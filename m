@@ -2,157 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FF684446BD
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 18:11:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C0994446C3
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 18:12:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231314AbhKCRNz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 13:13:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
+        id S229971AbhKCRPE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 13:15:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231204AbhKCRNv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 13:13:51 -0400
-Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050::465:202])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7B8DC061714;
-        Wed,  3 Nov 2021 10:11:14 -0700 (PDT)
-Received: from smtp202.mailbox.org (smtp202.mailbox.org [80.241.60.245])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4Hktb523P7zQkb9;
-        Wed,  3 Nov 2021 18:11:13 +0100 (CET)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-From:   =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>
-To:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-Subject: [PATCH v3 2/2] mwifiex: Add quirk to disable deep sleep with certain hardware revision
-Date:   Wed,  3 Nov 2021 18:10:55 +0100
-Message-Id: <20211103171055.16911-3-verdre@v0yd.nl>
-In-Reply-To: <20211103171055.16911-1-verdre@v0yd.nl>
-References: <20211103171055.16911-1-verdre@v0yd.nl>
+        with ESMTP id S229698AbhKCRPC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 13:15:02 -0400
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0137DC061714;
+        Wed,  3 Nov 2021 10:12:26 -0700 (PDT)
+Received: by mail-qt1-x82d.google.com with SMTP id o12so1555524qtv.4;
+        Wed, 03 Nov 2021 10:12:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9Yon/UNkvBv++0ELrNkjj8vCgTMl+XYKOntpW9f64Bw=;
+        b=HjYxBmcoWQoUGLuHCKKWEKX5kjOjXU6KFT8ycDPcR5Bas9M2mFqKPjupkNJ58t6CJB
+         YeOi0TDsj2ij/2mgqSHhaLPa8C1n/UvAYKEycX3B1WLXXUfs2FS1q27V3Lh1+/KzNkUJ
+         tD4fOQdX8uCaiQu+AFLzrgULjsdyEwAUPO+b1gryzbfrE06GL/Br9FYLcGsTzmUQKALY
+         i1kO1e/a/vNzdmNPvPA7Z2B++Fykd9xmlCCPshu342G1bF1W2XgM5F6cvNUYD71kThEJ
+         TBOzm3a11joNl4svA9qA81MH5EWs3eD0HCrR0WgDLRILc60+WDddSZ4O8SgAsAV43D+g
+         Uj7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9Yon/UNkvBv++0ELrNkjj8vCgTMl+XYKOntpW9f64Bw=;
+        b=jAVJhxj5WejsJ2zQPZqwqV80NoVoww3XbTh4SCGBIxBlZgQJNpSQ6VLbxx2HN4VaLX
+         jgcaRiMe1aG+vZALW1LnxSWHjx2S2gR+ZJ0dK+KNsbbAc6Lu06/CDSsH5h45ptIcFNL7
+         ZHbZAUYAi3Upi0qAEsco7ABYvSZPoxsa1xQZxqQgk3kNUAa/ua090UBWvrIrmOFf4mdZ
+         bPpHk/trNUkAqyqIhwtJJeiQKWnbA3bMCULiAX4onRI14PboDOCwsH/XNqDnhhNiLiCy
+         eeJiBJzgZUiqT8sb1F6XnSg+92Gwnn/5MFvohFcOWk6J98PvvEEtJiJR49ah3jxuXAnT
+         OQBw==
+X-Gm-Message-State: AOAM532gtYt9X1lh5b0LufVvFLIN/rYRqbdRK2kdJ3LwlzIVIKbHhxoP
+        mIgZjecfB/8RiQL0gWqd/izoDhiS4K6lpY9Khw==
+X-Google-Smtp-Source: ABdhPJxq2UgyOnxT41jhoN4lP4xkSptM+QHl4MmThU3e1NiJfPJjtIHydWt1Nf7ZCOHjBe91DzZk1RJ0JUxrxUpbM+M=
+X-Received: by 2002:ac8:5bd6:: with SMTP id b22mr25897430qtb.157.1635959545206;
+ Wed, 03 Nov 2021 10:12:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: E523E1313
+References: <20211102021432.2807760-1-jevburton.kernel@gmail.com> <aa6081aa-9741-be05-8051-e01909662ff1@mojatatu.com>
+In-Reply-To: <aa6081aa-9741-be05-8051-e01909662ff1@mojatatu.com>
+From:   Joe Burton <jevburton.kernel@gmail.com>
+Date:   Wed, 3 Nov 2021 10:12:14 -0700
+Message-ID: <CAN22DihBMX=xTMeTQ2-Z8Fa6r=1ynKshbfhFJJ5Jb=-ww_9hDQ@mail.gmail.com>
+Subject: Re: [RFC PATCH v3 0/3] Introduce BPF map tracing capability
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Petar Penkov <ppenkov@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Joe Burton <jevburton@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 88W8897 PCIe+USB card in the hardware revision 20 apparently has a
-hardware issue where the card wakes up from deep sleep randomly and very
-often, somewhat depending on the card activity, maybe the hardware has a
-floating wakeup pin or something. This was found by comparing two MS
-Surface Book 2 devices, where one devices wifi card experienced spurious
-wakeups, while the other one didn't.
+That's a good point. Since the probe is invoked before the update takes
+place, it would not be possible to account for the possibility that the
+update failed.
 
-Those continuous wakeups prevent the card from entering host sleep when
-the computer suspends. And because the host won't answer to events from
-the card anymore while it's suspended, the firmwares internal power
-saving state machine seems to get confused and the card can't sleep
-anymore at all after that.
+Unless someone wants the `pre update' hook, I'll simply adjust the
+existing hooks' semantics so that they are invoked after the update.
+As discussed, this better suits the intended use case.
 
-Since we can't work around that hardware bug in the firmware, let's
-get the hardware revision string from the firmware and match it with
-known bad revisions. Then disable auto deep sleep for those revisions,
-which makes sure we no longer get those spurious wakeups.
-
-Signed-off-by: Jonas Dreßler <verdre@v0yd.nl>
----
- drivers/net/wireless/marvell/mwifiex/main.c   | 18 +++++++++++++++++
- drivers/net/wireless/marvell/mwifiex/main.h   |  1 +
- .../wireless/marvell/mwifiex/sta_cmdresp.c    | 20 +++++++++++++++++++
- 3 files changed, 39 insertions(+)
-
-diff --git a/drivers/net/wireless/marvell/mwifiex/main.c b/drivers/net/wireless/marvell/mwifiex/main.c
-index 19b996c6a260..ace7371c4773 100644
---- a/drivers/net/wireless/marvell/mwifiex/main.c
-+++ b/drivers/net/wireless/marvell/mwifiex/main.c
-@@ -226,6 +226,23 @@ static int mwifiex_process_rx(struct mwifiex_adapter *adapter)
- 	return 0;
- }
- 
-+static void maybe_quirk_fw_disable_ds(struct mwifiex_adapter *adapter)
-+{
-+	struct mwifiex_private *priv = mwifiex_get_priv(adapter, MWIFIEX_BSS_ROLE_STA);
-+	struct mwifiex_ver_ext ver_ext;
-+
-+	if (test_and_set_bit(MWIFIEX_IS_REQUESTING_FW_VEREXT, &adapter->work_flags))
-+		return;
-+
-+	memset(&ver_ext, 0, sizeof(ver_ext));
-+	ver_ext.version_str_sel = 1;
-+	if (mwifiex_send_cmd(priv, HostCmd_CMD_VERSION_EXT,
-+			     HostCmd_ACT_GEN_GET, 0, &ver_ext, false)) {
-+		mwifiex_dbg(priv->adapter, MSG,
-+			    "Checking hardware revision failed.\n");
-+	}
-+}
-+
- /*
-  * The main process.
-  *
-@@ -356,6 +373,7 @@ int mwifiex_main_process(struct mwifiex_adapter *adapter)
- 			if (adapter->hw_status == MWIFIEX_HW_STATUS_INIT_DONE) {
- 				adapter->hw_status = MWIFIEX_HW_STATUS_READY;
- 				mwifiex_init_fw_complete(adapter);
-+				maybe_quirk_fw_disable_ds(adapter);
- 			}
- 		}
- 
-diff --git a/drivers/net/wireless/marvell/mwifiex/main.h b/drivers/net/wireless/marvell/mwifiex/main.h
-index 65609ea2327e..eabd0e0a9f56 100644
---- a/drivers/net/wireless/marvell/mwifiex/main.h
-+++ b/drivers/net/wireless/marvell/mwifiex/main.h
-@@ -524,6 +524,7 @@ enum mwifiex_adapter_work_flags {
- 	MWIFIEX_IS_SUSPENDED,
- 	MWIFIEX_IS_HS_CONFIGURED,
- 	MWIFIEX_IS_HS_ENABLING,
-+	MWIFIEX_IS_REQUESTING_FW_VEREXT,
- };
- 
- struct mwifiex_band_config {
-diff --git a/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c b/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c
-index 20b69a37f9e1..6c7b0b9bc4e9 100644
---- a/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c
-+++ b/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c
-@@ -708,6 +708,26 @@ static int mwifiex_ret_ver_ext(struct mwifiex_private *priv,
- {
- 	struct host_cmd_ds_version_ext *ver_ext = &resp->params.verext;
- 
-+	if (test_and_clear_bit(MWIFIEX_IS_REQUESTING_FW_VEREXT, &priv->adapter->work_flags)) {
-+		if (strncmp(ver_ext->version_str, "ChipRev:20, BB:9b(10.00), RF:40(21)",
-+			    MWIFIEX_VERSION_STR_LENGTH) == 0) {
-+			struct mwifiex_ds_auto_ds auto_ds = {
-+				.auto_ds = DEEP_SLEEP_OFF,
-+			};
-+
-+			mwifiex_dbg(priv->adapter, MSG,
-+				    "Bad HW revision detected, disabling deep sleep\n");
-+
-+			if (mwifiex_send_cmd(priv, HostCmd_CMD_802_11_PS_MODE_ENH,
-+					     DIS_AUTO_PS, BITMAP_AUTO_DS, &auto_ds, false)) {
-+				mwifiex_dbg(priv->adapter, MSG,
-+					    "Disabling deep sleep failed.\n");
-+			}
-+		}
-+
-+		return 0;
-+	}
-+
- 	if (version_ext) {
- 		version_ext->version_str_sel = ver_ext->version_str_sel;
- 		memcpy(version_ext->version_str, ver_ext->version_str,
--- 
-2.33.1
-
+On Wed, Nov 3, 2021 at 3:34 AM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>
+> On 2021-11-01 22:14, Joe Burton wrote:
+> > From: Joe Burton<jevburton@google.com>
+> >
+> > This is the third version of a patch series implementing map tracing.
+> >
+> > Map tracing enables executing BPF programs upon BPF map updates. This
+> > might be useful to perform upgrades of stateful programs; e.g., tracing
+> > programs can propagate changes to maps that occur during an upgrade
+> > operation.
+> >
+> > This version uses trampoline hooks to provide the capability.
+> > fentry/fexit/fmod_ret programs can attach to two new functions:
+> >          int bpf_map_trace_update_elem(struct bpf_map* map, void* key,
+> >                  void* val, u32 flags);
+> >          int bpf_map_trace_delete_elem(struct bpf_map* map, void* key);
+> >
+> > These hooks work as intended for the following map types:
+> >          BPF_MAP_TYPE_ARRAY
+> >          BPF_MAP_TYPE_PERCPU_ARRAY
+> >          BPF_MAP_TYPE_HASH
+> >          BPF_MAP_TYPE_PERCPU_HASH
+> >          BPF_MAP_TYPE_LRU_HASH
+> >          BPF_MAP_TYPE_LRU_PERCPU_HASH
+> >
+> > The only guarantee about the semantics of these hooks is that they execute
+> > before the operation takes place. We cannot call them with locks held
+> > because the hooked program might try to acquire the same locks. Thus they
+> > may be invoked in situations where the traced map is not ultimately
+> > updated.
+>
+> Sorry, I may have missed something obvious while staring at the patches,
+> but:
+> Dont you want the notification if the command actually was successful
+> on the map? If the command failed for whatever reason theres nothing
+> to synchronize? Unless you use that as an indicator to re-read the map?
+>
+> cheers,
+> jamal
