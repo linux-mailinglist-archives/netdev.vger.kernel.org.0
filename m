@@ -2,82 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B152F44490B
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 20:37:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4177844490D
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 20:38:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230270AbhKCTjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 15:39:36 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45662 "EHLO vps0.lunn.ch"
+        id S230380AbhKCTlG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 15:41:06 -0400
+Received: from todd.t-8ch.de ([159.69.126.157]:58401 "EHLO todd.t-8ch.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230198AbhKCTjg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Nov 2021 15:39:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=2u8+xxOn4g/JbmCkvm/SX9mKAxPVHUs+JVNIris0Gow=; b=BpO8NbkMDafRWlcCmDTJzWtcUn
-        AwNNb5RB9Jb6rwd5bXnjP+ZcisWRxogdevk8RoQAnFDP4O+9SO/doPtrCgiwD8SS9WbA1Bl4W5BF5
-        tYAYuy3cO8VqZPrBMvGSdzzNGBUtv6ZATTfvzX3dOgOr0PHBD10LDPI9TYYpQFhuh/1s=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1miM41-00CXAU-QW; Wed, 03 Nov 2021 20:36:49 +0100
-Date:   Wed, 3 Nov 2021 20:36:49 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        id S229918AbhKCTlG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Nov 2021 15:41:06 -0400
+From:   =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=weissschuh.net;
+        s=mail; t=1635968308;
+        bh=F7/IqXfrZtyQ8NW8rysMnKtrgiVYUxBlS6M/A2Yg+4k=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VNiMoSp6ylT3mDXyPfrQtncCFOmKtCeB+EOnyRasaVPfN6fidBD0XzW7NsLyLA1Zd
+         wn7v6SSdCkWEMffw23ksshCVOUke2Io+47sSdtUtDMBTc2bCMXLqjDELqh9UDWk2OB
+         hzYwGIYcd6HyNK02dFXeRkepQtfUi6PDKDq5caRU=
+To:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org
+Cc:     =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org, Vignesh Raghavendra <vigneshr@ti.com>
-Subject: Re: [RFC PATCH] net: phy/mdio: enable mmd indirect access through
- phy_mii_ioctl()
-Message-ID: <YYLk0dEKX2Jlq0Se@lunn.ch>
-References: <YYCLJnY52MoYfxD8@lunn.ch>
- <YYExmHYW49jOjfOt@shell.armlinux.org.uk>
- <bc9df441-49bf-5c8a-891c-cc3f0db00aba@ti.com>
- <YYF4ZQHqc1jJsE/+@shell.armlinux.org.uk>
- <e18f17bd-9e77-d3ef-cc1e-30adccb7cdd5@ti.com>
- <828e2d69-be15-fe69-48d8-9cfc29c4e76e@ti.com>
- <YYGxvomL/0tiPzvV@lunn.ch>
- <8d24c421-064c-9fee-577a-cbbf089cdf33@ti.com>
- <YYHXcyCOPiUkk8Tz@lunn.ch>
- <01a0ebf9-5d3f-e886-4072-acb9bf418b12@ti.com>
+        Stefano Stabellini <stefano@aporeto.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/4] net/9p: optimize transport module loading
+Date:   Wed,  3 Nov 2021 20:38:19 +0100
+Message-Id: <20211103193823.111007-1-linux@weissschuh.net>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <01a0ebf9-5d3f-e886-4072-acb9bf418b12@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 03, 2021 at 08:42:07PM +0200, Grygorii Strashko wrote:
-> 
-> 
-> On 03/11/2021 02:27, Andrew Lunn wrote:
-> > > > What i find interesting is that you and the other resent requester are
-> > > > using the same user space tool. If you implement C45 over C22 in that
-> > > > tool, you get your solution, and it will work for older kernels as
-> > > > well. Also, given the diverse implementations of this IOTCL, it
-> > > > probably works for more drivers than just those using phy_mii_ioctl().
-> > > 
-> > > Do you mean change uapi, like
-> > >   add mdio_phy_id_is_c45_over_c22() and
-> > >   flag #define MDIO_PHY_ID_C45_OVER_C22 0x4000?
-> > 
-> > No, i mean user space implements C45 over C22. Make phytool write
-> > MII_MMD_CTRL and MII_MMD_DATA to perform a C45 over C22.
-> 
-> Now I give up - as mentioned there is now way to sync User space vs Kernel
-> MMD transactions and so no way to get trusted results.
+This is a continuation of the single patch
+"net/9p: autoload transport modules".
 
-Except that it will probably work 99% of the time, which is enough for
-a debug tool. phylib is pretty idle most of the time, it just polls
-the PHY once a second to see if the link status has changed. And does
-not poll at all if interrupts are wired up. And you can always do a
-read three times and see if you get the same answer, or do a write
-followed by a read to see if the write actually happened correctly, or
-corrupted some other register.
+Patch 1 is a cleaned up version of the original patch.
 
-	Andrew
+Patch 2 splits the filedescriptor-based transports into their own module.
+
+Patch 3 adds autoloading for the xen transport. Please note that this is
+completely untested, but other xenbus drivers do the same.
+
+Patch 4 adds some fallback transport loading from modules if none is usable at
+the moment.
+
+Changes since v1:
+( https://lore.kernel.org/netdev/20211017134611.4330-1-linux@weissschuh.net/ )
+
+* Fix warnings
+* Split FD transport into its own module
+* Autoload xen transport when xenbus device is present
+* Load transports from modules when none is specified and loaded
+
+Thomas Weißschuh (4):
+  net/9p: autoload transport modules
+  9p/trans_fd: split into dedicated module
+  9p/xen: autoload when xenbus service is available
+  net/p9: load default transports
+
+ include/net/9p/9p.h        |  2 --
+ include/net/9p/transport.h |  8 +++++++-
+ net/9p/Kconfig             |  7 +++++++
+ net/9p/Makefile            |  5 ++++-
+ net/9p/mod.c               | 41 ++++++++++++++++++++++++++++++--------
+ net/9p/trans_fd.c          | 14 +++++++++++--
+ net/9p/trans_rdma.c        |  1 +
+ net/9p/trans_virtio.c      |  1 +
+ net/9p/trans_xen.c         |  2 ++
+ 9 files changed, 67 insertions(+), 14 deletions(-)
+
+
+base-commit: cc0356d6a02e064387c16a83cb96fe43ef33181e
+-- 
+2.33.1
+
