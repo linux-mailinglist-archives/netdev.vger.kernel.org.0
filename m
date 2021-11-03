@@ -2,118 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47D994440E5
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 12:55:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48AE64440EE
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 12:59:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231517AbhKCL6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 07:58:04 -0400
-Received: from mail-lj1-f178.google.com ([209.85.208.178]:35719 "EHLO
-        mail-lj1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230304AbhKCL6E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 07:58:04 -0400
-Received: by mail-lj1-f178.google.com with SMTP id 1so3362122ljv.2;
-        Wed, 03 Nov 2021 04:55:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=11mAUeEzHYo4WofQQnhX6tKzbvv6UrSSLpN/q7XHPV4=;
-        b=aH/8Wn5j72LL3ny8DFPANyReAgyvGnbAQpbuRP6espgrJiMnohqIXDdxvBTHTzIDkM
-         h5NmCqr42e4krJfJOzBjWbHK2rg+IFt/CmrMNyLRLOGVbMG8BuslFhOVrm4398+4MkkN
-         3rvt0McbTJYx93C2iXW8a4GMa/et9OTznb9P9uDnZawfQvTfAnN1GaGIXWQemFbkWm9K
-         sYWU/AoMsmyzW5/QflUlkn9qUsRRWcbt7RqvO1tkDHBfgPuVrKsS0LpUXadZizEl4V5Y
-         LDwfHZ+v51NgMdAhMd/CgcPl3x9KNqHB0asy7XF2FgsxwZZNnCF5wQyg2cI7iYCkgXfs
-         5LxQ==
-X-Gm-Message-State: AOAM532gDtdcbJa57CEVucyQ20sHvzD6W7vrXNo6DvuU6Sb4SvG22TAq
-        LPzzRWChrqDBKWNkvylH7xg=
-X-Google-Smtp-Source: ABdhPJyPei1aKTKE69u+FCwdajtiXEz9jxZBU//xdhQs7vcHoF3KS+mS4SShXAwvvND1vpqm4oTlug==
-X-Received: by 2002:a05:651c:2cf:: with SMTP id f15mr19032566ljo.170.1635940526852;
-        Wed, 03 Nov 2021 04:55:26 -0700 (PDT)
-Received: from kladdkakan.. (c213-102-90-208.bredband.tele2.se. [213.102.90.208])
-        by smtp.gmail.com with ESMTPSA id g18sm161890lfv.25.2021.11.03.04.55.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Nov 2021 04:55:25 -0700 (PDT)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>
-To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, tongtiangen@huawei.com
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        luke.r.nels@gmail.com, xi.wang@gmail.com,
-        linux-riscv@lists.infradead.org
-Subject: [PATCH bpf-next] riscv, bpf: Fix RV32 broken build, and silence RV64 warning
-Date:   Wed,  3 Nov 2021 12:54:53 +0100
-Message-Id: <20211103115453.397209-1-bjorn@kernel.org>
-X-Mailer: git-send-email 2.32.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        id S230527AbhKCMB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 08:01:56 -0400
+Received: from mx1.tq-group.com ([93.104.207.81]:51424 "EHLO mx1.tq-group.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229998AbhKCMB4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Nov 2021 08:01:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1635940759; x=1667476759;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=u7rdF4NdfNB9nxiTZiM3YjsgOLHGvGQpa/fbZZV96k8=;
+  b=dePlM8oS9kt1NmE23GwypmsidyDDRyAlPhx624+C8oOi7aQFsLkxQh/5
+   KmDv2jcUBftS+7MWq0nyBjryFcYE9uuM3z8+ETW3arXjCbApNhm3Lp6e7
+   ZSElvRfYHUEj9HgY/bKwky0tOtNG2ZiEGIrprph8Sf9LBHh9yVrdwkNkR
+   VRJRPEAoXSsqcdNnqdws3DsPz666senN9HGu6mrr++k5Pv5qH/hUu+qat
+   cjVdn/hJ9o6Minv7XwMwwamcTzeJ/H1fKUwIXj1xrGkED5PYJR1LD0vzZ
+   Q5p67OdvlkxwXf0u0J8R62G2NJ3kPsP0LhCeFCnIf1UQIbRBJAf3bSaHY
+   A==;
+X-IronPort-AV: E=Sophos;i="5.87,205,1631570400"; 
+   d="scan'208";a="20323835"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 03 Nov 2021 12:59:18 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Wed, 03 Nov 2021 12:59:18 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Wed, 03 Nov 2021 12:59:18 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1635940758; x=1667476758;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=u7rdF4NdfNB9nxiTZiM3YjsgOLHGvGQpa/fbZZV96k8=;
+  b=VMhEW0PbjUSijTyfA5hHgHblj+vJY2gJi330hKDhr55lyTAucPPOhxiP
+   mdGpdbERikj6AZ8HdtEwXVIOfHZcvdYQtSYXTDQ2OuoyBGy5CZU44+i9h
+   tqDzI73kmlofReVZzoiL3DGCgv7fhJtfsmFHtY0MbHaA3kEz53vew60IX
+   VxlEOeFx0t4LT/vdPc0Zj5MOV7GaGAx/Vi9iGDW9Jfaau1t6CYlHhLYQE
+   NwkT8Jn4ixLBcGWFBM7Ey6+lzzN8+1K2+RYcKcrDZu94niLVbzynxf7SX
+   F3jAaOcy+OpmhApKEQEAq/pl8Xm6rtXcw/WZXp/e5q9ufWIPEd5j/255U
+   g==;
+X-IronPort-AV: E=Sophos;i="5.87,205,1631570400"; 
+   d="scan'208";a="20323834"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 03 Nov 2021 12:59:18 +0100
+Received: from schifferm-ubuntu4.tq-net.de (schifferm-ubuntu4.tq-net.de [10.121.48.12])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 9B22D280065;
+        Wed,  3 Nov 2021 12:59:18 +0100 (CET)
+Message-ID: <77c9849442e7e4a747aebd79747fd88c383c6b57.camel@ew.tq-group.com>
+Subject: Re: [PATCH] net: fec: defer probe if PHY on external MDIO bus is
+ not available
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Wed, 03 Nov 2021 12:59:16 +0100
+In-Reply-To: <e8e0f07afbae8333c94c198a20a66a9448c32ce6.camel@ew.tq-group.com>
+References: <20211014113043.3518-1-matthias.schiffer@ew.tq-group.com>
+         <YW7SWKiUy8LfvSkl@lunn.ch>
+         <aae9573f89560a32da0786dc90cb7be0331acad4.camel@ew.tq-group.com>
+         <YXBk8gwuCqrxDbVY@lunn.ch>
+         <c286107376a99ca2201db058e1973e2b2264e9fb.camel@ew.tq-group.com>
+         <YXFh/nLTqvCsLAXj@lunn.ch>
+         <7a478c1f25d2ea96ff09cee77d648e9c63b97dcf.camel@ew.tq-group.com>
+         <YXK1E9LLDCfajzmR@lunn.ch>
+         <e8e0f07afbae8333c94c198a20a66a9448c32ce6.camel@ew.tq-group.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 252c765bd764 ("riscv, bpf: Add BPF exception tables") only
-addressed RV64, and broke the RV32 build [1]. Fix by gating the exception
-tables code with CONFIG_ARCH_RV64I.
+On Tue, 2021-10-26 at 13:54 +0200, Matthias Schiffer wrote:
+> On Fri, 2021-10-22 at 14:56 +0200, Andrew Lunn wrote:
+> > > Hmm, lots of network drivers? I tried to find an example, but all
+> > > drivers that generate -EPROBE_DEFER for missing PHYs at all don't have
+> > > an internal MDIO bus and thus avoid the circular dependency.
+> > 
+> > Try drivers/net/dsa.
+> > 
+> > These often have mdio busses which get registered and then
+> > unregistered. There are also IRQ drivers which do the same.
+> > 
+> > 	Andrew
+> 
+> 
+> All drivers I looked at were careful to register the MDIO bus in the
+> last part of the probe function, so that the only errors that could 
+> happen after that (and thus require to unregister the bus device again)
+> would not be -EPROBE_DEFER.
+> 
+> The documented infinite loop is easy to reproduce: You just need two
+> separate device instances with misbehaving probe() functions that
+> return -EPROBE_DEFER after registering and unregistering some
+> subdevice. If the missing device that causes the deferral never appears
+> (for example because its driver is not available), the two devices will
+> be probed ad infinitum.
+> 
+> I agree with the documentation that a driver should not do this, and
+> thus we need another way to deal with the cyclic dependency between an
+> Ethernet interface and a PHY on its internal MDIO bus.
+> 
+> While I think that a generic solution would be theoretically possible
+> by ensuring that the probing loop makes some kind of "progress", I
+> think this would set a precedent for "expensive" operations happening
+> before a -EPROBE_DEFER return, which should be avoided even when no
+> infinite loop results.
+> 
+> Matthias
 
-Further, silence a "-Wmissing-prototypes" warning [2] in the RV64 BPF
-JIT.
-
-[1] https://lore.kernel.org/llvm/202111020610.9oy9Rr0G-lkp@intel.com/
-[2] https://lore.kernel.org/llvm/202110290334.2zdMyRq4-lkp@intel.com/
-
-Fixes: 252c765bd764 ("riscv, bpf: Add BPF exception tables")
-Signed-off-by: Björn Töpel <bjorn@kernel.org>
----
-Tong/Daniel: The RV32 build has been broken since Thursday. I'll try
-to fast-track a bit, and commit a quick-fix for it. Hope that's OK
-with you, Tong!
-
-I've verified the build on my machine using riscv32 GCC 9.3.0 and
-riscv64 GCC 11.2.0.
-
-
-Björn
----
-arch/riscv/mm/extable.c         | 4 ++--
- arch/riscv/net/bpf_jit_comp64.c | 2 ++
- 2 files changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/arch/riscv/mm/extable.c b/arch/riscv/mm/extable.c
-index 18bf338303b6..ddb7d3b99e89 100644
---- a/arch/riscv/mm/extable.c
-+++ b/arch/riscv/mm/extable.c
-@@ -11,7 +11,7 @@
- #include <linux/module.h>
- #include <linux/uaccess.h>
- 
--#ifdef CONFIG_BPF_JIT
-+#if defined(CONFIG_BPF_JIT) && defined(CONFIG_ARCH_RV64I)
- int rv_bpf_fixup_exception(const struct exception_table_entry *ex, struct pt_regs *regs);
- #endif
- 
-@@ -23,7 +23,7 @@ int fixup_exception(struct pt_regs *regs)
- 	if (!fixup)
- 		return 0;
- 
--#ifdef CONFIG_BPF_JIT
-+#if defined(CONFIG_BPF_JIT) && defined(CONFIG_ARCH_RV64I)
- 	if (regs->epc >= BPF_JIT_REGION_START && regs->epc < BPF_JIT_REGION_END)
- 		return rv_bpf_fixup_exception(fixup, regs);
- #endif
-diff --git a/arch/riscv/net/bpf_jit_comp64.c b/arch/riscv/net/bpf_jit_comp64.c
-index 2ca345c7b0bf..f2a779c7e225 100644
---- a/arch/riscv/net/bpf_jit_comp64.c
-+++ b/arch/riscv/net/bpf_jit_comp64.c
-@@ -459,6 +459,8 @@ static int emit_call(bool fixed, u64 addr, struct rv_jit_context *ctx)
- #define BPF_FIXUP_OFFSET_MASK   GENMASK(26, 0)
- #define BPF_FIXUP_REG_MASK      GENMASK(31, 27)
- 
-+int rv_bpf_fixup_exception(const struct exception_table_entry *ex,
-+				struct pt_regs *regs);
- int rv_bpf_fixup_exception(const struct exception_table_entry *ex,
- 				struct pt_regs *regs)
- {
-
-base-commit: cc0356d6a02e064387c16a83cb96fe43ef33181e
--- 
-2.32.0
+Does anyone have a suggestion how to proceed with this issue?
 
