@@ -2,53 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F780443AB9
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 02:11:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD398443AD3
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 02:20:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231204AbhKCBNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 21:13:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53082 "EHLO mail.kernel.org"
+        id S231982AbhKCBWr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 21:22:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58092 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230295AbhKCBNS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Nov 2021 21:13:18 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 12D6E60FC4;
-        Wed,  3 Nov 2021 01:10:40 +0000 (UTC)
+        id S231208AbhKCBWo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Nov 2021 21:22:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 46F0160FC4;
+        Wed,  3 Nov 2021 01:20:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635901842;
-        bh=xI9EJ2i6X9dxqm5x8ZW0RA+QOVBUId4dJCq44ghvmK8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mUq1CEHZdLfPWeL31ZzgZgIxBBnELvCAd0rvfWK31pNdiH7nDIppJ4x01QFHl7fZu
-         Hs3ZeXZIIyyks5fG62xLL8Wz/ymXWeqeqNfUBDWlfc+7pPQiM6j/0w1ra7qMQ/AdVb
-         fW+P9eVukjDa9hmepXUbLU1KV3aE5IFu8wn9OJip3UU1qzdq+zUZgWNXmOevft3/qx
-         veyWvfqR6ei7k6qMWpSHFzGTBlYef/gfNxgc6mclex9vCyyfSfiRYjstdf+SeBjULK
-         pXVBm9i5SxiTgGFBeBIMzn0xETmPhU5Cp2ZhJ41gA7ZhZZ6Ow+aUzSwOGdUOWJKd4U
-         Y38tFhLnFmKgw==
-Date:   Tue, 2 Nov 2021 18:10:38 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Volodymyr Mytnyk [C]" <vmytnyk@marvell.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "Taras Chornyi [C]" <tchornyi@marvell.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Yevhen Orlov <yevhen.orlov@plvision.eu>,
-        "Vadym Kochan [C]" <vkochan@marvell.com>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] [-next] net: marvell: prestera: Add explicit padding
-Message-ID: <20211102181038.31035104@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <SJ0PR18MB4009AED9ADC1CB53775F71FEB28B9@SJ0PR18MB4009.namprd18.prod.outlook.com>
-References: <20211102082433.3820514-1-geert@linux-m68k.org>
-        <CAK8P3a1x0dU=x=mnBC8JeDG=dsQNfyO7X=16jm0WUwQ8wwLp=w@mail.gmail.com>
-        <SJ0PR18MB4009AED9ADC1CB53775F71FEB28B9@SJ0PR18MB4009.namprd18.prod.outlook.com>
+        s=k20201202; t=1635902408;
+        bh=DgmSYM2Z05M1PXI6XirV1xbPnFA0PG6MBbbt7fbohjY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=SrhyRmbDssVg/bU+UCzG5AhsuDcrtJTPmJeCIv1PnVfMYuOABH47qDITaWwYqpdOR
+         8cM6EXC9zmpsWr5ZUZ+gU68bpK3JXY6+0djFZSqU1XMFv6gfUC755ng7pli1obZWVP
+         90kq5SpEOCjFC1NDIqug1qcIIkrTVsC0jJo8Pm9PBE0VIDfKqjPsjYZ5/PNezVoGEA
+         +2w/bS27I4aa9GqXOs+yNWIato7xa9G3RKgv7ZWZlys3I3xCIu/F8opyPWQdvnP/3i
+         vcNwPoIt/TejOqZ9TkKvCA4tl88+v7KERXfJ5b7HmjtCL+SfKgOECwJqEiVweSkEY8
+         BTyEZCUdvAhQA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 332B860A2F;
+        Wed,  3 Nov 2021 01:20:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 1/2] netfilter: nfnetlink_queue: fix OOB when mac header
+ was cleared
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163590240820.27381.17723425785268130948.git-patchwork-notify@kernel.org>
+Date:   Wed, 03 Nov 2021 01:20:08 +0000
+References: <20211101221528.236114-2-pablo@netfilter.org>
+In-Reply-To: <20211101221528.236114-2-pablo@netfilter.org>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2 Nov 2021 11:36:19 +0000 Volodymyr Mytnyk [C] wrote:
-> Should I rebase my changes based on yours now ? Is it possible to make a relation chain ?
+Hello:
 
-Please rebase your changes on top of net/master.
+This series was applied to netdev/net.git (master)
+by Pablo Neira Ayuso <pablo@netfilter.org>:
+
+On Mon,  1 Nov 2021 23:15:27 +0100 you wrote:
+> From: Florian Westphal <fw@strlen.de>
+> 
+> On 64bit platforms the MAC header is set to 0xffff on allocation and
+> also when a helper like skb_unset_mac_header() is called.
+> 
+> dev_parse_header may call skb_mac_header() which assumes valid mac offset:
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,1/2] netfilter: nfnetlink_queue: fix OOB when mac header was cleared
+    https://git.kernel.org/netdev/net/c/5648b5e1169f
+  - [net,2/2] ipvs: autoload ipvs on genl access
+    https://git.kernel.org/netdev/net/c/2199f562730d
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
