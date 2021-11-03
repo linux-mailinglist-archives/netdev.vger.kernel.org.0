@@ -2,110 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C8FE444A15
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 22:08:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4FB3444A2D
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 22:23:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231130AbhKCVLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 17:11:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37000 "EHLO
+        id S230202AbhKCV02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 17:26:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231265AbhKCVLR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 17:11:17 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74B5CC061714
-        for <netdev@vger.kernel.org>; Wed,  3 Nov 2021 14:08:40 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id d72-20020a1c1d4b000000b00331140f3dc8so2828425wmd.1
-        for <netdev@vger.kernel.org>; Wed, 03 Nov 2021 14:08:40 -0700 (PDT)
+        with ESMTP id S229893AbhKCV01 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 17:26:27 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8878C061714
+        for <netdev@vger.kernel.org>; Wed,  3 Nov 2021 14:23:50 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id a20-20020a1c7f14000000b003231d13ee3cso5674403wmd.3
+        for <netdev@vger.kernel.org>; Wed, 03 Nov 2021 14:23:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
-         :subject:content-transfer-encoding;
-        bh=WqZqYInOPtFj1d1NPtRF1AXpHyZvEqxfW7F8QKAEvD8=;
-        b=bflSdyeeU5XoP2TpH/sPJmepkwQxLdPDEaR3lmNlBJR4aQS4Zb7gStCUY7BVDgAcym
-         W5DqSFcUB2QAnvvNUuzbqsMsgc0hBzVgzTgOkxRUtzA+6SG6yQZWohYY/GNPPaVLn5BX
-         1MdakJLx76oAKD3/KtuZFbyhY8GCETObUwUs3NytH23dqgpjZhkJJVJMRYS6PY773O6j
-         /Z1p7t2J7XudbwJMrId6F2WunNuSDGESoJUOLOwoJSrkvvNBno5xAc/8lzv5zflPxtMp
-         hoof4FP3CQdANDOGPuuJs2AtazF7pCY+RhbTO8IJuRykw4N483Cl41CyfXoa5prM6uFl
-         6+1A==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ASM16knmeuNz5Je3Dcaw1hffBq36knNoh8i2fZ0jgQo=;
+        b=TGFT9tM/bqGcnTBjSE7V6iC8Tgnk2mMyYwRYjh2U43HzmimxQl0KR4Upx6Iat+D5VN
+         cwoG6EX3vsdOBjht6eYbs/n1zg8rHPdbhcTq3ZWlnXmfH19UTOWDxmrjMlIV1D6ywigw
+         l9xbxlUbXogj/wtqWTvDVuO3S7pMsYlKXa5Ee8rEUPNRAXJLLhsluoSH9HdzRoP6GO2p
+         B+POVGInFUTsDZz6ZcfSWFVkoMTWxyc5zJGinV4MfEnn9ZbbW+4KxConpnbBAuXr0cVq
+         OAA/00v5PUOMam5YjkrYVS6P3M1IqbiHkHkirKlEc6PTzVcYBGD/+NjFuvefY2VID+Cq
+         t16Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:from:subject:content-transfer-encoding;
-        bh=WqZqYInOPtFj1d1NPtRF1AXpHyZvEqxfW7F8QKAEvD8=;
-        b=M6iBUhKMCvwt9CIBaKZZ8JTRjIGWuKpaHvE0W2auZLTQkq5QDD4Ay6Gn6b3gr/gK7q
-         hYSg6GcW0jHyg7VCghSXA75sFAdpZ+GqUD626KvnOndY6Z1pe1fbS8XhbYnm+JG7/nfK
-         bu5JcdYY7QsPigIFWUR8UXFIyb3Tzf8nsmmPxwcF1q5m+c2h0alRmkmljvSB5nze/euU
-         JTGZZZSh8ULRUVdSR6/L/kiHzKZK9AV/3rjHDhB3h1wRzqTRTdw+jrTNv/EwiXvPsb8i
-         HFloohUqurCG7KEjPxlu5ipB/DNeNUKShamMduEi9Y/CGUkIsFV1tu6q41b7J1hvrGTX
-         8nyQ==
-X-Gm-Message-State: AOAM532Xx09j844ookfApHR5HMxlRIx8wGCDrA2+drdSZXhhBCXUY1JC
-        xuJPfK2MDYr/HedpNUrYFDewWVtKf2c=
-X-Google-Smtp-Source: ABdhPJwpJG4w7gWdMny3DfH9KpdTEQV9vAXcY+iFlfZe4Kp7Cj4lYBIDA4o1K2eaZxg8fPQxfVq4Sg==
-X-Received: by 2002:a7b:c005:: with SMTP id c5mr18199383wmb.150.1635973719052;
-        Wed, 03 Nov 2021 14:08:39 -0700 (PDT)
-Received: from ?IPV6:2003:ea:8f1a:f00:304e:d540:1893:d784? (p200300ea8f1a0f00304ed5401893d784.dip0.t-ipconnect.de. [2003:ea:8f1a:f00:304e:d540:1893:d784])
-        by smtp.googlemail.com with ESMTPSA id t127sm6926086wma.9.2021.11.03.14.08.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Nov 2021 14:08:38 -0700 (PDT)
-Message-ID: <7b8b9456-a93f-abbc-1dc5-a2c2542f932c@gmail.com>
-Date:   Wed, 3 Nov 2021 22:08:28 +0100
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ASM16knmeuNz5Je3Dcaw1hffBq36knNoh8i2fZ0jgQo=;
+        b=8BsjW01eaYlZbdVYeKhBcSiGAVYiWGfVc2KTbBVBxvux22faPxyiDz0i5YkjKt6X0O
+         pIri+gkNUPII5DE3EBYW+ell7o67+9E+mzYsyBMee/FLyBf5XPvuqNkp9bdnh89VwSpi
+         cVhTYLbAhJiD2SXe6UC+g5eZldPoIzyqDvYdAcJequfqM2bdO2sBrXXscHEJ3UxpOAwL
+         +ixDdQRlx6z7e0SQQLclAI77Pk+0qa+mV1/QgMM3cfHieciRot+qyiUhamwxXi5Vt8j9
+         psWd+yweGPtKQ+1wi8cvHzQrjaefVWcSFVbxfvQ3+0tnkaQn1FxvcykEgxm6XYH0MWgB
+         Z6Jw==
+X-Gm-Message-State: AOAM533twsBsq2yQEuRV+K1frCk1LU2Kf9qVVLqRDA3hBhMM1Gz86itb
+        UOGjrcOh9n57fNu5WSP9OUDNRsQNZ9IQur3e+6B18Q==
+X-Google-Smtp-Source: ABdhPJxyF4Dsd0usfoRUWRZwEU7SJXMPnt5APDduOQ5NKLQZcckVh72Ah53fDBaQ7L8pgQBrNPchV1fhuIHSgNOYhc8=
+X-Received: by 2002:a1c:43c2:: with SMTP id q185mr18344349wma.30.1635974628544;
+ Wed, 03 Nov 2021 14:23:48 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.1
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Zhang Changzhong <zhangchangzhong@huawei.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net] net: phy: fix duplex out of sync problem while changing
- settings
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20211025121253.8643-1-hmukos@yandex-team.ru> <20211103204607.21491-1-hmukos@yandex-team.ru>
+In-Reply-To: <20211103204607.21491-1-hmukos@yandex-team.ru>
+From:   Yuchung Cheng <ycheng@google.com>
+Date:   Wed, 3 Nov 2021 14:23:11 -0700
+Message-ID: <CAK6E8=dfHURjNyLbPEqvFvP9nQh45PFGjK05MJaAxMU-LEboag@mail.gmail.com>
+Subject: Re: [PATCH v3] tcp: Use BPF timeout setting for SYN ACK RTO
+To:     Akhmat Karakotov <hmukos@yandex-team.ru>
+Cc:     kafai@fb.com, brakmo@fb.com, eric.dumazet@gmail.com,
+        mitradir@yandex-team.ru, ncardwell@google.com,
+        netdev@vger.kernel.org, zeil@yandex-team.ru
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As reported by Zhang there's a small issue if in forced mode the duplex
-mode changes with the link staying up [0]. In this case the MAC isn't
-notified about the change.
+On Wed, Nov 3, 2021 at 1:46 PM Akhmat Karakotov <hmukos@yandex-team.ru> wrote:
+>
+> When setting RTO through BPF program, some SYN ACK packets were unaffected
+> and continued to use TCP_TIMEOUT_INIT constant. This patch adds timeout
+> option to struct request_sock. Option is initialized with TCP_TIMEOUT_INIT
+> and is reassigned through BPF using tcp_timeout_init call. SYN ACK
+> retransmits now use newly added timeout option.
+>
+> Signed-off-by: Akhmat Karakotov <hmukos@yandex-team.ru>
+> ---
+>  include/net/request_sock.h      |  2 ++
+>  include/net/tcp.h               |  2 +-
+>  net/ipv4/inet_connection_sock.c |  4 +++-
+>  net/ipv4/tcp_input.c            |  8 +++++---
+>  net/ipv4/tcp_minisocks.c        | 12 +++++++++---
+>  5 files changed, 20 insertions(+), 8 deletions(-)
+>
+> diff --git a/include/net/request_sock.h b/include/net/request_sock.h
+> index 29e41ff3ec93..144c39db9898 100644
+> --- a/include/net/request_sock.h
+> +++ b/include/net/request_sock.h
+> @@ -70,6 +70,7 @@ struct request_sock {
+>         struct saved_syn                *saved_syn;
+>         u32                             secid;
+>         u32                             peer_secid;
+> +       u32                             timeout;
+>  };
+>
+>  static inline struct request_sock *inet_reqsk(const struct sock *sk)
+> @@ -104,6 +105,7 @@ reqsk_alloc(const struct request_sock_ops *ops, struct sock *sk_listener,
+>         sk_node_init(&req_to_sk(req)->sk_node);
+>         sk_tx_queue_clear(req_to_sk(req));
+>         req->saved_syn = NULL;
+> +       req->timeout = 0;
+>         req->num_timeout = 0;
+>         req->num_retrans = 0;
+>         req->sk = NULL;
+> diff --git a/include/net/tcp.h b/include/net/tcp.h
+> index 3166dc15d7d6..e328d6735e38 100644
+> --- a/include/net/tcp.h
+> +++ b/include/net/tcp.h
+> @@ -2323,7 +2323,7 @@ static inline u32 tcp_timeout_init(struct sock *sk)
+>
+>         if (timeout <= 0)
+>                 timeout = TCP_TIMEOUT_INIT;
+> -       return timeout;
+> +       return min_t(int, timeout, TCP_RTO_MAX);
+>  }
+>
+>  static inline u32 tcp_rwnd_init_bpf(struct sock *sk)
+> diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+> index 0d477c816309..cdf16285e193 100644
+> --- a/net/ipv4/inet_connection_sock.c
+> +++ b/net/ipv4/inet_connection_sock.c
+> @@ -870,7 +870,9 @@ static void reqsk_timer_handler(struct timer_list *t)
+>
+>                 if (req->num_timeout++ == 0)
+>                         atomic_dec(&queue->young);
+> -               timeo = min(TCP_TIMEOUT_INIT << req->num_timeout, TCP_RTO_MAX);
+> +               timeo = min_t(unsigned long,
+> +                             (unsigned long)req->timeout << req->num_timeout,
+> +                             TCP_RTO_MAX);
 
-The proposed patch relies on the phylib state machine and ignores the
-fact that there are drivers that uses phylib but not the phylib state
-machine. So let's don't change the behavior for such drivers and fix
-it w/o re-adding state PHY_FORCING for the case that phylib state
-machine is used.
+would it make sense to have a helper tcp_timeout_max() to reduce
+clutter? but that can be done by a later refactor patch
 
-[0] https://lore.kernel.org/netdev/a5c26ffd-4ee4-a5e6-4103-873208ce0dc5@huawei.com/T/
-
-Fixes: 2bd229df5e2e ("net: phy: remove state PHY_FORCING")
-Reported-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-Tested-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/phy/phy.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index a3bfb156c..beb2b66da 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -815,7 +815,12 @@ int phy_ethtool_ksettings_set(struct phy_device *phydev,
- 	phydev->mdix_ctrl = cmd->base.eth_tp_mdix_ctrl;
- 
- 	/* Restart the PHY */
--	_phy_start_aneg(phydev);
-+	if (phy_is_started(phydev)) {
-+		phydev->state = PHY_UP;
-+		phy_trigger_machine(phydev);
-+	} else {
-+		_phy_start_aneg(phydev);
-+	}
- 
- 	mutex_unlock(&phydev->lock);
- 	return 0;
--- 
-2.33.1
-
+>                 mod_timer(&req->rsk_timer, jiffies + timeo);
+>
+>                 if (!nreq)
+> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> index 3f7bd7ae7d7a..5c181dc4e96f 100644
+> --- a/net/ipv4/tcp_input.c
+> +++ b/net/ipv4/tcp_input.c
+> @@ -6706,6 +6706,7 @@ struct request_sock *inet_reqsk_alloc(const struct request_sock_ops *ops,
+>                 ireq->ireq_state = TCP_NEW_SYN_RECV;
+>                 write_pnet(&ireq->ireq_net, sock_net(sk_listener));
+>                 ireq->ireq_family = sk_listener->sk_family;
+> +               req->timeout = TCP_TIMEOUT_INIT;
+>         }
+>
+>         return req;
+> @@ -6922,9 +6923,10 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+>                 sock_put(fastopen_sk);
+>         } else {
+>                 tcp_rsk(req)->tfo_listener = false;
+> -               if (!want_cookie)
+> -                       inet_csk_reqsk_queue_hash_add(sk, req,
+> -                               tcp_timeout_init((struct sock *)req));
+> +               if (!want_cookie) {
+> +                       req->timeout = tcp_timeout_init((struct sock *)req);
+> +                       inet_csk_reqsk_queue_hash_add(sk, req, req->timeout);
+> +               }
+>                 af_ops->send_synack(sk, dst, &fl, req, &foc,
+>                                     !want_cookie ? TCP_SYNACK_NORMAL :
+>                                                    TCP_SYNACK_COOKIE,
+> diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+> index 0a4f3f16140a..9ebcd554f601 100644
+> --- a/net/ipv4/tcp_minisocks.c
+> +++ b/net/ipv4/tcp_minisocks.c
+> @@ -583,6 +583,8 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
+>                 tcp_parse_options(sock_net(sk), skb, &tmp_opt, 0, NULL);
+>
+>                 if (tmp_opt.saw_tstamp) {
+> +                       unsigned long timeo;
+> +
+>                         tmp_opt.ts_recent = req->ts_recent;
+>                         if (tmp_opt.rcv_tsecr)
+>                                 tmp_opt.rcv_tsecr -= tcp_rsk(req)->ts_off;
+> @@ -590,7 +592,10 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
+>                          * it can be estimated (approximately)
+>                          * from another data.
+>                          */
+> -                       tmp_opt.ts_recent_stamp = ktime_get_seconds() - ((TCP_TIMEOUT_INIT/HZ)<<req->num_timeout);
+> +                       timeo = min_t(unsigned long,
+> +                                     (unsigned long)req->timeout << req->num_timeout,
+> +                                     TCP_RTO_MAX);
+> +                       tmp_opt.ts_recent_stamp = ktime_get_seconds() - timeo / HZ;
+>                         paws_reject = tcp_paws_reject(&tmp_opt, th->rst);
+>                 }
+>         }
+> @@ -629,8 +634,9 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
+>                     !inet_rtx_syn_ack(sk, req)) {
+>                         unsigned long expires = jiffies;
+>
+> -                       expires += min(TCP_TIMEOUT_INIT << req->num_timeout,
+> -                                      TCP_RTO_MAX);
+> +                       expires += min_t(unsigned long,
+> +                                        (unsigned long)req->timeout << req->num_timeout,
+> +                                        TCP_RTO_MAX);
+>                         if (!fastopen)
+>                                 mod_timer_pending(&req->rsk_timer, expires);
+>                         else
+> --
+> 2.17.1
+>
