@@ -2,185 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78D4B444275
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 14:33:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9912444283
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 14:36:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231178AbhKCNgc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 09:36:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45474 "EHLO
+        id S231748AbhKCNil (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 09:38:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230472AbhKCNgb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 09:36:31 -0400
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B4DDC061714
-        for <netdev@vger.kernel.org>; Wed,  3 Nov 2021 06:33:54 -0700 (PDT)
-Received: by mail-qt1-x834.google.com with SMTP id s1so764389qta.13
-        for <netdev@vger.kernel.org>; Wed, 03 Nov 2021 06:33:54 -0700 (PDT)
+        with ESMTP id S231131AbhKCNil (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 09:38:41 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D39AC061714;
+        Wed,  3 Nov 2021 06:36:04 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id c71-20020a1c9a4a000000b0032cdcc8cbafso1864683wme.3;
+        Wed, 03 Nov 2021 06:36:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=Dtyqav1xIcS+lIQBgzs/o7w+kKJKhZZY0S7Ome7qVh0=;
-        b=XApYQtqrnWUfP6i/6Em0n+8de0+luHfJBKHdDm0RxKiadoHt0gDvlgeuK87jFom5fT
-         rGvnJFwc3iN1WK5/HN85MiFA71cGdfPdhh/ljKciNSng+YItR2GjheM+9KgWv1mMqFjK
-         NytuVvI6f3WFUa8YTLeWXnipUD6b/8WhiwgpMo4/1J44WnFxubRPjezHoLCAc3y8f1ri
-         ucoiI+nxwyCQ108gHgcs90jlpas3nhlvYSMmvrYrZ+rLTHmVMgLmttzSrW0CQgagIyIe
-         cQ/oRg2k38T1DFGLhNzhCeAlgMHfiSGPNpoTnHGC0QadUNqzEfYl8GLLqnERoKpiZL5s
-         XIsQ==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=9Uvh5caEZPaBGsYkz+RB5PR1cX52FmrRW0kzG11c76w=;
+        b=qI/UsZ2Mq1UosSHGW96E1Ln6Ohj4iHO3r5lBIvPiiNnSxIBIgcvQTvfRZyeI4uu4O/
+         HYbGeRhksts0ElYrEG0INKEe7aXhGIbNRoa+5SfNLfBRpFlXkAKGayX0LZ63aqDWcpJu
+         dosgFRYQhPioiFxg3dKiHepeHKdbG2JsP/JMlRyX4UEPlfgB3nyfKFkz67tWL42Oz4Lq
+         haeTteOxmjvqdt2T96vQoPKq68khNWceoi3kbQKOgXwGPz4h2E6HMJQpKmhk4bbm2avI
+         AoSD57sN9RO2aPG2Vw102MrdVN2OMUIaMVVTVHFMc1zAox6M/EelPvrtB3rZV8jRItpA
+         XAtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=Dtyqav1xIcS+lIQBgzs/o7w+kKJKhZZY0S7Ome7qVh0=;
-        b=UUFY5eoC/xxE4eitrbloa7ZBm1TlFmLbjdi4cBjiWfFXLflUVtChSnOmoqVjkp/KVx
-         b9aD7VZQW+M0Ur+lyww+lECEcVVle2PylmC7o/+3OVONhxTxwQqm8fwPRLgQshba1AAX
-         jzTSbgsn4ukT42ALhMRPltaTo65xOGISKUCymEukhji+UycHVEEJt+EIKyBulvLWWZs/
-         T3mgKkyOUJ/wsjiyqRvOou8WE66Go8RFabkgurFuMm6F1V94DchUr8hMYpo0oNB80/et
-         efMB45gxROEAIEztvT4DaEtehbN3u/Ft7FjnHkH9p0CJSt7JyXmrg1XyivctP8CBG9tO
-         aP8w==
-X-Gm-Message-State: AOAM532uW1GmpcIdcOcRkq1NcNz5uKM8s48+64mUvndYmk+/ugPabexj
-        9V2Z5uHiadyncVLgWIRHxFqC0w==
-X-Google-Smtp-Source: ABdhPJwFGRRqpJEElp0JIwpVmyPbeVM2tpwm2RSN/1zxddrB8PcJxsWAyKrmd3YVm43Rea2kBbZ9/g==
-X-Received: by 2002:ac8:5853:: with SMTP id h19mr35920490qth.273.1635946433621;
-        Wed, 03 Nov 2021 06:33:53 -0700 (PDT)
-Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-33-142-112-185-132.dsl.bell.ca. [142.112.185.132])
-        by smtp.googlemail.com with ESMTPSA id a11sm1762946qtx.9.2021.11.03.06.33.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Nov 2021 06:33:53 -0700 (PDT)
-Message-ID: <10dae364-b649-92f8-11b0-f3628a6f550a@mojatatu.com>
-Date:   Wed, 3 Nov 2021 09:33:52 -0400
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=9Uvh5caEZPaBGsYkz+RB5PR1cX52FmrRW0kzG11c76w=;
+        b=X4e65o8V2tH7oqGNHwlB5oSAQ3w28WKc6w75n35cYKxoj6huTDF1QSHoG5D4Qo9VKc
+         pJvGcRh7o4GqXSfhQorQPhObNGrmoITKMOQs6zaTqxaRs1ZWe96IOtvYkiYeugHRIrtp
+         I2tByDP9cWGQHm12v+XttRw4dGGIVC/PsehTCDua/WEnV6ni6tVOHPETLTKuQpSRFCws
+         TuRkDr3hZiqcfftyC2aKP8N9MmTQ7vEnCGmTVDqi/lPtPiAkxm36u6x/mONQ6mC2bFnE
+         DjXOrbUxxtc3qKaMicg1Ysqhph/g+ZtHvmPzfeu4sJUWdYqDBPkqQk4FNLQ6uwaNwiyD
+         /mPw==
+X-Gm-Message-State: AOAM530x/MKUsSp2biNvnKvyNPOV3wXRFefQPuOn1qEgnBC7dSXw8M6b
+        x0yHhEExRwgQPJvPzq/esXBLlXlfwWwdd4sV72A=
+X-Google-Smtp-Source: ABdhPJyk9Vedichm0HF4wrXK3I6wCZMF2YAnKWK9qhd5b6mRw8h4ORBTyVOJ9T9BtxHsr3rVBwd+WcJuTZ2OQtcKxVM=
+X-Received: by 2002:a1c:740e:: with SMTP id p14mr15144147wmc.109.1635946563010;
+ Wed, 03 Nov 2021 06:36:03 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.1
-Subject: Re: [RFC/PATCH net-next v3 8/8] flow_offload: validate flags of
- filter and actions
-Content-Language: en-US
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-To:     Baowen Zheng <baowen.zheng@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Vlad Buslov <vladbu@nvidia.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Roi Dayan <roid@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Baowen Zheng <notifications@github.com>,
-        Louis Peens <louis.peens@corigine.com>,
-        oss-drivers <oss-drivers@corigine.com>,
-        Oz Shlomo <ozsh@nvidia.com>
-References: <20211028110646.13791-1-simon.horman@corigine.com>
- <20211028110646.13791-9-simon.horman@corigine.com>
- <ygnhilxfaexq.fsf@nvidia.com>
- <7147daf1-2546-a6b5-a1ba-78dfb4af408a@mojatatu.com>
- <ygnhfssia7vd.fsf@nvidia.com>
- <DM5PR1301MB21722A85B19EE97EFE27A5BBE7899@DM5PR1301MB2172.namprd13.prod.outlook.com>
- <d16042e3-bc1e-0a2b-043d-bbb62b1e68d7@mojatatu.com>
- <DM5PR1301MB21728931E03CFE4FA45C5DD3E78A9@DM5PR1301MB2172.namprd13.prod.outlook.com>
- <ygnhcznk9vgl.fsf@nvidia.com> <20211102123957.GA7266@corigine.com>
- <DM5PR1301MB2172F4949E810BDE380AF800E78C9@DM5PR1301MB2172.namprd13.prod.outlook.com>
- <428057ce-ccbc-3878-71aa-d5926f11248c@mojatatu.com>
- <DM5PR1301MB2172AD191B6A370C39641E3FE78C9@DM5PR1301MB2172.namprd13.prod.outlook.com>
- <66f350c5-1fd7-6132-3791-390454c97256@mojatatu.com>
-In-Reply-To: <66f350c5-1fd7-6132-3791-390454c97256@mojatatu.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20211103115453.397209-1-bjorn@kernel.org> <f98b15c9-bd06-267e-e404-ae4f607d8740@iogearbox.net>
+In-Reply-To: <f98b15c9-bd06-267e-e404-ae4f607d8740@iogearbox.net>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Wed, 3 Nov 2021 14:35:50 +0100
+Message-ID: <CAJ+HfNg9Ko93D1M5En8wv4f-7j_by=OwnewRDiM+xQ0EZLw06w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] riscv, bpf: Fix RV32 broken build, and silence
+ RV64 warning
+To:     Daniel Borkmann <daniel@iogearbox.net>, jszhang@kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Tong Tiangen <tongtiangen@huawei.com>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-11-03 08:33, Jamal Hadi Salim wrote:
-> On 2021-11-03 07:30, Baowen Zheng wrote:
->> On November 3, 2021 6:14 PM, Jamal Hadi Salim wrote:
->>> On 2021-11-03 03:57, Baowen Zheng wrote:
->>>> On November 2, 2021 8:40 PM, Simon Horman wrote:
->>>>> On Mon, Nov 01, 2021 at 09:38:34AM +0200, Vlad Buslov wrote:
->>>>>> On Mon 01 Nov 2021 at 05:29, Baowen Zheng
->>>
->>> [..]
->>>>>>
->>>>>> My suggestion was to forgo the skip_sw flag for shared action
->>>>>> offload and, consecutively, remove the validation code, not to add
->>>>>> even more checks. I still don't see a practical case where skip_sw
->>>>>> shared action is useful. But I don't have any strong feelings about
->>>>>> this flag, so if Jamal thinks it is necessary, then fine by me.
->>>>>
->>>>> FWIIW, my feelings are the same as Vlad's.
->>>>>
->>>>> I think these flags add complexity that would be nice to avoid.
->>>>> But if Jamal thinks its necessary, then including the flags
->>>>> implementation is fine by me.
->>>> Thanks Simon. Jamal, do you think it is necessary to keep the skip_sw
->>>> flag for user to specify the action should not run in software?
->>>>
->>>
->>> Just catching up with discussion...
->>> IMO, we need the flag. Oz indicated with requirement to be able to 
->>> identify
->>> the action with an index. So if a specific action is added for 
->>> skip_sw (as
->>> standalone or alongside a filter) then it cant be used for skip_hw. 
->>> To illustrate
->>> using extended example:
->>>
->>> #filter 1, skip_sw
->>> tc filter add dev $DEV1 proto ip parent ffff: flower \
->>>      skip_sw ip_proto tcp action police blah index 10
->>>
->>> #filter 2, skip_hw
->>> tc filter add dev $DEV1 proto ip parent ffff: flower \
->>>      skip_hw ip_proto udp action police index 10
->>>
->>> Filter2 should be illegal.
->>> And when i dump the actions as so:
->>> tc actions ls action police
->>>
->>> For debugability, I should see index 10 clearly marked with the flag 
->>> as skip_sw
->>>
->>> The other example i gave earlier which showed the sharing of actions:
->>>
->>> #add a policer action and offload it
->>> tc actions add action police skip_sw rate ... index 20 #now add 
->>> filter1 which is
->>> offloaded using offloaded policer tc filter add dev $DEV1 proto ip 
->>> parent ffff:
->>> flower \
->>>      skip_sw ip_proto tcp action police index 20 #add filter2 
->>> likewise offloaded
->>> tc filter add dev $DEV1 proto ip parent ffff: flower \
->>>      skip_sw ip_proto udp action police index 20
->>>
->>> All good and filter 1 and 2 are sharing policer instance with index 20.
->>>
->>> #Now add a filter3 which is s/w only
->>> tc filter add dev $DEV1 proto ip parent ffff: flower \
->>>      skip_hw ip_proto icmp action police index 20
->>>
->>> filter3 should not be allowed.
->> I think the use cases you mentioned above are clear for us. For the case:
->>
->> #add a policer action and offload it
->> tc actions add action police skip_sw rate ... index 20
->> #Now add a filter4 which has no flag
->> tc filter add dev $DEV1 proto ip parent ffff: flower \
->>       ip_proto icmp action police index 20
->>
->> Is filter4 legal? 
-> 
-> Yes it is _based on current semantics_.
-> The reason is when adding a filter and specifying neither
-> skip_sw nor skip_hw it defaults to allowing both.
-> i.e is the same as skip_sw|skip_hw. You will need to have
-> counters for both s/w and h/w (which i think is taken care of today).
-> 
-> 
+On Wed, 3 Nov 2021 at 14:15, Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 11/3/21 12:54 PM, Bj=C3=B6rn T=C3=B6pel wrote:
+> > Commit 252c765bd764 ("riscv, bpf: Add BPF exception tables") only
+> > addressed RV64, and broke the RV32 build [1]. Fix by gating the excepti=
+on
+> > tables code with CONFIG_ARCH_RV64I.
+> >
+> > Further, silence a "-Wmissing-prototypes" warning [2] in the RV64 BPF
+> > JIT.
+> >
+> > [1] https://lore.kernel.org/llvm/202111020610.9oy9Rr0G-lkp@intel.com/
+> > [2] https://lore.kernel.org/llvm/202110290334.2zdMyRq4-lkp@intel.com/
+> >
+> > Fixes: 252c765bd764 ("riscv, bpf: Add BPF exception tables")
+> > Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn@kernel.org>
+> > ---
+> > Tong/Daniel: The RV32 build has been broken since Thursday. I'll try
+> > to fast-track a bit, and commit a quick-fix for it. Hope that's OK
+> > with you, Tong!
+> >
+> > I've verified the build on my machine using riscv32 GCC 9.3.0 and
+> > riscv64 GCC 11.2.0.
+>
+> Thanks for the fix Bjorn!
+>
+> > arch/riscv/mm/extable.c         | 4 ++--
+> >   arch/riscv/net/bpf_jit_comp64.c | 2 ++
+> >   2 files changed, 4 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/arch/riscv/mm/extable.c b/arch/riscv/mm/extable.c
+> > index 18bf338303b6..ddb7d3b99e89 100644
+> > --- a/arch/riscv/mm/extable.c
+> > +++ b/arch/riscv/mm/extable.c
+> > @@ -11,7 +11,7 @@
+> >   #include <linux/module.h>
+> >   #include <linux/uaccess.h>
+> >
+> > -#ifdef CONFIG_BPF_JIT
+> > +#if defined(CONFIG_BPF_JIT) && defined(CONFIG_ARCH_RV64I)
+> >   int rv_bpf_fixup_exception(const struct exception_table_entry *ex, st=
+ruct pt_regs *regs);
+> >   #endif
+> >
+> > @@ -23,7 +23,7 @@ int fixup_exception(struct pt_regs *regs)
+> >       if (!fixup)
+> >               return 0;
+> >
+> > -#ifdef CONFIG_BPF_JIT
+> > +#if defined(CONFIG_BPF_JIT) && defined(CONFIG_ARCH_RV64I)
+> >       if (regs->epc >=3D BPF_JIT_REGION_START && regs->epc < BPF_JIT_RE=
+GION_END)
+> >               return rv_bpf_fixup_exception(fixup, regs);
+> >   #endif
+> > diff --git a/arch/riscv/net/bpf_jit_comp64.c b/arch/riscv/net/bpf_jit_c=
+omp64.c
+> > index 2ca345c7b0bf..f2a779c7e225 100644
+> > --- a/arch/riscv/net/bpf_jit_comp64.c
+> > +++ b/arch/riscv/net/bpf_jit_comp64.c
+> > @@ -459,6 +459,8 @@ static int emit_call(bool fixed, u64 addr, struct r=
+v_jit_context *ctx)
+> >   #define BPF_FIXUP_OFFSET_MASK   GENMASK(26, 0)
+> >   #define BPF_FIXUP_REG_MASK      GENMASK(31, 27)
+> >
+> > +int rv_bpf_fixup_exception(const struct exception_table_entry *ex,
+> > +                             struct pt_regs *regs);
+>
+> I'm okay to take this as a quick fix, but if its not too much hassle, cou=
+ld we add a
+> arch/riscv/include/asm/extable.h in similar fashion like arm64 or x86 whe=
+re we move
+> the ex_handler_bpf() signature there, did you have a chance to check?
+>
 
-Apologies, i will like to take this one back. Couldnt stop thinking
-about it while sipping coffee;->
-To be safe that should be illegal. The flags have to match _exactly_
-for both  action and filter to make any sense. i.e in the above case
-they are not.
+OK! I've not looked into it yet!
 
-cheers,
-jamal
+There's a patch out from Jisheng on the RV list, which is starting
+some consolidation work [1].
 
+@Jisheng What do you think about adding type/handlers [2,3] as
+arm64/x86 recently did, to your series?
+
+
+Bj=C3=B6rn
+
+[1] https://lore.kernel.org/linux-riscv/20211022001957.1eba8f04@xhacker/
+[2] https://lore.kernel.org/linux-arm-kernel/20211019160219.5202-11-mark.ru=
+tland@arm.com/
+[3] https://lore.kernel.org/lkml/20210908132525.211958725@linutronix.de/
