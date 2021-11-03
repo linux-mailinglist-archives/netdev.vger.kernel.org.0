@@ -2,161 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0287444AD5
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 23:22:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08F08444AF2
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 23:50:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229893AbhKCWZa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 18:25:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53358 "EHLO
+        id S229906AbhKCWwh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 18:52:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229618AbhKCWZ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 18:25:29 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8915C061714;
-        Wed,  3 Nov 2021 15:22:52 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id f8so14723073edy.4;
-        Wed, 03 Nov 2021 15:22:52 -0700 (PDT)
+        with ESMTP id S229618AbhKCWwb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 18:52:31 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 026B9C061714;
+        Wed,  3 Nov 2021 15:49:55 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id l3so1953506pfu.13;
+        Wed, 03 Nov 2021 15:49:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=J2NdaQ8T+dt9p0jHQsB0InvqWOp8/QEv69XWnnosGBY=;
-        b=GzUMX9Jd1JqRALeydvQkd1EteV+LGofdP3599Qk4mjqzSesoDGjQdQcKoqGFR4aoDk
-         JsSLfMQxKvkEfaa+V4djLBHJg7gcSyqFtQvkkMJEbH9MofIg56bjXxLf+Vbfyf6NuNdZ
-         efy9VFnCdyjcQmueGYDvJv5cL8JcrhSDLQls9ycfzplAA8GWc8BwHVEAqTfPJQkWi5Ov
-         41UH+Cfvqw8ipreeDS/0Lo/dbZJuIAK2WVBsv7ekD1Rfdf/uNBVLkKM3v/YbFoTyqxWw
-         UwIxMgDH50zWAm2SzdskqS58ZW6oBLOos6zQQG4FhNXgtAMqfWXQXyuOg0AszvkWxh7i
-         Tr6g==
+        bh=Y22+99gCqV197XlZxvdK7gJySp40M5DM7tv6BPbRLOA=;
+        b=GJ60OnGPiXDonq9ay0G4pCx49b/YktFNdDdFt3hmwul9i4tBWfV4H/Wol46ZOURR+q
+         KFGjBuShzTHpGRLkxitCRm+f/f99xKTiIp3IfoDBECWDGOvFnvH2FSyeDJxZ/ZVg31k7
+         xd8WUaEZPruUzCuh3cjfM0QbNR0aEx7Yy7//7UM39MskyrsyVGQBssaXPWe+Po7kp0/y
+         PbsgDd5gc/lsI/5LZuF2RyZTwYKwODIovBcrNpoZgTQZ8K/zazpigwDNj+r4ny1s3NjD
+         kftH+HefWvl/rx27ZLCcC4LK/pPnku36r2MO6Q0+OEQqxLiIBn/Zp4CnJ0tygi1If2kH
+         XIbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=J2NdaQ8T+dt9p0jHQsB0InvqWOp8/QEv69XWnnosGBY=;
-        b=yLj5H2Hk3FYmZ6a7Uta8ESfZ8EROBMuEhyp5ZT0kcyu1zudciX2HaTV5WrD4DL7bZO
-         ddxzjLUnZxrYCifmjsGOCGsUlvj/PmOf7QgprAdWjPdfrEDlldsmlP2SQB7wz8UHuaJd
-         R3bTuyVoBGKF5MQLP0Iqc8RGvKIsZ/qRP6JGfh2D8CzNy8VDCNU9B0lakmsgqYaf1EfZ
-         //NgvSKqcGEexR1HYNmewfUuzzvxJkX1LeukCqr+hm3ed00zjmaXtsck4A/gTvHbwaBK
-         YZ4LrgGhkdM91CAi8tNs+ZFsIQ1ilsujJy+Gscv+e6z3dw448k4iPnntJ6ysOEgHh6db
-         It8Q==
-X-Gm-Message-State: AOAM532wfw64ASo5iuz5H+QuXBYwaV4fzH5BxuAfadyurH7wKcjae6fn
-        LPnJ3/QaYQxTrkC9cwS54SKGJ/JOz91Tpg==
-X-Google-Smtp-Source: ABdhPJzV4/y5qTs4xQPrAXlnayDNX8Mrj7BkhVqpL8WzEHl/VS/hgdFLOpFJr0DwVrlp/gonwlrvsA==
-X-Received: by 2002:a17:907:1c85:: with SMTP id nb5mr23550781ejc.502.1635978171338;
-        Wed, 03 Nov 2021 15:22:51 -0700 (PDT)
-Received: from ?IPv6:2a04:241e:501:3800:dd98:1fb5:16b3:cb28? ([2a04:241e:501:3800:dd98:1fb5:16b3:cb28])
-        by smtp.gmail.com with ESMTPSA id p23sm2064759edw.94.2021.11.03.15.22.49
+        bh=Y22+99gCqV197XlZxvdK7gJySp40M5DM7tv6BPbRLOA=;
+        b=5dH5MOACoRxf7rYBIv/Vtt3uwIMuUYEhGEiCEPVSbzb8ln2ACl2bdRalCPyJVn/4sL
+         jfrW/x3vHdTfH0ASaZy51y0vidAaehmSjrPFbxtks6Db5BedLCE3zFDJSjOT6H1Ot1PE
+         aOEFLdSvswhKXCUSr1z6Nr7HOCTCDjCClhcW82JHwvi5duzXHMpFFb0YYJ9JdJcCpjfA
+         +kpxfCBoEgPJdWh9COIuS195/+fGCdRlZa01xcdPOA8B4FPpTFdISl69F4aJ9o6foppA
+         dKtAd7zKzpvdJJuh0VuhQkEf7z/SKmpj9Gc4KcfDOQP8fMfygwRRnVA6Wk0ZpNKiXGYd
+         Kfwg==
+X-Gm-Message-State: AOAM530s1vF6Dr0CS2LlBDoLh42WKPGorvxTM/8r1gjo3ThGK1gw0S+8
+        Tl4XHJvSvI9GIr0mXiS5ph7d6f4tv08=
+X-Google-Smtp-Source: ABdhPJyddS8tAf+d5cn2U7YjxcFIC/7TGpOdCEChny/0rdRcY+Sw6PEcntNOvOn3cmLRe4Fiv+HEIQ==
+X-Received: by 2002:a63:c:: with SMTP id 12mr36207912pga.477.1635979794340;
+        Wed, 03 Nov 2021 15:49:54 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id w21sm3626608pfu.68.2021.11.03.15.49.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Nov 2021 15:22:50 -0700 (PDT)
-Subject: Re: [PATCH v2] tcp: Initial support for RFC5925 auth option
-To:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        Wed, 03 Nov 2021 15:49:53 -0700 (PDT)
+Subject: Re: [PATCH] tcp: Use BIT() for OPTION_* constants
+To:     Leonard Crestez <cdleonard@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@kernel.org>
+Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
         Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Jakub Kicinski <kuba@kernel.org>,
+        Neal Cardwell <ncardwell@google.com>,
         Yuchung Cheng <ycheng@google.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Christoph Paasch <cpaasch@apple.com>,
-        Ivan Delalande <colona@arista.com>,
-        Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Enke Chen <enchen@paloaltonetworks.com>,
+        Wei Wang <weiwan@google.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <cover.1635784253.git.cdleonard@gmail.com>
- <832e6d49-8490-ab8b-479b-0420596d0aaa@gmail.com>
-From:   Leonard Crestez <cdleonard@gmail.com>
-Message-ID: <9bcd27f0-e14e-ab89-88a4-f6cf6b4323b4@gmail.com>
-Date:   Thu, 4 Nov 2021 00:22:49 +0200
+References: <cde3385c115ddf64fe14725f57d88a2a089f23e1.1635977622.git.cdleonard@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <e869d690-939a-a5a5-1a8c-fe4b550b69ab@gmail.com>
+Date:   Wed, 3 Nov 2021 15:49:52 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <832e6d49-8490-ab8b-479b-0420596d0aaa@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <cde3385c115ddf64fe14725f57d88a2a089f23e1.1635977622.git.cdleonard@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/3/21 5:18 AM, David Ahern wrote:
-> On 11/1/21 10:34 AM, Leonard Crestez wrote:
->> This is similar to TCP MD5 in functionality but it's sufficiently
->> different that wire formats are incompatible. Compared to TCP-MD5 more
->> algorithms are supported and multiple keys can be used on the same
->> connection but there is still no negotiation mechanism.
->>
->> Expected use-case is protecting long-duration BGP/LDP connections
->> between routers using pre-shared keys. The goal of this series is to
->> allow routers using the linux TCP stack to interoperate with vendors
->> such as Cisco and Juniper.
->>
->> Both algorithms described in RFC5926 are implemented but the code is not
->> very easily extensible beyond that. In particular there are several code
->> paths making stack allocations based on RFC5926 maximum, those would
->> have to be increased.
->>
->> This version implements SNE and l3mdev awareness and adds more tests.
->> Here are some known flaws and limitations:
->>
->> * Interaction with TCP-MD5 not tested in all corners
->> * Interaction with FASTOPEN not tested and unlikely to work because
->> sequence number assumptions for syn/ack.
->> * Not clear if crypto_shash_setkey might sleep. If some implementation
->> do that then maybe they could be excluded through alloc flags.
->> * Traffic key is not cached (reducing performance)
->> * User is responsible for ensuring keys do not overlap.
->> * There is no useful way to list keys, making userspace debug difficult.
->> * There is no prefixlen support equivalent to md5. This is used in
->> some complex FRR configs.
->>
->> Test suite was added to tools/selftests/tcp_authopt. Tests are written
->> in python using pytest and scapy and check the API in some detail and
->> validate packet captures. Python code is already used in linux and in
->> kselftests but virtualenvs not very much, this particular test suite
->> uses `pip` to create a private virtualenv and hide dependencies.
->>
->> This actually forms the bulk of the series by raw line-count. Since
->> there is a lot of code it was mostly split on "functional area" so most
->> files are only affected by a single code. A lot of those tests are
->> relevant to TCP-MD5 so perhaps it might help to split into a separate
->> series?
->>
->> Some testing support is included in nettest and fcnal-test.sh, similar
->> to the current level of tcp-md5 testing.
->>
->> SNE was tested by creating connections in a loop until a large SEQ is
->> randomly selected and then making it rollover. The "connect in a loop"
->> step ran into timewait overflow and connection failure on port reuse.
->> After spending some time on this issue and my conclusion is that AO
->> makes it impossible to kill remainders of old connections in a manner
->> similar to unsigned or md5sig, this is because signatures are dependent
->> on ISNs.  This means that if a timewait socket is closed improperly then
->> information required to RST the peer is lost.
->>
->> The fact that AO completely breaks all connection-less RSTs is
->> acknowledged in the RFC and the workaround of "respect timewait" seems
->> acceptable.
->>
->> Changes for frr (old): https://github.com/FRRouting/frr/pull/9442
->> That PR was made early for ABI feedback, it has many issues.
->>
+
+
+On 11/3/21 3:17 PM, Leonard Crestez wrote:
+> Extending these flags using the existing (1 << x) pattern triggers
+> complaints from checkpatch. Instead of ignoring checkpatch modify the
+> existing values to use BIT(x) style in a separate commit.
 > 
-> overall looks ok to me. I did not wade through the protocol details.
-> 
-> I did see the comment about no prefixlen support in the tests. A lot of
-> patches to absorb, perhaps I missed it. Does AuthOpt support for
-> prefixes? If not, you should consider adding that as a quick follow on
-> (within the same dev cycle). MD5 added prefix support for scalability;
-> seems like AO should be concerned about the same.
+> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
+>
 
-I just skipped it because it's not required for core functionality.
+Yes, I guess checkpatch does not know that we currently use at most 16 bits :)
 
-It's very straight forward so I will add it to the next version.
+u16 options = opts->options;
 
---
-Regards,
-Leonard
+Anyway, this seems fine.
+
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+
+
