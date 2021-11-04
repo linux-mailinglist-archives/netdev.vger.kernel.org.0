@@ -2,103 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7418445356
-	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 13:52:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16730445365
+	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 13:55:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231211AbhKDMzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Nov 2021 08:55:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49650 "EHLO
+        id S231408AbhKDM5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Nov 2021 08:57:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229809AbhKDMzV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 08:55:21 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71059C061714;
-        Thu,  4 Nov 2021 05:52:43 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id f8so21111059edy.4;
-        Thu, 04 Nov 2021 05:52:43 -0700 (PDT)
+        with ESMTP id S229960AbhKDM5o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 08:57:44 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 039A2C061714;
+        Thu,  4 Nov 2021 05:55:07 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id q126so1383309pgq.13;
+        Thu, 04 Nov 2021 05:55:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=DpYzPiVrlxZpQKVyCCJ8zj4zAgXSuVUmCZXLOiQD4c4=;
-        b=MxQK9t7Xs9iYEYRHXQZdDHduOCmEaggH8LQAUmUKbjQydjgzmWcPXjvRBpksckLQQK
-         snV8IcV33XkIrXIO6E1qLzUfSUvYP49MKd9LZ8lvVhbWUbx3s7fhzoHB6bWq2eVzIPz6
-         WU6vBIOUkVbhrqpIsZkyTLKj98aXTbS0VS6b0mMWqPVJm9uqqLCrF76bdpboeDX6EdF/
-         LYsLgLx1YIVof/9yxtryPMPMl7eQQfFhOqXa5sbbzvrZLZxVYW3rwlRlYPLDsleNSOEm
-         BTH0KVZZ9s3fihX4hWR61hwX3XYtilIlGdWB5Un1BbEKuGxQ3qe2GTT3aRjklsIH8VHq
-         qfsA==
+        bh=1EGh8Ks1kwTPl4HlYk/VIkwHYF+RXVJORjfcoMxNQ0k=;
+        b=f8KeiW+0BHpKBKZg+GrvwjpWomrDRt0dipQqdvJIZocIqKsozCFr33jctWptn5H8Ny
+         bag//weyAbkPOWmnACA2qFj6HLHdOnF2YS+zX1gsjCQOQolJwuZ8OhzlWmH0cmCJYWiF
+         4BY75Z0/7A3pwZ2tBNSDJDe3lT8+X7OMUYgPSkHTb8lM44ST5BQRIQb+B1WMvAZx/pIZ
+         8Iqb+jsDpO9PVCsGxGMRnRacXIAvjjcwKjIQI40mOj2i4CxLHFpA15agpt2BKmUAx+iH
+         BSqxfPgRUvXo4Gdp0N+WQYUYJ1krlyDbxzRnnySiKa1nbD0r+MBMFtAyU9sCCMoeqcWD
+         3FEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=DpYzPiVrlxZpQKVyCCJ8zj4zAgXSuVUmCZXLOiQD4c4=;
-        b=zq7taLD9hWv4JNPnhS3edK0bvV8UeVfl2eiUVJYNGHYFEICDT0l5orXp2GeEIozeeO
-         IXgjq9h2nYl76u8554Vkyc38/9q0hhrF1/EwM6rBODGaWXrCyHXjYBRYZcXjcp5ACFGt
-         m84My+mE7M4UWI8FvPGMyJZCjinb+hIfN42rO6iuEu0qNxVE6HL74OT28UNg7o6eo3iW
-         VSNiTrvDymMlKHORcBKhjl0MaaafT6VJXMibnkiMWbPTfLef6PNFjifc1oIr7Pnn4feo
-         SrizPZjHGGAxxXnXCnE20Iu+xSLIelnwQ/ILRnn++G0k2r+OCIiJY3Nsfxrtg2sHi/Oj
-         odBA==
-X-Gm-Message-State: AOAM530keRYnd5a9Xy+se0W2VvpUPz9OIsyDLTcXeD0VJkdUUgC7AkkC
-        MbAvr8fqBxgHDw7wWIssLvkw/GGJKxc=
-X-Google-Smtp-Source: ABdhPJyz7BQ7BD+SGOq8UW0TkjQkBuhLtuQQ2StrBiA9UvOm6qs9skdBWhKUG0k8+wAKyeQI0prG9A==
-X-Received: by 2002:a05:6402:3508:: with SMTP id b8mr10593465edd.347.1636030361939;
-        Thu, 04 Nov 2021 05:52:41 -0700 (PDT)
-Received: from skbuf ([188.25.175.102])
-        by smtp.gmail.com with ESMTPSA id t22sm2759571eds.65.2021.11.04.05.52.40
+        bh=1EGh8Ks1kwTPl4HlYk/VIkwHYF+RXVJORjfcoMxNQ0k=;
+        b=A22j/xZUEl3psNEPQzDaUz2/VK1oqrSsbj4Xew/YbwuOr5oVSOv0YNud6Z/evYBGsG
+         8fIfEyEGJdLP0DI4oJyyPqy/SliU/PaXZXZLX6TCNHhJERMjFr7i43DLl0T44CxcU+w5
+         EKfdSHavxqCHuixuoCzDdJpxaZ9TDBouRj1sf7PMX1P4kTe7AbNbx40v5OCU9z7qu+4R
+         8nw9PVa4WdqC8q9zyh4d2BLORafwH9EL99VfAOghx2fZf7IrM7gXUTIZX3v2Kk29QhV3
+         bN9xcAthr1wZLTYxGAZIyMfRnIn7uVvH2a0aduIA5Hal55EKZuwLhmuKMEz1y1H80WjL
+         F8tw==
+X-Gm-Message-State: AOAM531BZqjUhWcYgL1+xQPDvx51AebKTdTEahprW0TWG+6dw6Evk+Oj
+        VB2BEzggUNNz26uJDSf/MegbtkHIJk5EYw==
+X-Google-Smtp-Source: ABdhPJxirrIAw747a1+mWlD8z94haanRuiMYlL3nnbvTxRw6UeuKjFsU9H58klDOigBnF4yidY3tmQ==
+X-Received: by 2002:aa7:888d:0:b0:46b:72b2:5d61 with SMTP id z13-20020aa7888d000000b0046b72b25d61mr51337250pfe.73.1636030506511;
+        Thu, 04 Nov 2021 05:55:06 -0700 (PDT)
+Received: from localhost ([2405:201:6014:d916:31fc:9e49:a605:b093])
+        by smtp.gmail.com with ESMTPSA id j12sm5009703pfu.33.2021.11.04.05.55.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Nov 2021 05:52:41 -0700 (PDT)
-Date:   Thu, 4 Nov 2021 14:52:39 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Robert Marko <robert.marko@sartura.hr>,
-        John Crispin <john@phrozen.org>
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Gabor Juhos <j4g8y7@gmail.com>
-Subject: Re: [net-next] net: dsa: qca8k: only change the MIB_EN bit in
- MODULE_EN register
-Message-ID: <20211104125239.n4a4w5maodygpe4n@skbuf>
-References: <20211104124927.364683-1-robert.marko@sartura.hr>
+        Thu, 04 Nov 2021 05:55:06 -0700 (PDT)
+Date:   Thu, 4 Nov 2021 18:25:03 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Florian Westphal <fw@strlen.de>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
+Subject: Re: [PATCH RFC bpf-next v1 0/6] Introduce unstable CT lookup helpers
+Message-ID: <20211104125503.smxxptjqri6jujke@apollo.localdomain>
+References: <20211030144609.263572-1-memxor@gmail.com>
+ <20211102231642.yqgocduxcoladqne@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211104124927.364683-1-robert.marko@sartura.hr>
+In-Reply-To: <20211102231642.yqgocduxcoladqne@ast-mbp.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 04, 2021 at 01:49:27PM +0100, Robert Marko wrote:
-> From: Gabor Juhos <j4g8y7@gmail.com>
-> 
-> The MIB module needs to be enabled in the MODULE_EN register in
-> order to make it to counting. This is done in the qca8k_mib_init()
-> function. However instead of only changing the MIB module enable
-> bit, the function writes the whole register. As a side effect other
-> internal modules gets disabled.
-> 
-> Fix up the code to only change the MIB module specific bit.
-> 
-> Fixes: 6b93fb46480a ("net-next: dsa: add new driver for qca8xxx family")
-> Signed-off-by: Gabor Juhos <j4g8y7@gmail.com>
-> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-> ---
->  drivers/net/dsa/qca8k.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-> index a984f06f6f04..a229776924f8 100644
-> --- a/drivers/net/dsa/qca8k.c
-> +++ b/drivers/net/dsa/qca8k.c
-> @@ -583,7 +583,7 @@ qca8k_mib_init(struct qca8k_priv *priv)
->  	if (ret)
->  		goto exit;
->  
-> -	ret = qca8k_write(priv, QCA8K_REG_MODULE_EN, QCA8K_MODULE_EN_MIB);
-> +	ret = qca8k_reg_set(priv, QCA8K_REG_MODULE_EN, QCA8K_MODULE_EN_MIB);
->  
->  exit:
->  	mutex_unlock(&priv->reg_mutex);
-> -- 
-> 2.33.1
-> 
+On Wed, Nov 03, 2021 at 04:46:42AM IST, Alexei Starovoitov wrote:
+> On Sat, Oct 30, 2021 at 08:16:03PM +0530, Kumar Kartikeya Dwivedi wrote:
+> > This series adds unstable conntrack lookup helpers using BPF kfunc support.  The
+> > patch adding the lookup helper is based off of Maxim's recent patch to aid in
+> > rebasing their series on top of this, all adjusted to work with kfunc support
+> > [0].
+> >
+> > This is an RFC series, as I'm unsure whether the reference tracking for
+> > PTR_TO_BTF_ID will be accepted.
+>
+> Yes. The patches look good overall.
+> Please don't do __BPF_RET_TYPE_MAX signalling. It's an ambiguous name.
+> _MAX is typically used for a different purpose. Just give it an explicit name.
+> I don't fully understand why that skip is needed though.
 
-You should have copied the original patch author too. Adding him now.
+I needed a sentinel to skip return type checking (otherwise check that return
+type and prototype match) since existing kfunc don't have a
+get_kfunc_return_type callback, but if we add bpf_func_proto support to kfunc
+then we can probably convert existing kfuncs to that as well and skip all this
+logic. Mostly needed it for RET_PTR_TO_BTF_ID_OR_NULL.
+
+Extending to support bpf_func_proto seemed like a bit of work so I wanted to get
+some feedback first on all this, before working on it.
+
+> Why it's not one of existing RET_*. Duplication of return and
+> being lazy to propagate the correct ret value into get_kfunc_return_type ?
+>
+> > If not, we can go back to doing it the typical
+> > way with PTR_TO_NF_CONN type, guarded with #if IS_ENABLED(CONFIG_NF_CONNTRACK).
+>
+> Please don't. We already have a ton of special and custom types in the verifier.
+> refcnted PTR_TO_BTF_ID sounds as good way to scale it.
+>
+
+Understood.
+
+> > Also, I want to understand whether it would make sense to introduce
+> > check_helper_call style bpf_func_proto based argument checking for kfuncs, or
+> > continue with how it is right now, since it doesn't seem correct that PTR_TO_MEM
+> > can be passed where PTR_TO_BTF_ID may be expected. Only PTR_TO_CTX is enforced.
+>
+> Do we really allow to pass PTR_TO_MEM argument into a function that expects PTR_TO_BTF_ID ?
+
+Sorry, that's poorly phrased. Current kfunc doesn't support PTR_TO_MEM. I meant
+it would be allowed now, with the way I implemented things, but there also isn't
+a way to signal whether PTR_TO_BTF_ID is expected (hence the question about
+bpf_func_proto). I did not understand why that was not done originally (maybe it
+was lack of usecase). PTR_TO_CTX works because the type is matched with prog
+type, so you can't pass something else there. For other cases the type of
+register is considered.
+
+> That sounds like a bug that we need to fix.
+
+--
+Kartikeya
