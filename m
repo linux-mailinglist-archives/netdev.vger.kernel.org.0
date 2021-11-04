@@ -2,106 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53193444F60
-	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 07:54:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0069444F67
+	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 08:00:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230119AbhKDG4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Nov 2021 02:56:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53546 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230108AbhKDG4l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 02:56:41 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECF44C061714;
-        Wed,  3 Nov 2021 23:54:02 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id b13so5718820plg.2;
-        Wed, 03 Nov 2021 23:54:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AmqWbFtMRKjP/RYJLNtNwVoR7JKadqFB+epBPQPtrdE=;
-        b=j8q3HYWXl0/V6GEchczRjUTymFAGpd8AEm4NLL1XFtGllfhMZn+ll7hWRKjuuKcBfS
-         Yz2UEWnPILR872/9x4gocwZMDoOhl3GQEizfYBvUzX/UQt73M1k3FvlZStAEzB0JMYV+
-         UeBZG1fiOb7CWRcfEdY0wvl2G4haNN77SryH9Db5/yWgz1q/GrCbxvpxqQ+AB2FsaIEC
-         YtlwM2jn2S43PA9ccfCsQZzoMNZJ3Dhf71IFUrzop9uI6SysBPCigmsXo2D1y0mubDov
-         KpRwU+QO/PPHAZUXxXsqri/NnILV//ejQA97lu4t3V99Ra4hVAntb7RDAp+SwMMmreLt
-         DY4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AmqWbFtMRKjP/RYJLNtNwVoR7JKadqFB+epBPQPtrdE=;
-        b=28GjoCyB1fa8OkObjbf3Cbneluyyl9DnzrrF9B3hdX1DenStOfSVPA9v/dPGY5Q3BZ
-         PFUSR/JpbVmMejM+OSreU0AVe6KDGJcphItKw7ZttY8A0Cvz0rXM8V8BBpOF3rpZHOsO
-         5KLSoUzEZYq95ZBEY0U71Dtk6i8AOf1WKieQno12XLFwOfcb0Jm7k5w7PWP2j9n74b7v
-         Oca0HIQHws4MISWwKOZz7x0YhL+1ewQ9xksvprKtuyNzDZEKZoVSHehtnrCftuiwsaCB
-         xZOTvVz/11tnIzGUEBHyYrLJrgrP21mgp3mmqvPGZOUc44hbF2zX7v9GlxKMlJHXPp0q
-         V6OA==
-X-Gm-Message-State: AOAM53288Am9sw2xJUqQR05SCWz6NJGoeudwLu6GC+qudTMwvGAlsyvc
-        bfAyBDDlXYGixmMgkw4c9Xw=
-X-Google-Smtp-Source: ABdhPJzLGg5lDHAALjn0FUrZCg7vkYrG8lygeOc21XjYBZ08S7udKhTeB/ebTpGKAuqxWBj6BEFO7Q==
-X-Received: by 2002:a17:902:b597:b0:13e:9ba6:fed with SMTP id a23-20020a170902b59700b0013e9ba60fedmr43743350pls.32.1636008842559;
-        Wed, 03 Nov 2021 23:54:02 -0700 (PDT)
-Received: from debian11-dev-61.localdomain (192.243.120.180.16clouds.com. [192.243.120.180])
-        by smtp.gmail.com with ESMTPSA id o1sm6638518pjs.30.2021.11.03.23.53.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Nov 2021 23:54:02 -0700 (PDT)
-From:   davidcomponentone@gmail.com
-X-Google-Original-From: yang.guang5@zte.com.cn
-To:     ecree.xilinx@gmail.com
-Cc:     davidcomponentone@gmail.com, habetsm.xilinx@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, hkallweit1@gmail.com,
-        bhelgaas@google.com, yuehaibing@huawei.com, arnd@arndb.de,
-        yang.guang5@zte.com.cn, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] sfc: use swap() to make code cleaner
-Date:   Thu,  4 Nov 2021 14:53:50 +0800
-Message-Id: <20211104065350.1834911-1-yang.guang5@zte.com.cn>
+        id S230213AbhKDHDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Nov 2021 03:03:03 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:54314 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230108AbhKDHDC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 03:03:02 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1A422xpQ005419
+        for <netdev@vger.kernel.org>; Thu, 4 Nov 2021 00:00:25 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=++gSyi54JJHnSvOMM2x6PtcyKV4rJwmGq2kQyJWI8y0=;
+ b=H+BR1psXeRLmHgruyHoZm10S4/N6Def0LtkohJLkvDwr9bb1qTqlKqSVF6GNajJat29c
+ xDhQl9xw4TOkM/iohQSDLaWpHlP+ZsfiFnB3GcZAEgr6xr+qKEFm2r+CQDNc2n4IwIQ2
+ NZ/lpw132hiVTat4P1QiDeUOexMPj9xjKZ0= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 3c42t0u1c8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 04 Nov 2021 00:00:25 -0700
+Received: from intmgw002.25.frc3.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.14; Thu, 4 Nov 2021 00:00:23 -0700
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 808071DC16563; Thu,  4 Nov 2021 00:00:19 -0700 (PDT)
+From:   Song Liu <songliubraving@fb.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kernel-team@fb.com>, <kpsingh@kernel.org>,
+        Song Liu <songliubraving@fb.com>
+Subject: [PATCH v2 bpf-next 0/2] introduce bpf_find_vma
+Date:   Thu, 4 Nov 2021 00:00:14 -0700
+Message-ID: <20211104070016.2463668-1-songliubraving@fb.com>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-FB-Source: Intern
+X-Proofpoint-ORIG-GUID: Hc1O7p7iZCGuatMXOLaS7kPZXq0vF7ey
+X-Proofpoint-GUID: Hc1O7p7iZCGuatMXOLaS7kPZXq0vF7ey
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-11-04_01,2021-11-03_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ spamscore=0 adultscore=0 lowpriorityscore=0 clxscore=1015 bulkscore=0
+ impostorscore=0 suspectscore=0 mlxlogscore=456 phishscore=0 mlxscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2111040033
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yang Guang <yang.guang5@zte.com.cn>
+Changes v1 =3D> v2:
+1. Share irq_work with stackmap.c. (Daniel)
+2. Add tests for illegal writes to task/vma from the callback function.
+   (Daniel)
+3. Other small fixes.
 
-Use the macro 'swap()' defined in 'include/linux/minmax.h' to avoid
-opencoding it.
+Add helper bpf_find_vma. This can be used in some profiling use cases. It
+might also be useful for LSM.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
----
- drivers/net/ethernet/sfc/falcon/efx.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+Song Liu (2):
+  bpf: introduce helper bpf_find_vma
+  selftests/bpf: add tests for bpf_find_vma
 
-diff --git a/drivers/net/ethernet/sfc/falcon/efx.c b/drivers/net/ethernet/sfc/falcon/efx.c
-index c68837a951f4..314c9c69eb0e 100644
---- a/drivers/net/ethernet/sfc/falcon/efx.c
-+++ b/drivers/net/ethernet/sfc/falcon/efx.c
-@@ -817,9 +817,7 @@ ef4_realloc_channels(struct ef4_nic *efx, u32 rxq_entries, u32 txq_entries)
- 	efx->rxq_entries = rxq_entries;
- 	efx->txq_entries = txq_entries;
- 	for (i = 0; i < efx->n_channels; i++) {
--		channel = efx->channel[i];
--		efx->channel[i] = other_channel[i];
--		other_channel[i] = channel;
-+		swap(efx->channel[i], other_channel[i]);
- 	}
- 
- 	/* Restart buffer table allocation */
-@@ -863,9 +861,7 @@ ef4_realloc_channels(struct ef4_nic *efx, u32 rxq_entries, u32 txq_entries)
- 	efx->rxq_entries = old_rxq_entries;
- 	efx->txq_entries = old_txq_entries;
- 	for (i = 0; i < efx->n_channels; i++) {
--		channel = efx->channel[i];
--		efx->channel[i] = other_channel[i];
--		other_channel[i] = channel;
-+		swap(efx->channel[i], other_channel[i]);
- 	}
- 	goto out;
- }
--- 
+ include/linux/bpf.h                           |   1 +
+ include/uapi/linux/bpf.h                      |  20 +++
+ kernel/bpf/mmap_unlock_work.h                 |  65 ++++++++++
+ kernel/bpf/stackmap.c                         |  71 +++--------
+ kernel/bpf/task_iter.c                        |  49 ++++++++
+ kernel/bpf/verifier.c                         |  36 ++++++
+ kernel/trace/bpf_trace.c                      |   2 +
+ tools/include/uapi/linux/bpf.h                |  20 +++
+ .../selftests/bpf/prog_tests/find_vma.c       | 115 ++++++++++++++++++
+ tools/testing/selftests/bpf/progs/find_vma.c  |  70 +++++++++++
+ .../selftests/bpf/progs/find_vma_fail1.c      |  30 +++++
+ .../selftests/bpf/progs/find_vma_fail2.c      |  30 +++++
+ 12 files changed, 454 insertions(+), 55 deletions(-)
+ create mode 100644 kernel/bpf/mmap_unlock_work.h
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/find_vma.c
+ create mode 100644 tools/testing/selftests/bpf/progs/find_vma.c
+ create mode 100644 tools/testing/selftests/bpf/progs/find_vma_fail1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/find_vma_fail2.c
+
+--
 2.30.2
-
