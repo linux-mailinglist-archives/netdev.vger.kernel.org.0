@@ -2,99 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 888F4444ED8
-	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 07:26:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D137444EE8
+	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 07:32:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230319AbhKDG3G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Nov 2021 02:29:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47264 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230213AbhKDG3F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 02:29:05 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB9D4C061714;
-        Wed,  3 Nov 2021 23:26:27 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id p17so4587335pgj.2;
-        Wed, 03 Nov 2021 23:26:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nlnnt3n3O4Jk/rf550R30jHD5iuaforuARNIfO1qRrU=;
-        b=Q3MVElHB90l/Gng+gMKxJXEErRAq29eXKemft+xA+adhXOZ/NMc/W92sfgb8xZl+Ql
-         NgnoFw6KHmbP+64CdGOlsG6qYK9NRSmEoya4p15+pPlRkWA8i2zdTlQT6s3EtRQ/11jF
-         ULYtnara3+lqXNmx1fNqCzV2oaaN8I9eLr6adnWJD1eU3DsQBtU27q7I/D2x4OMmExxJ
-         c47OdBFkW+nEk4x7m9KN3MVaa0azsOYJjVSXYE/6+my1PMPMoXbd9Uyc02+1RIntggYy
-         M3DCOhYSsPG3gNoY1jSiy4mPn5+1kQXorePgZKqQA8PuyxeW/1S0IQE5kblzk21AAKZJ
-         JYlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nlnnt3n3O4Jk/rf550R30jHD5iuaforuARNIfO1qRrU=;
-        b=jcj8t1MJ2a0eRD+35fwg7L3bR8GTazeK06+9pnuPoDXHKj2IjM5zs1lc5yUSagNbWB
-         1dHLrIa6Ur5+Qjnk+XqQO5ajCo3QQZE/5INnhmIW+9LqmH+G4g1O34hSnK3w67HxpqXR
-         DotQ4ltU8K7NqXGb0RcGamHNC5+7Fy4lAzmuW976KUtS4J7/Thvf2lrWt7yyjK7eZ+Vu
-         ZHsGi7EW12PM6jxq/+PKzyods9apeyGvcuSmCcGnvrqStM4SSHfyKPskOfHgowPkhs1b
-         B9sUWRSsxaYHJ6JdFR6ZzW0onGw3T56t+DbJRAbCp92fc1HN5ablFRp62jQTGTAuS/dd
-         +AtQ==
-X-Gm-Message-State: AOAM5324Cmx3BofJV+xva0ozytOvBuR+9H3ywWhuTU1BBputkZyRdhax
-        QLVtro48vUuO9cqzwitOrVugJNTtFHQ=
-X-Google-Smtp-Source: ABdhPJx220Vg/l6cKgMODZdCbqjkrY2TQ9yb+WgAGxk7h2rm9u/BFrL0LnjVBOBH5hmq5aXIamadkw==
-X-Received: by 2002:a63:af09:: with SMTP id w9mr36793326pge.323.1636007187287;
-        Wed, 03 Nov 2021 23:26:27 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id h6sm929669pfg.128.2021.11.03.23.26.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Nov 2021 23:26:27 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: luo.penghao@zte.com.cn
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luo penghao <luo.penghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] xfrm: Remove duplicate assignment
-Date:   Thu,  4 Nov 2021 06:26:21 +0000
-Message-Id: <20211104062621.2643-1-luo.penghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        id S230152AbhKDGfX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Nov 2021 02:35:23 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:30917 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230383AbhKDGfT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 02:35:19 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HlDGK5wx3zcZxj;
+        Thu,  4 Nov 2021 14:27:53 +0800 (CST)
+Received: from dggpeml500025.china.huawei.com (7.185.36.35) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Thu, 4 Nov 2021 14:32:38 +0800
+Received: from [10.174.176.117] (10.174.176.117) by
+ dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Thu, 4 Nov 2021 14:32:38 +0800
+Subject: Re: [RFC PATCH v3 2/3] bpf: Add selftests
+To:     Joe Burton <jevburton.kernel@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+CC:     Petar Penkov <ppenkov@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Joe Burton <jevburton@google.com>
+References: <20211102021432.2807760-1-jevburton.kernel@gmail.com>
+ <20211102021432.2807760-3-jevburton.kernel@gmail.com>
+From:   Hou Tao <houtao1@huawei.com>
+Message-ID: <98178f0f-ff43-b996-f78b-778f74b44a6b@huawei.com>
+Date:   Thu, 4 Nov 2021 14:32:37 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211102021432.2807760-3-jevburton.kernel@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.174.176.117]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500025.china.huawei.com (7.185.36.35)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: luo penghao <luo.penghao@zte.com.cn>
+Hi,
 
-The statement in the switch is repeated with the statement at the
-beginning of the while loop, so this statement is meaningless.
+On 11/2/2021 10:14 AM, Joe Burton wrote:
+> From: Joe Burton <jevburton@google.com>
+>
+> Add selftests verifying that each supported map type is traced.
+>
+> Signed-off-by: Joe Burton <jevburton@google.com>
+> ---
+>  .../selftests/bpf/prog_tests/map_trace.c      | 166 ++++++++++++++++++
+>  .../selftests/bpf/progs/bpf_map_trace.c       |  95 ++++++++++
+>  .../bpf/progs/bpf_map_trace_common.h          |  12 ++
+>  3 files changed, 273 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/map_trace.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/bpf_map_trace.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/bpf_map_trace_common.h
+snip
+> +	/*
+> +	 * Invoke core BPF program.
+> +	 */
+> +	write_fd = open("/tmp/map_trace_test_file", O_CREAT | O_WRONLY);
+> +	if (!ASSERT_GE(rc, 0, "open tmp file for writing"))
+> +		goto out;
+> +
+> +	bytes_written = write(write_fd, &write_buf, sizeof(write_buf));
+> +	if (!ASSERT_EQ(bytes_written, sizeof(write_buf), "write to tmp file"))
+> +		return;
+In fentry__x64_sys_write(), you just do trigger updates to maps, so for the
+portability of the test
+(e.g. run-able for arm64) and minimal dependency (e.g. don't depends on /tmp),
+why do you
+using nanosleep() and replacing fentry_x64_sys_write by
+tp/syscalls/sys_enter_nanosleep instead.
+Also it will be better if you can filter out other processes by pid.
 
-The clang_analyzer complains as follows:
-
-net/xfrm/xfrm_policy.c:3392:2 warning:
-
-Value stored to 'exthdr' is never read
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: luo penghao <luo.penghao@zte.com.cn>
----
- net/xfrm/xfrm_policy.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 7f881f5..e8a31b9 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -3389,7 +3389,6 @@ decode_session6(struct sk_buff *skb, struct flowi *fl, bool reverse)
- 		case NEXTHDR_DEST:
- 			offset += ipv6_optlen(exthdr);
- 			nexthdr = exthdr->nexthdr;
--			exthdr = (struct ipv6_opt_hdr *)(nh + offset);
- 			break;
- 		case IPPROTO_UDP:
- 		case IPPROTO_UDPLITE:
--- 
-2.15.2
-
+Thanks,
+Tao
 
