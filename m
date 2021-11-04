@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50E594458BB
-	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 18:37:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D1E74458BD
+	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 18:37:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233972AbhKDRkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Nov 2021 13:40:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49274 "EHLO mail.kernel.org"
+        id S233978AbhKDRkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Nov 2021 13:40:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49350 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233937AbhKDRkI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Nov 2021 13:40:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 31F6960724;
-        Thu,  4 Nov 2021 17:37:27 +0000 (UTC)
+        id S233976AbhKDRkP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Nov 2021 13:40:15 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7301F60EFE;
+        Thu,  4 Nov 2021 17:37:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636047450;
-        bh=FwS3hgjgEXuZG9x2cvYYCdv9bbd8SXVyMny4P3YWmqo=;
+        s=k20201202; t=1636047457;
+        bh=/IFqaPgL6PnwnttujhbogBxwr3lKfTj1U/DLqTGzF/Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I2XMXZbEx4TqXhhJc4ix9yjgTSLMpUDR360DrRnvMhQj7ZA3VJnXhCfX3CtW7Gfkf
-         ZAyl0am9t8Xsjv8YgYA4tv1wZgJWvpqmtrxT1uZfTLNChHXWMPu8DJYyYL/Cm/FSOg
-         yPcP8OstXKffnlDIEvdTKrBGeiszQMUAWB5t8Fal20C8ylLakGjDSB6Oqz0bs+RnwZ
-         1aPVkXm+vfj+6C9L60B2Gagu5Qv35C8GX/vX6VFa5cobd1pjHWlngG9a+Bg7EOcqx5
-         /DizRloFfJoGpBa1nuMF1h2iR+A2nGopL722jOabn2qOxmC4i7zt7qUYCgwPpzmRlZ
-         kmEkuUnhI+OTA==
+        b=AUCQ5I7u2sVjAAT1gKVJwnano82IpxnXr4BhPTRW+MWi4IEMzUo/AQU/S/V0bOk5f
+         ePsoVZZ4YeIPZf70AL3d2jTb49nPVAIXawx4Y6qM4MMAG9VcJSjfs6tBEpw5CB8y3B
+         9rC9Gu6VEPWFWAmAumP/HRlZ275Oy5/KKrs7Ob8qwJc0iKHD/066k1g1nB/QLoS3qC
+         kOn0i34n+a+hSp7GhyhDERIf8CdLW1Kb2VQx9W1VIKv3ZB7lnZ239oNk/QEwuSSpr8
+         gMME+78yegRuTovpbhm6p2Ovc5C10UhpEZazDxBHW7ObAgwHyZLbpcLXtb/Jy5e6fD
+         r0PmWUNRriFTQ==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
@@ -32,9 +32,9 @@ Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         alexander.duyck@gmail.com, saeed@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
         tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: [PATCH v17 bpf-next 19/23] bpf: generalise tail call map
-Date:   Thu,  4 Nov 2021 18:35:39 +0100
-Message-Id: <bb1d0de1e0d25563a3bb1770069d46badaf720a9.1636044387.git.lorenzo@kernel.org>
+Subject: [PATCH v17 bpf-next 20/23] net: xdp: introduce bpf_xdp_pointer utility routine
+Date:   Thu,  4 Nov 2021 18:35:40 +0100
+Message-Id: <273cc085c8cbe5913defe302800fc69da650e7b1.1636044387.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1636044387.git.lorenzo@kernel.org>
 References: <cover.1636044387.git.lorenzo@kernel.org>
@@ -44,263 +44,244 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Toke Hoiland-Jorgensen <toke@redhat.com>
+Similar to skb_header_pointer, introduce bpf_xdp_pointer utility routine
+to return a pointer to a given position in the xdp_buff if the requested
+area (offset + len) is contained in a contiguous memory area otherwise it
+will be copied in a bounce buffer provided by the caller.
+Similar to the tc counterpart, introduce the two following xdp helpers:
+- bpf_xdp_load_bytes
+- bpf_xdp_store_bytes
 
-The check for tail call map compatibility ensures that tail calls only
-happen between maps of the same type. To ensure backwards compatibility for
-XDP multi-buffer we need a similar type of check for cpumap and devmap
-programs, so move the state from bpf_array_aux into bpf_map, add xdp_mb to
-the check, and apply the same check to cpumap and devmap.
-
-Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Toke Hoiland-Jorgensen <toke@redhat.com>
 ---
- include/linux/bpf.h   | 31 ++++++++++++++++++++-----------
- kernel/bpf/arraymap.c |  4 +---
- kernel/bpf/core.c     | 28 ++++++++++++++--------------
- kernel/bpf/cpumap.c   |  8 +++++---
- kernel/bpf/devmap.c   |  3 ++-
- kernel/bpf/syscall.c  | 21 +++++++++++----------
- 6 files changed, 53 insertions(+), 42 deletions(-)
+ include/uapi/linux/bpf.h       |  18 +++++
+ net/core/filter.c              | 133 +++++++++++++++++++++++++++++++++
+ tools/include/uapi/linux/bpf.h |  18 +++++
+ 3 files changed, 169 insertions(+)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index ba31c22ad839..09f0422d7fcd 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -194,6 +194,18 @@ struct bpf_map {
- 	struct work_struct work;
- 	struct mutex freeze_mutex;
- 	u64 writecnt; /* writable mmap cnt; protected by freeze_mutex */
-+
-+	/* 'Ownership' of program-containing map is claimed by the first program
-+	 * that is going to use this map or by the first program which FD is
-+	 * stored in the map to make sure that all callers and callees have the
-+	 * same prog type, JITed flag and xdp_mb flag.
-+	 */
-+	struct {
-+		spinlock_t lock;
-+		enum bpf_prog_type type;
-+		bool jited;
-+		bool xdp_mb;
-+	} owner;
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index c643be066700..a63c7080b74d 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -4949,6 +4949,22 @@ union bpf_attr {
+  *		Get the total size of a given xdp buff (linear and paged area)
+  *	Return
+  *		The total size of a given xdp buffer.
++ *
++ * long bpf_xdp_load_bytes(struct xdp_buff *xdp_md, u32 offset, void *buf, u32 len)
++ *	Description
++ *		This helper is provided as an easy way to load data from a
++ *		xdp buffer. It can be used to load *len* bytes from *offset* from
++ *		the frame associated to *xdp_md*, into the buffer pointed by
++ *		*buf*.
++ *	Return
++ *		0 on success, or a negative error in case of failure.
++ *
++ * long bpf_xdp_store_bytes(struct xdp_buff *xdp_md, u32 offset, void *buf, u32 len)
++ *	Description
++ *		Store *len* bytes from buffer *buf* into the frame
++ *		associated to *xdp_md*, at *offset*.
++ *	Return
++ *		0 on success, or a negative error in case of failure.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -5132,6 +5148,8 @@ union bpf_attr {
+ 	FN(skc_to_unix_sock),		\
+ 	FN(kallsyms_lookup_name),	\
+ 	FN(xdp_get_buff_len),		\
++	FN(xdp_load_bytes),		\
++	FN(xdp_store_bytes),		\
+ 	/* */
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 386dd2fffded..534305037ad7 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -3840,6 +3840,135 @@ static const struct bpf_func_proto bpf_xdp_adjust_head_proto = {
+ 	.arg2_type	= ARG_ANYTHING,
  };
  
- static inline bool map_value_has_spin_lock(const struct bpf_map *map)
-@@ -930,16 +942,6 @@ struct bpf_prog_aux {
- };
- 
- struct bpf_array_aux {
--	/* 'Ownership' of prog array is claimed by the first program that
--	 * is going to use this map or by the first program which FD is
--	 * stored in the map to make sure that all callers and callees have
--	 * the same prog type and JITed flag.
--	 */
--	struct {
--		spinlock_t lock;
--		enum bpf_prog_type type;
--		bool jited;
--	} owner;
- 	/* Programs with direct jumps into programs part of this array. */
- 	struct list_head poke_progs;
- 	struct bpf_map *map;
-@@ -1114,7 +1116,14 @@ struct bpf_event_entry {
- 	struct rcu_head rcu;
- };
- 
--bool bpf_prog_array_compatible(struct bpf_array *array, const struct bpf_prog *fp);
-+static inline bool map_type_contains_progs(struct bpf_map *map)
++static void bpf_xdp_copy_buf(struct xdp_buff *xdp, u32 offset,
++			     u32 len, void *buf, bool flush)
 +{
-+	return map->map_type == BPF_MAP_TYPE_PROG_ARRAY ||
-+	       map->map_type == BPF_MAP_TYPE_DEVMAP ||
-+	       map->map_type == BPF_MAP_TYPE_CPUMAP;
++	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
++	u32 headsize = xdp->data_end - xdp->data;
++	u32 count = 0, frame_offset = headsize;
++	int i = 0;
++
++	if (offset < headsize) {
++		int size = min_t(int, headsize - offset, len);
++		void *src = flush ? buf : xdp->data + offset;
++		void *dst = flush ? xdp->data + offset : buf;
++
++		memcpy(dst, src, size);
++		count = size;
++		offset = 0;
++	}
++
++	while (count < len && i < sinfo->nr_frags) {
++		skb_frag_t *frag = &sinfo->frags[i++];
++		u32 frag_size = skb_frag_size(frag);
++
++		if  (offset < frame_offset + frag_size) {
++			int size = min_t(int, frag_size - offset, len - count);
++			void *addr = skb_frag_address(frag);
++			void *src = flush ? buf + count : addr + offset;
++			void *dst = flush ? addr + offset : buf + count;
++
++			memcpy(dst, src, size);
++			count += size;
++			offset = 0;
++		}
++		frame_offset += frag_size;
++	}
 +}
 +
-+bool bpf_prog_map_compatible(struct bpf_map *map, const struct bpf_prog *fp);
- int bpf_prog_calc_tag(struct bpf_prog *fp);
- 
- const struct bpf_func_proto *bpf_get_trace_printk_proto(void);
-diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
-index c7a5be3bf8be..7f145aefbff8 100644
---- a/kernel/bpf/arraymap.c
-+++ b/kernel/bpf/arraymap.c
-@@ -837,13 +837,12 @@ static int fd_array_map_delete_elem(struct bpf_map *map, void *key)
- static void *prog_fd_array_get_ptr(struct bpf_map *map,
- 				   struct file *map_file, int fd)
- {
--	struct bpf_array *array = container_of(map, struct bpf_array, map);
- 	struct bpf_prog *prog = bpf_prog_get(fd);
- 
- 	if (IS_ERR(prog))
- 		return prog;
- 
--	if (!bpf_prog_array_compatible(array, prog)) {
-+	if (!bpf_prog_map_compatible(map, prog)) {
- 		bpf_prog_put(prog);
- 		return ERR_PTR(-EINVAL);
- 	}
-@@ -1071,7 +1070,6 @@ static struct bpf_map *prog_array_map_alloc(union bpf_attr *attr)
- 	INIT_WORK(&aux->work, prog_array_map_clear_deferred);
- 	INIT_LIST_HEAD(&aux->poke_progs);
- 	mutex_init(&aux->poke_mutex);
--	spin_lock_init(&aux->owner.lock);
- 
- 	map = array_map_alloc(attr);
- 	if (IS_ERR(map)) {
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 327e3996eadb..bd24cc30d3bd 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -1821,28 +1821,30 @@ static unsigned int __bpf_prog_ret0_warn(const void *ctx,
- }
- #endif
- 
--bool bpf_prog_array_compatible(struct bpf_array *array,
--			       const struct bpf_prog *fp)
-+bool bpf_prog_map_compatible(struct bpf_map *map,
-+			     const struct bpf_prog *fp)
- {
- 	bool ret;
- 
- 	if (fp->kprobe_override)
- 		return false;
- 
--	spin_lock(&array->aux->owner.lock);
--
--	if (!array->aux->owner.type) {
-+	spin_lock(&map->owner.lock);
-+	if (!map->owner.type) {
- 		/* There's no owner yet where we could check for
- 		 * compatibility.
- 		 */
--		array->aux->owner.type  = fp->type;
--		array->aux->owner.jited = fp->jited;
-+		map->owner.type  = fp->type;
-+		map->owner.jited = fp->jited;
-+		map->owner.xdp_mb = fp->aux->xdp_mb;
- 		ret = true;
- 	} else {
--		ret = array->aux->owner.type  == fp->type &&
--		      array->aux->owner.jited == fp->jited;
-+		ret = map->owner.type  == fp->type &&
-+		      map->owner.jited == fp->jited &&
-+		      map->owner.xdp_mb == fp->aux->xdp_mb;
- 	}
--	spin_unlock(&array->aux->owner.lock);
-+	spin_unlock(&map->owner.lock);
++static void *bpf_xdp_pointer(struct xdp_buff *xdp, u32 offset,
++			     u32 len, void *buf)
++{
++	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
++	u32 size = xdp->data_end - xdp->data;
++	void *addr = xdp->data;
++	int i;
 +
- 	return ret;
- }
- 
-@@ -1854,13 +1856,11 @@ static int bpf_check_tail_call(const struct bpf_prog *fp)
- 	mutex_lock(&aux->used_maps_mutex);
- 	for (i = 0; i < aux->used_map_cnt; i++) {
- 		struct bpf_map *map = aux->used_maps[i];
--		struct bpf_array *array;
- 
--		if (map->map_type != BPF_MAP_TYPE_PROG_ARRAY)
-+		if (!map_type_contains_progs(map))
- 			continue;
- 
--		array = container_of(map, struct bpf_array, map);
--		if (!bpf_prog_array_compatible(array, fp)) {
-+		if (!bpf_prog_map_compatible(map, fp)) {
- 			ret = -EINVAL;
- 			goto out;
- 		}
-diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-index 585b2b77ccc4..7f9984e7ba1d 100644
---- a/kernel/bpf/cpumap.c
-+++ b/kernel/bpf/cpumap.c
-@@ -397,7 +397,8 @@ static int cpu_map_kthread_run(void *data)
- 	return 0;
- }
- 
--static int __cpu_map_load_bpf_program(struct bpf_cpu_map_entry *rcpu, int fd)
-+static int __cpu_map_load_bpf_program(struct bpf_cpu_map_entry *rcpu,
-+				      struct bpf_map *map, int fd)
- {
- 	struct bpf_prog *prog;
- 
-@@ -405,7 +406,8 @@ static int __cpu_map_load_bpf_program(struct bpf_cpu_map_entry *rcpu, int fd)
- 	if (IS_ERR(prog))
- 		return PTR_ERR(prog);
- 
--	if (prog->expected_attach_type != BPF_XDP_CPUMAP) {
-+	if (prog->expected_attach_type != BPF_XDP_CPUMAP ||
-+	    !bpf_prog_map_compatible(map, prog)) {
- 		bpf_prog_put(prog);
- 		return -EINVAL;
- 	}
-@@ -457,7 +459,7 @@ __cpu_map_entry_alloc(struct bpf_map *map, struct bpf_cpumap_val *value,
- 	rcpu->map_id = map->id;
- 	rcpu->value.qsize  = value->qsize;
- 
--	if (fd > 0 && __cpu_map_load_bpf_program(rcpu, fd))
-+	if (fd > 0 && __cpu_map_load_bpf_program(rcpu, map, fd))
- 		goto free_ptr_ring;
- 
- 	/* Setup kthread */
-diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-index f02d04540c0c..a35edd4a2bf1 100644
---- a/kernel/bpf/devmap.c
-+++ b/kernel/bpf/devmap.c
-@@ -868,7 +868,8 @@ static struct bpf_dtab_netdev *__dev_map_alloc_node(struct net *net,
- 					     BPF_PROG_TYPE_XDP, false);
- 		if (IS_ERR(prog))
- 			goto err_put_dev;
--		if (prog->expected_attach_type != BPF_XDP_DEVMAP)
-+		if (prog->expected_attach_type != BPF_XDP_DEVMAP ||
-+		    !bpf_prog_map_compatible(&dtab->map, prog))
- 			goto err_put_prog;
- 	}
- 
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index fbae37d5b329..ba78d3490491 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -540,16 +540,15 @@ static unsigned long bpf_map_memory_footprint(const struct bpf_map *map)
- 
- static void bpf_map_show_fdinfo(struct seq_file *m, struct file *filp)
- {
--	const struct bpf_map *map = filp->private_data;
--	const struct bpf_array *array;
--	u32 type = 0, jited = 0;
--
--	if (map->map_type == BPF_MAP_TYPE_PROG_ARRAY) {
--		array = container_of(map, struct bpf_array, map);
--		spin_lock(&array->aux->owner.lock);
--		type  = array->aux->owner.type;
--		jited = array->aux->owner.jited;
--		spin_unlock(&array->aux->owner.lock);
-+	struct bpf_map *map = filp->private_data;
-+	u32 type = 0, jited = 0, xdp_mb = 0;
++	if (unlikely(offset > 0xffff))
++		return ERR_PTR(-EFAULT);
 +
-+	if (map_type_contains_progs(map)) {
-+		spin_lock(&map->owner.lock);
-+		type  = map->owner.type;
-+		jited = map->owner.jited;
-+		xdp_mb = map->owner.xdp_mb;
-+		spin_unlock(&map->owner.lock);
- 	}
++	if (offset + len > xdp_get_buff_len(xdp))
++		return ERR_PTR(-EINVAL);
++
++	if (offset < size) /* linear area */
++		goto out;
++
++	offset -= size;
++	for (i = 0; i < sinfo->nr_frags; i++) { /* paged area */
++		u32 frag_size = skb_frag_size(&sinfo->frags[i]);
++
++		if  (offset < frag_size) {
++			addr = skb_frag_address(&sinfo->frags[i]);
++			size = frag_size;
++			break;
++		}
++		offset -= frag_size;
++	}
++
++out:
++	if (offset + len < size)
++		return addr + offset; /* fast path - no need to copy */
++
++	if (!buf) /* no copy to the bounce buffer */
++		return NULL;
++
++	/* slow path - we need to copy data into the bounce buffer */
++	bpf_xdp_copy_buf(xdp, offset, len, buf, false);
++	return buf;
++}
++
++BPF_CALL_4(bpf_xdp_load_bytes, struct xdp_buff *, xdp, u32, offset,
++	   void *, buf, u32, len)
++{
++	void *ptr;
++
++	ptr = bpf_xdp_pointer(xdp, offset, len, buf);
++	if (IS_ERR(ptr))
++		return PTR_ERR(ptr);
++
++	if (ptr != buf)
++		memcpy(buf, ptr, len);
++
++	return 0;
++}
++
++static const struct bpf_func_proto bpf_xdp_load_bytes_proto = {
++	.func		= bpf_xdp_load_bytes,
++	.gpl_only	= false,
++	.ret_type	= RET_INTEGER,
++	.arg1_type	= ARG_PTR_TO_CTX,
++	.arg2_type	= ARG_ANYTHING,
++	.arg3_type	= ARG_PTR_TO_UNINIT_MEM,
++	.arg4_type	= ARG_CONST_SIZE,
++};
++
++BPF_CALL_4(bpf_xdp_store_bytes, struct xdp_buff *, xdp, u32, offset,
++	   void *, buf, u32, len)
++{
++	void *ptr;
++
++	ptr = bpf_xdp_pointer(xdp, offset, len, NULL);
++	if (IS_ERR(ptr))
++		return PTR_ERR(ptr);
++
++	if (!ptr)
++		bpf_xdp_copy_buf(xdp, offset, len, buf, true);
++	else
++		memcpy(ptr, buf, len);
++
++	return 0;
++}
++
++static const struct bpf_func_proto bpf_xdp_store_bytes_proto = {
++	.func		= bpf_xdp_store_bytes,
++	.gpl_only	= false,
++	.ret_type	= RET_INTEGER,
++	.arg1_type	= ARG_PTR_TO_CTX,
++	.arg2_type	= ARG_ANYTHING,
++	.arg3_type	= ARG_PTR_TO_UNINIT_MEM,
++	.arg4_type	= ARG_CONST_SIZE,
++};
++
+ static int bpf_xdp_mb_increase_tail(struct xdp_buff *xdp, int offset)
+ {
+ 	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
+@@ -7601,6 +7730,10 @@ xdp_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_xdp_adjust_tail_proto;
+ 	case BPF_FUNC_xdp_get_buff_len:
+ 		return &bpf_xdp_get_buff_len_proto;
++	case BPF_FUNC_xdp_load_bytes:
++		return &bpf_xdp_load_bytes_proto;
++	case BPF_FUNC_xdp_store_bytes:
++		return &bpf_xdp_store_bytes_proto;
+ 	case BPF_FUNC_fib_lookup:
+ 		return &bpf_xdp_fib_lookup_proto;
+ 	case BPF_FUNC_check_mtu:
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index c643be066700..a63c7080b74d 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -4949,6 +4949,22 @@ union bpf_attr {
+  *		Get the total size of a given xdp buff (linear and paged area)
+  *	Return
+  *		The total size of a given xdp buffer.
++ *
++ * long bpf_xdp_load_bytes(struct xdp_buff *xdp_md, u32 offset, void *buf, u32 len)
++ *	Description
++ *		This helper is provided as an easy way to load data from a
++ *		xdp buffer. It can be used to load *len* bytes from *offset* from
++ *		the frame associated to *xdp_md*, into the buffer pointed by
++ *		*buf*.
++ *	Return
++ *		0 on success, or a negative error in case of failure.
++ *
++ * long bpf_xdp_store_bytes(struct xdp_buff *xdp_md, u32 offset, void *buf, u32 len)
++ *	Description
++ *		Store *len* bytes from buffer *buf* into the frame
++ *		associated to *xdp_md*, at *offset*.
++ *	Return
++ *		0 on success, or a negative error in case of failure.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -5132,6 +5148,8 @@ union bpf_attr {
+ 	FN(skc_to_unix_sock),		\
+ 	FN(kallsyms_lookup_name),	\
+ 	FN(xdp_get_buff_len),		\
++	FN(xdp_load_bytes),		\
++	FN(xdp_store_bytes),		\
+ 	/* */
  
- 	seq_printf(m,
-@@ -574,6 +573,7 @@ static void bpf_map_show_fdinfo(struct seq_file *m, struct file *filp)
- 	if (type) {
- 		seq_printf(m, "owner_prog_type:\t%u\n", type);
- 		seq_printf(m, "owner_jited:\t%u\n", jited);
-+		seq_printf(m, "owner_xdp_mb:\t%u\n", xdp_mb);
- 	}
- }
- #endif
-@@ -864,6 +864,7 @@ static int map_create(union bpf_attr *attr)
- 	atomic64_set(&map->refcnt, 1);
- 	atomic64_set(&map->usercnt, 1);
- 	mutex_init(&map->freeze_mutex);
-+	spin_lock_init(&map->owner.lock);
- 
- 	map->spin_lock_off = -EINVAL;
- 	map->timer_off = -EINVAL;
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
 -- 
 2.31.1
 
