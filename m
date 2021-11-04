@@ -2,78 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CB92445A36
-	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 20:04:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59E03445A76
+	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 20:10:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234205AbhKDTGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Nov 2021 15:06:53 -0400
-Received: from 113.196.136.162.ll.static.sparqnet.net ([113.196.136.162]:41358
-        "EHLO mg.sunplus.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S233947AbhKDTGu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 15:06:50 -0400
-X-Greylist: delayed 104113 seconds by postgrey-1.27 at vger.kernel.org; Thu, 04 Nov 2021 15:06:49 EDT
-X-MailGates: (flag:3,DYNAMIC,RELAY,NOHOST:PASS)(compute_score:DELIVER,40
-        ,3)
-Received: from 172.17.9.112
-        by mg01.sunplus.com with MailGates ESMTP Server V5.0(13488:0:AUTH_RELAY)
-        (envelope-from <wells.lu@sunplus.com>); Fri, 05 Nov 2021 03:03:42 +0800 (CST)
-Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
- sphcmbx02.sunplus.com.tw (172.17.9.112) with Microsoft SMTP Server (TLS) id
- 15.0.1497.23; Fri, 5 Nov 2021 03:03:43 +0800
-Received: from sphcmbx02.sunplus.com.tw ([::1]) by sphcmbx02.sunplus.com.tw
- ([fe80::f8bb:bd77:a854:5b9e%14]) with mapi id 15.00.1497.023; Fri, 5 Nov 2021
- 03:03:43 +0800
-From:   =?big5?B?V2VsbHMgTHUgp2aq2sTL?= <wells.lu@sunplus.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Randy Dunlap <rdunlap@infradead.org>,
-        Wells Lu <wellslutw@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>
-Subject: RE: [PATCH 2/2] net: ethernet: Add driver for Sunplus SP7021
-Thread-Topic: [PATCH 2/2] net: ethernet: Add driver for Sunplus SP7021
-Thread-Index: AQHX0KKBcebTINBXKk6D/f7Frpi9sKvxbhgAgAClKgD//5f5gIABJz+w///9xoCAANUOEP//hOQAABHi4LA=
-Date:   Thu, 4 Nov 2021 19:03:43 +0000
-Message-ID: <72446c510f05480f9967c32df8787d46@sphcmbx02.sunplus.com.tw>
-References: <cover.1635936610.git.wells.lu@sunplus.com>
- <650ec751dd782071dd56af5e36c0d509b0c66d7f.1635936610.git.wells.lu@sunplus.com>
- <d0217eed-a8b7-8eb9-7d50-4bf69cd38e03@infradead.org>
- <159ab76ac7114da983332aadc6056c08@sphcmbx02.sunplus.com.tw>
- <YYLjaYCQHzqBzN1l@lunn.ch>
- <36d5bc6d40734ae0a9c1fb26d258f49f@sphcmbx02.sunplus.com.tw>
- <YYPZN9hPBJTBzVUl@lunn.ch>
- <c51d2927eedb4f3999b8361a44526a07@sphcmbx02.sunplus.com.tw>
- <YYQkqkZOwOhTa+VD@lunn.ch>
-In-Reply-To: <YYQkqkZOwOhTa+VD@lunn.ch>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [172.25.108.39]
-Content-Type: text/plain; charset="big5"
-Content-Transfer-Encoding: base64
+        id S232340AbhKDTN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Nov 2021 15:13:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52120 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234209AbhKDTNT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 15:13:19 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA2CFC061203
+        for <netdev@vger.kernel.org>; Thu,  4 Nov 2021 12:10:40 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id r4so24235086edi.5
+        for <netdev@vger.kernel.org>; Thu, 04 Nov 2021 12:10:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NH1hAfvi+I4370XeV24vwAJMjY68rCJZqPqZJpWaQC8=;
+        b=CTFC0aT1kl3ldDGN7A63/pPZn/knkHUG1Y86+2vgLApjmgjAXNfv4QsK78E7ZmmMhF
+         OvLF4OEtRu2b2mrzOG7fk8r25FQ5hn0HWf034uc8ml9d/OfOJWnqX6ikLbr8FBXSekxU
+         IQg1JVMOqVVdCN7KqM0a3kMVSVSHfPPK9obose8M40j8hJf7qWjvA4zHwNu4dwatAsZT
+         sJSfxrVnkCr1LqrIRbexoMhk76V6J9oOW1bBGQxsYRkBCi1F4jAZn3qkpxHEQR98oFC5
+         vqZ0w7iw6cFjLHTfA4otkRwl53QM+gnpV/yn2yfkbfNQ7YaiL5q2kkiMyZW/nt9VUphS
+         iEqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NH1hAfvi+I4370XeV24vwAJMjY68rCJZqPqZJpWaQC8=;
+        b=QtX0J3bXJIk+/DzQTS6nqkH/3dpH4Usf5f/1ris+Rl9B2m0+WcPcdU3jrBW68M6hkV
+         cmug/v5e9HV+bRZyOmz/rvb9EXUcQ2fm1hKUH50pHkdGfmiQhGbn0y6NMWSHWf7yJv5u
+         UCa6j2QsKRREZ94pYesKdpf5zR93w3476Z8oz6Y0tNNK22e/JTUG0hXfJfebhlqwJZOJ
+         1glyt64nqt/RIlOZIthFPLru/z+l0PLJoIOebripSN03D2AWBkneVpH2YMFWAgHz9vbA
+         iZbt04/r0MZ7fDYuUkp5jELQxuqI0j80nr9I1UO/NcJayU15BIiLDvK1Jmy0vObap2mR
+         svLQ==
+X-Gm-Message-State: AOAM531b+lqqgC8+6Nad6qumruIIcWCz3H+L4lADsJL0Z/cGzeeXySX7
+        1GrYIeoJIDiMkMkACNX/roHdxOXkpn3HVai6DDX2UunWAg==
+X-Google-Smtp-Source: ABdhPJxwMN13Ohq4ksEEAgvk2n+Rrl8sdlV2f6hojDOE00hlUM8/gLrBdZwdU+SDaAJW4dxN5kG3X04PDE8YRvZnWLM=
+X-Received: by 2002:a05:6402:4309:: with SMTP id m9mr9997327edc.93.1636053039080;
+ Thu, 04 Nov 2021 12:10:39 -0700 (PDT)
 MIME-Version: 1.0
+References: <CAHC9VhRQ3wGRTL1UXEnnhATGA_zKASVJJ6y4cbWYoA19CZyLbA@mail.gmail.com>
+ <CADvbK_fVENGZhyUXKqpQ7mpva5PYJk2_o=jWKbY1jR_1c-4S-Q@mail.gmail.com>
+ <CAHC9VhSjPVotYVb8-ABescHmnNnDL=9B3M0J=txiDOuyJNoYuw@mail.gmail.com> <20211104.110213.948977313836077922.davem@davemloft.net>
+In-Reply-To: <20211104.110213.948977313836077922.davem@davemloft.net>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Thu, 4 Nov 2021 15:10:28 -0400
+Message-ID: <CAHC9VhQUdU6iXrnMTGsHd4qg7DnHDVoiWE9rfOQPjNoasLBbUA@mail.gmail.com>
+Subject: Re: [PATCHv2 net 4/4] security: implement sctp_assoc_established hook
+ in selinux
+To:     David Miller <davem@davemloft.net>
+Cc:     lucien.xin@gmail.com, omosnace@redhat.com, netdev@vger.kernel.org,
+        selinux@vger.kernel.org, linux-security-module@vger.kernel.org,
+        linux-sctp@vger.kernel.org, kuba@kernel.org,
+        marcelo.leitner@gmail.com, jmorris@namei.org,
+        richard_c_haines@btinternet.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiA+IE5vLCB3ZSBvbmx5IGRldmVsb3AgYXJtLWJhc2VkIFNvQywgbmV2ZXIgZm9yIHg4NiBvciBt
-aXBzLg0KPiA+IFdlIG5ldmVyIGNvbXBpbGUgdGhlIGRyaXZlciBmb3IgeDg2IG9yIG1pcHMgbWFj
-aGluZS4NCj4gDQo+IFlvdSBkb24ndCwgYnV0IHRoZSBMaW51eCBjb21tdW5pdHkgZG9lcyBidWls
-ZCBmb3IgdGhvc2UgYXJjaGl0ZWN0dXJlcy4gTW9zdA0KPiBwZW9wbGUgZG8gdHJlZSB3aWRlIHJl
-ZmFjdG9yaW5nIHdvcmsgdXNpbmcgeDg2LiBUcmVlIHdpZGUgY2xlYW51cHMgdXNpbmcgeDg2LA0K
-PiBldGMuIEFueSBjaGFuZ2VzIGxpa2UgdGhhdCBjb3VsZCB0b3VjaCB5b3VyIGRyaXZlci4gVGhl
-IGhhcmRlciBpcyBpdCB0byBidWlsZCwgdGhlDQo+IGxlc3MgYnVpbGQgdGVzdGluZyBpdCB3aWxs
-IGdldCwgYW5kIHRyZWUgd2lkZSBjaGFuZ2VzIHdoaWNoIGJyZWFrIGl0IGFyZSBsZXNzIGxpa2Vs
-eQ0KPiB0byBnZXQgbm90aWNlZC4gIFNvIHlvdSByZWFsbHkgZG8gd2FudCBpdCB0byBjb21waWxl
-IGNsZWFubHkgZm9yIGFsbA0KPiBhcmNoaXRlY3R1cmVzLiBJZiBpdCBkb2VzIG5vdCwgaXQgbm9y
-bWFsbHkgYWN0dWFsbHkgbWVhbnMgeW91IGFyZSBkb2luZw0KPiBzb21ldGhpbmcgd3JvbmcsIHNv
-bWV0aGluZyB5b3UgbmVlZCB0byBmaXggYW55d2F5LiBTbyBwbGVhc2UgZG8gYnVpbGQgaXQgZm9y
-DQo+IHg4NiBhbmQgbWFrZSBzdXJlIGl0IGJ1aWxkcyBjbGVhbmx5Lg0KPiANCj4gCSAgQW5kcmV3
-DQoNCk9rLCBJIHVuZGVyc3RhbmQuDQpJJ2xsIGFkZCBDT01QSUxFX1RFU1QgYW5kIGNvbXBpbGUg
-ZHJpdmVyIGZvciB4ODYuDQoNClRoYW5rcywNCg==
+On Thu, Nov 4, 2021 at 7:02 AM David Miller <davem@davemloft.net> wrote:
+> From: Paul Moore <paul@paul-moore.com>
+> Date: Wed, 3 Nov 2021 23:17:00 -0400
+> >
+> > While I understand you did not intend to mislead DaveM and the netdev
+> > folks with the v2 patchset, your failure to properly manage the
+> > patchset's metadata *did* mislead them and as a result a patchset with
+> > serious concerns from the SELinux side was merged.  You need to revert
+> > this patchset while we continue to discuss, develop, and verify a
+> > proper fix that we can all agree on.  If you decide not to revert this
+> > patchset I will work with DaveM to do it for you, and that is not
+> > something any of us wants.
+>
+> I would prefer a follow-up rathewr than a revert at this point.
+>
+> Please work with Xin to come up with a fix that works for both of you.
+
+We are working with Xin (see this thread), but you'll notice there is
+still not a clear consensus on the best path forward.  The only thing
+I am clear on at this point is that the current code in linux-next is
+*not* something we want from a SELinux perspective.  I don't like
+leaving known bad code like this in linux-next for more than a day or
+two so please revert it, now.  If your policy is to merge substantive
+non-network subsystem changes into the network tree without the proper
+ACKs from the other subsystem maintainers, it would seem reasonable to
+also be willing to revert those patches when the affected subsystems
+request it.
+
+I understand that if a patchset is being ignored you might feel the
+need to act without an explicit ACK, but this particular patchset
+wasn't even a day old before you merged into the netdev tree.  Not to
+mention that the patchset was posted during the second day of the
+merge window, a time when many maintainers are busy testing code,
+sending pull requests to Linus, and generally managing merge window
+fallout.
+
+-- 
+paul moore
+www.paul-moore.com
