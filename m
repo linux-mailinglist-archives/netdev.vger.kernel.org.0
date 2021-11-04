@@ -2,329 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 589C3445B7A
-	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 22:04:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 714F7445B8B
+	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 22:11:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232161AbhKDVGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Nov 2021 17:06:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49048 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232384AbhKDVGr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 17:06:47 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1504FC061714;
-        Thu,  4 Nov 2021 14:04:09 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id o14so9365614plg.5;
-        Thu, 04 Nov 2021 14:04:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:references:cc:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=h6d4KYsPCgkIM6hYRgfbMryU9W2jxjbMCBBkti0NQMU=;
-        b=Hi6BhicE6Z/jncVvvyENZV+cauK04GXs+PLfnr35IavphSKv3qLp+Zu/y06/TV5uhQ
-         lq70z2a/RQwpM1UsCUINPENNzP0m1IcQGwdVKu86DKcYZVwbcTHJIWErTYmFuV3BGlgM
-         PRsNh9L88j4vqMaVbzIpaTFoIQ4MUPYUyOtxmCEYS7vnYI2Wu7JgyXmpuCRCT4zudAoZ
-         XarkZ/fIWzhQXqwqUXQdC2LMq6EDAt5G+n3Xx5VEQ2dQPUqCef4+/70csykGkgl/pHhb
-         o8TCriZOcFv/jyeprszOh6n4NtCNmAOD9z+Fk3PoYryXI843vOW+OOg67U6nNqueyXGE
-         tivA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=h6d4KYsPCgkIM6hYRgfbMryU9W2jxjbMCBBkti0NQMU=;
-        b=0jAlkEJZMTXop5FSamuJi9Asd7PP9Q6Rvm8RX0LFemxSxNi5EpIe3pBXiyCHKpU3dO
-         8/b1ocoQW7Gf3nz2ztCYkx0TBOrwTEv/EXFMBgJ2LJtAnQSZl4UM+wF/tQRuc4e7JcK6
-         AGwoQZtMr52E5eFbTFBSFu9xxWBByhPhG1dkMVhFjjxyFggtYgXqVkmmvoTahWfo2uR7
-         U1xMNSOtVTHHJvPwkXIroAg+f57NFNWRCt/uSxS8RGVbfpis2B3YWHPHLbL4KoJ9UCAL
-         t+ppOtstQzAoqiNli1JRkHhH9crPrSOJ6epvyDr2fVMscUvwbwH0yVkujcuz43J9VbJe
-         9EDg==
-X-Gm-Message-State: AOAM532NsQiykF/Z3hUhVNStJ9O/7dA+HuTI+wdMBAfcUkrkqUZVPLdu
-        paw7IWLWCWbMz9DksDAsOu7Fk1WD5JM=
-X-Google-Smtp-Source: ABdhPJy4VOP0ZhhpiVliYHss6TPQzcCZDhJY2NQqlZR5S6XdWeItB9SV8CR2DoLPgm76bxM5Cg+ELA==
-X-Received: by 2002:a17:90a:1a4c:: with SMTP id 12mr25047488pjl.175.1636059848111;
-        Thu, 04 Nov 2021 14:04:08 -0700 (PDT)
-Received: from [10.1.1.26] (222-155-4-20-adsl.sparkbb.co.nz. [222.155.4.20])
-        by smtp.gmail.com with ESMTPSA id om8sm25001pjb.12.2021.11.04.14.04.04
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 04 Nov 2021 14:04:07 -0700 (PDT)
-Subject: Re: [PATCH v8 3/3] net/8390: apne.c - add 100 Mbit support to apne.c
- driver
-To:     Denis Kirjanov <dkirjanov@suse.de>, linux-m68k@vger.kernel.org,
-        geert@linux-m68k.org
-References: <20211104061102.30899-1-schmitzmic@gmail.com>
- <20211104061102.30899-4-schmitzmic@gmail.com>
- <d1b941f8-de6a-4379-aa20-97274088e6df@suse.de>
-Cc:     alex@kazik.de, netdev@vger.kernel.org
-From:   Michael Schmitz <schmitzmic@gmail.com>
-Message-ID: <843806b9-7a1b-1389-c3f4-b0e01facd2cf@gmail.com>
-Date:   Fri, 5 Nov 2021 10:04:02 +1300
-User-Agent: Mozilla/5.0 (X11; Linux ppc64; rv:45.0) Gecko/20100101
- Thunderbird/45.8.0
+        id S232179AbhKDVNz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Nov 2021 17:13:55 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:41770 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S230162AbhKDVNy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 17:13:54 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.1.2/8.16.1.2) with SMTP id 1A4GBTrv004180;
+        Thu, 4 Nov 2021 14:11:15 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : mime-version; s=facebook;
+ bh=zTQwCCF/TydqlKAjfLxRd69FX0SXskmBWJ3MopMIHvU=;
+ b=lrFUlR6daChHbnXCm5kY/gspTjBdLKEu1EQz24hjhratWdkKZ4NHl9TullEGO8KUwemA
+ wSfI9aR72v8jHtx7ByKpC3YvEnSQPSDchRlNK0H5TW4Ae4mexzbTfaRTcGsbxPK6xqew
+ vksjJAPxIv/sdRhZ/1aWGw4ImuyxquCt8EY= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 3c45wqfkdm-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 04 Nov 2021 14:11:15 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.14; Thu, 4 Nov 2021 14:11:14 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=igJVb4qbvQ3mrxom4PHhLOLFB5mHnRVqWM8SGC6u1sYyv2/QeXrMxkkfXpHNDVIbeRBdefFc10U2BOKn0DM5UMs9uRXf/qEQJg9cPkZu1+1524FIjofbyak8Ms9bAWHZJmLkvi+FA0UEMPqoQKOxWKOKO8GgIg3nzguP67yg45RKI7A1xJWYiUAEDIYb0ZDeN8kM7/cXak7i0irjS2TJaRkyc92OV6Ap7pjO6WUS7oI7kyhFr4n1T52R5L0a+xR6tpzXsjPCI2sZYAGnGZof9OB+TLgIQDU8hhKMVixVvU+MRsgx3Vn6VW8oa+rgOAL0GWeoAWkP/AdZgPkLfUtlbA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yLukex2qob3C1e+oav/m+cYwB+oRZaEgKVjAhurGSTA=;
+ b=K4DPjhgMn9ONpnQXvx+ifSLsAyROhsnHaFoP4UmfdlFMppceaxf9Nq2iwjwJ+R+ISQwUxmTb7Qh0SQnDLECqFdyBRxLBlmLOXC8XaUXZPQiwoMqNVC7qn+BbmzcmyuHCkw04iAUQVXD2e/fFokhzdYMokWxOVJELaw/9mPIhL+Uyw/VH1wYcBKH2A9j0rf2chAUebvILJI0YZWBcHMmghrh02ip/bD7toR3yv/jIL3qpM7wAo8l/hLSHJfeFaPg7st/t/Y8O78HdiK/f/njwhf5Ydze9TZsYkk2BBRzYWsEw/VmbQ5UleTbvDNktbO2XqsIQKRTYs6DnG0eftlg/NQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com (2603:10b6:806:1dc::10)
+ by SA1PR15MB5258.namprd15.prod.outlook.com (2603:10b6:806:22a::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.10; Thu, 4 Nov
+ 2021 21:11:13 +0000
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::30d5:5bb:f0af:d953]) by SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::30d5:5bb:f0af:d953%9]) with mapi id 15.20.4669.013; Thu, 4 Nov 2021
+ 21:11:13 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     kernel test robot <lkp@intel.com>
+CC:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>
+Subject: Re: [PATCH v2 bpf-next 1/2] bpf: introduce helper bpf_find_vma
+Thread-Topic: [PATCH v2 bpf-next 1/2] bpf: introduce helper bpf_find_vma
+Thread-Index: AQHX0UmwYDsL5du11kO3TuvqOZ+VF6vz1O4AgAAJeIA=
+Date:   Thu, 4 Nov 2021 21:11:13 +0000
+Message-ID: <60072279-1775-4359-8E65-C2956D4BE8BE@fb.com>
+References: <20211104070016.2463668-2-songliubraving@fb.com>
+ <202111050424.dT5wiJAZ-lkp@intel.com>
+In-Reply-To: <202111050424.dT5wiJAZ-lkp@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3654.120.0.1.13)
+authentication-results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=fb.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e8f124a8-b314-4f55-7821-08d99fd7a1db
+x-ms-traffictypediagnostic: SA1PR15MB5258:
+x-microsoft-antispam-prvs: <SA1PR15MB525830D17232E7A0E840462BB38D9@SA1PR15MB5258.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:773;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: E3PFmj4eLGHqM3dAik40YupdtX2/z0Qcv93QAnvTKPZX5CYPhevzyzowUhvPtHSIMB8Q81QmNX+plIAEQ1y9Rded7hrBHonANeOXC57AF0bFJEqCIuFONs8GXATfhMGe2I+qMbVe9zc75CEj+22+WONVbyaO6Bz/z9giHXh2zuXENaLZGiueva9RD/c3cWIBvQaZaTC8JtONH3bhtJb6FOSU+bNbwrNhJsSxxYyEgMHRwPCTe0blE/Eigg6yaF/m+cZKmlhfIG43dK0n0yCHgQ1FzssGRJlCj3pBssz1vmFVS0RYn2KwvzwTl9FgSVyXx0xJyhqBC0AxdDqzUB+neQF9N8EE0r2rwkTiTPSI8BUo5AX8+8M9/LT/jqJ1u6lIuhhQKZjjPQiJdn/cOGtFT8IescTar+sFbio9O8XzcVY7bI0IBGfDJsfuV1uLckr+5SwX0sDB7oEp0F7l5ogDOJ78kHkyolVEW3ZPN23Obs1HG2iaMc8m7Sm3LMsmWYjkpa2z2wfPy/ClT0f3HNOUoat5tsyOR4gZPH+d9PnGjAK2ZRHN/EaJTXp/nincpWavIAt6ZwAOl6Zt33i7RpYjYKnsv+qzCgYmRnvw7QaUtOXtVxWy+Ktawqt0kvO/34p0oc+bjv4Ym8qVO6f0Sbg4IhR6AcqpJTjnZbjmCKcdlrpDLFegBDMudFmha0j9Vys61wUkNt0iaSYVt8Nw1iFLkYKqSDJrQ/QTsv+g1YKlBn8FhkNWEL5WTHfzIZQm59oE/Uf6v0J0CG4ryC+xY3/24iBcWh3fJzpPYaE/ekLpnphofJDMvlar9qV+W22HCJbkxsjdmQkGJYkYvYCXz3XSmtuT1074dmp3usCNMPueQDe/hDpD4G7Pc7EwZZFnENpP7acyKh1idhpFnb3jXFeKnA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5109.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(64756008)(54906003)(186003)(66556008)(66446008)(8676002)(66946007)(8936002)(76116006)(86362001)(71200400001)(122000001)(6506007)(4326008)(33656002)(6512007)(508600001)(38070700005)(966005)(5660300002)(2906002)(66476007)(83380400001)(53546011)(36756003)(91956017)(6916009)(38100700002)(2616005)(316002)(6486002)(45980500001)(1758585002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?chvkTwZPPYElD2nyQF3Q02y2iyyrwF/XDXQ5wjmkoHZsBnhzCPw53UrKQ32+?=
+ =?us-ascii?Q?4NMb5rtLJAsygfh6fqxoKk/613h+W3APj0mcU/e4AH+9dZUjywDh09zZQ5Lq?=
+ =?us-ascii?Q?pzy13dBgALmmuTmhjNkKI8bTdpcz9wyJ/EwqUY+oiaianRjqaGbpeug6/tX4?=
+ =?us-ascii?Q?V4jpc9GMoFeuVMnK1mBM7ykOFkjrCHMNQn79T3d0l0P3Rjyp6xtoDgYMQ3Ma?=
+ =?us-ascii?Q?08Bz7q80V/tdFrpiMO99jHCNQsZ997MSNrpA3/Ose98c9M2l2DgkLpTrvtIj?=
+ =?us-ascii?Q?ae+IX0lOar647tVtuTAoPg4flRk+cfithWFwqU9g9PTpJDGbtKceRZnY5f23?=
+ =?us-ascii?Q?WwnT3K0LAKjU2MfjW9nH94eiP3Kk2VyEhWx38d40jxQZJYHxsR81lY/g9gpB?=
+ =?us-ascii?Q?WZr1wzhZ4ZgXJToDqCOzTzVHYX24q9a4jwrftcyJ9zcSaZTu26uKhc3O4/78?=
+ =?us-ascii?Q?O2zY1cdU0yWxchQPNuYNWhlKL5dgVIaNPNjG31omEl9NOo642XzBnk+++ReU?=
+ =?us-ascii?Q?E3NLLLsOCZT48Kl7P9ihIK2zp4YH+n/ydl3bvZ1jGcRp/Gw7Il5xuoEv+j3r?=
+ =?us-ascii?Q?vCSBcFb0iw8BzFq2gVFUQzdhqUTcnO5zCGztMxdqQN6CwPG4Unyyk7tpTll+?=
+ =?us-ascii?Q?2sSnoPOW4Gfca7eLKHumkOsp0lmxG686s15gv+4AQfNVei0ccgiBlizGkN45?=
+ =?us-ascii?Q?ZbfyFMqxSmaEOiC4r79IaRlu17M/QjWSm2uAAtLqCBbd00IIxuQ5YTWmwEKC?=
+ =?us-ascii?Q?Ue8Tg6OkQNPyvaoopZm8jJxnR4CKPMZlXiofxAHy8MBAgn2SWPYKX/aPAC2G?=
+ =?us-ascii?Q?C+ejTrTrqVMPkz4zj++iLnO0SW0SkmbfxRmLiEwG2eIieRC6nA2p4BLc0pL3?=
+ =?us-ascii?Q?cCP4YU5zSLoRRpFt9cdHRWI7lnotR6wvTHXLWCbV5e7bB+zDCJliHFGPDJil?=
+ =?us-ascii?Q?tWq4+hHWjEmNCUTckxgrMWJ1c6d6mfs7s2LLJ5y8DYuwsYyQCJ4990UrkEts?=
+ =?us-ascii?Q?I+dYLn9b4U7vqLoWVoCfnrudAqHZYD9v6rEW8aL2rjNQOcY0doWaYiCmaht4?=
+ =?us-ascii?Q?TJxgdttut8XpQh2RwHXMyOjqJI7Ic0RYqeF31usmSFsnUMp1muJ5XXot1nCO?=
+ =?us-ascii?Q?1wWoWgAF9yoBG2ij+H5SMurQ+11mQzyl8I8pl0v7C8q8j9ZpVsOXKwcspSf4?=
+ =?us-ascii?Q?tXQ0JSX1ZCI7kIlZwJHYK6YSiFp69q3jm58fCKx48ix7niw2KFz2EWslPtTM?=
+ =?us-ascii?Q?+oTtVUd0GABkPuGzdolyQfPp8owCvbVVr4/RX0XCdJJ+/dEbbamerR1pMseg?=
+ =?us-ascii?Q?7JqCVIamOR5/bhJarGkBIRdawsxYP37fkS8Jrsl5MAVRpCyLEb1IyvBE9Pj2?=
+ =?us-ascii?Q?8dpRbmRzbnuJ1fOuHXigZVhmA8kMn4ZXEpzD1qJLQcjS5ZJ1O0c/XdZbRuu+?=
+ =?us-ascii?Q?0993Dappd2pt2FY/+EGg3nLI+APYgUxl5guLRaJjtv1tVx5q3kZ18vI3CVf1?=
+ =?us-ascii?Q?AloJOMpb8w9UVhH1c84dUjnHHrQHk5UQqg+lpbRkyEqDXi1GORsA1nVavKEf?=
+ =?us-ascii?Q?KVfSvp2+nbXBIoGWnUSUIspTkWfUBY11kWsKcXdQp8cnB97YHsFHOGAQ0nqA?=
+ =?us-ascii?Q?LWW+L6Mi3Kp5UWuBo1ZuGUDFTxEOlsUKTVzmfJI7JwfzOR5bXwTM4Rr4PklA?=
+ =?us-ascii?Q?8r6lSA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <E3D8058BF0BF5C44942F8F842F89D7EC@namprd15.prod.outlook.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5109.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e8f124a8-b314-4f55-7821-08d99fd7a1db
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Nov 2021 21:11:13.1268
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: N2Cy2UAObBUjq147O84J1lr7pKnT1v/Z9UERo9jbuYZlBNy57eiIfFCa1gunjOgwGoly8tV6Qo5vQZNDKy3X7w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB5258
+X-OriginatorOrg: fb.com
+X-Proofpoint-GUID: PLg47qrhyNDJ0y1SMTNiqvcQBmJbjRAp
+X-Proofpoint-ORIG-GUID: PLg47qrhyNDJ0y1SMTNiqvcQBmJbjRAp
+X-Proofpoint-UnRewURL: 2 URL's were un-rewritten
 MIME-Version: 1.0
-In-Reply-To: <d1b941f8-de6a-4379-aa20-97274088e6df@suse.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-11-04_07,2021-11-03_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ bulkscore=0 mlxscore=0 phishscore=0 suspectscore=0 priorityscore=1501
+ clxscore=1015 malwarescore=0 spamscore=0 impostorscore=0 adultscore=0
+ mlxlogscore=797 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2111040081
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Denis,
 
-On 05/11/21 00:19, Denis Kirjanov wrote:
->
->
-> 11/4/21 9:10 AM, Michael Schmitz пишет:
->> Add module parameter, IO mode autoprobe and PCMCIA reset code
->> required to support 100 Mbit PCMCIA ethernet cards on Amiga.
->>
->> Select core PCMCIA support modules for use by APNE driver.
->>
->> 10 Mbit and 100 Mbit mode are supported by the same module.
->> Use the core PCMCIA cftable parser to detect 16 bit cards,
->> and automatically enable 16 bit ISA IO access for those cards
->> by changing isa_type at runtime. Code to reset the PCMCIA
->> hardware required for 16 bit cards is also added to the driver
->> probe.
->>
->> An optional module parameter switches Amiga ISA IO accessors
->> to 8 or 16 bit access in case autoprobe fails.
->>
->> Patch modified after patch "[PATCH RFC net-next] Amiga PCMCIA
->> 100 MBit card support" submitted to netdev 2018/09/16 by Alex
->> Kazik <alex@kazik.de>.
->>
->> CC: netdev@vger.kernel.org
->> Link:
->> https://lore.kernel.org/r/1622958877-2026-1-git-send-email-schmitzmic@gmail.com
->>
->> Tested-by: Alex Kazik <alex@kazik.de>
->> Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
->>
->> --
->>
->> Changes from v7:
->>
->> - move 'select' for PCCARD and PCMCIA to 8390 Kconfig, so
->>    Amiga pcmcia.c may remain built-in while core PCMCIA
->>    code can be built as modules if APNE driver is a module.
->> - move 16 bit mode autoprobe code from amiga/pcmcia.c to this
->>    driver, to allow the core PCMCIA code we depend on to be
->>    built as modules.
->> - change module parameter type from bool to int to allow for
->>    tri-state semantics (autoprobe, 8 bit, 16 bit).
->>
->> Changes from v6:
->>
->> - use 16 bit mode autoprobe based on PCMCIA config table data
->>
->> Changes from v5:
->>
->> - move autoprobe code to new patch in this series
->>
->> Geert Uytterhoeven:
->> - reword Kconfig help text
->>
->> Finn Thain:
->> - style fixes, use msec_to_jiffies in timeout calc
->>
->> Alex Kazik:
->> - revert module parameter permission change
->>
->> Changes from v4:
->>
->> Geert Uytterhoeven:
->> - remove APNE100MBIT config option, always include 16 bit support
->> - change module parameter permissions
->> - try autoprobing for 16 bit mode early on in device probe
->>
->> Changes from v3:
->>
->> - change module parameter name to match Kconfig help
->>
->> Finn Thain:
->> - fix coding style in new card reset code block
->> - allow reset of isa_type by module parameter
->>
->> Changes from v1:
->>
->> - fix module parameter name in Kconfig help text
->>
->> Alex Kazik:
->> - change module parameter type to bool, fix module parameter
->>    permission
->>
->> Changes from RFC:
->>
->> Geert Uytterhoeven:
->> - change APNE_100MBIT to depend on APNE
->> - change '---help---' to 'help' (former no longer supported)
->> - fix whitespace errors
->> - fix module_param_named() arg count
->> - protect all added code by #ifdef CONFIG_APNE_100MBIT
->>
->> change module parameter - 0 for 8 bit, 1 for 16 bit, else autoprobe
->> ---
->>   drivers/net/ethernet/8390/Kconfig |  9 ++++
->>   drivers/net/ethernet/8390/apne.c  | 69 +++++++++++++++++++++++++++++++
->>   2 files changed, 78 insertions(+)
->>
->> diff --git a/drivers/net/ethernet/8390/Kconfig
->> b/drivers/net/ethernet/8390/Kconfig
->> index a4130e643342..b22c3cf96560 100644
->> --- a/drivers/net/ethernet/8390/Kconfig
->> +++ b/drivers/net/ethernet/8390/Kconfig
->> @@ -136,6 +136,8 @@ config NE2K_PCI
->>   config APNE
->>       tristate "PCMCIA NE2000 support"
->>       depends on AMIGA_PCMCIA
->> +    select PCCARD
->> +    select PCMCIA
->>       select CRC32
->>       help
->>         If you have a PCMCIA NE2000 compatible adapter, say Y.
->> Otherwise,
->> @@ -144,6 +146,13 @@ config APNE
->>         To compile this driver as a module, choose M here: the module
->>         will be called apne.
->>   +      The driver also supports 10/100Mbit cards (e.g. Netgear FA411,
->> +      CNet Singlepoint). To activate 100 Mbit support, use the kernel
->> +      option apne.100mbit=1 (builtin) at boot time, or the apne.100mbit
->> +      module parameter. The driver will attempt to autoprobe 100 Mbit
->> +      mode, so this option may not be necessary. Use apne.100mbit=0
->> +      should autoprobe mis-detect a 100 Mbit card.
->> +
->>   config PCMCIA_PCNET
->>       tristate "NE2000 compatible PCMCIA support"
->>       depends on PCMCIA
->> diff --git a/drivers/net/ethernet/8390/apne.c
->> b/drivers/net/ethernet/8390/apne.c
->> index da1ae37a9d73..115c008a129c 100644
->> --- a/drivers/net/ethernet/8390/apne.c
->> +++ b/drivers/net/ethernet/8390/apne.c
->> @@ -38,6 +38,7 @@
->>   #include <linux/etherdevice.h>
->>   #include <linux/interrupt.h>
->>   #include <linux/jiffies.h>
->> +#include <pcmcia/cistpl.h>
->>     #include <asm/io.h>
->>   #include <asm/setup.h>
->> @@ -87,6 +88,7 @@ static void apne_block_output(struct net_device
->> *dev, const int count,
->>   static irqreturn_t apne_interrupt(int irq, void *dev_id);
->>     static int init_pcmcia(void);
->> +static int pcmcia_is_16bit(void);
->>     /* IO base address used for nic */
->>   @@ -119,6 +121,10 @@ static u32 apne_msg_enable;
->>   module_param_named(msg_enable, apne_msg_enable, uint, 0444);
->>   MODULE_PARM_DESC(msg_enable, "Debug message level (see
->> linux/netdevice.h for bitmap)");
->>   +static u32 apne_100_mbit = -1;
->> +module_param_named(100_mbit, apne_100_mbit, uint, 0444);
->> +MODULE_PARM_DESC(100_mbit, "Enable 100 Mbit support");
->
-> Can we try to detect 100mbit support by default on load and make a
-> configuration option in sysfs?
 
-100mbit support _is_ detected by default on load (see code below). The 
-module option is only there as an override.
+> On Nov 4, 2021, at 1:37 PM, kernel test robot <lkp@intel.com> wrote:
+> 
+> Hi Song,
+> 
+> I love your patch! Yet something to improve:
+> 
+> [auto build test ERROR on bpf-next/master]
+> 
+> url:    https://github.com/0day-ci/linux/commits/Song-Liu/introduce-bpf_find_vma/20211104-150210
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+> config: riscv-randconfig-r034-20211104 (attached as .config)
+> compiler: riscv64-linux-gcc (GCC) 11.2.0
+> reproduce (this is a W=1 build):
+>        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross  -O ~/bin/make.cross
+>        chmod +x ~/bin/make.cross
+>        # https://github.com/0day-ci/linux/commit/e219efba8d04dede08b1d87fa1e8c5c01180caaf
+>        git remote add linux-review https://github.com/0day-ci/linux
+>        git fetch --no-tags linux-review Song-Liu/introduce-bpf_find_vma/20211104-150210
+>        git checkout e219efba8d04dede08b1d87fa1e8c5c01180caaf
+>        # save the attached .config to linux build tree
+>        mkdir build_dir
+>        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+>   riscv64-linux-ld: kernel/bpf/task_iter.o: in function `bpf_find_vma':
+>   task_iter.c:(.text+0x3dc): undefined reference to `mmap_unlock_work'
+>>> riscv64-linux-ld: task_iter.c:(.text+0x3e0): undefined reference to `mmap_unlock_work'
+>   riscv64-linux-ld: task_iter.c:(.text+0x400): undefined reference to `mmap_unlock_work'
 
-PCMCIA 100mbit support is equivalent to 16 bit IO supported by the card. 
-You might argue a sysfs option belongs in the built-in Amiga PCMCIA 
-support code, instead of the card driver even though this is about a 
-card feature. We had discussed this earlier and gone for the module 
-parameter. I'll discuss this with Geert again.
+Sigh, I didn't see this before sending v3. Will fix in v4. 
 
-Cheers,
+> 
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org 
+> <.config.gz>
 
-	Michael
-
->
->> +
->>   static struct net_device * __init apne_probe(void)
->>   {
->>       struct net_device *dev;
->> @@ -140,6 +146,13 @@ static struct net_device * __init apne_probe(void)
->>         pr_info("Looking for PCMCIA ethernet card : ");
->>   +    if (apne_100_mbit == 1)
->> +        isa_type = ISA_TYPE_AG16;
->> +    else if (apne_100_mbit == 0)
->> +        isa_type = ISA_TYPE_AG;
->> +    else
->> +        pr_cont(" (autoprobing 16 bit mode) ");
->> +
->>       /* check if a card is inserted */
->>       if (!(PCMCIA_INSERTED)) {
->>           pr_cont("NO PCMCIA card inserted\n");
->> @@ -167,6 +180,14 @@ static struct net_device * __init apne_probe(void)
->>         pr_cont("ethernet PCMCIA card inserted\n");
->>   +#if IS_ENABLED(CONFIG_PCMCIA)
->> +    if (apne_100_mbit < 0 && pcmcia_is_16bit()) {
->> +        pr_info("16-bit PCMCIA card detected!\n");
->> +        isa_type = ISA_TYPE_AG16;
->> +        apne_100_mbit = 1;
->> +    }
->> +#endif
->> +
->>       if (!init_pcmcia()) {
->>           /* XXX: shouldn't we re-enable irq here? */
->>           free_netdev(dev);
->> @@ -583,6 +604,16 @@ static int init_pcmcia(void)
->>   #endif
->>       u_long offset;
->>   +    /* reset card (idea taken from CardReset by Artur Pogoda) */
->> +    if (isa_type == ISA_TYPE_AG16) {
->> +        u_char tmp = gayle.intreq;
->> +
->> +        gayle.intreq = 0xff;
->> +        mdelay(1);
->> +        gayle.intreq = tmp;
->> +        mdelay(300);
->> +    }
->> +
->>       pcmcia_reset();
->>       pcmcia_program_voltage(PCMCIA_0V);
->>       pcmcia_access_speed(PCMCIA_SPEED_250NS);
->> @@ -616,4 +647,42 @@ static int init_pcmcia(void)
->>       return 1;
->>   }
->>   +#if IS_ENABLED(CONFIG_PCMCIA)
->> +static int pcmcia_is_16bit(void)
->> +{
->> +    u_char cftuple[258];
->> +    int cftuple_len;
->> +    tuple_t cftable_tuple;
->> +    cistpl_cftable_entry_t cftable_entry;
->> +
->> +    cftuple_len = pcmcia_copy_tuple(CISTPL_CFTABLE_ENTRY, cftuple, 256);
->> +    if (cftuple_len < 3)
->> +        return 0;
->> +#ifdef DEBUG
->> +    else
->> +        print_hex_dump(KERN_WARNING, "cftable: ", DUMP_PREFIX_NONE, 8,
->> +                   sizeof(char), cftuple, cftuple_len, false);
->> +#endif
->> +
->> +    /* build tuple_t struct and call pcmcia_parse_tuple */
->> +    cftable_tuple.DesiredTuple = CISTPL_CFTABLE_ENTRY;
->> +    cftable_tuple.TupleCode = CISTPL_CFTABLE_ENTRY;
->> +    cftable_tuple.TupleData = &cftuple[2];
->> +    cftable_tuple.TupleDataLen = cftuple_len - 2;
->> +    cftable_tuple.TupleDataMax = cftuple_len - 2;
->> +
->> +    if (pcmcia_parse_tuple(&cftable_tuple, (cisparse_t
->> *)&cftable_entry))
->> +        return 0;
->> +
->> +#ifdef DEBUG
->> +    pr_info("IO flags: %x\n", cftable_entry.io.flags);
->> +#endif
->> +
->> +    if (cftable_entry.io.flags & CISTPL_IO_16BIT)
->> +        return 1;
->> +
->> +    return 0;
->> +}
->> +#endif
->> +
->>   MODULE_LICENSE("GPL");
->>
