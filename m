@@ -2,363 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE239444F6B
-	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 08:00:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F7EB44503B
+	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 09:27:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230361AbhKDHDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Nov 2021 03:03:11 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:24400 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230306AbhKDHDF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 03:03:05 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1A422xpW005419
-        for <netdev@vger.kernel.org>; Thu, 4 Nov 2021 00:00:28 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=ncmUorEmzmbEO1AKZEZElGYsRqnoHrpi83tdM/o96ck=;
- b=JdJCyWddX/4fS9FPYdYUo+0EmsGO5ZoqegshHFy8bUAHTemlz89Af3UAh+kBy6rOjBDI
- 3P5uiLsstAXBBbpdowMa4LjFyz4S8QjU7UvgngxwRBF1OqWeMNWOJkaCJ9OSiFhey1Va
- 3+Mqrakv9i+K33RXuwLzk5vR22P4JtNYoK4= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3c42t0u1c8-7
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 04 Nov 2021 00:00:28 -0700
-Received: from intmgw001.38.frc1.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.14; Thu, 4 Nov 2021 00:00:26 -0700
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id 94E9F1DC16578; Thu,  4 Nov 2021 00:00:21 -0700 (PDT)
-From:   Song Liu <songliubraving@fb.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kernel-team@fb.com>, <kpsingh@kernel.org>,
-        Song Liu <songliubraving@fb.com>
-Subject: [PATCH v2 bpf-next 2/2] selftests/bpf: add tests for bpf_find_vma
-Date:   Thu, 4 Nov 2021 00:00:16 -0700
-Message-ID: <20211104070016.2463668-3-songliubraving@fb.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211104070016.2463668-1-songliubraving@fb.com>
-References: <20211104070016.2463668-1-songliubraving@fb.com>
+        id S230365AbhKDIaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Nov 2021 04:30:10 -0400
+Received: from mga02.intel.com ([134.134.136.20]:57728 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230202AbhKDIaJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Nov 2021 04:30:09 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10157"; a="218857384"
+X-IronPort-AV: E=Sophos;i="5.87,208,1631602800"; 
+   d="scan'208";a="218857384"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2021 01:27:31 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,208,1631602800"; 
+   d="scan'208";a="501438354"
+Received: from unknown (HELO localhost.igk.intel.com) ([10.102.22.231])
+  by orsmga008.jf.intel.com with ESMTP; 04 Nov 2021 01:27:28 -0700
+From:   Maciej Machnikowski <maciej.machnikowski@intel.com>
+To:     maciej.machnikowski@intel.com, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org
+Cc:     richardcochran@gmail.com, abyagowi@fb.com,
+        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kselftest@vger.kernel.org, idosch@idosch.org,
+        mkubecek@suse.cz, saeed@kernel.org, michael.chan@broadcom.com
+Subject: [PATCH net-next 0/6] Add RTNL interface for SyncE
+Date:   Thu,  4 Nov 2021 09:12:25 +0100
+Message-Id: <20211104081231.1982753-1-maciej.machnikowski@intel.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-FB-Source: Intern
-X-Proofpoint-ORIG-GUID: kDUKVRl0qqBSyMb6Il2HLYeWu4HTSTht
-X-Proofpoint-GUID: kDUKVRl0qqBSyMb6Il2HLYeWu4HTSTht
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-11-04_01,2021-11-03_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- spamscore=0 adultscore=0 lowpriorityscore=0 clxscore=1015 bulkscore=0
- impostorscore=0 suspectscore=0 mlxlogscore=999 phishscore=0 mlxscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2111040033
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add tests for bpf_find_vma in perf_event program and kprobe program. The
-perf_event program is triggered from NMI context, so the second call of
-bpf_find_vma() will return -EBUSY (irq_work busy). The kprobe program,
-on the other hand, does not have this constraint.
+Synchronous Ethernet networks use a physical layer clock to syntonize
+the frequency across different network elements.
 
-Also add test for illegal writes to task or vma from the callback
-function. The verifier should reject both cases.
+Basic SyncE node defined in the ITU-T G.8264 consist of an Ethernet
+Equipment Clock (EEC) and have the ability to recover synchronization
+from the synchronization inputs - either traffic interfaces or external
+frequency sources.
+The EEC can synchronize its frequency (syntonize) to any of those sources.
+It is also able to select synchronization source through priority tables
+and synchronization status messaging. It also provides neccessary
+filtering and holdover capabilities
 
-Signed-off-by: Song Liu <songliubraving@fb.com>
----
- .../selftests/bpf/prog_tests/find_vma.c       | 115 ++++++++++++++++++
- tools/testing/selftests/bpf/progs/find_vma.c  |  70 +++++++++++
- .../selftests/bpf/progs/find_vma_fail1.c      |  30 +++++
- .../selftests/bpf/progs/find_vma_fail2.c      |  30 +++++
- 4 files changed, 245 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/find_vma.c
- create mode 100644 tools/testing/selftests/bpf/progs/find_vma.c
- create mode 100644 tools/testing/selftests/bpf/progs/find_vma_fail1.c
- create mode 100644 tools/testing/selftests/bpf/progs/find_vma_fail2.c
+This patch series introduces basic interface for reading the Ethernet
+Equipment Clock (EEC) state on a SyncE capable device. This state gives
+information about the source of the syntonization signal (ether my port,
+or any external one) and the state of EEC. This interface is required\
+to implement Synchronization Status Messaging on upper layers.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/find_vma.c b/tools/te=
-sting/selftests/bpf/prog_tests/find_vma.c
-new file mode 100644
-index 0000000000000..3955a92d4c152
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/find_vma.c
-@@ -0,0 +1,115 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+#include <test_progs.h>
-+#include <sys/types.h>
-+#include <unistd.h>
-+#include "find_vma.skel.h"
-+#include "find_vma_fail1.skel.h"
-+#include "find_vma_fail2.skel.h"
-+
-+static void test_and_reset_skel(struct find_vma *skel, int expected_find=
-_zero_ret)
-+{
-+	ASSERT_EQ(skel->bss->found_vm_exec, 1, "found_vm_exec");
-+	ASSERT_EQ(skel->data->find_addr_ret, 0, "find_addr_ret");
-+	ASSERT_EQ(skel->data->find_zero_ret, expected_find_zero_ret, "find_zero=
-_ret");
-+	ASSERT_OK_PTR(strstr(skel->bss->d_iname, "test_progs"), "find_test_prog=
-s");
-+
-+	skel->bss->found_vm_exec =3D 0;
-+	skel->data->find_addr_ret =3D -1;
-+	skel->data->find_zero_ret =3D -1;
-+	skel->bss->d_iname[0] =3D 0;
-+}
-+
-+static int open_pe(void)
-+{
-+	struct perf_event_attr attr =3D {0};
-+	int pfd;
-+
-+	/* create perf event */
-+	attr.size =3D sizeof(attr);
-+	attr.type =3D PERF_TYPE_HARDWARE;
-+	attr.config =3D PERF_COUNT_HW_CPU_CYCLES;
-+	attr.freq =3D 1;
-+	attr.sample_freq =3D 4000;
-+	pfd =3D syscall(__NR_perf_event_open, &attr, 0, -1, -1, PERF_FLAG_FD_CL=
-OEXEC);
-+
-+	return pfd >=3D 0 ? pfd : -errno;
-+}
-+
-+static void test_find_vma_pe(struct find_vma *skel)
-+{
-+	struct bpf_link *link =3D NULL;
-+	volatile int j =3D 0;
-+	int pfd =3D -1, i;
-+
-+	pfd =3D open_pe();
-+	if (pfd < 0) {
-+		if (pfd =3D=3D -ENOENT || pfd =3D=3D -EOPNOTSUPP) {
-+			printf("%s:SKIP:no PERF_COUNT_HW_CPU_CYCLES\n", __func__);
-+			test__skip();
-+		}
-+		if (!ASSERT_GE(pfd, 0, "perf_event_open"))
-+			goto cleanup;
-+	}
-+
-+	link =3D bpf_program__attach_perf_event(skel->progs.handle_pe, pfd);
-+	if (!ASSERT_OK_PTR(link, "attach_perf_event"))
-+		goto cleanup;
-+
-+	for (i =3D 0; i < 1000000; ++i)
-+		++j;
-+
-+	test_and_reset_skel(skel, -EBUSY /* in nmi, irq_work is busy */);
-+cleanup:
-+	bpf_link__destroy(link);
-+	close(pfd);
-+	/* caller will clean up skel */
-+}
-+
-+static void test_find_vma_kprobe(struct find_vma *skel)
-+{
-+	int err;
-+
-+	err =3D find_vma__attach(skel);
-+	if (!ASSERT_OK(err, "get_branch_snapshot__attach"))
-+		return;  /* caller will cleanup skel */
-+
-+	getpgid(skel->bss->target_pid);
-+	test_and_reset_skel(skel, -ENOENT /* could not find vma for ptr 0 */);
-+}
-+
-+static void test_illegal_write_vma(void)
-+{
-+	struct find_vma_fail1 *skel;
-+
-+	skel =3D find_vma_fail1__open_and_load();
-+	ASSERT_ERR_PTR(skel, "find_vma_fail1__open_and_load");
-+}
-+
-+static void test_illegal_write_task(void)
-+{
-+	struct find_vma_fail2 *skel;
-+
-+	skel =3D find_vma_fail2__open_and_load();
-+	ASSERT_ERR_PTR(skel, "find_vma_fail2__open_and_load");
-+}
-+
-+void serial_test_find_vma(void)
-+{
-+	struct find_vma *skel;
-+
-+	skel =3D find_vma__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "find_vma__open_and_load"))
-+		return;
-+
-+	skel->bss->target_pid =3D getpid();
-+	skel->bss->addr =3D (__u64)test_find_vma_pe;
-+
-+	test_find_vma_pe(skel);
-+	usleep(100000); /* allow the irq_work to finish */
-+	test_find_vma_kprobe(skel);
-+
-+	find_vma__destroy(skel);
-+	test_illegal_write_vma();
-+	test_illegal_write_task();
-+}
-diff --git a/tools/testing/selftests/bpf/progs/find_vma.c b/tools/testing=
-/selftests/bpf/progs/find_vma.c
-new file mode 100644
-index 0000000000000..2776718a54e29
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/find_vma.c
-@@ -0,0 +1,70 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+char _license[] SEC("license") =3D "GPL";
-+
-+struct callback_ctx {
-+	int dummy;
-+};
-+
-+#define VM_EXEC		0x00000004
-+#define DNAME_INLINE_LEN 32
-+
-+pid_t target_pid =3D 0;
-+char d_iname[DNAME_INLINE_LEN] =3D {0};
-+__u32 found_vm_exec =3D 0;
-+__u64 addr =3D 0;
-+int find_zero_ret =3D -1;
-+int find_addr_ret =3D -1;
-+
-+static __u64
-+check_vma(struct task_struct *task, struct vm_area_struct *vma,
-+	  struct callback_ctx *data)
-+{
-+	if (vma->vm_file)
-+		bpf_probe_read_kernel_str(d_iname, DNAME_INLINE_LEN - 1,
-+					  vma->vm_file->f_path.dentry->d_iname);
-+
-+	/* check for VM_EXEC */
-+	if (vma->vm_flags & VM_EXEC)
-+		found_vm_exec =3D 1;
-+
-+	return 0;
-+}
-+
-+SEC("kprobe/__x64_sys_getpgid")
-+int handle_getpid(void)
-+{
-+	struct task_struct *task =3D bpf_get_current_task_btf();
-+	struct callback_ctx data =3D {0};
-+
-+	if (task->pid !=3D target_pid)
-+		return 0;
-+
-+	find_addr_ret =3D bpf_find_vma(task, addr, check_vma, &data, 0);
-+
-+	/* this should return -ENOENT */
-+	find_zero_ret =3D bpf_find_vma(task, 0, check_vma, &data, 0);
-+	return 0;
-+}
-+
-+SEC("perf_event")
-+int handle_pe(void)
-+{
-+	struct task_struct *task =3D bpf_get_current_task_btf();
-+	struct callback_ctx data =3D {0};
-+
-+	if (task->pid !=3D target_pid)
-+		return 0;
-+
-+	find_addr_ret =3D bpf_find_vma(task, addr, check_vma, &data, 0);
-+
-+	/* In NMI, this should return -EBUSY, as the previous call is using
-+	 * the irq_work.
-+	 */
-+	find_zero_ret =3D bpf_find_vma(task, 0, check_vma, &data, 0);
-+	return 0;
-+}
-diff --git a/tools/testing/selftests/bpf/progs/find_vma_fail1.c b/tools/t=
-esting/selftests/bpf/progs/find_vma_fail1.c
-new file mode 100644
-index 0000000000000..d17bdcdf76f07
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/find_vma_fail1.c
-@@ -0,0 +1,30 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+
-+char _license[] SEC("license") =3D "GPL";
-+
-+struct callback_ctx {
-+	int dummy;
-+};
-+
-+static __u64
-+write_vma(struct task_struct *task, struct vm_area_struct *vma,
-+	  struct callback_ctx *data)
-+{
-+	/* writing to vma, which is illegal */
-+	vma->vm_flags |=3D 0x55;
-+
-+	return 0;
-+}
-+
-+SEC("kprobe/__x64_sys_getpgid")
-+int handle_getpid(void)
-+{
-+	struct task_struct *task =3D bpf_get_current_task_btf();
-+	struct callback_ctx data =3D {0};
-+
-+	bpf_find_vma(task, 0, write_vma, &data, 0);
-+	return 0;
-+}
-diff --git a/tools/testing/selftests/bpf/progs/find_vma_fail2.c b/tools/t=
-esting/selftests/bpf/progs/find_vma_fail2.c
-new file mode 100644
-index 0000000000000..079c4594c095d
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/find_vma_fail2.c
-@@ -0,0 +1,30 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+
-+char _license[] SEC("license") =3D "GPL";
-+
-+struct callback_ctx {
-+	int dummy;
-+};
-+
-+static __u64
-+write_task(struct task_struct *task, struct vm_area_struct *vma,
-+	   struct callback_ctx *data)
-+{
-+	/* writing to task, which is illegal */
-+	task->mm =3D NULL;
-+
-+	return 0;
-+}
-+
-+SEC("kprobe/__x64_sys_getpgid")
-+int handle_getpid(void)
-+{
-+	struct task_struct *task =3D bpf_get_current_task_btf();
-+	struct callback_ctx data =3D {0};
-+
-+	bpf_find_vma(task, 0, write_task, &data, 0);
-+	return 0;
-+}
---=20
-2.30.2
+RFC history:
+v2:
+- removed whitespace changes
+- fix issues reported by test robot
+v3:
+- Changed naming from SyncE to EEC
+- Clarify cover letter and commit message for patch 1
+v4:
+- Removed sync_source and pin_idx info
+- Changed one structure to attributes
+- Added EEC_SRC_PORT flag to indicate that the EEC is synchronized
+  to the recovered clock of a port that returns the state
+v5:
+- add EEC source as an optiona attribute
+- implement support for recovered clocks
+- align states returned by EEC to ITU-T G.781
+v6:
+- fix EEC clock state reporting
+- add documentation
+- fix descriptions in code comments
+
+Maciej Machnikowski (6):
+  ice: add support detecting features based on netlist
+  rtnetlink: Add new RTM_GETEECSTATE message to get SyncE status
+  ice: add support for reading SyncE DPLL state
+  rtnetlink: Add support for SyncE recovered clock configuration
+  ice: add support for SyncE recovered clocks
+  docs: net: Add description of SyncE interfaces
+
+ Documentation/networking/synce.rst            |  88 ++++++
+ drivers/net/ethernet/intel/ice/ice.h          |   7 +
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  94 ++++++-
+ drivers/net/ethernet/intel/ice/ice_common.c   | 224 ++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_common.h   |  20 +-
+ drivers/net/ethernet/intel/ice/ice_devids.h   |   3 +
+ drivers/net/ethernet/intel/ice/ice_lib.c      |   6 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     | 138 ++++++++++
+ drivers/net/ethernet/intel/ice/ice_ptp.c      |  34 +++
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.c   |  49 ++++
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.h   |  22 ++
+ drivers/net/ethernet/intel/ice/ice_type.h     |   1 +
+ include/linux/netdevice.h                     |  33 +++
+ include/uapi/linux/if_link.h                  |  57 ++++
+ include/uapi/linux/rtnetlink.h                |  10 +
+ net/core/rtnetlink.c                          | 253 ++++++++++++++++++
+ security/selinux/nlmsgtab.c                   |   6 +-
+ 17 files changed, 1041 insertions(+), 4 deletions(-)
+ create mode 100644 Documentation/networking/synce.rst
+
+-- 
+2.26.3
 
