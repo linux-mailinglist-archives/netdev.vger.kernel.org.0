@@ -2,100 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C35BF44527F
-	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 12:49:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 560F84452E8
+	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 13:23:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231451AbhKDLv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Nov 2021 07:51:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35042 "EHLO
+        id S230509AbhKDM0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Nov 2021 08:26:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231423AbhKDLv6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 07:51:58 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6600FC061714;
-        Thu,  4 Nov 2021 04:49:20 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id g13so3352313qtk.12;
-        Thu, 04 Nov 2021 04:49:20 -0700 (PDT)
+        with ESMTP id S229843AbhKDM0C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 08:26:02 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D98B3C061714
+        for <netdev@vger.kernel.org>; Thu,  4 Nov 2021 05:23:24 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id d5so8348811wrc.1
+        for <netdev@vger.kernel.org>; Thu, 04 Nov 2021 05:23:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=cloudflare.com; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=KuPFje2AUfFzNhATj0vA/YQ0MyvJDY+bIV73xrs0RvI=;
-        b=DQdZgG7ncr8s3KKVKwa3fXaIh48oz2vApeCPTJucPck1JOjSDVN7AIbtb+3uL9xUU+
-         dgDKRIDzuwYPdk5BL1T+3YnwRxfb9krTafY+lzn8rQ63YzNQrM9t3inidG4LS2xc0XaQ
-         B9aVyDN1zY0iBjvMQcfjxJP2D/Iv371r55Ycv4h7bZ5vcyDGaFn9sayuxjcNiaqpQmEl
-         ZBm1fFbW7oavXzpqqT4DW+Ym7WWpwNzEfesFf6vH1cEZUEGTWs9tWLdSTVBXn+g7EXOp
-         uxuK396/sjqZ1LDYdMJ2UYExDPfC5Olgh1SKcCTMsCrF8B9YWc1/lzDpsqbNwszJJ4wG
-         D/cA==
+        bh=hDAfluk/2X7+fmQG4qXn6RJudeE3seAt4NVyCikCy4s=;
+        b=C5+NoGXw4ACviHJJ7p1MEBpfq8KXpKqqzLzMTM5nmbIHdcGUx20GaTVsHmt6ctfmNz
+         FiA/OKmz/eVd0XHl0VLA5IuQbYzfLnzcdo7a5dOOAXiY4+xHityIMDUr75GTtF7kmzgB
+         mJCnJaNxVHZvtPF1UtTSQefVxutNSb87mPYGU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=KuPFje2AUfFzNhATj0vA/YQ0MyvJDY+bIV73xrs0RvI=;
-        b=iPCAwOvII45UPsOdED6iv303mae1k8gsKuy08euTLWAjwodfOmwMTIyDW5vdLziMF8
-         tzu5R1nVKAN2ogGN8nSUEFQ0JzZebr+ZaYvgBqMwhjnxxkstU5gJ1MSzCPd7u8iK1vK9
-         HtkmVkZcmFPAnu7/7H/El5l04230vm7Xem5ybuok01ifgNCXvKEZ4yjT94fJXeE+dTrQ
-         cLAsGQ+Dzs4PvTcc0kpfRLT7Hygj0xvVBzGSG9nx58Xjz5cV9jMfnkCoKPgvCKQEd40Z
-         Vg3IdHybpgLuikAmanV9VxjGPvHZz3Y4bKeTmmv4eavvqYsvy7nrAm2tytkQjics6ADy
-         EAMg==
-X-Gm-Message-State: AOAM532DPaXrEteE7X9oZPpNSiEB39Ck/loeiPe42hA5YS76ngqHCkAE
-        iHf8mnv0JpqCy+BV3TOVi3w=
-X-Google-Smtp-Source: ABdhPJxWtq2g4hcFUl/W8H1C4ME4cZJ97RFASWfkbGy8eVumbGHOxsZ8yCYR1Aj8YQKSzCDtE8VALg==
-X-Received: by 2002:ac8:610b:: with SMTP id a11mr51988133qtm.182.1636026559643;
-        Thu, 04 Nov 2021 04:49:19 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id g8sm3314601qka.45.2021.11.04.04.49.16
+        bh=hDAfluk/2X7+fmQG4qXn6RJudeE3seAt4NVyCikCy4s=;
+        b=rCGLeMH0SGJJnweIYA1PA9KJGqrOyZao/Za+sCkeX6ilq6dSFHhaS7g/BXXFg1WGw5
+         xXl6FYQP7jEJzq148/8vgvc+j4mdoI1ixzD2RMFeGTrf3cx8M7THMXyTkKzfp6lRJly5
+         9uLZxywg3PfIUF0vAhLvusV2kS9pq/bONXgTBpZBqddjzDPuSjlmy5P3puzyh7wUVMHF
+         oibp7GifLYWPMoNuUhLbUkcAT6/qGSEN0tRtY6pE/gBcCZaPh/6zO52za/namKuVKO3F
+         qLo5h3p0ckiNmcso+LcrA9KrKLxpVLIx5rtEgEAKNRSwPo2wxHDS1W9W5XK7x1QlPm9r
+         fntw==
+X-Gm-Message-State: AOAM531HirunlzUHnYC1b71mU5ust8Y0vYt9sfVu816nUvTN5aejpj72
+        P9EMTb5Ia0+1Sd3cU9yEZD2C+w==
+X-Google-Smtp-Source: ABdhPJw0sF2DN67/muAaWG6N5jp7kSqIfCN11j8MKhChoKZVI1dD8FdJexi4/Qqd+/KtnUa330ucCQ==
+X-Received: by 2002:adf:9dc1:: with SMTP id q1mr65116565wre.13.1636028603491;
+        Thu, 04 Nov 2021 05:23:23 -0700 (PDT)
+Received: from kharboze.dr-pashinator-m-d.gmail.com.beta.tailscale.net (cust97-dsl60.idnet.net. [212.69.60.97])
+        by smtp.gmail.com with ESMTPSA id a4sm4797535wmb.39.2021.11.04.05.23.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Nov 2021 04:49:19 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: yao.jing2@zte.com.cn
-To:     pablo@netfilter.org
-Cc:     kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
-        kuba@kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jing Yao <yao.jing2@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] netfilter: xt_IDLETIMER: replace snprintf in show functions with sysfs_emit
-Date:   Thu,  4 Nov 2021 11:49:11 +0000
-Message-Id: <20211104114911.31214-1-yao.jing2@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 04 Nov 2021 05:23:23 -0700 (PDT)
+From:   Mark Pashmfouroush <markpash@cloudflare.com>
+To:     markpash@cloudflare.com, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     kernel-team@cloudflare.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH bpf-next v2 0/2] Get ifindex in BPF_SK_LOOKUP prog type
+Date:   Thu,  4 Nov 2021 12:23:02 +0000
+Message-Id: <20211104122304.962104-1-markpash@cloudflare.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jing Yao <yao.jing2@zte.com.cn>
+BPF_SK_LOOKUP users may want to have access to the ifindex of the skb
+which triggered the socket lookup. This may be useful for selectively
+applying programmable socket lookup logic to packets that arrive on a
+specific interface, or excluding packets from an interface.
 
-coccicheck complains about the use of snprintf() in sysfs show
-functions:
-WARNING use scnprintf or sprintf
+v2:
+- Fix inaccurate comment (Alexei)
+- Add more details to commit messages (John)
 
-Use sysfs_emit instead of scnprintf, snprintf or sprintf makes more
-sense.
+Mark Pashmfouroush (2):
+  bpf: Add ifindex to bpf_sk_lookup
+  selftests/bpf: Add tests for accessing ifindex in bpf_sk_lookup
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
----
- net/netfilter/xt_IDLETIMER.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/linux/filter.h                        |  7 ++--
+ include/uapi/linux/bpf.h                      |  1 +
+ net/core/filter.c                             |  7 ++++
+ net/ipv4/inet_hashtables.c                    |  8 ++---
+ net/ipv4/udp.c                                |  8 ++---
+ net/ipv6/inet6_hashtables.c                   |  8 ++---
+ net/ipv6/udp.c                                |  8 ++---
+ tools/include/uapi/linux/bpf.h                |  1 +
+ .../selftests/bpf/prog_tests/sk_lookup.c      | 31 ++++++++++++++++++
+ .../selftests/bpf/progs/test_sk_lookup.c      |  8 +++++
+ .../selftests/bpf/verifier/ctx_sk_lookup.c    | 32 +++++++++++++++++++
+ 11 files changed, 101 insertions(+), 18 deletions(-)
 
-diff --git a/net/netfilter/xt_IDLETIMER.c b/net/netfilter/xt_IDLETIMER.c
-index 2f7cf5ecebf4..0f8bb0bf558f 100644
---- a/net/netfilter/xt_IDLETIMER.c
-+++ b/net/netfilter/xt_IDLETIMER.c
-@@ -85,9 +85,9 @@ static ssize_t idletimer_tg_show(struct device *dev,
- 	mutex_unlock(&list_mutex);
- 
- 	if (time_after(expires, jiffies) || ktimespec.tv_sec > 0)
--		return snprintf(buf, PAGE_SIZE, "%ld\n", time_diff);
-+		return sysfs_emit(buf, "%ld\n", time_diff);
- 
--	return snprintf(buf, PAGE_SIZE, "0\n");
-+	return sysfs_emit(buf, "0\n");
- }
- 
- static void idletimer_tg_work(struct work_struct *work)
 -- 
-2.25.1
+2.31.1
 
