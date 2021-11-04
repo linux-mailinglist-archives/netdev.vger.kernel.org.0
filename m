@@ -2,82 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51147445418
-	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 14:37:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 168B344545F
+	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 14:57:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231766AbhKDNka (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Nov 2021 09:40:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39398 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231565AbhKDNkS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Nov 2021 09:40:18 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 743CD604DC;
-        Thu,  4 Nov 2021 13:37:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636033060;
-        bh=EKpljgVa5r5UmD2IEpypElISm7qojaXBWVSnqjIx8EI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Oq2pjjsCWrJdrsqVekgDZs8m9kH32LUoC8KYN9R+FDLbqcxOAlTL8Nwbr22LdspX7
-         GxEqHb+dOFJnxoV5wKbGzGK71BTYy7Ty/bs5+tH5yAmuWRUPNb/pHtoquaMComxL66
-         LaN86i4HmrqiAE3BOkMwHWTuNs0jt6JOvHTHjAMwSpNLswVSxtJtDrEyikzNfPD26g
-         /f/rHYcgB+PzKnBe55SUu9ZeMKyTjdjnb9KOJQERdDaRVXrN778DzEoEmSWeQiZ9Ig
-         tRydd0tHAbVjBnW3UXTECmHBssu/vI+CyMXj3Il1eW1wqu8Bp0Z3GLGJqyNmNHRRpS
-         fkWZMtuL/RnEA==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Luca Coelho <luciano.coelho@intel.com>,
+        id S231243AbhKDOAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Nov 2021 10:00:32 -0400
+Received: from mout-p-102.mailbox.org ([80.241.56.152]:43940 "EHLO
+        mout-p-102.mailbox.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229505AbhKDOAc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 10:00:32 -0400
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4HlQFT3F3kzQjf7;
+        Thu,  4 Nov 2021 14:57:49 +0100 (CET)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+Message-ID: <b7e15579-f899-d292-92e0-79ecdab1672e@v0yd.nl>
+Date:   Thu, 4 Nov 2021 14:57:41 +0100
+MIME-Version: 1.0
+Subject: Re: [PATCH] mwifiex: Add quirk resetting the PCI bridge on MS Surface
+ devices
+Content-Language: en-US
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes.berg@intel.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Yaara Baruch <yaara.baruch@intel.com>,
-        Matti Gottlieb <matti.gottlieb@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH] iwlwifi: pcie: fix constant-conversion warning
-Date:   Thu,  4 Nov 2021 14:37:23 +0100
-Message-Id: <20211104133735.1223989-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-MIME-Version: 1.0
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Brian Norris <briannorris@chromium.org>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Vidya Sagar <vidyas@nvidia.com>,
+        Victor Ding <victording@google.com>
+References: <20211025235618.GA52139@bhelgaas>
+From:   =?UTF-8?Q?Jonas_Dre=c3=9fler?= <verdre@v0yd.nl>
+In-Reply-To: <20211025235618.GA52139@bhelgaas>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Rspamd-Queue-Id: 43B0F110B
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On 10/26/21 01:56, Bjorn Helgaas wrote:
+> On Mon, Oct 25, 2021 at 06:45:29PM +0200, Jonas Dreßler wrote:
+>> On 10/18/21 17:35, Bjorn Helgaas wrote:
+>>> On Thu, Oct 14, 2021 at 12:08:31AM +0200, Jonas Dreßler wrote:
+>>>> On 10/12/21 17:39, Bjorn Helgaas wrote:
+>>>>> [+cc Vidya, Victor, ASPM L1.2 config issue; beginning of thread:
+>>>>> https://lore.kernel.org/all/20211011134238.16551-1-verdre@v0yd.nl/]
+>>>
+>>>>> I wonder if this reset quirk works because pci_reset_function() saves
+>>>>> and restores much of config space, but it currently does *not* restore
+>>>>> the L1 PM Substates capability, so those T_POWER_ON,
+>>>>> Common_Mode_Restore_Time, and LTR_L1.2_THRESHOLD values probably get
+>>>>> cleared out by the reset.  We did briefly save/restore it [1], but we
+>>>>> had to revert that because of a regression that AFAIK was never
+>>>>> resolved [2].  I expect we will eventually save/restore this, so if
+>>>>> the quirk depends on it *not* being restored, that would be a problem.
+>>>>>
+>>>>> You should be able to test whether this is the critical thing by
+>>>>> clearing those registers with setpci instead of doing the reset.  Per
+>>>>> spec, they can only be modified when L1.2 is disabled, so you would
+>>>>> have to disable it via sysfs (for the endpoint, I think)
+>>>>> /sys/.../l1_2_aspm and /sys/.../l1_2_pcipm, do the setpci on the root
+>>>>> port, then re-enable L1.2.
+>>>>>
+>>>>> [1] https://git.kernel.org/linus/4257f7e008ea
+>>>>> [2] https://lore.kernel.org/all/20210127160449.2990506-1-helgaas@kernel.org/
+>>>>
+>>>> Hmm, interesting, thanks for those links.
+>>>>
+>>>> Are you sure the config values will get lost on the reset? If we
+>>>> only reset the port by going into D3hot and back into D0, the
+>>>> device will remain powered and won't lose the config space, will
+>>>> it?
+>>>
+>>> I think you're doing a PM reset (transition to D3hot and back to
+>>> D0).  Linux only does this when PCI_PM_CTRL_NO_SOFT_RESET == 0.
+>>> The spec doesn't actually *require* the device to be reset; it
+>>> only says the internal state of the device is undefined after
+>>> these transitions.
+>>
+>> Not requiring the device to be reset sounds sensible to me given
+>> that D3hot is what devices are transitioned into during suspend.
+>>
+>> But anyway, that doesn't really get us any further except it
+>> somewhat gives an explanation why the LTR is suddenly 0 after the
+>> reset. Or are you making the point that we shouldn't rely on
+>> "undefined state" for this hack because not all PCI bridges/ports
+>> will necessarily behave the same?
+> 
+> I guess I'm just making the point that I don't understand why the
+> bridge reset fixes something, and I'm not confident that the fix will
+> work on every system and continue working even if/when the PCI core
+> starts saving and restoring the L1 PM Substates capability.
+> 
 
-clang points out a potential issue with integer overflow when
-the iwl_dev_info_table[] array is empty:
+FWIW, I've tested it with the restoring of L1 PM Substates enabled now
+and the bridge reset worked just as before.
 
-drivers/net/wireless/intel/iwlwifi/pcie/drv.c:1344:42: error: implicit conversion from 'unsigned long' to 'int' changes value from 18446744073709551615 to -1 [-Werror,-Wconstant-conversion]
-        for (i = ARRAY_SIZE(iwl_dev_info_table) - 1; i >= 0; i--) {
-               ~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+But yeah I, too, have no clue why exactly the bridge reset does what it
+does...
 
-This is still harmless, as the loop correctly terminates, but adding
-an (int) cast makes that clearer to the compiler.
-
-Fixes: 3f7320428fa4 ("iwlwifi: pcie: simplify iwl_pci_find_dev_info()")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/net/wireless/intel/iwlwifi/pcie/drv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-index c574f041f096..81e8f2fc4982 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-@@ -1341,7 +1341,7 @@ iwl_pci_find_dev_info(u16 device, u16 subsystem_device,
- {
- 	int i;
- 
--	for (i = ARRAY_SIZE(iwl_dev_info_table) - 1; i >= 0; i--) {
-+	for (i = (int)ARRAY_SIZE(iwl_dev_info_table) - 1; i >= 0; i--) {
- 		const struct iwl_dev_info *dev_info = &iwl_dev_info_table[i];
- 
- 		if (dev_info->device != (u16)IWL_CFG_ANY &&
--- 
-2.29.2
-
+Anyway, I've also confirmed that it actually impacts the power usage by
+measuring consumed energy during idle over a few minutes: Applying either
+the bridge reset quirk or ignoring the LTR via pmc_core results in about
+7% less energy usage. Given that the overall energy usage was almost
+nothing to make the measurement easier, those 7% are not a lot, but
+nonetheless it confirms that the quirk works.
