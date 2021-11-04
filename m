@@ -2,139 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D59D9444D08
-	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 02:39:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA21E444D16
+	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 02:46:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232905AbhKDBlu convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 3 Nov 2021 21:41:50 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:52367 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231489AbhKDBlu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 21:41:50 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1A41cj9H3009888, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36503.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1A41cj9H3009888
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 4 Nov 2021 09:38:45 +0800
-Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
- RTEXH36503.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Thu, 4 Nov 2021 09:38:44 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Thu, 4 Nov 2021 09:38:44 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::dc53:1026:298b:c584]) by
- RTEXMBS04.realtek.com.tw ([fe80::dc53:1026:298b:c584%5]) with mapi id
- 15.01.2308.015; Thu, 4 Nov 2021 09:38:44 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-CC:     Colin King <colin.king@canonical.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH][next] rtw89: Fix potential dereference of the null pointer sta
-Thread-Topic: [PATCH][next] rtw89: Fix potential dereference of the null
- pointer sta
-Thread-Index: AQHXwduziBNegQ3KtE6tzEeaYjpkJqvX/pCwgBfOyICAAT/CgIAAIjOAgAGF8cA=
-Date:   Thu, 4 Nov 2021 01:38:44 +0000
-Message-ID: <25510e071f6c46788bb3348251f9975b@realtek.com>
-References: <20211015154530.34356-1-colin.king@canonical.com>
- <9cc681c217a449519aee524b35e6b6bc@realtek.com> <20211102131437.GF2794@kadam>
- <c3de973999ea40cf967ffefe0ee56ed4@realtek.com> <20211103102128.GL2794@kadam>
-In-Reply-To: <20211103102128.GL2794@kadam>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/11/3_=3F=3F_11:29:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S232747AbhKDBtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 21:49:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42488 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231206AbhKDBtW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 21:49:22 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F298C061714;
+        Wed,  3 Nov 2021 18:46:45 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id i5so6267608wrb.2;
+        Wed, 03 Nov 2021 18:46:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6UZ9QzgDO0cKHF5YhLIs9VgxnGlTbz4OFbftB+dyTWA=;
+        b=eOctDe7zw0mVyaLMEPaq0CFWmR4LZfppwf58NICJVQVHgxHuAybDgae0VUPRcoeOMv
+         wjZjTw4bYaczAzL8k+U+B4l/WwCWdxGz7KStaJcBEh9xOy8kJYu4is6Rsg17KY3DT82q
+         jYzkWEFyoimN2aBMEBVMaJofUFRb0TBXHLzpLzCWC/9+4LggC/v1lpQGi4gMUgqwNn0A
+         zFuN6/qKcq1gr6C+3turAL4FJAekc53LdQpSW3iXXmZtxDKHCkGV84oEJbEHrhP/ii1f
+         qtd0ej6TAGnm6jzfQQKgfLQgWDXHtFjsZ+mktSCK4FnbVs9tQ2UwPGOHCN2ZufDQKcjU
+         6JxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6UZ9QzgDO0cKHF5YhLIs9VgxnGlTbz4OFbftB+dyTWA=;
+        b=NQ5sAqJ5r2roScbGZXcNjLusEwD1Sqtdq+pFYctCScNxailsJJc0c0OBmooRpp1hb4
+         GkI94rx2gWw0dYS4KyYGl6xqTsnRxi4bVYWH57hW39m7/wgcCPpHqQadj+JKT4/I6hgQ
+         m096o9jMsr/k/gVCMVxYjOQYKZsRJHC87Goz/O+1Akv9W/tvWjK+goRHXp9reuf5Cd8C
+         R4l3lEPd8vkPMZ/uvhS6WKLmvIOQsNuhtzq6Fz9fgKOX06bad8t4b1XQPSAr5JzAhdot
+         n4Ha68/Q4MCWHWO+xOLzriZBbZyEJnIkVknhNEp5DdbkJ34sgBuVX7qDHsbOA55lvSpg
+         +9NQ==
+X-Gm-Message-State: AOAM533SJluZqmkx2ocfvy9bU06fmUZ51gYPpw9TcrdyAmiPCL2fgYHV
+        fJZ//1zTqDvsj9crmp8eqzReXZGH2Zvdys0vBsw=
+X-Google-Smtp-Source: ABdhPJyaczO54g3EhWm66dK0ow4tFDvuAAcvmMZ/5PYaCARB8LDFdfh3ulyit0H+xLHFBkeZeVgk7T4IWFENx42QB6I=
+X-Received: by 2002:a5d:4563:: with SMTP id a3mr43479496wrc.130.1635990404084;
+ Wed, 03 Nov 2021 18:46:44 -0700 (PDT)
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36503.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 11/04/2021 01:15:49
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 167084 [Nov 03 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: pkshih@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 465 465 eb31509370142567679dd183ac984a0cb2ee3296
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1;127.0.0.199:7.1.2
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 11/04/2021 01:18:00
+References: <cover.1635854268.git.lucien.xin@gmail.com> <cdca8eaca8a0ec5fe4aa58412a6096bb08c3c9bc.1635854268.git.lucien.xin@gmail.com>
+ <CAFqZXNtJNnk+iwLnGq6mpdTKuWFmZ4W0PCTj4ira7G2HHPU1tA@mail.gmail.com>
+ <CADvbK_cDSKJ+eWeOdvURV_mDXEgEE+B3ZG3ASiKOm501NO9CqQ@mail.gmail.com>
+ <CADvbK_ddKB_N=Bj8vtTF_aufmgkqmoQGz+-t7e2nZgoBrDWk8Q@mail.gmail.com> <CAHC9VhRQ3wGRTL1UXEnnhATGA_zKASVJJ6y4cbWYoA19CZyLbA@mail.gmail.com>
+In-Reply-To: <CAHC9VhRQ3wGRTL1UXEnnhATGA_zKASVJJ6y4cbWYoA19CZyLbA@mail.gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Wed, 3 Nov 2021 21:46:32 -0400
+Message-ID: <CADvbK_fVENGZhyUXKqpQ7mpva5PYJk2_o=jWKbY1jR_1c-4S-Q@mail.gmail.com>
+Subject: Re: [PATCHv2 net 4/4] security: implement sctp_assoc_established hook
+ in selinux
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Ondrej Mosnacek <omosnace@redhat.com>,
+        network dev <netdev@vger.kernel.org>,
+        SElinux list <selinux@vger.kernel.org>,
+        Linux Security Module list 
+        <linux-security-module@vger.kernel.org>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        James Morris <jmorris@namei.org>,
+        Richard Haines <richard_c_haines@btinternet.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-> -----Original Message-----
-> From: Dan Carpenter <dan.carpenter@oracle.com>
-> Sent: Wednesday, November 3, 2021 6:21 PM
-> To: Pkshih <pkshih@realtek.com>
-> Cc: Colin King <colin.king@canonical.com>; Kalle Valo <kvalo@codeaurora.org>; David S . Miller
-> <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; linux-wireless@vger.kernel.org;
-> netdev@vger.kernel.org; kernel-janitors@vger.kernel.org; linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH][next] rtw89: Fix potential dereference of the null pointer sta
-> 
-> On Wed, Nov 03, 2021 at 12:36:17AM +0000, Pkshih wrote:
-> 
-> > > > > diff --git a/drivers/net/wireless/realtek/rtw89/core.c
-> > > > > b/drivers/net/wireless/realtek/rtw89/core.c
-> > > > > index 06fb6e5b1b37..26f52a25f545 100644
-> > > > > --- a/drivers/net/wireless/realtek/rtw89/core.c
-> > > > > +++ b/drivers/net/wireless/realtek/rtw89/core.c
-> > > > > @@ -1534,9 +1534,14 @@ static bool rtw89_core_txq_agg_wait(struct rtw89_dev *rtwdev,
-> > > > >  {
-> > > > >  	struct rtw89_txq *rtwtxq = (struct rtw89_txq *)txq->drv_priv;
-> > > > >  	struct ieee80211_sta *sta = txq->sta;
-> > > > > -	struct rtw89_sta *rtwsta = (struct rtw89_sta *)sta->drv_priv;
+On Wed, Nov 3, 2021 at 6:01 PM Paul Moore <paul@paul-moore.com> wrote:
+>
+> On Wed, Nov 3, 2021 at 1:36 PM Xin Long <lucien.xin@gmail.com> wrote:
+> > On Wed, Nov 3, 2021 at 1:33 PM Xin Long <lucien.xin@gmail.com> wrote:
+> > > On Wed, Nov 3, 2021 at 12:40 PM Ondrej Mosnacek <omosnace@redhat.com> wrote:
+> > > > On Tue, Nov 2, 2021 at 1:03 PM Xin Long <lucien.xin@gmail.com> wrote:
+> > > > >
+> > > > > Different from selinux_inet_conn_established(), it also gives the
+> > > > > secid to asoc->peer_secid in selinux_sctp_assoc_established(),
+> > > > > as one UDP-type socket may have more than one asocs.
+> > > > >
+> > > > > Note that peer_secid in asoc will save the peer secid for this
+> > > > > asoc connection, and peer_sid in sksec will just keep the peer
+> > > > > secid for the latest connection. So the right use should be do
+> > > > > peeloff for UDP-type socket if there will be multiple asocs in
+> > > > > one socket, so that the peeloff socket has the right label for
+> > > > > its asoc.
+> > > > >
+> > > > > v1->v2:
+> > > > >   - call selinux_inet_conn_established() to reduce some code
+> > > > >     duplication in selinux_sctp_assoc_established(), as Ondrej
+> > > > >     suggested.
+> > > > >   - when doing peeloff, it calls sock_create() where it actually
+> > > > >     gets secid for socket from socket_sockcreate_sid(). So reuse
+> > > > >     SECSID_WILD to ensure the peeloff socket keeps using that
+> > > > >     secid after calling selinux_sctp_sk_clone() for client side.
 > > > >
-> > > > 'sta->drv_priv' is only a pointer, we don't really dereference the
-> > > > data right here, so I think this is safe. More, compiler can optimize
-> > > > this instruction that reorder it to the place just right before using.
-> > > > So, it seems like a false alarm.
-> > >
-> > > The warning is about "sta" not "sta->priv".  It's not a false positive.
-> > >
-> > > I have heard discussions about compilers trying to work around these
-> > > bugs by re-ordering the code.  Is that an option in GCC?  It's not
-> > > something we should rely on, but I'm just curious if it exists in
-> > > released versions.
-> > >
-> >
-> > I say GCC does "reorder" the code, because the object codes of following
-> > two codes are identical with default or -Os ccflags.
-> 
-> Huh...  That's cool.  GCC doesn't re-order it for me, but I'm on GCC 8
-> so maybe it will work when I get to a more modern version.
-> 
+> > > > Interesting... I find strange that SCTP creates the peeloff socket
+> > > > using sock_create() rather than allocating it directly via
+> > > > sock_alloc() like the other callers of sctp_copy_sock() (which calls
+> > > > security_sctp_sk_clone()) do. Wouldn't it make more sense to avoid the
+> > > > sock_create() call and just rely on the security_sctp_sk_clone()
+> > > > semantic to set up the labels? Would anything break if
+> > > > sctp_do_peeloff() switched to plain sock_alloc()?
+> > > >
+> > > > I'd rather we avoid this SECSID_WILD hack to support the weird
+> > > > created-but-also-cloned socket hybrid and just make the peeloff socket
+> > > > behave the same as an accept()-ed socket (i.e. no
+> > > > security_socket_[post_]create() hook calls, just
+> > > > security_sctp_sk_clone()).
+>
+> I believe the important part is that sctp_do_peeloff() eventually
+> calls security_sctp_sk_clone() via way of sctp_copy_sock().  Assuming
+> we have security_sctp_sk_clone() working properly I would expect that
+> the new socket would be setup properly when sctp_do_peeloff() returns
+> on success.
+>
+> ... and yes, that SECSID_WILD approach is *not* something we want to do.
+ SECSID_WILD is used to avoid client's new socket's sid overwritten by
+old socket's.
 
-My GCC is 9.3.0. 
-But, I don't try other versions.
+If I understand correctly, new socket's should keep using its original
+sid, namely,
+the one set from security_socket_[post_]create() on client side. I
+AGREE with that.
+Now I want to *confirm* this with you, as it's different from the last version's
+'inherit from parent socket' that Richard and Ondrej reviewed.
 
---
-Ping-Ke
+>
+> In my mind, selinux_sctp_sk_clone() should end up looking like this.
+>
+>   void selinux_sctp_sk_clone(asoc, sk, newsk)
+>   {
+>     struct sk_security_struct sksec = sk->sk_security;
+>     struct sk_security_struct newsksec = newsk->sk_security;
+>
+>     if (!selinux_policycap_extsockclass())
+>         return selinux_sk_clone_security(sk, newsk);
+>
+>     newsksec->sid = sksec->secid;
+>     newsksec->peer_sid = asoc->peer_secid;
+>     newsksec->sclass = sksec->sclass;
+>     selinux_netlbl_sctp_sk_clone(sk, newsk);
+>   }
+Let's say, this socket has 3 associations now, how can we ensure
+the new socket's sid is set to the right sid? I don't think we can use
+"sksec->secid" in this place, this is not TCP.
 
+>
+> Also, to be clear, the "assoc->secid = SECSID_WILD;" line should be
+> removed from selinux_sctp_assoc_established().  If we are treating
+> SCTP associations similarly to TCP connections, the association's
+> label/secid should be set once and not changed during the life of the
+> association.
+The association's label/secid will never change once set in this patchset.
+it's just a temporary record, and later it will be used to set socket's
+label/secid. I think that's the idea at the beginning.
+
+>
+> > > > > Fixes: 72e89f50084c ("security: Add support for SCTP security hooks")
+> > > > > Reported-by: Prashanth Prahlad <pprahlad@redhat.com>
+> > > > > Reviewed-by: Richard Haines <richard_c_haines@btinternet.com>
+> > > > > Tested-by: Richard Haines <richard_c_haines@btinternet.com>
+> > > >
+> > > > You made non-trivial changes since the last revision in this patch, so
+> > > > you should have also dropped the Reviewed-by and Tested-by here. Now
+> > > > David has merged the patches probably under the impression that they
+> > > > have been reviewed/approved from the SELinux side, which isn't
+> > > > completely true.
+> > >
+> > > Oh, that's a mistake, I thought I didn't add it.
+> > > Will he be able to test this new patchset?
+>
+> While I tend to try to avoid reverts as much as possible, I think the
+> right thing to do is to get these patches reverted out of DaveM's tree
+> while we continue to sort this out and do all of the necessary testing
+> and verification.
+>
+> Xin Long, please work with the netdev folks to get your patchset
+> reverted and then respin this patchset using the feedback provided.
+Hi, Paul,
+
+The original issue this patchset fixes is a crucial one (it could cause
+peeloff sockets on client side to not work) which I think
+can already be fixed now. If you think SECSID_WILD is tricky but
+no better way yet, my suggestion is to leave it for now until we have
+a better solution to follow up. As I couldn't find a better way to work
+it out. Also, we may want to hear Richard's opinion on how it should
+work and how this should be fixed.
+
+Thanks.
+
+>
+> --
+> paul moore
+> www.paul-moore.com
