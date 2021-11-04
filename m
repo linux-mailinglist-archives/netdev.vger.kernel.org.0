@@ -2,70 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F9D9445950
-	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 19:08:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A077445975
+	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 19:16:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234059AbhKDSLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Nov 2021 14:11:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55256 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231402AbhKDSLf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Nov 2021 14:11:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9208B611C3;
-        Thu,  4 Nov 2021 18:08:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636049336;
-        bh=xnNcXcazwQwUlo5RPHBcBCT74SiT22kEneLRSZIj/FQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Tba14w+sKLD/aZF8PYdg0l92q+C+lx5K1JeX0grlk3OxVCjy6x6x7mJRtWA94BiMm
-         vJen6WSh/YoC/2VRRSXlDRIzivYTN0/AVJCHUBOb1x60r6W+mZ3avmSizsuionzgva
-         2LI+YVnx+FaoLOarVK3iFJAVSAEzgVBWDz+M7ZKQdoLoEr4jW/8kF7R6vXjecFtxlc
-         4GwE507rYzZZ9CzXe3UzWYDVOfPA5NkZgvFb0Yt31vCpwVh/hEV+wAuUi/qyQXNgF+
-         XpKYtJGP5IBBpoJhMjlD/J5FMLO1JFA82knblenO2WNNFTubNCSf4tGjubWSIjW8rM
-         zVAtHaXBLWUNg==
-Date:   Thu, 4 Nov 2021 11:08:55 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Maciej Machnikowski <maciej.machnikowski@intel.com>
-Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        richardcochran@gmail.com, abyagowi@fb.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net,
-        linux-kselftest@vger.kernel.org, idosch@idosch.org,
-        mkubecek@suse.cz, saeed@kernel.org, michael.chan@broadcom.com
-Subject: Re: [PATCH net-next 6/6] docs: net: Add description of SyncE
- interfaces
-Message-ID: <20211104110855.3ead1642@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211104081231.1982753-7-maciej.machnikowski@intel.com>
-References: <20211104081231.1982753-1-maciej.machnikowski@intel.com>
-        <20211104081231.1982753-7-maciej.machnikowski@intel.com>
+        id S234104AbhKDSSk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Nov 2021 14:18:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39526 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234101AbhKDSSk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 14:18:40 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B809C061714
+        for <netdev@vger.kernel.org>; Thu,  4 Nov 2021 11:16:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=44JK5jZSdaEoySOJK+3VMsxP4//qzIt8zzR6/J4I3FQ=; b=JM5N/S30PrczUVBWyFCthDWeG2
+        H2FWGtgihP5Qj/xiqQyg3ugsyW92Y88eHBAN1uO52OyfWWo10vjtzn51f0nFJK8hO5FQ9J+0e4/iK
+        JjwP20rnmsolQDWbae2yogouFe4iA5S3MNpQnK/efMrdc08n7PwR3n2IN3YCju+1A3EHHETbs3iEt
+        /TGrpMFLDmNb5p5zCOG2HiOT0BvwZ7b+cYaEMiDbXdDzfCea9esEWKip5MeYy4/oIk9mGwhIxniry
+        qYnJTcL2ZJIAeEWIZwovL/9hlJMULgWbOSee7u8lvmNAefVuza+msWI9rTWcAEv8JcgNHTEgDyOuB
+        Rq2BxYkg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55486)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mihHL-0006Dc-5Z; Thu, 04 Nov 2021 18:15:59 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mihHK-0007Wi-0M; Thu, 04 Nov 2021 18:15:58 +0000
+Date:   Thu, 4 Nov 2021 18:15:57 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>
+Subject: Re: [PATCH net] net: dsa: mv88e6xxx: Don't support >1G speeds on
+ 6191X on ports other than 10
+Message-ID: <YYQjXVsLTRsTBBHa@shell.armlinux.org.uk>
+References: <20211104171747.10509-1-kabel@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211104171747.10509-1-kabel@kernel.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  4 Nov 2021 09:12:31 +0100 Maciej Machnikowski wrote:
-> +Synchronous Ethernet networks use a physical layer clock to syntonize
-> +the frequency across different network elements.
-> +
-> +Basic SyncE node defined in the ITU-T G.8264 consist of an Ethernet
-> +Equipment Clock (EEC) and can recover synchronization
-> +from the synchronization inputs - either traffic interfaces or external
-> +frequency sources.
-> +The EEC can synchronize its frequency (syntonize) to any of those sources.
-> +It is also able to select a synchronization source through priority tables
-> +and synchronization status messaging. It also provides necessary
-> +filtering and holdover capabilities.
-> +
-> +The following interface can be applicable to diffferent packet network types
-> +following ITU-T G.8261/G.8262 recommendations.
+On Thu, Nov 04, 2021 at 06:17:47PM +0100, Marek Behún wrote:
+> Model 88E6191X only supports >1G speeds on port 10. Port 0 and 9 are
+> only 1G.
 
-Can we get a diagram in here in terms of how the port feeds its
-recovered Rx freq into EEC and that feeds freq of Tx on other ports?
+Interesting. The original commit says:
 
-I'm still struggling to understand your reasoning around not making 
-EEC its own object. "We can do this later" seems like trading
-relatively little effort now for extra work for driver and application
-developers for ever.
+SERDESes can do USXGMII, 10GBASER and 5GBASER (on 6191X only one
+SERDES is capable of more than 1g; USXGMII is not yet supported
+with this change)
 
-Also patch 3 still has a kdoc warning.
+which is ambiguously worded - so I guess we now know that it's only
+port 10 that supports speeds above 1G.
+
+Can ports 0 / 1 / 10 be changed at runtime (iow, is the C_Mode field
+writable on these ports?)
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
