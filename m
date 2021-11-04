@@ -2,110 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C8CF445697
-	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 16:51:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BF664456AD
+	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 16:59:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231533AbhKDPxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Nov 2021 11:53:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34112 "EHLO
+        id S231501AbhKDQCD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Nov 2021 12:02:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229770AbhKDPxo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 11:53:44 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1068BC061714;
-        Thu,  4 Nov 2021 08:51:06 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id b12so9341890wrh.4;
-        Thu, 04 Nov 2021 08:51:05 -0700 (PDT)
+        with ESMTP id S231240AbhKDQCB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 12:02:01 -0400
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA11AC061714;
+        Thu,  4 Nov 2021 08:59:23 -0700 (PDT)
+Received: by mail-ot1-x32c.google.com with SMTP id r10-20020a056830448a00b0055ac7767f5eso8893927otv.3;
+        Thu, 04 Nov 2021 08:59:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=WZb02HUNcpyrSV5l5/+XMe5AMoc6YwLyY8T5euRMbL8=;
-        b=kw1zp2Tegl4Kqb4SQ0i5nA93CA98pd7hYLtkw13rlOMEQZ+8Q418AzSmPVcyedY74C
-         ABTDfoiZNmd1s4NmsY4PWLZhgb3Y1XfqgBLaWDRnQH+/hLeAofrOwy7p8lZsjZSugL3F
-         qrmL7LzDpqv5BwpI1UxzYHz/nPrF7LPiHH5C3sKTPWd3H/lECZQohDF+Ynq7FWOlIIgS
-         /aPrZ/MhApbdHIyUnl4liqM7yWj9yl03OnkwXGaX+xZbE2IgwRGwXsJAmP+kvLNTw606
-         uTKDJKSeDBWCs1LcRwCwkV1jPQ1fCNcpeM/tbxb8ZP7j1CilcdcHqsXUIgJKjP9eWS94
-         FLxA==
+        bh=+DWga+L4ukHUCEsqSLIkNP4gRULHLBKXgraKCXcH83k=;
+        b=IyRG8ML45zPkZrb9Ey4t+9jJPcza2/TWEHCg+nrHeGAI7KDAUjIk2L06MTntVeODJb
+         YqsXJZ95FkU+U++mo87rxsam8aByv0w/rbL7iqux1amjU9NHdGSI/JJWwblsGPZC9K1a
+         2s6IqGipEFy35oVS6CkiQR9aAZ9201VfG+V93DWKSUS3pQvc5cO2J8k/P+KOfKc8C3/2
+         VGhl/x4owQwIzUZYD8Mms0M/FR8mwGgbUbUEPhFt5S8rGDKlr6Ic7mbS8I5L/DH8wVsu
+         c+wd8hqEWHbLd1r5PI29LNirjRzYoKQbPDOWw0kMakXt+fEgN9wVDqHuBbIAedKUXO8d
+         8/4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=WZb02HUNcpyrSV5l5/+XMe5AMoc6YwLyY8T5euRMbL8=;
-        b=1KKrFWtD+EZHWIzSwdqf52hTvLKw/wojFNYVCtR8SZrVmFeua2LteKc8HAl+nQTZHl
-         KFNluKn/n92MRXzFO7iQ5Uc5YqDA7AfWA4t8yBMGq9cMCUnCOY509ixsbmEo3mIxUpSL
-         LzcYuHIdlpIAJKfiVY4Sol3DTwmdu+9a9vFTWuCL69BA8qQUDK77gOqXmArvqQrhLiyU
-         S2gKMP2sttSa7gYtd57tBJb26NArTH/B8zqfLkJzjybrRd3PuTJuRs6kDQBl7+vZAGVm
-         7y+xca0qbLPLGXOkKJf53MxN9oQHGdjqJLDrUr+QgzYEC19QAldngiBpumtwHt6W/Bt3
-         g6Yw==
-X-Gm-Message-State: AOAM532RPwX0ehD7tJFj+rkk3nCt7sgXwkbEAyjCO4rI801Mx38cORNU
-        Y9oIYjG+r3ZxVqGGXOEuACs=
-X-Google-Smtp-Source: ABdhPJyDTpRBmB3xRPfE1CErEHrPH0QFPa6OVsRksW9o7hV8xA9OzQNF3oJjV7lgeE4GnIlESrqjZA==
-X-Received: by 2002:adf:ce8b:: with SMTP id r11mr45456071wrn.294.1636041064535;
-        Thu, 04 Nov 2021 08:51:04 -0700 (PDT)
-Received: from debian64.daheim (p5b0d7fa5.dip0.t-ipconnect.de. [91.13.127.165])
-        by smtp.gmail.com with ESMTPSA id e12sm6714724wrq.20.2021.11.04.08.51.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Nov 2021 08:51:04 -0700 (PDT)
-Received: from localhost.daheim ([127.0.0.1])
-        by debian64.daheim with esmtp (Exim 4.95)
-        (envelope-from <chunkeey@gmail.com>)
-        id 1mie48-00085z-QO;
-        Thu, 04 Nov 2021 16:51:03 +0100
-Message-ID: <179edf00-3ae0-3964-3433-015da8274aff@gmail.com>
-Date:   Thu, 4 Nov 2021 16:51:03 +0100
+        bh=+DWga+L4ukHUCEsqSLIkNP4gRULHLBKXgraKCXcH83k=;
+        b=5+z9Bgit9Xs1/vSy5Muwad7zss6xDtlfBc6IVCPm+ZEcyHIaQ6D1eulqM0ku/NyQms
+         3tjWWhhtH1idCzNNZmw5TAtsv8NlAomjsSM60vGczZwnuj79WDTSqj2hNdfH2WfUI2T+
+         2tUdmAuJyEEsdz7fD8SMZhbyxlTjrN/X2edsDInzRRLeO/YOWcKWY3/9Ny1zgE/Dt+CC
+         hnnvipbiv6e7BFfpt9oItHnm6vbg+9rvrILF+f1Zj45F/gdsbF5wwEl91vrt8hU1quGn
+         mN5PzBzQ+DnAWI1pAtcZtN/ffWxBE+B9mX44aSV6kydVP3772sr6ACBNTryaznXfjAJq
+         9M3Q==
+X-Gm-Message-State: AOAM531ObNydYPJBIp6EJ1vYYclmtesHMHEQ90ynzR8ckfQjYXsEYEFu
+        IPoSr+GTmm2FCL7UVy31tEMmgkt1rd4=
+X-Google-Smtp-Source: ABdhPJwvan2UYqGozZ4ixz4iSDrhnJrkcHeLP7/F7Pn69DbBlbf933yALBOlRknquOcOd4gLzQ+Ltg==
+X-Received: by 2002:a9d:3a4:: with SMTP id f33mr13068470otf.131.1636041562964;
+        Thu, 04 Nov 2021 08:59:22 -0700 (PDT)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id 3sm1564261oif.12.2021.11.04.08.59.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 Nov 2021 08:59:22 -0700 (PDT)
+Message-ID: <f0a0155c-6f4c-231f-dfbf-3239214f52ff@gmail.com>
+Date:   Thu, 4 Nov 2021 09:59:20 -0600
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.1
-Subject: Re: [RFC net-next/wireless-next v1 2/2] ath10k: move
- device_get_mac_address() and pass errors up the chain
-Content-Language: de-DE
-To:     Mathias Kresin <dev@kresin.me>, netdev@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-wireless@vger.kernel.org,
-        ath10k@lists.infradead.org
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>, Michael Walle <michael@walle.cc>,
-        Arnd Bergmann <arnd@arndb.de>
-References: <20211030174111.1432663-1-chunkeey@gmail.com>
- <20211030174111.1432663-2-chunkeey@gmail.com>
- <2caec4e0-94f4-915c-60d1-c78e7bdc5364@kresin.me>
-From:   Christian Lamparter <chunkeey@gmail.com>
-In-Reply-To: <2caec4e0-94f4-915c-60d1-c78e7bdc5364@kresin.me>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.2.1
+Subject: Re: [PATCH v2] ipv4/raw: support binding to nonlocal addresses
+Content-Language: en-US
+To:     Riccardo Paolo Bestetti <pbl@bestov.io>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+References: <20210321002045.23700-1-pbl@bestov.io>
+ <20211102141921.197561-1-pbl@bestov.io>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20211102141921.197561-1-pbl@bestov.io>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mathias,
-
-On 02/11/2021 23:08, Mathias Kresin wrote:
-> 10/30/21 7:41 PM, Christian Lamparter:
->> --- a/drivers/net/wireless/ath/ath10k/ahb.c
->> +++ b/drivers/net/wireless/ath/ath10k/ahb.c
->> @@ -745,9 +745,11 @@ static int ath10k_ahb_probe(struct platform_device *pdev)
->>       size = sizeof(*ar_pci) + sizeof(*ar_ahb);
->>       ar = ath10k_core_create(size, &pdev->dev, ATH10K_BUS_AHB,
->>                   hw_rev, &ath10k_ahb_hif_ops);
->> -    if (!ar) {
->> -        dev_err(&pdev->dev, "failed to allocate core\n");
->> -        return -ENOMEM;
->> +    if (IS_ERR(ar)) {
->> +        ret = PTR_ERR(ar);
->> +        if (ret != -EPROBE_DEFER)
->> +            dev_err(&pdev->dev, "failed to allocate core: %d\n", ret);
+On 11/2/21 8:19 AM, Riccardo Paolo Bestetti wrote:
+> Add support to inet v4 raw sockets for binding to nonlocal addresses
+> through the IP_FREEBIND and IP_TRANSPARENT socket options, as well as
+> the ipv4.ip_nonlocal_bind kernel parameter.
 > 
-> There's a helper for that: dev_err_probe().
+> Add helper function to inet_sock.h to check for bind address validity on
+> the base of the address type and whether nonlocal address are enabled
+> for the socket via any of the sockopts/sysctl, deduplicating checks in
+> ipv4/ping.c, ipv4/af_inet.c, ipv6/af_inet6.c (for mapped v4->v6
+> addresses), and ipv4/raw.c.
+> 
+> Add test cases with IP[V6]_FREEBIND verifying that both v4 and v6 raw
+> sockets support binding to nonlocal addresses after the change. Add
+> necessary support for the test cases to nettest.
+> 
+> Signed-off-by: Riccardo Paolo Bestetti <pbl@bestov.io>
+> ---
 
-I was looking for that. Thank you! :-)
-(I need to check if this device_get_mac_address() all works
-with 5.15-next or not. It's probably easier to wait until
-5.16-rc1-wt gets released).
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
-Regards,
-Christian
+
