@@ -2,110 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99304444F13
-	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 07:45:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B9DA444F5B
+	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 07:51:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230450AbhKDGrk convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 4 Nov 2021 02:47:40 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:49367 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231612AbhKDGqP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 02:46:15 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1A46hAUH1009054, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36503.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1A46hAUH1009054
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 4 Nov 2021 14:43:10 +0800
-Received: from RTEXMBS01.realtek.com.tw (172.21.6.94) by
- RTEXH36503.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Thu, 4 Nov 2021 14:43:09 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Thu, 4 Nov 2021 02:43:09 -0400
-Received: from RTEXMBS04.realtek.com.tw ([fe80::dc53:1026:298b:c584]) by
- RTEXMBS04.realtek.com.tw ([fe80::dc53:1026:298b:c584%5]) with mapi id
- 15.01.2308.015; Thu, 4 Nov 2021 14:43:09 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     "cgel.zte@gmail.com" <cgel.zte@gmail.com>
-CC:     "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Ye Guojin <ye.guojin@zte.com.cn>,
+        id S230301AbhKDGyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Nov 2021 02:54:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53012 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230087AbhKDGyS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 02:54:18 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39D6DC061714;
+        Wed,  3 Nov 2021 23:51:41 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id s24so5757005plp.0;
+        Wed, 03 Nov 2021 23:51:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3h+irhGayDiswcx7a1bXBLxDjkUlVsPyCqdz/tgrKlI=;
+        b=AQCOglP/FxgO9OL2dOh5ti8PZVoG0NtH+eGDizLJAmEOZyG0rGPNyKVALrL2NZQlN9
+         aPwtan6ahyG1uMYuUhgxngw1Y0kZBNsKrTU/UogAR1LiZM6jTGjV4k0tzykF73j6JUDH
+         YGqlgEo/40sBhV/PI48HjHa3DoiPliUwuDnqghXozVSQ1Da+Spn3s4dayZxQC9jnhTVB
+         MZB4qOEkKjTBDM3qntK0Ss/A4sqCtziVNw6m2tzTjqiUErTMH8q6bCieJCfF0TJy+zu1
+         S6nX9XKjNEGS49gqt/XxKftkIlMHXx5jyuU7aWdbKvKuDr33aPMLDCef4eXXLwYrUSd6
+         tPEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3h+irhGayDiswcx7a1bXBLxDjkUlVsPyCqdz/tgrKlI=;
+        b=LuAq2H+ssbKunjMK5bGVOz6e18dqKrgpfdOqNoX6qDNdX7+zBWgZGlznTMx3Zkb8ss
+         beNbdv1zVHQS1+R4whz2/to4HvCNy+TLpKG9tV5Dcju5LGbbjJXLTvun0GgFRQBMTru2
+         Dao+2Qt6qflU3LdShvUcYevniZLNjzox0FhBN3875XjhQ0KIBa96icNq8xO9HABA69Nl
+         Ud0gdTikhWpXizEj6+w8rtnLr1Kq6v9OtYDO1HqOc4EuR5/JvdVkpPKEGZs7osog/3fD
+         aO54wU4ezpfD4ZTr/phsE/T8Gk9+1N11REbTVD5Mgpz7U9wxdjnt4n3qR3O/SAc6ZaM8
+         uvww==
+X-Gm-Message-State: AOAM531oha2tOE6GgTZdlRTpz+pE3J0rmpBlwIRn7F3nYRB21nG9eaWq
+        wfQyPyoOrm1tUMucpm9nIbo=
+X-Google-Smtp-Source: ABdhPJxHmbUVPftUW7Kpr//QrcR95MmE/TdmYbfckjm6fjP1lQc1O7BJqzYRup4KY7CEplMwMwMSmA==
+X-Received: by 2002:a17:902:9348:b0:141:5862:28b4 with SMTP id g8-20020a170902934800b00141586228b4mr42856976plp.17.1636008700796;
+        Wed, 03 Nov 2021 23:51:40 -0700 (PDT)
+Received: from debian11-dev-61.localdomain (192.243.120.180.16clouds.com. [192.243.120.180])
+        by smtp.gmail.com with ESMTPSA id v14sm4927823pfu.171.2021.11.03.23.51.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Nov 2021 23:51:40 -0700 (PDT)
+From:   davidcomponentone@gmail.com
+X-Google-Original-From: yang.guang5@zte.com.cn
+To:     steffen.klassert@secunet.com
+Cc:     davidcomponentone@gmail.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Guang <yang.guang5@zte.com.cn>,
         Zeal Robot <zealci@zte.com.cn>
-Subject: RE: [PATCH] rtw89: remove unnecessary conditional operators
-Thread-Topic: [PATCH] rtw89: remove unnecessary conditional operators
-Thread-Index: AQHX0ULQZJxC+uGsq0GE1mLzw53Hj6vy67XQ
-Date:   Thu, 4 Nov 2021 06:43:09 +0000
-Message-ID: <a540a609d7e44993ac830d439e417835@realtek.com>
-References: <20211104061119.1685-1-ye.guojin@zte.com.cn>
-In-Reply-To: <20211104061119.1685-1-ye.guojin@zte.com.cn>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS01.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/11/4_=3F=3F_02:09:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Subject: [PATCH] xfrm: use swap() to make code cleaner
+Date:   Thu,  4 Nov 2021 14:51:28 +0800
+Message-Id: <20211104065129.1817139-1-yang.guang5@zte.com.cn>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36503.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 11/04/2021 06:26:06
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 167084 [Nov 03 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: pkshih@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 465 465 eb31509370142567679dd183ac984a0cb2ee3296
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: realtek.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 11/04/2021 06:28:00
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-> -----Original Message-----
-> From: cgel.zte@gmail.com <cgel.zte@gmail.com>
-> Sent: Thursday, November 4, 2021 2:11 PM
-> To: Pkshih <pkshih@realtek.com>
-> Cc: kvalo@codeaurora.org; davem@davemloft.net; kuba@kernel.org; linux-wireless@vger.kernel.org;
-> netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Ye Guojin <ye.guojin@zte.com.cn>; Zeal Robot
-> <zealci@zte.com.cn>
-> Subject: [PATCH] rtw89: remove unnecessary conditional operators
-> 
-> From: Ye Guojin <ye.guojin@zte.com.cn>
-> 
-> The conditional operator is unnecessary while assigning values to the
-> bool variables.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Ye Guojin <ye.guojin@zte.com.cn>
+Use the macro 'swap()' defined in 'include/linux/minmax.h' to avoid
+opencoding it.
 
-Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+---
+ net/ipv6/ah6.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-[...]
-
+diff --git a/net/ipv6/ah6.c b/net/ipv6/ah6.c
+index 828e62514260..b5995c1f4d7a 100644
+--- a/net/ipv6/ah6.c
++++ b/net/ipv6/ah6.c
+@@ -175,7 +175,6 @@ static void ipv6_rearrange_destopt(struct ipv6hdr *iph, struct ipv6_opt_hdr *des
+ 			 * See 11.3.2 of RFC 3775 for details.
+ 			 */
+ 			if (opt[off] == IPV6_TLV_HAO) {
+-				struct in6_addr final_addr;
+ 				struct ipv6_destopt_hao *hao;
+ 
+ 				hao = (struct ipv6_destopt_hao *)&opt[off];
+@@ -184,9 +183,7 @@ static void ipv6_rearrange_destopt(struct ipv6hdr *iph, struct ipv6_opt_hdr *des
+ 							     hao->length);
+ 					goto bad;
+ 				}
+-				final_addr = hao->addr;
+-				hao->addr = iph->saddr;
+-				iph->saddr = final_addr;
++				swap(hao->addr, iph->saddr);
+ 			}
+ 			break;
+ 		}
+-- 
+2.30.2
 
