@@ -2,89 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E29B4458E5
-	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 18:46:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67E514458F1
+	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 18:49:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232941AbhKDRtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Nov 2021 13:49:35 -0400
-Received: from 113.196.136.146.ll.static.sparqnet.net ([113.196.136.146]:42198
-        "EHLO mg.sunplus.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S232318AbhKDRtd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 13:49:33 -0400
-X-Greylist: delayed 44076 seconds by postgrey-1.27 at vger.kernel.org; Thu, 04 Nov 2021 13:49:32 EDT
-X-MailGates: (flag:3,DYNAMIC,RELAY,NOHOST:PASS)(compute_score:DELIVER,40
-        ,3)
-Received: from 172.17.9.112
-        by mg02.sunplus.com with MailGates ESMTP Server V5.0(53130:0:AUTH_RELAY)
-        (envelope-from <wells.lu@sunplus.com>); Fri, 05 Nov 2021 01:46:36 +0800 (CST)
-Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
- sphcmbx02.sunplus.com.tw (172.17.9.112) with Microsoft SMTP Server (TLS) id
- 15.0.1497.23; Fri, 5 Nov 2021 01:46:36 +0800
-Received: from sphcmbx02.sunplus.com.tw ([::1]) by sphcmbx02.sunplus.com.tw
- ([fe80::f8bb:bd77:a854:5b9e%14]) with mapi id 15.00.1497.023; Fri, 5 Nov 2021
- 01:46:36 +0800
-From:   =?utf-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Randy Dunlap <rdunlap@infradead.org>,
-        Wells Lu <wellslutw@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>
-Subject: RE: [PATCH 2/2] net: ethernet: Add driver for Sunplus SP7021
-Thread-Topic: [PATCH 2/2] net: ethernet: Add driver for Sunplus SP7021
-Thread-Index: AQHX0KKBcebTINBXKk6D/f7Frpi9sKvxbhgAgAClKgD//5f5gIABJz+w///9xoCAANUOEA==
-Date:   Thu, 4 Nov 2021 17:46:35 +0000
-Message-ID: <c51d2927eedb4f3999b8361a44526a07@sphcmbx02.sunplus.com.tw>
-References: <cover.1635936610.git.wells.lu@sunplus.com>
- <650ec751dd782071dd56af5e36c0d509b0c66d7f.1635936610.git.wells.lu@sunplus.com>
- <d0217eed-a8b7-8eb9-7d50-4bf69cd38e03@infradead.org>
- <159ab76ac7114da983332aadc6056c08@sphcmbx02.sunplus.com.tw>
- <YYLjaYCQHzqBzN1l@lunn.ch>
- <36d5bc6d40734ae0a9c1fb26d258f49f@sphcmbx02.sunplus.com.tw>
- <YYPZN9hPBJTBzVUl@lunn.ch>
-In-Reply-To: <YYPZN9hPBJTBzVUl@lunn.ch>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [172.25.108.39]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S231689AbhKDRw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Nov 2021 13:52:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33496 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231486AbhKDRwZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 13:52:25 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A9DC061714;
+        Thu,  4 Nov 2021 10:49:47 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id h74so6600710pfe.0;
+        Thu, 04 Nov 2021 10:49:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Er+ttp0UKGdAr3bm8pX3+iTWGGsJD3H0D2S+9yKdazs=;
+        b=TnwaPd/poAV3uEmYRjV0rvoQudulAmE/zGKiWZpD2o7bhVBFGCXb+jYuEP/mmUicFn
+         iylfttG038izYN1UutxAhIN2R4esCOYCEUSPZqlGZ0+U5mvF09p2Ov0trQQqAC1sZTxo
+         cQN+1HQ4AyUkY43BdOhCAC5HUOGb+YbNZ37WvOmq3XDYpMOmz9iEUUb0btmCRw92dhjU
+         x1qJzk2ra0xmOUSUILB3VBvmYp7krKNZcuZWLO+JGb08/zoOO+1JBo33LY2QTOGifhyf
+         9qoqKiby02DVRBbHBw04ZqNt+3XU8oXf4hB67LfsCODJcGaVDCEGVmaH3TT0ARsFp2S3
+         lBEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Er+ttp0UKGdAr3bm8pX3+iTWGGsJD3H0D2S+9yKdazs=;
+        b=vdG6WeXMs2ORtjw1VBmyTrCnJA7VUzYiPAxwb5f2skDswf2qEvbd69i62VQU8ueK02
+         CQYRmx1r/6+QGsw0kbw1vRsxJ6y1Z3tK54ZF6Fn/F/6LsScdUdFgLxbbEaPHcURqIZcZ
+         BQ5UXpM586ZE3E+2sXzQ1ZRQXHcHq1nfRFMa29k0uOkzTEK7fWTeVzb1crAJHmH394Z+
+         +5W2PsQ4VRZ+fNeSxVGFurm04uZ3hMrS4tVfOXEHauSxlyLatQp0ylroMySLjppvKrKw
+         p1LwU7xG94cTHt2rAmhW7JWKEn7fxAtM0sbA7HXZUyDWhHdLPFy67tT/TB4A9BhIcV04
+         zxmQ==
+X-Gm-Message-State: AOAM533X+QTlf8TvbUoV6nXopPqC/ekcDZ209FfyPEbdp75EBl+Ba+JR
+        P6WC4A+vo0q1weRDnK9Pnyo=
+X-Google-Smtp-Source: ABdhPJzA2ubj3mwJbGlNTyL+N44DiBjUSAXGw7ZwvD0zAlq16bIgMOC1NLckktcT7jsV6p8NzIosLA==
+X-Received: by 2002:a62:e514:0:b0:47c:12f6:3aae with SMTP id n20-20020a62e514000000b0047c12f63aaemr54048996pff.26.1636048186937;
+        Thu, 04 Nov 2021 10:49:46 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:645:c000:2163:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id p7sm4307095pgn.52.2021.11.04.10.49.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Nov 2021 10:49:46 -0700 (PDT)
+Date:   Thu, 4 Nov 2021 10:49:44 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Martin Kaistra <martin.kaistra@linutronix.de>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 4/7] net: dsa: b53: Add PHC clock support
+Message-ID: <20211104174944.GC32548@hoboy.vegasvil.org>
+References: <20211104133204.19757-1-martin.kaistra@linutronix.de>
+ <20211104133204.19757-5-martin.kaistra@linutronix.de>
+ <20211104172843.GA32548@hoboy.vegasvil.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211104172843.GA32548@hoboy.vegasvil.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBPbiBUaHUsIE5vdiAwNCwgMjAyMSBhdCAwNTozMTo1N0FNICswMDAwLCBXZWxscyBMdSDlkYLo
-irPpqLAgd3JvdGU6DQo+ID4gSGksDQo+ID4NCj4gPiBUaGFua3MgYSBsb3QgZm9yIHJldmlldy4N
-Cj4gPg0KPiA+ID4NCj4gPiA+ID4gY29uZmlnIE5FVF9WRU5ET1JfU1VOUExVUw0KPiA+ID4gPiAJ
-Ym9vbCAiU3VucGx1cyBkZXZpY2VzIg0KPiA+ID4gPiAJZGVmYXVsdCB5DQo+ID4gPiA+IAlkZXBl
-bmRzIG9uIEFSQ0hfU1VOUExVUw0KPiA+ID4NCj4gPiA+IERvZXMgaXQgYWN0dWFsbHkgZGVwZW5k
-IG9uIEFSQ0hfU1VOUExVUz8gV2hhdCBkbyB5b3UgbWFrZSB1c2Ugb2Y/DQo+ID4NCj4gPiBBUkNI
-X1NVTlBMVVMgd2lsbCBiZSBkZWZpbmVkIGZvciBTdW5wbHVzIGZhbWlseSBzZXJpZXMgU29DLg0K
-PiA+IEV0aGVybmV0IGRldmljZXMgb2YgU3VucGx1cyBhcmUgZGVzaWduZWQgYW5kIHVzZWQgZm9y
-IFN1bnBsdXMgU29DLg0KPiA+IFNvIGZhciwgb25seSB0d28gU29DIG9mIFN1bnBsdXMgaGF2ZSB0
-aGUgbmV0d29yayBkZXZpY2UuDQo+ID4gSSdkIGxpa2UgdG8gc2hvdyB1cCB0aGUgc2VsZWN0aW9u
-IG9ubHkgZm9yIFN1bnBsdXMgU29DLg0KPiANCj4gU28gaXQgZG9lcyBub3QgYWN0dWFsbHkgZGVw
-ZW5kIG9uIEFSQ0hfU1VOUExVUy4gVGhlcmUgYXJlIGEgZmV3IGNhc2VzIHdoZXJlDQo+IGRyaXZl
-cnMgaGF2ZSBuZWVkZWQgdG8gY2FsbCBpbnRvIGFyY2ggc3BlY2lmaWMgY29kZSwgd2hpY2ggc3Rv
-cHMgdGhlbSBidWlsZGluZw0KPiBmb3IgYW55IG90aGVyIGFyY2guDQo+IA0KPiA+ID4gSWRlYWxs
-eSwgeW91IHdhbnQgaXQgdG8gYWxzbyBidWlsZCB3aXRoIENPTVBJTEVfVEVTVCwgc28gdGhhdCB0
-aGUNCj4gPiA+IGRyaXZlciBnZXRzIGJ1aWxkIGJ5IDAtZGF5IGFuZCBhbGwgdGhlIG90aGVyIGJ1
-aWxkIGJvdHMuDQo+ID4NCj4gPiBJIGFtIG5vdCBzdXJlIGlmIHRoaXMgaXMgbWFuZGF0b3J5IG9y
-IG5vdC4NCj4gPiBTaG91bGQgSSBhZGQgQ09NUElMRV9URVNUIGFzIGJlbG93Pw0KPiA+DQo+ID4g
-CWRlcGVuZHMgb24gQVJDSF9TVU5QTFVTIHwgQ09NUElMRV9URVNUDQo+IA0KPiBZZXMuDQo+IA0K
-PiA+IFllcywgdGhlIGRldmljZSBpcyBub3cgb25seSBmb3IgU3VucGx1cyBTUDcwMjEgU29DLg0K
-PiA+IERldmljZXMgaW4gZWFjaCBTb0MgbWF5IGhhdmUgYSBiaXQgZGlmZmVyZW5jZSBiZWNhdXNl
-IG9mIGFkZGluZyBuZXcNCj4gPiBmdW5jdGlvbiBvciBpbXByb3Zpbmcgc29tZXRoaW5nLg0KPiAN
-Cj4gSWYgaXQgd2lsbCBjb21waWxlIHdpdGggQ09NUElMRV9URVNUIG9uIHg4NiwgbWlwcywgZXRj
-LCB5b3Ugc2hvdWxkIGFsbG93IGl0IHRvDQo+IGNvbXBpbGUgd2l0aCBDT01QSUxFX1RFU1QuIFlv
-dSBnZXQgYmV0dGVyIGNvbXBpbGUgdGVzdGluZyB0aGF0IHdheS4NCj4gDQo+ICAgICAgQW5kcmV3
-DQoNCk5vLCB3ZSBvbmx5IGRldmVsb3AgYXJtLWJhc2VkIFNvQywgbmV2ZXIgZm9yIHg4NiBvciBt
-aXBzLg0KV2UgbmV2ZXIgY29tcGlsZSB0aGUgZHJpdmVyIGZvciB4ODYgb3IgbWlwcyBtYWNoaW5l
-Lg0KDQo=
+On Thu, Nov 04, 2021 at 10:28:43AM -0700, Richard Cochran wrote:
+> Instead of generic work, consider implementing
+> ptp_clock_info::do_aux_work instead.
+> 
+> The advantage is that you get a named kernel thread that can be given
+> scheduling priority administratively.
+
+I see you are using do_aux_work in Patch 6.  You could use the kthread
+for both overflow avoidance and transmit time stamps.
+
+> Thanks,
+> Richard
