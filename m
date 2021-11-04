@@ -2,106 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62A6B445621
-	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 16:16:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B06A445658
+	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 16:30:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231340AbhKDPSg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Nov 2021 11:18:36 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:2918 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231152AbhKDPSg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 11:18:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1636038958; x=1667574958;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=bZ4tH7bxY3N/i7tJeaPbPXNGW0M5MDZHNwSM9AH0YU8=;
-  b=gtnJ2B5tKvRTEQ62Yfp3wL5vJeHrnNvLglFLifQTdl1ii/H2IFaaJOQL
-   f9SlF2L3vzrNCDiKKPVh7TlrXk3kgMHt2VThyYk60/z0LYu4EC45OBGSM
-   idgxx8SuwoDTXEUjn3M5Ko15qLq9LgP75RkGpF+AP3zP4XWZoUdcdBV+b
-   9YLgEYTMQPUUF0MEV9eBgRG7MNLlNve86bMYgMgv+nedtBDjfoTG4OYTD
-   5V8/Yv/5iN9AcJ86MmxArK9BKE7Cj1Ujj1GlOKQxdutEHrkF48beYVpAi
-   QRNshFiOcKYylYD7BhUIBxuhgJPCy8r0N+E1lu6KIcpYs72xdqxVvnqBc
-   Q==;
-IronPort-SDR: YCpnUhJv5P3ZR1JD2xV2Zpbnc3WLso4H8cPr24AZQmeZI8jZOS2ZF2XYD1RArrriSssRKw4I/a
- oNfyNoPqkrjxB0leSdvui+T4cEzb/AtIRko2qnOCtKsBlwZjGPc/H8g5w/Z3ZkyfiDvxWA6kXK
- 7GY/Enke3pjazBf6dHXqvFS7Cuu8clEx4hSVZhXMvTPBD0/eA0zKvfaW7wLMxN9kcunYqUnjkp
- PzmkI1yRwoSaDlnpk8kiS/P9oeDOT6QjJaiqXpoF3BvZJrWbff1JeLZNj6SPdTiRIgev5Ht3Jp
- wyGzpAn4dWFA1CevAilFeJPQ
-X-IronPort-AV: E=Sophos;i="5.87,209,1631602800"; 
-   d="scan'208";a="150735507"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Nov 2021 08:15:57 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Thu, 4 Nov 2021 08:15:56 -0700
-Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2176.14 via Frontend
- Transport; Thu, 4 Nov 2021 08:15:54 -0700
-Subject: Re: [net-next PATCH v5] net: macb: Fix several edge cases in validate
-To:     Parshuram Raju Thombare <pthombar@cadence.com>,
-        Sean Anderson <sean.anderson@seco.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Milind Parab <mparab@cadence.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        "Russell King" <linux@armlinux.org.uk>
-References: <20211101150422.2811030-1-sean.anderson@seco.com>
- <CY4PR07MB27576B46D37E39F9F1789A31C18C9@CY4PR07MB2757.namprd07.prod.outlook.com>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-Message-ID: <5305c72d-e8f0-c4cd-3a85-2f12a0f644c8@microchip.com>
-Date:   Thu, 4 Nov 2021 16:15:53 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S231450AbhKDPcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Nov 2021 11:32:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41466 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229970AbhKDPcq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Nov 2021 11:32:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id C5AE7611C4;
+        Thu,  4 Nov 2021 15:30:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636039807;
+        bh=vjn1Lwm7oWdvDDcHq4GCLUqdhjQ7tGTX2vpcbSflNho=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=CvmVtSmqYzJN+zppDD76m9LfNJI7kh0ckolbJALV1Fyjk7DH3wkNz1OEDLffbw6wX
+         e3W+bN6YHd1/33QuZMlY1SgLnB2yUCnbKGLAxmM7Q0E+Ue2dlNCUBIfekEVepeQA/D
+         PzEFVwQwwQDhzULmZGGYqDKTaXd47ml5fhOqZheJFjWhBHYmB/cMnEUOSr/JB4bqR+
+         zGVO6QAbBYeo91/QZXmbg4IUkjyjkVw84/lpFw7EpctceN7YJRCCsOXZl4llWQwoFo
+         MOlNtC4sGAcdry6zmEzTXObg/Vi70KxyL+NZE0hXWKcdO+wJSEmoDqZU8+z4xHTDiz
+         vB4u5Fzb54WHA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BA3AB609B8;
+        Thu,  4 Nov 2021 15:30:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <CY4PR07MB27576B46D37E39F9F1789A31C18C9@CY4PR07MB2757.namprd07.prod.outlook.com>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] selftests: net: reuseport_bpf_numa: skip nodes not available
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163603980775.7046.17291736320593809022.git-patchwork-notify@kernel.org>
+Date:   Thu, 04 Nov 2021 15:30:07 +0000
+References: <20211101145317.286118-1-kleber.souza@canonical.com>
+In-Reply-To: <20211101145317.286118-1-kleber.souza@canonical.com>
+To:     Kleber Sacilotto de Souza <kleber.souza@canonical.com>
+Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        daniel@iogearbox.net, shuah@kernel.org, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03/11/2021 at 11:14, Parshuram Raju Thombare wrote:
-> Hi Sean,
-> 
-> Thanks for this improvement.
-> 
->> +      if (!macb_is_gem(bp) ||
->> +          (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE)) {
->> +              have_1g = true;
->> +              if (bp->caps & MACB_CAPS_PCS)
->> +                      have_sgmii = true;
->> +              if (bp->caps & MACB_CAPS_HIGH_SPEED)
->> +                      have_10g = true;
-> 
-> As I understand, MACB_CAPS_GIGABIT_MODE_AVAILABLE is used as a quirk in configs
-> to prevent giga bit operation support, Nicolas should have more information about this.
+Hello:
 
-That's right Parshuram.
+This patch was applied to bpf/bpf.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
 
-> macb_is_gem() tells whether giga bit operations is supported by HW, MACB_CAPS_PCS indicate
-> whether PCS is included in the design (needed for SGMII and 10G operation), MACB_CAPS_HIGH_SPEED
-> indicate if design supports 10G operation.
+On Mon,  1 Nov 2021 15:53:17 +0100 you wrote:
+> In some platforms the numa node numbers are not necessarily consecutive,
+> meaning that not all nodes from 0 to the value returned by
+> numa_max_node() are available on the system. Using node numbers which
+> are not available results on errors from libnuma such as:
 > 
-> I believe this should be
+> ---- IPv4 UDP ----
+> send node 0, receive socket 0
+> libnuma: Warning: Cannot read node cpumask from sysfs
+> ./reuseport_bpf_numa: failed to pin to node: No such file or directory
 > 
->> +      if (macb_is_gem(bp) &&
->> +          (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE)) {
->> +              have_1g = true;
->> +              if (bp->caps & MACB_CAPS_PCS)
->> +                      have_sgmii = true;
->> +              if (bp->caps & MACB_CAPS_HIGH_SPEED)
->> +                      have_10g = true;
+> [...]
 
+Here is the summary with links:
+  - selftests: net: reuseport_bpf_numa: skip nodes not available
+    https://git.kernel.org/bpf/bpf/c/a38bc45a08e9
 
-Regards,
-   Nicolas
-
+You are awesome, thank you!
 -- 
-Nicolas Ferre
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
