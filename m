@@ -2,79 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 303FF445758
-	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 17:38:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E777544576D
+	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 17:44:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231611AbhKDQlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Nov 2021 12:41:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44916 "EHLO
+        id S231676AbhKDQrJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Nov 2021 12:47:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230058AbhKDQlH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 12:41:07 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB5BC061714;
-        Thu,  4 Nov 2021 09:38:29 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id g184so5894464pgc.6;
-        Thu, 04 Nov 2021 09:38:29 -0700 (PDT)
+        with ESMTP id S231684AbhKDQrH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 12:47:07 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41826C06120A;
+        Thu,  4 Nov 2021 09:44:29 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id b13so8209111plg.2;
+        Thu, 04 Nov 2021 09:44:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=XdJVrf9pNAl7BlZCVazZHbi0TUrSpMei3Pt6/bMN1co=;
-        b=pgRUxQKGU0e/5ENng9OIGIRQURz0UEq5MLJxMdiwhh69EldcGsquum8f49E9ymKT4r
-         6L7+rEFf4LFQPNKNLnOm8f5SLf75idGpWxPSnEUfet2MByu9jsX5tzs8aWaAqDCsOA+F
-         BXQXoyL2nSFvX9L3I9+U19ZxOZkNW3LvC/CDd0OiJUobAqOcLaM6seX6FAGMfI37F12N
-         WY86q3Yc7LVC0H1UtLpxW+7iNY1XO0pNRpIRo/cVUZjYYHXVFvGFwrASywo9ubThKJDA
-         DoWkgzurtwpqEajVfzL/2N6SJIbQI2G4ROAvB2BSw8X7TmG82F2l0rNgR3RGWTFAdqUz
-         Aczg==
+        bh=6KJURW1u7e7p8ktWh7btj0F0HKwNRv2B8zhFqoFWrBM=;
+        b=NTcpIlonhwiDYnrpEIjfUJfoGuhtNj1Euba8n9FTt/EPwDEO5Cctwij3oZtChG2r/n
+         I7Yo01xWHo4JgotFSUncL3yh9CQ0c+ozLlLXi3xy8l46n7SfhluzVmDfYFnu45jZ0VeX
+         pFxZ91uHQzJWswy6KNx0txxPbOBGdq8ORZAIU8y33WxiNr2zhoDnpCa92999mOxAJ/6L
+         DqE4m2SN8UrqBxbkVgkYI46PMY2kcx9lQ+LXDUPjqe0hBdvuckfI9y8RQF6+gvTHCqdn
+         emZKxs4MLOuA4bfY0L/3hDd4G3gmFnPZ2cqdxQKnAbcxcfdV46Cu6bhr+wNlj5iWqMve
+         mmCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=XdJVrf9pNAl7BlZCVazZHbi0TUrSpMei3Pt6/bMN1co=;
-        b=xXn7EkbHBFnT0OX9CK25SV80MHJdcd3CCT9YQaCXmn/Ghz2Q/jMVQvC0nUDMQ1EM59
-         M0ltIau52V2ntK11jiUfhvyps+hflZW18AGp9HVrwKkvaFj5EVvI4LdE1meWdIbdUjW+
-         iepCRGpQmLsqELsRTzQjqWpo4sK3grhQg8yc74vc3TmGNvANsRsp7ZBA/6Ynq7FCjPzJ
-         kwyGsJMlMLGnDHx5jkP+U+UO2N+iIm/QIKsYyM3yChPOs+/6dudsobic9t19rprIFPUR
-         iG9AzBJzNNj+AXBydhuwJjseXmoT4mPxs8FqqwbdgVUT3sPX62DKSffo/KR6XQq0DwyZ
-         Jqrw==
-X-Gm-Message-State: AOAM5321lml1SOiJt4rWO8RuEzbllxY/871gTtRPXyMwUxtbxbiKNfzX
-        BxsWbctQmlKWZy+5yqGDMtqdycpR78Y=
-X-Google-Smtp-Source: ABdhPJxADAWi9XYzDZQndcrS9mjUOymjMRreIKNJMzS5ob/wZJZPyXUyNO+ICpn+Kxych4PVcho7qA==
-X-Received: by 2002:aa7:9250:0:b0:44c:27d1:7f0f with SMTP id 16-20020aa79250000000b0044c27d17f0fmr52275236pfp.41.1636043908403;
-        Thu, 04 Nov 2021 09:38:28 -0700 (PDT)
+        bh=6KJURW1u7e7p8ktWh7btj0F0HKwNRv2B8zhFqoFWrBM=;
+        b=o7JC/653bPPF+mkJ4WIohOQGn9NJ2RgH5ORMqNOGhZ031OdGspYjLpElQxEM6fpV95
+         N8Itgay/aEYnYdnhMU0BYK7Xp7wRX/CWO5Uc3gY12WowyrOYdyvbcyXGQvDpuwy4ZVat
+         /SNtnqJAZZcPuBiGBQztIfzXCmNuTLWtVPtZrpSk87nvQLjQpXkbD3wxznthU+6oUgC4
+         p/hwNpNU6NzkkD0p8UK011ssiuFN8V0jEK6M399cr+JODqJiywUONdMy57Gp2+Ca8lnS
+         57hlzRs1502RwktAseFaVBSOocnD/L6ZwDXMqC8y484Tl24Xjotme2zjEUDV8Upy82H5
+         Wiiw==
+X-Gm-Message-State: AOAM531ZDlzuVWYL9t/vEYLNXPRqkdGpmZKUHSFouEVpdIf2GDDp9G+4
+        MsLFBSXLhMa9RM8L1Ml1K3A=
+X-Google-Smtp-Source: ABdhPJzmAVX0WbDV63R23BnPUT5sXiUy/+ecfcss/9hPyJC8D2qwiZqQYyw3XbCO8dhXWGAgiM3YPQ==
+X-Received: by 2002:a17:90b:4a05:: with SMTP id kk5mr8055736pjb.142.1636044268829;
+        Thu, 04 Nov 2021 09:44:28 -0700 (PDT)
 Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id e7sm4200753pgk.90.2021.11.04.09.38.26
+        by smtp.gmail.com with ESMTPSA id p14sm4402974pjb.9.2021.11.04.09.44.27
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Nov 2021 09:38:27 -0700 (PDT)
-Subject: Re: [PATCH] tcp: Use BIT() for OPTION_* constants
-To:     David Laight <David.Laight@ACULAB.COM>,
-        'Eric Dumazet' <eric.dumazet@gmail.com>,
-        Leonard Crestez <cdleonard@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>
-Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Neal Cardwell <ncardwell@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Enke Chen <enchen@paloaltonetworks.com>,
-        Wei Wang <weiwan@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <cde3385c115ddf64fe14725f57d88a2a089f23e1.1635977622.git.cdleonard@gmail.com>
- <e869d690-939a-a5a5-1a8c-fe4b550b69ab@gmail.com>
- <0b48f1ae32ba49f38dcfe11f912c4ace@AcuMS.aculab.com>
+        Thu, 04 Nov 2021 09:44:28 -0700 (PDT)
+Subject: Re: [PATCH] ipv6: remove useless assignment to newinet in
+ tcp_v6_syn_recv_sock()
+To:     Nghia Le <nghialm78@gmail.com>, edumazet@google.com,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        lukas.bulwahn@gmail.com
+References: <20211104143740.32446-1-nghialm78@gmail.com>
 From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <60a45fd0-7055-e2ca-8254-1ccbc3fb7370@gmail.com>
-Date:   Thu, 4 Nov 2021 09:38:26 -0700
+Message-ID: <bed89145-c9a5-ba76-2446-dee8cd35c7da@gmail.com>
+Date:   Thu, 4 Nov 2021 09:44:26 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <0b48f1ae32ba49f38dcfe11f912c4ace@AcuMS.aculab.com>
+In-Reply-To: <20211104143740.32446-1-nghialm78@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -84,28 +75,29 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 11/4/21 2:17 AM, David Laight wrote:
-> From: Eric Dumazet
->> Sent: 03 November 2021 22:50
->>
->> On 11/3/21 3:17 PM, Leonard Crestez wrote:
->>> Extending these flags using the existing (1 << x) pattern triggers
->>> complaints from checkpatch. Instead of ignoring checkpatch modify the
->>> existing values to use BIT(x) style in a separate commit.
->>>
->>> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
->>>
->>
->> Yes, I guess checkpatch does not know that we currently use at most 16 bits :)
->>
->> u16 options = opts->options;
->>
->> Anyway, this seems fine.
+On 11/4/21 7:37 AM, Nghia Le wrote:
+> The newinet value is initialized with inet_sk() in a block code to
+> handle sockets for the ETH_P_IP protocol. Along this code path,
+> newinet is never read. Thus, assignment to newinet is needless and
+> can be removed.
 > 
-> Doesn't BIT() have a nasty habit of generating 64bit constants
-> that just cause a different set of issues when inverted?
-> It may be safe here - but who knows.
+> Signed-off-by: Nghia Le <nghialm78@gmail.com>
+> ---
+>  net/ipv6/tcp_ipv6.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+> index 2cc9b0e53ad1..551fce49841d 100644
+> --- a/net/ipv6/tcp_ipv6.c
+> +++ b/net/ipv6/tcp_ipv6.c
+> @@ -1263,7 +1263,6 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
+>  
+>  		inet_sk(newsk)->pinet6 = tcp_inet6_sk(newsk);
+>  
+> -		newinet = inet_sk(newsk);
+>  		newnp = tcp_inet6_sk(newsk);
+>  		newtp = tcp_sk(newsk);
+>  
+> 
 
-BIT() does not use/force 64bit constants, plain "unsigned long" ones.
-
-Really this patch looks a nop to me.
+Reviewed-by: Eric Dumazet <edumazet@google.com>
