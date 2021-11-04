@@ -2,84 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 552D34450EF
-	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 10:13:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A140A4450FD
+	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 10:17:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231129AbhKDJPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Nov 2021 05:15:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56324 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230252AbhKDJPi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 05:15:38 -0400
-Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 595B8C061714
-        for <netdev@vger.kernel.org>; Thu,  4 Nov 2021 02:13:01 -0700 (PDT)
-Received: by mail-oi1-x241.google.com with SMTP id l15so8208067oie.8
-        for <netdev@vger.kernel.org>; Thu, 04 Nov 2021 02:13:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=FJS4/5T71szSxuyB4zC+w3VW/dKU2m10Yv1EUUU33j4=;
-        b=XQaJWZqukd/mHqQb8PcXRXIE/Ks7GgOMyeDASnVLKkmMGI06dXajVQWF8JGn8e5g36
-         wcQy8UfDINAVS7JjIsoavSFpKyhgWGiPEci8AvK1lAae9AE6KM5arkxe3j3mgvoUFag1
-         U32pir0rKBRaI6wcu1GQd5qP2t0XvDzDFkUDPELyhwGMwE+La5jucnffJzJQOpLEUx0T
-         TxoD1gydaqV3M4JUgTcvMJRJtpWf67yTTAWJtolcpG1BHxuy4yxq/gTrgZPK+e5iliiE
-         DL6ysKoNTnhvRG4WCJIzm6zRS1bzTdTab/9njIBn6WWXlsJuEDbRL+SXeJaOrEo0rKLb
-         J0aA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=FJS4/5T71szSxuyB4zC+w3VW/dKU2m10Yv1EUUU33j4=;
-        b=iHULoLyzKF/DdeSOfOJidsgLU4FzvI0MVweC9F9hV4W6fGGOpM5U+gO/HBCCIcJYOX
-         DO99Q7k8eFMQfVw8pCJ/IJ5b5HlgVxvJi5Wu6cic/ykxhsEQ8RlO83et7aQlflGwt79U
-         XE7X7nyyH7ZkFqNfniCSmNbZjTadbjKmZfz9MrmesAIMCaTgfR6qPO2L5A3ysuXSxA4B
-         5R2KvIXpK8G5B7eI8LJWnRJGtQNhjNKCWqEOVZBRYWsppvVqcpJYxuzYCk3itqqAo0C/
-         ergtd5a4BW8yk6hiO1+GHX5P7G593FPxF9nwOTte5DSC+7GJUiua1hGDVp/jXUe6TjTm
-         e5zg==
-X-Gm-Message-State: AOAM532LzNO/51olE9WCZn5pwmHlR4jQTLF/UwC1cKm+PwycLMXTIIFO
-        2HkAtccD2wYs7K3PADQLOrr1N2x90rpVBZ7XJRc=
-X-Google-Smtp-Source: ABdhPJwqeoc6PRBgVo1/B61jEcQcIEN9S4sFnId58w2eZ2td3hEK9MHwWiM53lkbNW/7bFEW4dGhvUaMM98eUSVEvk4=
-X-Received: by 2002:a05:6808:8:: with SMTP id u8mr4510326oic.37.1636017180800;
- Thu, 04 Nov 2021 02:13:00 -0700 (PDT)
+        id S231132AbhKDJTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Nov 2021 05:19:50 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:47826 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230497AbhKDJTu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 05:19:50 -0400
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-173-N5bOYDKsPfSbmMVWox4mog-1; Thu, 04 Nov 2021 09:17:10 +0000
+X-MC-Unique: N5bOYDKsPfSbmMVWox4mog-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.24; Thu, 4 Nov 2021 09:17:07 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.024; Thu, 4 Nov 2021 09:17:07 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Eric Dumazet' <eric.dumazet@gmail.com>,
+        Leonard Crestez <cdleonard@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@kernel.org>
+CC:     Dmitry Safonov <0x7f454c46@gmail.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Neal Cardwell <ncardwell@google.com>,
+        "Yuchung Cheng" <ycheng@google.com>,
+        Enke Chen <enchen@paloaltonetworks.com>,
+        Wei Wang <weiwan@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] tcp: Use BIT() for OPTION_* constants
+Thread-Topic: [PATCH] tcp: Use BIT() for OPTION_* constants
+Thread-Index: AQHX0QUloXdkr6nCi0mOO2Zi6AIfEavzFV8g
+Date:   Thu, 4 Nov 2021 09:17:07 +0000
+Message-ID: <0b48f1ae32ba49f38dcfe11f912c4ace@AcuMS.aculab.com>
+References: <cde3385c115ddf64fe14725f57d88a2a089f23e1.1635977622.git.cdleonard@gmail.com>
+ <e869d690-939a-a5a5-1a8c-fe4b550b69ab@gmail.com>
+In-Reply-To: <e869d690-939a-a5a5-1a8c-fe4b550b69ab@gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Received: by 2002:a05:6839:154d:0:0:0:0 with HTTP; Thu, 4 Nov 2021 02:13:00
- -0700 (PDT)
-Reply-To: mussaomra2017@gmail.com
-From:   omra musa <atmcard.consultant100@gmail.com>
-Date:   Thu, 4 Nov 2021 09:13:00 +0000
-Message-ID: <CANsUGieHd6KvBBwDfquiWVU=1S8VE4KzN9rFyTe3akf9zRg7mw@mail.gmail.com>
-Subject: I NEED YOUR URGENT RESPOND.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Good Day,
+RnJvbTogRXJpYyBEdW1hemV0DQo+IFNlbnQ6IDAzIE5vdmVtYmVyIDIwMjEgMjI6NTANCj4gDQo+
+IE9uIDExLzMvMjEgMzoxNyBQTSwgTGVvbmFyZCBDcmVzdGV6IHdyb3RlOg0KPiA+IEV4dGVuZGlu
+ZyB0aGVzZSBmbGFncyB1c2luZyB0aGUgZXhpc3RpbmcgKDEgPDwgeCkgcGF0dGVybiB0cmlnZ2Vy
+cw0KPiA+IGNvbXBsYWludHMgZnJvbSBjaGVja3BhdGNoLiBJbnN0ZWFkIG9mIGlnbm9yaW5nIGNo
+ZWNrcGF0Y2ggbW9kaWZ5IHRoZQ0KPiA+IGV4aXN0aW5nIHZhbHVlcyB0byB1c2UgQklUKHgpIHN0
+eWxlIGluIGEgc2VwYXJhdGUgY29tbWl0Lg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogTGVvbmFy
+ZCBDcmVzdGV6IDxjZGxlb25hcmRAZ21haWwuY29tPg0KPiA+DQo+IA0KPiBZZXMsIEkgZ3Vlc3Mg
+Y2hlY2twYXRjaCBkb2VzIG5vdCBrbm93IHRoYXQgd2UgY3VycmVudGx5IHVzZSBhdCBtb3N0IDE2
+IGJpdHMgOikNCj4gDQo+IHUxNiBvcHRpb25zID0gb3B0cy0+b3B0aW9uczsNCj4gDQo+IEFueXdh
+eSwgdGhpcyBzZWVtcyBmaW5lLg0KDQpEb2Vzbid0IEJJVCgpIGhhdmUgYSBuYXN0eSBoYWJpdCBv
+ZiBnZW5lcmF0aW5nIDY0Yml0IGNvbnN0YW50cw0KdGhhdCBqdXN0IGNhdXNlIGEgZGlmZmVyZW50
+IHNldCBvZiBpc3N1ZXMgd2hlbiBpbnZlcnRlZD8NCkl0IG1heSBiZSBzYWZlIGhlcmUgLSBidXQg
+d2hvIGtub3dzLg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBC
+cmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdp
+c3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
-
-I know this email might come to you as a surprise as first coming from
-one you haven=E2=80=99t met with before.
-
-I am Mr. Omra Musa, the bank manager with ADB bank of Burkina Faso,and
-a personal banker of Dr.Mohamed Farouk Ibrahim, an Egyptian who
-happened to be a medical contractor attached to the overthrown Afghan
-government by the Taliban government.
-
-Dr.Mohamed Farouk Ibrahim deposits some sum of ($15) million USD with
-our bank but he was died by car accidents with his family while trying
-to leave from Kandahar.
-
-The said sum can be used for an investment if you are interested.
-Details relating to the funds are in my position and will present you
-as the Next-of-Kin because there was none, and I shall furnish you
-with more detail once i hear your response.
-
-Regards,
-Mr. Omra Musa
-
-
-you can reply to my private email address at mussaomra2017@gmail.com
