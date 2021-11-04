@@ -2,255 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46F8E4451CC
-	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 11:56:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E6434451DB
+	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 11:59:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230509AbhKDK7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Nov 2021 06:59:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51140 "EHLO
+        id S231253AbhKDLCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Nov 2021 07:02:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229809AbhKDK7I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 06:59:08 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4B2EC061714;
-        Thu,  4 Nov 2021 03:56:30 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id 67-20020a1c1946000000b0030d4c90fa87so3941817wmz.2;
-        Thu, 04 Nov 2021 03:56:30 -0700 (PDT)
+        with ESMTP id S231186AbhKDLCQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 07:02:16 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54BD7C061205
+        for <netdev@vger.kernel.org>; Thu,  4 Nov 2021 03:59:38 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id bj27so3562788qkb.11
+        for <netdev@vger.kernel.org>; Thu, 04 Nov 2021 03:59:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wWWXhfRjzRysjE0NOvlFjKePJBuoPIi4Ry+b748tzNs=;
-        b=JBxTmWbY70ZlQw09JgizVDUINgs67bQfkDVVClj4C6KjRfii0FJMzNEd7yRcm6EKlf
-         /q0HG1mTt0mNvjq60isCXGrrclPlOM5OK1DE3gFl3fj7h5C0dQLvA21a10/lQ7GcRiA/
-         W10TOLn7RLRKaUvhoE08zNomINd4nunVUPyHBLGxHAs23mguo4hsXBeS96iBVdxn+moA
-         B8QRoTsASW1voZxfGc6ozHOd4xBShjDhdd4PWMlnnWwyCTKqZAOnW7KQ6gsr06J6f46d
-         VbdNJBbjhAgAvViBVEgTqUxtvotX7CKOpgUZmdWzJW2vaEFFNyrDF3NEbehMHtWtOPJJ
-         5jkg==
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=yk5XgrdOGaW3p+sZvRRyB5VgAQCpuos1tmstcywTUC4=;
+        b=XX1YBYYHmk1cGhVONndzHMCKWuohW4I4dM1TtuQ9FZOpOuKRiNQ7W8lU0mLOfMXMln
+         tebH6GbKj86VppLGa3M9D3purC3zTa3kl4odzXyqfOMep4hmM3a0qwX/osMUd86fnJex
+         U0DIvfNePhGdPEOvHNjDsXdK5/GWVJUwXUERwJiGXk/2e2mRrXAYzCD3Qpc+LQ/sb0Gb
+         cThFB+zRxr3kmrwkLC58FnNMtAQW3aKy7QMCYwgjlB/2fidVHlkLUMDLdampm91nvXDi
+         09TcE3LMsn5DCPDnkN07mT+vT4KeTjY8hiKaOrekAU9PQlcPpsIzBdCZ4ckpq+SnY5DM
+         w6JA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wWWXhfRjzRysjE0NOvlFjKePJBuoPIi4Ry+b748tzNs=;
-        b=7wr6Hhsg0LxaUBE5UUtxg0VTiQ+sq5GANq8Kv+C79u85k/1LAymJ+GHF/CqVYbaGQG
-         KKqKUv+dDpiRotGHWMc1z2qNpkNo4L8VZELegxK2c7koKPMWW5N6KRRDERFonqJIcrzD
-         NqGofF940bYzyNgqSFaqyZwW8s31IDtwpr+KpqwSpnVtE23kSezYkX3pfEExHXOi0++X
-         ah9l1LWb90HUW+qUaXZ6fghrnSm0gYMkQoABfhKTHeJMU6PgcH4uvQkmciEWKrDYYPDE
-         RO5NYQehKyAQ3fDw443fK5useJCpBrE32Srqt/1dVS6YRdlnsLoOxuND6tLxHEZBosLH
-         OnKw==
-X-Gm-Message-State: AOAM533GSLbQcxZdaBqUZitwoy7P2tLyM/1uTw8M0eCfmRzbW46QRbf8
-        BC12jqUDYGhh7YxNoeDYkNOrH17kJJ3POaPQEKc=
-X-Google-Smtp-Source: ABdhPJw+tXxe/YWGGiXFBzKZux/R5pAIVkL+bontHuXR1Q8ayZE79eFWb/Dpyp6owkTUAKUYRaGQ5reEP/FQM1DAL+g=
-X-Received: by 2002:a05:600c:296:: with SMTP id 22mr22955656wmk.135.1636023389240;
- Thu, 04 Nov 2021 03:56:29 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=yk5XgrdOGaW3p+sZvRRyB5VgAQCpuos1tmstcywTUC4=;
+        b=G2P061MK50WDAHVUYgagLUBr3eZclMBFoqOQdTBalFMabpZ3jf4JadoB/AxG5WIlpf
+         f2gqqEI8z7/N+nzeuSPVWlxo3v1tgm8OFAE9crFemYi3hGH3Kmz1DiVqAtqTecTyDkE0
+         /whdPpXMwjnWd1hBvB+B9H6ZnAx6HblL8tsNNBBOomG4qung9N+YYbcaLxXZOMB8SmaN
+         Me9nMywpKEiJbvjk8GAGvobMDt7bX42FtkC7iZSP7fzJD1hFG/Rt5TaMFE/5uCWjdORz
+         XeKVask49DD+O7ctb2plgI5OwHcr4FgGKUBBroQonVJTIsdQtL0x5LMRr+Fxl7v8H9Ud
+         ZYww==
+X-Gm-Message-State: AOAM5311aKr43VfZjYwbNT2dzINzfGjsIosplm67bvdceEoFHzvWCb96
+        dgm3gZIWFUe0EMthT5xpPMnrBg==
+X-Google-Smtp-Source: ABdhPJzhUAIh65nsdBGdq1eovhwrx6kLDOIqjGAzGexR5wn7UKV0JMgWgt2ucF4Fw2LrUUBhtCqJSg==
+X-Received: by 2002:a05:620a:4086:: with SMTP id f6mr40328253qko.220.1636023577438;
+        Thu, 04 Nov 2021 03:59:37 -0700 (PDT)
+Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-33-142-112-185-132.dsl.bell.ca. [142.112.185.132])
+        by smtp.googlemail.com with ESMTPSA id v14sm101547qkp.9.2021.11.04.03.59.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 Nov 2021 03:59:36 -0700 (PDT)
+Message-ID: <4e602c87-9764-829c-4763-38f4ac057b7c@mojatatu.com>
+Date:   Thu, 4 Nov 2021 06:59:35 -0400
 MIME-Version: 1.0
-References: <cover.1635854268.git.lucien.xin@gmail.com> <cdca8eaca8a0ec5fe4aa58412a6096bb08c3c9bc.1635854268.git.lucien.xin@gmail.com>
- <CAFqZXNtJNnk+iwLnGq6mpdTKuWFmZ4W0PCTj4ira7G2HHPU1tA@mail.gmail.com>
- <CADvbK_cDSKJ+eWeOdvURV_mDXEgEE+B3ZG3ASiKOm501NO9CqQ@mail.gmail.com>
- <CADvbK_ddKB_N=Bj8vtTF_aufmgkqmoQGz+-t7e2nZgoBrDWk8Q@mail.gmail.com>
- <CAHC9VhRQ3wGRTL1UXEnnhATGA_zKASVJJ6y4cbWYoA19CZyLbA@mail.gmail.com>
- <CADvbK_fVENGZhyUXKqpQ7mpva5PYJk2_o=jWKbY1jR_1c-4S-Q@mail.gmail.com> <CAHC9VhSjPVotYVb8-ABescHmnNnDL=9B3M0J=txiDOuyJNoYuw@mail.gmail.com>
-In-Reply-To: <CAHC9VhSjPVotYVb8-ABescHmnNnDL=9B3M0J=txiDOuyJNoYuw@mail.gmail.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Thu, 4 Nov 2021 06:56:17 -0400
-Message-ID: <CADvbK_cmo5Nbrgdt_qLZVnee4M_e4vrw+ocHG5BZpPH_=SS=bQ@mail.gmail.com>
-Subject: Re: [PATCHv2 net 4/4] security: implement sctp_assoc_established hook
- in selinux
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Ondrej Mosnacek <omosnace@redhat.com>,
-        network dev <netdev@vger.kernel.org>,
-        SElinux list <selinux@vger.kernel.org>,
-        Linux Security Module list 
-        <linux-security-module@vger.kernel.org>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        James Morris <jmorris@namei.org>,
-        Richard Haines <richard_c_haines@btinternet.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.1
+Subject: Re: [RFC PATCH v3 0/3] Introduce BPF map tracing capability
+Content-Language: en-US
+To:     Joe Burton <jevburton.kernel@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Petar Penkov <ppenkov@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Joe Burton <jevburton@google.com>
+References: <20211102021432.2807760-1-jevburton.kernel@gmail.com>
+ <aa6081aa-9741-be05-8051-e01909662ff1@mojatatu.com>
+ <CAN22DihBMX=xTMeTQ2-Z8Fa6r=1ynKshbfhFJJ5Jb=-ww_9hDQ@mail.gmail.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+In-Reply-To: <CAN22DihBMX=xTMeTQ2-Z8Fa6r=1ynKshbfhFJJ5Jb=-ww_9hDQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 3, 2021 at 11:17 PM Paul Moore <paul@paul-moore.com> wrote:
+On 2021-11-03 13:12, Joe Burton wrote:
+> That's a good point. Since the probe is invoked before the update takes
+> place, it would not be possible to account for the possibility that the
+> update failed.
+> 
+> Unless someone wants the `pre update' hook, I'll simply adjust the
+> existing hooks' semantics so that they are invoked after the update.
+> As discussed, this better suits the intended use case.
 >
-> On Wed, Nov 3, 2021 at 9:46 PM Xin Long <lucien.xin@gmail.com> wrote:
-> > On Wed, Nov 3, 2021 at 6:01 PM Paul Moore <paul@paul-moore.com> wrote:
-> > > On Wed, Nov 3, 2021 at 1:36 PM Xin Long <lucien.xin@gmail.com> wrote:
-> > > > On Wed, Nov 3, 2021 at 1:33 PM Xin Long <lucien.xin@gmail.com> wrote:
-> > > > > On Wed, Nov 3, 2021 at 12:40 PM Ondrej Mosnacek <omosnace@redhat.com> wrote:
-> > > > > > On Tue, Nov 2, 2021 at 1:03 PM Xin Long <lucien.xin@gmail.com> wrote:
-> > > > > > >
-> > > > > > > Different from selinux_inet_conn_established(), it also gives the
-> > > > > > > secid to asoc->peer_secid in selinux_sctp_assoc_established(),
-> > > > > > > as one UDP-type socket may have more than one asocs.
-> > > > > > >
-> > > > > > > Note that peer_secid in asoc will save the peer secid for this
-> > > > > > > asoc connection, and peer_sid in sksec will just keep the peer
-> > > > > > > secid for the latest connection. So the right use should be do
-> > > > > > > peeloff for UDP-type socket if there will be multiple asocs in
-> > > > > > > one socket, so that the peeloff socket has the right label for
-> > > > > > > its asoc.
-> > > > > > >
-> > > > > > > v1->v2:
-> > > > > > >   - call selinux_inet_conn_established() to reduce some code
-> > > > > > >     duplication in selinux_sctp_assoc_established(), as Ondrej
-> > > > > > >     suggested.
-> > > > > > >   - when doing peeloff, it calls sock_create() where it actually
-> > > > > > >     gets secid for socket from socket_sockcreate_sid(). So reuse
-> > > > > > >     SECSID_WILD to ensure the peeloff socket keeps using that
-> > > > > > >     secid after calling selinux_sctp_sk_clone() for client side.
-> > > > > >
-> > > > > > Interesting... I find strange that SCTP creates the peeloff socket
-> > > > > > using sock_create() rather than allocating it directly via
-> > > > > > sock_alloc() like the other callers of sctp_copy_sock() (which calls
-> > > > > > security_sctp_sk_clone()) do. Wouldn't it make more sense to avoid the
-> > > > > > sock_create() call and just rely on the security_sctp_sk_clone()
-> > > > > > semantic to set up the labels? Would anything break if
-> > > > > > sctp_do_peeloff() switched to plain sock_alloc()?
-> > > > > >
-> > > > > > I'd rather we avoid this SECSID_WILD hack to support the weird
-> > > > > > created-but-also-cloned socket hybrid and just make the peeloff socket
-> > > > > > behave the same as an accept()-ed socket (i.e. no
-> > > > > > security_socket_[post_]create() hook calls, just
-> > > > > > security_sctp_sk_clone()).
-> > >
-> > > I believe the important part is that sctp_do_peeloff() eventually
-> > > calls security_sctp_sk_clone() via way of sctp_copy_sock().  Assuming
-> > > we have security_sctp_sk_clone() working properly I would expect that
-> > > the new socket would be setup properly when sctp_do_peeloff() returns
-> > > on success.
-> > >
-> > > ... and yes, that SECSID_WILD approach is *not* something we want to do.
-> >
-> > SECSID_WILD is used to avoid client's new socket's sid overwritten by
-> > old socket's.
->
-> In the case of security_sctp_sk_clone() the new client socket (the
-> cloned socket) should inherit the label/sid from the original socket
 
-"""
- The initial SCTP client association would
-need to take it's label from the parent process so perhaps that is the
-right answer for all SCTP client associations[2].
+If the goal is to synchronize state between two maps (if i understood
+correctly the intent) then it is more useful to go post-update.
 
-[2] I'm guessing the client associations might also want to follow the
-setsockcreatecon(3) behavior, see selinux_sockcreate_sid() for more
-info.
-"""
-What I got is to take it's label from the parent process, which means
-we get it from socket_sockcreate_sid(), not directly copy from parent
-socket. It seems I misunderstood that, Sorry, maybe we should just
-use the v1 patchset.
-
-
-> (the "parent" in the inherit-from-parent label inheritance behavior
-> discussed earlier).  The selinux_sctp_assoc_established() function
-> should not change the socket's label/sid at all, only the peer label.
-Right, that's what it currently does in this patchset, no *socket* sid
-is changed, and only *socket*'s peer label.
-
-{
-        struct sk_security_struct *sksec = asoc->base.sk->sk_security;
-
-        selinux_inet_conn_established(asoc->base.sk, skb);
-        asoc->peer_secid = sksec->peer_sid;
-        asoc->secid = SECSID_WILD;
-}
-
->
-> > If I understand correctly, new socket's should keep using its original
-> > sid, namely,
-> > the one set from security_socket_[post_]create() on client side. I
-> > AGREE with that.
-> > Now I want to *confirm* this with you, as it's different from the last version's
-> > 'inherit from parent socket' that Richard and Ondrej reviewed.
->
-> Unfortunately I think we are struggling to communicate because you are
-> not familiar with SELinux concepts and I'm not as well versed in SCTP
-> as you are.  As things currently stand, I am getting a disconnect
-> between your explanations and the code you have submitted; they simply
-> aren't consistent from my perspective.
->
-> In an effort to help provide something that is hopefully a bit more
-> clear, here are the selinux_sctp_sk_clone() and
-> selinux_sctp_assoc_established() functions which I believe we need.
-> If you feel these are incorrect, please explain and/or provide edits:
->
->   static void selinux_sctp_sk_clone(struct sctp_association *asoc,
->                                     struct sock *sk, struct sock *newsk)
->   {
->     struct sk_security_struct *sksec = sk->sk_security;
->     struct sk_security_struct *newsksec = newsk->sk_security;
->
->     /* If policy does not support SECCLASS_SCTP_SOCKET then call
->      * the non-sctp clone version.
->      */
->     if (!selinux_policycap_extsockclass())
->       return selinux_sk_clone_security(sk, newsk);
->
->     newsksec->secid = sksec->secid;
->     newsksec->peer_sid = asoc->peer_secid;
->     newsksec->sclass = sksec->sclass;
->     selinux_netlbl_sctp_sk_clone(sk, newsk);
->   }
-here, SCTP is one-to-many socket, and it means one socket can have
-multiple associations or connections, so for sksec->sid in one socket
-it can only save the latest cid, if we peel off an old one, it will get the
-wrong cid on server side.
-
->
->   static void selinux_sctp_assoc_established(struct sctp_association *asoc,
->                                              struct sk_buff *skb)
->   {
->     struct sk_security_struct *sksec = asoc->base.sk->sk_security;
->
->     selinux_inet_conn_established(asoc->base.sk, skb);
->     asoc->peer_secid = sksec->peer_sid;
->   }
->
-> > > > > > > Fixes: 72e89f50084c ("security: Add support for SCTP security hooks")
-> > > > > > > Reported-by: Prashanth Prahlad <pprahlad@redhat.com>
-> > > > > > > Reviewed-by: Richard Haines <richard_c_haines@btinternet.com>
-> > > > > > > Tested-by: Richard Haines <richard_c_haines@btinternet.com>
-> > > > > >
-> > > > > > You made non-trivial changes since the last revision in this patch, so
-> > > > > > you should have also dropped the Reviewed-by and Tested-by here. Now
-> > > > > > David has merged the patches probably under the impression that they
-> > > > > > have been reviewed/approved from the SELinux side, which isn't
-> > > > > > completely true.
-> > > > >
-> > > > > Oh, that's a mistake, I thought I didn't add it.
-> > > > > Will he be able to test this new patchset?
-> > >
-> > > While I tend to try to avoid reverts as much as possible, I think the
-> > > right thing to do is to get these patches reverted out of DaveM's tree
-> > > while we continue to sort this out and do all of the necessary testing
-> > > and verification.
-> > >
-> > > Xin Long, please work with the netdev folks to get your patchset
-> > > reverted and then respin this patchset using the feedback provided.
-> >
-> > Hi, Paul,
-> >
-> > The original issue this patchset fixes is a crucial one (it could cause
-> > peeloff sockets on client side to not work) which I think
-> > can already be fixed now. If you think SECSID_WILD is tricky but
-> > no better way yet, my suggestion is to leave it for now until we have
-> > a better solution to follow up. As I couldn't find a better way to work
-> > it out. Also, we may want to hear Richard's opinion on how it should
-> > work and how this should be fixed.
->
-> While I understand you did not intend to mislead DaveM and the netdev
-> folks with the v2 patchset, your failure to properly manage the
-> patchset's metadata *did* mislead them and as a result a patchset with
-> serious concerns from the SELinux side was merged.  You need to revert
-> this patchset while we continue to discuss, develop, and verify a
-> proper fix that we can all agree on.  If you decide not to revert this
-> patchset I will work with DaveM to do it for you, and that is not
-> something any of us wants.
->
-> --
-> paul moore
-> www.paul-moore.com
+cheers,
+jamal
