@@ -2,105 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16D04444D74
-	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 04:03:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21D91444D9A
+	for <lists+netdev@lfdr.de>; Thu,  4 Nov 2021 04:07:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229738AbhKDDFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 23:05:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59044 "EHLO
+        id S230489AbhKDDKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 23:10:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbhKDDFd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 23:05:33 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47EF1C061714;
-        Wed,  3 Nov 2021 20:02:56 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id u17so4896804plg.9;
-        Wed, 03 Nov 2021 20:02:56 -0700 (PDT)
+        with ESMTP id S230084AbhKDDKF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 23:10:05 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74F7CC06127A;
+        Wed,  3 Nov 2021 20:07:27 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id t127so11150780ybf.13;
+        Wed, 03 Nov 2021 20:07:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8TcziieSeJt2XzZbAoNFqSo9KPYA6B681Bs/Zj9nsrk=;
-        b=GqWwdjaPX9g1LbZMFrN9/ZUb+6tXZyrRrc5BMW2Lz+on6zAAqJomTgqsNC0wVyM8O2
-         Y4J2MZs5v9uCc6IUqIxDYk327HQ2pN3whrwn19UQ1Gs6rB1eTzW5y4X5ZnHOUtQoYDf/
-         eD3hUfLjHZp+0nGKG25leI6XzZEvdIYZ4oPOReFybMKInGL9AwNw8CKsjGNG9BWRZE83
-         Rsj87W5FnI0R1k6aFQLU8BaoZcfjU/1fpaohWQpkaaY+td+7qguy/3xFlBoOmlBr7t4e
-         G9WPPOvusAismJZ6jghViwwsXGif9n+BgJunQsoLRGwKkrm3lA210sL/9iDEr99eJ1sI
-         tkMw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0WKPz/ZeRoXF3sQd10dP+NWHOO9HPyrJzM/t8aB8TmY=;
+        b=Wjd9fo6bCdElVb1YXBrSNg3JCK1xq0lb12EgVc75FhmqjnhmHTbJ/jtsw3PYsZDlZm
+         kYsh2SexP2mUIbZYwgzdxbZBrfuezC7qcE4cJ8WuUbJ1n7/z+TlETrbXjoc/xkNeYAq3
+         T34zIMeOPZUBivg7aZdSIWsRTW8yFpW49O59x79jmgEDZ27Fzg6sN6+7l/lRTdaVKYWV
+         SjAgsqe1JQRc57N6Tv0WKR4TFK8XvTJFgdwsCvww6mKCWbqDIkgnLbioKe6zBfiL7poY
+         mXcjJwGjhXhM6JUWr18wjFJvZTaV/uePkP00x03kdkpTXGsMzVamHVgM8Y0yxw5D7RlH
+         lx7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8TcziieSeJt2XzZbAoNFqSo9KPYA6B681Bs/Zj9nsrk=;
-        b=VQgNh7dYtLrnRQlsGK8a7TqlNOYbOZZUotEZxOfChxAx/i3cR0jSYKRMPEoeYsBsd0
-         rOgFR6tIGOfl9H+jwqYU+DZ5l3qmhWZPOq8FXgoWKk1Piwt8+5981Sv3O2g1hEtfNcLK
-         1ToiyCerp/XWBlwXcoXBYrGQUaTzFdIk4CZKlhKpRowOZ5KrVsO0qLg+yHV0Po1gT3EW
-         Tar5HOyov/Jw1Z/WrxooUGbJzbPygUAJDuvb1NUPScHVu0SIOjjrL6Rvuu+Pf+yB3FBR
-         y5nl5C3i5UYtgvoq9GxuMN6ZCgTLdvN0DCshU+cIU40gejpSsVXpgYMmHOhM0Y8y2f4F
-         aQUg==
-X-Gm-Message-State: AOAM532Coja7v9RpQvdkYcxklLwfYVCQN/K3Stz/510+qrQVG1B7BrwM
-        UCIIcfa1C+gd/GANi2Xj3LYWdYLsvd0=
-X-Google-Smtp-Source: ABdhPJy6Z/KboUdfCUyfnYDryfgHTkZx3YMOYC6uN8AvX7aAJ4jSxhO+Sltxv6NZwElAyrn66kbv5w==
-X-Received: by 2002:a17:902:bf07:b0:138:e32d:9f2e with SMTP id bi7-20020a170902bf0700b00138e32d9f2emr41283567plb.59.1635994975742;
-        Wed, 03 Nov 2021 20:02:55 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id h3sm6259078pjz.43.2021.11.03.20.02.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Nov 2021 20:02:54 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: luo.penghao@zte.com.cn
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luo penghao <luo.penghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH v2] ipv4: Remove useless assignments
-Date:   Thu,  4 Nov 2021 03:02:22 +0000
-Message-Id: <20211104030222.30580-1-luo.penghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0WKPz/ZeRoXF3sQd10dP+NWHOO9HPyrJzM/t8aB8TmY=;
+        b=V7DQJ9siVWzmnOGYmSNtpTOWlTjhtOCL+lXybPeHn2p881uTwN7CyRzv3ZKN6DG5E3
+         RxLDmXpEAwZWYwe9IUl5dl4gLv2aeW7KAWh3GKQBvVLnYiGjMD1wrPk69EpiKdEkZQRI
+         4WFzx6p/JStuGLCD9ci1aa4L/4NJiHVJq5ZThoBuDSz508EGPiAUi/I0L++R9WO2uA2W
+         wXENnRRvO3vZH/zZJ7FaZ+c8JPQAwoyJeWfj3sKdrJLh4wE/DVd1+SKb6fCdv8oNI8WK
+         f54Vxos0cj2M0G1SqPWlKRv5teDY1LW2u596DQSymWcvj8T8tRF8gZ0O05bpfYyBD7U2
+         36Hw==
+X-Gm-Message-State: AOAM530fyQRTuib4yehYLC+kekaggDBRjAIC9TsUb3JKH8g4LopUKF+Q
+        iQvGLQzwTHCRmR0re/vRWDXvEufTpJKtQajJpIo=
+X-Google-Smtp-Source: ABdhPJxWi84Hxm87iRlfOMCXUAAUhHWSPnwgeuEl2u0peU86R5XsuHbk9+iUtB5TvFzOmqRa537B05jdrdvCxWeoh+g=
+X-Received: by 2002:a25:bb0c:: with SMTP id z12mr54482892ybg.181.1635995246618;
+ Wed, 03 Nov 2021 20:07:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAFcO6XMgwuz97EJN+8jh9PJ9seaUbousDBOh9sduM6MZ6MRHxA@mail.gmail.com>
+ <20211103095308.7ff68a7f@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20211103095308.7ff68a7f@kicinski-fedora-PC1C0HJN>
+From:   butt3rflyh4ck <butterflyhuangxx@gmail.com>
+Date:   Thu, 4 Nov 2021 11:07:16 +0800
+Message-ID: <CAFcO6XPA5uR6PLqRYxNmie6jZkkZxpkyTzJmB7pyNNf17gg3Wg@mail.gmail.com>
+Subject: Re: A kernel-infoleak bug in pppoe_getname() in drivers/net/ppp/pppoe.c
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     mostrows@earthlink.net, "David S. Miller" <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Bhaskar Chowdhury <unixbhaskar@gmail.com>,
+        Guillaume Nault <gnault@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: luo penghao <luo.penghao@zte.com.cn>
-
-From: luo penghao <luo.penghao@zte.com.cn>
-
-The assigned local variables will not be used next, so this statement
-should be deleted.
-
-The clang_analyzer complains as follows:
-
-net/ipv4/ipconfig.c:1037:2 warning:
-
-Value stored to 'h' is never read
-
-Changes in v2:
-
-Repair sending email box
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: luo penghao <luo.penghao@zte.com.cn>
----
- net/ipv4/ipconfig.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/net/ipv4/ipconfig.c b/net/ipv4/ipconfig.c
-index 816d8aa..fe2c8e9 100644
---- a/net/ipv4/ipconfig.c
-+++ b/net/ipv4/ipconfig.c
-@@ -1034,7 +1034,6 @@ static int __init ic_bootp_recv(struct sk_buff *skb, struct net_device *dev, str
- 		goto drop;
- 
- 	b = (struct bootp_pkt *)skb_network_header(skb);
--	h = &b->iph;
- 
- 	/* One reply at a time, please. */
- 	spin_lock(&ic_recv_lock);
--- 
-2.15.2
+Ok, I will check. Oh, you are right.
 
 
+
+On Thu, Nov 4, 2021 at 12:53 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Thu, 4 Nov 2021 00:14:31 +0800 butt3rflyh4ck wrote:
+> > Hi, I report a kernel-infoleak bug in pppoe_getname()) in
+> > drivers/net/ppp/pppoe.c.
+> > And we can call getname ioctl to invoke pppoe_getname().
+> >
+> > ###anaylze
+> > ```
+> > static int pppoe_getname(struct socket *sock, struct sockaddr *uaddr,
+> >   int peer)
+> > {
+> > int len = sizeof(struct sockaddr_pppox);
+> > struct sockaddr_pppox sp;    ///--->  define a 'sp' in stack but does
+> > not clear it
+> >
+> > sp.sa_family = AF_PPPOX;   ///---> sp.sa_family is a short type, just
+>
+> But the structure is marked as __packed.
+>
+> > 2 byte sizes.
+> > sp.sa_protocol = PX_PROTO_OE;
+> > memcpy(&sp.sa_addr.pppoe, &pppox_sk(sock->sk)->pppoe_pa,
+> >        sizeof(struct pppoe_addr));
+> >
+> > memcpy(uaddr, &sp, len);
+> >
+> > return len;
+> > }
+> > ```
+> > There is an anonymous 2-byte hole after sa_family, make sure to clear it.
+> >
+> > ###fix
+> > use memset() to clear the struct sockaddr_pppox sp.
+> > ```
+> > diff --git a/drivers/net/ppp/pppoe.c b/drivers/net/ppp/pppoe.c
+> > index 3619520340b7..fec328ad7202 100644
+> > --- a/drivers/net/ppp/pppoe.c
+> > +++ b/drivers/net/ppp/pppoe.c
+> > @@ -723,6 +723,11 @@ static int pppoe_getname(struct socket *sock,
+> > struct sockaddr *uaddr,
+> >         int len = sizeof(struct sockaddr_pppox);
+> >         struct sockaddr_pppox sp;
+> >
+> > +       /* There is an anonymous 2-byte hole after sa_family,
+> > +        * make sure to clear it.
+> > +        */
+> > +       memset(&sp, 0, len);
+> > +
+> >         sp.sa_family    = AF_PPPOX;
+> >         sp.sa_protocol  = PX_PROTO_OE;
+> >         memcpy(&sp.sa_addr.pppoe, &pppox_sk(sock->sk)->pppoe_pa,
+> > ```
+> > The attachment is a patch.
+>
+
+
+--
+Active Defense Lab of Venustech
