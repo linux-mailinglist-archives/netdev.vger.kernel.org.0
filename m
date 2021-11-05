@@ -2,113 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFC66446A11
-	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 21:47:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54B28446A15
+	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 21:48:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233831AbhKEUua (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Nov 2021 16:50:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56776 "EHLO
+        id S233769AbhKEUvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Nov 2021 16:51:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233825AbhKEUu3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Nov 2021 16:50:29 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88FFAC061205
-        for <netdev@vger.kernel.org>; Fri,  5 Nov 2021 13:47:49 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id d21so21100416lfg.7
-        for <netdev@vger.kernel.org>; Fri, 05 Nov 2021 13:47:49 -0700 (PDT)
+        with ESMTP id S232646AbhKEUvN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Nov 2021 16:51:13 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F06C061714;
+        Fri,  5 Nov 2021 13:48:33 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id j9so9317404pgh.1;
+        Fri, 05 Nov 2021 13:48:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OzIUMIfi4RPXj+onsD2EV5D7RTPP5SubsnRhKU4PVU0=;
-        b=STcanu/5UsqXYQCqH+MMlwnQs3HYtefRvaVpdBadT4nknJx7xsOWcuWJFSNqH8EGcc
-         TdVh2U9BG0Ll8NqyhIpXa0bN5nKoC87pay5tODOXNsMRNr0+IAHXgi/TUmPGeXabbWhP
-         3+W8acnoow1uISKEeiZY5onD9DQjC9h+hXYXVghf1fjciY0IGQOfm6jMRGtZoVz1yu6Y
-         L66uVvPlhxO7g8ZOu5c/gQpvqJqjFxaOKvKl8fq51HYnF6uUxqtiYwl48HXw4GxD2nb3
-         IHjr6/nVPUUamL9GA8ojWKkwzsmX8F5+tQaSQbZsmisDmmu8wUMRL82zKCy74IC2jYCj
-         oeDg==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=iSsAsex9Qxf45MGUKoDkmbYaYqPdOA6HoAlu6dhpjH8=;
+        b=jakEfGvgls1jMLVAmauhS/b4rUqhKPjOCKW514sAyxhBXwPV2hKGU5KRpAM6iVHKE7
+         LWTeBQEN/GSJTtopLHMysedEQvudIi1w8mnv3rBRdMrVmmV6FGXf4Pa2thRl5YYCZ5SR
+         Z+Wlf3d2CrlzMI2oAawmXrJRgYiQ2WS/ooNG6VWw5Zn6Ieb/VtHnO8gknOzcOJTcGLjb
+         D8cG8MckWdajaldB+t9XV1bexpIfQv9V035pQLJEPffw/OIVcbC9MfbGy89EPc61I/XV
+         ll6Z6+2cwKy4OaqEj/fWpBwBXITGv5uYn9Rop0Lofz5Xy/rJw3ZkW5WyzQwuyFZsLMNk
+         kLXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OzIUMIfi4RPXj+onsD2EV5D7RTPP5SubsnRhKU4PVU0=;
-        b=Ek8DkNtkkpPSc8ZGXEWDFtOX3Y1vpuLFQIk9ZE2ZgZ8QvMxVzAU0cV5yW/eCRnBtCt
-         D/3Gtl89caNKBVVpXmyB+CucH6JIt4H4TfLxxhMzf9PTVLNdRsAJjkSshnaV2uD0L8K+
-         TU5rbg4goxAkP4sZfDeWfhJyo3LN8pRBLaIYhOre/TbB0jtT6VVwdrcP6pkBBlhcdfCW
-         +3Rzlct/mghie6NDIUcCscLcynkHIc1+9aZCSCKSHLew7hboaqyQrWlARjB5xTr3JsYp
-         BkJLJ7eMgN7AMzEg30RA/C4mklSfyO9JNnwqEJp3n7e6p1mEUCDGjN3f5LMsXITK9Kzi
-         /tQg==
-X-Gm-Message-State: AOAM531cPs76uhg60WmnxEyCtcFaF/qTDtUbEPwiXefLrpZlNCa+9zar
-        afIGDulVPD50zePk+Tw6dxug5ea51ako10gHezAvPg==
-X-Google-Smtp-Source: ABdhPJx6deQDCMojiHegS2mr4kysTeQUwWlnsyXo3BZVwZZ0CbYgJnSE8SDB61e07DBsybj27PrjCyFSpnlV/xbuQeU=
-X-Received: by 2002:a05:6512:228a:: with SMTP id f10mr56001997lfu.489.1636145267629;
- Fri, 05 Nov 2021 13:47:47 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=iSsAsex9Qxf45MGUKoDkmbYaYqPdOA6HoAlu6dhpjH8=;
+        b=G+bVsi+Pgh2HHa1TdcyVdC7Bm4fQPTRlzMlPt7GjspNu5HHn2ldhpXdan3RzlvCQZ2
+         +fHb9o4O9KfII+E/73l8+HXdnQn5/Imgtz63eWS724h6959Mg6f+NcZ4RQXRjOOluNue
+         1rBpep+XpnMGBHAyMntCSEK/W7I7eid4myrbxTu6RuiV5M/U0gFSYp+3jIL59y3Mnb3/
+         9lx1s1oCixsfArRs1e2avFWyHvcJ8WB1KrCsozJlazd/ddA4zCPEx6KF4lSlEbE045Bh
+         Kuq75mVz5pmcYACllrVNas9yyS5KqEJm7krFiuYbhkuyVUuTfhFdUwnabyvV4RDd62xq
+         z0TA==
+X-Gm-Message-State: AOAM533CYoWl38eHvBtx5FV5N058LPHS8tpeSOSA6pjBSm/QPwF5fapM
+        ql+DXjSFJdUVu2SrFfeMVh4=
+X-Google-Smtp-Source: ABdhPJyL3SFYyP5FlyOwMwU/8+m/arwSKg2ldioZ+Jt/LgWLYrY+YNtvvJE+I8S9ODbk3cimylFA4A==
+X-Received: by 2002:a05:6a00:1310:b0:494:672b:1e97 with SMTP id j16-20020a056a00131000b00494672b1e97mr13240235pfu.77.1636145313181;
+        Fri, 05 Nov 2021 13:48:33 -0700 (PDT)
+Received: from localhost ([2405:201:6014:d916:31fc:9e49:a605:b093])
+        by smtp.gmail.com with ESMTPSA id co4sm10546680pjb.2.2021.11.05.13.48.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Nov 2021 13:48:32 -0700 (PDT)
+Date:   Sat, 6 Nov 2021 02:18:29 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
+Subject: Re: [PATCH RFC bpf-next v1 5/6] net: netfilter: Add unstable CT
+ lookup helper for XDP and TC-BPF
+Message-ID: <20211105204829.3qt6hkxk4vh6csfn@apollo.localdomain>
+References: <20211030144609.263572-1-memxor@gmail.com>
+ <20211030144609.263572-6-memxor@gmail.com>
+ <20211031191045.GA19266@breakpoint.cc>
+ <87y2677j19.fsf@toke.dk>
+ <20211102204358.GC11415@breakpoint.cc>
 MIME-Version: 1.0
-References: <20211105164511.3360473-1-anders.roxell@linaro.org>
-In-Reply-To: <20211105164511.3360473-1-anders.roxell@linaro.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Fri, 5 Nov 2021 13:47:35 -0700
-Message-ID: <CAKwvOdmj07NhhrLUqavJGHBgsBRrg6BvCFCzKbzt4wQJUv+M9A@mail.gmail.com>
-Subject: Re: [PATCH] selftests: net: tls: remove unused variable and code
-To:     Anders Roxell <anders.roxell@linaro.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, shuah@kernel.org,
-        nathan@kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211102204358.GC11415@breakpoint.cc>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 5, 2021 at 9:45 AM Anders Roxell <anders.roxell@linaro.org> wrote:
+On Wed, Nov 03, 2021 at 02:13:58AM IST, Florian Westphal wrote:
+> Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+> > > I tried to find a use case but I could not.
+> > > Entry will time out soon once packets stop appearing, so it can't be
+> > > used for stack bypass.  Is it for something else?  If so, what?
+> >
+> > I think Maxim's use case was to implement a SYN proxy in XDP, where the
+> > XDP program just needs to answer the question "do I have state for this
+> > flow already". For TCP flows terminating on the local box this can be
+> > done via a socket lookup, but for a middlebox, a conntrack lookup is
+> > useful. Maxim, please correct me if I got your use case wrong.
 >
-> When building selftests/net with clang, the compiler warn about the
-> function abs() see below:
+> Looked at
+> https://netdevconf.info/0x15/slides/30/Netdev%200x15%20Accelerating%20synproxy%20with%20XDP.pdf
 >
-> tls.c:657:15: warning: variable 'len_compared' set but not used [-Wunused-but-set-variable]
->         unsigned int len_compared = 0;
->                      ^
->
-> Rework to remove the unused variable and the for-loop where the variable
-> 'len_compared' was assinged.
->
-> Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
-
-Thanks for the patch. Hard to say what the original intent was here.
-
-Fixes: 7f657d5bf507 ("selftests: tls: add selftests for TLS sockets")
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-
-> ---
->  tools/testing/selftests/net/tls.c | 3 ---
->  1 file changed, 3 deletions(-)
->
-> diff --git a/tools/testing/selftests/net/tls.c b/tools/testing/selftests/net/tls.c
-> index d3047e251fe9..e61fc4c32ba2 100644
-> --- a/tools/testing/selftests/net/tls.c
-> +++ b/tools/testing/selftests/net/tls.c
-> @@ -654,7 +654,6 @@ TEST_F(tls, recvmsg_single_max)
->  TEST_F(tls, recvmsg_multiple)
->  {
->         unsigned int msg_iovlen = 1024;
-> -       unsigned int len_compared = 0;
->         struct iovec vec[1024];
->         char *iov_base[1024];
->         unsigned int iov_len = 16;
-> @@ -675,8 +674,6 @@ TEST_F(tls, recvmsg_multiple)
->         hdr.msg_iovlen = msg_iovlen;
->         hdr.msg_iov = vec;
->         EXPECT_NE(recvmsg(self->cfd, &hdr, 0), -1);
-> -       for (i = 0; i < msg_iovlen; i++)
-> -               len_compared += iov_len;
->
->         for (i = 0; i < msg_iovlen; i++)
->                 free(iov_base[i]);
-> --
-> 2.33.0
+> seems thats right, its only a "does it exist".
 >
 
+FYI, there's also an example in the original series (grep for bpf_ct_lookup_tcp):
+https://lore.kernel.org/bpf/20211019144655.3483197-11-maximmi@nvidia.com
 
--- 
-Thanks,
-~Nick Desaulniers
+> > > For UDP it will work to let a packet pass through classic forward
+> > > path once in a while, but this will not work for tcp, depending
+> > > on conntrack settings (lose mode, liberal pickup etc. pp).
+> >
+> > The idea is certainly to follow up with some kind of 'update' helper. At
+> > a minimum a "keep this entry alive" update, but potentially more
+> > complicated stuff as well. Details TBD, input welcome :)
+>
+> Depends on use case.  For bypass infra I'd target the flowtable
+> infra rather than conntrack because it gets rid of the "early time out"
+> problem, plus you get the output interface/dst entry.
+>
+> Not trivial for xdp because existing code assumes sk_buff.
+> But I think it can be refactored to allow raw buffers, similar
+> to flow dissector.
+>
+> > >> +	hash = nf_conntrack_find_get(net, &nf_ct_zone_dflt, &tuple);
+> > >
+> > > Ok, so default zone. Depending on meaning of "unstable helper" this
+> > > is ok and can be changed in incompatible way later.
+> >
+> > I'm not sure about the meaning of "unstable" either, TBH, but in either
+> > case I'd rather avoid changing things if we don't have to, so I think
+> > adding the zone as an argument from the get-go may be better...
+>
+> Another thing I just noted:
+> The above gives a nf_conn with incremented reference count.
+>
+> For Maxims use case, thats unnecessary overhead. Existence can be
+> determined without reference increment.  The caveat is that the pointer
+> cannot be used after last rcu_read_unlock().
+
+From my reading, it was safe but not correct to use (as in dereference) without
+using nf_conntrack_find_get, since even though freeing of underlying memory is
+done using SLAB_DESTROY_BY_RCU, but the nf_conn itself may not correspond to the
+same tuple in the rcu read section without taking a reference. So doing what the
+example currently does (checking ct->status & IPS_CONFIRMED_BIT) is not safe
+without raising the reference, even though the XDP program invocation is under
+RCU protection. Returning a PTR_TO_BTF_ID for the nf_conn wouldn't really work
+without getting a reference on it, since the object can be recycled.
+
+--
+Kartikeya
