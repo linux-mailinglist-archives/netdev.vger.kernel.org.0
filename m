@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1434244621B
+	by mail.lfdr.de (Postfix) with ESMTP id 5CAEC44621C
 	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 11:20:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233066AbhKEKWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Nov 2021 06:22:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55036 "EHLO mail.kernel.org"
+        id S233085AbhKEKWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Nov 2021 06:22:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55040 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232895AbhKEKWr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232787AbhKEKWr (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 5 Nov 2021 06:22:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 638AE6124F;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6D38261284;
         Fri,  5 Nov 2021 10:20:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1636107608;
-        bh=v6/gMhly+W0Ou4xdbyamFWXa0/OMNV3Q9dIvqzgmRtg=;
+        bh=U/Xq3fs1HP1WRH+4oXRkxIVYvODT9jT28QGt/1AugWU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=eHeQIArVM0JBioR+xCStOfzB7b3pQ63CxfrS3xDQpq0lwXKW/Du67oDDgOzKW8Yql
-         1RFcfc7p+5z+nIhWrSHPVVbotGoOa3X/jKSVYcCKSbed731u+TOak/UoaiT7KuJ4jy
-         6RkNSJRFumK/J7vYFIOcD2Pjioy5QJmCqkp+BNTiVJe998MYzLdzDK+fV/JNbAA/Kw
-         3/BKXtQhtW7F2Ldt6zxjQlMGchBhr/DMGNEIslQIGkEKtc8ehUK/lBQXH7XFFD4o3E
-         Zz8sM3Zd7bGAef9GjTJb5HEr1XpjIUN0Qu7RcKx9JLqSYc93DS5vqOvk8JtoG6CLeE
-         zzOQBwSJrzvdQ==
+        b=OCS0hb6ACpt4YW90mBUBx2hz21aGTu5LKzNu8HRwlfJnxzRtpMwx7e/xadcX27x3f
+         nzBKp5QQc00tTI67qYeh0f4O6bQo7Y2AQP+6fynshxRoL2vxmkT1MtC86OIrPNJAFp
+         KJ7LjgYx9J84PFTd0QNKpQq4mwPqo2rTB3KM+VQBH+D7lVTXZI76jREdndw2K+66z4
+         xJrB/ECdWlO9J6YtPeQsdA7pGT/pSp9fYJon4PUvt8bISv8jGq+aNszegy3JxRwB9I
+         K9nQZy4W3OR+yqIiliTMT0Po2hB/ciBPodavMeq0/hxFnGACCHeUaWM1/m/Cm6elOj
+         ayrXG7iPmSCGg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 52E2A609B8;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6037260A0E;
         Fri,  5 Nov 2021 10:20:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] octeontx2-pf: select CONFIG_NET_DEVLINK
+Subject: Re: [PATCH] net: ethernet: litex: Remove unnecessary print function
+ dev_err()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163610760833.10303.2855852393623176603.git-patchwork-notify@kernel.org>
+Message-Id: <163610760838.10303.2701217711088972051.git-patchwork-notify@kernel.org>
 Date:   Fri, 05 Nov 2021 10:20:08 +0000
-References: <20211104133449.1118457-1-arnd@kernel.org>
-In-Reply-To: <20211104133449.1118457-1-arnd@kernel.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, sgoutham@marvell.com,
-        sbhatta@marvell.com, arnd@arndb.de, george.cherian@marvell.com,
-        vladimir.oltean@nxp.com, netdev@vger.kernel.org,
+References: <20211105014217.38681-1-vulab@iscas.ac.cn>
+In-Reply-To: <20211105014217.38681-1-vulab@iscas.ac.cn>
+To:     Xu Wang <vulab@iscas.ac.cn>
+Cc:     joel@jms.id.au, caihuoqing@baidu.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -49,26 +48,18 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Thu,  4 Nov 2021 14:34:42 +0100 you wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+On Fri,  5 Nov 2021 01:42:17 +0000 you wrote:
+> The print function dev_err() is redundant because
+> platform_get_irq() already prints an error.
 > 
-> The octeontx2 pf nic driver failsz to link when the devlink support
-> is not reachable:
-> 
-> aarch64-linux-ld: drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.o: in function `otx2_dl_mcam_count_get':
-> otx2_devlink.c:(.text+0x10): undefined reference to `devlink_priv'
-> aarch64-linux-ld: drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.o: in function `otx2_dl_mcam_count_validate':
-> otx2_devlink.c:(.text+0x50): undefined reference to `devlink_priv'
-> aarch64-linux-ld: drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.o: in function `otx2_dl_mcam_count_set':
-> otx2_devlink.c:(.text+0xd0): undefined reference to `devlink_priv'
-> aarch64-linux-ld: drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.o: in function `otx2_devlink_info_get':
-> otx2_devlink.c:(.text+0x150): undefined reference to `devlink_priv'
-> 
-> [...]
+> Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
+> ---
+>  drivers/net/ethernet/litex/litex_liteeth.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
 
 Here is the summary with links:
-  - octeontx2-pf: select CONFIG_NET_DEVLINK
-    https://git.kernel.org/netdev/net/c/9cbc3367968d
+  - net: ethernet: litex: Remove unnecessary print function dev_err()
+    https://git.kernel.org/netdev/net/c/827beb7781d3
 
 You are awesome, thank you!
 -- 
