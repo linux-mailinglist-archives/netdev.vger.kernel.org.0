@@ -2,189 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7070D446406
-	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 14:20:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A44E446413
+	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 14:24:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232820AbhKENWl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Nov 2021 09:22:41 -0400
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:38938 "EHLO
-        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233030AbhKENWa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Nov 2021 09:22:30 -0400
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20211105131932euoutp024daf04fcb9869d99edf2ca2707068794~0qP3edrHS1722817228euoutp02K;
-        Fri,  5 Nov 2021 13:19:32 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20211105131932euoutp024daf04fcb9869d99edf2ca2707068794~0qP3edrHS1722817228euoutp02K
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1636118373;
-        bh=pvKkSQfQXZLXIfe/YwqvyKLq5nJqkg5+Jem5zmbw3xQ=;
-        h=From:To:Cc:Subject:In-Reply-To:Date:References:From;
-        b=OJ5H90gG5beJ7wEJJzor5+QKEXpmLb6eI765xhZ1MsXapdYJ1yv6OEKu2KblQAOFJ
-         +PjAuHZt/Pvm+bZuMiRb/9OwFJp26sZaQVTa/V8psPKCwFmEu8GP+HP4tesXwsUl20
-         GzwjZPoKptd06R9SOzf1AqRa2uDvbChJgtEfTLkA=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20211105131932eucas1p2e1d19560ad2120566d08e244fffce93e~0qP3NIN5R0297602976eucas1p2z;
-        Fri,  5 Nov 2021 13:19:32 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-        eusmges3new.samsung.com (EUCPMTA) with SMTP id 19.01.56448.46F25816; Fri,  5
-        Nov 2021 13:19:32 +0000 (GMT)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-        20211105131932eucas1p284bdb650732ceff3c8326ed578f22b1a~0qP2zQyFJ0990009900eucas1p2h;
-        Fri,  5 Nov 2021 13:19:32 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20211105131932eusmtrp2b5b2f5fe71dcf26ac12ca5bee73f61e4~0qP2yBP9e2295322953eusmtrp25;
-        Fri,  5 Nov 2021 13:19:32 +0000 (GMT)
-X-AuditID: cbfec7f5-d53ff7000002dc80-04-61852f645828
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id 9C.5D.20981.46F25816; Fri,  5
-        Nov 2021 13:19:32 +0000 (GMT)
-Received: from localhost (unknown [106.120.51.46]) by eusmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20211105131932eusmtip2c859289fa71724ed9abf275bfff6bab1~0qP2m8k3R2117921179eusmtip2c;
-        Fri,  5 Nov 2021 13:19:31 +0000 (GMT)
-From:   Lukasz Stelmach <l.stelmach@samsung.com>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Arnd Bergmann <arnd@arndb.de>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Alexander Lobakin <alobakin@pm.me>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH 1/2] ax88796c: fix ioctl callback
-In-Reply-To: <20211105092954.1771974-1-arnd@kernel.org> (Arnd Bergmann's
-        message of "Fri, 5 Nov 2021 10:29:39 +0100")
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
-Date:   Fri, 05 Nov 2021 14:19:21 +0100
-Message-ID: <dleftj5yt6loyu.fsf%l.stelmach@samsung.com>
+        id S232896AbhKEN0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Nov 2021 09:26:48 -0400
+Received: from mail-bn7nam10on2044.outbound.protection.outlook.com ([40.107.92.44]:2401
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232258AbhKEN0r (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Nov 2021 09:26:47 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TdpXNtVCuFmmTabm4A25ljQN2yi82WlrFHtVT+fy/HIURHjLM32Nrj1wAxzk8E2yFDe6VgIk7b/voNWszmjC6c2fyl0tjxrNbPQ0TvzEerNu1Afj4Ac6XhGZpTV9p6SfcYuXUvtAEmo0fEcm1Dy9kiDxxcZi/qcR+tqzus2dh6IG3GMoIEJmhwHbTNAd9CaUZF0fMov2hehyjFfnmUHUYehG2ZqIe434Eo3VE34PP07Ojvy7BrQpg1TaFW3hhur5Q+ZMFf49deMxz9FEeT0s4loAZZddtmr1JsTkVribTlCg6TIRSM1tQzpliwdJIm9TqKFHqd/+2QyAe+wv4hpE5A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Fg+rrJ3u5Xugl80Wka052s5fBV+X81ssAzykmhJKPhE=;
+ b=EX+D8dkRdAWQDy04DNrj9mvt90JNyUSNFETark1SUqr3gqh9vEkJaD8wRCg9kgvfmwHstWlLnc8Axo9734JhvgvjZJ5PnB3wZG6NwzeZ8kqogvZFQF6dqrEDJJxQSXhImH1wpX4Xpvib3Uo0qQiCAIVbkAFcD9/mkrTzcK7gh5dL96E61AtpK5sJKtt9mK2fxikk8lU+XRmRD8/PHjEOXNvJewOyypFtwhpHvZasqC3EZ8dVk5MX3p3IS3RqwUfzFQsXdpk1J2a1U36RhtmBfVn6PvEm4utQ+Au5AsJ69vBLxSVpt3mcq8XkiA6l/NUmmq+JGwPtBhv2Hg06y8Ulhg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Fg+rrJ3u5Xugl80Wka052s5fBV+X81ssAzykmhJKPhE=;
+ b=uL8ScYJaHu9iygHroMP7QHL57T4HQE1PRZCVhS1FIfqC2V/dr5KB/9SWseMlQoqDU9kJSYBoFv9cuq7cHSVLUifpKTyuO/AgmoVsa5ik1pU7jrci5n0TpLEJsv9ER8DsITQ1OnqvO3e4W114+voQEU+bbqarB54PurHdxVjlbYkEirfN92qyTRp0EueFCBd3c5FIzDO715LGDyal5PN9zZrnGBe4sxfsKPS7e8OKZkfF2hF2g/0VOFI8teFrOAlr/h5fIVjsVjkGSYtidNRjub8zADWMmXW8QFIq10M8gKxWrzv5OagSaT//tuvyNfxtxPvyKPqS7Rnr6VoLBXgaRA==
+Authentication-Results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5304.namprd12.prod.outlook.com (2603:10b6:208:314::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.11; Fri, 5 Nov
+ 2021 13:24:06 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::5897:83b2:a704:7909]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::5897:83b2:a704:7909%7]) with mapi id 15.20.4669.013; Fri, 5 Nov 2021
+ 13:24:06 +0000
+Date:   Fri, 5 Nov 2021 10:24:04 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
+ for mlx5 devices
+Message-ID: <20211105132404.GB2744544@nvidia.com>
+References: <20211101172506.GC2744544@nvidia.com>
+ <20211102085651.28e0203c.alex.williamson@redhat.com>
+ <20211102155420.GK2744544@nvidia.com>
+ <20211102102236.711dc6b5.alex.williamson@redhat.com>
+ <20211102163610.GG2744544@nvidia.com>
+ <20211102141547.6f1b0bb3.alex.williamson@redhat.com>
+ <20211103120955.GK2744544@nvidia.com>
+ <20211103094409.3ea180ab.alex.williamson@redhat.com>
+ <20211103161019.GR2744544@nvidia.com>
+ <20211103120411.3a470501.alex.williamson@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211103120411.3a470501.alex.williamson@redhat.com>
+X-ClientProxiedBy: MN2PR05CA0001.namprd05.prod.outlook.com
+ (2603:10b6:208:c0::14) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-="; micalg="pgp-sha256";
-        protocol="application/pgp-signature"
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrHKsWRmVeSWpSXmKPExsWy7djP87op+q2JBpP3KliserydxeLvpGPs
-        Ftu2bGK1mHO+hcVi5owTjBYXtvWxWlzeNYfNYu2Ru+wW7SufslkcWyDmwOXx+9ckRo8tK28y
-        eWxa1cnmcXTPOTaPvi2rGD0+b5Lz2Pr5NksAexSXTUpqTmZZapG+XQJXxoqFt1kKpohVfF/1
-        g62B8apQFyMnh4SAiUTr281MXYxcHEICKxgl3j5fDOV8YZTY8PYeM4TzmVFi6pTlbDAtn+de
-        ZYRILGeUuH5zFQuE85xRYvPXT0AZDg42AT2JtWsjQBpEBJQlrn+bA9bALHCCSWLt769MIAlh
-        AVOJqR/fg9mcAuUS6+cuZwWxRQUsJf48+8gOYrMIqEpMPdzNAmLzCphLNC1qYoOwBSVOznwC
-        FmcWyJWYef4N2AIJgdmcEs8nnGcHOUJCwEVi9+VwiKuFJV4d38IOYctI/N85nwmipF5i8iQz
-        iNYeRoltc36wQNRYS9w59wvqY0eJ5d9msULU80nceCsIsZZPYtK26cwQYV6JjjZokKpIrOvf
-        AzVFSqL31QpGCNtD4tGX69Cg6mKUWLL5FcsERoVZSL6ZheSbWUBjmQU0Jdbv0ocIa0ssW/ia
-        GcK2lVi37j3LAkbWVYziqaXFuempxcZ5qeV6xYm5xaV56XrJ+bmbGIHJ7PS/4193MK549VHv
-        ECMTB+MhRhWg5kcbVl9glGLJy89LVRLhNb7YkijEm5JYWZValB9fVJqTWnyIUZqDRUmcV+RP
-        Q6KQQHpiSWp2ampBahFMlomDU6qBycfQ7h3HwQWBnydN6Nm0xt5YfFVBt5jHi8fGHIn+yXNf
-        XNkRfXvCpRV6j7dohOS/OH6mdf/nv7O/MoVPjKm1YZdPXNLA53zIKMHw3VrB22H+d/ZlZrxv
-        P/f99646sb0X799s5OXd/WLLjCANl8hi6VdKtyI396z80fxyA0/x2Yt6k99E6GitYE19naqk
-        b3XSoulsVtrdgN/POe5cXuOueP/TrT8KvlGFx5Ki7TmNIt/LfZFKOafycP2TB1sW6blF+Frr
-        lket/7dsu6Di9XWGdS6X7+nyGTOuvXol1LKtoe9Rn3bvzD1mbyNk/6376qScIzt/R/eiM6ac
-        f5c+Wal+pnO7+6XbQn+vCn9IVTdIqVNiKc5INNRiLipOBAB6V0fo4QMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrGIsWRmVeSWpSXmKPExsVy+t/xe7op+q2JBm2v2C1WPd7OYvF30jF2
-        i21bNrFazDnfwmIxc8YJRosL2/pYLS7vmsNmsfbIXXaL9pVP2SyOLRBz4PL4/WsSo8eWlTeZ
-        PDat6mTzOLrnHJtH35ZVjB6fN8l5bP18myWAPUrPpii/tCRVISO/uMRWKdrQwkjP0NJCz8jE
-        Us/Q2DzWyshUSd/OJiU1J7MstUjfLkEvY8XC2ywFU8Qqvq/6wdbAeFWoi5GTQ0LAROLz3KuM
-        XYxcHEICSxklZk85BORwACWkJFbOTYeoEZb4c62LDaLmKaPEyntvmUFq2AT0JNaujQCpERFQ
-        lrj+bQ7YHGaBk0wSM+72MIEkhAVMJaZ+fA9mcwqUS6yfu5wVxBYSMJO427aZEcQWFbCU+PPs
-        IzuIzSKgKjH1cDcLiM0rYC7RtKiJDcIWlDg58wlYnFkgW+Lr6ufMExgFZiFJzUKSmgV0HrOA
-        psT6XfoQYW2JZQtfM0PYthLr1r1nWcDIuopRJLW0ODc9t9hIrzgxt7g0L10vOT93EyMwErcd
-        +7llB+PKVx/1DjEycTAeYlQB6ny0YfUFRimWvPy8VCURXuOLLYlCvCmJlVWpRfnxRaU5qcWH
-        GE2BXpjILCWanA9MEXkl8YZmBqaGJmaWBqaWZsZK4rwmR9bECwmkJ5akZqemFqQWwfQxcXBK
-        NTBVlTPtOeuz7Hzc/9IPJ19r7lrw9ZFXy9cGhyutcwwSWCeVHTxxJFH14oQZy/c/D1b2DDpj
-        X/zvzIELgWLfNz/4MT9tW7HUs+9GD5cvSRLZtHWl8YFfp7Zx2XXv+Ll6Q9vi+UHPXLdwzukw
-        lOD2dlqfKrvEsy0kXKfkyOT1AVY6ahK9bO/9ulun8dtMNEvkX3hAJ3XljSxbNR07pdrP7mZ7
-        53EdEmPdxPBvdtGm05sbrBUXxH7ZbpPpWb2u+oPmzhfqOVoRfgGCvcGST370zDt5oXTf9z8S
-        lgk2hx82fLOKuXQp54pW2Ms5W3nlHmvrFc/OKORc5FqziLtmf7qe4cOM2hel3BPMDqx7/WaF
-        1NnrSizFGYmGWsxFxYkAuzeToFkDAAA=
-X-CMS-MailID: 20211105131932eucas1p284bdb650732ceff3c8326ed578f22b1a
-X-Msg-Generator: CA
-X-RootMTR: 20211105131932eucas1p284bdb650732ceff3c8326ed578f22b1a
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20211105131932eucas1p284bdb650732ceff3c8326ed578f22b1a
-References: <20211105092954.1771974-1-arnd@kernel.org>
-        <CGME20211105131932eucas1p284bdb650732ceff3c8326ed578f22b1a@eucas1p2.samsung.com>
+Received: from mlx.ziepe.ca (142.162.113.129) by MN2PR05CA0001.namprd05.prod.outlook.com (2603:10b6:208:c0::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.5 via Frontend Transport; Fri, 5 Nov 2021 13:24:05 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1mizCO-006L7R-HK; Fri, 05 Nov 2021 10:24:04 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1e1df56e-cf43-48a8-c8c8-08d9a05f8a6a
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5304:
+X-Microsoft-Antispam-PRVS: <BL1PR12MB53045F68066C025F730CBC87C28E9@BL1PR12MB5304.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: rWEkfMgWGxyKA6CE4MkVyljBoxJjNWkgsXk0VRZbb8tlZ3CnXeBvzPHOcq5yzaUDEYKN5DsMeH+gBIvke+eYWZT285VfK1Xu2thjWULlMz3MIMI3XmVadn4QOGXU0KwA3asOgPgkmKLsKOAgOD04lc/i64CkPHXe2cOxk1C2uxlelE57gCl6CdyRO07WGlCkcCpL2eu6VvM4oCmsB0TeOCwUZgdDfjWUTaNp0Rtfkcaxg3bjyRTM3Gn/jSZAwF6SnZpQEVEUkJMt/EoZm6AshCqAtlF57kIcYM+lQTrc5UkBoj409suayqeJNu9xfZbazkc7OAUMF1QgItF+OdrNVyFMZwZmgpOzEkfPkwrKWcv9YfL6MWCr8xApiH7zRvyB8mXgvwUt/rNPXnHMHVQtkgvJJDN06/oijaGFGUYcV8AkStkwAP2ov/5EhNoXHRxaUvEkz3fNG6qUrHfXjCQTkcnflQFzETHFonJzMAwF7092W3Vj64dZZDy3AGvm/xUZXGYCKtyBTsAgQJIG/nlsffwYFN0QfTa2FMfFFMSmKqg8skvJ1z2RYSBs9KqCxAav9Dz5aj0WUPIpDtcXiofFtKpc5MD9xYx5Y/NdYoR68sxHDECuVabrzXePItd7nvKeCPqFlzylnv6rOh4RYn2aTw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(316002)(26005)(36756003)(2906002)(86362001)(38100700002)(186003)(83380400001)(8676002)(54906003)(4326008)(426003)(66476007)(33656002)(6916009)(66556008)(9786002)(8936002)(1076003)(9746002)(66946007)(2616005)(5660300002)(508600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?i4IMgBq3t3qLiRQ7+uvbEU70VsLeONuRrUb5LzHqK2GJPMNdkTuhEuZfET11?=
+ =?us-ascii?Q?MPQ7j/o82ipaF1LfNPTUtJIf9kWhija62oDPtoLFnnY/ajgEeUjvGxoHS7YV?=
+ =?us-ascii?Q?t5wYk1TgXUWu/arNAMhfqxcBIo38OxIvGSVB889pcNiQR8C5GjtEGM+rkCJF?=
+ =?us-ascii?Q?UuftHD0nTzVeL6grflBvCT2NYU2zGMRYIdyENEj4XEaZj/1jiQmtyBUykfy5?=
+ =?us-ascii?Q?H0PR4QlgsNIMDrwqvkzwr/J/BavzWtAU7e7S8Xr7NL1dbT2D7QKbUr4VnIuc?=
+ =?us-ascii?Q?ThpJ2ycfgg3G/KymF7fw4QCpmMuQd/JFjvLNbhh+eLJJvUN+F9mn7LnepeM+?=
+ =?us-ascii?Q?VHS+msmb+m1QOymGBUmEfBi6d7eJeL7GS6IyccgJmKRz8Cl/HJVvOYLnOL42?=
+ =?us-ascii?Q?pcnT+mNBYlq4st7PzBonwYwcsRn7XpLTyF4Ql3FKBGSuow/tpPloVL7u2JKm?=
+ =?us-ascii?Q?cl/WaQY2huR9zyKWiHfJxDry2tLGQGX21h5LtdBZcj1MlULMg4ewQYlC88Bh?=
+ =?us-ascii?Q?fUyWTSlexRvyDHJlM7mAT2TX5T/gpSt2EgHSSe6y5TiYd9Z9dSTQEfDtTUwX?=
+ =?us-ascii?Q?V3F1wzhl+ULrE39wxIiRSRRMvPluI0hVhbE5le+if2uL9mZasnVq9aMuU/Ft?=
+ =?us-ascii?Q?pS+WV4MJnDW+R/ZV5zT3WG88W3dSuHzQo9WkMwI+NRako1OftEcvIOsAy6Wt?=
+ =?us-ascii?Q?IoVv62ab3DG87TKc2ZxLBrSZ+or9mETroAUa2MnXJy4ZJjNW2JOvNS/o8vOp?=
+ =?us-ascii?Q?RpM8WZ193Adm8DxaUDB0fiIegaC/hF0GD72MRkWH88XBnZoONMF+oNyIz0WT?=
+ =?us-ascii?Q?CEvkc54lK7wuWu2A2cnmEtBHMLuuie8dAGrr2B2yeAibH8/oPcJclfuwWoIl?=
+ =?us-ascii?Q?HdfHS+5rafBzK898aX2139crisQnGhOtAX/Dv50SkLTwcdAZY2md5CKFq5pQ?=
+ =?us-ascii?Q?vk4Buz5w1MjI2pS+IVKw5CpFTxFYgtUwXzDPpmImJA+O/b4Erz2Kny3fxIPv?=
+ =?us-ascii?Q?s/pfofgLw1sLLh4XVDonr7flBBTSXrdiYsqtd783LKZbWYky/yHJdDlamXVY?=
+ =?us-ascii?Q?uvW83WR/+dAWbbhc6b1S8Qaq65zXFQBpSHp1GLmSkn8jK7QjKxtvjaSjAT1d?=
+ =?us-ascii?Q?3GFI8tsaTe/7xiE51W7GkKmemp2s8k3pkaFGwkhYjd3ohMy+c5Maw9Pwy5Pv?=
+ =?us-ascii?Q?uaLs/39S3iN/FsgL1Ix2TI4msyaIhj5roU7Ntt7EnSjIgcHHuFWVYpkYINEN?=
+ =?us-ascii?Q?QGPLyt4igjbtjg4tb+86byfMCHbt9jUZSyz46ecFV/UWS6rOgp8ISDK8BWkA?=
+ =?us-ascii?Q?mOXaEH4XMNcefGAS4gr2qQejmbH1rOT8nbmgYgD0LaHKjueTWEYP8WjUOex7?=
+ =?us-ascii?Q?lK7EnxdC+s/fNdFUqVxpYnN9GvauXF+sHXuA1xBNB0/Od7ZGuDPmVPAgUN/Q?=
+ =?us-ascii?Q?McSPlqpOFUo2a+9EaiKYOYErlY1/+I9dO0pk+phc0+jqcv+hkH3Al0+ShIcZ?=
+ =?us-ascii?Q?CaFY2mXoL5fAN4BnptOMFKtdlbi9gosweitjy9QAOXcSZZCpp5+YHV4FftAB?=
+ =?us-ascii?Q?BgolZabVdusLxCd1mOc=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1e1df56e-cf43-48a8-c8c8-08d9a05f8a6a
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2021 13:24:06.0887
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5DxL2cVyPtJYZ4C/NcxHjtYElYSFz324nwsPUIyv+CnavX23n8dtnMkHeHYCcO4Y
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5304
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+On Wed, Nov 03, 2021 at 12:04:11PM -0600, Alex Williamson wrote:
 
-It was <2021-11-05 pi=C4=85 10:29>, when Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> The timestamp ioctls are now handled by the ndo_eth_ioctl() callback,
+> We agreed that it's easier to add a feature than a restriction in a
+> uAPI, so how do we resolve that some future device may require a new
+> state in order to apply the SET_IRQS configuration?
 
-Actually neither the driver nor the chip support
-timstamping. ax88796c_ioctl() simply wraps phy_mii_ioctl(). I believe
-you swapped commit messages between this and the other patch in the
-series.
+I would say don't support those devices. If there is even a hint that
+they could maybe exist then we should fix it now. Once the uapi is set
+and documented we should expect device makers to consider it when
+building their devices.
 
-> not the old ndo_do_ioctl(), but oax88796 introduced the
-                                 ^^^=20
-Typo here.=20
+As for SET_IRQs, I have been looking at making documentation and I
+don't like the way the documentation has to be wrriten because of
+this.
 
-> function for the old way.
+What I see as an understandable, clear, documentation is:
 
-At first I though =E2=80=94 What did I mess up again? But then saw a7605370=
-7dbf
-is quite a new thing and ndo_do_ioctl() is still there, so my builds
-didn't fail. Thanks, for the patch.
+ - SAVING set - no device touches allowed beyond migration operations
+   and reset via XX
+   Must be set with !RUNNING
+ - RESUMING set - same as SAVING
+ - RUNNING cleared - limited device touches in this list: SET_IRQs, XX
+   config, XX.
+   Device may assume no touches outside the above. (ie no MMIO)
+   Implies NDMA
+ - NDMA set - full device touches
+   Device may not issue DMA or interrupts (??)
+   Device may not dirty pages
+ - RUNNING set - full functionality
+ * In no state may a device generate an error TLP, device
+   hang/integrity failure or kernel intergity failure, no matter
+   what userspace does.
+   The device is permitted to corrupt the migration/VM or SEGV
+   userspace if userspace doesn't follow the rules.
 
-> Move it over to ndo_eth_ioctl() to actually allow calling it from
-> user space.
->
-> Fixes: a97c69ba4f30 ("net: ax88796c: ASIX AX88796C SPI Ethernet Adapter D=
-river")
-> Fixes: a76053707dbf ("dev_ioctl: split out ndo_eth_ioctl")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
-> It would be best to completely remove the .ndo_do_ioctl() callback
-> to avoid this problem in the future, but I'm still unsure whether
-> we want to just remove the ancient wireless and localtalk drivers
-> instead of fixing them.
-> ---
->  drivers/net/ethernet/asix/ax88796c_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
+(we are trying to figure out what the XX's are right now, would
+appreciate any help)
 
-Acked-by: Lukasz Stelmach <l.stelmach@samsung.com>
+This is something I think we could expect a HW engineering team to
+follow and implement in devices. It doesn't complicate things.
 
-> diff --git a/drivers/net/ethernet/asix/ax88796c_main.c b/drivers/net/ethe=
-rnet/asix/ax88796c_main.c
-> index 4b0c5a09fd57..8994f2322268 100644
-> --- a/drivers/net/ethernet/asix/ax88796c_main.c
-> +++ b/drivers/net/ethernet/asix/ax88796c_main.c
-> @@ -934,7 +934,7 @@ static const struct net_device_ops ax88796c_netdev_op=
-s =3D {
->  	.ndo_stop		=3D ax88796c_close,
->  	.ndo_start_xmit		=3D ax88796c_start_xmit,
->  	.ndo_get_stats64	=3D ax88796c_get_stats64,
-> -	.ndo_do_ioctl		=3D ax88796c_ioctl,
-> +	.ndo_eth_ioctl		=3D ax88796c_ioctl,
->  	.ndo_set_mac_address	=3D eth_mac_addr,
->  	.ndo_set_features	=3D ax88796c_set_features,
->  };
+Overall, at this moment, I would prioritize documentation clarity over
+strict compatability with qemu, because people have to follow this
+documentation and make their devices long into the future. If the
+documentation is convoluted for compatibility reasons HW people are
+more likely to get it wrong. When HW people get it wrong they are more
+likely to ask for "quirks" in the uAPI to fix their mistakes.
 
-=2D-=20
-=C5=81ukasz Stelmach
-Samsung R&D Institute Poland
-Samsung Electronics
+The pending_bytes P2P idea is also quite complicated to document as
+now we have to describe an HW state not in terms of a NDMA control
+bit, but in terms of a bunch of implicit operations in a protocol. Not
+so nice.
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+So, here is what I propose. Let us work on some documentation and come
+up with the sort of HW centric docs like above and we can then decide
+if we want to make the qemu changes it will imply, or not. We'll
+include the P2P stuff, as we see it, so it shows a whole picture.
 
------BEGIN PGP SIGNATURE-----
+I think that will help everyone participate fully in the discussion.
 
-iQEzBAEBCAAdFiEEXpuyqjq9kGEVr9UQsK4enJilgBAFAmGFL1kACgkQsK4enJil
-gBBgawf/RllvbArEsDJkUKjH7yGlJ3Xg/bcC40kDl7k3/LBv43X1f45915LoyJr6
-QN9rZFxJt7bLjb7gIFuoZr7YzrXL6G+zT6eIiSNj12bLmBIQO9Q56emT5cDtGap4
-xSjVzQII7JG7Lp5jnjIOpZTWg9O48taICkDCUw838QXGoZZzFCJvtMBGQ97nx3FK
-/abRaW/NM+IGsK9EbEpIFVLFlRUIotRSLaSgaB9HoT+Xm9aXBZanuaSSTLMiA4GO
-TnSUR0c18bACN2l9mIuegXXVV8T2jDrolujgYlNeXKmKVVmtNH9nwfexcinG6WgA
-yjKe4VajNq2+hl6o/kkchWlrgUoT9A==
-=sDKN
------END PGP SIGNATURE-----
---=-=-=--
+> If we're going to move forward with the existing uAPI, then we're going
+> to need to start factoring compatibility into our discussions of
+> missing states and protocols.  For example, requiring that the device
+> is "quiesced" when the _RUNNING bit is cleared and "frozen" when
+> pending_bytes is read has certain compatibility advantages versus
+> defining a new state bit. 
+
+Not entirely, to support P2P going from RESUMING directly to RUNNING
+is not possible. There must be an in between state that all devices
+reach before they go to RUNNING. It seems P2P cannot be bolted into
+the existing qmeu flow with a kernel only change?
+
+> clarifications were trying for within the existing uAPI rather than
+> toss out new device states and protocols at every turn for the sake of
+> API purity.  The rate at which we're proposing new states and required
+> transitions without a plan for the uAPI is not where I want to be for
+> adding the driver that could lock us in to a supported uAPI.  Thanks,
+
+Well, to be fair, the other cases I suggested new stats was when you
+asked about features we don't have at all today (like post-copy). I
+think adding new states is a very reasonable way to approach adding
+new features. As long as new features can be supported with new states
+we have a forward compatability story.
+
+Thanks,
+Jason
