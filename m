@@ -2,74 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73BE0445D84
-	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 02:48:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E93A8445D7B
+	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 02:46:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230457AbhKEBva (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Nov 2021 21:51:30 -0400
-Received: from smtp21.cstnet.cn ([159.226.251.21]:43770 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229647AbhKEBv3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Nov 2021 21:51:29 -0400
-X-Greylist: delayed 372 seconds by postgrey-1.27 at vger.kernel.org; Thu, 04 Nov 2021 21:51:29 EDT
-Received: from localhost.localdomain (unknown [124.16.141.244])
-        by APP-01 (Coremail) with SMTP id qwCowAD3jyD8i4RhvH6SBg--.14727S2;
-        Fri, 05 Nov 2021 09:42:20 +0800 (CST)
-From:   Xu Wang <vulab@iscas.ac.cn>
-To:     joel@jms.id.au, caihuoqing@baidu.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: ethernet: litex: Remove unnecessary print function dev_err()
-Date:   Fri,  5 Nov 2021 01:42:17 +0000
-Message-Id: <20211105014217.38681-1-vulab@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S231690AbhKEBsz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Nov 2021 21:48:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54980 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231684AbhKEBsw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 21:48:52 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69978C061714;
+        Thu,  4 Nov 2021 18:46:13 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id j128-20020a1c2386000000b003301a98dd62so8507384wmj.5;
+        Thu, 04 Nov 2021 18:46:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=2xhc5oWpvO9Tk65WJtzZWw7fGB5wYEtIT3Aaq8xkviA=;
+        b=QuAX2YIVdOkDaBevFozERc6N4+YXFCkM0rdD+8v1wsW27UpiEFrzOZLoAZ2zyphUhw
+         mdqyTfRTOwmrAFlj42xOjNglqtwz52C4HJzcmZWKo9Pb5vdb6+dIUbPptCxM8yVwQR0f
+         ByzrW5CMcEi+FadkLPglRtZAfseBP3mSwYzl4JEWB6DEAj4gaGWIM5phN+LV1uCM44TC
+         4u1YMUMENa6aiA46E0VLlgm3mLqDTelZCHZrPrCcdIjlG9Lqax8bFIdyl+glE8o7k7nn
+         AspdrCFutJQh5GuT8immG08vNiBllBC1YhOQ2g6nEdBqJwtC7sfQg9mCJSc03jvYz2/2
+         5xGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=2xhc5oWpvO9Tk65WJtzZWw7fGB5wYEtIT3Aaq8xkviA=;
+        b=Kk35vLZeqKPU+sEIbNA6fHTI9kYWG4qCeR1gRQrxG27evNHlJrVoqZeklgOd81YQje
+         qUH7+ejG6wyA3ECKcF7pA5r4GBzCnLfLJ0RMRXr4MPMiiVRqYtT0El4ysd1FSg5anv0y
+         TVRI8H0D4xo+ZRzgAH3bm5QkBDLOy7+vhdHfKfJ0F4M7jdQXQGV2qEa0ZMQ+v0THi69p
+         U92ducPXFeIdMGqidNDzzknVsN6VnIpAUyEmOIoUBWbHmUtVreFHVMH3vAG5qlIAySPB
+         qT/98IPNFLbKvIazyY/gs7qD6ZIrF3RnDeIaA5MDv4YU9UHeXj3TGp91jmRvBj0rVBtU
+         6XRg==
+X-Gm-Message-State: AOAM532L6bNTuYRufGHzORr8LD3cvXWs/MhuyL+a09M6x58fEvqE6D+J
+        qtg8YmuOH+0krjrVgInBbVQ=
+X-Google-Smtp-Source: ABdhPJzX1mhMIpnvJbqUXJj+GamrvNa9AxYluUoas0Jjrg4lrIURGC3Xng1GrJ3DjAerE++vcN2/zw==
+X-Received: by 2002:a1c:a715:: with SMTP id q21mr27297533wme.23.1636076772108;
+        Thu, 04 Nov 2021 18:46:12 -0700 (PDT)
+Received: from ?IPV6:2a02:8084:e84:2480:228:f8ff:fe6f:83a8? ([2a02:8084:e84:2480:228:f8ff:fe6f:83a8])
+        by smtp.gmail.com with ESMTPSA id 10sm8240762wrb.75.2021.11.04.18.46.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 Nov 2021 18:46:11 -0700 (PDT)
+Message-ID: <cccdd347-57ee-62e5-2824-a3e7e2910395@gmail.com>
+Date:   Fri, 5 Nov 2021 01:46:10 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: qwCowAD3jyD8i4RhvH6SBg--.14727S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrZrWrWF45Kr47Kr1furWfZrb_yoWfXrcEqr
-        n29a93Gw48Jr1Fyw10yrW3Zr9Ikrn8X348XaykKayaq34UCry7Z3sFvF1DJw4Uu397CFy7
-        try3Jay7C34SqjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbc8YjsxI4VWkKwAYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
-        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0
-        cI8IcVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwV
-        C2z280aVCY1x0267AKxVW8Jr0_Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVAC
-        Y4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJV
-        W8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lc2xSY4AK67AK6w4l42xK
-        82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGw
-        C20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48J
-        MIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMI
-        IF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY
-        6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxUqRpPUUUUU
-X-Originating-IP: [124.16.141.244]
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCwcPA1z4kkBX0wACsw
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
+Subject: Re: [PATCH v2 09/25] tcp: authopt: Disable via sysctl by default
+Content-Language: en-US
+To:     Leonard Crestez <cdleonard@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Ivan Delalande <colona@arista.com>,
+        Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <cover.1635784253.git.cdleonard@gmail.com>
+ <137399b962131c278acbfa5446a3b6d59aa0547b.1635784253.git.cdleonard@gmail.com>
+From:   Dmitry Safonov <0x7f454c46@gmail.com>
+In-Reply-To: <137399b962131c278acbfa5446a3b6d59aa0547b.1635784253.git.cdleonard@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The print function dev_err() is redundant because
-platform_get_irq() already prints an error.
+On 11/1/21 16:34, Leonard Crestez wrote:
+> This is mainly intended to protect against local privilege escalations
+> through a rarely used feature so it is deliberately not namespaced.
+> 
+> Enforcement is only at the setsockopt level, this should be enough to
+> ensure that the tcp_authopt_needed static key never turns on.
+> 
+> No effort is made to handle disabling when the feature is already in
+> use.
+> 
+> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
+> ---
+[..]
+> diff --git a/net/ipv4/tcp_authopt.c b/net/ipv4/tcp_authopt.c
+> index 5e80e5e5e36e..7c49dcce7d24 100644
+> --- a/net/ipv4/tcp_authopt.c
+> +++ b/net/ipv4/tcp_authopt.c
+> @@ -3,10 +3,15 @@
+>  #include <linux/kernel.h>
+>  #include <net/tcp.h>
+>  #include <net/tcp_authopt.h>
+>  #include <crypto/hash.h>
+>  
+> +/* This is mainly intended to protect against local privilege escalations through
+> + * a rarely used feature so it is deliberately not namespaced.
+> + */
+> +int sysctl_tcp_authopt;
 
-Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
----
- drivers/net/ethernet/litex/litex_liteeth.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+Could you add pr_warn_once() for setsockopt() without this set, so that
+it's visible in dmesg for a user that gets -EPERM.
 
-diff --git a/drivers/net/ethernet/litex/litex_liteeth.c b/drivers/net/ethernet/litex/litex_liteeth.c
-index 3d9385a4989b..ab9fa1525053 100644
---- a/drivers/net/ethernet/litex/litex_liteeth.c
-+++ b/drivers/net/ethernet/litex/litex_liteeth.c
-@@ -242,10 +242,8 @@ static int liteeth_probe(struct platform_device *pdev)
- 	priv->dev = &pdev->dev;
- 
- 	irq = platform_get_irq(pdev, 0);
--	if (irq < 0) {
--		dev_err(&pdev->dev, "Failed to get IRQ %d\n", irq);
-+	if (irq < 0)
- 		return irq;
--	}
- 	netdev->irq = irq;
- 
- 	priv->base = devm_platform_ioremap_resource_byname(pdev, "mac");
--- 
-2.25.1
-
+Thanks,
+          Dmitry
