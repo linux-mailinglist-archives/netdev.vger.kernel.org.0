@@ -2,109 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F1A8445F0A
-	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 05:10:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07BAF445F97
+	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 07:09:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230003AbhKEEMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Nov 2021 00:12:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58606 "EHLO
+        id S229690AbhKEGMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Nov 2021 02:12:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229884AbhKEEMx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Nov 2021 00:12:53 -0400
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 498E5C061714
-        for <netdev@vger.kernel.org>; Thu,  4 Nov 2021 21:10:14 -0700 (PDT)
-Received: by mail-io1-xd35.google.com with SMTP id q203so9253132iod.12
-        for <netdev@vger.kernel.org>; Thu, 04 Nov 2021 21:10:14 -0700 (PDT)
+        with ESMTP id S229456AbhKEGMR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Nov 2021 02:12:17 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28013C061714;
+        Thu,  4 Nov 2021 23:09:38 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id m14so28753265edd.0;
+        Thu, 04 Nov 2021 23:09:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=o/wF/V9TAVPEMQT2oLx1JVaew2djn3pZBY/upXLYuzc=;
-        b=l0l+zbBdER6JnFUeecGIEb7Jhf2CnR1dlv1R+aZDGekxPOtiA53+cRf4cBIv1cql/4
-         ovdBe+Nc6MLaFeQuvXp4YANoodMJXIrXZtLj32k+5KfHXkXTFyOXyDfTpdhzOb6lnwrf
-         svgwpadAhtz9rAy0gv/eOUkN4cmnYRXmK5f2/yoRtszcQE1Wi5VekfqnbvH3dGoRZOK3
-         m0AIWDCmrwtNutdY4onRYSuvDT/xBNy5QRsft1odOUjp+ZBclpUQp0OvsMP4MjxMkFUD
-         +ZBT0Ioj6QpmUxHYP6qANSsQCXYFd8ed7blrGaUixCDWwgQibNg2O+kfKCVN/V+4o2z0
-         40QQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SvWkC8sIKWk2uTn2LDUiYL203o6lBq4o2a+zBxr/B5Q=;
+        b=B+q8GpPZ2cb+9OPUWfZXV2d5lT3UQD6tMtTtx1xWRb7EIYU3qTVwn8hxOL84Mmzg0y
+         TUiocdG10Fx/oUBWLx2Rtsm8gjKaKNiSsXPs0M8NRXdKD52fSV2pg6jYG/i2JHMOvwjp
+         EYmg7ezoB6VZ26Zvg4AUOVOczRUkMzwRCHuTtVOMfmT29PtvlFIEt8aXbz/QXVKc+KU6
+         0+RDP7RKfG82xinKbkDztyGVFdWeDHgmojvy4erx1cWwRtoAJWY2bs9jBcV+KEaPPbK3
+         C+JClIXAMpRV8USbz57JOiPf7jbredFdrlDq7mXO8czv4WfNGYeZkVglALBloL7wFYSS
+         vMQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=o/wF/V9TAVPEMQT2oLx1JVaew2djn3pZBY/upXLYuzc=;
-        b=Zv7iqrXlX2SO9Eojho7w9Oq5A9mzll3CV96dk/+8YPVqk/iPiV5Z7QSjmaSn9TW64p
-         vGHwOXvLcqBBk9BGpXXyahnTEcrbTeGGAc24li6J01bnDyaK3pzeIVxKd6IIuiMBQ/6B
-         6Clc5lpCSI/8dM7mEBQFAOV0mUMW4JDjqg25zEXbfOjYaNjTdM+9RSg5SfgImAH8rmcf
-         UuTKUNi8vHbQ4nSULhJIseXEFyGf6w9e0qmbGkCUNsoWmGkfloi8IYu9iE0QpKFEgaVV
-         pgSDJbSLDRToZkXgFOwS8+alGmPN8dgi5/gjYcWEOxLMdgq7rVY+y1oxFwVAYKhibVyB
-         dmcA==
-X-Gm-Message-State: AOAM530ADM9Ysui3fqspWH8b3NnhiTMZ2C+aXYoEKx//yhgsw3ODI8lT
-        q67RVrNgmIUWTmiAzhkgsL1Dyd/6rTmpbCuDQ2w=
-X-Google-Smtp-Source: ABdhPJyJgdMTX2qjugWwY+8XEAOmzMTUInoG9B9MjVDgoY+ogud3G7X8yZkMk+eqlbX2cdgbEpFm0+jIyuhxoJ5GNFU=
-X-Received: by 2002:a5d:9e44:: with SMTP id i4mr4559037ioi.172.1636085413745;
- Thu, 04 Nov 2021 21:10:13 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SvWkC8sIKWk2uTn2LDUiYL203o6lBq4o2a+zBxr/B5Q=;
+        b=6ekBzmcnqIgnM1js00gfpDiY1B70bWKipt6Pe2t67IgNunnp4WAf5f10zt43C3lYw6
+         PFrh7bNalAR/lorpOicgjeqcbQNuat0O308fnp7oUyPJl8A1/elRBGGRK1OMKp5wfyGg
+         0NFXarvfpIDg1KwoN4p5FI2EUPG76Xf8//qELLzxtBgkJx7jI/K8VM/be5Qq4+s53N8U
+         UdODtHNYWuEku7M0qgOtP6veTtV0lK8/h8VW5QDMkXy5HJ0WsiY0yUE9NxlgHgZKrzo3
+         gbgE6S4YGCQmJum77FyerpwI7KfW+z8X1CtpwUY6af3X/DvM5tHnlUOrFDl/lHPTpc3r
+         QFQA==
+X-Gm-Message-State: AOAM531/WsI4AHajb/mnp4L6p6e/7myh80C14mLfmKQ24UswHgcX3gPR
+        mJyzJ6dFFQKzxB2zUMCOkNM=
+X-Google-Smtp-Source: ABdhPJwtvbbfo9zOG7xG6Cdi38/mJvqwzFVPhDpSIVTOSnl1Ru3HfTXQ4/dpBy02gnyFBHNbdtjv3A==
+X-Received: by 2002:a17:906:6acd:: with SMTP id q13mr19642510ejs.426.1636092576664;
+        Thu, 04 Nov 2021 23:09:36 -0700 (PDT)
+Received: from ?IPv6:2a04:241e:501:3800:fafc:6a7c:c046:18f4? ([2a04:241e:501:3800:fafc:6a7c:c046:18f4])
+        by smtp.gmail.com with ESMTPSA id i13sm3417479edc.62.2021.11.04.23.09.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 Nov 2021 23:09:36 -0700 (PDT)
+Subject: Re: [PATCH v2 06/25] tcp: authopt: Compute packet signatures
+To:     Dmitry Safonov <0x7f454c46@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Ivan Delalande <colona@arista.com>,
+        Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@kernel.org>
+References: <cover.1635784253.git.cdleonard@gmail.com>
+ <5245f35901015acc6a41d1da92deb96f3e593b7c.1635784253.git.cdleonard@gmail.com>
+ <7a32f18e-aa92-8fd8-4f53-72b4ef8b0ffc@gmail.com>
+From:   Leonard Crestez <cdleonard@gmail.com>
+Message-ID: <a115cbfa-b68a-422c-d6c2-034c77496823@gmail.com>
+Date:   Fri, 5 Nov 2021 08:09:34 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Received: by 2002:a05:6e04:695:0:0:0:0 with HTTP; Thu, 4 Nov 2021 21:10:13
- -0700 (PDT)
-Reply-To: mstheresaheidi8@gmail.com
-From:   Mrs Theresa Heidi <harrypdegreat@gmail.com>
-Date:   Fri, 5 Nov 2021 04:10:13 +0000
-Message-ID: <CAJZ7=gav62hoC4P1kBusV8nks-+DDw6psADHGZrxw3QRy-5zEQ@mail.gmail.com>
-Subject: =?UTF-8?B?55eF6Zmi44GL44KJ44Gu57eK5oCl44Gu5Yqp44GR77yB?=
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <7a32f18e-aa92-8fd8-4f53-72b4ef8b0ffc@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-6Kaq5oSb44Gq44KL5oSb44GZ44KL5Lq644CBDQoNCuaFiOWWhOWvhOS7mOOBk+OBruaJi+e0meOB
-jOOBguOBquOBn+OBq+mpmuOBjeOBqOOBl+OBpuadpeOCi+OBi+OCguOBl+OCjOOBquOBhOOBk+OB
-qOOBr+eiuuOBi+OBp+OBmeOAgeazqOaEj+a3seOBj+iqreOCk+OBp+OBj+OBoOOBleOBhOOAguen
-geOBr+OBguOBquOBn+OBruaPtOWKqeOCkuW/heimgeOBqOOBl+OBpuOBhOOCi+mWk+OBq+engeea
-hOOBquaknOe0ouOCkumAmuOBl+OBpuOBguOBquOBn+OBrumbu+WtkOODoeODvOODq+OBrumAo+e1
-oeWFiOOBq+WHuuOBj+OCj+OBl+OBvuOBl+OBn+OAguengeOBr+W/g+OBi+OCieaCsuOBl+OBv+OC
-kui+vOOCgeOBpuOBk+OBruODoeODvOODq+OCkuabuOOBhOOBpuOBhOOBvuOBmeOAguOCpOODs+OC
-v+ODvOODjeODg+ODiOOBjOS+neeEtuOBqOOBl+OBpuacgOmAn+OBruOCs+ODn+ODpeODi+OCseOD
-vOOCt+ODp+ODs+aJi+auteOBp+OBguOCi+OBn+OCgeOAgeOCpOODs+OCv+ODvOODjeODg+ODiOOC
-kuS7i+OBl+OBpuOBguOBquOBn+OBq+mAo+e1oeOBmeOCi+OBk+OBqOOCkumBuOaKnuOBl+OBvuOB
-l+OBn+OAgg0KDQrnp4Hjga7lkI3liY3jga/jg4bjg6zjgrXjg7vjg4/jgqTjgrjlpKvkurrjgafj
-gZnnp4Hjga/nj77lnKjjgIHnp4HjgYw2Muats+OBruiCuueZjOOBrue1kOaenOOBqOOBl+OBpuOC
-pOOCueODqeOCqOODq+OBruengeeri+eXhemZouOBq+WFpemZouOBl+OBpuOBiuOCiuOAgeengeOB
-r+e0hDTlubTliY3jgIHlpKvjga7mrbvlvozjgZnjgZDjgavogrrjgYzjgpPjgajoqLrmlq3jgZXj
-gozjgb7jgZfjgZ/jgILnp4Hjga/ogrrjga7nmYzjga7msrvnmYLjgpLlj5fjgZHjgabjgYTjgovj
-gZPjgZPjga7nl4XpmaLjgafnp4Hjga7jg6njg4Pjg5fjg4jjg4Pjg5fjgajkuIDnt5LjgavjgYTj
-gb7jgZnjgILnp4Hjga/kuqHjgY3lpKvjgYvjgonlj5fjgZHntpnjgYTjgaDos4fph5HjgpLmjIHj
-gaPjgabjgYTjgb7jgZnjgYzjgIHlkIjoqIjjga8yNTDkuIfjg4njg6soMiw1MDAsMDAwLDAwMOex
-s+ODieODqynjgafjgZnjgILku4rjgIHnp4Hjga/np4Hjga7kurrnlJ/jga7mnIDlvozjga7ml6Xj
-gavov5HjgaXjgYTjgabjgYTjgovjgZPjgajjga/mmI7jgonjgYvjgafjgYLjgorjgIHnp4Hjga/j
-goLjgYbjgZPjga7jgYrph5HjgpLlv4XopoHjgajjgZfjgarjgYTjgajmgJ3jgYTjgb7jgZnjgILn
-p4Hjga7ljLvogIXjga/jgIHnp4HjgYzogrrnmYzjga7llY/poYzjga7jgZ/jgoHjgasx5bm06ZaT
-57aa44GL44Gq44GE44GT44Go44KS56eB44Gr55CG6Kej44GV44Gb44G+44GX44Gf44CCDQoNCuOB
-k+OBruOBiumHkeOBr+OBvuOBoOWkluWbveOBrumKgOihjOOBq+OBguOCiuOAgee1jOWWtuiAheOB
-r+engeOCkuacrOW9k+OBruaJgOacieiAheOBqOOBl+OBpuOAgeOBiumHkeOCkuWPl+OBkeWPluOC
-i+OBn+OCgeOBq+WJjeOBq+WHuuOBpuadpeOCi+OBi+OAgeeXheawl+OBruOBn+OCgeOBq+adpeOC
-i+OBk+OBqOOBjOOBp+OBjeOBquOBhOOBruOBp+engeOBq+S7o+OCj+OBo+OBpuiqsOOBi+OBq+OB
-neOCjOOCkuWPl+OBkeWPluOCi+OBn+OCgeOBruaJv+iqjeabuOOCkueZuuihjOOBmeOCi+OCiOOB
-huOBq+abuOOBhOOBn+OAgumKgOihjOOBruihjOWLleOBq+WkseaVl+OBmeOCi+OBqOOAgeOBneOC
-jOOCkumVt+OBj+e2reaMgeOBl+OBn+OBn+OCgeOBq+izh+mHkeOBjOayoeWPjuOBleOCjOOCi+WP
-r+iDveaAp+OBjOOBguOCiuOBvuOBmeOAgg0KDQrnp4HjgYzlpJblm73jga7pioDooYzjgYvjgonj
-gZPjga7jgYrph5HjgpLlvJXjgY3lh7rjgZnjga7jgpLmiYvkvJ3jgaPjgabjgY/jgozjgovjgarj
-gonjgIHjgYLjgarjgZ/jgavpgKPntaHjgZnjgovjgZPjgajjgavjgZfjgb7jgZfjgZ/jgILjgZ3j
-gZfjgabjgIHmhYjlloTmtLvli5Xjga7jgZ/jgoHjga7os4fph5HjgpLkvb/jgaPjgabjgIHmgbXj
-gb7jgozjgarjgYTkurrjgIXjgpLliqnjgZHjgIHnpL7kvJrjga5Db3ZpZC0xOeODkeODs+ODh+OD
-n+ODg+OCr+OBqOaIpuOBhuOBk+OBqOOCguOBp+OBjeOBvuOBmeOAguengeOBq+S9leOBi+OBjOi1
-t+OBk+OCi+WJjeOBq+OAgeOBk+OCjOOCieOBruS/oeiol+WfuumHkeOCkuiqoOWun+OBq+aJseOB
-o+OBpuOBu+OBl+OBhOOAguOBk+OCjOOBr+ebl+OBvuOCjOOBn+OBiumHkeOBp+OBr+OBquOBj+OA
-geWujOWFqOOBquazleeahOiovOaLoOOBjOOBguOCjOOBsDEwMO+8heODquOCueOCr+OBjOOBquOB
-hOOBqOOBhOOBhuWNsemZuuOBr+OBguOCiuOBvuOBm+OCk+OAgg0KDQrnp4Hjga/jgYLjgarjgZ/j
-gavjgYLjgarjgZ/jga7lgIvkurrnmoTjgarkvb/nlKjjga7jgZ/jgoHjga7nt4/jgYrph5Hjga40
-NSXjgpLlj5bjgaPjgabjgbvjgZfjgYTjgYzjgIHjgYrph5Hjga41NSXjga/mhYjlloTmtLvli5Xj
-gavooYzjgY/jgILnp4Hjga/np4Hjga7mnIDlvozjga7poZjjgYTjgpLljbHpmbrjgavjgZXjgonj
-gZnjgoLjga7jgpLmnJvjgpPjgafjgYTjgarjgYTjga7jgafjgIHnp4Hjga/np4Hjga7lv4Pjga7m
-rLLmnJvjgpLpgZTmiJDjgZnjgovjgZ/jgoHjgavjgIHjgZPjga7llY/poYzjgafjgYLjgarjgZ/j
-ga7mnIDlpKfpmZDjga7kv6HpoLzjgajmqZ/lr4bmgKfjgavmhJ/orJ3jgZfjgb7jgZnjgILjgYLj
-garjgZ/jga7jgrnjg5Hjg6DjgafjgZPjga7miYvntJnjgpLlj5fjgZHlj5bjgaPjgZ/loLTlkIjj
-gIHnp4Hjga/pnZ7luLjjgavnlLPjgZfoqLPjgYLjgorjgb7jgZvjgpPjgYzjgIHlm73jga7mnIDo
-v5Hjga7mjqXntprjgqjjg6njg7zjgavjgojjgovjgoLjga7jgafjgZnjgIINCg0K44GC44Gq44Gf
-44Gu5pyA5oSb44Gu5aeJ5aa544CCDQrjg4bjg6zjgrXjg7vjg4/jgqTjgrjlpKvkuroNCg==
+On 11/5/21 4:08 AM, Dmitry Safonov wrote:
+> On 11/1/21 16:34, Leonard Crestez wrote:
+> [..]
+>> +/* Find TCP_AUTHOPT in header.
+>> + *
+>> + * Returns pointer to TCP_AUTHOPT or NULL if not found.
+>> + */
+>> +static u8 *tcp_authopt_find_option(struct tcphdr *th)
+>> +{
+>> +	int length = (th->doff << 2) - sizeof(*th);
+>> +	u8 *ptr = (u8 *)(th + 1);
+>> +
+>> +	while (length >= 2) {
+>> +		int opcode = *ptr++;
+>> +		int opsize;
+>> +
+>> +		switch (opcode) {
+>> +		case TCPOPT_EOL:
+>> +			return NULL;
+>> +		case TCPOPT_NOP:
+>> +			length--;
+>> +			continue;
+>> +		default:
+>> +			if (length < 2)
+>> +				return NULL;
+> 
+> ^ never true, as checked by the loop condition
+> 
+>> +			opsize = *ptr++;
+>> +			if (opsize < 2)
+>> +				return NULL;
+>> +			if (opsize > length)
+>> +				return NULL;
+>> +			if (opcode == TCPOPT_AUTHOPT)
+>> +				return ptr - 2;
+>> +		}
+>> +		ptr += opsize - 2;
+>> +		length -= opsize;
+>> +	}
+>> +	return NULL;
+>> +}
+> 
+> Why copy'n'pasting tcp_parse_md5sig_option(), rather than adding a new
+> argument to the function?
+
+No good reason.
+
+There is a requirement in RFC5925 that packets with both AO and MD5 
+signatures be dropped. This currently works but the implementation is 
+convoluted: after an AO signature is found an error is returned if MD5 
+is also present.
+
+A better solution would be to do a single scan for both options up 
+front, for example in tcp_{v4,v6}_auth_inbound_check
+
+--
+Regards,
+Leonard
