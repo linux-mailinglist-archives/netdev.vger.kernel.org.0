@@ -2,230 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57ACE44643A
-	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 14:37:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 091BC44643C
+	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 14:37:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232090AbhKENj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Nov 2021 09:39:59 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:48430 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229924AbhKENj6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Nov 2021 09:39:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=denP3kmSD6IXR8Bp1s7m9uM6u56hzDvbAqHxvI7j02Q=; b=12
-        HqT2rdS+lE5Bso3joKwGtg8uf59mmk815YjYTlOvjsWwKwRoBttM7ZZ9ii+j3LHcI1wICHKGuI2np
-        ebpEYydeu3CNx9KLRZwqf8micGdzVT7ZfJLiXaEPL3vNjC2A77D/V0fDU5tEvzbi9jacyP9KMlT1S
-        FuVJ27SlFtHNV30=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mizP1-00Cg6c-F5; Fri, 05 Nov 2021 14:37:07 +0100
-Date:   Fri, 5 Nov 2021 14:37:07 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Wells Lu =?utf-8?B?5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
-Cc:     Wells Lu <wellslutw@gmail.com>,
+        id S232353AbhKENkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Nov 2021 09:40:04 -0400
+Received: from mail-eopbgr1410134.outbound.protection.outlook.com ([40.107.141.134]:37816
+        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229924AbhKENkD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Nov 2021 09:40:03 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EYNSLz7SE4J8wyUfpgKEtW9ZuE45VsXMaEnfnACd9uv3JxfSfLKhh+frHu76vXVRZCATutkfqeo5Vg2XsSfn4fdeXagFYI1/RUxvm0gjqBBR7++fj0pNxrYP2z/QYtPUwRxaE6erkxW7yV3jCuJmhfbGJLwdT8qgbUsEPdGH1QeQQKUR4+1UaOtO5UP0wN4BqLvm8IVUA7YLVlOsOvtRrFyN+cqC3UjEeJuxJiQD6c+VaK3wxWCVWpjAF0pOQzelQBaxCEreiTabHfYyfEydoL646s/ErynGmuRELACxZb0vd/s+pt+/RgzrXHLDw39bJ8AS2GWF5YyjqFyy1dUEKw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Q4IjobilcApVEZtmEgUePVAmMH0EanOy9/tzj6Qggm4=;
+ b=GdcpV7Zxb7TOWsiSTZ95wV5o/iE0xf5JY+txcx/UecYtI43nlNWD2/FvppEyYEk7uydNVj6x5VLRIkgz4co+n0vDk0nKRmn5kLrNPLRILmwmSGtm/WcvfkA4HrgQH+sUpImicUfUHtxveeepv+n1Fx28hC7ILM0XR8MI4Pr3aE4q4QATcl/mhxAd2bUqpjBVC/SOS4GlLi0w1X05W+pKa3vvfFSNAS9WoWyJ3t4MZy4/WaNXROCpfULNRaBoFVVfO67i/0LVt2QyfMaDXK5yeNPNnKZUCLY2RREzSA4ywxsVAXmPhEBu2Cuj9prM76pbGKmx9sHvOyxxfxScR17Aqg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=connect.ust.hk; dmarc=pass action=none
+ header.from=connect.ust.hk; dkim=pass header.d=connect.ust.hk; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=connect.ust.hk;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Q4IjobilcApVEZtmEgUePVAmMH0EanOy9/tzj6Qggm4=;
+ b=i/REP1Ve8B6RdfaAYrrOndkg2s1YxySAwN2RJph272scdZoTrvNunqPV64YVR/ByOIeRoQPmr4SyqB8LEXsDUbTTU4bWEPw8J0PtvvxgoIvtFAExLFmg9F3yG4CUAWCLvbCx/4Jjv8Q20ScYuFCk6CdkZL8qDcyOZq9P6YWWsN4=
+Received: from TYCP286MB1188.JPNP286.PROD.OUTLOOK.COM (2603:1096:400:b7::8) by
+ TYYP286MB1248.JPNP286.PROD.OUTLOOK.COM (2603:1096:400:d7::11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4669.13; Fri, 5 Nov 2021 13:37:22 +0000
+Received: from TYCP286MB1188.JPNP286.PROD.OUTLOOK.COM
+ ([fe80::c0af:a534:cead:3a04]) by TYCP286MB1188.JPNP286.PROD.OUTLOOK.COM
+ ([fe80::c0af:a534:cead:3a04%6]) with mapi id 15.20.4669.013; Fri, 5 Nov 2021
+ 13:37:22 +0000
+From:   YE Chengfeng <cyeaa@connect.ust.hk>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+CC:     "krzysztof.kozlowski@canonical.com" 
+        <krzysztof.kozlowski@canonical.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
+        "wengjianfeng@yulong.com" <wengjianfeng@yulong.com>,
         "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>
-Subject: Re: [PATCH 2/2] net: ethernet: Add driver for Sunplus SP7021
-Message-ID: <YYUzgyS6pfQOmKRk@lunn.ch>
-References: <cover.1635936610.git.wells.lu@sunplus.com>
- <650ec751dd782071dd56af5e36c0d509b0c66d7f.1635936610.git.wells.lu@sunplus.com>
- <YYK+EeCOu/BXBXDi@lunn.ch>
- <64626e48052c4fba9057369060bfbc84@sphcmbx02.sunplus.com.tw>
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: =?gb2312?B?u9i4tDogbmZjOiBwbjUzMzogc3VzcGVjdGVkIGRvdWJsZSBmcmVlIHdoZW4g?=
+ =?gb2312?B?cG41MzNfZmlsbF9mcmFnbWVudF9za2JzKCkgcmV0dXJuIHZhbHVlIDw9IDA=?=
+Thread-Topic: nfc: pn533: suspected double free when
+ pn533_fill_fragment_skbs() return value <= 0
+Thread-Index: AdfSJhbChn+moLKRRQKXKwLgcIIbAAAGPrKAAALGd/A=
+Date:   Fri, 5 Nov 2021 13:37:21 +0000
+Message-ID: <TYCP286MB11884A0B03028EC1BF021FCB8A8E9@TYCP286MB1188.JPNP286.PROD.OUTLOOK.COM>
+References: <TYCP286MB1188FA6BE2735C22AA9C473E8A8E9@TYCP286MB1188.JPNP286.PROD.OUTLOOK.COM>
+ <20211105121715.GB2026@kadam>
+In-Reply-To: <20211105121715.GB2026@kadam>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: oracle.com; dkim=none (message not signed)
+ header.d=none;oracle.com; dmarc=none action=none header.from=connect.ust.hk;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5d368f2d-86bd-4fcd-bbfd-08d9a0616554
+x-ms-traffictypediagnostic: TYYP286MB1248:
+x-microsoft-antispam-prvs: <TYYP286MB12483AB9CF9ADD25AD6E3DF88A8E9@TYYP286MB1248.JPNP286.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: PF44P5TaW0aB0VstcbZvXn02h+LsoPOjErKdeTvB6mnbS4YzIbzxjfp2Ed+AZtnPcJUbcJisRyKaHl3WqxaC4BeFoBh9ARj7w1kLYGWDimayydmvmnJRV1ynWuCUmPRHaSSFPRqfse0wN6FclRIyLGvcMLl4KU9r3ISbQuQDjOR9UTX8WmnZ16+A1XC+Crh+fsmwBdsWfk76Z3fk5iBv4SUu5PnoRNXJdaEMJIezW5Ogeld2TQ34R3uKWDEMZV1rUgovUT5RrXg02xHmkMRc4d8zL9zHXDgxNAFzOCrt92Kh4dzdoxEVRIOdsStzNj6Q0shdF5ZkVSTkKpgTZ8+ToyCAy7OhbzstJfC7W5fbnKlgaAVfju9baqeVMT6WAv2qnWsrO6w+2Qz8JFztMEuCe1jLNa2zbupXBeWPrl176c5L7gVOBKoOZc6jlnc6sjJdk0x0GuRZam8sHpjHCc8rIFRLNv4eCDknmSjp3iT1HDUTYppGAYFFw0UcrFD1q1yWN1NdTlCBCiJ+5HpyTT0hRCdb1YMoJ9v+tcDNpUsaCqkwTXzZAY57U4eKrHkR3BNShm3fCj+hKukwy4V+dnjoWKlkQCYiz6LDqlqSAgSGaKJ+tpXhuiSClfJSsNWN1hA+aygM4bpkw9gBIObZsWfYBZ6qaUw47kLDG5zx1+c0TJbw5n7VUw5caZyA+0H8aiyQCfYD9DaYP0iV9iH/csh030lm0af5Blq3taqrlY1VjSG/U+25kdcZpSmwUSjYrQ5j0J0sFTO0m1YTrJ6odDZo+FoVtQOmuuZP4wN/4DUA0TE=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYCP286MB1188.JPNP286.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(366004)(7696005)(4326008)(38100700002)(66446008)(224303003)(52536014)(66476007)(66946007)(64756008)(66556008)(8936002)(86362001)(45080400002)(966005)(122000001)(54906003)(498600001)(83380400001)(5660300002)(71200400001)(2906002)(55016002)(186003)(6916009)(33656002)(26005)(9686003)(38070700005)(6506007)(76116006);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?gb2312?B?Z0NjNk1oY1pZUmxaMjlmNFFmRWtQQWllRUJ5K2dlU003dXJMZDB1ZzVDZ3oz?=
+ =?gb2312?B?M25NMUlqbjFpanpxdE5DNnFnWWFGYkgySTE2bzlDQktHYTI3THBqV1FMTWJE?=
+ =?gb2312?B?cXIzcVVVbXF2Z0pLMlErRU00UXBPSFZJUmYwRUllSnFwY3FGT0JzenMwMnBV?=
+ =?gb2312?B?d0xudlhEdTBWQmFPd01GTU5TUmN3Vkt4clJSZzY4cU1Veng4MHFwQUtCdmFP?=
+ =?gb2312?B?cWNFancrRjYrVittUlRkQjJLTmZBeGtYcHpBSWhaNkZpK1Bta1I0ZHJoT01s?=
+ =?gb2312?B?WitkSlh2SnJubDFyQVVraUJxbElZNS9STW1HMGxYa0FNUkZUT3UzN1FJT2FL?=
+ =?gb2312?B?cHoyanJ4S0RVWHVQanlQZHVFTnhrT0lRMitXRDJHdmhEWHljeVhkbkNCM2RW?=
+ =?gb2312?B?N0hqRWEyN2hXTFo2T0RDM282TEgyT0dLcnhSYVQwb0NXY3ByMWtmV1hQa3o0?=
+ =?gb2312?B?amR6OXB1dmoxem1XbGxqb3lieEw4ZzNJelRoR1BDRExBbmtwVlFtQzZtWFRj?=
+ =?gb2312?B?S29xUWdybEJxbGxzaVpaS0VvRHFXcXR0N1ZJdVZzeURyeVFBbjc5WjhYRkY3?=
+ =?gb2312?B?MkFRYVUrcUpmVDg5Q0IxaHl0dEM5bm9RYmljbThVUE9DTTZBN3hLbm5jbHJD?=
+ =?gb2312?B?cG9valRQcWc1WU1FcnNrZDc4TVF0Y3VxYzExREhhY3hab3VuWCt4cFFyZnIv?=
+ =?gb2312?B?L0RtelkzemRkRUgrd1hWclNYRUJKNlUrNzRPbm9pMnA4K1VnWjh4RTNrdTQ2?=
+ =?gb2312?B?V2hjdGdFNVRFeVVFUUVOL1NzQkNzZnF4V3pTRk9ZcklXNDYwUStFQ0VSWitw?=
+ =?gb2312?B?R2QwL1B4VFVOUmFUbXF6S2x2R3VLWitwS081aUR5VTdXVzFuQVRmcHZOVGR6?=
+ =?gb2312?B?ZnV1WnJMOWtYSFNVYnFlUmhMVVRxQnp3K09wK1NrdlpxVmM5c2xOTjJUWUlB?=
+ =?gb2312?B?bWJnQ29JNldtN1ExbWFWUVMwZnVmRElxNHBZTEdKNXV2YTNkbHc0RGJtcTM1?=
+ =?gb2312?B?TXNtUlpudHFkempCZkM5ayttclUycXZEQnIrTUNmYzVEamE4VFVZeGpnZ2ZB?=
+ =?gb2312?B?NlVvRWRXS0ZhYnc1UFRiOEMvc0lFcmxTY0dweFZSMHR6M0xmV20zMnQxWjIz?=
+ =?gb2312?B?cndkS1R6bHJjL2xBZ1c3Tys1ZzBBK09rSlNyc0h6K3V5MVkxNDlGRWdkR0hs?=
+ =?gb2312?B?MkRtMW5ZOCttem4xcGJIWFFoY2Q0ZGFva21HSFNiU1RLZHVweEQ4SFdMVm5m?=
+ =?gb2312?B?b3N4N3lmQm15c3g1bTU4L1JDdHBrcUZWNEdMV3lJM2xZUEdFTGxQdlluSnhY?=
+ =?gb2312?B?YlNhdld6OXFaZnhwQ1ZLQjJ5eHNiamt4Q2tGZFJhWUdvYWcyWE9tN1htcDFn?=
+ =?gb2312?B?VW5aWHk4cG40L09GZDFIc0NOWnpEdkxvdGFqeCtoWlhMWjd2bHh5ZEliVU5D?=
+ =?gb2312?B?MGd4RlUrRFhrdUpCZzVZUmpZSTJJRGhTdWN4Mlo2MW04a3NYTit5ZlphTGtv?=
+ =?gb2312?B?ZzRtR2U5VTJBNy92d0tkcmpSY3phTS9taTlYKytkNFpONFNPMmFYQk5sa3By?=
+ =?gb2312?B?dDhuaGxkMzZqVlk3emE0K3V1Z2ZOYXh5aWlkWVg3c05Gai9Ta1gvdUxGS3Z4?=
+ =?gb2312?B?WFdjM0ZLR3psL1cwWktudFdhUDZFbXpwbGRMWmhyKy9TSFJaQnljdzJTZFp1?=
+ =?gb2312?B?b281K1ZGTkhtYWJKZnVJa2h3cmJCQm9LNUZpNVowdG5hUERVQmJuZ01GdG5l?=
+ =?gb2312?B?R3podEtSL2xTNW5xWWx3RlVlZFExdG5ZcXEySEhJNlZFWmRNY2Q1b2hkN3lj?=
+ =?gb2312?B?Rmk0QkRsYnBMZG16UzhiVmE1TytqaitNU1h5ak1HczVDK0NHRVF2dnhJSlNX?=
+ =?gb2312?B?b3pYaHFRSUNXaFNhZmIwcTFaVWpLR1JYM3NMWHVnZUphRGQwQ2Y5NjF1c0ts?=
+ =?gb2312?B?ZXB5dkM4cC9oNU0vU2l0Q0tQaEFQODNOWHlUVDduc2d2ZjNERW8vMERkUGFP?=
+ =?gb2312?B?aStFSTE4dUFZckxFdG5FVDBEa3pVakprckhPbTRYTE8vdFp1TE1ON1lyWlAz?=
+ =?gb2312?B?QWF2d21uSGFRYkcwWVZtZzJKbHFqb05HWGpQZ3ozM0tlTXVxcXpKbnk0cHRI?=
+ =?gb2312?B?Z1VQYVlxNTd0RHUyWGVQcVN6SDU2NmI1ckYra01wTzlHZ1IvMHRRTXY0anVt?=
+ =?gb2312?B?aEE9PQ==?=
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <64626e48052c4fba9057369060bfbc84@sphcmbx02.sunplus.com.tw>
+X-OriginatorOrg: connect.ust.hk
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TYCP286MB1188.JPNP286.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5d368f2d-86bd-4fcd-bbfd-08d9a0616554
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Nov 2021 13:37:21.9062
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 6c1d4152-39d0-44ca-88d9-b8d6ddca0708
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: nZN7KcxBkWV8CU7z6LnX5yH/EQKs/P9oOoYUKcgSyt7laQqqapyz+0hVoC3CkEoySzSOd61BRrorP6hSre6I4w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYYP286MB1248
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > +config NET_VENDOR_SUNPLUS
-> > > +	tristate "Sunplus Dual 10M/100M Ethernet (with L2 switch) devices"
-> > 
-> > The "with L2 Switch" is causing lots of warning bells to ring for me.
-> > 
-> > I don't see any references to switchdev or DSA in this driver. How is the
-> > switch managed? There have been a few examples in the past of similar two
-> > port switches being first supported in Dual MAC mode. Later trying to
-> > actually use the switch in the Linux was always ran into problems, and
-> > basically needed a new driver. So i want to make sure you don't have this
-> > problem.
-> > 
-> > In the Linux world, Ethernet switches default to having there
-> > ports/interfaces separated. This effectively gives you your dual MAC mode by
-> > default.  You then create a Linux bridge, and add the ports/interfaces to the
-> > bridge. switchdev is used to offload the bridge, telling the hardware to
-> > enable the L2 switch between the ports.
-> > 
-> > So you don't need the mode parameter in DT. switchdev tells you this.
-> > Switchdev gives user space access to the address table etc.
-> 
-> The L2 switch of Ethernet of SP7021 is not used to forward packets 
-> between two network interfaces.
-> 
-> Sunplus Dual Ethernet devices consists of one CPU port, two LAN 
-> ports, and a L2 switch. L2 switch is a circuitry which receives packets 
-> from CPU or LAN ports and then forwards them other ports. Rules of 
-> forwarding packets are set by driver.
-> 
-> Ethernet driver of SP7021 of Sunplus supports 3 operation modes:
->   - Dual NIC mode
->   - An NIC with two LAN ports mode (daisy-chain mode)
->   - An NIC with two LAN ports mode 2
-> 
-> Dual NIC mode
-> Ethernet driver creates two net-device interfaces (eg: eth0 and eth1). 
-> Each has its dedicated LAN port. For example, LAN port 0 is for 
-> net-device interface eth0. LAN port 1 is for net-device interface 
-> eth1. Packets from LAN port 0 will be always forwarded to eth0 and 
-> vice versa by L2 switch. Similarly, packets from LAN port 1 will be 
-> always forwarded to eth1 and vice versa by L2 switch. Packets will 
-> never be forwarded between two LAN ports, or between eth0 and 
-> LAN port 1, or between eth1 and LAN port 0. The two network 
-> devices work independently.
-> 
-> An NIC with two LAN ports mode (daisy-chain mode)
-> Ethernet driver creates one net-device interface (eg: eth0), but the 
-> net-device interface has two LAN ports. In this mode, a packet from 
-> one LAN port will be either forwarded to net-device interface (eht0) 
-> if its destination address matches MAC address of net-device 
-> interface (eth0), or forwarded to other LAN port. A packet from 
-> net-device interface (eth0) will be forwarded to a LAN port if its 
-> destination address is learnt by L2 switch, or forwarded to both 
-> LAN ports if its destination has not been learnt yet.
-> 
-> An NIC with two LAN ports mode 2
-> This mode is similar to “An NIC with two LAN ports mode”. The 
-> difference is that a packet from net-device interface (eth0) will be 
-> always forwarded to both LAN ports. Learning function of L2 switch 
-> is turned off in this mode. This means L2 switch will never learn the 
-> source address of a packet. So, it always forward packets to both 
-> LAN ports. This mode works like you have 2-port Ethernet hub.
-
-So here you describe how the hardware can be used. Dual is two
-interfaces. Daisy-chain is what you get by taking those two interfaces
-and adding them to a bridge. The bridge then forwards frames between
-the interfaces and the CPU as needed, based on learning. And your
-third mode is the bridge always performs flooding.
-
-A linux driver must follow the linux networking model. You cannot make
-up your own model. In the linux world, you model the external
-ports. The hardware always has two external ports, so you need to
-always have two netdev interfaces. To bridge packets between those two
-interfaces, you create a bridge and you add the interfaces to the
-bridge. That is the model you need to follow. switchdev gives you the
-API calls you need to implement this.
-
-> > > +struct l2sw_common {
-> > 
-> > Please change your prefix. l2sw is a common prefix, there are other silicon
-> > vendors using l2sw. I would suggest sp_l2sw or spl2sw.
-> 
-> Ok, I'll modify two struct names in next patch as shown below:
-> l2sw_common --> sp_common
-> l2sw_mac --> sp_mac
-> 
-> Should I also modify prefix of file name?
-
-You need to modify the prefix everywhere you use it.  Function names,
-variable names, all symbols. Search and replace throughout the whole
-code.
-
-> > > +			return -EINVAL;
-> > > +		}
-> > > +	}
-> > > +
-> > > +	switch (cmd) {
-> > > +	case SIOCGMIIPHY:
-> > > +		if (comm->dual_nic && (strcmp(ifr->ifr_ifrn.ifrn_name, "eth1") ==
-> > > +0))
-> > 
-> > You cannot rely on the name, systemd has probably renamed it. If you have
-> > using phylib correctly, net_dev->phydev is what you want.
-> 
-> Ok, I'll use name of the second net device to do compare, 
-> instead of using fixed string "eth1", in next patch.
-
-No. There are always two interfaces. You always have two netdev
-structures. Each netdev structure has a phydev. So use netdev->phydev.
-
-This is another advantage of the Linux model. In your daisy chain
-mode, how do i control the two PHYs? How do i see one is up and one is
-down? How do i configure one to 10Half and the other 100Full?
-
-> > > +int phy_cfg(struct l2sw_mac *mac)
-> > > +{
-> > > +	// Bug workaround:
-> > > +	// Flow-control of phy should be enabled. L2SW IP flow-control will refer
-> > > +	// to the bit to decide to enable or disable flow-control.
-> > > +	mdio_write(mac->comm->phy1_addr, 4,
-> > mdio_read(mac->comm->phy1_addr, 4) | (1 << 10));
-> > > +	mdio_write(mac->comm->phy2_addr, 4,
-> > mdio_read(mac->comm->phy2_addr,
-> > > +4) | (1 << 10));
-> > 
-> > This should be in the PHY driver. The MAC driver should never need to touch
-> > PHY registers.
-> 
-> Sunplus Ethernet MAC integrates MDIO controller. 
-> So Ethernet driver has MDIO- and PHY-related code. 
-> To work-around a circuitry bug, we need to enable 
-> bit 10 of register 4 of PHY.
-> Where should we place the code?
-
-The silicon is integrated, but it is still a collection of standard
-blocks. Linux models those blocks independently. There is a subsystem
-for the MAC, a subsystem for the MDIO bus master and a subsystem for
-the PHY. You register a driver with each of these subsystems. PHY
-drivers live in drivers/net/phy. Put a PHY driver in there, which
-includes this workaround.
-
-> > > +static void mii_linkchange(struct net_device *netdev) { }
-> > 
-> > Nothing to do? Seems very odd. Don't you need to tell the MAC it should do
-> > 10Mbps or 100Mbps? What about pause?
-> 
-> No, hardware does it automatically.
-> Sunplus MAC integrates MDIO controller.
-> It reads PHY status and set MAC automatically.
-
-The PHY is external? So you have no idea what PHY that is? It could be
-a Marvell PHY, a microchip PHY, an Atheros PHY. Often PHYs have
-pages. In order to read the temperature sensor you change the page,
-read a register, and then hopefully change the page back again. If the
-PHY supports Fibre as well as copper, it can put the fibre registers
-in a second page. The PHY driver knows about this, it will flip the
-pages as needed. The phylib core has a mutex, so that only one
-operation happens at a time. So a page flip does not happen
-unexpectedly.
-
-Your MAC hardware does not take this mutex. It has no idea what page
-is selected when it reads registers. Instead of getting the basic mode
-register, it could get the LED control register...
-
-The MAC should never directly access the PHY. Please disable this
-hardware, and use the mii_linkchange callback to configure the MAC.
-
-> > So the MAC does not support pause? I'm then confused about phy_cfg().
- 
-> Yes, MAC supports pause. MAC (hardware) takes care of pause 
-> automatically.
-> 
-> Should I remove the two lines?
-
-Yes.
-
-And you need to configure the MAC based on the results of the
-auto-neg.
-
-	Andrew
+VGhhbmtzIGZvciB5b3VyIGFkdmljZS4gSSBmb2xsb3cgaXQgYW5kIHNlbmQgYSB2MiBwYXRjaCwg
+aXMgaXQgY29ycmVjdD8NCg0KQmVzdCByZWdhcmRzLA0KQ2hlbmdmZW5nDQoNCi0tLS0t08q8/tSt
+vP4tLS0tLQ0Kt6K8/sjLOiBEYW4gQ2FycGVudGVyIDxkYW4uY2FycGVudGVyQG9yYWNsZS5jb20+
+IA0Kt6LLzcqxvOQ6IDIwMjHE6jEx1MI1yNUgMjA6MTcNCsrVvP7IyzogWUUgQ2hlbmdmZW5nIDxj
+eWVhYUBjb25uZWN0LnVzdC5oaz4NCrOty806IGtyenlzenRvZi5rb3psb3dza2lAY2Fub25pY2Fs
+LmNvbTsgZGF2ZW1AZGF2ZW1sb2Z0Lm5ldDsgd2VuZ2ppYW5mZW5nQHl1bG9uZy5jb207IGt1YmFA
+a2VybmVsLm9yZzsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2Vy
+bmVsLm9yZw0K1vfM4jogUmU6IG5mYzogcG41MzM6IHN1c3BlY3RlZCBkb3VibGUgZnJlZSB3aGVu
+IHBuNTMzX2ZpbGxfZnJhZ21lbnRfc2ticygpIHJldHVybiB2YWx1ZSA8PSAwDQoNCk9uIEZyaSwg
+Tm92IDA1LCAyMDIxIGF0IDA5OjIyOjEyQU0gKzAwMDAsIFlFIENoZW5nZmVuZyB3cm90ZToNCj4g
+SGksDQo+IA0KPiBXZSBub3RpY2UgdGhhdCBza2IgaXMgYWxyZWFkeSBmcmVlZCBieSBkZXZfa2Zy
+ZWVfc2tiIGluIA0KPiBwbjUzM19maWxsX2ZyYWdtZW50X3NrYnMsIGJ1dCBmb2xsb3cgZXJyb3Ig
+aGFuZGxlciBicmFuY2ggI2xpbmUgMjI4OCANCj4gYW5kICNsaW5lIDIzNTYsIHNrYiBpcyBmcmVl
+ZCBhZ2Fpbiwgc2VlbXMgbGlrZSBhIGRvdWJsZSBmcmVlIGlzc3VlLg0KPiBXb3VsZCB5b3UgbGlr
+ZSB0byBoYXZlIGEgbG9vayBhdCB0aGVtPw0KPiANCj4gaHR0cHM6Ly9hcGMwMS5zYWZlbGlua3Mu
+cHJvdGVjdGlvbi5vdXRsb29rLmNvbS8/dXJsPWh0dHBzJTNBJTJGJTJGZ2l0aA0KPiB1Yi5jb20l
+MkZ0b3J2YWxkcyUyRmxpbnV4JTJGYmxvYiUyRm1hc3RlciUyRmRyaXZlcnMlMkZuZmMlMkZwbjUz
+MyUyRnBuDQo+IDUzMy5jJTIzTDIyODgmYW1wO2RhdGE9MDQlN0MwMSU3Q2N5ZWFhJTQwY29ubmVj
+dC51c3QuaGslN0MyOWRmNzJkMWY4YTMNCj4gNDQ3M2ExNTAwOGQ5YTA1NjQyY2YlN0M2YzFkNDE1
+MjM5ZDA0NGNhODhkOWI4ZDZkZGNhMDcwOCU3QzElN0MwJTdDNjM3Nw0KPiAxNzExNDYyNDAxNjUy
+MCU3Q1Vua25vd24lN0NUV0ZwYkdac2IzZDhleUpXSWpvaU1DNHdMakF3TURBaUxDSlFJam9pVjJs
+DQo+IHVNeklpTENKQlRpSTZJazFoYVd3aUxDSlhWQ0k2TW4wJTNEJTdDMTAwMCZhbXA7c2RhdGE9
+OW5zc1ZJNU50eUVVdm5INmsNCj4gTlA2MGRxU210Z2ZXSUxvS1hpbWNKV0lpS2MlM0QmYW1wO3Jl
+c2VydmVkPTANCj4gDQoNClRoZSBjb2RlIGlzIGJ1Z2d5LCB5ZXMsIGJ1dCBpdCdzIGEgYml0IHRy
+aWNreSB0byBmaXguDQoNCnBuNTMzX2ZpbGxfZnJhZ21lbnRfc2ticygpIG5ldmVyIHJldHVybnMg
+ZXJyb3IgY29kZXMsIGl0IHJldHVybnMgemVybyBvbiBlcnJvci4gIFNwZWNpZmljYWxseSBpdCBj
+bGVhcnMgb3V0IHRoZSAmZGV2LT5mcmFnbWVudF9za2IgbGlzdCBhbmQgdGhlbiByZXR1cm5zIHRo
+ZSBsZW5ndGggb2YgdGhlIGxpc3QgInNrYl9xdWV1ZV9sZW4oJmRldi0+ZnJhZ21lbnRfc2tiKSIN
+CndoaWNoIGlzIG5vdyB6ZXJvLg0KDQpSZXR1cm5pbmcgc3VjY2VzcyBvbiB0cmFuc21pdCBmYWls
+dXJlIGlzIGZpbmUgYmVjYXVzZSB0aGUgbmV0d29yayBzdGFjayB0aGlua3MgaXQgd2FzIGxvc3Qg
+c29tZXdoZXJlIGluIHRoZSBuZXR3b3JrIGFuZCByZXNlbmRzIGl0LiAgQnV0IHByb2JhYmx5IGl0
+IHNob3VsZCByZXR1cm4gLUVOT01FTT8gIEJ1dCBjaGFuZ2luZyB0aGUgcmV0dXJuIHdvdWxkIG1h
+a2UgdGhlIG90aGVyIGNhbGxlciBpbnRvIGEgZG91YmxlIGZyZWUgbm93Lg0KDQpTbyBwcm9iYWJs
+eSB0aGUgY29ycmVjdCBmaXggaXMgdG8NCjEpIE1ha2UgcG41MzNfZmlsbF9mcmFnbWVudF9za2Jz
+KCkgcmV0dXJuIC1FTk9NRU0gb24gZXJyb3INCjIpIERvbid0IGNhbGwgZGV2X2tmcmVlX3NrYihz
+a2IpOyBvbiBlcnJvciBpbiBwbjUzM19maWxsX2ZyYWdtZW50X3NrYnMoKS4NCiAgIE9ubHkgY2Fs
+bCBpdCBvbiB0aGUgc3VjY2VzcyBwYXRoLg0KMykgQ2hhbmdlIHRoZSBjYWxsZXJzIHRvIGNoZWNr
+IGZvciBuZWdhdGl2ZXMgaW5zdGVhZCBvZiA8PSAwDQoNCj4gV2Ugd2lsbCBwcm92aWRlIHBhdGNo
+IGZvciB0aGVtIGFmdGVyIGNvbmZpcm1hdGlvbi4NCg0KU291bmRzIGdyZWF0LiAgWW91IGNhbiBm
+aXggaXQgaG93ZXZlciB5b3Ugd2FudC4gIE15IGlkZWFzIGFyZSBhIHN1Z2dlc3Rpb24gb25seS4N
+Cg0KcmVnYXJkcywNCmRhbiBjYXJwZW50ZXINCg0K
