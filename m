@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2CB144625F
-	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 11:50:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F611446261
+	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 11:50:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231690AbhKEKws (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Nov 2021 06:52:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34630 "EHLO mail.kernel.org"
+        id S231827AbhKEKwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Nov 2021 06:52:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34634 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231642AbhKEKwr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231645AbhKEKwr (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 5 Nov 2021 06:52:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id F13A26124A;
-        Fri,  5 Nov 2021 10:50:07 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 189D06126A;
+        Fri,  5 Nov 2021 10:50:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1636109408;
-        bh=PEbAx5J23QwyAPFh+r1xwhp+zPTVbSStfq79iDXgTao=;
+        bh=qMIiZiv0eQoteCXhrpdDrRcNzDI4p0mpSQ/gDae3tQ4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=KJpEQ91h9wDJQzsIU4auifDCO0ji2s9VYiYHn8Iaen8f+6tBlzijpSFE+FtQ3Hi2E
-         0aJ35HcvIa6mRccEC0zca1kuBOZMUusHlOdMmhD73UY4D25ZAy1STWk298Ll6pW0aB
-         4SVjU7Aw0/euQOaTOTZDm7XyL0jWmTO/MGHiTE9EYw66yFXVMtaFVu3Ovka8+pLe+Q
-         B/oLb8/BtJa/gyJLqrbsjvYxpp8/bHESHKqbQdWb/uwcfyPyXrCbss1H+1pngLzcbl
-         M0CuVQiaNivloiDFWiZKebDT/2Rar2QE/5dk4o976uVEJl5Lf6YCifr/k09zNv8k6T
-         4HfvwZj/6FYJg==
+        b=VNd0JMp4mdKweVUDz7VT2tpFFHqjYqDOPUuUualvg5tYuUrkeV5QIxmQAcETAzGb8
+         yR1Xt+frG/JJDn+rWpJVrgRU2p76whKOnaYjFfxIZgaZrZm0lhWnCNZ+pQBPDUAT00
+         IVlvAEl4FnsxZDNrLzMW1ckhlSAohDL7+wiJxwPOeOt44TPiaLc+g+WA0d7+kk+GQJ
+         /jYMLlAHy2aO3nt5ny5eiEncqDBYqOL+jFlj6KqKbzjZJnSnmz/dULB0P0EETXoZRP
+         ThR4JKT8B0FmL+u3i12TbEOqdowJH96U42FWvBvUO6l/zCLXsVw0+IXBdbEhANAi7b
+         B6nBA3ekgbCMA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DF3DE60A0E;
-        Fri,  5 Nov 2021 10:50:07 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0EDCD609B8;
+        Fri,  5 Nov 2021 10:50:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: udp: correct the document for udp_mem
+Subject: Re: [PATCH net] net: ax88796c: hide ax88796c_dt_ids if !CONFIG_OF
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163610940791.24664.10352541983010508425.git-patchwork-notify@kernel.org>
-Date:   Fri, 05 Nov 2021 10:50:07 +0000
-References: <20211105073541.2981935-1-imagedong@tencent.com>
-In-Reply-To: <20211105073541.2981935-1-imagedong@tencent.com>
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, corbet@lwn.net,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, imagedong@tencent.com
+Message-Id: <163610940805.24664.14336515464359871243.git-patchwork-notify@kernel.org>
+Date:   Fri, 05 Nov 2021 10:50:08 +0000
+References: <20211104175527.91343-1-kuba@kernel.org>
+In-Reply-To: <20211104175527.91343-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        l.stelmach@samsung.com, lkp@intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,22 +47,20 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri,  5 Nov 2021 15:35:41 +0800 you wrote:
-> From: Menglong Dong <imagedong@tencent.com>
+On Thu,  4 Nov 2021 10:55:27 -0700 you wrote:
+> Build bot says:
 > 
-> udp_mem is a vector of 3 INTEGERs, which is used to limit the number of
-> pages allowed for queueing by all UDP sockets.
+> >> drivers/net/ethernet/asix/ax88796c_main.c:1116:34: warning: unused variable 'ax88796c_dt_ids' [-Wunused-const-variable]
+>    static const struct of_device_id ax88796c_dt_ids[] = {
+>                                     ^
 > 
-> However, sk_has_memory_pressure() in __sk_mem_raise_allocated() always
-> return false for udp, as memory pressure is not supported by udp, which
-> means that __sk_mem_raise_allocated() will fail once pages allocated
-> for udp socket exceeds udp_mem[0].
+> The only reference to this array is wrapped in of_match_ptr().
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: udp: correct the document for udp_mem
-    https://git.kernel.org/netdev/net/c/69dfccbc1186
+  - [net] net: ax88796c: hide ax88796c_dt_ids if !CONFIG_OF
+    https://git.kernel.org/netdev/net/c/6789a4c05127
 
 You are awesome, thank you!
 -- 
