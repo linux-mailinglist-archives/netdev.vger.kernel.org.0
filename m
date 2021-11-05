@@ -2,90 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D42944675D
-	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 17:54:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EA32446767
+	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 17:56:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234090AbhKEQ4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Nov 2021 12:56:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:53618 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234093AbhKEQ4f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Nov 2021 12:56:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1636131235;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=akKdH9HbFFjAn593OExPRv0KSG0Y+eS7KHle5vuF5I8=;
-        b=JYLahD1TU7PilXAJBfRXyBH5NWsa3aaARpXXvm6qUOHYfBBhKHv9jvuckLuH+sd43lTPZI
-        dyVlicmYIm6pG1k3tFbrhrthYKtDgYsG4RfuKjVn565tHt7kx0N1NwoWVbnvE0+le3vjfW
-        nYo1mcsqcbNB5JabGSq94NpJ7ffQ5Ws=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-10-sA2cZVqlPOKk-vpzbHRZYg-1; Fri, 05 Nov 2021 12:53:51 -0400
-X-MC-Unique: sA2cZVqlPOKk-vpzbHRZYg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 109128070F0;
-        Fri,  5 Nov 2021 16:53:50 +0000 (UTC)
-Received: from localhost (unknown [10.39.193.41])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0660668388;
-        Fri,  5 Nov 2021 16:53:48 +0000 (UTC)
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Alex Williamson <alex.williamson@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
-        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
-        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
-        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
- for mlx5 devices
-In-Reply-To: <877ddob233.fsf@redhat.com>
-Organization: Red Hat GmbH
-References: <20211028234750.GP2744544@nvidia.com>
- <20211029160621.46ca7b54.alex.williamson@redhat.com>
- <20211101172506.GC2744544@nvidia.com>
- <20211102085651.28e0203c.alex.williamson@redhat.com>
- <20211102155420.GK2744544@nvidia.com>
- <20211102102236.711dc6b5.alex.williamson@redhat.com>
- <20211102163610.GG2744544@nvidia.com>
- <20211102141547.6f1b0bb3.alex.williamson@redhat.com>
- <20211103120955.GK2744544@nvidia.com>
- <20211103094409.3ea180ab.alex.williamson@redhat.com>
- <20211103161019.GR2744544@nvidia.com>
- <20211103120411.3a470501.alex.williamson@redhat.com>
- <877ddob233.fsf@redhat.com>
-User-Agent: Notmuch/0.32.1 (https://notmuchmail.org)
-Date:   Fri, 05 Nov 2021 17:53:47 +0100
-Message-ID: <878ry2a6hw.fsf@redhat.com>
+        id S234121AbhKEQ7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Nov 2021 12:59:01 -0400
+Received: from mout.kundenserver.de ([212.227.17.13]:49055 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233696AbhKEQ7A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Nov 2021 12:59:00 -0400
+Received: from mail-wm1-f47.google.com ([209.85.128.47]) by
+ mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MLyzP-1n0IPi2EGv-00HzgQ; Fri, 05 Nov 2021 17:56:19 +0100
+Received: by mail-wm1-f47.google.com with SMTP id c71-20020a1c9a4a000000b0032cdcc8cbafso6864625wme.3;
+        Fri, 05 Nov 2021 09:56:19 -0700 (PDT)
+X-Gm-Message-State: AOAM5319JCfb4P8VkkKMswy7LLSqENZ5/ldZ/YtndskEazxlPcOrxWGb
+        YKXi7B1eBMEojmLQ3YStQAEvMpSHhVfsskPhrA8=
+X-Google-Smtp-Source: ABdhPJzCWcqBQFAOtdy87/up3hDxesJBAui20qESnFtHDp6+RJ5ZUn1yaNIx0LWLlxACnyLPS+0+MxDyFNStk332/U4=
+X-Received: by 2002:a1c:1c1:: with SMTP id 184mr31696130wmb.1.1636131379131;
+ Fri, 05 Nov 2021 09:56:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+References: <1636031398-19867-1-git-send-email-volodymyr.mytnyk@plvision.eu>
+ <CAK8P3a2nbEFGPRWKwjLYOz3wROLOk1SN-6Wd7-sNkaEuuid==w@mail.gmail.com> <SJ0PR18MB400959CE08EC6BFB397CAAB3B28D9@SJ0PR18MB4009.namprd18.prod.outlook.com>
+In-Reply-To: <SJ0PR18MB400959CE08EC6BFB397CAAB3B28D9@SJ0PR18MB4009.namprd18.prod.outlook.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 5 Nov 2021 17:56:03 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a2zsuxZvt3ajzw4u6vpoDbei5xETiB-oCzx5FD4cq=oVQ@mail.gmail.com>
+Message-ID: <CAK8P3a2zsuxZvt3ajzw4u6vpoDbei5xETiB-oCzx5FD4cq=oVQ@mail.gmail.com>
+Subject: Re: [PATCH net v3] net: marvell: prestera: fix hw structure laid out
+To:     "Volodymyr Mytnyk [C]" <vmytnyk@marvell.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Networking <netdev@vger.kernel.org>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Denis Kirjanov <dkirjanov@suse.de>,
+        "Taras Chornyi [C]" <tchornyi@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Vadym Kochan [C]" <vkochan@marvell.com>,
+        Yevhen Orlov <yevhen.orlov@plvision.eu>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:BMDUplX6zSp/RXl9H0Byv+lBATiOD+qjYj5165qj18rJrLYvHFC
+ c3NiRKl43rTH8+baG2LUzJKzoafCxcN7QdShVto9m7MYHsB/kOyNCFen9N2qI2tw7yfCXO+
+ ni2/EjYW7rTdZI5E9H8JWOcK/6GUY7bQCb2vX/uPg6cgbvib1LzYgFHx1S5nLXEZSnwxK07
+ k+ryvd5mUCwmsxb9iKG5Q==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:I43aGbWE+m0=:GuxhiSs19Z0+QfB9k9dfpL
+ UOJ9bVlRIkafqa2tgxeioqOozCUzO2mehf7RhqlEygx5FfkR8Cnc963Iz19BpK28R9RvUhhnb
+ 5lI6m0x+8bM8bfGnlvSuwABEQGAbpuCdYgRhxfwpqNje707QbwWJrcpVtM1TOcL6HZ3pe3Y3m
+ L04+/8RsRpONmSOgCs7liZMK6EWx/yqJhwcNadQQq46NXyOl5E9rBes7YQu611dNkISx147oO
+ RhJYqrVKfQ82fpLyf46xdBpUEXkwQ+kSRD2+MzRC8cEEHJhSOZwxzs6xvtyg4rRc0mq2R23ol
+ VXCS8x+A3jEow6SPYfauVpMEE1hOhFg3JqXy1utLyVvljQ+89Pqk9hgr/FtoxNMRqfQJG2K8w
+ JWSgJy+9gRADgFtHJ8h++S9B/QQiPXTOnFB13Mj/su/voyWHnAVQMasncFm47qtrgUReUt3gp
+ FEOHOImHC8leoP0VWeWpRc/V+WZqf1wAPLXmTohnsAFv7FYGm177nimT72f8l4bpXjiTSwHv6
+ loBRXqCaCkd8vP5lt4Ekr3jM7BtSS11aLgkuei769MxguRQWDAafDTSLayansCd2n6nSn6iGm
+ ZOYrHc98ynqvk3h1Zfdln70OfRljVy34knrdheB7s4VjXW+qE1BmTXGT2WbvSdvOZOCLmXSTn
+ qrA3i8vM/gu64IoSbSiYA5Cy9IP2Axwg7LTEnsvaLnIAnUtYmZlYMgB3BgvLgGWzoUJDktGHC
+ 8x3mgOqQHFEdD8LtEOE+cf1ZxpysczKx9AfiJdk0/S+rw80vR1sPP+YFPg9+72JPI9Pdp3g0u
+ mGm2BKEuVNNNA9Vwhz50l8qHRpiD8WIuyWXIFyVO4WZhKtD8l4=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 04 2021, Cornelia Huck <cohuck@redhat.com> wrote:
-
-> So, I doubt that I'm the only person trying to follow this discussion
-> who has lost the overview about issues and possible solutions here. I
-> think it would be a good idea to summarize what has been brought up so
-> far outside of this thread.
+On Fri, Nov 5, 2021 at 5:33 PM Volodymyr Mytnyk [C] <vmytnyk@marvell.com> wrote:
+> >
+> > However, there is still this structure that lacks explicit padding:
+> >
+> > struct prestera_msg_acl_match {
+> >         __le32 type;
+> >         /* there is a four-byte hole on most architectures, but not on
+> > x86-32 or m68k */
 >
-> To that effect, I've created an etherpad at
-> https://etherpad.opendev.org/p/VFIOMigrationDiscussions and started
-> filling it with some points. It would be great if others could fill in
-> the blanks so that everyone has a chance to see what is on the table so
-> far, so that we can hopefully discuss this on-list and come up with
-> something that works.
+> Checked holes on x86_64 with pahole, and there is no holes. Maybe on some
+> other there will be. Will add 4byte member here to make sure. Thx.
 
-...just to clarify, my idea was that we could have a writeup of the
-various issues and proposed solutions on the etherpad, and then post the
-contents on-list next week as a starting point for a discussion that is
-not hidden deeply inside the discussion on a patch set.
+That is very strange, as the union has an __le64 member that should be
+64-bit aligned on x86_64.
+> >
+> > struct prestera_msg_event_port_param {
+> >         union {
+> >                 struct {
+> >                         __le32 mode;
+> >                         __le32 speed;
+> >                         u8 oper;
+> >                         u8 duplex;
+> >                         u8 fc;
+> >                         u8 fec;
+> >                 } mac;
+> >                 struct {
+> >                         __le64 lmode_bmap;
+> >                         u8 mdix;
+> >                         u8 fc;
+> >                         u8 __pad[2];
+> >                 } __packed phy;
+> >         } __packed;
+> > } __packed;
+> >
+> > There is no need to make the outer aggregates __packed, I would
+> > mark only the innermost ones here: mode, speed and lmode_bmap.
+> > Same for prestera_msg_port_cap_param and prestera_msg_port_param.
+> >
+>
+> Will add __packed only to innermost ones. Looks like only phy is required to have __packed.
 
-So, please continue adding points :)
+I think you need it on both lmode_bmap and mode/speed
+to get a completely unaligned structure. If you mark phy as __packed,
+that will implicitly mark lmode_bmap as packed but leave the
+four-byte alignment on mode and speed, so the entire structure
+is still four-byte aligned.
 
+       Arnd
