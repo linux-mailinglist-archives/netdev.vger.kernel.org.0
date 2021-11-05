@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB475446260
+	by mail.lfdr.de (Postfix) with ESMTP id A2CB144625F
 	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 11:50:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231793AbhKEKws (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S231690AbhKEKws (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 5 Nov 2021 06:52:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34616 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:34630 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230003AbhKEKwr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231642AbhKEKwr (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 5 Nov 2021 06:52:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id DD60F6120E;
+Received: by mail.kernel.org (Postfix) with ESMTPS id F13A26124A;
         Fri,  5 Nov 2021 10:50:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636109407;
-        bh=ke52n55HQ2LSKnAVrU/HcMARYrUbPJNHu0gw9CYhLx0=;
+        s=k20201202; t=1636109408;
+        bh=PEbAx5J23QwyAPFh+r1xwhp+zPTVbSStfq79iDXgTao=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fTOo2m/J1Y6tfAw2ZxnTT0Wy1YWh40NTxjRRbKJPM/0gaWXyjNCdzxgs1JHo/3oWc
-         IkqN6JhcabYST5NSl/wul54TPmQeLcOw2KK7i8skqgmFJt4E27OaGRO7uciPjKnrEk
-         mxbjBT9B5NM7lA9AWxs8hTr8UycduaEc2/uz7ydM45LDca7QM+Dt9/jASdcJNtxlH3
-         ufdptB9Zl1FBg4p7NO2DWSjzIm06/Z4xrzSYtoETV4t/8JG4r+CQBSWWWurdVLgZSG
-         EfFn4A5VnyfbobsgcXC3q1+jkLyz2kbC7yzuO8fH6dQY7jyFfDcS5T2ldNVx9QH0JS
-         /I5mD0gfhOEYA==
+        b=KJpEQ91h9wDJQzsIU4auifDCO0ji2s9VYiYHn8Iaen8f+6tBlzijpSFE+FtQ3Hi2E
+         0aJ35HcvIa6mRccEC0zca1kuBOZMUusHlOdMmhD73UY4D25ZAy1STWk298Ll6pW0aB
+         4SVjU7Aw0/euQOaTOTZDm7XyL0jWmTO/MGHiTE9EYw66yFXVMtaFVu3Ovka8+pLe+Q
+         B/oLb8/BtJa/gyJLqrbsjvYxpp8/bHESHKqbQdWb/uwcfyPyXrCbss1H+1pngLzcbl
+         M0CuVQiaNivloiDFWiZKebDT/2Rar2QE/5dk4o976uVEJl5Lf6YCifr/k09zNv8k6T
+         4HfvwZj/6FYJg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D3134609B8;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DF3DE60A0E;
         Fri,  5 Nov 2021 10:50:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH -next] amt: Fix NULL but dereferenced coccicheck error
+Subject: Re: [PATCH net-next] net: udp: correct the document for udp_mem
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163610940785.24664.1591851687839471191.git-patchwork-notify@kernel.org>
+Message-Id: <163610940791.24664.10352541983010508425.git-patchwork-notify@kernel.org>
 Date:   Fri, 05 Nov 2021 10:50:07 +0000
-References: <1636096370-19862-1-git-send-email-yang.lee@linux.alibaba.com>
-In-Reply-To: <1636096370-19862-1-git-send-email-yang.lee@linux.alibaba.com>
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     ap420073@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20211105073541.2981935-1-imagedong@tencent.com>
+In-Reply-To: <20211105073541.2981935-1-imagedong@tencent.com>
+To:     Menglong Dong <menglong8.dong@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, corbet@lwn.net,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, imagedong@tencent.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,19 +48,22 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri,  5 Nov 2021 15:12:50 +0800 you wrote:
-> Eliminate the following coccicheck warning:
-> ./drivers/net/amt.c:2795:6-9: ERROR: amt is NULL but dereferenced.
+On Fri,  5 Nov 2021 15:35:41 +0800 you wrote:
+> From: Menglong Dong <imagedong@tencent.com>
 > 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
-> ---
->  drivers/net/amt.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+> udp_mem is a vector of 3 INTEGERs, which is used to limit the number of
+> pages allowed for queueing by all UDP sockets.
+> 
+> However, sk_has_memory_pressure() in __sk_mem_raise_allocated() always
+> return false for udp, as memory pressure is not supported by udp, which
+> means that __sk_mem_raise_allocated() will fail once pages allocated
+> for udp socket exceeds udp_mem[0].
+> 
+> [...]
 
 Here is the summary with links:
-  - [-next] amt: Fix NULL but dereferenced coccicheck error
-    https://git.kernel.org/netdev/net/c/3f81c5799128
+  - [net-next] net: udp: correct the document for udp_mem
+    https://git.kernel.org/netdev/net/c/69dfccbc1186
 
 You are awesome, thank you!
 -- 
