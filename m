@@ -2,176 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA32D44672D
-	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 17:41:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 936FC446739
+	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 17:45:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233079AbhKEQoO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Nov 2021 12:44:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57748 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233829AbhKEQoN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Nov 2021 12:44:13 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E05B8C061205
-        for <netdev@vger.kernel.org>; Fri,  5 Nov 2021 09:41:33 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id x10so7255283qta.6
-        for <netdev@vger.kernel.org>; Fri, 05 Nov 2021 09:41:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7q+jfQZAGOoXONkVvMr1O3APE+0mzw7wvLCpsLQ5yEE=;
-        b=M93/lYttEyFoawlHqosPXsTKc9vnPLLS1CaYFC6cwRp1pt4bU26xFU84mhl43MskyS
-         aL5GEM+oa6r4+DeXLeDBOXLjLSuuQEkeTDhbWFTyezdLD0SBYPPrt564s0fukZ51z4P2
-         G3msCPkqZ987wC5gM4bVSeaAdi/6tzfoWp9kvMvSjqUvKvYqNxV6z1qDKfmBcrPEru3s
-         rbbGkhPv4Bxh2hPAEbTo0enZszZ73W+cKCFe73xUKhTRMjXuiilQOdetsny4+oHgRGVu
-         1GV1jJLCn7al3OdYHlmy+757C0RMkDcXgWSNgxMpdTcb8ACNWd6ogCEw8V3ZIEzK/nhY
-         jXOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7q+jfQZAGOoXONkVvMr1O3APE+0mzw7wvLCpsLQ5yEE=;
-        b=djrAGPtOXXAKu7517Hz1wcio7mtAgv6DAxKHw6EZG2HNOnHZNCbZEYRXaR0E13RsD1
-         cSUtFlMjMHkPA/kxdIBjTkRDc/JVzm1ZumpRTCg8D/eZnmhY5TkI9J68ijU9OSZCGzbl
-         HQgTfoAc3iowyIR6vsJ3SHzyCvjTWU66xYtAPvPjLoJvvJ9ykkl/vDBOW6LKZfJnO0t0
-         Cr1cwBsZyefgzfq4na09LxWeGt3r2GySdx1XlmFMCs9TxunFkub6jF4MNsK7GdgIPY8U
-         JbwyRxUIWZ2t4BK6HGa8Px44kh64OgV9fsgBwAuqT12hQYrahJbc4RtGiq9J+7wDr+3J
-         zULA==
-X-Gm-Message-State: AOAM533RX7wOd8PJguY5x92w9f05waVZId9f3BotrXPcxtHqjQcWIm8y
-        rgScQU0gBiQpRrp91hmN3jipPwFgAfDb05NVx0mBNw==
-X-Google-Smtp-Source: ABdhPJytwGk/ktwCaGpyVGo3rm6JWsnKTqt2sq/45uOo/AJVXLNqDhNO7ePXdMn7li5+deCeTjT/pAZErLF/ZWMAWBo=
-X-Received: by 2002:ac8:7dc5:: with SMTP id c5mr56453550qte.287.1636130492828;
- Fri, 05 Nov 2021 09:41:32 -0700 (PDT)
+        id S233850AbhKEQsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Nov 2021 12:48:00 -0400
+Received: from mga07.intel.com ([134.134.136.100]:60894 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232930AbhKEQr7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Nov 2021 12:47:59 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10159"; a="295382296"
+X-IronPort-AV: E=Sophos;i="5.87,212,1631602800"; 
+   d="scan'208";a="295382296"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2021 09:45:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,212,1631602800"; 
+   d="scan'208";a="639871341"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga001.fm.intel.com with ESMTP; 05 Nov 2021 09:45:00 -0700
+Received: from alobakin-mobl.ger.corp.intel.com (kfilipek-MOBL1.ger.corp.intel.com [10.213.15.123])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1A5Gis9h007215;
+        Fri, 5 Nov 2021 16:44:54 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Lukasz Czapnik <lukasz.czapnik@intel.com>,
+        Marcin Kubiak <marcin.kubiak@intel.com>,
+        Michal Kubiak <michal.kubiak@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Netanel Belgazal <netanel@amazon.com>,
+        Arthur Kiyanovski <akiyano@amazon.com>,
+        Guy Tzalik <gtzalik@amazon.com>,
+        Saeed Bishara <saeedb@amazon.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Shay Agroskin <shayagr@amazon.com>,
+        Sameeh Jubran <sameehj@amazon.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Danielle Ratson <danieller@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vladyslav Tarasiuk <vladyslavt@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jian Shen <shenjian15@huawei.com>,
+        Petr Vorel <petr.vorel@gmail.com>, Dan Murphy <dmurphy@ti.com>,
+        Yangbo Lu <yangbo.lu@nxp.com>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+Subject: Re: [PATCH net-next 03/21] ethtool, stats: introduce standard XDP statistics
+Date:   Fri,  5 Nov 2021 17:44:53 +0100
+Message-Id: <20211105164453.29102-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20211026092323.165-1-alexandr.lobakin@intel.com>
+References: <20210803163641.3743-1-alexandr.lobakin@intel.com> <20210803163641.3743-4-alexandr.lobakin@intel.com> <20210803134900.578b4c37@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <ec0aefbc987575d1979f9102d331bd3e8f809824.camel@kernel.org> <20211026092323.165-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
-References: <20211104160311.4028188-1-sdf@google.com> <6fbd1539-c343-2d03-d153-11d2684effd6@isovalent.com>
-In-Reply-To: <6fbd1539-c343-2d03-d153-11d2684effd6@isovalent.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Fri, 5 Nov 2021 09:41:22 -0700
-Message-ID: <CAKH8qBvb87bGz9N9uOyCxHQheT+cWa9AyY2Uw8nfvrqgRZ1YGw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpftool: add option to enable libbpf's strict mode
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org,
-        John Fastabend <john.fastabend@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 5, 2021 at 4:02 AM Quentin Monnet <quentin@isovalent.com> wrote:
->
-> 2021-11-04 09:03 UTC-0700 ~ Stanislav Fomichev <sdf@google.com>
-> > Otherwise, attaching with bpftool doesn't work with strict section names.
-> >
-> > Also:
-> >
-> > - by default, don't append / to the section name; in strict
-> >   mode it's relevant only for a small subset of prog types
-> > - print a deprecation warning when requested to pin all programs
-> >
-> > + bpftool prog loadall tools/testing/selftests/bpf/test_probe_user.o /sys/fs/bpf/kprobe type kprobe
-> > Warning: pinning by section name is deprecated, use --strict to pin by function name.
-> > See: https://github.com/libbpf/libbpf/wiki/Libbpf:-the-road-to-v1.0#pinning-path-differences
-> >
-> > + bpftool prog loadall tools/testing/selftests/bpf/xdp_dummy.o /sys/fs/bpf/xdp type xdp
-> > Warning: pinning by section name is deprecated, use --strict to pin by function name.
-> > See: https://github.com/libbpf/libbpf/wiki/Libbpf:-the-road-to-v1.0#pinning-path-differences
-> >
-> > + bpftool --strict prog loadall tools/testing/selftests/bpf/test_probe_user.o /sys/fs/bpf/kprobe type kprobe
-> > + bpftool --strict prog loadall tools/testing/selftests/bpf/xdp_dummy.o /sys/fs/bpf/xdp type xdp
-> >
-> > Cc: Quentin Monnet <quentin@isovalent.com>
-> > Cc: John Fastabend <john.fastabend@gmail.com>
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> Hi and thanks Stanislav! I have some reservations on the current
-> approach, though.
->
-> I see the new option is here to avoid breaking the current behaviour.
-> However:
->
-> - Libbpf has the API break scheduled for v1.0, and at this stage we
-> won't be able to avoid breakage in bpftool's behaviour. This means that,
-> eventually, "bpftool prog loadall" will load functions by func name and
-> not section name, that section names with garbage prefixes
-> ('SEC("xdp_my_prog")') will be rejected, and that maps with extra
-> attributes in their definitions will be rejected. And save for the
-> pinning path difference, we won't be able to tell from bpftool when this
-> happens, because this is all handled by libbpf.
->
-> - In that context, I'd rather have the strict behaviour being the
-> default. We could have an option to restore the legacy behaviour
-> (disabling strict mode) during the transition, but I'd rather avoid
-> users starting to use everywhere a "--strict" option which becomes
-> either mandatory in the future or (more likely) a deprecated no-op when
-> we switch to libbpf v1.0 and break legacy behaviour anyway.
->
-> - If we were to keep the current option, I'm not a fan of the "--strict"
-> name, because from a user point of view, I don't think it reflects well
-> the change to pinning by function name, for example. But given that the
-> option interferes with different aspects of the loading process, I don't
-> really have a better suggestion :/.
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
+Date: Tue, 26 Oct 2021 11:23:23 +0200
 
-Yeah, not sure what's the best way here. Strict by default will break
-users, but at least we can expect some action. Non-strict by default
-will most likely not cause anybody to add --strict or react to that
-warning.
+> From: Saeed Mahameed <saeed@kernel.org>
+> Date: Tue, 03 Aug 2021 16:57:22 -0700
+> 
+> [ snip ]
+> 
+> > XDP is going to always be eBPF based ! why not just report such stats
+> > to a special BPF_MAP ? BPF stack can collect the stats from the driver
+> > and report them to this special MAP upon user request.
+> 
+> I really dig this idea now. How do you see it?
+> <ifindex:channel:stat_id> as a key and its value as a value or ...?
 
-I agree with your point though regarding --strict being default at
-some point and polluting every bpftool call with it doesn't look good,
-so I'll try to switch to strict by default in v2.
+Ideas, suggestions, anyone?
 
-RE naming: we can use --legacy-libbpf instead, but it also doesn't
-really tell what the real changes are.
+> [ snip ]
+> 
+> Thanks,
+> Al
 
-> Aside from the discussion on this option, the code looks good. The
-> optional '/' on program types on the command line works well, thanks for
-> preserving the behaviour on the CLI. Please find also a few more notes
-> below.
->
-> > ---
-> >  .../bpftool/Documentation/common_options.rst  |  6 +++
-> >  tools/bpf/bpftool/main.c                      | 13 +++++-
-> >  tools/bpf/bpftool/main.h                      |  1 +
-> >  tools/bpf/bpftool/prog.c                      | 40 +++++++++++--------
-> >  4 files changed, 43 insertions(+), 17 deletions(-)
-> >
-> > diff --git a/tools/bpf/bpftool/Documentation/common_options.rst b/tools/bpf/bpftool/Documentation/common_options.rst
-> > index 05d06c74dcaa..28710f9005be 100644
-> > --- a/tools/bpf/bpftool/Documentation/common_options.rst
-> > +++ b/tools/bpf/bpftool/Documentation/common_options.rst
-> > @@ -20,3 +20,9 @@
-> >         Print all logs available, even debug-level information. This includes
-> >         logs from libbpf as well as from the verifier, when attempting to
-> >         load programs.
-> > +
-> > +-S, --strict
->
-> The option does not affect all commands, and could maybe be moved to the
-> pages of the relevant commands. I think that "prog" and "map" are affected?
-
-True, but probably still a good idea to exercise that strict mode
-everywhere in the bpftool itself? To make sure other changes don't
-break it in a significant way.
-
-> > +       Use strict (aka v1.0) libbpf mode which has more stringent section
-> > +       name requirements.
-> > +       See https://github.com/libbpf/libbpf/wiki/Libbpf:-the-road-to-v1.0#pinning-path-differences
->
-> There is more than just the pinning difference. The stricter section
-> name handling and the changes for map declarations (drop of non-BTF and
-> of unknown attributes) should also affect the way bpftool can load
-> objects. Even the changes in the ELF section processing might affect the
-> resulting objects.
-
-Ack. Will add a better description here to point to the overall list
-of libbpf-1.0 changes.
-
-> > +       for details.
-> Note that if we add a command line option, we'd also need to add it to
-> the interactive help message and bash completion:
->
-> https://elixir.bootlin.com/linux/v5.15/source/tools/bpf/bpftool/main.h#L57
-> https://elixir.bootlin.com/linux/v5.15/source/tools/bpf/bpftool/bash-completion/bpftool#L263
-
-Thanks, will do!
+Thanks,
+Al
