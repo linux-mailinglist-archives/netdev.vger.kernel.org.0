@@ -2,94 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B394144657B
-	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 16:09:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55CBF4465A4
+	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 16:24:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233386AbhKEPMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Nov 2021 11:12:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59444 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229680AbhKEPMU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Nov 2021 11:12:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0A3E660F36;
-        Fri,  5 Nov 2021 15:09:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636124980;
-        bh=y22Owe3WsOyK/XyUDi4v5MjW8f8Cqs3vQzTjwWumqwA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ryd+zHE7ncWjFfazijXbytqlPP7euhlaAXbEN8UU+CvwAcwQ1UbN/1W33jZhPOmxJ
-         bW9/jwjaVMqXW+bodI1nMZioXnSuawGLlyaWyJlWcq1E6VKd/APgCFk2M/Xh6A/ME1
-         EsaTuUeXBoh8ak2zTgD4EeB1D/V5OoGIkX7pTnKb7b4LpfrFzFIJwcTte5jhccit30
-         a+ToWYFsFzMxxsm4MMSia1YtE3PlR6p+NwrBdASu6sH2fydwXYWQ2evLGJABbK5m+v
-         94KGNXvfT9kSgaP2uzrO7WmsiZvo41pPSLXaNLSqHkZUU8owI+laLJGzIdiFHN7eqm
-         w4pAWO6qZMpcg==
-Date:   Fri, 5 Nov 2021 08:09:39 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Martin Kaistra <martin.kaistra@linutronix.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        John Stultz <john.stultz@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 7/7] net: dsa: b53: Expose PTP timestamping ioctls to
- userspace
-Message-ID: <20211105080939.2508a51e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211105142833.nv56zd5bqrkyjepd@skbuf>
-References: <20211104133204.19757-1-martin.kaistra@linutronix.de>
-        <20211104133204.19757-8-martin.kaistra@linutronix.de>
-        <20211104174251.GB32548@hoboy.vegasvil.org>
-        <ba543ae4-3a71-13fe-fa82-600ac37eaf5a@linutronix.de>
-        <20211105141319.GA16456@hoboy.vegasvil.org>
-        <20211105142833.nv56zd5bqrkyjepd@skbuf>
+        id S233488AbhKEP0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Nov 2021 11:26:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39552 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233429AbhKEP0i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Nov 2021 11:26:38 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA214C061714;
+        Fri,  5 Nov 2021 08:23:58 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id t11so11232980plq.11;
+        Fri, 05 Nov 2021 08:23:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=dtxaiaqX8WBZCm8iJ4NOVFM1D7iO+vs2YKjl8WFcejc=;
+        b=JDc4YDtQ+7lOLUeBklqjSnvvYcnQNeI6ZGGOh3iyW0GXvovezcuIpgYNNx8QjpqGL9
+         6Sm0DN+DgepGAdXj7S+Am2cMKaL8dL1oipBoUhcA0df+uU13Tvao1DGpYU1h116ftA5w
+         U8ONAHh2Fh6FIkqXYNyYIMlt2StU0TxO7EHcxFdAROA+FmKstxPJj2buXt8lVDjnHQ/1
+         3/5RAZ9P+rc/w9CoUKHYQbbQvtiYZp7TP56vM1gjLcd1HBDhImelM2drUEvxi3XsPmV7
+         YmZYkMyHuL13cI5qA3/yH0ASHwZ+yiEJFOnyhbsLoOj/FWY6LQ1voX2qsBXLOO1vApMI
+         MDhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=dtxaiaqX8WBZCm8iJ4NOVFM1D7iO+vs2YKjl8WFcejc=;
+        b=Fcx3EugN+xj0kqXDWImiJ7NChoMkjoycvT+GN0INo+yjQlo6mpB+pMrPamq2Tk6nUA
+         xVRXRcS4ZmBgl3CoDMFU5Gedi1n439YJ2Re9Vq1pFBHyZGa2APBLyX4VRNAGeru7pW2q
+         ra/ywW7pomMMBsS11L+t12zMmy+G5Wn5DfS1yXYene6vWMyprY3qFTqNXtd4cRNjkaHy
+         S8hGvH1nCwRkgEaPG3BrS/LNyHzHB1xItuFUC79a8oLKAI/MDgHbfIAEmu8jaOur81WC
+         hP5W7cW8GokTNAs4r0skm2rNAjoxoQx3HtNUkoun7Mr84w5V5CmOfmQk5+2QTOvjlH/4
+         lvNw==
+X-Gm-Message-State: AOAM530i2CLyWCfjRxL6mdrY47AWH+lpUGUGt0D5fHsDyetslnpUGlMu
+        cv9SobUCK/RFqmieLMtyOtU=
+X-Google-Smtp-Source: ABdhPJzdQjYpYbjXXxC2rfDwnMmafb5FVdnAUmvBClOKFeLkox1TwyRREtgEwJu/ipumOWQlUfC6CQ==
+X-Received: by 2002:a17:903:408c:b0:142:45a9:672c with SMTP id z12-20020a170903408c00b0014245a9672cmr5560302plc.7.1636125838356;
+        Fri, 05 Nov 2021 08:23:58 -0700 (PDT)
+Received: from [192.168.255.10] ([203.205.141.112])
+        by smtp.gmail.com with ESMTPSA id d7sm8415931pfj.91.2021.11.05.08.23.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 05 Nov 2021 08:23:58 -0700 (PDT)
+Message-ID: <6a6dd497-4592-7e28-72e0-ae253badba8b@gmail.com>
+Date:   Fri, 5 Nov 2021 23:23:52 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.2.1
+Subject: Re: [PATCH v4 bpf-next 1/2] bpf: introduce helper bpf_find_vma
+Content-Language: en-US
+To:     Song Liu <songliubraving@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kernel-team@fb.com, kpsingh@kernel.org,
+        kernel test robot <lkp@intel.com>
+References: <20211104213138.2779620-1-songliubraving@fb.com>
+ <20211104213138.2779620-2-songliubraving@fb.com>
+From:   Hengqi Chen <hengqi.chen@gmail.com>
+In-Reply-To: <20211104213138.2779620-2-songliubraving@fb.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 5 Nov 2021 16:28:33 +0200 Vladimir Oltean wrote:
-> On Fri, Nov 05, 2021 at 07:13:19AM -0700, Richard Cochran wrote:
-> > On Fri, Nov 05, 2021 at 02:38:01PM +0100, Martin Kaistra wrote:  
-> > > Ok, then I will remove HWTSTAMP_FILTER_PTP_V2_(EVENT|SYNC|DELAY_REQ) from
-> > > this list, what about HWTSTAMP_FILTER_ALL?  
-> > 
-> > AKK means time stamp every received frame, so your driver should
-> > return an error in this case as well.  
+Hi, Song
+
+On 2021/11/5 5:31 AM, Song Liu wrote:
+> In some profiler use cases, it is necessary to map an address to the
+> backing file, e.g., a shared library. bpf_find_vma helper provides a
+> flexible way to achieve this. bpf_find_vma maps an address of a task to
+> the vma (vm_area_struct) for this address, and feed the vma to an callback
+> BPF function. The callback function is necessary here, as we need to
+> ensure mmap_sem is unlocked.
 > 
-> What is the expected convention exactly? There are other drivers that
-> downgrade the user application's request to what they support, and at
-> least ptp4l does not error out, it just prints a warning.
+> It is necessary to lock mmap_sem for find_vma. To lock and unlock mmap_sem
+> safely when irqs are disable, we use the same mechanism as stackmap with
+> build_id. Specifically, when irqs are disabled, the unlocked is postponed
+> in an irq_work. Refactor stackmap.c so that the irq_work is shared among
+> bpf_find_vma and stackmap helpers.
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Song Liu <songliubraving@fb.com>
+> ---
 
-Which is sad because that's one of the best documented parts of our API:
+[...]
 
-  Desired behavior is passed into the kernel and to a specific device by
-  calling ioctl(SIOCSHWTSTAMP) with a pointer to a struct ifreq whose
-  ifr_data points to a struct hwtstamp_config. The tx_type and
-  rx_filter are hints to the driver what it is expected to do. If
-  the requested fine-grained filtering for incoming packets is not
-  supported, the driver may time stamp more than just the requested types
-  of packets.
+>  
+> -BTF_ID_LIST(btf_task_file_ids)
+> -BTF_ID(struct, file)
+> -BTF_ID(struct, vm_area_struct)
+> -
+>  static const struct bpf_iter_seq_info task_seq_info = {
+>  	.seq_ops		= &task_seq_ops,
+>  	.init_seq_private	= init_seq_pidns,
+> @@ -586,9 +583,74 @@ static struct bpf_iter_reg task_vma_reg_info = {
+>  	.seq_info		= &task_vma_seq_info,
+>  };
+>  
+> +BPF_CALL_5(bpf_find_vma, struct task_struct *, task, u64, start,
+> +	   bpf_callback_t, callback_fn, void *, callback_ctx, u64, flags)
+> +{
+> +	struct mmap_unlock_irq_work *work = NULL;
+> +	struct vm_area_struct *vma;
+> +	bool irq_work_busy = false;
+> +	struct mm_struct *mm;
+> +	int ret = -ENOENT;
+> +
+> +	if (flags)
+> +		return -EINVAL;
+> +
+> +	if (!task)
+> +		return -ENOENT;
+> +
+> +	mm = task->mm;
+> +	if (!mm)
+> +		return -ENOENT;
+> +
+> +	irq_work_busy = bpf_mmap_unlock_get_irq_work(&work);
+> +
+> +	if (irq_work_busy || !mmap_read_trylock(mm))
+> +		return -EBUSY;
+> +
+> +	vma = find_vma(mm, start);
+> +
 
-  Drivers are free to use a more permissive configuration than the requested
-  configuration. It is expected that drivers should only implement directly the
-  most generic mode that can be supported. For example if the hardware can
-  support HWTSTAMP_FILTER_V2_EVENT, then it should generally always upscale
-  HWTSTAMP_FILTER_V2_L2_SYNC_MESSAGE, and so forth, as HWTSTAMP_FILTER_V2_EVENT
-  is more generic (and more useful to applications).
+I found that when a BPF program attach to security_file_open which is in
+the bpf_d_path helper's allowlist, the bpf_d_path helper is also allowed
+to be called inside the callback function. So we can have this in callback
+function:
 
-  A driver which supports hardware time stamping shall update the struct
-  with the actual, possibly more permissive configuration. If the
-  requested packets cannot be time stamped, then nothing should be
-  changed and ERANGE shall be returned (in contrast to EINVAL, which
-  indicates that SIOCSHWTSTAMP is not supported at all).
+    bpf_d_path(&vma->vm_file->f_path, path, sizeof(path));
 
-https://www.kernel.org/doc/html/latest/networking/timestamping.html#hardware-timestamping-configuration-siocshwtstamp-and-siocghwtstamp
+
+I wonder whether there is a guarantee that vma->vm_file will never be null,
+as you said in the commit message, a backing file.
+
+If that is not something to be concerned, feel free to add:
+Tested-by: Hengqi Chen <hengqi.chen@gmail.com>
+
+> +	if (vma && vma->vm_start <= start && vma->vm_end > start) {
+> +		callback_fn((u64)(long)task, (u64)(long)vma,
+> +			    (u64)(long)callback_ctx, 0, 0);
+> +		ret = 0;
+> +	}
+> +	bpf_mmap_unlock_mm(work, mm);
+> +	return ret;
+> +}
+> +
+> +const struct bpf_func_proto bpf_find_vma_proto = {
+> +	.func		= bpf_find_vma,
+> +	.ret_type	= RET_INTEGER,
+> +	.arg1_type	= ARG_PTR_TO_BTF_ID,
+> +	.arg1_btf_id	= &btf_task_struct_ids[0],
+> +	.arg2_type	= ARG_ANYTHING,
+> +	.arg3_type	= ARG_PTR_TO_FUNC,
+> +	.arg4_type	= ARG_PTR_TO_STACK_OR_NULL,
+> +	.arg5_type	= ARG_ANYTHING,
+> +};
+> +
+
+[...]
+
+Cheers,
+--
+Hengqi
