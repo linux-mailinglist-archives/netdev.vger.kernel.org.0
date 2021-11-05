@@ -2,46 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60A364464F1
-	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 15:30:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BE0F4464F3
+	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 15:30:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233184AbhKEOcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S233105AbhKEOcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 5 Nov 2021 10:32:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47772 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:47788 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233105AbhKEOcr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233159AbhKEOcr (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 5 Nov 2021 10:32:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id D4B086120E;
+Received: by mail.kernel.org (Postfix) with ESMTPS id E65026125F;
         Fri,  5 Nov 2021 14:30:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1636122607;
-        bh=RabxvYF8MZZnaFfJhLDyKcDazTYwHz1HTQ/AJEYwWIE=;
+        bh=i+FCshLLa0khIoCWn28uPj+QlUmJRcx7mINt1sfZ5r4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=NNEy01GitXRvkQh1ABqGilGKA9Y7xFQlmtN+DPsrdmWZSBG1qZ2WjBy2VcnIuSl25
-         DSafvpvMUp72AL3WFAP53wiKBlZfUVJjZilXLWv92q4n5aq7jgrozZ3WQ9OIUI+WJH
-         64Nsz2WvCdvcApOYBWEjmVEoOapB7kpuxWkCb+Ab7qGLU4XbtFN7nFoVRGgTeeOyTN
-         xujPThafhKXYiuUhnqIsKNKSf7V3BRt6+b1diJEZkK18dlBWsV3/eCDiviZyqgJ8QQ
-         fF3nsdWh9lyjlFJJdjv/ZrpwPPlfwK97LI7tWsJ4l+OsdHtdrwrur3lyVSG2FOzOou
-         y/zwPpgFrRtEg==
+        b=BJvEZkmQG4apA0jyLW8jg3aTKCPb67/Qp/PEKRSdg6bYhwB4AvkcVuWGdrdUJeqa1
+         CeSbn0TnUm3j4WP2sq1sFd4p7QCC1gqjmYsTGRfR2Vgi+R5g2JCzAj+Z5zyU19B8zD
+         ecNTaBlyvhbGb5or4h3CGSCTiwvQEyTC7UT0zx5ccSdrC3Mx2H9DNTjpE67VH7Ai+m
+         LVgoqSRMxnelldupxkEAw8ZE9VrC+TmGJKPB9gkQkqYgH0JOdXjGY5836QksHcz7lY
+         ULd5gmtK7CyFQCaQF+hepSzt+k+FoamrETt7nCyVZgPUW6JHJDu8uvQQjPDdgWcfnM
+         YZHRN0t9CMfIw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C77FE60A3C;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D5A65609E6;
         Fri,  5 Nov 2021 14:30:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: marvell: prestera: fix patchwork build problems
+Subject: Re: [PATCH] amt: remove duplicate include in amt.c
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163612260781.32748.8817987999743419122.git-patchwork-notify@kernel.org>
+Message-Id: <163612260787.32748.7504323566984865749.git-patchwork-notify@kernel.org>
 Date:   Fri, 05 Nov 2021 14:30:07 +0000
-References: <1636031573-20006-1-git-send-email-volodymyr.mytnyk@plvision.eu>
-In-Reply-To: <1636031573-20006-1-git-send-email-volodymyr.mytnyk@plvision.eu>
-To:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
-Cc:     netdev@vger.kernel.org, taras.chornyi@plvision.eu,
-        mickeyr@marvell.com, serhiy.pshyk@plvision.eu, andrew@lunn.ch,
-        arnd@arndb.de, geert@linux-m68k.org, dkirjanov@suse.de,
-        vmytnyk@marvell.com, tchornyi@marvell.com, davem@davemloft.net,
-        kuba@kernel.org, vkochan@marvell.com, yevhen.orlov@plvision.eu,
-        linux-kernel@vger.kernel.org
+References: <20211105012717.74249-1-zhang.mingyu@zte.com.cn>
+In-Reply-To: <20211105012717.74249-1-zhang.mingyu@zte.com.cn>
+To:     luo penghao <cgel.zte@gmail.com>
+Cc:     ap420073@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        zhang.mingyu@zte.com.cn, zealci@zte.com.cn
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -51,22 +48,19 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Thu,  4 Nov 2021 15:12:52 +0200 you wrote:
-> From: Volodymyr Mytnyk <vmytnyk@marvell.com>
+On Fri,  5 Nov 2021 01:27:17 +0000 you wrote:
+> From: Zhang Mingyu <zhang.mingyu@zte.com.cn>
 > 
-> fix the remaining build issues reported by patchwork
-> in firmware v4.0 support commit which has been already
-> merged.
+> 'net/protocol.h' included in 'drivers/net/amt.c' is duplicated.
 > 
-> Fix patchwork issues:
->  - source inline
->  - checkpatch
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Zhang Mingyu <zhang.mingyu@zte.com.cn>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] net: marvell: prestera: fix patchwork build problems
-    https://git.kernel.org/netdev/net/c/a46a5036e7d2
+  - amt: remove duplicate include in amt.c
+    https://git.kernel.org/netdev/net/c/dce981c42151
 
 You are awesome, thank you!
 -- 
