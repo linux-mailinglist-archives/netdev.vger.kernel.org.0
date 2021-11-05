@@ -2,116 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EA32446767
-	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 17:56:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E19D544676F
+	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 17:58:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234121AbhKEQ7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Nov 2021 12:59:01 -0400
-Received: from mout.kundenserver.de ([212.227.17.13]:49055 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233696AbhKEQ7A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Nov 2021 12:59:00 -0400
-Received: from mail-wm1-f47.google.com ([209.85.128.47]) by
- mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MLyzP-1n0IPi2EGv-00HzgQ; Fri, 05 Nov 2021 17:56:19 +0100
-Received: by mail-wm1-f47.google.com with SMTP id c71-20020a1c9a4a000000b0032cdcc8cbafso6864625wme.3;
-        Fri, 05 Nov 2021 09:56:19 -0700 (PDT)
-X-Gm-Message-State: AOAM5319JCfb4P8VkkKMswy7LLSqENZ5/ldZ/YtndskEazxlPcOrxWGb
-        YKXi7B1eBMEojmLQ3YStQAEvMpSHhVfsskPhrA8=
-X-Google-Smtp-Source: ABdhPJzCWcqBQFAOtdy87/up3hDxesJBAui20qESnFtHDp6+RJ5ZUn1yaNIx0LWLlxACnyLPS+0+MxDyFNStk332/U4=
-X-Received: by 2002:a1c:1c1:: with SMTP id 184mr31696130wmb.1.1636131379131;
- Fri, 05 Nov 2021 09:56:19 -0700 (PDT)
+        id S233340AbhKERAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Nov 2021 13:00:46 -0400
+Received: from www62.your-server.de ([213.133.104.62]:37182 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229763AbhKERAp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Nov 2021 13:00:45 -0400
+Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mj2XT-0001XY-RL; Fri, 05 Nov 2021 17:58:03 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        andrii.nakryiko@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: pull-request: bpf 2021-11-05
+Date:   Fri,  5 Nov 2021 17:58:03 +0100
+Message-Id: <20211105165803.29372-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-References: <1636031398-19867-1-git-send-email-volodymyr.mytnyk@plvision.eu>
- <CAK8P3a2nbEFGPRWKwjLYOz3wROLOk1SN-6Wd7-sNkaEuuid==w@mail.gmail.com> <SJ0PR18MB400959CE08EC6BFB397CAAB3B28D9@SJ0PR18MB4009.namprd18.prod.outlook.com>
-In-Reply-To: <SJ0PR18MB400959CE08EC6BFB397CAAB3B28D9@SJ0PR18MB4009.namprd18.prod.outlook.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 5 Nov 2021 17:56:03 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a2zsuxZvt3ajzw4u6vpoDbei5xETiB-oCzx5FD4cq=oVQ@mail.gmail.com>
-Message-ID: <CAK8P3a2zsuxZvt3ajzw4u6vpoDbei5xETiB-oCzx5FD4cq=oVQ@mail.gmail.com>
-Subject: Re: [PATCH net v3] net: marvell: prestera: fix hw structure laid out
-To:     "Volodymyr Mytnyk [C]" <vmytnyk@marvell.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Networking <netdev@vger.kernel.org>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Denis Kirjanov <dkirjanov@suse.de>,
-        "Taras Chornyi [C]" <tchornyi@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Vadym Kochan [C]" <vkochan@marvell.com>,
-        Yevhen Orlov <yevhen.orlov@plvision.eu>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:BMDUplX6zSp/RXl9H0Byv+lBATiOD+qjYj5165qj18rJrLYvHFC
- c3NiRKl43rTH8+baG2LUzJKzoafCxcN7QdShVto9m7MYHsB/kOyNCFen9N2qI2tw7yfCXO+
- ni2/EjYW7rTdZI5E9H8JWOcK/6GUY7bQCb2vX/uPg6cgbvib1LzYgFHx1S5nLXEZSnwxK07
- k+ryvd5mUCwmsxb9iKG5Q==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:I43aGbWE+m0=:GuxhiSs19Z0+QfB9k9dfpL
- UOJ9bVlRIkafqa2tgxeioqOozCUzO2mehf7RhqlEygx5FfkR8Cnc963Iz19BpK28R9RvUhhnb
- 5lI6m0x+8bM8bfGnlvSuwABEQGAbpuCdYgRhxfwpqNje707QbwWJrcpVtM1TOcL6HZ3pe3Y3m
- L04+/8RsRpONmSOgCs7liZMK6EWx/yqJhwcNadQQq46NXyOl5E9rBes7YQu611dNkISx147oO
- RhJYqrVKfQ82fpLyf46xdBpUEXkwQ+kSRD2+MzRC8cEEHJhSOZwxzs6xvtyg4rRc0mq2R23ol
- VXCS8x+A3jEow6SPYfauVpMEE1hOhFg3JqXy1utLyVvljQ+89Pqk9hgr/FtoxNMRqfQJG2K8w
- JWSgJy+9gRADgFtHJ8h++S9B/QQiPXTOnFB13Mj/su/voyWHnAVQMasncFm47qtrgUReUt3gp
- FEOHOImHC8leoP0VWeWpRc/V+WZqf1wAPLXmTohnsAFv7FYGm177nimT72f8l4bpXjiTSwHv6
- loBRXqCaCkd8vP5lt4Ekr3jM7BtSS11aLgkuei769MxguRQWDAafDTSLayansCd2n6nSn6iGm
- ZOYrHc98ynqvk3h1Zfdln70OfRljVy34knrdheB7s4VjXW+qE1BmTXGT2WbvSdvOZOCLmXSTn
- qrA3i8vM/gu64IoSbSiYA5Cy9IP2Axwg7LTEnsvaLnIAnUtYmZlYMgB3BgvLgGWzoUJDktGHC
- 8x3mgOqQHFEdD8LtEOE+cf1ZxpysczKx9AfiJdk0/S+rw80vR1sPP+YFPg9+72JPI9Pdp3g0u
- mGm2BKEuVNNNA9Vwhz50l8qHRpiD8WIuyWXIFyVO4WZhKtD8l4=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26344/Fri Nov  5 09:18:44 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 5, 2021 at 5:33 PM Volodymyr Mytnyk [C] <vmytnyk@marvell.com> wrote:
-> >
-> > However, there is still this structure that lacks explicit padding:
-> >
-> > struct prestera_msg_acl_match {
-> >         __le32 type;
-> >         /* there is a four-byte hole on most architectures, but not on
-> > x86-32 or m68k */
->
-> Checked holes on x86_64 with pahole, and there is no holes. Maybe on some
-> other there will be. Will add 4byte member here to make sure. Thx.
+Hi David, hi Jakub,
 
-That is very strange, as the union has an __le64 member that should be
-64-bit aligned on x86_64.
-> >
-> > struct prestera_msg_event_port_param {
-> >         union {
-> >                 struct {
-> >                         __le32 mode;
-> >                         __le32 speed;
-> >                         u8 oper;
-> >                         u8 duplex;
-> >                         u8 fc;
-> >                         u8 fec;
-> >                 } mac;
-> >                 struct {
-> >                         __le64 lmode_bmap;
-> >                         u8 mdix;
-> >                         u8 fc;
-> >                         u8 __pad[2];
-> >                 } __packed phy;
-> >         } __packed;
-> > } __packed;
-> >
-> > There is no need to make the outer aggregates __packed, I would
-> > mark only the innermost ones here: mode, speed and lmode_bmap.
-> > Same for prestera_msg_port_cap_param and prestera_msg_port_param.
-> >
->
-> Will add __packed only to innermost ones. Looks like only phy is required to have __packed.
+The following pull-request contains BPF updates for your *net* tree.
 
-I think you need it on both lmode_bmap and mode/speed
-to get a completely unaligned structure. If you mark phy as __packed,
-that will implicitly mark lmode_bmap as packed but leave the
-four-byte alignment on mode and speed, so the entire structure
-is still four-byte aligned.
+We've added 15 non-merge commits during the last 3 day(s) which contain
+a total of 14 files changed, 199 insertions(+), 90 deletions(-).
 
-       Arnd
+The main changes are:
+
+1) Fix regression from stack spill/fill of <8 byte scalars, from Martin KaFai Lau.
+
+2) Fix perf's build of bpftool's bootstrap version due to missing libbpf
+   headers, from Quentin Monnet.
+
+3) Fix riscv{32,64} BPF exception tables build errors and warnings, from Björn Töpel.
+
+4) Fix bpf fs to allow RENAME_EXCHANGE support for atomic upgrades on sk_lookup
+   control planes, from Lorenz Bauer.
+
+5) Fix libbpf's error reporting in bpf_map_lookup_and_delete_elem_flags() due to
+   missing libbpf_err_errno(), from Mehrdad Arshad Rad.
+
+6) Various fixes to make xdp_redirect_multi selftest more reliable, from Hangbin Liu.
+
+7) Fix netcnt selftest to make it run serial and thus avoid conflicts with other
+   cgroup/skb selftests run in parallel that could cause flakes, from Andrii Nakryiko.
+
+8) Fix reuseport_bpf_numa networking selftest to skip unavailable NUMA nodes,
+   from Kleber Sacilotto de Souza.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Arnaldo Carvalho de Melo, Christian Brauner, Hengqi Chen, Jiri Benc, 
+Miklos Szeredi, Tong Tiangen, Yonghong Song
+
+----------------------------------------------------------------
+
+The following changes since commit 92f62485b3715882cd397b0cbd80a96d179b86d6:
+
+  net: dsa: felix: fix broken VLAN-tagged PTP under VLAN-aware bridge (2021-11-03 14:22:00 +0000)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+
+for you to fetch changes up to f47d4ffe3a84ae11fc4bddc37939b9719467042c:
+
+  riscv, bpf: Fix RV32 broken build, and silence RV64 warning (2021-11-05 16:52:34 +0100)
+
+----------------------------------------------------------------
+Andrii Nakryiko (1):
+      selftests/bpf: Make netcnt selftests serial to avoid spurious failures
+
+Björn Töpel (1):
+      riscv, bpf: Fix RV32 broken build, and silence RV64 warning
+
+Hangbin Liu (4):
+      selftests/bpf/xdp_redirect_multi: Put the logs to tmp folder
+      selftests/bpf/xdp_redirect_multi: Use arping to accurate the arp number
+      selftests/bpf/xdp_redirect_multi: Give tcpdump a chance to terminate cleanly
+      selftests/bpf/xdp_redirect_multi: Limit the tests in netns
+
+Kleber Sacilotto de Souza (1):
+      selftests/net: Fix reuseport_bpf_numa by skipping unavailable nodes
+
+Lorenz Bauer (4):
+      libfs: Move shmem_exchange to simple_rename_exchange
+      libfs: Support RENAME_EXCHANGE in simple_rename()
+      selftests/bpf: Convert test_bpffs to ASSERT macros
+      selftests/bpf: Test RENAME_EXCHANGE and RENAME_NOREPLACE on bpffs
+
+Martin KaFai Lau (2):
+      bpf: Do not reject when the stack read size is different from the tracked scalar size
+      selftests/bpf: Verifier test on refill from a smaller spill
+
+Mehrdad Arshad Rad (1):
+      libbpf: Fix lookup_and_delete_elem_flags error reporting
+
+Quentin Monnet (1):
+      bpftool: Install libbpf headers for the bootstrap version, too
+
+ arch/riscv/mm/extable.c                            |  4 +-
+ arch/riscv/net/bpf_jit_comp64.c                    |  2 +
+ fs/libfs.c                                         | 29 +++++++-
+ include/linux/fs.h                                 |  2 +
+ kernel/bpf/verifier.c                              | 18 ++---
+ mm/shmem.c                                         | 24 +-----
+ tools/bpf/bpftool/Makefile                         | 32 +++++---
+ tools/lib/bpf/bpf.c                                |  4 +-
+ tools/testing/selftests/bpf/prog_tests/netcnt.c    |  2 +-
+ .../testing/selftests/bpf/prog_tests/test_bpffs.c  | 85 +++++++++++++++++++---
+ .../selftests/bpf/test_xdp_redirect_multi.sh       | 62 +++++++++-------
+ tools/testing/selftests/bpf/verifier/spill_fill.c  | 17 +++++
+ tools/testing/selftests/bpf/xdp_redirect_multi.c   |  4 +-
+ tools/testing/selftests/net/reuseport_bpf_numa.c   |  4 +
+ 14 files changed, 199 insertions(+), 90 deletions(-)
