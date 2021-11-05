@@ -2,124 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F50E446AAE
-	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 22:42:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A8D7446AD9
+	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 23:19:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233102AbhKEVpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Nov 2021 17:45:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40628 "EHLO
+        id S233262AbhKEWVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Nov 2021 18:21:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232934AbhKEVpA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Nov 2021 17:45:00 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C8A5C061570
-        for <netdev@vger.kernel.org>; Fri,  5 Nov 2021 14:42:18 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id n36-20020a17090a5aa700b0019fa884ab85so4238178pji.5
-        for <netdev@vger.kernel.org>; Fri, 05 Nov 2021 14:42:18 -0700 (PDT)
+        with ESMTP id S230498AbhKEWVv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Nov 2021 18:21:51 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E52B1C061570
+        for <netdev@vger.kernel.org>; Fri,  5 Nov 2021 15:19:10 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id s13so15982114wrb.3
+        for <netdev@vger.kernel.org>; Fri, 05 Nov 2021 15:19:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Q7DYm/VtVMSabGX9/vLK32h3hn/fCqMgaaGrWW1CTOM=;
-        b=RoHW6LLSA56MGmjrwLCJ77k77ilY0XLF/QZwZxNYuQ05dPi7iKxlrMHs2k3GDQVRbQ
-         wk57ER6u5FhioxK9F9c1PhcKri4mOenYKEXUz5/I9d09314Fu4Z1YH1QnhWpL0FKRhS+
-         +tDOZ4LONZHZipc77qPv/lb0rBYwcC77zcE107N3wXf3RagDEPCtDWRbsPccCSf7GBNh
-         E6gLTQEyCj4/sS0hFmuxsxXp8nSw8RZeQbRZe18QH/B7VGJHuKNeWPjR2y7zDzJc75Wf
-         dr6N4s/JT+gU8k37kQB1wSPcA3Gj/vC0h/tdQHHuuuTiLR5gpCEesaUJhjKeo/a3pZse
-         Ls1g==
+        bh=HwEmQN7iuyGwHgTXFsIw/xVKZJ4qPZjUOVQsJw5aWGw=;
+        b=Sd8kvulXdaLPVfbLZft0TAAolBRS+c95hKuA/NQGiLse9xPDKu+h3OJsE7JDXG4TF3
+         w4p7EP03PHnmFSFLhf6ySbsOQ3v7bc5R2J+yxlhAAQWCu7XwbWrakch+/F2xBGdnfXAD
+         P4Cl1ZQFiL+7LSWjkJJQEKcYqNc53juX9e0HzNP3pBOpEI41+2TeRY7LOKNj2SzE920o
+         l9qgaKZCY7uANl1D+75uUI6BS2n0oeJv5ZL/ClHGuPZsbnXpj61trXw2C+cRG69m+uaT
+         EZomnbFU8ZDQSyjWh4LxDFRrcE19IJDby5jGosuzBS2OS98r02D6lLCfj1oBR8R/9twM
+         VUDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Q7DYm/VtVMSabGX9/vLK32h3hn/fCqMgaaGrWW1CTOM=;
-        b=LhifSW2ryL9kg+jwEqQHerWp7TpJYgUepeW6wsbPqUm7L4sWs2HmYdUsvQjjSsv2Mi
-         rXYrxQMoP1fOIJuXX6YBGWDW/w0pDf/Y/QenU+PSCAYydp8l4dQjDB6nBUsgu9FhLLXL
-         SyIndFrI4iFFsBivk3xL8CGVsAmmJx/5sKWDaA3cLcf+jWhwtt2QlqZFC4Kar2gf4O4z
-         qN5lgQhyEJ8KfQFF9A2Lbp9I4ZaP6NejfVnjYx85cfN1gE4dVQzlZ9BdMBq7nzmno3at
-         KaEVGOUaQDdS9t3uHOKD9RoPoYtpwpcJTfXO23ywF6PPyYyinpLggpB9FzQzQ4j4JU5Z
-         rI5g==
-X-Gm-Message-State: AOAM530F/2yXtoVqo6DRzkJFB+zH/JWE3zC3FHwF2l7IbktSubD0rv8i
-        tNyQYK9OYOgCeP7L43fu5Cc=
-X-Google-Smtp-Source: ABdhPJwA5JcnYjLzKkacC6zAnAnZQlg+aRXiblta8GWYL/IWl/TrQ4WUeOoEueOwwMVGdqghubJjiw==
-X-Received: by 2002:a17:902:e5c9:b0:142:53c4:478d with SMTP id u9-20020a170902e5c900b0014253c4478dmr3490897plf.33.1636148538401;
-        Fri, 05 Nov 2021 14:42:18 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:de44:6393:8b19:6f30])
-        by smtp.gmail.com with ESMTPSA id mp12sm10332388pjb.39.2021.11.05.14.42.17
+        bh=HwEmQN7iuyGwHgTXFsIw/xVKZJ4qPZjUOVQsJw5aWGw=;
+        b=L+YlnVW8ucCegL0s4UiiITE4Ye1odZ5Ba3kZjn1ZlMegUKvw8JbUr/BiMCmQIQryLU
+         IDhxHIHoYMYD0Ei7JL5U+Bu2H/tVkzT3K82ERA6wk2qowjCtiuA+D+S0qgP2LL/xiKpd
+         u3liMdM7VAVaQIeEw0cHd2Z69LXSnnvPQKq3Bl13xYCyvv8T9jTHQn3vQEpq+kkRelFm
+         22FB3o5KVHH9c8ggtXivHG9dVdexfP9N3r3+Bvpu3x0LpaUlOyWb7mZGPvlJUo2FmEq9
+         cNGBkT9Q/BW/iK+vPfuEuCwNV9+vuyJbsYCLyBbII+Mc/UmvGZSDbuFDaJ94uCFYEFPj
+         F46A==
+X-Gm-Message-State: AOAM532gir/te804dEamTWqiWZm/iVl39RA8dqOgHVevqEH2hGO9BFEr
+        ryOiUu2Blye5e8EUKFlzCSVBvA==
+X-Google-Smtp-Source: ABdhPJyn4MVY/LmkuOSj0E9tqgW6faEVsiVA7kH3ME2QW9JOUzLw1cYsDbzDlFCZT4rZdqSPA0nXrg==
+X-Received: by 2002:a5d:47a9:: with SMTP id 9mr24706910wrb.42.1636150749378;
+        Fri, 05 Nov 2021 15:19:09 -0700 (PDT)
+Received: from localhost.localdomain ([149.86.68.127])
+        by smtp.gmail.com with ESMTPSA id l18sm9536381wrt.81.2021.11.05.15.19.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Nov 2021 14:42:17 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net] llc: fix out-of-bound array index in llc_sk_dev_hash()
-Date:   Fri,  5 Nov 2021 14:42:14 -0700
-Message-Id: <20211105214214.2259841-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.34.0.rc0.344.g81b53c2807-goog
+        Fri, 05 Nov 2021 15:19:08 -0700 (PDT)
+From:   Quentin Monnet <quentin@isovalent.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Quentin Monnet <quentin@isovalent.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>, Joe Stringer <joe@cilium.io>,
+        Peter Wu <peter@lekensteyn.nl>, Roman Gushchin <guro@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Tobias Klauser <tklauser@distanz.ch>
+Subject: [PATCH bpf-next] bpftool: Fix SPDX tag for Makefiles and .gitignore
+Date:   Fri,  5 Nov 2021 22:19:04 +0000
+Message-Id: <20211105221904.3536-1-quentin@isovalent.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Bpftool is dual-licensed under GPLv2 and BSD-2-Clause. In commit
+907b22365115 ("tools: bpftool: dual license all files") we made sure
+that all its source files were indeed covered by the two licenses, and
+that they had the correct SPDX tags.
 
-Both ifindex and LLC_SK_DEV_HASH_ENTRIES are signed.
+However, bpftool's Makefile, the Makefile for its documentation, and the
+.gitignore file were skipped at the time (their GPL-2.0-only tag was
+added later). Let's update the tags.
 
-This means that (ifindex % LLC_SK_DEV_HASH_ENTRIES) is negative
-if @ifindex is negative.
-
-We could simply make LLC_SK_DEV_HASH_ENTRIES unsigned.
-
-In this patch I chose to use hash_32() to get more entropy
-from @ifindex, like llc_sk_laddr_hashfn().
-
-UBSAN: array-index-out-of-bounds in ./include/net/llc.h:75:26
-index -43 is out of range for type 'hlist_head [64]'
-CPU: 1 PID: 20999 Comm: syz-executor.3 Not tainted 5.15.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- ubsan_epilogue+0xb/0x5a lib/ubsan.c:151
- __ubsan_handle_out_of_bounds.cold+0x62/0x6c lib/ubsan.c:291
- llc_sk_dev_hash include/net/llc.h:75 [inline]
- llc_sap_add_socket+0x49c/0x520 net/llc/llc_conn.c:697
- llc_ui_bind+0x680/0xd70 net/llc/af_llc.c:404
- __sys_bind+0x1e9/0x250 net/socket.c:1693
- __do_sys_bind net/socket.c:1704 [inline]
- __se_sys_bind net/socket.c:1702 [inline]
- __x64_sys_bind+0x6f/0xb0 net/socket.c:1702
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7fa503407ae9
-
-Fixes: 6d2e3ea28446 ("llc: use a device based hash table to speed up multicast delivery")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Andrii Nakryiko <andriin@fb.com>
+Cc: Ilya Leoshkevich <iii@linux.ibm.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: Jesper Dangaard Brouer <brouer@redhat.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Joe Stringer <joe@cilium.io>
+Cc: Peter Wu <peter@lekensteyn.nl>
+Cc: Roman Gushchin <guro@fb.com>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Stanislav Fomichev <sdf@google.com>
+Cc: Tobias Klauser <tklauser@distanz.ch>
+Signed-off-by: Quentin Monnet <quentin@isovalent.com>
 ---
- include/net/llc.h | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ tools/bpf/bpftool/.gitignore             | 2 +-
+ tools/bpf/bpftool/Documentation/Makefile | 2 +-
+ tools/bpf/bpftool/Makefile               | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/llc.h b/include/net/llc.h
-index fd1f9a3fd8dda463cc24d95e0d3a528e505927b4..e250dca03963bf14750d16ebf1cb6d976b7206d3 100644
---- a/include/net/llc.h
-+++ b/include/net/llc.h
-@@ -72,7 +72,9 @@ struct llc_sap {
- static inline
- struct hlist_head *llc_sk_dev_hash(struct llc_sap *sap, int ifindex)
- {
--	return &sap->sk_dev_hash[ifindex % LLC_SK_DEV_HASH_ENTRIES];
-+	u32 bucket = hash_32(ifindex, LLC_SK_DEV_HASH_BITS);
-+
-+	return &sap->sk_dev_hash[bucket];
- }
+diff --git a/tools/bpf/bpftool/.gitignore b/tools/bpf/bpftool/.gitignore
+index 05ce4446b780..a736f64dc5dc 100644
+--- a/tools/bpf/bpftool/.gitignore
++++ b/tools/bpf/bpftool/.gitignore
+@@ -1,4 +1,4 @@
+-# SPDX-License-Identifier: GPL-2.0-only
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ *.d
+ /bootstrap/
+ /bpftool
+diff --git a/tools/bpf/bpftool/Documentation/Makefile b/tools/bpf/bpftool/Documentation/Makefile
+index c49487905ceb..44b60784847b 100644
+--- a/tools/bpf/bpftool/Documentation/Makefile
++++ b/tools/bpf/bpftool/Documentation/Makefile
+@@ -1,4 +1,4 @@
+-# SPDX-License-Identifier: GPL-2.0-only
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ include ../../../scripts/Makefile.include
+ include ../../../scripts/utilities.mak
  
- static inline
+diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
+index c0c30e56988f..622568c7a9b8 100644
+--- a/tools/bpf/bpftool/Makefile
++++ b/tools/bpf/bpftool/Makefile
+@@ -1,4 +1,4 @@
+-# SPDX-License-Identifier: GPL-2.0-only
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ include ../../scripts/Makefile.include
+ include ../../scripts/utilities.mak
+ 
 -- 
-2.34.0.rc0.344.g81b53c2807-goog
+2.32.0
 
