@@ -2,161 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E82B1445E21
-	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 03:55:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11A79445E25
+	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 03:59:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232077AbhKEC6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Nov 2021 22:58:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42102 "EHLO
+        id S231688AbhKEDCC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Nov 2021 23:02:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231627AbhKEC6B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 22:58:01 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D019C061714;
-        Thu,  4 Nov 2021 19:55:22 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id y1so10200846plk.10;
-        Thu, 04 Nov 2021 19:55:22 -0700 (PDT)
+        with ESMTP id S230456AbhKEDCB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 23:02:01 -0400
+Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 054BDC061714;
+        Thu,  4 Nov 2021 19:59:22 -0700 (PDT)
+Received: by mail-ot1-x32b.google.com with SMTP id g91-20020a9d12e4000000b0055ae68cfc3dso8441427otg.9;
+        Thu, 04 Nov 2021 19:59:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=45+llUOgil6QGWh/6zA+LlVuyM/uPXKNATalzsb9kFc=;
-        b=pv6QeQ8U3fe0uYwo3nvn2NBkmImxld1nouO0U2Bb2SB1oS2VTJbyGPSSAtN8RnPoXi
-         /R/lG1B4IZQBMUNiaRcR45Y9dqiYj0ldw+xaOEzVNZkKQ0ImUkzvHi/a880GXPyrF0CE
-         eBvJiRHzu3FH4DsaGxGPkj4EbLyb4TC9PCWe1iIsHv0HW3KrxVTporL7plYx1KYmYi1B
-         6VCceV3gO4MbPbc2241SCb7DjjQLSVVASXK7weqsOODJlMd2oU8wKUZKYFFG2+XeCeJB
-         c4Ton1OLqxRyWtSizv14JjFLMLIeo99g1WKLtNOL0A4W3n3EYNE7OmdBygf9ISi0ZjVf
-         tKOg==
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=XnI9g132VVmuM0dfdWaa2DPIJ0tMZeltl/rjMSrblFY=;
+        b=JPKA+MVwu2XoHKfEKhyPsXKhRCpdGY65L4ypNAmzP+fWraigSMOeaUplsuSLJpYM3x
+         l1hr/oGmWbMODwUGYG7ll0nqtR5h+S/u0iRWKYBduFnDSk9hMdQdyFT56aGGVMBpcCdO
+         DhF5jRLMK0e0WwEXdbx8OF9ydhWqzCrSkqhSXIZFtHLAV5d+4XtM/7qrECPbAKjn6kkX
+         r48vE8xmY/gbGK68cEmvHz8BnDKEfpPfGI2XILG/V1gzOy6RCqYs+CBa1RoC0+oM9Rw4
+         2v148QRsMVSltkM5JS8OG/Kfs5ql68kx2s3MakNn577CZ1XJrCUddbSxNQNKv38QLMkD
+         cfMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=45+llUOgil6QGWh/6zA+LlVuyM/uPXKNATalzsb9kFc=;
-        b=hWlTMz0s3/11fZKJYtanQiAdDVTlK+zobj/OE86uuzay58aji+8zXVahIXOaGQatwC
-         v+YzZG1hIPoWy2I5k9r3ggRLZyd9yC/lEJ5ROxvM2HsAjxNL4vuG+O80oXGbhJ/iwuGC
-         qOhLrFn1X5h444ix0wya8kA4/BH0CxzgBHfJcgSHKnsmTPaarBmDPrlpq/spzfmnM+0r
-         K9Ov1K07Z5CGzlhav8xtaZ5TlrSQNNhHzSnTyhArA9aEdbD3/bxhYdX6GQSSx0qYZV1j
-         L/MjyWibL9Rc8YMv3BiYrwllra7ASqvaQwpiVaW9Ngu61k3X2ynciOF0aAFZPnYPplqt
-         DD7g==
-X-Gm-Message-State: AOAM530egzn+WJY0eKqBG4GeGkfptBpCIl9kmfo2GLY9s2T0Vh+bXH3e
-        6p4X6zR5oq36ohDqItN6ThhXPsllbz4=
-X-Google-Smtp-Source: ABdhPJzitAh5fVbBpk8AOP9CIVqZherI1eQpadhUmMFN6+//TTEVSLvgjHeSK48MWE+Y4SoSMlRE1w==
-X-Received: by 2002:a17:90b:1b04:: with SMTP id nu4mr26949131pjb.72.1636080921439;
-        Thu, 04 Nov 2021 19:55:21 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id d2sm6417300pfj.42.2021.11.04.19.55.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Nov 2021 19:55:20 -0700 (PDT)
-Subject: Re: [PATCH 1/5] tcp/md5: Don't BUG_ON() failed kmemdup()
-To:     Dmitry Safonov <dima@arista.com>, linux-kernel@vger.kernel.org
-Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
-        Andy Lutomirski <luto@amacapital.net>,
-        David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Leonard Crestez <cdleonard@gmail.com>,
-        linux-crypto@vger.kernel.org, netdev@vger.kernel.org
-References: <20211105014953.972946-1-dima@arista.com>
- <20211105014953.972946-2-dima@arista.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <15c0469e-9433-0a8d-50f0-de6517365464@gmail.com>
-Date:   Thu, 4 Nov 2021 19:55:19 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=XnI9g132VVmuM0dfdWaa2DPIJ0tMZeltl/rjMSrblFY=;
+        b=kQUZyJ+2lm9Wd5X1W3McmRwDFP9+nIY8Strn53ZnSvX4dyQVjx3xLQAHXZEdHZ7xqU
+         RYruYwd3lXklzE/q7XyjwDXkaYNoMF7iypNDo/IdH/uTIUwrc5vK02PwxyPYUV1F9yBH
+         gniZdKoGfDpibuO2hVuQF1/nUDCJQ1FphoIxgBPWFpcYlAKK10mj9BVuXPcWIeF6MewQ
+         Y9vxHnqyOBGIkAIzrGBgjOA5A8MlKbt66nq3scQnuTDBfKwxHu/UeuDSxoG0TSHo01s/
+         5NODWeCfuqGH+tgbOENFdSBvi2fsSw5vfclFa8QoJCEgP9c1XShLL4LboJ8wPS30LFhi
+         hD3Q==
+X-Gm-Message-State: AOAM530VOx+7M79gRskT7c+b5Vi54KjD2fezD9K4uRZ10emoaIk0aNgL
+        IeHxTXOW1B7tJWnbghpNJ/kByKBGrxE=
+X-Google-Smtp-Source: ABdhPJwknlXw++6iy8k7nRavsdW0Uev9fTWlo2k2Svdvwm5pmMouWH41OIa/6ueOqAiNbZyJHSGkcA==
+X-Received: by 2002:a9d:730b:: with SMTP id e11mr17295524otk.212.1636081162352;
+        Thu, 04 Nov 2021 19:59:22 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id t12sm2014179oth.21.2021.11.04.19.59.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Nov 2021 19:59:21 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Thu, 4 Nov 2021 19:59:20 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
+Cc:     kuba@kernel.org, andrew@lunn.ch, mickeyr@marvell.com,
+        serhiy.pshyk@plvision.eu, taras.chornyi@plvision.eu,
+        Volodymyr Mytnyk <vmytnyk@marvell.com>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Yevhen Orlov <yevhen.orlov@plvision.eu>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v4] net: marvell: prestera: add firmware v4.0
+ support
+Message-ID: <20211105025920.GA2923425@roeck-us.net>
+References: <1635485889-27504-1-git-send-email-volodymyr.mytnyk@plvision.eu>
 MIME-Version: 1.0
-In-Reply-To: <20211105014953.972946-2-dima@arista.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1635485889-27504-1-git-send-email-volodymyr.mytnyk@plvision.eu>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 11/4/21 6:49 PM, Dmitry Safonov wrote:
-> static_branch_unlikely(&tcp_md5_needed) is enabled by
-> tcp_alloc_md5sig_pool(), so as long as the code doesn't change
-> tcp_md5sig_pool has been already populated if this code is being
-> executed.
+On Fri, Oct 29, 2021 at 08:38:07AM +0300, Volodymyr Mytnyk wrote:
+> From: Volodymyr Mytnyk <vmytnyk@marvell.com>
 > 
-> In case tcptw->tw_md5_key allocaion failed - no reason to crash kernel:
-> tcp_{v4,v6}_send_ack() will send unsigned segment, the connection won't be
-> established, which is bad enough, but in OOM situation totally
-> acceptable and better than kernel crash.
+> Add firmware (FW) version 4.0 support for Marvell Prestera
+> driver.
 > 
-> Introduce tcp_md5sig_pool_ready() helper.
-> tcp_alloc_md5sig_pool() usage is intentionally avoided here as it's
-> fast-path here and it's check for sanity rather than point of actual
-> pool allocation. That will allow to have generic slow-path allocator
-> for tcp crypto pool.
+> Major changes have been made to new v4.0 FW ABI to add support
+> of new features, introduce the stability of the FW ABI and ensure
+> better forward compatibility for the future driver vesrions.
 > 
-> Signed-off-by: Dmitry Safonov <dima@arista.com>
-> ---
->  include/net/tcp.h        | 1 +
->  net/ipv4/tcp.c           | 5 +++++
->  net/ipv4/tcp_minisocks.c | 5 +++--
->  3 files changed, 9 insertions(+), 2 deletions(-)
+> Current v4.0 FW feature set support does not expect any changes
+> to ABI, as it was defined and tested through long period of time.
+> The ABI may be extended in case of new features, but it will not
+> break the backward compatibility.
 > 
-> diff --git a/include/net/tcp.h b/include/net/tcp.h
-> index 4da22b41bde6..3e5423a10a74 100644
-> --- a/include/net/tcp.h
-> +++ b/include/net/tcp.h
-> @@ -1672,6 +1672,7 @@ tcp_md5_do_lookup(const struct sock *sk, int l3index,
->  #endif
->  
->  bool tcp_alloc_md5sig_pool(void);
-> +bool tcp_md5sig_pool_ready(void);
->  
->  struct tcp_md5sig_pool *tcp_get_md5sig_pool(void);
->  static inline void tcp_put_md5sig_pool(void)
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index b7796b4cf0a0..c0856a6af9f5 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -4314,6 +4314,11 @@ bool tcp_alloc_md5sig_pool(void)
->  }
->  EXPORT_SYMBOL(tcp_alloc_md5sig_pool);
->  
-> +bool tcp_md5sig_pool_ready(void)
-> +{
-> +	return tcp_md5sig_pool_populated;
-> +}
-> +EXPORT_SYMBOL(tcp_md5sig_pool_ready);
->  
->  /**
->   *	tcp_get_md5sig_pool - get md5sig_pool for this user
-> diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-> index cf913a66df17..c99cdb529902 100644
-> --- a/net/ipv4/tcp_minisocks.c
-> +++ b/net/ipv4/tcp_minisocks.c
-> @@ -293,11 +293,12 @@ void tcp_time_wait(struct sock *sk, int state, int timeo)
->  			tcptw->tw_md5_key = NULL;
->  			if (static_branch_unlikely(&tcp_md5_needed)) {
->  				struct tcp_md5sig_key *key;
-> +				bool err = WARN_ON(!tcp_md5sig_pool_ready());
->  
->  				key = tp->af_specific->md5_lookup(sk, sk);
-> -				if (key) {
-> +				if (key && !err) {
->  					tcptw->tw_md5_key = kmemdup(key, sizeof(*key), GFP_ATOMIC);
-> -					BUG_ON(tcptw->tw_md5_key && !tcp_alloc_md5sig_pool());
-> +					WARN_ON_ONCE(tcptw->tw_md5_key == NULL);
->  				}
->  			}
->  		} while (0);
+> ABI major changes done in v4.0:
+> - L1 ABI, where MAC and PHY API configuration are split.
+> - ACL has been split to low-level TCAM and Counters ABI
+>   to provide more HW ACL capabilities for future driver
+>   versions.
 > 
+> To support backward support, the addition compatibility layer is
+> required in the driver which will have two different codebase under
+> "if FW-VER elif FW-VER else" conditions that will be removed
+> in the future anyway, So, the idea was to break backward support
+> and focus on more stable FW instead of supporting old version
+> with very minimal and limited set of features/capabilities.
+> 
+> Improve FW msg validation:
+>  * Use __le64, __le32, __le16 types in msg to/from FW to
+>    catch endian mismatch by sparse.
+>  * Use BUILD_BUG_ON for structures sent/recv to/from FW.
+> 
+> Co-developed-by: Vadym Kochan <vkochan@marvell.com>
+> Signed-off-by: Vadym Kochan <vkochan@marvell.com>
+> Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
+> Signed-off-by: Taras Chornyi <tchornyi@marvell.com>
+> Signed-off-by: Volodymyr Mytnyk <vmytnyk@marvell.com>
 
-Hmmm.... how this BUG_ON() could trigger exactly ?
+Compiling this file on m68k results in:
 
-tcp_md5_needed can only be enabled after __tcp_alloc_md5sig_pool has succeeded.
+In file included from <command-line>:
+In function 'prestera_hw_build_tests',
+    inlined from 'prestera_hw_switch_init' at drivers/net/ethernet/marvell/prestera/prestera_hw.c:788:2:
+include/linux/compiler_types.h:317:45: error: call to '__compiletime_assert_351' declared with attribute error: BUILD_BUG_ON failed: sizeof(struct prestera_msg_switch_attr_req) != 16
 
-This patch, sent during merge-window, is a distraction, sorry.
+The size of struct prestera_msg_switch_attr_req is not well defined.
 
-About renaming : It looks nice, but is a disaster for backports
-done for stable releases. Please refrain from doing this.
+struct prestera_msg_switch_attr_req {
+        struct prestera_msg_cmd cmd;			// 4 bytes
+        __le32 attr;					// 4 bytes
+        union prestera_msg_switch_param param;		// 6 bytes
+};
+
+The compiler may well decide, in this situation, to generate a structure of
+size 14, not 16. The error is therefore not surprising.
+
+Guenter
