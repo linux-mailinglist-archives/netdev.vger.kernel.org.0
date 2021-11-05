@@ -2,154 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B92DF446243
-	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 11:35:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60EAE446248
+	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 11:39:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233153AbhKEKiR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Nov 2021 06:38:17 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:40662 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233151AbhKEKiC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Nov 2021 06:38:02 -0400
-Received: by mail-io1-f70.google.com with SMTP id t1-20020a5d81c1000000b005de76e9e20cso5940938iol.7
-        for <netdev@vger.kernel.org>; Fri, 05 Nov 2021 03:35:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=cNB+tE4AKA8z8YAxBjN+ixj7uS5g86EAeIE4JxHKPoo=;
-        b=DRBsT82ex9T6GlmbhDRz+LpPLMK+N/eq07I6G+3WVPrSLpivK1pygVrYr7yD7g2aCS
-         IavGP1mYF3LQLbam3F0jnMOmeS6leE0nyMMQLa7picPBVPhBHEbaKY5XGErZu0l0hmV9
-         epez3VL+XHSLej5h3lh8zvdkr35/neax8Oz9ibVsXHOD6TIOiPdGLqwc2jOpt3SWAkFh
-         XeaU30U5be38j9XtndDL7B0cVa1qh4Ax5h7KN1b+vefFp+pzqqiHisy7tXrhOfTIAcwF
-         MaKweyo2Q6bFJl5uDI6zXD3wQSEPGk0zXeMVROSflGIAkzinRnFC5sgytLbCqCJdSdQ0
-         1XUA==
-X-Gm-Message-State: AOAM530uhQJIIPNSzAtUT3DzRhRFcFEBzcrFu2k2mzST2hPOWkK7MwOr
-        M9BAMz0IJpOiE/flzPeT1U7G3gvUyPb6yXR/I8iJVgrs+mVC
-X-Google-Smtp-Source: ABdhPJwZyhCRYGxypk9hITyt4FJuVw8c6uF2lWTTkViU6A1fb9h1Z8EvFd7jxNjiaE0qXkiFQwmStZY/sok1Z366jRHSVsrE291r
+        id S229690AbhKEKmd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Nov 2021 06:42:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33654 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229500AbhKEKmc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Nov 2021 06:42:32 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8F02360E97;
+        Fri,  5 Nov 2021 10:39:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636108793;
+        bh=AWME9e38tOHnKSeQpw7eCf6D08+o+ysk6gGCjpvrGGM=;
+        h=In-Reply-To:References:To:Subject:Cc:From:Date:From;
+        b=VfnRF4bvMEJaS3lgJMQYrfQGb7EuyplRXvi1aM+xNhA5PiWlU3BVKnQuXskX9PXST
+         NLV18qQO0GHdg5+21Y0UMszjCcIqsBfglJCB79YlvlSqz1HymbWJze1w5XcGXWvJLI
+         Z+V9Jeh8dWK6d1LsVjZPMeQDax706PMvphFZUUQJ+8P0MudhLrv1uyDCO8kdAIU9lV
+         rG70WSD+M3iBX2JuHloM5P+4aGq1m6nAsiR6zGDe3QLgAY6IxWvMyDbyCDCTtZMYbA
+         /Y/yNdRDaPwLlx42rm1j5Vkwd+BuSNO+9PeD8B78we0IsNJQ9IQSdn0MOofjrK2cXt
+         ejDVDK7b/rF0A==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:933:: with SMTP id o19mr6913868ilt.92.1636108522273;
- Fri, 05 Nov 2021 03:35:22 -0700 (PDT)
-Date:   Fri, 05 Nov 2021 03:35:22 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000048c15c05d0083397@google.com>
-Subject: [syzbot] general protection fault in cgroup_file_write
-From:   syzbot <syzbot+50f5cf33a284ce738b62@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        cgroups@vger.kernel.org, christian@brauner.io,
-        daniel@iogearbox.net, hannes@cmpxchg.org, john.fastabend@gmail.com,
-        kafai@fb.com, kpsingh@kernel.org, linux-kernel@vger.kernel.org,
-        lizefan.x@bytedance.com, netdev@vger.kernel.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
-        tj@kernel.org, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <163525905360.935735.15638391921416634794@kwain>
+References: <20211026133822.949135-1-atenart@kernel.org> <20211026.153057.208749798584527471.davem@davemloft.net> <163525905360.935735.15638391921416634794@kwain>
+To:     David Miller <davem@davemloft.net>
+Subject: Re: [net] net-sysfs: avoid registering new queue objects after device unregistration
+Cc:     kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+From:   Antoine Tenart <atenart@kernel.org>
+Message-ID: <163610878996.170932.4166922872643100375@kwain>
+Date:   Fri, 05 Nov 2021 11:39:49 +0100
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Quoting Antoine Tenart (2021-10-26 16:37:33)
+> Quoting David Miller (2021-10-26 16:30:57)
+> > From: Antoine Tenart <atenart@kernel.org>
+> > Date: Tue, 26 Oct 2021 15:38:22 +0200
+> >=20
+> > > netdev_queue_update_kobjects can be called after device unregistration
+> > > started (and device_del was called) resulting in two issues: possible
+> > > registration of new queue kobjects (leading to the following trace) a=
+nd
+> > > providing a wrong 'old_num' number (because real_num_tx_queues is not
+> > > updated in the unregistration path).
+> > >=20
+> > >   BUG: KASAN: use-after-free in kobject_get+0x14/0x90
+> > >   Read of size 1 at addr ffff88801961248c by task ethtool/755
+> > >=20
+> > >   CPU: 0 PID: 755 Comm: ethtool Not tainted 5.15.0-rc6+ #778
+> > >   Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-=
+4.fc34 04/014
+> > >   Call Trace:
+> > >    dump_stack_lvl+0x57/0x72
+> > >    print_address_description.constprop.0+0x1f/0x140
+> > >    kasan_report.cold+0x7f/0x11b
+> > >    kobject_get+0x14/0x90
+> > >    kobject_add_internal+0x3d1/0x450
+> > >    kobject_init_and_add+0xba/0xf0
+> > >    netdev_queue_update_kobjects+0xcf/0x200
+> > >    netif_set_real_num_tx_queues+0xb4/0x310
+> > >    veth_set_channels+0x1c3/0x550
+> > >    ethnl_set_channels+0x524/0x610
+> > >=20
+> > > The fix for both is to only allow unregistering queue kobjects after a
+> > > net device started its unregistration and to ensure we know the curre=
+nt
+> > > Tx queue number (we update dev->real_num_tx_queues before returning).
+> > > This relies on the fact that dev->real_num_tx_queues is used for
+> > > 'old_num' expect when firstly allocating queues.
+> > >=20
+> > > (Rx queues are not affected as net_rx_queue_update_kobjects can't be
+> > > called after a net device started its unregistration).
+> > >=20
+> > > Fixes: 5c56580b74e5 ("net: Adjust TX queue kobjects if number of queu=
+es changes during unregister")
+> > > Signed-off-by: Antoine Tenart <atenart@kernel.org>
+> >=20
+> > netdev_queue_update_kobjects is a confusing function name, it sounds
+> > like it handles both rx and tx.  It only handles tx so
+> > net_tx_queue_update_kobjects is more appropriate.
+>=20
+> Agreed.
+>=20
+> > Could you rename the function in this patch please?
+>=20
+> As this is targeting stable kernels, shouldn't the rename be a separate
+> patch sent to net-next instead? (And it's not the only function that
+> should be renamed if we take this path, such as netdev_queue_add_kobject
+> and the functions in struct kobj_type netdev_queue_ktype).
 
-syzbot found the following issue on:
-
-HEAD commit:    d4439a1189f9 Merge tag 'hsi-for-5.16' of git://git.kernel...
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1656d30ab00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=ff3ea6b218615239
-dashboard link: https://syzkaller.appspot.com/bug?extid=50f5cf33a284ce738b62
-compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.2
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+50f5cf33a284ce738b62@syzkaller.appspotmail.com
-
-general protection fault, probably for non-canonical address 0xdffffc0000000008: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000040-0x0000000000000047]
-CPU: 1 PID: 11182 Comm: syz-executor.1 Not tainted 5.15.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:cgroup_file_write+0xbe/0x790 kernel/cgroup/cgroup.c:3831
-Code: 81 c3 88 08 00 00 48 89 d8 48 c1 e8 03 42 80 3c 38 00 74 08 48 89 df e8 c0 5c 52 00 48 8b 1b 48 83 c3 40 48 89 d8 48 c1 e8 03 <42> 80 3c 38 00 74 08 48 89 df e8 a3 5c 52 00 48 8b 03 48 89 44 24
-RSP: 0018:ffffc9000a79f2a0 EFLAGS: 00010202
-RAX: 0000000000000008 RBX: 0000000000000040 RCX: ffff888074320000
-RDX: 0000000000000000 RSI: ffff88801d008980 RDI: ffff88806b48ac00
-RBP: ffffc9000a79f390 R08: ffffffff8207dab3 R09: fffffbfff1fedffb
-R10: fffffbfff1fedffb R11: 0000000000000000 R12: 1ffff920014f3e5c
-R13: ffff88806b48ac00 R14: ffff88806b48ac00 R15: dffffc0000000000
-FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fe6fd24a1b8 CR3: 000000002c740000 CR4: 00000000003526e0
-Call Trace:
- <TASK>
- kernfs_fop_write_iter+0x3b6/0x510 fs/kernfs/file.c:296
- __kernel_write+0x5d1/0xaf0 fs/read_write.c:535
- do_acct_process+0x112a/0x17b0 kernel/acct.c:518
- acct_pin_kill+0x27/0x130 kernel/acct.c:173
- pin_kill+0x2a6/0x940 fs/fs_pin.c:44
- mnt_pin_kill+0xc1/0x170 fs/fs_pin.c:81
- cleanup_mnt+0x4bc/0x510 fs/namespace.c:1130
- task_work_run+0x146/0x1c0 kernel/task_work.c:164
- exit_task_work include/linux/task_work.h:32 [inline]
- do_exit+0x705/0x24f0 kernel/exit.c:832
- do_group_exit+0x168/0x2d0 kernel/exit.c:929
- get_signal+0x16b0/0x2090 kernel/signal.c:2820
- arch_do_signal_or_restart+0x9c/0x730 arch/x86/kernel/signal.c:868
- handle_signal_work kernel/entry/common.c:148 [inline]
- exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
- exit_to_user_mode_prepare+0x191/0x220 kernel/entry/common.c:207
- __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
- syscall_exit_to_user_mode+0x2e/0x70 kernel/entry/common.c:300
- do_syscall_64+0x53/0xd0 arch/x86/entry/common.c:86
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f0054d5fae9
-Code: Unable to access opcode bytes at RIP 0x7f0054d5fabf.
-RSP: 002b:00007f00522d5218 EFLAGS: 00000246 ORIG_RAX: 00000000000000ca
-RAX: fffffffffffffe00 RBX: 00007f0054e72f68 RCX: 00007f0054d5fae9
-RDX: 0000000000000000 RSI: 0000000000000080 RDI: 00007f0054e72f68
-RBP: 00007f0054e72f60 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f0054e72f6c
-R13: 00007ffd99a378af R14: 00007f00522d5300 R15: 0000000000022000
- </TASK>
-Modules linked in:
----[ end trace 54fd0e4a1cf7068c ]---
-RIP: 0010:cgroup_file_write+0xbe/0x790 kernel/cgroup/cgroup.c:3831
-Code: 81 c3 88 08 00 00 48 89 d8 48 c1 e8 03 42 80 3c 38 00 74 08 48 89 df e8 c0 5c 52 00 48 8b 1b 48 83 c3 40 48 89 d8 48 c1 e8 03 <42> 80 3c 38 00 74 08 48 89 df e8 a3 5c 52 00 48 8b 03 48 89 44 24
-RSP: 0018:ffffc9000a79f2a0 EFLAGS: 00010202
-RAX: 0000000000000008 RBX: 0000000000000040 RCX: ffff888074320000
-RDX: 0000000000000000 RSI: ffff88801d008980 RDI: ffff88806b48ac00
-RBP: ffffc9000a79f390 R08: ffffffff8207dab3 R09: fffffbfff1fedffb
-R10: fffffbfff1fedffb R11: 0000000000000000 R12: 1ffff920014f3e5c
-R13: ffff88806b48ac00 R14: ffff88806b48ac00 R15: dffffc0000000000
-FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fe6fd24a1b8 CR3: 000000000c88e000 CR4: 00000000003526e0
-----------------
-Code disassembly (best guess):
-   0:	81 c3 88 08 00 00    	add    $0x888,%ebx
-   6:	48 89 d8             	mov    %rbx,%rax
-   9:	48 c1 e8 03          	shr    $0x3,%rax
-   d:	42 80 3c 38 00       	cmpb   $0x0,(%rax,%r15,1)
-  12:	74 08                	je     0x1c
-  14:	48 89 df             	mov    %rbx,%rdi
-  17:	e8 c0 5c 52 00       	callq  0x525cdc
-  1c:	48 8b 1b             	mov    (%rbx),%rbx
-  1f:	48 83 c3 40          	add    $0x40,%rbx
-  23:	48 89 d8             	mov    %rbx,%rax
-  26:	48 c1 e8 03          	shr    $0x3,%rax
-* 2a:	42 80 3c 38 00       	cmpb   $0x0,(%rax,%r15,1) <-- trapping instruction
-  2f:	74 08                	je     0x39
-  31:	48 89 df             	mov    %rbx,%rdi
-  34:	e8 a3 5c 52 00       	callq  0x525cdc
-  39:	48 8b 03             	mov    (%rbx),%rax
-  3c:	48                   	rex.W
-  3d:	89                   	.byte 0x89
-  3e:	44                   	rex.R
-  3f:	24                   	.byte 0x24
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Gentle ping.
