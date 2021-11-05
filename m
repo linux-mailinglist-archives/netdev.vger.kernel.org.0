@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D307F445D89
-	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 02:50:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D800445D8D
+	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 02:50:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231724AbhKEBwh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Nov 2021 21:52:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55840 "EHLO
+        id S231833AbhKEBwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Nov 2021 21:52:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231372AbhKEBwg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 21:52:36 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E869CC061203
-        for <netdev@vger.kernel.org>; Thu,  4 Nov 2021 18:49:57 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id o14so11310400wra.12
-        for <netdev@vger.kernel.org>; Thu, 04 Nov 2021 18:49:57 -0700 (PDT)
+        with ESMTP id S231715AbhKEBwh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 21:52:37 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA54DC061203
+        for <netdev@vger.kernel.org>; Thu,  4 Nov 2021 18:49:58 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id j128-20020a1c2386000000b003301a98dd62so8511501wmj.5
+        for <netdev@vger.kernel.org>; Thu, 04 Nov 2021 18:49:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=arista.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=rQaR7pp39Z0B6hBnX5gFqMWGoIyCNaiLBW5E59MvVPU=;
-        b=HpKBBKdcwfPb3BMYNPFePf+BzaC0GDFahXGNk6Xf3M1UObOb5421v7FFc07VdVU1WC
-         J1/772b1SSlAjfPajdR2V345GHLG07oHXjOpjrNG9cCKsPCpANeP0PkuM/zcErR0oM0g
-         Dc79B3CVgKl8USygfoQVaNZfvertwqBr2p7yFq1c+z4f7YKLMEsXEAnpn4GZVOBYhghM
-         3JHacOGOA2OQN5WjvHNOhualZnF72yExBCkAjzZFdMgUdeE7b6CGhHMvMMKCS8esz/bt
-         Ux9z52Qpt9kOdySlK08zeRih87wA8bgyYpdEptTrw5NOVHLDy9j0SY2lJn75SYlj7CMW
-         BrAQ==
+        bh=dNwZbIKE8lWneBjLIglBIBwD0K8M5nQ1YwG5fYxV9yQ=;
+        b=S6873E77/TJAfAk2C/saKYt/6NEm0CteTcVWlSBIfx1IWNTD7Q8bjsrowiXO88I7S+
+         LEH+nrIQC8MQCABpuao3qyBTNN9A278yGM3a1irACwfOGwcc1q+uIqfLfRACZq0tiJzk
+         ovBpHKT6QjjaXbDQVDrOPug+/QiRYxUMaM6bdh3UHjaW1FekQyY9xh4+TT6CJHnQs/zO
+         H5mJcJFblppVgwfKrU81pamfcy160SDTTyPFBxLoMUtXfhxncvJK1zWzJuWdiBhCelIz
+         ahUuGr5fxFkbdaBsh0NRLVDKc13euXGU3uqc4pR8j3wHmfMLsY5I/FhfMNxBYtWo42JB
+         0xzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rQaR7pp39Z0B6hBnX5gFqMWGoIyCNaiLBW5E59MvVPU=;
-        b=Jpsjg2laLnU4PEjvO3HupC8rxFpCuIFSFI76nWXmLdPvM/ySDlGgoJBAuvwhK1NLuZ
-         6IiNKIKX67SGY9aQJJKcB/i/f7sTf6o/ac3nPUM3ZoeO3EEseFNQTL/BdeVWHbuBYD40
-         VueSr6rAAa4g/k+9EFaZEhFbyDXQs+tdxKZ7ZKo17i5D/hUM9SnE9Z+5ZkYC7pQQOwKd
-         nqT1lhe17RNDp5kCDsz6OF2q+/WqrEYGSm7UMfYzrUN2i2xGnTR5BQ9IUwnwDs9ENvzd
-         yZIx4XKmaBCZDRcsFCsCcmhdg2NnXurtYowRpWonqzO2++V+nTpwCzJubSa0/SeH6mQL
-         rFVA==
-X-Gm-Message-State: AOAM530UNsNe9xOcyUQXPdKwWUARBzwu8URAo8GQYd1xZBgfrLllkupw
-        PrJL0TyLLbZtjFYgPdtAUXdjag==
-X-Google-Smtp-Source: ABdhPJxood27uGNuAJy89dbUs4q1LVV544g8s4ei9ZS6BOn6gHSZyEs/iyJSjCj57SDkdUgfgcoRdg==
-X-Received: by 2002:adf:a389:: with SMTP id l9mr58721497wrb.121.1636076996488;
-        Thu, 04 Nov 2021 18:49:56 -0700 (PDT)
+        bh=dNwZbIKE8lWneBjLIglBIBwD0K8M5nQ1YwG5fYxV9yQ=;
+        b=5mVRdRni1CGPK5aj3NQ1VgLaCg5yNZbnSHlW1EVDX1F4Dy5n+bZFifeU4+/Kqtmjsx
+         VKqM6jz2tSzjQo2g+5rnWl2Kxa5+of8qBxaZ4YjTiu3C1KNqnGRJ0+2t1jRMMclaI5vF
+         XeRy1LD+hFqqmR/1Yx73nQ1eBpHS5qbzkZzf4fhP31xFJN7mAyW0dRbGmrhrDut8vU+2
+         g17kEf4GzC3VBU3fYIJzq6a4sL0sXebzjLofmPFWCjWKyuBTgItGpShpRcxZlBeyZSEy
+         Ja4CPgEDR0oPrJg6SHwEfdg8Kv7q7w7sENuyewzOcic3JjpCU07eWcJ5rHGR5H2UUD94
+         Ac/A==
+X-Gm-Message-State: AOAM533P1yIPYDxqDcLWmpcFCwv3r+MrXVk/zVugGmbNCTjTR7RAh+D0
+        23Oec6/eDcI9Ws8WSAQm1mA6Yg==
+X-Google-Smtp-Source: ABdhPJyMGEIoev86k8g8uhwR4iMxEaS98FgaftBQIKbdzzTI4hjx8cTbU0bLfu9OlD5UJTes221/6A==
+X-Received: by 2002:a05:600c:4f0f:: with SMTP id l15mr9170724wmq.25.1636076997577;
+        Thu, 04 Nov 2021 18:49:57 -0700 (PDT)
 Received: from localhost.localdomain ([2a02:8084:e84:2480:228:f8ff:fe6f:83a8])
-        by smtp.gmail.com with ESMTPSA id c6sm7202421wmq.46.2021.11.04.18.49.55
+        by smtp.gmail.com with ESMTPSA id c6sm7202421wmq.46.2021.11.04.18.49.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Nov 2021 18:49:56 -0700 (PDT)
+        Thu, 04 Nov 2021 18:49:57 -0700 (PDT)
 From:   Dmitry Safonov <dima@arista.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
@@ -61,9 +61,9 @@ Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Leonard Crestez <cdleonard@gmail.com>,
         linux-crypto@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 1/5] tcp/md5: Don't BUG_ON() failed kmemdup()
-Date:   Fri,  5 Nov 2021 01:49:49 +0000
-Message-Id: <20211105014953.972946-2-dima@arista.com>
+Subject: [PATCH 2/5] tcp/md5: Don't leak ahash in OOM
+Date:   Fri,  5 Nov 2021 01:49:50 +0000
+Message-Id: <20211105014953.972946-3-dima@arista.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211105014953.972946-1-dima@arista.com>
 References: <20211105014953.972946-1-dima@arista.com>
@@ -73,76 +73,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-static_branch_unlikely(&tcp_md5_needed) is enabled by
-tcp_alloc_md5sig_pool(), so as long as the code doesn't change
-tcp_md5sig_pool has been already populated if this code is being
-executed.
+In quite unlikely scenario when __tcp_alloc_md5sig_pool() succeeded in
+crypto_alloc_ahash(), but later failed to allocate per-cpu request or
+scratch area ahash will be leaked.
+In theory it can happen multiple times in OOM condition for every
+setsockopt(TCP_MD5SIG{,_EXT}).
 
-In case tcptw->tw_md5_key allocaion failed - no reason to crash kernel:
-tcp_{v4,v6}_send_ack() will send unsigned segment, the connection won't be
-established, which is bad enough, but in OOM situation totally
-acceptable and better than kernel crash.
-
-Introduce tcp_md5sig_pool_ready() helper.
-tcp_alloc_md5sig_pool() usage is intentionally avoided here as it's
-fast-path here and it's check for sanity rather than point of actual
-pool allocation. That will allow to have generic slow-path allocator
-for tcp crypto pool.
+Add a clean-up path to free ahash.
 
 Signed-off-by: Dmitry Safonov <dima@arista.com>
 ---
- include/net/tcp.h        | 1 +
- net/ipv4/tcp.c           | 5 +++++
- net/ipv4/tcp_minisocks.c | 5 +++--
- 3 files changed, 9 insertions(+), 2 deletions(-)
+ net/ipv4/tcp.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 4da22b41bde6..3e5423a10a74 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -1672,6 +1672,7 @@ tcp_md5_do_lookup(const struct sock *sk, int l3index,
- #endif
- 
- bool tcp_alloc_md5sig_pool(void);
-+bool tcp_md5sig_pool_ready(void);
- 
- struct tcp_md5sig_pool *tcp_get_md5sig_pool(void);
- static inline void tcp_put_md5sig_pool(void)
 diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index b7796b4cf0a0..c0856a6af9f5 100644
+index c0856a6af9f5..eb478028b1ea 100644
 --- a/net/ipv4/tcp.c
 +++ b/net/ipv4/tcp.c
-@@ -4314,6 +4314,11 @@ bool tcp_alloc_md5sig_pool(void)
+@@ -4276,15 +4276,13 @@ static void __tcp_alloc_md5sig_pool(void)
+ 					       GFP_KERNEL,
+ 					       cpu_to_node(cpu));
+ 			if (!scratch)
+-				return;
++				goto out_free;
+ 			per_cpu(tcp_md5sig_pool, cpu).scratch = scratch;
+ 		}
+-		if (per_cpu(tcp_md5sig_pool, cpu).md5_req)
+-			continue;
+ 
+ 		req = ahash_request_alloc(hash, GFP_KERNEL);
+ 		if (!req)
+-			return;
++			goto out_free;
+ 
+ 		ahash_request_set_callback(req, 0, NULL, NULL);
+ 
+@@ -4295,6 +4293,16 @@ static void __tcp_alloc_md5sig_pool(void)
+ 	 */
+ 	smp_wmb();
+ 	tcp_md5sig_pool_populated = true;
++	return;
++
++out_free:
++	for_each_possible_cpu(cpu) {
++		if (per_cpu(tcp_md5sig_pool, cpu).md5_req == NULL)
++			break;
++		ahash_request_free(per_cpu(tcp_md5sig_pool, cpu).md5_req);
++		per_cpu(tcp_md5sig_pool, cpu).md5_req = NULL;
++	}
++	crypto_free_ahash(hash);
  }
- EXPORT_SYMBOL(tcp_alloc_md5sig_pool);
  
-+bool tcp_md5sig_pool_ready(void)
-+{
-+	return tcp_md5sig_pool_populated;
-+}
-+EXPORT_SYMBOL(tcp_md5sig_pool_ready);
- 
- /**
-  *	tcp_get_md5sig_pool - get md5sig_pool for this user
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index cf913a66df17..c99cdb529902 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -293,11 +293,12 @@ void tcp_time_wait(struct sock *sk, int state, int timeo)
- 			tcptw->tw_md5_key = NULL;
- 			if (static_branch_unlikely(&tcp_md5_needed)) {
- 				struct tcp_md5sig_key *key;
-+				bool err = WARN_ON(!tcp_md5sig_pool_ready());
- 
- 				key = tp->af_specific->md5_lookup(sk, sk);
--				if (key) {
-+				if (key && !err) {
- 					tcptw->tw_md5_key = kmemdup(key, sizeof(*key), GFP_ATOMIC);
--					BUG_ON(tcptw->tw_md5_key && !tcp_alloc_md5sig_pool());
-+					WARN_ON_ONCE(tcptw->tw_md5_key == NULL);
- 				}
- 			}
- 		} while (0);
+ bool tcp_alloc_md5sig_pool(void)
 -- 
 2.33.1
 
