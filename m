@@ -2,104 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FA2B445E0C
-	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 03:50:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E82B1445E21
+	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 03:55:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231496AbhKECvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Nov 2021 22:51:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:28264 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230395AbhKECva (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 22:51:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1636080530;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xCcEqsnBhifvXkjiVwnMz5H8oH0AK0pj5dvEeQNewCw=;
-        b=P8PsQLaNAFe15EoPXLqHJvLqhI1Mh4ZsRfcc7kfMHOj+KTZaA4ai9RzeQi6upWs/Xu+UDQ
-        bckjdU+b+xk7KUPJ7cKqAWV7BE5QsWEQyjRlON7wF+GsoprcI2J9VfHcjEJI3QvV2BwlwA
-        fAYtj+Rj93Mxwt16uTrxiRsLIJWxp/I=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-213-EbbrbVE4NiuMPAIx9FDm9w-1; Thu, 04 Nov 2021 22:48:49 -0400
-X-MC-Unique: EbbrbVE4NiuMPAIx9FDm9w-1
-Received: by mail-lf1-f71.google.com with SMTP id c13-20020a05651200cd00b004001aab328aso2884704lfp.1
-        for <netdev@vger.kernel.org>; Thu, 04 Nov 2021 19:48:49 -0700 (PDT)
+        id S232077AbhKEC6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Nov 2021 22:58:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42102 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231627AbhKEC6B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Nov 2021 22:58:01 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D019C061714;
+        Thu,  4 Nov 2021 19:55:22 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id y1so10200846plk.10;
+        Thu, 04 Nov 2021 19:55:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=45+llUOgil6QGWh/6zA+LlVuyM/uPXKNATalzsb9kFc=;
+        b=pv6QeQ8U3fe0uYwo3nvn2NBkmImxld1nouO0U2Bb2SB1oS2VTJbyGPSSAtN8RnPoXi
+         /R/lG1B4IZQBMUNiaRcR45Y9dqiYj0ldw+xaOEzVNZkKQ0ImUkzvHi/a880GXPyrF0CE
+         eBvJiRHzu3FH4DsaGxGPkj4EbLyb4TC9PCWe1iIsHv0HW3KrxVTporL7plYx1KYmYi1B
+         6VCceV3gO4MbPbc2241SCb7DjjQLSVVASXK7weqsOODJlMd2oU8wKUZKYFFG2+XeCeJB
+         c4Ton1OLqxRyWtSizv14JjFLMLIeo99g1WKLtNOL0A4W3n3EYNE7OmdBygf9ISi0ZjVf
+         tKOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=xCcEqsnBhifvXkjiVwnMz5H8oH0AK0pj5dvEeQNewCw=;
-        b=12lGVCF4Jvf3WoBzj9RnCFp9UoJvHctExj0kcEeuJF9GiKmuiwZO8j2G2cXcQrtHJI
-         LUxQk9bZmHhQH0zTE6Fq+gQubksV5KlYfISPosxRyT0q2jOaj2+txWD+cB8qWffa3RJ2
-         V4tjnXfTEld9IUiJEioTDxP6P81DZdj7zDqlZZwjrycU7QiCqZa0YyBxk4+A5AILbh5j
-         bq/Bva/v0gz88er5eIJ5HJrai4pz+r4i4ATxEwAa3Qs990zZ1hhi42Ersr7UuVftpd+U
-         SXkgfm30a2rpBPARTHUasPMu6D72scOuECzHefzKJWeyflB39G4+2Ffovw4PhR8AHST1
-         du7A==
-X-Gm-Message-State: AOAM532o79xnk6W1uToIEUH4B8mEYJRJCLqLT7XRdyLJ5nZNjsSj1voP
-        j4U/HnQof+PMUdD4b9Y2IGCRcumM6gGwd2pdryNfD1EkJrly+egyvYvE+fiRDfw4ZTLBMNrJ3Wa
-        ATggUZGrLfNW5twZ3ORoO/aQgZj54W48z
-X-Received: by 2002:ac2:4e68:: with SMTP id y8mr52932395lfs.348.1636080528103;
-        Thu, 04 Nov 2021 19:48:48 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzS1jRGe/qTBDl1fmwuB1InzojHnj32ucWekjQLu2yHsikj5gNhAUpYDb19ZeRf/IO8Jf3Qu4zH8GujGcXFofc=
-X-Received: by 2002:ac2:4e68:: with SMTP id y8mr52932379lfs.348.1636080527953;
- Thu, 04 Nov 2021 19:48:47 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=45+llUOgil6QGWh/6zA+LlVuyM/uPXKNATalzsb9kFc=;
+        b=hWlTMz0s3/11fZKJYtanQiAdDVTlK+zobj/OE86uuzay58aji+8zXVahIXOaGQatwC
+         v+YzZG1hIPoWy2I5k9r3ggRLZyd9yC/lEJ5ROxvM2HsAjxNL4vuG+O80oXGbhJ/iwuGC
+         qOhLrFn1X5h444ix0wya8kA4/BH0CxzgBHfJcgSHKnsmTPaarBmDPrlpq/spzfmnM+0r
+         K9Ov1K07Z5CGzlhav8xtaZ5TlrSQNNhHzSnTyhArA9aEdbD3/bxhYdX6GQSSx0qYZV1j
+         L/MjyWibL9Rc8YMv3BiYrwllra7ASqvaQwpiVaW9Ngu61k3X2ynciOF0aAFZPnYPplqt
+         DD7g==
+X-Gm-Message-State: AOAM530egzn+WJY0eKqBG4GeGkfptBpCIl9kmfo2GLY9s2T0Vh+bXH3e
+        6p4X6zR5oq36ohDqItN6ThhXPsllbz4=
+X-Google-Smtp-Source: ABdhPJzitAh5fVbBpk8AOP9CIVqZherI1eQpadhUmMFN6+//TTEVSLvgjHeSK48MWE+Y4SoSMlRE1w==
+X-Received: by 2002:a17:90b:1b04:: with SMTP id nu4mr26949131pjb.72.1636080921439;
+        Thu, 04 Nov 2021 19:55:21 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id d2sm6417300pfj.42.2021.11.04.19.55.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 Nov 2021 19:55:20 -0700 (PDT)
+Subject: Re: [PATCH 1/5] tcp/md5: Don't BUG_ON() failed kmemdup()
+To:     Dmitry Safonov <dima@arista.com>, linux-kernel@vger.kernel.org
+Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
+        Andy Lutomirski <luto@amacapital.net>,
+        David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Leonard Crestez <cdleonard@gmail.com>,
+        linux-crypto@vger.kernel.org, netdev@vger.kernel.org
+References: <20211105014953.972946-1-dima@arista.com>
+ <20211105014953.972946-2-dima@arista.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <15c0469e-9433-0a8d-50f0-de6517365464@gmail.com>
+Date:   Thu, 4 Nov 2021 19:55:19 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20211104195833.2089796-1-eperezma@redhat.com>
-In-Reply-To: <20211104195833.2089796-1-eperezma@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Fri, 5 Nov 2021 10:48:37 +0800
-Message-ID: <CACGkMEug9Ci=mmQcwPwD0rKo4Lp8Vkz87i5X6H9Y0MfgQNc53g@mail.gmail.com>
-Subject: Re: [PATCH] vdpa: Avoid duplicate call to vp_vdpa get_status
-To:     =?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>, kvm <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20211105014953.972946-2-dima@arista.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 5, 2021 at 3:58 AM Eugenio P=C3=A9rez <eperezma@redhat.com> wro=
-te:
->
-> It has no sense to call get_status twice, since we already have a
-> variable for that.
->
-> Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
 
-Acked-by: Jason Wang <jasowang@redhat.com>
 
+On 11/4/21 6:49 PM, Dmitry Safonov wrote:
+> static_branch_unlikely(&tcp_md5_needed) is enabled by
+> tcp_alloc_md5sig_pool(), so as long as the code doesn't change
+> tcp_md5sig_pool has been already populated if this code is being
+> executed.
+> 
+> In case tcptw->tw_md5_key allocaion failed - no reason to crash kernel:
+> tcp_{v4,v6}_send_ack() will send unsigned segment, the connection won't be
+> established, which is bad enough, but in OOM situation totally
+> acceptable and better than kernel crash.
+> 
+> Introduce tcp_md5sig_pool_ready() helper.
+> tcp_alloc_md5sig_pool() usage is intentionally avoided here as it's
+> fast-path here and it's check for sanity rather than point of actual
+> pool allocation. That will allow to have generic slow-path allocator
+> for tcp crypto pool.
+> 
+> Signed-off-by: Dmitry Safonov <dima@arista.com>
 > ---
->  drivers/vhost/vdpa.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index 01c59ce7e250..10676ea0348b 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -167,13 +167,13 @@ static long vhost_vdpa_set_status(struct vhost_vdpa=
- *v, u8 __user *statusp)
->         status_old =3D ops->get_status(vdpa);
->
->         /*
->          * Userspace shouldn't remove status bits unless reset the
->          * status to 0.
->          */
-> -       if (status !=3D 0 && (ops->get_status(vdpa) & ~status) !=3D 0)
-> +       if (status !=3D 0 && (status_old & ~status) !=3D 0)
->                 return -EINVAL;
->
->         if ((status_old & VIRTIO_CONFIG_S_DRIVER_OK) && !(status & VIRTIO=
-_CONFIG_S_DRIVER_OK))
->                 for (i =3D 0; i < nvqs; i++)
->                         vhost_vdpa_unsetup_vq_irq(v, i);
->
-> --
-> 2.27.0
->
+>  include/net/tcp.h        | 1 +
+>  net/ipv4/tcp.c           | 5 +++++
+>  net/ipv4/tcp_minisocks.c | 5 +++--
+>  3 files changed, 9 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/net/tcp.h b/include/net/tcp.h
+> index 4da22b41bde6..3e5423a10a74 100644
+> --- a/include/net/tcp.h
+> +++ b/include/net/tcp.h
+> @@ -1672,6 +1672,7 @@ tcp_md5_do_lookup(const struct sock *sk, int l3index,
+>  #endif
+>  
+>  bool tcp_alloc_md5sig_pool(void);
+> +bool tcp_md5sig_pool_ready(void);
+>  
+>  struct tcp_md5sig_pool *tcp_get_md5sig_pool(void);
+>  static inline void tcp_put_md5sig_pool(void)
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index b7796b4cf0a0..c0856a6af9f5 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -4314,6 +4314,11 @@ bool tcp_alloc_md5sig_pool(void)
+>  }
+>  EXPORT_SYMBOL(tcp_alloc_md5sig_pool);
+>  
+> +bool tcp_md5sig_pool_ready(void)
+> +{
+> +	return tcp_md5sig_pool_populated;
+> +}
+> +EXPORT_SYMBOL(tcp_md5sig_pool_ready);
+>  
+>  /**
+>   *	tcp_get_md5sig_pool - get md5sig_pool for this user
+> diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+> index cf913a66df17..c99cdb529902 100644
+> --- a/net/ipv4/tcp_minisocks.c
+> +++ b/net/ipv4/tcp_minisocks.c
+> @@ -293,11 +293,12 @@ void tcp_time_wait(struct sock *sk, int state, int timeo)
+>  			tcptw->tw_md5_key = NULL;
+>  			if (static_branch_unlikely(&tcp_md5_needed)) {
+>  				struct tcp_md5sig_key *key;
+> +				bool err = WARN_ON(!tcp_md5sig_pool_ready());
+>  
+>  				key = tp->af_specific->md5_lookup(sk, sk);
+> -				if (key) {
+> +				if (key && !err) {
+>  					tcptw->tw_md5_key = kmemdup(key, sizeof(*key), GFP_ATOMIC);
+> -					BUG_ON(tcptw->tw_md5_key && !tcp_alloc_md5sig_pool());
+> +					WARN_ON_ONCE(tcptw->tw_md5_key == NULL);
+>  				}
+>  			}
+>  		} while (0);
+> 
 
+Hmmm.... how this BUG_ON() could trigger exactly ?
+
+tcp_md5_needed can only be enabled after __tcp_alloc_md5sig_pool has succeeded.
+
+This patch, sent during merge-window, is a distraction, sorry.
+
+About renaming : It looks nice, but is a disaster for backports
+done for stable releases. Please refrain from doing this.
