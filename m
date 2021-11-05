@@ -2,152 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61586446436
-	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 14:36:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57ACE44643A
+	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 14:37:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231778AbhKENj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Nov 2021 09:39:28 -0400
-Received: from mail-eopbgr1410124.outbound.protection.outlook.com ([40.107.141.124]:20805
-        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229924AbhKENj1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Nov 2021 09:39:27 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HIMJ5acKWM0CD4G8UHwJhf3PHVGjHfgS6DBez7axtmJBDJEvMiDF6M44PPfj5hEffJDoy4UErQ7MTt+XKYmBQu7lw/3vGTr5BBKG42Hcj56ADQ5guEVIJVRPv2oFOSHbbBc+d8nUJ8csFYCipIzbB/ccRGIcKmkK512udkWKgpS5LSL/pqKBTabUxKIXmnRZVpYDfWpeGBH8LgbSjEgkEGsG+4yBxYTCU7GbxZ1lvbqgTCcN4iF0gVZgl5lG9UWF4bVSJshrScimL3USSHkkkQURbX8H6ogkWGSt+ZWfYQgc4/4pXJ44imF/6VA3rZ/ZPUp95ssUcRA5tJcf6pmG5Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xGKUgahTW3p6MwqEuWsq9Oal2MfRlaJcma7S0VYIbdc=;
- b=n7abxIibyQWP7NS7HVX5W/Ti5z6+A2lJsYd2Q7eJY/LaM4yRgdpYanGrCbTttP8nIFYvOqajCj/Mz9swT1bD7o0KZpSHyex2RUfmRvTk1ghypT3Xt2vkbK/KXHbzeEAadAfKGctuT92C1WbPdEhMQ2IyuWXNyDnCF0jj2SH2HHAhY8T2Ss5jjLc3Psxo0v/RQkHuZgTkXMMHHHGnPwC/yE1yrJDKakjRTOCbN+RVmfsmrFSq/b5h2X36neHkHGGToiKWgAGsTFtluwhmgalLMzgJJmr/J7gtvfoGhcblMr78aDzQqh/QGj0Jeycjf4nmrHoiUq7oWVgf9EwjK47tSw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=connect.ust.hk; dmarc=pass action=none
- header.from=connect.ust.hk; dkim=pass header.d=connect.ust.hk; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=connect.ust.hk;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xGKUgahTW3p6MwqEuWsq9Oal2MfRlaJcma7S0VYIbdc=;
- b=2OqwBkenEYg4sGTTbH5d2esUFqSXrzO8ZdiGwm39BXGEaKCnUcr2tl7f3rVkHAY55/ya04biOoj31RPOAPysKydDGMp9BVA52H5LA3j7NhsCkKqcmqxav+ep7IczwoAP5WpPZ1beV4ry+q7KYM6Q4V8Ydm+VdBPhwP2dnhsN/ac=
-Authentication-Results: canonical.com; dkim=none (message not signed)
- header.d=none;canonical.com; dmarc=none action=none
- header.from=connect.ust.hk;
-Received: from TYCP286MB1188.JPNP286.PROD.OUTLOOK.COM (2603:1096:400:b7::8) by
- TYYP286MB1248.JPNP286.PROD.OUTLOOK.COM (2603:1096:400:d7::11) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4669.13; Fri, 5 Nov 2021 13:36:46 +0000
-Received: from TYCP286MB1188.JPNP286.PROD.OUTLOOK.COM
- ([fe80::c0af:a534:cead:3a04]) by TYCP286MB1188.JPNP286.PROD.OUTLOOK.COM
- ([fe80::c0af:a534:cead:3a04%6]) with mapi id 15.20.4669.013; Fri, 5 Nov 2021
- 13:36:46 +0000
-From:   Chengfeng Ye <cyeaa@connect.ust.hk>
-To:     krzysztof.kozlowski@canonical.com, davem@davemloft.net,
-        kuba@kernel.org, wengjianfeng@yulong.com, dan.carpenter@oracle.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Chengfeng Ye <cyeaa@connect.ust.hk>
-Subject: [PATCH v2] nfc: pn533: Fix double free when pn533_fill_fragment_skbs() fails
-Date:   Fri,  5 Nov 2021 06:36:36 -0700
-Message-Id: <20211105133636.31282-1-cyeaa@connect.ust.hk>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: HK0PR03CA0098.apcprd03.prod.outlook.com
- (2603:1096:203:b0::14) To TYCP286MB1188.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:400:b7::8)
+        id S232090AbhKENj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Nov 2021 09:39:59 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:48430 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229924AbhKENj6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Nov 2021 09:39:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=denP3kmSD6IXR8Bp1s7m9uM6u56hzDvbAqHxvI7j02Q=; b=12
+        HqT2rdS+lE5Bso3joKwGtg8uf59mmk815YjYTlOvjsWwKwRoBttM7ZZ9ii+j3LHcI1wICHKGuI2np
+        ebpEYydeu3CNx9KLRZwqf8micGdzVT7ZfJLiXaEPL3vNjC2A77D/V0fDU5tEvzbi9jacyP9KMlT1S
+        FuVJ27SlFtHNV30=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mizP1-00Cg6c-F5; Fri, 05 Nov 2021 14:37:07 +0100
+Date:   Fri, 5 Nov 2021 14:37:07 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Wells Lu =?utf-8?B?5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
+Cc:     Wells Lu <wellslutw@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>
+Subject: Re: [PATCH 2/2] net: ethernet: Add driver for Sunplus SP7021
+Message-ID: <YYUzgyS6pfQOmKRk@lunn.ch>
+References: <cover.1635936610.git.wells.lu@sunplus.com>
+ <650ec751dd782071dd56af5e36c0d509b0c66d7f.1635936610.git.wells.lu@sunplus.com>
+ <YYK+EeCOu/BXBXDi@lunn.ch>
+ <64626e48052c4fba9057369060bfbc84@sphcmbx02.sunplus.com.tw>
 MIME-Version: 1.0
-Received: from ubuntu.localdomain (175.159.124.155) by HK0PR03CA0098.apcprd03.prod.outlook.com (2603:1096:203:b0::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.11 via Frontend Transport; Fri, 5 Nov 2021 13:36:44 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2db9c7db-57fd-4a10-5d26-08d9a0614f6d
-X-MS-TrafficTypeDiagnostic: TYYP286MB1248:
-X-Microsoft-Antispam-PRVS: <TYYP286MB12481CB7C84ACF5B1F9362218A8E9@TYYP286MB1248.JPNP286.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wMMSrdQckqZoHaPF0+2LNMT4VIMm7iJfmInx2ya526dpLiYjwmL5yOZndcHqb5X60lZRKNaiNSzON8O7LxZ91AHdtD80kmftX1Kns4jrDTVKCbqgdQCO5VlJqc73eJOUUfx+yiuVJcsT4gpkwYIIHuDQt3a+Gecohf7dNJXjirbrIkunK+SZTtbKglGvWlk1yCt2I0lNZf8XpCasHlGGHPPBPDE2eVAiQA9s4s+vmXBdy6DSImrMrQpdQIpIUaFhaV1RxTrffTwS69k83/cswU0wsTzg8JiDpWx0eFSImayVJQ0+uWxqAd6kKPw08UnkphS4F3oshRLG/e2weZ0+wfMAX/T9Q2r9G2MAE2+cFe6n3sbEoX4SPc1DKoLRg/zd1fb2vl1Cv6pEsv902gxPSwLrDFfFhZqlt0QMIRPlcYFNz2yFEv1bP2z24JboTy6dzNX/orPxa56VU1ej+hW8G7If20Xc/Nd2tGceOuKr1NqqI545xLiP9Z89KbWJGbMz839clHHgAwVrY6JYiIIZv5XtuHmyPXasiOVye9BhrZ6BfIX9XcVcC/9lHEIjZh4jmQHd1TMm0Zo1JMzc+hoh0LYWlOLUnSbGnjus6H2IY3eHiLp4WMxNvfGvAoOfhGBCDWOPBdCG16ZOrjIyO5oTJnL9TEjuM/hmUeQZnC801nG0l3alZaWX4FAIggOoJMo5evERg8z69Xq9Mw2F55u67Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYCP286MB1188.JPNP286.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(366004)(4326008)(38100700002)(38350700002)(66476007)(52116002)(66946007)(66556008)(8936002)(86362001)(36756003)(2616005)(498600001)(83380400001)(5660300002)(956004)(107886003)(2906002)(6486002)(6666004)(186003)(26005)(6512007)(6506007)(1076003)(8676002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vJsGyPMYb08D9iod+KkbW+f458ubtEzYUDVnc1Am7npq/N3WFQMClh5DEEJQ?=
- =?us-ascii?Q?IED+HVob7Cyki03MPHmaS9Q0y/2KOQ7japsw7iwhQ8SmW5dtfRD83Uj692Yj?=
- =?us-ascii?Q?F2f/WbuzgbfQmIboTGWp6poS3ZrZ85eWL2PBf2mjxY67xj7Fx1dMvNdu+evv?=
- =?us-ascii?Q?U3yxCWoK/DsE1EtzYg3wXpjXZInBoW+7PDAd4aMrJONn/uYHiNdfRLTjtROZ?=
- =?us-ascii?Q?zEIPN6zDLkavs4C0UN9Ok1C1OBExkI7MUBJw9UIUT9PaolZsZIGxeCbAgEXx?=
- =?us-ascii?Q?a0kB4JQSNvhkdBSev7aO8IBBOpJSMhfPUlZQM2xga1PP6xzIMNg9ulhe2hcb?=
- =?us-ascii?Q?YR7KySeNdSWZ5+adN9NmqljqM9PXmkqzHZwIv403nV2UDjPEnzb9lfiMU/bE?=
- =?us-ascii?Q?S+vKaN9ibInsE1XfKikKlqSl4PlNd5SnQjJkAZlrXCLC+PNzwJ7HGoE0Gcqc?=
- =?us-ascii?Q?oUy3jPq5hd4udOyuVD+zpSvECSDaS7WanlFhBINXZjIcMO1tCH+3mnXD2ygH?=
- =?us-ascii?Q?e9vSoVadii6V7dv2vhS66iSxuDg/EBnOoOnLkYgIWJMFWdYRrm7HbPvFj0aF?=
- =?us-ascii?Q?Q69zBzH+2gKn1OV+CwpYjeZ2lo2CvAFhdr14EpiOB533EtUjhOb8lzeFasRU?=
- =?us-ascii?Q?rtkezUpF02h4ZMxoWvmVSjilLTZP9FOmGv6kd5y6JANoyAw+08vWbmPctlMK?=
- =?us-ascii?Q?9VvuR3eJ2uzt1tnt+zsfCRTmg9uKeR8y14T8aF+p9uONjviInEP7W2RWfR5S?=
- =?us-ascii?Q?6kLFsqsFD65Krxlu3X0P3BGY5GBKRBAAdYmiqlLDznn61i/2yvmQmHlJ0SrH?=
- =?us-ascii?Q?k1gABtk3xvzDFc0IXInoAtKUJv8La04AxdjII1yHRoeJwg/6VTSFl8joLGfB?=
- =?us-ascii?Q?02T+SCQUywKtWOpAIDKZMYHEUAmi9trScHh33aVrCkWbgphnH6pdCtExBEym?=
- =?us-ascii?Q?FUKkJkGPtiQgn7PszUdIa0jAYQVzm3P1fiUGBDXMxxrg3mEPw4gQX2KSfs8x?=
- =?us-ascii?Q?qPlTjWUSik4JdXCuGXeG1FO6j4EPmjJjCrZgyNNYgCuxsPBiJEDcHMTuPVLQ?=
- =?us-ascii?Q?Qn69P9uCa3HgmMyi7l8/xh27XaAvFI6jPhK0/aBiHzN14WefhWHExEcyv55y?=
- =?us-ascii?Q?nZlK1/BUzRR0zUtibKaVNoDeAYi6peIMQgTun68H1nQnXvYF1a4I4Hdr4aPU?=
- =?us-ascii?Q?kl198zQNzKA6eUNvSGi1wBIdxObTXPByW+ta4oowpAKgSdlKDUfOrQOwCan1?=
- =?us-ascii?Q?qkxD80IaPb7tnmtsYD2R99/cntgdko2TQoc0KPI1eibwenbbtoPXJICjI1KD?=
- =?us-ascii?Q?KgbgAn9fNf4h+GSI5kLpq8rj0yiI5wJ6jBSxKP+/w4YKjDxVJUbB9q+J+uII?=
- =?us-ascii?Q?XEqt2c9gvaU99oHwasB6oKW2PPLYrOnvonsubgg9qoaADKWTuJD2BFEdTFSm?=
- =?us-ascii?Q?c35F4nvf8GzSWEzmTiHJYW4DPpFsu0QrqSOjiM63z7yw06RIivcyA3Lmyhy2?=
- =?us-ascii?Q?sBJDvql8Zmwe7mIuP9aYM6L7PENmGlCCOip5nuWYtKnN6OdPY3ZpCK/DVOHl?=
- =?us-ascii?Q?dF4ES+9j7OlOZp2+TQNXfCjPVUsJTkrzKiXpngWo7v79cB6DlPlvnkVe3hyw?=
- =?us-ascii?Q?92LmDfhCP3V9OTCyCJZADbM=3D?=
-X-OriginatorOrg: connect.ust.hk
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2db9c7db-57fd-4a10-5d26-08d9a0614f6d
-X-MS-Exchange-CrossTenant-AuthSource: TYCP286MB1188.JPNP286.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2021 13:36:45.6177
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 6c1d4152-39d0-44ca-88d9-b8d6ddca0708
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: T603hoSy8UBoxjiQg5Xc0Fi1xxKBVc7MN8iYbhCcYQ5H392ZQf5Q+6yasO+VnorEtpcxM/WyLs73YX5Wfh6XtA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYYP286MB1248
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <64626e48052c4fba9057369060bfbc84@sphcmbx02.sunplus.com.tw>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-skb is already freed by dev_kfree_skb in pn533_fill_fragment_skbs,
-but follow error handler branch when pn533_fill_fragment_skbs()
-fails, skb is freed again, results in double free issue. Fix this
-by not free skb in error path of pn533_fill_fragment_skbs.
+> > > +config NET_VENDOR_SUNPLUS
+> > > +	tristate "Sunplus Dual 10M/100M Ethernet (with L2 switch) devices"
+> > 
+> > The "with L2 Switch" is causing lots of warning bells to ring for me.
+> > 
+> > I don't see any references to switchdev or DSA in this driver. How is the
+> > switch managed? There have been a few examples in the past of similar two
+> > port switches being first supported in Dual MAC mode. Later trying to
+> > actually use the switch in the Linux was always ran into problems, and
+> > basically needed a new driver. So i want to make sure you don't have this
+> > problem.
+> > 
+> > In the Linux world, Ethernet switches default to having there
+> > ports/interfaces separated. This effectively gives you your dual MAC mode by
+> > default.  You then create a Linux bridge, and add the ports/interfaces to the
+> > bridge. switchdev is used to offload the bridge, telling the hardware to
+> > enable the L2 switch between the ports.
+> > 
+> > So you don't need the mode parameter in DT. switchdev tells you this.
+> > Switchdev gives user space access to the address table etc.
+> 
+> The L2 switch of Ethernet of SP7021 is not used to forward packets 
+> between two network interfaces.
+> 
+> Sunplus Dual Ethernet devices consists of one CPU port, two LAN 
+> ports, and a L2 switch. L2 switch is a circuitry which receives packets 
+> from CPU or LAN ports and then forwards them other ports. Rules of 
+> forwarding packets are set by driver.
+> 
+> Ethernet driver of SP7021 of Sunplus supports 3 operation modes:
+>   - Dual NIC mode
+>   - An NIC with two LAN ports mode (daisy-chain mode)
+>   - An NIC with two LAN ports mode 2
+> 
+> Dual NIC mode
+> Ethernet driver creates two net-device interfaces (eg: eth0 and eth1). 
+> Each has its dedicated LAN port. For example, LAN port 0 is for 
+> net-device interface eth0. LAN port 1 is for net-device interface 
+> eth1. Packets from LAN port 0 will be always forwarded to eth0 and 
+> vice versa by L2 switch. Similarly, packets from LAN port 1 will be 
+> always forwarded to eth1 and vice versa by L2 switch. Packets will 
+> never be forwarded between two LAN ports, or between eth0 and 
+> LAN port 1, or between eth1 and LAN port 0. The two network 
+> devices work independently.
+> 
+> An NIC with two LAN ports mode (daisy-chain mode)
+> Ethernet driver creates one net-device interface (eg: eth0), but the 
+> net-device interface has two LAN ports. In this mode, a packet from 
+> one LAN port will be either forwarded to net-device interface (eht0) 
+> if its destination address matches MAC address of net-device 
+> interface (eth0), or forwarded to other LAN port. A packet from 
+> net-device interface (eth0) will be forwarded to a LAN port if its 
+> destination address is learnt by L2 switch, or forwarded to both 
+> LAN ports if its destination has not been learnt yet.
+> 
+> An NIC with two LAN ports mode 2
+> This mode is similar to “An NIC with two LAN ports mode”. The 
+> difference is that a packet from net-device interface (eth0) will be 
+> always forwarded to both LAN ports. Learning function of L2 switch 
+> is turned off in this mode. This means L2 switch will never learn the 
+> source address of a packet. So, it always forward packets to both 
+> LAN ports. This mode works like you have 2-port Ethernet hub.
 
-Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
----
- drivers/nfc/pn533/pn533.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+So here you describe how the hardware can be used. Dual is two
+interfaces. Daisy-chain is what you get by taking those two interfaces
+and adding them to a bridge. The bridge then forwards frames between
+the interfaces and the CPU as needed, based on learning. And your
+third mode is the bridge always performs flooding.
 
-diff --git a/drivers/nfc/pn533/pn533.c b/drivers/nfc/pn533/pn533.c
-index 787bcbd290f7..a491db46e3bd 100644
---- a/drivers/nfc/pn533/pn533.c
-+++ b/drivers/nfc/pn533/pn533.c
-@@ -2216,7 +2216,7 @@ static int pn533_fill_fragment_skbs(struct pn533 *dev, struct sk_buff *skb)
- 		frag = pn533_alloc_skb(dev, frag_size);
- 		if (!frag) {
- 			skb_queue_purge(&dev->fragment_skb);
--			break;
-+			return -ENOMEM;
- 		}
- 
- 		if (!dev->tgt_mode) {
-@@ -2285,7 +2285,7 @@ static int pn533_transceive(struct nfc_dev *nfc_dev,
- 		/* jumbo frame ? */
- 		if (skb->len > PN533_CMD_DATAEXCH_DATA_MAXLEN) {
- 			rc = pn533_fill_fragment_skbs(dev, skb);
--			if (rc <= 0)
-+			if (rc < 0)
- 				goto error;
- 
- 			skb = skb_dequeue(&dev->fragment_skb);
-@@ -2353,7 +2353,7 @@ static int pn533_tm_send(struct nfc_dev *nfc_dev, struct sk_buff *skb)
- 	/* let's split in multiple chunks if size's too big */
- 	if (skb->len > PN533_CMD_DATAEXCH_DATA_MAXLEN) {
- 		rc = pn533_fill_fragment_skbs(dev, skb);
--		if (rc <= 0)
-+		if (rc < 0)
- 			goto error;
- 
- 		/* get the first skb */
--- 
-2.17.1
+A linux driver must follow the linux networking model. You cannot make
+up your own model. In the linux world, you model the external
+ports. The hardware always has two external ports, so you need to
+always have two netdev interfaces. To bridge packets between those two
+interfaces, you create a bridge and you add the interfaces to the
+bridge. That is the model you need to follow. switchdev gives you the
+API calls you need to implement this.
 
+> > > +struct l2sw_common {
+> > 
+> > Please change your prefix. l2sw is a common prefix, there are other silicon
+> > vendors using l2sw. I would suggest sp_l2sw or spl2sw.
+> 
+> Ok, I'll modify two struct names in next patch as shown below:
+> l2sw_common --> sp_common
+> l2sw_mac --> sp_mac
+> 
+> Should I also modify prefix of file name?
+
+You need to modify the prefix everywhere you use it.  Function names,
+variable names, all symbols. Search and replace throughout the whole
+code.
+
+> > > +			return -EINVAL;
+> > > +		}
+> > > +	}
+> > > +
+> > > +	switch (cmd) {
+> > > +	case SIOCGMIIPHY:
+> > > +		if (comm->dual_nic && (strcmp(ifr->ifr_ifrn.ifrn_name, "eth1") ==
+> > > +0))
+> > 
+> > You cannot rely on the name, systemd has probably renamed it. If you have
+> > using phylib correctly, net_dev->phydev is what you want.
+> 
+> Ok, I'll use name of the second net device to do compare, 
+> instead of using fixed string "eth1", in next patch.
+
+No. There are always two interfaces. You always have two netdev
+structures. Each netdev structure has a phydev. So use netdev->phydev.
+
+This is another advantage of the Linux model. In your daisy chain
+mode, how do i control the two PHYs? How do i see one is up and one is
+down? How do i configure one to 10Half and the other 100Full?
+
+> > > +int phy_cfg(struct l2sw_mac *mac)
+> > > +{
+> > > +	// Bug workaround:
+> > > +	// Flow-control of phy should be enabled. L2SW IP flow-control will refer
+> > > +	// to the bit to decide to enable or disable flow-control.
+> > > +	mdio_write(mac->comm->phy1_addr, 4,
+> > mdio_read(mac->comm->phy1_addr, 4) | (1 << 10));
+> > > +	mdio_write(mac->comm->phy2_addr, 4,
+> > mdio_read(mac->comm->phy2_addr,
+> > > +4) | (1 << 10));
+> > 
+> > This should be in the PHY driver. The MAC driver should never need to touch
+> > PHY registers.
+> 
+> Sunplus Ethernet MAC integrates MDIO controller. 
+> So Ethernet driver has MDIO- and PHY-related code. 
+> To work-around a circuitry bug, we need to enable 
+> bit 10 of register 4 of PHY.
+> Where should we place the code?
+
+The silicon is integrated, but it is still a collection of standard
+blocks. Linux models those blocks independently. There is a subsystem
+for the MAC, a subsystem for the MDIO bus master and a subsystem for
+the PHY. You register a driver with each of these subsystems. PHY
+drivers live in drivers/net/phy. Put a PHY driver in there, which
+includes this workaround.
+
+> > > +static void mii_linkchange(struct net_device *netdev) { }
+> > 
+> > Nothing to do? Seems very odd. Don't you need to tell the MAC it should do
+> > 10Mbps or 100Mbps? What about pause?
+> 
+> No, hardware does it automatically.
+> Sunplus MAC integrates MDIO controller.
+> It reads PHY status and set MAC automatically.
+
+The PHY is external? So you have no idea what PHY that is? It could be
+a Marvell PHY, a microchip PHY, an Atheros PHY. Often PHYs have
+pages. In order to read the temperature sensor you change the page,
+read a register, and then hopefully change the page back again. If the
+PHY supports Fibre as well as copper, it can put the fibre registers
+in a second page. The PHY driver knows about this, it will flip the
+pages as needed. The phylib core has a mutex, so that only one
+operation happens at a time. So a page flip does not happen
+unexpectedly.
+
+Your MAC hardware does not take this mutex. It has no idea what page
+is selected when it reads registers. Instead of getting the basic mode
+register, it could get the LED control register...
+
+The MAC should never directly access the PHY. Please disable this
+hardware, and use the mii_linkchange callback to configure the MAC.
+
+> > So the MAC does not support pause? I'm then confused about phy_cfg().
+ 
+> Yes, MAC supports pause. MAC (hardware) takes care of pause 
+> automatically.
+> 
+> Should I remove the two lines?
+
+Yes.
+
+And you need to configure the MAC based on the results of the
+auto-neg.
+
+	Andrew
