@@ -2,122 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63F2944643E
-	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 14:38:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69FBB44644F
+	for <lists+netdev@lfdr.de>; Fri,  5 Nov 2021 14:42:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232254AbhKENkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Nov 2021 09:40:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43646 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232052AbhKENkm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Nov 2021 09:40:42 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25742C061714;
-        Fri,  5 Nov 2021 06:38:03 -0700 (PDT)
-Message-ID: <ba543ae4-3a71-13fe-fa82-600ac37eaf5a@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1636119481;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=sZQB9w3+9FKZwmi/cO2+1n0La9tvCBuaJ9sTpnPYv4g=;
-        b=RDGwff50BUZRF67gegFKaDbSUG2omly1gxVB7XUa7+2giu6sckDggxlWMSEymeNSexidQJ
-        n52bGsUc+kvAi+8St8UKVFnhfsUjUndyXpt7/+yE6X5++ygqhUkoId7OMOOd0qtMAUiV0d
-        jcbglE6CKlk+IDQGUmaWzoJ8bVZHpGe0nzVDelfL+c5dER0T6aj9wEyS/L8iYm4aHFOfOQ
-        4l2O/WShm2GtY+OTnLH3DTIgRsjWhcfdmwOeYVp48Uc8wk/4FBulArFHwyxvrYCRtOBie1
-        1JzxcDFgpUfTN5bkCfMx39iZg/C/Eq2Jps6rSON6RDUFrj0B7lUpgQoRImc5QQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1636119481;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=sZQB9w3+9FKZwmi/cO2+1n0La9tvCBuaJ9sTpnPYv4g=;
-        b=A2Y1ws64rELJfRZc3Z2qFqdyymiBgpjNKzpO0NBUgCEqaSVkfx8E7/0MZgP0tETMJ+Jbn8
-        Jxm5+pGQ5gYoVjBw==
-Date:   Fri, 5 Nov 2021 14:38:01 +0100
+        id S232773AbhKENpX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Nov 2021 09:45:23 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:37693 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232659AbhKENpW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Nov 2021 09:45:22 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1636119763; h=Date: Message-ID: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=97JDROl6nekEmikx5XRgFoJpVnsjC7pw9N4FbxjAHmg=;
+ b=GBJZGgTWU609dNZky0B7Xb0v8uV7z9JCxSTJ4+vXLdIh2ZvyX7C5M7zMeLcfg6qgz0tnUxEz
+ ogdNSDy52h4dKrGq/+JiljLtO2DbGpsdEwSGyxb+8lenh0waW7DVf34s88uELaurwrmCNtq7
+ 8aZnTYW+u1s6RchX28Xb2ltUkME=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
+ 618534d1045d18c075fd4086 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 05 Nov 2021 13:42:41
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 7BB9EC43618; Fri,  5 Nov 2021 13:42:40 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.5 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id CD44EC4338F;
+        Fri,  5 Nov 2021 13:42:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org CD44EC4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Subject: Re: [PATCH 7/7] net: dsa: b53: Expose PTP timestamping ioctls to
- userspace
-Content-Language: de-DE
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Vladimir Oltean <olteanv@gmail.com>,
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath9k: Fix out-of-bound memcpy in ath9k_hif_usb_rx_stream
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <YXsidrRuK6zBJicZ@10-18-43-117.dynapool.wireless.nyu.edu>
+References: <YXsidrRuK6zBJicZ@10-18-43-117.dynapool.wireless.nyu.edu>
+To:     Zekun Shen <bruceshenzk@gmail.com>
+Cc:     bruceshenzk@gmail.com, ath9k-devel@qca.qualcomm.com,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-References: <20211104133204.19757-1-martin.kaistra@linutronix.de>
- <20211104133204.19757-8-martin.kaistra@linutronix.de>
- <20211104174251.GB32548@hoboy.vegasvil.org>
-From:   Martin Kaistra <martin.kaistra@linutronix.de>
-In-Reply-To: <20211104174251.GB32548@hoboy.vegasvil.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <163611975427.24604.10345795952487961567.kvalo@codeaurora.org>
+Date:   Fri,  5 Nov 2021 13:42:40 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 04.11.21 um 18:42 schrieb Richard Cochran:
-> On Thu, Nov 04, 2021 at 02:32:01PM +0100, Martin Kaistra wrote:
->> +static int b53_set_hwtstamp_config(struct b53_device *dev, int port,
->> +				   struct hwtstamp_config *config)
->> +{
->> +	struct b53_port_hwtstamp *ps = &dev->ports[port].port_hwtstamp;
->> +	bool tstamp_enable = false;
->> +
->> +	clear_bit_unlock(B53_HWTSTAMP_ENABLED, &ps->state);
->> +
->> +	/* Reserved for future extensions */
->> +	if (config->flags)
->> +		return -EINVAL;
->> +
->> +	switch (config->tx_type) {
->> +	case HWTSTAMP_TX_ON:
->> +		tstamp_enable = true;
->> +		break;
->> +	case HWTSTAMP_TX_OFF:
->> +		tstamp_enable = false;
->> +		break;
->> +	default:
->> +		return -ERANGE;
->> +	}
->> +
->> +	switch (config->rx_filter) {
->> +	case HWTSTAMP_FILTER_NONE:
->> +		tstamp_enable = false;
->> +		break;
->> +	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
->> +	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
->> +	case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
->> +	case HWTSTAMP_FILTER_PTP_V2_EVENT:
->> +	case HWTSTAMP_FILTER_PTP_V2_SYNC:
->> +	case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
-> 
-> This is incorrect.  HWTSTAMP_FILTER_PTP_V2_EVENT includes support for
-> UDP/IPv4 and UDP/IPv6.  Driver should return error here.
+Zekun Shen <bruceshenzk@gmail.com> wrote:
 
-Ok, then I will remove HWTSTAMP_FILTER_PTP_V2_(EVENT|SYNC|DELAY_REQ) 
-from this list, what about HWTSTAMP_FILTER_ALL?
+> Large pkt_len can lead to out-out-bound memcpy. Current
+> ath9k_hif_usb_rx_stream allows combining the content of two urb
+> inputs to one pkt. The first input can indicate the size of the
+> pkt. Any remaining size is saved in hif_dev->rx_remain_len.
+> While processing the next input, memcpy is used with rx_remain_len.
+> 
+> 4-byte pkt_len can go up to 0xffff, while a single input is 0x4000
+> maximum in size (MAX_RX_BUF_SIZE). Thus, the patch adds a check for
+> pkt_len which must not exceed 2 * MAX_RX_BUG_SIZE.
+> 
+> BUG: KASAN: slab-out-of-bounds in ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
+> Read of size 46393 at addr ffff888018798000 by task kworker/0:1/23
+> 
+> CPU: 0 PID: 23 Comm: kworker/0:1 Not tainted 5.6.0 #63
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+> BIOS rel-1.10.2-0-g5f4c7b1-prebuilt.qemu-project.org 04/01/2014
+> Workqueue: events request_firmware_work_func
+> Call Trace:
+>  <IRQ>
+>  dump_stack+0x76/0xa0
+>  print_address_description.constprop.0+0x16/0x200
+>  ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
+>  ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
+>  __kasan_report.cold+0x37/0x7c
+>  ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
+>  kasan_report+0xe/0x20
+>  check_memory_region+0x15a/0x1d0
+>  memcpy+0x20/0x50
+>  ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
+>  ? hif_usb_mgmt_cb+0x2d9/0x2d9 [ath9k_htc]
+>  ? _raw_spin_lock_irqsave+0x7b/0xd0
+>  ? _raw_spin_trylock_bh+0x120/0x120
+>  ? __usb_unanchor_urb+0x12f/0x210
+>  __usb_hcd_giveback_urb+0x1e4/0x380
+>  usb_giveback_urb_bh+0x241/0x4f0
+>  ? __hrtimer_run_queues+0x316/0x740
+>  ? __usb_hcd_giveback_urb+0x380/0x380
+>  tasklet_action_common.isra.0+0x135/0x330
+>  __do_softirq+0x18c/0x634
+>  irq_exit+0x114/0x140
+>  smp_apic_timer_interrupt+0xde/0x380
+>  apic_timer_interrupt+0xf/0x20
+> 
+> Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
 
-> 
->> +	case HWTSTAMP_FILTER_ALL:
->> +		config->rx_filter = HWTSTAMP_FILTER_PTP_V2_L2_EVENT;
->> +		break;
->> +	default:
->> +		return -ERANGE;
->> +	}
-> 
-> Thanks,
-> Richard
-> 
+I need to test this myself.
 
+Patch set to Deferred.
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/YXsidrRuK6zBJicZ@10-18-43-117.dynapool.wireless.nyu.edu/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
