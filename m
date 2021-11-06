@@ -2,89 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07F8A446EEF
-	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 17:27:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AA27446F30
+	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 18:08:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234555AbhKFQ3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Nov 2021 12:29:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58228 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234552AbhKFQ3s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Nov 2021 12:29:48 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0124C061570
-        for <netdev@vger.kernel.org>; Sat,  6 Nov 2021 09:27:06 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1mjOWr-0005tR-Lh; Sat, 06 Nov 2021 17:26:53 +0100
-Received: from pengutronix.de (dialin-80-228-153-084.ewe-ip-backbone.de [80.228.153.84])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id D8A7F6A5DC6;
-        Sat,  6 Nov 2021 16:26:48 +0000 (UTC)
-Date:   Sat, 6 Nov 2021 17:26:47 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Zhang Changzhong <zhangchangzhong@huawei.com>
-Cc:     Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v2 0/3] can: j1939: fix some standard conformance
- problems
-Message-ID: <20211106162647.qgejhws3osmxfjuq@pengutronix.de>
-References: <1635431907-15617-1-git-send-email-zhangchangzhong@huawei.com>
+        id S234642AbhKFRK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Nov 2021 13:10:57 -0400
+Received: from smtp07.smtpout.orange.fr ([80.12.242.129]:56587 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233080AbhKFRK4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Nov 2021 13:10:56 -0400
+Received: from pop-os.home ([86.243.171.122])
+        by smtp.orange.fr with ESMTPA
+        id jPAqmPRE42lVYjPArmWDoG; Sat, 06 Nov 2021 18:08:14 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sat, 06 Nov 2021 18:08:14 +0100
+X-ME-IP: 86.243.171.122
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     saeedm@nvidia.com, leon@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, roid@nvidia.com, vladbu@nvidia.com,
+        paulb@nvidia.com, lariel@nvidia.com
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] net/mlx5: Fix some error handling paths in 'mlx5e_tc_add_fdb_flow()'
+Date:   Sat,  6 Nov 2021 18:08:11 +0100
+Message-Id: <3055988affc39dff4d2a5c00a8d18474b0d63e26.1636218396.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="q4cbyovnoxxgd3sj"
-Content-Disposition: inline
-In-Reply-To: <1635431907-15617-1-git-send-email-zhangchangzhong@huawei.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+All the error handling paths of 'mlx5e_tc_add_fdb_flow()' end to 'err_out'
+where 'flow_flag_set(flow, FAILED);' is called.
 
---q4cbyovnoxxgd3sj
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+All but the new error handling paths added by the commits given in the
+Fixes tag below.
 
-On 28.10.2021 22:38:24, Zhang Changzhong wrote:
-> This patchset fixes 3 standard conformance problems in the j1939 stack.
+Fix these error handling paths and branch to 'err_out'.
 
-Applied to linux-can/testing added stable on Cc.
+Fixes: 166f431ec6be ("net/mlx5e: Add indirect tc offload of ovs internal port")
+Fixes: b16eb3c81fe2 ("net/mlx5: Support internal port as decap route device")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+This patch is speculative, review with care.
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-thanks,
-Marc
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 835caa1c7b74..ff881307c744 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -1445,7 +1445,7 @@ mlx5e_tc_add_fdb_flow(struct mlx5e_priv *priv,
+ 							MLX5_FLOW_NAMESPACE_FDB, VPORT_TO_REG,
+ 							metadata);
+ 			if (err)
+-				return err;
++				goto err_out;
+ 		}
+ 	}
+ 
+@@ -1461,13 +1461,15 @@ mlx5e_tc_add_fdb_flow(struct mlx5e_priv *priv,
+ 		if (attr->chain) {
+ 			NL_SET_ERR_MSG_MOD(extack,
+ 					   "Internal port rule is only supported on chain 0");
+-			return -EOPNOTSUPP;
++			err = -EOPNOTSUPP;
++			goto err_out;
+ 		}
+ 
+ 		if (attr->dest_chain) {
+ 			NL_SET_ERR_MSG_MOD(extack,
+ 					   "Internal port rule offload doesn't support goto action");
+-			return -EOPNOTSUPP;
++			err = -EOPNOTSUPP;
++			goto err_out;
+ 		}
+ 
+ 		int_port = mlx5e_tc_int_port_get(mlx5e_get_int_port_priv(priv),
+@@ -1475,8 +1477,10 @@ mlx5e_tc_add_fdb_flow(struct mlx5e_priv *priv,
+ 						 flow_flag_test(flow, EGRESS) ?
+ 						 MLX5E_TC_INT_PORT_EGRESS :
+ 						 MLX5E_TC_INT_PORT_INGRESS);
+-		if (IS_ERR(int_port))
+-			return PTR_ERR(int_port);
++		if (IS_ERR(int_port)) {
++			err = PTR_ERR(int_port);
++			goto err_out;
++		}
+ 
+ 		esw_attr->int_port = int_port;
+ 	}
+-- 
+2.30.2
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---q4cbyovnoxxgd3sj
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmGGrMQACgkQqclaivrt
-76kGVAgAqDNbF9848DnAPt5t+jSSaEB38fCyUZdbe/XPnNnB8vdIlUDQsJc9NrQD
-AEnqKIZr6eZ8ZzL5xV2zpa81hMVOakpvO0v3fhpDNnw4QkJ3EL89jURPyc1/HCfF
-RSBHTS7PLMuXokjfiWtqmSYw1F3LqwF1oMScV7j6D5i202s/R8H7oHwQoJ5Akugz
-cqVSphTe3XpgSs3Bt4rKPt8jhOmq61GoIILPXxKOq4aLb4iANQxdDTJT8rwfvLFO
-5650A0nXMvKFx4NN5GOuakQDxbzRkI3elekoEkgPoiyBJSwydTqQ6rJQpmNHPqAf
-GrdvOJe/kzwi+s2HNc5bMBf63CVZcw==
-=38/T
------END PGP SIGNATURE-----
-
---q4cbyovnoxxgd3sj--
