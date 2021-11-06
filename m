@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A76A3446D2C
-	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 10:19:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D24FD446D2D
+	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 10:19:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231545AbhKFJWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Nov 2021 05:22:00 -0400
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:19851 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229961AbhKFJWA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Nov 2021 05:22:00 -0400
+        id S233889AbhKFJWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Nov 2021 05:22:10 -0400
+Received: from smtp-fw-80007.amazon.com ([99.78.197.218]:51267 "EHLO
+        smtp-fw-80007.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229961AbhKFJWJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Nov 2021 05:22:09 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1636190360; x=1667726360;
+  s=amazon201209; t=1636190368; x=1667726368;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=vD6xtrmUq8lQfQrQgGSokdyQzLQ1hPMD1Wb7Ebs20hA=;
-  b=BjSLznnGpEGobBw5BVOvb8vJAgQuEOpC7P0Uu0DYZ7DjbZWy+a1FtFgB
-   NgRYNfjFZAhv07+p1TDb+zSTynqBzSuHg6K96co5jg+1c6KfLv/oowvbI
-   sxU58tQObG8j+H59RwSleE5hJtT2sxfzsKJdHh9k/SM8S3ioUT4BQRS7D
-   M=;
+  bh=TsIvw6xfJwKSOt9g7urUFeVunt9zmZwiZLj7JZuNUv0=;
+  b=bNOITVJWopdh6k6aKt4VOIVl/33HLoXe0z06djKWZVjL6b0hRejZLPX5
+   juaFBGjv6IUz7JRT4mNnWHR//7hiVDyo+34nVam6bt/g/8afJa+7viVVY
+   oj04HdHViOmNbHciirs3BR8yIuawFp7Y01Nl/OzLXV5JITdUvCRFUPJaH
+   A=;
 X-IronPort-AV: E=Sophos;i="5.87,213,1631577600"; 
-   d="scan'208";a="172183347"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-0bfdb89e.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP; 06 Nov 2021 09:19:19 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1e-0bfdb89e.us-east-1.amazon.com (Postfix) with ESMTPS id 85EC8E0204;
-        Sat,  6 Nov 2021 09:19:17 +0000 (UTC)
+   d="scan'208";a="39563420"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1d-35b1f9a2.us-east-1.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 06 Nov 2021 09:19:27 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1d-35b1f9a2.us-east-1.amazon.com (Postfix) with ESMTPS id B83A72015D6;
+        Sat,  6 Nov 2021 09:19:26 +0000 (UTC)
 Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.24; Sat, 6 Nov 2021 09:19:16 +0000
+ id 15.0.1497.24; Sat, 6 Nov 2021 09:19:25 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.162.153) by
  EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.24; Sat, 6 Nov 2021 09:19:07 +0000
+ id 15.0.1497.24; Sat, 6 Nov 2021 09:19:22 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -41,9 +41,9 @@ CC:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
         Benjamin Herrenschmidt <benh@amazon.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH net-next 07/13] af_unix: Remove unix_mkname().
-Date:   Sat, 6 Nov 2021 18:17:06 +0900
-Message-ID: <20211106091712.15206-8-kuniyu@amazon.co.jp>
+Subject: [PATCH net-next 08/13] af_unix: Allocate unix_address in unix_bind_(bsd|abstract)().
+Date:   Sat, 6 Nov 2021 18:17:07 +0900
+Message-ID: <20211106091712.15206-9-kuniyu@amazon.co.jp>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211106091712.15206-1-kuniyu@amazon.co.jp>
 References: <20211106091712.15206-1-kuniyu@amazon.co.jp>
@@ -57,88 +57,202 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch removes unix_mkname() and postpones calculating a hash to
-unix_bind_abstract().  Some BSD stuffs still remain in unix_bind()
-though, the next patch packs them into unix_bind_bsd().
+To terminate address with '\0' in unix_bind_bsd(), we add
+unix_create_addr() and call it in unix_bind_bsd() and unix_bind_abstract().
+
+Also, unix_bind_abstract() does not return -EEXIST.  Only
+kern_path_create() and vfs_mknod() in unix_bind_bsd() can return it,
+so we move the last error check in unix_bind() to unix_bind_bsd().
 
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 ---
- net/unix/af_unix.c | 32 ++++++++++----------------------
- 1 file changed, 10 insertions(+), 22 deletions(-)
+ net/unix/af_unix.c | 103 +++++++++++++++++++++++++++------------------
+ 1 file changed, 63 insertions(+), 40 deletions(-)
 
 diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index d0172d5d208f..00f9b83e8966 100644
+index 00f9b83e8966..75ba642dbcac 100644
 --- a/net/unix/af_unix.c
 +++ b/net/unix/af_unix.c
-@@ -252,20 +252,6 @@ static void unix_mkname_bsd(struct sockaddr_un *sunaddr, int addr_len)
- 	((char *)sunaddr)[addr_len] = 0;
+@@ -214,6 +214,21 @@ struct sock *unix_peer_get(struct sock *s)
+ }
+ EXPORT_SYMBOL_GPL(unix_peer_get);
+ 
++static struct unix_address *unix_create_addr(struct sockaddr_un *sunaddr, int addr_len)
++{
++	struct unix_address *addr;
++
++	addr = kmalloc(sizeof(*addr) + addr_len, GFP_KERNEL);
++	if (!addr)
++		return NULL;
++
++	refcount_set(&addr->refcnt, 1);
++	addr->len = addr_len;
++	memcpy(addr->name, sunaddr, addr_len);
++
++	return addr;
++}
++
+ static inline void unix_release_addr(struct unix_address *addr)
+ {
+ 	if (refcount_dec_and_test(&addr->refcnt))
+@@ -1083,34 +1098,44 @@ out:	mutex_unlock(&u->bindlock);
+ 	return err;
  }
  
--static int unix_mkname(struct sockaddr_un *sunaddr, int len, unsigned int *hashp)
--{
--	*hashp = 0;
--
--	if (sunaddr->sun_path[0]) {
--		unix_mkname_bsd(sunaddr, len);
--		len = strlen(sunaddr->sun_path) + offsetof(struct sockaddr_un, sun_path) + 1;
--		return len;
--	}
--
--	*hashp = unix_hash_fold(csum_partial(sunaddr, len, 0));
--	return len;
--}
--
- static void __unix_remove_socket(struct sock *sk)
+-static int unix_bind_bsd(struct sock *sk, struct unix_address *addr)
++static int unix_bind_bsd(struct sock *sk, struct sockaddr_un *sunaddr, int addr_len)
  {
- 	sk_del_node_init(sk);
-@@ -1167,6 +1153,9 @@ static int unix_bind_abstract(struct sock *sk, struct unix_address *addr)
- 		return -EINVAL;
+-	struct unix_sock *u = unix_sk(sk);
+ 	umode_t mode = S_IFSOCK |
+ 	       (SOCK_INODE(sk->sk_socket)->i_mode & ~current_umask());
++	struct unix_sock *u = unix_sk(sk);
+ 	struct user_namespace *ns; // barf...
+-	struct path parent;
++	struct unix_address *addr;
+ 	struct dentry *dentry;
++	struct path parent;
+ 	unsigned int hash;
+ 	int err;
+ 
++	unix_mkname_bsd(sunaddr, addr_len);
++	addr_len = strlen(sunaddr->sun_path) + offsetof(struct sockaddr_un, sun_path) + 1;
++
++	addr = unix_create_addr(sunaddr, addr_len);
++	if (!addr)
++		return -ENOMEM;
++
+ 	/*
+ 	 * Get the parent directory, calculate the hash for last
+ 	 * component.
+ 	 */
+ 	dentry = kern_path_create(AT_FDCWD, addr->name->sun_path, &parent, 0);
+-	if (IS_ERR(dentry))
+-		return PTR_ERR(dentry);
+-	ns = mnt_user_ns(parent.mnt);
++	if (IS_ERR(dentry)) {
++		err = PTR_ERR(dentry);
++		goto out;
++	}
+ 
+ 	/*
+ 	 * All right, let's create it.
+ 	 */
++	ns = mnt_user_ns(parent.mnt);
+ 	err = security_path_mknod(&parent, dentry, mode, 0);
+ 	if (!err)
+ 		err = vfs_mknod(ns, d_inode(parent.dentry), dentry, mode, 0);
+ 	if (err)
+-		goto out;
++		goto out_path;
+ 	err = mutex_lock_interruptible(&u->bindlock);
+ 	if (err)
+ 		goto out_unlink;
+@@ -1134,47 +1159,59 @@ static int unix_bind_bsd(struct sock *sk, struct unix_address *addr)
+ out_unlink:
+ 	/* failed after successful mknod?  unlink what we'd created... */
+ 	vfs_unlink(ns, d_inode(parent.dentry), dentry, NULL);
+-out:
++out_path:
+ 	done_path_create(&parent, dentry);
+-	return err;
++out:
++	unix_release_addr(addr);
++	return err == -EEXIST ? -EADDRINUSE : err;
+ }
+ 
+-static int unix_bind_abstract(struct sock *sk, struct unix_address *addr)
++static int unix_bind_abstract(struct sock *sk, struct sockaddr_un *sunaddr, int addr_len)
+ {
+ 	struct unix_sock *u = unix_sk(sk);
++	struct unix_address *addr;
+ 	int err;
+ 
++	addr = unix_create_addr(sunaddr, addr_len);
++	if (!addr)
++		return -ENOMEM;
++
+ 	err = mutex_lock_interruptible(&u->bindlock);
+ 	if (err)
+-		return err;
++		goto out;
+ 
+ 	if (u->addr) {
+-		mutex_unlock(&u->bindlock);
+-		return -EINVAL;
++		err = -EINVAL;
++		goto out_mutex;
  	}
  
-+	addr->hash = unix_hash_fold(csum_partial(addr->name, addr->len, 0));
-+	addr->hash ^= sk->sk_type;
-+
+ 	addr->hash = unix_hash_fold(csum_partial(addr->name, addr->len, 0));
+ 	addr->hash ^= sk->sk_type;
+ 
  	spin_lock(&unix_table_lock);
- 	if (__unix_find_socket_byname(sock_net(sk), addr->name, addr->len,
- 				      addr->hash)) {
-@@ -1182,12 +1171,11 @@ static int unix_bind_abstract(struct sock *sk, struct unix_address *addr)
+-	if (__unix_find_socket_byname(sock_net(sk), addr->name, addr->len,
+-				      addr->hash)) {
+-		spin_unlock(&unix_table_lock);
+-		mutex_unlock(&u->bindlock);
+-		return -EADDRINUSE;
+-	}
++
++	if (__unix_find_socket_byname(sock_net(sk), addr->name, addr->len, addr->hash))
++		goto out_spin;
++
+ 	__unix_set_addr(sk, addr, addr->hash);
+ 	spin_unlock(&unix_table_lock);
+ 	mutex_unlock(&u->bindlock);
+ 	return 0;
++
++out_spin:
++	spin_unlock(&unix_table_lock);
++	err = -EADDRINUSE;
++out_mutex:
++	mutex_unlock(&u->bindlock);
++out:
++	unix_release_addr(addr);
++	return err;
+ }
  
  static int unix_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
  {
--	struct sock *sk = sock->sk;
  	struct sockaddr_un *sunaddr = (struct sockaddr_un *)uaddr;
- 	char *sun_path = sunaddr->sun_path;
--	int err;
--	unsigned int hash;
-+	struct sock *sk = sock->sk;
- 	struct unix_address *addr;
-+	int err;
+-	char *sun_path = sunaddr->sun_path;
+ 	struct sock *sk = sock->sk;
+-	struct unix_address *addr;
+ 	int err;
  
  	if (addr_len == offsetof(struct sockaddr_un, sun_path) &&
- 	    sunaddr->sun_family == AF_UNIX)
-@@ -1197,17 +1185,17 @@ static int unix_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
+@@ -1185,26 +1222,12 @@ static int unix_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
  	if (err)
  		return err;
  
--	err = unix_mkname(sunaddr, addr_len, &hash);
--	if (err < 0)
--		return err;
--	addr_len = err;
-+	if (sun_path[0]) {
-+		unix_mkname_bsd(sunaddr, addr_len);
-+		addr_len = strlen(sunaddr->sun_path) + offsetof(struct sockaddr_un, sun_path) + 1;
-+	}
+-	if (sun_path[0]) {
+-		unix_mkname_bsd(sunaddr, addr_len);
+-		addr_len = strlen(sunaddr->sun_path) + offsetof(struct sockaddr_un, sun_path) + 1;
+-	}
+-
+-	addr = kmalloc(sizeof(*addr)+addr_len, GFP_KERNEL);
+-	if (!addr)
+-		return -ENOMEM;
+-
+-	memcpy(addr->name, sunaddr, addr_len);
+-	addr->len = addr_len;
+-	refcount_set(&addr->refcnt, 1);
+-
+-	if (sun_path[0])
+-		err = unix_bind_bsd(sk, addr);
++	if (sunaddr->sun_path[0])
++		err = unix_bind_bsd(sk, sunaddr, addr_len);
+ 	else
+-		err = unix_bind_abstract(sk, addr);
+-	if (err)
+-		unix_release_addr(addr);
+-	return err == -EEXIST ? -EADDRINUSE : err;
++		err = unix_bind_abstract(sk, sunaddr, addr_len);
 +
- 	addr = kmalloc(sizeof(*addr)+addr_len, GFP_KERNEL);
- 	if (!addr)
- 		return -ENOMEM;
++	return err;
+ }
  
- 	memcpy(addr->name, sunaddr, addr_len);
- 	addr->len = addr_len;
--	addr->hash = hash ^ sk->sk_type;
- 	refcount_set(&addr->refcnt, 1);
- 
- 	if (sun_path[0])
+ static void unix_state_double_lock(struct sock *sk1, struct sock *sk2)
 -- 
 2.30.2
 
