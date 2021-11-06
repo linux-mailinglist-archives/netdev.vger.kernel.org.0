@@ -2,69 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62B9E446EDA
-	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 17:09:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07F8A446EEF
+	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 17:27:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233954AbhKFQLt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Nov 2021 12:11:49 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:48096 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232371AbhKFQLs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Nov 2021 12:11:48 -0400
-Received: by mail-io1-f70.google.com with SMTP id x15-20020a056602160f00b005e1888842d5so8497294iow.14
-        for <netdev@vger.kernel.org>; Sat, 06 Nov 2021 09:09:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=QqpG2ujyFdtX1D/IpoTYH2d0pbAXhtWvdOKz8yZlSqY=;
-        b=cPjR9v/g0NCvkaAl5dllEvxRHG5dAKHz/z9Ce7EVsmdYPuPEL2mH6J5IIXdrpnl2Eh
-         W8Mj4Zu2PeIvFK+SAYPnuI+glkFH+o6sNYIKfWwCYWFBgSBgzfTzK9g3giyjmCoHqrys
-         X031Cf7j+W8UEuFrobiZtMkukBD6bCnZfwzMGcTjggA2QWmlKOVAav0HWnmLUh/RUn9J
-         A2IIEjUEM5ibYzcz+jTo7wnG6Zh1wFhABmFPLtTldJV/0TPZMAKUwLh29NMKTUxyggcR
-         KgK+gj2uPScPHBLGJW/I/d7++xgoyXKGFbrMFr5+OW8pnPJZH1Vcj+02VN7lKx3KeeZE
-         /OhA==
-X-Gm-Message-State: AOAM530g/RNkWKWKkmD1QMFrhPhwjMlqOi+/AmzJzJ0p1EMi40+c9uVD
-        OajgacHoRieMAiTDUXX4zoBX3x8DHfhiwnFQgxAThWJ1boiy
-X-Google-Smtp-Source: ABdhPJxHYBDMptvTT4I2qhDfgHiUdhddkrynfcSDI3B1z2AnakIJrFjxx4QPg+lHcVYgeQ5RFvXq9fvxL+F3GjIkgNzT9+NqGh1L
+        id S234555AbhKFQ3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Nov 2021 12:29:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58228 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234552AbhKFQ3s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Nov 2021 12:29:48 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0124C061570
+        for <netdev@vger.kernel.org>; Sat,  6 Nov 2021 09:27:06 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1mjOWr-0005tR-Lh; Sat, 06 Nov 2021 17:26:53 +0100
+Received: from pengutronix.de (dialin-80-228-153-084.ewe-ip-backbone.de [80.228.153.84])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id D8A7F6A5DC6;
+        Sat,  6 Nov 2021 16:26:48 +0000 (UTC)
+Date:   Sat, 6 Nov 2021 17:26:47 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Zhang Changzhong <zhangchangzhong@huawei.com>
+Cc:     Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v2 0/3] can: j1939: fix some standard conformance
+ problems
+Message-ID: <20211106162647.qgejhws3osmxfjuq@pengutronix.de>
+References: <1635431907-15617-1-git-send-email-zhangchangzhong@huawei.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:2c95:: with SMTP id i21mr4894708iow.60.1636214946868;
- Sat, 06 Nov 2021 09:09:06 -0700 (PDT)
-Date:   Sat, 06 Nov 2021 09:09:06 -0700
-In-Reply-To: <0000000000004d87c705b00bcb0a@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000af312005d020fa29@google.com>
-Subject: Re: [syzbot] WARNING in sta_info_insert_rcu
-From:   syzbot <syzbot+ef4ca92d9d6f5ba2f880@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, expedicao@bandup.com.br, hdanton@sina.com,
-        johannes.berg@intel.com, johannes@sipsolutions.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, yuehaibing@huawei.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="q4cbyovnoxxgd3sj"
+Content-Disposition: inline
+In-Reply-To: <1635431907-15617-1-git-send-email-zhangchangzhong@huawei.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
 
-commit a6555f844549cd190eb060daef595f94d3de1582
-Author: YueHaibing <yuehaibing@huawei.com>
-Date:   Fri Aug 27 14:42:30 2021 +0000
+--q4cbyovnoxxgd3sj
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-    mac80211: Drop frames from invalid MAC address in ad-hoc mode
+On 28.10.2021 22:38:24, Zhang Changzhong wrote:
+> This patchset fixes 3 standard conformance problems in the j1939 stack.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=103db432b00000
-start commit:   7266f2030eb0 Merge tag 'pm-5.13-rc8' of git://git.kernel.o..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=533cb04fad26afdb
-dashboard link: https://syzkaller.appspot.com/bug?extid=ef4ca92d9d6f5ba2f880
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11be2fd0300000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10d85b14300000
+Applied to linux-can/testing added stable on Cc.
 
-If the result looks correct, please mark the issue as fixed by replying with:
+thanks,
+Marc
 
-#syz fix: mac80211: Drop frames from invalid MAC address in ad-hoc mode
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+--q4cbyovnoxxgd3sj
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmGGrMQACgkQqclaivrt
+76kGVAgAqDNbF9848DnAPt5t+jSSaEB38fCyUZdbe/XPnNnB8vdIlUDQsJc9NrQD
+AEnqKIZr6eZ8ZzL5xV2zpa81hMVOakpvO0v3fhpDNnw4QkJ3EL89jURPyc1/HCfF
+RSBHTS7PLMuXokjfiWtqmSYw1F3LqwF1oMScV7j6D5i202s/R8H7oHwQoJ5Akugz
+cqVSphTe3XpgSs3Bt4rKPt8jhOmq61GoIILPXxKOq4aLb4iANQxdDTJT8rwfvLFO
+5650A0nXMvKFx4NN5GOuakQDxbzRkI3elekoEkgPoiyBJSwydTqQ6rJQpmNHPqAf
+GrdvOJe/kzwi+s2HNc5bMBf63CVZcw==
+=38/T
+-----END PGP SIGNATURE-----
+
+--q4cbyovnoxxgd3sj--
