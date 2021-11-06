@@ -2,74 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17609446C29
-	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 04:00:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 467C1446C36
+	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 04:29:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233079AbhKFDCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Nov 2021 23:02:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47106 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229852AbhKFDCr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Nov 2021 23:02:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 3F99160EBB;
-        Sat,  6 Nov 2021 03:00:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636167607;
-        bh=axACwuwSd8HnjHHPp8qZEz07q30ERonRNw6m+mDyUqM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=vP3/EdBGmDuM2kJ6cVZJ92VAYZTjkCDWGjWtBI+BX+d0g0q4DuJGv7cXpd8ynEnC8
-         lVu5RkxKM7wMEn2VMvtU1gemiTx1JB3TLB+dvD/gt8SixSRy3i7xnGk/QpMZ04+So1
-         /lp78NLYRj4ucFxMl25+JkVPFz0R8YQxxuP9d+6Z7V2E7xZxEWA4Qijv4x88oiLzVC
-         m2WCwA8XT3W9Z/CyA3Oub5thhFUgh2It5yx4IFolLilLSFvsdv/hmpUFS9V0eevV6P
-         a5vhcjItruMlDCTPx1HZV1u4yGsGbX5M0kAIVBwNk2wDrVxxLaDXGJTTiEw/NRKzBn
-         cC5ZF74N5XoRg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2E1AD609D9;
-        Sat,  6 Nov 2021 03:00:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232324AbhKFDR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Nov 2021 23:17:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56588 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230523AbhKFDR0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Nov 2021 23:17:26 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6677EC061570
+        for <netdev@vger.kernel.org>; Fri,  5 Nov 2021 20:14:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=257xpXZTZhrRkeI8MnMBy7Q/W2QpOh7S6UfC9AcF3Ts=; b=hr1esui0tRYrryIG49poL4X8B/
+        FNt0bpIhjQCtxTqvJYqj6BXiEgQ6BvwSvlALfihL5Ed+wo0CzOrqyPzbWZK7kwe7KMrRTRByb9WzJ
+        oDgMUgRQaA96OlSUI61CJaAFKWgEHPN/w6D8MN+lhGBgZ/LXHbfKBaSpy0x+cx84H9lS5To+Y3BBx
+        0s0/Q37BUrLMO/+ar+/BGcEw4ORXDuXWLqR93YOlkvoaA5CCcMC6L1pTeVquf3oQV8s5ew/6L5H9O
+        KfjSaHbJyAuUNBwdnlX8/e7jTaTtPVDTb8eSJyZl6WWNLoS50gHoFmztKYx33QHjasTcoKBm5h/Zw
+        VaKXXDBQ==;
+Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mjCAE-00Cc6Y-I7; Sat, 06 Nov 2021 03:14:42 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     netdev@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Peng Li <lipeng321@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH -net] net: hisilicon: fix hsn3_ethtool kernel-doc warnings
+Date:   Fri,  5 Nov 2021 20:14:41 -0700
+Message-Id: <20211106031441.3004-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] ipv6: remove useless assignment to newinet in
- tcp_v6_syn_recv_sock()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163616760718.459.15604217607658404644.git-patchwork-notify@kernel.org>
-Date:   Sat, 06 Nov 2021 03:00:07 +0000
-References: <20211104143740.32446-1-nghialm78@gmail.com>
-In-Reply-To: <20211104143740.32446-1-nghialm78@gmail.com>
-To:     Nghia Le <nghialm78@gmail.com>
-Cc:     edumazet@google.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, lukas.bulwahn@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Fix kernel-doc warnings and spacing in hns3_ethtool.c:
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+hns3_ethtool.c:246: warning: No description found for return value of 'hns3_lp_run_test'
+hns3_ethtool.c:408: warning: expecting prototype for hns3_nic_self_test(). Prototype was for hns3_self_test() instead
 
-On Thu,  4 Nov 2021 21:37:40 +0700 you wrote:
-> The newinet value is initialized with inet_sk() in a block code to
-> handle sockets for the ETH_P_IP protocol. Along this code path,
-> newinet is never read. Thus, assignment to newinet is needless and
-> can be removed.
-> 
-> Signed-off-by: Nghia Le <nghialm78@gmail.com>
-> 
-> [...]
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: Peng Li <lipeng321@huawei.com>
+Cc: Guangbin Huang <huangguangbin2@huawei.com>
+Cc: Yisen Zhuang <yisen.zhuang@huawei.com>
+Cc: Salil Mehta <salil.mehta@huawei.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+---
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Here is the summary with links:
-  - ipv6: remove useless assignment to newinet in tcp_v6_syn_recv_sock()
-    https://git.kernel.org/netdev/net/c/70bf363d7adb
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+--- linux-next-20211106.orig/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ linux-next-20211106/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -238,9 +238,11 @@ static void hns3_lb_clear_tx_ring(struct
+ }
+ 
+ /**
+- * hns3_lp_run_test -  run loopback test
++ * hns3_lp_run_test - run loopback test
+  * @ndev: net device
+  * @mode: loopback type
++ *
++ * Return: %0 for success or a NIC loopback test error code on failure
+  */
+ static int hns3_lp_run_test(struct net_device *ndev, enum hnae3_loop mode)
+ {
+@@ -398,7 +400,7 @@ static void hns3_do_selftest(struct net_
+ }
+ 
+ /**
+- * hns3_nic_self_test - self test
++ * hns3_self_test - self test
+  * @ndev: net device
+  * @eth_test: test cmd
+  * @data: test result
