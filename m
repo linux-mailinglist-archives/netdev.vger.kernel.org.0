@@ -2,101 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04260446FE9
-	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 19:43:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 102E4446FF6
+	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 20:01:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234021AbhKFSpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Nov 2021 14:45:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59834 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbhKFSpv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Nov 2021 14:45:51 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB04EC061570;
-        Sat,  6 Nov 2021 11:43:09 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id s136so11242795pgs.4;
-        Sat, 06 Nov 2021 11:43:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yyfRWDK8NCqlPqDCBGpSUQxg8ZGEujbB5rTKuJMxw0M=;
-        b=ekvunCuGbBmzpCgyWBCWIXRx5w52Y2G+RsPgUYm1KBfUAqmtPLQoxQSipH+C19gihx
-         LOLpjZD7/46KUG+fljFxJ/Wnt0bocI5eVjECb2HX1ZtuMIAFs4Rim+606rWbN8I+tsOr
-         glmLalZrGs0qRu4PMpMoNWmutnpIm1bEz19Gd+KWaEjl5qhRAAaDAf4TdtogB3Wnie3x
-         O4rQj/swe+1JF7bxiGR1wVIrxWT88vTasKUV9kyHCjLyEIXbmToQz3Tntd11XexSApU6
-         8wNMns2dYhLRX8/0xa9fR8MmCSF+z3enYJJm9iqa4NCfwDdpfczgdOs8xG4SMP4echMP
-         VU5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yyfRWDK8NCqlPqDCBGpSUQxg8ZGEujbB5rTKuJMxw0M=;
-        b=j6Y5u3gM7OWgNOKR/nDOCDpGe4VjGBoxDKdxJ3u4bftEfmq1svhbRO3VRrEM50gv2T
-         epKcpq47N45flk9mEt7i/YQ4klCBVSl8r6SY2EzWy8XACA5bAegymLUwHcJzKysX//gX
-         bcyEX9GrATuY9byNBdxaZJYy8OZ7khWyUaWrLfgpN2cb6uJkrTuiCEuLbWFbEZw/ip6L
-         biBJhC3isE0aRuMZ9bd+dbXEXmSmmvGhwpQRwAKo2F64TaH9jwr2p6X4BxC9eelel68t
-         gRxrcDPPCzZddHjfBNEKiLKNLnN9FoR+NvjOhu03+3XfjAKKoXMOxoNI1Q/IHWjVQmJI
-         cpLw==
-X-Gm-Message-State: AOAM530XiL3Lg/Sti31YBJXxt25WjxEl6NUgbJF0w9YZJuAlQW4gTfT2
-        VHJjcc4m4bwK5z0vSb4uhT8=
-X-Google-Smtp-Source: ABdhPJyRBJSH67CaK3tFmpv+UdQGbRsqyk2fjY6i96cGS3Btd1UoluWexQwE2vk2pZxt7HY7O5xPQw==
-X-Received: by 2002:aa7:8611:0:b0:49f:a5b3:14b4 with SMTP id p17-20020aa78611000000b0049fa5b314b4mr9525248pfn.30.1636224189396;
-        Sat, 06 Nov 2021 11:43:09 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:5e3b])
-        by smtp.gmail.com with ESMTPSA id mv22sm8986084pjb.36.2021.11.06.11.43.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 06 Nov 2021 11:43:09 -0700 (PDT)
-Date:   Sat, 6 Nov 2021 11:43:07 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Hou Tao <houtao1@huawei.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Song Liu <songliubraving@fb.com>,
+        id S234859AbhKFTEU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Nov 2021 15:04:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52604 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232523AbhKFTES (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 6 Nov 2021 15:04:18 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D1C3261058;
+        Sat,  6 Nov 2021 19:01:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636225297;
+        bh=gHiRP7T92ZrX+spwRw+xIdpGjcXe+C4gS84lei3bAXE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QWf3im/y0N/JbBKieGbxgCnRWbwO7L7qXY+xgCOev9tT7B4JvpDD1PlyWkgf9CUfN
+         IKRjIAkVj3v9hNpO8yqxxNAOjRSww+eKli1Gf/H1bOanbKlNnnKvS0rwXWlbypNQ+k
+         e4AYixfm6F7uOFxiO/Cc6KdVAPMbeK6vra3oNXgNakBw9H0VrWQY10A5R7TEXIM9Ol
+         qdsC37A12ATVR6fbLBK+1ePb11NnkO5S5g0UHxTZm8Qr92EuZBFrx75vnHJcvhuJvL
+         +/aJlJmJMOoISG5YvaBEqA/wtaLd6e47NWAHOA5Om++x/IewwTCNlK23tW1L0MK67G
+         dS2CLSvHJqrEQ==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 72C0F410A1; Sat,  6 Nov 2021 16:01:33 -0300 (-03)
+Date:   Sat, 6 Nov 2021 16:01:33 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>, Song Liu <songliubraving@fb.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [RFC PATCH bpf-next 2/2] selftests/bpf: add benchmark bpf_strcmp
-Message-ID: <20211106184307.7gbztgkeprktbohz@ast-mbp.dhcp.thefacebook.com>
-References: <20211106132822.1396621-1-houtao1@huawei.com>
- <20211106132822.1396621-3-houtao1@huawei.com>
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        linux-perf-users@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH 1/2] perf bpf: Avoid memory leak from perf_env__insert_btf
+Message-ID: <YYbRDT6eknbL1DVd@kernel.org>
+References: <20211106053733.3580931-1-irogers@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211106132822.1396621-3-houtao1@huawei.com>
+In-Reply-To: <20211106053733.3580931-1-irogers@google.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 06, 2021 at 09:28:22PM +0800, Hou Tao wrote:
-> The benchmark runs a loop 5000 times. In the loop it reads the file name
-> from kprobe argument into stack by using bpf_probe_read_kernel_str(),
-> and compares the file name with a target character or string.
+Em Fri, Nov 05, 2021 at 10:37:32PM -0700, Ian Rogers escreveu:
+> perf_env__insert_btf doesn't insert if a duplicate btf id is
+> encountered and this causes a memory leak. Modify the function to return
+> a success/error value and then free the memory if insertion didn't
+> happen.
 > 
-> Three cases are compared: only compare one character, compare the whole
-> string by a home-made strncmp() and compare the whole string by
-> bpf_strcmp().
+> Fixes: 3792cb2ff43b ("perf bpf: Save BTF in a rbtree in perf_env")
+> Signed-off-by: Ian Rogers <irogers@google.com>
+> ---
+>  tools/perf/util/bpf-event.c | 5 ++++-
+>  tools/perf/util/env.c       | 5 ++++-
+>  tools/perf/util/env.h       | 2 +-
+>  3 files changed, 9 insertions(+), 3 deletions(-)
 > 
-> The following is the result:
-> 
-> x86-64 host:
-> 
-> one character: 2613499 ns
-> whole str by strncmp: 2920348 ns
-> whole str by helper: 2779332 ns
-> 
-> arm64 host:
-> 
-> one character: 3898867 ns
-> whole str by strncmp: 4396787 ns
-> whole str by helper: 3968113 ns
-> 
-> Compared with home-made strncmp, the performance of bpf_strncmp helper
-> improves 80% under x86-64 and 600% under arm64. The big performance win
-> on arm64 may comes from its arch-optimized strncmp().
+> diff --git a/tools/perf/util/bpf-event.c b/tools/perf/util/bpf-event.c
+> index 1a7112a87736..0783b464777a 100644
+> --- a/tools/perf/util/bpf-event.c
+> +++ b/tools/perf/util/bpf-event.c
+> @@ -120,7 +120,10 @@ static int perf_env__fetch_btf(struct perf_env *env,
+>  	node->data_size = data_size;
+>  	memcpy(node->data, data, data_size);
+>  
+> -	perf_env__insert_btf(env, node);
+> +	if (!perf_env__insert_btf(env, node)) {
+> +		/* Insertion failed because of a duplicate. */
+> +		free(node);
+> +	}
+>  	return 0;
 
-80% and 600% improvement?!
-I don't understand how this math works.
+Shouldn't this error be propagated? Song?
 
-Why one char is barely different in total nsec than the whole string?
-The string shouldn't miscompare on the first char as far as I understand the test.
+- Arnaldo
+
+>  }
+>  
+> diff --git a/tools/perf/util/env.c b/tools/perf/util/env.c
+> index cf773f0dec38..5b24eb010336 100644
+> --- a/tools/perf/util/env.c
+> +++ b/tools/perf/util/env.c
+> @@ -74,12 +74,13 @@ struct bpf_prog_info_node *perf_env__find_bpf_prog_info(struct perf_env *env,
+>  	return node;
+>  }
+>  
+> -void perf_env__insert_btf(struct perf_env *env, struct btf_node *btf_node)
+> +bool perf_env__insert_btf(struct perf_env *env, struct btf_node *btf_node)
+>  {
+>  	struct rb_node *parent = NULL;
+>  	__u32 btf_id = btf_node->id;
+>  	struct btf_node *node;
+>  	struct rb_node **p;
+> +	bool ret = true;
+>  
+>  	down_write(&env->bpf_progs.lock);
+>  	p = &env->bpf_progs.btfs.rb_node;
+> @@ -93,6 +94,7 @@ void perf_env__insert_btf(struct perf_env *env, struct btf_node *btf_node)
+>  			p = &(*p)->rb_right;
+>  		} else {
+>  			pr_debug("duplicated btf %u\n", btf_id);
+> +			ret = false;
+>  			goto out;
+>  		}
+>  	}
+> @@ -102,6 +104,7 @@ void perf_env__insert_btf(struct perf_env *env, struct btf_node *btf_node)
+>  	env->bpf_progs.btfs_cnt++;
+>  out:
+>  	up_write(&env->bpf_progs.lock);
+> +	return ret;
+>  }
+>  
+>  struct btf_node *perf_env__find_btf(struct perf_env *env, __u32 btf_id)
+> diff --git a/tools/perf/util/env.h b/tools/perf/util/env.h
+> index 1383876f72b3..163e5ec503a2 100644
+> --- a/tools/perf/util/env.h
+> +++ b/tools/perf/util/env.h
+> @@ -167,7 +167,7 @@ void perf_env__insert_bpf_prog_info(struct perf_env *env,
+>  				    struct bpf_prog_info_node *info_node);
+>  struct bpf_prog_info_node *perf_env__find_bpf_prog_info(struct perf_env *env,
+>  							__u32 prog_id);
+> -void perf_env__insert_btf(struct perf_env *env, struct btf_node *btf_node);
+> +bool perf_env__insert_btf(struct perf_env *env, struct btf_node *btf_node);
+>  struct btf_node *perf_env__find_btf(struct perf_env *env, __u32 btf_id);
+>  
+>  int perf_env__numa_node(struct perf_env *env, int cpu);
+> -- 
+> 2.34.0.rc0.344.g81b53c2807-goog
+
+-- 
+
+- Arnaldo
