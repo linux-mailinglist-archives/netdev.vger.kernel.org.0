@@ -2,107 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7FD4446DBB
-	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 12:53:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 421B1446DF1
+	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 13:45:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233533AbhKFL4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Nov 2021 07:56:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37384 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229968AbhKFL4A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 6 Nov 2021 07:56:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5C9186120A;
-        Sat,  6 Nov 2021 11:53:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1636199599;
-        bh=oOqfUkN+V01wkWHLOAfGGPh0bwOJZPTt6wQPkt/W0qQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fRWXE3CU7LRnQ7iMonBxh4PiDxUBRDWn/t9e3fNXbV1LN194uMsDAtS1f0k9uDJGE
-         if6c/4wy0PALr3mX5tgd/JHMSdLrjM5rt+dY7kJtuAEIbzJ2KwOyYZVfS/6ILa0Jms
-         gTmBjCpQAcimqZSwpxnkWCfQWjy4uqo/njm4PkYE=
-Date:   Sat, 6 Nov 2021 12:53:10 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Meng Li <Meng.Li@windriver.com>
-Cc:     stable@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        mcoquelin.stm32@gmail.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] driver: ethernet: stmmac: remove the redundant clock
- disable action
-Message-ID: <YYZsprWP3vO9dtZy@kroah.com>
-References: <20211106104401.10846-1-Meng.Li@windriver.com>
+        id S233389AbhKFMsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Nov 2021 08:48:30 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:35302 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232900AbhKFMs3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Nov 2021 08:48:29 -0400
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1A69MMRo033455;
+        Sat, 6 Nov 2021 12:45:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=QP1ehqk8w2ElEGkdv2KPKItCkiDJa+NrePQ5P8xyX2U=;
+ b=ajYrTwFaMcLoCqTer6Lw1PRFUqXqs48F8DbUcmD757uNp4eSyLr3Wu9c1e2DehBAYjVF
+ wzpZmK9ysNkAudBgMLSq0jNZv6VYfUVsnLcC4w2NclGwKMCNORN+jJouZBQc/uhI5yRx
+ 9eof6m5wyJ2zJ3sN2i2opIFhUW0YCCA8cwYYTEqpB9dAesDFTsqKYXnkDj+6sW8h1r0E
+ zy1tff4POMPTdxLatoVcYCweStE07EA8NCPGJo0e3keyc6IhJt9nc7y0NDhCFL5Mqj0E
+ xonIRs8Kcbo2bxze/NpidbXNpKN2NTpp/huXwzNOOAwRocKeAlBDkRsl70suN8CkEF/v FA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3c5q11acjq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 06 Nov 2021 12:45:44 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1A6CenHX029423;
+        Sat, 6 Nov 2021 12:45:44 GMT
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3c5q11acjf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 06 Nov 2021 12:45:44 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1A6ChSoa026786;
+        Sat, 6 Nov 2021 12:45:42 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma05fra.de.ibm.com with ESMTP id 3c5hb8svgc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 06 Nov 2021 12:45:42 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1A6CjeS348234962
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 6 Nov 2021 12:45:40 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EAEBDA4051;
+        Sat,  6 Nov 2021 12:45:39 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6FB07A404D;
+        Sat,  6 Nov 2021 12:45:39 +0000 (GMT)
+Received: from [9.145.174.141] (unknown [9.145.174.141])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Sat,  6 Nov 2021 12:45:39 +0000 (GMT)
+Message-ID: <8445f69e-54e6-0c54-a2de-0560cbf0e6ce@linux.ibm.com>
+Date:   Sat, 6 Nov 2021 13:46:00 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211106104401.10846-1-Meng.Li@windriver.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.1
+Subject: Re: [PATCH net 1/4] Revert "net/smc: don't wait for send buffer space
+ when data was already sent"
+Content-Language: en-US
+To:     Tony Lu <tonylu@linux.alibaba.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rdma@vger.kernel.org, jacob.qi@linux.alibaba.com,
+        xuanzhuo@linux.alibaba.com, guwen@linux.alibaba.com,
+        dust.li@linux.alibaba.com
+References: <20211027085208.16048-1-tonylu@linux.alibaba.com>
+ <20211027085208.16048-2-tonylu@linux.alibaba.com>
+ <9bbd05ac-5fa5-7d7a-fe69-e7e072ccd1ab@linux.ibm.com>
+ <20211027080813.238b82ce@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <06ae0731-0b9b-a70d-6479-de6fe691e25d@linux.ibm.com>
+ <20211027084710.1f4a4ff1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <c6396899-cf99-e695-fc90-3e21e95245ed@linux.ibm.com>
+ <20211028073827.421a68d7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YX+RaKfBVzFokQON@TonyMac-Alibaba>
+ <ca2a567b-915e-c4e1-96cf-2c03ff74aad5@linux.ibm.com>
+ <YYH8npT0+ww57Gg1@TonyMac-Alibaba>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <YYH8npT0+ww57Gg1@TonyMac-Alibaba>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: ikKJlSI1m7-smd4oBKs2w62RZ0OsrB1h
+X-Proofpoint-GUID: LIgrbCnPsI5ThBkVrkktc0mqnAn0UyAQ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-11-06_02,2021-11-03_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
+ spamscore=0 bulkscore=0 mlxlogscore=999 malwarescore=0 phishscore=0
+ impostorscore=0 clxscore=1015 lowpriorityscore=0 suspectscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2111060077
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 06, 2021 at 06:44:01PM +0800, Meng Li wrote:
-> When run below command to remove ethernet driver on
-> stratix10 platform, there will be warning trace as below:
+On 03/11/2021 04:06, Tony Lu wrote:
 > 
-> $ cd /sys/class/net/etha01/device/driver
-> $ echo ff800000.ethernet > unbind
-> 
-> WARNING: CPU: 3 PID: 386 at drivers/clk/clk.c:810 clk_core_unprepare+0x114/0x274
-> Modules linked in: sch_fq_codel
-> CPU: 3 PID: 386 Comm: sh Tainted: G        W         5.10.74-yocto-standard #1
-> Hardware name: SoCFPGA Stratix 10 SoCDK (DT)
-> pstate: 00000005 (nzcv daif -PAN -UAO -TCO BTYPE=--)
-> pc : clk_core_unprepare+0x114/0x274
-> lr : clk_core_unprepare+0x114/0x274
-> sp : ffff800011bdbb10
-> clk_core_unprepare+0x114/0x274
->  clk_unprepare+0x38/0x50
->  stmmac_remove_config_dt+0x40/0x80
->  stmmac_pltfr_remove+0x64/0x80
->  platform_drv_remove+0x38/0x60
->  ... ..
->  el0_sync_handler+0x1a4/0x1b0
->  el0_sync+0x180/0x1c0
-> This issue is introduced by introducing upstream commit 8f269102baf7
-> ("net: stmmac: disable clocks in stmmac_remove_config_dt()")
-> Because clock has been disabled in function stmmac_dvr_remove()
-> It not reasonable the remove clock disable action from function
-> stmmac_remove_config_dt(), because it is mainly used in probe failed,
-> and other platform drivers also use this common function. So, remove
-> stmmac_remove_config_dt() from stmmac_pltfr_remove(), only other
-> necessary code.
-> 
-> Fixes: 1af3a8e91f1a ("net: stmmac: disable clocks in stmmac_remove_config_dt()")
-> Signed-off-by: Meng Li <Meng.Li@windriver.com>
-> 
-> ---
-> 
-> Some extra comments as below:
-> 
-> 1. This patch is only for linux-stable kernel v5.10, so the fixed commit ID is the one
->    in linux-stable kernel, not the one in mainline upsteam kernel.
+> I agree with you. I am curious about this deadlock scene. If it was
+> convenient, could you provide a reproducible test case? We are also
+> setting up a SMC CI/CD system to find the compatible and performance
+> fallback problems. Maybe we could do something to make it better.
 
-Ick, why?
-
-> 2. I created a patch only to fix the linux-stable kernel v5.10, not submit it to upstream kernel.
->    The reason as below:
->    In fact, upstream kernel doesn't have this issue any more. Because it has a patch to improve
->    the clock management and other 4 patches to fix the 1st patch. Detial patches as below:
->    5ec55823438e("net: stmmac: add clocks management for gmac driver")
->    30f347ae7cc1("net: stmmac: fix missing unlock on error in stmmac_suspend()")
->    b3dcb3127786("net: stmmac: correct clocks enabled in stmmac_vlan_rx_kill_vid()")
->    4691ffb18ac9("net: stmmac: fix system hang if change mac address after interface ifdown")
->    ab00f3e051e8("net: stmmac: fix issue where clk is being unprepared twice")
-> 
->    But I think it is a little complex to backport all the 5 patches. Moreover, it may be related
->    with other patches and code context mofification.
->    Therefore, I create a simple and clear patch to only this issue on linux-stable kernel, v 5.10
-
-We almost ALWAYS want the original patches instead.  When we try to do
-stable-only patches, 95% of the time it gets wrong and it makes
-backporting future fixes for the same code area impossible.
-
-So please submit the above patches as a series and I will be glad to
-consider them.
-
-thanks,
-
-greg k-h
+Run an echo server that uses blocking sockets. First call recv() with an 1MB buffer
+and when recv() returns then send all received bytes back to the client, no matter
+how many bytes where received. Run this in a loop (recv / send).
+On the client side also use only blocking sockets and a send / recv loop. Use
+an 1MB data buffer and call send() with the whole 1MB of data.
+Now run that with both scenarios (send() returns lesser bytes than requested vs. not).
