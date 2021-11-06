@@ -2,156 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3532644705B
-	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 21:12:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8639744706E
+	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 21:32:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230035AbhKFUPe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Nov 2021 16:15:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56786 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229598AbhKFUPd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 6 Nov 2021 16:15:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B667461058;
-        Sat,  6 Nov 2021 20:12:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636229571;
-        bh=VExLNn2H7AysruulvVY/PSyrJByHUoO+ctvfj3Yeg0s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cpfWVJYmndSZxfdMLc7vMgX70OE7eQczm/sezO3uy4rNKm483WTP2zktP637sKROi
-         Os8s76dB5XGZy6ePPiGhFOAaHFQFZGwv/ShwoUURVYREgOg768OmlsBnCMRU6CrMgZ
-         B9wgcii/xZIUDD8KE+RcSZHW/s7VjL/5PeRBX7o6dWqPEpvuQjt15voLQXQwrghV2d
-         39c2lwIZMA6qJXxCHrqgHu7ojYOYVZU/8EkDtRHRCjccl5P3dN/cvlx15kkT/yUXH0
-         ZLIdHkYRBCJioikqvr8HC6XzMy8g/WrgqQHPwF+VOV4JABTCwrn6VWgHmUAgauf4Uq
-         I8X3oddq3JZsA==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 744E6410A1; Sat,  6 Nov 2021 17:12:48 -0300 (-03)
-Date:   Sat, 6 Nov 2021 17:12:48 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+        id S235059AbhKFUf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Nov 2021 16:35:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55532 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234273AbhKFUf2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Nov 2021 16:35:28 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6173C061570;
+        Sat,  6 Nov 2021 13:32:46 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id nh10-20020a17090b364a00b001a69adad5ebso5809939pjb.2;
+        Sat, 06 Nov 2021 13:32:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=X6lpn6AMoPP9TRTu8toAjATfa/UQsAtS13j2wxEqZDk=;
+        b=FEpfve68/uifvN5DKaowbOH3aYzYGqzjkC/k25/xa/+QfG0zAfN7bVQXfEcjqLiQXn
+         G4+RHwRBubW9SFRu/J7e9nntqztrAB16PkGDTLrfjYSQwLngV6Tv7JbaLD8CxTwoJCC+
+         k/BF/mfYyfOBomX9WIG7TuShXTAyPkCVZTbCstXHR5eupmqu5uA4/ZF4i9V/amlV9ee9
+         Ycg3PEux5JGm78/k0YkBAPtZCfcaTfuNHGFChLHhRiffhZmnhlxQIBySiqj54RXNMgML
+         czIL/Vl8OQ/Eq8xfOWO4mvoRmKjEGDP4k4+IMTzOpcdR3r+lEbzye/xsH7NFPI+wdizh
+         BM4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=X6lpn6AMoPP9TRTu8toAjATfa/UQsAtS13j2wxEqZDk=;
+        b=rwgnHckQ1GTzSNq6rsDYd+cUeag+sCx3MKlW6zUu5IuYj38AzgZCYJ3M/JXDGflLWF
+         OaRNZzzxorlrD9/y5gpXDqK/ebX3rHCvMdSUScm4+e5DYWC4hnhvitDRdnApTJUAku2r
+         yKMfQ4cz+mtlzwRKiEceMnuFrhzU3GXUO8yiC4S8Us5y9w50spSWgdv6pE671KKOH5G2
+         WvEvadV3ZxtmYhl4xpcyiMvpI8Nl15F1ZWgCWx728AU+XO42YnVyLQW/HVWrHfaQ6Kl3
+         U8goOqgi+1pArWLRbMc5x8jGEoW/KxK90AMmE1lxnwppAC52Ib7NICHgJT0TtWiW1Usn
+         NPqA==
+X-Gm-Message-State: AOAM532umFgBmNiS6A8Im/VO32XMzkrV9hZdIWtDDmHxlo/sZvL0tGk4
+        JysXAlaSnTwCGfkIYA2TYN4ndcfLlOAnrUg6cb8=
+X-Google-Smtp-Source: ABdhPJyvLi90F5vkQdv/ztpYIFxnvIqhZnUpXOgUaIaotV5cD5aFG/Pvbox2cHdba/Dfh3AIDEQJZq7DAKsqef6ibEs=
+X-Received: by 2002:a17:90b:4c03:: with SMTP id na3mr17923802pjb.62.1636230766231;
+ Sat, 06 Nov 2021 13:32:46 -0700 (PDT)
+MIME-Version: 1.0
+References: <20211106132822.1396621-1-houtao1@huawei.com> <20211106132822.1396621-2-houtao1@huawei.com>
+ <20211106192602.knmfk2x7ogcjuzvw@ast-mbp.dhcp.thefacebook.com> <CAEf4BzZ-g2U-=kLihD3xNkWsZrkg+B29Es=WZqCH1+r5V95sVg@mail.gmail.com>
+In-Reply-To: <CAEf4BzZ-g2U-=kLihD3xNkWsZrkg+B29Es=WZqCH1+r5V95sVg@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sat, 6 Nov 2021 13:32:35 -0700
+Message-ID: <CAADnVQJv1NXV2ZHRQZu8YqOdQzdtD+Ydezoh-usvYvVdqyc0Gw@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 1/2] bpf: add bpf_strncmp helper
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Quentin Monnet <quentin@isovalent.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+Cc:     Hou Tao <houtao1@huawei.com>, Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Song Liu <songliubraving@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>, Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH bpf-next] perf build: Install libbpf headers locally when
- building
-Message-ID: <YYbhwPnn4OvnybzQ@kernel.org>
-References: <20211105020244.6869-1-quentin@isovalent.com>
- <CAEf4Bza_-vvOXPRZaJzi4YpU5Bfb=werLUFG=Au9DtaanbuArg@mail.gmail.com>
- <YYbXjE1aAdNjI+aY@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YYbXjE1aAdNjI+aY@kernel.org>
-X-Url:  http://acmel.wordpress.com
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Sat, Nov 06, 2021 at 04:29:16PM -0300, Arnaldo Carvalho de Melo escreveu:
-> Em Fri, Nov 05, 2021 at 11:38:50AM -0700, Andrii Nakryiko escreveu:
-> > On Thu, Nov 4, 2021 at 7:02 PM Quentin Monnet <quentin@isovalent.com> wrote:
+On Sat, Nov 6, 2021 at 1:07 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Sat, Nov 6, 2021 at 12:26 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Sat, Nov 06, 2021 at 09:28:21PM +0800, Hou Tao wrote:
+> > > The helper compares two strings: one string is a null-terminated
+> > > read-only string, and another one has const max storage size. And
+> > > it can be used to compare file name in tracing or LSM program.
 > > >
-> > > API headers from libbpf should not be accessed directly from the
-> > > library's source directory. Instead, they should be exported with "make
-> > > install_headers". Let's adjust perf's Makefile to install those headers
-> > > locally when building libbpf.
-> > >
-> > > Signed-off-by: Quentin Monnet <quentin@isovalent.com>
-> > > ---
-> > > Note: Sending to bpf-next because it's directly related to libbpf, and
-> > > to similar patches merged through bpf-next, but maybe Arnaldo prefers to
-> > > take it?
-> > 
-> > Arnaldo would know better how to thoroughly test it, so I'd prefer to
-> > route this through perf tree. Any objections, Arnaldo?
-> 
-> Preliminary testing passed for 'BUILD_BPF_SKEL=1' with without
-> LIBBPF_DYNAMIC=1 (using the system's libbpf-devel to build perf), so far
-> so good, so I tentatively applied it, will see with the full set of
-> containers.
+> > > We don't check whether or not s2 in bpf_strncmp() is null-terminated,
+> > > because its content may be changed by malicous program, and we only
+> > > ensure the memory accessed is bounded by s2_sz.
+> >
+> > I think "malicous" adjective is unnecessary and misleading.
+> > It's also misspelled.
+> > Just mention that 2nd argument doesn't have to be null terminated.
+> >
+> > > + * long bpf_strncmp(const char *s1, const char *s2, u32 s2_sz)
+> > ...
+> > > +BPF_CALL_3(bpf_strncmp, const char *, s1, const char *, s2, size_t, s2_sz)
+> >
+> > probably should match u32 instead of size_t.
+> >
+> > > @@ -1210,6 +1210,8 @@ bpf_tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+> > >               return &bpf_get_branch_snapshot_proto;
+> > >       case BPF_FUNC_trace_vprintk:
+> > >               return bpf_get_trace_vprintk_proto();
+> > > +     case BPF_FUNC_strncmp:
+> > > +             return &bpf_strncmp_proto;
+> >
+> > why tracing only?
+> > Should probably be in bpf_base_func_proto.
+> >
+> > I was thinking whether the proto could be:
+> > long bpf_strncmp(const char *s1, u32 s1_sz, const char *s2)
+> > but I think your version is better though having const string as 1st arg
+> > is a bit odd in normal C.
+>
+> Why do you think it's better? This is equivalent to `123 == x` if it
+> was integer comparison, so it feels like bpf_strncmp(s, sz, "blah") is
+> indeed more natural. No big deal, just curious what's better about it.
 
-Because all the preliminary tests used O= to have that OUTPUT variable
-set, when we do simply:
-
-	make -C tools/perf
-
-it breaks:
-
-⬢[acme@toolbox perf]$ make -C tools clean > /dev/null 2>&1
-⬢[acme@toolbox perf]$ make JOBS=1 -C tools/perf
-make: Entering directory '/var/home/acme/git/perf/tools/perf'
-  BUILD:   Doing 'make -j1' parallel build
-  HOSTCC  fixdep.o
-  HOSTLD  fixdep-in.o
-  LINK    fixdep
-<SNIP ABI sync warnings>
-
-Auto-detecting system features:
-...                         dwarf: [ on  ]
-...            dwarf_getlocations: [ on  ]
-...                         glibc: [ on  ]
-...                        libbfd: [ on  ]
-...                libbfd-buildid: [ on  ]
-...                        libcap: [ on  ]
-...                        libelf: [ on  ]
-...                       libnuma: [ on  ]
-...        numa_num_possible_cpus: [ on  ]
-...                       libperl: [ on  ]
-...                     libpython: [ on  ]
-...                     libcrypto: [ on  ]
-...                     libunwind: [ on  ]
-...            libdw-dwarf-unwind: [ on  ]
-...                          zlib: [ on  ]
-...                          lzma: [ on  ]
-...                     get_cpuid: [ on  ]
-...                           bpf: [ on  ]
-...                        libaio: [ on  ]
-...                       libzstd: [ on  ]
-...        disassembler-four-args: [ on  ]
-
-
-  CC      fd/array.o
-  LD      fd/libapi-in.o
-  CC      fs/fs.o
-  CC      fs/tracing_path.o
-  CC      fs/cgroup.o
-  LD      fs/libapi-in.o
-  CC      cpu.o
-  CC      debug.o
-  CC      str_error_r.o
-  LD      libapi-in.o
-  AR      libapi.a
-  CC      exec-cmd.o
-  CC      help.o
-  CC      pager.o
-  CC      parse-options.o
-  CC      run-command.o
-  CC      sigchain.o
-  CC      subcmd-config.o
-  LD      libsubcmd-in.o
-  AR      libsubcmd.a
-  CC      core.o
-  CC      cpumap.o
-  CC      threadmap.o
-  CC      evsel.o
-  CC      evlist.o
-  CC      mmap.o
-  CC      zalloc.o
-  CC      xyarray.o
-  CC      lib.o
-  LD      libperf-in.o
-  AR      libperf.a
-make[2]: *** No rule to make target 'libbpf', needed by 'libbpf/libbpf.a'.  Stop.
-make[1]: *** [Makefile.perf:240: sub-make] Error 2
-make: *** [Makefile:70: all] Error 2
-make: Leaving directory '/var/home/acme/git/perf/tools/perf'
-⬢[acme@toolbox perf]$
-
-Trying to fix...
-
-- Arnaldo
+Only that helper implementation has two less register moves.
+which makes it 51%/49% win for me.
