@@ -2,108 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 009AF446CA6
-	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 06:38:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40F8F446CC0
+	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 07:47:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233389AbhKFFlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Nov 2021 01:41:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59332 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233461AbhKFFlG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Nov 2021 01:41:06 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E8C6C061205
-        for <netdev@vger.kernel.org>; Fri,  5 Nov 2021 22:38:26 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id w5-20020a25ac05000000b005c55592df4dso8311990ybi.12
-        for <netdev@vger.kernel.org>; Fri, 05 Nov 2021 22:38:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=Tg5TDm4qC6UeNIYD0XPbfD7vBlef2Yfxw+Y9xztxVG8=;
-        b=nHhROQoUoeOnMhq4hEeheovNulp00BK7oFx1VJZgsESDL929lrKYG4FlANZ7rztXFP
-         ckrk+XL0HLlpuEQQswgzHI5MqDi1CxcdUAFCecSs6dl26DkxCeyrEZ368pciaAcfJZpu
-         cGmR0ebNjafJw2jhFnFe+u4dZABJtvHtme5dTuIAg1/i5+loxv14hnMyZ6llOtoqxB6M
-         xxqhKDl52MBk74WgCzs3BsdX33WSw4AH91hJqNRM11xiliH443qv3PNiaxHRs+9pxGwv
-         AfwljPpZ7y0/n0NeCflEdDeXFMXHbf7gfinnNQnN/mTelKaRLh3J/bYwUTgfz3Eo1PbV
-         +kYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=Tg5TDm4qC6UeNIYD0XPbfD7vBlef2Yfxw+Y9xztxVG8=;
-        b=bODrO2vh693dB9CQyZIh1Ete9SUhDQpt8WYIMJ7oXJxDjND0bx4vDnjmhBW3uVNdd3
-         aucwAT7uDg7adhh4Z8TWz7eL9i4/V1L+7gZ/T8htPzLj9PeEGSYrCQI7E3dSu3S5pv8r
-         xDvzi0AN/sbXdRxord/1cybM4Lg1ncO9x+fOd7d5hLQkonPccxvO9urO+vgoVsIjFdtw
-         xpBZ3/DLlXwOawtYJJGf67++zFwKlcnQNAEkG09C1gSgaV0FaT/0Op6Ekt8PRVjuLb80
-         TKRcsoVQQIFEn8XhmsKN+hBbXSR9e0yexVO1+r47D47w0GYJdrUarxn1FcakK/5IY21k
-         vLxw==
-X-Gm-Message-State: AOAM531GpRXk2MpFxydFem7iyTwAtJE4aplMjpOoM+0a6hri1/9zdGwS
-        0gAlAA993gplrrzlz0fjo7iYpP5a3k8S
-X-Google-Smtp-Source: ABdhPJz0e8lLlaTt9y6F99fCcNxbjyEhMkd4yUph+qezq9MMmrIQRcEbbYsFONTAtJcldYZzD2XWicIFL44C
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:b70b:3e34:63e5:9e95])
- (user=irogers job=sendgmr) by 2002:a25:ae1a:: with SMTP id
- a26mr51521917ybj.70.1636177105344; Fri, 05 Nov 2021 22:38:25 -0700 (PDT)
-Date:   Fri,  5 Nov 2021 22:37:33 -0700
-In-Reply-To: <20211106053733.3580931-1-irogers@google.com>
-Message-Id: <20211106053733.3580931-2-irogers@google.com>
-Mime-Version: 1.0
-References: <20211106053733.3580931-1-irogers@google.com>
-X-Mailer: git-send-email 2.34.0.rc0.344.g81b53c2807-goog
-Subject: [PATCH 2/2] perf bpf: Add missing free to bpf_event__print_bpf_prog_info
-From:   Ian Rogers <irogers@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Song Liu <songliubraving@fb.com>, linux-kernel@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Tiezhu Yang <yangtiezhu@loongson.cn>,
-        linux-perf-users@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     Stephane Eranian <eranian@google.com>,
-        Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S232771AbhKFGot (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Nov 2021 02:44:49 -0400
+Received: from mail-dm6nam10on2054.outbound.protection.outlook.com ([40.107.93.54]:44512
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231518AbhKFGos (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 6 Nov 2021 02:44:48 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fkf6sUaBthfUTLFGgaDIleLEy7ty+3yGYqfaEZhVvOSR7El98p4nSqaGGtfZgTEgWdUPeKPaB4g4j1FzE0Nfxu0A0YJONKO/SXypZMcduG3B8WMl62tCva41b7/uHtttt8QCB4+Hy34crPBMvjh434vuUUb38bYiHp7VHpdu0Azj/AJ0027pqp693oUuAq6aZLPlOluhpRvm761MuBubegiHWriSh4HEzrUZdgp+yjL7+y5ie/f70S2mbshaLpMdUZddZwg/uC/oonZ2a3JS+dcTaJHPrPawSdwtBB8fTDO8g0RU03wd3iH8bw+CbvwU5TtTK/JUlTyLVXTkiJjucg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=S8sUDlfWDU7cf+zcUItIDwfLQJpoXtOclKhWxcvBGL4=;
+ b=jVoUqP5Aotcyd/uv9wKXeGcYU4WWBgzvftgXmNpsDCgCei1UMsCVdie+37oGl74i2dHs6HOXe2ZE4C0pSMAuccT+rJOviq7oeeooPjIYSsVTNRjhnEU11gr5lZ77R83ySwNJJf3nhJO+zxYsc7Ebni4tqTPKeKlzCuW5pfNNPEwNeVS1Ci+zbuzYXBkf7scOJu94qKLO9WzqxdWFKSzVjCSaxOPQJJXoG+VNMzxVcuBYf5BAGWf0aGoNpvYgFr/Frx+dvdEVoWjSjDM2k4rV7O17BDr2nWTKrtYXeUKnUKXKBbQZVpXEqbG2zl7pk9Tng4zQpV7YbJ2IpmJulyc5FQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=nvidia.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=S8sUDlfWDU7cf+zcUItIDwfLQJpoXtOclKhWxcvBGL4=;
+ b=VjnvaJVnswTQ/ecDNxM3gjur8GyH8wgbT1XQ+ShJnZh/eupYwNbUA1g6rU6w8moihWRzBNmdP+BtO0fWuIfSufJr2HJl2bMRxUq16EfPhy7ztmvwK7S5MGTuEMQAzDxXktYkcjduV+y9Ra9C+ZpvQMcwN7JN3ng6AKHXdzrijY7OXlrzPqf/elToHVXQga67G6HnKdJwYM5nYM0v8hRyZM6Bm+zuY5d8VwIRAvNadKXIioac4xexTLgq6OkkulRJ7Z1ptk2duhWvsrfWzx9NzWRhsLnpH1UIoOPAnFtU8LxfgJQ3oqYw106WOc9jh05iDWQtvJhvVKR4xpDUknM8qg==
+Received: from CO2PR04CA0128.namprd04.prod.outlook.com (2603:10b6:104:7::30)
+ by MN2PR12MB3567.namprd12.prod.outlook.com (2603:10b6:208:c9::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.11; Sat, 6 Nov
+ 2021 06:42:06 +0000
+Received: from CO1NAM11FT018.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:104:7:cafe::4) by CO2PR04CA0128.outlook.office365.com
+ (2603:10b6:104:7::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.11 via Frontend
+ Transport; Sat, 6 Nov 2021 06:42:06 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ CO1NAM11FT018.mail.protection.outlook.com (10.13.175.16) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4669.10 via Frontend Transport; Sat, 6 Nov 2021 06:42:05 +0000
+Received: from sw-mtx-036.mtx.labs.mlnx (172.20.187.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Sat, 6 Nov
+ 2021 06:42:04 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     <dsahern@gmail.com>, <stephen@networkplumber.org>,
+        <netdev@vger.kernel.org>
+CC:     Parav Pandit <parav@nvidia.com>
+Subject: [PATCH net-next iproute2] vdpa: Remove duplicate vdpa UAPI header file
+Date:   Sat, 6 Nov 2021 08:41:52 +0200
+Message-ID: <20211106064152.313417-1-parav@nvidia.com>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.20.187.6]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 345c1afe-4f8e-4abd-7c63-08d9a0f08c70
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3567:
+X-Microsoft-Antispam-PRVS: <MN2PR12MB3567EA59A58C99C3EB8ECBBADC8F9@MN2PR12MB3567.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: m+ngSoXMOPZMDsFgGsixGGtHVzrqbiJSseQdj+efpIzVrL4oAzuTcFvOBBQz2Bd7EZDeik6HCVypuCwesjU9H5J0bNoQ6CJVo8R1HERfuKqRzr1c2lAhDOrSrslE4jYNAoSiukCeskse2Ruo5ZWP+3Z4PtRP05NHhXz1ZWArfnEIWM/uGpZy4zXTBseruExd28ymsnCscHdvRQPZRZ2/SqEn5lT6dY7FlLMbvZoB/MMl/h1Fy0PEE1L8W+xC82aZwLxPEd2AHOxfXH+fT2wdHMwjvDi/xojjRFVUFcDTBHK0n9qSWgxUHfNhMd6m/Q7L0nIAlnmJRD7Dw6IkL80D+1mLz6twZWhNimut54pj2sPXXwRI6M+gP7z/EM9syEc+TN79Bmc+UL8suG9UgnRP1Kh2m313ICaByWki9FX5nz+hLTDKAgHro9idobTpHiWIw5yCywnta1BYeSAP/h/Y34RpNKX9iOo5JAI5SUP90tU8DZ9rUi4SuhUI4UXPfEuyT4dceT1WDN9e8GMY7c8ssRshXwScxHCSqp1AJmKWXBBN0xhJc+M6NZhkjM71LzXmwCDRhB6uYS1flqxS3VzfYNt5d8Wdc6PheR0gjKCcfHd4qzUj2CWAx8buRKb8IxvHDcq+82dpZVWXpCRCOIsGh10rFJIemm5UEof5tj6oeaKAGS4Rp51ICvidE81LDb7vyPfiPlMUgYU4awDsmMrd3gVJBoGNS8bIdozSxC8AwAT8cU7WAD6aGApGV0B9r3fyrqKbnAsou2fc2HGM3DxG8s4IvZUSCm/Fo4O1mfDoakE=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(5660300002)(1076003)(966005)(508600001)(4326008)(26005)(86362001)(70586007)(2906002)(316002)(2616005)(70206006)(356005)(336012)(110136005)(426003)(8936002)(186003)(6666004)(82310400003)(8676002)(16526019)(36860700001)(47076005)(83380400001)(36756003)(7636003)(107886003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Nov 2021 06:42:05.7253
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 345c1afe-4f8e-4abd-7c63-08d9a0f08c70
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT018.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3567
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If btf__new is called then there needs to be a corresponding btf__free.
+vdpa header file is already present in the tree at
+vdpa/include/uapi/linux/vdpa.h and used by vdpa/vdpa.c.
 
-Fixes: f8dfeae009ef ("perf bpf: Show more BPF program info in print_bpf_prog_info()")
-Signed-off-by: Ian Rogers <irogers@google.com>
+As we discussed in thread [1] vdpa header comes from a different
+tree, similar to rdma subsystem. Hence remove the duplicate vdpa
+UAPI header file.
+
+[1] https://www.spinics.net/lists/netdev/msg748458.html
+
+Fixes: b5a6ed9cc9fc ("uapi: add missing virtio related headers")
+Signed-off-by: Parav Pandit <parav@nvidia.com>
 ---
- tools/perf/util/bpf-event.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ include/uapi/linux/vdpa.h | 40 ---------------------------------------
+ 1 file changed, 40 deletions(-)
+ delete mode 100644 include/uapi/linux/vdpa.h
 
-diff --git a/tools/perf/util/bpf-event.c b/tools/perf/util/bpf-event.c
-index 0783b464777a..1f813d8bb946 100644
---- a/tools/perf/util/bpf-event.c
-+++ b/tools/perf/util/bpf-event.c
-@@ -579,7 +579,7 @@ void bpf_event__print_bpf_prog_info(struct bpf_prog_info *info,
- 		synthesize_bpf_prog_name(name, KSYM_NAME_LEN, info, btf, 0);
- 		fprintf(fp, "# bpf_prog_info %u: %s addr 0x%llx size %u\n",
- 			info->id, name, prog_addrs[0], prog_lens[0]);
--		return;
-+		goto out;
- 	}
- 
- 	fprintf(fp, "# bpf_prog_info %u:\n", info->id);
-@@ -589,4 +589,6 @@ void bpf_event__print_bpf_prog_info(struct bpf_prog_info *info,
- 		fprintf(fp, "# \tsub_prog %u: %s addr 0x%llx size %u\n",
- 			i, name, prog_addrs[i], prog_lens[i]);
- 	}
-+out:
-+	btf__free(btf);
- }
+diff --git a/include/uapi/linux/vdpa.h b/include/uapi/linux/vdpa.h
+deleted file mode 100644
+index 37ae26b6..00000000
+--- a/include/uapi/linux/vdpa.h
++++ /dev/null
+@@ -1,40 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
+-/*
+- * vdpa device management interface
+- * Copyright (c) 2020 Mellanox Technologies Ltd. All rights reserved.
+- */
+-
+-#ifndef _LINUX_VDPA_H_
+-#define _LINUX_VDPA_H_
+-
+-#define VDPA_GENL_NAME "vdpa"
+-#define VDPA_GENL_VERSION 0x1
+-
+-enum vdpa_command {
+-	VDPA_CMD_UNSPEC,
+-	VDPA_CMD_MGMTDEV_NEW,
+-	VDPA_CMD_MGMTDEV_GET,		/* can dump */
+-	VDPA_CMD_DEV_NEW,
+-	VDPA_CMD_DEV_DEL,
+-	VDPA_CMD_DEV_GET,		/* can dump */
+-};
+-
+-enum vdpa_attr {
+-	VDPA_ATTR_UNSPEC,
+-
+-	/* bus name (optional) + dev name together make the parent device handle */
+-	VDPA_ATTR_MGMTDEV_BUS_NAME,		/* string */
+-	VDPA_ATTR_MGMTDEV_DEV_NAME,		/* string */
+-	VDPA_ATTR_MGMTDEV_SUPPORTED_CLASSES,	/* u64 */
+-
+-	VDPA_ATTR_DEV_NAME,			/* string */
+-	VDPA_ATTR_DEV_ID,			/* u32 */
+-	VDPA_ATTR_DEV_VENDOR_ID,		/* u32 */
+-	VDPA_ATTR_DEV_MAX_VQS,			/* u32 */
+-	VDPA_ATTR_DEV_MAX_VQ_SIZE,		/* u16 */
+-
+-	/* new attributes must be added above here */
+-	VDPA_ATTR_MAX,
+-};
+-
+-#endif
 -- 
-2.34.0.rc0.344.g81b53c2807-goog
+2.26.2
 
