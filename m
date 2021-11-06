@@ -2,165 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 821CB44701E
-	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 20:29:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0E26447054
+	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 21:07:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234924AbhKFTcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Nov 2021 15:32:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46060 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232498AbhKFTcA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 6 Nov 2021 15:32:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3BC7960E8B;
-        Sat,  6 Nov 2021 19:29:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636226959;
-        bh=SSh/MjS6+Voc6TzAoE/tOg6RTP+gVHgAW32sKjAaUmo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SXqJNXbi7+Hpa/cw0Vjccw8nQKSQMJkl7lXbA/6SwRDWDbDUdXr4dkb1l/OrrhWmM
-         5mV9ebOfySX0U7bmMYdjX838818NsWyoNOuRVTzFzU5sIjvQsPkgnfcOIoidXWI7MD
-         i729Kuh7MinnyKWhzQi8i/6/in5NGXaDxb/JueMNDMEJNFQfmuzQdQIN0Bb9Hx2wa+
-         otJLWnHuZj/6esupGjPv1MP+18cBZEl6KsvHNX9UJHbkHz8Y45eXbPNJ6gvPMBia8S
-         IAlzvfSvQTAd27KrSeAxSSWFZ9dOUCo5stT+Z4RVgyPYFO5eoAlCiDZLnD93us3Cfn
-         J38uz+wCDksTA==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id C4C0C410A2; Sat,  6 Nov 2021 16:29:16 -0300 (-03)
-Date:   Sat, 6 Nov 2021 16:29:16 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Quentin Monnet <quentin@isovalent.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S233674AbhKFUJx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Nov 2021 16:09:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49960 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231844AbhKFUJx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Nov 2021 16:09:53 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5469C061570;
+        Sat,  6 Nov 2021 13:07:11 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id s186so32028378yba.12;
+        Sat, 06 Nov 2021 13:07:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7PMk2LODnuYK2JswHOw8gmG1okLs8PvKewJG/qmyDUo=;
+        b=VbXyxqBRMH3vNZ9ruMpmI4BPOoHmrLVQYCRRi9Qggn5wtQEacC7zAxv8wUv78iM0dg
+         L2fl5hFBP1/G0K/YsBjGwUQeQrljaEUJTBJYBuaVdE2oiE2b74ZPjkcqE8PmG2lssKt/
+         n9pid7vECQ1D3NbOgugSxgRlPXtU2axkdWmJQ9b8VN45Ao8gGqjqBm71bXoG+G9Gcvrr
+         ebgjKULdi8Io473y0oBGzCRmOASERJQgLHTseqSlGdYO+7KHqRTYx81iNlQkGnhyfC7G
+         eaySoB+m3Zy9i+MhOFoiDXGiRl+JUagJ9lQX9dHcpQKQjlH3KkM2NvNWhoQ9Y/pkp6fr
+         vAlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7PMk2LODnuYK2JswHOw8gmG1okLs8PvKewJG/qmyDUo=;
+        b=ySuMKhXCY8rpG0kT+Io7CWNeXWc4uE+2pLqnm9C2CW/D4pUCwkDtujLVryNLA8GfT+
+         CqFY7KI2H5ZEpHFxGigJN9nH/K2HimwqoEJPq+vz6h0UjvlluY8OD1FSMNstX3Rgb/Oh
+         tiQ1Azq8crAxjhpVyzJ91IoA3LCpHXn12SkLjBX1FQHx7VehphohdOgnGPhdo/vl4oD3
+         Jgj29bet7FNNSFqMMNIdidMt6Md1Yf3xqHuvIGeTFHmegrNrDS59hzYzLuf2QV00dYL2
+         lkK/yB5MDjykkVM2qhIgej2mVf6KMSqAJP9jTEk1dfjnGjMWZhG9JJ3ta7BapsMS8PG1
+         a62Q==
+X-Gm-Message-State: AOAM531fqvwV4oRnZFI1MJctC/5mPLlujMIY2O8kHnqS9VRgayhKBrDT
+        KYAUbCq2Lkxx78+M5/Hog/Lqos7poONpBsqn2Lk=
+X-Google-Smtp-Source: ABdhPJw+ELjeeKeABYfUUh9A9Wq3EiTksUXSUnO1DHxXcVCfEP8ebEHHx0UN6A4EKUd4t5A/yPzHU3ovK0Upg8POHes=
+X-Received: by 2002:a25:d187:: with SMTP id i129mr60183246ybg.2.1636229231186;
+ Sat, 06 Nov 2021 13:07:11 -0700 (PDT)
+MIME-Version: 1.0
+References: <20211106132822.1396621-1-houtao1@huawei.com> <20211106132822.1396621-2-houtao1@huawei.com>
+ <20211106192602.knmfk2x7ogcjuzvw@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20211106192602.knmfk2x7ogcjuzvw@ast-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Sat, 6 Nov 2021 13:07:00 -0700
+Message-ID: <CAEf4BzZ-g2U-=kLihD3xNkWsZrkg+B29Es=WZqCH1+r5V95sVg@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 1/2] bpf: add bpf_strncmp helper
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Hou Tao <houtao1@huawei.com>, Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Song Liu <songliubraving@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>, Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH bpf-next] perf build: Install libbpf headers locally when
- building
-Message-ID: <YYbXjE1aAdNjI+aY@kernel.org>
-References: <20211105020244.6869-1-quentin@isovalent.com>
- <CAEf4Bza_-vvOXPRZaJzi4YpU5Bfb=werLUFG=Au9DtaanbuArg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4Bza_-vvOXPRZaJzi4YpU5Bfb=werLUFG=Au9DtaanbuArg@mail.gmail.com>
-X-Url:  http://acmel.wordpress.com
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Fri, Nov 05, 2021 at 11:38:50AM -0700, Andrii Nakryiko escreveu:
-> On Thu, Nov 4, 2021 at 7:02 PM Quentin Monnet <quentin@isovalent.com> wrote:
+On Sat, Nov 6, 2021 at 12:26 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Sat, Nov 06, 2021 at 09:28:21PM +0800, Hou Tao wrote:
+> > The helper compares two strings: one string is a null-terminated
+> > read-only string, and another one has const max storage size. And
+> > it can be used to compare file name in tracing or LSM program.
 > >
-> > API headers from libbpf should not be accessed directly from the
-> > library's source directory. Instead, they should be exported with "make
-> > install_headers". Let's adjust perf's Makefile to install those headers
-> > locally when building libbpf.
-> >
-> > Signed-off-by: Quentin Monnet <quentin@isovalent.com>
-> > ---
-> > Note: Sending to bpf-next because it's directly related to libbpf, and
-> > to similar patches merged through bpf-next, but maybe Arnaldo prefers to
-> > take it?
-> 
-> Arnaldo would know better how to thoroughly test it, so I'd prefer to
-> route this through perf tree. Any objections, Arnaldo?
+> > We don't check whether or not s2 in bpf_strncmp() is null-terminated,
+> > because its content may be changed by malicous program, and we only
+> > ensure the memory accessed is bounded by s2_sz.
+>
+> I think "malicous" adjective is unnecessary and misleading.
+> It's also misspelled.
+> Just mention that 2nd argument doesn't have to be null terminated.
+>
+> > + * long bpf_strncmp(const char *s1, const char *s2, u32 s2_sz)
+> ...
+> > +BPF_CALL_3(bpf_strncmp, const char *, s1, const char *, s2, size_t, s2_sz)
+>
+> probably should match u32 instead of size_t.
+>
+> > @@ -1210,6 +1210,8 @@ bpf_tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+> >               return &bpf_get_branch_snapshot_proto;
+> >       case BPF_FUNC_trace_vprintk:
+> >               return bpf_get_trace_vprintk_proto();
+> > +     case BPF_FUNC_strncmp:
+> > +             return &bpf_strncmp_proto;
+>
+> why tracing only?
+> Should probably be in bpf_base_func_proto.
+>
+> I was thinking whether the proto could be:
+> long bpf_strncmp(const char *s1, u32 s1_sz, const char *s2)
+> but I think your version is better though having const string as 1st arg
+> is a bit odd in normal C.
 
-Preliminary testing passed for 'BUILD_BPF_SKEL=1' with without
-LIBBPF_DYNAMIC=1 (using the system's libbpf-devel to build perf), so far
-so good, so I tentatively applied it, will see with the full set of
-containers.
+Why do you think it's better? This is equivalent to `123 == x` if it
+was integer comparison, so it feels like bpf_strncmp(s, sz, "blah") is
+indeed more natural. No big deal, just curious what's better about it.
 
-Thanks!
-
-- Arnaldo
- 
-> > ---
-> >  tools/perf/Makefile.perf | 24 +++++++++++++-----------
-> >  1 file changed, 13 insertions(+), 11 deletions(-)
-> >
-> > diff --git a/tools/perf/Makefile.perf b/tools/perf/Makefile.perf
-> > index b856afa6eb52..3a81b6c712a9 100644
-> > --- a/tools/perf/Makefile.perf
-> > +++ b/tools/perf/Makefile.perf
-> > @@ -241,7 +241,7 @@ else # force_fixdep
-> >
-> >  LIB_DIR         = $(srctree)/tools/lib/api/
-> >  TRACE_EVENT_DIR = $(srctree)/tools/lib/traceevent/
-> > -BPF_DIR         = $(srctree)/tools/lib/bpf/
-> > +LIBBPF_DIR      = $(srctree)/tools/lib/bpf/
-> >  SUBCMD_DIR      = $(srctree)/tools/lib/subcmd/
-> >  LIBPERF_DIR     = $(srctree)/tools/lib/perf/
-> >  DOC_DIR         = $(srctree)/tools/perf/Documentation/
-> > @@ -293,7 +293,6 @@ strip-libs = $(filter-out -l%,$(1))
-> >  ifneq ($(OUTPUT),)
-> >    TE_PATH=$(OUTPUT)
-> >    PLUGINS_PATH=$(OUTPUT)
-> > -  BPF_PATH=$(OUTPUT)
-> >    SUBCMD_PATH=$(OUTPUT)
-> >    LIBPERF_PATH=$(OUTPUT)
-> >  ifneq ($(subdir),)
-> > @@ -305,7 +304,6 @@ else
-> >    TE_PATH=$(TRACE_EVENT_DIR)
-> >    PLUGINS_PATH=$(TRACE_EVENT_DIR)plugins/
-> >    API_PATH=$(LIB_DIR)
-> > -  BPF_PATH=$(BPF_DIR)
-> >    SUBCMD_PATH=$(SUBCMD_DIR)
-> >    LIBPERF_PATH=$(LIBPERF_DIR)
-> >  endif
-> > @@ -324,7 +322,10 @@ LIBTRACEEVENT_DYNAMIC_LIST_LDFLAGS = $(if $(findstring -static,$(LDFLAGS)),,$(DY
-> >  LIBAPI = $(API_PATH)libapi.a
-> >  export LIBAPI
-> >
-> > -LIBBPF = $(BPF_PATH)libbpf.a
-> > +LIBBPF_OUTPUT = $(OUTPUT)libbpf
-> > +LIBBPF_DESTDIR = $(LIBBPF_OUTPUT)
-> > +LIBBPF_INCLUDE = $(LIBBPF_DESTDIR)/include
-> > +LIBBPF = $(LIBBPF_OUTPUT)/libbpf.a
-> >
-> >  LIBSUBCMD = $(SUBCMD_PATH)libsubcmd.a
-> >
-> > @@ -829,12 +830,14 @@ $(LIBAPI)-clean:
-> >         $(call QUIET_CLEAN, libapi)
-> >         $(Q)$(MAKE) -C $(LIB_DIR) O=$(OUTPUT) clean >/dev/null
-> >
-> > -$(LIBBPF): FORCE
-> > -       $(Q)$(MAKE) -C $(BPF_DIR) O=$(OUTPUT) $(OUTPUT)libbpf.a FEATURES_DUMP=$(FEATURE_DUMP_EXPORT)
-> > +$(LIBBPF): FORCE | $(LIBBPF_OUTPUT)
-> > +       $(Q)$(MAKE) -C $(LIBBPF_DIR) FEATURES_DUMP=$(FEATURE_DUMP_EXPORT) \
-> > +               O= OUTPUT=$(LIBBPF_OUTPUT)/ DESTDIR=$(LIBBPF_DESTDIR) prefix= \
-> > +               $@ install_headers
-> >
-> >  $(LIBBPF)-clean:
-> >         $(call QUIET_CLEAN, libbpf)
-> > -       $(Q)$(MAKE) -C $(BPF_DIR) O=$(OUTPUT) clean >/dev/null
-> > +       $(Q)$(RM) -r -- $(LIBBPF_OUTPUT)
-> >
-> >  $(LIBPERF): FORCE
-> >         $(Q)$(MAKE) -C $(LIBPERF_DIR) EXTRA_CFLAGS="$(LIBPERF_CFLAGS)" O=$(OUTPUT) $(OUTPUT)libperf.a
-> > @@ -1036,14 +1039,13 @@ SKELETONS += $(SKEL_OUT)/bperf_cgroup.skel.h
-> >
-> >  ifdef BUILD_BPF_SKEL
-> >  BPFTOOL := $(SKEL_TMP_OUT)/bootstrap/bpftool
-> > -LIBBPF_SRC := $(abspath ../lib/bpf)
-> > -BPF_INCLUDE := -I$(SKEL_TMP_OUT)/.. -I$(BPF_PATH) -I$(LIBBPF_SRC)/..
-> > +BPF_INCLUDE := -I$(SKEL_TMP_OUT)/.. -I$(LIBBPF_INCLUDE)
-> >
-> > -$(SKEL_TMP_OUT):
-> > +$(SKEL_TMP_OUT) $(LIBBPF_OUTPUT):
-> >         $(Q)$(MKDIR) -p $@
-> >
-> >  $(BPFTOOL): | $(SKEL_TMP_OUT)
-> > -       CFLAGS= $(MAKE) -C ../bpf/bpftool \
-> > +       $(Q)CFLAGS= $(MAKE) -C ../bpf/bpftool \
-> >                 OUTPUT=$(SKEL_TMP_OUT)/ bootstrap
-> >
-> >  VMLINUX_BTF_PATHS ?= $(if $(O),$(O)/vmlinux)                           \
-> > --
-> > 2.32.0
-> >
-
--- 
-
-- Arnaldo
+>
+> Would it make sense to add bpf_memchr as well while we are at it?
+> And
+> static inline bpf_strnlen(const char *s, u32 sz)
+> {
+>   return bpf_memchr(s, sz, 0);
+> }
+> to bpf_helpers.h ?
