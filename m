@@ -2,204 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D454446D79
-	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 11:44:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFB0C446D80
+	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 11:54:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234007AbhKFKrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Nov 2021 06:47:20 -0400
-Received: from mx0a-0064b401.pphosted.com ([205.220.166.238]:64914 "EHLO
-        mx0a-0064b401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230219AbhKFKrT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Nov 2021 06:47:19 -0400
-Received: from pps.filterd (m0250809.ppops.net [127.0.0.1])
-        by mx0a-0064b401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1A6AiZRp022147;
-        Sat, 6 Nov 2021 03:44:35 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=from : to : cc :
- subject : date : message-id : content-type : mime-version; s=PPS06212021;
- bh=FDzLOglzS/mqXmCHZRrfaQQjN+Z2GoNOo1aDtZaLflk=;
- b=VpchAELxOpmhypyB5wx9flyOXqMwvenc/eeDyJ/b41mKsXzbrAO7ORTbXWOE2jUH/I/O
- WsGwLN1Yuy1A+kkcPv+KMNw0QdCRWGNMp9Xbxrx77aKwklSsMMAJWJ3hmKwuhxfUlAnU
- CdSt1l2m9utx1PQDw3G+E5cypAg3adbEYajGons3z1EY/R+5rZhYcrWpGpiIVA8xgken
- XxaEH/6r/9jXp1rZcq3EcA53MlSkQ5WfbgvxuvDLDrmnDQNi9pKH8EU5ePXHHV/MIf/c
- oJqsijT4S+tn9P9VPI0QGTGeDQSJH9BUpu2fljpFyc4+QBRDU6dtKRoE7IutPP6yr/mL XA== 
-Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2176.outbound.protection.outlook.com [104.47.59.176])
-        by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3c4t31s719-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 06 Nov 2021 03:44:34 -0700
+        id S234016AbhKFK45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Nov 2021 06:56:57 -0400
+Received: from mail-eopbgr150112.outbound.protection.outlook.com ([40.107.15.112]:8487
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229500AbhKFK44 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 6 Nov 2021 06:56:56 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nb3+cRRtxjSs+SSSWaR3duAJtMXF39GMQyVmSecvWjy0heufdhepCI21Rf4zpB+/uLp1GV3wiY4YxX/t31rCxlTHiup3tudzgxSNPZLlt+T9TVzTDtsixNnHFwj5UKG3Nkxp1uGe9LL2AGUtb1oDNGlKz4ZkkoXJ15K6v7bcAOb5jjl4DnW+Frn31TwO/oB5YOoUyqQwnkKiDdhypHR62eEiBBsg3C8Am5NbGPaxW4hv3k6Jhz/eozEZD3ycHqF8OIoaKXey97+EP1qEo8dIWu7cgXAHm5M1USX0gZHH3Wz32pBx9hUKQw6foc6JmafQ1l2jLbFscmesPu7T70q4dg==
+ b=L+gjbYCOvgMIaxV2nmOmTjHnPRlmlyDhHGiQF8vGcVoGARfRkQZo6mlOW28ioydMVNLMKmFSCLs6hV5hrmMhCn2lh71NyWVdy1dKsT4rYTgc9oy8yH4e3hkjIuCa1Y9vcBr/2kF/G4GcvTsacW8pRI0S9/gfYo55daPSssP/HKFJ8IlDRMJw/ttQIjY0cHPuc6Coqh4tFCiSfJIsJ2m9oyryHA1Z0BAKwseTvxGEd6jvYp3a/GpFlpv/LpeF8iZsRmXzBuVR8hIIaXJ3QWDstU+HNCgrln5hwS5D1rN4ENczVBTWqhXmg3ZVxi1iBdmFpN7YOtXUDzL7RQP0dR6+Kg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FDzLOglzS/mqXmCHZRrfaQQjN+Z2GoNOo1aDtZaLflk=;
- b=BFyM5HC7vLCsKBo+eOBFiJ2hAUR30hg9HJu7vwu5NOpubGeEEWeok4Hcacgnywi6nxzrIIzyyCYLm11C60ey4aqfL8irOlytpTTPKDfdcoWv6K7hGz3+3pKo7/1IKGWWrG89WqCLO/mEuI3W3qjBZN9oVU3ZEoEP3L+oNb5tTSrZdOh+XZgnRQs9QgC5GSBPEfen2dGH9qv0HIthiGWmMtIxUOZdRNQhXd7056Y42ZnXGRy2/NA1+R3zqav2fQvGRspLFkByO3Omj4O0zmRG1tAG3nAivM1OTiJR5gdx+l+OhezE41i/brBMLPRTcvBikd7si4NgqlgXh0/tRyjiuw==
+ bh=jM1l+G68XXIEmhSqcXfi+6uPUPVOjc4H3y2+AutcgxQ=;
+ b=JhdgYLDY4ObWkCW44ecZxq7cSftPEq0N/uCTjrRtHT9+Tbgjn0gUylBIQbpxgOkHkLsHK4U3PkFFsXb+d95wUVyR3JoSPm0zPXzIt7hWPL9Nujbd55GmkEjheXyiNZuAlIDzeBS0VrizDsb91zOxYiOw+7/p10DZYKdRhuSMNQ2UnWj6pCg88L0o5tHwJP+aXWwe/d8xSZOnC8SHRvKPIrOlX2Gq5LC5zC0odWT3D9fEp25/3IpZfP3CnK9DXM10bdWwf3day3FAdRGGT4sN1NQWkNYUzRLT5QK/0s+5IYxUThafzOTU45ra5iUNQTxG5yPPAmvAa2dYEWIHvSDVKw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=windriver.com; dmarc=pass action=none
- header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=windriver.com;
-Received: from PH0PR11MB5191.namprd11.prod.outlook.com (2603:10b6:510:3e::24)
- by PH0PR11MB4950.namprd11.prod.outlook.com (2603:10b6:510:33::20) with
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jM1l+G68XXIEmhSqcXfi+6uPUPVOjc4H3y2+AutcgxQ=;
+ b=rG7LsEBn9bhXT6KCXxZ+FFToldy3xBxeX8GAGAKGOjkbI77/n2Q/pFfXpTusNARCP38VpDXNu5dkkT3s7HmzfaAlWoG2mEI1Gi0WAanijSrTyV6eklByKlB2rQY2PCwI6VyN9mfpGgbm1SAF/TA7cFmIIsogh2J/p4tAlj1L2yg=
+Received: from VI1P190MB0734.EURP190.PROD.OUTLOOK.COM (2603:10a6:800:123::23)
+ by VI1P190MB0477.EURP190.PROD.OUTLOOK.COM (2603:10a6:802:3a::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.13; Sat, 6 Nov
- 2021 10:44:31 +0000
-Received: from PH0PR11MB5191.namprd11.prod.outlook.com
- ([fe80::a090:40db:80ae:f06a]) by PH0PR11MB5191.namprd11.prod.outlook.com
- ([fe80::a090:40db:80ae:f06a%9]) with mapi id 15.20.4669.013; Sat, 6 Nov 2021
- 10:44:31 +0000
-From:   Meng Li <Meng.Li@windriver.com>
-To:     stable@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        mcoquelin.stm32@gmail.com
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        meng.li@windriver.com
-Subject: [PATCH] driver: ethernet: stmmac: remove the redundant clock disable action
-Date:   Sat,  6 Nov 2021 18:44:01 +0800
-Message-Id: <20211106104401.10846-1-Meng.Li@windriver.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: HK2PR0401CA0007.apcprd04.prod.outlook.com
- (2603:1096:202:2::17) To PH0PR11MB5191.namprd11.prod.outlook.com
- (2603:10b6:510:3e::24)
+ 2021 10:54:11 +0000
+Received: from VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
+ ([fe80::a1aa:fd40:3626:d67f]) by VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
+ ([fe80::a1aa:fd40:3626:d67f%6]) with mapi id 15.20.4669.013; Sat, 6 Nov 2021
+ 10:54:11 +0000
+From:   Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Guenter Roeck <linux@roeck-us.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Andrew Lunn <andrew@lunn.ch>, Arnd Bergmann <arnd@arndb.de>,
+        Denis Kirjanov <dkirjanov@suse.de>,
+        Volodymyr Mytnyk <vmytnyk@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Yevhen Orlov <yevhen.orlov@plvision.eu>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net v4] net: marvell: prestera: fix hw structure laid out
+Thread-Topic: [PATCH net v4] net: marvell: prestera: fix hw structure laid out
+Thread-Index: AQHX0mUuVcB8vzXrnUiS928altpGN6v1XrOAgAAmYDqAAKqBgIAAIrHY
+Date:   Sat, 6 Nov 2021 10:54:11 +0000
+Message-ID: <VI1P190MB07348408440226486210A5018F8F9@VI1P190MB0734.EURP190.PROD.OUTLOOK.COM>
+References: <1636130964-21252-1-git-send-email-volodymyr.mytnyk@plvision.eu>
+ <8a5d8e0c-730e-0426-37f1-180c78f7d402@roeck-us.net>
+ <VI1P190MB0734F38F35521218A02CF2048F8E9@VI1P190MB0734.EURP190.PROD.OUTLOOK.COM>
+ <CAMuHMdWXLU64wxnJe82ede0ALrQM6ie+7czy4WtUfGLDufWX4g@mail.gmail.com>
+In-Reply-To: <CAMuHMdWXLU64wxnJe82ede0ALrQM6ie+7czy4WtUfGLDufWX4g@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+suggested_attachment_session_id: 009cd834-0cb1-73fc-5c15-63763309b437
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=plvision.eu;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: bcbfe157-0466-44c1-9a04-08d9a113c424
+x-ms-traffictypediagnostic: VI1P190MB0477:
+x-microsoft-antispam-prvs: <VI1P190MB0477B241F27F96CEDB38D85A8F8F9@VI1P190MB0477.EURP190.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:2201;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: xQ8Cr+CNmvQibExvTdtmVh9Sz+VOPtW7wz/Y8fYm0Tu8mTaBY83gme6wvrNxVyxdgTwAf6015Ydi56zKZAg1hg4q+FPJ+2rWrZJlrwdjcfO4jgLZuM0Tfbhs6XunyCYA1cVCKsIqdQ78bQpkJICRsAH6jGIPmf8HCsSLGzOgAJAaTG4GvyfbHBhwj/0pmUHLrGqOnJGvKA1TyHj1Zju7bnO2OS1uF6hh+TMD81rzRZPn/DTbkj5TtOt9NKYKzteCX871BmMUfWRxYt+pjZuWkSUHp1WwYo2Z1Zkv5xUnmqCjiOxBq3Xfsd7e3+O9qenqkbWODBOn3FukzJRFgqVMjE9CeG4layEqpG2TD5b5BTd/G3zOLEgSjIuUcnggFcjMkd8ua/q5Hl1ctEAVXtamEThAaJ1l/4nxRiRWDYAurz6ygUTW3z8zsu6G8c7eN90K+nz6OznwbzC6Ba7HWcie7edY3YZFNzSxPL3+dXtDzxvzCSbKrh1XiOhZp4Tv3tb5GuZ78y/Uhycy7wgA+e3yTZRZiJUq9OtA4br3C2RSWdM229dmJ0zL4N8qcaA66XlFwxk+mZHZ7OzX3HMwXRdJ0kQhdYdkYIW4SraqnXnxoAT+hG4cm4ZvTqAIZyfyHSS68ADGPW/nt3Hh36cIAR/32Y8lJGb3e+KBozIAtj2SPlFNzOxDwE/uZEvnnfDfzHXTWEXjodBNRDV5nbLhTiyFoZTcMXnz+Y+V/G039+GH8vO7t0aMZSFOnekwnEY4SAgDC+3qpiLYKX1ww0SjQCXRsIYLqObhKG8xqwH/i1URAXQ=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P190MB0734.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(376002)(396003)(136003)(366004)(346002)(39830400003)(33656002)(54906003)(66946007)(508600001)(110136005)(76116006)(86362001)(186003)(966005)(316002)(38070700005)(55016002)(66556008)(9686003)(71200400001)(66446008)(53546011)(66476007)(6506007)(52536014)(64756008)(8676002)(8936002)(5660300002)(4326008)(2906002)(7696005)(122000001)(38100700002)(44832011)(26005)(7416002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?fVjJ5HCwKxVZPYePNDrFZHnb4+xqhl230+LbsXqSVuWR3nfinV1gcGkI9P?=
+ =?iso-8859-1?Q?QUE7Vi0FUm8SKNFkGItq/aIZaVN389xk2P21I03Zipz1X/wKBM50m+itXo?=
+ =?iso-8859-1?Q?FIp+xDyrlJpAHyBViynbaeTrSyFeCzWFa/sBveQp/aZQVSIiUJdaGn7RTT?=
+ =?iso-8859-1?Q?3/IZV1DhI2f61DqBEWEiNd8tnhpHeXbxiM0LSa45vE369OAR+NKw5/1GXo?=
+ =?iso-8859-1?Q?JQlUQcuOxqSNBqtwNBcOqY5sVVMLsZfgITEYzwJIv/t8ox3PN6MXywu3yj?=
+ =?iso-8859-1?Q?mWmQHKOWpCskuhBj+2Ct94aeKZXq4wMDWka3IRmNawGYx7gt++oCQFYq9f?=
+ =?iso-8859-1?Q?kqu9TVZ3PT5jNADQipSeiPh1gfZNTuK4zORI3TAT91UfVggjUfaaGjILrA?=
+ =?iso-8859-1?Q?p1vbKS3KEhA2NH2h7yYe6avt55Ct7O+/G24OtklBomzGJedXWykKF+aRPQ?=
+ =?iso-8859-1?Q?K1Sa8pDOlOCpbu/EI+ViFyc6rEKSg7VcO92Kj4EAAeSAKzGI6BtOgcRRuP?=
+ =?iso-8859-1?Q?jkCaitSW6t23sZmqbclI59Spg1H0s9Mf+ZcbtSuaL4fzc/rdhdxGSoRWU/?=
+ =?iso-8859-1?Q?YlNz1psXeJNonIIpXcI4+SC7fE/46QlCDJk4ZpIHlj65Bs8g/zUkiyt8Mx?=
+ =?iso-8859-1?Q?3KFRzNjZzCD1f3dmpePhPkMH0PwoSrKdiSb8LPbOAVtXfb18VJI1dJQ3WB?=
+ =?iso-8859-1?Q?egOlC+edIhXMt2pCjdXKY/nYhWy1iwidUFtfKESTqtz5jnZjcNYvnGmen3?=
+ =?iso-8859-1?Q?pl9cQbIPmEb2EtMovH5NAV2NNOJBRLVDAkmxjUNOLLZL00xh7xdfPiq9y/?=
+ =?iso-8859-1?Q?zZ2YApSOxg6Lg5RZcXw7nttHNmqIM28XUrbkcW7BGiYmuWLw3tBOzk0TQk?=
+ =?iso-8859-1?Q?Ny6GVoLpDOJ1bVRliSNEwtIEsRzfehHC6JlA3/jfqHiYbCteHBHRK8XzHW?=
+ =?iso-8859-1?Q?AjcvmBr1x5G0iA43gggS30c6ixJvUSisGQBPX7fDqM4KqLludVLvJBNv3n?=
+ =?iso-8859-1?Q?ynqA2sTFh1XTM0GwrStNHLTm5ZKKOkrM/b6aFT2aJQsS9sCooRqA2NR4wD?=
+ =?iso-8859-1?Q?LCr/6Xfk+tXATUz7ThnZy6VforhCpzcIUeNjaGMkJ7ZvbXvy8yfuRdvRKU?=
+ =?iso-8859-1?Q?AxDYU0xyW2oGGxq46Ia/dfvZHgFdnU98N0mvP2glbFFf0rLBsuFA6tBn3i?=
+ =?iso-8859-1?Q?Bl4oZ3GTEBTitXiOJbWfN+9AAlgiLKbyCm8/H/uuGqWA0/4AE0ofENbKva?=
+ =?iso-8859-1?Q?JIPuokH5rwjQ4S+C2dNhqiDeUWkiZ6XjTAHcQwTjDwvnWBe3HnvQOjeLTt?=
+ =?iso-8859-1?Q?lR/qqG0gNDyc+ISRhqZD+tLSOR9AaIoeLrxyx1vw7SzEsvRPIKGuT6o3Rl?=
+ =?iso-8859-1?Q?rmSLaHQIejDedCRCoea0CBlLzG3UOKCxN0QyKWKZnwfBj+aDitPToYst8X?=
+ =?iso-8859-1?Q?JOoJy880xK1EjWYA/WTXmm1/jAqe6zWkEL7JY5JeuDxJraXyv+TZUYwcet?=
+ =?iso-8859-1?Q?T8MBKHGvUm8a86aCd6TbHvDexL/kxd8fUtC25/tX+gYFQLlwP06UJy0hl2?=
+ =?iso-8859-1?Q?mqoSbwCgyV+pT4FF64HBZvvLRdqvdC/rmVbB2JN8/2lEMAuqd6zSJTrABc?=
+ =?iso-8859-1?Q?8xvMJlkNDTccj/tnjawxro7emQJDjJiTTendxvYXelaZL02xEtjMWmBVBr?=
+ =?iso-8859-1?Q?El4FvtCulmV5yETLGlq03Y1vXoonaePSmT2fS3XK?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Received: from pek-mli1-d2.wrs.com (60.247.85.82) by HK2PR0401CA0007.apcprd04.prod.outlook.com (2603:1096:202:2::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.11 via Frontend Transport; Sat, 6 Nov 2021 10:44:28 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4bb5ff10-638c-41f7-62f2-08d9a11269e9
-X-MS-TrafficTypeDiagnostic: PH0PR11MB4950:
-X-Microsoft-Antispam-PRVS: <PH0PR11MB495001FBCD3A713A7C06B8C6F18F9@PH0PR11MB4950.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2582;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bJ9TrNxK5oPWV+w58IyMTrcZRAQ5bqhZbkLd5p4Xk2uAa5zE7lGo8PP18bCWZV1DVc9Np29EIvS+5xHlRKIcmmqn/E1co/9epjpJrpvSPdrEZRKgB0Uls1IJeBvZch3sbIphKFJhgIMBFGJ2YNtOyfWGA09FGFdqlT06FAumnabdewHVmIulEoPh5Oypf5ixHl/j+ZRGss9yQwXy4uzvdXi1AdlHJU9nudVAOZO8IllrUsUL+GoEM+1M6trR667tyUgFz6GSiEmebaEAoKhtf1zvophuBjnlIJTl6Ps4S+CjlVmxUxx3ufCRG+GrfHTFCr5WCmpnvs48H+tdnQ4rJ1IpYg9RNJ4mHtOIQXvXyDlwVz+1CF73DAVF/BvaNN/5cQLpZDU8uooX8pNxMKFokh4QaaFv4atfj3TGO6+xBUDOH4qSMbJhb3RDi2NWUgeaM3e7nhbAncK15edpjyZc3z+PAelWStEQm3+1RJyW2pRJM9ujSd+cEIQkWJJIMBtkD57NhzgHisus5B49Ks+kiF6N9qWYYxHDGE4LRKNT9WY+hePu0/+jK9AvXlt2ouHO2lZoujWVmxKepkIKlbmmh6hUb7cxJ2/vio+SJ9mJKa5rsgFEf74dTdrJ4B4lOuUT/+c7dxr5eJHwmjnTjv5v29VDpOH4qDN/VPXVPkzRTIJDziw1/cEM0jn6HFOng0eS6ZP5ghl/jpZIgsfMkuXgiQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5191.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6506007)(2616005)(66556008)(52116002)(2906002)(66476007)(316002)(86362001)(45080400002)(66946007)(5660300002)(83380400001)(956004)(38100700002)(38350700002)(1076003)(36756003)(6666004)(107886003)(6512007)(508600001)(186003)(8936002)(8676002)(6486002)(26005)(4326008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?zUo5ZBMowHN4oN5kDHpS/BbPL8yx0g3A5zFIi0/vdTBCQF0f2aOnVirZQozp?=
- =?us-ascii?Q?lVr6in3Rsv2Z96GytlpR4a8OuFSqTxtYgeGUSsJ0YkbuatFNVhS5Vhq6Oz4c?=
- =?us-ascii?Q?vybE6Z7cj7jcpTj6iaynux7XAiwOKMYeYFbkz8m/yxA1FFKMUUCfnLC1d39Z?=
- =?us-ascii?Q?wfoH9zL4B/9avmd/LFt1x4afGkEMuK3jfxZK2HID/jKjcSuMZNcGCurhhFWs?=
- =?us-ascii?Q?VG6Fy+lwVhTxGMP0SZDmSTCFRKO4tKpVkaqS64zCGdAbWhq8GxGwzZWv1vRq?=
- =?us-ascii?Q?P+8sM7JgOi3XZmNy9KjbVEl/2eOEQv5s2jvHaYuWuJGDURzvJZt+FZt5NkGh?=
- =?us-ascii?Q?tWeTc8/NdNE9kycHz+jBSOhvL4YWozIK9+npQnDCQBcC9hgbJFLaIN/w6O1z?=
- =?us-ascii?Q?hfX5dWd6vm15TbJO5bpOGzMqvLO+ecjXEEj0YRaMJQ6zQCXOKn2cb4H/KLeE?=
- =?us-ascii?Q?a7oVeKaUq6OPZJdwHJW7vTn92AEKza1sKYQWRC2mU0cXzgulVC5XU9DQzylp?=
- =?us-ascii?Q?pKHyfLcNciySQ/PgeCErriHsh5rIs4NoJvSCdu5c2oTf7aYHMC9wWvfpCRZo?=
- =?us-ascii?Q?oZqfbg6y84ZzXpcJUwTwlD1bbDNFL9CEjvXRcaaG0UXTqVONYQBT6+2QawgP?=
- =?us-ascii?Q?+ix4fZVDX6rH6NoaWkbDCKECOtist89JHpBTPgaJGv89AxmDIl+5PonDt/SI?=
- =?us-ascii?Q?2JypsSRUENMX/b9WP1AkTYb7wl9mjDXQmwQTS6RiVXj8He/j3m6oqbOUOEpL?=
- =?us-ascii?Q?YbrO+0UGN+NzSaj89AzB/m7/PObhbVFKHWD3UaAcd8RVQ1zaoszyDz5YTJ0p?=
- =?us-ascii?Q?qHuRcjjrEVemxF8EllvxKUYRz4vc0kdKDAnOtqmpy2meC6sDnFjV300M+a+Z?=
- =?us-ascii?Q?CIilZ8h91XslzyJInmnuAnO3spmoEpSj2AyKLGVbrvadTVpaKpdXeSJ5XmKR?=
- =?us-ascii?Q?WKuto+kygHxW0Sf/MR5BzQUzINYxl+7QLb6OY0drgYENGLOxtebqZVVDzAr+?=
- =?us-ascii?Q?nYumN0ByHgfhNjCvWRyh71OJN+B5GcDglyXpYgdlae+7qf4RldieZro0bJMU?=
- =?us-ascii?Q?1rQAUbkk//gcd+VLRqa1HwxF49DU5fiwoJ6vRISuvg4GLCJ4rsP29fVRYwQk?=
- =?us-ascii?Q?G0g6FWqGM5d6jlVzUNRuc0KZQ4oY2bjLwC5FlRMK+GaYN+QxLm6zJoiyFRSz?=
- =?us-ascii?Q?QWXVwcgDS8+uYvV9fF9yYZxeIMV4R4wPwIbnhcDBSmwxiwA4LprCTvgCX14Y?=
- =?us-ascii?Q?vY4oINFA49qpQvMP9n3vlrT4MfcXabqtuKeiG35VdOeo6wm/hbe1lJ0VG+hT?=
- =?us-ascii?Q?B8GQifAGJzVnN/KnqALeqXyACBc8vCLwpE1g8afIzdAJWt/ohW339eCopbM2?=
- =?us-ascii?Q?blNM5m4l/Rr2Xe9IcuyU2rd81u/X5cqmFawVKtJ1lHKa47tjfLzSN9vT+nKN?=
- =?us-ascii?Q?r1/x9p9bJ1T7pY+qe8tkwYpT6kx+38PumCOF3CY1HsjMF18SXjnc6DD4aRxg?=
- =?us-ascii?Q?cMfmvqPQL+vYq01tF0FLNRovGbkzEGbWUh3VrzElK8jTrJUZw3j1Kwi7jEId?=
- =?us-ascii?Q?er8jFba9ZjJ7kP2qf0TaeOsfaa1vNZO7v3hDtVN4/dUKDI6MgPVYMC39wRgf?=
- =?us-ascii?Q?sM6BDMOyWjywYna78HMKoxA=3D?=
-X-OriginatorOrg: windriver.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4bb5ff10-638c-41f7-62f2-08d9a11269e9
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5191.namprd11.prod.outlook.com
+X-OriginatorOrg: plvision.eu
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Nov 2021 10:44:31.0222
+X-MS-Exchange-CrossTenant-AuthSource: VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: bcbfe157-0466-44c1-9a04-08d9a113c424
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Nov 2021 10:54:11.4051
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: W0RC8CgZpdTtzQmrOxoLxhBVrFuNye4AXyzneP+13xQZbAcFOm4SZF6x4EwXzuJOOEePIqwsDxWNiXWbYxgsLA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB4950
-X-Proofpoint-ORIG-GUID: cWDHNPRcimXpA2jnkMpGJRlFL3xQJqr_
-X-Proofpoint-GUID: cWDHNPRcimXpA2jnkMpGJRlFL3xQJqr_
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-11-06_02,2021-11-03_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- impostorscore=0 spamscore=0 phishscore=0 clxscore=1011 priorityscore=1501
- lowpriorityscore=0 mlxlogscore=953 bulkscore=0 mlxscore=0 adultscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2111060065
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: kojYbeSsLmuQf+Kyf/jTjsRXNVT5RKE/IBHpQuDOhZUV7A27r3Yhr46WdjgVzTKaKunAECUDFw5DNb61DYeVb+2fIQhaUyT59TJRZ16fnTU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1P190MB0477
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When run below command to remove ethernet driver on
-stratix10 platform, there will be warning trace as below:
-
-$ cd /sys/class/net/etha01/device/driver
-$ echo ff800000.ethernet > unbind
-
-WARNING: CPU: 3 PID: 386 at drivers/clk/clk.c:810 clk_core_unprepare+0x114/0x274
-Modules linked in: sch_fq_codel
-CPU: 3 PID: 386 Comm: sh Tainted: G        W         5.10.74-yocto-standard #1
-Hardware name: SoCFPGA Stratix 10 SoCDK (DT)
-pstate: 00000005 (nzcv daif -PAN -UAO -TCO BTYPE=--)
-pc : clk_core_unprepare+0x114/0x274
-lr : clk_core_unprepare+0x114/0x274
-sp : ffff800011bdbb10
-clk_core_unprepare+0x114/0x274
- clk_unprepare+0x38/0x50
- stmmac_remove_config_dt+0x40/0x80
- stmmac_pltfr_remove+0x64/0x80
- platform_drv_remove+0x38/0x60
- ... ..
- el0_sync_handler+0x1a4/0x1b0
- el0_sync+0x180/0x1c0
-This issue is introduced by introducing upstream commit 8f269102baf7
-("net: stmmac: disable clocks in stmmac_remove_config_dt()")
-Because clock has been disabled in function stmmac_dvr_remove()
-It not reasonable the remove clock disable action from function
-stmmac_remove_config_dt(), because it is mainly used in probe failed,
-and other platform drivers also use this common function. So, remove
-stmmac_remove_config_dt() from stmmac_pltfr_remove(), only other
-necessary code.
-
-Fixes: 1af3a8e91f1a ("net: stmmac: disable clocks in stmmac_remove_config_dt()")
-Signed-off-by: Meng Li <Meng.Li@windriver.com>
-
----
-
-Some extra comments as below:
-
-1. This patch is only for linux-stable kernel v5.10, so the fixed commit ID is the one
-   in linux-stable kernel, not the one in mainline upsteam kernel.
-
-2. I created a patch only to fix the linux-stable kernel v5.10, not submit it to upstream kernel.
-   The reason as below:
-   In fact, upstream kernel doesn't have this issue any more. Because it has a patch to improve
-   the clock management and other 4 patches to fix the 1st patch. Detial patches as below:
-   5ec55823438e("net: stmmac: add clocks management for gmac driver")
-   30f347ae7cc1("net: stmmac: fix missing unlock on error in stmmac_suspend()")
-   b3dcb3127786("net: stmmac: correct clocks enabled in stmmac_vlan_rx_kill_vid()")
-   4691ffb18ac9("net: stmmac: fix system hang if change mac address after interface ifdown")
-   ab00f3e051e8("net: stmmac: fix issue where clk is being unprepared twice")
-
-   But I think it is a little complex to backport all the 5 patches. Moreover, it may be related
-   with other patches and code context mofification.
-   Therefore, I create a simple and clear patch to only this issue on linux-stable kernel, v 5.10
-
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-index 53be8fc1d125..0fb702ce2408 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-@@ -706,7 +706,8 @@ int stmmac_pltfr_remove(struct platform_device *pdev)
- 	if (plat->exit)
- 		plat->exit(pdev, plat->bsp_priv);
- 
--	stmmac_remove_config_dt(pdev, plat);
-+	of_node_put(plat->phy_node);
-+	of_node_put(plat->mdio_node);
- 
- 	return ret;
- }
--- 
-2.17.1
-
+> On Fri, Nov 5, 2021 at 11:42 PM Volodymyr Mytnyk=0A=
+> <volodymyr.mytnyk@plvision.eu> wrote:=0A=
+> > > > From: Volodymyr Mytnyk <vmytnyk@marvell.com>=0A=
+> > > >=0A=
+> > > > The prestera FW v4.0 support commit has been merged=0A=
+> > > > accidentally w/o review comments addressed and waiting=0A=
+> > > > for the final patch set to be uploaded. So, fix the remaining=0A=
+> > > > comments related to structure laid out and build issues.=0A=
+> > > >=0A=
+> > > > Reported-by: kernel test robot <lkp@intel.com>=0A=
+> > > > Fixes: bb5dbf2cc64d ("net: marvell: prestera: add firmware v4.0 sup=
+port")=0A=
+> > > > Signed-off-by: Volodymyr Mytnyk <vmytnyk@marvell.com>=0A=
+> > >=0A=
+> > > The patch does not apply to the mainline kernel, so I can not test it=
+ there.=0A=
+> > > It does apply to linux-next, and m68k:allmodconfig builds there with =
+the patch=0A=
+> > > applied. However, m68k:allmodconfig also builds in -next with this pa=
+tch _not_=0A=
+> > > applied, so I can not really say if it does any good or bad.=0A=
+> > > In the meantime, the mainline kernel (as of v5.15-10643-gfe91c4725aee=
+)=0A=
+> > > still fails to build.=0A=
+> =0A=
+> >         The mainline kernel doesn't have the base ("net: marvell: prest=
+era: add firmware v4.0 support") commit yet, so the patch will not be appli=
+ed.=0A=
+> =0A=
+> Mainline has this broken commit as of Nov 2.=0A=
+=0A=
+Hi Geert,=0A=
+=0A=
+	Right, this one is it there. My fault, thx.=0A=
+=0A=
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/d=
+rivers/net/ethernet/marvell/prestera/prestera_hw.c?id=3Dbb5dbf2cc64d5cfa696=
+765944c784c0010c48ae8=0A=
+	=0A=
+So, only 236f57fe1b88 ("net: marvell: prestera: Add explicit padding") from=
+ net/master is needed to fix the build and to be able to apply this patch.=
+=0A=
+=0A=
+Sorry for confusion.=0A=
+=0A=
+    Volodymyr=0A=
+=0A=
+> =0A=
+> Gr{oetje,eeting}s,=0A=
+> =0A=
+>                         Geert=0A=
+> =0A=
+> --=0A=
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m6=
+8k.org=0A=
+> =0A=
+> In personal conversations with technical people, I call myself a hacker. =
+But=0A=
+> when I'm talking to journalists I just say "programmer" or something like=
+ that.=0A=
+>                                 -- Linus Torvalds=
