@@ -2,101 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7165B446FF9
-	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 20:03:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F576447019
+	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 20:26:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234875AbhKFTF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Nov 2021 15:05:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53796 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232523AbhKFTF4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 6 Nov 2021 15:05:56 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B87D161076;
-        Sat,  6 Nov 2021 19:03:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636225394;
-        bh=dvJnVXtykJb5fOfhANDIzNUpNdbIdocyte+fty4l+uE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Um5YP6q9WrJXqkaI10osNjoBSPL81UNr2Rm64XOjiCh984ABlEZ3O/IAwes7dY842
-         n2wO4p0OC6FR54Td2sfYhhWXSkfIX288ty+XzrKVgDdCCxNiHWQpJt+ra4g+c14p/m
-         MYwF2Gxtg1z9jgUwPXgziPme/bHgMxk5WU07tzPyUiyX+bCaHPfIrgnhPKjMgvbYGc
-         NzfqegzNYscfjzFDUoqV6Yw7OXa+5gG2mHgF16Zaa7dtS7WDTtMJxsicGJL9oP38eX
-         REZCjvOmR/rxgD5NTB5yeCaCo+9JX0nJZ30sEFATRxzoQS37veDhM/5WifHZzdsGsf
-         glMsXIrqF600Q==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 693C8410A1; Sat,  6 Nov 2021 16:03:12 -0300 (-03)
-Date:   Sat, 6 Nov 2021 16:03:12 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Song Liu <songliubraving@fb.com>, linux-kernel@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
+        id S232498AbhKFT2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Nov 2021 15:28:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41062 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229635AbhKFT2q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Nov 2021 15:28:46 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 299A5C061570;
+        Sat,  6 Nov 2021 12:26:05 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id x64so12090073pfd.6;
+        Sat, 06 Nov 2021 12:26:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=TCDGGZBE94EQitsRdSmlc57LXB5IcNg6m4Ayk7djMx0=;
+        b=nVle96lFWTcyEKKJblARx0AXUoplXBuzWb43YpjzRNoPgdxh0qK7dmxOQZvajG+AFX
+         NwhGZ4eLdrav+ZHG7ZerA+WJB2/N3Is1AVUEG7K+i5IZ9WlIXBrXr3GD3Z86J4Gb8jIa
+         4tjfRnJtpD1O5KNW4ukAXjRMYKiZ9MS0NFu10cBtfiijaEXVDhvirdgtXaFhHdh6oBo8
+         NLn5g0I+3h82rkYKyN9CnT8X4tmLnmzyBMVxfln4ZMovTNLbOwO/V/H0z4w3u9mp18Dv
+         5vVih+dEyTpd19mknq80ZUm4MShlfac6yu1YPh1bEDXLAFX1ZThSWLf+DtIGwdY4mi9n
+         Pb3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TCDGGZBE94EQitsRdSmlc57LXB5IcNg6m4Ayk7djMx0=;
+        b=HgStvI7YaykurtxWIUczGYv3bW39A+7JVk5kN4i7e2vysHt1wWeG0YahzLczfx7qQq
+         i67sEi1itPRUMp68emYzdY2LlZYSZ7K4I5gzkZypTi46vleQAoIqYTPFwzIS71vXiDxM
+         u84PBnPbzqOEhpWQb7F24HhJvsR5DE/1iqrfLJ3JHy+k0S/vO9GF0WOa9XA9tO0QKNF5
+         rAbeaEvFZffuYaW+3PER+jGgflO6MaydQSmuY/egidfvKTjqEHucRwAynq9DdeABIQjW
+         w7k7CLUuCKvsvlCCSENMJpnxJ7mVeDuhrCgu3oRsQ+Az/tKNJW6zdBeGDPQf4f0vZBaE
+         /x9w==
+X-Gm-Message-State: AOAM531wprfIibXx5+mo2BB4dw0FauiIcilTcp1gww4ONJi2B/tMv9SE
+        1kfGZJtlLmfw6i9CozfJDW0=
+X-Google-Smtp-Source: ABdhPJw5EZVXyp5rlY45NYQHOEgmKeQZcAxlnJ2vvEqfWTjHw2IC+PbkyxELwW6Jz7H4dM59cwX2Pw==
+X-Received: by 2002:a63:8842:: with SMTP id l63mr40077006pgd.280.1636226764537;
+        Sat, 06 Nov 2021 12:26:04 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:5e3b])
+        by smtp.gmail.com with ESMTPSA id l21sm10852049pfu.213.2021.11.06.12.26.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 06 Nov 2021 12:26:04 -0700 (PDT)
+Date:   Sat, 6 Nov 2021 12:26:02 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Hou Tao <houtao1@huawei.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Tiezhu Yang <yangtiezhu@loongson.cn>,
-        linux-perf-users@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH 2/2] perf bpf: Add missing free to
- bpf_event__print_bpf_prog_info
-Message-ID: <YYbRcJCx4J2pP1UO@kernel.org>
-References: <20211106053733.3580931-1-irogers@google.com>
- <20211106053733.3580931-2-irogers@google.com>
+        Song Liu <songliubraving@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [RFC PATCH bpf-next 1/2] bpf: add bpf_strncmp helper
+Message-ID: <20211106192602.knmfk2x7ogcjuzvw@ast-mbp.dhcp.thefacebook.com>
+References: <20211106132822.1396621-1-houtao1@huawei.com>
+ <20211106132822.1396621-2-houtao1@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211106053733.3580931-2-irogers@google.com>
-X-Url:  http://acmel.wordpress.com
+In-Reply-To: <20211106132822.1396621-2-houtao1@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Fri, Nov 05, 2021 at 10:37:33PM -0700, Ian Rogers escreveu:
-> If btf__new is called then there needs to be a corresponding btf__free.
-
-
-Thanks, applied.
-
-- Arnaldo
-
-
- 
-> Fixes: f8dfeae009ef ("perf bpf: Show more BPF program info in print_bpf_prog_info()")
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
->  tools/perf/util/bpf-event.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+On Sat, Nov 06, 2021 at 09:28:21PM +0800, Hou Tao wrote:
+> The helper compares two strings: one string is a null-terminated
+> read-only string, and another one has const max storage size. And
+> it can be used to compare file name in tracing or LSM program.
 > 
-> diff --git a/tools/perf/util/bpf-event.c b/tools/perf/util/bpf-event.c
-> index 0783b464777a..1f813d8bb946 100644
-> --- a/tools/perf/util/bpf-event.c
-> +++ b/tools/perf/util/bpf-event.c
-> @@ -579,7 +579,7 @@ void bpf_event__print_bpf_prog_info(struct bpf_prog_info *info,
->  		synthesize_bpf_prog_name(name, KSYM_NAME_LEN, info, btf, 0);
->  		fprintf(fp, "# bpf_prog_info %u: %s addr 0x%llx size %u\n",
->  			info->id, name, prog_addrs[0], prog_lens[0]);
-> -		return;
-> +		goto out;
->  	}
->  
->  	fprintf(fp, "# bpf_prog_info %u:\n", info->id);
-> @@ -589,4 +589,6 @@ void bpf_event__print_bpf_prog_info(struct bpf_prog_info *info,
->  		fprintf(fp, "# \tsub_prog %u: %s addr 0x%llx size %u\n",
->  			i, name, prog_addrs[i], prog_lens[i]);
->  	}
-> +out:
-> +	btf__free(btf);
->  }
-> -- 
-> 2.34.0.rc0.344.g81b53c2807-goog
+> We don't check whether or not s2 in bpf_strncmp() is null-terminated,
+> because its content may be changed by malicous program, and we only
+> ensure the memory accessed is bounded by s2_sz.
 
--- 
+I think "malicous" adjective is unnecessary and misleading.
+It's also misspelled.
+Just mention that 2nd argument doesn't have to be null terminated.
 
-- Arnaldo
+> + * long bpf_strncmp(const char *s1, const char *s2, u32 s2_sz)
+...
+> +BPF_CALL_3(bpf_strncmp, const char *, s1, const char *, s2, size_t, s2_sz)
+
+probably should match u32 instead of size_t.
+
+> @@ -1210,6 +1210,8 @@ bpf_tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>  		return &bpf_get_branch_snapshot_proto;
+>  	case BPF_FUNC_trace_vprintk:
+>  		return bpf_get_trace_vprintk_proto();
+> +	case BPF_FUNC_strncmp:
+> +		return &bpf_strncmp_proto;
+
+why tracing only?
+Should probably be in bpf_base_func_proto.
+
+I was thinking whether the proto could be:
+long bpf_strncmp(const char *s1, u32 s1_sz, const char *s2)
+but I think your version is better though having const string as 1st arg
+is a bit odd in normal C.
+
+Would it make sense to add bpf_memchr as well while we are at it?
+And
+static inline bpf_strnlen(const char *s, u32 sz)
+{
+  return bpf_memchr(s, sz, 0);
+}
+to bpf_helpers.h ?
