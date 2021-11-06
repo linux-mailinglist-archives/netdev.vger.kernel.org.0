@@ -2,64 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEF04446C09
-	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 03:30:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC713446C0C
+	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 03:33:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231664AbhKFCcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Nov 2021 22:32:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46952 "EHLO
+        id S231981AbhKFCfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Nov 2021 22:35:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230081AbhKFCci (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Nov 2021 22:32:38 -0400
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583AFC061570;
-        Fri,  5 Nov 2021 19:29:58 -0700 (PDT)
-Received: by mail-oi1-x235.google.com with SMTP id o4so17474006oia.10;
-        Fri, 05 Nov 2021 19:29:58 -0700 (PDT)
+        with ESMTP id S229728AbhKFCfh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Nov 2021 22:35:37 -0400
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46DD3C061570;
+        Fri,  5 Nov 2021 19:32:57 -0700 (PDT)
+Received: by mail-ot1-x32e.google.com with SMTP id s19-20020a056830125300b0055ad9673606so14549789otp.0;
+        Fri, 05 Nov 2021 19:32:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Cx/5L6YHV8PLhIoo7ZFeFyDy2iN4fUwBCCwtNoKUz7g=;
-        b=b4HZay8PgkTEjVD6y5tAsBytBplt9zifqTXwQq6klN7BmZYgMOXwozNQ3ep0f8/0xu
-         VJtwXaNEK+ZvQo64+OS7fa8gDA/ABsQyjLah+Zm3iF5fWVsLOZkyl+8BKIfm7gp4oGTl
-         VlOJFekERmFvqX7n433z25TN3JzpsBYGXbSgSZBJKj3b6EKKevD01WlR1K9RXWGPUYa/
-         kk6eppmZgv2vVZ2lsApsbKrPxL3LpY6pv1bJIyyxddtjNfnOLHfbXJIrQXKhyiJGE5ip
-         T0nAJ/1J5SQK68Neuq1x4hKaH3BoDfIqgRqbHoyjb15ORjFJbdJOLMe97Z269/2OUR6v
-         gEsQ==
+        bh=qQWOLFiWqAxjwAAeFXl9+YsFchVkFO4XJY9lG1INzkU=;
+        b=QEGcKUZptaYLjYpM/+bJFKqO92hizKff1BtteZGn3bMHOWkBsMhiP+WgYO6CV57w6M
+         UIgK9B5ndYcQVtLfaEVwLkwiCUcqVA1m65mhOI+ataJwd5vPfJMsX4S+nf5d4PQI3Gr4
+         VdJ8CBhSPhJYSYizt5tgCxYUGvr43stkulz9B6PjkjI0Xgp3vA5gdAJYDtfMfRqMVdUe
+         aBoyb0wD5gXLXPw6QXym3zAX1uE3h5ahWrnMIk1bsQ9nnYqRB0+o0vGpaZoC1H5Lvg/+
+         RRJs8SzaR4aL18dhhEwnZGWXgmkd8sIqWIAi47O13GKcAtmpLWSQXxznnRf+OWji5B2i
+         9YBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=Cx/5L6YHV8PLhIoo7ZFeFyDy2iN4fUwBCCwtNoKUz7g=;
-        b=AhHczj2vwPRsAxu8QkZQcdFmyCNnLh7pmNHeHYSoNN4D2jkiLf6tCmE/QpIRCTp+gK
-         au3/nmc1y7/6Y86cG7cxL+p8SGOciN/9dbI4Q+GggL4FJGMFtwZ/M95fBKuOG4YLWhwp
-         ySluD2oPgAc6z2O04cWbEM8EUOrzzZDdU+EjpEtyJK+RquDga12DL6tUQG5b1MpH9N81
-         g9uGy3AXHLwsW2PgaIO9eQnyAJnS+2Xsq3vGPPvX9sCafjK/+TnmqybeBd60zZ+7bE26
-         3CSaQBKhkBxdybvgJ7QcYG8ukg3zFmKVuBgyJs1PuVWEtRoGAdBincOEayRBf9Th+KuI
-         TekQ==
-X-Gm-Message-State: AOAM532JWFLkcx9+qaMp1hDsC5sAuupTeMXf5m4NNgugijXCNUjsl48L
-        3u5o/A7PgzuReCfbMtzcNsY=
-X-Google-Smtp-Source: ABdhPJxJXIqAVGBfSmySumplWAbCYTLW215Byq2FC9MP310fCXqFRGt9m3SS+ow8dT1kUrX8IXZhrA==
-X-Received: by 2002:a05:6808:3a5:: with SMTP id n5mr12308660oie.62.1636165797014;
-        Fri, 05 Nov 2021 19:29:57 -0700 (PDT)
+        bh=qQWOLFiWqAxjwAAeFXl9+YsFchVkFO4XJY9lG1INzkU=;
+        b=BQbhFPg3uK3zI4JikEfDt55vIwf3fWthiCR0btufxfY6Oz7wUxVt7hI4riiQGAmum1
+         TKlg0HKfxVCx5aB22304gQ/xa4jHBsSJRgGeuuDOXAXOtj4aARzKQWLdBrAQRp62Ozlu
+         eGkEKlfcdA/7v9O8s1xoulaLBgnoaMFDAc39wRLUgdVIhdCsTnlO7WoyCuo7rG034+Gv
+         9S8lu/QmpVKB0Mg03fY34LIAiYncVeFXeN6JnSoGSyJenOxpWKTrVg2ll/tE5OTSksaJ
+         3O1yNIuRnkJIk1LqQ5brvO58ek4USkcZX22mUUySXI/l9mmV66hACARU5ptthj44VaB4
+         iIww==
+X-Gm-Message-State: AOAM532w/xBP8LYVquSEHpVpyMFOPwMbl99rLk5fctu+4hb4SgHyGAhe
+        6BIJUv3+sBfPRp6TCu0HKqM=
+X-Google-Smtp-Source: ABdhPJxzgtB3jBA2tHvTqI2ctaA5SEIILQkNwk3fyx/rTjDFHhMYpdH0PAgMg2UrE4Utq2kXfKMAfA==
+X-Received: by 2002:a05:6830:1e42:: with SMTP id e2mr47610176otj.41.1636165976621;
+        Fri, 05 Nov 2021 19:32:56 -0700 (PDT)
 Received: from ?IPV6:2600:1700:dfe0:49f0:14e0:e534:f753:ba71? ([2600:1700:dfe0:49f0:14e0:e534:f753:ba71])
-        by smtp.gmail.com with ESMTPSA id h1sm939837oom.12.2021.11.05.19.29.54
+        by smtp.gmail.com with ESMTPSA id j9sm1113995ots.68.2021.11.05.19.32.54
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Nov 2021 19:29:56 -0700 (PDT)
-Message-ID: <04b34a92-bc31-adcd-5357-0faf61612a31@gmail.com>
-Date:   Fri, 5 Nov 2021 19:29:53 -0700
+        Fri, 05 Nov 2021 19:32:55 -0700 (PDT)
+Message-ID: <666b195b-e7d7-6f1f-e09d-bfe113c2f4fe@gmail.com>
+Date:   Fri, 5 Nov 2021 19:32:53 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.2.1
-Subject: Re: [PATCH 1/7] net: dsa: b53: Add BroadSync HD register definitions
+Subject: Re: [PATCH 4/7] net: dsa: b53: Add PHC clock support
 Content-Language: en-US
 To:     Martin Kaistra <martin.kaistra@linutronix.de>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>
 Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -70,9 +69,9 @@ Cc:     Richard Cochran <richardcochran@gmail.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 References: <20211104133204.19757-1-martin.kaistra@linutronix.de>
- <20211104133204.19757-2-martin.kaistra@linutronix.de>
+ <20211104133204.19757-5-martin.kaistra@linutronix.de>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20211104133204.19757-2-martin.kaistra@linutronix.de>
+In-Reply-To: <20211104133204.19757-5-martin.kaistra@linutronix.de>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -82,94 +81,122 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 11/4/2021 6:31 AM, Martin Kaistra wrote:
-> From: Kurt Kanzenbach <kurt@linutronix.de>
+> The BCM53128 switch has an internal clock, which can be used for
+> timestamping. Add support for it.
 > 
-> Add register definitions for the BroadSync HD features of
-> BCM53128. These will be used to enable PTP support.
+> The 32-bit free running clock counts nanoseconds. In order to account
+> for the wrap-around at 999999999 (0x3B9AC9FF) while using the cycle
+> counter infrastructure, we need to set a 30bit mask and use the
+> overflow_point property.
 > 
-> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> Enable the Broadsync HD timestamping feature in b53_ptp_init() for PTPv2
+> Ethertype (0x88f7).
+> 
 > Signed-off-by: Martin Kaistra <martin.kaistra@linutronix.de>
 > ---
->   drivers/net/dsa/b53/b53_regs.h | 38 ++++++++++++++++++++++++++++++++++
->   1 file changed, 38 insertions(+)
-> 
-> diff --git a/drivers/net/dsa/b53/b53_regs.h b/drivers/net/dsa/b53/b53_regs.h
-> index b2c539a42154..c8a9d633f78b 100644
-> --- a/drivers/net/dsa/b53/b53_regs.h
-> +++ b/drivers/net/dsa/b53/b53_regs.h
-> @@ -50,6 +50,12 @@
->   /* Jumbo Frame Registers */
->   #define B53_JUMBO_PAGE			0x40
->   
-> +/* BroadSync HD Register Page */
-> +#define B53_BROADSYNC_PAGE		0x90
+
+[snip]
+
+
+> +int b53_ptp_init(struct b53_device *dev)
+> +{
+> +	mutex_init(&dev->ptp_mutex);
 > +
-> +/* Traffic Remarking Register Page */
-> +#define B53_TRAFFICREMARKING_PAGE	0x91
+> +	INIT_DELAYED_WORK(&dev->overflow_work, b53_ptp_overflow_check);
 > +
->   /* EEE Control Registers Page */
->   #define B53_EEE_PAGE			0x92
->   
-> @@ -479,6 +485,38 @@
->   #define   JMS_MIN_SIZE			1518
->   #define   JMS_MAX_SIZE			9724
->   
-> +/*************************************************************************
-> + * BroadSync HD Page Registers
-> + *************************************************************************/
+> +	/* Enable BroadSync HD for all ports */
+> +	b53_write16(dev, B53_BROADSYNC_PAGE, B53_BROADSYNC_EN_CTRL1, 0x00ff);
+
+Can you do this for all enabled user ports instead of each port, that 
+way it is clera that this register is supposed to be a bitmask of ports 
+for which you desire PTP timestamping to be enabled?
+
 > +
-> +#define B53_BROADSYNC_EN_CTRL1		0x00
-> +#define B53_BROADSYNC_EN_CTRL2		0x01
+> +	/* Enable BroadSync HD Time Stamping Reporting (Egress) */
+> +	b53_write8(dev, B53_BROADSYNC_PAGE, B53_BROADSYNC_TS_REPORT_CTRL, 0x01);
 
-This is a single register which is 16-bit wide, can you also add a 
-comment to that extent like what is done for other register definitions?
+Can you add a define for this bit in b53_regs.h and name it:
 
-> +#define B53_BROADSYNC_TS_REPORT_CTRL	0x02
-> +#define B53_BROADSYNC_PCP_CTRL		0x03
-> +#define B53_BROADSYNC_MAX_SDU		0x04
+#define TSRPT_PKT_EN	BIT(0)
 
+which will enable timestamp reporting towards the IMP port.
 
-> +#define B53_BROADSYNC_TIMEBASE1		0x10
-
-Single register which is 32-bit wide, no need to define the 
-TIMEBASE1..4, just call it timebase.
-
-> +#define B53_BROADSYNC_TIMEBASE2		0x11
-> +#define B53_BROADSYNC_TIMEBASE3		0x12
-> +#define B53_BROADSYNC_TIMEBASE4		0x13
-> +#define B53_BROADSYNC_TIMEBASE_ADJ1	0x14
-
-Likewise.
-
-> +#define B53_BROADSYNC_TIMEBASE_ADJ2	0x15
-> +#define B53_BROADSYNC_TIMEBASE_ADJ3	0x16
-> +#define B53_BROADSYNC_TIMEBASE_ADJ4	0x17
-> +#define B53_BROADSYNC_SLOT_CNT1		0x18
-> +#define B53_BROADSYNC_SLOT_CNT2		0x19
-> +#define B53_BROADSYNC_SLOT_CNT3		0x1a > +#define B53_BROADSYNC_SLOT_CNT4		0x1b
-
-Likewise, 32-bit register.
-
-> +#define B53_BROADSYNC_SLOT_ADJ1		0x1c
-> +#define B53_BROADSYNC_SLOT_ADJ2		0x1d
-> +#define B53_BROADSYNC_SLOT_ADJ3		0x1e
-> +#define B53_BROADSYNC_SLOT_ADJ4		0x1f
-
-And likewise
-
-> +#define B53_BROADSYNC_CLS5_BW_CTRL	0x30
-> +#define B53_BROADSYNC_CLS4_BW_CTRL	0x60
-> +#define B53_BROADSYNC_EGRESS_TS		0x90
-> +#define B53_BROADSYNC_EGRESS_TS_STS	0xd0
-> +#define B53_BROADSYNC_LINK_STS1		0xe0
-> +#define B53_BROADSYNC_LINK_STS2		0xe1
-
-Likewise this is a 16-bit register.
 > +
->   /*************************************************************************
->    * EEE Configuration Page Registers
->    *************************************************************************/
-> 
+> +	/* Enable BroadSync HD Time Stamping for PTPv2 ingress */
+> +
+> +	/* MPORT_CTRL0 | MPORT0_TS_EN */
+> +	b53_write16(dev, B53_ARLCTRL_PAGE, 0x0e, (1 << 15) | 0x01);
 
+Please add a definition for 0x0e which is the multi-port control 
+register and is 16-bit wide.
+
+Bit 15 is MPORT0_TS_EN and it will ensure that packets matching 
+multiport 0 (address or ethertype) will be timestamped.
+
+and then add a macro or generic definitions that are applicable to all 
+multiport control registers, something like:
+
+#define MPORT_CTRL_DIS_FORWARD	0
+#define MPORT_CTRL_CMP_ADDR	1
+#define MPORT_CTRL_CMP_ETYPE	2
+#define MPORT_CTRL_CMP_ADDR_ETYPE 3
+
+#define MPORT_CTRL_SHIFT(x)	((x) << 2)
+#define MPORT_CTRL_MASK		0x3
+
+> +	/* Forward to IMP port 8 */
+> +	b53_write64(dev, B53_ARLCTRL_PAGE, 0x18, (1 << 8));
+
+0x18 is the multiport vector N register so we would want a macro to 
+define the multiprot vector being used (up to 6 of them), and this is a 
+32-bit register, not a 64-bit register. The 8 here should be checked 
+against the actual CPU port index number, it is 8 for you, it could be 5 
+for someone else, or 7, even.
+
+> +	/* PTPv2 Ether Type */
+> +	b53_write64(dev, B53_ARLCTRL_PAGE, 0x10, (u64)0x88f7 << 48);
+
+Use ETH_P_1588 here and 0x10 deserves a define which is the multiport 
+address N register. Likewise, we need a base offset of 0x10 and then a 
+macro to address the 6 multiports that exists.
+
+> +
+> +	/* Setup PTP clock */
+> +	dev->ptp_clock_info.owner = THIS_MODULE;
+> +	snprintf(dev->ptp_clock_info.name, sizeof(dev->ptp_clock_info.name),
+> +		 dev_name(dev->dev));
+> +
+> +	dev->ptp_clock_info.max_adj = 1000000000ULL;
+> +	dev->ptp_clock_info.n_alarm = 0;
+> +	dev->ptp_clock_info.n_pins = 0;
+> +	dev->ptp_clock_info.n_ext_ts = 0;
+> +	dev->ptp_clock_info.n_per_out = 0;
+> +	dev->ptp_clock_info.pps = 0;
+
+memset the structure ahead of time so you only need explicit 
+initialization where needed?
+
+> +	dev->ptp_clock_info.adjfine = b53_ptp_adjfine;
+> +	dev->ptp_clock_info.adjtime = b53_ptp_adjtime;
+> +	dev->ptp_clock_info.gettime64 = b53_ptp_gettime;
+> +	dev->ptp_clock_info.settime64 = b53_ptp_settime;
+> +	dev->ptp_clock_info.enable = b53_ptp_enable;
+> +
+> +	dev->ptp_clock = ptp_clock_register(&dev->ptp_clock_info, dev->dev);
+> +	if (IS_ERR(dev->ptp_clock))
+> +		return PTR_ERR(dev->ptp_clock);
+> +
+> +	/* The switch provides a 32 bit free running counter. Use the Linux
+> +	 * cycle counter infrastructure which is suited for such scenarios.
+> +	 */
+> +	dev->cc.read = b53_ptp_read;
+> +	dev->cc.mask = CYCLECOUNTER_MASK(30);
+> +	dev->cc.overflow_point = 999999999;
+> +	dev->cc.mult = (1 << 28);
+> +	dev->cc.shift = 28;
+> +
+> +	b53_write32(dev, B53_BROADSYNC_PAGE, B53_BROADSYNC_TIMEBASE_ADJ1, 40);
+
+You are writing the default value of the register, is that of any use?
 -- 
 Florian
