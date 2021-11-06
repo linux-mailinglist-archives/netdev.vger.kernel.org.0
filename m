@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DF42446D25
-	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 10:17:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FECD446D26
+	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 10:17:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233943AbhKFJUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Nov 2021 05:20:12 -0400
-Received: from smtp-fw-9103.amazon.com ([207.171.188.200]:12983 "EHLO
-        smtp-fw-9103.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231987AbhKFJUL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Nov 2021 05:20:11 -0400
+        id S233950AbhKFJUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Nov 2021 05:20:24 -0400
+Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:6490 "EHLO
+        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231987AbhKFJUX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Nov 2021 05:20:23 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1636190250; x=1667726250;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=eLms/cF8sp/7sdS4urV6Uf1FQrfnjQQ22TuCqm8Ih1s=;
-  b=lHcrJ0gkQKrPaWzkA+5OlLV70bsTfXxNGBAaJZoABSxb7yaQHN8AarfM
-   RGU0T1lG0z6qjfaIufExA4W69hoMMmpHloz4ZdcxQsPuAjVpNR7gRE5h9
-   +Y6tAoSAAyTe9FBeAo6GaOuYTi0Rqa/DUZ9xsZdqL2fG5FRuGrdVN+V3+
-   Q=;
+  s=amazon201209; t=1636190264; x=1667726264;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=0F7mhTkggN4Aci28q7G1AHhOrM1/oe9uGG6Si3UbprI=;
+  b=sXrpOKlQZyD8PYKEIivgqJO/3DinuF98Ow+CG8723HEFRdrPIah5fKwp
+   fbz1wMqSr/TrmvjDIom6F1XWYrfUMzLAbAn3PKxnbGDd6nbGs9icVjjwW
+   W8zL7WIe0nDisccB4WE1bCIQNpYAs4LG6ycNktvY/Q61sgfmLVrZgNEL1
+   Y=;
 X-IronPort-AV: E=Sophos;i="5.87,213,1631577600"; 
-   d="scan'208";a="969837647"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1e-98691110.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9103.sea19.amazon.com with ESMTP; 06 Nov 2021 09:17:29 +0000
+   d="scan'208";a="150050641"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1d-10222bbc.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP; 06 Nov 2021 09:17:43 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1e-98691110.us-east-1.amazon.com (Postfix) with ESMTPS id 5BA1B81422;
-        Sat,  6 Nov 2021 09:17:29 +0000 (UTC)
+        by email-inbound-relay-iad-1d-10222bbc.us-east-1.amazon.com (Postfix) with ESMTPS id 88F951A0100;
+        Sat,  6 Nov 2021 09:17:41 +0000 (UTC)
 Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.24; Sat, 6 Nov 2021 09:17:28 +0000
+ id 15.0.1497.24; Sat, 6 Nov 2021 09:17:40 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.162.153) by
  EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.24; Sat, 6 Nov 2021 09:17:25 +0000
+ id 15.0.1497.24; Sat, 6 Nov 2021 09:17:37 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -41,10 +41,12 @@ CC:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
         Benjamin Herrenschmidt <benh@amazon.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH net-next 00/13] af_unix: Replace unix_table_lock with per-hash locks.
-Date:   Sat, 6 Nov 2021 18:16:59 +0900
-Message-ID: <20211106091712.15206-1-kuniyu@amazon.co.jp>
+Subject: [PATCH net-next 01/13] af_unix: Use offsetof() instead of sizeof().
+Date:   Sat, 6 Nov 2021 18:17:00 +0900
+Message-ID: <20211106091712.15206-2-kuniyu@amazon.co.jp>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20211106091712.15206-1-kuniyu@amazon.co.jp>
+References: <20211106091712.15206-1-kuniyu@amazon.co.jp>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -55,42 +57,105 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The hash table of AF_UNIX sockets is protected by a single big lock,
-unix_table_lock.  This series replaces it with small per-hash locks.
+The length of the AF_UNIX socket address contains an offset to the member
+sun_path of struct sockaddr_un.
 
-1st -  2nd : Misc refactoring
-3rd -  8th : Separate BSD/abstract address logics
-9th - 11th : Prep to save a hash in each socket
-12th       : Replace the big lock
-13th       : Speed up autobind()
+Currently, the preceding member is just sun_family, and its type is
+sa_family_t and resolved to short.  Therefore, the offset is represented by
+sizeof(short).  However, it is not clear and fragile to changes in struct
+sockaddr_storage or sockaddr_un.
 
-After this series land in bpf-next, I will post another series to support
-bpf batching iteration and bpf_(get|set)sockopt for AF_UNIX sockets.
+This commit makes it clear and robust by rewriting sizeof() with
+offsetof().
 
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+---
+ net/unix/af_unix.c | 15 ++++++++-------
+ net/unix/diag.c    |  3 ++-
+ 2 files changed, 10 insertions(+), 8 deletions(-)
 
-Kuniyuki Iwashima (13):
-  af_unix: Use offsetof() instead of sizeof().
-  af_unix: Pass struct sock to unix_autobind().
-  af_unix: Factorise unix_find_other() based on address types.
-  af_unix: Return an error as a pointer in unix_find_other().
-  af_unix: Cut unix_validate_addr() out of unix_mkname().
-  af_unix: Copy unix_mkname() into unix_find_(bsd|abstract)().
-  af_unix: Remove unix_mkname().
-  af_unix: Allocate unix_address in unix_bind_(bsd|abstract)().
-  af_unix: Remove UNIX_ABSTRACT() macro and test sun_path[0] instead.
-  af_unix: Add helpers to calculate hashes.
-  af_unix: Save hash in sk_hash.
-  af_unix: Replace the big lock with small locks.
-  af_unix: Relax race in unix_autobind().
-
- include/net/af_unix.h                         |   3 +-
- net/unix/af_unix.c                            | 556 ++++++++++--------
- net/unix/diag.c                               |  23 +-
- .../selftests/bpf/progs/bpf_iter_unix.c       |   2 +-
- .../selftests/bpf/progs/bpf_tracing_net.h     |   2 -
- .../bpf/progs/test_skc_to_unix_sock.c         |   2 +-
- 6 files changed, 334 insertions(+), 254 deletions(-)
-
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 78e08e82c08c..b0ef27062489 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -231,7 +231,7 @@ static int unix_mkname(struct sockaddr_un *sunaddr, int len, unsigned int *hashp
+ {
+ 	*hashp = 0;
+ 
+-	if (len <= sizeof(short) || len > sizeof(*sunaddr))
++	if (len <= offsetof(struct sockaddr_un, sun_path) || len > sizeof(*sunaddr))
+ 		return -EINVAL;
+ 	if (!sunaddr || sunaddr->sun_family != AF_UNIX)
+ 		return -EINVAL;
+@@ -244,7 +244,7 @@ static int unix_mkname(struct sockaddr_un *sunaddr, int len, unsigned int *hashp
+ 		 * kernel address buffer.
+ 		 */
+ 		((char *)sunaddr)[len] = 0;
+-		len = strlen(sunaddr->sun_path)+1+sizeof(short);
++		len = strlen(sunaddr->sun_path) + offsetof(struct sockaddr_un, sun_path) + 1;
+ 		return len;
+ 	}
+ 
+@@ -970,7 +970,7 @@ static int unix_autobind(struct socket *sock)
+ 		goto out;
+ 
+ 	err = -ENOMEM;
+-	addr = kzalloc(sizeof(*addr) + sizeof(short) + 16, GFP_KERNEL);
++	addr = kzalloc(sizeof(*addr) + offsetof(struct sockaddr_un, sun_path) + 16, GFP_KERNEL);
+ 	if (!addr)
+ 		goto out;
+ 
+@@ -978,7 +978,8 @@ static int unix_autobind(struct socket *sock)
+ 	refcount_set(&addr->refcnt, 1);
+ 
+ retry:
+-	addr->len = sprintf(addr->name->sun_path+1, "%05x", ordernum) + 1 + sizeof(short);
++	addr->len = sprintf(addr->name->sun_path + 1, "%05x", ordernum) +
++		offsetof(struct sockaddr_un, sun_path) + 1;
+ 	addr->hash = unix_hash_fold(csum_partial(addr->name, addr->len, 0));
+ 	addr->hash ^= sk->sk_type;
+ 
+@@ -1160,7 +1161,7 @@ static int unix_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
+ 	    sunaddr->sun_family != AF_UNIX)
+ 		return -EINVAL;
+ 
+-	if (addr_len == sizeof(short))
++	if (addr_len == offsetof(struct sockaddr_un, sun_path))
+ 		return unix_autobind(sock);
+ 
+ 	err = unix_mkname(sunaddr, addr_len, &hash);
+@@ -1604,7 +1605,7 @@ static int unix_getname(struct socket *sock, struct sockaddr *uaddr, int peer)
+ 	if (!addr) {
+ 		sunaddr->sun_family = AF_UNIX;
+ 		sunaddr->sun_path[0] = 0;
+-		err = sizeof(short);
++		err = offsetof(struct sockaddr_un, sun_path);
+ 	} else {
+ 		err = addr->len;
+ 		memcpy(sunaddr, addr->name, addr->len);
+@@ -3235,7 +3236,7 @@ static int unix_seq_show(struct seq_file *seq, void *v)
+ 			seq_putc(seq, ' ');
+ 
+ 			i = 0;
+-			len = u->addr->len - sizeof(short);
++			len = u->addr->len - offsetof(struct sockaddr_un, sun_path);
+ 			if (!UNIX_ABSTRACT(s))
+ 				len--;
+ 			else {
+diff --git a/net/unix/diag.c b/net/unix/diag.c
+index 7e7d7f45685a..db555f267407 100644
+--- a/net/unix/diag.c
++++ b/net/unix/diag.c
+@@ -19,7 +19,8 @@ static int sk_diag_dump_name(struct sock *sk, struct sk_buff *nlskb)
+ 	if (!addr)
+ 		return 0;
+ 
+-	return nla_put(nlskb, UNIX_DIAG_NAME, addr->len - sizeof(short),
++	return nla_put(nlskb, UNIX_DIAG_NAME,
++		       addr->len - offsetof(struct sockaddr_un, sun_path),
+ 		       addr->name->sun_path);
+ }
+ 
 -- 
 2.30.2
 
