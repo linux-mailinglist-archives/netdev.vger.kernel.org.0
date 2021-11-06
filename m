@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FCA3446FB8
-	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 19:07:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9557446FBC
+	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 19:07:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234087AbhKFSJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Nov 2021 14:09:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52020 "EHLO
+        id S234152AbhKFSK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Nov 2021 14:10:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231384AbhKFSJr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Nov 2021 14:09:47 -0400
-Received: from mail-ua1-x92c.google.com (mail-ua1-x92c.google.com [IPv6:2607:f8b0:4864:20::92c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF770C061570;
-        Sat,  6 Nov 2021 11:07:05 -0700 (PDT)
-Received: by mail-ua1-x92c.google.com with SMTP id q13so23367765uaq.2;
-        Sat, 06 Nov 2021 11:07:05 -0700 (PDT)
+        with ESMTP id S231384AbhKFSK0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Nov 2021 14:10:26 -0400
+Received: from mail-ua1-x930.google.com (mail-ua1-x930.google.com [IPv6:2607:f8b0:4864:20::930])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7158C061570;
+        Sat,  6 Nov 2021 11:07:44 -0700 (PDT)
+Received: by mail-ua1-x930.google.com with SMTP id v3so23279193uam.10;
+        Sat, 06 Nov 2021 11:07:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=AcEPzmA1L284bZR8Qr3ibGx3jhuqPyHsP2AM9zB6niA=;
-        b=JDq1I74+sG/9EU6UEo47EC6OIURudmyM2IYXcQfbOZz5ngCCdM3Hiaj/UCykV4oEBb
-         ZvFmONZv4evbGKhwfj17iaukfTZrc6ebl7vnz9WbgQmFIxWcYZf9BMrzAnWCEFR+pvGi
-         9Sav79V5kH4QRXTtiNa/cD49RY8XW2K7QLAbFSY74hX+JZuOOhpiyynZ7FODvvYOzcO6
-         pPRrxRk2unVxoC1hngAuT8KsDdbvGDL8c5L0ZA2gOdPBloZ3xjyeh4Id5re+81qWlC6L
-         hw//mh3qD8acFsJiw1TI7Z/qCYtMcSSmCGnzkfoQqbMJYcuKlmPSEdcw7OWPW8u9D4NA
-         PSRA==
+        bh=p6t+adxQ0bKFUq5Op+nUBg/TmVOSwc6YKd9W3pFBChs=;
+        b=Vbss1/v7FKSrIWZPV+oPY/Qq4T8MIjCXxgrpy44PPSXlyac2pTdz5tyevxbIzWJf7C
+         G0guvwNhQx+566Un3ZjZKhOb1+xSn6W+b8cGJX2dSTD5Z2kI19hkYBufiMX0G0BB4qUl
+         FsCn7p3C6ExBknozI/uB+LjR5dfvaOiPrcGtrWUMuJmxSI3adS+jR8rrikc1Zz7jfvwg
+         we0G8x23elvwVDDwWLAKNyyPw+OgE4jylOZw4PwTbD9z2wJvel4wEyZYyw/B2d49OabC
+         +jxVSLgYofFy4WS49fgsQgordEtWPj9VApPpDl+oqgg8Jz+SYTZaQJ+1snJvBcAskJCs
+         EecA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=AcEPzmA1L284bZR8Qr3ibGx3jhuqPyHsP2AM9zB6niA=;
-        b=0kDPx/FLfRy3gAWN69KKc3KDDMo99z1MRJFvmDhHYtT2FGgGiMN+GKLVbNyNqYE9Bo
-         KOWLMbmDbtFWCiZvFw1V7OxHRY7e3YdQJfEl4wJVmql29Dgm08rqaLO5c3cjZm0TX1Fo
-         w1zNmQ7V+270ceAnj8ifJ0vJv4X91e460pc2OVA/6j6z5r+EJB4o0X9lMYO6VOm1x5Sh
-         cOMSFSw1b7uJEidUGLAu9PHj0YUXoFiXvmI6mz+CBrU3ffisY4+Q8BFKJ+CQDkSl2IBc
-         yPx0SnRaCzLHvShtK3xdyyhokmlml0fq6G7/19wcBKmqrPNGnONC5gNxfqb2hEf3tb3Y
-         8IUA==
-X-Gm-Message-State: AOAM530RIoTu+MNtAShJ2W409y5jkJM7OTcqERsyJKEitffI6pyrgCem
-        hxXosjLM61BB7RGHEpT7f2ZzJFWh5Ib4w1V58IM=
-X-Google-Smtp-Source: ABdhPJzldF/wP+De19wiqdyP8tlpX49DTTiELZra86AEjbeBras36VFrf1I4lRbZKBks/N/eO3Of/TQ4SqVR7JoH6sg=
-X-Received: by 2002:a05:6102:3e81:: with SMTP id m1mr82967547vsv.44.1636222025036;
- Sat, 06 Nov 2021 11:07:05 -0700 (PDT)
+        bh=p6t+adxQ0bKFUq5Op+nUBg/TmVOSwc6YKd9W3pFBChs=;
+        b=3c0g8L2BoulYPp9v63XSVpsl/WMynI0DmHTPCGD9adNYTiDCoF1AX5z8/Av/4pfkS4
+         uYwWLGjsXM9Sub5HONp+7pj92eIrSEHsk8tX0Mrpc+goSq54jbuBCaWOS5fz9JPsQC/C
+         2ZFzz20G+mE+Q0rN6zKHWSVjzibyGfWX4AJuEaH31vc6dxqeSrAcqs8tQjLF0XOGrZAx
+         Viiq1RvfSuhMpDCG2nXon/RG5gCODe2P3nDJnR41DJ/HfsDNEAnwa1feY2nhy/xKgajo
+         Lr4CJsMRsa8ZnApg+lljbO9fWEGOZsYzk7DRROVPjjTzMYUNn5RSVLZg5GFDNNfo5N4m
+         0OCw==
+X-Gm-Message-State: AOAM530F6vg8gRyfz4I3IPgEPRT9Lv9MXycjoyApv5StmfxgkZZI7nyv
+        eod2g2xTcP7F8at/ON/AtY6OOsT6VpG1YEWxxVI=
+X-Google-Smtp-Source: ABdhPJy1a+mAuvPsSEgnKLIsu/XnAYwVU1pU/VbUS+A0IUw2U1NI5vF/DwVmrrb5EOFLmH5p2kSef6OS4isscz9lkBM=
+X-Received: by 2002:a67:d48d:: with SMTP id g13mr50054993vsj.34.1636222063626;
+ Sat, 06 Nov 2021 11:07:43 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211101035635.26999-1-ricardo.martinez@linux.intel.com> <20211101035635.26999-9-ricardo.martinez@linux.intel.com>
-In-Reply-To: <20211101035635.26999-9-ricardo.martinez@linux.intel.com>
+References: <20211101035635.26999-1-ricardo.martinez@linux.intel.com> <20211101035635.26999-10-ricardo.martinez@linux.intel.com>
+In-Reply-To: <20211101035635.26999-10-ricardo.martinez@linux.intel.com>
 From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Sat, 6 Nov 2021 21:08:07 +0300
-Message-ID: <CAHNKnsTBbyouE1Pp-UN_b9xwWXh_cjO7UH1Xhtyv7kT3U=KFAQ@mail.gmail.com>
-Subject: Re: [PATCH v2 08/14] net: wwan: t7xx: Add data path interface
+Date:   Sat, 6 Nov 2021 21:08:46 +0300
+Message-ID: <CAHNKnsTAj8OHzoyK3SHhA_yXJrqc38bYmY6pYZf9fwUemcK7iQ@mail.gmail.com>
+Subject: Re: [PATCH v2 09/14] net: wwan: t7xx: Add WWAN network interface
 To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
 Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
@@ -74,183 +74,329 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Mon, Nov 1, 2021 at 6:57 AM Ricardo Martinez
 <ricardo.martinez@linux.intel.com> wrote:
-> Data Path Modem AP Interface (DPMAIF) HIF layer provides methods
-> for initialization, ISR, control and event handling of TX/RX flows.
->
-> DPMAIF TX
-> Exposes the `dmpaif_tx_send_skb` function which can be used by the
-> network device to transmit packets.
-> The uplink data management uses a Descriptor Ring Buffer (DRB).
-> First DRB entry is a message type that will be followed by 1 or more
-> normal DRB entries. Message type DRB will hold the skb information
-> and each normal DRB entry holds a pointer to the skb payload.
->
-> DPMAIF RX
-> The downlink buffer management uses Buffer Address Table (BAT) and
-> Packet Information Table (PIT) rings.
-> The BAT ring holds the address of skb data buffer for the HW to use,
-> while the PIT contains metadata about a whole network packet including
-> a reference to the BAT entry holding the data buffer address.
-> The driver reads the PIT and BAT entries written by the modem, when
-> reaching a threshold, the driver will reload the PIT and BAT rings.
+> Creates the Cross Core Modem Network Interface (CCMNI) which implements
+> the wwan_ops for registration with the WWAN framework, CCMNI also
+> implements the net_device_ops functions used by the network device.
+> Network device operations include open, close, start transmission, TX
+> timeout, change MTU, and select queue.
 
 [skipped]
 
-> diff --git a/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c b/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c
+> diff --git a/drivers/net/wwan/t7xx/t7xx_netdev.c b/drivers/net/wwan/t7xx/t7xx_netdev.c
 > ...
-> +static int dpmaif_net_rx_push_thread(void *arg)
+> +static void ccmni_make_etherframe(struct net_device *dev, void *skb_eth_hdr,
+> +                                 u8 *mac_addr, unsigned int packet_type)
 > +{
-> ...
-> +       while (!kthread_should_stop()) {
-> +               if (skb_queue_empty(&q->skb_queue.skb_list)) {
-> +                       if (wait_event_interruptible(q->rx_wq,
-> +                                                    !skb_queue_empty(&q->skb_queue.skb_list) ||
-> +                                                    kthread_should_stop()))
-> +                               continue;
-> +               }
+> +       struct ethhdr *eth_hdr;
 > +
-> +               if (kthread_should_stop())
-> +                       break;
-
-Looks like the above check is used to recheck thread state after the
-wait_event_interruptible() call, so the check could be moved to the
-skb_queue_empty() code block to avoid odd thread state checks.
-
-> ...
-> +static void dpmaif_rx_skb(struct dpmaif_rx_queue *rxq, struct dpmaif_cur_rx_skb_info *rx_skb_info)
-> +{
-> +       struct sk_buff *new_skb;
-> +       u32 *lhif_header;
+> +       eth_hdr = skb_eth_hdr;
+> +       memcpy(eth_hdr->h_dest, mac_addr, sizeof(eth_hdr->h_dest));
+> +       memset(eth_hdr->h_source, 0, sizeof(eth_hdr->h_source));
 > +
-> +       new_skb = rx_skb_info->cur_skb;
-> ...
-> +       /* MD put the ccmni_index to the msg pkt,
-> +        * so we need push it alone. Maybe not needed.
-> +        */
-> +       lhif_header = skb_push(new_skb, sizeof(*lhif_header));
-> +       *lhif_header &= ~LHIF_HEADER_NETIF;
-> +       *lhif_header |= FIELD_PREP(LHIF_HEADER_NETIF, rx_skb_info->cur_chn_idx);
-
-Why is the skb data field used to carry packet control data? Consider
-using the skb control buffer (i.e skb->cb) to carry control data
-between the driver layers to make metadata handling less expensive and
-increase driver performance.
-
-> +       /* add data to rx thread skb list */
-> +       ccci_skb_enqueue(&rxq->skb_queue, new_skb);
+> +       if (packet_type == IPV6_VERSION)
+> +               eth_hdr->h_proto = cpu_to_be16(ETH_P_IPV6);
+> +       else
+> +               eth_hdr->h_proto = cpu_to_be16(ETH_P_IP);
 > +}
-> ...
-> +void dpmaif_rxq_free(struct dpmaif_rx_queue *queue)
+
+If the modem is a pure IP device, you do not need to forge an Ethernet
+header. Moreover this does not make any sense, only odd CPU time
+spending. Just set netdev->type to ARPHRD_NONE and send a pure
+IPv4/IPv6 packet up to the stack.
+
+> +static enum txq_type get_txq_type(struct sk_buff *skb)
 > +{
-> ...
-> +       while ((skb = skb_dequeue(&queue->skb_queue.skb_list)))
-> +               kfree_skb(skb);
-
-skb_queue_purge()
-
-> ...
-> +static int dpmaif_skb_queue_init_struct(struct dpmaif_ctrl *dpmaif_ctrl,
-> +                                       const unsigned int index)
-> +{
-> ...
-> +       INIT_LIST_HEAD(&queue->skb_list.head);
-> +       spin_lock_init(&queue->skb_list.lock);
-> +       queue->skb_list.qlen = 0;
-
-skb_queue_head_init()
-
-[skipped]
-
-> diff --git a/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.h b/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.h
-> ...
-> +/* lhif header feilds */
-> +#define LHIF_HEADER_NW_TYPE    GENMASK(31, 29)
-> +#define LHIF_HEADER_NETIF      GENMASK(28, 24)
-> +#define LHIF_HEADER_F          GENMASK(22, 20)
-> +#define LHIF_HEADER_FLOW       GENMASK(19, 16)
-
-Just place control data to the skb control buffer (i.e. skb->cb) and
-define this control data as a structure:
-
-struct rx_pkt_cb {
-        u8 nw_type;
-        u8 netif;
-        u8 flow;
-};
-
-> diff --git a/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_tx.c b/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_tx.c
-> ...
-> +static int dpmaif_tx_send_skb_on_tx_thread(struct dpmaif_ctrl *dpmaif_ctrl,
-> +                                          struct dpmaif_tx_event *event)
-> +{
-> ...
-> +       struct ccci_header ccci_h;
-> ...
-> +       skb = event->skb;
-> ...
-> +       ccci_h = *(struct ccci_header *)skb->data;
-> +       skb_pull(skb, sizeof(struct ccci_header));
-
-Place this metadata to the skb control buffer (i.e. skb->cb) to avoid
-odd skb_push()/skb_pull() calls.
-
-Also this looks like an abuse of ccci_header structure. In fact it
-never passed to the modem along with a data packet, but searching
-through the code show this as a structure usage place.
-
-> ...
-> +int dpmaif_tx_send_skb(struct dpmaif_ctrl *dpmaif_ctrl, enum txq_type txqt, struct sk_buff *skb)
-> +{
-> ...
-> +       if (txq->tx_submit_skb_cnt < txq->tx_list_max_len && tx_drb_available) {
-> +               struct dpmaif_tx_event *event;
-> ...
-> +               event = kmalloc(sizeof(*event), GFP_ATOMIC);
-> ...
-> +               INIT_LIST_HEAD(&event->entry);
-> +               event->qno = txqt;
-> +               event->skb = skb;
-> +               event->drb_cnt = send_drb_cnt;
-
-Please, place the packet metadata (dpmaif_tx_event data) in the skb
-control buffer (i.e. skb->cb) and use skb queue API as in Rx path.
-This will allow you to avoid the per-packet metadata memory allocation
-and make code simple.
-
-> +               spin_lock_irqsave(&txq->tx_event_lock, flags);
-> +               list_add_tail(&event->entry, &txq->tx_event_queue);
-> +               txq->tx_submit_skb_cnt++;
-> +               spin_unlock_irqrestore(&txq->tx_event_lock, flags);
-> +               wake_up(&dpmaif_ctrl->tx_wq);
+> +       u32 total_len, payload_len, l4_off;
+> +       bool tcp_syn_fin_rst, is_tcp;
+> +       struct ipv6hdr *ip6h;
+> +       struct tcphdr *tcph;
+> +       struct iphdr *ip4h;
+> +       u32 packet_type;
+> +       __be16 frag_off;
 > +
-> +               return 0;
+> +       packet_type = skb->data[0] & SBD_PACKET_TYPE_MASK;
+> +       if (packet_type == IPV6_VERSION) {
+> +               ip6h = (struct ipv6hdr *)skb->data;
+> +               total_len = sizeof(struct ipv6hdr) + ntohs(ip6h->payload_len);
+> +               l4_off = ipv6_skip_exthdr(skb, sizeof(struct ipv6hdr), &ip6h->nexthdr, &frag_off);
+> +               tcph = (struct tcphdr *)(skb->data + l4_off);
+> +               is_tcp = ip6h->nexthdr == IPPROTO_TCP;
+> +               payload_len = total_len - l4_off - (tcph->doff << 2);
+> +       } else if (packet_type == IPV4_VERSION) {
+> +               ip4h = (struct iphdr *)skb->data;
+> +               tcph = (struct tcphdr *)(skb->data + (ip4h->ihl << 2));
+> +               is_tcp = ip4h->protocol == IPPROTO_TCP;
+> +               payload_len = ntohs(ip4h->tot_len) - (ip4h->ihl << 2) - (tcph->doff << 2);
+> +       } else {
+> +               return TXQ_NORMAL;
 > +       }
 > +
-> +       cb = dpmaif_ctrl->callbacks;
-> +       cb->state_notify(dpmaif_ctrl->mtk_dev, DMPAIF_TXQ_STATE_FULL, txqt);
+> +       tcp_syn_fin_rst = tcph->syn || tcph->fin || tcph->rst;
+> +       if (is_tcp && !payload_len && !tcp_syn_fin_rst)
+> +               return TXQ_FAST;
 > +
-> +       return -EBUSY;
+> +       return TXQ_NORMAL;
+> +}
 
-It is better to invert the above condition, handle TXQ full situation
-as a corner case and packet queuing as a normal case. I.e. instead of:
+I am wondering how much modem performance has improved with this
+optimization compared to the performance loss on each packet due to
+the cache miss? Do you have any measurement results?
 
-        if (have_queue_space) {
-                /* Enqueue packet */
-                return 0;
-        }
-        /* Queue full notification emitting */
-        return -EBUSY;
+> +static u16 ccmni_select_queue(struct net_device *dev, struct sk_buff *skb,
+> +                             struct net_device *sb_dev)
+> +{
+> +       struct ccmni_instance *ccmni;
+> +
+> +       ccmni = netdev_priv(dev);
+> +
+> +       if (ccmni->ctlb->capability & NIC_CAP_DATA_ACK_DVD)
+> +               return get_txq_type(skb);
+> +
+> +       return TXQ_NORMAL;
+> +}
+> +
+> +static int ccmni_open(struct net_device *dev)
+> +{
+> +       struct ccmni_instance *ccmni;
+> +
+> +       ccmni = wwan_netdev_drvpriv(dev);
 
-handle queuing like this:
+Move this assignment to the variable definition.
 
-        if (unlikely(!have_queue_space)) {
-                /* Queue full notification emitting */
-                return -EBUSY;
-        }
-        /* Enqueue packet */
-        return 0;
+> +       netif_carrier_on(dev);
+> +       netif_tx_start_all_queues(dev);
+> +       atomic_inc(&ccmni->usage);
+> +       return 0;
+> +}
+> +
+> +static int ccmni_close(struct net_device *dev)
+> +{
+> +       struct ccmni_instance *ccmni;
+> +
+> +       ccmni = wwan_netdev_drvpriv(dev);
 
-This is a matter of taste, but makes code more readable.
+Same here.
+
+> +       if (atomic_dec_return(&ccmni->usage) < 0)
+> +               return -EINVAL;
+> +
+> +       netif_carrier_off(dev);
+> +       netif_tx_disable(dev);
+> +       return 0;
+> +}
+> +
+> +static int ccmni_send_packet(struct ccmni_instance *ccmni, struct sk_buff *skb, enum txq_type txqt)
+> +{
+> +       struct ccmni_ctl_block *ctlb;
+> +       struct ccci_header *ccci_h;
+> +       unsigned int ccmni_idx;
+> +
+> +       skb_push(skb, sizeof(struct ccci_header));
+> +       ccci_h = (struct ccci_header *)skb->data;
+> +       ccci_h->status &= ~HDR_FLD_CHN;
+
+Please do not push control data to the skb data. You anyway will
+remove them during the enqueuing to HW. This approach will cause a
+performance penalty. Also this looks like a ccci_header structure
+abuse.
+
+Use a dedicated structure and the skb control buffer (e.g. skb->cb) to
+preserve control data while the packet stays in an intermediate queue.
+
+> +       ccmni_idx = ccmni->index;
+> +       ccci_h->data[0] = ccmni_idx;
+> +       ccci_h->data[1] = skb->len;
+> +       ccci_h->reserved = 0;
+> +
+> +       ctlb = ccmni->ctlb;
+> +       if (dpmaif_tx_send_skb(ctlb->hif_ctrl, txqt, skb)) {
+> +               skb_pull(skb, sizeof(struct ccci_header));
+> +               /* we will reserve header again in the next retry */
+> +               return NETDEV_TX_BUSY;
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+> +static int ccmni_start_xmit(struct sk_buff *skb, struct net_device *dev)
+> +{
+> +       struct ccmni_instance *ccmni;
+> +       struct ccmni_ctl_block *ctlb;
+> +       enum txq_type txqt;
+> +       int skb_len;
+> +
+> +       ccmni = wwan_netdev_drvpriv(dev);
+
+Move assignment to the variable definition.
+
+> +       ctlb = ccmni->ctlb;
+> +       txqt = TXQ_NORMAL;
+> +       skb_len = skb->len;
+> +
+> +       /* If MTU changed or there is no headroom, drop the packet */
+> +       if (skb->len > dev->mtu || skb_headroom(skb) < sizeof(struct ccci_header)) {
+> +               dev_kfree_skb(skb);
+> +               dev->stats.tx_dropped++;
+> +               return NETDEV_TX_OK;
+> +       }
+> +
+> +       if (ctlb->capability & NIC_CAP_DATA_ACK_DVD)
+> +               txqt = get_txq_type(skb);
+> +
+> +       if (ccmni_send_packet(ccmni, skb, txqt)) {
+> +               if (!(ctlb->capability & NIC_CAP_TXBUSY_STOP)) {
+> +                       if ((ccmni->tx_busy_cnt[txqt]++) % 100 == 0)
+> +                               netdev_notice(dev, "[TX]CCMNI:%d busy:pkt=%ld(ack=%d) cnt=%ld\n",
+> +                                             ccmni->index, dev->stats.tx_packets,
+> +                                             txqt, ccmni->tx_busy_cnt[txqt]);
+
+What is the purpose of this message?
+
+> +               } else {
+> +                       ccmni->tx_busy_cnt[txqt]++;
+> +               }
+> +
+> +               return NETDEV_TX_BUSY;
+> +       }
+> +
+> +       dev->stats.tx_packets++;
+> +       dev->stats.tx_bytes += skb_len;
+> +       if (ccmni->tx_busy_cnt[txqt] > 10) {
+> +               netdev_notice(dev, "[TX]CCMNI:%d TX busy:tx_pkt=%ld(ack=%d) retries=%ld\n",
+> +                             ccmni->index, dev->stats.tx_packets,
+> +                             txqt, ccmni->tx_busy_cnt[txqt]);
+> +       }
+> +       ccmni->tx_busy_cnt[txqt] = 0;
+> +
+> +       return NETDEV_TX_OK;
+> +}
+> +
+> +static int ccmni_change_mtu(struct net_device *dev, int new_mtu)
+> +{
+> +       if (new_mtu > CCMNI_MTU_MAX)
+> +               return -EINVAL;
+> +
+> +       dev->mtu = new_mtu;
+> +       return 0;
+> +}
+
+You do not need this function at all. You already specify the max_mtu
+value in the ccmni_wwan_setup(), so the network core code will be
+happy to check a user requested MTU against max_mtu for you.
+
+> ...
+> +static void ccmni_pre_stop(struct ccmni_ctl_block *ctlb)
+> +{
+> ...
+> +}
+> +
+> +static void ccmni_pos_stop(struct ccmni_ctl_block *ctlb)
+
+Please consider renaming this function to ccmni_post_stop(). It is
+quite hard to figure out what position should be stopped on first code
+reading.
+
+> ...
+> +static void ccmni_wwan_setup(struct net_device *dev)
+> +{
+> +       dev->header_ops = NULL;
+> +       dev->hard_header_len += sizeof(struct ccci_header);
+> +
+> +       dev->mtu = WWAN_DEFAULT_MTU;
+> +       dev->max_mtu = CCMNI_MTU_MAX;
+> +       dev->tx_queue_len = CCMNI_TX_QUEUE;
+> +       dev->watchdog_timeo = CCMNI_NETDEV_WDT_TO;
+> +       /* ccmni is a pure IP device */
+> +       dev->flags = (IFF_POINTOPOINT | IFF_NOARP)
+> +                    & ~(IFF_BROADCAST | IFF_MULTICAST);
+
+You do not need to reset flags on the initial assignment. Just
+
+        dev->flags = IFF_POINTOPOINT | IFF_NOARP;
+
+would be enough.
+
+> +       /* not supporting VLAN */
+> +       dev->features = NETIF_F_VLAN_CHALLENGED;
+> +
+> +       dev->features |= NETIF_F_SG;
+> +       dev->hw_features |= NETIF_F_SG;
+> +
+> +       /* uplink checksum offload */
+> +       dev->features |= NETIF_F_HW_CSUM;
+> +       dev->hw_features |= NETIF_F_HW_CSUM;
+> +
+> +       /* downlink checksum offload */
+> +       dev->features |= NETIF_F_RXCSUM;
+> +       dev->hw_features |= NETIF_F_RXCSUM;
+> +
+> +       dev->addr_len = ETH_ALEN;
+
+You do not need to configure HW address length as the modem is a pure
+IP device. Just drop the above line or explicitly set address length
+to zero.
+
+> +       /* use kernel default free_netdev() function */
+> +       dev->needs_free_netdev = true;
+> +
+> +       /* no need to free again because of free_netdev() */
+> +       dev->priv_destructor = NULL;
+> +       dev->type = ARPHRD_PPP;
+
+Use ARPHRD_NONE here since the modem is a pure IP device. Or you could
+use ARPHRD_RAWIP depending on how you would like to allocate the link
+IPv6 address. If in doubt then ARPHRD_NONE is a good starting point.
+
+> +       dev->netdev_ops = &ccmni_netdev_ops;
+> +       eth_random_addr(dev->dev_addr);
+
+You do not need this random address generation.
+
+> +}
+> ...
+> +static void ccmni_recv_skb(struct mtk_pci_dev *mtk_dev, int netif_id, struct sk_buff *skb)
+> +{
+> ...
+> +       pkt_type = skb->data[0] & SBD_PACKET_TYPE_MASK;
+> +       ccmni_make_etherframe(dev, skb->data - ETH_HLEN, dev->dev_addr, pkt_type);
+
+As I wrote above, you do not need to forge an Ethernet header for pure
+IP devices.
+
+> +       skb_set_mac_header(skb, -ETH_HLEN);
+> +       skb_reset_network_header(skb);
+> +       skb->dev = dev;
+> +       if (pkt_type == IPV6_VERSION)
+> +               skb->protocol = htons(ETH_P_IPV6);
+> +       else
+> +               skb->protocol = htons(ETH_P_IP);
+> +
+> +       skb_len = skb->len;
+> +
+> +       netif_rx_any_context(skb);
+
+Did you consider using NAPI for the packet Rx path? This should
+improve Rx performance.
+
+> +       dev->stats.rx_packets++;
+> +       dev->stats.rx_bytes += skb_len;
+> +}
+
+[skipped]
+
+> diff --git a/drivers/net/wwan/t7xx/t7xx_netdev.h b/drivers/net/wwan/t7xx/t7xx_netdev.h
+> ...
+> +#define CCMNI_TX_QUEUE         1000
+
+Is this a really carefully selected queue depth limit, or just an
+arbitrary value? If the last one, then feel free to use  the
+DEFAULT_TX_QUEUE_LEN macro.
+
+> ..
+> +#define IPV4_VERSION           0x40
+> +#define IPV6_VERSION           0x60
+
+Just curious why the _VERSION suffix? Why not, for example, PKT_TYPE_ prefix?
 
 --
 Sergey
