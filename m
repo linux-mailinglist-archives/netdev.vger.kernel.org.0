@@ -2,187 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E66B4470A6
-	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 22:20:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 180494470B9
+	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 22:52:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235136AbhKFVWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Nov 2021 17:22:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54384 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233912AbhKFVWz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 6 Nov 2021 17:22:55 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 16E7861139;
-        Sat,  6 Nov 2021 21:20:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636233613;
-        bh=En7ugPZwMj4wEOcXJ2z95aMtHtRSF4XCmNpI+QBG1nk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Nib81Xv8Z6A/Gb8YlZgPUiGfIaETHFoBUvGGkBi61eSu9y6H+jz/rsF8OsjI06PCb
-         akZZTjGQQc8pKXDc3Z44D3YD6/bTskMCb5OTPd3I3iylM1OX9jERjFYHWrrnqK6UT4
-         PNJBQp7AqqgtaFBlXI9og0OoYG8lHBzLCI0TZGAn5HGZ9ISYvi5PdEqtBhg+01OiXk
-         JkA/Ddgt+20fdHSwjhWoxw5N6V7QTe0RUoRWzNt/8EpfN4uDWuF0Va4Lj/bNYgYOJy
-         nygT5z6epy3bFHLIK9WLCU/rjBK4RdXsm0axWKJmjyzOISB1Zne+wzIFEKL3UQ9rX0
-         XmCCnjas/eslw==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 97558410A1; Sat,  6 Nov 2021 18:20:10 -0300 (-03)
-Date:   Sat, 6 Nov 2021 18:20:10 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>, Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [BUG] Re: [PATCH bpf-next] perf build: Install libbpf headers
- locally when building
-Message-ID: <YYbxigLXFkomexsZ@kernel.org>
-References: <20211105020244.6869-1-quentin@isovalent.com>
- <CAEf4Bza_-vvOXPRZaJzi4YpU5Bfb=werLUFG=Au9DtaanbuArg@mail.gmail.com>
- <YYbXjE1aAdNjI+aY@kernel.org>
- <YYbhwPnn4OvnybzQ@kernel.org>
- <YYbuA347Y5nMJ4Xm@kernel.org>
+        id S230319AbhKFVzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Nov 2021 17:55:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44724 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229723AbhKFVzQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Nov 2021 17:55:16 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D0CC061570
+        for <netdev@vger.kernel.org>; Sat,  6 Nov 2021 14:52:34 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id u18so19612775wrg.5
+        for <netdev@vger.kernel.org>; Sat, 06 Nov 2021 14:52:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=cpzkNayM9HufcRN2Q1h9fIKC9aOJE8WfPgyI8YiLXQ8=;
+        b=nsyETzIruwmXw3a7KsGcNdy8kMHZKB1eFoCa0a/ISOoaGB6q4AaTpqsTF5BugDyCtK
+         laEGmrE8DVEmhxhtPcK/WjilLeIvIn6mPjjtcVWmv8nqpkrcEhlTz1XrVmykBaevjcA0
+         oo+VwZh9Fa+QMDyLsxnSQMJsIGwc8VoVqdtKkOkrQihL9G9qsxWH9KjVV4EYVSOOwek2
+         aVtCxbclBb5ln7LLsD+xFsKniFLtd8ubYV6A/gZf+gPydq9NaVRHfeP+dOEEMN48y8+2
+         ZOTRLHOC4/WCVuf9G4aTZwB/9gbcOTDkLHVb3pMuiB2ps+CJds1wp5ntSel3VBlEsKuz
+         LpdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=cpzkNayM9HufcRN2Q1h9fIKC9aOJE8WfPgyI8YiLXQ8=;
+        b=eJoy8u8jUbo5+79wPFD9hUxooD0IyIgrUTuximfQV2arQ3aLxmt86bQjuk7uGwNJ1E
+         sDNvK/R1AoulwcZxMixiGvnOHqXhImB2Fw05/Cx9zR89Vc2tpPj2IWrHn8gaXeoJdJ9B
+         km343qeJVHPWA3SjdxuI+Q2LAvXSdXKlVNg03Dv7YvSLpN057jabqYCNQAbWKR3Q8r16
+         vVNz/mk2mrz2UmVkvsGu8KGz6FZ5m7HfIq/+Dag8R3f7YIZ4kQ/tR+g68Wpqn/CksDd8
+         z/BcqLqDNlfUQtIL6xun9WTrhUVk/1bbeMQnM5P166gHtNrCS1rl2DdcQDxdl/Y3dYzj
+         v8bQ==
+X-Gm-Message-State: AOAM532Q+ScNAf4LVEyLcNX/1FisvpuPJ/1EQOjcutMgHN7Z4iqNfAZ/
+        lDZjyyIhi3W+AOU4h6Ts/gk=
+X-Google-Smtp-Source: ABdhPJx/De6OrHTgJUY9qk3pL0+AyC4D5o/uaHwRF//HhgXfszTtUQ+kRUcRlQ5ayyvR4tuySVvsPQ==
+X-Received: by 2002:a05:6000:2a2:: with SMTP id l2mr51558263wry.110.1636235553274;
+        Sat, 06 Nov 2021 14:52:33 -0700 (PDT)
+Received: from ?IPV6:2003:ea:8f1a:f00:1d15:24f0:8ddc:e918? (p200300ea8f1a0f001d1524f08ddce918.dip0.t-ipconnect.de. [2003:ea:8f1a:f00:1d15:24f0:8ddc:e918])
+        by smtp.googlemail.com with ESMTPSA id f3sm14821495wmb.12.2021.11.06.14.52.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 06 Nov 2021 14:52:32 -0700 (PDT)
+Message-ID: <6e1844e5-cbee-5d50-e304-efa785405922@gmail.com>
+Date:   Sat, 6 Nov 2021 22:52:24 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YYbuA347Y5nMJ4Xm@kernel.org>
-X-Url:  http://acmel.wordpress.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Content-Language: en-US
+To:     bage@linutronix.de, Andrew Lunn <andrew@lunn.ch>
+Cc:     Russell King <linux@armlinux.org.uk>, davem@davemloft.net,
+        netdev@vger.kernel.org,
+        Benedikt Spranger <b.spranger@linutronix.de>
+References: <20211105153648.8337-1-bage@linutronix.de>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH] phy: phy_ethtool_ksettings_set: Don't discard
+ phy_start_aneg's return
+In-Reply-To: <20211105153648.8337-1-bage@linutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Sat, Nov 06, 2021 at 06:05:07PM -0300, Arnaldo Carvalho de Melo escreveu:
-> Em Sat, Nov 06, 2021 at 05:12:48PM -0300, Arnaldo Carvalho de Melo escreveu:
-> > Em Sat, Nov 06, 2021 at 04:29:16PM -0300, Arnaldo Carvalho de Melo escreveu:
-> > > Em Fri, Nov 05, 2021 at 11:38:50AM -0700, Andrii Nakryiko escreveu:
-> > > > On Thu, Nov 4, 2021 at 7:02 PM Quentin Monnet <quentin@isovalent.com> wrote:
-> > > > >
-> > > > > API headers from libbpf should not be accessed directly from the
-> > > > > library's source directory. Instead, they should be exported with "make
-> > > > > install_headers". Let's adjust perf's Makefile to install those headers
-> > > > > locally when building libbpf.
-> > > > >
-> > > > > Signed-off-by: Quentin Monnet <quentin@isovalent.com>
-> > > > > ---
-> > > > > Note: Sending to bpf-next because it's directly related to libbpf, and
-> > > > > to similar patches merged through bpf-next, but maybe Arnaldo prefers to
-> > > > > take it?
-> > > > 
-> > > > Arnaldo would know better how to thoroughly test it, so I'd prefer to
-> > > > route this through perf tree. Any objections, Arnaldo?
-> > > 
-> > > Preliminary testing passed for 'BUILD_BPF_SKEL=1' with without
-> > > LIBBPF_DYNAMIC=1 (using the system's libbpf-devel to build perf), so far
-> > > so good, so I tentatively applied it, will see with the full set of
-> > > containers.
-> > 
-> > Because all the preliminary tests used O= to have that OUTPUT variable
-> > set, when we do simply:
-> > 
-> > 	make -C tools/perf
+On 05.11.2021 16:36, bage@linutronix.de wrote:
+> From: Bastian Germann <bage@linutronix.de>
 > 
-> So I'll have to remove it now as my container builds test both O= and
-> in-place builds (make -C tools/perf), I know many people (Jiri for
-> instance) don't use O=.
+> Take the return of phy_start_aneg into account so that ethtool will handle
+> negotiation errors and not silently accept invalid input.
 > 
-> I tried to fix this but run out of time today, visits arriving soon, so
-> I'll try to come back to this tomorrow early morning, to push what I
-> have in to Linus, that is blocked by this now :-\
+> Fixes: 2d55173e71b0 ("phy: add generic function to support ksetting support")
+> Signed-off-by: Bastian Germann <bage@linutronix.de>
+> Reviewed-by: Benedikt Spranger <b.spranger@linutronix.de>
 
-What I have, with your patch, is at:
+In addition to what Andrew said already:
 
-git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git tmp.perf/core
+- This patch won't apply on net due to a4db9055fdb9.
+- Patch misses the "net" annotation.
+- Prefix should be "net: phy:", not "phy:".
 
-It has both patches, as its needed for the BUILD_BPF_SKEL=1 mode to
-build correctly with/without LIBBPF_DYNAMIC=1.
+At least the formal aspects should have been covered by the internal review.
 
-- Arnaldo
- 
-> - Arnaldo
+> ---
+>  drivers/net/phy/phy.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+> index a3bfb156c83d..f740b533abba 100644
+> --- a/drivers/net/phy/phy.c
+> +++ b/drivers/net/phy/phy.c
+> @@ -770,6 +770,8 @@ static int phy_poll_aneg_done(struct phy_device *phydev)
+>  int phy_ethtool_ksettings_set(struct phy_device *phydev,
+>  			      const struct ethtool_link_ksettings *cmd)
+>  {
+> +	int ret = 0;
+
+Why initializing ret?
+
+> +
+>  	__ETHTOOL_DECLARE_LINK_MODE_MASK(advertising);
+>  	u8 autoneg = cmd->base.autoneg;
+>  	u8 duplex = cmd->base.duplex;
+> @@ -815,10 +817,10 @@ int phy_ethtool_ksettings_set(struct phy_device *phydev,
+>  	phydev->mdix_ctrl = cmd->base.eth_tp_mdix_ctrl;
 >  
-> > it breaks:
-> > 
-> > ⬢[acme@toolbox perf]$ make -C tools clean > /dev/null 2>&1
-> > ⬢[acme@toolbox perf]$ make JOBS=1 -C tools/perf
-> > make: Entering directory '/var/home/acme/git/perf/tools/perf'
-> >   BUILD:   Doing 'make -j1' parallel build
-> >   HOSTCC  fixdep.o
-> >   HOSTLD  fixdep-in.o
-> >   LINK    fixdep
-> > <SNIP ABI sync warnings>
-> > 
-> > Auto-detecting system features:
-> > ...                         dwarf: [ on  ]
-> > ...            dwarf_getlocations: [ on  ]
-> > ...                         glibc: [ on  ]
-> > ...                        libbfd: [ on  ]
-> > ...                libbfd-buildid: [ on  ]
-> > ...                        libcap: [ on  ]
-> > ...                        libelf: [ on  ]
-> > ...                       libnuma: [ on  ]
-> > ...        numa_num_possible_cpus: [ on  ]
-> > ...                       libperl: [ on  ]
-> > ...                     libpython: [ on  ]
-> > ...                     libcrypto: [ on  ]
-> > ...                     libunwind: [ on  ]
-> > ...            libdw-dwarf-unwind: [ on  ]
-> > ...                          zlib: [ on  ]
-> > ...                          lzma: [ on  ]
-> > ...                     get_cpuid: [ on  ]
-> > ...                           bpf: [ on  ]
-> > ...                        libaio: [ on  ]
-> > ...                       libzstd: [ on  ]
-> > ...        disassembler-four-args: [ on  ]
-> > 
-> > 
-> >   CC      fd/array.o
-> >   LD      fd/libapi-in.o
-> >   CC      fs/fs.o
-> >   CC      fs/tracing_path.o
-> >   CC      fs/cgroup.o
-> >   LD      fs/libapi-in.o
-> >   CC      cpu.o
-> >   CC      debug.o
-> >   CC      str_error_r.o
-> >   LD      libapi-in.o
-> >   AR      libapi.a
-> >   CC      exec-cmd.o
-> >   CC      help.o
-> >   CC      pager.o
-> >   CC      parse-options.o
-> >   CC      run-command.o
-> >   CC      sigchain.o
-> >   CC      subcmd-config.o
-> >   LD      libsubcmd-in.o
-> >   AR      libsubcmd.a
-> >   CC      core.o
-> >   CC      cpumap.o
-> >   CC      threadmap.o
-> >   CC      evsel.o
-> >   CC      evlist.o
-> >   CC      mmap.o
-> >   CC      zalloc.o
-> >   CC      xyarray.o
-> >   CC      lib.o
-> >   LD      libperf-in.o
-> >   AR      libperf.a
-> > make[2]: *** No rule to make target 'libbpf', needed by 'libbpf/libbpf.a'.  Stop.
-> > make[1]: *** [Makefile.perf:240: sub-make] Error 2
-> > make: *** [Makefile:70: all] Error 2
-> > make: Leaving directory '/var/home/acme/git/perf/tools/perf'
-> > ⬢[acme@toolbox perf]$
-> > 
-> > Trying to fix...
-> > 
-> > - Arnaldo
+>  	/* Restart the PHY */
+> -	_phy_start_aneg(phydev);
+> +	ret = _phy_start_aneg(phydev);
+>  
+>  	mutex_unlock(&phydev->lock);
+> -	return 0;
+> +	return ret;
+>  }
+>  EXPORT_SYMBOL(phy_ethtool_ksettings_set);
+>  
 > 
-> -- 
-> 
-> - Arnaldo
 
--- 
-
-- Arnaldo
