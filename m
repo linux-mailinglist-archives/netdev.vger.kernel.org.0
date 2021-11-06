@@ -2,187 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2525B446D33
-	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 10:20:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5092446D1A
+	for <lists+netdev@lfdr.de>; Sat,  6 Nov 2021 10:11:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233956AbhKFJXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Nov 2021 05:23:25 -0400
-Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:48276 "EHLO
-        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229961AbhKFJXX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Nov 2021 05:23:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1636190443; x=1667726443;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=VfzbhLVSWl/MyUE2VHE8dsQieL35uCjr7Lh2GpnHbjc=;
-  b=rzg4rWTUahYjjCc/oUr1O7RcXHNuhqglXFDJEemefJ3O7Iz3cj0SOkRw
-   +CIJJ+GsADpyRIjhTGHIBdudUpD2N0HgubORF5AL1B9NOh3/9kGq+M4Gh
-   rqWUUErNX5RFvPW+3+7ztwzCN50p2Jeoq6mOzXw57CNWXJ8xAHxT/UsLj
-   8=;
-X-IronPort-AV: E=Sophos;i="5.87,213,1631577600"; 
-   d="scan'208";a="154598049"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-c92fe759.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP; 06 Nov 2021 09:20:42 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1a-c92fe759.us-east-1.amazon.com (Postfix) with ESMTPS id A1A83C09D1;
-        Sat,  6 Nov 2021 09:20:41 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.24; Sat, 6 Nov 2021 09:20:40 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.153) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.24; Sat, 6 Nov 2021 09:20:37 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        Benjamin Herrenschmidt <benh@amazon.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH net-next 13/13] af_unix: Relax race in unix_autobind().
-Date:   Sat, 6 Nov 2021 18:17:12 +0900
-Message-ID: <20211106091712.15206-14-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211106091712.15206-1-kuniyu@amazon.co.jp>
-References: <20211106091712.15206-1-kuniyu@amazon.co.jp>
+        id S233892AbhKFJNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Nov 2021 05:13:40 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:30922 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231987AbhKFJNj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Nov 2021 05:13:39 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HmWgw3hGtzcb0P;
+        Sat,  6 Nov 2021 17:06:04 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Sat, 6 Nov 2021 17:10:51 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.15; Sat, 6 Nov
+ 2021 17:10:49 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <axboe@kernel.dk>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <andrii@kernel.org>, <kbusch@kernel.org>
+CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <yukuai3@huawei.com>, <yi.zhang@huawei.com>, <yebin10@huawei.com>
+Subject: [PATCH] blk-mq: don't free tags if the tag_set is used by other device in queue initialztion
+Date:   Sat, 6 Nov 2021 17:23:31 +0800
+Message-ID: <20211106092331.3162749-1-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.153]
-X-ClientProxiedBy: EX13D03UWA001.ant.amazon.com (10.43.160.141) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we bind an AF_UNIX socket without a name specified, the kernel selects
-an available one from 0x00000 to 0xFFFFF.  unix_autobind() starts searching
-from a number in the 'static' variable and increments it after acquiring
-two locks.
+Our test report a UAF on v5.10:
 
-If multiple processes try autobind, they obtain the same lock and check if
-a socket in the hash list has the same name.  If not, one process uses it,
-and all except one end up retrying the _next_ number (actually not, it may
-be incremented by the other processes).  The more we autobind sockets in
-parallel, the longer the latency gets.  We can avoid such a race by
-searching for a name from a random number.
+[ 1446.674930] ==================================================================
+[ 1446.675970] BUG: KASAN: use-after-free in blk_mq_get_driver_tag+0x9a4/0xa90
+[ 1446.676902] Read of size 8 at addr ffff8880185afd10 by task kworker/1:2/12348
+[ 1446.677851]
+[ 1446.678073] CPU: 1 PID: 12348 Comm: kworker/1:2 Not tainted 5.10.0-10177-gc9c81b1e346a #2
+[ 1446.679168] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+[ 1446.680692] Workqueue: kthrotld blk_throtl_dispatch_work_fn
+[ 1446.681448] Call Trace:
+[ 1446.681800]  dump_stack+0x9b/0xce
+[ 1446.682259]  ? blk_mq_get_driver_tag+0x9a4/0xa90
+[ 1446.682916]  print_address_description.constprop.6+0x3e/0x60
+[ 1446.683688]  ? __cpuidle_text_end+0x5/0x5
+[ 1446.684239]  ? vprintk_func+0x6b/0x120
+[ 1446.684748]  ? blk_mq_get_driver_tag+0x9a4/0xa90
+[ 1446.685373]  ? blk_mq_get_driver_tag+0x9a4/0xa90
+[ 1446.685999]  kasan_report.cold.9+0x22/0x3a
+[ 1446.686559]  ? blk_mq_get_driver_tag+0x9a4/0xa90
+[ 1446.687186]  blk_mq_get_driver_tag+0x9a4/0xa90
+[ 1446.687785]  blk_mq_dispatch_rq_list+0x21a/0x1d40
+[ 1446.688427]  ? __sbitmap_get_word+0xc3/0xe0
+[ 1446.688992]  ? blk_mq_dequeue_from_ctx+0x960/0x960
+[ 1446.689641]  ? _raw_spin_lock+0x7a/0xd0
+[ 1446.690164]  ? _raw_spin_lock_irq+0xd0/0xd0
+[ 1446.690727]  ? sbitmap_get_shallow+0x3c9/0x4e0
+[ 1446.691329]  ? sbitmap_any_bit_set+0x128/0x190
+[ 1446.691928]  ? kyber_completed_request+0x290/0x290
+[ 1446.692576]  __blk_mq_do_dispatch_sched+0x394/0x830
+[ 1446.693237]  ? blk_mq_sched_request_inserted+0x100/0x100
+[ 1446.693948]  ? __blk_queue_split+0x31d/0x1380
+[ 1446.694540]  ? blk_integrity_merge_bio+0xc1/0x370
+[ 1446.695182]  ? ll_back_merge_fn+0x694/0x1490
+[ 1446.695758]  __blk_mq_sched_dispatch_requests+0x398/0x4f0
+[ 1446.696484]  ? bio_attempt_back_merge+0x1cc/0x340
+[ 1446.697121]  ? blk_mq_do_dispatch_ctx+0x570/0x570
+[ 1446.697756]  ? _raw_spin_lock+0x7a/0xd0
+[ 1446.698279]  blk_mq_sched_dispatch_requests+0xdf/0x140
+[ 1446.698967]  __blk_mq_run_hw_queue+0xc0/0x270
+[ 1446.699561]  __blk_mq_delay_run_hw_queue+0x4cc/0x550
+[ 1446.700231]  ? kyber_has_work+0x9a/0x140
+[ 1446.700760]  ? kyber_completed_request+0x290/0x290
+[ 1446.701407]  blk_mq_run_hw_queue+0x13b/0x2b0
+[ 1446.701982]  ? kyber_has_work+0x140/0x140
+[ 1446.702593]  blk_mq_sched_insert_requests+0x1de/0x390
+[ 1446.703309]  blk_mq_flush_plug_list+0x4b4/0x760
+[ 1446.703946]  ? blk_mq_insert_requests+0x4b0/0x4b0
+[ 1446.704644]  ? __bpf_trace_block_bio_complete+0x30/0x30
+[ 1446.705408]  blk_flush_plug_list+0x2c5/0x480
+[ 1446.706026]  ? blk_insert_cloned_request+0x460/0x460
+[ 1446.706717]  ? _raw_spin_lock_irq+0x7b/0xd0
+[ 1446.707292]  ? _raw_spin_lock_irqsave+0xe0/0xe0
+[ 1446.707901]  ? set_next_entity+0x235/0x2210
+[ 1446.708471]  blk_finish_plug+0x55/0xa0
+[ 1446.708980]  blk_throtl_dispatch_work_fn+0x23b/0x2e0
+[ 1446.709653]  ? tg_prfill_limit+0x8a0/0x8a0
+[ 1446.710216]  ? read_word_at_a_time+0xe/0x20
+[ 1446.710780]  ? strscpy+0x9a/0x320
+[ 1446.711236]  process_one_work+0x6d4/0xfe0
+[ 1446.711778]  worker_thread+0x91/0xc80
+[ 1446.712281]  ? __kthread_parkme+0xb0/0x110
+[ 1446.712834]  ? process_one_work+0xfe0/0xfe0
+[ 1446.713400]  kthread+0x32d/0x3f0
+[ 1446.713840]  ? kthread_park+0x170/0x170
+[ 1446.714362]  ret_from_fork+0x1f/0x30
+[ 1446.714846]
+[ 1446.715062] Allocated by task 1:
+[ 1446.715509]  kasan_save_stack+0x19/0x40
+[ 1446.716026]  __kasan_kmalloc.constprop.1+0xc1/0xd0
+[ 1446.716673]  blk_mq_init_tags+0x6d/0x330
+[ 1446.717207]  blk_mq_alloc_rq_map+0x50/0x1c0
+[ 1446.717769]  __blk_mq_alloc_map_and_request+0xe5/0x320
+[ 1446.718459]  blk_mq_alloc_tag_set+0x679/0xdc0
+[ 1446.719050]  scsi_add_host_with_dma.cold.3+0xa0/0x5db
+[ 1446.719736]  virtscsi_probe+0x7bf/0xbd0
+[ 1446.720265]  virtio_dev_probe+0x402/0x6c0
+[ 1446.720808]  really_probe+0x276/0xde0
+[ 1446.721320]  driver_probe_device+0x267/0x3d0
+[ 1446.721892]  device_driver_attach+0xfe/0x140
+[ 1446.722491]  __driver_attach+0x13a/0x2c0
+[ 1446.723037]  bus_for_each_dev+0x146/0x1c0
+[ 1446.723603]  bus_add_driver+0x3fc/0x680
+[ 1446.724145]  driver_register+0x1c0/0x400
+[ 1446.724693]  init+0xa2/0xe8
+[ 1446.725091]  do_one_initcall+0x9e/0x310
+[ 1446.725626]  kernel_init_freeable+0xc56/0xcb9
+[ 1446.726231]  kernel_init+0x11/0x198
+[ 1446.726714]  ret_from_fork+0x1f/0x30
+[ 1446.727212]
+[ 1446.727433] Freed by task 26992:
+[ 1446.727882]  kasan_save_stack+0x19/0x40
+[ 1446.728420]  kasan_set_track+0x1c/0x30
+[ 1446.728943]  kasan_set_free_info+0x1b/0x30
+[ 1446.729517]  __kasan_slab_free+0x111/0x160
+[ 1446.730084]  kfree+0xb8/0x520
+[ 1446.730507]  blk_mq_free_map_and_requests+0x10b/0x1b0
+[ 1446.731206]  blk_mq_realloc_hw_ctxs+0x8cb/0x15b0
+[ 1446.731844]  blk_mq_init_allocated_queue+0x374/0x1380
+[ 1446.732540]  blk_mq_init_queue_data+0x7f/0xd0
+[ 1446.733155]  scsi_mq_alloc_queue+0x45/0x170
+[ 1446.733730]  scsi_alloc_sdev+0x73c/0xb20
+[ 1446.734281]  scsi_probe_and_add_lun+0x9a6/0x2d90
+[ 1446.734916]  __scsi_scan_target+0x208/0xc50
+[ 1446.735500]  scsi_scan_channel.part.3+0x113/0x170
+[ 1446.736149]  scsi_scan_host_selected+0x25a/0x360
+[ 1446.736783]  store_scan+0x290/0x2d0
+[ 1446.737275]  dev_attr_store+0x55/0x80
+[ 1446.737782]  sysfs_kf_write+0x132/0x190
+[ 1446.738313]  kernfs_fop_write_iter+0x319/0x4b0
+[ 1446.738921]  new_sync_write+0x40e/0x5c0
+[ 1446.739429]  vfs_write+0x519/0x720
+[ 1446.739877]  ksys_write+0xf8/0x1f0
+[ 1446.740332]  do_syscall_64+0x2d/0x40
+[ 1446.740802]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[ 1446.741462]
+[ 1446.741670] The buggy address belongs to the object at ffff8880185afd00
+[ 1446.741670]  which belongs to the cache kmalloc-256 of size 256
+[ 1446.743276] The buggy address is located 16 bytes inside of
+[ 1446.743276]  256-byte region [ffff8880185afd00, ffff8880185afe00)
+[ 1446.744765] The buggy address belongs to the page:
+[ 1446.745416] page:ffffea0000616b00 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x185ac
+[ 1446.746694] head:ffffea0000616b00 order:2 compound_mapcount:0 compound_pincount:0
+[ 1446.747719] flags: 0x1fffff80010200(slab|head)
+[ 1446.748337] raw: 001fffff80010200 ffffea00006a3208 ffffea000061bf08 ffff88801004f240
+[ 1446.749404] raw: 0000000000000000 0000000000100010 00000001ffffffff 0000000000000000
+[ 1446.750455] page dumped because: kasan: bad access detected
+[ 1446.751227]
+[ 1446.751445] Memory state around the buggy address:
+[ 1446.752102]  ffff8880185afc00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[ 1446.753090]  ffff8880185afc80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[ 1446.754079] >ffff8880185afd00: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[ 1446.755065]                          ^
+[ 1446.755589]  ffff8880185afd80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[ 1446.756574]  ffff8880185afe00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[ 1446.757566] ==================================================================
 
-These show latency in unix_autobind() while 64 CPUs are simultaneously
-autobind-ing 1024 sockets for each.
+Flag 'BLK_MQ_F_TAG_QUEUE_SHARED' will be set if the second device on the
+same host initializes it's queue successfully. However, if the second
+device failed to allocate memory in blk_mq_alloc_and_init_hctx() from
+blk_mq_realloc_hw_ctxs() from blk_mq_init_allocated_queue(),
+__blk_mq_free_map_and_rqs() will be called on error path, and if
+'BLK_MQ_TAG_HCTX_SHARED' is not set, 'tag_set->tags' will be freed
+while it's still used by the first device.
 
-  Without this patch:
+Fix the problem by checking if 'tag_set->tag_list' is emptly before
+freeing 'tag_set->tag' during queue initialization.
 
-     usec          : count     distribution
-        0          : 1176     |***                                     |
-        2          : 3655     |***********                             |
-        4          : 4094     |*************                           |
-        6          : 3831     |************                            |
-        8          : 3829     |************                            |
-        10         : 3844     |************                            |
-        12         : 3638     |***********                             |
-        14         : 2992     |*********                               |
-        16         : 2485     |*******                                 |
-        18         : 2230     |*******                                 |
-        20         : 2095     |******                                  |
-        22         : 1853     |*****                                   |
-        24         : 1827     |*****                                   |
-        26         : 1677     |*****                                   |
-        28         : 1473     |****                                    |
-        30         : 1573     |*****                                   |
-        32         : 1417     |****                                    |
-        34         : 1385     |****                                    |
-        36         : 1345     |****                                    |
-        38         : 1344     |****                                    |
-        40         : 1200     |***                                     |
-
-  With this patch:
-
-     usec          : count     distribution
-        0          : 1855     |******                                  |
-        2          : 6464     |*********************                   |
-        4          : 9936     |********************************        |
-        6          : 12107    |****************************************|
-        8          : 10441    |**********************************      |
-        10         : 7264     |***********************                 |
-        12         : 4254     |**************                          |
-        14         : 2538     |********                                |
-        16         : 1596     |*****                                   |
-        18         : 1088     |***                                     |
-        20         : 800      |**                                      |
-        22         : 670      |**                                      |
-        24         : 601      |*                                       |
-        26         : 562      |*                                       |
-        28         : 525      |*                                       |
-        30         : 446      |*                                       |
-        32         : 378      |*                                       |
-        34         : 337      |*                                       |
-        36         : 317      |*                                       |
-        38         : 314      |*                                       |
-        40         : 298      |                                        |
-
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Fixes: 868f2f0b7206 ("blk-mq: dynamic h/w context count")
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
 ---
- net/unix/af_unix.c | 21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+ block/blk-mq.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index 643f0358bf7a..55d570b23475 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -1075,8 +1075,7 @@ static int unix_autobind(struct sock *sk)
- 	unsigned int new_hash, old_hash = sk->sk_hash;
- 	struct unix_sock *u = unix_sk(sk);
- 	struct unix_address *addr;
--	unsigned int retries = 0;
--	static u32 ordernum = 1;
-+	u32 initnum, ordernum;
- 	int err;
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index 3527ee251a85..529ad8c47377 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -3571,7 +3571,7 @@ static struct blk_mq_hw_ctx *blk_mq_alloc_and_init_hctx(
+ }
  
- 	err = mutex_lock_interruptible(&u->bindlock);
-@@ -1091,31 +1090,33 @@ static int unix_autobind(struct sock *sk)
- 	if (!addr)
- 		goto out;
+ static void blk_mq_realloc_hw_ctxs(struct blk_mq_tag_set *set,
+-						struct request_queue *q)
++				   struct request_queue *q)
+ {
+ 	int i, j, end;
+ 	struct blk_mq_hw_ctx **hctxs = q->queue_hw_ctx;
+@@ -3636,9 +3636,17 @@ static void blk_mq_realloc_hw_ctxs(struct blk_mq_tag_set *set,
  
-+	addr->len = offsetof(struct sockaddr_un, sun_path) + 6;
- 	addr->name->sun_family = AF_UNIX;
- 	refcount_set(&addr->refcnt, 1);
+ 	for (; j < end; j++) {
+ 		struct blk_mq_hw_ctx *hctx = hctxs[j];
++		bool free_tags = !blk_mq_is_shared_tags(set->flags) &&
++			!q->nr_hw_queues && list_empty(&set->tag_list);
  
-+	initnum = ordernum = prandom_u32();
- retry:
--	addr->len = sprintf(addr->name->sun_path + 1, "%05x", ordernum) +
--		offsetof(struct sockaddr_un, sun_path) + 1;
-+	ordernum = (ordernum + 1) & 0xFFFFF;
-+	sprintf(addr->name->sun_path + 1, "%05x", ordernum);
- 
- 	new_hash = unix_abstract_hash(addr->name, addr->len, sk->sk_type);
- 	unix_table_double_lock(old_hash, new_hash);
--	ordernum = (ordernum+1)&0xFFFFF;
- 
- 	if (__unix_find_socket_byname(sock_net(sk), addr->name, addr->len, new_hash)) {
- 		unix_table_double_unlock(old_hash, new_hash);
- 
--		/*
--		 * __unix_find_socket_byname() may take long time if many names
-+		/* __unix_find_socket_byname() may take long time if many names
- 		 * are already in use.
- 		 */
- 		cond_resched();
--		/* Give up if all names seems to be in use. */
--		if (retries++ == 0xFFFFF) {
-+
-+		if (ordernum == initnum) {
-+			/* Give up if all names seems to be in use. */
- 			err = -ENOSPC;
--			kfree(addr);
-+			unix_release_addr(addr);
- 			goto out;
+ 		if (hctx) {
+-			__blk_mq_free_map_and_rqs(set, j);
++			/*
++			 * tags should not be freed if other device is using the
++			 * tagset. q->nr_hw_queues is zero means current
++			 * function is called from queue initialization.
++			 */
++			if (free_tags)
++				__blk_mq_free_map_and_rqs(set, j);
+ 			blk_mq_exit_hctx(q, set, hctx, j);
+ 			hctxs[j] = NULL;
  		}
-+
- 		goto retry;
- 	}
- 
 -- 
-2.30.2
+2.31.1
 
