@@ -2,170 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47D6D447214
-	for <lists+netdev@lfdr.de>; Sun,  7 Nov 2021 08:50:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D2AE447238
+	for <lists+netdev@lfdr.de>; Sun,  7 Nov 2021 09:52:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235150AbhKGHwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Nov 2021 02:52:39 -0500
-Received: from mail-mw2nam12on2062.outbound.protection.outlook.com ([40.107.244.62]:52256
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235036AbhKGHwi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 7 Nov 2021 02:52:38 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=M3sYBh97ULtoF/7Os6893XlosBR15G/uz1T0D2hmSx6Vh9gPNIw77ldPGMD/zjPNTeZ0uPbypL4q1Epau2ldgNnbb5GBZjWpMn9RqQJfOPXkGiattxSpagTCTs19e33WaqrAcRUWpK2tMI7yop4UbkMq48nQyLlhGnHjXArwGeyPu//UinAq8BVdXsEg7kNl2MNmMCZvG6oIE0B6fAYvYkrNtwJNYYXyid4x/tHGOANd7lezbWanOMWfS0T2CBk1Bp2+SuLKa/yp/1sprX98and6a4vJYgX3xWmKSvu2P1A+t2xIqs3j2bzsdk+TyMHHfCElakXZNprkh3vii7A8ug==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=om8l3+jh4ujTlwoJf4ByzG7dVxMASjxFxLh5VGQFQOY=;
- b=IY+cUbagXOI5zfiYTU0VkWd1O42ITBVzXYI0HDorJ4GXGKnRAy2FQAI9yhztvGWTgtCcmfoqPZmZ4U+2MFi3qkqrZVocn3l+5+VDIx+KODf7xrmcSjKmNM0TVi+TlMNsL3F6uFThzbBtZsH++fxdAeJJIPylyhPVTAFo0fMpRpp5Kc25dImDiPchI871TehFsHlfq3BWE75VQDvcQ40JlZmjykapcwjdyDhG+YV0pLVADp8H95FE1EW6XhC4fOfBdmkIzECjCeOQbFGFVa8Ek+gx5L+JRQqRhrRvFkzthJzj+vBV0vnoUYgVeYqP2mUIM7iFwLkXyqlz8v8aG2FXnw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=om8l3+jh4ujTlwoJf4ByzG7dVxMASjxFxLh5VGQFQOY=;
- b=WWjBBjey1SmrDnfCAyGHGHM5pYrHPrT6erlyLm6z9iXmdytMqsgFq5yYg+oqfe30AgyTqI7nda97p5WIIkeJOHR1XzZQ8vhCZielfaCyosChZukROWVQSqdqys3ykDIzsawHwjeRgozUgB9SM1YjdLcmeRN7qAYLNtzh2Rb6HuYdr9ZmVlU3EzGbNRW9ocEIkHrDfoY8MF2J7b35w9ziWDETMVU0n4vfhiAUnXD78FP5sNE77jS2AjO4zFx6iV72gComPHuPF7j6e32/rb7tSRhHCwB5gabbM0+oKCDNtQG9ydu2DhvtTJLyc8c8VLtbiVCzEiQwAowuG8vMpcFo7w==
-Received: from BN6PR20CA0065.namprd20.prod.outlook.com (2603:10b6:404:151::27)
- by BY5PR12MB5542.namprd12.prod.outlook.com (2603:10b6:a03:1db::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.10; Sun, 7 Nov
- 2021 07:49:54 +0000
-Received: from BN8NAM11FT010.eop-nam11.prod.protection.outlook.com
- (2603:10b6:404:151:cafe::60) by BN6PR20CA0065.outlook.office365.com
- (2603:10b6:404:151::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.15 via Frontend
- Transport; Sun, 7 Nov 2021 07:49:54 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT010.mail.protection.outlook.com (10.13.177.53) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4669.10 via Frontend Transport; Sun, 7 Nov 2021 07:49:53 +0000
-Received: from [172.27.14.198] (172.20.187.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Sun, 7 Nov
- 2021 07:49:50 +0000
-Message-ID: <c76779a3-aa4a-98af-f04d-3a8b41a58cb6@nvidia.com>
-Date:   Sun, 7 Nov 2021 09:49:47 +0200
+        id S235255AbhKGIyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Nov 2021 03:54:02 -0500
+Received: from mail-io1-f71.google.com ([209.85.166.71]:56291 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235231AbhKGIyC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Nov 2021 03:54:02 -0500
+Received: by mail-io1-f71.google.com with SMTP id s21-20020a056602169500b005e184f81e0fso9190388iow.22
+        for <netdev@vger.kernel.org>; Sun, 07 Nov 2021 01:51:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=0snVIq2Bui/dySdfpi4a1QVUvDVLh4nBMkVbNdPRPao=;
+        b=w7qRwpn1PUJn8j4mROtP4rf0HL29ab5nlk8EN8gbGyBNPChRFkT0Td4aY+TOx6bJHN
+         KIPRXOZqrIQtwIuWjBYW4nZGkI89G1KoTguo+abGHHa24jrrnpLgIgoCwrSJRMjdnCZJ
+         090tCZG1rkIbAxz/Q/bPVeMtVR3zh1/m24paNFKCVW91N8aLa0JOgWEv/l+3EN7TZUHV
+         L55ZykXs3xbuBucBWlbMJ9V6ZqDpAFYnX6+m0KL0SS8NocHGeKJMdCdowFcHUBJ2G20k
+         dZAW9Io8QoHlCWc+ROqBie6LZdAKz++A1wVquzMxKhXZXlkd4vXq8jMBplWdks4EKDLE
+         wohA==
+X-Gm-Message-State: AOAM531lbRfOXABLSz5d1wU55oQl0kznaBud4Nwcc0v4FoV1coCrlMjM
+        ZKf9mrbPfrfvqhpkbgcRsgGyCQMpnuTfJmDjgWFLS8xvIA10
+X-Google-Smtp-Source: ABdhPJz82QBJIuHxfhU93K92SbySnNOqP/KWwQPZlEV33Vtpa3NIsbfwANaRVhpNxBwmLHW7Ej1jkpW9ZUjKewWowfTKTdVAcLzo
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101
- Thunderbird/95.0
-Subject: Re: [PATCH] net/mlx5: Fix some error handling paths in
- 'mlx5e_tc_add_fdb_flow()'
-Content-Language: en-US
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        <saeedm@nvidia.com>, <leon@kernel.org>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <vladbu@nvidia.com>, <paulb@nvidia.com>,
-        <lariel@nvidia.com>
-CC:     <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>
-References: <3055988affc39dff4d2a5c00a8d18474b0d63e26.1636218396.git.christophe.jaillet@wanadoo.fr>
-From:   Roi Dayan <roid@nvidia.com>
-In-Reply-To: <3055988affc39dff4d2a5c00a8d18474b0d63e26.1636218396.git.christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.20.187.5]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3be8c76b-3f6b-4d5f-1a63-08d9a1c32fb9
-X-MS-TrafficTypeDiagnostic: BY5PR12MB5542:
-X-Microsoft-Antispam-PRVS: <BY5PR12MB5542F209A535D613B3E6760AB8909@BY5PR12MB5542.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DbsgtJWs2/inlAtNmtAoyp6nqKaebKpF7icmrQx2U4NPTkVQGdzc8uoNYCMtX+X7+QEMe1zYJLwQbcDTPB2BizDHMN6AT3sjWAlH/5ovQ2c9/OlfNbFgXnIqxhijJeBq8iH+/F493N7RCacwRLBEUuLN/B9AAKeT1zgaDIBvfUdNxOtty2EwG3rOuEpNTXIqzGhX+A4to5wTnoxpdQk4Cs1jtSb4d/25YmR79347R5Y4PYja1kT1ZluDACc+Xs9zQiaUoCPl2H1uuwLVxflOrIbN0dtJpb3fDVjS4IpIo+T7vAorbuam0bDse8j2eODC8vFeFqdVOYSrU4t6uMKbtD3XhQR4dmYeXpUwpDIzJvPGDmgWVs3TndWFJc4CV3u4RKQg5qr07Jkfl5kGtFrhejmbQ1LmMhPUqbZBQnHL8B7O4L/bb3XE2bVXrXTifXkfFfhNLgGQ6Q1uJIh95qlt9sU9WjHwI42Vgwfl/M/+zR1SvCOjzH7g1uXgFcFwmL8lygEfSB6pCJvALIRLPy8AVT++E/sHZC+9WYggCOPwZOuaFz8fiYBw0WB4v/vwC10dNhyHKGKG/SlrpRvKe0QdkQaeaYzB0cnQ5zZla0F1bjFCTFIGBoA6Hn43strOV6RanU7aWdI67oKMj1pvIBkgj6lrdCZP2EPsO9eW3xcbs7jlILJpziLRl2aJ5O7CIcKsW5lszTzLStZv9QDqJ2/EE0L/b+SsfB9PtsJnVQXTlXo=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(336012)(8936002)(70206006)(70586007)(16526019)(356005)(316002)(31696002)(7636003)(16576012)(53546011)(508600001)(54906003)(31686004)(6666004)(86362001)(26005)(82310400003)(83380400001)(2906002)(6636002)(110136005)(36756003)(426003)(2616005)(36906005)(8676002)(36860700001)(4326008)(5660300002)(47076005)(186003)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Nov 2021 07:49:53.9301
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3be8c76b-3f6b-4d5f-1a63-08d9a1c32fb9
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT010.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB5542
+X-Received: by 2002:a6b:6812:: with SMTP id d18mr1508988ioc.47.1636275079645;
+ Sun, 07 Nov 2021 01:51:19 -0700 (PDT)
+Date:   Sun, 07 Nov 2021 01:51:19 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e08e4a05d02efa66@google.com>
+Subject: [syzbot] WARNING: suspicious RCU usage in ieee80211_set_tx_power
+From:   syzbot <syzbot+79fbc232a705a30d93cd@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
+
+syzbot found the following issue on:
+
+HEAD commit:    cc0356d6a02e Merge tag 'x86_core_for_v5.16_rc1' of git://g..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1414732eb00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a5d447cdc3ae81d9
+dashboard link: https://syzkaller.appspot.com/bug?extid=79fbc232a705a30d93cd
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+79fbc232a705a30d93cd@syzkaller.appspotmail.com
+
+netlink: 4 bytes leftover after parsing attributes in process `syz-executor.0'.
+=============================
+WARNING: suspicious RCU usage
+5.15.0-syzkaller #0 Not tainted
+-----------------------------
+net/mac80211/cfg.c:2710 suspicious rcu_dereference_protected() usage!
+
+other info that might help us debug this:
 
 
-On 2021-11-06 7:08 PM, Christophe JAILLET wrote:
-> All the error handling paths of 'mlx5e_tc_add_fdb_flow()' end to 'err_out'
-> where 'flow_flag_set(flow, FAILED);' is called.
-> 
-> All but the new error handling paths added by the commits given in the
-> Fixes tag below.
-> 
-> Fix these error handling paths and branch to 'err_out'.
-> 
-> Fixes: 166f431ec6be ("net/mlx5e: Add indirect tc offload of ovs internal port")
-> Fixes: b16eb3c81fe2 ("net/mlx5: Support internal port as decap route device")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> This patch is speculative, review with care.
-> ---
->   drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 14 +++++++++-----
->   1 file changed, 9 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> index 835caa1c7b74..ff881307c744 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> @@ -1445,7 +1445,7 @@ mlx5e_tc_add_fdb_flow(struct mlx5e_priv *priv,
->   							MLX5_FLOW_NAMESPACE_FDB, VPORT_TO_REG,
->   							metadata);
->   			if (err)
-> -				return err;
-> +				goto err_out;
->   		}
->   	}
->   
-> @@ -1461,13 +1461,15 @@ mlx5e_tc_add_fdb_flow(struct mlx5e_priv *priv,
->   		if (attr->chain) {
->   			NL_SET_ERR_MSG_MOD(extack,
->   					   "Internal port rule is only supported on chain 0");
-> -			return -EOPNOTSUPP;
-> +			err = -EOPNOTSUPP;
-> +			goto err_out;
->   		}
->   
->   		if (attr->dest_chain) {
->   			NL_SET_ERR_MSG_MOD(extack,
->   					   "Internal port rule offload doesn't support goto action");
-> -			return -EOPNOTSUPP;
-> +			err = -EOPNOTSUPP;
-> +			goto err_out;
->   		}
->   
->   		int_port = mlx5e_tc_int_port_get(mlx5e_get_int_port_priv(priv),
-> @@ -1475,8 +1477,10 @@ mlx5e_tc_add_fdb_flow(struct mlx5e_priv *priv,
->   						 flow_flag_test(flow, EGRESS) ?
->   						 MLX5E_TC_INT_PORT_EGRESS :
->   						 MLX5E_TC_INT_PORT_INGRESS);
-> -		if (IS_ERR(int_port))
-> -			return PTR_ERR(int_port);
-> +		if (IS_ERR(int_port)) {
-> +			err = PTR_ERR(int_port);
-> +			goto err_out;
-> +		}
->   
->   		esw_attr->int_port = int_port;
->   	}
-> 
+rcu_scheduler_active = 2, debug_locks = 1
+2 locks held by syz-executor.0/25174:
+ #0: ffffffff8d183890 (cb_lock){++++}-{3:3}, at: genl_rcv+0x15/0x40 net/netlink/genetlink.c:802
+ #1: ffff88802ab60628 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: wiphy_lock include/net/cfg80211.h:5377 [inline]
+ #1: ffff88802ab60628 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: nl80211_set_wiphy+0x1c6/0x2c20 net/wireless/nl80211.c:3287
+
+stack backtrace:
+CPU: 0 PID: 25174 Comm: syz-executor.0 Not tainted 5.15.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ ieee80211_set_tx_power+0x74c/0x860 net/mac80211/cfg.c:2710
+ rdev_set_tx_power net/wireless/rdev-ops.h:580 [inline]
+ nl80211_set_wiphy+0xd5b/0x2c20 net/wireless/nl80211.c:3384
+ genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:731
+ genl_family_rcv_msg net/netlink/genetlink.c:775 [inline]
+ genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:792
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2491
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:803
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x86d/0xda0 net/netlink/af_netlink.c:1916
+ sock_sendmsg_nosec net/socket.c:704 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:724
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2492
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7fbfe1b55ae9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fbfdf0cb188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007fbfe1c68f60 RCX: 00007fbfe1b55ae9
+RDX: 0000000000000000 RSI: 0000000020000200 RDI: 0000000000000003
+RBP: 00007fbfe1baff25 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fff39e7553f R14: 00007fbfdf0cb300 R15: 0000000000022000
+ </TASK>
 
 
-thanks for catching this.
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Reviewed-by: Roi Dayan <roid@nvidia.com>
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
