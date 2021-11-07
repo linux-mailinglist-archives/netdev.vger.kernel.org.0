@@ -2,120 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D2AE447238
-	for <lists+netdev@lfdr.de>; Sun,  7 Nov 2021 09:52:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FCE1447255
+	for <lists+netdev@lfdr.de>; Sun,  7 Nov 2021 10:21:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235255AbhKGIyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Nov 2021 03:54:02 -0500
-Received: from mail-io1-f71.google.com ([209.85.166.71]:56291 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235231AbhKGIyC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Nov 2021 03:54:02 -0500
-Received: by mail-io1-f71.google.com with SMTP id s21-20020a056602169500b005e184f81e0fso9190388iow.22
-        for <netdev@vger.kernel.org>; Sun, 07 Nov 2021 01:51:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=0snVIq2Bui/dySdfpi4a1QVUvDVLh4nBMkVbNdPRPao=;
-        b=w7qRwpn1PUJn8j4mROtP4rf0HL29ab5nlk8EN8gbGyBNPChRFkT0Td4aY+TOx6bJHN
-         KIPRXOZqrIQtwIuWjBYW4nZGkI89G1KoTguo+abGHHa24jrrnpLgIgoCwrSJRMjdnCZJ
-         090tCZG1rkIbAxz/Q/bPVeMtVR3zh1/m24paNFKCVW91N8aLa0JOgWEv/l+3EN7TZUHV
-         L55ZykXs3xbuBucBWlbMJ9V6ZqDpAFYnX6+m0KL0SS8NocHGeKJMdCdowFcHUBJ2G20k
-         dZAW9Io8QoHlCWc+ROqBie6LZdAKz++A1wVquzMxKhXZXlkd4vXq8jMBplWdks4EKDLE
-         wohA==
-X-Gm-Message-State: AOAM531lbRfOXABLSz5d1wU55oQl0kznaBud4Nwcc0v4FoV1coCrlMjM
-        ZKf9mrbPfrfvqhpkbgcRsgGyCQMpnuTfJmDjgWFLS8xvIA10
-X-Google-Smtp-Source: ABdhPJz82QBJIuHxfhU93K92SbySnNOqP/KWwQPZlEV33Vtpa3NIsbfwANaRVhpNxBwmLHW7Ej1jkpW9ZUjKewWowfTKTdVAcLzo
+        id S235051AbhKGJYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Nov 2021 04:24:06 -0500
+Received: from wnew2-smtp.messagingengine.com ([64.147.123.27]:50091 "EHLO
+        wnew2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234994AbhKGJYF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Nov 2021 04:24:05 -0500
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.west.internal (Postfix) with ESMTP id A0BF52B01407;
+        Sun,  7 Nov 2021 04:21:21 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Sun, 07 Nov 2021 04:21:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=/QGUeq
+        caCo70u4JNx8665htRvpmwYT5F3jUqVzHXtOQ=; b=fkPpcQtGr9Mw6lV7YlCfrk
+        bOyu12JUv8iEBr6IbPxgeV5OaHy8TfvCa+4ROHbyHKTid2xbuNzeKmlzddNpP1Vu
+        6ZlHM2tnm+9M3uNpOVSD8KWCOBZe2G88kTtmEX109eII3nQ6G7BHRP2hM2DlPNn/
+        d9C4j7y4NNUk64WM2zUKFmNNRj+K/EAD7w6VaAMe3wXuTuINX0bDd3ETIRDNTAJA
+        klQhnzRDLxWqdQuu16HIrLJ/MPvKxe80xaNQQGGYULUX6RDT/3hEGUQnhOCi0lXB
+        b1vg8nfGOH1tHpfovYpZBtuvStNUHlxvslqI4ML9Zl4LtqEhLrf62AEaaDmPUGmg
+        ==
+X-ME-Sender: <xms:kJqHYUcRe9T1LNret48Q8m1gXKuT5lT7qudWngX9KAF9HkL9UhPhHw>
+    <xme:kJqHYWNBVtFB46ciu3PoMb27U9ZRT3jSzhRSD9j5X5lLRLoXh4ctEjtNP1WSCSeIX
+    Yb98OtkLyenapE>
+X-ME-Received: <xmr:kJqHYVghHbmirFIl3dCz9PqTtbQZJseBeWqXsQkd98oQF1KgdRKOtvUym43z>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddruddtgddtudcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:kJqHYZ-uX08SchdGP-eCr0Nrw1_TvU_1MuMpxNg2X6DoW9h3dv9tOQ>
+    <xmx:kJqHYQv4d9uWer7iNCjoN13rXe_Jet30ulwXTfBTPqRoYMTZ7JhA4Q>
+    <xmx:kJqHYQEb-e_3hLKTG5y8R8vkCyEmc-j7Zf4WKEz-BWDPjMdn8BlHcA>
+    <xmx:kZqHYQHwf7u2x-sQlv_VL-D16y_x8CzyNO_kvdEHIAMTLfZtoh3bIzkrppE>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 7 Nov 2021 04:21:19 -0500 (EST)
+Date:   Sun, 7 Nov 2021 11:21:17 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     sundeep subbaraya <sundeep.lkml@gmail.com>
+Cc:     Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Hariprasad Kelam <hkelam@marvell.com>,
+        Geethasowjanya Akula <gakula@marvell.com>,
+        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
+        Rakesh Babu Saladi <rsaladi2@marvell.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Andrew Lunn <andrew@lunn.ch>, argeorge@cisco.com
+Subject: Re: [EXT] Re: [net-next PATCH 1/2] octeontx2-pf: Add devlink param
+ to init and de-init serdes
+Message-ID: <YYeajTs6d4j39rJ2@shredder>
+References: <20211027083808.27f39cb0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <PH0PR18MB4671C22DB7C8E5C46647860FA1859@PH0PR18MB4671.namprd18.prod.outlook.com>
+ <CALHRZurNzkkma7HGg2xNLz3ECbwT2Hv=QXMeWr7AXCEegHOciw@mail.gmail.com>
+ <20211027100857.4d25544c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YXmWb2PZJQhpMfrR@shredder>
+ <BY3PR18MB473794E01049EC94156E2858C6859@BY3PR18MB4737.namprd18.prod.outlook.com>
+ <YXnRup1EJaF5Gwua@shredder>
+ <CALHRZuqpaqvunTga+8OK4GSa3oRao-CBxit6UzRvN3a1-T0dhA@mail.gmail.com>
+ <YXqq19HxleZd6V9W@shredder>
+ <CALHRZuoOWu0sEWjuanrYxyAVEUaO4-wea5+mET9UjPyoOrX5NQ@mail.gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:6812:: with SMTP id d18mr1508988ioc.47.1636275079645;
- Sun, 07 Nov 2021 01:51:19 -0700 (PDT)
-Date:   Sun, 07 Nov 2021 01:51:19 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e08e4a05d02efa66@google.com>
-Subject: [syzbot] WARNING: suspicious RCU usage in ieee80211_set_tx_power
-From:   syzbot <syzbot+79fbc232a705a30d93cd@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALHRZuoOWu0sEWjuanrYxyAVEUaO4-wea5+mET9UjPyoOrX5NQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sat, Oct 30, 2021 at 12:55:47PM +0530, sundeep subbaraya wrote:
+> Hi Ido,
+> 
+> On Thu, Oct 28, 2021 at 7:21 PM Ido Schimmel <idosch@idosch.org> wrote:
+> >
+> > On Thu, Oct 28, 2021 at 05:48:02PM +0530, sundeep subbaraya wrote:
+> > > Actually we also need a case where debugging is required when the
+> > > logical link is
+> > > up (so that packets flow from kernel to SerDes continuously) but the
+> > > physical link
+> > > is down.
+> >
+> > Can you explain the motivation for that? In the past we discussed use
+> > cases for forcing the operational state to down while the administrative
+> > state is up and couldn't find any.
+> >
+> To be honest we got this request from a customer to provide a command to modify
+> physical link without tying it to a logical link. I have asked for
+> more details on how
+> they use it.
 
-syzbot found the following issue on:
+Thanks
 
-HEAD commit:    cc0356d6a02e Merge tag 'x86_core_for_v5.16_rc1' of git://g..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1414732eb00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a5d447cdc3ae81d9
-dashboard link: https://syzkaller.appspot.com/bug?extid=79fbc232a705a30d93cd
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> 
+> > > We will change the commit description since it is giving the
+> > > wrong impression.
+> > > A command to change physical link up/down with no relation to ifconfig
+> > > is needed.
+> >
+> > So it is obvious that some drivers default to not shutting down the
+> > physical link upon admin down, but that some users want to change that.
+> > In addition, we have your use case to control the physical link without
+> > relation to the logical link. I wonder if it can all be solved with a
+> > new ethtool attribute (part of LINKINFO_{SET,GET} ?) that describes the
+> > physical link policy and has the following values:
+> >
+> > * auto: Physical link state is derived from logical link state
+> > * up: Physical link state is always up
+> > * down: Physical link state is always down
+> >
+> > IIUC, it should solve your problem and that of the "link-down-on-close"
+> > private flag. It also has the added benefit of allowing user space to
+> > query the default policy. The expectation is that it would be "auto",
+> > but in some scenarios it is "up".
+> 
+> This looks good. Please note that we need the behavior such that after changing
+> the flag a subsequent ifconfig command is not needed by the user.
+> 
+> auto : in ndo_open, ndo_close check the physical link flag is auto and
+> send command
+>           to firmware for bringing physical link up/down.
+> up: send command to firmware instantaneously for physical link UP
+> down: send command to firmware instantaneously for physical link DOWN
 
-Unfortunately, I don't have any reproducer for this issue yet.
+TBH, I'm not that happy with my ethtool suggestion. It is not very clear
+which hardware entities the attribute controls. Maybe it's better to
+implement it as a rtnetlink attribute that controls the carrier (e.g.,
+"carrier_policy")? Note that we already have ndo_change_carrier(), but
+the kdoc comment explicitly mentions that it shouldn't be used by
+physical devices:
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+79fbc232a705a30d93cd@syzkaller.appspotmail.com
-
-netlink: 4 bytes leftover after parsing attributes in process `syz-executor.0'.
-=============================
-WARNING: suspicious RCU usage
-5.15.0-syzkaller #0 Not tainted
------------------------------
-net/mac80211/cfg.c:2710 suspicious rcu_dereference_protected() usage!
-
-other info that might help us debug this:
-
-
-rcu_scheduler_active = 2, debug_locks = 1
-2 locks held by syz-executor.0/25174:
- #0: ffffffff8d183890 (cb_lock){++++}-{3:3}, at: genl_rcv+0x15/0x40 net/netlink/genetlink.c:802
- #1: ffff88802ab60628 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: wiphy_lock include/net/cfg80211.h:5377 [inline]
- #1: ffff88802ab60628 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: nl80211_set_wiphy+0x1c6/0x2c20 net/wireless/nl80211.c:3287
-
-stack backtrace:
-CPU: 0 PID: 25174 Comm: syz-executor.0 Not tainted 5.15.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- ieee80211_set_tx_power+0x74c/0x860 net/mac80211/cfg.c:2710
- rdev_set_tx_power net/wireless/rdev-ops.h:580 [inline]
- nl80211_set_wiphy+0xd5b/0x2c20 net/wireless/nl80211.c:3384
- genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:731
- genl_family_rcv_msg net/netlink/genetlink.c:775 [inline]
- genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:792
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2491
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:803
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x86d/0xda0 net/netlink/af_netlink.c:1916
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:724
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2492
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7fbfe1b55ae9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fbfdf0cb188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007fbfe1c68f60 RCX: 00007fbfe1b55ae9
-RDX: 0000000000000000 RSI: 0000000020000200 RDI: 0000000000000003
-RBP: 00007fbfe1baff25 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fff39e7553f R14: 00007fbfdf0cb300 R15: 0000000000022000
- </TASK>
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+ * int (*ndo_change_carrier)(struct net_device *dev, bool new_carrier);
+ *	Called to change device carrier. Soft-devices (like dummy, team, etc)
+ *	which do not represent real hardware may define this to allow their
+ *	userspace components to manage their virtual carrier state. Devices
+ *	that determine carrier state from physical hardware properties (eg
+ *	network cables) or protocol-dependent mechanisms (eg
+ *	USB_CDC_NOTIFY_NETWORK_CONNECTION) should NOT implement this function.
