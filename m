@@ -2,129 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 177DD44733A
-	for <lists+netdev@lfdr.de>; Sun,  7 Nov 2021 15:13:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F50144733E
+	for <lists+netdev@lfdr.de>; Sun,  7 Nov 2021 15:14:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232847AbhKGOPx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Nov 2021 09:15:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57396 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231934AbhKGOPw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Nov 2021 09:15:52 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7159DC061714
-        for <netdev@vger.kernel.org>; Sun,  7 Nov 2021 06:13:09 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id f4so51537103edx.12
-        for <netdev@vger.kernel.org>; Sun, 07 Nov 2021 06:13:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=y/8bLRVi7dxv/9MASDzNQG0suFX7w4MEKyGAhcaOmtQ=;
-        b=yi3zBMtPTUhA4YOSggoL1+XRKolOBDBTagP31xlRyE4I804LZUtIx7V2Vj9B4+Md4L
-         pRySWKh2i3CnoSO31LrzU9xpG5Vdd9QCpNUYKbxofcKTXf/KCCZzpPxRZJYfPvmrX1G3
-         8sMifZJM0aZ53HfYhuYZvcMsmO1iIIRfxbusTFPCt6GGQw+VprCEnllCVNwuoe9lZgto
-         jDVVp2ySWIS1wkymDhLxNzmtwFUmdDeXMVZvzHUZW6Xm2D2tpOl+VokFAguQIAr8Qaot
-         f4F/HGoeBmHxU74v8DUovBi/OKDIs65LvbiQo8PNCUFeoA/A1QQQZAQ4iAkW21sLRsXa
-         GJVQ==
+        id S232667AbhKGOQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Nov 2021 09:16:51 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:35142
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229524AbhKGOQv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Nov 2021 09:16:51 -0500
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com [209.85.167.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 49A463F4A7
+        for <netdev@vger.kernel.org>; Sun,  7 Nov 2021 14:14:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1636294444;
+        bh=O9pqCgMsXCaNEj0SpUPq8dlJCX+c7h9cDUUijvaulx0=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version;
+        b=mAdRykuFTYV4poZFUyWqpRB30FtJu9uB7stMGEqJ1HAX+rA/qbBY123phz6Ywf98Z
+         CKjJQ8EQqJiQBLJ6jN8ysuLAsanmjVzrF5y0xY1ZlQt1Y5OA1TlHdqDNcGO715YhnD
+         uGT0a0heigRODYhG2iqfKDAT9M6OhcJq01Nz5mfLfzBV+kczcgzshXn14eqpcF5ZGH
+         N4kn7ZNIgr5d0zMYh3Mq2NmqX77scUKCD2d+WXzkQd7ovOIfXteHt4r0IeKnR+vDUC
+         RepjA6hNJbYfhjsmzZ4B/SGv7wDsD88R4iAL0gav86Q/LIr/3LVVEkOrV9qWfYKoif
+         ix3wPKDxHyiLw==
+Received: by mail-lf1-f71.google.com with SMTP id y40-20020a0565123f2800b003fded085638so5411796lfa.0
+        for <netdev@vger.kernel.org>; Sun, 07 Nov 2021 06:14:04 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y/8bLRVi7dxv/9MASDzNQG0suFX7w4MEKyGAhcaOmtQ=;
-        b=MMq21nS2/ErG7hlOU93R+bRKNM0zsOxtbkv8RUEY7lNHT+qVJIaBNXz0DGFLCxmh0e
-         y4eqluuBl/f8V7e1EJgcmsPL+/xTQXIHTUbQ2R67QuQWnf4lOYaT9/1vR2ZnG+5tqs8Z
-         CyVSOKIlW9e372XvnNsHnWtLrE6KgpUjucf6B8Ju4B5fKpEG91zj/M5iE4iP5ZXJBUBU
-         OnSTuh9ow0oJ5/sWIh4jhQEx7WU/qA89rUkN110VdyzT6DuUa6go1fWsCwyXA3G3OfGv
-         WpDgXQ22M89m5LzdGWMiRWJ0H3tmGRJlrbYlUDpjoumTSZPJDTi3/zBVr74VK3Z1zu60
-         vgTQ==
-X-Gm-Message-State: AOAM533/xV9FtiJjf836hQ6SgcAfIKemBmF+C/sQxNxfFmE/vF3CJ+tz
-        hI7QRoR0LrwCxWD6ZYouMADIcDv0jIulWGzvH98j
-X-Google-Smtp-Source: ABdhPJxcjyzrhjw45p8G8n8WvvcwB4V30YZiOXbmjJus85QXuwma8cKK6NpWxAc70tFMV+J67qu2uzk/ur2A5n1w4Gs=
-X-Received: by 2002:a50:8dcb:: with SMTP id s11mr67368043edh.318.1636294387862;
- Sun, 07 Nov 2021 06:13:07 -0800 (PST)
-MIME-Version: 1.0
-References: <20211104195949.135374-1-omosnace@redhat.com>
-In-Reply-To: <20211104195949.135374-1-omosnace@redhat.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Sun, 7 Nov 2021 09:12:57 -0500
-Message-ID: <CAHC9VhQwpKWBF2S=vTutBVXeY9xSfTRuhK9nM9TariLVUSweMA@mail.gmail.com>
-Subject: Re: [PATCH net] selinux: fix SCTP client peeloff socket labeling
-To:     Ondrej Mosnacek <omosnace@redhat.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        Xin Long <lucien.xin@gmail.com>,
-        Richard Haines <richard_c_haines@btinternet.com>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        linux-sctp@vger.kernel.org, selinux@vger.kernel.org,
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=O9pqCgMsXCaNEj0SpUPq8dlJCX+c7h9cDUUijvaulx0=;
+        b=suzze1rniCN4ALfpef6ta6Us+SSVFneF8hmqj+fkMjo8QNepU5oyDnBBpaCX3gGxjj
+         OkTatkvHvB4eMO+0YjxYbxCYZ2znnPNAmQbdmh87hl7SoKA2DXrluBPnS/ZTMrs5Yh9m
+         9rQyCCcCuQtj7gRwvjDJ0kSSGdXTR5XmBt2ZN3DN4odsN5f5oAQ/vuy/b7XQfVVw65rt
+         5r14ElV5fOxA7vbpgcOEZfEGadTbcqKGuqC3v3MGYktVGzKLNtLlCgB5cIXxzdc57xLI
+         pk2ZU1B1jj+FRNw0e9tASuLt0CyO8reAmQaC6L45Sj+6HtRb5q+cFHPfXjhh40/IVMml
+         QnfA==
+X-Gm-Message-State: AOAM532Q1+TS5XYiI+HArGYm5BAMVOiMHzPolGVzEiveODMw3cdcfr+0
+        GMK8CwAQsEV1g32ERvJR32ohK12Dp39FZ0ok+JvUgv4GDPgMBYdeH1jUMOK4Mo0qFZa8+vAIdq8
+        uapZc6ypqh/g2gr1Eo1TBMOwkPtflLz3u7g==
+X-Received: by 2002:a05:6512:388e:: with SMTP id n14mr19430186lft.72.1636294443621;
+        Sun, 07 Nov 2021 06:14:03 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzuH1fKHFHacU0lmRyB5Colku3qqo+9IOCcLj0U1LZ/I5Q+tnSl6nsY4lQLrZ5FxRoPfk/71A==
+X-Received: by 2002:a05:6512:388e:: with SMTP id n14mr19430164lft.72.1636294443378;
+        Sun, 07 Nov 2021 06:14:03 -0800 (PST)
+Received: from krzk-bin.lan (89-77-68-124.dynamic.chello.pl. [89.77.68.124])
+        by smtp.gmail.com with ESMTPSA id d16sm285435ljj.87.2021.11.07.06.14.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 07 Nov 2021 06:14:03 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-nfc@lists.01.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Subject: [PATCH] nfc: port100: lower verbosity of cancelled URB messages
+Date:   Sun,  7 Nov 2021 15:14:00 +0100
+Message-Id: <20211107141400.523651-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 4, 2021 at 3:59 PM Ondrej Mosnacek <omosnace@redhat.com> wrote:
->
-> The commit referenced in the "Fixes" tag mistakenly attempted to
-> preserve the label of the peeloff socket that had been set in
-> selinux_socket_post_create() in the case of a client socket. However,
-> the peeloff socket should in fact just inherit the label from the parent
-> socket. In practice these labels are usually the same, but they may
-> differ when setsockcreatecon(3) or socket type transition rules are
-> involved.
->
-> The fact that selinux_socket_[post_]create() are called on the peeloff
-> socket is actually not what should be happening (it is a side effect of
-> sctp_do_peeloff() using socket_create() to create the socket, which
-> calls the aforementioned LSM hooks). A patch to fix this is being worked
-> on.
->
-> In the meanwhile, at least fix sctp_assoc_established() to set
-> asoc->secid to the socket's sid and selinux_sctp_sk_clone() to
-> unconditionally get the peeloff socket's sid from asoc->secid, which
-> will ensure that the peeloff socket gets the right label in case of both
-> client and server SCTP socket. The label set by
-> selinux_socket_post_create() will be simply overwritten in both cases,
-> as was the case before the commit this patch is fixing.
->
-> Passed both the selinux-testsuite (with client peeloff tests added) and
-> the SCTP functional test suite from lksctp-tools.
->
-> Fixes: e7310c94024c ("security: implement sctp_assoc_established hook in selinux")
-> Based-on-patch-by: Xin Long <lucien.xin@gmail.com>
-> Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
-> ---
->
-> As agreed with Xin Long, I'm posting this fix up instead of him. I am
-> now fairly convinced that this is the right way to deal with the
-> immediate problem of client peeloff socket labeling. I'll work on
-> addressing the side problem regarding selinux_socket_post_create()
-> being called on the peeloff sockets separately.
->
-> Please don't merge this patch without an ack from Paul, as it seems
-> we haven't reached an overall consensus yet.
->
->  security/selinux/hooks.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
+It is not an error to receive an URB with -ENOENT because it can come
+from regular user operations, e.g. pressing CTRL+C when running nfctool
+from neard.  Make it a debugging message, not an error.
 
-When we change things as significantly as we are doing here, i.e.
-shifting some of the labeling away from the endpoint to the
-association, I much rather we do it as a chunk/patchset so that we can
-review it in a consistent manner.  Some of that has gone out the door
-here because of what I view as recklessness on the part of the netdev
-folks, but that doesn't mean we need to abandon all order.  Let's get
-all the fixes and repairs queued up in a single patchset so that we
-can fully see what the end result of these changes are going to look
-like.  Further, I think it would be good if at least one of the
-patches has a very clear explanation in the commit description (not
-the cover letter, I want to see this in the git log) of what happens
-with respect to labeling on the server side, the client side, during
-socket peeloffs on both ends, and how multiple associations are
-handled.  My hope is that this should give us all a more consistent
-view, which will be very important moving forward if netdev is going
-to act independent of the other subsystems.
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+---
+ drivers/nfc/port100.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/nfc/port100.c b/drivers/nfc/port100.c
+index 16ceb763594f..d7db1a0e6be1 100644
+--- a/drivers/nfc/port100.c
++++ b/drivers/nfc/port100.c
+@@ -624,7 +624,7 @@ static void port100_recv_response(struct urb *urb)
+ 		break; /* success */
+ 	case -ECONNRESET:
+ 	case -ENOENT:
+-		nfc_err(&dev->interface->dev,
++		nfc_dbg(&dev->interface->dev,
+ 			"The urb has been canceled (status %d)\n", urb->status);
+ 		goto sched_wq;
+ 	case -ESHUTDOWN:
+@@ -678,7 +678,7 @@ static void port100_recv_ack(struct urb *urb)
+ 		break; /* success */
+ 	case -ECONNRESET:
+ 	case -ENOENT:
+-		nfc_err(&dev->interface->dev,
++		nfc_dbg(&dev->interface->dev,
+ 			"The urb has been stopped (status %d)\n", urb->status);
+ 		goto sched_wq;
+ 	case -ESHUTDOWN:
+@@ -942,7 +942,7 @@ static void port100_send_complete(struct urb *urb)
+ 		break; /* success */
+ 	case -ECONNRESET:
+ 	case -ENOENT:
+-		nfc_err(&dev->interface->dev,
++		nfc_dbg(&dev->interface->dev,
+ 			"The urb has been stopped (status %d)\n", urb->status);
+ 		break;
+ 	case -ESHUTDOWN:
 -- 
-paul moore
-www.paul-moore.com
+2.32.0
+
