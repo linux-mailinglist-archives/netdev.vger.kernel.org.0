@@ -2,132 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E136B44732F
-	for <lists+netdev@lfdr.de>; Sun,  7 Nov 2021 15:05:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A5B7447332
+	for <lists+netdev@lfdr.de>; Sun,  7 Nov 2021 15:08:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234019AbhKGOIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Nov 2021 09:08:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55744 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230308AbhKGOIV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Nov 2021 09:08:21 -0500
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 724DAC061570;
-        Sun,  7 Nov 2021 06:05:38 -0800 (PST)
-Received: by mail-pg1-x52b.google.com with SMTP id f5so12767760pgc.12;
-        Sun, 07 Nov 2021 06:05:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=S9Hzr0G+eW/ZzC3V59XnG0Uj0s7Oz1fOZsTjDtBfKfQ=;
-        b=biEaVbLhY7qe3w4ohrNzHoW6Whl2En11wjfRFI12H7AB6fwaN+pYmbHDyxXV21rqjd
-         rCLilmGcb5qNLBz9D2v9aJBU6ssz3GmdE1GQEcySx070mT+S3jtGyvVSikW3fJHVxext
-         6Dhj2B+tVmpfo3EkrAEvFTE3UxCy5M3goppt3/A0gRd9EGacwBMSqcYxhiQM/97U26mS
-         Qrc9v1mHIsJDNyHrmcZysY5pkq7YGNiZ0v9wveoYdvuYdxfrg8qI4S/unvrrZ0Q5ZItx
-         2PO2FLI1TaHGCJXgoKRNODb2fH3QlplNvn+K4QJbegYUXK6njIg7Vr5ok9MfzJVzzqid
-         8UCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=S9Hzr0G+eW/ZzC3V59XnG0Uj0s7Oz1fOZsTjDtBfKfQ=;
-        b=crBy+JwF4PydmPRR/gI0eUW4UOym/U6yTIcqmNmwMOAMXLiXxoFBXTdJFohRWrA2QZ
-         AMNHosOyECEyzwAgZRXfu1XjwJaOCTfsYgHd+5BcQ3Rb772qyVgG1UaRJcuPWO5eZDzt
-         v2RDHdNXOXWzLNzG1qmNaZDUaTr7ALiddM9jRMVsIFU/xlKBr+6UYQEYUrOmD6Z6oVgE
-         x9OrTiMR9EHtR8f6N8sP8Jy6qqN/X5ySNFJPpPcc61DaWlxNg3HChB3ucmeVvixdgWLF
-         Tm9Dr442QAEJpccaFbP7mBQ/Le92MQyaDx9Fs5NXBav2N1RS9yvDktxW3VEM8/bsMThz
-         bBxA==
-X-Gm-Message-State: AOAM533f6eYLpak00/CMo4aE59t5HrYGjkhOOuxreQvSVANOmmqTRz/v
-        2xi5FXcFzkDFD/sM1Ic9gceMXJ9Alzo=
-X-Google-Smtp-Source: ABdhPJww0EP6IbQfQ/2x5B0xYENNMY6nqsUEnsglQ3f6GlitCE+xFH9zozCcDm/23EhZ6TmTs/87Cw==
-X-Received: by 2002:a05:6a00:134a:b0:47f:2c6a:f37d with SMTP id k10-20020a056a00134a00b0047f2c6af37dmr65781184pfu.50.1636293938010;
-        Sun, 07 Nov 2021 06:05:38 -0800 (PST)
-Received: from hoboy.vegasvil.org ([2601:645:c000:2163:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id x135sm5280958pfd.78.2021.11.07.06.05.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Nov 2021 06:05:37 -0800 (PST)
-Date:   Sun, 7 Nov 2021 06:05:34 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Martin Kaistra <martin.kaistra@linutronix.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 7/7] net: dsa: b53: Expose PTP timestamping ioctls to
- userspace
-Message-ID: <20211107140534.GB18693@hoboy.vegasvil.org>
-References: <20211104133204.19757-1-martin.kaistra@linutronix.de>
- <20211104133204.19757-8-martin.kaistra@linutronix.de>
- <20211104174251.GB32548@hoboy.vegasvil.org>
- <ba543ae4-3a71-13fe-fa82-600ac37eaf5a@linutronix.de>
- <20211105141319.GA16456@hoboy.vegasvil.org>
- <20211105142833.nv56zd5bqrkyjepd@skbuf>
- <20211106001804.GA24062@hoboy.vegasvil.org>
- <20211106003606.qvfkitgyzoutznlw@skbuf>
+        id S235447AbhKGOLb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Nov 2021 09:11:31 -0500
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:44169 "EHLO
+        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230308AbhKGOLa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Nov 2021 09:11:30 -0500
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id BFDE0580870;
+        Sun,  7 Nov 2021 09:08:47 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Sun, 07 Nov 2021 09:08:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; bh=LPXxBZ9hcKFsIAG6Gh0OKT3ko6pm8TaBuYfdcJ5X5
+        eY=; b=cp9wxbFACt6kl6FJUezJwPTN6VfQwO8PU1xNaWhgh1o3d1T5TYslJchq4
+        HzzSx+NEKk7a64V8D3Z0tPKGR4Q7CNMrYtFczQn7ysuCJcP3T6bMmKgmGf62xWvs
+        Rdcjd8gXx91X+vDk9OJDv+0Ai5FonJM9/FwSpMKD8UcqEnl3FtqZ2TRicxAV0in5
+        79kvVkbCwm2Mo9sxaepsqSjYXG1RJOlrxKoMvCV4RHZiqW36JMBJ9YSxr6gRJYRB
+        etZXCsy4/hNrYTDK2F5EAkjz9cRq3IRaB66J8ULvTHu8JP03bd/pqxTfyt2tW/Rr
+        l7zbX8aoIuoolZzT6uvAvdD4b0p9A==
+X-ME-Sender: <xms:792HYXl2hKbk2AAteLcXf16AXazh7FalS3YinUwZ0eCOAuC0sgeHWw>
+    <xme:792HYa1DWVZ_hSyjWDeu_AAicJCOimXrP6BMpIRfK1wrMfkccUWA9qO0pZd8IEiYD
+    g1bt2CyDUdrZC8>
+X-ME-Received: <xmr:792HYdqWq1ca-d0tBvdQe6Knu4FS5ArbsXN9eunr6nTXlBxMqrV-FDlrc-98>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddruddtgdeitdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggugfgjsehtkeertddttdejnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpeeugfejfeeviedvkedtgfeghfegvedugeevgfetudfgteevveeutdfghfekgfeg
+    gfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    hoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:792HYfmCct8Si5lLS7pgXiKTnv0c6VZy6YjnNcocJG1gIFwiTkTYdg>
+    <xmx:792HYV0-Pe0BR919C3pojr7m73QPXVcsBtBAXom6aTZg6xoq2iRGtA>
+    <xmx:792HYeu3va0dvHylOGh1Mq-qlRXeANfguIsvEF1akjm4j-_tiJmchQ>
+    <xmx:792HYfxTAncxmaimRXKiLOyTqaYm3yd2fQCuydeJMeGfJ2D4giUu4A>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 7 Nov 2021 09:08:46 -0500 (EST)
+Date:   Sun, 7 Nov 2021 16:08:44 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Maciej Machnikowski <maciej.machnikowski@intel.com>
+Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        richardcochran@gmail.com, abyagowi@fb.com,
+        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kselftest@vger.kernel.org, mkubecek@suse.cz,
+        saeed@kernel.org, michael.chan@broadcom.com
+Subject: Re: [PATCH v2 net-next 6/6] docs: net: Add description of SyncE
+ interfaces
+Message-ID: <YYfd7DCFFtj/x+zQ@shredder>
+References: <20211105205331.2024623-1-maciej.machnikowski@intel.com>
+ <20211105205331.2024623-7-maciej.machnikowski@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20211106003606.qvfkitgyzoutznlw@skbuf>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211105205331.2024623-7-maciej.machnikowski@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 06, 2021 at 02:36:06AM +0200, Vladimir Oltean wrote:
-> On Fri, Nov 05, 2021 at 05:18:04PM -0700, Richard Cochran wrote:
-> > On Fri, Nov 05, 2021 at 04:28:33PM +0200, Vladimir Oltean wrote:
-> > > What is the expected convention exactly? There are other drivers that
-> > > downgrade the user application's request to what they support, and at
-> > > least ptp4l does not error out, it just prints a warning.
-> > 
-> > Drivers may upgrade, but they may not downgrade.
-> > 
-> > Which drivers downgrade?  We need to fix those buggy drivers.
-> > 
-> > Thanks,
-> > Richard
+On Fri, Nov 05, 2021 at 09:53:31PM +0100, Maciej Machnikowski wrote:
+> Add Documentation/networking/synce.rst describing new RTNL messages
+> and respective NDO ops supporting SyncE (Synchronous Ethernet).
 > 
-> Just a quick example
-> https://elixir.bootlin.com/linux/v5.15/source/drivers/net/ethernet/mscc/ocelot.c#L1178
+> Signed-off-by: Maciej Machnikowski <maciej.machnikowski@intel.com>
+> ---
+>  Documentation/networking/synce.rst | 117 +++++++++++++++++++++++++++++
+>  1 file changed, 117 insertions(+)
+>  create mode 100644 Documentation/networking/synce.rst
+> 
+> diff --git a/Documentation/networking/synce.rst b/Documentation/networking/synce.rst
+> new file mode 100644
+> index 000000000000..4ca41fb9a481
+> --- /dev/null
+> +++ b/Documentation/networking/synce.rst
+> @@ -0,0 +1,117 @@
+> +.. SPDX-License-Identifier: GPL-2.0
+> +
+> +====================
+> +Synchronous Ethernet
+> +====================
+> +
+> +Synchronous Ethernet networks use a physical layer clock to syntonize
+> +the frequency across different network elements.
+> +
+> +Basic SyncE node defined in the ITU-T G.8264 consist of an Ethernet
+> +Equipment Clock (EEC) and a PHY that has dedicated outputs of recovered clocks
+> +and a dedicated TX clock input that is used as to transmit data to other nodes.
+> +
+> +The SyncE capable PHY is able to recover the incomning frequency of the data
+> +stream on RX lanes and redirect it (sometimes dividing it) to recovered
+> +clock outputs. In SyncE PHY the TX frequency is directly dependent on the
+> +input frequency - either on the PHY CLK input, or on a dedicated
+> +TX clock input.
+> +
+> +      ┌───────────┬──────────┐
+> +      │ RX        │ TX       │
+> +  1   │ lanes     │ lanes    │ 1
+> +  ───►├──────┐    │          ├─────►
+> +  2   │      │    │          │ 2
+> +  ───►├──┐   │    │          ├─────►
+> +  3   │  │   │    │          │ 3
+> +  ───►├─▼▼   ▼    │          ├─────►
+> +      │ ──────    │          │
+> +      │ \____/    │          │
+> +      └──┼──┼─────┴──────────┘
+> +        1│ 2│        ▲
+> + RCLK out│  │        │ TX CLK in
+> +         ▼  ▼        │
+> +       ┌─────────────┴───┐
+> +       │                 │
+> +       │       EEC       │
+> +       │                 │
+> +       └─────────────────┘
+> +
+> +The EEC can synchronize its frequency to one of the synchronization inputs
+> +either clocks recovered on traffic interfaces or (in advanced deployments)
+> +external frequency sources.
+> +
+> +Some EEC implementations can select synchronization source through
+> +priority tables and synchronization status messaging and provide necessary
+> +filtering and holdover capabilities.
+> +
+> +The following interface can be applicable to diffferent packet network types
+> +following ITU-T G.8261/G.8262 recommendations.
+> +
+> +Interface
+> +=========
+> +
+> +The following RTNL messages are used to read/configure SyncE recovered
+> +clocks.
+> +
+> +RTM_GETRCLKRANGE
+> +-----------------
+> +Reads the allowed pin index range for the recovered clock outputs.
+> +This can be aligned to PHY outputs or to EEC inputs, whichever is
+> +better for a given application.
 
-        switch (cfg.rx_filter) {
-        case HWTSTAMP_FILTER_NONE:
-                break;
-        case HWTSTAMP_FILTER_ALL:
-        case HWTSTAMP_FILTER_SOME:
-        case HWTSTAMP_FILTER_PTP_V1_L4_EVENT:
-        case HWTSTAMP_FILTER_PTP_V1_L4_SYNC:
-        case HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ:
-        case HWTSTAMP_FILTER_NTP_ALL:
-        case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
-        case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
-        case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
-        case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
-        case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
-        case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
-        case HWTSTAMP_FILTER_PTP_V2_EVENT:
-        case HWTSTAMP_FILTER_PTP_V2_SYNC:
-        case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
-                cfg.rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
-                break;
-        default:
-                mutex_unlock(&ocelot->ptp_lock);
-                return -ERANGE;
-        }
+Can you explain the difference between PHY outputs and EEC inputs? It is
+no clear to me from the diagram.
 
-That is essentially an upgrade to HWTSTAMP_FILTER_PTP_V2_EVENT.  The
-change from ALL to HWTSTAMP_FILTER_PTP_V2_EVENT is probably a simple
-oversight, and the driver can be easily fixed.
+How would the diagram look in a multi-port adapter where you have a
+single EEC?
 
-Thanks,
-Richard
+> +Will call the ndo_get_rclk_range function to read the allowed range
+> +of output pin indexes.
+> +Will call ndo_get_rclk_range to determine the allowed recovered clock
+> +range and return them in the IFLA_RCLK_RANGE_MIN_PIN and the
+> +IFLA_RCLK_RANGE_MAX_PIN attributes
+
+The first sentence seems to be redundant
+
+> +
+> +RTM_GETRCLKSTATE
+> +-----------------
+> +Read the state of recovered pins that output recovered clock from
+> +a given port. The message will contain the number of assigned clocks
+> +(IFLA_RCLK_STATE_COUNT) and an N pin indexes in IFLA_RCLK_STATE_OUT_IDX
+> +To support multiple recovered clock outputs from the same port, this message
+> +will return the IFLA_RCLK_STATE_COUNT attribute containing the number of
+> +active recovered clock outputs (N) and N IFLA_RCLK_STATE_OUT_IDX attributes
+> +listing the active output indexes.
+> +This message will call the ndo_get_rclk_range to determine the allowed
+> +recovered clock indexes and then will loop through them, calling
+> +the ndo_get_rclk_state for each of them.
+
+Why do you need both RTM_GETRCLKRANGE and RTM_GETRCLKSTATE? Isn't
+RTM_GETRCLKSTATE enough? Instead of skipping over "disabled" pins in the
+range IFLA_RCLK_RANGE_MIN_PIN..IFLA_RCLK_RANGE_MAX_PIN, just report the
+state (enabled / disable) for all
+
+> +
+> +RTM_SETRCLKSTATE
+> +-----------------
+> +Sets the redirection of the recovered clock for a given pin. This message
+> +expects one attribute:
+> +struct if_set_rclk_msg {
+> +	__u32 ifindex; /* interface index */
+> +	__u32 out_idx; /* output index (from a valid range)
+> +	__u32 flags; /* configuration flags */
+> +};
+> +
+> +Supported flags are:
+> +SET_RCLK_FLAGS_ENA - if set in flags - the given output will be enabled,
+> +		     if clear - the output will be disabled.
+
+In the diagram you have two recovered clock outputs going into the EEC.
+According to which the EEC is synchronized?
+
+How does user space know which pins to enable?
+
+> +
+> +RTM_GETEECSTATE
+> +----------------
+> +Reads the state of the EEC or equivalent physical clock synchronizer.
+> +This message returns the following attributes:
+> +IFLA_EEC_STATE - current state of the EEC or equivalent clock generator.
+> +		 The states returned in this attribute are aligned to the
+> +		 ITU-T G.781 and are:
+> +		  IF_EEC_STATE_INVALID - state is not valid
+> +		  IF_EEC_STATE_FREERUN - clock is free-running
+> +		  IF_EEC_STATE_LOCKED - clock is locked to the reference,
+> +		                        but the holdover memory is not valid
+> +		  IF_EEC_STATE_LOCKED_HO_ACQ - clock is locked to the reference
+> +		                               and holdover memory is valid
+> +		  IF_EEC_STATE_HOLDOVER - clock is in holdover mode
+> +State is read from the netdev calling the:
+> +int (*ndo_get_eec_state)(struct net_device *dev, enum if_eec_state *state,
+> +			 u32 *src_idx, struct netlink_ext_ack *extack);
+> +
+> +IFLA_EEC_SRC_IDX - optional attribute returning the index of the reference that
+> +		   is used for the current IFLA_EEC_STATE, i.e., the index of
+> +		   the pin that the EEC is locked to.
+> +
+> +Will be returned only if the ndo_get_eec_src is implemented.
+> \ No newline at end of file
+> -- 
+> 2.26.3
+> 
