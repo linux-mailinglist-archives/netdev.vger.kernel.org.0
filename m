@@ -2,63 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B368244752E
-	for <lists+netdev@lfdr.de>; Sun,  7 Nov 2021 20:10:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5733044752B
+	for <lists+netdev@lfdr.de>; Sun,  7 Nov 2021 20:10:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236250AbhKGTMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Nov 2021 14:12:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37902 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233008AbhKGTMx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Nov 2021 14:12:53 -0500
-Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52CFDC061570;
-        Sun,  7 Nov 2021 11:10:10 -0800 (PST)
-Received: from localhost (225.159.143.150.dyn.plus.net [150.143.159.225])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id 345F74FE7B833;
-        Sun,  7 Nov 2021 11:10:05 -0800 (PST)
-Date:   Sun, 07 Nov 2021 19:09:59 +0000 (GMT)
-Message-Id: <20211107.190959.1432110661171124830.davem@davemloft.net>
-To:     paul@paul-moore.com
-Cc:     omosnace@redhat.com, netdev@vger.kernel.org, kuba@kernel.org,
-        lucien.xin@gmail.com, richard_c_haines@btinternet.com,
-        vyasevich@gmail.com, nhorman@tuxdriver.com,
-        marcelo.leitner@gmail.com, linux-sctp@vger.kernel.org,
-        selinux@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] selinux: fix SCTP client peeloff socket labeling
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <CAHC9VhQwpKWBF2S=vTutBVXeY9xSfTRuhK9nM9TariLVUSweMA@mail.gmail.com>
-References: <20211104195949.135374-1-omosnace@redhat.com>
-        <CAHC9VhQwpKWBF2S=vTutBVXeY9xSfTRuhK9nM9TariLVUSweMA@mail.gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 27.2
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Sun, 07 Nov 2021 11:10:07 -0800 (PST)
+        id S236253AbhKGTMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Nov 2021 14:12:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37412 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229990AbhKGTMv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 7 Nov 2021 14:12:51 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id B23F360EBB;
+        Sun,  7 Nov 2021 19:10:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636312208;
+        bh=wZR7a6HrkbX4Ku9WZ4G4CNA6D5gqWJIXCQMCCZ2A4jk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Mm36nEeOjzhbELI7T36gtDabrEJ7G/qFn8a2LIP95NKnzAoiNixnstuCRnuxxvq1j
+         bPzLpdfzLpOY1MVP3N5gP4Pgso91inve50jNQ6J0JTKFfvCEt/foWA7AFBq+lc4LWg
+         uXv9+zsWP3eJf0V20WAFJ5PIww83Bv0GlVCJGgw70/cn93r3SMOYLpGJpeP8PPhgPk
+         g5LiMPpPrheD/CcY7g3HLun5qAqzxesi4g3i3K0dyLOkXiXr7Hb8fkQCDHt9JSkEam
+         hTHmw2y1GcM7Ytshj4ceBowdmOBa5nbN6LFCiZ6pvwuyJ7qbSc29XmTsL4JYmxTocX
+         71e+4sHaE2UWg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A4C7E609F7;
+        Sun,  7 Nov 2021 19:10:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: can 2021-11-06
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163631220867.2857.10166147031340186904.git-patchwork-notify@kernel.org>
+Date:   Sun, 07 Nov 2021 19:10:08 +0000
+References: <20211106215449.57946-1-mkl@pengutronix.de>
+In-Reply-To: <20211106215449.57946-1-mkl@pengutronix.de>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-can@vger.kernel.org, kernel@pengutronix.de
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paul Moore <paul@paul-moore.com>
-Date: Sun, 7 Nov 2021 09:12:57 -0500
+Hello:
 
+This pull request was applied to netdev/net.git (master)
+by Marc Kleine-Budde <mkl@pengutronix.de>:
+
+On Sat,  6 Nov 2021 22:54:41 +0100 you wrote:
+> Hello Jakub, hello David,
 > 
-> When we change things as significantly as we are doing here, i.e.
-> shifting some of the labeling away from the endpoint to the
-> association, I much rather we do it as a chunk/patchset so that we can
-> review it in a consistent manner.  Some of that has gone out the door
-> here because of what I view as recklessness on the part of the netdev
-> folks, but that doesn't mean we need to abandon all order.  Let's get
-> all the fixes and repairs queued up in a single patchset so that we
-> can fully see what the end result of these changes are going to look
-> like.  Further, I think it would be good if at least one of the
-> patches has a very clear explanation in the commit description (not
-> the cover letter, I want to see this in the git log) of what happens
+> this is a pull request of 8 patches for net/master.
+> 
+> The first 3 patches are by Zhang Changzhong and fix 3 standard
+> conformance problems in the j1939 CAN stack.
+> 
+> [...]
 
-Cover letters show up in the merge commit log message for the patch
-series so they show up in the git commit log.
+Here is the summary with links:
+  - pull-request: can 2021-11-06
+    https://git.kernel.org/netdev/net/c/f05fb508ec3b
+  - [net,2/8] can: j1939: j1939_can_recv(): ignore messages with invalid source address
+    https://git.kernel.org/netdev/net/c/a79305e156db
+  - [net,3/8] can: j1939: j1939_tp_cmd_recv(): check the dst address of TP.CM_BAM
+    https://git.kernel.org/netdev/net/c/164051a6ab54
+  - [net,4/8] can: etas_es58x: es58x_rx_err_msg(): fix memory leak in error path
+    https://git.kernel.org/netdev/net/c/d9447f768bc8
+  - [net,5/8] can: peak_usb: always ask for BERR reporting for PCAN-USB devices
+    https://git.kernel.org/netdev/net/c/3f1c7aa28498
+  - [net,6/8] can: peak_usb: exchange the order of information messages
+    https://git.kernel.org/netdev/net/c/6b78ba3e51f9
+  - [net,7/8] can: mcp251xfd: mcp251xfd_irq(): add missing can_rx_offload_threaded_irq_finish() in case of bus off
+    https://git.kernel.org/netdev/net/c/691204bd66b3
+  - [net,8/8] can: mcp251xfd: mcp251xfd_chip_start(): fix error handling for mcp251xfd_chip_rx_int_enable()
+    https://git.kernel.org/netdev/net/c/69c55f6e7669
 
-Paul, please stop being so difficult and let's fix this.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Thank you.
 
