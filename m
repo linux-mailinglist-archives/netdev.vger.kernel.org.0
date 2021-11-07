@@ -2,105 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3258944731A
-	for <lists+netdev@lfdr.de>; Sun,  7 Nov 2021 14:44:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E136B44732F
+	for <lists+netdev@lfdr.de>; Sun,  7 Nov 2021 15:05:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233703AbhKGNrk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Nov 2021 08:47:40 -0500
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:37591 "EHLO
-        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230128AbhKGNrj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Nov 2021 08:47:39 -0500
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 623235800BC;
-        Sun,  7 Nov 2021 08:44:56 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute6.internal (MEProxy); Sun, 07 Nov 2021 08:44:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=YYBzFB
-        LaqRjypaCTOnoGZ+5BHWOftMjIYoQeVeLxb5Y=; b=HjB4hVxvEaAvjjqDPcyJIa
-        5QrURh0Fua3tVbL77gFzPYJl4pH6s2U9GliabrhOxkp2y5J0FEA96r5VVEdFpkaf
-        ppoJszTvIXgG10O9nBRM5JzZ27P6eouEoZ6eVs894PRykt9mK31nyHiKjP3jknEd
-        rtyHdpVsSsw7MK7o0CnTXABl1uMKr4BLBbn3FT30z1RyOPGvMKUsuyWP05KHyYc7
-        x94o8mGy0cZ81sVR4UnLv+QjieF/7d318HgJ3EmhqNub5gNR6EvBCY5iDbL3PPIo
-        UG3hWa1Byc7EveD7+mWJhR+tCUXgQRptRkppbXn0RhP09Tjoe6ottP9H9nFByMUw
-        ==
-X-ME-Sender: <xms:V9iHYUdibIJ2ADw6i8_Krih-i-rH9sBz0OpmEkwYPmXGh8Y7NatbXA>
-    <xme:V9iHYWO-21u9fdmFgxBoPiiV6hDBnnXbHrhNG6il_i0-lyde3qhSvhVDGSI18hDw9
-    VBtVeaHuxwYKJM>
-X-ME-Received: <xmr:V9iHYVhaQd5tc2v7b1gHBLlFeHTGfcrdGUBAiJObYAwp79vxXu4gj-di9Ulh>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddruddtgdehhecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnhepgfevgfevueduueffieffheeifffgjeelvedtteeuteeuffekvefggfdtudfgkeev
-    necuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtne
-    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:V9iHYZ_zATfsMXtbU-0UbyfQjXVVhOK0OlldF78Ji3cG4fcU5VUW7A>
-    <xmx:V9iHYQtZjeHSIB1h7H-jr3STB8LFdTRYTE150ZcBhVsm8b89gu-7bA>
-    <xmx:V9iHYQFoOShoIwWFpJAMmPI4tPgmjtD2OhUW6accm2Nb_n32O5eHHw>
-    <xmx:WNiHYSI6hxzOeY5nEuAMckML32XXM5t8J2vCk0UYOHbpRPqppjH9Ww>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 7 Nov 2021 08:44:55 -0500 (EST)
-Date:   Sun, 7 Nov 2021 15:44:52 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Maciej Machnikowski <maciej.machnikowski@intel.com>
-Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        richardcochran@gmail.com, abyagowi@fb.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kselftest@vger.kernel.org, mkubecek@suse.cz,
-        saeed@kernel.org, michael.chan@broadcom.com
-Subject: Re: [PATCH v2 net-next 2/6] rtnetlink: Add new RTM_GETEECSTATE
- message to get SyncE status
-Message-ID: <YYfYVA9j6Dk2rkDD@shredder>
-References: <20211105205331.2024623-1-maciej.machnikowski@intel.com>
- <20211105205331.2024623-3-maciej.machnikowski@intel.com>
+        id S234019AbhKGOIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Nov 2021 09:08:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55744 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230308AbhKGOIV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Nov 2021 09:08:21 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 724DAC061570;
+        Sun,  7 Nov 2021 06:05:38 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id f5so12767760pgc.12;
+        Sun, 07 Nov 2021 06:05:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=S9Hzr0G+eW/ZzC3V59XnG0Uj0s7Oz1fOZsTjDtBfKfQ=;
+        b=biEaVbLhY7qe3w4ohrNzHoW6Whl2En11wjfRFI12H7AB6fwaN+pYmbHDyxXV21rqjd
+         rCLilmGcb5qNLBz9D2v9aJBU6ssz3GmdE1GQEcySx070mT+S3jtGyvVSikW3fJHVxext
+         6Dhj2B+tVmpfo3EkrAEvFTE3UxCy5M3goppt3/A0gRd9EGacwBMSqcYxhiQM/97U26mS
+         Qrc9v1mHIsJDNyHrmcZysY5pkq7YGNiZ0v9wveoYdvuYdxfrg8qI4S/unvrrZ0Q5ZItx
+         2PO2FLI1TaHGCJXgoKRNODb2fH3QlplNvn+K4QJbegYUXK6njIg7Vr5ok9MfzJVzzqid
+         8UCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=S9Hzr0G+eW/ZzC3V59XnG0Uj0s7Oz1fOZsTjDtBfKfQ=;
+        b=crBy+JwF4PydmPRR/gI0eUW4UOym/U6yTIcqmNmwMOAMXLiXxoFBXTdJFohRWrA2QZ
+         AMNHosOyECEyzwAgZRXfu1XjwJaOCTfsYgHd+5BcQ3Rb772qyVgG1UaRJcuPWO5eZDzt
+         v2RDHdNXOXWzLNzG1qmNaZDUaTr7ALiddM9jRMVsIFU/xlKBr+6UYQEYUrOmD6Z6oVgE
+         x9OrTiMR9EHtR8f6N8sP8Jy6qqN/X5ySNFJPpPcc61DaWlxNg3HChB3ucmeVvixdgWLF
+         Tm9Dr442QAEJpccaFbP7mBQ/Le92MQyaDx9Fs5NXBav2N1RS9yvDktxW3VEM8/bsMThz
+         bBxA==
+X-Gm-Message-State: AOAM533f6eYLpak00/CMo4aE59t5HrYGjkhOOuxreQvSVANOmmqTRz/v
+        2xi5FXcFzkDFD/sM1Ic9gceMXJ9Alzo=
+X-Google-Smtp-Source: ABdhPJww0EP6IbQfQ/2x5B0xYENNMY6nqsUEnsglQ3f6GlitCE+xFH9zozCcDm/23EhZ6TmTs/87Cw==
+X-Received: by 2002:a05:6a00:134a:b0:47f:2c6a:f37d with SMTP id k10-20020a056a00134a00b0047f2c6af37dmr65781184pfu.50.1636293938010;
+        Sun, 07 Nov 2021 06:05:38 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:645:c000:2163:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id x135sm5280958pfd.78.2021.11.07.06.05.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 07 Nov 2021 06:05:37 -0800 (PST)
+Date:   Sun, 7 Nov 2021 06:05:34 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Martin Kaistra <martin.kaistra@linutronix.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 7/7] net: dsa: b53: Expose PTP timestamping ioctls to
+ userspace
+Message-ID: <20211107140534.GB18693@hoboy.vegasvil.org>
+References: <20211104133204.19757-1-martin.kaistra@linutronix.de>
+ <20211104133204.19757-8-martin.kaistra@linutronix.de>
+ <20211104174251.GB32548@hoboy.vegasvil.org>
+ <ba543ae4-3a71-13fe-fa82-600ac37eaf5a@linutronix.de>
+ <20211105141319.GA16456@hoboy.vegasvil.org>
+ <20211105142833.nv56zd5bqrkyjepd@skbuf>
+ <20211106001804.GA24062@hoboy.vegasvil.org>
+ <20211106003606.qvfkitgyzoutznlw@skbuf>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211105205331.2024623-3-maciej.machnikowski@intel.com>
+In-Reply-To: <20211106003606.qvfkitgyzoutznlw@skbuf>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 05, 2021 at 09:53:27PM +0100, Maciej Machnikowski wrote:
-> +/* SyncE section */
-> +
-> +enum if_eec_state {
-> +	IF_EEC_STATE_INVALID = 0,	/* state is not valid */
-> +	IF_EEC_STATE_FREERUN,		/* clock is free-running */
-> +	IF_EEC_STATE_LOCKED,		/* clock is locked to the reference,
-> +					 * but the holdover memory is not valid
-> +					 */
-> +	IF_EEC_STATE_LOCKED_HO_ACQ,	/* clock is locked to the reference
-> +					 * and holdover memory is valid
-> +					 */
-> +	IF_EEC_STATE_HOLDOVER,		/* clock is in holdover mode */
-> +};
-> +
-> +#define EEC_SRC_PORT		(1 << 0) /* recovered clock from the port is
-> +					  * currently the source for the EEC
-> +					  */
+On Sat, Nov 06, 2021 at 02:36:06AM +0200, Vladimir Oltean wrote:
+> On Fri, Nov 05, 2021 at 05:18:04PM -0700, Richard Cochran wrote:
+> > On Fri, Nov 05, 2021 at 04:28:33PM +0200, Vladimir Oltean wrote:
+> > > What is the expected convention exactly? There are other drivers that
+> > > downgrade the user application's request to what they support, and at
+> > > least ptp4l does not error out, it just prints a warning.
+> > 
+> > Drivers may upgrade, but they may not downgrade.
+> > 
+> > Which drivers downgrade?  We need to fix those buggy drivers.
+> > 
+> > Thanks,
+> > Richard
+> 
+> Just a quick example
+> https://elixir.bootlin.com/linux/v5.15/source/drivers/net/ethernet/mscc/ocelot.c#L1178
 
-Where is this used?
+        switch (cfg.rx_filter) {
+        case HWTSTAMP_FILTER_NONE:
+                break;
+        case HWTSTAMP_FILTER_ALL:
+        case HWTSTAMP_FILTER_SOME:
+        case HWTSTAMP_FILTER_PTP_V1_L4_EVENT:
+        case HWTSTAMP_FILTER_PTP_V1_L4_SYNC:
+        case HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ:
+        case HWTSTAMP_FILTER_NTP_ALL:
+        case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
+        case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
+        case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
+        case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
+        case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
+        case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
+        case HWTSTAMP_FILTER_PTP_V2_EVENT:
+        case HWTSTAMP_FILTER_PTP_V2_SYNC:
+        case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
+                cfg.rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
+                break;
+        default:
+                mutex_unlock(&ocelot->ptp_lock);
+                return -ERANGE;
+        }
 
-Note that the merge window is open and that net-next is closed:
+That is essentially an upgrade to HWTSTAMP_FILTER_PTP_V2_EVENT.  The
+change from ALL to HWTSTAMP_FILTER_PTP_V2_EVENT is probably a simple
+oversight, and the driver can be easily fixed.
 
-http://vger.kernel.org/~davem/net-next.html
-
-> +
-> +struct if_eec_state_msg {
-> +	__u32 ifindex;
-> +};
-> +
-> +enum {
-> +	IFLA_EEC_UNSPEC,
-> +	IFLA_EEC_STATE,
-> +	IFLA_EEC_SRC_IDX,
-> +	__IFLA_EEC_MAX,
-> +};
-> +
-> +#define IFLA_EEC_MAX (__IFLA_EEC_MAX - 1)
+Thanks,
+Richard
