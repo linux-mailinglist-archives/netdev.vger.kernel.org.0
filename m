@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F24CC449A7A
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 18:07:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E1A8449A77
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 18:06:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241424AbhKHRJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 12:09:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44616 "EHLO mail.kernel.org"
+        id S240435AbhKHRI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 12:08:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44502 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241428AbhKHRJI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 12:09:08 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4FF2B6120A;
-        Mon,  8 Nov 2021 17:06:23 +0000 (UTC)
+        id S241429AbhKHRI5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 12:08:57 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8595361406;
+        Mon,  8 Nov 2021 17:06:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636391184;
-        bh=6QHJrw69sX3p9BOYrufp6NKlS1pMEGA87i1Q8hTrm4k=;
+        s=k20201202; t=1636391173;
+        bh=+SR6P1MuJzp5cF5dePEfqnSBAXoAo9DSe2e/gwRJZ1Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sUdrBzMtKMJRapjw59yDtOEZPqTTXkWBKOfqugGLImqJoePn5JP/+EC+KWuYK95zO
-         Hac3HffaMc6eLoTLh6QP5/MZJZnan0iXrvqI2v5jVmmvPhyb+n1fv59Tq8hAVghcU1
-         JjWVXPCa+CfWf99IQH7K/IScRjsx+r6MsM9owCQajJSlImTuUWWkBDa1EU4j93A0LG
-         7wnl9fM05uM4OqFvjjqZZMdLGbWoNH+xKjhFStOVusvr+eFIPc2L+3t0JExXRFSFtl
-         GtCg5NrcwWUE/qRrWNJLUAmiVgIF8Epd52XI/UAF2B8EqqrmsDYGGmyxMRfFGTushS
-         k4TGNh6p/QAHQ==
+        b=i3q5RcqHMYNJS8CrOMFnFwZccbg8b3VIvWUsT6zadAYFFWqSDJqyNjaXZJatSbWmS
+         ktx4bg87izveBcXg2H4YD5JLF5azXB1wPsoSenama06hD7wOOtShDnoxXd1IDDBBQ5
+         XfQCQoVvw6kBCcju5W//hidLYLTVRUPFyLnU+IjIW7DnfrjohEysfLAi7yf3HVXJ3f
+         fZ1XY0bI9IHLO9RnCbBObgyL6b4PSRpzlQJZJbvNpofjdMEKCRU0LbzshN+kRhsDIN
+         I4n9wVSdLiOdgJCut8N3An8hqlTh6+Ejwf0ShQXtwKLXYF2QTgf5rcg7SA9xUBBAnF
+         yv18dcoCR+Seg==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
         netdev <netdev@vger.kernel.org>
-Subject: [RFC PATCH 08/16] devlink: Protect resource list with specific lock
-Date:   Mon,  8 Nov 2021 19:05:30 +0200
-Message-Id: <461d1e1b3d0399d6cab1117a796f0b02b634597f.1636390483.git.leonro@nvidia.com>
+Subject: [RFC PATCH 09/16] devlink: Protect all traps lists with specialized lock
+Date:   Mon,  8 Nov 2021 19:05:31 +0200
+Message-Id: <49788cd5a06b23bc679edf21bf58832e37d170e3.1636390483.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <cover.1636390483.git.leonro@nvidia.com>
 References: <cover.1636390483.git.leonro@nvidia.com>
@@ -43,301 +43,532 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Devlink resource flows relied on devlink instance lock to protect
-from parallel addition and deletion from resource_list. So instead
-of overloading devlink->lock, let's introduce new lock with much more
-clear scope.
+Separate traps related list protection from main devlink instance lock
+to rely on specialized lock that will protect traps, traps groups and
+policies.
 
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- net/core/devlink.c | 100 +++++++++++++++++++++++++--------------------
- 1 file changed, 56 insertions(+), 44 deletions(-)
+ net/core/devlink.c | 154 ++++++++++++++++++++++++++++++---------------
+ 1 file changed, 102 insertions(+), 52 deletions(-)
 
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 86db7cf1f3ca..97154219fca2 100644
+index 97154219fca2..e89eaaba653d 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -46,6 +46,7 @@ struct devlink {
- 	struct list_head sb_list;
- 	struct list_head dpipe_table_list;
- 	struct list_head resource_list;
-+	struct mutex resource_list_lock; /* protects resource_list */
- 	struct list_head param_list;
- 	struct list_head region_list;
- 	struct list_head reporter_list;
-@@ -3587,12 +3588,15 @@ devlink_resource_find(struct devlink *devlink,
- }
- 
- static void
--devlink_resource_validate_children(struct devlink_resource *resource)
-+devlink_resource_validate_children(struct devlink *devlink,
-+				   struct devlink_resource *resource)
+@@ -55,6 +55,7 @@ struct devlink {
+ 	struct list_head trap_list;
+ 	struct list_head trap_group_list;
+ 	struct list_head trap_policer_list;
++	struct mutex traps_lock; /* protects all traps activities */
+ 	const struct devlink_ops *ops;
+ 	u64 features;
+ 	struct xarray snapshot_ids;
+@@ -7534,6 +7535,8 @@ devlink_trap_item_lookup(struct devlink *devlink, const char *name)
  {
- 	struct devlink_resource *child_resource;
- 	bool size_valid = true;
- 	u64 parts_size = 0;
+ 	struct devlink_trap_item *trap_item;
  
-+	lockdep_assert_held(&devlink->lock);
++	lockdep_assert_held(&devlink->traps_lock);
 +
- 	if (list_empty(&resource->resource_list))
- 		goto out;
+ 	list_for_each_entry(trap_item, &devlink->trap_list, list) {
+ 		if (!strcmp(trap_item->trap->name, name))
+ 			return trap_item;
+@@ -7753,21 +7756,25 @@ static int devlink_nl_cmd_trap_get_doit(struct sk_buff *skb,
+ 	struct netlink_ext_ack *extack = info->extack;
+ 	struct devlink *devlink = info->user_ptr[0];
+ 	struct devlink_trap_item *trap_item;
++	int err = -EOPNOTSUPP;
+ 	struct sk_buff *msg;
+-	int err;
  
-@@ -3645,20 +3649,25 @@ static int devlink_nl_cmd_resource_set(struct sk_buff *skb,
- 		return -EINVAL;
- 	resource_id = nla_get_u64(info->attrs[DEVLINK_ATTR_RESOURCE_ID]);
++	mutex_lock(&devlink->traps_lock);
+ 	if (list_empty(&devlink->trap_list))
+-		return -EOPNOTSUPP;
++		goto out;
  
-+	mutex_lock(&devlink->resource_list_lock);
- 	resource = devlink_resource_find(devlink, NULL, resource_id);
--	if (!resource)
--		return -EINVAL;
-+	if (!resource) {
-+		err = -EINVAL;
+ 	trap_item = devlink_trap_item_get_from_info(devlink, info);
+ 	if (!trap_item) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Device did not register this trap");
+-		return -ENOENT;
++		err = -ENOENT;
++		goto out;
+ 	}
+ 
+ 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
+-	if (!msg)
+-		return -ENOMEM;
++	if (!msg) {
++		err = -ENOMEM;
 +		goto out;
 +	}
  
- 	size = nla_get_u64(info->attrs[DEVLINK_ATTR_RESOURCE_SIZE]);
- 	err = devlink_resource_validate_size(resource, size, info->extack);
+ 	err = devlink_nl_trap_fill(msg, devlink, trap_item,
+ 				   DEVLINK_CMD_TRAP_NEW, info->snd_portid,
+@@ -7775,10 +7782,13 @@ static int devlink_nl_cmd_trap_get_doit(struct sk_buff *skb,
  	if (err)
--		return err;
+ 		goto err_trap_fill;
+ 
++	mutex_unlock(&devlink->traps_lock);
+ 	return genlmsg_reply(msg, info);
+ 
+ err_trap_fill:
+ 	nlmsg_free(msg);
++out:
++	mutex_unlock(&devlink->traps_lock);
+ 	return err;
+ }
+ 
+@@ -7800,7 +7810,7 @@ static int devlink_nl_cmd_trap_get_dumpit(struct sk_buff *msg,
+ 		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
+ 			goto retry;
+ 
+-		mutex_lock(&devlink->lock);
++		mutex_lock(&devlink->traps_lock);
+ 		list_for_each_entry(trap_item, &devlink->trap_list, list) {
+ 			if (idx < start) {
+ 				idx++;
+@@ -7812,13 +7822,13 @@ static int devlink_nl_cmd_trap_get_dumpit(struct sk_buff *msg,
+ 						   cb->nlh->nlmsg_seq,
+ 						   NLM_F_MULTI);
+ 			if (err) {
+-				mutex_unlock(&devlink->lock);
++				mutex_unlock(&devlink->traps_lock);
+ 				devlink_put(devlink);
+ 				goto out;
+ 			}
+ 			idx++;
+ 		}
+-		mutex_unlock(&devlink->lock);
++		mutex_unlock(&devlink->traps_lock);
+ retry:
+ 		devlink_put(devlink);
+ 	}
+@@ -7878,17 +7888,23 @@ static int devlink_nl_cmd_trap_set_doit(struct sk_buff *skb,
+ 	struct netlink_ext_ack *extack = info->extack;
+ 	struct devlink *devlink = info->user_ptr[0];
+ 	struct devlink_trap_item *trap_item;
++	int err = -EOPNOTSUPP;
+ 
++	mutex_lock(&devlink->traps_lock);
+ 	if (list_empty(&devlink->trap_list))
+-		return -EOPNOTSUPP;
 +		goto out;
  
- 	resource->size_new = size;
--	devlink_resource_validate_children(resource);
-+	devlink_resource_validate_children(devlink, resource);
- 	if (resource->parent)
--		devlink_resource_validate_children(resource->parent);
--	return 0;
-+		devlink_resource_validate_children(devlink, resource->parent);
+ 	trap_item = devlink_trap_item_get_from_info(devlink, info);
+ 	if (!trap_item) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Device did not register this trap");
+-		return -ENOENT;
++		err = -ENOENT;
++		goto out;
+ 	}
+ 
+-	return devlink_trap_action_set(devlink, trap_item, info);
++	err = devlink_trap_action_set(devlink, trap_item, info);
 +out:
-+	mutex_unlock(&devlink->resource_list_lock);
++	mutex_unlock(&devlink->traps_lock);
 +	return err;
  }
  
- static int
-@@ -3742,31 +3751,36 @@ static int devlink_resource_put(struct devlink *devlink, struct sk_buff *skb,
- 	return -EMSGSIZE;
- }
- 
--static int devlink_resource_fill(struct genl_info *info,
--				 enum devlink_command cmd, int flags)
-+static int devlink_nl_cmd_resource_dump(struct sk_buff *sk,
-+					struct genl_info *info)
- {
+ static struct devlink_trap_group_item *
+@@ -7978,21 +7994,25 @@ static int devlink_nl_cmd_trap_group_get_doit(struct sk_buff *skb,
+ 	struct netlink_ext_ack *extack = info->extack;
  	struct devlink *devlink = info->user_ptr[0];
- 	struct devlink_resource *resource;
- 	struct nlattr *resources_attr;
- 	struct sk_buff *skb = NULL;
+ 	struct devlink_trap_group_item *group_item;
 +	int err = -EOPNOTSUPP;
- 	struct nlmsghdr *nlh;
- 	bool incomplete;
- 	void *hdr;
- 	int i;
+ 	struct sk_buff *msg;
 -	int err;
-+
-+	mutex_lock(&devlink->resource_list_lock);
-+	if (list_empty(&devlink->resource_list))
+ 
++	mutex_lock(&devlink->traps_lock);
+ 	if (list_empty(&devlink->trap_group_list))
+-		return -EOPNOTSUPP;
 +		goto out;
  
- 	resource = list_first_entry(&devlink->resource_list,
- 				    struct devlink_resource, list);
- start_again:
- 	err = devlink_dpipe_send_and_alloc_skb(&skb, info);
+ 	group_item = devlink_trap_group_item_get_from_info(devlink, info);
+ 	if (!group_item) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Device did not register this trap group");
+-		return -ENOENT;
++		err = -ENOENT;
++		goto out;
+ 	}
+ 
+ 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
+-	if (!msg)
+-		return -ENOMEM;
++	if (!msg) {
++		err = -ENOMEM;
++		goto out;
++	}
+ 
+ 	err = devlink_nl_trap_group_fill(msg, devlink, group_item,
+ 					 DEVLINK_CMD_TRAP_GROUP_NEW,
+@@ -8000,10 +8020,13 @@ static int devlink_nl_cmd_trap_group_get_doit(struct sk_buff *skb,
+ 	if (err)
+ 		goto err_trap_group_fill;
+ 
++	mutex_unlock(&devlink->traps_lock);
+ 	return genlmsg_reply(msg, info);
+ 
+ err_trap_group_fill:
+ 	nlmsg_free(msg);
++out:
++	mutex_unlock(&devlink->traps_lock);
+ 	return err;
+ }
+ 
+@@ -8027,7 +8050,7 @@ static int devlink_nl_cmd_trap_group_get_dumpit(struct sk_buff *msg,
+ 		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
+ 			goto retry;
+ 
+-		mutex_lock(&devlink->lock);
++		mutex_lock(&devlink->traps_lock);
+ 		list_for_each_entry(group_item, &devlink->trap_group_list,
+ 				    list) {
+ 			if (idx < start) {
+@@ -8040,13 +8063,13 @@ static int devlink_nl_cmd_trap_group_get_dumpit(struct sk_buff *msg,
+ 							 cb->nlh->nlmsg_seq,
+ 							 NLM_F_MULTI);
+ 			if (err) {
+-				mutex_unlock(&devlink->lock);
++				mutex_unlock(&devlink->traps_lock);
+ 				devlink_put(devlink);
+ 				goto out;
+ 			}
+ 			idx++;
+ 		}
+-		mutex_unlock(&devlink->lock);
++		mutex_unlock(&devlink->traps_lock);
+ retry:
+ 		devlink_put(devlink);
+ 	}
+@@ -8067,6 +8090,8 @@ __devlink_trap_group_action_set(struct devlink *devlink,
+ 	struct devlink_trap_item *trap_item;
+ 	int err;
+ 
++	lockdep_assert_held(&devlink->traps_lock);
++
+ 	if (devlink->ops->trap_group_action_set) {
+ 		err = devlink->ops->trap_group_action_set(devlink, group_item->group,
+ 							  trap_action, extack);
+@@ -8171,31 +8196,35 @@ static int devlink_nl_cmd_trap_group_set_doit(struct sk_buff *skb,
+ 	struct devlink *devlink = info->user_ptr[0];
+ 	struct devlink_trap_group_item *group_item;
+ 	bool modified = false;
+-	int err;
++	int err = -EOPNOTSUPP;
+ 
++	mutex_lock(&devlink->traps_lock);
+ 	if (list_empty(&devlink->trap_group_list))
+-		return -EOPNOTSUPP;
++		goto out;
+ 
+ 	group_item = devlink_trap_group_item_get_from_info(devlink, info);
+ 	if (!group_item) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Device did not register this trap group");
+-		return -ENOENT;
++		err = -ENOENT;
++		goto out;
+ 	}
+ 
+ 	err = devlink_trap_group_action_set(devlink, group_item, info,
+ 					    &modified);
  	if (err)
 -		return err;
 +		goto out;
  
- 	hdr = genlmsg_put(skb, info->snd_portid, info->snd_seq,
--			  &devlink_nl_family, NLM_F_MULTI, cmd);
-+			  &devlink_nl_family, NLM_F_MULTI,
-+			  DEVLINK_CMD_RESOURCE_DUMP);
- 	if (!hdr) {
--		nlmsg_free(skb);
--		return -EMSGSIZE;
-+		err = -EMSGSIZE;
-+		goto err_resource_put;
- 	}
+ 	err = devlink_trap_group_set(devlink, group_item, info);
+ 	if (err)
+ 		goto err_trap_group_set;
+-
++	mutex_unlock(&devlink->traps_lock);
+ 	return 0;
  
- 	if (devlink_nl_put_handle(skb, devlink))
-@@ -3793,9 +3807,10 @@ static int devlink_resource_fill(struct genl_info *info,
- 	genlmsg_end(skb, hdr);
- 	if (incomplete)
- 		goto start_again;
-+	mutex_unlock(&devlink->resource_list_lock);
- send_done:
--	nlh = nlmsg_put(skb, info->snd_portid, info->snd_seq,
--			NLMSG_DONE, 0, flags | NLM_F_MULTI);
-+	nlh = nlmsg_put(skb, info->snd_portid, info->snd_seq, NLMSG_DONE, 0,
-+			NLM_F_MULTI);
- 	if (!nlh) {
- 		err = devlink_dpipe_send_and_alloc_skb(&skb, info);
- 		if (err)
-@@ -3808,28 +3823,20 @@ static int devlink_resource_fill(struct genl_info *info,
- 	err = -EMSGSIZE;
- err_resource_put:
- 	nlmsg_free(skb);
+ err_trap_group_set:
+ 	if (modified)
+ 		NL_SET_ERR_MSG_MOD(extack, "Trap group set failed, but some changes were committed already");
 +out:
-+	mutex_unlock(&devlink->resource_list_lock);
++	mutex_unlock(&devlink->traps_lock);
  	return err;
  }
  
--static int devlink_nl_cmd_resource_dump(struct sk_buff *skb,
--					struct genl_info *info)
--{
--	struct devlink *devlink = info->user_ptr[0];
--
--	if (list_empty(&devlink->resource_list))
+@@ -8292,21 +8321,25 @@ static int devlink_nl_cmd_trap_policer_get_doit(struct sk_buff *skb,
+ 	struct devlink_trap_policer_item *policer_item;
+ 	struct netlink_ext_ack *extack = info->extack;
+ 	struct devlink *devlink = info->user_ptr[0];
++	int err = -EOPNOTSUPP;
+ 	struct sk_buff *msg;
+-	int err;
+ 
++	mutex_lock(&devlink->traps_lock);
+ 	if (list_empty(&devlink->trap_policer_list))
 -		return -EOPNOTSUPP;
--
--	return devlink_resource_fill(info, DEVLINK_CMD_RESOURCE_DUMP, 0);
--}
--
- static int
- devlink_resources_validate(struct devlink *devlink,
--			   struct devlink_resource *resource,
--			   struct genl_info *info)
-+			   struct devlink_resource *resource)
- {
- 	struct list_head *resource_list;
- 	int err = 0;
++		goto out;
  
-+	lockdep_assert_held(&devlink->lock);
-+
- 	if (resource)
- 		resource_list = &resource->resource_list;
- 	else
-@@ -3838,9 +3845,10 @@ devlink_resources_validate(struct devlink *devlink,
- 	list_for_each_entry(resource, resource_list, list) {
- 		if (!resource->size_valid)
- 			return -EINVAL;
--		err = devlink_resources_validate(devlink, resource, info);
-+
-+		err = devlink_resources_validate(devlink, resource);
- 		if (err)
--			return err;
-+			break;
+ 	policer_item = devlink_trap_policer_item_get_from_info(devlink, info);
+ 	if (!policer_item) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Device did not register this trap policer");
+-		return -ENOENT;
++		err = -ENOENT;
++		goto out;
  	}
+ 
+ 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
+-	if (!msg)
+-		return -ENOMEM;
++	if (!msg) {
++		err = -ENOMEM;
++		goto out;
++	}
+ 
+ 	err = devlink_nl_trap_policer_fill(msg, devlink, policer_item,
+ 					   DEVLINK_CMD_TRAP_POLICER_NEW,
+@@ -8314,10 +8347,13 @@ static int devlink_nl_cmd_trap_policer_get_doit(struct sk_buff *skb,
+ 	if (err)
+ 		goto err_trap_policer_fill;
+ 
++	mutex_unlock(&devlink->traps_lock);
+ 	return genlmsg_reply(msg, info);
+ 
+ err_trap_policer_fill:
+ 	nlmsg_free(msg);
++out:
++	mutex_unlock(&devlink->traps_lock);
  	return err;
  }
-@@ -4064,7 +4072,9 @@ static int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
- 	if (!(devlink->features & DEVLINK_F_RELOAD))
+ 
+@@ -8341,7 +8377,7 @@ static int devlink_nl_cmd_trap_policer_get_dumpit(struct sk_buff *msg,
+ 		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
+ 			goto retry;
+ 
+-		mutex_lock(&devlink->lock);
++		mutex_lock(&devlink->traps_lock);
+ 		list_for_each_entry(policer_item, &devlink->trap_policer_list,
+ 				    list) {
+ 			if (idx < start) {
+@@ -8354,13 +8390,13 @@ static int devlink_nl_cmd_trap_policer_get_dumpit(struct sk_buff *msg,
+ 							   cb->nlh->nlmsg_seq,
+ 							   NLM_F_MULTI);
+ 			if (err) {
+-				mutex_unlock(&devlink->lock);
++				mutex_unlock(&devlink->traps_lock);
+ 				devlink_put(devlink);
+ 				goto out;
+ 			}
+ 			idx++;
+ 		}
+-		mutex_unlock(&devlink->lock);
++		mutex_unlock(&devlink->traps_lock);
+ retry:
+ 		devlink_put(devlink);
+ 	}
+@@ -8427,20 +8463,26 @@ static int devlink_nl_cmd_trap_policer_set_doit(struct sk_buff *skb,
+ 	struct devlink_trap_policer_item *policer_item;
+ 	struct netlink_ext_ack *extack = info->extack;
+ 	struct devlink *devlink = info->user_ptr[0];
+-
+-	if (list_empty(&devlink->trap_policer_list))
+-		return -EOPNOTSUPP;
++	int err = -EOPNOTSUPP;
+ 
+ 	if (!devlink->ops->trap_policer_set)
  		return -EOPNOTSUPP;
  
--	err = devlink_resources_validate(devlink, NULL, info);
-+	mutex_lock(&devlink->resource_list_lock);
-+	err = devlink_resources_validate(devlink, NULL);
-+	mutex_unlock(&devlink->resource_list_lock);
- 	if (err) {
- 		NL_SET_ERR_MSG_MOD(info->extack, "resources size validation failed");
- 		return err;
-@@ -8955,7 +8965,10 @@ struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
- 	INIT_LIST_HEAD(&devlink->rate_list);
- 	INIT_LIST_HEAD(&devlink->sb_list);
- 	INIT_LIST_HEAD_RCU(&devlink->dpipe_table_list);
++	mutex_lock(&devlink->traps_lock);
++	if (list_empty(&devlink->trap_policer_list))
++		goto out;
 +
- 	INIT_LIST_HEAD(&devlink->resource_list);
-+	mutex_init(&devlink->resource_list_lock);
-+
+ 	policer_item = devlink_trap_policer_item_get_from_info(devlink, info);
+ 	if (!policer_item) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Device did not register this trap policer");
+-		return -ENOENT;
++		err = -ENOENT;
++		goto out;
+ 	}
+ 
+-	return devlink_trap_policer_set(devlink, policer_item, info);
++	err = devlink_trap_policer_set(devlink, policer_item, info);
++out:
++	mutex_unlock(&devlink->traps_lock);
++	return err;
+ }
+ 
+ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
+@@ -8972,9 +9014,12 @@ struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
  	INIT_LIST_HEAD(&devlink->param_list);
  	INIT_LIST_HEAD(&devlink->region_list);
  	INIT_LIST_HEAD(&devlink->reporter_list);
-@@ -9108,6 +9121,7 @@ void devlink_free(struct devlink *devlink)
++
+ 	INIT_LIST_HEAD(&devlink->trap_list);
+ 	INIT_LIST_HEAD(&devlink->trap_group_list);
+ 	INIT_LIST_HEAD(&devlink->trap_policer_list);
++	mutex_init(&devlink->traps_lock);
++
+ 	mutex_init(&devlink->lock);
+ 	mutex_init(&devlink->reporters_lock);
+ 	refcount_set(&devlink->refcount, 1);
+@@ -9012,6 +9057,7 @@ static void devlink_notify_register(struct devlink *devlink)
+ 		devlink_port_notify(devlink_port, DEVLINK_CMD_PORT_NEW);
+ 	mutex_unlock(&devlink->port_list_lock);
  
++	mutex_lock(&devlink->traps_lock);
+ 	list_for_each_entry(policer_item, &devlink->trap_policer_list, list)
+ 		devlink_trap_policer_notify(devlink, policer_item,
+ 					    DEVLINK_CMD_TRAP_POLICER_NEW);
+@@ -9022,6 +9068,7 @@ static void devlink_notify_register(struct devlink *devlink)
+ 
+ 	list_for_each_entry(trap_item, &devlink->trap_list, list)
+ 		devlink_trap_notify(devlink, trap_item, DEVLINK_CMD_TRAP_NEW);
++	mutex_unlock(&devlink->traps_lock);
+ 
+ 	list_for_each_entry(rate_node, &devlink->rate_list, list)
+ 		devlink_rate_notify(rate_node, DEVLINK_CMD_RATE_NEW);
+@@ -9054,6 +9101,7 @@ static void devlink_notify_unregister(struct devlink *devlink)
+ 	list_for_each_entry_reverse(rate_node, &devlink->rate_list, list)
+ 		devlink_rate_notify(rate_node, DEVLINK_CMD_RATE_DEL);
+ 
++	mutex_lock(&devlink->traps_lock);
+ 	list_for_each_entry_reverse(trap_item, &devlink->trap_list, list)
+ 		devlink_trap_notify(devlink, trap_item, DEVLINK_CMD_TRAP_DEL);
+ 
+@@ -9064,6 +9112,7 @@ static void devlink_notify_unregister(struct devlink *devlink)
+ 				    list)
+ 		devlink_trap_policer_notify(devlink, policer_item,
+ 					    DEVLINK_CMD_TRAP_POLICER_DEL);
++	mutex_unlock(&devlink->traps_lock);
+ 
+ 	mutex_lock(&devlink->port_list_lock);
+ 	list_for_each_entry_reverse(devlink_port, &devlink->port_list, list)
+@@ -9122,6 +9171,7 @@ void devlink_free(struct devlink *devlink)
  	mutex_destroy(&devlink->reporters_lock);
  	mutex_destroy(&devlink->port_list_lock);
-+	mutex_destroy(&devlink->resource_list_lock);
+ 	mutex_destroy(&devlink->resource_list_lock);
++	mutex_destroy(&devlink->traps_lock);
  	mutex_destroy(&devlink->lock);
  	WARN_ON(!list_empty(&devlink->trap_policer_list));
  	WARN_ON(!list_empty(&devlink->trap_group_list));
-@@ -9825,7 +9839,7 @@ int devlink_resource_register(struct devlink *devlink,
- 	       sizeof(resource->size_params));
- 	INIT_LIST_HEAD(&resource->resource_list);
+@@ -10796,7 +10846,7 @@ int devlink_traps_register(struct devlink *devlink,
+ 	if (!devlink->ops->trap_init || !devlink->ops->trap_action_set)
+ 		return -EINVAL;
  
 -	mutex_lock(&devlink->lock);
-+	mutex_lock(&devlink->resource_list_lock);
- 	if (parent_resource_id == DEVLINK_RESOURCE_ID_PARENT_TOP) {
- 		resource_list = &devlink->resource_list;
- 	} else {
-@@ -9845,7 +9859,7 @@ int devlink_resource_register(struct devlink *devlink,
++	mutex_lock(&devlink->traps_lock);
+ 	for (i = 0; i < traps_count; i++) {
+ 		const struct devlink_trap *trap = &traps[i];
  
- 	list_add_tail(&resource->list, resource_list);
- out:
--	mutex_unlock(&devlink->lock);
-+	mutex_unlock(&devlink->resource_list_lock);
- 	return err;
- }
- EXPORT_SYMBOL_GPL(devlink_resource_register);
-@@ -9872,16 +9886,14 @@ void devlink_resources_unregister(struct devlink *devlink)
- {
- 	struct devlink_resource *tmp, *child_resource;
- 
--	mutex_lock(&devlink->lock);
--
-+	mutex_lock(&devlink->resource_list_lock);
- 	list_for_each_entry_safe(child_resource, tmp, &devlink->resource_list,
- 				 list) {
- 		devlink_resource_unregister(devlink, child_resource);
- 		list_del(&child_resource->list);
- 		kfree(child_resource);
+@@ -10808,7 +10858,7 @@ int devlink_traps_register(struct devlink *devlink,
+ 		if (err)
+ 			goto err_trap_register;
  	}
--
 -	mutex_unlock(&devlink->lock);
-+	mutex_unlock(&devlink->resource_list_lock);
- }
- EXPORT_SYMBOL_GPL(devlink_resources_unregister);
++	mutex_unlock(&devlink->traps_lock);
  
-@@ -9899,7 +9911,7 @@ int devlink_resource_size_get(struct devlink *devlink,
- 	struct devlink_resource *resource;
- 	int err = 0;
+ 	return 0;
  
--	mutex_lock(&devlink->lock);
-+	mutex_lock(&devlink->resource_list_lock);
- 	resource = devlink_resource_find(devlink, NULL, resource_id);
- 	if (!resource) {
- 		err = -EINVAL;
-@@ -9908,7 +9920,7 @@ int devlink_resource_size_get(struct devlink *devlink,
- 	*p_resource_size = resource->size_new;
- 	resource->size = resource->size_new;
- out:
+@@ -10816,7 +10866,7 @@ int devlink_traps_register(struct devlink *devlink,
+ err_trap_verify:
+ 	for (i--; i >= 0; i--)
+ 		devlink_trap_unregister(devlink, &traps[i]);
 -	mutex_unlock(&devlink->lock);
-+	mutex_unlock(&devlink->resource_list_lock);
++	mutex_unlock(&devlink->traps_lock);
  	return err;
  }
- EXPORT_SYMBOL_GPL(devlink_resource_size_get);
-@@ -9959,7 +9971,7 @@ void devlink_resource_occ_get_register(struct devlink *devlink,
+ EXPORT_SYMBOL_GPL(devlink_traps_register);
+@@ -10833,7 +10883,7 @@ void devlink_traps_unregister(struct devlink *devlink,
  {
- 	struct devlink_resource *resource;
+ 	int i;
  
 -	mutex_lock(&devlink->lock);
-+	mutex_lock(&devlink->resource_list_lock);
- 	resource = devlink_resource_find(devlink, NULL, resource_id);
- 	if (WARN_ON(!resource))
- 		goto out;
-@@ -9968,7 +9980,7 @@ void devlink_resource_occ_get_register(struct devlink *devlink,
- 	resource->occ_get = occ_get;
- 	resource->occ_get_priv = occ_get_priv;
- out:
++	mutex_lock(&devlink->traps_lock);
+ 	/* Make sure we do not have any packets in-flight while unregistering
+ 	 * traps by disabling all of them and waiting for a grace period.
+ 	 */
+@@ -10842,7 +10892,7 @@ void devlink_traps_unregister(struct devlink *devlink,
+ 	synchronize_rcu();
+ 	for (i = traps_count - 1; i >= 0; i--)
+ 		devlink_trap_unregister(devlink, &traps[i]);
 -	mutex_unlock(&devlink->lock);
-+	mutex_unlock(&devlink->resource_list_lock);
++	mutex_unlock(&devlink->traps_lock);
  }
- EXPORT_SYMBOL_GPL(devlink_resource_occ_get_register);
+ EXPORT_SYMBOL_GPL(devlink_traps_unregister);
  
-@@ -9983,7 +9995,7 @@ void devlink_resource_occ_get_unregister(struct devlink *devlink,
+@@ -11014,7 +11064,7 @@ int devlink_trap_groups_register(struct devlink *devlink,
  {
- 	struct devlink_resource *resource;
+ 	int i, err;
  
 -	mutex_lock(&devlink->lock);
-+	mutex_lock(&devlink->resource_list_lock);
- 	resource = devlink_resource_find(devlink, NULL, resource_id);
- 	if (WARN_ON(!resource))
- 		goto out;
-@@ -9992,7 +10004,7 @@ void devlink_resource_occ_get_unregister(struct devlink *devlink,
- 	resource->occ_get = NULL;
- 	resource->occ_get_priv = NULL;
- out:
++	mutex_lock(&devlink->traps_lock);
+ 	for (i = 0; i < groups_count; i++) {
+ 		const struct devlink_trap_group *group = &groups[i];
+ 
+@@ -11026,7 +11076,7 @@ int devlink_trap_groups_register(struct devlink *devlink,
+ 		if (err)
+ 			goto err_trap_group_register;
+ 	}
 -	mutex_unlock(&devlink->lock);
-+	mutex_unlock(&devlink->resource_list_lock);
++	mutex_unlock(&devlink->traps_lock);
+ 
+ 	return 0;
+ 
+@@ -11034,7 +11084,7 @@ int devlink_trap_groups_register(struct devlink *devlink,
+ err_trap_group_verify:
+ 	for (i--; i >= 0; i--)
+ 		devlink_trap_group_unregister(devlink, &groups[i]);
+-	mutex_unlock(&devlink->lock);
++	mutex_unlock(&devlink->traps_lock);
+ 	return err;
  }
- EXPORT_SYMBOL_GPL(devlink_resource_occ_get_unregister);
+ EXPORT_SYMBOL_GPL(devlink_trap_groups_register);
+@@ -11051,10 +11101,10 @@ void devlink_trap_groups_unregister(struct devlink *devlink,
+ {
+ 	int i;
+ 
+-	mutex_lock(&devlink->lock);
++	mutex_lock(&devlink->traps_lock);
+ 	for (i = groups_count - 1; i >= 0; i--)
+ 		devlink_trap_group_unregister(devlink, &groups[i]);
+-	mutex_unlock(&devlink->lock);
++	mutex_unlock(&devlink->traps_lock);
+ }
+ EXPORT_SYMBOL_GPL(devlink_trap_groups_unregister);
+ 
+@@ -11154,7 +11204,7 @@ devlink_trap_policers_register(struct devlink *devlink,
+ {
+ 	int i, err;
+ 
+-	mutex_lock(&devlink->lock);
++	mutex_lock(&devlink->traps_lock);
+ 	for (i = 0; i < policers_count; i++) {
+ 		const struct devlink_trap_policer *policer = &policers[i];
+ 
+@@ -11169,7 +11219,7 @@ devlink_trap_policers_register(struct devlink *devlink,
+ 		if (err)
+ 			goto err_trap_policer_register;
+ 	}
+-	mutex_unlock(&devlink->lock);
++	mutex_unlock(&devlink->traps_lock);
+ 
+ 	return 0;
+ 
+@@ -11177,7 +11227,7 @@ devlink_trap_policers_register(struct devlink *devlink,
+ err_trap_policer_verify:
+ 	for (i--; i >= 0; i--)
+ 		devlink_trap_policer_unregister(devlink, &policers[i]);
+-	mutex_unlock(&devlink->lock);
++	mutex_unlock(&devlink->traps_lock);
+ 	return err;
+ }
+ EXPORT_SYMBOL_GPL(devlink_trap_policers_register);
+@@ -11195,10 +11245,10 @@ devlink_trap_policers_unregister(struct devlink *devlink,
+ {
+ 	int i;
+ 
+-	mutex_lock(&devlink->lock);
++	mutex_lock(&devlink->traps_lock);
+ 	for (i = policers_count - 1; i >= 0; i--)
+ 		devlink_trap_policer_unregister(devlink, &policers[i]);
+-	mutex_unlock(&devlink->lock);
++	mutex_unlock(&devlink->traps_lock);
+ }
+ EXPORT_SYMBOL_GPL(devlink_trap_policers_unregister);
  
 -- 
 2.33.1
