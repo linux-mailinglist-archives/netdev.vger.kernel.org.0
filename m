@@ -2,92 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 793C0448021
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 14:16:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EAD044801F
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 14:16:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239863AbhKHNTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 08:19:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52560 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235636AbhKHNTc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 08:19:32 -0500
-X-Greylist: delayed 999 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 08 Nov 2021 05:16:48 PST
-Received: from ganesha.gnumonks.org (ganesha.gnumonks.org [IPv6:2001:780:45:1d:225:90ff:fe52:c662])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84975C061570
-        for <netdev@vger.kernel.org>; Mon,  8 Nov 2021 05:16:48 -0800 (PST)
-Received: from uucp by ganesha.gnumonks.org with local-bsmtp (Exim 4.89)
-        (envelope-from <laforge@gnumonks.org>)
-        id 1mk4Fo-0008Ra-Cr; Mon, 08 Nov 2021 14:00:04 +0100
-Received: from laforge by localhost.localdomain with local (Exim 4.95)
-        (envelope-from <laforge@gnumonks.org>)
-        id 1mk46x-004ORa-A2;
-        Mon, 08 Nov 2021 13:50:55 +0100
-Date:   Mon, 8 Nov 2021 13:50:55 +0100
-From:   Harald Welte <laforge@gnumonks.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Thomas Jarosch <thomas.jarosch@intra2net.com>,
-        Networking <netdev@vger.kernel.org>,
-        Tilman Schmidt <tilman@imap.cc>,
-        Karsten Keil <isdn@linux-pingi.de>,
-        gigaset307x-common@lists.sourceforge.net,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Paul Bolle <pebolle@tiscali.nl>,
-        isdn4linux@listserv.isdn4linux.de,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Holger Schurig <holgerschurig@googlemail.com>
-Subject: Re: [PATCH v2 5/5] isdn: move capi drivers to staging
-Message-ID: <YYkdL2AsV84J950k@nataraja>
-References: <20190426195849.4111040-1-arnd@arndb.de>
- <20190426195849.4111040-6-arnd@arndb.de>
- <20211108094845.cytlyen5nptv4elu@intra2net.com>
- <CAK8P3a0=+w-CR_3uUr3Vi8E7v1z1O40K81pZU6y67u5ns8tCHA@mail.gmail.com>
+        id S238329AbhKHNSq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 08:18:46 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:50532 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235636AbhKHNSq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 08:18:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=osVSOLYOJwSGODa9jrgI/5dh+40TO58UgjiAmVBjKPQ=; b=So6zvcfGyFcIy+0GqfFKVCOQ82
+        CDB8/b7vfWNhJE2X7EPoTmzYib4wXVgFBe9lP66euZjJARFTkkoIfmEqCs3SQw0be0uyRKbbScSsA
+        2QPe3Yj9+AnmVGQjgX7OEZEgSApJQQ36KO9qdwQFx6ERIaPc31rBX6FXp0WOPqNPYZ4A=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mk4V3-00CtfT-55; Mon, 08 Nov 2021 14:15:49 +0100
+Date:   Mon, 8 Nov 2021 14:15:49 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Wells Lu =?utf-8?B?5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
+Cc:     Wells Lu <wellslutw@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>
+Subject: Re: [PATCH 2/2] net: ethernet: Add driver for Sunplus SP7021
+Message-ID: <YYkjBdu64r2JF1bR@lunn.ch>
+References: <cover.1635936610.git.wells.lu@sunplus.com>
+ <650ec751dd782071dd56af5e36c0d509b0c66d7f.1635936610.git.wells.lu@sunplus.com>
+ <YYK+EeCOu/BXBXDi@lunn.ch>
+ <64626e48052c4fba9057369060bfbc84@sphcmbx02.sunplus.com.tw>
+ <YYUzgyS6pfQOmKRk@lunn.ch>
+ <7c77f644b7a14402bad6dd6326ba85b1@sphcmbx02.sunplus.com.tw>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAK8P3a0=+w-CR_3uUr3Vi8E7v1z1O40K81pZU6y67u5ns8tCHA@mail.gmail.com>
+In-Reply-To: <7c77f644b7a14402bad6dd6326ba85b1@sphcmbx02.sunplus.com.tw>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arnd,
+> SP7021 Ethernet supports 3 operation modes:
+>  - Dual Ethernet mode
+>    In this mode, driver creates two net-device interfaces. Each connects
+>    to PHY. There are two LAN ports totally.
+>    I am sorry that EMAC of SP7021 cannot support L2 switch functions
+>    of Linux switch-device model because it only has partial function of 
+>    switch.
 
-On Mon, Nov 08, 2021 at 11:58:23AM +0100, Arnd Bergmann wrote:
-> When removal of mISDN came up last, Harald Welte mentioned that some
-> of the code is still used by Osmocom/OpenBSC[1] to drive the E1 line cards.
-> I'm not sure if this is still the case, of if they have since migrated
-> to another driver.
+This is fine.
 
-In Osmocom (specifically, libosmo-abis which is used in osmo-bsc and
-osmo-mgw) We currently support E1 interfaces via three drivers:
+> 
+>  - One Ethernet mode
+>    In this mode, driver creates one net-device interface. It connects to
+>    to a PHY (There is only one LAN port).
+>    The LAN port is then connected to a 3-port Ethernet hub.
+>    The 3-port Ethernet hub is a hardware circuitry. All operations 
+>    (packet forwarding) are done by hardware. No software 
+>    intervention is needed. Actually, even just power-on, no software 
+>    running, two LAN ports of SP7021 work well as 2-port hub.
 
-1) mISDN
-2) DAHDI
-3) our new open source hardware / gateware / firmware USB-E1 adapter icE1usb
-   https://osmocom.org/projects/e1-t1-adapter/wiki/IcE1usb via the
-   all-userspace libusb based driver osmo-e1d
-   https://osmocom.org/projects/osmo-e1d/wiki/Wiki
+We need to dig into the details of this mode. I would initially say
+no, until we really do know it is impossible to do it correctly.  Even
+if it is impossible to do it correctly, i'm still temped to reject
+this mode.
 
-The days of the use of TDM/E1 interface are also still far from over in
-the cellular telecom operator industry - particularly so in
-not-so-wealthy countries.  At my company we regularly have projects that
-involve the requirement to drive E1 interfaces (typically 3GPP Abis, A and
-Gb interface), even in 2021.
+How does spanning tree work? Who sends and receives the BPDU?
 
-From my point of view, mISDN is certainly the least used driver at the
-moment, given that [as far as I know] the only E1/PRI interface chipsets
-it supports were for classic parallel PCI bus, which is hard to find
-both in terms of E1 adapters as well as in mainboards.  Also, the cards
-never supported more than 1 or 2 E1 ports, as far as I know.
+Is there PTP support? How do you send and receive the PTP frames?
 
-I would expect the majority of the users are using DAHDI based
-deployments (up to 8x E1 per PCIe slot), with some adventurous ones
-requiring few portsgoing for our icE1usb.
+Is IGMP snooping supported?
 
-I will inquire on the appropriate osmocom mailing list whether there are
-people still using mISDN.
+All of these have one thing in common, you need to be able to egress
+frames out a specific port of the switch, and you need to know what
+port a received frames ingressed on. If you can do that, you can
+probably do proper support in Linux.
 
--- 
-- Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.org/
-============================================================================
-"Privacy in residential applications is a desirable marketing option."
-                                                  (ETSI EN 300 175-7 Ch. A6)
+Is the datasheet available?
+
+
+   Andrew
