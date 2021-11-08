@@ -2,154 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E35994499B2
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 17:27:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38D614499C1
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 17:30:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239868AbhKHQai (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 11:30:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40046 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235636AbhKHQah (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 11:30:37 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55049C061570;
-        Mon,  8 Nov 2021 08:27:53 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id n85so12015226pfd.10;
-        Mon, 08 Nov 2021 08:27:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=06pjZgUlhuSLHVkSAvU2VOH/sHyuv+YQc4ZfaT3ttl0=;
-        b=WPKGIGDNpXn3gfNci+GeR1RT1zNO+AcE1eoQppQ6W3uJQtn9uyBzgNSVOl7IvQTpsZ
-         swau6Rcp38biDe2TFzfDTQJ3sd/jGf1FFwIUN+Mp/W+GnXVm6wjLG6yDnUFQZ4BVC16n
-         4L8C0hRTFH4XcZavYxp5gKyKjrYhrcHvnAKWn8xRZrbICKc2l97zJNq3Y47X21bo/Jak
-         IOJPXwYz51fJJFplwzxTDQvkC7hKU6CCaa0lw2xn/Osc6W90qISnGCq+0Vw267J3tdtC
-         2ALWFKHZOim2j1JFVZQCOybQr2svGui94KCFEuxTdsPgZG5C5v1awKwNTpcz6yHsXhhT
-         woNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=06pjZgUlhuSLHVkSAvU2VOH/sHyuv+YQc4ZfaT3ttl0=;
-        b=M92ExlxTPrvOm09oUR2HNiod74uu0MCHB3b5nKoylSOYDs5bZCHYn+0BAEfAq6oPN6
-         H41gVKJz2MEGyyZUhgOBlyE70xWX7tiqcLUlrlTVf/6+5bOueSbRhZ8UWS4yd4IwYneU
-         XmaHLiDuE/X5ei6SBsSoKsxJs/bBwkxnhNdndk+A4r1Y0Vjykw6fI434cxq+5vgvHlpJ
-         vOlfkOgCPwkCVXAXkf4PBYTyuhjGGJyVoJeUvF+ZEEs8ToQlkWCOx6h56KvtxffC1u9k
-         TN7r24ovKiV0QSkG4sjA1k4uacZbsAxPBfuno+WkGwF5Bq+PSHHcEneATj7LJXHlJJIf
-         4HAg==
-X-Gm-Message-State: AOAM532wZTPmItWNqnC5buRWvzzrSxSqWuGC586D77i6CgnbNRvnwM+6
-        PYzW+Z5mD9tGwMblnfrNsRQ=
-X-Google-Smtp-Source: ABdhPJwYkwHWXMW8cexif3W/MwCFRyjWUyKQQ7LUdUrSS+hfN8U80oGITmZRDoMj+NbNpm4RmUkQWA==
-X-Received: by 2002:a63:f52:: with SMTP id 18mr518972pgp.58.1636388872836;
-        Mon, 08 Nov 2021 08:27:52 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id k20sm17287865pfc.83.2021.11.08.08.27.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Nov 2021 08:27:52 -0800 (PST)
-Subject: Re: [RFC PATCH] sched&net: avoid over-pulling tasks due to network
- interrupts
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Barry Song <21cnbao@gmail.com>
-Cc:     David Miller <davem@davemloft.net>, kuba@kernel.org,
-        Eric Dumazet <edumazet@google.com>, pabeni@redhat.com,
-        fw@strlen.de, Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linuxarm <linuxarm@huawei.com>,
-        Guodong Xu <guodong.xu@linaro.org>,
-        yangyicong <yangyicong@huawei.com>, shenyang39@huawei.com,
-        tangchengchang@huawei.com, Barry Song <song.bao.hua@hisilicon.com>,
-        Libo Chen <libo.chen@oracle.com>,
-        Tim Chen <tim.c.chen@linux.intel.com>
-References: <20211105105136.12137-1-21cnbao@gmail.com>
- <YYUiYrXMOQGap4+5@hirez.programming.kicks-ass.net>
- <CAGsJ_4wofduvT2BJipJppJza_ZyL2pU3Ni-B3R+A3_Zqv2v_4g@mail.gmail.com>
- <YYjthV9W09H5Err8@hirez.programming.kicks-ass.net>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <7c94dd79-af90-3258-6f53-d63417ce4126@gmail.com>
-Date:   Mon, 8 Nov 2021 08:27:50 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S241270AbhKHQco (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 11:32:44 -0500
+Received: from wnew1-smtp.messagingengine.com ([64.147.123.26]:41433 "EHLO
+        wnew1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239912AbhKHQcn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 11:32:43 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.west.internal (Postfix) with ESMTP id 75F162B0162A;
+        Mon,  8 Nov 2021 11:29:57 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Mon, 08 Nov 2021 11:29:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=MZvp7a
+        2mXTAiGBx6VD3+4iAJ4DcWCBfSPtZAEQOsy1k=; b=HoNvWcbC2oUhERbJbl7FZk
+        MFqzuH4xz8l2HbvH3vy0iv4hl1hrJjFkbzdEOQn8kWPOOSvYj4BXBmVVrUSuMXbk
+        7TvhOEGflk90b/HJdzr48eni5YqUVuSprJuedcwl8TyerhbuOOpLPkgrzz742A4Y
+        14m1sqi/s10wLzIX+6G7f21lsFDp+840oXER5YKxqngVK604LMvmkpkpXC73tFJe
+        R1DY3jT0ErQ/Hpymt8EtlbdKY/Mah1kH5P9mAZLiBHtBC1vCvv+jDW+Sv7M3M0HA
+        8KBJcnTtKS+2z4QAOiX5+pblvw5ndErT2bDHwH6DOcU1m55ul21S25qeRPbhDofw
+        ==
+X-ME-Sender: <xms:hFCJYRx2w_-5WdSbYdWh2GETy8DkFPdHYf-t7yDa8bqmyJtngDO1SA>
+    <xme:hFCJYRSOHPQfO8wuYeBP5HKJcRw1Zxqpg53f2FL2w4ml406V3LYrV8oHFqPp5Gc_8
+    Gq9CVR1-oCa7Ak>
+X-ME-Received: <xmr:hFCJYbXOnuElwCsy592uXNSO_9Ug0z8y0cw7eUIQ1xEd27uP1rDlqfR21sxjDBnhFXRXQtFAHhbZC6dcYXKAsQzWL7ywDQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddruddvgdekjecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:hFCJYTgNFIhMZ4SN_QPsQUBtlhap7f9eF74KkiZ5awZzvZ5zRvSTMw>
+    <xmx:hFCJYTC1TfCEUUG15zpDxnSGQy1WcH_BGh9JeeIOrwrgL9yppHC-Uw>
+    <xmx:hFCJYcLhBUvWLjEP3C3pteKFfBHejRKj6e4N-dS6kYN0jvGfIPzLmA>
+    <xmx:hVCJYfvrps-r07TCJkObom_a8opG7ST05-MfpT_0ztIOpgCQ3n4A5DEq51M>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 8 Nov 2021 11:29:55 -0500 (EST)
+Date:   Mon, 8 Nov 2021 18:29:50 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "abyagowi@fb.com" <abyagowi@fb.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>,
+        "saeed@kernel.org" <saeed@kernel.org>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>
+Subject: Re: [PATCH v2 net-next 6/6] docs: net: Add description of SyncE
+ interfaces
+Message-ID: <YYlQfm3eW/jRS4Ra@shredder>
+References: <20211105205331.2024623-1-maciej.machnikowski@intel.com>
+ <20211105205331.2024623-7-maciej.machnikowski@intel.com>
+ <YYfd7DCFFtj/x+zQ@shredder>
+ <MW5PR11MB58120F585A5CF1BCA1E7E958EA919@MW5PR11MB5812.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <YYjthV9W09H5Err8@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <MW5PR11MB58120F585A5CF1BCA1E7E958EA919@MW5PR11MB5812.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 11/8/21 1:27 AM, Peter Zijlstra wrote:
-> On Mon, Nov 08, 2021 at 07:08:09AM +1300, Barry Song wrote:
->> On Sat, Nov 6, 2021 at 1:25 AM Peter Zijlstra <peterz@infradead.org> wrote:
->>>
->>> On Fri, Nov 05, 2021 at 06:51:36PM +0800, Barry Song wrote:
->>>> From: Barry Song <song.bao.hua@hisilicon.com>
->>>>
->>>> In LPC2021, both Libo Chen and Tim Chen have reported the overpull
->>>> of network interrupts[1]. For example, while running one database,
->>>> ethernet is located in numa0, numa1 might be almost idle due to
->>>> interrupts are pulling tasks to numa0 because of wake_up affine.
->>>> I have seen the same problem. One way to solve this problem is
->>>> moving to a normal wakeup in network rather than using a sync
->>>> wakeup which will be more aggressively pulling tasks in scheduler
->>>> core.
->>>>
->>>> On kunpeng920 with 4numa, ethernet is located at numa0, storage
->>>> disk is located at numa2. While using sysbench to connect this
->>>> mysql machine, I am seeing numa1 is idle though numa0,2 and 3
->>>> are quite busy.
->>>>
->>>
->>>> I am not saying this patch is exactly the right approach, But I'd
->>>> like to use this RFC to connect the people of net and scheduler,
->>>> and start the discussion in this wider range.
->>>
->>> Well the normal way would be to use multi-queue crud and/or receive
->>> packet steering to get the interrupt/wakeup back to the cpu that data
->>> came from.
->>
->> The test case has been a multi-queue ethernet and irqs are balanced
->> to NUMA0 by irqbalanced or pinned to NUMA0 where the card is located
->> by the script like:
->> #!/bin/bash
->> irq_list=(`cat /proc/interrupts | grep network_name| awk -F: '{print $1}'`)
->> cpunum=0
->> for irq in ${irq_list[@]}
->> do
->> echo $cpunum > /proc/irq/$irq/smp_affinity_list
->> echo `cat /proc/irq/$irq/smp_affinity_list`
->> (( cpunum+=1 ))
->> done
->>
->> I have heard some people are working around this issue  by pinning
->> multi-queue IRQs to multiple NUMAs which can spread interrupts and
->> avoid over-pulling tasks to one NUMA only, but lose ethernet locality?
+On Mon, Nov 08, 2021 at 08:35:17AM +0000, Machnikowski, Maciej wrote:
+> > -----Original Message-----
+> > From: Ido Schimmel <idosch@idosch.org>
+> > Sent: Sunday, November 7, 2021 3:09 PM
+> > To: Machnikowski, Maciej <maciej.machnikowski@intel.com>
+> > Subject: Re: [PATCH v2 net-next 6/6] docs: net: Add description of SyncE
+> > interfaces
+> > 
+> > On Fri, Nov 05, 2021 at 09:53:31PM +0100, Maciej Machnikowski wrote:
+> > > +Interface
+> > > +=========
+> > > +
+> > > +The following RTNL messages are used to read/configure SyncE recovered
+> > > +clocks.
+> > > +
+> > > +RTM_GETRCLKRANGE
+> > > +-----------------
+> > > +Reads the allowed pin index range for the recovered clock outputs.
+> > > +This can be aligned to PHY outputs or to EEC inputs, whichever is
+> > > +better for a given application.
+> > 
+> > Can you explain the difference between PHY outputs and EEC inputs? It is
+> > no clear to me from the diagram.
 > 
-> So you're doing explicitly the wrong thing with your script above and
-> then complain the scheduler follows that and destroys your data
-> locality?
+> PHY is the source of frequency for the EEC, so PHY produces the reference
+> And EEC synchronizes to it.
 > 
-> The network folks made RPS/RFS specifically to spread the processing of
-> the packets back to the CPUs/Nodes the TX happened on to increase data
-> locality. Why not use that?
+> Both PHY outputs and EEC inputs are configurable. PHY outputs usually are
+> configured using PHY registers, and EEC inputs in the DPLL references
+> block
+>  
+> > How would the diagram look in a multi-port adapter where you have a
+> > single EEC?
 > 
+> That depends. It can be either a multiport PHY - in this case it will look
+> exactly like the one I drawn. In case we have multiple PHYs their recovered
+> clock outputs will go to different recovered clock inputs and each PHY
+> TX clock inputs will be driven from different EEC's synchronized outputs
+> or from a single one through  clock fan out.
+> 
+> > > +Will call the ndo_get_rclk_range function to read the allowed range
+> > > +of output pin indexes.
+> > > +Will call ndo_get_rclk_range to determine the allowed recovered clock
+> > > +range and return them in the IFLA_RCLK_RANGE_MIN_PIN and the
+> > > +IFLA_RCLK_RANGE_MAX_PIN attributes
+> > 
+> > The first sentence seems to be redundant
+> > 
+> > > +
+> > > +RTM_GETRCLKSTATE
+> > > +-----------------
+> > > +Read the state of recovered pins that output recovered clock from
+> > > +a given port. The message will contain the number of assigned clocks
+> > > +(IFLA_RCLK_STATE_COUNT) and an N pin indexes in
+> > IFLA_RCLK_STATE_OUT_IDX
+> > > +To support multiple recovered clock outputs from the same port, this
+> > message
+> > > +will return the IFLA_RCLK_STATE_COUNT attribute containing the number
+> > of
+> > > +active recovered clock outputs (N) and N IFLA_RCLK_STATE_OUT_IDX
+> > attributes
+> > > +listing the active output indexes.
+> > > +This message will call the ndo_get_rclk_range to determine the allowed
+> > > +recovered clock indexes and then will loop through them, calling
+> > > +the ndo_get_rclk_state for each of them.
+> > 
+> > Why do you need both RTM_GETRCLKRANGE and RTM_GETRCLKSTATE? Isn't
+> > RTM_GETRCLKSTATE enough? Instead of skipping over "disabled" pins in the
+> > range IFLA_RCLK_RANGE_MIN_PIN..IFLA_RCLK_RANGE_MAX_PIN, just
+> > report the
+> > state (enabled / disable) for all
+> 
+> Great idea! Will implement it.
+>  
+> > > +
+> > > +RTM_SETRCLKSTATE
+> > > +-----------------
+> > > +Sets the redirection of the recovered clock for a given pin. This message
+> > > +expects one attribute:
+> > > +struct if_set_rclk_msg {
+> > > +	__u32 ifindex; /* interface index */
+> > > +	__u32 out_idx; /* output index (from a valid range)
+> > > +	__u32 flags; /* configuration flags */
+> > > +};
+> > > +
+> > > +Supported flags are:
+> > > +SET_RCLK_FLAGS_ENA - if set in flags - the given output will be enabled,
+> > > +		     if clear - the output will be disabled.
+> > 
+> > In the diagram you have two recovered clock outputs going into the EEC.
+> > According to which the EEC is synchronized?
+> 
+> That will depend on the future DPLL configuration. For now it'll be based
+> on the DPLL's auto select ability and its default configuration.
+>  
+> > How does user space know which pins to enable?
+> 
+> That's why the RTM_GETRCLKRANGE was invented but I like the suggestion
+> you made above so will rework the code to remove the range one and
+> just return the indexes with enable/disable bit for each of them. In this
+> case youserspace will just send the RTM_GETRCLKSTATE to learn what
+> can be enabled.
 
-+1
+In the diagram there are multiple Rx lanes, all of which might be used
+by the same port. How does user space know to differentiate between the
+quality levels of the clock signal recovered from each lane / pin when
+the information is transmitted on a per-port basis via ESMC messages?
 
-This documentation should describe how this can be done
+The uAPI seems to be too low-level and is not compatible with Nvidia's
+devices and potentially other vendors. We really just need a logical
+interface that says "Synchronize the frequency of the EEC to the clock
+recovered from port X". The kernel / drivers should abstract the inner
+workings of the device from user space. Any reason this can't work for
+ice?
 
-Documentation/networking/scaling.rst
+I also want to re-iterate my dissatisfaction with the interface being
+netdev-centric. By modelling the EEC as a standalone object we will be
+able to extend it to set the source of the EEC to something other than a
+netdev in the future. If we don't do it now, we will end up with two
+ways to report the source of the EEC (i.e., EEC_SRC_PORT and something
+else).
 
-Hopefully it is not completely outdated.
- 
+Other advantages of modelling the EEC as a separate object include the
+ability for user space to determine the mapping between netdevs and EECs
+(currently impossible) and reporting additional EEC attributes such as
+SyncE clockIdentity and default SSM code. There is really no reason to
+report all of this identical information via multiple netdevs.
+
+With regards to rtnetlink vs. something else, in my suggestion the only
+thing that should be reported per-netdev is the mapping between the
+netdev and the EEC. Similar to the way user space determines the mapping
+from netdev to PHC via ETHTOOL_GET_TS_INFO. If we go with rtnetlink,
+this can be reported as a new attribute in RTM_NEWLINK, no need to add
+new messages.
