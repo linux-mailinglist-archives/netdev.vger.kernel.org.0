@@ -2,115 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B02834498C7
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 16:55:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 853DC4498ED
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 17:02:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239221AbhKHP5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 10:57:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53094 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239202AbhKHP5g (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 10:57:36 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3864261186;
-        Mon,  8 Nov 2021 15:54:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636386891;
-        bh=9X8r3jqw0ZTe39v+PUxIOYcuShAZDQmvLMPn7jbJ02c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HehssfTnKSI+G9VRy34d0drzJPsDtq+tIe44xT+ryor1Z809l8sTHKfmHAm2ZF1uS
-         gvU6sQBVbR/Jxn50xRZn3LHR6K+44AHY4j2bu39hLDF117bg3zz/You6JeEiA6SZJn
-         nnjCtOgigIGWKheRQMW3X3OaB5/VS419J/RIup59m0GTiWy36rEooq0P5k/Hgi6pbh
-         sJwEbmiLQeqP3zFSyWKMxkTUKx81nyPpzkBA1TRcQcvFkB7RYI2lUY8T5Rl/17y3AT
-         rWffVqBTfvXJ3skEBjMCA1mwB+5B31YNO/WSRgjYJWGcAxgl15mB6kPQ/MkcunYwTc
-         5dNzJOK0Hi3rQ==
-Date:   Mon, 8 Nov 2021 07:54:50 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     sundeep subbaraya <sundeep.lkml@gmail.com>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Hariprasad Kelam <hkelam@marvell.com>,
-        Geethasowjanya Akula <gakula@marvell.com>,
-        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
-        Rakesh Babu Saladi <rsaladi2@marvell.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Andrew Lunn <andrew@lunn.ch>, argeorge@cisco.com
-Subject: Re: [EXT] Re: [net-next PATCH 1/2] octeontx2-pf: Add devlink param
- to init and de-init serdes
-Message-ID: <20211108075450.1dbdedc3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YYeajTs6d4j39rJ2@shredder>
-References: <20211027083808.27f39cb0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <PH0PR18MB4671C22DB7C8E5C46647860FA1859@PH0PR18MB4671.namprd18.prod.outlook.com>
-        <CALHRZurNzkkma7HGg2xNLz3ECbwT2Hv=QXMeWr7AXCEegHOciw@mail.gmail.com>
-        <20211027100857.4d25544c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YXmWb2PZJQhpMfrR@shredder>
-        <BY3PR18MB473794E01049EC94156E2858C6859@BY3PR18MB4737.namprd18.prod.outlook.com>
-        <YXnRup1EJaF5Gwua@shredder>
-        <CALHRZuqpaqvunTga+8OK4GSa3oRao-CBxit6UzRvN3a1-T0dhA@mail.gmail.com>
-        <YXqq19HxleZd6V9W@shredder>
-        <CALHRZuoOWu0sEWjuanrYxyAVEUaO4-wea5+mET9UjPyoOrX5NQ@mail.gmail.com>
-        <YYeajTs6d4j39rJ2@shredder>
+        id S241127AbhKHQB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 11:01:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33440 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236850AbhKHQBy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 11:01:54 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBA6DC061570;
+        Mon,  8 Nov 2021 07:59:09 -0800 (PST)
+Received: from zn.tnic (p200300ec2f331100b486bab6e60d7aaf.dip0.t-ipconnect.de [IPv6:2003:ec:2f33:1100:b486:bab6:e60d:7aaf])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 341131EC04DE;
+        Mon,  8 Nov 2021 16:59:08 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1636387148;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=JALJsenIQCt4BletZS/B+Zq0YBxBp6L9Ch45cvOw8XQ=;
+        b=LCBDSZEhct23FIVquhfAlhIS3MpLXm84rotG+ppp99dGMPWi9iJHGgKkfiFg0DoLQ+NSWf
+        ixY2Bl+WafqAknd6kFkKb4q9SvLPR/pI4iyCTMD6S/zki4CWzqH6/1ZBq8awazUNWt4Xi0
+        idSLz3mdlao9wfI9n1SzGKhLH2sR0dI=
+Date:   Mon, 8 Nov 2021 16:58:57 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        intel-gvt-dev@lists.freedesktop.org,
+        alpha <linux-alpha@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-edac@vger.kernel.org,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        linux-hyperv@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-leds <linux-leds@vger.kernel.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        "open list:REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM" 
+        <linux-remoteproc@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        scsi <linux-scsi@vger.kernel.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        linux-staging@lists.linux.dev,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        linux-um <linux-um@lists.infradead.org>,
+        USB list <linux-usb@vger.kernel.org>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>, netdev <netdev@vger.kernel.org>,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        sparclinux <sparclinux@vger.kernel.org>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        xen-devel@lists.xenproject.org
+Subject: Re: [PATCH v0 42/42] notifier: Return an error when callback is
+ already registered
+Message-ID: <YYlJQYLiIrhjwOmT@zn.tnic>
+References: <20211108101157.15189-1-bp@alien8.de>
+ <20211108101157.15189-43-bp@alien8.de>
+ <CAMuHMdWH+txiSP_d7Jc4f_bU8Lf9iWpT4E3o5o7BJr-YdA6-VA@mail.gmail.com>
+ <YYkyUEqcsOwQMb1S@zn.tnic>
+ <CAMuHMdXiBEQyEXJagSfpH44hxVA2t0sDH7B7YubLGHrb2MJLLA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdXiBEQyEXJagSfpH44hxVA2t0sDH7B7YubLGHrb2MJLLA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 7 Nov 2021 11:21:17 +0200 Ido Schimmel wrote:
-> > This looks good. Please note that we need the behavior such that after changing
-> > the flag a subsequent ifconfig command is not needed by the user.
-> > 
-> > auto : in ndo_open, ndo_close check the physical link flag is auto and
-> > send command
-> >           to firmware for bringing physical link up/down.
-> > up: send command to firmware instantaneously for physical link UP
-> > down: send command to firmware instantaneously for physical link DOWN  
-> 
-> TBH, I'm not that happy with my ethtool suggestion. It is not very clear
-> which hardware entities the attribute controls.
+On Mon, Nov 08, 2021 at 04:25:47PM +0100, Geert Uytterhoeven wrote:
+> I'm not against returning proper errors codes.  I'm against forcing
+> callers to check things that cannot fail and to add individual error
+> printing to each and every caller.
 
-Last week I heard a request to also be able to model NC-SI disruption.
-Control if the NIC should be reset and newly flashed FW activated when
-host is rebooted (vs full server power cycle).
+If you're against checking things at the callers, then the registration
+function should be void. IOW, those APIs are not optimally designed atm.
 
-That adds another dimension to the problem, even though that particular
-use case may be better answered thru the devlink flashing/reset APIs.
+> Note that in other areas, we are moving in the other direction,
+> to a centralized printing of error messages, cfr. e.g. commit
+> 7723f4c5ecdb8d83 ("driver core: platform: Add an error message to
+> platform_get_irq*()").
 
-Trying to organize the requirements we have 3 entities which may hold
-the link up:
- - SFP power policy
- - NC-SI / BMC
- - SR-IOV (legacy)
+Yes, thus my other idea to add a lower level __notifier_chain_register()
+to do the checking.
 
-I'd think auto/up as possible options still make sense, although in
-case of NC-SI many NICs may not allow overriding the "up". And the
-policy may change without notification if BMC selects / activates 
-a port - it may go from auto to up with no notification.
+I'll see if I can convert those notifier registration functions to
+return void, in the process. But let's see what the others think first.
 
-Presumably we want to track "who's holding the link up" per consumer.
-Just a bitset with 1s for every consumer holding "up"? 
+Thanks for taking the time.
 
-Or do we expect there will be "more to it" and should create bespoke
-nests?
+-- 
+Regards/Gruss,
+    Boris.
 
-> Maybe it's better to
-> implement it as a rtnetlink attribute that controls the carrier (e.g.,
-> "carrier_policy")? Note that we already have ndo_change_carrier(), but
-> the kdoc comment explicitly mentions that it shouldn't be used by
-> physical devices:
->
->  * int (*ndo_change_carrier)(struct net_device *dev, bool new_carrier);
->  *	Called to change device carrier. Soft-devices (like dummy, team, etc)
->  *	which do not represent real hardware may define this to allow their
->  *	userspace components to manage their virtual carrier state. Devices
->  *	that determine carrier state from physical hardware properties (eg
->  *	network cables) or protocol-dependent mechanisms (eg
->  *	USB_CDC_NOTIFY_NETWORK_CONNECTION) should NOT implement this function.
-
-New NDO seems reasonable. 
-
-What are your thoughts on the SFP policy? We can still reshuffle it.
+https://people.kernel.org/tglx/notes-about-netiquette
