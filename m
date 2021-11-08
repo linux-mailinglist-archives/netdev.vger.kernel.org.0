@@ -2,140 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0132449BB9
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 19:36:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F164449BCD
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 19:41:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232018AbhKHSjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 13:39:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41150 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230269AbhKHSjG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 13:39:06 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B00C3C061570;
-        Mon,  8 Nov 2021 10:36:21 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id n36-20020a17090a5aa700b0019fa884ab85so9492454pji.5;
-        Mon, 08 Nov 2021 10:36:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Pe1bWLXlIi/2zH+f+tSQAtO/51QNXQXJBH+pOwSHeKQ=;
-        b=Ug3VXcIVP7QId+X/LluYtSipQRCwoKj+uwYaaEQEo21LVVdguxNhN6/nhel16lgEHh
-         mfLxowE57m6nwDvxJWFmlfVvDH60XJxg/i2RG1xesjKV8iM+ZdY/1BzRLSHowtN9XrhU
-         ZvTKLMZZpFrRxCyirHOaNRMXCXeNV8+G4pRtTI+OM+WTwhmREeN4D4D24wjX8GLfeUK6
-         kWQFfLWoO/+mYLSkispBOZwsZsqs3t6O0innQNvEo6yq9jX7jDwmVp2frGlQB5P22dio
-         eK/HwQ8/mrxoV4iXwAWugF3v36Wbbw5D/sRV78L3cM5WyW2i+AbMKmhmVXCA2sSTrPsw
-         r2PA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Pe1bWLXlIi/2zH+f+tSQAtO/51QNXQXJBH+pOwSHeKQ=;
-        b=szJNP1oTwJ7SqwJyzcMGz54I6NdxDVNtyqstOe+CPxYUhs2aXRcrGmTfZcrJ3m24Iz
-         xAChhrIOsAIHfgbPr1lwAfd/QyWKRhtMGo9MCXwcyYIrM7sq8EusJAtlp3KtZYYbDdBK
-         k6E+GqZVSy8RJRKOciREIFGlTXzGSDLgOizxDCyXjI9F6OGvFBQabRWVkbUathdSKTgP
-         moRjNTI+pDbVILsHlG2th4NBUnB8N0j8fqW2JlUawdzoIfZs5TmjsK7GsboAR9BNzbxF
-         AHh0RD8EInU3iLyPGUkrOb2fKsA/YUx3u/ozjtNjg4PBCpJh4X3C8pvj2M1P8VFXTSbf
-         5pKQ==
-X-Gm-Message-State: AOAM531wjJ6kYoEMFOWa2VPweg8jcoFcpwQh4Lc6bnlkGJr0hdxrK/1c
-        fCbO4stCW+Ipps6kR4XCAX1Jxgj4PzQ=
-X-Google-Smtp-Source: ABdhPJwZRoAmRuFHDQpo+XfoZIfq/HK0Ql63fB5CUylRJ3HkiDhafG4IcLvFhWoUZwjdtRUjUfPuaw==
-X-Received: by 2002:a17:902:714f:b0:142:892d:a46 with SMTP id u15-20020a170902714f00b00142892d0a46mr1263538plm.39.1636396581261;
-        Mon, 08 Nov 2021 10:36:21 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id h130sm4993293pfe.85.2021.11.08.10.36.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Nov 2021 10:36:20 -0800 (PST)
-Subject: Re: [PATCH v5 bpf-next 1/2] bpf: introduce helper bpf_find_vma
-To:     Song Liu <songliubraving@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kernel-team@fb.com, kpsingh@kernel.org, hengqi.chen@gmail.com,
-        Yonghong Song <yhs@fb.com>
-References: <20211105232330.1936330-1-songliubraving@fb.com>
- <20211105232330.1936330-2-songliubraving@fb.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <0ee9be06-6552-d8e3-74c7-7a96a46c8888@gmail.com>
-Date:   Mon, 8 Nov 2021 10:36:19 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S235742AbhKHSof (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 13:44:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45802 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235369AbhKHSoe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 13:44:34 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5A98361506;
+        Mon,  8 Nov 2021 18:41:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636396909;
+        bh=sdeq1n+k7eyb7Na64KF01UO9TaLNhF7oJ20x3QUlUUg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=gj5VlyPLVNTBk4vPd8looxyYc/xZI594yBBBghDH1i8LpxYzfOsN8lediJBiIw5D6
+         udp3kIcqXE8qtLB38s6BWCUozCJz9/IIBxCPIwgJbPpjqF5w0fr3pe5IXw/1ZNfp72
+         U0+WjBE3AwrlEjQAZm5lzD4Q+ltCj5MzFHjOxhpkULp0TpsP6lZIVVqVhl6z1oNW32
+         tD3m0sm2Q7QIwGZho/UkIsSfF+32+sDt5codZW8MATMakZm5shs44k8OkeitGKHouQ
+         ZLPceEq3MtHx4MmsQcPe+Aq7cZbVAcAONjKcPgGP8Ii9STUJNIFmjjvbPziQgkuzVL
+         gTO0mzz8dqEWA==
+Date:   Mon, 8 Nov 2021 19:41:42 +0100
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [RFC PATCH v2 1/5] leds: trigger: add API for HW offloading of
+ triggers
+Message-ID: <20211108194142.58630e60@thinkpad>
+In-Reply-To: <YYllTn9W5tZLmVN8@Ansuel-xps.localdomain>
+References: <20211108002500.19115-1-ansuelsmth@gmail.com>
+        <20211108002500.19115-2-ansuelsmth@gmail.com>
+        <YYkuZwQi66slgfTZ@lunn.ch>
+        <YYk/Pbm9ZZ/Ikckg@Ansuel-xps.localdomain>
+        <20211108171312.0318b960@thinkpad>
+        <YYlUSr586WiZxMn6@Ansuel-xps.localdomain>
+        <20211108183537.134ee04c@thinkpad>
+        <YYllTn9W5tZLmVN8@Ansuel-xps.localdomain>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20211105232330.1936330-2-songliubraving@fb.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 8 Nov 2021 18:58:38 +0100
+Ansuel Smith <ansuelsmth@gmail.com> wrote:
 
+> Are you aware of any device that can have some trigger offloaded and
+> still have the led triggered manually?
 
-On 11/5/21 4:23 PM, Song Liu wrote:
-> In some profiler use cases, it is necessary to map an address to the
-> backing file, e.g., a shared library. bpf_find_vma helper provides a
-> flexible way to achieve this. bpf_find_vma maps an address of a task to
-> the vma (vm_area_struct) for this address, and feed the vma to an callback
-> BPF function. The callback function is necessary here, as we need to
-> ensure mmap_sem is unlocked.
-> 
-> It is necessary to lock mmap_sem for find_vma. To lock and unlock mmap_sem
-> safely when irqs are disable, we use the same mechanism as stackmap with
-> build_id. Specifically, when irqs are disabled, the unlocked is postponed
-> in an irq_work. Refactor stackmap.c so that the irq_work is shared among
-> bpf_find_vma and stackmap helpers.
-> 
-> Acked-by: Yonghong Song <yhs@fb.com>
-> Tested-by: Hengqi Chen <hengqi.chen@gmail.com>
-> Signed-off-by: Song Liu <songliubraving@fb.com>
-> ---
+I don't understand why we would need such a thing.
 
-...
+Look, just to make it clear via an example: I have a device with a
+Marvell PHY chip inside. There is a LED connected to one of the PHY LED
+pins.
 
-> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> index dbc3ad07e21b6..cdb0fba656006 100644
-> --- a/kernel/bpf/btf.c
-> +++ b/kernel/bpf/btf.c
-> @@ -6342,7 +6342,10 @@ const struct bpf_func_proto bpf_btf_find_by_name_kind_proto = {
->  	.arg4_type	= ARG_ANYTHING,
->  };
->  
-> -BTF_ID_LIST_GLOBAL_SINGLE(btf_task_struct_ids, struct, task_struct)
-> +BTF_ID_LIST_GLOBAL(btf_task_struct_ids)
-> +BTF_ID(struct, task_struct)
-> +BTF_ID(struct, file)
-> +BTF_ID(struct, vm_area_struct)
+Marvell PHY has LED[0] control register, which supports the following
+modes:
+  LED is OFF
+  LED is ON
+  LED is ON when Link is up
+  LED blinks on RX activity
+  LED blinks on TX activity
+  LED blinks on RX/TX activity
+  LED is ON and blinks on RX/TX activity
+  ...
 
-$ nm -v vmlinux |grep -A3 btf_task_struct_ids
-ffffffff82adfd9c R btf_task_struct_ids
-ffffffff82adfda0 r __BTF_ID__struct__file__715
-ffffffff82adfda4 r __BTF_ID__struct__vm_area_struct__716
-ffffffff82adfda8 r bpf_skb_output_btf_ids
+I have code that exports this LED as a LED classdev
 
-KASAN thinks btf_task_struct_ids has 4 bytes only.
+When I activate netdev trigger on this LED, the netdev trigger currently
+just blinks the LED in software, by calling the .brightness_set()
+method, which configures LED[0] control register to one of the first
+two modes above (LED is OFF, LED is ON).
 
-BUG: KASAN: global-out-of-bounds in task_iter_init+0x212/0x2e7 kernel/bpf/task_iter.c:661
-Read of size 4 at addr ffffffff90297404 by task swapper/0/1
+But I have also another patch that adds support to offloading netdev
+trigger upon offloadable settings. The netdev trigger code calls the
+.trigger_offload() method, which is implemented in PHY driver. This
+method checks whether it is a netdev trigger that is to be offloaded,
+and whether device_name is the name of the device attached to the PHY,
+and then chooses one of the modes above, according to netdev trigger
+settings.
 
-CPU: 1 PID: 1 Comm: swapper/0 Not tainted 5.15.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0xf/0x309 mm/kasan/report.c:256
- __kasan_report mm/kasan/report.c:442 [inline]
- kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
- task_iter_init+0x212/0x2e7 kernel/bpf/task_iter.c:661
- do_one_initcall+0x103/0x650 init/main.c:1295
- do_initcall_level init/main.c:1368 [inline]
- do_initcalls init/main.c:1384 [inline]
- do_basic_setup init/main.c:1403 [inline]
- kernel_init_freeable+0x6b1/0x73a init/main.c:1606
- kernel_init+0x1a/0x1d0 init/main.c:1497
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
+So when I request netdev trigger for eth0, to indicate link and blink
+on activity, the netdev trigger doesn't do anything in software. It
+just calls the offload method ONCE (at the moment I am changing netdev
+trigger settings). The blinking is then done by the PHY chip. Netdev
+trigger doesn't do anything, at least not until I change the settings
+again.
 
-The buggy address belongs to the variable:
- btf_task_struct_ids+0x4/0x40
+> Talking about mixed mode, so HW and SW.
+
+What exactly do you mean by mixed mode? There is no mixed mode.
+
+> Asking to understand as currently the only way to impement all
+> of this in netdev trigger is that:
+> IF any hw offload trigger is supported (and enabled) then the entire
+> netdev trigger can't work as it won't be able to simulate missing
+> trigger in SW. And that would leave some flexibility.
+
+What do you mean by missing trigger here? I think we need to clarify
+what we mean by the word "trigger". Are you talking about the various
+blinking modes that the PHY supports? If so, please let's call them HW
+control modes, and not triggers. By "triggers" I understand triggers
+that can be enabled on a LED via /sys/class/leds/<LED>/trigger.
+
+> We need to understand how to operate in this condition. Should netdev
+> detect that and ""hide"" the sysfs triggers? Should we report error?
+
+So if I understand you correctly, you are asking about what should we
+do if user asked for netdev trigger settings (currently only link, rx,
+tx, interval) that can't be offloaded to the PHY chip.
+
+Well, if the PHY allows to manipulate the LEDs ON/OFF state (in other
+words "full control by SW", or ability to implement brightness_set()
+method), then netdev trigger should blink the LED in SW via this
+mechanism (which is something it would do now). A new sysfs file,
+"offloaded", can indicate whether the trigger is offloaded to HW or not.
+
+If, on the other hand, the LED cannot be controlled by SW, and it only
+support some HW control modes, then there are multiple ways how to
+implement what should be done, and we need to discuss this.
+
+For example suppose that the PHY LED pin supports indicating LINK,
+blinking on activity, or both, but it doesn't support blinking on rx
+only, or tx only.
+
+Since the LED is always indicating something about one network device,
+the netdev trigger should be always activated for this LED and it
+should be impossible to deactivate it. Also, it should be impossible to
+change device_name.
+
+  $ cd /sys/class/leds/<LED>
+  $ cat device_name
+  eth0
+  $ echo eth1 >device_name
+  Operation not supported.
+  $ echo none >trigger
+  Operation not supported.
+
+Now suppose that the driver by default enabled link indication, so we
+have:
+  $ cat link
+  1
+  $ cat rx
+  0
+  $ cat tx
+  0
+
+We want to enable blink on activity, but the LED supports only blinking
+on both rx/tx activity, rx only or tx only is not supported.
+
+Currently the only way to enable this is to do
+  $ echo 1 >rx
+  $ echo 1 >tx
+but the first call asks for (link=1, rx=1, tx=0), which is impossible.
+
+There are multiple things which can be done:
+- "echo 1 >rx" indicates error, but remembers the setting
+- "echo 1 >rx" quietly fails, without error indication. Something can
+  be written to dmesg about nonsupported mode
+- "echo 1 >rx" succeeds, but also sets tx=1
+- rx and tx are non-writable, writing always fails. Another sysfs file
+  is created, which lists modes that are actually supported, and allows
+  to select between them. When a mode is selected, link,rx,tx are
+  filled automatically, so that user may read them to know what the LED
+  is actually doing
+- something different?
+
+Marek
