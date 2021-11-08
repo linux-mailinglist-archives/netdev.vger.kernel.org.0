@@ -2,109 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB2D8449BFB
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 19:50:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C7D8449C24
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 20:03:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236111AbhKHSxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 13:53:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44372 "EHLO
+        id S236546AbhKHTFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 14:05:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236093AbhKHSxX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 13:53:23 -0500
-Received: from todd.t-8ch.de (todd.t-8ch.de [IPv6:2a01:4f8:c010:41de::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF233C061570;
-        Mon,  8 Nov 2021 10:50:38 -0800 (PST)
-Date:   Mon, 8 Nov 2021 19:50:34 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=weissschuh.net;
-        s=mail; t=1636397436;
-        bh=L6MFlY7fncI7DTAhySExlSyQ36N0y6PwyRwcayAnt6s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ATxD+/7NQrBK6w98+St8hye1dyDqJ/XVefzz3A+E4wsY/9IPnPcEuie7Bx8TdpWPk
-         4J+viPttbySzEI1AQl+GCBK8rdPh9ml/P3cCzMXsdQE5e1rtNKA2oja7w51XSXuTau
-         3SrTnH6BZR2VbxLua9Vr1Ycbxmyv6lrMv4SP2qXU=
-From:   Thomas =?utf-8?Q?Wei=C3=9Fschuh?= <linux@weissschuh.net>
-To:     Dominique Martinet <asmadeus@codewreck.org>
-Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stefano Stabellini <stefano@aporeto.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 4/4] net/p9: load default transports
-Message-ID: <c2a33fa1-30b0-4f19-808f-3bd0316a4ed8@t-8ch.de>
-References: <20211103193823.111007-1-linux@weissschuh.net>
- <20211103193823.111007-5-linux@weissschuh.net>
+        with ESMTP id S236467AbhKHTFp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 14:05:45 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D148C061570
+        for <netdev@vger.kernel.org>; Mon,  8 Nov 2021 11:03:01 -0800 (PST)
+Date:   Mon, 8 Nov 2021 20:02:57 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1636398178;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QZkjr/TQ3VhqI2p+z3DXRWGKsyAoXJxMeWe2GkHkt/Y=;
+        b=gWiSfM+T6deAF6TZslfUVvdPttQ686DSZhNbEGgZnv16EVZ4XR0y7MP+s67mr0eaiNs7JA
+        15jYXGg3iryBlntjLmjFAj/6B9QbjFUdqjo+1vMV8DbFTJxqhHI41kBLA1Lh/V/CeaogZc
+        sBlFLTQrfJPHiP/HR1dGKdGQ3vKXutBlgMSeJxZO2MWlAL8ne9+Ygc4mVAEljHG4HO3U0r
+        ILlhRxC2g7laJcc3tanjyi7UY+w7CdpNhCXh5U63VcBYOcI32Ng7ngJP8I+a4s3HPn7KRf
+        Vxc295h7ARJq5ihDd0zzRNukObcawpB/6BWXXXcOJ8hlIF7ALM3d2qRyDhf9yg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1636398178;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QZkjr/TQ3VhqI2p+z3DXRWGKsyAoXJxMeWe2GkHkt/Y=;
+        b=HTYnsyPjOBB6+QpPC3Ir8em4qOM4LC20n2ZCR5zs0Y+WBvCGFbgJud/gS0Xti81F+/QPW0
+        D7GSa+y/IpnEGmAw==
+From:   Benedikt Spranger <b.spranger@linutronix.de>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Bastian Germann <bage@linutronix.de>,
+        "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH net v2] net: phy: phy_ethtool_ksettings_set: Don't
+ discard phy_start_aneg's return
+Message-ID: <20211108200257.78864d69@mitra>
+In-Reply-To: <e07b6b7c-3353-461e-887d-96be9a9f6f36@gmail.com>
+References: <20211105153648.8337-1-bage@linutronix.de>
+        <20211108141834.19105-1-bage@linutronix.de>
+        <YYkzbE39ERAxzg4k@shell.armlinux.org.uk>
+        <20211108160653.3d6127df@mitra>
+        <YYlLvhE6/wjv8g3z@lunn.ch>
+        <63e5522a-f420-28c4-dd60-ce317dbbdfe0@linutronix.de>
+        <YYlk8Rv85h0Ia/LT@lunn.ch>
+        <e07b6b7c-3353-461e-887d-96be9a9f6f36@gmail.com>
+Organization: Linutronix GmbH
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211103193823.111007-5-linux@weissschuh.net>
-Jabber-ID: thomas@t-8ch.de
-X-Accept: text/plain, text/html;q=0.2, text/*;q=0.1
-X-Accept-Language: en-us, en;q=0.8, de-de;q=0.7, de;q=0.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dominique,
+On Mon, 8 Nov 2021 19:01:23 +0100
+Heiner Kallweit <hkallweit1@gmail.com> wrote:
 
-On 2021-11-03 20:38+0100, Thomas Weißschuh wrote:
-> Now that all transports are split into modules it may happen that no
-> transports are registered when v9fs_get_default_trans() is called.
-> When that is the case try to load more transports from modules.
-> 
-> Signed-off-by: Thomas Weißschuh <linux@weissschuh.net>
-> ---
->  net/9p/mod.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
-> 
-> diff --git a/net/9p/mod.c b/net/9p/mod.c
-> index 8f1d067b272e..7bb875cd279f 100644
-> --- a/net/9p/mod.c
-> +++ b/net/9p/mod.c
-> @@ -128,6 +128,10 @@ struct p9_trans_module *v9fs_get_trans_by_name(const char *s)
->  }
->  EXPORT_SYMBOL(v9fs_get_trans_by_name);
->  
-> +static const char * const v9fs_default_transports[] = {
-> +	"virtio", "tcp", "fd", "unix", "xen", "rdma",
-> +};
-> +
->  /**
->   * v9fs_get_default_trans - get the default transport
->   *
-> @@ -136,6 +140,7 @@ EXPORT_SYMBOL(v9fs_get_trans_by_name);
->  struct p9_trans_module *v9fs_get_default_trans(void)
->  {
->  	struct p9_trans_module *t, *found = NULL;
-> +	int i;
->  
->  	spin_lock(&v9fs_trans_lock);
->  
-> @@ -153,6 +158,10 @@ struct p9_trans_module *v9fs_get_default_trans(void)
->  			}
->  
->  	spin_unlock(&v9fs_trans_lock);
-> +
-> +	for (i = 0; !found && i < ARRAY_SIZE(v9fs_default_transports); i++)
-> +		found = v9fs_get_trans_by_name(v9fs_default_transports[i]);
-> +
->  	return found;
->  }
->  EXPORT_SYMBOL(v9fs_get_default_trans);
-> -- 
-> 2.33.1
+> If we would like to support PHY's that don't support all MDI modes
+> then supposedly this would require to add ETHTOOL_LINK_MODE bits for
+> the MDI modes. Then we could use the generic mechanism to check the
+> bits in the "supported" bitmap.
 
-I did not notice that you already had applied "net/9p: autoload transport modules"
-to your tree when sending this series.
+The things are even worse:
+The chip supports only auto-MDIX at Gigabit and force MDI and
+auto-MDIX in 10/100 modes. No force MDIX at all.
 
-Please note that in this series I modified patch 1 a bit, from the ony you
-applied, to prevent warnings in patch 4.
-Concretely I modified the prototypes of `v9fs_get_trans_by_name()` and
-`_p9_get_trans_by_name()` to take const parameters.
+A validation callback from phy_ethtool_ksettings_set() before
+restarting the PHY seems reasonable for me. Something like:
 
-Feel free to roll those changes into this patch when applying or I can resend
-the patch/series.
+	/* Verify the settings we care about. */
+	if (autoneg != AUTONEG_ENABLE && autoneg != AUTONEG_DISABLE)
+	        return -EINVAL;
 
-Thomas
+        if (autoneg == AUTONEG_ENABLE && linkmode_empty(advertising))
+	        return -EINVAL;
+
+        if (autoneg == AUTONEG_DISABLE &&
+	    ((speed != SPEED_1000 &&
+	      speed != SPEED_100 &&
+              speed != SPEED_10) ||
+             (duplex != DUPLEX_HALF &&
+              duplex != DUPLEX_FULL)))
+                return -EINVAL;
+
+	if (phydev->validate_cmd && phydev->validate_cmd(cmd))
+		return -EINVAL;
+
+Thanks
+    Benedikt Spranger
