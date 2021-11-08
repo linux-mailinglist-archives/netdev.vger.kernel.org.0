@@ -2,125 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95DC7449928
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 17:11:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1163844993E
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 17:12:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231741AbhKHQOC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 11:14:02 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57302 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229568AbhKHQOB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 11:14:01 -0500
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 66D1A6101C;
-        Mon,  8 Nov 2021 16:11:16 +0000 (UTC)
-Date:   Mon, 8 Nov 2021 11:11:14 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Jonathon Reinhart <jonathon.reinhart@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Antoine Tenart <atenart@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        tglx@linutronix.de, peterz@infradead.org
-Subject: Re: [PATCH net-next] net: sysctl data could be in .bss
-Message-ID: <20211108111114.2e37c9d6@gandalf.local.home>
-In-Reply-To: <CAPFHKzduJiebgnAAjEvx4vBJCFn7-eyfJ+k6JQja2waxqKeCwQ@mail.gmail.com>
-References: <20211020083854.1101670-1-atenart@kernel.org>
-        <20211022130146.3dacef0a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAPFHKzduJiebgnAAjEvx4vBJCFn7-eyfJ+k6JQja2waxqKeCwQ@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S237877AbhKHQPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 11:15:19 -0500
+Received: from mail-ua1-f42.google.com ([209.85.222.42]:36511 "EHLO
+        mail-ua1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231976AbhKHQPP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 11:15:15 -0500
+Received: by mail-ua1-f42.google.com with SMTP id e10so32564015uab.3;
+        Mon, 08 Nov 2021 08:12:29 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hEQQmRj7LTpJogPgt2xRVOX7N+txus6iMmGepIZghfU=;
+        b=6Syoq3UJc9F69Br0sBFpk6RXHRMeuYXTvKjf4/mPkGe4FYwxl6tGFzpgg5Ffeef7QH
+         jXnjEmKBI2Gr5+Xow1AQTwKFMBiHN52GceJ07J01c2xOO96O7RaMIpW2fPxqhM4ltjX0
+         ADkJrllkqdxhszF3ASqri5CNVzXw3FMsIq+DaP0Vh8dtlWwMIslFznFFE5up3PlEAbQz
+         M0ROOfLDGYH+D8tEQSi7tUMGNbEGm8eYCUR+bDFaEc8LuiEdgQf2F+iDlQvXjNcEVaGL
+         THVDJhBiJ59Om9S9/FXuY0GNsdQGvF35U3YlJvq+qkSuRahZ+Wvx2/50KDXS2Ieqpxco
+         Qzfg==
+X-Gm-Message-State: AOAM530E2jUS0t/A6z8puiwBo7zU97dFnqpAITI+Qi9jpLPxnz9GACEv
+        EyrNPGOZNcZS4LazJnF/jQXArVVGU+Kix41X
+X-Google-Smtp-Source: ABdhPJxb7f8vOf1U8hfBptjO9dfxwRBRUSwReN0xMc/29Wjx93em3eNYCiggGS5kLSVRuKyq/aAMqQ==
+X-Received: by 2002:a05:6102:3ed4:: with SMTP id n20mr114208vsv.57.1636387948517;
+        Mon, 08 Nov 2021 08:12:28 -0800 (PST)
+Received: from mail-vk1-f180.google.com (mail-vk1-f180.google.com. [209.85.221.180])
+        by smtp.gmail.com with ESMTPSA id t76sm2751741vkt.0.2021.11.08.08.12.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 Nov 2021 08:12:27 -0800 (PST)
+Received: by mail-vk1-f180.google.com with SMTP id t127so8459709vke.13;
+        Mon, 08 Nov 2021 08:12:27 -0800 (PST)
+X-Received: by 2002:a1f:f24f:: with SMTP id q76mr347755vkh.11.1636387947335;
+ Mon, 08 Nov 2021 08:12:27 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20211108101157.15189-1-bp@alien8.de> <20211108101157.15189-43-bp@alien8.de>
+ <CAMuHMdWH+txiSP_d7Jc4f_bU8Lf9iWpT4E3o5o7BJr-YdA6-VA@mail.gmail.com>
+ <YYkyUEqcsOwQMb1S@zn.tnic> <CAMuHMdXiBEQyEXJagSfpH44hxVA2t0sDH7B7YubLGHrb2MJLLA@mail.gmail.com>
+ <YYlJQYLiIrhjwOmT@zn.tnic>
+In-Reply-To: <YYlJQYLiIrhjwOmT@zn.tnic>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 8 Nov 2021 17:12:16 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXHikGrmUzuq0WG5JRHUUE=5zsaVCTF+e4TiHpM5tc5kA@mail.gmail.com>
+Message-ID: <CAMuHMdXHikGrmUzuq0WG5JRHUUE=5zsaVCTF+e4TiHpM5tc5kA@mail.gmail.com>
+Subject: Re: [PATCH v0 42/42] notifier: Return an error when callback is
+ already registered
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        intel-gvt-dev@lists.freedesktop.org,
+        alpha <linux-alpha@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-edac@vger.kernel.org,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        linux-hyperv@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-leds <linux-leds@vger.kernel.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        "open list:REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM" 
+        <linux-remoteproc@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        scsi <linux-scsi@vger.kernel.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        linux-staging@lists.linux.dev,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        linux-um <linux-um@lists.infradead.org>,
+        USB list <linux-usb@vger.kernel.org>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>, netdev <netdev@vger.kernel.org>,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        sparclinux <sparclinux@vger.kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        xen-devel@lists.xenproject.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 8 Nov 2021 00:24:33 -0500
-Jonathon Reinhart <jonathon.reinhart@gmail.com> wrote:
+Hi Borislav,
 
-> On Fri, Oct 22, 2021 at 4:01 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > Widening the CC list a little.
+On Mon, Nov 8, 2021 at 4:59 PM Borislav Petkov <bp@alien8.de> wrote:
+> On Mon, Nov 08, 2021 at 04:25:47PM +0100, Geert Uytterhoeven wrote:
+> > I'm not against returning proper errors codes.  I'm against forcing
+> > callers to check things that cannot fail and to add individual error
+> > printing to each and every caller.
+>
+> If you're against checking things at the callers, then the registration
+> function should be void. IOW, those APIs are not optimally designed atm.
 
-Thanks!
+Returning void is the other extreme ;-)
 
-[..]
+There are 3 levels (ignoring BUG_ON()/panic () inside the callee):
+  1. Return void: no one can check success or failure,
+  2. Return an error code: up to the caller to decide,
+  3. Return a __must_check error code: every caller must check.
 
-> The core_kernel_data() function was introduced in a2d063ac216c1, and
-> the commit message says:
-> 
-> "It may or may not return true for RO data... This utility function is
-> used to determine if data is safe from ever being freed. Thus it
-> should return true for all RW global data that is not in a module or
-> has been allocated, or false otherwise."
-> 
-> The intent of the function seems to be more in line with the
-> higher-level "is this global kernel data" semantics you suggested. The
-> purpose seems to be to differentiate between "part of the loaded
-> kernel image" vs. a dynamic allocation (which would include a loaded
-> module image). And given that it *might* return true for RO data
-> (depending on the arch linker script, presumably), I think it would be
-> safe to include .bss -- clearly, with that caveat in place, it isn't
-> promising strict section semantics.
-> 
-> There are only two existing in-tree consumers:
-> 
-> 1. __register_ftrace_function() [kernel/trace/ftrace.c] -- Sets
-> FTRACE_OPS_FL_DYNAMIC if core_kernel_data(ops) returns false, which
-> denotes "dynamically allocated ftrace_ops which need special care". It
-> would be unlikely (if not impossible) for the "ops" object in question
-> to be all-zero and end up in the .bss, but if it were, then the
-> current behavior would be wrong. IOW, it would be more correct to
-> include .bss.
-> 
-> 2. ensure_safe_net_sysctl() [net/sysctl_net.c] (The subject of this
-> thread) -- Trying to distinguish "global kernel data" (static/global
-> variables) from kmalloc-allocated objects. More correct to include
-> .bss.
-> 
-> Both of these callers only seem to delineate between static and
-> dynamic object allocations. Put another way, if core_kernel_bss(), all
-> existing callers should be updated to check core_kernel_data() ||
-> core_kernel_bss().
-> 
-> Since Steven introduced it, and until I added
-> ensure_safe_net_sysctl(), he / tracing was the only consumer.
+I'm in favor of 2, as there are several places where it cannot fail.
 
-I agree with your analysis.
+Gr{oetje,eeting}s,
 
-The intent is that allocated ftrace_ops (things that function tracer uses
-to know what callbacks are called from function entry), must go through a
-very slow synchronization (rcu_synchronize_tasks). But this is not needed
-if the ftrace_ops is part of the core kernel (.data or .bss) as that will
-never be freed, and thus does not need to worry about it disappearing while
-they are still in use.
+                        Geert
 
-> 
-> Thinking critically from the C language perspective, I can't come up
-> with any case where one would actually expect core_kernel_data() to
-> return true for 'int global = 1' and false for 'int global = 0'.
-> 
-> In conclusion, I agree with your alternative proposal Jakub, and I
-> think this patch is the right way forward:
-> 
-> diff --git a/kernel/extable.c b/kernel/extable.c
-> index b0ea5eb0c3b4..8b6f1d0bdaf6 100644
-> --- a/kernel/extable.c
-> +++ b/kernel/extable.c
-> @@ -97,6 +97,9 @@ int core_kernel_data(unsigned long addr)
->         if (addr >= (unsigned long)_sdata &&
->             addr < (unsigned long)_edata)
->                 return 1;
-> +       if (addr >= (unsigned long)__bss_start &&
-> +           addr < (unsigned long)__bss_stop)
-> +               return 1;
->         return 0;
->  }
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Acked-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
-
--- Steve
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
