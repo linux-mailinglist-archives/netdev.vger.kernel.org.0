@@ -2,98 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B92B449B9A
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 19:24:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B684449BA9
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 19:31:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235497AbhKHS10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 13:27:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43112 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235472AbhKHS10 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 13:27:26 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0C1C561029;
-        Mon,  8 Nov 2021 18:24:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636395881;
-        bh=hqLreZ17nUMObGhW7DnA0LH/tm6sV6cExozL2LFyZP8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZrI12cBq2X/sqUI1CA7Hm1umZ73y+cgG8ZNgWBxzfWaDtFAVfiAAhnTX7qJZUl+KU
-         bwXEG7Uz8SxGDoYmA6BKDNzY3yrFCMvX2NEvDiRX4/NZ8/NjbKzoPRnf7hJMNHv1RA
-         WsMi7tpCYObjX/9VHjnhQXC/mzjR93W7+wh2cwow8fZWP6S3HdCBpmN2mw2Dc5Cg58
-         wkL6JENAG4w4awfbwtmuqLAJOjsa7pwm4rR1R1H6273RRfrhfibo/sgoB1HDl6S/1h
-         F6zDGYINBTKVw1jtqHlOWH6eXqPiqOwT+yWuU/dPmZYLPtR99AkfF4NUbPhbGF+oyI
-         ceUgsxxUiKrDQ==
-Date:   Mon, 8 Nov 2021 20:24:37 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Ido Schimmel <idosch@idosch.org>, Jiri Pirko <jiri@resnulli.us>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, edwin.peer@broadcom.com
-Subject: Re: [PATCH net-next] devlink: Require devlink lock during device
- reload
-Message-ID: <YYlrZZTdJKhha0FF@unreal>
-References: <9716f9a13e217a0a163b745b6e92e02d40973d2c.1635701665.git.leonro@nvidia.com>
- <YYABqfFy//g5Gdis@nanopsycho>
- <YYBTg4nW2BIVadYE@shredder>
- <20211101161122.37fbb99d@kicinski-fedora-PC1C0HJN>
- <YYgJ1bnECwUWvNqD@shredder>
- <YYgSzEHppKY3oYTb@unreal>
- <20211108080918.2214996c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YYlfI4UgpEsMt5QI@unreal>
- <20211108101646.0a4e5ca4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S235621AbhKHSd4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 13:33:56 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:43904 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235611AbhKHSdx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 13:33:53 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 6F5861FD4E;
+        Mon,  8 Nov 2021 18:31:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1636396266; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XCt44ciTjHPqBO2xWONoM27y235Uqj1XS1pgFKfh1lY=;
+        b=oR4Rs8LrrE2wh0pjmmsoiEgZk4Uco+owPrA8z7rJMAyfH9HUrmu0/vaxkGJNBvrGAAEpUL
+        qAKkN5X6PkDnnWkRKCRblD+UodYxnQVbJMtjIbyB3cXBxzkOxKx7xpx6A4FOztkrilWaD2
+        qiyjPZSGEBbFG9romrvi61mp7Vjd2q0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1636396266;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XCt44ciTjHPqBO2xWONoM27y235Uqj1XS1pgFKfh1lY=;
+        b=5XKQZm3A0GQgccfJjWJc/L5fHp7SL2/HrLb6lUCIHOQg3+qixevztH+dmKeA/W8tlGx326
+        04jfgETojWoLCOCw==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 42AC0A3B85;
+        Mon,  8 Nov 2021 18:31:05 +0000 (UTC)
+Date:   Mon, 8 Nov 2021 19:31:05 +0100 (CET)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+cc:     jeyu@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, nathan@kernel.org,
+        ndesaulniers@google.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        clang-built-linux@googlegroups.com, mcgrof@kernel.org
+Subject: Re: [PATCH] module: Fix implicit type conversion
+In-Reply-To: <1635473169-1848729-1-git-send-email-jiasheng@iscas.ac.cn>
+Message-ID: <alpine.LSU.2.21.2111081925580.1710@pobox.suse.cz>
+References: <1635473169-1848729-1-git-send-email-jiasheng@iscas.ac.cn>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211108101646.0a4e5ca4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 08, 2021 at 10:16:46AM -0800, Jakub Kicinski wrote:
-> On Mon, 8 Nov 2021 19:32:19 +0200 Leon Romanovsky wrote:
-> > > I think it's common sense. We're just exporting something to make our
-> > > lives easier somewhere else in the three. Do you see a way in which
-> > > taking refs on devlink can help out-of-tree code?  
-> > 
-> > I didn't go such far in my thoughts. My main concern is that you ore
-> > exposing broken devlink internals in the hope that drivers will do better
-> > locking. I wanted to show that internal locking should be fixed first.
-> > 
-> > https://lore.kernel.org/netdev/cover.1636390483.git.leonro@nvidia.com/T/#m093f067d0cafcbe6c05ed469bcfd708dd1eb7f36
-> > 
-> > While this series fixes locking and after all my changes devlink started
-> > to be more secure, that works correctly for simple drivers.
+[CCing Luis]
+
+Hi,
+
+On Fri, 29 Oct 2021, Jiasheng Jiang wrote:
+
+> The variable 'cpu' is defined as unsigned int.
+> However in the for_each_possible_cpu, its values is assigned to -1.
+> That doesn't make sense and in the cpumask_next() it is implicitly
+> type conversed to int.
+> It is universally accepted that the implicit type conversion is
+> terrible.
+> Also, having the good programming custom will set an example for
+> others.
+> Thus, it might be better to change the definition of 'cpu' from
+> unsigned int to int.
+
+Frankly, I don't see a benefit of changing this. It seems fine to me. 
+Moreover this is not, by far, the only place in the kernel with the same 
+pattern.
+
+Miroslav
+
+> Fixes: 10fad5e ("percpu, module: implement and use is_kernel/module_percpu_address()")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+> ---
+>  kernel/module.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> I prefer my version. I think I asked you to show how the changes make
-> drivers simpler, which you failed to do.
-
-Why did I fail? My version requires **zero** changes to the drivers.
-Everything works without them changing anything. You can't ask for more.
-
+> diff --git a/kernel/module.c b/kernel/module.c
+> index 927d46c..f10d611 100644
+> --- a/kernel/module.c
+> +++ b/kernel/module.c
+> @@ -632,7 +632,7 @@ static void percpu_modcopy(struct module *mod,
+>  bool __is_module_percpu_address(unsigned long addr, unsigned long *can_addr)
+>  {
+>  	struct module *mod;
+> -	unsigned int cpu;
+> +	int cpu;
+>  
+>  	preempt_disable();
+>  
+> -- 
+> 2.7.4
 > 
-> I already told you how this is going to go, don't expect me to comment
-> too much.
-> 
-> > However for net namespace aware drivers it still stays DOA.
-> > 
-> > As you can see, devlink reload holds pernet_ops_rwsem, which drivers should
-> > take too in order to unregister_netdevice_notifier.
-> > 
-> > So for me, the difference between netdevsim and real device (mlx5) is
-> > too huge to really invest time into netdevsim-centric API, because it
-> > won't solve any of real world problems.
-> 
-> Did we not already go over this? Sorry, it feels like you're repeating
-> arguments which I replied to before. This is exhausting.
 
-I don't enjoy it either.
-
-> 
-> nfp will benefit from the simplified locking as well, and so will bnxt,
-> although I'm not sure the maintainers will opt for using devlink framework
-> due to the downstream requirements.
-
-Exactly why devlink should be fixed first.
-
-Thanks
