@@ -2,39 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF3FC44A189
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 02:07:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B26844A18B
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 02:07:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241644AbhKIBKS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 20:10:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33040 "EHLO mail.kernel.org"
+        id S241783AbhKIBKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 20:10:21 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60498 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241944AbhKIBIm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 20:08:42 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AF5D5619E9;
-        Tue,  9 Nov 2021 01:03:44 +0000 (UTC)
+        id S241960AbhKIBIp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 20:08:45 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5455561A56;
+        Tue,  9 Nov 2021 01:03:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636419825;
-        bh=taL6sC6kBQ0kKIFnBN+DUqd0qu3vrvgE0qU8fkPqiAo=;
+        s=k20201202; t=1636419827;
+        bh=JmBqMvhyA1ldjJb4xhPuyeFDzUumH1hHOKbx/ZS6ofM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E86Q6Q2/qa69RyGG6/x8KUJ74z1v2IgdqjOb464r0WUyps4dyuxsgxP2pMCzxqRYZ
-         baFTLFuArMelYAFuCMG4Ptp6WJTXyBhPXwBLsdWo4uf50uFqeQ0Y3EXhXSFvB7cMPi
-         m/1mYizYq9gw64biWScYhVGgexwdE78Kvzq1xF0q+EOyfuvU6JmV6YPFSvqr9WOXyG
-         SfbwRVlNNVyEB3OvGh8IZ3tZoG4jW+xANUqZaUg+1MN2KvWQNJmxfZH7o5Ng55e/ae
-         wODPVS6+PtkxEh/IwDxGWf1DkhA5o5Z4bEhso8ZD1SgtZvovHJR7oNVVCXh4g3oWMk
-         P1yvF9xG/4GpQ==
+        b=EZuzaCTmuTsGOYRAyxmDlj151LgoLmcjbrfXHF0rV8aIU2st40fMdYUXWwkRT60wH
+         AbwT3kmog3tWIZg0NOiSM7g86afrFOFESQvC03Uy7GrYuAsj9uw6mLK7eUGu7FAXyb
+         a+f+QvnTnPv6yZ1Dgr7ZRByGDsdgQzV/Ev+RJMoQBr4sxsFci6/DfvBA6nliQl6bJ9
+         DpGDNz0/jqXLUPVZD+4YiGm+ZoYxtea09jgm2qsHM9lc0mq189b7PRTxsvX8ZYV/MD
+         9kaV3Ia5+T9pa96Pn6iC9GyJ/zB5FfblsX/zEZnrkHbZw4iADrSga8LMT7NeUkU+hI
+         sNIP+rYRWZ9Lg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Seevalamuthu Mariappan <seevalam@codeaurora.org>,
-        Ritesh Singh <ritesi@codeaurora.org>,
-        Jouni Malinen <jouni@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 016/101] ath11k: Align bss_chan_info structure with firmware
-Date:   Mon,  8 Nov 2021 12:47:06 -0500
-Message-Id: <20211108174832.1189312-16-sashal@kernel.org>
+Cc:     wangzhitong <wangzhitong@uniontech.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, paul@paul-moore.com,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-security-module@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 017/101] NET: IPV4: fix error "do not initialise globals to 0"
+Date:   Mon,  8 Nov 2021 12:47:07 -0500
+Message-Id: <20211108174832.1189312-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211108174832.1189312-1-sashal@kernel.org>
 References: <20211108174832.1189312-1-sashal@kernel.org>
@@ -46,71 +44,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Seevalamuthu Mariappan <seevalam@codeaurora.org>
+From: wangzhitong <wangzhitong@uniontech.com>
 
-[ Upstream commit feab5bb8f1d4621025dceae7eef62d5f92de34ac ]
+[ Upstream commit db9c8e2b1e246fc2dc20828932949437793146cc ]
 
-pdev_id in structure 'wmi_pdev_bss_chan_info_event' is wrongly placed
-at the beginning. This causes invalid values in survey dump. Hence, align
-the structure with the firmware.
+this patch fixes below Errors reported by checkpatch
+    ERROR: do not initialise globals to 0
+    +int cipso_v4_rbm_optfmt = 0;
 
-Note: The firmware releases follow this order since the feature was
-implemented. Also, it is not changing across the branches including
-QCA6390.
-
-Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.1.0.1-01228-QCAHKSWPL_SILICONZ-1
-
-Signed-off-by: Ritesh Singh <ritesi@codeaurora.org>
-Signed-off-by: Seevalamuthu Mariappan <seevalam@codeaurora.org>
-Signed-off-by: Jouni Malinen <jouni@codeaurora.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20210720214922.118078-3-jouni@codeaurora.org
+Signed-off-by: wangzhitong <wangzhitong@uniontech.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/wmi.c | 1 +
- drivers/net/wireless/ath/ath11k/wmi.h | 3 ++-
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ net/ipv4/cipso_ipv4.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index eca86225a3413..fca71e00123d9 100644
---- a/drivers/net/wireless/ath/ath11k/wmi.c
-+++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -1333,6 +1333,7 @@ int ath11k_wmi_pdev_bss_chan_info_request(struct ath11k *ar,
- 				     WMI_TAG_PDEV_BSS_CHAN_INFO_REQUEST) |
- 			  FIELD_PREP(WMI_TLV_LEN, sizeof(*cmd) - TLV_HDR_SIZE);
- 	cmd->req_type = type;
-+	cmd->pdev_id = ar->pdev->pdev_id;
+diff --git a/net/ipv4/cipso_ipv4.c b/net/ipv4/cipso_ipv4.c
+index ca217a6f488f6..112f1d5b5dc7c 100644
+--- a/net/ipv4/cipso_ipv4.c
++++ b/net/ipv4/cipso_ipv4.c
+@@ -73,7 +73,7 @@ struct cipso_v4_map_cache_entry {
+ static struct cipso_v4_map_cache_bkt *cipso_v4_cache;
  
- 	ath11k_dbg(ar->ab, ATH11K_DBG_WMI,
- 		   "WMI bss chan info req type %d\n", type);
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
-index 5a32ba0eb4f57..c47adaab7918b 100644
---- a/drivers/net/wireless/ath/ath11k/wmi.h
-+++ b/drivers/net/wireless/ath/ath11k/wmi.h
-@@ -2935,6 +2935,7 @@ struct wmi_pdev_bss_chan_info_req_cmd {
- 	u32 tlv_header;
- 	/* ref wmi_bss_chan_info_req_type */
- 	u32 req_type;
-+	u32 pdev_id;
- } __packed;
+ /* Restricted bitmap (tag #1) flags */
+-int cipso_v4_rbm_optfmt = 0;
++int cipso_v4_rbm_optfmt;
+ int cipso_v4_rbm_strictvalid = 1;
  
- struct wmi_ap_ps_peer_cmd {
-@@ -4028,7 +4029,6 @@ struct wmi_vdev_stopped_event {
- } __packed;
- 
- struct wmi_pdev_bss_chan_info_event {
--	u32 pdev_id;
- 	u32 freq;	/* Units in MHz */
- 	u32 noise_floor;	/* units are dBm */
- 	/* rx clear - how often the channel was unused */
-@@ -4046,6 +4046,7 @@ struct wmi_pdev_bss_chan_info_event {
- 	/*rx_cycle cnt for my bss in 64bits format */
- 	u32 rx_bss_cycle_count_low;
- 	u32 rx_bss_cycle_count_high;
-+	u32 pdev_id;
- } __packed;
- 
- #define WMI_VDEV_INSTALL_KEY_COMPL_STATUS_SUCCESS 0
+ /*
 -- 
 2.33.0
 
