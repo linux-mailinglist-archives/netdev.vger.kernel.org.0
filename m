@@ -2,130 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2604B44994E
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 17:13:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B42C744997C
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 17:22:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238138AbhKHQQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 11:16:03 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57838 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238111AbhKHQQD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 11:16:03 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D4E1461107;
-        Mon,  8 Nov 2021 16:13:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636387998;
-        bh=Ijsj68+ZcgX66on4xNvcnNeiQfAyxcdQcTHC4K5SOXI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lG6VDp2Tre0jkggzgpKn9zvIrAhb/7shlfuxVMN99UOqioR2n7IB3e85NKwQI4CqE
-         4P5cUQQ3Kl9Cntyyla1RG7CZpkPTFZTkq7cKd8g8K2Sn+NjmqDkTOZLdotViKTJA0M
-         XxC8FX8X1cEy+Reb28kjQ/3VsEbZNzsIRS3aUl1cuPVQ2fQ6473y1oh0/WbFaqgLiO
-         z29jA75XqULm50+FN4uS8rLx2xqzVmnRs7dTetXDZAa2dsJGVD/YmDZfVjPfwyRfk3
-         AdV2zF03PBuqD4Eg1zKgsoP6EVcrX0vpx1FFQGa27vd1mibkfGag6kZhWyGN2TFJ1Y
-         rpaKnkC28UAgQ==
-Date:   Mon, 8 Nov 2021 17:13:12 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
-Subject: Re: [RFC PATCH v2 1/5] leds: trigger: add API for HW offloading of
- triggers
-Message-ID: <20211108171312.0318b960@thinkpad>
-In-Reply-To: <YYk/Pbm9ZZ/Ikckg@Ansuel-xps.localdomain>
-References: <20211108002500.19115-1-ansuelsmth@gmail.com>
-        <20211108002500.19115-2-ansuelsmth@gmail.com>
-        <YYkuZwQi66slgfTZ@lunn.ch>
-        <YYk/Pbm9ZZ/Ikckg@Ansuel-xps.localdomain>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S241236AbhKHQYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 11:24:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38612 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239990AbhKHQYh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 11:24:37 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A331C061570;
+        Mon,  8 Nov 2021 08:21:52 -0800 (PST)
+Received: from zn.tnic (p200300ec2f331100181cb4ce2fe9e1de.dip0.t-ipconnect.de [IPv6:2003:ec:2f33:1100:181c:b4ce:2fe9:e1de])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 071501EC0503;
+        Mon,  8 Nov 2021 17:21:51 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1636388511;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=BmhP/O36y2kgWhY9wVesOsCT3VZHRN0l2HSALpf1H38=;
+        b=PwrrR1/9r0PtkEkx8l94Lq5o8cthN3NxILevAwj1LoIRoN/B58W84rM+iyPPtwIBmVMRtG
+        8jlUd2DAmGqQe7+sK0xny6az8RzdndQG0jeU2pdwyReIQXuaywQhQg+JKE/uRG6ku5v9jN
+        K5y81X7+5Pp2iJVW5AZDozV+KOdqQTY=
+Date:   Mon, 8 Nov 2021 17:21:45 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        intel-gvt-dev@lists.freedesktop.org,
+        alpha <linux-alpha@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-edac@vger.kernel.org,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        linux-hyperv@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-leds <linux-leds@vger.kernel.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        "open list:REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM" 
+        <linux-remoteproc@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        scsi <linux-scsi@vger.kernel.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        linux-staging@lists.linux.dev,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        linux-um <linux-um@lists.infradead.org>,
+        USB list <linux-usb@vger.kernel.org>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>, netdev <netdev@vger.kernel.org>,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        sparclinux <sparclinux@vger.kernel.org>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        xen-devel@lists.xenproject.org
+Subject: Re: [PATCH v0 42/42] notifier: Return an error when callback is
+ already registered
+Message-ID: <YYlOmd0AeA8DSluD@zn.tnic>
+References: <20211108101157.15189-1-bp@alien8.de>
+ <20211108101157.15189-43-bp@alien8.de>
+ <CAMuHMdWH+txiSP_d7Jc4f_bU8Lf9iWpT4E3o5o7BJr-YdA6-VA@mail.gmail.com>
+ <YYkyUEqcsOwQMb1S@zn.tnic>
+ <CAMuHMdXiBEQyEXJagSfpH44hxVA2t0sDH7B7YubLGHrb2MJLLA@mail.gmail.com>
+ <YYlJQYLiIrhjwOmT@zn.tnic>
+ <CAMuHMdXHikGrmUzuq0WG5JRHUUE=5zsaVCTF+e4TiHpM5tc5kA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdXHikGrmUzuq0WG5JRHUUE=5zsaVCTF+e4TiHpM5tc5kA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 8 Nov 2021 16:16:13 +0100
-Ansuel Smith <ansuelsmth@gmail.com> wrote:
-
-> On Mon, Nov 08, 2021 at 03:04:23PM +0100, Andrew Lunn wrote:
-> > > +static inline int led_trigger_offload(struct led_classdev *led_cdev)
-> > > +{
-> > > +	int ret;
-> > > +
-> > > +	if (!led_cdev->trigger_offload)
-> > > +		return -EOPNOTSUPP;
-> > > +
-> > > +	ret = led_cdev->trigger_offload(led_cdev, true);
-> > > +	led_cdev->offloaded = !ret;
-> > > +
-> > > +	return ret;
-> > > +}
-> > > +
-> > > +static inline void led_trigger_offload_stop(struct led_classdev *led_cdev)
-> > > +{
-> > > +	if (!led_cdev->trigger_offload)
-> > > +		return;
-> > > +
-> > > +	if (led_cdev->offloaded) {
-> > > +		led_cdev->trigger_offload(led_cdev, false);
-> > > +		led_cdev->offloaded = false;
-> > > +	}
-> > > +}
-> > > +#endif  
-> > 
-> > I think there should be two calls into the cdev driver, not this
-> > true/false parameter. trigger_offload_start() and
-> > trigger_offload_stop().
-> >   
+On Mon, Nov 08, 2021 at 05:12:16PM +0100, Geert Uytterhoeven wrote:
+> Returning void is the other extreme ;-)
 > 
-> To not add too much function to the struct, can we introduce one
-> function that both enable and disable the hw mode?
+> There are 3 levels (ignoring BUG_ON()/panic () inside the callee):
+>   1. Return void: no one can check success or failure,
+>   2. Return an error code: up to the caller to decide,
+>   3. Return a __must_check error code: every caller must check.
+> 
+> I'm in favor of 2, as there are several places where it cannot fail.
 
-Dear Ansuel,
+Makes sense to me. I'll do that in the next iteration.
 
-what is the purpose of adding trigger_offload() methods to LED, if you
-are not going to add support to offload the netdev trigger? That was
-the entire purpose when I wrote that patch.
+Thx.
 
-If you just want to create a new trigger that will make the PHY chip do
-the blinking, there is no need at all for the offloading patch.
+-- 
+Regards/Gruss,
+    Boris.
 
-And you will also get a NACK from me and also Pavel (LED subsystem
-maintainer).
-
-The current plan is to:
-- add support for offloading existing LED triggers to HW (LED
-  controllers (PHY chips, for example))
-- make netdev trigger try offloading itself to HW via this new API (if
-  it fails, netdev trigger will blink the LED in SW as it does now)
-- create LED classdevices in a PHY driver that have the offload()
-  methods implemented. The offload method looks at what trigger is
-  being enabled for the LED, and it if it is a netdev trigger with such
-  settings that are possible to offload, it will be offloaded.
-
-  This whole thing makes use of the existing sysfs ABI.
-  So for example if I do
-    cd /sys/class/net/eth0/phydev/leds/<LED>
-    echo netdev >trigger
-    echo eth0 >device_name
-    echo 1 >rx
-    echo 1 >tx
-  The netdev trigger is activated, and it calls the offload() method.
-  The offload() method is implemented in the PHY driver, and it checks
-  that it can offload these settings (blink on rx/tx), and will enable
-  this.
-- extend netdev trigger to support more settings:
-  - indicate link for specific link modes only (for example 1g, 100m)
-  - ...
-- extend PHY drivers to support offloading of these new settings
-
-Marek
+https://people.kernel.org/tglx/notes-about-netiquette
