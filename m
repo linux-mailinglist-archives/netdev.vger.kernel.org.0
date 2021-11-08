@@ -2,140 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5635F4498B4
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 16:46:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B02834498C7
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 16:55:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239119AbhKHPsn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 10:48:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58772 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237339AbhKHPsm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 10:48:42 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B056C061570;
-        Mon,  8 Nov 2021 07:45:58 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id b15so44922485edd.7;
-        Mon, 08 Nov 2021 07:45:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=PVza8bc+buwzI929X8sHOlCTGiVgpXXZXYwI8Fybjx0=;
-        b=phVki65L5hxv+xQOyJZrMNRFTbKH8OSIgDhhxuQwrxszhIsMEYK2tLOpFd6UvSQPhZ
-         tzin2L3SCtV4nnTmGGJee1cW3YYxd2bTzWjqD9czUAc0h44JLEhAKGuwEmZB6EaBSfJo
-         aZRUcsFCRMxgBKkmcuGfNo0wHG/5hbZG8j/GZ5Tae7vFKszVoaG7AF0a3LjEmzjYOhZ0
-         RYXNe9hex9CxKhRjDVTeUKxGdC5eJBSheHLCJWgEsbiPt9X4UqRvrzxeKDoDoGtHx53u
-         STkv5P52gd9jJpYVeCz1rbzirDzJU4brHGIaFJT8ndihadb6Y6Bk5i8AK3cinOYPniap
-         Y/Bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PVza8bc+buwzI929X8sHOlCTGiVgpXXZXYwI8Fybjx0=;
-        b=REHhksjps6yNzIc69n1YuaARm+H5CAEkZqgT+y9Ow+OVUFaxlCB5f9sfU08C78FMH/
-         FNlKelY7SS8NcFlgzyVOPkKCRm/dq0tk4PVcNgId+huL/tgPq/NmN5DxkyLN4TAnkbJt
-         I45bsWPRub4NOwffryVYRH0PrDCTEEcqVvZKw0/a9OVXiIUK8HXU80SDP5+VyMUZKj9Q
-         CuKiNg6FOTZgFA+0+IOE4+8yjX+l8fpYFg1cfuop1sQ3Wsz9FWB+ygLG3vXIH74bp5LT
-         GYOZonqSEz6P5iiMOGoVXb8Gj2EK6HFV9DaNng+U+hzB0JmH3iRI4+TjCzlkVZXuT91Q
-         qv8g==
-X-Gm-Message-State: AOAM531xlqni2wglrbvyeJdUV/cSFNzCicAqgO+qdTZ+u6bt9EZE3krs
-        9jyZwkhazefX+znknpuo5iA=
-X-Google-Smtp-Source: ABdhPJwJmcAuxFWPTO6M9QJsOkA9H+B2EKW7FArIW5Jx9cV/hYP96PeZTzf5PPn+RN4BVA5Gqqtdvg==
-X-Received: by 2002:a17:907:3f18:: with SMTP id hq24mr302251ejc.506.1636386356512;
-        Mon, 08 Nov 2021 07:45:56 -0800 (PST)
-Received: from skbuf ([188.25.175.102])
-        by smtp.gmail.com with ESMTPSA id f7sm9536865edl.33.2021.11.08.07.45.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Nov 2021 07:45:56 -0800 (PST)
-Date:   Mon, 8 Nov 2021 17:45:54 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Ong Boon Leong <boon.leong.ong@intel.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Voon Weifeng <weifeng.voon@intel.com>
-Subject: Re: [PATCH net 1/1] net: stmmac: Fix VLAN filter delete timeout
- issue in Intel mGBE SGMII
-Message-ID: <20211108154554.axd2lmm2a3gw6vfu@skbuf>
-References: <20210305054930.7434-1-boon.leong.ong@intel.com>
+        id S239221AbhKHP5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 10:57:36 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53094 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239202AbhKHP5g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 10:57:36 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3864261186;
+        Mon,  8 Nov 2021 15:54:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636386891;
+        bh=9X8r3jqw0ZTe39v+PUxIOYcuShAZDQmvLMPn7jbJ02c=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=HehssfTnKSI+G9VRy34d0drzJPsDtq+tIe44xT+ryor1Z809l8sTHKfmHAm2ZF1uS
+         gvU6sQBVbR/Jxn50xRZn3LHR6K+44AHY4j2bu39hLDF117bg3zz/You6JeEiA6SZJn
+         nnjCtOgigIGWKheRQMW3X3OaB5/VS419J/RIup59m0GTiWy36rEooq0P5k/Hgi6pbh
+         sJwEbmiLQeqP3zFSyWKMxkTUKx81nyPpzkBA1TRcQcvFkB7RYI2lUY8T5Rl/17y3AT
+         rWffVqBTfvXJ3skEBjMCA1mwB+5B31YNO/WSRgjYJWGcAxgl15mB6kPQ/MkcunYwTc
+         5dNzJOK0Hi3rQ==
+Date:   Mon, 8 Nov 2021 07:54:50 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     sundeep subbaraya <sundeep.lkml@gmail.com>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Hariprasad Kelam <hkelam@marvell.com>,
+        Geethasowjanya Akula <gakula@marvell.com>,
+        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
+        Rakesh Babu Saladi <rsaladi2@marvell.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Andrew Lunn <andrew@lunn.ch>, argeorge@cisco.com
+Subject: Re: [EXT] Re: [net-next PATCH 1/2] octeontx2-pf: Add devlink param
+ to init and de-init serdes
+Message-ID: <20211108075450.1dbdedc3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YYeajTs6d4j39rJ2@shredder>
+References: <20211027083808.27f39cb0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <PH0PR18MB4671C22DB7C8E5C46647860FA1859@PH0PR18MB4671.namprd18.prod.outlook.com>
+        <CALHRZurNzkkma7HGg2xNLz3ECbwT2Hv=QXMeWr7AXCEegHOciw@mail.gmail.com>
+        <20211027100857.4d25544c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YXmWb2PZJQhpMfrR@shredder>
+        <BY3PR18MB473794E01049EC94156E2858C6859@BY3PR18MB4737.namprd18.prod.outlook.com>
+        <YXnRup1EJaF5Gwua@shredder>
+        <CALHRZuqpaqvunTga+8OK4GSa3oRao-CBxit6UzRvN3a1-T0dhA@mail.gmail.com>
+        <YXqq19HxleZd6V9W@shredder>
+        <CALHRZuoOWu0sEWjuanrYxyAVEUaO4-wea5+mET9UjPyoOrX5NQ@mail.gmail.com>
+        <YYeajTs6d4j39rJ2@shredder>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210305054930.7434-1-boon.leong.ong@intel.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 05, 2021 at 01:49:30PM +0800, Ong Boon Leong wrote:
-> For Intel mGbE controller, MAC VLAN filter delete operation will time-out
-> if serdes power-down sequence happened first during driver remove() with
-> below message.
+On Sun, 7 Nov 2021 11:21:17 +0200 Ido Schimmel wrote:
+> > This looks good. Please note that we need the behavior such that after changing
+> > the flag a subsequent ifconfig command is not needed by the user.
+> > 
+> > auto : in ndo_open, ndo_close check the physical link flag is auto and
+> > send command
+> >           to firmware for bringing physical link up/down.
+> > up: send command to firmware instantaneously for physical link UP
+> > down: send command to firmware instantaneously for physical link DOWN  
 > 
-> [82294.764958] intel-eth-pci 0000:00:1e.4 eth2: stmmac_dvr_remove: removing driver
-> [82294.778677] intel-eth-pci 0000:00:1e.4 eth2: Timeout accessing MAC_VLAN_Tag_Filter
-> [82294.779997] intel-eth-pci 0000:00:1e.4 eth2: failed to kill vid 0081/0
-> [82294.947053] intel-eth-pci 0000:00:1d.2 eth1: stmmac_dvr_remove: removing driver
-> [82295.002091] intel-eth-pci 0000:00:1d.1 eth0: stmmac_dvr_remove: removing driver
-> 
-> Therefore, we delay the serdes power-down to be after unregister_netdev()
-> which triggers the VLAN filter delete.
-> 
-> Fixes: b9663b7ca6ff ("net: stmmac: Enable SERDES power up/down sequence")
-> Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index 0eba44e9c1f8..208cae344ffa 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -5249,13 +5249,16 @@ int stmmac_dvr_remove(struct device *dev)
->  	netdev_info(priv->dev, "%s: removing driver", __func__);
->  
->  	stmmac_stop_all_dma(priv);
-> +	stmmac_mac_set(priv, priv->ioaddr, false);
-> +	netif_carrier_off(ndev);
-> +	unregister_netdev(ndev);
->  
-> +	/* Serdes power down needs to happen after VLAN filter
-> +	 * is deleted that is triggered by unregister_netdev().
-> +	 */
->  	if (priv->plat->serdes_powerdown)
->  		priv->plat->serdes_powerdown(ndev, priv->plat->bsp_priv);
->  
-> -	stmmac_mac_set(priv, priv->ioaddr, false);
-> -	netif_carrier_off(ndev);
-> -	unregister_netdev(ndev);
->  #ifdef CONFIG_DEBUG_FS
->  	stmmac_exit_fs(ndev);
->  #endif
-> -- 
-> 2.17.0
-> 
+> TBH, I'm not that happy with my ethtool suggestion. It is not very clear
+> which hardware entities the attribute controls.
 
-Don't you also want to fix the probe path?
+Last week I heard a request to also be able to model NC-SI disruption.
+Control if the NIC should be reset and newly flashed FW activated when
+host is rebooted (vs full server power cycle).
 
-stmmac_dvr_probe:
-	ret = register_netdev(ndev);
-	if (ret) {
-		dev_err(priv->device, "%s: ERROR %i registering the device\n",
-			__func__, ret);
-		goto error_netdev_register;
-	}
+That adds another dimension to the problem, even though that particular
+use case may be better answered thru the devlink flashing/reset APIs.
 
-	if (priv->plat->serdes_powerup) {
-		ret = priv->plat->serdes_powerup(ndev,
-						 priv->plat->bsp_priv);
+Trying to organize the requirements we have 3 entities which may hold
+the link up:
+ - SFP power policy
+ - NC-SI / BMC
+ - SR-IOV (legacy)
 
-		if (ret < 0)
-			goto error_serdes_powerup;
-	}
+I'd think auto/up as possible options still make sense, although in
+case of NC-SI many NICs may not allow overriding the "up". And the
+policy may change without notification if BMC selects / activates 
+a port - it may go from auto to up with no notification.
 
-Since the device can start being used immediately after registration, it
-depends upon the SERDES clock being powered up.
+Presumably we want to track "who's holding the link up" per consumer.
+Just a bitset with 1s for every consumer holding "up"? 
+
+Or do we expect there will be "more to it" and should create bespoke
+nests?
+
+> Maybe it's better to
+> implement it as a rtnetlink attribute that controls the carrier (e.g.,
+> "carrier_policy")? Note that we already have ndo_change_carrier(), but
+> the kdoc comment explicitly mentions that it shouldn't be used by
+> physical devices:
+>
+>  * int (*ndo_change_carrier)(struct net_device *dev, bool new_carrier);
+>  *	Called to change device carrier. Soft-devices (like dummy, team, etc)
+>  *	which do not represent real hardware may define this to allow their
+>  *	userspace components to manage their virtual carrier state. Devices
+>  *	that determine carrier state from physical hardware properties (eg
+>  *	network cables) or protocol-dependent mechanisms (eg
+>  *	USB_CDC_NOTIFY_NETWORK_CONNECTION) should NOT implement this function.
+
+New NDO seems reasonable. 
+
+What are your thoughts on the SFP policy? We can still reshuffle it.
