@@ -2,136 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D1C1449ACA
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 18:33:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CBB0449AD2
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 18:35:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240576AbhKHRfs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 12:35:48 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:51082 "EHLO vps0.lunn.ch"
+        id S240676AbhKHRi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 12:38:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49268 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230348AbhKHRfr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 12:35:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=ZIgkx2h2uhdvFHjzt95iXBpX3sU9M0VENzKJGAceA5A=; b=Lo
-        MW7iBZLZcZ/W5dRgh3tvXYE4v5QLm7sTRyuU8ezpFLticNBV0GKG4eDYOoY75CeKsEV5qPOicuPhL
-        TTB3N7ftsOoo5cl0Esl/6Wf3+o3I1MCUrjnB/CSpIpyEWuh+dDWZvVaSM2pM5pmpAJnlGBW7tAOo5
-        IKrN4R5IB/qcU1o=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mk8Vo-00Cuvp-Br; Mon, 08 Nov 2021 18:32:52 +0100
-Date:   Mon, 8 Nov 2021 18:32:52 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Wells Lu =?utf-8?B?5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
-Cc:     Wells Lu <wellslutw@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>
-Subject: Re: [PATCH 2/2] net: ethernet: Add driver for Sunplus SP7021
-Message-ID: <YYlfRB7updHplnLE@lunn.ch>
-References: <cover.1635936610.git.wells.lu@sunplus.com>
- <650ec751dd782071dd56af5e36c0d509b0c66d7f.1635936610.git.wells.lu@sunplus.com>
- <YYK+EeCOu/BXBXDi@lunn.ch>
- <64626e48052c4fba9057369060bfbc84@sphcmbx02.sunplus.com.tw>
- <YYUzgyS6pfQOmKRk@lunn.ch>
- <7c77f644b7a14402bad6dd6326ba85b1@sphcmbx02.sunplus.com.tw>
- <YYkjBdu64r2JF1bR@lunn.ch>
- <4e663877558247048e9b04b027e555b8@sphcmbx02.sunplus.com.tw>
- <YYk5s5fDuub7eBqu@lunn.ch>
- <585e234fdb74499caafee3b43b5e5ab4@sphcmbx02.sunplus.com.tw>
+        id S240628AbhKHRi3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 12:38:29 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D12C061288;
+        Mon,  8 Nov 2021 17:35:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636392944;
+        bh=VI8GHizFjqwLRi7Qw8aE1jNiA7hGriW5mAa6mKyDlgQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aPn4nBYMmjO/ZTSm24vq/CZ4kutVXNCJPFi3MRJcO06fbHS6QZJlufDsw5xeZcP91
+         VbTUuEod9OMGcay/TKqq+yGGiWMtC1vLdT4JnJVAxM4baA6IF7/TEyvxYna4Mt/QT+
+         xI7L7amngrdvjF2DO0Mah9i6IMkf0w6qPYYhbPc5fnpJn2sWIdflADODtcuxVhAQns
+         hsYts76xCgpKxn3vmkDiHWwlP+5DVsH3St4Ax6ELaeWNaQ0yxGRmXqwKEjt2j04syh
+         pRCvojnYiI0o9z0hd3EW7kO3o5XTVOZJID7raHE1awmoYWx8mmh6GtYiSm6gUIFLYH
+         vVhDgRthFl4hg==
+Date:   Mon, 8 Nov 2021 18:35:37 +0100
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [RFC PATCH v2 1/5] leds: trigger: add API for HW offloading of
+ triggers
+Message-ID: <20211108183537.134ee04c@thinkpad>
+In-Reply-To: <YYlUSr586WiZxMn6@Ansuel-xps.localdomain>
+References: <20211108002500.19115-1-ansuelsmth@gmail.com>
+        <20211108002500.19115-2-ansuelsmth@gmail.com>
+        <YYkuZwQi66slgfTZ@lunn.ch>
+        <YYk/Pbm9ZZ/Ikckg@Ansuel-xps.localdomain>
+        <20211108171312.0318b960@thinkpad>
+        <YYlUSr586WiZxMn6@Ansuel-xps.localdomain>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <585e234fdb74499caafee3b43b5e5ab4@sphcmbx02.sunplus.com.tw>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 08, 2021 at 04:47:34PM +0000, Wells Lu 呂芳騰 wrote:
-> > > The switch will not recognize type of packets, regardless BPDU, PTP or
-> > > any other packets. If turning off source-address learning function, it
-> > > works like an Ethernet plus a 2-port hub.
-> > 
-> > So without STP, there is no way to stop an loop, and a broadcast storm taking
-> > down your network?
+Dear Ansuel,
+
+On Mon, 8 Nov 2021 17:46:02 +0100
+Ansuel Smith <ansuelsmth@gmail.com> wrote:
+
+> > what is the purpose of adding trigger_offload() methods to LED, if you
+> > are not going to add support to offload the netdev trigger? That was
+> > the entire purpose when I wrote that patch.  
 > 
-> Do you mean connecting two PHY ports to the same LAN? We never 
-> connect two PHY ports to the same LAN (or hub). I never think of this 
-> loop problem. I thought only WAN has the loop problem.
+> But the final step was adding LEDs support for PHY. The idea was to find
+> a clean way by passing the idea of offloading a trigger... But fact is
+> that LEDs in PHY operate by themself so it would add overhead selecting
+> a trigger that will use event/works just to then be ignored as the
+> trigger is offloaded.
 
-Any Ethernet network can have a loop. Often loops a deliberate because
-they give redundancy. STP will detect this loop, and somewhere in the
-network one of the switches will block traffic to break the loop. But
-if something in the network breaks, the port can be unblocked to allow
-traffic to flow, redundancy. Well behaved switches should always
-implement STP.
+I don't understand what kind of overhead in events/works are you
+talking about. If the trigger is successfully offloaded, there are no
+events/works. Everything is done in hardware. If you look at my last
+attempt
+  https://lore.kernel.org/linux-leds/20210601005155.27997-5-kabel@kernel.org/
+which adds the offloading support to netdev trigger, you can see
 
-> How an Ethernet hub take care of this situation?
+  if (!led_trigger_offload(led_cdev))
+    return;
 
-STP. Run tcpdump on your network. Depending on how your network is
-configured, you might see BPDU from your building switches.
+so if the trigger is succesfully offloaded, the subsequen
+schedule_delayed_work() is not called and netdev trigger does not do anything.
+The blinking of the LED on rx/tx activity is done purely in hardware.
+No software overhead.
 
-> Is that reasonable to connect two ports of an Ethernet hub together?
+> Also I think we are missing the fact that most of PHY can operate in
+> software or in hardware. NOT BOTH. So the entire concept of offloading
+> some trigger won't work as we were not able to simulate with SW
+> unsupported trigger. (not the case with netdev as it does only support
+> link, rx/tx but that was to explain the concept that SW and HW mode are
+> mutually exclusive.)
 
-It is not just together. You cannot guarantee any Ethernet network is
-a tree. You could connect the two ports to two different hubs, but
-those hubs are connected together, and so you get a loop.
+I am not missing this fact, I know that there are LEDs that cannot be
+set into purely SW mode. Which brings another problem: Pavel currely
+isn't convinced that these LEDs should be exported via LED classdev
+API. We need to persuade him about this, because otherwise we would
+need to create another subsystem for this.
 
-> > Looking at the TX descriptor, there are two bits:
+But there are PHYs which do allow purely SW LED control, i.e. I can set
+the LED to be just ON or OFF. These are for example marvell PHYs.
+
+The fact that there are LEDs that can't be controlled purely in SW does
+not seem a good reason for to not implement it via netdev trigger.
+
+Either these LEDs shouldn't be exported as LED classdevs, or they
+should somehow make use of existing trigger API (so netdev).
+
+The fact that the LED cannot be controlled in SW can be simply
+implemented by refusing to disable the netdev trigger on the LED.
+
 > > 
-> >           [18]: force forward to port 0
-> >           [19]: force forward to port 1
+> > If you just want to create a new trigger that will make the PHY chip do
+> > the blinking, there is no need at all for the offloading patch.
+> >   
+> 
+> Again the idea here is that a LED can offer a way to run by HW and then
+> a trigger configure them and enables the mode. I see the offload and
+> configure function needed anyway side from the implementation.
+
+There is already LED private trigger API for this. You don't need
+offloading of existing trigger if you are going to create a new trigger
+anyway.
+
+> > And you will also get a NACK from me and also Pavel (LED subsystem
+> > maintainer).
+> >   
+> 
+> Can we try to find a common way to introduce this?
+> 
+> > The current plan is to:
+> > - add support for offloading existing LED triggers to HW (LED
+> >   controllers (PHY chips, for example))
+> > - make netdev trigger try offloading itself to HW via this new API (if
+> >   it fails, netdev trigger will blink the LED in SW as it does now)  
+> 
+> Can't be done. If in HW mode, we should just declare a trigger not
+> supported in SW if we really want to follow the netdev expanding path.
+> But still that would mean filling the netdev trigger with extra code and
+> condition that will only apply in HW mode. At this point just create a
+> dedicated trigger.
+
+The netdev trigger already needs to be expanded with extra code: it
+doesn't allow indicating different link types, for example.
+
+For offloading, the extra code can be quite small. So I don't think
+this is an argument.
+
+> We can consider introducing the same sysfs used by netdev trigger but
+> nothing else.
+
+Not true.
+
+> > - create LED classdevices in a PHY driver that have the offload()
+> >   methods implemented. The offload method looks at what trigger is
+> >   being enabled for the LED, and it if it is a netdev trigger with such
+> >   settings that are possible to offload, it will be offloaded.
 > > 
-> > When the switch is enabled, can these two bits be used?
+> >   This whole thing makes use of the existing sysfs ABI.
+> >   So for example if I do
+> >     cd /sys/class/net/eth0/phydev/leds/<LED>
+> >     echo netdev >trigger
+> >     echo eth0 >device_name  
 > 
-> Yes, for example, when bit 19 of TX descriptor is enabled, a packet from CPU 
-> port is forwarded to LAN port 0 forcibly.
+> How would this work in HW mode? The PHY blink only with packet in his
+> port. We can't tell the PHY to HW blink based on an interface.
+> That is the main problem by using netdev for PHYs, netdev is flexible
+> but an offload trigger is not and would work only based on some
+> condition. We should hardcode the device_name in HW and again pollute
+> the netdev trigger more.
+
+netdev trigger does not need to be poluted by this much. All this can be
+implemented by one callback to offload method, and everything else can
+be done in the LED driver itself.
+
+> An idea would be add tons of check to netdev on every event to check the
+> interface but that wouldn't go against any offload idea? The system will
+> be loaded anyway with all these checks.
+
+The checks are done only at the moment of configuring the trigger.
+Surely you don't see that as "loaded system".
+
 > 
-> 
-> > In the RX descriptor there is:
+> >     echo 1 >rx
+> >     echo 1 >tx
+> >   The netdev trigger is activated, and it calls the offload() method.
+> >   The offload() method is implemented in the PHY driver, and it checks
+> >   that it can offload these settings (blink on rx/tx), and will enable
+> >   this.
+> > - extend netdev trigger to support more settings:
+> >   - indicate link for specific link modes only (for example 1g, 100m)
+> >   - ...
+> > - extend PHY drivers to support offloading of these new settings
 > > 
-> > pkt_sp:
-> >           000: from port0
-> >           001: from port1
-> >           110: soc0 loopback
-> >           101: soc1 loopback
-> > 
-> > Are these bits used when the switch is enabled?
+> > Marek  
 > 
-> Yes, E- MAC driver uses these bits to tell where a packet comes from.
-> Note that soc1 port (CPU port) has been removed in this chip.
- 
-Right. So you can have two netdev when in L2 switch mode.
+> The rest of the implementation is very similar. Except we just NOT use
+> netdev. And to me it does seems the most sane way to handle offload for
+> a LED. (considering the specific situation of a PHY)
+> 
+> From what I can see we have 2 path:
+> - Pollute netdev trigger to add entire different function for HW. (that
+>   will end up in complex condition and more load/overhead)
+> - Introduce a new way to entirely offload some triggers.
 
-You need to think about the Linux model some more. In linux,
-networking hardware is there to accelerate what the Linux stack can do
-in software. Take for example a simple SoC will have two Ethernet
-interfaces. You can perform software bridging on those two interfaces:
+The check conditions would be all in LED driver (PHY driver in this
+case). The code could be a little complicated, but it only needs to be
+written once, and the PHY drivers can reuse it. netdev trigger is not
+polluted, only a few calls to offload() method are done.
 
-ip link add name br0 type bridge
-ip link set dev br0 up
-ip link set dev eth0 master br0
-ip link set dev eth1 master br0
+> Could be that here I'm just using the wrong word and I should use
+> hardware instead offload. But considering we are offloading some trigger
+> (example rx/tx/link) it's not that wrong.
+> 
+> The thing is why trying to expand a trigger that will just remove some
+> flexibility when we can solve the problem at the source with some
+> additional API that currently we lack any support (leds can be
+> configured to run by hw) and some dedicated trigger that will do the
+> task in a cleaner way (and without adding extra load/overhead by really
+> offloading the task) ?
 
-The software bridge will decided which interface to send a packet
-out. The software will perform learning etc.
+As I explained above, there is no extra load/overhead. The only thing
+that is extra is that netdev trigger gets a little more new code, but
+that is already needed anyway.
+> 
+> Again hope I didn't seem rude in this message but I just want to find a
+> solution and proposing a new idea/explaining my concern.
+> 
 
-You can use your dual MAC setup exactly like this. But you can also go
-further. You can use the hardware to accelerate switching packets
-between eth0 and eth1. But also Linux can still send packets out
-specific ports using these bits. The software bridge and the hardware
-bridge work together. This is the correct way to do this in Linux.
+I don't think you're rude, we are just discussing a topic for which we
+have different opinions.
 
-> Sorry, I don't know what is a RMC packet?
-
-Sorry, i have no idea.
-
-       Andrew
+Marek
