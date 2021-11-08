@@ -2,66 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F4074476CD
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 01:09:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 109804476DB
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 01:25:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236737AbhKHAL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Nov 2021 19:11:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46578 "EHLO
+        id S235180AbhKHA1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Nov 2021 19:27:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236047AbhKHAL0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Nov 2021 19:11:26 -0500
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E13DC061570
-        for <netdev@vger.kernel.org>; Sun,  7 Nov 2021 16:08:43 -0800 (PST)
-Received: by mail-ot1-x32d.google.com with SMTP id x19-20020a9d7053000000b0055c8b39420bso2427545otj.1
-        for <netdev@vger.kernel.org>; Sun, 07 Nov 2021 16:08:43 -0800 (PST)
+        with ESMTP id S230455AbhKHA1s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Nov 2021 19:27:48 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FA68C061570;
+        Sun,  7 Nov 2021 16:25:05 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id w1so55979786edd.10;
+        Sun, 07 Nov 2021 16:25:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=NHAujRj3nNPe07TxWi88DybAbp7vcb7zQT2ctaDgCnw=;
-        b=NaRzJ8cJ3FO88Lg8NDDQ2b8pXUbvu2leE3seEK5sazLC/RlII54s3RWSQ5Xc/q574I
-         BTROmTlf+UBxfKburQPXkbjreo42CQf7UE2hfo/iZCSlK5AUsGPwkdTLLqfbJyRLzKJY
-         CIkThfzvxmbwP2k2vTxsvPIjj3aWsL4j/6WoaJl9GESe7mxdWFft2uE3XqOpnjcj3C7E
-         W+DRplVMbZAKVYtc90mMEASunYS1EX0i+iyPLZf2zM4fA8MmYYQn6tH3dlxbK5pHly40
-         VVR85iQf6NoiYhhmdZ3o2xEdZNrAoeqd1z+2o+5KEATY3bNFn48RtlGp3PNfPtyQgWUM
-         6jpA==
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MONscSKyhvi2+SRKlBcGRiPlb7krpgUPlxLNPbjxYgo=;
+        b=bad+zSa0E8ifLsxFIIjQOYUpj6cMP4QEQxAksHyC+dUEaJmhyqt5mMse6Z5zIMA6v4
+         1JTVZB4rIye0fXMLmOgQPozH47hCaUtuIJq/NioXDoF48lXy8Ikqfl2jtGRlIQphLEG8
+         e50FmCg4kKLtcPSNiMYGDDEYQoVsnretSCq62en/klNk28jGf1WnGEzZhQ5DX0tfUnaQ
+         BV+OUNsqG2GkbkYE5wIxX0TMGrLOsEwLaaP2gdO3xGBkaEaJ8I3lxQdwzjV3b7LWnu/7
+         OC6XpuVTzI80d4P5+T0ZgMcB5H6LVl0MX0VRVZGSmSv7609AOL3nhHX+TlYbOhuCOxpd
+         kq/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=NHAujRj3nNPe07TxWi88DybAbp7vcb7zQT2ctaDgCnw=;
-        b=e590GIh/85FwcAPx2BpEtLGWD3X4dgfJZ/NmN4A83YXu3+DfQWX2X6pUKudrDHAlGI
-         Pb/cwyhLxZOJP1Le91V9r3qTcjUErT78X4yFWSpC1JgbntSpjK2zYql1OeLPr4/l1Qh0
-         dS/VtuT7WxngrvT4tS3h22vhOS0skhnRbkNU/vHYOrYQVduZmzh8zfAwRhxa0FZ4DfC4
-         +qDAvsCbD9aH19xrsSR7Uw/V1v7AtueF7AnfCAVixJKWIfS51RMw5LO4TSZ4p9jy/A42
-         WkxgD9VTLCffUVBunAO+UTiYnYxCjV6+KWnt8CbVaO3SnQHSBe7xYPLHAD0unkVckYsS
-         FaeQ==
-X-Gm-Message-State: AOAM533xynEeiuW5xmNV6LkV8OEbSVvKH/4Zk/elV7TxDjj5LYXG1XsZ
-        K6MTMSp9eQZYoiyLjZK68KDV+RU5R0co9Ak8uA==
-X-Google-Smtp-Source: ABdhPJxgKuVRIm+1ahFGkFkkLzWJT6Q+t+bPl0VH0r6Ns6jVvhC1zPgeKorTqlrNPvFvvpViAsbeHNy/hE/AUE/HVcE=
-X-Received: by 2002:a9d:6a4e:: with SMTP id h14mr4726081otn.134.1636330122759;
- Sun, 07 Nov 2021 16:08:42 -0800 (PST)
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MONscSKyhvi2+SRKlBcGRiPlb7krpgUPlxLNPbjxYgo=;
+        b=TZJ16GckiqBqWJUvDeTVEEJBCILVRmeA8F0LDZcN5wWURjq1LnROysL+9mmnQ/aTbH
+         497hJ/mn4Hq8L8ZjhUp3gJubUII0LQsgX3/h0yIzCHFGIHrs+VfpSs3vts9WR+WQe6iN
+         ZNiSswIHrPIQFefGTTDVKqbaEh4agRHMEKcYQvEK7PVbprocHu/2ho1cGbmnabHG0oPS
+         Rs3AH1gqdVE0wQrsS3n/Z3DqhFb8Sum5jXy4sVPKnCucEzb1t1HxPIHmPgC1NZGw4dUz
+         xKZmxAJjfWauwEIBupkcBOFHrx6uVCBPpEt/qtTJ+pxWOa7N/THRASBaHz+wnhUG2oqG
+         bt9Q==
+X-Gm-Message-State: AOAM532PcPGE+wHelhOhHgNaRxoaC3/fhZ7Zaa7qqb4J5C4Umfyr/jV2
+        pyEYPd8Hg1VL4k+HzOPUpY0=
+X-Google-Smtp-Source: ABdhPJxwuWOpWvwWyszMr+He1assUHDS3DKb5+qzQypzgnqgp3iSmhDeLLoGhR6U6by6xxd+xNcTPg==
+X-Received: by 2002:a05:6402:40d0:: with SMTP id z16mr73382067edb.340.1636331103501;
+        Sun, 07 Nov 2021 16:25:03 -0800 (PST)
+Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.googlemail.com with ESMTPSA id bf8sm8537878edb.46.2021.11.07.16.25.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 07 Nov 2021 16:25:03 -0800 (PST)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: [RFC PATCH v2 0/5] Adds support for PHY LEDs with offload triggers
+Date:   Mon,  8 Nov 2021 01:24:55 +0100
+Message-Id: <20211108002500.19115-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Received: by 2002:a4a:db75:0:0:0:0:0 with HTTP; Sun, 7 Nov 2021 16:08:42 -0800 (PST)
-Reply-To: salemchantal@mail.ee
-From:   MRS Salem Chantal Lawrence <osaruwanseovenseri@gmail.com>
-Date:   Sun, 7 Nov 2021 16:08:42 -0800
-Message-ID: <CAENio1rYegKXJxKARWZR9O4sKkmpQMrcm=U1ZmsGcR0Ztg96kQ@mail.gmail.com>
-Subject: Attention
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Attention
+This is another attempt in adding support for PHY LEDs. Most of the
+times Switch/PHY have connected multiple LEDs that are controlled by HW
+based on some rules/event. Currently we lack any support for a generic
+way to control the HW part and normally we either never implement the
+feature or only add control for brightness or hw blink.
 
-You have been compensated with the sum of 4.6 million dollars in this
-United Nation the payment will be issue into Atm Visa Card and send to you
-from the Bank we need your Address Passport and your whatsapp number
+This is based on Marek idea of providing some API to cled but use a
+different implementation that in theory should be more generilized.
 
-Contact This My WhatsApp Number for more Details (+1 (201)308-2233
+The current idea is:
+- LED driver implement 2 API (trigger and configure). They are used to
+  put the LED in offload mode and to configure the various trigger.
+- We have offload triggers that are used to expose to userspace the
+  supported offload triggers and set the offload mode on trigger
+  activation.
+- The LED driver will declare each supported trigger and each supported
+  offloaded trigger and communicate it to the trigger that will expose them
+  via sysfs.
+- Only supported triggers from linux,supported-offload-triggers will be
+  exposed by the offload trigger to userspace via sysfs. Other won't be
+  configurable as they are not supported by the LED driver.
+- The LED driver will set how the Offload mode is activated/disabled and
+  will set a configure function to set each supported offload triggers.
+  This function provide 3 different mode enable/disable/read that
+  will enable or disable the offload trigger or read the current status.
+- On offload trigger activation, only the offload mode is triggered but
+  the offload triggers are not configured. This means that the LED will
+  run in offload mode but will have the default rules/event set by the
+  device by default. To change this the user will have to operate via
+  userspace (or we can consider adding another binding in the dts to
+  declare also a default trigger configuration)
 
-THANKS
-MRS Salem Chantal Lawrence
+Each LED driver will have to declare explicit support for the offload
+trigger (or return not supported error code) as we pass a u32 flag that
+the LED driver will elaborate and understand what is referring to (based
+on the current active trigger).
+
+I posted a user for this new implementation that will benefit from this
+and will add a big feature to it. Currently qca8k can have up to 3 LEDs
+connected to each PHY port and we have some device that have only one of
+them connected and the default configuration won't work for that.
+
+v2:
+- Fix spelling mistake (sorry)
+- Drop patch 02 "permit to declare supported offload triggers".
+  Change the logic, now the LED driver declare support for them
+  using the configure_offload with the cmd TRIGGER_SUPPORTED.
+- Rework code to follow this new implementation.
+- Update Documentation to better describe how this offload
+  implementation work.
+
+Ansuel Smith (4):
+  leds: add function to configure offload leds
+  leds: trigger: add offload-phy-activity trigger
+  net: dsa: qca8k: add LEDs support
+  dt-bindings: net: dsa: qca8k: add LEDs definition example
+
+Marek Behún (1):
+  leds: trigger: add API for HW offloading of triggers
+
+ .../devicetree/bindings/net/dsa/qca8k.yaml    |  20 +
+ Documentation/leds/leds-class.rst             |  44 +++
+ drivers/leds/led-triggers.c                   |   1 +
+ drivers/leds/trigger/Kconfig                  |  39 ++
+ drivers/leds/trigger/Makefile                 |   1 +
+ .../trigger/ledtrig-offload-phy-activity.c    | 145 +++++++
+ drivers/net/dsa/Kconfig                       |   9 +
+ drivers/net/dsa/Makefile                      |   1 +
+ drivers/net/dsa/qca8k-leds.c                  | 364 ++++++++++++++++++
+ drivers/net/dsa/qca8k.c                       |   8 +-
+ drivers/net/dsa/qca8k.h                       |  64 +++
+ include/linux/leds.h                          |  85 ++++
+ 12 files changed, 779 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/leds/trigger/ledtrig-offload-phy-activity.c
+ create mode 100644 drivers/net/dsa/qca8k-leds.c
+
+-- 
+2.32.0
+
