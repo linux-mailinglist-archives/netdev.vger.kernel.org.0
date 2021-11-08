@@ -2,39 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E61844A0A3
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 02:02:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18FF644A0A5
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 02:02:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241810AbhKIBEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 20:04:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60518 "EHLO mail.kernel.org"
+        id S241825AbhKIBEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 20:04:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60570 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241662AbhKIBDs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 20:03:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B92A361390;
-        Tue,  9 Nov 2021 01:01:00 +0000 (UTC)
+        id S241663AbhKIBDt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 20:03:49 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6024461359;
+        Tue,  9 Nov 2021 01:01:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636419661;
-        bh=XufEztxeItGTehTrSkdJrWqgyzeYZCom6ctehxWgBGg=;
+        s=k20201202; t=1636419663;
+        bh=kJabWk3tR5D0fBJ//h2uhG0xDlPR4KZLQpHMsJtcjkY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lxtjGfXzH2w1ouqVex0+QHG//ESnbZLAer7UrfcDDpvlwg4IaT3BryUwfM9NkzWyd
-         zGXpNvpf9vxJjf6hSnQFBLNsoqoeQGM5pbwVR/yBiA9y8rkLpmomR+DMX8w9nEM4Hg
-         1xmU1T0fWuxJWRqLptYtebSR4m31tvMrAz86zGdxx+kIVsxnnu9j49rft7+lXSJuW9
-         4pZ2Wlal3rKq5S7Gd53Bsqd4Lj3nlOtKLKhM4p6sT573zABsshyO3NopDabreMVZdD
-         j69NekDlV96f/am7Fvp5M0lNbA69NLilEBTTh0nWbW2G2b0oq5/SVETe7sqAq6878B
-         6dKcmBmegZeAw==
+        b=AJQ0ueGH40xM8QQvyTNszy009d0E8GT45J/GJqL1jtUOLHkxk9xlGI7UB6QFGkUhv
+         4YoADwt3Vh34OecYjAyVCnW6Wzs8M0bB3pDo7QaiOSzqhAt0l4jj2DQcXK4LNuIGX9
+         j2mOJ8eD+iieD50fqJ872GT/r+gQ4UdVOtjhM95WBGdya/a/IIYfblk4tMacRed4sG
+         9pLFUs7ipJdMNIFJLuoYklVAtC8IxPUHu75lodg1Qbk7Perw2P6LjFtXnJUefSU2+d
+         1l1m9TuqNebyXlFLnnGCeYe8Z1VjS9qVmQ1O94p0R82TqPS1magZwRsxWNNWxCNZ5R
+         iZmL0h4DBcU6A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alagu Sankar <alagusankar@silex-india.com>,
-        Erik Stromdahl <erik.stromdahl@gmail.com>,
-        Fabio Estevam <festevam@denx.de>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 036/146] ath10k: high latency fixes for beacon buffer
-Date:   Mon,  8 Nov 2021 12:43:03 -0500
-Message-Id: <20211108174453.1187052-36-sashal@kernel.org>
+Cc:     Rakesh Babu <rsaladi2@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, gakula@marvell.com,
+        hkelam@marvell.com, kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 037/146] octeontx2-pf: Enable promisc/allmulti match MCAM entries.
+Date:   Mon,  8 Nov 2021 12:43:04 -0500
+Message-Id: <20211108174453.1187052-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211108174453.1187052-1-sashal@kernel.org>
 References: <20211108174453.1187052-1-sashal@kernel.org>
@@ -46,82 +45,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alagu Sankar <alagusankar@silex-india.com>
+From: Rakesh Babu <rsaladi2@marvell.com>
 
-[ Upstream commit e263bdab9c0e8025fb7f41f153709a9cda51f6b6 ]
+[ Upstream commit ffd2f89ad05cd620d822112a07b0c5669fa9e333 ]
 
-Beacon buffer for high latency devices does not use DMA. other similar
-buffer allocation methods in the driver have already been modified for
-high latency path. Fix the beacon buffer allocation left out in the
-earlier high latency changes.
+Whenever the interface is brought up/down then set_rx_mode
+function is called by the stack which enables promisc/allmulti
+MCAM entries. But there are cases when driver brings
+interface down and then up such as while changing number
+of channels. In these cases promisc/allmulti MCAM entries
+are left disabled as set_rx_mode callback is not called.
+This patch enables these MCAM entries in all such cases.
 
-Signed-off-by: Alagu Sankar <alagusankar@silex-india.com>
-Signed-off-by: Erik Stromdahl <erik.stromdahl@gmail.com>
-[fabio: adapt it to use ar->bus_param.dev_type ]
-Signed-off-by: Fabio Estevam <festevam@denx.de>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20210818232627.2040121-1-festevam@denx.de
+Signed-off-by: Rakesh Babu <rsaladi2@marvell.com>
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/mac.c | 31 ++++++++++++++++++++-------
- 1 file changed, 23 insertions(+), 8 deletions(-)
+ .../ethernet/marvell/octeontx2/nic/otx2_pf.c  | 78 ++++++++++---------
+ 1 file changed, 43 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
-index c272b290fa73d..7ca68c81d9b61 100644
---- a/drivers/net/wireless/ath/ath10k/mac.c
-+++ b/drivers/net/wireless/ath/ath10k/mac.c
-@@ -993,8 +993,12 @@ static void ath10k_mac_vif_beacon_cleanup(struct ath10k_vif *arvif)
- 	ath10k_mac_vif_beacon_free(arvif);
- 
- 	if (arvif->beacon_buf) {
--		dma_free_coherent(ar->dev, IEEE80211_MAX_FRAME_LEN,
--				  arvif->beacon_buf, arvif->beacon_paddr);
-+		if (ar->bus_param.dev_type == ATH10K_DEV_TYPE_HL)
-+			kfree(arvif->beacon_buf);
-+		else
-+			dma_free_coherent(ar->dev, IEEE80211_MAX_FRAME_LEN,
-+					  arvif->beacon_buf,
-+					  arvif->beacon_paddr);
- 		arvif->beacon_buf = NULL;
- 	}
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+index 53df7fff92c40..53a3e8de1a51e 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -1493,6 +1493,44 @@ static void otx2_free_hw_resources(struct otx2_nic *pf)
+ 	mutex_unlock(&mbox->lock);
  }
-@@ -5576,10 +5580,17 @@ static int ath10k_add_interface(struct ieee80211_hw *hw,
- 	if (vif->type == NL80211_IFTYPE_ADHOC ||
- 	    vif->type == NL80211_IFTYPE_MESH_POINT ||
- 	    vif->type == NL80211_IFTYPE_AP) {
--		arvif->beacon_buf = dma_alloc_coherent(ar->dev,
--						       IEEE80211_MAX_FRAME_LEN,
--						       &arvif->beacon_paddr,
--						       GFP_ATOMIC);
-+		if (ar->bus_param.dev_type == ATH10K_DEV_TYPE_HL) {
-+			arvif->beacon_buf = kmalloc(IEEE80211_MAX_FRAME_LEN,
-+						    GFP_KERNEL);
-+			arvif->beacon_paddr = (dma_addr_t)arvif->beacon_buf;
-+		} else {
-+			arvif->beacon_buf =
-+				dma_alloc_coherent(ar->dev,
-+						   IEEE80211_MAX_FRAME_LEN,
-+						   &arvif->beacon_paddr,
-+						   GFP_ATOMIC);
-+		}
- 		if (!arvif->beacon_buf) {
- 			ret = -ENOMEM;
- 			ath10k_warn(ar, "failed to allocate beacon buffer: %d\n",
-@@ -5794,8 +5805,12 @@ static int ath10k_add_interface(struct ieee80211_hw *hw,
  
- err:
- 	if (arvif->beacon_buf) {
--		dma_free_coherent(ar->dev, IEEE80211_MAX_FRAME_LEN,
--				  arvif->beacon_buf, arvif->beacon_paddr);
-+		if (ar->bus_param.dev_type == ATH10K_DEV_TYPE_HL)
-+			kfree(arvif->beacon_buf);
-+		else
-+			dma_free_coherent(ar->dev, IEEE80211_MAX_FRAME_LEN,
-+					  arvif->beacon_buf,
-+					  arvif->beacon_paddr);
- 		arvif->beacon_buf = NULL;
- 	}
++static void otx2_do_set_rx_mode(struct otx2_nic *pf)
++{
++	struct net_device *netdev = pf->netdev;
++	struct nix_rx_mode *req;
++	bool promisc = false;
++
++	if (!(netdev->flags & IFF_UP))
++		return;
++
++	if ((netdev->flags & IFF_PROMISC) ||
++	    (netdev_uc_count(netdev) > OTX2_MAX_UNICAST_FLOWS)) {
++		promisc = true;
++	}
++
++	/* Write unicast address to mcam entries or del from mcam */
++	if (!promisc && netdev->priv_flags & IFF_UNICAST_FLT)
++		__dev_uc_sync(netdev, otx2_add_macfilter, otx2_del_macfilter);
++
++	mutex_lock(&pf->mbox.lock);
++	req = otx2_mbox_alloc_msg_nix_set_rx_mode(&pf->mbox);
++	if (!req) {
++		mutex_unlock(&pf->mbox.lock);
++		return;
++	}
++
++	req->mode = NIX_RX_MODE_UCAST;
++
++	if (promisc)
++		req->mode |= NIX_RX_MODE_PROMISC;
++	if (netdev->flags & (IFF_ALLMULTI | IFF_MULTICAST))
++		req->mode |= NIX_RX_MODE_ALLMULTI;
++
++	req->mode |= NIX_RX_MODE_USE_MCE;
++
++	otx2_sync_mbox_msg(&pf->mbox);
++	mutex_unlock(&pf->mbox.lock);
++}
++
+ int otx2_open(struct net_device *netdev)
+ {
+ 	struct otx2_nic *pf = netdev_priv(netdev);
+@@ -1646,6 +1684,8 @@ int otx2_open(struct net_device *netdev)
+ 	if (err)
+ 		goto err_tx_stop_queues;
  
++	otx2_do_set_rx_mode(pf);
++
+ 	return 0;
+ 
+ err_tx_stop_queues:
+@@ -1791,43 +1831,11 @@ static void otx2_set_rx_mode(struct net_device *netdev)
+ 	queue_work(pf->otx2_wq, &pf->rx_mode_work);
+ }
+ 
+-static void otx2_do_set_rx_mode(struct work_struct *work)
++static void otx2_rx_mode_wrk_handler(struct work_struct *work)
+ {
+ 	struct otx2_nic *pf = container_of(work, struct otx2_nic, rx_mode_work);
+-	struct net_device *netdev = pf->netdev;
+-	struct nix_rx_mode *req;
+-	bool promisc = false;
+-
+-	if (!(netdev->flags & IFF_UP))
+-		return;
+-
+-	if ((netdev->flags & IFF_PROMISC) ||
+-	    (netdev_uc_count(netdev) > OTX2_MAX_UNICAST_FLOWS)) {
+-		promisc = true;
+-	}
+ 
+-	/* Write unicast address to mcam entries or del from mcam */
+-	if (!promisc && netdev->priv_flags & IFF_UNICAST_FLT)
+-		__dev_uc_sync(netdev, otx2_add_macfilter, otx2_del_macfilter);
+-
+-	mutex_lock(&pf->mbox.lock);
+-	req = otx2_mbox_alloc_msg_nix_set_rx_mode(&pf->mbox);
+-	if (!req) {
+-		mutex_unlock(&pf->mbox.lock);
+-		return;
+-	}
+-
+-	req->mode = NIX_RX_MODE_UCAST;
+-
+-	if (promisc)
+-		req->mode |= NIX_RX_MODE_PROMISC;
+-	if (netdev->flags & (IFF_ALLMULTI | IFF_MULTICAST))
+-		req->mode |= NIX_RX_MODE_ALLMULTI;
+-
+-	req->mode |= NIX_RX_MODE_USE_MCE;
+-
+-	otx2_sync_mbox_msg(&pf->mbox);
+-	mutex_unlock(&pf->mbox.lock);
++	otx2_do_set_rx_mode(pf);
+ }
+ 
+ static int otx2_set_features(struct net_device *netdev,
+@@ -2358,7 +2366,7 @@ static int otx2_wq_init(struct otx2_nic *pf)
+ 	if (!pf->otx2_wq)
+ 		return -ENOMEM;
+ 
+-	INIT_WORK(&pf->rx_mode_work, otx2_do_set_rx_mode);
++	INIT_WORK(&pf->rx_mode_work, otx2_rx_mode_wrk_handler);
+ 	INIT_WORK(&pf->reset_task, otx2_reset_task);
+ 	return 0;
+ }
 -- 
 2.33.0
 
