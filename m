@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E034449A6E
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 18:06:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6E7C449A75
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 18:06:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240421AbhKHRIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 12:08:47 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44276 "EHLO mail.kernel.org"
+        id S240479AbhKHRIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 12:08:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44360 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240435AbhKHRIr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 12:08:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DE9546120A;
-        Mon,  8 Nov 2021 17:06:01 +0000 (UTC)
+        id S240461AbhKHRIu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 12:08:50 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6971661406;
+        Mon,  8 Nov 2021 17:06:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636391162;
-        bh=21dZcZWvadWM6+SxR0oX231jQ5mVH6rTshF3/Bs6aZQ=;
+        s=k20201202; t=1636391166;
+        bh=CLRTIdZSHTcwYmS1NxkLbfrYZ0AZbXpTrl8Y0wpdR/Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C+XqWVeecET/KKFz5d3r8go1A5DYKxEVbsU3ZOyp74mFh0eR4BoswHNU+fV0sP2Ob
-         sZp8Zfr4nqKm/t1F2xqK6AFfCSVBplViEV2gZqpEUm0XeynaYg5/0BoN8wb2wk0Rmm
-         dH1zZs2VOdjbSURgj90978HPYEz135cP5bzYuerSLAriTEu8K/J5T9HInfQ7NbMpzz
-         Pzp2Cpj6iYNrw8Pj42aw6JIU2xujWTb0wFcYnwhwetT/mvEma9aadVrc4MyKHJqLqh
-         YtzbykZG4aw2Nq/Dg/uOvjETDSMa9MO96CUAtVXBwicqKEFfBre/ACxiP3BxAKuOgm
-         aSkNLpqsV7D1Q==
+        b=uW/AXhp8ygKBpRLzN7PZHow1EmuBhkQBDMJ2stO+RZRhV9Acq6BFqEV/Yq5d+s8zh
+         Xhzi7Wxl2zO/huQNVcl3E0UOfbospYf4rBDzPCBqF48BLSHz+j7Re3NWpXai2ai9kA
+         eQOfhEDXUhvJtXpcSfhxBNEMZI5jCimBEqMT+BpOdbFjWSYJYf6oH2rpIRqTAkITNC
+         lVCJwuKFZ/uh3agviJnQgXeyc1q1d7FAzoTaQBaIFc5pcvcB5wjTQf6c3KepuXWmGj
+         cjdhPO/foCAVohffQFELdC3J/si8Qr5FcPfLiq53pBNMDMFsMgno8vZQdhvbSmi/LN
+         og3COEsQYibhA==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
         netdev <netdev@vger.kernel.org>
-Subject: [RFC PATCH 06/16] devlink: Reshuffle resource registration logic
-Date:   Mon,  8 Nov 2021 19:05:28 +0200
-Message-Id: <f197bf339088377abad6063ce3efd63faa415a5f.1636390483.git.leonro@nvidia.com>
+Subject: [RFC PATCH 07/16] devlink: Inline sb related functions
+Date:   Mon,  8 Nov 2021 19:05:29 +0200
+Message-Id: <985847373a397a708bb5d86dec806d5d025fb080.1636390483.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <cover.1636390483.git.leonro@nvidia.com>
 References: <cover.1636390483.git.leonro@nvidia.com>
@@ -43,77 +43,268 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-The devlink->lock doesn't need to be held during whole execution of
-function, but only when recursive path walk and list addition are
-performed. So reshuffle the resource registration logic to allocate
-resource and configure it without lock.
+Remove useless indirection of sb related functions, which called only
+once and do nothing except accessing specific struct field.
 
-As part of this change, complain more louder if driver authors used
-already existed resource_id. It is performed outside of the locks as
-drivers were supposed to provide unique IDs and such error can't happen.
+As part of this cleanup, properly report an programming erro if already
+existing sb index was supplied during SB registration.
 
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- net/core/devlink.c | 30 ++++++++++++------------------
- 1 file changed, 12 insertions(+), 18 deletions(-)
+ net/core/devlink.c | 110 ++++++++++++++-------------------------------
+ 1 file changed, 33 insertions(+), 77 deletions(-)
 
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index d88e882616bc..a2cd27fd767e 100644
+index a2cd27fd767e..86db7cf1f3ca 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -9850,17 +9850,9 @@ int devlink_resource_register(struct devlink *devlink,
- {
- 	struct devlink_resource *resource;
- 	struct list_head *resource_list;
--	bool top_hierarchy;
- 	int err = 0;
+@@ -364,12 +364,6 @@ static struct devlink_sb *devlink_sb_get_by_index(struct devlink *devlink,
+ 	return NULL;
+ }
  
--	top_hierarchy = parent_resource_id == DEVLINK_RESOURCE_ID_PARENT_TOP;
+-static bool devlink_sb_index_exists(struct devlink *devlink,
+-				    unsigned int sb_index)
+-{
+-	return devlink_sb_get_by_index(devlink, sb_index);
+-}
 -
+ static struct devlink_sb *devlink_sb_get_from_attrs(struct devlink *devlink,
+ 						    struct nlattr **attrs)
+ {
+@@ -385,16 +379,11 @@ static struct devlink_sb *devlink_sb_get_from_attrs(struct devlink *devlink,
+ 	return ERR_PTR(-EINVAL);
+ }
+ 
+-static struct devlink_sb *devlink_sb_get_from_info(struct devlink *devlink,
+-						   struct genl_info *info)
+-{
+-	return devlink_sb_get_from_attrs(devlink, info->attrs);
+-}
+-
+-static int devlink_sb_pool_index_get_from_attrs(struct devlink_sb *devlink_sb,
+-						struct nlattr **attrs,
+-						u16 *p_pool_index)
++static int devlink_sb_pool_index_get_from_info(struct devlink_sb *devlink_sb,
++					       struct genl_info *info,
++					       u16 *p_pool_index)
+ {
++	struct nlattr **attrs = info->attrs;
+ 	u16 val;
+ 
+ 	if (!attrs[DEVLINK_ATTR_SB_POOL_INDEX])
+@@ -407,18 +396,11 @@ static int devlink_sb_pool_index_get_from_attrs(struct devlink_sb *devlink_sb,
+ 	return 0;
+ }
+ 
+-static int devlink_sb_pool_index_get_from_info(struct devlink_sb *devlink_sb,
+-					       struct genl_info *info,
+-					       u16 *p_pool_index)
+-{
+-	return devlink_sb_pool_index_get_from_attrs(devlink_sb, info->attrs,
+-						    p_pool_index);
+-}
+-
+ static int
+-devlink_sb_pool_type_get_from_attrs(struct nlattr **attrs,
+-				    enum devlink_sb_pool_type *p_pool_type)
++devlink_sb_pool_type_get_from_info(struct genl_info *info,
++				   enum devlink_sb_pool_type *p_pool_type)
+ {
++	struct nlattr **attrs = info->attrs;
+ 	u8 val;
+ 
+ 	if (!attrs[DEVLINK_ATTR_SB_POOL_TYPE])
+@@ -433,16 +415,10 @@ devlink_sb_pool_type_get_from_attrs(struct nlattr **attrs,
+ }
+ 
+ static int
+-devlink_sb_pool_type_get_from_info(struct genl_info *info,
+-				   enum devlink_sb_pool_type *p_pool_type)
+-{
+-	return devlink_sb_pool_type_get_from_attrs(info->attrs, p_pool_type);
+-}
+-
+-static int
+-devlink_sb_th_type_get_from_attrs(struct nlattr **attrs,
+-				  enum devlink_sb_threshold_type *p_th_type)
++devlink_sb_th_type_get_from_info(struct genl_info *info,
++				 enum devlink_sb_threshold_type *p_th_type)
+ {
++	struct nlattr **attrs = info->attrs;
+ 	u8 val;
+ 
+ 	if (!attrs[DEVLINK_ATTR_SB_POOL_THRESHOLD_TYPE])
+@@ -457,18 +433,12 @@ devlink_sb_th_type_get_from_attrs(struct nlattr **attrs,
+ }
+ 
+ static int
+-devlink_sb_th_type_get_from_info(struct genl_info *info,
+-				 enum devlink_sb_threshold_type *p_th_type)
+-{
+-	return devlink_sb_th_type_get_from_attrs(info->attrs, p_th_type);
+-}
+-
+-static int
+-devlink_sb_tc_index_get_from_attrs(struct devlink_sb *devlink_sb,
+-				   struct nlattr **attrs,
+-				   enum devlink_sb_pool_type pool_type,
+-				   u16 *p_tc_index)
++devlink_sb_tc_index_get_from_info(struct devlink_sb *devlink_sb,
++				  struct genl_info *info,
++				  enum devlink_sb_pool_type pool_type,
++				  u16 *p_tc_index)
+ {
++	struct nlattr **attrs = info->attrs;
+ 	u16 val;
+ 
+ 	if (!attrs[DEVLINK_ATTR_SB_TC_INDEX])
+@@ -485,16 +455,6 @@ devlink_sb_tc_index_get_from_attrs(struct devlink_sb *devlink_sb,
+ 	return 0;
+ }
+ 
+-static int
+-devlink_sb_tc_index_get_from_info(struct devlink_sb *devlink_sb,
+-				  struct genl_info *info,
+-				  enum devlink_sb_pool_type pool_type,
+-				  u16 *p_tc_index)
+-{
+-	return devlink_sb_tc_index_get_from_attrs(devlink_sb, info->attrs,
+-						  pool_type, p_tc_index);
+-}
+-
+ struct devlink_region {
+ 	struct devlink *devlink;
+ 	struct devlink_port *port;
+@@ -1975,7 +1935,7 @@ static int devlink_nl_cmd_sb_get_doit(struct sk_buff *skb,
+ 	struct sk_buff *msg;
+ 	int err;
+ 
+-	devlink_sb = devlink_sb_get_from_info(devlink, info);
++	devlink_sb = devlink_sb_get_from_attrs(devlink, info->attrs);
+ 	if (IS_ERR(devlink_sb))
+ 		return PTR_ERR(devlink_sb);
+ 
+@@ -2093,7 +2053,7 @@ static int devlink_nl_cmd_sb_pool_get_doit(struct sk_buff *skb,
+ 	u16 pool_index;
+ 	int err;
+ 
+-	devlink_sb = devlink_sb_get_from_info(devlink, info);
++	devlink_sb = devlink_sb_get_from_attrs(devlink, info->attrs);
+ 	if (IS_ERR(devlink_sb))
+ 		return PTR_ERR(devlink_sb);
+ 
+@@ -2217,7 +2177,7 @@ static int devlink_nl_cmd_sb_pool_set_doit(struct sk_buff *skb,
+ 	u32 size;
+ 	int err;
+ 
+-	devlink_sb = devlink_sb_get_from_info(devlink, info);
++	devlink_sb = devlink_sb_get_from_attrs(devlink, info->attrs);
+ 	if (IS_ERR(devlink_sb))
+ 		return PTR_ERR(devlink_sb);
+ 
+@@ -2308,7 +2268,7 @@ static int devlink_nl_cmd_sb_port_pool_get_doit(struct sk_buff *skb,
+ 	u16 pool_index;
+ 	int err;
+ 
+-	devlink_sb = devlink_sb_get_from_info(devlink, info);
++	devlink_sb = devlink_sb_get_from_attrs(devlink, info->attrs);
+ 	if (IS_ERR(devlink_sb))
+ 		return PTR_ERR(devlink_sb);
+ 
+@@ -2438,7 +2398,7 @@ static int devlink_nl_cmd_sb_port_pool_set_doit(struct sk_buff *skb,
+ 	u32 threshold;
+ 	int err;
+ 
+-	devlink_sb = devlink_sb_get_from_info(devlink, info);
++	devlink_sb = devlink_sb_get_from_attrs(devlink, info->attrs);
+ 	if (IS_ERR(devlink_sb))
+ 		return PTR_ERR(devlink_sb);
+ 
+@@ -2531,7 +2491,7 @@ static int devlink_nl_cmd_sb_tc_pool_bind_get_doit(struct sk_buff *skb,
+ 	u16 tc_index;
+ 	int err;
+ 
+-	devlink_sb = devlink_sb_get_from_info(devlink, info);
++	devlink_sb = devlink_sb_get_from_attrs(devlink, info->attrs);
+ 	if (IS_ERR(devlink_sb))
+ 		return PTR_ERR(devlink_sb);
+ 
+@@ -2695,7 +2655,7 @@ static int devlink_nl_cmd_sb_tc_pool_bind_set_doit(struct sk_buff *skb,
+ 	u32 threshold;
+ 	int err;
+ 
+-	devlink_sb = devlink_sb_get_from_info(devlink, info);
++	devlink_sb = devlink_sb_get_from_attrs(devlink, info->attrs);
+ 	if (IS_ERR(devlink_sb))
+ 		return PTR_ERR(devlink_sb);
+ 
+@@ -2729,7 +2689,7 @@ static int devlink_nl_cmd_sb_occ_snapshot_doit(struct sk_buff *skb,
+ 	const struct devlink_ops *ops = devlink->ops;
+ 	struct devlink_sb *devlink_sb;
+ 
+-	devlink_sb = devlink_sb_get_from_info(devlink, info);
++	devlink_sb = devlink_sb_get_from_attrs(devlink, info->attrs);
+ 	if (IS_ERR(devlink_sb))
+ 		return PTR_ERR(devlink_sb);
+ 
+@@ -2745,7 +2705,7 @@ static int devlink_nl_cmd_sb_occ_max_clear_doit(struct sk_buff *skb,
+ 	const struct devlink_ops *ops = devlink->ops;
+ 	struct devlink_sb *devlink_sb;
+ 
+-	devlink_sb = devlink_sb_get_from_info(devlink, info);
++	devlink_sb = devlink_sb_get_from_attrs(devlink, info->attrs);
+ 	if (IS_ERR(devlink_sb))
+ 		return PTR_ERR(devlink_sb);
+ 
+@@ -9653,29 +9613,24 @@ int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
+ 			u16 egress_tc_count)
+ {
+ 	struct devlink_sb *devlink_sb;
+-	int err = 0;
+ 
 -	mutex_lock(&devlink->lock);
--	resource = devlink_resource_find(devlink, NULL, resource_id);
--	if (resource) {
--		err = -EINVAL;
--		goto out;
+-	if (devlink_sb_index_exists(devlink, sb_index)) {
+-		err = -EEXIST;
+-		goto unlock;
 -	}
-+	WARN_ON(devlink_resource_find(devlink, NULL, resource_id));
++	WARN_ON(devlink_sb_get_by_index(devlink, sb_index));
  
- 	resource = kzalloc(sizeof(*resource), GFP_KERNEL);
- 	if (!resource) {
-@@ -9868,7 +9860,17 @@ int devlink_resource_register(struct devlink *devlink,
- 		goto out;
- 	}
- 
--	if (top_hierarchy) {
-+	resource->name = resource_name;
-+	resource->size = resource_size;
-+	resource->size_new = resource_size;
-+	resource->id = resource_id;
-+	resource->size_valid = true;
-+	memcpy(&resource->size_params, size_params,
-+	       sizeof(resource->size_params));
-+	INIT_LIST_HEAD(&resource->resource_list);
+ 	devlink_sb = kzalloc(sizeof(*devlink_sb), GFP_KERNEL);
+-	if (!devlink_sb) {
+-		err = -ENOMEM;
+-		goto unlock;
+-	}
++	if (!devlink_sb)
++		return -ENOMEM;
++
+ 	devlink_sb->index = sb_index;
+ 	devlink_sb->size = size;
+ 	devlink_sb->ingress_pools_count = ingress_pools_count;
+ 	devlink_sb->egress_pools_count = egress_pools_count;
+ 	devlink_sb->ingress_tc_count = ingress_tc_count;
+ 	devlink_sb->egress_tc_count = egress_tc_count;
 +
 +	mutex_lock(&devlink->lock);
-+	if (parent_resource_id == DEVLINK_RESOURCE_ID_PARENT_TOP) {
- 		resource_list = &devlink->resource_list;
- 	} else {
- 		struct devlink_resource *parent_resource;
-@@ -9885,14 +9887,6 @@ int devlink_resource_register(struct devlink *devlink,
- 		}
- 	}
- 
--	resource->name = resource_name;
--	resource->size = resource_size;
--	resource->size_new = resource_size;
--	resource->id = resource_id;
--	resource->size_valid = true;
--	memcpy(&resource->size_params, size_params,
--	       sizeof(resource->size_params));
--	INIT_LIST_HEAD(&resource->resource_list);
- 	list_add_tail(&resource->list, resource_list);
- out:
+ 	list_add_tail(&devlink_sb->list, &devlink->sb_list);
+-unlock:
  	mutex_unlock(&devlink->lock);
+-	return err;
++	return 0;
+ }
+ EXPORT_SYMBOL_GPL(devlink_sb_register);
+ 
+@@ -9683,9 +9638,10 @@ void devlink_sb_unregister(struct devlink *devlink, unsigned int sb_index)
+ {
+ 	struct devlink_sb *devlink_sb;
+ 
+-	mutex_lock(&devlink->lock);
+ 	devlink_sb = devlink_sb_get_by_index(devlink, sb_index);
+ 	WARN_ON(!devlink_sb);
++
++	mutex_lock(&devlink->lock);
+ 	list_del(&devlink_sb->list);
+ 	mutex_unlock(&devlink->lock);
+ 	kfree(devlink_sb);
 -- 
 2.33.1
 
