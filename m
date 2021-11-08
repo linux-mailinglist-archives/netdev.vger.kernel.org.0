@@ -2,79 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6DB3449F06
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 00:31:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1DC8449F0F
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 00:38:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238664AbhKHXeP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 18:34:15 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46402 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229591AbhKHXeP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 18:34:15 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CD11061175;
-        Mon,  8 Nov 2021 23:31:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636414290;
-        bh=P2bBc0/n+Zd/hqg8awc2ShYNTCAACpZXxIz97sKBhjE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=T6GYXYhiDWKtuLAAOkyPgxJPw6wbPWGP6T1bdf3dR5QTDo4bbM75x14HuqzvT5iDx
-         tUo09gjAsJjxcIOcLua7Jjj0Y6jabGVIgeNYcfhegbL93Rx8JOsrrQjvDefoRjME4J
-         gHk50OpiHdiEUzyrmfzC6FZ2M4Nser4+gwNC8YVGvxcSljAvc49fodgqBV78hmtc8t
-         6iU+I1T0Q0BT1jcRxk4zP1jE8IDV9vK27b0CONkoMJQdpJAZWS7IrCGy8LOCzMWE3b
-         oZpbxfwRn2hc71+siq8x7ViaEG1qx9Wwb8T7d5wMbb1pbMJaHx74U24soEjbp7X9Xg
-         HsS074d77rW6g==
-Date:   Mon, 8 Nov 2021 15:31:26 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Ido Schimmel <idosch@idosch.org>, Jiri Pirko <jiri@resnulli.us>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, edwin.peer@broadcom.com
-Subject: Re: [PATCH net-next] devlink: Require devlink lock during device
- reload
-Message-ID: <20211108153126.1f3a8fe8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YYmBbJ5++iO4MOo7@unreal>
-References: <YYABqfFy//g5Gdis@nanopsycho>
-        <YYBTg4nW2BIVadYE@shredder>
-        <20211101161122.37fbb99d@kicinski-fedora-PC1C0HJN>
-        <YYgJ1bnECwUWvNqD@shredder>
-        <YYgSzEHppKY3oYTb@unreal>
-        <20211108080918.2214996c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YYlfI4UgpEsMt5QI@unreal>
-        <20211108101646.0a4e5ca4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YYlrZZTdJKhha0FF@unreal>
-        <20211108104608.378c106e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YYmBbJ5++iO4MOo7@unreal>
+        id S236668AbhKHXkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 18:40:46 -0500
+Received: from smtprelay0080.hostedemail.com ([216.40.44.80]:47598 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231268AbhKHXkp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 18:40:45 -0500
+Received: from omf01.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay03.hostedemail.com (Postfix) with ESMTP id 5411F837F24F;
+        Mon,  8 Nov 2021 23:37:59 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf01.hostedemail.com (Postfix) with ESMTPA id 7C9C917274;
+        Mon,  8 Nov 2021 23:37:54 +0000 (UTC)
+Message-ID: <5179a7c097e0bb88f95642a394f53c53e64b66b1.camel@perches.com>
+Subject: Re: [PATCH 2/2] MAINTAINERS: Mark VMware mailing list entries as
+ private
+From:   Joe Perches <joe@perches.com>
+To:     "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>, jgross@suse.com,
+        x86@kernel.org, pv-drivers@vmware.com
+Cc:     Nadav Amit <namit@vmware.com>, Vivek Thampi <vithampi@vmware.com>,
+        Vishal Bhakta <vbhakta@vmware.com>,
+        Ronak Doshi <doshir@vmware.com>,
+        linux-graphics-maintainer@vmware.com,
+        dri-devel@lists.freedesktop.org, linux-rdma@vger.kernel.org,
+        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+        linux-input@vger.kernel.org, Zack Rusin <zackr@vmware.com>,
+        sdeep@vmware.com, amakhalov@vmware.com,
+        virtualization@lists.linux-foundation.org, keerthanak@vmware.com,
+        srivatsab@vmware.com, anishs@vmware.com,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 08 Nov 2021 15:37:53 -0800
+In-Reply-To: <163640339370.62866.3435211389009241865.stgit@srivatsa-dev>
+References: <163640336232.62866.489924062999332446.stgit@srivatsa-dev>
+         <163640339370.62866.3435211389009241865.stgit@srivatsa-dev>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-0.22
+X-Stat-Signature: dabja5iyhi1f3u7sn4gaygkth6wafpyr
+X-Rspamd-Server: rspamout05
+X-Rspamd-Queue-Id: 7C9C917274
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX19XvMXBRYU1i3HvRZAoQGyZbMrqYURbOg0=
+X-HE-Tag: 1636414674-345765
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 8 Nov 2021 21:58:36 +0200 Leon Romanovsky wrote:
-> > > > nfp will benefit from the simplified locking as well, and so will bnxt,
-> > > > although I'm not sure the maintainers will opt for using devlink framework
-> > > > due to the downstream requirements.    
-> > > 
-> > > Exactly why devlink should be fixed first.  
-> > 
-> > If by "fixed first" you mean it needs 5 locks to be added and to remove
-> > any guarantees on sub-object lifetime then no thanks.  
+On Mon, 2021-11-08 at 12:30 -0800, Srivatsa S. Bhat wrote:
+> From: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 > 
-> How do you plan to fix pernet_ops_rwsem lock? By exposing devlink state
-> to the drivers? By providing unlocked version of unregister_netdevice_notifier?
-> 
-> This simple scenario has deadlocks:
-> sudo ip netns add n1
-> sudo devlink dev reload pci/0000:00:09.0 netns n1
-> sudo ip netns del n1
+> VMware mailing lists in the MAINTAINERS file are private lists meant
+> for VMware-internal review/notification for patches to the respective
+> subsystems. So, in an earlier discussion [1][2], it was recommended to
+> mark them as such. Update all the remaining VMware mailing list
+> references to use that format -- "L: list@address (private)".
+[]
+> diff --git a/MAINTAINERS b/MAINTAINERS
+[]
+> @@ -6134,8 +6134,8 @@ T:	git git://anongit.freedesktop.org/drm/drm-misc
+>  F:	drivers/gpu/drm/vboxvideo/
+>  
+>  DRM DRIVER FOR VMWARE VIRTUAL GPU
+> -M:	"VMware Graphics" <linux-graphics-maintainer@vmware.com>
+>  M:	Zack Rusin <zackr@vmware.com>
+> +L:	linux-graphics-maintainer@vmware.com (private)
 
-Okay - I'm not sure why you're asking me this. This is not related to
-devlink locking as far as I can tell. Neither are you fixing this
-problem in your own RFC.
+This MAINTAINERS file is for _public_ use, marking something
+non-public isn't useful.
 
-You'd need to tell me more about what the notifier is used for (I see
-RoCE in the call trace). I don't understand why you need to re-register 
-a global (i.e. not per netns) notifier when devlink is switching name
-spaces.
+private makes no sense and likely these L: entries shouldn't exist.
+
+
