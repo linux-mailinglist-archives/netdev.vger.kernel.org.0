@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3D4F4497F8
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 16:16:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43226449808
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 16:19:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237357AbhKHPTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 10:19:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51846 "EHLO
+        id S238298AbhKHPWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 10:22:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231127AbhKHPTE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 10:19:04 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD4BBC061570;
-        Mon,  8 Nov 2021 07:16:19 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id o8so63794735edc.3;
-        Mon, 08 Nov 2021 07:16:19 -0800 (PST)
+        with ESMTP id S231557AbhKHPWB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 10:22:01 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C6CC061570;
+        Mon,  8 Nov 2021 07:19:16 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id d24so27536245wra.0;
+        Mon, 08 Nov 2021 07:19:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=c1o8VuFV0ex5mfdL4xyBALnF6n9F6qHpOK09h+9rf8g=;
-        b=H27fZX1z/J39dmx5ZvhB+Zjd/Ahz3nOLNMPA8vLb8Xm2jJ5NNDOIMTtHe090eOtOFU
-         DD/UFLFvddxNItBc/qNVrzgLM6s1d5nsbc2ES0evNQ/4s+72n9mcaXT8RZv4BAF1RY7b
-         szvrS6jfzexdx1T0N3WH4x2FaM6GOZHKStAmaO5A0sC6qsgJTzq/XVKQsAug0VRcYzII
-         pbrCWxDiWV2Z6iJos5t6YZ3i3NRnMBhkA9iIjCLQtZl6xCLBChO26K5O3b/CAydNqhOg
-         IHtuS/bODnqA6Ck7F1ffSd98H9bH6xwC4SPb+E4MDBdZBYGszCkHQaKIMFM1Xu9qxZX/
-         DhTQ==
+        bh=r0UgxhSO3VS7lE1Qbtzz6PCS/79bXIcN+v+cxY6Q5rY=;
+        b=N5ABK3F+wUiTUnqjYz/5cQ3pFlpJ4ZWKrIfVL543NKoSYE+u6GEsSTW21HaChwCmzQ
+         MZSycOqdEng49+sTPNdda4tPrs45AimAOyhGUpJL93G86x9nW7I8D7qQC4TI2xeTnBRN
+         LSfm7zDUcysmBizo7rTGzP4Gck+JRNBDBjpFDOIt9rl4XNxbfY+I+3o89Tf7HqZVi/HU
+         MdBTLbATJD2ojiROC/X76x0XIJ4gzkytkSR3sK4ZDfjPhPyfw/cWx47XnjVL8sQWWNa8
+         FIivBpgav0R90YNFEikDx2XB/lhUMTYWTQ/6mvFeZxq+8bQRBXfFofr1LlBleIv9q+PD
+         CzEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=c1o8VuFV0ex5mfdL4xyBALnF6n9F6qHpOK09h+9rf8g=;
-        b=3bswvzK28r6EXMOtC4iJzId/TQ4tii5U+EAu8MIHH8Im0ghIUxKzEtLxHTWcQh/jPi
-         UZO85VgRzH3G+mWxmd59VoMawiJG07RH4cOujp7YwPrKD9A0mJY2XxEibqSexDoaButD
-         tJWSX2SiZFAxpLpGz0Arv4XOLz18YG9cefk/PVXhj8hwgvXmgQ5411pVbR3wsxFVkZk4
-         +uV8gvAUo+EEE0b58d9NXrnpbeudCq44lB8cXzaxQhPysVHNTkfGL0PngV1dIcxjloaS
-         bmeDtk6jhfYsQST/zYz+NVlUMV/Er+f3X2Emh+H8mf9GJlE1WEgOuKyc6ws5YM3ePCl9
-         q/9Q==
-X-Gm-Message-State: AOAM531xxhCvjChCJR0P82yOyCz3MHmCyK3R7Ppi1TKnDjxci+jV/BKl
-        +XS6ZE1nyFdtAYDHLOZkg/M=
-X-Google-Smtp-Source: ABdhPJwjEyIFnc/Rjx2b9L48SpZXLmyPNORFLclvTaJrHwA6uQV6fc9x3apU8YExeVxFBkzNqYyUVw==
-X-Received: by 2002:a17:906:c156:: with SMTP id dp22mr103436ejc.168.1636384578278;
-        Mon, 08 Nov 2021 07:16:18 -0800 (PST)
+        bh=r0UgxhSO3VS7lE1Qbtzz6PCS/79bXIcN+v+cxY6Q5rY=;
+        b=fodOS3dS7sHN0xGdzJtwNQ/vGUlOctZylD+00mQqHnfv0oA8s82z/4FRxOO5sPBYrx
+         ygTgzvUwX2YOXae5WSH9EQvPGT/3onEa8eIeZPgo+C6GjGl1pHk5fTj06JsZEprjVGNR
+         oOCIG4JWo6Rb2aIvYloJZjmGjWMats5irze28CS8obxnEBTsYjENTWfmOuHKXliaMHBr
+         ADmvbYetJ5udjIHTYOdkd/oCnFdTFcVRLytN+UeyOBRyHoJeKeCU2Bsf4YNxnjy0VEt9
+         I64a80AWQCq3ysXjqffKGbSVzMyY8UPfdU6SszF07Wnft2I8LR/5ovRdd52WNbm8jCID
+         8Z8Q==
+X-Gm-Message-State: AOAM5320qlxcoA42iZjgDPuYVqz72VK8eF1OzxyZJQ30GHCIX4YbgcX5
+        htoAzGeyjq17r0FRS9JwUMMQDxSlUOo=
+X-Google-Smtp-Source: ABdhPJx6wEJ0HyH3ODXf3R+ZN2UrMGtNivD7rCHS5b+2JhAR5DIP+vLbo2e1Y2BugcI3M8vNI0UjSA==
+X-Received: by 2002:adf:dc0e:: with SMTP id t14mr541769wri.277.1636384754971;
+        Mon, 08 Nov 2021 07:19:14 -0800 (PST)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id n1sm9216809edf.45.2021.11.08.07.16.17
+        by smtp.gmail.com with ESMTPSA id e18sm16976074wrs.48.2021.11.08.07.19.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Nov 2021 07:16:18 -0800 (PST)
-Date:   Mon, 8 Nov 2021 16:16:13 +0100
+        Mon, 08 Nov 2021 07:19:14 -0800 (PST)
+Date:   Mon, 8 Nov 2021 16:19:12 +0100
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
@@ -59,72 +59,71 @@ Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
         Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
         John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Subject: Re: [RFC PATCH v2 1/5] leds: trigger: add API for HW offloading of
- triggers
-Message-ID: <YYk/Pbm9ZZ/Ikckg@Ansuel-xps.localdomain>
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [RFC PATCH v2 3/5] leds: trigger: add offload-phy-activity
+ trigger
+Message-ID: <YYk/8IIhCYUZFcy4@Ansuel-xps.localdomain>
 References: <20211108002500.19115-1-ansuelsmth@gmail.com>
- <20211108002500.19115-2-ansuelsmth@gmail.com>
- <YYkuZwQi66slgfTZ@lunn.ch>
+ <20211108002500.19115-4-ansuelsmth@gmail.com>
+ <YYkxfRrJ8ERaTr5x@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YYkuZwQi66slgfTZ@lunn.ch>
+In-Reply-To: <YYkxfRrJ8ERaTr5x@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 08, 2021 at 03:04:23PM +0100, Andrew Lunn wrote:
-> > +static inline int led_trigger_offload(struct led_classdev *led_cdev)
-> > +{
-> > +	int ret;
-> > +
-> > +	if (!led_cdev->trigger_offload)
-> > +		return -EOPNOTSUPP;
-> > +
-> > +	ret = led_cdev->trigger_offload(led_cdev, true);
-> > +	led_cdev->offloaded = !ret;
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static inline void led_trigger_offload_stop(struct led_classdev *led_cdev)
-> > +{
-> > +	if (!led_cdev->trigger_offload)
-> > +		return;
-> > +
-> > +	if (led_cdev->offloaded) {
-> > +		led_cdev->trigger_offload(led_cdev, false);
-> > +		led_cdev->offloaded = false;
-> > +	}
-> > +}
-> > +#endif
+On Mon, Nov 08, 2021 at 03:17:33PM +0100, Andrew Lunn wrote:
+> On Mon, Nov 08, 2021 at 01:24:58AM +0100, Ansuel Smith wrote:
+> > Add Offload Trigger for PHY Activity. This special trigger is used to
+> > configure and expose the different HW trigger that are provided by the
+> > PHY. Each offload trigger can be configured by sysfs and on trigger
+> > activation the offload mode is enabled.
+> > 
+> > This currently implement these hw triggers:
+> >   - blink_tx: Blink LED on tx packet receive
+> >   - blink_rx: Blink LED on rx packet receive
+> >   - blink_collision: Blink LED on collision detection
 > 
-> I think there should be two calls into the cdev driver, not this
-> true/false parameter. trigger_offload_start() and
-> trigger_offload_stop().
-> 
-
-To not add too much function to the struct, can we introduce one
-function that both enable and disable the hw mode?
-
-> There are also a number of PHYs which don't allow software blinking of
-> the LED. So for them, trigger_offload_stop() is going to return
-> -EOPNOTSUPP. And you need to handle that correctly.
-> 
-
-So we have PHYs that can only work in offload or off. Correct?
-
-> It would be go to also document the expectations of
-> trigger_offload_stop(). Should it leave the LED in whatever state it
-> was, or force it off? 
+> When did you last see a collision? Do you really have a 1/2 duplex
+> link? Just because the PHY can, does not mean we should support
+> it. Lets restrict this to the most useful modes.
 >
 
-I think it should be put off. Do you agree? (also the brightness should
-be set to 0 in this case)
+Ok will drop this. In my case (qca8k) I also never see a device using it
+so I agree on the fact that should be dropped.
 
->      Andrew
+> >   - link_10m: Keep LED on with 10m link speed
+> >   - link_100m: Keep LED on with 100m link speed
+> >   - link_1000m: Keep LED on with 1000m link speed
+> >   - half_duplex: Keep LED on with half duplex link
+> >   - full_duplex: Keep LED on with full duplex link
+> >   - linkup_over: Keep LED on with link speed and blink on rx/tx traffic
+> >   - power_on_reset: Keep LED on with switch reset
+> 
+> >   - blink_2hz: Set blink speed at 2hz for every blink event
+> >   - blink_4hz: Set blink speed at 4hz for every blink event
+> >   - blink_8hz: Set blink speed at 8hz for every blink event
+> 
+> These seems like attributes, not blink modes. They need to be
+> specified somehow differently, or not at all. Do we really need them?
+> 
+
+Sorry I didn't update the commit. In sysfs they are exposed as option
+like the power_on_reset and linkup_over. So they are option on how the
+LED behave on the event.
+
+> >   - blink_auto: Set blink speed at 2hz for 10m link speed,
+> >       4hz for 100m and 8hz for 1000m
+> 
+> Another attribute, and one i've not seen any other PHY do.
+> 
+
+Yes we can consider dropping this but I think the other 3 should be
+keeped.
+
+> 	Andrew
 
 -- 
 	Ansuel
