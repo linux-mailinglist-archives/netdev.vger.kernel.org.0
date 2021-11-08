@@ -2,37 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03DDE44A1AA
+	by mail.lfdr.de (Postfix) with ESMTP id 6FE3E44A1AB
 	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 02:09:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242332AbhKIBLT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 20:11:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60628 "EHLO mail.kernel.org"
+        id S240734AbhKIBLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 20:11:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33602 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242016AbhKIBIv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S242018AbhKIBIv (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 8 Nov 2021 20:08:51 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2013761A71;
-        Tue,  9 Nov 2021 01:04:04 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 95FD8619F6;
+        Tue,  9 Nov 2021 01:04:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636419845;
-        bh=7aameh29KZ7F4eWJbvaEzI58laStKlQ9gTUJIFvTU8Y=;
+        s=k20201202; t=1636419846;
+        bh=hmu+N6SDxU2j51vgWSqTSsSPerqeeMoo7dgvOvk2bBM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u6l8jHbZ0i6o2NB24E5iIiXxIUFAi2dkVnz0QTfmH3iHqYiLbnIqez9UEWCSl7JGh
-         5CMbT9CNHH8rcnCp6ENp7+huQCsrTMCzq45LULY0Dqgki87BnD5t3tcxRcZBrybH2q
-         p0PUvawY6u+BtTWFqrqCdPsB/NsWEzpD6o62x1ycaVdy6miaiMoV+dYkUoP8YPSeWL
-         DHUUCrs7a2UnTn5jFmt9evF2pv5h1QWLsr7evaGuiXGmmqF6bvVBGQCbTmyKqCcTzn
-         nKuF+L8orQXHBA5+faMuzyQYfHcUBtk2VoijUrruwCIDwAA5JhF+U9sGyqNCkBX1lp
-         wj9AjoBoZsyrg==
+        b=XyCmvsLamOHs8rDq2hD1q07Sg+k/9pgKOKWOS3+ADsaMugtK1oo6WaDh+7f06ZpDe
+         3J2KJ+xg2W/ysKXvzTM15tbpG9eOFuE9hb1iuyYT5AFVRdJJdlcTqOdSVfU3u0FYJk
+         DhaNiaSbo6y+v2J26WgtjkXO1HIVC5ppJCCfcmXJ7J8DI5xXuXn5j8E43b8fDz0Tme
+         tGmQutAtEg1CKhru8HJBDgC+L1+jWj0p0fwxW8iXUsDTn7XIUm+xs6KMnIOH8lB4KZ
+         Rl4zq0oqZ1vnH+ZMcWDXi+PbVA7YDBEbrtt5Zega5Z7WkfM0BXI+Uk7Lok7bAm8MlO
+         xQoJDulEU5pVg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Baochen Qiang <bqiang@codeaurora.org>,
+Cc:     Alagu Sankar <alagusankar@silex-india.com>,
+        Erik Stromdahl <erik.stromdahl@gmail.com>,
+        Fabio Estevam <festevam@denx.de>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, ath11k@lists.infradead.org,
+        kuba@kernel.org, ath10k@lists.infradead.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 025/101] ath11k: Change DMA_FROM_DEVICE to DMA_TO_DEVICE when map reinjected packets
-Date:   Mon,  8 Nov 2021 12:47:15 -0500
-Message-Id: <20211108174832.1189312-25-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 026/101] ath10k: high latency fixes for beacon buffer
+Date:   Mon,  8 Nov 2021 12:47:16 -0500
+Message-Id: <20211108174832.1189312-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211108174832.1189312-1-sashal@kernel.org>
 References: <20211108174832.1189312-1-sashal@kernel.org>
@@ -44,50 +46,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Baochen Qiang <bqiang@codeaurora.org>
+From: Alagu Sankar <alagusankar@silex-india.com>
 
-[ Upstream commit 86a03dad0f5ad8182ed5fcf7bf3eec71cd96577c ]
+[ Upstream commit e263bdab9c0e8025fb7f41f153709a9cda51f6b6 ]
 
-For fragmented packets, ath11k reassembles each fragment as a normal
-packet and then reinjects it into HW ring. In this case, the DMA
-direction should be DMA_TO_DEVICE, not DMA_FROM_DEVICE, otherwise
-invalid payload will be reinjected to HW and then delivered to host.
-What is more, since arbitrary memory could be allocated to the frame, we
-don't know what kind of data is contained in the buffer reinjected.
-Thus, as a bad result, private info may be leaked.
+Beacon buffer for high latency devices does not use DMA. other similar
+buffer allocation methods in the driver have already been modified for
+high latency path. Fix the beacon buffer allocation left out in the
+earlier high latency changes.
 
-Note that this issue is only found on Intel platform.
-
-Tested-on: QCA6390 hw2.0 PCI WLAN.HST.1.0.1-01740-QCAHSTSWPLZ_V2_TO_X86-1
-Signed-off-by: Baochen Qiang <bqiang@codeaurora.org>
+Signed-off-by: Alagu Sankar <alagusankar@silex-india.com>
+Signed-off-by: Erik Stromdahl <erik.stromdahl@gmail.com>
+[fabio: adapt it to use ar->bus_param.dev_type ]
+Signed-off-by: Fabio Estevam <festevam@denx.de>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20210916064617.20006-1-bqiang@codeaurora.org
+Link: https://lore.kernel.org/r/20210818232627.2040121-1-festevam@denx.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/dp_rx.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/ath/ath10k/mac.c | 31 ++++++++++++++++++++-------
+ 1 file changed, 23 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
-index 2bff8eb507d4d..7d6fd8155bb22 100644
---- a/drivers/net/wireless/ath/ath11k/dp_rx.c
-+++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -3273,7 +3273,7 @@ static int ath11k_dp_rx_h_defrag_reo_reinject(struct ath11k *ar, struct dp_rx_ti
+diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
+index 36183fdfb7f03..90dc48f66fbfe 100644
+--- a/drivers/net/wireless/ath/ath10k/mac.c
++++ b/drivers/net/wireless/ath/ath10k/mac.c
+@@ -982,8 +982,12 @@ static void ath10k_mac_vif_beacon_cleanup(struct ath10k_vif *arvif)
+ 	ath10k_mac_vif_beacon_free(arvif);
  
- 	paddr = dma_map_single(ab->dev, defrag_skb->data,
- 			       defrag_skb->len + skb_tailroom(defrag_skb),
--			       DMA_FROM_DEVICE);
-+			       DMA_TO_DEVICE);
- 	if (dma_mapping_error(ab->dev, paddr))
- 		return -ENOMEM;
- 
-@@ -3338,7 +3338,7 @@ static int ath11k_dp_rx_h_defrag_reo_reinject(struct ath11k *ar, struct dp_rx_ti
- 	spin_unlock_bh(&rx_refill_ring->idr_lock);
- err_unmap_dma:
- 	dma_unmap_single(ab->dev, paddr, defrag_skb->len + skb_tailroom(defrag_skb),
--			 DMA_FROM_DEVICE);
-+			 DMA_TO_DEVICE);
- 	return ret;
+ 	if (arvif->beacon_buf) {
+-		dma_free_coherent(ar->dev, IEEE80211_MAX_FRAME_LEN,
+-				  arvif->beacon_buf, arvif->beacon_paddr);
++		if (ar->bus_param.dev_type == ATH10K_DEV_TYPE_HL)
++			kfree(arvif->beacon_buf);
++		else
++			dma_free_coherent(ar->dev, IEEE80211_MAX_FRAME_LEN,
++					  arvif->beacon_buf,
++					  arvif->beacon_paddr);
+ 		arvif->beacon_buf = NULL;
+ 	}
  }
+@@ -5466,10 +5470,17 @@ static int ath10k_add_interface(struct ieee80211_hw *hw,
+ 	if (vif->type == NL80211_IFTYPE_ADHOC ||
+ 	    vif->type == NL80211_IFTYPE_MESH_POINT ||
+ 	    vif->type == NL80211_IFTYPE_AP) {
+-		arvif->beacon_buf = dma_alloc_coherent(ar->dev,
+-						       IEEE80211_MAX_FRAME_LEN,
+-						       &arvif->beacon_paddr,
+-						       GFP_ATOMIC);
++		if (ar->bus_param.dev_type == ATH10K_DEV_TYPE_HL) {
++			arvif->beacon_buf = kmalloc(IEEE80211_MAX_FRAME_LEN,
++						    GFP_KERNEL);
++			arvif->beacon_paddr = (dma_addr_t)arvif->beacon_buf;
++		} else {
++			arvif->beacon_buf =
++				dma_alloc_coherent(ar->dev,
++						   IEEE80211_MAX_FRAME_LEN,
++						   &arvif->beacon_paddr,
++						   GFP_ATOMIC);
++		}
+ 		if (!arvif->beacon_buf) {
+ 			ret = -ENOMEM;
+ 			ath10k_warn(ar, "failed to allocate beacon buffer: %d\n",
+@@ -5684,8 +5695,12 @@ static int ath10k_add_interface(struct ieee80211_hw *hw,
+ 
+ err:
+ 	if (arvif->beacon_buf) {
+-		dma_free_coherent(ar->dev, IEEE80211_MAX_FRAME_LEN,
+-				  arvif->beacon_buf, arvif->beacon_paddr);
++		if (ar->bus_param.dev_type == ATH10K_DEV_TYPE_HL)
++			kfree(arvif->beacon_buf);
++		else
++			dma_free_coherent(ar->dev, IEEE80211_MAX_FRAME_LEN,
++					  arvif->beacon_buf,
++					  arvif->beacon_paddr);
+ 		arvif->beacon_buf = NULL;
+ 	}
  
 -- 
 2.33.0
