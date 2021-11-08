@@ -2,85 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EEB6448136
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 15:17:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCE0D44813B
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 15:19:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240340AbhKHOU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 09:20:27 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:50680 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237965AbhKHOU0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 09:20:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=gmwJXUQZZysDMClQuXxVmi498zqenZAX/qkgrMBBZ50=; b=5sED2Qlu/i1e7c6vp1/BW3d4NP
-        nV8oRFSio//MRsYm1iWPcPRPCCTxYuR0syPTB4OUGLQscihcyflEkb9CrFuX6FsvZqPqrgdKzsH7j
-        GSLDwEYIVEJHzUpGvlzvMXbBWiiBs2hUYKZ4iUzlKxuBENDaFzQRb8Lq1Im5QcsjLHdQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mk5Sn-00Cu1S-Sq; Mon, 08 Nov 2021 15:17:33 +0100
-Date:   Mon, 8 Nov 2021 15:17:33 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
-Subject: Re: [RFC PATCH v2 3/5] leds: trigger: add offload-phy-activity
- trigger
-Message-ID: <YYkxfRrJ8ERaTr5x@lunn.ch>
-References: <20211108002500.19115-1-ansuelsmth@gmail.com>
- <20211108002500.19115-4-ansuelsmth@gmail.com>
+        id S240364AbhKHOWU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 09:22:20 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:57552 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240369AbhKHOV6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 09:21:58 -0500
+From:   bage@linutronix.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1636381130;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=b8hzfb8Wmp1WPwNw4clkoEnCjxnpmgeTQi5Gr7DjGfM=;
+        b=DPM3e1h6k/tdN5mUFgiEOHA2+w3jv6HCGtkjshW0yD/ZQ1yuQHBN/JUTyZ/4yKAzQlMr0W
+        wxPbRtpebjaRi+7keqvgf9c79yW+Shp+4smCoj+7jABgHLctpmq7CPCb/aVDKaZmY39UYV
+        fnbt95drM9ZmBHXaVOiSKSbZR/bRMClkXud9MkMPLgwO6jXIqHHGxhEIfK3eIecmAI4BoO
+        BYz6QdTz7gZh3xXyvoliqJfPpnR+Awuiu08MI8V3locgq1zhJ2qU7GGs7UcUDkfZ5bqXC4
+        yRSiuMOPtM/OAAwle7SwJBNUxzs+l+REymaOTsrUo4FMb94tbb1cbc5SaIWjBg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1636381130;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=b8hzfb8Wmp1WPwNw4clkoEnCjxnpmgeTQi5Gr7DjGfM=;
+        b=V+axK6sJHvn7oaDAr+mIPb5sKHbBkI265YrNQ0P7OaVPcbng+cqDO0S/g/EyxSMzzx6OTi
+        +OVrsmhpd9S8OYBQ==
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Bastian Germann <bage@linutronix.de>,
+        Russell King <linux@armlinux.org.uk>, davem@davemloft.net,
+        netdev@vger.kernel.org, b.spranger@linutronix.de
+Subject: [PATCH net v2] net: phy: phy_ethtool_ksettings_set: Don't discard phy_start_aneg's return
+Date:   Mon,  8 Nov 2021 15:18:34 +0100
+Message-Id: <20211108141834.19105-1-bage@linutronix.de>
+In-Reply-To: <20211105153648.8337-1-bage@linutronix.de>
+References: <20211105153648.8337-1-bage@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211108002500.19115-4-ansuelsmth@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 08, 2021 at 01:24:58AM +0100, Ansuel Smith wrote:
-> Add Offload Trigger for PHY Activity. This special trigger is used to
-> configure and expose the different HW trigger that are provided by the
-> PHY. Each offload trigger can be configured by sysfs and on trigger
-> activation the offload mode is enabled.
-> 
-> This currently implement these hw triggers:
->   - blink_tx: Blink LED on tx packet receive
->   - blink_rx: Blink LED on rx packet receive
->   - blink_collision: Blink LED on collision detection
+From: Bastian Germann <bage@linutronix.de>
 
-When did you last see a collision? Do you really have a 1/2 duplex
-link? Just because the PHY can, does not mean we should support
-it. Lets restrict this to the most useful modes.
+Take the return of phy_start_aneg into account so that ethtool will handle
+negotiation errors and not silently accept invalid input.
 
->   - link_10m: Keep LED on with 10m link speed
->   - link_100m: Keep LED on with 100m link speed
->   - link_1000m: Keep LED on with 1000m link speed
->   - half_duplex: Keep LED on with half duplex link
->   - full_duplex: Keep LED on with full duplex link
->   - linkup_over: Keep LED on with link speed and blink on rx/tx traffic
->   - power_on_reset: Keep LED on with switch reset
+Fixes: 2d55173e71b0 ("phy: add generic function to support ksetting support")
+Signed-off-by: Bastian Germann <bage@linutronix.de>
+---
+ drivers/net/phy/phy.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
->   - blink_2hz: Set blink speed at 2hz for every blink event
->   - blink_4hz: Set blink speed at 4hz for every blink event
->   - blink_8hz: Set blink speed at 8hz for every blink event
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index beb2b66da132..59e024891f50 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -770,6 +770,8 @@ static int phy_poll_aneg_done(struct phy_device *phydev)
+ int phy_ethtool_ksettings_set(struct phy_device *phydev,
+ 			      const struct ethtool_link_ksettings *cmd)
+ {
++	int ret;
++
+ 	__ETHTOOL_DECLARE_LINK_MODE_MASK(advertising);
+ 	u8 autoneg = cmd->base.autoneg;
+ 	u8 duplex = cmd->base.duplex;
+@@ -818,12 +820,13 @@ int phy_ethtool_ksettings_set(struct phy_device *phydev,
+ 	if (phy_is_started(phydev)) {
+ 		phydev->state = PHY_UP;
+ 		phy_trigger_machine(phydev);
++		ret = 0;
+ 	} else {
+-		_phy_start_aneg(phydev);
++		ret = _phy_start_aneg(phydev);
+ 	}
+ 
+ 	mutex_unlock(&phydev->lock);
+-	return 0;
++	return ret;
+ }
+ EXPORT_SYMBOL(phy_ethtool_ksettings_set);
+ 
+-- 
+2.30.2
 
-These seems like attributes, not blink modes. They need to be
-specified somehow differently, or not at all. Do we really need them?
-
->   - blink_auto: Set blink speed at 2hz for 10m link speed,
->       4hz for 100m and 8hz for 1000m
-
-Another attribute, and one i've not seen any other PHY do.
-
-	Andrew
