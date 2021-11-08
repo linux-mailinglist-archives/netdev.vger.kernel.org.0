@@ -2,89 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B73BB4481A6
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 15:24:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B9D44481AA
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 15:25:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239406AbhKHO1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 09:27:33 -0500
-Received: from mail.skyhub.de ([5.9.137.197]:50114 "EHLO mail.skyhub.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236155AbhKHO13 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 09:27:29 -0500
-Received: from zn.tnic (p200300ec2f33110093973d8dfcf40fd9.dip0.t-ipconnect.de [IPv6:2003:ec:2f33:1100:9397:3d8d:fcf4:fd9])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id D54F61EC04EE;
-        Mon,  8 Nov 2021 15:24:40 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1636381481;
+        id S237626AbhKHO20 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 09:28:26 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:57604 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234601AbhKHO2Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 09:28:25 -0500
+Subject: Re: [PATCH] phy: phy_ethtool_ksettings_set: Don't discard
+ phy_start_aneg's return
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1636381540;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=oQBbYlaqexu4t08cRZdDH3XaT2khXLTGUfDdhXY+o6w=;
-        b=BzFVBEJotdv+x1wk5r7BVthkB7IfDjFkcs3Qa23VnQgw6n7GoUvAnfTwnsI1XwsFUQ2pfc
-        wTEtmUg2zpiIKZgiV8GtlPXLXcMCnwwX7vbzvuM7Jd46qSvtVDp/eqlUHv6UrUSSdUIxSB
-        fTiz2Hj9eXxtQyoPpRyOqBuxOD7Awrk=
-Date:   Mon, 8 Nov 2021 15:24:39 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Alan Stern <stern@rowland.harvard.edu>
-Cc:     LKML <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        alsa-devel@alsa-project.org, bcm-kernel-feedback-list@broadcom.com,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, linux-alpha@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-edac@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-pm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-remoteproc@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-sh@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-tegra@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-usb@vger.kernel.org,
-        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
-        sparclinux@vger.kernel.org, x86@kernel.org,
-        xen-devel@lists.xenproject.org
-Subject: Re: [PATCH v0 00/42] notifiers: Return an error when callback is
- already registered
-Message-ID: <YYkzJ3+faVga2Tl3@zn.tnic>
-References: <20211108101157.15189-1-bp@alien8.de>
- <20211108101924.15759-1-bp@alien8.de>
- <20211108141703.GB1666297@rowland.harvard.edu>
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UhQkxGQODLZIA/Wz5X/+8PfIi4GUMdwLbiCmCwa9LYc=;
+        b=o2u7KmRqHeNqECKExCnCSlQkiO/fNNPXS7D943cy8hi1i6Efi/ew8Np/L/ZahSvJQEkuof
+        qsnYXE9twvnqEbmvGPbFV+3plwu473kX2rSePnPmwHYHguoIjr9S2s2mkwtnU8mbO3Mlvd
+        AeWkTTzOZeTsPsphn7aZiV6VcJPprnckglrY8+xoCEwFHeAml5uWYcB1SrQKVixDUUf7XP
+        LNMopslgzkqOZLmxaQxx8FIrc77DaRiWVuP0FszuzlnFoxjHJGm/7T2oJaEBIUQJBBgzyv
+        N+UP4v8WTWIhwUOrVcIETpMObrw/sE3iBZwxl2O9fSLXBbEsXUBZ6y8aps+DLg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1636381540;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UhQkxGQODLZIA/Wz5X/+8PfIi4GUMdwLbiCmCwa9LYc=;
+        b=Ve6np4KhwHrJTAhOqGWcbWrRA3kDVJs86Axw3832qm1iaTsMHD4zlNVVdiqNVkUlHGblmW
+        QSojZMS4s+O7KuAA==
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     Russell King <linux@armlinux.org.uk>, davem@davemloft.net,
+        netdev@vger.kernel.org,
+        Benedikt Spranger <b.spranger@linutronix.de>
+References: <20211105153648.8337-1-bage@linutronix.de>
+ <6e1844e5-cbee-5d50-e304-efa785405922@gmail.com>
+From:   Bastian Germann <bage@linutronix.de>
+Message-ID: <108f9fe7-54ec-d601-d091-bac6178624cf@linutronix.de>
+Date:   Mon, 8 Nov 2021 15:25:40 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20211108141703.GB1666297@rowland.harvard.edu>
+In-Reply-To: <6e1844e5-cbee-5d50-e304-efa785405922@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: de-DE-frami
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 08, 2021 at 09:17:03AM -0500, Alan Stern wrote:
-> What reason is there for moving the check into the callers?  It seems 
-> like pointless churn.  Why not add the error return code, change the 
-> WARN to pr_warn, and leave the callers as they are?  Wouldn't that end 
-> up having exactly the same effect?
+Am 06.11.21 um 22:52 schrieb Heiner Kallweit:
+> On 05.11.2021 16:36, bage@linutronix.de wrote:
+>> From: Bastian Germann <bage@linutronix.de>
+>>
+>> Take the return of phy_start_aneg into account so that ethtool will handle
+>> negotiation errors and not silently accept invalid input.
+>>
+>> Fixes: 2d55173e71b0 ("phy: add generic function to support ksetting support")
+>> Signed-off-by: Bastian Germann <bage@linutronix.de>
+>> Reviewed-by: Benedikt Spranger <b.spranger@linutronix.de>
 > 
-> For that matter, what sort of remedial action can a caller take if the 
-> return code is -EEXIST?  Is there any point in forcing callers to check 
-> the return code if they can't do anything about it?
+> In addition to what Andrew said already:
+> 
+> - This patch won't apply on net due to a4db9055fdb9.
 
-See my reply to Geert from just now:
+Hi Heiner,
 
-https://lore.kernel.org/r/YYkyUEqcsOwQMb1S@zn.tnic
+Thanks for your remarks. I would have gotten the first one right if the netdev
+tree was documented in the MAINTAINERS file (T: ...) and not only in netdev-FAQ.
 
-I guess I can add another indirection to notifier_chain_register() and
-avoid touching all the call sites.
+Maybe you want to address that.
 
--- 
-Regards/Gruss,
-    Boris.
+Thanks,
+Bastian
 
-https://people.kernel.org/tglx/notes-about-netiquette
+> - Patch misses the "net" annotation.
+> - Prefix should be "net: phy:", not "phy:".
+> 
+> At least the formal aspects should have been covered by the internal review.
+> 
+>> ---
+>>   drivers/net/phy/phy.c | 6 ++++--
+>>   1 file changed, 4 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+>> index a3bfb156c83d..f740b533abba 100644
+>> --- a/drivers/net/phy/phy.c
+>> +++ b/drivers/net/phy/phy.c
+>> @@ -770,6 +770,8 @@ static int phy_poll_aneg_done(struct phy_device *phydev)
+>>   int phy_ethtool_ksettings_set(struct phy_device *phydev,
+>>   			      const struct ethtool_link_ksettings *cmd)
+>>   {
+>> +	int ret = 0;
+> 
+> Why initializing ret?
+> 
+>> +
+>>   	__ETHTOOL_DECLARE_LINK_MODE_MASK(advertising);
+>>   	u8 autoneg = cmd->base.autoneg;
+>>   	u8 duplex = cmd->base.duplex;
+>> @@ -815,10 +817,10 @@ int phy_ethtool_ksettings_set(struct phy_device *phydev,
+>>   	phydev->mdix_ctrl = cmd->base.eth_tp_mdix_ctrl;
+>>   
+>>   	/* Restart the PHY */
+>> -	_phy_start_aneg(phydev);
+>> +	ret = _phy_start_aneg(phydev);
+>>   
+>>   	mutex_unlock(&phydev->lock);
+>> -	return 0;
+>> +	return ret;
+>>   }
+>>   EXPORT_SYMBOL(phy_ethtool_ksettings_set);
+>>   
+>>
+> 
