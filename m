@@ -2,253 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B5EF449E82
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 22:53:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1B64449E85
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 22:57:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235823AbhKHV4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 16:56:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57760 "EHLO
+        id S235418AbhKHV7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 16:59:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231769AbhKHV4j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 16:56:39 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DC61C061570
-        for <netdev@vger.kernel.org>; Mon,  8 Nov 2021 13:53:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=iCjvE+lRVWJDjfBgwsYNTnGsPhH+GU4HIHujqaNY26o=; b=xS8kKXGNbcIhQf3g2+OWd8AUJq
-        7MFz0w0l8d2YAvmvRYBW4tsl2Gpe1v4g+eS9PatZ29ES+hlbiACdarB+f/Fi15j7mErdi0Ca6Q08P
-        lOR7eTeaDV+nf6kKptRtbmHHzENzF3+jeQgBy0b6Xmdi5Cl3qD3r77Om4fMB7g2qwl+rdpCA1H1i4
-        UtBAu48AQkZCY16UIeFPSW0FtU69twVvEWqdgufFV+9CzZoYMPGsK+XY8rAcfpMfnuhqqtYj5RIo+
-        BNhDDi81Mxg9+nvzsqgL3rlKHMxycf1mkTjB8TvatU30+ca3BxgoN5FXeCyxJrB/OEHjNbc6h/1um
-        EhaeUW1w==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55546)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mkCaO-0001Au-4Z; Mon, 08 Nov 2021 21:53:52 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mkCaM-00038o-UM; Mon, 08 Nov 2021 21:53:50 +0000
-Date:   Mon, 8 Nov 2021 21:53:50 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH net] net: marvell: mvpp2: Fix wrong SerDes
- reconfiguration order
-Message-ID: <YYmcbmuefuEaARxq@shell.armlinux.org.uk>
-References: <20211108214918.25222-1-kabel@kernel.org>
+        with ESMTP id S231769AbhKHV7r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 16:59:47 -0500
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 728E4C061714
+        for <netdev@vger.kernel.org>; Mon,  8 Nov 2021 13:57:02 -0800 (PST)
+Received: by mail-io1-xd29.google.com with SMTP id x10so6588624ioj.9
+        for <netdev@vger.kernel.org>; Mon, 08 Nov 2021 13:57:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sartura-hr.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IyGf++HsWcdR0ymSOyyo/gWpZRHRvO1oI0zO4vspMsM=;
+        b=vxq3lixp9fobI0QzIjgaBfyTNzcjBFCqjPFMT9q8ZIzecvofrDZrKxAizDBFdDfv+F
+         g70nVh91i1SsL3SMGp3c67MSsc8JePmGGQswMAlq5y3wdFmGGtP+O5/jb4NOLQ8pubhb
+         mNrTtlAt73JwpyetbertCAmiPUNaxjm08rAqhg95CCKkVv48j1+k6C68Y8a9u6a4Vodd
+         VcR54w/nl7yE1zyi02caL2e7lKQl+N0+fKlvfniLYhtjGjSF5Ha7ZEmFfJGrICGGrKgl
+         dwj+1tOJZ6fU+1ncBBwJzq368AZ0yEPI+pJhgmtyehm2pZ0CpMqCfamZgBLhc50txefc
+         GzTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IyGf++HsWcdR0ymSOyyo/gWpZRHRvO1oI0zO4vspMsM=;
+        b=ILA/iGPS7sFsGXfpPRTn3tw9g6yqTG+LiS+LpPgq5CYkrxR5lUSe01VL8oCYqEfvAX
+         0p2+ap4YuwVgz8JWhStasMyXzL+0k0xBUyLPDz57cvoxJEMC4iz2oWvuyzuGuva6UqDq
+         GqjKDmx3PTI4oG/ZmrBBbJ6f2QzyhHMTczmWcHPUlefDys9kJyx1LKeYMrYFvp36EwEW
+         vnvEVmx6S8XyZKbWDv0KTnaBhcfZPlbJlVBNKOkbt3bAUDmYPWKKqakydkfmMhgJh3+3
+         3G1uD2AdDiYwXOkOMHIuCpbuDQG9uL1wtdasiUpU8l9UtWAxVQ1M7lALlHfj2wrdizN5
+         ELtA==
+X-Gm-Message-State: AOAM530dguN30epLFC5bNI0sDBcP2UStWjBuMixrcl2Sesr9+/GFzfHi
+        eCVAFBcPhn5IXUkzcTewV/8UvijxVPNSmqY+4BiqVQ==
+X-Google-Smtp-Source: ABdhPJyMnKqnGU/0YhS5Ftnk/li3m9IYAYdQEY80Cy39T1Z2o0Yu2pYt5BKdf+TDte2XbO+gf0JWOmA0aOSxTUXVAq4=
+X-Received: by 2002:a02:c901:: with SMTP id t1mr1832807jao.132.1636408621835;
+ Mon, 08 Nov 2021 13:57:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211108214918.25222-1-kabel@kernel.org>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+References: <20211104124927.364683-1-robert.marko@sartura.hr>
+ <20211108202058.th7vjq4sjca3encz@skbuf> <CA+HBbNE_jh_h9bx9GLfMRFz_Kq=Vx1pu0dE1aK0guMoEkX1S5A@mail.gmail.com>
+ <20211108211811.qukts37eufgfj4sc@skbuf> <CA+HBbNGvg43wMNbte827wmK_fnWuweKSgA-nWW+UPGCvunUwGA@mail.gmail.com>
+ <20211108214613.5fdhm4zg43xn5edm@skbuf>
+In-Reply-To: <20211108214613.5fdhm4zg43xn5edm@skbuf>
+From:   Robert Marko <robert.marko@sartura.hr>
+Date:   Mon, 8 Nov 2021 22:56:51 +0100
+Message-ID: <CA+HBbNEKOW3F6Yu=OV3BDea+KKNH6AEUMS07az6=62aEAKHGgw@mail.gmail.com>
+Subject: Re: [net-next] net: dsa: qca8k: only change the MIB_EN bit in
+ MODULE_EN register
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, vivien.didelot@gmail.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Gabor Juhos <j4g8y7@gmail.com>, John Crispin <john@phrozen.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 08, 2021 at 10:49:18PM +0100, Marek Behún wrote:
-> Commit bfe301ebbc94 ("net: mvpp2: convert to use
-> mac_prepare()/mac_finish()") introduced a bug wherein it leaves the MAC
-> RESET register asserted after mac_finish(), due to wrong order of
-> function calls.
-> 
-> Before it was:
->   .mac_config()
->     mvpp22_mode_reconfigure()
->       assert reset
->     mvpp2_xlg_config()
->       deassert reset
-> 
-> Now it is:
->   .mac_prepare()
->   .mac_config()
->     mvpp2_xlg_config()
->       deassert reset
->   .mac_finish()
->     mvpp2_xlg_config()
->       assert reset
-> 
-> Obviously this is wrong.
-> 
-> This bug is triggered when phylink tries to change the PHY interface
-> mode from a GMAC mode (sgmii, 1000base-x, 2500base-x) to XLG mode
-> (10gbase-r, xaui). The XLG mode does not work since reset is left
-> asserted. Only after
->   ifconfig down && ifconfig up
-> is called will the XLG mode work.
-> 
-> Move the call to mvpp22_mode_reconfigure() to .mac_prepare()
-> implementation. Since some of the subsequent functions need to know
-> whether the interface is being changed, we unfortunately also need to
-> pass around the new interface mode before setting port->phy_interface.
-> 
-> Fixes: bfe301ebbc94 ("net: mvpp2: convert to use mac_prepare()/mac_finish()")
-> Signed-off-by: Marek Behún <kabel@kernel.org>
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+On Mon, Nov 8, 2021 at 10:46 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> On Mon, Nov 08, 2021 at 10:39:27PM +0100, Robert Marko wrote:
+> > On Mon, Nov 8, 2021 at 10:18 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+> > >
+> > > On Mon, Nov 08, 2021 at 10:10:19PM +0100, Robert Marko wrote:
+> > > > On Mon, Nov 8, 2021 at 9:21 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+> > > > >
+> > > > > Timed out waiting for ACK/NACK from John.
+> > > > >
+> > > > > On Thu, Nov 04, 2021 at 01:49:27PM +0100, Robert Marko wrote:
+> > > > > > From: Gabor Juhos <j4g8y7@gmail.com>
+> > > > > >
+> > > > > > The MIB module needs to be enabled in the MODULE_EN register in
+> > > > > > order to make it to counting. This is done in the qca8k_mib_init()
+> > > > > > function. However instead of only changing the MIB module enable
+> > > > > > bit, the function writes the whole register. As a side effect other
+> > > > > > internal modules gets disabled.
+> > > > >
+> > > > > Please be more specific.
+> > > > > The MODULE_EN register contains these other bits:
+> > > > > BIT(0): MIB_EN
+> > > > > BIT(1): ACL_EN (ACL module enable)
+> > > > > BIT(2): L3_EN (Layer 3 offload enable)
+> > > > > BIT(10): SPECIAL_DIP_EN (Enable special DIP (224.0.0.x or ff02::1) broadcast
+> > > > > 0 = Use multicast DP
+> > > > > 1 = Use broadcast DP)
+> > > > >
+> > > > > >
+> > > > > > Fix up the code to only change the MIB module specific bit.
+> > > > >
+> > > > > Clearing which one of the above bits bothers you? The driver for the
+> > > > > qca8k switch supports neither layer 3 offloading nor ACLs, and I don't
+> > > > > really know what this special DIP packet/header is).
+> > > > >
+> > > > > Generally the assumption for OF-based drivers is that one should not
+> > > > > rely on any configuration done by prior boot stages, so please explain
+> > > > > what should have worked but doesn't.
+> > > >
+> > > > Hi,
+> > > > I think that the commit message wasn't clear enough and that's my fault for not
+> > > > fixing it up before sending.
+> > >
+> > > Yes, it is not. If things turn out to need changing, you should resend
+> > > with an updated commit message.
+> > >
+> > > > MODULE_EN register has 3 more bits that aren't documented in the QCA8337
+> > > > datasheet but only in the IPQ4019 one but they are there.
+> > > > Those are:
+> > > > BIT(31) S17C_INT (This one is IPQ4019 specific)
+> > > > BIT(9) LOOKUP_ERR_RST_EN
+> > > > BIT(10) QM_ERR_RST_EN
+> > >
+> > > Are you sure that BIT(10) is QM_ERR_RST_EN on IPQ4019? Because in the
+> > > QCA8334 document I'm looking at, it is SPECIAL_DIP_EN.
+> >
+> > Sorry, QM_ERR_RST_EN is BIT(8) and it as well as LOOKUP_ERR_RST_EN should
+> > be exactly the same on QCA833x switches as well as IPQ4019 uses a
+> > variant of QCA8337N.
+> > >
+> > > > Lookup and QM bits as well as the DIP default to 1 while the INT bit is 0.
+> > > >
+> > > > Clearing the QM and Lookup bits is what is bothering me, why should we clear HW
+> > > > default bits without mentioning that they are being cleared and for what reason?
+> > >
+> > > To be fair, BIT(9) is marked as RESERVED and documented as being set to 1,
+> > > so writing a zero is probably not very smart.
+> > >
+> > > > We aren't depending on the bootloader or whatever configuring the switch, we are
+> > > > even invoking the HW reset before doing anything to make sure that the
+> > > > whole networking
+> > > > subsystem in IPQ4019 is back to HW defaults to get rid of various
+> > > > bootloader hackery.
+> > > >
+> > > > Gabor found this while working on IPQ4019 support and to him and to me it looks
+> > > > like a bug.
+> > >
+> > > A bug with what impact? I don't have a description of those bits that
+> > > get unset. What do they do, what doesn't work?
+> >
+> > LOOKUP_ERR_RST_EN:
+> > 1b1:Enableautomatic software reset by hardware due to
+> > lookup error.
+> >
+> > QM_ERR_RST_EN:
+> > 1b1:enableautomatic software reset by hardware due to qm
+> > error.
+> >
+> > So clearing these 2 disables the built-in error recovery essentially.
+> >
+> > To me clearing the bits even if they are not breaking something now
+> > should at least have a comment in the code that indicates that it's intentional
+> > for some reason.
+> > I wish John would explain the logic behind this.
+>
+> That sounds... aggressive. Have you or Gabor exercised this error path?
+> What is supposed to happen? Is software prepared for the hardware to
+> automatically reset?
 
-Thanks Marek.
+I am not trying to be aggressive, but to me, this is either a bug or they are
+intentionally cleaned but it's not documented.
+Have tried triggering the QM error, but couldn't hit it even when
+doing crazy stuff.
+It should be nearly impossible to hit it, but it's there to prevent
+the switch from just locking up
+under extreme conditions (At least that is how I understand it).
 
-For those who may say something about the sign-offs, we were both
-working on the problem, and both eventually came up with the same
-patch while talking about it on IRC, so this is kind of co-creation
-- and hence the two sign-offs.
+I don't think the driver currently even monitors the QM registers at all.
+I can understand clearing these bits intentionally, but it's gotta be
+documented otherwise
+somebody else is gonna think is a bug/mistake/whatever in the code.
 
-> ---
->  .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 38 ++++++++++---------
->  1 file changed, 20 insertions(+), 18 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> index 587def69a6f7..2b18d89d9756 100644
-> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> @@ -1605,7 +1605,7 @@ static void mvpp22_gop_fca_set_periodic_timer(struct mvpp2_port *port)
->  	mvpp22_gop_fca_enable_periodic(port, true);
->  }
->  
-> -static int mvpp22_gop_init(struct mvpp2_port *port)
-> +static int mvpp22_gop_init(struct mvpp2_port *port, phy_interface_t interface)
->  {
->  	struct mvpp2 *priv = port->priv;
->  	u32 val;
-> @@ -1613,7 +1613,7 @@ static int mvpp22_gop_init(struct mvpp2_port *port)
->  	if (!priv->sysctrl_base)
->  		return 0;
->  
-> -	switch (port->phy_interface) {
-> +	switch (interface) {
->  	case PHY_INTERFACE_MODE_RGMII:
->  	case PHY_INTERFACE_MODE_RGMII_ID:
->  	case PHY_INTERFACE_MODE_RGMII_RXID:
-> @@ -1743,15 +1743,15 @@ static void mvpp22_gop_setup_irq(struct mvpp2_port *port)
->   * lanes by the physical layer. This is why configurations like
->   * "PPv2 (2500BaseX) - COMPHY (2500SGMII)" are valid.
->   */
-> -static int mvpp22_comphy_init(struct mvpp2_port *port)
-> +static int mvpp22_comphy_init(struct mvpp2_port *port,
-> +			      phy_interface_t interface)
->  {
->  	int ret;
->  
->  	if (!port->comphy)
->  		return 0;
->  
-> -	ret = phy_set_mode_ext(port->comphy, PHY_MODE_ETHERNET,
-> -			       port->phy_interface);
-> +	ret = phy_set_mode_ext(port->comphy, PHY_MODE_ETHERNET, interface);
->  	if (ret)
->  		return ret;
->  
-> @@ -2172,7 +2172,8 @@ static void mvpp22_pcs_reset_assert(struct mvpp2_port *port)
->  	writel(val & ~MVPP22_XPCS_CFG0_RESET_DIS, xpcs + MVPP22_XPCS_CFG0);
->  }
->  
-> -static void mvpp22_pcs_reset_deassert(struct mvpp2_port *port)
-> +static void mvpp22_pcs_reset_deassert(struct mvpp2_port *port,
-> +				      phy_interface_t interface)
->  {
->  	struct mvpp2 *priv = port->priv;
->  	void __iomem *mpcs, *xpcs;
-> @@ -2184,7 +2185,7 @@ static void mvpp22_pcs_reset_deassert(struct mvpp2_port *port)
->  	mpcs = priv->iface_base + MVPP22_MPCS_BASE(port->gop_id);
->  	xpcs = priv->iface_base + MVPP22_XPCS_BASE(port->gop_id);
->  
-> -	switch (port->phy_interface) {
-> +	switch (interface) {
->  	case PHY_INTERFACE_MODE_10GBASER:
->  		val = readl(mpcs + MVPP22_MPCS_CLK_RESET);
->  		val |= MAC_CLK_RESET_MAC | MAC_CLK_RESET_SD_RX |
-> @@ -4529,7 +4530,8 @@ static int mvpp2_poll(struct napi_struct *napi, int budget)
->  	return rx_done;
->  }
->  
-> -static void mvpp22_mode_reconfigure(struct mvpp2_port *port)
-> +static void mvpp22_mode_reconfigure(struct mvpp2_port *port,
-> +				    phy_interface_t interface)
->  {
->  	u32 ctrl3;
->  
-> @@ -4540,18 +4542,18 @@ static void mvpp22_mode_reconfigure(struct mvpp2_port *port)
->  	mvpp22_pcs_reset_assert(port);
->  
->  	/* comphy reconfiguration */
-> -	mvpp22_comphy_init(port);
-> +	mvpp22_comphy_init(port, interface);
->  
->  	/* gop reconfiguration */
-> -	mvpp22_gop_init(port);
-> +	mvpp22_gop_init(port, interface);
->  
-> -	mvpp22_pcs_reset_deassert(port);
-> +	mvpp22_pcs_reset_deassert(port, interface);
->  
->  	if (mvpp2_port_supports_xlg(port)) {
->  		ctrl3 = readl(port->base + MVPP22_XLG_CTRL3_REG);
->  		ctrl3 &= ~MVPP22_XLG_CTRL3_MACMODESELECT_MASK;
->  
-> -		if (mvpp2_is_xlg(port->phy_interface))
-> +		if (mvpp2_is_xlg(interface))
->  			ctrl3 |= MVPP22_XLG_CTRL3_MACMODESELECT_10G;
->  		else
->  			ctrl3 |= MVPP22_XLG_CTRL3_MACMODESELECT_GMAC;
-> @@ -4559,7 +4561,7 @@ static void mvpp22_mode_reconfigure(struct mvpp2_port *port)
->  		writel(ctrl3, port->base + MVPP22_XLG_CTRL3_REG);
->  	}
->  
-> -	if (mvpp2_port_supports_xlg(port) && mvpp2_is_xlg(port->phy_interface))
-> +	if (mvpp2_port_supports_xlg(port) && mvpp2_is_xlg(interface))
->  		mvpp2_xlg_max_rx_size_set(port);
->  	else
->  		mvpp2_gmac_max_rx_size_set(port);
-> @@ -4579,7 +4581,7 @@ static void mvpp2_start_dev(struct mvpp2_port *port)
->  	mvpp2_interrupts_enable(port);
->  
->  	if (port->priv->hw_version >= MVPP22)
-> -		mvpp22_mode_reconfigure(port);
-> +		mvpp22_mode_reconfigure(port, port->phy_interface);
->  
->  	if (port->phylink) {
->  		phylink_start(port->phylink);
-> @@ -6444,6 +6446,9 @@ static int mvpp2__mac_prepare(struct phylink_config *config, unsigned int mode,
->  			mvpp22_gop_mask_irq(port);
->  
->  			phy_power_off(port->comphy);
-> +
-> +			/* Reconfigure the serdes lanes */
-> +			mvpp22_mode_reconfigure(port, interface);
->  		}
->  	}
->  
-> @@ -6498,9 +6503,6 @@ static int mvpp2_mac_finish(struct phylink_config *config, unsigned int mode,
->  	    port->phy_interface != interface) {
->  		port->phy_interface = interface;
->  
-> -		/* Reconfigure the serdes lanes */
-> -		mvpp22_mode_reconfigure(port);
-> -
->  		/* Unmask interrupts */
->  		mvpp22_gop_unmask_irq(port);
->  	}
-> @@ -6961,7 +6963,7 @@ static int mvpp2_port_probe(struct platform_device *pdev,
->  	 * driver does this, we can remove this code.
->  	 */
->  	if (port->comphy) {
-> -		err = mvpp22_comphy_init(port);
-> +		err = mvpp22_comphy_init(port, port->phy_interface);
->  		if (err == 0)
->  			phy_power_off(port->comphy);
->  	}
-> -- 
-> 2.32.0
-> 
-> 
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Regards,
+Robert
+--
+Robert Marko
+Staff Embedded Linux Engineer
+Sartura Ltd.
+Lendavska ulica 16a
+10000 Zagreb, Croatia
+Email: robert.marko@sartura.hr
+Web: www.sartura.hr
