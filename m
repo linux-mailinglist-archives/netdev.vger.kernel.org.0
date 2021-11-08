@@ -2,181 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02CFA449DCE
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 22:18:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0D91449DEA
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 22:19:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239976AbhKHVVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 16:21:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49522 "EHLO
+        id S240029AbhKHVW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 16:22:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239938AbhKHVU7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 16:20:59 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B67EEC061570;
-        Mon,  8 Nov 2021 13:18:14 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id f4so67703557edx.12;
-        Mon, 08 Nov 2021 13:18:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=73vuYE9yYoLEy9iSrAl/rTu+PZTNJ9VdX48Xg8l11Dg=;
-        b=n+MYiZYy9nfxUhIu1n9FMmStmoZk3i6UH1eL4C+N/pEViVc3RiCQ4cAzkfVEgMEzcQ
-         SHzxBuYErbLwi0L18Tr9dTCN8yerCevpw9NLT8SfjddiX/arSvW/+fDSHmSpEEI04eJW
-         HkwswVi84klSx3TaXpJnmAPpax94mGIPrSoqgOPvipHgZi2aJOCxN6gnezdQXsSt211L
-         ifCHEcR+ogsc040LOwNLGl8a85KvUB4iKaxYh881xkllucDPTS3y1jZy4YohScQTxjb4
-         j4ztaVObPY4BBot8QZEOwnz5JBMwr7d7IVdsx5xvcj18Z8THhcNYG1quTSVVBr0BHmde
-         5XaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=73vuYE9yYoLEy9iSrAl/rTu+PZTNJ9VdX48Xg8l11Dg=;
-        b=VnFU4o3IzfLIj5kfbxTZauhdw0aBRxh21ZwQlKDenhxROuff5abwaLxsWK/Uh5w/gd
-         vDdWMmOh40Ru4aO2akLai7NMIswrU9bLRobboyNFeV1M/SqWTBOY51qm4aD/yOzvXSEY
-         XXQtrqtuXERJrGS4/hTDpfaaWI0opRZeteR4rBy/NsVBcr6DOTerXBPSxarZCsxqFlyy
-         oTJFoDA+kUJUO/lpZhOL9yH5Gde+hzaxUwbEg3/OTbRPQNU+LAgdPoAm3izXiHDZnf0y
-         TMQnlal5NAQwdA9HOcugZDQ+ZKO6iq68i7elz7XLkns5W45XbM1xAEerlRVj7E3nrK9o
-         5fzQ==
-X-Gm-Message-State: AOAM531Nze4sVWSA/oZDC1IW+Yiyf7Hav+Xu/Qiu0NAC19r3YjhxiEd7
-        5kF6gCrVqRwCST9rZKBilEo=
-X-Google-Smtp-Source: ABdhPJxElJYjUS/m0XnOrttdBBhOkph3caesijCsfQ7Tv9Vlstoo75Raixe7jzdIR+zX3ebxdj9Jgg==
-X-Received: by 2002:a17:907:3da6:: with SMTP id he38mr2668303ejc.151.1636406293258;
-        Mon, 08 Nov 2021 13:18:13 -0800 (PST)
-Received: from skbuf ([188.25.175.102])
-        by smtp.gmail.com with ESMTPSA id gs15sm8901663ejc.42.2021.11.08.13.18.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Nov 2021 13:18:12 -0800 (PST)
-Date:   Mon, 8 Nov 2021 23:18:11 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Robert Marko <robert.marko@sartura.hr>
-Cc:     Andrew Lunn <andrew@lunn.ch>, vivien.didelot@gmail.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>, kuba@kernel.org,
-        netdev@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Gabor Juhos <j4g8y7@gmail.com>, John Crispin <john@phrozen.org>
-Subject: Re: [net-next] net: dsa: qca8k: only change the MIB_EN bit in
- MODULE_EN register
-Message-ID: <20211108211811.qukts37eufgfj4sc@skbuf>
-References: <20211104124927.364683-1-robert.marko@sartura.hr>
- <20211108202058.th7vjq4sjca3encz@skbuf>
- <CA+HBbNE_jh_h9bx9GLfMRFz_Kq=Vx1pu0dE1aK0guMoEkX1S5A@mail.gmail.com>
+        with ESMTP id S239990AbhKHVVk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 16:21:40 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F44C061570;
+        Mon,  8 Nov 2021 13:18:55 -0800 (PST)
+Received: from zn.tnic (p200300ec2f3311007827e440708b1099.dip0.t-ipconnect.de [IPv6:2003:ec:2f33:1100:7827:e440:708b:1099])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id E3BE71EC051F;
+        Mon,  8 Nov 2021 22:18:52 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1636406333;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=AU7V4fSHGUK4yNvIX3QFWGgL2mpvsQwlJrzk1EYTZE4=;
+        b=HI4wHVqdPFUaTmLfTawRP0YuILjCSvy0XvR7UY6GhjpkLZ7Jcpensq3GPz/wKuSVQPh/ah
+        JjfisFcmsOLL77YybjTfUcF4SOtfsMptjoCY2iNpL/QAVX8IlmhT4tll2zqUciAF4fFC2q
+        GhOxoJIWWV9UKbtfg9ziQ2wDV7UERPU=
+Date:   Mon, 8 Nov 2021 22:18:47 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Alan Stern <stern@rowland.harvard.edu>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        intel-gvt-dev@lists.freedesktop.org,
+        alpha <linux-alpha@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-edac@vger.kernel.org,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        linux-hyperv@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-leds <linux-leds@vger.kernel.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        "open list:REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM" 
+        <linux-remoteproc@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        scsi <linux-scsi@vger.kernel.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        linux-staging@lists.linux.dev,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        linux-um <linux-um@lists.infradead.org>,
+        USB list <linux-usb@vger.kernel.org>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>, netdev <netdev@vger.kernel.org>,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        sparclinux <sparclinux@vger.kernel.org>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        xen-devel@lists.xenproject.org
+Subject: Re: [PATCH v0 42/42] notifier: Return an error when callback is
+ already registered
+Message-ID: <YYmUN69Y7z9xITas@zn.tnic>
+References: <20211108101157.15189-1-bp@alien8.de>
+ <20211108101157.15189-43-bp@alien8.de>
+ <CAMuHMdWH+txiSP_d7Jc4f_bU8Lf9iWpT4E3o5o7BJr-YdA6-VA@mail.gmail.com>
+ <YYkyUEqcsOwQMb1S@zn.tnic>
+ <CAMuHMdXiBEQyEXJagSfpH44hxVA2t0sDH7B7YubLGHrb2MJLLA@mail.gmail.com>
+ <YYlJQYLiIrhjwOmT@zn.tnic>
+ <CAMuHMdXHikGrmUzuq0WG5JRHUUE=5zsaVCTF+e4TiHpM5tc5kA@mail.gmail.com>
+ <YYlOmd0AeA8DSluD@zn.tnic>
+ <20211108205926.GA1678880@rowland.harvard.edu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CA+HBbNE_jh_h9bx9GLfMRFz_Kq=Vx1pu0dE1aK0guMoEkX1S5A@mail.gmail.com>
+In-Reply-To: <20211108205926.GA1678880@rowland.harvard.edu>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 08, 2021 at 10:10:19PM +0100, Robert Marko wrote:
-> On Mon, Nov 8, 2021 at 9:21 PM Vladimir Oltean <olteanv@gmail.com> wrote:
-> >
-> > Timed out waiting for ACK/NACK from John.
-> >
-> > On Thu, Nov 04, 2021 at 01:49:27PM +0100, Robert Marko wrote:
-> > > From: Gabor Juhos <j4g8y7@gmail.com>
-> > >
-> > > The MIB module needs to be enabled in the MODULE_EN register in
-> > > order to make it to counting. This is done in the qca8k_mib_init()
-> > > function. However instead of only changing the MIB module enable
-> > > bit, the function writes the whole register. As a side effect other
-> > > internal modules gets disabled.
-> >
-> > Please be more specific.
-> > The MODULE_EN register contains these other bits:
-> > BIT(0): MIB_EN
-> > BIT(1): ACL_EN (ACL module enable)
-> > BIT(2): L3_EN (Layer 3 offload enable)
-> > BIT(10): SPECIAL_DIP_EN (Enable special DIP (224.0.0.x or ff02::1) broadcast
-> > 0 = Use multicast DP
-> > 1 = Use broadcast DP)
-> >
-> > >
-> > > Fix up the code to only change the MIB module specific bit.
-> >
-> > Clearing which one of the above bits bothers you? The driver for the
-> > qca8k switch supports neither layer 3 offloading nor ACLs, and I don't
-> > really know what this special DIP packet/header is).
-> >
-> > Generally the assumption for OF-based drivers is that one should not
-> > rely on any configuration done by prior boot stages, so please explain
-> > what should have worked but doesn't.
+On Mon, Nov 08, 2021 at 03:59:26PM -0500, Alan Stern wrote:
+> Is there really any reason for returning an error code?  For example, is 
+> it anticipated that at some point in the future these registration calls 
+> might fail?
 > 
-> Hi,
-> I think that the commit message wasn't clear enough and that's my fault for not
-> fixing it up before sending.
+> Currently, the only reason for failing...
 
-Yes, it is not. If things turn out to need changing, you should resend
-with an updated commit message.
+Right, I believe with not making it return void we're leaving the door
+open for some, *hypothetical* future return values if we decide we need
+to return them too, at some point.
 
-> MODULE_EN register has 3 more bits that aren't documented in the QCA8337
-> datasheet but only in the IPQ4019 one but they are there.
-> Those are:
-> BIT(31) S17C_INT (This one is IPQ4019 specific)
-> BIT(9) LOOKUP_ERR_RST_EN
-> BIT(10) QM_ERR_RST_EN
+Yes, I can't think of another fact to state besides that the callback
+was already registered or return success but who knows what we wanna do
+in the future...
 
-Are you sure that BIT(10) is QM_ERR_RST_EN on IPQ4019? Because in the
-QCA8334 document I'm looking at, it is SPECIAL_DIP_EN.
+And so if we change them all to void now, I think it'll be a lot more
+churn to switch back to returning a non-void value and having the
+callers who choose to handle that value, do so again.
 
-> Lookup and QM bits as well as the DIP default to 1 while the INT bit is 0.
-> 
-> Clearing the QM and Lookup bits is what is bothering me, why should we clear HW
-> default bits without mentioning that they are being cleared and for what reason?
+So, long story short, keeping the retval - albeit not very useful right
+now - is probably easier.
 
-To be fair, BIT(9) is marked as RESERVED and documented as being set to 1,
-so writing a zero is probably not very smart.
+I hope I'm making some sense here.
 
-> We aren't depending on the bootloader or whatever configuring the switch, we are
-> even invoking the HW reset before doing anything to make sure that the
-> whole networking
-> subsystem in IPQ4019 is back to HW defaults to get rid of various
-> bootloader hackery.
-> 
-> Gabor found this while working on IPQ4019 support and to him and to me it looks
-> like a bug.
+-- 
+Regards/Gruss,
+    Boris.
 
-A bug with what impact? I don't have a description of those bits that
-get unset. What do they do, what doesn't work?
-
-> I hope this clears up things a bit.
-> Regards,
-> Robert
-> >
-> > >
-> > > Fixes: 6b93fb46480a ("net-next: dsa: add new driver for qca8xxx family")
-> > > Signed-off-by: Gabor Juhos <j4g8y7@gmail.com>
-> > > Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-> > > ---
-> > >  drivers/net/dsa/qca8k.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-> > > index a984f06f6f04..a229776924f8 100644
-> > > --- a/drivers/net/dsa/qca8k.c
-> > > +++ b/drivers/net/dsa/qca8k.c
-> > > @@ -583,7 +583,7 @@ qca8k_mib_init(struct qca8k_priv *priv)
-> > >       if (ret)
-> > >               goto exit;
-> > >
-> > > -     ret = qca8k_write(priv, QCA8K_REG_MODULE_EN, QCA8K_MODULE_EN_MIB);
-> > > +     ret = qca8k_reg_set(priv, QCA8K_REG_MODULE_EN, QCA8K_MODULE_EN_MIB);
-> > >
-> > >  exit:
-> > >       mutex_unlock(&priv->reg_mutex);
-> > > --
-> > > 2.33.1
-> > >
-> 
-> 
-> 
-> -- 
-> Robert Marko
-> Staff Embedded Linux Engineer
-> Sartura Ltd.
-> Lendavska ulica 16a
-> 10000 Zagreb, Croatia
-> Email: robert.marko@sartura.hr
-> Web: www.sartura.hr
+https://people.kernel.org/tglx/notes-about-netiquette
