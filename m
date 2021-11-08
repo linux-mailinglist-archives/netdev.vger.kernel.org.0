@@ -2,66 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81054449921
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 17:09:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ECD2449923
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 17:09:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241187AbhKHQMF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 11:12:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56556 "EHLO mail.kernel.org"
+        id S237033AbhKHQMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 11:12:25 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:50918 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236099AbhKHQME (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 11:12:04 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D052761038;
-        Mon,  8 Nov 2021 16:09:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636387760;
-        bh=7CNd4po5W6zKOYXmUQ878mG5xFvVcTmoqKd54bOk1r0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZCLj7zfW+rzumbTsnoFv2Y2/ZOX2pdyesCg3TT8ruFXHBiyx0sfbVWSxiAbEBag7M
-         rv99zogpjQq6s8Fmb4G6/r+k463yGaYR3HpACbj13x3fR5nACjA5OVUdNlWbX+443J
-         5aZ1KOSFwY33NFX/95Fej58yhvxt0bxzAjT+nGqBIb3UxnEjvB050HSgIJfYLwmzRO
-         WUKoO0WYpAabuhuKK0aHL1e+NL7v2gwkEUhXb0ezJr74B+qtZZK47HSzsx394isoYM
-         q9CjJivL+sUNLNuFEimRtQkjiW/REgF/mgKhbY9tf1rnZ0GY1dfbSWvB6iBGSGi6x+
-         BlbJ2DcP3du6A==
-Date:   Mon, 8 Nov 2021 08:09:18 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Ido Schimmel <idosch@idosch.org>, Jiri Pirko <jiri@resnulli.us>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, edwin.peer@broadcom.com
-Subject: Re: [PATCH net-next] devlink: Require devlink lock during device
- reload
-Message-ID: <20211108080918.2214996c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YYgSzEHppKY3oYTb@unreal>
-References: <9716f9a13e217a0a163b745b6e92e02d40973d2c.1635701665.git.leonro@nvidia.com>
-        <YYABqfFy//g5Gdis@nanopsycho>
-        <YYBTg4nW2BIVadYE@shredder>
-        <20211101161122.37fbb99d@kicinski-fedora-PC1C0HJN>
-        <YYgJ1bnECwUWvNqD@shredder>
-        <YYgSzEHppKY3oYTb@unreal>
+        id S236099AbhKHQMZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 11:12:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=zfzU/jlcDyT5ulhdagf/cP4RIpRacn4ukb4dJ5PZH+A=; b=u/YAolBLIicOz5G8Wj6oZyfZLc
+        QPhCZs+3Luq/q9rEZevR1m0QkeuCL7pTAVYs5lZknSxrvdlDzyUHyGNCTbc2abGqPNBoJ0LwvLLdd
+        b8NC0fW2Z5lJ8ZwPVOnjkn4HlfbiFWiyN5ZuXY2irQHXPorpe6N6p/m7WaQCHw4c7MKU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mk7DC-00CuXk-Ab; Mon, 08 Nov 2021 17:09:34 +0100
+Date:   Mon, 8 Nov 2021 17:09:34 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Benedikt Spranger <b.spranger@linutronix.de>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        bage@linutronix.de, Heiner Kallweit <hkallweit1@gmail.com>,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH net v2] net: phy: phy_ethtool_ksettings_set: Don't
+ discard phy_start_aneg's return
+Message-ID: <YYlLvhE6/wjv8g3z@lunn.ch>
+References: <20211105153648.8337-1-bage@linutronix.de>
+ <20211108141834.19105-1-bage@linutronix.de>
+ <YYkzbE39ERAxzg4k@shell.armlinux.org.uk>
+ <20211108160653.3d6127df@mitra>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211108160653.3d6127df@mitra>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 7 Nov 2021 19:54:20 +0200 Leon Romanovsky wrote:
-> > >  (3) should we let drivers take refs on the devlink instance?  
-> > 
-> > I think it's fine mainly because I don't expect it to be used by too
-> > many drivers other than netdevsim which is somewhat special. Looking at
-> > the call sites of devlink_get() in netdevsim, it is only called from
-> > places (debugfs and trap workqueue) that shouldn't be present in real
-> > drivers.  
+On Mon, Nov 08, 2021 at 04:06:53PM +0100, Benedikt Spranger wrote:
+> On Mon, 8 Nov 2021 14:25:48 +0000
+> "Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
 > 
-> Sorry, I'm obligated to ask. In which universe is it ok to create new
-> set of API that no real driver should use?
+> > On Mon, Nov 08, 2021 at 03:18:34PM +0100, bage@linutronix.de wrote:
+> > > From: Bastian Germann <bage@linutronix.de>
+> > > 
+> > > Take the return of phy_start_aneg into account so that ethtool will
+> > > handle negotiation errors and not silently accept invalid input.
+> > 
+> > I don't think this description is accurate. If we get to call
+> > phy_start_aneg() with invalid input, then something has already
+> > gone wrong.
+> The MDI/MDIX/auto-MDIX settings are not checked before calling
+> phy_start_aneg(). If the PHY supports forcing MDI and auto-MDIX, but
+> not forcing MDIX _phy_start_aneg() returns a failure, which is silently
+> ignored.
 
-I think it's common sense. We're just exporting something to make our
-lives easier somewhere else in the three. Do you see a way in which
-taking refs on devlink can help out-of-tree code?
+Does the broadcom driver currently do this, or is this the new
+functionality you are adding?
 
-BTW we can put the symbols in a namespace or under a kconfig, to aid
-reviews of drivers using them if you want.
+It actually seems odd that auto and MDI is supported, but not MDIX?  I
+would suggest checking with Florian about that. Which particular
+broadcom PHY is it?
+
+   Andrew
