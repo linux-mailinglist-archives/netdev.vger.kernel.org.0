@@ -2,195 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 645C4449B6F
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 19:08:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99564449B72
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 19:09:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234940AbhKHSLE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 13:11:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34852 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234936AbhKHSLE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 13:11:04 -0500
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB4DC061570
-        for <netdev@vger.kernel.org>; Mon,  8 Nov 2021 10:08:19 -0800 (PST)
-Received: by mail-pg1-x536.google.com with SMTP id 188so3498037pgb.7
-        for <netdev@vger.kernel.org>; Mon, 08 Nov 2021 10:08:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=H1J4NU0lce6uUCFnPuSlPKeuUp7tV+vKkLV63CjFU8g=;
-        b=OWyzUNQvmkiT+MxC4Q6obdyf0NaciWD4QtZ0HeNeV8cU/mbc/jIztTR7wo/tSHK5BC
-         Tt5fdUTFOke2UIGPjXsB0ayHnpP+1UM+YbThEtoZ0T80Pz2LNq/iqf0GHp1vRVmhj0Yk
-         TV1YdV1ZMKvIr+PVSF57SxPrSVGSID58KjaHOI0wufIWqlqblZy43V+M6fpD5T/CeDvu
-         jNC0eJE0gXx3BBfTFCBJIJCGQLESucvzKrCDMVelpfpT1TRmvNlIm53BeB1K+CSkqwYm
-         Mf+a9svQWondFiRDA2dyFfNpHD2Tm8TfW25OuwJK+RpacuQ3N2ysDomuOweSEiMPcILE
-         8FxA==
+        id S234977AbhKHSL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 13:11:59 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:25704 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234936AbhKHSL7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 13:11:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1636394953;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1cEuhXaEuhD+GKL/lBmFj9KF6WCNj/n+YccNImJPdjg=;
+        b=RtDjLOyG+rvejCqdCpqUrTxUmiM+0yQ6Dk3aIr/ytyH3lfKVJemntMIeWjpqeMmZTJs6iR
+        Gvqfo2dDOgzvfJCq0VagoMab4VYfHQCBk9SZXM6m4PcY7tM44lkVhYx+lkabhLWVOwpXfe
+        37wUPUG9ofma1X5gCwn4olEtKTvLJQY=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-92-uXjV_7kZOduwFELB07_OJg-1; Mon, 08 Nov 2021 13:09:12 -0500
+X-MC-Unique: uXjV_7kZOduwFELB07_OJg-1
+Received: by mail-ed1-f72.google.com with SMTP id g3-20020a056402424300b003e2981e1edbso15706156edb.3
+        for <netdev@vger.kernel.org>; Mon, 08 Nov 2021 10:09:12 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=H1J4NU0lce6uUCFnPuSlPKeuUp7tV+vKkLV63CjFU8g=;
-        b=DT6T/OBCEW7A3OJPNCN/POnUQ3MDs6Q20gQKMLyGfYJx/S1FEfOAWjbouT0gPzZfrS
-         wFe2BazPOI5vgU5X3tRhUpFiT/3BGoukbxnFcC7eYyIaz3v4m5n3yNaT3yj4Sd5YUHQH
-         DuM8YRThHDbliNNuwdZ1pgxe82ILB/9+gmyCDAjaD+PPpIfsZPPJn5xLjVETOAZUFvx1
-         6PzDmX+QPUwVWI4De5QmFP/0I+nrc953/v9y8bl9EGiSaBl7DFbGG96c61H7l/beOkcI
-         36hjGRt8ubhtVq7W1kGZpTd9mlAUOacXEmHm85+ViFn0EsnMBy1apVKA4deYTVPnd5iy
-         7/zA==
-X-Gm-Message-State: AOAM533IQc1izkgrsAoZI6wh/5QdE6b6ssK+dknk97OpNMVLI+NIr3Hm
-        YlD2CG7RTonJOJmK3OAX+nA=
-X-Google-Smtp-Source: ABdhPJxi5QTKXld5GAaqF3G1rZIoAXSkIYf4y9V3sKqTvwYyktugvRCyZTPW3FmOyhOneynaxzo9og==
-X-Received: by 2002:a63:7d58:: with SMTP id m24mr1002172pgn.130.1636394899089;
-        Mon, 08 Nov 2021 10:08:19 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:d2e1:4ea4:3f63:67b1])
-        by smtp.gmail.com with ESMTPSA id c8sm43118pjr.38.2021.11.08.10.08.18
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=1cEuhXaEuhD+GKL/lBmFj9KF6WCNj/n+YccNImJPdjg=;
+        b=8K624PVIwQl0WOAK535k4odIe2KXmN9eaulGzOhFlclK1ycGzKIr+M+rLKQ7ycoMGg
+         ctWCWj3dsVsgWGkCUXiBA6Bnt92m7fPGbskMkREiwPAWPGMsj9pKPU0q3M4PSr8hcQKk
+         o9BIMPCLry5a8WCA27ai1jSmCaPFyYLUlYhRODhVo4kO+E7KF+Thi5XJNGFq+Pmi8NWR
+         kZlmjAlX2a2RbL5di096u54uKB/R6+aTD15Hga9mIth50axOzv50p+cOyBi+3BjrZ8Qx
+         jImU0qc1BigXstkgamxWvmOVUThJOE6GmrXWtCPnz/7KSnINUvUx0ZW0HNgaPFofWZ/e
+         HwoQ==
+X-Gm-Message-State: AOAM532epmtofBy1tzNsVVlihALtDXAWv01JiqgfsaFIeADpnyjR7gwf
+        99K7umfMAaPsGgdl5EIp3xo4O2dIDEUpCWdxQLGV8M8+jwH2ZUYDUweyVqKJbD/lw7ruHAhj7Kg
+        eqws7kATzyEy2wm4z
+X-Received: by 2002:a17:907:8692:: with SMTP id qa18mr1467269ejc.7.1636394950738;
+        Mon, 08 Nov 2021 10:09:10 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyClv8tcSrI/UxXplWxRW76JXyVsa3nEi/pu2Ka0nP1mqXKVKeTujb2Aq2XU4+3KU1tY6N6lw==
+X-Received: by 2002:a17:907:8692:: with SMTP id qa18mr1467121ejc.7.1636394949701;
+        Mon, 08 Nov 2021 10:09:09 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id gn16sm8739933ejc.67.2021.11.08.10.09.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Nov 2021 10:08:18 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Vedang Patel <vedang.patel@intel.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net] net/sched: sch_taprio: fix undefined behavior in ktime_mono_to_any
-Date:   Mon,  8 Nov 2021 10:08:15 -0800
-Message-Id: <20211108180815.1822479-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.34.0.rc0.344.g81b53c2807-goog
+        Mon, 08 Nov 2021 10:09:08 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 1A5BA18026D; Mon,  8 Nov 2021 19:09:08 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Lukasz Czapnik <lukasz.czapnik@intel.com>,
+        Marcin Kubiak <marcin.kubiak@intel.com>,
+        Michal Kubiak <michal.kubiak@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Netanel Belgazal <netanel@amazon.com>,
+        Arthur Kiyanovski <akiyano@amazon.com>,
+        Guy Tzalik <gtzalik@amazon.com>,
+        Saeed Bishara <saeedb@amazon.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Shay Agroskin <shayagr@amazon.com>,
+        Sameeh Jubran <sameehj@amazon.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Danielle Ratson <danieller@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vladyslav Tarasiuk <vladyslavt@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jian Shen <shenjian15@huawei.com>,
+        Petr Vorel <petr.vorel@gmail.com>, Dan Murphy <dmurphy@ti.com>,
+        Yangbo Lu <yangbo.lu@nxp.com>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+Subject: Re: [PATCH net-next 03/21] ethtool, stats: introduce standard XDP
+ statistics
+In-Reply-To: <20211108132113.5152-1-alexandr.lobakin@intel.com>
+References: <20210803163641.3743-1-alexandr.lobakin@intel.com>
+ <20210803163641.3743-4-alexandr.lobakin@intel.com>
+ <20210803134900.578b4c37@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <ec0aefbc987575d1979f9102d331bd3e8f809824.camel@kernel.org>
+ <20211026092323.165-1-alexandr.lobakin@intel.com>
+ <20211105164453.29102-1-alexandr.lobakin@intel.com>
+ <87v912ri7h.fsf@toke.dk>
+ <20211108132113.5152-1-alexandr.lobakin@intel.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 08 Nov 2021 19:09:08 +0100
+Message-ID: <87cznar03f.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Alexander Lobakin <alexandr.lobakin@intel.com> writes:
 
-1) if q->tk_offset == TK_OFFS_MAX, then get_tcp_tstamp() calls
-   ktime_mono_to_any() with out-of-bound value.
+> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> Date: Mon, 08 Nov 2021 12:37:54 +0100
+>
+>> Alexander Lobakin <alexandr.lobakin@intel.com> writes:
+>>=20
+>> > From: Alexander Lobakin <alexandr.lobakin@intel.com>
+>> > Date: Tue, 26 Oct 2021 11:23:23 +0200
+>> >
+>> >> From: Saeed Mahameed <saeed@kernel.org>
+>> >> Date: Tue, 03 Aug 2021 16:57:22 -0700
+>> >>=20
+>> >> [ snip ]
+>> >>=20
+>> >> > XDP is going to always be eBPF based ! why not just report such sta=
+ts
+>> >> > to a special BPF_MAP ? BPF stack can collect the stats from the dri=
+ver
+>> >> > and report them to this special MAP upon user request.
+>> >>=20
+>> >> I really dig this idea now. How do you see it?
+>> >> <ifindex:channel:stat_id> as a key and its value as a value or ...?
+>> >
+>> > Ideas, suggestions, anyone?
+>>=20
+>> I don't like the idea of putting statistics in a map instead of the
+>> regular statistics counters. Sure, for bespoke things people want to put
+>> into their XDP programs, use a map, but for regular packet/byte
+>> counters, update the regular counters so XDP isn't "invisible".
+>
+> I wanted to provide an `ip link` command for getting these stats
+> from maps and printing them in a usual format as well, but seems
+> like that's an unneeded overcomplication of things since using
+> maps for "regular"/"generic" XDP stats really has no reason except
+> for "XDP means eBPF means maps".
 
-2) if q->tk_offset is changed in taprio_parse_clockid(),
-   taprio_get_time() might also call ktime_mono_to_any()
-   with out-of-bound value as sysbot found:
+Yeah, don't really see why it would have to: to me, one of the benefits
+of XDP is being integrated closely with the kernel so we can have a
+"fast path" *without* reinventing everything...
 
-UBSAN: array-index-out-of-bounds in kernel/time/timekeeping.c:908:27
-index 3 is out of range for type 'ktime_t *[3]'
-CPU: 1 PID: 25668 Comm: kworker/u4:0 Not tainted 5.15.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: bat_events batadv_iv_send_outstanding_bat_ogm_packet
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- ubsan_epilogue+0xb/0x5a lib/ubsan.c:151
- __ubsan_handle_out_of_bounds.cold+0x62/0x6c lib/ubsan.c:291
- ktime_mono_to_any+0x1d4/0x1e0 kernel/time/timekeeping.c:908
- get_tcp_tstamp net/sched/sch_taprio.c:322 [inline]
- get_packet_txtime net/sched/sch_taprio.c:353 [inline]
- taprio_enqueue_one+0x5b0/0x1460 net/sched/sch_taprio.c:420
- taprio_enqueue+0x3b1/0x730 net/sched/sch_taprio.c:485
- dev_qdisc_enqueue+0x40/0x300 net/core/dev.c:3785
- __dev_xmit_skb net/core/dev.c:3869 [inline]
- __dev_queue_xmit+0x1f6e/0x3630 net/core/dev.c:4194
- batadv_send_skb_packet+0x4a9/0x5f0 net/batman-adv/send.c:108
- batadv_iv_ogm_send_to_if net/batman-adv/bat_iv_ogm.c:393 [inline]
- batadv_iv_ogm_emit net/batman-adv/bat_iv_ogm.c:421 [inline]
- batadv_iv_send_outstanding_bat_ogm_packet+0x6d7/0x8e0 net/batman-adv/bat_iv_ogm.c:1701
- process_one_work+0x9b2/0x1690 kernel/workqueue.c:2298
- worker_thread+0x658/0x11f0 kernel/workqueue.c:2445
- kthread+0x405/0x4f0 kernel/kthread.c:327
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+>> As Jesper pointed out, batching the updates so the global counters are
+>> only updated once per NAPI cycle is the way to avoid a huge performance
+>> overhead of this...
+>
+> That's how I do things currently, seems to work just fine.
 
-Fixes: 7ede7b03484b ("taprio: make clock reference conversions easier")
-Fixes: 54002066100b ("taprio: Adjust timestamps for TCP packets")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Cc: Vedang Patel <vedang.patel@intel.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
----
- net/sched/sch_taprio.c | 27 +++++++++++++++++----------
- 1 file changed, 17 insertions(+), 10 deletions(-)
+Awesome!
 
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 9ab068fa2672be8febd227b96cbcf646bf51f661..377f896bdedc4575316c3bab1d661d9c88142ec0 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -95,18 +95,22 @@ static ktime_t sched_base_time(const struct sched_gate_list *sched)
- 	return ns_to_ktime(sched->base_time);
- }
- 
--static ktime_t taprio_get_time(struct taprio_sched *q)
-+static ktime_t taprio_mono_to_any(const struct taprio_sched *q, ktime_t mono)
- {
--	ktime_t mono = ktime_get();
-+	/* This pairs with WRITE_ONCE() in taprio_parse_clockid() */
-+	enum tk_offsets tk_offset = READ_ONCE(q->tk_offset);
- 
--	switch (q->tk_offset) {
-+	switch (tk_offset) {
- 	case TK_OFFS_MAX:
- 		return mono;
- 	default:
--		return ktime_mono_to_any(mono, q->tk_offset);
-+		return ktime_mono_to_any(mono, tk_offset);
- 	}
-+}
- 
--	return KTIME_MAX;
-+static ktime_t taprio_get_time(const struct taprio_sched *q)
-+{
-+	return taprio_mono_to_any(q, ktime_get());
- }
- 
- static void taprio_free_sched_cb(struct rcu_head *head)
-@@ -319,7 +323,7 @@ static ktime_t get_tcp_tstamp(struct taprio_sched *q, struct sk_buff *skb)
- 		return 0;
- 	}
- 
--	return ktime_mono_to_any(skb->skb_mstamp_ns, q->tk_offset);
-+	return taprio_mono_to_any(q, skb->skb_mstamp_ns);
- }
- 
- /* There are a few scenarios where we will have to modify the txtime from
-@@ -1352,6 +1356,7 @@ static int taprio_parse_clockid(struct Qdisc *sch, struct nlattr **tb,
- 		}
- 	} else if (tb[TCA_TAPRIO_ATTR_SCHED_CLOCKID]) {
- 		int clockid = nla_get_s32(tb[TCA_TAPRIO_ATTR_SCHED_CLOCKID]);
-+		enum tk_offsets tk_offset;
- 
- 		/* We only support static clockids and we don't allow
- 		 * for it to be modified after the first init.
-@@ -1366,22 +1371,24 @@ static int taprio_parse_clockid(struct Qdisc *sch, struct nlattr **tb,
- 
- 		switch (clockid) {
- 		case CLOCK_REALTIME:
--			q->tk_offset = TK_OFFS_REAL;
-+			tk_offset = TK_OFFS_REAL;
- 			break;
- 		case CLOCK_MONOTONIC:
--			q->tk_offset = TK_OFFS_MAX;
-+			tk_offset = TK_OFFS_MAX;
- 			break;
- 		case CLOCK_BOOTTIME:
--			q->tk_offset = TK_OFFS_BOOT;
-+			tk_offset = TK_OFFS_BOOT;
- 			break;
- 		case CLOCK_TAI:
--			q->tk_offset = TK_OFFS_TAI;
-+			tk_offset = TK_OFFS_TAI;
- 			break;
- 		default:
- 			NL_SET_ERR_MSG(extack, "Invalid 'clockid'");
- 			err = -EINVAL;
- 			goto out;
- 		}
-+		/* This pairs with READ_ONCE() in taprio_mono_to_any */
-+		WRITE_ONCE(q->tk_offset, tk_offset);
- 
- 		q->clockid = clockid;
- 	} else {
--- 
-2.34.0.rc0.344.g81b53c2807-goog
+-Toke
 
