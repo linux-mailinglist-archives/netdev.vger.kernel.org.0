@@ -2,38 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95BFC44A0E4
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 02:03:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C89E844A0FB
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 02:04:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237697AbhKIBGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 20:06:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60570 "EHLO mail.kernel.org"
+        id S239592AbhKIBGs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 20:06:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60822 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241799AbhKIBE3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 20:04:29 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3240F619E4;
-        Tue,  9 Nov 2021 01:01:37 +0000 (UTC)
+        id S238905AbhKIBEu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 20:04:50 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A066F61359;
+        Tue,  9 Nov 2021 01:01:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636419698;
-        bh=DeqjnGbftIwCQgoOGZZTaOrItH53A9Ff1Dq8FjN1Veg=;
+        s=k20201202; t=1636419714;
+        bh=djQR+gzHKgx5mD1fqwot6fowA0CIa9QBZdRdfX5IDh8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BPPjlqCibU9uNQ9H7BUw8YD9srtOLkMgHInxdbf4Xk6ONCwGldpOi6nI6xZ86PJ2b
-         U4xxLlbIRls6BvmcjM1TOraGg7vADmVAu0ohVVfwi4QEFTgTWgb2Is2iLZV9fPIk18
-         S9pt7LhLUGu2vMnLPhZmybaXDp7wBwX/yAqrtm9Q1xfrKtdm6wGQT2j/YVXCaYy3fQ
-         49gAJRt84eC4inCoamde+/Xn3VbcFx3lnhbzCklzof3yOOHBoBXO0bWutn/X6QjGRN
-         OJDPmWWHMJFt1FfbSGRAelkY6CC8k0QaBVCH3teU2/ikbUhi0oBteCZ8fIX3VO33Jk
-         goU4ZuQzVWqug==
+        b=B49uARtTvq6dXkoPl8A+higcjg6UACJQnpWEizOzWTpuyec3Ek5TvUyPXiBMyzTfu
+         iXqJmoBD9SfoiHDw8f+W6d4hWIO/yBl9Sn74CL98FRiXVOzF0a1PQIoNmcvSTut06e
+         0x7m3zy88hn+C8Nzwbr4mH9nvNyEWo/siV5EkPBv+8kbDzSvgaFzs2PtbCAg8ea37g
+         nTzlNBnyX1qWxmJ6uKSCLUG+oKVd3OKmXQ9XRwOZ0VUEbemxffh6J5h6NdUP1fEoGY
+         S4MZjgdXOgFba4nkdocfP7cx9cLljnc+rycJMUXaYsRKeBD6C7v0yNyV+yoGU4nZwR
+         tnuzwuBHoBjYg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wang ShaoBo <bobo.shaobowang@huawei.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
-        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.14 006/138] Bluetooth: fix use-after-free error in lock_sock_nested()
-Date:   Mon,  8 Nov 2021 12:44:32 -0500
-Message-Id: <20211108174644.1187889-6-sashal@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Matthew Massey <matthewmassey@fb.com>,
+        Dave Taht <dave.taht@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, atenart@kernel.org,
+        daniel@iogearbox.net, edumazet@google.com, alobakin@pm.me,
+        weiwan@google.com, bjorn@kernel.org, arnd@arndb.de,
+        memxor@gmail.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.14 013/138] net: sched: update default qdisc visibility after Tx queue cnt changes
+Date:   Mon,  8 Nov 2021 12:44:39 -0500
+Message-Id: <20211108174644.1187889-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211108174644.1187889-1-sashal@kernel.org>
 References: <20211108174644.1187889-1-sashal@kernel.org>
@@ -45,137 +48,183 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wang ShaoBo <bobo.shaobowang@huawei.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit 1bff51ea59a9afb67d2dd78518ab0582a54a472c ]
+[ Upstream commit 1e080f17750d1083e8a32f7b350584ae1cd7ff20 ]
 
-use-after-free error in lock_sock_nested is reported:
+mq / mqprio make the default child qdiscs visible. They only do
+so for the qdiscs which are within real_num_tx_queues when the
+device is registered. Depending on order of calls in the driver,
+or if user space changes config via ethtool -L the number of
+qdiscs visible under tc qdisc show will differ from the number
+of queues. This is confusing to users and potentially to system
+configuration scripts which try to make sure qdiscs have the
+right parameters.
 
-[  179.140137][ T3731] =====================================================
-[  179.142675][ T3731] BUG: KMSAN: use-after-free in lock_sock_nested+0x280/0x2c0
-[  179.145494][ T3731] CPU: 4 PID: 3731 Comm: kworker/4:2 Not tainted 5.12.0-rc6+ #54
-[  179.148432][ T3731] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
-[  179.151806][ T3731] Workqueue: events l2cap_chan_timeout
-[  179.152730][ T3731] Call Trace:
-[  179.153301][ T3731]  dump_stack+0x24c/0x2e0
-[  179.154063][ T3731]  kmsan_report+0xfb/0x1e0
-[  179.154855][ T3731]  __msan_warning+0x5c/0xa0
-[  179.155579][ T3731]  lock_sock_nested+0x280/0x2c0
-[  179.156436][ T3731]  ? kmsan_get_metadata+0x116/0x180
-[  179.157257][ T3731]  l2cap_sock_teardown_cb+0xb8/0x890
-[  179.158154][ T3731]  ? __msan_metadata_ptr_for_load_8+0x10/0x20
-[  179.159141][ T3731]  ? kmsan_get_metadata+0x116/0x180
-[  179.159994][ T3731]  ? kmsan_get_shadow_origin_ptr+0x84/0xb0
-[  179.160959][ T3731]  ? l2cap_sock_recv_cb+0x420/0x420
-[  179.161834][ T3731]  l2cap_chan_del+0x3e1/0x1d50
-[  179.162608][ T3731]  ? kmsan_get_metadata+0x116/0x180
-[  179.163435][ T3731]  ? kmsan_get_shadow_origin_ptr+0x84/0xb0
-[  179.164406][ T3731]  l2cap_chan_close+0xeea/0x1050
-[  179.165189][ T3731]  ? kmsan_internal_unpoison_shadow+0x42/0x70
-[  179.166180][ T3731]  l2cap_chan_timeout+0x1da/0x590
-[  179.167066][ T3731]  ? __msan_metadata_ptr_for_load_8+0x10/0x20
-[  179.168023][ T3731]  ? l2cap_chan_create+0x560/0x560
-[  179.168818][ T3731]  process_one_work+0x121d/0x1ff0
-[  179.169598][ T3731]  worker_thread+0x121b/0x2370
-[  179.170346][ T3731]  kthread+0x4ef/0x610
-[  179.171010][ T3731]  ? process_one_work+0x1ff0/0x1ff0
-[  179.171828][ T3731]  ? kthread_blkcg+0x110/0x110
-[  179.172587][ T3731]  ret_from_fork+0x1f/0x30
-[  179.173348][ T3731]
-[  179.173752][ T3731] Uninit was created at:
-[  179.174409][ T3731]  kmsan_internal_poison_shadow+0x5c/0xf0
-[  179.175373][ T3731]  kmsan_slab_free+0x76/0xc0
-[  179.176060][ T3731]  kfree+0x3a5/0x1180
-[  179.176664][ T3731]  __sk_destruct+0x8af/0xb80
-[  179.177375][ T3731]  __sk_free+0x812/0x8c0
-[  179.178032][ T3731]  sk_free+0x97/0x130
-[  179.178686][ T3731]  l2cap_sock_release+0x3d5/0x4d0
-[  179.179457][ T3731]  sock_close+0x150/0x450
-[  179.180117][ T3731]  __fput+0x6bd/0xf00
-[  179.180787][ T3731]  ____fput+0x37/0x40
-[  179.181481][ T3731]  task_work_run+0x140/0x280
-[  179.182219][ T3731]  do_exit+0xe51/0x3e60
-[  179.182930][ T3731]  do_group_exit+0x20e/0x450
-[  179.183656][ T3731]  get_signal+0x2dfb/0x38f0
-[  179.184344][ T3731]  arch_do_signal_or_restart+0xaa/0xe10
-[  179.185266][ T3731]  exit_to_user_mode_prepare+0x2d2/0x560
-[  179.186136][ T3731]  syscall_exit_to_user_mode+0x35/0x60
-[  179.186984][ T3731]  do_syscall_64+0xc5/0x140
-[  179.187681][ T3731]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  179.188604][ T3731] =====================================================
+Add a new Qdisc_ops callback and make relevant qdiscs TTRT.
 
-In our case, there are two Thread A and B:
+Note that this uncovers the "shortcut" created by
+commit 1f27cde313d7 ("net: sched: use pfifo_fast for non real queues")
+The default child qdiscs beyond initial real_num_tx are always
+pfifo_fast, no matter what the sysfs setting is. Fixing this
+gets a little tricky because we'd need to keep a reference
+on whatever the default qdisc was at the time of creation.
+In practice this is likely an non-issue the qdiscs likely have
+to be configured to non-default settings, so whatever user space
+is doing such configuration can replace the pfifos... now that
+it will see them.
 
-Context: Thread A:              Context: Thread B:
-
-l2cap_chan_timeout()            __se_sys_shutdown()
-  l2cap_chan_close()              l2cap_sock_shutdown()
-    l2cap_chan_del()                l2cap_chan_close()
-      l2cap_sock_teardown_cb()        l2cap_sock_teardown_cb()
-
-Once l2cap_sock_teardown_cb() excuted, this sock will be marked as SOCK_ZAPPED,
-and can be treated as killable in l2cap_sock_kill() if sock_orphan() has
-excuted, at this time we close sock through sock_close() which end to call
-l2cap_sock_kill() like Thread C:
-
-Context: Thread C:
-
-sock_close()
-  l2cap_sock_release()
-    sock_orphan()
-    l2cap_sock_kill()  #free sock if refcnt is 1
-
-If C completed, Once A or B reaches l2cap_sock_teardown_cb() again,
-use-after-free happened.
-
-We should set chan->data to NULL if sock is destructed, for telling teardown
-operation is not allowed in l2cap_sock_teardown_cb(), and also we should
-avoid killing an already killed socket in l2cap_sock_close_cb().
-
-Signed-off-by: Wang ShaoBo <bobo.shaobowang@huawei.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Reported-by: Matthew Massey <matthewmassey@fb.com>
+Reviewed-by: Dave Taht <dave.taht@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/l2cap_sock.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ include/net/sch_generic.h |  4 ++++
+ net/core/dev.c            |  2 ++
+ net/sched/sch_generic.c   |  9 +++++++++
+ net/sched/sch_mq.c        | 24 ++++++++++++++++++++++++
+ net/sched/sch_mqprio.c    | 23 +++++++++++++++++++++++
+ 5 files changed, 62 insertions(+)
 
-diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
-index c99d65ef13b1e..160c016a5dfb9 100644
---- a/net/bluetooth/l2cap_sock.c
-+++ b/net/bluetooth/l2cap_sock.c
-@@ -1508,6 +1508,9 @@ static void l2cap_sock_close_cb(struct l2cap_chan *chan)
- {
- 	struct sock *sk = chan->data;
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index 9ed33e6840bd6..30da65a421d7a 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -308,6 +308,8 @@ struct Qdisc_ops {
+ 					  struct netlink_ext_ack *extack);
+ 	void			(*attach)(struct Qdisc *sch);
+ 	int			(*change_tx_queue_len)(struct Qdisc *, unsigned int);
++	void			(*change_real_num_tx)(struct Qdisc *sch,
++						      unsigned int new_real_tx);
  
-+	if (!sk)
-+		return;
+ 	int			(*dump)(struct Qdisc *, struct sk_buff *);
+ 	int			(*dump_stats)(struct Qdisc *, struct gnet_dump *);
+@@ -684,6 +686,8 @@ void qdisc_class_hash_grow(struct Qdisc *, struct Qdisc_class_hash *);
+ void qdisc_class_hash_destroy(struct Qdisc_class_hash *);
+ 
+ int dev_qdisc_change_tx_queue_len(struct net_device *dev);
++void dev_qdisc_change_real_num_tx(struct net_device *dev,
++				  unsigned int new_real_tx);
+ void dev_init_scheduler(struct net_device *dev);
+ void dev_shutdown(struct net_device *dev);
+ void dev_activate(struct net_device *dev);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 9cb47618d4869..4d3f6df1fe71c 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3048,6 +3048,8 @@ int netif_set_real_num_tx_queues(struct net_device *dev, unsigned int txq)
+ 		if (dev->num_tc)
+ 			netif_setup_tc(dev, txq);
+ 
++		dev_qdisc_change_real_num_tx(dev, txq);
 +
- 	l2cap_sock_kill(sk);
+ 		dev->real_num_tx_queues = txq;
+ 
+ 		if (disabling) {
+diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+index a8dd06c74e318..66d2fbe9ef501 100644
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -1330,6 +1330,15 @@ static int qdisc_change_tx_queue_len(struct net_device *dev,
+ 	return 0;
  }
  
-@@ -1516,6 +1519,9 @@ static void l2cap_sock_teardown_cb(struct l2cap_chan *chan, int err)
- 	struct sock *sk = chan->data;
- 	struct sock *parent;
- 
-+	if (!sk)
-+		return;
++void dev_qdisc_change_real_num_tx(struct net_device *dev,
++				  unsigned int new_real_tx)
++{
++	struct Qdisc *qdisc = dev->qdisc;
 +
- 	BT_DBG("chan %p state %s", chan, state_to_string(chan->state));
- 
- 	/* This callback can be called both for server (BT_LISTEN)
-@@ -1707,8 +1713,10 @@ static void l2cap_sock_destruct(struct sock *sk)
++	if (qdisc->ops->change_real_num_tx)
++		qdisc->ops->change_real_num_tx(qdisc, new_real_tx);
++}
++
+ int dev_qdisc_change_tx_queue_len(struct net_device *dev)
  {
- 	BT_DBG("sk %p", sk);
+ 	bool up = dev->flags & IFF_UP;
+diff --git a/net/sched/sch_mq.c b/net/sched/sch_mq.c
+index e79f1afe0cfd6..db18d8a860f9c 100644
+--- a/net/sched/sch_mq.c
++++ b/net/sched/sch_mq.c
+@@ -125,6 +125,29 @@ static void mq_attach(struct Qdisc *sch)
+ 	priv->qdiscs = NULL;
+ }
  
--	if (l2cap_pi(sk)->chan)
-+	if (l2cap_pi(sk)->chan) {
-+		l2cap_pi(sk)->chan->data = NULL;
- 		l2cap_chan_put(l2cap_pi(sk)->chan);
++static void mq_change_real_num_tx(struct Qdisc *sch, unsigned int new_real_tx)
++{
++#ifdef CONFIG_NET_SCHED
++	struct net_device *dev = qdisc_dev(sch);
++	struct Qdisc *qdisc;
++	unsigned int i;
++
++	for (i = new_real_tx; i < dev->real_num_tx_queues; i++) {
++		qdisc = netdev_get_tx_queue(dev, i)->qdisc_sleeping;
++		/* Only update the default qdiscs we created,
++		 * qdiscs with handles are always hashed.
++		 */
++		if (qdisc != &noop_qdisc && !qdisc->handle)
++			qdisc_hash_del(qdisc);
 +	}
++	for (i = dev->real_num_tx_queues; i < new_real_tx; i++) {
++		qdisc = netdev_get_tx_queue(dev, i)->qdisc_sleeping;
++		if (qdisc != &noop_qdisc && !qdisc->handle)
++			qdisc_hash_add(qdisc, false);
++	}
++#endif
++}
++
+ static int mq_dump(struct Qdisc *sch, struct sk_buff *skb)
+ {
+ 	struct net_device *dev = qdisc_dev(sch);
+@@ -288,6 +311,7 @@ struct Qdisc_ops mq_qdisc_ops __read_mostly = {
+ 	.init		= mq_init,
+ 	.destroy	= mq_destroy,
+ 	.attach		= mq_attach,
++	.change_real_num_tx = mq_change_real_num_tx,
+ 	.dump		= mq_dump,
+ 	.owner		= THIS_MODULE,
+ };
+diff --git a/net/sched/sch_mqprio.c b/net/sched/sch_mqprio.c
+index 5eb3b1b7ae5e7..50e15add6068f 100644
+--- a/net/sched/sch_mqprio.c
++++ b/net/sched/sch_mqprio.c
+@@ -306,6 +306,28 @@ static void mqprio_attach(struct Qdisc *sch)
+ 	priv->qdiscs = NULL;
+ }
  
- 	if (l2cap_pi(sk)->rx_busy_skb) {
- 		kfree_skb(l2cap_pi(sk)->rx_busy_skb);
++static void mqprio_change_real_num_tx(struct Qdisc *sch,
++				      unsigned int new_real_tx)
++{
++	struct net_device *dev = qdisc_dev(sch);
++	struct Qdisc *qdisc;
++	unsigned int i;
++
++	for (i = new_real_tx; i < dev->real_num_tx_queues; i++) {
++		qdisc = netdev_get_tx_queue(dev, i)->qdisc_sleeping;
++		/* Only update the default qdiscs we created,
++		 * qdiscs with handles are always hashed.
++		 */
++		if (qdisc != &noop_qdisc && !qdisc->handle)
++			qdisc_hash_del(qdisc);
++	}
++	for (i = dev->real_num_tx_queues; i < new_real_tx; i++) {
++		qdisc = netdev_get_tx_queue(dev, i)->qdisc_sleeping;
++		if (qdisc != &noop_qdisc && !qdisc->handle)
++			qdisc_hash_add(qdisc, false);
++	}
++}
++
+ static struct netdev_queue *mqprio_queue_get(struct Qdisc *sch,
+ 					     unsigned long cl)
+ {
+@@ -629,6 +651,7 @@ static struct Qdisc_ops mqprio_qdisc_ops __read_mostly = {
+ 	.init		= mqprio_init,
+ 	.destroy	= mqprio_destroy,
+ 	.attach		= mqprio_attach,
++	.change_real_num_tx = mqprio_change_real_num_tx,
+ 	.dump		= mqprio_dump,
+ 	.owner		= THIS_MODULE,
+ };
 -- 
 2.33.0
 
