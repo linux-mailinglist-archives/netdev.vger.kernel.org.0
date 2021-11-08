@@ -2,71 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ECD2449923
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 17:09:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95DC7449928
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 17:11:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237033AbhKHQMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 11:12:25 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:50918 "EHLO vps0.lunn.ch"
+        id S231741AbhKHQOC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 11:14:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57302 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236099AbhKHQMZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 11:12:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=zfzU/jlcDyT5ulhdagf/cP4RIpRacn4ukb4dJ5PZH+A=; b=u/YAolBLIicOz5G8Wj6oZyfZLc
-        QPhCZs+3Luq/q9rEZevR1m0QkeuCL7pTAVYs5lZknSxrvdlDzyUHyGNCTbc2abGqPNBoJ0LwvLLdd
-        b8NC0fW2Z5lJ8ZwPVOnjkn4HlfbiFWiyN5ZuXY2irQHXPorpe6N6p/m7WaQCHw4c7MKU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mk7DC-00CuXk-Ab; Mon, 08 Nov 2021 17:09:34 +0100
-Date:   Mon, 8 Nov 2021 17:09:34 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Benedikt Spranger <b.spranger@linutronix.de>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        bage@linutronix.de, Heiner Kallweit <hkallweit1@gmail.com>,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH net v2] net: phy: phy_ethtool_ksettings_set: Don't
- discard phy_start_aneg's return
-Message-ID: <YYlLvhE6/wjv8g3z@lunn.ch>
-References: <20211105153648.8337-1-bage@linutronix.de>
- <20211108141834.19105-1-bage@linutronix.de>
- <YYkzbE39ERAxzg4k@shell.armlinux.org.uk>
- <20211108160653.3d6127df@mitra>
+        id S229568AbhKHQOB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 11:14:01 -0500
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 66D1A6101C;
+        Mon,  8 Nov 2021 16:11:16 +0000 (UTC)
+Date:   Mon, 8 Nov 2021 11:11:14 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Jonathon Reinhart <jonathon.reinhart@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Antoine Tenart <atenart@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        tglx@linutronix.de, peterz@infradead.org
+Subject: Re: [PATCH net-next] net: sysctl data could be in .bss
+Message-ID: <20211108111114.2e37c9d6@gandalf.local.home>
+In-Reply-To: <CAPFHKzduJiebgnAAjEvx4vBJCFn7-eyfJ+k6JQja2waxqKeCwQ@mail.gmail.com>
+References: <20211020083854.1101670-1-atenart@kernel.org>
+        <20211022130146.3dacef0a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAPFHKzduJiebgnAAjEvx4vBJCFn7-eyfJ+k6JQja2waxqKeCwQ@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211108160653.3d6127df@mitra>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 08, 2021 at 04:06:53PM +0100, Benedikt Spranger wrote:
-> On Mon, 8 Nov 2021 14:25:48 +0000
-> "Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
+On Mon, 8 Nov 2021 00:24:33 -0500
+Jonathon Reinhart <jonathon.reinhart@gmail.com> wrote:
+
+> On Fri, Oct 22, 2021 at 4:01 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > Widening the CC list a little.
+
+Thanks!
+
+[..]
+
+> The core_kernel_data() function was introduced in a2d063ac216c1, and
+> the commit message says:
 > 
-> > On Mon, Nov 08, 2021 at 03:18:34PM +0100, bage@linutronix.de wrote:
-> > > From: Bastian Germann <bage@linutronix.de>
-> > > 
-> > > Take the return of phy_start_aneg into account so that ethtool will
-> > > handle negotiation errors and not silently accept invalid input.
-> > 
-> > I don't think this description is accurate. If we get to call
-> > phy_start_aneg() with invalid input, then something has already
-> > gone wrong.
-> The MDI/MDIX/auto-MDIX settings are not checked before calling
-> phy_start_aneg(). If the PHY supports forcing MDI and auto-MDIX, but
-> not forcing MDIX _phy_start_aneg() returns a failure, which is silently
-> ignored.
+> "It may or may not return true for RO data... This utility function is
+> used to determine if data is safe from ever being freed. Thus it
+> should return true for all RW global data that is not in a module or
+> has been allocated, or false otherwise."
+> 
+> The intent of the function seems to be more in line with the
+> higher-level "is this global kernel data" semantics you suggested. The
+> purpose seems to be to differentiate between "part of the loaded
+> kernel image" vs. a dynamic allocation (which would include a loaded
+> module image). And given that it *might* return true for RO data
+> (depending on the arch linker script, presumably), I think it would be
+> safe to include .bss -- clearly, with that caveat in place, it isn't
+> promising strict section semantics.
+> 
+> There are only two existing in-tree consumers:
+> 
+> 1. __register_ftrace_function() [kernel/trace/ftrace.c] -- Sets
+> FTRACE_OPS_FL_DYNAMIC if core_kernel_data(ops) returns false, which
+> denotes "dynamically allocated ftrace_ops which need special care". It
+> would be unlikely (if not impossible) for the "ops" object in question
+> to be all-zero and end up in the .bss, but if it were, then the
+> current behavior would be wrong. IOW, it would be more correct to
+> include .bss.
+> 
+> 2. ensure_safe_net_sysctl() [net/sysctl_net.c] (The subject of this
+> thread) -- Trying to distinguish "global kernel data" (static/global
+> variables) from kmalloc-allocated objects. More correct to include
+> .bss.
+> 
+> Both of these callers only seem to delineate between static and
+> dynamic object allocations. Put another way, if core_kernel_bss(), all
+> existing callers should be updated to check core_kernel_data() ||
+> core_kernel_bss().
+> 
+> Since Steven introduced it, and until I added
+> ensure_safe_net_sysctl(), he / tracing was the only consumer.
 
-Does the broadcom driver currently do this, or is this the new
-functionality you are adding?
+I agree with your analysis.
 
-It actually seems odd that auto and MDI is supported, but not MDIX?  I
-would suggest checking with Florian about that. Which particular
-broadcom PHY is it?
+The intent is that allocated ftrace_ops (things that function tracer uses
+to know what callbacks are called from function entry), must go through a
+very slow synchronization (rcu_synchronize_tasks). But this is not needed
+if the ftrace_ops is part of the core kernel (.data or .bss) as that will
+never be freed, and thus does not need to worry about it disappearing while
+they are still in use.
 
-   Andrew
+> 
+> Thinking critically from the C language perspective, I can't come up
+> with any case where one would actually expect core_kernel_data() to
+> return true for 'int global = 1' and false for 'int global = 0'.
+> 
+> In conclusion, I agree with your alternative proposal Jakub, and I
+> think this patch is the right way forward:
+> 
+> diff --git a/kernel/extable.c b/kernel/extable.c
+> index b0ea5eb0c3b4..8b6f1d0bdaf6 100644
+> --- a/kernel/extable.c
+> +++ b/kernel/extable.c
+> @@ -97,6 +97,9 @@ int core_kernel_data(unsigned long addr)
+>         if (addr >= (unsigned long)_sdata &&
+>             addr < (unsigned long)_edata)
+>                 return 1;
+> +       if (addr >= (unsigned long)__bss_start &&
+> +           addr < (unsigned long)__bss_stop)
+> +               return 1;
+>         return 0;
+>  }
+
+Acked-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+
+-- Steve
+
