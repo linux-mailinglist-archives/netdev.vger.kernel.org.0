@@ -2,155 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A94B8449C2E
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 20:06:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DD60449C36
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 20:09:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236606AbhKHTJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 14:09:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52916 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236573AbhKHTJ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 14:09:27 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8B41461181;
-        Mon,  8 Nov 2021 19:06:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636398403;
-        bh=pd0VCkggWE2iPh69ltI+nfP+BwOWPf0TnwVTYOnczxQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mriAKXRtWZh1jXLC2uP+eja0pXUzB9G5zjA5vLhVJ8SyqzH1IjeDtTsBSxwOR2+jp
-         AZfhTfbmhCagYiki6W4AF45i1uwsWpBIg9WepFU3GuBIJAImdADV2mjcCEgTW3IfPO
-         0xYbjh7tWWwbE1LsHhAoiKm7Gzh8U7x9UM5HVgP6SgIpwj/YYtnk8d8urzF85Sw9bm
-         8wOKEGFIaD2DkAY3QUG5gzpa9o7t0xbtxA86CQA/Kj2nP/vRCmQkeROlIdBVYiawJf
-         fsIXeX6bPwy8GxV71G7tzQ5salX7DwYS/YzzOme/jO0qO4Bm+4e2p0bFRz9c5Ht2Bm
-         NFEJXFpEiIrvw==
-Date:   Mon, 8 Nov 2021 20:06:39 +0100
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
-        davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        shayagr@amazon.com, john.fastabend@gmail.com, dsahern@kernel.org,
-        brouer@redhat.com, echaudro@redhat.com, jasowang@redhat.com,
-        alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
-        tirthendu.sarkar@intel.com
-Subject: Re: [PATCH v17 bpf-next 12/23] bpf: add multi-buff support to the
- bpf_xdp_adjust_tail() API
-Message-ID: <YYl1P+nPSuMjI+e6@lore-desk>
-References: <cover.1636044387.git.lorenzo@kernel.org>
- <fd0400802295a87a921ba95d880ad27b9f9b8636.1636044387.git.lorenzo@kernel.org>
- <20211105162941.46b807e5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YYlWcuUwcKGYtWAR@lore-desk>
- <87fss6r058.fsf@toke.dk>
+        id S236694AbhKHTLp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 14:11:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48492 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236666AbhKHTLn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 14:11:43 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DBDCC061570;
+        Mon,  8 Nov 2021 11:08:58 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id o8so66603312edc.3;
+        Mon, 08 Nov 2021 11:08:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=5BlVIudKDsjBXmEfeAzic983XTcXGaBukuqDNHjo4TM=;
+        b=qE0pQR5zB920csJ351IAUW7201eKn63N8kQcApEzYbtjSOZ89W5ZXTpq0mkek1ku5r
+         /bDK86pF/pQijglFrnT6P/FV+GWxGSjVe5WYHr+EIaKYqMdqqaiwhMXMJrfOq3m2+6RN
+         PtmXwbDMbMmMLssQpxOI+CAWjrZ/bpmHWdfhQUHWlvksSuKwhW/JpFdlNJRnckB0XfG1
+         GcWnNZWl1XYgZEHXkZuvsz2w2TwVzS9A4pfICIMQHiJi7VkxUCtn90dxmiUpJBjGcIMt
+         EDIS42z/7tEk8ZD/3Z0fPQxJ1jmn2Er2XgFolO+yDqmvhau9EwISLTbcfnBMLOcesyyD
+         1okA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=5BlVIudKDsjBXmEfeAzic983XTcXGaBukuqDNHjo4TM=;
+        b=l/1mC6qPC8Zc2uMF/xzD5zxNNdCV+wz3AI+8hHyq35SROiGpbe24jDnzxn5pI7+TkQ
+         APOt548uHB3Hzou4NlnjnjG21bmpwrqeTj+ypMUDVdnxDHKIyQjoqpPwmVCuzYBBftpa
+         YwiyiG4nTe9oPpUEBDahkMJwXgxejnT7MnvFDfFwkwYocI76ZHqjcEWd0KaOzEPNu1QN
+         1xzV+9HeTm1gx5LUllz/MmNdjfB/P65MPsStmhi90wWBS54bDP9vVY1cRi1bSkB7StSk
+         nmF3fR0xxBMR23GdXMw9OfcnJ8zRLEJBnVRJPcJ7KK5+Ke4w4HIb7Y8N+WxGP0626QaI
+         ojgQ==
+X-Gm-Message-State: AOAM531Tz0Q+zBGp2zGP2Q1zPiUAtFnDtFYpfGhKMZqrm4QO/Cwu0/ZR
+        OUW++S4H2NGQJvUEL/DNQrE=
+X-Google-Smtp-Source: ABdhPJyKoqVhJK5MeuK4FsEiGxNzxqhdI9qzpBWBjOZKCsihq9hPEPoVBmFgMoXktSrj3TWxVkBi7A==
+X-Received: by 2002:a17:906:4791:: with SMTP id cw17mr1831807ejc.493.1636398536742;
+        Mon, 08 Nov 2021 11:08:56 -0800 (PST)
+Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.gmail.com with ESMTPSA id bx27sm9967545edb.7.2021.11.08.11.08.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Nov 2021 11:08:56 -0800 (PST)
+Date:   Mon, 8 Nov 2021 20:08:53 +0100
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [RFC PATCH v2 1/5] leds: trigger: add API for HW offloading of
+ triggers
+Message-ID: <YYl1xSKg4vrsbTdw@Ansuel-xps.localdomain>
+References: <20211108002500.19115-1-ansuelsmth@gmail.com>
+ <20211108002500.19115-2-ansuelsmth@gmail.com>
+ <YYkuZwQi66slgfTZ@lunn.ch>
+ <YYk/Pbm9ZZ/Ikckg@Ansuel-xps.localdomain>
+ <20211108171312.0318b960@thinkpad>
+ <YYlUSr586WiZxMn6@Ansuel-xps.localdomain>
+ <20211108183537.134ee04c@thinkpad>
+ <YYllTn9W5tZLmVN8@Ansuel-xps.localdomain>
+ <20211108194142.58630e60@thinkpad>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="p3KXfLdNpNEkKsaf"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <87fss6r058.fsf@toke.dk>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211108194142.58630e60@thinkpad>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Nov 08, 2021 at 07:41:42PM +0100, Marek Behún wrote:
+> On Mon, 8 Nov 2021 18:58:38 +0100
+> Ansuel Smith <ansuelsmth@gmail.com> wrote:
+> 
+> > Are you aware of any device that can have some trigger offloaded and
+> > still have the led triggered manually?
+> 
+> I don't understand why we would need such a thing.
+> 
+> Look, just to make it clear via an example: I have a device with a
+> Marvell PHY chip inside. There is a LED connected to one of the PHY LED
+> pins.
+> 
+> Marvell PHY has LED[0] control register, which supports the following
+> modes:
+>   LED is OFF
+>   LED is ON
+>   LED is ON when Link is up
+>   LED blinks on RX activity
+>   LED blinks on TX activity
+>   LED blinks on RX/TX activity
+>   LED is ON and blinks on RX/TX activity
+>   ...
+> 
+> I have code that exports this LED as a LED classdev
+> 
+> When I activate netdev trigger on this LED, the netdev trigger currently
+> just blinks the LED in software, by calling the .brightness_set()
+> method, which configures LED[0] control register to one of the first
+> two modes above (LED is OFF, LED is ON).
+> 
+> But I have also another patch that adds support to offloading netdev
+> trigger upon offloadable settings. The netdev trigger code calls the
+> .trigger_offload() method, which is implemented in PHY driver. This
+> method checks whether it is a netdev trigger that is to be offloaded,
+> and whether device_name is the name of the device attached to the PHY,
+> and then chooses one of the modes above, according to netdev trigger
+> settings.
+> 
+> So when I request netdev trigger for eth0, to indicate link and blink
+> on activity, the netdev trigger doesn't do anything in software. It
+> just calls the offload method ONCE (at the moment I am changing netdev
+> trigger settings). The blinking is then done by the PHY chip. Netdev
+> trigger doesn't do anything, at least not until I change the settings
+> again.
+> 
+> > Talking about mixed mode, so HW and SW.
+> 
+> What exactly do you mean by mixed mode? There is no mixed mode.
+>
 
---p3KXfLdNpNEkKsaf
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Ok.
 
-> Lorenzo Bianconi <lorenzo@kernel.org> writes:
->=20
-> >> On Thu,  4 Nov 2021 18:35:32 +0100 Lorenzo Bianconi wrote:
-> >> > This change adds support for tail growing and shrinking for XDP mult=
-i-buff.
-> >> >=20
-> >> > When called on a multi-buffer packet with a grow request, it will al=
-ways
-> >> > work on the last fragment of the packet. So the maximum grow size is=
- the
-> >> > last fragments tailroom, i.e. no new buffer will be allocated.
-> >> >=20
-> >> > When shrinking, it will work from the last fragment, all the way dow=
-n to
-> >> > the base buffer depending on the shrinking size. It's important to m=
-ention
-> >> > that once you shrink down the fragment(s) are freed, so you can not =
-grow
-> >> > again to the original size.
-> >>=20
-> >> > +static int bpf_xdp_mb_increase_tail(struct xdp_buff *xdp, int offse=
-t)
-> >> > +{
-> >> > +	struct skb_shared_info *sinfo =3D xdp_get_shared_info_from_buff(xd=
-p);
-> >> > +	skb_frag_t *frag =3D &sinfo->frags[sinfo->nr_frags - 1];
-> >> > +	int size, tailroom;
-> >> > +
-> >> > +	tailroom =3D xdp->frame_sz - skb_frag_size(frag) - skb_frag_off(fr=
-ag);
-> >>=20
-> >> I know I complained about this before but the assumption that we can
-> >> use all the space up to xdp->frame_sz makes me uneasy.
-> >>=20
-> >> Drivers may not expect the idea that core may decide to extend the=20
-> >> last frag.. I don't think the skb path would ever do this.
-> >>=20
-> >> How do you feel about any of these options:=20
-> >>  - dropping this part for now (return an error for increase)
-> >>  - making this an rxq flag or reading the "reserved frag size"
-> >>    from rxq (so that drivers explicitly opt-in)
-> >>  - adding a test that can be run on real NICs
-> >> ?
-> >
-> > I think this has been added to be symmetric with bpf_xdp_adjust_tail().
-> > I do think there is a real use-case for it so far so I am fine to just
-> > support the shrink part.
-> >
-> > @Eelco, Jesper, Toke: any comments on it?
->=20
-> Well, tail adjust is useful for things like encapsulations that need to
-> add a trailer. Don't see why that wouldn't be something people would
-> want to do for jumboframes as well?
->=20
+> > Asking to understand as currently the only way to impement all
+> > of this in netdev trigger is that:
+> > IF any hw offload trigger is supported (and enabled) then the entire
+> > netdev trigger can't work as it won't be able to simulate missing
+> > trigger in SW. And that would leave some flexibility.
+> 
+> What do you mean by missing trigger here? I think we need to clarify
+> what we mean by the word "trigger". Are you talking about the various
+> blinking modes that the PHY supports? If so, please let's call them HW
+> control modes, and not triggers. By "triggers" I understand triggers
+> that can be enabled on a LED via /sys/class/leds/<LED>/trigger.
+> 
 
-I agree this would be useful for protocols that add a trailer.
+offload triggers = blinking modes supported
 
-> Not sure I get what the issue is with this either? But having a test
-> that can be run to validate this on hardware would be great in any case,
-> I suppose - we've been discussing more general "compliance tests" for
-> XDP before...
+> > We need to understand how to operate in this condition. Should netdev
+> > detect that and ""hide"" the sysfs triggers? Should we report error?
+> 
+> So if I understand you correctly, you are asking about what should we
+> do if user asked for netdev trigger settings (currently only link, rx,
+> tx, interval) that can't be offloaded to the PHY chip.
+> 
+> Well, if the PHY allows to manipulate the LEDs ON/OFF state (in other
+> words "full control by SW", or ability to implement brightness_set()
+> method), then netdev trigger should blink the LED in SW via this
+> mechanism (which is something it would do now). A new sysfs file,
+> "offloaded", can indicate whether the trigger is offloaded to HW or not.
+> 
 
-what about option 2? We can add a frag_size field to rxq [0] that is set by
-the driver initializing the xdp_buff. frag_size set to 0 means we can use
-all the buffer.
+Are all these sysfs entry OK? I mean if we want to add support for he
+main blinking modes, the number will increase to at least 10 additional
+entry. 
 
-Regards,
-Lorenzo
+> If, on the other hand, the LED cannot be controlled by SW, and it only
+> support some HW control modes, then there are multiple ways how to
+> implement what should be done, and we need to discuss this.
+> 
+> For example suppose that the PHY LED pin supports indicating LINK,
+> blinking on activity, or both, but it doesn't support blinking on rx
+> only, or tx only.
+> 
+> Since the LED is always indicating something about one network device,
+> the netdev trigger should be always activated for this LED and it
+> should be impossible to deactivate it. Also, it should be impossible to
+> change device_name.
+> 
+>   $ cd /sys/class/leds/<LED>
+>   $ cat device_name
+>   eth0
+>   $ echo eth1 >device_name
+>   Operation not supported.
+>   $ echo none >trigger
+>   Operation not supported.
+> 
+> Now suppose that the driver by default enabled link indication, so we
+> have:
+>   $ cat link
+>   1
+>   $ cat rx
+>   0
+>   $ cat tx
+>   0
+> 
+> We want to enable blink on activity, but the LED supports only blinking
+> on both rx/tx activity, rx only or tx only is not supported.
+> 
+> Currently the only way to enable this is to do
+>   $ echo 1 >rx
+>   $ echo 1 >tx
+> but the first call asks for (link=1, rx=1, tx=0), which is impossible.
+> 
+> There are multiple things which can be done:
+> - "echo 1 >rx" indicates error, but remembers the setting
+> - "echo 1 >rx" quietly fails, without error indication. Something can
+>   be written to dmesg about nonsupported mode
+> - "echo 1 >rx" succeeds, but also sets tx=1
+> - rx and tx are non-writable, writing always fails. Another sysfs file
+>   is created, which lists modes that are actually supported, and allows
+>   to select between them. When a mode is selected, link,rx,tx are
+>   filled automatically, so that user may read them to know what the LED
+>   is actually doing
+> - something different?
+> 
 
-[0] pahole -C xdp_rxq_info vmlinux
-struct xdp_rxq_info {
-	struct net_device *        dev;                  /*     0     8 */
-	u32                        queue_index;          /*     8     4 */
-	u32                        reg_state;            /*    12     4 */
-	struct xdp_mem_info        mem;                  /*    16     8 */
-	unsigned int               napi_id;              /*    24     4 */
+Expose only the supported blinking modes? (in conjunciong with a generic
+traffic blinking mode)
 
-	/* size: 64, cachelines: 1, members: 5 */
-	/* padding: 36 */
-} __attribute__((__aligned__(64)));
+The initial question was Should we support a mixed mode offloaed
+blinking modes and blinking modes simulated by sw? I assume no as i
+don't think a device that supports that exist.
 
->=20
-> -Toke
->=20
+> Marek
 
---p3KXfLdNpNEkKsaf
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYYl1PwAKCRA6cBh0uS2t
-rGnqAQD1pTkY4LULPI8QwzvwJAcHV6GwG9GDqOYZk2vVxzPFNwD+NbfDdSShTSro
-XXRWopIZmeepdZVp7zdj/qOZEGkFtAU=
-=Kfff
------END PGP SIGNATURE-----
-
---p3KXfLdNpNEkKsaf--
+-- 
+	Ansuel
