@@ -2,58 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE15C449CDA
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 21:03:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 233CB449CEC
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 21:11:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238293AbhKHUFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 15:05:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60824 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234723AbhKHUFv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 15:05:51 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF646C061570;
-        Mon,  8 Nov 2021 12:03:06 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id j21so67052957edt.11;
-        Mon, 08 Nov 2021 12:03:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gfAW25npFijObZczyeTtXuHr+HMG0py6gXu8Oe8aGbQ=;
-        b=MASgWmxyfQR+VXm4faiVUYw7Hpp0SWGGzIwBC95c+422xytVdOdFS4qVwxvbnLBAHa
-         reNEg1Rgm+iM5o6Z8+kRP26cmqQhXGFEjKCyYekOyilXjMjiwSnJzPcZmtlj+SdW9JT/
-         TQTq4U65ObeWa7oGz944LwYscLqFZNDGh18t/u0ExDA5He+AzU82ZR/qE/n2xd40Uem2
-         ZoAgTm7mhFDv1goDyvW54xkyJhQArcxD5u6zEYTfCe1U/WBvNXqvBCzBEqEEoDot6pdl
-         Cr5P2dm3QCRMCK+E95nLcmSFOXJFnRZwqLSP5EnmBnX91wJygyOmzTNvaag8z3RVLxJL
-         ea7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gfAW25npFijObZczyeTtXuHr+HMG0py6gXu8Oe8aGbQ=;
-        b=Sr2KSq6K03RHQrMwQslM1GMGpUojan1woWXTTaQniyAlCMHoByAGOPRqJA22kBYSj7
-         fXvh9iHFBgbWliV8u0ZrpCg3jqKHXUe0AnKnp+2MxmrLTmBY9TJWmm6G8GPH4Z+DyKtB
-         4S+e0UQHzg1Axw3gUIgTAntK+h5A7nUVHOJ9cHdtpyUM1xHNa61od6MnoAawqCatNaD0
-         PTNfWxvb4M2Dt8oEyRuugjPmAposxv4YvQmYIezyZ0vkG7qxCIzedQf4IWZb880ag93r
-         eLx0Ent61iae2Gob3bdPQz9ZusrYOgtwqpbsIYc0Wt9D18HbN/WHpgj04ogMhm7zMSmP
-         4C6w==
-X-Gm-Message-State: AOAM533eOAiMNt3c+/B+tLwi7pWN2JOKiTaYbe+5feUOGt6PWdtoT5jc
-        laSIiG6HNRLVhAjZvQ61Vhc=
-X-Google-Smtp-Source: ABdhPJyr1gNI0uda0yXjXSsbfW3BBMV5yo4ctyCCmHiurclZHgyu/ngNGTcq+0SXtFGufhVLaqGAZA==
-X-Received: by 2002:a05:6402:28e:: with SMTP id l14mr2298832edv.162.1636401785325;
-        Mon, 08 Nov 2021 12:03:05 -0800 (PST)
-Received: from skbuf ([188.25.175.102])
-        by smtp.gmail.com with ESMTPSA id v6sm8243762edy.83.2021.11.08.12.03.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Nov 2021 12:03:04 -0800 (PST)
-Date:   Mon, 8 Nov 2021 22:03:02 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
+        id S238454AbhKHUOC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 15:14:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35318 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231251AbhKHUOB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 15:14:01 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BF69260234;
+        Mon,  8 Nov 2021 20:11:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636402276;
+        bh=rEhGYaNhEjOwF3udFY6tXD+7DrAWIkpttgy+7HoR1tU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Y9w0lTil+unC2FCt3Pd3O202/5SxrND+4WcKH3p9Z2H2N5+wxn+Dy/+d4djm0iGbW
+         uFWQjQWTUnWfS7bG4Udikz5BZuQcvaZKCFYNvHURe1UjhRZKyYAJCo5RGGmw88jAvx
+         I2+A+hxFnE7Qmxnm46Um1cZKlpFJB+Dnty2We9kVtWlxeJphppE3Io+YZTGuTf1ZF9
+         xfVh4F5rQ4+HFXOTcgE9iHGnu8heOlEkgT9vAT3qCAmVsz5/6g5wFzjeRWGT1SRY3K
+         oYthfGTHH6BVwmmZ5ugGZKqjk7R8q3fXVMc64JumVidBT0N39LU2LtAVuSMAklVudd
+         dG0ZmGQERQgMA==
+Date:   Mon, 8 Nov 2021 21:11:10 +0100
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
 To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -63,29 +39,32 @@ Cc:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
         linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
 Subject: Re: [RFC PATCH v2 1/5] leds: trigger: add API for HW offloading of
  triggers
-Message-ID: <20211108200302.dusowlxfsb3e2sy3@skbuf>
-References: <20211108002500.19115-1-ansuelsmth@gmail.com>
- <20211108002500.19115-2-ansuelsmth@gmail.com>
- <YYkuZwQi66slgfTZ@lunn.ch>
- <YYk/Pbm9ZZ/Ikckg@Ansuel-xps.localdomain>
- <20211108171312.0318b960@thinkpad>
- <YYliclrZuxG/laIh@lunn.ch>
- <20211108185637.21b63d40@thinkpad>
- <YYmAQDIBGxPXCNff@lunn.ch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Message-ID: <20211108211110.4ad78e41@thinkpad>
 In-Reply-To: <YYmAQDIBGxPXCNff@lunn.ch>
+References: <20211108002500.19115-1-ansuelsmth@gmail.com>
+        <20211108002500.19115-2-ansuelsmth@gmail.com>
+        <YYkuZwQi66slgfTZ@lunn.ch>
+        <YYk/Pbm9ZZ/Ikckg@Ansuel-xps.localdomain>
+        <20211108171312.0318b960@thinkpad>
+        <YYliclrZuxG/laIh@lunn.ch>
+        <20211108185637.21b63d40@thinkpad>
+        <YYmAQDIBGxPXCNff@lunn.ch>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 08, 2021 at 08:53:36PM +0100, Andrew Lunn wrote:
+On Mon, 8 Nov 2021 20:53:36 +0100
+Andrew Lunn <andrew@lunn.ch> wrote:
+
 > > I guess I will have to work on this again ASAP or we will end up with
 > > solution that I don't like.
 > > 
 > > Nonetheless, what is your opinion about offloading netdev trigger vs
-> > introducing another trigger?
+> > introducing another trigger?  
 > 
 > It is a solution that fits the general pattern, do it in software, and
 > offload it if possible.
@@ -98,13 +77,6 @@ On Mon, Nov 08, 2021 at 08:53:36PM +0100, Andrew Lunn wrote:
 > get_stats. There was also was an issue that get_stats64() cannot
 > perform blocking calls. I don't remember if that was fixed, but if
 > not, get_stats64() is going to be pretty useless on switches.
-
-No it wasn't, I lost the interest.
-I feel pretty uneasy hooking up .ndo_get_stats64() to my switches, and
-basically opening the flood gates for random processes and kernel
-threads to send SPI transactions back and forth like it's nothing.
-Latency for programs like ptp4l and phc2sys is actually more important.
-
 > 
 > We also need to handle drivers which don't actually implement
 > dev_get_stats(). That probably means only supporting offloads, all
@@ -120,10 +92,27 @@ Latency for programs like ptp4l and phc2sys is actually more important.
 > 
 > Given this, i think we need to bias the API so that it very likely
 > ends up offloading, if offloading is available.
-> 
->      Andrew
-> 
 
-We could use some of the newer stats APIs exposed by Jakub if
-.ndo_get_stats64 is not implemented, like ethtool_ops->get_eth_mac_stats.
-Although.. see above.
+I am working with Marvell PHYs and Marvell switches. I am aware of the
+problem that SW netdev does not work for switches because we don't have
+uptodate data.
+
+It seems to me that yes, if the user wants to blink the LEDs on
+activity on switch port, the netdev trigger should only work in offload
+mode and only on LEDs that are connected to switch pins, unless we
+implement a mechanism to get statistics at lest 10 times a second
+(which could maybe be done on marvell switches by reading the registers
+via ethernet frames instead of MDIO).
+
+Marvell switches don't seem to support rx only / tx only activity
+blinking, only rx/tx. I think this could be solved by making rx/tx
+sysfs files for netdev trigger behave so that writing to one would also
+write to another.
+
+But since currently netdev trigger does not work for these switches, I
+think making it so that it works at least to some fashion (in HW
+supported modes) would still be better that current situation.
+
+I will try to look into this, maybe work together with Ansuel.
+
+Marek
