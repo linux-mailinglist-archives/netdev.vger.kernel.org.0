@@ -2,62 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F3E9447FE9
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 13:55:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 793C0448021
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 14:16:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238763AbhKHM60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 07:58:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47756 "EHLO
+        id S239863AbhKHNTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 08:19:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239711AbhKHM6Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 07:58:16 -0500
-Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E1ABC061570
-        for <netdev@vger.kernel.org>; Mon,  8 Nov 2021 04:55:31 -0800 (PST)
-Received: by mail-il1-x133.google.com with SMTP id x9so16752315ilu.6
-        for <netdev@vger.kernel.org>; Mon, 08 Nov 2021 04:55:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=krIzPWjxL6fKkVEliFep/8p+kZeYHWQzCxL2PWO8nMw=;
-        b=K7a6fQ4n8BXHBJzHBmKYHSrJMWTnI6E2NZQkxIrnREHVRpFnpDjTStFWRSw5+aHZoU
-         LlRpZAMm1p6L7MJE4g/g1ol5Lij3KCuVwIAUj0efxemuXtMgkWtAnbESqRyYrHRhi4O/
-         6JPh7GmRXqTBH/R8Qg/CxBg6g9DpFMqIvIrE4+3vUMQ8Uao2Tv10U3cjMIaAVAX0Aamb
-         yZSgtcXqrto5wbejgEhqLjF9/tcs3326baAERvTRDBAGm1imkvbDJIm0Q8wqPM5FMbJ2
-         Upkz7v1lIhSe23bp+1XvTc3kNTQN7IuLYs+fQZ2+mdaVuM/Z+Qlao5MsvXJ3cWtz9MYi
-         PNOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=krIzPWjxL6fKkVEliFep/8p+kZeYHWQzCxL2PWO8nMw=;
-        b=Ng19d2DnQ8wixSzRQiJIVkbWf3BxhQqfJp6MOtLqK8VCE+FXhV6gdHz0740j/eCSaO
-         dFfxTozQjwAF9DwTH0P0OXYX7P0h8Szuswr2+qe+3Huui3UtaxmJz78EDw0uUr1J0zNl
-         2DaBIuta63KfW/GBVFgpTvy8Yr1i8GESOdy9sLP8XlsTZ3ZrVcYuwBt7cgnaO7hFUBkK
-         EJJqIhhfklL49aRBvHMfGwd6KVZDemG5tLmKUNUMXE6qaqjbu0Mo7HcTEk3yMkE0um0W
-         38HIcmbrV3xEd4J6ZtA4X8oCCgYIY5DbGWN7vcxTA5qHJd2W6AdMy94o/xsDQCpb9QUi
-         6Rhg==
-X-Gm-Message-State: AOAM531/AGHe/vJcO8nq0Cd6rPAfrlS0wbQbzcILuTBiLLpqblhLVIjW
-        +FgpFqD67JECMYrzGQ5GAgfODDgzfZY5N0Zt1Dc=
-X-Google-Smtp-Source: ABdhPJx4BlqRb0cKasZGKcXjblUaoIAcp6CkpQqPjsUCf7N3B2Vd0VjJCqCjrVouQSGK7Ru13u3GOcArzc57hzt//dg=
-X-Received: by 2002:a05:6e02:b2a:: with SMTP id e10mr36636177ilu.186.1636376130978;
- Mon, 08 Nov 2021 04:55:30 -0800 (PST)
+        with ESMTP id S235636AbhKHNTc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 08:19:32 -0500
+X-Greylist: delayed 999 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 08 Nov 2021 05:16:48 PST
+Received: from ganesha.gnumonks.org (ganesha.gnumonks.org [IPv6:2001:780:45:1d:225:90ff:fe52:c662])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84975C061570
+        for <netdev@vger.kernel.org>; Mon,  8 Nov 2021 05:16:48 -0800 (PST)
+Received: from uucp by ganesha.gnumonks.org with local-bsmtp (Exim 4.89)
+        (envelope-from <laforge@gnumonks.org>)
+        id 1mk4Fo-0008Ra-Cr; Mon, 08 Nov 2021 14:00:04 +0100
+Received: from laforge by localhost.localdomain with local (Exim 4.95)
+        (envelope-from <laforge@gnumonks.org>)
+        id 1mk46x-004ORa-A2;
+        Mon, 08 Nov 2021 13:50:55 +0100
+Date:   Mon, 8 Nov 2021 13:50:55 +0100
+From:   Harald Welte <laforge@gnumonks.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Thomas Jarosch <thomas.jarosch@intra2net.com>,
+        Networking <netdev@vger.kernel.org>,
+        Tilman Schmidt <tilman@imap.cc>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        gigaset307x-common@lists.sourceforge.net,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Paul Bolle <pebolle@tiscali.nl>,
+        isdn4linux@listserv.isdn4linux.de,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Holger Schurig <holgerschurig@googlemail.com>
+Subject: Re: [PATCH v2 5/5] isdn: move capi drivers to staging
+Message-ID: <YYkdL2AsV84J950k@nataraja>
+References: <20190426195849.4111040-1-arnd@arndb.de>
+ <20190426195849.4111040-6-arnd@arndb.de>
+ <20211108094845.cytlyen5nptv4elu@intra2net.com>
+ <CAK8P3a0=+w-CR_3uUr3Vi8E7v1z1O40K81pZU6y67u5ns8tCHA@mail.gmail.com>
 MIME-Version: 1.0
-Sender: mrsshantelwilliams@gmail.com
-Received: by 2002:a05:6e04:49c:0:0:0:0 with HTTP; Mon, 8 Nov 2021 04:55:30
- -0800 (PST)
-From:   Treasure Asumta <mytreasunta@gmail.com>
-Date:   Mon, 8 Nov 2021 04:55:30 -0800
-X-Google-Sender-Auth: BXI9YJOCUGBlksA6WiBk5vYOHXM
-Message-ID: <CAJkn8gDXuba2wL7_o=vP1z3znngTpkQVxRVANm7hn8eiXoxLog@mail.gmail.com>
-Subject: Re: Hello my dear.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a0=+w-CR_3uUr3Vi8E7v1z1O40K81pZU6y67u5ns8tCHA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello my dear friend good day to you, my name is Mrs. Treasure Asumta
-am from France and I have been expecting your response to my previous
-mail to you concerning a Business Transaction at my Bank that I need
-you to assist me or is your email not Valid?
+Hi Arnd,
+
+On Mon, Nov 08, 2021 at 11:58:23AM +0100, Arnd Bergmann wrote:
+> When removal of mISDN came up last, Harald Welte mentioned that some
+> of the code is still used by Osmocom/OpenBSC[1] to drive the E1 line cards.
+> I'm not sure if this is still the case, of if they have since migrated
+> to another driver.
+
+In Osmocom (specifically, libosmo-abis which is used in osmo-bsc and
+osmo-mgw) We currently support E1 interfaces via three drivers:
+
+1) mISDN
+2) DAHDI
+3) our new open source hardware / gateware / firmware USB-E1 adapter icE1usb
+   https://osmocom.org/projects/e1-t1-adapter/wiki/IcE1usb via the
+   all-userspace libusb based driver osmo-e1d
+   https://osmocom.org/projects/osmo-e1d/wiki/Wiki
+
+The days of the use of TDM/E1 interface are also still far from over in
+the cellular telecom operator industry - particularly so in
+not-so-wealthy countries.  At my company we regularly have projects that
+involve the requirement to drive E1 interfaces (typically 3GPP Abis, A and
+Gb interface), even in 2021.
+
+From my point of view, mISDN is certainly the least used driver at the
+moment, given that [as far as I know] the only E1/PRI interface chipsets
+it supports were for classic parallel PCI bus, which is hard to find
+both in terms of E1 adapters as well as in mainboards.  Also, the cards
+never supported more than 1 or 2 E1 ports, as far as I know.
+
+I would expect the majority of the users are using DAHDI based
+deployments (up to 8x E1 per PCIe slot), with some adventurous ones
+requiring few portsgoing for our icE1usb.
+
+I will inquire on the appropriate osmocom mailing list whether there are
+people still using mISDN.
+
+-- 
+- Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.org/
+============================================================================
+"Privacy in residential applications is a desirable marketing option."
+                                                  (ETSI EN 300 175-7 Ch. A6)
