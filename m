@@ -2,73 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 933854481AB
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 15:26:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FDD34481AD
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 15:26:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238154AbhKHO2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 09:28:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40418 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234601AbhKHO2t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 09:28:49 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6283C061570
-        for <netdev@vger.kernel.org>; Mon,  8 Nov 2021 06:26:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=vB3lGTKeXlkwPt1uW+zIv45y5eq/L48p/G5oE4G69cQ=; b=el7KfnOcZzyOI2msWn885gGF/G
-        Sa78dybaSyn1kpmLx3kYpTwqtJ9mdku7Zc4eW7zY8oiaRrUWbkIHMQcflkgI0Zn8RCrADfNuL1Jlp
-        S2YsOE21CaNeTIkgsQr574CsD5OqIkWA7g+veHrV8BzyzXqk57g1krTav870WCygM3Ed9HKn598Re
-        wtdDQC8ZoQa8X+Lo4/BMNU/sYGUTVpN4Ntl1Kb3Rhxv5SNR5eq8HSY9tcl6zU0O1vEboKgqMnS/Rm
-        9WXROBq2Dm0bt6sSs947UEFfnjFN9wZJtT0Xw6eJkajG0KKwTmbRzEit2onpEUs3GUncEJhb5HcEW
-        4tFjZa0Q==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55536)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mk5ao-0000pA-MF; Mon, 08 Nov 2021 14:25:50 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mk5an-0002sB-0o; Mon, 08 Nov 2021 14:25:49 +0000
-Date:   Mon, 8 Nov 2021 14:25:48 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     bage@linutronix.de
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, b.spranger@linutronix.de
-Subject: Re: [PATCH net v2] net: phy: phy_ethtool_ksettings_set: Don't
- discard phy_start_aneg's return
-Message-ID: <YYkzbE39ERAxzg4k@shell.armlinux.org.uk>
-References: <20211105153648.8337-1-bage@linutronix.de>
- <20211108141834.19105-1-bage@linutronix.de>
+        id S239374AbhKHO3G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 09:29:06 -0500
+Received: from mswedge2.sunplus.com ([60.248.182.106]:48032 "EHLO
+        mg.sunplus.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S234601AbhKHO3F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 09:29:05 -0500
+X-MailGates: (flag:3,DYNAMIC,RELAY,NOHOST:PASS)(compute_score:DELIVER,40
+        ,3)
+Received: from 172.17.9.112
+        by mg02.sunplus.com with MailGates ESMTP Server V5.0(53121:0:AUTH_RELAY)
+        (envelope-from <wells.lu@sunplus.com>); Mon, 08 Nov 2021 22:26:11 +0800 (CST)
+Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
+ sphcmbx02.sunplus.com.tw (172.17.9.112) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.23; Mon, 8 Nov 2021 22:26:11 +0800
+Received: from sphcmbx02.sunplus.com.tw ([::1]) by sphcmbx02.sunplus.com.tw
+ ([fe80::f8bb:bd77:a854:5b9e%14]) with mapi id 15.00.1497.023; Mon, 8 Nov 2021
+ 22:26:11 +0800
+From:   =?big5?B?V2VsbHMgTHUgp2aq2sTL?= <wells.lu@sunplus.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Wells Lu <wellslutw@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>
+Subject: RE: [PATCH 2/2] net: ethernet: Add driver for Sunplus SP7021
+Thread-Topic: [PATCH 2/2] net: ethernet: Add driver for Sunplus SP7021
+Thread-Index: AQHX0KKBcebTINBXKk6D/f7Frpi9sKvxfraAgAGf2kCAAU6CgIAE3RVA///T9oCAAJMwUA==
+Date:   Mon, 8 Nov 2021 14:26:11 +0000
+Message-ID: <4e663877558247048e9b04b027e555b8@sphcmbx02.sunplus.com.tw>
+References: <cover.1635936610.git.wells.lu@sunplus.com>
+ <650ec751dd782071dd56af5e36c0d509b0c66d7f.1635936610.git.wells.lu@sunplus.com>
+ <YYK+EeCOu/BXBXDi@lunn.ch>
+ <64626e48052c4fba9057369060bfbc84@sphcmbx02.sunplus.com.tw>
+ <YYUzgyS6pfQOmKRk@lunn.ch>
+ <7c77f644b7a14402bad6dd6326ba85b1@sphcmbx02.sunplus.com.tw>
+ <YYkjBdu64r2JF1bR@lunn.ch>
+In-Reply-To: <YYkjBdu64r2JF1bR@lunn.ch>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [172.25.108.39]
+Content-Type: text/plain; charset="big5"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211108141834.19105-1-bage@linutronix.de>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 08, 2021 at 03:18:34PM +0100, bage@linutronix.de wrote:
-> From: Bastian Germann <bage@linutronix.de>
-> 
-> Take the return of phy_start_aneg into account so that ethtool will handle
-> negotiation errors and not silently accept invalid input.
-
-I don't think this description is accurate. If we get to call
-phy_start_aneg() with invalid input, then something has already
-gone wrong. As Andrew has already explained, an error from this
-function means that something went wrong with PHY communication.
-All validation should have happened prior to this function being
-called.
-
-Thanks.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+PiA+IFNQNzAyMSBFdGhlcm5ldCBzdXBwb3J0cyAzIG9wZXJhdGlvbiBtb2RlczoNCj4gPiAgLSBE
+dWFsIEV0aGVybmV0IG1vZGUNCj4gPiAgICBJbiB0aGlzIG1vZGUsIGRyaXZlciBjcmVhdGVzIHR3
+byBuZXQtZGV2aWNlIGludGVyZmFjZXMuIEVhY2ggY29ubmVjdHMNCj4gPiAgICB0byBQSFkuIFRo
+ZXJlIGFyZSB0d28gTEFOIHBvcnRzIHRvdGFsbHkuDQo+ID4gICAgSSBhbSBzb3JyeSB0aGF0IEVN
+QUMgb2YgU1A3MDIxIGNhbm5vdCBzdXBwb3J0IEwyIHN3aXRjaCBmdW5jdGlvbnMNCj4gPiAgICBv
+ZiBMaW51eCBzd2l0Y2gtZGV2aWNlIG1vZGVsIGJlY2F1c2UgaXQgb25seSBoYXMgcGFydGlhbCBm
+dW5jdGlvbiBvZg0KPiA+ICAgIHN3aXRjaC4NCj4gDQo+IFRoaXMgaXMgZmluZS4NCg0KVGhhbmtz
+IGEgbG90IQ0KDQoNCj4gPg0KPiA+ICAtIE9uZSBFdGhlcm5ldCBtb2RlDQo+ID4gICAgSW4gdGhp
+cyBtb2RlLCBkcml2ZXIgY3JlYXRlcyBvbmUgbmV0LWRldmljZSBpbnRlcmZhY2UuIEl0IGNvbm5l
+Y3RzIHRvDQo+ID4gICAgdG8gYSBQSFkgKFRoZXJlIGlzIG9ubHkgb25lIExBTiBwb3J0KS4NCj4g
+PiAgICBUaGUgTEFOIHBvcnQgaXMgdGhlbiBjb25uZWN0ZWQgdG8gYSAzLXBvcnQgRXRoZXJuZXQg
+aHViLg0KPiA+ICAgIFRoZSAzLXBvcnQgRXRoZXJuZXQgaHViIGlzIGEgaGFyZHdhcmUgY2lyY3Vp
+dHJ5LiBBbGwgb3BlcmF0aW9ucw0KPiA+ICAgIChwYWNrZXQgZm9yd2FyZGluZykgYXJlIGRvbmUg
+YnkgaGFyZHdhcmUuIE5vIHNvZnR3YXJlDQo+ID4gICAgaW50ZXJ2ZW50aW9uIGlzIG5lZWRlZC4g
+QWN0dWFsbHksIGV2ZW4ganVzdCBwb3dlci1vbiwgbm8gc29mdHdhcmUNCj4gPiAgICBydW5uaW5n
+LCB0d28gTEFOIHBvcnRzIG9mIFNQNzAyMSB3b3JrIHdlbGwgYXMgMi1wb3J0IGh1Yi4NCj4gDQo+
+IFdlIG5lZWQgdG8gZGlnIGludG8gdGhlIGRldGFpbHMgb2YgdGhpcyBtb2RlLiBJIHdvdWxkIGlu
+aXRpYWxseSBzYXkgbm8sIHVudGlsIHdlDQo+IHJlYWxseSBkbyBrbm93IGl0IGlzIGltcG9zc2li
+bGUgdG8gZG8gaXQgY29ycmVjdGx5LiAgRXZlbiBpZiBpdCBpcyBpbXBvc3NpYmxlIHRvIGRvDQo+
+IGl0IGNvcnJlY3RseSwgaSdtIHN0aWxsIHRlbXBlZCB0byByZWplY3QgdGhpcyBtb2RlLg0KPiAN
+Cj4gSG93IGRvZXMgc3Bhbm5pbmcgdHJlZSB3b3JrPyBXaG8gc2VuZHMgYW5kIHJlY2VpdmVzIHRo
+ZSBCUERVPw0KPiANCj4gSXMgdGhlcmUgUFRQIHN1cHBvcnQ/IEhvdyBkbyB5b3Ugc2VuZCBhbmQg
+cmVjZWl2ZSB0aGUgUFRQIGZyYW1lcz8NCj4gDQo+IElzIElHTVAgc25vb3Bpbmcgc3VwcG9ydGVk
+Pw0KPiANCj4gQWxsIG9mIHRoZXNlIGhhdmUgb25lIHRoaW5nIGluIGNvbW1vbiwgeW91IG5lZWQg
+dG8gYmUgYWJsZSB0byBlZ3Jlc3MgZnJhbWVzDQo+IG91dCBhIHNwZWNpZmljIHBvcnQgb2YgdGhl
+IHN3aXRjaCwgYW5kIHlvdSBuZWVkIHRvIGtub3cgd2hhdCBwb3J0IGEgcmVjZWl2ZWQNCj4gZnJh
+bWVzIGluZ3Jlc3NlZCBvbi4gSWYgeW91IGNhbiBkbyB0aGF0LCB5b3UgY2FuIHByb2JhYmx5IGRv
+IHByb3BlciBzdXBwb3J0IGluDQo+IExpbnV4Lg0KDQpUaGUgIkwyIHN3aXRjaCIgaXMgYSB2ZXJ5
+IHNpbXBsZSB3aXRjaC4gSXQgaGFzIDMgcG9ydHM6IENQVSwgTEFOIHBvcnQgMCBhbmQgTEFOIA0K
+cG9ydCAxLiBBIHBhY2tldCBpcyBhbHdheXMgZm9yd2FyZGVkIHRvIG90aGVyIHR3byBwb3J0cyBp
+ZiBzb3VyY2UtYWRkcmVzcyAob2YgTUFDKQ0KbGVhcm5pbmcgZnVuY3Rpb24gaXMgb2ZmLCBvciBm
+b3J3YXJkZWQgdG8gb25lIG9mIHRoZSB0d28gcG9ydHMgaWYgc291cmNlLWFkZHJlc3MNCmxlYXJu
+aW5nIGZ1bmN0aW9uIGlzIG9uIGFuZCBzb3VyY2UgYWRkcmVzcyBpcyBsZWFybnQgKHJlY29yZGVk
+IGJ5IHN3aXRjaCkuDQoNClRoZSBzd2l0Y2ggd2lsbCBub3QgcmVjb2duaXplIHR5cGUgb2YgcGFj
+a2V0cywgcmVnYXJkbGVzcyBCUERVLCBQVFAgb3IgYW55IG90aGVyDQpwYWNrZXRzLiBJZiB0dXJu
+aW5nIG9mZiBzb3VyY2UtYWRkcmVzcyBsZWFybmluZyBmdW5jdGlvbiwgaXQgd29ya3MgbGlrZSBh
+biBFdGhlcm5ldA0KcGx1cyBhIDItcG9ydCBodWIuDQoNCg0KPiBJcyB0aGUgZGF0YXNoZWV0IGF2
+YWlsYWJsZT8NCg0KWWVzLCByZWZlciB0byBvbi1saW5lIGRvY3VtZW50IG9mIFNQNzAyMToNCmh0
+dHBzOi8vc3VucGx1cy10aWJiby5hdGxhc3NpYW4ubmV0L3dpa2kvc3BhY2VzL2RvYy9wYWdlcy80
+NjI1NTMwOTAvMTUuK0V0aGVybmV0K1N3aXRjaA0KDQoNCj4gDQo+ICAgIEFuZHJldw0K
