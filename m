@@ -2,107 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78D6D447954
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 05:24:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1ADF4479F6
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 06:25:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237429AbhKHE1M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Nov 2021 23:27:12 -0500
-Received: from mail-io1-f71.google.com ([209.85.166.71]:34397 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237426AbhKHE1L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Nov 2021 23:27:11 -0500
-Received: by mail-io1-f71.google.com with SMTP id k20-20020a5d97d4000000b005da6f3b7dc7so10650067ios.1
-        for <netdev@vger.kernel.org>; Sun, 07 Nov 2021 20:24:27 -0800 (PST)
+        id S236755AbhKHF1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 00:27:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59186 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229962AbhKHF1o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 00:27:44 -0500
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D016FC061570
+        for <netdev@vger.kernel.org>; Sun,  7 Nov 2021 21:25:00 -0800 (PST)
+Received: by mail-pg1-x530.google.com with SMTP id 188so1776719pgb.7
+        for <netdev@vger.kernel.org>; Sun, 07 Nov 2021 21:25:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1zv8A5SdJdFnXGFUujP5eLzOnIQkuB6UXQ/3icX2J9M=;
+        b=W48T89SQeAMDIT+9eFU0Irc+FkSsJ03P98ZCAaqEG2ZD3jw7+9kYN/yPvoP5PrGelL
+         GQ99cWd35oyJnbUG7RmK72WU6YIr2jyEL+AXTcOipvcPbyXW/QDESMerwinccWWAogT1
+         tbnbCM6ALrZ1Y1SkrTffVtGt3CVIdCwdZzkGIyl/aBS6FIB7uP8dsmeC3wGEGYml1yvf
+         KLoeGz9GZs/RwkFtOo3COpJ44sCAZmIdrpYCIIM2zCZ0XVbsJCHSjuEVFt6jT0Iukp+P
+         OV71o22S2wXHXRIS3zXYIyQRa7Cx5OJ//BCrQCNnsFZT56WM4y73otFz8D2P6MHYutvp
+         DbRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=jj0xIfo2KzB7kQSJ9auzxPc3+VA8HLiH6Li4VX2HPn0=;
-        b=ej2In+9YfuTBta1indl7ElZkVdceIHVJeUA8u+V9t9mVoFyhrzcuuoCf/ebk1RIXcH
-         TlUcJ82wAWvudUNzhWBbIvvvGDZ/aXK49jcwNoaUg9dSKgME7EXniBc02vhTOOJsA7cr
-         EIIim1gCTyriCj1z0J/S2sePsD71TvI8+rMUU7D8H4s4Oki3Myfs/RNd2JDtr5U36rFC
-         myr+tyIp0fmRansB//4Ky5t/bLInex74t4NU6jA4S1yWi2a1WfnMVs7WI43UQDrU3yHZ
-         wxUvrAOEKkIVurk/eV7+PgYhMPdezlFoT0YkFbAsVFA+SJDw6CiNseGK9J4vAqS8guJ4
-         mq3Q==
-X-Gm-Message-State: AOAM530IDlyC5D5RCgVgam7R4mbpVK6aA0snwVFbtVEBIVzOO/UpAGg2
-        bkMRZmwcjBdC7qBr5wL88AB1PvwYgtBATuhmR/FXlwtIeahR
-X-Google-Smtp-Source: ABdhPJyZCDMHcParfIhx8LnNuU6d+VIWK0tBzBPz6/McmA684K3l5loYaEejjZRbb/pXlM4kGMYhRxrTiIElRtUWttmuPpz7io+Y
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1zv8A5SdJdFnXGFUujP5eLzOnIQkuB6UXQ/3icX2J9M=;
+        b=gMahxZZ+vg3YIVFZg+FE7dHU4xCT7NMlXwPtgxhj0kvnHeFu8GLOwpsq/g6f47EbZ0
+         TNlaFvhFW0cCfuNbIFC8GLK/kiGN0YHhRmhZ4CQvkL5jdEbdGgd57BxZW2/PibUH3nc3
+         XO7C21AW7TdmD9FBJ4dxHuJEkEtimvY8bBBAgtv3gRIRk5f9tJdwWMVTTMe92956WN3u
+         7PaF3jS4/ES+dg6Gjgk6HT1Q3OSwmmo++fcAUvd4HdennqDlQuajmU3QdYtzte/h5DUk
+         e2FASzOonwKhgNfV0y3FQ67G/17pz3XOZ91fZFsZU9AAVAynaofEX1W4Jw7xtkI1B/5L
+         UJPg==
+X-Gm-Message-State: AOAM5301lP+y+FVowL190bcG7cxtVScD4UV6MyJN/0PNvSYjSNd+BLET
+        0B51qEFnZ/Hd9v1mLPKilBM3jBD2Y0sn4EhMCyo=
+X-Google-Smtp-Source: ABdhPJw6ONl0eMrSe2/tM4DtM02aWPZ5jqjo4xYJAhuQk5rld2a7TabI0DhhEHsPESgr3PssCfZ1nlFSIfWtYXaIbzk=
+X-Received: by 2002:a65:550e:: with SMTP id f14mr42064367pgr.164.1636349100038;
+ Sun, 07 Nov 2021 21:25:00 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a02:5b82:: with SMTP id g124mr21629365jab.89.1636345467120;
- Sun, 07 Nov 2021 20:24:27 -0800 (PST)
-Date:   Sun, 07 Nov 2021 20:24:27 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000004c317905d03f5e78@google.com>
-Subject: [syzbot] WARNING: refcount bug in default_device_exit_batch
-From:   syzbot <syzbot+5971b9b300c59af94177@syzkaller.appspotmail.com>
-To:     changbin.du@intel.com, daniel@iogearbox.net, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        yajun.deng@linux.dev
+References: <20211020083854.1101670-1-atenart@kernel.org> <20211022130146.3dacef0a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211022130146.3dacef0a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Jonathon Reinhart <jonathon.reinhart@gmail.com>
+Date:   Mon, 8 Nov 2021 00:24:33 -0500
+Message-ID: <CAPFHKzduJiebgnAAjEvx4vBJCFn7-eyfJ+k6JQja2waxqKeCwQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: sysctl data could be in .bss
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Antoine Tenart <atenart@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        tglx@linutronix.de, peterz@infradead.org,
+        Steven Rostedt <rostedt@goodmis.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Fri, Oct 22, 2021 at 4:01 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> Widening the CC list a little.
+>
+> On Wed, 20 Oct 2021 10:38:54 +0200 Antoine Tenart wrote:
+> > A check is made when registering non-init netns sysctl files to ensure
+> > their data pointer does not point to a global data section. This works
+> > well for modules as the check is made against the whole module address
+> > space (is_module_address). But when built-in, the check is made against
+> > the .data section. However global variables initialized to 0 can be in
+> > .bss (-fzero-initialized-in-bss).
+> >
+> > Add an extra check to make sure the sysctl data does not point to the
+> > .bss section either.
+> >
+> > Signed-off-by: Antoine Tenart <atenart@kernel.org>
+> > Reviewed-by: Jonathon Reinhart <jonathon.reinhart@gmail.com>
+> > ---
+> > Hello,
+> >
+> > This was previously sent as an RFC[1] waiting for a problematic sysctl
+> > to be fixed. The fix was accepted and is now in the nf tree[2].
+> >
+> > This is not sent as a fix to avoid possible new warnings in stable
+> > kernels. (The actual fixes of sysctl files should go).
+> >
+> > I think this can go through the net-next tree as kernel/extable.c
+> > doesn't seem to be under any subsystem and a conflict is unlikely to
+> > happen.
+>
+> > [1] https://lore.kernel.org/all/20211012155542.827631-1-atenart@kernel.org/T/
+> > [2] https://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git/commit/?id=174c376278949c44aad89c514a6b5db6cee8db59
+> >
+> >  include/linux/kernel.h | 1 +
+> >  kernel/extable.c       | 8 ++++++++
+> >  net/sysctl_net.c       | 2 +-
+> >  3 files changed, 10 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+> > index 2776423a587e..beb61d0ab220 100644
+> > --- a/include/linux/kernel.h
+> > +++ b/include/linux/kernel.h
+> > @@ -231,6 +231,7 @@ extern char *next_arg(char *args, char **param, char **val);
+> >  extern int core_kernel_text(unsigned long addr);
+> >  extern int init_kernel_text(unsigned long addr);
+> >  extern int core_kernel_data(unsigned long addr);
+> > +extern int core_kernel_bss(unsigned long addr);
+>
+> Is the intention of these helpers to have strict section name semantics
+> or higher level "is this global kernel data" semantics? If it's the
+> latter we could make core_kernel_data() check bss instead, chances are
+> all callers will either want that or not care. Steven?
 
-syzbot found the following issue on:
+The core_kernel_data() function was introduced in a2d063ac216c1, and
+the commit message says:
 
-HEAD commit:    08fcdfa6e3ae nfc: port100: lower verbosity of cancelled UR..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=10325fb6b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a5d447cdc3ae81d9
-dashboard link: https://syzkaller.appspot.com/bug?extid=5971b9b300c59af94177
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+"It may or may not return true for RO data... This utility function is
+used to determine if data is safe from ever being freed. Thus it
+should return true for all RW global data that is not in a module or
+has been allocated, or false otherwise."
 
-Unfortunately, I don't have any reproducer for this issue yet.
+The intent of the function seems to be more in line with the
+higher-level "is this global kernel data" semantics you suggested. The
+purpose seems to be to differentiate between "part of the loaded
+kernel image" vs. a dynamic allocation (which would include a loaded
+module image). And given that it *might* return true for RO data
+(depending on the arch linker script, presumably), I think it would be
+safe to include .bss -- clearly, with that caveat in place, it isn't
+promising strict section semantics.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+5971b9b300c59af94177@syzkaller.appspotmail.com
+There are only two existing in-tree consumers:
 
-bond0 (unregistering): (slave bond_slave_1): Releasing backup interface
-bond0 (unregistering): (slave bond_slave_0): Releasing backup interface
-bond0 (unregistering): Released all slaves
-------------[ cut here ]------------
-refcount_t: decrement hit 0; leaking memory.
-WARNING: CPU: 0 PID: 15049 at lib/refcount.c:31 refcount_warn_saturate+0xbf/0x1e0 lib/refcount.c:31
-Modules linked in:
-CPU: 0 PID: 15049 Comm: kworker/u4:8 Not tainted 5.15.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: netns cleanup_net
-RIP: 0010:refcount_warn_saturate+0xbf/0x1e0 lib/refcount.c:31
-Code: 1d a9 13 82 09 31 ff 89 de e8 ad ae 9e fd 84 db 75 e0 e8 64 a8 9e fd 48 c7 c7 20 2a e4 89 c6 05 89 13 82 09 01 e8 c1 55 1b 05 <0f> 0b eb c4 e8 48 a8 9e fd 0f b6 1d 78 13 82 09 31 ff 89 de e8 78
-RSP: 0018:ffffc900045dfa10 EFLAGS: 00010286
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff888078fcba00 RSI: ffffffff815ef908 RDI: fffff520008bbf34
-RBP: 0000000000000004 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff815e96ee R11: 0000000000000000 R12: 0000000000000001
-R13: ffffc900045dfb68 R14: ffff8880784105b0 R15: ffff88802a8bc5a0
-FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fcf4f55b000 CR3: 000000001b5cc000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- __refcount_dec include/linux/refcount.h:344 [inline]
- refcount_dec include/linux/refcount.h:359 [inline]
- dev_put include/linux/netdevice.h:4166 [inline]
- unregister_netdevice_many+0x12c9/0x1790 net/core/dev.c:11111
- default_device_exit_batch+0x2fa/0x3c0 net/core/dev.c:11604
- ops_exit_list+0x10d/0x160 net/core/net_namespace.c:171
- cleanup_net+0x4ea/0xb00 net/core/net_namespace.c:593
- process_one_work+0x9b2/0x1690 kernel/workqueue.c:2297
- worker_thread+0x658/0x11f0 kernel/workqueue.c:2444
- kthread+0x405/0x4f0 kernel/kthread.c:327
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
+1. __register_ftrace_function() [kernel/trace/ftrace.c] -- Sets
+FTRACE_OPS_FL_DYNAMIC if core_kernel_data(ops) returns false, which
+denotes "dynamically allocated ftrace_ops which need special care". It
+would be unlikely (if not impossible) for the "ops" object in question
+to be all-zero and end up in the .bss, but if it were, then the
+current behavior would be wrong. IOW, it would be more correct to
+include .bss.
 
+2. ensure_safe_net_sysctl() [net/sysctl_net.c] (The subject of this
+thread) -- Trying to distinguish "global kernel data" (static/global
+variables) from kmalloc-allocated objects. More correct to include
+.bss.
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Both of these callers only seem to delineate between static and
+dynamic object allocations. Put another way, if core_kernel_bss(), all
+existing callers should be updated to check core_kernel_data() ||
+core_kernel_bss().
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Since Steven introduced it, and until I added
+ensure_safe_net_sysctl(), he / tracing was the only consumer.
+
+Thinking critically from the C language perspective, I can't come up
+with any case where one would actually expect core_kernel_data() to
+return true for 'int global = 1' and false for 'int global = 0'.
+
+In conclusion, I agree with your alternative proposal Jakub, and I
+think this patch is the right way forward:
+
+diff --git a/kernel/extable.c b/kernel/extable.c
+index b0ea5eb0c3b4..8b6f1d0bdaf6 100644
+--- a/kernel/extable.c
++++ b/kernel/extable.c
+@@ -97,6 +97,9 @@ int core_kernel_data(unsigned long addr)
+        if (addr >= (unsigned long)_sdata &&
+            addr < (unsigned long)_edata)
+                return 1;
++       if (addr >= (unsigned long)__bss_start &&
++           addr < (unsigned long)__bss_stop)
++               return 1;
+        return 0;
+ }
+
+Jonathon Reinhart
