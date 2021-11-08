@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8874844A119
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 02:04:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6673644A123
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 02:05:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230299AbhKIBHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 20:07:32 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60498 "EHLO mail.kernel.org"
+        id S240132AbhKIBHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 20:07:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33368 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239277AbhKIBFt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 20:05:49 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3A347611C4;
-        Tue,  9 Nov 2021 01:02:21 +0000 (UTC)
+        id S239285AbhKIBFu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 20:05:50 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 00E7161215;
+        Tue,  9 Nov 2021 01:02:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636419742;
-        bh=oE25VBAXKjug5zZ/ntNxpF9N4QRExlf1uT4rWOqGdyU=;
+        s=k20201202; t=1636419744;
+        bh=qmmu+Z7ueqUZf2mPkdOMLMF8XFdHvd5LVBYbVFORez4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J6zv0y8/YsqjUukf+BoNjtd/RDSHzfczeVnMEEGIhp0CsEPCiOwEkSRCjRqlodgEC
-         xfwl3efGD8McjPFhz56SnjxzwANxr6776erhn0NXiiwqiuJ+Idd4yJ7miu/CM3YJh8
-         Dl3+2qDC27uNALkMua4/Vv9jjSsjnDMWw7fZJrp8WfBa+rsmdemXfRQpD8/KAUxQCs
-         vfYQBxWtWkXPLpGClsTkGRke86zwaXX0bZ5Y3azaXL/owv/0HvnrjoVcX/FwSLX7uU
-         PpEpNBHLBorSJFD0wewU3/YMXQD4wlcAMdkDctdIijYcaBR8cHdDVf7vnWxfgWTGvv
-         yiVpbve3QKHlw==
+        b=STG5/kz9rHpukcs86Jq1iOo4S59iQ6cIxSb6S7oyYz+fng2trpGcWLme2dJJm8PQO
+         SBmiwsz4q031KZxYl49PX/ahNiJdLHMbhwHnWGaoCTAy1xCAr7safF/Kl60oogsWKt
+         5ozdd27b+31K4QoaM4c6ysUca14G8XCQA9P7xEYbu3kgsd5JwcBkUmjKCTiUOogyHn
+         qCRFsAwCTHbYEBkDeJZb9Aocen5zENryOL5ZPs0qmcyQM4lqcf9zczqbnu1w0xWN/f
+         X6fhtucXnqWSOg2al1REwBn8oRhbm2CkUi/YbElN5XkzMNyKN6Roke8AhivCB7m0F7
+         Kt8tseyHjUXpA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>,
@@ -31,9 +31,9 @@ Cc:     =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>,
         ganapathi017@gmail.com, sharvari.harisangam@nxp.com,
         huxinming820@gmail.com, davem@davemloft.net, kuba@kernel.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.14 022/138] mwifiex: Run SET_BSS_MODE when changing from P2P to STATION vif-type
-Date:   Mon,  8 Nov 2021 12:44:48 -0500
-Message-Id: <20211108174644.1187889-22-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.14 023/138] mwifiex: Properly initialize private structure on interface type changes
+Date:   Mon,  8 Nov 2021 12:44:49 -0500
+Message-Id: <20211108174644.1187889-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211108174644.1187889-1-sashal@kernel.org>
 References: <20211108174644.1187889-1-sashal@kernel.org>
@@ -48,70 +48,57 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jonas Dreßler <verdre@v0yd.nl>
 
-[ Upstream commit c2e9666cdffd347460a2b17988db4cfaf2a68fb9 ]
+[ Upstream commit c606008b70627a2fc485732a53cc22f0f66d0981 ]
 
-We currently handle changing from the P2P to the STATION virtual
-interface type slightly different than changing from P2P to ADHOC: When
-changing to STATION, we don't send the SET_BSS_MODE command. We do send
-that command on all other type-changes though, and it probably makes
-sense to send the command since after all we just changed our BSS_MODE.
-Looking at prior changes to this part of the code, it seems that this is
-simply a leftover from old refactorings.
+When creating a new virtual interface in mwifiex_add_virtual_intf(), we
+update our internal driver states like bss_type, bss_priority, bss_role
+and bss_mode to reflect the mode the firmware will be set to.
 
-Since sending the SET_BSS_MODE command is the only difference between
-mwifiex_change_vif_to_sta_adhoc() and the current code, we can now use
-mwifiex_change_vif_to_sta_adhoc() for both switching to ADHOC and
-STATION interface type.
+When switching virtual interface mode using
+mwifiex_init_new_priv_params() though, we currently only update bss_mode
+and bss_role. In order for the interface mode switch to actually work,
+we also need to update bss_type to its proper value, so do that.
 
-This does not fix any particular bug and just "looked right", so there's
-a small chance it might be a regression.
+This fixes a crash of the firmware (because the driver tries to execute
+commands that are invalid in AP mode) when switching from station mode
+to AP mode.
 
 Signed-off-by: Jonas Dreßler <verdre@v0yd.nl>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20210914195909.36035-4-verdre@v0yd.nl
+Link: https://lore.kernel.org/r/20210914195909.36035-9-verdre@v0yd.nl
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/marvell/mwifiex/cfg80211.c   | 22 ++++---------------
- 1 file changed, 4 insertions(+), 18 deletions(-)
+ drivers/net/wireless/marvell/mwifiex/cfg80211.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-index 0961f4a5e415c..93eb5f109949f 100644
+index 93eb5f109949f..97f0f39364d67 100644
 --- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
 +++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-@@ -1229,29 +1229,15 @@ mwifiex_cfg80211_change_virtual_intf(struct wiphy *wiphy,
+@@ -908,16 +908,20 @@ mwifiex_init_new_priv_params(struct mwifiex_private *priv,
+ 	switch (type) {
+ 	case NL80211_IFTYPE_STATION:
+ 	case NL80211_IFTYPE_ADHOC:
+-		priv->bss_role =  MWIFIEX_BSS_ROLE_STA;
++		priv->bss_role = MWIFIEX_BSS_ROLE_STA;
++		priv->bss_type = MWIFIEX_BSS_TYPE_STA;
  		break;
  	case NL80211_IFTYPE_P2P_CLIENT:
+-		priv->bss_role =  MWIFIEX_BSS_ROLE_STA;
++		priv->bss_role = MWIFIEX_BSS_ROLE_STA;
++		priv->bss_type = MWIFIEX_BSS_TYPE_P2P;
+ 		break;
  	case NL80211_IFTYPE_P2P_GO:
-+		if (mwifiex_cfg80211_deinit_p2p(priv))
-+			return -EFAULT;
-+
- 		switch (type) {
--		case NL80211_IFTYPE_STATION:
--			if (mwifiex_cfg80211_deinit_p2p(priv))
--				return -EFAULT;
--			priv->adapter->curr_iface_comb.p2p_intf--;
--			priv->adapter->curr_iface_comb.sta_intf++;
--			dev->ieee80211_ptr->iftype = type;
--			if (mwifiex_deinit_priv_params(priv))
--				return -1;
--			if (mwifiex_init_new_priv_params(priv, dev, type))
--				return -1;
--			if (mwifiex_sta_init_cmd(priv, false, false))
--				return -1;
--			break;
- 		case NL80211_IFTYPE_ADHOC:
--			if (mwifiex_cfg80211_deinit_p2p(priv))
--				return -EFAULT;
-+		case NL80211_IFTYPE_STATION:
- 			return mwifiex_change_vif_to_sta_adhoc(dev, curr_iftype,
- 							       type, params);
--			break;
- 		case NL80211_IFTYPE_AP:
--			if (mwifiex_cfg80211_deinit_p2p(priv))
--				return -EFAULT;
- 			return mwifiex_change_vif_to_ap(dev, curr_iftype, type,
- 							params);
- 		case NL80211_IFTYPE_UNSPECIFIED:
+-		priv->bss_role =  MWIFIEX_BSS_ROLE_UAP;
++		priv->bss_role = MWIFIEX_BSS_ROLE_UAP;
++		priv->bss_type = MWIFIEX_BSS_TYPE_P2P;
+ 		break;
+ 	case NL80211_IFTYPE_AP:
+ 		priv->bss_role = MWIFIEX_BSS_ROLE_UAP;
++		priv->bss_type = MWIFIEX_BSS_TYPE_UAP;
+ 		break;
+ 	default:
+ 		mwifiex_dbg(adapter, ERROR,
 -- 
 2.33.0
 
