@@ -2,32 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3883447884
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 03:22:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AEB3447890
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 03:25:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236497AbhKHCZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Nov 2021 21:25:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47380 "EHLO
+        id S229757AbhKHC1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Nov 2021 21:27:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229757AbhKHCZO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Nov 2021 21:25:14 -0500
+        with ESMTP id S236349AbhKHC1t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Nov 2021 21:27:49 -0500
 Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1234::107])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C188AC061570;
-        Sun,  7 Nov 2021 18:22:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2192C061570;
+        Sun,  7 Nov 2021 18:25:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
         In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:Sender:
         Reply-To:Cc:Content-ID:Content-Description;
-        bh=Kmu1o3d56x2PHpP0lDg/mYidF1A/EmIUpA6P+e8dkwE=; b=wAknlF+ydZevj70eq0j8ZFkyVz
-        0lClZbALmoyuNN2Xuk4+RZNhe06866teuO8O90/BcUMJ0rH1dDJhKd3C5UxiIokL9HsYwH4Jv6AVI
-        HESTbJrNgKjgOZCRr/zenRz590Mm+BFpWf2aZI1k7itxTJM8E8Bv+xxDYX5Rw5RO72uclGmsUm8WX
-        GL1GwaBoaZbM3p70SCqosj2OhgDMNp39jwPbcHWqA7z3kpcy3Y+ZbCiv+k4g9lRYdcnLmbPJH0Te7
-        RJ0tJvJKQ4gM7yhJau+SRBXElgZxU7HXiO53d0AH/KHkht3JbF+fmG6MWQzc4/ZP0lIogmZ40+Y4Y
-        LYjU5GkQ==;
+        bh=fXq7+MPtzIJaHy2u5Sla+LxJHB+7hwlQh6EuB/DXOcE=; b=nfdpIMcKnxJmCRj/alHgM4rBdx
+        +lRosgdUbAH2qS4k9JA8Os9CfC8FYJgUbAUfynhdFHqyTtF6wLWTaguJs3mbBw+bEUncZ2UVfLItE
+        QZUZ+ZN69hbJ8bJnyEGkZ95C0/5/gLtCo6kADpPtEsGs++P0OsQHLdvwMeXhM+ctZ0HdSWl467jX5
+        5MaeT1JwBQnVQYV+TVVkFF2Z30AWCzZ/PQ/fiEWzrwer8EPOAwaUxnajIcy69TN6Yobj0IEZbFfJc
+        XsGue80NTSf5ra77qz60CfUU5LcQzfLNWLinKYRDsfWV3VCtAPNMSEP4lwSYBjAvGJzKLKZqoP4/7
+        QkVXOpzg==;
 Received: from [2601:1c0:6280:3f0::aa0b]
         by merlin.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mjuIj-008fPf-EB; Mon, 08 Nov 2021 02:22:26 +0000
-Subject: Re: [RFC PATCH v2 2/5] leds: add function to configure offload leds
+        id 1mjuLG-008fQY-Nt; Mon, 08 Nov 2021 02:25:03 +0000
+Subject: Re: [RFC PATCH v2 3/5] leds: trigger: add offload-phy-activity
+ trigger
 To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -40,14 +41,14 @@ To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
 References: <20211108002500.19115-1-ansuelsmth@gmail.com>
- <20211108002500.19115-3-ansuelsmth@gmail.com>
+ <20211108002500.19115-4-ansuelsmth@gmail.com>
 From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <f28d4f1b-66e7-808c-ae69-c1734d60fdc1@infradead.org>
-Date:   Sun, 7 Nov 2021 18:22:19 -0800
+Message-ID: <72114aa0-3154-2027-0eae-36d08003e436@infradead.org>
+Date:   Sun, 7 Nov 2021 18:24:54 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <20211108002500.19115-3-ansuelsmth@gmail.com>
+In-Reply-To: <20211108002500.19115-4-ansuelsmth@gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -56,43 +57,27 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 11/7/21 4:24 PM, Ansuel Smith wrote:
-> diff --git a/Documentation/leds/leds-class.rst b/Documentation/leds/leds-class.rst
-> index 5bf6e5d471ce..0a3bbe71dac7 100644
-> --- a/Documentation/leds/leds-class.rst
-> +++ b/Documentation/leds/leds-class.rst
-> @@ -190,6 +190,30 @@ If the second argument (enable) to the trigger_offload() method is false, any
->   active HW offloading must be deactivated. In this case errors are not permitted
->   in the trigger_offload() method and the driver will be set to the new trigger.
+> diff --git a/drivers/leds/trigger/Kconfig b/drivers/leds/trigger/Kconfig
+> index 33aba8defeab..14023e160ba1 100644
+> --- a/drivers/leds/trigger/Kconfig
+> +++ b/drivers/leds/trigger/Kconfig
+> @@ -164,4 +164,33 @@ config LEDS_TRIGGER_TTY
 >   
-> +The offload trigger will use the function configure_offload() provided by the driver
-> +that will configure the offloaded mode for the LED.
-> +This function passes as the first argument (offload_flags) a u32 flag.
-> +The second argument (cmd) of the configure_offload() method can be used to do various
-> +operations for the specific trigger. We currently support ENABLE, DISABLE, READ and
-> +SUPPORTED to enable, disable, read the state of the offload trigger and ask the LED
-> +driver supports the specific offload trigger.
-> +
-> +In ENABLE/DISABLE configure_offload() should configure the LED to enable/disable the
-> +requested trigger (flags).
-> +In READ configure_offload() should return 0 or 1 based on the status of the requested
-> +trigger (flags).
-> +In SUPPORTED configure_offload() should return 0 or 1 if the LED driver supports the
-> +requested trigger (flags) or not.
-> +
-> +The u32 flag is specific to the trigger and change across them. It's in the LED
+>   	  When build as a module this driver will be called ledtrig-tty.
+>   
+> +config LEDS_OFFLOAD_TRIGGER_PHY_ACTIVITY
+> +	tristate "LED Offload Trigger for PHY Activity"
+> +	depends on LEDS_OFFLOAD_TRIGGERS
+> +	help
+> +	  This allows LEDs to be configured to run by hardware and offloaded
 
-                                                changes
+	                                    to be run
 
-> +driver interest know how to elaborate this flag and to declare support for a
+> +	  based on some rules. The LED will blink or be on based on the PHY
 
-    driver's
+Could "on" be changed to ON or "on" or 'on' here:    be ON based on the PHY
 
-> +particular offload trigger. For this exact reason explicit support for the specific
-> +trigger is mandatory or the driver returns -EOPNOTSUPP if asked to enter offload mode
-> +with a not supported trigger.
-> +If the driver returns -EOPNOTSUPP on configure_offload(), the trigger activation will
-> +fail as the driver doesn't support that specific offload trigger or doesn't know
-> +how to handle the provided flags.
+> +	  Activity for example on packet receive or based on the link speed.
 
 
 -- 
