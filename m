@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39DC2449A78
+	by mail.lfdr.de (Postfix) with ESMTP id A7B4B449A79
 	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 18:07:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240498AbhKHRJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S241420AbhKHRJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 8 Nov 2021 12:09:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44552 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:44576 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241431AbhKHRJC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 12:09:02 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 31A386120A;
-        Mon,  8 Nov 2021 17:06:15 +0000 (UTC)
+        id S241435AbhKHRJF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 12:09:05 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C4C5F61406;
+        Mon,  8 Nov 2021 17:06:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636391176;
-        bh=xXuKLQObFUgfLmuLEDUT6jwWURydljj59SldGzW0B50=;
+        s=k20201202; t=1636391180;
+        bh=tq0Gg/TAMu/vt8uQk+2/qXKWAb9CPayZFTszfOa4jWA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bAUHXHGToNJ0Tixt32huUOBXeZLvcctrnBvR4et71IHOoHXAhpraZ46rZtGaCv0rc
-         1YE+Idpg3jAaOYQYqQVM5ndEtuq3iJHFcVqMGbLR6nfPhMtoTxS17TMKb8Rrc1oozh
-         vKvGF3C6AGQobRjOHQgs72KvU/5mfdpdfXKGrgz8W2FRNLVbwEdiY7h41m1DBF5BWd
-         fLYyr5zdDb2/zWG8Kb27EYa5o92JPrBE7RE/C8mk5Ey1ITjXP7xoFmO89SLPVK4yXd
-         HJRtGwn0juaVvo6BGd4CQxYwT4TmOLh5uowf1hp7U50gLfvr2JO/+WyIIojCt93QWy
-         GR5qYBfUeo5pQ==
+        b=MG4S3zLaoZAl+isu29oty9JzHhQuriaG8UR4L6uUwXbXhNLj/MyV2fAoEGc0HbQbE
+         KpeSnycw3isssptm9XUH7Tm7FuNKDt9YkFj0J1Erbsb1cl+kF0aBj/r/WodT0QXI5b
+         /8WkkVtGtgQWUCOv+Li0BRWemxaGdozeKvtruJdGO3nZl7YBB/MsXBjrsvcv/DXabn
+         StUk9ArWxiz4J6cJiBus2IKS3eyGkCJQZFMAtaY2vd95zWc2/fhbh222dKdpASgIZi
+         7Rb7O8Mq6AC4SnyFgGb81GT+bGTBKjhQnziMMNw6OEVdLZEg6Y1OUbTLeHsbCgYkcy
+         nlGP2K37TW/WQ==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
         netdev <netdev@vger.kernel.org>
-Subject: [RFC PATCH 10/16] devlink: Separate region list protection to be done with specialized lock
-Date:   Mon,  8 Nov 2021 19:05:32 +0200
-Message-Id: <a84ddeda0fb9f6a4b895bb0a8a92b22773d602f3.1636390483.git.leonro@nvidia.com>
+Subject: [RFC PATCH 11/16] devlink: Protect all rate operations with specialized lock
+Date:   Mon,  8 Nov 2021 19:05:33 +0200
+Message-Id: <a0475d8c2592852ddfa0663469c96dcb14bdefff.1636390483.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <cover.1636390483.git.leonro@nvidia.com>
 References: <cover.1636390483.git.leonro@nvidia.com>
@@ -43,263 +43,233 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Reduce scope of devlink->lock and use dedicated lock to protect region_list.
+Separate rate related list protection from main devlink instance lock
+to rely on specialized lock.
 
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- net/core/devlink.c | 66 +++++++++++++++++++++++++++-------------------
- 1 file changed, 39 insertions(+), 27 deletions(-)
+ net/core/devlink.c | 60 +++++++++++++++++++++++++++-------------------
+ 1 file changed, 36 insertions(+), 24 deletions(-)
 
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index e89eaaba653d..52a1255a0917 100644
+index 52a1255a0917..008826bc108d 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -49,6 +49,7 @@ struct devlink {
- 	struct mutex resource_list_lock; /* protects resource_list */
- 	struct list_head param_list;
- 	struct list_head region_list;
-+	struct mutex region_list_lock; /* protects region_list, including port */
- 	struct list_head reporter_list;
- 	struct mutex reporters_lock; /* protects reporter_list */
- 	struct devlink_dpipe_headers *dpipe_headers;
-@@ -5412,25 +5413,28 @@ static int devlink_nl_cmd_region_get_port_dumpit(struct sk_buff *msg,
- 						 int *idx,
- 						 int start)
- {
-+	struct devlink *devlink = port->devlink;
- 	struct devlink_region *region;
- 	int err = 0;
+@@ -43,6 +43,7 @@ struct devlink {
+ 	struct list_head port_list;
+ 	struct mutex port_list_lock; /* protects port_list */
+ 	struct list_head rate_list;
++	struct mutex rate_list_lock; /* protects rate_list */
+ 	struct list_head sb_list;
+ 	struct list_head dpipe_table_list;
+ 	struct list_head resource_list;
+@@ -1143,7 +1144,7 @@ static int devlink_nl_cmd_rate_get_dumpit(struct sk_buff *msg,
+ 		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
+ 			goto retry;
  
-+	mutex_lock(&devlink->region_list_lock);
- 	list_for_each_entry(region, &port->region_list, list) {
- 		if (*idx < start) {
- 			(*idx)++;
- 			continue;
+-		mutex_lock(&devlink->lock);
++		mutex_lock(&devlink->rate_list_lock);
+ 		list_for_each_entry(devlink_rate, &devlink->rate_list, list) {
+ 			enum devlink_command cmd = DEVLINK_CMD_RATE_NEW;
+ 			u32 id = NETLINK_CB(cb->skb).portid;
+@@ -1156,13 +1157,13 @@ static int devlink_nl_cmd_rate_get_dumpit(struct sk_buff *msg,
+ 						   cb->nlh->nlmsg_seq,
+ 						   NLM_F_MULTI, NULL);
+ 			if (err) {
+-				mutex_unlock(&devlink->lock);
++				mutex_unlock(&devlink->rate_list_lock);
+ 				devlink_put(devlink);
+ 				goto out;
+ 			}
+ 			idx++;
  		}
--		err = devlink_nl_region_fill(msg, port->devlink,
-+		err = devlink_nl_region_fill(msg, devlink,
- 					     DEVLINK_CMD_REGION_GET,
- 					     NETLINK_CB(cb->skb).portid,
--					     cb->nlh->nlmsg_seq,
--					     NLM_F_MULTI, region);
-+					     cb->nlh->nlmsg_seq, NLM_F_MULTI,
-+					     region);
- 		if (err)
- 			goto out;
- 		(*idx)++;
+-		mutex_unlock(&devlink->lock);
++		mutex_unlock(&devlink->rate_list_lock);
+ retry:
+ 		devlink_put(devlink);
  	}
+@@ -1829,15 +1830,21 @@ static int devlink_nl_cmd_rate_new_doit(struct sk_buff *skb,
+ 	if (!devlink_rate_set_ops_supported(ops, info, DEVLINK_RATE_TYPE_NODE))
+ 		return -EOPNOTSUPP;
  
- out:
-+	mutex_unlock(&devlink->region_list_lock);
++	mutex_lock(&devlink->rate_list_lock);
+ 	rate_node = devlink_rate_node_get_from_attrs(devlink, info->attrs);
+-	if (!IS_ERR(rate_node))
+-		return -EEXIST;
+-	else if (rate_node == ERR_PTR(-EINVAL))
+-		return -EINVAL;
++	if (!IS_ERR(rate_node)) {
++		err = -EEXIST;
++		goto out;
++	} else if (rate_node == ERR_PTR(-EINVAL)) {
++		err = -EINVAL;
++		goto out;
++	}
+ 
+ 	rate_node = kzalloc(sizeof(*rate_node), GFP_KERNEL);
+-	if (!rate_node)
+-		return -ENOMEM;
++	if (!rate_node) {
++		err = -ENOMEM;
++		goto out;
++	}
+ 
+ 	rate_node->devlink = devlink;
+ 	rate_node->type = DEVLINK_RATE_TYPE_NODE;
+@@ -1858,6 +1865,7 @@ static int devlink_nl_cmd_rate_new_doit(struct sk_buff *skb,
+ 	refcount_set(&rate_node->refcnt, 1);
+ 	list_add(&rate_node->list, &devlink->rate_list);
+ 	devlink_rate_notify(rate_node, DEVLINK_CMD_RATE_NEW);
++	mutex_unlock(&devlink->rate_list_lock);
+ 	return 0;
+ 
+ err_rate_set:
+@@ -1866,6 +1874,8 @@ static int devlink_nl_cmd_rate_new_doit(struct sk_buff *skb,
+ 	kfree(rate_node->name);
+ err_strdup:
+ 	kfree(rate_node);
++out:
++	mutex_unlock(&devlink->rate_list_lock);
  	return err;
  }
  
-@@ -5444,7 +5448,7 @@ static int devlink_nl_cmd_region_get_devlink_dumpit(struct sk_buff *msg,
- 	struct devlink_port *port;
- 	int err = 0;
+@@ -2800,14 +2810,14 @@ static int devlink_rate_nodes_check(struct devlink *devlink, u16 mode,
+ 	struct devlink_rate *devlink_rate;
  
+ 	/* Take the lock to sync with devlink_rate_nodes_destroy() */
 -	mutex_lock(&devlink->lock);
-+	mutex_lock(&devlink->region_list_lock);
- 	list_for_each_entry(region, &devlink->region_list, list) {
- 		if (*idx < start) {
- 			(*idx)++;
-@@ -5455,22 +5459,22 @@ static int devlink_nl_cmd_region_get_devlink_dumpit(struct sk_buff *msg,
- 					     NETLINK_CB(cb->skb).portid,
- 					     cb->nlh->nlmsg_seq,
- 					     NLM_F_MULTI, region);
--		if (err)
--			goto out;
-+		if (err) {
-+			mutex_unlock(&devlink->region_list_lock);
-+			return err;
-+		}
- 		(*idx)++;
- 	}
-+	mutex_unlock(&devlink->region_list_lock);
- 
- 	mutex_lock(&devlink->port_list_lock);
- 	list_for_each_entry(port, &devlink->port_list, list) {
- 		err = devlink_nl_cmd_region_get_port_dumpit(msg, cb, port, idx,
- 							    start);
- 		if (err)
--			goto out;
-+			break;
- 	}
--
--out:
- 	mutex_unlock(&devlink->port_list_lock);
++	mutex_lock(&devlink->rate_list_lock);
+ 	list_for_each_entry(devlink_rate, &devlink->rate_list, list)
+ 		if (devlink_rate_is_node(devlink_rate)) {
+-			mutex_unlock(&devlink->lock);
++			mutex_unlock(&devlink->rate_list_lock);
+ 			NL_SET_ERR_MSG_MOD(extack, "Rate node(s) exists.");
+ 			return -EBUSY;
+ 		}
 -	mutex_unlock(&devlink->lock);
- 	return err;
++	mutex_unlock(&devlink->rate_list_lock);
+ 	return 0;
  }
  
-@@ -5760,7 +5764,7 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
- 		goto out_dev;
- 	}
+@@ -9009,6 +9019,8 @@ struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
+ 	mutex_init(&devlink->port_list_lock);
  
--	mutex_lock(&devlink->lock);
-+	mutex_lock(&devlink->region_list_lock);
- 
- 	if (!attrs[DEVLINK_ATTR_REGION_NAME] ||
- 	    !attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID]) {
-@@ -5856,7 +5860,7 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
- 
- 	nla_nest_end(skb, chunks_attr);
- 	genlmsg_end(skb, hdr);
--	mutex_unlock(&devlink->lock);
-+	mutex_unlock(&devlink->region_list_lock);
- 	devlink_put(devlink);
- 	mutex_unlock(&devlink_mutex);
- 
-@@ -5865,7 +5869,7 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
- nla_put_failure:
- 	genlmsg_cancel(skb, hdr);
- out_unlock:
--	mutex_unlock(&devlink->lock);
-+	mutex_unlock(&devlink->region_list_lock);
- 	devlink_put(devlink);
- out_dev:
- 	mutex_unlock(&devlink_mutex);
-@@ -9012,7 +9016,10 @@ struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
- 	mutex_init(&devlink->resource_list_lock);
- 
- 	INIT_LIST_HEAD(&devlink->param_list);
+ 	INIT_LIST_HEAD(&devlink->rate_list);
++	mutex_init(&devlink->rate_list_lock);
 +
- 	INIT_LIST_HEAD(&devlink->region_list);
-+	mutex_init(&devlink->region_list_lock);
-+
- 	INIT_LIST_HEAD(&devlink->reporter_list);
+ 	INIT_LIST_HEAD(&devlink->sb_list);
+ 	INIT_LIST_HEAD_RCU(&devlink->dpipe_table_list);
  
- 	INIT_LIST_HEAD(&devlink->trap_list);
-@@ -9073,8 +9080,10 @@ static void devlink_notify_register(struct devlink *devlink)
+@@ -9077,8 +9089,10 @@ static void devlink_notify_register(struct devlink *devlink)
+ 		devlink_trap_notify(devlink, trap_item, DEVLINK_CMD_TRAP_NEW);
+ 	mutex_unlock(&devlink->traps_lock);
+ 
++	mutex_lock(&devlink->rate_list_lock);
  	list_for_each_entry(rate_node, &devlink->rate_list, list)
  		devlink_rate_notify(rate_node, DEVLINK_CMD_RATE_NEW);
++	mutex_unlock(&devlink->rate_list_lock);
  
-+	mutex_lock(&devlink->region_list_lock);
+ 	mutex_lock(&devlink->region_list_lock);
  	list_for_each_entry(region, &devlink->region_list, list)
- 		devlink_nl_region_notify(region, NULL, DEVLINK_CMD_REGION_NEW);
-+	mutex_unlock(&devlink->region_list_lock);
- 
- 	list_for_each_entry(param_item, &devlink->param_list, list)
- 		devlink_param_notify(devlink, 0, param_item,
-@@ -9095,8 +9104,10 @@ static void devlink_notify_unregister(struct devlink *devlink)
- 		devlink_param_notify(devlink, 0, param_item,
- 				     DEVLINK_CMD_PARAM_DEL);
- 
-+	mutex_lock(&devlink->region_list_lock);
- 	list_for_each_entry_reverse(region, &devlink->region_list, list)
+@@ -9109,8 +9123,10 @@ static void devlink_notify_unregister(struct devlink *devlink)
  		devlink_nl_region_notify(region, NULL, DEVLINK_CMD_REGION_DEL);
-+	mutex_unlock(&devlink->region_list_lock);
+ 	mutex_unlock(&devlink->region_list_lock);
  
++	mutex_lock(&devlink->rate_list_lock);
  	list_for_each_entry_reverse(rate_node, &devlink->rate_list, list)
  		devlink_rate_notify(rate_node, DEVLINK_CMD_RATE_DEL);
-@@ -9172,6 +9183,7 @@ void devlink_free(struct devlink *devlink)
- 	mutex_destroy(&devlink->port_list_lock);
++	mutex_unlock(&devlink->rate_list_lock);
+ 
+ 	mutex_lock(&devlink->traps_lock);
+ 	list_for_each_entry_reverse(trap_item, &devlink->trap_list, list)
+@@ -9184,6 +9200,7 @@ void devlink_free(struct devlink *devlink)
  	mutex_destroy(&devlink->resource_list_lock);
  	mutex_destroy(&devlink->traps_lock);
-+	mutex_destroy(&devlink->region_list_lock);
+ 	mutex_destroy(&devlink->region_list_lock);
++	mutex_destroy(&devlink->rate_list_lock);
  	mutex_destroy(&devlink->lock);
  	WARN_ON(!list_empty(&devlink->trap_policer_list));
  	WARN_ON(!list_empty(&devlink->trap_group_list));
-@@ -10293,7 +10305,7 @@ devlink_region_create(struct devlink *devlink,
- 	if (WARN_ON(!ops) || WARN_ON(!ops->destructor))
- 		return ERR_PTR(-EINVAL);
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock(&devlink->region_list_lock);
- 
- 	if (devlink_region_get_by_name(devlink, ops->name)) {
- 		err = -EEXIST;
-@@ -10314,11 +10326,11 @@ devlink_region_create(struct devlink *devlink,
- 	list_add_tail(&region->list, &devlink->region_list);
- 	devlink_nl_region_notify(region, NULL, DEVLINK_CMD_REGION_NEW);
- 
--	mutex_unlock(&devlink->lock);
-+	mutex_unlock(&devlink->region_list_lock);
- 	return region;
- 
- unlock:
--	mutex_unlock(&devlink->lock);
-+	mutex_unlock(&devlink->region_list_lock);
- 	return ERR_PTR(err);
- }
- EXPORT_SYMBOL_GPL(devlink_region_create);
-@@ -10343,7 +10355,7 @@ devlink_port_region_create(struct devlink_port *port,
- 	if (WARN_ON(!ops) || WARN_ON(!ops->destructor))
- 		return ERR_PTR(-EINVAL);
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock(&devlink->region_list_lock);
- 
- 	if (devlink_port_region_get_by_name(port, ops->name)) {
- 		err = -EEXIST;
-@@ -10365,11 +10377,11 @@ devlink_port_region_create(struct devlink_port *port,
- 	list_add_tail(&region->list, &port->region_list);
- 	devlink_nl_region_notify(region, NULL, DEVLINK_CMD_REGION_NEW);
- 
--	mutex_unlock(&devlink->lock);
-+	mutex_unlock(&devlink->region_list_lock);
- 	return region;
- 
- unlock:
--	mutex_unlock(&devlink->lock);
-+	mutex_unlock(&devlink->region_list_lock);
- 	return ERR_PTR(err);
- }
- EXPORT_SYMBOL_GPL(devlink_port_region_create);
-@@ -10384,7 +10396,7 @@ void devlink_region_destroy(struct devlink_region *region)
- 	struct devlink *devlink = region->devlink;
- 	struct devlink_snapshot *snapshot, *ts;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock(&devlink->region_list_lock);
- 
- 	/* Free all snapshots of region */
- 	list_for_each_entry_safe(snapshot, ts, &region->snapshot_list, list)
-@@ -10393,7 +10405,7 @@ void devlink_region_destroy(struct devlink_region *region)
- 	list_del(&region->list);
- 
- 	devlink_nl_region_notify(region, NULL, DEVLINK_CMD_REGION_DEL);
--	mutex_unlock(&devlink->lock);
-+	mutex_unlock(&devlink->region_list_lock);
- 	kfree(region);
- }
- EXPORT_SYMBOL_GPL(devlink_region_destroy);
-@@ -10417,9 +10429,9 @@ int devlink_region_snapshot_id_get(struct devlink *devlink, u32 *id)
- {
- 	int err;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock(&devlink->region_list_lock);
- 	err = __devlink_region_snapshot_id_get(devlink, id);
--	mutex_unlock(&devlink->lock);
-+	mutex_unlock(&devlink->region_list_lock);
- 
- 	return err;
- }
-@@ -10437,9 +10449,9 @@ EXPORT_SYMBOL_GPL(devlink_region_snapshot_id_get);
+@@ -9522,8 +9539,6 @@ EXPORT_SYMBOL_GPL(devlink_port_attrs_pci_sf_set);
+  * Create devlink rate object of type leaf on provided @devlink_port.
+  * Throws call trace if @devlink_port already has a devlink rate object.
+  *
+- * Context: Takes and release devlink->lock <mutex>.
+- *
+  * Return: -ENOMEM if failed to allocate rate object, 0 otherwise.
   */
- void devlink_region_snapshot_id_put(struct devlink *devlink, u32 id)
+ int
+@@ -9536,16 +9551,17 @@ devlink_rate_leaf_create(struct devlink_port *devlink_port, void *priv)
+ 	if (!devlink_rate)
+ 		return -ENOMEM;
+ 
+-	mutex_lock(&devlink->lock);
+ 	WARN_ON(devlink_port->devlink_rate);
+ 	devlink_rate->type = DEVLINK_RATE_TYPE_LEAF;
+ 	devlink_rate->devlink = devlink;
+ 	devlink_rate->devlink_port = devlink_port;
+ 	devlink_rate->priv = priv;
++
++	mutex_lock(&devlink->rate_list_lock);
+ 	list_add_tail(&devlink_rate->list, &devlink->rate_list);
+ 	devlink_port->devlink_rate = devlink_rate;
+ 	devlink_rate_notify(devlink_rate, DEVLINK_CMD_RATE_NEW);
+-	mutex_unlock(&devlink->lock);
++	mutex_unlock(&devlink->rate_list_lock);
+ 
+ 	return 0;
+ }
+@@ -9555,8 +9571,6 @@ EXPORT_SYMBOL_GPL(devlink_rate_leaf_create);
+  * devlink_rate_leaf_destroy - destroy devlink rate leaf
+  *
+  * @devlink_port: devlink port linked to the rate object
+- *
+- * Context: Takes and release devlink->lock <mutex>.
+  */
+ void devlink_rate_leaf_destroy(struct devlink_port *devlink_port)
  {
--	mutex_lock(&devlink->lock);
-+	mutex_lock(&devlink->region_list_lock);
- 	__devlink_snapshot_id_decrement(devlink, id);
--	mutex_unlock(&devlink->lock);
-+	mutex_unlock(&devlink->region_list_lock);
- }
- EXPORT_SYMBOL_GPL(devlink_region_snapshot_id_put);
- 
-@@ -10461,9 +10473,9 @@ int devlink_region_snapshot_create(struct devlink_region *region,
- 	struct devlink *devlink = region->devlink;
- 	int err;
+@@ -9566,13 +9580,13 @@ void devlink_rate_leaf_destroy(struct devlink_port *devlink_port)
+ 	if (!devlink_rate)
+ 		return;
  
 -	mutex_lock(&devlink->lock);
-+	mutex_lock(&devlink->region_list_lock);
- 	err = __devlink_region_snapshot_create(region, data, snapshot_id);
++	mutex_lock(&devlink->rate_list_lock);
+ 	devlink_rate_notify(devlink_rate, DEVLINK_CMD_RATE_DEL);
+ 	if (devlink_rate->parent)
+ 		refcount_dec(&devlink_rate->parent->refcnt);
+ 	list_del(&devlink_rate->list);
+ 	devlink_port->devlink_rate = NULL;
 -	mutex_unlock(&devlink->lock);
-+	mutex_unlock(&devlink->region_list_lock);
- 
- 	return err;
++	mutex_unlock(&devlink->rate_list_lock);
+ 	kfree(devlink_rate);
  }
+ EXPORT_SYMBOL_GPL(devlink_rate_leaf_destroy);
+@@ -9584,15 +9598,13 @@ EXPORT_SYMBOL_GPL(devlink_rate_leaf_destroy);
+  *
+  * Unset parent for all rate objects and destroy all rate nodes
+  * on specified device.
+- *
+- * Context: Takes and release devlink->lock <mutex>.
+  */
+ void devlink_rate_nodes_destroy(struct devlink *devlink)
+ {
+ 	static struct devlink_rate *devlink_rate, *tmp;
+ 	const struct devlink_ops *ops = devlink->ops;
+ 
+-	mutex_lock(&devlink->lock);
++	mutex_lock(&devlink->rate_list_lock);
+ 	list_for_each_entry(devlink_rate, &devlink->rate_list, list) {
+ 		if (!devlink_rate->parent)
+ 			continue;
+@@ -9613,7 +9625,7 @@ void devlink_rate_nodes_destroy(struct devlink *devlink)
+ 			kfree(devlink_rate);
+ 		}
+ 	}
+-	mutex_unlock(&devlink->lock);
++	mutex_unlock(&devlink->rate_list_lock);
+ }
+ EXPORT_SYMBOL_GPL(devlink_rate_nodes_destroy);
+ 
 -- 
 2.33.1
 
