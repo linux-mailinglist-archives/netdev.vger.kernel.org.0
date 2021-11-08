@@ -2,127 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B37B544817E
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 15:21:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AA4F448183
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 15:22:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240485AbhKHOYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 09:24:11 -0500
-Received: from mail.skyhub.de ([5.9.137.197]:49490 "EHLO mail.skyhub.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240432AbhKHOX6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 09:23:58 -0500
-Received: from zn.tnic (p200300ec2f33110093973d8dfcf40fd9.dip0.t-ipconnect.de [IPv6:2003:ec:2f33:1100:9397:3d8d:fcf4:fd9])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id D08561EC04E4;
-        Mon,  8 Nov 2021 15:21:09 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1636381269;
+        id S231512AbhKHOYd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 09:24:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39410 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235534AbhKHOYc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 09:24:32 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F490C061570
+        for <netdev@vger.kernel.org>; Mon,  8 Nov 2021 06:21:48 -0800 (PST)
+Subject: Re: [PATCH] phy: phy_ethtool_ksettings_set: Don't discard
+ phy_start_aneg's return
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1636381305;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=oWsCJGhsvF17zUFafKKKz1XGvPrCUoTgLb0x72qzY0w=;
-        b=DvalVyPWlBMIVGIell7SDhnTX9Q86iHxoTdmXzPxorrW7sqlHpzQzwtFgZEI1KmHXq30Gs
-        yOE/y0FWs3djKZaj7cQDtIyWYYD5AKtdhjFE5l3EWLo8DNcP+YE1HL9C5d3kHwZrzRPHP8
-        xiS/nYCk2AFbtbv/wLq5RqiIdGlMN38=
-Date:   Mon, 8 Nov 2021 15:21:04 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        intel-gvt-dev@lists.freedesktop.org,
-        alpha <linux-alpha@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        linux-edac@vger.kernel.org,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        linux-hyperv@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-leds <linux-leds@vger.kernel.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        "open list:REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM" 
-        <linux-remoteproc@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        scsi <linux-scsi@vger.kernel.org>,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        linux-staging@lists.linux.dev,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        linux-um <linux-um@lists.infradead.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        "open list:TENSILICA XTENSA PORT (xtensa)" 
-        <linux-xtensa@linux-xtensa.org>, netdev <netdev@vger.kernel.org>,
-        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
-        sparclinux <sparclinux@vger.kernel.org>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        xen-devel@lists.xenproject.org
-Subject: Re: [PATCH v0 42/42] notifier: Return an error when callback is
- already registered
-Message-ID: <YYkyUEqcsOwQMb1S@zn.tnic>
-References: <20211108101157.15189-1-bp@alien8.de>
- <20211108101157.15189-43-bp@alien8.de>
- <CAMuHMdWH+txiSP_d7Jc4f_bU8Lf9iWpT4E3o5o7BJr-YdA6-VA@mail.gmail.com>
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eJTwkzJ4qB0w0zmGfeACIoD0LCtFOPfbF6VW8j+bL04=;
+        b=fvAqKciZEoDVPp6/rqIQ492SSAc+hQhjpJvTE45I1Ud/TWnHl0pBfzK77tMA6rwEuXF41Q
+        5j1Gu1r2tz+R0HA7j4I96nI2TfkkO0fZIUMMmQWauc3ThTPQI6uxNTJImJA7f6B+uNyQjB
+        oXyP2kzsKI7TcJ8w5FJy0Wv/0H2exiDJ1q4vQTBqeQj3vg5D7DksMiFDQPqcqiN8iGs6ac
+        33vk7S8zLRnlheE9FHM53nUoX1gBlzL1hIM5n20WDQL9Wqh1Ya06IpOW0Z35Xdll2Qgrdp
+        q+KkbeCrcgVTzxQePU2QZwx4B7uz8eDMHhEMQkYCxxatR+9MRX403oLmhMYQMw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1636381305;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eJTwkzJ4qB0w0zmGfeACIoD0LCtFOPfbF6VW8j+bL04=;
+        b=3M1JBo0nlc8tEo/+Fjk0kYZTX9C5t7u5xrKun6npBiWqUOmajPnQtEf6ai38a+8MxL/y0n
+        Y7tb2DzDNFtVeUCQ==
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, davem@davemloft.net,
+        netdev@vger.kernel.org,
+        Benedikt Spranger <b.spranger@linutronix.de>
+References: <20211105153648.8337-1-bage@linutronix.de>
+ <YYV40/2N+2j02V/f@lunn.ch>
+From:   Bastian Germann <bage@linutronix.de>
+Message-ID: <b4379bb7-0529-39d7-1ec7-9dc2bf834aaf@linutronix.de>
+Date:   Mon, 8 Nov 2021 15:21:45 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdWH+txiSP_d7Jc4f_bU8Lf9iWpT4E3o5o7BJr-YdA6-VA@mail.gmail.com>
+In-Reply-To: <YYV40/2N+2j02V/f@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: de-DE-frami
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 08, 2021 at 03:07:03PM +0100, Geert Uytterhoeven wrote:
-> I think the addition of __must_check is overkill, leading to the
-> addition of useless error checks and message printing.
+Am 05.11.21 um 19:32 schrieb Andrew Lunn:
+> What PHY driver are you using this with? phy_start_aneg() generally
+> does not return errors, except for -EIO/-TIMEDOUT because
+> communication with the PHY has failed. All parameter validation should
+> of already happened before the call to phy_start_aneg(). So i'm
+> wondering if the PHY driver is doing something wrong.
 
-See the WARN in notifier_chain_register() - it will already do "message
-printing".
-
-> Many callers call this where it cannot fail, and where nothing can
-> be done in the very unlikely event that the call would ever start to
-> fail.
-
-This is an attempt to remove this WARN() hack in
-notifier_chain_register() and have the function return a proper error
-value instead of this "Currently always returns zero." which is bad
-design.
-
-Some of the registration functions around the tree check that retval and
-some don't. So if "it cannot fail" those registration either should not
-return a value or callers should check that return value - what we have
-now doesn't make a whole lot of sense.
-
-Oh, and then fixing this should avoid stuff like:
-
-+	if (notifier_registered == false) {
-+		mce_register_decode_chain(&amdgpu_bad_page_nb);
-+		notifier_registered = true;
-+	}
-
-from propagating in the code.
-
-The other idea I have is to add another indirection in
-notifier_chain_register() which will check the *proper* return value of
-a lower level __notifier_chain_register() and then issue that warning.
-That would definitely avoid touch so many call sites.
-
-Bottom line is: what we have now needs cleaning up.
-
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+I am modifying broadcom phy and will make sure that I will end up nut having
+error checks in the wrong place.
