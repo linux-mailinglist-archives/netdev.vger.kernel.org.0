@@ -2,41 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AFF744A149
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 02:06:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D5BD44A146
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 02:06:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239365AbhKIBJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 20:09:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59938 "EHLO mail.kernel.org"
+        id S239469AbhKIBJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 20:09:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60628 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239608AbhKIBGu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 20:06:50 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8DF2361A09;
-        Tue,  9 Nov 2021 01:02:50 +0000 (UTC)
+        id S240764AbhKIBHw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 20:07:52 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 15B22619E8;
+        Tue,  9 Nov 2021 01:03:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636419771;
-        bh=HOgw2nna1IcTt56k1yWLpiLuN2uFcgNZ3Lwy++j4nXI=;
+        s=k20201202; t=1636419804;
+        bh=nyavkQzvO+WKzgYD0WK4CVp6Qo51pIkIKsvFt4p9isQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eP2nN49CKhdYmuYz1cuOy4TfiirVBU4PQbdo1rbL3FXrq4OVH8Cpq7O/ciwKfzta5
-         45fSCjBq5X1l2bsHbwyW7PkCkrAfQ1gDXtXxSf/5GaUooYbTSrL9//rYqtRqpnOSvn
-         cvMacQl+VgD2EbMNBbq6mSoJSWM9g/r2Ed5V4xzr1NELXTOk9Y6HNHsjao3Uqk9Gl5
-         cAlp84vxPblz70aRKN4KJaPGxpZAwP+uRPMQ5euo04kpZKnEvl4PkxoYu/m25VnXFn
-         3bL03TyHWxTzpqH3c/vAg7RqKzMjOQ2N4/hy6HC/ZfC5MTRd0O2womNRGnjRQGfUTJ
-         v6mQYaRMY1/og==
+        b=MuPt/OShJ5U+kLvS2Al2/JS8mlK7Fkxxkoxcdl/EOv7bCSY/1xsGiz9Vw7dBl6Q3G
+         lQXByYHAx7gvtgxijCo8lquT8SmTNgGe+Fx55FMAFgmhSdIrAza6doQyEdY0dKT/TS
+         PmKhzUS8FDL5Bn0zxIN22M1OMdxqjRig/Nte0LIANiwBzuy0NjNzkMvXXAulvL8AIE
+         dLxwpHXlgkVHK+RZEHEXIL93uqYV2WR8Tj9cgvngjdggyitvvI3orKUWmWHkWi72kk
+         M1KdXSQoT0qTYb6F2NADEho4mEuqq81i3HEhq+ci4wcBeTlCMaIRvG1/YhlfYj4C8f
+         2cdQjl5nBB+yg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Rakesh Babu <rsaladi2@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, gakula@marvell.com,
-        hkelam@marvell.com, kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.14 034/138] octeontx2-pf: Enable promisc/allmulti match MCAM entries.
-Date:   Mon,  8 Nov 2021 12:45:00 -0500
-Message-Id: <20211108174644.1187889-34-sashal@kernel.org>
+Cc:     Takashi Iwai <tiwai@suse.de>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 005/101] Bluetooth: sco: Fix lock_sock() blockage by memcpy_from_msg()
+Date:   Mon,  8 Nov 2021 12:46:55 -0500
+Message-Id: <20211108174832.1189312-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211108174644.1187889-1-sashal@kernel.org>
-References: <20211108174644.1187889-1-sashal@kernel.org>
+In-Reply-To: <20211108174832.1189312-1-sashal@kernel.org>
+References: <20211108174832.1189312-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -45,140 +44,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rakesh Babu <rsaladi2@marvell.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit ffd2f89ad05cd620d822112a07b0c5669fa9e333 ]
+[ Upstream commit 99c23da0eed4fd20cae8243f2b51e10e66aa0951 ]
 
-Whenever the interface is brought up/down then set_rx_mode
-function is called by the stack which enables promisc/allmulti
-MCAM entries. But there are cases when driver brings
-interface down and then up such as while changing number
-of channels. In these cases promisc/allmulti MCAM entries
-are left disabled as set_rx_mode callback is not called.
-This patch enables these MCAM entries in all such cases.
+The sco_send_frame() also takes lock_sock() during memcpy_from_msg()
+call that may be endlessly blocked by a task with userfaultd
+technique, and this will result in a hung task watchdog trigger.
 
-Signed-off-by: Rakesh Babu <rsaladi2@marvell.com>
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Just like the similar fix for hci_sock_sendmsg() in commit
+92c685dc5de0 ("Bluetooth: reorganize functions..."), this patch moves
+the  memcpy_from_msg() out of lock_sock() for addressing the hang.
+
+This should be the last piece for fixing CVE-2021-3640 after a few
+already queued fixes.
+
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../ethernet/marvell/octeontx2/nic/otx2_pf.c  | 78 ++++++++++---------
- 1 file changed, 43 insertions(+), 35 deletions(-)
+ net/bluetooth/sco.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 2c24944a4dba2..105b32221d91b 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -1496,6 +1496,44 @@ static void otx2_free_hw_resources(struct otx2_nic *pf)
- 	mutex_unlock(&mbox->lock);
+diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+index 7c24a9acbc459..93df269a64707 100644
+--- a/net/bluetooth/sco.c
++++ b/net/bluetooth/sco.c
+@@ -281,7 +281,8 @@ static int sco_connect(struct hci_dev *hdev, struct sock *sk)
+ 	return err;
  }
  
-+static void otx2_do_set_rx_mode(struct otx2_nic *pf)
-+{
-+	struct net_device *netdev = pf->netdev;
-+	struct nix_rx_mode *req;
-+	bool promisc = false;
-+
-+	if (!(netdev->flags & IFF_UP))
-+		return;
-+
-+	if ((netdev->flags & IFF_PROMISC) ||
-+	    (netdev_uc_count(netdev) > OTX2_MAX_UNICAST_FLOWS)) {
-+		promisc = true;
-+	}
-+
-+	/* Write unicast address to mcam entries or del from mcam */
-+	if (!promisc && netdev->priv_flags & IFF_UNICAST_FLT)
-+		__dev_uc_sync(netdev, otx2_add_macfilter, otx2_del_macfilter);
-+
-+	mutex_lock(&pf->mbox.lock);
-+	req = otx2_mbox_alloc_msg_nix_set_rx_mode(&pf->mbox);
-+	if (!req) {
-+		mutex_unlock(&pf->mbox.lock);
-+		return;
-+	}
-+
-+	req->mode = NIX_RX_MODE_UCAST;
-+
-+	if (promisc)
-+		req->mode |= NIX_RX_MODE_PROMISC;
-+	if (netdev->flags & (IFF_ALLMULTI | IFF_MULTICAST))
-+		req->mode |= NIX_RX_MODE_ALLMULTI;
-+
-+	req->mode |= NIX_RX_MODE_USE_MCE;
-+
-+	otx2_sync_mbox_msg(&pf->mbox);
-+	mutex_unlock(&pf->mbox.lock);
-+}
-+
- int otx2_open(struct net_device *netdev)
+-static int sco_send_frame(struct sock *sk, struct msghdr *msg, int len)
++static int sco_send_frame(struct sock *sk, void *buf, int len,
++			  unsigned int msg_flags)
  {
- 	struct otx2_nic *pf = netdev_priv(netdev);
-@@ -1657,6 +1695,8 @@ int otx2_open(struct net_device *netdev)
- 	if (err)
- 		goto err_tx_stop_queues;
+ 	struct sco_conn *conn = sco_pi(sk)->conn;
+ 	struct sk_buff *skb;
+@@ -293,15 +294,11 @@ static int sco_send_frame(struct sock *sk, struct msghdr *msg, int len)
  
-+	otx2_do_set_rx_mode(pf);
-+
- 	return 0;
+ 	BT_DBG("sk %p len %d", sk, len);
  
- err_tx_stop_queues:
-@@ -1809,43 +1849,11 @@ static void otx2_set_rx_mode(struct net_device *netdev)
- 	queue_work(pf->otx2_wq, &pf->rx_mode_work);
- }
+-	skb = bt_skb_send_alloc(sk, len, msg->msg_flags & MSG_DONTWAIT, &err);
++	skb = bt_skb_send_alloc(sk, len, msg_flags & MSG_DONTWAIT, &err);
+ 	if (!skb)
+ 		return err;
  
--static void otx2_do_set_rx_mode(struct work_struct *work)
-+static void otx2_rx_mode_wrk_handler(struct work_struct *work)
- {
- 	struct otx2_nic *pf = container_of(work, struct otx2_nic, rx_mode_work);
--	struct net_device *netdev = pf->netdev;
--	struct nix_rx_mode *req;
--	bool promisc = false;
--
--	if (!(netdev->flags & IFF_UP))
--		return;
--
--	if ((netdev->flags & IFF_PROMISC) ||
--	    (netdev_uc_count(netdev) > OTX2_MAX_UNICAST_FLOWS)) {
--		promisc = true;
--	}
- 
--	/* Write unicast address to mcam entries or del from mcam */
--	if (!promisc && netdev->priv_flags & IFF_UNICAST_FLT)
--		__dev_uc_sync(netdev, otx2_add_macfilter, otx2_del_macfilter);
--
--	mutex_lock(&pf->mbox.lock);
--	req = otx2_mbox_alloc_msg_nix_set_rx_mode(&pf->mbox);
--	if (!req) {
--		mutex_unlock(&pf->mbox.lock);
--		return;
+-	if (memcpy_from_msg(skb_put(skb, len), msg, len)) {
+-		kfree_skb(skb);
+-		return -EFAULT;
 -	}
 -
--	req->mode = NIX_RX_MODE_UCAST;
--
--	if (promisc)
--		req->mode |= NIX_RX_MODE_PROMISC;
--	if (netdev->flags & (IFF_ALLMULTI | IFF_MULTICAST))
--		req->mode |= NIX_RX_MODE_ALLMULTI;
--
--	req->mode |= NIX_RX_MODE_USE_MCE;
--
--	otx2_sync_mbox_msg(&pf->mbox);
--	mutex_unlock(&pf->mbox.lock);
-+	otx2_do_set_rx_mode(pf);
++	memcpy(skb_put(skb, len), buf, len);
+ 	hci_send_sco(conn->hcon, skb);
+ 
+ 	return len;
+@@ -726,6 +723,7 @@ static int sco_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+ 			    size_t len)
+ {
+ 	struct sock *sk = sock->sk;
++	void *buf;
+ 	int err;
+ 
+ 	BT_DBG("sock %p, sk %p", sock, sk);
+@@ -737,14 +735,24 @@ static int sco_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+ 	if (msg->msg_flags & MSG_OOB)
+ 		return -EOPNOTSUPP;
+ 
++	buf = kmalloc(len, GFP_KERNEL);
++	if (!buf)
++		return -ENOMEM;
++
++	if (memcpy_from_msg(buf, msg, len)) {
++		kfree(buf);
++		return -EFAULT;
++	}
++
+ 	lock_sock(sk);
+ 
+ 	if (sk->sk_state == BT_CONNECTED)
+-		err = sco_send_frame(sk, msg, len);
++		err = sco_send_frame(sk, buf, len, msg->msg_flags);
+ 	else
+ 		err = -ENOTCONN;
+ 
+ 	release_sock(sk);
++	kfree(buf);
+ 	return err;
  }
  
- static int otx2_set_features(struct net_device *netdev,
-@@ -2345,7 +2353,7 @@ static int otx2_wq_init(struct otx2_nic *pf)
- 	if (!pf->otx2_wq)
- 		return -ENOMEM;
- 
--	INIT_WORK(&pf->rx_mode_work, otx2_do_set_rx_mode);
-+	INIT_WORK(&pf->rx_mode_work, otx2_rx_mode_wrk_handler);
- 	INIT_WORK(&pf->reset_task, otx2_reset_task);
- 	return 0;
- }
 -- 
 2.33.0
 
