@@ -2,122 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0D91449DEA
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 22:19:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA46A449E05
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 22:22:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240029AbhKHVW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 16:22:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49682 "EHLO
+        id S240104AbhKHVZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 16:25:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239990AbhKHVVk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 16:21:40 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F44C061570;
-        Mon,  8 Nov 2021 13:18:55 -0800 (PST)
-Received: from zn.tnic (p200300ec2f3311007827e440708b1099.dip0.t-ipconnect.de [IPv6:2003:ec:2f33:1100:7827:e440:708b:1099])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id E3BE71EC051F;
-        Mon,  8 Nov 2021 22:18:52 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1636406333;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=AU7V4fSHGUK4yNvIX3QFWGgL2mpvsQwlJrzk1EYTZE4=;
-        b=HI4wHVqdPFUaTmLfTawRP0YuILjCSvy0XvR7UY6GhjpkLZ7Jcpensq3GPz/wKuSVQPh/ah
-        JjfisFcmsOLL77YybjTfUcF4SOtfsMptjoCY2iNpL/QAVX8IlmhT4tll2zqUciAF4fFC2q
-        GhOxoJIWWV9UKbtfg9ziQ2wDV7UERPU=
-Date:   Mon, 8 Nov 2021 22:18:47 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Alan Stern <stern@rowland.harvard.edu>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        intel-gvt-dev@lists.freedesktop.org,
-        alpha <linux-alpha@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        linux-edac@vger.kernel.org,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        linux-hyperv@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-leds <linux-leds@vger.kernel.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        "open list:REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM" 
-        <linux-remoteproc@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        scsi <linux-scsi@vger.kernel.org>,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        linux-staging@lists.linux.dev,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        linux-um <linux-um@lists.infradead.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        "open list:TENSILICA XTENSA PORT (xtensa)" 
-        <linux-xtensa@linux-xtensa.org>, netdev <netdev@vger.kernel.org>,
-        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
-        sparclinux <sparclinux@vger.kernel.org>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        xen-devel@lists.xenproject.org
-Subject: Re: [PATCH v0 42/42] notifier: Return an error when callback is
- already registered
-Message-ID: <YYmUN69Y7z9xITas@zn.tnic>
-References: <20211108101157.15189-1-bp@alien8.de>
- <20211108101157.15189-43-bp@alien8.de>
- <CAMuHMdWH+txiSP_d7Jc4f_bU8Lf9iWpT4E3o5o7BJr-YdA6-VA@mail.gmail.com>
- <YYkyUEqcsOwQMb1S@zn.tnic>
- <CAMuHMdXiBEQyEXJagSfpH44hxVA2t0sDH7B7YubLGHrb2MJLLA@mail.gmail.com>
- <YYlJQYLiIrhjwOmT@zn.tnic>
- <CAMuHMdXHikGrmUzuq0WG5JRHUUE=5zsaVCTF+e4TiHpM5tc5kA@mail.gmail.com>
- <YYlOmd0AeA8DSluD@zn.tnic>
- <20211108205926.GA1678880@rowland.harvard.edu>
+        with ESMTP id S237872AbhKHVZX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 16:25:23 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 763B9C061570;
+        Mon,  8 Nov 2021 13:22:38 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id b13so16946877plg.2;
+        Mon, 08 Nov 2021 13:22:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:references:cc:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=Ms0gppu1WsSVlXH+1hGodjojHRTEhm9TIy1Gwk/m3tA=;
+        b=DNbgesMT74V/N0bGnFXaljTx8YqYWQbZaIQhvPTFHmgG+K9sujhp+WCxzcIodt/mW5
+         /nQcB9H47onlSRUkT7ShLkYQqoYzdmT6IQuNbSjV/t1HP0utFOzqXm2grNpPAv4J6mm7
+         BV9Y9kY6OJRNaYyHaxIsVojiMdkBTPq8SYE0E4nbx5EUUo1mIVrw2byvrMGL48Izgn1W
+         KpIulv0K476OVHP/cFzhf61uYR2vH0Pv28bR7pFAopFU2yxVJTaRh24VGMqnMAhNG3KE
+         EB8MMq5IuPiqqRgCY8pnVLdTG+28vEVtSV13aD91PZQfIwipuwZ7OhIV0gJAGTd1K0oj
+         Aq4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
+        bh=Ms0gppu1WsSVlXH+1hGodjojHRTEhm9TIy1Gwk/m3tA=;
+        b=MODBvKLl0XFT9xahn5SEB9z29iD/cOKK1ULp/I290dNFiOsad3GQ705cggmcwN/Qma
+         eQIsZ4sREWyaZAoCuAT+FIYdvs2JhSGUz/s72XiZEgGrZvQQkKZNSBKAubvrSoRiSew3
+         7pE7FJewDbjuZUSJqxRrArXFhntAzGIZO+eCD6EfaZM95aWI0E/K3XF1s/826YYdHt+/
+         bcXezb32dHra5cB9NuJcaLG+WMxTIXm15uBEdMoj9kOCfvTnaIDDtaGF5shO1j5zfyxy
+         VVHz/HK6ITTcHIi0C/uSFsUhmHUL0hXH6eSf+LJO4iRWy/FoLveacuLXtLlWug2TgNYZ
+         wCYA==
+X-Gm-Message-State: AOAM532AUFmmr5HUQMi1sLPzJDT8mI6OYQGZTw1Ke0cdxyDsHllqyDlj
+        Uqi0FdG6ZBrydSuZKwkfsG4=
+X-Google-Smtp-Source: ABdhPJwxykzkY6XPYGuOHzynltWyCQM19YmErsiiLAKyC997b55MB9BvD9Nf+O9o5fGmN+6Cgr59nQ==
+X-Received: by 2002:a17:90b:128e:: with SMTP id fw14mr1499686pjb.173.1636406557907;
+        Mon, 08 Nov 2021 13:22:37 -0800 (PST)
+Received: from [10.1.1.26] (222-155-101-117-fibre.sparkbb.co.nz. [222.155.101.117])
+        by smtp.gmail.com with ESMTPSA id t135sm13207356pgc.51.2021.11.08.13.22.33
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 08 Nov 2021 13:22:37 -0800 (PST)
+Subject: Re: [PATCH v8 3/3] net/8390: apne.c - add 100 Mbit support to apne.c
+ driver
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+References: <20211104061102.30899-1-schmitzmic@gmail.com>
+ <20211104061102.30899-4-schmitzmic@gmail.com>
+ <CAMuHMdVMG8x-s-1_a2vGw3cqP=1OfDjePL+knsLR-=zjEDzN1g@mail.gmail.com>
+Cc:     Linux/m68k <linux-m68k@vger.kernel.org>,
+        ALeX Kazik <alex@kazik.de>, netdev <netdev@vger.kernel.org>,
+        Denis Kirjanov <dkirjanov@suse.de>
+From:   Michael Schmitz <schmitzmic@gmail.com>
+Message-ID: <7f11aeef-f3f5-d00c-d220-4417bd1959d0@gmail.com>
+Date:   Tue, 9 Nov 2021 10:22:24 +1300
+User-Agent: Mozilla/5.0 (X11; Linux ppc64; rv:45.0) Gecko/20100101
+ Thunderbird/45.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20211108205926.GA1678880@rowland.harvard.edu>
+In-Reply-To: <CAMuHMdVMG8x-s-1_a2vGw3cqP=1OfDjePL+knsLR-=zjEDzN1g@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 08, 2021 at 03:59:26PM -0500, Alan Stern wrote:
-> Is there really any reason for returning an error code?  For example, is 
-> it anticipated that at some point in the future these registration calls 
-> might fail?
-> 
-> Currently, the only reason for failing...
+Hi Geert,
 
-Right, I believe with not making it return void we're leaving the door
-open for some, *hypothetical* future return values if we decide we need
-to return them too, at some point.
+On 08/11/21 21:38, Geert Uytterhoeven wrote:
+>> --- a/drivers/net/ethernet/8390/apne.c
+>> +++ b/drivers/net/ethernet/8390/apne.c
+>
+>> @@ -119,6 +121,10 @@ static u32 apne_msg_enable;
+>>  module_param_named(msg_enable, apne_msg_enable, uint, 0444);
+>>  MODULE_PARM_DESC(msg_enable, "Debug message level (see linux/netdevice.h for bitmap)");
+>>
+>> +static u32 apne_100_mbit = -1;
+>
+> The changelog said you changed this to int, not u32...
 
-Yes, I can't think of another fact to state besides that the callback
-was already registered or return success but who knows what we wanna do
-in the future...
+Yes, and I had certainly done that, for the express purpose of allowing 
+the negative ...
 
-And so if we change them all to void now, I think it'll be a lot more
-churn to switch back to returning a non-void value and having the
-callers who choose to handle that value, do so again.
+No idea how that one snuck back in, I'll fix that.
 
-So, long story short, keeping the retval - albeit not very useful right
-now - is probably easier.
+Denis suggested this be changed to a sysfs parameter, but neither this 
+driver nor the Amiga PCMCIA support have been converted to the driver 
+framework. I couldn't see a way to add a sysfs parameter, so I'd rather 
+keep this as kernel command line or module parameter.
 
-I hope I'm making some sense here.
+Cheers,
 
--- 
-Regards/Gruss,
-    Boris.
+	Michael
 
-https://people.kernel.org/tglx/notes-about-netiquette
+
+>> +module_param_named(100_mbit, apne_100_mbit, uint, 0444);
+>> +MODULE_PARM_DESC(100_mbit, "Enable 100 Mbit support");
+>> +
+>>  static struct net_device * __init apne_probe(void)
+>>  {
+>>         struct net_device *dev;
+>> @@ -140,6 +146,13 @@ static struct net_device * __init apne_probe(void)
+>>
+>>         pr_info("Looking for PCMCIA ethernet card : ");
+>>
+>> +       if (apne_100_mbit == 1)
+>> +               isa_type = ISA_TYPE_AG16;
+>> +       else if (apne_100_mbit == 0)
+>> +               isa_type = ISA_TYPE_AG;
+>> +       else
+>> +               pr_cont(" (autoprobing 16 bit mode) ");
+>> +
+>>         /* check if a card is inserted */
+>>         if (!(PCMCIA_INSERTED)) {
+>>                 pr_cont("NO PCMCIA card inserted\n");
+>> @@ -167,6 +180,14 @@ static struct net_device * __init apne_probe(void)
+>>
+>>         pr_cont("ethernet PCMCIA card inserted\n");
+>>
+>> +#if IS_ENABLED(CONFIG_PCMCIA)
+>> +       if (apne_100_mbit < 0 && pcmcia_is_16bit()) {
+>
+> apne_100_mbit is u32, hence can never be negative.
+>
+>> +               pr_info("16-bit PCMCIA card detected!\n");
+>> +               isa_type = ISA_TYPE_AG16;
+>> +               apne_100_mbit = 1;
+>> +       }
+>> +#endif
+>> +
+>>         if (!init_pcmcia()) {
+>>                 /* XXX: shouldn't we re-enable irq here? */
+>>                 free_netdev(dev);
+>
+> Gr{oetje,eeting}s,
+>
+>                         Geert
+>
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+>
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
+>
