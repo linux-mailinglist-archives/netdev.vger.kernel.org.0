@@ -2,83 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B46B0449786
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 16:07:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FB464497F4
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 16:16:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240795AbhKHPKN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 10:10:13 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:57834 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240688AbhKHPJk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 10:09:40 -0500
-Date:   Mon, 8 Nov 2021 16:06:53 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1636384015;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mmYjYs0vxRDEE03tUyW2SGvMXjLzVD6zu3z0n7ne0e4=;
-        b=ZYwFJ0PFXHDzr8j/2kC16IdAQhQPvU43EvAZEBsAC7P7vyKhOBEKSxO6kB5kGUPJ/bgb2m
-        BG+d3QzPpT61PdGRMKGJBIhvw9ddBDeuYL3cYrrTVgwS1kiv78tzTgJhzlWDGL2m41lR8L
-        iSjkGMA4yGdGnAcpWpMyaYSs8MiwspNOHHnFCTPDjgniAXCIMyL6AuRyzALJ0xjuTaES41
-        3r60sy89vskVUowCVVLS6PztV/JIgmMH1bCtBVIkimxZqenwIdrwF35YCEQnJsUK/8zpAb
-        MNSJSMTmMfUYorps+Vxx9hAMUu0p+UrqVrxDjnV8PnEF5TR8e7JgkPp/wsgMJw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1636384015;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mmYjYs0vxRDEE03tUyW2SGvMXjLzVD6zu3z0n7ne0e4=;
-        b=J/wUZJFNsA0k89NESZ2TQ7U3xplIiYBdyXlKre4T6e9TwwTsIURiBBOVRsMt9IHungBCAk
-        PsLr/X2XJZRaZMAQ==
-From:   Benedikt Spranger <b.spranger@linutronix.de>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     bage@linutronix.de, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>, davem@davemloft.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net v2] net: phy: phy_ethtool_ksettings_set: Don't
- discard phy_start_aneg's return
-Message-ID: <20211108160653.3d6127df@mitra>
-In-Reply-To: <YYkzbE39ERAxzg4k@shell.armlinux.org.uk>
-References: <20211105153648.8337-1-bage@linutronix.de>
-        <20211108141834.19105-1-bage@linutronix.de>
-        <YYkzbE39ERAxzg4k@shell.armlinux.org.uk>
-Organization: Linutronix GmbH
+        id S237233AbhKHPSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 10:18:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51790 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236714AbhKHPSt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 10:18:49 -0500
+Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6378C061570
+        for <netdev@vger.kernel.org>; Mon,  8 Nov 2021 07:16:04 -0800 (PST)
+Received: by mail-oi1-x241.google.com with SMTP id be32so5679234oib.11
+        for <netdev@vger.kernel.org>; Mon, 08 Nov 2021 07:16:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=OcVKYMqD1OAPCy0gYs4jHd1iGD2P0eAuhSWYYDqPTRU=;
+        b=UrsIWwXW0mSEQ6gCx01Mk2lq+MIAGiSGQ3NOlpg074CbuJQXsT1xywoq/9u3eeG88w
+         b7xI9h9+CMluG3mw0iV4lB3CFZO5X58KoSrMDicBI42T6I9QIMSDCutvoMPR2leZJnvG
+         BmwOyeJmtDxtPCzgmQoE2yUbaP+eW6Gw23HqblpAiRdytGD13vTw9sZwsP92mNe4GfHR
+         nCj/qTCiQ3XLb8FPs9tOhZ6IKQWStL8BxnP/lCmbeY2TERloFP2j9XiIDCgPDzY8AQxa
+         YQzinFxkkRVgV1aSuNNeDjsNqZugn+OYdnHnAI7SstNfDODL8XMobOgXVT2aFwQb4pg2
+         sTBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=OcVKYMqD1OAPCy0gYs4jHd1iGD2P0eAuhSWYYDqPTRU=;
+        b=tbPn1juqpJ+Z+kDgx0QcnICLNFLVNOakLFMvAHLmqP0S1YfNHzGZF8TQWbpUjmzQ86
+         5RcpPKxasX219dCp4VBEePNQoPQO0tOe04QDa8BHDeJyWkVN+T4TcAucCV7cZYwOfJT4
+         iMbY2Hx7v8V3OKYsvO9eDm6y5oF+dc5t4LbSdDZqYtzIOmWngC8KYwveXnsLZMtXK7i1
+         5eNjnuAZ1pFOvqoIO/shlkwmgKZqkyqjrpdW0hxkAVi6FC33N8CkFqEvQZWxtp8cJgAR
+         pDlM0+prhp8wtE8+8t9f+XAFUMdNLLI/WjUVxNXJHOpM48tyHoMvfCmwwfreSkbP44fk
+         1xxg==
+X-Gm-Message-State: AOAM532rkAphAmNOKc3qSAj1MOsir47CB7rrOGsTwcHxARdLxNBorLKF
+        bG9uWcuRTmfGXtPa1idiTtIlc4K31QG6XiBiTL0=
+X-Google-Smtp-Source: ABdhPJwSq6YMVYSccqTWnvAgRAri3dm24+G251GehmCW7iSbStPh1DsJeK01BKPvluVRB8y+8K10yS5odp3ynTxpNHk=
+X-Received: by 2002:a05:6808:168a:: with SMTP id bb10mr37615259oib.99.1636384564004;
+ Mon, 08 Nov 2021 07:16:04 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a05:6838:1b0f:0:0:0:0 with HTTP; Mon, 8 Nov 2021 07:16:03
+ -0800 (PST)
+Reply-To: mrsaishag45@gmail.com
+From:   Mrs Aisha Al-Qaddafi <gaddafimrsaisha155@gmail.com>
+Date:   Mon, 8 Nov 2021 07:16:03 -0800
+Message-ID: <CAATVZ=TV=Ny+HsXqE=va99Dm7892ta_pvzOnZrb21CEcW=AOUQ@mail.gmail.com>
+Subject: Dear Friend,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 8 Nov 2021 14:25:48 +0000
-"Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
+Hi Dear Friend,
+I came across your e-mail contact prior a private search while in need
+of your assistance. I am Aisha Al-Qaddafi, the only biological
+Daughter of Former President of Libya Col. Muammar Al-Qaddafi. Am a
+single Mother and a Widow with three Children.
 
-> On Mon, Nov 08, 2021 at 03:18:34PM +0100, bage@linutronix.de wrote:
-> > From: Bastian Germann <bage@linutronix.de>
-> > 
-> > Take the return of phy_start_aneg into account so that ethtool will
-> > handle negotiation errors and not silently accept invalid input.
-> 
-> I don't think this description is accurate. If we get to call
-> phy_start_aneg() with invalid input, then something has already
-> gone wrong.
-The MDI/MDIX/auto-MDIX settings are not checked before calling
-phy_start_aneg(). If the PHY supports forcing MDI and auto-MDIX, but
-not forcing MDIX _phy_start_aneg() returns a failure, which is silently
-ignored.
+I have investment funds worth Twenty Seven Million Five Hundred
+Thousand United State Dollar ($27.500.000.00 ) and i need a trusted
+investment Manager/Partner because of my current refugee status,
+however, I am interested in you for investment project assistance in
+your country, may be from there, we can build business relationship in
+the nearest future.
 
-> As Andrew has already explained, an error from this
-> function means that something went wrong with PHY communication.
-Or for MDI/MDIX setings, the PHY does not support a feature/setting.
+I am willing to negotiate investment/business profit sharing ratio
+with you base on the future investment earning profits.
+If you are willing to handle this project on my behalf kindly reply
+urgent to enable me provide you more information about the investment
+funds.
 
-> All validation should have happened prior to this function being
-> called.
-OK.
-Just to be clear: The PHY driver should check the settings and return
-an error before calling phy_ethtool_ksettings_set() ?
-
-Thanks
-    Bene
+Your Urgent Reply Will Be Appreciated
+Best Regards
+Mrs Aisha Al-Qaddafi
