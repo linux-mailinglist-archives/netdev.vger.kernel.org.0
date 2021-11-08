@@ -2,154 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75669447C00
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 09:38:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A923447C03
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 09:39:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238068AbhKHIlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 03:41:19 -0500
-Received: from mail-ua1-f53.google.com ([209.85.222.53]:36520 "EHLO
-        mail-ua1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237379AbhKHIlQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 03:41:16 -0500
-Received: by mail-ua1-f53.google.com with SMTP id e10so29962711uab.3;
-        Mon, 08 Nov 2021 00:38:31 -0800 (PST)
+        id S238072AbhKHImK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 03:42:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45638 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234965AbhKHImJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 03:42:09 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4992C061570;
+        Mon,  8 Nov 2021 00:39:24 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id iq11so7576342pjb.3;
+        Mon, 08 Nov 2021 00:39:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xlgz5f/1O7j1fYQGwZaGYM2sPo7uBwCryb9I1PFva10=;
+        b=mu+nQO3yTipG+EFeCqkGRpcXAHGb/8gxmZo+EDH9ytABe13PJCvj7yg40gSQ6BtopL
+         W9cd7aLMbBxdIqQBDagjm5iSOLlZY5z016L1Wv/9B4M9HPspxdxK3cSEeNdPyAvXHC+t
+         sescGDiM5vgOCBS7t2DeIhrjjZ14RQft4d+NRhEok4L8unqGF8CcIcek+xBmrSsRjVN8
+         nVO3O2hheXB7EEmUUFvxj8JoJ/3FMtFdQaZfBpn/+hZmAIg1DMcsPC8f5Acm3rIaAQRS
+         IiilGsYGP4yID21gz87Lttl9qljFoCNit3ACWlNxRWSR+Vi3ScaMIpQKr8HyhPtTG4T3
+         kTEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YVKWMJNK4m12lLt0Wrn48k6keA+9Ub6Foox4AHZICvc=;
-        b=4pePbNBnF70HQMZOUtFMmUjkyZ4TVDuLqHoWhiPFrmlp6h3CYjMEZgONSBtXNlUW/t
-         Bi7wFxEKtX4OZJvjyV/iSoeJJQB42LfBMAnG3bApImG0UZz2scvydX+TCQ/Axh0IGsib
-         gNcWtntJaZsAWcdukFMLw9/Jrxp7oNFSgkciIQXYtYx8u6fFXMul7lTV5bZcjjStELMI
-         x9t1eu3a6hix31GNozlcgs4RPGk0rF9kDWi0MsIVQm0NbYbAKGczx7AnH2ccQV++yxs7
-         DP4xWne3PhU0utl9FDd5l27WDu+jitIvwaJAzLt4/2148o+vCf6w1POZG+EZ6t1KYvE9
-         e4Rw==
-X-Gm-Message-State: AOAM5318bpP7X5RpsSq7sPmT3b+Gjp9sGFE1IJ74f/fflDll1jzPhWK0
-        jXEh7WeJtQC9FEVvtjH+MDFNPVHNuCfwzg==
-X-Google-Smtp-Source: ABdhPJw4g0wLfAkoknojliQnEXnkYUSGczHurwxG8+2vVR4C5s7KgiS3iBdrjibCzSja6zDhqY86MA==
-X-Received: by 2002:a05:6102:e14:: with SMTP id o20mr46993124vst.26.1636360710778;
-        Mon, 08 Nov 2021 00:38:30 -0800 (PST)
-Received: from mail-ua1-f47.google.com (mail-ua1-f47.google.com. [209.85.222.47])
-        by smtp.gmail.com with ESMTPSA id 66sm3094203vsh.34.2021.11.08.00.38.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Nov 2021 00:38:30 -0800 (PST)
-Received: by mail-ua1-f47.google.com with SMTP id q13so29973308uaq.2;
-        Mon, 08 Nov 2021 00:38:30 -0800 (PST)
-X-Received: by 2002:a05:6102:1354:: with SMTP id j20mr25744747vsl.41.1636360709999;
- Mon, 08 Nov 2021 00:38:29 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xlgz5f/1O7j1fYQGwZaGYM2sPo7uBwCryb9I1PFva10=;
+        b=5TBIXvMVrC7d/Fl+S8GFAgvCAhGRdOSJ4QMHVHdH+GdWxX1zw664VoLPmsRUV6GHUq
+         Lmb42ZZLRln8gEddQoXRKAHDzEgVPW0w9tmlPkowfULXQRR/M/9b5eBsNInVytAQ2JpP
+         MtsbV8vQ1eRClWLS2b1I25ARcUDgipmeVLKg0xp4i3AitZwJwv0qGkRomeHjaqCeqZir
+         yUL9BPbQpD57T4rm6GyK4SMm32GvYnOyIYiHRUeMhGpNE2iFK3UElk0B80cAW1JaLlE9
+         k1FCJrvrDUgGBUvkBMLNbgE/feMXoL7zktO9qpzaWpuld/bihzBiXqGx9ABt8rBDvLI4
+         HDCw==
+X-Gm-Message-State: AOAM530Nwx1AF+dAqT72ftfzkZdXIqeEHT7OBXDpnGRTMTqmPNdOu7o+
+        ZlUI1I9vtsEKeLwHWvYt7dc=
+X-Google-Smtp-Source: ABdhPJy1+50gPKAmCT9Y0ZwuuPEAhduRynsf7+l9Q3TeWobNCHK2T8eiL59YlBTlGbJV4bZzZldAdA==
+X-Received: by 2002:a17:90a:5986:: with SMTP id l6mr50152993pji.215.1636360764275;
+        Mon, 08 Nov 2021 00:39:24 -0800 (PST)
+Received: from localhost.localdomain ([45.63.124.202])
+        by smtp.gmail.com with ESMTPSA id w3sm12253206pfd.195.2021.11.08.00.39.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Nov 2021 00:39:23 -0800 (PST)
+From:   Yafang Shao <laoar.shao@gmail.com>
+To:     akpm@linux-foundation.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        oliver.sang@intel.com, lkp@intel.com,
+        Yafang Shao <laoar.shao@gmail.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        David Hildenbrand <david@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Kees Cook <keescook@chromium.org>,
+        Petr Mladek <pmladek@suse.com>
+Subject: [PATCH 0/7] task comm cleanups 
+Date:   Mon,  8 Nov 2021 08:38:33 +0000
+Message-Id: <20211108083840.4627-1-laoar.shao@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <20211104061102.30899-1-schmitzmic@gmail.com> <20211104061102.30899-4-schmitzmic@gmail.com>
-In-Reply-To: <20211104061102.30899-4-schmitzmic@gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 8 Nov 2021 09:38:18 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVMG8x-s-1_a2vGw3cqP=1OfDjePL+knsLR-=zjEDzN1g@mail.gmail.com>
-Message-ID: <CAMuHMdVMG8x-s-1_a2vGw3cqP=1OfDjePL+knsLR-=zjEDzN1g@mail.gmail.com>
-Subject: Re: [PATCH v8 3/3] net/8390: apne.c - add 100 Mbit support to apne.c driver
-To:     Michael Schmitz <schmitzmic@gmail.com>
-Cc:     "Linux/m68k" <linux-m68k@vger.kernel.org>,
-        ALeX Kazik <alex@kazik.de>, netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michael,
+This patchset is part of the patchset "extend task comm from 16 to 24"[1].
+Now we have different opinion that dynamically allocates memory to store 
+kthread's long name into a separate pointer, so I decide to take the useful
+cleanups apart from the original patchset and send it separately[2].
 
-On Thu, Nov 4, 2021 at 7:11 AM Michael Schmitz <schmitzmic@gmail.com> wrote:
-> Add module parameter, IO mode autoprobe and PCMCIA reset code
-> required to support 100 Mbit PCMCIA ethernet cards on Amiga.
->
-> Select core PCMCIA support modules for use by APNE driver.
->
-> 10 Mbit and 100 Mbit mode are supported by the same module.
-> Use the core PCMCIA cftable parser to detect 16 bit cards,
-> and automatically enable 16 bit ISA IO access for those cards
-> by changing isa_type at runtime. Code to reset the PCMCIA
-> hardware required for 16 bit cards is also added to the driver
-> probe.
->
-> An optional module parameter switches Amiga ISA IO accessors
-> to 8 or 16 bit access in case autoprobe fails.
->
-> Patch modified after patch "[PATCH RFC net-next] Amiga PCMCIA
-> 100 MBit card support" submitted to netdev 2018/09/16 by Alex
-> Kazik <alex@kazik.de>.
->
-> CC: netdev@vger.kernel.org
-> Link: https://lore.kernel.org/r/1622958877-2026-1-git-send-email-schmitzmic@gmail.com
-> Tested-by: Alex Kazik <alex@kazik.de>
-> Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
+These useful cleanups can make the usage around task comm less
+error-prone. Furthermore, it will be useful if we want to extend task
+comm in the future.
 
-> Changes from v7:
->
-> - move 'select' for PCCARD and PCMCIA to 8390 Kconfig, so
->   Amiga pcmcia.c may remain built-in while core PCMCIA
->   code can be built as modules if APNE driver is a module.
-> - move 16 bit mode autoprobe code from amiga/pcmcia.c to this
->   driver, to allow the core PCMCIA code we depend on to be
->   built as modules.
-> - change module parameter type from bool to int to allow for
->   tri-state semantics (autoprobe, 8 bit, 16 bit).
+All of the patches except patch #4 have either a reviewed-by or a
+acked-by now. I have verfied that the vmcore/crash works well after
+patch #4.
 
-Thanks for the update!
+[1]. https://lore.kernel.org/lkml/20211101060419.4682-1-laoar.shao@gmail.com/
+[2]. https://lore.kernel.org/lkml/CALOAHbAx55AUo3bm8ZepZSZnw7A08cvKPdPyNTf=E_tPqmw5hw@mail.gmail.com/
 
-> --- a/drivers/net/ethernet/8390/apne.c
-> +++ b/drivers/net/ethernet/8390/apne.c
+Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+Cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc: Michal Miroslaw <mirq-linux@rere.qmqm.pl>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: David Hildenbrand <david@redhat.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Petr Mladek <pmladek@suse.com>
 
-> @@ -119,6 +121,10 @@ static u32 apne_msg_enable;
->  module_param_named(msg_enable, apne_msg_enable, uint, 0444);
->  MODULE_PARM_DESC(msg_enable, "Debug message level (see linux/netdevice.h for bitmap)");
->
-> +static u32 apne_100_mbit = -1;
+Yafang Shao (7):
+  fs/exec: make __set_task_comm always set a nul terminated string
+  fs/exec: make __get_task_comm always get a nul terminated string
+  drivers/infiniband: use get_task_comm instead of open-coded string
+    copy
+  fs/binfmt_elf: use get_task_comm instead of open-coded string copy
+  samples/bpf/test_overhead_kprobe_kern: make it adopt to task comm size
+    change
+  tools/bpf/bpftool/skeleton: use bpf_probe_read_kernel_str to get task
+    comm
+  tools/testing/selftests/bpf: make it adopt to task comm size change
 
-The changelog said you changed this to int, not u32...
+ drivers/infiniband/hw/qib/qib.h                       |  2 +-
+ drivers/infiniband/hw/qib/qib_file_ops.c              |  2 +-
+ fs/binfmt_elf.c                                       |  2 +-
+ fs/exec.c                                             |  5 +++--
+ include/linux/sched.h                                 |  9 +++++++--
+ samples/bpf/offwaketime_kern.c                        |  4 ++--
+ samples/bpf/test_overhead_kprobe_kern.c               | 11 ++++++-----
+ samples/bpf/test_overhead_tp_kern.c                   |  5 +++--
+ tools/bpf/bpftool/skeleton/pid_iter.bpf.c             |  4 ++--
+ .../testing/selftests/bpf/progs/test_stacktrace_map.c |  6 +++---
+ tools/testing/selftests/bpf/progs/test_tracepoint.c   |  6 +++---
+ 11 files changed, 32 insertions(+), 24 deletions(-)
 
-> +module_param_named(100_mbit, apne_100_mbit, uint, 0444);
-> +MODULE_PARM_DESC(100_mbit, "Enable 100 Mbit support");
-> +
->  static struct net_device * __init apne_probe(void)
->  {
->         struct net_device *dev;
-> @@ -140,6 +146,13 @@ static struct net_device * __init apne_probe(void)
->
->         pr_info("Looking for PCMCIA ethernet card : ");
->
-> +       if (apne_100_mbit == 1)
-> +               isa_type = ISA_TYPE_AG16;
-> +       else if (apne_100_mbit == 0)
-> +               isa_type = ISA_TYPE_AG;
-> +       else
-> +               pr_cont(" (autoprobing 16 bit mode) ");
-> +
->         /* check if a card is inserted */
->         if (!(PCMCIA_INSERTED)) {
->                 pr_cont("NO PCMCIA card inserted\n");
-> @@ -167,6 +180,14 @@ static struct net_device * __init apne_probe(void)
->
->         pr_cont("ethernet PCMCIA card inserted\n");
->
-> +#if IS_ENABLED(CONFIG_PCMCIA)
-> +       if (apne_100_mbit < 0 && pcmcia_is_16bit()) {
+-- 
+2.17.1
 
-apne_100_mbit is u32, hence can never be negative.
-
-> +               pr_info("16-bit PCMCIA card detected!\n");
-> +               isa_type = ISA_TYPE_AG16;
-> +               apne_100_mbit = 1;
-> +       }
-> +#endif
-> +
->         if (!init_pcmcia()) {
->                 /* XXX: shouldn't we re-enable irq here? */
->                 free_netdev(dev);
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
