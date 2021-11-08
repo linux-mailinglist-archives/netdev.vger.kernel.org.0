@@ -2,135 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C8E7449C9A
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 20:41:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF9ED449CBA
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 20:58:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237725AbhKHTmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 14:42:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55506 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236276AbhKHTmT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 14:42:19 -0500
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77CBEC061570
-        for <netdev@vger.kernel.org>; Mon,  8 Nov 2021 11:39:34 -0800 (PST)
-Received: by mail-pf1-x42c.google.com with SMTP id o4so2984990pfp.13
-        for <netdev@vger.kernel.org>; Mon, 08 Nov 2021 11:39:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=qylr0GtQoWErVMeDcCgzgVsk6zbeljCVVpd0hIlmahg=;
-        b=opOsGuiZwJE76pkOLXrxE5csUjTHUkNOJ5n85fb1DXx5ESteGIc41WzlcaDRJ+3lCq
-         fZ9izXIYalrqAUB97d8uSpEaPM6VTKI0cwBjed7XxqQUKeD0e70I2TPQwG40DeVvNQcU
-         1Rlg6PbXP3mkNSoU9zej5AOV4PYIIHVnPzRIyfRhFnJDavJ8NUyMw3AhepEuCUAkTJoz
-         TbMU9J6UrNb+tNgrLhipSjpDoX21A+X9/gxxgxmF8tbkFIVg6ZKAG6SFrMsdcpg7bBVj
-         nHC/tE3n8HIsNu3fUdz8cjdLNsVUORk/WSmfJviEjXtF/Zp/+d3aiG53j3kIpiGClsTf
-         pkPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qylr0GtQoWErVMeDcCgzgVsk6zbeljCVVpd0hIlmahg=;
-        b=IyZ7B+CLaqeE0JNpWzbERQ8XO2YvxvjI1W5BpT1ayx/uh0dqg6epTG0jBVvSOqcgpS
-         swUji+yXCbkK/ve1qC4WI5ui4OKp/xzmxLC6moCe/6Rz1n69NC9cnP4KbYUn6G5CrnEB
-         Ksava8+XRtMG+ve/T0r2ciqNPtIRgO7JXQHe9lxh2MLHExjc5rBKF2tg4In8wSuJfuvU
-         GTWbWVG/jTbLe0vKgoiKpHzZvYaoTi0hE1+e77G4ruUumnplDt5Kk+CCDQFtqvFWiZi2
-         DEDVyoK9TS+Luiin+KLRi1Xg9Fa2ojPEA4UG+cPMH9m0I+lWP8KAUOVvhRhqMdsQxDjW
-         g5AQ==
-X-Gm-Message-State: AOAM530LapZy1A2eq1gPH7pqi692abKcP5XPtEV/ssqXxUuRf6faaPkr
-        CDkJnJLVwSVlh1BuZOlPGJPF/QIh0H4=
-X-Google-Smtp-Source: ABdhPJzliCl+Z9kSAHQtBUhEOv2Fg6i2EhXpxG++Xu2NiRG6jJdWJl/xk+o/zn6JNe8U5bTYLu+TTA==
-X-Received: by 2002:a63:fc48:: with SMTP id r8mr1433376pgk.339.1636400373856;
-        Mon, 08 Nov 2021 11:39:33 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id s15sm142692pjs.51.2021.11.08.11.39.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Nov 2021 11:39:33 -0800 (PST)
-Subject: Re: [RFC PATCH net-next 2/4] txhash: Add socket option to control TX
- hash rethink behavior
-To:     Akhmat Karakotov <hmukos@yandex-team.ru>, netdev@vger.kernel.org
-References: <20211025203521.13507-1-hmukos@yandex-team.ru>
- <20211025203521.13507-3-hmukos@yandex-team.ru>
- <f21dfe61-58e6-ba03-cc0a-b5d2fd0a88c6@gmail.com>
- <3EA39ACA-9935-4FB7-B89A-5F57D33BC069@yandex-team.ru>
- <D7FFC160-1DC3-42A5-BE0E-15FD81BEB1F3@yandex-team.ru>
- <A1CCE8E1-72B0-429C-BBD9-ABA31DE2EBE0@yandex-team.ru>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <e9ca04cd-ec21-43ad-fd99-11af754e3279@gmail.com>
-Date:   Mon, 8 Nov 2021 11:39:31 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S238000AbhKHT4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 14:56:31 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:51336 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237891AbhKHT4a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 14:56:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=tkHOqRl65t9wybmGiKhhe/EfI/jcQW1AOyReaAVadCU=; b=fqeyTs0xe5dnBpErQ5uU1VCqWl
+        a3T7OuP/xp/XGuaDOLyEt/21UVOpo/jAYTWQqKNsEa/CK6akVxAatzaxHaJekgOAKClQHY5DSmFVr
+        qcrXeH8zfrm2hmD728eYgau2CFQgOs1Zg1HXDWDMCInaks3tux+x4nHZQBQYdRJ+qm2c=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mkAi0-00CvWI-Ky; Mon, 08 Nov 2021 20:53:36 +0100
+Date:   Mon, 8 Nov 2021 20:53:36 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [RFC PATCH v2 1/5] leds: trigger: add API for HW offloading of
+ triggers
+Message-ID: <YYmAQDIBGxPXCNff@lunn.ch>
+References: <20211108002500.19115-1-ansuelsmth@gmail.com>
+ <20211108002500.19115-2-ansuelsmth@gmail.com>
+ <YYkuZwQi66slgfTZ@lunn.ch>
+ <YYk/Pbm9ZZ/Ikckg@Ansuel-xps.localdomain>
+ <20211108171312.0318b960@thinkpad>
+ <YYliclrZuxG/laIh@lunn.ch>
+ <20211108185637.21b63d40@thinkpad>
 MIME-Version: 1.0
-In-Reply-To: <A1CCE8E1-72B0-429C-BBD9-ABA31DE2EBE0@yandex-team.ru>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211108185637.21b63d40@thinkpad>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 11/8/21 4:48 AM, Akhmat Karakotov wrote:
->> On Oct 29, 2021, at 13:01, Akhmat Karakotov <hmukos@yandex-team.ru> wrote:
->>
->>>
->>> On Oct 26, 2021, at 00:05, Eric Dumazet <eric.dumazet@gmail.com> wrote:
->>>
->>>
->>>
->>> On 10/25/21 1:35 PM, Akhmat Karakotov wrote:
->>>> Add the SO_TXREHASH socket option to control hash rethink behavior per socket.
->>>> When default mode is set, sockets disable rehash at initialization and use
->>>> sysctl option when entering listen state. setsockopt() overrides default
->>>> behavior.
->>>
->>> What values are accepted, and what are their meaning ?
->>>
->>> It seems weird to do anything in inet_csk_listen_start()
->>>
->>>
->>> For sockets that have not used SO_TXREHASH
->>> (this includes passive sockets where their parent did not use SO_TXREHASH),
->>> the sysctl _current_ value should be used every time we consider a rehash.
->> SO_TXREHASH_DEFAULT value means default behavior: for listening sockets
->> the sysctl value is taken, while for others rehash is disabled. The motivation
->> was to disallow hash rethink at the client-side to avoid connection timeout to
->> anycast services (as was stated in cover letter).
->> ENABLED and DISABLED values are for enforcing rehash option values.
->>
->> To be honest I didn't quite understand how you propose to change patch behaviour.
->>
->>>
->>>> #define SOCK_TXREHASH_DISABLED	0
->>>> #define SOCK_TXREHASH_ENABLED	1
->>>>
->>>> diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
->>>> index 0d833b861f00..537a8532ff8a 100644
->>>> --- a/net/core/net_namespace.c
->>>> +++ b/net/core/net_namespace.c
->>>> @@ -360,7 +360,7 @@ static int __net_init net_defaults_init_net(struct net *net)
->>>> {
->>>> 	net->core.sysctl_somaxconn = SOMAXCONN;
->>>>
->>>> -	net->core.sysctl_txrehash = SOCK_TXREHASH_DISABLED;
->>>> +	net->core.sysctl_txrehash = SOCK_TXREHASH_ENABLED;
->>>
->>> This is very confusing.
->>>
->>
->> Could you, please, elaborate what exactly is confusing?
+> I guess I will have to work on this again ASAP or we will end up with
+> solution that I don't like.
 > 
-> Hi Eric,
-> 
-> I wonder if you have time to take a closer look at my last comments.
-> 
-> P. S.: resending this message without CC, because delivery system rejected it first time
-> 
+> Nonetheless, what is your opinion about offloading netdev trigger vs
+> introducing another trigger?
 
-I guess the confusing part was that one patch sets SOCK_TXREHASH_DISABLED,
-then a following one (in the series) sets it to SOCK_TXREHASH_ENABLED
+It is a solution that fits the general pattern, do it in software, and
+offload it if possible.
 
-My brain hurts.
+However, i'm not sure the software solution actually works very well.
+At least for switches. The two DSA drivers which implement
+get_stats64() simply copy the cached statistics. The XRS700X updates
+its cached values every 3000ms. The ar9331 is the same. Those are the
+only two switch drivers which implement get_stats64 and none implement
+get_stats. There was also was an issue that get_stats64() cannot
+perform blocking calls. I don't remember if that was fixed, but if
+not, get_stats64() is going to be pretty useless on switches.
+
+We also need to handle drivers which don't actually implement
+dev_get_stats(). That probably means only supporting offloads, all
+modes which cannot be offloaded need to be rejected. This is pretty
+much the same case of software control of the LEDs is not possible.
+Unfortunately, dev_get_stats() does not return -EOPNOTSUPP, you need
+to look at dev->netdev_ops->ndo_get_stats64 and
+dev->netdev_ops->ndo_get_stats.
+
+Are you working on Marvell switches? Have you implemented
+get_stats64() for mv88e6xxx? How often do you poll the hardware for
+the stats?
+
+Given this, i think we need to bias the API so that it very likely
+ends up offloading, if offloading is available.
+
+     Andrew
+
