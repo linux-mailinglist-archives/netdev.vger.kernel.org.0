@@ -2,95 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECAC2449A45
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 17:48:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01C34449A4A
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 17:48:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240173AbhKHQue (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 11:50:34 -0500
-Received: from 113.196.136.162.ll.static.sparqnet.net ([113.196.136.162]:49192
-        "EHLO mg.sunplus.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S240259AbhKHQud (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 11:50:33 -0500
-X-MailGates: (flag:3,DYNAMIC,RELAY,NOHOST:PASS)(compute_score:DELIVER,40
-        ,3)
-Received: from 172.17.9.202
-        by mg01.sunplus.com with MailGates ESMTP Server V5.0(13482:0:AUTH_RELAY)
-        (envelope-from <wells.lu@sunplus.com>); Tue, 09 Nov 2021 00:47:38 +0800 (CST)
-Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
- sphcmbx01.sunplus.com.tw (172.17.9.202) with Microsoft SMTP Server (TLS) id
- 15.0.1497.23; Tue, 9 Nov 2021 00:47:33 +0800
-Received: from sphcmbx02.sunplus.com.tw ([::1]) by sphcmbx02.sunplus.com.tw
- ([fe80::f8bb:bd77:a854:5b9e%14]) with mapi id 15.00.1497.023; Tue, 9 Nov 2021
- 00:47:34 +0800
-From:   =?big5?B?V2VsbHMgTHUgp2aq2sTL?= <wells.lu@sunplus.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Wells Lu <wellslutw@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>
-Subject: RE: [PATCH 2/2] net: ethernet: Add driver for Sunplus SP7021
-Thread-Topic: [PATCH 2/2] net: ethernet: Add driver for Sunplus SP7021
-Thread-Index: AQHX0KKBcebTINBXKk6D/f7Frpi9sKvxfraAgAGf2kCAAU6CgIAE3RVA///T9oCAAJMwUP//h9mAgACMUqA=
-Date:   Mon, 8 Nov 2021 16:47:34 +0000
-Message-ID: <585e234fdb74499caafee3b43b5e5ab4@sphcmbx02.sunplus.com.tw>
-References: <cover.1635936610.git.wells.lu@sunplus.com>
- <650ec751dd782071dd56af5e36c0d509b0c66d7f.1635936610.git.wells.lu@sunplus.com>
- <YYK+EeCOu/BXBXDi@lunn.ch>
- <64626e48052c4fba9057369060bfbc84@sphcmbx02.sunplus.com.tw>
- <YYUzgyS6pfQOmKRk@lunn.ch>
- <7c77f644b7a14402bad6dd6326ba85b1@sphcmbx02.sunplus.com.tw>
- <YYkjBdu64r2JF1bR@lunn.ch>
- <4e663877558247048e9b04b027e555b8@sphcmbx02.sunplus.com.tw>
- <YYk5s5fDuub7eBqu@lunn.ch>
-In-Reply-To: <YYk5s5fDuub7eBqu@lunn.ch>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [172.25.108.39]
-Content-Type: text/plain; charset="big5"
-Content-Transfer-Encoding: base64
+        id S240217AbhKHQva (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 11:51:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37028 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231330AbhKHQva (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 11:51:30 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5B653610A3;
+        Mon,  8 Nov 2021 16:48:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636390125;
+        bh=O2kvEdbaEtHMwFnvPTppO4ra6nMHq0KjSKGtW5owMLc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fEbYHQFBjZpsQgCGCmLcw6QepoK+qbU0s0vT85B5kkyR6W28tkac5XMj62oyotEUd
+         SUbaGGoS0NjBretzYrTVlvXahkiM2NqjOEaI9grElFeGQGV/HhmFlH5mplqajs6DpW
+         V7m4C3ZoADB08yjG8Bl9/CW3o9kxYLUUcz2je0keaUEyiDv12RUc+Pv4ZGt7jaWvq6
+         IEWPdhsgphlf3/2Knjps0zY/1qNvL5vANnyp12qG2TjfHlC0KwmgY+rSRmteicb4Qy
+         EY0SCnwQyk5IjAmn9UedkTZSag2i95/I7YDDtR/Ocb4wDk3tplhk9SPlZCsFLv6A59
+         RTftkGfJ+mVEA==
+Date:   Mon, 8 Nov 2021 17:48:42 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, davem@davemloft.net, ast@kernel.org,
+        daniel@iogearbox.net, shayagr@amazon.com, john.fastabend@gmail.com,
+        dsahern@kernel.org, brouer@redhat.com, echaudro@redhat.com,
+        jasowang@redhat.com, alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        tirthendu.sarkar@intel.com, toke@redhat.com
+Subject: Re: [PATCH v17 bpf-next 20/23] net: xdp: introduce bpf_xdp_pointer
+ utility routine
+Message-ID: <YYlU6nuZu7aUFLQT@lore-desk>
+References: <cover.1636044387.git.lorenzo@kernel.org>
+ <273cc085c8cbe5913defe302800fc69da650e7b1.1636044387.git.lorenzo@kernel.org>
+ <20211105162944.5f58487e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="AsmBTGevGnjm9UDq"
+Content-Disposition: inline
+In-Reply-To: <20211105162944.5f58487e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiA+IFRoZSBzd2l0Y2ggd2lsbCBub3QgcmVjb2duaXplIHR5cGUgb2YgcGFja2V0cywgcmVnYXJk
-bGVzcyBCUERVLCBQVFAgb3INCj4gPiBhbnkgb3RoZXIgcGFja2V0cy4gSWYgdHVybmluZyBvZmYg
-c291cmNlLWFkZHJlc3MgbGVhcm5pbmcgZnVuY3Rpb24sIGl0DQo+ID4gd29ya3MgbGlrZSBhbiBF
-dGhlcm5ldCBwbHVzIGEgMi1wb3J0IGh1Yi4NCj4gDQo+IFNvIHdpdGhvdXQgU1RQLCB0aGVyZSBp
-cyBubyB3YXkgdG8gc3RvcCBhbiBsb29wLCBhbmQgYSBicm9hZGNhc3Qgc3Rvcm0gdGFraW5nDQo+
-IGRvd24geW91ciBuZXR3b3JrPw0KDQpEbyB5b3UgbWVhbiBjb25uZWN0aW5nIHR3byBQSFkgcG9y
-dHMgdG8gdGhlIHNhbWUgTEFOPyBXZSBuZXZlciANCmNvbm5lY3QgdHdvIFBIWSBwb3J0cyB0byB0
-aGUgc2FtZSBMQU4gKG9yIGh1YikuIEkgbmV2ZXIgdGhpbmsgb2YgdGhpcyANCmxvb3AgcHJvYmxl
-bS4gSSB0aG91Z2h0IG9ubHkgV0FOIGhhcyB0aGUgbG9vcCBwcm9ibGVtLg0KDQpUaGUgc3dpdGNo
-IGhhcyBzb21lIGtpbmRzIG9mIGZsb3cgY29udHJvbCwgcmVmZXIgdG8gMC4yICJGbG93IGNvbnRy
-b2wgdGhyZXNob2xkIg0KYW5kIDAuMyAiQ1BVIHBvcnQgZmxvdyBjb250cm9sIHRocmVzaG9sZCIu
-IEl0IHdpbGwgZHJvcCBleHRyYSBwYWNrZXRzLg0KSG93IGFuIEV0aGVybmV0IGh1YiB0YWtlIGNh
-cmUgb2YgdGhpcyBzaXR1YXRpb24/DQpJcyB0aGF0IHJlYXNvbmFibGUgdG8gY29ubmVjdCB0d28g
-cG9ydHMgb2YgYW4gRXRoZXJuZXQgaHViIHRvZ2V0aGVyPw0KDQoNCj4gTG9va2luZyBhdCB0aGUg
-VFggZGVzY3JpcHRvciwgdGhlcmUgYXJlIHR3byBiaXRzOg0KPiANCj4gICAgICAgICAgIFsxOF06
-IGZvcmNlIGZvcndhcmQgdG8gcG9ydCAwDQo+ICAgICAgICAgICBbMTldOiBmb3JjZSBmb3J3YXJk
-IHRvIHBvcnQgMQ0KPiANCj4gV2hlbiB0aGUgc3dpdGNoIGlzIGVuYWJsZWQsIGNhbiB0aGVzZSB0
-d28gYml0cyBiZSB1c2VkPw0KDQpZZXMsIGZvciBleGFtcGxlLCB3aGVuIGJpdCAxOSBvZiBUWCBk
-ZXNjcmlwdG9yIGlzIGVuYWJsZWQsIGEgcGFja2V0IGZyb20gQ1BVIA0KcG9ydCBpcyBmb3J3YXJk
-ZWQgdG8gTEFOIHBvcnQgMCBmb3JjaWJseS4NCg0KDQo+IEluIHRoZSBSWCBkZXNjcmlwdG9yIHRo
-ZXJlIGlzOg0KPiANCj4gcGt0X3NwOg0KPiAgICAgICAgICAgMDAwOiBmcm9tIHBvcnQwDQo+ICAg
-ICAgICAgICAwMDE6IGZyb20gcG9ydDENCj4gICAgICAgICAgIDExMDogc29jMCBsb29wYmFjaw0K
-PiAgICAgICAgICAgMTAxOiBzb2MxIGxvb3BiYWNrDQo+IA0KPiBBcmUgdGhlc2UgYml0cyB1c2Vk
-IHdoZW4gdGhlIHN3aXRjaCBpcyBlbmFibGVkPw0KDQpZZXMsIEUtIE1BQyBkcml2ZXIgdXNlcyB0
-aGVzZSBiaXRzIHRvIHRlbGwgd2hlcmUgYSBwYWNrZXQgY29tZXMgZnJvbS4NCk5vdGUgdGhhdCBz
-b2MxIHBvcnQgKENQVSBwb3J0KSBoYXMgYmVlbiByZW1vdmVkIGluIHRoaXMgY2hpcC4NCg0KDQo+
-IDAuMzEgcG9ydCBjb250cm9sIDEgKHBvcnQgY250bDEpIGJsb2NraW5nIHN0YXRlIHNlZW1zIHRv
-IGhhdmUgd2hhdCB5b3UgbmVlZCBmb3INCj4gU1RQLg0KDQpGcm9tIGRvY3VtZW50LCBpZiBiaXQg
-MTcgb3IgYml0IDE2IG9mIHBvcnRfY250bDEgcmVnaXN0ZXIgaXMgc2V0LCBvbmx5IFJNQyANCnBh
-Y2tldHMgd2lsbCBiZSBmb3J3YXJkZWQgdG8gb3RoZXIgTEFOIHBvcnQuIEkgYW0gbm90IHN1cmUg
-d2hldGhlciANCmVuYWJsaW5nIHRoZSBiaXRzIGhlbHBzIHRoZSBpc3N1ZS4gU2hvdWxkIEkgZW5h
-YmxlIHRoZSBiaXRzPw0KU29ycnksIEkgZG9uJ3Qga25vdyB3aGF0IGlzIGEgUk1DIHBhY2tldD8N
-CkNvdWxkIHlvdSBwbGVhc2UgdGVhY2ggbWU/DQoNCg0KPiAgICAgQW5kcmV3DQoNClRoYW5rIHlv
-dSBmb3IgcmV2aWV3Lg0KDQo=
+
+--AsmBTGevGnjm9UDq
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+> On Thu,  4 Nov 2021 18:35:40 +0100 Lorenzo Bianconi wrote:
+> > Similar to skb_header_pointer, introduce bpf_xdp_pointer utility routine
+> > to return a pointer to a given position in the xdp_buff if the requested
+> > area (offset + len) is contained in a contiguous memory area otherwise =
+it
+> > will be copied in a bounce buffer provided by the caller.
+> > Similar to the tc counterpart, introduce the two following xdp helpers:
+> > - bpf_xdp_load_bytes
+> > - bpf_xdp_store_bytes
+> >=20
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+>=20
+> > diff --git a/net/core/filter.c b/net/core/filter.c
+> > index 386dd2fffded..534305037ad7 100644
+> > --- a/net/core/filter.c
+> > +++ b/net/core/filter.c
+> > @@ -3840,6 +3840,135 @@ static const struct bpf_func_proto bpf_xdp_adju=
+st_head_proto =3D {
+> >  	.arg2_type	=3D ARG_ANYTHING,
+> >  };
+> > =20
+> > +static void bpf_xdp_copy_buf(struct xdp_buff *xdp, u32 offset,
+> > +			     u32 len, void *buf, bool flush)
+> > +{
+> > +	struct skb_shared_info *sinfo =3D xdp_get_shared_info_from_buff(xdp);
+> > +	u32 headsize =3D xdp->data_end - xdp->data;
+> > +	u32 count =3D 0, frame_offset =3D headsize;
+> > +	int i =3D 0;
+> > +
+> > +	if (offset < headsize) {
+> > +		int size =3D min_t(int, headsize - offset, len);
+> > +		void *src =3D flush ? buf : xdp->data + offset;
+> > +		void *dst =3D flush ? xdp->data + offset : buf;
+> > +
+> > +		memcpy(dst, src, size);
+> > +		count =3D size;
+> > +		offset =3D 0;
+> > +	}
+> > +
+> > +	while (count < len && i < sinfo->nr_frags) {
+>=20
+> nit: for (i =3D 0; ...; i++) ?
+
+ack, I will fix it in v18
+
+>=20
+> > +		skb_frag_t *frag =3D &sinfo->frags[i++];
+> > +		u32 frag_size =3D skb_frag_size(frag);
+> > +
+> > +		if  (offset < frame_offset + frag_size) {
+>=20
+> nit: double space after if
+
+ack, I will fix it in v18
+>=20
+> > +			int size =3D min_t(int, frag_size - offset, len - count);
+> > +			void *addr =3D skb_frag_address(frag);
+> > +			void *src =3D flush ? buf + count : addr + offset;
+> > +			void *dst =3D flush ? addr + offset : buf + count;
+> > +
+> > +			memcpy(dst, src, size);
+> > +			count +=3D size;
+> > +			offset =3D 0;
+> > +		}
+> > +		frame_offset +=3D frag_size;
+> > +	}
+> > +}
+> > +
+> > +static void *bpf_xdp_pointer(struct xdp_buff *xdp, u32 offset,
+> > +			     u32 len, void *buf)
+> > +{
+> > +	struct skb_shared_info *sinfo =3D xdp_get_shared_info_from_buff(xdp);
+> > +	u32 size =3D xdp->data_end - xdp->data;
+> > +	void *addr =3D xdp->data;
+> > +	int i;
+> > +
+> > +	if (unlikely(offset > 0xffff))
+> > +		return ERR_PTR(-EFAULT);
+> > +
+> > +	if (offset + len > xdp_get_buff_len(xdp))
+> > +		return ERR_PTR(-EINVAL);
+>=20
+> I don't think it breaks anything but should we sanity check len?
+> Maybe make the test above (offset | len) > 0xffff -> EFAULT?
+
+ack, I will add it in v18
+
+>=20
+> > +	if (offset < size) /* linear area */
+> > +		goto out;
+> > +
+> > +	offset -=3D size;
+> > +	for (i =3D 0; i < sinfo->nr_frags; i++) { /* paged area */
+> > +		u32 frag_size =3D skb_frag_size(&sinfo->frags[i]);
+> > +
+> > +		if  (offset < frag_size) {
+> > +			addr =3D skb_frag_address(&sinfo->frags[i]);
+> > +			size =3D frag_size;
+> > +			break;
+> > +		}
+> > +		offset -=3D frag_size;
+> > +	}
+> > +
+> > +out:
+> > +	if (offset + len < size)
+> > +		return addr + offset; /* fast path - no need to copy */
+> > +
+> > +	if (!buf) /* no copy to the bounce buffer */
+> > +		return NULL;
+> > +
+> > +	/* slow path - we need to copy data into the bounce buffer */
+> > +	bpf_xdp_copy_buf(xdp, offset, len, buf, false);
+> > +	return buf;
+> > +}
+> > +
+> > +BPF_CALL_4(bpf_xdp_load_bytes, struct xdp_buff *, xdp, u32, offset,
+> > +	   void *, buf, u32, len)
+> > +{
+> > +	void *ptr;
+> > +
+> > +	ptr =3D bpf_xdp_pointer(xdp, offset, len, buf);
+> > +	if (IS_ERR(ptr))
+> > +		return PTR_ERR(ptr);
+> > +
+> > +	if (ptr !=3D buf)
+> > +		memcpy(buf, ptr, len);
+>=20
+> Maybe we should just call out to bpf_xdp_copy_buf() like store does
+> instead of putting one but not the other inside bpf_xdp_pointer().
+>=20
+> We'll have to refactor this later for the real bpf_xdp_pointer,
+> I'd lean on the side of keeping things symmetric for now.
+
+ack, I agree. I will move bpf_xdp_copy_buf out of bpf_xdp_pointer so
+bpf_xdp_load_bytes and bpf_xdp_store_bytes are symmetric
+
+Regards,
+Lorenzo
+
+>=20
+> > +	return 0;
+> > +}
+>=20
+> > +BPF_CALL_4(bpf_xdp_store_bytes, struct xdp_buff *, xdp, u32, offset,
+> > +	   void *, buf, u32, len)
+> > +{
+> > +	void *ptr;
+> > +
+> > +	ptr =3D bpf_xdp_pointer(xdp, offset, len, NULL);
+> > +	if (IS_ERR(ptr))
+> > +		return PTR_ERR(ptr);
+> > +
+> > +	if (!ptr)
+> > +		bpf_xdp_copy_buf(xdp, offset, len, buf, true);
+> > +	else
+> > +		memcpy(ptr, buf, len);
+> > +
+> > +	return 0;
+> > +}
+
+--AsmBTGevGnjm9UDq
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYYlU6QAKCRA6cBh0uS2t
+rFAMAP92t9LG0vTYodP+rXQUqVeJAeMc9n6cpaGDoC66nP+upgEA7eyee7VN6s1W
+BrLDuyz08ws7DZ2BJQ01vtAs0uDx6g4=
+=+z/b
+-----END PGP SIGNATURE-----
+
+--AsmBTGevGnjm9UDq--
