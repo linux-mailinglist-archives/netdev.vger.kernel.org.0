@@ -2,86 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4C6F447702
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 01:46:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F4074476CD
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 01:09:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236077AbhKHAsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Nov 2021 19:48:45 -0500
-Received: from prt-mail.chinatelecom.cn ([42.123.76.219]:59515 "EHLO
-        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S229807AbhKHAso (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Nov 2021 19:48:44 -0500
-X-Greylist: delayed 412 seconds by postgrey-1.27 at vger.kernel.org; Sun, 07 Nov 2021 19:48:42 EST
-HMM_SOURCE_IP: 172.18.0.48:43760.616130149
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-110.80.1.45 (unknown [172.18.0.48])
-        by chinatelecom.cn (HERMES) with SMTP id 1090E2800AF;
-        Mon,  8 Nov 2021 08:38:21 +0800 (CST)
-X-189-SAVE-TO-SEND: +zhenggy@chinatelecom.cn
-Received: from  ([172.18.0.48])
-        by app0024 with ESMTP id a7c1a4c9887d45d59953a2e84212ca75 for lvs-devel@vger.kernel.org;
-        Mon, 08 Nov 2021 08:38:42 CST
-X-Transaction-ID: a7c1a4c9887d45d59953a2e84212ca75
-X-Real-From: zhenggy@chinatelecom.cn
-X-Receive-IP: 172.18.0.48
-X-MEDUSA-Status: 0
-Sender: zhenggy@chinatelecom.cn
-From:   GuoYong Zheng <zhenggy@chinatelecom.cn>
-To:     lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org
-Cc:     horms@verge.net.au, ja@ssi.bg, pablo@netfilter.org,
-        kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org, coreteam@netfilter.org,
-        linux-kernel@vger.kernel.org,
-        GuoYong Zheng <zhenggy@chinatelecom.cn>
-Subject: [PATCH] ipvs: remove unused variable for ip_vs_new_dest
-Date:   Fri,  5 Nov 2021 19:39:40 +0800
-Message-Id: <1636112380-11040-1-git-send-email-zhenggy@chinatelecom.cn>
-X-Mailer: git-send-email 1.8.3.1
+        id S236737AbhKHAL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Nov 2021 19:11:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46578 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236047AbhKHAL0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Nov 2021 19:11:26 -0500
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E13DC061570
+        for <netdev@vger.kernel.org>; Sun,  7 Nov 2021 16:08:43 -0800 (PST)
+Received: by mail-ot1-x32d.google.com with SMTP id x19-20020a9d7053000000b0055c8b39420bso2427545otj.1
+        for <netdev@vger.kernel.org>; Sun, 07 Nov 2021 16:08:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=NHAujRj3nNPe07TxWi88DybAbp7vcb7zQT2ctaDgCnw=;
+        b=NaRzJ8cJ3FO88Lg8NDDQ2b8pXUbvu2leE3seEK5sazLC/RlII54s3RWSQ5Xc/q574I
+         BTROmTlf+UBxfKburQPXkbjreo42CQf7UE2hfo/iZCSlK5AUsGPwkdTLLqfbJyRLzKJY
+         CIkThfzvxmbwP2k2vTxsvPIjj3aWsL4j/6WoaJl9GESe7mxdWFft2uE3XqOpnjcj3C7E
+         W+DRplVMbZAKVYtc90mMEASunYS1EX0i+iyPLZf2zM4fA8MmYYQn6tH3dlxbK5pHly40
+         VVR85iQf6NoiYhhmdZ3o2xEdZNrAoeqd1z+2o+5KEATY3bNFn48RtlGp3PNfPtyQgWUM
+         6jpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=NHAujRj3nNPe07TxWi88DybAbp7vcb7zQT2ctaDgCnw=;
+        b=e590GIh/85FwcAPx2BpEtLGWD3X4dgfJZ/NmN4A83YXu3+DfQWX2X6pUKudrDHAlGI
+         Pb/cwyhLxZOJP1Le91V9r3qTcjUErT78X4yFWSpC1JgbntSpjK2zYql1OeLPr4/l1Qh0
+         dS/VtuT7WxngrvT4tS3h22vhOS0skhnRbkNU/vHYOrYQVduZmzh8zfAwRhxa0FZ4DfC4
+         +qDAvsCbD9aH19xrsSR7Uw/V1v7AtueF7AnfCAVixJKWIfS51RMw5LO4TSZ4p9jy/A42
+         WkxgD9VTLCffUVBunAO+UTiYnYxCjV6+KWnt8CbVaO3SnQHSBe7xYPLHAD0unkVckYsS
+         FaeQ==
+X-Gm-Message-State: AOAM533xynEeiuW5xmNV6LkV8OEbSVvKH/4Zk/elV7TxDjj5LYXG1XsZ
+        K6MTMSp9eQZYoiyLjZK68KDV+RU5R0co9Ak8uA==
+X-Google-Smtp-Source: ABdhPJxgKuVRIm+1ahFGkFkkLzWJT6Q+t+bPl0VH0r6Ns6jVvhC1zPgeKorTqlrNPvFvvpViAsbeHNy/hE/AUE/HVcE=
+X-Received: by 2002:a9d:6a4e:: with SMTP id h14mr4726081otn.134.1636330122759;
+ Sun, 07 Nov 2021 16:08:42 -0800 (PST)
+MIME-Version: 1.0
+Received: by 2002:a4a:db75:0:0:0:0:0 with HTTP; Sun, 7 Nov 2021 16:08:42 -0800 (PST)
+Reply-To: salemchantal@mail.ee
+From:   MRS Salem Chantal Lawrence <osaruwanseovenseri@gmail.com>
+Date:   Sun, 7 Nov 2021 16:08:42 -0800
+Message-ID: <CAENio1rYegKXJxKARWZR9O4sKkmpQMrcm=U1ZmsGcR0Ztg96kQ@mail.gmail.com>
+Subject: Attention
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The dest variable is not used after ip_vs_new_dest anymore in
-ip_vs_add_dest, do not need pass it to ip_vs_new_dest, remove it.
+Attention
 
-Signed-off-by: GuoYong Zheng <zhenggy@chinatelecom.cn>
----
- net/netfilter/ipvs/ip_vs_ctl.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+You have been compensated with the sum of 4.6 million dollars in this
+United Nation the payment will be issue into Atm Visa Card and send to you
+from the Bank we need your Address Passport and your whatsapp number
 
-diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
-index e62b40b..494399d 100644
---- a/net/netfilter/ipvs/ip_vs_ctl.c
-+++ b/net/netfilter/ipvs/ip_vs_ctl.c
-@@ -959,8 +959,7 @@ static void ip_vs_trash_cleanup(struct netns_ipvs *ipvs)
-  *	Create a destination for the given service
-  */
- static int
--ip_vs_new_dest(struct ip_vs_service *svc, struct ip_vs_dest_user_kern *udest,
--	       struct ip_vs_dest **dest_p)
-+ip_vs_new_dest(struct ip_vs_service *svc, struct ip_vs_dest_user_kern *udest)
- {
- 	struct ip_vs_dest *dest;
- 	unsigned int atype, i;
-@@ -1020,8 +1019,6 @@ static void ip_vs_trash_cleanup(struct netns_ipvs *ipvs)
- 	spin_lock_init(&dest->stats.lock);
- 	__ip_vs_update_dest(svc, dest, udest, 1);
- 
--	*dest_p = dest;
--
- 	LeaveFunction(2);
- 	return 0;
- 
-@@ -1095,7 +1092,7 @@ static void ip_vs_trash_cleanup(struct netns_ipvs *ipvs)
- 		/*
- 		 * Allocate and initialize the dest structure
- 		 */
--		ret = ip_vs_new_dest(svc, udest, &dest);
-+		ret = ip_vs_new_dest(svc, udest);
- 	}
- 	LeaveFunction(2);
- 
--- 
-1.8.3.1
+Contact This My WhatsApp Number for more Details (+1 (201)308-2233
 
+THANKS
+MRS Salem Chantal Lawrence
