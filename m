@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19DC444A1A9
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 02:09:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBD3544A1A6
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 02:09:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242306AbhKIBLO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 20:11:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38626 "EHLO mail.kernel.org"
+        id S242295AbhKIBLC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 20:11:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33466 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242011AbhKIBIv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S242014AbhKIBIv (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 8 Nov 2021 20:08:51 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0334961361;
-        Tue,  9 Nov 2021 01:04:00 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9001761A59;
+        Tue,  9 Nov 2021 01:04:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636419842;
-        bh=SqMwSJlsmhRnzp2vM6XUPwpHBdW+FdUM2Grw036Ydhc=;
+        s=k20201202; t=1636419843;
+        bh=bHa5gPhozM+s6vrbsoyeHM3zp4a5PsqgvND0jai6kAo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QXY86Hk3UBksnZoIJikSuIpj8pGbNA/9S5cC/JnzL9MADPEYlvtOPH6hTdoH2uyD7
-         oemV5i0dikhtbAkI0v1NcyL6OrHmCec46qDvU7ImFAUNvMRzAQxz/kNXZh5KqXk1yM
-         +aynRbNbMNI5aD9GplZeMFaewNyoWkLcurVbKto7K+Z2pPQGblyZeRzSX8gZK4nRLx
-         0lwSWGh7/qfC42pYH2UPL8TnjyuHy14urWFIZSWXWIpVdp19RYJqD/Jp//FeIRHZf2
-         SiIuZQaL6hC883XBDza8byK5KYirD4vVcx0dJWUwkmF79fC254CAfGQ6KBYOSQ7Y9C
-         1YmrEZ9jOXSAA==
+        b=Q6oAFhob9m48AisTdlKlukU/Cghj0bCNSaXx0LyuVByGmHi28pw0g4e0mIAa8NYgY
+         7l3xD7MBG3aYCtXFrvCg+xtB/0YsIQ9Kz4Q4OZW8O6cCYVAWoNwTO+AfOvYDATSdHC
+         3gOKDjTD/TuqtEgv6PmOHO0mDJdo0IhPKom1jUqdZvdFOgRImqQFqzGG2Gqmd4FQ88
+         PG2nuYBOSisKEXJGX25um2+nnRXfVo7AYWsvvOvGO9KTJ6BqOh3L1GnivDqySNzmHG
+         UQD2xepFJYAUBJgzGwgMqZUdz1GLe0mV5K5og1WHE/wuEDwxtgJkrgUwZ6p8P2y/Z9
+         4Q36hwb/mXCrA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sriram R <srirrama@codeaurora.org>,
+Cc:     Wen Gong <wgong@codeaurora.org>,
         Jouni Malinen <jouni@codeaurora.org>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
         kuba@kernel.org, ath11k@lists.infradead.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 023/101] ath11k: Avoid reg rules update during firmware recovery
-Date:   Mon,  8 Nov 2021 12:47:13 -0500
-Message-Id: <20211108174832.1189312-23-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 024/101] ath11k: add handler for scan event WMI_SCAN_EVENT_DEQUEUED
+Date:   Mon,  8 Nov 2021 12:47:14 -0500
+Message-Id: <20211108174832.1189312-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211108174832.1189312-1-sashal@kernel.org>
 References: <20211108174832.1189312-1-sashal@kernel.org>
@@ -45,77 +45,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sriram R <srirrama@codeaurora.org>
+From: Wen Gong <wgong@codeaurora.org>
 
-[ Upstream commit 69a0fcf8a9f2273040d03e5ee77c9689c09e9d3a ]
+[ Upstream commit 441b3b5911f8ead7f2fe2336587b340a33044d58 ]
 
-During firmware recovery, the default reg rules which are
-received via WMI_REG_CHAN_LIST_CC_EVENT can overwrite
-the currently configured user regd.
+When wlan interface is up, 11d scan is sent to the firmware, and the
+firmware needs to spend couple of seconds to complete the 11d scan. If
+immediately a normal scan from user space arrives to ath11k, then the
+normal scan request is also sent to the firmware, but the scan started
+event will be reported to ath11k until the 11d scan complete. When timed
+out for the scan started in ath11k, ath11k stops the normal scan and the
+firmware reports WMI_SCAN_EVENT_DEQUEUED to ath11k for the normal scan.
+ath11k has no handler for the event and then timed out for the scan
+completed in ath11k_scan_stop(), and ath11k prints the following error
+message.
 
-See below snap for example,
+[ 1491.604750] ath11k_pci 0000:02:00.0: failed to receive scan abort comple: timed out
+[ 1491.604756] ath11k_pci 0000:02:00.0: failed to stop scan: -110
+[ 1491.604758] ath11k_pci 0000:02:00.0: failed to start hw scan: -110
 
-root@OpenWrt:/# iw reg get | grep country
-country FR: DFS-ETSI
-country FR: DFS-ETSI
-country FR: DFS-ETSI
-country FR: DFS-ETSI
+Add a handler for WMI_SCAN_EVENT_DEQUEUED and then complete the scan to
+get rid of the above error message.
 
-root@OpenWrt:/# echo assert > /sys/kernel/debug/ath11k/ipq8074\ hw2.0/simulate_f
-w_crash
-<snip>
-[ 5290.471696] ath11k c000000.wifi1: pdev 1 successfully recovered
+Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-01720.1-QCAHSPSWPL_V1_V2_SILICONZ_LITE-1
 
-root@OpenWrt:/# iw reg get | grep country
-country FR: DFS-ETSI
-country US: DFS-FCC
-country US: DFS-FCC
-country US: DFS-FCC
-
-In the above, the user configured country 'FR' is overwritten
-when the rules of default country 'US' are received and updated during
-recovery. Hence avoid processing of these rules in general
-during firmware recovery as they have been already applied during
-driver registration or after last set user country is configured.
-
-This scenario applies for both AP and STA devices basically because
-cfg80211 is not aware of the recovery and only the driver recovers, but
-changing or resetting of the reg domain during recovery is not needed so
-as to continue with the configured regdomain currently in use.
-
-Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.4.0.1-01460-QCAHKSWPL_SILICONZ-1
-
-Signed-off-by: Sriram R <srirrama@codeaurora.org>
+Signed-off-by: Wen Gong <wgong@codeaurora.org>
 Signed-off-by: Jouni Malinen <jouni@codeaurora.org>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20210721212029.142388-3-jouni@codeaurora.org
+Link: https://lore.kernel.org/r/20210914164226.38843-1-jouni@codeaurora.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/wmi.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/net/wireless/ath/ath11k/wmi.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index fca71e00123d9..2f777d61f9065 100644
+index 2f777d61f9065..cf0f778b0cbc9 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -5362,6 +5362,17 @@ static int ath11k_reg_chan_list_event(struct ath11k_base *ab, struct sk_buff *sk
- 
- 	pdev_idx = reg_info->phy_id;
- 
-+	/* Avoid default reg rule updates sent during FW recovery if
-+	 * it is already available
-+	 */
-+	spin_lock(&ab->base_lock);
-+	if (test_bit(ATH11K_FLAG_RECOVERY, &ab->dev_flags) &&
-+	    ab->default_regd[pdev_idx]) {
-+		spin_unlock(&ab->base_lock);
-+		goto mem_free;
-+	}
-+	spin_unlock(&ab->base_lock);
-+
- 	if (pdev_idx >= ab->num_radios) {
- 		/* Process the event for phy0 only if single_pdev_only
- 		 * is true. If pdev_idx is valid but not 0, discard the
+@@ -5856,6 +5856,8 @@ static void ath11k_scan_event(struct ath11k_base *ab, struct sk_buff *skb)
+ 		ath11k_wmi_event_scan_start_failed(ar);
+ 		break;
+ 	case WMI_SCAN_EVENT_DEQUEUED:
++		__ath11k_mac_scan_finish(ar);
++		break;
+ 	case WMI_SCAN_EVENT_PREEMPTED:
+ 	case WMI_SCAN_EVENT_RESTARTED:
+ 	case WMI_SCAN_EVENT_FOREIGN_CHAN_EXIT:
 -- 
 2.33.0
 
