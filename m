@@ -2,43 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6673644A123
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 02:05:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E010544A130
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 02:05:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240132AbhKIBHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 20:07:40 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33368 "EHLO mail.kernel.org"
+        id S241540AbhKIBHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 20:07:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60162 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239285AbhKIBFu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 20:05:50 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 00E7161215;
-        Tue,  9 Nov 2021 01:02:22 +0000 (UTC)
+        id S237935AbhKIBGI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 20:06:08 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 93DC861A08;
+        Tue,  9 Nov 2021 01:02:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636419744;
-        bh=qmmu+Z7ueqUZf2mPkdOMLMF8XFdHvd5LVBYbVFORez4=;
+        s=k20201202; t=1636419762;
+        bh=pKhH/t9S/manekTLD5/XhoBYKn7pRmMlwLKnyU9Itno=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=STG5/kz9rHpukcs86Jq1iOo4S59iQ6cIxSb6S7oyYz+fng2trpGcWLme2dJJm8PQO
-         SBmiwsz4q031KZxYl49PX/ahNiJdLHMbhwHnWGaoCTAy1xCAr7safF/Kl60oogsWKt
-         5ozdd27b+31K4QoaM4c6ysUca14G8XCQA9P7xEYbu3kgsd5JwcBkUmjKCTiUOogyHn
-         qCRFsAwCTHbYEBkDeJZb9Aocen5zENryOL5ZPs0qmcyQM4lqcf9zczqbnu1w0xWN/f
-         X6fhtucXnqWSOg2al1REwBn8oRhbm2CkUi/YbElN5XkzMNyKN6Roke8AhivCB7m0F7
-         Kt8tseyHjUXpA==
+        b=jyx2Z+G5hABC2D3HXqBskXZ9xNdvMg7KRmt2dHiDoRCxalvOePWS84cWBG5iOs1Mf
+         7zh1UlAe6wN7ZOhMk/rbuCbDCWLcZZsP0dJ3P9LJ0mUDOmFnD8kQntp5VySwXXBPh5
+         W7qJx5mgQGmxlcveWkRWg6KyJ33MA3HEvhsD6wwYdna5fbpN3oGRLa8uPIx7jiXryN
+         V2ehDaHaya2JcF3M35dgKE5DH3avDPYm4bo9bFtau+bpWf9GRc0CrGzSdNay6ltlvZ
+         2Cx8MBFyPc3ZBBlq5t6st67PhVXkWWERAgjtUIl79ZaYQ/36tsEs1HpCV0gSOzz4v1
+         eLUz0QML6qM9A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, amitkarwar@gmail.com,
-        ganapathi017@gmail.com, sharvari.harisangam@nxp.com,
-        huxinming820@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.14 023/138] mwifiex: Properly initialize private structure on interface type changes
-Date:   Mon,  8 Nov 2021 12:44:49 -0500
-Message-Id: <20211108174644.1187889-23-sashal@kernel.org>
+Cc:     Petr Machata <petrm@nvidia.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        shuah@kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.14 028/138] selftests: net: fib_nexthops: Wait before checking reported idle time
+Date:   Mon,  8 Nov 2021 12:44:54 -0500
+Message-Id: <20211108174644.1187889-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211108174644.1187889-1-sashal@kernel.org>
 References: <20211108174644.1187889-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -46,59 +44,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jonas Dreßler <verdre@v0yd.nl>
+From: Petr Machata <petrm@nvidia.com>
 
-[ Upstream commit c606008b70627a2fc485732a53cc22f0f66d0981 ]
+[ Upstream commit b69c99463d414cc263411462d52f25205657e9af ]
 
-When creating a new virtual interface in mwifiex_add_virtual_intf(), we
-update our internal driver states like bss_type, bss_priority, bss_role
-and bss_mode to reflect the mode the firmware will be set to.
+The purpose of this test is to verify that after a short activity passes,
+the reported time is reasonable: not zero (which could be reported by
+mistake), and not something outrageous (which would be indicative of an
+issue in used units).
 
-When switching virtual interface mode using
-mwifiex_init_new_priv_params() though, we currently only update bss_mode
-and bss_role. In order for the interface mode switch to actually work,
-we also need to update bss_type to its proper value, so do that.
+However, the idle time is reported in units of clock_t, or hundredths of
+second. If the initial sequence of commands is very quick, it is possible
+that the idle time is reported as just flat-out zero. When this test was
+recently enabled in our nightly regression, we started seeing spurious
+failures for exactly this reason.
 
-This fixes a crash of the firmware (because the driver tries to execute
-commands that are invalid in AP mode) when switching from station mode
-to AP mode.
+Therefore buffer the delay leading up to the test with a sleep, to make
+sure there is no legitimate way of reporting 0.
 
-Signed-off-by: Jonas Dreßler <verdre@v0yd.nl>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20210914195909.36035-9-verdre@v0yd.nl
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/marvell/mwifiex/cfg80211.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ tools/testing/selftests/net/fib_nexthops.sh | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-index 93eb5f109949f..97f0f39364d67 100644
---- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-+++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-@@ -908,16 +908,20 @@ mwifiex_init_new_priv_params(struct mwifiex_private *priv,
- 	switch (type) {
- 	case NL80211_IFTYPE_STATION:
- 	case NL80211_IFTYPE_ADHOC:
--		priv->bss_role =  MWIFIEX_BSS_ROLE_STA;
-+		priv->bss_role = MWIFIEX_BSS_ROLE_STA;
-+		priv->bss_type = MWIFIEX_BSS_TYPE_STA;
- 		break;
- 	case NL80211_IFTYPE_P2P_CLIENT:
--		priv->bss_role =  MWIFIEX_BSS_ROLE_STA;
-+		priv->bss_role = MWIFIEX_BSS_ROLE_STA;
-+		priv->bss_type = MWIFIEX_BSS_TYPE_P2P;
- 		break;
- 	case NL80211_IFTYPE_P2P_GO:
--		priv->bss_role =  MWIFIEX_BSS_ROLE_UAP;
-+		priv->bss_role = MWIFIEX_BSS_ROLE_UAP;
-+		priv->bss_type = MWIFIEX_BSS_TYPE_P2P;
- 		break;
- 	case NL80211_IFTYPE_AP:
- 		priv->bss_role = MWIFIEX_BSS_ROLE_UAP;
-+		priv->bss_type = MWIFIEX_BSS_TYPE_UAP;
- 		break;
- 	default:
- 		mwifiex_dbg(adapter, ERROR,
+diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
+index 0d293391e9a44..b5a69ad191b07 100755
+--- a/tools/testing/selftests/net/fib_nexthops.sh
++++ b/tools/testing/selftests/net/fib_nexthops.sh
+@@ -2078,6 +2078,7 @@ basic_res()
+ 		"id 101 index 0 nhid 2 id 101 index 1 nhid 2 id 101 index 2 nhid 1 id 101 index 3 nhid 1"
+ 	log_test $? 0 "Dump all nexthop buckets in a group"
+ 
++	sleep 0.1
+ 	(( $($IP -j nexthop bucket list id 101 |
+ 	     jq '[.[] | select(.bucket.idle_time > 0 and
+ 	                       .bucket.idle_time < 2)] | length') == 4 ))
 -- 
 2.33.0
 
