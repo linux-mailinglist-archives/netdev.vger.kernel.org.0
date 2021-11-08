@@ -2,229 +2,248 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD2C7447C4D
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 09:53:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3E7F447C78
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 10:04:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237105AbhKHI4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 03:56:11 -0500
-Received: from mga02.intel.com ([134.134.136.20]:50785 "EHLO mga02.intel.com"
+        id S238285AbhKHJGq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 04:06:46 -0500
+Received: from mga01.intel.com ([192.55.52.88]:9101 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236594AbhKHI4K (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 03:56:10 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10161"; a="219390271"
+        id S235592AbhKHJGp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 04:06:45 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10161"; a="255860025"
 X-IronPort-AV: E=Sophos;i="5.87,218,1631602800"; 
-   d="scan'208";a="219390271"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2021 00:53:26 -0800
+   d="scan'208";a="255860025"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2021 01:04:01 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,218,1631602800"; 
-   d="scan'208";a="581399115"
-Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
-  by FMSMGA003.fm.intel.com with ESMTP; 08 Nov 2021 00:53:21 -0800
-Received: from orsmsx605.amr.corp.intel.com (10.22.229.18) by
- ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
+   d="scan'208";a="491139336"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga007.jf.intel.com with ESMTP; 08 Nov 2021 01:04:00 -0800
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Mon, 8 Nov 2021 00:53:21 -0800
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
+ 15.1.2242.12; Mon, 8 Nov 2021 01:03:59 -0800
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12 via Frontend Transport; Mon, 8 Nov 2021 00:53:21 -0800
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.102)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ 15.1.2242.12 via Frontend Transport; Mon, 8 Nov 2021 01:03:59 -0800
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.49) by
+ edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.12; Mon, 8 Nov 2021 00:53:21 -0800
+ 15.1.2242.12; Mon, 8 Nov 2021 01:03:59 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BOfnj+ZApD26iMt5vut/T2gzj8s5Y0QAeHgCXiLnB/bhVlb/Am/I00vIewjcqEToWMhptALZU3f3eZy4pTb0Nz2gtK0DRM85hyH1pRjn2MGG2S5zkyE6GkZKWC8bjjm80mIAmR+PHnnIi60jzowBWzxtqJ+DquE0h129SKKzJd3UwUcmnwsC2gVimhgA71teBPtQJfMwMyY36FLTudBpe2em31pW9cYvdV1V2snONgzCPyjQCVgTMxlUk3bY9RsbOEzr6Jd3BNx/U+1n1iXXID49cj3GiIIydFS7Rtoa8kMX022bSDWLbwWD8mJXCfbxuzVCKSEVXV8aI9MWwVCauw==
+ b=IrsFuoXnlrHpsVNOtfXLteXUasBRj4jSqlhDfdNxSveLOzaOm6lq6NPhqzpwqB50UYO8DOILE0aNNHLWJa2T/vg3cpxYCuMVRsoQOcDBKoXYcfk9BFFFNoh++NFdLFMHV8mosojnHnMn777E1jkf6Yf8P9c06dGEqQEXu4QQchwINFmRRwIId85aAAyLfW1BD6H8InT59zJWxWWIbGgISegpuO+FTVic6BL3xwdoBAFBl18nWXbm+l0fbxPHiwJOJcQ6/iRxVKPhsrF5N49kvS8eRJGj2W8aho+UKkxbmgTQuHPni7jYmC/+SuPQsuNol1l9oqutQABpFaZ71Z4gSg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QGIOop6anO0nlwluRiC7d5ny1MPisTsFSJ+6Lq8Kyfg=;
- b=NC4pPfOonMkSextXWu25MjIYbgwIwQbnT/enpHfXplURszieECConSdHPC260MKUkXuSFI7cNVsEOzyNNO3Go0P+7vT+jlI1EPadmzcQFA5dG6G8QnHEIytPRvRC6prG1Hu5Doj1iseObVAQc4PfoqT4IBLMxQMfRJhuBjQT7Vv/yPLaHP8dUQL2gGnS0S22jRnbOILx6VeJZA6n+zIEfwHvyv7h7u0lDHWE4c7dS334WnNiU2jus7U/7PDimJYfkH8EjSY/TLm7Td0VBU474fgOaFGv1ar8yYBHzjgrflpZ2/qC5K8YKzB4s09hWCxVNPRL15coblPI/fprojYbgg==
+ bh=WSvKiwRdPpaUn3YyURhJpe56SKepG2UyXj/Al8819FA=;
+ b=YbxehmqAhyXuXwhKHluRKO+SODoP2BJlvqCIN3k3ZYPL1NQAIj/x9PbOrpghytQlZBxwmXLSr2/l9/fPNTDE2gl8rkK12WPIxowzc200bPT1yEY2qSde+yM25meuVmj5tx3NgZAiF2/P5avXtmgM7JCG9wFhgp+yIanYF7f8bKIZZ+7rLqFxj7x13sUhM/plKTUYmU03XbIg3vphe8CYjy/ffBuSdvSXIh+2aMX/CvxRGviucebs10cAKyzvvCxPIY74qkSonyawZ4Qllof/fCLKcnHBTZBlyQr6HClzzol6dJ+ai1y6pDOjrbTAKocOQjCERE66nuLNSJx7cbT8rw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
  s=selector2-intel-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QGIOop6anO0nlwluRiC7d5ny1MPisTsFSJ+6Lq8Kyfg=;
- b=ULuQARbxTgR9LBTwDNqC8SEBcqRSPQEDVx3imQPA/sGf8eBh/ahP5cGsGvNGBkaUeyy6GO++JnAIqvXFfPgUQa+KKS2C6uTeASkK+d53BI4cBRw6NUy3m8aYdYm9/90P4dAsJjlFtaNL2dlT/SOQf5upR2dyZGWEC0EEsrg0KP8=
-Received: from BN9PR11MB5433.namprd11.prod.outlook.com (2603:10b6:408:11e::13)
- by BN9PR11MB5340.namprd11.prod.outlook.com (2603:10b6:408:119::20) with
+ bh=WSvKiwRdPpaUn3YyURhJpe56SKepG2UyXj/Al8819FA=;
+ b=pf48stli9ARgpWfi7HeLazLI38drLJ5Hqu30vRXJGVQUuzcU6UBLYGe1WwR/XcCA64Qt2vDWHAhvd81Htq/Of1JyBS3bdrQpqA5iVL0Hbdj26okiL/80CTmjKTKdY6E8Rs32jCGaZgVKdwIoOTJ8ku5s0gunWyvmoZ8OvSe/aEc=
+Received: from MW5PR11MB5812.namprd11.prod.outlook.com (2603:10b6:303:193::14)
+ by MW4PR11MB5822.namprd11.prod.outlook.com (2603:10b6:303:185::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.15; Mon, 8 Nov
- 2021 08:53:20 +0000
-Received: from BN9PR11MB5433.namprd11.prod.outlook.com
- ([fe80::ecad:62e1:bab9:ac81]) by BN9PR11MB5433.namprd11.prod.outlook.com
- ([fe80::ecad:62e1:bab9:ac81%9]) with mapi id 15.20.4669.016; Mon, 8 Nov 2021
- 08:53:20 +0000
-From:   "Tian, Kevin" <kevin.tian@intel.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>
-CC:     Cornelia Huck <cohuck@redhat.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "saeedm@nvidia.com" <saeedm@nvidia.com>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.16; Mon, 8 Nov
+ 2021 09:03:58 +0000
+Received: from MW5PR11MB5812.namprd11.prod.outlook.com
+ ([fe80::b137:7318:a259:699e]) by MW5PR11MB5812.namprd11.prod.outlook.com
+ ([fe80::b137:7318:a259:699e%9]) with mapi id 15.20.4649.019; Mon, 8 Nov 2021
+ 09:03:58 +0000
+From:   "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
+To:     Ido Schimmel <idosch@idosch.org>
+CC:     Roopa Prabhu <roopa@nvidia.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "abyagowi@fb.com" <abyagowi@fb.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
         "kuba@kernel.org" <kuba@kernel.org>,
-        "leonro@nvidia.com" <leonro@nvidia.com>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "mgurtovoy@nvidia.com" <mgurtovoy@nvidia.com>,
-        "maorg@nvidia.com" <maorg@nvidia.com>,
-        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Subject: RE: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
- for mlx5 devices
-Thread-Topic: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
- for mlx5 devices
-Thread-Index: AQHXxNiiQv8W8p5Om0G/XtAgyw28t6vaqNQAgAALEQCAABqsAIAAIxaAgACddQCAAIzwAIAAI26AgAAjuICAANCqAIAAzO+AgAWtdwCAACFWgIAAB8YAgAGYuJeAE/f4kA==
-Date:   Mon, 8 Nov 2021 08:53:20 +0000
-Message-ID: <BN9PR11MB5433ACFD8418D888F9E1BCAE8C919@BN9PR11MB5433.namprd11.prod.outlook.com>
-References: <5a496713-ae1d-11f2-1260-e4c1956e1eda@nvidia.com>
- <20211020105230.524e2149.alex.williamson@redhat.com>
- <20211020185919.GH2744544@nvidia.com>
- <20211020150709.7cff2066.alex.williamson@redhat.com>
- <87o87isovr.fsf@redhat.com>
- <20211021154729.0e166e67.alex.williamson@redhat.com>
- <20211025122938.GR2744544@nvidia.com>
- <20211025082857.4baa4794.alex.williamson@redhat.com>
- <20211025145646.GX2744544@nvidia.com>
- <20211026084212.36b0142c.alex.williamson@redhat.com>
- <20211026151851.GW2744544@nvidia.com>
-In-Reply-To: <20211026151851.GW2744544@nvidia.com>
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>,
+        "saeed@kernel.org" <saeed@kernel.org>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>
+Subject: RE: [PATCH net-next 4/6] rtnetlink: Add support for SyncE recovered
+ clock configuration
+Thread-Topic: [PATCH net-next 4/6] rtnetlink: Add support for SyncE recovered
+ clock configuration
+Thread-Index: AQHX0VXaGVDKpAoRukeJgXEmmkmUoavzr9EAgAEko4CAA05OAIABNvJg
+Date:   Mon, 8 Nov 2021 09:03:58 +0000
+Message-ID: <MW5PR11MB5812A805FD73E435EF43E9CDEA919@MW5PR11MB5812.namprd11.prod.outlook.com>
+References: <20211104081231.1982753-1-maciej.machnikowski@intel.com>
+ <20211104081231.1982753-5-maciej.machnikowski@intel.com>
+ <2d379392-a381-e60a-7658-5ac695c30df1@nvidia.com>
+ <MW5PR11MB5812F4FD090FCEA7CD83E984EA8E9@MW5PR11MB5812.namprd11.prod.outlook.com>
+ <YYfg2Gty6dNmjp1E@shredder>
+In-Reply-To: <YYfg2Gty6dNmjp1E@shredder>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
 dlp-version: 11.6.200.16
 dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: nvidia.com; dkim=none (message not signed)
- header.d=none;nvidia.com; dmarc=none action=none header.from=intel.com;
+authentication-results: idosch.org; dkim=none (message not signed)
+ header.d=none;idosch.org; dmarc=none action=none header.from=intel.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1163a44f-1eed-4988-f09b-08d9a29536b9
-x-ms-traffictypediagnostic: BN9PR11MB5340:
-x-microsoft-antispam-prvs: <BN9PR11MB534089EB131FA0C488735DE88C919@BN9PR11MB5340.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-office365-filtering-correlation-id: 67a8bfc8-979d-48f1-42e1-08d9a296b34e
+x-ms-traffictypediagnostic: MW4PR11MB5822:
+x-microsoft-antispam-prvs: <MW4PR11MB5822547FA9286F2D6C7114F3EA919@MW4PR11MB5822.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: B8vTE9uJ2F/jLS+16gOw660mNW0z+BtFtiLNaXR1b+gfgTuM4aE8tUByL6LV1F9WoBXDgPyTGsmr7ae6fHavRC0MZg3SeXM58wzhYe6Zx40BeTrrJarYHZ5xcuNyDYUGwY6kVJoduwVre6wCSXQ5Ppq2cqs+ErRAV7YWZ8biZUySnKsTY+vxpwfFK/Xi32BzaAj8iP6/R2pJuLyau8Cs3qcVMNO7K2DDVIMhZzFvzK9WuoNdfNQDsBOZOF/jdGlY1RK5kA907gF/r8HIaMOt3Titb6u5zFXOPlV4J67dPQDsP0fKMWUSQPjTt+RHgVt8CRfxizHy2FIPDJcGv/fIL0UQSInNpe7+blz3TplumTjPVo9TDY0f7R0YTUtNWkD1YzUQH66NXBXHRfLrPaekW9tlZXRNXH7ki5yQzYKyloQ6BfgiHk6lCMqmjM5LuDP6Lf+xCk1rklyOCOZdK4B4qVxayN9lkjw96jy5MCC3TxZBuTia+IIr0OaqF2XUUevx8S+Zagszebpz9pXzSODYJ571wvOFnQWJzmpAPjTPcUjGYFj0MQNW6hLOEMrG2ieB7gy0FynvtYZWaspSPRC0GKiabSN2CHTHUSr2vewwVCMKN7SbbYg224/zGbnfBiRYF4SHCbRvY6A+He/f7nb8n0oFG+7KJGb3iPp0KngceiRPYJuWaSQ03g99/oTi4rGdfAHVaLWkB+3zjVXkizPEr7m4Sgs02GN7D09RlE7EcUzYrDdAfiGEb3ZysYQ4CO2mc5DNcpG9wjPhlIdrMi3V1IgxUBy/saQ10oJYszL78D4=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5433.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(71200400001)(38070700005)(55016002)(110136005)(6506007)(82960400001)(7696005)(66446008)(9686003)(5660300002)(8676002)(38100700002)(122000001)(8936002)(52536014)(316002)(54906003)(64756008)(186003)(26005)(508600001)(66946007)(76116006)(66556008)(66476007)(86362001)(7416002)(2906002)(4326008)(83380400001)(33656002)(966005);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: tTFAVgMOFwbYKxA5YBZwGkq9L0kUxnnc2CF90OJHfMrU7cvsSB+WNf0zgGm+v7e42ij4biuL3rJRWQIbcASa3a9oE5IEAHcRt/ytl7l1U8gUBmFdSzk3FwlimDF+biV5wVI1FMIGbCPug7Xeq6a8efNW3X4JDbhT6XX0x/Q7bxjK95NXPXFoy2euf10DhCB7HFgYT+laJLV1J4C9+Y8bv7PkgjYAx9tDQQatKZjAX4iBF1AWX7+qmU0nUTXo8tXnfFl3x7e5Q5PFMpSuGlE0WtqCiMiiJ1bsLZtE4g7imyX8Yo6MufKwJZzhT7mQHFQAbbS3lmBO5AaqdNWZedZ8xKbq6QNgjUidiqxNExpxpd2r5bexA3v0E4Mh4bp3MoU4UUL9ldHP4DwqZNDFBTW7dDsfMnA8XKQVQPsnH+mK4VlWguIN2le2ZOE8EJ4mgDUmWrtxTl3SyRmhiM/sTz9rsar906vRMTdHMgfhdfl5MNWD/37nfHgmp/Em4TPSfnD3yjxDP6quu0AIlPvx88zMmk1pQcEnEY4Dy9fWsb46DJh4E8GDyndXSAk80HsNPBbPus8jnSTf+Y6x5M1AAP4lrHDsVES4sNuC98HyzXQLQGFR1ZtJW0bxnwURggPeNu5Po3ui22REuRwXJx0k3v58B3NfLe+9bwSyPfOW6xnJEgji0pL6u4cWz43hb5riD+ox/ngU7psA+wHZlYa29eJJUw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW5PR11MB5812.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(54906003)(76116006)(316002)(6916009)(66476007)(38100700002)(66556008)(64756008)(66446008)(122000001)(53546011)(26005)(186003)(7416002)(8676002)(66946007)(4326008)(7696005)(6506007)(2906002)(52536014)(508600001)(5660300002)(8936002)(55016002)(86362001)(38070700005)(82960400001)(71200400001)(33656002)(9686003)(83380400001);DIR:OUT;SFP:1102;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?YHgvEWZ7aHBUHK1HZKWPSOp5goI1CBF6gwJ8Qtyb61/f1A1oVLIFD47aet2+?=
- =?us-ascii?Q?IzLzJWX2/V8NnGuJY0dQakpw6uOmZ0TZLPVs+ihJzPggfIc7Kgdu2JjoIuSU?=
- =?us-ascii?Q?wT95cKH7dVCvQ7nKDTcEU22zwaSSrIfxu1TddShyZ60C96EDByuoCod0Vl+u?=
- =?us-ascii?Q?fcnRG11gWQwz7tkZKPK3FBVhBAj4jizyd5jVf+DMOIqbf8R7R51malcRxmUd?=
- =?us-ascii?Q?62Ai5yC0VGqjoAC7dzmlxEMOLEsAG6Q4JFTAFj1mFnIuEycKB9lqGpeebT4G?=
- =?us-ascii?Q?sINNwJBpkwkxdimgXXxGtCBPa+ucBPmoFxqHHmydRnyalcMpAxEKtE/SqYw3?=
- =?us-ascii?Q?WW5z6hnDwJzknJfXpDw/9YQl+3hxk8xGhYtXOgoKcoerO+iZNYP3QAQmeEpI?=
- =?us-ascii?Q?DEPhzFe9Z+KP+d49wk/xbhnu3R72Vm18NSUelMNl9AvBmdZC8SYCigJ3oDSM?=
- =?us-ascii?Q?Wb+3CcP6BFOS9ZDGA+E0NFeaVckap4/LwqZHNXE/5Zhx7mf1rkndRG2ulUpz?=
- =?us-ascii?Q?diTd9SlF3LoJ4/xdYWI8FJbGZGZcVHeSDvp5yMlQf+Jx1fkuxszR422hyJQg?=
- =?us-ascii?Q?p39wO4MT4uTCWGRpHdvuCHTybl73XZ0oI3cRvIlWlwdvzTGADalkIKBcC+22?=
- =?us-ascii?Q?XCgdpPUmm5LiepjW6Z2Wc9X1vpobk5HnkUPG6BiKqNFQ9KhVGdJOroLGTIv2?=
- =?us-ascii?Q?zDGpEquzO/51NWK3umgjLwMIWbogLe2l+mLk8jHuEPbBX6Mjf6uk42KiYeYd?=
- =?us-ascii?Q?sXACu1HXfrcJnuARCcKL0I94b7VkX1g2Z0DXjrs/gwUcUAK+K2UJpJKPajFz?=
- =?us-ascii?Q?98ZDJXeNlPW4FMt1BenvhAdAXEYsl663SkgEk9tfjpGyqn8l7J6cPqhn/YpT?=
- =?us-ascii?Q?rvZxGTE8m2FgL/HSdBXP0oR7QSCUPLiLKtjnW406/k9zENW8Kms2dCFL+jlM?=
- =?us-ascii?Q?T+0P98Q2cptOU5dBZnDbYBNzv9g4lZa+W5oDBCC398tb6QZVCQS0vuvPeBpb?=
- =?us-ascii?Q?vdhGRVxx7oZ322Y06iTBbKII5t2bmCafVAg38MHNFnl+9UHluym74iAM8ZpW?=
- =?us-ascii?Q?vIDQpINQjXYlLSKwtYh+I2GbI2xoQ5IdzFJawOGr4HOsCKamLuC2lbcJ0Qvw?=
- =?us-ascii?Q?M6pdVRQNM0xeQUUbtF8Sf2VQu5o0Ytwfl2tJ/MxI8B6/owG1KogP2Q81z0/G?=
- =?us-ascii?Q?4GGn68vD/pzxqGrLe+SvEH6gqsYbRi+g7FJJZQP+hnqwvIXn9XQ/kPUmCwDt?=
- =?us-ascii?Q?6F9RqRafbnmhmEJ11vEKmCJILTPe51vZhheeEZmNGU6Etz8m75pu50DycIrb?=
- =?us-ascii?Q?dIM4a9Ke/4ezPnbBhX+5d1kZ3VHwnvw6gdG5rNR5DL1GCcDfYZ79d8RPGMy0?=
- =?us-ascii?Q?4E1qrmBJ9jik1oBitfbXqjs6woev5xdjHpr1gKqDVQoX6Zf3fC2nkY5DbtQH?=
- =?us-ascii?Q?brWuUBPeHDZL1BDX9dKsyoAkUDs5RPs4jy18fdEFSIZZT6+cuxcAIPnKXyRW?=
- =?us-ascii?Q?5AmPQ+pJnQVlzdYpFpm2hzDTgYWRmCQtZj6eW4YmpHLa3vXDBxGlxIr67Z2m?=
- =?us-ascii?Q?kPMU47zRAQBk+BCJo6aHaOVoMO8SlT7retuBVvxJAeAgbWuHhLel7A3yY2Xq?=
- =?us-ascii?Q?FxmucZVlMk2/ry3BSW7b0Ik=3D?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?oi18fF7L5R+WwYaUMmauvp+1PT0kyHPTE/VOwd3i6b1o7o1u5vXk1kM4CZep?=
+ =?us-ascii?Q?4ucZ8MGOTgMgFSUPJIWnNbg7fDWXjpjNmvji4mod4UspmyqXAt4/XO/AJv5z?=
+ =?us-ascii?Q?1fxguH5ptMpE+zsWO8ulys+67CuiphR6QnzFUlz82WO/vrqJyX+iEZZd2Ca0?=
+ =?us-ascii?Q?+fHUh3tn8hEuAdX7cfRasjLupI5ZX1Bp7F2gqRjog+kB3OEtt3IYFyH8vCWc?=
+ =?us-ascii?Q?bEXkmaRODVIH5QBECI3izxH/4PMBc39sjpurY2OmepWYZ0a9305GLyF6c/mO?=
+ =?us-ascii?Q?oTX/Ahc7t3yAC4XvR31Wno8j5MagNWXeLqidkb73FppHoqAW8PBmiHJqSjvl?=
+ =?us-ascii?Q?fYrDt+ZNtgtorDZ3hR72IHCRYmJAct3/BS78QSC0WxISW1VIc7X1AlX74b1b?=
+ =?us-ascii?Q?pLBIkXCX6YqkQtqwDdP7S5AfkB4JtBHAkpDY7JkKR0bKqZixebn0GokbGU9Z?=
+ =?us-ascii?Q?/YE9WEsR7o71OnRJwkPK+872XehICTRngJho2OsWFJnCKPioznqZPS5R5P5F?=
+ =?us-ascii?Q?GMYHgPlSJEN9i0eJbxUNFy6ZZWh2Db5rvY2+mQkKTOIehJzKVc+wvKIYpJQ+?=
+ =?us-ascii?Q?S70EHUOaSwx/AY3TSFu4ZZQuYeEuX5AQnhLGblbR0d5+FMYD6QQPhvvO7wZu?=
+ =?us-ascii?Q?eKg8RnYBA4u1N6QYUaoC/1PdnE6tx0aMNX2GHFSsRraIObPPZ7RSoo5104/M?=
+ =?us-ascii?Q?8odsV9V9uvbYBSkyLyif4vxnMiy374IsSgNz+5i946s0we5tANOxOsw+iaiU?=
+ =?us-ascii?Q?7TZl5UBmeEafh6Ssvf0rfOQArukwKq9cWPm+w5jbdOMqfNBdbkV0MF8DZrdn?=
+ =?us-ascii?Q?ucrus5ajUeaQvdj5ovoVssLEduyx7RlDdo3CFhAzoPv9wYzQPb3ZPPp3WwUq?=
+ =?us-ascii?Q?PO0mn4ibKop/m2iz5pJPxU3En1zRQNQpn3B7mocBavX86LztsiYBJyqgYLcN?=
+ =?us-ascii?Q?EzP5jYW9CawzPo9oqc7KFmBt9o7cjkB/uZeDT6q4Y0d7HlNvqKD1gXllBCHn?=
+ =?us-ascii?Q?2B4z009lJDtlYYNQe3Xql6YlzuqYMnK6PYi/kR0QwHwyHxWOsG0qAx5K87iZ?=
+ =?us-ascii?Q?UkUBJB1QWirfclvpUTOJimZpjCpqMPqlepRQn62346wz0EwlH/y70BGOhLsa?=
+ =?us-ascii?Q?QdPcscBaNoWGef9WYud1Vf5ZOj9eU4de5hyNW9IeuNAhd5nYj2LNpxVf0JVy?=
+ =?us-ascii?Q?TTyfnZO6LGn0TSge2N6Cw9+BS8CUcy0v6gILAbOd28/pZ+E4agW7NOASO4N8?=
+ =?us-ascii?Q?X0JaZfAoxEv/Xc7HTWRYpJet5dzTCyVvIBpl0hKtj2teMn1yq5gxhGXovpLh?=
+ =?us-ascii?Q?sR22Y1o/n1eJTYZzlC4+6+Rp/RD613EgztwQkwXkCnK0HNTeURawih3iMQ+6?=
+ =?us-ascii?Q?jpUZva/DJnSzU/SgfD+8awhamv9SmQc4H2m+/IdoUR06FfKxiq4NfihQdOE8?=
+ =?us-ascii?Q?xApMjxCjBjoiqbmyptYPVZac36Ex7Y75dCoGiaDmsF9cRDDXzCUHuYHJz+A7?=
+ =?us-ascii?Q?NyrJZ3vuRcMvX11gd4/bgWC1iwELNL6ZhfOx1QHNDL6xXqRptmlvOuAS5Iyh?=
+ =?us-ascii?Q?S5OyvLoC/xHCJm48Cq4QUoD8OZD3UA7BiCpmwmAmA3Ll1CqEI7B8zYs975kW?=
+ =?us-ascii?Q?1tddr0pYGt1I+WYJH/oAZqvDScSNdqezIRNX/aA87v95xLa6USb+5qX9uE2Y?=
+ =?us-ascii?Q?xjI4ow=3D=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5433.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1163a44f-1eed-4988-f09b-08d9a29536b9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Nov 2021 08:53:20.0622
+X-MS-Exchange-CrossTenant-AuthSource: MW5PR11MB5812.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 67a8bfc8-979d-48f1-42e1-08d9a296b34e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Nov 2021 09:03:58.5923
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: jMtnQWeg/KvZT7L4JzRJvy6c1CZgqSXVxbnE+PZ/J18ASV1gF1T2DceITpm1dc0PnWWBmUl/jMZ0DBS1BMZgUw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR11MB5340
+X-MS-Exchange-CrossTenant-userprincipalname: 8k9t1yWC71tqgwdbP8/+vJF8l09wJw6kswZyLWhZM6Y41PyIA2ny1DDKBoib3VLX8W7RJ/6m4nfm4mYM7n+ZLyefjoBGTm5KxzawNRzLkjU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB5822
 X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Tuesday, October 26, 2021 11:19 PM
+> -----Original Message-----
+> From: Ido Schimmel <idosch@idosch.org>
+> Sent: Sunday, November 7, 2021 3:21 PM
+> To: Machnikowski, Maciej <maciej.machnikowski@intel.com>
+> Subject: Re: [PATCH net-next 4/6] rtnetlink: Add support for SyncE recove=
+red
+> clock configuration
 >=20
-> On Tue, Oct 26, 2021 at 08:42:12AM -0600, Alex Williamson wrote:
->=20
-> > > This is also why I don't like it being so transparent as it is
-> > > something userspace needs to care about - especially if the HW cannot
-> > > support such a thing, if we intend to allow that.
+> On Fri, Nov 05, 2021 at 12:17:19PM +0000, Machnikowski, Maciej wrote:
 > >
-> > Userspace does need to care, but userspace's concern over this should
-> > not be able to compromise the platform and therefore making VF
-> > assignment more susceptible to fatal error conditions to comply with a
-> > migration uAPI is troublesome for me.
+> >
+> > > -----Original Message-----
+> > > From: Roopa Prabhu <roopa@nvidia.com>
+> > > Sent: Thursday, November 4, 2021 7:25 PM
+> > > To: Machnikowski, Maciej <maciej.machnikowski@intel.com>;
+> > > netdev@vger.kernel.org; intel-wired-lan@lists.osuosl.org
+> > > Cc: richardcochran@gmail.com; abyagowi@fb.com; Nguyen, Anthony L
+> > > <anthony.l.nguyen@intel.com>; davem@davemloft.net;
+> kuba@kernel.org;
+> > > linux-kselftest@vger.kernel.org; idosch@idosch.org; mkubecek@suse.cz;
+> > > saeed@kernel.org; michael.chan@broadcom.com
+> > > Subject: Re: [PATCH net-next 4/6] rtnetlink: Add support for SyncE
+> recovered
+> > > clock configuration
+> > >
+> > >
+> > > On 11/4/21 1:12 AM, Maciej Machnikowski wrote:
+> > > > Add support for RTNL messages for reading/configuring SyncE
+> recovered
+> > > > clocks.
+> > > > The messages are:
+> > > > RTM_GETRCLKRANGE: Reads the allowed pin index range for the
+> > > recovered
+> > > > 		  clock outputs. This can be aligned to PHY outputs or
+> > > > 		  to EEC inputs, whichever is better for a given
+> > > > 		  application
+> > > >
+> > > > RTM_GETRCLKSTATE: Read the state of recovered pins that output
+> > > recovered
+> > > > 		  clock from a given port. The message will contain the
+> > > > 		  number of assigned clocks (IFLA_RCLK_STATE_COUNT) and
+> > > > 		  a N pin inexes in IFLA_RCLK_STATE_OUT_IDX
+> > > >
+> > > > RTM_SETRCLKSTATE: Sets the redirection of the recovered clock for
+> > > > 		  a given pin
+> > > >
+> > > > Signed-off-by: Maciej Machnikowski
+> <maciej.machnikowski@intel.com>
+> > > > ---
+> > >
+> > >
+> > > Can't we just use a single RTM msg with nested attributes ?
+> > >
+> > > With separate RTM msgtype for each syncE attribute we will end up
+> > > bloating the RTM msg namespace.
+> > >
+> > > (these api's could also be in ethtool given its directly querying the
+> > > drivers)
+> >
+> > I'm not a fan of merging those messages. The mergeable ones are
+> > GETRCLKRANGE and GETCLKSTATE, but the get range function may be
+> > result in a significantly longer call if the information about the unde=
+rlying
+> > HW require any HW calls.
+> > They are currently grouped in 3 categories:
+> > - reading the boundaries in GetRclkRange (we can later add more to it, =
+like
+> > 	configurable frequency limits)
+> > - Reading current configuration
+> > - setting the required configuration
+> >
+> > I don't plan adding any additional RTM msg types for those (and that's
+> > the reason why I pulled them before EEC state which may have more
+> > messages in the future)
+> >
+> > We also discussed ethtool way in the past RFCs, but this concept
+> > is applicable to any transport layer so I'd rather not limit it to ethe=
+rnet
+> > devices (i.e. SONET, infiniband and others).
 >=20
-> It is an interesting scenario.
->=20
-> I think it points that we are not implementing this fully properly.
->=20
-> The !RUNNING state should be like your reset efforts.
->=20
-> All access to the MMIO memories from userspace should be revoked
-> during !RUNNING
+> I'm still not convinced that this doesn't belong in ethtool. I find it
+> very weird to have a message called "Get Ethernet Equipment Clock State"
+> in rtnetlink and not in ethtool. I also believe it was a mistake to add
+> DCB to rtnetlink (for example, why PAUSE is configured via ethtool, but
+> PFC via rtnetlink?)
 
-This assumes that vCPUs must be stopped before !RUNNING is entered=20
-in virtualization case. and it is true today.
+We can use:
+- SEC - Synchronous Equipment Clock
+- EC - Equipment Clock
 
-But it may not hold when talking about guest SVA and I/O page fault [1].
-The problem is that the pending requests may trigger I/O page faults
-on guest page tables. W/o running vCPUs to handle those faults, the
-quiesce command cannot complete draining the pending requests
-if the device doesn't support preempt-on-fault (at least it's the case for
-some Intel and Huawei devices, possibly true for most initial SVA
-implementations).=20
-
-Of course migrating guest SVA requires more changes as discussed in [1].=20
-Here just want to point out this forward-looking requirement so any=20
-definition change in this thread won't break that usage.
-
-[1] https://lore.kernel.org/qemu-devel/06cb5bfd-f6f8-b61b-1a7e-60a9ae2f8fac=
-@nvidia.com/T/
-(p.s. 'stop device' in [1] means 'quiesce device' in this thread)
-
-Thanks,
-Kevin
-
->=20
-> All VMAs zap'd.
->=20
-> All IOMMU peer mappings invalidated.
->=20
-> The kernel should directly block userspace from causing a MMIO TLP
-> before the device driver goes to !RUNNING.
->=20
-> Then the question of what the device does at this edge is not
-> relevant as hostile userspace cannot trigger it.
->=20
-> The logical way to implement this is to key off running and
-> block/unblock MMIO access when !RUNNING.
->=20
-> To me this strongly suggests that the extra bit is the correct way
-> forward as the driver is much simpler to implement and understand if
-> RUNNING directly controls the availability of MMIO instead of having
-> an irregular case where !RUNNING still allows MMIO but only until a
-> pending_bytes read.
->=20
-> Given the complexity of this can we move ahead with the current
-> mlx5_vfio and Yishai&co can come with some followup proposal to split
-> the freeze/queice and block MMIO?
->=20
-> Jason
+SyncE is a specific implementation of a more generic concept. I'd rather no=
+t limit
+it to Ethernet only, as there are more network types that already use this =
+concept,
+like Sonet/SDH or PDH as well as GPON/EPON networks and given the recent
+growth in timing applications - I expect more to follow.
