@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 109804476DB
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 01:25:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33B184476E1
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 01:25:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235180AbhKHA1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Nov 2021 19:27:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50132 "EHLO
+        id S236809AbhKHA1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Nov 2021 19:27:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230455AbhKHA1s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Nov 2021 19:27:48 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FA68C061570;
-        Sun,  7 Nov 2021 16:25:05 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id w1so55979786edd.10;
-        Sun, 07 Nov 2021 16:25:04 -0800 (PST)
+        with ESMTP id S235185AbhKHA1t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Nov 2021 19:27:49 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D91DC061570;
+        Sun,  7 Nov 2021 16:25:06 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id j21so55504246edt.11;
+        Sun, 07 Nov 2021 16:25:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MONscSKyhvi2+SRKlBcGRiPlb7krpgUPlxLNPbjxYgo=;
-        b=bad+zSa0E8ifLsxFIIjQOYUpj6cMP4QEQxAksHyC+dUEaJmhyqt5mMse6Z5zIMA6v4
-         1JTVZB4rIye0fXMLmOgQPozH47hCaUtuIJq/NioXDoF48lXy8Ikqfl2jtGRlIQphLEG8
-         e50FmCg4kKLtcPSNiMYGDDEYQoVsnretSCq62en/klNk28jGf1WnGEzZhQ5DX0tfUnaQ
-         BV+OUNsqG2GkbkYE5wIxX0TMGrLOsEwLaaP2gdO3xGBkaEaJ8I3lxQdwzjV3b7LWnu/7
-         OC6XpuVTzI80d4P5+T0ZgMcB5H6LVl0MX0VRVZGSmSv7609AOL3nhHX+TlYbOhuCOxpd
-         kq/w==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=1J/Wz/1ljWta/ijf6VTHqMRxNuGNDGOOF5jyDMPGesw=;
+        b=i8QlGmQ2W1f2kJiyJiIGfGCnt45aCL2frADBunjLTxKdHu/p/2iqs7Y5E4/U6SLpVP
+         vk9NN0Dhyay0YuFbMqZQgoAuwKPvFNsJmzQvEkK6dqHpw4Ff9zCMSPAr6Z4bIU6jq9ui
+         eSFNKnu6oebPNQMZEMEnzsIVjLpFinke0Es+NtjpB86iFzG55mJhbkocLHilTkugp+2Q
+         UbZaNmp4DEtxQ5pmSIWtQgq9ij3kPIgg73h7Bnuz9XtrbeqzgbBO/45h7i+E5EC+lclg
+         QUQPYjJjwZtyi/s2+4ewtM/wGvyxfDhblCH3yH+8JxO5BmKDev0wSK3dp4PMiUEzIDJ4
+         6jWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MONscSKyhvi2+SRKlBcGRiPlb7krpgUPlxLNPbjxYgo=;
-        b=TZJ16GckiqBqWJUvDeTVEEJBCILVRmeA8F0LDZcN5wWURjq1LnROysL+9mmnQ/aTbH
-         497hJ/mn4Hq8L8ZjhUp3gJubUII0LQsgX3/h0yIzCHFGIHrs+VfpSs3vts9WR+WQe6iN
-         ZNiSswIHrPIQFefGTTDVKqbaEh4agRHMEKcYQvEK7PVbprocHu/2ho1cGbmnabHG0oPS
-         Rs3AH1gqdVE0wQrsS3n/Z3DqhFb8Sum5jXy4sVPKnCucEzb1t1HxPIHmPgC1NZGw4dUz
-         xKZmxAJjfWauwEIBupkcBOFHrx6uVCBPpEt/qtTJ+pxWOa7N/THRASBaHz+wnhUG2oqG
-         bt9Q==
-X-Gm-Message-State: AOAM532PcPGE+wHelhOhHgNaRxoaC3/fhZ7Zaa7qqb4J5C4Umfyr/jV2
-        pyEYPd8Hg1VL4k+HzOPUpY0=
-X-Google-Smtp-Source: ABdhPJxwuWOpWvwWyszMr+He1assUHDS3DKb5+qzQypzgnqgp3iSmhDeLLoGhR6U6by6xxd+xNcTPg==
-X-Received: by 2002:a05:6402:40d0:: with SMTP id z16mr73382067edb.340.1636331103501;
-        Sun, 07 Nov 2021 16:25:03 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=1J/Wz/1ljWta/ijf6VTHqMRxNuGNDGOOF5jyDMPGesw=;
+        b=e9jNW5j4e8wkRQNNgsTh8AURxulwjsK4+Fs8/oOdV+6FYKqB1weTLnbedZ8RCaLcvS
+         EExJYCL6FlhBdpN/pL7+vuEF0FtKVL063Hu2JdwD8N+xAtMhVKaDt49lj2mYyWPoF9xg
+         KVymJZdBewlKQ2JbP2R7ReMT1DXzKF9VG/bZwpmNCPdpnqz0N17bbD9c+IQKdFzl+bok
+         sN71J0FP7XQZDq4A7jYG9YXMI6Z4Z0W6P0FjJKXeWBbqIX8dY8PfWAbQvcHSyG9JyDgr
+         ZcyYTAYSJZZVP0cawMPHlBmq9P+kEi2fZzrVTwfAOTQGbJa/kvm7te6OqBKVs3FykkWV
+         x8/w==
+X-Gm-Message-State: AOAM530O9GY32344MbEtBJX8W4uwc5gxm683aWJZRxZYvSG68Hf97hgg
+        uojWsnkuaVIoFU7HLH01EdYpnTf/QAY=
+X-Google-Smtp-Source: ABdhPJynpInC5TfqlyhmhZ79G4P1Op+gbixpbsM8IdypfMm8eaV6YafRoDb6KIQC83Sqqz8vZ94IRw==
+X-Received: by 2002:a17:906:314e:: with SMTP id e14mr92728525eje.165.1636331104667;
+        Sun, 07 Nov 2021 16:25:04 -0800 (PST)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id bf8sm8537878edb.46.2021.11.07.16.25.02
+        by smtp.googlemail.com with ESMTPSA id bf8sm8537878edb.46.2021.11.07.16.25.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Nov 2021 16:25:03 -0800 (PST)
+        Sun, 07 Nov 2021 16:25:04 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -60,10 +60,13 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
-Subject: [RFC PATCH v2 0/5] Adds support for PHY LEDs with offload triggers
-Date:   Mon,  8 Nov 2021 01:24:55 +0100
-Message-Id: <20211108002500.19115-1-ansuelsmth@gmail.com>
+Cc:     =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [RFC PATCH v2 1/5] leds: trigger: add API for HW offloading of triggers
+Date:   Mon,  8 Nov 2021 01:24:56 +0100
+Message-Id: <20211108002500.19115-2-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20211108002500.19115-1-ansuelsmth@gmail.com>
+References: <20211108002500.19115-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -71,82 +74,154 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is another attempt in adding support for PHY LEDs. Most of the
-times Switch/PHY have connected multiple LEDs that are controlled by HW
-based on some rules/event. Currently we lack any support for a generic
-way to control the HW part and normally we either never implement the
-feature or only add control for brightness or hw blink.
+From: Marek Behún <kabel@kernel.org>
 
-This is based on Marek idea of providing some API to cled but use a
-different implementation that in theory should be more generilized.
+Add method trigger_offload() and member variable `offloaded` to struct
+led_classdev. Add helper functions led_trigger_offload() and
+led_trigger_offload_stop().
 
-The current idea is:
-- LED driver implement 2 API (trigger and configure). They are used to
-  put the LED in offload mode and to configure the various trigger.
-- We have offload triggers that are used to expose to userspace the
-  supported offload triggers and set the offload mode on trigger
-  activation.
-- The LED driver will declare each supported trigger and each supported
-  offloaded trigger and communicate it to the trigger that will expose them
-  via sysfs.
-- Only supported triggers from linux,supported-offload-triggers will be
-  exposed by the offload trigger to userspace via sysfs. Other won't be
-  configurable as they are not supported by the LED driver.
-- The LED driver will set how the Offload mode is activated/disabled and
-  will set a configure function to set each supported offload triggers.
-  This function provide 3 different mode enable/disable/read that
-  will enable or disable the offload trigger or read the current status.
-- On offload trigger activation, only the offload mode is triggered but
-  the offload triggers are not configured. This means that the LED will
-  run in offload mode but will have the default rules/event set by the
-  device by default. To change this the user will have to operate via
-  userspace (or we can consider adding another binding in the dts to
-  declare also a default trigger configuration)
+The trigger_offload() method, when implemented by the LED driver, should
+be called (via led_trigger_offload() function) from trigger code wanting
+to be offloaded at the moment when configuration of the trigger changes.
 
-Each LED driver will have to declare explicit support for the offload
-trigger (or return not supported error code) as we pass a u32 flag that
-the LED driver will elaborate and understand what is referring to (based
-on the current active trigger).
+If the trigger is successfully offloaded, this method returns 0 and the
+trigger does not have to blink the LED in software.
 
-I posted a user for this new implementation that will benefit from this
-and will add a big feature to it. Currently qca8k can have up to 3 LEDs
-connected to each PHY port and we have some device that have only one of
-them connected and the default configuration won't work for that.
+If the trigger with given configuration cannot be offloaded, the method
+should return -EOPNOTSUPP, in which case the trigger must blink the LED
+in SW.
 
-v2:
-- Fix spelling mistake (sorry)
-- Drop patch 02 "permit to declare supported offload triggers".
-  Change the logic, now the LED driver declare support for them
-  using the configure_offload with the cmd TRIGGER_SUPPORTED.
-- Rework code to follow this new implementation.
-- Update Documentation to better describe how this offload
-  implementation work.
+The second argument to trigger_offload() being false means that the
+offloading is being disabled. In this case the function must return 0,
+errors are not permitted.
 
-Ansuel Smith (4):
-  leds: add function to configure offload leds
-  leds: trigger: add offload-phy-activity trigger
-  net: dsa: qca8k: add LEDs support
-  dt-bindings: net: dsa: qca8k: add LEDs definition example
+An additional config CONFIG_LEDS_OFFLOAD_TRIGGERS is added to add support
+for these special trigger offload driven.
 
-Marek Behún (1):
-  leds: trigger: add API for HW offloading of triggers
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+---
+ Documentation/leds/leds-class.rst | 20 +++++++++++++++++++
+ drivers/leds/led-triggers.c       |  1 +
+ drivers/leds/trigger/Kconfig      | 10 ++++++++++
+ include/linux/leds.h              | 33 +++++++++++++++++++++++++++++++
+ 4 files changed, 64 insertions(+)
 
- .../devicetree/bindings/net/dsa/qca8k.yaml    |  20 +
- Documentation/leds/leds-class.rst             |  44 +++
- drivers/leds/led-triggers.c                   |   1 +
- drivers/leds/trigger/Kconfig                  |  39 ++
- drivers/leds/trigger/Makefile                 |   1 +
- .../trigger/ledtrig-offload-phy-activity.c    | 145 +++++++
- drivers/net/dsa/Kconfig                       |   9 +
- drivers/net/dsa/Makefile                      |   1 +
- drivers/net/dsa/qca8k-leds.c                  | 364 ++++++++++++++++++
- drivers/net/dsa/qca8k.c                       |   8 +-
- drivers/net/dsa/qca8k.h                       |  64 +++
- include/linux/leds.h                          |  85 ++++
- 12 files changed, 779 insertions(+), 2 deletions(-)
- create mode 100644 drivers/leds/trigger/ledtrig-offload-phy-activity.c
- create mode 100644 drivers/net/dsa/qca8k-leds.c
-
+diff --git a/Documentation/leds/leds-class.rst b/Documentation/leds/leds-class.rst
+index cd155ead8703..5bf6e5d471ce 100644
+--- a/Documentation/leds/leds-class.rst
++++ b/Documentation/leds/leds-class.rst
+@@ -169,6 +169,26 @@ Setting the brightness to zero with brightness_set() callback function
+ should completely turn off the LED and cancel the previously programmed
+ hardware blinking function, if any.
+ 
++Hardware offloading of LED triggers
++===================================
++
++Some LEDs can be driven by hardware triggers (for example a LED connected to
++an ethernet PHY or an ethernet switch can be configured to blink on activity on
++the network, which in software is done by the netdev trigger).
++
++To do such offloading, LED driver must support this and a deficated offload
++trigger must be used. The LED must implement the trigger_offload() method and
++the trigger code must try to call this method (via led_trigger_offload()
++function) to set the LED to this particular mode. (and disable any software
++blinking)
++
++The implementation of the trigger_offload() method by the LED driver must return
++0 if the offload is successful and -EOPNOTSUPP if the requested trigger
++configuration is not supported.
++
++If the second argument (enable) to the trigger_offload() method is false, any
++active HW offloading must be deactivated. In this case errors are not permitted
++in the trigger_offload() method and the driver will be set to the new trigger.
+ 
+ Known Issues
+ ============
+diff --git a/drivers/leds/led-triggers.c b/drivers/leds/led-triggers.c
+index 072491d3e17b..281c52914f42 100644
+--- a/drivers/leds/led-triggers.c
++++ b/drivers/leds/led-triggers.c
+@@ -179,6 +179,7 @@ int led_trigger_set(struct led_classdev *led_cdev, struct led_trigger *trig)
+ 
+ 		cancel_work_sync(&led_cdev->set_brightness_work);
+ 		led_stop_software_blink(led_cdev);
++		led_trigger_offload_stop(led_cdev);
+ 		if (led_cdev->trigger->deactivate)
+ 			led_cdev->trigger->deactivate(led_cdev);
+ 		device_remove_groups(led_cdev->dev, led_cdev->trigger->groups);
+diff --git a/drivers/leds/trigger/Kconfig b/drivers/leds/trigger/Kconfig
+index dc6816d36d06..33aba8defeab 100644
+--- a/drivers/leds/trigger/Kconfig
++++ b/drivers/leds/trigger/Kconfig
+@@ -9,6 +9,16 @@ menuconfig LEDS_TRIGGERS
+ 
+ if LEDS_TRIGGERS
+ 
++config LEDS_OFFLOAD_TRIGGERS
++	bool "LED Offload Trigger support"
++	help
++	  This option enabled offload triggers support used by leds that
++	  can be driven in hardware by declaring some specific triggers.
++	  A offload trigger will expose a sysfs dir to configure the
++	  different blinking trigger and the available hardware triggers.
++
++	  If unsure, say Y.
++
+ config LEDS_TRIGGER_TIMER
+ 	tristate "LED Timer Trigger"
+ 	help
+diff --git a/include/linux/leds.h b/include/linux/leds.h
+index ba4861ec73d3..949ab461287f 100644
+--- a/include/linux/leds.h
++++ b/include/linux/leds.h
+@@ -154,6 +154,13 @@ struct led_classdev {
+ 
+ 	/* LEDs that have private triggers have this set */
+ 	struct led_hw_trigger_type	*trigger_type;
++
++#ifdef CONFIG_LEDS_OFFLOAD_TRIGGERS
++	int			offloaded;
++	/* some LEDs cne be driven by HW */
++	int			(*trigger_offload)(struct led_classdev *led_cdev,
++						   bool enable);
++#endif
+ #endif
+ 
+ #ifdef CONFIG_LEDS_BRIGHTNESS_HW_CHANGED
+@@ -409,6 +416,32 @@ static inline void *led_get_trigger_data(struct led_classdev *led_cdev)
+ 	return led_cdev->trigger_data;
+ }
+ 
++#ifdef CONFIG_LEDS_OFFLOAD_TRIGGERS
++static inline int led_trigger_offload(struct led_classdev *led_cdev)
++{
++	int ret;
++
++	if (!led_cdev->trigger_offload)
++		return -EOPNOTSUPP;
++
++	ret = led_cdev->trigger_offload(led_cdev, true);
++	led_cdev->offloaded = !ret;
++
++	return ret;
++}
++
++static inline void led_trigger_offload_stop(struct led_classdev *led_cdev)
++{
++	if (!led_cdev->trigger_offload)
++		return;
++
++	if (led_cdev->offloaded) {
++		led_cdev->trigger_offload(led_cdev, false);
++		led_cdev->offloaded = false;
++	}
++}
++#endif
++
+ /**
+  * led_trigger_rename_static - rename a trigger
+  * @name: the new trigger name
 -- 
 2.32.0
 
