@@ -2,42 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FE3E44A1AB
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 02:09:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 029F044A1D5
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 02:10:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240734AbhKIBLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 20:11:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33602 "EHLO mail.kernel.org"
+        id S242050AbhKIBMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 20:12:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40814 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242018AbhKIBIv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 20:08:51 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 95FD8619F6;
-        Tue,  9 Nov 2021 01:04:05 +0000 (UTC)
+        id S241702AbhKIBKm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 20:10:42 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EB55961A7A;
+        Tue,  9 Nov 2021 01:04:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636419846;
-        bh=hmu+N6SDxU2j51vgWSqTSsSPerqeeMoo7dgvOvk2bBM=;
+        s=k20201202; t=1636419874;
+        bh=wFMUeH1FDA87z3CGgGJ9U3yq3OQ7CrXInZWnOAy9wXQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XyCmvsLamOHs8rDq2hD1q07Sg+k/9pgKOKWOS3+ADsaMugtK1oo6WaDh+7f06ZpDe
-         3J2KJ+xg2W/ysKXvzTM15tbpG9eOFuE9hb1iuyYT5AFVRdJJdlcTqOdSVfU3u0FYJk
-         DhaNiaSbo6y+v2J26WgtjkXO1HIVC5ppJCCfcmXJ7J8DI5xXuXn5j8E43b8fDz0Tme
-         tGmQutAtEg1CKhru8HJBDgC+L1+jWj0p0fwxW8iXUsDTn7XIUm+xs6KMnIOH8lB4KZ
-         Rl4zq0oqZ1vnH+ZMcWDXi+PbVA7YDBEbrtt5Zega5Z7WkfM0BXI+Uk7Lok7bAm8MlO
-         xQoJDulEU5pVg==
+        b=qzDoJYy9nMnac/VxpF2bHxKazHGaeMiHb6r6NLdqUvGi/oK0+j5EdXa0vRTmNsMKY
+         SsmCH9u+F4YBf/uwyzaeRSO+/JZQzuP8o9wegRYn87/PgUYHyID/hHVtjuZddRdg67
+         J5IDmEip9yJxOdHOHiMOdMi3gJVsryQ67PE1/bmrKSNI+fqjIr4XmrcMkLK+Xr0M4T
+         wCYX59WuaInsxxYeQi7N/PpdDve2WrSY37KYvS+M+7Hcv3Es860UXxb593mnw78Oaf
+         SkO+wiEJCFpM6y9msUwAeYvAA+3fWVbVoZun7sVeQEaI9NRv8WtwXeD/agdGF0+P3n
+         UM8RdOD9FC86w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alagu Sankar <alagusankar@silex-india.com>,
-        Erik Stromdahl <erik.stromdahl@gmail.com>,
-        Fabio Estevam <festevam@denx.de>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 026/101] ath10k: high latency fixes for beacon buffer
-Date:   Mon,  8 Nov 2021 12:47:16 -0500
-Message-Id: <20211108174832.1189312-26-sashal@kernel.org>
+Cc:     Takashi Iwai <tiwai@suse.de>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 05/74] Bluetooth: sco: Fix lock_sock() blockage by memcpy_from_msg()
+Date:   Mon,  8 Nov 2021 12:48:32 -0500
+Message-Id: <20211108174942.1189927-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211108174832.1189312-1-sashal@kernel.org>
-References: <20211108174832.1189312-1-sashal@kernel.org>
+In-Reply-To: <20211108174942.1189927-1-sashal@kernel.org>
+References: <20211108174942.1189927-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -46,81 +44,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alagu Sankar <alagusankar@silex-india.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit e263bdab9c0e8025fb7f41f153709a9cda51f6b6 ]
+[ Upstream commit 99c23da0eed4fd20cae8243f2b51e10e66aa0951 ]
 
-Beacon buffer for high latency devices does not use DMA. other similar
-buffer allocation methods in the driver have already been modified for
-high latency path. Fix the beacon buffer allocation left out in the
-earlier high latency changes.
+The sco_send_frame() also takes lock_sock() during memcpy_from_msg()
+call that may be endlessly blocked by a task with userfaultd
+technique, and this will result in a hung task watchdog trigger.
 
-Signed-off-by: Alagu Sankar <alagusankar@silex-india.com>
-Signed-off-by: Erik Stromdahl <erik.stromdahl@gmail.com>
-[fabio: adapt it to use ar->bus_param.dev_type ]
-Signed-off-by: Fabio Estevam <festevam@denx.de>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20210818232627.2040121-1-festevam@denx.de
+Just like the similar fix for hci_sock_sendmsg() in commit
+92c685dc5de0 ("Bluetooth: reorganize functions..."), this patch moves
+the  memcpy_from_msg() out of lock_sock() for addressing the hang.
+
+This should be the last piece for fixing CVE-2021-3640 after a few
+already queued fixes.
+
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/mac.c | 31 ++++++++++++++++++++-------
- 1 file changed, 23 insertions(+), 8 deletions(-)
+ net/bluetooth/sco.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
-index 36183fdfb7f03..90dc48f66fbfe 100644
---- a/drivers/net/wireless/ath/ath10k/mac.c
-+++ b/drivers/net/wireless/ath/ath10k/mac.c
-@@ -982,8 +982,12 @@ static void ath10k_mac_vif_beacon_cleanup(struct ath10k_vif *arvif)
- 	ath10k_mac_vif_beacon_free(arvif);
- 
- 	if (arvif->beacon_buf) {
--		dma_free_coherent(ar->dev, IEEE80211_MAX_FRAME_LEN,
--				  arvif->beacon_buf, arvif->beacon_paddr);
-+		if (ar->bus_param.dev_type == ATH10K_DEV_TYPE_HL)
-+			kfree(arvif->beacon_buf);
-+		else
-+			dma_free_coherent(ar->dev, IEEE80211_MAX_FRAME_LEN,
-+					  arvif->beacon_buf,
-+					  arvif->beacon_paddr);
- 		arvif->beacon_buf = NULL;
- 	}
+diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+index 1915943bb646a..cc5a1d2545679 100644
+--- a/net/bluetooth/sco.c
++++ b/net/bluetooth/sco.c
+@@ -280,7 +280,8 @@ static int sco_connect(struct hci_dev *hdev, struct sock *sk)
+ 	return err;
  }
-@@ -5466,10 +5470,17 @@ static int ath10k_add_interface(struct ieee80211_hw *hw,
- 	if (vif->type == NL80211_IFTYPE_ADHOC ||
- 	    vif->type == NL80211_IFTYPE_MESH_POINT ||
- 	    vif->type == NL80211_IFTYPE_AP) {
--		arvif->beacon_buf = dma_alloc_coherent(ar->dev,
--						       IEEE80211_MAX_FRAME_LEN,
--						       &arvif->beacon_paddr,
--						       GFP_ATOMIC);
-+		if (ar->bus_param.dev_type == ATH10K_DEV_TYPE_HL) {
-+			arvif->beacon_buf = kmalloc(IEEE80211_MAX_FRAME_LEN,
-+						    GFP_KERNEL);
-+			arvif->beacon_paddr = (dma_addr_t)arvif->beacon_buf;
-+		} else {
-+			arvif->beacon_buf =
-+				dma_alloc_coherent(ar->dev,
-+						   IEEE80211_MAX_FRAME_LEN,
-+						   &arvif->beacon_paddr,
-+						   GFP_ATOMIC);
-+		}
- 		if (!arvif->beacon_buf) {
- 			ret = -ENOMEM;
- 			ath10k_warn(ar, "failed to allocate beacon buffer: %d\n",
-@@ -5684,8 +5695,12 @@ static int ath10k_add_interface(struct ieee80211_hw *hw,
  
- err:
- 	if (arvif->beacon_buf) {
--		dma_free_coherent(ar->dev, IEEE80211_MAX_FRAME_LEN,
--				  arvif->beacon_buf, arvif->beacon_paddr);
-+		if (ar->bus_param.dev_type == ATH10K_DEV_TYPE_HL)
-+			kfree(arvif->beacon_buf);
-+		else
-+			dma_free_coherent(ar->dev, IEEE80211_MAX_FRAME_LEN,
-+					  arvif->beacon_buf,
-+					  arvif->beacon_paddr);
- 		arvif->beacon_buf = NULL;
- 	}
+-static int sco_send_frame(struct sock *sk, struct msghdr *msg, int len)
++static int sco_send_frame(struct sock *sk, void *buf, int len,
++			  unsigned int msg_flags)
+ {
+ 	struct sco_conn *conn = sco_pi(sk)->conn;
+ 	struct sk_buff *skb;
+@@ -292,15 +293,11 @@ static int sco_send_frame(struct sock *sk, struct msghdr *msg, int len)
+ 
+ 	BT_DBG("sk %p len %d", sk, len);
+ 
+-	skb = bt_skb_send_alloc(sk, len, msg->msg_flags & MSG_DONTWAIT, &err);
++	skb = bt_skb_send_alloc(sk, len, msg_flags & MSG_DONTWAIT, &err);
+ 	if (!skb)
+ 		return err;
+ 
+-	if (memcpy_from_msg(skb_put(skb, len), msg, len)) {
+-		kfree_skb(skb);
+-		return -EFAULT;
+-	}
+-
++	memcpy(skb_put(skb, len), buf, len);
+ 	hci_send_sco(conn->hcon, skb);
+ 
+ 	return len;
+@@ -714,6 +711,7 @@ static int sco_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+ 			    size_t len)
+ {
+ 	struct sock *sk = sock->sk;
++	void *buf;
+ 	int err;
+ 
+ 	BT_DBG("sock %p, sk %p", sock, sk);
+@@ -725,14 +723,24 @@ static int sco_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+ 	if (msg->msg_flags & MSG_OOB)
+ 		return -EOPNOTSUPP;
+ 
++	buf = kmalloc(len, GFP_KERNEL);
++	if (!buf)
++		return -ENOMEM;
++
++	if (memcpy_from_msg(buf, msg, len)) {
++		kfree(buf);
++		return -EFAULT;
++	}
++
+ 	lock_sock(sk);
+ 
+ 	if (sk->sk_state == BT_CONNECTED)
+-		err = sco_send_frame(sk, msg, len);
++		err = sco_send_frame(sk, buf, len, msg->msg_flags);
+ 	else
+ 		err = -ENOTCONN;
+ 
+ 	release_sock(sk);
++	kfree(buf);
+ 	return err;
+ }
  
 -- 
 2.33.0
