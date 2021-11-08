@@ -2,245 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59C36447CEE
-	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 10:37:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 305C6447D27
+	for <lists+netdev@lfdr.de>; Mon,  8 Nov 2021 10:57:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232754AbhKHJkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 04:40:14 -0500
-Received: from 113.196.136.146.ll.static.sparqnet.net ([113.196.136.146]:42222
-        "EHLO mg.sunplus.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S230413AbhKHJkN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 04:40:13 -0500
-X-MailGates: (flag:3,DYNAMIC,RELAY,NOHOST:PASS)(compute_score:DELIVER,40
-        ,3)
-Received: from 172.17.9.202
-        by mg02.sunplus.com with MailGates ESMTP Server V5.0(53123:0:AUTH_RELAY)
-        (envelope-from <wells.lu@sunplus.com>); Mon, 08 Nov 2021 17:37:14 +0800 (CST)
-Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
- sphcmbx01.sunplus.com.tw (172.17.9.202) with Microsoft SMTP Server (TLS) id
- 15.0.1497.23; Mon, 8 Nov 2021 17:37:08 +0800
-Received: from sphcmbx02.sunplus.com.tw ([::1]) by sphcmbx02.sunplus.com.tw
- ([fe80::f8bb:bd77:a854:5b9e%14]) with mapi id 15.00.1497.023; Mon, 8 Nov 2021
- 17:37:08 +0800
-From:   =?utf-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Wells Lu <wellslutw@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>
-Subject: RE: [PATCH 2/2] net: ethernet: Add driver for Sunplus SP7021
-Thread-Topic: [PATCH 2/2] net: ethernet: Add driver for Sunplus SP7021
-Thread-Index: AQHX0KKBcebTINBXKk6D/f7Frpi9sKvxfraAgAGf2kCAAU6CgIAE3RVA
-Date:   Mon, 8 Nov 2021 09:37:08 +0000
-Message-ID: <7c77f644b7a14402bad6dd6326ba85b1@sphcmbx02.sunplus.com.tw>
-References: <cover.1635936610.git.wells.lu@sunplus.com>
- <650ec751dd782071dd56af5e36c0d509b0c66d7f.1635936610.git.wells.lu@sunplus.com>
- <YYK+EeCOu/BXBXDi@lunn.ch>
- <64626e48052c4fba9057369060bfbc84@sphcmbx02.sunplus.com.tw>
- <YYUzgyS6pfQOmKRk@lunn.ch>
-In-Reply-To: <YYUzgyS6pfQOmKRk@lunn.ch>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [172.25.108.39]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S238514AbhKHKA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 05:00:28 -0500
+Received: from rs07.intra2net.com ([85.214.138.66]:50614 "EHLO
+        rs07.intra2net.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238511AbhKHKA1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 05:00:27 -0500
+X-Greylist: delayed 534 seconds by postgrey-1.27 at vger.kernel.org; Mon, 08 Nov 2021 05:00:26 EST
+Received: from mail.m.i2n (unknown [172.17.128.1])
+        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by rs07.intra2net.com (Postfix) with ESMTPS id 3A63D1500132;
+        Mon,  8 Nov 2021 10:48:47 +0100 (CET)
+Received: from localhost (mail.m.i2n [127.0.0.1])
+        by localhost (Postfix) with ESMTP id 1F4C4E7C;
+        Mon,  8 Nov 2021 10:48:47 +0100 (CET)
+X-Virus-Scanned: by Intra2net Mail Security (AVE=8.3.64.48,VDF=8.18.45.132)
+X-Spam-Status: 
+X-Spam-Level: 0
+Received: from localhost (storm.m.i2n [172.16.1.2])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.m.i2n (Postfix) with ESMTPS id A1E93E6A;
+        Mon,  8 Nov 2021 10:48:45 +0100 (CET)
+Date:   Mon, 8 Nov 2021 10:48:45 +0100
+From:   Thomas Jarosch <thomas.jarosch@intra2net.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     netdev@vger.kernel.org, Tilman Schmidt <tilman@imap.cc>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        gigaset307x-common@lists.sourceforge.net,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Paul Bolle <pebolle@tiscali.nl>,
+        isdn4linux@listserv.isdn4linux.de,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Holger Schurig <holgerschurig@googlemail.com>
+Subject: Re: [PATCH v2 5/5] isdn: move capi drivers to staging
+Message-ID: <20211108094845.cytlyen5nptv4elu@intra2net.com>
+References: <20190426195849.4111040-1-arnd@arndb.de>
+ <20190426195849.4111040-6-arnd@arndb.de>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190426195849.4111040-6-arnd@arndb.de>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiA+ID4gPiArY29uZmlnIE5FVF9WRU5ET1JfU1VOUExVUw0KPiA+ID4gPiArCXRyaXN0YXRlICJT
-dW5wbHVzIER1YWwgMTBNLzEwME0gRXRoZXJuZXQgKHdpdGggTDIgc3dpdGNoKSBkZXZpY2VzIg0K
-PiA+ID4NCj4gPiA+IFRoZSAid2l0aCBMMiBTd2l0Y2giIGlzIGNhdXNpbmcgbG90cyBvZiB3YXJu
-aW5nIGJlbGxzIHRvIHJpbmcgZm9yIG1lLg0KPiA+ID4NCj4gPiA+IEkgZG9uJ3Qgc2VlIGFueSBy
-ZWZlcmVuY2VzIHRvIHN3aXRjaGRldiBvciBEU0EgaW4gdGhpcyBkcml2ZXIuIEhvdw0KPiA+ID4g
-aXMgdGhlIHN3aXRjaCBtYW5hZ2VkPyBUaGVyZSBoYXZlIGJlZW4gYSBmZXcgZXhhbXBsZXMgaW4g
-dGhlIHBhc3Qgb2YNCj4gPiA+IHNpbWlsYXIgdHdvIHBvcnQgc3dpdGNoZXMgYmVpbmcgZmlyc3Qg
-c3VwcG9ydGVkIGluIER1YWwgTUFDIG1vZGUuDQo+ID4gPiBMYXRlciB0cnlpbmcgdG8gYWN0dWFs
-bHkgdXNlIHRoZSBzd2l0Y2ggaW4gdGhlIExpbnV4IHdhcyBhbHdheXMgcmFuDQo+ID4gPiBpbnRv
-IHByb2JsZW1zLCBhbmQgYmFzaWNhbGx5IG5lZWRlZCBhIG5ldyBkcml2ZXIuIFNvIGkgd2FudCB0
-byBtYWtlDQo+ID4gPiBzdXJlIHlvdSBkb24ndCBoYXZlIHRoaXMgcHJvYmxlbS4NCj4gPiA+DQo+
-ID4gPiBJbiB0aGUgTGludXggd29ybGQsIEV0aGVybmV0IHN3aXRjaGVzIGRlZmF1bHQgdG8gaGF2
-aW5nIHRoZXJlDQo+ID4gPiBwb3J0cy9pbnRlcmZhY2VzIHNlcGFyYXRlZC4gVGhpcyBlZmZlY3Rp
-dmVseSBnaXZlcyB5b3UgeW91ciBkdWFsIE1BQw0KPiA+ID4gbW9kZSBieSBkZWZhdWx0LiAgWW91
-IHRoZW4gY3JlYXRlIGEgTGludXggYnJpZGdlLCBhbmQgYWRkIHRoZQ0KPiA+ID4gcG9ydHMvaW50
-ZXJmYWNlcyB0byB0aGUgYnJpZGdlLiBzd2l0Y2hkZXYgaXMgdXNlZCB0byBvZmZsb2FkIHRoZQ0K
-PiA+ID4gYnJpZGdlLCB0ZWxsaW5nIHRoZSBoYXJkd2FyZSB0byBlbmFibGUgdGhlIEwyIHN3aXRj
-aCBiZXR3ZWVuIHRoZSBwb3J0cy4NCj4gPiA+DQo+ID4gPiBTbyB5b3UgZG9uJ3QgbmVlZCB0aGUg
-bW9kZSBwYXJhbWV0ZXIgaW4gRFQuIHN3aXRjaGRldiB0ZWxscyB5b3UgdGhpcy4NCj4gPiA+IFN3
-aXRjaGRldiBnaXZlcyB1c2VyIHNwYWNlIGFjY2VzcyB0byB0aGUgYWRkcmVzcyB0YWJsZSBldGMu
-DQo+ID4NCj4gPiBUaGUgTDIgc3dpdGNoIG9mIEV0aGVybmV0IG9mIFNQNzAyMSBpcyBub3QgdXNl
-ZCB0byBmb3J3YXJkIHBhY2tldHMNCj4gPiBiZXR3ZWVuIHR3byBuZXR3b3JrIGludGVyZmFjZXMu
-DQo+ID4NCj4gPiBTdW5wbHVzIER1YWwgRXRoZXJuZXQgZGV2aWNlcyBjb25zaXN0cyBvZiBvbmUg
-Q1BVIHBvcnQsIHR3byBMQU4gcG9ydHMsDQo+ID4gYW5kIGEgTDIgc3dpdGNoLiBMMiBzd2l0Y2gg
-aXMgYSBjaXJjdWl0cnkgd2hpY2ggcmVjZWl2ZXMgcGFja2V0cyBmcm9tDQo+ID4gQ1BVIG9yIExB
-TiBwb3J0cyBhbmQgdGhlbiBmb3J3YXJkcyB0aGVtIG90aGVyIHBvcnRzLiBSdWxlcyBvZg0KPiA+
-IGZvcndhcmRpbmcgcGFja2V0cyBhcmUgc2V0IGJ5IGRyaXZlci4NCj4gPg0KPiA+IEV0aGVybmV0
-IGRyaXZlciBvZiBTUDcwMjEgb2YgU3VucGx1cyBzdXBwb3J0cyAzIG9wZXJhdGlvbiBtb2RlczoN
-Cj4gPiAgIC0gRHVhbCBOSUMgbW9kZQ0KPiA+ICAgLSBBbiBOSUMgd2l0aCB0d28gTEFOIHBvcnRz
-IG1vZGUgKGRhaXN5LWNoYWluIG1vZGUpDQo+ID4gICAtIEFuIE5JQyB3aXRoIHR3byBMQU4gcG9y
-dHMgbW9kZSAyDQo+ID4NCj4gPiBEdWFsIE5JQyBtb2RlDQo+ID4gRXRoZXJuZXQgZHJpdmVyIGNy
-ZWF0ZXMgdHdvIG5ldC1kZXZpY2UgaW50ZXJmYWNlcyAoZWc6IGV0aDAgYW5kIGV0aDEpLg0KPiA+
-IEVhY2ggaGFzIGl0cyBkZWRpY2F0ZWQgTEFOIHBvcnQuIEZvciBleGFtcGxlLCBMQU4gcG9ydCAw
-IGlzIGZvcg0KPiA+IG5ldC1kZXZpY2UgaW50ZXJmYWNlIGV0aDAuIExBTiBwb3J0IDEgaXMgZm9y
-IG5ldC1kZXZpY2UgaW50ZXJmYWNlDQo+ID4gZXRoMS4gUGFja2V0cyBmcm9tIExBTiBwb3J0IDAg
-d2lsbCBiZSBhbHdheXMgZm9yd2FyZGVkIHRvIGV0aDAgYW5kDQo+ID4gdmljZSB2ZXJzYSBieSBM
-MiBzd2l0Y2guIFNpbWlsYXJseSwgcGFja2V0cyBmcm9tIExBTiBwb3J0IDEgd2lsbCBiZQ0KPiA+
-IGFsd2F5cyBmb3J3YXJkZWQgdG8gZXRoMSBhbmQgdmljZSB2ZXJzYSBieSBMMiBzd2l0Y2guIFBh
-Y2tldHMgd2lsbA0KPiA+IG5ldmVyIGJlIGZvcndhcmRlZCBiZXR3ZWVuIHR3byBMQU4gcG9ydHMs
-IG9yIGJldHdlZW4gZXRoMCBhbmQgTEFOIHBvcnQNCj4gPiAxLCBvciBiZXR3ZWVuIGV0aDEgYW5k
-IExBTiBwb3J0IDAuIFRoZSB0d28gbmV0d29yayBkZXZpY2VzIHdvcmsNCj4gPiBpbmRlcGVuZGVu
-dGx5Lg0KPiA+DQo+ID4gQW4gTklDIHdpdGggdHdvIExBTiBwb3J0cyBtb2RlIChkYWlzeS1jaGFp
-biBtb2RlKSBFdGhlcm5ldCBkcml2ZXINCj4gPiBjcmVhdGVzIG9uZSBuZXQtZGV2aWNlIGludGVy
-ZmFjZSAoZWc6IGV0aDApLCBidXQgdGhlIG5ldC1kZXZpY2UNCj4gPiBpbnRlcmZhY2UgaGFzIHR3
-byBMQU4gcG9ydHMuIEluIHRoaXMgbW9kZSwgYSBwYWNrZXQgZnJvbSBvbmUgTEFOIHBvcnQNCj4g
-PiB3aWxsIGJlIGVpdGhlciBmb3J3YXJkZWQgdG8gbmV0LWRldmljZSBpbnRlcmZhY2UgKGVodDAp
-IGlmIGl0cw0KPiA+IGRlc3RpbmF0aW9uIGFkZHJlc3MgbWF0Y2hlcyBNQUMgYWRkcmVzcyBvZiBu
-ZXQtZGV2aWNlIGludGVyZmFjZQ0KPiA+IChldGgwKSwgb3IgZm9yd2FyZGVkIHRvIG90aGVyIExB
-TiBwb3J0LiBBIHBhY2tldCBmcm9tIG5ldC1kZXZpY2UNCj4gPiBpbnRlcmZhY2UgKGV0aDApIHdp
-bGwgYmUgZm9yd2FyZGVkIHRvIGEgTEFOIHBvcnQgaWYgaXRzIGRlc3RpbmF0aW9uDQo+ID4gYWRk
-cmVzcyBpcyBsZWFybnQgYnkgTDIgc3dpdGNoLCBvciBmb3J3YXJkZWQgdG8gYm90aCBMQU4gcG9y
-dHMgaWYgaXRzDQo+ID4gZGVzdGluYXRpb24gaGFzIG5vdCBiZWVuIGxlYXJudCB5ZXQuDQo+ID4N
-Cj4gPiBBbiBOSUMgd2l0aCB0d28gTEFOIHBvcnRzIG1vZGUgMg0KPiA+IFRoaXMgbW9kZSBpcyBz
-aW1pbGFyIHRvIOKAnEFuIE5JQyB3aXRoIHR3byBMQU4gcG9ydHMgbW9kZeKAnS4gVGhlDQo+ID4g
-ZGlmZmVyZW5jZSBpcyB0aGF0IGEgcGFja2V0IGZyb20gbmV0LWRldmljZSBpbnRlcmZhY2UgKGV0
-aDApIHdpbGwgYmUNCj4gPiBhbHdheXMgZm9yd2FyZGVkIHRvIGJvdGggTEFOIHBvcnRzLiBMZWFy
-bmluZyBmdW5jdGlvbiBvZiBMMiBzd2l0Y2ggaXMNCj4gPiB0dXJuZWQgb2ZmIGluIHRoaXMgbW9k
-ZS4gVGhpcyBtZWFucyBMMiBzd2l0Y2ggd2lsbCBuZXZlciBsZWFybiB0aGUNCj4gPiBzb3VyY2Ug
-YWRkcmVzcyBvZiBhIHBhY2tldC4gU28sIGl0IGFsd2F5cyBmb3J3YXJkIHBhY2tldHMgdG8gYm90
-aCBMQU4NCj4gPiBwb3J0cy4gVGhpcyBtb2RlIHdvcmtzIGxpa2UgeW91IGhhdmUgMi1wb3J0IEV0
-aGVybmV0IGh1Yi4NCj4gDQo+IFNvIGhlcmUgeW91IGRlc2NyaWJlIGhvdyB0aGUgaGFyZHdhcmUg
-Y2FuIGJlIHVzZWQuIER1YWwgaXMgdHdvIGludGVyZmFjZXMuDQo+IERhaXN5LWNoYWluIGlzIHdo
-YXQgeW91IGdldCBieSB0YWtpbmcgdGhvc2UgdHdvIGludGVyZmFjZXMgYW5kIGFkZGluZyB0aGVt
-IHRvDQo+IGEgYnJpZGdlLiBUaGUgYnJpZGdlIHRoZW4gZm9yd2FyZHMgZnJhbWVzIGJldHdlZW4g
-dGhlIGludGVyZmFjZXMgYW5kIHRoZSBDUFUNCj4gYXMgbmVlZGVkLCBiYXNlZCBvbiBsZWFybmlu
-Zy4gQW5kIHlvdXIgdGhpcmQgbW9kZSBpcyB0aGUgYnJpZGdlIGFsd2F5cw0KPiBwZXJmb3JtcyBm
-bG9vZGluZy4NCj4gDQo+IEEgbGludXggZHJpdmVyIG11c3QgZm9sbG93IHRoZSBsaW51eCBuZXR3
-b3JraW5nIG1vZGVsLiBZb3UgY2Fubm90IG1ha2UgdXANCj4geW91ciBvd24gbW9kZWwuIEluIHRo
-ZSBsaW51eCB3b3JsZCwgeW91IG1vZGVsIHRoZSBleHRlcm5hbCBwb3J0cy4gVGhlDQo+IGhhcmR3
-YXJlIGFsd2F5cyBoYXMgdHdvIGV4dGVybmFsIHBvcnRzLCBzbyB5b3UgbmVlZCB0byBhbHdheXMg
-aGF2ZSB0d28NCj4gbmV0ZGV2IGludGVyZmFjZXMuIFRvIGJyaWRnZSBwYWNrZXRzIGJldHdlZW4g
-dGhvc2UgdHdvIGludGVyZmFjZXMsIHlvdSBjcmVhdGUNCj4gYSBicmlkZ2UgYW5kIHlvdSBhZGQg
-dGhlIGludGVyZmFjZXMgdG8gdGhlIGJyaWRnZS4gVGhhdCBpcyB0aGUgbW9kZWwgeW91IG5lZWQN
-Cj4gdG8gZm9sbG93LiBzd2l0Y2hkZXYgZ2l2ZXMgeW91IHRoZSBBUEkgY2FsbHMgeW91IG5lZWQg
-dG8gaW1wbGVtZW50IHRoaXMuDQoNClRoYW5rIHlvdSB2ZXJ5IG11Y2ggZm9yIHlvdXIgZXhwbGFu
-YXRpb24uDQoNCkkgcmVhbGl6ZSB0aGF0IHdlIG5lZWQgdG8gZm9sbG93IHRoZSBMaW51eCBuZXR3
-b3JraW5nIG1vZGVsLg0KSSdsbCByZW1vdmUgYWxsIGRlc2NyaXB0aW9ucyBhYm91dCBMMiBzd2l0
-Y2ggb3IgZGFpc3ktY2hhaW4gbW9kZS4NCg0KSSdkIGxpa2UgdG8gbW9kaWZ5IFN1bnBsdXMgRXRo
-ZXJuZXQgZHJpdmVyIHRvIGZ1bGZpbGwgTGludXggbmV0d29ya2luZyBtb2RlbC4NCkhlcmUgaXMg
-bXkgcHJvcG9zYWw6DQoNClNQNzAyMSBFdGhlcm5ldCBzdXBwb3J0cyAzIG9wZXJhdGlvbiBtb2Rl
-czoNCiAtIER1YWwgRXRoZXJuZXQgbW9kZQ0KICAgSW4gdGhpcyBtb2RlLCBkcml2ZXIgY3JlYXRl
-cyB0d28gbmV0LWRldmljZSBpbnRlcmZhY2VzLiBFYWNoIGNvbm5lY3RzDQogICB0byBQSFkuIFRo
-ZXJlIGFyZSB0d28gTEFOIHBvcnRzIHRvdGFsbHkuDQogICBJIGFtIHNvcnJ5IHRoYXQgRU1BQyBv
-ZiBTUDcwMjEgY2Fubm90IHN1cHBvcnQgTDIgc3dpdGNoIGZ1bmN0aW9ucw0KICAgb2YgTGludXgg
-c3dpdGNoLWRldmljZSBtb2RlbCBiZWNhdXNlIGl0IG9ubHkgaGFzIHBhcnRpYWwgZnVuY3Rpb24g
-b2YgDQogICBzd2l0Y2guDQoNCiAtIE9uZSBFdGhlcm5ldCBtb2RlDQogICBJbiB0aGlzIG1vZGUs
-IGRyaXZlciBjcmVhdGVzIG9uZSBuZXQtZGV2aWNlIGludGVyZmFjZS4gSXQgY29ubmVjdHMgdG8N
-CiAgIHRvIGEgUEhZIChUaGVyZSBpcyBvbmx5IG9uZSBMQU4gcG9ydCkuDQogICBUaGUgTEFOIHBv
-cnQgaXMgdGhlbiBjb25uZWN0ZWQgdG8gYSAzLXBvcnQgRXRoZXJuZXQgaHViLg0KICAgVGhlIDMt
-cG9ydCBFdGhlcm5ldCBodWIgaXMgYSBoYXJkd2FyZSBjaXJjdWl0cnkuIEFsbCBvcGVyYXRpb25z
-IA0KICAgKHBhY2tldCBmb3J3YXJkaW5nKSBhcmUgZG9uZSBieSBoYXJkd2FyZS4gTm8gc29mdHdh
-cmUgDQogICBpbnRlcnZlbnRpb24gaXMgbmVlZGVkLiBBY3R1YWxseSwgZXZlbiBqdXN0IHBvd2Vy
-LW9uLCBubyBzb2Z0d2FyZSANCiAgIHJ1bm5pbmcsIHR3byBMQU4gcG9ydHMgb2YgU1A3MDIxIHdv
-cmsgd2VsbCBhcyAyLXBvcnQgaHViLg0KDQogLSBPbmUgRXRoZXJuZXQgbW9kZSAyDQogICBUaGlz
-IGlzIG1vZGUgaXMgc2ltaWxhciB0byBwcmV2aW91cyBtb2RlLCBidXQgYSBiaXQgZGlmZmVyZW50
-IHNldHRpbmdzDQogICB0byB0aGUgaHViLg0KDQpQbGVhc2Uga2luZGx5IGNvbW1lbnQgaWYgbXkg
-cHJvcG9zYWwgaXMgZmVhc2libGUgb3Igbm90DQoNCg0KPiA+ID4gPiArc3RydWN0IGwyc3dfY29t
-bW9uIHsNCj4gPiA+DQo+ID4gPiBQbGVhc2UgY2hhbmdlIHlvdXIgcHJlZml4LiBsMnN3IGlzIGEg
-Y29tbW9uIHByZWZpeCwgdGhlcmUgYXJlIG90aGVyDQo+ID4gPiBzaWxpY29uIHZlbmRvcnMgdXNp
-bmcgbDJzdy4gSSB3b3VsZCBzdWdnZXN0IHNwX2wyc3cgb3Igc3BsMnN3Lg0KPiA+DQo+ID4gT2ss
-IEknbGwgbW9kaWZ5IHR3byBzdHJ1Y3QgbmFtZXMgaW4gbmV4dCBwYXRjaCBhcyBzaG93biBiZWxv
-dzoNCj4gPiBsMnN3X2NvbW1vbiAtLT4gc3BfY29tbW9uDQo+ID4gbDJzd19tYWMgLS0+IHNwX21h
-Yw0KPiA+DQo+ID4gU2hvdWxkIEkgYWxzbyBtb2RpZnkgcHJlZml4IG9mIGZpbGUgbmFtZT8NCj4g
-DQo+IFlvdSBuZWVkIHRvIG1vZGlmeSB0aGUgcHJlZml4IGV2ZXJ5d2hlcmUgeW91IHVzZSBpdC4g
-IEZ1bmN0aW9uIG5hbWVzLA0KPiB2YXJpYWJsZSBuYW1lcywgYWxsIHN5bWJvbHMuIFNlYXJjaCBh
-bmQgcmVwbGFjZSB0aHJvdWdob3V0IHRoZSB3aG9sZSBjb2RlLg0KDQpZZXMsIEknbGwgZG8gaW4g
-bmV4dCBwYXRjaC4NCg0KDQo+ID4gPiA+ICsJCQlyZXR1cm4gLUVJTlZBTDsNCj4gPiA+ID4gKwkJ
-fQ0KPiA+ID4gPiArCX0NCj4gPiA+ID4gKw0KPiA+ID4gPiArCXN3aXRjaCAoY21kKSB7DQo+ID4g
-PiA+ICsJY2FzZSBTSU9DR01JSVBIWToNCj4gPiA+ID4gKwkJaWYgKGNvbW0tPmR1YWxfbmljICYm
-IChzdHJjbXAoaWZyLT5pZnJfaWZybi5pZnJuX25hbWUsICJldGgxIikNCj4gPiA+ID4gKz09DQo+
-ID4gPiA+ICswKSkNCj4gPiA+DQo+ID4gPiBZb3UgY2Fubm90IHJlbHkgb24gdGhlIG5hbWUsIHN5
-c3RlbWQgaGFzIHByb2JhYmx5IHJlbmFtZWQgaXQuIElmIHlvdQ0KPiA+ID4gaGF2ZSB1c2luZyBw
-aHlsaWIgY29ycmVjdGx5LCBuZXRfZGV2LT5waHlkZXYgaXMgd2hhdCB5b3Ugd2FudC4NCj4gPg0K
-PiA+IE9rLCBJJ2xsIHVzZSBuYW1lIG9mIHRoZSBzZWNvbmQgbmV0IGRldmljZSB0byBkbyBjb21w
-YXJlLCBpbnN0ZWFkIG9mDQo+ID4gdXNpbmcgZml4ZWQgc3RyaW5nICJldGgxIiwgaW4gbmV4dCBw
-YXRjaC4NCj4gDQo+IE5vLiBUaGVyZSBhcmUgYWx3YXlzIHR3byBpbnRlcmZhY2VzLiBZb3UgYWx3
-YXlzIGhhdmUgdHdvIG5ldGRldiBzdHJ1Y3R1cmVzLg0KPiBFYWNoIG5ldGRldiBzdHJ1Y3R1cmUg
-aGFzIGEgcGh5ZGV2LiBTbyB1c2UgbmV0ZGV2LT5waHlkZXYuDQoNClllcywgSSdsbCBtb2RpZnkg
-ZHJpdmVyIHRvIHVzZSAnbmV0ZGV2LT5waHlkZXYnLg0KDQoNCj4gVGhpcyBpcyBhbm90aGVyIGFk
-dmFudGFnZSBvZiB0aGUgTGludXggbW9kZWwuIEluIHlvdXIgZGFpc3kgY2hhaW4gbW9kZSwgaG93
-DQo+IGRvIGkgY29udHJvbCB0aGUgdHdvIFBIWXM/IEhvdyBkbyBpIHNlZSBvbmUgaXMgdXAgYW5k
-IG9uZSBpcyBkb3duPyBIb3cgZG8gaQ0KPiBjb25maWd1cmUgb25lIHRvIDEwSGFsZiBhbmQgdGhl
-IG90aGVyIDEwMEZ1bGw/DQoNCk5vIHNvZnR3YXJlIGludGVydmVudGlvbiBpcyBuZWVkZWQuDQpI
-YXJkd2FyZSBjaXJjdWl0cnkgb2YgRU1BQyBvZiBTdW5wbHVzIFNQNzAyMSBkb2VzIGl0IHdlbGwu
-DQpFTUFDIHdpbGwgY29tbXVuaWNhdGUgd2l0aCBQSFkgY2hpcHMgKHZpYSBNRElPIGJ1cykgYXV0
-b21hdGljYWxseS4NCkFjdHVhbGx5LCBqdXN0IGdpdmluZyBwb3dlciB0byBTUDcwMjEsIHRoZSB0
-d28gTEFOIHBvcnRzIGFjdCBhcyAyLXBvcnQgDQpFdGhlcm5ldCBodWIsIGZvcndhcmRpbmcgcGFj
-a2V0cyBiZXR3ZWVuIHBvcnRzLg0KDQoNCj4gPiA+ID4gK2ludCBwaHlfY2ZnKHN0cnVjdCBsMnN3
-X21hYyAqbWFjKSB7DQo+ID4gPiA+ICsJLy8gQnVnIHdvcmthcm91bmQ6DQo+ID4gPiA+ICsJLy8g
-Rmxvdy1jb250cm9sIG9mIHBoeSBzaG91bGQgYmUgZW5hYmxlZC4gTDJTVyBJUCBmbG93LWNvbnRy
-b2wgd2lsbA0KPiByZWZlcg0KPiA+ID4gPiArCS8vIHRvIHRoZSBiaXQgdG8gZGVjaWRlIHRvIGVu
-YWJsZSBvciBkaXNhYmxlIGZsb3ctY29udHJvbC4NCj4gPiA+ID4gKwltZGlvX3dyaXRlKG1hYy0+
-Y29tbS0+cGh5MV9hZGRyLCA0LA0KPiA+ID4gbWRpb19yZWFkKG1hYy0+Y29tbS0+cGh5MV9hZGRy
-LCA0KSB8ICgxIDw8IDEwKSk7DQo+ID4gPiA+ICsJbWRpb193cml0ZShtYWMtPmNvbW0tPnBoeTJf
-YWRkciwgNCwNCj4gPiA+IG1kaW9fcmVhZChtYWMtPmNvbW0tPnBoeTJfYWRkciwNCj4gPiA+ID4g
-KzQpIHwgKDEgPDwgMTApKTsNCj4gPiA+DQo+ID4gPiBUaGlzIHNob3VsZCBiZSBpbiB0aGUgUEhZ
-IGRyaXZlci4gVGhlIE1BQyBkcml2ZXIgc2hvdWxkIG5ldmVyIG5lZWQNCj4gPiA+IHRvIHRvdWNo
-IFBIWSByZWdpc3RlcnMuDQo+ID4NCj4gPiBTdW5wbHVzIEV0aGVybmV0IE1BQyBpbnRlZ3JhdGVz
-IE1ESU8gY29udHJvbGxlci4NCj4gPiBTbyBFdGhlcm5ldCBkcml2ZXIgaGFzIE1ESU8tIGFuZCBQ
-SFktcmVsYXRlZCBjb2RlLg0KPiA+IFRvIHdvcmstYXJvdW5kIGEgY2lyY3VpdHJ5IGJ1Zywgd2Ug
-bmVlZCB0byBlbmFibGUgYml0IDEwIG9mIHJlZ2lzdGVyIDQNCj4gPiBvZiBQSFkuDQo+ID4gV2hl
-cmUgc2hvdWxkIHdlIHBsYWNlIHRoZSBjb2RlPw0KPiANCj4gVGhlIHNpbGljb24gaXMgaW50ZWdy
-YXRlZCwgYnV0IGl0IGlzIHN0aWxsIGEgY29sbGVjdGlvbiBvZiBzdGFuZGFyZCBibG9ja3MuIExp
-bnV4DQo+IG1vZGVscyB0aG9zZSBibG9ja3MgaW5kZXBlbmRlbnRseS4gVGhlcmUgaXMgYSBzdWJz
-eXN0ZW0gZm9yIHRoZSBNQUMsIGENCj4gc3Vic3lzdGVtIGZvciB0aGUgTURJTyBidXMgbWFzdGVy
-IGFuZCBhIHN1YnN5c3RlbSBmb3IgdGhlIFBIWS4gWW91IHJlZ2lzdGVyDQo+IGEgZHJpdmVyIHdp
-dGggZWFjaCBvZiB0aGVzZSBzdWJzeXN0ZW1zLiBQSFkgZHJpdmVycyBsaXZlIGluIGRyaXZlcnMv
-bmV0L3BoeS4gUHV0DQo+IGEgUEhZIGRyaXZlciBpbiB0aGVyZSwgd2hpY2ggaW5jbHVkZXMgdGhp
-cyB3b3JrYXJvdW5kLg0KPiANCj4gPiA+ID4gK3N0YXRpYyB2b2lkIG1paV9saW5rY2hhbmdlKHN0
-cnVjdCBuZXRfZGV2aWNlICpuZXRkZXYpIHsgfQ0KPiA+ID4NCj4gPiA+IE5vdGhpbmcgdG8gZG8/
-IFNlZW1zIHZlcnkgb2RkLiBEb24ndCB5b3UgbmVlZCB0byB0ZWxsIHRoZSBNQUMgaXQNCj4gPiA+
-IHNob3VsZCBkbyAxME1icHMgb3IgMTAwTWJwcz8gV2hhdCBhYm91dCBwYXVzZT8NCj4gPg0KPiA+
-IE5vLCBoYXJkd2FyZSBkb2VzIGl0IGF1dG9tYXRpY2FsbHkuDQo+ID4gU3VucGx1cyBNQUMgaW50
-ZWdyYXRlcyBNRElPIGNvbnRyb2xsZXIuDQo+ID4gSXQgcmVhZHMgUEhZIHN0YXR1cyBhbmQgc2V0
-IE1BQyBhdXRvbWF0aWNhbGx5Lg0KPiANCj4gVGhlIFBIWSBpcyBleHRlcm5hbD8gU28geW91IGhh
-dmUgbm8gaWRlYSB3aGF0IFBIWSB0aGF0IGlzPyBJdCBjb3VsZCBiZSBhDQo+IE1hcnZlbGwgUEhZ
-LCBhIG1pY3JvY2hpcCBQSFksIGFuIEF0aGVyb3MgUEhZLiBPZnRlbiBQSFlzIGhhdmUgcGFnZXMu
-IEluIG9yZGVyDQo+IHRvIHJlYWQgdGhlIHRlbXBlcmF0dXJlIHNlbnNvciB5b3UgY2hhbmdlIHRo
-ZSBwYWdlLCByZWFkIGEgcmVnaXN0ZXIsIGFuZCB0aGVuDQo+IGhvcGVmdWxseSBjaGFuZ2UgdGhl
-IHBhZ2UgYmFjayBhZ2Fpbi4gSWYgdGhlIFBIWSBzdXBwb3J0cyBGaWJyZSBhcyB3ZWxsIGFzDQo+
-IGNvcHBlciwgaXQgY2FuIHB1dCB0aGUgZmlicmUgcmVnaXN0ZXJzIGluIGEgc2Vjb25kIHBhZ2Uu
-IFRoZSBQSFkgZHJpdmVyIGtub3dzDQo+IGFib3V0IHRoaXMsIGl0IHdpbGwgZmxpcCB0aGUgcGFn
-ZXMgYXMgbmVlZGVkLiBUaGUgcGh5bGliIGNvcmUgaGFzIGEgbXV0ZXgsIHNvIHRoYXQNCj4gb25s
-eSBvbmUgb3BlcmF0aW9uIGhhcHBlbnMgYXQgYSB0aW1lLiBTbyBhIHBhZ2UgZmxpcCBkb2VzIG5v
-dCBoYXBwZW4NCj4gdW5leHBlY3RlZGx5Lg0KPg0KPiBZb3VyIE1BQyBoYXJkd2FyZSBkb2VzIG5v
-dCB0YWtlIHRoaXMgbXV0ZXguIEl0IGhhcyBubyBpZGVhIHdoYXQgcGFnZSBpcw0KPiBzZWxlY3Rl
-ZCB3aGVuIGl0IHJlYWRzIHJlZ2lzdGVycy4gSW5zdGVhZCBvZiBnZXR0aW5nIHRoZSBiYXNpYyBt
-b2RlIHJlZ2lzdGVyLCBpdA0KPiBjb3VsZCBnZXQgdGhlIExFRCBjb250cm9sIHJlZ2lzdGVyLi4u
-DQo+IA0KPiBUaGUgTUFDIHNob3VsZCBuZXZlciBkaXJlY3RseSBhY2Nlc3MgdGhlIFBIWS4gUGxl
-YXNlIGRpc2FibGUgdGhpcyBoYXJkd2FyZSwNCj4gYW5kIHVzZSB0aGUgbWlpX2xpbmtjaGFuZ2Ug
-Y2FsbGJhY2sgdG8gY29uZmlndXJlIHRoZSBNQUMuDQoNClllcywgdGhlIFBIWXMgYXJlIGV4dGVy
-bmFsLiBTUDcwMjEgYXJlIGNvbm5lY3RlZCB0byB0d28gSUNQbHVzIElQMTAxIFBIWS4NCkVNQUMg
-b2YgU1A3MDIxIGNvbW11bmljYXRlcyB3aXRoIFBIWSB2aWEgTURJTyBidXMgYXV0b21hdGljYWxs
-eSBhZnRlciANCkl0IGlzIHNldHVwIGFuZCBlbmFibGVkLiBTb3JyeSB0aGF0IHRoZSBmdW5jdGlv
-biBjYW5ub3QgYmUgZGlzYWJsZWQuDQoNClRoZSBtZW50aW9uZWQgYnVnIGlzIG5vdCBhIGJ1ZyBv
-ZiBQSFksIGJ1dCBhIGhhcmR3YXJlIGJ1ZyBvZiBFTUFDLg0KU1A3MDIxIEVNQUMgd2lsbCByZWFk
-IGJpdCAxMCAocGF1c2UgYml0KSBvZiByZWdpc3RlciA0IG9mIFBIWSBhbmQgdGhlbiBzZXQNCnBh
-dXNlIG1vZGUgb2YgRU1BQyBpdHNlbGYuIEF0IGluaXRpYWwsIGJpdCAxMCBvZiByZWdpc3RlciA0
-IG9mIFBIWSBpcyAwLiBUaGlzDQpyZXN1bHRzIGluIHBhdXNlIG1vZGUgb2YgRU1BQyBiZSB0dXJu
-ZWQgb2ZmLiBEdWUgdG8gdGltaW5nIGlzc3VlLCBzZXR0aW5nIA0KYml0IDEwIG9uIFBIWSBkcml2
-ZXIgaXMgbm90IGZlYXNpYmxlLCB3ZSBuZWVkIHRvIHNldCBpdCBvbiBFTUFDIGRyaXZlciByaWdo
-dCANCmp1c3QgYWZ0ZXIgTUFDIGlzIGVuYWJsZWQuDQoNCg0KPiA+ID4gU28gdGhlIE1BQyBkb2Vz
-IG5vdCBzdXBwb3J0IHBhdXNlPyBJJ20gdGhlbiBjb25mdXNlZCBhYm91dCBwaHlfY2ZnKCkuDQo+
-IA0KPiA+IFllcywgTUFDIHN1cHBvcnRzIHBhdXNlLiBNQUMgKGhhcmR3YXJlKSB0YWtlcyBjYXJl
-IG9mIHBhdXNlDQo+ID4gYXV0b21hdGljYWxseS4NCj4gPg0KPiA+IFNob3VsZCBJIHJlbW92ZSB0
-aGUgdHdvIGxpbmVzPw0KPiANCj4gWWVzLg0KDQpZZXMsIEknbGwgcmVtb3ZlIHRoZW0gaW4gbmV4
-dCBwYXRjaC4NCg0KDQo+IEFuZCB5b3UgbmVlZCB0byBjb25maWd1cmUgdGhlIE1BQyBiYXNlZCBv
-biB0aGUgcmVzdWx0cyBvZiB0aGUgYXV0by1uZWcuDQo+IA0KPiAJQW5kcmV3DQoNCg0K
+Hi Arnd,
+
+You wrote on Fri, Apr 26, 2019 at 09:58:49PM +0200:
+> I tried to find any indication of whether the capi drivers are still in
+> use, and have not found anything from a long time ago.
+> 
+> With public ISDN networks almost completely shut down over the past 12
+> months, there is very little you can actually do with this hardware. The
+> main remaining use case would be to connect ISDN voice phones to an
+> in-house installation with Asterisk or LCR, but anyone trying this in
+> turn seems to be using either the mISDN driver stack, or out-of-tree
+> drivers from the hardware vendors.
+> 
+> I may of course have missed something, so I would suggest moving these
+> three drivers (avm, hysdn, gigaset) into drivers/staging/ just in case
+> someone still uses them.
+> 
+> If nobody complains, we can remove them entirely in six months, or
+> otherwise move the core code and any drivers that are still needed back
+> into drivers/isdn.
+
+just a quick follow up on this one: Intra2net is officially
+removing ISDN fax support from our distribution on 2022-06-30.
+
+Since we are still running on kernel 4.19 and plan on upgrading to 5.10 some day 
+soonish, there's one less ISDN user to care about in future kernel maintenance.
+
+This makes me even wonder how many linux ISDN users are left these days.
+
+Cheers,
+Thomas
