@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 284B844A4AC
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 03:26:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2055444A4B5
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 03:26:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240870AbhKIC3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 21:29:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34974 "EHLO
+        id S242014AbhKIC3Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 21:29:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239625AbhKIC3F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 21:29:05 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D42FDC061570;
-        Mon,  8 Nov 2021 18:26:19 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id m14so69877397edd.0;
-        Mon, 08 Nov 2021 18:26:19 -0800 (PST)
+        with ESMTP id S241284AbhKIC3H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 21:29:07 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD4EC061767;
+        Mon,  8 Nov 2021 18:26:21 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id f8so70626860edy.4;
+        Mon, 08 Nov 2021 18:26:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=jFe5KTURBcOOWrUfhODd1Eso/w+chUk7dQ+LiJPhNjU=;
-        b=Kn3VTkVxk2VjycPtbFj/RgOqzsDJ/GGvEDv+ZxBOlFw+AbafgbXdqycJZ4brzm39Fh
-         DdCZpPlsNiXdEH1VdxDVmRC+0e4yOarZeETaryroCttm63J1VYdBnz9QDgCn+JQTeDa3
-         yn3LSpwRU2IGtTCioXrMUORcTWX7Vi5B5IrEUs2U2MsGu+dBx0qDBU31HWmUG6fSabMW
-         Xo9rtxBqlSRpW3qhgjKrKq8wUzmEAwt05pfGU1Ox7+QXyIm/YwGjvCl4bRQId6JvNBCj
-         QX+5829bpytIbfSxfJIhghk42dUBnIbOh4luDf1s16i4Wal4JUc4ldmKuj5EdOSnAsC/
-         hr2A==
+        bh=yGOfJM0myGJ9WNoV+7xlGJ0AyPi6t90BpfeCjdvbki0=;
+        b=jyCWj+7Cv7s2+oMLEi9HQeskxlU9QUu3KZ2y2mT0adK9F8buG7I9fBFjlu5XcUZxub
+         Cu7l40mmX+P+VHnWFnJkCxytUVBCQGujk/4TXzqB4yOKdvG6q6egHEgULAZARsHCxQaG
+         LszC2LxFCTdOKFORNPjOuj3Jmh4a5lGclLcOZXRXG1v7OWu2GA7zRoSWrGdGqY4PFMAK
+         dUBIbnnH4r660HjzYnj9StSI7502wKFRG/qyFUILkHbpFUU9dBnvtqTFF7kpS/YR0by7
+         ce8Z1vzI/h+Gm4V+4n0i7TAnMFybRJ78Ysf3W62QvOSnEuP6Cv1ewIEp7sjeTHDv5C8f
+         PnuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=jFe5KTURBcOOWrUfhODd1Eso/w+chUk7dQ+LiJPhNjU=;
-        b=8Rtz7SSPRPjIvGc8BXc7stFkVDmZozQ9X5/9LLwYEwoWvLTT0d3d3IEHQFJ52nrf8i
-         8y18saJzaVIwvTBoWiPDls6PrVOFL/o5PFGA87UOBlZ1WZEGJOhio0/u6VkKZFtEwSev
-         zFJf31/BrY56zysjYycuf1Nry2tdpBtUP7MB3K5Pxwtkda21qw+UpW0XMaYrf4KxJ8Nm
-         Su5DEZ7SpeWvUTKMhU32EgvhmQOT9Hebb3XY2qj2YKtSjO1S0//gmSe0AyqcNdVc1dsr
-         peasJU0dq2hyyscMyjWZYVdDth5e9ZJukjHhkgD+8eJm/CF3kdndtUClk8vAE7b+sAaP
-         iI1g==
-X-Gm-Message-State: AOAM533A2Rtr84kDMz5XcveXVgMyoD5E601R4vU9W0kuN1brR61YdBhm
-        1TyZ3exUThAqKhl4OsiczT43zAquHME=
-X-Google-Smtp-Source: ABdhPJx7ldT+O4kZz2zJaD34Ue5F6nXtqzu7OIQcKLXN0CQhEgIgVe8Fqg1QNXS2NSZgEG0ow7qNAA==
-X-Received: by 2002:a17:906:a949:: with SMTP id hh9mr5038520ejb.294.1636424778328;
-        Mon, 08 Nov 2021 18:26:18 -0800 (PST)
+        bh=yGOfJM0myGJ9WNoV+7xlGJ0AyPi6t90BpfeCjdvbki0=;
+        b=TQy1QKVA3mhTyv2TFBS7cU230sgwa0hoe2f64iVeq45pJEGfd1SfKcyWxOjQFknm/4
+         kk3Ri8v0YNR+wwzuc/9SoHXMnrJVnFrSc0awOGaJ9Mr1kNEvwRGFNy7anVSg9FcJdDZZ
+         IsUnOVkZ3uGX0swy3qVC/bfYt9ihgR98UsJh5084FK5+PUfoqRF5jqj0W11A6Qz/+jKc
+         b1PKZ20wARJg8YHp3oV9S2lpcp8PxQvJQym4Qw1HOH0LgeIz3KyCvWXSOvx/wU/CUybH
+         RWHBpKUT+6pZwWMyJyRGJgo8AD7PfmIorpJhlkm98UZufR11o165UrCuELNI9E0m5YwT
+         oWbQ==
+X-Gm-Message-State: AOAM532oHWnA3rTpYaixXgumGLTesx92C5F2dzsugXt/l87iRaEx3qbj
+        tB1a1ondzOkn/F1cw9Tv3cMYk83nwew=
+X-Google-Smtp-Source: ABdhPJxCzaLSs5BdwfSMP6QLAebGM2WNVdZEhoCPu5TbGdeU1auKUErDXYCZmBZZvnWLWfVDTnCKcw==
+X-Received: by 2002:a05:6402:34d3:: with SMTP id w19mr5293694edc.35.1636424779579;
+        Mon, 08 Nov 2021 18:26:19 -0800 (PST)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id m5sm8760900ejc.62.2021.11.08.18.26.17
+        by smtp.googlemail.com with ESMTPSA id m5sm8760900ejc.62.2021.11.08.18.26.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Nov 2021 18:26:18 -0800 (PST)
+        Mon, 08 Nov 2021 18:26:19 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -61,9 +61,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [RFC PATCH v3 4/8] leds: trigger: netdev: rename and expose NETDEV trigger enum modes
-Date:   Tue,  9 Nov 2021 03:26:04 +0100
-Message-Id: <20211109022608.11109-5-ansuelsmth@gmail.com>
+Subject: [RFC PATCH v3 5/8] leds: trigger: netdev: add hardware control support
+Date:   Tue,  9 Nov 2021 03:26:05 +0100
+Message-Id: <20211109022608.11109-6-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211109022608.11109-1-ansuelsmth@gmail.com>
 References: <20211109022608.11109-1-ansuelsmth@gmail.com>
@@ -73,128 +73,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rename NETDEV trigger enum modes to a more simbolic name and move them
-in leds.h to make them accessible by any user.
+Add hardware control support for the Netdev trigger.
+The trigger on config change will check if the requested trigger can set
+to blink mode using LED hardware mode and if every blink mode is supported,
+the trigger will enable hardware mode with the requested configuration.
+If there is at least one trigger that is not supported and can't run in
+hardware mode, then software mode will be used instead.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/leds/trigger/ledtrig-netdev.c | 31 ++++++++++++---------------
- include/linux/leds.h                  |  7 ++++++
- 2 files changed, 21 insertions(+), 17 deletions(-)
+ drivers/leds/trigger/ledtrig-netdev.c | 61 ++++++++++++++++++++++++++-
+ 1 file changed, 60 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/leds/trigger/ledtrig-netdev.c b/drivers/leds/trigger/ledtrig-netdev.c
-index 66a81cc9b64d..0a3c0b54dbb9 100644
+index 0a3c0b54dbb9..28d9def2fbd0 100644
 --- a/drivers/leds/trigger/ledtrig-netdev.c
 +++ b/drivers/leds/trigger/ledtrig-netdev.c
-@@ -51,9 +51,6 @@ struct led_netdev_data {
+@@ -37,6 +37,7 @@
+  */
  
- 	unsigned long mode;
- 	bool carrier_link_up;
--#define NETDEV_LED_LINK	0
--#define NETDEV_LED_TX	1
--#define NETDEV_LED_RX	2
- };
+ struct led_netdev_data {
++	bool hw_mode_supported;
+ 	spinlock_t lock;
  
- enum netdev_led_attr {
-@@ -76,7 +73,7 @@ static void set_baseline_state(struct led_netdev_data *trigger_data)
- 	if (!trigger_data->carrier_link_up) {
- 		led_set_brightness(led_cdev, LED_OFF);
- 	} else {
--		if (test_bit(NETDEV_LED_LINK, &trigger_data->mode))
-+		if (test_bit(TRIGGER_NETDEV_LINK, &trigger_data->mode))
- 			led_set_brightness(led_cdev,
- 					   led_cdev->blink_brightness);
- 		else
-@@ -85,8 +82,8 @@ static void set_baseline_state(struct led_netdev_data *trigger_data)
- 		/* If we are looking for RX/TX start periodically
- 		 * checking stats
- 		 */
--		if (test_bit(NETDEV_LED_TX, &trigger_data->mode) ||
--		    test_bit(NETDEV_LED_RX, &trigger_data->mode))
-+		if (test_bit(TRIGGER_NETDEV_TX, &trigger_data->mode) ||
-+		    test_bit(TRIGGER_NETDEV_RX, &trigger_data->mode))
- 			schedule_delayed_work(&trigger_data->work, 0);
- 	}
- }
-@@ -153,13 +150,13 @@ static ssize_t netdev_led_attr_show(struct device *dev, char *buf,
+ 	struct delayed_work work;
+@@ -61,9 +62,52 @@ enum netdev_led_attr {
  
- 	switch (attr) {
- 	case NETDEV_ATTR_LINK:
--		bit = NETDEV_LED_LINK;
-+		bit = TRIGGER_NETDEV_LINK;
- 		break;
- 	case NETDEV_ATTR_TX:
--		bit = NETDEV_LED_TX;
-+		bit = TRIGGER_NETDEV_TX;
- 		break;
- 	case NETDEV_ATTR_RX:
--		bit = NETDEV_LED_RX;
-+		bit = TRIGGER_NETDEV_RX;
- 		break;
- 	default:
- 		return -EINVAL;
-@@ -182,13 +179,13 @@ static ssize_t netdev_led_attr_store(struct device *dev, const char *buf,
+ static void set_baseline_state(struct led_netdev_data *trigger_data)
+ {
++	bool can_offload;
+ 	int current_brightness;
++	u32 hw_blink_mode_supported;
+ 	struct led_classdev *led_cdev = trigger_data->led_cdev;
  
- 	switch (attr) {
- 	case NETDEV_ATTR_LINK:
--		bit = NETDEV_LED_LINK;
-+		bit = TRIGGER_NETDEV_LINK;
- 		break;
- 	case NETDEV_ATTR_TX:
--		bit = NETDEV_LED_TX;
-+		bit = TRIGGER_NETDEV_TX;
- 		break;
- 	case NETDEV_ATTR_RX:
--		bit = NETDEV_LED_RX;
-+		bit = TRIGGER_NETDEV_RX;
- 		break;
- 	default:
- 		return -EINVAL;
-@@ -358,21 +355,21 @@ static void netdev_trig_work(struct work_struct *work)
- 	}
- 
- 	/* If we are not looking for RX/TX then return  */
--	if (!test_bit(NETDEV_LED_TX, &trigger_data->mode) &&
--	    !test_bit(NETDEV_LED_RX, &trigger_data->mode))
-+	if (!test_bit(TRIGGER_NETDEV_TX, &trigger_data->mode) &&
-+	    !test_bit(TRIGGER_NETDEV_RX, &trigger_data->mode))
- 		return;
- 
- 	dev_stats = dev_get_stats(trigger_data->net_dev, &temp);
- 	new_activity =
--	    (test_bit(NETDEV_LED_TX, &trigger_data->mode) ?
-+	    (test_bit(TRIGGER_NETDEV_TX, &trigger_data->mode) ?
- 		dev_stats->tx_packets : 0) +
--	    (test_bit(NETDEV_LED_RX, &trigger_data->mode) ?
-+	    (test_bit(TRIGGER_NETDEV_RX, &trigger_data->mode) ?
- 		dev_stats->rx_packets : 0);
- 
- 	if (trigger_data->last_activity != new_activity) {
- 		led_stop_software_blink(trigger_data->led_cdev);
- 
--		invert = test_bit(NETDEV_LED_LINK, &trigger_data->mode);
-+		invert = test_bit(TRIGGER_NETDEV_LINK, &trigger_data->mode);
- 		interval = jiffies_to_msecs(
- 				atomic_read(&trigger_data->interval));
- 		/* base state is ON (link present) */
-diff --git a/include/linux/leds.h b/include/linux/leds.h
-index 00bc4d6ed7ca..087debe6716d 100644
---- a/include/linux/leds.h
-+++ b/include/linux/leds.h
-@@ -548,6 +548,13 @@ static inline void *led_get_trigger_data(struct led_classdev *led_cdev)
- 
- #endif /* CONFIG_LEDS_TRIGGERS */
- 
-+/* Trigger specific enum */
-+enum led_trigger_netdev_modes {
-+	TRIGGER_NETDEV_LINK,
-+	TRIGGER_NETDEV_TX,
-+	TRIGGER_NETDEV_RX,
-+};
++	if (trigger_data->hw_mode_supported) {
++		if (test_bit(TRIGGER_NETDEV_LINK, &trigger_data->mode) &&
++		    led_trigger_blink_mode_is_supported(led_cdev, TRIGGER_NETDEV_LINK))
++			hw_blink_mode_supported |= TRIGGER_NETDEV_LINK;
++		if (test_bit(TRIGGER_NETDEV_TX, &trigger_data->mode) &&
++		    led_trigger_blink_mode_is_supported(led_cdev, TRIGGER_NETDEV_TX))
++			hw_blink_mode_supported |= TRIGGER_NETDEV_TX;
++		if (test_bit(TRIGGER_NETDEV_RX, &trigger_data->mode) &&
++		    led_trigger_blink_mode_is_supported(led_cdev, TRIGGER_NETDEV_RX))
++			hw_blink_mode_supported |= TRIGGER_NETDEV_RX;
 +
- /* Trigger specific functions */
- #ifdef CONFIG_LEDS_TRIGGER_DISK
- void ledtrig_disk_activity(bool write);
++		/* All the requested blink mode can be triggered by hardware.
++		 * Put it in hardware mode.
++		 */
++		if (hw_blink_mode_supported == trigger_data->mode)
++			can_offload = true;
++
++		if (can_offload) {
++			/* We are refreshing the blink modes. Reset them */
++			led_cdev->hw_control_configure(led_cdev, TRIGGER_NETDEV_LINK,
++						       BLINK_MODE_ZERO);
++
++			if (test_bit(TRIGGER_NETDEV_LINK, &trigger_data->mode))
++				led_cdev->hw_control_configure(led_cdev, TRIGGER_NETDEV_LINK,
++							       BLINK_MODE_ENABLE);
++			if (test_bit(TRIGGER_NETDEV_TX, &trigger_data->mode))
++				led_cdev->hw_control_configure(led_cdev, TRIGGER_NETDEV_TX,
++							       BLINK_MODE_ENABLE);
++			if (test_bit(TRIGGER_NETDEV_RX, &trigger_data->mode))
++				led_cdev->hw_control_configure(led_cdev, TRIGGER_NETDEV_RX,
++							       BLINK_MODE_ENABLE);
++			led_cdev->hw_control_start(led_cdev);
++
++			return;
++		}
++	}
++
++	/* If LED supports only hardware mode then skip any software handling */
++	if (led_cdev->blink_mode == HARDWARE_CONTROLLED)
++		return;
++
+ 	current_brightness = led_cdev->brightness;
+ 	if (current_brightness)
+ 		led_cdev->blink_brightness = current_brightness;
+@@ -407,13 +451,27 @@ static int netdev_trig_activate(struct led_classdev *led_cdev)
+ 	trigger_data->mode = 0;
+ 	atomic_set(&trigger_data->interval, msecs_to_jiffies(50));
+ 	trigger_data->last_activity = 0;
++	if (led_cdev->blink_mode != SOFTWARE_CONTROLLED) {
++		trigger_data->hw_mode_supported = true;
++
++		/* With hw mode enabled reset any rule set by default */
++		if (led_cdev->hw_control_status(led_cdev)) {
++			rc = led_cdev->hw_control_configure(led_cdev, TRIGGER_NETDEV_LINK,
++							    BLINK_MODE_ZERO);
++			if (rc)
++				goto err;
++		}
++	}
+ 
+ 	led_set_trigger_data(led_cdev, trigger_data);
+ 
+ 	rc = register_netdevice_notifier(&trigger_data->notifier);
+ 	if (rc)
+-		kfree(trigger_data);
++		goto err;
+ 
++	return 0;
++err:
++	kfree(trigger_data);
+ 	return rc;
+ }
+ 
+@@ -433,6 +491,7 @@ static void netdev_trig_deactivate(struct led_classdev *led_cdev)
+ 
+ static struct led_trigger netdev_led_trigger = {
+ 	.name = "netdev",
++	.supported_blink_modes = SOFTWARE_HARDWARE,
+ 	.activate = netdev_trig_activate,
+ 	.deactivate = netdev_trig_deactivate,
+ 	.groups = netdev_trig_groups,
 -- 
 2.32.0
 
