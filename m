@@ -2,224 +2,269 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7CFD44AAF4
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 10:51:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D44F344AB0E
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 10:58:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245157AbhKIJyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 04:54:15 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:35044 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244998AbhKIJx5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 04:53:57 -0500
-From:   Martin Kaistra <martin.kaistra@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1636451471;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2tHBO2b/mRYqYaDxmJViJfyYebaSLivzcR+D3MQPfYI=;
-        b=pIO4YMV7vjsKIUiMyfskBgshhCRgjBXAVW5BQsGFdKBssH/g6xEuRFeNOwSajPv/Y9lnR6
-        Jk6e2lEpK6hzPEZmnoujPZgvnbHHchLRmSnbzeXbupwFhvkTDiEbNfd5x2N7FRDSn/meQT
-        f7plRlTymJstIxhoxLbUAgX06GFtBgpkGgwxGNn2ICjyDKpMalqklKzrGGCIADtSRbD/Pk
-        9gSDWSTXgpQhGdDmLq5RTSlaud0wA3hfBucB7dCHxwpkgZwbEPFbS2SgbPc0PZc4SYKhrz
-        sQ0n45cIWsMjqNbQzVFf5NCRSsHYkAUgjUPc1CLb/WeO2ppEjHYJgQx+CSlAaA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1636451471;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2tHBO2b/mRYqYaDxmJViJfyYebaSLivzcR+D3MQPfYI=;
-        b=ghE+auZmb+06eJQ90iZy85RhAs34/Y0gR0NjNZ+1KDjFS5bX28Lir+LjJ/OgrFa7iHvoF/
-        AfvfeKWw8x0icfDQ==
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     martin.kaistra@linutronix.de,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v2 7/7] net: dsa: b53: Expose PTP timestamping ioctls to userspace
-Date:   Tue,  9 Nov 2021 10:50:09 +0100
-Message-Id: <20211109095013.27829-8-martin.kaistra@linutronix.de>
-In-Reply-To: <20211109095013.27829-1-martin.kaistra@linutronix.de>
-References: <20211109095013.27829-1-martin.kaistra@linutronix.de>
+        id S245004AbhKIKA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 05:00:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51556 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243012AbhKIKAy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 05:00:54 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC7F9C061764;
+        Tue,  9 Nov 2021 01:58:08 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: gtucker)
+        with ESMTPSA id AE1FE1F44AE3
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=collabora.com; s=mail;
+        t=1636451887; bh=gwr0AMfKB/PxFzBdU0KGV5ZIiDYtZPwJi9dHOVJhKg4=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=ZR/oXfTxyrRDKcVLMlNYPrEgT+a/QJUeKLde4QVX2OLJqbvYvmrk26OgVOZVkEVpb
+         NLa0tK+iZXNPOkFlpdwviIdb8niH4CW8nzGM9Px6H/6qwr7EBnFXlZ0OUWMQV7Lv3c
+         v+vsPL0ilgo6JaqlvjT8uVnAbVCFKJ/W8Ku2H0DusZJMBzgx84ZmXje6cgHNBHzvom
+         /R22EvmmHt9zGbldogyRqrbg4tND2/kd0kw2Ewky6TW/ZERv7vptsiITzNDcoPUh8Z
+         W6cx8c2GSJmybBButFOhFUQ4g4nCVTZH/qBEf6CJBxWFROQxmZXvkuALzmRTFsRkXH
+         bAEFCe/hUUdSA==
+Subject: Re: [PATCH net-next v6] page_pool: disable dma mapping support for
+ 32-bit arch with 64-bit DMA
+To:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxarm@openeuler.org, hawk@kernel.org,
+        ilias.apalodimas@linaro.org, akpm@linux-foundation.org,
+        peterz@infradead.org, will@kernel.org, jhubbard@nvidia.com,
+        yuzhao@google.com, mcroce@microsoft.com, fenghua.yu@intel.com,
+        feng.tang@intel.com, jgg@ziepe.ca, aarcange@redhat.com,
+        guro@fb.com, "kernelci@groups.io" <kernelci@groups.io>
+References: <20211013091920.1106-1-linyunsheng@huawei.com>
+From:   Guillaume Tucker <guillaume.tucker@collabora.com>
+Message-ID: <b9c0e7ef-a7a2-66ad-3a19-94cc545bd557@collabora.com>
+Date:   Tue, 9 Nov 2021 09:58:04 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211013091920.1106-1-linyunsheng@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow userspace to use the PTP support. Currently only L2 is supported.
+Hi Yunsheng,
 
-Signed-off-by: Martin Kaistra <martin.kaistra@linutronix.de>
-Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
----
- drivers/net/dsa/b53/b53_common.c |  2 +
- drivers/net/dsa/b53/b53_ptp.c    | 90 +++++++++++++++++++++++++++++++-
- drivers/net/dsa/b53/b53_ptp.h    | 14 +++++
- 3 files changed, 104 insertions(+), 2 deletions(-)
+Please see the bisection report below about a boot failure on
+rk3288-rock2-square which is pointing to this patch.  The issue
+appears to only happen with CONFIG_ARM_LPAE=y.
 
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index 56a9de89b38b..3e7e5f83cc84 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -2302,6 +2302,8 @@ static const struct dsa_switch_ops b53_switch_ops = {
- 	.get_ts_info		= b53_get_ts_info,
- 	.port_rxtstamp		= b53_port_rxtstamp,
- 	.port_txtstamp		= b53_port_txtstamp,
-+	.port_hwtstamp_set	= b53_port_hwtstamp_set,
-+	.port_hwtstamp_get	= b53_port_hwtstamp_get,
- };
- 
- struct b53_chip_data {
-diff --git a/drivers/net/dsa/b53/b53_ptp.c b/drivers/net/dsa/b53/b53_ptp.c
-index 5567135ba8b9..f611ac219fb5 100644
---- a/drivers/net/dsa/b53/b53_ptp.c
-+++ b/drivers/net/dsa/b53/b53_ptp.c
-@@ -260,13 +260,99 @@ int b53_get_ts_info(struct dsa_switch *ds, int port,
- 	info->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
- 				SOF_TIMESTAMPING_RX_HARDWARE |
- 				SOF_TIMESTAMPING_RAW_HARDWARE;
--	info->tx_types = BIT(HWTSTAMP_TX_OFF);
--	info->rx_filters = BIT(HWTSTAMP_FILTER_NONE);
-+	info->tx_types = BIT(HWTSTAMP_TX_ON);
-+	info->rx_filters = BIT(HWTSTAMP_FILTER_PTP_V2_L2_EVENT);
- 
- 	return 0;
- }
- EXPORT_SYMBOL(b53_get_ts_info);
- 
-+static int b53_set_hwtstamp_config(struct b53_device *dev, int port,
-+				   struct hwtstamp_config *config)
-+{
-+	struct b53_port_hwtstamp *ps = &dev->ports[port].port_hwtstamp;
-+	bool tstamp_enable = false;
-+
-+	clear_bit_unlock(B53_HWTSTAMP_ENABLED, &ps->state);
-+
-+	/* Reserved for future extensions */
-+	if (config->flags)
-+		return -EINVAL;
-+
-+	switch (config->tx_type) {
-+	case HWTSTAMP_TX_ON:
-+		tstamp_enable = true;
-+		break;
-+	case HWTSTAMP_TX_OFF:
-+		tstamp_enable = false;
-+		break;
-+	default:
-+		return -ERANGE;
-+	}
-+
-+	switch (config->rx_filter) {
-+	case HWTSTAMP_FILTER_NONE:
-+		tstamp_enable = false;
-+		break;
-+	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
-+	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
-+	case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
-+		config->rx_filter = HWTSTAMP_FILTER_PTP_V2_L2_EVENT;
-+		break;
-+	default:
-+		return -ERANGE;
-+	}
-+
-+	if (ps->tx_skb) {
-+		dev_kfree_skb_any(ps->tx_skb);
-+		ps->tx_skb = NULL;
-+	}
-+	clear_bit(B53_HWTSTAMP_TX_IN_PROGRESS, &ps->state);
-+
-+	if (tstamp_enable)
-+		set_bit(B53_HWTSTAMP_ENABLED, &ps->state);
-+
-+	return 0;
-+}
-+
-+int b53_port_hwtstamp_set(struct dsa_switch *ds, int port, struct ifreq *ifr)
-+{
-+	struct b53_device *dev = ds->priv;
-+	struct b53_port_hwtstamp *ps;
-+	struct hwtstamp_config config;
-+	int err;
-+
-+	ps = &dev->ports[port].port_hwtstamp;
-+
-+	if (copy_from_user(&config, ifr->ifr_data, sizeof(config)))
-+		return -EFAULT;
-+
-+	err = b53_set_hwtstamp_config(dev, port, &config);
-+	if (err)
-+		return err;
-+
-+	/* Save the chosen configuration to be returned later */
-+	memcpy(&ps->tstamp_config, &config, sizeof(config));
-+
-+	return copy_to_user(ifr->ifr_data, &config, sizeof(config)) ? -EFAULT :
-+								      0;
-+}
-+EXPORT_SYMBOL(b53_port_hwtstamp_set);
-+
-+int b53_port_hwtstamp_get(struct dsa_switch *ds, int port, struct ifreq *ifr)
-+{
-+	struct b53_device *dev = ds->priv;
-+	struct b53_port_hwtstamp *ps;
-+	struct hwtstamp_config *config;
-+
-+	ps = &dev->ports[port].port_hwtstamp;
-+	config = &ps->tstamp_config;
-+
-+	return copy_to_user(ifr->ifr_data, config, sizeof(*config)) ? -EFAULT :
-+								      0;
-+}
-+EXPORT_SYMBOL(b53_port_hwtstamp_get);
-+
- void b53_ptp_exit(struct b53_device *dev)
- {
- 	if (dev->ptp_clock)
-diff --git a/drivers/net/dsa/b53/b53_ptp.h b/drivers/net/dsa/b53/b53_ptp.h
-index f888f0a2022a..3a341f752e31 100644
---- a/drivers/net/dsa/b53/b53_ptp.h
-+++ b/drivers/net/dsa/b53/b53_ptp.h
-@@ -17,6 +17,8 @@ int b53_ptp_init(struct b53_device *dev);
- void b53_ptp_exit(struct b53_device *dev);
- int b53_get_ts_info(struct dsa_switch *ds, int port,
- 		    struct ethtool_ts_info *info);
-+int b53_port_hwtstamp_set(struct dsa_switch *ds, int port, struct ifreq *ifr);
-+int b53_port_hwtstamp_get(struct dsa_switch *ds, int port, struct ifreq *ifr);
- bool b53_port_rxtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb,
- 		       unsigned int type);
- void b53_port_txtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb);
-@@ -38,6 +40,18 @@ static inline int b53_get_ts_info(struct dsa_switch *ds, int port,
- 	return -EOPNOTSUPP;
- }
- 
-+static inline int b53_port_hwtstamp_set(struct dsa_switch *ds, int port,
-+					struct ifreq *ifr)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static inline int b53_port_hwtstamp_get(struct dsa_switch *ds, int port,
-+					struct ifreq *ifr)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
- static inline bool b53_port_rxtstamp(struct dsa_switch *ds, int port,
- 				     struct sk_buff *skb, unsigned int type)
- {
--- 
-2.20.1
+Reports aren't automatically sent to the public while we're
+trialing new bisection features on kernelci.org but this one
+looks valid.
 
+Some more details can be found here:
+
+  https://linux.kernelci.org/test/case/id/6189968c3ec0a3c06e3358fe/
+
+Here's the same revision on the same platform booting fine with a
+plain multi_v7_defconfig build:
+
+  https://linux.kernelci.org/test/plan/id/61899d322c0e9fee7e3358ec/
+
+Please let us know if you need any help debugging this issue or
+if you have a fix to try.
+
+Best wishes,
+Guillaume
+
+
+GitHub: https://github.com/kernelci/kernelci-project/issues/71
+
+-------------------------------------------------------------------------------
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* This automated bisection report was sent to you on the basis  *
+* that you may be involved with the breaking commit it has      *
+* found.  No manual investigation has been done to verify it,   *
+* and the root cause of the problem may be somewhere else.      *
+*                                                               *
+* If you do send a fix, please include this trailer:            *
+*   Reported-by: "kernelci.org bot" <bot@kernelci.org>          *
+*                                                               *
+* Hope this helps!                                              *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+mainline/master bisection: baseline.login on rk3288-rock2-square
+
+Summary:
+  Start:      e851dfae4371d Merge tag 'kgdb-5.16-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/danielt/linux
+  Plain log:  https://storage.kernelci.org/mainline/master/v5.15-11387-ge851dfae4371/arm/multi_v7_defconfig+CONFIG_EFI=y+CONFIG_ARM_LPAE=y/gcc-10/lab-collabora/baseline-rk3288-rock2-square.txt
+  HTML log:   https://storage.kernelci.org/mainline/master/v5.15-11387-ge851dfae4371/arm/multi_v7_defconfig+CONFIG_EFI=y+CONFIG_ARM_LPAE=y/gcc-10/lab-collabora/baseline-rk3288-rock2-square.html
+  Result:     d00e60ee54b12 page_pool: disable dma mapping support for 32-bit arch with 64-bit DMA
+
+Checks:
+  revert:     PASS
+  verify:     PASS
+
+Parameters:
+  Tree:       mainline
+  URL:        https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+  Branch:     master
+  Target:     rk3288-rock2-square
+  CPU arch:   arm
+  Lab:        lab-collabora
+  Compiler:   gcc-10
+  Config:     multi_v7_defconfig+CONFIG_EFI=y+CONFIG_ARM_LPAE=y
+  Test case:  baseline.login
+
+Breaking commit found:
+
+-------------------------------------------------------------------------------
+commit d00e60ee54b12de945b8493cf18c1ada9e422514
+Author: Yunsheng Lin <linyunsheng@huawei.com>
+Date:   Wed Oct 13 17:19:20 2021 +0800
+
+    page_pool: disable dma mapping support for 32-bit arch with 64-bit DMA
+    
+
+On 13/10/2021 10:19, Yunsheng Lin wrote:
+> As the 32-bit arch with 64-bit DMA seems to rare those days,
+> and page pool might carry a lot of code and complexity for
+> systems that possibly.
+> 
+> So disable dma mapping support for such systems, if drivers
+> really want to work on such systems, they have to implement
+> their own DMA-mapping fallback tracking outside page_pool.
+> 
+> Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> ---
+> V6: Drop pp page tracking support
+> ---
+>  include/linux/mm_types.h | 13 +------------
+>  include/net/page_pool.h  | 12 +-----------
+>  net/core/page_pool.c     | 10 ++++++----
+>  3 files changed, 8 insertions(+), 27 deletions(-)
+> 
+> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+> index 7f8ee09c711f..436e0946d691 100644
+> --- a/include/linux/mm_types.h
+> +++ b/include/linux/mm_types.h
+> @@ -104,18 +104,7 @@ struct page {
+>  			struct page_pool *pp;
+>  			unsigned long _pp_mapping_pad;
+>  			unsigned long dma_addr;
+> -			union {
+> -				/**
+> -				 * dma_addr_upper: might require a 64-bit
+> -				 * value on 32-bit architectures.
+> -				 */
+> -				unsigned long dma_addr_upper;
+> -				/**
+> -				 * For frag page support, not supported in
+> -				 * 32-bit architectures with 64-bit DMA.
+> -				 */
+> -				atomic_long_t pp_frag_count;
+> -			};
+> +			atomic_long_t pp_frag_count;
+>  		};
+>  		struct {	/* slab, slob and slub */
+>  			union {
+> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> index a4082406a003..3855f069627f 100644
+> --- a/include/net/page_pool.h
+> +++ b/include/net/page_pool.h
+> @@ -216,24 +216,14 @@ static inline void page_pool_recycle_direct(struct page_pool *pool,
+>  	page_pool_put_full_page(pool, page, true);
+>  }
+>  
+> -#define PAGE_POOL_DMA_USE_PP_FRAG_COUNT	\
+> -		(sizeof(dma_addr_t) > sizeof(unsigned long))
+> -
+>  static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
+>  {
+> -	dma_addr_t ret = page->dma_addr;
+> -
+> -	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
+> -		ret |= (dma_addr_t)page->dma_addr_upper << 16 << 16;
+> -
+> -	return ret;
+> +	return page->dma_addr;
+>  }
+>  
+>  static inline void page_pool_set_dma_addr(struct page *page, dma_addr_t addr)
+>  {
+>  	page->dma_addr = addr;
+> -	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
+> -		page->dma_addr_upper = upper_32_bits(addr);
+>  }
+>  
+>  static inline void page_pool_set_frag_count(struct page *page, long nr)
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index 1a6978427d6c..9b60e4301a44 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -49,6 +49,12 @@ static int page_pool_init(struct page_pool *pool,
+>  	 * which is the XDP_TX use-case.
+>  	 */
+>  	if (pool->p.flags & PP_FLAG_DMA_MAP) {
+> +		/* DMA-mapping is not supported on 32-bit systems with
+> +		 * 64-bit DMA mapping.
+> +		 */
+> +		if (sizeof(dma_addr_t) > sizeof(unsigned long))
+> +			return -EOPNOTSUPP;
+> +
+>  		if ((pool->p.dma_dir != DMA_FROM_DEVICE) &&
+>  		    (pool->p.dma_dir != DMA_BIDIRECTIONAL))
+>  			return -EINVAL;
+> @@ -69,10 +75,6 @@ static int page_pool_init(struct page_pool *pool,
+>  		 */
+>  	}
+>  
+> -	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT &&
+> -	    pool->p.flags & PP_FLAG_PAGE_FRAG)
+> -		return -EINVAL;
+> -
+>  	if (ptr_ring_init(&pool->ring, ring_qsize, GFP_KERNEL) < 0)
+>  		return -ENOMEM;
+>  
+> 
+
+
+
+Git bisection log:
+
+-------------------------------------------------------------------------------
+git bisect start
+# good: [bfc484fe6abba4b89ec9330e0e68778e2a9856b2] Merge branch 'linus' of git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-2.6
+git bisect good bfc484fe6abba4b89ec9330e0e68778e2a9856b2
+# bad: [e851dfae4371d3c751f1e18e8eb5eba993de1467] Merge tag 'kgdb-5.16-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/danielt/linux
+git bisect bad e851dfae4371d3c751f1e18e8eb5eba993de1467
+# bad: [dcd68326d29b62f3039e4f4d23d3e38f24d37360] Merge tag 'devicetree-for-5.16' of git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux
+git bisect bad dcd68326d29b62f3039e4f4d23d3e38f24d37360
+# bad: [b7b98f868987cd3e86c9bd9a6db048614933d7a0] Merge https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next
+git bisect bad b7b98f868987cd3e86c9bd9a6db048614933d7a0
+# bad: [9fd3d5dced976640f588e0a866b9611db2d2cb37] net: ethernet: ave: Add compatible string and SoC-dependent data for NX1 SoC
+git bisect bad 9fd3d5dced976640f588e0a866b9611db2d2cb37
+# good: [a96d317fb1a30b9f323548eb2ff05d4e4600ead9] ethernet: use eth_hw_addr_set()
+git bisect good a96d317fb1a30b9f323548eb2ff05d4e4600ead9
+# good: [f5396b8a663f7a78ee5b75a47ee524b40795b265] ice: switchdev slow path
+git bisect good f5396b8a663f7a78ee5b75a47ee524b40795b265
+# good: [20c3d9e45ba630a7156d682a40988c0e96be1b92] hamradio: use dev_addr_set() for setting device address
+git bisect good 20c3d9e45ba630a7156d682a40988c0e96be1b92
+# bad: [a64b442137669c9e839c6a70965989b01b1253b7] net: dpaa2: add support for manual setup of IRQ coalesing
+git bisect bad a64b442137669c9e839c6a70965989b01b1253b7
+# good: [30fc7efa38f21afa48b0be6bf2053e4c10ae2c78] net, neigh: Reject creating NUD_PERMANENT with NTF_MANAGED entries
+git bisect good 30fc7efa38f21afa48b0be6bf2053e4c10ae2c78
+# bad: [13ad5ccc093ff448b99ac7e138e91e78796adb48] dt-bindings: net: dsa: qca8k: Document qca,sgmii-enable-pll
+git bisect bad 13ad5ccc093ff448b99ac7e138e91e78796adb48
+# good: [40088915f547b52635f022c1e1e18df65ae3153a] Merge branch 'octeontx2-af-miscellaneous-changes-for-cpt'
+git bisect good 40088915f547b52635f022c1e1e18df65ae3153a
+# bad: [fdbf35df9c091db9c46e57e9938e3f7a4f603a7c] dt-bindings: net: dsa: qca8k: Add SGMII clock phase properties
+git bisect bad fdbf35df9c091db9c46e57e9938e3f7a4f603a7c
+# bad: [bacc8daf97d4199316328a5d18eeafbe447143c5] xen-netback: Remove redundant initialization of variable err
+git bisect bad bacc8daf97d4199316328a5d18eeafbe447143c5
+# bad: [d00e60ee54b12de945b8493cf18c1ada9e422514] page_pool: disable dma mapping support for 32-bit arch with 64-bit DMA
+git bisect bad d00e60ee54b12de945b8493cf18c1ada9e422514
+# first bad commit: [d00e60ee54b12de945b8493cf18c1ada9e422514] page_pool: disable dma mapping support for 32-bit arch with 64-bit DMA
+-------------------------------------------------------------------------------
