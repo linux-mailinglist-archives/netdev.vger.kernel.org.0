@@ -2,88 +2,275 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1FA344B26E
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 19:07:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D20B44B276
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 19:07:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241943AbhKISJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 13:09:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50280 "EHLO
+        id S241793AbhKISK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 13:10:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241779AbhKISJV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 13:09:21 -0500
-Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C979C06127A
-        for <netdev@vger.kernel.org>; Tue,  9 Nov 2021 10:06:35 -0800 (PST)
-Received: by mail-ot1-x336.google.com with SMTP id r10-20020a056830080a00b0055c8fd2cebdso10725591ots.6
-        for <netdev@vger.kernel.org>; Tue, 09 Nov 2021 10:06:35 -0800 (PST)
+        with ESMTP id S241785AbhKISKM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 13:10:12 -0500
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A028C06120B;
+        Tue,  9 Nov 2021 10:07:26 -0800 (PST)
+Received: by mail-pl1-x633.google.com with SMTP id o14so22378649plg.5;
+        Tue, 09 Nov 2021 10:07:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=O+fhYkcqhMQ8k14bNZcPRV6UkOwVHbARh5DBR4w4Kpg=;
-        b=CPnbviPehHndJcufAKnxvmQCz4mp4bEQpdeHccnDuhigP6kyJib/gphfqJKMBD9sYN
-         oez1oJmgZmzZ9XoEAsKiegEc6B939nNhVcBQpeUfDIlRCKzPMyNeltxhWg23GOET6xug
-         ceiQT9g16XrsJlHxHY1H3O2rBE2zM0ITmzCjE=
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=2L6rhPvItN9TtF9bTs6WdQ6t8LTnm64uAEz7E762uR4=;
+        b=f8GO3C4yJFV0tcQCJKO62bvQvyPI/8stXnayu2hAB4hSAuvZZ3puhEUkdies7wCSeL
+         O3VpG2DvCrAmVgT+/CwoBPymcOJyFd2kC+pRIF9jwR15SyQ2wZxlL0ucUcIqMDPY/gAy
+         Zm44BNzWX75hLEdcDz9jGSFK8XBf1ZeX8SMuC+YO0hNsPp/ISmVIK4KwvnRlRCjL1KJq
+         jnHzmRINu6w5t1n+xeBLXv7kMcD3PnzXExJCYfkyy16b0jSvRNL916JejXEcFuVnM09O
+         9cTqdES32DB7hC1XDB3lIOJWhuUAXt1c1uDbGg8tTDNji2r4lUJoJ1NBPqeNB6BFuDxb
+         eQDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=O+fhYkcqhMQ8k14bNZcPRV6UkOwVHbARh5DBR4w4Kpg=;
-        b=zPsfzV2sE02tX2XgS4IkeqKAI9M6ixcEf9g4j0tMJnfKaU0bM2oC2OFPL59jBOu5dC
-         yx4FC7a8zo6W4GPRKQnmbNYS5fTd+UZ36jwCHZ84yQvA9VUvQNjlSDqiXQ/Ei4UffoMl
-         djYKfxUrHycRZ0UnnB4Mdi/9ugy3yK9Xi5ZQJv9D7bfq9BmtZ0GQSvYcyLOwsFe38XSU
-         II+ZbXfJc2mqnGn9vMkoq4dtq0RFFNSb2OlbFMYEko+Bs8hkQW+jGZNgzALKFMUs/QdA
-         VP+4x/yEKf5LYJvRSMs0aEJ+txZKBxm+wQU/uFf7u9z6Ii+JTV1m/ZeGogp2N6qGz43r
-         iY8Q==
-X-Gm-Message-State: AOAM5332JixzQhlp3OrHy4I7DE6k+dIfsmfBNJ4mx3szx2i8Chz45Y90
-        xK8/8TKrokOvXVykoxYVEd4pBaTpKPgY1g==
-X-Google-Smtp-Source: ABdhPJxc4OIlOhsx8D/RPPuVcNJB8t4jq3thkePMO7uYA2V+4xhm1PvaZwv2yGF5l7/44kZz6dDC0w==
-X-Received: by 2002:a9d:2f42:: with SMTP id h60mr7144863otb.159.1636481194145;
-        Tue, 09 Nov 2021 10:06:34 -0800 (PST)
-Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com. [209.85.210.45])
-        by smtp.gmail.com with ESMTPSA id j99sm6427179otj.19.2021.11.09.10.06.32
-        for <netdev@vger.kernel.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=2L6rhPvItN9TtF9bTs6WdQ6t8LTnm64uAEz7E762uR4=;
+        b=LIUw+sHYoWCSYS6rU5tr2VoWyb4pQu+hMJvVE5gp1w5gORCpK/tHwow6lG6ohSScQb
+         I+JGnxHOD8kgqf5Lz8SOwCWmFx8lzBRzCpMv/UNu3Q8846ZPD804ZXCl42K0RMl2f5YV
+         AdzrE1QfBJXxcyYQ/4MVyW1K4ZoGcVN+mI3JEM/+aHm1az0z2sqVB6PhoxdjzY01XTTG
+         F6+JPyuo1hPoTHytMY8A5SOs1YZmV8SQQA8aBIwkPMIRJm8wbnc/ij/OUTOLwvY5adFs
+         cinv173QC/GvrrOUBfgFFnj6J27Zy+Pg2II8wKbDLgyitihcsYWWBRVanq+idcuFyt62
+         WC6g==
+X-Gm-Message-State: AOAM533cQrUyk6AAE18ZM4kV8pRrb/9fUx8kcqjHRPuObX7nhYYJtSmS
+        nACXS27eg5i+y8bSDwJ/+lu++H13Dvo=
+X-Google-Smtp-Source: ABdhPJyIH/JdlC2MWoxLNgBLQcdGKuJDgY/I1EtXIj3PaU+gLC12v3SqwRSTTw8LLIHG/jBjql8WwA==
+X-Received: by 2002:a17:902:6902:b0:13f:c1cd:88f1 with SMTP id j2-20020a170902690200b0013fc1cd88f1mr8863981plk.36.1636481245760;
+        Tue, 09 Nov 2021 10:07:25 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id j7sm3427169pjf.41.2021.11.09.10.07.24
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Nov 2021 10:06:32 -0800 (PST)
-Received: by mail-ot1-f45.google.com with SMTP id h16-20020a9d7990000000b0055c7ae44dd2so16076603otm.10
-        for <netdev@vger.kernel.org>; Tue, 09 Nov 2021 10:06:32 -0800 (PST)
-X-Received: by 2002:a9d:734a:: with SMTP id l10mr7706868otk.3.1636481191553;
- Tue, 09 Nov 2021 10:06:31 -0800 (PST)
+        Tue, 09 Nov 2021 10:07:25 -0800 (PST)
+Subject: Re: [PATCH v2 5/7] net: dsa: b53: Add logic for RX timestamping
+To:     Martin Kaistra <martin.kaistra@linutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20211109095013.27829-1-martin.kaistra@linutronix.de>
+ <20211109095013.27829-6-martin.kaistra@linutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <9d9f3b13-051c-0c6d-e2cb-b64bbee2522f@gmail.com>
+Date:   Tue, 9 Nov 2021 10:07:23 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-References: <20211109010649.1191041-1-sashal@kernel.org> <20211109010649.1191041-10-sashal@kernel.org>
-In-Reply-To: <20211109010649.1191041-10-sashal@kernel.org>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Tue, 9 Nov 2021 10:06:19 -0800
-X-Gmail-Original-Message-ID: <CA+ASDXPwH9esHZFVy4bD+D+NtfvU6qJ_sJH+JxMmj3APkdCWiw@mail.gmail.com>
-Message-ID: <CA+ASDXPwH9esHZFVy4bD+D+NtfvU6qJ_sJH+JxMmj3APkdCWiw@mail.gmail.com>
-Subject: Re: [PATCH AUTOSEL 4.14 10/39] mwifiex: Run SET_BSS_MODE when
- changing from P2P to STATION vif-type
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        =?UTF-8?Q?Jonas_Dre=C3=9Fler?= <verdre@v0yd.nl>,
-        Kalle Valo <kvalo@codeaurora.org>, amitkarwar@gmail.com,
-        ganapathi017@gmail.com, sharvari.harisangam@nxp.com,
-        huxinming820@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20211109095013.27829-6-martin.kaistra@linutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 8, 2021 at 5:18 PM Sasha Levin <sashal@kernel.org> wrote:
->
-> From: Jonas Dre=C3=9Fler <verdre@v0yd.nl>
->
-> [ Upstream commit c2e9666cdffd347460a2b17988db4cfaf2a68fb9 ]
-...
-> This does not fix any particular bug and just "looked right", so there's
-> a small chance it might be a regression.
+On 11/9/21 1:50 AM, Martin Kaistra wrote:
+> Packets received by the tagger with opcode=1 contain the 32-bit timestamp
+> according to the timebase register. This timestamp is saved in
+> BRCM_SKB_CB(skb)->meta_tstamp. b53_port_rxtstamp() takes this
+> and puts the full time information from the timecounter into
+> shwt->hwtstamp.
+> 
+> Signed-off-by: Martin Kaistra <martin.kaistra@linutronix.de>
+> ---
+>  drivers/net/dsa/b53/b53_common.c |  1 +
+>  drivers/net/dsa/b53/b53_ptp.c    | 28 +++++++++++++++++++++++++
+>  drivers/net/dsa/b53/b53_ptp.h    | 10 +++++++++
+>  include/linux/dsa/b53.h          | 30 +++++++++++++++++++++++++++
+>  net/dsa/tag_brcm.c               | 35 ++++++++++++++++++++++++--------
+>  5 files changed, 95 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+> index ed590efbd3bf..a9408f9cd414 100644
+> --- a/drivers/net/dsa/b53/b53_common.c
+> +++ b/drivers/net/dsa/b53/b53_common.c
+> @@ -2300,6 +2300,7 @@ static const struct dsa_switch_ops b53_switch_ops = {
+>  	.port_max_mtu		= b53_get_max_mtu,
+>  	.port_change_mtu	= b53_change_mtu,
+>  	.get_ts_info		= b53_get_ts_info,
+> +	.port_rxtstamp		= b53_port_rxtstamp,
+>  };
+>  
+>  struct b53_chip_data {
+> diff --git a/drivers/net/dsa/b53/b53_ptp.c b/drivers/net/dsa/b53/b53_ptp.c
+> index 8629c510b1a0..f8dd8d484d93 100644
+> --- a/drivers/net/dsa/b53/b53_ptp.c
+> +++ b/drivers/net/dsa/b53/b53_ptp.c
+> @@ -6,6 +6,8 @@
+>   * Copyright (C) 2021 Linutronix GmbH
+>   */
+>  
+> +#include <linux/ptp_classify.h>
+> +
+>  #include "b53_priv.h"
+>  #include "b53_ptp.h"
+>  
+> @@ -106,6 +108,32 @@ static long b53_hwtstamp_work(struct ptp_clock_info *ptp)
+>  	return B53_PTP_OVERFLOW_PERIOD;
+>  }
+>  
+> +bool b53_port_rxtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb,
+> +		       unsigned int type)
+> +{
+> +	struct b53_device *dev = ds->priv;
+> +	struct b53_port_hwtstamp *ps = &dev->ports[port].port_hwtstamp;
+> +	struct skb_shared_hwtstamps *shwt;
+> +	u64 ns;
 
-I won't insist on rejecting this one, but especially given this
-sentence, this doesn't really pass the smell test for -stable
-candidates. It's stuff like this that pushes me a bit toward the camp
-of those who despise the ML-based selection methods here, even though
-it occasionally (or even often) may produce some good.
+I had asked you to store b53_port_hwtstamp into dp->priv, any reason for
+not doing that?
 
-Brian
+> +
+> +	if (type != PTP_CLASS_V2_L2)
+> +		return false;
+> +
+> +	if (!test_bit(B53_HWTSTAMP_ENABLED, &ps->state))
+> +		return false;
+> +
+> +	mutex_lock(&dev->ptp_mutex);
+> +	ns = timecounter_cyc2time(&dev->tc, BRCM_SKB_CB(skb)->meta_tstamp);
+> +	mutex_unlock(&dev->ptp_mutex);
+> +
+> +	shwt = skb_hwtstamps(skb);
+> +	memset(shwt, 0, sizeof(*shwt));
+> +	shwt->hwtstamp = ns_to_ktime(ns);
+> +
+> +	return false;
+> +}
+> +EXPORT_SYMBOL(b53_port_rxtstamp);
+> +
+>  int b53_ptp_init(struct b53_device *dev)
+>  {
+>  	mutex_init(&dev->ptp_mutex);
+> diff --git a/drivers/net/dsa/b53/b53_ptp.h b/drivers/net/dsa/b53/b53_ptp.h
+> index 5cd2fd9621a2..3b3437870c55 100644
+> --- a/drivers/net/dsa/b53/b53_ptp.h
+> +++ b/drivers/net/dsa/b53/b53_ptp.h
+> @@ -9,11 +9,15 @@
+>  
+>  #include "b53_priv.h"
+>  
+> +#define SKB_PTP_TYPE(__skb) (*(unsigned int *)((__skb)->cb))
+> +
+>  #ifdef CONFIG_B53_PTP
+>  int b53_ptp_init(struct b53_device *dev);
+>  void b53_ptp_exit(struct b53_device *dev);
+>  int b53_get_ts_info(struct dsa_switch *ds, int port,
+>  		    struct ethtool_ts_info *info);
+> +bool b53_port_rxtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb,
+> +		       unsigned int type);
+>  #else /* !CONFIG_B53_PTP */
+>  
+>  static inline int b53_ptp_init(struct b53_device *dev)
+> @@ -31,5 +35,11 @@ static inline int b53_get_ts_info(struct dsa_switch *ds, int port,
+>  	return -EOPNOTSUPP;
+>  }
+>  
+> +static inline bool b53_port_rxtstamp(struct dsa_switch *ds, int port,
+> +				     struct sk_buff *skb, unsigned int type)
+> +{
+> +	return false;
+> +}
+> +
+>  #endif
+>  #endif
+> diff --git a/include/linux/dsa/b53.h b/include/linux/dsa/b53.h
+> index 85aa6d9dc53d..542e5e3040d6 100644
+> --- a/include/linux/dsa/b53.h
+> +++ b/include/linux/dsa/b53.h
+> @@ -46,9 +46,32 @@ struct b53_io_ops {
+>  					struct phylink_link_state *state);
+>  };
+>  
+> +/* state flags for b53_port_hwtstamp::state */
+> +enum {
+> +	B53_HWTSTAMP_ENABLED,
+> +	B53_HWTSTAMP_TX_IN_PROGRESS,
+> +};
+> +
+> +struct b53_port_hwtstamp {
+> +	/* Port index */
+> +	int port_id;
+
+unsigned int;
+
+> +
+> +	/* Timestamping state */
+> +	unsigned long state;
+> +
+> +	/* Resources for transmit timestamping */
+> +	unsigned long tx_tstamp_start;
+> +	struct sk_buff *tx_skb;
+> +
+> +	/* Current timestamp configuration */
+> +	struct hwtstamp_config tstamp_config;
+> +};
+> +
+>  struct b53_port {
+>  	u16 vlan_ctl_mask;
+>  	struct ethtool_eee eee;
+> +	/* Per-port timestamping resources */
+> +	struct b53_port_hwtstamp port_hwtstamp;
+>  };
+>  
+>  struct b53_vlan {
+> @@ -112,3 +135,10 @@ struct b53_device {
+>  #define B53_PTP_OVERFLOW_PERIOD (HZ / 2)
+>  	struct delayed_work overflow_work;
+>  };
+> +
+> +struct brcm_skb_cb {
+> +	struct sk_buff *clone;
+> +	u32 meta_tstamp;
+> +};
+> +
+> +#define BRCM_SKB_CB(skb) ((struct brcm_skb_cb *)(skb)->cb)
+> diff --git a/net/dsa/tag_brcm.c b/net/dsa/tag_brcm.c
+> index 96dbb8ee2fee..d611c1073deb 100644
+> --- a/net/dsa/tag_brcm.c
+> +++ b/net/dsa/tag_brcm.c
+> @@ -9,6 +9,7 @@
+>  #include <linux/etherdevice.h>
+>  #include <linux/list.h>
+>  #include <linux/slab.h>
+> +#include <linux/dsa/b53.h>
+>  
+>  #include "dsa_priv.h"
+>  
+> @@ -31,7 +32,10 @@
+>  /* 6th byte in the tag */
+>  #define BRCM_LEG_PORT_ID	(0xf)
+>  
+> -/* Newer Broadcom tag (4 bytes) */
+> +/* Newer Broadcom tag (4 bytes)
+> + * For egress, when opcode = 0001, additional 4 bytes are used for
+> + * the time stamp.
+> + */
+>  #define BRCM_TAG_LEN	4
+>  
+>  /* Tag is constructed and desconstructed using byte by byte access
+> @@ -136,19 +140,29 @@ static struct sk_buff *brcm_tag_xmit_ll(struct sk_buff *skb,
+>   */
+>  static struct sk_buff *brcm_tag_rcv_ll(struct sk_buff *skb,
+>  				       struct net_device *dev,
+> -				       unsigned int offset)
+> +				       unsigned int offset,
+> +				       int *tag_len)
+
+unsigned int tag_len.
+-- 
+Florian
