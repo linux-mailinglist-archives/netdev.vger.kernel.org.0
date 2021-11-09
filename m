@@ -2,106 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B637344B32B
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 20:25:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F90C44B338
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 20:31:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243185AbhKIT2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 14:28:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39912 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243162AbhKIT2W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 14:28:22 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1234::107])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38743C061764;
-        Tue,  9 Nov 2021 11:25:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=F98UNqntfHXxVudmAVesBMdsZFxqfEsY/m4RvE7VdZU=; b=oGv8zCSeFrB7Pt9axEhivrf9JS
-        QaC9cTo2pCzQ3FiPTKdmBploWFeEMyTmxpIKDhxghOcV/IdOXsDU3jSicPUFvYEVd6kvk5hvx9IvL
-        Cp+7sLQUobv1uVSWbdbzcs/CAHPTeItKYnFcbnev/Q+EAvUG4OTCWa4zTNvS4b1ED83O7yCjDkcUE
-        fw+Zd1ViZaYkMMddC9OIZyQDmYhHAdyjl7xrMxXBVapaNHX6APLKlT6/AcXskH28/duF1DgGKOICJ
-        rLRI17iN5ZmAeFmFW4TkK4AZtcJaTlfGxjb9D1fb9OvcwVA3Cn3sdTrRYdLZyYRiGpEI1h4oPXca3
-        YW+TvcvA==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by merlin.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mkWkP-008ojx-No; Tue, 09 Nov 2021 19:25:34 +0000
-Subject: Re: [PATCH net v9 3/3] net/8390: apne.c - add 100 Mbit support to
- apne.c driver
-To:     Michael Schmitz <schmitzmic@gmail.com>, linux-m68k@vger.kernel.org,
-        geert@linux-m68k.org
-Cc:     alex@kazik.de, netdev@vger.kernel.org
-References: <20211109040242.11615-1-schmitzmic@gmail.com>
- <20211109040242.11615-4-schmitzmic@gmail.com>
- <3d4c9e98-f004-755c-2f30-45b951ede6a6@infradead.org>
- <d5fa96b6-a351-1195-7967-25c26d9a04fb@gmail.com>
- <c7ab4109-9abf-dfe8-0325-7d3e113aa66c@infradead.org>
- <1ed3a71a-e57b-0754-b719-36ac862413da@gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <f5fb3808-b658-abfb-3b33-4ded8cd8ba57@infradead.org>
-Date:   Tue, 9 Nov 2021 11:25:30 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
-MIME-Version: 1.0
-In-Reply-To: <1ed3a71a-e57b-0754-b719-36ac862413da@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        id S243263AbhKITe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 14:34:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41750 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231390AbhKITe1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Nov 2021 14:34:27 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 53B7A61360;
+        Tue,  9 Nov 2021 19:31:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636486301;
+        bh=dnXj0CKluQKLZKn9owkzkWpD13pbNKDaQ6RrQPX2muk=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=l01Q5ggXuA6OHCib8jNzhVl8XvtrMO/pxp36PqhEAYPam3NCov2uOrE1b6JynjupB
+         H/o/DaDVOHhZk3pJ13AjD/y14juoR/MqeF2kdZ9aNOdjnAjQVxXDdDJLgZK3XyEhaJ
+         JJB9TgetLdny5Tr7d9iuNIIQFzCxRHgrb/MG/CNYBP7+gDtrbSBLcL5lqJoi3QL4fg
+         WTF3r68QYBNUq6DcCajFrFlCyxpOHAbNq6qte5q2O8g/QYIGi/lyPXnwjbvC8pLBSh
+         mfRbUSz9ABJI10Ew+xABRZZAGF5T2Ue/vRUq5FwAsQz646jYNuT1dA+eimrDTCz0o+
+         38x0oAKGhcpcQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4D34C60985;
+        Tue,  9 Nov 2021 19:31:41 +0000 (UTC)
+Subject: Re: [GIT PULL] 9p for 5.16-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YYkuBxbTYS2ANFnK@codewreck.org>
+References: <YYkuBxbTYS2ANFnK@codewreck.org>
+X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YYkuBxbTYS2ANFnK@codewreck.org>
+X-PR-Tracked-Remote: git://github.com/martinetd/linux tags/9p-for-5.16-rc1
+X-PR-Tracked-Commit-Id: 6e195b0f7c8e50927fa31946369c22a0534ec7e2
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: f89ce84bc33330607a782e47a8b19406ed109b15
+Message-Id: <163648630130.13393.17965204101604959929.pr-tracker-bot@kernel.org>
+Date:   Tue, 09 Nov 2021 19:31:41 +0000
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/9/21 11:19 AM, Michael Schmitz wrote:
-> Hi Randy,
-> 
-> On 09/11/21 18:44, Randy Dunlap wrote:
->> On 11/8/21 8:55 PM, Michael Schmitz wrote:
->>> Hi Randy,
->>>
->>> On 09/11/21 17:09, Randy Dunlap wrote:
->>>> On 11/8/21 8:02 PM, Michael Schmitz wrote:
->>>>> diff --git a/drivers/net/ethernet/8390/Kconfig
->>>>> b/drivers/net/ethernet/8390/Kconfig
->>>>> index a4130e643342..b22c3cf96560 100644
->>>>> --- a/drivers/net/ethernet/8390/Kconfig
->>>>> +++ b/drivers/net/ethernet/8390/Kconfig
->>>>> @@ -136,6 +136,8 @@ config NE2K_PCI
->>>>>   config APNE
->>>>>       tristate "PCMCIA NE2000 support"
->>>>>       depends on AMIGA_PCMCIA
->>>>> +    select PCCARD
->>>>> +    select PCMCIA
->>>>>       select CRC32
->>>>
->>>> Hi,
->>>>
->>>> There are no other drivers that "select PCCARD" or
->>>> "select PCMCIA" in the entire kernel tree.
->>>> I don't see any good justification to allow it here.
->>>
->>> Amiga doesn't use anything from the core PCMCIA code, instead
->>> providing its own basic PCMCIA support code.
->>>
->>> I had initially duplicated some of the cis tuple parser code, but
->>> decided to use what's already there instead.
->>>
->>> I can drop these selects, and add instructions to manually select
->>> these options in the Kconfig help section. Seemed a little error prone
->>> to me.
->>
->> Just make it the same as other drivers in this respect, please.
-> 
-> "depends on PCMCIA" is what I've seen for other drivers. That is not really appropriate for the APNE driver (8 bit cards work fine with just the support code from arch/m68k/amiga/pcmcia.c).
-> 
-> Please confirm that "depends on PCMCIA" is what you want me to use?
+The pull request you sent on Mon, 8 Nov 2021 23:02:47 +0900:
 
-Hi Michael,
+> git://github.com/martinetd/linux tags/9p-for-5.16-rc1
 
-I don't want to see this driver using 'select', so that probably only
-leaves "depends on".
-But if you or Geert tell me that I am bonkers, so be it. :)
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/f89ce84bc33330607a782e47a8b19406ed109b15
 
-Thanks.
+Thank you!
+
 -- 
-~Randy
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
