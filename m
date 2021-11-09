@@ -2,107 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50A2B44AD19
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 13:06:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F38FE44AD62
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 13:17:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237074AbhKIMJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 07:09:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52838 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236479AbhKIMJY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 07:09:24 -0500
-Received: from mail-ua1-x92e.google.com (mail-ua1-x92e.google.com [IPv6:2607:f8b0:4864:20::92e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3C4C061764;
-        Tue,  9 Nov 2021 04:06:38 -0800 (PST)
-Received: by mail-ua1-x92e.google.com with SMTP id i6so37948958uae.6;
-        Tue, 09 Nov 2021 04:06:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YoFuJCUkFN5FZfOrpbgUBLY2zsWBbOscul+PkeJej6A=;
-        b=GXWQYa9KeSd+PpzF4X58/hEJHTKJoEdBL0JUuHsOThvIKx4njHCb+AMjDaE6MZ+TCJ
-         w8zmMwVyS7RSBd4f6pLsBemh8tbTOyZlIaqJ6ArwzBT24OgSTMfvQWIGJqzd6emdsYDT
-         JuIxDKkr8QbIc2M9HS4hVrd/14TSBOpWf3x+mj7DjIKLK/TFgft8nLg624Hh+7BiWXh8
-         4yaogbdu6wZt6iPH07pY0Jt0+W/RRcZ274W0HSnxcEGzKi5/qBP+IbuYvr2Q9M7aamm6
-         H/5qsZJW6X5ts1ySluHJFn2OsMowY1MH01yNvYJSc9KBgwhMrncN3/yjjVcTT2E6548S
-         +Xcw==
+        id S242214AbhKIMUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 07:20:12 -0500
+Received: from mail-io1-f72.google.com ([209.85.166.72]:39452 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242041AbhKIMUG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 07:20:06 -0500
+Received: by mail-io1-f72.google.com with SMTP id r15-20020a6b600f000000b005dde03edc0cso14058446iog.6
+        for <netdev@vger.kernel.org>; Tue, 09 Nov 2021 04:17:20 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YoFuJCUkFN5FZfOrpbgUBLY2zsWBbOscul+PkeJej6A=;
-        b=3F/qAfzhel9dIY0+6W+y2N9of4Pr4GX0St1U0vN6KAGjJ/FpsaIDsC8Xek32nV4Wno
-         yypPDyQ5Lt/KMkAaRt4itwJBC952rrE1Q5UVomPbALq+Dp5/w07D6gk8FwUvNAv7hlxT
-         /KAnNcZcDnc1OAHcDd9ZDFFAhlNXiwblONllXAnfAS5uyDt9Xt8dj+M8PbR/6BTRVYlh
-         A4iI2it+6jbFFTgu/bd0DI4MuU4S5b/9NkZNpQV3DiKZLA55zpNKj37IhAZyCa/r3Sy2
-         pqYEj6cQEWtb1/q7u69qFiKlIlKEO9oIqch7xJglEv7se1jIqYx/08tRmWAMhcanx66C
-         P3tg==
-X-Gm-Message-State: AOAM532ddhDQu1O8qprXQFZjwmxG6pmaDzxLMuYE6ADhW9u3w1+WlfOF
-        QClJtZLH8G1lp/NsVHMbS8IzyAdiQ9CTHoPXrTs=
-X-Google-Smtp-Source: ABdhPJxBrZRTEnwiKQmcdCCaPYoNwEbEoKa3nX+QnQZFdh5BdGZCw6XxcCYpVmZRzgcJpEvs64ZqyLrcupH1/WlvAL8=
-X-Received: by 2002:a67:e9c4:: with SMTP id q4mr36553639vso.19.1636459597493;
- Tue, 09 Nov 2021 04:06:37 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=aCoweEaOvgt71+0i7uxsWqNufLYUKzPDGNM1p0HMj7E=;
+        b=Nrhe5qs7uUVXTAQ2quxq9+iAovDtJXM00/vRFbO2QTzIc/53QE+n/b9C8xY1VPHAuG
+         RPvm4wYWRxb/fzrekcrXJlzEsYF0RRA13dOa4LywB+NGGt2F0+wUL/DTA0W8D/PHXlHZ
+         IKNRGYgpjMfHQNGCLVS++ygJPvIGdIb/MMBFvTvw7CnA/8nLFqYEuEZwvEK8dfDwyvjd
+         pdS4YeM4Fj8GlCsrI4PAQh2xFdK3koyaG0ec32xW/yNYUmHrnfwlyl77COyLKv+7/ZQ4
+         otER45sa2BmWnJUtmr0S2jczbL9lqBUdxCHIUdUqmFcpuneuTsuwWlb9OjfhdwWbvk9e
+         7Hsw==
+X-Gm-Message-State: AOAM533qD1Up25vEeMeOqoR9Yvj24tYp8gnISSNfw1ti+zTXLKr2OovW
+        5dl0vj2LTUUOs9Jf9EP4G/7QB3R3vj0Nj1n5Zf55+yNOAqii
+X-Google-Smtp-Source: ABdhPJxHGqbMCdDPD99fI2rQ3B09+I0TS+iw5PhxMREKjUcnFu0aagRR+VHmZTddB2VF4YbOV6ZUNDwhZ8MzjNnidcIeCpqjHzAd
 MIME-Version: 1.0
-References: <20211101035635.26999-1-ricardo.martinez@linux.intel.com> <20211101035635.26999-7-ricardo.martinez@linux.intel.com>
-In-Reply-To: <20211101035635.26999-7-ricardo.martinez@linux.intel.com>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Tue, 9 Nov 2021 15:06:26 +0300
-Message-ID: <CAHNKnsRe-88_jXvW4=0rPSDhVTbnJnDoeLpjHS4ouDv3pJXWSg@mail.gmail.com>
-Subject: Re: [PATCH v2 06/14] net: wwan: t7xx: Add AT and MBIM WWAN ports
-To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        M Chetan Kumar <m.chetan.kumar@intel.com>,
-        chandrashekar.devegowda@intel.com,
-        Intel Corporation <linuxwwan@intel.com>,
-        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
-        amir.hanania@intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        mika.westerberg@linux.intel.com, moises.veleta@intel.com,
-        pierre-louis.bossart@intel.com, muralidharan.sethuraman@intel.com,
-        Soumya.Prakash.Mishra@intel.com, sreehari.kancharla@intel.com,
-        suresh.nagaraj@intel.com
+X-Received: by 2002:a05:6e02:178a:: with SMTP id y10mr4676101ilu.257.1636460240527;
+ Tue, 09 Nov 2021 04:17:20 -0800 (PST)
+Date:   Tue, 09 Nov 2021 04:17:20 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000053692705d05a17c1@google.com>
+Subject: [syzbot] WARNING in perf_pending_event
+From:   syzbot <syzbot+23843634c323e144fd0b@syzkaller.appspotmail.com>
+To:     acme@kernel.org, alexander.shishkin@linux.intel.com,
+        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, john.fastabend@gmail.com, jolsa@redhat.com,
+        kafai@fb.com, kpsingh@kernel.org, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, mark.rutland@arm.com,
+        mingo@redhat.com, namhyung@kernel.org, netdev@vger.kernel.org,
+        peterz@infradead.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 1, 2021 at 6:57 AM Ricardo Martinez wrote:
-> ...
->  static struct t7xx_port md_ccci_ports[] = {
-> +       {CCCI_UART2_TX, CCCI_UART2_RX, DATA_AT_CMD_Q, DATA_AT_CMD_Q, 0xff,
-> +        0xff, ID_CLDMA1, PORT_F_RX_CHAR_NODE, &wwan_sub_port_ops, 0, "ttyC0", WWAN_PORT_AT},
-> +       {CCCI_MBIM_TX, CCCI_MBIM_RX, 2, 2, 0, 0, ID_CLDMA1,
-> +        PORT_F_RX_CHAR_NODE, &wwan_sub_port_ops, 10, "ttyCMBIM0", WWAN_PORT_MBIM},
-> ...
-> +               if (count + CCCI_H_ELEN > txq_mtu &&
-> +                   (port_ccci->tx_ch == CCCI_MBIM_TX ||
-> +                    (port_ccci->tx_ch >= CCCI_DSS0_TX && port_ccci->tx_ch <= CCCI_DSS7_TX)))
-> +                       multi_packet = DIV_ROUND_UP(count, txq_mtu - CCCI_H_ELEN);
+Hello,
 
-I am just wondering, the chip does support MBIM message fragmentation,
-but does not support AT commands stream (CCCI_UART2_TX) fragmentation.
-Is that the correct conclusion from the code above?
+syzbot found the following issue on:
 
-BTW, you could factor out data fragmentation support to a dedicated
-function to improve code readability. Something like this:
+HEAD commit:    85a90500f9a1 Merge tag 'io_uring-5.14-2021-08-07' of git:/..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=13c8aa81300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5ba4a97de189f896
+dashboard link: https://syzkaller.appspot.com/bug?extid=23843634c323e144fd0b
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12ac8392300000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1039bce6300000
 
-static inline bool port_is_multipacket_capable(... *port)
-{
-        return port->tx_ch == CCCI_MBIM_TX ||
-               (port->tx_ch >= CCCI_DSS0_TX && port->tx_ch <= CCCI_DSS7_TX);
-}
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+23843634c323e144fd0b@syzkaller.appspotmail.com
 
-So condition become something like that:
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 8449 at kernel/events/core.c:6407 perf_sigtrap kernel/events/core.c:6407 [inline]
+WARNING: CPU: 0 PID: 8449 at kernel/events/core.c:6407 perf_pending_event_disable kernel/events/core.c:6431 [inline]
+WARNING: CPU: 0 PID: 8449 at kernel/events/core.c:6407 perf_pending_event+0x4ba/0x560 kernel/events/core.c:6474
+Modules linked in:
+CPU: 0 PID: 8449 Comm: syz-executor996 Not tainted 5.14.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:perf_sigtrap kernel/events/core.c:6407 [inline]
+RIP: 0010:perf_pending_event_disable kernel/events/core.c:6431 [inline]
+RIP: 0010:perf_pending_event+0x4ba/0x560 kernel/events/core.c:6474
+Code: ff 4c 89 e7 e8 d7 78 27 00 e9 2f ff ff ff e8 ad 78 27 00 e9 3d fc ff ff 4c 89 ff e8 30 79 27 00 e9 fb fb ff ff e8 b6 ba e1 ff <0f> 0b e9 86 fd ff ff e8 ba 78 27 00 e9 7b fe ff ff 48 89 df e8 9d
+RSP: 0018:ffffc90000007f38 EFLAGS: 00010046
+RAX: 0000000080010001 RBX: ffff88802a04fc40 RCX: 0000000000000000
+RDX: ffff8880377e0040 RSI: ffffffff8193268a RDI: ffff888026467958
+RBP: 0000000000000002 R08: 0000000000000000 R09: 0000000000000020
+R10: ffffffff819322cb R11: 0000000000000000 R12: ffff8880377e0040
+R13: ffff888026467800 R14: ffff88802a04f800 R15: ffff88802a04fc30
+FS:  0000000000545300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000004d05c0 CR3: 000000003d54f000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <IRQ>
+ irq_work_single+0x120/0x1f0 kernel/irq_work.c:155
+ irq_work_run_list+0x91/0xc0 kernel/irq_work.c:177
+ irq_work_run+0x54/0xd0 kernel/irq_work.c:186
+ __sysvec_irq_work+0x95/0x3d0 arch/x86/kernel/irq_work.c:22
+ sysvec_irq_work+0x8e/0xc0 arch/x86/kernel/irq_work.c:17
+ </IRQ>
+ asm_sysvec_irq_work+0x12/0x20 arch/x86/include/asm/idtentry.h:664
+RIP: 0010:__raw_spin_unlock_irq include/linux/spinlock_api_smp.h:169 [inline]
+RIP: 0010:_raw_spin_unlock_irq+0x25/0x40 kernel/locking/spinlock.c:199
+Code: 0f 1f 44 00 00 55 48 8b 74 24 08 48 89 fd 48 83 c7 18 e8 3e 1a 2d f8 48 89 ef e8 e6 8f 2d f8 e8 21 cb 4d f8 fb bf 01 00 00 00 <e8> 36 6a 21 f8 65 8b 05 cf b0 d4 76 85 c0 74 02 5d c3 e8 2b 06 d3
+RSP: 0018:ffffc90001a17ee8 EFLAGS: 00000202
+RAX: 0000000000000315 RBX: 0000000000000000 RCX: 1ffffffff1ad8461
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000001
+RBP: ffff888021b9cb40 R08: 0000000000000001 R09: 0000000000000001
+R10: ffffffff817b0a38 R11: 0000000000000000 R12: ffff888033f2f320
+R13: 0000000000000000 R14: ffff888021b9cb40 R15: ffff8880377e0040
+ spin_unlock_irq include/linux/spinlock.h:404 [inline]
+ do_group_exit+0x29a/0x310 kernel/exit.c:919
+ __do_sys_exit_group kernel/exit.c:933 [inline]
+ __se_sys_exit_group kernel/exit.c:931 [inline]
+ __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:931
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x444379
+Code: 00 49 c7 c0 b8 ff ff ff be e7 00 00 00 ba 3c 00 00 00 eb 12 0f 1f 44 00 00 89 d0 0f 05 48 3d 00 f0 ff ff 77 1c f4 89 f0 0f 05 <48> 3d 00 f0 ff ff 76 e7 f7 d8 64 41 89 00 eb df 0f 1f 80 00 00 00
+RSP: 002b:00007fffad23f4c8 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+RAX: ffffffffffffffda RBX: 00000000004ca370 RCX: 0000000000444379
+RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000000
+RBP: 0000000000000000 R08: ffffffffffffffb8 R09: 0000000000f0b5ff
+R10: 00007fffad23f550 R11: 0000000000000246 R12: 00000000004ca370
+R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000001
 
-        if (count + CCCI_H_ELEN > txq_mtu &&
-            port_is_multipacket_capable(port))
-                multi_packet = DIV_ROUND_UP(count, txq_mtu - CCCI_H_ELEN);
 
--- 
-Sergey
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
