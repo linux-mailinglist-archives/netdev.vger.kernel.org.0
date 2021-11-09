@@ -2,197 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F0D344A48B
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 03:25:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF69444A49A
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 03:26:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239167AbhKIC1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 21:27:43 -0500
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:53409 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236458AbhKIC1m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 21:27:42 -0500
+        id S240905AbhKIC3G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 21:29:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34942 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239826AbhKIC3A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 21:29:00 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28879C061767;
+        Mon,  8 Nov 2021 18:26:15 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id ee33so70828260edb.8;
+        Mon, 08 Nov 2021 18:26:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1636424697; x=1667960697;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=w8jv/A/IYbCa0tWJt2D+ZYeHok9e2nIopEFRk2QmQVQ=;
-  b=Fs13IVI1LYUhYoy25XC5CQ+yXSXGIE8ufiev/rhbwiQhlkxj6xY0FJPB
-   v0LebIQ+R3RxDn26u0eEW6Ks45iWFCvos16GqqLqDLxoLFokzcBs5RLki
-   A4s3+iz1StxjMjDBzsK8N2McCF+LJsr39RTTqL8aMfk8xDvcLdaX4YokY
-   Y=;
-X-IronPort-AV: E=Sophos;i="5.87,219,1631577600"; 
-   d="scan'208";a="150523948"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP; 09 Nov 2021 02:24:56 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com (Postfix) with ESMTPS id 5CD26810DC;
-        Tue,  9 Nov 2021 02:24:55 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.24; Tue, 9 Nov 2021 02:24:54 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.139) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.24; Tue, 9 Nov 2021 02:24:50 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <eric.dumazet@gmail.com>
-CC:     <benh@amazon.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 13/13] af_unix: Relax race in unix_autobind().
-Date:   Tue, 9 Nov 2021 11:24:46 +0900
-Message-ID: <20211109022446.25282-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <1d2e0a47-a486-0991-91e2-fed54163898e@gmail.com>
-References: <1d2e0a47-a486-0991-91e2-fed54163898e@gmail.com>
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5ATv7QJLJGWA/jVTvZ8jIOs6JMQffIGJpisb3naCydY=;
+        b=iLnnzMkMKOaSW8WZAkRUis6pzefQrk+lQOUsZjWFouEisWyeoxFBtRFVEqDcwnL/3j
+         QOQDwwfDPxTE+QZxOMEwfKJQcIbzP1iHKx/8q3OJekP0lvJXIUPWeMb4eiwLdfyOFnv0
+         z2uDOkHCsBnjCuyPatya69mzMQvxWbk3jU9iKz+rxMdbvhA39wS2g1Xo1NPBIumcrnSq
+         z5iUhcJOgWLbP5mL1hIbENC1xBnoLTgH0CgXCsppRZlIqVLGd8m+Tnyb/2OobcyB3VmB
+         4SF5NRY63fQGeVYZvMHV6OfwTOfJLfMiJtwGg/GTGycUINsII10GfZfy4KntXpHcWxfQ
+         /c0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5ATv7QJLJGWA/jVTvZ8jIOs6JMQffIGJpisb3naCydY=;
+        b=VFRpRdPAzjbSS99WVu7R51W5US1iDZiFc/CEiiClG4hU1WPrLfkm6CzXrZlifTwfnk
+         cH58N+oghEFPsJg297vze6Y69iRwe1tSu0UGGBsSN/c1i8mRoTXtROOMillmf17Jbyzh
+         wyR5F8gDfZea3ocCV65hpTTKOtoIs23Xi3yChzdDJOxV2sbqGtNTMCMp5fZO9SyhRgCd
+         vvbd9dP2vCQQ0Q/zI08w73OwSsIFpKlMPDiDQf5IlidvrIIdZXDMJXODxLdeD21JSiVn
+         HmOBjAU9Kx+/PqNQfEWDlBVQJCmoerHida3paCIo1fne4MdnJ1McyB4cWNStDNs2hD+i
+         rlew==
+X-Gm-Message-State: AOAM5313g5PtqjojqOouP/xSkZlpXjsone7b6LjyJsJ4dCzO8eXdtAoS
+        HnS7NG8YRR2QPCRILspqzF4=
+X-Google-Smtp-Source: ABdhPJxP4iaB7NvDrtN/dYQ0n5j+BUHoxDaa8LdU0ILc0h9s4G4rn8jXN3afAKr/k+hO4ieqScKW3Q==
+X-Received: by 2002:a17:907:6d10:: with SMTP id sa16mr5122537ejc.532.1636424773605;
+        Mon, 08 Nov 2021 18:26:13 -0800 (PST)
+Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.googlemail.com with ESMTPSA id m5sm8760900ejc.62.2021.11.08.18.26.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Nov 2021 18:26:13 -0800 (PST)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [RFC PATCH v3 0/8] Adds support for PHY LEDs with offload triggers
+Date:   Tue,  9 Nov 2021 03:26:00 +0100
+Message-Id: <20211109022608.11109-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.139]
-X-ClientProxiedBy: EX13D42UWB003.ant.amazon.com (10.43.161.45) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Date:   Mon, 8 Nov 2021 15:10:24 -0800
-> On 11/6/21 2:17 AM, Kuniyuki Iwashima wrote:
-> > When we bind an AF_UNIX socket without a name specified, the kernel selects
-> > an available one from 0x00000 to 0xFFFFF.  unix_autobind() starts searching
-> > from a number in the 'static' variable and increments it after acquiring
-> > two locks.
-> > 
-> > If multiple processes try autobind, they obtain the same lock and check if
-> > a socket in the hash list has the same name.  If not, one process uses it,
-> > and all except one end up retrying the _next_ number (actually not, it may
-> > be incremented by the other processes).  The more we autobind sockets in
-> > parallel, the longer the latency gets.  We can avoid such a race by
-> > searching for a name from a random number.
-> > 
-> > These show latency in unix_autobind() while 64 CPUs are simultaneously
-> > autobind-ing 1024 sockets for each.
-> > 
-> >   Without this patch:
-> > 
-> >      usec          : count     distribution
-> >         0          : 1176     |***                                     |
-> >         2          : 3655     |***********                             |
-> >         4          : 4094     |*************                           |
-> >         6          : 3831     |************                            |
-> >         8          : 3829     |************                            |
-> >         10         : 3844     |************                            |
-> >         12         : 3638     |***********                             |
-> >         14         : 2992     |*********                               |
-> >         16         : 2485     |*******                                 |
-> >         18         : 2230     |*******                                 |
-> >         20         : 2095     |******                                  |
-> >         22         : 1853     |*****                                   |
-> >         24         : 1827     |*****                                   |
-> >         26         : 1677     |*****                                   |
-> >         28         : 1473     |****                                    |
-> >         30         : 1573     |*****                                   |
-> >         32         : 1417     |****                                    |
-> >         34         : 1385     |****                                    |
-> >         36         : 1345     |****                                    |
-> >         38         : 1344     |****                                    |
-> >         40         : 1200     |***                                     |
-> > 
-> >   With this patch:
-> > 
-> >      usec          : count     distribution
-> >         0          : 1855     |******                                  |
-> >         2          : 6464     |*********************                   |
-> >         4          : 9936     |********************************        |
-> >         6          : 12107    |****************************************|
-> >         8          : 10441    |**********************************      |
-> >         10         : 7264     |***********************                 |
-> >         12         : 4254     |**************                          |
-> >         14         : 2538     |********                                |
-> >         16         : 1596     |*****                                   |
-> >         18         : 1088     |***                                     |
-> >         20         : 800      |**                                      |
-> >         22         : 670      |**                                      |
-> >         24         : 601      |*                                       |
-> >         26         : 562      |*                                       |
-> >         28         : 525      |*                                       |
-> >         30         : 446      |*                                       |
-> >         32         : 378      |*                                       |
-> >         34         : 337      |*                                       |
-> >         36         : 317      |*                                       |
-> >         38         : 314      |*                                       |
-> >         40         : 298      |                                        |
-> > 
-> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-> > ---
-> >  net/unix/af_unix.c | 21 +++++++++++----------
-> >  1 file changed, 11 insertions(+), 10 deletions(-)
-> > 
-> > diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-> > index 643f0358bf7a..55d570b23475 100644
-> > --- a/net/unix/af_unix.c
-> > +++ b/net/unix/af_unix.c
-> > @@ -1075,8 +1075,7 @@ static int unix_autobind(struct sock *sk)
-> >  	unsigned int new_hash, old_hash = sk->sk_hash;
-> >  	struct unix_sock *u = unix_sk(sk);
-> >  	struct unix_address *addr;
-> > -	unsigned int retries = 0;
-> > -	static u32 ordernum = 1;
-> > +	u32 initnum, ordernum;
-> >  	int err;
-> >  
-> >  	err = mutex_lock_interruptible(&u->bindlock);
-> > @@ -1091,31 +1090,33 @@ static int unix_autobind(struct sock *sk)
-> >  	if (!addr)
-> >  		goto out;
-> >  
-> > +	addr->len = offsetof(struct sockaddr_un, sun_path) + 6;
-> >  	addr->name->sun_family = AF_UNIX;
-> >  	refcount_set(&addr->refcnt, 1);
-> >  
-> > +	initnum = ordernum = prandom_u32();
-> >  retry:
-> > -	addr->len = sprintf(addr->name->sun_path + 1, "%05x", ordernum) +
-> > -		offsetof(struct sockaddr_un, sun_path) + 1;
-> > +	ordernum = (ordernum + 1) & 0xFFFFF;
-> > +	sprintf(addr->name->sun_path + 1, "%05x", ordernum);
-> >  
-> >  	new_hash = unix_abstract_hash(addr->name, addr->len, sk->sk_type);
-> >  	unix_table_double_lock(old_hash, new_hash);
-> > -	ordernum = (ordernum+1)&0xFFFFF;
-> >  
-> >  	if (__unix_find_socket_byname(sock_net(sk), addr->name, addr->len, new_hash)) {
-> >  		unix_table_double_unlock(old_hash, new_hash);
-> >  
-> > -		/*
-> > -		 * __unix_find_socket_byname() may take long time if many names
-> > +		/* __unix_find_socket_byname() may take long time if many names
-> >  		 * are already in use.
-> >  		 */
-> >  		cond_resched();
-> > -		/* Give up if all names seems to be in use. */
-> > -		if (retries++ == 0xFFFFF) {
-> > +
-> > +		if (ordernum == initnum) {
-> 
-> Infinite loop alert, in the likely case initnum >= 2^16
+This is another attempt in adding support for PHY LEDs. Most of the
+times Switch/PHY have connected multiple LEDs that are controlled by HW
+based on some rules/event. Currently we lack any support for a generic
+way to control the HW part and normally we either never implement the
+feature or only add control for brightness or hw blink.
 
-Good catch!
-Thank you for reviewing.
+This is based on Marek idea of providing some API to cled but use a
+different implementation that in theory should be more generilized.
 
-And I'm sorry for distraction in the merge window.
-I'll post v2 after that.
+The current idea is:
+- LED driver implement 5 API (hw_control_status/start/stop/configure).
+  They are used to put the LED in offload mode and to configure the
+  various trigger.
+- We have hardware triggers that are used to expose to userspace the
+  supported offload triggers and set the offload mode on trigger
+  activation.
+- We can also have triggers that both support hardware and software mode.
+- The LED driver will declare each supported hardware trigger and
+  communicate with the trigger all the supported blink modes that will
+  be available by sysfs.
+- The LED driver will set how the hardware mode is activated/disabled and
+  will set a configure function to set each supported triggers.
+  This function provide 5 different mode enable/disable/read/supported/zero
+  that will enable or disable the offload trigger, read the current status,
+  check if supported or reset any active blink mode.
+- On hardware trigger activation, only the hardware mode is enabled but
+  the blink modes are not configured. This means that the LED will
+  run in hardware mode but will have the default rules/event set by the
+  device by default. To change this the user will have to operate via
+  userspace (or we can consider adding another binding in the dts to
+  declare also a default trigger configuration)
 
+Each LED driver will have to declare explicit support for the offload
+trigger (or return not supported error code) as we pass a flag that
+the LED driver will elaborate and understand what is referring to (based
+on the current active trigger).
 
-> 
-> > +			/* Give up if all names seems to be in use. */
-> >  			err = -ENOSPC;
-> > -			kfree(addr);
-> > +			unix_release_addr(addr);
-> >  			goto out;
-> >  		}
-> > +
-> >  		goto retry;
-> >  	}
-> >  
-> > 
+I posted a user for this new implementation that will benefit from this
+and will add a big feature to it. Currently qca8k can have up to 3 LEDs
+connected to each PHY port and we have some device that have only one of
+them connected and the default configuration won't work for that.
+
+I also posted the netdev trigger expanded with the hardware support.
+
+More polish is required but this is just to understand if I'm taking
+the correct path with this implementation.
+
+v3:
+- Rework start/stop as Andrew asked.
+- Introduce more logic to permit a trigger to run in hardware mode.
+- Add additional patch with netdev hardware support.
+- Use test_bit API to check flag passed to hw_control_configure.
+- Added a new cmd to hw_control_configure to reset any active blink_mode.
+- Refactor all the patches to follow this new implementation.
+v2:
+- Fix spelling mistake (sorry)
+- Drop patch 02 "permit to declare supported offload triggers".
+  Change the logic, now the LED driver declare support for them
+  using the configure_offload with the cmd TRIGGER_SUPPORTED.
+- Rework code to follow this new implementation.
+- Update Documentation to better describe how this offload
+  implementation work.
+
+Ansuel Smith (8):
+  leds: add support for hardware driven LEDs
+  leds: add function to configure hardware controlled LED
+  leds: trigger: netdev: drop NETDEV_LED_MODE_LINKUP from mode
+  leds: trigger: netdev: rename and expose NETDEV trigger enum modes
+  leds: trigger: netdev: add hardware control support
+  leds: trigger: add hardware-phy-activity trigger
+  net: dsa: qca8k: add LEDs support
+  dt-bindings: net: dsa: qca8k: add LEDs definition example
+
+ .../devicetree/bindings/net/dsa/qca8k.yaml    |  20 +
+ Documentation/leds/leds-class.rst             |  53 +++
+ drivers/leds/Kconfig                          |  11 +
+ drivers/leds/led-class.c                      |  27 ++
+ drivers/leds/led-triggers.c                   |  29 ++
+ drivers/leds/trigger/Kconfig                  |  28 ++
+ drivers/leds/trigger/Makefile                 |   1 +
+ .../trigger/ledtrig-hardware-phy-activity.c   | 171 +++++++
+ drivers/leds/trigger/ledtrig-netdev.c         | 108 +++--
+ drivers/net/dsa/Kconfig                       |   9 +
+ drivers/net/dsa/Makefile                      |   1 +
+ drivers/net/dsa/qca8k-leds.c                  | 429 ++++++++++++++++++
+ drivers/net/dsa/qca8k.c                       |   8 +-
+ drivers/net/dsa/qca8k.h                       |  65 +++
+ include/linux/leds.h                          | 115 ++++-
+ 15 files changed, 1045 insertions(+), 30 deletions(-)
+ create mode 100644 drivers/leds/trigger/ledtrig-hardware-phy-activity.c
+ create mode 100644 drivers/net/dsa/qca8k-leds.c
+
+-- 
+2.32.0
+
