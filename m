@@ -2,71 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDB0B44AF4E
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 15:17:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 378F144AF55
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 15:19:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237582AbhKIOUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 09:20:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52498 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237622AbhKIOUS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Nov 2021 09:20:18 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 969E2600CD;
-        Tue,  9 Nov 2021 14:17:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636467453;
-        bh=rXBu4BjCjfe2WnUmVMqs6dfvqqWqixQG/xs79QcduXk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=foM500EyrOnCO2lkaYXPW8zzkutMAI5vFIN1YcnV6dCpMsN327P1esCsaMHqm6M5C
-         OZAAPirSQxJURA8lRmmKjPhdQVo78SfbXMMUL2FJ3TWedRSJJdOGD9V5oMtD1ipMfn
-         Cyw3VPzoMs9BSbdB4ZhMZKiA9DKierGd3sGem28gGEeNXQTxXxforJJ/vfBxBIMZsk
-         Av/Eq1KGgjd7q06oGgSbC98r4nbVNO0jTgZXh3CJ8gG9hwMccPF+0JAQRaUe0FECJ7
-         s7PFI+SN4viaplWv+83FLJsfhdBWA9w5fYT1E6GFlcERyR92XeaXMSjQuZQIo+XhQI
-         6t3q4d9+faTpw==
-Date:   Tue, 9 Nov 2021 06:17:29 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Ido Schimmel <idosch@idosch.org>, Jiri Pirko <jiri@resnulli.us>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, edwin.peer@broadcom.com
-Subject: Re: [PATCH net-next] devlink: Require devlink lock during device
- reload
-Message-ID: <20211109061729.32f20616@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YYqB0VZcWnmtSS91@unreal>
-References: <20211101161122.37fbb99d@kicinski-fedora-PC1C0HJN>
-        <YYgJ1bnECwUWvNqD@shredder>
-        <YYgSzEHppKY3oYTb@unreal>
-        <20211108080918.2214996c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YYlfI4UgpEsMt5QI@unreal>
-        <20211108101646.0a4e5ca4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YYlrZZTdJKhha0FF@unreal>
-        <20211108104608.378c106e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YYmBbJ5++iO4MOo7@unreal>
-        <20211108153126.1f3a8fe8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YYqB0VZcWnmtSS91@unreal>
+        id S235273AbhKIOWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 09:22:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54764 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235140AbhKIOWa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 09:22:30 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C4C6C061764
+        for <netdev@vger.kernel.org>; Tue,  9 Nov 2021 06:19:43 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[127.0.0.1])
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <a.fatoum@pengutronix.de>)
+        id 1mkRyH-0003AW-2g; Tue, 09 Nov 2021 15:19:33 +0100
+From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
+Subject: Re: [Linux-stm32] [PATCH net] net: stmmac: allow a tc-taprio
+ base-time of zero
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
+        Holger Assmann <h.assmann@pengutronix.de>
+Cc:     Yannick Vignon <yannick.vignon@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>
+References: <20211108202854.1740995-1-vladimir.oltean@nxp.com>
+ <87bl2t3fkq.fsf@kurt> <20211109103504.ahl2djymnevsbhoj@skbuf>
+Message-ID: <6bf6db8b-4717-71fe-b6de-9f6e12202dad@pengutronix.de>
+Date:   Tue, 9 Nov 2021 15:19:28 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20211109103504.ahl2djymnevsbhoj@skbuf>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 9 Nov 2021 16:12:33 +0200 Leon Romanovsky wrote:
-> > You'd need to tell me more about what the notifier is used for (I see
-> > RoCE in the call trace). I don't understand why you need to re-register 
-> > a global (i.e. not per netns) notifier when devlink is switching name
-> > spaces.  
-> 
-> RDMA subsystem supports two net namespace aware scenarios.
-> 
-> We need global netdev_notifier for shared mode. This is legacy mode where
-> we listen to all namespaces. We must support this mode otherwise we break
-> whole RDMA world.
-> 
-> See commit below:
-> de641d74fb00 ("Revert "RDMA/mlx5: Fix devlink deadlock on net namespace deletion"")
+Hello Vladimir, Kurt,
 
-But why re-reg? To take advantage of clean event replay?
+On 09.11.21 11:35, Vladimir Oltean wrote:
+> On Tue, Nov 09, 2021 at 09:20:53AM +0100, Kurt Kanzenbach wrote:
+>> Hi Vladimir,
+>>
+>> On Mon Nov 08 2021, Vladimir Oltean wrote:
+>>> Commit fe28c53ed71d ("net: stmmac: fix taprio configuration when
+>>> base_time is in the past") allowed some base time values in the past,
+>>> but apparently not all, the base-time value of 0 (Jan 1st 1970) is still
+>>> explicitly denied by the driver.
+>>>
+>>> Remove the bogus check.
+>>>
+>>> Fixes: b60189e0392f ("net: stmmac: Integrate EST with TAPRIO scheduler API")
+>>> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+>>
+>> I've experienced the same problem and wanted to send a patch for
+>> it. Thanks!
+>>
+>> Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
+> 
+> Cool. So you had that patch queued up? What other stmmac patches do you
+> have queued up? :) Do you have a fix for the driver setting the PTP time
+> every time when SIOCSHWTSTAMP is called? This breaks the UTC-to-TAI
+> offset established by phc2sys and it takes a few seconds to readjust,
+> which is very annoying.
 
-IIUC the problem is that the un-reg is called from the reload_down path.
+Sounds like the same issue in:
+https://lore.kernel.org/netdev/20201216113239.2980816-1-h.assmann@pengutronix.de/
+
+Cheers,
+Ahmad
+
+> _______________________________________________
+> Linux-stm32 mailing list
+> Linux-stm32@st-md-mailman.stormreply.com
+> https://st-md-mailman.stormreply.com/mailman/listinfo/linux-stm32
+> 
+
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
