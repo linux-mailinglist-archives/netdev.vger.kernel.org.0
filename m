@@ -2,273 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F2C044B20A
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 18:34:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7F9D44B230
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 18:51:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241163AbhKIRha (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 12:37:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43146 "EHLO
+        id S241395AbhKIRxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 12:53:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241098AbhKIRh1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 12:37:27 -0500
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E211FC061764
-        for <netdev@vger.kernel.org>; Tue,  9 Nov 2021 09:34:40 -0800 (PST)
-Received: by mail-pg1-x52f.google.com with SMTP id e65so19139965pgc.5
-        for <netdev@vger.kernel.org>; Tue, 09 Nov 2021 09:34:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YtCMrd8soCJwqQdYqfS1Uxj+jvIWsqJW9Sfp+I5znK0=;
-        b=RnI334WgYGo1s2xg0PnNwh/LwyjwkbeECYSptgpgWOUMErGKHmsDK/ZLGV9pEMwl/O
-         ekYV7g3Qyj7iroFAawbog28LZq8j9E8ozPsy6LbXEeNYDfaWne0pF0iY2RKw20oFgoi+
-         iUWeYVTxBO9NJJ4Hp1KyWtYKI60Ou3f9tZSZ4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YtCMrd8soCJwqQdYqfS1Uxj+jvIWsqJW9Sfp+I5znK0=;
-        b=ufafAb8AvmJJp94kik4N1jOpHYhCv2S2zfGkvVXN3VucKo5UJwTSN0mp8ENPKN5N88
-         yxPErXlrmHska0wQI0J+/7gyMcrEwYEHX6KLViY+rY82PYeimFnTAwSlLFwR1uvcG3Ll
-         0OEgmDTzgWDo/zwitgNIfQ6NOut41at3x0nffob3O1q7wQjRLKM2TO5yxqfcftOMPxyL
-         DRQhPbPpCXMsmWLj/CUlBy7cHumBUyUJRBm01p2z2xPfWoyLODylgmH4v+815yLGGcyi
-         twmsX5zmvs1HQVYT6ItySfD4NWLeNfohI2XRIWv/qb9YhXdXYrmz2eAAhrUcRBzIcOtJ
-         wByQ==
-X-Gm-Message-State: AOAM532S6xlcTf1aznMX4tR4gADeD1/L8l5ctL9bTrobgWOK60sywGu+
-        4IOsqprvgyl/m9Xald+R+40k4A==
-X-Google-Smtp-Source: ABdhPJzSUauLeZJaFQUg6w2y5hqN0XLLDLzRlcMe5/CcpZD5KWsYDIDxVT3fGawLe51+TwjHa4Pryg==
-X-Received: by 2002:a63:e710:: with SMTP id b16mr7200956pgi.38.1636479280328;
-        Tue, 09 Nov 2021 09:34:40 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id q9sm20769593pfj.88.2021.11.09.09.34.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Nov 2021 09:34:39 -0800 (PST)
-Date:   Tue, 9 Nov 2021 09:34:39 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     akpm@linux-foundation.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, oliver.sang@intel.com, lkp@intel.com,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        David Hildenbrand <david@redhat.com>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH] kthread: dynamically allocate memory to store kthread's
- full name
-Message-ID: <202111090930.75BBF4678@keescook>
-References: <20211108084142.4692-1-laoar.shao@gmail.com>
+        with ESMTP id S239360AbhKIRxp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 12:53:45 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B003AC061764
+        for <netdev@vger.kernel.org>; Tue,  9 Nov 2021 09:50:59 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mkVGs-0002Fu-03; Tue, 09 Nov 2021 18:50:58 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mkVGq-0000Xo-Lk; Tue, 09 Nov 2021 18:50:56 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mkVGp-0001gs-I3; Tue, 09 Nov 2021 18:50:56 +0100
+Date:   Tue, 9 Nov 2021 18:50:55 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        kernel@pengutronix.de, Jakub Kicinski <kuba@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH net-next] net: dsa: Some cleanups in remove code
+Message-ID: <20211109175055.46rytrdejv56hkxv@pengutronix.de>
+References: <20211109113921.1020311-1-u.kleine-koenig@pengutronix.de>
+ <20211109115434.oejplrd7rzmvad34@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="hi7hemjrusbjl3eu"
 Content-Disposition: inline
-In-Reply-To: <20211108084142.4692-1-laoar.shao@gmail.com>
+In-Reply-To: <20211109115434.oejplrd7rzmvad34@skbuf>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 08, 2021 at 08:41:42AM +0000, Yafang Shao wrote:
-> When I was implementing a new per-cpu kthread cfs_migration, I found the
-> comm of it "cfs_migration/%u" is truncated due to the limitation of
-> TASK_COMM_LEN. For example, the comm of the percpu thread on CPU10~19 are
-> all with the same name "cfs_migration/1", which will confuse the user. This
-> issue is not critical, because we can get the corresponding CPU from the
-> task's Cpus_allowed. But for kthreads correspoinding to other hardware
-> devices, it is not easy to get the detailed device info from task comm,
-> for example,
-> 
->     jbd2/nvme0n1p2-
->     xfs-reclaim/sdf
-> 
-> Currently there are so many truncated kthreads:
-> 
->     rcu_tasks_kthre
->     rcu_tasks_rude_
->     rcu_tasks_trace
->     poll_mpt3sas0_s
->     ext4-rsv-conver
->     xfs-reclaim/sd{a, b, c, ...}
->     xfs-blockgc/sd{a, b, c, ...}
->     xfs-inodegc/sd{a, b, c, ...}
->     audit_send_repl
->     ecryptfs-kthrea
->     vfio-irqfd-clea
->     jbd2/nvme0n1p2-
->     ...
-> 
-> We can shorten these names to work around this problem, but it may be
-> not applied to all of the truncated kthreads. Take 'jbd2/nvme0n1p2-' for
-> example, it is a nice name, and it is not a good idea to shorten it.
-> 
-> One possible way to fix this issue is extending the task comm size, but
-> as task->comm is used in lots of places, that may cause some potential
-> buffer overflows. Another more conservative approach is introducing a new
-> pointer to store kthread's full name if it is truncated, which won't
-> introduce too much overhead as it is in the non-critical path. Finally we
-> make a dicision to use the second approach. See also the discussions in
-> this thread:
-> https://lore.kernel.org/lkml/20211101060419.4682-1-laoar.shao@gmail.com/
-> 
-> After this change, the full name of these truncated kthreads will be
-> displayed via /proc/[pid]/comm:
-> 
->     rcu_tasks_kthread
->     rcu_tasks_rude_kthread
->     rcu_tasks_trace_kthread
->     poll_mpt3sas0_statu
->     ext4-rsv-conversion
->     xfs-reclaim/sdf1
->     xfs-blockgc/sdf1
->     xfs-inodegc/sdf1
->     audit_send_reply
->     ecryptfs-kthread
->     vfio-irqfd-cleanup
->     jbd2/nvme0n1p2-8
-> 
-> Suggested-by: Petr Mladek <pmladek@suse.com>
-> Suggested-by: Steven Rostedt <rostedt@goodmis.org>
-> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-> Cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-> Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> Cc: Michal Miroslaw <mirq-linux@rere.qmqm.pl>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Steven Rostedt <rostedt@goodmis.org>
-> Cc: Matthew Wilcox <willy@infradead.org>
-> Cc: David Hildenbrand <david@redhat.com>
-> Cc: Al Viro <viro@zeniv.linux.org.uk>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Petr Mladek <pmladek@suse.com>
-> ---
-> TODO: will cleanup worker comm in the next step. 
-> 
-> ---
->  fs/proc/array.c         |  3 +++
->  include/linux/kthread.h |  1 +
->  kernel/kthread.c        | 32 +++++++++++++++++++++++++++++++-
->  3 files changed, 35 insertions(+), 1 deletion(-)
-> 
-> diff --git a/fs/proc/array.c b/fs/proc/array.c
-> index 49be8c8ef555..860e4deafa65 100644
-> --- a/fs/proc/array.c
-> +++ b/fs/proc/array.c
-> @@ -92,6 +92,7 @@
->  #include <linux/string_helpers.h>
->  #include <linux/user_namespace.h>
->  #include <linux/fs_struct.h>
-> +#include <linux/kthread.h>
->  
->  #include <asm/processor.h>
->  #include "internal.h"
-> @@ -102,6 +103,8 @@ void proc_task_name(struct seq_file *m, struct task_struct *p, bool escape)
->  
->  	if (p->flags & PF_WQ_WORKER)
->  		wq_worker_comm(tcomm, sizeof(tcomm), p);
-> +	else if (p->flags & PF_KTHREAD)
-> +		get_kthread_comm(tcomm, sizeof(tcomm), p);
->  	else
->  		__get_task_comm(tcomm, sizeof(tcomm), p);
->  
-> diff --git a/include/linux/kthread.h b/include/linux/kthread.h
-> index 346b0f269161..2a5c04494663 100644
-> --- a/include/linux/kthread.h
-> +++ b/include/linux/kthread.h
-> @@ -33,6 +33,7 @@ struct task_struct *kthread_create_on_cpu(int (*threadfn)(void *data),
->  					  unsigned int cpu,
->  					  const char *namefmt);
->  
-> +void get_kthread_comm(char *buf, size_t buf_size, struct task_struct *tsk);
->  void set_kthread_struct(struct task_struct *p);
->  
->  void kthread_set_per_cpu(struct task_struct *k, int cpu);
-> diff --git a/kernel/kthread.c b/kernel/kthread.c
-> index 5b37a8567168..ce8258231eea 100644
-> --- a/kernel/kthread.c
-> +++ b/kernel/kthread.c
-> @@ -60,6 +60,8 @@ struct kthread {
->  #ifdef CONFIG_BLK_CGROUP
->  	struct cgroup_subsys_state *blkcg_css;
->  #endif
-> +	/* To store the full name if task comm is truncated. */
-> +	char *full_name;
->  };
->  
->  enum KTHREAD_BITS {
-> @@ -93,6 +95,18 @@ static inline struct kthread *__to_kthread(struct task_struct *p)
->  	return kthread;
->  }
->  
-> +void get_kthread_comm(char *buf, size_t buf_size, struct task_struct *tsk)
-> +{
-> +	struct kthread *kthread = to_kthread(tsk);
-> +
-> +	if (!kthread || !kthread->full_name) {
-> +		__get_task_comm(buf, buf_size, tsk);
-> +		return;
-> +	}
-> +
-> +	strscpy_pad(buf, kthread->full_name, buf_size);
-> +}
-> +
->  void set_kthread_struct(struct task_struct *p)
->  {
->  	struct kthread *kthread;
-> @@ -121,6 +135,7 @@ void free_kthread_struct(struct task_struct *k)
->  #ifdef CONFIG_BLK_CGROUP
->  	WARN_ON_ONCE(kthread && kthread->blkcg_css);
->  #endif
-> +	kfree(kthread->full_name);
->  	kfree(kthread);
->  }
->  
-> @@ -399,12 +414,27 @@ struct task_struct *__kthread_create_on_node(int (*threadfn)(void *data),
->  	if (!IS_ERR(task)) {
->  		static const struct sched_param param = { .sched_priority = 0 };
->  		char name[TASK_COMM_LEN];
-> +		va_list aq;
-> +		int len;
->  
->  		/*
->  		 * task is already visible to other tasks, so updating
->  		 * COMM must be protected.
->  		 */
-> -		vsnprintf(name, sizeof(name), namefmt, args);
-> +		va_copy(aq, args);
-> +		len = vsnprintf(name, sizeof(name), namefmt, aq);
-> +		va_end(aq);
-> +		if (len >= TASK_COMM_LEN) {
-> +			struct kthread *kthread = to_kthread(task);
-> +			char *full_name;
-> +
-> +			full_name = kvasprintf(GFP_KERNEL, namefmt, args);
-> +			if (!full_name) {
-> +				kfree(create);
-> +				return ERR_PTR(-ENOMEM);
 
-I'm not a fan of this out-of-line free/return. Why not just leave it
-truncated when out of memory? For example just do:
+--hi7hemjrusbjl3eu
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-			struct kthread *kthread = to_kthread(task);
+Hello,
 
-			kthread->full_name = kvasprintf(GFP_KERNEL, namefmt, args);
+Cc +=3D gregkh, maybe he has something to say on this matter
 
-> +			}
-> +			kthread->full_name = full_name;
-> +		}
->  		set_task_comm(task, name);
->  		/*
->  		 * root may have changed our (kthreadd's) priority or CPU mask.
-> -- 
-> 2.17.1
-> 
+On Tue, Nov 09, 2021 at 01:54:34PM +0200, Vladimir Oltean wrote:
+> Your commit prefix does not reflect the fact that you are touching the
+> vsc73xx driver. Try "net: dsa: vsc73xx: ".
 
--- 
-Kees Cook
+Oh, I missed that indeed.
+
+> On Tue, Nov 09, 2021 at 12:39:21PM +0100, Uwe Kleine-K=F6nig wrote:
+> > vsc73xx_remove() returns zero unconditionally and no caller checks the
+> > returned value. So convert the function to return no value.
+>=20
+> This I agree with.
+>=20
+> > For both the platform and the spi variant ..._get_drvdata() will never
+> > return NULL in .remove() because the remove callback is only called aft=
+er
+> > the probe callback returned successfully and in this case driver data w=
+as
+> > set to a non-NULL value.
+>=20
+> Have you read the commit message of 0650bf52b31f ("net: dsa: be
+> compatible with masters which unregister on shutdown")?
+
+No. But I did now. I consider it very surprising that .shutdown() calls
+the .remove() callback and would recommend to not do this. The commit
+log seems to prove this being difficult.
+
+> To remove the check for dev_get_drvdata =3D=3D NULL in ->remove, you need=
+ to
+> prove that ->remove will never be called after ->shutdown. For platform
+> devices this is pretty easy to prove, for SPI devices not so much.
+> I intentionally kept the code structure the same because code gets
+> copied around a lot, it is easy to copy from the wrong place.
+
+Alternatively remove spi_set_drvdata(spi, NULL); from
+vsc73xx_spi_shutdown()? Also I'm not aware how platform devices are
+different to spi devices that the ordering of .remove and shutdown() is
+more or less obvious than on the other bus?!
+
+> > Also setting driver data to NULL is not necessary, this is already done
+> > in the driver core in __device_release_driver(), so drop this from the
+> > remove callback, too.
+>=20
+> And this was also intentional, for visibility more or less. I would like
+> you to ack that you understand the problems surrounding ->remove/->shutdo=
+wn
+> ordering for devices on buses, prior to making seemingly trivial cleanups.
+
+I see that the change is not so obviously correct as I thought. I'll
+have to think about this and will respin if and when I find a sane way
+forward.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--hi7hemjrusbjl3eu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmGKtPwACgkQwfwUeK3K
+7AlwHQf/brAIABdCMSAp/6DHcYUD/ICoES+9/4kti0C1mV/wyWxruLLPz2BIhm00
+iE2vwod3N3g1RIULX9RJlMAuCAc6L/D8H2ZDWqAw8gYQYm+g/V64pSOYs8s94YHM
+g8bqeocRXmmiMD3dsDhK0SjKRoQ//vnNPR6q7Pv5s2IWo/2Q0CKD6DKl+Wz5b3fF
+0N2y8cJOm75PvYWTEJGFg7cBqTU5wpcjdfaW2rDM3a4Ww6P+0q1abe76qSMAxfVU
+KA0XTxqdOAmy0nUQhYQ5iRbAxu301qg21XbGmEnGtmd0O2vvCbqmYMtEM7WyrBd/
+f1Sqi/xKdg6djkekPwlrWBrEQxQVAQ==
+=bvYm
+-----END PGP SIGNATURE-----
+
+--hi7hemjrusbjl3eu--
