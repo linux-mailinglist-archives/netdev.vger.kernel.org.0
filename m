@@ -2,58 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96E5E44B4C0
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 22:29:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F4D644B4EC
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 22:52:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245193AbhKIVbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 16:31:32 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:53468 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245187AbhKIVbZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Nov 2021 16:31:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=UQf8COTFsagdrfbDjGeAFUwNVRG2xJ6sgcNzxAbi2GQ=; b=3vR5thXo5U0rqtVzvGah4Lsl/d
-        /b2EEtsaZdO8VlZNYC7oCbh+PbezQOcZoRwCGBddHevqFI03oDQ3v6nOm49kzzNAlayYHgA/NCoQi
-        E79jOZ/M8dMmqP7kugNMj1GgfhQghMImI3J6+ZwpMaJ0zkx0zcvQ+7yPUBJ8B7ZuUkBQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mkYfS-00D1aM-7h; Tue, 09 Nov 2021 22:28:34 +0100
-Date:   Tue, 9 Nov 2021 22:28:34 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Subject: Re: [RFC PATCH v3 6/8] leds: trigger: add hardware-phy-activity
- trigger
-Message-ID: <YYroAse2JQjLTK4J@lunn.ch>
-References: <20211109022608.11109-1-ansuelsmth@gmail.com>
- <20211109022608.11109-7-ansuelsmth@gmail.com>
+        id S244097AbhKIVzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 16:55:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44840 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241983AbhKIVzC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 16:55:02 -0500
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E72FC061764;
+        Tue,  9 Nov 2021 13:52:16 -0800 (PST)
+Received: by mail-pg1-x52f.google.com with SMTP id e65so350468pgc.5;
+        Tue, 09 Nov 2021 13:52:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bsrdgL3do9jE/45Ub+BZHx3M+v8XdQYPbDEI8JfUoVs=;
+        b=B8seUKGFVfQBw0vDuSlW5GF4x5fqUhYBm1EJTiYPjlDdqQrsbibtzJxHOK9EocqmSt
+         cSxiNZn2M2OmTFTTtDIGhvufuU2SzSNZuS6tidCObITEDiU5+n/HUO1kGapOp14yu3uZ
+         PDpgCCoGhwGvMJdPpbFH575924BNonb7yCJlD4nnCOg9icbbSkpxlzAUdE1NqO1HHKt8
+         Agl+yFQm1Wv44rzvmUcjcdLDPpqEFOzK+ynYjpzg6ho0ttp+nYgPTVKcfNgJja200vgT
+         1qrI49eYuwNFT809ZWabe7FWjI7BZiqtJRtZIhRGGAV9vpJi72HwNVMyJfyMXJDBKnip
+         s/Sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bsrdgL3do9jE/45Ub+BZHx3M+v8XdQYPbDEI8JfUoVs=;
+        b=AA8Kgr8Bu1Pc76cut4jib7La8m7H/CWktWRGSbOofS0oe7qzsKG6ytPAX/rRpFivfI
+         OFfxu7UdxsVddgjsZQ1HPe3g45EUGBogMqs2umwhJyxv13b40DdQaruQJhOVa5lj+OO/
+         1MFKS/LTKVzRcorEm5/vqsyt1GJ12Jq69r4QHIX6SsPO2lmZ2AKLGq2+qZaQu62m/Lq1
+         a9slDpTjBwA/I/OxBn6mbFH6HrKTbE1nMc+8p5MWo6GnsBqaJtyZjFbgCQfLK3rJ4N+4
+         quSNMeM6jJ6LLETtvQZZtobgz0QuBy6PRAaehQ0ZuUH9z+/jwFC9Y/BlFfcHy+YLG7lc
+         wnEw==
+X-Gm-Message-State: AOAM530CRZVR7Hpv9cJ3DpKh7wxBNfShsZPj8QI2geQ/DNXUjRdiqq/T
+        gbn44ZcV/p6GL8sN3oPi+IyRyw7rDJ94Hi8eyrg=
+X-Google-Smtp-Source: ABdhPJw24SX2e9CGDihhmkA4QccdgXILFl9imc8UkSBQc7tl5soo1qazxhvBEpf1aeehm8rfLfv6NjLbktYFxVomCQA=
+X-Received: by 2002:a05:6a00:1310:b0:494:672b:1e97 with SMTP id
+ j16-20020a056a00131000b00494672b1e97mr45482368pfu.77.1636494735702; Tue, 09
+ Nov 2021 13:52:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211109022608.11109-7-ansuelsmth@gmail.com>
+References: <20211108164620.407305-1-me@ubique.spb.ru> <20211108164620.407305-2-me@ubique.spb.ru>
+In-Reply-To: <20211108164620.407305-2-me@ubique.spb.ru>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 9 Nov 2021 13:52:04 -0800
+Message-ID: <CAADnVQJf5ZbJ11ytgyWxGoKoXTvDtpjn_EAw23rCppoY8LtiBA@mail.gmail.com>
+Subject: Re: [PATCH bpf 1/2] bpf: Forbid bpf_ktime_get_coarse_ns and
+ bpf_timer_* in tracing progs
+To:     Dmitrii Banshchikov <me@ubique.spb.ru>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Andrey Ignatov <rdna@fb.com>,
+        John Stultz <john.stultz@linaro.org>, sboyd@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Steven Rostedt <rosted@goodmis.org>,
+        syzbot <syzbot+43fd005b5a1b4d10781e@syzkaller.appspotmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +/* The attrs will be placed dynamically based on the supported triggers */
-> +static struct attribute *phy_activity_attrs[PHY_ACTIVITY_MAX_TRIGGERS + 1];
+On Mon, Nov 8, 2021 at 8:46 AM Dmitrii Banshchikov <me@ubique.spb.ru> wrote:
+>
+> bpf_ktime_get_coarse_ns() helper uses ktime_get_coarse_ns() time
+> accessor that isn't safe for any context.
+> This results in locking issues:
 
-This cannot be global. I have boards with a mixture of different PHYs
-and switches. Each will have their own collection of supported
-modes. And some PHYs have different modes per LED. 
+Please trim the cc. vger thinks it's a spam.
+The patch didn't reach the mailing list or patchwork.
 
-       Andrew
+>  const struct bpf_func_proto bpf_ktime_get_coarse_ns_proto = {
+>         .func           = bpf_ktime_get_coarse_ns,
+>         .gpl_only       = false,
+>         .ret_type       = RET_INTEGER,
+> +       .allowed        = bpf_ktime_get_coarse_ns_allowed,
+
+I think it's easier to move to networking prog types
+instead of going through a callback.
+
+>  static const struct bpf_func_proto bpf_timer_init_proto = {
+>         .func           = bpf_timer_init,
+>         .gpl_only       = true,
+> @@ -1147,6 +1173,7 @@ static const struct bpf_func_proto bpf_timer_init_proto = {
+>         .arg1_type      = ARG_PTR_TO_TIMER,
+>         .arg2_type      = ARG_CONST_MAP_PTR,
+>         .arg3_type      = ARG_ANYTHING,
+> +       .allowed        = bpf_timer_allowed,
+
+I think disabling timers in check_map_prog_compatibility
+(similar to how bpf_spin_lock is restricted) would be cleaner.
