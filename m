@@ -2,124 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83F6544B2D7
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 19:49:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3885144B320
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 20:19:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242635AbhKISvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 13:51:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59920 "EHLO
+        id S243073AbhKITWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 14:22:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242639AbhKISvx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 13:51:53 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA20BC061764;
-        Tue,  9 Nov 2021 10:49:06 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id f8so409141edy.4;
-        Tue, 09 Nov 2021 10:49:06 -0800 (PST)
+        with ESMTP id S234141AbhKITWh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 14:22:37 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1BC0C061764;
+        Tue,  9 Nov 2021 11:19:51 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id y7so470426plp.0;
+        Tue, 09 Nov 2021 11:19:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=lmow5GkNL8rmuwuXfGzLROk1KvBCn7lg2Dy3ImDhk10=;
-        b=DgAORoscuZ0uTA2FwtEIUUSdpeFFRTHDDTQa8+U3lm4kvgoK+xMBoVjJxivld4Twlv
-         v+zZumC3rXSFyTF9aKlusOMEaby0gMAB7y0NuDc1dkJqTCzp1fLMzUxcrwibyI66NdOj
-         FwaWBNx37/JeJeRZ2j2EAll9hItYc3Th5YpChuoSRj8fseyKgHs+byX4LmkC8BYGYiu5
-         zZ7OZtHvOIaWB3rNJGuguMc1YlusPKrgeH4XpBRPPeeo5hS/8pMSkz+uM26I77jaxg8i
-         u8ZhJ/GagOUrVLefJF606zsFPcloclpN1ToMZC06NP/gSpnUhRfH2bfftdSfg5xK4fX4
-         S+xA==
+        h=subject:to:references:cc:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=iuczEJUFH8NAmBu+6MhEyS1Oy526YGYJ40DdJUhMxXU=;
+        b=iT9sJzGOAD++jCCo2/84DRigMjRY5MBKPP2sfrbWevMFunAuSPXCfVvNeLqVNb0Npa
+         JbInWsFHG2Iv2Iria+l724E8LeVnCm8pwz70gXSO61cMSyrnXifyCEtKozJOhIcdtHX7
+         vL/TJsPd0dS5rPR6lB7ak1gDPI299Lw/NsTtBy9AsRvtroKVleYrBQazJBdPEvDUYgPP
+         tXzVoumENHAfM96W+NZFwe/uBfqDdkq7E6SJcZphvKyrWPctwJNlIKABBBoLsmGaNak3
+         2S7pqRU+2dgcoV1i2a/WMoiG4OTvv+7OemHj6gaWmF2juemyZrMR8H4KMu0u7Uz1MOmL
+         K23g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=lmow5GkNL8rmuwuXfGzLROk1KvBCn7lg2Dy3ImDhk10=;
-        b=wSqnsSZr4i9EMOnzPXskouEcBfUJKS8ftWnhOW60UPkHCJDKpT9oHomrbz+t2o2deV
-         aF0MCXlNUGfBQj/qgNfz3pzQNBSXJ0YIvl5XGPR1aULn3UDS25eDUPcSozAE9486YbG4
-         YGJlNToQdRHJipc9z5aPmpq/uH0lXiaMfxHHLo2YcvQieRQc/dOb5wCjRDlQ1jyhe1A8
-         fbRb9f+6WYjXcevOs9JupeCOz6obZraXz3XXrU9LATYwiMnbD9jgBIsTqaSIrsAyIz1e
-         g6Qd6SrsghAv2DrSTXjsSX5JlvgHnPUgimRgQNlZO+F11ktCB02tjw328/3A8cYpuftV
-         9u1w==
-X-Gm-Message-State: AOAM532T1bcie8IW94y39nDZ1wr3XYECJpXe8FFxPq03WBPSciKa3yLx
-        7mtp/HWV/bc92OERF3T2DSo=
-X-Google-Smtp-Source: ABdhPJxGX9O0aUKxjKHiwzcWe5JLdc+r40TrL+2RP/tT84C062tGbTS1J0/78LdZJ3snzFvV2Dr0mQ==
-X-Received: by 2002:a17:906:82c5:: with SMTP id a5mr12532955ejy.127.1636483745332;
-        Tue, 09 Nov 2021 10:49:05 -0800 (PST)
-Received: from skbuf ([188.25.175.102])
-        by smtp.gmail.com with ESMTPSA id gb2sm10260118ejc.52.2021.11.09.10.49.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Nov 2021 10:49:04 -0800 (PST)
-Date:   Tue, 9 Nov 2021 20:49:03 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Martin Kaistra <martin.kaistra@linutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 2/7] net: dsa: b53: Move struct b53_device to
- include/linux/dsa/b53.h
-Message-ID: <20211109184903.q6ijhjvcvhymf6nx@skbuf>
-References: <20211109095013.27829-1-martin.kaistra@linutronix.de>
- <20211109095013.27829-3-martin.kaistra@linutronix.de>
- <f71396fc-29a3-4022-3f7a-3a37abb9079c@gmail.com>
- <caec2d40-6093-ff06-ab8e-379e7939a85c@gmail.com>
- <CA+h21hp+UKRgCE0UTZr7keyU380W22ZEXdbfORhSTNfzb1S_iw@mail.gmail.com>
- <b04b344e-2a17-eac2-bbcb-746091f9175a@gmail.com>
+        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
+        bh=iuczEJUFH8NAmBu+6MhEyS1Oy526YGYJ40DdJUhMxXU=;
+        b=jt0tHgymP8jPxddI5v3Ll3D7W08USh7w11ry2JmPOAhCrKdOeHRoyPg0O4D5exdJX+
+         fAdgu56cTMcNXIaS6u506GmdlOtAxWTVTlwq4rxTtTHHNS0QQPvDcAz1iTrMx0vhy+uc
+         3CGlkiaN/Uw5gYsIINf5IuYCDMp9Po/LCaeTyspkZhwmwvwCwFYd6bEXz1aTSsbPaFu/
+         S+YcyrGU/M/HT6+skI0EeMOmlNColYZj14xsbEYemvAk+kV0lU25wACdczzMuk6J4zhQ
+         +JYp/7canNBNS/F+K9v+ccAW6waIX44vIL4GuyKtIHY/lw0b6TBkib8JdgDOEt33cGHw
+         rxFQ==
+X-Gm-Message-State: AOAM533s3Lu4X0uSubWrAj7Vc3MC+qzJQy0GNZO1CY/9pa/fKjXV6Y0C
+        EiGpN9tGHvKLez2LexLsCGS56a6eNTA=
+X-Google-Smtp-Source: ABdhPJzINCEQFIMyYG2W5OVqoCflUtO+O8LPtH2tNUIyTbTgGDo2UKDlSjgxoGdfLHtoq4kcX+dHxg==
+X-Received: by 2002:a17:903:2055:b0:142:497c:a249 with SMTP id q21-20020a170903205500b00142497ca249mr9433909pla.35.1636485590950;
+        Tue, 09 Nov 2021 11:19:50 -0800 (PST)
+Received: from [10.1.1.26] (222-155-101-117-fibre.sparkbb.co.nz. [222.155.101.117])
+        by smtp.gmail.com with ESMTPSA id oa2sm3449107pjb.53.2021.11.09.11.19.47
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 09 Nov 2021 11:19:50 -0800 (PST)
+Subject: Re: [PATCH net v9 3/3] net/8390: apne.c - add 100 Mbit support to
+ apne.c driver
+To:     Randy Dunlap <rdunlap@infradead.org>, linux-m68k@vger.kernel.org,
+        geert@linux-m68k.org
+References: <20211109040242.11615-1-schmitzmic@gmail.com>
+ <20211109040242.11615-4-schmitzmic@gmail.com>
+ <3d4c9e98-f004-755c-2f30-45b951ede6a6@infradead.org>
+ <d5fa96b6-a351-1195-7967-25c26d9a04fb@gmail.com>
+ <c7ab4109-9abf-dfe8-0325-7d3e113aa66c@infradead.org>
+Cc:     alex@kazik.de, netdev@vger.kernel.org
+From:   Michael Schmitz <schmitzmic@gmail.com>
+Message-ID: <1ed3a71a-e57b-0754-b719-36ac862413da@gmail.com>
+Date:   Wed, 10 Nov 2021 08:19:45 +1300
+User-Agent: Mozilla/5.0 (X11; Linux ppc64; rv:45.0) Gecko/20100101
+ Thunderbird/45.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b04b344e-2a17-eac2-bbcb-746091f9175a@gmail.com>
+In-Reply-To: <c7ab4109-9abf-dfe8-0325-7d3e113aa66c@infradead.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 09, 2021 at 10:20:25AM -0800, Florian Fainelli wrote:
-> On 11/9/21 10:15 AM, Vladimir Oltean wrote:
-> > On Tue, 9 Nov 2021 at 20:11, Florian Fainelli <f.fainelli@gmail.com> wrote:
-> >>
-> >> On 11/9/21 10:05 AM, Florian Fainelli wrote:
-> >>> On 11/9/21 1:50 AM, Martin Kaistra wrote:
-> >>>> In order to access the b53 structs from net/dsa/tag_brcm.c move the
-> >>>> definitions from drivers/net/dsa/b53/b53_priv.h to the new file
-> >>>> include/linux/dsa/b53.h.
-> >>>>
-> >>>> Signed-off-by: Martin Kaistra <martin.kaistra@linutronix.de>
-> >>>> ---
-> >>>>  drivers/net/dsa/b53/b53_priv.h |  90 +----------------------------
-> >>>>  include/linux/dsa/b53.h        | 100 +++++++++++++++++++++++++++++++++
-> >>>>  2 files changed, 101 insertions(+), 89 deletions(-)
-> >>>>  create mode 100644 include/linux/dsa/b53.h
-> >>>
-> >>> All you really access is the b53_port_hwtstamp structure within the
-> >>> tagger, so please make it the only structure exposed to net/dsa/tag_brcm.c.
-> >>
-> >> You do access b53_dev in the TX part, still, I would like to find a more
-> >> elegant solution to exposing everything here, can you create a
-> >> b53_timecounter_cyc2time() function that is exported to modules but does
-> >> not require exposing the b53_device to net/dsa/tag_brcm.c?
-> >> --
-> >> Florian
-> > 
-> > Switch drivers can't export symbols to tagging protocol drivers, remember?
-> > https://lore.kernel.org/netdev/20210908220834.d7gmtnwrorhharna@skbuf/
-> 
-> I do now :) How about a function pointer in dsa_switch_ops that driver
-> can hook onto?
+Hi Randy,
 
-IMHO, the honest answer to this is to admit that it's not quite okay to
-timestamp a single packet at a time and simply not timestamp any packet
-that might be concurrent with that, no warning or questions asked. We
-should queue that second packet if it cannot be marked for timestamping
-right away.
+On 09/11/21 18:44, Randy Dunlap wrote:
+> On 11/8/21 8:55 PM, Michael Schmitz wrote:
+>> Hi Randy,
+>>
+>> On 09/11/21 17:09, Randy Dunlap wrote:
+>>> On 11/8/21 8:02 PM, Michael Schmitz wrote:
+>>>> diff --git a/drivers/net/ethernet/8390/Kconfig
+>>>> b/drivers/net/ethernet/8390/Kconfig
+>>>> index a4130e643342..b22c3cf96560 100644
+>>>> --- a/drivers/net/ethernet/8390/Kconfig
+>>>> +++ b/drivers/net/ethernet/8390/Kconfig
+>>>> @@ -136,6 +136,8 @@ config NE2K_PCI
+>>>>   config APNE
+>>>>       tristate "PCMCIA NE2000 support"
+>>>>       depends on AMIGA_PCMCIA
+>>>> +    select PCCARD
+>>>> +    select PCMCIA
+>>>>       select CRC32
+>>>
+>>> Hi,
+>>>
+>>> There are no other drivers that "select PCCARD" or
+>>> "select PCMCIA" in the entire kernel tree.
+>>> I don't see any good justification to allow it here.
+>>
+>> Amiga doesn't use anything from the core PCMCIA code, instead
+>> providing its own basic PCMCIA support code.
+>>
+>> I had initially duplicated some of the cis tuple parser code, but
+>> decided to use what's already there instead.
+>>
+>> I can drop these selects, and add instructions to manually select
+>> these options in the Kconfig help section. Seemed a little error prone
+>> to me.
+>
+> Just make it the same as other drivers in this respect, please.
 
-Which brings me to my second point, there used to be a generic deferred
-xmit mechanism in DSA that also happened to solve this problem because
-yes, there was a function pointer in dsa_switch_ops for it.
-But you and Richard didn't quite like it, so I removed it.
-https://patchwork.ozlabs.org/cover/1215617/
+"depends on PCMCIA" is what I've seen for other drivers. That is not 
+really appropriate for the APNE driver (8 bit cards work fine with just 
+the support code from arch/m68k/amiga/pcmcia.c).
+
+Please confirm that "depends on PCMCIA" is what you want me to use?
+
+Cheers,
+
+	Michael
+
