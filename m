@@ -2,106 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2145244A703
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 07:48:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FB8844A731
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 08:00:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240902AbhKIGvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 01:51:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36412 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241023AbhKIGvb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 01:51:31 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62F27C061764
-        for <netdev@vger.kernel.org>; Mon,  8 Nov 2021 22:48:44 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id 77-20020a1c0450000000b0033123de3425so1095511wme.0
-        for <netdev@vger.kernel.org>; Mon, 08 Nov 2021 22:48:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ubique-spb-ru.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=eDg4EfYyQlktMfASerfzCufE4z7AwT0PxzRc+DnymYM=;
-        b=y1To8VpQmwo5VU6Ze1EuRL4i8u1RkUTtv8zEzUfCqbW/HiuXbX8FTSszTfhOA/Df6i
-         IjFmWuKGvP2pJ+lXDZuuDHQ4x7x9S5PiNTEVI/cd7xpc7v+kbKzddFkbjcthW0ZtJcKk
-         +SxIg34aC25VrQJAne835WTNQJCQryCLl2v5Eq/oPIzrbU2pR/3rtdHlTO8ZCNbwcmEg
-         bIQoPLSNrRqMJXw0zrsOKG3kMsvG3rNXL/LCtLZeUk35W2OQJ+F5Pv4zZ7UI0d5reZgd
-         NlJbkTM9fPJ5GoJ6W8LU6ALOKlyu+h8oRsQr++lDDSxeRVU6/0gIO/CfaGmfYWGX3tV6
-         Yzrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=eDg4EfYyQlktMfASerfzCufE4z7AwT0PxzRc+DnymYM=;
-        b=HemRQMioFNBLM4xySJAn6WhCb9+DmQVZqcb2rdhoRnOlWybm5rvoThHgEfbJ5P4QYV
-         G6+/0IBaDo0sOx0xi8W8Ojv8az0xJBRjndjnsn2/YEjpTsMOGlXDlctI+BodBlrTzOmc
-         1WEdPbrS/NRcTxuleM37uiyJ+5mxs1bhBVuNFbd/odLXIHRLq4HVXdvJGo8jEEHyd6gF
-         c1bR3BRfByuh7aSp5Reb0ltJt/QW35DgjHfqt6tfIdkM8+0mZ5qD2o+6/CeUQnoFmal0
-         aVtKi0fZO7k9NKTUEMMbGWZ9WXm3m19nzn8dm7PG3rEGZ5Rzvg056wMPxSIoaEuA2iFp
-         5qkQ==
-X-Gm-Message-State: AOAM532bM40EUVOsV3amDCxvsVwiwxCF4yx7rURGnhOMaSCTr43FcmFK
-        jVpR9SVSAxvCNkDFfIY9qiVPHw==
-X-Google-Smtp-Source: ABdhPJzGmax9buTiHVqEJkHAzARS1fg5sYe4LbJYbfcnI3urUJklCzBxgH4DMtXJTSWBGwtCFFh5LQ==
-X-Received: by 2002:a1c:1f06:: with SMTP id f6mr4540613wmf.55.1636440522693;
-        Mon, 08 Nov 2021 22:48:42 -0800 (PST)
-Received: from localhost ([154.21.15.43])
-        by smtp.gmail.com with ESMTPSA id o1sm19242782wru.91.2021.11.08.22.48.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Nov 2021 22:48:42 -0800 (PST)
-Date:   Tue, 9 Nov 2021 10:48:37 +0400
-From:   Dmitrii Banshchikov <me@ubique.spb.ru>
-To:     bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, rdna@fb.com, john.stultz@linaro.org,
-        sboyd@kernel.org, peterz@infradead.org, mark.rutland@arm.com,
-        rosted@goodmis.org
-Subject: Re: [PATCH bpf 2/2] selftests/bpf: Add tests for allowed helpers
-Message-ID: <20211109064837.qtokqcxf6yj6zbig@amnesia>
-References: <20211108164620.407305-1-me@ubique.spb.ru>
- <20211108164620.407305-3-me@ubique.spb.ru>
+        id S243403AbhKIHDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 02:03:08 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:36656 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S243389AbhKIHDC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 02:03:02 -0500
+X-UUID: 94ae060bcbb5478296e847ce0c92951a-20211109
+X-UUID: 94ae060bcbb5478296e847ce0c92951a-20211109
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <rocco.yue@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 2058828200; Tue, 09 Nov 2021 15:00:12 +0800
+Received: from mtkmbs10n2.mediatek.inc (172.21.101.183) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 9 Nov 2021 15:00:10 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
+ mtkmbs10n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Tue, 9 Nov 2021 15:00:10 +0800
+From:   Rocco Yue <rocco.yue@mediatek.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <Rocco.Yue@gmail.com>,
+        <chao.song@mediatek.com>, <zhuoliang.zhang@mediatek.com>,
+        <yanjie.jiang@mediatek.com>, Rocco Yue <rocco.yue@mediatek.com>
+Subject: [PATCH net-next] ipv6: don't generate link-local addr in random or privacy mode
+Date:   Tue, 9 Nov 2021 14:55:26 +0800
+Message-ID: <20211109065526.16772-1-rocco.yue@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211108164620.407305-3-me@ubique.spb.ru>
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 08, 2021 at 08:46:20PM +0400, Dmitrii Banshchikov wrote:
-> This patch adds tests that bpf_ktime_get_coarse_ns() and bpf_timer_* and
-> bpf_spin_lock()/bpf_spin_unlock() helpers are forbidden in tracing
-> progs as it may result in various locking issues.
-> 
-> Signed-off-by: Dmitrii Banshchikov <me@ubique.spb.ru>
-> ---
->  tools/testing/selftests/bpf/test_verifier.c   |  36 +++-
->  .../selftests/bpf/verifier/helper_allowed.c   | 196 ++++++++++++++++++
->  2 files changed, 231 insertions(+), 1 deletion(-)
->  create mode 100644 tools/testing/selftests/bpf/verifier/helper_allowed.c
-> 
-> diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
-> index 25afe423b3f0..e16eab6fc3a9 100644
-> --- a/tools/testing/selftests/bpf/test_verifier.c
-> +++ b/tools/testing/selftests/bpf/test_verifier.c
-> @@ -92,6 +92,7 @@ struct bpf_test {
->  	int fixup_map_event_output[MAX_FIXUPS];
->  	int fixup_map_reuseport_array[MAX_FIXUPS];
->  	int fixup_map_ringbuf[MAX_FIXUPS];
-> +	int fixup_map_timer[MAX_FIXUPS];
->  	/* Expected verifier log output for result REJECT or VERBOSE_ACCEPT.
->  	 * Can be a tab-separated sequence of expected strings. An empty string
->  	 * means no log verification.
-> @@ -605,7 +606,7 @@ static int create_cgroup_storage(bool percpu)
->   *   struct bpf_spin_lock l;
->   * };
->   */
-> -static const char btf_str_sec[] = "\0bpf_spin_lock\0val\0cnt\0l";
-> +static const char btf_str_sec[] = "\0bpf_spin_lock\0val\0cnt\0l\0bpf_timer\0";
+In the 3GPP TS 29.061, here is a description as follows:
+"In order to avoid any conflict between the link-local address
+of the MS and that of the GGSN, the Interface-Identifier used by
+the MS to build its link-local address shall be assigned by the
+GGSN. The GGSN ensures the uniqueness of this Interface-Identifier.
+The MT shall then enforce the use of this Interface-Identifier by
+the TE"
 
-There is extra null byte at the end.
+In other words, in the cellular network, GGSN determines whether
+to reply a solicited RA message by identifying the bottom 64 bits
+of the source address of the received RS message. Therefore,
+cellular network device's ipv6 link-local address should be set
+as the format of fe80::(GGSN assigned IID).
 
+To meet the above spec requirement, this patch adds two new
+addr_gen_mode:
 
+1) IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA, this mode is suitable
+for cellular networks that support RFC7217. In this mode, the
+kernel doesn't generate a link-local address for the cellular
+NIC, and generates an ipv6 stable privacy global address after
+receiving the RA message.
+
+2) IN6_ADDR_GEN_MODE_RANDOM_NO_LLA, in this mode, the kernel
+doesn't generate a link-local address for the cellular NIC,
+and will use the bottom 64 bits of the link-local address(same
+as the IID assigned by GGSN) to form an ipv6 global address
+after receiveing the RA message.
+
+Signed-off-by: Rocco Yue <rocco.yue@mediatek.com>
+---
+ include/uapi/linux/if_link.h       |  2 ++
+ net/ipv6/addrconf.c                | 22 ++++++++++++++++------
+ tools/include/uapi/linux/if_link.h |  2 ++
+ 3 files changed, 20 insertions(+), 6 deletions(-)
+
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index eebd3894fe89..9c5695744c7d 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -428,6 +428,8 @@ enum in6_addr_gen_mode {
+ 	IN6_ADDR_GEN_MODE_NONE,
+ 	IN6_ADDR_GEN_MODE_STABLE_PRIVACY,
+ 	IN6_ADDR_GEN_MODE_RANDOM,
++	IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA,
++	IN6_ADDR_GEN_MODE_RANDOM_NO_LLA,
+ };
+ 
+ /* Bridge section */
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 3445f8017430..0045de10f4b5 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -392,7 +392,8 @@ static struct inet6_dev *ipv6_add_dev(struct net_device *dev)
+ 	timer_setup(&ndev->rs_timer, addrconf_rs_timer, 0);
+ 	memcpy(&ndev->cnf, dev_net(dev)->ipv6.devconf_dflt, sizeof(ndev->cnf));
+ 
+-	if (ndev->cnf.stable_secret.initialized)
++	if (ndev->cnf.stable_secret.initialized &&
++	    ndev->cnf.addr_gen_mode != IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA)
+ 		ndev->cnf.addr_gen_mode = IN6_ADDR_GEN_MODE_STABLE_PRIVACY;
+ 
+ 	ndev->cnf.mtu6 = dev->mtu;
+@@ -2578,7 +2579,8 @@ static void manage_tempaddrs(struct inet6_dev *idev,
+ static bool is_addr_mode_generate_stable(struct inet6_dev *idev)
+ {
+ 	return idev->cnf.addr_gen_mode == IN6_ADDR_GEN_MODE_STABLE_PRIVACY ||
+-	       idev->cnf.addr_gen_mode == IN6_ADDR_GEN_MODE_RANDOM;
++	       idev->cnf.addr_gen_mode == IN6_ADDR_GEN_MODE_RANDOM ||
++	       idev->cnf.addr_gen_mode == IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA;
+ }
+ 
+ int addrconf_prefix_rcv_add_addr(struct net *net, struct net_device *dev,
+@@ -3331,6 +3333,8 @@ static void addrconf_addr_gen(struct inet6_dev *idev, bool prefix_route)
+ 					      0, 0, GFP_KERNEL);
+ 		break;
+ 	case IN6_ADDR_GEN_MODE_NONE:
++	case IN6_ADDR_GEN_MODE_RANDOM_NO_LLA:
++	case IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA:
+ 	default:
+ 		/* will not add any link local address */
+ 		break;
+@@ -5798,7 +5802,9 @@ static int check_addr_gen_mode(int mode)
+ 	if (mode != IN6_ADDR_GEN_MODE_EUI64 &&
+ 	    mode != IN6_ADDR_GEN_MODE_NONE &&
+ 	    mode != IN6_ADDR_GEN_MODE_STABLE_PRIVACY &&
+-	    mode != IN6_ADDR_GEN_MODE_RANDOM)
++	    mode != IN6_ADDR_GEN_MODE_RANDOM &&
++	    mode != IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA &&
++	    mode != IN6_ADDR_GEN_MODE_RANDOM_NO_LLA)
+ 		return -EINVAL;
+ 	return 1;
+ }
+@@ -6428,15 +6434,19 @@ static int addrconf_sysctl_stable_secret(struct ctl_table *ctl, int write,
+ 		for_each_netdev(net, dev) {
+ 			struct inet6_dev *idev = __in6_dev_get(dev);
+ 
+-			if (idev) {
++			if (idev && idev->cnf.addr_gen_mode !=
++			    IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA) {
+ 				idev->cnf.addr_gen_mode =
+ 					IN6_ADDR_GEN_MODE_STABLE_PRIVACY;
+ 			}
+ 		}
+ 	} else {
+ 		struct inet6_dev *idev = ctl->extra1;
+-
+-		idev->cnf.addr_gen_mode = IN6_ADDR_GEN_MODE_STABLE_PRIVACY;
++		if (idev->cnf.addr_gen_mode !=
++		    IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA) {
++			idev->cnf.addr_gen_mode =
++				IN6_ADDR_GEN_MODE_STABLE_PRIVACY;
++		}
+ 	}
+ 
+ out:
+diff --git a/tools/include/uapi/linux/if_link.h b/tools/include/uapi/linux/if_link.h
+index b3610fdd1fee..fb69137aea89 100644
+--- a/tools/include/uapi/linux/if_link.h
++++ b/tools/include/uapi/linux/if_link.h
+@@ -241,6 +241,8 @@ enum in6_addr_gen_mode {
+ 	IN6_ADDR_GEN_MODE_NONE,
+ 	IN6_ADDR_GEN_MODE_STABLE_PRIVACY,
+ 	IN6_ADDR_GEN_MODE_RANDOM,
++	IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA,
++	IN6_ADDR_GEN_MODE_RANDOM_NO_LLA,
+ };
+ 
+ /* Bridge section */
 -- 
+2.18.0
 
-Dmitrii Banshchikov
