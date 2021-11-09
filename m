@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6724544A399
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 02:26:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E91944A3A0
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 02:26:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243540AbhKIB1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 20:27:47 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50106 "EHLO mail.kernel.org"
+        id S242069AbhKIB1x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 20:27:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50424 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244215AbhKIBY7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 20:24:59 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E04A261B2F;
-        Tue,  9 Nov 2021 01:09:30 +0000 (UTC)
+        id S230441AbhKIBZM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 20:25:12 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 81CFC61B4A;
+        Tue,  9 Nov 2021 01:09:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636420171;
-        bh=I6YMP7D0RXYm5hmeBrttZmTmHBoqWCzSufs82EJtph0=;
+        s=k20201202; t=1636420191;
+        bh=hXW8FtxbzZ1SI7n0WtdWelRy0BL6GlcbWUAnMOdKOtQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=erFMbmJdU1QykTCShwcctnZr+MIeY/QB6xdIcvuwyqGe/bB7Ua35vWmBXJBmKeX06
-         Jjkd2AUEFFzdBIfi4WO/nxS5pzCe9DKeFREuAw3+jI6pXguuY5xWRL2+RcVro31Wmo
-         5FMu4mCNcPfTZDY9/gzt3fpPrEWLDoG5fL+xJyvW4rcdOGAGblB0sZ2o28j+lqvOTO
-         zoOUxV0z9LokyiQQciOFmfvMn6EFKuHDI+etyNByuZk1WRhkT9flJYF6Q4SWnfAKO6
-         StHWyOqUiqmk50fpvPvxue3zUxol4FipfPztZu+I9eLi8SQVEXiex97guipQeeXNIJ
-         wcF9pr24oWogw==
+        b=NBZpZENh6V5a+bsQ45AphrjcyNzfGEv63Gok7RjjqLRZbLD41uuxdRwtb09pr6APS
+         /dS0b2HCp/rTNly68/g2SRxPO9j4FAolyZxCDEptcdC/gECVcmux9Gbq5LHmHGOaLm
+         TkGy6xPR6wBie0Hmq3T0rYSeV5WIaizPS7fOpp0lUiovL13gwYpRwkBz05PfN/wS+5
+         CyMyDtPMC3AHx7d7t5lF4hz7egHEKVr32kiRkzG65nDzw83GCN19B78J3rx+kY8+XS
+         DpGpDZa6Xao4yekwq4uDtyiWR2GLloAZF+Jflqek+XlBplDQKUbyRxm5fVHzX+nZEC
+         EBg3wdFzRxPwQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     wangzhitong <wangzhitong@uniontech.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, paul@paul-moore.com,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-security-module@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 07/30] NET: IPV4: fix error "do not initialise globals to 0"
-Date:   Mon,  8 Nov 2021 20:08:55 -0500
-Message-Id: <20211109010918.1192063-7-sashal@kernel.org>
+Cc:     Tuo Li <islituo@gmail.com>, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 18/30] ath: dfs_pattern_detector: Fix possible null-pointer dereference in channel_detector_create()
+Date:   Mon,  8 Nov 2021 20:09:06 -0500
+Message-Id: <20211109010918.1192063-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211109010918.1192063-1-sashal@kernel.org>
 References: <20211109010918.1192063-1-sashal@kernel.org>
@@ -44,34 +44,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wangzhitong <wangzhitong@uniontech.com>
+From: Tuo Li <islituo@gmail.com>
 
-[ Upstream commit db9c8e2b1e246fc2dc20828932949437793146cc ]
+[ Upstream commit 4b6012a7830b813799a7faf40daa02a837e0fd5b ]
 
-this patch fixes below Errors reported by checkpatch
-    ERROR: do not initialise globals to 0
-    +int cipso_v4_rbm_optfmt = 0;
+kzalloc() is used to allocate memory for cd->detectors, and if it fails,
+channel_detector_exit() behind the label fail will be called:
+  channel_detector_exit(dpd, cd);
 
-Signed-off-by: wangzhitong <wangzhitong@uniontech.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+In channel_detector_exit(), cd->detectors is dereferenced through:
+  struct pri_detector *de = cd->detectors[i];
+
+To fix this possible null-pointer dereference, check cd->detectors before
+the for loop to dereference cd->detectors.
+
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Tuo Li <islituo@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20210805153854.154066-1-islituo@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/cipso_ipv4.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/ath/dfs_pattern_detector.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv4/cipso_ipv4.c b/net/ipv4/cipso_ipv4.c
-index e798e27b3c7d3..15d224cfe7c92 100644
---- a/net/ipv4/cipso_ipv4.c
-+++ b/net/ipv4/cipso_ipv4.c
-@@ -87,7 +87,7 @@ struct cipso_v4_map_cache_entry {
- static struct cipso_v4_map_cache_bkt *cipso_v4_cache;
- 
- /* Restricted bitmap (tag #1) flags */
--int cipso_v4_rbm_optfmt = 0;
-+int cipso_v4_rbm_optfmt;
- int cipso_v4_rbm_strictvalid = 1;
- 
- /*
+diff --git a/drivers/net/wireless/ath/dfs_pattern_detector.c b/drivers/net/wireless/ath/dfs_pattern_detector.c
+index 0835828ffed77..2f4b79102a27a 100644
+--- a/drivers/net/wireless/ath/dfs_pattern_detector.c
++++ b/drivers/net/wireless/ath/dfs_pattern_detector.c
+@@ -182,10 +182,12 @@ static void channel_detector_exit(struct dfs_pattern_detector *dpd,
+ 	if (cd == NULL)
+ 		return;
+ 	list_del(&cd->head);
+-	for (i = 0; i < dpd->num_radar_types; i++) {
+-		struct pri_detector *de = cd->detectors[i];
+-		if (de != NULL)
+-			de->exit(de);
++	if (cd->detectors) {
++		for (i = 0; i < dpd->num_radar_types; i++) {
++			struct pri_detector *de = cd->detectors[i];
++			if (de != NULL)
++				de->exit(de);
++		}
+ 	}
+ 	kfree(cd->detectors);
+ 	kfree(cd);
 -- 
 2.33.0
 
