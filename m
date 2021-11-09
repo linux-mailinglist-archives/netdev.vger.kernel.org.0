@@ -2,129 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0759844A477
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 03:13:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F0D344A48B
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 03:25:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235776AbhKICP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 21:15:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60086 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230190AbhKICP6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 21:15:58 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21DE1C061570
-        for <netdev@vger.kernel.org>; Mon,  8 Nov 2021 18:13:13 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id t21so18091482plr.6
-        for <netdev@vger.kernel.org>; Mon, 08 Nov 2021 18:13:13 -0800 (PST)
+        id S239167AbhKIC1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 21:27:43 -0500
+Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:53409 "EHLO
+        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236458AbhKIC1m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Nov 2021 21:27:42 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bluerivertech.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/KmtMbfeaXHuTAh4g4GRV6pvDUPLEEqbIUrWqrzrkr4=;
-        b=VWNXSJ7c9oewp5zwmjgYyTofl8MWUpyO6jYRfVKQMpradF2g0kPx/a5xHL6KxsQ9wK
-         MXAl9nBCktRejGnb+EpaTJXIlrbc/dLc3sDMzl7c8vOh9q9HJphZbsg/jkzuL5Lz1Fd3
-         Eq8fEQ3T25FrYfXgtaWA5RBiCgHctFnk6ZWeEJoSawDdsHUVsr7MklNomCPrQ9pzQKLS
-         2Or11Fc21Yzl/NwWgPDPxsseqlQkDKkYlnFK6PrBTUYnwE3FZqTfS4zzkANKXzgh1xvz
-         bQ8/1spX5YWKdjvj26yB2zQATsbg4l5hceLCKGGYoAhmlFH/F66eFFK5KGsr3/0xmRcz
-         agDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/KmtMbfeaXHuTAh4g4GRV6pvDUPLEEqbIUrWqrzrkr4=;
-        b=lqSgYUBl6z70aargdVv1jzaL2J9720ILiPGZHVkzAH0F8llYQ8W26bEmi20BiZfSd1
-         PdJXG4+QVx/qx4fByH/qx8IWcC2Tl5CXy9QlFteGuzecEAAoxfIoxIGORrCDq30EUp1Z
-         EUutrt8OulZfnhDjHkRkmtl3wcNwX0e59KpQYWpKP3WUAW9u8BeitHpop1BKRysGmFQH
-         owE2lmo8eI4hp2wteXRb95KudnUdD+yzPtZmi2CLks9dzsoPREjWNxS6LHacQYZo9TpS
-         yyJy+rDXi/EOmY0FFFuGy6BBUMagvJCp4bUtYDQqry5kKHkBRR/VZyIAjiI8v97xIwhe
-         VYoA==
-X-Gm-Message-State: AOAM5331bLOEEWT1aK94j1qeCTu8FaKZJKr1BDepWgLTkZEtxe8fmNKO
-        Dp0iEudKxapGrIKx8Bx1uvoqCQ==
-X-Google-Smtp-Source: ABdhPJyC/JZiHHGHtloHvx9nkuJ5gCvVSNoZw24JRS5IbnnnyMuqzg92vMXzIxZE9pBARpLr2NKFRw==
-X-Received: by 2002:a17:902:c412:b0:141:f710:2a94 with SMTP id k18-20020a170902c41200b00141f7102a94mr3465223plk.1.1636423992630;
-        Mon, 08 Nov 2021 18:13:12 -0800 (PST)
-Received: from localhost.localdomain (c-73-231-33-37.hsd1.ca.comcast.net. [73.231.33.37])
-        by smtp.gmail.com with ESMTPSA id 95sm576982pjo.2.2021.11.08.18.13.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Nov 2021 18:13:12 -0800 (PST)
-From:   Brian Silverman <brian.silverman@bluerivertech.com>
-Cc:     Brian Silverman <brian.silverman@bluerivertech.com>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Varka Bhadram <varkabhadram@gmail.com>,
-        Fengguang Wu <fengguang.wu@intel.com>,
-        Dong Aisheng <b29396@freescale.com>,
-        linux-can@vger.kernel.org (open list:MCAN MMIO DEVICE DRIVER),
-        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] can: m_can: Disable and ignore ELO interrupt
-Date:   Mon,  8 Nov 2021 18:12:40 -0800
-Message-Id: <20211109021240.3013-1-brian.silverman@bluerivertech.com>
-X-Mailer: git-send-email 2.20.1
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1636424697; x=1667960697;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=w8jv/A/IYbCa0tWJt2D+ZYeHok9e2nIopEFRk2QmQVQ=;
+  b=Fs13IVI1LYUhYoy25XC5CQ+yXSXGIE8ufiev/rhbwiQhlkxj6xY0FJPB
+   v0LebIQ+R3RxDn26u0eEW6Ks45iWFCvos16GqqLqDLxoLFokzcBs5RLki
+   A4s3+iz1StxjMjDBzsK8N2McCF+LJsr39RTTqL8aMfk8xDvcLdaX4YokY
+   Y=;
+X-IronPort-AV: E=Sophos;i="5.87,219,1631577600"; 
+   d="scan'208";a="150523948"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP; 09 Nov 2021 02:24:56 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com (Postfix) with ESMTPS id 5CD26810DC;
+        Tue,  9 Nov 2021 02:24:55 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.24; Tue, 9 Nov 2021 02:24:54 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.139) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.24; Tue, 9 Nov 2021 02:24:50 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <eric.dumazet@gmail.com>
+CC:     <benh@amazon.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 13/13] af_unix: Relax race in unix_autobind().
+Date:   Tue, 9 Nov 2021 11:24:46 +0900
+Message-ID: <20211109022446.25282-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <1d2e0a47-a486-0991-91e2-fed54163898e@gmail.com>
+References: <1d2e0a47-a486-0991-91e2-fed54163898e@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.139]
+X-ClientProxiedBy: EX13D42UWB003.ant.amazon.com (10.43.161.45) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With the design of this driver, this condition is often triggered.
-However, the counter that this interrupt indicates an overflow is never
-read either, so overflowing is harmless.
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Date:   Mon, 8 Nov 2021 15:10:24 -0800
+> On 11/6/21 2:17 AM, Kuniyuki Iwashima wrote:
+> > When we bind an AF_UNIX socket without a name specified, the kernel selects
+> > an available one from 0x00000 to 0xFFFFF.  unix_autobind() starts searching
+> > from a number in the 'static' variable and increments it after acquiring
+> > two locks.
+> > 
+> > If multiple processes try autobind, they obtain the same lock and check if
+> > a socket in the hash list has the same name.  If not, one process uses it,
+> > and all except one end up retrying the _next_ number (actually not, it may
+> > be incremented by the other processes).  The more we autobind sockets in
+> > parallel, the longer the latency gets.  We can avoid such a race by
+> > searching for a name from a random number.
+> > 
+> > These show latency in unix_autobind() while 64 CPUs are simultaneously
+> > autobind-ing 1024 sockets for each.
+> > 
+> >   Without this patch:
+> > 
+> >      usec          : count     distribution
+> >         0          : 1176     |***                                     |
+> >         2          : 3655     |***********                             |
+> >         4          : 4094     |*************                           |
+> >         6          : 3831     |************                            |
+> >         8          : 3829     |************                            |
+> >         10         : 3844     |************                            |
+> >         12         : 3638     |***********                             |
+> >         14         : 2992     |*********                               |
+> >         16         : 2485     |*******                                 |
+> >         18         : 2230     |*******                                 |
+> >         20         : 2095     |******                                  |
+> >         22         : 1853     |*****                                   |
+> >         24         : 1827     |*****                                   |
+> >         26         : 1677     |*****                                   |
+> >         28         : 1473     |****                                    |
+> >         30         : 1573     |*****                                   |
+> >         32         : 1417     |****                                    |
+> >         34         : 1385     |****                                    |
+> >         36         : 1345     |****                                    |
+> >         38         : 1344     |****                                    |
+> >         40         : 1200     |***                                     |
+> > 
+> >   With this patch:
+> > 
+> >      usec          : count     distribution
+> >         0          : 1855     |******                                  |
+> >         2          : 6464     |*********************                   |
+> >         4          : 9936     |********************************        |
+> >         6          : 12107    |****************************************|
+> >         8          : 10441    |**********************************      |
+> >         10         : 7264     |***********************                 |
+> >         12         : 4254     |**************                          |
+> >         14         : 2538     |********                                |
+> >         16         : 1596     |*****                                   |
+> >         18         : 1088     |***                                     |
+> >         20         : 800      |**                                      |
+> >         22         : 670      |**                                      |
+> >         24         : 601      |*                                       |
+> >         26         : 562      |*                                       |
+> >         28         : 525      |*                                       |
+> >         30         : 446      |*                                       |
+> >         32         : 378      |*                                       |
+> >         34         : 337      |*                                       |
+> >         36         : 317      |*                                       |
+> >         38         : 314      |*                                       |
+> >         40         : 298      |                                        |
+> > 
+> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> > ---
+> >  net/unix/af_unix.c | 21 +++++++++++----------
+> >  1 file changed, 11 insertions(+), 10 deletions(-)
+> > 
+> > diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+> > index 643f0358bf7a..55d570b23475 100644
+> > --- a/net/unix/af_unix.c
+> > +++ b/net/unix/af_unix.c
+> > @@ -1075,8 +1075,7 @@ static int unix_autobind(struct sock *sk)
+> >  	unsigned int new_hash, old_hash = sk->sk_hash;
+> >  	struct unix_sock *u = unix_sk(sk);
+> >  	struct unix_address *addr;
+> > -	unsigned int retries = 0;
+> > -	static u32 ordernum = 1;
+> > +	u32 initnum, ordernum;
+> >  	int err;
+> >  
+> >  	err = mutex_lock_interruptible(&u->bindlock);
+> > @@ -1091,31 +1090,33 @@ static int unix_autobind(struct sock *sk)
+> >  	if (!addr)
+> >  		goto out;
+> >  
+> > +	addr->len = offsetof(struct sockaddr_un, sun_path) + 6;
+> >  	addr->name->sun_family = AF_UNIX;
+> >  	refcount_set(&addr->refcnt, 1);
+> >  
+> > +	initnum = ordernum = prandom_u32();
+> >  retry:
+> > -	addr->len = sprintf(addr->name->sun_path + 1, "%05x", ordernum) +
+> > -		offsetof(struct sockaddr_un, sun_path) + 1;
+> > +	ordernum = (ordernum + 1) & 0xFFFFF;
+> > +	sprintf(addr->name->sun_path + 1, "%05x", ordernum);
+> >  
+> >  	new_hash = unix_abstract_hash(addr->name, addr->len, sk->sk_type);
+> >  	unix_table_double_lock(old_hash, new_hash);
+> > -	ordernum = (ordernum+1)&0xFFFFF;
+> >  
+> >  	if (__unix_find_socket_byname(sock_net(sk), addr->name, addr->len, new_hash)) {
+> >  		unix_table_double_unlock(old_hash, new_hash);
+> >  
+> > -		/*
+> > -		 * __unix_find_socket_byname() may take long time if many names
+> > +		/* __unix_find_socket_byname() may take long time if many names
+> >  		 * are already in use.
+> >  		 */
+> >  		cond_resched();
+> > -		/* Give up if all names seems to be in use. */
+> > -		if (retries++ == 0xFFFFF) {
+> > +
+> > +		if (ordernum == initnum) {
+> 
+> Infinite loop alert, in the likely case initnum >= 2^16
 
-On my system, when a CAN bus starts flapping up and down, this locks up
-the whole system with lots of interrupts and printks.
+Good catch!
+Thank you for reviewing.
 
-Specifically, this interrupt indicates the CEL field of ECR has
-overflowed. All reads of ECR mask out CEL.
+And I'm sorry for distraction in the merge window.
+I'll post v2 after that.
 
-Fixes: e0d1f4816f2a ("can: m_can: add Bosch M_CAN controller support")
-Signed-off-by: Brian Silverman <brian.silverman@bluerivertech.com>
----
- drivers/net/can/m_can/m_can.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 2470c47b2e31..91be87c4f4d3 100644
---- a/drivers/net/can/m_can/m_can.c
-+++ b/drivers/net/can/m_can/m_can.c
-@@ -204,16 +204,16 @@ enum m_can_reg {
- 
- /* Interrupts for version 3.0.x */
- #define IR_ERR_LEC_30X	(IR_STE	| IR_FOE | IR_ACKE | IR_BE | IR_CRCE)
--#define IR_ERR_BUS_30X	(IR_ERR_LEC_30X | IR_WDI | IR_ELO | IR_BEU | \
--			 IR_BEC | IR_TOO | IR_MRAF | IR_TSW | IR_TEFL | \
--			 IR_RF1L | IR_RF0L)
-+#define IR_ERR_BUS_30X	(IR_ERR_LEC_30X | IR_WDI | IR_BEU | IR_BEC | \
-+			 IR_TOO | IR_MRAF | IR_TSW | IR_TEFL | IR_RF1L | \
-+			 IR_RF0L)
- #define IR_ERR_ALL_30X	(IR_ERR_STATE | IR_ERR_BUS_30X)
- 
- /* Interrupts for version >= 3.1.x */
- #define IR_ERR_LEC_31X	(IR_PED | IR_PEA)
--#define IR_ERR_BUS_31X      (IR_ERR_LEC_31X | IR_WDI | IR_ELO | IR_BEU | \
--			 IR_BEC | IR_TOO | IR_MRAF | IR_TSW | IR_TEFL | \
--			 IR_RF1L | IR_RF0L)
-+#define IR_ERR_BUS_31X      (IR_ERR_LEC_31X | IR_WDI | IR_BEU | IR_BEC | \
-+			 IR_TOO | IR_MRAF | IR_TSW | IR_TEFL | IR_RF1L | \
-+			 IR_RF0L)
- #define IR_ERR_ALL_31X	(IR_ERR_STATE | IR_ERR_BUS_31X)
- 
- /* Interrupt Line Select (ILS) */
-@@ -810,8 +810,6 @@ static void m_can_handle_other_err(struct net_device *dev, u32 irqstatus)
- {
- 	if (irqstatus & IR_WDI)
- 		netdev_err(dev, "Message RAM Watchdog event due to missing READY\n");
--	if (irqstatus & IR_ELO)
--		netdev_err(dev, "Error Logging Overflow\n");
- 	if (irqstatus & IR_BEU)
- 		netdev_err(dev, "Bit Error Uncorrected\n");
- 	if (irqstatus & IR_BEC)
-
-base-commit: d2f38a3c6507b2520101f9a3807ed98f1bdc545a
--- 
-2.20.1
-
+> 
+> > +			/* Give up if all names seems to be in use. */
+> >  			err = -ENOSPC;
+> > -			kfree(addr);
+> > +			unix_release_addr(addr);
+> >  			goto out;
+> >  		}
+> > +
+> >  		goto retry;
+> >  	}
+> >  
+> > 
