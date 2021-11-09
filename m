@@ -2,120 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D92F44ACB4
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 12:34:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E41C944ACBF
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 12:35:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237599AbhKILhD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 06:37:03 -0500
-Received: from www62.your-server.de ([213.133.104.62]:41502 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232875AbhKILhC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 06:37:02 -0500
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mkPOG-000C7K-9O; Tue, 09 Nov 2021 12:34:12 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mkPOG-000U0z-3M; Tue, 09 Nov 2021 12:34:12 +0100
-Subject: Re: 4-year old off-by-two bug in the BPF verifier's boundary checks?
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>
-References: <279b0a91-506d-e657-022d-aad52c17dfc6@nvidia.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <fd6296d6-154c-814a-f088-e0567a566a21@iogearbox.net>
-Date:   Tue, 9 Nov 2021 12:34:11 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1343542AbhKILij (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 06:38:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45866 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239543AbhKILii (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 06:38:38 -0500
+Received: from mail-vk1-xa33.google.com (mail-vk1-xa33.google.com [IPv6:2607:f8b0:4864:20::a33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C7CC061764;
+        Tue,  9 Nov 2021 03:35:52 -0800 (PST)
+Received: by mail-vk1-xa33.google.com with SMTP id b125so9856366vkb.9;
+        Tue, 09 Nov 2021 03:35:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=c0Yph5k5PR6TeOU3I7k4EwQFxdX4oi2J5SYnWO8o0KU=;
+        b=Pe9oQC3BhxPWfC2irk/Tcu++9nUD29Fju0j/DACUlqjeF9TN/uoAczpOwrdY8t9WOp
+         DAB97v7IdKefWaPyLOHzbt+Y5DQ3hsr9T1OaDz9olA2Hz3v9XvUaFHHlheJhMOG3Y/4y
+         DyAy8cBueNt1q19JOoSJgAIp1EZHY771/qm+p0BPEDdxxxdEpdyr5vfvVRa36FK9F/VM
+         oI6BMDD8rL0DjqLTDlGPnGKLLSTCwuLn1a7OFVby+27FljKmAMq9e028vxoJ+KeaCt1a
+         7uRtX3BH7JC8KrJVSXZjsDX2XLCqj9JfkOjLZm1otzghtSPPYKDnnCep8I4yCfiOeh1P
+         a4xA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=c0Yph5k5PR6TeOU3I7k4EwQFxdX4oi2J5SYnWO8o0KU=;
+        b=5zqYPd6iI7gJUsL4Dg4dOWYQqS68Rwpf/SKa+XqrxfApgfPkrsL0bsQYNHSvwiQd2H
+         VFG57scHgtxT/mTktroBZ0VHy/r/Sh4SeNi5kQ5herW5fy4ESXW11XDvAN3c8B548Ef0
+         vKsfPf5TvS0+bYFWVNBhFjdn+mDSKvAOjZZ/Lh5UYHSzAaFLwBM8TmGBsge/qTg0Twbk
+         qN6RY5D7AV1I34Jw6vqnEiIgXBG/jQIBoov12puX08bzjek59BlVxu+VskDDzRdFRPbj
+         MjCArJu1CP2UCuxoCho4sUUlrs2k+W5wQWIoSf+Pu3uxG5bo4M8l3yNcCUGia3pi3at/
+         Na8A==
+X-Gm-Message-State: AOAM530IzzrpKq/Rkc/AQdKnxTu7IXsskyuYAK1v7mZ2wcSGKZ3xb8qR
+        VZtTC9+BwYTePKXqB5lWW5VWU1YjEvuMkzf5DSs=
+X-Google-Smtp-Source: ABdhPJwNss78ZLB+AQwkHzhdek2GHqgMm+PdQbj3KqVC1K0SBPVvplyCCxFUXMetP2Ue+G2CApQvbDMyNCmseKgslUM=
+X-Received: by 2002:a05:6122:1803:: with SMTP id ay3mr10286237vkb.24.1636457751664;
+ Tue, 09 Nov 2021 03:35:51 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <279b0a91-506d-e657-022d-aad52c17dfc6@nvidia.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26348/Tue Nov  9 10:18:36 2021)
+References: <20211101035635.26999-1-ricardo.martinez@linux.intel.com>
+ <CAHNKnsSW15BXq7WXmyG7SrrNA+Rqp_bKVneVNrpegJvDrh688Q@mail.gmail.com> <27811a97-6368-dab2-5163-cbd0169b8666@linux.intel.com>
+In-Reply-To: <27811a97-6368-dab2-5163-cbd0169b8666@linux.intel.com>
+From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Date:   Tue, 9 Nov 2021 14:35:40 +0300
+Message-ID: <CAHNKnsQ8k-mKCfK2UEiC-EZn13-4VPU3ygoT3a3s4nUw5bHvhQ@mail.gmail.com>
+Subject: Re: [PATCH v2 00/14] net: wwan: t7xx: PCIe driver for MediaTek M.2 modem
+To:     "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        M Chetan Kumar <m.chetan.kumar@intel.com>,
+        chandrashekar.devegowda@intel.com,
+        Intel Corporation <linuxwwan@intel.com>,
+        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
+        amir.hanania@intel.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        dinesh.sharma@intel.com, eliot.lee@intel.com,
+        mika.westerberg@linux.intel.com, moises.veleta@intel.com,
+        pierre-louis.bossart@intel.com, muralidharan.sethuraman@intel.com,
+        Soumya.Prakash.Mishra@intel.com, sreehari.kancharla@intel.com,
+        suresh.nagaraj@intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Maxim,
+On Tue, Nov 9, 2021 at 8:26 AM Martinez, Ricardo wrote:
+> On 11/6/2021 11:10 AM, Sergey Ryazanov wrote:
+>> A one nitpick that is common for the entire series. Please consider
+>> using a common prefix for all driver function names (e.g. t7xx_) to
+>> make them more specific. This should improve the code readability.
+>> Thus, any reader will know for sure that the called functions belong
+>> to the driver, and not to a generic kernel API. E.g. use the
+>> t7xx_cldma_hw_init() name for the  CLDMA initialization function
+>> instead of the too generic cldma_hw_init() name, etc.
+>
+> Does this apply to static functions as well?
 
-On 11/2/21 4:12 PM, Maxim Mikityanskiy wrote:
-> Hi guys,
-> 
-> I think I found cases where the BPF verifier mistakenly rejects valid BPF programs when doing pkt_end boundary checks, and the selftests for these cases test wrong things as well.
-> 
-> Daniel's commit fb2a311a31d3 ("bpf: fix off by one for range markings with L{T, E} patterns") [1] attempts to fix an off-by-one bug in boundary checks, but I think it shifts the index by 1 in a wrong direction, so instead of fixing, the bug becomes off-by-two.
-> 
-> A following commit b37242c773b2 ("bpf: add test cases to bpf selftests to cover all access tests") [2] adds unit tests to check the new behavior, but the tests look also wrong to me.
-> 
-> Let me analyze these two tests:
-> 
-> {
->          "XDP pkt read, pkt_data' > pkt_end, good access",
->          .insns = {
->          BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1, offsetof(struct xdp_md, data)),
->          BPF_LDX_MEM(BPF_W, BPF_REG_3, BPF_REG_1,
->                      offsetof(struct xdp_md, data_end)),
->          BPF_MOV64_REG(BPF_REG_1, BPF_REG_2),
->          BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, 8),
->          BPF_JMP_REG(BPF_JGT, BPF_REG_1, BPF_REG_3, 1),
->          BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, -8),
->          BPF_MOV64_IMM(BPF_REG_0, 0),
->          BPF_EXIT_INSN(),
->          },
->          .result = ACCEPT,
->          .prog_type = BPF_PROG_TYPE_XDP,
->          .flags = F_NEEDS_EFFICIENT_UNALIGNED_ACCESS,
-> },
-> 
-> {
->          "XDP pkt read, pkt_data' >= pkt_end, bad access 1",
->          .insns = {
->          BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1, offsetof(struct xdp_md, data)),
->          BPF_LDX_MEM(BPF_W, BPF_REG_3, BPF_REG_1,
->                      offsetof(struct xdp_md, data_end)),
->          BPF_MOV64_REG(BPF_REG_1, BPF_REG_2),
->          BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, 8),
->          BPF_JMP_REG(BPF_JGE, BPF_REG_1, BPF_REG_3, 1),
->          BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, -8),
->          BPF_MOV64_IMM(BPF_REG_0, 0),
->          BPF_EXIT_INSN(),
->          },
->          .errstr = "R1 offset is outside of the packet",
->          .result = REJECT,
->          .prog_type = BPF_PROG_TYPE_XDP,
->          .flags = F_NEEDS_EFFICIENT_UNALIGNED_ACCESS,
-> },
-> 
-> The first program looks good both to me and the verifier: if data + 8 > data_end, we bail out, otherwise, if data + 8 <= data_end, we read 8 bytes: [data; data+7].
-> 
-> The second program doesn't pass the verifier, and the test expects it to be rejected, but the program itself still looks fine to me: if data + 8 >= data_end, we bail out, otherwise, if data + 8 < data_end, we read 8 bytes: [data; data+7], and this is fine, because data + 7 is for sure < data_end. The verifier considers data + 7 to be out of bounds, although both data + 7 and data + 8 are still valid offsets, hence the off-by-two bug.
-> 
-> Are my considerations valid, or am I stupidly missing anything?
+As I wrote, this is a nitpick. As you can see in
+Documentation/process/coding-style.rst, there are no general rules for
+functions naming. My personal rule of thumb is that if  a function
+performs a very general operation (like averaging, interpolation,
+etc.), then a prefix can be omitted. If a function operation is
+specific for a module, then add a common module prefix to the function
+name. But again, this is my personal rule.
 
-Sorry for my late reply, bit too swamped lately. So we have the two variants:
+As for the driver, it was quite difficult to read the code that calls
+functions such as cldma_alloc(), cldma_init(). It was hard to figure
+out whether these functions are new kernel API or they are specific to
+the driver. A common way to solve such ambiguity issues is to prefix
+the driver function names. But again, this was just an attempt to draw
+your attention to the function naming. Feel free to name functions as
+you would like, just make the code readable for developers who are not
+familiar with the specific HW chip.
 
-   r2 = data;
-   r2 += 8;
-   if (r2 > data_end) goto <handle exception>
-     <access okay>
+>> Another common drawback is that the driver should break as soon as two
+>> modems are connected simultaneously. This should happen due to the use
+>> of multiple _global_ variables that keeps pointers to a modem runtime
+>> state. Out of curiosity, did you test the driver with two or more
+>> modems connected simultaneously?
+>
+> We haven't tested such configurations, we are focusing on platforms with one single modem.
 
-   r2 = data;
-   r2 += 8;
-   if (r2 >= data_end) goto <handle exception>
-     <access okay>
+Now you are aware of the potential kernel crash due to the global
+variables misuse. Please fix it.
 
-Technically, the first option is the more correct way to check, meaning, we have 8 bytes of
-access in the <access okay> branch. The second one is overly pessimistic in that if r2 equals
-data_end we bail out even though we wouldn't have to. So in that case <access okay> branch
-would have 9 bytes for access since r2 with offset 8 is already < data_end.
-
-Anyway, please send a fix and updated test cases. Thanks Maxim!
+-- 
+Sergey
