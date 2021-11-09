@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50B7C44AAE7
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 10:50:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66C4344AAEA
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 10:51:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245059AbhKIJxg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 04:53:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49794 "EHLO
+        id S245049AbhKIJxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 04:53:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242807AbhKIJxd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 04:53:33 -0500
+        with ESMTP id S245074AbhKIJxh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 04:53:37 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16B56C061767;
-        Tue,  9 Nov 2021 01:50:48 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C7B9C061764;
+        Tue,  9 Nov 2021 01:50:51 -0800 (PST)
 From:   Martin Kaistra <martin.kaistra@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1636451445;
+        s=2020; t=1636451450;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=QAIgtG2gp3vW7HRXGd/1SQnk8hM3CErk4xOJRxIoPy4=;
-        b=MxiShnBCeruIZ6OUNZDjlmPNckzWmVeIwodAdtDHG6sXcZ9jT/Oy1fKDexO4vZ8WQbolQZ
-        BR+sKRxo7z5Nl/JlzO84QX4lg09wZihftSfbKflXA+2XO2Wwbhroq+Q4WPUvIyu8Opgk8+
-        mooLozMhbuwRdiNhv2f448PjGb8ud4GD0IQShn0r2KkF7Lvw8qv5G6yFpTvIu5ZFGQQSb7
-        ImA8Q2j0nmilMe0L+VWYn00TzKDS9yix9sx5dV3S5+sMNZjMNaBRzrwLr1lv9IQYy9tzFU
-        qQaPb7hy5bdtaFh6xJYNq23rFXsnhTPOc9Uy0i9RH2KsiDuaffjowlJdQ5f1iA==
+        bh=7YbG2hfMz6xW/PCCxdMREuP3ECE7JRXSaX6c5e8BiT4=;
+        b=VQAKOd3FX8ayXWNWBddYNpGSWuEsHVO4+pJfdRXsv2nYwmgu8LiTmGLMjslL2E7BUTbJNh
+        dUcbW88NEmkxLLzUkEuOaJSq14zz2PDxzx03f737prjsXQnESEc8dwM3eP1aX6TyO9stmx
+        szdKtDMQJH6/NEr40C+wlCPjQCbDSk/iJsvu9mrDBHUh4kI5f8WC3N7mDq6a7GSJyBSWcG
+        TEZjnSEH6VVhKaJoTE/pAKp1gh0Rqe5HPeOnxwf0ngWyywSc2u30R+LZCXCWGZrnpU3SaO
+        cKnVtRMWp7jbVV2dSaOXX7GE5Q1cuYzhQvR9OGwgZb3e/4096aCKupWU5d7k1w==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1636451445;
+        s=2020e; t=1636451450;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=QAIgtG2gp3vW7HRXGd/1SQnk8hM3CErk4xOJRxIoPy4=;
-        b=l7HXjtYDaNWbSyXULGwrphGkVvQ3eIYb0bdPEbHuf1Pf4a3wJAxfDj4hZoghuXhFne/l+A
-        abmjQN4xEfj2cPCA==
+        bh=7YbG2hfMz6xW/PCCxdMREuP3ECE7JRXSaX6c5e8BiT4=;
+        b=U7NWNeeJLgWaTYKHm46ULD0N/00omlOgkZpUPCpdXqAort78/KTRotlpt3pPZAYV1rJvXl
+        o6lNPCgiRMVOulAg==
 To:     Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>
 Cc:     martin.kaistra@linutronix.de,
         Richard Cochran <richardcochran@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -51,125 +50,248 @@ Cc:     martin.kaistra@linutronix.de,
         Russell King <linux@armlinux.org.uk>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v2 1/7] net: dsa: b53: Add BroadSync HD register definitions
-Date:   Tue,  9 Nov 2021 10:50:03 +0100
-Message-Id: <20211109095013.27829-2-martin.kaistra@linutronix.de>
+Subject: [PATCH v2 2/7] net: dsa: b53: Move struct b53_device to include/linux/dsa/b53.h
+Date:   Tue,  9 Nov 2021 10:50:04 +0100
+Message-Id: <20211109095013.27829-3-martin.kaistra@linutronix.de>
 In-Reply-To: <20211109095013.27829-1-martin.kaistra@linutronix.de>
 References: <20211109095013.27829-1-martin.kaistra@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kurt Kanzenbach <kurt@linutronix.de>
+In order to access the b53 structs from net/dsa/tag_brcm.c move the
+definitions from drivers/net/dsa/b53/b53_priv.h to the new file
+include/linux/dsa/b53.h.
 
-Add register definitions for the BroadSync HD features of
-BCM53128. These will be used to enable PTP support.
-
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 Signed-off-by: Martin Kaistra <martin.kaistra@linutronix.de>
 ---
- drivers/net/dsa/b53/b53_regs.h | 71 ++++++++++++++++++++++++++++++++++
- 1 file changed, 71 insertions(+)
+ drivers/net/dsa/b53/b53_priv.h |  90 +----------------------------
+ include/linux/dsa/b53.h        | 100 +++++++++++++++++++++++++++++++++
+ 2 files changed, 101 insertions(+), 89 deletions(-)
+ create mode 100644 include/linux/dsa/b53.h
 
-diff --git a/drivers/net/dsa/b53/b53_regs.h b/drivers/net/dsa/b53/b53_regs.h
-index b2c539a42154..0deb11a7c9cd 100644
---- a/drivers/net/dsa/b53/b53_regs.h
-+++ b/drivers/net/dsa/b53/b53_regs.h
-@@ -50,6 +50,12 @@
- /* Jumbo Frame Registers */
- #define B53_JUMBO_PAGE			0x40
+diff --git a/drivers/net/dsa/b53/b53_priv.h b/drivers/net/dsa/b53/b53_priv.h
+index 579da74ada64..1652e489b737 100644
+--- a/drivers/net/dsa/b53/b53_priv.h
++++ b/drivers/net/dsa/b53/b53_priv.h
+@@ -23,44 +23,13 @@
+ #include <linux/mutex.h>
+ #include <linux/phy.h>
+ #include <linux/etherdevice.h>
+-#include <net/dsa.h>
++#include <linux/dsa/b53.h>
  
-+/* BroadSync HD Register Page */
-+#define B53_BROADSYNC_PAGE		0x90
-+
-+/* Traffic Remarking Register Page */
-+#define B53_TRAFFICREMARKING_PAGE	0x91
-+
- /* EEE Control Registers Page */
- #define B53_EEE_PAGE			0x92
+ #include "b53_regs.h"
  
-@@ -260,6 +266,27 @@
- /* Broadcom header TX control (16 bit)	*/
- #define B53_BRCM_HDR_TX_DIS		0x62
+-struct b53_device;
+ struct net_device;
+ struct phylink_link_state;
  
-+/*************************************************************************
-+ * ARL Control Registers
-+ *************************************************************************/
-+
-+/* Multiport Control Register (16 bit) */
-+#define B53_MPORT_CTRL			0x0e
-+#define   MPORT_CTRL_DIS_FORWARD	0
-+#define   MPORT_CTRL_CMP_ETYPE		1
-+#define   MPORT_CTRL_CMP_ADDR		2
-+#define   MPORT_CTRL_CMP_ADDR_ETYPE	3
-+#define   MPORT_CTRL_SHIFT(x)		((x) << 1)
-+#define   MPORT_CTRL_MASK		0x2
-+#define   MPORT0_TS_EN			BIT(15)
-+
-+/* Multiport Address N (N = 0–5) Register (64 bit) */
-+#define B53_MPORT_ADDR(n)		(0x10 + ((n) << 4))
-+#define   MPORT_ETYPE(x)		((u64)(x) << 48)
-+
-+/* Multiport Vector N (N = 0–5) Register (32 bit) */
-+#define B53_MPORT_VCTR(n)		(0x18 + ((n) << 4))
-+
- /*************************************************************************
-  * ARL Access Page Registers
-  *************************************************************************/
-@@ -479,6 +506,50 @@
- #define   JMS_MIN_SIZE			1518
- #define   JMS_MAX_SIZE			9724
+-struct b53_io_ops {
+-	int (*read8)(struct b53_device *dev, u8 page, u8 reg, u8 *value);
+-	int (*read16)(struct b53_device *dev, u8 page, u8 reg, u16 *value);
+-	int (*read32)(struct b53_device *dev, u8 page, u8 reg, u32 *value);
+-	int (*read48)(struct b53_device *dev, u8 page, u8 reg, u64 *value);
+-	int (*read64)(struct b53_device *dev, u8 page, u8 reg, u64 *value);
+-	int (*write8)(struct b53_device *dev, u8 page, u8 reg, u8 value);
+-	int (*write16)(struct b53_device *dev, u8 page, u8 reg, u16 value);
+-	int (*write32)(struct b53_device *dev, u8 page, u8 reg, u32 value);
+-	int (*write48)(struct b53_device *dev, u8 page, u8 reg, u64 value);
+-	int (*write64)(struct b53_device *dev, u8 page, u8 reg, u64 value);
+-	int (*phy_read16)(struct b53_device *dev, int addr, int reg, u16 *value);
+-	int (*phy_write16)(struct b53_device *dev, int addr, int reg, u16 value);
+-	int (*irq_enable)(struct b53_device *dev, int port);
+-	void (*irq_disable)(struct b53_device *dev, int port);
+-	u8 (*serdes_map_lane)(struct b53_device *dev, int port);
+-	int (*serdes_link_state)(struct b53_device *dev, int port,
+-				 struct phylink_link_state *state);
+-	void (*serdes_config)(struct b53_device *dev, int port,
+-			      unsigned int mode,
+-			      const struct phylink_link_state *state);
+-	void (*serdes_an_restart)(struct b53_device *dev, int port);
+-	void (*serdes_link_set)(struct b53_device *dev, int port,
+-				unsigned int mode, phy_interface_t interface,
+-				bool link_up);
+-	void (*serdes_phylink_validate)(struct b53_device *dev, int port,
+-					unsigned long *supported,
+-					struct phylink_link_state *state);
+-};
+-
+ #define B53_INVALID_LANE	0xff
  
-+/*************************************************************************
-+ * BroadSync HD Page Registers
-+ *************************************************************************/
+ enum {
+@@ -89,63 +58,6 @@ enum {
+ #define B53_N_PORTS	9
+ #define B53_N_PORTS_25	6
+ 
+-struct b53_port {
+-	u16		vlan_ctl_mask;
+-	struct ethtool_eee eee;
+-};
+-
+-struct b53_vlan {
+-	u16 members;
+-	u16 untag;
+-	bool valid;
+-};
+-
+-struct b53_device {
+-	struct dsa_switch *ds;
+-	struct b53_platform_data *pdata;
+-	const char *name;
+-
+-	struct mutex reg_mutex;
+-	struct mutex stats_mutex;
+-	struct mutex arl_mutex;
+-	const struct b53_io_ops *ops;
+-
+-	/* chip specific data */
+-	u32 chip_id;
+-	u8 core_rev;
+-	u8 vta_regs[3];
+-	u8 duplex_reg;
+-	u8 jumbo_pm_reg;
+-	u8 jumbo_size_reg;
+-	int reset_gpio;
+-	u8 num_arl_bins;
+-	u16 num_arl_buckets;
+-	enum dsa_tag_protocol tag_protocol;
+-
+-	/* used ports mask */
+-	u16 enabled_ports;
+-	unsigned int imp_port;
+-
+-	/* connect specific data */
+-	u8 current_page;
+-	struct device *dev;
+-	u8 serdes_lane;
+-
+-	/* Master MDIO bus we got probed from */
+-	struct mii_bus *bus;
+-
+-	void *priv;
+-
+-	/* run time configuration */
+-	bool enable_jumbo;
+-
+-	unsigned int num_vlans;
+-	struct b53_vlan *vlans;
+-	bool vlan_enabled;
+-	unsigned int num_ports;
+-	struct b53_port *ports;
+-};
+-
+ #define b53_for_each_port(dev, i) \
+ 	for (i = 0; i < B53_N_PORTS; i++) \
+ 		if (dev->enabled_ports & BIT(i))
+diff --git a/include/linux/dsa/b53.h b/include/linux/dsa/b53.h
+new file mode 100644
+index 000000000000..af782a1da362
+--- /dev/null
++++ b/include/linux/dsa/b53.h
+@@ -0,0 +1,100 @@
++/* SPDX-License-Identifier: ISC */
++/*
++ * Copyright (C) 2011-2013 Jonas Gorski <jogo@openwrt.org>
++ *
++ * Included by drivers/net/dsa/b53/b53_priv.h and net/dsa/tag_brcm.c
++ */
 +
-+/* BroadSync HD Enable Control Register (16 bit) */
-+#define B53_BROADSYNC_EN_CTRL		0x00
++#include <net/dsa.h>
 +
-+/* BroadSync HD Time Stamp Report Control Register */
-+#define B53_BROADSYNC_TS_REPORT_CTRL	0x02
-+#define   TSRPT_PKT_EN			BIT(0)
++struct b53_device;
++struct phylink_link_state;
 +
-+/* BroadSync HD PCP Value Control Register */
-+#define B53_BROADSYNC_PCP_CTRL		0x03
++struct b53_io_ops {
++	int (*read8)(struct b53_device *dev, u8 page, u8 reg, u8 *value);
++	int (*read16)(struct b53_device *dev, u8 page, u8 reg, u16 *value);
++	int (*read32)(struct b53_device *dev, u8 page, u8 reg, u32 *value);
++	int (*read48)(struct b53_device *dev, u8 page, u8 reg, u64 *value);
++	int (*read64)(struct b53_device *dev, u8 page, u8 reg, u64 *value);
++	int (*write8)(struct b53_device *dev, u8 page, u8 reg, u8 value);
++	int (*write16)(struct b53_device *dev, u8 page, u8 reg, u16 value);
++	int (*write32)(struct b53_device *dev, u8 page, u8 reg, u32 value);
++	int (*write48)(struct b53_device *dev, u8 page, u8 reg, u64 value);
++	int (*write64)(struct b53_device *dev, u8 page, u8 reg, u64 value);
++	int (*phy_read16)(struct b53_device *dev, int addr, int reg,
++			  u16 *value);
++	int (*phy_write16)(struct b53_device *dev, int addr, int reg,
++			   u16 value);
++	int (*irq_enable)(struct b53_device *dev, int port);
++	void (*irq_disable)(struct b53_device *dev, int port);
++	u8 (*serdes_map_lane)(struct b53_device *dev, int port);
++	int (*serdes_link_state)(struct b53_device *dev, int port,
++				 struct phylink_link_state *state);
++	void (*serdes_config)(struct b53_device *dev, int port,
++			      unsigned int mode,
++			      const struct phylink_link_state *state);
++	void (*serdes_an_restart)(struct b53_device *dev, int port);
++	void (*serdes_link_set)(struct b53_device *dev, int port,
++				unsigned int mode, phy_interface_t interface,
++				bool link_up);
++	void (*serdes_phylink_validate)(struct b53_device *dev, int port,
++					unsigned long *supported,
++					struct phylink_link_state *state);
++};
 +
-+/* BroadSync HD Max Packet Size Register */
-+#define B53_BROADSYNC_MAX_SDU		0x04
++struct b53_port {
++	u16 vlan_ctl_mask;
++	struct ethtool_eee eee;
++};
 +
-+/* BroadSync HD Time Base Register (32 bit) */
-+#define B53_BROADSYNC_TIMEBASE		0x10
++struct b53_vlan {
++	u16 members;
++	u16 untag;
++	bool valid;
++};
 +
-+/* BroadSync HD Time Base Adjustment Register (32 bit) */
-+#define B53_BROADSYNC_TIMEBASE_ADJ	0x14
++struct b53_device {
++	struct dsa_switch *ds;
++	struct b53_platform_data *pdata;
++	const char *name;
 +
-+/* BroadSync HD Slot Number and Tick Counter Register (32 bit) */
-+#define B53_BROADSYNC_SLOT_CNT		0x18
++	struct mutex reg_mutex;
++	struct mutex stats_mutex;
++	struct mutex arl_mutex;
++	const struct b53_io_ops *ops;
 +
-+/* BroadSync HD Slot Adjustment Register (32 bit) */
-+#define B53_BROADSYNC_SLOT_ADJ		0x1c
++	/* chip specific data */
++	u32 chip_id;
++	u8 core_rev;
++	u8 vta_regs[3];
++	u8 duplex_reg;
++	u8 jumbo_pm_reg;
++	u8 jumbo_size_reg;
++	int reset_gpio;
++	u8 num_arl_bins;
++	u16 num_arl_buckets;
++	enum dsa_tag_protocol tag_protocol;
 +
-+/* BroadSync HD Class 5 Bandwidth Control Register */
-+#define B53_BROADSYNC_CLS5_BW_CTRL	0x30
++	/* used ports mask */
++	u16 enabled_ports;
++	unsigned int imp_port;
 +
-+/* BroadSync HD Class 4 Bandwidth Control Register */
-+#define B53_BROADSYNC_CLS4_BW_CTRL	0x60
++	/* connect specific data */
++	u8 current_page;
++	struct device *dev;
++	u8 serdes_lane;
 +
-+/* BroadSync HD Egress Time Stamp Register */
-+#define B53_BROADSYNC_EGRESS_TS		0x90
++	/* Master MDIO bus we got probed from */
++	struct mii_bus *bus;
 +
-+/* BroadSync HD Egress Time Stamp Status Register */
-+#define B53_BROADSYNC_EGRESS_TS_STS	0xd0
++	void *priv;
 +
-+/* BroadSync HD Link Status Register (16 bit) */
-+#define B53_BROADSYNC_LINK_STS		0xe0
++	/* run time configuration */
++	bool enable_jumbo;
 +
- /*************************************************************************
-  * EEE Configuration Page Registers
-  *************************************************************************/
++	unsigned int num_vlans;
++	struct b53_vlan *vlans;
++	bool vlan_enabled;
++	unsigned int num_ports;
++	struct b53_port *ports;
++};
 -- 
 2.20.1
 
