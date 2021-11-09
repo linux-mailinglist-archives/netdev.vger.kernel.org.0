@@ -2,82 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B4B144B461
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 21:58:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8D9544B463
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 21:58:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244808AbhKIVBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 16:01:20 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:53386 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240544AbhKIVBT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Nov 2021 16:01:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Knm+1fWLBsxLEW41OBuptUN5iX3Ypk6GGtGuApg2Lwg=; b=wxMjZEwFBPrYee0kuYW/+Z9L6G
-        gZCtp1/tutHLV44lg973zw8Z6C4TQd3yd9YcdcSrhCNXpC+JSZr3xQMzWAL+SedrvmxZq6IGlZ7i9
-        NoqtU2kPqC/SlQVi/m3QE1Bmajrt8b9jvyC+VzdHj1gFXbyKKkYFSFCsKUnqYxSEUYFA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mkYCJ-00D1Tq-2t; Tue, 09 Nov 2021 21:58:27 +0100
-Date:   Tue, 9 Nov 2021 21:58:27 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Subject: Re: [RFC PATCH v3 4/8] leds: trigger: netdev: rename and expose
- NETDEV trigger enum modes
-Message-ID: <YYrg870zccL13+Mk@lunn.ch>
-References: <20211109022608.11109-1-ansuelsmth@gmail.com>
- <20211109022608.11109-5-ansuelsmth@gmail.com>
+        id S244834AbhKIVBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 16:01:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32792 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240544AbhKIVBY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 16:01:24 -0500
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 380C5C061764
+        for <netdev@vger.kernel.org>; Tue,  9 Nov 2021 12:58:38 -0800 (PST)
+Received: by mail-qk1-x72c.google.com with SMTP id bk22so416656qkb.6
+        for <netdev@vger.kernel.org>; Tue, 09 Nov 2021 12:58:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:from:subject:message-id:date:user-agent:mime-version
+         :content-transfer-encoding:content-language;
+        bh=uJLwi4hPqvjhVR79xyMVIuVqhjfSEa/IkEnpNp9BcHs=;
+        b=Cf5+FgVYBN1h0oPCy7/8Q24+U8kRDQcPrG2zjilQj1N6VcLJFw1453Yn1AdnvgkdPC
+         5oMMDimcrg4LlKZV7Z8iVoJ1olYq1kX+3Lf/j8sWRcyFI/SnbwiO+hUBR7UcVveG6jrm
+         zolNGU0+YE+vY+Y4PptG0p4ezhbo4qXgNagnbUqFvOhbJ3kvk4Ra4z9O2GrS0i638jpM
+         aofxHBhEasKdUl/GCKUW55PjD+/Edb5EU1hfvmbUD1cyyWhkttOXjnnLZdR6EPOhjuUu
+         Lx2QKEsXSIA0k6mBxEcybzeN+rcCNaXKZeT8UK6lgjtD04p9Ar8g8RjkuPgqaBMMvuEm
+         BrIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:to:from:subject:message-id:date:user-agent
+         :mime-version:content-transfer-encoding:content-language;
+        bh=uJLwi4hPqvjhVR79xyMVIuVqhjfSEa/IkEnpNp9BcHs=;
+        b=eHIpNAVe5lo3yJDuiCNbLs5eN3FAq87TkM3OUdHOGzaTz1mP6MNB8ajPGeQfzuqMx8
+         LmQw5WonTyeqp28WUCY+5pwBlS1rcAVf9oNDZVFEGAIllir8rLZXJlbB7yLAdnu1VOEb
+         v6GDNatTmkpVsEiktAw2rOPS7Aq+U9juc5xKD1nxf/o5Nf8R562jIh+cphV6e8jXdLNG
+         z+yLhWByPGOI/nPKyNidL/5ghcEG4Ty4LFUxBhRcFbWp+ZMNCRNoQalUE2Ndx7oIEcRg
+         AGN0Dp/I6H06HbpdV5fvocmu5Guhs3danxms+wSqdaIMT268x4ViRNVoJU0kCsdvwItT
+         kDkA==
+X-Gm-Message-State: AOAM532jXkMEIC+mqkSFW6wnkWTp7Tbf4RUOGQKjnRnm13X1xIGPXFAH
+        caqZ0aU+Ca0koojo/cXpJxBa6qbz5gg=
+X-Google-Smtp-Source: ABdhPJyDHglcAh5E+suJos5HImMiz6Rq31NHzKm4f2GFUCe4KJZOpHe5E1eQ0hMfX5UDqiMgKhOrgg==
+X-Received: by 2002:a37:a64f:: with SMTP id p76mr8516069qke.154.1636491517118;
+        Tue, 09 Nov 2021 12:58:37 -0800 (PST)
+Received: from [10.50.24.244] (wsip-184-181-13-226.ph.ph.cox.net. [184.181.13.226])
+        by smtp.gmail.com with ESMTPSA id e10sm12765359qte.57.2021.11.09.12.58.36
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Nov 2021 12:58:36 -0800 (PST)
+To:     netdev@vger.kernel.org
+From:   Johannes Lundberg <johalun0@gmail.com>
+Subject: Suitable value for bonding module's tx_queues?
+Message-ID: <948e62ad-2fe5-11e3-03a9-8382f7e8b6f1@gmail.com>
+Date:   Tue, 9 Nov 2021 13:58:35 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211109022608.11109-5-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 09, 2021 at 03:26:04AM +0100, Ansuel Smith wrote:
-> Rename NETDEV trigger enum modes to a more simbolic name and move them
+Hi
 
-symbolic. Randy is slipping :-)
+Please cc me on reply since I'm not subscribed.
 
-> in leds.h to make them accessible by any user.
+I'm wondering when you want to change tx_queues from default 16. Should 
+this match the total number of queues of all the members of the bond? 
+Let's say I got 2 interfaces, each with 24 queues on a 24 CPU system in 
+a bond. Should I load bonding with 24 to match the number of CPUs or 48 
+to match the total number of queues of the members, or leave at default 
+because it's not relevant?
 
-any user? I would be more specific than that. Other triggers dealing
-with netdev states?
+Thanks!
 
-> +++ b/include/linux/leds.h
-> @@ -548,6 +548,13 @@ static inline void *led_get_trigger_data(struct led_classdev *led_cdev)
->  
->  #endif /* CONFIG_LEDS_TRIGGERS */
->  
-> +/* Trigger specific enum */
-
-You probably want netdev in the comment above. Things could get
-interesting if other ledtrig-*.c started using them.
-
-> +enum led_trigger_netdev_modes {
-> +	TRIGGER_NETDEV_LINK,
-> +	TRIGGER_NETDEV_TX,
-> +	TRIGGER_NETDEV_RX,
-> +};
-> +
->  /* Trigger specific functions */
->  #ifdef CONFIG_LEDS_TRIGGER_DISK
->  void ledtrig_disk_activity(bool write);
-> -- 
-> 2.32.0
-> 
