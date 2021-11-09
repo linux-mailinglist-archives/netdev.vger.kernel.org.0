@@ -2,69 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCC2B44AF36
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 15:10:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BC2E44AF3C
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 15:12:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236744AbhKIOM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 09:12:57 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49970 "EHLO mail.kernel.org"
+        id S236800AbhKIOPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 09:15:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50824 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234374AbhKIOMx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Nov 2021 09:12:53 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 60B45611C5;
-        Tue,  9 Nov 2021 14:10:07 +0000 (UTC)
+        id S236744AbhKIOPY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Nov 2021 09:15:24 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4072961077;
+        Tue,  9 Nov 2021 14:12:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636467007;
-        bh=zn5UzZl7c1y46/sBicFGO6ktBWwvdCl5cH4ZCLRo0yM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=a3/LnwMToOwIAG/7jfvd4yp51Hz5zUVpHdlSKfTv6o3+PYfVhPoalqMTOQBSNv3ow
-         3tZ7c6JxHq3V3TiUKsNdLv9oNkFv7Xjkg6STYIHaJq7pR5xM4Klge+BNkk8XWMHXy3
-         QrmpWYJ/U78L5dVy9Dal++OIt/sVuN+dPLtID4vrITA406jZPLr99Qgt1f4SmUYvh1
-         qim/uI6XiG4fNFrMB2KpXtfX3NIoJsBY8021Y416vvb4VZ9mpSsz49/rqI3W/hHMRV
-         drJc/YSvhcowh2y0uXVOzR+iOBhBwjwgEYxP/Fa187CWN3Hhhhbb0yWjMxBy6zAaXW
-         z3vf/9LetuwKw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5476360A3C;
-        Tue,  9 Nov 2021 14:10:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1636467157;
+        bh=ibv5S3X3VOybyGY3Q4Atuq9j4OFPKFJkJ3B8gu8K7Kg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=B/Ls0f0Foznn6ADcKqiqjnJzca/VLfd7pfTjeKFGhf3jzXOl3NeH26uy9+PorCvqf
+         EpaqHuUbmwLMwP1VfXNHx8EoIv12kyo3wDTPS/tYej3KhGSHOA5ehBkzo7RrmQQZI0
+         CbTMJlbBHclZLlPQDwnis9v8aqBXFhQJ5Ytfcubx63SDcuQqW0BjqsaqRdNk9k1h9Z
+         h1YbS5YZXNY+iN2GdWt58KslyvapZwK5FlDZ28ZdPZubcx7ejMVLBoOTWbOHgMEPIv
+         Kx8x3lJ9l/KJ+zMhqxOPmpROTeNDHMO+4IGY2/Ch12XVXAH6XcxSyItw3SoI+p4vaj
+         bHjV1SsAeb41w==
+Date:   Tue, 9 Nov 2021 16:12:33 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ido Schimmel <idosch@idosch.org>, Jiri Pirko <jiri@resnulli.us>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, edwin.peer@broadcom.com
+Subject: Re: [PATCH net-next] devlink: Require devlink lock during device
+ reload
+Message-ID: <YYqB0VZcWnmtSS91@unreal>
+References: <20211101161122.37fbb99d@kicinski-fedora-PC1C0HJN>
+ <YYgJ1bnECwUWvNqD@shredder>
+ <YYgSzEHppKY3oYTb@unreal>
+ <20211108080918.2214996c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YYlfI4UgpEsMt5QI@unreal>
+ <20211108101646.0a4e5ca4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YYlrZZTdJKhha0FF@unreal>
+ <20211108104608.378c106e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YYmBbJ5++iO4MOo7@unreal>
+ <20211108153126.1f3a8fe8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] amt: add IPV6 Kconfig dependency
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163646700734.20937.7035104041345204085.git-patchwork-notify@kernel.org>
-Date:   Tue, 09 Nov 2021 14:10:07 +0000
-References: <20211108111322.3852690-1-arnd@kernel.org>
-In-Reply-To: <20211108111322.3852690-1-arnd@kernel.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, ap420073@gmail.com,
-        arnd@arndb.de, loic.poulain@linaro.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211108153126.1f3a8fe8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Mon,  8 Nov 2021 12:12:24 +0100 you wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+On Mon, Nov 08, 2021 at 03:31:26PM -0800, Jakub Kicinski wrote:
+> On Mon, 8 Nov 2021 21:58:36 +0200 Leon Romanovsky wrote:
+> > > > > nfp will benefit from the simplified locking as well, and so will bnxt,
+> > > > > although I'm not sure the maintainers will opt for using devlink framework
+> > > > > due to the downstream requirements.    
+> > > > 
+> > > > Exactly why devlink should be fixed first.  
+> > > 
+> > > If by "fixed first" you mean it needs 5 locks to be added and to remove
+> > > any guarantees on sub-object lifetime then no thanks.  
+> > 
+> > How do you plan to fix pernet_ops_rwsem lock? By exposing devlink state
+> > to the drivers? By providing unlocked version of unregister_netdevice_notifier?
+> > 
+> > This simple scenario has deadlocks:
+> > sudo ip netns add n1
+> > sudo devlink dev reload pci/0000:00:09.0 netns n1
+> > sudo ip netns del n1
 > 
-> This driver cannot be built-in if IPV6 is a loadable module:
+> Okay - I'm not sure why you're asking me this. This is not related to
+> devlink locking as far as I can tell. Neither are you fixing this
+> problem in your own RFC.
+
+I asked you because you clearly showed to me that things that makes
+sense for me, doesn't make sense for you and vice versa.
+
+I don't want to do work that will be thrown away.
+
 > 
-> x86_64-linux-ld: drivers/net/amt.o: in function `amt_build_mld_gq':
-> amt.c:(.text+0x2e7d): undefined reference to `ipv6_dev_get_saddr'
-> 
-> [...]
+> You'd need to tell me more about what the notifier is used for (I see
+> RoCE in the call trace). I don't understand why you need to re-register 
+> a global (i.e. not per netns) notifier when devlink is switching name
+> spaces.
 
-Here is the summary with links:
-  - amt: add IPV6 Kconfig dependency
-    https://git.kernel.org/netdev/net/c/9758aba8542b
+RDMA subsystem supports two net namespace aware scenarios.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+We need global netdev_notifier for shared mode. This is legacy mode where
+we listen to all namespaces. We must support this mode otherwise we break
+whole RDMA world.
 
+See commit below:
+de641d74fb00 ("Revert "RDMA/mlx5: Fix devlink deadlock on net namespace deletion"")
 
+Thanks
