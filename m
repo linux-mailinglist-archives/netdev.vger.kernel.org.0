@@ -2,137 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7F9D44B230
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 18:51:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88D8C44B24A
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 19:04:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241395AbhKIRxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 12:53:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46822 "EHLO
+        id S241457AbhKISHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 13:07:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239360AbhKIRxp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 12:53:45 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B003AC061764
-        for <netdev@vger.kernel.org>; Tue,  9 Nov 2021 09:50:59 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mkVGs-0002Fu-03; Tue, 09 Nov 2021 18:50:58 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mkVGq-0000Xo-Lk; Tue, 09 Nov 2021 18:50:56 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mkVGp-0001gs-I3; Tue, 09 Nov 2021 18:50:56 +0100
-Date:   Tue, 9 Nov 2021 18:50:55 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        kernel@pengutronix.de, Jakub Kicinski <kuba@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH net-next] net: dsa: Some cleanups in remove code
-Message-ID: <20211109175055.46rytrdejv56hkxv@pengutronix.de>
-References: <20211109113921.1020311-1-u.kleine-koenig@pengutronix.de>
- <20211109115434.oejplrd7rzmvad34@skbuf>
+        with ESMTP id S241149AbhKISHI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 13:07:08 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C0DC061764;
+        Tue,  9 Nov 2021 10:04:22 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id t21so22363433plr.6;
+        Tue, 09 Nov 2021 10:04:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=PeT5cLUiL6MHK4FPkOiax8dsT/NJjA4TiyxrikVui0U=;
+        b=ZPvL/1Sl2S2wwAZprgutj0NzY6JOpVvTIpv3J9QZCCr2WLtzzjcNFfgEbp2lUdQqpZ
+         m3j8vIS+fAASyftuBWg0RQPnNObtl9APHubBrwLFehTGhvz5Z9waBmBYGI0UNa/YM7kC
+         YxOTw/NPRhMvCpSDRs+MiKrRbRIlxsyLBJl8Iu8Uz4ycrJtL59qQ2svQGb9hk0cyMDwO
+         dx7RFzpZphk3KEKyT39dJRCXvwB36DcfoBOPwlgTmgWhndLutwFDC2qv5aejDqEt10s9
+         tnXph4QFj6QJUXBDaq4VWpPNMrUxgnI0K1QJN1ejdWA0+TY/F2g0BksSoBb8xZVRIG13
+         PP4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=PeT5cLUiL6MHK4FPkOiax8dsT/NJjA4TiyxrikVui0U=;
+        b=k+ojwyiH9h7ws7W8oUnoc2jjCY7TnkVpYNfDW96I3NRD/LONdtGPGZEl9xFRQWtLEx
+         1mLrlaxFb4yhw3EXMRpN4lu8b4yt1kTWEkD//tSHrgyCj5h+wfdZpyq0pW03f9gc7WUh
+         1ZJ1YPafUqNPUAeO54OkLoxh2xjPxoE6yjVc1a5cYyfxg3HgAi+n9G1ZaNo2zRVEQvWa
+         RJHlDM64wKYbIDCI+ObSOCgMGHYUgGBn8mXuu29AjVMl/DsaAAfuQ5FS/gnSPKtwxnEQ
+         sBsDz4kMv6XQH6zUW68Q4YyMNd2gOPihKZmiUPcGmci2YXBhEAUM8mpHccGgTBXF3uER
+         bTVg==
+X-Gm-Message-State: AOAM533iNFiiEf9+KgW7ZehHQHRsjT0uxwV4wldVSPYOtSbhU0v4q5bW
+        DZcnKfL44lKChsB2zyWdBxO0EtlVXi0=
+X-Google-Smtp-Source: ABdhPJw02X/e5A9sK0sFEhlBu+UWo3oyq5AeQNpoliTmqKx4V5AZTk84nYNv2G0jqGjUyWtPTMLcOQ==
+X-Received: by 2002:a17:90a:ad47:: with SMTP id w7mr9479225pjv.16.1636481061410;
+        Tue, 09 Nov 2021 10:04:21 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id co4sm3229462pjb.2.2021.11.09.10.04.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Nov 2021 10:04:20 -0800 (PST)
+Subject: Re: [PATCH v2 1/7] net: dsa: b53: Add BroadSync HD register
+ definitions
+To:     Martin Kaistra <martin.kaistra@linutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20211109095013.27829-1-martin.kaistra@linutronix.de>
+ <20211109095013.27829-2-martin.kaistra@linutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <6839c4e9-123d-227a-630d-fae8a2df6483@gmail.com>
+Date:   Tue, 9 Nov 2021 10:04:19 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="hi7hemjrusbjl3eu"
-Content-Disposition: inline
-In-Reply-To: <20211109115434.oejplrd7rzmvad34@skbuf>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <20211109095013.27829-2-martin.kaistra@linutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 11/9/21 1:50 AM, Martin Kaistra wrote:
+> From: Kurt Kanzenbach <kurt@linutronix.de>
+> 
+> Add register definitions for the BroadSync HD features of
+> BCM53128. These will be used to enable PTP support.
+> 
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> Signed-off-by: Martin Kaistra <martin.kaistra@linutronix.de>
+> ---
 
---hi7hemjrusbjl3eu
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+[snip]
 
-Hello,
+> +/*************************************************************************
+> + * ARL Control Registers
+> + *************************************************************************/
+> +
+> +/* Multiport Control Register (16 bit) */
+> +#define B53_MPORT_CTRL			0x0e
+> +#define   MPORT_CTRL_DIS_FORWARD	0
+> +#define   MPORT_CTRL_CMP_ETYPE		1
+> +#define   MPORT_CTRL_CMP_ADDR		2
+> +#define   MPORT_CTRL_CMP_ADDR_ETYPE	3
+> +#define   MPORT_CTRL_SHIFT(x)		((x) << 1)
+> +#define   MPORT_CTRL_MASK		0x2
 
-Cc +=3D gregkh, maybe he has something to say on this matter
-
-On Tue, Nov 09, 2021 at 01:54:34PM +0200, Vladimir Oltean wrote:
-> Your commit prefix does not reflect the fact that you are touching the
-> vsc73xx driver. Try "net: dsa: vsc73xx: ".
-
-Oh, I missed that indeed.
-
-> On Tue, Nov 09, 2021 at 12:39:21PM +0100, Uwe Kleine-K=F6nig wrote:
-> > vsc73xx_remove() returns zero unconditionally and no caller checks the
-> > returned value. So convert the function to return no value.
->=20
-> This I agree with.
->=20
-> > For both the platform and the spi variant ..._get_drvdata() will never
-> > return NULL in .remove() because the remove callback is only called aft=
-er
-> > the probe callback returned successfully and in this case driver data w=
-as
-> > set to a non-NULL value.
->=20
-> Have you read the commit message of 0650bf52b31f ("net: dsa: be
-> compatible with masters which unregister on shutdown")?
-
-No. But I did now. I consider it very surprising that .shutdown() calls
-the .remove() callback and would recommend to not do this. The commit
-log seems to prove this being difficult.
-
-> To remove the check for dev_get_drvdata =3D=3D NULL in ->remove, you need=
- to
-> prove that ->remove will never be called after ->shutdown. For platform
-> devices this is pretty easy to prove, for SPI devices not so much.
-> I intentionally kept the code structure the same because code gets
-> copied around a lot, it is easy to copy from the wrong place.
-
-Alternatively remove spi_set_drvdata(spi, NULL); from
-vsc73xx_spi_shutdown()? Also I'm not aware how platform devices are
-different to spi devices that the ordering of .remove and shutdown() is
-more or less obvious than on the other bus?!
-
-> > Also setting driver data to NULL is not necessary, this is already done
-> > in the driver core in __device_release_driver(), so drop this from the
-> > remove callback, too.
->=20
-> And this was also intentional, for visibility more or less. I would like
-> you to ack that you understand the problems surrounding ->remove/->shutdo=
-wn
-> ordering for devices on buses, prior to making seemingly trivial cleanups.
-
-I see that the change is not so obviously correct as I thought. I'll
-have to think about this and will respin if and when I find a sane way
-forward.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---hi7hemjrusbjl3eu
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmGKtPwACgkQwfwUeK3K
-7AlwHQf/brAIABdCMSAp/6DHcYUD/ICoES+9/4kti0C1mV/wyWxruLLPz2BIhm00
-iE2vwod3N3g1RIULX9RJlMAuCAc6L/D8H2ZDWqAw8gYQYm+g/V64pSOYs8s94YHM
-g8bqeocRXmmiMD3dsDhK0SjKRoQ//vnNPR6q7Pv5s2IWo/2Q0CKD6DKl+Wz5b3fF
-0N2y8cJOm75PvYWTEJGFg7cBqTU5wpcjdfaW2rDM3a4Ww6P+0q1abe76qSMAxfVU
-KA0XTxqdOAmy0nUQhYQ5iRbAxu301qg21XbGmEnGtmd0O2vvCbqmYMtEM7WyrBd/
-f1Sqi/xKdg6djkekPwlrWBrEQxQVAQ==
-=bvYm
------END PGP SIGNATURE-----
-
---hi7hemjrusbjl3eu--
+The mask should be 0x3 since this is a 2-bit wide field.
+-- 
+Florian
