@@ -2,77 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8D9544B463
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 21:58:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 971AC44B467
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 22:02:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244834AbhKIVBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 16:01:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32792 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240544AbhKIVBY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 16:01:24 -0500
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 380C5C061764
-        for <netdev@vger.kernel.org>; Tue,  9 Nov 2021 12:58:38 -0800 (PST)
-Received: by mail-qk1-x72c.google.com with SMTP id bk22so416656qkb.6
-        for <netdev@vger.kernel.org>; Tue, 09 Nov 2021 12:58:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:from:subject:message-id:date:user-agent:mime-version
-         :content-transfer-encoding:content-language;
-        bh=uJLwi4hPqvjhVR79xyMVIuVqhjfSEa/IkEnpNp9BcHs=;
-        b=Cf5+FgVYBN1h0oPCy7/8Q24+U8kRDQcPrG2zjilQj1N6VcLJFw1453Yn1AdnvgkdPC
-         5oMMDimcrg4LlKZV7Z8iVoJ1olYq1kX+3Lf/j8sWRcyFI/SnbwiO+hUBR7UcVveG6jrm
-         zolNGU0+YE+vY+Y4PptG0p4ezhbo4qXgNagnbUqFvOhbJ3kvk4Ra4z9O2GrS0i638jpM
-         aofxHBhEasKdUl/GCKUW55PjD+/Edb5EU1hfvmbUD1cyyWhkttOXjnnLZdR6EPOhjuUu
-         Lx2QKEsXSIA0k6mBxEcybzeN+rcCNaXKZeT8UK6lgjtD04p9Ar8g8RjkuPgqaBMMvuEm
-         BrIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:to:from:subject:message-id:date:user-agent
-         :mime-version:content-transfer-encoding:content-language;
-        bh=uJLwi4hPqvjhVR79xyMVIuVqhjfSEa/IkEnpNp9BcHs=;
-        b=eHIpNAVe5lo3yJDuiCNbLs5eN3FAq87TkM3OUdHOGzaTz1mP6MNB8ajPGeQfzuqMx8
-         LmQw5WonTyeqp28WUCY+5pwBlS1rcAVf9oNDZVFEGAIllir8rLZXJlbB7yLAdnu1VOEb
-         v6GDNatTmkpVsEiktAw2rOPS7Aq+U9juc5xKD1nxf/o5Nf8R562jIh+cphV6e8jXdLNG
-         z+yLhWByPGOI/nPKyNidL/5ghcEG4Ty4LFUxBhRcFbWp+ZMNCRNoQalUE2Ndx7oIEcRg
-         AGN0Dp/I6H06HbpdV5fvocmu5Guhs3danxms+wSqdaIMT268x4ViRNVoJU0kCsdvwItT
-         kDkA==
-X-Gm-Message-State: AOAM532jXkMEIC+mqkSFW6wnkWTp7Tbf4RUOGQKjnRnm13X1xIGPXFAH
-        caqZ0aU+Ca0koojo/cXpJxBa6qbz5gg=
-X-Google-Smtp-Source: ABdhPJyDHglcAh5E+suJos5HImMiz6Rq31NHzKm4f2GFUCe4KJZOpHe5E1eQ0hMfX5UDqiMgKhOrgg==
-X-Received: by 2002:a37:a64f:: with SMTP id p76mr8516069qke.154.1636491517118;
-        Tue, 09 Nov 2021 12:58:37 -0800 (PST)
-Received: from [10.50.24.244] (wsip-184-181-13-226.ph.ph.cox.net. [184.181.13.226])
-        by smtp.gmail.com with ESMTPSA id e10sm12765359qte.57.2021.11.09.12.58.36
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Nov 2021 12:58:36 -0800 (PST)
+        id S244847AbhKIVFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 16:05:11 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:60560 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244824AbhKIVFK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 16:05:10 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id F1B8D1FD59
+        for <netdev@vger.kernel.org>; Tue,  9 Nov 2021 21:02:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1636491742; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=sSFP0KEcTCKx46JUUjd3ZUUAf42Y7qIjHHAEkod9NGo=;
+        b=YKQ2O8YV6gKRYk2xjY8m2t4oRxP+mAR49gMeqwm2UKJXl4QzpgTIVjvvZtBfCR7Aer0F5U
+        3N+r6Bx15RRyKbjmzbjR0INKYi1vl/QPME3eTBOcSsbv7i8px1v1OWFyclxpCm56KTdlLv
+        EvXAf9apn4OZcwOE0LI66C0Ucva5wSc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1636491742;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=sSFP0KEcTCKx46JUUjd3ZUUAf42Y7qIjHHAEkod9NGo=;
+        b=VL3az3sOZJJMlrd3pmA8k1aHL2zWOGcUhHGtih4q+/3lr9q1I5CtwmHiWIvRKmyEYqY81i
+        tSZD1Ov0lD2KK6BA==
+Received: from lion.mk-sys.cz (unknown [10.100.200.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id E9D84A3B83
+        for <netdev@vger.kernel.org>; Tue,  9 Nov 2021 21:02:22 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id D2B3E602D1; Tue,  9 Nov 2021 22:02:22 +0100 (CET)
+Date:   Tue, 9 Nov 2021 22:02:22 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
 To:     netdev@vger.kernel.org
-From:   Johannes Lundberg <johalun0@gmail.com>
-Subject: Suitable value for bonding module's tx_queues?
-Message-ID: <948e62ad-2fe5-11e3-03a9-8382f7e8b6f1@gmail.com>
-Date:   Tue, 9 Nov 2021 13:58:35 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+Subject: ethtool 5.15 released
+Message-ID: <20211109210222.oofsxukjmxgebunw@lion.mk-sys.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="epu27kyqf6mdfo4x"
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi
 
-Please cc me on reply since I'm not subscribed.
+--epu27kyqf6mdfo4x
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-I'm wondering when you want to change tx_queues from default 16. Should 
-this match the total number of queues of all the members of the bond? 
-Let's say I got 2 interfaces, each with 24 queues on a 24 CPU system in 
-a bond. Should I load bonding with 24 to match the number of CPUs or 48 
-to match the total number of queues of the members, or leave at default 
-because it's not relevant?
+Hello,
 
-Thanks!
+ethtool 5.15 has been released.
 
+Home page: https://www.kernel.org/pub/software/network/ethtool/
+Download link:
+https://www.kernel.org/pub/software/network/ethtool/ethtool-5.15.tar.xz
+
+Relase notes:
+
+	* Feature: new extended link substates for bad signal (no arg)
+	* Feature: coalesce cqe mode attributes (-c and -C)
+	* Fix: multiple fixes of EEPROM module data parsing (-m)
+	* Fix: fix condition to display MDI-X info (no arg)
+
+Michal
+
+--epu27kyqf6mdfo4x
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmGK4c4ACgkQ538sG/LR
+dpU0pAf/faTCNtQphlTlqX1X6I4BX8Vv7Y7mLWStb3R4zzObFZ10KcauuOj6RWU9
+z6YTgDJeCpmSD3FLn/VUNjc+BPHCmhtNkmNecBZSgDolQee2JVTDQ74WHnK2s/qz
+GJUtsCggFdjs1JtWrMA1Sqlc6ZLVi2wPBOpbHmcw3pspDlKm/f/7DnoWn8A22CjH
+9DHdES1zOtAHm+xao9SgEidvrYWwEea6cDlsfVMnHIN0kYSrOzSkP4S1UlAlgxls
+qzjElAzScK5q2ZCtW5aYp+SbQAuSeirWcnPk2uqCNVEoBUa1hK4qMrsaaFVVWAhT
+x849+nJ5vCszzoiV/LJRzgctcW5a4Q==
+=Kfz+
+-----END PGP SIGNATURE-----
+
+--epu27kyqf6mdfo4x--
