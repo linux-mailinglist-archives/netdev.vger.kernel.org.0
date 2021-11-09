@@ -2,56 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3773C44B289
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 19:13:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9425944B290
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 19:15:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242074AbhKISQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 13:16:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51872 "EHLO
+        id S242182AbhKISST (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 13:18:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239343AbhKISQI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 13:16:08 -0500
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 534B5C061764;
-        Tue,  9 Nov 2021 10:13:22 -0800 (PST)
-Received: by mail-pg1-x531.google.com with SMTP id 188so6864240pgb.7;
-        Tue, 09 Nov 2021 10:13:22 -0800 (PST)
+        with ESMTP id S241573AbhKISSJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 13:18:09 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 085DFC061764;
+        Tue,  9 Nov 2021 10:15:23 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id g14so105575edz.2;
+        Tue, 09 Nov 2021 10:15:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=KZpT8QxJXvPZ/vEQ7mL1NDSD1H6v3kFSlru2WIxlImg=;
-        b=I24IEE5sw+29rchnsfUWJOP2lxRNVKeTIACbyXUNcPHVd/ygD1u6SozwQgdzuBmdVs
-         ky5c/I2X2k7GMG4aGfpwm0VepagVzvlbV9JNDr5VyjtzHLvP9X2hDBymZdAP9FoJzsW1
-         V5icp4ubGcx1y4wUJ+/1R+i6nZ3AxIHaMbKsecxpCje3UJ0hp3yu+mPdDjM00evtTZAn
-         MCzMU7AqHbiOQ5QuMB9o0K5MiZU2Rds3UmGXfEs6oxlpdu0k/vcn4csUX+sxzmn+WT8J
-         7yWgJieh6qEHuBMMmrsCnOH/YY2HeSf/osMqhjgBpOuMW+uNNQHeZ91e6PgLwYcbbLU3
-         XqMg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oCDUefM5oc1pTaSVPsqfq8VDRqVjc8fVTjdoYr50Dr4=;
+        b=RG+NTcaV6DKkj5ZBxrf7TMRqtQJIdxgoiZ1ooSQPLmlEaoP3nXX+F3f1HnGOplAPRc
+         Ov1QVJGi7sUXUpdhA34iE3XLho83KSve36oPeTqdI02lhmCImyKggExX9NCx0TneA9zg
+         9AYOScNPzH6ExJtFzkq0Osudf1ROrs/WTst0C59tiXkd3W0WzMX1Mojpnv4NyIwAUV5u
+         MNkoCyK+EpdTRes5ErGOio+DdJvnCDKa7R3wVIrxU2voZ58HlOraaDuZMzgU8Ax8P2uX
+         bqsHX3rkSsx3PzBu7xgNgEczjqxPu2i3818JJRGnBhVSf+Bz68o8gSEzM65kW2OZCO/3
+         CqNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=KZpT8QxJXvPZ/vEQ7mL1NDSD1H6v3kFSlru2WIxlImg=;
-        b=Gzbsg99gXiLB4Bbsl5PyAnHy82sz10IxcQz9TDDLXvBgFnw36jBRVT+KliDECPLaEO
-         WaMVuZzrcK9yjS8YsD5XG4kYX9zyn31vwOfJK7+33kJzyf75m9u9kfMUH+8TGO+6WpmF
-         5sz7pe8NZeD5gyatIPiz5z7SLFqeeSgfhx4yTTc3+NAzNxtZkAFyIDJybo2kQpQ3xT2I
-         3ULYADevBLks808KkEBfzAPzVvLmwy6kqAL5Q2PrqSq/PUoPTKThNuQsF0DxyM7tZl/x
-         71H4f8ng9oqWYWZSgSpjyRom/frCbYpr9KkaeS2Z+T36rmF8qUfYtk38O+Iqd+n4DGIi
-         afAw==
-X-Gm-Message-State: AOAM530wjPsuNkSKgMzJVdi/4V82vmp015XRYc0loGI2IKya67nnMsWJ
-        ezPOhG432lFOGyZfTgQZNKnlPZ7vpL8=
-X-Google-Smtp-Source: ABdhPJzHPswmBeRQ4Hl2iBooH52FvSv+PcfKbgWOy74Y2RfYl2ztYRD4h4vq8qCCnqRCsxS3lMZ7MQ==
-X-Received: by 2002:a62:dd0d:0:b0:494:6e7a:23d with SMTP id w13-20020a62dd0d000000b004946e7a023dmr10302474pff.17.1636481601344;
-        Tue, 09 Nov 2021 10:13:21 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id pf15sm3609442pjb.40.2021.11.09.10.13.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Nov 2021 10:13:20 -0800 (PST)
-Subject: Re: [PATCH v2 0/7] Add PTP support for BCM53128 switch
-To:     Martin Kaistra <martin.kaistra@linutronix.de>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oCDUefM5oc1pTaSVPsqfq8VDRqVjc8fVTjdoYr50Dr4=;
+        b=AhAny73CTsXzP0iPdS0e0VQOkn0a2ECyFX/GMUTQUdJmo8BZ0SYYrePnSjPyjNaXMZ
+         UZpMCt23p0hI0AKtTL93jqKlSAvsvpeSwu3h9E6AyynFXo8+0wzH1/ysJ/mJjhiIw2rf
+         mCB/phIEa7ry7HAQwr4GhlloLqnkOrjqjWiGgaKvxrtrGSXrw7hGweexVa2kgqfOGII5
+         m3KVcitHi9EWSOH79Ujna7ueaksHUKiQ8r9bArhTQY0on/eYj2zHHHAK6Rs93ul8bkQn
+         CnNpzMGjcRejqVZs05Q0rZSlQ0kZY1eRl0ZKotRLGtuIGbNFftd5PUiidsmzxnZH0wpH
+         oVGg==
+X-Gm-Message-State: AOAM532LfzLek2FLMfIXZs/sE0haxYFLe/vkDesbDT35HNEVB9B/jbmU
+        gOUHXslH1Bq+bnCRothPafRpj4NlKOw5i9yx9fYbrsZjczU=
+X-Google-Smtp-Source: ABdhPJxXjwd7oLCKD1XSL/s5FeabDqMfCUNMosUfoBzJ8Lj+urzIn7aFwIF+iJK2r6vI+T7QCEUSa0sTJjEppE91HMY=
+X-Received: by 2002:a50:d50c:: with SMTP id u12mr12602049edi.118.1636481721571;
+ Tue, 09 Nov 2021 10:15:21 -0800 (PST)
+MIME-Version: 1.0
+References: <20211109095013.27829-1-martin.kaistra@linutronix.de>
+ <20211109095013.27829-3-martin.kaistra@linutronix.de> <f71396fc-29a3-4022-3f7a-3a37abb9079c@gmail.com>
+ <caec2d40-6093-ff06-ab8e-379e7939a85c@gmail.com>
+In-Reply-To: <caec2d40-6093-ff06-ab8e-379e7939a85c@gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Tue, 9 Nov 2021 20:15:10 +0200
+Message-ID: <CA+h21hp+UKRgCE0UTZr7keyU380W22ZEXdbfORhSTNfzb1S_iw@mail.gmail.com>
+Subject: Re: [PATCH v2 2/7] net: dsa: b53: Move struct b53_device to include/linux/dsa/b53.h
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Martin Kaistra <martin.kaistra@linutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Richard Cochran <richardcochran@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -62,79 +65,35 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Russell King <linux@armlinux.org.uk>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-References: <20211109095013.27829-1-martin.kaistra@linutronix.de>
- <20211109103936.2wjvvwhihhfqjfot@skbuf>
- <eb5836a7-fe08-7764-596b-f3941128f89c@linutronix.de>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <f88555e0-88b7-d01c-92ed-33729f704c4c@gmail.com>
-Date:   Tue, 9 Nov 2021 10:13:18 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
-MIME-Version: 1.0
-In-Reply-To: <eb5836a7-fe08-7764-596b-f3941128f89c@linutronix.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/9/21 3:13 AM, Martin Kaistra wrote:
-> 
-> 
-> Am 09.11.21 um 11:39 schrieb Vladimir Oltean:
->> On Tue, Nov 09, 2021 at 10:50:02AM +0100, Martin Kaistra wrote:
->>> Ideally, for the B53=m case, I would have liked to include the PTP
->>> support in the b53_module itself, however I couldn't find a way to do
->>> that without renaming either the common source file or the module, which
->>> I didn't want to do.
->>>
->>> Instead, b53_ptp will be allowed as a loadable module, but only if
->>> b53_common is also a module, otherwise it will be built-in.
->>
->> Does this not work?
->>
->> obj-$(CONFIG_B53)        += b53_common.o
->>
->> ifdef CONFIG_B53_PTP
->> b53_common-objs += b53_ptp.o
->> endif
->>
->> (haven't tried though)
->>
-> 
-> I get:
-> 
-> arm-linux-gnueabihf-ld  -EL    -r -o drivers/net/dsa/b53/b53_common.o
-> drivers/net/dsa/b53/b53_ptp.o
-> 
-> 
-> 
-> and
-> 
-> 
-> 
-> ERROR: modpost: "b53_switch_register" [drivers/net/dsa/b53/b53_mdio.ko]
-> undefined!
-> 
-> ERROR: modpost: "b53_switch_alloc" [drivers/net/dsa/b53/b53_mdio.ko]
-> undefined!
-> 
-> ERROR: modpost: "b53_switch_register" [drivers/net/dsa/b53/b53_spi.ko]
-> undefined!
-> 
-> ERROR: modpost: "b53_switch_alloc" [drivers/net/dsa/b53/b53_spi.ko]
-> undefined!
-> 
-> It seems to me, that b53_common.c does not get included at all.
+On Tue, 9 Nov 2021 at 20:11, Florian Fainelli <f.fainelli@gmail.com> wrote:
+>
+> On 11/9/21 10:05 AM, Florian Fainelli wrote:
+> > On 11/9/21 1:50 AM, Martin Kaistra wrote:
+> >> In order to access the b53 structs from net/dsa/tag_brcm.c move the
+> >> definitions from drivers/net/dsa/b53/b53_priv.h to the new file
+> >> include/linux/dsa/b53.h.
+> >>
+> >> Signed-off-by: Martin Kaistra <martin.kaistra@linutronix.de>
+> >> ---
+> >>  drivers/net/dsa/b53/b53_priv.h |  90 +----------------------------
+> >>  include/linux/dsa/b53.h        | 100 +++++++++++++++++++++++++++++++++
+> >>  2 files changed, 101 insertions(+), 89 deletions(-)
+> >>  create mode 100644 include/linux/dsa/b53.h
+> >
+> > All you really access is the b53_port_hwtstamp structure within the
+> > tagger, so please make it the only structure exposed to net/dsa/tag_brcm.c.
+>
+> You do access b53_dev in the TX part, still, I would like to find a more
+> elegant solution to exposing everything here, can you create a
+> b53_timecounter_cyc2time() function that is exported to modules but does
+> not require exposing the b53_device to net/dsa/tag_brcm.c?
+> --
+> Florian
 
-You need to play tricks with '-' and '_' and do something like this:
-
-obj-$(CONFIG_B53)	+= b53-common.o
-
-b53-common-objs		+= b53_common.o b53_ptp.o
-
-and that should result in a b53-common.ko which would be accepted by
-modprobe b53_common or b53-common AFAICT.
--- 
-Florian
+Switch drivers can't export symbols to tagging protocol drivers, remember?
+https://lore.kernel.org/netdev/20210908220834.d7gmtnwrorhharna@skbuf/
