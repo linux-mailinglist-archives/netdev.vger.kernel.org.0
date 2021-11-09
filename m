@@ -2,226 +2,489 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85E3644B93B
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 00:07:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF51144B953
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 00:23:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240752AbhKIXKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 18:10:21 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:46804 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S236797AbhKIXKU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 18:10:20 -0500
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.1.2/8.16.1.2) with SMTP id 1A9MwuPl021433;
-        Tue, 9 Nov 2021 15:07:33 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : mime-version; s=facebook;
- bh=z4+oNxDpZ3CagbvPemANB817KOOkxJNBXgrnoCqykAs=;
- b=pXvP/bMSxuMqqOoO9uYx2WIijkrL19EuHEDuYZK6Hf3zwEVglLAZuaCI11Dec+0m47AU
- O2KiOGshC85JfCVLWsqei8PEp0J7rYMlbYSWORLOy0bmFinzBX1PI2yE8PrGfgohAdPi
- yP130zey0qnFm3i8Fi96tK4/eUH1nbetf58= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net with ESMTP id 3c7tefd592-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 09 Nov 2021 15:07:33 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.14; Tue, 9 Nov 2021 14:56:40 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YvfJcwLziI0QCvHxB0b1wRfizEevpp0s4ayJUjDn6SQcIbn66pen3vmoTl+IK2iGBomtpZEYZeQOYSVSfNwyeL37y8UH724f5P4ivgbWGquXc2e3cWjkdBlQqy+GkYYfgWVb61RRPR4m/utm2DdEygYcfwbQhGDH31EDLffjgJrkZpdTnTiPcZsIJ4SWXxzFqFz3dBOTXgg2cjpVaXu7n34JrywFIQswIkR1KnT4q3lTe6mZ6RVPKLtsv57PvrIo88hRuXyJszhlsCw2q9JlCKmOmW29X6DdH3LKPwR+5Po2ygsH02rVv7p0UeqhQMTrrAiOOyKQKMxLzooaLfi1Wg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=z4+oNxDpZ3CagbvPemANB817KOOkxJNBXgrnoCqykAs=;
- b=M+DwPIZsi0NUYlS0Yg8vLnzWBLef6BAXaXCLU4tARJDxX04IjqHEH1JN/geuGniWDnST4bz+7mxty0arNgw8YIgsHMGqQhCDqri/tw25panHc1hpjI1pHX1arTI2vKsgvz+/LBujHfhV1UEiomXZgzKYF+swxFKpsC1Ae27h4a9SukTgoMBTTfm6bNncrtuGce6nKt81dMEgYaxMsyTL9/Tcq8TTBxn37i1ZlWX29jZW/3DpbqephlVboD7QaGAyk4fuLxMFo2+ng0DMtowpsLtE1dvNfpsDu+nh8XJoqQfRQe7n8o96QqKUWigxqS0x8w9SBAFHhpFhvVtMtdIoEA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from PH0PR15MB5117.namprd15.prod.outlook.com (2603:10b6:510:c4::8)
- by PH7PR15MB5276.namprd15.prod.outlook.com (2603:10b6:510:13e::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.11; Tue, 9 Nov
- 2021 22:56:39 +0000
-Received: from PH0PR15MB5117.namprd15.prod.outlook.com
- ([fe80::3102:269:96e6:379c]) by PH0PR15MB5117.namprd15.prod.outlook.com
- ([fe80::3102:269:96e6:379c%9]) with mapi id 15.20.4669.016; Tue, 9 Nov 2021
- 22:56:39 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Eric Dumazet <edumazet@google.com>, Yonghong Song <yhs@fb.com>
-CC:     bpf <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next] bpf: fix btf_task_struct_ids w/o
- CONFIG_DEBUG_INFO_BTF
-Thread-Topic: [PATCH bpf-next] bpf: fix btf_task_struct_ids w/o
- CONFIG_DEBUG_INFO_BTF
-Thread-Index: AQHX1bitryCAq/+ByUq+OwLiE+zgCav7ybIAgAAE9oA=
-Date:   Tue, 9 Nov 2021 22:56:39 +0000
-Message-ID: <F9CC386F-9598-41EA-8B15-D2DF4EB4EC01@fb.com>
-References: <20211109222447.3251621-1-songliubraving@fb.com>
- <CANn89iLULCxZ+p-zkZVTLObLvJ+z34nEqS-e3nmA8MK0cKzi=g@mail.gmail.com>
-In-Reply-To: <CANn89iLULCxZ+p-zkZVTLObLvJ+z34nEqS-e3nmA8MK0cKzi=g@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3654.120.0.1.13)
-authentication-results: google.com; dkim=none (message not signed)
- header.d=none;google.com; dmarc=none action=none header.from=fb.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2df23a3d-e252-4127-66bf-08d9a3d43096
-x-ms-traffictypediagnostic: PH7PR15MB5276:
-x-microsoft-antispam-prvs: <PH7PR15MB527681071DFEE88486D279F5B3929@PH7PR15MB5276.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7HQhCArSgUCIptIBGpHSkMRUum/4S1DgUmX1JKtdahtrsVY6pii5AXk4t+FoIR/QYf6IRV5k+jj3q7ghfdBK44jNle71es5uWiGwPSCTmiABomDgenLigTZwGW95+L3zx5UhTyZ6CeyPFkirz6hQCkR7/FJmfFP090aaDeAiLHi92bpn2vuiDVj6hYNc/pqsMH3wm//SATW447sDZn+vXIVeB8U23ta+n8bs7o+uw+niKaXsj5Js0FOy7SsNRAsjt0dyOJOmG2t74z5y91H2JiFWiIodNloSV2FzfR3UBa9w79j+97eQA1Dtln4tnAToKN/SPytLoLviA6Fg4cFEWl3Lt1sRtCKnMmPOivhRU49OshWQbuwfSB+9WLexy4wgCPCmIZ0wW38at0cWvVnzjTaceUGmO+sFAPHzgBeOEs/WUGcUcPimXX+fDvB8C08vf5ZMDkpMTVS2IFDIa9rjmhVYDiVjjc2vpKiizjsbiema33+G8Ldowg0ZwWhnE405mMYtq1aeqL8jUCCx5WJ+n6l27qUJjt6H/kB6OyaUI33DAuJ2rsNyFbQZGyL01q4tPmt17EDootLmDOyh4MMM8sM5Tn9Q4Ulk0ErszbgUkKTecHpEiM0LWBuj/1sY8F2aAzG62wtZZmITU59NVfeZ8N5HyYQuVJr1X7lz4dPbw9SOz0OAavAtEkibsls7S96HKU9c2eqSNEQTf9vymOVNG3JRspgInURLi5u6silvtnFNCxGs58CaKnNJ0bddnFYF
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR15MB5117.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(33656002)(186003)(5660300002)(64756008)(86362001)(36756003)(66446008)(38070700005)(6486002)(66946007)(508600001)(66476007)(91956017)(76116006)(6636002)(8936002)(6512007)(66556008)(4326008)(38100700002)(2616005)(122000001)(53546011)(71200400001)(110136005)(6506007)(2906002)(54906003)(316002)(8676002)(45980500001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?9DGvQevguZ5EzRj1xqAo/yH/L5USGKcyO3RitV0gRQSCIlSsuewHaeDambwM?=
- =?us-ascii?Q?50K8DhY/y4R23ByqxY1wegvzSlSAtkntXy30Q9XxJKWYKg1I2swDvjpY7tNn?=
- =?us-ascii?Q?yy3DhF38lIxWG7hM95sHUbNCwR5oNld4Q7rbq0FjCfCmPH3mH6pFxfbhI91R?=
- =?us-ascii?Q?ZsyS2PzqMYqUyPIvZsYPdD/B7AtOaLLDxZRiE3hyiCS/vss4z0FUFUgiW9n6?=
- =?us-ascii?Q?NBEOGATe1MTfFr5ZZAe3sUU9yDwJ/+QK735NsSlKif5rhWtwMOZEsi06/6RQ?=
- =?us-ascii?Q?cRI2Kp2PFFQA306qavhrvca9o/m6dDKoCz3UlplJQx8fZx9E4xolvKZ2vX+V?=
- =?us-ascii?Q?nSqGvU9drlNrLv6kM8Rxyyn+BkjtGEvKYWcSqgEY8sskBmBuUNEhlPERHZtJ?=
- =?us-ascii?Q?l1Xq7vRfloEx12eG0PKwSf7p8g18B8yLqRHcQCXXeNcnoaMEX5AL+hN+gEnf?=
- =?us-ascii?Q?48efthCb4+nuMD2IL4iWvJvwYJxytZfMZyKqb+R+OkE077CBIuYVhbEncbj7?=
- =?us-ascii?Q?alzh/lpxKXDIbFnlDk84li2BRa+lZFCAALsiSI2hoNfwP8mSSmBdfVaGSCiF?=
- =?us-ascii?Q?x8awy9AdeAQoFgOaq+byMzRaxt0EbaUMcwA64X/je2ExumcAlIdIdhd4PeET?=
- =?us-ascii?Q?SaN3FaYT2iMzDRnctV1xOnzHBX5mAtYNpEOA6uHFv//DY2r413oSW7sYO92b?=
- =?us-ascii?Q?q6t8tmNx36EuhtEJzvCAWBFq6XU421Rmq4IyX1dLXWFnIBAWgJD2BuAqor3m?=
- =?us-ascii?Q?NT1XEx7h9wgm9ltMgLcPeWFFOefZCRybVlc/D2eOVPAvGLqTeiw5J5yDRBk1?=
- =?us-ascii?Q?ggBlCiScHMqIcb+UZk2wOR6vgCBZFL/PSBOsxxMVizcpZRbb+eFmKZCeNTTG?=
- =?us-ascii?Q?OdOOmPxVW6VqKxm/hPi6qwnT/bc5jxpdBg7uKM+BQBu6jt+n/jeMjkbwFyd6?=
- =?us-ascii?Q?FEAzBkSVfp512tMdkODNJm76AaU3cNPdh4i9tl9wIAjpoTC6GFf6kmc/0Zcb?=
- =?us-ascii?Q?0uPlJxyavHPNNObrLL/LsjwGA1u15gvOgstwmI6cr3TrcJNF5xtnK2qxeZRy?=
- =?us-ascii?Q?+F2aekNS/DiXY6CEfcK2xzdB/YSqrTiY1n2+hl8UMb9KVFBQa+dVigr6Jmmj?=
- =?us-ascii?Q?+b5oO30j8Tkmjro8Nv41ACgTPdGJdAQhkSNdQUND3cb4k3lRTfU6p4HlHvn3?=
- =?us-ascii?Q?9r0KuQHRKeCksecdJo+u1rurJO5ymfYr9abCdR4G+ZojouQ+eBecE+pLM2IT?=
- =?us-ascii?Q?PayouLnl37KvUvkN/lK68PLjtme4R+7G3KB1ag+bimviAZU3FT7+gZ++jJ5c?=
- =?us-ascii?Q?JQhmKxOSdDg5vC+CT8R+Lat/OA2rbYX35sht10hLMAZeV4PHVFn9N1ScYw4M?=
- =?us-ascii?Q?Tt03USd8jYWJdmzYaTowJLXk4T/jtXF1JzzDllZ2aZDcGvTve7s/7XO/kpgW?=
- =?us-ascii?Q?FsItmcieugQbOK2A8WmT6gDpCArXrXsz56ATpfdd1ukcoBDhOADBppBMLMQJ?=
- =?us-ascii?Q?LZ1W8rKZpALlOf70MyCs1lKJHjjuTW5srMHiWP7yg5BxQHTc7VZlICPGDG2I?=
- =?us-ascii?Q?vG+Eb8MJ13kwDbUKgWokG55qgO6ZcZiVsDlP8x3ztBTqH2fxD835mdjfadoZ?=
- =?us-ascii?Q?yadci+IQk0jJzaxPL4KEgQ5IzsOtxaZ40pdx5A3tWFHIUj/9XjJGgJOybaHu?=
- =?us-ascii?Q?8tEMlw=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <74E63EDBFCC4E845A5DED034192C2E9D@namprd15.prod.outlook.com>
+        id S231742AbhKIX0Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 18:26:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37226 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231572AbhKIX0Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 18:26:24 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE428C061764;
+        Tue,  9 Nov 2021 15:23:37 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id d10so1617283ybe.3;
+        Tue, 09 Nov 2021 15:23:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=K4CnNtM68bAoei39Db2FNwlg2tArVQYIo5v7gviqUj8=;
+        b=iZ7d7gUANUyH79lyQZ4/i6ZAA3kIvJ/dnSN3YLiH+QDEldIZfSffgJPKTQL853OJtz
+         mfwX5khXvLG0O3tBGgc5XoyWK5C2zLWklRoaZ8wteogw9195YrSrCrsUXvRESxWII7LY
+         Q9JduQS+cOQHby+yVJqm6CGob3gbyTaS8/Y18X8kzrMbQ6B0s/GLQjWg3mRSlz/tVFEn
+         N/5QN3vL4srDyJ4Ob8LlgFxxDxjp6xWwOKtr7vOpN5saj///HGzzO4JfS0tZ00Vv0tKW
+         BpGWwTNa7c09Cp1Sevp8LHpOop3hX8Ime8XJTc8/0dVYlWllMuC5XIfq9BAL9nTAs6hh
+         Jbhw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=K4CnNtM68bAoei39Db2FNwlg2tArVQYIo5v7gviqUj8=;
+        b=m+YjfoHupaqS3p8E4sqXZGf9lGInLMljfeUVwlEYOlqK4xAIVJne1E2Cc79ZvaJxNg
+         GVVfL0YiW82ZQIzY4o7joBtw1RpfAy43/tetglpo50QPkzYw295waRx4OTvjkzIN98k1
+         n2mMnjjR1DrL8bTMu1tA3W12o6X9vQ7f7hBa/nBwyXtZMHh7jxEXwkf/hRKSLlRFT4PR
+         zko+bL/VS+xkFH55kVd0ArFgZ9XUPIJwWZAgH38kzl6yBgrv5Yau1K9xUorejOygyf84
+         Yo3F9L92npSgjqwV2k0ZMUXMoKocS3uX1TaM+1QgboqLcmDyRmoxmDOpfEAbjqz7h6F8
+         q12w==
+X-Gm-Message-State: AOAM531YwqcGDCqIIj+aHWj3c/8oaR8TWQTsSTtn4nMlYbHX67YQq9fM
+        /SxHMrc453DOfGkCzFF/EE8rGwZipVt11H4YUt4=
+X-Google-Smtp-Source: ABdhPJzT63uv0QTZviNdet423TuTBUj15IZqib+KS5qt4tUpUOrjTiShp7mmvKPQuaLM5MxIF1swERd83SyQCgudKZw=
+X-Received: by 2002:a25:d16:: with SMTP id 22mr12115229ybn.51.1636500216961;
+ Tue, 09 Nov 2021 15:23:36 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR15MB5117.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2df23a3d-e252-4127-66bf-08d9a3d43096
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Nov 2021 22:56:39.2526
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: be2iia92A/GUecau4RZ/k7GQPT2omArXuf7cZDQsXm7FRIWogmhyU/owZL7YdfKgpL212Nxt6BpgTy9ot3UmTw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR15MB5276
-X-OriginatorOrg: fb.com
-X-Proofpoint-GUID: iVfLfj5mW9ARh97G6mWJc4cxvWTq_l7s
-X-Proofpoint-ORIG-GUID: iVfLfj5mW9ARh97G6mWJc4cxvWTq_l7s
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-11-09_07,2021-11-08_02,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- adultscore=0 priorityscore=1501 impostorscore=0 clxscore=1015 spamscore=0
- bulkscore=0 mlxscore=0 mlxlogscore=999 suspectscore=0 lowpriorityscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2111090126
-X-FB-Internal: deliver
+References: <20211023120452.212885-1-jolsa@kernel.org> <CAEf4BzbaD60KFsUB4VkTAH2v3+GFkRvRbY_O-bNSpNG0=8pJ0Q@mail.gmail.com>
+ <YXfulitQY1+Gd35h@krava> <CAEf4BzabyAdsrUoRx58MZKbwVBGa93247sw8pwU62N_wNhSZSQ@mail.gmail.com>
+ <YXkTihiRKKJIc9M6@krava> <CAEf4BzYP8eK0qxF+1UK7=TZ+vFRVMfmnm9AN=B2JHROoDwaHeg@mail.gmail.com>
+ <YXmX4+HDw9rghl0T@krava> <YXr2NFlJTAhHdZqq@krava> <CAEf4BzY1WLO+OmRQnRuJZc_-TEM12VZxd6RKQOrxWjT84KqBXw@mail.gmail.com>
+ <YYFH2qSOGdcYAqaE@krava> <YYfpcN71HCqoY1DT@krava>
+In-Reply-To: <YYfpcN71HCqoY1DT@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 9 Nov 2021 15:23:25 -0800
+Message-ID: <CAEf4BzYhnLt453hQj2=2uzR-yPiSTjgvyf2E_qHv=F-8ZM=ZyA@mail.gmail.com>
+Subject: Re: [RFC bpf-next 0/2] bpf: Fix BTF data for modules
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, Nov 7, 2021 at 6:57 AM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Tue, Nov 02, 2021 at 03:14:52PM +0100, Jiri Olsa wrote:
+> > On Mon, Nov 01, 2021 at 04:14:29PM -0700, Andrii Nakryiko wrote:
+> > > On Thu, Oct 28, 2021 at 12:12 PM Jiri Olsa <jolsa@redhat.com> wrote:
+> > > >
+> > > > On Wed, Oct 27, 2021 at 08:18:11PM +0200, Jiri Olsa wrote:
+> > > > > On Wed, Oct 27, 2021 at 10:53:55AM -0700, Andrii Nakryiko wrote:
+> > > > > > On Wed, Oct 27, 2021 at 1:53 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> > > > > > >
+> > > > > > > On Tue, Oct 26, 2021 at 09:12:31PM -0700, Andrii Nakryiko wrote:
+> > > > > > > > On Tue, Oct 26, 2021 at 5:03 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> > > > > > > > >
+> > > > > > > > > On Mon, Oct 25, 2021 at 09:54:48PM -0700, Andrii Nakryiko wrote:
+> > > > > > > > > > On Sat, Oct 23, 2021 at 5:05 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> > > > > > > > > > >
+> > > > > > > > > > > hi,
+> > > > > > > > > > > I'm trying to enable BTF for kernel module in fedora,
+> > > > > > > > > > > and I'm getting big increase on modules sizes on s390x arch.
+> > > > > > > > > > >
+> > > > > > > > > > > Size of modules in total - kernel dir under /lib/modules/VER/
+> > > > > > > > > > > from kernel-core and kernel-module packages:
+> > > > > > > > > > >
+> > > > > > > > > > >                current   new
+> > > > > > > > > > >       aarch64      60M   76M
+> > > > > > > > > > >       ppc64le      53M   66M
+> > > > > > > > > > >       s390x        21M   41M
+> > > > > > > > > > >       x86_64       64M   79M
+> > > > > > > > > > >
+> > > > > > > > > > > The reason for higher increase on s390x was that dedup algorithm
+> > > > > > > > > > > did not detect some of the big kernel structs like 'struct module',
+> > > > > > > > > > > so they are duplicated in the kernel module BTF data. The s390x
+> > > > > > > > > > > has many small modules that increased significantly in size because
+> > > > > > > > > > > of that even after compression.
+> > > > > > > > > > >
+> > > > > > > > > > > First issues was that the '--btf_gen_floats' option is not passed
+> > > > > > > > > > > to pahole for kernel module BTF generation.
+> > > > > > > > > > >
+> > > > > > > > > > > The other problem is more tricky and is the reason why this patchset
+> > > > > > > > > > > is RFC ;-)
+> > > > > > > > > > >
+> > > > > > > > > > > The s390x compiler generates multiple definitions of the same struct
+> > > > > > > > > > > and dedup algorithm does not seem to handle this at the moment.
+> > > > > > > > > > >
+> > > > > > > > > > > I put the debuginfo and btf dump of the s390x pnet.ko module in here:
+> > > > > > > > > > >   http://people.redhat.com/~jolsa/kmodbtf/
+> > > > > > > > > > >
+> > > > > > > > > > > Please let me know if you'd like to see other info/files.
+> > > > > > > > > > >
+> > > > > > > > > >
+> > > > > > > > > > Hard to tell what's going on without vmlinux itself. Can you upload a
+> > > > > > > > > > corresponding kernel image with BTF in it?
+> > > > > > > > >
+> > > > > > > > > sure, uploaded
+> > > > > > > > >
+> > > > > > > >
+> > > > > > > > vmlinux.btfdump:
+> > > > > > > >
+> > > > > > > > [174] FLOAT 'float' size=4
+> > > > > > > > [175] FLOAT 'double' size=8
+> > > > > > > >
+> > > > > > > > VS
+> > > > > > > >
+> > > > > > > > pnet.btfdump:
+> > > > > > > >
+> > > > > > > > [89318] INT 'float' size=4 bits_offset=0 nr_bits=32 encoding=(none)
+> > > > > > > > [89319] INT 'double' size=8 bits_offset=0 nr_bits=64 encoding=(none)
+> > > > > > >
+> > > > > > > ugh, that's with no fix applied, sry
+> > > > > > >
+> > > > > > > I applied the first patch and uploaded new files
+> > > > > > >
+> > > > > > > now when I compare the 'module' struct from vmlinux:
+> > > > > > >
+> > > > > > >         [885] STRUCT 'module' size=1280 vlen=70
+> > > > > > >
+> > > > > > > and same one from pnet.ko:
+> > > > > > >
+> > > > > > >         [89323] STRUCT 'module' size=1280 vlen=70
+> > > > > > >
+> > > > > > > they seem to completely match, all the fields
+> > > > > > > and yet it still appears in the kmod's BTF
+> > > > > > >
+> > > > > >
+> > > > > > Ok, now struct module is identical down to the types referenced from
+> > > > > > the fields, which means it should have been deduplicated completely.
+> > > > > > This will require a more time-consuming debugging, though, so I'll put
+> > > > > > it on my TODO list for now. If you get to this earlier, see where the
+> > > > > > equivalence check fails in btf_dedup (sprinkle debug outputs around to
+> > > > > > see what's going on).
+> > > > >
+> > > > > it failed for me on that hypot_type_id check where I did fix,
+> > > > > I thought it's the issue of multiple same struct in the kmod,
+> > > > > but now I see I might have confused cannon_id with cand_id ;-)
+> > > > > I'll check more on this
+> > > >
+> > > > with more checking I got to the same conclusion as before,
+> > > > now maybe with little more details ;-)
+> > > >
+> > > > the problem seems to be that in some cases the module BTF
+> > > > data stores same structs under new/different IDs, while the
+> > > > kernel BTF data is already dedup-ed
+> > > >
+> > > > the dedup algo keeps hypot_map of kernel IDs to kmod IDs,
+> > > > and in my case it will get to the point that the kernel ID
+> > > > is already 'known' and points to certain kmod ID 'A', but it
+> > > > is also equiv to another kmod ID 'B' (so kmod ID 'A' and 'B'
+> > > > are equiv structs) but the dedup will claim as not equiv
+> > > >
+> > > >
+> > > > This is where the dedup fails for me on that s390 data:
+> > > >
+> > > > The pt_regs is defined as:
+> > > >
+> > > >         struct pt_regs
+> > > >         {
+> > > >                 union {
+> > > >                         user_pt_regs user_regs;
+> > > >                         struct {
+> > > >                                 unsigned long args[1];
+> > > >                                 psw_t psw;
+> > > >                                 unsigned long gprs[NUM_GPRS];
+> > > >                         };
+> > > >                 };
+> > > >                 ...
+> > > >         };
+> > > >
+> > > > considering just the first union:
+> > > >
+> > > >         [186] UNION '(anon)' size=152 vlen=2
+> > > >                 'user_regs' type_id=183 bits_offset=0
+> > > >                 '(anon)' type_id=181 bits_offset=0
+> > > >
+> > > >         [91251] UNION '(anon)' size=152 vlen=2
+> > > >                 'user_regs' type_id=91247 bits_offset=0
+> > > >                 '(anon)' type_id=91250 bits_offset=0
+> > > >
+> > > >
+> > > > ---------------------------------------------------------------
+> > > >
+> > > > Comparing the first member 'user_regs':
+> > > >
+> > > >         struct pt_regs
+> > > >         {
+> > > >                 union {
+> > > >     --->                user_pt_regs user_regs;
+> > > >                         struct {
+> > > >                                 unsigned long args[1];
+> > > >                                 psw_t psw;
+> > > >                                 unsigned long gprs[NUM_GPRS];
+> > > >                         };
+> > > >                 };
+> > > >
+> > > > Which looks like:
+> > > >
+> > > >         typedef struct {
+> > > >                 unsigned long args[1];
+> > > >                 psw_t psw;
+> > > >                 unsigned long gprs[NUM_GPRS];
+> > > >         } user_pt_regs;
+> > > >
+> > > >
+> > > > and is also equiv to the next union member struct.. and that's what
+> > > > kernel knows but not kmod... anyway,
+> > > >
+> > > >
+> > > > the dedup will compare 'user_pt_regs':
+> > > >
+> > > >         [183] TYPEDEF 'user_pt_regs' type_id=181
+> > > >
+> > > >         [91247] TYPEDEF 'user_pt_regs' type_id=91245
+> > > >
+> > > >
+> > > >         [181] STRUCT '(anon)' size=152 vlen=3
+> > > >                 'args' type_id=182 bits_offset=0
+> > > >                 'psw' type_id=179 bits_offset=64
+> > > >                 'gprs' type_id=48 bits_offset=192
+> > > >
+> > > >         [91245] STRUCT '(anon)' size=152 vlen=3
+> > > >                 'args' type_id=91246 bits_offset=0
+> > > >                 'psw' type_id=91243 bits_offset=64
+> > > >                 'gprs' type_id=91132 bits_offset=192
+> > > >
+> > > > and make them equiv by setting hypot_type_id for 181 to be 91245
+> > > >
+> > > >
+> > > > ---------------------------------------------------------------
+> > > >
+> > > > Now comparing the second member:
+> > > >
+> > > >         struct pt_regs
+> > > >         {
+> > > >                 union {
+> > > >                         user_pt_regs user_regs;
+> > > >     --->                struct {
+> > > >                                 unsigned long args[1];
+> > > >                                 psw_t psw;
+> > > >                                 unsigned long gprs[NUM_GPRS];
+> > > >                         };
+> > > >                 };
+> > > >
+> > > >
+> > > > kernel knows it's same struct as user_pt_regs and uses ID 181
+> > > >
+> > > >         [186] UNION '(anon)' size=152 vlen=2
+> > > >                 'user_regs' type_id=183 bits_offset=0
+> > > >                 '(anon)' type_id=181 bits_offset=0
+> > > >
+> > > > but kmod has new ID 91250 (not 91245):
+> > > >
+> > > >         [91251] UNION '(anon)' size=152 vlen=2
+> > > >                 'user_regs' type_id=91247 bits_offset=0
+> > > >                 '(anon)' type_id=91250 bits_offset=0
+> > > >
+> > > >
+> > > > and 181 and 91250 are equiv structs:
+> > > >
+> > > >         [181] STRUCT '(anon)' size=152 vlen=3
+> > > >                 'args' type_id=182 bits_offset=0
+> > > >                 'psw' type_id=179 bits_offset=64
+> > > >                 'gprs' type_id=48 bits_offset=192
+> > > >
+> > > >         [91250] STRUCT '(anon)' size=152 vlen=3
+> > > >                 'args' type_id=91246 bits_offset=0
+> > > >                 'psw' type_id=91243 bits_offset=64
+> > > >                 'gprs' type_id=91132 bits_offset=192
+> > > >
+> > > >
+> > > > now hypot_type_id for 181 is 91245, but we have brand new struct
+> > > > ID 91250, so we fail
+> > > >
+> > > > what the patch tries to do is at this point to compare ID 91250
+> > > > with 91245 and if it passes then we are equal and we throw away
+> > > > ID 91250 because the hypot_type_id for 181 stays 91245
+> > > >
+> > > >
+> > > > ufff.. thoughts? ;-)
+> > >
+> > > Oh, this is a really great analysis, thanks a lot! It makes everything
+> > > clear. Basically, BTF dedup algo does too good job deduping vmlinux
+> > > BTF. :)
+> > >
+> > > What's not clear is what to do about that, because a (current)
+> > > fundamental assumption of is_equiv() check is that any type within CU
+> > > (or in this case deduped vmlinux BTF) has exactly one unique mapping.
+> > > Clearly that's not the case now. That array fix you mentioned worked
+> > > around GCC bug where this assumption broke. In this case it's not a
+> > > bug of a compiler (neither of algo, really), we just need to make algo
+> > > smarter.
+> > >
+> > > Let me think about this a bit, we'll need to make the equivalence
+> > > check be aware that there could be multiple equivalent mappings and be
+> > > ok with that as long as all candidates are equivalent between
+> > > themselves. Lots of equivalence and recursion to think about.
+> > >
+> > > It would be great to have a simplified test case to play with that. Do
+> > > you mind distilling the chain of types above into a selftests and
+> > > posting it to the mailing list so that I can play with it? It
+> > > shouldn't be hard to write given BTF writing APIs. And we'll need a
+> > > selftests anyway once we improve the algo, so it's definitely not a
+> > > wasted work.
+> > >
+>
+>
+> I ended up with simply test, where the idea is to use
+> type id which is defined after currently processed type
+>
+> the last VALIDATE_RAW_BTF fails
+>
+> I'm not sending full atch, because I assume this is not
+> to merge yet also I assume you might want to change that
+> anyway ;-)
+>
+
+Thanks, Jiri! I'll get to playing with this some time this week,
+hopefully. I hope this is not a huge blocker for you?
 
 
-> On Nov 9, 2021, at 2:38 PM, Eric Dumazet <edumazet@google.com> wrote:
-> 
-> On Tue, Nov 9, 2021 at 2:25 PM Song Liu <songliubraving@fb.com> wrote:
->> 
->> This fixes KASAN oops like
->> 
->> BUG: KASAN: global-out-of-bounds in task_iter_init+0x212/0x2e7 kernel/bpf/task_iter.c:661
->> Read of size 4 at addr ffffffff90297404 by task swapper/0/1
->> 
->> CPU: 1 PID: 1 Comm: swapper/0 Not tainted 5.15.0-syzkaller #0
->> Hardware name: ... Google Compute Engine, BIOS Google 01/01/2011
->> Call Trace:
->> <TASK>
->> __dump_stack lib/dump_stack.c:88 [inline]
->> dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
->> print_address_description.constprop.0.cold+0xf/0x309 mm/kasan/report.c:256
->> __kasan_report mm/kasan/report.c:442 [inline]
->> kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
->> task_iter_init+0x212/0x2e7 kernel/bpf/task_iter.c:661
->> do_one_initcall+0x103/0x650 init/main.c:1295
->> do_initcall_level init/main.c:1368 [inline]
->> do_initcalls init/main.c:1384 [inline]
->> do_basic_setup init/main.c:1403 [inline]
->> kernel_init_freeable+0x6b1/0x73a init/main.c:1606
->> kernel_init+0x1a/0x1d0 init/main.c:1497
->> ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
->> </TASK>
->> 
-> 
-> Please add a Fixes: tag
-
-Will add it in v2. 
-
-> 
-> Also you can add
-> 
-> Reported-by: syzbot+e0d81ec552a21d9071aa@syzkaller.appspotmail.com
-> 
-> 
->> Reported-by: Eric Dumazet <edumazet@google.com>
->> Signed-off-by: Song Liu <songliubraving@fb.com>
->> ---
->> kernel/bpf/btf.c | 4 ++++
->> 1 file changed, 4 insertions(+)
->> 
->> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
->> index cdb0fba656006..6db929a5826d4 100644
->> --- a/kernel/bpf/btf.c
->> +++ b/kernel/bpf/btf.c
->> @@ -6342,10 +6342,14 @@ const struct bpf_func_proto bpf_btf_find_by_name_kind_proto = {
->>        .arg4_type      = ARG_ANYTHING,
->> };
->> 
->> +#ifdef CONFIG_DEBUG_INFO_BTF
->> BTF_ID_LIST_GLOBAL(btf_task_struct_ids)
->> BTF_ID(struct, task_struct)
->> BTF_ID(struct, file)
->> BTF_ID(struct, vm_area_struct)
->> +#else
->> +u32 btf_task_struct_ids[3];
->> +#endif
-> 
-> What about adding to  BTF_ID_LIST_GLOBAL() another argument ?
-> 
-> BTF_ID_LIST_GLOBAL(btf_task_struct_ids, 3)
-> 
-> This would avoid this #ifdef
-> 
-> I understand commit 079ef53673f2e3b3ee1728800311f20f28eed4f7
-> hardcoded a [5] value, maybe we can do slightly better with exact
-> boundary checks for KASAN.
-
-I like this idea. 
-
-Yonghong, I believe you added BTF_ID_LIST_GLOBAL. What do you think 
-about this proposal?
-
-Thanks,
-Song
-
+> I'll check later on that special array case
+>
+> thanks,
+> jirka
+>
+>
+> ---
+>  .../bpf/prog_tests/btf_dedup_split.c          | 113 ++++++++++++++++++
+>  1 file changed, 113 insertions(+)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/btf_dedup_split.c b/tools/testing/selftests/bpf/prog_tests/btf_dedup_split.c
+> index 64554fd33547..2ad54e185221 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/btf_dedup_split.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/btf_dedup_split.c
+> @@ -314,6 +314,117 @@ static void test_split_struct_duped() {
+>         btf__free(btf1);
+>  }
+>
+> +static void btf_add_data(struct btf *btf, int start_id)
+> +{
+> +#define ID(n) (start_id + n)
+> +       btf__set_pointer_size(btf, 8); /* enforce 64-bit arch */
+> +
+> +       btf__add_int(btf, "int", 4, BTF_INT_SIGNED);    /* [1] int */
+> +
+> +       btf__add_struct(btf, "s", 8);                   /* [2] struct s { */
+> +       btf__add_field(btf, "a", ID(3), 0, 0);          /*      struct anon a; */
+> +       btf__add_field(btf, "b", ID(4), 0, 0);          /*      struct anon b; */
+> +                                                       /* } */
+> +
+> +       btf__add_struct(btf, "(anon)", 8);              /* [3] struct anon { */
+> +       btf__add_field(btf, "f1", ID(1), 0, 0);         /*      int f1; */
+> +       btf__add_field(btf, "f2", ID(1), 32, 0);        /*      int f2; */
+> +                                                       /* } */
+> +
+> +       btf__add_struct(btf, "(anon)", 8);              /* [4] struct anon { */
+> +       btf__add_field(btf, "f1", ID(1), 0, 0);         /*      int f1; */
+> +       btf__add_field(btf, "f2", ID(1), 32, 0);        /*      int f2; */
+> +                                                       /* } */
+> +#undef ID
+> +}
+> +
+> +static void test_split_struct_missed()
+> +{
+> +       struct btf *btf1, *btf2;
+> +       int err;
+> +
+> +       /* generate the base data.. */
+> +       btf1 = btf__new_empty();
+> +       if (!ASSERT_OK_PTR(btf1, "empty_main_btf"))
+> +               return;
+> +
+> +       btf_add_data(btf1, 0);
+> +
+> +       VALIDATE_RAW_BTF(
+> +               btf1,
+> +               "[1] INT 'int' size=4 bits_offset=0 nr_bits=32 encoding=SIGNED",
+> +               "[2] STRUCT 's' size=8 vlen=2\n"
+> +               "\t'a' type_id=3 bits_offset=0\n"
+> +               "\t'b' type_id=4 bits_offset=0",
+> +               "[3] STRUCT '(anon)' size=8 vlen=2\n"
+> +               "\t'f1' type_id=1 bits_offset=0\n"
+> +               "\t'f2' type_id=1 bits_offset=32",
+> +               "[4] STRUCT '(anon)' size=8 vlen=2\n"
+> +               "\t'f1' type_id=1 bits_offset=0\n"
+> +               "\t'f2' type_id=1 bits_offset=32");
+> +
+> +       /* ..dedup them... */
+> +       err = btf__dedup(btf1, NULL, NULL);
+> +       if (!ASSERT_OK(err, "btf_dedup"))
+> +               goto cleanup;
+> +
+> +       VALIDATE_RAW_BTF(
+> +               btf1,
+> +               "[1] INT 'int' size=4 bits_offset=0 nr_bits=32 encoding=SIGNED",
+> +               "[2] STRUCT 's' size=8 vlen=2\n"
+> +               "\t'a' type_id=3 bits_offset=0\n"
+> +               "\t'b' type_id=3 bits_offset=0",
+> +               "[3] STRUCT '(anon)' size=8 vlen=2\n"
+> +               "\t'f1' type_id=1 bits_offset=0\n"
+> +               "\t'f2' type_id=1 bits_offset=32");
+> +
+> +       /* and add the same data on top of it */
+> +       btf2 = btf__new_empty_split(btf1);
+> +       if (!ASSERT_OK_PTR(btf2, "empty_split_btf"))
+> +               goto cleanup;
+> +
+> +       btf_add_data(btf2, 3);
+> +
+> +       VALIDATE_RAW_BTF(
+> +               btf2,
+> +               "[1] INT 'int' size=4 bits_offset=0 nr_bits=32 encoding=SIGNED",
+> +               "[2] STRUCT 's' size=8 vlen=2\n"
+> +               "\t'a' type_id=3 bits_offset=0\n"
+> +               "\t'b' type_id=3 bits_offset=0",
+> +               "[3] STRUCT '(anon)' size=8 vlen=2\n"
+> +               "\t'f1' type_id=1 bits_offset=0\n"
+> +               "\t'f2' type_id=1 bits_offset=32",
+> +               "[4] INT 'int' size=4 bits_offset=0 nr_bits=32 encoding=SIGNED",
+> +               "[5] STRUCT 's' size=8 vlen=2\n"
+> +               "\t'a' type_id=6 bits_offset=0\n"
+> +               "\t'b' type_id=7 bits_offset=0",
+> +               "[6] STRUCT '(anon)' size=8 vlen=2\n"
+> +               "\t'f1' type_id=4 bits_offset=0\n"
+> +               "\t'f2' type_id=4 bits_offset=32",
+> +               "[7] STRUCT '(anon)' size=8 vlen=2\n"
+> +               "\t'f1' type_id=4 bits_offset=0\n"
+> +               "\t'f2' type_id=4 bits_offset=32");
+> +
+> +       err = btf__dedup(btf2, NULL, NULL);
+> +       if (!ASSERT_OK(err, "btf_dedup"))
+> +               goto cleanup;
+> +
+> +       /* after dedup it should match the original data */
+> +       VALIDATE_RAW_BTF(
+> +               btf2,
+> +               "[1] INT 'int' size=4 bits_offset=0 nr_bits=32 encoding=SIGNED",
+> +               "[2] STRUCT 's' size=8 vlen=2\n"
+> +               "\t'a' type_id=3 bits_offset=0\n"
+> +               "\t'b' type_id=3 bits_offset=0",
+> +               "[3] STRUCT '(anon)' size=8 vlen=2\n"
+> +               "\t'f1' type_id=1 bits_offset=0\n"
+> +               "\t'f2' type_id=1 bits_offset=32");
+> +
+> +cleanup:
+> +       btf__free(btf2);
+> +       btf__free(btf1);
+> +}
+> +
+>  void test_btf_dedup_split()
+>  {
+>         if (test__start_subtest("split_simple"))
+> @@ -322,4 +433,6 @@ void test_btf_dedup_split()
+>                 test_split_struct_duped();
+>         if (test__start_subtest("split_fwd_resolve"))
+>                 test_split_fwd_resolve();
+> +       if (test__start_subtest("split_struct_missed"))
+> +               test_split_struct_missed();
+>  }
+> --
+> 2.32.0
+>
