@@ -2,87 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 971AC44B467
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 22:02:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C8C344B478
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 22:09:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244847AbhKIVFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 16:05:11 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:60560 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244824AbhKIVFK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 16:05:10 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id F1B8D1FD59
-        for <netdev@vger.kernel.org>; Tue,  9 Nov 2021 21:02:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1636491742; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
-         mime-version:mime-version:content-type:content-type;
-        bh=sSFP0KEcTCKx46JUUjd3ZUUAf42Y7qIjHHAEkod9NGo=;
-        b=YKQ2O8YV6gKRYk2xjY8m2t4oRxP+mAR49gMeqwm2UKJXl4QzpgTIVjvvZtBfCR7Aer0F5U
-        3N+r6Bx15RRyKbjmzbjR0INKYi1vl/QPME3eTBOcSsbv7i8px1v1OWFyclxpCm56KTdlLv
-        EvXAf9apn4OZcwOE0LI66C0Ucva5wSc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1636491742;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
-         mime-version:mime-version:content-type:content-type;
-        bh=sSFP0KEcTCKx46JUUjd3ZUUAf42Y7qIjHHAEkod9NGo=;
-        b=VL3az3sOZJJMlrd3pmA8k1aHL2zWOGcUhHGtih4q+/3lr9q1I5CtwmHiWIvRKmyEYqY81i
-        tSZD1Ov0lD2KK6BA==
-Received: from lion.mk-sys.cz (unknown [10.100.200.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id E9D84A3B83
-        for <netdev@vger.kernel.org>; Tue,  9 Nov 2021 21:02:22 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id D2B3E602D1; Tue,  9 Nov 2021 22:02:22 +0100 (CET)
-Date:   Tue, 9 Nov 2021 22:02:22 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Subject: ethtool 5.15 released
-Message-ID: <20211109210222.oofsxukjmxgebunw@lion.mk-sys.cz>
+        id S244907AbhKIVMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 16:12:33 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:53414 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237584AbhKIVMc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Nov 2021 16:12:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=fqMfvevUL4ukmxtHDYzE4N3EIZqfBJykGBfoMdASPoc=; b=EdA5Rkfs5/ZsHFfhINZIQ6inmE
+        xr1hE5zxYp/zcr/mb/MlKKxMvBKAMm70zb3zyoSaTLgp9SOqvO0KpwXMF0UY/0RRJESp2k7eXNYkj
+        AyX/Zjkebe7biSqDhYgH9WnC07Rmh9jiajIC5nKERkr+8B2iqgTypBC6Tv5PekdX7bnE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mkYNA-00D1Wk-AZ; Tue, 09 Nov 2021 22:09:40 +0100
+Date:   Tue, 9 Nov 2021 22:09:40 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [RFC PATCH v3 6/8] leds: trigger: add hardware-phy-activity
+ trigger
+Message-ID: <YYrjlHz/UgTUwQAm@lunn.ch>
+References: <20211109022608.11109-1-ansuelsmth@gmail.com>
+ <20211109022608.11109-7-ansuelsmth@gmail.com>
+ <20211109042517.03baa809@thinkpad>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="epu27kyqf6mdfo4x"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20211109042517.03baa809@thinkpad>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> > +/* Expose sysfs for every blink to be configurable from userspace */
+> > +DEFINE_OFFLOAD_TRIGGER(blink_tx, BLINK_TX);
+> > +DEFINE_OFFLOAD_TRIGGER(blink_rx, BLINK_RX);
+> > +DEFINE_OFFLOAD_TRIGGER(keep_link_10m, KEEP_LINK_10M);
+> > +DEFINE_OFFLOAD_TRIGGER(keep_link_100m, KEEP_LINK_100M);
+> > +DEFINE_OFFLOAD_TRIGGER(keep_link_1000m, KEEP_LINK_1000M);
 
---epu27kyqf6mdfo4x
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+You might get warnings about CamelCase, but i suggest keep_link_10M,
+keep_link_100M and keep_link_1000M. These are megabits, not millibits.
 
-Hello,
+> > +DEFINE_OFFLOAD_TRIGGER(keep_half_duplex, KEEP_HALF_DUPLEX);
+> > +DEFINE_OFFLOAD_TRIGGER(keep_full_duplex, KEEP_FULL_DUPLEX);
 
-ethtool 5.15 has been released.
+What does keep mean in this context?
 
-Home page: https://www.kernel.org/pub/software/network/ethtool/
-Download link:
-https://www.kernel.org/pub/software/network/ethtool/ethtool-5.15.tar.xz
+> > +DEFINE_OFFLOAD_TRIGGER(option_linkup_over, OPTION_LINKUP_OVER);
+> > +DEFINE_OFFLOAD_TRIGGER(option_power_on_reset, OPTION_POWER_ON_RESET);
+> > +DEFINE_OFFLOAD_TRIGGER(option_blink_2hz, OPTION_BLINK_2HZ);
+> > +DEFINE_OFFLOAD_TRIGGER(option_blink_4hz, OPTION_BLINK_4HZ);
+> > +DEFINE_OFFLOAD_TRIGGER(option_blink_8hz, OPTION_BLINK_8HZ);
+> 
+> This is very strange. Is option_blink_2hz a trigger on itself? Or just
+> an option for another trigger? It seems that it is an option, so that I
+> can set something like
+>   blink_tx,option_blink_2hz
+> and the LED will blink on tx activity with frequency 2 Hz... If that is
+> so, I think you are misnaming your macros or something, since you are
+> defining option_blink_2hz as a trigger with
+>  DEFINE_OFFLOAD_TRIGGER
 
-Relase notes:
+Yes, i already said this needs handling differently. The 2Hz, 4Hz and
+8Hz naturally fit the delay_on, delay_of sysfs attributes.
 
-	* Feature: new extended link substates for bad signal (no arg)
-	* Feature: coalesce cqe mode attributes (-c and -C)
-	* Fix: multiple fixes of EEPROM module data parsing (-m)
-	* Fix: fix condition to display MDI-X info (no arg)
-
-Michal
-
---epu27kyqf6mdfo4x
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmGK4c4ACgkQ538sG/LR
-dpU0pAf/faTCNtQphlTlqX1X6I4BX8Vv7Y7mLWStb3R4zzObFZ10KcauuOj6RWU9
-z6YTgDJeCpmSD3FLn/VUNjc+BPHCmhtNkmNecBZSgDolQee2JVTDQ74WHnK2s/qz
-GJUtsCggFdjs1JtWrMA1Sqlc6ZLVi2wPBOpbHmcw3pspDlKm/f/7DnoWn8A22CjH
-9DHdES1zOtAHm+xao9SgEidvrYWwEea6cDlsfVMnHIN0kYSrOzSkP4S1UlAlgxls
-qzjElAzScK5q2ZCtW5aYp+SbQAuSeirWcnPk2uqCNVEoBUa1hK4qMrsaaFVVWAhT
-x849+nJ5vCszzoiV/LJRzgctcW5a4Q==
-=Kfz+
------END PGP SIGNATURE-----
-
---epu27kyqf6mdfo4x--
+    Andrew
