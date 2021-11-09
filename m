@@ -2,196 +2,350 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CD4844ABCE
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 11:50:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BEEE44AC54
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 12:12:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243251AbhKIKxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 05:53:05 -0500
-Received: from mga01.intel.com ([192.55.52.88]:57446 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241110AbhKIKxE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Nov 2021 05:53:04 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10162"; a="256103111"
-X-IronPort-AV: E=Sophos;i="5.87,220,1631602800"; 
-   d="scan'208";a="256103111"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2021 02:50:18 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,220,1631602800"; 
-   d="scan'208";a="563977335"
-Received: from fmsmsx605.amr.corp.intel.com ([10.18.126.85])
-  by fmsmga004.fm.intel.com with ESMTP; 09 Nov 2021 02:50:16 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Tue, 9 Nov 2021 02:50:16 -0800
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12 via Frontend Transport; Tue, 9 Nov 2021 02:50:16 -0800
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.103)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.12; Tue, 9 Nov 2021 02:50:15 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cYG3NaVHSc7vGNWL93lrgeE1jFzsy70Ow3UjxT44SFru9VrwqgN//gltyJEVQ4dkNBVTsGWgne4zw9i9Z41JbKWH571A8M9UMJNbrDMpt/RvqvpYPmegyCVCrmOJarOrrplhnSfr9siuCR/IGYEXeqfIOrZHjYXBXpUwXS4i2O7c3zfpXYiL38FlMkoqxOuf7WLPr2jJi4xZbvTC7ceZf3nTGX8t18IuGgmvxRu6i+5K0QJbDXwG1N3DdPRjzpLirihGnxLrHh+PPCl/l5OcBc2RNcJopgQdijlecsky53wG8Xs1DsRIf96EkLGCYYZiXBZDOOux2+cwfKUIu/atVg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mpERv0RvmHVQlg0q33UxI/I8aeEqu7BNhrJujq/0gXg=;
- b=VmP0KU+0NeY9PyIWz1YodwwvUKAEdoVl74zgIiMTUwI2A/Qn5Q2Rzbjvodamot7doNuYAeYpXTqQPaPAGIY3dVR3wSWUhtU9JCPrRXc9POhKu6apI26U5k6EKR+UOyJWXzFv8KN3NuobeS5qZTlhEc83WsNafCRST3LQzhblH8JuuD749ODNbKQ/vO7szLLswUJq3XAohyW/F7F/rMOIoDLWU5AI3jTlVdQbr0oUpRQhn3kSKTQVy3T5s7wUt82dnRUYnj/vY+GtBQYdQG2QU9qTRo14Sa+r0beE2tjbLWbgi3cPyVrkESiNCUfy7ZPok6/SMEyr7zI5Ys9efVrAqg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mpERv0RvmHVQlg0q33UxI/I8aeEqu7BNhrJujq/0gXg=;
- b=J55rzd2cUx9WSillyKhepLqYPuqIOjvE7+6YuWxJQl6JDQ3bdsyjlM8ov8HZ3sA0VQ95OEPWtBnzODSns40P2oeYZfvxJ9s3Tfl8lqVNi+8kV7w49ZsF9/oO5FgrU2/4jP0S2ZjPcTXKDnVH65+sJS7GBDBXmPDAJ5xQr2Gi0pI=
-Received: from MW5PR11MB5812.namprd11.prod.outlook.com (2603:10b6:303:193::14)
- by MW3PR11MB4730.namprd11.prod.outlook.com (2603:10b6:303:58::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.11; Tue, 9 Nov
- 2021 10:50:15 +0000
-Received: from MW5PR11MB5812.namprd11.prod.outlook.com
- ([fe80::b137:7318:a259:699e]) by MW5PR11MB5812.namprd11.prod.outlook.com
- ([fe80::b137:7318:a259:699e%9]) with mapi id 15.20.4649.019; Tue, 9 Nov 2021
- 10:50:14 +0000
-From:   "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>, Ido Schimmel <idosch@idosch.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "abyagowi@fb.com" <abyagowi@fb.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "mkubecek@suse.cz" <mkubecek@suse.cz>,
-        "saeed@kernel.org" <saeed@kernel.org>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>
-Subject: RE: [PATCH v2 net-next 6/6] docs: net: Add description of SyncE
- interfaces
-Thread-Topic: [PATCH v2 net-next 6/6] docs: net: Add description of SyncE
- interfaces
-Thread-Index: AQHX0oli6labJUcox0OLXoT9uSo8Gqv4HN8AgAEw1JCAAIjtAIAACUcAgAEobTA=
-Date:   Tue, 9 Nov 2021 10:50:14 +0000
-Message-ID: <MW5PR11MB58121891B56004F5AB3DE922EA929@MW5PR11MB5812.namprd11.prod.outlook.com>
-References: <20211105205331.2024623-1-maciej.machnikowski@intel.com>
-        <20211105205331.2024623-7-maciej.machnikowski@intel.com>
-        <YYfd7DCFFtj/x+zQ@shredder>
-        <MW5PR11MB58120F585A5CF1BCA1E7E958EA919@MW5PR11MB5812.namprd11.prod.outlook.com>
-        <YYlQfm3eW/jRS4Ra@shredder>
- <20211108090302.64ca86a5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211108090302.64ca86a5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-reaction: no-action
-dlp-version: 11.6.200.16
-dlp-product: dlpe-windows
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 59e45d1c-2fbe-4920-08c3-08d9a36eb63c
-x-ms-traffictypediagnostic: MW3PR11MB4730:
-x-microsoft-antispam-prvs: <MW3PR11MB4730AB9F8CB01CA9DEFCB1D7EA929@MW3PR11MB4730.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: IfJU3gjnNR1KPjntxfaDzUqu9C0TV5TCHfdBwTRqSCusuk8/2XZQupcZ5v5WXT4ASG6pMyMg2rMviI1ik+rqt6FRGwDa04S4VLQxyWowHUMj9Mi+nhLLbLWl5kUghlYweqUa1JZriqZzlx88iLeX813dwOy8Go9aOoiLYQevcaqy4fKIIuUXNNFfl56veJOqWKDEKTnhFhsaDroe0Vtb93CxjAlMhhJly8irnool1J3EUcL5RjIagrDkNjSObAHPKRW/vWiuY10FVzsHzFGWa7QEdAbYAA0qUkOOgcYGH+MVCkitjdKPM0TDmUV3z2tES1fykNpkWSp241UPWoO5G6ns5VCJ8L5P+p7Lfd4knAjGh3VY23uiUpxPMT+Lu4NYza4FqmaZjPaVVDp3MVolpP+0XmNN5hPB+eyc9EWtSD83riWdVORu2QDwS+k5++pbuxFGjUhICV2VIUZf4q2UBqOCblSv143NfjeLZoUuK+EjM/zUT5MLbRlTTn/Bus9GHYbcaOcb4U2Sj5l7HrL8tdZe46TesS7yei0rJ+5Qn+GI2G4GQMHRJyuQ/TVUeBBt255I9twhPz09CzM5KAE2LwUXbP5T/ggLBPNVILnJB8BfskgOsvhvkRQaJEoMGN4BlsqUCmDZrGnGMUfekUz8FG2S9N9RPB2aDKWNlratFx4lZUIJCmCGdjpvlPR2htG90WSUEnaru+jw/a4qguMbWg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW5PR11MB5812.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(4326008)(66556008)(8936002)(9686003)(508600001)(86362001)(82960400001)(110136005)(38100700002)(26005)(7696005)(53546011)(66946007)(66446008)(8676002)(55016002)(66476007)(6506007)(38070700005)(76116006)(7416002)(186003)(122000001)(71200400001)(316002)(5660300002)(33656002)(64756008)(54906003)(83380400001)(52536014)(2906002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?9spmujWhuelNvpXDvGl/jBkRAmu5uWSMb+bFyRGD4Fy9xvJACxopH4paoG+w?=
- =?us-ascii?Q?svWTuhdhTEIJfhatELJUCDQsORZnEK/E8hGA4RjmF6AfL2KmZ8h3EuyIljI2?=
- =?us-ascii?Q?OOuQZ1ENg0GnI20gOQygvBV3J2yvOGu0DVlqI3qVFuiJBVU8Pa5E/IXxsRTr?=
- =?us-ascii?Q?QxiMAM9GKxp0ELBHYIQjPPPihWDJE2NT7O3kcQcsCZNxpmbfsYWO93QKnyfU?=
- =?us-ascii?Q?4wfZm3U4zQKctBM6EqPda8bC1UjUZxd0k3oUzHYRCCOhKmrDkY8zqy9DxP6N?=
- =?us-ascii?Q?DrIvT7YFt0h2/Rzbxsx89gvlruAiTM+wJ/H37ANT2HmJWSiB/4uNrzlYH/zF?=
- =?us-ascii?Q?bwjGi9egye225WC4E1AMWgfnR+FgPvD2mjc8K1WMR1ht1aC1E0rFZuKmRIZu?=
- =?us-ascii?Q?NjbOxOfE1zWe6ETj0nOwSROp0jUCYBog3SKPKJMNgYxMdckl64wF6f0SVpPf?=
- =?us-ascii?Q?dnAT6H1jcxwhAfx3b9SjRCpdcuqU9Vl8pJpnhAv9rzRhRWO6ECbnmO0/aLOP?=
- =?us-ascii?Q?yHbAQ+IDSHQFZzln7iuTzHlgie/G8apntSvv0YrrFxVVAQWG++MmXmL6m04E?=
- =?us-ascii?Q?u2WpLib4odPbUcXrpMb2OUWYlkJYUuf9wk/8qDIbFf0EswDktFsaWGSIYWqO?=
- =?us-ascii?Q?ggUjCaEMndzgx5qaqzlBhZ+SR5n3ItQK4oNcFgJtnZzq3WzeKWQ7DbNkkZ6/?=
- =?us-ascii?Q?YEJsAX5kQGypGJMmbR94dmIWjupxXnPwwadVFVFgAZpfs/udKjEpKOL/VccP?=
- =?us-ascii?Q?1xVm2NS0cuWk28jlrUXXx4/YjQk+k0fszupNMmXukgsiZL9qgajeZMoc7n51?=
- =?us-ascii?Q?TM+m+LK2W5+QMoavzfK8fg95ijubGERMeZH5sGu4XG+ZPykQoda9reBe2woB?=
- =?us-ascii?Q?RQuCevHVC77+B5t54d8x8IRAHnIy5JP7gwN81oF6Z/19w29Y8lrDkcw+l/7G?=
- =?us-ascii?Q?QQhRCs8SoXxblJdfKNEXKrzfZcdm6FGP3jK6lSQhU5Vdn7aOIx30s0AGx3Bu?=
- =?us-ascii?Q?YI2kfciH+FwxVY9TLq4uk0K0TWB3Wswb5YnkRszkTTrNJl4kcZuQmKwhnvUJ?=
- =?us-ascii?Q?nYHReIGvhTEx3tpINu4ocycg+1NS9hcV9kvbk171EG/YWH9F5T2xdDBpFpK2?=
- =?us-ascii?Q?M03ou0W8FTO0Iwt1PlTl6Ha2xs5ozOv5e7w0xNCNI13Hq4ThrQs2WnXcckKr?=
- =?us-ascii?Q?44NYxU+cn223bNQvdsc485zfT5fBOf81lO1MPw4mg8cTNkU+LkzFyRHTkYLO?=
- =?us-ascii?Q?s2g+Yr4cHNtcRPTBkKN7pJS1Agf7Pu0mTh366M//jePh/u8qg0LiWzqrp9GV?=
- =?us-ascii?Q?HmWaZvOEFTD7oChlsY/3YCXdtoYc1P2OvBJI2t/jYYTc7HFBgMSyHMykvlVa?=
- =?us-ascii?Q?aDLIBrxV4eYA/AH5pZgqZyMj5GYSugFjm8jIPXwRyeY1P3vrbWKl1bUKN8rN?=
- =?us-ascii?Q?35UsARPza/NZ2K6JMx+dwvCJSEJa8qEUB/Mm3oaVfMcRh8ApyjzUml6BmOGA?=
- =?us-ascii?Q?MLsXyBpCEEthwAYkRr6nngIZWCqwz4cMQ+h2me+TLNrdUQppt+0dByBdh5JZ?=
- =?us-ascii?Q?GfI8uLjugEVUrDm1A/NI2m3YKhaYG9DT1iJQRqSAYCb9owZbfJmTcuUZdqf1?=
- =?us-ascii?Q?4BSuiVeAc38T2+ShT7omwo1J2hNsB3ZhxHMCHZ6RLAANCnaXrjU+S2KVK7/8?=
- =?us-ascii?Q?rgkRcA=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S245589AbhKILPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 06:15:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40354 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241538AbhKILPD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 06:15:03 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09687C061764;
+        Tue,  9 Nov 2021 03:12:17 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id f4so74829587edx.12;
+        Tue, 09 Nov 2021 03:12:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=d1Cwzm/R2VskFtuO04qmR4oP8PF+o0XMCDSULbcMQ+Q=;
+        b=lTqzOeYE0rxc5qmZAbQMkwUrQQGLwl95efeWadOGqFv6n4kCrFjE0MbLOSmofn3R7z
+         xMTIV6eXxV5cQ67N7A18kDdwokk/HmX7diZbc6hJeV/dVoGp5Mk5FJOnzVndPxaV7Ifb
+         lvL3dS1bq0RZcya5cw4cRx/mFfOFiSH1ytFH6GsORcUOz6deU/nhUDNV5CFhAv9DRMHw
+         1bUaX9WixThN4TtEX7pE1r+DkKwh9Xx3XKJ7do4Gx0bWm1D6mSlsd0x8HPV8Efl1lNL0
+         wjcKMsvAxzRsrkkQnjmB1BcJf0/9a4JNCLllGIHWDj/wO+TcF8Lx/0oNPvyBdJ7U+pbb
+         S02g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=d1Cwzm/R2VskFtuO04qmR4oP8PF+o0XMCDSULbcMQ+Q=;
+        b=hHd6o6EHO6AZ9XXD/AEJBJcP6oEUWSk8jl8gfgyz7Ku7w5wez1OzboWRvP0FpT1twj
+         jY10OJfvZ45Vuk4kQYRIz+jl2LLeFfOwxgr4AhDHc8pgQhLcBG6aVN2Y8ZZtrk7l2B8H
+         C4LdbEmkX5BNS4bvd/V7uVlhDU9XSBdxi5aV9LwUW88Ac4E6VFJ+yF3nZ/tsG0/lTW4L
+         2L/IIEAGHTpczhwOvCzBVKPvPCclr409/+ZtoWzaZ7qkY0Tbo0zwv29aBnt8g+nyztRl
+         x89ntOpqMIo6rcgdfbq5fAmbIgUcrrTiwc1vJrXtGLvGxfGDNunfGBwDuH5DW7rlmRh5
+         UMMw==
+X-Gm-Message-State: AOAM533tICXJ5YQvYx9U7FWYG1NhE6GAHosSi9TJkZpjGF7qJ2xAG/Ai
+        T8KMFLxS67lVXQ+2H90yqbk=
+X-Google-Smtp-Source: ABdhPJzbK1Pep1EV5znlJyRGdijLQvJsQCB5W8ckjantaKU45csvgIC5VBNseaQpVQzmsGpWoaMuYA==
+X-Received: by 2002:a17:907:7d88:: with SMTP id oz8mr8756710ejc.173.1636456335503;
+        Tue, 09 Nov 2021 03:12:15 -0800 (PST)
+Received: from skbuf ([188.25.175.102])
+        by smtp.gmail.com with ESMTPSA id sg17sm9613898ejc.72.2021.11.09.03.12.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Nov 2021 03:12:15 -0800 (PST)
+Date:   Tue, 9 Nov 2021 13:12:13 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Martin Kaistra <martin.kaistra@linutronix.de>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 6/7] net: dsa: b53: Add logic for TX timestamping
+Message-ID: <20211109111213.6vo5swdhxjvgmyjt@skbuf>
+References: <20211109095013.27829-1-martin.kaistra@linutronix.de>
+ <20211109095013.27829-7-martin.kaistra@linutronix.de>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW5PR11MB5812.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 59e45d1c-2fbe-4920-08c3-08d9a36eb63c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Nov 2021 10:50:14.7140
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: k0qfMJ8Tm5jCm1CjAE5/NF4AsRJ58ydkhvTzarapXn72RP5EjFOOw5cNVJ1LQQFIn5+vjAHD6Rf+m71irntZQxRfghNNICNfKU3vGWEWs1Q=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4730
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211109095013.27829-7-martin.kaistra@linutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Monday, November 8, 2021 6:03 PM
-> To: Ido Schimmel <idosch@idosch.org>
-> Subject: Re: [PATCH v2 net-next 6/6] docs: net: Add description of SyncE
-> interfaces
->=20
-> On Mon, 8 Nov 2021 18:29:50 +0200 Ido Schimmel wrote:
-> > I also want to re-iterate my dissatisfaction with the interface being
-> > netdev-centric. By modelling the EEC as a standalone object we will be
-> > able to extend it to set the source of the EEC to something other than =
-a
-> > netdev in the future. If we don't do it now, we will end up with two
-> > ways to report the source of the EEC (i.e., EEC_SRC_PORT and something
-> > else).
-> >
-> > Other advantages of modelling the EEC as a separate object include the
-> > ability for user space to determine the mapping between netdevs and EEC=
-s
-> > (currently impossible) and reporting additional EEC attributes such as
-> > SyncE clockIdentity and default SSM code. There is really no reason to
-> > report all of this identical information via multiple netdevs.
->=20
-> Indeed, I feel convinced. I believe the OCP timing card will benefit
-> from such API as well. I pinged Jonathan if he doesn't have cycles
-> I'll do the typing.
->=20
-> What do you have in mind for driver abstracting away pin selection?
-> For a standalone clock fed PPS signal from a backplate this will be
-> impossible, so we may need some middle way.
+On Tue, Nov 09, 2021 at 10:50:08AM +0100, Martin Kaistra wrote:
+> In order to get the switch to generate a timestamp for a transmitted
+> packet, we need to set the TS bit in the BRCM tag. The switch will then
+> create a status frame, which gets send back to the cpu.
+> In b53_port_txtstamp() we put the skb into a waiting position.
+> 
+> When a status frame is received, we extract the timestamp and put the time
+> according to our timecounter into the waiting skb. When
+> TX_TSTAMP_TIMEOUT is reached and we have no means to correctly get back
+> a full timestamp, we cancel the process.
+> 
+> As the status frame doesn't contain a reference to the original packet,
+> only one packet with timestamp request can be sent at a time.
+> 
+> Signed-off-by: Martin Kaistra <martin.kaistra@linutronix.de>
+> ---
+>  drivers/net/dsa/b53/b53_common.c |  1 +
+>  drivers/net/dsa/b53/b53_ptp.c    | 56 ++++++++++++++++++++++++++++++++
+>  drivers/net/dsa/b53/b53_ptp.h    |  8 +++++
+>  net/dsa/tag_brcm.c               | 46 ++++++++++++++++++++++++++
+>  4 files changed, 111 insertions(+)
+> 
+> diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+> index a9408f9cd414..56a9de89b38b 100644
+> --- a/drivers/net/dsa/b53/b53_common.c
+> +++ b/drivers/net/dsa/b53/b53_common.c
+> @@ -2301,6 +2301,7 @@ static const struct dsa_switch_ops b53_switch_ops = {
+>  	.port_change_mtu	= b53_change_mtu,
+>  	.get_ts_info		= b53_get_ts_info,
+>  	.port_rxtstamp		= b53_port_rxtstamp,
+> +	.port_txtstamp		= b53_port_txtstamp,
+>  };
+>  
+>  struct b53_chip_data {
+> diff --git a/drivers/net/dsa/b53/b53_ptp.c b/drivers/net/dsa/b53/b53_ptp.c
+> index f8dd8d484d93..5567135ba8b9 100644
+> --- a/drivers/net/dsa/b53/b53_ptp.c
+> +++ b/drivers/net/dsa/b53/b53_ptp.c
+> @@ -100,14 +100,65 @@ static long b53_hwtstamp_work(struct ptp_clock_info *ptp)
+>  {
+>  	struct b53_device *dev =
+>  		container_of(ptp, struct b53_device, ptp_clock_info);
+> +	struct dsa_switch *ds = dev->ds;
+> +	int i;
+>  
+>  	mutex_lock(&dev->ptp_mutex);
+>  	timecounter_read(&dev->tc);
+>  	mutex_unlock(&dev->ptp_mutex);
+>  
+> +	for (i = 0; i < ds->num_ports; i++) {
+> +		struct b53_port_hwtstamp *ps;
+> +
+> +		if (!dsa_is_user_port(ds, i))
+> +			continue;
 
-Me too! Yet it'll take a lot of time to implement it. My thinking was to
-implement the simplest usable EEC state possible that is applicable to all
-solutions (like 1GBaseT that doesn't always require external DPLL to enable
-SyncE) and have an option to return the state for netdev-specific use cases
-And easily enable the new path when it's available. We can just check if th=
-e
-driver is connected to the DPLL in the future DPLL subsystem and reroute
-the GET_EECSTATE call there.
+dsa_switch_for_each_user_port and replace i with dp->index.
+This makes for a more efficient iteration through the port list.
 
-We can also fix the mapping by adding the DPLL_IDX attribute.
+> +
+> +		ps = &dev->ports[i].port_hwtstamp;
+> +
+> +		if (test_bit(B53_HWTSTAMP_TX_IN_PROGRESS, &ps->state) &&
+> +		    time_is_before_jiffies(ps->tx_tstamp_start +
+> +					   TX_TSTAMP_TIMEOUT)) {
+> +			dev_err(dev->dev,
+> +				"Timeout while waiting for Tx timestamp!\n");
+> +			dev_kfree_skb_any(ps->tx_skb);
+> +			ps->tx_skb = NULL;
+> +			clear_bit_unlock(B53_HWTSTAMP_TX_IN_PROGRESS,
+> +					 &ps->state);
+> +		}
+> +	}
+> +
+>  	return B53_PTP_OVERFLOW_PERIOD;
+>  }
+>  
+> +void b53_port_txtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb)
+> +{
+> +	struct b53_device *dev = ds->priv;
+> +	struct b53_port_hwtstamp *ps = &dev->ports[port].port_hwtstamp;
+> +	struct sk_buff *clone;
+> +	unsigned int type;
+> +
+> +	type = ptp_classify_raw(skb);
+> +
+> +	if (type != PTP_CLASS_V2_L2)
+> +		return;
+> +
+> +	if (!test_bit(B53_HWTSTAMP_ENABLED, &ps->state))
+> +		return;
+> +
+> +	clone = skb_clone_sk(skb);
+> +	if (!clone)
+> +		return;
+> +
+> +	if (test_and_set_bit_lock(B53_HWTSTAMP_TX_IN_PROGRESS, &ps->state)) {
 
-The DPLL subsystem will require very flexible pin model as there are a lot =
-to
-configure inside the DPLL to enable many use cases.
+Is it ok if you simply don't timestamp a second skb which may be sent
+while the first one is in flight, I wonder? What PTP profiles have you
+tested with? At just one PTP packet at a time, the switch isn't giving
+you a lot. Is it a hardware limitation?
+
+> +		kfree_skb(clone);
+> +		return;
+> +	}
+> +
+> +	ps->tx_skb = clone;
+> +	ps->tx_tstamp_start = jiffies;
+> +}
+> +EXPORT_SYMBOL(b53_port_txtstamp);
+> +
+>  bool b53_port_rxtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb,
+>  		       unsigned int type)
+>  {
+> @@ -136,6 +187,8 @@ EXPORT_SYMBOL(b53_port_rxtstamp);
+>  
+>  int b53_ptp_init(struct b53_device *dev)
+>  {
+> +	struct dsa_port *dp;
+> +
+>  	mutex_init(&dev->ptp_mutex);
+>  
+>  	/* Enable BroadSync HD for all ports */
+> @@ -191,6 +244,9 @@ int b53_ptp_init(struct b53_device *dev)
+>  
+>  	ptp_schedule_worker(dev->ptp_clock, 0);
+>  
+> +	dsa_switch_for_each_port(dp, dev->ds)
+> +		dp->priv = &dev->ports[dp->index].port_hwtstamp;
+> +
+>  	return 0;
+>  }
+>  EXPORT_SYMBOL(b53_ptp_init);
+> diff --git a/drivers/net/dsa/b53/b53_ptp.h b/drivers/net/dsa/b53/b53_ptp.h
+> index 3b3437870c55..f888f0a2022a 100644
+> --- a/drivers/net/dsa/b53/b53_ptp.h
+> +++ b/drivers/net/dsa/b53/b53_ptp.h
+> @@ -10,6 +10,7 @@
+>  #include "b53_priv.h"
+>  
+>  #define SKB_PTP_TYPE(__skb) (*(unsigned int *)((__skb)->cb))
+> +#define TX_TSTAMP_TIMEOUT msecs_to_jiffies(40)
+>  
+>  #ifdef CONFIG_B53_PTP
+>  int b53_ptp_init(struct b53_device *dev);
+> @@ -18,6 +19,8 @@ int b53_get_ts_info(struct dsa_switch *ds, int port,
+>  		    struct ethtool_ts_info *info);
+>  bool b53_port_rxtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb,
+>  		       unsigned int type);
+> +void b53_port_txtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb);
+> +
+>  #else /* !CONFIG_B53_PTP */
+>  
+>  static inline int b53_ptp_init(struct b53_device *dev)
+> @@ -41,5 +44,10 @@ static inline bool b53_port_rxtstamp(struct dsa_switch *ds, int port,
+>  	return false;
+>  }
+>  
+> +static inline void b53_port_txtstamp(struct dsa_switch *ds, int port,
+> +				     struct sk_buff *skb)
+> +{
+> +}
+> +
+>  #endif
+>  #endif
+> diff --git a/net/dsa/tag_brcm.c b/net/dsa/tag_brcm.c
+> index d611c1073deb..a44ac81fa097 100644
+> --- a/net/dsa/tag_brcm.c
+> +++ b/net/dsa/tag_brcm.c
+> @@ -8,6 +8,7 @@
+>  #include <linux/dsa/brcm.h>
+>  #include <linux/etherdevice.h>
+>  #include <linux/list.h>
+> +#include <linux/ptp_classify.h>
+>  #include <linux/slab.h>
+>  #include <linux/dsa/b53.h>
+>  
+> @@ -76,6 +77,7 @@
+>  #define BRCM_EG_TC_SHIFT	5
+>  #define BRCM_EG_TC_MASK		0x7
+>  #define BRCM_EG_PID_MASK	0x1f
+> +#define BRCM_EG_T_R		0x20
+>  
+>  #if IS_ENABLED(CONFIG_NET_DSA_TAG_BRCM) || \
+>  	IS_ENABLED(CONFIG_NET_DSA_TAG_BRCM_PREPEND)
+> @@ -85,6 +87,8 @@ static struct sk_buff *brcm_tag_xmit_ll(struct sk_buff *skb,
+>  					unsigned int offset)
+>  {
+>  	struct dsa_port *dp = dsa_slave_to_port(dev);
+> +	unsigned int type = ptp_classify_raw(skb);
+> +	struct b53_port_hwtstamp *ps = dp->priv;
+>  	u16 queue = skb_get_queue_mapping(skb);
+>  	u8 *brcm_tag;
+>  
+> @@ -112,7 +116,13 @@ static struct sk_buff *brcm_tag_xmit_ll(struct sk_buff *skb,
+>  	 */
+>  	brcm_tag[0] = (1 << BRCM_OPCODE_SHIFT) |
+>  		       ((queue & BRCM_IG_TC_MASK) << BRCM_IG_TC_SHIFT);
+> +
+>  	brcm_tag[1] = 0;
+> +
+> +	if (type == PTP_CLASS_V2_L2 &&
+> +	    test_bit(B53_HWTSTAMP_TX_IN_PROGRESS, &ps->state))
+> +		brcm_tag[1] = 1 << BRCM_IG_TS_SHIFT;
+> +
+>  	brcm_tag[2] = 0;
+>  	if (dp->index == 8)
+>  		brcm_tag[2] = BRCM_IG_DSTMAP2_MASK;
+> @@ -126,6 +136,33 @@ static struct sk_buff *brcm_tag_xmit_ll(struct sk_buff *skb,
+>  	return skb;
+>  }
+>  
+> +static int set_txtstamp(struct dsa_port *dp,
+> +			int port,
+> +			u64 ns)
+> +{
+> +	struct b53_device *b53_dev = dp->ds->priv;
+> +	struct b53_port_hwtstamp *ps = dp->priv;
+> +	struct skb_shared_hwtstamps shhwtstamps;
+> +	struct sk_buff *tmp_skb;
+> +
+> +	if (!ps->tx_skb)
+> +		return 0;
+> +
+> +	mutex_lock(&b53_dev->ptp_mutex);
+> +	ns = timecounter_cyc2time(&b53_dev->tc, ns);
+> +	mutex_unlock(&b53_dev->ptp_mutex);
+
+This is called from brcm_tag_rcv_ll which runs in softirq context.
+You can't take a sleeping mutex, sorry.
+Please test your patches with CONFIG_DEBUG_ATOMIC_SLEEP and friends
+(lockdep etc).
+
+> +
+> +	memset(&shhwtstamps, 0, sizeof(shhwtstamps));
+> +	shhwtstamps.hwtstamp = ns_to_ktime(ns);
+> +	tmp_skb = ps->tx_skb;
+> +	ps->tx_skb = NULL;
+> +
+> +	clear_bit_unlock(B53_HWTSTAMP_TX_IN_PROGRESS, &ps->state);
+> +	skb_complete_tx_timestamp(tmp_skb, &shhwtstamps);
+> +
+> +	return 0;
+> +}
+> +
+>  /* Frames with this tag have one of these two layouts:
+>   * -----------------------------------
+>   * | MAC DA | MAC SA | 4b tag | Type | DSA_TAG_PROTO_BRCM
+> @@ -143,6 +180,7 @@ static struct sk_buff *brcm_tag_rcv_ll(struct sk_buff *skb,
+>  				       unsigned int offset,
+>  				       int *tag_len)
+>  {
+> +	struct dsa_port *dp;
+>  	int source_port;
+>  	u8 *brcm_tag;
+>  	u32 tstamp;
+> @@ -177,6 +215,14 @@ static struct sk_buff *brcm_tag_rcv_ll(struct sk_buff *skb,
+>  	if (!skb->dev)
+>  		return NULL;
+>  
+> +	/* Check whether this is a status frame */
+> +	if (unlikely(*tag_len == 8 && brcm_tag[3] & BRCM_EG_T_R)) {
+> +		dp = dsa_slave_to_port(skb->dev);
+> +
+> +		set_txtstamp(dp, source_port, tstamp);
+> +		return NULL;
+> +	}
+> +
+>  	/* Remove Broadcom tag and update checksum */
+>  	skb_pull_rcsum(skb, *tag_len);
+>  
+> -- 
+> 2.20.1
+> 
+
