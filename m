@@ -2,37 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2C3544AAF0
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 10:51:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60D4C44AAF2
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 10:51:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245084AbhKIJyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 04:54:04 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:35012 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245074AbhKIJxu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 04:53:50 -0500
+        id S245113AbhKIJyF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 04:54:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49890 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245106AbhKIJxy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 04:53:54 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D05FC0613B9;
+        Tue,  9 Nov 2021 01:51:08 -0800 (PST)
 From:   Martin Kaistra <martin.kaistra@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1636451462;
+        s=2020; t=1636451467;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xQswiKvKoyJnh7CLEzRLDmgSKq/tGhgbu7FVjEL+3G8=;
-        b=wN0pMFKG5ZWI5QjMuGncMAgcKn5pZxNuIenHzW3tzyYwCrGaFckY+BWlY8WU7u5bXhFN1B
-        xpXTJ3Ml2/VogoBa0Mlg3xYu+9WAIMbyqtIS9BHkRWrTy68Zolg+Zk6953DgdeCmwxt7ql
-        HeVB3OTjY1UtgXB/Kgfd9v3y5716mbSE/hwy92wecTDhxtObBZ3J5fJBJEWDr8ucT2PXJc
-        L5dwEq6O/MDmr1Kbgg6+wxsAOo64An89olRPVqP9S+iK2YcRu8jDlQh0Jk2CLSg2DbhmHj
-        RjLVNurZYDuP4WL2+XKitvHK1CL6AKbmT7xmJIXaTMioeU2XfX6t4qRs59Zxtw==
+        bh=nJgE1Oggh7wQq8N7HhcPzV1VqckTR+2ntDU2O4TJk/M=;
+        b=qpEkXcDqcisjbA0djXVk7UFyyyEuftY8gGBx6d+Xb2znpjdk0LLIy7MUx/K40BuZUfA//h
+        U5/IEEV1Jww+QsPbNqo11mKV6jWfYyDobR0bkeaKRxFk7uDA2igg68ZRLz/EGyMiehQ07d
+        6KwapMaXWc/7lW6O4jau9xXCgZoIHUHTI/JqtPGid9w7E9Ip9jqk8PhmaHdhTKN78nX5YE
+        vNGCzWCNyFPGo7At7Cs50+EsN6z8cYOkPvK79tyQiWH+vjEMKWCIcjgLiaGc8QvIscIBri
+        PR52quUfCaNeiEdnWE4CHrmC4GO59USTtthZ0yiu7sScu5BUjcKpOIpf6qu/Zw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1636451462;
+        s=2020e; t=1636451467;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xQswiKvKoyJnh7CLEzRLDmgSKq/tGhgbu7FVjEL+3G8=;
-        b=Xv92KSMwH1rDqdjROAnjFp0GZXDVFNXua3mNhkGhbf0SjXCjPD26dYvuPqB1z2JL5+9Hgb
-        79TqYTw3yEDdHLCA==
+        bh=nJgE1Oggh7wQq8N7HhcPzV1VqckTR+2ntDU2O4TJk/M=;
+        b=PKn/t/688GQmkta1UU9vAAHPxf2YZ+2RygAKrOlWZfKvIAH+wmQ/MTocRtTXYTfje+mZlo
+        nrviuW02Uw2pTxCQ==
 To:     Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>
@@ -47,9 +50,9 @@ Cc:     martin.kaistra@linutronix.de,
         Russell King <linux@armlinux.org.uk>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v2 5/7] net: dsa: b53: Add logic for RX timestamping
-Date:   Tue,  9 Nov 2021 10:50:07 +0100
-Message-Id: <20211109095013.27829-6-martin.kaistra@linutronix.de>
+Subject: [PATCH v2 6/7] net: dsa: b53: Add logic for TX timestamping
+Date:   Tue,  9 Nov 2021 10:50:08 +0100
+Message-Id: <20211109095013.27829-7-martin.kaistra@linutronix.de>
 In-Reply-To: <20211109095013.27829-1-martin.kaistra@linutronix.de>
 References: <20211109095013.27829-1-martin.kaistra@linutronix.de>
 MIME-Version: 1.0
@@ -58,255 +61,260 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Packets received by the tagger with opcode=1 contain the 32-bit timestamp
-according to the timebase register. This timestamp is saved in
-BRCM_SKB_CB(skb)->meta_tstamp. b53_port_rxtstamp() takes this
-and puts the full time information from the timecounter into
-shwt->hwtstamp.
+In order to get the switch to generate a timestamp for a transmitted
+packet, we need to set the TS bit in the BRCM tag. The switch will then
+create a status frame, which gets send back to the cpu.
+In b53_port_txtstamp() we put the skb into a waiting position.
+
+When a status frame is received, we extract the timestamp and put the time
+according to our timecounter into the waiting skb. When
+TX_TSTAMP_TIMEOUT is reached and we have no means to correctly get back
+a full timestamp, we cancel the process.
+
+As the status frame doesn't contain a reference to the original packet,
+only one packet with timestamp request can be sent at a time.
 
 Signed-off-by: Martin Kaistra <martin.kaistra@linutronix.de>
 ---
  drivers/net/dsa/b53/b53_common.c |  1 +
- drivers/net/dsa/b53/b53_ptp.c    | 28 +++++++++++++++++++++++++
- drivers/net/dsa/b53/b53_ptp.h    | 10 +++++++++
- include/linux/dsa/b53.h          | 30 +++++++++++++++++++++++++++
- net/dsa/tag_brcm.c               | 35 ++++++++++++++++++++++++--------
- 5 files changed, 95 insertions(+), 9 deletions(-)
+ drivers/net/dsa/b53/b53_ptp.c    | 56 ++++++++++++++++++++++++++++++++
+ drivers/net/dsa/b53/b53_ptp.h    |  8 +++++
+ net/dsa/tag_brcm.c               | 46 ++++++++++++++++++++++++++
+ 4 files changed, 111 insertions(+)
 
 diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index ed590efbd3bf..a9408f9cd414 100644
+index a9408f9cd414..56a9de89b38b 100644
 --- a/drivers/net/dsa/b53/b53_common.c
 +++ b/drivers/net/dsa/b53/b53_common.c
-@@ -2300,6 +2300,7 @@ static const struct dsa_switch_ops b53_switch_ops = {
- 	.port_max_mtu		= b53_get_max_mtu,
+@@ -2301,6 +2301,7 @@ static const struct dsa_switch_ops b53_switch_ops = {
  	.port_change_mtu	= b53_change_mtu,
  	.get_ts_info		= b53_get_ts_info,
-+	.port_rxtstamp		= b53_port_rxtstamp,
+ 	.port_rxtstamp		= b53_port_rxtstamp,
++	.port_txtstamp		= b53_port_txtstamp,
  };
  
  struct b53_chip_data {
 diff --git a/drivers/net/dsa/b53/b53_ptp.c b/drivers/net/dsa/b53/b53_ptp.c
-index 8629c510b1a0..f8dd8d484d93 100644
+index f8dd8d484d93..5567135ba8b9 100644
 --- a/drivers/net/dsa/b53/b53_ptp.c
 +++ b/drivers/net/dsa/b53/b53_ptp.c
-@@ -6,6 +6,8 @@
-  * Copyright (C) 2021 Linutronix GmbH
-  */
+@@ -100,14 +100,65 @@ static long b53_hwtstamp_work(struct ptp_clock_info *ptp)
+ {
+ 	struct b53_device *dev =
+ 		container_of(ptp, struct b53_device, ptp_clock_info);
++	struct dsa_switch *ds = dev->ds;
++	int i;
  
-+#include <linux/ptp_classify.h>
+ 	mutex_lock(&dev->ptp_mutex);
+ 	timecounter_read(&dev->tc);
+ 	mutex_unlock(&dev->ptp_mutex);
+ 
++	for (i = 0; i < ds->num_ports; i++) {
++		struct b53_port_hwtstamp *ps;
 +
- #include "b53_priv.h"
- #include "b53_ptp.h"
- 
-@@ -106,6 +108,32 @@ static long b53_hwtstamp_work(struct ptp_clock_info *ptp)
++		if (!dsa_is_user_port(ds, i))
++			continue;
++
++		ps = &dev->ports[i].port_hwtstamp;
++
++		if (test_bit(B53_HWTSTAMP_TX_IN_PROGRESS, &ps->state) &&
++		    time_is_before_jiffies(ps->tx_tstamp_start +
++					   TX_TSTAMP_TIMEOUT)) {
++			dev_err(dev->dev,
++				"Timeout while waiting for Tx timestamp!\n");
++			dev_kfree_skb_any(ps->tx_skb);
++			ps->tx_skb = NULL;
++			clear_bit_unlock(B53_HWTSTAMP_TX_IN_PROGRESS,
++					 &ps->state);
++		}
++	}
++
  	return B53_PTP_OVERFLOW_PERIOD;
  }
  
-+bool b53_port_rxtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb,
-+		       unsigned int type)
++void b53_port_txtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb)
 +{
 +	struct b53_device *dev = ds->priv;
 +	struct b53_port_hwtstamp *ps = &dev->ports[port].port_hwtstamp;
-+	struct skb_shared_hwtstamps *shwt;
-+	u64 ns;
++	struct sk_buff *clone;
++	unsigned int type;
++
++	type = ptp_classify_raw(skb);
 +
 +	if (type != PTP_CLASS_V2_L2)
-+		return false;
++		return;
 +
 +	if (!test_bit(B53_HWTSTAMP_ENABLED, &ps->state))
-+		return false;
++		return;
 +
-+	mutex_lock(&dev->ptp_mutex);
-+	ns = timecounter_cyc2time(&dev->tc, BRCM_SKB_CB(skb)->meta_tstamp);
-+	mutex_unlock(&dev->ptp_mutex);
++	clone = skb_clone_sk(skb);
++	if (!clone)
++		return;
 +
-+	shwt = skb_hwtstamps(skb);
-+	memset(shwt, 0, sizeof(*shwt));
-+	shwt->hwtstamp = ns_to_ktime(ns);
++	if (test_and_set_bit_lock(B53_HWTSTAMP_TX_IN_PROGRESS, &ps->state)) {
++		kfree_skb(clone);
++		return;
++	}
 +
-+	return false;
++	ps->tx_skb = clone;
++	ps->tx_tstamp_start = jiffies;
 +}
-+EXPORT_SYMBOL(b53_port_rxtstamp);
++EXPORT_SYMBOL(b53_port_txtstamp);
 +
+ bool b53_port_rxtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb,
+ 		       unsigned int type)
+ {
+@@ -136,6 +187,8 @@ EXPORT_SYMBOL(b53_port_rxtstamp);
+ 
  int b53_ptp_init(struct b53_device *dev)
  {
++	struct dsa_port *dp;
++
  	mutex_init(&dev->ptp_mutex);
+ 
+ 	/* Enable BroadSync HD for all ports */
+@@ -191,6 +244,9 @@ int b53_ptp_init(struct b53_device *dev)
+ 
+ 	ptp_schedule_worker(dev->ptp_clock, 0);
+ 
++	dsa_switch_for_each_port(dp, dev->ds)
++		dp->priv = &dev->ports[dp->index].port_hwtstamp;
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL(b53_ptp_init);
 diff --git a/drivers/net/dsa/b53/b53_ptp.h b/drivers/net/dsa/b53/b53_ptp.h
-index 5cd2fd9621a2..3b3437870c55 100644
+index 3b3437870c55..f888f0a2022a 100644
 --- a/drivers/net/dsa/b53/b53_ptp.h
 +++ b/drivers/net/dsa/b53/b53_ptp.h
-@@ -9,11 +9,15 @@
- 
+@@ -10,6 +10,7 @@
  #include "b53_priv.h"
  
-+#define SKB_PTP_TYPE(__skb) (*(unsigned int *)((__skb)->cb))
-+
+ #define SKB_PTP_TYPE(__skb) (*(unsigned int *)((__skb)->cb))
++#define TX_TSTAMP_TIMEOUT msecs_to_jiffies(40)
+ 
  #ifdef CONFIG_B53_PTP
  int b53_ptp_init(struct b53_device *dev);
- void b53_ptp_exit(struct b53_device *dev);
- int b53_get_ts_info(struct dsa_switch *ds, int port,
+@@ -18,6 +19,8 @@ int b53_get_ts_info(struct dsa_switch *ds, int port,
  		    struct ethtool_ts_info *info);
-+bool b53_port_rxtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb,
-+		       unsigned int type);
+ bool b53_port_rxtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb,
+ 		       unsigned int type);
++void b53_port_txtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb);
++
  #else /* !CONFIG_B53_PTP */
  
  static inline int b53_ptp_init(struct b53_device *dev)
-@@ -31,5 +35,11 @@ static inline int b53_get_ts_info(struct dsa_switch *ds, int port,
- 	return -EOPNOTSUPP;
+@@ -41,5 +44,10 @@ static inline bool b53_port_rxtstamp(struct dsa_switch *ds, int port,
+ 	return false;
  }
  
-+static inline bool b53_port_rxtstamp(struct dsa_switch *ds, int port,
-+				     struct sk_buff *skb, unsigned int type)
++static inline void b53_port_txtstamp(struct dsa_switch *ds, int port,
++				     struct sk_buff *skb)
 +{
-+	return false;
 +}
 +
  #endif
  #endif
-diff --git a/include/linux/dsa/b53.h b/include/linux/dsa/b53.h
-index 85aa6d9dc53d..542e5e3040d6 100644
---- a/include/linux/dsa/b53.h
-+++ b/include/linux/dsa/b53.h
-@@ -46,9 +46,32 @@ struct b53_io_ops {
- 					struct phylink_link_state *state);
- };
- 
-+/* state flags for b53_port_hwtstamp::state */
-+enum {
-+	B53_HWTSTAMP_ENABLED,
-+	B53_HWTSTAMP_TX_IN_PROGRESS,
-+};
-+
-+struct b53_port_hwtstamp {
-+	/* Port index */
-+	int port_id;
-+
-+	/* Timestamping state */
-+	unsigned long state;
-+
-+	/* Resources for transmit timestamping */
-+	unsigned long tx_tstamp_start;
-+	struct sk_buff *tx_skb;
-+
-+	/* Current timestamp configuration */
-+	struct hwtstamp_config tstamp_config;
-+};
-+
- struct b53_port {
- 	u16 vlan_ctl_mask;
- 	struct ethtool_eee eee;
-+	/* Per-port timestamping resources */
-+	struct b53_port_hwtstamp port_hwtstamp;
- };
- 
- struct b53_vlan {
-@@ -112,3 +135,10 @@ struct b53_device {
- #define B53_PTP_OVERFLOW_PERIOD (HZ / 2)
- 	struct delayed_work overflow_work;
- };
-+
-+struct brcm_skb_cb {
-+	struct sk_buff *clone;
-+	u32 meta_tstamp;
-+};
-+
-+#define BRCM_SKB_CB(skb) ((struct brcm_skb_cb *)(skb)->cb)
 diff --git a/net/dsa/tag_brcm.c b/net/dsa/tag_brcm.c
-index 96dbb8ee2fee..d611c1073deb 100644
+index d611c1073deb..a44ac81fa097 100644
 --- a/net/dsa/tag_brcm.c
 +++ b/net/dsa/tag_brcm.c
-@@ -9,6 +9,7 @@
+@@ -8,6 +8,7 @@
+ #include <linux/dsa/brcm.h>
  #include <linux/etherdevice.h>
  #include <linux/list.h>
++#include <linux/ptp_classify.h>
  #include <linux/slab.h>
-+#include <linux/dsa/b53.h>
+ #include <linux/dsa/b53.h>
  
- #include "dsa_priv.h"
+@@ -76,6 +77,7 @@
+ #define BRCM_EG_TC_SHIFT	5
+ #define BRCM_EG_TC_MASK		0x7
+ #define BRCM_EG_PID_MASK	0x1f
++#define BRCM_EG_T_R		0x20
  
-@@ -31,7 +32,10 @@
- /* 6th byte in the tag */
- #define BRCM_LEG_PORT_ID	(0xf)
- 
--/* Newer Broadcom tag (4 bytes) */
-+/* Newer Broadcom tag (4 bytes)
-+ * For egress, when opcode = 0001, additional 4 bytes are used for
-+ * the time stamp.
-+ */
- #define BRCM_TAG_LEN	4
- 
- /* Tag is constructed and desconstructed using byte by byte access
-@@ -136,19 +140,29 @@ static struct sk_buff *brcm_tag_xmit_ll(struct sk_buff *skb,
-  */
- static struct sk_buff *brcm_tag_rcv_ll(struct sk_buff *skb,
- 				       struct net_device *dev,
--				       unsigned int offset)
-+				       unsigned int offset,
-+				       int *tag_len)
+ #if IS_ENABLED(CONFIG_NET_DSA_TAG_BRCM) || \
+ 	IS_ENABLED(CONFIG_NET_DSA_TAG_BRCM_PREPEND)
+@@ -85,6 +87,8 @@ static struct sk_buff *brcm_tag_xmit_ll(struct sk_buff *skb,
+ 					unsigned int offset)
  {
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
++	unsigned int type = ptp_classify_raw(skb);
++	struct b53_port_hwtstamp *ps = dp->priv;
+ 	u16 queue = skb_get_queue_mapping(skb);
+ 	u8 *brcm_tag;
+ 
+@@ -112,7 +116,13 @@ static struct sk_buff *brcm_tag_xmit_ll(struct sk_buff *skb,
+ 	 */
+ 	brcm_tag[0] = (1 << BRCM_OPCODE_SHIFT) |
+ 		       ((queue & BRCM_IG_TC_MASK) << BRCM_IG_TC_SHIFT);
++
+ 	brcm_tag[1] = 0;
++
++	if (type == PTP_CLASS_V2_L2 &&
++	    test_bit(B53_HWTSTAMP_TX_IN_PROGRESS, &ps->state))
++		brcm_tag[1] = 1 << BRCM_IG_TS_SHIFT;
++
+ 	brcm_tag[2] = 0;
+ 	if (dp->index == 8)
+ 		brcm_tag[2] = BRCM_IG_DSTMAP2_MASK;
+@@ -126,6 +136,33 @@ static struct sk_buff *brcm_tag_xmit_ll(struct sk_buff *skb,
+ 	return skb;
+ }
+ 
++static int set_txtstamp(struct dsa_port *dp,
++			int port,
++			u64 ns)
++{
++	struct b53_device *b53_dev = dp->ds->priv;
++	struct b53_port_hwtstamp *ps = dp->priv;
++	struct skb_shared_hwtstamps shhwtstamps;
++	struct sk_buff *tmp_skb;
++
++	if (!ps->tx_skb)
++		return 0;
++
++	mutex_lock(&b53_dev->ptp_mutex);
++	ns = timecounter_cyc2time(&b53_dev->tc, ns);
++	mutex_unlock(&b53_dev->ptp_mutex);
++
++	memset(&shhwtstamps, 0, sizeof(shhwtstamps));
++	shhwtstamps.hwtstamp = ns_to_ktime(ns);
++	tmp_skb = ps->tx_skb;
++	ps->tx_skb = NULL;
++
++	clear_bit_unlock(B53_HWTSTAMP_TX_IN_PROGRESS, &ps->state);
++	skb_complete_tx_timestamp(tmp_skb, &shhwtstamps);
++
++	return 0;
++}
++
+ /* Frames with this tag have one of these two layouts:
+  * -----------------------------------
+  * | MAC DA | MAC SA | 4b tag | Type | DSA_TAG_PROTO_BRCM
+@@ -143,6 +180,7 @@ static struct sk_buff *brcm_tag_rcv_ll(struct sk_buff *skb,
+ 				       unsigned int offset,
+ 				       int *tag_len)
+ {
++	struct dsa_port *dp;
  	int source_port;
  	u8 *brcm_tag;
-+	u32 tstamp;
-+
-+	*tag_len = 8;
- 
- 	if (unlikely(!pskb_may_pull(skb, BRCM_TAG_LEN)))
+ 	u32 tstamp;
+@@ -177,6 +215,14 @@ static struct sk_buff *brcm_tag_rcv_ll(struct sk_buff *skb,
+ 	if (!skb->dev)
  		return NULL;
  
- 	brcm_tag = skb->data - offset;
- 
--	/* The opcode should never be different than 0b000 */
--	if (unlikely((brcm_tag[0] >> BRCM_OPCODE_SHIFT) & BRCM_OPCODE_MASK))
--		return NULL;
-+	if ((brcm_tag[0] >> BRCM_OPCODE_SHIFT) & BRCM_OPCODE_MASK) {
-+		if (unlikely(!pskb_may_pull(skb, *tag_len)))
-+			return NULL;
++	/* Check whether this is a status frame */
++	if (unlikely(*tag_len == 8 && brcm_tag[3] & BRCM_EG_T_R)) {
++		dp = dsa_slave_to_port(skb->dev);
 +
-+		tstamp = brcm_tag[4] << 24 | brcm_tag[5] << 16 | brcm_tag[6] << 8 | brcm_tag[7];
-+		BRCM_SKB_CB(skb)->meta_tstamp = tstamp;
-+	} else {
-+		*tag_len = BRCM_TAG_LEN;
++		set_txtstamp(dp, source_port, tstamp);
++		return NULL;
 +	}
- 
- 	/* We should never see a reserved reason code without knowing how to
- 	 * handle it
-@@ -164,7 +178,7 @@ static struct sk_buff *brcm_tag_rcv_ll(struct sk_buff *skb,
- 		return NULL;
- 
- 	/* Remove Broadcom tag and update checksum */
--	skb_pull_rcsum(skb, BRCM_TAG_LEN);
-+	skb_pull_rcsum(skb, *tag_len);
- 
- 	dsa_default_offload_fwd_mark(skb);
- 
-@@ -184,13 +198,14 @@ static struct sk_buff *brcm_tag_xmit(struct sk_buff *skb,
- static struct sk_buff *brcm_tag_rcv(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct sk_buff *nskb;
-+	int tag_len;
- 
- 	/* skb->data points to the EtherType, the tag is right before it */
--	nskb = brcm_tag_rcv_ll(skb, dev, 2);
-+	nskb = brcm_tag_rcv_ll(skb, dev, 2, &tag_len);
- 	if (!nskb)
- 		return nskb;
- 
--	dsa_strip_etype_header(skb, BRCM_TAG_LEN);
-+	dsa_strip_etype_header(skb, tag_len);
- 
- 	return nskb;
- }
-@@ -295,8 +310,10 @@ static struct sk_buff *brcm_tag_xmit_prepend(struct sk_buff *skb,
- static struct sk_buff *brcm_tag_rcv_prepend(struct sk_buff *skb,
- 					    struct net_device *dev)
- {
-+	int tag_len;
 +
- 	/* tag is prepended to the packet */
--	return brcm_tag_rcv_ll(skb, dev, ETH_HLEN);
-+	return brcm_tag_rcv_ll(skb, dev, ETH_HLEN, &tag_len);
- }
+ 	/* Remove Broadcom tag and update checksum */
+ 	skb_pull_rcsum(skb, *tag_len);
  
- static const struct dsa_device_ops brcm_prepend_netdev_ops = {
 -- 
 2.20.1
 
