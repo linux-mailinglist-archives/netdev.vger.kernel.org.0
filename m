@@ -2,40 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07E0544AAE6
+	by mail.lfdr.de (Postfix) with ESMTP id 50B7C44AAE7
 	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 10:50:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244223AbhKIJxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 04:53:34 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:34922 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244979AbhKIJx2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 04:53:28 -0500
+        id S245059AbhKIJxg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 04:53:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49794 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242807AbhKIJxd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 04:53:33 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16B56C061767;
+        Tue,  9 Nov 2021 01:50:48 -0800 (PST)
 From:   Martin Kaistra <martin.kaistra@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1636451441;
+        s=2020; t=1636451445;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=bw5qBgd0vmub1Pz0L0QBZ2Rcgqf+q4qF+intuloVUEs=;
-        b=U0/DZg8u2uFgnNZAOm6vLTWVYKLNlbXJAZTjMTCEM8Ra8jpt/AdJzmFbG7+M8bjTCNQ89S
-        7xK8hP52Y3n7DdIWETXT9CNM9RJkUDs+W04HrwKP3u2zkWxA/9S1lfTDw7qlszFxT2XM5x
-        zWhn+bJo9D41AZMrfCGPMb616Ca2VaGRZoCC4+s8T9ZlaDm6U4ZhNUYNiF2fKJDuGmPWzs
-        yCpN2I5G1ZbuJgt0CK6ju+83uXjT3ciuGdmweLTR3abOM0QeWqupA1S3lT4Llth2v4RRZQ
-        J6icNiduVJ1iFcW3Id4ErJNif7y49ac9fOxbfl3FLM1ZG1RQVHLJyIgNLV4gZg==
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QAIgtG2gp3vW7HRXGd/1SQnk8hM3CErk4xOJRxIoPy4=;
+        b=MxiShnBCeruIZ6OUNZDjlmPNckzWmVeIwodAdtDHG6sXcZ9jT/Oy1fKDexO4vZ8WQbolQZ
+        BR+sKRxo7z5Nl/JlzO84QX4lg09wZihftSfbKflXA+2XO2Wwbhroq+Q4WPUvIyu8Opgk8+
+        mooLozMhbuwRdiNhv2f448PjGb8ud4GD0IQShn0r2KkF7Lvw8qv5G6yFpTvIu5ZFGQQSb7
+        ImA8Q2j0nmilMe0L+VWYn00TzKDS9yix9sx5dV3S5+sMNZjMNaBRzrwLr1lv9IQYy9tzFU
+        qQaPb7hy5bdtaFh6xJYNq23rFXsnhTPOc9Uy0i9RH2KsiDuaffjowlJdQ5f1iA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1636451441;
+        s=2020e; t=1636451445;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=bw5qBgd0vmub1Pz0L0QBZ2Rcgqf+q4qF+intuloVUEs=;
-        b=Zrisn8IlnnH4WW5dCXEKUchUYFA8khY9U1ug+WU0fP0LFOkGKexrVUMMlVZE4DX4uN4Zv0
-        TyXJVO2g0W8068Cg==
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QAIgtG2gp3vW7HRXGd/1SQnk8hM3CErk4xOJRxIoPy4=;
+        b=l7HXjtYDaNWbSyXULGwrphGkVvQ3eIYb0bdPEbHuf1Pf4a3wJAxfDj4hZoghuXhFne/l+A
+        abmjQN4xEfj2cPCA==
 To:     Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>
 Cc:     martin.kaistra@linutronix.de,
         Richard Cochran <richardcochran@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -45,84 +51,125 @@ Cc:     martin.kaistra@linutronix.de,
         Russell King <linux@armlinux.org.uk>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v2 0/7] Add PTP support for BCM53128 switch
-Date:   Tue,  9 Nov 2021 10:50:02 +0100
-Message-Id: <20211109095013.27829-1-martin.kaistra@linutronix.de>
+Subject: [PATCH v2 1/7] net: dsa: b53: Add BroadSync HD register definitions
+Date:   Tue,  9 Nov 2021 10:50:03 +0100
+Message-Id: <20211109095013.27829-2-martin.kaistra@linutronix.de>
+In-Reply-To: <20211109095013.27829-1-martin.kaistra@linutronix.de>
+References: <20211109095013.27829-1-martin.kaistra@linutronix.de>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Kurt Kanzenbach <kurt@linutronix.de>
 
-this series adds PTP support to the b53 DSA driver for the BCM53128
-switch using the BroadSync HD feature.
+Add register definitions for the BroadSync HD features of
+BCM53128. These will be used to enable PTP support.
 
-As there seems to be only one filter (either by Ethertype or DA) for
-timestamping incoming packets, only L2 is supported.
+Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+Signed-off-by: Martin Kaistra <martin.kaistra@linutronix.de>
+---
+ drivers/net/dsa/b53/b53_regs.h | 71 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 71 insertions(+)
 
-To be able to use the timecounter infrastructure with a counter that
-wraps around at a non-power of two point, patch 2 adds support for such
-a custom point. Alternatively I could fix up the delta every time a
-wrap-around occurs in the driver itself, but this way it can also be
-useful for other hardware.
-
-v1 -> v2: fix compiling each patch with W=1 C=1
-          fix compiling when NET_DSA or B53 = m
-          return error on request for too broad filters
-          use aux_work for overflow check
-          fix signature of b53_port_txtstamp() for !CONFIG_B53_PTP
-          rework broadsync hd register definitions
-          add and use register definitions for multiport control
-          remove setting default value for B53_BROADSYNC_TIMEBASE_ADJ
-          simplify initialisation of dev->ptp_clock_info
-          fix pskb_may_pull() for different tag lengths
-          add unlikely() to check for status frames
-          add pointer to b53_port_hwtstamp from dp->priv to simplify access from tag_brcm.c
-
-Ideally, for the B53=m case, I would have liked to include the PTP
-support in the b53_module itself, however I couldn't find a way to do
-that without renaming either the common source file or the module, which
-I didn't want to do.
-
-Instead, b53_ptp will be allowed as a loadable module, but only if
-b53_common is also a module, otherwise it will be built-in.
-
-
-This is v2, the previous version can be found here:
-https://lore.kernel.org/netdev/20211104133204.19757-1-martin.kaistra@linutronix.de/
-
-Thanks,
-Martin
-
-Kurt Kanzenbach (1):
-  net: dsa: b53: Add BroadSync HD register definitions
-
-Martin Kaistra (6):
-  net: dsa: b53: Move struct b53_device to include/linux/dsa/b53.h
-  timecounter: allow for non-power of two overflow
-  net: dsa: b53: Add PHC clock support
-  net: dsa: b53: Add logic for RX timestamping
-  net: dsa: b53: Add logic for TX timestamping
-  net: dsa: b53: Expose PTP timestamping ioctls to userspace
-
- drivers/net/dsa/b53/Kconfig      |   8 +
- drivers/net/dsa/b53/Makefile     |   4 +
- drivers/net/dsa/b53/b53_common.c |  21 ++
- drivers/net/dsa/b53/b53_priv.h   |  90 +-------
- drivers/net/dsa/b53/b53_ptp.c    | 366 +++++++++++++++++++++++++++++++
- drivers/net/dsa/b53/b53_ptp.h    |  67 ++++++
- drivers/net/dsa/b53/b53_regs.h   |  71 ++++++
- include/linux/dsa/b53.h          | 144 ++++++++++++
- include/linux/timecounter.h      |   3 +
- kernel/time/timecounter.c        |   3 +
- net/dsa/tag_brcm.c               |  81 ++++++-
- 11 files changed, 760 insertions(+), 98 deletions(-)
- create mode 100644 drivers/net/dsa/b53/b53_ptp.c
- create mode 100644 drivers/net/dsa/b53/b53_ptp.h
- create mode 100644 include/linux/dsa/b53.h
-
+diff --git a/drivers/net/dsa/b53/b53_regs.h b/drivers/net/dsa/b53/b53_regs.h
+index b2c539a42154..0deb11a7c9cd 100644
+--- a/drivers/net/dsa/b53/b53_regs.h
++++ b/drivers/net/dsa/b53/b53_regs.h
+@@ -50,6 +50,12 @@
+ /* Jumbo Frame Registers */
+ #define B53_JUMBO_PAGE			0x40
+ 
++/* BroadSync HD Register Page */
++#define B53_BROADSYNC_PAGE		0x90
++
++/* Traffic Remarking Register Page */
++#define B53_TRAFFICREMARKING_PAGE	0x91
++
+ /* EEE Control Registers Page */
+ #define B53_EEE_PAGE			0x92
+ 
+@@ -260,6 +266,27 @@
+ /* Broadcom header TX control (16 bit)	*/
+ #define B53_BRCM_HDR_TX_DIS		0x62
+ 
++/*************************************************************************
++ * ARL Control Registers
++ *************************************************************************/
++
++/* Multiport Control Register (16 bit) */
++#define B53_MPORT_CTRL			0x0e
++#define   MPORT_CTRL_DIS_FORWARD	0
++#define   MPORT_CTRL_CMP_ETYPE		1
++#define   MPORT_CTRL_CMP_ADDR		2
++#define   MPORT_CTRL_CMP_ADDR_ETYPE	3
++#define   MPORT_CTRL_SHIFT(x)		((x) << 1)
++#define   MPORT_CTRL_MASK		0x2
++#define   MPORT0_TS_EN			BIT(15)
++
++/* Multiport Address N (N = 0–5) Register (64 bit) */
++#define B53_MPORT_ADDR(n)		(0x10 + ((n) << 4))
++#define   MPORT_ETYPE(x)		((u64)(x) << 48)
++
++/* Multiport Vector N (N = 0–5) Register (32 bit) */
++#define B53_MPORT_VCTR(n)		(0x18 + ((n) << 4))
++
+ /*************************************************************************
+  * ARL Access Page Registers
+  *************************************************************************/
+@@ -479,6 +506,50 @@
+ #define   JMS_MIN_SIZE			1518
+ #define   JMS_MAX_SIZE			9724
+ 
++/*************************************************************************
++ * BroadSync HD Page Registers
++ *************************************************************************/
++
++/* BroadSync HD Enable Control Register (16 bit) */
++#define B53_BROADSYNC_EN_CTRL		0x00
++
++/* BroadSync HD Time Stamp Report Control Register */
++#define B53_BROADSYNC_TS_REPORT_CTRL	0x02
++#define   TSRPT_PKT_EN			BIT(0)
++
++/* BroadSync HD PCP Value Control Register */
++#define B53_BROADSYNC_PCP_CTRL		0x03
++
++/* BroadSync HD Max Packet Size Register */
++#define B53_BROADSYNC_MAX_SDU		0x04
++
++/* BroadSync HD Time Base Register (32 bit) */
++#define B53_BROADSYNC_TIMEBASE		0x10
++
++/* BroadSync HD Time Base Adjustment Register (32 bit) */
++#define B53_BROADSYNC_TIMEBASE_ADJ	0x14
++
++/* BroadSync HD Slot Number and Tick Counter Register (32 bit) */
++#define B53_BROADSYNC_SLOT_CNT		0x18
++
++/* BroadSync HD Slot Adjustment Register (32 bit) */
++#define B53_BROADSYNC_SLOT_ADJ		0x1c
++
++/* BroadSync HD Class 5 Bandwidth Control Register */
++#define B53_BROADSYNC_CLS5_BW_CTRL	0x30
++
++/* BroadSync HD Class 4 Bandwidth Control Register */
++#define B53_BROADSYNC_CLS4_BW_CTRL	0x60
++
++/* BroadSync HD Egress Time Stamp Register */
++#define B53_BROADSYNC_EGRESS_TS		0x90
++
++/* BroadSync HD Egress Time Stamp Status Register */
++#define B53_BROADSYNC_EGRESS_TS_STS	0xd0
++
++/* BroadSync HD Link Status Register (16 bit) */
++#define B53_BROADSYNC_LINK_STS		0xe0
++
+ /*************************************************************************
+  * EEE Configuration Page Registers
+  *************************************************************************/
 -- 
 2.20.1
 
