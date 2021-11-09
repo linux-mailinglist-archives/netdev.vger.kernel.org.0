@@ -2,78 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FC1A44B412
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 21:34:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C58B044B41D
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 21:40:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244469AbhKIUhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 15:37:22 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:53314 "EHLO vps0.lunn.ch"
+        id S244534AbhKIUmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 15:42:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46972 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239648AbhKIUhV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Nov 2021 15:37:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=NZmg3j0EAUz6SRjH0lLT+qY9ZFf2Fx+/cHi7xXQ221k=; b=minbOTZiNi6GoEgekr24PBPWFW
-        wJdqcet8470M6FxSH98y41OHosHueu8nRrp7A33FuPRnuK9jz/RbQNJFODaSQwxBcTWCfOnfBOjbl
-        wMn1MwCJ+vFP7DxKXM9aCplqrnyoMrzxgqKb+MRLoKdCjkz8fjGaZnS58tPhqRSs+KZw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mkXp1-00D1Mt-Pd; Tue, 09 Nov 2021 21:34:23 +0100
-Date:   Tue, 9 Nov 2021 21:34:23 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Subject: Re: [RFC PATCH v3 1/8] leds: add support for hardware driven LEDs
-Message-ID: <YYrbT6pMGXqA2EVn@lunn.ch>
-References: <20211109022608.11109-1-ansuelsmth@gmail.com>
- <20211109022608.11109-2-ansuelsmth@gmail.com>
+        id S242487AbhKIUmx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Nov 2021 15:42:53 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6A90F611AF;
+        Tue,  9 Nov 2021 20:40:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636490407;
+        bh=RYcIMR5vEokbAR+QXtzkXpw/phiwZkZKI+KjU00rhFE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=fm+8W0eqEhK6Qtr+gt0aZA7lxDb1W3bKyu9TlnWHQn8/uhFB0hVh2k90uOWwpylTP
+         9HVtre8H4irHXaNhn/W6AOdTznJDrnTa6vHEsK6x4IxC2CS75fOia7jzX9pRXKAF+v
+         Svr+qLuY9/+4cM0cKQUkq9GCRLvrT4iDUtDYurwYkVHa6LX9y8V9kyNVN95mSXEK+s
+         HUrgHeDx1mhYg6jcki9f3c7qxQ6tMLObfY+LJpqU2s4Q6UU4cjv37uK1kao0yRlOkj
+         TjlOnCnwoFAY78qZRrvYbqTn7nUxl77IKx4UZmVxXvyVIksreE6GUBBi529N58X2Iq
+         ul97rDQ2gOwVg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5C8DC60A89;
+        Tue,  9 Nov 2021 20:40:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211109022608.11109-2-ansuelsmth@gmail.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH ethtool v2 0/1] Fix condition for showing MDI-X status
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163649040737.15746.8792472619973521733.git-patchwork-notify@kernel.org>
+Date:   Tue, 09 Nov 2021 20:40:07 +0000
+References: <20211109172125.10505-1-bage@linutronix.de>
+In-Reply-To: <20211109172125.10505-1-bage@linutronix.de>
+To:     Bastian Germann <bage@linutronix.de>
+Cc:     mkubecek@suse.cz, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 09, 2021 at 03:26:01AM +0100, Ansuel Smith wrote:
-> Some LEDs can be driven by hardware (for example a LED connected to
-> an ethernet PHY or an ethernet switch can be configured to blink on
-> activity on the network, which in software is done by the netdev trigger).
-> 
-> To do such offloading, LED driver must support this and a supported
-> trigger must be used.
-> 
-> LED driver should declare the correct blink_mode supported and should set
-> the blink_mode parameter to one of HARDWARE_CONTROLLED or
-> SOFTWARE_HARDWARE_CONTROLLED.
-> The trigger will check this option and fail to activate if the blink_mode
-> is not supported. By default if a LED driver doesn't declare blink_mode,
-> SOFTWARE_CONTROLLED is assumed.
-> 
-> The LED must implement 3 main API:
-> - trigger_offload_status(): This asks the LED driver if offload mode is
->     enabled or not.
->     Triggers will check if the offload mode is supported and will be
->     activated accordingly. If the trigger can't run in software mode,
->     return -EOPNOTSUPP as the blinking can't be simulated by software.
+Hello:
 
-I don't understand this last part. The LED controller is not
-implementing software mode, other than providing a method to manually
-turn the LED on and off. And there is a well defined call for that. If
-that call is a NULL, it is clear it is not implemented. There is no
-need to ask the driver.
+This patch was applied to ethtool/ethtool.git (master)
+by Michal Kubecek <mkubecek@suse.cz>:
 
-     Andrew
+On Tue,  9 Nov 2021 18:21:24 +0100 you wrote:
+> From: Bastian Germann <bage@linutronix.de>
+> 
+> Fix a duplicate condition in the filter for showing MDI-X info.
+> I am not intending to continue on this issue, so I am dropping
+> the second patch (invalid for the current kernel side handling).
+> 
+> Changelog:
+>  v2: - Collect the additional tags
+>      - Drop the 2nd patch with the twisted pair port condition
+> 
+> [...]
+
+Here is the summary with links:
+  - [ethtool,v2,1/1] netlink: settings: Correct duplicate condition
+    https://git.kernel.org/pub/scm/network/ethtool/ethtool.git/commit/?id=fd7db6457916
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
