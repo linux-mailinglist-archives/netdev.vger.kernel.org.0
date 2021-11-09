@@ -2,99 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70D2D44B2B7
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 19:28:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7B8E44B2BB
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 19:29:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231396AbhKISbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 13:31:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55278 "EHLO
+        id S241768AbhKIScf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 13:32:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242435AbhKISbH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 13:31:07 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED54EC061764
-        for <netdev@vger.kernel.org>; Tue,  9 Nov 2021 10:28:20 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id u17so52526plg.9
-        for <netdev@vger.kernel.org>; Tue, 09 Nov 2021 10:28:20 -0800 (PST)
+        with ESMTP id S230383AbhKISce (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 13:32:34 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6162DC061764
+        for <netdev@vger.kernel.org>; Tue,  9 Nov 2021 10:29:48 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id x64so146695pfd.6
+        for <netdev@vger.kernel.org>; Tue, 09 Nov 2021 10:29:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YqtAkERQI/ln6XRRI9t4KGym2pBKGt4SPOY54xOyYmc=;
-        b=PGOJkkhM/AspXaJubyodGGt3bokcuo1nWeF66Ozy2PSHqL4ozl1ealnJ2sESU77Daa
-         5PCgxSnMKmr5LSn7P+UZw5lKAiqvWF452/e/zcO5+QvHTusOJTtt+u60C6PqqZ1Yg/LF
-         XnAN//7pVh4I0+4GH1pCdd6cp3HnHcZsIY7gg=
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=6keW1cwJ1gZeH5/F+rrzBzRoyC4dgM8zBqcm8dATQxI=;
+        b=P5t/q6LuSQAPCaHvQO5BJfbqHRLy5QyRtNEEXFdXD4DWOOxMOT5RH3rrhmMqP8aL9n
+         yDFiOQ0qijxSoX6zg6hXLVpKabYJgWzX1L6KFxgr+IuGaGSLWJVSrZCnUhhrBFJtdVXf
+         psBEQEOfxaL7m5m1orZDzJKmO7LYvq26aEOK9+0yB0PWwS9X1/W3Y3b5FhUJehZ0+zZ6
+         NotADDLvPyGqzrgEUCGwhsCm5xuutWr7T07p5k4OQIgywsMNV/KPUR96v5iREoO7MI3s
+         GVdQTDxHxNWG9TVqEJvVNxVnS+ML54xri1iYxftAiTqsgv2dpTXO74oIgsHmM647ndjr
+         Dntw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YqtAkERQI/ln6XRRI9t4KGym2pBKGt4SPOY54xOyYmc=;
-        b=HVRkjjkti5F7V+p4vZkm+IfeFAXAleFrWW5vR/FzHRHdcm8q6gGRKiXguAAQu1sUi+
-         6KUZK0+qB70K4a7RUsQLO96e4N7q+2XGB/YASaTntmVe6/v4cP+JWnhsvm5jZlKW4TfZ
-         0bglJeR7Cci8z92Q8dLt7tRQpbFNzpvqJbq3/1FkeYGdGIdiDr+Eb6RE5NCTEzJiVo2I
-         /vjQRRm1BR6Wh8uUm2i7ht8Dn5YpIS7owS2HpoTP3ritTQ9abb+ADq7wi7FNdjxLYGRt
-         Jzg0+uy4cb/A9MLeJfibOdzJv9gmEbLz+oqSyKX79QlFlDWppQOVmco7olunq9pr5dSg
-         tAUg==
-X-Gm-Message-State: AOAM530ywX7VbYnOBM4kW5LILuBJC5Kx64vZbkOu28HjNTyGrq9+mAn4
-        zRa9L/aZt2A47ehvUhUiEsTABA==
-X-Google-Smtp-Source: ABdhPJw56zqbHPhzHi/UjO1EuTMs0ckASHUWtACCQVftB6fOpzf6idVKbxIvoc6DXqmWnHNuFyu1UQ==
-X-Received: by 2002:a17:90b:3a89:: with SMTP id om9mr9485773pjb.29.1636482500572;
-        Tue, 09 Nov 2021 10:28:20 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id u11sm7194577pfk.152.2021.11.09.10.28.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Nov 2021 10:28:20 -0800 (PST)
-Date:   Tue, 9 Nov 2021 10:28:19 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     akpm@linux-foundation.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, oliver.sang@intel.com, lkp@intel.com,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        David Hildenbrand <david@redhat.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH 0/7] task comm cleanups
-Message-ID: <202111091027.DEF1B6DD@keescook>
-References: <20211108083840.4627-1-laoar.shao@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=6keW1cwJ1gZeH5/F+rrzBzRoyC4dgM8zBqcm8dATQxI=;
+        b=Bcm8ig9GUignLurAV98yTZzPCHAOVaS4wyRy0/p8NYKSAJOWAr9RbMqNUE53me1TCA
+         IgRPEsL+OXKSveWUR8oFyv7jkhtPP1fsJ3UiCwToZ3vKUqgwMmMRpWnd8MIaa651b24p
+         ksCcJgcTsSmG6HQPsIo8XyQQkP4X/H5BEXWsIxVTPfLbmY7WloOtPoTgn7dWZmuPKaXW
+         ogM/x/NSjsHeOHdlG2oRXVkZBUHR00juCV65ylMFiS93LjZ5AEQcMgS0m3SqKBCtEKU9
+         zR7CjCPzc+H1/WoTwz7+dJ1gM2QnuQFQjXPuUrelZyg7bnlmrM4cedizRqqrSAY6+gTY
+         LACg==
+X-Gm-Message-State: AOAM533+yCKrniwRakxK12uxLpUkmNtQuCM4aebdnGLN+XUGBrVeLaxA
+        NS8ShBU7wC7nlZW5dE9qf2YDFuf4gVQ=
+X-Google-Smtp-Source: ABdhPJy6IqS7gOshU8Qr5KBFqpS51PGbHJ+nYnl6KfyYfJbg5JCF5wKRQYI7xby+MaV2xuRMPyG2eA==
+X-Received: by 2002:a63:81c8:: with SMTP id t191mr7618894pgd.192.1636482587370;
+        Tue, 09 Nov 2021 10:29:47 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id oj11sm124195pjb.46.2021.11.09.10.29.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Nov 2021 10:29:46 -0800 (PST)
+Subject: Re: [PATCH net v2] net: phy: phy_ethtool_ksettings_set: Don't discard
+ phy_start_aneg's return
+To:     Benedikt Spranger <b.spranger@linutronix.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Bastian Germann <bage@linutronix.de>,
+        "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        davem@davemloft.net, netdev@vger.kernel.org
+References: <20211105153648.8337-1-bage@linutronix.de>
+ <20211108141834.19105-1-bage@linutronix.de>
+ <YYkzbE39ERAxzg4k@shell.armlinux.org.uk> <20211108160653.3d6127df@mitra>
+ <YYlLvhE6/wjv8g3z@lunn.ch>
+ <63e5522a-f420-28c4-dd60-ce317dbbdfe0@linutronix.de>
+ <YYlk8Rv85h0Ia/LT@lunn.ch> <e07b6b7c-3353-461e-887d-96be9a9f6f36@gmail.com>
+ <20211108200257.78864d69@mitra>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <1d589921-996e-d6b9-49f8-97e8a0b7fbd2@gmail.com>
+Date:   Tue, 9 Nov 2021 10:29:45 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211108083840.4627-1-laoar.shao@gmail.com>
+In-Reply-To: <20211108200257.78864d69@mitra>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 08, 2021 at 08:38:33AM +0000, Yafang Shao wrote:
-> This patchset is part of the patchset "extend task comm from 16 to 24"[1].
-> Now we have different opinion that dynamically allocates memory to store 
-> kthread's long name into a separate pointer, so I decide to take the useful
-> cleanups apart from the original patchset and send it separately[2].
+On 11/8/21 11:02 AM, Benedikt Spranger wrote:
+> On Mon, 8 Nov 2021 19:01:23 +0100
+> Heiner Kallweit <hkallweit1@gmail.com> wrote:
 > 
-> These useful cleanups can make the usage around task comm less
-> error-prone. Furthermore, it will be useful if we want to extend task
-> comm in the future.
+>> If we would like to support PHY's that don't support all MDI modes
+>> then supposedly this would require to add ETHTOOL_LINK_MODE bits for
+>> the MDI modes. Then we could use the generic mechanism to check the
+>> bits in the "supported" bitmap.
 > 
-> All of the patches except patch #4 have either a reviewed-by or a
-> acked-by now. I have verfied that the vmcore/crash works well after
-> patch #4.
-> 
-> [1]. https://lore.kernel.org/lkml/20211101060419.4682-1-laoar.shao@gmail.com/
-> [2]. https://lore.kernel.org/lkml/CALOAHbAx55AUo3bm8ZepZSZnw7A08cvKPdPyNTf=E_tPqmw5hw@mail.gmail.com/
+> The things are even worse:
+> The chip supports only auto-MDIX at Gigabit and force MDI and
+> auto-MDIX in 10/100 modes. No force MDIX at all.
 
-Thanks for collecting this! It all looks good to me.
-
-Andrew, can you take these?
-
--Kees
-
--- 
-Kees Cook
+Yes that appears to be correct from my reading of the 53125 datasheet.
+Force MDI-X is optional anyway AFAICT
+--
+Florian
