@@ -2,42 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 690B844A322
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 02:24:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70A7444A32A
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 02:24:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242378AbhKIB0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Nov 2021 20:26:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50184 "EHLO mail.kernel.org"
+        id S242693AbhKIB0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Nov 2021 20:26:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53574 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243465AbhKIBXT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Nov 2021 20:23:19 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1B34461A79;
-        Tue,  9 Nov 2021 01:09:01 +0000 (UTC)
+        id S243783AbhKIBXf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Nov 2021 20:23:35 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AF8FF61B39;
+        Tue,  9 Nov 2021 01:09:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636420142;
-        bh=tXNqZFEup+T7Gb0GfPeWhphkJylcrBNUBCMBVQ2ToDo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UMejXKMWJItSXPftSCrgpZRdkYRR8PwZSaVEABqT7m4WBYrct5+m4rbymQUD8XQ1B
-         jbjG0s8tDHkpQiXdDHCrv1k2aIsLhBY4TNkxxpZhG9wnkrs7ufbnPWeF5CVoOSr1Bx
-         r4vgyHMxtygwTAUtMSgA9xcC6mV89JS6K9ciruKGftyz3VDK7WtJcmGM2PqBuYP+Rw
-         baEff2z9fhhhcrMxlLNTLYmo5ua8QOnTRN92Y9E/T58WLpv3elelR27h1UOpnXOVEy
-         YSUZvZZ1ZX5kMCQqtLVOD2G8r1cNMT4Bu8zRwVI1MgmRTrsNJTU+3z3oEAHHiYt1Qo
-         ybdXIl1QMbUrA==
+        s=k20201202; t=1636420160;
+        bh=h+3O8ihisOyjjQ0k6GtByOCBc0K7xSLkeRYEVi1M0L8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=cmvCJA+FpDUJ3EEYgk5VMfkxXGsZvyvnAv5tH0DPerXSciQo8wQ56neWA6MR5uHeS
+         Sh8NRQ/6SMQnzY5JrdWTr2sTl875F8FGDa3fULDTZIOMGfbcUYQTZcbYePwNosbSag
+         JEACxBsAaXdLKXmqd8zpDmXUF7q0RFP9BSlKQCPkONQFm68nu/s3Rtx2LZBvXRGoJZ
+         Kv7jBsuyI9Dulpuv/JkZtQ8vrnqBbocVyo9WtzeIwv62+FFXfmYt5sM5lfE8d0TZJp
+         zMrGfZgyjA5bEfQ4egApbgP7X5/9ZygNMrnI9Dji4gWSr4Y0HxfIhsj1M1+OlF9yE6
+         EHuAkMLu0xk4w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org,
-        miriam.rachel.korenblit@intel.com, mordechay.goodstein@intel.com,
-        emmanuel.grumbach@intel.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 27/33] iwlwifi: mvm: disable RX-diversity in powersave
-Date:   Mon,  8 Nov 2021 20:08:01 -0500
-Message-Id: <20211109010807.1191567-27-sashal@kernel.org>
+Cc:     Takashi Iwai <tiwai@suse.de>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 01/30] Bluetooth: sco: Fix lock_sock() blockage by memcpy_from_msg()
+Date:   Mon,  8 Nov 2021 20:08:49 -0500
+Message-Id: <20211109010918.1192063-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211109010807.1191567-1-sashal@kernel.org>
-References: <20211109010807.1191567-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -46,36 +42,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit e5322b9ab5f63536c41301150b7ce64605ce52cc ]
+[ Upstream commit 99c23da0eed4fd20cae8243f2b51e10e66aa0951 ]
 
-Just like we have default SMPS mode as dynamic in powersave,
-we should not enable RX-diversity in powersave, to reduce
-power consumption when connected to a non-MIMO AP.
+The sco_send_frame() also takes lock_sock() during memcpy_from_msg()
+call that may be endlessly blocked by a task with userfaultd
+technique, and this will result in a hung task watchdog trigger.
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211017113927.fc896bc5cdaa.I1d11da71b8a5cbe921a37058d5f578f1b14a2023@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Just like the similar fix for hci_sock_sendmsg() in commit
+92c685dc5de0 ("Bluetooth: reorganize functions..."), this patch moves
+the  memcpy_from_msg() out of lock_sock() for addressing the hang.
+
+This should be the last piece for fixing CVE-2021-3640 after a few
+already queued fixes.
+
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/utils.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/bluetooth/sco.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/utils.c b/drivers/net/wireless/intel/iwlwifi/mvm/utils.c
-index ff5ce1ed03c42..4746f4b096c56 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/utils.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/utils.c
-@@ -913,6 +913,9 @@ bool iwl_mvm_rx_diversity_allowed(struct iwl_mvm *mvm)
+diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+index 701d230fb9cf6..b9d0d1d6a4be1 100644
+--- a/net/bluetooth/sco.c
++++ b/net/bluetooth/sco.c
+@@ -269,7 +269,8 @@ static int sco_connect(struct sock *sk)
+ 	return err;
+ }
  
- 	lockdep_assert_held(&mvm->mutex);
+-static int sco_send_frame(struct sock *sk, struct msghdr *msg, int len)
++static int sco_send_frame(struct sock *sk, void *buf, int len,
++			  unsigned int msg_flags)
+ {
+ 	struct sco_conn *conn = sco_pi(sk)->conn;
+ 	struct sk_buff *skb;
+@@ -281,15 +282,11 @@ static int sco_send_frame(struct sock *sk, struct msghdr *msg, int len)
  
-+	if (iwlmvm_mod_params.power_scheme != IWL_POWER_SCHEME_CAM)
-+		return false;
+ 	BT_DBG("sk %p len %d", sk, len);
+ 
+-	skb = bt_skb_send_alloc(sk, len, msg->msg_flags & MSG_DONTWAIT, &err);
++	skb = bt_skb_send_alloc(sk, len, msg_flags & MSG_DONTWAIT, &err);
+ 	if (!skb)
+ 		return err;
+ 
+-	if (memcpy_from_msg(skb_put(skb, len), msg, len)) {
+-		kfree_skb(skb);
+-		return -EFAULT;
+-	}
+-
++	memcpy(skb_put(skb, len), buf, len);
+ 	hci_send_sco(conn->hcon, skb);
+ 
+ 	return len;
+@@ -700,6 +697,7 @@ static int sco_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+ 			    size_t len)
+ {
+ 	struct sock *sk = sock->sk;
++	void *buf;
+ 	int err;
+ 
+ 	BT_DBG("sock %p, sk %p", sock, sk);
+@@ -711,14 +709,24 @@ static int sco_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+ 	if (msg->msg_flags & MSG_OOB)
+ 		return -EOPNOTSUPP;
+ 
++	buf = kmalloc(len, GFP_KERNEL);
++	if (!buf)
++		return -ENOMEM;
 +
- 	if (num_of_ant(iwl_mvm_get_valid_rx_ant(mvm)) == 1)
- 		return false;
++	if (memcpy_from_msg(buf, msg, len)) {
++		kfree(buf);
++		return -EFAULT;
++	}
++
+ 	lock_sock(sk);
+ 
+ 	if (sk->sk_state == BT_CONNECTED)
+-		err = sco_send_frame(sk, msg, len);
++		err = sco_send_frame(sk, buf, len, msg->msg_flags);
+ 	else
+ 		err = -ENOTCONN;
+ 
+ 	release_sock(sk);
++	kfree(buf);
+ 	return err;
+ }
  
 -- 
 2.33.0
