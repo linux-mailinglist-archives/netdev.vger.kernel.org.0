@@ -2,269 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D44F344AB0E
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 10:58:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17D7444AB3C
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 11:10:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245004AbhKIKA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 05:00:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51556 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243012AbhKIKAy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 05:00:54 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC7F9C061764;
-        Tue,  9 Nov 2021 01:58:08 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: gtucker)
-        with ESMTPSA id AE1FE1F44AE3
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=collabora.com; s=mail;
-        t=1636451887; bh=gwr0AMfKB/PxFzBdU0KGV5ZIiDYtZPwJi9dHOVJhKg4=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=ZR/oXfTxyrRDKcVLMlNYPrEgT+a/QJUeKLde4QVX2OLJqbvYvmrk26OgVOZVkEVpb
-         NLa0tK+iZXNPOkFlpdwviIdb8niH4CW8nzGM9Px6H/6qwr7EBnFXlZ0OUWMQV7Lv3c
-         v+vsPL0ilgo6JaqlvjT8uVnAbVCFKJ/W8Ku2H0DusZJMBzgx84ZmXje6cgHNBHzvom
-         /R22EvmmHt9zGbldogyRqrbg4tND2/kd0kw2Ewky6TW/ZERv7vptsiITzNDcoPUh8Z
-         W6cx8c2GSJmybBButFOhFUQ4g4nCVTZH/qBEf6CJBxWFROQxmZXvkuALzmRTFsRkXH
-         bAEFCe/hUUdSA==
-Subject: Re: [PATCH net-next v6] page_pool: disable dma mapping support for
- 32-bit arch with 64-bit DMA
-To:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxarm@openeuler.org, hawk@kernel.org,
-        ilias.apalodimas@linaro.org, akpm@linux-foundation.org,
-        peterz@infradead.org, will@kernel.org, jhubbard@nvidia.com,
-        yuzhao@google.com, mcroce@microsoft.com, fenghua.yu@intel.com,
-        feng.tang@intel.com, jgg@ziepe.ca, aarcange@redhat.com,
-        guro@fb.com, "kernelci@groups.io" <kernelci@groups.io>
-References: <20211013091920.1106-1-linyunsheng@huawei.com>
-From:   Guillaume Tucker <guillaume.tucker@collabora.com>
-Message-ID: <b9c0e7ef-a7a2-66ad-3a19-94cc545bd557@collabora.com>
-Date:   Tue, 9 Nov 2021 09:58:04 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S242460AbhKIKN2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 05:13:28 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:35134 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242349AbhKIKN1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 05:13:27 -0500
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1636452640;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1HnMyv5K4HcUpzy/iFVT4s1y0ITpaZ1fAf53D1M5kOE=;
+        b=hTWgvmHG1WGd25opox1jFbjusUDzhJdX2pzbhM6v/53NeT3WLbDMbnZ9l0crs5mE6t4S0T
+        BdyxwHBXH+LJlrKdgpeRFBkS2xxInElYdHTVNtLaMkFouMfUQIGdzILP+LE0/em4EZFHO+
+        bWdOb4rbYVkgAAgAOD4cEnZL/UVvN9X9zdgTgpoCQmBleujDwKde6iGXCWPUZTmZZNMVsU
+        36OOhR4XqiNwsWOjDX39pZbTMqliHbNviCR8yYNZC7EUGfjAeHXvmNfee3fAYRXrAoMTsq
+        fApspFNyIXNsQzWbw+P3s5yBHahO72oF/sBqrsFHdYEFdM5LFjqThNhNgaZnmQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1636452640;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1HnMyv5K4HcUpzy/iFVT4s1y0ITpaZ1fAf53D1M5kOE=;
+        b=kLzu9YpTEdHgupTsQ2imkiOzok3JS1cAJGd91YBGtT4Mu4pXKaNYsmrgKAk5wPspoBcqxf
+        jg+2n6UI/kHUtWCA==
+To:     Martin Kaistra <martin.kaistra@linutronix.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     martin.kaistra@linutronix.de,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 1/7] net: dsa: b53: Add BroadSync HD register
+ definitions
+In-Reply-To: <20211109095013.27829-2-martin.kaistra@linutronix.de>
+References: <20211109095013.27829-1-martin.kaistra@linutronix.de>
+ <20211109095013.27829-2-martin.kaistra@linutronix.de>
+Date:   Tue, 09 Nov 2021 11:10:39 +0100
+Message-ID: <87wnlh1vxc.fsf@kurt>
 MIME-Version: 1.0
-In-Reply-To: <20211013091920.1106-1-linyunsheng@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yunsheng,
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-Please see the bisection report below about a boot failure on
-rk3288-rock2-square which is pointing to this patch.  The issue
-appears to only happen with CONFIG_ARM_LPAE=y.
+Hi Martin,
 
-Reports aren't automatically sent to the public while we're
-trialing new bisection features on kernelci.org but this one
-looks valid.
-
-Some more details can be found here:
-
-  https://linux.kernelci.org/test/case/id/6189968c3ec0a3c06e3358fe/
-
-Here's the same revision on the same platform booting fine with a
-plain multi_v7_defconfig build:
-
-  https://linux.kernelci.org/test/plan/id/61899d322c0e9fee7e3358ec/
-
-Please let us know if you need any help debugging this issue or
-if you have a fix to try.
-
-Best wishes,
-Guillaume
-
-
-GitHub: https://github.com/kernelci/kernelci-project/issues/71
-
--------------------------------------------------------------------------------
-
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* This automated bisection report was sent to you on the basis  *
-* that you may be involved with the breaking commit it has      *
-* found.  No manual investigation has been done to verify it,   *
-* and the root cause of the problem may be somewhere else.      *
-*                                                               *
-* If you do send a fix, please include this trailer:            *
-*   Reported-by: "kernelci.org bot" <bot@kernelci.org>          *
-*                                                               *
-* Hope this helps!                                              *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-mainline/master bisection: baseline.login on rk3288-rock2-square
-
-Summary:
-  Start:      e851dfae4371d Merge tag 'kgdb-5.16-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/danielt/linux
-  Plain log:  https://storage.kernelci.org/mainline/master/v5.15-11387-ge851dfae4371/arm/multi_v7_defconfig+CONFIG_EFI=y+CONFIG_ARM_LPAE=y/gcc-10/lab-collabora/baseline-rk3288-rock2-square.txt
-  HTML log:   https://storage.kernelci.org/mainline/master/v5.15-11387-ge851dfae4371/arm/multi_v7_defconfig+CONFIG_EFI=y+CONFIG_ARM_LPAE=y/gcc-10/lab-collabora/baseline-rk3288-rock2-square.html
-  Result:     d00e60ee54b12 page_pool: disable dma mapping support for 32-bit arch with 64-bit DMA
-
-Checks:
-  revert:     PASS
-  verify:     PASS
-
-Parameters:
-  Tree:       mainline
-  URL:        https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-  Branch:     master
-  Target:     rk3288-rock2-square
-  CPU arch:   arm
-  Lab:        lab-collabora
-  Compiler:   gcc-10
-  Config:     multi_v7_defconfig+CONFIG_EFI=y+CONFIG_ARM_LPAE=y
-  Test case:  baseline.login
-
-Breaking commit found:
-
--------------------------------------------------------------------------------
-commit d00e60ee54b12de945b8493cf18c1ada9e422514
-Author: Yunsheng Lin <linyunsheng@huawei.com>
-Date:   Wed Oct 13 17:19:20 2021 +0800
-
-    page_pool: disable dma mapping support for 32-bit arch with 64-bit DMA
-    
-
-On 13/10/2021 10:19, Yunsheng Lin wrote:
-> As the 32-bit arch with 64-bit DMA seems to rare those days,
-> and page pool might carry a lot of code and complexity for
-> systems that possibly.
-> 
-> So disable dma mapping support for such systems, if drivers
-> really want to work on such systems, they have to implement
-> their own DMA-mapping fallback tracking outside page_pool.
-> 
-> Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+On Tue Nov 09 2021, Martin Kaistra wrote:
+> From: Kurt Kanzenbach <kurt@linutronix.de>
+>
+> Add register definitions for the BroadSync HD features of
+> BCM53128. These will be used to enable PTP support.
+>
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> Signed-off-by: Martin Kaistra <martin.kaistra@linutronix.de>
 > ---
-> V6: Drop pp page tracking support
-> ---
->  include/linux/mm_types.h | 13 +------------
->  include/net/page_pool.h  | 12 +-----------
->  net/core/page_pool.c     | 10 ++++++----
->  3 files changed, 8 insertions(+), 27 deletions(-)
-> 
-> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-> index 7f8ee09c711f..436e0946d691 100644
-> --- a/include/linux/mm_types.h
-> +++ b/include/linux/mm_types.h
-> @@ -104,18 +104,7 @@ struct page {
->  			struct page_pool *pp;
->  			unsigned long _pp_mapping_pad;
->  			unsigned long dma_addr;
-> -			union {
-> -				/**
-> -				 * dma_addr_upper: might require a 64-bit
-> -				 * value on 32-bit architectures.
-> -				 */
-> -				unsigned long dma_addr_upper;
-> -				/**
-> -				 * For frag page support, not supported in
-> -				 * 32-bit architectures with 64-bit DMA.
-> -				 */
-> -				atomic_long_t pp_frag_count;
-> -			};
-> +			atomic_long_t pp_frag_count;
->  		};
->  		struct {	/* slab, slob and slub */
->  			union {
-> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-> index a4082406a003..3855f069627f 100644
-> --- a/include/net/page_pool.h
-> +++ b/include/net/page_pool.h
-> @@ -216,24 +216,14 @@ static inline void page_pool_recycle_direct(struct page_pool *pool,
->  	page_pool_put_full_page(pool, page, true);
->  }
->  
-> -#define PAGE_POOL_DMA_USE_PP_FRAG_COUNT	\
-> -		(sizeof(dma_addr_t) > sizeof(unsigned long))
-> -
->  static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
->  {
-> -	dma_addr_t ret = page->dma_addr;
-> -
-> -	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
-> -		ret |= (dma_addr_t)page->dma_addr_upper << 16 << 16;
-> -
-> -	return ret;
-> +	return page->dma_addr;
->  }
->  
->  static inline void page_pool_set_dma_addr(struct page *page, dma_addr_t addr)
->  {
->  	page->dma_addr = addr;
-> -	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
-> -		page->dma_addr_upper = upper_32_bits(addr);
->  }
->  
->  static inline void page_pool_set_frag_count(struct page *page, long nr)
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index 1a6978427d6c..9b60e4301a44 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -49,6 +49,12 @@ static int page_pool_init(struct page_pool *pool,
->  	 * which is the XDP_TX use-case.
->  	 */
->  	if (pool->p.flags & PP_FLAG_DMA_MAP) {
-> +		/* DMA-mapping is not supported on 32-bit systems with
-> +		 * 64-bit DMA mapping.
-> +		 */
-> +		if (sizeof(dma_addr_t) > sizeof(unsigned long))
-> +			return -EOPNOTSUPP;
+>  drivers/net/dsa/b53/b53_regs.h | 71 ++++++++++++++++++++++++++++++++++
+>  1 file changed, 71 insertions(+)
+>
+> diff --git a/drivers/net/dsa/b53/b53_regs.h b/drivers/net/dsa/b53/b53_reg=
+s.h
+> index b2c539a42154..0deb11a7c9cd 100644
+> --- a/drivers/net/dsa/b53/b53_regs.h
+> +++ b/drivers/net/dsa/b53/b53_regs.h
+> @@ -50,6 +50,12 @@
+>  /* Jumbo Frame Registers */
+>  #define B53_JUMBO_PAGE			0x40
+>=20=20
+> +/* BroadSync HD Register Page */
+> +#define B53_BROADSYNC_PAGE		0x90
 > +
->  		if ((pool->p.dma_dir != DMA_FROM_DEVICE) &&
->  		    (pool->p.dma_dir != DMA_BIDIRECTIONAL))
->  			return -EINVAL;
-> @@ -69,10 +75,6 @@ static int page_pool_init(struct page_pool *pool,
->  		 */
->  	}
->  
-> -	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT &&
-> -	    pool->p.flags & PP_FLAG_PAGE_FRAG)
-> -		return -EINVAL;
-> -
->  	if (ptr_ring_init(&pool->ring, ring_qsize, GFP_KERNEL) < 0)
->  		return -ENOMEM;
->  
-> 
+> +/* Traffic Remarking Register Page */
+> +#define B53_TRAFFICREMARKING_PAGE	0x91
 
+That's not used anywhere and could be removed.
 
+Note: The subject prefix for the patches should be net-next to indicate
+the tree which you are targeting. See
 
-Git bisection log:
+ https://www.kernel.org/doc/html/latest/networking/netdev-FAQ.html#how-do-i=
+-indicate-which-tree-net-vs-net-next-my-patch-should-be-in
 
--------------------------------------------------------------------------------
-git bisect start
-# good: [bfc484fe6abba4b89ec9330e0e68778e2a9856b2] Merge branch 'linus' of git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-2.6
-git bisect good bfc484fe6abba4b89ec9330e0e68778e2a9856b2
-# bad: [e851dfae4371d3c751f1e18e8eb5eba993de1467] Merge tag 'kgdb-5.16-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/danielt/linux
-git bisect bad e851dfae4371d3c751f1e18e8eb5eba993de1467
-# bad: [dcd68326d29b62f3039e4f4d23d3e38f24d37360] Merge tag 'devicetree-for-5.16' of git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux
-git bisect bad dcd68326d29b62f3039e4f4d23d3e38f24d37360
-# bad: [b7b98f868987cd3e86c9bd9a6db048614933d7a0] Merge https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next
-git bisect bad b7b98f868987cd3e86c9bd9a6db048614933d7a0
-# bad: [9fd3d5dced976640f588e0a866b9611db2d2cb37] net: ethernet: ave: Add compatible string and SoC-dependent data for NX1 SoC
-git bisect bad 9fd3d5dced976640f588e0a866b9611db2d2cb37
-# good: [a96d317fb1a30b9f323548eb2ff05d4e4600ead9] ethernet: use eth_hw_addr_set()
-git bisect good a96d317fb1a30b9f323548eb2ff05d4e4600ead9
-# good: [f5396b8a663f7a78ee5b75a47ee524b40795b265] ice: switchdev slow path
-git bisect good f5396b8a663f7a78ee5b75a47ee524b40795b265
-# good: [20c3d9e45ba630a7156d682a40988c0e96be1b92] hamradio: use dev_addr_set() for setting device address
-git bisect good 20c3d9e45ba630a7156d682a40988c0e96be1b92
-# bad: [a64b442137669c9e839c6a70965989b01b1253b7] net: dpaa2: add support for manual setup of IRQ coalesing
-git bisect bad a64b442137669c9e839c6a70965989b01b1253b7
-# good: [30fc7efa38f21afa48b0be6bf2053e4c10ae2c78] net, neigh: Reject creating NUD_PERMANENT with NTF_MANAGED entries
-git bisect good 30fc7efa38f21afa48b0be6bf2053e4c10ae2c78
-# bad: [13ad5ccc093ff448b99ac7e138e91e78796adb48] dt-bindings: net: dsa: qca8k: Document qca,sgmii-enable-pll
-git bisect bad 13ad5ccc093ff448b99ac7e138e91e78796adb48
-# good: [40088915f547b52635f022c1e1e18df65ae3153a] Merge branch 'octeontx2-af-miscellaneous-changes-for-cpt'
-git bisect good 40088915f547b52635f022c1e1e18df65ae3153a
-# bad: [fdbf35df9c091db9c46e57e9938e3f7a4f603a7c] dt-bindings: net: dsa: qca8k: Add SGMII clock phase properties
-git bisect bad fdbf35df9c091db9c46e57e9938e3f7a4f603a7c
-# bad: [bacc8daf97d4199316328a5d18eeafbe447143c5] xen-netback: Remove redundant initialization of variable err
-git bisect bad bacc8daf97d4199316328a5d18eeafbe447143c5
-# bad: [d00e60ee54b12de945b8493cf18c1ada9e422514] page_pool: disable dma mapping support for 32-bit arch with 64-bit DMA
-git bisect bad d00e60ee54b12de945b8493cf18c1ada9e422514
-# first bad commit: [d00e60ee54b12de945b8493cf18c1ada9e422514] page_pool: disable dma mapping support for 32-bit arch with 64-bit DMA
--------------------------------------------------------------------------------
+Thanks,
+Kurt
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQJHBAEBCgAxFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmGKSR8THGt1cnRAbGlu
+dXRyb25peC5kZQAKCRB5KluBy5jwpp5gEACyXXigcK2I/5shm/0JaMHlTR4CXx3i
+EnKBUw/by7dBUIoulqQeGU2v/lJOBHZCdCArPCvc3lXdawBZ1oNroFxKwqSHJ3+Q
+fs9P3ffneHu3BDrVISS/EVIhXZEqohraJjVnlSyI5RXygGbSkNHkhS1qYYMbjNFm
+AkSkhvM0X7PYq3+tKz1F4Fzb+LwOnpRVQ/iqfyFEcANUBUf7Nq6XeCmB8N5gazK2
+Hr4haR7LS2SYlLP/LgBphZaqTl7r28hWCZ/Y9PCFe+HdbFYhpKmzwoY1+ZgcIWvg
+hl+Yfq8oKB/i0TiGXWhuEem7/xYdqgI5XqcxratZx8eUgW78OgEi6Z+WEyZrMx+Z
+7XeWN6eHkd8vH1sMsI15t19HWfMFt2M6nGLrJs5azg47fd7Pw3fouWgE70CxMB9/
+1VxyAEfuN5x/A69f+VPpMpDDVMpTuO+U9krGfRUq2Pj3P67mXfB4pLoTLaEc8ze5
+jaZMzxQuSYHbY3nEANHWjoeBc63u1uvKle+PMNlKnt/D3vqybcIr3NwYEos4q6NL
+hoLQetjgzjSYY01SfI+OL60TK1o6v5oaE50B2mQ118A3RrxWlQkifjePLIgpM/nx
+35y3GL5OQTjhnoIQS4bYwota9eIhC5sZ7uNRNJxZwQtgub8ISPx/UPNhy8tKVbj2
+40r9n5jEsxmcgg==
+=9vvy
+-----END PGP SIGNATURE-----
+--=-=-=--
