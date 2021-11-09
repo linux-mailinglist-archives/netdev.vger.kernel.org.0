@@ -2,89 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD82444B50B
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 22:57:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A74644B510
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 22:58:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241924AbhKIWA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 17:00:26 -0500
-Received: from smtprelay0006.hostedemail.com ([216.40.44.6]:49108 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S237422AbhKIWA0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 17:00:26 -0500
-Received: from omf09.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay07.hostedemail.com (Postfix) with ESMTP id B72C8184C6E43;
-        Tue,  9 Nov 2021 21:57:38 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf09.hostedemail.com (Postfix) with ESMTPA id CE6C81E04D4;
-        Tue,  9 Nov 2021 21:57:32 +0000 (UTC)
-Message-ID: <1875b0458294d23d8e3260d2824894b095d6a62d.camel@perches.com>
-Subject: Re: [PATCH 2/2] MAINTAINERS: Mark VMware mailing list entries as
- private
-From:   Joe Perches <joe@perches.com>
-To:     Nadav Amit <namit@vmware.com>
-Cc:     "srivatsa@csail.mit.edu" <srivatsa@csail.mit.edu>,
-        Juergen Gross <jgross@suse.com>, X86 ML <x86@kernel.org>,
-        Pv-drivers <Pv-drivers@vmware.com>,
-        Vivek Thampi <vithampi@vmware.com>,
-        Vishal Bhakta <vbhakta@vmware.com>,
-        Ronak Doshi <doshir@vmware.com>,
-        Linux-graphics-maintainer <Linux-graphics-maintainer@vmware.com>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-        Zack Rusin <zackr@vmware.com>, Deep Shah <sdeep@vmware.com>,
-        Alexey Makhalov <amakhalov@vmware.com>,
-        Linux Virtualization <virtualization@lists.linux-foundation.org>,
-        Keerthana Kalyanasundaram <keerthanak@vmware.com>,
-        Srivatsa Bhat <srivatsab@vmware.com>,
-        Anish Swaminathan <anishs@vmware.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Tue, 09 Nov 2021 13:57:31 -0800
-In-Reply-To: <5C24FB2A-D2C0-4D95-A0C0-B48C4B8D5AF4@vmware.com>
-References: <163640336232.62866.489924062999332446.stgit@srivatsa-dev>
-         <163640339370.62866.3435211389009241865.stgit@srivatsa-dev>
-         <5179a7c097e0bb88f95642a394f53c53e64b66b1.camel@perches.com>
-         <cb03ca42-b777-3d1a-5aba-b01cd19efa9a@csail.mit.edu>
-         <dcbd19fcd1625146f4db267f84abd7412513d20e.camel@perches.com>
-         <5C24FB2A-D2C0-4D95-A0C0-B48C4B8D5AF4@vmware.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1 
+        id S244470AbhKIWBC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 17:01:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33926 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237422AbhKIWBC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Nov 2021 17:01:02 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 24FCD61177;
+        Tue,  9 Nov 2021 21:58:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636495095;
+        bh=K7/RWXNmIZ4b5Efp504XvDWDV1msyyr7fkDycknssRw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=X88s04fFVzqgHjNi2f0rD8hcfBwDtnZjsaw2joEHdm58Ym6WPWAyYNOkAfrJ8LnIb
+         s2Na+XPYO1DNK82NWPmelXlogUdRy9EjrbwZDz7VFFC+O1INWZzHV74KW5m4ANGxFQ
+         pi5VE0fneK2rIXZIbFb2M8hDhlGaIxwzJWPAnVV/3a8LRQ8rst1VqTeDfhA7yDVyUo
+         BtCpV1wkjBUtOFTch4XND55d6aUt7R6499opRTRquw7HqpVUYm+ytjtDyL+OusQaqw
+         tFZ90M2LtM+FDxhstRYpyQC3X147Ff+48fd9L/ioo/D/0P/VCN49RVhrJKPkSyCIa4
+         mW1C/5T7TTqKg==
+Date:   Tue, 9 Nov 2021 22:58:11 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, davem@davemloft.net, ast@kernel.org,
+        daniel@iogearbox.net, shayagr@amazon.com, john.fastabend@gmail.com,
+        dsahern@kernel.org, brouer@redhat.com, echaudro@redhat.com,
+        jasowang@redhat.com, alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        tirthendu.sarkar@intel.com
+Subject: Re: [PATCH v17 bpf-next 12/23] bpf: add multi-buff support to the
+ bpf_xdp_adjust_tail() API
+Message-ID: <YYru8wI3XAC3P1r3@lore-desk>
+References: <cover.1636044387.git.lorenzo@kernel.org>
+ <fd0400802295a87a921ba95d880ad27b9f9b8636.1636044387.git.lorenzo@kernel.org>
+ <20211105162941.46b807e5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YYlWcuUwcKGYtWAR@lore-desk>
+ <87fss6r058.fsf@toke.dk>
+ <YYl1P+nPSuMjI+e6@lore-desk>
+ <20211108134059.738ce863@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Server: rspamout04
-X-Rspamd-Queue-Id: CE6C81E04D4
-X-Spam-Status: No, score=-4.90
-X-Stat-Signature: xphw7gem3ckanztarthni3x91po8eitn
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18k+m4zQxO7Jw0A5AU3JcKPJ/10qFxleFI=
-X-HE-Tag: 1636495052-266614
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="GMfHRMkChqh/b365"
+Content-Disposition: inline
+In-Reply-To: <20211108134059.738ce863@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-11-09 at 00:58 +0000, Nadav Amit wrote:
-> > On Nov 8, 2021, at 4:37 PM, Joe Perches <joe@perches.com> wrote:
-> > On Mon, 2021-11-08 at 16:22 -0800, Srivatsa S. Bhat wrote:
-> > 
-> > So it's an exploder not an actual maintainer and it likely isn't
-> > publically archived with any normal list mechanism.
-> > 
-> > So IMO "private" isn't appropriate.  Neither is "L:"
-> > Perhaps just mark it as what it is as an "exploder".
-> > 
-> > Or maybe these blocks should be similar to:
-> > 
-> > M:	Name of Lead Developer <somebody@vmware.com>
-> > M:	VMware <foo> maintainers <linux-<foo>-maintainers@vmlinux.com>
 
-Maybe adding entries like
+--GMfHRMkChqh/b365
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-M:	Named maintainer <whoever@vmware.com>
-R:	VMware <foo> reviewers <linux-<foo>-maintainers@vmware.com>
+> On Mon, 8 Nov 2021 20:06:39 +0100 Lorenzo Bianconi wrote:
+> > > Not sure I get what the issue is with this either? But having a test
+> > > that can be run to validate this on hardware would be great in any ca=
+se,
+> > > I suppose - we've been discussing more general "compliance tests" for
+> > > XDP before... =20
+> >=20
+> > what about option 2? We can add a frag_size field to rxq [0] that is se=
+t by
+> > the driver initializing the xdp_buff. frag_size set to 0 means we can u=
+se
+> > all the buffer.
+>=20
+> So 0 would mean xdp->frame_sz can be used for extending frags?
+>=20
+> I was expecting that we'd used rxq->frag_size in place of xdp->frame_sz.
+>=20
+> For devices doing payload packing we will not be able to extend the
+> last frag at all. Wouldn't it be better to keep 0 for the case where
+> extending is not allowed?
 
-would be best/simplest.
+ack, I am fine with it. I will integrate it in v18. Thanks.
 
+Regards,
+Lorenzo
 
+--GMfHRMkChqh/b365
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYYru8wAKCRA6cBh0uS2t
+rJwcAP9ZjowUOGVsaq6eqvKxwSIN2OZjO6Duwbsvk6SFqs7E8gD9Gx+fpU7dJSL/
+TadXjt1knOB1fTUtGMGuKZT9e9tzuwQ=
+=O8z+
+-----END PGP SIGNATURE-----
+
+--GMfHRMkChqh/b365--
