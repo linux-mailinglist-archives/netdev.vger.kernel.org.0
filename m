@@ -2,70 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 405A244B4D3
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 22:32:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96E5E44B4C0
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 22:29:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245231AbhKIVfc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 16:35:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40548 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238607AbhKIVfb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 16:35:31 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E233C061764;
-        Tue,  9 Nov 2021 13:32:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=dJw8Ik3ylTfPa2P+lNYAI2E2MHLc1nH0ayoDuzAKkgA=; b=OOkUgSDXP7m4WHp+xHkR0poveQ
-        F4isHITGM8YcAaTGbZj0pvoTb+4BCJTmjqojBg4GfhXkZZXUzCNjHAYHDC80RJzSF2L5hDRJZsnaY
-        NtGk4eumtBy/xPnr89A8E9WSXDGJ7jc2XWB3w0hTg4wy0vplWcJb+HB68jvs/fSOE0Y6NadAmTH8M
-        0/oR/kogdOGavrcWaV+75SpbQRGwB+TWzk0lLgRRcUP0STDeNykaS6lv5SzTLxwlaN+WbJzNrHCU2
-        5GkLZTjl3/QeOpKdfwfPLGIs1qt7FlguhfDJPvfIAtHa8UtmS619YcDGNU+iGkaKQfsTSyQEVpxZB
-        P+pMNIzQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mkYj3-00F8o8-Sd; Tue, 09 Nov 2021 21:32:19 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 1C45A985A2A; Tue,  9 Nov 2021 22:25:56 +0100 (CET)
-Date:   Tue, 9 Nov 2021 22:25:56 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Miroslav Benes <mbenes@suse.cz>,
-        Julia Lawall <julia.lawall@inria.fr>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>, jeyu@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, nathan@kernel.org,
-        ndesaulniers@google.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-Subject: Re: [PATCH] module: Fix implicit type conversion
-Message-ID: <20211109212556.GX174703@worktop.programming.kicks-ass.net>
-References: <1635473169-1848729-1-git-send-email-jiasheng@iscas.ac.cn>
- <alpine.LSU.2.21.2111081925580.1710@pobox.suse.cz>
- <YYrghnBqTq5ZF2ZR@bombadil.infradead.org>
+        id S245193AbhKIVbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 16:31:32 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:53468 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S245187AbhKIVbZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Nov 2021 16:31:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=UQf8COTFsagdrfbDjGeAFUwNVRG2xJ6sgcNzxAbi2GQ=; b=3vR5thXo5U0rqtVzvGah4Lsl/d
+        /b2EEtsaZdO8VlZNYC7oCbh+PbezQOcZoRwCGBddHevqFI03oDQ3v6nOm49kzzNAlayYHgA/NCoQi
+        E79jOZ/M8dMmqP7kugNMj1GgfhQghMImI3J6+ZwpMaJ0zkx0zcvQ+7yPUBJ8B7ZuUkBQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mkYfS-00D1aM-7h; Tue, 09 Nov 2021 22:28:34 +0100
+Date:   Tue, 9 Nov 2021 22:28:34 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Subject: Re: [RFC PATCH v3 6/8] leds: trigger: add hardware-phy-activity
+ trigger
+Message-ID: <YYroAse2JQjLTK4J@lunn.ch>
+References: <20211109022608.11109-1-ansuelsmth@gmail.com>
+ <20211109022608.11109-7-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YYrghnBqTq5ZF2ZR@bombadil.infradead.org>
+In-Reply-To: <20211109022608.11109-7-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 09, 2021 at 12:56:38PM -0800, Luis Chamberlain wrote:
+> +/* The attrs will be placed dynamically based on the supported triggers */
+> +static struct attribute *phy_activity_attrs[PHY_ACTIVITY_MAX_TRIGGERS + 1];
 
-> If we're going to do this we we must ask, is it really worth it and
-> moving forward then add a semantic patch rule which will pick up on
-> misuses.
+This cannot be global. I have boards with a mixture of different PHYs
+and switches. Each will have their own collection of supported
+modes. And some PHYs have different modes per LED. 
 
-Please, no!
-
-This guy has been going around sending silly patches on his own, but the
-moment you add this script all the robots will join him, adding to the
-pile of useless crap we get to wade through each day.
-
-I've yet to see one of these patches fix an actual problem.
+       Andrew
