@@ -2,105 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 378F144AF55
-	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 15:19:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 256FC44AF5C
+	for <lists+netdev@lfdr.de>; Tue,  9 Nov 2021 15:21:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235273AbhKIOWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 09:22:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54764 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235140AbhKIOWa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 09:22:30 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C4C6C061764
-        for <netdev@vger.kernel.org>; Tue,  9 Nov 2021 06:19:43 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[127.0.0.1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1mkRyH-0003AW-2g; Tue, 09 Nov 2021 15:19:33 +0100
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-Subject: Re: [Linux-stm32] [PATCH net] net: stmmac: allow a tc-taprio
- base-time of zero
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
-        Holger Assmann <h.assmann@pengutronix.de>
-Cc:     Yannick Vignon <yannick.vignon@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>
-References: <20211108202854.1740995-1-vladimir.oltean@nxp.com>
- <87bl2t3fkq.fsf@kurt> <20211109103504.ahl2djymnevsbhoj@skbuf>
-Message-ID: <6bf6db8b-4717-71fe-b6de-9f6e12202dad@pengutronix.de>
-Date:   Tue, 9 Nov 2021 15:19:28 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S237012AbhKIOYe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 09:24:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53452 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236800AbhKIOYb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Nov 2021 09:24:31 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5E15F610F7;
+        Tue,  9 Nov 2021 14:21:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636467705;
+        bh=mo1+rhyssyl04yagu0+zAJeinO57uVXHKqe+e1wi/cc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ljIvXx1f034/vUGuqbD0dxp30MtgksnN5oY5zsfsab+2soYTfYSuIZ2F5CQVX3lLp
+         iDCIhPDgkkAn0c1cLOlMXsReWsOQXeeVBf3WemeDtZi5qYCvJcvGnvwb+tLy74aKC+
+         X8V4KuRyKijr5h/yOUoWVAAPcYpm7CmKNnSfbD3F/yQ1lxXhBuv1eSn1gTpZQbUZIQ
+         OGiiHNUEUnHaS+oMPydWGAOpplHJUPg1KcbN2mXJtcrtiR1CaJS6fn7V2n9BXNpO85
+         FjgQOuPd2Z56cQgxd0AN866V8omi4q/6VYwYa+PQgeE/jBYWre8GM4SibjfJQy4290
+         GpA+DdRWruEIQ==
+Date:   Tue, 9 Nov 2021 06:21:40 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ondrej Mosnacek <omosnace@redhat.com>,
+        Xin Long <lucien.xin@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        Paul Moore <paul@paul-moore.com>,
+        Richard Haines <richard_c_haines@btinternet.com>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        linux-sctp@vger.kernel.org, selinux@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] selinux: fix SCTP client peeloff socket labeling
+Message-ID: <20211109062140.2ed84f96@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211104195949.135374-1-omosnace@redhat.com>
+References: <20211104195949.135374-1-omosnace@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20211109103504.ahl2djymnevsbhoj@skbuf>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Vladimir, Kurt,
+On Thu,  4 Nov 2021 20:59:49 +0100 Ondrej Mosnacek wrote:
+> As agreed with Xin Long, I'm posting this fix up instead of him. I am
+> now fairly convinced that this is the right way to deal with the
+> immediate problem of client peeloff socket labeling. I'll work on
+> addressing the side problem regarding selinux_socket_post_create()
+> being called on the peeloff sockets separately.
 
-On 09.11.21 11:35, Vladimir Oltean wrote:
-> On Tue, Nov 09, 2021 at 09:20:53AM +0100, Kurt Kanzenbach wrote:
->> Hi Vladimir,
->>
->> On Mon Nov 08 2021, Vladimir Oltean wrote:
->>> Commit fe28c53ed71d ("net: stmmac: fix taprio configuration when
->>> base_time is in the past") allowed some base time values in the past,
->>> but apparently not all, the base-time value of 0 (Jan 1st 1970) is still
->>> explicitly denied by the driver.
->>>
->>> Remove the bogus check.
->>>
->>> Fixes: b60189e0392f ("net: stmmac: Integrate EST with TAPRIO scheduler API")
->>> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
->>
->> I've experienced the same problem and wanted to send a patch for
->> it. Thanks!
->>
->> Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
-> 
-> Cool. So you had that patch queued up? What other stmmac patches do you
-> have queued up? :) Do you have a fix for the driver setting the PTP time
-> every time when SIOCSHWTSTAMP is called? This breaks the UTC-to-TAI
-> offset established by phc2sys and it takes a few seconds to readjust,
-> which is very annoying.
-
-Sounds like the same issue in:
-https://lore.kernel.org/netdev/20201216113239.2980816-1-h.assmann@pengutronix.de/
-
-Cheers,
-Ahmad
-
-> _______________________________________________
-> Linux-stm32 mailing list
-> Linux-stm32@st-md-mailman.stormreply.com
-> https://st-md-mailman.stormreply.com/mailman/listinfo/linux-stm32
-> 
-
-
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+IIUC Paul would like to see this part to come up in the same series.
+Any predictions when such series would materialize?
