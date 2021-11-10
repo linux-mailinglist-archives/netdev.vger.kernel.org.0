@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1791944C3DA
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 16:03:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 206ED44C3E3
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 16:03:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232330AbhKJPFk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 10:05:40 -0500
-Received: from mx07-00178001.pphosted.com ([185.132.182.106]:45776 "EHLO
+        id S232689AbhKJPFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 10:05:46 -0500
+Received: from mx07-00178001.pphosted.com ([185.132.182.106]:33810 "EHLO
         mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232374AbhKJPFI (ORCPT
+        by vger.kernel.org with ESMTP id S231593AbhKJPFI (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 10:05:08 -0500
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1AAEQeW4017950;
-        Wed, 10 Nov 2021 16:01:53 +0100
+Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1AABtbA0015793;
+        Wed, 10 Nov 2021 16:01:54 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type; s=selector1;
- bh=N5V+BbtvYrsb+kqmfbPEbma9cqG0GoeZx3DzAXMNF24=;
- b=IB2xpbz84oqAquUfdJaKwITkZVLAMk1Rp7HR3B0qfOJN5/kJ0nUP+gl31WA/m5xXIfYO
- aRJgliij5QJMLPFqHzYqYStiVGzCIOpp8NfpWy4LShFpRkbPzkwXtNQ9qpMZzDdVVGQX
- AcUF7IlqlPtP4R0Q7FTHzqMq2ZRPaKab5KpswqmoTpKsA0uJyZ56QQ1cXrPTwV0ZURPf
- nqEfS0GhBdFrW+KwiPp8t6pmqS8nN+55TjdoM0Yac0/bZNO+zmaWcQmB7oFoBA7sqRRZ
- w7sSQ7lvhpXQN3BMtIaZcuQwXG2p0uHBFnlLroDS3GZcwMobyCtv3Bj30BEM5uc2ssk3 6w== 
+ bh=uvjcNBfg4Ag+xSMxxfAcIs/mdreMSdQjNkKdGHVHtA4=;
+ b=XAbsAtSa61Iq6bEunvgOj+SPaPufjX6LuyhQq2pjIqSN8bYl0dJTe4eZBiqQQY5TjdYy
+ KJZIdn1bGNAK5msN1i/KTZGTrPVPMXq/TRIACCYg8SBTyBazvWMSp0IXt9IvZ6Bmvtqe
+ EBIW984mVSSTNjvgouzQjOtph/05dHGnbiwbtuOG9hnZ23tq/KP3t63cVzD89AFhy+kA
+ KZXOag0Ew5gAIk11giRAuWdGKQ66/vd8k/TyiTYOHk8L1p+/9w8zAMbDhH1z0UTxLTSI
+ yowKkfYvSyYO5HoOiPl0lwbdT7N4JZSrOlCxiO0FwE3Tuxg2327d5s5uYmPewYMY9h9M 8Q== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3c7ufnfufs-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3c8dmw16at-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Wed, 10 Nov 2021 16:01:53 +0100
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 8B487100038;
-        Wed, 10 Nov 2021 16:01:52 +0100 (CET)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 5C7A010002A;
+        Wed, 10 Nov 2021 16:01:53 +0100 (CET)
 Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 79616207568;
-        Wed, 10 Nov 2021 16:01:52 +0100 (CET)
-Received: from localhost (10.75.127.51) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 10 Nov 2021 16:01:51
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 3EFB6207568;
+        Wed, 10 Nov 2021 16:01:53 +0100 (CET)
+Received: from localhost (10.75.127.49) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 10 Nov 2021 16:01:52
  +0100
 From:   <patrice.chotard@foss.st.com>
 To:     Rob Herring <robh+dt@kernel.org>,
@@ -123,15 +123,15 @@ CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
         <linux-pm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
         <linux-watchdog@vger.kernel.org>
-Subject: [PATCH v3 3/5] dt-bindings: media: Update maintainers for st,stm32-cec.yaml
-Date:   Wed, 10 Nov 2021 16:01:42 +0100
-Message-ID: <20211110150144.18272-4-patrice.chotard@foss.st.com>
+Subject: [PATCH v3 4/5] dt-bindings: media: Update maintainers for st,stm32-hwspinlock.yaml
+Date:   Wed, 10 Nov 2021 16:01:43 +0100
+Message-ID: <20211110150144.18272-5-patrice.chotard@foss.st.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211110150144.18272-1-patrice.chotard@foss.st.com>
 References: <20211110150144.18272-1-patrice.chotard@foss.st.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.51]
+X-Originating-IP: [10.75.127.49]
 X-ClientProxiedBy: SFHDAG1NODE2.st.com (10.75.127.2) To SFHDAG2NODE2.st.com
  (10.75.127.5)
 X-Proofpoint-Virus-Version: vendor=baseguard
@@ -147,19 +147,19 @@ Benjamin has left the company, remove his name from maintainers.
 
 Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
 ---
- Documentation/devicetree/bindings/media/st,stm32-cec.yaml | 1 -
+ .../devicetree/bindings/hwlock/st,stm32-hwspinlock.yaml          | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/media/st,stm32-cec.yaml b/Documentation/devicetree/bindings/media/st,stm32-cec.yaml
-index d75019c093a4..33e47e371941 100644
---- a/Documentation/devicetree/bindings/media/st,stm32-cec.yaml
-+++ b/Documentation/devicetree/bindings/media/st,stm32-cec.yaml
+diff --git a/Documentation/devicetree/bindings/hwlock/st,stm32-hwspinlock.yaml b/Documentation/devicetree/bindings/hwlock/st,stm32-hwspinlock.yaml
+index 47cf9c8d97e9..8f136542a4ea 100644
+--- a/Documentation/devicetree/bindings/hwlock/st,stm32-hwspinlock.yaml
++++ b/Documentation/devicetree/bindings/hwlock/st,stm32-hwspinlock.yaml
 @@ -7,7 +7,6 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- title: STMicroelectronics STM32 CEC bindings
+ title: STMicroelectronics STM32 Hardware Spinlock bindings
  
  maintainers:
 -  - Benjamin Gaignard <benjamin.gaignard@st.com>
-   - Yannick Fertre <yannick.fertre@st.com>
+   - Fabien Dessenne <fabien.dessenne@st.com>
  
  properties:
 -- 
