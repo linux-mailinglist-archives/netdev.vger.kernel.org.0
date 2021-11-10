@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6BE944BA9E
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 04:23:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8451244BAC3
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 05:00:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230218AbhKJD0E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 22:26:04 -0500
-Received: from mga09.intel.com ([134.134.136.24]:38926 "EHLO mga09.intel.com"
+        id S230341AbhKJEDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 23:03:10 -0500
+Received: from mga17.intel.com ([192.55.52.151]:25175 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230167AbhKJD0E (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Nov 2021 22:26:04 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10163"; a="232440117"
+        id S230364AbhKJEDH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Nov 2021 23:03:07 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10163"; a="213326487"
 X-IronPort-AV: E=Sophos;i="5.87,222,1631602800"; 
-   d="gz'50?scan'50,208,50";a="232440117"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2021 19:23:16 -0800
+   d="gz'50?scan'50,208,50";a="213326487"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2021 20:00:18 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,222,1631602800"; 
-   d="gz'50?scan'50,208,50";a="642389001"
+   d="gz'50?scan'50,208,50";a="491941328"
 Received: from lkp-server02.sh.intel.com (HELO c20d8bc80006) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 09 Nov 2021 19:23:12 -0800
+  by orsmga007.jf.intel.com with ESMTP; 09 Nov 2021 20:00:13 -0800
 Received: from kbuild by c20d8bc80006 with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1mkeCd-000EJV-BZ; Wed, 10 Nov 2021 03:23:11 +0000
-Date:   Wed, 10 Nov 2021 11:22:12 +0800
+        id 1mkemS-000ELd-Jp; Wed, 10 Nov 2021 04:00:12 +0000
+Date:   Wed, 10 Nov 2021 11:59:46 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
         bpf@vger.kernel.org
@@ -34,10 +34,10 @@ Cc:     kbuild-all@lists.01.org,
         memxor@gmail.com, kafai@fb.com, andrii@kernel.org,
         songliubraving@fb.com, yhs@fb.com
 Subject: Re: [PATCH net v1] bpf: Fix build when CONFIG_BPF_SYSCALL is disabled
-Message-ID: <202111101113.mwpAY6Aa-lkp@intel.com>
+Message-ID: <202111101156.m5ifQ54c-lkp@intel.com>
 References: <20211110010024.31415-1-vinicius.gomes@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="4Ckj6UjgE2iN1+kY"
+Content-Type: multipart/mixed; boundary="cNdxnHkX5QqsyA0e"
 Content-Disposition: inline
 In-Reply-To: <20211110010024.31415-1-vinicius.gomes@intel.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
@@ -46,15 +46,15 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---4Ckj6UjgE2iN1+kY
+--cNdxnHkX5QqsyA0e
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
 Hi Vinicius,
 
-I love your patch! Perhaps something to improve:
+I love your patch! Yet something to improve:
 
-[auto build test WARNING on net/master]
+[auto build test ERROR on net/master]
 
 url:    https://github.com/0day-ci/linux/commits/Vinicius-Costa-Gomes/bpf-Fix-build-when-CONFIG_BPF_SYSCALL-is-disabled/20211110-090148
 base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git fceb07950a7aac43d52d8c6ef580399a8b9b68fe
@@ -67,12 +67,12 @@ reproduce (this is a W=1 build):
         git checkout 1e7a382c089da5714e4a9411765e84815cf550f9
         # save the attached .config to linux build tree
         mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash kernel/bpf/
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All warnings (new ones prefixed by >>):
+All errors (new ones prefixed by >>):
 
    kernel/bpf/btf.c: In function 'btf_seq_show':
    kernel/bpf/btf.c:5876:22: warning: function 'btf_seq_show' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
@@ -83,7 +83,7 @@ All warnings (new ones prefixed by >>):
     5913 |  len = vsnprintf(show->target, ssnprintf->len_left, fmt, args);
          |  ^~~
    kernel/bpf/btf.c: At top level:
-   kernel/bpf/btf.c:6370:9: error: variable 'bpf_tcp_ca_kfunc_list' has initializer but incomplete type
+>> kernel/bpf/btf.c:6370:9: error: variable 'bpf_tcp_ca_kfunc_list' has initializer but incomplete type
     6370 |  struct kfunc_btf_id_list name = { LIST_HEAD_INIT(name.list),           \
          |         ^~~~~~~~~~~~~~~~~
    kernel/bpf/btf.c:6374:1: note: in expansion of macro 'DEFINE_KFUNC_BTF_ID_LIST'
@@ -97,7 +97,7 @@ All warnings (new ones prefixed by >>):
                     from ./arch/x86/include/generated/uapi/asm/bpf_perf_event.h:1,
                     from include/uapi/linux/bpf_perf_event.h:11,
                     from kernel/bpf/btf.c:6:
-   include/linux/list.h:21:30: error: extra brace group at end of initializer
+>> include/linux/list.h:21:30: error: extra brace group at end of initializer
       21 | #define LIST_HEAD_INIT(name) { &(name), &(name) }
          |                              ^
    kernel/bpf/btf.c:6370:36: note: in expansion of macro 'LIST_HEAD_INIT'
@@ -115,7 +115,7 @@ All warnings (new ones prefixed by >>):
    kernel/bpf/btf.c:6374:1: note: in expansion of macro 'DEFINE_KFUNC_BTF_ID_LIST'
     6374 | DEFINE_KFUNC_BTF_ID_LIST(bpf_tcp_ca_kfunc_list);
          | ^~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/bpf/btf.c:6370:55: error: invalid use of undefined type 'struct kfunc_btf_id_list'
+>> kernel/bpf/btf.c:6370:55: error: invalid use of undefined type 'struct kfunc_btf_id_list'
     6370 |  struct kfunc_btf_id_list name = { LIST_HEAD_INIT(name.list),           \
          |                                                       ^
    include/linux/list.h:21:34: note: in definition of macro 'LIST_HEAD_INIT'
@@ -124,7 +124,7 @@ All warnings (new ones prefixed by >>):
    kernel/bpf/btf.c:6374:1: note: in expansion of macro 'DEFINE_KFUNC_BTF_ID_LIST'
     6374 | DEFINE_KFUNC_BTF_ID_LIST(bpf_tcp_ca_kfunc_list);
          | ^~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/bpf/btf.c:6370:55: error: invalid use of undefined type 'struct kfunc_btf_id_list'
+>> kernel/bpf/btf.c:6370:55: error: invalid use of undefined type 'struct kfunc_btf_id_list'
     6370 |  struct kfunc_btf_id_list name = { LIST_HEAD_INIT(name.list),           \
          |                                                       ^
    include/linux/list.h:21:43: note: in definition of macro 'LIST_HEAD_INIT'
@@ -133,7 +133,7 @@ All warnings (new ones prefixed by >>):
    kernel/bpf/btf.c:6374:1: note: in expansion of macro 'DEFINE_KFUNC_BTF_ID_LIST'
     6374 | DEFINE_KFUNC_BTF_ID_LIST(bpf_tcp_ca_kfunc_list);
          | ^~~~~~~~~~~~~~~~~~~~~~~~
->> include/linux/list.h:21:30: warning: excess elements in struct initializer
+   include/linux/list.h:21:30: warning: excess elements in struct initializer
       21 | #define LIST_HEAD_INIT(name) { &(name), &(name) }
          |                              ^
    kernel/bpf/btf.c:6370:36: note: in expansion of macro 'LIST_HEAD_INIT'
@@ -161,7 +161,7 @@ All warnings (new ones prefixed by >>):
                     from ./arch/x86/include/generated/uapi/asm/bpf_perf_event.h:1,
                     from include/uapi/linux/bpf_perf_event.h:11,
                     from kernel/bpf/btf.c:6:
-   include/linux/mutex.h:109:3: error: extra brace group at end of initializer
+>> include/linux/mutex.h:109:3: error: extra brace group at end of initializer
      109 |   { .owner = ATOMIC_LONG_INIT(0) \
          |   ^
    kernel/bpf/btf.c:6371:8: note: in expansion of macro '__MUTEX_INITIALIZER'
@@ -181,7 +181,7 @@ All warnings (new ones prefixed by >>):
          | ^~~~~~~~~~~~~~~~~~~~~~~~
    In file included from include/uapi/linux/btf.h:6,
                     from kernel/bpf/btf.c:4:
-   include/linux/types.h:170:24: error: extra brace group at end of initializer
+>> include/linux/types.h:170:24: error: extra brace group at end of initializer
      170 | #define ATOMIC_INIT(i) { (i) }
          |                        ^
    include/linux/atomic/atomic-long.h:19:30: note: in expansion of macro 'ATOMIC_INIT'
@@ -219,7 +219,7 @@ All warnings (new ones prefixed by >>):
                     from ./arch/x86/include/generated/uapi/asm/bpf_perf_event.h:1,
                     from include/uapi/linux/bpf_perf_event.h:11,
                     from kernel/bpf/btf.c:6:
-   include/linux/list.h:21:30: error: extra brace group at end of initializer
+>> include/linux/list.h:21:30: error: extra brace group at end of initializer
       21 | #define LIST_HEAD_INIT(name) { &(name), &(name) }
          |                              ^
    include/linux/mutex.h:111:18: note: in expansion of macro 'LIST_HEAD_INIT'
@@ -277,7 +277,7 @@ All warnings (new ones prefixed by >>):
                     from ./arch/x86/include/generated/uapi/asm/bpf_perf_event.h:1,
                     from include/uapi/linux/bpf_perf_event.h:11,
                     from kernel/bpf/btf.c:6:
->> include/linux/mutex.h:109:3: warning: excess elements in struct initializer
+   include/linux/mutex.h:109:3: warning: excess elements in struct initializer
      109 |   { .owner = ATOMIC_LONG_INIT(0) \
          |   ^
    kernel/bpf/btf.c:6371:8: note: in expansion of macro '__MUTEX_INITIALIZER'
@@ -295,7 +295,7 @@ All warnings (new ones prefixed by >>):
    kernel/bpf/btf.c:6374:1: note: in expansion of macro 'DEFINE_KFUNC_BTF_ID_LIST'
     6374 | DEFINE_KFUNC_BTF_ID_LIST(bpf_tcp_ca_kfunc_list);
          | ^~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/bpf/btf.c:6370:9: error: variable 'prog_test_kfunc_list' has initializer but incomplete type
+>> kernel/bpf/btf.c:6370:9: error: variable 'prog_test_kfunc_list' has initializer but incomplete type
     6370 |  struct kfunc_btf_id_list name = { LIST_HEAD_INIT(name.list),           \
          |         ^~~~~~~~~~~~~~~~~
    kernel/bpf/btf.c:6375:1: note: in expansion of macro 'DEFINE_KFUNC_BTF_ID_LIST'
@@ -309,7 +309,7 @@ All warnings (new ones prefixed by >>):
                     from ./arch/x86/include/generated/uapi/asm/bpf_perf_event.h:1,
                     from include/uapi/linux/bpf_perf_event.h:11,
                     from kernel/bpf/btf.c:6:
-   include/linux/list.h:21:30: error: extra brace group at end of initializer
+>> include/linux/list.h:21:30: error: extra brace group at end of initializer
       21 | #define LIST_HEAD_INIT(name) { &(name), &(name) }
          |                              ^
    kernel/bpf/btf.c:6370:36: note: in expansion of macro 'LIST_HEAD_INIT'
@@ -327,7 +327,7 @@ All warnings (new ones prefixed by >>):
    kernel/bpf/btf.c:6375:1: note: in expansion of macro 'DEFINE_KFUNC_BTF_ID_LIST'
     6375 | DEFINE_KFUNC_BTF_ID_LIST(prog_test_kfunc_list);
          | ^~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/bpf/btf.c:6370:55: error: invalid use of undefined type 'struct kfunc_btf_id_list'
+>> kernel/bpf/btf.c:6370:55: error: invalid use of undefined type 'struct kfunc_btf_id_list'
     6370 |  struct kfunc_btf_id_list name = { LIST_HEAD_INIT(name.list),           \
          |                                                       ^
    include/linux/list.h:21:34: note: in definition of macro 'LIST_HEAD_INIT'
@@ -336,7 +336,7 @@ All warnings (new ones prefixed by >>):
    kernel/bpf/btf.c:6375:1: note: in expansion of macro 'DEFINE_KFUNC_BTF_ID_LIST'
     6375 | DEFINE_KFUNC_BTF_ID_LIST(prog_test_kfunc_list);
          | ^~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/bpf/btf.c:6370:55: error: invalid use of undefined type 'struct kfunc_btf_id_list'
+>> kernel/bpf/btf.c:6370:55: error: invalid use of undefined type 'struct kfunc_btf_id_list'
     6370 |  struct kfunc_btf_id_list name = { LIST_HEAD_INIT(name.list),           \
          |                                                       ^
    include/linux/list.h:21:43: note: in definition of macro 'LIST_HEAD_INIT'
@@ -345,7 +345,7 @@ All warnings (new ones prefixed by >>):
    kernel/bpf/btf.c:6375:1: note: in expansion of macro 'DEFINE_KFUNC_BTF_ID_LIST'
     6375 | DEFINE_KFUNC_BTF_ID_LIST(prog_test_kfunc_list);
          | ^~~~~~~~~~~~~~~~~~~~~~~~
->> include/linux/list.h:21:30: warning: excess elements in struct initializer
+   include/linux/list.h:21:30: warning: excess elements in struct initializer
       21 | #define LIST_HEAD_INIT(name) { &(name), &(name) }
          |                              ^
    kernel/bpf/btf.c:6370:36: note: in expansion of macro 'LIST_HEAD_INIT'
@@ -373,7 +373,7 @@ All warnings (new ones prefixed by >>):
                     from ./arch/x86/include/generated/uapi/asm/bpf_perf_event.h:1,
                     from include/uapi/linux/bpf_perf_event.h:11,
                     from kernel/bpf/btf.c:6:
-   include/linux/mutex.h:109:3: error: extra brace group at end of initializer
+>> include/linux/mutex.h:109:3: error: extra brace group at end of initializer
      109 |   { .owner = ATOMIC_LONG_INIT(0) \
          |   ^
    kernel/bpf/btf.c:6371:8: note: in expansion of macro '__MUTEX_INITIALIZER'
@@ -393,7 +393,7 @@ All warnings (new ones prefixed by >>):
          | ^~~~~~~~~~~~~~~~~~~~~~~~
    In file included from include/uapi/linux/btf.h:6,
                     from kernel/bpf/btf.c:4:
-   include/linux/types.h:170:24: error: extra brace group at end of initializer
+>> include/linux/types.h:170:24: error: extra brace group at end of initializer
      170 | #define ATOMIC_INIT(i) { (i) }
          |                        ^
    include/linux/atomic/atomic-long.h:19:30: note: in expansion of macro 'ATOMIC_INIT'
@@ -431,7 +431,7 @@ All warnings (new ones prefixed by >>):
                     from ./arch/x86/include/generated/uapi/asm/bpf_perf_event.h:1,
                     from include/uapi/linux/bpf_perf_event.h:11,
                     from kernel/bpf/btf.c:6:
-   include/linux/list.h:21:30: error: extra brace group at end of initializer
+>> include/linux/list.h:21:30: error: extra brace group at end of initializer
       21 | #define LIST_HEAD_INIT(name) { &(name), &(name) }
          |                              ^
    include/linux/mutex.h:111:18: note: in expansion of macro 'LIST_HEAD_INIT'
@@ -489,7 +489,7 @@ All warnings (new ones prefixed by >>):
                     from ./arch/x86/include/generated/uapi/asm/bpf_perf_event.h:1,
                     from include/uapi/linux/bpf_perf_event.h:11,
                     from kernel/bpf/btf.c:6:
->> include/linux/mutex.h:109:3: warning: excess elements in struct initializer
+   include/linux/mutex.h:109:3: warning: excess elements in struct initializer
      109 |   { .owner = ATOMIC_LONG_INIT(0) \
          |   ^
    kernel/bpf/btf.c:6371:8: note: in expansion of macro '__MUTEX_INITIALIZER'
@@ -517,7 +517,7 @@ All warnings (new ones prefixed by >>):
                     from ./arch/x86/include/generated/uapi/asm/bpf_perf_event.h:1,
                     from include/uapi/linux/bpf_perf_event.h:11,
                     from kernel/bpf/btf.c:6:
-   kernel/bpf/btf.c:6374:26: error: storage size of 'bpf_tcp_ca_kfunc_list' isn't known
+>> kernel/bpf/btf.c:6374:26: error: storage size of 'bpf_tcp_ca_kfunc_list' isn't known
     6374 | DEFINE_KFUNC_BTF_ID_LIST(bpf_tcp_ca_kfunc_list);
          |                          ^~~~~~~~~~~~~~~~~~~~~
    include/linux/export.h:98:21: note: in definition of macro '___EXPORT_SYMBOL'
@@ -535,7 +535,7 @@ All warnings (new ones prefixed by >>):
    kernel/bpf/btf.c:6374:1: note: in expansion of macro 'DEFINE_KFUNC_BTF_ID_LIST'
     6374 | DEFINE_KFUNC_BTF_ID_LIST(bpf_tcp_ca_kfunc_list);
          | ^~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/bpf/btf.c:6374:26: error: storage size of 'bpf_tcp_ca_kfunc_list' isn't known
+>> kernel/bpf/btf.c:6374:26: error: storage size of 'bpf_tcp_ca_kfunc_list' isn't known
     6374 | DEFINE_KFUNC_BTF_ID_LIST(bpf_tcp_ca_kfunc_list);
          |                          ^~~~~~~~~~~~~~~~~~~~~
    include/linux/export.h:98:21: note: in definition of macro '___EXPORT_SYMBOL'
@@ -553,7 +553,7 @@ All warnings (new ones prefixed by >>):
    kernel/bpf/btf.c:6374:1: note: in expansion of macro 'DEFINE_KFUNC_BTF_ID_LIST'
     6374 | DEFINE_KFUNC_BTF_ID_LIST(bpf_tcp_ca_kfunc_list);
          | ^~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/bpf/btf.c:6375:26: error: storage size of 'prog_test_kfunc_list' isn't known
+>> kernel/bpf/btf.c:6375:26: error: storage size of 'prog_test_kfunc_list' isn't known
     6375 | DEFINE_KFUNC_BTF_ID_LIST(prog_test_kfunc_list);
          |                          ^~~~~~~~~~~~~~~~~~~~
    include/linux/export.h:98:21: note: in definition of macro '___EXPORT_SYMBOL'
@@ -571,7 +571,7 @@ All warnings (new ones prefixed by >>):
    kernel/bpf/btf.c:6375:1: note: in expansion of macro 'DEFINE_KFUNC_BTF_ID_LIST'
     6375 | DEFINE_KFUNC_BTF_ID_LIST(prog_test_kfunc_list);
          | ^~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/bpf/btf.c:6375:26: error: storage size of 'prog_test_kfunc_list' isn't known
+>> kernel/bpf/btf.c:6375:26: error: storage size of 'prog_test_kfunc_list' isn't known
     6375 | DEFINE_KFUNC_BTF_ID_LIST(prog_test_kfunc_list);
          |                          ^~~~~~~~~~~~~~~~~~~~
    include/linux/export.h:98:21: note: in definition of macro '___EXPORT_SYMBOL'
@@ -591,32 +591,27 @@ All warnings (new ones prefixed by >>):
          | ^~~~~~~~~~~~~~~~~~~~~~~~
 
 
-vim +21 include/linux/list.h
+vim +/bpf_tcp_ca_kfunc_list +6370 kernel/bpf/btf.c
 
-^1da177e4c3f41 Linus Torvalds 2005-04-16  10  
-^1da177e4c3f41 Linus Torvalds 2005-04-16  11  /*
-1eafe075bf9cb4 Asif Rasheed   2020-09-20  12   * Circular doubly linked list implementation.
-^1da177e4c3f41 Linus Torvalds 2005-04-16  13   *
-^1da177e4c3f41 Linus Torvalds 2005-04-16  14   * Some of the internal functions ("__xxx") are useful when
-^1da177e4c3f41 Linus Torvalds 2005-04-16  15   * manipulating whole lists rather than single entries, as
-^1da177e4c3f41 Linus Torvalds 2005-04-16  16   * sometimes we already know the next/prev entries and we can
-^1da177e4c3f41 Linus Torvalds 2005-04-16  17   * generate better code by using them directly rather than
-^1da177e4c3f41 Linus Torvalds 2005-04-16  18   * using the generic single-entry routines.
-^1da177e4c3f41 Linus Torvalds 2005-04-16  19   */
-^1da177e4c3f41 Linus Torvalds 2005-04-16  20  
-^1da177e4c3f41 Linus Torvalds 2005-04-16 @21  #define LIST_HEAD_INIT(name) { &(name), &(name) }
-^1da177e4c3f41 Linus Torvalds 2005-04-16  22  
+14f267d95fe4b0 Kumar Kartikeya Dwivedi 2021-10-02  6368  
+14f267d95fe4b0 Kumar Kartikeya Dwivedi 2021-10-02  6369  #define DEFINE_KFUNC_BTF_ID_LIST(name)                                         \
+14f267d95fe4b0 Kumar Kartikeya Dwivedi 2021-10-02 @6370  	struct kfunc_btf_id_list name = { LIST_HEAD_INIT(name.list),           \
+14f267d95fe4b0 Kumar Kartikeya Dwivedi 2021-10-02 @6371  					  __MUTEX_INITIALIZER(name.mutex) };   \
+14f267d95fe4b0 Kumar Kartikeya Dwivedi 2021-10-02 @6372  	EXPORT_SYMBOL_GPL(name)
+0e32dfc80bae53 Kumar Kartikeya Dwivedi 2021-10-02  6373  
+0e32dfc80bae53 Kumar Kartikeya Dwivedi 2021-10-02 @6374  DEFINE_KFUNC_BTF_ID_LIST(bpf_tcp_ca_kfunc_list);
+c48e51c8b07aba Kumar Kartikeya Dwivedi 2021-10-02 @6375  DEFINE_KFUNC_BTF_ID_LIST(prog_test_kfunc_list);
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
 https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 
---4Ckj6UjgE2iN1+kY
+--cNdxnHkX5QqsyA0e
 Content-Type: application/gzip
 Content-Disposition: attachment; filename=".config.gz"
 Content-Transfer-Encoding: base64
 
-H4sICHs0i2EAAy5jb25maWcAjDzJdty2svt8RR9nk7uwo8m6znlHCzQJkkiTBAOArW5teBS5
+H4sICH09i2EAAy5jb25maWcAjDzJdty2svt8RR9nk7uwo8m6znlHCzQJkkiTBAOArW5teBS5
 nehcW/LTcF/896+qwAEAwbaziNVVhalQqAkF/vzTzyv2+vL45fbl/u728+dvq78OD4en25fD
 x9Wn+8+H/1mlclVLs+KpMO+AuLx/eP3n1/vzD5er9+9O3787WW0OTw+Hz6vk8eHT/V+v0PT+
 8eGnn39KZJ2JvEuSbsuVFrLuDN+Zqzd/3d29/W31S3r48/72YfXbu/N3J2/Pzv5l/3rjNBO6
@@ -1250,4 +1245,4 @@ qelFCOzonBihyPoEmH1g4vBliWSaISj7n8Xh0mOIi6HQDXX2sxp5OxKLciMoiC9xYHtKXBX4
 xLYGjM09lZTgiiIJ/C85dUPiQGCqElDfEgeKtNSovGU6SSNQ8hZK3ZXAiVieCEjWC07stT1W
 xGQ8VFJgRpSawnYz0w27AMoluTXZFvlgkukFaWXYuez/SzbYaM4kAgA=
 
---4Ckj6UjgE2iN1+kY--
+--cNdxnHkX5QqsyA0e--
