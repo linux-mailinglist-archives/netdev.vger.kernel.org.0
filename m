@@ -2,130 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72CA944BBE8
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 08:02:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F09144BC00
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 08:15:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229618AbhKJHF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 02:05:26 -0500
-Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:41864 "EHLO
-        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229545AbhKJHFZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 02:05:25 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0UvtXNbN_1636527754;
-Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0UvtXNbN_1636527754)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 10 Nov 2021 15:02:35 +0800
-From:   Dust Li <dust.li@linux.alibaba.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>,
-        Ursula Braun <ubraun@linux.vnet.ibm.com>
-Cc:     Tony Lu <tonylu@linux.alibaba.com>, guwen@linux.alibaba.com,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net] net/smc: fix sk_refcnt underflow on linkdown and fallback
-Date:   Wed, 10 Nov 2021 15:02:34 +0800
-Message-Id: <20211110070234.60527-1-dust.li@linux.alibaba.com>
-X-Mailer: git-send-email 2.19.1.3.ge56e4f7
+        id S229682AbhKJHRX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 02:17:23 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:41084 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229567AbhKJHRW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 02:17:22 -0500
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1636528474;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=QYI7QecjnuG6GfxdL7j/OK7s1zjdjd+JXdxf/Anwd28=;
+        b=JA+pnNN5pl09aLxL29MEYniyA8Xu1rTX+7i2DAzB5jI+Hsgp3Rnzr2wGEmD+N0ZKl07yND
+        +POpOSGP226y+NiBgA+9fqZ6VhilXkGwW5mBBPMn55GP6XCNcxIcGAq56Ws3PkR4P/E+TN
+        996vQo2zx/m+nh1IQbhTWXFg8T+QSXM7tncXFV6S6gl6T1Z3nyYhjYQpIhlQkPAAx03Bng
+        qJrpsR8WcqCBs4WakzxS5srdMVL+XscV2lKrPm4cv5WAEY7TIo/JUDSd9po7XYhUWcZvsU
+        ayaMhB6B0ZH1+OyH3JdB23E0aXJ499z6BeE8QYb1OX5rDQsYlVameOSkV011JA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1636528474;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=QYI7QecjnuG6GfxdL7j/OK7s1zjdjd+JXdxf/Anwd28=;
+        b=PlZUDTvGnYFz8eGYw1Kd/4NWTm6ysons3+Fay8IdiFO2RtvhiQGY6UmazJQTfSy9q59Y00
+        d0j9Z13e027C8ZDQ==
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Martin Kaistra <martin.kaistra@linutronix.de>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 6/7] net: dsa: b53: Add logic for TX timestamping
+In-Reply-To: <20211109111213.6vo5swdhxjvgmyjt@skbuf>
+References: <20211109095013.27829-1-martin.kaistra@linutronix.de>
+ <20211109095013.27829-7-martin.kaistra@linutronix.de>
+ <20211109111213.6vo5swdhxjvgmyjt@skbuf>
+Date:   Wed, 10 Nov 2021 08:14:32 +0100
+Message-ID: <87ee7o8otj.fsf@kurt>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We got the following WARNING when running ab/nginx
-test with RDMA link flapping (up-down-up).
-The reason is when smc_sock fallback and at linkdown
-happens simultaneously, we may got the following situation:
+--=-=-=
+Content-Type: text/plain
 
-__smc_lgr_terminate()
- --> smc_conn_kill()
-    --> smc_close_active_abort()
-           smc_sock->sk_state = SMC_CLOSED
-           sock_put(smc_sock)
+Hi Vladimir,
 
-smc_sock was set to SMC_CLOSED and sock_put() been called
-when terminate the link group. But later application call
-close() on the socket, then we got:
+On Tue Nov 09 2021, Vladimir Oltean wrote:
+>> +void b53_port_txtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb)
+>> +{
+>> +	struct b53_device *dev = ds->priv;
+>> +	struct b53_port_hwtstamp *ps = &dev->ports[port].port_hwtstamp;
+>> +	struct sk_buff *clone;
+>> +	unsigned int type;
+>> +
+>> +	type = ptp_classify_raw(skb);
+>> +
+>> +	if (type != PTP_CLASS_V2_L2)
+>> +		return;
+>> +
+>> +	if (!test_bit(B53_HWTSTAMP_ENABLED, &ps->state))
+>> +		return;
+>> +
+>> +	clone = skb_clone_sk(skb);
+>> +	if (!clone)
+>> +		return;
+>> +
+>> +	if (test_and_set_bit_lock(B53_HWTSTAMP_TX_IN_PROGRESS, &ps->state)) {
+>
+> Is it ok if you simply don't timestamp a second skb which may be sent
+> while the first one is in flight, I wonder? What PTP profiles have you
+> tested with? At just one PTP packet at a time, the switch isn't giving
+> you a lot.
 
-__smc_release():
-    if (smc_sock->fallback)
-        smc_sock->sk_state = SMC_CLOSED
-        sock_put(smc_sock)
+PTP only generates a couple of messages per second which need to be
+timestamped. Therefore, this behavior shouldn't be a problem.
 
-Again we set the smc_sock to CLOSED through it's already
-in CLOSED state, and double put the refcnt, so the following
-warning happens:
+hellcreek (and mv88e6xxx) do the same thing, simply because the device
+can only hold only one Tx timestamp. If we'd allow more than one PTP
+packet in flight, there will be correlation problems. I've tested with
+default and gPTP profile without any problems. What PTP profiles do have
+in mind?
 
-refcount_t: underflow; use-after-free.
-WARNING: CPU: 5 PID: 860 at lib/refcount.c:28 refcount_warn_saturate+0x8d/0xf0
-Modules linked in:
-CPU: 5 PID: 860 Comm: nginx Not tainted 5.10.46+ #403
-Hardware name: Alibaba Cloud Alibaba Cloud ECS, BIOS 8c24b4c 04/01/2014
-RIP: 0010:refcount_warn_saturate+0x8d/0xf0
-Code: 05 5c 1e b5 01 01 e8 52 25 bc ff 0f 0b c3 80 3d 4f 1e b5 01 00 75 ad 48
+> Is it a hardware limitation?
 
-RSP: 0018:ffffc90000527e50 EFLAGS: 00010286
-RAX: 0000000000000026 RBX: ffff8881300df2c0 RCX: 0000000000000027
-RDX: 0000000000000000 RSI: ffff88813bd58040 RDI: ffff88813bd58048
-RBP: 0000000000000000 R08: 0000000000000003 R09: 0000000000000001
-R10: ffff8881300df2c0 R11: ffffc90000527c78 R12: ffff8881300df340
-R13: ffff8881300df930 R14: ffff88810b3dad80 R15: ffff8881300df4f8
-FS:  00007f739de8fb80(0000) GS:ffff88813bd40000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000000a01b008 CR3: 0000000111b64003 CR4: 00000000003706e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- smc_release+0x353/0x3f0
- __sock_release+0x3d/0xb0
- sock_close+0x11/0x20
- __fput+0x93/0x230
- task_work_run+0x65/0xa0
- exit_to_user_mode_prepare+0xf9/0x100
- syscall_exit_to_user_mode+0x27/0x190
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
+Not for the b53. It will generate status frames for each to be
+timestamped packet. However, I don't see the need to allow more than one
+Tx packet per port to be timestamped at the moment.
 
-This patch adds check in __smc_release() to make
-sure we won't do an extra sock_put() and set the
-socket to CLOSED when its already in CLOSED state.
+Thanks,
+Kurt
 
-Fixes: 51f1de79ad8e (net/smc: replace sock_put worker by socket refcounting)
-Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
-Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
-Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
----
- net/smc/af_smc.c | 18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 0cf7ed2f5d41..59284da9116d 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -149,14 +149,18 @@ static int __smc_release(struct smc_sock *smc)
- 		sock_set_flag(sk, SOCK_DEAD);
- 		sk->sk_shutdown |= SHUTDOWN_MASK;
- 	} else {
--		if (sk->sk_state != SMC_LISTEN && sk->sk_state != SMC_INIT)
--			sock_put(sk); /* passive closing */
--		if (sk->sk_state == SMC_LISTEN) {
--			/* wake up clcsock accept */
--			rc = kernel_sock_shutdown(smc->clcsock, SHUT_RDWR);
-+		if (sk->sk_state != SMC_CLOSED) {
-+			if (sk->sk_state != SMC_LISTEN &&
-+			    sk->sk_state != SMC_INIT)
-+				sock_put(sk); /* passive closing */
-+			if (sk->sk_state == SMC_LISTEN) {
-+				/* wake up clcsock accept */
-+				rc = kernel_sock_shutdown(smc->clcsock,
-+							  SHUT_RDWR);
-+			}
-+			sk->sk_state = SMC_CLOSED;
-+			sk->sk_state_change(sk);
- 		}
--		sk->sk_state = SMC_CLOSED;
--		sk->sk_state_change(sk);
- 		smc_restore_fallback_changes(smc);
- 	}
- 
--- 
-2.19.1.3.ge56e4f7
+-----BEGIN PGP SIGNATURE-----
 
+iQJHBAEBCgAxFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmGLcVgTHGt1cnRAbGlu
+dXRyb25peC5kZQAKCRB5KluBy5jwpohmD/9Fi3OzBODMKAMtxu4MdAKbvJaeHAqD
+a/6agx8SRMlt0nJ7bw52jAoD6ky1WPaAgpmr4iYvwLqp5yTwAa7V1jMxC82PaxUp
+DEo9E3HuTZiQD9s+w0UYE6JDcvG88QvZbRPvBc8k1r4vUTG13giPe6dYh8bAXmqB
+A+fpvH1o24dNG2IstdSdkbQvj4oK5nkTxXx6q72dx2eZ8Ong+tI2Jor5htu+qBHZ
+PdYU466Z2ov3KGd5Ne0zTZE4zDUEPJan5TeJoCy37zAjQSWj3VLeF2/MwoOZBGjk
+e92jimwtWWi2knpaBR60NA6PL1qx9oztbzB0n9/jLKkYu7W0y201Hw/KDdz5r80D
+RoIQ6c5z5e1GZztr4280dsFfGeL/rRph0sGiUMtKH7SXJOaU78bKa5P4BTGs6DQb
+lNewiEMoTnP6to7pb0iVDlky1rafX/yu4kDrjHXaN0lLtxDqDzYvB74d1ExUoxog
+opvhJr6UVCyt9wo+IYlheET5zjbMFRuS7L/NGismf7LwzBKogfzTrEIxjHieF0+m
+Xi29P1SWNCOlH9TGMd3Sd48txcJVXX4mv7JLGtQ0gUF4h09M2wHHVa7WUsyB3zRT
+G/K+1yicIt9T1VvkBRzRU4ggHPUbkBsuUacpRLcaxEggUwdD1vxBmBUOv17uHC1Q
+bbEeE4JSnePfAg==
+=JRT5
+-----END PGP SIGNATURE-----
+--=-=-=--
