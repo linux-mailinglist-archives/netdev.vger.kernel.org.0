@@ -2,77 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9C4A44C05C
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 12:55:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5D6744C107
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 13:11:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231331AbhKJL5u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 06:57:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34498 "EHLO
+        id S231527AbhKJMOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 07:14:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231158AbhKJL5t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 06:57:49 -0500
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0F9DC061766
-        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 03:55:01 -0800 (PST)
-Received: by mail-lj1-x231.google.com with SMTP id h11so4810135ljk.1
-        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 03:55:01 -0800 (PST)
+        with ESMTP id S231254AbhKJMOh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 07:14:37 -0500
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9454C061766;
+        Wed, 10 Nov 2021 04:11:49 -0800 (PST)
+Received: by mail-pf1-x435.google.com with SMTP id x64so2486900pfd.6;
+        Wed, 10 Nov 2021 04:11:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gJBYeKbyuFnxWRx/yzd9DIfo4zFjEF+kJb4DPlegKoU=;
-        b=yvTU+Pn638oDi5a5GEV4t1ihLSjORPtRlQUmlcW7QSm517HNztsIu00bRPycn9Ko2Y
-         E8f30nQnMQ5lZH9Nl+tfyq1+xNw6bz8NVy/exMCdJxeZ6u2JUEHxuc5m42mrK/ToWrsh
-         GRx+BoJEqwuzwD+O+2Thz8uED4UE/CYIEa4aw=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Bd62kUhFHKorEdg0sPrkxQ7qB2nMKiUIB+3qfTaStf0=;
+        b=DXNNf6K83ULfqyjdU1hySEHbe4hiMeTVhtpocirou30jBV6NRaemNjAufpb0tBihXH
+         2DLCTDGVDwmndpCuL0aC+TyVpSh0yy+Tl74jpCmLyVKHLkx3smRG+s7UWFI85KXS/9+t
+         OCCn3trCcxjiJ4ZMMkpaxBIDqvctok7B3jDYyndKdUxHLDgGXKPlvUuRSUCnihxj1QJ4
+         V2cPeIS2lpgpcWx0aqOCAKjUO7y85sGSUKnMrF2jkc9EGBvaJ7RbL3wad61bmjg5f7gg
+         SJlnEcW7j5tEF//16yAuU9N++kKFJsjzLUrV9MaBfgBABUSy9bowEWa42WxhECguSn9Q
+         35Jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gJBYeKbyuFnxWRx/yzd9DIfo4zFjEF+kJb4DPlegKoU=;
-        b=Gghez0yRs6cCZ2UBDdFitF5Ro2kE58IohU8nPkuHbOeWp7UNH4GAXJiRtgB7yJoBC3
-         W6wAYSs0cydywqUmSIqTG5knR4uiJ3UG/MZXaMwLJs5kTcUtjCEYZObP6urdF0zvqQbW
-         xBSYVHatNI52E+fJbR4R0Fwz6R6NjoHsEVS3VA5Ncik8DW37tyWhfpbAj2EGrSINYff7
-         Rp2CcwhxQG2YSXjHP4219dTABrS3fCf+fQyn5f0yZUbMJLe1JGeT6jKiJTxSQw2njEuN
-         NWMXra8g/jKiWFONmkifgQmqlcQ+L2m0Zd3i3bNNRbEBKgn/ws8IBz8ve+ex5Y+kO/mA
-         ZWEw==
-X-Gm-Message-State: AOAM530NpO0CNjZoE9d7TGShZrM9jBQ4XF9+wfDfQH0dKjqeK1aZg+u0
-        tWJISe24WAF6TXSNmrIuOVyzgcqPGGDZZ4EcSowrWg==
-X-Google-Smtp-Source: ABdhPJy8ULRwKBmn+C3Fc8lyYoeoDPUCQKNOf/5sGl8YbhpO9Sl5ko934GsOxzQhtayRJGOHYFHRqJW2QnN/umJkR2w=
-X-Received: by 2002:a2e:b545:: with SMTP id a5mr14883106ljn.510.1636545300069;
- Wed, 10 Nov 2021 03:55:00 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Bd62kUhFHKorEdg0sPrkxQ7qB2nMKiUIB+3qfTaStf0=;
+        b=spN0YSUUZaxS5lajVZRXt/e1pnWbcTDgGg8b7qIOP3/SAzPV0lC8OnNbY94bAbuz4T
+         6NQTmHgDJtI1XPG4/NPVjP8HVG6RgmlPC6DzBxfyRW4w3V3KIuTDv5JT9q9eFR//WZMG
+         9vF0e+UQ3UIKtgL2f3HYSMOq8iU/HoAZe9TiYvdpoC/N4cu19Dpbo+YSvI0P3+1yCkwb
+         wrY/07NYS1O/5RqrowqDCJDDXd8vKb43P9012AYn/wMb5DqyEGFoiXcIBcird80hYJv6
+         WFZE9/5wAcyv8H5F0Iukjh+cdRhmDPFx47n4CF3LxL+/y2xe8WKO3AW8+wG0I9GDFv89
+         Xarw==
+X-Gm-Message-State: AOAM5330F2jzX3eHBTeKmxXEqxQEk+t7StSR1jj801VGHqCvHrzf7us3
+        jvtEwkccnn8qYBJqdncPark=
+X-Google-Smtp-Source: ABdhPJwr4wIOT77bNfmqObauPfPmEKjjSNks6dI4WNWcOOTv92WOABSsSJOe/B2ifrX8ypuaLuksyg==
+X-Received: by 2002:a05:6a00:10d1:b0:47b:aa9b:1e7a with SMTP id d17-20020a056a0010d100b0047baa9b1e7amr96981336pfu.57.1636546309355;
+        Wed, 10 Nov 2021 04:11:49 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id m19sm7935319pgh.75.2021.11.10.04.11.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Nov 2021 04:11:49 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: deng.changcheng@zte.com.cn
+To:     kvalo@codeaurora.org
+Cc:     davem@davemloft.net, kuba@kernel.org, deng.changcheng@zte.com.cn,
+        pkshih@realtek.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] rtw89: remove unneeded variable
+Date:   Wed, 10 Nov 2021 12:11:35 +0000
+Message-Id: <20211110121135.151187-1-deng.changcheng@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20211110111016.5670-1-markpash@cloudflare.com>
-In-Reply-To: <20211110111016.5670-1-markpash@cloudflare.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Wed, 10 Nov 2021 11:54:49 +0000
-Message-ID: <CACAyw9_eT54_Az5B5pWVL86rii6BpKH8BT_HeKZWq4j4FNZAYg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 0/2] Get ingress_ifindex in BPF_SK_LOOKUP prog type
-To:     Mark Pashmfouroush <markpash@cloudflare.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 10 Nov 2021 at 11:10, Mark Pashmfouroush
-<markpash@cloudflare.com> wrote:
->
-> BPF_SK_LOOKUP users may want to have access to the ifindex of the skb
-> which triggered the socket lookup. This may be useful for selectively
-> applying programmable socket lookup logic to packets that arrive on a
-> specific interface, or excluding packets from an interface.
->
+From: Changcheng Deng <deng.changcheng@zte.com.cn>
 
-For the series:
+Fix the following coccicheck review:
+./drivers/net/wireless/realtek/rtw89/mac.c: 1096: 5-8: Unneeded variable
 
-Revieview-by: Lorenz Bauer <lmb@cloudflare.com>
+Remove unneeded variable used to store return value.
 
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
+---
+ drivers/net/wireless/realtek/rtw89/mac.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/mac.c b/drivers/net/wireless/realtek/rtw89/mac.c
+index 0171a5a7b1de..b93ac242b305 100644
+--- a/drivers/net/wireless/realtek/rtw89/mac.c
++++ b/drivers/net/wireless/realtek/rtw89/mac.c
+@@ -1093,7 +1093,6 @@ static int cmac_func_en(struct rtw89_dev *rtwdev, u8 mac_idx, bool en)
+ static int dmac_func_en(struct rtw89_dev *rtwdev)
+ {
+ 	u32 val32;
+-	u32 ret = 0;
+ 
+ 	val32 = (B_AX_MAC_FUNC_EN | B_AX_DMAC_FUNC_EN | B_AX_MAC_SEC_EN |
+ 		 B_AX_DISPATCHER_EN | B_AX_DLE_CPUIO_EN | B_AX_PKT_IN_EN |
+@@ -1107,7 +1106,7 @@ static int dmac_func_en(struct rtw89_dev *rtwdev)
+ 		 B_AX_WD_RLS_CLK_EN);
+ 	rtw89_write32(rtwdev, R_AX_DMAC_CLK_EN, val32);
+ 
+-	return ret;
++	return 0;
+ }
+ 
+ static int chip_func_en(struct rtw89_dev *rtwdev)
 -- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+2.25.1
 
-www.cloudflare.com
