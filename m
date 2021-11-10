@@ -2,266 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CFB744BD37
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 09:43:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 914C344BD60
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 09:53:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230312AbhKJIq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 03:46:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47338 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230318AbhKJIqZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 03:46:25 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF94C061764;
-        Wed, 10 Nov 2021 00:43:38 -0800 (PST)
-Message-ID: <139d7989-629f-6216-7ae4-a9c2dfbea8d0@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1636533815;
+        id S230416AbhKJI41 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 03:56:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:26824 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229831AbhKJI41 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 03:56:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1636534419;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=BaCdPVLt3LH31qmIYERVcQuW1qRTSezMav4tuaHTI7I=;
-        b=vs/gZuNz6fo8ahaWWAVhUEjnztVnR3fS3A8fm0UDalI2uqb2Z9AWyFgjJVn7l2Evq8NxTq
-        qy157GeDrYOncmlqV6OIEWQTVfc7JPWraW1NwCCEvMv4lIE05LoRi5Ike5Mgwf32V+T2f9
-        05gxuIafC2FDHxk1jCh2gO5XvYznWMPCjz/1jx1ODyC8psnCoish0ZEaY942Ych5PAP0MY
-        kPcv01gPkJyVQIknOZP0L1DBt6+XseB5WG4ZZFdetFuziQfA3SUaahIHj/IiapU5fMtvag
-        kFcRiSOArLVuuXnVTPE7LfOFk0Wv/Q9M5Et/2S6VzeZ5LzLp97u9G5tFd9B5lg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1636533815;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BaCdPVLt3LH31qmIYERVcQuW1qRTSezMav4tuaHTI7I=;
-        b=7eumjWboScUh+cWycQYVLznpeO4b+Ukq81VrHl0Lk4rP1CdgO+D9samIoB3gWuFs7Hf7Wq
-        nwh+ltnYcJ4x46Bw==
-Date:   Wed, 10 Nov 2021 09:43:35 +0100
+        bh=9cR5sqbN1957iQ/bal6X9SNI5rajv2fdoOQTfC/GcDE=;
+        b=BS+2GJPORhOauX6ZxKUUWRT3Nn4SJa10an1BGNqDMouo0dhAL90v5nPRowv0yw9e6RvmFu
+        ZcYHafmAbtrowpV12SFdU3jpPuo7iY5QzWS/dbN+PKPyNUVDcWfGduZ5mH0pAEbnnnbVS4
+        YXolE8/vRWHkooczPXlfjGuqwEKGZVw=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-578-FRvry2vGNsmTaR0TlN1pTA-1; Wed, 10 Nov 2021 03:53:38 -0500
+X-MC-Unique: FRvry2vGNsmTaR0TlN1pTA-1
+Received: by mail-ed1-f71.google.com with SMTP id w12-20020a056402268c00b003e2ab5a3370so1766040edd.0
+        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 00:53:38 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
+         :subject:content-language:to:references:in-reply-to
+         :content-transfer-encoding;
+        bh=9cR5sqbN1957iQ/bal6X9SNI5rajv2fdoOQTfC/GcDE=;
+        b=RwL2/Jsax6gWRtYJMkGKrYoun3Wsx6KxdXUuh/Fl1RdxW+fEobVSscCC4qsgNf8kwM
+         pxttf3Ptm2abOSHeFwzj7dtiOn1BJi7UtnPsyP6CudVniPWWIWbEgEl3KyJdVTO0ZMUl
+         Bn47dtqgyFtcDyc+75rwCPqsFvcpbcHLTpkirRMX22hy9Ip9Bx/o6URIvHicsz4fBnCA
+         QwRixL7Oe5dYflzSsRDtsc0GSk1X9XFvbCtYFvvVGmx+Dm98QDYAozStR2KVH2lWK0Dc
+         Ro5mbAnmSLuQNn3B0qwHkwQRWhHsrpMwmYi3effbClQHtSN1YSXlFErgENjJZS5/ufbF
+         87SQ==
+X-Gm-Message-State: AOAM5329e1Z7lEezEYZRm6O/Xh0vhIO2xbiz8poTbRICSJNqsHjuBbIU
+        BVkxFfFO+uJ2Wv8u4iitIT/92//ALr8SOrY2R2PsWuaN5J42/y0BBJY3EGPDzpbX5m6YNpf7cRF
+        HkqZ+OqxWTBD2nPHB
+X-Received: by 2002:a17:906:cd18:: with SMTP id oz24mr18338198ejb.166.1636534417418;
+        Wed, 10 Nov 2021 00:53:37 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyKJaoLZ/EZKOb6+YOSDdmJl1tIhkXRCt9cQq0I+y+4Q41Ds7ob43uAUnoCI9K3PLc4Ab2RUA==
+X-Received: by 2002:a17:906:cd18:: with SMTP id oz24mr18338169ejb.166.1636534417199;
+        Wed, 10 Nov 2021 00:53:37 -0800 (PST)
+Received: from [192.168.2.13] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
+        by smtp.gmail.com with ESMTPSA id r22sm10690912ejd.109.2021.11.10.00.53.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Nov 2021 00:53:36 -0800 (PST)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <3d5a4644-62d8-8eac-fb6a-4dc9468372c3@redhat.com>
+Date:   Wed, 10 Nov 2021 09:53:35 +0100
 MIME-Version: 1.0
-Subject: Re: [PATCH v2 5/7] net: dsa: b53: Add logic for RX timestamping
-Content-Language: de-DE
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
+Cc:     brouer@redhat.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Andrii Nakryiko <andriin@fb.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-References: <20211109095013.27829-1-martin.kaistra@linutronix.de>
- <20211109095013.27829-6-martin.kaistra@linutronix.de>
- <9d9f3b13-051c-0c6d-e2cb-b64bbee2522f@gmail.com>
-From:   Martin Kaistra <martin.kaistra@linutronix.de>
-In-Reply-To: <9d9f3b13-051c-0c6d-e2cb-b64bbee2522f@gmail.com>
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Jiri Olsa <jolsa@kernel.org>, Joe Stringer <joe@cilium.io>,
+        Peter Wu <peter@lekensteyn.nl>, Roman Gushchin <guro@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Tobias Klauser <tklauser@distanz.ch>
+Subject: Re: [PATCH bpf-next] bpftool: Fix SPDX tag for Makefiles and
+ .gitignore
+Content-Language: en-US
+To:     Quentin Monnet <quentin@isovalent.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+References: <20211105221904.3536-1-quentin@isovalent.com>
+In-Reply-To: <20211105221904.3536-1-quentin@isovalent.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 09.11.21 um 19:07 schrieb Florian Fainelli:
-> On 11/9/21 1:50 AM, Martin Kaistra wrote:
->> Packets received by the tagger with opcode=1 contain the 32-bit timestamp
->> according to the timebase register. This timestamp is saved in
->> BRCM_SKB_CB(skb)->meta_tstamp. b53_port_rxtstamp() takes this
->> and puts the full time information from the timecounter into
->> shwt->hwtstamp.
->>
->> Signed-off-by: Martin Kaistra <martin.kaistra@linutronix.de>
->> ---
->>   drivers/net/dsa/b53/b53_common.c |  1 +
->>   drivers/net/dsa/b53/b53_ptp.c    | 28 +++++++++++++++++++++++++
->>   drivers/net/dsa/b53/b53_ptp.h    | 10 +++++++++
->>   include/linux/dsa/b53.h          | 30 +++++++++++++++++++++++++++
->>   net/dsa/tag_brcm.c               | 35 ++++++++++++++++++++++++--------
->>   5 files changed, 95 insertions(+), 9 deletions(-)
->>
->> diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
->> index ed590efbd3bf..a9408f9cd414 100644
->> --- a/drivers/net/dsa/b53/b53_common.c
->> +++ b/drivers/net/dsa/b53/b53_common.c
->> @@ -2300,6 +2300,7 @@ static const struct dsa_switch_ops b53_switch_ops = {
->>   	.port_max_mtu		= b53_get_max_mtu,
->>   	.port_change_mtu	= b53_change_mtu,
->>   	.get_ts_info		= b53_get_ts_info,
->> +	.port_rxtstamp		= b53_port_rxtstamp,
->>   };
->>   
->>   struct b53_chip_data {
->> diff --git a/drivers/net/dsa/b53/b53_ptp.c b/drivers/net/dsa/b53/b53_ptp.c
->> index 8629c510b1a0..f8dd8d484d93 100644
->> --- a/drivers/net/dsa/b53/b53_ptp.c
->> +++ b/drivers/net/dsa/b53/b53_ptp.c
->> @@ -6,6 +6,8 @@
->>    * Copyright (C) 2021 Linutronix GmbH
->>    */
->>   
->> +#include <linux/ptp_classify.h>
->> +
->>   #include "b53_priv.h"
->>   #include "b53_ptp.h"
->>   
->> @@ -106,6 +108,32 @@ static long b53_hwtstamp_work(struct ptp_clock_info *ptp)
->>   	return B53_PTP_OVERFLOW_PERIOD;
->>   }
->>   
->> +bool b53_port_rxtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb,
->> +		       unsigned int type)
->> +{
->> +	struct b53_device *dev = ds->priv;
->> +	struct b53_port_hwtstamp *ps = &dev->ports[port].port_hwtstamp;
->> +	struct skb_shared_hwtstamps *shwt;
->> +	u64 ns;
-> 
-> I had asked you to store b53_port_hwtstamp into dp->priv, any reason for
-> not doing that?
 
-I am sorry, I must have misunderstood you. tag_brcm.c ist now accessing 
-b53_port_hwtstamp via dp->priv (like in the sja1105 driver). It should 
-also be possible, to store it only in there.
 
+On 05/11/2021 23.19, Quentin Monnet wrote:
+> Bpftool is dual-licensed under GPLv2 and BSD-2-Clause. In commit
+> 907b22365115 ("tools: bpftool: dual license all files") we made sure
+> that all its source files were indeed covered by the two licenses, and
+> that they had the correct SPDX tags.
 > 
->> +
->> +	if (type != PTP_CLASS_V2_L2)
->> +		return false;
->> +
->> +	if (!test_bit(B53_HWTSTAMP_ENABLED, &ps->state))
->> +		return false;
->> +
->> +	mutex_lock(&dev->ptp_mutex);
->> +	ns = timecounter_cyc2time(&dev->tc, BRCM_SKB_CB(skb)->meta_tstamp);
->> +	mutex_unlock(&dev->ptp_mutex);
->> +
->> +	shwt = skb_hwtstamps(skb);
->> +	memset(shwt, 0, sizeof(*shwt));
->> +	shwt->hwtstamp = ns_to_ktime(ns);
->> +
->> +	return false;
->> +}
->> +EXPORT_SYMBOL(b53_port_rxtstamp);
->> +
->>   int b53_ptp_init(struct b53_device *dev)
->>   {
->>   	mutex_init(&dev->ptp_mutex);
->> diff --git a/drivers/net/dsa/b53/b53_ptp.h b/drivers/net/dsa/b53/b53_ptp.h
->> index 5cd2fd9621a2..3b3437870c55 100644
->> --- a/drivers/net/dsa/b53/b53_ptp.h
->> +++ b/drivers/net/dsa/b53/b53_ptp.h
->> @@ -9,11 +9,15 @@
->>   
->>   #include "b53_priv.h"
->>   
->> +#define SKB_PTP_TYPE(__skb) (*(unsigned int *)((__skb)->cb))
->> +
->>   #ifdef CONFIG_B53_PTP
->>   int b53_ptp_init(struct b53_device *dev);
->>   void b53_ptp_exit(struct b53_device *dev);
->>   int b53_get_ts_info(struct dsa_switch *ds, int port,
->>   		    struct ethtool_ts_info *info);
->> +bool b53_port_rxtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb,
->> +		       unsigned int type);
->>   #else /* !CONFIG_B53_PTP */
->>   
->>   static inline int b53_ptp_init(struct b53_device *dev)
->> @@ -31,5 +35,11 @@ static inline int b53_get_ts_info(struct dsa_switch *ds, int port,
->>   	return -EOPNOTSUPP;
->>   }
->>   
->> +static inline bool b53_port_rxtstamp(struct dsa_switch *ds, int port,
->> +				     struct sk_buff *skb, unsigned int type)
->> +{
->> +	return false;
->> +}
->> +
->>   #endif
->>   #endif
->> diff --git a/include/linux/dsa/b53.h b/include/linux/dsa/b53.h
->> index 85aa6d9dc53d..542e5e3040d6 100644
->> --- a/include/linux/dsa/b53.h
->> +++ b/include/linux/dsa/b53.h
->> @@ -46,9 +46,32 @@ struct b53_io_ops {
->>   					struct phylink_link_state *state);
->>   };
->>   
->> +/* state flags for b53_port_hwtstamp::state */
->> +enum {
->> +	B53_HWTSTAMP_ENABLED,
->> +	B53_HWTSTAMP_TX_IN_PROGRESS,
->> +};
->> +
->> +struct b53_port_hwtstamp {
->> +	/* Port index */
->> +	int port_id;
+> However, bpftool's Makefile, the Makefile for its documentation, and the
+> .gitignore file were skipped at the time (their GPL-2.0-only tag was
+> added later). Let's update the tags.
 > 
-> unsigned int;
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Cc: Andrii Nakryiko <andriin@fb.com>
+> Cc: Ilya Leoshkevich <iii@linux.ibm.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Cc: Jesper Dangaard Brouer <brouer@redhat.com>
+
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
+> Cc: Jiri Olsa <jolsa@kernel.org>
+> Cc: Joe Stringer <joe@cilium.io>
+> Cc: Peter Wu <peter@lekensteyn.nl>
+> Cc: Roman Gushchin <guro@fb.com>
+> Cc: Song Liu <songliubraving@fb.com>
+> Cc: Stanislav Fomichev <sdf@google.com>
+> Cc: Tobias Klauser <tklauser@distanz.ch>
+> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+> ---
+>   tools/bpf/bpftool/.gitignore             | 2 +-
+>   tools/bpf/bpftool/Documentation/Makefile | 2 +-
+>   tools/bpf/bpftool/Makefile               | 2 +-
+>   3 files changed, 3 insertions(+), 3 deletions(-)
 > 
->> +
->> +	/* Timestamping state */
->> +	unsigned long state;
->> +
->> +	/* Resources for transmit timestamping */
->> +	unsigned long tx_tstamp_start;
->> +	struct sk_buff *tx_skb;
->> +
->> +	/* Current timestamp configuration */
->> +	struct hwtstamp_config tstamp_config;
->> +};
->> +
->>   struct b53_port {
->>   	u16 vlan_ctl_mask;
->>   	struct ethtool_eee eee;
->> +	/* Per-port timestamping resources */
->> +	struct b53_port_hwtstamp port_hwtstamp;
->>   };
->>   
->>   struct b53_vlan {
->> @@ -112,3 +135,10 @@ struct b53_device {
->>   #define B53_PTP_OVERFLOW_PERIOD (HZ / 2)
->>   	struct delayed_work overflow_work;
->>   };
->> +
->> +struct brcm_skb_cb {
->> +	struct sk_buff *clone;
->> +	u32 meta_tstamp;
->> +};
->> +
->> +#define BRCM_SKB_CB(skb) ((struct brcm_skb_cb *)(skb)->cb)
->> diff --git a/net/dsa/tag_brcm.c b/net/dsa/tag_brcm.c
->> index 96dbb8ee2fee..d611c1073deb 100644
->> --- a/net/dsa/tag_brcm.c
->> +++ b/net/dsa/tag_brcm.c
->> @@ -9,6 +9,7 @@
->>   #include <linux/etherdevice.h>
->>   #include <linux/list.h>
->>   #include <linux/slab.h>
->> +#include <linux/dsa/b53.h>
->>   
->>   #include "dsa_priv.h"
->>   
->> @@ -31,7 +32,10 @@
->>   /* 6th byte in the tag */
->>   #define BRCM_LEG_PORT_ID	(0xf)
->>   
->> -/* Newer Broadcom tag (4 bytes) */
->> +/* Newer Broadcom tag (4 bytes)
->> + * For egress, when opcode = 0001, additional 4 bytes are used for
->> + * the time stamp.
->> + */
->>   #define BRCM_TAG_LEN	4
->>   
->>   /* Tag is constructed and desconstructed using byte by byte access
->> @@ -136,19 +140,29 @@ static struct sk_buff *brcm_tag_xmit_ll(struct sk_buff *skb,
->>    */
->>   static struct sk_buff *brcm_tag_rcv_ll(struct sk_buff *skb,
->>   				       struct net_device *dev,
->> -				       unsigned int offset)
->> +				       unsigned int offset,
->> +				       int *tag_len)
+> diff --git a/tools/bpf/bpftool/.gitignore b/tools/bpf/bpftool/.gitignore
+> index 05ce4446b780..a736f64dc5dc 100644
+> --- a/tools/bpf/bpftool/.gitignore
+> +++ b/tools/bpf/bpftool/.gitignore
+> @@ -1,4 +1,4 @@
+> -# SPDX-License-Identifier: GPL-2.0-only
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>   *.d
+>   /bootstrap/
+>   /bpftool
+> diff --git a/tools/bpf/bpftool/Documentation/Makefile b/tools/bpf/bpftool/Documentation/Makefile
+> index c49487905ceb..44b60784847b 100644
+> --- a/tools/bpf/bpftool/Documentation/Makefile
+> +++ b/tools/bpf/bpftool/Documentation/Makefile
+> @@ -1,4 +1,4 @@
+> -# SPDX-License-Identifier: GPL-2.0-only
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>   include ../../../scripts/Makefile.include
+>   include ../../../scripts/utilities.mak
+>   
+> diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
+> index c0c30e56988f..622568c7a9b8 100644
+> --- a/tools/bpf/bpftool/Makefile
+> +++ b/tools/bpf/bpftool/Makefile
+> @@ -1,4 +1,4 @@
+> -# SPDX-License-Identifier: GPL-2.0-only
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>   include ../../scripts/Makefile.include
+>   include ../../scripts/utilities.mak
+>   
 > 
-> unsigned int tag_len.
-> 
+
