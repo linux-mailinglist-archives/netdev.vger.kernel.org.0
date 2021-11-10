@@ -2,217 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C0FD44C5CD
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 18:16:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D971044C5EE
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 18:26:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232340AbhKJRTo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 12:19:44 -0500
-Received: from outgoing-stata.csail.mit.edu ([128.30.2.210]:48272 "EHLO
-        outgoing-stata.csail.mit.edu" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230471AbhKJRTn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 12:19:43 -0500
-Received: from [128.177.79.46] (helo=csail.mit.edu)
-        by outgoing-stata.csail.mit.edu with esmtpsa (TLS1.2:RSA_AES_256_CBC_SHA1:256)
-        (Exim 4.82)
-        (envelope-from <srivatsa@csail.mit.edu>)
-        id 1mkrDM-000Nx5-Kq; Wed, 10 Nov 2021 12:16:48 -0500
-Date:   Wed, 10 Nov 2021 09:20:00 -0800
-From:   "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>
-To:     Joe Perches <joe@perches.com>
-Cc:     Nadav Amit <namit@vmware.com>, Juergen Gross <jgross@suse.com>,
-        X86 ML <x86@kernel.org>, Pv-drivers <Pv-drivers@vmware.com>,
-        Vivek Thampi <vithampi@vmware.com>,
-        Vishal Bhakta <vbhakta@vmware.com>,
-        Ronak Doshi <doshir@vmware.com>,
-        Linux-graphics-maintainer <Linux-graphics-maintainer@vmware.com>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-        Zack Rusin <zackr@vmware.com>, Deep Shah <sdeep@vmware.com>,
-        Alexey Makhalov <amakhalov@vmware.com>,
-        Linux Virtualization <virtualization@lists.linux-foundation.org>,
-        Keerthana Kalyanasundaram <keerthanak@vmware.com>,
-        Srivatsa Bhat <srivatsab@vmware.com>,
-        Anish Swaminathan <anishs@vmware.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 2/2] MAINTAINERS: Mark VMware mailing list entries as
- private
-Message-ID: <20211110172000.GA121926@csail.mit.edu>
-References: <163640336232.62866.489924062999332446.stgit@srivatsa-dev>
- <163640339370.62866.3435211389009241865.stgit@srivatsa-dev>
- <5179a7c097e0bb88f95642a394f53c53e64b66b1.camel@perches.com>
- <cb03ca42-b777-3d1a-5aba-b01cd19efa9a@csail.mit.edu>
- <dcbd19fcd1625146f4db267f84abd7412513d20e.camel@perches.com>
- <5C24FB2A-D2C0-4D95-A0C0-B48C4B8D5AF4@vmware.com>
- <1875b0458294d23d8e3260d2824894b095d6a62d.camel@perches.com>
+        id S230400AbhKJR2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 12:28:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54394 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230230AbhKJR2q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 12:28:46 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3CC0C061764;
+        Wed, 10 Nov 2021 09:25:58 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id p18-20020a17090ad31200b001a78bb52876so2231505pju.3;
+        Wed, 10 Nov 2021 09:25:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jxsEFlYIf6e7+lQEXRxrewNE2YsLXosTxzqGZrpdI4Q=;
+        b=EF3fmcyfSgmZQ7SqVtVixsGDpWOXRk7ujmlg/YXhtkvPyowEJWpz2VtXmTIGnTKlSi
+         f0yX6bSs6YC5nKb8MT1EtKEee2qtfThBbCRhLHK8QTZLfZILbxLcLGPojn6YhueUA+4n
+         1Q8Qy2gk/ZdndY+WBCgiSGhfxHSB/b4od26qdSTLjrR2TpBOijoLu6gutZtQxvs7fTKa
+         48fyyflcf4Uen/cfsSrVRrgf16vLpJZQMsT1Pfu5rGM9V3eJSWD2dFGWXS6Itr03eS/o
+         iE0NzFcOX+0RAKgA145f2PPE1AXmVZCJeo6ksR8LqjJrv9zfcIBudbgsYDIMpzTjuOtX
+         Bojw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jxsEFlYIf6e7+lQEXRxrewNE2YsLXosTxzqGZrpdI4Q=;
+        b=pd58uSo6q1/i21oHXZz1fwF2wUs8iJZdU4tijb3hS+x5msM0Ng8sXpDHrJFjuW83tg
+         BLQ/O9OBCIVUd2Dqe/HA3EF4j6VEdfKlTs/uE6Qacy0yrFkp60r57ph6nZessHT9clmz
+         68f2PB+LxspzlhUQ0tn/7r3GJ5ud4qhiuVMG0rIfq//rxaAZKI8U1Zzat7k3AQkdPDxK
+         +PbGzHNmoOdnvGeoQ6OdEm4pmHatO4nw+AIWvhkLZzoT+tt/sZf3ZkXeAmBkzmUFOSnr
+         C13NMs1TLG4CRMM/V5av8AZaG3iXFFPVoSwEgFwtrtmd+Yt1/y9mVFIRMz1lZYcW100m
+         NJWA==
+X-Gm-Message-State: AOAM531Fc98zDgXOmmZrudKc61QC7F5MvfJO9pTs5X3KsyHAXOhI6EsG
+        psSJv10WtLMz2QNSJ3nSTcAmNBlGYU0=
+X-Google-Smtp-Source: ABdhPJzMvCpX69izWbpiL0sWIBc9ONUJ5tN4dhA77zi6+Lf2qmTsQNklDBIuc5pK/gSW5OLZ0wSNng==
+X-Received: by 2002:a17:902:8695:b0:142:7171:abf5 with SMTP id g21-20020a170902869500b001427171abf5mr811220plo.74.1636565158285;
+        Wed, 10 Nov 2021 09:25:58 -0800 (PST)
+Received: from ast-mbp.thefacebook.com ([2620:10d:c090:400::5:7abd])
+        by smtp.gmail.com with ESMTPSA id g5sm6201149pjt.15.2021.11.10.09.25.57
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 10 Nov 2021 09:25:57 -0800 (PST)
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     davem@davemloft.net
+Cc:     daniel@iogearbox.net, lmb@cloudflare.com, andrii@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+Subject: [PATCH bpf] bpf: Fix inner map state pruning regression.
+Date:   Wed, 10 Nov 2021 09:25:56 -0800
+Message-Id: <20211110172556.20754-1-alexei.starovoitov@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1875b0458294d23d8e3260d2824894b095d6a62d.camel@perches.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 09, 2021 at 01:57:31PM -0800, Joe Perches wrote:
-> On Tue, 2021-11-09 at 00:58 +0000, Nadav Amit wrote:
-> > > On Nov 8, 2021, at 4:37 PM, Joe Perches <joe@perches.com> wrote:
-> > > On Mon, 2021-11-08 at 16:22 -0800, Srivatsa S. Bhat wrote:
-> > > 
-> > > So it's an exploder not an actual maintainer and it likely isn't
-> > > publically archived with any normal list mechanism.
-> > > 
-> > > So IMO "private" isn't appropriate.  Neither is "L:"
-> > > Perhaps just mark it as what it is as an "exploder".
-> > > 
-> > > Or maybe these blocks should be similar to:
-> > > 
-> > > M:	Name of Lead Developer <somebody@vmware.com>
-> > > M:	VMware <foo> maintainers <linux-<foo>-maintainers@vmlinux.com>
-> 
-> Maybe adding entries like
-> 
-> M:	Named maintainer <whoever@vmware.com>
-> R:	VMware <foo> reviewers <linux-<foo>-maintainers@vmware.com>
-> 
-> would be best/simplest.
-> 
+From: Alexei Starovoitov <ast@kernel.org>
 
-Sure, that sounds good to me. I also considered adding "(email alias)"
-like Juergen suggested, but I think the R: entry is clear enough.
-Please find the updated patch below.
+Introduction of map_uid made two lookups from outer map to be distinct.
+That distinction is only necessary when inner map has an embedded timer.
+Otherwise it will make the verifier state pruning to be conservative
+which will cause complex programs to hit 1M insn_processed limit.
+Tighten map_uid logic to apply to inner maps with timers only.
 
+Fixes: 3e8ce29850f1 ("bpf: Prevent pointer mismatch in bpf_timer_init.")
+Reported-by: Lorenz Bauer <lmb@cloudflare.com>
+Tested-by: Lorenz Bauer <lmb@cloudflare.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 ---
+ kernel/bpf/verifier.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-From f66faa238facf504cfc66325912ce7af8cbf79ec Mon Sep 17 00:00:00 2001
-From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
-Date: Mon, 8 Nov 2021 11:46:57 -0800
-Subject: [PATCH v2 2/2] MAINTAINERS: Mark VMware mailing list entries as email
- aliases
-
-VMware mailing lists in the MAINTAINERS file are private lists meant
-for VMware-internal review/notification for patches to the respective
-subsystems. Anyone can post to these addresses, but there is no public
-read access like open mailing lists, which makes them more like email
-aliases instead (to reach out to reviewers).
-
-So update all the VMware mailing list references in the MAINTAINERS
-file to mark them as such, using "R: email-alias@vmware.com".
-
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
-Cc: Zack Rusin <zackr@vmware.com>
-Cc: Nadav Amit <namit@vmware.com>
-Cc: Vivek Thampi <vithampi@vmware.com>
-Cc: Vishal Bhakta <vbhakta@vmware.com>
-Cc: Ronak Doshi <doshir@vmware.com>
-Cc: pv-drivers@vmware.com
-Cc: linux-graphics-maintainer@vmware.com
-Cc: dri-devel@lists.freedesktop.org
-Cc: linux-rdma@vger.kernel.org
-Cc: linux-scsi@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: linux-input@vger.kernel.org
----
- MAINTAINERS | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 118cf8170d02..4372d79027e9 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -6134,8 +6134,8 @@ T:	git git://anongit.freedesktop.org/drm/drm-misc
- F:	drivers/gpu/drm/vboxvideo/
- 
- DRM DRIVER FOR VMWARE VIRTUAL GPU
--M:	"VMware Graphics" <linux-graphics-maintainer@vmware.com>
- M:	Zack Rusin <zackr@vmware.com>
-+R:	VMware Graphics Reviewers <linux-graphics-maintainer@vmware.com>
- L:	dri-devel@lists.freedesktop.org
- S:	Supported
- T:	git git://anongit.freedesktop.org/drm/drm-misc
-@@ -14189,7 +14189,7 @@ F:	include/uapi/linux/ppdev.h
- PARAVIRT_OPS INTERFACE
- M:	Juergen Gross <jgross@suse.com>
- M:	Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
--L:	pv-drivers@vmware.com (private)
-+R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
- L:	virtualization@lists.linux-foundation.org
- L:	x86@kernel.org
- S:	Supported
-@@ -20032,7 +20032,7 @@ F:	tools/testing/vsock/
- 
- VMWARE BALLOON DRIVER
- M:	Nadav Amit <namit@vmware.com>
--M:	"VMware, Inc." <pv-drivers@vmware.com>
-+R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
- L:	linux-kernel@vger.kernel.org
- S:	Maintained
- F:	drivers/misc/vmw_balloon.c
-@@ -20040,7 +20040,7 @@ F:	drivers/misc/vmw_balloon.c
- VMWARE HYPERVISOR INTERFACE
- M:	Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
- M:	Alexey Makhalov <amakhalov@vmware.com>
--L:	pv-drivers@vmware.com (private)
-+R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
- L:	virtualization@lists.linux-foundation.org
- L:	x86@kernel.org
- S:	Supported
-@@ -20050,14 +20050,14 @@ F:	arch/x86/kernel/cpu/vmware.c
- 
- VMWARE PVRDMA DRIVER
- M:	Adit Ranadive <aditr@vmware.com>
--M:	VMware PV-Drivers <pv-drivers@vmware.com>
-+R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
- L:	linux-rdma@vger.kernel.org
- S:	Maintained
- F:	drivers/infiniband/hw/vmw_pvrdma/
- 
- VMware PVSCSI driver
- M:	Vishal Bhakta <vbhakta@vmware.com>
--M:	VMware PV-Drivers <pv-drivers@vmware.com>
-+R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
- L:	linux-scsi@vger.kernel.org
- S:	Maintained
- F:	drivers/scsi/vmw_pvscsi.c
-@@ -20065,7 +20065,7 @@ F:	drivers/scsi/vmw_pvscsi.h
- 
- VMWARE VIRTUAL PTP CLOCK DRIVER
- M:	Vivek Thampi <vithampi@vmware.com>
--M:	"VMware, Inc." <pv-drivers@vmware.com>
-+R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
- L:	netdev@vger.kernel.org
- S:	Supported
- F:	drivers/ptp/ptp_vmw.c
-@@ -20073,14 +20073,14 @@ F:	drivers/ptp/ptp_vmw.c
- VMWARE VMCI DRIVER
- M:	Jorgen Hansen <jhansen@vmware.com>
- M:	Vishnu Dasa <vdasa@vmware.com>
-+R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
- L:	linux-kernel@vger.kernel.org
--L:	pv-drivers@vmware.com (private)
- S:	Maintained
- F:	drivers/misc/vmw_vmci/
- 
- VMWARE VMMOUSE SUBDRIVER
--M:	"VMware Graphics" <linux-graphics-maintainer@vmware.com>
--M:	"VMware, Inc." <pv-drivers@vmware.com>
-+R:	VMware Graphics Reviewers <linux-graphics-maintainer@vmware.com>
-+R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
- L:	linux-input@vger.kernel.org
- S:	Maintained
- F:	drivers/input/mouse/vmmouse.c
-@@ -20088,7 +20088,7 @@ F:	drivers/input/mouse/vmmouse.h
- 
- VMWARE VMXNET3 ETHERNET DRIVER
- M:	Ronak Doshi <doshir@vmware.com>
--M:	pv-drivers@vmware.com
-+R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
- L:	netdev@vger.kernel.org
- S:	Maintained
- F:	drivers/net/vmxnet3/
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 890b3ec375a3..aab7482ed1c3 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -1151,7 +1151,8 @@ static void mark_ptr_not_null_reg(struct bpf_reg_state *reg)
+ 			/* transfer reg's id which is unique for every map_lookup_elem
+ 			 * as UID of the inner map.
+ 			 */
+-			reg->map_uid = reg->id;
++			if (map_value_has_timer(map->inner_map_meta))
++				reg->map_uid = reg->id;
+ 		} else if (map->map_type == BPF_MAP_TYPE_XSKMAP) {
+ 			reg->type = PTR_TO_XDP_SOCK;
+ 		} else if (map->map_type == BPF_MAP_TYPE_SOCKMAP ||
 -- 
-2.25.1
+2.30.2
 
