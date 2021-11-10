@@ -2,152 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4775744C9E7
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 20:56:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD78F44C9EC
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 20:57:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231688AbhKJT7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 14:59:05 -0500
-Received: from mga17.intel.com ([192.55.52.151]:63653 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230195AbhKJT7E (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Nov 2021 14:59:04 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10164"; a="213478931"
-X-IronPort-AV: E=Sophos;i="5.87,224,1631602800"; 
-   d="scan'208";a="213478931"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2021 11:56:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,224,1631602800"; 
-   d="scan'208";a="504107409"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga008.jf.intel.com with ESMTP; 10 Nov 2021 11:56:12 -0800
-Received: from alobakin-mobl.ger.corp.intel.com (acetnero-MOBL1.ger.corp.intel.com [10.213.0.197])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1AAJuAjV016265;
-        Wed, 10 Nov 2021 19:56:11 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@intel.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Wei Wang <weiwan@google.com>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net] net: fix premature exit from NAPI state polling in napi_disable()
-Date:   Wed, 10 Nov 2021 20:56:05 +0100
-Message-Id: <20211110195605.1304-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.33.1
+        id S231994AbhKJUAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 15:00:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60704 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230345AbhKJUAQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 15:00:16 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB7D4C061764;
+        Wed, 10 Nov 2021 11:57:28 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id x15so15240800edv.1;
+        Wed, 10 Nov 2021 11:57:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=EU6qRCGKmOsD7M4nlNl8xZtfhKKTJDrdLwQ6tHtqau8=;
+        b=HmsajFPz5u8KZGfSDlwOG70dFndlBn8lNACxHCAaZaxgzsCSx//qXtUQ6PzJ2hi0Ef
+         QRFuhls6BJQqBe+9A3L89PYlRHWd83VdxeANpz7doHcblCkKpSg91pdGE9CkeiiNlFMP
+         B24l9ux91p95f/063pN7uJLblerOIDikrRoQ6GAe4pecy0mC9dhMOYZy9mKlk4GGOkQX
+         f5sbqNOiignnvdLEjX9liJJtP2JHW+YWtANoXlC0s/NZspNaeSxaC9xogMjXjkFw2ujY
+         kWIDWplVOqeHw6EAfa0npYmbNTy+lK9Uyi0yljn9neJhn4iS2Y5HnnvFu5r7yrnw9Njt
+         tRQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EU6qRCGKmOsD7M4nlNl8xZtfhKKTJDrdLwQ6tHtqau8=;
+        b=SLrujYO2tAoVPvnNwLXy7z2rrFNVlcZl0HH3KvshM04IgiLdcicQZPkMdzLfXUkWnE
+         WwpgOve03wSyHP2kOBea2fgKm59+GHp+49xLPIi18UmnMQifxz+Bmrhja02sGlT2Dwkm
+         fUZV5MLBGpZCDzQX7u7lM9rAi+dl2bLANBaDU2HNhIHrbm078pC4frQ6llryjzfSFDUt
+         h47Y+o3X8zeyYYK1J3c4rV6d0j9fMTGJCsGHtr4B6aLmbKLM0pNN78Ch+CvlKN0lX5Nd
+         WAaKDF1PDlkJVqyLSJfuBQ9CP+fdtrr9TDEWmd+WDjgiEuRmaPe/zlKPVyZDlmOq4lbk
+         txbQ==
+X-Gm-Message-State: AOAM533dcDRTVlJ6YGdGn8mjCp6/TGBQQmMf89XxHo/aapGTl8u+woxN
+        c08oWh13GHje86ZlWQFSx212cj5wpyc=
+X-Google-Smtp-Source: ABdhPJx/zqq0oAEZw0FPESEHqBVLX7xbZbaLQDOoVprKI4/kf81vjA18xQFtIFm8rrj5No7RGcKT/g==
+X-Received: by 2002:a05:6402:416:: with SMTP id q22mr2075002edv.382.1636574247165;
+        Wed, 10 Nov 2021 11:57:27 -0800 (PST)
+Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.gmail.com with ESMTPSA id d4sm378725edk.78.2021.11.10.11.57.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Nov 2021 11:57:26 -0800 (PST)
+Date:   Wed, 10 Nov 2021 20:57:24 +0100
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Subject: Re: [RFC PATCH v3 4/8] leds: trigger: netdev: rename and expose
+ NETDEV trigger enum modes
+Message-ID: <YYwkJPQeej3/eRUl@Ansuel-xps.localdomain>
+References: <20211109022608.11109-1-ansuelsmth@gmail.com>
+ <20211109022608.11109-5-ansuelsmth@gmail.com>
+ <YYrg870zccL13+Mk@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YYrg870zccL13+Mk@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 719c57197010 ("net: make napi_disable() symmetric with
-enable") accidentally introduced a bug sometimes leading to a kernel
-BUG when bringing an iface up/down under heavy traffic load.
+On Tue, Nov 09, 2021 at 09:58:27PM +0100, Andrew Lunn wrote:
+> On Tue, Nov 09, 2021 at 03:26:04AM +0100, Ansuel Smith wrote:
+> > Rename NETDEV trigger enum modes to a more simbolic name and move them
+> 
+> symbolic. Randy is slipping :-)
+> 
+> > in leds.h to make them accessible by any user.
+> 
+> any user? I would be more specific than that. Other triggers dealing
+> with netdev states?
+>
 
-Prior to this commit, napi_disable() was polling n->state until
-none of (NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC) is set and then
-always flip them. Now there's a possibility to get away with the
-NAPIF_STATE_SCHE unset as 'continue' drops us to the cmpxchg()
-call with an unitialized variable, rather than straight to
-another round of the state check.
+Ok will be more specific. A LED driver require to explicitly support the
+trigger to run in hardware mode. The LED driver will take the
+trigger_data and elaborate his struct to parse all the option
+(blink_mode bitmap, interval)
 
-Error path looks like:
+So the user would be a LED driver that adds support for that specific
+trigger. That is also the reason we need to export them.
 
-napi_disable():
-unsigned long val, new; /* new is uninitialized */
+> > +++ b/include/linux/leds.h
+> > @@ -548,6 +548,13 @@ static inline void *led_get_trigger_data(struct led_classdev *led_cdev)
+> >  
+> >  #endif /* CONFIG_LEDS_TRIGGERS */
+> >  
+> > +/* Trigger specific enum */
+> 
+> You probably want netdev in the comment above. Things could get
+> interesting if other ledtrig-*.c started using them.
+> 
+> > +enum led_trigger_netdev_modes {
+> > +	TRIGGER_NETDEV_LINK,
+> > +	TRIGGER_NETDEV_TX,
+> > +	TRIGGER_NETDEV_RX,
+> > +};
+> > +
+> >  /* Trigger specific functions */
+> >  #ifdef CONFIG_LEDS_TRIGGER_DISK
+> >  void ledtrig_disk_activity(bool write);
+> > -- 
+> > 2.32.0
+> > 
 
-do {
-	val = READ_ONCE(n->state); /* NAPIF_STATE_NPSVC and/or
-				      NAPIF_STATE_SCHED is set */
-	if (val & (NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC)) { /* true */
-		usleep_range(20, 200);
-		continue; /* go straight to the condition check */
-	}
-	new = val | <...>
-} while (cmpxchg(&n->state, val, new) != val); /* state == val, cmpxchg()
-						  writes garbage */
-
-napi_enable():
-do {
-	val = READ_ONCE(n->state);
-	BUG_ON(!test_bit(NAPI_STATE_SCHED, &val)); /* 50/50 boom */
-<...>
-
-while the typical BUG splat is like:
-
-[  172.652461] ------------[ cut here ]------------
-[  172.652462] kernel BUG at net/core/dev.c:6937!
-[  172.656914] invalid opcode: 0000 [#1] PREEMPT SMP PTI
-[  172.661966] CPU: 36 PID: 2829 Comm: xdp_redirect_cp Tainted: G          I       5.15.0 #42
-[  172.670222] Hardware name: Intel Corporation S2600WFT/S2600WFT, BIOS SE5C620.86B.02.01.0014.082620210524 08/26/2021
-[  172.680646] RIP: 0010:napi_enable+0x5a/0xd0
-[  172.684832] Code: 07 49 81 cc 00 01 00 00 4c 89 e2 48 89 d8 80 e6 fb f0 48 0f b1 55 10 48 39 c3 74 10 48 8b 5d 10 f6 c7 04 75 3d f6 c3 01 75 b4 <0f> 0b 5b 5d 41 5c c3 65 ff 05 b8 e5 61 53 48 c7 c6 c0 f3 34 ad 48
-[  172.703578] RSP: 0018:ffffa3c9497477a8 EFLAGS: 00010246
-[  172.708803] RAX: ffffa3c96615a014 RBX: 0000000000000000 RCX: ffff8a4b575301a0
-< snip >
-[  172.782403] Call Trace:
-[  172.784857]  <TASK>
-[  172.786963]  ice_up_complete+0x6f/0x210 [ice]
-[  172.791349]  ice_xdp+0x136/0x320 [ice]
-[  172.795108]  ? ice_change_mtu+0x180/0x180 [ice]
-[  172.799648]  dev_xdp_install+0x61/0xe0
-[  172.803401]  dev_xdp_attach+0x1e0/0x550
-[  172.807240]  dev_change_xdp_fd+0x1e6/0x220
-[  172.811338]  do_setlink+0xee8/0x1010
-[  172.814917]  rtnl_setlink+0xe5/0x170
-[  172.818499]  ? bpf_lsm_binder_set_context_mgr+0x10/0x10
-[  172.823732]  ? security_capable+0x36/0x50
-< snip >
-
-Fix this by replacing 'do { } while (cmpxchg())' with an "infinite"
-for-loop with an explicit break.
-
-From v1 [0]:
- - just use a for-loop to simplify both the fix and the existing
-   code (Eric).
-
-[0] https://lore.kernel.org/netdev/20211110191126.1214-1-alexandr.lobakin@intel.com
-
-Fixes: 719c57197010 ("net: make napi_disable() symmetric with enable")
-Suggested-by: Eric Dumazet <edumazet@google.com> # for-loop
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
----
- net/core/dev.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index edeb811c454e..15ac064b5562 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -6928,7 +6928,7 @@ void napi_disable(struct napi_struct *n)
- 	might_sleep();
- 	set_bit(NAPI_STATE_DISABLE, &n->state);
- 
--	do {
-+	for ( ; ; ) {
- 		val = READ_ONCE(n->state);
- 		if (val & (NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC)) {
- 			usleep_range(20, 200);
-@@ -6937,7 +6937,10 @@ void napi_disable(struct napi_struct *n)
- 
- 		new = val | NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC;
- 		new &= ~(NAPIF_STATE_THREADED | NAPIF_STATE_PREFER_BUSY_POLL);
--	} while (cmpxchg(&n->state, val, new) != val);
-+
-+		if (cmpxchg(&n->state, val, new) == val)
-+			break;
-+	}
- 
- 	hrtimer_cancel(&n->timer);
- 
 -- 
-2.33.1
-
+	Ansuel
