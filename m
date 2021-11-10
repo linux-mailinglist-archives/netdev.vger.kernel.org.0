@@ -2,167 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C11944B9D7
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 02:00:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6758644B9E5
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 02:16:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229583AbhKJBDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 20:03:18 -0500
-Received: from mga07.intel.com ([134.134.136.100]:13821 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229545AbhKJBDS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Nov 2021 20:03:18 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10163"; a="296012678"
-X-IronPort-AV: E=Sophos;i="5.87,221,1631602800"; 
-   d="scan'208";a="296012678"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2021 17:00:30 -0800
-X-IronPort-AV: E=Sophos;i="5.87,221,1631602800"; 
-   d="scan'208";a="503739512"
-Received: from vcostago-mobl3.jf.intel.com ([10.24.14.56])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2021 17:00:30 -0800
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     bpf@vger.kernel.org
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        memxor@gmail.com, kafai@fb.com, andrii@kernel.org,
-        songliubraving@fb.com, yhs@fb.com
-Subject: [PATCH net v1] bpf: Fix build when CONFIG_BPF_SYSCALL is disabled
-Date:   Tue,  9 Nov 2021 17:00:24 -0800
-Message-Id: <20211110010024.31415-1-vinicius.gomes@intel.com>
-X-Mailer: git-send-email 2.32.0
+        id S229602AbhKJBTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 20:19:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33712 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229453AbhKJBTM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 20:19:12 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37D0BC061764;
+        Tue,  9 Nov 2021 17:16:26 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id e136so2171349ybc.4;
+        Tue, 09 Nov 2021 17:16:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qHh1Vf7eeOvmCwF+55LrkkbRXe+afVAhadgPvbSrnKk=;
+        b=pDlhRfk0awturO4GS2aiXEz8Ivc/si2mwtowUrx+rdFycuj907j249Cwz3OWq9G6FM
+         U1jfOssi6Meb80uPGYaq+LFiP06gIkoWk3eNjY1CYuQOofIyp+AiJDRwTMRPnKDyIBIm
+         Cca0GiQsBM+3KcLCp2DyhLr136CFMtIMeZZFTTjlSiHpx445yxdX7M60clV7dAmZ80Cf
+         zW2gBbzs0DoLt+b7/oIEK9ii/umSx4c6rI+T8snH3p/OJkqXYO+Utd4qFITdSmgUJ2x0
+         bFWREjXqvaoyqx2qIoUcjIafbZ+ZTqpKx+l1dy5IRon82rfxhDlkY4x+GBY/yDzJBAq4
+         FPcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qHh1Vf7eeOvmCwF+55LrkkbRXe+afVAhadgPvbSrnKk=;
+        b=I2xNEUjfjUosG67FkwleKDzAhGnGr+vLRBDj/pb5z1NlbasI20VjhonlFg0IMiEu2I
+         F1V3FUtBTVVQm+i3jx/GUYDODvUGNg3E4IIU7nkGi+a+pj6elztak1xKeK4G4saSFAxq
+         APHKRYlFYj3pAMvRU6PGZtkPfnnLa/chbZ+x6ROoP+LKKBcLYap+2UPiFgL+h/k5jyWI
+         O38JvIsRwY+fCKvSU0SrF0HpKAXFdIYX7NfFmu0m+j8p1lgzpZTdhYFbc0nI62OVg2Gx
+         vr2LSFNYdnxz9fp3PY/yRLgfnNUmhO3FNy+0g0zgsm2QjhBHw1K98eGq8lLzhQkJ9dvd
+         fgbA==
+X-Gm-Message-State: AOAM533ZKWeapBA3qb6aPtbDdCtMiV5hKQME1OzaZ5lb5+O7OSR7SbOF
+        7DdErTOWHNiB8cLQC0FBPRJP5Jbj3KTraeetihU=
+X-Google-Smtp-Source: ABdhPJzMXC1jDV3CtTLI82Xa7AFYWAK8GkXPeJgKa7P7MEPZyacaT65bminV+cf3BSUFeOOpxf9cSaZf5TeLwWctwy8=
+X-Received: by 2002:a25:d010:: with SMTP id h16mr14985690ybg.225.1636506985487;
+ Tue, 09 Nov 2021 17:16:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211108164620.407305-1-me@ubique.spb.ru> <20211108164620.407305-3-me@ubique.spb.ru>
+ <20211109064837.qtokqcxf6yj6zbig@amnesia>
+In-Reply-To: <20211109064837.qtokqcxf6yj6zbig@amnesia>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 9 Nov 2021 17:16:14 -0800
+Message-ID: <CAEf4BzbaFSwSA9R1FgeD=CXdOi3iWW1QR7cF0jEnRmw6tZpiAQ@mail.gmail.com>
+Subject: Re: [PATCH bpf 2/2] selftests/bpf: Add tests for allowed helpers
+To:     Dmitrii Banshchikov <me@ubique.spb.ru>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Andrey Ignatov <rdna@fb.com>, john.stultz@linaro.org,
+        sboyd@kernel.org, Peter Ziljstra <peterz@infradead.org>,
+        Mark Rutland <mark.rutland@arm.com>, rosted@goodmis.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When CONFIG_DEBUG_INFO_BTF is enabled and CONFIG_BPF_SYSCALL is
-disabled, the following compilation error can be seen:
+On Mon, Nov 8, 2021 at 10:48 PM Dmitrii Banshchikov <me@ubique.spb.ru> wrote:
+>
+> On Mon, Nov 08, 2021 at 08:46:20PM +0400, Dmitrii Banshchikov wrote:
+> > This patch adds tests that bpf_ktime_get_coarse_ns() and bpf_timer_* and
+> > bpf_spin_lock()/bpf_spin_unlock() helpers are forbidden in tracing
+> > progs as it may result in various locking issues.
+> >
+> > Signed-off-by: Dmitrii Banshchikov <me@ubique.spb.ru>
+> > ---
+> >  tools/testing/selftests/bpf/test_verifier.c   |  36 +++-
+> >  .../selftests/bpf/verifier/helper_allowed.c   | 196 ++++++++++++++++++
+> >  2 files changed, 231 insertions(+), 1 deletion(-)
+> >  create mode 100644 tools/testing/selftests/bpf/verifier/helper_allowed.c
+> >
+> > diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
+> > index 25afe423b3f0..e16eab6fc3a9 100644
+> > --- a/tools/testing/selftests/bpf/test_verifier.c
+> > +++ b/tools/testing/selftests/bpf/test_verifier.c
+> > @@ -92,6 +92,7 @@ struct bpf_test {
+> >       int fixup_map_event_output[MAX_FIXUPS];
+> >       int fixup_map_reuseport_array[MAX_FIXUPS];
+> >       int fixup_map_ringbuf[MAX_FIXUPS];
+> > +     int fixup_map_timer[MAX_FIXUPS];
+> >       /* Expected verifier log output for result REJECT or VERBOSE_ACCEPT.
+> >        * Can be a tab-separated sequence of expected strings. An empty string
+> >        * means no log verification.
+> > @@ -605,7 +606,7 @@ static int create_cgroup_storage(bool percpu)
+> >   *   struct bpf_spin_lock l;
+> >   * };
+> >   */
+> > -static const char btf_str_sec[] = "\0bpf_spin_lock\0val\0cnt\0l";
+> > +static const char btf_str_sec[] = "\0bpf_spin_lock\0val\0cnt\0l\0bpf_timer\0";
+>
+> There is extra null byte at the end.
 
-  GEN     .version
-  CHK     include/generated/compile.h
-  UPD     include/generated/compile.h
-  CC      init/version.o
-  AR      init/built-in.a
-  LD      vmlinux.o
-  MODPOST vmlinux.symvers
-  MODINFO modules.builtin.modinfo
-  GEN     modules.builtin
-  LD      .tmp_vmlinux.btf
-ld: net/ipv4/tcp_cubic.o: in function `cubictcp_unregister':
-net/ipv4/tcp_cubic.c:545: undefined reference to `bpf_tcp_ca_kfunc_list'
-ld: net/ipv4/tcp_cubic.c:545: undefined reference to `unregister_kfunc_btf_id_set'
-ld: net/ipv4/tcp_cubic.o: in function `cubictcp_register':
-net/ipv4/tcp_cubic.c:539: undefined reference to `bpf_tcp_ca_kfunc_list'
-ld: net/ipv4/tcp_cubic.c:539: undefined reference to `register_kfunc_btf_id_set'
-  BTF     .btf.vmlinux.bin.o
-pahole: .tmp_vmlinux.btf: No such file or directory
-  LD      .tmp_vmlinux.kallsyms1
-.btf.vmlinux.bin.o: file not recognized: file format not recognized
-make: *** [Makefile:1187: vmlinux] Error 1
+Won't hurt, probably. But I wonder if it will be much easier to add
+all those programs as C code and test from test_progs? Instead of all
+this assembly.
 
-'bpf_tcp_ca_kfunc_list', 'register_kfunc_btf_id_set()' and
-'unregister_kfunc_btf_id_set()' are only defined when
-CONFIG_BPF_SYSCALL is enabled.
+You can put all of them into a single file and have loop that disabled
+all but one program at a time (using bpf_program__set_autoload()) and
+loading it and validating that the load failed. WDYT?
 
-Fix that by moving those definitions somewhere that doesn't depend on
-the bpf() syscall.
-
-Fixes: 14f267d95fe4 ("bpf: btf: Introduce helpers for dynamic BTF set registration")
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
----
-This is RFC-ish as I don't know enough about BPF/BTF. I could be missing something.
-
- kernel/bpf/btf.c  | 25 -------------------------
- kernel/bpf/core.c | 37 +++++++++++++++++++++++++++++++++++++
- 2 files changed, 37 insertions(+), 25 deletions(-)
-
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index dbc3ad07e21b..69dd2efd518f 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -6344,33 +6344,8 @@ const struct bpf_func_proto bpf_btf_find_by_name_kind_proto = {
- 
- BTF_ID_LIST_GLOBAL_SINGLE(btf_task_struct_ids, struct, task_struct)
- 
--/* BTF ID set registration API for modules */
--
--struct kfunc_btf_id_list {
--	struct list_head list;
--	struct mutex mutex;
--};
--
- #ifdef CONFIG_DEBUG_INFO_BTF_MODULES
- 
--void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
--			       struct kfunc_btf_id_set *s)
--{
--	mutex_lock(&l->mutex);
--	list_add(&s->list, &l->list);
--	mutex_unlock(&l->mutex);
--}
--EXPORT_SYMBOL_GPL(register_kfunc_btf_id_set);
--
--void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
--				 struct kfunc_btf_id_set *s)
--{
--	mutex_lock(&l->mutex);
--	list_del_init(&s->list);
--	mutex_unlock(&l->mutex);
--}
--EXPORT_SYMBOL_GPL(unregister_kfunc_btf_id_set);
--
- bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist, u32 kfunc_id,
- 			      struct module *owner)
- {
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 327e3996eadb..4b2ad0fa0a4f 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -2449,6 +2449,43 @@ int __weak bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
- DEFINE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
- EXPORT_SYMBOL(bpf_stats_enabled_key);
- 
-+/* BTF ID set registration API for modules */
-+
-+struct kfunc_btf_id_list {
-+	struct list_head list;
-+	struct mutex mutex;
-+};
-+
-+#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
-+
-+void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
-+			       struct kfunc_btf_id_set *s)
-+{
-+	mutex_lock(&l->mutex);
-+	list_add(&s->list, &l->list);
-+	mutex_unlock(&l->mutex);
-+}
-+EXPORT_SYMBOL_GPL(register_kfunc_btf_id_set);
-+
-+void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
-+				 struct kfunc_btf_id_set *s)
-+{
-+	mutex_lock(&l->mutex);
-+	list_del_init(&s->list);
-+	mutex_unlock(&l->mutex);
-+}
-+EXPORT_SYMBOL_GPL(unregister_kfunc_btf_id_set);
-+
-+#endif
-+
-+#define DEFINE_KFUNC_BTF_ID_LIST(name)                                         \
-+	struct kfunc_btf_id_list name = { LIST_HEAD_INIT(name.list),           \
-+					  __MUTEX_INITIALIZER(name.mutex) };   \
-+	EXPORT_SYMBOL_GPL(name)
-+
-+DEFINE_KFUNC_BTF_ID_LIST(bpf_tcp_ca_kfunc_list);
-+DEFINE_KFUNC_BTF_ID_LIST(prog_test_kfunc_list);
-+
- /* All definitions of tracepoints related to BPF. */
- #define CREATE_TRACE_POINTS
- #include <linux/bpf_trace.h>
--- 
-2.33.1
-
+>
+>
+> --
+>
+> Dmitrii Banshchikov
