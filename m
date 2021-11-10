@@ -2,98 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 977ED44CB5D
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 22:40:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7E1244CB62
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 22:43:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233493AbhKJVmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 16:42:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55720 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233405AbhKJVmn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 16:42:43 -0500
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E0F9C061767
-        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 13:39:55 -0800 (PST)
-Received: by mail-lj1-x235.google.com with SMTP id 1so7979675ljv.2
-        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 13:39:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9fhwG8JiKxShnSZ6QQTuDODf/U79N+SImDenfsND+wk=;
-        b=oUscIYcAOyGNfe6068weJD3o7F8eiMzWJsLWdyJHFlZkjw33u5QetZpv4QE+Mhla9O
-         8GpEs73hv+7Loye8oARnHeEIJcEswipTkyEy3noPdsFodzIQ+no4YZidLUFNbWMdoeIB
-         gkJrvz1KBAPbbzQ8mYtWRjJzMz4kcqqiEzV/hYqavmrOrvgkNdNYtraJLkLld6CHOfiq
-         EMhssthtLoIuiVgdCYXNfKHUAWX/uP6uqWcQmDQl+idQ6TT9YPc/FtTlyAh5mnZssFgb
-         rHtix1iiFGKrSvaAYhKv8R21On0pjmXxfWLnAY6WPfdvKRtgWgMOQv0u3xFItqU8Xt/a
-         zC5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9fhwG8JiKxShnSZ6QQTuDODf/U79N+SImDenfsND+wk=;
-        b=xClldgfpIOffu53Xa1O/2PNzQ6fynAB6PKy1vEU2QpGi91VrvoiAnNS610EzZke4oy
-         +7VdatplFl7WWSeUewwLubZUUg+NBzP5XjMCjDGT1mevW6+F+ck8PplHlPFoAfWzYV8U
-         shQMVweg3LRaMNnB3ZIxuHUaY0cQNGbhE0cw9WoN1BwGf1fLauHtcAXyR/4q+0jPvkIc
-         rlgEpOWa9woHGj2bY1nEOftVQzBR4cIfI7LxdXe5gfZrZxshQZ0oZ/NpoEZNeucHFiCZ
-         Waxsi51c8ZyTjDB4qN06/jTwrNm/ewh3ekAsB9Vv3/THQdm0SAsazEbzMd8H/1eTu1uY
-         63mQ==
-X-Gm-Message-State: AOAM533k0UvjOoIYfyLo4xk8/r2hrR5KZn75X8QUAjx25QSru2OPurI5
-        vf4nYxjIoOt2X59LNw66zjQjBNvUqPonoBKs0mJmVA==
-X-Google-Smtp-Source: ABdhPJzUIhrOS4hmYH9FaPKnAudImegiTctFFSRfcQrJlee75A8HV4vHD3JDgxaGjvxmuKS9yUY/zPoQiH0ftQbO2FU=
-X-Received: by 2002:a2e:9a8c:: with SMTP id p12mr2167251lji.526.1636580393318;
- Wed, 10 Nov 2021 13:39:53 -0800 (PST)
+        id S233491AbhKJVp4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 16:45:56 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:55336 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233284AbhKJVp4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Nov 2021 16:45:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=RiSyE+EVKYVY2Tb3uQccY7RA9TLCliIY6PxoCw7V/h4=; b=Eg4j/MQZYXmcjoZS+NYQrga7RG
+        R195QVs1SdBax2wK/Tv5J3go84XrzuNZZY3r1JkJCsfULcCJ3fthwX02X/IV4k/t7Nv/LWRqEoO7Q
+        1JXKcxR5+zODycC3xtmQzCwaNPTElby3+3Wav7qb1aNePlTFjGCIawtJeOC6Rg57JLvk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mkvMy-00D8tO-IS; Wed, 10 Nov 2021 22:43:00 +0100
+Date:   Wed, 10 Nov 2021 22:43:00 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Apeksha Gupta <apeksha.gupta@nxp.com>
+Cc:     qiangqing.zhang@nxp.com, davem@davemloft.net, kuba@kernel.org,
+        arnd@arndb.de, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-devel@linux.nxdi.nxp.com,
+        LnxRevLi@nxp.com, sachin.saxena@nxp.com, hemant.agrawal@nxp.com,
+        nipun.gupta@nxp.com
+Subject: Re: [PATCH 1/3] fec_phy: add new PHY file
+Message-ID: <YYw85MeF8sbRRiXM@lunn.ch>
+References: <20211110053617.13497-1-apeksha.gupta@nxp.com>
+ <20211110053617.13497-2-apeksha.gupta@nxp.com>
 MIME-Version: 1.0
-References: <20211104133735.1223989-1-arnd@kernel.org> <CAKwvOd=vrUe7xWohkPZkfui2BM-uP2Q79v02NzTJs9XJJ1CTjw@mail.gmail.com>
-In-Reply-To: <CAKwvOd=vrUe7xWohkPZkfui2BM-uP2Q79v02NzTJs9XJJ1CTjw@mail.gmail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Wed, 10 Nov 2021 13:39:41 -0800
-Message-ID: <CAKwvOdm1zU8nhp-KVNDwQK6SfxzwZQgkWvPwpbzn_a-VzVbkXA@mail.gmail.com>
-Subject: Re: [PATCH] iwlwifi: pcie: fix constant-conversion warning
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Yaara Baruch <yaara.baruch@intel.com>,
-        Matti Gottlieb <matti.gottlieb@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211110053617.13497-2-apeksha.gupta@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 10, 2021 at 1:38 PM Nick Desaulniers
-<ndesaulniers@google.com> wrote:
->
-> On Thu, Nov 4, 2021 at 6:37 AM Arnd Bergmann <arnd@kernel.org> wrote:
-> >
-> > From: Arnd Bergmann <arnd@arndb.de>
-> >
-> > clang points out a potential issue with integer overflow when
-> > the iwl_dev_info_table[] array is empty:
-> >
-> > drivers/net/wireless/intel/iwlwifi/pcie/drv.c:1344:42: error: implicit conversion from 'unsigned long' to 'int' changes value from 18446744073709551615 to -1 [-Werror,-Wconstant-conversion]
-> >         for (i = ARRAY_SIZE(iwl_dev_info_table) - 1; i >= 0; i--) {
-> >                ~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-> >
-> > This is still harmless, as the loop correctly terminates, but adding
-> > an (int) cast makes that clearer to the compiler.
-> >
-> > Fixes: 3f7320428fa4 ("iwlwifi: pcie: simplify iwl_pci_find_dev_info()")
-> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+On Wed, Nov 10, 2021 at 11:06:15AM +0530, Apeksha Gupta wrote:
+> Added common file for both fec and fec_uio driver.
+> fec_phy.h and fec_phy.c have phy related API's.
+> Now the PHY functions can be used in both FEC and
+> FEC_UIO driver independently.
 
-Also, looks like 0day bot reported as well:
-https://lore.kernel.org/lkml/202111070825.gigxmmDq-lkp@intel.com/
+You appear to be missing a patch. I don't see any changes to FEC_UIO
+driver to make use of this.
 
-Reported-by: kernel test robot <lkp@intel.com>
-
-
--- 
-Thanks,
-~Nick Desaulniers
+	Andrew
