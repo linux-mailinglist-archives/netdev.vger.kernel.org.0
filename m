@@ -2,258 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E96944C88E
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 20:08:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 327BD44C8A7
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 20:11:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232679AbhKJTKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 14:10:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34096 "EHLO mail.kernel.org"
+        id S232832AbhKJTOZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 14:14:25 -0500
+Received: from mga01.intel.com ([192.55.52.88]:37773 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232548AbhKJTKO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Nov 2021 14:10:14 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B2B8B610CF;
-        Wed, 10 Nov 2021 19:07:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636571247;
-        bh=GyCY08s0Brp5i/xVSdvC3xXsX4BvDeO4gHsWneeh5cM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I7Wsfhtz17ML3XBoMgIV90zLP9SSbGqGxkCaNSQxmsQfV0csqTUnT5n0dg33ejB7q
-         +EK4pTA5fjF1EsyvzGZwZO60wZ8ebitSbVKXnvEOXZMVx2oodYaWgC0Q/5hur6kS8v
-         C7zO2d4ZWX8cTmb00kxeJN7xFZjtthDPetHxCw5Ge8ceMGlgtjgthzKNio0Hr+bDx3
-         ZobU53HsJm5UF6pzSxiUqgvE+BwqyjselESPymIdA+JT1ypmaypJTwIYoB5se1sZ59
-         dPXKSRwlAcHOtfq9rb5kqeVgx6uO1G9p4lSybB3jJuJSdpl1SXPMa6/AmmH6neediM
-         mJzyyA9vnVU7w==
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
-Cc:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>, pali@kernel.org,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH RFC net-next 8/8] net: phy: marvell10g: select host interface configuration
-Date:   Wed, 10 Nov 2021 20:07:09 +0100
-Message-Id: <20211110190709.16505-9-kabel@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211110190709.16505-1-kabel@kernel.org>
-References: <20211110190709.16505-1-kabel@kernel.org>
+        id S232721AbhKJTOY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Nov 2021 14:14:24 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10164"; a="256439320"
+X-IronPort-AV: E=Sophos;i="5.87,224,1631602800"; 
+   d="scan'208";a="256439320"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2021 11:11:36 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,224,1631602800"; 
+   d="scan'208";a="732634661"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga006.fm.intel.com with ESMTP; 10 Nov 2021 11:11:33 -0800
+Received: from alobakin-mobl.ger.corp.intel.com (baranski-mobl.ger.corp.intel.com [10.213.1.114])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1AAJBVWe004469;
+        Wed, 10 Nov 2021 19:11:31 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@intel.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Wei Wang <weiwan@google.com>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net] net: fix premature exit from NAPI state polling in napi_disable()
+Date:   Wed, 10 Nov 2021 20:11:26 +0100
+Message-Id: <20211110191126.1214-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Russell King <rmk+kernel@armlinux.org.uk>
+Commit 719c57197010 ("net: make napi_disable() symmetric with
+enable") accidentally introduced a bug sometimes leading to a kernel
+BUG when bringing an iface up/down under heavy traffic load.
 
-Select the host interface configuration according to the capabilities of
-the host.
+Prior to this commit, napi_disable() was polling n->state until
+none of (NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC) is set and then
+always flip them. Now there's a possibility to get away with the
+NAPIF_STATE_SCHE unset as 'continue' drops us to the cmpxchg()
+call with an unitialized variable, rather than straight to
+another round of the state check.
 
-This allows the kernel to:
-- support SFP modules with 88X33X0 or 88E21X0 inside them
-- switch interface modes when the PHY is used with the mvpp2 MAC
-  (e.g. on MacchiatoBIN)
+Error path looks like:
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-[ rebase, updated, also added support for 88E21X0 ]
-Signed-off-by: Marek Behún <kabel@kernel.org>
+napi_disable():
+unsigned long val, new; /* new is uninitialized */
+
+do {
+	val = READ_ONCE(n->state); /* NAPIF_STATE_NPSVC and/or
+				      NAPIF_STATE_SCHED is set */
+	if (val & (NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC)) { /* true */
+		usleep_range(20, 200);
+		continue; /* go straight to the condition check */
+	}
+	new = val | <...>
+} while (cmpxchg(&n->state, val, new) != val); /* state == val, cmpxchg()
+						  writes garbage */
+
+napi_enable():
+do {
+	val = READ_ONCE(n->state);
+	BUG_ON(!test_bit(NAPI_STATE_SCHED, &val)); /* 50/50 boom */
+<...>
+
+while the typical BUG splat is like:
+
+[  172.652461] ------------[ cut here ]------------
+[  172.652462] kernel BUG at net/core/dev.c:6937!
+[  172.656914] invalid opcode: 0000 [#1] PREEMPT SMP PTI
+[  172.661966] CPU: 36 PID: 2829 Comm: xdp_redirect_cp Tainted: G          I       5.15.0 #42
+[  172.670222] Hardware name: Intel Corporation S2600WFT/S2600WFT, BIOS SE5C620.86B.02.01.0014.082620210524 08/26/2021
+[  172.680646] RIP: 0010:napi_enable+0x5a/0xd0
+[  172.684832] Code: 07 49 81 cc 00 01 00 00 4c 89 e2 48 89 d8 80 e6 fb f0 48 0f b1 55 10 48 39 c3 74 10 48 8b 5d 10 f6 c7 04 75 3d f6 c3 01 75 b4 <0f> 0b 5b 5d 41 5c c3 65 ff 05 b8 e5 61 53 48 c7 c6 c0 f3 34 ad 48
+[  172.703578] RSP: 0018:ffffa3c9497477a8 EFLAGS: 00010246
+[  172.708803] RAX: ffffa3c96615a014 RBX: 0000000000000000 RCX: ffff8a4b575301a0
+< snip >
+[  172.782403] Call Trace:
+[  172.784857]  <TASK>
+[  172.786963]  ice_up_complete+0x6f/0x210 [ice]
+[  172.791349]  ice_xdp+0x136/0x320 [ice]
+[  172.795108]  ? ice_change_mtu+0x180/0x180 [ice]
+[  172.799648]  dev_xdp_install+0x61/0xe0
+[  172.803401]  dev_xdp_attach+0x1e0/0x550
+[  172.807240]  dev_change_xdp_fd+0x1e6/0x220
+[  172.811338]  do_setlink+0xee8/0x1010
+[  172.814917]  rtnl_setlink+0xe5/0x170
+[  172.818499]  ? bpf_lsm_binder_set_context_mgr+0x10/0x10
+[  172.823732]  ? security_capable+0x36/0x50
+< snip >
+
+Fix this by replacing this 'continue' with a goto to the beginning
+of the loop body to restore the original behaviour.
+This could be written without a goto, but would look uglier and
+require one more indent level.
+
+Fixes: 719c57197010 ("net: make napi_disable() symmetric with enable")
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 ---
- drivers/net/phy/marvell10g.c | 120 +++++++++++++++++++++++++++++++++--
- 1 file changed, 115 insertions(+), 5 deletions(-)
+ net/core/dev.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-index 0cb9b4ef09c7..94bea1bade6f 100644
---- a/drivers/net/phy/marvell10g.c
-+++ b/drivers/net/phy/marvell10g.c
-@@ -96,6 +96,11 @@ enum {
- 	MV_PCS_PORT_INFO_NPORTS_MASK	= 0x0380,
- 	MV_PCS_PORT_INFO_NPORTS_SHIFT	= 7,
+diff --git a/net/core/dev.c b/net/core/dev.c
+index edeb811c454e..5e101c53b9de 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6929,10 +6929,11 @@ void napi_disable(struct napi_struct *n)
+ 	set_bit(NAPI_STATE_DISABLE, &n->state);
  
-+	/* SerDes reinitialization 88E21X0 */
-+	MV_AN_21X0_SERDES_CTRL2	= 0x800f,
-+	MV_AN_21X0_SERDES_CTRL2_AUTO_INIT_DIS	= BIT(13),
-+	MV_AN_21X0_SERDES_CTRL2_RUN_INIT	= BIT(15),
-+
- 	/* These registers appear at 0x800X and 0xa00X - the 0xa00X control
- 	 * registers appear to set themselves to the 0x800X when AN is
- 	 * restarted, but status registers appear readable from either.
-@@ -140,6 +145,8 @@ struct mv3310_chip {
- 	bool (*has_downshift)(struct phy_device *phydev);
- 	void (*init_supported_interfaces)(unsigned long *mask);
- 	int (*get_mactype)(struct phy_device *phydev);
-+	int (*set_mactype)(struct phy_device *phydev, int mactype);
-+	int (*select_mactype)(unsigned long *interfaces);
- 	int (*init_interface)(struct phy_device *phydev, int mactype);
+ 	do {
++retry:
+ 		val = READ_ONCE(n->state);
+ 		if (val & (NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC)) {
+ 			usleep_range(20, 200);
+-			continue;
++			goto retry;
+ 		}
  
- #ifdef CONFIG_HWMON
-@@ -593,6 +600,49 @@ static int mv2110_get_mactype(struct phy_device *phydev)
- 	return mactype & MV_PMA_21X0_PORT_CTRL_MACTYPE_MASK;
- }
- 
-+static int mv2110_set_mactype(struct phy_device *phydev, int mactype)
-+{
-+	int err, val;
-+
-+	mactype &= MV_PMA_21X0_PORT_CTRL_MACTYPE_MASK;
-+	err = phy_modify_mmd(phydev, MDIO_MMD_PMAPMD, MV_PMA_21X0_PORT_CTRL,
-+			     MV_PMA_21X0_PORT_CTRL_SWRST |
-+			     MV_PMA_21X0_PORT_CTRL_MACTYPE_MASK,
-+			     MV_PMA_21X0_PORT_CTRL_SWRST | mactype);
-+	if (err)
-+		return err;
-+
-+	err = phy_set_bits_mmd(phydev, MDIO_MMD_AN, MV_AN_21X0_SERDES_CTRL2,
-+			       MV_AN_21X0_SERDES_CTRL2_AUTO_INIT_DIS |
-+			       MV_AN_21X0_SERDES_CTRL2_RUN_INIT);
-+	if (err)
-+		return err;
-+
-+	err = phy_read_mmd_poll_timeout(phydev, MDIO_MMD_AN,
-+					MV_AN_21X0_SERDES_CTRL2, val,
-+					!(val &
-+					  MV_AN_21X0_SERDES_CTRL2_RUN_INIT),
-+					5000, 100000, true);
-+	if (err)
-+		return err;
-+
-+	return phy_clear_bits_mmd(phydev, MDIO_MMD_AN, MV_AN_21X0_SERDES_CTRL2,
-+				  MV_AN_21X0_SERDES_CTRL2_AUTO_INIT_DIS);
-+}
-+
-+static int mv2110_select_mactype(unsigned long *interfaces)
-+{
-+	if (test_bit(PHY_INTERFACE_MODE_USXGMII, interfaces))
-+		return MV_PMA_21X0_PORT_CTRL_MACTYPE_USXGMII;
-+	else if (test_bit(PHY_INTERFACE_MODE_SGMII, interfaces) &&
-+		 !test_bit(PHY_INTERFACE_MODE_10GBASER, interfaces))
-+		return MV_PMA_21X0_PORT_CTRL_MACTYPE_5GBASER;
-+	else if (test_bit(PHY_INTERFACE_MODE_10GBASER, interfaces))
-+		return MV_PMA_21X0_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH;
-+	else
-+		return -1;
-+}
-+
- static int mv3310_get_mactype(struct phy_device *phydev)
- {
- 	int mactype;
-@@ -604,6 +654,46 @@ static int mv3310_get_mactype(struct phy_device *phydev)
- 	return mactype & MV_V2_33X0_PORT_CTRL_MACTYPE_MASK;
- }
- 
-+static int mv3310_set_mactype(struct phy_device *phydev, int mactype)
-+{
-+	int ret;
-+
-+	mactype &= MV_V2_33X0_PORT_CTRL_MACTYPE_MASK;
-+	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_VEND2, MV_V2_PORT_CTRL,
-+				     MV_V2_33X0_PORT_CTRL_MACTYPE_MASK,
-+				     mactype);
-+	if (ret <= 0)
-+		return ret;
-+
-+	return phy_set_bits_mmd(phydev, MDIO_MMD_VEND2, MV_V2_PORT_CTRL,
-+				MV_V2_33X0_PORT_CTRL_SWRST);
-+}
-+
-+static int mv3310_select_mactype(unsigned long *interfaces)
-+{
-+	if (test_bit(PHY_INTERFACE_MODE_USXGMII, interfaces))
-+		return MV_V2_33X0_PORT_CTRL_MACTYPE_USXGMII;
-+	else if (test_bit(PHY_INTERFACE_MODE_SGMII, interfaces) &&
-+		 test_bit(PHY_INTERFACE_MODE_10GBASER, interfaces))
-+		return MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER;
-+	else if (test_bit(PHY_INTERFACE_MODE_SGMII, interfaces) &&
-+		 test_bit(PHY_INTERFACE_MODE_RXAUI, interfaces))
-+		return MV_V2_33X0_PORT_CTRL_MACTYPE_RXAUI;
-+	else if (test_bit(PHY_INTERFACE_MODE_SGMII, interfaces) &&
-+		 test_bit(PHY_INTERFACE_MODE_XAUI, interfaces))
-+		return MV_V2_3310_PORT_CTRL_MACTYPE_XAUI;
-+	else if (test_bit(PHY_INTERFACE_MODE_10GBASER, interfaces))
-+		return MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH;
-+	else if (test_bit(PHY_INTERFACE_MODE_RXAUI, interfaces))
-+		return MV_V2_33X0_PORT_CTRL_MACTYPE_RXAUI_RATE_MATCH;
-+	else if (test_bit(PHY_INTERFACE_MODE_XAUI, interfaces))
-+		return MV_V2_3310_PORT_CTRL_MACTYPE_XAUI_RATE_MATCH;
-+	else if (test_bit(PHY_INTERFACE_MODE_SGMII, interfaces))
-+		return MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER;
-+	else
-+		return -1;
-+}
-+
- static int mv2110_init_interface(struct phy_device *phydev, int mactype)
- {
- 	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
-@@ -674,10 +764,16 @@ static int mv3310_config_init(struct phy_device *phydev)
- {
- 	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
- 	const struct mv3310_chip *chip = to_mv3310_chip(phydev);
-+	DECLARE_PHY_INTERFACE_MASK(interfaces);
- 	int err, mactype;
- 
--	/* Check that the PHY interface type is compatible */
--	if (!test_bit(phydev->interface, priv->supported_interfaces))
-+	/* In case host didn't provide supported interfaces */
-+	__set_bit(phydev->interface, phydev->host_interfaces);
-+
-+	/* Check that there is at least one compatible PHY interface type */
-+	phy_interface_and(interfaces, phydev->host_interfaces,
-+			  priv->supported_interfaces);
-+	if (phy_interface_empty(interfaces))
- 		return -ENODEV;
- 
- 	phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
-@@ -687,9 +783,15 @@ static int mv3310_config_init(struct phy_device *phydev)
- 	if (err)
- 		return err;
- 
--	mactype = chip->get_mactype(phydev);
--	if (mactype < 0)
--		return mactype;
-+	mactype = chip->select_mactype(interfaces);
-+	if (mactype < 0) {
-+		mactype = chip->get_mactype(phydev);
-+	} else {
-+		phydev_info(phydev, "Changing MACTYPE to %i\n", mactype);
-+		err = chip->set_mactype(phydev, mactype);
-+		if (err)
-+			return err;
-+	}
- 
- 	err = chip->init_interface(phydev, mactype);
- 	if (err) {
-@@ -1049,6 +1151,8 @@ static const struct mv3310_chip mv3310_type = {
- 	.has_downshift = mv3310_has_downshift,
- 	.init_supported_interfaces = mv3310_init_supported_interfaces,
- 	.get_mactype = mv3310_get_mactype,
-+	.set_mactype = mv3310_set_mactype,
-+	.select_mactype = mv3310_select_mactype,
- 	.init_interface = mv3310_init_interface,
- 
- #ifdef CONFIG_HWMON
-@@ -1060,6 +1164,8 @@ static const struct mv3310_chip mv3340_type = {
- 	.has_downshift = mv3310_has_downshift,
- 	.init_supported_interfaces = mv3340_init_supported_interfaces,
- 	.get_mactype = mv3310_get_mactype,
-+	.set_mactype = mv3310_set_mactype,
-+	.select_mactype = mv3310_select_mactype,
- 	.init_interface = mv3340_init_interface,
- 
- #ifdef CONFIG_HWMON
-@@ -1070,6 +1176,8 @@ static const struct mv3310_chip mv3340_type = {
- static const struct mv3310_chip mv2110_type = {
- 	.init_supported_interfaces = mv2110_init_supported_interfaces,
- 	.get_mactype = mv2110_get_mactype,
-+	.set_mactype = mv2110_set_mactype,
-+	.select_mactype = mv2110_select_mactype,
- 	.init_interface = mv2110_init_interface,
- 
- #ifdef CONFIG_HWMON
-@@ -1080,6 +1188,8 @@ static const struct mv3310_chip mv2110_type = {
- static const struct mv3310_chip mv2111_type = {
- 	.init_supported_interfaces = mv2111_init_supported_interfaces,
- 	.get_mactype = mv2110_get_mactype,
-+	.set_mactype = mv2110_set_mactype,
-+	.select_mactype = mv2110_select_mactype,
- 	.init_interface = mv2110_init_interface,
- 
- #ifdef CONFIG_HWMON
+ 		new = val | NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC;
 -- 
-2.32.0
+2.33.1
 
