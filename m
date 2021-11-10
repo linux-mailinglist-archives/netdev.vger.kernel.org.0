@@ -2,117 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9636E44CB4E
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 22:26:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E679944CB5B
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 22:38:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233392AbhKJV2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 16:28:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52642 "EHLO
+        id S233437AbhKJVlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 16:41:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232242AbhKJV2p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 16:28:45 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1788C061766;
-        Wed, 10 Nov 2021 13:25:57 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id m26so3784743pff.3;
-        Wed, 10 Nov 2021 13:25:57 -0800 (PST)
+        with ESMTP id S233324AbhKJVlO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 16:41:14 -0500
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0EBFC0613F5
+        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 13:38:25 -0800 (PST)
+Received: by mail-lf1-x12f.google.com with SMTP id f18so9249294lfv.6
+        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 13:38:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7t8P8Q4j/y6WykkDsECi+hA6gTG4UAWOCLccneL7O0Y=;
-        b=KNVYELvEFH8mBkAfPuf2YY5J6TLGj+RiZc2ebrsshM/fA9BbmQU1OXGhnsyWT4ZyZr
-         uArgiF0JyiTiTUOffJC/a7xPx1WGq8gYSRcZaU1bNErMmEA6XQZt94dun0Q/8Tqox9DR
-         hvDgatQ1aNxY1yF+oj0XDAvrmcbv28X3KEynJ6RVASip//cq29NhO1aT8s6DFsw+TYsU
-         OEEBgFICT7uePsvyqJlmIJHNJZLGSbwz4P81GVtz6T8UVOLpXJcCSBdyzB1hRJLCayef
-         hf1MBjev9rj6rRrY1rCdSNRk3WIik70lTwbMuRWxaKofnrReEYbu8KxJom011VsZw6aH
-         HNSg==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=D1z6yFw1+0sjIG7f/nWzQHi2azAv8rrhzZz6SpWHNuM=;
+        b=WEIjO9suAw0S5n0/8xePw/9zyOCQ82BMKNODVfHoR78GTG3zeg6GkhFPCLJIsFCjvz
+         bJVm0yam2RSFMl3esknEdAS9ODHTqOy6amhxC12wyjiqlgdEelF/QpVTDjnrApktgtae
+         ZNBHIp4VnoNFbkYwJlv8VqK7o/V4J+shWCYxlKqY3dDyttmXnbPccPYE+njowYXo5fJX
+         qhDwePaO54X/c5iyD0ah9kw0f52od9wnZA3OOYLBr/7pH/AEmkc5xs5fotAaSDnUS+jK
+         P9nXANp5U4MtyprHHDl48a27zc++RXkCphZMYxvelIGof9UepJFEp4Ir631Sdg4LHk4A
+         hN1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7t8P8Q4j/y6WykkDsECi+hA6gTG4UAWOCLccneL7O0Y=;
-        b=5GH19JLib2PD72bsw5N1oaeXAXUzcSLV55a0YCYvHy8cfs0iFpuR4YiGmQevBJPvPa
-         5nxn03H/C7LedrO90kiq3Z8N6yoJF1IHLHh3cQxNZEEL7I+CLh/y3zqJ6QWQKXOR9iFw
-         U83P+cYgkDygGSdvrM3tL2FRcWaiiKnHVfotfTXRpq0wyMWor1T3hrxQeoVNc1oHPFhd
-         sRIw4BJ55wtbKF1MT6DA5qem/VFb3uWbeSbpQ5trWZYbBEq0+PwIkuPBmTVRzsHqYwJy
-         iDbfLAqC+QED6EDCmIK1b1MwdVK5UCn8OZEtoolwai3Ubo0XhWp6O0ZkeQfyLjFHp2qP
-         N/tA==
-X-Gm-Message-State: AOAM532CqncBYoY085xDGxuxumU9haO+c+ztQoBReJAbklurxc3AF8WE
-        D52lEdKBZzWs5kQQWpLnisk=
-X-Google-Smtp-Source: ABdhPJx0kIy6PXhciEVv9Ca2RI46mgs/wQnd4mZdy5xG/0l/nwnVgXwqTD7YHxfE59iTrxsAi2/45g==
-X-Received: by 2002:a63:6e4d:: with SMTP id j74mr1248223pgc.257.1636579557352;
-        Wed, 10 Nov 2021 13:25:57 -0800 (PST)
-Received: from localhost ([2405:201:6014:d064:3d4e:6265:800c:dc84])
-        by smtp.gmail.com with ESMTPSA id f11sm412263pga.11.2021.11.10.13.25.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Nov 2021 13:25:57 -0800 (PST)
-Date:   Thu, 11 Nov 2021 02:55:53 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, kafai@fb.com, andrii@kernel.org,
-        songliubraving@fb.com, yhs@fb.com
-Subject: Re: [PATCH net v2] bpf: Fix build when CONFIG_BPF_SYSCALL is disabled
-Message-ID: <20211110212553.e2xnltq3dqduhjnj@apollo.localdomain>
-References: <20211110205418.332403-1-vinicius.gomes@intel.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=D1z6yFw1+0sjIG7f/nWzQHi2azAv8rrhzZz6SpWHNuM=;
+        b=T5/pr6wbtT6mDXaJiFAuCqQFSm3YTO423FgZheFfWZ83VTFG31hjsftr1zoXMKESUs
+         QSguQuhid/4fFjmRA1kyzWnwK0KB7ZlWdAGGTO3HV3AKrKQEy8aJ0YBWu+iXtOEC8BQl
+         65NmuxVKKXBVtn0F485W0VI9+4/6e6uvP5GMlakjj6IsO0mbNkf8DmOqhKH0Ov5nF59/
+         ifsfcihBdQ+sG8sr1mO1b6CcjaOEcFcCWgGlEv2E54Tg+3j3GBVPimOTt1KXLedg7kTX
+         ylMV4s/K3watL6aSWxjIF7eCeNXOYv9pXrisvLa/VDuRZlgDHcqCQO4cx+E/zkPCRvup
+         sYuA==
+X-Gm-Message-State: AOAM532vGycKLoi3qK9Zvaj3UIDWNIf9L183OuXQq2xX6M08iP5nZVmw
+        P88jGuw+/9hxyo2l5JztyMlYckdF4fPySBiSyHpC7g==
+X-Google-Smtp-Source: ABdhPJzjaFy5q9lDBd1wo9aZvGBOM/b8VEotHF5YZ79B0EbTM7S5RL5M93fguRMPKxqbWX/iwxlaCKZr5lO5Q3V9YmA=
+X-Received: by 2002:a05:6512:607:: with SMTP id b7mr2082726lfe.489.1636580303716;
+ Wed, 10 Nov 2021 13:38:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211110205418.332403-1-vinicius.gomes@intel.com>
+References: <20211104133735.1223989-1-arnd@kernel.org>
+In-Reply-To: <20211104133735.1223989-1-arnd@kernel.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Wed, 10 Nov 2021 13:38:11 -0800
+Message-ID: <CAKwvOd=vrUe7xWohkPZkfui2BM-uP2Q79v02NzTJs9XJJ1CTjw@mail.gmail.com>
+Subject: Re: [PATCH] iwlwifi: pcie: fix constant-conversion warning
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Yaara Baruch <yaara.baruch@intel.com>,
+        Matti Gottlieb <matti.gottlieb@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 11, 2021 at 02:24:18AM IST, Vinicius Costa Gomes wrote:
-> When CONFIG_DEBUG_INFO_BTF is enabled and CONFIG_BPF_SYSCALL is
-> disabled, the following compilation error can be seen:
+On Thu, Nov 4, 2021 at 6:37 AM Arnd Bergmann <arnd@kernel.org> wrote:
 >
->   GEN     .version
->   CHK     include/generated/compile.h
->   UPD     include/generated/compile.h
->   CC      init/version.o
->   AR      init/built-in.a
->   LD      vmlinux.o
->   MODPOST vmlinux.symvers
->   MODINFO modules.builtin.modinfo
->   GEN     modules.builtin
->   LD      .tmp_vmlinux.btf
-> ld: net/ipv4/tcp_cubic.o: in function `cubictcp_unregister':
-> net/ipv4/tcp_cubic.c:545: undefined reference to `bpf_tcp_ca_kfunc_list'
-> ld: net/ipv4/tcp_cubic.c:545: undefined reference to `unregister_kfunc_btf_id_set'
-> ld: net/ipv4/tcp_cubic.o: in function `cubictcp_register':
-> net/ipv4/tcp_cubic.c:539: undefined reference to `bpf_tcp_ca_kfunc_list'
-> ld: net/ipv4/tcp_cubic.c:539: undefined reference to `register_kfunc_btf_id_set'
->   BTF     .btf.vmlinux.bin.o
-> pahole: .tmp_vmlinux.btf: No such file or directory
->   LD      .tmp_vmlinux.kallsyms1
-> .btf.vmlinux.bin.o: file not recognized: file format not recognized
-> make: *** [Makefile:1187: vmlinux] Error 1
+> From: Arnd Bergmann <arnd@arndb.de>
 >
-> 'bpf_tcp_ca_kfunc_list', 'register_kfunc_btf_id_set()' and
-> 'unregister_kfunc_btf_id_set()' are only defined when
-> CONFIG_BPF_SYSCALL is enabled.
+> clang points out a potential issue with integer overflow when
+> the iwl_dev_info_table[] array is empty:
 >
-> Fix that by moving those definitions somewhere that doesn't depend on
-> the bpf() syscall.
+> drivers/net/wireless/intel/iwlwifi/pcie/drv.c:1344:42: error: implicit conversion from 'unsigned long' to 'int' changes value from 18446744073709551615 to -1 [-Werror,-Wconstant-conversion]
+>         for (i = ARRAY_SIZE(iwl_dev_info_table) - 1; i >= 0; i--) {
+>                ~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
 >
-> Fixes: 14f267d95fe4 ("bpf: btf: Introduce helpers for dynamic BTF set registration")
-> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+> This is still harmless, as the loop correctly terminates, but adding
+> an (int) cast makes that clearer to the compiler.
+>
+> Fixes: 3f7320428fa4 ("iwlwifi: pcie: simplify iwl_pci_find_dev_info()")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  drivers/net/wireless/intel/iwlwifi/pcie/drv.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+> index c574f041f096..81e8f2fc4982 100644
+> --- a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+> +++ b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+> @@ -1341,7 +1341,7 @@ iwl_pci_find_dev_info(u16 device, u16 subsystem_device,
+>  {
+>         int i;
+>
+> -       for (i = ARRAY_SIZE(iwl_dev_info_table) - 1; i >= 0; i--) {
+> +       for (i = (int)ARRAY_SIZE(iwl_dev_info_table) - 1; i >= 0; i--) {
 
-Thanks for the fix.
+Perhaps `i` could be a `size_t` instead of an `int`?
 
-But instead of moving this to core.c, you can probably make the btf.h
-declaration conditional on CONFIG_BPF_SYSCALL, since this is not useful in
-isolation (only used by verifier for module kfunc support). For the case of
-kfunc_btf_id_list variables, just define it as an empty struct and static
-variables, since the definition is still inside btf.c. So it becomes a noop for
-!CONFIG_BPF_SYSCALL.
+size_t i = ARRAY_SIZE(iwl_dev_info_table);
+while (i--) {
+  ...
 
-I am also not sure whether BTF is useful without BPF support, but maybe I'm
-missing some usecase.
+>                 const struct iwl_dev_info *dev_info = &iwl_dev_info_table[i];
+>
+>                 if (dev_info->device != (u16)IWL_CFG_ANY &&
+> --
+> 2.29.2
+>
 
-That's just my opinion however, I'll defer to BPF maintainers.
 
---
-Kartikeya
+-- 
+Thanks,
+~Nick Desaulniers
