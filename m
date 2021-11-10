@@ -2,84 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DB0544CB89
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 23:02:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A133B44CB8E
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 23:06:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233561AbhKJWF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 17:05:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60782 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233509AbhKJWF2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 17:05:28 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D691EC061766;
-        Wed, 10 Nov 2021 14:02:40 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id np3so2663586pjb.4;
-        Wed, 10 Nov 2021 14:02:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pLtMD5YfNqZol7MFNr0Vu3H/2bOzYreoma/+lSepIwE=;
-        b=AIjljorY44KXKRb7eU0HGgsjVZauxcHqvcQGt4lPZPb0t2k9TYsFhrcisl6lYy4LfV
-         5vHzWBea0QBjveSKYflV7+855OVSHYav0h12kt1DJoSuUS9OJj++GSPBcBtXOJFaXWxL
-         pu+N0WzkyMd9Jwpwp7JAdYlFZHqFpEhvMhYcWWZ9pLMe15O1kHhqBz4d6Q5OXrQkwa/g
-         naXA+oRlhVYc0LFeYSe+FyBs6gGfERl5mM7cgV5R17CsCRkGGBNGmBCAnbQ2b6lWMnCu
-         9irfRYwjjs6zOBDkXTzjNqCzMcwfYGvhm3tIiDU+xSDeXi2FvW5Nvw6MYpsPXL7y0eiy
-         LZlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pLtMD5YfNqZol7MFNr0Vu3H/2bOzYreoma/+lSepIwE=;
-        b=C9H13ZopWeCA3nfQsLCZbPf3ps/X0tDVus6sN4iLn8YALQpdJWvm/6ZeLKQYt+928e
-         uUJacVJJJJg2fq1iFoDnimfYhHxelOsr9A3xXsZnswisiXmUamoCdC8w5MSM/8MhMgI7
-         3czuqQcR0PSIHpNCX/BZoXZkXVg7P1xatuXz0kTJL2Trv5W3nqw0sRvfvQ/ONMADtXKk
-         d21ceGlhiM6XLes/G7ytju6p+iNoWWAFPndgpaUPLK9l4Icc0T0fwBwT9cP6JvM4kJXS
-         zWXKsCW8Z+phPfCntrI4/ljQwO56yU0qLPz4eupSClX9vaXPx7gjtVpHYiDOQHQmS7Um
-         UyUg==
-X-Gm-Message-State: AOAM531KBsPc5Bz5bl6FZcQV3cndVB7ehdoIE5N5C93HllsEpc9waXPj
-        K5YTP+cxLXA7XhbOiHCN6h6LRgXMbjBpQ0ryOzE=
-X-Google-Smtp-Source: ABdhPJwl9gw6QB3nNd66kzBxQgBw/I49JMur7S2PFyeLV4+wHLuzEJ7w9epVRXK8vFSsnzH2QsBzZMJye6akbLZgXgA=
-X-Received: by 2002:a17:903:2306:b0:141:e52e:457d with SMTP id
- d6-20020a170903230600b00141e52e457dmr2684477plh.3.1636581760426; Wed, 10 Nov
- 2021 14:02:40 -0800 (PST)
+        id S233525AbhKJWJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 17:09:11 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:55360 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233321AbhKJWJK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Nov 2021 17:09:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=KUZYc+UYSCIQpV6CXLwxg5Aw9+FUL6qmdSzE/JqAMSA=; b=SWmF1CQvRfIWylqx5Ray/qVpjw
+        9kka7ZmoJqdOIHEgbnyOSzdJ8PkZo0uSi8fh7w0OjrTSWRb84QtaNTF4X/gCfgfie/ZlvT/FhQtJC
+        OleEAHPMjhBXdIxJWFGz6f+8bAqJ6oy9jK/Ui4NA74vAza6XyJnjlRnWYmguIwGx/ll4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mkvjX-00D8wh-3m; Wed, 10 Nov 2021 23:06:19 +0100
+Date:   Wed, 10 Nov 2021 23:06:19 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Apeksha Gupta <apeksha.gupta@nxp.com>
+Cc:     qiangqing.zhang@nxp.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-devel@linux.nxdi.nxp.com, LnxRevLi@nxp.com,
+        sachin.saxena@nxp.com, hemant.agrawal@nxp.com, nipun.gupta@nxp.com
+Subject: Re: [PATCH 2/5] net: fec: fec-uio driver
+Message-ID: <YYxCWyLExiWgXf/L@lunn.ch>
+References: <20211110054838.27907-1-apeksha.gupta@nxp.com>
+ <20211110054838.27907-3-apeksha.gupta@nxp.com>
 MIME-Version: 1.0
-References: <20211110174442.619398-1-songliubraving@fb.com>
-In-Reply-To: <20211110174442.619398-1-songliubraving@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 10 Nov 2021 14:02:29 -0800
-Message-ID: <CAADnVQK5nHGnC_9+m0q__AdhSxuHtE5Uh98epw2JEdjOCP343Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: extend BTF_ID_LIST_GLOBAL with parameter
- for number of IDs
-To:     Song Liu <songliubraving@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Kernel Team <kernel-team@fb.com>,
-        syzbot+e0d81ec552a21d9071aa@syzkaller.appspotmail.com,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211110054838.27907-3-apeksha.gupta@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 10, 2021 at 9:47 AM Song Liu <songliubraving@fb.com> wrote:
->
-> -#ifdef CONFIG_DEBUG_INFO_BTF
-> -BTF_ID_LIST_GLOBAL(btf_sock_ids)
-> +BTF_ID_LIST_GLOBAL(btf_sock_ids, MAX_BTF_SOCK_TYPE)
->  #define BTF_SOCK_TYPE(name, type) BTF_ID(struct, type)
->  BTF_SOCK_TYPE_xxx
->  #undef BTF_SOCK_TYPE
-> -#else
-> -u32 btf_sock_ids[MAX_BTF_SOCK_TYPE];
-> -#endif
+On Wed, Nov 10, 2021 at 11:18:35AM +0530, Apeksha Gupta wrote:
+> i.mx: fec-uio driver
+> 
+> This patch adds the userspace support. In this basic
+> hardware initialization is performed in kernel via userspace
+> input/output, while the majority of code is written in the
+> userspace.
 
-If we're trying to future proof it I think it would be better
-to combine it with MAX_BTF_SOCK_TYPE and BTF_SOCK_TYPE_xxx macro.
-(or have another macro that is tracing specific).
-That will help avoid cryptic btf_task_struct_ids[0|1|2]
-references in the code.
+Where do i find this usespace code. Please include a URL to a git
+repo.
+
+> +static unsigned char macaddr[ETH_ALEN];
+> +module_param_array(macaddr, byte, NULL, 0);
+> +MODULE_PARM_DESC(macaddr, "FEC Ethernet MAC address");
+
+No module parameters please. Use the standard device tree bindings.
+
+> +static int fec_enet_uio_init(struct net_device *ndev)
+> +{
+> +	unsigned int total_tx_ring_size = 0, total_rx_ring_size = 0;
+> +	struct fec_enet_private *fep = netdev_priv(ndev);
+> +	unsigned int dsize = sizeof(struct bufdesc);
+> +	unsigned short tx_ring_size, rx_ring_size;
+> +	int ret, i;
+> +
+> +	/* Check mask of the streaming and coherent API */
+> +	ret = dma_set_mask_and_coherent(&fep->pdev->dev, DMA_BIT_MASK(32));
+> +	if (ret < 0) {
+> +		dev_warn(&fep->pdev->dev, "No suitable DMA available\n");
+> +		return ret;
+> +	}
+> +
+> +	tx_ring_size = TX_RING_SIZE;
+> +	rx_ring_size = RX_RING_SIZE;
+> +
+> +	for (i = 0; i <	FEC_ENET_MAX_TX_QS; i++)
+> +		total_tx_ring_size += tx_ring_size;
+> +	for (i = 0; i <	FEC_ENET_MAX_RX_QS; i++)
+> +		total_rx_ring_size += rx_ring_size;
+> +
+> +	bd_size = (total_tx_ring_size + total_rx_ring_size) * dsize;
+
+These are the buffer descriptors, not buffers themselves. I assume the
+user space driver is allocating the buffer? And your userspace then
+set the descriptor to point to user allocated memory? Or some other
+memory in the address space, and overwrite whatever you want on the
+next DMA? Or DMAing kernel memory out as frames?
+
+> +static int
+> +fec_enet_uio_probe(struct platform_device *pdev)
+> +{
+> +	struct fec_uio_devinfo *dev_info;
+> +	const struct of_device_id *of_id;
+> +	struct fec_enet_private *fep;
+> +	struct net_device *ndev;
+> +	u32 ecntl = ETHER_EN;
+> +	static int dev_id;
+> +	bool reset_again;
+> +	int ret = 0;
+> +
+> +	/* Init network device */
+> +	ndev = alloc_etherdev_mq(sizeof(struct fec_enet_private) +
+> +				FEC_PRIV_SIZE, FEC_MAX_Q);
+
+Why do you need this. This is not a netdev driver, since it does not
+connect to the network stack.
+
+> +static int
+> +fec_enet_uio_remove(struct platform_device *pdev)
+> +{
+> +	struct net_device *ndev = platform_get_drvdata(pdev);
+> +	struct fec_enet_private *fep = netdev_priv(ndev);
+> +
+> +	kfree(fec_dev);
+> +	iounmap(fep->hwp);
+> +	dma_free_coherent(&fep->pdev->dev, bd_size, cbd_base, bd_dma);
+
+Don't you have to assume that the userspace driver has crashed and
+burned, leaving the hardware in an undefined state. It could still be
+receiving, into buffers we have no idea about. Don't you need to stop
+the hardware, and then wait for all DMA activity to stop, and only
+then can you free the buffer descriptors?
+
+     Andrew
