@@ -2,95 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E64744CA42
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 21:11:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB32E44CA6E
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 21:17:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232276AbhKJUO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 15:14:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35824 "EHLO
+        id S232202AbhKJUUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 15:20:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233185AbhKJUO0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 15:14:26 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40B8BC061767
-        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 12:11:38 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id i12so2423921wmq.4
-        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 12:11:38 -0800 (PST)
+        with ESMTP id S231769AbhKJUUY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 15:20:24 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16095C0613F5
+        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 12:17:36 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id fv9-20020a17090b0e8900b001a6a5ab1392so2817342pjb.1
+        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 12:17:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OWTPgVJnueHkxFEIUf6VDXE+mQNwR15b3RG+2t+lLFg=;
-        b=MuG2HGcxj8Fylb+z3NhMaag1UIicfo4w2QsrPK8ZYdEr09jxSz1wMqxA+cqfgwydA8
-         KP1wuTX2jUXfWEaKe2ESxSu/4R8akg+wy+a/EETM1QX0vn+hp5xb9XoIpIfnrwaxaS7o
-         OMRWa+L60bEYP9Eg9J69hFCg9YRf+9gh2swTAsNyjxQQtP/P+uLcCmw65kJcYLCnHw/W
-         1D/lywOZVcXTXEvSkSbbztpuMvysZ/capmfrGRTr3vPKvKxxmFwVBAl2ziQeQpxC716q
-         aI6nJic4PZFfK62fTXoFGSOR0BgSbu6RTAauGn3YJ/uPWnpdieX3sveqZ/8eE3xNPWjz
-         b9Zg==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kJ30f4yltU8P9D1vIvrgm4JmaUKFVTUymd542MzbX34=;
+        b=g9lNF+pd24Lg+MqAqHCV7wh24XIQNX4IMaEiJo9WPFtT4ECrdlVpmAPO8QVV2WHbFK
+         nQ+O9QSeWTirPqQxEh3uFPZ+WLk8Q0CYxvBO5RUARXtXksYhPr4lmu5668PzlePyOmcl
+         As4OgFb6VXL9nsV00X1BkxHIuNlUxiMXmbd8w=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OWTPgVJnueHkxFEIUf6VDXE+mQNwR15b3RG+2t+lLFg=;
-        b=FU8bHPjBgzjago7aW8dlWKokIyCPZu3/z1hZ3SZ1k4V7s57pkq+SpILcNIXBPJUhyX
-         t/dgcgjvGkF4oh7jrBmIoLDoKyJlV5g8DGogjacdrQvodI+sEPDGR25vImM59ewkYCfQ
-         QMLELmR8wuuRv9zmkYkiqOUch9z1cWF4LMmWFsCB0DEZD/gS5AkRBMriaDPpvX/NN1Nj
-         bePHRxAxpMn89Yc58bU3OoIlQuSRZDC1S3KoIdTcOmtvw5vzF/4I+XIbOEoLeLWwi/4R
-         2vonPcVSNmHPa4lsTtbSYuMPIq+SjOyotjV6j/CaSyDFUo0WzAnPQZGKpym6JhP6vd+J
-         Ey6g==
-X-Gm-Message-State: AOAM53371qV+rjkWmj39mDKvZOD7qqM8hn3EDeZNQIXAOSg3iF2D27n+
-        zndWmphipbGnPArx22v+Oglzy26g4PLRGkb/vtqPzQ==
-X-Google-Smtp-Source: ABdhPJz2w1x4uMql2NaYrLepa+M24PkUgWoHHoR+u50R1U/HMBcQQRj4m13aigkD4Y2qp0d+kwFK6z+uilUBm/L8eNI=
-X-Received: by 2002:a7b:c8c8:: with SMTP id f8mr2041010wml.49.1636575096439;
- Wed, 10 Nov 2021 12:11:36 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kJ30f4yltU8P9D1vIvrgm4JmaUKFVTUymd542MzbX34=;
+        b=V5PVwzdjG26HwdK1jbGp6eHiPfNKqA9rH3hk57cskApElRZq60jZafHVEPItTWgYos
+         ACWtM0+KmNaCtRe2BMVw/6m3GrAgRpQgk4HQxZed5R5npg5je6uZshN1d9CPSkHt/so+
+         Dhbge3F90V97knj7k2nCJRVfT5NPyzzg5ZHK6WsvG/83MU+PxqKg41Bn9eAQoxSearX3
+         NasYxdjTMMDuW2bAOLz9zUqbCZ32EG3y98I4gIPWjyuB/HDIw4PTQSJiSOvYbl4IjkFb
+         ohaduh581gHy/PqYT4Me96+RBoyo99IRX4ThlrqHsuGDAgrFVMjF6gsTCZK8b49FVOZz
+         ipzA==
+X-Gm-Message-State: AOAM533C9xmnwwnie8+r/Ix9bxy4UJf+8LF/n9M1lEpHYYOFZmymnmqT
+        zWrxLU/jsEtMvIvIIHEQF6Dvpw==
+X-Google-Smtp-Source: ABdhPJy9OJ/YGW/eEJO6u7l+llSGLL86Mlc82irnMKIDFwKNMwM8Slu26rVYUZa6XKnHewItU9EAMw==
+X-Received: by 2002:a17:90b:33d0:: with SMTP id lk16mr1928527pjb.66.1636575455497;
+        Wed, 10 Nov 2021 12:17:35 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id fw21sm6200587pjb.25.2021.11.10.12.17.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Nov 2021 12:17:35 -0800 (PST)
+Date:   Wed, 10 Nov 2021 12:17:34 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Yafang Shao <laoar.shao@gmail.com>, akpm@linux-foundation.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        oliver.sang@intel.com, lkp@intel.com,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH 1/7] fs/exec: make __set_task_comm always set a nul
+ terminated string
+Message-ID: <202111101215.A42612FEC@keescook>
+References: <20211108083840.4627-1-laoar.shao@gmail.com>
+ <20211108083840.4627-2-laoar.shao@gmail.com>
+ <c3571571-320a-3e25-8409-5653ddca895c@redhat.com>
 MIME-Version: 1.0
-References: <20211110195605.1304-1-alexandr.lobakin@intel.com>
-In-Reply-To: <20211110195605.1304-1-alexandr.lobakin@intel.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 10 Nov 2021 12:11:24 -0800
-Message-ID: <CANn89i+67J4GNbWmpMf8ieFFRK5BuPRA=1Q83KU+9-gRvg+aGQ@mail.gmail.com>
-Subject: Re: [PATCH v2 net] net: fix premature exit from NAPI state polling in napi_disable()
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@intel.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Wei Wang <weiwan@google.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c3571571-320a-3e25-8409-5653ddca895c@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 10, 2021 at 11:56 AM Alexander Lobakin
-<alexandr.lobakin@intel.com> wrote:
->
-> Commit 719c57197010 ("net: make napi_disable() symmetric with
-> enable") accidentally introduced a bug sometimes leading to a kernel
-> BUG when bringing an iface up/down under heavy traffic load.
->
-> Prior to this commit, napi_disable() was polling n->state until
-> none of (NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC) is set and then
-> always flip them. Now there's a possibility to get away with the
-> NAPIF_STATE_SCHE unset as 'continue' drops us to the cmpxchg()
-> call with an unitialized variable, rather than straight to
-> another round of the state check.
->
+On Wed, Nov 10, 2021 at 09:28:12AM +0100, David Hildenbrand wrote:
+> On 08.11.21 09:38, Yafang Shao wrote:
+> > Make sure the string set to task comm is always nul terminated.
+> > 
+> 
+> strlcpy: "the result is always a valid NUL-terminated string that fits
+> in the buffer"
+> 
+> The only difference seems to be that strscpy_pad() pads the remainder
+> with zeroes.
+> 
+> Is this description correct and I am missing something important?
 
-...
+Yes, this makes sure it's zero padded just to be robust against full
+tsk->comm copies that got noticed in other places.
 
->
-> [0] https://lore.kernel.org/netdev/20211110191126.1214-1-alexandr.lobakin@intel.com
->
-> Fixes: 719c57197010 ("net: make napi_disable() symmetric with enable")
-> Suggested-by: Eric Dumazet <edumazet@google.com> # for-loop
-> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> ---
+The only other change is that we want to remove strlcpy() from the
+kernel generally since it can trigger out-of-bound reads on the source
+string[1].
 
-Thanks a lot !
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+So, in this case, the most robust version is to use strscpy_pad().
+
+-Kees
+
+[1] https://github.com/KSPP/linux/issues/89
+
+> 
+> > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> > Reviewed-by: Kees Cook <keescook@chromium.org>
+> > Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+> > Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+> > Cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+> > Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> > Cc: Michal Miroslaw <mirq-linux@rere.qmqm.pl> 
+> > Cc: Peter Zijlstra <peterz@infradead.org>
+> > Cc: Steven Rostedt <rostedt@goodmis.org>
+> > Cc: Matthew Wilcox <willy@infradead.org>
+> > Cc: David Hildenbrand <david@redhat.com>
+> > Cc: Al Viro <viro@zeniv.linux.org.uk>
+> > Cc: Kees Cook <keescook@chromium.org>
+> > Cc: Petr Mladek <pmladek@suse.com>
+> > ---
+> >  fs/exec.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/fs/exec.c b/fs/exec.c
+> > index a098c133d8d7..404156b5b314 100644
+> > --- a/fs/exec.c
+> > +++ b/fs/exec.c
+> > @@ -1224,7 +1224,7 @@ void __set_task_comm(struct task_struct *tsk, const char *buf, bool exec)
+> >  {
+> >  	task_lock(tsk);
+> >  	trace_task_rename(tsk, buf);
+> > -	strlcpy(tsk->comm, buf, sizeof(tsk->comm));
+> > +	strscpy_pad(tsk->comm, buf, sizeof(tsk->comm));
+> >  	task_unlock(tsk);
+> >  	perf_event_comm(tsk, exec);
+> >  }
+> > 
+> 
+> 
+> -- 
+> Thanks,
+> 
+> David / dhildenb
+> 
+
+-- 
+Kees Cook
