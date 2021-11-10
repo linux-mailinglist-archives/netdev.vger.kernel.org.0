@@ -2,186 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BD0244C096
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 13:02:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C76444C045
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 12:46:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231793AbhKJMDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 07:03:21 -0500
-Received: from mga06.intel.com ([134.134.136.31]:54414 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231837AbhKJMDE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Nov 2021 07:03:04 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10163"; a="293484892"
-X-IronPort-AV: E=Sophos;i="5.87,223,1631602800"; 
-   d="scan'208";a="293484892"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2021 04:00:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,223,1631602800"; 
-   d="scan'208";a="452276676"
-Received: from unknown (HELO localhost.igk.intel.com) ([10.102.22.231])
-  by orsmga003.jf.intel.com with ESMTP; 10 Nov 2021 04:00:12 -0800
-From:   Maciej Machnikowski <maciej.machnikowski@intel.com>
-To:     maciej.machnikowski@intel.com, netdev@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org
-Cc:     richardcochran@gmail.com, abyagowi@fb.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kselftest@vger.kernel.org, idosch@idosch.org,
-        mkubecek@suse.cz, saeed@kernel.org, michael.chan@broadcom.com,
-        petrm@nvidia.com
-Subject: [PATCH v3 net-next 6/6] docs: net: Add description of SyncE interfaces
-Date:   Wed, 10 Nov 2021 12:44:48 +0100
-Message-Id: <20211110114448.2792314-7-maciej.machnikowski@intel.com>
-X-Mailer: git-send-email 2.26.3
-In-Reply-To: <20211110114448.2792314-1-maciej.machnikowski@intel.com>
-References: <20211110114448.2792314-1-maciej.machnikowski@intel.com>
+        id S231344AbhKJLtY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 06:49:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60880 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231148AbhKJLtY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 06:49:24 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A95B0C061766
+        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 03:46:36 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id d24so3577804wra.0
+        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 03:46:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kjHd0Kr0ymQ3a10ENDIboaCgm2YTIHCHTF3U6cm7HUg=;
+        b=smrMgPz/PdOvuy4BKoFdtbXDyOFYkAfUEbCjFH8yI/4ulUYkKidxaDqNe6F2Mm3ap4
+         92bn8RGNDbepC8kqKFdGM1ehzQvTP8NHpl+cjvsKZ4+ewYbVQTz5pqlqChe1Qt3gv5zP
+         1Jbt2/+vd72sTXheXp/cGlg6XGtMmtGn7KjZVeWz2RH+XS7G0D0XhFoOSl8Yi4v7Y15J
+         azs0fLS1SC455Tc3OjU4tGTB6LKGVJFTl7ETuBEONoNo8O0T+Agk8228fblewZuAMYdw
+         f4zcKJ+MRJ3jwhUrvo4s+Un5/0Swo6tHn5nSTvMLYljdGysc7DqRNJrFFF7tz20muV8N
+         MmUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kjHd0Kr0ymQ3a10ENDIboaCgm2YTIHCHTF3U6cm7HUg=;
+        b=YaHsf0QuY2t5B1Ka7haI05/a+oaZtPyqX8dstGTVKYENPN7helc5MEKnhKvCLkj5Vr
+         FffvPUvYxcE3DeEVPmTuuTonivvUEAyQw/Ytk9T68JH5XEJF3x6hqCpgGb8jRdnI0Id+
+         A+Wd/vmSOtIdTNG8gVu1MI3TIHGR37Hgq56CmLwy0+ZnSjzfM7LzqSj3naoSrSDQI12c
+         2mMhSLB4fA8X/gG9DJmW3xpAN0qB0Dvpypp2QZk+Dld4RUkLYy1CaoA8R423eE5iYVIs
+         6P4Ng2GV9nR/Zo2muXZ5gJV5JAT9RncF+0dvCLGp9DWKNHW4TsJ1cG1X4ukCvAH1AoQL
+         Mnpg==
+X-Gm-Message-State: AOAM532VHiDuXKYOec4XStQmrRvOWyo/Js5EcJuzKBnLYc2RKqcGdH4E
+        8ZW/Hkny/z65e4xg5ofk+CvFag==
+X-Google-Smtp-Source: ABdhPJy3MBxnYrFBRaaBIYguino2d8UdpUPEN6l1WISYeWXrbpo1Z2s8FmxmZtMpVhfc7/eojE76kg==
+X-Received: by 2002:a05:6000:1201:: with SMTP id e1mr18403404wrx.298.1636544795181;
+        Wed, 10 Nov 2021 03:46:35 -0800 (PST)
+Received: from localhost.localdomain ([149.86.79.190])
+        by smtp.gmail.com with ESMTPSA id i15sm6241152wmq.18.2021.11.10.03.46.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Nov 2021 03:46:34 -0800 (PST)
+From:   Quentin Monnet <quentin@isovalent.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Quentin Monnet <quentin@isovalent.com>
+Subject: [PATCH bpf-next 0/6] bpftool: miscellaneous fixes
+Date:   Wed, 10 Nov 2021 11:46:26 +0000
+Message-Id: <20211110114632.24537-1-quentin@isovalent.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add Documentation/networking/synce.rst describing new RTNL messages
-and respective NDO ops supporting SyncE (Synchronous Ethernet).
+This set contains several independent minor fixes for bpftool, its
+Makefile, and its documentation. Please refer to individual commits for
+details.
 
-Signed-off-by: Maciej Machnikowski <maciej.machnikowski@intel.com>
----
- Documentation/networking/synce.rst | 124 +++++++++++++++++++++++++++++
- 1 file changed, 124 insertions(+)
- create mode 100644 Documentation/networking/synce.rst
+Quentin Monnet (6):
+  bpftool: Fix memory leak in prog_dump()
+  bpftool: Remove inclusion of utilities.mak from Makefiles
+  bpftool: Use $(OUTPUT) and not $(O) for VMLINUX_BTF_PATHS in Makefile
+  bpftool: Fix indent in option lists in the documentation
+  bpftool: Update the lists of names for maps and prog-attach types
+  bpftool: Fix mixed indentation in documentation
 
-diff --git a/Documentation/networking/synce.rst b/Documentation/networking/synce.rst
-new file mode 100644
-index 000000000000..a7bb75685c07
---- /dev/null
-+++ b/Documentation/networking/synce.rst
-@@ -0,0 +1,124 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+=============================
-+Synchronous Equipment Clocks
-+=============================
-+
-+Synchronous Equipment Clocks use a physical layer clock to syntonize
-+the frequency across different network elements.
-+
-+Basic Synchronous network node consist of a Synchronous Equipment
-+Clock (SEC) and and a PHY that has dedicated outputs of clocks recovered
-+from the Receive side and a dedicated TX clock input that is used as
-+a reference for the physical frequency of the transmit data to other nodes.
-+
-+The PHY is able to recover the physical signal frequency of the RX data
-+stream on RX ports and redirect it (sometimes dividing it) to recovered
-+clock outputs. Number of recovered clock output pins is usually lower than
-+the number of RX portx. As a result the RX port to Recovered Clock output
-+mapping needs to be configured. the TX frequency is directly depends on the
-+input frequency - either on the PHY CLK input, or on a dedicated
-+TX clock input.
-+
-+      ┌──────────┬──────────┐
-+      │ RX       │ TX       │
-+  1   │ ports    │ ports    │ 1
-+  ───►├─────┐    │          ├─────►
-+  2   │     │    │          │ 2
-+  ───►├───┐ │    │          ├─────►
-+  3   │   │ │    │          │ 3
-+  ───►├─┐ │ │    │          ├─────►
-+      │ ▼ ▼ ▼    │          │
-+      │ ──────   │          │
-+      │ \____/   │          │
-+      └──┼──┼────┴──────────┘
-+        1│ 2│        ▲
-+ RCLK out│  │        │ TX CLK in
-+         ▼  ▼        │
-+       ┌─────────────┴───┐
-+       │                 │
-+       │       SEC       │
-+       │                 │
-+       └─────────────────┘
-+
-+The SEC can synchronize its frequency to one of the synchronization inputs
-+either clocks recovered on traffic interfaces or (in advanced deployments)
-+external frequency sources.
-+
-+Some SEC implementations can automatically select synchronization source
-+through priority tables and synchronization status messaging and provide
-+necessary filtering and holdover capabilities.
-+
-+The following interface can be applicable to diffferent packet network types
-+following ITU-T G.8261/G.8262 recommendations.
-+
-+Interface
-+=========
-+
-+The following RTNL messages are used to read/configure SyncE recovered
-+clocks.
-+
-+RTM_GETRCLKSTATE
-+-----------------
-+Read the state of recovered pins that output recovered clock from
-+a given port. The message will contain the number of assigned clocks
-+(IFLA_RCLK_STATE_COUNT) and an N pin indexes in IFLA_RCLK_STATE_OUT_STATE
-+To support multiple recovered clock outputs from the same port, this message
-+will return the IFLA_RCLK_STATE_COUNT attribute containing the number of
-+recovered clock outputs (N) and N IFLA_RCLK_STATE_OUT_STATE attributes
-+listing the output indexes with the respective GET_RCLK_FLAGS_ENA flag.
-+This message will call the ndo_get_rclk_range to determine the allowed
-+recovered clock indexes and then will loop through them, calling
-+the ndo_get_rclk_state for each of them.
-+
-+
-+Attributes:
-+IFLA_RCLK_STATE_COUNT - Returns the number of recovered clock outputs
-+IFLA_RCLK_STATE_OUT_STATE - Returns the current state of a single recovered
-+			    clock output in the struct if_get_rclk_msg.
-+struct if_get_rclk_msg {
-+	__u32 out_idx; /* output index (from a valid range) */
-+	__u32 flags;   /* configuration flags */
-+};
-+
-+Currently supported flags:
-+#define GET_RCLK_FLAGS_ENA	(1U << 0)
-+
-+
-+RTM_SETRCLKSTATE
-+-----------------
-+Sets the redirection of the recovered clock for a given pin. This message
-+expects one attribute:
-+struct if_set_rclk_msg {
-+	__u32 ifindex; /* interface index */
-+	__u32 out_idx; /* output index (from a valid range) */
-+	__u32 flags;   /* configuration flags */
-+};
-+
-+Supported flags are:
-+SET_RCLK_FLAGS_ENA - if set in flags - the given output will be enabled,
-+		     if clear - the output will be disabled.
-+
-+RTM_GETEECSTATE
-+----------------
-+Reads the state of the EEC or equivalent physical clock synchronizer.
-+This message returns the following attributes:
-+IFLA_EEC_STATE - current state of the EEC or equivalent clock generator.
-+		 The states returned in this attribute are aligned to the
-+		 ITU-T G.781 and are:
-+		  IF_EEC_STATE_INVALID - state is not valid
-+		  IF_EEC_STATE_FREERUN - clock is free-running
-+		  IF_EEC_STATE_LOCKED - clock is locked to the reference,
-+		                        but the holdover memory is not valid
-+		  IF_EEC_STATE_LOCKED_HO_ACQ - clock is locked to the reference
-+		                               and holdover memory is valid
-+		  IF_EEC_STATE_HOLDOVER - clock is in holdover mode
-+State is read from the netdev calling the:
-+int (*ndo_get_eec_state)(struct net_device *dev, enum if_eec_state *state,
-+			 u32 *src_idx, struct netlink_ext_ack *extack);
-+
-+IFLA_EEC_SRC_IDX - optional attribute returning the index of the reference
-+		   that is used for the current IFLA_EEC_STATE, i.e.,
-+		   the index of the pin that the EEC is locked to.
-+
-+Will be returned only if the ndo_get_eec_src is implemented.
-\ No newline at end of file
+ tools/bpf/bpftool/Documentation/Makefile      |  1 -
+ .../bpf/bpftool/Documentation/bpftool-btf.rst |  2 +-
+ .../bpftool/Documentation/bpftool-cgroup.rst  | 12 ++--
+ .../bpf/bpftool/Documentation/bpftool-gen.rst |  2 +-
+ .../bpftool/Documentation/bpftool-link.rst    |  2 +-
+ .../bpf/bpftool/Documentation/bpftool-map.rst |  8 +--
+ .../bpf/bpftool/Documentation/bpftool-net.rst | 62 +++++++++----------
+ .../bpftool/Documentation/bpftool-prog.rst    |  8 +--
+ tools/bpf/bpftool/Documentation/bpftool.rst   |  6 +-
+ tools/bpf/bpftool/Makefile                    |  3 +-
+ tools/bpf/bpftool/bash-completion/bpftool     |  3 +-
+ tools/bpf/bpftool/common.c                    |  1 +
+ tools/bpf/bpftool/map.c                       |  3 +-
+ tools/bpf/bpftool/prog.c                      | 15 +++--
+ 14 files changed, 66 insertions(+), 62 deletions(-)
+
 -- 
-2.26.3
+2.32.0
 
