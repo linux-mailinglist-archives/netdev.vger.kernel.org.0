@@ -2,91 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 355DB44C5A5
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 18:03:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C0FD44C5CD
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 18:16:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231577AbhKJRGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 12:06:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49270 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229995AbhKJRGE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 12:06:04 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF26C061764;
-        Wed, 10 Nov 2021 09:03:16 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id b13so3595476plg.2;
-        Wed, 10 Nov 2021 09:03:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mBVJ5ckaj1U7LCVrGTqIX+IPqB1XJBNYQd38Ft9SXuo=;
-        b=i3HPuC8amfjQDaCVo8OmB80yRP0Nf6qbPP5751y6IuSgmDz/oFWcWe25Qpz0nC6TdW
-         Tkg2mHYf+YKimxrN3w3kwTe3axusXnhk+Rx+cizEJq8yuSknIa3K1W0F1MPSM2854Yrj
-         P6+b4EKsdndVqQ35AAE5esvxwo/Mp75tkAfSpv+AfSoWzbp3SPZnMqqcKO67APAjQAX5
-         chtxU5SRYTebHcxWGKc3rThQga8H22Fg2sMMRk7mnhN8aIrTvsHBh9oAjugNUo5heDGs
-         jQAlgXpzmN2iBBKS+rGHup7/B5ymTJYnfWJd3txv2NBb4pQ9wCnxEcSvVosQNiBaWB1w
-         9whw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mBVJ5ckaj1U7LCVrGTqIX+IPqB1XJBNYQd38Ft9SXuo=;
-        b=LuLqPvTq0k/k+xo2ZYgGgvrVl1W1iVv89m3KbOyN6FXzwUMc3Zjk8qGxB/JXer2ziF
-         hS87ZcNo9kIBuGQHpwbRYpKtlVojyKDntTU50QKPcQ76d39QD63Eg18YEaj0ptRC8zr7
-         6J+JeykWPU148w/GUG3QCT6ffWVeDwmEhq9pBNsJ/P2b9d93Dix2s52k/Ye7Bwc0fbQ4
-         Ay8y3GX5SBL+fhx7HCKdzay6mVpEz3kYpNhR48rCO6qvhCYGiN8PYDLdUL10OWWAxOh9
-         +WPKfR5Ecy3RdNdNtf1S8K/Mh+0AqQwujMbSq9lEbCG7/VPXDec8vfdx7CQu2wMcZu3L
-         P66A==
-X-Gm-Message-State: AOAM5318owMZBBw/BeV8Beq1lXkaPBj1uHC57TizQsvkl0Md3aQ/iSFB
-        CoQTroIDAjtvXWGhTDd8SgLtA3k76KijXEaX4eU=
-X-Google-Smtp-Source: ABdhPJwYOvb+bKn8DdC8j6wI3L9MqGJeV5v4v/NNIFruOHmQHa5M6eQqnTTxSYB4LOd1qjaTMd76onmCgcNzzjoOUSs=
-X-Received: by 2002:a17:90b:4c03:: with SMTP id na3mr429035pjb.62.1636563795875;
- Wed, 10 Nov 2021 09:03:15 -0800 (PST)
+        id S232340AbhKJRTo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 12:19:44 -0500
+Received: from outgoing-stata.csail.mit.edu ([128.30.2.210]:48272 "EHLO
+        outgoing-stata.csail.mit.edu" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230471AbhKJRTn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 12:19:43 -0500
+Received: from [128.177.79.46] (helo=csail.mit.edu)
+        by outgoing-stata.csail.mit.edu with esmtpsa (TLS1.2:RSA_AES_256_CBC_SHA1:256)
+        (Exim 4.82)
+        (envelope-from <srivatsa@csail.mit.edu>)
+        id 1mkrDM-000Nx5-Kq; Wed, 10 Nov 2021 12:16:48 -0500
+Date:   Wed, 10 Nov 2021 09:20:00 -0800
+From:   "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>
+To:     Joe Perches <joe@perches.com>
+Cc:     Nadav Amit <namit@vmware.com>, Juergen Gross <jgross@suse.com>,
+        X86 ML <x86@kernel.org>, Pv-drivers <Pv-drivers@vmware.com>,
+        Vivek Thampi <vithampi@vmware.com>,
+        Vishal Bhakta <vbhakta@vmware.com>,
+        Ronak Doshi <doshir@vmware.com>,
+        Linux-graphics-maintainer <Linux-graphics-maintainer@vmware.com>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+        Zack Rusin <zackr@vmware.com>, Deep Shah <sdeep@vmware.com>,
+        Alexey Makhalov <amakhalov@vmware.com>,
+        Linux Virtualization <virtualization@lists.linux-foundation.org>,
+        Keerthana Kalyanasundaram <keerthanak@vmware.com>,
+        Srivatsa Bhat <srivatsab@vmware.com>,
+        Anish Swaminathan <anishs@vmware.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 2/2] MAINTAINERS: Mark VMware mailing list entries as
+ private
+Message-ID: <20211110172000.GA121926@csail.mit.edu>
+References: <163640336232.62866.489924062999332446.stgit@srivatsa-dev>
+ <163640339370.62866.3435211389009241865.stgit@srivatsa-dev>
+ <5179a7c097e0bb88f95642a394f53c53e64b66b1.camel@perches.com>
+ <cb03ca42-b777-3d1a-5aba-b01cd19efa9a@csail.mit.edu>
+ <dcbd19fcd1625146f4db267f84abd7412513d20e.camel@perches.com>
+ <5C24FB2A-D2C0-4D95-A0C0-B48C4B8D5AF4@vmware.com>
+ <1875b0458294d23d8e3260d2824894b095d6a62d.camel@perches.com>
 MIME-Version: 1.0
-References: <20211105221904.3536-1-quentin@isovalent.com> <20211110071033.23d48b10@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211110071033.23d48b10@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 10 Nov 2021 09:03:04 -0800
-Message-ID: <CAADnVQ+jQse2pgGEkGfTOBWSoFhoWwofBqQoauKJ2tyS5FACEw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpftool: Fix SPDX tag for Makefiles and .gitignore
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Quentin Monnet <quentin@isovalent.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andriin@fb.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>, Joe Stringer <joe@cilium.io>,
-        Peter Wu <peter@lekensteyn.nl>, Roman Gushchin <guro@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Tobias Klauser <tklauser@distanz.ch>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1875b0458294d23d8e3260d2824894b095d6a62d.camel@perches.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 10, 2021 at 7:10 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Fri,  5 Nov 2021 22:19:04 +0000 Quentin Monnet wrote:
-> > Bpftool is dual-licensed under GPLv2 and BSD-2-Clause. In commit
-> > 907b22365115 ("tools: bpftool: dual license all files") we made sure
-> > that all its source files were indeed covered by the two licenses, and
-> > that they had the correct SPDX tags.
-> >
-> > However, bpftool's Makefile, the Makefile for its documentation, and the
-> > .gitignore file were skipped at the time (their GPL-2.0-only tag was
-> > added later). Let's update the tags.
-> >
-> > Cc: Alexei Starovoitov <ast@kernel.org>
-> > Cc: Andrii Nakryiko <andriin@fb.com>
-> > Cc: Ilya Leoshkevich <iii@linux.ibm.com>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
->
-> Acked-by: Jakub Kicinski <kuba@kernel.org>
+On Tue, Nov 09, 2021 at 01:57:31PM -0800, Joe Perches wrote:
+> On Tue, 2021-11-09 at 00:58 +0000, Nadav Amit wrote:
+> > > On Nov 8, 2021, at 4:37 PM, Joe Perches <joe@perches.com> wrote:
+> > > On Mon, 2021-11-08 at 16:22 -0800, Srivatsa S. Bhat wrote:
+> > > 
+> > > So it's an exploder not an actual maintainer and it likely isn't
+> > > publically archived with any normal list mechanism.
+> > > 
+> > > So IMO "private" isn't appropriate.  Neither is "L:"
+> > > Perhaps just mark it as what it is as an "exploder".
+> > > 
+> > > Or maybe these blocks should be similar to:
+> > > 
+> > > M:	Name of Lead Developer <somebody@vmware.com>
+> > > M:	VMware <foo> maintainers <linux-<foo>-maintainers@vmlinux.com>
+> 
+> Maybe adding entries like
+> 
+> M:	Named maintainer <whoever@vmware.com>
+> R:	VMware <foo> reviewers <linux-<foo>-maintainers@vmware.com>
+> 
+> would be best/simplest.
+> 
 
-Applied. Thanks everyone.
+Sure, that sounds good to me. I also considered adding "(email alias)"
+like Juergen suggested, but I think the R: entry is clear enough.
+Please find the updated patch below.
+
+---
+
+From f66faa238facf504cfc66325912ce7af8cbf79ec Mon Sep 17 00:00:00 2001
+From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
+Date: Mon, 8 Nov 2021 11:46:57 -0800
+Subject: [PATCH v2 2/2] MAINTAINERS: Mark VMware mailing list entries as email
+ aliases
+
+VMware mailing lists in the MAINTAINERS file are private lists meant
+for VMware-internal review/notification for patches to the respective
+subsystems. Anyone can post to these addresses, but there is no public
+read access like open mailing lists, which makes them more like email
+aliases instead (to reach out to reviewers).
+
+So update all the VMware mailing list references in the MAINTAINERS
+file to mark them as such, using "R: email-alias@vmware.com".
+
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+Cc: Zack Rusin <zackr@vmware.com>
+Cc: Nadav Amit <namit@vmware.com>
+Cc: Vivek Thampi <vithampi@vmware.com>
+Cc: Vishal Bhakta <vbhakta@vmware.com>
+Cc: Ronak Doshi <doshir@vmware.com>
+Cc: pv-drivers@vmware.com
+Cc: linux-graphics-maintainer@vmware.com
+Cc: dri-devel@lists.freedesktop.org
+Cc: linux-rdma@vger.kernel.org
+Cc: linux-scsi@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Cc: linux-input@vger.kernel.org
+---
+ MAINTAINERS | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 118cf8170d02..4372d79027e9 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6134,8 +6134,8 @@ T:	git git://anongit.freedesktop.org/drm/drm-misc
+ F:	drivers/gpu/drm/vboxvideo/
+ 
+ DRM DRIVER FOR VMWARE VIRTUAL GPU
+-M:	"VMware Graphics" <linux-graphics-maintainer@vmware.com>
+ M:	Zack Rusin <zackr@vmware.com>
++R:	VMware Graphics Reviewers <linux-graphics-maintainer@vmware.com>
+ L:	dri-devel@lists.freedesktop.org
+ S:	Supported
+ T:	git git://anongit.freedesktop.org/drm/drm-misc
+@@ -14189,7 +14189,7 @@ F:	include/uapi/linux/ppdev.h
+ PARAVIRT_OPS INTERFACE
+ M:	Juergen Gross <jgross@suse.com>
+ M:	Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+-L:	pv-drivers@vmware.com (private)
++R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+ L:	virtualization@lists.linux-foundation.org
+ L:	x86@kernel.org
+ S:	Supported
+@@ -20032,7 +20032,7 @@ F:	tools/testing/vsock/
+ 
+ VMWARE BALLOON DRIVER
+ M:	Nadav Amit <namit@vmware.com>
+-M:	"VMware, Inc." <pv-drivers@vmware.com>
++R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+ L:	linux-kernel@vger.kernel.org
+ S:	Maintained
+ F:	drivers/misc/vmw_balloon.c
+@@ -20040,7 +20040,7 @@ F:	drivers/misc/vmw_balloon.c
+ VMWARE HYPERVISOR INTERFACE
+ M:	Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+ M:	Alexey Makhalov <amakhalov@vmware.com>
+-L:	pv-drivers@vmware.com (private)
++R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+ L:	virtualization@lists.linux-foundation.org
+ L:	x86@kernel.org
+ S:	Supported
+@@ -20050,14 +20050,14 @@ F:	arch/x86/kernel/cpu/vmware.c
+ 
+ VMWARE PVRDMA DRIVER
+ M:	Adit Ranadive <aditr@vmware.com>
+-M:	VMware PV-Drivers <pv-drivers@vmware.com>
++R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+ L:	linux-rdma@vger.kernel.org
+ S:	Maintained
+ F:	drivers/infiniband/hw/vmw_pvrdma/
+ 
+ VMware PVSCSI driver
+ M:	Vishal Bhakta <vbhakta@vmware.com>
+-M:	VMware PV-Drivers <pv-drivers@vmware.com>
++R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+ L:	linux-scsi@vger.kernel.org
+ S:	Maintained
+ F:	drivers/scsi/vmw_pvscsi.c
+@@ -20065,7 +20065,7 @@ F:	drivers/scsi/vmw_pvscsi.h
+ 
+ VMWARE VIRTUAL PTP CLOCK DRIVER
+ M:	Vivek Thampi <vithampi@vmware.com>
+-M:	"VMware, Inc." <pv-drivers@vmware.com>
++R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+ L:	netdev@vger.kernel.org
+ S:	Supported
+ F:	drivers/ptp/ptp_vmw.c
+@@ -20073,14 +20073,14 @@ F:	drivers/ptp/ptp_vmw.c
+ VMWARE VMCI DRIVER
+ M:	Jorgen Hansen <jhansen@vmware.com>
+ M:	Vishnu Dasa <vdasa@vmware.com>
++R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+ L:	linux-kernel@vger.kernel.org
+-L:	pv-drivers@vmware.com (private)
+ S:	Maintained
+ F:	drivers/misc/vmw_vmci/
+ 
+ VMWARE VMMOUSE SUBDRIVER
+-M:	"VMware Graphics" <linux-graphics-maintainer@vmware.com>
+-M:	"VMware, Inc." <pv-drivers@vmware.com>
++R:	VMware Graphics Reviewers <linux-graphics-maintainer@vmware.com>
++R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+ L:	linux-input@vger.kernel.org
+ S:	Maintained
+ F:	drivers/input/mouse/vmmouse.c
+@@ -20088,7 +20088,7 @@ F:	drivers/input/mouse/vmmouse.h
+ 
+ VMWARE VMXNET3 ETHERNET DRIVER
+ M:	Ronak Doshi <doshir@vmware.com>
+-M:	pv-drivers@vmware.com
++R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+ L:	netdev@vger.kernel.org
+ S:	Maintained
+ F:	drivers/net/vmxnet3/
+-- 
+2.25.1
+
