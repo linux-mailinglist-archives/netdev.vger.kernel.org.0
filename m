@@ -2,83 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 033A744B99B
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 01:30:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C11944B9D7
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 02:00:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230487AbhKJAcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 19:32:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51764 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230508AbhKJAcc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 19:32:32 -0500
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11939C061767
-        for <netdev@vger.kernel.org>; Tue,  9 Nov 2021 16:29:46 -0800 (PST)
-Received: by mail-pg1-x52c.google.com with SMTP id n23so602172pgh.8
-        for <netdev@vger.kernel.org>; Tue, 09 Nov 2021 16:29:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=/HlAJkz8z+WvcY1CNW3q9RpILjfIUidoFI5uK5K0/NY=;
-        b=GB5GtDe36Kfotz+SAUI0Z8GpWiH2kk8PQ5lNYJGw6bgIQyDnZ/HG4DwavAtQn1aEUr
-         20vfcZXTxD35Oava+sQSijJxHDN8BshQVGo743YxNC/BiFp+zW2DVQ/vjQWp8AsSy+Mc
-         rvT9WDKB+MEZvwaXMzoTnKV1j3Rn3uuoqVD59pgzA75gmmpKzj0OvH2E+BZwLhOhH/5V
-         0IqWEe+4PlkE950mD+Hix0dSGHzNqia1ezeGjXchD3O+208/5S6yYHL1hZS08gz4EuhI
-         fhi6H0g+dZ4mZ11lh99Y06blEdW3Z4e8/Y97vl1LgXWv8YC/3GIgHleCYUQHUYedsTJ+
-         sf3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=/HlAJkz8z+WvcY1CNW3q9RpILjfIUidoFI5uK5K0/NY=;
-        b=y6eQsJWDv0folm/HG6EeOAsI6EuCOrXxZBiA3jwBX3pQ/qNpIG276ZcUdZTb0QMu89
-         oWLdR2I6sG1xvd4QLyr9LYEn7z31e+doasGO2bVu1F2iyaLv0CnLeo5i/fy/l9bhutuX
-         S2onNT7tx7+zVMt/K2sWbAM0hS+iMbO7Fe7ruCqTJIlSxiTVCuZcDvsHrhYg1rlEWRXu
-         Gh93dg/VDVQMyWcuNlT/1mgs0ePxIBeh7q2pPS3e4GHLRdlqoHB1eIBETXtQOk7/e4WG
-         1zn35EDaUZI4JwhjD/PIU6SMmJwtEr/m//8urDtgJlt/gd97O1iOWtWtpsq30744vpC+
-         EwbA==
-X-Gm-Message-State: AOAM530mdd++f2hDWoW3raO5dpZJkKeHKHOhz0JeIA3BBS2wPcgebaRx
-        dX0z/CmYt04vNS3AOCgavgd3NHJdtBQ=
-X-Google-Smtp-Source: ABdhPJypDhouvq0pwS01V6Vg3ru+o+9AX7Pj1GlHdbnxzl5D7BhQEpcSiyE5xBQ3q5GQSpTdEhWUjw==
-X-Received: by 2002:a65:460f:: with SMTP id v15mr9102237pgq.430.1636504185346;
-        Tue, 09 Nov 2021 16:29:45 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id a11sm7097406pfh.108.2021.11.09.16.29.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Nov 2021 16:29:44 -0800 (PST)
-Subject: Re: Suitable value for bonding module's tx_queues?
-To:     Johannes Lundberg <johalun0@gmail.com>, netdev@vger.kernel.org
-References: <948e62ad-2fe5-11e3-03a9-8382f7e8b6f1@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <edcf2233-4da9-b756-150d-114285b860d1@gmail.com>
-Date:   Tue, 9 Nov 2021 16:29:38 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S229583AbhKJBDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 20:03:18 -0500
+Received: from mga07.intel.com ([134.134.136.100]:13821 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229545AbhKJBDS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Nov 2021 20:03:18 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10163"; a="296012678"
+X-IronPort-AV: E=Sophos;i="5.87,221,1631602800"; 
+   d="scan'208";a="296012678"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2021 17:00:30 -0800
+X-IronPort-AV: E=Sophos;i="5.87,221,1631602800"; 
+   d="scan'208";a="503739512"
+Received: from vcostago-mobl3.jf.intel.com ([10.24.14.56])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2021 17:00:30 -0800
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     bpf@vger.kernel.org
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        memxor@gmail.com, kafai@fb.com, andrii@kernel.org,
+        songliubraving@fb.com, yhs@fb.com
+Subject: [PATCH net v1] bpf: Fix build when CONFIG_BPF_SYSCALL is disabled
+Date:   Tue,  9 Nov 2021 17:00:24 -0800
+Message-Id: <20211110010024.31415-1-vinicius.gomes@intel.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-In-Reply-To: <948e62ad-2fe5-11e3-03a9-8382f7e8b6f1@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+When CONFIG_DEBUG_INFO_BTF is enabled and CONFIG_BPF_SYSCALL is
+disabled, the following compilation error can be seen:
 
+  GEN     .version
+  CHK     include/generated/compile.h
+  UPD     include/generated/compile.h
+  CC      init/version.o
+  AR      init/built-in.a
+  LD      vmlinux.o
+  MODPOST vmlinux.symvers
+  MODINFO modules.builtin.modinfo
+  GEN     modules.builtin
+  LD      .tmp_vmlinux.btf
+ld: net/ipv4/tcp_cubic.o: in function `cubictcp_unregister':
+net/ipv4/tcp_cubic.c:545: undefined reference to `bpf_tcp_ca_kfunc_list'
+ld: net/ipv4/tcp_cubic.c:545: undefined reference to `unregister_kfunc_btf_id_set'
+ld: net/ipv4/tcp_cubic.o: in function `cubictcp_register':
+net/ipv4/tcp_cubic.c:539: undefined reference to `bpf_tcp_ca_kfunc_list'
+ld: net/ipv4/tcp_cubic.c:539: undefined reference to `register_kfunc_btf_id_set'
+  BTF     .btf.vmlinux.bin.o
+pahole: .tmp_vmlinux.btf: No such file or directory
+  LD      .tmp_vmlinux.kallsyms1
+.btf.vmlinux.bin.o: file not recognized: file format not recognized
+make: *** [Makefile:1187: vmlinux] Error 1
 
-On 11/9/21 12:58 PM, Johannes Lundberg wrote:
-> Hi
-> 
-> Please cc me on reply since I'm not subscribed.
-> 
-> I'm wondering when you want to change tx_queues from default 16. Should this match the total number of queues of all the members of the bond? Let's say I got 2 interfaces, each with 24 queues on a 24 CPU system in a bond. Should I load bonding with 24 to match the number of CPUs or 48 to match the total number of queues of the members, or leave at default because it's not relevant?
-> 
-> Thanks!
-> 
+'bpf_tcp_ca_kfunc_list', 'register_kfunc_btf_id_set()' and
+'unregister_kfunc_btf_id_set()' are only defined when
+CONFIG_BPF_SYSCALL is enabled.
 
-Unless you add a mq qdisc on the bonding device, "number of tx queues" does not matter
-because bonding is a virtual device, with NETIF_F_LLTX
+Fix that by moving those definitions somewhere that doesn't depend on
+the bpf() syscall.
 
+Fixes: 14f267d95fe4 ("bpf: btf: Introduce helpers for dynamic BTF set registration")
+Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+---
+This is RFC-ish as I don't know enough about BPF/BTF. I could be missing something.
 
+ kernel/bpf/btf.c  | 25 -------------------------
+ kernel/bpf/core.c | 37 +++++++++++++++++++++++++++++++++++++
+ 2 files changed, 37 insertions(+), 25 deletions(-)
+
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index dbc3ad07e21b..69dd2efd518f 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -6344,33 +6344,8 @@ const struct bpf_func_proto bpf_btf_find_by_name_kind_proto = {
+ 
+ BTF_ID_LIST_GLOBAL_SINGLE(btf_task_struct_ids, struct, task_struct)
+ 
+-/* BTF ID set registration API for modules */
+-
+-struct kfunc_btf_id_list {
+-	struct list_head list;
+-	struct mutex mutex;
+-};
+-
+ #ifdef CONFIG_DEBUG_INFO_BTF_MODULES
+ 
+-void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
+-			       struct kfunc_btf_id_set *s)
+-{
+-	mutex_lock(&l->mutex);
+-	list_add(&s->list, &l->list);
+-	mutex_unlock(&l->mutex);
+-}
+-EXPORT_SYMBOL_GPL(register_kfunc_btf_id_set);
+-
+-void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
+-				 struct kfunc_btf_id_set *s)
+-{
+-	mutex_lock(&l->mutex);
+-	list_del_init(&s->list);
+-	mutex_unlock(&l->mutex);
+-}
+-EXPORT_SYMBOL_GPL(unregister_kfunc_btf_id_set);
+-
+ bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist, u32 kfunc_id,
+ 			      struct module *owner)
+ {
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 327e3996eadb..4b2ad0fa0a4f 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -2449,6 +2449,43 @@ int __weak bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
+ DEFINE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
+ EXPORT_SYMBOL(bpf_stats_enabled_key);
+ 
++/* BTF ID set registration API for modules */
++
++struct kfunc_btf_id_list {
++	struct list_head list;
++	struct mutex mutex;
++};
++
++#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
++
++void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
++			       struct kfunc_btf_id_set *s)
++{
++	mutex_lock(&l->mutex);
++	list_add(&s->list, &l->list);
++	mutex_unlock(&l->mutex);
++}
++EXPORT_SYMBOL_GPL(register_kfunc_btf_id_set);
++
++void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
++				 struct kfunc_btf_id_set *s)
++{
++	mutex_lock(&l->mutex);
++	list_del_init(&s->list);
++	mutex_unlock(&l->mutex);
++}
++EXPORT_SYMBOL_GPL(unregister_kfunc_btf_id_set);
++
++#endif
++
++#define DEFINE_KFUNC_BTF_ID_LIST(name)                                         \
++	struct kfunc_btf_id_list name = { LIST_HEAD_INIT(name.list),           \
++					  __MUTEX_INITIALIZER(name.mutex) };   \
++	EXPORT_SYMBOL_GPL(name)
++
++DEFINE_KFUNC_BTF_ID_LIST(bpf_tcp_ca_kfunc_list);
++DEFINE_KFUNC_BTF_ID_LIST(prog_test_kfunc_list);
++
+ /* All definitions of tracepoints related to BPF. */
+ #define CREATE_TRACE_POINTS
+ #include <linux/bpf_trace.h>
+-- 
+2.33.1
 
