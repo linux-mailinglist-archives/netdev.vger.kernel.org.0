@@ -2,157 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC68A44C21B
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 14:30:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54BBC44C22D
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 14:36:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231760AbhKJNdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 08:33:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57030 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231210AbhKJNdl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 08:33:41 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 347B3C061764;
-        Wed, 10 Nov 2021 05:30:54 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id ee33so10547927edb.8;
-        Wed, 10 Nov 2021 05:30:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=PdcubBZGgzy6nCoanrqJmpFMiZMmdU7pQANUJ/vf8eY=;
-        b=D1RKrIP8CxU3TOmiu3Pl8kzv3oznBHOjPzBh6CJfrs59HK1ges5QS/xmYXP8JFeFWA
-         u6hHFxRioeYQl5J5Bo/klURzfjPSecO/kekFvMMI3Y/fK9gydsYqsuUybG+DZNuEiGRm
-         P8Lgf1JYlG3ZyyUwEeOol12sX3EJTCXz8cAfUujHpe2HmLXCWqeMc9Ng/nv5ORfFgwh+
-         4A9+vMp9PzFqYvXaJiP7nf8lUUZzRzcwankpDxapKbSR2dk06RunYg9dklrry5ETwexV
-         KVmuLKxMFUmNaip3r9b5h/x1/vfySS/q2uPfAh85PSTu/MEs8aQZhDbVKf7EeWjy7XJ3
-         FZpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PdcubBZGgzy6nCoanrqJmpFMiZMmdU7pQANUJ/vf8eY=;
-        b=8P9id9/hsTcyfYQsiQ2MZLhZ/vQS5ZeBIWrNnu6iNTOE0KY8gZD6XS4ku567pR/YX0
-         p64m9mhIazYyEKk+bRbK7EjP9bxbyGIllN01YqHbaFGuTYu8CSxU3ZHFCAmblD+NUHXK
-         63ylmfvMZ6Ccgvb7tsBfhknvxGg2iv79pbgQ4ZH1w4xeGvmcaaeet5XO2Eg8BCJFJkAf
-         bn+qg+KbwpZEmFgaEBKmQmNqk5IMliqR1FKo3fynuSHgTpf/Yi6eYuU/G5b+yjmgqyPe
-         5H549Nb1dAL6koTzxikZcUK1DLU8UVhXwJP6njY9JhpH5Em3E5E6v4Zs8E2r2pXfIa4w
-         sPog==
-X-Gm-Message-State: AOAM533uTfIgucRdxcQYcSmTgv2RtuXlY5IBqwx64zN+sUhD9cU7Fw+g
-        7BPVRDSu56Lw5P4ccdU1xSg=
-X-Google-Smtp-Source: ABdhPJwBS8X7ydnbTxbWZvcRu4+oL7W0gBpGmbGJr7GwZAoZXhjwe+BJk0DXl08PvgkistfaUFRO1g==
-X-Received: by 2002:a05:6402:182:: with SMTP id r2mr4932991edv.313.1636551052034;
-        Wed, 10 Nov 2021 05:30:52 -0800 (PST)
-Received: from skbuf ([188.25.175.102])
-        by smtp.gmail.com with ESMTPSA id t6sm12885365edj.27.2021.11.10.05.30.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Nov 2021 05:30:50 -0800 (PST)
-Date:   Wed, 10 Nov 2021 15:30:48 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     Martin Kaistra <martin.kaistra@linutronix.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 6/7] net: dsa: b53: Add logic for TX timestamping
-Message-ID: <20211110133048.3ml6wpjncd6ivqbz@skbuf>
-References: <20211109095013.27829-1-martin.kaistra@linutronix.de>
- <20211109095013.27829-7-martin.kaistra@linutronix.de>
- <20211109111213.6vo5swdhxjvgmyjt@skbuf>
- <87ee7o8otj.fsf@kurt>
- <20211110130545.ga7ajracz2vvzotg@skbuf>
+        id S231501AbhKJNjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 08:39:15 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:54732 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231210AbhKJNjM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Nov 2021 08:39:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=virQNNKalV0a8U7ToqzDsctwOUdzNW0Hb+k7Zd27NHc=; b=qX
+        751ZbcrzC+rctO8zfIW6W5PawRpvpMu1sWcKlDw4UV2Q+sDumVMC78Li2ZPWTqwRjjTeLTiJueOp4
+        HXpEfexZns3lLDNDOe8fUS8DMpw7o+1WXEJz1z4oi/0qeJu2P5liG7S9RpsKPrbN5x4k5dcPsN+fo
+        oqxCxJySoZOHPus=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mknlq-00D6pX-J4; Wed, 10 Nov 2021 14:36:10 +0100
+Date:   Wed, 10 Nov 2021 14:36:10 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "shenjian (K)" <shenjian15@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, ecree.xilinx@gmail.com,
+        hkallweit1@gmail.com, alexandr.lobakin@intel.com, saeed@kernel.org,
+        netdev@vger.kernel.org, linuxarm@openeuler.org
+Subject: Re: [RFCv4 PATCH net-next] net: extend netdev_features_t
+Message-ID: <YYvKyruLcemj6J+i@lunn.ch>
+References: <20211107101519.29264-1-shenjian15@huawei.com>
+ <YYr3FXJC3eu4AN31@lunn.ch>
+ <86fa46f8-2a20-8912-7ec2-19257d6598db@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20211110130545.ga7ajracz2vvzotg@skbuf>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <86fa46f8-2a20-8912-7ec2-19257d6598db@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 10, 2021 at 03:05:45PM +0200, Vladimir Oltean wrote:
-> Hi Kurt,
+On Wed, Nov 10, 2021 at 09:17:12AM +0800, shenjian (K) wrote:
 > 
-> On Wed, Nov 10, 2021 at 08:14:32AM +0100, Kurt Kanzenbach wrote:
-> > Hi Vladimir,
-> > 
-> > On Tue Nov 09 2021, Vladimir Oltean wrote:
-> > >> +void b53_port_txtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb)
-> > >> +{
-> > >> +	struct b53_device *dev = ds->priv;
-> > >> +	struct b53_port_hwtstamp *ps = &dev->ports[port].port_hwtstamp;
-> > >> +	struct sk_buff *clone;
-> > >> +	unsigned int type;
-> > >> +
-> > >> +	type = ptp_classify_raw(skb);
-> > >> +
-> > >> +	if (type != PTP_CLASS_V2_L2)
-> > >> +		return;
-> > >> +
-> > >> +	if (!test_bit(B53_HWTSTAMP_ENABLED, &ps->state))
-> > >> +		return;
-> > >> +
-> > >> +	clone = skb_clone_sk(skb);
-> > >> +	if (!clone)
-> > >> +		return;
-> > >> +
-> > >> +	if (test_and_set_bit_lock(B53_HWTSTAMP_TX_IN_PROGRESS, &ps->state)) {
-> > >
-> > > Is it ok if you simply don't timestamp a second skb which may be sent
-> > > while the first one is in flight, I wonder? What PTP profiles have you
-> > > tested with? At just one PTP packet at a time, the switch isn't giving
-> > > you a lot.
-> > 
-> > PTP only generates a couple of messages per second which need to be
-> > timestamped. Therefore, this behavior shouldn't be a problem.
-> > 
-> > hellcreek (and mv88e6xxx) do the same thing, simply because the device
-> > can only hold only one Tx timestamp. If we'd allow more than one PTP
-> > packet in flight, there will be correlation problems. I've tested with
-> > default and gPTP profile without any problems. What PTP profiles do have
-> > in mind?
 > 
-> First of all, let's separate "more than one packet in flight" at the
-> hardware/driver level vs user space level. Even if there is any hardware
-> requirement to not request TX timestamping for the 2nd frame until the
-> 1st has been acked, that shouldn't necessarily have an implication upon
-> what user space sees. After all, we don't tell user space anything about
-> the realities of the hardware it's running on.
+> 在 2021/11/10 6:32, Andrew Lunn 写道:
+> > > -	if ((netdev->features & NETIF_F_HW_TC) > (features & NETIF_F_HW_TC) &&
+> > > +	if ((netdev_active_features_test_bit(netdev, NETIF_F_HW_TC_BIT) >
+> > > +	    netdev_features_test_bit(NETIF_F_NTUPLE_BIT, features)) &&
+> > Using > is interesting.
+> will use
 > 
-> So it is true that ptp4l is single threaded and always polls
-> synchronously for the reception of a TX timestamp on the error queue
-> before proceeding to do anything else. But writing a kernel driver to
-> the specification of a single user space program is questionable.
-> Especially with the SOF_TIMESTAMPING_OPT_ID flag of the SO_TIMESTAMPING
-> socket option, it is quite possible to write a different PTP stack that
-> handles TX timestamps differently. It sends event messages on their
-> respective timer expiry (sync, peer delay request, whatever), and
-> processes TX timestamps as they come, asynchronously instead of blocking.
-> That other PTP stack would not work reliably with this driver (or with
-> mv88e6xxx, or with hellcreek).
+> if (netdev_active_features_test_bit(netdev, NETIF_F_HW_TC_BIT) &&
+>     !netdev_features_test_bit(netdev, NETIF_F_HW_TC_BIT))
+> 
+> instead.
 
-Another example that may be closer to you is using vclocks and multiple
-ptp4l instances in multiple domains, over the same ports. Since ptp4l
-doesn't claim exclusive ownership of an interface, there you don't even
-need to have a different stack to see issues with the timestamps of one
-ptp4l instance getting dropped just because a different one happened to
-send an event message at the same time.
+I don't think it needs changing. It is just unusual. I had to think
+about it, a while, and i was not initial sure it would still work.
 
-> > > Is it a hardware limitation?
+> > But where did NETIF_F_NTUPLE_BIT come from?
+> Thanks for catching this!
+ 
+> > > -	netdev->features |= NETIF_F_HW_VLAN_CTAG_FILTER |
+> > > -		NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX |
+> > > -		NETIF_F_RXCSUM | NETIF_F_SG | NETIF_F_GSO |
+> > > -		NETIF_F_GRO | NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_GSO_GRE |
+> > > -		NETIF_F_GSO_GRE_CSUM | NETIF_F_GSO_UDP_TUNNEL |
+> > > -		NETIF_F_SCTP_CRC | NETIF_F_FRAGLIST;
+> > > +	netdev_features_zero(&features);
+> > > +	netdev_features_set_array(hns3_default_features_array,
+> > > +				  ARRAY_SIZE(hns3_default_features_array),
+> > > +				  &features);
+> > The original code is netdev->features |= so it is appending these
+> > bits. Yet the first thing the new code does is zero features?
 > > 
-> > Not for the b53. It will generate status frames for each to be
-> > timestamped packet. However, I don't see the need to allow more than one
-> > Tx packet per port to be timestamped at the moment.
-> > 
-> > Thanks,
-> > Kurt
+> >        Andrew
+> > .
+> The features is a local variable, the change for netdev->active_features is
+> later, by calling
 > 
-> 
+> netdev_active_features_direct_or(netdev, features);
+
+O.K. This and the NETIF_F_NTPLE_BIT points towards another issue. The
+new API looks O.K. to me and we need to encourage more people to
+review it. This patch allows us to see where you are going with the
+change, and i think it is O.K.
+
+However, you are about to modify a large number of files to swap to
+this new API. Accidentally changing NETIF_F_HW_TC to
+NETIF_F_NTUPLE_BIT is unlikely to be noticed in review given the size
+of the change you are about to make. Changing the structure of the
+code to later call netdev_active_features_direct_or() is going to be
+messy. In order to have confidence you are not introducing a lot of
+new bugs we are going to want to see the semantic patches which make
+all the needed changes. So while waiting for further reviews, i
+suggest you are start on the semantic patches. It could also be that
+you want to modify the proposed API in minor ways to make it easier to
+write the semantic patches.
+
+      Andrew
+
