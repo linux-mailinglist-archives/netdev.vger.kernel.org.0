@@ -2,148 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E83B44C1D6
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 14:05:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D38B844C1F5
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 14:15:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231997AbhKJNIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 08:08:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51396 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231162AbhKJNIg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 08:08:36 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCCD3C061764;
-        Wed, 10 Nov 2021 05:05:48 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id x15so10396643edv.1;
-        Wed, 10 Nov 2021 05:05:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=KPNsZzc2E1+3l/gXAViN6JbSjy2RMoZISYhUaEliIWM=;
-        b=ZhtKVXJzgF4OPgvd7zg+7pyIF3fsZtApKls2ZBzNTD9LuSYl2JUj1rwhNLVCNEx+5J
-         b9IF4WYdJsry61oRL0Vs+pFmCtMsdEU6NwyB9tR4gTXoQyD3mEDvCsgjvClsxCcaTkC1
-         Q1Kg+741ZWsTLi8ZKDvuKWkQPiYMgZ6kkqywtWKvnCdngOmz0yi+R0ndQX2PdNKW2teU
-         /QOe+fkTimpLOwhPfMS+3+G1mwLXOKHoXzyCRLoJ3lHEHDDIAcigtmktUB+Xbx2CTKgu
-         FJVXqKCnlH3G4IKcYqDwy9/iQLtjlR3cWEsLeIgtAI4uz7ki9pYOPLFt/nLyILGj9c90
-         Odgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KPNsZzc2E1+3l/gXAViN6JbSjy2RMoZISYhUaEliIWM=;
-        b=X0ctfqbMZJVVrqfePAo2FhiL33lL2sGnaCm2XUlj1RHagzbQ1rRpL7NHIk2kTSF+Y5
-         67Y5sY6B++/MsYhTVrqiDgRJ+JZeY/k6kOX7Gn1YPAN0BnFD86hilFGM8bGxKCka6/8s
-         bXvZ/hzakfp1cVP11C40lENtZkctycs5ENQujVDFoDJDXRMZoE1mEjRAOFSjbArw0JIk
-         5xXTwLpIsUDvfWJsRkCPaMbAsOkCUXeSad1xDSdKnje/SUmcVz1tfpdaRk79KuKtkDF6
-         pOcwpEizOHccjfixeX6X7OrL7nUMQkPk1zxJ8qV2ESWKiKjGBoXSjs90GuarYk4tx28p
-         ChyA==
-X-Gm-Message-State: AOAM532DEOu5fI04YoK6Nl5dJtQQabYHHlpqsLkU0VB5PMz8DENL588g
-        7J7VK6LI8dwEq6hUMw8e06Q=
-X-Google-Smtp-Source: ABdhPJwCgJ5JBt/MqNqQTPwVO3uGq+lNe+wjuaOf8NmyRRHB2Qo64jC7H8Bt3fnmHTVEQ4Az7CMmlQ==
-X-Received: by 2002:a05:6402:35c2:: with SMTP id z2mr21577281edc.135.1636549547417;
-        Wed, 10 Nov 2021 05:05:47 -0800 (PST)
-Received: from skbuf ([188.25.175.102])
-        by smtp.gmail.com with ESMTPSA id p6sm12631327edx.60.2021.11.10.05.05.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Nov 2021 05:05:46 -0800 (PST)
-Date:   Wed, 10 Nov 2021 15:05:45 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     Martin Kaistra <martin.kaistra@linutronix.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 6/7] net: dsa: b53: Add logic for TX timestamping
-Message-ID: <20211110130545.ga7ajracz2vvzotg@skbuf>
-References: <20211109095013.27829-1-martin.kaistra@linutronix.de>
- <20211109095013.27829-7-martin.kaistra@linutronix.de>
- <20211109111213.6vo5swdhxjvgmyjt@skbuf>
- <87ee7o8otj.fsf@kurt>
+        id S231980AbhKJNRu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 08:17:50 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:35864 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231641AbhKJNRt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 08:17:49 -0500
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1AABgZZp030024;
+        Wed, 10 Nov 2021 13:15:02 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=COOlmpUd/EPF0l1orxpaEzcUREam8OWI2PtRBKIZVkg=;
+ b=ULLiL4AzlegoqrCQAa+IlN0p5hDwoXKaWX3rRjvaHQQCoqAU4jzWER0ppwdzHqw3/ghL
+ 9G8D/fxmJSV7Ij6BRd+YVbolwUwbNHhjRWmvdVpJzx2nyndNOSqPctNdRbedfrXNzLcp
+ d70MoUfD+kJuXLK6IXm0c855adhlUUxcWDMSJUE9ZHT2x1Xk4yVEZ3LaK5K1WnzAeh6W
+ 08qEEJYw/FZ88DTOJPiUEisDykBi6C8J7U/YJdZ99tfV+R//roFQAJfWlMmIuCWhNjz3
+ A73k5RVLaxWzuADmFl+ZycQR2E1MSo3EG+UlEqx7X73EDge+qUxlhPHCyBfIYhHN+lm8 vg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3c8derhxkd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 10 Nov 2021 13:15:01 +0000
+Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1AACoGW8000855;
+        Wed, 10 Nov 2021 13:15:01 GMT
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3c8derhxjq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 10 Nov 2021 13:15:01 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1AADC03M009676;
+        Wed, 10 Nov 2021 13:14:59 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma02fra.de.ibm.com with ESMTP id 3c5hb9r9te-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 10 Nov 2021 13:14:58 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1AADEuGZ65798610
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 10 Nov 2021 13:14:56 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3B08211C04C;
+        Wed, 10 Nov 2021 13:14:56 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DF07611C05B;
+        Wed, 10 Nov 2021 13:14:55 +0000 (GMT)
+Received: from [9.145.47.152] (unknown [9.145.47.152])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 10 Nov 2021 13:14:55 +0000 (GMT)
+Message-ID: <0b6d5916-fad0-ccc1-9c37-21a92ffa8293@linux.ibm.com>
+Date:   Wed, 10 Nov 2021 14:14:56 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87ee7o8otj.fsf@kurt>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH net] net/smc: fix sk_refcnt underflow on linkdown and
+ fallback
+Content-Language: en-US
+To:     Dust Li <dust.li@linux.alibaba.com>,
+        Ursula Braun <ubraun@linux.vnet.ibm.com>
+Cc:     Tony Lu <tonylu@linux.alibaba.com>, guwen@linux.alibaba.com,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org
+References: <20211110070234.60527-1-dust.li@linux.alibaba.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <20211110070234.60527-1-dust.li@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: t7GsbITeQp8xcTQNJjbBSoSp35HwC8nE
+X-Proofpoint-ORIG-GUID: 5o9qha51cN0eOuR3Kdt5FDTDo7My730a
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-11-10_04,2021-11-08_02,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 adultscore=0
+ priorityscore=1501 impostorscore=0 suspectscore=0 mlxscore=0
+ mlxlogscore=978 phishscore=0 bulkscore=0 lowpriorityscore=0 spamscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2111100069
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kurt,
-
-On Wed, Nov 10, 2021 at 08:14:32AM +0100, Kurt Kanzenbach wrote:
-> Hi Vladimir,
+On 10/11/2021 08:02, Dust Li wrote:
+> We got the following WARNING when running ab/nginx
+> test with RDMA link flapping (up-down-up).
+> The reason is when smc_sock fallback and at linkdown
+> happens simultaneously, we may got the following situation:
 > 
-> On Tue Nov 09 2021, Vladimir Oltean wrote:
-> >> +void b53_port_txtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb)
-> >> +{
-> >> +	struct b53_device *dev = ds->priv;
-> >> +	struct b53_port_hwtstamp *ps = &dev->ports[port].port_hwtstamp;
-> >> +	struct sk_buff *clone;
-> >> +	unsigned int type;
-> >> +
-> >> +	type = ptp_classify_raw(skb);
-> >> +
-> >> +	if (type != PTP_CLASS_V2_L2)
-> >> +		return;
-> >> +
-> >> +	if (!test_bit(B53_HWTSTAMP_ENABLED, &ps->state))
-> >> +		return;
-> >> +
-> >> +	clone = skb_clone_sk(skb);
-> >> +	if (!clone)
-> >> +		return;
-> >> +
-> >> +	if (test_and_set_bit_lock(B53_HWTSTAMP_TX_IN_PROGRESS, &ps->state)) {
-> >
-> > Is it ok if you simply don't timestamp a second skb which may be sent
-> > while the first one is in flight, I wonder? What PTP profiles have you
-> > tested with? At just one PTP packet at a time, the switch isn't giving
-> > you a lot.
-> 
-> PTP only generates a couple of messages per second which need to be
-> timestamped. Therefore, this behavior shouldn't be a problem.
-> 
-> hellcreek (and mv88e6xxx) do the same thing, simply because the device
-> can only hold only one Tx timestamp. If we'd allow more than one PTP
-> packet in flight, there will be correlation problems. I've tested with
-> default and gPTP profile without any problems. What PTP profiles do have
-> in mind?
-
-First of all, let's separate "more than one packet in flight" at the
-hardware/driver level vs user space level. Even if there is any hardware
-requirement to not request TX timestamping for the 2nd frame until the
-1st has been acked, that shouldn't necessarily have an implication upon
-what user space sees. After all, we don't tell user space anything about
-the realities of the hardware it's running on.
-
-So it is true that ptp4l is single threaded and always polls
-synchronously for the reception of a TX timestamp on the error queue
-before proceeding to do anything else. But writing a kernel driver to
-the specification of a single user space program is questionable.
-Especially with the SOF_TIMESTAMPING_OPT_ID flag of the SO_TIMESTAMPING
-socket option, it is quite possible to write a different PTP stack that
-handles TX timestamps differently. It sends event messages on their
-respective timer expiry (sync, peer delay request, whatever), and
-processes TX timestamps as they come, asynchronously instead of blocking.
-That other PTP stack would not work reliably with this driver (or with
-mv88e6xxx, or with hellcreek).
-
-> > Is it a hardware limitation?
-> 
-> Not for the b53. It will generate status frames for each to be
-> timestamped packet. However, I don't see the need to allow more than one
-> Tx packet per port to be timestamped at the moment.
-> 
-> Thanks,
-> Kurt
+<snip>
 
 
+Acked-by: Karsten Graul <kgraul@linux.ibm.com>
