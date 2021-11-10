@@ -2,148 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5FCE44C9DD
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 20:53:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4775744C9E7
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 20:56:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232126AbhKJT43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 14:56:29 -0500
-Received: from mail-ot1-f43.google.com ([209.85.210.43]:42895 "EHLO
-        mail-ot1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230073AbhKJT4Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 14:56:24 -0500
-Received: by mail-ot1-f43.google.com with SMTP id g91-20020a9d12e4000000b0055ae68cfc3dso5557492otg.9;
-        Wed, 10 Nov 2021 11:53:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rtQL/sbdzpxz6Lu8ElJAZUiYQnGOPRjAvEo183EhEZQ=;
-        b=Y+G/EpUnkYeRwidEQcxcB/bCKh8UXs/sQt22sSAO1wgkYWmb6nrJ7MuuHhQul2ci8j
-         2CwHUXM2ymOtKrduUBQB+2NKgfo1yAiFZ3j6AQ3PxM07YMklELUttcvWqG0omYwHl/sV
-         yq8ZNsn3uiX3CnIQsK4DPopYdZ06Tq2RKg71EImg75aZyWplCShG2+E4b+BN9TypjKq/
-         mxKnFrAPVWtMfZ5FpoGYvy/PhT51mw5okPo70sezswBDfmXPIo1gcvzoTOUMmdMFJ1J6
-         XUoK7OrbJdyduylqzZ0cXRPntrMYyIIcF9X993qFHhgxve4XP2bRPSjR8QOauLAvH5kc
-         sZwA==
-X-Gm-Message-State: AOAM532SQ0biJ93+S/ljBKB2KNqVAnkdvc6jx23hWkd0WvEF1lIpE4E4
-        TbYwou8v7aIAf5FdWCwmag==
-X-Google-Smtp-Source: ABdhPJzPMoAqV3AUGDDa1G/mcQBg1/+e3vLu75Mv4kA30QovRpmA/hmvXuDtC6I5AysjT0t7pidUQg==
-X-Received: by 2002:a9d:6a4e:: with SMTP id h14mr1449816otn.134.1636574015905;
-        Wed, 10 Nov 2021 11:53:35 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id j7sm129827oon.13.2021.11.10.11.53.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Nov 2021 11:53:35 -0800 (PST)
-Received: (nullmailer pid 1864115 invoked by uid 1000);
-        Wed, 10 Nov 2021 19:53:32 -0000
-Date:   Wed, 10 Nov 2021 13:53:32 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     patrice.chotard@foss.st.com
-Cc:     Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        alexandre torgue <alexandre.torgue@foss.st.com>,
-        jonathan cameron <jic23@kernel.org>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        olivier moysan <olivier.moysan@foss.st.com>,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        linux-mtd@lists.infradead.org, linux-watchdog@vger.kernel.org,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        maxime coquelin <mcoquelin.stm32@gmail.com>,
-        Matt Mackall <mpm@selenic.com>, vinod koul <vkoul@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        baolin wang <baolin.wang7@gmail.com>,
-        linux-spi@vger.kernel.org, david airlie <airlied@linux.ie>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        netdev@vger.kernel.org,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        ohad ben-cohen <ohad@wizery.com>, linux-gpio@vger.kernel.org,
-        Jose Abreu <joabreu@synopsys.com>,
-        Le Ray <erwan.leray@foss.st.com>,
-        herbert xu <herbert@gondor.apana.org.au>,
-        michael turquette <mturquette@baylibre.com>,
-        Christophe Kerello <christophe.kerello@foss.st.com>,
-        Gabriel Fernandez <gabriel.fernandez@foss.st.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Christophe Roullier <christophe.roullier@foss.st.com>,
-        linux-serial@vger.kernel.org, Amit Kucheria <amitk@kernel.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Ludovic Barre <ludovic.barre@foss.st.com>,
-        "david s . miller" <davem@davemloft.net>,
-        Lionel Debieve <lionel.debieve@foss.st.com>,
-        linux-i2c@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        Guenter Roeck <linux@roeck-us.net>,
-        thierry reding <thierry.reding@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        philippe cornu <philippe.cornu@foss.st.com>,
-        linux-rtc@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Hugues Fruchet <hugues.fruchet@foss.st.com>,
-        alsa-devel@alsa-project.org, Zhang Rui <rui.zhang@intel.com>,
-        linux-crypto@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        linux-iio@vger.kernel.org, pascal Paillet <p.paillet@foss.st.com>,
-        Pierre-Yves MORDRET <pierre-yves.mordret@foss.st.com>,
-        Fabien Dessenne <fabien.dessenne@foss.st.com>,
-        linux-pm@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
-        stephen boyd <sboyd@kernel.org>,
-        dillon min <dillon.minfei@gmail.com>,
-        devicetree@vger.kernel.org,
-        yannick fertre <yannick.fertre@foss.st.com>,
-        linux-kernel@vger.kernel.org,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        linux-phy@lists.infradead.org,
-        benjamin gaignard <benjamin.gaignard@linaro.org>,
-        sam ravnborg <sam@ravnborg.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-clk@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Richard Weinberger <richard@nod.at>,
-        Rob Herring <robh+dt@kernel.org>, Marek Vasut <marex@denx.de>,
-        arnaud pouliquen <arnaud.pouliquen@foss.st.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        dmaengine@vger.kernel.org, linux-media@vger.kernel.org,
-        daniel vetter <daniel@ffwll.ch>, Marc Zyngier <maz@kernel.org>,
-        bjorn andersson <bjorn.andersson@linaro.org>,
-        lars-peter clausen <lars@metafoo.de>
-Subject: Re: [PATCH v3 2/5] dt-bindings: mfd: timers: Update maintainers for
- st,stm32-timers
-Message-ID: <YYwjPAoCtuM6iycz@robh.at.kernel.org>
-References: <20211110150144.18272-1-patrice.chotard@foss.st.com>
- <20211110150144.18272-3-patrice.chotard@foss.st.com>
+        id S231688AbhKJT7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 14:59:05 -0500
+Received: from mga17.intel.com ([192.55.52.151]:63653 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230195AbhKJT7E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Nov 2021 14:59:04 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10164"; a="213478931"
+X-IronPort-AV: E=Sophos;i="5.87,224,1631602800"; 
+   d="scan'208";a="213478931"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2021 11:56:16 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,224,1631602800"; 
+   d="scan'208";a="504107409"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga008.jf.intel.com with ESMTP; 10 Nov 2021 11:56:12 -0800
+Received: from alobakin-mobl.ger.corp.intel.com (acetnero-MOBL1.ger.corp.intel.com [10.213.0.197])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1AAJuAjV016265;
+        Wed, 10 Nov 2021 19:56:11 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@intel.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Wei Wang <weiwan@google.com>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 net] net: fix premature exit from NAPI state polling in napi_disable()
+Date:   Wed, 10 Nov 2021 20:56:05 +0100
+Message-Id: <20211110195605.1304-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211110150144.18272-3-patrice.chotard@foss.st.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 10 Nov 2021 16:01:41 +0100, patrice.chotard@foss.st.com wrote:
-> From: Patrice Chotard <patrice.chotard@foss.st.com>
-> 
-> Benjamin has left the company, remove his name from maintainers.
-> 
-> Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
-> ---
->  Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml | 1 -
->  1 file changed, 1 deletion(-)
-> 
+Commit 719c57197010 ("net: make napi_disable() symmetric with
+enable") accidentally introduced a bug sometimes leading to a kernel
+BUG when bringing an iface up/down under heavy traffic load.
 
-Lee indicated he was going to pick this one up, so:
+Prior to this commit, napi_disable() was polling n->state until
+none of (NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC) is set and then
+always flip them. Now there's a possibility to get away with the
+NAPIF_STATE_SCHE unset as 'continue' drops us to the cmpxchg()
+call with an unitialized variable, rather than straight to
+another round of the state check.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Error path looks like:
+
+napi_disable():
+unsigned long val, new; /* new is uninitialized */
+
+do {
+	val = READ_ONCE(n->state); /* NAPIF_STATE_NPSVC and/or
+				      NAPIF_STATE_SCHED is set */
+	if (val & (NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC)) { /* true */
+		usleep_range(20, 200);
+		continue; /* go straight to the condition check */
+	}
+	new = val | <...>
+} while (cmpxchg(&n->state, val, new) != val); /* state == val, cmpxchg()
+						  writes garbage */
+
+napi_enable():
+do {
+	val = READ_ONCE(n->state);
+	BUG_ON(!test_bit(NAPI_STATE_SCHED, &val)); /* 50/50 boom */
+<...>
+
+while the typical BUG splat is like:
+
+[  172.652461] ------------[ cut here ]------------
+[  172.652462] kernel BUG at net/core/dev.c:6937!
+[  172.656914] invalid opcode: 0000 [#1] PREEMPT SMP PTI
+[  172.661966] CPU: 36 PID: 2829 Comm: xdp_redirect_cp Tainted: G          I       5.15.0 #42
+[  172.670222] Hardware name: Intel Corporation S2600WFT/S2600WFT, BIOS SE5C620.86B.02.01.0014.082620210524 08/26/2021
+[  172.680646] RIP: 0010:napi_enable+0x5a/0xd0
+[  172.684832] Code: 07 49 81 cc 00 01 00 00 4c 89 e2 48 89 d8 80 e6 fb f0 48 0f b1 55 10 48 39 c3 74 10 48 8b 5d 10 f6 c7 04 75 3d f6 c3 01 75 b4 <0f> 0b 5b 5d 41 5c c3 65 ff 05 b8 e5 61 53 48 c7 c6 c0 f3 34 ad 48
+[  172.703578] RSP: 0018:ffffa3c9497477a8 EFLAGS: 00010246
+[  172.708803] RAX: ffffa3c96615a014 RBX: 0000000000000000 RCX: ffff8a4b575301a0
+< snip >
+[  172.782403] Call Trace:
+[  172.784857]  <TASK>
+[  172.786963]  ice_up_complete+0x6f/0x210 [ice]
+[  172.791349]  ice_xdp+0x136/0x320 [ice]
+[  172.795108]  ? ice_change_mtu+0x180/0x180 [ice]
+[  172.799648]  dev_xdp_install+0x61/0xe0
+[  172.803401]  dev_xdp_attach+0x1e0/0x550
+[  172.807240]  dev_change_xdp_fd+0x1e6/0x220
+[  172.811338]  do_setlink+0xee8/0x1010
+[  172.814917]  rtnl_setlink+0xe5/0x170
+[  172.818499]  ? bpf_lsm_binder_set_context_mgr+0x10/0x10
+[  172.823732]  ? security_capable+0x36/0x50
+< snip >
+
+Fix this by replacing 'do { } while (cmpxchg())' with an "infinite"
+for-loop with an explicit break.
+
+From v1 [0]:
+ - just use a for-loop to simplify both the fix and the existing
+   code (Eric).
+
+[0] https://lore.kernel.org/netdev/20211110191126.1214-1-alexandr.lobakin@intel.com
+
+Fixes: 719c57197010 ("net: make napi_disable() symmetric with enable")
+Suggested-by: Eric Dumazet <edumazet@google.com> # for-loop
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+---
+ net/core/dev.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index edeb811c454e..15ac064b5562 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6928,7 +6928,7 @@ void napi_disable(struct napi_struct *n)
+ 	might_sleep();
+ 	set_bit(NAPI_STATE_DISABLE, &n->state);
+ 
+-	do {
++	for ( ; ; ) {
+ 		val = READ_ONCE(n->state);
+ 		if (val & (NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC)) {
+ 			usleep_range(20, 200);
+@@ -6937,7 +6937,10 @@ void napi_disable(struct napi_struct *n)
+ 
+ 		new = val | NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC;
+ 		new &= ~(NAPIF_STATE_THREADED | NAPIF_STATE_PREFER_BUSY_POLL);
+-	} while (cmpxchg(&n->state, val, new) != val);
++
++		if (cmpxchg(&n->state, val, new) == val)
++			break;
++	}
+ 
+ 	hrtimer_cancel(&n->timer);
+ 
+-- 
+2.33.1
+
