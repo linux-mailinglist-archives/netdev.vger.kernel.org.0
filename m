@@ -2,100 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 204D644C26F
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 14:49:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AECA44C25A
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 14:47:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232098AbhKJNua (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 08:50:30 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:26300 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232080AbhKJNuU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 08:50:20 -0500
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Hq5d92sStzbhn7;
-        Wed, 10 Nov 2021 21:42:37 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Wed, 10 Nov 2021 21:47:27 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Wed, 10 Nov 2021 21:47:26 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <wangjie125@huawei.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
-        <chenhao288@hisilicon.com>
-Subject: [PATCH net 8/8] net: hns3: allow configure ETS bandwidth of all TCs
-Date:   Wed, 10 Nov 2021 21:42:56 +0800
-Message-ID: <20211110134256.25025-9-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211110134256.25025-1-huangguangbin2@huawei.com>
-References: <20211110134256.25025-1-huangguangbin2@huawei.com>
+        id S231979AbhKJNuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 08:50:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60718 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231526AbhKJNuL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 08:50:11 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01539C061764;
+        Wed, 10 Nov 2021 05:47:23 -0800 (PST)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1636552041;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/MciXaiM/IuTmIk/zMIlZFbpG5qOYdi18BE9VZB246g=;
+        b=QdH2wN/OUfJa1D4UUw9Z158yvc9J6KaiHGOpk0xV/c0tqp7CrqRK9r8STCXWwofz9sGvGM
+        5zG/+sxajESDEe/WEMSfNV+cVysXCwXZv4BVfd4GYZsEHHLmaufib+Tg10nzB1o2ksabIC
+        9+p6Xw/KmvvEn4zGHvQ35pAgdcDu7XIPEpjf4FL7T9roN+GStDZaJOpjpJQ+SEuTgrHG+j
+        uqMnQFcLnQtSBO5v+FKeMoW/3j6aW3eOjbXEs0ABZylnGhFt38O0EACE9vjDhbUgckx8mf
+        UPDHWShhreB0mNFiB/lyUawGu9BC/d+1MNnazJgF0y5g6fdFlgGpBFq7rFuYow==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1636552041;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/MciXaiM/IuTmIk/zMIlZFbpG5qOYdi18BE9VZB246g=;
+        b=r8RlS/AQgTnYBJ8q5P3IWsoiij24JoTCzTmVCbkZ9VsEFMn/04rNTxuegKnAY5pnMA2cgA
+        vB8Aszd6wQxvuxAA==
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Martin Kaistra <martin.kaistra@linutronix.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 6/7] net: dsa: b53: Add logic for TX timestamping
+In-Reply-To: <20211110130545.ga7ajracz2vvzotg@skbuf>
+References: <20211109095013.27829-1-martin.kaistra@linutronix.de>
+ <20211109095013.27829-7-martin.kaistra@linutronix.de>
+ <20211109111213.6vo5swdhxjvgmyjt@skbuf> <87ee7o8otj.fsf@kurt>
+ <20211110130545.ga7ajracz2vvzotg@skbuf>
+Date:   Wed, 10 Nov 2021 14:47:19 +0100
+Message-ID: <8735o486mw.fsf@kurt>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, driver only allow configuring ETS bandwidth of TCs according
-to the max TC number queried from firmware. However, the hardware actually
-supports 8 TCs and users may need to configure ETS bandwidth of all TCs,
-so remove the restriction.
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-Fixes: 330baff5423b ("net: hns3: add ETS TC weight setting in SSU module")
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c | 2 +-
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c  | 9 +--------
- 2 files changed, 2 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
-index 90013c131e94..375ebf105a9a 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
-@@ -129,7 +129,7 @@ static int hclge_ets_sch_mode_validate(struct hclge_dev *hdev,
- 	u32 total_ets_bw = 0;
- 	u8 i;
- 
--	for (i = 0; i < hdev->tc_max; i++) {
-+	for (i = 0; i < HNAE3_MAX_TC; i++) {
- 		switch (ets->tc_tsa[i]) {
- 		case IEEE_8021QAZ_TSA_STRICT:
- 			if (hdev->tm_info.tc_info[i].tc_sch_mode !=
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-index a50e2edbf4a0..429652a8cde1 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-@@ -1123,7 +1123,6 @@ static int hclge_tm_pri_tc_base_dwrr_cfg(struct hclge_dev *hdev)
- 
- static int hclge_tm_ets_tc_dwrr_cfg(struct hclge_dev *hdev)
+On Wed Nov 10 2021, Vladimir Oltean wrote:
+> Hi Kurt,
+>
+> On Wed, Nov 10, 2021 at 08:14:32AM +0100, Kurt Kanzenbach wrote:
+>> Hi Vladimir,
+>>=20
+>> On Tue Nov 09 2021, Vladimir Oltean wrote:
+>> >> +void b53_port_txtstamp(struct dsa_switch *ds, int port, struct sk_bu=
+ff *skb)
+>> >> +{
+>> >> +	struct b53_device *dev =3D ds->priv;
+>> >> +	struct b53_port_hwtstamp *ps =3D &dev->ports[port].port_hwtstamp;
+>> >> +	struct sk_buff *clone;
+>> >> +	unsigned int type;
+>> >> +
+>> >> +	type =3D ptp_classify_raw(skb);
+>> >> +
+>> >> +	if (type !=3D PTP_CLASS_V2_L2)
+>> >> +		return;
+>> >> +
+>> >> +	if (!test_bit(B53_HWTSTAMP_ENABLED, &ps->state))
+>> >> +		return;
+>> >> +
+>> >> +	clone =3D skb_clone_sk(skb);
+>> >> +	if (!clone)
+>> >> +		return;
+>> >> +
+>> >> +	if (test_and_set_bit_lock(B53_HWTSTAMP_TX_IN_PROGRESS, &ps->state))=
  {
--#define DEFAULT_TC_WEIGHT	1
- #define DEFAULT_TC_OFFSET	14
- 
- 	struct hclge_ets_tc_weight_cmd *ets_weight;
-@@ -1136,13 +1135,7 @@ static int hclge_tm_ets_tc_dwrr_cfg(struct hclge_dev *hdev)
- 	for (i = 0; i < HNAE3_MAX_TC; i++) {
- 		struct hclge_pg_info *pg_info;
- 
--		ets_weight->tc_weight[i] = DEFAULT_TC_WEIGHT;
--
--		if (!(hdev->hw_tc_map & BIT(i)))
--			continue;
--
--		pg_info =
--			&hdev->tm_info.pg_info[hdev->tm_info.tc_info[i].pgid];
-+		pg_info = &hdev->tm_info.pg_info[hdev->tm_info.tc_info[i].pgid];
- 		ets_weight->tc_weight[i] = pg_info->tc_dwrr[i];
- 	}
- 
--- 
-2.33.0
+>> >
+>> > Is it ok if you simply don't timestamp a second skb which may be sent
+>> > while the first one is in flight, I wonder? What PTP profiles have you
+>> > tested with? At just one PTP packet at a time, the switch isn't giving
+>> > you a lot.
+>>=20
+>> PTP only generates a couple of messages per second which need to be
+>> timestamped. Therefore, this behavior shouldn't be a problem.
+>>=20
+>> hellcreek (and mv88e6xxx) do the same thing, simply because the device
+>> can only hold only one Tx timestamp. If we'd allow more than one PTP
+>> packet in flight, there will be correlation problems. I've tested with
+>> default and gPTP profile without any problems. What PTP profiles do have
+>> in mind?
+>
+> First of all, let's separate "more than one packet in flight" at the
+> hardware/driver level vs user space level. Even if there is any hardware
+> requirement to not request TX timestamping for the 2nd frame until the
+> 1st has been acked, that shouldn't necessarily have an implication upon
+> what user space sees. After all, we don't tell user space anything about
+> the realities of the hardware it's running on.
 
+Fair enough.
+
+>
+> So it is true that ptp4l is single threaded and always polls
+> synchronously for the reception of a TX timestamp on the error queue
+> before proceeding to do anything else. But writing a kernel driver to
+> the specification of a single user space program is questionable.
+> Especially with the SOF_TIMESTAMPING_OPT_ID flag of the SO_TIMESTAMPING
+> socket option, it is quite possible to write a different PTP stack that
+> handles TX timestamps differently. It sends event messages on their
+> respective timer expiry (sync, peer delay request, whatever), and
+> processes TX timestamps as they come, asynchronously instead of blocking.
+> That other PTP stack would not work reliably with this driver (or with
+> mv88e6xxx, or with hellcreek).
+
+Yeah, a PTP stack which e.g. runs delay measurements independently from
+the other tasks (sync, announce, ...) may run into trouble with such as
+an implementation. I'm wondering how would you solve that problem for
+hardware such as hellcreek? If a packet for timestamping is "in-flight"
+the Tx path for a concurrent frame would have to be delayed. That might
+be a surprise to the user as well.
+
+Thanks,
+Kurt
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQJHBAEBCgAxFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmGLzWcTHGt1cnRAbGlu
+dXRyb25peC5kZQAKCRB5KluBy5jwphxXD/9AAZtvg6YJic2fjwwmSNV2WUUBMVmO
+ztwGA8AvA5luVfVRNBZFWViU1+2F81GfyqZa3311B7lMVWoMcT02ZTsSOiRKVXpM
+Xx8ut3iXN/2D+mfklMYHU5K8qLd/fqk2n7PLJkXN5B0YCV9+l5KRVbIKMnzwbemX
+x3Pkm1D0Nk3+/I81TW22/NmejIde9DJQ+YasgsaxAkWVe1j2ZMGstYkowDUjjjq+
+IGQqzpXxsmK4rLCe0d9wNElbaykiPNA93o+B2uN3nOhwuRo5odhY0QwJ06OjrZto
+C4IyID15l2B8EyLVw7ap4U0jwTmR3HugM/fzWZMgbNiPeiYJsNgxxFN5txu3z+qx
+fzQ0AB11w49qYcIRZCG4G8oC8vWJTHWP1/O02c5yKf5fQjztMynhnHOFtWkIYJUw
+N9gwO9KYVtDS7axyDxwTCkDNc/ncST9nXiajqxxtrcBQHJc24nsqV/YBDN9xMikI
+OThlrPhnh986mXaK7SFfmnyw4172wHc8zcKm/WDgVCcRAB+8MQVa/dCKSKg2tFjP
+rlrhMs9Veo9wkmF17yqSMNgUUHgfcl6nmkIRWk0fKmVfSKzBfWlHHVcOocuyOMvG
+JV9n3yJGpQSRYNbsBQQroEiYiD0h9ZEtJMDPPph4suAF+zbbBHNeyFBJGWTXVqlv
+nadUgwMvQI2XFQ==
+=Uu/4
+-----END PGP SIGNATURE-----
+--=-=-=--
