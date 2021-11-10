@@ -2,98 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6A4F44BCB6
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 09:19:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67EE544BCD3
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 09:27:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230101AbhKJIVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 03:21:54 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:41408 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230136AbhKJIVx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 03:21:53 -0500
-Message-ID: <c342fbf3-44b2-ce22-888f-363b709ea986@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1636532345;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BN0MsiNbgeRKb+wkl1o9CWyi634gHXLRKnp+TwIJuMo=;
-        b=2jdebMqMvjbryDpOrBpDXQUQiTiL/S+JXKDJMKO3RJSXmVPI76It05CXknKsVBf2Oy77jn
-        Ymgsk64r+QZnCwiXlZ0I2lDZH5Wgsh0YnfF19Ro6TKOJkJ8SIisSVXgZ0BYDj0SerJBh/h
-        nAFmOYN6PnXtpx6Bz/UmJHcyOQ/uvpn79MpVFPvVpQBmhhYPj2yuXbe2UHrm1i4I3zQ4H+
-        ZZUuwysRn+eFjGR/H3c0eKlJ/KYR5rUImOwycRZQC9TmtISKEi8GEp6Ow2zMxqk+mHr1Tm
-        sRc7LMONau9rQQXXMHv4M8gE/yxly4utyFxY43GLIPIJUXzyOJJjgkq2VwSVDA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1636532345;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BN0MsiNbgeRKb+wkl1o9CWyi634gHXLRKnp+TwIJuMo=;
-        b=T5DrVa8i7km/keaSIh/JD0Zt7lo6ne8WiNRjMVgAoz6JJ0FrbPR34+ri4LBep3Jpqfg5oF
-        4zByVAA3oQK1OrAQ==
-Date:   Wed, 10 Nov 2021 09:19:04 +0100
+        id S230230AbhKJIaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 03:30:16 -0500
+Received: from mail-ua1-f43.google.com ([209.85.222.43]:39553 "EHLO
+        mail-ua1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229582AbhKJIaP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 03:30:15 -0500
+Received: by mail-ua1-f43.google.com with SMTP id i6so3166198uae.6;
+        Wed, 10 Nov 2021 00:27:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uQGLy9TSy7z4CUPPpyYTSpZf9gYsNWWhiopCAQfwV3s=;
+        b=m66vYe0WPCZ/eokMg00ZW764pKyFAp56/ZXfp14EBaU2hqV0nombvvTvu0UQh8ZYjQ
+         yVpDFPq6pdH8G+QxFW0qgUbv+EYx28WUzA67ZU6762owcDOQowzIi/k+ZnTLIBM0htz5
+         P6oJMMIFlrNZDmre4ubemvmbXNYfmT6wpsAPCZcIkWxH9purkb+XKf88QPE7DR8KA1zK
+         1iId7PoXKhmoCUowbZmKXGY00FE7fGcEUl0RB0nug+N03bgCmFpeAXz82SlpuVK2iFY+
+         WmqkhuTbJwPJr25EpW2UThdowBBbN9ACYvHC/VjiGgxRquyiGBGIJmHFbTxRRiuGZSqL
+         6VkA==
+X-Gm-Message-State: AOAM5333x9oq8ojXkp9DBNFbBAUh34ZEYqFqLocss8QdHI9r6KTabTIS
+        FkhLgeSaB+XyB1qXGITQmig6bJI/pWdjtQ==
+X-Google-Smtp-Source: ABdhPJzK4bWMqyN0aZXo6H4T3fio0qM8a+t1Ktk9AuD4jLSEwZWtx97ZVa/dYnBhVLZcHzjkn1fTBQ==
+X-Received: by 2002:ab0:298c:: with SMTP id u12mr19555157uap.64.1636532847951;
+        Wed, 10 Nov 2021 00:27:27 -0800 (PST)
+Received: from mail-ua1-f50.google.com (mail-ua1-f50.google.com. [209.85.222.50])
+        by smtp.gmail.com with ESMTPSA id y2sm2913968vke.43.2021.11.10.00.27.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Nov 2021 00:27:27 -0800 (PST)
+Received: by mail-ua1-f50.google.com with SMTP id p2so3111111uad.11;
+        Wed, 10 Nov 2021 00:27:27 -0800 (PST)
+X-Received: by 2002:a9f:2431:: with SMTP id 46mr10283360uaq.114.1636532847452;
+ Wed, 10 Nov 2021 00:27:27 -0800 (PST)
 MIME-Version: 1.0
-Subject: Re: [PATCH v2 1/7] net: dsa: b53: Add BroadSync HD register
- definitions
-Content-Language: en-US
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-References: <20211109095013.27829-1-martin.kaistra@linutronix.de>
- <20211109095013.27829-2-martin.kaistra@linutronix.de>
- <6839c4e9-123d-227a-630d-fae8a2df6483@gmail.com>
-From:   Martin Kaistra <martin.kaistra@linutronix.de>
-In-Reply-To: <6839c4e9-123d-227a-630d-fae8a2df6483@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20211109040242.11615-1-schmitzmic@gmail.com> <20211109040242.11615-4-schmitzmic@gmail.com>
+ <3d4c9e98-f004-755c-2f30-45b951ede6a6@infradead.org> <d5fa96b6-a351-1195-7967-25c26d9a04fb@gmail.com>
+ <c7ab4109-9abf-dfe8-0325-7d3e113aa66c@infradead.org> <1ed3a71a-e57b-0754-b719-36ac862413da@gmail.com>
+ <f5fb3808-b658-abfb-3b33-4ded8cd8ba57@infradead.org> <bcf2265d-cbd3-83dd-0131-a72efa97fd99@gmail.com>
+In-Reply-To: <bcf2265d-cbd3-83dd-0131-a72efa97fd99@gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 10 Nov 2021 09:27:16 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVjZxVmLp5Vg=Ks_vQpoJ_7D9JYoELhQM4zbKqvQMybDQ@mail.gmail.com>
+Message-ID: <CAMuHMdVjZxVmLp5Vg=Ks_vQpoJ_7D9JYoELhQM4zbKqvQMybDQ@mail.gmail.com>
+Subject: Re: [PATCH net v9 3/3] net/8390: apne.c - add 100 Mbit support to
+ apne.c driver
+To:     Michael Schmitz <schmitzmic@gmail.com>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        "Linux/m68k" <linux-m68k@vger.kernel.org>,
+        ALeX Kazik <alex@kazik.de>, netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 09.11.21 um 19:04 schrieb Florian Fainelli:
-> On 11/9/21 1:50 AM, Martin Kaistra wrote:
->> From: Kurt Kanzenbach <kurt@linutronix.de>
->>
->> Add register definitions for the BroadSync HD features of
->> BCM53128. These will be used to enable PTP support.
->>
->> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
->> Signed-off-by: Martin Kaistra <martin.kaistra@linutronix.de>
->> ---
-> 
-> [snip]
-> 
->> +/*************************************************************************
->> + * ARL Control Registers
->> + *************************************************************************/
->> +
->> +/* Multiport Control Register (16 bit) */
->> +#define B53_MPORT_CTRL			0x0e
->> +#define   MPORT_CTRL_DIS_FORWARD	0
->> +#define   MPORT_CTRL_CMP_ETYPE		1
->> +#define   MPORT_CTRL_CMP_ADDR		2
->> +#define   MPORT_CTRL_CMP_ADDR_ETYPE	3
->> +#define   MPORT_CTRL_SHIFT(x)		((x) << 1)
->> +#define   MPORT_CTRL_MASK		0x2
-> 
-> The mask should be 0x3 since this is a 2-bit wide field.
-> 
+Hi Michael,
 
-Correct, thanks.
-Currently, this mask is not used, as I am just writing
-MPORT0_TS_EN |
-  (MPORT_CTRL_CMP_ETYPE << MPORT_CTRL_SHIFT(0))
-to the register. Should I keep the definition anyway?
+On Tue, Nov 9, 2021 at 8:39 PM Michael Schmitz <schmitzmic@gmail.com> wrote:
+> On 10/11/21 08:25, Randy Dunlap wrote:
+> >>>>> There are no other drivers that "select PCCARD" or
+> >>>>> "select PCMCIA" in the entire kernel tree.
+> >>>>> I don't see any good justification to allow it here.
+> >>>>
+> >>>> Amiga doesn't use anything from the core PCMCIA code, instead
+> >>>> providing its own basic PCMCIA support code.
+> >>>>
+> >>>> I had initially duplicated some of the cis tuple parser code, but
+> >>>> decided to use what's already there instead.
+> >>>>
+> >>>> I can drop these selects, and add instructions to manually select
+> >>>> these options in the Kconfig help section. Seemed a little error prone
+> >>>> to me.
+> >>>
+> >>> Just make it the same as other drivers in this respect, please.
+> >>
+> >> "depends on PCMCIA" is what I've seen for other drivers. That is not
+> >> really appropriate for the APNE driver (8 bit cards work fine with
+> >> just the support code from arch/m68k/amiga/pcmcia.c).
+> >>
+> >> Please confirm that "depends on PCMCIA" is what you want me to use?
+> >
+> > Hi Michael,
+> >
+> > I don't want to see this driver using 'select', so that probably only
+> > leaves "depends on".
+> > But if you or Geert tell me that I am bonkers, so be it. :)
+>
+> Are you OK with adding CONFIG_PCCARD=y and CONFIG_PCMCIA=y to
+> amiga_defconfig to allow APNE to still be built when changed to depend
+> on PCMCIA?
+
+Sure.  When they become dependencies for APNE, I will update them in
+the next defconfig refresh.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
