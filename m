@@ -2,102 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B665544BCF9
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 09:36:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D0EB44BD01
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 09:40:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229582AbhKJIjN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 03:39:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45462 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230205AbhKJIjN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 03:39:13 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B593EC061766
-        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 00:36:25 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id o29so1402867wms.2
-        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 00:36:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=P3ex3Y/JqfiottMx/xPchUEVWxBEI/96t8WHOpWOlwc=;
-        b=BrkCsEbFksKENGwL9BW6Tjuq6MOEv8RErTYA1CzxLT/hhyc74mDe0BRRUH86BYAl+e
-         31j3AQGO/ZOtyXFRkgIMfiVAAx/SQTqRAjtH3wXus4yO2D2jVtnZlEHa8KUp1vCdz6xX
-         2PJv5XJZyhy9Hzt8QE+NkmBvkMM4e8DxJ9nPRNGGKhPaEVjihF2sG0tfsZG+9FiOtwfl
-         ChXpxJd+SWHxFPJnwlnfPE5ucUncv221tIMZRzN0BRZ4SOibkXGckkeT9LoSD/mu4t+I
-         QFKnPirFX9ovY8664cWRtz4Y3KGVdwNa0A0XIX+EDm7RkrVRbcEqRIfqjQMc1svMl4g/
-         sjVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=P3ex3Y/JqfiottMx/xPchUEVWxBEI/96t8WHOpWOlwc=;
-        b=MFPhVAV54B9oDzUr4lgFoCISpe/UDtWNQFNMAWBlft9+TyFI4eT8XobfDZDKkQS902
-         27ZoeA/0FOYfWDsQnQNiuLabVxBmeUTqGLDPAfSvmZy2mz89pDy3e1SbZr9+PrTs4dqt
-         Wx7s6jr9goOARo/buZg+3VXSWr77WT66Y5tfPyJoWBxmFcgqC6Y3vUaKFl1t4j8vpY15
-         QYGXUHoBdDbuxhuYGfvu2MvTgXHdUk5WKxb+pd2464qUGfq8W20rxKUOjR7WnZSk+pXQ
-         ZmcMNtiwlyPX0Keix4AcADj52Z5M+GA7jQFJp5S/7MqjwrAQEExg54px3yDXvtKhr6/Y
-         j1Lg==
-X-Gm-Message-State: AOAM530EG+MgTushYs5h7pKUsNzF0gEIEwT1MIgNX3JMl8tOI50Mfszk
-        evJu+Z4rQvDGDUy5ZZR79wx9ew==
-X-Google-Smtp-Source: ABdhPJwxNqnTEYLifRDamp1z10bsNS3TWpGvIkf5dRVq2WH7GWsUxp/msiracCdwAcTS0f1+QCsWsg==
-X-Received: by 2002:a1c:f008:: with SMTP id a8mr14686663wmb.140.1636533384344;
-        Wed, 10 Nov 2021 00:36:24 -0800 (PST)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id l18sm23150446wrt.81.2021.11.10.00.36.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Nov 2021 00:36:23 -0800 (PST)
-Date:   Wed, 10 Nov 2021 08:36:02 +0000
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>, Joe Stringer <joe@cilium.io>,
-        Peter Wu <peter@lekensteyn.nl>, Roman Gushchin <guro@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Tobias Klauser <tklauser@distanz.ch>
-Subject: Re: [PATCH bpf-next] bpftool: Fix SPDX tag for Makefiles and
- .gitignore
-Message-ID: <YYuEcp/8ECfWzZcl@myrica>
-References: <20211105221904.3536-1-quentin@isovalent.com>
+        id S230235AbhKJIm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 03:42:57 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:49108 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S229653AbhKJIm4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 03:42:56 -0500
+X-UUID: 605f5c25076d4934906011bd96077482-20211110
+X-UUID: 605f5c25076d4934906011bd96077482-20211110
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        (envelope-from <biao.huang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 861002986; Wed, 10 Nov 2021 16:40:07 +0800
+Received: from mtkmbs10n1.mediatek.inc (172.21.101.34) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Wed, 10 Nov 2021 16:40:06 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkmbs10n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
+ Transport; Wed, 10 Nov 2021 16:40:05 +0800
+From:   Biao Huang <biao.huang@mediatek.com>
+To:     <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Biao Huang <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <srv_heupstream@mediatek.com>, <macpaul.lin@mediatek.com>
+Subject: [PATCH 0/5] MediaTek Ethernet Patches on MT8195
+Date:   Wed, 10 Nov 2021 16:39:43 +0800
+Message-ID: <20211110083948.6082-1-biao.huang@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211105221904.3536-1-quentin@isovalent.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 05, 2021 at 10:19:04PM +0000, Quentin Monnet wrote:
-> Bpftool is dual-licensed under GPLv2 and BSD-2-Clause. In commit
-> 907b22365115 ("tools: bpftool: dual license all files") we made sure
-> that all its source files were indeed covered by the two licenses, and
-> that they had the correct SPDX tags.
-> 
-> However, bpftool's Makefile, the Makefile for its documentation, and the
-> .gitignore file were skipped at the time (their GPL-2.0-only tag was
-> added later). Let's update the tags.
-> 
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Cc: Andrii Nakryiko <andriin@fb.com>
-> Cc: Ilya Leoshkevich <iii@linux.ibm.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> Cc: Jesper Dangaard Brouer <brouer@redhat.com>
-> Cc: Jiri Olsa <jolsa@kernel.org>
-> Cc: Joe Stringer <joe@cilium.io>
-> Cc: Peter Wu <peter@lekensteyn.nl>
-> Cc: Roman Gushchin <guro@fb.com>
-> Cc: Song Liu <songliubraving@fb.com>
-> Cc: Stanislav Fomichev <sdf@google.com>
-> Cc: Tobias Klauser <tklauser@distanz.ch>
-> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+This series include 5 patches:
+1. add platform level clocks management for dwmac-mediatek
+2. resue more common features defined in stmmac_platform.c
+3. add ethernet entry for mt8195
+4. convert mediatek-dwmac.txt to mediatek-dwmac.yaml
+5. add ethernet device node for mt8195
 
-Acked-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Biao Huang (5):
+  net: stmmac: dwmac-mediatek: add platform level clocks management
+  net: stmmac: dwmac-mediatek: Reuse more common features
+  net: stmmac: dwmac-mediatek: add support for mt8195
+  dt-bindings: net: dwmac: Convert mediatek-dwmac to DT schema
+  arm64: dts: mt8195: add ethernet device node
+
+ .../bindings/net/mediatek-dwmac.txt           |  91 -----
+ .../bindings/net/mediatek-dwmac.yaml          | 179 ++++++++++
+ arch/arm64/boot/dts/mediatek/mt8195-evb.dts   |  92 +++++
+ arch/arm64/boot/dts/mediatek/mt8195.dtsi      |  70 ++++
+ .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 313 ++++++++++++++++--
+ 5 files changed, 632 insertions(+), 113 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.txt
+ create mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+
+--
+2.18.0
+
 
