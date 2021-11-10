@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18D8444BD13
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 09:40:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30DBF44BD10
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 09:40:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230399AbhKJInH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 03:43:07 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:49306 "EHLO
+        id S230344AbhKJInG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 03:43:06 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:49272 "EHLO
         mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S230338AbhKJInD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 03:43:03 -0500
-X-UUID: 55f5e40e3dd949e98bbcbe73b97f380f-20211110
-X-UUID: 55f5e40e3dd949e98bbcbe73b97f380f-20211110
+        with ESMTP id S230318AbhKJInC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 03:43:02 -0500
+X-UUID: 38ccab97c9684151ad9106cd48a9aab3-20211110
+X-UUID: 38ccab97c9684151ad9106cd48a9aab3-20211110
 Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
         (envelope-from <biao.huang@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 493030593; Wed, 10 Nov 2021 16:40:11 +0800
+        with ESMTP id 1385070186; Wed, 10 Nov 2021 16:40:11 +0800
 Received: from mtkmbs10n1.mediatek.inc (172.21.101.34) by
  mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Wed, 10 Nov 2021 16:40:09 +0800
+ 15.2.792.15; Wed, 10 Nov 2021 16:40:10 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkmbs10n1.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Wed, 10 Nov 2021 16:40:08 +0800
+ Transport; Wed, 10 Nov 2021 16:40:09 +0800
 From:   Biao Huang <biao.huang@mediatek.com>
 To:     <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
         Rob Herring <robh+dt@kernel.org>
@@ -38,9 +38,9 @@ CC:     Matthias Brugger <matthias.bgg@gmail.com>,
         <linux-mediatek@lists.infradead.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <srv_heupstream@mediatek.com>, <macpaul.lin@mediatek.com>
-Subject: [PATCH 3/5] net: stmmac: dwmac-mediatek: add support for mt8195
-Date:   Wed, 10 Nov 2021 16:39:46 +0800
-Message-ID: <20211110083948.6082-4-biao.huang@mediatek.com>
+Subject: [PATCH 4/5] dt-bindings: net: dwmac: Convert mediatek-dwmac to DT schema
+Date:   Wed, 10 Nov 2021 16:39:47 +0800
+Message-ID: <20211110083948.6082-5-biao.huang@mediatek.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211110083948.6082-1-biao.huang@mediatek.com>
 References: <20211110083948.6082-1-biao.huang@mediatek.com>
@@ -52,347 +52,298 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add Ethernet support for MediaTek SoCs from the mt8195 family.
+Convert mediatek-dwmac to DT schema, and delete old mediatek-dwmac.txt.
 
 Signed-off-by: Biao Huang <biao.huang@mediatek.com>
 ---
- .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 261 +++++++++++++++++-
- 1 file changed, 260 insertions(+), 1 deletion(-)
+ .../bindings/net/mediatek-dwmac.txt           |  91 ---------
+ .../bindings/net/mediatek-dwmac.yaml          | 179 ++++++++++++++++++
+ 2 files changed, 179 insertions(+), 91 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.txt
+ create mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-index 6ea972e96665..b1266b68e21f 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-@@ -40,6 +40,33 @@
- #define ETH_FINE_DLY_GTXC	BIT(1)
- #define ETH_FINE_DLY_RXC	BIT(0)
- 
-+/* Peri Configuration register for mt8195 */
-+#define MT8195_PERI_ETH_CTRL0		0xFD0
-+#define MT8195_RMII_CLK_SRC_INTERNAL	BIT(28)
-+#define MT8195_RMII_CLK_SRC_RXC		BIT(27)
-+#define MT8195_ETH_INTF_SEL		GENMASK(26, 24)
-+#define MT8195_RGMII_TXC_PHASE_CTRL	BIT(22)
-+#define MT8195_EXT_PHY_MODE		BIT(21)
-+#define MT8195_DLY_GTXC_INV		BIT(12)
-+#define MT8195_DLY_GTXC_ENABLE		BIT(5)
-+#define MT8195_DLY_GTXC_STAGES		GENMASK(4, 0)
+diff --git a/Documentation/devicetree/bindings/net/mediatek-dwmac.txt b/Documentation/devicetree/bindings/net/mediatek-dwmac.txt
+deleted file mode 100644
+index afbcaebf062e..000000000000
+--- a/Documentation/devicetree/bindings/net/mediatek-dwmac.txt
++++ /dev/null
+@@ -1,91 +0,0 @@
+-MediaTek DWMAC glue layer controller
+-
+-This file documents platform glue layer for stmmac.
+-Please see stmmac.txt for the other unchanged properties.
+-
+-The device node has following properties.
+-
+-Required properties:
+-- compatible:  Should be "mediatek,mt2712-gmac" for MT2712 SoC
+-- reg:  Address and length of the register set for the device
+-- interrupts:  Should contain the MAC interrupts
+-- interrupt-names: Should contain a list of interrupt names corresponding to
+-	the interrupts in the interrupts property, if available.
+-	Should be "macirq" for the main MAC IRQ
+-- clocks: Must contain a phandle for each entry in clock-names.
+-- clock-names: The name of the clock listed in the clocks property. These are
+-	"axi", "apb", "mac_main", "ptp_ref", "rmii_internal" for MT2712 SoC.
+-- mac-address: See ethernet.txt in the same directory
+-- phy-mode: See ethernet.txt in the same directory
+-- mediatek,pericfg: A phandle to the syscon node that control ethernet
+-	interface and timing delay.
+-
+-Optional properties:
+-- mediatek,tx-delay-ps: TX clock delay macro value. Default is 0.
+-	It should be defined for RGMII/MII interface.
+-	It should be defined for RMII interface when the reference clock is from MT2712 SoC.
+-- mediatek,rx-delay-ps: RX clock delay macro value. Default is 0.
+-	It should be defined for RGMII/MII interface.
+-	It should be defined for RMII interface.
+-Both delay properties need to be a multiple of 170 for RGMII interface,
+-or will round down. Range 0~31*170.
+-Both delay properties need to be a multiple of 550 for MII/RMII interface,
+-or will round down. Range 0~31*550.
+-
+-- mediatek,rmii-rxc: boolean property, if present indicates that the RMII
+-	reference clock, which is from external PHYs, is connected to RXC pin
+-	on MT2712 SoC.
+-	Otherwise, is connected to TXC pin.
+-- mediatek,rmii-clk-from-mac: boolean property, if present indicates that
+-	MT2712 SoC provides the RMII reference clock, which outputs to TXC pin only.
+-- mediatek,txc-inverse: boolean property, if present indicates that
+-	1. tx clock will be inversed in MII/RGMII case,
+-	2. tx clock inside MAC will be inversed relative to reference clock
+-	   which is from external PHYs in RMII case, and it rarely happen.
+-	3. the reference clock, which outputs to TXC pin will be inversed in RMII case
+-	   when the reference clock is from MT2712 SoC.
+-- mediatek,rxc-inverse: boolean property, if present indicates that
+-	1. rx clock will be inversed in MII/RGMII case.
+-	2. reference clock will be inversed when arrived at MAC in RMII case, when
+-	   the reference clock is from external PHYs.
+-	3. the inside clock, which be sent to MAC, will be inversed in RMII case when
+-	   the reference clock is from MT2712 SoC.
+-- assigned-clocks: mac_main and ptp_ref clocks
+-- assigned-clock-parents: parent clocks of the assigned clocks
+-
+-Example:
+-	eth: ethernet@1101c000 {
+-		compatible = "mediatek,mt2712-gmac";
+-		reg = <0 0x1101c000 0 0x1300>;
+-		interrupts = <GIC_SPI 237 IRQ_TYPE_LEVEL_LOW>;
+-		interrupt-names = "macirq";
+-		phy-mode ="rgmii-rxid";
+-		mac-address = [00 55 7b b5 7d f7];
+-		clock-names = "axi",
+-			      "apb",
+-			      "mac_main",
+-			      "ptp_ref",
+-			      "rmii_internal";
+-		clocks = <&pericfg CLK_PERI_GMAC>,
+-			 <&pericfg CLK_PERI_GMAC_PCLK>,
+-			 <&topckgen CLK_TOP_ETHER_125M_SEL>,
+-			 <&topckgen CLK_TOP_ETHER_50M_SEL>,
+-			 <&topckgen CLK_TOP_ETHER_50M_RMII_SEL>;
+-		assigned-clocks = <&topckgen CLK_TOP_ETHER_125M_SEL>,
+-				  <&topckgen CLK_TOP_ETHER_50M_SEL>,
+-				  <&topckgen CLK_TOP_ETHER_50M_RMII_SEL>;
+-		assigned-clock-parents = <&topckgen CLK_TOP_ETHERPLL_125M>,
+-					 <&topckgen CLK_TOP_APLL1_D3>,
+-					 <&topckgen CLK_TOP_ETHERPLL_50M>;
+-		power-domains = <&scpsys MT2712_POWER_DOMAIN_AUDIO>;
+-		mediatek,pericfg = <&pericfg>;
+-		mediatek,tx-delay-ps = <1530>;
+-		mediatek,rx-delay-ps = <1530>;
+-		mediatek,rmii-rxc;
+-		mediatek,txc-inverse;
+-		mediatek,rxc-inverse;
+-		snps,txpbl = <1>;
+-		snps,rxpbl = <1>;
+-		snps,reset-gpio = <&pio 87 GPIO_ACTIVE_LOW>;
+-		snps,reset-active-low;
+-	};
+diff --git a/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml b/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+new file mode 100644
+index 000000000000..9f069917061f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+@@ -0,0 +1,179 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/mediatek-dwmac.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+#define MT8195_PERI_ETH_CTRL1		0xFD4
-+#define MT8195_DLY_RXC_INV		BIT(25)
-+#define MT8195_DLY_RXC_ENABLE		BIT(18)
-+#define MT8195_DLY_RXC_STAGES		GENMASK(17, 13)
-+#define MT8195_DLY_TXC_INV		BIT(12)
-+#define MT8195_DLY_TXC_ENABLE		BIT(5)
-+#define MT8195_DLY_TXC_STAGES		GENMASK(4, 0)
++title: MediaTek DWMAC glue layer controller
 +
-+#define MT8195_PERI_ETH_CTRL2		0xFD8
-+#define MT8195_DLY_RMII_RXC_INV		BIT(25)
-+#define MT8195_DLY_RMII_RXC_ENABLE	BIT(18)
-+#define MT8195_DLY_RMII_RXC_STAGES	GENMASK(17, 13)
-+#define MT8195_DLY_RMII_TXC_INV		BIT(12)
-+#define MT8195_DLY_RMII_TXC_ENABLE	BIT(5)
-+#define MT8195_DLY_RMII_TXC_STAGES	GENMASK(4, 0)
++maintainers:
++  - Biao Huang <biao.huang@mediatek.com>
 +
- struct mac_delay_struct {
- 	u32 tx_delay;
- 	u32 rx_delay;
-@@ -58,11 +85,13 @@ struct mediatek_dwmac_plat_data {
- 	int num_clks_to_config;
- 	bool rmii_clk_from_mac;
- 	bool rmii_rxc;
-+	bool mac_wol;
- };
- 
- struct mediatek_dwmac_variant {
- 	int (*dwmac_set_phy_interface)(struct mediatek_dwmac_plat_data *plat);
- 	int (*dwmac_set_delay)(struct mediatek_dwmac_plat_data *plat);
-+	void (*dwmac_fix_mac_speed)(void *priv, unsigned int speed);
- 
- 	/* clock ids to be requested */
- 	const char * const *clk_list;
-@@ -78,6 +107,10 @@ static const char * const mt2712_dwmac_clk_l[] = {
- 	"axi", "apb", "mac_main", "ptp_ref", "rmii_internal"
- };
- 
-+static const char * const mt8195_dwmac_clk_l[] = {
-+	"axi", "apb", "mac_cg", "mac_main", "ptp_ref", "rmii_internal"
-+};
++description:
++  This file documents platform glue layer for stmmac.
 +
- static int mt2712_set_interface(struct mediatek_dwmac_plat_data *plat)
- {
- 	int rmii_clk_from_mac = plat->rmii_clk_from_mac ? RMII_CLK_SRC_INTERNAL : 0;
-@@ -268,6 +301,204 @@ static const struct mediatek_dwmac_variant mt2712_gmac_variant = {
- 		.tx_delay_max = 17600,
- };
- 
-+static int mt8195_set_interface(struct mediatek_dwmac_plat_data *plat)
-+{
-+	int rmii_clk_from_mac = plat->rmii_clk_from_mac ? MT8195_RMII_CLK_SRC_INTERNAL : 0;
-+	int rmii_rxc = plat->rmii_rxc ? MT8195_RMII_CLK_SRC_RXC : 0;
-+	u32 intf_val = 0;
++# We need a select here so we don't match all nodes with 'snps,dwmac'
++select:
++  properties:
++    compatible:
++      contains:
++        enum:
++          - mediatek,mt2712-gmac
++          - mediatek,mt8195-gmac
++  required:
++    - compatible
 +
-+	/* The clock labeled as "rmii_internal" in mt8195_dwmac_clk_l is needed
-+	 * only in RMII(when MAC provides the reference clock), and useless for
-+	 * RGMII/MII/RMII(when PHY provides the reference clock).
-+	 * num_clks_to_config indicates the real number of clocks should be
-+	 * configured, equals to (plat->variant->num_clks - 1) in default for all the case,
-+	 * then +1 for rmii_clk_from_mac case.
-+	 */
-+	plat->num_clks_to_config = plat->variant->num_clks - 1;
++allOf:
++  - $ref: "snps,dwmac.yaml#"
++  - $ref: "ethernet-controller.yaml#"
 +
-+	/* select phy interface in top control domain */
-+	switch (plat->phy_mode) {
-+	case PHY_INTERFACE_MODE_MII:
-+		intf_val |= FIELD_PREP(MT8195_ETH_INTF_SEL, PHY_INTF_MII);
-+		break;
-+	case PHY_INTERFACE_MODE_RMII:
-+		if (plat->rmii_clk_from_mac)
-+			plat->num_clks_to_config++;
-+		intf_val |= (rmii_rxc | rmii_clk_from_mac);
-+		intf_val |= FIELD_PREP(MT8195_ETH_INTF_SEL, PHY_INTF_RMII);
-+		break;
-+	case PHY_INTERFACE_MODE_RGMII:
-+	case PHY_INTERFACE_MODE_RGMII_TXID:
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+		intf_val |= FIELD_PREP(MT8195_ETH_INTF_SEL, PHY_INTF_RGMII);
-+		break;
-+	default:
-+		dev_err(plat->dev, "phy interface not supported\n");
-+		return -EINVAL;
-+	}
++properties:
++  compatible:
++    oneOf:
++      - items:
++          - enum:
++              - mediatek,mt2712-gmac
++          - const: snps,dwmac-4.20a
++      - items:
++          - enum:
++              - mediatek,mt8195-gmac
++          - const: snps,dwmac-5.10a
 +
-+	/* MT8195 only support external PHY */
-+	intf_val |= MT8195_EXT_PHY_MODE;
++  clocks:
++    minItems: 5
++    maxItems: 6
++    items:
++      - description: AXI clock
++      - description: APB clock
++      - description: MAC clock gate
++      - description: MAC Main clock
++      - description: PTP clock
++      - description: RMII reference clock provided by MAC
 +
-+	regmap_write(plat->peri_regmap, MT8195_PERI_ETH_CTRL0, intf_val);
++  clock-names:
++    contains:
++      enum:
++        - axi
++        - apb
++        - mac_cg
++        - mac_main
++        - ptp_ref
++        - rmii_internal
 +
-+	return 0;
-+}
++  mediatek,pericfg:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description:
++      The phandle to the syscon node that control ethernet
++      interface and timing delay.
 +
-+static void mt8195_delay_ps2stage(struct mediatek_dwmac_plat_data *plat)
-+{
-+	struct mac_delay_struct *mac_delay = &plat->mac_delay;
++  mediatek,tx-delay-ps:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description:
++      The internal TX clock delay (provided by this driver) in nanoseconds.
++      For MT2712 RGMII interface, Allowed value need to be a multiple of 170,
++      or will round down. Range 0~31*170.
++      For MT2712 RMII/MII interface, Allowed value need to be a multiple of 550,
++      or will round down. Range 0~31*550.
++      For MT8195 RGMII/RMII/MII interface, Allowed value need to be a multiple of 290,
++      or will round down. Range 0~31*290.
 +
-+	/* 290ps per stage */
-+	mac_delay->tx_delay /= 290;
-+	mac_delay->rx_delay /= 290;
-+}
++  mediatek,rx-delay-ps:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description:
++      The internal RX clock delay (provided by this driver) in nanoseconds.
++      For MT2712 RGMII interface, Allowed value need to be a multiple of 170,
++      or will round down. Range 0~31*170.
++      For MT2712 RMII/MII interface, Allowed value need to be a multiple of 550,
++      or will round down. Range 0~31*550.
++      For MT8195 RGMII/RMII/MII interface, Allowed value need to be a multiple
++      of 290, or will round down. Range 0~31*290.
 +
-+static void mt8195_delay_stage2ps(struct mediatek_dwmac_plat_data *plat)
-+{
-+	struct mac_delay_struct *mac_delay = &plat->mac_delay;
++  mediatek,rmii-rxc:
++    type: boolean
++    description:
++      If present, indicates that the RMII reference clock, which is from external
++      PHYs, is connected to RXC pin. Otherwise, is connected to TXC pin.
 +
-+	/* 290ps per stage */
-+	mac_delay->tx_delay *= 290;
-+	mac_delay->rx_delay *= 290;
-+}
++  mediatek,rmii-clk-from-mac:
++    type: boolean
++    description:
++      If present, indicates that MAC provides the RMII reference clock, which
++      outputs to TXC pin only.
 +
-+static int mt8195_set_delay(struct mediatek_dwmac_plat_data *plat)
-+{
-+	struct mac_delay_struct *mac_delay = &plat->mac_delay;
-+	u32 gtxc_delay_val, delay_val = 0, rmii_delay_val = 0;
++  mediatek,txc-inverse:
++    type: boolean
++    description:
++      If present, indicates that
++      1. tx clock will be inversed in MII/RGMII case,
++      2. tx clock inside MAC will be inversed relative to reference clock
++         which is from external PHYs in RMII case, and it rarely happen.
++      3. the reference clock, which outputs to TXC pin will be inversed in RMII case
++         when the reference clock is from MT2712 SoC.
 +
-+	mt8195_delay_ps2stage(plat);
++  mediatek,rxc-inverse:
++    type: boolean
++    description:
++      If present, indicates that
++      1. rx clock will be inversed in MII/RGMII case.
++      2. reference clock will be inversed when arrived at MAC in RMII case, when
++         the reference clock is from external PHYs.
++      3. the inside clock, which be sent to MAC, will be inversed in RMII case when
++         the reference clock is from MT2712 SoC.
 +
-+	switch (plat->phy_mode) {
-+	case PHY_INTERFACE_MODE_MII:
-+		delay_val |= FIELD_PREP(MT8195_DLY_TXC_ENABLE, !!mac_delay->tx_delay);
-+		delay_val |= FIELD_PREP(MT8195_DLY_TXC_STAGES, mac_delay->tx_delay);
-+		delay_val |= FIELD_PREP(MT8195_DLY_TXC_INV, mac_delay->tx_inv);
++  mediatek,mac-wol:
++    type: boolean
++    description:
++      If present, indicates that MAC supports WOL(Wake-On-LAN), and MAC WOL will be enabled.
++      Otherwise, PHY WOL is perferred.
 +
-+		delay_val |= FIELD_PREP(MT8195_DLY_RXC_ENABLE, !!mac_delay->rx_delay);
-+		delay_val |= FIELD_PREP(MT8195_DLY_RXC_STAGES, mac_delay->rx_delay);
-+		delay_val |= FIELD_PREP(MT8195_DLY_RXC_INV, mac_delay->rx_inv);
-+		break;
-+	case PHY_INTERFACE_MODE_RMII:
-+		if (plat->rmii_clk_from_mac) {
-+			/* case 1: mac provides the rmii reference clock,
-+			 * and the clock output to TXC pin.
-+			 * The egress timing can be adjusted by RMII_TXC delay macro circuit.
-+			 * The ingress timing can be adjusted by RMII_RXC delay macro circuit.
-+			 */
-+			rmii_delay_val |= FIELD_PREP(MT8195_DLY_RMII_TXC_ENABLE,
-+						     !!mac_delay->tx_delay);
-+			rmii_delay_val |= FIELD_PREP(MT8195_DLY_RMII_TXC_STAGES,
-+						     mac_delay->tx_delay);
-+			rmii_delay_val |= FIELD_PREP(MT8195_DLY_RMII_TXC_INV,
-+						     mac_delay->tx_inv);
++required:
++  - compatible
++  - reg
++  - interrupts
++  - interrupt-names
++  - clocks
++  - clock-names
++  - phy-mode
++  - mediatek,pericfg
 +
-+			rmii_delay_val |= FIELD_PREP(MT8195_DLY_RMII_RXC_ENABLE,
-+						     !!mac_delay->rx_delay);
-+			rmii_delay_val |= FIELD_PREP(MT8195_DLY_RMII_RXC_STAGES,
-+						     mac_delay->rx_delay);
-+			rmii_delay_val |= FIELD_PREP(MT8195_DLY_RMII_RXC_INV,
-+						     mac_delay->rx_inv);
-+		} else {
-+			/* case 2: the rmii reference clock is from external phy,
-+			 * and the property "rmii_rxc" indicates which pin(TXC/RXC)
-+			 * the reference clk is connected to. The reference clock is a
-+			 * received signal, so rx_delay/rx_inv are used to indicate
-+			 * the reference clock timing adjustment
-+			 */
-+			if (plat->rmii_rxc) {
-+				/* the rmii reference clock from outside is connected
-+				 * to RXC pin, the reference clock will be adjusted
-+				 * by RXC delay macro circuit.
-+				 */
-+				delay_val |= FIELD_PREP(MT8195_DLY_RXC_ENABLE,
-+							!!mac_delay->rx_delay);
-+				delay_val |= FIELD_PREP(MT8195_DLY_RXC_STAGES,
-+							mac_delay->rx_delay);
-+				delay_val |= FIELD_PREP(MT8195_DLY_RXC_INV,
-+							mac_delay->rx_inv);
-+			} else {
-+				/* the rmii reference clock from outside is connected
-+				 * to TXC pin, the reference clock will be adjusted
-+				 * by TXC delay macro circuit.
-+				 */
-+				delay_val |= FIELD_PREP(MT8195_DLY_TXC_ENABLE,
-+							!!mac_delay->rx_delay);
-+				delay_val |= FIELD_PREP(MT8195_DLY_TXC_STAGES,
-+							mac_delay->rx_delay);
-+				delay_val |= FIELD_PREP(MT8195_DLY_TXC_INV,
-+							mac_delay->rx_inv);
-+			}
-+		}
-+		break;
-+	case PHY_INTERFACE_MODE_RGMII:
-+	case PHY_INTERFACE_MODE_RGMII_TXID:
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+		gtxc_delay_val |= FIELD_PREP(MT8195_DLY_GTXC_ENABLE, !!mac_delay->tx_delay);
-+		gtxc_delay_val |= FIELD_PREP(MT8195_DLY_GTXC_STAGES, mac_delay->tx_delay);
-+		gtxc_delay_val |= FIELD_PREP(MT8195_DLY_GTXC_INV, mac_delay->tx_inv);
++unevaluatedProperties: false
 +
-+		delay_val |= FIELD_PREP(MT8195_DLY_RXC_ENABLE, !!mac_delay->rx_delay);
-+		delay_val |= FIELD_PREP(MT8195_DLY_RXC_STAGES, mac_delay->rx_delay);
-+		delay_val |= FIELD_PREP(MT8195_DLY_RXC_INV, mac_delay->rx_inv);
++examples:
++  - |
++    #include <dt-bindings/clock/mt2712-clk.h>
++    #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/power/mt2712-power.h>
 +
-+		break;
-+	default:
-+		dev_err(plat->dev, "phy interface not supported\n");
-+		return -EINVAL;
-+	}
-+
-+	regmap_update_bits(plat->peri_regmap,
-+			   MT8195_PERI_ETH_CTRL0,
-+			   MT8195_RGMII_TXC_PHASE_CTRL |
-+			   MT8195_DLY_GTXC_INV |
-+			   MT8195_DLY_GTXC_ENABLE |
-+			   MT8195_DLY_GTXC_STAGES,
-+			   gtxc_delay_val);
-+	regmap_write(plat->peri_regmap, MT8195_PERI_ETH_CTRL1, delay_val);
-+	regmap_write(plat->peri_regmap, MT8195_PERI_ETH_CTRL2, rmii_delay_val);
-+
-+	mt8195_delay_stage2ps(plat);
-+
-+	return 0;
-+}
-+
-+static void mt8195_fix_mac_speed(void *priv, unsigned int speed)
-+{
-+	struct mediatek_dwmac_plat_data *priv_plat = priv;
-+
-+	if ((phy_interface_mode_is_rgmii(priv_plat->phy_mode))) {
-+		/* prefer 2ns fixed delay which is controlled by TXC_PHASE_CTRL,
-+		 * when link speed is 1Gbps with RGMII interface,
-+		 * Fall back to delay macro circuit for 10/100Mbps link speed.
-+		 */
-+		if (speed == SPEED_1000)
-+			regmap_update_bits(priv_plat->peri_regmap,
-+					   MT8195_PERI_ETH_CTRL0,
-+					   MT8195_RGMII_TXC_PHASE_CTRL |
-+					   MT8195_DLY_GTXC_ENABLE |
-+					   MT8195_DLY_GTXC_INV |
-+					   MT8195_DLY_GTXC_STAGES,
-+					   MT8195_RGMII_TXC_PHASE_CTRL);
-+		else
-+			mt8195_set_delay(priv_plat);
-+	}
-+}
-+
-+static const struct mediatek_dwmac_variant mt8195_gmac_variant = {
-+	.dwmac_set_phy_interface = mt8195_set_interface,
-+	.dwmac_set_delay = mt8195_set_delay,
-+	.dwmac_fix_mac_speed = mt8195_fix_mac_speed,
-+	.clk_list = mt8195_dwmac_clk_l,
-+	.num_clks = ARRAY_SIZE(mt8195_dwmac_clk_l),
-+	.dma_bit_mask = 35,
-+	.rx_delay_max = 9280,
-+	.tx_delay_max = 9280,
-+};
-+
- static int mediatek_dwmac_config_dt(struct mediatek_dwmac_plat_data *plat)
- {
- 	struct mac_delay_struct *mac_delay = &plat->mac_delay;
-@@ -308,6 +539,7 @@ static int mediatek_dwmac_config_dt(struct mediatek_dwmac_plat_data *plat)
- 	mac_delay->rx_inv = of_property_read_bool(plat->np, "mediatek,rxc-inverse");
- 	plat->rmii_rxc = of_property_read_bool(plat->np, "mediatek,rmii-rxc");
- 	plat->rmii_clk_from_mac = of_property_read_bool(plat->np, "mediatek,rmii-clk-from-mac");
-+	plat->mac_wol = of_property_read_bool(plat->np, "mediatek,mac-wol");
- 
- 	return 0;
- }
-@@ -384,6 +616,16 @@ static int mediatek_dwmac_clks_config(void *priv, bool enabled)
- 
- 	return ret;
- }
-+
-+static void mediatek_fix_mac_speed(void *priv, unsigned int speed)
-+{
-+	struct mediatek_dwmac_plat_data *plat = priv;
-+	const struct mediatek_dwmac_variant *variant = plat->variant;
-+
-+	if (variant->dwmac_fix_mac_speed)
-+		variant->dwmac_fix_mac_speed(priv, speed);
-+}
-+
- static int mediatek_dwmac_probe(struct platform_device *pdev)
- {
- 	struct mediatek_dwmac_plat_data *priv_plat;
-@@ -421,7 +663,7 @@ static int mediatek_dwmac_probe(struct platform_device *pdev)
- 		return PTR_ERR(plat_dat);
- 
- 	plat_dat->interface = priv_plat->phy_mode;
--	plat_dat->use_phy_wol = 1;
-+	plat_dat->use_phy_wol = priv_plat->mac_wol ? 0 : 1;
- 	plat_dat->riwt_off = 1;
- 	plat_dat->maxmtu = ETH_DATA_LEN;
- 	plat_dat->addr64 = priv_plat->variant->dma_bit_mask;
-@@ -429,7 +671,22 @@ static int mediatek_dwmac_probe(struct platform_device *pdev)
- 	plat_dat->init = mediatek_dwmac_init;
- 	plat_dat->exit = mediatek_dwmac_exit;
- 	plat_dat->clks_config = mediatek_dwmac_clks_config;
-+	plat_dat->fix_mac_speed = mediatek_fix_mac_speed;
-+	plat_dat->safety_feat_cfg = devm_kzalloc(&pdev->dev,
-+						 sizeof(*plat_dat->safety_feat_cfg),
-+						 GFP_KERNEL);
-+	if (!plat_dat->safety_feat_cfg)
-+		return -ENOMEM;
- 
-+	plat_dat->safety_feat_cfg->tsoee = 1;
-+	plat_dat->safety_feat_cfg->mrxpee = 0;
-+	plat_dat->safety_feat_cfg->mestee = 1;
-+	plat_dat->safety_feat_cfg->mrxee = 1;
-+	plat_dat->safety_feat_cfg->mtxee = 1;
-+	plat_dat->safety_feat_cfg->epsi = 0;
-+	plat_dat->safety_feat_cfg->edpp = 1;
-+	plat_dat->safety_feat_cfg->prtyen = 1;
-+	plat_dat->safety_feat_cfg->tmouten = 1;
- 	mediatek_dwmac_init(pdev, priv_plat);
- 
- 	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
-@@ -444,6 +701,8 @@ static int mediatek_dwmac_probe(struct platform_device *pdev)
- static const struct of_device_id mediatek_dwmac_match[] = {
- 	{ .compatible = "mediatek,mt2712-gmac",
- 	  .data = &mt2712_gmac_variant },
-+	{ .compatible = "mediatek,mt8195-gmac",
-+	  .data = &mt8195_gmac_variant },
- 	{ }
- };
- 
++    eth: ethernet@1101c000 {
++        compatible = "mediatek,mt2712-gmac", "snps,dwmac-4.20a";
++        reg = <0x1101c000 0x1300>;
++        interrupts = <GIC_SPI 237 IRQ_TYPE_LEVEL_LOW>;
++        interrupt-names = "macirq";
++        phy-mode ="rgmii-rxid";
++        mac-address = [00 55 7b b5 7d f7];
++        clock-names = "axi",
++                      "apb",
++                      "mac_main",
++                      "ptp_ref",
++                      "rmii_internal";
++        clocks = <&pericfg CLK_PERI_GMAC>,
++                 <&pericfg CLK_PERI_GMAC_PCLK>,
++                 <&topckgen CLK_TOP_ETHER_125M_SEL>,
++                 <&topckgen CLK_TOP_ETHER_50M_SEL>,
++                 <&topckgen CLK_TOP_ETHER_50M_RMII_SEL>;
++        assigned-clocks = <&topckgen CLK_TOP_ETHER_125M_SEL>,
++                          <&topckgen CLK_TOP_ETHER_50M_SEL>,
++                          <&topckgen CLK_TOP_ETHER_50M_RMII_SEL>;
++        assigned-clock-parents = <&topckgen CLK_TOP_ETHERPLL_125M>,
++                                 <&topckgen CLK_TOP_APLL1_D3>,
++                                 <&topckgen CLK_TOP_ETHERPLL_50M>;
++        power-domains = <&scpsys MT2712_POWER_DOMAIN_AUDIO>;
++        mediatek,pericfg = <&pericfg>;
++        mediatek,tx-delay-ps = <1530>;
++        snps,txpbl = <1>;
++        snps,rxpbl = <1>;
++        snps,reset-gpio = <&pio 87 GPIO_ACTIVE_LOW>;
++        snps,reset-delays-us = <0 10000 10000>;
++    };
 -- 
 2.25.1
 
