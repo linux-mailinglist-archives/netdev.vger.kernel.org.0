@@ -2,130 +2,286 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3286044BA28
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 03:00:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D6B844BA35
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 03:12:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229513AbhKJCC6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Nov 2021 21:02:58 -0500
-Received: from szxga01-in.huawei.com ([45.249.212.187]:30931 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbhKJCC6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 21:02:58 -0500
-Received: from dggeml757-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Hpnx21Jnvzcb01;
-        Wed, 10 Nov 2021 09:55:18 +0800 (CST)
-Received: from [10.174.179.200] (10.174.179.200) by
- dggeml757-chm.china.huawei.com (10.1.199.137) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.15; Wed, 10 Nov 2021 10:00:07 +0800
-Subject: Re: [PATCH net] can: j1939: fix errant WARN_ON_ONCE in
- j1939_session_deactivate
-To:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-CC:     <robin@protonic.nl>, <linux@rempel-privat.de>,
-        <socketcan@hartkopp.net>, <mkl@pengutronix.de>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20210906094200.95868-1-william.xuanziyang@huawei.com>
- <20210910124005.GJ26100@pengutronix.de>
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Message-ID: <17aeff56-716d-3ba5-40cd-b4e1da3f6909@huawei.com>
-Date:   Wed, 10 Nov 2021 10:00:06 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S229785AbhKJCPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Nov 2021 21:15:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46102 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229630AbhKJCPl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Nov 2021 21:15:41 -0500
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DF2CC061764;
+        Tue,  9 Nov 2021 18:12:54 -0800 (PST)
+Received: by mail-qt1-x836.google.com with SMTP id n15so816191qta.0;
+        Tue, 09 Nov 2021 18:12:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4VQUyPfCtYAmUYj3dR2/AldJMwVjcJ2wvzveCAfMSD0=;
+        b=dHfRkDX+SYS5DlPOldecO1B8oe39cHcMciJgT+p8fDBO8LAiATBRlcJPe0hUu8ZXsf
+         MX4uesuxXbhgXhLMZjFkJ6uao2wBHXlKv772pMYhYuHYBrmrp/75BvWHvgFeLHy5xTBj
+         AOKNRtqunabK9d+TcZCAtXgjDbm12mIl7+ilq+Lx0L2wIx24IRjr6FVyYO7S2D1B3Su+
+         43bxilSW8YQm2MM0zGhbkuAVuvsVm6vQ3LHgHMeYTjbogfAqkSZo7UcB4C28XcREW8TS
+         SiIR0f17OPvwBrAscpY1RGi2HgYVG/lrK9DX3im09U1ipfj1OfFiLso8pZoxCmwVyUkO
+         Fa5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4VQUyPfCtYAmUYj3dR2/AldJMwVjcJ2wvzveCAfMSD0=;
+        b=tj6m59uclTFR2jKRYJICRMoVCjnfyM/hUe+0wKuNZwg0EX3ldG4UeUpn9cO06pOyRL
+         5pyR4KBItBuhfUyRq7+gYNdMOndFXODgbDqAqnfMeFxIaFZ7SI7JzZy6YC/jZn6ujzKa
+         Iv2NpHNbDqjbb0w78oJU0qqMKVp9KRjbLmseuP5YyqleftJSU3Kgo7cuEjzqCgWOyqmx
+         qyPamg+V6txjhMLc0n8NDzjRiW9hisit/3QrggTbiqYEq3TSDdrY8FWV05mzI8/qX8Dl
+         rmWRtqj8OqU7i5LYtZqI4qPAAw8/yJ7uR+ipLYpoYolIbnh+ZXhRubLiRdZXofYBX+Bk
+         T/qQ==
+X-Gm-Message-State: AOAM530SVdFdZD6FXy161RRaXQg9GqpaXexxISCBk/S65uTo6kOEjVcT
+        63kLA2YeD+xz96LApFEx/7ZEJrRehh1Qimkf+Ek=
+X-Google-Smtp-Source: ABdhPJyqPJROfwSYcAqP9/td2q+C5e2ziUkdQh37q0NRiGe4vILAtZEiDLqgqy49V1468mKWHCYyWIBl9yyxc/hr+lo=
+X-Received: by 2002:a05:622a:194:: with SMTP id s20mr13976369qtw.66.1636510373404;
+ Tue, 09 Nov 2021 18:12:53 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210910124005.GJ26100@pengutronix.de>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.200]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggeml757-chm.china.huawei.com (10.1.199.137)
-X-CFilter-Loop: Reflected
+References: <20211108084142.4692-1-laoar.shao@gmail.com> <202111090930.75BBF4678@keescook>
+In-Reply-To: <202111090930.75BBF4678@keescook>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Wed, 10 Nov 2021 10:12:17 +0800
+Message-ID: <CALOAHbCo9_qYHQOa4KbXeQgVOmyEqOOXbY7j_p+u4ZaSUjWnFA@mail.gmail.com>
+Subject: Re: [PATCH] kthread: dynamically allocate memory to store kthread's
+ full name
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel test robot <oliver.sang@intel.com>,
+        kbuild test robot <lkp@intel.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        David Hildenbrand <david@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, Nov 10, 2021 at 1:34 AM Kees Cook <keescook@chromium.org> wrote:
+>
+> On Mon, Nov 08, 2021 at 08:41:42AM +0000, Yafang Shao wrote:
+> > When I was implementing a new per-cpu kthread cfs_migration, I found the
+> > comm of it "cfs_migration/%u" is truncated due to the limitation of
+> > TASK_COMM_LEN. For example, the comm of the percpu thread on CPU10~19 are
+> > all with the same name "cfs_migration/1", which will confuse the user. This
+> > issue is not critical, because we can get the corresponding CPU from the
+> > task's Cpus_allowed. But for kthreads correspoinding to other hardware
+> > devices, it is not easy to get the detailed device info from task comm,
+> > for example,
+> >
+> >     jbd2/nvme0n1p2-
+> >     xfs-reclaim/sdf
+> >
+> > Currently there are so many truncated kthreads:
+> >
+> >     rcu_tasks_kthre
+> >     rcu_tasks_rude_
+> >     rcu_tasks_trace
+> >     poll_mpt3sas0_s
+> >     ext4-rsv-conver
+> >     xfs-reclaim/sd{a, b, c, ...}
+> >     xfs-blockgc/sd{a, b, c, ...}
+> >     xfs-inodegc/sd{a, b, c, ...}
+> >     audit_send_repl
+> >     ecryptfs-kthrea
+> >     vfio-irqfd-clea
+> >     jbd2/nvme0n1p2-
+> >     ...
+> >
+> > We can shorten these names to work around this problem, but it may be
+> > not applied to all of the truncated kthreads. Take 'jbd2/nvme0n1p2-' for
+> > example, it is a nice name, and it is not a good idea to shorten it.
+> >
+> > One possible way to fix this issue is extending the task comm size, but
+> > as task->comm is used in lots of places, that may cause some potential
+> > buffer overflows. Another more conservative approach is introducing a new
+> > pointer to store kthread's full name if it is truncated, which won't
+> > introduce too much overhead as it is in the non-critical path. Finally we
+> > make a dicision to use the second approach. See also the discussions in
+> > this thread:
+> > https://lore.kernel.org/lkml/20211101060419.4682-1-laoar.shao@gmail.com/
+> >
+> > After this change, the full name of these truncated kthreads will be
+> > displayed via /proc/[pid]/comm:
+> >
+> >     rcu_tasks_kthread
+> >     rcu_tasks_rude_kthread
+> >     rcu_tasks_trace_kthread
+> >     poll_mpt3sas0_statu
+> >     ext4-rsv-conversion
+> >     xfs-reclaim/sdf1
+> >     xfs-blockgc/sdf1
+> >     xfs-inodegc/sdf1
+> >     audit_send_reply
+> >     ecryptfs-kthread
+> >     vfio-irqfd-cleanup
+> >     jbd2/nvme0n1p2-8
+> >
+> > Suggested-by: Petr Mladek <pmladek@suse.com>
+> > Suggested-by: Steven Rostedt <rostedt@goodmis.org>
+> > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> > Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+> > Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+> > Cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+> > Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> > Cc: Michal Miroslaw <mirq-linux@rere.qmqm.pl>
+> > Cc: Peter Zijlstra <peterz@infradead.org>
+> > Cc: Steven Rostedt <rostedt@goodmis.org>
+> > Cc: Matthew Wilcox <willy@infradead.org>
+> > Cc: David Hildenbrand <david@redhat.com>
+> > Cc: Al Viro <viro@zeniv.linux.org.uk>
+> > Cc: Kees Cook <keescook@chromium.org>
+> > Cc: Petr Mladek <pmladek@suse.com>
+> > ---
+> > TODO: will cleanup worker comm in the next step.
+> >
+> > ---
+> >  fs/proc/array.c         |  3 +++
+> >  include/linux/kthread.h |  1 +
+> >  kernel/kthread.c        | 32 +++++++++++++++++++++++++++++++-
+> >  3 files changed, 35 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/fs/proc/array.c b/fs/proc/array.c
+> > index 49be8c8ef555..860e4deafa65 100644
+> > --- a/fs/proc/array.c
+> > +++ b/fs/proc/array.c
+> > @@ -92,6 +92,7 @@
+> >  #include <linux/string_helpers.h>
+> >  #include <linux/user_namespace.h>
+> >  #include <linux/fs_struct.h>
+> > +#include <linux/kthread.h>
+> >
+> >  #include <asm/processor.h>
+> >  #include "internal.h"
+> > @@ -102,6 +103,8 @@ void proc_task_name(struct seq_file *m, struct task_struct *p, bool escape)
+> >
+> >       if (p->flags & PF_WQ_WORKER)
+> >               wq_worker_comm(tcomm, sizeof(tcomm), p);
+> > +     else if (p->flags & PF_KTHREAD)
+> > +             get_kthread_comm(tcomm, sizeof(tcomm), p);
+> >       else
+> >               __get_task_comm(tcomm, sizeof(tcomm), p);
+> >
+> > diff --git a/include/linux/kthread.h b/include/linux/kthread.h
+> > index 346b0f269161..2a5c04494663 100644
+> > --- a/include/linux/kthread.h
+> > +++ b/include/linux/kthread.h
+> > @@ -33,6 +33,7 @@ struct task_struct *kthread_create_on_cpu(int (*threadfn)(void *data),
+> >                                         unsigned int cpu,
+> >                                         const char *namefmt);
+> >
+> > +void get_kthread_comm(char *buf, size_t buf_size, struct task_struct *tsk);
+> >  void set_kthread_struct(struct task_struct *p);
+> >
+> >  void kthread_set_per_cpu(struct task_struct *k, int cpu);
+> > diff --git a/kernel/kthread.c b/kernel/kthread.c
+> > index 5b37a8567168..ce8258231eea 100644
+> > --- a/kernel/kthread.c
+> > +++ b/kernel/kthread.c
+> > @@ -60,6 +60,8 @@ struct kthread {
+> >  #ifdef CONFIG_BLK_CGROUP
+> >       struct cgroup_subsys_state *blkcg_css;
+> >  #endif
+> > +     /* To store the full name if task comm is truncated. */
+> > +     char *full_name;
+> >  };
+> >
+> >  enum KTHREAD_BITS {
+> > @@ -93,6 +95,18 @@ static inline struct kthread *__to_kthread(struct task_struct *p)
+> >       return kthread;
+> >  }
+> >
+> > +void get_kthread_comm(char *buf, size_t buf_size, struct task_struct *tsk)
+> > +{
+> > +     struct kthread *kthread = to_kthread(tsk);
+> > +
+> > +     if (!kthread || !kthread->full_name) {
+> > +             __get_task_comm(buf, buf_size, tsk);
+> > +             return;
+> > +     }
+> > +
+> > +     strscpy_pad(buf, kthread->full_name, buf_size);
+> > +}
+> > +
+> >  void set_kthread_struct(struct task_struct *p)
+> >  {
+> >       struct kthread *kthread;
+> > @@ -121,6 +135,7 @@ void free_kthread_struct(struct task_struct *k)
+> >  #ifdef CONFIG_BLK_CGROUP
+> >       WARN_ON_ONCE(kthread && kthread->blkcg_css);
+> >  #endif
+> > +     kfree(kthread->full_name);
+> >       kfree(kthread);
+> >  }
+> >
+> > @@ -399,12 +414,27 @@ struct task_struct *__kthread_create_on_node(int (*threadfn)(void *data),
+> >       if (!IS_ERR(task)) {
+> >               static const struct sched_param param = { .sched_priority = 0 };
+> >               char name[TASK_COMM_LEN];
+> > +             va_list aq;
+> > +             int len;
+> >
+> >               /*
+> >                * task is already visible to other tasks, so updating
+> >                * COMM must be protected.
+> >                */
+> > -             vsnprintf(name, sizeof(name), namefmt, args);
+> > +             va_copy(aq, args);
+> > +             len = vsnprintf(name, sizeof(name), namefmt, aq);
+> > +             va_end(aq);
+> > +             if (len >= TASK_COMM_LEN) {
+> > +                     struct kthread *kthread = to_kthread(task);
+> > +                     char *full_name;
+> > +
+> > +                     full_name = kvasprintf(GFP_KERNEL, namefmt, args);
+> > +                     if (!full_name) {
+> > +                             kfree(create);
+> > +                             return ERR_PTR(-ENOMEM);
+>
+> I'm not a fan of this out-of-line free/return. Why not just leave it
+> truncated when out of memory? For example just do:
+>
 
-I notice that the patch is not applied in upstream. Is it missed
-or any other problems?
+It is OK for me.
+I will do it as you suggested and show a warning for this case.
 
-Thank you!
+>                         struct kthread *kthread = to_kthread(task);
+>
+>                         kthread->full_name = kvasprintf(GFP_KERNEL, namefmt, args);
+>
+> > +                     }
+> > +                     kthread->full_name = full_name;
+> > +             }
+> >               set_task_comm(task, name);
+> >               /*
+> >                * root may have changed our (kthreadd's) priority or CPU mask.
+> > --
+> > 2.17.1
+> >
+>
+> --
+> Kees Cook
 
-> On Mon, Sep 06, 2021 at 05:42:00PM +0800, Ziyang Xuan wrote:
->> The conclusion "j1939_session_deactivate() should be called with a
->> session ref-count of at least 2" is incorrect. In some concurrent
->> scenarios, j1939_session_deactivate can be called with the session
->> ref-count less than 2. But there is not any problem because it
->> will check the session active state before session putting in
->> j1939_session_deactivate_locked().
->>
->> Here is the concurrent scenario of the problem reported by syzbot
->> and my reproduction log.
->>
->>         cpu0                            cpu1
->>                                 j1939_xtp_rx_eoma
->> j1939_xtp_rx_abort_one
->>                                 j1939_session_get_by_addr [kref == 2]
->> j1939_session_get_by_addr [kref == 3]
->> j1939_session_deactivate [kref == 2]
->> j1939_session_put [kref == 1]
->> 				j1939_session_completed
->> 				j1939_session_deactivate
->> 				WARN_ON_ONCE(kref < 2)
->>
-> 
-> Ok, I see, this warning makes sense only if session will actually be
-> deactivated.
-> 
-> Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> 
-> Thank you!
-> 
->> =====================================================
->> WARNING: CPU: 1 PID: 21 at net/can/j1939/transport.c:1088 j1939_session_deactivate+0x5f/0x70
->> CPU: 1 PID: 21 Comm: ksoftirqd/1 Not tainted 5.14.0-rc7+ #32
->> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1 04/01/2014
->> RIP: 0010:j1939_session_deactivate+0x5f/0x70
->> Call Trace:
->>  j1939_session_deactivate_activate_next+0x11/0x28
->>  j1939_xtp_rx_eoma+0x12a/0x180
->>  j1939_tp_recv+0x4a2/0x510
->>  j1939_can_recv+0x226/0x380
->>  can_rcv_filter+0xf8/0x220
->>  can_receive+0x102/0x220
->>  ? process_backlog+0xf0/0x2c0
->>  can_rcv+0x53/0xf0
->>  __netif_receive_skb_one_core+0x67/0x90
->>  ? process_backlog+0x97/0x2c0
->>  __netif_receive_skb+0x22/0x80
->>
->> Fixes: 0c71437dd50d ("can: j1939: j1939_session_deactivate(): clarify lifetime of session object")
->> Reported-by: syzbot+9981a614060dcee6eeca@syzkaller.appspotmail.com
->> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
->> ---
->>  net/can/j1939/transport.c | 4 ----
->>  1 file changed, 4 deletions(-)
->>
->> diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
->> index bdc95bd7a851..0f8309314075 100644
->> --- a/net/can/j1939/transport.c
->> +++ b/net/can/j1939/transport.c
->> @@ -1079,10 +1079,6 @@ static bool j1939_session_deactivate(struct j1939_session *session)
->>  	bool active;
->>  
->>  	j1939_session_list_lock(priv);
->> -	/* This function should be called with a session ref-count of at
->> -	 * least 2.
->> -	 */
->> -	WARN_ON_ONCE(kref_read(&session->kref) < 2);
->>  	active = j1939_session_deactivate_locked(session);
->>  	j1939_session_list_unlock(priv);
->>  
->> -- 
->> 2.25.1
->>
->>
-> 
+
+
+-- 
+Thanks
+Yafang
