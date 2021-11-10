@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 419E044C263
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 14:49:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 952A544C267
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 14:49:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232091AbhKJNuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 08:50:18 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:15814 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232040AbhKJNuP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 08:50:15 -0500
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Hq5kP2ljWz912h;
-        Wed, 10 Nov 2021 21:47:09 +0800 (CST)
+        id S232123AbhKJNuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 08:50:22 -0500
+Received: from szxga03-in.huawei.com ([45.249.212.189]:27194 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232051AbhKJNuR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 08:50:17 -0500
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Hq5hr3n44z8tt0;
+        Wed, 10 Nov 2021 21:45:48 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Wed, 10 Nov 2021 21:47:24 +0800
+ 15.1.2308.15; Wed, 10 Nov 2021 21:47:25 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -27,9 +27,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <wangjie125@huawei.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
         <chenhao288@hisilicon.com>
-Subject: [PATCH net 1/8] net: hns3: fix failed to add reuse multicast mac addr to hardware when mc mac table is full
-Date:   Wed, 10 Nov 2021 21:42:49 +0800
-Message-ID: <20211110134256.25025-2-huangguangbin2@huawei.com>
+Subject: [PATCH net 2/8] net: hns3: fix ROCE base interrupt vector initialization bug
+Date:   Wed, 10 Nov 2021 21:42:50 +0800
+Message-ID: <20211110134256.25025-3-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211110134256.25025-1-huangguangbin2@huawei.com>
 References: <20211110134256.25025-1-huangguangbin2@huawei.com>
@@ -44,131 +44,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, when driver is failed to add a new multicast mac address to
-hardware due to the multicast mac table is full, it will directly return.
-In this case, if the multicast mac list has some reuse addresses after the
-new address, those reuse addresses will never be added to hardware.
+From: Jie Wang <wangjie125@huawei.com>
 
-To fix this problem, if function hclge_add_mc_addr_common() returns
--ENOSPC, hclge_sync_vport_mac_list() should judge whether continue or
-stop to add next address.
+Currently, NIC init ROCE interrupt vector with MSIX interrupt. But ROCE use
+pci_irq_vector() to get interrupt vector, which adds the relative interrupt
+vector again and gets wrong interrupt vector.
 
-As function hclge_sync_vport_mac_list() needs parameter mac_type to know
-whether is uc or mc, refine this function to add parameter mac_type and
-remove parameter sync. So does function hclge_unsync_vport_mac_list().
+So fixes it by assign relative interrupt vector to ROCE instead of MSIX
+interrupt vector and delete the unused struct member base_msi_vector
+declaration of hclgevf_dev.
 
-Fixes: ee4bcd3b7ae4 ("net: hns3: refactor the MAC address configure")
+Fixes: 46a3df9f9718 ("net: hns3: Add HNS3 Acceleration Engine & Compatibility Layer Support")
+Signed-off-by: Jie Wang <wangjie125@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- .../hisilicon/hns3/hns3pf/hclge_main.c        | 50 ++++++++++---------
- 1 file changed, 27 insertions(+), 23 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c   | 6 +-----
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h   | 2 --
+ drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 5 +----
+ drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h | 2 --
+ 4 files changed, 2 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 2e41aa2d1df8..eb96bea9e3ce 100644
+index eb96bea9e3ce..0fc2b81f4712 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -8949,8 +8949,11 @@ int hclge_add_mc_addr_common(struct hclge_vport *vport,
+@@ -2581,7 +2581,7 @@ static int hclge_init_roce_base_info(struct hclge_vport *vport)
+ 	if (hdev->num_msi < hdev->num_nic_msi + hdev->num_roce_msi)
+ 		return -EINVAL;
  
- err_no_space:
- 	/* if already overflow, not to print each time */
--	if (!(vport->overflow_promisc_flags & HNAE3_OVERFLOW_MPE))
-+	if (!(vport->overflow_promisc_flags & HNAE3_OVERFLOW_MPE)) {
-+		vport->overflow_promisc_flags |= HNAE3_OVERFLOW_MPE;
- 		dev_err(&hdev->pdev->dev, "mc mac vlan table is full\n");
-+	}
-+
- 	return -ENOSPC;
- }
+-	roce->rinfo.base_vector = hdev->roce_base_vector;
++	roce->rinfo.base_vector = hdev->num_nic_msi;
  
-@@ -9006,12 +9009,17 @@ int hclge_rm_mc_addr_common(struct hclge_vport *vport,
+ 	roce->rinfo.netdev = nic->kinfo.netdev;
+ 	roce->rinfo.roce_io_base = hdev->hw.io_base;
+@@ -2617,10 +2617,6 @@ static int hclge_init_msi(struct hclge_dev *hdev)
+ 	hdev->num_msi = vectors;
+ 	hdev->num_msi_left = vectors;
  
- static void hclge_sync_vport_mac_list(struct hclge_vport *vport,
- 				      struct list_head *list,
--				      int (*sync)(struct hclge_vport *,
--						  const unsigned char *))
-+				      enum HCLGE_MAC_ADDR_TYPE mac_type)
- {
-+	int (*sync)(struct hclge_vport *vport, const unsigned char *addr);
- 	struct hclge_mac_node *mac_node, *tmp;
- 	int ret;
+-	hdev->base_msi_vector = pdev->irq;
+-	hdev->roce_base_vector = hdev->base_msi_vector +
+-				hdev->num_nic_msi;
+-
+ 	hdev->vector_status = devm_kcalloc(&pdev->dev, hdev->num_msi,
+ 					   sizeof(u16), GFP_KERNEL);
+ 	if (!hdev->vector_status) {
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+index 9e1eede599ec..21013776de55 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+@@ -904,12 +904,10 @@ struct hclge_dev {
+ 	u16 num_msi;
+ 	u16 num_msi_left;
+ 	u16 num_msi_used;
+-	u32 base_msi_vector;
+ 	u16 *vector_status;
+ 	int *vector_irq;
+ 	u16 num_nic_msi;	/* Num of nic vectors for this PF */
+ 	u16 num_roce_msi;	/* Num of roce vectors for this PF */
+-	int roce_base_vector;
  
-+	if (mac_type == HCLGE_MAC_ADDR_UC)
-+		sync = hclge_add_uc_addr_common;
-+	else
-+		sync = hclge_add_mc_addr_common;
-+
- 	list_for_each_entry_safe(mac_node, tmp, list, node) {
- 		ret = sync(vport, mac_node->mac_addr);
- 		if (!ret) {
-@@ -9023,8 +9031,13 @@ static void hclge_sync_vport_mac_list(struct hclge_vport *vport,
- 			/* If one unicast mac address is existing in hardware,
- 			 * we need to try whether other unicast mac addresses
- 			 * are new addresses that can be added.
-+			 * Multicast mac address can be reusable, even though
-+			 * there is no space to add new multicast mac address,
-+			 * we should check whether other mac addresses are
-+			 * existing in hardware for reuse.
- 			 */
--			if (ret != -EEXIST)
-+			if ((mac_type == HCLGE_MAC_ADDR_UC && ret != -EEXIST) ||
-+			    (mac_type == HCLGE_MAC_ADDR_MC && ret != -ENOSPC))
- 				break;
- 		}
- 	}
-@@ -9032,12 +9045,17 @@ static void hclge_sync_vport_mac_list(struct hclge_vport *vport,
+ 	unsigned long service_timer_period;
+ 	unsigned long service_timer_previous;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+index 645b2c0011e6..98332dad804d 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+@@ -2557,7 +2557,7 @@ static int hclgevf_init_roce_base_info(struct hclgevf_dev *hdev)
+ 	    hdev->num_msi_left == 0)
+ 		return -EINVAL;
  
- static void hclge_unsync_vport_mac_list(struct hclge_vport *vport,
- 					struct list_head *list,
--					int (*unsync)(struct hclge_vport *,
--						      const unsigned char *))
-+					enum HCLGE_MAC_ADDR_TYPE mac_type)
- {
-+	int (*unsync)(struct hclge_vport *vport, const unsigned char *addr);
- 	struct hclge_mac_node *mac_node, *tmp;
- 	int ret;
+-	roce->rinfo.base_vector = hdev->roce_base_vector;
++	roce->rinfo.base_vector = hdev->roce_base_msix_offset;
  
-+	if (mac_type == HCLGE_MAC_ADDR_UC)
-+		unsync = hclge_rm_uc_addr_common;
-+	else
-+		unsync = hclge_rm_mc_addr_common;
-+
- 	list_for_each_entry_safe(mac_node, tmp, list, node) {
- 		ret = unsync(vport, mac_node->mac_addr);
- 		if (!ret || ret == -ENOENT) {
-@@ -9168,17 +9186,8 @@ static void hclge_sync_vport_mac_table(struct hclge_vport *vport,
- 	spin_unlock_bh(&vport->mac_list_lock);
+ 	roce->rinfo.netdev = nic->kinfo.netdev;
+ 	roce->rinfo.roce_io_base = hdev->hw.io_base;
+@@ -2823,9 +2823,6 @@ static int hclgevf_init_msi(struct hclgevf_dev *hdev)
+ 	hdev->num_msi = vectors;
+ 	hdev->num_msi_left = vectors;
  
- 	/* delete first, in order to get max mac table space for adding */
--	if (mac_type == HCLGE_MAC_ADDR_UC) {
--		hclge_unsync_vport_mac_list(vport, &tmp_del_list,
--					    hclge_rm_uc_addr_common);
--		hclge_sync_vport_mac_list(vport, &tmp_add_list,
--					  hclge_add_uc_addr_common);
--	} else {
--		hclge_unsync_vport_mac_list(vport, &tmp_del_list,
--					    hclge_rm_mc_addr_common);
--		hclge_sync_vport_mac_list(vport, &tmp_add_list,
--					  hclge_add_mc_addr_common);
--	}
-+	hclge_unsync_vport_mac_list(vport, &tmp_del_list, mac_type);
-+	hclge_sync_vport_mac_list(vport, &tmp_add_list, mac_type);
+-	hdev->base_msi_vector = pdev->irq;
+-	hdev->roce_base_vector = pdev->irq + hdev->roce_base_msix_offset;
+-
+ 	hdev->vector_status = devm_kcalloc(&pdev->dev, hdev->num_msi,
+ 					   sizeof(u16), GFP_KERNEL);
+ 	if (!hdev->vector_status) {
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
+index 28288d7e3303..4bd922b47501 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
+@@ -308,8 +308,6 @@ struct hclgevf_dev {
+ 	u16 num_nic_msix;	/* Num of nic vectors for this VF */
+ 	u16 num_roce_msix;	/* Num of roce vectors for this VF */
+ 	u16 roce_base_msix_offset;
+-	int roce_base_vector;
+-	u32 base_msi_vector;
+ 	u16 *vector_status;
+ 	int *vector_irq;
  
- 	/* if some mac addresses were added/deleted fail, move back to the
- 	 * mac_list, and retry at next time.
-@@ -9337,12 +9346,7 @@ static void hclge_uninit_vport_mac_list(struct hclge_vport *vport,
- 
- 	spin_unlock_bh(&vport->mac_list_lock);
- 
--	if (mac_type == HCLGE_MAC_ADDR_UC)
--		hclge_unsync_vport_mac_list(vport, &tmp_del_list,
--					    hclge_rm_uc_addr_common);
--	else
--		hclge_unsync_vport_mac_list(vport, &tmp_del_list,
--					    hclge_rm_mc_addr_common);
-+	hclge_unsync_vport_mac_list(vport, &tmp_del_list, mac_type);
- 
- 	if (!list_empty(&tmp_del_list))
- 		dev_warn(&hdev->pdev->dev,
 -- 
 2.33.0
 
