@@ -2,77 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 945B944CCEB
-	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 23:32:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6292A44CD27
+	for <lists+netdev@lfdr.de>; Wed, 10 Nov 2021 23:53:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234174AbhKJWfO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 17:35:14 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:55480 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234140AbhKJWfN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Nov 2021 17:35:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=/9jSI9XXJ0BNTrF7wiBWFlu2npPyfj2u1QvVr6UGl4k=; b=fTc2niDtnC2xPmySOUN95UWhyE
-        1JAe/fwaQx23vdc+3TddqrVkfEc9As9YzYR7C8PCm+f1DJjlipYtidNH4BXhl0bbGfe/skAehHBLh
-        3fnxfiRgCqtWjCEzv5ldtzu/sMWeimOYtB/uQ2oGzju7w21FhM7L/srChq0/VvMHECmk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mkw8i-00D97l-92; Wed, 10 Nov 2021 23:32:20 +0100
-Date:   Wed, 10 Nov 2021 23:32:20 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        id S233937AbhKJW4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 17:56:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44560 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233902AbhKJWz4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 17:55:56 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 426E3C061766
+        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 14:53:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=nexbm/nvrCb4nfER+vG9pFsNpml3LQEWFepsYAQAjW0=; b=MysM3B2yRkxH0dL1pVKdHce0UD
+        ZssN7nxSojLA8lpoea/MWQDaKqsTmf7hBDXGDNc8wU7t+SY+ngNdVzpDr6JPZjK6vksfWbPrefyUh
+        GGYfQ1mv1SNwvhMsVCpPCHnlguip3I4Rk6Jw8FQ1IOU/IhNahAkvYuJBhvR/5a+pB2K9Kw7aYQw+x
+        IJhPUSSi7CbWqjmwIMQJixCjXrnGddrFdqr039y7a1FeR+LMIhp2kevAPY2AkPrUcNDkxRA/5rwy4
+        jci3mJhjVS2AyXm8NyERHTIxLvFmu0gQMcpHf2nk/u1fkEKawN3taU9Xlz/QA9ETPrpQLuaLnGwpi
+        SzlYmAew==;
+Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mkwSo-006azM-U0; Wed, 10 Nov 2021 22:53:07 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     netdev@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Min Li <min.li.xe@renesas.com>,
+        Richard Cochran <richardcochran@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
-Subject: Re: [RFC PATCH v3 6/8] leds: trigger: add hardware-phy-activity
- trigger
-Message-ID: <YYxIdAH4JW9OMawS@lunn.ch>
-References: <20211109022608.11109-1-ansuelsmth@gmail.com>
- <20211109022608.11109-7-ansuelsmth@gmail.com>
- <20211109042517.03baa809@thinkpad>
- <YYrjlHz/UgTUwQAm@lunn.ch>
- <YYwl0ursbAtsBdxX@Ansuel-xps.localdomain>
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH] ptp: ptp_clockmatrix: repair non-kernel-doc comment
+Date:   Wed, 10 Nov 2021 14:53:06 -0800
+Message-Id: <20211110225306.13483-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YYwl0ursbAtsBdxX@Ansuel-xps.localdomain>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 10, 2021 at 09:04:34PM +0100, Ansuel Smith wrote:
-> On Tue, Nov 09, 2021 at 10:09:40PM +0100, Andrew Lunn wrote:
-> > > > +/* Expose sysfs for every blink to be configurable from userspace */
-> > > > +DEFINE_OFFLOAD_TRIGGER(blink_tx, BLINK_TX);
-> > > > +DEFINE_OFFLOAD_TRIGGER(blink_rx, BLINK_RX);
-> > > > +DEFINE_OFFLOAD_TRIGGER(keep_link_10m, KEEP_LINK_10M);
-> > > > +DEFINE_OFFLOAD_TRIGGER(keep_link_100m, KEEP_LINK_100M);
-> > > > +DEFINE_OFFLOAD_TRIGGER(keep_link_1000m, KEEP_LINK_1000M);
-> > 
-> > You might get warnings about CamelCase, but i suggest keep_link_10M,
-> > keep_link_100M and keep_link_1000M. These are megabits, not millibits.
-> > 
-> > > > +DEFINE_OFFLOAD_TRIGGER(keep_half_duplex, KEEP_HALF_DUPLEX);
-> > > > +DEFINE_OFFLOAD_TRIGGER(keep_full_duplex, KEEP_FULL_DUPLEX);
-> > 
-> > What does keep mean in this context?
-> >
-> 
-> LED is turned on but doesn't blink. Hint for a better name?
+Do not use "/**" to begin a comment that is not in kernel-doc format.
 
-I would just drop the keep. You have blink_ as a prefix for those
-modes that blink.
+Prevents this docs build warning:
 
-      Andrew
+drivers/ptp/ptp_clockmatrix.c:1679: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+    * Maximum absolute value for write phase offset in picoseconds
+
+Fixes: 794c3dffacc16 ("ptp: ptp_clockmatrix: Add support for FW 5.2 (8A34005)")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: Min Li <min.li.xe@renesas.com>
+Cc: Richard Cochran <richardcochran@gmail.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+---
+ drivers/ptp/ptp_clockmatrix.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- linux-next-20211110.orig/drivers/ptp/ptp_clockmatrix.c
++++ linux-next-20211110/drivers/ptp/ptp_clockmatrix.c
+@@ -1699,7 +1699,7 @@ static int initialize_dco_operating_mode
+ 
+ /* PTP Hardware Clock interface */
+ 
+-/**
++/*
+  * Maximum absolute value for write phase offset in picoseconds
+  *
+  * @channel:  channel
