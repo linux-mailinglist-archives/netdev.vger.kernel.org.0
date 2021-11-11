@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A923144D620
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 12:54:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29F9144D623
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 12:54:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233227AbhKKL5E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 06:57:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49006 "EHLO
+        id S233290AbhKKL5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 06:57:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233210AbhKKL5D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 06:57:03 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A04A0C0613F5
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 03:54:14 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id v7-20020a25ab87000000b005c2130838beso9061305ybi.0
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 03:54:14 -0800 (PST)
+        with ESMTP id S233258AbhKKL5K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 06:57:10 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BED8C061767
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 03:54:21 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id r67-20020a252b46000000b005bea12c4befso8775301ybr.19
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 03:54:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=jmP+ym/LNDBSoNGjkA1WbJQp3PL8dM66JjCqrEvWUO4=;
-        b=EReAqt3wWCshtfpjrVqkeOUzoUlSUMZ+WirKASttCbc31hhh7FM9kGHf9kxHQhuQkV
-         YDIgswGFGMl931UjVBr3ybbHSU7RV7KfnTIEgKcuEuDSmCU+C3ogFRCIuEhe1u0kX2Yy
-         4Hq69kQKV6aJlwvzXl7CgoAyCqVr1vagFZKpuHVDpJhDhfOfEpsxTM5kiWCjeSNS1Kf4
-         wsr+snkF95KdCVXyQcsYzp4Abs2Yqd+MS4/ni6wr6tHKH70EVNfQSgSWNPbL6G3WaIIL
-         q1896XJsPNojHt+DRvo3Nm2HRySj+uwYFzaQp5Dos07gkxMLTQmeQ4+Udsn/I5toLT8Z
-         lyRg==
+        bh=4kL0X2JVV0XjaUHDlSkh7aIxrPJS+P1TxygnVknNAZg=;
+        b=Q+/jtBb//RU4wXxTAhXSVm2orlgn4RWfwrSjrQlNKVkWGlTrLvz9MJ96wWDFx/4DBn
+         8nfP/26EVLTEEXNF8fgtFKprei22rUtMhyowsZU4vLDFEfAgkwHFa23Nw46oD+VMrfaV
+         8ukt0PyOqV2V1gbFykDZm4V9iSer4Wi5lYigGnsxqn/lzGnBZ0Hdi8LP8vK7RK4LSm0l
+         KWkjCr3vQ0hbfr8MJLEmYVYxuSi8r39LtkxTGoVlchAjYi+XbN0SGszIDnqsO1/a+LDv
+         nw/SdPnQ7l/LOSQ71L93BdLvyi1CSMfHQQZxya7I6X7olgrs2syvV6EnhCIixiUkTpDR
+         ASMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=jmP+ym/LNDBSoNGjkA1WbJQp3PL8dM66JjCqrEvWUO4=;
-        b=zh4aKazZ09kLARKgFUK2m5F0XLgNRvcHYNaqpRh9T8Njkv7CKkPXO68oc6b/GAxaDd
-         2dZggExLU9NpeJaM9Iqgl38dafBdsxIJbh095xmazXHjRgqHaQHUM4FSgJWKC6P+4wuJ
-         kA7srSleWkIJ/AFvA2n8n+AJIp50UKp90Ebv9fwNibojboS/8QSTKzhh0zK8awV9mIYz
-         NSSV2ZYWvlehU7UL/pdcDr7SKkKYizvCwRpKnWule9IBRarFKJiHgYEm87ugZdNiWGcb
-         92+2frFAaKfiHgPNSw3eo+Na8TohekE86cg7mcD6KtwZR8AVR+p3i4OVZrSovSRgJpto
-         tJxw==
-X-Gm-Message-State: AOAM530e1aPwwFQPsBGdeGk/ZRrHZb3fjkZJSYujQQCNLtD7elx0s/Ry
-        N/CBONy670bsGQ974gDzGhtZWbwIzRfP
-X-Google-Smtp-Source: ABdhPJyve7pqoR9nIze4bse7v5R2P8N8xr58adtTxqsoI8t7P2Q91OPdlzKWlpjE0YvsLOIS0O+XebV/fh3m
+        bh=4kL0X2JVV0XjaUHDlSkh7aIxrPJS+P1TxygnVknNAZg=;
+        b=ZAbungsAWixIsQBhbqC/uBHjll8S50JPVVECB1oIufCNk07tOEZ1qSC4vj9268HONA
+         ysn+cOgPm1KTyTDaK1w8IJwtvW9kqyhrJpSdbTTpiFfs4VyeMBnoucX3BKdQludl5yC5
+         TnaKBQqCLndwwDXpkx9pe+5bd+Yr6qKRKu3xgZQie0cAc7377YNjpEr0CiYbp5//mD5d
+         vVDDB1TdZwVHZkfK80L5V5/lLodwsBxZfDayrM6DlM4B709P/tLSHbs2bUp+w7/K0fGo
+         sK0jJRXXw+epVlReqSEz3YFeYVThVg/J7mq+3BSmOlo0jYxnBNun8Va7FHi4pqiSrHRc
+         QY2A==
+X-Gm-Message-State: AOAM531eC4GdxLbcMvprAMBULYfhE89zReZTEAUiu/xIuyWnc1vSGPY1
+        ViJT05hEed5oYuKB3StTsIGLP/6+XRh8
+X-Google-Smtp-Source: ABdhPJypRDIh4yurXN82mQRqslDI7fpio42+fj+0QjBuTXIyRZ/XgO7FeGopIjdipnZupcHi2ly03+HNzBey
 X-Received: from apusaka-p920.tpe.corp.google.com ([2401:fa00:1:10:b87e:3eb:e17e:1273])
- (user=apusaka job=sendgmr) by 2002:a25:d6c2:: with SMTP id
- n185mr7025157ybg.319.1636631653894; Thu, 11 Nov 2021 03:54:13 -0800 (PST)
-Date:   Thu, 11 Nov 2021 19:53:51 +0800
+ (user=apusaka job=sendgmr) by 2002:a05:6902:1205:: with SMTP id
+ s5mr8240471ybu.71.1636631660862; Thu, 11 Nov 2021 03:54:20 -0800 (PST)
+Date:   Thu, 11 Nov 2021 19:53:52 +0800
 In-Reply-To: <20211111195320.1.Id7366eb14b6f48173fcbf17846ace59479179c7c@changeid>
-Message-Id: <20211111195320.2.I8f792722c41f0841a0eba7a6782ce80d61b20a14@changeid>
+Message-Id: <20211111195320.3.I35b7f3a496f834de6b43a32f94b6160cb1467c94@changeid>
 Mime-Version: 1.0
 References: <20211111195320.1.Id7366eb14b6f48173fcbf17846ace59479179c7c@changeid>
 X-Mailer: git-send-email 2.34.0.rc0.344.g81b53c2807-goog
-Subject: [PATCH 2/3] Bluetooth: Add "DONT_CARE" to remote name inquiry
+Subject: [PATCH 3/3] Bluetooth: Limit duration of Remote Name Resolve
 From:   Archie Pusaka <apusaka@google.com>
 To:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
         Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
@@ -69,84 +69,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Archie Pusaka <apusaka@chromium.org>
 
-With this patch, the user space can specify DONT_CARE when sending
-confirm_name MGMT command. The kernel then will not attempt to perform
-remote name request. In practice, we will treat them the same as if
-the user space specified NAME_KNOWN instead.
+When doing remote name request, we cannot scan. In the normal case it's
+OK since we can expect it to finish within a short amount of time.
+However, there is a possibility to scan lots of devices that
+(1) requires Remote Name Resolve
+(2) is unresponsive to Remote Name Resolve
+When this happens, we are stuck to do Remote Name Resolve until all is
+done before continue scanning.
+
+This patch adds a time limit to stop us spending too long on remote
+name request.
 
 Signed-off-by: Archie Pusaka <apusaka@chromium.org>
 Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
-
 ---
 
- include/net/bluetooth/hci_core.h | 1 +
- include/net/bluetooth/mgmt.h     | 6 +++++-
- net/bluetooth/hci_core.c         | 1 +
- net/bluetooth/mgmt.c             | 5 ++++-
- 4 files changed, 11 insertions(+), 2 deletions(-)
+ include/net/bluetooth/hci_core.h | 3 +++
+ net/bluetooth/hci_event.c        | 7 +++++++
+ 2 files changed, 10 insertions(+)
 
 diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index b5f061882c10..eb08dd502f2a 100644
+index eb08dd502f2a..941cfbb024d1 100644
 --- a/include/net/bluetooth/hci_core.h
 +++ b/include/net/bluetooth/hci_core.h
-@@ -56,6 +56,7 @@ struct inquiry_entry {
- 		NAME_NEEDED,
- 		NAME_PENDING,
- 		NAME_KNOWN,
-+		NAME_DONT_CARE,		/* Don't know but don't want to know */
- 	} name_state;
- 	__u32			timestamp;
- 	struct inquiry_data	data;
-diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
-index 113438f295bf..30d0415c29c9 100644
---- a/include/net/bluetooth/mgmt.h
-+++ b/include/net/bluetooth/mgmt.h
-@@ -352,10 +352,14 @@ struct mgmt_cp_stop_discovery {
- } __packed;
- #define MGMT_STOP_DISCOVERY_SIZE	1
+@@ -89,6 +89,7 @@ struct discovery_state {
+ 	u8			(*uuids)[16];
+ 	unsigned long		scan_start;
+ 	unsigned long		scan_duration;
++	unsigned long		name_resolve_timeout;
+ };
  
-+#define MGMT_CONFIRM_NAME_UNKNOWN	0
-+#define MGMT_CONFIRM_NAME_KNOWN		1
-+#define MGMT_CONFIRM_NAME_DONT_CARE	2
+ #define SUSPEND_NOTIFIER_TIMEOUT	msecs_to_jiffies(2000) /* 2 seconds */
+@@ -1763,6 +1764,8 @@ void hci_mgmt_chan_unregister(struct hci_mgmt_chan *c);
+ #define DISCOV_LE_FAST_ADV_INT_MIN	0x00A0	/* 100 msec */
+ #define DISCOV_LE_FAST_ADV_INT_MAX	0x00F0	/* 150 msec */
+ 
++#define NAME_RESOLVE_DURATION		msecs_to_jiffies(10240)	/* msec */
 +
- #define MGMT_OP_CONFIRM_NAME		0x0025
- struct mgmt_cp_confirm_name {
- 	struct mgmt_addr_info addr;
--	__u8	name_known;
-+	__u8	name_state;
- } __packed;
- #define MGMT_CONFIRM_NAME_SIZE		(MGMT_ADDR_INFO_SIZE + 1)
- struct mgmt_rp_confirm_name {
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index fdc0dcf8ee36..90064dbbba5f 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -304,6 +304,7 @@ u32 hci_inquiry_cache_update(struct hci_dev *hdev, struct inquiry_data *data,
+ void mgmt_fill_version_info(void *ver);
+ int mgmt_new_settings(struct hci_dev *hdev);
+ void mgmt_index_added(struct hci_dev *hdev);
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 2de3080659f9..6180ab0e8b8d 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -2129,6 +2129,12 @@ static bool hci_resolve_next_name(struct hci_dev *hdev)
+ 	if (list_empty(&discov->resolve))
+ 		return false;
  
- update:
- 	if (name_known && ie->name_state != NAME_KNOWN &&
-+	    ie->name_state != NAME_DONT_CARE &&
- 	    ie->name_state != NAME_PENDING) {
- 		ie->name_state = NAME_KNOWN;
- 		list_del(&ie->list);
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index c1d6fbc19207..e887de6f411e 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -5531,9 +5531,12 @@ static int confirm_name(struct sock *sk, struct hci_dev *hdev, void *data,
- 		goto failed;
- 	}
- 
--	if (cp->name_known) {
-+	if (cp->name_state == MGMT_CONFIRM_NAME_KNOWN) {
- 		e->name_state = NAME_KNOWN;
- 		list_del(&e->list);
-+	} else if (cp->name_state == MGMT_CONFIRM_NAME_DONT_CARE) {
-+		e->name_state = NAME_DONT_CARE;
-+		list_del(&e->list);
++	/* We should stop if we already spent too much time resolving names. */
++	if (time_after(jiffies, discov->name_resolve_timeout)) {
++		bt_dev_dbg(hdev, "Name resolve takes too long, stopping.");
++		return false;
++	}
++
+ 	e = hci_inquiry_cache_lookup_resolve(hdev, BDADDR_ANY, NAME_NEEDED);
+ 	if (!e)
+ 		return false;
+@@ -2716,6 +2722,7 @@ static void hci_inquiry_complete_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 	if (e && hci_resolve_name(hdev, e) == 0) {
+ 		e->name_state = NAME_PENDING;
+ 		hci_discovery_set_state(hdev, DISCOVERY_RESOLVING);
++		discov->name_resolve_timeout = jiffies + NAME_RESOLVE_DURATION;
  	} else {
- 		e->name_state = NAME_NEEDED;
- 		hci_inquiry_cache_update_resolve(hdev, e);
+ 		/* When BR/EDR inquiry is active and no LE scanning is in
+ 		 * progress, then change discovery state to indicate completion.
 -- 
 2.34.0.rc0.344.g81b53c2807-goog
 
