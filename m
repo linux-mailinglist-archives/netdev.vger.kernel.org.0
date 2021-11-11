@@ -2,76 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B7FA44CF69
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 03:00:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1353944CF72
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 03:04:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233210AbhKKCC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 21:02:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54528 "EHLO mail.kernel.org"
+        id S233409AbhKKCH1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 21:07:27 -0500
+Received: from mga06.intel.com ([134.134.136.31]:57468 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232723AbhKKCC4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Nov 2021 21:02:56 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id A934E61260;
-        Thu, 11 Nov 2021 02:00:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636596007;
-        bh=DN2pxsQyqaLVqqH7loumH+uqoFq2dQAvlu5pNXkpYvg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Rvz829o/Od/xd2d1SRfvnRjCOVlzcAtd5XG6ubFp1trZrT91IwA9URi3dAVA++yWL
-         8YiDHpO0xGg9709PiROzs7kk18rJ8OLIBSvSzRBOoIsZu2iPSd53LpKtd8pJqeyzp+
-         7JPk/+IIJH9rk4xOrqkVNXhaW2gcOKbwCpgKTHuGvvz26uOBXLnOHKHXHqnUIO3TAO
-         vyTV3f63PeYbMRuCKUO2A9GXu90f0NlWC+xdV70xfNsPpVs1MUWc/7fUnQYxnfgC44
-         52BSl6aTpMIdJ7mN4+fFLulQ8Dls4fO8EL+Ne66ZkSwwio81bIos7p98JgYFoEpSVF
-         ioYXofehjLSBQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9262A6008E;
-        Thu, 11 Nov 2021 02:00:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S233156AbhKKCH1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Nov 2021 21:07:27 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10164"; a="293657960"
+X-IronPort-AV: E=Sophos;i="5.87,225,1631602800"; 
+   d="scan'208";a="293657960"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2021 18:04:39 -0800
+X-IronPort-AV: E=Sophos;i="5.87,225,1631602800"; 
+   d="scan'208";a="470622106"
+Received: from wson-mobl.amr.corp.intel.com (HELO vcostago-mobl3) ([10.209.125.254])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2021 18:04:38 -0800
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
+Subject: Re: [PATCH net v2] bpf: Fix build when CONFIG_BPF_SYSCALL is disabled
+In-Reply-To: <20211111001359.3v2yjha5nxkdtoju@apollo.localdomain>
+References: <20211110205418.332403-1-vinicius.gomes@intel.com>
+ <20211110212553.e2xnltq3dqduhjnj@apollo.localdomain>
+ <CAADnVQKqjLM1P7X+iTfnH-QFw5=z5L_w8MLsWtcNWbh5QR7VVg@mail.gmail.com>
+ <878rxvbmcm.fsf@intel.com>
+ <20211111001359.3v2yjha5nxkdtoju@apollo.localdomain>
+Date:   Wed, 10 Nov 2021 18:04:38 -0800
+Message-ID: <87v90za1mx.fsf@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net] net: fix premature exit from NAPI state polling in
- napi_disable()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163659600759.26095.2844234203024787527.git-patchwork-notify@kernel.org>
-Date:   Thu, 11 Nov 2021 02:00:07 +0000
-References: <20211110195605.1304-1-alexandr.lobakin@intel.com>
-In-Reply-To: <20211110195605.1304-1-alexandr.lobakin@intel.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, jesse.brandeburg@intel.com,
-        maciej.fijalkowski@intel.com, michal.swiatkowski@intel.com,
-        xuanzhuo@linux.alibaba.com, atenart@kernel.org,
-        edumazet@google.com, weiwan@google.com, bjorn@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi Kartikeya,
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Kumar Kartikeya Dwivedi <memxor@gmail.com> writes:
 
-On Wed, 10 Nov 2021 20:56:05 +0100 you wrote:
-> Commit 719c57197010 ("net: make napi_disable() symmetric with
-> enable") accidentally introduced a bug sometimes leading to a kernel
-> BUG when bringing an iface up/down under heavy traffic load.
-> 
-> Prior to this commit, napi_disable() was polling n->state until
-> none of (NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC) is set and then
-> always flip them. Now there's a possibility to get away with the
-> NAPIF_STATE_SCHE unset as 'continue' drops us to the cmpxchg()
-> call with an unitialized variable, rather than straight to
-> another round of the state check.
-> 
-> [...]
+> On Thu, Nov 11, 2021 at 05:21:53AM IST, Vinicius Costa Gomes wrote:
+>> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>>
+>> >> Thanks for the fix.
+>> >>
+>> >> But instead of moving this to core.c, you can probably make the btf.h
+>> >> declaration conditional on CONFIG_BPF_SYSCALL, since this is not useful in
+>> >> isolation (only used by verifier for module kfunc support). For the case of
+>> >> kfunc_btf_id_list variables, just define it as an empty struct and static
+>> >> variables, since the definition is still inside btf.c. So it becomes a noop for
+>> >> !CONFIG_BPF_SYSCALL.
+>> >>
+>> >> I am also not sure whether BTF is useful without BPF support, but maybe I'm
+>> >> missing some usecase.
+>> >
+>> > Unlikely. I would just disallow such config instead of sprinkling
+>> > the code with ifdefs.
+>>
+>> Is something like this what you have in mind?
+>>
+>> diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+>> index 6fdbf9613aec..eae860c86e26 100644
+>> --- a/lib/Kconfig.debug
+>> +++ b/lib/Kconfig.debug
+>> @@ -316,6 +316,7 @@ config DEBUG_INFO_BTF
+>>  	bool "Generate BTF typeinfo"
+>>  	depends on !DEBUG_INFO_SPLIT && !DEBUG_INFO_REDUCED
+>>  	depends on !GCC_PLUGIN_RANDSTRUCT || COMPILE_TEST
+>> +	depends on BPF_SYSCALL
+>>  	help
+>>  	  Generate deduplicated BTF type information from DWARF debug info.
+>>  	  Turning this on expects presence of pahole tool, which will convert
+>>
+>>
+>
+> BTW, you will need a little more than that, I suspect the compiler optimizes out
+> the register/unregister call so we don't see a build failure, but adding a side
+> effect gives me errors, so something like this should resolve the problem (since
+> kfunc_btf_id_list variable definition is behind CONFIG_BPF_SYSCALL).
+>
+> diff --git a/include/linux/btf.h b/include/linux/btf.h
+> index 203eef993d76..e9881ef9e9aa 100644
+> --- a/include/linux/btf.h
+> +++ b/include/linux/btf.h
+> @@ -254,6 +254,8 @@ void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
+>                                  struct kfunc_btf_id_set *s);
+>  bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist, u32 kfunc_id,
+>                               struct module *owner);
+> +extern struct kfunc_btf_id_list bpf_tcp_ca_kfunc_list;
+> +extern struct kfunc_btf_id_list prog_test_kfunc_list;
+>  #else
+>  static inline void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
+>                                              struct kfunc_btf_id_set *s)
+> @@ -268,13 +270,13 @@ static inline bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist,
+>  {
+>         return false;
+>  }
+> +struct kfunc_btf_id_list {};
+> +static struct kfunc_btf_id_list bpf_tcp_ca_kfunc_list __maybe_unused;
+> +static struct kfunc_btf_id_list prog_test_kfunc_list __maybe_unused;
+> +
+>  #endif
+>
+>  #define DEFINE_KFUNC_BTF_ID_SET(set, name)                                     \
+>         struct kfunc_btf_id_set name = { LIST_HEAD_INIT(name.list), (set),     \
+>                                          THIS_MODULE }
+> -
+> -extern struct kfunc_btf_id_list bpf_tcp_ca_kfunc_list;
+> -extern struct kfunc_btf_id_list prog_test_kfunc_list;
+> -
+>  #endif
+>
 
-Here is the summary with links:
-  - [v2,net] net: fix premature exit from NAPI state polling in napi_disable()
-    https://git.kernel.org/netdev/net/c/0315a075f134
+I could not reproduce the build failure here even when adding some side
+effects, but I didn't try very hard.
 
-You are awesome, thank you!
+As you are more familiar with the code, I would be glad if you could
+take it from here and propose a patch.
+
+
+Cheers,
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Vinicius
