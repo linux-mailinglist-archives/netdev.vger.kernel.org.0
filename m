@@ -2,236 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB40244D752
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 14:36:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B38F44D77A
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 14:46:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233470AbhKKNi5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 08:38:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43764 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232257AbhKKNi4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 08:38:56 -0500
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73468C061766;
-        Thu, 11 Nov 2021 05:36:07 -0800 (PST)
-Received: by mail-pj1-x1042.google.com with SMTP id nh10-20020a17090b364a00b001a69adad5ebso4776040pjb.2;
-        Thu, 11 Nov 2021 05:36:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=mXQH7YYjzTqKky6WSwmjgG9rVJO6HB2r9vXGljisfm0=;
-        b=AqVF7WWiJ+vakptOfG0xEYGWEW4QKOxHUYSc2w8j7c5QaAWI/lQ1xY/AX1KWxzvsM6
-         /StFsI6P0hECQfKG/oOjBWjotfbQka6m5r9jdKW7VY2R/i30Vnf/Woeh53b//LBFgixb
-         QWpUksL/9rkWeXiR6P94CQlqQ6t6YoqWhZ05EFsNOfpdGi+rqLJpevLitlZp2dPZu8cK
-         a3bjw2D9cExK3ewp8SZtn5d66JkmwcXZaBQl8XNrdIWWRJsXPrXa0tljK+gLgzvZ+QDT
-         zuzvX/rxitVdJVIX0VD0ht1cGSQXFawfzEmztD7Syims3Pl8QsRPmgc9NJqiAsXNhXze
-         2Bww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=mXQH7YYjzTqKky6WSwmjgG9rVJO6HB2r9vXGljisfm0=;
-        b=KLYSOON9ecxebo5z5UX4Smq4mNFSLpaGdTHc9bdgU4OwqykzSBeUHttk9e4RjBf4Sl
-         PR1vaRRmF3b9fE+v+wGpUsvVesJk3tsOoZqRcUBnUcFpWzvUB5fMbf8FkIapQ82jcVZT
-         /113HgmGjNJ6+8HiKH7QK6NTeWo28iKx32bt4uJ/T/C5g1K0lpL4hGg1HfV+nRnjVqbV
-         O9tJZjOJI4vtfdKINseFVg/IfYTUgLooLaKcg0zpys+RDJPkQd+PGkEiZuVJFMA9QLII
-         uvEvS4n6KOwTbuvexOZB0b3JQSmfl3+vuR4U6SnZAkymZ+WL8K02THDY1pq4Jhd+fB11
-         fU9g==
-X-Gm-Message-State: AOAM5338NFg5UtWg7HCMucLKbko2H3VJbU97/iFEIwAE1CuKqs2WqbCo
-        nGBBU5yyKq0Ic0HoqDGskzE=
-X-Google-Smtp-Source: ABdhPJxGCZfBRNinzkntcoVuBfKKOZNWjbFOxTJHGoGHkLXkp+g6Cpx0in7vRZViN98QlDB5BFVzVQ==
-X-Received: by 2002:a17:902:c204:b0:142:2441:aa26 with SMTP id 4-20020a170902c20400b001422441aa26mr8074945pll.84.1636637767023;
-        Thu, 11 Nov 2021 05:36:07 -0800 (PST)
-Received: from desktop.cluster.local ([43.132.141.4])
-        by smtp.gmail.com with ESMTPSA id l11sm3291342pfu.129.2021.11.11.05.36.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Nov 2021 05:36:06 -0800 (PST)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     kuba@kernel.org
-Cc:     davem@davemloft.net, rostedt@goodmis.org, mingo@redhat.com,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, imagedong@tencent.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 2/2] net: snmp: add snmp tracepoint support for udp
-Date:   Thu, 11 Nov 2021 21:35:30 +0800
-Message-Id: <20211111133530.2156478-3-imagedong@tencent.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20211111133530.2156478-1-imagedong@tencent.com>
-References: <20211111133530.2156478-1-imagedong@tencent.com>
+        id S233442AbhKKNtQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 08:49:16 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:44900 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232815AbhKKNtP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 08:49:15 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 703431FD54;
+        Thu, 11 Nov 2021 13:46:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1636638385; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NAF/yJr5v/6eyyS3wjyZwr6hNg/ZHfjNI3pJFtQctxI=;
+        b=ia0CZcCp4uTBojcw+YTkCVlP/P+OA3hTIEuZOdEcpYEKaamVTRvnIOEH8ad3EdykZsuE+s
+        HTPOf9CvxN0ZpLdrVEVPAAtP81m+uKvIA/jao9vlYCQXN1tBRxskK5V2s6qSn3Ysh2B2Zl
+        OYvW+BcM+T+Fl40OqMCKyinu6ysXP04=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9453F13D8F;
+        Thu, 11 Nov 2021 13:46:24 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id pCUgIbAejWGINAAAMHmgww
+        (envelope-from <jgross@suse.com>); Thu, 11 Nov 2021 13:46:24 +0000
+Subject: Re: [PATCH v3 3/3] MAINTAINERS: Mark VMware mailing list entries as
+ email aliases
+To:     "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>, x86@kernel.org,
+        pv-drivers@vmware.com
+Cc:     Zack Rusin <zackr@vmware.com>, Nadav Amit <namit@vmware.com>,
+        Vivek Thampi <vithampi@vmware.com>,
+        Vishal Bhakta <vbhakta@vmware.com>,
+        Ronak Doshi <doshir@vmware.com>,
+        linux-graphics-maintainer@vmware.com,
+        dri-devel@lists.freedesktop.org, linux-rdma@vger.kernel.org,
+        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+        linux-input@vger.kernel.org, amakhalov@vmware.com,
+        sdeep@vmware.com, virtualization@lists.linux-foundation.org,
+        keerthanak@vmware.com, srivatsab@vmware.com, anishs@vmware.com,
+        linux-kernel@vger.kernel.org, joe@perches.com, kuba@kernel.org,
+        rostedt@goodmis.org
+References: <163657479269.84207.13658789048079672839.stgit@srivatsa-dev>
+ <163657493334.84207.11063282485812745766.stgit@srivatsa-dev>
+From:   Juergen Gross <jgross@suse.com>
+Message-ID: <1074ce5f-06a4-52da-7d2c-6c281e871f7a@suse.com>
+Date:   Thu, 11 Nov 2021 14:46:23 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <163657493334.84207.11063282485812745766.stgit@srivatsa-dev>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="UU6HyAmpNKquL2EeOkjBcsuZswhHmhCPA"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--UU6HyAmpNKquL2EeOkjBcsuZswhHmhCPA
+Content-Type: multipart/mixed; boundary="sjjohHWLN7n6IklkiI33KpOryat72rluS";
+ protected-headers="v1"
+From: Juergen Gross <jgross@suse.com>
+To: "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>, x86@kernel.org,
+ pv-drivers@vmware.com
+Cc: Zack Rusin <zackr@vmware.com>, Nadav Amit <namit@vmware.com>,
+ Vivek Thampi <vithampi@vmware.com>, Vishal Bhakta <vbhakta@vmware.com>,
+ Ronak Doshi <doshir@vmware.com>, linux-graphics-maintainer@vmware.com,
+ dri-devel@lists.freedesktop.org, linux-rdma@vger.kernel.org,
+ linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+ linux-input@vger.kernel.org, amakhalov@vmware.com, sdeep@vmware.com,
+ virtualization@lists.linux-foundation.org, keerthanak@vmware.com,
+ srivatsab@vmware.com, anishs@vmware.com, linux-kernel@vger.kernel.org,
+ joe@perches.com, kuba@kernel.org, rostedt@goodmis.org
+Message-ID: <1074ce5f-06a4-52da-7d2c-6c281e871f7a@suse.com>
+Subject: Re: [PATCH v3 3/3] MAINTAINERS: Mark VMware mailing list entries as
+ email aliases
+References: <163657479269.84207.13658789048079672839.stgit@srivatsa-dev>
+ <163657493334.84207.11063282485812745766.stgit@srivatsa-dev>
+In-Reply-To: <163657493334.84207.11063282485812745766.stgit@srivatsa-dev>
 
-Add snmp tracepoint support for udp. Here is the new tracepoint:
-/sys/kernel/debug/tracing/events/snmp/snmp_udp/
+--sjjohHWLN7n6IklkiI33KpOryat72rluS
+Content-Type: multipart/mixed;
+ boundary="------------70DE7479312B276329FA74A4"
+Content-Language: en-US
 
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
----
- include/net/udp.h           | 25 +++++++++++++++++++------
- include/trace/events/snmp.h |  5 +++++
- net/core/net-traces.c       |  2 ++
- net/ipv4/udp.c              | 28 +++++++++++++++++-----------
- 4 files changed, 43 insertions(+), 17 deletions(-)
+This is a multi-part message in MIME format.
+--------------70DE7479312B276329FA74A4
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/include/net/udp.h b/include/net/udp.h
-index 909ecf447e0f..bf39793f2052 100644
---- a/include/net/udp.h
-+++ b/include/net/udp.h
-@@ -28,6 +28,7 @@
- #include <linux/seq_file.h>
- #include <linux/poll.h>
- #include <linux/indirect_call_wrapper.h>
-+#include <trace/events/snmp.h>
- 
- /**
-  *	struct udp_skb_cb  -  UDP(-Lite) private variables
-@@ -408,12 +409,24 @@ static inline int copy_linear_skb(struct sk_buff *skb, int len, int off,
- /*
-  * 	SNMP statistics for UDP and UDP-Lite
-  */
--#define UDP_INC_STATS(net, field, is_udplite)		      do { \
--	if (is_udplite) SNMP_INC_STATS((net)->mib.udplite_statistics, field);       \
--	else		SNMP_INC_STATS((net)->mib.udp_statistics, field);  }  while(0)
--#define __UDP_INC_STATS(net, field, is_udplite) 	      do { \
--	if (is_udplite) __SNMP_INC_STATS((net)->mib.udplite_statistics, field);         \
--	else		__SNMP_INC_STATS((net)->mib.udp_statistics, field);    }  while(0)
-+#define UDP_INC_STATS(net, field, is_udplite)			do {	\
-+	if (is_udplite) {						\
-+		SNMP_INC_STATS((net)->mib.udplite_statistics, field);	\
-+		TRACE_SNMP(skb, udp, field, 1);				\
-+	} else {							\
-+		SNMP_INC_STATS((net)->mib.udp_statistics, field);	\
-+		TRACE_SNMP(skb, udplite, field, 1);			\
-+	}								\
-+} while (0)
-+#define __UDP_INC_STATS(net, skb, field, is_udplite)		do {	\
-+	if (is_udplite) {						\
-+		__SNMP_INC_STATS((net)->mib.udplite_statistics, field);	\
-+		TRACE_SNMP(skb, udp, field, 1);				\
-+	} else {							\
-+		__SNMP_INC_STATS((net)->mib.udp_statistics, field);	\
-+		TRACE_SNMP(skb, udplite, field, 1);			\
-+	}								\
-+}  while (0)
- 
- #define __UDP6_INC_STATS(net, field, is_udplite)	    do { \
- 	if (is_udplite) __SNMP_INC_STATS((net)->mib.udplite_stats_in6, field);\
-diff --git a/include/trace/events/snmp.h b/include/trace/events/snmp.h
-index 9dbd630306dd..799a8b66b438 100644
---- a/include/trace/events/snmp.h
-+++ b/include/trace/events/snmp.h
-@@ -37,6 +37,11 @@ DEFINE_EVENT(snmp_template, snmp_##proto,			\
- 	TP_ARGS(skb, field, val)				\
- )
- 
-+
-+
-+DEFINE_SNMP_EVENT(udp);
-+DEFINE_SNMP_EVENT(udplite);
-+
- #define TRACE_SNMP(skb, proto, field, val) \
- 	trace_snmp_##proto(skb, field, val)
- 
-diff --git a/net/core/net-traces.c b/net/core/net-traces.c
-index 15ff40b83ca7..c33a86bb2db3 100644
---- a/net/core/net-traces.c
-+++ b/net/core/net-traces.c
-@@ -62,3 +62,5 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(napi_poll);
- 
- EXPORT_TRACEPOINT_SYMBOL_GPL(tcp_send_reset);
- EXPORT_TRACEPOINT_SYMBOL_GPL(tcp_bad_csum);
-+
-+EXPORT_TRACEPOINT_SYMBOL_GPL(snmp_udp);
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 319dd7bbfe33..d5116971892f 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -1648,9 +1648,11 @@ static struct sk_buff *__first_packet_length(struct sock *sk,
- 
- 	while ((skb = skb_peek(rcvq)) != NULL) {
- 		if (udp_lib_checksum_complete(skb)) {
--			__UDP_INC_STATS(sock_net(sk), UDP_MIB_CSUMERRORS,
-+			__UDP_INC_STATS(sock_net(sk), skb,
-+					UDP_MIB_CSUMERRORS,
- 					IS_UDPLITE(sk));
--			__UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS,
-+			__UDP_INC_STATS(sock_net(sk), skb,
-+					UDP_MIB_INERRORS,
- 					IS_UDPLITE(sk));
- 			atomic_inc(&sk->sk_drops);
- 			__skb_unlink(skb, rcvq);
-@@ -2143,7 +2145,7 @@ static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
- 
- 			ret = encap_rcv(sk, skb);
- 			if (ret <= 0) {
--				__UDP_INC_STATS(sock_net(sk),
-+				__UDP_INC_STATS(sock_net(sk), skb,
- 						UDP_MIB_INDATAGRAMS,
- 						is_udplite);
- 				return -ret;
-@@ -2201,9 +2203,10 @@ static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
- 	return __udp_queue_rcv_skb(sk, skb);
- 
- csum_error:
--	__UDP_INC_STATS(sock_net(sk), UDP_MIB_CSUMERRORS, is_udplite);
-+	__UDP_INC_STATS(sock_net(sk), skb, UDP_MIB_CSUMERRORS,
-+			is_udplite);
- drop:
--	__UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
-+	__UDP_INC_STATS(sock_net(sk), skb, UDP_MIB_INERRORS, is_udplite);
- 	atomic_inc(&sk->sk_drops);
- 	kfree_skb(skb);
- 	return -1;
-@@ -2290,9 +2293,9 @@ static int __udp4_lib_mcast_deliver(struct net *net, struct sk_buff *skb,
- 
- 		if (unlikely(!nskb)) {
- 			atomic_inc(&sk->sk_drops);
--			__UDP_INC_STATS(net, UDP_MIB_RCVBUFERRORS,
-+			__UDP_INC_STATS(net, skb, UDP_MIB_RCVBUFERRORS,
- 					IS_UDPLITE(sk));
--			__UDP_INC_STATS(net, UDP_MIB_INERRORS,
-+			__UDP_INC_STATS(net, skb, UDP_MIB_INERRORS,
- 					IS_UDPLITE(sk));
- 			continue;
- 		}
-@@ -2311,7 +2314,7 @@ static int __udp4_lib_mcast_deliver(struct net *net, struct sk_buff *skb,
- 			consume_skb(skb);
- 	} else {
- 		kfree_skb(skb);
--		__UDP_INC_STATS(net, UDP_MIB_IGNOREDMULTI,
-+		__UDP_INC_STATS(net, skb, UDP_MIB_IGNOREDMULTI,
- 				proto == IPPROTO_UDPLITE);
- 	}
- 	return 0;
-@@ -2454,7 +2457,8 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 	if (udp_lib_checksum_complete(skb))
- 		goto csum_error;
- 
--	__UDP_INC_STATS(net, UDP_MIB_NOPORTS, proto == IPPROTO_UDPLITE);
-+	__UDP_INC_STATS(net, skb, UDP_MIB_NOPORTS,
-+			proto == IPPROTO_UDPLITE);
- 	icmp_send(skb, ICMP_DEST_UNREACH, ICMP_PORT_UNREACH, 0);
- 
- 	/*
-@@ -2481,9 +2485,11 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 			    proto == IPPROTO_UDPLITE ? "Lite" : "",
- 			    &saddr, ntohs(uh->source), &daddr, ntohs(uh->dest),
- 			    ulen);
--	__UDP_INC_STATS(net, UDP_MIB_CSUMERRORS, proto == IPPROTO_UDPLITE);
-+	__UDP_INC_STATS(net, skb, UDP_MIB_CSUMERRORS,
-+			proto == IPPROTO_UDPLITE);
- drop:
--	__UDP_INC_STATS(net, UDP_MIB_INERRORS, proto == IPPROTO_UDPLITE);
-+	__UDP_INC_STATS(net, skb, UDP_MIB_INERRORS,
-+			proto == IPPROTO_UDPLITE);
- 	kfree_skb(skb);
- 	return 0;
- }
--- 
-2.27.0
+On 10.11.21 21:09, Srivatsa S. Bhat wrote:
+> From: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+>=20
+> VMware mailing lists in the MAINTAINERS file are private lists meant
+> for VMware-internal review/notification for patches to the respective
+> subsystems. Anyone can post to these addresses, but there is no public
+> read access like open mailing lists, which makes them more like email
+> aliases instead (to reach out to reviewers).
+>=20
+> So update all the VMware mailing list references in the MAINTAINERS
+> file to mark them as such, using "R: email-alias@vmware.com".
+>=20
+> Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 
+Acked-by: Juergen Gross <jgross@suse.com>
+
+
+Juergen
+
+--------------70DE7479312B276329FA74A4
+Content-Type: application/pgp-keys;
+ name="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Transfer-Encoding: quoted-printable
+Content-Description: OpenPGP public key
+Content-Disposition: attachment;
+ filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+xsBNBFOMcBYBCACgGjqjoGvbEouQZw/ToiBg9W98AlM2QHV+iNHsEs7kxWhKMjrioyspZKOBy=
+cWx
+w3ie3j9uvg9EOB3aN4xiTv4qbnGiTr3oJhkB1gsb6ToJQZ8uxGq2kaV2KL9650I1SJvedYm8O=
+f8Z
+d621lSmoKOwlNClALZNew72NjJLEzTalU1OdT7/i1TXkH09XSSI8mEQ/ouNcMvIJNwQpd369y=
+9bf
+IhWUiVXEK7MlRgUG6MvIj6Y3Am/BBLUVbDa4+gmzDC9ezlZkTZG2t14zWPvxXP3FAp2pkW0xq=
+G7/
+377qptDmrk42GlSKN4z76ELnLxussxc7I2hx18NUcbP8+uty4bMxABEBAAHNHEp1ZXJnZW4gR=
+3Jv
+c3MgPGpnQHBmdXBmLm5ldD7CwHkEEwECACMFAlOMcBYCGwMHCwkIBwMCAQYVCAIJCgsEFgIDA=
+QIe
+AQIXgAAKCRCw3p3WKL8TL0KdB/93FcIZ3GCNwFU0u3EjNbNjmXBKDY4FUGNQH2lvWAUy+dnyT=
+hpw
+dtF/jQ6j9RwE8VP0+NXcYpGJDWlNb9/JmYqLiX2Q3TyevpB0CA3dbBQp0OW0fgCetToGIQrg0=
+MbD
+1C/sEOv8Mr4NAfbauXjZlvTj30H2jO0u+6WGM6nHwbh2l5O8ZiHkH32iaSTfN7Eu5RnNVUJbv=
+oPH
+Z8SlM4KWm8rG+lIkGurqqu5gu8q8ZMKdsdGC4bBxdQKDKHEFExLJK/nRPFmAuGlId1E3fe10v=
+5QL
++qHI3EIPtyfE7i9Hz6rVwi7lWKgh7pe0ZvatAudZ+JNIlBKptb64FaiIOAWDCx1SzR9KdWVyZ=
+2Vu
+IEdyb3NzIDxqZ3Jvc3NAc3VzZS5jb20+wsB5BBMBAgAjBQJTjHCvAhsDBwsJCAcDAgEGFQgCC=
+QoL
+BBYCAwECHgECF4AACgkQsN6d1ii/Ey/HmQf/RtI7kv5A2PS4RF7HoZhPVPogNVbC4YA6lW7Dr=
+Wf0
+teC0RR3MzXfy6pJ+7KLgkqMlrAbN/8Dvjoz78X+5vhH/rDLa9BuZQlhFmvcGtCF8eR0T1v0nC=
+/nu
+AFVGy+67q2DH8As3KPu0344TBDpAvr2uYM4tSqxK4DURx5INz4ZZ0WNFHcqsfvlGJALDeE0Lh=
+ITT
+d9jLzdDad1pQSToCnLl6SBJZjDOX9QQcyUigZFtCXFst4dlsvddrxyqT1f17+2cFSdu7+ynLm=
+XBK
+7abQ3rwJY8SbRO2iRulogc5vr/RLMMlscDAiDkaFQWLoqHHOdfO9rURssHNN8WkMnQfvUewRz=
+80h
+SnVlcmdlbiBHcm9zcyA8amdyb3NzQG5vdmVsbC5jb20+wsB5BBMBAgAjBQJTjHDXAhsDBwsJC=
+AcD
+AgEGFQgCCQoLBBYCAwECHgECF4AACgkQsN6d1ii/Ey8PUQf/ehmgCI9jB9hlgexLvgOtf7PJn=
+FOX
+gMLdBQgBlVPO3/D9R8LtF9DBAFPNhlrsfIG/SqICoRCqUcJ96Pn3P7UUinFG/I0ECGF4EvTE1=
+jnD
+kfJZr6jrbjgyoZHiw/4BNwSTL9rWASyLgqlA8u1mf+c2yUwcGhgkRAd1gOwungxcwzwqgljf0=
+N51
+N5JfVRHRtyfwq/ge+YEkDGcTU6Y0sPOuj4Dyfm8fJzdfHNQsWq3PnczLVELStJNdapwPOoE+l=
+otu
+fe3AM2vAEYJ9rTz3Cki4JFUsgLkHFqGZarrPGi1eyQcXeluldO3m91NK/1xMI3/+8jbO0tsn1=
+tqS
+EUGIJi7ox80eSnVlcmdlbiBHcm9zcyA8amdyb3NzQHN1c2UuZGU+wsB5BBMBAgAjBQJTjHDrA=
+hsD
+BwsJCAcDAgEGFQgCCQoLBBYCAwECHgECF4AACgkQsN6d1ii/Ey+LhQf9GL45eU5vOowA2u5N3=
+g3O
+ZUEBmDHVVbqMtzwlmNC4k9Kx39r5s2vcFl4tXqW7g9/ViXYuiDXb0RfUpZiIUW89siKrkzmQ5=
+dM7
+wRqzgJpJwK8Bn2MIxAKArekWpiCKvBOB/Cc+3EXE78XdlxLyOi/NrmSGRIov0karw2RzMNOu5=
+D+j
+LRZQd1Sv27AR+IP3I8U4aqnhLpwhK7MEy9oCILlgZ1QZe49kpcumcZKORmzBTNh30FVKK1Evm=
+V2x
+AKDoaEOgQB4iFQLhJCdP1I5aSgM5IVFdn7v5YgEYuJYx37IoN1EblHI//x/e2AaIHpzK5h88N=
+Eaw
+QsaNRpNSrcfbFmAg987ATQRTjHAWAQgAyzH6AOODMBjgfWE9VeCgsrwH3exNAU32gLq2xvjpW=
+nHI
+s98ndPUDpnoxWQugJ6MpMncr0xSwFmHEgnSEjK/PAjppgmyc57BwKII3sV4on+gDVFJR6Y8ZR=
+wgn
+BC5mVM6JjQ5xDk8WRXljExRfUX9pNhdE5eBOZJrDRoLUmmjDtKzWaDhIg/+1Hzz93X4fCQkNV=
+bVF
+LELU9bMaLPBG/x5q4iYZ2k2ex6d47YE1ZFdMm6YBYMOljGkZKwYde5ldM9mo45mmwe0icXKLk=
+pEd
+IXKTZeKDO+Hdv1aqFuAcccTg9RXDQjmwhC3yEmrmcfl0+rPghO0Iv3OOImwTEe4co3c1mwARA=
+QAB
+wsBfBBgBAgAJBQJTjHAWAhsMAAoJELDendYovxMvQ/gH/1ha96vm4P/L+bQpJwrZ/dneZcmEw=
+Tbe
+8YFsw2V/Buv6Z4Mysln3nQK5ZadD534CF7TDVft7fC4tU4PONxF5D+/tvgkPfDAfF77zy2AH1=
+vJz
+Q1fOU8lYFpZXTXIHb+559UqvIB8AdgR3SAJGHHt4RKA0F7f5ipYBBrC6cyXJyyoprT10EMvU8=
+VGi
+wXvTyJz3fjoYsdFzpWPlJEBRMedCot60g5dmbdrZ5DWClAr0yau47zpWj3enf1tLWaqcsuylW=
+svi
+uGjKGw7KHQd3bxALOknAp4dN3QwBYCKuZ7AddY9yjynVaD5X7nF9nO5BjR/i1DG86lem3iBDX=
+zXs
+ZDn8R38=3D
+=3D2wuH
+-----END PGP PUBLIC KEY BLOCK-----
+
+--------------70DE7479312B276329FA74A4--
+
+--sjjohHWLN7n6IklkiI33KpOryat72rluS--
+
+--UU6HyAmpNKquL2EeOkjBcsuZswhHmhCPA
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmGNHq8FAwAAAAAACgkQsN6d1ii/Ey/9
+dgf/Q0I7w7riRIIWsIohFJK9GXIxTsH7a0tXejDwGNNCZgkN2Fg0HPA6qKtePFrw9SSWWPxTXzpj
+k2Vkx5cecHODWygm4EuqMipawRlsfDZIIXSZwKQe7im1Q/gg8Ia0/RGT9i65FQEAz54EP+nWKEWN
+J889ahikfXsudz39IOXf+XjUkbmwVN/abmC35CC5mwtgsmBrXLwficnpwLBNrMwBOAwS7To+q6eA
+0e596byenUg1NcS2yjPBBJ+L8JxSf4lzXbtnCkeX38MmF/veoa1/vnhqfpUUOaCuAvXzIDjqAUkT
+z9pZeOg/gJztvwhNTNzoR9dPKnzXAxixTLwfgVgtQA==
+=mGeS
+-----END PGP SIGNATURE-----
+
+--UU6HyAmpNKquL2EeOkjBcsuZswhHmhCPA--
