@@ -2,138 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E011744D957
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 16:44:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 148A144D962
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 16:46:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233907AbhKKPrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 10:47:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45450 "EHLO
+        id S234004AbhKKPs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 10:48:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233874AbhKKPrP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 10:47:15 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74504C061767
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 07:44:25 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id x15so25913787edv.1
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 07:44:25 -0800 (PST)
+        with ESMTP id S233903AbhKKPsz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 10:48:55 -0500
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84CF7C061766
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 07:46:06 -0800 (PST)
+Received: by mail-pg1-x531.google.com with SMTP id s136so5495304pgs.4
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 07:46:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EPQ7vOyVbbdDApHDNZY5gQprN5zr7x8ve73iIkJlJYY=;
-        b=0QU+TYq0W1sc8EeqjE/tNL4yaJ2SFpNf3JbfSJ6XIrpKAwitFcd/yhNROOgoDQwjkj
-         1NMRGqLcfCZMpvPlHqan1c+mGhTrU6zkuQyIp+ySJiC9/Q4lWo3vjntt84USDZ+k21am
-         Yln5xnwGUa2TRf7uWX/0J2QQw+MgU7rUQsfB1IVcQYKFqckaUvu0uZfFQL1/ExxFooFF
-         s/SsXAhYMI4P2W4V6ll0c5VDrqiwvHDDsiF2YCUQo593d1kCA06mEik43mYDWUL1uDms
-         bFOX+T1rjMLZtSH7cboYBKh/gb810BB/Fo1Se41dkIg5AHQm25qVdO6u70csjbkXtDSr
-         O4sg==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=BHccbKUYFihxrvL4LkODdfxX5LJ5XuM0tHtYW03wVts=;
+        b=mzYW1NQQpxn7t+qrDxy1Zhk/2kyidt8NLxAeTcZw3x5YwXgtyasREch7tTXCAwgIln
+         eNJdt58BaovTp2e5BZEJdAQv8GYnNs3p6f/fdLbM4qAQEBlfzap0VBQ2Xz+Q/dTAdH94
+         uY7ID1d5VougpBnnpgR33obR+1DPiWjo2aF85aqaVHpbJAvlrPo/8RrqfjznsNbTj4hd
+         aXEmgSKtDUKwKBwyilJTYqTodtuJYbvKTgh+1fL3xDKEl0/1MGOtWXG2f//DrO4QCs8K
+         9h8d4ywu1vXrFrEzgguHRPZi9vcRyu5o3AMcjxAXAFO0wvvu+QvE2lpGjk9C8GIoR8/O
+         VUdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EPQ7vOyVbbdDApHDNZY5gQprN5zr7x8ve73iIkJlJYY=;
-        b=go1pWgmzOtogIJY8NJjBUjR0zAM3ihIz4JvdGH/yoER6o9lB7ir2S1G7JXo0TR1nmJ
-         M3ul4QOjkYMW3VM+kFCeW7msBOjo0dtNWAUyh1Sc/yN57pr8mhQWK/XEZMb0Z0t4l7IK
-         oyr4/mYdO7+r2XSdrjZ5z+O17eUea79GAT6fd9KwEIWvcBA71LmyOYDst6t23qz98MEu
-         4eIvPX/H2L44s9TISrYhvTiojUHv5DRMnq0XFSUJZtrLIq3pswibFzyHbe1U4ylIeNcn
-         fCy278a3U/E2Yd4GGae+BU/0/Xb8sMFPkNxWPEkP7T0R/Mtigts5kqX0SDK9aQUXxLOj
-         V7cg==
-X-Gm-Message-State: AOAM532PHDSttC6+ZgdnexQ+scSGwrVlP6W47ZrrZ7dYHMDl7r1hdHB+
-        +AjaR2XhSE6tSZnGrSz+4IQsDs/7ESIn+loRy0Km
-X-Google-Smtp-Source: ABdhPJw5AV/+6LHJGpXCxldUJSlAQrshxCBciUosbU8oRccWa5FSy8lbwzIVunwib2JpOIbLzgCLXChfqP/otc9BRVQ=
-X-Received: by 2002:a17:907:9484:: with SMTP id dm4mr10250499ejc.307.1636645463777;
- Thu, 11 Nov 2021 07:44:23 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=BHccbKUYFihxrvL4LkODdfxX5LJ5XuM0tHtYW03wVts=;
+        b=WntUcYgzQ381FKD5tHAkRxHaXo9kksS88yagNlmK25DdphC01Nwrb6YJmALBJfzakj
+         iuGc+a7dLVg1UB97dAhFHt/k4yPtmxtU+x4s+yecOlT9aOsOX/9+/UoUHjMy+vjF0MeO
+         u37iSkvxVV8bUGgyapVfbDgPDdQ+Fmm1jjVLqEGVWPSGURcFh1m8+1I+BXEBtxcBlT9F
+         MOXo4UlLRQrn5ywex4I1Oi7HKRGQj3Cj3VBKk/1zX+185G04q3wrO3uadaajBt2MHt0u
+         sRAwp8cfbCDNFByH1F0TWq7sVMYLUnXfsy9owwC14pL71zayAmQg7ireX3SGytdMhYlv
+         e9/A==
+X-Gm-Message-State: AOAM533KmG5nibrUSGheZhOdFNsGEWm3VEO8xJRD47VTPHlFBiUpoVxW
+        +yFXc3Kvqi2aIWtVdqUQ3PI7RA==
+X-Google-Smtp-Source: ABdhPJxvj/ffqLCEnuG9spEMFlTL9xC6GI5bKoFJZ/QBOSSIo4t8lut3c28hhWT9q9gZLR94wBlrsQ==
+X-Received: by 2002:a62:1b86:0:b0:47b:d112:96d4 with SMTP id b128-20020a621b86000000b0047bd11296d4mr7606654pfb.52.1636645565990;
+        Thu, 11 Nov 2021 07:46:05 -0800 (PST)
+Received: from [192.168.254.17] ([50.39.160.154])
+        by smtp.gmail.com with ESMTPSA id w20sm3978276pfu.146.2021.11.11.07.46.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Nov 2021 07:46:05 -0800 (PST)
+Message-ID: <c410f4a0-cc06-8ef8-3765-d99e29012acb@linaro.org>
+Date:   Thu, 11 Nov 2021 07:46:04 -0800
 MIME-Version: 1.0
-References: <20211104195949.135374-1-omosnace@redhat.com> <20211109062140.2ed84f96@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAHC9VhTVNOUHJp+NbqV5AgtwR6+3V6am0SKGKF0CegsPqjQ8pw@mail.gmail.com> <CAFqZXNuct_T-SkvoRg2n7+ye0--OkMJ_gS31V-t3Cm+Yy7FhxQ@mail.gmail.com>
-In-Reply-To: <CAFqZXNuct_T-SkvoRg2n7+ye0--OkMJ_gS31V-t3Cm+Yy7FhxQ@mail.gmail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Thu, 11 Nov 2021 10:44:12 -0500
-Message-ID: <CAHC9VhTmkQy1_1xFn9StgrwT2m8nyCwvHCMA+1sRdTW6xWR96A@mail.gmail.com>
-Subject: Re: [PATCH net] selinux: fix SCTP client peeloff socket labeling
-To:     Ondrej Mosnacek <omosnace@redhat.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Xin Long <lucien.xin@gmail.com>,
-        network dev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Richard Haines <richard_c_haines@btinternet.com>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        SElinux list <selinux@vger.kernel.org>,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
+Content-Language: en-US
+To:     Marco Elver <elver@google.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Willem de Bruijn <willemb@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Kees Cook <keescook@chromium.org>,
+        Eric Dumazet <edumazet@google.com>
+References: <20211111003519.1050494-1-tadeusz.struk@linaro.org>
+ <CANpmjNNcVFmnBV-1Daauqk5ww8YRUVRtVs_SXVAPWG5CrFBVPg@mail.gmail.com>
+From:   Tadeusz Struk <tadeusz.struk@linaro.org>
+Subject: Re: [PATCH] skbuff: suppress clang object-size-mismatch error
+In-Reply-To: <CANpmjNNcVFmnBV-1Daauqk5ww8YRUVRtVs_SXVAPWG5CrFBVPg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 11, 2021 at 7:59 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
-> On Tue, Nov 9, 2021 at 4:00 PM Paul Moore <paul@paul-moore.com> wrote:
-> > On Tue, Nov 9, 2021 at 9:21 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > On Thu,  4 Nov 2021 20:59:49 +0100 Ondrej Mosnacek wrote:
-> > > > As agreed with Xin Long, I'm posting this fix up instead of him. I am
-> > > > now fairly convinced that this is the right way to deal with the
-> > > > immediate problem of client peeloff socket labeling. I'll work on
-> > > > addressing the side problem regarding selinux_socket_post_create()
-> > > > being called on the peeloff sockets separately.
-> > >
-> > > IIUC Paul would like to see this part to come up in the same series.
-> >
-> > Just to reaffirm the IIUC part - yes, your understanding is correct.
->
-> The more I'm reading these threads, the more I'm getting confused...
-> Do you insist on resending the whole original series with
-> modifications? Or actual revert patches + the new patches? Or is it
-> enough to revert/resend only the patches that need changes? Do you
-> also insist on the selinux_socket_post_create() thing to be fixed in
-> the same series? Note that the original patches are still in the
-> net.git tree and it doesn't seem like Dave will want to rebase them
-> away, so it seems explicit reverting is the only way to "respin" the
-> series...
+Hi Marco,
+On 11/11/21 01:51, Marco Elver wrote:
+> On Thu, 11 Nov 2021 at 01:36, Tadeusz Struk<tadeusz.struk@linaro.org>  wrote:
+>> Kernel throws a runtime object-size-mismatch error in skbuff queue
+>> helpers like in [1]. This happens every time there is a pattern
+>> like the below:
+>>
+>> int skbuf_xmit(struct sk_buff *skb)
+>> {
+>>          struct sk_buff_head list;
+>>
+>>          __skb_queue_head_init(&list);
+>>          __skb_queue_tail(&list, skb); <-- offending call
+>>
+>>          return do_xmit(net, &list);
+>> }
+>>
+>> and the kernel is build with clang and -fsanitize=undefined flag set.
+>> The reason is that the functions __skb_queue_[tail|head]() access the
+>> struct sk_buff_head object via a pointer to struct sk_buff, which is
+>> much bigger in size than the sk_buff_head. This could cause undefined
+>> behavior and clang is complaining:
+>>
+>> UBSAN: object-size-mismatch in ./include/linux/skbuff.h:2023:28
+>> member access within address ffffc90000cb71c0 with insufficient space
+>> for an object of type 'struct sk_buff'
+> The config includes CONFIG_UBSAN_OBJECT_SIZE, right? Normally that's
+> disabled by default, probably why nobody has noticed these much.
 
-DaveM is stubbornly rejecting the revert requests so for now I would
-continue to base any patches on top of the netdev tree.  If that
-changes we can reconcile any changes as necessary, that should not be
-a major issue.
+Right, in all the defconfigs CONFIG_UBSAN_OBJECT_SIZE is not set.
 
-As far as what I would like to see from the patches, ignoring the
-commit description vs cover letter discussion, I would like to see
-patches that fix all of the known LSM/SELinux/SCTP problems as have
-been discussed over the past couple of weeks.  Even beyond this
-particular issue I generally disapprove of partial fixes to known
-problems; I would rather see us sort out all of the issues in a single
-patchset so that we can review everything in a sane manner.  In this
-particular case things are a bit more complicated because of the
-current state of the patches in the netdev tree, but as mentioned
-above just treat the netdev tree as broken and base your patches on
-that with all of the necessary "Fixes:" metadata and the like.
+> 
+>> Suppress the error with __attribute__((no_sanitize("undefined")))
+>> in the skb helpers.
+> Isn't there a better way, because doing this might also suppress other
+> issues wholesale. __no_sanitize_undefined should be the last resort.
+> 
 
-> Regardless of the answers, this thing has rabbithole'd too much and
-> I'm already past my free cycles to dedicate to this, so I think it
-> will take me (and Xin) some time to prepare the corrected and
-> re-documented patches. Moreover, I think I realized how to to deal
-> with the peer_secid-vs.-multiple-assocs-on-one-socket problem that Xin
-> mentions in patch 4/4, fixing which can't really be split out into a
-> separate patch and will need some test coverage, so I don't think I
-> can rush this up at this point...
+The other way to fix it would be to make the struct sk_buff_head
+equal in size with struct sk_buff:
 
-It's not clear to me from your comments above if this is something you
-are currently working on, planning to work on soon, or giving up on in
-the near term.  Are we able to rely on you for a patchset to fix this
-or are you unable to see this through at this time?
+  struct sk_buff_head {
+-       /* These two members must be first. */
+-       struct sk_buff  *next;
+-       struct sk_buff  *prev;
++       union {
++               struct {
++                       /* These two members must be first. */
++                       struct sk_buff  *next;
++                       struct sk_buff  *prev;
 
-> In the short term, I'd suggest
-> either reverting patches 3/4 and 4/4 (which are the only ones that
-> would need re-doing; the first two are good changes on their own) or
-> leaving everything as is (it's not functionally worse than what we had
-> before...) and waiting for the proper fixes.
+-       __u32           qlen;
+-       spinlock_t      lock;
++                       __u32           qlen;
++                       spinlock_t      lock;
++               };
++               struct sk_buff  __prv;
++       };
+  };
 
-DaveM has thus far failed to honor the revert request so it doesn't
-appear that reverting 3/4 and 4/4 is an option.  In the near term that
-leaves us with the other two options: leave it as-is or fix it
-properly.  I am firmly in the fix it properly camp, regardless of the
-revert state, so that is the direction I would like to see things go.
+but that's much more invasive, and I don't even have means to
+quantify this in terms of final binary size and performance
+impact. I think that would be a flat out no go.
+
+ From the other hand if you look at the __skb_queue functions
+they don't do much and at all so there is no much room for
+other issues really. I followed the suggestion in [1]:
+
+"if your function deliberately contains possible ..., you can
+  use __attribute__((no_sanitize... "
+
+[1] https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
 
 -- 
-paul moore
-www.paul-moore.com
+Thanks,
+Tadeusz
