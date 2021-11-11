@@ -2,122 +2,258 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BF9C44D3B7
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 10:05:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D90C044D3BA
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 10:05:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232537AbhKKJHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 04:07:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39120 "EHLO
+        id S232659AbhKKJH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 04:07:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229668AbhKKJHw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 04:07:52 -0500
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9315C061766;
-        Thu, 11 Nov 2021 01:05:03 -0800 (PST)
-Received: by mail-pg1-x536.google.com with SMTP id e65so4645952pgc.5;
-        Thu, 11 Nov 2021 01:05:03 -0800 (PST)
+        with ESMTP id S229668AbhKKJHy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 04:07:54 -0500
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0000C061766;
+        Thu, 11 Nov 2021 01:05:05 -0800 (PST)
+Received: by mail-pl1-x631.google.com with SMTP id p18so5202193plf.13;
+        Thu, 11 Nov 2021 01:05:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=B2+NYimYtAQHeWQJ4JtOcv8cQ+tGOJVExZpBjl/zQdE=;
-        b=g8k9FhV8RU+mgoRenwOYCDSFUzr4/9fvQnN6+T5XN/aidqFlIRubk6AVfEho6j+92y
-         taihMGwuZpA3CmEVLPTXYWWleALNnmAya6MuEzeKpiYw/yv6utrqVKF5R3AgI9tr+8aF
-         ZlB+i6Gjac+VV+/vmIP3SReltHhNonW3G2o4sJPIId482SrbLQz4RydhiHaLx4CRZthf
-         kq9hM8m5278DEkrSqOsMyrWygKFFa75ecANdSvhN8Ux0xpElLoTAAK7ciRSjPYA49Fq6
-         miBhtduGCxvZX48KzD7Ib/hkg/DLAPxC9L8sEVWFD2i3VGYftrAjPsU/lcVVYMmRvPVC
-         AbOw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :in-reply-to:references;
+        bh=Qap7jU3pKbD9wB1gL4FC2+loQy7R9hd7KNyGg6OulRI=;
+        b=cBoAH5xPZgMZBiIP6qWoJGlaccUP85YFCZElSj7Ntd1Y04JPrl8FdZ1C8jxUDVVo0G
+         qyXp/zbCrjfK2gSH/MEOhTHAglh1ZzGs59lzxEh8ec/YOTna76U9dGpfPc/+P2ugN4qs
+         yj0GoL2kF4Wf4gGmEtreKR8Cw1nbWjc+crS/DvyJmzLgpV4z8Z+o5d1NHaZeNZsMEtGK
+         gO6rvu3ddfS7QQI8uHA4Ogn1GZXebrnrq6zwuCxt3cDDrieINrtNy5xv4apLL4bNK06Q
+         ZFbycaVepLPko0eZGjNOKDfA57uSImBLs/D8B4kcnUR2/VuHmh4Ir5apbbdJiWIqdGGs
+         0BLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=B2+NYimYtAQHeWQJ4JtOcv8cQ+tGOJVExZpBjl/zQdE=;
-        b=rWW9G8BwLKOhJyqWDACTVClN1PA6YtrEkgD1CtWToGUEbOrvquu2jj79FZeA8/7Kyk
-         LAq6T61HEDpmlwDYZxxcjfaIplwQ0x2X+0dTY1gPyVc6wL90LEiPKxaCl2EL5kBbNVUw
-         J5ad0qR48dCePYNlJ7gpgqFhIoryn/z0kayS2cWg/kH4jEOZ/B5Tbazt2LxZqRCpe1gQ
-         IC3/aJS3BQbxxtiO7aGqOFxJ38abEpdy09TAl6hA78iE3pPQHsnB2l6LlDfB/NJ0sNDY
-         eJ0KAncTLyf/Kuu8P3qMH3r5+30hjooWi/b8IqXnKsMtK9jFIbRR04WCSkQRSrdAYnBA
-         Az2g==
-X-Gm-Message-State: AOAM532S0muQdbp2P1nIuMEv8RMbng07G4hyc1wFAl0mt68iMs+iNaxd
-        FBOJBo3PxgggzwGupJVdlWQ=
-X-Google-Smtp-Source: ABdhPJzf0W/pq5teO2ouyTyBQTG9ViYcwPEatPljIxm/wRbNJEvCQhTjvguFo2zFWygS/QALhbDqdw==
-X-Received: by 2002:aa7:91c5:0:b0:49f:a400:9771 with SMTP id z5-20020aa791c5000000b0049fa4009771mr5236810pfa.79.1636621503159;
-        Thu, 11 Nov 2021 01:05:03 -0800 (PST)
+         :references:in-reply-to:references;
+        bh=Qap7jU3pKbD9wB1gL4FC2+loQy7R9hd7KNyGg6OulRI=;
+        b=ZgDCHNUrbzybuulnzIVADSslOg+VHYyPZMnyxnRCQDcmFqt2zaBzgsVPRWWSI0aOTd
+         4v/oYkg3xyEr1Ao9yBFQ3njUXErFCwyxX2fbGK/7ACXiKn/tzq9PngDrzg6dkiqZjgJe
+         9gH8WAdxRS/TdK60DXLPVcu+Fj5uvkKvN1+hddjIqDjaScqERaUZAnYZl052iD3SF85n
+         P++bABcb38CKTsT428VxSxjN6yq1pR/3BvA2ihA9tP4YUZOWKmdPd5Fqbtij78qIpVeJ
+         Owy+YUUh0VLab9qLTEh9ZSzg4XRJPZ7Uc0oi3qPMLRDKp9A2yGOPUuY+pRMftMPsuqaJ
+         VfmA==
+X-Gm-Message-State: AOAM530R/UH+N4CBCFC0tkv15vK7C4gjYRz96l1Q+hsxzfOBNAupxIBp
+        TEjxYERdw+zznVZR9uPkXOM=
+X-Google-Smtp-Source: ABdhPJy28eOTy4ErIiz9W9rSCV4Tz7aBBHQCN1D823p6ZsLd+pc02PN0pwKoJ4hJSWq0tFu1wi4hqg==
+X-Received: by 2002:a17:903:2288:b0:141:e76d:1b16 with SMTP id b8-20020a170903228800b00141e76d1b16mr5816701plh.21.1636621505464;
+        Thu, 11 Nov 2021 01:05:05 -0800 (PST)
 Received: from scdiu3.sunplus.com ([113.196.136.192])
-        by smtp.googlemail.com with ESMTPSA id cv1sm7626011pjb.48.2021.11.11.01.05.00
+        by smtp.googlemail.com with ESMTPSA id cv1sm7626011pjb.48.2021.11.11.01.05.03
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 11 Nov 2021 01:05:02 -0800 (PST)
+        Thu, 11 Nov 2021 01:05:04 -0800 (PST)
 From:   Wells Lu <wellslutw@gmail.com>
 X-Google-Original-From: Wells Lu <wells.lu@sunplus.com>
 To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, p.zabel@pengutronix.de
 Cc:     vincent.shih@sunplus.com, Wells Lu <wells.lu@sunplus.com>
-Subject: [PATCH v2 0/2] This is a patch series for pinctrl driver for Sunplus SP7021 SoC.
-Date:   Thu, 11 Nov 2021 17:04:19 +0800
-Message-Id: <cover.1636620754.git.wells.lu@sunplus.com>
+Subject: [PATCH v2 1/2] devicetree: bindings: net: Add bindings doc for Sunplus SP7021.
+Date:   Thu, 11 Nov 2021 17:04:20 +0800
+Message-Id: <321e3b1a7dfca81f3ffae03b11099e8efeef92fa.1636620754.git.wells.lu@sunplus.com>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1635936610.git.wells.lu@sunplus.com>
+In-Reply-To: <cover.1636620754.git.wells.lu@sunplus.com>
 References: <cover.1635936610.git.wells.lu@sunplus.com>
+ <cover.1636620754.git.wells.lu@sunplus.com>
+In-Reply-To: <cover.1636620754.git.wells.lu@sunplus.com>
+References: <cover.1636620754.git.wells.lu@sunplus.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates
-many peripherals (ex: UART, I2C, SPI, SDIO, eMMC, USB, SD card and
-etc.) into a single chip. It is designed for industrial control
-applications.
+Add bindings documentation for Sunplus SP7021.
 
-Refer to:
-https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
-https://tibbo.com/store/plus1.html
+Signed-off-by: Wells Lu <wells.lu@sunplus.com>
+---
+Changes in V2
+ - Added mdio and phy sub-nodes.
 
-Wells Lu (2):
-  devicetree: bindings: net: Add bindings doc for Sunplus SP7021.
-  net: ethernet: Add driver for Sunplus SP7021
-
- .../bindings/net/sunplus,sp7021-emac.yaml          | 152 ++++++
- MAINTAINERS                                        |   8 +
- drivers/net/ethernet/Kconfig                       |   1 +
- drivers/net/ethernet/Makefile                      |   1 +
- drivers/net/ethernet/sunplus/Kconfig               |  36 ++
- drivers/net/ethernet/sunplus/Makefile              |   6 +
- drivers/net/ethernet/sunplus/sp_define.h           | 212 +++++++
- drivers/net/ethernet/sunplus/sp_desc.c             | 231 ++++++++
- drivers/net/ethernet/sunplus/sp_desc.h             |  21 +
- drivers/net/ethernet/sunplus/sp_driver.c           | 606 +++++++++++++++++++++
- drivers/net/ethernet/sunplus/sp_driver.h           |  23 +
- drivers/net/ethernet/sunplus/sp_hal.c              | 331 +++++++++++
- drivers/net/ethernet/sunplus/sp_hal.h              |  31 ++
- drivers/net/ethernet/sunplus/sp_int.c              | 286 ++++++++++
- drivers/net/ethernet/sunplus/sp_int.h              |  13 +
- drivers/net/ethernet/sunplus/sp_mac.c              |  63 +++
- drivers/net/ethernet/sunplus/sp_mac.h              |  23 +
- drivers/net/ethernet/sunplus/sp_mdio.c             |  90 +++
- drivers/net/ethernet/sunplus/sp_mdio.h             |  20 +
- drivers/net/ethernet/sunplus/sp_phy.c              |  64 +++
- drivers/net/ethernet/sunplus/sp_phy.h              |  16 +
- drivers/net/ethernet/sunplus/sp_register.h         |  96 ++++
- 22 files changed, 2330 insertions(+)
+ .../bindings/net/sunplus,sp7021-emac.yaml          | 152 +++++++++++++++++++++
+ MAINTAINERS                                        |   7 +
+ 2 files changed, 159 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/net/sunplus,sp7021-emac.yaml
- create mode 100644 drivers/net/ethernet/sunplus/Kconfig
- create mode 100644 drivers/net/ethernet/sunplus/Makefile
- create mode 100644 drivers/net/ethernet/sunplus/sp_define.h
- create mode 100644 drivers/net/ethernet/sunplus/sp_desc.c
- create mode 100644 drivers/net/ethernet/sunplus/sp_desc.h
- create mode 100644 drivers/net/ethernet/sunplus/sp_driver.c
- create mode 100644 drivers/net/ethernet/sunplus/sp_driver.h
- create mode 100644 drivers/net/ethernet/sunplus/sp_hal.c
- create mode 100644 drivers/net/ethernet/sunplus/sp_hal.h
- create mode 100644 drivers/net/ethernet/sunplus/sp_int.c
- create mode 100644 drivers/net/ethernet/sunplus/sp_int.h
- create mode 100644 drivers/net/ethernet/sunplus/sp_mac.c
- create mode 100644 drivers/net/ethernet/sunplus/sp_mac.h
- create mode 100644 drivers/net/ethernet/sunplus/sp_mdio.c
- create mode 100644 drivers/net/ethernet/sunplus/sp_mdio.h
- create mode 100644 drivers/net/ethernet/sunplus/sp_phy.c
- create mode 100644 drivers/net/ethernet/sunplus/sp_phy.h
- create mode 100644 drivers/net/ethernet/sunplus/sp_register.h
 
+diff --git a/Documentation/devicetree/bindings/net/sunplus,sp7021-emac.yaml b/Documentation/devicetree/bindings/net/sunplus,sp7021-emac.yaml
+new file mode 100644
+index 0000000..9bb0b4a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/sunplus,sp7021-emac.yaml
+@@ -0,0 +1,152 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) Sunplus Co., Ltd. 2021
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/sunplus,sp7021-emac.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Sunplus SP7021 Dual Ethernet MAC Device Tree Bindings
++
++maintainers:
++  - Wells Lu <wells.lu@sunplus.com>
++
++description: |
++  Sunplus SP7021 dual 10M/100M Ethernet MAC controller.
++  Device node of the controller has following properties.
++
++properties:
++  compatible:
++    const: sunplus,sp7021-emac
++
++  reg:
++    items:
++      - description: Base address and length of the EMAC registers.
++      - description: Base address and length of the MOON5 registers.
++
++  reg-names:
++    items:
++      - const: emac
++      - const: moon5
++
++  interrupts:
++    description: |
++      Contains number and type of interrupt. Number should be 66.
++      Type should be high-level trigger
++    maxItems: 1
++
++  clocks:
++    description: |
++      Clock controller selector for Ethernet MAC controller.
++    maxItems: 1
++
++  resets:
++    description: |
++      Reset controller selector for Ethernet MAC controller.
++    maxItems: 1
++
++  phy-handle1:
++    description: A handle to node of phy 1 in mdio node
++    maxItems: 1
++
++  phy-handle2:
++    description: A handle to node of phy 2 in mdio node
++    maxItems: 1
++
++  pinctrl-names:
++    description: |
++      Names corresponding to the numbered pinctrl states.
++      A pinctrl state named "default" must be defined.
++    const: default
++
++  pinctrl-0:
++    description: A handle to the 'default' state of pin configuration
++
++  nvmem-cells:
++    items:
++      - description: nvmem cell address of MAC address of MAC 1
++      - description: nvmem cell address of MAC address of MAC 2
++
++  nvmem-cell-names:
++    description: names corresponding to the nvmem cells of MAC address
++    items:
++      - const: mac_addr0
++      - const: mac_addr1
++
++  mdio:
++    type: object
++    description: Internal MDIO Bus
++
++    properties:
++      "#address-cells":
++        const: 1
++
++      "#size-cells":
++        const: 0
++
++    patternProperties:
++      "^ethernet-phy@[0-9]$":
++        type: object
++
++        description:
++          Integrated PHY node
++
++        properties:
++           reg:
++             maxItems: 1
++
++           phy-mode:
++             maxItems: 1
++
++        required:
++          - reg
++          - phy-mode
++
++additionalProperties: false
++
++required:
++  - compatible
++  - reg
++  - reg-names
++  - interrupts
++  - clocks
++  - resets
++  - phy-handle1
++  - phy-handle2
++  - pinctrl-0
++  - pinctrl-names
++  - nvmem-cells
++  - nvmem-cell-names
++  - mdio
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    emac: emac@9c108000 {
++        compatible = "sunplus,sp7021-emac";
++        reg = <0x9c108000 0x400>, <0x9c000280 0x80>;
++        reg-names = "emac", "moon5";
++        interrupt-parent = <&intc>;
++        interrupts = <66 IRQ_TYPE_LEVEL_HIGH>;
++        clocks = <&clkc 0xa7>;
++        resets = <&rstc 0x97>;
++        phy-handle1 = <&eth_phy0>;
++        phy-handle2 = <&eth_phy1>;
++        pinctrl-0 = <&emac_demo_board_v3_pins>;
++        pinctrl-names = "default";
++        nvmem-cells = <&mac_addr0>, <&mac_addr1>;
++        nvmem-cell-names = "mac_addr0", "mac_addr1";
++
++        mdio {
++            #address-cells = <1>;
++            #size-cells = <0>;
++            eth_phy0: ethernet-phy@0 {
++                reg = <0>;
++                phy-mode = "rmii";
++            };
++            eth_phy1: ethernet-phy@1 {
++                reg = <1>;
++                phy-mode = "rmii";
++            };
++        };
++    };
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index dcc1819..737b9d0 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -18000,6 +18000,13 @@ L:	netdev@vger.kernel.org
+ S:	Maintained
+ F:	drivers/net/ethernet/dlink/sundance.c
+ 
++SUNPLUS ETHERNET DRIVER
++M:	Wells Lu <wells.lu@sunplus.com>
++L:	netdev@vger.kernel.org
++S:	Maintained
++W:	https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
++F:	Documentation/devicetree/bindings/net/sunplus,sp7021-emac.yaml
++
+ SUPERH
+ M:	Yoshinori Sato <ysato@users.sourceforge.jp>
+ M:	Rich Felker <dalias@libc.org>
 -- 
 2.7.4
 
