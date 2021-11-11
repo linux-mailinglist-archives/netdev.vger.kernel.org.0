@@ -2,91 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB0BD44DBB1
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 19:43:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A99444DBE8
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 19:59:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234188AbhKKSqJ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 11 Nov 2021 13:46:09 -0500
-Received: from coyote.holtmann.net ([212.227.132.17]:48187 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233245AbhKKSqI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 13:46:08 -0500
-Received: from smtpclient.apple (p4fefc15c.dip0.t-ipconnect.de [79.239.193.92])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 6FED6CECD2;
-        Thu, 11 Nov 2021 19:43:15 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.20.0.1.32\))
-Subject: Re: [PATCH v2] Bluetooth: Don't initialize msft/aosp when using user
- channel
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20211108200058.v2.1.Ide934b992a0b54085a6be469d3687963a245dba9@changeid>
-Date:   Thu, 11 Nov 2021 19:43:14 +0100
-Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        Sonny Sasaka <sonnysasaka@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <17BDA821-9D4A-46C9-8C0E-F7DB35D50033@holtmann.org>
-References: <20211108200058.v2.1.Ide934b992a0b54085a6be469d3687963a245dba9@changeid>
-To:     Jesse Melhuish <melhuishj@chromium.org>
-X-Mailer: Apple Mail (2.3693.20.0.1.32)
+        id S233793AbhKKTCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 14:02:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33634 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231825AbhKKTCV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 14:02:21 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F52CC061766;
+        Thu, 11 Nov 2021 10:59:32 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id j75so17478760ybj.6;
+        Thu, 11 Nov 2021 10:59:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Hk/jkCF3NnmetG2VnhLTRlUShF6p+8d6T3wHQ5hjpWA=;
+        b=PnOWwjGfij1P4RDR2xksGVWXWmS0CCCuAHF4MZl7ZobmlFhE2R5xVx6pkDaW8tBwSq
+         OSZrPWPCqqJ8IGlWALXrOKCeFJKpkzJbfEij5kqtysauvuLwKLwilSpOcg4tQCFdMaug
+         Qx2M7+uLAz1fNLh+46WYT8C5JD2gptNm31Auon2CdRyCCFpf+W5kYPkGV+hklmlM1b4d
+         e2bbI7XA3Zu/gMutlNOSkqhT+sRoS/ctdCPNfJCAhUvwzy4yKbVTAaqQ6VZq1gzb3sAh
+         9ozgW1Sdq6UHycg0zdCecxRN7/yaN3G74wEjhHPx9bwWhCOJZNmb3GbZstv+XFIQKqEG
+         SuJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Hk/jkCF3NnmetG2VnhLTRlUShF6p+8d6T3wHQ5hjpWA=;
+        b=jEHrtUnR/eYEhIdKytXCF0Yq6r8dQvHvWUOr8Mph9fFOrTYZtMZnpo/drpzKCTIBqZ
+         Kcl4reH7x1lWtGn/4bjiPZwI+W7tfC+lCvy5y0BOiz2VyqPOZimpN8F1ceqbYCaNKS8M
+         Ep0qrW2batpUS1ZQy5oVcFxwi4guvIwp9+cfsgaQ9f1ZXN7DeyOHOcJZ3QAP2Jry7AnV
+         9zOTzgi2phSh0+Eb0CpypkqyRrzssgUui+7Y3hnFlrGJjX27y6HQBPNt48OUbsi0STcn
+         6BVC2DnvcYFUCGB7d5rLefnyeXF1Yng36xw/4t9bCkzOFWIe2URhwy2dO0JpP0urVJkZ
+         yVwg==
+X-Gm-Message-State: AOAM532o67CaK516lHVX4vyNDwlTX5ODIBKoWGZp4xyqrWOKfv/JMQIx
+        I2jNy2B3+DqW5lBjy7h4ZNxWL9vCKtGuO6fOz+E=
+X-Google-Smtp-Source: ABdhPJyUl2ioPOpq9RUHCkikL4QZw2KPE01/wsZYcwtjyVxHVsF0ngroqvhhU8PbK8/caP011PqAmTNZmOCop5gy0sE=
+X-Received: by 2002:a25:afcd:: with SMTP id d13mr10686409ybj.504.1636657171758;
+ Thu, 11 Nov 2021 10:59:31 -0800 (PST)
+MIME-Version: 1.0
+References: <20211110114632.24537-1-quentin@isovalent.com> <20211110114632.24537-4-quentin@isovalent.com>
+In-Reply-To: <20211110114632.24537-4-quentin@isovalent.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 11 Nov 2021 10:59:20 -0800
+Message-ID: <CAEf4BzbtC8S_j7oZP9vqK+FwoSvBmt8Hp4_ZyzbwUifg8JfUUA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/6] bpftool: Use $(OUTPUT) and not $(O) for
+ VMLINUX_BTF_PATHS in Makefile
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jesse,
-
-> A race condition is triggered when usermode control is given to
-> userspace before the kernel's MSFT query responds, resulting in an
-> unexpected response to userspace's reset command.
-> 
-> Issue can be observed in btmon:
-> < HCI Command: Vendor (0x3f|0x001e) plen 2                    #3 [hci0]
->        05 01                                            ..
-> @ USER Open: bt_stack_manage (privileged) version 2.22  {0x0002} [hci0]
-> < HCI Command: Reset (0x03|0x0003) plen 0                     #4 [hci0]
->> HCI Event: Command Complete (0x0e) plen 5                   #5 [hci0]
->      Vendor (0x3f|0x001e) ncmd 1
-> 	Status: Command Disallowed (0x0c)
-> 	05                                               .
->> HCI Event: Command Complete (0x0e) plen 4                   #6 [hci0]
->      Reset (0x03|0x0003) ncmd 2
-> 	Status: Success (0x00)
-> 
-> Signed-off-by: Jesse Melhuish <melhuishj@chromium.org>
-> Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> Reviewed-by: Sonny Sasaka <sonnysasaka@chromium.org>
+On Wed, Nov 10, 2021 at 3:46 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>
+> The Makefile for bpftool relies on $(OUTPUT), and not on $(O), for
+> passing the output directory. So $(VMLINUX_BTF_PATHS), used for
+> searching for kernel BTF info, should use the same variable.
+>
+> Fixes: 05aca6da3b5a ("tools/bpftool: Generalize BPF skeleton support and generate vmlinux.h")
+> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
 > ---
-> 
-> Changes in v2:
-> - Moved guard to the new home for this code.
-> 
-> net/bluetooth/hci_sync.c | 6 ++++--
-> 1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-> index b794605dc882..5f1f59ac1813 100644
-> --- a/net/bluetooth/hci_sync.c
-> +++ b/net/bluetooth/hci_sync.c
-> @@ -3887,8 +3887,10 @@ int hci_dev_open_sync(struct hci_dev *hdev)
-> 	    hci_dev_test_flag(hdev, HCI_VENDOR_DIAG) && hdev->set_diag)
-> 		ret = hdev->set_diag(hdev, true);
-> 
-> -	msft_do_open(hdev);
-> -	aosp_do_open(hdev);
-> +	if (!hci_dev_test_flag(hdev, HCI_USER_CHANNEL)) {
-> +		msft_do_open(hdev);
-> +		aosp_do_open(hdev);
-> +	}
+>  tools/bpf/bpftool/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
+> index 2a846cb92120..40abf50b59d4 100644
+> --- a/tools/bpf/bpftool/Makefile
+> +++ b/tools/bpf/bpftool/Makefile
+> @@ -150,7 +150,7 @@ $(BOOTSTRAP_OBJS): $(LIBBPF_BOOTSTRAP)
+>  OBJS = $(patsubst %.c,$(OUTPUT)%.o,$(SRCS)) $(OUTPUT)disasm.o
+>  $(OBJS): $(LIBBPF) $(LIBBPF_INTERNAL_HDRS)
+>
+> -VMLINUX_BTF_PATHS ?= $(if $(O),$(O)/vmlinux)                           \
+> +VMLINUX_BTF_PATHS ?= $(if $(OUTPUT),$(OUTPUT)/vmlinux)                 \
+>                      $(if $(KBUILD_OUTPUT),$(KBUILD_OUTPUT)/vmlinux)    \
 
-but then you need to do the same on hci_dev_close. Also it would be good to extend userchan-tester with test cases for this.
+But you still check KBUILD_OUTPUT? O overrides KBUILD_OUTPUT as far as
+kernel build goes. So if you still support KBUILD_OUTPUT, you should
+support O. And the $(OUTPUT) seems to be completely unrelated, as that
+defines the output of bpftool build files, not the vmlinux image. Or
+am I missing something?
 
-Regards
-
-Marcel
-
+>                      ../../../vmlinux                                   \
+>                      /sys/kernel/btf/vmlinux                            \
+> --
+> 2.32.0
+>
