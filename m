@@ -2,94 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C46F144D6E1
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 13:51:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9316E44D6EF
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 13:59:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233274AbhKKMyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 07:54:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33834 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232915AbhKKMyn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 07:54:43 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A6DFC061766;
-        Thu, 11 Nov 2021 04:51:54 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id n15-20020a17090a160f00b001a75089daa3so4549887pja.1;
-        Thu, 11 Nov 2021 04:51:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2Zki/+Prvo1eo5OhzEfA0T2kN/JtMjM+kEl6i27v6H4=;
-        b=S3aEwpUINTXBJfQgvEaI8QUqbSBsqDFcfLcJ6paCwc07PPXrc8McDtdmnkNn6v4WwI
-         FMRUcZpP4RqUqjq9df9t6eQSPyz/D22iK5O/esHKSQ8rJBkTCowvcbY7+ROLcSUkY4pd
-         KlaU56gHglO0tzJ3bUeb9N1nL9MptsL97AwGGFarxuHxIznxAD6hVDSX2lo2T2tHwaTQ
-         iPvW4njj49kDBUrrWQ9cg7HwRe0iqcRFEX7sET0qR17lx8oiuV5T3n9ttlzMn4Et3zE8
-         3ZYUsS9rDMLrKxe5ZNHMojLvJFPGDpmcaU0PlMh7/U/KbZydNHUkDdBtkbvqA1xhBXYB
-         bYbQ==
+        id S233144AbhKKNC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 08:02:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:50261 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232126AbhKKNC0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 08:02:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1636635576;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mYNth8yGw4v927g+Vg3jQS/EjAzZzl56c0iIAAHcboA=;
+        b=Xf7yWwH2eub2Wz+PYHovac9rPunaEijTzXa8ml37xW1BbdgHNrCL+8sfjT+4VIMizOIpM8
+        G3hHUAAyk887D4wI6H8ELwKLTOoqDc4IHJMrKDpYFCNBjRqm9DD6mWZNRG/BvGP0SxSx3b
+        s0OVSl6oPMhUvtvhvB8PYqRQ7NCehnI=
+Received: from mail-yb1-f199.google.com (mail-yb1-f199.google.com
+ [209.85.219.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-496-q0z61P4kM66iFAr71kIb9w-1; Thu, 11 Nov 2021 07:59:35 -0500
+X-MC-Unique: q0z61P4kM66iFAr71kIb9w-1
+Received: by mail-yb1-f199.google.com with SMTP id v133-20020a25c58b000000b005c20153475dso9099537ybe.17
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 04:59:35 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2Zki/+Prvo1eo5OhzEfA0T2kN/JtMjM+kEl6i27v6H4=;
-        b=QFsuEUdJ2sBaaxf2Fh5s4YXdBVLMXoKCfqrsKbsTJGvyoD9yhU6NCBMGVcWK7N9prX
-         rpsdHuQq5KmXd/hrA+XiQl4srbKb4xigy0oP4HIZ3TYRS/Xv+HaKNqbstK9IPtPDcqCt
-         egOskuFLcm0mjtacOVDHFUv3AtGHvZG53Hxf/CdYhQKn7FKJU1wS80UcjIt/SjfOd8hh
-         F+26oa4VYnTJ7yO01PKOOURv//m0+KB3hxno1YkKbMtYp9FSRZ2MwD4qlF1HOZYPR2Q2
-         NJ1XJ9gfiqE4X54LyfOsJ8ci6vKt4Gk4Nz7znKDWp6SCoGWaj8VpjgXjIJ5anQ2DaKeb
-         xVXQ==
-X-Gm-Message-State: AOAM531Xuwx/cAGB9VUJAemm+Z3/+fDXmYCWRGxc6P0hq0+7ccHp/DIW
-        uh/UUUkh7pD0+AjmQDVvd2I=
-X-Google-Smtp-Source: ABdhPJwt99d4BkCxuxtRIF+4/JqokNM9vnLOlM6lTpcGAFSpmf7q1tKQOTn4V5otzvfeHL5CODzFcA==
-X-Received: by 2002:a17:90b:11c1:: with SMTP id gv1mr26644744pjb.208.1636635113640;
-        Thu, 11 Nov 2021 04:51:53 -0800 (PST)
-Received: from localhost.localdomain ([94.177.118.102])
-        by smtp.gmail.com with ESMTPSA id z8sm2272138pgc.53.2021.11.11.04.51.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Nov 2021 04:51:53 -0800 (PST)
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-To:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: ieee802154: fix shift-out-of-bound in nl802154_new_interface
-Date:   Thu, 11 Nov 2021 20:51:17 +0800
-Message-Id: <20211111125118.1441463-1-mudongliangabcd@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mYNth8yGw4v927g+Vg3jQS/EjAzZzl56c0iIAAHcboA=;
+        b=hndwKXgEkbe/6TxB0UuAeCg7mq6rwuyfb06o1ev5E2Q8lVuJfgRj6ZPOEut7R6kILV
+         APEuxkdHyx+zT/Z/l++/f5NPgjbY785JqUh/Uq6amOygLeOnF9/e9U2SoL6yo+//QD5j
+         htZ38gnh/hx11lOk+wao/OJsrP9k9Kvosf7G7c5MtYgGGOapD7rE8Jvxf08k5xzW7oIF
+         3mFDaS1fajTKq0L50L2uKHGGfrARlYMJVaU2FLt+gui/Uo0Enaczkv0bPFNcM+607V/4
+         ohWjYnS3ZUfqP7ijM3BwnDhJT2ablYSzqKqpUC6v+dj6yDbdeePmzgBFYXfsa/+BYYAv
+         fRIg==
+X-Gm-Message-State: AOAM533k2hy9WXyZzHrfI3xmStRMQdTAGPB97Emq8hH91xo/EeWEchIv
+        ESR+0mfm786bb76upXRjMEOLPjSrfGHk1LCehjp2z5I+l2KmYtxm6OniOzwgyZjOsMk+HWqr3S6
+        k5etjO0pzhdkHa9oWFQJnJVlFC0X1yHdS
+X-Received: by 2002:a25:8205:: with SMTP id q5mr8471176ybk.256.1636635575358;
+        Thu, 11 Nov 2021 04:59:35 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwIi/1Svow6TT4OfOYjhTxQ7Cq1Y11nySt5jkdv4wavlrbMpPNIHMsXQc5bQLOFe91kCQ+8oGm16aGVLrXvy24=
+X-Received: by 2002:a25:8205:: with SMTP id q5mr8471141ybk.256.1636635575185;
+ Thu, 11 Nov 2021 04:59:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211104195949.135374-1-omosnace@redhat.com> <20211109062140.2ed84f96@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAHC9VhTVNOUHJp+NbqV5AgtwR6+3V6am0SKGKF0CegsPqjQ8pw@mail.gmail.com>
+In-Reply-To: <CAHC9VhTVNOUHJp+NbqV5AgtwR6+3V6am0SKGKF0CegsPqjQ8pw@mail.gmail.com>
+From:   Ondrej Mosnacek <omosnace@redhat.com>
+Date:   Thu, 11 Nov 2021 13:59:23 +0100
+Message-ID: <CAFqZXNuct_T-SkvoRg2n7+ye0--OkMJ_gS31V-t3Cm+Yy7FhxQ@mail.gmail.com>
+Subject: Re: [PATCH net] selinux: fix SCTP client peeloff socket labeling
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Richard Haines <richard_c_haines@btinternet.com>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        SElinux list <selinux@vger.kernel.org>,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In nl802154_new_interface, if type retrieved from info->attr is
-NL802154_IFTYPE_UNSPEC(-1), i.e., less than NL802154_IFTYPE_MAX,
-it will trigger a shift-out-of-bound bug in BIT(type).
+On Tue, Nov 9, 2021 at 4:00 PM Paul Moore <paul@paul-moore.com> wrote:
+> On Tue, Nov 9, 2021 at 9:21 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Thu,  4 Nov 2021 20:59:49 +0100 Ondrej Mosnacek wrote:
+> > > As agreed with Xin Long, I'm posting this fix up instead of him. I am
+> > > now fairly convinced that this is the right way to deal with the
+> > > immediate problem of client peeloff socket labeling. I'll work on
+> > > addressing the side problem regarding selinux_socket_post_create()
+> > > being called on the peeloff sockets separately.
+> >
+> > IIUC Paul would like to see this part to come up in the same series.
+>
+> Just to reaffirm the IIUC part - yes, your understanding is correct.
 
-Fix this by adding a condition to check if the variable type is
-larger than NL802154_IFTYPE_UNSPEC(-1).
+The more I'm reading these threads, the more I'm getting confused...
+Do you insist on resending the whole original series with
+modifications? Or actual revert patches + the new patches? Or is it
+enough to revert/resend only the patches that need changes? Do you
+also insist on the selinux_socket_post_create() thing to be fixed in
+the same series? Note that the original patches are still in the
+net.git tree and it doesn't seem like Dave will want to rebase them
+away, so it seems explicit reverting is the only way to "respin" the
+series...
 
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
----
- net/ieee802154/nl802154.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Regardless of the answers, this thing has rabbithole'd too much and
+I'm already past my free cycles to dedicate to this, so I think it
+will take me (and Xin) some time to prepare the corrected and
+re-documented patches. Moreover, I think I realized how to to deal
+with the peer_secid-vs.-multiple-assocs-on-one-socket problem that Xin
+mentions in patch 4/4, fixing which can't really be split out into a
+separate patch and will need some test coverage, so I don't think I
+can rush this up at this point... In the short term, I'd suggest
+either reverting patches 3/4 and 4/4 (which are the only ones that
+would need re-doing; the first two are good changes on their own) or
+leaving everything as is (it's not functionally worse than what we had
+before...) and waiting for the proper fixes.
 
-diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
-index 277124f206e0..cecf5ce0aa20 100644
---- a/net/ieee802154/nl802154.c
-+++ b/net/ieee802154/nl802154.c
-@@ -915,7 +915,7 @@ static int nl802154_new_interface(struct sk_buff *skb, struct genl_info *info)
- 
- 	if (info->attrs[NL802154_ATTR_IFTYPE]) {
- 		type = nla_get_u32(info->attrs[NL802154_ATTR_IFTYPE]);
--		if (type > NL802154_IFTYPE_MAX ||
-+		if (type <= NL802154_IFTYPE_UNSPEC || type > NL802154_IFTYPE_MAX ||
- 		    !(rdev->wpan_phy.supported.iftypes & BIT(type)))
- 			return -EINVAL;
- 	}
--- 
-2.25.1
+--
+Ondrej Mosnacek
+Software Engineer, Linux Security - SELinux kernel
+Red Hat, Inc.
 
