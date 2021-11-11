@@ -2,100 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DE4244DAD0
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 17:53:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE02244DAF9
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 18:08:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233966AbhKKQ4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 11:56:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33574 "EHLO
+        id S231666AbhKKRLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 12:11:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbhKKQ4k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 11:56:40 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 267C1C061766;
-        Thu, 11 Nov 2021 08:53:51 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id c4so10834830wrd.9;
-        Thu, 11 Nov 2021 08:53:51 -0800 (PST)
+        with ESMTP id S229539AbhKKRLf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 12:11:35 -0500
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1C7C061766
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 09:08:46 -0800 (PST)
+Received: by mail-wr1-x42e.google.com with SMTP id t30so10918314wra.10
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 09:08:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=/jrnoVf+n7YqwtxXnwP3VKh9fJI/Dke/6law9LGVWwU=;
-        b=OERyfw8zJ+LWGdkqDxo3O2Fghfv7CjJ1eDoMNUYGfhG61LdixHD/muosa3dexgCQ80
-         KdutXfIGKCnH5rmkU1dfJhRXTEWZgIOJZFNIoSLFzo4/C7dbdAgidsfXlqsAkXysjNPB
-         02Q3zCd9m4/M9NPsuUo21ROwHxVh1JKvmuWcOQTj3DRm7JRZI3Fc6SPf7BEtSm5YY2+7
-         74neldIqCBqJIXAJrTP24aXfnDC57vwUyS0KsLcOqKGxslPUjwaBJiv2cmtpL3gm7Uur
-         W77JEep/dSzE/wiAaQ9e+fUXYC8XPt3xu4XC6L5ZdX3YMM4uikCvD0NFT51t4lkaXfhv
-         sOkA==
+        h=mime-version:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=twxFcb4m5IsNstFuz4gRAIVsSyli01pOYmlUziyAASw=;
+        b=oeO4JE0QkSMQU/T0aulT1CR31idc3TY0Yf7R1M4mbdtCbBR3Quxw6S819iEKiKANIr
+         RMrxCaST4uhEsnXz8qGMQi3ktkk1nR0062q1i53D12tQbAOnMOMpOVo69PVEApJwDQOm
+         bewpXtzpNb32tK70jDEfCt15XwmwGEZe51I13gJqE3egMturf+3WCRp9Kn3aML9qzhoR
+         KrDbbRL67UhBUdcyHK+vvy/kEwnOuroLWuACRs817tdriXiliEOJhKcFGA/ISK5JNYiQ
+         28mDD485zHm+FMqUjcNiQw4IDk/v+Bft3ocBs0jIeL5wllX3aFX2HNN5nD1LOPpZZoqt
+         WI8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=/jrnoVf+n7YqwtxXnwP3VKh9fJI/Dke/6law9LGVWwU=;
-        b=wismYqNxrZqqD5sJ720Tz+19qzxh+BIOP2jW1mhbDqKvhKa518qt+DMleGG2LM1h+2
-         yuLMtMy+P1wb8lNyKoVnNL0vJwermZ6/YJv8yLK9Q+Val9Bu9mKU9o8EMh9V83HXuSjO
-         NSUdbW/FnpifNK4AfBigaUnkpz2ei3RMTAYl4LLB7QU7tCMvMqtqF3GZ1t5Jh+H1QkJT
-         ffJrnDB0lXuuQVjBfuSwGoTTKz0+PtnbziDTGdNPWXC+9OsfFHIy1Awx7KHml6lJ3rcn
-         NEUkdK2ROdMJIiUFm3x8lgBOBfXMoGd/rb6i9c5AZEIfg60Mj7A+/h7s+Xb1UAyBJ/CT
-         fpVA==
-X-Gm-Message-State: AOAM530nTE4ya98khxMEGkqiSQXhDwnfIf1OhveV1fQBk6+EvAj2VOHA
-        KriA+sj5RW9bG9+HmDTsY+HimQkGzBjo/iVx/AE=
-X-Google-Smtp-Source: ABdhPJxzJBafNVhaTumUIXJSTqjdtXpwb8dSAszYOloMr9pBIq9rL/EjRYPgL2F9UkvIbaUwSKmpECTl25hUOa2HZD4=
-X-Received: by 2002:a5d:648e:: with SMTP id o14mr10335737wri.141.1636649629731;
- Thu, 11 Nov 2021 08:53:49 -0800 (PST)
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to:content-transfer-encoding;
+        bh=twxFcb4m5IsNstFuz4gRAIVsSyli01pOYmlUziyAASw=;
+        b=Pdjp7xvvN6Q7ClINSxKh5YpfEqqQSvcXiIUu3+RDaO9QeSY4aQaDzXOot1k+2NlynU
+         HIJQu1h0sndc4wsysQd8+0ACfxbIplnQYUydTGjUbI0oNluqORC6Z68LHZN+gXLPLpBy
+         HFbq9T/3bTXlZTuPum2O8nqJgiEsRFsAp2lo2pG+0j3PByqlC6Du4CT2W0BUh/YwYrwZ
+         wCBSLL08HU9VEthVFXhUJ6EiOitdoKGbKuqO8O29pneSGJeRFY3zZPuzUFQBBCoF5pTE
+         xxAwCKyGhM5Y1xfepvrl9dhbg7iH/xB/8z1+OEm4p+kQApX6EmfvmgdZt5NG9urYr55A
+         7gBQ==
+X-Gm-Message-State: AOAM530churIzG6SoAfi7ZIsdOJUUebkUrsyELePuqWFEWzOzEDvingM
+        EYcV/4qv5Ecu+ZFmAnGAmFMTuM4e66HFN/WVdtA=
+X-Google-Smtp-Source: ABdhPJwln1Y2UXUsdp+Jiqs2+9l2vuio3HOK/ST7Q0vadHVVS0LyjXCDehs+XcwsSbuhtjAgyT+wZHWz6jCJGYYjy0g=
+X-Received: by 2002:adf:ce0e:: with SMTP id p14mr10423094wrn.423.1636650524898;
+ Thu, 11 Nov 2021 09:08:44 -0800 (PST)
 MIME-Version: 1.0
-References: <20211111075707.21922-1-magnus.karlsson@gmail.com>
-In-Reply-To: <20211111075707.21922-1-magnus.karlsson@gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Thu, 11 Nov 2021 17:53:37 +0100
-Message-ID: <CAJ+HfNju+_PC7nYKqJk6TqK6vSxRXAOd7Mb7a2wkhaqpbfkOAA@mail.gmail.com>
-Subject: Re: [PATCH bpf] xsk: fix crash on double free in buffer pool
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Netdev <netdev@vger.kernel.org>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        bpf <bpf@vger.kernel.org>
+Sender: 1joypeters@gmail.com
+Received: by 2002:adf:f60f:0:0:0:0:0 with HTTP; Thu, 11 Nov 2021 09:08:43
+ -0800 (PST)
+From:   DINA MCKENNA <dinamckennahowley@gmail.com>
+Date:   Thu, 11 Nov 2021 17:08:43 +0000
+X-Google-Sender-Auth: eUVQqbZKUGepS6zVHlTJDS4FW1Q
+Message-ID: <CA+F+MbbDTFhZjErLoeHfxXCd+zyHDsPH6YMxz49MvHVj05GSbA@mail.gmail.com>
+Subject: Hello,
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 11 Nov 2021 at 08:57, Magnus Karlsson <magnus.karlsson@gmail.com> w=
-rote:
->
-> From: Magnus Karlsson <magnus.karlsson@intel.com>
->
-> Fix a crash in the buffer pool allocator when a buffer is double
-> freed. It is possible to trigger this behavior not only from a faulty
-> driver, but also from user space like this: Create a zero-copy AF_XDP
-> socket. Load an XDP program that will issue XDP_DROP for all
-> packets. Put the same umem buffer into the fill ring multiple times,
-> then bind the socket and send some traffic. This will crash the kernel
-> as the XDP_DROP action triggers one call to xsk_buff_free()/xp_free()
-> for every packet dropped. Each call will add the corresponding buffer
-> entry to the free_list and increase the free_list_cnt. Some entries
-> will have been added multiple times due to the same buffer being
-> freed. The buffer allocation code will then traverse this broken list
-> and since the same buffer is in the list multiple times, it will try
-> to delete the same buffer twice from the list leading to a crash.
->
-> The fix for this is just to test that the buffer has not been added
-> before in xp_free(). If it has been, just return from the function and
-> do not put it in the free_list a second time.
->
-> Note that this bug was not present in the code before the commit
-> referenced in the Fixes tag. That code used one list entry per
-> allocated buffer, so multiple frees did not have any side effects. But
-> the commit below optimized the usage of the pool and only uses a
-> single entry per buffer in the umem, meaning that multiple
-> allocations/frees of the same buffer will also only use one entry,
-> thus leading to the problem.
->
-> Fixes: 47e4075df300 ("xsk: Batched buffer allocation for the pool")
-> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Hello my dear.,
 
-Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn@kernel.org>
+ I sent this mail praying it will get to you in a good condition of
+health, since I myself are in a very critical health condition in
+which I sleep every night without knowing if I may be alive to see the
+next day. I bring peace and love to you. It is by the grace of God, I
+had no choice than to do what is lawful and right in the sight of God
+for eternal life and in the sight of man, for witness of God=E2=80=99s merc=
+y
+and glory upon my life. I am Mrs. Dina. Mckenna Howley., a widow. I am
+suffering from a long time brain tumor, It has defiled all forms of
+medical treatment, and right now I have about a few months to leave,
+according to medical experts. The situation has gotten complicated
+recently with my inability to hear proper, am communicating with you
+with the help of the chief nurse herein the hospital, from all
+indication my conditions is really deteriorating and it is quite
+obvious that, according to my doctors they have advised me that I may
+not live too long, Because this illness has gotten to a very bad
+stage. I plead that you will not expose or betray this trust and
+confidence that I am about to repose on you for the mutual benefit of
+the orphans and the less privilege. I have some funds I inherited from
+my late husband, the sum of ($ 11,000,000.00, Eleven Million Dollars).
+Having known my condition, I decided to donate this fund to you
+believing that you will utilize it the way i am going to instruct
+herein. I need you to assist me and reclaim this money and use it for
+Charity works therein your country  for orphanages and gives justice
+and help to the poor, needy and widows says The Lord." Jeremiah
+22:15-16.=E2=80=9C and also build schools for less privilege that will be
+named after my late husband if possible and to promote the word of God
+and the effort that the house of God is maintained. I do not want a
+situation where this money will be used in an ungodly manner. That's
+why I'm taking this decision. I'm not afraid of death, so I know where
+I'm going. I accept this decision because I do not have any child who
+will inherit this money after I die.. Please I want your sincerely and
+urgent answer to know if you will be able to execute this project for
+the glory of God, and I will give you more information on how the fund
+will be transferred to your bank account. May the grace, peace, love
+and the truth in the Word of God be with you and all those that you
+love and care for.
+
+I'm waiting for your immediate reply .
+
+May God Bless you,
+Mrs. Dina Mckenna. Howley..
