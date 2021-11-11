@@ -2,117 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AE8D44D3CC
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 10:10:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F8E044D3E4
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 10:18:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232257AbhKKJNR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 04:13:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40402 "EHLO
+        id S232531AbhKKJVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 04:21:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbhKKJNR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 04:13:17 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8374FC061766
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 01:10:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=l8j9tJ00Ql9MeJ5+QQk4bfpY2azbQHOFwUs/CJt0uBU=; b=J7cYwaK2uJMg2i5hv8JUDGFBZK
-        Hh+cZdNF2pT0eKdIxVNc9At35Jo0WAYEVoHKnoKX+CTlM14Fss42Qggq7mX4ttKDe8Aj3t9ZDiK7Y
-        tSrxfarqoNkUUWtF1gBWg0PCJb8xu+IrcfhqsNjHWprTASNX8BgtbM2zebys53/7Yf4XBnBr2G9Jv
-        +AiTSd7aUZ9fJ19aPSwdzuHFKc3xGGXMb4swhn/zAbtH44Tzy+zqOfRY/NjywmX3rgasvzqiXczI1
-        3R7wYXJbUxhGiUEEUTnmfGX804f5zz9JHeNn9vIoL/ITloBC8dKn01760LlIqyD/TWIce8wP96oeZ
-        OqFlZkMQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ml668-00FRGT-KO; Thu, 11 Nov 2021 09:10:20 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id B11B130001C;
-        Thu, 11 Nov 2021 10:10:19 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 51E182CCBA320; Thu, 11 Nov 2021 10:10:19 +0100 (CET)
-Date:   Thu, 11 Nov 2021 10:10:19 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>, x86@kernel.org,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Subject: Re: [RFC] x86/csum: rewrite csum_partial()
-Message-ID: <YYzd+zdzqUM5/ZKL@hirez.programming.kicks-ass.net>
-References: <20211111065322.1261275-1-eric.dumazet@gmail.com>
+        with ESMTP id S232570AbhKKJVE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 04:21:04 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EFAFC06127A;
+        Thu, 11 Nov 2021 01:18:14 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id b68so5069859pfg.11;
+        Thu, 11 Nov 2021 01:18:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LjO7/fZn8A4IMe1GMP9m7bCzLwYikbXUyytf4mrez9I=;
+        b=V1HNfvZ2U0+GPbyim+Kquq2OpFo6MTL7U1sTyfO9l//Vdqxn3/GEjWHaK3qHOluCKM
+         1iT3+STWT6gBV1QU8fkNMye7i60ccrJL5PpAfOG8LCjQSmWwztH5MLpyBDXqTmqZHHQG
+         qmcxvXC+lVdk84bWi3TI5aXd9n3UT6UCPUoz8048ePkmjMvowScbI9iEjucfXPeQGFYT
+         IC5bWeZdok9G8M6AAoVf5Mf6TrVHgb0q5jSZz7iqf2rsYQLVEOo7VsElhT4y2XYAX/1y
+         JXKN/6lK/3JfvUrHGUhwuH/13U3Us/n3Dop/lvQGat0gxlSQumxWmrQVhDwGGoCaozKU
+         gUOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LjO7/fZn8A4IMe1GMP9m7bCzLwYikbXUyytf4mrez9I=;
+        b=8BlQPNAiNoeKhEHxMRASGLdcmdeaUXUMyQXHr8vt0xdnc2TQfa9waLpcWZg5I+fDZf
+         Mln/bT9wciDydBmgGVr5oN++I2+HR3mOiemCq/gynPVR3nzNvJcigSllwvK5ApozhIHF
+         RBqb2+9uLguFtJibS4qqpKJ6rEyAj2fdY2jzixJFITBlozvFQq6rrvRXMl1IJM01q3h/
+         mCbSGOkgEMKO7WpOc7rEK5TBsDpiXPtBj+WVsZ/LBCi0ZJX/4etWmF6MjMONYjOTA4Bi
+         A/5EQqu5ZWJr6rYGgVl+satYmALg/fTe/QuUiVx/Ap86/Yf01+UXYctnz1GNQbL6hWMO
+         ZtMA==
+X-Gm-Message-State: AOAM531qmoGd8FEoLBCgvtSbrb/cIkStQDrhpUQg+1evgaankmTf2Oxr
+        uCI50DksPKkfHCFbmpehUHJan+Xzv9Y=
+X-Google-Smtp-Source: ABdhPJwisArS43Uz93uj5pf2J2ZmQmsWA5250+ed2chujObe4GEphMp/fRmHAuFOU1Luib+EXkvy1A==
+X-Received: by 2002:a63:63c1:: with SMTP id x184mr3585330pgb.401.1636622294165;
+        Thu, 11 Nov 2021 01:18:14 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id u2sm2233225pfi.120.2021.11.11.01.18.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Nov 2021 01:18:13 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: luo.penghao@zte.com.cn
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luo penghao <luo.penghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] ipv4: drop unused assignment
+Date:   Thu, 11 Nov 2021 09:18:09 +0000
+Message-Id: <20211111091809.159707-1-luo.penghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211111065322.1261275-1-eric.dumazet@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 10, 2021 at 10:53:22PM -0800, Eric Dumazet wrote:
-> +		/*
-> +		 * This implements an optimized version of
-> +		 * switch (dwords) {
-> +		 * case 15: res = add_with_carry(res, buf32[14]); fallthrough;
-> +		 * case 14: res = add_with_carry(res, buf32[13]); fallthrough;
-> +		 * case 13: res = add_with_carry(res, buf32[12]); fallthrough;
-> +		 * ...
-> +		 * case 3: res = add_with_carry(res, buf32[2]); fallthrough;
-> +		 * case 2: res = add_with_carry(res, buf32[1]); fallthrough;
-> +		 * case 1: res = add_with_carry(res, buf32[0]); fallthrough;
-> +		 * }
-> +		 *
-> +		 * "adcl 8byteoff(%reg1),%reg2" are using either 3 or 4 bytes.
-> +		 */
-> +		asm("	call 1f\n"
-> +		    "1:	pop %[dest]\n"
+From: luo penghao <luo.penghao@zte.com.cn>
 
-That's terrible. I think on x86_64 we can do: lea (%%rip), %[dest], not
-sure what would be the best way on i386.
+The assignment in the if statement will be overwritten by the
+following statement
 
-> +		    "	lea (2f-1b)(%[dest],%[skip],4),%[dest]\n"
-> +		    "	clc\n"
-> +		    "	jmp *%[dest]\n               .align 4\n"
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: luo penghao <luo.penghao@zte.com.cn>
+---
+ net/ipv4/igmp.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-That's an indirect branch, you can't do that these days. This would need
-to use JMP_NOSPEC (except we don't have a !ASSEMBLER version of that.
-But that would also completely and utterly destroy performance.
+diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
+index d2e2b3d..2ad3c7b 100644
+--- a/net/ipv4/igmp.c
++++ b/net/ipv4/igmp.c
+@@ -2558,7 +2558,6 @@ int ip_mc_msfget(struct sock *sk, struct ip_msfilter *msf,
+ 	msf->imsf_fmode = pmc->sfmode;
+ 	psl = rtnl_dereference(pmc->sflist);
+ 	if (!psl) {
+-		len = 0;
+ 		count = 0;
+ 	} else {
+ 		count = psl->sl_count;
+-- 
+2.15.2
 
-Also, objtool would complain about this if it hadn't tripped over that
-first instruction:
 
- arch/x86/lib/csum-partial_64.o: warning: objtool: do_csum()+0x84: indirect jump found in RETPOLINE build
-
-I'm not sure what the best way is to unroll loops without using computed
-gotos/jump-tables though :/
-
-> +		    "2:\n"
-> +		    "	adcl 14*4(%[src]),%[res]\n   .align 4\n"
-> +		    "	adcl 13*4(%[src]),%[res]\n   .align 4\n"
-> +		    "	adcl 12*4(%[src]),%[res]\n   .align 4\n"
-> +		    "	adcl 11*4(%[src]),%[res]\n   .align 4\n"
-> +		    "	adcl 10*4(%[src]),%[res]\n   .align 4\n"
-> +		    "	adcl 9*4(%[src]),%[res]\n   .align 4\n"
-> +		    "	adcl 8*4(%[src]),%[res]\n   .align 4\n"
-> +		    "	adcl 7*4(%[src]),%[res]\n   .align 4\n"
-> +		    "	adcl 6*4(%[src]),%[res]\n   .align 4\n"
-> +		    "	adcl 5*4(%[src]),%[res]\n   .align 4\n"
-> +		    "	adcl 4*4(%[src]),%[res]\n   .align 4\n"
-> +		    "	adcl 3*4(%[src]),%[res]\n   .align 4\n"
-> +		    "	adcl 2*4(%[src]),%[res]\n   .align 4\n"
-> +		    "	adcl 1*4(%[src]),%[res]\n   .align 4\n"
-> +		    "	adcl 0*4(%[src]),%[res]\n"
-> +		    "	adcl $0,%[res]"
-
-If only the CPU would accept: REP ADCL (%%rsi), %[res]   :/
-
-> +			: [res] "=r" (result), [dest] "=&r" (dest)
-> +			: [src] "r" (buff), "[res]" (result),
-> +			  [skip] "r" (dwords ^ 15)
-> +			: "memory");
-> +	}
