@@ -2,59 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 338EE44D156
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 06:08:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BA5E44D166
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 06:19:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233978AbhKKFKp convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 11 Nov 2021 00:10:45 -0500
-Received: from host-200-90-157-143.netpc.ec ([200.90.157.143]:54108 "EHLO
-        mail.gruponetpc.com" rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org
-        with ESMTP id S233092AbhKKFKf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 00:10:35 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by mail.gruponetpc.com (Postfix) with ESMTP id 97CF5E10856;
-        Wed, 10 Nov 2021 08:38:06 -0500 (-05)
-Received: from mail.gruponetpc.com ([127.0.0.1])
-        by localhost (mail.gruponetpc.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id vgJjYq1ZieFm; Wed, 10 Nov 2021 08:38:05 -0500 (-05)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.gruponetpc.com (Postfix) with ESMTP id C01A07EC489;
-        Tue,  9 Nov 2021 22:22:29 -0500 (-05)
-X-Virus-Scanned: amavisd-new at gruponetpc.com
-Received: from mail.gruponetpc.com ([127.0.0.1])
-        by localhost (mail.gruponetpc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id okpwN920NmIQ; Tue,  9 Nov 2021 22:22:29 -0500 (-05)
-Received: from [192.168.0.108] (unknown [93.182.105.113])
-        by mail.gruponetpc.com (Postfix) with ESMTPSA id 2D1A88A6238;
-        Tue,  9 Nov 2021 15:25:32 -0500 (-05)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
+        id S231730AbhKKFWb convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 11 Nov 2021 00:22:31 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:36715 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230021AbhKKFW0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 00:22:26 -0500
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1AB5JKo64009230, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1AB5JKo64009230
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 11 Nov 2021 13:19:20 +0800
+Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Thu, 11 Nov 2021 13:19:20 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Thu, 11 Nov 2021 13:19:19 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::dc53:1026:298b:c584]) by
+ RTEXMBS04.realtek.com.tw ([fe80::dc53:1026:298b:c584%5]) with mapi id
+ 15.01.2308.015; Thu, 11 Nov 2021 13:19:19 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     "cgel.zte@gmail.com" <cgel.zte@gmail.com>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "deng.changcheng@zte.com.cn" <deng.changcheng@zte.com.cn>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: RE: [PATCH] rtw89: remove unneeded variable
+Thread-Topic: [PATCH] rtw89: remove unneeded variable
+Thread-Index: AQHX1iwllMhddv70KEieF6Y/ho4Aj6v9yu3w
+Date:   Thu, 11 Nov 2021 05:19:19 +0000
+Message-ID: <2b0fcb779baf49caa58a4e7134af45b1@realtek.com>
+References: <20211110121135.151187-1-deng.changcheng@zte.com.cn>
+In-Reply-To: <20211110121135.151187-1-deng.changcheng@zte.com.cn>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/11/11_=3F=3F_04:20:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: donation
-To:     Recipients <ecouso@mail.gruponetpc.com>
-From:   ecouso@mail.gruponetpc.com
-Date:   Tue, 09 Nov 2021 20:25:02 +0000
-Reply-To: stefanopessina35@gmail.com
-Message-Id: <20211109202533.2D1A88A6238@mail.gruponetpc.com>
+MIME-Version: 1.0
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 11/11/2021 05:04:36
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 167193 [Nov 11 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: pkshih@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 465 465 eb31509370142567679dd183ac984a0cb2ee3296
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: realtek.com:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 11/11/2021 05:07:00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+> -----Original Message-----
+> From: cgel.zte@gmail.com <cgel.zte@gmail.com>
+> Sent: Wednesday, November 10, 2021 8:12 PM
+> To: kvalo@codeaurora.org
+> Cc: davem@davemloft.net; kuba@kernel.org; deng.changcheng@zte.com.cn; Pkshih <pkshih@realtek.com>;
+> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Zeal Robot
+> <zealci@zte.com.cn>
+> Subject: [PATCH] rtw89: remove unneeded variable
+> 
+> From: Changcheng Deng <deng.changcheng@zte.com.cn>
+> 
+> Fix the following coccicheck review:
+> ./drivers/net/wireless/realtek/rtw89/mac.c: 1096: 5-8: Unneeded variable
+> 
+> Remove unneeded variable used to store return value.
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
 
-Hallo,
+Acked-by: Ping-Ke Shih <pkshih@realtek.com>
 
-Ich bin STEFANO PESSINA. Ich bin ein italienisch-monegassischer Milliardär und stellvertretender Vorsitzender, Chief Executive Officer (CEO) und größter Einzelaktionär der Walgreens Boots Alliance. Au   fgrund dieser aktuellen Situation (Corona-Virus), die sich auf der ganzen Welt ausbreitet, spenden ich selbst und andere 19 italienische Milliardäre mehr als 45 Millionen US-Dollar, um das Coronavirus in Italien zu bekämpfen. Ich habe auch zugesagt, 1.500.000,00 € an Einzelpersonen, Kirchen und Waisenhäuser usw. zu spenden. Ich habe mich entschieden, Ihnen 1.500.000,00 € zu spenden, da Ihre E-Mail-Adresse zu den glücklichen Gewinnern gehört. Wenn Sie an meiner Spende interessiert sind, kontaktieren Sie mich für weitere Informationen. Du kannst auch über den untenstehenden Link mehr über mich lesen
-
-https://en.wikipedia.org/wiki/Stefano_Pessina
-
-Herzlicher Gruss
-Stellvertretender Vorsitzender und Geschäftsführer,
-Walgreens Boots-Allianz.
-Stefano Pessina
-
-E-Mail: stefanopessina35@gmail.com
-
-
+> ---
+>  drivers/net/wireless/realtek/rtw89/mac.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/realtek/rtw89/mac.c b/drivers/net/wireless/realtek/rtw89/mac.c
+> index 0171a5a7b1de..b93ac242b305 100644
+> --- a/drivers/net/wireless/realtek/rtw89/mac.c
+> +++ b/drivers/net/wireless/realtek/rtw89/mac.c
+> @@ -1093,7 +1093,6 @@ static int cmac_func_en(struct rtw89_dev *rtwdev, u8 mac_idx, bool en)
+>  static int dmac_func_en(struct rtw89_dev *rtwdev)
+>  {
+>  	u32 val32;
+> -	u32 ret = 0;
+> 
+>  	val32 = (B_AX_MAC_FUNC_EN | B_AX_DMAC_FUNC_EN | B_AX_MAC_SEC_EN |
+>  		 B_AX_DISPATCHER_EN | B_AX_DLE_CPUIO_EN | B_AX_PKT_IN_EN |
+> @@ -1107,7 +1106,7 @@ static int dmac_func_en(struct rtw89_dev *rtwdev)
+>  		 B_AX_WD_RLS_CLK_EN);
+>  	rtw89_write32(rtwdev, R_AX_DMAC_CLK_EN, val32);
+> 
+> -	return ret;
+> +	return 0;
+>  }
+> 
+>  static int chip_func_en(struct rtw89_dev *rtwdev)
+> --
+> 2.25.1
 
