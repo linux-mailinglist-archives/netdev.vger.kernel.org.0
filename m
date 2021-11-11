@@ -2,74 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12DCD44D581
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 12:06:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5DC644D5BF
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 12:22:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232318AbhKKLJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 06:09:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38452 "EHLO
+        id S232318AbhKKLZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 06:25:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229643AbhKKLJm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 06:09:42 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F6C4C061766;
-        Thu, 11 Nov 2021 03:06:53 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 6E54B22236;
-        Thu, 11 Nov 2021 12:06:51 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1636628811;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=B5p/dVLuXbGMx3xKBjTjbL8B54ECPpXqaKXphyHJO7E=;
-        b=sny/fJeTTbB1LxeKNQ6ky8Td0TS9hNWMvjXWvGDK/qaWkMCYm9294Lrt5qS24nBrjSNmZN
-        v6N9/sPEDs2GBp8HyOp67c2S+tDNA+wXwoq2L8s9dOzJY2/1/tj1Jmi18wLo4NxfQCTcXz
-        tE9x3jmoLvvan3YvqGvWOHYirbjS/do=
-From:   Michael Walle <michael@walle.cc>
-To:     apeksha.gupta@nxp.com
-Cc:     LnxRevLi@nxp.com, davem@davemloft.net, hemant.agrawal@nxp.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, nipun.gupta@nxp.com,
-        qiangqing.zhang@nxp.com, sachin.saxena@nxp.com,
-        Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH 0/5] drivers/net: add NXP FEC-UIO driver
-Date:   Thu, 11 Nov 2021 12:06:42 +0100
-Message-Id: <20211111110642.3340300-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211110054838.27907-1-apeksha.gupta@nxp.com>
-References: <20211110054838.27907-1-apeksha.gupta@nxp.com>
+        with ESMTP id S230400AbhKKLZg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 06:25:36 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBBF0C061766
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 03:22:47 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id y3so14262510ybf.2
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 03:22:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=QRxKlChU1oWffMledsms8p7hi9f8ZByPGGV28U2osgo=;
+        b=GlatnluOgtQiF86T/koErVNvBYrKn0da9X127rQBG5VdYA02to1culwWnpIXl4jOYp
+         DVnfBusG53A603Ej8SEy287iyOOK6PtQRJWmfLYYX3AFvOVUOu0mg0qIUynurrS63fn9
+         JvbFzQUgE3kCJz8Q8e0YaW7XXZF/24o/v4IJjVE6MFiRLLSpLXjOuwbIdP4RffMKeaqy
+         9hjG3CLWCmK9b9snOLCGz690ve8FWr9WRO+lUuVwRfJINEiXK/aoAsWbYXIccrN3qE3t
+         M74k4C3n/KfmwDDtKE+h3t2jqTieUanbLKMTfPZIIrGdYd/YicgcVTtkh/0aBgBC4IMN
+         lATw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=QRxKlChU1oWffMledsms8p7hi9f8ZByPGGV28U2osgo=;
+        b=J+lxzbv2gJcWUkFLC59RRDcTtiSIFnF3eGaqaRuxifv19m4YKhtv8fJN7p3D6vz59o
+         1/ZhJLVm/s9tVAfHj/14fwzBPxwT6ocju5Ni2XNxmO2k/5xotTUeidRVKB7mgrOCkFav
+         VkDi094vVn3UMTp+uVmeHcFSdsoBT62sFFuGpPQxLbxkRn0+4lAYJrroe+twSc5a93k3
+         GaP/th6UCSf5E6CyCHmZElbs9OacZq+x1CpMdY1wfLTGPkuSafGARy6+nwihrjyz+a9D
+         js0WGsFNC+yd83JLpo/cjwi/nftkG2j1iX20xRoakfIcloMTWCFZjewczAJFTCL6CdZK
+         KPEQ==
+X-Gm-Message-State: AOAM533lZz3Dv3f2SLqn9z0cjFq/Z1qh6/wzOA2r4Jq83ftC3Q1LWIpJ
+        rV0nNIJIjR306ediTFZWi9tbQ2U4bRlBzwxxkvs=
+X-Google-Smtp-Source: ABdhPJywc7Ew6+ylplgfB2BRpkgReyno5whKGfFXlBK61UOiY2CHrIa4ZgRrQhyBYncesZq0STL7oZc+msOGgdPzzNI=
+X-Received: by 2002:a25:748a:: with SMTP id p132mr7013452ybc.207.1636629767069;
+ Thu, 11 Nov 2021 03:22:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:a05:7000:8d9d:0:0:0:0 with HTTP; Thu, 11 Nov 2021 03:22:46
+ -0800 (PST)
+Reply-To: filefileo532@naver.com
+From:   Victor Nelson <rubao483@gmail.com>
+Date:   Thu, 11 Nov 2021 12:22:46 +0100
+Message-ID: <CABDkXHAY2BjsroUERae53ph6xSCYa8gdYDMgCiFjztV0F9h4PQ@mail.gmail.com>
+Subject: Re: Your atm card is ready
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[linux-devel@linux.nxdi.nxp.com doesn't exist in the public, which is quite
-annoying when you reply to an email and the MTA doesn't accept it due to
-invalid domains]
+Attention: Beneficiary,
 
-> This patch series introduce the fec-uio driver, supported for the inbuilt
-> NIC found in the NXP i.MX 8M Mini SoC. Basic hardware initialization is
-> performed in kernel via userspace input/output(UIO) to support FEC
-> ethernet device detection in user space.
+This is to bring to your notice that because of the impossibility of
+your fund transfer through our western union network, we
 
-Could you elaborate for what this driver is needed? Doesn't the imx8mm
-already have a network driver? What is the difference between them?
+have credited your total fund of $15,500,000.00 into an ATM VISA
+card,and we have paid the delivery fee of your ATM VISA card
 
-As a user, I couldn't find what this is all about, neither in this
-commit message nor in the Kconfig help text.
+for you, we paid it because your ATM VISA card worth of $15,500,000.00
+which we have registered for deliver, has less than 16
 
-> Userspace PMD uses standard UIO interface to access kernel for PHY
-> initialisation and for mapping the allocated memory of register &
-> buffer descriptor with DPDK which gives access to non-cacheable memory
-> for buffer descriptor.
-> 
-> Module fec-uio.ko will get generated.
-> imx8mm-evk-dpdk.dtb is required to support fec-uio driver.
+days to expire in the custody of the UPS Company and when it expires,
+the money will go into federal government treasury
 
--michael
+account.
+
+For that we decided to help you pay off the money so that your ATM
+VISA card will not expire, because we trust that when you
+
+receive this your ATM VISA card, definitely you must pay us back and
+even compensate us for helping you. Like we stated
+
+earlier, the delivery charges has been paid ,therefore the only money
+you were advice to send to them is their official
+
+security keeping fees of $25usd every day.
+
+Like I stated earlier, the crediting re-activation, delivery and the
+company registration charges has been paid by me, but I
+
+did not pay their official security keeping fees since they refused,
+they refused and the reason is that they do not know
+
+when you are going to contact them and the demurrage might have
+increased by then, They told me that their official  security
+
+keeping fees is $$25.00 per a day , and I deposited it yesterday by
+10:am in the morning to their office.
+
+Therefore you should contact them with the below contact information;
+
+
+Contact person name: (Victor nelson)
+Email; filefileo532@gmail.com
+Logistic Manager: Mr Fransisco F,
+
+
+Try to contact them today and also send them the official security
+keeping charge to avoid increasing of their fee and let me
+
+know once you receive this your ATM VISA CARD.
+
+Contact them today with your full information requested below;
+
+Your Full Name;
+Your Country;
+Your Residence Home Address:
+Your Direct Phone :
+Your Cell:
+Age/Sex:
+
+Try to indicate all this codes to them because it will prove that you
+are the rightful person that own the ATM visa card
+
+deposited in their custody.
+
+Shipment Code awb :33xzs,
+ATM Card Registered Code No: xgt442
+Security Code sctc:2021dhx:567:
+Transaction Code 233:cstc:101:33028:
+Certificate Deposit code: sctc:bun.xxiv:78:01
+Depositor:Mrs. Linda Tutu
+Manager of UBA Bank Plc
+
+This is to avoid wrong delivery, do that urgent to avoid increase of
+their keeping fees and let us know once you receive your
+
+ATM VISA CARD.
+
+Yours sincerely
+Victor nelson
