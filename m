@@ -2,92 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66CD344D8E6
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 16:09:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 379B444D8FB
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 16:16:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233715AbhKKPMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 10:12:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37418 "EHLO
+        id S233191AbhKKPTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 10:19:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233899AbhKKPMT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 10:12:19 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC79C0613F5;
-        Thu, 11 Nov 2021 07:09:30 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id u17so5962961plg.9;
-        Thu, 11 Nov 2021 07:09:30 -0800 (PST)
+        with ESMTP id S232823AbhKKPTF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 10:19:05 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27984C061766;
+        Thu, 11 Nov 2021 07:16:16 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id f8so25696123edy.4;
+        Thu, 11 Nov 2021 07:16:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wARBVdjy78Ki5zgSlrRbIXBHuiHmJIv2mEbO4npOMh0=;
-        b=ESW0416vE10IDi125y9XoRl8Q1AILrQVd33mETZV5Rp7APUmtHFWalFB9XmMIPZN+3
-         H7sxBwNnU3vSS53JCMNAsPa8MeF0mEmgnmaiFZDLAplh/xluaLxZnnpngGaP6/zg+zK2
-         qszaWo5p7/0ga2YmPsY3ogeYDMfuPYPBDC8IQ0dqWJJLMJu9WWAkmUl9BdFEJxsj5Jn/
-         5UUUNNwiROjpCDBwuOJgeKEW8iQr1kSGcDmtyY5LphrV5EfYwIjkejfI3f6qVkLsevKa
-         6yItBNiqPhoxY8K8DRATsfs0NJZ55lvQ+eFcH1HOdvK2CddkZEurrrEYnwPxeFZ20SY6
-         vf5A==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Ou8kCYUrKezhxjUCVTwslzRMIDu5Ne8n1+te9ytVH1s=;
+        b=ha2RFjuLPyJjOO/XAgtI1XNgbhhh73dNA1bgqZYKQMOavR4nq58c3R9R3f2FhtlBqU
+         gxvJaQpd4Gp7+kQFaCAmgDBo4C821hKFdJsv/VGJR8eeVFcUc1wvm/MkbGy5+yfshBZ/
+         qGygvgaxmc4e0Pir77I7F7bXkzeW6meeQ2jn11Wkh++Q+E9j2Fgy28PQuKKXM2TyqDqy
+         tzd1BaY27ze1khP10ES/E3hE1wFHOpiKZoVm9WDSMLSbGWWakeR0Bs36SFA5acRCTbBK
+         iJQUfriRhv3iJwvHWRXxj/JEVOGoD/Cmpt3UCzXXVRCEfJ0llNmlTec0ajtgPZ3yvUVD
+         KoRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wARBVdjy78Ki5zgSlrRbIXBHuiHmJIv2mEbO4npOMh0=;
-        b=2x+iYEp9lQYl3N+fw+sTFz7d8kVbPtfdKNuDTVVf6fjiQIxNN2165rM9PO5Ys603gB
-         T3CUz8+HznbrmF6WZJPHb7Ue5UHTjJJOWRnX7er7kKAzUYk/0rb63ogpt8OmfbJ8VuS4
-         7T2qrRrT4BvrfOBlr5NlAQx9UPnx5RY0j6VR9QzTwQGLTKVuizllkbiHc8W+FOx61Kbj
-         cU7yADuwgi5E5C/rr3dFcdlOdb8rdxmd/mDIPnhK4GnPiW3ji2xfmk2UNWF3tP4KS/Y/
-         AxOQypG1GvMuAb+6VpAsEIwHh5E9DQSNAl1Fo9N7cobNBg5PTji6somqZhARHe66TXRV
-         7SPg==
-X-Gm-Message-State: AOAM532TbmHSqSlt6mDPfMjR70mQIPXzaXX8Xf1lJJ9SEUjiNqCKcc9b
-        V9NZQlWI/vHnvl9xDyP+gJQ=
-X-Google-Smtp-Source: ABdhPJwKoSnTWzEbQzrzy0Yv/LSkNWw5AzN47+w3Ent+iNKJznVHyGcAXEYEZ0RPRn0Qz6HXXpxqIg==
-X-Received: by 2002:a17:90b:4a0f:: with SMTP id kk15mr8761363pjb.223.1636643370300;
-        Thu, 11 Nov 2021 07:09:30 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id h12sm3675599pfv.117.2021.11.11.07.09.28
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Ou8kCYUrKezhxjUCVTwslzRMIDu5Ne8n1+te9ytVH1s=;
+        b=248dIGSeeJJvMdPxEYssBtZgGCs7vXBWp/cwmkZaRpM/oSDI/of3Hs0dFf+GXJ+Srh
+         qu0jwfXuiriVOmReh2aCDNhVMx8mLJXN0Hb4z1S/hFQR8Smxmorhgv7b3KL8F0RCO7iD
+         43F2++vtE2huYADToaMDaZG4C1vuo27C42BwqPwhf6hIMH+ng/Z7+0gfq70S7kClAW/E
+         aOViYkA6jg7pbTrZIKwaa1H+2dIHYVNFArUGepXCMK/NvJEKf+qGbgUuQQo7dEZ/Bs3E
+         hGzPRFr1/k51h/e71hmZJMr/1haE1yTTLLBB+Ln6xnn+aiwlwDmpvuUXME0/a9dmzKQ5
+         DyYw==
+X-Gm-Message-State: AOAM531VzchzLt/mTSZ8YhZhDUMlJn1VQO5BNjZstOvG+xMZlGLYWIX9
+        VHAI1o3iO8PUQ7Qm6HCkwBg=
+X-Google-Smtp-Source: ABdhPJw3TE8kuz8/k2xHXoMAQnGCP1Hdm83xKiUi1uoYtYuKz1hWQMZXVJhwj+kbBVe1G9GlPMGy8Q==
+X-Received: by 2002:aa7:ccc1:: with SMTP id y1mr10828710edt.177.1636643774626;
+        Thu, 11 Nov 2021 07:16:14 -0800 (PST)
+Received: from skbuf ([188.25.175.102])
+        by smtp.gmail.com with ESMTPSA id g21sm1499129ejt.87.2021.11.11.07.16.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Nov 2021 07:09:29 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: luo.penghao@zte.com.cn
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luo penghao <luo.penghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] ipv6: Remove duplicate statements
-Date:   Thu, 11 Nov 2021 15:09:24 +0000
-Message-Id: <20211111150924.2576-1-luo.penghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 11 Nov 2021 07:16:14 -0800 (PST)
+Date:   Thu, 11 Nov 2021 17:16:12 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        linux-imx@nxp.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: stmmac: fix system hang caused by
+ eee_ctrl_timer during suspend/resume
+Message-ID: <20211111151612.i7mnye5c3trfptda@skbuf>
+References: <20210908074335.4662-1-qiangqing.zhang@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210908074335.4662-1-qiangqing.zhang@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: luo penghao <luo.penghao@zte.com.cn>
+Hi Joakim,
 
-This statement is repeated with the initialization statement
+On Wed, Sep 08, 2021 at 03:43:35PM +0800, Joakim Zhang wrote:
+> commit 5f58591323bf ("net: stmmac: delete the eee_ctrl_timer after
+> napi disabled"), this patch tries to fix system hang caused by eee_ctrl_timer,
+> unfortunately, it only can resolve it for system reboot stress test. System
+> hang also can be reproduced easily during system suspend/resume stess test
+> when mount NFS on i.MX8MP EVK board.
+> 
+> In stmmac driver, eee feature is combined to phylink framework. When do
+> system suspend, phylink_stop() would queue delayed work, it invokes
+> stmmac_mac_link_down(), where to deactivate eee_ctrl_timer synchronizly.
+> In above commit, try to fix issue by deactivating eee_ctrl_timer obviously,
+> but it is not enough. Looking into eee_ctrl_timer expire callback
+> stmmac_eee_ctrl_timer(), it could enable hareware eee mode again. What is
+> unexpected is that LPI interrupt (MAC_Interrupt_Enable.LPIEN bit) is always
+> asserted. This interrupt has chance to be issued when LPI state entry/exit
+> from the MAC, and at that time, clock could have been already disabled.
+> The result is that system hang when driver try to touch register from
+> interrupt handler.
+> 
+> The reason why above commit can fix system hang issue in stmmac_release()
+> is that, deactivate eee_ctrl_timer not just after napi disabled, further
+> after irq freed.
+> 
+> In conclusion, hardware would generate LPI interrupt when clock has been
+> disabled during suspend or resume, since hardware is in eee mode and LPI
+> interrupt enabled.
+> 
+> Interrupts from MAC, MTL and DMA level are enabled and never been disabled
+> when system suspend, so postpone clocks management from suspend stage to
+> noirq suspend stage should be more safe.
+> 
+> Fixes: 5f58591323bf ("net: stmmac: delete the eee_ctrl_timer after napi disabled")
+> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+> ---
+>  .../net/ethernet/stmicro/stmmac/stmmac_main.c | 14 ------
+>  .../ethernet/stmicro/stmmac/stmmac_platform.c | 44 +++++++++++++++++++
+>  2 files changed, 44 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> index ece02b35a6ce..246f84fedbc8 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -7118,7 +7118,6 @@ int stmmac_suspend(struct device *dev)
+>  	struct net_device *ndev = dev_get_drvdata(dev);
+>  	struct stmmac_priv *priv = netdev_priv(ndev);
+>  	u32 chan;
+> -	int ret;
+>  
+>  	if (!ndev || !netif_running(ndev))
+>  		return 0;
+> @@ -7150,13 +7149,6 @@ int stmmac_suspend(struct device *dev)
+>  	} else {
+>  		stmmac_mac_set(priv, priv->ioaddr, false);
+>  		pinctrl_pm_select_sleep_state(priv->device);
+> -		/* Disable clock in case of PWM is off */
+> -		clk_disable_unprepare(priv->plat->clk_ptp_ref);
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: luo penghao <luo.penghao@zte.com.cn>
----
- net/ipv6/exthdrs.c | 1 -
- 1 file changed, 1 deletion(-)
+This patch looks strange to me. You are basically saying that the LPI
+timer for MAC-level EEE is clocked from the clk_ptp_ref clock?! Are you
+sure this is correct? I thought this clock is only used for the PTP
+timestamping counter. Maybe the clock definitions in imx8mp.dtsi are not
+correct?
 
-diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
-index 3a871a0..e7e955d 100644
---- a/net/ipv6/exthdrs.c
-+++ b/net/ipv6/exthdrs.c
-@@ -686,7 +686,6 @@ static int ipv6_rthdr_rcv(struct sk_buff *skb)
- 	struct net *net = dev_net(skb->dev);
- 	int accept_source_route = net->ipv6.devconf_all->accept_source_route;
- 
--	idev = __in6_dev_get(skb->dev);
- 	if (idev && accept_source_route > idev->cnf.accept_source_route)
- 		accept_source_route = idev->cnf.accept_source_route;
- 
--- 
-2.15.2
-
-
+> -		ret = pm_runtime_force_suspend(dev);
+> -		if (ret) {
+> -			mutex_unlock(&priv->lock);
+> -			return ret;
+> -		}
+>  	}
+>  
+>  	mutex_unlock(&priv->lock);
+> @@ -7242,12 +7234,6 @@ int stmmac_resume(struct device *dev)
+>  		priv->irq_wake = 0;
+>  	} else {
+>  		pinctrl_pm_select_default_state(priv->device);
+> -		/* enable the clk previously disabled */
+> -		ret = pm_runtime_force_resume(dev);
+> -		if (ret)
+> -			return ret;
+> -		if (priv->plat->clk_ptp_ref)
+> -			clk_prepare_enable(priv->plat->clk_ptp_ref);
+>  		/* reset the phy so that it's ready */
+>  		if (priv->mii)
+>  			stmmac_mdio_reset(priv->mii);
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+> index 5ca710844cc1..4885f9ad1b1e 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+> @@ -9,6 +9,7 @@
+>  *******************************************************************************/
+>  
+>  #include <linux/platform_device.h>
+> +#include <linux/pm_runtime.h>
+>  #include <linux/module.h>
+>  #include <linux/io.h>
+>  #include <linux/of.h>
+> @@ -771,9 +772,52 @@ static int __maybe_unused stmmac_runtime_resume(struct device *dev)
+>  	return stmmac_bus_clks_config(priv, true);
+>  }
+>  
+> +static int stmmac_pltfr_noirq_suspend(struct device *dev)
+> +{
+> +	struct net_device *ndev = dev_get_drvdata(dev);
+> +	struct stmmac_priv *priv = netdev_priv(ndev);
+> +	int ret;
+> +
+> +	if (!netif_running(ndev))
+> +		return 0;
+> +
+> +	if (!device_may_wakeup(priv->device) || !priv->plat->pmt) {
+> +		/* Disable clock in case of PWM is off */
+> +		clk_disable_unprepare(priv->plat->clk_ptp_ref);
+> +
+> +		ret = pm_runtime_force_suspend(dev);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int stmmac_pltfr_noirq_resume(struct device *dev)
+> +{
+> +	struct net_device *ndev = dev_get_drvdata(dev);
+> +	struct stmmac_priv *priv = netdev_priv(ndev);
+> +	int ret;
+> +
+> +	if (!netif_running(ndev))
+> +		return 0;
+> +
+> +	if (!device_may_wakeup(priv->device) || !priv->plat->pmt) {
+> +		/* enable the clk previously disabled */
+> +		ret = pm_runtime_force_resume(dev);
+> +		if (ret)
+> +			return ret;
+> +
+> +		clk_prepare_enable(priv->plat->clk_ptp_ref);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  const struct dev_pm_ops stmmac_pltfr_pm_ops = {
+>  	SET_SYSTEM_SLEEP_PM_OPS(stmmac_pltfr_suspend, stmmac_pltfr_resume)
+>  	SET_RUNTIME_PM_OPS(stmmac_runtime_suspend, stmmac_runtime_resume, NULL)
+> +	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(stmmac_pltfr_noirq_suspend, stmmac_pltfr_noirq_resume)
+>  };
+>  EXPORT_SYMBOL_GPL(stmmac_pltfr_pm_ops);
+>  
+> -- 
+> 2.17.1
+> 
