@@ -2,57 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 165A644DABE
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 17:47:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BB0744DAC3
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 17:50:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234263AbhKKQuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 11:50:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53650 "EHLO mail.kernel.org"
+        id S233987AbhKKQww (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 11:52:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55342 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234262AbhKKQuK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Nov 2021 11:50:10 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 737C4610A5;
-        Thu, 11 Nov 2021 16:47:20 +0000 (UTC)
+        id S233867AbhKKQwv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Nov 2021 11:52:51 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F1D3B61264;
+        Thu, 11 Nov 2021 16:50:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636649241;
-        bh=KwO46A3inh1+ZeeSfpuiHBpherpJAAVFpe7+aHAlruE=;
+        s=k20201202; t=1636649402;
+        bh=51HV5mKQra9//QardxIsZThqAWeIEV0HwhilxwaGBn4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=StvP6ITTligJp+smBZweYM4kmVPf4/tVYL89tbHlQuM3z4EZ5+0FjrJvTSOZfioU4
-         8bLH8KBgjqJn6xwn5/xC+SLGxAL+o/FSv0YJbg6mLKMPcLoQoWD6KfcwhY6Z34H/NJ
-         igUUNyepc7aBJbTABsWKoRANenTs4t4YibnumVI5vK3qrfUiF4JJnoZMPiJzH9Hjgn
-         ENiEH1C+S6VdnOyDYtDpCd5wVm5HgiBCl7D8SyXhbgSsBD6vGi22yIO9sejodlqgck
-         PowbM/vLcgLpAVJvOLpuSwNuGmqhGoL2OImsc+aqqMavMdB5vurR6tv5mdt9LdNIZz
-         GNx32FXwm+kmQ==
-Date:   Thu, 11 Nov 2021 08:47:19 -0800
+        b=IceVoHjviKtrlOA5AThqARgr9Y9AehkaSzV17p2RO0oc8IrsRK9G7S6Za/z+BSLZD
+         LbQXulzxt7vvzEf8PrVXEqE3D57WNtk8l2fTj942Bh/RiFNAROGbzB5Hak8c0uqi/C
+         CYxu7dmpWE6ccczMhuMOi40PB2bAUqTBNMJ1LdxeBMFKusmRbA3pcj5WwjzhQEx9PI
+         eW0DPYiD9+tH8lmgC3uiGSZqH5E6/FLd51x1uviJ76Pdj1bO+BC91OHFoOMmaReu5A
+         OFTPwuEIQ0u6J1HL9DTBlq6HbTxCCed7zCbRYX09f4AVi1eZarRnfllH7amhjffruW
+         l6ztzkELs2Bkw==
+Date:   Thu, 11 Nov 2021 08:50:01 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     sundeep subbaraya <sundeep.lkml@gmail.com>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Hariprasad Kelam <hkelam@marvell.com>,
-        Geethasowjanya Akula <gakula@marvell.com>,
-        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
-        Rakesh Babu Saladi <rsaladi2@marvell.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Andrew Lunn <andrew@lunn.ch>, argeorge@cisco.com
-Subject: Re: [EXT] Re: [net-next PATCH 1/2] octeontx2-pf: Add devlink param
- to init and de-init serdes
-Message-ID: <20211111084719.600f072d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YY0uB7OyTRCoNBJQ@shredder>
-References: <CALHRZurNzkkma7HGg2xNLz3ECbwT2Hv=QXMeWr7AXCEegHOciw@mail.gmail.com>
-        <20211027100857.4d25544c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YXmWb2PZJQhpMfrR@shredder>
-        <BY3PR18MB473794E01049EC94156E2858C6859@BY3PR18MB4737.namprd18.prod.outlook.com>
-        <YXnRup1EJaF5Gwua@shredder>
-        <CALHRZuqpaqvunTga+8OK4GSa3oRao-CBxit6UzRvN3a1-T0dhA@mail.gmail.com>
-        <YXqq19HxleZd6V9W@shredder>
-        <CALHRZuoOWu0sEWjuanrYxyAVEUaO4-wea5+mET9UjPyoOrX5NQ@mail.gmail.com>
-        <YYeajTs6d4j39rJ2@shredder>
-        <20211108075450.1dbdedc3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YY0uB7OyTRCoNBJQ@shredder>
+To:     kernel test robot <lkp@intel.com>
+Cc:     cgel.zte@gmail.com, Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        kbuild-all@lists.01.org, Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luo penghao <luo.penghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH linux] e1000e: Delete redundant variable definitions
+Message-ID: <20211111085001.24b58b5c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <202111112246.M0trEfiC-lkp@intel.com>
+References: <20211111090555.158828-1-luo.penghao@zte.com.cn>
+        <202111112246.M0trEfiC-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -60,99 +44,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 11 Nov 2021 16:51:51 +0200 Ido Schimmel wrote:
-> On Mon, Nov 08, 2021 at 07:54:50AM -0800, Jakub Kicinski wrote:
-> > On Sun, 7 Nov 2021 11:21:17 +0200 Ido Schimmel wrote:  
-> > > TBH, I'm not that happy with my ethtool suggestion. It is not very clear
-> > > which hardware entities the attribute controls.  
-> > 
-> > Last week I heard a request to also be able to model NC-SI disruption.
-> > Control if the NIC should be reset and newly flashed FW activated when
-> > host is rebooted (vs full server power cycle).
-> > 
-> > That adds another dimension to the problem, even though that particular
-> > use case may be better answered thru the devlink flashing/reset APIs.
-> > 
-> > Trying to organize the requirements we have 3 entities which may hold
-> > the link up:
-> >  - SFP power policy  
-> 
-> The SFP power policy does not keep the link up. In fact, we specifically
-> removed the "low" policy to make sure that whatever policy you configure
-> ("auto"/"high") does not affect your carrier.
+On Thu, 11 Nov 2021 22:56:38 +0800 kernel test robot wrote:
+> >> drivers/net/ethernet/intel/e1000e/e1000.h:31:20: error: 'hw' undeclared (first use in this function)  
+>       31 |         netdev_dbg(hw->adapter->netdev, format, ## arg)
 
-Hm. How do we come up with the appropriate wording here...
+Yeah, the infinite wisdom of Intel drivers using macros with implicit
+arguments :/
 
-I meant keeping the "PHY level link" up? I think we agree that all the
-cases should behave like SFP power behaves today?
-
-The API is to control or query what is forcing the PHY link to stay up
-after the netdev was set down. IOW why does the switch still see link
-up if the link is down on Linux. I don't think we should report carrier
-up when netdev is down?
-
-> >  - NC-SI / BMC
-> >  - SR-IOV (legacy)
-
- - NPAR / Mutli-Host
-
-so 4 known reasons.
-
-> > I'd think auto/up as possible options still make sense, although in
-> > case of NC-SI many NICs may not allow overriding the "up". And the
-> > policy may change without notification if BMC selects / activates 
-> > a port - it may go from auto to up with no notification.
-> > 
-> > Presumably we want to track "who's holding the link up" per consumer.
-> > Just a bitset with 1s for every consumer holding "up"? 
-> > 
-> > Or do we expect there will be "more to it" and should create bespoke
-> > nests?
-> >   
-> > > Maybe it's better to
-> > > implement it as a rtnetlink attribute that controls the carrier (e.g.,
-> > > "carrier_policy")? Note that we already have ndo_change_carrier(), but
-> > > the kdoc comment explicitly mentions that it shouldn't be used by
-> > > physical devices:
-> > >
-> > >  * int (*ndo_change_carrier)(struct net_device *dev, bool new_carrier);
-> > >  *	Called to change device carrier. Soft-devices (like dummy, team, etc)
-> > >  *	which do not represent real hardware may define this to allow their
-> > >  *	userspace components to manage their virtual carrier state. Devices
-> > >  *	that determine carrier state from physical hardware properties (eg
-> > >  *	network cables) or protocol-dependent mechanisms (eg
-> > >  *	USB_CDC_NOTIFY_NETWORK_CONNECTION) should NOT implement this function.  
-> > 
-> > New NDO seems reasonable.   
-> 
-> Spent a bit more time on that and I'm not sure a new ndo is needed. See:
-> 
->  * void (*ndo_change_proto_down)(struct net_device *dev,
->  *				 bool proto_down);
->  *	This function is used to pass protocol port error state information
->  *	to the switch driver. The switch driver can react to the proto_down
->  *      by doing a phys down on the associated switch port.
-> 
-> So what this patch is trying to achieve can be achieved by implementing
-> support for this ndo:
-> 
-> $ ip link show dev macvlan10
-> 20: macvlan10@dummy10: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
->     link/ether 3e:d6:1a:97:ba:5e brd ff:ff:ff:ff:ff:ff
-> 
-> # ip link set dev macvlan10 protodown on
-> 
-> $ ip link show dev macvlan10
-> 20: macvlan10@dummy10: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state LOWERLAYERDOWN mode DEFAULT group default qlen 1000
->     link/ether 3e:d6:1a:97:ba:5e brd ff:ff:ff:ff:ff:ff protodown on
-
-Let's wait to hear a strong use case, tho.
-
-> Currently, user space has no visibility into the fact that by default
-> the carrier is on, but I imagine this can be resolved by adding
-> "protoup" and defaulting the driver to report "on". The "who's holding
-> the link up" issue can be resolved via "protoup_reason" (same as
-> "protodown_reason").
-
-"proto" in "protodown" refers to STP, right? Not sure what "proto" in
-"protoup" would be.
+You should build test your patches, tho.
