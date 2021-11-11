@@ -2,75 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B471044D7BD
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 15:00:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 840CB44D7BC
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 15:00:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233593AbhKKODK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 09:03:10 -0500
-Received: from mail.zju.edu.cn ([61.164.42.155]:33790 "EHLO zju.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233586AbhKKODI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Nov 2021 09:03:08 -0500
-Received: from localhost.localdomain (unknown [222.205.2.245])
-        by mail-app3 (Coremail) with SMTP id cC_KCgBnbxvoIY1ht1H5Bw--.22116S4;
-        Thu, 11 Nov 2021 22:00:08 +0800 (CST)
-From:   Lin Ma <linma@zju.edu.cn>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jirislaby@kernel.org,
-        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        Lin Ma <linma@zju.edu.cn>
-Subject: [PATCH v0] hamradio: delete unnecessary free_netdev()
-Date:   Thu, 11 Nov 2021 22:00:07 +0800
-Message-Id: <20211111140007.7244-1-linma@zju.edu.cn>
-X-Mailer: git-send-email 2.33.1
+        id S231739AbhKKODD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 09:03:03 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51256 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233507AbhKKODC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Nov 2021 09:03:02 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1966E601FF;
+        Thu, 11 Nov 2021 14:00:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636639213;
+        bh=RGIWpnQXoQk6xjwoi/RBFJb74jkEb+yGI5rUAIw8faY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rZEeaPAE2kZbIJUxfS5iNzmi1KITHUzCUSNijYdFCHY4gj20xTnYp80gCw9nEtF+e
+         XP1UHvKGDKd+dr7gLz7S4OgehIG2yj7Nu5ebz164Ij779B9gBnWP//1iSzD0mNbcHG
+         EkEwDN37fM+ROV54+rLN60McRb+7bsGdbUIgAhPKfR9k3eC4j9k+YQz+eG04CIVAjV
+         GP1b2o9XJqJVs+IhAIexvforIiTW2l5Kf10aDQ0/suDJ+xW+FyAzMjp1xNwB3+4SK9
+         4UVP/CMeeCzurd7c+3nu7IKZf9Hti78hkn4x9CAIEAJ1y6H617t6JrkQ8lOvHBl8Qa
+         GJOwYmMp+7GAQ==
+Date:   Thu, 11 Nov 2021 06:00:12 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Matt Johnston <matt@codeconstruct.com.au>
+Cc:     Zev Weiss <zev@bewilderbeest.net>, Wolfram Sang <wsa@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Jeremy Kerr <jk@codeconstruct.com.au>,
+        linux-i2c@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2 0/6] MCTP I2C driver
+Message-ID: <20211111060005.01343703@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211111015548.2892849-1-matt@codeconstruct.com.au>
+References: <20211111015548.2892849-1-matt@codeconstruct.com.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: cC_KCgBnbxvoIY1ht1H5Bw--.22116S4
-X-Coremail-Antispam: 1UD129KBjvdXoWrtrW8uw15XF48AF15Xw48Xrb_yoWfZrg_ur
-        1xZFZ7Jr1DJrW7tanFvr4rA34IkFs8Xr1fuas2qas3Ga43twn7J3yI9rs3Jr15WayxtF9x
-        Ar12qF17J3y2gjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbxkFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AK
-        wVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20x
-        vE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4UJVW0owA2z4x0Y4vEx4A2
-        jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52
-        x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWU
-        GwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI4
-        8JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_Xryl42xK82IYc2Ij64vIr41l
-        42xK82IY6x8ErcxFaVAv8VW8uw4UJr1UMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I
-        8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWU
-        twCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x
-        0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_
-        Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUb
-        kR65UUUUU==
-X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The former patch "defer 6pack kfree after unregister_netdev" adds
-free_netdev() function in sixpack_close(), which is a bad copy from the
-similar code in mkiss_close(). However, this free is unnecessary as the
-flag needs_free_netdev is set to true in sp_setup(), hence the
-unregister_netdev() will free the netdev automatically.
+On Thu, 11 Nov 2021 09:55:42 +0800 Matt Johnston wrote:
+> Hi,
+> 
+> This patch series adds a netdev driver providing MCTP transport over
+> I2C. 
+> 
+> It applies against net-next using recent MCTP changes there, though also
+> has I2C core changes for review. I'll leave it to maintainers where it
+> should be applied - please let me know if it needs to be submitted
+> differently.
+> 
+> The I2C patches were previously sent as RFC though the only feedback
+> there was an ack to 255 bytes for aspeed.
+> 
+> The dt-bindings patch went through review on the list.
 
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
----
- drivers/net/hamradio/6pack.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
-index bfdf89e54752..180c8f08169b 100644
---- a/drivers/net/hamradio/6pack.c
-+++ b/drivers/net/hamradio/6pack.c
-@@ -677,8 +677,6 @@ static void sixpack_close(struct tty_struct *tty)
- 	/* Free all 6pack frame buffers after unreg. */
- 	kfree(sp->rbuff);
- 	kfree(sp->xbuff);
--
--	free_netdev(sp->dev);
- }
- 
- /* Perform I/O control on an active 6pack channel. */
--- 
-2.33.1
-
+net-next is still closed, you'll need to repost in a couple of days 
+so we can get this back into patchwork. Thanks!
