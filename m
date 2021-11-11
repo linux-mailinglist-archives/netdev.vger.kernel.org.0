@@ -2,212 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4730F44DD69
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 22:57:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 564F144DDD1
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 23:19:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229652AbhKKWAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 17:00:20 -0500
-Received: from mga04.intel.com ([192.55.52.120]:23621 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229520AbhKKWAT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Nov 2021 17:00:19 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10165"; a="231744048"
-X-IronPort-AV: E=Sophos;i="5.87,227,1631602800"; 
-   d="scan'208";a="231744048"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2021 13:57:29 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,227,1631602800"; 
-   d="scan'208";a="534551418"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga001.jf.intel.com with ESMTP; 11 Nov 2021 13:57:24 -0800
-Received: from alobakin-mobl.ger.corp.intel.com (llademan-MOBL2.ger.corp.intel.com [10.213.31.137])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1ABLvLZX026406;
-        Thu, 11 Nov 2021 21:57:22 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH bpf] samples: bpf: fix summary per-sec stats in xdp_sample_user
-Date:   Thu, 11 Nov 2021 22:57:03 +0100
-Message-Id: <20211111215703.690-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.33.1
+        id S233620AbhKKWWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 17:22:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50276 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233913AbhKKWWZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 17:22:25 -0500
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83FBCC061205
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 14:19:35 -0800 (PST)
+Received: by mail-ot1-x335.google.com with SMTP id r10-20020a056830080a00b0055c8fd2cebdso10989633ots.6
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 14:19:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=accEw/Egbd2gS5q8Kbzt6W1c0cUYIIqZRnaUHnz+byg=;
+        b=c3Oun6bPHKhZK/lhw7UJbZz2E2HQxe6REO+ifhldjtzuyM1XiDNthV5cbCwtf4bouA
+         TBkXRfDJ0N0iqzFe4hapdrX/5yffZa9FgyhdZuiGQSQcdUwOZJF2lbO2yt2bKKq/TavR
+         jHUN9wvz8JQmC3ZxGi+T2xiAMGSurLR78hAGQ1ECLHbdVmQ+oS2zmT5spRQQH3gUzzwx
+         HkD8m98sDAKqS94XdN/BwSOC7NPCAAnHEkyO1EAHNNAgPjO8Mq6a6Y3tjJuWStitEj+9
+         aauiEwt1jnFVO6W/rO5jxsKGRRL2CzXSCo2c4kP6uXq+MnVT+hp5rwuWD2+6Y8HQJkQM
+         Oh/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=accEw/Egbd2gS5q8Kbzt6W1c0cUYIIqZRnaUHnz+byg=;
+        b=pYHWLdkTdk1hkM0nk+nW8jMUUBOAfTe/gjkhBmbUCdfWLF7cnasdNc7Cjv0uI8BJPt
+         A5AepJ76HzDWKNa7aTncZ4I/g9SdL61SPL4RVkgk9t34mwOrcrAflxg4Ts6TvJq21dxD
+         oWR+V99wLzMKAOIStx2Jk7TlvXhIBbu3K/OIBLlgeHBPZSOEVuSmM9L/CxccNsq2rPfp
+         FHk83UElHIjfbVNiODYcCW/HW1Gbd/ybfIbap2J0OzJ/gm+ftYTwTHCaO8PM8DBmOeyZ
+         B+E6/+OUS1WhM8rT0+0N9sjibl0Ui9mW3aP+B+6yQB8HT8pKOHOcdLdaYDo/bPDwvBrP
+         37JQ==
+X-Gm-Message-State: AOAM531YyZH9U2SuaFo2ch5HsxIeYMv65wy+ASyEt9xAxbPmGFNZLMo/
+        tT6h8tLTbsFtuaUiMpYYsjg=
+X-Google-Smtp-Source: ABdhPJxiyhhIFrpHdZciFpvQXmGE3fA/du+WOTjQO9COBxAkbyclipekfRgK0bm9QRR1Lo8orUTS7g==
+X-Received: by 2002:a9d:24c5:: with SMTP id z63mr8467867ota.321.1636669174939;
+        Thu, 11 Nov 2021 14:19:34 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id r13sm758381oot.41.2021.11.11.14.19.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Nov 2021 14:19:34 -0800 (PST)
+Message-ID: <b90e874b-30a7-81bb-a94f-b6cebda87e99@gmail.com>
+Date:   Thu, 11 Nov 2021 15:19:33 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.3.0
+Subject: Re: [RFC PATCH net-next] rtnetlink: add RTNH_F_REJECT_MASK
+Content-Language: en-US
+To:     Alexander Mikhalitsyn <alexander@mihalicyn.com>,
+        Roopa Prabhu <roopa@nvidia.com>
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrei Vagin <avagin@gmail.com>,
+        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
+References: <20211111160240.739294-1-alexander.mikhalitsyn@virtuozzo.com>
+ <20211111160240.739294-2-alexander.mikhalitsyn@virtuozzo.com>
+ <1f4b9028-8dec-0b14-105a-3425898798c9@gmail.com>
+ <CAJqdLrqvNYm1YTA-dgGsrjsPG6efA8nsUCQLKmGXqoDM+dfpRQ@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <CAJqdLrqvNYm1YTA-dgGsrjsPG6efA8nsUCQLKmGXqoDM+dfpRQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sample_summary_print() uses accumulated period to calculate and
-display per-sec averages. This period gets incremented by sampling
-interval each time a new sample is formed, and thus equals to the
-number of samples collected multiplied by this interval.
-However, the totals are being calculated differently, they receive
-current sample statistics already divided by the interval gotten as
-a difference between sample timestamps for better precision -- in
-other words, they are being incremented by the per-sec values each
-sample.
-This leads to the excessive division of summary per-secs when
-interval != 1 sec. It is obvious pps couldn't become two times
-lower just from picking a different sampling interval value:
+[ cc roopa]
 
-$ samples/bpf/xdp_redirect_cpu -p xdp_prognum_n1_inverse_qnum -c all
-  -s -d 6 -i 1
-< snip >
-  Packets received    : 2,197,230,321
-  Average packets/s   : 22,887,816
-  Packets redirected  : 2,197,230,472
-  Average redir/s     : 22,887,817
-$ samples/bpf/xdp_redirect_cpu -p xdp_prognum_n1_inverse_qnum -c all
-  -s -d 6 -i 2
-< snip >
-  Packets received    : 159,566,498
-  Average packets/s   : 11,397,607
-  Packets redirected  : 159,566,995
-  Average redir/s     : 11,397,642
+On 11/11/21 12:23 PM, Alexander Mikhalitsyn wrote:
+> On Thu, Nov 11, 2021 at 10:13 PM David Ahern <dsahern@gmail.com> wrote:
+>>
+>> On 11/11/21 9:02 AM, Alexander Mikhalitsyn wrote:
+>>> diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+>>> index 5888492a5257..c15e591e5d25 100644
+>>> --- a/include/uapi/linux/rtnetlink.h
+>>> +++ b/include/uapi/linux/rtnetlink.h
+>>> @@ -417,6 +417,9 @@ struct rtnexthop {
+>>>  #define RTNH_COMPARE_MASK    (RTNH_F_DEAD | RTNH_F_LINKDOWN | \
+>>>                                RTNH_F_OFFLOAD | RTNH_F_TRAP)
+>>>
+>>> +/* these flags can't be set by the userspace */
+>>> +#define RTNH_F_REJECT_MASK   (RTNH_F_DEAD | RTNH_F_LINKDOWN)
+>>> +
+>>>  /* Macros to handle hexthops */
+>>
+>> Userspace can not set any of the flags in RTNH_COMPARE_MASK.
+> 
+> Hi David,
+> 
+> thanks! So, I have to prepare a patch which fixes current checks for rtnh_flags
+> against RTNH_COMPARE_MASK. So, there is no need to introduce a separate
+> RTNH_F_REJECT_MASK.
+> Am I right?
+> 
 
-This can be easily fixed by treating the divisor not as a period,
-but rather as a total number of samples, and thus incrementing it
-by 1 instead of interval. As a nice side effect, we can now remove
-so-named argument from a couple of functions. Let us also create
-an "alias" for sample_output::rx_cnt::pps named 'num' using a union
-since this field is used to store this number (period previously)
-as well, and the resulting counter-intuitive code might've been
-a reason for this bug.
+Added Roopa to double check if Cumulus relies on this for their switchd.
 
-Fixes: 156f886cf697 ("samples: bpf: Add basic infrastructure for XDP samples")
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
----
- samples/bpf/xdp_sample_user.c | 28 +++++++++++++++-------------
- 1 file changed, 15 insertions(+), 13 deletions(-)
-
-diff --git a/samples/bpf/xdp_sample_user.c b/samples/bpf/xdp_sample_user.c
-index b32d82178199..8740838e7767 100644
---- a/samples/bpf/xdp_sample_user.c
-+++ b/samples/bpf/xdp_sample_user.c
-@@ -120,7 +120,10 @@ struct sample_output {
- 		__u64 xmit;
- 	} totals;
- 	struct {
--		__u64 pps;
-+		union {
-+			__u64 pps;
-+			__u64 num;
-+		};
- 		__u64 drop;
- 		__u64 err;
- 	} rx_cnt;
-@@ -1322,7 +1325,7 @@ int sample_install_xdp(struct bpf_program *xdp_prog, int ifindex, bool generic,
- 
- static void sample_summary_print(void)
- {
--	double period = sample_out.rx_cnt.pps;
-+	double num = sample_out.rx_cnt.num;
- 
- 	if (sample_out.totals.rx) {
- 		double pkts = sample_out.totals.rx;
-@@ -1330,7 +1333,7 @@ static void sample_summary_print(void)
- 		print_always("  Packets received    : %'-10llu\n",
- 			     sample_out.totals.rx);
- 		print_always("  Average packets/s   : %'-10.0f\n",
--			     sample_round(pkts / period));
-+			     sample_round(pkts / num));
- 	}
- 	if (sample_out.totals.redir) {
- 		double pkts = sample_out.totals.redir;
-@@ -1338,7 +1341,7 @@ static void sample_summary_print(void)
- 		print_always("  Packets redirected  : %'-10llu\n",
- 			     sample_out.totals.redir);
- 		print_always("  Average redir/s     : %'-10.0f\n",
--			     sample_round(pkts / period));
-+			     sample_round(pkts / num));
- 	}
- 	if (sample_out.totals.drop)
- 		print_always("  Rx dropped          : %'-10llu\n",
-@@ -1355,7 +1358,7 @@ static void sample_summary_print(void)
- 		print_always("  Packets transmitted : %'-10llu\n",
- 			     sample_out.totals.xmit);
- 		print_always("  Average transmit/s  : %'-10.0f\n",
--			     sample_round(pkts / period));
-+			     sample_round(pkts / num));
- 	}
- }
- 
-@@ -1422,7 +1425,7 @@ static int sample_stats_collect(struct stats_record *rec)
- 	return 0;
- }
- 
--static void sample_summary_update(struct sample_output *out, int interval)
-+static void sample_summary_update(struct sample_output *out)
- {
- 	sample_out.totals.rx += out->totals.rx;
- 	sample_out.totals.redir += out->totals.redir;
-@@ -1430,12 +1433,11 @@ static void sample_summary_update(struct sample_output *out, int interval)
- 	sample_out.totals.drop_xmit += out->totals.drop_xmit;
- 	sample_out.totals.err += out->totals.err;
- 	sample_out.totals.xmit += out->totals.xmit;
--	sample_out.rx_cnt.pps += interval;
-+	sample_out.rx_cnt.num++;
- }
- 
- static void sample_stats_print(int mask, struct stats_record *cur,
--			       struct stats_record *prev, char *prog_name,
--			       int interval)
-+			       struct stats_record *prev, char *prog_name)
- {
- 	struct sample_output out = {};
- 
-@@ -1452,7 +1454,7 @@ static void sample_stats_print(int mask, struct stats_record *cur,
- 	else if (mask & SAMPLE_DEVMAP_XMIT_CNT_MULTI)
- 		stats_get_devmap_xmit_multi(cur, prev, 0, &out,
- 					    mask & SAMPLE_DEVMAP_XMIT_CNT);
--	sample_summary_update(&out, interval);
-+	sample_summary_update(&out);
- 
- 	stats_print(prog_name, mask, cur, prev, &out);
- }
-@@ -1495,7 +1497,7 @@ static void swap(struct stats_record **a, struct stats_record **b)
- }
- 
- static int sample_timer_cb(int timerfd, struct stats_record **rec,
--			   struct stats_record **prev, int interval)
-+			   struct stats_record **prev)
- {
- 	char line[64] = "Summary";
- 	int ret;
-@@ -1524,7 +1526,7 @@ static int sample_timer_cb(int timerfd, struct stats_record **rec,
- 		snprintf(line, sizeof(line), "%s->%s", f ?: "?", t ?: "?");
- 	}
- 
--	sample_stats_print(sample_mask, *rec, *prev, line, interval);
-+	sample_stats_print(sample_mask, *rec, *prev, line);
- 	return 0;
- }
- 
-@@ -1579,7 +1581,7 @@ int sample_run(int interval, void (*post_cb)(void *), void *ctx)
- 		if (pfd[0].revents & POLLIN)
- 			ret = sample_signal_cb();
- 		else if (pfd[1].revents & POLLIN)
--			ret = sample_timer_cb(timerfd, &rec, &prev, interval);
-+			ret = sample_timer_cb(timerfd, &rec, &prev);
- 
- 		if (ret)
- 			break;
--- 
-2.33.1
+If that answer is no, then there is no need for a new mask.
 
