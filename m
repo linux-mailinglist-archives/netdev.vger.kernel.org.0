@@ -2,82 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C95544D96A
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 16:47:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F2EA44D98D
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 16:50:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233128AbhKKPuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 10:50:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46192 "EHLO
+        id S234168AbhKKPxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 10:53:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232611AbhKKPuP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 10:50:15 -0500
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A9CDC061766
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 07:47:26 -0800 (PST)
-Received: by mail-yb1-xb41.google.com with SMTP id e136so16121301ybc.4
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 07:47:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=vIF0HCtULT8/Hj4oEOKhM3wVM2dbK4vAQWbMA06NHEs=;
-        b=ER8sTSSsx0E2uqJL/n7khMC/JtIW28f4oPddys0iTTMObVbvcg/1fXRD+LKkyC7Goy
-         tPLj/9NmA4W4nHEXSNqJeF2I3oEsNDKCGObylPp1mdx6KrtzXfRBVeV9d2z1EbVSbuns
-         WKtIFV7rIWv2pYw27gAWab7qe3b/QP19dOPb/UIkFiog83VfeCM1NsfeReal4181va3D
-         MX+fN8mva+c5lj/IOwUaZWG7iUTRxcPBs/bz2FLeP+N+3J6huwTDu69SpSiITwUhBUcA
-         WULEswWvpnFxGvF7HEe78SiqBy9kfQhhzvd6qBDcsT+bY0ExYP5EvBl31xO6gRXZJ1Qk
-         1CpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=vIF0HCtULT8/Hj4oEOKhM3wVM2dbK4vAQWbMA06NHEs=;
-        b=Ew+XZFlCixUEi8B82s5bYjGLD8/Siu8HtJSdMelND6SLqFYb6STaoelWLrN6DBvr2K
-         zLIhlytiO91oswSQA6i0K/bJddMtA0gjy7b5ateo8v+KugY8xi+iUfKy0MUm8pA2TX8f
-         5YqBERy4QOj4IsmmbIz7pIOQO1KHh7Bbm71rq73oax9C/pXkiq+/76IyMiKZViYUnNh4
-         BW1lDcdVBGWYHqragEesTJQfwK/+/eEO2G/WJQFfTE2DgT+ZDigFEPhH8lKf4E+Ec+EK
-         kDAO8tT/9cyKlcVOSY6n5okv/HfBwfwtbb49wE6eeoXh6xz2hnW9qLjX64tWA4yZ7Ddp
-         8DHg==
-X-Gm-Message-State: AOAM53076b+DULtOHZPRVZHAWfezXwiYXRMK/c67JXY2p4UyQjfHGuX6
-        v19ICGlpdi7rwGVPG1TXqlLJexfPsGQYpD3tngw=
-X-Google-Smtp-Source: ABdhPJwm7jIs3bG7xkhSo6zTvSrdm/CCjlP3nsjr8bY1eKz242g4u5aei3KpXWN70WIq4NWvKf8WQCrUHdiYsqfx2SI=
-X-Received: by 2002:a25:e016:: with SMTP id x22mr8975383ybg.534.1636645645767;
- Thu, 11 Nov 2021 07:47:25 -0800 (PST)
+        with ESMTP id S234036AbhKKPx2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 10:53:28 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBB35C061766
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 07:50:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=n/2dVMyFhk34vPhKNZV2XkZeZHz2jrUNDdH1q4DabZU=; b=IrZiahqSh6k/vYKan0gYVnRn+s
+        NRZTnEvlOdbnptYqMLBkwz5536gCqn8pUtbGP4JEMDkoKhy1Jn2v/4ITobdjq/o7fmKTh85sejVXr
+        lzzlV+X88hMyHkU3zwl8p5ZluVicPJ5nC2bvx2XpMkxa9Fl0oAkgPd8B/1c8fKwZe0EPdb6vXHVZT
+        Xp4qK44StlEVLX/R8UGtVpp65Dv796izL5EgGEYO9yYjJTwexp214U9CCtNjgvFVLYvLMLNuEIO12
+        06lYOeZs+T6V6WlFQG5zyyDPzmPSQwiJi9filFACGnq1N8CsQbao2X6XqJWRpu0DyWDn/jHSrJyuZ
+        Er1aMe8Q==;
+Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mlCLU-008Ieh-QU; Thu, 11 Nov 2021 15:50:36 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     netdev@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Min Li <min.li.xe@renesas.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH v2] ptp: ptp_clockmatrix: repair non-kernel-doc comment
+Date:   Thu, 11 Nov 2021 07:50:34 -0800
+Message-Id: <20211111155034.29153-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Sender: karbiruahmed60@gmail.com
-Received: by 2002:a05:7010:4e20:b0:1df:46fc:b50b with HTTP; Thu, 11 Nov 2021
- 07:47:25 -0800 (PST)
-From:   Sal Kavar <salkavar2@gmail.com>
-Date:   Thu, 11 Nov 2021 16:47:25 +0100
-X-Google-Sender-Auth: vV438dBW3KC24hdET0Rx8dm_724
-Message-ID: <CAOmUQf2NsKnZ8DpjuZR3UcJUUoS1x5hPT1oT9xXadtOh=RMkQA@mail.gmail.com>
-Subject: Yours Faithful,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I assume you and your family are in good health. I am the foreign
-operations Manager
+Do not use "/**" to begin a comment that is not in kernel-doc format.
 
-This being a wide world in which it can be difficult to make new
-acquaintances and because it is virtually impossible to know who is
-trustworthy and who can be believed, i have decided to repose
-confidence in you after much fasting and prayer. It is only because of
-this that I have decided to confide in you and to share with you this
-confidential business.
+Prevents this docs build warning:
 
-overdue and unclaimed sum of $15.5m, (Fifteen Million Five Hundred
-Thousand Dollars Only) when the account holder suddenly passed on, he
-left no beneficiary who would be entitled to the receipt of this fund.
-For this reason, I have found it expedient to transfer this fund to a
-trustworthy individual with capacity to act as foreign business
-partner.
+drivers/ptp/ptp_clockmatrix.c:1679: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+    * Maximum absolute value for write phase offset in picoseconds
 
-Thus i humbly request your assistance to claim this fund. Upon the
-transfer of this fund in your account, you will take 45% as your share
-from the total fund, 10% will be shared to Charity Organizations in
-both country and 45% will be for me.
+Then remove the kernel-doc-like function parameter descriptions
+since they don't add any useful info. (suggested by Jakub)
 
-Yours Faithful,
-Mr.Sal Kavar.
+Fixes: 794c3dffacc16 ("ptp: ptp_clockmatrix: Add support for FW 5.2 (8A34005)")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: Min Li <min.li.xe@renesas.com>
+Cc: Richard Cochran <richardcochran@gmail.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+---
+v2: remove useless function argument descriptions
+
+ drivers/ptp/ptp_clockmatrix.c |    5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+--- linux-next-20211110.orig/drivers/ptp/ptp_clockmatrix.c
++++ linux-next-20211110/drivers/ptp/ptp_clockmatrix.c
+@@ -1699,12 +1699,9 @@ static int initialize_dco_operating_mode
+ 
+ /* PTP Hardware Clock interface */
+ 
+-/**
++/*
+  * Maximum absolute value for write phase offset in picoseconds
+  *
+- * @channel:  channel
+- * @delta_ns: delta in nanoseconds
+- *
+  * Destination signed register is 32-bit register in resolution of 50ps
+  *
+  * 0x7fffffff * 50 =  2147483647 * 50 = 107374182350
