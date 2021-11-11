@@ -2,66 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 027FE44CF64
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 02:57:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B7FA44CF69
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 03:00:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233317AbhKKB74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 20:59:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233192AbhKKB7y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 20:59:54 -0500
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED66C061767
-        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 17:57:05 -0800 (PST)
-Received: by mail-io1-xd33.google.com with SMTP id k22so5067611iol.13
-        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 17:57:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=uL72NBIDCvdq2/a4fKAJXgm9khZY4a2px1crTHjKYJQ=;
-        b=ZlU5fr5msLuRIcaDRdq0yqRxOAINtPdNlBAK4lpU7U5ca942e+PkAoRdNZ0A/Svf4/
-         QUZyvKX5eVU4ekw/6UIDaq8pFFjagYR1X0BfIxIY/PYDI41ttKtOV/76yKrTiVRUtFIg
-         6/kBlU3IsKKkS3ibckGb8ja2fnE+rKWQX0TVBFm7Dqp4dOAArQNiDPvxZqvJZwvKmGd+
-         8/nINWhj4RXMZjVG49jVPrnGM2uFjmPrWM2+6HGKIckZ+kHtYw5Jp611CXwbTYDknEZm
-         Cj2PsH5D8Dgp2549GzW3Nl3qQLiWpJnzZ/sGL5MAzcmHG8bEUXQLpJYarChmiqGQ2VkO
-         IoNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=uL72NBIDCvdq2/a4fKAJXgm9khZY4a2px1crTHjKYJQ=;
-        b=KJC6v/1aBXhDh9XIHBTuDjGiEyyMeIYHBEP96UWvXU5NV9gl806tlQukYbeE0SSNhM
-         PwHFxRqQnECYfjWRv2aJWuB1ZXYuJMjT1bmGqZCQ4lW3cftB+1U9FiSboeJwpUhJfwlB
-         D2PBSnAiAz3USAQimUGIeF14gm8sH2SP5/e7rCe9vqUvYy7PoEqCujydcZgQCJmv1GNH
-         tmdoAVzGM3gRv0Trid5XLGfwKFhaxhpuE3oHOHXHTZYh/sv3JNHILw0wzUJJft855swW
-         OWXzofDJECclFnhV6WRccPD2cNxcJT4QrU/r6Ebgm6Uuw8Up+F05fHUOyq2ktycKrXB2
-         Ng+w==
-X-Gm-Message-State: AOAM531XiMsJuslVFmtno/WjJIsmF+Jh1UfiCU65SikZnjzk6r+iw/JA
-        mb/LvY8xxpE1/8vTsoIqR9izz0i99ktBPXWm5j4=
-X-Google-Smtp-Source: ABdhPJxQOLK9OoDfOlxXNeQnccms9fYwfi3TJY1AWGB4RfW0eaMhlHoTJjtmkunl+mDJ3FDzI7Zk0XOq+G1DYBtIbbk=
-X-Received: by 2002:a02:c78e:: with SMTP id n14mr2642034jao.40.1636595825310;
- Wed, 10 Nov 2021 17:57:05 -0800 (PST)
+        id S233210AbhKKCC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 21:02:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54528 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232723AbhKKCC4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Nov 2021 21:02:56 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id A934E61260;
+        Thu, 11 Nov 2021 02:00:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636596007;
+        bh=DN2pxsQyqaLVqqH7loumH+uqoFq2dQAvlu5pNXkpYvg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Rvz829o/Od/xd2d1SRfvnRjCOVlzcAtd5XG6ubFp1trZrT91IwA9URi3dAVA++yWL
+         8YiDHpO0xGg9709PiROzs7kk18rJ8OLIBSvSzRBOoIsZu2iPSd53LpKtd8pJqeyzp+
+         7JPk/+IIJH9rk4xOrqkVNXhaW2gcOKbwCpgKTHuGvvz26uOBXLnOHKHXHqnUIO3TAO
+         vyTV3f63PeYbMRuCKUO2A9GXu90f0NlWC+xdV70xfNsPpVs1MUWc/7fUnQYxnfgC44
+         52BSl6aTpMIdJ7mN4+fFLulQ8Dls4fO8EL+Ne66ZkSwwio81bIos7p98JgYFoEpSVF
+         ioYXofehjLSBQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9262A6008E;
+        Thu, 11 Nov 2021 02:00:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Received: by 2002:a6b:5f03:0:0:0:0:0 with HTTP; Wed, 10 Nov 2021 17:57:04
- -0800 (PST)
-Reply-To: mrsambamalick@gmail.com
-From:   MR MALICK <aiolarasr@gmail.com>
-Date:   Thu, 11 Nov 2021 02:57:04 +0100
-Message-ID: <CAKQXBZdMMV5+UmJ_Yw=K0aAW1t7tjisFOQ_kR3WHB6q0wFGHGA@mail.gmail.com>
-Subject: NOTIFICATION
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 net] net: fix premature exit from NAPI state polling in
+ napi_disable()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163659600759.26095.2844234203024787527.git-patchwork-notify@kernel.org>
+Date:   Thu, 11 Nov 2021 02:00:07 +0000
+References: <20211110195605.1304-1-alexandr.lobakin@intel.com>
+In-Reply-To: <20211110195605.1304-1-alexandr.lobakin@intel.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, jesse.brandeburg@intel.com,
+        maciej.fijalkowski@intel.com, michal.swiatkowski@intel.com,
+        xuanzhuo@linux.alibaba.com, atenart@kernel.org,
+        edumazet@google.com, weiwan@google.com, bjorn@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-LOTTO WINNING AWARD.
+Hello:
 
-Your email won 2.6 million dollars, Contact Barrister Marcel Cremer
-through his email here ( cremerrsolicitors@gmail.com) to claim your
-winning fund with your details as follows, your full name, your
-country, your home address and your phone number.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Regards,,
-Mr.  Malick Samba.
+On Wed, 10 Nov 2021 20:56:05 +0100 you wrote:
+> Commit 719c57197010 ("net: make napi_disable() symmetric with
+> enable") accidentally introduced a bug sometimes leading to a kernel
+> BUG when bringing an iface up/down under heavy traffic load.
+> 
+> Prior to this commit, napi_disable() was polling n->state until
+> none of (NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC) is set and then
+> always flip them. Now there's a possibility to get away with the
+> NAPIF_STATE_SCHE unset as 'continue' drops us to the cmpxchg()
+> call with an unitialized variable, rather than straight to
+> another round of the state check.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2,net] net: fix premature exit from NAPI state polling in napi_disable()
+    https://git.kernel.org/netdev/net/c/0315a075f134
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
