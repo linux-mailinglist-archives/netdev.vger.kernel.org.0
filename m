@@ -2,60 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 817DE44D7C2
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 15:02:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60D6144D7C8
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 15:04:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233548AbhKKOEs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 09:04:48 -0500
-Received: from spam.zju.edu.cn ([61.164.42.155]:34078 "EHLO zju.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233439AbhKKOEr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Nov 2021 09:04:47 -0500
-Received: by ajax-webmail-mail-app4 (Coremail) ; Thu, 11 Nov 2021 22:01:50
- +0800 (GMT+08:00)
-X-Originating-IP: [10.214.160.77]
-Date:   Thu, 11 Nov 2021 22:01:50 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   "Lin Ma" <linma@zju.edu.cn>
-To:     "Jakub Kicinski" <kuba@kernel.org>
+        id S233316AbhKKOHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 09:07:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51812 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232033AbhKKOH3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Nov 2021 09:07:29 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3B70E610CB;
+        Thu, 11 Nov 2021 14:04:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636639480;
+        bh=pgDoLydVad6OtF8Lu/bwZVoIn5pmTsMuCbI+UBIS9OY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IBnUGKRV5o3B9vk35+C9Hp8qApaRrLL3XyTMxaBYwgnAn/IfPB4Ayb2nVoQUFcgun
+         goe/puLV3MymANz3GdvXC9GhqS5TpD+1VyUbj8t7TcZ6xEF9KCLzJhlWe46OXZZ9YU
+         IJACx5eOW8KXdJV2SsqGAWRdOPKj/1RplD7btV8l4diZkGb4VRiFYFPyD5cjn4HNpr
+         qS3/YoSrmZchSfwtlFa2YRNjl2fyfeG7EcH5zRe9tEPj7FqAKpKvpY/7WgkZdDnGJE
+         VJIRIX/Xy8LqQ72JbD517wZxSCtBxnBIyF0YYzoZuRHWw6N3tEKZH31y5LT80h2czo
+         3MgLgw3uhAA7g==
+Date:   Thu, 11 Nov 2021 06:04:39 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Lin Ma <linma@zju.edu.cn>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, jirislaby@kernel.org,
         gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org
-Subject: Re: Re: [PATCH v1 2/2] hamradio: defer 6pack kfree after
- unregister_netdev
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2021 www.mailtech.cn zju.edu.cn
-In-Reply-To: <20211111055021.77186242@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20211108103721.30522-1-linma@zju.edu.cn>
- <20211108103759.30541-1-linma@zju.edu.cn>
- <20211110180525.20422f66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20211110180612.2f2eb760@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <724aae55.1863af.17d0cc249ab.Coremail.linma@zju.edu.cn>
- <20211111055021.77186242@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: [PATCH v0] hamradio: delete unnecessary free_netdev()
+Message-ID: <20211111060439.7d34f189@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211111140007.7244-1-linma@zju.edu.cn>
+References: <20211111140007.7244-1-linma@zju.edu.cn>
 MIME-Version: 1.0
-Message-ID: <2384cfdd.188d2b.17d0f4e0474.Coremail.linma@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cS_KCgD3fK1OIo1h5lzlBA--.65141W
-X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/1tbiAwUCElNG3ElR6gAbs2
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VW5Jw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgdGhlcmUsCgo+IAo+IE9uIFRodSwgMTEgTm92IDIwMjEgMTA6MDk6NTkgKzA4MDAgKEdNVCsw
-ODowMCkgTGluIE1hIHdyb3RlOgo+ID4gPiBMb29rcyBsaWtlIHRoaXMgZ28gYXBwbGllZCBhbHJl
-YWR5LCBwbGVhc2Ugc2VuZCBhIGZvbGxvdyB1cCBmaXguICAKPiA+IAo+ID4gT29vb3BzLCB0aGFu
-a3MgZm9yIHRoZSByZW1pbmQuIFhECj4gPiAKPiA+IEkganVzdCBmb3VuZCB0aGF0IHRoZSBta2ls
-bCBhZGRzIHRoZSBmcmVlX25ldGRldiBhZnRlciB0aGUKPiA+IHVucmVnaXN0ZXJfbmV0ZGV2IHNv
-IEkgZGlkIGl0IHRvby4gTm8gaWRlYSBhYm91dCB0aGlzIGF1dG9tYXRpYwo+ID4gY2xlYW51cC4K
-PiA+IAo+ID4gU2hvdWxkIEkgc2VuZCB0aGUgZml4IGluIHRoaXMgdGhyZWFkIG9yIG9wZW4gYSBu
-ZXcgb25lPwo+IAo+IE5ldyB0aHJlYWQgaXMgYmV0dGVyIGZvciBtZS4KClRoZSBmaXggZm9yIHRo
-ZSBlcnJvbmVvdXMgcGF0Y2ggaXMgc2VudCwgaW5mb3JtYXRpb24gaXMgbGlrZSBiZWxvdwoKU3Vi
-amVjdDogW1BBVENIIHYwXSBoYW1yYWRpbzogZGVsZXRlIHVubmVjZXNzYXJ5IGZyZWVfbmV0ZGV2
-KCkKRGF0ZTogVGh1LCAxMSBOb3YgMjAyMSAyMjowMDowNyArMDgwMApNZXNzYWdlLUlkOiA8MjAy
-MTExMTExNDAwMDcuNzI0NC0xLWxpbm1hQHpqdS5lZHUuY24+CgpTb3JyeSBhYm91dCB0aGlzIGRp
-c3R1cmJpbmcgOigKCkJlc3QgUmVnYXJkcwpMaW4=
+On Thu, 11 Nov 2021 22:00:07 +0800 Lin Ma wrote:
+> The former patch "defer 6pack kfree after unregister_netdev" adds
+> free_netdev() function in sixpack_close(), which is a bad copy from the
+> similar code in mkiss_close(). However, this free is unnecessary as the
+> flag needs_free_netdev is set to true in sp_setup(), hence the
+> unregister_netdev() will free the netdev automatically.
+> 
+> Signed-off-by: Lin Ma <linma@zju.edu.cn>
+> ---
+>  drivers/net/hamradio/6pack.c | 2 --
+>  1 file changed, 2 deletions(-)
+> 
+> diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
+> index bfdf89e54752..180c8f08169b 100644
+> --- a/drivers/net/hamradio/6pack.c
+> +++ b/drivers/net/hamradio/6pack.c
+> @@ -677,8 +677,6 @@ static void sixpack_close(struct tty_struct *tty)
+>  	/* Free all 6pack frame buffers after unreg. */
+>  	kfree(sp->rbuff);
+>  	kfree(sp->xbuff);
+> -
+> -	free_netdev(sp->dev);
+
+sp is netdev_priv() tho, so this is now a UAF. I'd go for removing the
+needs_free_netdev = true instead.
+
+>  }
+>  
+>  /* Perform I/O control on an active 6pack channel. */
+
