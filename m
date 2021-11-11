@@ -2,133 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1353944CF72
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 03:04:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7128E44CF76
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 03:05:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233409AbhKKCH1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 21:07:27 -0500
-Received: from mga06.intel.com ([134.134.136.31]:57468 "EHLO mga06.intel.com"
+        id S233621AbhKKCIP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 21:08:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55064 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233156AbhKKCH1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Nov 2021 21:07:27 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10164"; a="293657960"
-X-IronPort-AV: E=Sophos;i="5.87,225,1631602800"; 
-   d="scan'208";a="293657960"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2021 18:04:39 -0800
-X-IronPort-AV: E=Sophos;i="5.87,225,1631602800"; 
-   d="scan'208";a="470622106"
-Received: from wson-mobl.amr.corp.intel.com (HELO vcostago-mobl3) ([10.209.125.254])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2021 18:04:38 -0800
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
-Subject: Re: [PATCH net v2] bpf: Fix build when CONFIG_BPF_SYSCALL is disabled
-In-Reply-To: <20211111001359.3v2yjha5nxkdtoju@apollo.localdomain>
-References: <20211110205418.332403-1-vinicius.gomes@intel.com>
- <20211110212553.e2xnltq3dqduhjnj@apollo.localdomain>
- <CAADnVQKqjLM1P7X+iTfnH-QFw5=z5L_w8MLsWtcNWbh5QR7VVg@mail.gmail.com>
- <878rxvbmcm.fsf@intel.com>
- <20211111001359.3v2yjha5nxkdtoju@apollo.localdomain>
-Date:   Wed, 10 Nov 2021 18:04:38 -0800
-Message-ID: <87v90za1mx.fsf@intel.com>
+        id S233589AbhKKCIP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Nov 2021 21:08:15 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 801B4601FF;
+        Thu, 11 Nov 2021 02:05:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636596326;
+        bh=Euo8pJf5r2nQ1RUa0eONcm78FdllQfuJ8l5c65xmtH4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rSe5xIiRrvjz1iQWmSsWv1ycrJa3etMlHvpyMvXQuYE5Nfp1bd9noIKmfQkM+1ruQ
+         mblGQfR2dHo65Yq1ZzF7CQwuOwST7rEKS53/bXvJ02llTY7N3x4Svv6jDrbTNn4iR/
+         21KpLTcSRTcZtfUzqeaw4PLtCyc2bC0VVETLHKtVYjLtIB9tBveR1LDslXBZPxQKnw
+         c95z3imdL9zSTf/Q5Y74kHw2eGAco/wwLjBWMNwl+F68B+EGgUc+XxJ7pTjii3hgVW
+         Hz3N8NCIhBRmRfuIq5sMlPILLQX/jyDw5DU8flDPfmAYDcu7VAb8yIe3SsLNttC472
+         XMqWy3WNJs0qQ==
+Date:   Wed, 10 Nov 2021 18:05:25 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Lin Ma <linma@zju.edu.cn>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jirislaby@kernel.org,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 2/2] hamradio: defer 6pack kfree after
+ unregister_netdev
+Message-ID: <20211110180525.20422f66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211108103759.30541-1-linma@zju.edu.cn>
+References: <20211108103721.30522-1-linma@zju.edu.cn>
+        <20211108103759.30541-1-linma@zju.edu.cn>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kartikeya,
+On Mon,  8 Nov 2021 18:37:59 +0800 Lin Ma wrote:
+> There is a possible race condition (use-after-free) like below
+> 
+>  (USE)                       |  (FREE)
+>   dev_queue_xmit             |
+>    __dev_queue_xmit          |
+>     __dev_xmit_skb           |
+>      sch_direct_xmit         | ...
+>       xmit_one               |
+>        netdev_start_xmit     | tty_ldisc_kill
+>         __netdev_start_xmit  |  6pack_close
+>          sp_xmit             |   kfree
+>           sp_encaps          |
+>                              |
+> 
+> According to the patch "defer ax25 kfree after unregister_netdev", this
 
-Kumar Kartikeya Dwivedi <memxor@gmail.com> writes:
+This is the previous patch of the series? Maybe call it "previous
+patch"?
 
-> On Thu, Nov 11, 2021 at 05:21:53AM IST, Vinicius Costa Gomes wrote:
->> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->>
->> >> Thanks for the fix.
->> >>
->> >> But instead of moving this to core.c, you can probably make the btf.h
->> >> declaration conditional on CONFIG_BPF_SYSCALL, since this is not useful in
->> >> isolation (only used by verifier for module kfunc support). For the case of
->> >> kfunc_btf_id_list variables, just define it as an empty struct and static
->> >> variables, since the definition is still inside btf.c. So it becomes a noop for
->> >> !CONFIG_BPF_SYSCALL.
->> >>
->> >> I am also not sure whether BTF is useful without BPF support, but maybe I'm
->> >> missing some usecase.
->> >
->> > Unlikely. I would just disallow such config instead of sprinkling
->> > the code with ifdefs.
->>
->> Is something like this what you have in mind?
->>
->> diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
->> index 6fdbf9613aec..eae860c86e26 100644
->> --- a/lib/Kconfig.debug
->> +++ b/lib/Kconfig.debug
->> @@ -316,6 +316,7 @@ config DEBUG_INFO_BTF
->>  	bool "Generate BTF typeinfo"
->>  	depends on !DEBUG_INFO_SPLIT && !DEBUG_INFO_REDUCED
->>  	depends on !GCC_PLUGIN_RANDSTRUCT || COMPILE_TEST
->> +	depends on BPF_SYSCALL
->>  	help
->>  	  Generate deduplicated BTF type information from DWARF debug info.
->>  	  Turning this on expects presence of pahole tool, which will convert
->>
->>
->
-> BTW, you will need a little more than that, I suspect the compiler optimizes out
-> the register/unregister call so we don't see a build failure, but adding a side
-> effect gives me errors, so something like this should resolve the problem (since
-> kfunc_btf_id_list variable definition is behind CONFIG_BPF_SYSCALL).
->
-> diff --git a/include/linux/btf.h b/include/linux/btf.h
-> index 203eef993d76..e9881ef9e9aa 100644
-> --- a/include/linux/btf.h
-> +++ b/include/linux/btf.h
-> @@ -254,6 +254,8 @@ void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
->                                  struct kfunc_btf_id_set *s);
->  bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist, u32 kfunc_id,
->                               struct module *owner);
-> +extern struct kfunc_btf_id_list bpf_tcp_ca_kfunc_list;
-> +extern struct kfunc_btf_id_list prog_test_kfunc_list;
->  #else
->  static inline void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
->                                              struct kfunc_btf_id_set *s)
-> @@ -268,13 +270,13 @@ static inline bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist,
->  {
->         return false;
->  }
-> +struct kfunc_btf_id_list {};
-> +static struct kfunc_btf_id_list bpf_tcp_ca_kfunc_list __maybe_unused;
-> +static struct kfunc_btf_id_list prog_test_kfunc_list __maybe_unused;
+> patch reorder the kfree after the unregister_netdev to avoid the possible
+> UAF as the unregister_netdev() is well synchronized and won't return if
+> there is a running routine.
+> 
+> Signed-off-by: Lin Ma <linma@zju.edu.cn>
+
+> diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
+> index 49f10053a794..bfdf89e54752 100644
+> --- a/drivers/net/hamradio/6pack.c
+> +++ b/drivers/net/hamradio/6pack.c
+> @@ -672,11 +672,13 @@ static void sixpack_close(struct tty_struct *tty)
+>  	del_timer_sync(&sp->tx_t);
+>  	del_timer_sync(&sp->resync_t);
+>  
+> -	/* Free all 6pack frame buffers. */
+> +	unregister_netdev(sp->dev);
 > +
->  #endif
->
->  #define DEFINE_KFUNC_BTF_ID_SET(set, name)                                     \
->         struct kfunc_btf_id_set name = { LIST_HEAD_INIT(name.list), (set),     \
->                                          THIS_MODULE }
-> -
-> -extern struct kfunc_btf_id_list bpf_tcp_ca_kfunc_list;
-> -extern struct kfunc_btf_id_list prog_test_kfunc_list;
-> -
->  #endif
->
+> +	/* Free all 6pack frame buffers after unreg. */
+>  	kfree(sp->rbuff);
+>  	kfree(sp->xbuff);
+>  
+> -	unregister_netdev(sp->dev);
+> +	free_netdev(sp->dev);
 
-I could not reproduce the build failure here even when adding some side
-effects, but I didn't try very hard.
+You should mention in the commit message why you think it's safe to add
+free_netdev() which wasn't here before...
 
-As you are more familiar with the code, I would be glad if you could
-take it from here and propose a patch.
+This driver seems to be setting:
 
+	dev->needs_free_netdev	= true;
 
-Cheers,
--- 
-Vinicius
+so unregister_netdev() will free the netdev automatically.
+
+That said I don't see a reason why this driver needs the automatic
+cleanup.
+
+You can either remove that setting and then you can call free_netdev()
+like you do, or you need to move the cleanup to dev->priv_destructor.
+
+>  }
+>  
+>  /* Perform I/O control on an active 6pack channel. */
+
