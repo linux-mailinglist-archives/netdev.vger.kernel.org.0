@@ -2,104 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B9E144D286
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 08:33:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3258A44D2B5
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 08:50:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231528AbhKKHgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 02:36:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48082 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231185AbhKKHgk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Nov 2021 02:36:40 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 778676135E;
-        Thu, 11 Nov 2021 07:33:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636616031;
-        bh=QG6rxubhlm+xVWz1ucpUG/Vc4hQUbjbEez9Eq4wVz+c=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=rAJA748qder949q4fQEF1ASvgfTXaQsG4rSbAImH+iTBP7x/33YT0Z8z5p5pnPmP3
-         pZf4Ce+yogY/myzUWykDANvs/U5RkJrrg/gUijyyLOTzC27WDJULu4dKRSaZYic7JT
-         eVVHqg9JSw4z5CksrDPGtYCWCTh/91R3mpKCnGjUdbuImj1/0aStrwKd/TSC3NjAQG
-         dYnoqOHCK4lFqyIaOCG8GQOo2AwroMOhJ7SBT5OKR5LMJBbw5Vi809pzyC9C96Eed3
-         RshPkwrZgpQKcHIqSDtEK6to0DuFhb+BUQkgGlAMPVWSCFDxcaar0gGziHv/q8rSPD
-         k6rSfFnu5VwmQ==
-Received: by mail-wm1-f54.google.com with SMTP id p3-20020a05600c1d8300b003334fab53afso3625416wms.3;
-        Wed, 10 Nov 2021 23:33:51 -0800 (PST)
-X-Gm-Message-State: AOAM531MUYgfSWF5TtVr6ttnljEKcdMqfwmTRdITh8Hsvi9hKtQW35yv
-        JItkvUAl14z6uQtNFh/0IT5lqtl1nUmFstLZN5c=
-X-Google-Smtp-Source: ABdhPJxzGVNkezxnW3f6WHwFaHhv8pgqXtCVHYqsKbUj8e9LsPH9kOnfqlk8UGINyj9UOCnuo5tJa46lRLnvIl3LZVM=
-X-Received: by 2002:a05:600c:2107:: with SMTP id u7mr23449078wml.82.1636616029983;
- Wed, 10 Nov 2021 23:33:49 -0800 (PST)
-MIME-Version: 1.0
-References: <20211104133735.1223989-1-arnd@kernel.org> <CAKwvOd=vrUe7xWohkPZkfui2BM-uP2Q79v02NzTJs9XJJ1CTjw@mail.gmail.com>
-In-Reply-To: <CAKwvOd=vrUe7xWohkPZkfui2BM-uP2Q79v02NzTJs9XJJ1CTjw@mail.gmail.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Thu, 11 Nov 2021 08:33:34 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a1eWa8p58qAHS8hBee0p_-WOxZrtuLQ3ncARpyzBnsWiw@mail.gmail.com>
-Message-ID: <CAK8P3a1eWa8p58qAHS8hBee0p_-WOxZrtuLQ3ncARpyzBnsWiw@mail.gmail.com>
-Subject: Re: [PATCH] iwlwifi: pcie: fix constant-conversion warning
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Yaara Baruch <yaara.baruch@intel.com>,
-        Matti Gottlieb <matti.gottlieb@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        llvm@lists.linux.dev
+        id S231723AbhKKHxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 02:53:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50610 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229706AbhKKHxd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 02:53:33 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F80EC061766;
+        Wed, 10 Nov 2021 23:50:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=4HCVFFk19upOjTLWNUM/OfRNFSnFhC8rZPL5tgGbIYE=;
+        t=1636617044; x=1637826644; b=lX02yLfzgZEG3RvUVNmrUq3brvZPz/Sddu9O3r/KE3wP593
+        k6RPCXWohDWxiCt0nTb02/eymF+eJfJ4hAIIBMqv2AA5YSDfzEuQ7nkApgU4F2goas2IQAAr66Kgz
+        o84YXX9RiXgMMbO11adU+9wyIU2sT1IwkpG0hu/SSPu3HA02DCderbhB0tG/3Red3zQdn6juLqT3A
+        Ct13Ot1jsvA4bjaHELuB/FSMT/lTurqMUx+PwUvPNULLm5xhyLQHw4lRLIaSsrxXYZq4v0FcCbjHQ
+        RRLdBjB0dagHzQd14N+x6l80rT9DajWuLaV4GKgYoRd64x0xL/H7xA5NlegRL4NA==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.95)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1ml4qx-00Dh6U-8K;
+        Thu, 11 Nov 2021 08:50:35 +0100
+Message-ID: <e6bfbffa089c711fa3ea21f5f8ab852aaa4d9c00.camel@sipsolutions.net>
+Subject: Re: [syzbot] WARNING in __dev_change_net_namespace
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     syzbot <syzbot+5434727aa485c3203fed@syzkaller.appspotmail.com>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "avagin@gmail.com" <avagin@gmail.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "cong.wang@bytedance.com" <cong.wang@bytedance.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "hawk@kernel.org" <hawk@kernel.org>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
+        "yhs@fb.com" <yhs@fb.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Date:   Thu, 11 Nov 2021 08:50:33 +0100
+In-Reply-To: <0000000000008a7c9605d07da846@google.com>
+References: <0000000000008a7c9605d07da846@google.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 10, 2021 at 10:38 PM Nick Desaulniers
-<ndesaulniers@google.com> wrote:
->
-> On Thu, Nov 4, 2021 at 6:37 AM Arnd Bergmann <arnd@kernel.org> wrote:
-> >
-> > From: Arnd Bergmann <arnd@arndb.de>
-> >
-> > clang points out a potential issue with integer overflow when
-> > the iwl_dev_info_table[] array is empty:
-> >
-> > drivers/net/wireless/intel/iwlwifi/pcie/drv.c:1344:42: error: implicit conversion from 'unsigned long' to 'int' changes value from 18446744073709551615 to -1 [-Werror,-Wconstant-conversion]
-> >         for (i = ARRAY_SIZE(iwl_dev_info_table) - 1; i >= 0; i--) {
-> >                ~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-> >
-> > This is still harmless, as the loop correctly terminates, but adding
-> > an (int) cast makes that clearer to the compiler.
-> >
-> > Fixes: 3f7320428fa4 ("iwlwifi: pcie: simplify iwl_pci_find_dev_info()")
-> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> > ---
-> >  drivers/net/wireless/intel/iwlwifi/pcie/drv.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-> > index c574f041f096..81e8f2fc4982 100644
-> > --- a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-> > +++ b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-> > @@ -1341,7 +1341,7 @@ iwl_pci_find_dev_info(u16 device, u16 subsystem_device,
-> >  {
-> >         int i;
-> >
-> > -       for (i = ARRAY_SIZE(iwl_dev_info_table) - 1; i >= 0; i--) {
-> > +       for (i = (int)ARRAY_SIZE(iwl_dev_info_table) - 1; i >= 0; i--) {
->
-> Perhaps `i` could be a `size_t` instead of an `int`?
->
-> size_t i = ARRAY_SIZE(iwl_dev_info_table);
-> while (i--) {
->   ...
+On Thu, 2021-11-11 at 06:43 +0000, syzbot wrote:
+> 
+> console output: https://syzkaller.appspot.com/x/log.txt?x=15b45fb6b00000
 
-I imagine 'i' is idiomatically 'int' in inner iterations.
+So we see that fault injection is triggering a memory allocation failure
+deep within the device_rename():
 
-I've sent a different fix now.
+int __dev_change_net_namespace(struct net_device *dev, struct net *net,
+                               const char *pat, int new_ifindex)
+{
+...
+        /* Fixup kobjects */
+        err = device_rename(&dev->dev, dev->name);
+        WARN_ON(err);
 
-        Arnd
+
+So we hit that WARN_ON().
+
+I'm not really sure what to do about that though. Feels like we should
+be able to cope with failures here, but clearly we don't, and it seems
+like it would also be tricky to do after all the work already done at
+this point.
+
+Perhaps device_rename() could grow an API to preallocate all the
+memories, but that would also be fairly involved, I imagine?
+
+johannes
+
