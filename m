@@ -2,169 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CCFC44D8D2
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 16:02:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66CD344D8E6
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 16:09:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233735AbhKKPFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 10:05:21 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:55686 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233394AbhKKPFU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 10:05:20 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id CECF01FD40;
-        Thu, 11 Nov 2021 15:02:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1636642950; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I0IS9eHAFjRbFhRVgmy1zwTE8qh3rhYd1ikPaMLm9/o=;
-        b=0XK4wzAIhjQJeIlvW/qyZnVjyx6c/uosaQxI8SBFgQ8Q/3nVa4h6aMxzcKLcueX78zaPkZ
-        sgP81p+Wnq8DTHFYZgHcCl9BIGrm4li+YZcv6F7VVlThQTh2psuxauB6TfO1KjrJxlZd19
-        7156aXVpu8M6PJgKvb4yVt5nPhCsR2E=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1636642950;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I0IS9eHAFjRbFhRVgmy1zwTE8qh3rhYd1ikPaMLm9/o=;
-        b=I8toBzgm8ND8LYB2vlNRMR2O4Cm/YcjT+o/J0JJrsHgo6KPToMffKVmcICAebMatOSyw1T
-        JaFa+9lR9XC/wmCg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0505213DBC;
-        Thu, 11 Nov 2021 15:02:29 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id wXJ2OYUwjWHhcQAAMHmgww
-        (envelope-from <dkirjanov@suse.de>); Thu, 11 Nov 2021 15:02:29 +0000
-Subject: Re: [PATCH] net: stmmac: socfpga: add runtime suspend/resume callback
- for stratix10 platform
-To:     "Li, Meng" <Meng.Li@windriver.com>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
-        "joabreu@synopsys.com" <joabreu@synopsys.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20211111135630.24996-1-Meng.Li@windriver.com>
- <499952a2-c919-109d-4f0a-fb4db4ead604@suse.de>
- <PH0PR11MB5191582745F77F7D876001ECF1949@PH0PR11MB5191.namprd11.prod.outlook.com>
-From:   Denis Kirjanov <dkirjanov@suse.de>
-Message-ID: <788fa547-49c9-458b-8427-afddcee412a6@suse.de>
-Date:   Thu, 11 Nov 2021 18:02:29 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S233715AbhKKPMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 10:12:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37418 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233899AbhKKPMT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 10:12:19 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC79C0613F5;
+        Thu, 11 Nov 2021 07:09:30 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id u17so5962961plg.9;
+        Thu, 11 Nov 2021 07:09:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wARBVdjy78Ki5zgSlrRbIXBHuiHmJIv2mEbO4npOMh0=;
+        b=ESW0416vE10IDi125y9XoRl8Q1AILrQVd33mETZV5Rp7APUmtHFWalFB9XmMIPZN+3
+         H7sxBwNnU3vSS53JCMNAsPa8MeF0mEmgnmaiFZDLAplh/xluaLxZnnpngGaP6/zg+zK2
+         qszaWo5p7/0ga2YmPsY3ogeYDMfuPYPBDC8IQ0dqWJJLMJu9WWAkmUl9BdFEJxsj5Jn/
+         5UUUNNwiROjpCDBwuOJgeKEW8iQr1kSGcDmtyY5LphrV5EfYwIjkejfI3f6qVkLsevKa
+         6yItBNiqPhoxY8K8DRATsfs0NJZ55lvQ+eFcH1HOdvK2CddkZEurrrEYnwPxeFZ20SY6
+         vf5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wARBVdjy78Ki5zgSlrRbIXBHuiHmJIv2mEbO4npOMh0=;
+        b=2x+iYEp9lQYl3N+fw+sTFz7d8kVbPtfdKNuDTVVf6fjiQIxNN2165rM9PO5Ys603gB
+         T3CUz8+HznbrmF6WZJPHb7Ue5UHTjJJOWRnX7er7kKAzUYk/0rb63ogpt8OmfbJ8VuS4
+         7T2qrRrT4BvrfOBlr5NlAQx9UPnx5RY0j6VR9QzTwQGLTKVuizllkbiHc8W+FOx61Kbj
+         cU7yADuwgi5E5C/rr3dFcdlOdb8rdxmd/mDIPnhK4GnPiW3ji2xfmk2UNWF3tP4KS/Y/
+         AxOQypG1GvMuAb+6VpAsEIwHh5E9DQSNAl1Fo9N7cobNBg5PTji6somqZhARHe66TXRV
+         7SPg==
+X-Gm-Message-State: AOAM532TbmHSqSlt6mDPfMjR70mQIPXzaXX8Xf1lJJ9SEUjiNqCKcc9b
+        V9NZQlWI/vHnvl9xDyP+gJQ=
+X-Google-Smtp-Source: ABdhPJwKoSnTWzEbQzrzy0Yv/LSkNWw5AzN47+w3Ent+iNKJznVHyGcAXEYEZ0RPRn0Qz6HXXpxqIg==
+X-Received: by 2002:a17:90b:4a0f:: with SMTP id kk15mr8761363pjb.223.1636643370300;
+        Thu, 11 Nov 2021 07:09:30 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id h12sm3675599pfv.117.2021.11.11.07.09.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Nov 2021 07:09:29 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: luo.penghao@zte.com.cn
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luo penghao <luo.penghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] ipv6: Remove duplicate statements
+Date:   Thu, 11 Nov 2021 15:09:24 +0000
+Message-Id: <20211111150924.2576-1-luo.penghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <PH0PR11MB5191582745F77F7D876001ECF1949@PH0PR11MB5191.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: ru
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: luo penghao <luo.penghao@zte.com.cn>
+
+This statement is repeated with the initialization statement
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: luo penghao <luo.penghao@zte.com.cn>
+---
+ net/ipv6/exthdrs.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
+index 3a871a0..e7e955d 100644
+--- a/net/ipv6/exthdrs.c
++++ b/net/ipv6/exthdrs.c
+@@ -686,7 +686,6 @@ static int ipv6_rthdr_rcv(struct sk_buff *skb)
+ 	struct net *net = dev_net(skb->dev);
+ 	int accept_source_route = net->ipv6.devconf_all->accept_source_route;
+ 
+-	idev = __in6_dev_get(skb->dev);
+ 	if (idev && accept_source_route > idev->cnf.accept_source_route)
+ 		accept_source_route = idev->cnf.accept_source_route;
+ 
+-- 
+2.15.2
 
 
-11/11/21 5:16 PM, Li, Meng пишет:
-> 
-> 
->> -----Original Message-----
->> From: Denis Kirjanov <dkirjanov@suse.de>
->> Sent: Thursday, November 11, 2021 10:02 PM
->> To: Li, Meng <Meng.Li@windriver.com>; peppe.cavallaro@st.com;
->> alexandre.torgue@foss.st.com; joabreu@synopsys.com;
->> davem@davemloft.net; kuba@kernel.org; mcoquelin.stm32@gmail.com
->> Cc: netdev@vger.kernel.org; linux-stm32@st-md-mailman.stormreply.com;
->> linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org
->> Subject: Re: [PATCH] net: stmmac: socfpga: add runtime suspend/resume
->> callback for stratix10 platform
->>
->> [Please note: This e-mail is from an EXTERNAL e-mail address]
->>
->> 11/11/21 4:56 PM, Meng Li пишет:
->>> From: Meng Li <meng.li@windriver.com>
->>>
->>> According to upstream commit 5ec55823438e("net: stmmac:
->>> add clocks management for gmac driver "), it improve clocks management
->>> for stmmac driver. So, it is necessary to implement the runtime
->>> callback in dwmac-socfpga driver because it doesn’t use the common
->>> stmmac_pltfr_pm_ops instance. Otherwise, clocks are not disabled when
->>> system enters suspend status.
->>
->> Please add Fixes tag
-> 
-> Thanks for suggest.
-> Yes! this patch is used to fix an clock operation issue in dwmac-socfpga driver,
-> But I am not sure which Fixing commit ID I should use.
-> Because 5ec55823438e breaks the original clock operation of dwmac-socfpga driver, but this commit 5ec55823438e is not a bug.
-> Moreover, if without 5ec55823438e dwmac-socfpga driver also works fine.
-Yes I see. I also checked the commit 5ec55823438e and it logically 
-relates to your change
-> 
-> How about your suggest?
-> 
-> Thanks,
-> Limeng
-> 
->>>
->>> Signed-off-by: Meng Li <Meng.Li@windriver.com>
->>> ---
->>>    .../ethernet/stmicro/stmmac/dwmac-socfpga.c   | 24
->> +++++++++++++++++--
->>>    1 file changed, 22 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
->>> b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
->>> index 85208128f135..93abde467de4 100644
->>> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
->>> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
->>> @@ -485,8 +485,28 @@ static int socfpga_dwmac_resume(struct device
->> *dev)
->>>    }
->>>    #endif /* CONFIG_PM_SLEEP */
->>>
->>> -static SIMPLE_DEV_PM_OPS(socfpga_dwmac_pm_ops, stmmac_suspend,
->>> -                                            socfpga_dwmac_resume);
->>> +static int __maybe_unused socfpga_dwmac_runtime_suspend(struct
->> device
->>> +*dev) {
->>> +     struct net_device *ndev = dev_get_drvdata(dev);
->>> +     struct stmmac_priv *priv = netdev_priv(ndev);
->>> +
->>> +     stmmac_bus_clks_config(priv, false);
->> check the return value?
->>> +
->>> +     return 0;
->>> +}
->>> +
->>> +static int __maybe_unused socfpga_dwmac_runtime_resume(struct
->> device
->>> +*dev) {
->>> +     struct net_device *ndev = dev_get_drvdata(dev);
->>> +     struct stmmac_priv *priv = netdev_priv(ndev);
->>> +
->>> +     return stmmac_bus_clks_config(priv, true); }
->>> +
->>> +const struct dev_pm_ops socfpga_dwmac_pm_ops = {
->>> +     SET_SYSTEM_SLEEP_PM_OPS(stmmac_suspend,
->> socfpga_dwmac_resume)
->>> +     SET_RUNTIME_PM_OPS(socfpga_dwmac_runtime_suspend,
->>> +socfpga_dwmac_runtime_resume, NULL) };
->>>
->>>    static const struct socfpga_dwmac_ops socfpga_gen5_ops = {
->>>        .set_phy_mode = socfpga_gen5_set_phy_mode,
->>>
