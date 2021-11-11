@@ -2,99 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B670744DB8E
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 19:23:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0495244DBAA
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 19:39:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234389AbhKKS01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 13:26:27 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:57028 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232930AbhKKS01 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Nov 2021 13:26:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Vn/FEUnwBAyr2EGt/+6N9yAjiUxR9PT2i5SKEAIC2/Q=; b=HZal7urJUrZK46lzxb474watrg
-        fvc1bD30yeoEbxD9VK1Y+aKyif1zrvhP9cikm0U4u2eAeD4lzm7nEEZ04fsOicxS+oL9ryYXRK5iU
-        h6QyopfXeoeoVgAO4zpwMAdvWJhZWzme48cF6uXJ7Gi3b0HL3ZC1dy5HboQfs/h1QCPk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mlEjR-00DCxq-SZ; Thu, 11 Nov 2021 19:23:29 +0100
-Date:   Thu, 11 Nov 2021 19:23:29 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Wells Lu <wellslutw@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
-        vincent.shih@sunplus.com, Wells Lu <wells.lu@sunplus.com>
-Subject: Re: [PATCH v2 1/2] devicetree: bindings: net: Add bindings doc for
- Sunplus SP7021.
-Message-ID: <YY1fofJI0CW4Wmh5@lunn.ch>
-References: <cover.1636620754.git.wells.lu@sunplus.com>
- <321e3b1a7dfca81f3ffae03b11099e8efeef92fa.1636620754.git.wells.lu@sunplus.com>
+        id S233245AbhKKSlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 13:41:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57218 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233062AbhKKSlw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 13:41:52 -0500
+X-Greylist: delayed 354 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 11 Nov 2021 10:39:02 PST
+Received: from relay02.th.seeweb.it (relay02.th.seeweb.it [IPv6:2001:4b7a:2000:18::163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1BA6C061766
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 10:39:02 -0800 (PST)
+Received: from SoMainline.org (94-209-165-62.cable.dynamic.v4.ziggo.nl [94.209.165.62])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id 4E6251F633;
+        Thu, 11 Nov 2021 19:33:05 +0100 (CET)
+Date:   Thu, 11 Nov 2021 19:33:03 +0100
+From:   Marijn Suijten <marijn.suijten@somainline.org>
+To:     Konrad Dybcio <konrad.dybcio@somainline.org>
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, martin.botka@somainline.org,
+        angelogioacchino.delregno@somainline.org,
+        jamipkettunen@somainline.org, Alex Elder <elder@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net/ipa: ipa_resource: Fix wrong for loop range
+Message-ID: <20211111183303.avx45fu5mk5wnglj@SoMainline.org>
+References: <20211111173401.551408-1-konrad.dybcio@somainline.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <321e3b1a7dfca81f3ffae03b11099e8efeef92fa.1636620754.git.wells.lu@sunplus.com>
+In-Reply-To: <20211111173401.551408-1-konrad.dybcio@somainline.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    emac: emac@9c108000 {
-> +        compatible = "sunplus,sp7021-emac";
-> +        reg = <0x9c108000 0x400>, <0x9c000280 0x80>;
-> +        reg-names = "emac", "moon5";
-> +        interrupt-parent = <&intc>;
-> +        interrupts = <66 IRQ_TYPE_LEVEL_HIGH>;
-> +        clocks = <&clkc 0xa7>;
-> +        resets = <&rstc 0x97>;
-> +        phy-handle1 = <&eth_phy0>;
-> +        phy-handle2 = <&eth_phy1>;
-> +        pinctrl-0 = <&emac_demo_board_v3_pins>;
-> +        pinctrl-names = "default";
-> +        nvmem-cells = <&mac_addr0>, <&mac_addr1>;
-> +        nvmem-cell-names = "mac_addr0", "mac_addr1";
-> +
-> +        mdio {
-> +            #address-cells = <1>;
-> +            #size-cells = <0>;
-> +            eth_phy0: ethernet-phy@0 {
-> +                reg = <0>;
-> +                phy-mode = "rmii";
+On 2021-11-11 18:34:00, Konrad Dybcio wrote:
+> The destrination group count was mistakenly assigned to both dst and src loops.
 
-This is in the wrong place. It is a MAC property. You usually put it
-next to phy-handle.
+There's an unnecessary `r` in destRination...  Apart that I think you
+meant to say "source" here since both assignments to group_count use(d)
+rsrc_group_src_count, not the destination.
 
-> +            };
-> +            eth_phy1: ethernet-phy@1 {
-> +                reg = <1>;
-> +                phy-mode = "rmii";
-> +            };
-> +        };
+> Fix it to make IPA probe and work again.
+> 
 
-I would suggest you structure this differently to make it clear it is
-a two port switch:
+This is missing:
 
-	ethernet-ports {
-		#address-cells = <1>;
-                #size-cells = <0>;
+Fixes: 4fd704b3608a ("net: ipa: record number of groups in data")
 
-                port@0 {
-                    reg = <0>;
-		    phy-handle = <&eth_phy0>;
-		    phy-mode = "rmii";
-		}
+For backporting to 5.13 and above. Before that commit src and dst were
+correctly used.  Apart that, after fixing this all:
 
-		port@1 {
-                    reg = <1>;
-		    phy-handle = <&eth_phy1>;
-		    phy-mode = "rmii";
-		}
-	}
+Reviewed-by: Marijn Suijten <marijn.suijten@somainline.org>
 
-	Andrew
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+> ---
+>  drivers/net/ipa/ipa_resource.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ipa/ipa_resource.c b/drivers/net/ipa/ipa_resource.c
+> index e3da95d69409..06cec7199382 100644
+> --- a/drivers/net/ipa/ipa_resource.c
+> +++ b/drivers/net/ipa/ipa_resource.c
+> @@ -52,7 +52,7 @@ static bool ipa_resource_limits_valid(struct ipa *ipa,
+>  				return false;
+>  	}
+>  
+> -	group_count = data->rsrc_group_src_count;
+> +	group_count = data->rsrc_group_dst_count;
+>  	if (!group_count || group_count > IPA_RESOURCE_GROUP_MAX)
+>  		return false;
+>  
+> -- 
+> 2.33.0
+> 
