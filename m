@@ -2,225 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0840B44D618
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 12:51:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2224B44D61A
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 12:53:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232778AbhKKLyH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 06:54:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48352 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232815AbhKKLyG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 06:54:06 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F336C0613F5
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 03:51:17 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id r12so23082799edt.6
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 03:51:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=iaidmBLLwJ/AgQdQi9UKL+K7FBXKne5ZMv/s91Po68I=;
-        b=d0mb/rx/drXHGjr3gsr7N930M9WC2o2tuxdnA7FquJJTVHKNF5hdVfN+8mcHYrz5Yu
-         anD1BZcnvh4nYe5ujKQghIT0T1YjKHyX+mQ9T/mJML8w44Sm3RlPL/y9oQZnnt1z8p3S
-         8pvIhV/CcXgu4iN+YQ3ATPEqiipT9CQVuDETdRLDWt7sKUU9hPL9X+uKm3G3Q0w0SeNJ
-         fw9mpseSnyjUf9SmKKi9AVLBwRybkIJ9KaS+orIqOdsJAZxtdKgIvKUvnwRCytisJ2a7
-         0Ni7XynLRZGps0PcSNTCc5pueGXPiq+bPDe5N3GMYh5MNZu5Swek/DzemA5Hj75oW4UP
-         lBYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=iaidmBLLwJ/AgQdQi9UKL+K7FBXKne5ZMv/s91Po68I=;
-        b=lD0tb07fEnbvnYLooeDGR18oD958MmOX7CkhZAqRWfbiD4fhCnrcQvkRQxzMxJP7Kq
-         YDGC71UYa2RlrWqZaKrpFLDr6iInOJLr6Jzv8SW7gxSD3roSKDvzxd4CgijnPylAQuX6
-         VXlEjq6wCOWuLAcBFOmzYvtZDy6RRr2yli2CVz9QwgRFjIjLhw9AVGWl3e2lkoSsMC8r
-         Eyln4YCy2bNkxUXasNOmj9PKq8oBkmuP97vKGrl/7uGS/PSEUngNZFAKT5YZqTXRDwah
-         kTEuEqBy2HHVAsqpPDZ4u3paCkkaj6pukkaie8hyfu9h7rPHsPJCpMYV8+pQ5JMHhFIY
-         Hrjg==
-X-Gm-Message-State: AOAM532TMRsqXWI9JM7MXup3iq6RD0aLYTtr/tIhZzQX5WOk8RPqcdwO
-        /emSyoYJATkLX1dKwVVWRJQ=
-X-Google-Smtp-Source: ABdhPJx4ktwDIeIescoUfBstQX9Z56UDE4uHBWHWTWnzJmcbCXGjVYp5dMD5u//ey5QmS57cZiJMHQ==
-X-Received: by 2002:a17:907:8a12:: with SMTP id sc18mr8847921ejc.274.1636631470859;
-        Thu, 11 Nov 2021 03:51:10 -0800 (PST)
-Received: from skbuf ([188.25.175.102])
-        by smtp.gmail.com with ESMTPSA id x14sm1180315ejs.124.2021.11.11.03.51.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Nov 2021 03:51:10 -0800 (PST)
-Date:   Thu, 11 Nov 2021 13:51:09 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: Re: [PATCH net-next] net: dsa: Some cleanups in remove code
-Message-ID: <20211111115109.nnf4v5pdajtvw5h6@skbuf>
-References: <20211109113921.1020311-1-u.kleine-koenig@pengutronix.de>
- <20211109115434.oejplrd7rzmvad34@skbuf>
- <20211109175055.46rytrdejv56hkxv@pengutronix.de>
- <20211110131540.qxxeczi5vtzs277f@skbuf>
- <20211110210346.qthmuarwbuajpcp2@pengutronix.de>
- <20211110225611.h6klnoscntufdsv3@skbuf>
- <20211111075754.wnwtcfun3hjthh4v@pengutronix.de>
- <20211111104701.uzqte6kczfoj57e6@skbuf>
- <YY0CAPPo3g7FHDOU@kroah.com>
+        id S233162AbhKKLzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 06:55:48 -0500
+Received: from mail-vi1eur05on2072.outbound.protection.outlook.com ([40.107.21.72]:13633
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232570AbhKKLzr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Nov 2021 06:55:47 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=efcDaMbocuM06mU8G0stClXFCIj9sHhqiH1jJOfREzu5ttBEvxoB5iDCfP1kDBHa+cFp1ZlO+x39eFFD9yP1X7eQ4/eH/3bX3Nw1XYBSBCmtF3mEJn8hgxeStJXPn++X7q64omegEdzlgKThWZoSXxUM7yMOH99L/LnxtoqEWGUloEa729XXu/82E5jyQB5BejrrLeuZ8ETEXxJ8MNEJFkw99mCSEuHI8Lw2gsmFeAKs0EZyCC/q2DFd9btYZBtYw6Wksx//nnQvwlaIXd54QNuc8btmJWf6uz2UtqEcFZpbodKTqpNs4mVlEWGt3ic2AXqwtrIUkodA2ZQlzw7mhA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ez5b+QQoLMPjCHhVp2UU802jWjYoCw6PMdWi6qXGBfs=;
+ b=numGFJHW0tdbhkXCFLrE0tXlsPG+0dSt9hKYph91r3qlkFSpLJ+iGW9qMbzXAX41KVNnv4Q7JdvYuMWjrkgtH0WeDfeLqEf3H8GZNLqb7fxixIrfXqCppGY0BRsJvCQ64zCLNq47fTkvypO87GY6jelBNShmkFVLcSfN7PfWh1kcfWSgUffI4Y8rTUGTbBFBj4ejyjlE4r4z0fqX3GPmGX5ZrfnTQ/HwkaAzYUJvHclz/UcUk9ZoE+YUgeIv3KLWacxn7A9IA6t7hO5OlZ4aP1Dy2bzUtto02YlVxUvQ7HWA4b1pfigfUxz5+Wq/8NVwPRuAp2w5NJQkbkgWkt0uBg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ez5b+QQoLMPjCHhVp2UU802jWjYoCw6PMdWi6qXGBfs=;
+ b=CleYoUH+KmJCAeul97vWWzY/RC/NZBvjb29kdkgucl+fuPnjojuBVTa9w8cGfL3EZKMJK5/tk/XXTXBpTxOA3nyU1F1JMJoUm6QMnqerrWFl/YpBwLa6lop1/Z/PSKaw6KCzm+zlXUlwWDySIGTQF3mKc9EdYKP30sdUh11PChw=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VE1PR04MB7374.eurprd04.prod.outlook.com (2603:10a6:800:1ac::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.18; Thu, 11 Nov
+ 2021 11:52:56 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4669.016; Thu, 11 Nov 2021
+ 11:52:56 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Ido Schimmel <idosch@idosch.org>, Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: Is it ok for switch TCAMs to depend on the bridge state?
+Thread-Topic: Is it ok for switch TCAMs to depend on the bridge state?
+Thread-Index: AQHXz9lSx2h62F19RUufp+eb+7u3yav3+6cAgAZJ+AA=
+Date:   Thu, 11 Nov 2021 11:52:55 +0000
+Message-ID: <20211111115254.6w64bcvx5iyhnz7e@skbuf>
+References: <20211102110352.ac4kqrwqvk37wjg7@skbuf>
+ <YYe9jLd5AAurVoLW@shredder>
+In-Reply-To: <YYe9jLd5AAurVoLW@shredder>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 95afe1e2-e641-43fc-9fde-08d9a509cd40
+x-ms-traffictypediagnostic: VE1PR04MB7374:
+x-microsoft-antispam-prvs: <VE1PR04MB7374227B552542F362F1AC84E0949@VE1PR04MB7374.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Ce+1xXYy9zQA6f1YV2VYJFe55OerYh4dsZRvfSqU4j/Fj5fhgEOiSRs4OZDQxy+u+CSm5WK+TQUSFGAfA5HM4Y/Gjx5IPoCMZBlgOioJ3mTzWrRiHsAeAN3kTV10w6uhc9SUMB3F+EtKIQ0qzLLlmZDCCTjNMKpBz13u0sTJfiCXqT0qiAXEsLTI/+kAZ9JfKe3I7YUIZzbDQItMkz8PU66Cm9Z39z61lI+QluZSRVxQyEhpq+dzhrT1G76uLfVBXLsl5uCFwcJKqMpK7H2KxLV4VF0Cdf2vdY00aBFToU39d1IC7pI/r9RSbdeyp6gWcxwo8TOv03DrnYVyR/Fq3ZmYbFXlIMQ9WHtcj6JSDFefCXgUpsKQLxccpi45OlNbsxOww8Wv2XNIYicSotiCIe1k0zujJr9ua/jjrxwSU+ranJV4BBCNrtjWPgo8Oebs+E3oKDmWFOnQb9wgvzrk/XnMjVJ4HF7MJCO+zX+IM2ZvVWregxnyUT9jB/eKmY9+BQS3uJkVK3OTb3hzeZmTbHNeux8+9/tcw+RnK7WTQ32sVNvuoWN4XEI/cR63eE0JSjsCsRVvkOtO4ortNGE++NuHG9gZ8ayyWYU/28oZhgK1Zei1b7EjwogdB42vd2170jHnlppJ6c+GXLk+0BJ85jXlzIcghnC9zMqyQ6oSHa6qsevZ6T85TtpoF8OvVm2QdFZ4HaX0yRtBLeZkFF+ufA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(6506007)(2906002)(6486002)(71200400001)(76116006)(66446008)(66476007)(66556008)(44832011)(4326008)(64756008)(66946007)(86362001)(8676002)(508600001)(83380400001)(316002)(186003)(26005)(1076003)(9686003)(33716001)(110136005)(6512007)(122000001)(54906003)(5660300002)(38100700002)(38070700005)(8936002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?bhNIH4d4hzOlbLbnrSaUSTjuDlc06b4wiP7u4ZVbjft88wQRDtxEsanwQiix?=
+ =?us-ascii?Q?mo9FKfhP282gbwoL18NtjfhCQOhSt6ALYiejCwLdxC2+T6lBTX8HoNCgjeKN?=
+ =?us-ascii?Q?PYhUvERXuViVMxXlv+Za/aJVPHFdyYFPBvbdoQ1gVDGe7VukbgOnodzcvg7A?=
+ =?us-ascii?Q?1KdHvLyNQUwjtt/zEAV2fmufuH16WBaAU2YzbcGo3z2J54T/u4KJIcDSBnAw?=
+ =?us-ascii?Q?jl8jtFGf9Rk4r3RM+D8XOQ/JpIBQ7MyzDiaoCorBPVnZ0jPa6gLBGp4Yt/fR?=
+ =?us-ascii?Q?ddIgZSKj90VgIUtS4RkEJU79RLQvakxsHmk2friHKbi5GCGAzJJusRut7fiX?=
+ =?us-ascii?Q?gVtGiGTFzboL/+Fr0C4hHiXWzrZd2YnOFwu8mOM6112ovouRHpqDctORG0+4?=
+ =?us-ascii?Q?eGUb4iSE/egyFZx8ew8DDqIpaIv2NxqubCzqmp1vRQUdstbi+LdmNOUAfYTn?=
+ =?us-ascii?Q?lnJpIpDCmFGHx5ObzYhOMX8ubo51VAa5tl2QvX4qqM4IZHMQ4as1WuSKedVa?=
+ =?us-ascii?Q?UOBea/i0TCmi4wu8OpbCpLGxQSEfjXbdBdFbE1acTN4Q//la3gyPrYnn9rFy?=
+ =?us-ascii?Q?qmJFawXqrHtLOGyHpDFXQmwlDvCHBgDYGC0dJFjTq1HZcJZqA7wu7PpatGYw?=
+ =?us-ascii?Q?Prc2k6Ir7e9Pp49adzggVsHm/kB8GkVSj+k04/Te9YQY4gxxQQg2Fq+MWmxw?=
+ =?us-ascii?Q?1owErsKZjmFM6cpUwe/feNWE31POOt5i4G/hckPxn4dT/P5gyPimxAvCkY+S?=
+ =?us-ascii?Q?OxbZIalh9cMcCeoetE1ZH+VAp0E4hABd231vAMW6dARUVx6iecl4fkTY6fsv?=
+ =?us-ascii?Q?KvbZV4hDBfhw4KukpliMCbirx0NXr4Yb+slhViw6T+FUEIv496latAJ0hdhL?=
+ =?us-ascii?Q?MtacROlqMq+lpWq8h3immzeAEr4Fx19F+BSZTSAfbs58x12AV1JrQwjh/GIw?=
+ =?us-ascii?Q?rFgCY1ouLNBbUFur3bo1RyXws4H53u++9kSKPNqZ7sVa64ZgOU5jnJwIKSwq?=
+ =?us-ascii?Q?7dEL9DEV2bZE/kF/xRLSVSUO1cffAbUf2knDubsL7klsfMPaY7X19AS/u+Pz?=
+ =?us-ascii?Q?Rzic9nr4/3+UkkmwVZwR1MVRfelmqL0i/N8ERIJs4WEvrghR9NmvIp5vYkhK?=
+ =?us-ascii?Q?WttTDs/wtmliP1TDeuMQCoye6Q/rqeqgnM8sQflYCtKargTrpzO76LWGpwuT?=
+ =?us-ascii?Q?1MtCtOeO+XVHP5Q0Q4Vp1PMVBj4SNSzUm8YTMshNYdwJhiPFK9TYLNhoM0FE?=
+ =?us-ascii?Q?xWoe8oGXelofQEfF3K02uKXqyosYRHC3j8YYiuGSFBZVi9pVam7s3hCMUqud?=
+ =?us-ascii?Q?Jc7pT0wci4+91WpniVXGoE7Ap9wJRSH+3EO9dPRwtPdAJqm3h2wx6FUXf8Yc?=
+ =?us-ascii?Q?FrTAIjIvRdoIZOmdL5KDmvB1IacFk8csvtpoEqfUSCLdx/iwBxkCM53H46Qw?=
+ =?us-ascii?Q?eogk99FkQVo+Tukvcl3yvbPjZZ+UvhNiQCfLeE97MUnCFfIpG1+m88ev9evI?=
+ =?us-ascii?Q?QOMTdUZB6Gzz7PJXJYGZVK1+kcWtIIKRPMlssxNYyGjD7EyFox+TNEb/Xzx2?=
+ =?us-ascii?Q?tMWzrsLF2xSipQjBaK/anQc9lVhXFmexbbM5qxYdk62KFusQvfF/4MEM3KCd?=
+ =?us-ascii?Q?Bu2vKq6V9Rne8UWPqjV3x84=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <8A9BCAFA8E54FA43960892CDD77D784E@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YY0CAPPo3g7FHDOU@kroah.com>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 95afe1e2-e641-43fc-9fde-08d9a509cd40
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Nov 2021 11:52:56.5669
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 4risjMA2y5M9TOkqRGEVVzMB8JsE8mbgWHPxYqL9YN+2I8GoQgJFQ8GQbWYMGtiKUYBMtdkZaKK+oAt7/dS+MQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7374
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 11, 2021 at 12:44:00PM +0100, Greg Kroah-Hartman wrote:
-> On Thu, Nov 11, 2021 at 12:47:01PM +0200, Vladimir Oltean wrote:
-> > On Thu, Nov 11, 2021 at 08:57:54AM +0100, Uwe Kleine-König wrote:
-> > > Hello Vladimir,
-> > > 
-> > > On Thu, Nov 11, 2021 at 12:56:11AM +0200, Vladimir Oltean wrote:
-> > > > On Wed, Nov 10, 2021 at 10:03:46PM +0100, Uwe Kleine-König wrote:
-> > > > > Hello Vladimir,
-> > > > > 
-> > > > > On Wed, Nov 10, 2021 at 03:15:40PM +0200, Vladimir Oltean wrote:
-> > > > > > On Tue, Nov 09, 2021 at 06:50:55PM +0100, Uwe Kleine-König wrote:
-> > > > > > > On Tue, Nov 09, 2021 at 01:54:34PM +0200, Vladimir Oltean wrote:
-> > > > > > > > Your commit prefix does not reflect the fact that you are touching the
-> > > > > > > > vsc73xx driver. Try "net: dsa: vsc73xx: ".
-> > > > > > > 
-> > > > > > > Oh, I missed that indeed.
-> > > > > > > 
-> > > > > > > > On Tue, Nov 09, 2021 at 12:39:21PM +0100, Uwe Kleine-König wrote:
-> > > > > > > > > vsc73xx_remove() returns zero unconditionally and no caller checks the
-> > > > > > > > > returned value. So convert the function to return no value.
-> > > > > > > > 
-> > > > > > > > This I agree with.
-> > > > > > > > 
-> > > > > > > > > For both the platform and the spi variant ..._get_drvdata() will never
-> > > > > > > > > return NULL in .remove() because the remove callback is only called after
-> > > > > > > > > the probe callback returned successfully and in this case driver data was
-> > > > > > > > > set to a non-NULL value.
-> > > > > > > > 
-> > > > > > > > Have you read the commit message of 0650bf52b31f ("net: dsa: be
-> > > > > > > > compatible with masters which unregister on shutdown")?
-> > > > > > > 
-> > > > > > > No. But I did now. I consider it very surprising that .shutdown() calls
-> > > > > > > the .remove() callback and would recommend to not do this. The commit
-> > > > > > > log seems to prove this being difficult.
-> > > > > > 
-> > > > > > Why do you consider it surprising?
-> > > > > 
-> > > > > In my book .shutdown should be minimal and just silence the device, such
-> > > > > that it e.g. doesn't do any DMA any more.
-> > > > 
-> > > > To me, the more important thing to consider is that many drivers lack
-> > > > any ->shutdown hook at all, and making their ->shutdown simply call
-> > > > ->remove is often times the least-effort path of doing something
-> > > > reasonable towards quiescing the hardware. Not to mention the lesser
-> > > > evil compared to not having a ->shutdown at all.
-> > > > 
-> > > > That's not to say I am not in favor of a minimal shutdown procedure if
-> > > > possible. Notice how DSA has dsa_switch_shutdown() vs dsa_unregister_switch().
-> > > > But judging what should go into dsa_switch_shutdown() was definitely not
-> > > > simple and there might still be corner cases that I missed - although it
-> > > > works for now, knock on wood.
-> > > > 
-> > > > The reality is that you'll have a very hard time convincing people to
-> > > > write a dedicated code path for shutdown, if you can convince them to
-> > > > write one at all. They wouldn't even know if it does all the right
-> > > > things - it's not like you kexec every day (unless you're using Linux as
-> > > > a bootloader - but then again, if you do that you're kind of asking for
-> > > > trouble - the reason why this is the case is exactly because not having
-> > > > a ->shutdown hook implemented by drivers is an option, and the driver
-> > > > core doesn't e.g. fall back to calling the ->remove method, even with
-> > > > all the insanity that might ensue).
-> > > 
-> > > Maybe I'm missing an important point here, but I thought it to be fine
-> > > for most drivers not to have a .shutdown hook.
-> > 
-> > Depends on what you mean by "most drivers". One other case of definitely
-> > problematic things that ->shutdown must take care of are shared interrupts.
-> > I don't have a metric at hand, but there are definitely not few drivers
-> > which support IRQF_SHARED. Some of those don't implement ->shutdown.
-> > What I'm saying is that it would definitely go a long way for the
-> > problems caused by these to be solved in one fell swoop by having some
-> > logic to fall back to the ->remove path.
-> > 
-> > > > > > Many drivers implement ->shutdown by calling ->remove for the simple
-> > > > > > reason that ->remove provides for a well-tested code path already, and
-> > > > > > leaves the hardware in a known state, workable for kexec and others.
-> > > > > > 
-> > > > > > Many drivers have buses beneath them. Those buses go away when these
-> > > > > > drivers unregister, and so do their children.
-> > > > > > 
-> > > > > > ==============================================
-> > > > > > 
-> > > > > > => some drivers do both => children of these buses should expect to be
-> > > > > > potentially unregistered after they've been shut down.
-> > > > > 
-> > > > > Do you know this happens, or do you "only" fear it might happen?
-> > > > 
-> > > > Are you asking whether there are SPI controllers that implement
-> > > > ->shutdown as ->remove?
-> > > 
-> > > No I ask if it happens a lot / sometimes / ever that a driver's remove
-> > > callback is run for a device that was already shut down.
-> > 
-> > So if a SPI device is connected to one of the 3 SPI controllers
-> > mentioned by me below, it happens with 100% reproduction rate. Otherwise
-> > it happens with 0% reproduction rate. But you don't write a SPI device
-> > driver to work with just one SPI controller, ideally you write it to
-> > work with all.
-> > 
-> > > > Just search for "\.shutdown" in drivers/spi.
-> > > > 3 out of 3 implementations call ->remove.
-> > > > 
-> > > > If you really have time to waste, here, have fun: Lino Sanfilippo had
-> > > > not one, but two (!!!) reboot problems with his ksz9897 Ethernet switch
-> > > > connected to a Raspberry Pi, both of which were due to other drivers
-> > > > implementing their ->shutdown as ->remove. First driver was the DSA
-> > > > master/host port (bcmgenet), the other was the bcm2835_spi controller.
-> > > > https://patchwork.kernel.org/project/netdevbpf/cover/20210909095324.12978-1-LinoSanfilippo@gmx.de/
-> > > > https://patchwork.kernel.org/project/netdevbpf/cover/20210912120932.993440-1-vladimir.oltean@nxp.com/
-> > > > https://patchwork.kernel.org/project/netdevbpf/cover/20210917133436.553995-1-vladimir.oltean@nxp.com/
-> > > > As soon as we implemented ->shutdown in DSA drivers (which we had mostly
-> > > > not done up until that thread) we ran into the surprise that ->remove
-> > > > will get called too. Yay. It wasn't trivial to sort out, but we did it
-> > > > eventually in a more systematic way. Not sure whether there's anything
-> > > > to change at the drivers/base/ level.
-> > > 
-> > > What I wonder is: There are drivers that call .remove from .shutdown. Is
-> > > the right action to make other parts of the kernel robust with this
-> > > behaviour, or should the drivers changed to not call .remove from
-> > > .shutdown?
-> > > 
-> > > IMHO this is a question of promises of/expectations against the core
-> > > device layer. It must be known if for a shut down device there is (and
-> > > should be) a possibility that .remove is called. Depending on that
-> > > device drivers must be ready for this to happen, or can rely on it not
-> > > to happen.
-> > > 
-> > > From a global maintenance POV it would be good if it could not happen,
-> > > because then the complexity is concentrated to a small place (i.e. the
-> > > driver core, or maybe generic code in all subsystems) instead of making
-> > > each and every driver robust to this possible event that a considerable
-> > > part of the driver writers isn't aware of.
-> > 
-> > IMO, if you can not offer a solid promise but merely a fragile one, then
-> > it is always better to be robust (which DSA now is). How would you
-> > propose that this particular promise could be fulfilled? Simply patch
-> > the known offending drivers today and hope more drivers won't do this in
-> > the future? Patching the device core to keep track of which devices
-> > were shut down, so as to not call into their ->remove method?
-> > Mind you, this issue was reported as a bug and had to be dealt with
-> > locally, for stable kernels, so changing the driver core was not an
-> > option.
-> 
-> Fix things properly first, in Linus's tree, and then worry about stable
-> kernels.  Never the other way around please.
+On Sun, Nov 07, 2021 at 01:50:36PM +0200, Ido Schimmel wrote:
+> On Tue, Nov 02, 2021 at 11:03:53AM +0000, Vladimir Oltean wrote:
+> > I've been reviewing a patch set which offloads to hardware some
+> > tc-flower filters with some TSN-specific actions (ingress policing).
+> > The keys of those offloaded tc-flower filters are not arbitrary, they
+> > are the destination MAC address and VLAN ID of the frames, which is
+> > relevant because these TSN policers are actually coupled with the
+> > bridging service in hardware. So the premise of that patch set was that
+> > the user would first need to add static FDB entries to the bridge with
+> > the same key as the tc-flower key, before the tc-flower filters would b=
+e
+> > accepted for offloading.
+>=20
+> [...]
+>=20
+> > I don't have a clear picture in my mind about what is wrong. An airplan=
+e
+> > viewer might argue that the TCAM should be completely separate from the
+> > bridging service, but I'm not completely sure that this can be achieved
+> > in the aforementioned case with VLAN rewriting on ingress and on egress=
+,
+> > it would seem more natural for these features to operate on the
+> > classified VLAN (which again, depends on VLAN awareness being turned on=
+).
+> > Alternatively, one might argue that the deletion of a bridge interface
+> > should be vetoed, and so should the removal of a port from a bridge.
+> > But that is quite complicated, and doesn't answer questions such as
+> > "what should you do when you reboot".
+> > Alternatively, one might say that letting the user remove TCAM
+> > dependencies from the bridging service is fine, but the driver should
+> > have a way to also unoffload the tc-flower keys as long as the
+> > requirements are not satisfied. I think this is also difficult to
+> > implement.
+>=20
+> Regarding the question in the subject ("Is it ok for switch TCAMs to
+> depend on the bridge state?"), I believe the answer is yes because there
+> is no way to avoid it and effectively it is already happening.
+>=20
+> To add to your examples and Jakub's, this is also how "ERSPAN" works in
+> mlxsw. User space installs some flower filter with a mirror action
+> towards a gretap netdev, but the HW does not do the forwarding towards
+> the destination.
 
-Thanks, all clear now. I don't know why I never thought about that.
+I don't understand this part. By "forwarding" you mean "mirroring" here,
+and the "destination" is the gretap interface which is offloaded?
+
+> Instead, it relies on the SW to tell it which headers
+> (i.e., Eth, IP, GRE) to put on the mirrored packet and tell it from
+> which port the packet should egress. When we have a bridge in the
+> forwarding path, it means that the offload state of the filter is
+> affected by FDB updates.
+
+Here you're saying that the gretap interface whose local IP address is
+the IP address of a bridge interface that is offloaded by mlxsw, and the
+precise egress port is determined by the bridge's FDB? But since you
+don't support bridging with foreign interfaces, why would the mirred
+rule ever become unoffloaded?
+
+I'm afraid that I don't understand this case very well.
+
+> As was discussed in the past, we are missing
+> the ability to notify user space when the offload state of the filter
+> changes.
+>=20
+> Regarding the particular example of TSN policers. I'm not familiar with
+> the subject, but from your mail I get the impression that the dependency
+> between them and the bridge is a quirk of the hardware you are working
+> with and that in general the two are not related. If so, in order to
+> make the user experience somewhat better, you might consider vetoing the
+> addition of the flower filter or at least emit a warning via extack when
+> the port is not enslaved to a bridge. Regarding the FDB entries, instead
+> of requiring user space to understand that it needs to install those
+> entries in order to make the filter work, you can notify them from the
+> driver to the bridge via SWITCHDEV_FDB_ADD_TO_BRIDGE.=
