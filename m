@@ -2,295 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BD9144D6BF
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 13:43:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEF5144D6C2
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 13:45:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233042AbhKKMq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 07:46:27 -0500
-Received: from mail-dm6nam12on2076.outbound.protection.outlook.com ([40.107.243.76]:15200
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        id S232084AbhKKMsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 07:48:22 -0500
+Received: from mail-db8eur05on2043.outbound.protection.outlook.com ([40.107.20.43]:50528
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232126AbhKKMq1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Nov 2021 07:46:27 -0500
+        id S232033AbhKKMsU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Nov 2021 07:48:20 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nu6ATCCHatuqt3IC1TNAYDRFc1aD4jPV8q6AXCnANfJTbF9LuglldW7M4/Vsjf1FkWRr/weCrOX913J2Pz5oSvcgFt3IlbjWPhOG/pwBG9V4J4aFy1mah8nhTOE72YnBDrTgd5E1vm0Sd4iUsapN7hv16OOM/y/by3dJXl8lSzR2wSXVRS3aVq9gupOs9bvS7bKgljawRx6i+B0GnYE2KwDheWcfDvXmW1j1Jek4Atl/Er4D7tGSkrLn+80kqooltj6wrLbQB7LhmR+u5ahxHuujd7ameEOhFJu6jQ+lNkEq05z13nXSw2fjtgTxs6EC2lvB0cRVyDuJSU/89IrQ2g==
+ b=CqqWC/fqByXoV4Ety57GXryfpjh/Bcg9MOmwivBhRa6Y7Qm6v/AVSlLymjdNLBoudSK5OuJonmHjlo2jaM59L/KKJ86qs3eoOAwfUPX2ay11Cbpcjjeyf1X8koXI0xRCrRfANfGHX9CD0rCyKrGMeF9dPhGBEwjgrFztRLJUWQOLJIwcoKTj9Ugn6ULkYLbbKmYARa89sVxo2ifPTdr8YQJhbDgApKJv2yYuXDO2QFOr9ycUw9kfrRlONX2QRUl0enGLdg3HcZT8qdkhnvpbssZSb2ESX0eDlG6D3xDZCrnc/lqJr7lLcoicXI3pu0VIjEtvj8bD4RmjAvSZWrYRKA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ARHcli0ZsZxAV+EMy3pwQHR4onRn7VEprcXUDDqJU/c=;
- b=CJV3juYalI1nMTNyLUs6Yrb7KdRRVEn8YnsTaxiW0qcd3rDktjw2ouDg7W7aqZY49cfYfeS9N5tpsmK2DtWuoZ+DId9injts9EFep3XUi3nDrrRatx/ugYi1tIVpkgX0CdeS7WHjMpBbbduNGfzPRjjWAW6FsoiJ4eToj3G/PR3FOomCyrMURceBGy6TAFScobW/N7LQtyqrFam43lbS0NAh/BYttZVDmOg7TOWq70vGfKyPpuYpyD/u7HIOPaDGustsGXpJuRGQKuexmrikXk0YeTX3hMavxq8KQYbl2mj7pjbhlFRGGSTr5S00FoN3kwvaYCO6Eo3mbEde5WgP2g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=cYfM8SWKChENtPqC3tNrQiEHgE0Oibel7c2daCMnFgc=;
+ b=PBXQeqK+Oocv3/nA3j1hDM6zRRp0H3oEOJ9pACTxhb7foZ3UHnM0EknSJ8viJTah2lrt/fI49pZmAkQC69Ew123HDwSuvEVnOCwWljD3SDGLmYY9u8+lFRHgvX1kyStKrBdHlaT+6LXVKEfVgwJZtXkJn7tulIcJguoZVsU/nkCNLcXm0MMv8+Iui+j2PYkBlkgckz+DFtRmXQeetJ0i+np3SpsU9J7FmhgZzfNZhxmXM7/jeDJBsgqxA0dbh95pe0PfCCFe9ppRHNFcX3ul8/Y4AHAQ55tQ83z/G/7EmKI7aGBCwufOcxFeewTu0nBgXRhqoezea2LPzvpOLoflKg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ARHcli0ZsZxAV+EMy3pwQHR4onRn7VEprcXUDDqJU/c=;
- b=N1UYzoPaZ6SjwAKCcCn8wmR5aNBlIuvzTzdduCBq7ovpPW3SAaoWRkdDZ644VRw8nv4AgG1Ddj4aIOCdnj4RqJ1JqJThiC19lD30q4tWWq+muoXWYswkuBWjPqH4OBs4n9Afys+oNDNJ8ldr2ljWhoPVAYNP3MK6AqVOGnN9/7mCApzN7Hl5JEoWCbAHQe1JTDqWnUzt4iz5qWgm4TD/DDamKM98qPGjkrP6VUxRdLx85W7jTFmOEP2QxhL0Rs+ZDxTdq7PjU9eBl5lmNLIRf8rKi7cYnqLDACzV6FhvjxOAYQCe8oc1vh4Jdp4iHwI8V465y7qDfVTosNryAD+glg==
-Received: from BN9P223CA0017.NAMP223.PROD.OUTLOOK.COM (2603:10b6:408:10b::22)
- by BN8PR12MB2978.namprd12.prod.outlook.com (2603:10b6:408:42::30) with
+ bh=cYfM8SWKChENtPqC3tNrQiEHgE0Oibel7c2daCMnFgc=;
+ b=YxIrd3VjGxMLVgkrROGjy/oK0NelvKG0V3rlI/uo+S0ktFOUkgR8f6kHvMP2oFkpjYkWyv3u3SuRih6K1/trhDrJXeCnclpkmq5Na/HOXSpVPqM9r44ZFlHSVtnvC3aB9zG9ymxDx20gfHc5PZj+ameBv1XUoVw5Y8i0IrTW3ok=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB5694.eurprd04.prod.outlook.com (2603:10a6:803:e0::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.16; Thu, 11 Nov
- 2021 12:43:29 +0000
-Received: from BN8NAM11FT014.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:10b:cafe::d5) by BN9P223CA0017.outlook.office365.com
- (2603:10b6:408:10b::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.16 via Frontend
- Transport; Thu, 11 Nov 2021 12:43:29 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT014.mail.protection.outlook.com (10.13.177.142) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4690.15 via Frontend Transport; Thu, 11 Nov 2021 12:43:28 +0000
-Received: from yaviefel (172.20.187.5) by HQMAIL107.nvidia.com (172.20.187.13)
- with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 11 Nov 2021 12:43:23
- +0000
-References: <20211110114448.2792314-1-maciej.machnikowski@intel.com>
- <20211110114448.2792314-7-maciej.machnikowski@intel.com>
-User-agent: mu4e 1.4.15; emacs 27.2
-From:   Petr Machata <petrm@nvidia.com>
-To:     Maciej Machnikowski <maciej.machnikowski@intel.com>
-CC:     <netdev@vger.kernel.org>, <intel-wired-lan@lists.osuosl.org>,
-        <richardcochran@gmail.com>, <abyagowi@fb.com>,
-        <anthony.l.nguyen@intel.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <idosch@idosch.org>, <mkubecek@suse.cz>, <saeed@kernel.org>,
-        <michael.chan@broadcom.com>, <petrm@nvidia.com>
-Subject: Re: [PATCH v3 net-next 6/6] docs: net: Add description of SyncE
- interfaces
-In-Reply-To: <20211110114448.2792314-7-maciej.machnikowski@intel.com>
-Message-ID: <87tugic17a.fsf@nvidia.com>
-Date:   Thu, 11 Nov 2021 13:43:21 +0100
-MIME-Version: 1.0
+ 2021 12:45:29 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4669.016; Thu, 11 Nov 2021
+ 12:45:29 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     =?utf-8?B?QWx2aW4gxaBpcHJhZ2E=?= <ALSI@bang-olufsen.dk>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        DENG Qingfang <dqfext@gmail.com>
+Subject: Re: [RFC PATCH net-next 1/6] net: dsa: make dp->bridge_num one-based
+Thread-Topic: [RFC PATCH net-next 1/6] net: dsa: make dp->bridge_num one-based
+Thread-Index: AQHXyoZHNP2OAoYzNE6Mu95HQgPLg6v+WS6AgAAFxwA=
+Date:   Thu, 11 Nov 2021 12:45:28 +0000
+Message-ID: <20211111124528.2tecc3hoslheswl3@skbuf>
+References: <20211026162625.1385035-1-vladimir.oltean@nxp.com>
+ <20211026162625.1385035-2-vladimir.oltean@nxp.com>
+ <a84ee210-b695-c352-8802-5b982d4037d5@bang-olufsen.dk>
+In-Reply-To: <a84ee210-b695-c352-8802-5b982d4037d5@bang-olufsen.dk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: fbb56833-331f-410c-5276-08d9a5112434
+x-ms-traffictypediagnostic: VI1PR04MB5694:
+x-microsoft-antispam-prvs: <VI1PR04MB5694FD306408E3F6E1D7D584E0949@VI1PR04MB5694.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3383;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 4EygdYO7fge/KqsGaRgLY5G6/KFxJZ/k7kcTNAzDa7gT62bufRpp4jFUzwkC3THM5lGcy+WPjiuJUKbuRjnLiHDEnCTu1BJxxzLm6panokMUFLdqoTgDaglQz6/TC75Sf1sLJe6/Sic/IBC4AGM+Try2IrPXfEF+iJrR4QWu8Gon2DENUrGAh4PK4qoW0wFAIzId3NjegmSlTLDiKg1dh+5Q0Kn10zPZj+qUGZ5/1OgHfaTAMzWADSlYbdVqahlcJg7XSS+XntTBTY8eAbsZCeRAudy2E/2tpXixIFH6lan3QAeuKgXuSMLRNeH3JAULxxeoxlVkivbKHI9dwuaPD4FXThmMHBq7cFXJBKsI0l6qWgf+45BsqKWVOx4iG1R2tSvpI9Rf172HTodt5Td6TmqtEBCo0yJYxpQLCp8RkspARE/Dyy2sc//MJSDtChYb+5O+9ueUOz3kOgyTod6u+Ivlhmrmbxp2N4n2CWm4UQI586Pk2aQbYkZoz6NJdh9zQ3qCHVyDDMLuByV0vI7oWOscWI/llVWQiJt9nI37ozWlhdjagSojiM2MOHQFQ95Dnn+9Q7O6NJOq88qof2DNhy/3T1JGmNxaZPR7xtKvbgI7qCDKhzPFIRlGKYpxA3oRzTYF4yEbwV0foAstdHrjcHRXpSmQ0cwDbD1dxS0+mXhQ8bvUUmLwq9pDhSuO3ToIk/x9x4U+EuZ9xQ+0dCZrVg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(33716001)(6506007)(8676002)(26005)(1076003)(508600001)(66476007)(8936002)(71200400001)(6486002)(54906003)(2906002)(6916009)(38070700005)(316002)(5660300002)(6512007)(4326008)(53546011)(9686003)(44832011)(66574015)(83380400001)(76116006)(186003)(66946007)(66446008)(122000001)(86362001)(66556008)(38100700002)(64756008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?cXlLTGFyVGpMMFRoWEV3ZDNYNW5wbmRJVXUzbERQbElXcjhMYStVVGp3NUdZ?=
+ =?utf-8?B?WFBQS0ZjTUJEVENCd2lXQnpORSt4QTN5cGZpU0o2Q1RWSVV6ajdWVjBheTZT?=
+ =?utf-8?B?VzlQZzZOQmx0bWZqZXV1djhkMFlZM2cvdTQzY0tpNlRqWkx2aDZWaFVROWc0?=
+ =?utf-8?B?a1J4VmNaVXVwbHFZdnZvL1dMR24rQ3U1RUpnTkVYU0lEWTNWSStyQ3VvVUFk?=
+ =?utf-8?B?TUJZZEdZVnBCQ2h4TTRRdTZ1ZWltZm8vd2taaE9sMDVUSGdON3ZxMzVtUlNn?=
+ =?utf-8?B?clNDaG5DMGlneGdEUG8zZURRMkdGR3NFZnFOdUprNG9CZ0NCOWhJdi9lN1V4?=
+ =?utf-8?B?RG1pM3gwU2ZJcmc0U2hwOUxmT3JHQkp2RS9JeWpkajVEaklZTWIvZGZ2U0hu?=
+ =?utf-8?B?UnJ4ZmpnYlBwUlAzUll3RVcrRzRUaXJzUXIvb25KODRrNXJiL2x3SkNqc1pr?=
+ =?utf-8?B?K1VYYnBYQ0s0UVBKTXUyckpJOHJDZEQvaVBXTEV6eDFhNFpuaHlWZUtPYmRh?=
+ =?utf-8?B?Y1RZa0lLYzFRcHlTT3RYQ2RBU204Zy9rQlIrdzNxazVIWmtNUTQ2L1hNSXox?=
+ =?utf-8?B?b1FSTFB4SDEzcEQyWERnQXRFVVM3U1ZNdjg0enQrbGVLYkkvZlNQNkhKRkxr?=
+ =?utf-8?B?OWNGRWpHRm9iclJKUC8vVUJPbEhnQjRpZXZIeXFndDBReFZPcHJFMXVYejVU?=
+ =?utf-8?B?ZmVCclA5RVF0MFpuMkU2OGphb2pxN0FlaTJPN0FudTNwSU96VTdWanZQNkNi?=
+ =?utf-8?B?K3NsZkt1N1JJUzlDZDdQbFh2SnNVdmRmWGxIWXY0SUI1Q2s2NjI2aVZsR3Ix?=
+ =?utf-8?B?Q1lseXBuZjFtSlFXaGtuRENvWURicFRsblpmUWNvYWxmZkdHNlJQRjd0TWhr?=
+ =?utf-8?B?RmdVQ2gvT3RwTlQyWURKYUhMaDBVc0Q3dzJ2U211Vk9oRXlOOWlOZHBMN1Fu?=
+ =?utf-8?B?Y3J2M1EvOXBlSFdLWGhDWkhJQWYvTXJ6SVN2b0tjS3ZXMHVzZzNId2NmM0tl?=
+ =?utf-8?B?VmJYcE1lSEZVUjJoNXAyNS9ueVc2QVBiSHArR21rWXpySnR5RGw4UVlGdjNu?=
+ =?utf-8?B?eXRiT1c2VE9jVXk3MEVaWnl5SFNPdWxhcUQ0T2E5eW5PUk4rOHF1R2RnbU4r?=
+ =?utf-8?B?aDBZSjhRNjg2VnhmYzNKQkJCUHl3RVFxUVZEVVU5TmpYRC9PbUlSeklnaXpC?=
+ =?utf-8?B?eG4xTkJYa2J3MzhvRmt2R0lUUDNpRWtSZ3Jsay9IZm5lTWZDY0tsejNCZUJz?=
+ =?utf-8?B?RVh5SGdjNUpxZG1ibElhYm1lNS9LTVZSOWptZlc2amJIM2o3eGhyTTMwZi83?=
+ =?utf-8?B?cmhZNHQ1d0V4R3RFcS9vT3hDTTRsckhtdWs0V1gvQ2lQOTN4M3haSk91T003?=
+ =?utf-8?B?NWgrK1pzcUkvWmVhRUhFdkJsbHY5RGhNUDJwY3NiSjJxZDhFYWxSVU1QSTU2?=
+ =?utf-8?B?M2RBN2JxS3F2TDVUWjU1UUd0YUd2R3VNYU9pbVJsRVhVT3B5cEFLa09tZC9q?=
+ =?utf-8?B?U0s4cUlLWDU5T0N3Qjk2UDFMa2lBeG92cE44RWNlTGdRNHhGaGMxalVIdkE1?=
+ =?utf-8?B?Qmw2M2NJc3h4a1RCS3dyWmJmZmV1UHdpcG0rREU5V3hKNno4VGRGOWdWQzIz?=
+ =?utf-8?B?cmZFbzIzdmNTY0YvUTBZQzlJVWZ3OGlUeGRiY2VNUHVDM1dqeVNqODhTNjhP?=
+ =?utf-8?B?aTVlVUpNdGlLY0RYYVNPOTBNd0VwM1ZsS0RHVms3blZlU2NkNGNHdktwNkk4?=
+ =?utf-8?B?aUlFMDJtQnhsT3ZoQXZab1E4YzIyanNUYjBENWQ4T2RhRDc1Mlg3VEVWR1do?=
+ =?utf-8?B?dHdMb1pyOFZIeFh1TVBHSzBiWnNyUlhNa2l5OUJSM2hqNGlTY0NQRnJJQ1lK?=
+ =?utf-8?B?S0Y3dUVNWkhka0o3T1VYTHlvVnUwMGhCdngrRkNkN3Q0cHkvcThpSkNtclVV?=
+ =?utf-8?B?ZzZVK0xpUE9OV2dxUWh5OW1Id2t1MzZTTlFHNnNMaW9nVUlic0Q4NnhKRnky?=
+ =?utf-8?B?Z3BINnV3Y1dXTFN5Q3JiSm9CTHF4eFJXQkduNWhCdUJ5Qy9MOWFFWXB1V3cy?=
+ =?utf-8?B?b0krUDQyaGRYQjZzbW81NzhrQ0dZdjZxcjU1VnpIRUx6L3V3Sy9MT2dXb05n?=
+ =?utf-8?B?cElMUzV3NzRPQk1tZXgwWmRhdS9xS2xzUVAraUM4aFBIVU9jYVpqN2xTT01O?=
+ =?utf-8?Q?xsvks+u+Jjf0b4cZbTQwJ14=3D?=
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-Originating-IP: [172.20.187.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fd35f662-592c-4e3e-8540-08d9a510dc9a
-X-MS-TrafficTypeDiagnostic: BN8PR12MB2978:
-X-Microsoft-Antispam-PRVS: <BN8PR12MB297869626834A13F2939AE61D6949@BN8PR12MB2978.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wJOFNfHuN7RGXZgkRiijG2C7EpyuhE2hczaKxXdZS/dIUKKee/wsGDcSPtcK4YbG6MPrZDcQoGyg81ZXxbN857FIrTZd2Vw91xFL9ICJZdHXf7ZelKAF3PSTuYb7GKc719QZByKLSNZFQw/crzf9M8uq5nnLW/WN2agx5sD9vkx4RwpLbJcMctY59/Cwaky6XEW8zSGwynb1o5a7yy48bjf71iQlWmpqK8BaeWmr7SIBfQFp/RgnReX6sYN96hyXyjqY0/dmGaOW5E1EAmkTLbQnkVBa5Mi3vi45AQdB7b19opuVs8LAWxPkgS9Gd1rq8UVeHLxyxZyhrKANyzYFAUKnmL/1voGJThHnXd/qFQVx9s0pG6T7rNbV0a7+58Eo/j92pJlJKQOczDyyZBxttJW+Mhw83xFO1C78cV1SWTVf1FTtnJnyv/QSh5wPXYhxYhz0G8lu2li55XuOOjNdg7RP4zZVIabEnvwhqKWIUb2c774jVw10q7pMNnrjD/ZkRJNsZiNYEPw4D/W9WFQo+GJv43hH7tiJ+KTUQ5GJsSW7Z6iBix1QcwX8yegRaixW0ePzCXdsqw/yA+fvTzfjGWGMt4lVsA7qlAlQFShgxyDFvOQ+54UXBmBkKl+Wn3zBmQV5eHn8yrW7H+ryS1bEwN4YBjyrhH7waXEMZjJ8dHbV0vczSM4HptfccizDgshKMM4jpCm3Sg+/9EpOw03NFA==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(186003)(54906003)(26005)(16526019)(83380400001)(4326008)(5660300002)(8676002)(336012)(426003)(2906002)(47076005)(8936002)(2616005)(316002)(86362001)(36860700001)(7416002)(70206006)(70586007)(36756003)(356005)(82310400003)(6916009)(107886003)(508600001)(7636003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Nov 2021 12:43:28.6481
+Content-ID: <12E76041081F2B4AA796615DF252FDB1@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fbb56833-331f-410c-5276-08d9a5112434
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Nov 2021 12:45:28.9142
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fd35f662-592c-4e3e-8540-08d9a510dc9a
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT014.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB2978
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: FwdzvdO39LcNYIspHrOG9C+sIJOtBIZYOxmmSygEJWvChbP14/skj600yN7hUpaQJf2dD8FaL8JLZEdJZl9GvQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5694
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-Maciej Machnikowski <maciej.machnikowski@intel.com> writes:
-
-> Add Documentation/networking/synce.rst describing new RTNL messages
-> and respective NDO ops supporting SyncE (Synchronous Ethernet).
->
-> Signed-off-by: Maciej Machnikowski <maciej.machnikowski@intel.com>
-> ---
->  Documentation/networking/synce.rst | 124 +++++++++++++++++++++++++++++
->  1 file changed, 124 insertions(+)
->  create mode 100644 Documentation/networking/synce.rst
->
-> diff --git a/Documentation/networking/synce.rst b/Documentation/networkin=
-g/synce.rst
-> new file mode 100644
-> index 000000000000..a7bb75685c07
-> --- /dev/null
-> +++ b/Documentation/networking/synce.rst
-> @@ -0,0 +1,124 @@
-> +.. SPDX-License-Identifier: GPL-2.0
-> +
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D
-> +Synchronous Equipment Clocks
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D
-> +
-> +Synchronous Equipment Clocks use a physical layer clock to syntonize
-> +the frequency across different network elements.
-> +
-> +Basic Synchronous network node consist of a Synchronous Equipment
-> +Clock (SEC) and and a PHY that has dedicated outputs of clocks recovered
-> +from the Receive side and a dedicated TX clock input that is used as
-> +a reference for the physical frequency of the transmit data to other nod=
-es.
-> +
-> +The PHY is able to recover the physical signal frequency of the RX data
-> +stream on RX ports and redirect it (sometimes dividing it) to recovered
-> +clock outputs. Number of recovered clock output pins is usually lower th=
-an
-> +the number of RX portx. As a result the RX port to Recovered Clock output
-> +mapping needs to be configured. the TX frequency is directly depends on =
-the
-> +input frequency - either on the PHY CLK input, or on a dedicated
-> +TX clock input.
-> +
-> +      =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
-=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=AC=E2=94=80=E2=94=80=E2=94=80=E2=94=
-=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=90
-> +      =E2=94=82 RX       =E2=94=82 TX       =E2=94=82
-> +  1   =E2=94=82 ports    =E2=94=82 ports    =E2=94=82 1
-> +  =E2=94=80=E2=94=80=E2=94=80=E2=96=BA=E2=94=9C=E2=94=80=E2=94=80=E2=94=
-=80=E2=94=80=E2=94=80=E2=94=90    =E2=94=82          =E2=94=9C=E2=94=80=E2=
-=94=80=E2=94=80=E2=94=80=E2=94=80=E2=96=BA
-> +  2   =E2=94=82     =E2=94=82    =E2=94=82          =E2=94=82 2
-> +  =E2=94=80=E2=94=80=E2=94=80=E2=96=BA=E2=94=9C=E2=94=80=E2=94=80=E2=94=
-=80=E2=94=90 =E2=94=82    =E2=94=82          =E2=94=9C=E2=94=80=E2=94=80=E2=
-=94=80=E2=94=80=E2=94=80=E2=96=BA
-> +  3   =E2=94=82   =E2=94=82 =E2=94=82    =E2=94=82          =E2=94=82 3
-> +  =E2=94=80=E2=94=80=E2=94=80=E2=96=BA=E2=94=9C=E2=94=80=E2=94=90 =E2=94=
-=82 =E2=94=82    =E2=94=82          =E2=94=9C=E2=94=80=E2=94=80=E2=94=80=E2=
-=94=80=E2=94=80=E2=96=BA
-> +      =E2=94=82 =E2=96=BC =E2=96=BC =E2=96=BC    =E2=94=82          =E2=
-=94=82
-> +      =E2=94=82 =E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80  =
- =E2=94=82          =E2=94=82
-> +      =E2=94=82 \____/   =E2=94=82          =E2=94=82
-> +      =E2=94=94=E2=94=80=E2=94=80=E2=94=BC=E2=94=80=E2=94=80=E2=94=BC=E2=
-=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=B4=E2=94=80=E2=94=80=E2=94=80=E2=94=
-=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=98
-> +        1=E2=94=82 2=E2=94=82        =E2=96=B2
-> + RCLK out=E2=94=82  =E2=94=82        =E2=94=82 TX CLK in
-> +         =E2=96=BC  =E2=96=BC        =E2=94=82
-> +       =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
-=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=B4=E2=
-=94=80=E2=94=80=E2=94=80=E2=94=90
-> +       =E2=94=82                 =E2=94=82
-> +       =E2=94=82       SEC       =E2=94=82
-> +       =E2=94=82                 =E2=94=82
-> +       =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
-=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
-=94=80=E2=94=80=E2=94=80=E2=94=98
-> +
-> +The SEC can synchronize its frequency to one of the synchronization inpu=
-ts
-> +either clocks recovered on traffic interfaces or (in advanced deployment=
-s)
-> +external frequency sources.
-> +
-> +Some SEC implementations can automatically select synchronization source
-> +through priority tables and synchronization status messaging and provide
-> +necessary filtering and holdover capabilities.
-> +
-> +The following interface can be applicable to diffferent packet network t=
-ypes
-> +following ITU-T G.8261/G.8262 recommendations.
-> +
-> +Interface
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +
-> +The following RTNL messages are used to read/configure SyncE recovered
-> +clocks.
-> +
-> +RTM_GETRCLKSTATE
-> +-----------------
-> +Read the state of recovered pins that output recovered clock from
-> +a given port. The message will contain the number of assigned clocks
-> +(IFLA_RCLK_STATE_COUNT) and an N pin indexes in IFLA_RCLK_STATE_OUT_STATE
-> +To support multiple recovered clock outputs from the same port, this mes=
-sage
-> +will return the IFLA_RCLK_STATE_COUNT attribute containing the number of
-> +recovered clock outputs (N) and N IFLA_RCLK_STATE_OUT_STATE attributes
-> +listing the output indexes with the respective GET_RCLK_FLAGS_ENA flag.
-> +This message will call the ndo_get_rclk_range to determine the allowed
-> +recovered clock indexes and then will loop through them, calling
-> +the ndo_get_rclk_state for each of them.
-> +
-> +
-> +Attributes:
-> +IFLA_RCLK_STATE_COUNT - Returns the number of recovered clock outputs
-> +IFLA_RCLK_STATE_OUT_STATE - Returns the current state of a single recove=
-red
-> +			    clock output in the struct if_get_rclk_msg.
-> +struct if_get_rclk_msg {
-> +	__u32 out_idx; /* output index (from a valid range) */
-> +	__u32 flags;   /* configuration flags */
-> +};
-> +
-> +Currently supported flags:
-> +#define GET_RCLK_FLAGS_ENA	(1U << 0)
-> +
-> +
-> +RTM_SETRCLKSTATE
-> +-----------------
-> +Sets the redirection of the recovered clock for a given pin. This message
-> +expects one attribute:
-> +struct if_set_rclk_msg {
-> +	__u32 ifindex; /* interface index */
-> +	__u32 out_idx; /* output index (from a valid range) */
-> +	__u32 flags;   /* configuration flags */
-> +};
-> +
-> +Supported flags are:
-> +SET_RCLK_FLAGS_ENA - if set in flags - the given output will be enabled,
-> +		     if clear - the output will be disabled.
-> +
-> +RTM_GETEECSTATE
-> +----------------
-> +Reads the state of the EEC or equivalent physical clock synchronizer.
-> +This message returns the following attributes:
-> +IFLA_EEC_STATE - current state of the EEC or equivalent clock generator.
-> +		 The states returned in this attribute are aligned to the
-> +		 ITU-T G.781 and are:
-> +		  IF_EEC_STATE_INVALID - state is not valid
-> +		  IF_EEC_STATE_FREERUN - clock is free-running
-> +		  IF_EEC_STATE_LOCKED - clock is locked to the reference,
-> +		                        but the holdover memory is not valid
-> +		  IF_EEC_STATE_LOCKED_HO_ACQ - clock is locked to the reference
-> +		                               and holdover memory is valid
-> +		  IF_EEC_STATE_HOLDOVER - clock is in holdover mode
-> +State is read from the netdev calling the:
-> +int (*ndo_get_eec_state)(struct net_device *dev, enum if_eec_state *stat=
-e,
-> +			 u32 *src_idx, struct netlink_ext_ack *extack);
-> +
-> +IFLA_EEC_SRC_IDX - optional attribute returning the index of the referen=
-ce
-> +		   that is used for the current IFLA_EEC_STATE, i.e.,
-> +		   the index of the pin that the EEC is locked to.
-> +
-> +Will be returned only if the ndo_get_eec_src is implemented.
-> \ No newline at end of file
-
-Just to be clear, I have much the same objections to this UAPI as I had
-to v2:
-
-- RTM_GETEECSTATE will become obsolete as soon as DPLL object is added.
-
-- Reporting pins through the netdevices that use them allows for
-  configurations that are likely invalid, like disjoint "frequency
-  bridges".
-
-- It's not clear what enabling several pins means, and it's not clear
-  whether this genericity is not going to be an issue in the future when
-  we know what enabling more pins means.
-
-- No way as a user to tell whether two interfaces that report the same
-  pins are actually connected to the same EEC. How many EEC's are there,
-  in the system, anyway?
-
-In particular, I think that the proposed UAPIs should belong to a DPLL
-object. That object must know about the pins, so have it enumerate them.
-That object needs to know about which pin/s to track, so configure it
-there. That object has the state, so have it report it. Really, it looks
-basically 1:1 vs. the proposed API, except the object over which the
-UAPIs should be defined is a DPLL, not a netdev.
+T24gVGh1LCBOb3YgMTEsIDIwMjEgYXQgMTI6MjQ6NDdQTSArMDAwMCwgQWx2aW4gxaBpcHJhZ2Eg
+d3JvdGU6DQo+IE9uIDEwLzI2LzIxIDE4OjI2LCBWbGFkaW1pciBPbHRlYW4gd3JvdGU6DQo+ID4g
+SSBoYXZlIHNlZW4gdG9vIG1hbnkgYnVncyBhbHJlYWR5IGR1ZSB0byB0aGUgZmFjdCB0aGF0IHdl
+IG11c3QgZW5jb2RlIGFuDQo+ID4gaW52YWxpZCBkcC0+YnJpZGdlX251bSBhcyBhIG5lZ2F0aXZl
+IHZhbHVlLCBiZWNhdXNlIHRoZSBuYXR1cmFsIHRlbmRlbmN5DQo+ID4gaXMgdG8gY2hlY2sgdGhh
+dCBpbnZhbGlkIHZhbHVlIHVzaW5nICghZHAtPmJyaWRnZV9udW0pLiBMYXRlc3QgZXhhbXBsZQ0K
+PiA+IGNhbiBiZSBzZWVuIGluIGNvbW1pdCAxYmVjMGYwNTA2MmMgKCJuZXQ6IGRzYTogZml4IGJy
+aWRnZV9udW0gbm90DQo+ID4gZ2V0dGluZyBjbGVhcmVkIGFmdGVyIHBvcnRzIGxlYXZpbmcgdGhl
+IGJyaWRnZSIpLg0KPiA+IA0KPiA+IENvbnZlcnQgdGhlIGV4aXN0aW5nIHVzZXJzIHRvIGFzc3Vt
+ZSB0aGF0IGRwLT5icmlkZ2VfbnVtID09IDAgaXMgdGhlDQo+ID4gZW5jb2RpbmcgZm9yIGludmFs
+aWQsIGFuZCB2YWxpZCBicmlkZ2UgbnVtYmVycyBzdGFydCBmcm9tIDEuDQo+ID4gDQo+ID4gU2ln
+bmVkLW9mZi1ieTogVmxhZGltaXIgT2x0ZWFuIDx2bGFkaW1pci5vbHRlYW5AbnhwLmNvbT4NCj4g
+PiAtLS0NCj4gDQo+IFJldmlld2VkLWJ5OiBBbHZpbiDFoGlwcmFnYSA8YWxzaUBiYW5nLW9sdWZz
+ZW4uZGs+DQoNClRoYW5rcyBmb3IgdGhlIHJldmlldy4NCg0KPiBTbWFsbCByZW1hcmsgaW5saW5l
+Lg0KPiANCj4gPiAtaW50IGRzYV9icmlkZ2VfbnVtX2dldChjb25zdCBzdHJ1Y3QgbmV0X2Rldmlj
+ZSAqYnJpZGdlX2RldiwgaW50IG1heCkNCj4gPiArdW5zaWduZWQgaW50IGRzYV9icmlkZ2VfbnVt
+X2dldChjb25zdCBzdHJ1Y3QgbmV0X2RldmljZSAqYnJpZGdlX2RldiwgaW50IG1heCkNCj4gPiAg
+IHsNCj4gPiAtCWludCBicmlkZ2VfbnVtID0gZHNhX2JyaWRnZV9udW1fZmluZChicmlkZ2VfZGV2
+KTsNCj4gPiArCXVuc2lnbmVkIGludCBicmlkZ2VfbnVtID0gZHNhX2JyaWRnZV9udW1fZmluZChi
+cmlkZ2VfZGV2KTsNCj4gPiAgIA0KPiA+IC0JaWYgKGJyaWRnZV9udW0gPCAwKSB7DQo+ID4gKwlp
+ZiAoIWJyaWRnZV9udW0pIHsNCj4gPiAgIAkJLyogRmlyc3QgcG9ydCB0aGF0IG9mZmxvYWRzIFRY
+IGZvcndhcmRpbmcgZm9yIHRoaXMgYnJpZGdlICovDQo+IA0KPiBQZXJoYXBzIHlvdSB3YW50IHRv
+IHVwZGF0ZSB0aGlzIGNvbW1lbnQgaW4gcGF0Y2ggMi82LCBzaW5jZSBicmlkZ2VfbnVtIA0KPiBp
+cyBubyBsb25nZXIganVzdCBhYm91dCBUWCBmb3J3YXJkaW5nIG9mZmxvYWQuDQo+IA0KPiA+IC0J
+CWJyaWRnZV9udW0gPSBmaW5kX2ZpcnN0X3plcm9fYml0KCZkc2FfZndkX29mZmxvYWRpbmdfYnJp
+ZGdlcywNCj4gPiAtCQkJCQkJIERTQV9NQVhfTlVNX09GRkxPQURJTkdfQlJJREdFUyk7DQo+ID4g
+KwkJYnJpZGdlX251bSA9IGZpbmRfbmV4dF96ZXJvX2JpdCgmZHNhX2Z3ZF9vZmZsb2FkaW5nX2Jy
+aWRnZXMsDQo+ID4gKwkJCQkJCURTQV9NQVhfTlVNX09GRkxPQURJTkdfQlJJREdFUywNCj4gPiAr
+CQkJCQkJMSk7DQoNCkkgd2lsbCB1cGRhdGUgdGhpcyBjb21tZW50IGluIHBhdGNoIDIgdG8gc2F5
+ICJGaXJzdCBwb3J0IHRoYXQgcmVxdWVzdHMNCkZEQiBpc29sYXRpb24gb3IgVFggZm9yd2FyZGlu
+ZyBvZmZsb2FkIGZvciB0aGlzIGJyaWRnZSIuIFNvdW5kcyBvaz8=
