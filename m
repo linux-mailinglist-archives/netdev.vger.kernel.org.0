@@ -2,169 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C36F44CFDA
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 03:11:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B044B44CFE8
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 03:16:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233497AbhKKCO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 21:14:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32866 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233854AbhKKCOZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 21:14:25 -0500
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96E2DC061766;
-        Wed, 10 Nov 2021 18:11:37 -0800 (PST)
-Received: by mail-pl1-x641.google.com with SMTP id n8so4551812plf.4;
-        Wed, 10 Nov 2021 18:11:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=UsyCG8atsFeiYKk5HZLyFdqQ8bvEHYSrT0Mck/R3QNQ=;
-        b=qDq/OZYgTWRQMSCsn/CG907AhLIlN+1HK9fX8tSZtPiUtbBwJA1Pr/keWYtbcbYQMP
-         BzkhgW/RaR8beJCczzk5FsjinNX5F/1Q0FNBdzlSvU7Pqm5zP/PXlBSydpTBWES0Uuhk
-         nCfw0GB524VvrXhDKtKV7llwB5KyNylGadG8P9lPZYcBjEzrXAn82BJzOWUt5FRnrx8b
-         dt676FiJXz5c2Ah+lvsg64Yx/XVt5AXK22/ptFL0IjHuruZ3rCkqePYnqh+wfMYW2W58
-         O9EuYqpJH36Z6Wb9lG4sVMTnQBlFeweii8tFEiJYY9bnV80KMS889NW2KExwIROrYT+B
-         RsLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UsyCG8atsFeiYKk5HZLyFdqQ8bvEHYSrT0Mck/R3QNQ=;
-        b=GGJPya3hV6r15/1rjS+U/BgblC1kAYZVP2NU0Q5MVs2ouybHaGt3N68rcumnXkIY0S
-         1kDyHhnToJmNRM3thT5jxJGi1ut2ZYVvmzCIGSkrhjBcJ/mwwsn64tGQoJJlZk1XzisQ
-         +CCUW6Wu4AoyXnikn7ybxZqnsj7HD1FfXqNP9REY11FHG4CAd6VeRoE3ayYqW8w2nSCz
-         CXDuo/NJzZM8s5ZAFAVW8sF/LYiL4zun/boXhbTMmpAS+KxOxuDfCY4uDO6PNRP1a9Sh
-         FjG0Gdu+IKTYkfPybOXbkNwfW4FzsXJ04b45Z9pDAiIcBpg1Buqg4e3XdBAkQerMZ/r2
-         umqg==
-X-Gm-Message-State: AOAM531cZpDQlebC8IsZAYmK1/h5ND13Sz5xRGbaBKOwGvIZSsYTmlpx
-        ymaHtylgoafY4AWqyXwiXKo=
-X-Google-Smtp-Source: ABdhPJzw+11Q88k8zPcmQVPoMqnXcSJEXkX0erP+CgRsa36lg8qwfxiLaCVWF76rxNb9H1LL4NLNpg==
-X-Received: by 2002:a17:90b:128d:: with SMTP id fw13mr4336755pjb.50.1636596697112;
-        Wed, 10 Nov 2021 18:11:37 -0800 (PST)
-Received: from localhost ([2405:201:6014:d064:3d4e:6265:800c:dc84])
-        by smtp.gmail.com with ESMTPSA id v19sm343490pju.32.2021.11.10.18.11.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Nov 2021 18:11:36 -0800 (PST)
-Date:   Thu, 11 Nov 2021 07:41:33 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
-Subject: Re: [PATCH net v2] bpf: Fix build when CONFIG_BPF_SYSCALL is disabled
-Message-ID: <20211111021133.ekxloctojcriu4sb@apollo.localdomain>
-References: <20211110205418.332403-1-vinicius.gomes@intel.com>
- <20211110212553.e2xnltq3dqduhjnj@apollo.localdomain>
- <CAADnVQKqjLM1P7X+iTfnH-QFw5=z5L_w8MLsWtcNWbh5QR7VVg@mail.gmail.com>
- <878rxvbmcm.fsf@intel.com>
- <20211111001359.3v2yjha5nxkdtoju@apollo.localdomain>
- <87v90za1mx.fsf@intel.com>
+        id S233552AbhKKCTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 21:19:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58806 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233459AbhKKCTE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Nov 2021 21:19:04 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6A0AF61212;
+        Thu, 11 Nov 2021 02:16:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636596976;
+        bh=8gNozfYk5Ww4czdRpkbxlDuGfT6g2UI26/3WCyKo0Uc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cqdpQI+oqziLzFtvyPSJOW5glcBxVTA8bnWjufCrKOBlanpCvKbERpq21xwtUNVQn
+         9913T68oAUxoOgDnRUSJJIKHFOrgNmqULKD7xBcXPgrtv//mR30TKSlFqIoqE3iBnn
+         RsFogfv3oQ0akOqi9i+KuPgXIUwk3Z1Zf16C6XAmGK/1GGMeeISXNm2xKvA62j5BBZ
+         Ly5mbxRpIdrcmfrPnLJxkcpjmbCnagY339x6/aSM5NWk3e8WmmHFPHnBy1QchtTaMV
+         F2UxGhRKJK0IVEQZvKXVYasNls4i69iIc+xNhTaQbDc89EQTJHuatzBtIKgcco4i3J
+         b9gkzUK24CZOw==
+Date:   Thu, 11 Nov 2021 03:16:08 +0100
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [RFC PATCH v4 0/8] Adds support for PHY LEDs with offload
+ triggers
+Message-ID: <20211111031608.11267828@thinkpad>
+In-Reply-To: <20211111013500.13882-1-ansuelsmth@gmail.com>
+References: <20211111013500.13882-1-ansuelsmth@gmail.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87v90za1mx.fsf@intel.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 11, 2021 at 07:34:38AM IST, Vinicius Costa Gomes wrote:
-> Hi Kartikeya,
->
-> Kumar Kartikeya Dwivedi <memxor@gmail.com> writes:
->
-> > On Thu, Nov 11, 2021 at 05:21:53AM IST, Vinicius Costa Gomes wrote:
-> >> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
-> >>
-> >> >> Thanks for the fix.
-> >> >>
-> >> >> But instead of moving this to core.c, you can probably make the btf.h
-> >> >> declaration conditional on CONFIG_BPF_SYSCALL, since this is not useful in
-> >> >> isolation (only used by verifier for module kfunc support). For the case of
-> >> >> kfunc_btf_id_list variables, just define it as an empty struct and static
-> >> >> variables, since the definition is still inside btf.c. So it becomes a noop for
-> >> >> !CONFIG_BPF_SYSCALL.
-> >> >>
-> >> >> I am also not sure whether BTF is useful without BPF support, but maybe I'm
-> >> >> missing some usecase.
-> >> >
-> >> > Unlikely. I would just disallow such config instead of sprinkling
-> >> > the code with ifdefs.
-> >>
-> >> Is something like this what you have in mind?
-> >>
-> >> diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-> >> index 6fdbf9613aec..eae860c86e26 100644
-> >> --- a/lib/Kconfig.debug
-> >> +++ b/lib/Kconfig.debug
-> >> @@ -316,6 +316,7 @@ config DEBUG_INFO_BTF
-> >>  	bool "Generate BTF typeinfo"
-> >>  	depends on !DEBUG_INFO_SPLIT && !DEBUG_INFO_REDUCED
-> >>  	depends on !GCC_PLUGIN_RANDSTRUCT || COMPILE_TEST
-> >> +	depends on BPF_SYSCALL
-> >>  	help
-> >>  	  Generate deduplicated BTF type information from DWARF debug info.
-> >>  	  Turning this on expects presence of pahole tool, which will convert
-> >>
-> >>
-> >
-> > BTW, you will need a little more than that, I suspect the compiler optimizes out
-> > the register/unregister call so we don't see a build failure, but adding a side
-> > effect gives me errors, so something like this should resolve the problem (since
-> > kfunc_btf_id_list variable definition is behind CONFIG_BPF_SYSCALL).
-> >
-> > diff --git a/include/linux/btf.h b/include/linux/btf.h
-> > index 203eef993d76..e9881ef9e9aa 100644
-> > --- a/include/linux/btf.h
-> > +++ b/include/linux/btf.h
-> > @@ -254,6 +254,8 @@ void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
-> >                                  struct kfunc_btf_id_set *s);
-> >  bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist, u32 kfunc_id,
-> >                               struct module *owner);
-> > +extern struct kfunc_btf_id_list bpf_tcp_ca_kfunc_list;
-> > +extern struct kfunc_btf_id_list prog_test_kfunc_list;
-> >  #else
-> >  static inline void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
-> >                                              struct kfunc_btf_id_set *s)
-> > @@ -268,13 +270,13 @@ static inline bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist,
-> >  {
-> >         return false;
-> >  }
-> > +struct kfunc_btf_id_list {};
-> > +static struct kfunc_btf_id_list bpf_tcp_ca_kfunc_list __maybe_unused;
-> > +static struct kfunc_btf_id_list prog_test_kfunc_list __maybe_unused;
-> > +
-> >  #endif
-> >
-> >  #define DEFINE_KFUNC_BTF_ID_SET(set, name)                                     \
-> >         struct kfunc_btf_id_set name = { LIST_HEAD_INIT(name.list), (set),     \
-> >                                          THIS_MODULE }
-> > -
-> > -extern struct kfunc_btf_id_list bpf_tcp_ca_kfunc_list;
-> > -extern struct kfunc_btf_id_list prog_test_kfunc_list;
-> > -
-> >  #endif
-> >
->
-> I could not reproduce the build failure here even when adding some side
-> effects, but I didn't try very hard.
->
-> As you are more familiar with the code, I would be glad if you could
-> take it from here and propose a patch.
->
+On Thu, 11 Nov 2021 02:34:52 +0100
+Ansuel Smith <ansuelsmth@gmail.com> wrote:
 
-Sure, no worries!
+> This is another attempt in adding support for PHY LEDs. Most of the
+> times Switch/PHY have connected multiple LEDs that are controlled by HW
+> based on some rules/event. Currently we lack any support for a generic
+> way to control the HW part and normally we either never implement the
+> feature or only add control for brightness or hw blink.
+> 
+> This is based on Marek idea of providing some API to cled but use a
+> different implementation that in theory should be more generilized.
+> 
+> The current idea is:
+> - LED driver implement 3 API (hw_control_status/start/stop).
+>   They are used to put the LED in hardware mode and to configure the
+>   various trigger.
+> - We have hardware triggers that are used to expose to userspace the
+>   supported hardware mode and set the hardware mode on trigger
+>   activation.
+> - We can also have triggers that both support hardware and software mode.
+> - The LED driver will declare each supported hardware blink mode and
+>   communicate with the trigger all the supported blink modes that will
+>   be available by sysfs.
+> - A trigger will use blink_set to configure the blink mode to active
+>   in hardware mode.
+> - On hardware trigger activation, only the hardware mode is enabled but
+>   the blink modes are not configured. The LED driver should reset any
+>   link mode active by default.
+> 
+> Each LED driver will have to declare explicit support for the offload
+> trigger (or return not supported error code) as we the trigger_data that
+> the LED driver will elaborate and understand what is referring to (based
+> on the current active trigger).
+> 
+> I posted a user for this new implementation that will benefit from this
+> and will add a big feature to it. Currently qca8k can have up to 3 LEDs
+> connected to each PHY port and we have some device that have only one of
+> them connected and the default configuration won't work for that.
+> 
+> I also posted the netdev trigger expanded with the hardware support.
+> 
+> More polish is required but this is just to understand if I'm taking
+> the correct path with this implementation hoping we find a correct
+> implementation and we start working on the ""small details""
 
->
-> Cheers,
-> --
-> Vinicius
+Hello Ansuel,
 
---
-Kartikeya
+besides other things, I am still against the idea of the
+`hardware-phy-activity` trigger: I think that if the user wants the LED
+to indicate network device's link status or activity, it should always
+be done via the existing netdev trigger, and with that trigger only.
+
+Yes, I know that netdev trigger does not currently support indicating
+different link modes, only whether the link is up (in any mode). That
+should be solved by extending the netdev trigger.
+
+I am going to try to revive my last attempt and send my proposal again.
+Hope you don't mind.
+
+Marek
