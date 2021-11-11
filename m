@@ -2,108 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B86DF44DACD
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 17:53:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DE4244DAD0
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 17:53:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230034AbhKKQzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 11:55:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33404 "EHLO
+        id S233966AbhKKQ4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 11:56:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbhKKQzy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 11:55:54 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F4BDC061766
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 08:53:04 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id 133so5655622wme.0
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 08:53:04 -0800 (PST)
+        with ESMTP id S229539AbhKKQ4k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 11:56:40 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 267C1C061766;
+        Thu, 11 Nov 2021 08:53:51 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id c4so10834830wrd.9;
+        Thu, 11 Nov 2021 08:53:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GF+I7k9REg4J5pp7bpz4i4qyzuEm21Cj7urzwGnbJEg=;
-        b=OShEFn6GEVMIrsEcvpqtNv6qzAUXcQtG7jnm3B4hMA44oQwKiu1+9Oug+A/TZbjWYn
-         dSpAwm47rbHKsgieq/aUKpZUsnwXvcKW/TEHSEpGTDf9SkYFtsY7WP56f+NvEUKiTa3m
-         D3lbrJfAq0cUMgt8mrcL2a7d3/MRvSS4DK/PCWZulUvrdKm6ui+yaAKjcvsxWrgbTyfQ
-         eQUxZJDWXQ7jl7949eBmW4YciGFgW79C7j6O1QmQpxKVtM1KjVVVs+Qp3qizFMsdnPdF
-         H8gIfRVD1N93YW0nXRM41d51VQg3ErdG76uVQJVascmio7Tj1SHMG96Jh1hVxQCBLm1g
-         MEkw==
+         :cc:content-transfer-encoding;
+        bh=/jrnoVf+n7YqwtxXnwP3VKh9fJI/Dke/6law9LGVWwU=;
+        b=OERyfw8zJ+LWGdkqDxo3O2Fghfv7CjJ1eDoMNUYGfhG61LdixHD/muosa3dexgCQ80
+         KdutXfIGKCnH5rmkU1dfJhRXTEWZgIOJZFNIoSLFzo4/C7dbdAgidsfXlqsAkXysjNPB
+         02Q3zCd9m4/M9NPsuUo21ROwHxVh1JKvmuWcOQTj3DRm7JRZI3Fc6SPf7BEtSm5YY2+7
+         74neldIqCBqJIXAJrTP24aXfnDC57vwUyS0KsLcOqKGxslPUjwaBJiv2cmtpL3gm7Uur
+         W77JEep/dSzE/wiAaQ9e+fUXYC8XPt3xu4XC6L5ZdX3YMM4uikCvD0NFT51t4lkaXfhv
+         sOkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GF+I7k9REg4J5pp7bpz4i4qyzuEm21Cj7urzwGnbJEg=;
-        b=PXVG9JsPa5Q+//xTaYG7oy0JAbpBD7NN3tau6FMRngkFwWhJylNHUUjcCW7HLBA3oz
-         gEyl8VoxkIQyhzXhxjZY4ULK7GwryJgpZjy4dvwkX394aOU+xJbcQ17MWDJfr+6WAihu
-         /c/DWdTHvY8ZImTDfxBt2y50ZeoOdem+mRBgpbakGnyxi5dIKiRBxqjKp9SZZIyA2AKZ
-         c99r/i3p1642PPmupo6dq13zOz8fGmGD8yecUXD1I3ojxvSitmYqoOewhgW+njsUM0IU
-         xxArC+oq3AhJznQ0s5WZqxRxFyig3FKoIdbAf28MAVxI0E1Euyt6BkyLBA0hLm9kgxEk
-         nIlQ==
-X-Gm-Message-State: AOAM533bnHXIY0xXbOx6SfVzk+lICxRwsReLlqzSUSe+EEPG+0LeSNjG
-        dYiS0mXv5QexwhU/+LWQfdSvJS0ZrOBJHgI3jTB2Yw==
-X-Google-Smtp-Source: ABdhPJz/oogn1hAsMLtKpi1RptvsFD1ssLVa7+Zew5YEdjSG4/1US9Z3N20259F4w1VsmKvt3X+4Ql/Om12wmO694vc=
-X-Received: by 2002:a05:600c:2297:: with SMTP id 23mr26264276wmf.73.1636649582756;
- Thu, 11 Nov 2021 08:53:02 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=/jrnoVf+n7YqwtxXnwP3VKh9fJI/Dke/6law9LGVWwU=;
+        b=wismYqNxrZqqD5sJ720Tz+19qzxh+BIOP2jW1mhbDqKvhKa518qt+DMleGG2LM1h+2
+         yuLMtMy+P1wb8lNyKoVnNL0vJwermZ6/YJv8yLK9Q+Val9Bu9mKU9o8EMh9V83HXuSjO
+         NSUdbW/FnpifNK4AfBigaUnkpz2ei3RMTAYl4LLB7QU7tCMvMqtqF3GZ1t5Jh+H1QkJT
+         ffJrnDB0lXuuQVjBfuSwGoTTKz0+PtnbziDTGdNPWXC+9OsfFHIy1Awx7KHml6lJ3rcn
+         NEUkdK2ROdMJIiUFm3x8lgBOBfXMoGd/rb6i9c5AZEIfg60Mj7A+/h7s+Xb1UAyBJ/CT
+         fpVA==
+X-Gm-Message-State: AOAM530nTE4ya98khxMEGkqiSQXhDwnfIf1OhveV1fQBk6+EvAj2VOHA
+        KriA+sj5RW9bG9+HmDTsY+HimQkGzBjo/iVx/AE=
+X-Google-Smtp-Source: ABdhPJxzJBafNVhaTumUIXJSTqjdtXpwb8dSAszYOloMr9pBIq9rL/EjRYPgL2F9UkvIbaUwSKmpECTl25hUOa2HZD4=
+X-Received: by 2002:a5d:648e:: with SMTP id o14mr10335737wri.141.1636649629731;
+ Thu, 11 Nov 2021 08:53:49 -0800 (PST)
 MIME-Version: 1.0
-References: <20211111065322.1261275-1-eric.dumazet@gmail.com>
- <YYzd+zdzqUM5/ZKL@hirez.programming.kicks-ass.net> <YYzl8/7N+Tv/j0RV@hirez.programming.kicks-ass.net>
- <CANn89i+qjOpL9eYj=F2Mg-rLduQob4tOZcEUZeB5v0Zz3p6Qqw@mail.gmail.com>
-In-Reply-To: <CANn89i+qjOpL9eYj=F2Mg-rLduQob4tOZcEUZeB5v0Zz3p6Qqw@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 11 Nov 2021 08:52:51 -0800
-Message-ID: <CANn89i+Y6OXdKccgM6+gC-2giJFcOrMfraG7ofCfKXmjsfMPJQ@mail.gmail.com>
-Subject: Re: [RFC] x86/csum: rewrite csum_partial()
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, x86@kernel.org,
-        Alexander Duyck <alexander.duyck@gmail.com>
+References: <20211111075707.21922-1-magnus.karlsson@gmail.com>
+In-Reply-To: <20211111075707.21922-1-magnus.karlsson@gmail.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Thu, 11 Nov 2021 17:53:37 +0100
+Message-ID: <CAJ+HfNju+_PC7nYKqJk6TqK6vSxRXAOd7Mb7a2wkhaqpbfkOAA@mail.gmail.com>
+Subject: Re: [PATCH bpf] xsk: fix crash on double free in buffer pool
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Netdev <netdev@vger.kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 11, 2021 at 8:02 AM Eric Dumazet <edumazet@google.com> wrote:
+On Thu, 11 Nov 2021 at 08:57, Magnus Karlsson <magnus.karlsson@gmail.com> w=
+rote:
 >
-
-> Thanks Peter !
+> From: Magnus Karlsson <magnus.karlsson@intel.com>
 >
-> This is more or less the first version I wrote. (I was doing tests for
-> (len & 32), (len & 16) .. to not have to update len in these blocks.
+> Fix a crash in the buffer pool allocator when a buffer is double
+> freed. It is possible to trigger this behavior not only from a faulty
+> driver, but also from user space like this: Create a zero-copy AF_XDP
+> socket. Load an XDP program that will issue XDP_DROP for all
+> packets. Put the same umem buffer into the fill ring multiple times,
+> then bind the socket and send some traffic. This will crash the kernel
+> as the XDP_DROP action triggers one call to xsk_buff_free()/xp_free()
+> for every packet dropped. Each call will add the corresponding buffer
+> entry to the free_list and increase the free_list_cnt. Some entries
+> will have been added multiple times due to the same buffer being
+> freed. The buffer allocation code will then traverse this broken list
+> and since the same buffer is in the list multiple times, it will try
+> to delete the same buffer twice from the list leading to a crash.
 >
-> Then, I tried to add an inline version, a la ip_fast_csum() but for IPv6.
+> The fix for this is just to test that the buffer has not been added
+> before in xp_free(). If it has been, just return from the function and
+> do not put it in the free_list a second time.
 >
-> Then I came up with the version I sent, for some reason my .config had
-> temporarily disabled CONFIG_RETPOLINE,
-> thanks for reminding me this !
+> Note that this bug was not present in the code before the commit
+> referenced in the Fixes tag. That code used one list entry per
+> allocated buffer, so multiple frees did not have any side effects. But
+> the commit below optimized the usage of the pool and only uses a
+> single entry per buffer in the umem, meaning that multiple
+> allocations/frees of the same buffer will also only use one entry,
+> thus leading to the problem.
 >
-> I also missed this warning anyway :
-> arch/x86/lib/csum-partial_64.o: warning: objtool: csum_partial()+0x2f:
-> unannotated intra-function call
->
-> I will spend a bit more time on this before sending a V2, thanks again !
+> Fixes: 47e4075df300 ("xsk: Batched buffer allocation for the pool")
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-BTW, I could not understand why :
-
-               result = add32_with_carry(result, *(u32 *)buff);
-
-generates this code :
-
- 123: 41 8b 09              mov    (%r9),%ecx
- 126: 89 4d f8              mov    %ecx,-0x8(%rbp)
- 129: 03 45 f8              add    -0x8(%rbp),%eax
- 12c: 83 d0 00              adc    $0x0,%eax
-
-Apparently add32_with_carry() forces the use of use of a temporary in memory
-
-While
-               asm("   addl 0*4(%[src]),%[res]\n"
-                   "   adcl $0,%[res]\n"
-                       : [res] "=r" (result)
-                       : [src] "r" (buff), "[res]" (result)
-                        : "memory");
-
-gives
-
- 120: 41 03 01              add    (%r9),%eax
- 123: 83 d0 00              adc    $0x0,%eax
+Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn@kernel.org>
