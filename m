@@ -2,122 +2,278 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8598144D1FB
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 07:43:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55D3C44D212
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 07:53:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230358AbhKKGqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 01:46:10 -0500
-Received: from mail-io1-f71.google.com ([209.85.166.71]:56054 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230014AbhKKGqJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 01:46:09 -0500
-Received: by mail-io1-f71.google.com with SMTP id y74-20020a6bc84d000000b005e700290338so3394266iof.22
-        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 22:43:21 -0800 (PST)
+        id S229706AbhKKG4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 01:56:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37914 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229637AbhKKG4P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 01:56:15 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD6EAC061766
+        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 22:53:26 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id fv9-20020a17090b0e8900b001a6a5ab1392so3950057pjb.1
+        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 22:53:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9Ei6J2RlcbOG/FecECv4wnp+rVeKrIA1snLHEYJiK7o=;
+        b=nG1TmuqDG25GRunjekrdrijmOKmDnhGXA4iUIfq8qYJGNKVQPgmJ/dShAz72CfWfDP
+         ozlEOPHfWTWnthZ+yTpxsKfxoUSRekXZ2KMCWzLCT/pUngAnnGDr9181BjMjGXG2fX58
+         a8g5sabYtLy2sX85WpNo7BvNChsuBm7hyV5ydn2tXSGQI3rGz1XzUaBKtOiXQFDUMyIS
+         SBAfNDTsB4Yei9iSNOG7nDe87JPFoLlhI2hbZwmpA88iKJGCeOPg2Jik8WJrYbT/zpvG
+         mqs4FaZKJ5hhRi2Dd4VOj5/SkJHmXuFpVSlfvbj+93/vPEArfQeeboM06r6BMg6QscZp
+         cwjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=mnls3d+B5dNpFY4b4y80Brjr8wlqrHuUE32ifq4dCs8=;
-        b=h5R64x+WNKGpQOZdJ1jPIV+mS3YOgcwk6BblQGdgL5MUljKkV2mzxgmktmFiyoxcP1
-         4dJi9Ktpw3CJxn17dzi29A9jp3Y3aBLkE3M2Wyfq6N6TO/Fb3vo4kBlZBGGH+YX5Tq60
-         2LsYU2mkVVLnGGQuYpNsxuxQsCWEnI0F4BZct80eCcDPv5REX659hR2uM6M0Ug4PAZGf
-         btnMOgDVqY4NkPN4zCpkqSJaTH2J+nhVt/wXgdKXel10+RDCQbP8chjr+lda8khVr+C0
-         NeZicb6fdOCYToHb2jf9iLimMNuAIZRvCtAF9HL/P74kp3WjXFG2i9RF5FQMaZA8etIY
-         I0Xg==
-X-Gm-Message-State: AOAM530gW9QoXfidb05/zkeRdkT5RqGNRft80re7kdz2r94ncqKZ7fMc
-        3b/2XDL7BhWOxemtx2mZ9Nx2m+5Jiw2qX5c8Ys0zyOMsH1So
-X-Google-Smtp-Source: ABdhPJwA57G8Lx4oLqI477r2EWE3KPXCpaPPjX1Ze5ECwkKzAOip1D1Ie0wh3HxAAwqEy/qD2XyMFpdoT6dMY3KnFpfmeynDLMds
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9Ei6J2RlcbOG/FecECv4wnp+rVeKrIA1snLHEYJiK7o=;
+        b=qlYKV5fGsj6RCHcH2JoeGQDcaCZ+H3XQETwFgp5leuJI9nS3y3dcBPiMwWfE0F0AeN
+         dfSyow/6Pq+t3fC/VCYjxoVkQnUwxU7qzM0VRDSRwJXTvcmcBilfTnulOIdkMLyiTi2F
+         P6+YLDFNvB7xnvScnbkQbgid4+NmgDFt4pgFUR30eqskwQX+uUGrbADcc2mou0ZqnZqF
+         AQEBAkmUQg/j3msW+sjAaDzu4yleN4Olyjbd3JA7BqsqKz92/wdvfe/ziX6QRewCUsvM
+         juJPSn6R3BjGcJTmf8RLjjhhJM3B0FVO2UBr1uWpy2uan97lt1achsPhAi9sO5JMalan
+         DqGw==
+X-Gm-Message-State: AOAM531yEPZewd+rEQDCQ/3jyoCdzxF8VvOyYcms6wCbRFgpmf5O0zB+
+        EQv4X9oao4CTrJCr/+cdmbnlxYL6o0I=
+X-Google-Smtp-Source: ABdhPJxLUR/el9OHAqt5/5pmZHd5SRkdOfBWq4p3COPYhOlO0Q0KgZ6BSw01RstdIy6s/e4P5a2vQw==
+X-Received: by 2002:a17:90b:19c8:: with SMTP id nm8mr24289956pjb.163.1636613606294;
+        Wed, 10 Nov 2021 22:53:26 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:9e5b:8f30:564d:2a17])
+        by smtp.gmail.com with ESMTPSA id z23sm1346861pgn.14.2021.11.10.22.53.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Nov 2021 22:53:25 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>, x86@kernel.org,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: [RFC] x86/csum: rewrite csum_partial()
+Date:   Wed, 10 Nov 2021 22:53:22 -0800
+Message-Id: <20211111065322.1261275-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.34.0.rc0.344.g81b53c2807-goog
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1561:: with SMTP id k1mr2998713ilu.135.1636613000688;
- Wed, 10 Nov 2021 22:43:20 -0800 (PST)
-Date:   Wed, 10 Nov 2021 22:43:20 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000008a7c9605d07da846@google.com>
-Subject: [syzbot] WARNING in __dev_change_net_namespace
-From:   syzbot <syzbot+5434727aa485c3203fed@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, avagin@gmail.com,
-        bpf@vger.kernel.org, cong.wang@bytedance.com, daniel@iogearbox.net,
-        davem@davemloft.net, hawk@kernel.org, johannes.berg@intel.com,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+From: Eric Dumazet <edumazet@google.com>
 
-syzbot found the following issue on:
+With more NIC supporting CHECKSUM_COMPLETE, and IPv6 being widely used.
+csum_partial() is heavily used with small amount of bytes,
+and is consuming many cycles.
 
-HEAD commit:    512b7931ad05 Merge branch 'akpm' (patches from Andrew)
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=15b45fb6b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=99780e4a2873b273
-dashboard link: https://syzkaller.appspot.com/bug?extid=5434727aa485c3203fed
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+IPv6 header size for instance is 40 bytes.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Another thing to consider is that NET_IP_ALIGN is 0 on x86,
+meaning that network headers in RX path are not word-aligned,
+unless the driver forces this.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+5434727aa485c3203fed@syzkaller.appspotmail.com
+This means that csum_partial() fetches one u16
+to 'align the buffer', then perform seven u64 additions
+with carry in a loop, then a remaining u32, then a remaining u16.
 
-RAX: ffffffffffffffda RBX: 00007f02bf014f60 RCX: 00007f02bef01ae9
-RDX: 0000000000000000 RSI: 0000000020000080 RDI: 0000000000000003
-RBP: 00007f02bc4771d0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
-R13: 00007ffcc2738d7f R14: 00007f02bc477300 R15: 0000000000022000
- </TASK>
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 4974 at net/core/dev.c:11254 __dev_change_net_namespace+0x1079/0x1330 net/core/dev.c:11254
-Modules linked in:
-CPU: 0 PID: 4974 Comm: syz-executor.2 Not tainted 5.15.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:__dev_change_net_namespace+0x1079/0x1330 net/core/dev.c:11254
-Code: c7 c7 80 9b 8c 8a c6 05 ba 0e 3b 06 01 e8 36 73 d5 01 0f 0b e9 69 f0 ff ff e8 e3 95 57 fa 0f 0b e9 60 fb ff ff e8 d7 95 57 fa <0f> 0b e9 2a fb ff ff 41 bd ea ff ff ff e9 62 f2 ff ff e8 f0 38 9e
-RSP: 0018:ffffc900217aed70 EFLAGS: 00010246
-RAX: 0000000000040000 RBX: 00000000fffffff4 RCX: ffffc9000b291000
-RDX: 0000000000040000 RSI: ffffffff87202d59 RDI: 0000000000000003
-RBP: ffff88815cbea000 R08: 0000000000000000 R09: ffff88815cbea64b
-R10: ffffffff87202882 R11: 0000000000000000 R12: dffffc0000000000
-R13: ffffffff8d0e3dc0 R14: ffff88815cbeac00 R15: ffffffff8d0e3f0c
-FS:  00007f02bc477700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b32027000 CR3: 0000000162d58000 CR4: 0000000000350ef0
-Call Trace:
- <TASK>
- do_setlink+0x275/0x3970 net/core/rtnetlink.c:2624
- __rtnl_newlink+0xde6/0x1750 net/core/rtnetlink.c:3391
- rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3506
- rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5571
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2491
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x86d/0xda0 net/netlink/af_netlink.c:1916
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:724
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2492
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f02bef01ae9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f02bc477188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f02bf014f60 RCX: 00007f02bef01ae9
-RDX: 0000000000000000 RSI: 0000000020000080 RDI: 0000000000000003
-RBP: 00007f02bc4771d0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
-R13: 00007ffcc2738d7f R14: 00007f02bc477300 R15: 0000000000022000
- </TASK>
+With this new version, we perform 10 u32 adds with carry, to
+avoid the expensive 64->32 transformation. Using 5 u64 adds
+plus one add32_with_carry() is more expensive.
 
+Also note that this avoids loops for less than ~60 bytes.
 
+Tested on various cpus, all of them show a big reduction in
+csum_partial() cost (by 30 to 75 %)
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Alexander Duyck <alexander.duyck@gmail.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ arch/x86/lib/csum-partial_64.c | 146 +++++++++++++++++----------------
+ 1 file changed, 77 insertions(+), 69 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/arch/x86/lib/csum-partial_64.c b/arch/x86/lib/csum-partial_64.c
+index e7925d668b680269fb2442766deaf416dc42f9a1..f48fe0ec9663ff3afa1b5403f135407b8b0fde01 100644
+--- a/arch/x86/lib/csum-partial_64.c
++++ b/arch/x86/lib/csum-partial_64.c
+@@ -21,97 +21,105 @@ static inline unsigned short from32to16(unsigned a)
+ }
+ 
+ /*
+- * Do a 64-bit checksum on an arbitrary memory area.
++ * Do a checksum on an arbitrary memory area.
+  * Returns a 32bit checksum.
+  *
+  * This isn't as time critical as it used to be because many NICs
+  * do hardware checksumming these days.
+- * 
+- * Things tried and found to not make it faster:
+- * Manual Prefetching
+- * Unrolling to an 128 bytes inner loop.
+- * Using interleaving with more registers to break the carry chains.
++ *
++ * Still, with CHECKSUM_COMPLETE this is called to compute
++ * checksums on IPv6 headers (40 bytes) and other small parts.
+  */
+ static unsigned do_csum(const unsigned char *buff, unsigned len)
+ {
+-	unsigned odd, count;
+-	unsigned long result = 0;
++	unsigned long dwords;
++	unsigned odd, result = 0;
+ 
+-	if (unlikely(len == 0))
+-		return result; 
+ 	odd = 1 & (unsigned long) buff;
+ 	if (unlikely(odd)) {
++		if (unlikely(len == 0))
++			return result;
+ 		result = *buff << 8;
+ 		len--;
+ 		buff++;
+ 	}
+-	count = len >> 1;		/* nr of 16-bit words.. */
+-	if (count) {
+-		if (2 & (unsigned long) buff) {
+-			result += *(unsigned short *)buff;
+-			count--;
+-			len -= 2;
+-			buff += 2;
+-		}
+-		count >>= 1;		/* nr of 32-bit words.. */
+-		if (count) {
+-			unsigned long zero;
+-			unsigned count64;
+-			if (4 & (unsigned long) buff) {
+-				result += *(unsigned int *) buff;
+-				count--;
+-				len -= 4;
+-				buff += 4;
+-			}
+-			count >>= 1;	/* nr of 64-bit words.. */
++	if (unlikely(len >= 64)) {
++		unsigned long temp64 = result;
++		do {
++			asm("	addq 0*8(%[src]),%[res]\n"
++			    "	adcq 1*8(%[src]),%[res]\n"
++			    "	adcq 2*8(%[src]),%[res]\n"
++			    "	adcq 3*8(%[src]),%[res]\n"
++			    "	adcq 4*8(%[src]),%[res]\n"
++			    "	adcq 5*8(%[src]),%[res]\n"
++			    "	adcq 6*8(%[src]),%[res]\n"
++			    "	adcq 7*8(%[src]),%[res]\n"
++			    "	adcq $0,%[res]"
++			    : [res] "=r" (temp64)
++			    : [src] "r" (buff), "[res]" (temp64)
++			    : "memory");
++			buff += 64;
++			len -= 64;
++		} while (len >= 64);
++		result = add32_with_carry(temp64 >> 32, temp64 & 0xffffffff);
++	}
+ 
+-			/* main loop using 64byte blocks */
+-			zero = 0;
+-			count64 = count >> 3;
+-			while (count64) { 
+-				asm("addq 0*8(%[src]),%[res]\n\t"
+-				    "adcq 1*8(%[src]),%[res]\n\t"
+-				    "adcq 2*8(%[src]),%[res]\n\t"
+-				    "adcq 3*8(%[src]),%[res]\n\t"
+-				    "adcq 4*8(%[src]),%[res]\n\t"
+-				    "adcq 5*8(%[src]),%[res]\n\t"
+-				    "adcq 6*8(%[src]),%[res]\n\t"
+-				    "adcq 7*8(%[src]),%[res]\n\t"
+-				    "adcq %[zero],%[res]"
+-				    : [res] "=r" (result)
+-				    : [src] "r" (buff), [zero] "r" (zero),
+-				    "[res]" (result));
+-				buff += 64;
+-				count64--;
+-			}
++	dwords = len >> 2;
++	if (dwords) { /* dwords is in [1..15] */
++		unsigned long dest;
+ 
+-			/* last up to 7 8byte blocks */
+-			count %= 8; 
+-			while (count) { 
+-				asm("addq %1,%0\n\t"
+-				    "adcq %2,%0\n" 
+-					    : "=r" (result)
+-				    : "m" (*(unsigned long *)buff), 
+-				    "r" (zero),  "0" (result));
+-				--count; 
+-				buff += 8;
+-			}
+-			result = add32_with_carry(result>>32,
+-						  result&0xffffffff); 
++		/*
++		 * This implements an optimized version of
++		 * switch (dwords) {
++		 * case 15: res = add_with_carry(res, buf32[14]); fallthrough;
++		 * case 14: res = add_with_carry(res, buf32[13]); fallthrough;
++		 * case 13: res = add_with_carry(res, buf32[12]); fallthrough;
++		 * ...
++		 * case 3: res = add_with_carry(res, buf32[2]); fallthrough;
++		 * case 2: res = add_with_carry(res, buf32[1]); fallthrough;
++		 * case 1: res = add_with_carry(res, buf32[0]); fallthrough;
++		 * }
++		 *
++		 * "adcl 8byteoff(%reg1),%reg2" are using either 3 or 4 bytes.
++		 */
++		asm("	call 1f\n"
++		    "1:	pop %[dest]\n"
++		    "	lea (2f-1b)(%[dest],%[skip],4),%[dest]\n"
++		    "	clc\n"
++		    "	jmp *%[dest]\n               .align 4\n"
++		    "2:\n"
++		    "	adcl 14*4(%[src]),%[res]\n   .align 4\n"
++		    "	adcl 13*4(%[src]),%[res]\n   .align 4\n"
++		    "	adcl 12*4(%[src]),%[res]\n   .align 4\n"
++		    "	adcl 11*4(%[src]),%[res]\n   .align 4\n"
++		    "	adcl 10*4(%[src]),%[res]\n   .align 4\n"
++		    "	adcl 9*4(%[src]),%[res]\n   .align 4\n"
++		    "	adcl 8*4(%[src]),%[res]\n   .align 4\n"
++		    "	adcl 7*4(%[src]),%[res]\n   .align 4\n"
++		    "	adcl 6*4(%[src]),%[res]\n   .align 4\n"
++		    "	adcl 5*4(%[src]),%[res]\n   .align 4\n"
++		    "	adcl 4*4(%[src]),%[res]\n   .align 4\n"
++		    "	adcl 3*4(%[src]),%[res]\n   .align 4\n"
++		    "	adcl 2*4(%[src]),%[res]\n   .align 4\n"
++		    "	adcl 1*4(%[src]),%[res]\n   .align 4\n"
++		    "	adcl 0*4(%[src]),%[res]\n"
++		    "	adcl $0,%[res]"
++			: [res] "=r" (result), [dest] "=&r" (dest)
++			: [src] "r" (buff), "[res]" (result),
++			  [skip] "r" (dwords ^ 15)
++			: "memory");
++	}
+ 
+-			if (len & 4) {
+-				result += *(unsigned int *) buff;
+-				buff += 4;
+-			}
+-		}
++	if (len & 3U) {
++		buff += len & ~3U;
++		result = from32to16(result);
+ 		if (len & 2) {
+ 			result += *(unsigned short *) buff;
+ 			buff += 2;
+ 		}
++		if (len & 1)
++			result += *buff;
+ 	}
+-	if (len & 1)
+-		result += *buff;
+-	result = add32_with_carry(result>>32, result & 0xffffffff); 
+ 	if (unlikely(odd)) { 
+ 		result = from32to16(result);
+ 		result = ((result >> 8) & 0xff) | ((result & 0xff) << 8);
+-- 
+2.34.0.rc0.344.g81b53c2807-goog
+
