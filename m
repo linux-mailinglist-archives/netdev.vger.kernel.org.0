@@ -2,78 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2399844CFD6
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 03:11:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C36F44CFDA
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 03:11:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234048AbhKKCNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 21:13:16 -0500
-Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net ([165.227.154.27]:39181
-        "HELO zg8tmty1ljiyny4xntqumjca.icoremail.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with SMTP id S234265AbhKKCNE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 21:13:04 -0500
-Received: by ajax-webmail-mail-app4 (Coremail) ; Thu, 11 Nov 2021 10:09:59
- +0800 (GMT+08:00)
-X-Originating-IP: [183.159.98.51]
-Date:   Thu, 11 Nov 2021 10:09:59 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   "Lin Ma" <linma@zju.edu.cn>
-To:     "Jakub Kicinski" <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, jirislaby@kernel.org,
-        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org
-Subject: Re: Re: [PATCH v1 2/2] hamradio: defer 6pack kfree after
- unregister_netdev
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2021 www.mailtech.cn zju.edu.cn
-In-Reply-To: <20211110180612.2f2eb760@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20211108103721.30522-1-linma@zju.edu.cn>
- <20211108103759.30541-1-linma@zju.edu.cn>
- <20211110180525.20422f66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20211110180612.2f2eb760@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        id S233497AbhKKCO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 21:14:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32866 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233854AbhKKCOZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 21:14:25 -0500
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96E2DC061766;
+        Wed, 10 Nov 2021 18:11:37 -0800 (PST)
+Received: by mail-pl1-x641.google.com with SMTP id n8so4551812plf.4;
+        Wed, 10 Nov 2021 18:11:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=UsyCG8atsFeiYKk5HZLyFdqQ8bvEHYSrT0Mck/R3QNQ=;
+        b=qDq/OZYgTWRQMSCsn/CG907AhLIlN+1HK9fX8tSZtPiUtbBwJA1Pr/keWYtbcbYQMP
+         BzkhgW/RaR8beJCczzk5FsjinNX5F/1Q0FNBdzlSvU7Pqm5zP/PXlBSydpTBWES0Uuhk
+         nCfw0GB524VvrXhDKtKV7llwB5KyNylGadG8P9lPZYcBjEzrXAn82BJzOWUt5FRnrx8b
+         dt676FiJXz5c2Ah+lvsg64Yx/XVt5AXK22/ptFL0IjHuruZ3rCkqePYnqh+wfMYW2W58
+         O9EuYqpJH36Z6Wb9lG4sVMTnQBlFeweii8tFEiJYY9bnV80KMS889NW2KExwIROrYT+B
+         RsLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UsyCG8atsFeiYKk5HZLyFdqQ8bvEHYSrT0Mck/R3QNQ=;
+        b=GGJPya3hV6r15/1rjS+U/BgblC1kAYZVP2NU0Q5MVs2ouybHaGt3N68rcumnXkIY0S
+         1kDyHhnToJmNRM3thT5jxJGi1ut2ZYVvmzCIGSkrhjBcJ/mwwsn64tGQoJJlZk1XzisQ
+         +CCUW6Wu4AoyXnikn7ybxZqnsj7HD1FfXqNP9REY11FHG4CAd6VeRoE3ayYqW8w2nSCz
+         CXDuo/NJzZM8s5ZAFAVW8sF/LYiL4zun/boXhbTMmpAS+KxOxuDfCY4uDO6PNRP1a9Sh
+         FjG0Gdu+IKTYkfPybOXbkNwfW4FzsXJ04b45Z9pDAiIcBpg1Buqg4e3XdBAkQerMZ/r2
+         umqg==
+X-Gm-Message-State: AOAM531cZpDQlebC8IsZAYmK1/h5ND13Sz5xRGbaBKOwGvIZSsYTmlpx
+        ymaHtylgoafY4AWqyXwiXKo=
+X-Google-Smtp-Source: ABdhPJzw+11Q88k8zPcmQVPoMqnXcSJEXkX0erP+CgRsa36lg8qwfxiLaCVWF76rxNb9H1LL4NLNpg==
+X-Received: by 2002:a17:90b:128d:: with SMTP id fw13mr4336755pjb.50.1636596697112;
+        Wed, 10 Nov 2021 18:11:37 -0800 (PST)
+Received: from localhost ([2405:201:6014:d064:3d4e:6265:800c:dc84])
+        by smtp.gmail.com with ESMTPSA id v19sm343490pju.32.2021.11.10.18.11.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Nov 2021 18:11:36 -0800 (PST)
+Date:   Thu, 11 Nov 2021 07:41:33 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
+Subject: Re: [PATCH net v2] bpf: Fix build when CONFIG_BPF_SYSCALL is disabled
+Message-ID: <20211111021133.ekxloctojcriu4sb@apollo.localdomain>
+References: <20211110205418.332403-1-vinicius.gomes@intel.com>
+ <20211110212553.e2xnltq3dqduhjnj@apollo.localdomain>
+ <CAADnVQKqjLM1P7X+iTfnH-QFw5=z5L_w8MLsWtcNWbh5QR7VVg@mail.gmail.com>
+ <878rxvbmcm.fsf@intel.com>
+ <20211111001359.3v2yjha5nxkdtoju@apollo.localdomain>
+ <87v90za1mx.fsf@intel.com>
 MIME-Version: 1.0
-Message-ID: <724aae55.1863af.17d0cc249ab.Coremail.linma@zju.edu.cn>
-X-Coremail-Locale: en_US
-X-CM-TRANSID: cS_KCgAXSXR3e4xhh7ffBA--.61118W
-X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/1tbiAwUCElNG3ElR6gAUs5
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87v90za1mx.fsf@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgdGhlcmUsCgo+IFNlbnQgVGltZTogMjAyMS0xMS0xMSAxMDowNjoxMiAoVGh1cnNkYXkpCj4g
-VG86ICJMaW4gTWEiIDxsaW5tYUB6anUuZWR1LmNuPgo+IENjOiBuZXRkZXZAdmdlci5rZXJuZWwu
-b3JnLCBkYXZlbUBkYXZlbWxvZnQubmV0LCBqaXJpc2xhYnlAa2VybmVsLm9yZywgZ3JlZ2toQGxp
-bnV4Zm91bmRhdGlvbi5vcmcsIGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcKPiBTdWJqZWN0
-OiBSZTogW1BBVENIIHYxIDIvMl0gaGFtcmFkaW86IGRlZmVyIDZwYWNrIGtmcmVlIGFmdGVyIHVu
-cmVnaXN0ZXJfbmV0ZGV2Cj4gCj4gT24gV2VkLCAxMCBOb3YgMjAyMSAxODowNToyNSAtMDgwMCBK
-YWt1YiBLaWNpbnNraSB3cm90ZToKPiA+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2hhbXJh
-ZGlvLzZwYWNrLmMgYi9kcml2ZXJzL25ldC9oYW1yYWRpby82cGFjay5jCj4gPiA+IGluZGV4IDQ5
-ZjEwMDUzYTc5NC4uYmZkZjg5ZTU0NzUyIDEwMDY0NAo+ID4gPiAtLS0gYS9kcml2ZXJzL25ldC9o
-YW1yYWRpby82cGFjay5jCj4gPiA+ICsrKyBiL2RyaXZlcnMvbmV0L2hhbXJhZGlvLzZwYWNrLmMK
-PiA+ID4gQEAgLTY3MiwxMSArNjcyLDEzIEBAIHN0YXRpYyB2b2lkIHNpeHBhY2tfY2xvc2Uoc3Ry
-dWN0IHR0eV9zdHJ1Y3QgKnR0eSkKPiA+ID4gIAlkZWxfdGltZXJfc3luYygmc3AtPnR4X3QpOwo+
-ID4gPiAgCWRlbF90aW1lcl9zeW5jKCZzcC0+cmVzeW5jX3QpOwo+ID4gPiAgCj4gPiA+IC0JLyog
-RnJlZSBhbGwgNnBhY2sgZnJhbWUgYnVmZmVycy4gKi8KPiA+ID4gKwl1bnJlZ2lzdGVyX25ldGRl
-dihzcC0+ZGV2KTsKPiA+ID4gKwo+ID4gPiArCS8qIEZyZWUgYWxsIDZwYWNrIGZyYW1lIGJ1ZmZl
-cnMgYWZ0ZXIgdW5yZWcuICovCj4gPiA+ICAJa2ZyZWUoc3AtPnJidWZmKTsKPiA+ID4gIAlrZnJl
-ZShzcC0+eGJ1ZmYpOwo+ID4gPiAgCj4gPiA+IC0JdW5yZWdpc3Rlcl9uZXRkZXYoc3AtPmRldik7
-Cj4gPiA+ICsJZnJlZV9uZXRkZXYoc3AtPmRldik7ICAKPiA+IAo+ID4gWW91IHNob3VsZCBtZW50
-aW9uIGluIHRoZSBjb21taXQgbWVzc2FnZSB3aHkgeW91IHRoaW5rIGl0J3Mgc2FmZSB0byBhZGQK
-PiA+IGZyZWVfbmV0ZGV2KCkgd2hpY2ggd2Fzbid0IGhlcmUgYmVmb3JlLi4uCj4gPiAKPiA+IFRo
-aXMgZHJpdmVyIHNlZW1zIHRvIGJlIHNldHRpbmc6Cj4gPiAKPiA+IAlkZXYtPm5lZWRzX2ZyZWVf
-bmV0ZGV2CT0gdHJ1ZTsKPiA+IAo+ID4gc28gdW5yZWdpc3Rlcl9uZXRkZXYoKSB3aWxsIGZyZWUg
-dGhlIG5ldGRldiBhdXRvbWF0aWNhbGx5Lgo+ID4gCj4gPiBUaGF0IHNhaWQgSSBkb24ndCBzZWUg
-YSByZWFzb24gd2h5IHRoaXMgZHJpdmVyIG5lZWRzIHRoZSBhdXRvbWF0aWMKPiA+IGNsZWFudXAu
-Cj4gPiAKPiA+IFlvdSBjYW4gZWl0aGVyIHJlbW92ZSB0aGF0IHNldHRpbmcgYW5kIHRoZW4geW91
-IGNhbiBjYWxsIGZyZWVfbmV0ZGV2KCkKPiA+IGxpa2UgeW91IGRvLCBvciB5b3UgbmVlZCB0byBt
-b3ZlIHRoZSBjbGVhbnVwIHRvIGRldi0+cHJpdl9kZXN0cnVjdG9yLgo+IAo+IExvb2tzIGxpa2Ug
-dGhpcyBnbyBhcHBsaWVkIGFscmVhZHksIHBsZWFzZSBzZW5kIGEgZm9sbG93IHVwIGZpeC4KCk9v
-b29wcywgdGhhbmtzIGZvciB0aGUgcmVtaW5kLiBYRAoKSSBqdXN0IGZvdW5kIHRoYXQgdGhlIG1r
-aWxsIGFkZHMgdGhlIGZyZWVfbmV0ZGV2IGFmdGVyIHRoZSB1bnJlZ2lzdGVyX25ldGRldiBzbyBJ
-IGRpZCBpdCB0b28uIE5vIGlkZWEgYWJvdXQgdGhpcyBhdXRvbWF0aWMgY2xlYW51cC4KClNob3Vs
-ZCBJIHNlbmQgdGhlIGZpeCBpbiB0aGlzIHRocmVhZCBvciBvcGVuIGEgbmV3IG9uZT8KClRoYW5r
-cwoKTGluIAo=
+On Thu, Nov 11, 2021 at 07:34:38AM IST, Vinicius Costa Gomes wrote:
+> Hi Kartikeya,
+>
+> Kumar Kartikeya Dwivedi <memxor@gmail.com> writes:
+>
+> > On Thu, Nov 11, 2021 at 05:21:53AM IST, Vinicius Costa Gomes wrote:
+> >> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+> >>
+> >> >> Thanks for the fix.
+> >> >>
+> >> >> But instead of moving this to core.c, you can probably make the btf.h
+> >> >> declaration conditional on CONFIG_BPF_SYSCALL, since this is not useful in
+> >> >> isolation (only used by verifier for module kfunc support). For the case of
+> >> >> kfunc_btf_id_list variables, just define it as an empty struct and static
+> >> >> variables, since the definition is still inside btf.c. So it becomes a noop for
+> >> >> !CONFIG_BPF_SYSCALL.
+> >> >>
+> >> >> I am also not sure whether BTF is useful without BPF support, but maybe I'm
+> >> >> missing some usecase.
+> >> >
+> >> > Unlikely. I would just disallow such config instead of sprinkling
+> >> > the code with ifdefs.
+> >>
+> >> Is something like this what you have in mind?
+> >>
+> >> diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+> >> index 6fdbf9613aec..eae860c86e26 100644
+> >> --- a/lib/Kconfig.debug
+> >> +++ b/lib/Kconfig.debug
+> >> @@ -316,6 +316,7 @@ config DEBUG_INFO_BTF
+> >>  	bool "Generate BTF typeinfo"
+> >>  	depends on !DEBUG_INFO_SPLIT && !DEBUG_INFO_REDUCED
+> >>  	depends on !GCC_PLUGIN_RANDSTRUCT || COMPILE_TEST
+> >> +	depends on BPF_SYSCALL
+> >>  	help
+> >>  	  Generate deduplicated BTF type information from DWARF debug info.
+> >>  	  Turning this on expects presence of pahole tool, which will convert
+> >>
+> >>
+> >
+> > BTW, you will need a little more than that, I suspect the compiler optimizes out
+> > the register/unregister call so we don't see a build failure, but adding a side
+> > effect gives me errors, so something like this should resolve the problem (since
+> > kfunc_btf_id_list variable definition is behind CONFIG_BPF_SYSCALL).
+> >
+> > diff --git a/include/linux/btf.h b/include/linux/btf.h
+> > index 203eef993d76..e9881ef9e9aa 100644
+> > --- a/include/linux/btf.h
+> > +++ b/include/linux/btf.h
+> > @@ -254,6 +254,8 @@ void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
+> >                                  struct kfunc_btf_id_set *s);
+> >  bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist, u32 kfunc_id,
+> >                               struct module *owner);
+> > +extern struct kfunc_btf_id_list bpf_tcp_ca_kfunc_list;
+> > +extern struct kfunc_btf_id_list prog_test_kfunc_list;
+> >  #else
+> >  static inline void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
+> >                                              struct kfunc_btf_id_set *s)
+> > @@ -268,13 +270,13 @@ static inline bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist,
+> >  {
+> >         return false;
+> >  }
+> > +struct kfunc_btf_id_list {};
+> > +static struct kfunc_btf_id_list bpf_tcp_ca_kfunc_list __maybe_unused;
+> > +static struct kfunc_btf_id_list prog_test_kfunc_list __maybe_unused;
+> > +
+> >  #endif
+> >
+> >  #define DEFINE_KFUNC_BTF_ID_SET(set, name)                                     \
+> >         struct kfunc_btf_id_set name = { LIST_HEAD_INIT(name.list), (set),     \
+> >                                          THIS_MODULE }
+> > -
+> > -extern struct kfunc_btf_id_list bpf_tcp_ca_kfunc_list;
+> > -extern struct kfunc_btf_id_list prog_test_kfunc_list;
+> > -
+> >  #endif
+> >
+>
+> I could not reproduce the build failure here even when adding some side
+> effects, but I didn't try very hard.
+>
+> As you are more familiar with the code, I would be glad if you could
+> take it from here and propose a patch.
+>
+
+Sure, no worries!
+
+>
+> Cheers,
+> --
+> Vinicius
+
+--
+Kartikeya
