@@ -2,112 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE51544D7B9
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 15:00:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B471044D7BD
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 15:00:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232929AbhKKOCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 09:02:54 -0500
-Received: from smtp2.axis.com ([195.60.68.18]:10210 "EHLO smtp2.axis.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231739AbhKKOCx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Nov 2021 09:02:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1636639205;
-  x=1668175205;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=RFcG43MDtINsUV9C/D4kpj+78WwyKwfn64tSQhJrSn8=;
-  b=dHPXd1tqw+n6RIIpjF8+O8CkdgEnRQaKCghI5/p0yBbvRNyWWLJCKImm
-   LggvCs+0ANwG7FBbzhD5xESXjlj/s0nuTInGLCOEs7iJ53QKIpP+bkIhJ
-   c9EehaEwV8acSflQ96BWZVYSKyo3JeHWqVU8Dlf1CZRu8aGAMDKe/NH+T
-   cbldJc/5kTNmwgPBiF1k8+U2kLIroTLhwgRcrrySlsAQRYN6OR7deg3Nh
-   H2/Q0hfGUgmmbTXJ94DbtdnOO+PPzAHSCEUN071qQcdB4+DdDjkm4tBHw
-   YJ40senz4jiSCGQsITdyI8ugUnvrq9pA7l3kjJ2gbXV9pCa1l7izPl2xl
-   w==;
-Date:   Thu, 11 Nov 2021 15:00:02 +0100
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Jiang Wang <jiang.wang@bytedance.com>
-CC:     <bpf@vger.kernel.org>, <cong.wang@bytedance.com>,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Eric Dumazet <edumazet@google.com>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Rao Shoaib <Rao.Shoaib@oracle.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH bpf v1] unix: fix an issue in unix_shutdown causing the
- other end read/write failures
-Message-ID: <20211111140000.GA10779@axis.com>
-References: <20211004232530.2377085-1-jiang.wang@bytedance.com>
+        id S233593AbhKKODK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 09:03:10 -0500
+Received: from mail.zju.edu.cn ([61.164.42.155]:33790 "EHLO zju.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233586AbhKKODI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Nov 2021 09:03:08 -0500
+Received: from localhost.localdomain (unknown [222.205.2.245])
+        by mail-app3 (Coremail) with SMTP id cC_KCgBnbxvoIY1ht1H5Bw--.22116S4;
+        Thu, 11 Nov 2021 22:00:08 +0800 (CST)
+From:   Lin Ma <linma@zju.edu.cn>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jirislaby@kernel.org,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        Lin Ma <linma@zju.edu.cn>
+Subject: [PATCH v0] hamradio: delete unnecessary free_netdev()
+Date:   Thu, 11 Nov 2021 22:00:07 +0800
+Message-Id: <20211111140007.7244-1-linma@zju.edu.cn>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20211004232530.2377085-1-jiang.wang@bytedance.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: cC_KCgBnbxvoIY1ht1H5Bw--.22116S4
+X-Coremail-Antispam: 1UD129KBjvdXoWrtrW8uw15XF48AF15Xw48Xrb_yoWfZrg_ur
+        1xZFZ7Jr1DJrW7tanFvr4rA34IkFs8Xr1fuas2qas3Ga43twn7J3yI9rs3Jr15WayxtF9x
+        Ar12qF17J3y2gjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbxkFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AK
+        wVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20x
+        vE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4UJVW0owA2z4x0Y4vEx4A2
+        jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52
+        x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWU
+        GwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI4
+        8JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_Xryl42xK82IYc2Ij64vIr41l
+        42xK82IY6x8ErcxFaVAv8VW8uw4UJr1UMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I
+        8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWU
+        twCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x
+        0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_
+        Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUb
+        kR65UUUUU==
+X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 04, 2021 at 11:25:28PM +0000, Jiang Wang wrote:
-> Commit 94531cfcbe79 ("af_unix: Add unix_stream_proto for sockmap")
-> sets unix domain socket peer state to TCP_CLOSE
-> in unix_shutdown. This could happen when the local end is shutdown
-> but the other end is not. Then the other end will get read or write
-> failures which is not expected.
-> 
-> Fix the issue by setting the local state to shutdown.
-> 
-> Fixes: 94531cfcbe79 (af_unix: Add unix_stream_proto for sockmap)
-> Suggested-by: Cong Wang <cong.wang@bytedance.com>
-> Reported-by: Casey Schaufler <casey@schaufler-ca.com>
-> Signed-off-by: Jiang Wang <jiang.wang@bytedance.com>
+The former patch "defer 6pack kfree after unregister_netdev" adds
+free_netdev() function in sixpack_close(), which is a bad copy from the
+similar code in mkiss_close(). However, this free is unnecessary as the
+flag needs_free_netdev is set to true in sp_setup(), hence the
+unregister_netdev() will free the netdev automatically.
 
-This patch changed the behaviour of read(2) after a shutdown(2) on the
-local end of a UDS.  Before this patch, reading from a UDS after a local
-shutdown(SHUT_RDWR) would return the data written or EOF if there is no
-data, but now it always returns -EINVAL.
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+---
+ drivers/net/hamradio/6pack.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-For example, the following test program succeeds with "read 16 bytes" on
-v5.14 but fails with "read: Invalid argument" on v5.15 and mainline:
+diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
+index bfdf89e54752..180c8f08169b 100644
+--- a/drivers/net/hamradio/6pack.c
++++ b/drivers/net/hamradio/6pack.c
+@@ -677,8 +677,6 @@ static void sixpack_close(struct tty_struct *tty)
+ 	/* Free all 6pack frame buffers after unreg. */
+ 	kfree(sp->rbuff);
+ 	kfree(sp->xbuff);
+-
+-	free_netdev(sp->dev);
+ }
+ 
+ /* Perform I/O control on an active 6pack channel. */
+-- 
+2.33.1
 
-#include <err.h>
-#include <errno.h>
-#include <stdio.h>
-#include <sys/socket.h>
-#include <sys/unistd.h>
-
-int main(int argc, char *argv[]) {
-  int sock[2];
-  int ret;
-
-  ret = socketpair(AF_UNIX, SOCK_STREAM, 0, sock);
-  if (ret < 0)
-    err(1, "socketpair");
-
-  char buf[16] = {};
-  ret = write(sock[1], buf, sizeof(buf));
-  if (ret < 0)
-    err(1, "write");
-
-  ret = shutdown(sock[0], SHUT_RDWR);
-  if (ret < 0)
-    err(1, "shutdown");
-
-  ssize_t bytes = read(sock[0], buf, sizeof(buf));
-  if (bytes < 0)
-    err(1, "read");
-
-  printf("read %zd bytes\n", bytes);
-
-  return 0;
-}
