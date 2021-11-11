@@ -2,151 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14DBC44D995
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 16:53:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77D4544D9B4
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 17:01:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233951AbhKKPzt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 10:55:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47616 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232033AbhKKPzs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 10:55:48 -0500
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8081BC061767
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 07:52:59 -0800 (PST)
-Received: by mail-ot1-x332.google.com with SMTP id g91-20020a9d12e4000000b0055ae68cfc3dso9475103otg.9
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 07:52:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XOIv/URPqC6eVjwDrRR5fYOj9yjs4EkQ/pA34VIFsCI=;
-        b=Eyhft6Xf2VI0gBV0H6/ONYORdlmtc9gr6jLIhwgFGDcXr7m5gGQCouC2n40kCVMDEn
-         Donr40sJ+lx7Yr2GJ2XpK/gqU3Z9z+aIbAfhae3Zae05jc6Q5IrbFJP3MqerICkRSLSb
-         fgPF24JHiLgQWAH4/HHnrRY9vljS8O3gqckNIbCA3LpA9fMsNpurzjtYMAuT09NJV6Kg
-         HOIBIK/AQ8YRDstfGzUhdxn2q9gYvt0UbGyDOMrkOajRxI8TTeKhWaYe0SkH4/PB3PKv
-         N9LdJW5MMIwLSBVEd1kaG4fDN6YBdKbihcItHB9yJFZW9gBxc5wzaeEzyBVGPwK7wUFX
-         K42Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XOIv/URPqC6eVjwDrRR5fYOj9yjs4EkQ/pA34VIFsCI=;
-        b=6/MpA6gsR1Xe+b9cN/XEllMNQERxt1QIDjdQpyXn3dY9VcqtreQ1bP8Kf1m28yB1E6
-         0S76bOxGlNyFXZNtRiSiJtdTYFgNBnXhtxKZJeU80Dz6AViI7n7W432LgOiObs3t6Zqi
-         gOl5Fph/Hq/o1TSoZQRfDNfBV6Vu1BUwbtYJ+TUnAv+GA8xwNF0XcLuN2OXmJRDbBW//
-         puB/rcbNdwch2tVocM4vz2crpU7ovJkCXkZXOSCHM5dylfbVbL5zvMUMRlAIGkXcAi7J
-         gu5dFddXS6ovUOGKREwaGdeReTXKEI912ZLtRP2z1IYTQmq8uem1UpA2+Ye2x9n6e1kI
-         XClw==
-X-Gm-Message-State: AOAM532vUyrQclYr30zrjboJcLUdVEKUXsY6PlHZKK6tSjArJ53n1Zzf
-        2NUletn1Xvah19MUrS0olJMP/np9GfUTGBA47LixuHAU6Po=
-X-Google-Smtp-Source: ABdhPJw29oJdBm4eo39mCVignGDLORgWk0k1N0EgIzqxbAugI1zvrSur0vpAQSd/U7TtjiqqSwEmA7WOYJ0I1vASkrw=
-X-Received: by 2002:a9d:7548:: with SMTP id b8mr6647636otl.92.1636645978580;
- Thu, 11 Nov 2021 07:52:58 -0800 (PST)
+        id S233902AbhKKQEE convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 11 Nov 2021 11:04:04 -0500
+Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:29216 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232033AbhKKQED (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 11:04:03 -0500
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-282-qMVe2BLbM32ATq7CSvPpIQ-1; Thu, 11 Nov 2021 11:01:10 -0500
+X-MC-Unique: qMVe2BLbM32ATq7CSvPpIQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CD013100C660;
+        Thu, 11 Nov 2021 16:01:06 +0000 (UTC)
+Received: from hog (unknown [10.39.192.210])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id D20485DA61;
+        Thu, 11 Nov 2021 16:01:03 +0000 (UTC)
+Date:   Thu, 11 Nov 2021 17:01:02 +0100
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Maciej Machnikowski <maciej.machnikowski@intel.com>
+Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        richardcochran@gmail.com, abyagowi@fb.com,
+        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kselftest@vger.kernel.org, idosch@idosch.org,
+        mkubecek@suse.cz, saeed@kernel.org, michael.chan@broadcom.com,
+        petrm@nvidia.com
+Subject: Re: [PATCH v3 net-next 2/6] rtnetlink: Add new RTM_GETEECSTATE
+ message to get SyncE status
+Message-ID: <YY0+PmNU4MSGfgqA@hog>
+References: <20211110114448.2792314-1-maciej.machnikowski@intel.com>
+ <20211110114448.2792314-3-maciej.machnikowski@intel.com>
 MIME-Version: 1.0
-References: <20211111003519.1050494-1-tadeusz.struk@linaro.org>
- <CANpmjNNcVFmnBV-1Daauqk5ww8YRUVRtVs_SXVAPWG5CrFBVPg@mail.gmail.com> <c410f4a0-cc06-8ef8-3765-d99e29012acb@linaro.org>
-In-Reply-To: <c410f4a0-cc06-8ef8-3765-d99e29012acb@linaro.org>
-From:   Marco Elver <elver@google.com>
-Date:   Thu, 11 Nov 2021 16:52:46 +0100
-Message-ID: <CANpmjNNuWfauPoUxQ6BETrZ8JMjWgrAAhAEqEXW=5BNsfWfyDA@mail.gmail.com>
-Subject: Re: [PATCH] skbuff: suppress clang object-size-mismatch error
-To:     Tadeusz Struk <tadeusz.struk@linaro.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Willem de Bruijn <willemb@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Kees Cook <keescook@chromium.org>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20211110114448.2792314-3-maciej.machnikowski@intel.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=sd@queasysnail.net
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 11 Nov 2021 at 16:46, Tadeusz Struk <tadeusz.struk@linaro.org> wrote:
->
-> Hi Marco,
-> On 11/11/21 01:51, Marco Elver wrote:
-> > On Thu, 11 Nov 2021 at 01:36, Tadeusz Struk<tadeusz.struk@linaro.org>  wrote:
-> >> Kernel throws a runtime object-size-mismatch error in skbuff queue
-> >> helpers like in [1]. This happens every time there is a pattern
-> >> like the below:
-> >>
-> >> int skbuf_xmit(struct sk_buff *skb)
-> >> {
-> >>          struct sk_buff_head list;
-> >>
-> >>          __skb_queue_head_init(&list);
-> >>          __skb_queue_tail(&list, skb); <-- offending call
-> >>
-> >>          return do_xmit(net, &list);
-> >> }
-> >>
-> >> and the kernel is build with clang and -fsanitize=undefined flag set.
-> >> The reason is that the functions __skb_queue_[tail|head]() access the
-> >> struct sk_buff_head object via a pointer to struct sk_buff, which is
-> >> much bigger in size than the sk_buff_head. This could cause undefined
-> >> behavior and clang is complaining:
-> >>
-> >> UBSAN: object-size-mismatch in ./include/linux/skbuff.h:2023:28
-> >> member access within address ffffc90000cb71c0 with insufficient space
-> >> for an object of type 'struct sk_buff'
-> > The config includes CONFIG_UBSAN_OBJECT_SIZE, right? Normally that's
-> > disabled by default, probably why nobody has noticed these much.
->
-> Right, in all the defconfigs CONFIG_UBSAN_OBJECT_SIZE is not set.
->
-> >
-> >> Suppress the error with __attribute__((no_sanitize("undefined")))
-> >> in the skb helpers.
-> > Isn't there a better way, because doing this might also suppress other
-> > issues wholesale. __no_sanitize_undefined should be the last resort.
-> >
->
-> The other way to fix it would be to make the struct sk_buff_head
-> equal in size with struct sk_buff:
->
->   struct sk_buff_head {
-> -       /* These two members must be first. */
-> -       struct sk_buff  *next;
-> -       struct sk_buff  *prev;
-> +       union {
-> +               struct {
-> +                       /* These two members must be first. */
-> +                       struct sk_buff  *next;
-> +                       struct sk_buff  *prev;
->
-> -       __u32           qlen;
-> -       spinlock_t      lock;
-> +                       __u32           qlen;
-> +                       spinlock_t      lock;
-> +               };
-> +               struct sk_buff  __prv;
-> +       };
->   };
->
-> but that's much more invasive, and I don't even have means to
-> quantify this in terms of final binary size and performance
-> impact. I think that would be a flat out no go.
->
->  From the other hand if you look at the __skb_queue functions
-> they don't do much and at all so there is no much room for
-> other issues really. I followed the suggestion in [1]:
->
-> "if your function deliberately contains possible ..., you can
->   use __attribute__((no_sanitize... "
+Hello Maciej,
 
-That general advice might not be compatible with what the kernel
-wants, especially since UBSAN_OBJECT_SIZE is normally disabled and I
-think known to cause these issues in the kernel.
+2021-11-10, 12:44:44 +0100, Maciej Machnikowski wrote:
+> diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+> index 5888492a5257..1d8662afd6bd 100644
+> --- a/include/uapi/linux/rtnetlink.h
+> +++ b/include/uapi/linux/rtnetlink.h
+> @@ -185,6 +185,9 @@ enum {
+>  	RTM_GETNEXTHOPBUCKET,
+>  #define RTM_GETNEXTHOPBUCKET	RTM_GETNEXTHOPBUCKET
+>  
+> +	RTM_GETEECSTATE = 124,
+> +#define RTM_GETEECSTATE	RTM_GETEECSTATE
 
-I'll defer to maintainers to decide what would be the preferred way of
-handling this.
+I'm not sure about this. All the other RTM_GETxxx are such that
+RTM_GETxxx % 4 == 2. Following the current pattern, 124 should be
+reserved for RTM_NEWxxx, and RTM_GETEECSTATE would be 126.
+
+Also, why are you leaving a gap (which you end up filling in patch
+4/6)?
+
+> +
+>  	__RTM_MAX,
+>  #define RTM_MAX		(((__RTM_MAX + 3) & ~3) - 1)
+>  };
+> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+> index 2af8aeeadadf..03bc773d0e69 100644
+> --- a/net/core/rtnetlink.c
+> +++ b/net/core/rtnetlink.c
+> @@ -5467,6 +5467,83 @@ static int rtnl_stats_dump(struct sk_buff *skb, struct netlink_callback *cb)
+>  	return skb->len;
+>  }
+>  
+> +static int rtnl_fill_eec_state(struct sk_buff *skb, struct net_device *dev,
+> +			       u32 portid, u32 seq, struct netlink_callback *cb,
+> +			       int flags, struct netlink_ext_ack *extack)
+> +{
+[...]
+> +	nlh = nlmsg_put(skb, portid, seq, RTM_GETEECSTATE, sizeof(*state_msg),
+> +			flags);
+> +	if (!nlh)
+> +		return -EMSGSIZE;
+> +
+> +	state_msg = nlmsg_data(nlh);
+> +	state_msg->ifindex = dev->ifindex;
+
+Why stuff this in a struct instead of using an attribute?
+
+> +
+> +	if (nla_put_u32(skb, IFLA_EEC_STATE, state))
+> +		return -EMSGSIZE;
+> +
+> +	if (!ops->ndo_get_eec_src)
+> +		goto end_msg;
+> +
+> +	err = ops->ndo_get_eec_src(dev, &src_idx, extack);
+> +	if (err)
+> +		return err;
+> +
+> +	if (nla_put_u32(skb, IFLA_EEC_SRC_IDX, src_idx))
+> +		return -EMSGSIZE;
+> +
+> +end_msg:
+> +	nlmsg_end(skb, nlh);
+> +	return 0;
+> +}
+> +
+
+Thanks,
+
+-- 
+Sabrina
+
