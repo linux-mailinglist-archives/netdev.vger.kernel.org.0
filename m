@@ -2,133 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97D3F44DE73
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 00:25:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC81144DE93
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 00:39:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231919AbhKKX2K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 18:28:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36776 "EHLO
+        id S234295AbhKKXmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 18:42:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229710AbhKKX2K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 18:28:10 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D5FC061766
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 15:25:20 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id y5so6894296pfb.4
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 15:25:20 -0800 (PST)
+        with ESMTP id S231918AbhKKXmW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 18:42:22 -0500
+Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C47C061766
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 15:39:32 -0800 (PST)
+Received: by mail-ua1-x92f.google.com with SMTP id i6so15271911uae.6
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 15:39:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bb4YfWVvkz2UHEtxCuuuGnDa+oKMp8v1j+3+/92BNCU=;
-        b=LH1Di0H2xg6+5MbGDrXO22lK3hAKKRDeMsz4ySI9od8iHqXxo2wH+5enwkwYo9yvAp
-         FA6DZmCpJc0ITC0DUQ89lWZxiFPcLJLxI7lnyp1imZqsm/xHAw9kr6okJFl272MBhl4y
-         iVfDhQO2OJBHhHPxt2uyXe1bzmYyOJeUPMrCGro6ATGcVbKNVO7x2VSqVjQeDoj8yzl5
-         jchuGGVPBeCzLJPcKwb5Wu9NdqYocTduxYa6rmBFkoKryhN58FgCcXEfp1y5gBUpLumu
-         DCNmRGumfbUVrfTPJSDsds0kEaSeZRjxt9M1xXzJxmuL/sFm1NQ/hH432wEq4HRqmylj
-         5lyw==
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=j4v9BoUqE5THR/POP2rwQKiOwF7muwwRuvyZdm8EX68=;
+        b=r7xCDzugzkcIEDTjq0dBmc1CNg6/gxATCWmGlqsCZ8j6kpYB50T6v4XoRm1ncufWTv
+         MruD5HlYdhfznkMtjBFzbMZ65vpXiG0Vdk/Gu5MKvBoEjHYFR6ufgWJR7+XIpvKzx4CU
+         3L+n6CmN68YcN22fm3psS6W8j/KYuA6cki9+6UqKVwI4Ko2ntIiodmFRu981ugGPrLUM
+         mF5d4Q4s5jrzTXCRCEzvoc3WQ7Bg0x62ud9mpaQpeq2x2OGydOIuwpEltvWdJ3QoWC7/
+         gJcXUmZ1Rq6pWpumyBtlp/SNdmdK+LNvnv2XyOYdpuVDi/V+3ifpOsiatDRl+VnJ7pWl
+         AJWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bb4YfWVvkz2UHEtxCuuuGnDa+oKMp8v1j+3+/92BNCU=;
-        b=CI3eu3RdR3wRFZHrRoMwKMK7LoaZ1tJDYsWj2yTg1g06fG9a486Xb5/8Wg43dg5236
-         J9MxRM3cWdjpGsXxVC+vB6dk9Eyi8tmYCjiAQlx93mu03LwXpo3Af0MMJ6cC3znwKd1M
-         yTsHp0cTq6Ac3SHz6AMgVgRqZcFonrfzLVjHRn5gN8ZQN2nJcJg5smtJNnsQoTv09dJe
-         gpfPdpMcbxIAPahoMCn7Pixnqcx02Bh775SYknw2kk4KeJ2mGdBTQ39K/UOgiS83YPCj
-         jEtUhbcd+iHrpp9rasQ/GDHkewZeQR9AjMpfmTFKyACoIKIxwoEPKAn1+XUJjMONobcG
-         00cg==
-X-Gm-Message-State: AOAM531aCuhwJ6DHmQv+jtPldxtLx5+/urt6bOppyQHLv8UFxFWS1/vH
-        pvB+Jzrz5XG1UrXmch5SWi5u7r0dU8w=
-X-Google-Smtp-Source: ABdhPJwoE2TaDpS7ibL6eiYiR26D4LY00PI0zV43cTygGF5PxNc+7qDvsVm3cAGHvntpnF/dgY26iQ==
-X-Received: by 2002:a05:6a00:234f:b0:3eb:3ffd:6da2 with SMTP id j15-20020a056a00234f00b003eb3ffd6da2mr9821392pfj.15.1636673120093;
-        Thu, 11 Nov 2021 15:25:20 -0800 (PST)
-Received: from phantasmagoria.svl.corp.google.com ([2620:15c:2c4:201:f3d1:9c31:c5ef:f3e0])
-        by smtp.gmail.com with ESMTPSA id l6sm4674382pfc.126.2021.11.11.15.25.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Nov 2021 15:25:19 -0800 (PST)
-From:   Arjun Roy <arjunroy.kdev@gmail.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     arjunroy@google.com, edumazet@google.com, soheil@google.com,
-        kuba@kernel.org
-Subject: [net] tcp: Fix uninitialized access in skb frags array for Rx 0cp.
-Date:   Thu, 11 Nov 2021 15:24:29 -0800
-Message-Id: <20211111232429.2604394-1-arjunroy.kdev@gmail.com>
-X-Mailer: git-send-email 2.34.0.rc1.387.gb447b232ab-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=j4v9BoUqE5THR/POP2rwQKiOwF7muwwRuvyZdm8EX68=;
+        b=LsWSTr1OVqoPHO9OqwMTwDuwBisZD3FcXvJNJRX9NqMmYONdBb54htOBQHgYFl19wY
+         hLp6d4GwggIUOv+pHDFIZEWBvBg1w5JxIJ9yYIGpbIObA/dY4u8nhd8CZckM/BO3qnuQ
+         3UBMDZDCGVbE8sh3ddUgnxg8sBk2s3M8PCqGTKESID5Ir7tE1B2TDL4m0HP8EGQEyFJP
+         WGkDRLRzJZvApZBBdBAe8k7zRxeXBb9AM4py5CtQKMaxQPkgUnCTxzkHvrQfU2nLP1J3
+         AAZDdBidU7FK2praU1Eyt0JAef1/GJGTsmoVOs4qT9VcPgXpxP++XgvUf2dFcT1z4KKf
+         9+mA==
+X-Gm-Message-State: AOAM5328bdg8ZxHjhjBS/kShpkEuzna4ed6OM6JKsEesQVot183UrVVt
+        Ln35XGx1JUWC0jIS6mx5gjqUj5mAbPk6ORwUdfkrJBnxAC4=
+X-Google-Smtp-Source: ABdhPJw7YArV8KIKD31+kY7xNsztsjLS5qUO2+5uT6jhMhu7oJkT6TGo1uOzEdLdfz9COB9iQqI8gSJK0e8R1o42CEo=
+X-Received: by 2002:a67:e896:: with SMTP id x22mr3790169vsn.0.1636673971818;
+ Thu, 11 Nov 2021 15:39:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211110114632.24537-1-quentin@isovalent.com> <20211110114632.24537-4-quentin@isovalent.com>
+ <CAEf4BzbtC8S_j7oZP9vqK+FwoSvBmt8Hp4_ZyzbwUifg8JfUUA@mail.gmail.com>
+In-Reply-To: <CAEf4BzbtC8S_j7oZP9vqK+FwoSvBmt8Hp4_ZyzbwUifg8JfUUA@mail.gmail.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+Date:   Thu, 11 Nov 2021 23:39:20 +0000
+Message-ID: <CACdoK4JnbpU6ijcNr5n6HMj+yOb=OhEwO3DUQOgNYRvoe+EgfQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/6] bpftool: Use $(OUTPUT) and not $(O) for
+ VMLINUX_BTF_PATHS in Makefile
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arjun Roy <arjunroy@google.com>
+On Thu, 11 Nov 2021 at 18:59, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+>
+> On Wed, Nov 10, 2021 at 3:46 AM Quentin Monnet <quentin@isovalent.com> wrote:
+> >
+> > The Makefile for bpftool relies on $(OUTPUT), and not on $(O), for
+> > passing the output directory. So $(VMLINUX_BTF_PATHS), used for
+> > searching for kernel BTF info, should use the same variable.
+> >
+> > Fixes: 05aca6da3b5a ("tools/bpftool: Generalize BPF skeleton support and generate vmlinux.h")
+> > Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+> > ---
+> >  tools/bpf/bpftool/Makefile | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
+> > index 2a846cb92120..40abf50b59d4 100644
+> > --- a/tools/bpf/bpftool/Makefile
+> > +++ b/tools/bpf/bpftool/Makefile
+> > @@ -150,7 +150,7 @@ $(BOOTSTRAP_OBJS): $(LIBBPF_BOOTSTRAP)
+> >  OBJS = $(patsubst %.c,$(OUTPUT)%.o,$(SRCS)) $(OUTPUT)disasm.o
+> >  $(OBJS): $(LIBBPF) $(LIBBPF_INTERNAL_HDRS)
+> >
+> > -VMLINUX_BTF_PATHS ?= $(if $(O),$(O)/vmlinux)                           \
+> > +VMLINUX_BTF_PATHS ?= $(if $(OUTPUT),$(OUTPUT)/vmlinux)                 \
+> >                      $(if $(KBUILD_OUTPUT),$(KBUILD_OUTPUT)/vmlinux)    \
+>
+> But you still check KBUILD_OUTPUT? O overrides KBUILD_OUTPUT as far as
+> kernel build goes. So if you still support KBUILD_OUTPUT, you should
+> support O. And the $(OUTPUT) seems to be completely unrelated, as that
+> defines the output of bpftool build files, not the vmlinux image. Or
+> am I missing something?
 
-TCP Receive zerocopy iterates through the SKB queue via
-tcp_recv_skb(), acquiring a pointer to an SKB and an offset within
-that SKB to read from. From there, it iterates the SKB frags array to
-determine which offset to start remapping pages from.
+OK, I think I'm the one who missed the point. I simply figured we
+meant to search the output directory, and that it should be $(OUTPUT)
+like everywhere else in the Makefile. But from what I understand now,
+it's not the case. Let's drop this patch.
 
-However, this is built on the assumption that the offset read so far
-within the SKB is smaller than the SKB length. If this assumption is
-violated, we can attempt to read an invalid frags array element, which
-would cause a fault.
+If the rest of the set looks good to you, can you just skip this
+patch, or do you prefer me to send a v2?
 
-tcp_recv_skb() can cause such an SKB to be returned when the TCP FIN
-flag is set. Therefore, we must guard against this occurrence inside
-skb_advance_frag().
-
-One way that we can reproduce this error follows:
-1) In a receiver program, call getsockopt(TCP_ZEROCOPY_RECEIVE) with:
-char some_array[32 * 1024];
-struct tcp_zerocopy_receive zc = {
-  .copybuf_address  = (__u64) &some_array[0],
-  .copybuf_len = 32 * 1024,
-};
-
-2) In a sender program, after a TCP handshake, send the following
-sequence of packets:
-  i) Seq = [X, X+4000]
-  ii) Seq = [X+4000, X+5000]
-  iii) Seq = [X+4000, X+5000], Flags = FIN | URG, urgptr=1000
-
-(This can happen without URG, if we have a signal pending, but URG is
-a convenient way to reproduce the behaviour).
-
-In this case, the following event sequence will occur on the receiver:
-
-tcp_zerocopy_receive():
--> receive_fallback_to_copy() // copybuf_len >= inq
--> tcp_recvmsg_locked() // reads 5000 bytes, then breaks due to URG
--> tcp_recv_skb() // yields skb with skb->len == offset
--> tcp_zerocopy_set_hint_for_skb()
--> skb_advance_to_frag() // will returns a frags ptr. >= nr_frags
--> find_next_mappable_frag() // will dereference this bad frags ptr.
-
-With this patch, skb_advance_to_frag() will no longer return an
-invalid frags pointer, and will return NULL instead, fixing the issue.
-
-Signed-off-by: Arjun Roy <arjunroy@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Fixes: e32689db3b50 ("tcp: add TCP_ZEROCOPY_RECEIVE support for zerocopy receive")
-
----
- net/ipv4/tcp.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index bc7f419184aa..ef896847f190 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1741,6 +1741,9 @@ static skb_frag_t *skb_advance_to_frag(struct sk_buff *skb, u32 offset_skb,
- {
- 	skb_frag_t *frag;
- 
-+	if (unlikely(offset_skb >= skb->len))
-+		return NULL;
-+
- 	offset_skb -= skb_headlen(skb);
- 	if ((int)offset_skb < 0 || skb_has_frag_list(skb))
- 		return NULL;
--- 
-2.34.0.rc1.387.gb447b232ab-goog
-
+Quentin
