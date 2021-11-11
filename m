@@ -2,242 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B2E844CE64
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 01:36:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89F6844CECC
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 02:35:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232054AbhKKAjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 19:39:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39934 "EHLO
+        id S232736AbhKKBh4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 20:37:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230311AbhKKAjR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 19:39:17 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4475EC061767
-        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 16:36:29 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id y1so4345831plk.10
-        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 16:36:29 -0800 (PST)
+        with ESMTP id S232005AbhKKBhz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 20:37:55 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD92C061766;
+        Wed, 10 Nov 2021 17:35:06 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id d24so7152598wra.0;
+        Wed, 10 Nov 2021 17:35:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Y39O7L0VYZ0AOnDZ/VQ4mYlUhIpt4KibZ8jsie/NVYU=;
-        b=QWY1aSdDEjyl5zHnr1KyCXRUo66gPdwG3/+Y5b7UssGbOthAtgpVZyfy4itCMdRa9y
-         SV26Gt9JpsOMRreysHyd1Um92SSQomHd2cEdBG1tGaPliw+hP6CsBYsPjR75jjfONvtG
-         ilRN5Z8GphnemuU7k44b+HCfzoWplrn62lPJmDJBdjDUAFJPGyxZUeZoCZ5qmuYxHE4K
-         2c8xFSc5DSSF2lSDVKE2SWoNtULD6WjAw4XrwlaPaJHEsfNC36xFt9Ksq5jkpULEdmBf
-         lYOMLFCUXvfpPFsnLvipxV7mFp8wvBajs+K4Urn4JVuH+itzFgIIiER4IJN1HPDBqZZ4
-         KFJQ==
+        bh=jwqq2pe+WQgD85hWBRRaf4L09Fzexs7QXv8b+JM/QuQ=;
+        b=WgAH6TM6E0zDFux9ky93ucwmaJ0Q/JqfoOLW4DQ9c8Z3a6AwtA2nIg+ablW7Bc8dxX
+         hB3LXOJ9gaHAJZmN7eUfEup/genRK+WewtubjaBk8lPmlBh6U/2pcy8TzDCnxylbqcP4
+         7hQzKqqwIpjZXv/O0m2DAYQmF2jK2oyNHz4flQyH34JYFJtKf4gC/MAWN6Xk+2+dJHEU
+         yPp5vHt1k0iYmvcfXCA8+2FLhP3hYA/iF4KDTsMLS28hQYezCezFo1wXFJgWUQYFHLX7
+         ODKDtaVxaVT6VY4UinQKnWp+74tqskuTk+S7gfG73RSN9s+RgzI1iPM23GTh7ZAD8Ib+
+         P1jQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Y39O7L0VYZ0AOnDZ/VQ4mYlUhIpt4KibZ8jsie/NVYU=;
-        b=572VWmHQBskb6FEBoP/fbUxWPHVnDs0zSbXL20s+UtZnDNV2ZLnt3yLoADinHNH9y9
-         mXTjJ8T6fOz2N07LMmTb9otCcIPZZTwTum3AgDicxL6luznmYR9GZbvj8sgCla6fMSgH
-         E93rSjbGVtj17q5lvfBME+AvUNL2qbzx/AIn5nO4PIvcTzCpqoJYtQk6imlpTF9uWWUS
-         jpNoigjsdV6UeUAyZAMRwH4UmmvgimKXn+xmqovbyBUBy9q69siwLP19wmEywsjp6yyr
-         tugku00BrGiXQVw+8so3ao46HcvKcrcjuRB0ohLNBJH7JenWBpTcw0MDLlw+DT2pbRub
-         tYfA==
-X-Gm-Message-State: AOAM530BzC3RQoHjZnLTauDUhdL7dIpyggnG+H3OErnd7t0nVRBrkH5a
-        nFMkDaujISEwk+6EaVzu9qJe4w==
-X-Google-Smtp-Source: ABdhPJzsEJPjex1NQG/DhTFSkbnjJK5xOirxbEJzhreVw6bHOiXhCLAfnqx4eAPR6nsttvIURobvHQ==
-X-Received: by 2002:a17:90a:a396:: with SMTP id x22mr3733568pjp.14.1636590988824;
-        Wed, 10 Nov 2021 16:36:28 -0800 (PST)
-Received: from localhost.localdomain ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id h6sm843379pfh.82.2021.11.10.16.36.28
+        bh=jwqq2pe+WQgD85hWBRRaf4L09Fzexs7QXv8b+JM/QuQ=;
+        b=K1ZcREeoUu4qWyqoCoCOz08Xfsjv02cFZlxXUxm1RzQyHk6zLUuazG9LFYsapCS7sB
+         ByIWRDPe/RALC2+Jnk3SuG1dFZwjBS53Oli8z0bkdWV1WR6PEBsQBg9xoj/CJdLxIlU0
+         ldrvuBjsu1uVugI2kp/tGft3fW9BXWeSJWkuK5Oymsvq4ES/SExEILhJo2aMFgRmnaX4
+         UItNjojWLRy3wSmXAfa8AgBzN4eb6nvlJ/qKr1qgVd3nKYBQ/UWF2VNu55d7inqUES/b
+         Qm7xNY3UkLPTFMpA9gIakzCDmAmSi90qJ+pLH3brGP686bv2P+mkJr9RkVduB9sp69+7
+         MA0A==
+X-Gm-Message-State: AOAM5334uw9GkHWHY3+joNjoUkIH8rzyN4j5qFNRrB6SJipjQqJpjCfC
+        BxqnKLagTfuUFHHkzsrj0pE=
+X-Google-Smtp-Source: ABdhPJxqjLxwrL/9GuF2fgTUs8BDvThhn+l79UAAYEHUn3r3U2VDncKDMWUIfGgwNyufSHAKv5DAAg==
+X-Received: by 2002:a5d:6707:: with SMTP id o7mr4270354wru.172.1636594504921;
+        Wed, 10 Nov 2021 17:35:04 -0800 (PST)
+Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.googlemail.com with ESMTPSA id d8sm1369989wrm.76.2021.11.10.17.35.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Nov 2021 16:36:28 -0800 (PST)
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
-        "Nathan Chancellor" <nathan@kernel.org>,
-        "Nick Desaulniers" <ndesaulniers@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Jonathan Lemon" <jonathan.lemon@gmail.com>,
-        "Alexander Lobakin" <alobakin@pm.me>,
-        "Willem de Bruijn" <willemb@google.com>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        "Cong Wang" <cong.wang@bytedance.com>,
-        "Kevin Hao" <haokexin@gmail.com>,
-        "Ilias Apalodimas" <ilias.apalodimas@linaro.org>,
-        "Marco Elver" <elver@google.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH] skbuff: suppress clang object-size-mismatch error
-Date:   Wed, 10 Nov 2021 16:35:19 -0800
-Message-Id: <20211111003519.1050494-1-tadeusz.struk@linaro.org>
-X-Mailer: git-send-email 2.33.1
+        Wed, 10 Nov 2021 17:35:04 -0800 (PST)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [RFC PATCH v4 0/8] Adds support for PHY LEDs with offload triggers
+Date:   Thu, 11 Nov 2021 02:34:52 +0100
+Message-Id: <20211111013500.13882-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kernel throws a runtime object-size-mismatch error in skbuff queue
-helpers like in [1]. This happens every time there is a pattern
-like the below:
+This is another attempt in adding support for PHY LEDs. Most of the
+times Switch/PHY have connected multiple LEDs that are controlled by HW
+based on some rules/event. Currently we lack any support for a generic
+way to control the HW part and normally we either never implement the
+feature or only add control for brightness or hw blink.
 
-int skbuf_xmit(struct sk_buff *skb)
-{
-        struct sk_buff_head list;
+This is based on Marek idea of providing some API to cled but use a
+different implementation that in theory should be more generilized.
 
-        __skb_queue_head_init(&list);
-        __skb_queue_tail(&list, skb); <-- offending call
+The current idea is:
+- LED driver implement 3 API (hw_control_status/start/stop).
+  They are used to put the LED in hardware mode and to configure the
+  various trigger.
+- We have hardware triggers that are used to expose to userspace the
+  supported hardware mode and set the hardware mode on trigger
+  activation.
+- We can also have triggers that both support hardware and software mode.
+- The LED driver will declare each supported hardware blink mode and
+  communicate with the trigger all the supported blink modes that will
+  be available by sysfs.
+- A trigger will use blink_set to configure the blink mode to active
+  in hardware mode.
+- On hardware trigger activation, only the hardware mode is enabled but
+  the blink modes are not configured. The LED driver should reset any
+  link mode active by default.
 
-        return do_xmit(net, &list);
-}
+Each LED driver will have to declare explicit support for the offload
+trigger (or return not supported error code) as we the trigger_data that
+the LED driver will elaborate and understand what is referring to (based
+on the current active trigger).
 
-and the kernel is build with clang and -fsanitize=undefined flag set.
-The reason is that the functions __skb_queue_[tail|head]() access the
-struct sk_buff_head object via a pointer to struct sk_buff, which is
-much bigger in size than the sk_buff_head. This could cause undefined
-behavior and clang is complaining:
+I posted a user for this new implementation that will benefit from this
+and will add a big feature to it. Currently qca8k can have up to 3 LEDs
+connected to each PHY port and we have some device that have only one of
+them connected and the default configuration won't work for that.
 
-UBSAN: object-size-mismatch in ./include/linux/skbuff.h:2023:28
-member access within address ffffc90000cb71c0 with insufficient space
-for an object of type 'struct sk_buff'
+I also posted the netdev trigger expanded with the hardware support.
 
-Suppress the error with __attribute__((no_sanitize("undefined")))
-in the skb helpers.
+More polish is required but this is just to understand if I'm taking
+the correct path with this implementation hoping we find a correct
+implementation and we start working on the ""small details""
 
-[1] https://syzkaller.appspot.com/bug?id=5d9f0bca58cea80f272b73500df67dcd9e35c886
+v4:
+- Rework implementation and drop hw_configure logic.
+  We now expand blink_set.
+- Address even more spelling mistake. (thx a lot Randy)
+- Drop blink option and use blink_set delay.
+- Rework phy-activity trigger to actually make the groups dynamic.
+v3:
+- Rework start/stop as Andrew asked.
+- Introduce more logic to permit a trigger to run in hardware mode.
+- Add additional patch with netdev hardware support.
+- Use test_bit API to check flag passed to hw_control_configure.
+- Added a new cmd to hw_control_configure to reset any active blink_mode.
+- Refactor all the patches to follow this new implementation.
+v2:
+- Fix spelling mistake (sorry)
+- Drop patch 02 "permit to declare supported offload triggers".
+  Change the logic, now the LED driver declare support for them
+  using the configure_offload with the cmd TRIGGER_SUPPORTED.
+- Rework code to follow this new implementation.
+- Update Documentation to better describe how this offload
+  implementation work.
 
-Cc: "Nathan Chancellor" <nathan@kernel.org>
-Cc: "Nick Desaulniers" <ndesaulniers@google.com>
-Cc: "Jakub Kicinski" <kuba@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: "Jonathan Lemon" <jonathan.lemon@gmail.com>
-Cc: "Alexander Lobakin" <alobakin@pm.me>
-Cc: "Willem de Bruijn" <willemb@google.com>
-Cc: "Paolo Abeni" <pabeni@redhat.com>
-Cc: "Cong Wang" <cong.wang@bytedance.com>
-Cc: "Kevin Hao" <haokexin@gmail.com>
-Cc: "Ilias Apalodimas" <ilias.apalodimas@linaro.org>
-Cc: "Marco Elver" <elver@google.com>
-Cc: <netdev@vger.kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
-Cc: <llvm@lists.linux.dev>
+Ansuel Smith (8):
+  leds: add support for hardware driven LEDs
+  leds: document additional use of blink_set for hardware control
+  leds: trigger: netdev: drop NETDEV_LED_MODE_LINKUP from mode
+  leds: trigger: netdev: rename and expose NETDEV trigger enum and
+    struct
+  leds: trigger: netdev: add hardware control support
+  leds: trigger: add hardware-phy-activity trigger
+  net: dsa: qca8k: add LEDs support
+  dt-bindings: net: dsa: qca8k: add LEDs definition example
 
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
----
- include/linux/skbuff.h | 49 ++++++++++++++++++++++++------------------
- 1 file changed, 28 insertions(+), 21 deletions(-)
+ .../devicetree/bindings/net/dsa/qca8k.yaml    |  20 +
+ Documentation/leds/leds-class.rst             |  49 ++
+ drivers/leds/Kconfig                          |  11 +
+ drivers/leds/led-class.c                      |  40 ++
+ drivers/leds/led-triggers.c                   |  22 +
+ drivers/leds/trigger/Kconfig                  |  28 ++
+ drivers/leds/trigger/Makefile                 |   1 +
+ .../trigger/ledtrig-hardware-phy-activity.c   | 180 ++++++++
+ drivers/leds/trigger/ledtrig-netdev.c         |  92 ++--
+ drivers/net/dsa/Kconfig                       |   9 +
+ drivers/net/dsa/Makefile                      |   1 +
+ drivers/net/dsa/qca8k-leds.c                  | 423 ++++++++++++++++++
+ drivers/net/dsa/qca8k.c                       |   8 +-
+ drivers/net/dsa/qca8k.h                       |  65 +++
+ include/linux/leds.h                          |  97 +++-
+ 15 files changed, 999 insertions(+), 47 deletions(-)
+ create mode 100644 drivers/leds/trigger/ledtrig-hardware-phy-activity.c
+ create mode 100644 drivers/net/dsa/qca8k-leds.c
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 0bd6520329f6..8ec46e3a503d 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -1933,9 +1933,10 @@ static inline void skb_queue_head_init_class(struct sk_buff_head *list,
-  *	The "__skb_xxxx()" functions are the non-atomic ones that
-  *	can only be called with interrupts disabled.
-  */
--static inline void __skb_insert(struct sk_buff *newsk,
--				struct sk_buff *prev, struct sk_buff *next,
--				struct sk_buff_head *list)
-+static inline void __no_sanitize_undefined
-+__skb_insert(struct sk_buff *newsk,
-+	     struct sk_buff *prev, struct sk_buff *next,
-+	     struct sk_buff_head *list)
- {
- 	/* See skb_queue_empty_lockless() and skb_peek_tail()
- 	 * for the opposite READ_ONCE()
-@@ -1966,8 +1967,9 @@ static inline void __skb_queue_splice(const struct sk_buff_head *list,
-  *	@list: the new list to add
-  *	@head: the place to add it in the first list
-  */
--static inline void skb_queue_splice(const struct sk_buff_head *list,
--				    struct sk_buff_head *head)
-+static inline void __no_sanitize_undefined
-+skb_queue_splice(const struct sk_buff_head *list,
-+		 struct sk_buff_head *head)
- {
- 	if (!skb_queue_empty(list)) {
- 		__skb_queue_splice(list, (struct sk_buff *) head, head->next);
-@@ -1982,8 +1984,9 @@ static inline void skb_queue_splice(const struct sk_buff_head *list,
-  *
-  *	The list at @list is reinitialised
-  */
--static inline void skb_queue_splice_init(struct sk_buff_head *list,
--					 struct sk_buff_head *head)
-+static inline void __no_sanitize_undefined
-+skb_queue_splice_init(struct sk_buff_head *list,
-+		      struct sk_buff_head *head)
- {
- 	if (!skb_queue_empty(list)) {
- 		__skb_queue_splice(list, (struct sk_buff *) head, head->next);
-@@ -1997,8 +2000,9 @@ static inline void skb_queue_splice_init(struct sk_buff_head *list,
-  *	@list: the new list to add
-  *	@head: the place to add it in the first list
-  */
--static inline void skb_queue_splice_tail(const struct sk_buff_head *list,
--					 struct sk_buff_head *head)
-+static inline void __no_sanitize_undefined
-+skb_queue_splice_tail(const struct sk_buff_head *list,
-+		      struct sk_buff_head *head)
- {
- 	if (!skb_queue_empty(list)) {
- 		__skb_queue_splice(list, head->prev, (struct sk_buff *) head);
-@@ -2014,8 +2018,9 @@ static inline void skb_queue_splice_tail(const struct sk_buff_head *list,
-  *	Each of the lists is a queue.
-  *	The list at @list is reinitialised
-  */
--static inline void skb_queue_splice_tail_init(struct sk_buff_head *list,
--					      struct sk_buff_head *head)
-+static inline void __no_sanitize_undefined
-+skb_queue_splice_tail_init(struct sk_buff_head *list,
-+			   struct sk_buff_head *head)
- {
- 	if (!skb_queue_empty(list)) {
- 		__skb_queue_splice(list, head->prev, (struct sk_buff *) head);
-@@ -2035,9 +2040,10 @@ static inline void skb_queue_splice_tail_init(struct sk_buff_head *list,
-  *
-  *	A buffer cannot be placed on two lists at the same time.
-  */
--static inline void __skb_queue_after(struct sk_buff_head *list,
--				     struct sk_buff *prev,
--				     struct sk_buff *newsk)
-+static inline void __no_sanitize_undefined
-+__skb_queue_after(struct sk_buff_head *list,
-+		  struct sk_buff *prev,
-+		  struct sk_buff *newsk)
- {
- 	__skb_insert(newsk, prev, prev->next, list);
- }
-@@ -2045,9 +2051,10 @@ static inline void __skb_queue_after(struct sk_buff_head *list,
- void skb_append(struct sk_buff *old, struct sk_buff *newsk,
- 		struct sk_buff_head *list);
- 
--static inline void __skb_queue_before(struct sk_buff_head *list,
--				      struct sk_buff *next,
--				      struct sk_buff *newsk)
-+static inline void __no_sanitize_undefined
-+__skb_queue_before(struct sk_buff_head *list,
-+		   struct sk_buff *next,
-+		   struct sk_buff *newsk)
- {
- 	__skb_insert(newsk, next->prev, next, list);
- }
-@@ -2062,8 +2069,8 @@ static inline void __skb_queue_before(struct sk_buff_head *list,
-  *
-  *	A buffer cannot be placed on two lists at the same time.
-  */
--static inline void __skb_queue_head(struct sk_buff_head *list,
--				    struct sk_buff *newsk)
-+static inline void __no_sanitize_undefined
-+__skb_queue_head(struct sk_buff_head *list, struct sk_buff *newsk)
- {
- 	__skb_queue_after(list, (struct sk_buff *)list, newsk);
- }
-@@ -2079,8 +2086,8 @@ void skb_queue_head(struct sk_buff_head *list, struct sk_buff *newsk);
-  *
-  *	A buffer cannot be placed on two lists at the same time.
-  */
--static inline void __skb_queue_tail(struct sk_buff_head *list,
--				   struct sk_buff *newsk)
-+static inline void __no_sanitize_undefined
-+__skb_queue_tail(struct sk_buff_head *list, struct sk_buff *newsk)
- {
- 	__skb_queue_before(list, (struct sk_buff *)list, newsk);
- }
 -- 
-2.33.1
+2.32.0
 
