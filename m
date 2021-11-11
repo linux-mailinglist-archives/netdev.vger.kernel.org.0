@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F16B344D738
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 14:28:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 919F644D73E
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 14:30:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232257AbhKKNbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 08:31:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42122 "EHLO
+        id S232997AbhKKNdR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 08:33:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230177AbhKKNbf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 08:31:35 -0500
+        with ESMTP id S231739AbhKKNdR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 08:33:17 -0500
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49061C0613F5;
-        Thu, 11 Nov 2021 05:28:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BACC061766;
+        Thu, 11 Nov 2021 05:30:28 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 557401F45C17
+        with ESMTPSA id 2763C1F45C19
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=collabora.com; s=mail;
-        t=1636637325; bh=hKlJPVIsd3zl1fRS+HP0UR+QSYciJS0/XcKJEC6ReGU=;
+        t=1636637426; bh=Q3uCANzvE9+cRG6QMf3K+KvzdaN3OYug4xiZOrBZ+iM=;
         h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=bt6bqF1fNP4inuT+/4OcgZZjROtLEbuwpi5Sb473NqCNEZ7q9PJoNl7vjPkEORvdZ
-         pA6vwT0iSzB6cR+3DdoqueSaB4OOLHZW9cy3P/JT2azA1Ukcnp37fst7pVCL+OLDbe
-         EY3XvRh7PywUblMcQ4V78VsFsqQsfBOGyibzME5KshpNZVHmQ3AsiDPHz9B1M9HEPf
-         w/8nzQtjaOMBJC7o8yqgqoXnL4K3aDau+ZAvdyIMMfO1LZqE2JYqXZbLOBJZGYJwQl
-         SUOlAem03Zfb2jQMZKyUliqnRRdwFAYpvOCHBLEx9WYeIael5rYClvZk1PEr6SFxUZ
-         n5EX+fwU1LfhA==
-Subject: Re: [PATCH v2 2/5] net: stmmac: dwmac-mediatek: Reuse more common
- features
+        b=rZzbQShwGj5gN7VirvGPcA6smFvOgJNJVxSZ/0tDPh9PcbO0sUcLPRcA7VYW4ImPS
+         GhLtFxP2CKI2VHngQb15P/IdUO5b8lYSRD6m1vWcP7BI2axvDlU6Bu70t6OXMKGhR6
+         7Ej4t7rl/haFWR2eEkl+oaO+836qD68UZNwafVYWKv4m3jpPTjEQe6mzpTPg9hs3sH
+         sWb/3CorRa2b3Nako7IelthlBb+c632oUym8PYVP5MpuP+rAtIu+NBVz1aw3YzKcRq
+         Pjz2+f4d3JzMSewpQvqJ0le+NkCaTlWURLnD0Of3JHjhH1pXrcc8eoEBI9xNiCobNs
+         79pcEOuCWX4HA==
+Subject: Re: [PATCH v2 4/5] dt-bindings: net: dwmac: Convert mediatek-dwmac to
+ DT schema
 To:     Biao Huang <biao.huang@mediatek.com>, davem@davemloft.net,
         Jakub Kicinski <kuba@kernel.org>,
         Rob Herring <robh+dt@kernel.org>
@@ -42,15 +42,15 @@ Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         srv_heupstream@mediatek.com, macpaul.lin@mediatek.com
 References: <20211111071214.21027-1-biao.huang@mediatek.com>
- <20211111071214.21027-3-biao.huang@mediatek.com>
+ <20211111071214.21027-5-biao.huang@mediatek.com>
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-Message-ID: <71620d46-c9d5-07cc-befd-da838f0dcd1f@collabora.com>
-Date:   Thu, 11 Nov 2021 14:28:41 +0100
+Message-ID: <4214b222-6c43-3132-bcfe-07c43d29f5f9@collabora.com>
+Date:   Thu, 11 Nov 2021 14:30:23 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <20211111071214.21027-3-biao.huang@mediatek.com>
+In-Reply-To: <20211111071214.21027-5-biao.huang@mediatek.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -59,13 +59,19 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Il 11/11/21 08:12, Biao Huang ha scritto:
-> This patch makes dwmac-mediatek reuse more features
-> supported by stmmac_platform.c.
+> Convert mediatek-dwmac to DT schema, and delete old mediatek-dwmac.txt.
 > 
 > Signed-off-by: Biao Huang <biao.huang@mediatek.com>
 > ---
->   .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 32 +++++++++----------
->   1 file changed, 15 insertions(+), 17 deletions(-)
+>   .../bindings/net/mediatek-dwmac.txt           |  91 --------
+>   .../bindings/net/mediatek-dwmac.yaml          | 211 ++++++++++++++++++
+>   2 files changed, 211 insertions(+), 91 deletions(-)
+>   delete mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.txt
+>   create mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
 > 
 
-Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Thanks for the DT schema conversion!
+
+Anyway, you should split this in two commits: in the first one, you convert the
+txt documentation to schema, as it is... and in the second one, you add mt8195
+bindings.
