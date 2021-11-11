@@ -2,138 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29F9144D623
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 12:54:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F55744D63B
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 12:57:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233290AbhKKL5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 06:57:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49046 "EHLO
+        id S232855AbhKKMAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 07:00:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233258AbhKKL5K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 06:57:10 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BED8C061767
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 03:54:21 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id r67-20020a252b46000000b005bea12c4befso8775301ybr.19
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 03:54:21 -0800 (PST)
+        with ESMTP id S232570AbhKKMAK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 07:00:10 -0500
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F0DCC061766
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 03:57:21 -0800 (PST)
+Received: by mail-qt1-x834.google.com with SMTP id m25so4979262qtq.13
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 03:57:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=4kL0X2JVV0XjaUHDlSkh7aIxrPJS+P1TxygnVknNAZg=;
-        b=Q+/jtBb//RU4wXxTAhXSVm2orlgn4RWfwrSjrQlNKVkWGlTrLvz9MJ96wWDFx/4DBn
-         8nfP/26EVLTEEXNF8fgtFKprei22rUtMhyowsZU4vLDFEfAgkwHFa23Nw46oD+VMrfaV
-         8ukt0PyOqV2V1gbFykDZm4V9iSer4Wi5lYigGnsxqn/lzGnBZ0Hdi8LP8vK7RK4LSm0l
-         KWkjCr3vQ0hbfr8MJLEmYVYxuSi8r39LtkxTGoVlchAjYi+XbN0SGszIDnqsO1/a+LDv
-         nw/SdPnQ7l/LOSQ71L93BdLvyi1CSMfHQQZxya7I6X7olgrs2syvV6EnhCIixiUkTpDR
-         ASMg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oNr7NQJ+O6cRi3PNVg0Rien7aCPczIjyLhK3og0497w=;
+        b=SvZvJM4picYmt3OYUJGNcpQU2tV+AlNRX+5cmS13dPeqeigRgO81w+0hxBQi8Ow9lc
+         1Tmkpy5lv693keV18bkTUXxUTqsj326dbIXQk0jjG7V/E9pZRcf/PRPql5Lq2ZY0og2H
+         RGEFZASDMMHpj6yadyu3suncA987YoBxEAvA/qcCxpE38ythp49QRBTOwgsNDpDMD6/N
+         beoPi7DmDAEK99eXoj/KT0IZbkhXd9YSj48Z7t5tZacG6XIwEHvmHqFpMmzuoInG9e/Z
+         sjj6MlUZ8TSJTa6SVqypqjDmIAd+FH3UygaMOEhKaSsh9D2M3tRM645ZteeXuorlLiq+
+         dJPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=4kL0X2JVV0XjaUHDlSkh7aIxrPJS+P1TxygnVknNAZg=;
-        b=ZAbungsAWixIsQBhbqC/uBHjll8S50JPVVECB1oIufCNk07tOEZ1qSC4vj9268HONA
-         ysn+cOgPm1KTyTDaK1w8IJwtvW9kqyhrJpSdbTTpiFfs4VyeMBnoucX3BKdQludl5yC5
-         TnaKBQqCLndwwDXpkx9pe+5bd+Yr6qKRKu3xgZQie0cAc7377YNjpEr0CiYbp5//mD5d
-         vVDDB1TdZwVHZkfK80L5V5/lLodwsBxZfDayrM6DlM4B709P/tLSHbs2bUp+w7/K0fGo
-         sK0jJRXXw+epVlReqSEz3YFeYVThVg/J7mq+3BSmOlo0jYxnBNun8Va7FHi4pqiSrHRc
-         QY2A==
-X-Gm-Message-State: AOAM531eC4GdxLbcMvprAMBULYfhE89zReZTEAUiu/xIuyWnc1vSGPY1
-        ViJT05hEed5oYuKB3StTsIGLP/6+XRh8
-X-Google-Smtp-Source: ABdhPJypRDIh4yurXN82mQRqslDI7fpio42+fj+0QjBuTXIyRZ/XgO7FeGopIjdipnZupcHi2ly03+HNzBey
-X-Received: from apusaka-p920.tpe.corp.google.com ([2401:fa00:1:10:b87e:3eb:e17e:1273])
- (user=apusaka job=sendgmr) by 2002:a05:6902:1205:: with SMTP id
- s5mr8240471ybu.71.1636631660862; Thu, 11 Nov 2021 03:54:20 -0800 (PST)
-Date:   Thu, 11 Nov 2021 19:53:52 +0800
-In-Reply-To: <20211111195320.1.Id7366eb14b6f48173fcbf17846ace59479179c7c@changeid>
-Message-Id: <20211111195320.3.I35b7f3a496f834de6b43a32f94b6160cb1467c94@changeid>
-Mime-Version: 1.0
-References: <20211111195320.1.Id7366eb14b6f48173fcbf17846ace59479179c7c@changeid>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oNr7NQJ+O6cRi3PNVg0Rien7aCPczIjyLhK3og0497w=;
+        b=0OfMw6J0QQy/jCsAkTfe4qkaCXW855eI8UxnkQMz2eaD4DB4Pm6xOLnzNfCDuxJDfM
+         fTkv9aSfMflfwXlC43PLC1QdKy1ewK6o2QZbxi6EWggK0EB6rFhOdQdHvnY4nPZfkk4d
+         lTv+aILRaj9APKxCjmStTj5oG2hNOz7Yn5xrrqpwSrryt5XC64WvbfjpNOQdPGXkJ+v5
+         GHQ0psyp7+Hv/MW9TfWf9UoE7K14FoDICyf9MdZB/4VI9ppc04/Qz5Nm1JFiDemfOI00
+         soCt/ftgarJXq6+EffBX9FtP9Z1fnXaIbljsP3JBK4TU4buT/P28qBtIPTkEaUzuWney
+         sPTQ==
+X-Gm-Message-State: AOAM532zP1qITrBw1g1oPxvtiQ5NHDlaAr02FkLNoaBe0McQAf307WCY
+        FXk00SfKzeAX5eQAWfpNfN+s5kZU/kZdWQ==
+X-Google-Smtp-Source: ABdhPJyzFUb+m4dP79h+HUaTvIEFfaQHSdqx5vusbZ8mD2K2IUQmpPNzZP+BiVFsEh7BAzI01aFLOQ==
+X-Received: by 2002:a05:622a:49:: with SMTP id y9mr6845073qtw.301.1636631840266;
+        Thu, 11 Nov 2021 03:57:20 -0800 (PST)
+Received: from willemb.c.googlers.com.com (55.87.194.35.bc.googleusercontent.com. [35.194.87.55])
+        by smtp.gmail.com with ESMTPSA id ay12sm1265713qkb.35.2021.11.11.03.57.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Nov 2021 03:57:19 -0800 (PST)
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, Willem de Bruijn <willemb@google.com>
+Subject: [PATCH net] selftests/net: udpgso_bench_rx: fix port argument
+Date:   Thu, 11 Nov 2021 06:57:17 -0500
+Message-Id: <20211111115717.1925230-1-willemdebruijn.kernel@gmail.com>
 X-Mailer: git-send-email 2.34.0.rc0.344.g81b53c2807-goog
-Subject: [PATCH 3/3] Bluetooth: Limit duration of Remote Name Resolve
-From:   Archie Pusaka <apusaka@google.com>
-To:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>
-Cc:     CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Archie Pusaka <apusaka@chromium.org>
+From: Willem de Bruijn <willemb@google.com>
 
-When doing remote name request, we cannot scan. In the normal case it's
-OK since we can expect it to finish within a short amount of time.
-However, there is a possibility to scan lots of devices that
-(1) requires Remote Name Resolve
-(2) is unresponsive to Remote Name Resolve
-When this happens, we are stuck to do Remote Name Resolve until all is
-done before continue scanning.
+The below commit added optional support for passing a bind address.
+It configures the sockaddr bind arguments before parsing options and
+reconfigures on options -b and -4.
 
-This patch adds a time limit to stop us spending too long on remote
-name request.
+This broke support for passing port (-p) on its own.
 
-Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
+Configure sockaddr after parsing all arguments.
+
+Fixes: 3327a9c46352 ("selftests: add functionals test for UDP GRO")
+Reported-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Willem de Bruijn <willemb@google.com>
 ---
+ tools/testing/selftests/net/udpgso_bench_rx.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
- include/net/bluetooth/hci_core.h | 3 +++
- net/bluetooth/hci_event.c        | 7 +++++++
- 2 files changed, 10 insertions(+)
-
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index eb08dd502f2a..941cfbb024d1 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -89,6 +89,7 @@ struct discovery_state {
- 	u8			(*uuids)[16];
- 	unsigned long		scan_start;
- 	unsigned long		scan_duration;
-+	unsigned long		name_resolve_timeout;
- };
+diff --git a/tools/testing/selftests/net/udpgso_bench_rx.c b/tools/testing/selftests/net/udpgso_bench_rx.c
+index 76a24052f4b4..6a193425c367 100644
+--- a/tools/testing/selftests/net/udpgso_bench_rx.c
++++ b/tools/testing/selftests/net/udpgso_bench_rx.c
+@@ -293,19 +293,17 @@ static void usage(const char *filepath)
  
- #define SUSPEND_NOTIFIER_TIMEOUT	msecs_to_jiffies(2000) /* 2 seconds */
-@@ -1763,6 +1764,8 @@ void hci_mgmt_chan_unregister(struct hci_mgmt_chan *c);
- #define DISCOV_LE_FAST_ADV_INT_MIN	0x00A0	/* 100 msec */
- #define DISCOV_LE_FAST_ADV_INT_MAX	0x00F0	/* 150 msec */
+ static void parse_opts(int argc, char **argv)
+ {
++	const char *bind_addr = NULL;
+ 	int c;
  
-+#define NAME_RESOLVE_DURATION		msecs_to_jiffies(10240)	/* msec */
+-	/* bind to any by default */
+-	setup_sockaddr(PF_INET6, "::", &cfg_bind_addr);
+ 	while ((c = getopt(argc, argv, "4b:C:Gl:n:p:rR:S:tv")) != -1) {
+ 		switch (c) {
+ 		case '4':
+ 			cfg_family = PF_INET;
+ 			cfg_alen = sizeof(struct sockaddr_in);
+-			setup_sockaddr(PF_INET, "0.0.0.0", &cfg_bind_addr);
+ 			break;
+ 		case 'b':
+-			setup_sockaddr(cfg_family, optarg, &cfg_bind_addr);
++			bind_addr = optarg;
+ 			break;
+ 		case 'C':
+ 			cfg_connect_timeout_ms = strtoul(optarg, NULL, 0);
+@@ -341,6 +339,11 @@ static void parse_opts(int argc, char **argv)
+ 		}
+ 	}
+ 
++	if (!bind_addr)
++		bind_addr = cfg_family == PF_INET6 ? "::" : "0.0.0.0";
 +
- void mgmt_fill_version_info(void *ver);
- int mgmt_new_settings(struct hci_dev *hdev);
- void mgmt_index_added(struct hci_dev *hdev);
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 2de3080659f9..6180ab0e8b8d 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -2129,6 +2129,12 @@ static bool hci_resolve_next_name(struct hci_dev *hdev)
- 	if (list_empty(&discov->resolve))
- 		return false;
- 
-+	/* We should stop if we already spent too much time resolving names. */
-+	if (time_after(jiffies, discov->name_resolve_timeout)) {
-+		bt_dev_dbg(hdev, "Name resolve takes too long, stopping.");
-+		return false;
-+	}
++	setup_sockaddr(cfg_family, bind_addr, &cfg_bind_addr);
 +
- 	e = hci_inquiry_cache_lookup_resolve(hdev, BDADDR_ANY, NAME_NEEDED);
- 	if (!e)
- 		return false;
-@@ -2716,6 +2722,7 @@ static void hci_inquiry_complete_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 	if (e && hci_resolve_name(hdev, e) == 0) {
- 		e->name_state = NAME_PENDING;
- 		hci_discovery_set_state(hdev, DISCOVERY_RESOLVING);
-+		discov->name_resolve_timeout = jiffies + NAME_RESOLVE_DURATION;
- 	} else {
- 		/* When BR/EDR inquiry is active and no LE scanning is in
- 		 * progress, then change discovery state to indicate completion.
+ 	if (optind != argc)
+ 		usage(argv[0]);
+ 
 -- 
 2.34.0.rc0.344.g81b53c2807-goog
 
