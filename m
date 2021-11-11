@@ -2,76 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 557E344CF40
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 02:50:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1607A44CF53
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 02:56:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231312AbhKKBwq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 20:52:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50830 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233115AbhKKBwp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Nov 2021 20:52:45 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8999D61872;
-        Thu, 11 Nov 2021 01:49:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636595396;
-        bh=f/yC4ondW0QTs5CCN9edd7WOeQSC0/GyJBYH/SEXbpQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ehasmTh0v/BzH7yJ9PDwFpx/tpNK/9DIlLC+yQPe9HXagiWaVMpaPFYqFm+b4+ybW
-         GtMI6dkofWMPwT2izWu0hbn4X8kFtxdQYWtpDzb+kWAFh4VBiynRgR2pUHKWlzjflx
-         b5NpUaH8z/rYzjC7wmXSY8eyCnyINWwofDsDl6yyh9aDb0vr+MLPWCT+Uge+uP8jjb
-         fOQlufF85b7MafgIfOmKKspFwaT0ocUONIJxrhR10Qt4qJTsV0JpiOpuu/fnyLWX/h
-         MEmb4lj1iAfpRuMRQWKrHYg01DK7GD1IYKSTinpcmiqxj/9m8LKWwbFMEhB6b6GpLR
-         I6/x6326hC5Yw==
-Date:   Wed, 10 Nov 2021 17:49:55 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     netdev@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Min Li <min.li.xe@renesas.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH] ptp: ptp_clockmatrix: repair non-kernel-doc comment
-Message-ID: <20211110174955.3fb02cde@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211110225306.13483-1-rdunlap@infradead.org>
-References: <20211110225306.13483-1-rdunlap@infradead.org>
+        id S233254AbhKKB7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 20:59:06 -0500
+Received: from pi.codeconstruct.com.au ([203.29.241.158]:48510 "EHLO
+        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231254AbhKKB7G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 20:59:06 -0500
+Received: by codeconstruct.com.au (Postfix, from userid 10001)
+        id A86F42022C; Thu, 11 Nov 2021 09:56:16 +0800 (AWST)
+From:   Matt Johnston <matt@codeconstruct.com.au>
+Cc:     Zev Weiss <zev@bewilderbeest.net>, Wolfram Sang <wsa@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Jeremy Kerr <jk@codeconstruct.com.au>,
+        linux-i2c@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next v2 0/6] MCTP I2C driver
+Date:   Thu, 11 Nov 2021 09:55:42 +0800
+Message-Id: <20211111015548.2892849-1-matt@codeconstruct.com.au>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 10 Nov 2021 14:53:06 -0800 Randy Dunlap wrote:
-> Do not use "/**" to begin a comment that is not in kernel-doc format.
-> 
-> Prevents this docs build warning:
-> 
-> drivers/ptp/ptp_clockmatrix.c:1679: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
->     * Maximum absolute value for write phase offset in picoseconds
-> 
-> Fixes: 794c3dffacc16 ("ptp: ptp_clockmatrix: Add support for FW 5.2 (8A34005)")
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Cc: Min Li <min.li.xe@renesas.com>
-> Cc: Richard Cochran <richardcochran@gmail.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> ---
->  drivers/ptp/ptp_clockmatrix.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> --- linux-next-20211110.orig/drivers/ptp/ptp_clockmatrix.c
-> +++ linux-next-20211110/drivers/ptp/ptp_clockmatrix.c
-> @@ -1699,7 +1699,7 @@ static int initialize_dco_operating_mode
->  
->  /* PTP Hardware Clock interface */
->  
-> -/**
-> +/*
->   * Maximum absolute value for write phase offset in picoseconds
->   *
->   * @channel:  channel
+Hi,
 
-Looks like it documents parameters to the function, should we either
-fix it to make it valid kdoc or remove the params (which TBH aren't
-really adding much value)?
+This patch series adds a netdev driver providing MCTP transport over
+I2C. 
+
+It applies against net-next using recent MCTP changes there, though also
+has I2C core changes for review. I'll leave it to maintainers where it
+should be applied - please let me know if it needs to be submitted
+differently.
+
+The I2C patches were previously sent as RFC though the only feedback
+there was an ack to 255 bytes for aspeed.
+
+The dt-bindings patch went through review on the list.
+
+Cheers,
+Matt
+
+--
+v2:
+ - Simpler Kconfig condition for i2c-mux dependency, from Randy Dunlap
+
+Matt Johnston (6):
+  i2c: core: Allow 255 byte transfers for SMBus 3.x
+  i2c: dev: Handle 255 byte blocks for i2c ioctl
+  i2c: aspeed: Allow 255 byte block transfers
+  i2c: npcm7xx: Allow 255 byte block SMBus transfers
+  dt-bindings: net: New binding mctp-i2c-controller
+  mctp i2c: MCTP I2C binding driver
+
+ Documentation/devicetree/bindings/i2c/i2c.txt |   4 +
+ .../bindings/net/mctp-i2c-controller.yaml     |  92 ++
+ drivers/i2c/busses/i2c-aspeed.c               |   5 +-
+ drivers/i2c/busses/i2c-npcm7xx.c              |   3 +-
+ drivers/i2c/i2c-core-smbus.c                  |  20 +-
+ drivers/i2c/i2c-dev.c                         |  93 +-
+ drivers/net/mctp/Kconfig                      |  12 +
+ drivers/net/mctp/Makefile                     |   1 +
+ drivers/net/mctp/mctp-i2c.c                   | 982 ++++++++++++++++++
+ include/linux/i2c.h                           |  13 +
+ include/uapi/linux/i2c-dev.h                  |   2 +
+ include/uapi/linux/i2c.h                      |   7 +-
+ 12 files changed, 1209 insertions(+), 25 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/mctp-i2c-controller.yaml
+ create mode 100644 drivers/net/mctp/mctp-i2c.c
+
+-- 
+2.32.0
+
