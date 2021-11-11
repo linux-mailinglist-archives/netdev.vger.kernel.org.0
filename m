@@ -2,124 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F51344CEF2
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 02:36:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DF7544CF19
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 02:39:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233554AbhKKBiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 20:38:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53008 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233317AbhKKBiO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 20:38:14 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D5BC06120E;
-        Wed, 10 Nov 2021 17:35:24 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id b184-20020a1c1bc1000000b0033140bf8dd5so3273037wmb.5;
-        Wed, 10 Nov 2021 17:35:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=mrT39HXhsvQIv884aQ7FKStKCV5fQEcK++rSuH4MPzo=;
-        b=jqMykAR6VXN2xIlYa+0wkxRz2eQKa495CzICkfgqvBIgfgidn78nWvP9s8nJ3PFk56
-         fXqoQARTue0J7vfhVzxyVF3xv1BsvuhV5UoP8eyO5pIZ5Z0OAF3v+GBMV0R8BNc1veyG
-         4kv6yzBsb5vORckhrcygK5CXfMqhecblTRJ3z1qrp80K0cDaqxWYu4Lv878rEMLlZGWO
-         cgfeSyXBcvqIiRRUD+AtoLs1zvKcAglW/i2G1SCImax741DfwBQ/RFpzp3JzVl3cgddH
-         zIoXEEhK9Ez8pm5qCw8rlYx+v5kq2CKW6kDQQJqGIyJtiFnq7zqYKrdKFElqkfUQ6two
-         zOMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=mrT39HXhsvQIv884aQ7FKStKCV5fQEcK++rSuH4MPzo=;
-        b=KW/kDXdIOHzzmiEEQorAXNOHLJUbkT1KJoP/FARkJANrEr8Tcf+mYXIs5RPwAQM2z2
-         J39PizmW8itykRnxER8dj6nZs9QfE6mqRNelY6BSaTqNBYZ4LwqihYE+Cop2Lx8vvrED
-         Z82I8ZZ7Z+CAr6fIx1OxmEHebIvxQ9OdDQbStSoro9/gpjYuhrUpDouxCpZpPPSpUyyM
-         J+e9SoZujKmpqvsBn/r1AF6+aegAQ73O4MNR2tpgvMdtszY5YiMkIwQIrWQftpJC9Cz4
-         Tm9aYe1CcUoqKAbKFXM10DMLJvbFNKytJYqfwLL9CFhS4/N3Hht5P1LDkl6IFgj0OaoH
-         pPHQ==
-X-Gm-Message-State: AOAM533n3LMQ+VOLhBtJlQDofxE5+2Q+LdSHWJn20MnipYPxv8UnFl0d
-        OyurxRgKJtHkjLgmU/XiiouToV1e/+c=
-X-Google-Smtp-Source: ABdhPJzM0hS2UOYIOh6e3NSsyIh7bBsGvStuj3qU0xtrkPQjGQsG/0culT4Hzqyr4W4oBtOugjZ4Gw==
-X-Received: by 2002:a1c:2382:: with SMTP id j124mr4047911wmj.35.1636594522536;
-        Wed, 10 Nov 2021 17:35:22 -0800 (PST)
-Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id d8sm1369989wrm.76.2021.11.10.17.35.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Nov 2021 17:35:22 -0800 (PST)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [RFC PATCH v4 8/8] dt-bindings: net: dsa: qca8k: add LEDs definition example
-Date:   Thu, 11 Nov 2021 02:35:00 +0100
-Message-Id: <20211111013500.13882-9-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211111013500.13882-1-ansuelsmth@gmail.com>
-References: <20211111013500.13882-1-ansuelsmth@gmail.com>
+        id S232987AbhKKBm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 20:42:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49158 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231312AbhKKBmZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Nov 2021 20:42:25 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 50B8460EE4;
+        Thu, 11 Nov 2021 01:39:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636594777;
+        bh=cf5yOhrezRaS3az4I+5LjwvWmGyLUDhsfildHNI2s2M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TERuJy+0mBTSaXjUPuv97W88N9bqw45z6KMJt40R91eXi2cwfbpZ7DLMiCURoVFrO
+         HY9VrAJuvI9zgAUhl5FuPKJD2/ge4X7H873CCkdRjsl02PFlJqerhjL2WDBSYM5kG4
+         cdb1WmUVdcOQ56pMUz1UT8zzIhHEsZGAtdIwx0V7uGt32eZaPpQ+ITPB0AnPbcIgj1
+         oNUyFGVR0OLShASmRN1xqk0EfJ5LzhEgKOIwdUKjsGqQVzRq2pafRu4O9bpjEAO5SU
+         q1PE6zavYqmU8KskvjXGGWbMBRSfoR6gHkykTHNPZwNiOxinnB1ZmXajrtCMf7zUmd
+         uP+X+V8iXixqw==
+Date:   Wed, 10 Nov 2021 17:39:35 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>
+Cc:     jgross@suse.com, x86@kernel.org, pv-drivers@vmware.com,
+        Zack Rusin <zackr@vmware.com>, Nadav Amit <namit@vmware.com>,
+        Vivek Thampi <vithampi@vmware.com>,
+        Vishal Bhakta <vbhakta@vmware.com>,
+        Ronak Doshi <doshir@vmware.com>,
+        linux-graphics-maintainer@vmware.com,
+        dri-devel@lists.freedesktop.org, linux-rdma@vger.kernel.org,
+        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+        linux-input@vger.kernel.org, amakhalov@vmware.com,
+        sdeep@vmware.com, virtualization@lists.linux-foundation.org,
+        keerthanak@vmware.com, srivatsab@vmware.com, anishs@vmware.com,
+        linux-kernel@vger.kernel.org, joe@perches.com, rostedt@goodmis.org
+Subject: Re: [PATCH v3 3/3] MAINTAINERS: Mark VMware mailing list entries as
+ email aliases
+Message-ID: <20211110173935.45a9f495@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <163657493334.84207.11063282485812745766.stgit@srivatsa-dev>
+References: <163657479269.84207.13658789048079672839.stgit@srivatsa-dev>
+        <163657493334.84207.11063282485812745766.stgit@srivatsa-dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add LEDs definition example for qca8k using the offload trigger as the
-default trigger and add all the supported offload triggers by the
-switch.
+On Wed, 10 Nov 2021 12:09:06 -0800 Srivatsa S. Bhat wrote:
+>  DRM DRIVER FOR VMWARE VIRTUAL GPU
+> -M:	"VMware Graphics" <linux-graphics-maintainer@vmware.com>
+>  M:	Zack Rusin <zackr@vmware.com>
+> +R:	VMware Graphics Reviewers <linux-graphics-maintainer@vmware.com>
+>  L:	dri-devel@lists.freedesktop.org
+>  S:	Supported
+>  T:	git git://anongit.freedesktop.org/drm/drm-misc
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- .../devicetree/bindings/net/dsa/qca8k.yaml    | 20 +++++++++++++++++++
- 1 file changed, 20 insertions(+)
+It'd be preferable for these corporate entries to be marked or
+otherwise distinguishable so that we can ignore them when we try 
+to purge MAINTAINERS from developers who stopped participating.
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-index 48de0ace265d..106d95adc1e8 100644
---- a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-@@ -64,6 +64,8 @@ properties:
-                  internal mdio access is used.
-                  With the legacy mapping the reg corresponding to the internal
-                  mdio is the switch reg with an offset of -1.
-+                 Each phy have at least 3 LEDs connected and can be declared
-+                 using the standard LEDs structure.
- 
-     properties:
-       '#address-cells':
-@@ -340,6 +342,24 @@ examples:
- 
-                 internal_phy_port1: ethernet-phy@0 {
-                     reg = <0>;
-+
-+                    leds {
-+                        led@0 {
-+                            reg = <0>;
-+                            color = <LED_COLOR_ID_WHITE>;
-+                            function = LED_FUNCTION_LAN;
-+                            function-enumerator = <1>;
-+                            linux,default-trigger = "offload-phy-activity";
-+                        };
-+
-+                        led@1 {
-+                            reg = <1>;
-+                            color = <LED_COLOR_ID_AMBER>;
-+                            function = LED_FUNCTION_LAN;
-+                            function-enumerator = <1>;
-+                            linux,default-trigger = "offload-phy-activity";
-+                        };
-+                    };
-                 };
- 
-                 internal_phy_port2: ethernet-phy@1 {
--- 
-2.32.0
-
+These addresses will never show up in a commit tag which is normally
+sign of inactivity.
