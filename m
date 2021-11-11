@@ -2,78 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EDFF44CF78
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 03:06:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D830444CFD8
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 03:11:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233583AbhKKCJC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Nov 2021 21:09:02 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55166 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233552AbhKKCJC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Nov 2021 21:09:02 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 79BAC61073;
-        Thu, 11 Nov 2021 02:06:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636596373;
-        bh=X4sMI2ia4/BU1tBCkK05ajEI9bCkBdO8vwHAaLPmAOo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UECVeurkhuIaUY9WDjQcoxVYKmTe8BbPpwdDY3ua0UiE7VWODA2irmCyTPYlJCM3h
-         Mb5lxqogNGyfqvLwqtskHaPOz+obVepTNfkdM+F2K7Mqs3vGkQ7+zeXExsrsfjCDIu
-         wxs5+6MoomPz7/0+pyWok21hce2RCmWaU1jeHEnDmydscocUhRa3sOLAOzX/uFKp5a
-         MgmUMSINZxUvy4yvRxeumhnplzl1eVX+0J4o3b9TIIWhWhKwt/7IvqIlqcli0UU3jY
-         SihZnkGqbXBSybKDpe28UpNYvwhY0fh8RvFKa7dgKyGSFgUVGubymY1EILkGMOFfPy
-         kD3md4ethu6Tg==
-Date:   Wed, 10 Nov 2021 18:06:12 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lin Ma <linma@zju.edu.cn>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, jirislaby@kernel.org,
-        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 2/2] hamradio: defer 6pack kfree after
- unregister_netdev
-Message-ID: <20211110180612.2f2eb760@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211110180525.20422f66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20211108103721.30522-1-linma@zju.edu.cn>
-        <20211108103759.30541-1-linma@zju.edu.cn>
-        <20211110180525.20422f66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S234292AbhKKCNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Nov 2021 21:13:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60268 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233698AbhKKCNM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Nov 2021 21:13:12 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34090C0797BC
+        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 18:09:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
+        Subject:Sender:Reply-To:Content-ID:Content-Description;
+        bh=DamVpS/zsJJCjaEuEGxupiRyIApd7Zpv1oOomJiqAYI=; b=2TnbSOlL++auhbXRXRS7nVdE4J
+        Iv+4b/S/lGCFhRe2/QIGOG8xxio42y00pfoMAFTCosxQupjq86O3f0zCBdkDtHJUxZmQfi2NEWZ8o
+        DsV4qEEwF8VAxE+k4orZfy7kyZ2r5qItqpxVEJLfHgvnco8WWHc3X2PCFaVnVd3OuIKAHCAZNyEPG
+        PUkUDY8C/2cE14dzUNSqi+DvTgykG0MPoWM7qHz/J6E+QzJcyx8IrKxtgXGdrCZxZbpL3sQZf/Vdw
+        mAm2p9hSm1elf+I8glyJFzyApzoDRe7U7mvv+pCKt6fkhwpshyZfe4y5GMfqEEU/UXRzVvTuBm9Lo
+        XoCeEzsw==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mkzWj-006lHo-Go; Thu, 11 Nov 2021 02:09:21 +0000
+Subject: Re: [PATCH] ptp: ptp_clockmatrix: repair non-kernel-doc comment
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Min Li <min.li.xe@renesas.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20211110225306.13483-1-rdunlap@infradead.org>
+ <20211110174955.3fb02cde@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <d9933dbe-a41b-772f-9d53-b3a08a0ad401@infradead.org>
+Date:   Wed, 10 Nov 2021 18:09:20 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20211110174955.3fb02cde@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 10 Nov 2021 18:05:25 -0800 Jakub Kicinski wrote:
-> > diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
-> > index 49f10053a794..bfdf89e54752 100644
-> > --- a/drivers/net/hamradio/6pack.c
-> > +++ b/drivers/net/hamradio/6pack.c
-> > @@ -672,11 +672,13 @@ static void sixpack_close(struct tty_struct *tty)
-> >  	del_timer_sync(&sp->tx_t);
-> >  	del_timer_sync(&sp->resync_t);
-> >  
-> > -	/* Free all 6pack frame buffers. */
-> > +	unregister_netdev(sp->dev);
-> > +
-> > +	/* Free all 6pack frame buffers after unreg. */
-> >  	kfree(sp->rbuff);
-> >  	kfree(sp->xbuff);
-> >  
-> > -	unregister_netdev(sp->dev);
-> > +	free_netdev(sp->dev);  
+On 11/10/21 5:49 PM, Jakub Kicinski wrote:
+> On Wed, 10 Nov 2021 14:53:06 -0800 Randy Dunlap wrote:
+>> Do not use "/**" to begin a comment that is not in kernel-doc format.
+>>
+>> Prevents this docs build warning:
+>>
+>> drivers/ptp/ptp_clockmatrix.c:1679: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+>>      * Maximum absolute value for write phase offset in picoseconds
+>>
+>> Fixes: 794c3dffacc16 ("ptp: ptp_clockmatrix: Add support for FW 5.2 (8A34005)")
+>> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> Cc: Min Li <min.li.xe@renesas.com>
+>> Cc: Richard Cochran <richardcochran@gmail.com>
+>> Cc: "David S. Miller" <davem@davemloft.net>
+>> Cc: Jakub Kicinski <kuba@kernel.org>
+>> ---
+>>   drivers/ptp/ptp_clockmatrix.c |    2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> --- linux-next-20211110.orig/drivers/ptp/ptp_clockmatrix.c
+>> +++ linux-next-20211110/drivers/ptp/ptp_clockmatrix.c
+>> @@ -1699,7 +1699,7 @@ static int initialize_dco_operating_mode
+>>   
+>>   /* PTP Hardware Clock interface */
+>>   
+>> -/**
+>> +/*
+>>    * Maximum absolute value for write phase offset in picoseconds
+>>    *
+>>    * @channel:  channel
 > 
-> You should mention in the commit message why you think it's safe to add
-> free_netdev() which wasn't here before...
+> Looks like it documents parameters to the function, should we either
+> fix it to make it valid kdoc or remove the params (which TBH aren't
+> really adding much value)?
 > 
-> This driver seems to be setting:
-> 
-> 	dev->needs_free_netdev	= true;
-> 
-> so unregister_netdev() will free the netdev automatically.
-> 
-> That said I don't see a reason why this driver needs the automatic
-> cleanup.
-> 
-> You can either remove that setting and then you can call free_netdev()
-> like you do, or you need to move the cleanup to dev->priv_destructor.
 
-Looks like this go applied already, please send a follow up fix.
+a. It would be the only kernel-doc in that source file and
+b. we usually want to document exported or at least non-static
+functions and don't try very hard to document static ones.
+
+I don't care much about whether we remove the other comments
+that are there...
+If you want them removed, I can do that.
+
+-- 
+~Randy
