@@ -2,117 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67E8D44D1DB
-	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 07:16:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8598144D1FB
+	for <lists+netdev@lfdr.de>; Thu, 11 Nov 2021 07:43:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230014AbhKKGSu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 01:18:50 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:56104 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S229674AbhKKGSu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 01:18:50 -0500
-X-UUID: b19ff7f055f84f59846da09edcc5d20f-20211111
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=tHZR4ShgONrY1xlUrKSMoIV7qdy+WnxCRT5rQr7aNKg=;
-        b=AXypkWyzZ8T+5Xhbxi3j/hp1XjY94qr1XZyfZ6FI6buZRJY/nBAWGrytEpmzcR7H7w8Op8tWD2eRS37nUO8JtFNGQ5OQ51zcKR8IOKQ+m0hQNnEqR5phz2VHzEorka/4HK1ULoVzlb9AasCtv13+S6RVkeHXI3lLXcPPeNZk/B8=;
-X-UUID: b19ff7f055f84f59846da09edcc5d20f-20211111
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 806377556; Thu, 11 Nov 2021 14:15:57 +0800
-Received: from mtkmbs10n1.mediatek.inc (172.21.101.34) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Thu, 11 Nov 2021 14:15:56 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkmbs10n1.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Thu, 11 Nov 2021 14:15:55 +0800
-Message-ID: <426d15179d7d79c3f3bd4774e23d4f5e384c7956.camel@mediatek.com>
-Subject: Re: [PATCH 4/5] dt-bindings: net: dwmac: Convert mediatek-dwmac to
- DT schema
-From:   Biao Huang <biao.huang@mediatek.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     <davem@davemloft.net>, Jose Abreu <joabreu@synopsys.com>,
-        <srv_heupstream@mediatek.com>,
-        <linux-mediatek@lists.infradead.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <macpaul.lin@mediatek.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Maxime Coquelin" <mcoquelin.stm32@gmail.com>
-Date:   Thu, 11 Nov 2021 14:15:55 +0800
-In-Reply-To: <1636573460.872424.1783735.nullmailer@robh.at.kernel.org>
-References: <20211110083948.6082-1-biao.huang@mediatek.com>
-         <20211110083948.6082-5-biao.huang@mediatek.com>
-         <1636573460.872424.1783735.nullmailer@robh.at.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        id S230358AbhKKGqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 01:46:10 -0500
+Received: from mail-io1-f71.google.com ([209.85.166.71]:56054 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230014AbhKKGqJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 01:46:09 -0500
+Received: by mail-io1-f71.google.com with SMTP id y74-20020a6bc84d000000b005e700290338so3394266iof.22
+        for <netdev@vger.kernel.org>; Wed, 10 Nov 2021 22:43:21 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=mnls3d+B5dNpFY4b4y80Brjr8wlqrHuUE32ifq4dCs8=;
+        b=h5R64x+WNKGpQOZdJ1jPIV+mS3YOgcwk6BblQGdgL5MUljKkV2mzxgmktmFiyoxcP1
+         4dJi9Ktpw3CJxn17dzi29A9jp3Y3aBLkE3M2Wyfq6N6TO/Fb3vo4kBlZBGGH+YX5Tq60
+         2LsYU2mkVVLnGGQuYpNsxuxQsCWEnI0F4BZct80eCcDPv5REX659hR2uM6M0Ug4PAZGf
+         btnMOgDVqY4NkPN4zCpkqSJaTH2J+nhVt/wXgdKXel10+RDCQbP8chjr+lda8khVr+C0
+         NeZicb6fdOCYToHb2jf9iLimMNuAIZRvCtAF9HL/P74kp3WjXFG2i9RF5FQMaZA8etIY
+         I0Xg==
+X-Gm-Message-State: AOAM530gW9QoXfidb05/zkeRdkT5RqGNRft80re7kdz2r94ncqKZ7fMc
+        3b/2XDL7BhWOxemtx2mZ9Nx2m+5Jiw2qX5c8Ys0zyOMsH1So
+X-Google-Smtp-Source: ABdhPJwA57G8Lx4oLqI477r2EWE3KPXCpaPPjX1Ze5ECwkKzAOip1D1Ie0wh3HxAAwqEy/qD2XyMFpdoT6dMY3KnFpfmeynDLMds
 MIME-Version: 1.0
-X-MTK:  N
-Content-Transfer-Encoding: base64
+X-Received: by 2002:a05:6e02:1561:: with SMTP id k1mr2998713ilu.135.1636613000688;
+ Wed, 10 Nov 2021 22:43:20 -0800 (PST)
+Date:   Wed, 10 Nov 2021 22:43:20 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008a7c9605d07da846@google.com>
+Subject: [syzbot] WARNING in __dev_change_net_namespace
+From:   syzbot <syzbot+5434727aa485c3203fed@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, avagin@gmail.com,
+        bpf@vger.kernel.org, cong.wang@bytedance.com, daniel@iogearbox.net,
+        davem@davemloft.net, hawk@kernel.org, johannes.berg@intel.com,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RGVhciBSb2IsDQoJVGhhbmtzIGZvciB5b3VyIGNvbW1lbnRzfg0KCUknbGwgY2hlY2sgYWdhaW4g
-d2l0aCB1cGRhdGVkIGR0c2NoZW1hLCBhbmQgc2VuZCBpbiBuZXh0DQp2ZXJzaW9uLg0KCQ0KQmVz
-dCBSZWdhcmRzIQ0KQmlhbw0KDQpPbiBXZWQsIDIwMjEtMTEtMTAgYXQgMTM6NDQgLTA2MDAsIFJv
-YiBIZXJyaW5nIHdyb3RlOg0KPiBPbiBXZWQsIDEwIE5vdiAyMDIxIDE2OjM5OjQ3ICswODAwLCBC
-aWFvIEh1YW5nIHdyb3RlOg0KPiA+IENvbnZlcnQgbWVkaWF0ZWstZHdtYWMgdG8gRFQgc2NoZW1h
-LCBhbmQgZGVsZXRlIG9sZCBtZWRpYXRlay0NCj4gPiBkd21hYy50eHQuDQo+ID4gDQo+ID4gU2ln
-bmVkLW9mZi1ieTogQmlhbyBIdWFuZyA8Ymlhby5odWFuZ0BtZWRpYXRlay5jb20+DQo+ID4gLS0t
-DQo+ID4gIC4uLi9iaW5kaW5ncy9uZXQvbWVkaWF0ZWstZHdtYWMudHh0ICAgICAgICAgICB8ICA5
-MSAtLS0tLS0tLS0NCj4gPiAgLi4uL2JpbmRpbmdzL25ldC9tZWRpYXRlay1kd21hYy55YW1sICAg
-ICAgICAgIHwgMTc5DQo+ID4gKysrKysrKysrKysrKysrKysrDQo+ID4gIDIgZmlsZXMgY2hhbmdl
-ZCwgMTc5IGluc2VydGlvbnMoKyksIDkxIGRlbGV0aW9ucygtKQ0KPiA+ICBkZWxldGUgbW9kZSAx
-MDA2NDQgRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL25ldC9tZWRpYXRlay0NCj4g
-PiBkd21hYy50eHQNCj4gPiAgY3JlYXRlIG1vZGUgMTAwNjQ0IERvY3VtZW50YXRpb24vZGV2aWNl
-dHJlZS9iaW5kaW5ncy9uZXQvbWVkaWF0ZWstDQo+ID4gZHdtYWMueWFtbA0KPiA+IA0KPiANCj4g
-TXkgYm90IGZvdW5kIGVycm9ycyBydW5uaW5nICdtYWtlIERUX0NIRUNLRVJfRkxBR1M9LW0NCj4g
-ZHRfYmluZGluZ19jaGVjaycNCj4gb24geW91ciBwYXRjaCAoRFRfQ0hFQ0tFUl9GTEFHUyBpcyBu
-ZXcgaW4gdjUuMTMpOg0KPiANCj4geWFtbGxpbnQgd2FybmluZ3MvZXJyb3JzOg0KPiANCj4gZHRz
-Y2hlbWEvZHRjIHdhcm5pbmdzL2Vycm9yczoNCj4gL2J1aWxkcy9yb2JoZXJyaW5nL2xpbnV4LWR0
-LQ0KPiByZXZpZXcvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL25ldC9tZWRpYXRl
-ay1kd21hYy55YW1sOg0KPiBwcm9wZXJ0aWVzOm1lZGlhdGVrLHR4LWRlbGF5LXBzOiAnJHJlZicg
-c2hvdWxkIG5vdCBiZSB2YWxpZCB1bmRlcg0KPiB7J2NvbnN0JzogJyRyZWYnfQ0KPiAJaGludDog
-U3RhbmRhcmQgdW5pdCBzdWZmaXggcHJvcGVydGllcyBkb24ndCBuZWVkIGEgdHlwZSAkcmVmDQo+
-IAlmcm9tIHNjaGVtYSAkaWQ6IGh0dHA6Ly9kZXZpY2V0cmVlLm9yZy9tZXRhLXNjaGVtYXMvY29y
-ZS55YW1sIw0KPiAvYnVpbGRzL3JvYmhlcnJpbmcvbGludXgtZHQtDQo+IHJldmlldy9Eb2N1bWVu
-dGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvbmV0L21lZGlhdGVrLWR3bWFjLnlhbWw6DQo+IHBy
-b3BlcnRpZXM6bWVkaWF0ZWsscngtZGVsYXktcHM6ICckcmVmJyBzaG91bGQgbm90IGJlIHZhbGlk
-IHVuZGVyDQo+IHsnY29uc3QnOiAnJHJlZid9DQo+IAloaW50OiBTdGFuZGFyZCB1bml0IHN1ZmZp
-eCBwcm9wZXJ0aWVzIGRvbid0IG5lZWQgYSB0eXBlICRyZWYNCj4gCWZyb20gc2NoZW1hICRpZDog
-aHR0cDovL2RldmljZXRyZWUub3JnL21ldGEtc2NoZW1hcy9jb3JlLnlhbWwjDQo+IC9idWlsZHMv
-cm9iaGVycmluZy9saW51eC1kdC0NCj4gcmV2aWV3L0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9i
-aW5kaW5ncy9uZXQvbWVkaWF0ZWstZHdtYWMueWFtbDoNCj4gcHJvcGVydGllczpjbG9ja3M6IHsn
-bWluSXRlbXMnOiA1LCAnbWF4SXRlbXMnOiA2LCAnaXRlbXMnOg0KPiBbeydkZXNjcmlwdGlvbic6
-ICdBWEkgY2xvY2snfSwgeydkZXNjcmlwdGlvbic6ICdBUEIgY2xvY2snfSwNCj4geydkZXNjcmlw
-dGlvbic6ICdNQUMgY2xvY2sgZ2F0ZSd9LCB7J2Rlc2NyaXB0aW9uJzogJ01BQyBNYWluIGNsb2Nr
-J30sDQo+IHsnZGVzY3JpcHRpb24nOiAnUFRQIGNsb2NrJ30sIHsnZGVzY3JpcHRpb24nOiAnUk1J
-SSByZWZlcmVuY2UgY2xvY2sNCj4gcHJvdmlkZWQgYnkgTUFDJ31dfSBzaG91bGQgbm90IGJlIHZh
-bGlkIHVuZGVyIHsncmVxdWlyZWQnOg0KPiBbJ21heEl0ZW1zJ119DQo+IAloaW50OiAibWF4SXRl
-bXMiIGlzIG5vdCBuZWVkZWQgd2l0aCBhbiAiaXRlbXMiIGxpc3QNCj4gCWZyb20gc2NoZW1hICRp
-ZDogaHR0cDovL2RldmljZXRyZWUub3JnL21ldGEtc2NoZW1hcy9pdGVtcy55YW1sIw0KPiAvYnVp
-bGRzL3JvYmhlcnJpbmcvbGludXgtZHQtDQo+IHJldmlldy9Eb2N1bWVudGF0aW9uL2RldmljZXRy
-ZWUvYmluZGluZ3MvbmV0L21lZGlhdGVrLWR3bWFjLnlhbWw6DQo+IGlnbm9yaW5nLCBlcnJvciBp
-biBzY2hlbWE6IHByb3BlcnRpZXM6IG1lZGlhdGVrLHR4LWRlbGF5LXBzDQo+IHdhcm5pbmc6IG5v
-IHNjaGVtYSBmb3VuZCBpbiBmaWxlOg0KPiAuL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5k
-aW5ncy9uZXQvbWVkaWF0ZWstZHdtYWMueWFtbA0KPiBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUv
-YmluZGluZ3MvbmV0L21lZGlhdGVrLQ0KPiBkd21hYy5leGFtcGxlLmR0LnlhbWw6MDowOiAvZXhh
-bXBsZS0wL2V0aGVybmV0QDExMDFjMDAwOiBmYWlsZWQgdG8NCj4gbWF0Y2ggYW55IHNjaGVtYSB3
-aXRoIGNvbXBhdGlibGU6IFsnbWVkaWF0ZWssbXQyNzEyLWdtYWMnLA0KPiAnc25wcyxkd21hYy00
-LjIwYSddDQo+IA0KPiBkb2MgcmVmZXJlbmNlIGVycm9ycyAobWFrZSByZWZjaGVja2RvY3MpOg0K
-PiANCj4gU2VlIGh0dHBzOi8vcGF0Y2h3b3JrLm96bGFicy5vcmcvcGF0Y2gvMTU1MzMwNA0KPiAN
-Cj4gVGhpcyBjaGVjayBjYW4gZmFpbCBpZiB0aGVyZSBhcmUgYW55IGRlcGVuZGVuY2llcy4gVGhl
-IGJhc2UgZm9yIGENCj4gcGF0Y2gNCj4gc2VyaWVzIGlzIGdlbmVyYWxseSB0aGUgbW9zdCByZWNl
-bnQgcmMxLg0KPiANCj4gSWYgeW91IGFscmVhZHkgcmFuICdtYWtlIGR0X2JpbmRpbmdfY2hlY2sn
-IGFuZCBkaWRuJ3Qgc2VlIHRoZSBhYm92ZQ0KPiBlcnJvcihzKSwgdGhlbiBtYWtlIHN1cmUgJ3lh
-bWxsaW50JyBpcyBpbnN0YWxsZWQgYW5kIGR0LXNjaGVtYSBpcyB1cA0KPiB0bw0KPiBkYXRlOg0K
-PiANCj4gcGlwMyBpbnN0YWxsIGR0c2NoZW1hIC0tdXBncmFkZQ0KPiANCj4gUGxlYXNlIGNoZWNr
-IGFuZCByZS1zdWJtaXQuDQo+IA0K
+Hello,
 
+syzbot found the following issue on:
+
+HEAD commit:    512b7931ad05 Merge branch 'akpm' (patches from Andrew)
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=15b45fb6b00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=99780e4a2873b273
+dashboard link: https://syzkaller.appspot.com/bug?extid=5434727aa485c3203fed
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+5434727aa485c3203fed@syzkaller.appspotmail.com
+
+RAX: ffffffffffffffda RBX: 00007f02bf014f60 RCX: 00007f02bef01ae9
+RDX: 0000000000000000 RSI: 0000000020000080 RDI: 0000000000000003
+RBP: 00007f02bc4771d0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
+R13: 00007ffcc2738d7f R14: 00007f02bc477300 R15: 0000000000022000
+ </TASK>
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 4974 at net/core/dev.c:11254 __dev_change_net_namespace+0x1079/0x1330 net/core/dev.c:11254
+Modules linked in:
+CPU: 0 PID: 4974 Comm: syz-executor.2 Not tainted 5.15.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:__dev_change_net_namespace+0x1079/0x1330 net/core/dev.c:11254
+Code: c7 c7 80 9b 8c 8a c6 05 ba 0e 3b 06 01 e8 36 73 d5 01 0f 0b e9 69 f0 ff ff e8 e3 95 57 fa 0f 0b e9 60 fb ff ff e8 d7 95 57 fa <0f> 0b e9 2a fb ff ff 41 bd ea ff ff ff e9 62 f2 ff ff e8 f0 38 9e
+RSP: 0018:ffffc900217aed70 EFLAGS: 00010246
+RAX: 0000000000040000 RBX: 00000000fffffff4 RCX: ffffc9000b291000
+RDX: 0000000000040000 RSI: ffffffff87202d59 RDI: 0000000000000003
+RBP: ffff88815cbea000 R08: 0000000000000000 R09: ffff88815cbea64b
+R10: ffffffff87202882 R11: 0000000000000000 R12: dffffc0000000000
+R13: ffffffff8d0e3dc0 R14: ffff88815cbeac00 R15: ffffffff8d0e3f0c
+FS:  00007f02bc477700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000001b32027000 CR3: 0000000162d58000 CR4: 0000000000350ef0
+Call Trace:
+ <TASK>
+ do_setlink+0x275/0x3970 net/core/rtnetlink.c:2624
+ __rtnl_newlink+0xde6/0x1750 net/core/rtnetlink.c:3391
+ rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3506
+ rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5571
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2491
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x86d/0xda0 net/netlink/af_netlink.c:1916
+ sock_sendmsg_nosec net/socket.c:704 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:724
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2492
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f02bef01ae9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f02bc477188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f02bf014f60 RCX: 00007f02bef01ae9
+RDX: 0000000000000000 RSI: 0000000020000080 RDI: 0000000000000003
+RBP: 00007f02bc4771d0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
+R13: 00007ffcc2738d7f R14: 00007f02bc477300 R15: 0000000000022000
+ </TASK>
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
