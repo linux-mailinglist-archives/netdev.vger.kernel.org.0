@@ -2,135 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAE2044E994
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 16:08:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5963B44E9BB
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 16:11:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229678AbhKLPLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 10:11:20 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:33200 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229509AbhKLPLU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 10:11:20 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id A51BF1FD66;
-        Fri, 12 Nov 2021 15:08:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1636729708; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=R/1fHuKFgBgw4hV9neRtlv0mhDFE9RH72dHARJzHv1I=;
-        b=xtrQ8QYB3cUMrRALhmU2GVhy5qCSwkncdTDYv8X/uzjEvgbRxFg9ONxcBgbQYRmOUyEQyK
-        tAjfGVNDCgmSRWmUL4ZzgI7RqWLxci/N2PRZFMI8nFLk9YBc5yamlaQ9Xsy2NalJQyOW1T
-        NheZ+hlSfc5JUObB3gdaT4rgN96hGnk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1636729708;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=R/1fHuKFgBgw4hV9neRtlv0mhDFE9RH72dHARJzHv1I=;
-        b=yV692aDYuglUylNYIkwp5IllmIK0n2maEnXKbTY6x+MHHLLPNYBopF0S5G4+HkbXW4SsEh
-        94Q7RMSvaS8PtEBw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E313213C75;
-        Fri, 12 Nov 2021 15:08:27 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id DSBBM2uDjmGXVgAAMHmgww
-        (envelope-from <dkirjanov@suse.de>); Fri, 12 Nov 2021 15:08:27 +0000
-Subject: Re: [PATCH] net: igbvf: fix double free in `igbvf_probe`
-To:     Letu Ren <fantasquex@gmail.com>, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>
-References: <20211112142002.23156-1-fantasquex@gmail.com>
-From:   Denis Kirjanov <dkirjanov@suse.de>
-Message-ID: <4246e551-8963-e6aa-a70a-7a7005c7316b@suse.de>
-Date:   Fri, 12 Nov 2021 18:08:27 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S229841AbhKLPOl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 10:14:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51422 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229678AbhKLPOk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 10:14:40 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C264DC061766
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 07:11:49 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id m14so39263900edd.0
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 07:11:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=6ADvEmc1RISB5qi6+8FZvcxIM4fENhmrMvKh3S0wTzQ=;
+        b=ozjpPLc1S33YvBMxY/ZUvwNREs6C12awdr7IZl//E8q5sq4ldR5O2p2KI88dGxIqFI
+         J7Rn+zHUmIOhVtybcifEoXZDEOAusBeUZfkdihf8yKYHmwLmgvVDIGC0D1JwxJrYT7Xn
+         K5JVevINbRCdOMg++Gx2EK42DFF+SlQH9cX0Jh/qC3P2wKixxIu7X/wNF9IjRnykEA9d
+         UY/vnueJZnScDUDBbkjJyB3svjqrq4r/skriTDBf3qsVheg4AZYnJba7j6vLTQ7IU4Pj
+         f7C5zh5EGtJFcTUKcurcxxNZlfCJNULlmGldz588OJ4vd0LmC8fqy9Sh0VRsORRTS+vO
+         +nDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=6ADvEmc1RISB5qi6+8FZvcxIM4fENhmrMvKh3S0wTzQ=;
+        b=6VXZYSX6Zo2KGi4ywC4+cj0UJQ3CLaDK2oMVocXvh7IxPm+Un1e6AUgK1udCUD32PT
+         B3rqNix0ARN/MOHoefLLGCboK4XhJ0G4qNquQR4DWxjRa9ZldPgJI08oOoWyc6Ae8I3J
+         7u+bB7AgYcwjsEJa9yemNIL0MSHRuv9ozgOj12ANX0iP2Z08pNLhWoi+dd8okLUo6L7l
+         UIkbXSDA9hy3F4m668COe05HuqV3b2Rc8prxsdHxMyq5KMQCdw30voI99LJkTnFar3X2
+         P27zm+ewcRnSrUZmk5lFx043vxlaTm/49Mndv11hHCBwhWAlIOmc0bX0e0yMVxQpgyqM
+         PG9w==
+X-Gm-Message-State: AOAM531v5EsbGHrBOF/ucOV9aUqLA0BuLcV3NyJBeZeKINg3d+NCa3/D
+        pAPgSXQ6AIZampp6KB2y0bg=
+X-Google-Smtp-Source: ABdhPJxUR8KfHPRKY5yDIIk1zptg0KLE166UQ5s2tY3m/mWoWcNkJ9s+ceGoHq2rXVh9Kczx9xYDHw==
+X-Received: by 2002:a17:906:1457:: with SMTP id q23mr19230857ejc.561.1636729908335;
+        Fri, 12 Nov 2021 07:11:48 -0800 (PST)
+Received: from skbuf ([188.25.175.102])
+        by smtp.gmail.com with ESMTPSA id w1sm3365060edd.49.2021.11.12.07.11.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Nov 2021 07:11:48 -0800 (PST)
+Date:   Fri, 12 Nov 2021 17:11:46 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dsa: vsc73xxx: Make vsc73xx_remove()
+ return void
+Message-ID: <20211112151146.mzvte55gz5eo7fhr@skbuf>
+References: <20211112145352.1125971-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <20211112142002.23156-1-fantasquex@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: ru
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211112145352.1125971-1-u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-11/12/21 5:20 PM, Letu Ren пишет:
-> In `igbvf_probe`, if register_netdev() fails, the program will go to
-> label err_hw_init, and then to label err_ioremap. In free_netdev() which
-> is just below label err_ioremap, there is `list_for_each_entry_safe` and
-> `netif_napi_del` which aims to delete all entries in `dev->napi_list`.
-> The program has added an entry `adapter->rx_ring->napi` which is added by
-> `netif_napi_add` in igbvf_alloc_queues(). However, adapter->rx_ring has
-> been freed below label err_hw_init. So this a UAF.
+On Fri, Nov 12, 2021 at 03:53:52PM +0100, Uwe Kleine-K�nig wrote:
+> vsc73xx_remove() returns zero unconditionally and no caller checks the
+> returned value. So convert the function to return no value.
 > 
-> In terms of how to patch the problem, we can refer to igbvf_remove() and
-> delete the entry before `adapter->rx_ring`.
-> 
-> The KASAN logs are as follows:
-> 
-> [   35.126075] BUG: KASAN: use-after-free in free_netdev+0x1fd/0x450
-> [   35.127170] Read of size 8 at addr ffff88810126d990 by task modprobe/366
-> [   35.128360]
-> [   35.128643] CPU: 1 PID: 366 Comm: modprobe Not tainted 5.15.0-rc2+ #14
-> [   35.129789] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-> [   35.131749] Call Trace:
-> [   35.132199]  dump_stack_lvl+0x59/0x7b
-> [   35.132865]  print_address_description+0x7c/0x3b0
-> [   35.133707]  ? free_netdev+0x1fd/0x450
-> [   35.134378]  __kasan_report+0x160/0x1c0
-> [   35.135063]  ? free_netdev+0x1fd/0x450
-> [   35.135738]  kasan_report+0x4b/0x70
-> [   35.136367]  free_netdev+0x1fd/0x450
-> [   35.137006]  igbvf_probe+0x121d/0x1a10 [igbvf]
-> [   35.137808]  ? igbvf_vlan_rx_add_vid+0x100/0x100 [igbvf]
-> [   35.138751]  local_pci_probe+0x13c/0x1f0
-> [   35.139461]  pci_device_probe+0x37e/0x6c0
-> [   35.165526]
-> [   35.165806] Allocated by task 366:
-> [   35.166414]  ____kasan_kmalloc+0xc4/0xf0
-> [   35.167117]  foo_kmem_cache_alloc_trace+0x3c/0x50 [igbvf]
-> [   35.168078]  igbvf_probe+0x9c5/0x1a10 [igbvf]
-> [   35.168866]  local_pci_probe+0x13c/0x1f0
-> [   35.169565]  pci_device_probe+0x37e/0x6c0
-> [   35.179713]
-> [   35.179993] Freed by task 366:
-> [   35.180539]  kasan_set_track+0x4c/0x80
-> [   35.181211]  kasan_set_free_info+0x1f/0x40
-> [   35.181942]  ____kasan_slab_free+0x103/0x140
-> [   35.182703]  kfree+0xe3/0x250
-> [   35.183239]  igbvf_probe+0x1173/0x1a10 [igbvf]
-> [   35.184040]  local_pci_probe+0x13c/0x1f0
-> 
-> Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Please add Fixes tag
-> Signed-off-by: Letu Ren <fantasquex@gmail.com>
+> Signed-off-by: Uwe Kleine-K�nig <u.kleine-koenig@pengutronix.de>
 > ---
->   drivers/net/ethernet/intel/igbvf/netdev.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/ethernet/intel/igbvf/netdev.c b/drivers/net/ethernet/intel/igbvf/netdev.c
-> index d32e72d953c8..d051918dfdff 100644
-> --- a/drivers/net/ethernet/intel/igbvf/netdev.c
-> +++ b/drivers/net/ethernet/intel/igbvf/netdev.c
-> @@ -2861,6 +2861,7 @@ static int igbvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->   	return 0;
->   
->   err_hw_init:
-> +	netif_napi_del(&adapter->rx_ring->napi);
->   	kfree(adapter->tx_ring);
->   	kfree(adapter->rx_ring);
->   err_sw_init:
-> 
+
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
