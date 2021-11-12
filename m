@@ -2,103 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB41E44EF2D
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 23:22:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4392C44EFBD
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 23:50:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235935AbhKLWZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 17:25:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35958 "EHLO
+        id S233270AbhKLWxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 17:53:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229634AbhKLWZJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 17:25:09 -0500
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F7BC061767
-        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 14:22:18 -0800 (PST)
-Received: by mail-io1-xd31.google.com with SMTP id w22so13061631ioa.1
-        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 14:22:18 -0800 (PST)
+        with ESMTP id S233608AbhKLWxQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 17:53:16 -0500
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B437C0613F5
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 14:50:24 -0800 (PST)
+Received: by mail-oi1-x236.google.com with SMTP id bk14so20613844oib.7
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 14:50:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=vBvf+NulIyt0LTL/apruhCuQuT1ch+DwHu+pDQ7AiQw=;
-        b=RRVA0tA2+HDRrngBIjTLvD9iiLWFFT1PXs2jwihVCqapwBP30Z1UPD4y7M1mFe6/a0
-         JUbWBeZneQDSyrIyrfApEJeP5ghlXt9aTIKWrEkGcx/RxzDsSePjQYF+PWL56N+9R5nx
-         sQH49N0O764b40Uu1qaEvrqiD2512e/qtJMkp+0ER+byhlvT/pgVbWlSKjodwNJai4V1
-         1sZ4ZsB9ApTlVmf3pTzMuP7PmOymMvM8P5qbJb2OyAVjU0DByqo3NYPg+AIdO5HwMHE1
-         5e5SB+F3pRtVf2711swQy04i9maplbZ33qLkdWn2OhDBA6Pwd1YOVQGFR8cU05iO60lx
-         01iQ==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vODi7QdVsXr5ltMsHWp2FnleR3mjZRfOo8/CUw9j+es=;
+        b=M8edBYX7AF53kHQELBSlm84mGncbdzrpwtmcNx6TcpAU6cijvGMOcynVW5F0IdglzE
+         p7UL1KV57VrYCFjmjBl0iheYUMGwJaL4sqfIFhCTIBIwfhUczA63C6gf2f3CBjRRkXd5
+         NHsBF9M+k2vtvhKS0FWv5qoy+TjF0ZmRIaXvw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=vBvf+NulIyt0LTL/apruhCuQuT1ch+DwHu+pDQ7AiQw=;
-        b=nsJDI4NrF1pgKVbxB5GGdNnBZE0NZVHdy19OsrMxb2ObhzCPdTlZY5DDRVSU/Ah0Nf
-         eh760QeF1JjCbV47Y5Xpsmcf5rO94Nqe8DHWFXz+SbsXtdHFPLxc4/uFpLmfXH1FwSnS
-         5z8yKGgppTG+I7ODLbjcxX8m8hTQQ99zLTU1vUDXLAzZhLBNn2ZtJ4kiGfaVVoYEJa17
-         B77ZpgTQbKXW2RKfFN0jYv2gTkSosiG+aY1zgvAUsE39VxvjbFF4UhFhznyQp/4pjmDn
-         6CFhy2P1DeCG7PPtQnsDPtsTiIg97vWXMa66pqufgk62/b/Qee3PaA5MI+DNIOQ8Bl+4
-         YL8g==
-X-Gm-Message-State: AOAM532t2ucrlxjgMwz2sI3lWV47Schpd/Y5SQCmBm7B7pS6IWux+GuV
-        fN8AYPYBgG/6XlKTX0OQdbInmQ==
-X-Google-Smtp-Source: ABdhPJwWtlycZTqGisu6Ug8roHF41gN5Bw9kANuFsx+AcIeRV3NfUqORFWEADHDWMISB8wPg4692Sw==
-X-Received: by 2002:a05:6602:140d:: with SMTP id t13mr12888620iov.120.1636755737658;
-        Fri, 12 Nov 2021 14:22:17 -0800 (PST)
-Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id y6sm5241117ilu.38.2021.11.12.14.22.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Nov 2021 14:22:17 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     pkurapat@codeaurora.org, avuyyuru@codeaurora.org,
-        bjorn.andersson@linaro.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, evgreen@chromium.org, elder@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net 2/2] net: ipa: disable HOLB drop when updating timer
-Date:   Fri, 12 Nov 2021 16:22:10 -0600
-Message-Id: <20211112222210.224057-3-elder@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211112222210.224057-1-elder@linaro.org>
-References: <20211112222210.224057-1-elder@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vODi7QdVsXr5ltMsHWp2FnleR3mjZRfOo8/CUw9j+es=;
+        b=h8mFOXwUSe3TlRFhCAFJnqgo9+SBkdXbrK0ecDyZotfCNQqUkX5RQ/Cb0YZ1kt8Ovg
+         Bff71IjRfuc6bhKPGD+w0qPzXbh7TSetWDjJCRyxSqyaT/TTjcg8oJ3Jt2oUv6jQkiwg
+         WSoySmeQ1Bh+ItL+eOqdcT8wELxOHQZtZauH7CPXbut++Vs+Wo+QJlb51v+NNYk3SMik
+         4wGfxf77Rzkobr8PuRGA/DOxQcYDExEMTr5Xu8gmtq4kMfRUYWDh4lMzYaLXNrP4CfKe
+         3L7HnRrjcUO5npU1HiSC1d+4gPLSTi/iNIz/E2rCcGQ5KmTD8xXEzlptwCc9eZpVKjr8
+         F2sA==
+X-Gm-Message-State: AOAM532VXmd+UqpO04XbtbrI4lpwzKZG0i6r/GVFkrTnDA0AQFdGhk3T
+        Jhfawc+Yjyp8F4488/6V0TfSu1qYS/Ocnw==
+X-Google-Smtp-Source: ABdhPJzZqRVOfE8PbmG1QBrIlGDiSpTtEXuhFXNHgManqVq8E9J0Zv4Tzrg2Q7dOtzDs8BgpegWZKg==
+X-Received: by 2002:a05:6808:1894:: with SMTP id bi20mr15901561oib.151.1636757423277;
+        Fri, 12 Nov 2021 14:50:23 -0800 (PST)
+Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com. [209.85.210.49])
+        by smtp.gmail.com with ESMTPSA id q81sm1690251oib.47.2021.11.12.14.50.20
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 12 Nov 2021 14:50:21 -0800 (PST)
+Received: by mail-ot1-f49.google.com with SMTP id z2-20020a9d71c2000000b0055c6a7d08b8so16061876otj.5
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 14:50:20 -0800 (PST)
+X-Received: by 2002:a9d:6c2:: with SMTP id 60mr14670064otx.279.1636757420114;
+ Fri, 12 Nov 2021 14:50:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211108200058.v2.1.Ide934b992a0b54085a6be469d3687963a245dba9@changeid>
+ <17BDA821-9D4A-46C9-8C0E-F7DB35D50033@holtmann.org>
+In-Reply-To: <17BDA821-9D4A-46C9-8C0E-F7DB35D50033@holtmann.org>
+From:   Jesse Melhuish <melhuishj@chromium.org>
+Date:   Fri, 12 Nov 2021 16:50:08 -0600
+X-Gmail-Original-Message-ID: <CACGnfjTBtZ+1ey6+wF7hAVX23ty7yS9qEH0b6p+vzCLBWWPW0Q@mail.gmail.com>
+Message-ID: <CACGnfjTBtZ+1ey6+wF7hAVX23ty7yS9qEH0b6p+vzCLBWWPW0Q@mail.gmail.com>
+Subject: Re: [PATCH v2] Bluetooth: Don't initialize msft/aosp when using user channel
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Jesse Melhuish <melhuishj@chromium.org>,
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        Sonny Sasaka <sonnysasaka@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The head-of-line blocking timer should only be modified when
-head-of-line drop is disabled.
+Hi Marcel,
 
-One of the steps in recovering from a modem crash is to enable
-dropping of packets with timeout of 0 (immediate).  We don't know
-how the modem configured its endpoints, so before we program the
-timer, we need to ensure HOL_BLOCK is disabled.
+No problem, thanks. Happy to extend userchan-tester; do you mind if we
+continue reviewing this patch for approval in the meantime so we can
+mitigate the issue on our end?
 
-Fixes: 84f9bd12d46db ("soc: qcom: ipa: IPA endpoints")
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa_endpoint.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 006da4642a0ba..ef790fd0ab56a 100644
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -853,6 +853,7 @@ static void ipa_endpoint_init_hol_block_timer(struct ipa_endpoint *endpoint,
- 	u32 offset;
- 	u32 val;
- 
-+	/* This should only be changed when HOL_BLOCK_EN is disabled */
- 	offset = IPA_REG_ENDP_INIT_HOL_BLOCK_TIMER_N_OFFSET(endpoint_id);
- 	val = hol_block_timer_val(ipa, microseconds);
- 	iowrite32(val, ipa->reg_virt + offset);
-@@ -883,6 +884,7 @@ void ipa_endpoint_modem_hol_block_clear_all(struct ipa *ipa)
- 		if (endpoint->toward_ipa || endpoint->ee_id != GSI_EE_MODEM)
- 			continue;
- 
-+		ipa_endpoint_init_hol_block_enable(endpoint, false);
- 		ipa_endpoint_init_hol_block_timer(endpoint, 0);
- 		ipa_endpoint_init_hol_block_enable(endpoint, true);
- 	}
--- 
-2.32.0
-
+On Thu, Nov 11, 2021 at 12:43 PM Marcel Holtmann <marcel@holtmann.org> wrote:
+>
+> Hi Jesse,
+>
+> > A race condition is triggered when usermode control is given to
+> > userspace before the kernel's MSFT query responds, resulting in an
+> > unexpected response to userspace's reset command.
+> >
+> > Issue can be observed in btmon:
+> > < HCI Command: Vendor (0x3f|0x001e) plen 2                    #3 [hci0]
+> >        05 01                                            ..
+> > @ USER Open: bt_stack_manage (privileged) version 2.22  {0x0002} [hci0]
+> > < HCI Command: Reset (0x03|0x0003) plen 0                     #4 [hci0]
+> >> HCI Event: Command Complete (0x0e) plen 5                   #5 [hci0]
+> >      Vendor (0x3f|0x001e) ncmd 1
+> >       Status: Command Disallowed (0x0c)
+> >       05                                               .
+> >> HCI Event: Command Complete (0x0e) plen 4                   #6 [hci0]
+> >      Reset (0x03|0x0003) ncmd 2
+> >       Status: Success (0x00)
+> >
+> > Signed-off-by: Jesse Melhuish <melhuishj@chromium.org>
+> > Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+> > Reviewed-by: Sonny Sasaka <sonnysasaka@chromium.org>
+> > ---
+> >
+> > Changes in v2:
+> > - Moved guard to the new home for this code.
+> >
+> > net/bluetooth/hci_sync.c | 6 ++++--
+> > 1 file changed, 4 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+> > index b794605dc882..5f1f59ac1813 100644
+> > --- a/net/bluetooth/hci_sync.c
+> > +++ b/net/bluetooth/hci_sync.c
+> > @@ -3887,8 +3887,10 @@ int hci_dev_open_sync(struct hci_dev *hdev)
+> >           hci_dev_test_flag(hdev, HCI_VENDOR_DIAG) && hdev->set_diag)
+> >               ret = hdev->set_diag(hdev, true);
+> >
+> > -     msft_do_open(hdev);
+> > -     aosp_do_open(hdev);
+> > +     if (!hci_dev_test_flag(hdev, HCI_USER_CHANNEL)) {
+> > +             msft_do_open(hdev);
+> > +             aosp_do_open(hdev);
+> > +     }
+>
+> but then you need to do the same on hci_dev_close. Also it would be good to extend userchan-tester with test cases for this.
+>
+> Regards
+>
+> Marcel
+>
