@@ -2,79 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50EB344E958
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 16:00:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64E1D44E98D
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 16:07:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235144AbhKLPC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 10:02:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59852 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231553AbhKLPC6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Nov 2021 10:02:58 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 4683460FDA;
-        Fri, 12 Nov 2021 15:00:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636729207;
-        bh=FV8jwTFbCJmlhaac0NczCRG2uWBxTbxV8Qr9tE7mnSo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=QTvRnk/KIXbVvFzOdZMq7yUdiOeV6nK+2VJWK3EpcRaJ6l2KlVW4HAX0Wbxa781US
-         cNOUT3orzNrMT5tYl0VCxUBzGepJyIfhChVywzhH6r9InTknJ+7yFqhMmjk/RLM6BB
-         3ud9ZQ21aSIItkSC5P0AM3oHIfn49i6DGnwnVoxFBsrkbTMDa9HKVI27YfgenV/Ca/
-         6lDlKocsIS3+BZ5uGW9/ZSdEANeqrp6WBAaBKFJ6w7F+wtSoZPtncljGr3Vu1j7y1z
-         czx6pwx3ZLVN2Ueu+z5Xphx4E6Zwc4wc8xidKWEQmR8h0iOAmvuPj4mcPd7n/cv3DB
-         9Y60b5wGS4mfw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3AAEE609F7;
-        Fri, 12 Nov 2021 15:00:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229710AbhKLPKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 10:10:02 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:22716 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S229509AbhKLPKC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 10:10:02 -0500
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.1.2/8.16.1.2) with SMTP id 1ACF5Xau023791
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 07:07:11 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=VX7J7Gzy96s0CAxZsM8utdZ4Hm+Uw3NgP1n/8spaUd4=;
+ b=f0DYnfjNc5eJO6Py388rB8Qw+W71bLuqnOo4P6/TBWWZYWvoVIhC2ret3adeFBNfdFPk
+ qG7OhtTQtv/m9NMzSOgba6tHYaRri+xkFEotWGSscfrXugrhYHMssdjBmokdPOuCYxVA
+ mSHPVWx1XI+NvMFevLfWR9+NlF8+KgyhDMA= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0089730.ppops.net with ESMTP id 3c9pa5swqa-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 07:07:11 -0800
+Received: from intmgw002.06.ash9.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.14; Fri, 12 Nov 2021 07:02:53 -0800
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id E4E021FA8FBEF; Fri, 12 Nov 2021 07:02:47 -0800 (PST)
+From:   Song Liu <songliubraving@fb.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kernel-team@fb.com>, Song Liu <songliubraving@fb.com>
+Subject: [PATCH v3 bpf-next 0/2] introduce btf_tracing_ids
+Date:   Fri, 12 Nov 2021 07:02:41 -0800
+Message-ID: <20211112150243.1270987-1-songliubraving@fb.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf] xsk: fix crash on double free in buffer pool
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163672920723.2811.854129217519334722.git-patchwork-notify@kernel.org>
-Date:   Fri, 12 Nov 2021 15:00:07 +0000
-References: <20211111075707.21922-1-magnus.karlsson@gmail.com>
-In-Reply-To: <20211111075707.21922-1-magnus.karlsson@gmail.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        maciej.fijalkowski@intel.com, jonathan.lemon@gmail.com,
-        bpf@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-FB-Source: Intern
+X-Proofpoint-ORIG-GUID: 6FXENl9c4697PUVBK2GMAkIIqg1ucl8w
+X-Proofpoint-GUID: 6FXENl9c4697PUVBK2GMAkIIqg1ucl8w
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-11-12_05,2021-11-12_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ clxscore=1015 adultscore=0 mlxlogscore=384 priorityscore=1501 spamscore=0
+ mlxscore=0 lowpriorityscore=0 phishscore=0 bulkscore=0 suspectscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2111120087
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Changes v2 =3D> v3:
+1. Fix bug in task_iter.c. (Kernel test robot <lkp@intel.com>)
 
-This patch was applied to bpf/bpf.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
+Changes v1 =3D> v2:
+1. Add patch 2/2. (Alexei)
 
-On Thu, 11 Nov 2021 08:57:07 +0100 you wrote:
-> From: Magnus Karlsson <magnus.karlsson@intel.com>
-> 
-> Fix a crash in the buffer pool allocator when a buffer is double
-> freed. It is possible to trigger this behavior not only from a faulty
-> driver, but also from user space like this: Create a zero-copy AF_XDP
-> socket. Load an XDP program that will issue XDP_DROP for all
-> packets. Put the same umem buffer into the fill ring multiple times,
-> then bind the socket and send some traffic. This will crash the kernel
-> as the XDP_DROP action triggers one call to xsk_buff_free()/xp_free()
-> for every packet dropped. Each call will add the corresponding buffer
-> entry to the free_list and increase the free_list_cnt. Some entries
-> will have been added multiple times due to the same buffer being
-> freed. The buffer allocation code will then traverse this broken list
-> and since the same buffer is in the list multiple times, it will try
-> to delete the same buffer twice from the list leading to a crash.
-> 
-> [...]
+1/2 fixes issue with btf_task_struct_ids w/o CONFIG_DEBUG_INFO_BTF.
+2/2 replaces btf_task_struct_ids with easier to understand btf_tracing_id=
+s.
 
-Here is the summary with links:
-  - [bpf] xsk: fix crash on double free in buffer pool
-    https://git.kernel.org/bpf/bpf/c/199d983bc015
+Song Liu (2):
+  bpf: extend BTF_ID_LIST_GLOBAL with parameter for number of IDs
+  bpf: introduce btf_tracing_ids
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+ include/linux/btf_ids.h       | 20 ++++++++++++++++----
+ kernel/bpf/bpf_task_storage.c |  4 ++--
+ kernel/bpf/btf.c              |  8 ++++----
+ kernel/bpf/stackmap.c         |  2 +-
+ kernel/bpf/task_iter.c        | 12 ++++++------
+ kernel/bpf/verifier.c         |  2 +-
+ kernel/trace/bpf_trace.c      |  4 ++--
+ net/core/filter.c             |  6 +-----
+ 8 files changed, 33 insertions(+), 25 deletions(-)
 
-
+--
+2.30.2
