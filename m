@@ -2,102 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6DE044EB8D
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 17:44:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2BCB44EB8E
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 17:45:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235373AbhKLQr0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 11:47:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44612 "EHLO
+        id S235142AbhKLQsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 11:48:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235142AbhKLQr0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 11:47:26 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 353D0C061767
-        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 08:44:35 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id d27-20020a25addb000000b005c2355d9052so15290981ybe.3
-        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 08:44:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=twivPmHGmtG8iF2Iqs4VmwFt4m0EiD82k/Wb4RTz6Kc=;
-        b=OyXHubVFMlweTuLfR3lTaZWi9qarwXv7g9No6exsAdlMdf4WR6hKnPWRGAfL3W6705
-         R2VAB05Eq+ZLlGCKQX+egZMf8paMfj8KeIJcZY7xxCW2AYOUWi2GaFCdGWD64BC6CAaD
-         hONobq8B4xju5OZ7g/81d6TrdkeYwmWETgh373uAoAVO9qkEOuQFKzXiJaJC58nAuy0/
-         g4K9ka0AtZ7h5VzMRaStCzfm57+sy+1+DIE2BhJ4IOexlRg4WliOrUEJAbogzklMsjQf
-         RybvvnSK+NYOYM/vhvDdxdeuW4awgkVY9XO5miuLlOeLuxgSfJcBMG6jdKn6tF5qh3cP
-         WRIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=twivPmHGmtG8iF2Iqs4VmwFt4m0EiD82k/Wb4RTz6Kc=;
-        b=2BQ1LMSmPgRmLqKh9HC9whi96srW1XlypnsGQsP8Wu4eySJ90cmFLUgA/UB+JhH9Sz
-         4dvgIofETJqcLsLOqgSL46cL4fsAHwxBAjTxvlzqC+bFViW23PexsShS99eSYo3xpEHi
-         SzdemcdjZD4xQ5G/7PnjdStoTMMgpmHSiY0ts4hSFCR7GA1LKSALR1WDLGbIYEzcEawl
-         eI5g6Vdlqt8AWnYHe4JzYzyHThjUy82gERTbVBxMhCVScuBbXvl8yBnSCwhKDab93vry
-         WxH2g0gl2GOeMn2ZepPIlgTcH/IxaEE12uNC/kmVY/kaQzmuW8bfYf30sPh5QhYauVhs
-         zJhA==
-X-Gm-Message-State: AOAM530LR9XMMu7QNg+AP1UuJAd4bMKbmX7iouCGW++Vy7xaEsKjsCR7
-        1pMK1Wk8EyNxjsQNMKw/Y6HMxHz3sVFhsVO+SUh0cXe46D37PfYefkmc4rFOFmm3ipw1LraszoX
-        BdmHFwKPQZ1DzQMttiJY3w5E8d1VC6AOAe2et4tfZuqmsmVkld15dZQ==
-X-Google-Smtp-Source: ABdhPJzSvSx0imV1lHXiXXkyhTthLeS1VldJBYkhV1Ktp5Agm1ClZh9ThPLr7JcTgABL0preLTPi4LM=
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:a840:6f02:587a:91e6])
- (user=sdf job=sendgmr) by 2002:a25:ae07:: with SMTP id a7mr18348527ybj.364.1636735474266;
- Fri, 12 Nov 2021 08:44:34 -0800 (PST)
-Date:   Fri, 12 Nov 2021 08:44:32 -0800
-Message-Id: <20211112164432.3138956-1-sdf@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.34.0.rc1.387.gb447b232ab-goog
-Subject: [PATCH bpf-next] bpftool: add current libbpf_strict mode to version output
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        Stanislav Fomichev <sdf@google.com>,
-        Quentin Monnet <quentin@isovalent.com>
-Content-Type: text/plain; charset="UTF-8"
+        with ESMTP id S233445AbhKLQs3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 11:48:29 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A08C061766
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 08:45:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=lElUIF6JDk4lgFVCgziZqcyAcOXW72j39FyZpK9atDo=; b=l9bEYnbX92RilP0GeY0EpxghLo
+        MeA81Emuy6aqM5cF/3O9oOJiDdkvuN7g8q31Xd7WMBlYqg8zT9SGWLQHGrFXhFIWygR4L/fm6RPGt
+        5mALdebS4WlGH5MWlc972jFpyjU+wnwSn4e2Asi8WKNW1w+D80i6CaBJCWP93b89yeYjnYZbb6twL
+        cL2G8ANdLafUB27PoZv1WOq4j9gw+22PyD55IyreDt9YWnmRZ5OQRJQb+WJJ89dZH6Xl0D37o6GCk
+        1hsDxYC6+FNTSBwSD1TcHhHDQkrFi8I4feQyKSWtKAMOSQ3xLn0Ju0sC0MWGfvveiT52/mWt4izvy
+        /xoRrJYQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mlZg9-003gAk-Cq; Fri, 12 Nov 2021 16:45:30 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 7E834300024;
+        Fri, 12 Nov 2021 17:45:29 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 538662C70C9B3; Fri, 12 Nov 2021 17:45:29 +0100 (CET)
+Date:   Fri, 12 Nov 2021 17:45:29 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>, x86@kernel.org,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Andrew Cooper <andrew.cooper3@citrix.com>
+Subject: Re: [PATCH v2] x86/csum: rewrite csum_partial()
+Message-ID: <YY6aKcUyZaERbBih@hirez.programming.kicks-ass.net>
+References: <20211112161950.528886-1-eric.dumazet@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211112161950.528886-1-eric.dumazet@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+ bpftool --legacy version
-bpftool v5.15.0
-features: libbfd, skeletons
-+ bpftool version
-bpftool v5.15.0
-features: libbfd, libbpf_strict, skeletons
-+ bpftool --json --legacy version
-{"version":"5.15.0","features":{"libbfd":true,"libbpf_strict":false,"skeletons":true}}
-+ bpftool --json version
-{"version":"5.15.0","features":{"libbfd":true,"libbpf_strict":true,"skeletons":true}}
+On Fri, Nov 12, 2021 at 08:19:50AM -0800, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> With more NIC supporting CHECKSUM_COMPLETE, and IPv6 being widely used.
+> csum_partial() is heavily used with small amount of bytes,
+> and is consuming many cycles.
+> 
+> IPv6 header size for instance is 40 bytes.
+> 
+> Another thing to consider is that NET_IP_ALIGN is 0 on x86,
+> meaning that network headers are not word-aligned, unless
+> the driver forces this.
+> 
+> This means that csum_partial() fetches one u16
+> to 'align the buffer', then perform three u64 additions
+> with carry in a loop, then a remaining u32, then a remaining u16.
+> 
+> With this new version, we perform a loop only for the 64 bytes blocks,
+> then the remaining is bisected.
+> 
+> Tested on various cpus, all of them show a big reduction in
+> csum_partial() cost (by 50 to 80 %)
+> 
+> v3: - use "+r" (temp64) asm constraints (Andrew).
+>     - fold do_csum() in csum_partial(), as gcc does not inline it.
+>     - fix bug added in v2 for the "odd" case.
+>     - back using addcq, as Andrew pointed the clang bug that was adding
+> 	  a stall on my hosts.
+>       (separate patch to add32_with_carry() will follow)
+>     - use load_unaligned_zeropad() for final 1-7 bytes (Peter & Alexander).
+> 
+> v2: - removed the hard-coded switch(), as it was not RETPOLINE aware.
+>     - removed the final add32_with_carry() that we were doing
+>       in csum_partial(), we can simply pass @sum to do_csum().
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-Suggested-by: Quentin Monnet <quentin@isovalent.com>
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- tools/bpf/bpftool/main.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/tools/bpf/bpftool/main.c b/tools/bpf/bpftool/main.c
-index 473791e87f7d..edbb146287ee 100644
---- a/tools/bpf/bpftool/main.c
-+++ b/tools/bpf/bpftool/main.c
-@@ -93,6 +93,7 @@ static int do_version(int argc, char **argv)
- 		jsonw_name(json_wtr, "features");
- 		jsonw_start_object(json_wtr);	/* features */
- 		jsonw_bool_field(json_wtr, "libbfd", has_libbfd);
-+		jsonw_bool_field(json_wtr, "libbpf_strict", !legacy_libbpf);
- 		jsonw_bool_field(json_wtr, "skeletons", has_skeletons);
- 		jsonw_end_object(json_wtr);	/* features */
- 
-@@ -106,6 +107,10 @@ static int do_version(int argc, char **argv)
- 			printf(" libbfd");
- 			nb_features++;
- 		}
-+		if (!legacy_libbpf) {
-+			printf("%s libbpf_strict", nb_features++ ? "," : "");
-+			nb_features++;
-+		}
- 		if (has_skeletons)
- 			printf("%s skeletons", nb_features++ ? "," : "");
- 		printf("\n");
--- 
-2.34.0.rc1.387.gb447b232ab-goog
-
+Looks nice, happen to have shiny perf numbers to show how awesome it it?
+:-)
