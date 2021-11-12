@@ -2,126 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74C8544E047
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 03:27:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D59F544E050
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 03:32:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231965AbhKLCal (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 21:30:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49014 "EHLO
+        id S234213AbhKLCf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 21:35:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233638AbhKLCal (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 21:30:41 -0500
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C16C061766
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 18:27:51 -0800 (PST)
-Received: by mail-oi1-x22d.google.com with SMTP id q124so15218183oig.3
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 18:27:51 -0800 (PST)
+        with ESMTP id S233638AbhKLCfZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 21:35:25 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3DB8C061766
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 18:32:35 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id y7so7399808plp.0
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 18:32:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=SjyauEv+E4VZxaW4hhra9vLv0tm876Xi5p2mVPiJ/yE=;
-        b=GNfZcYNd4x2wsCJO52SKbIt73ABkOZzWFm+JRvLPPnLbJcAqKcvy6c809wlkg1HsDB
-         CXzWlJjlzcT+r+NBzSbkMUEtIE4TAdeqdZJTldw6/ARbnmjoGbT+xoCGqGkoKCCP6Ik/
-         05dkpUBo9osG8LdTmKEVMnT1AN2mvK+LT5Vh29/HhYeUG9jOLtxeAp3qO1MATTnOwH3e
-         idcT89jnSHYlETglkhexHh+BAJgzqaJyGcNpFLaG/0oBYbCBBte9+TMT4qoPtpGTpYwm
-         jx/Ktwr2RGJmUfsOpHjq6sG0W824Yj4u5tYUbZOP4G9GyDug1NEk4XM2k1gYZpfB2Eah
-         b/hQ==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KOTw1ZcaUFj5U5Kc9KmboBfIHi2Pmw2F9Zs6YOM05l0=;
+        b=QKl5Y9+KYSo2dql645p9VxkUr7m7MeMf31+zpDqwkPAstyFr9v8m0lANjB2JHgajCC
+         Kk0DnRXESrpqfus4foQb6L6Fo8dasAvFejoic3C2N/NpDUfPjPafDhGKi4JUD8Wi9Psq
+         dYCqAgdGR7TFRTFfavviSYoZTEScUE2SbY21abdE2RmLUAt61ZEUtj7mmTXfOH2xdVZi
+         DafxDq0N/LPWZHH8ElafJOLHOpb6D+maSOBkMHVKkLAD0fJMYIgvBZkKNcwGOCFo97JU
+         LVb+DoyTduD4WK8Nfgh2iWEk6sJw8+X6G1K5k9r3mf+f+p4Af1jVCxqImPssP1f1d6zr
+         BeUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=SjyauEv+E4VZxaW4hhra9vLv0tm876Xi5p2mVPiJ/yE=;
-        b=cjGgiuCHHgJUyyP/DybXXzq8irLp23lS04qs7dgrYQYNjvEhW5a+MwLy4RyKL8Z11Q
-         D46YhfUeojaeoHMu4UDxD38RMiMWMulhU/8eaXZZYYgk9Lae/+ehWID6kIFdg0wItMTc
-         fNVTJi/A6cBHbC/yMvTNtZRC/SLpfREMXTPdvXEiVaPGV9P1m98RTgdUtggBBOErYsrR
-         Y+nVGEgzdmXzPXBn1bORN5SVKGmqGc7uODRul6EmOMd4q/79kBOQWTikah5TYo2QaCtC
-         UEyrW+njWDUWVl0epn4Xei+EcT0ojT4KeivwH6e2dC+HbJmnazbsVwL+vbupX2+GoUNH
-         ZowA==
-X-Gm-Message-State: AOAM533Hey9rpdMHfvhm5uoPOGZGaujnmFW+U4tiUJT1YDnu6XtZE58u
-        lJyc0AcTow90ZOU0bhYM6+Y=
-X-Google-Smtp-Source: ABdhPJw0Y69yAE9eTqfKpN+G90Bhqnb+/XA5J7RjHpdY5g3wADEmQqCKEEBQTumTPN4xtWgWMxvzkw==
-X-Received: by 2002:aca:61c6:: with SMTP id v189mr9674228oib.103.1636684070590;
-        Thu, 11 Nov 2021 18:27:50 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id 3sm978769otl.60.2021.11.11.18.27.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 Nov 2021 18:27:50 -0800 (PST)
-Message-ID: <d7c2d8fa-052e-b941-2ef1-830c1ba655c1@gmail.com>
-Date:   Thu, 11 Nov 2021 19:27:48 -0700
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KOTw1ZcaUFj5U5Kc9KmboBfIHi2Pmw2F9Zs6YOM05l0=;
+        b=h5vp/Zt9LVZ71435cJ8aZwiGb/B9CnzvS760eYuj+twQZbFoKnTf6KlLEIWtGzBRaP
+         E0SAWpCRdsrBqVOhlwdJLz+kxR67L1nuHxUN7y2bnu98mE7OdEO6pwHwQdVEy3XWeMGG
+         pQrA/p2d8rvYc3SUsAnq4ew7X1pPKh2pmUvqFaEa87M8DraJBpht+88icSPCVXF3Mozp
+         2bnpht0llfUbDbCr/Tjjv5a2TO8agDoeNMgz7deBuwCSGh/x3KaXvsnCuUHA8RoT/S8W
+         ujfffLmlDkDKoPbbTaZeWR9nlrn/WwWwlgOl9oYbbCKnZ+VWm99XkIrwL5VP1uG2JRPU
+         bUCQ==
+X-Gm-Message-State: AOAM532z2+GFW+sB0lwJ6Iy+oUdTrTTepRx0FiVmQpXEiymwrn0avDCC
+        9EFKRXYE7QMDvmFJLyMkS/3D6pCxhqJ6cJ7xJGllosDHvUIFPA==
+X-Google-Smtp-Source: ABdhPJxkZ+AfZC5Kla6moKGkBk+gCfSOSwht5hTm0gNzVW1VkjW0ez9H83IayQRIz+g4pJLpFuNcVxl6DMLLWBFgbEQ=
+X-Received: by 2002:a17:90b:38c7:: with SMTP id nn7mr13887158pjb.105.1636684354848;
+ Thu, 11 Nov 2021 18:32:34 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.0
-Subject: Re: [RFC PATCH net-next] rtnetlink: add RTNH_F_REJECT_MASK
-Content-Language: en-US
-To:     Roopa Prabhu <roopa@nvidia.com>,
-        Alexander Mikhalitsyn <alexander@mihalicyn.com>
-Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrei Vagin <avagin@gmail.com>,
-        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
-References: <20211111160240.739294-1-alexander.mikhalitsyn@virtuozzo.com>
- <20211111160240.739294-2-alexander.mikhalitsyn@virtuozzo.com>
- <1f4b9028-8dec-0b14-105a-3425898798c9@gmail.com>
- <CAJqdLrqvNYm1YTA-dgGsrjsPG6efA8nsUCQLKmGXqoDM+dfpRQ@mail.gmail.com>
- <b90e874b-30a7-81bb-a94f-b6cebda87e99@gmail.com>
- <ff405eae-21d9-35f4-1397-b6f9a29a57ff@nvidia.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <ff405eae-21d9-35f4-1397-b6f9a29a57ff@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20211111235215.2605384-1-arjunroy.kdev@gmail.com>
+In-Reply-To: <20211111235215.2605384-1-arjunroy.kdev@gmail.com>
+From:   Arjun Roy <arjunroy@google.com>
+Date:   Thu, 11 Nov 2021 18:32:23 -0800
+Message-ID: <CAOFY-A0zLEQ_cbVFS_Rd16EiOP7R-gEkHTsZ6gNEmUCbeLK1OQ@mail.gmail.com>
+Subject: Re: [net v2] tcp: Fix uninitialized access in skb frags array for Rx 0cp.
+To:     Arjun Roy <arjunroy.kdev@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        soheil@google.com, kuba@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/11/21 6:02 PM, Roopa Prabhu wrote:
-> 
-> On 11/11/21 2:19 PM, David Ahern wrote:
->> [ cc roopa]
->>
->> On 11/11/21 12:23 PM, Alexander Mikhalitsyn wrote:
->>> On Thu, Nov 11, 2021 at 10:13 PM David Ahern <dsahern@gmail.com> wrote:
->>>> On 11/11/21 9:02 AM, Alexander Mikhalitsyn wrote:
->>>>> diff --git a/include/uapi/linux/rtnetlink.h
->>>>> b/include/uapi/linux/rtnetlink.h
->>>>> index 5888492a5257..c15e591e5d25 100644
->>>>> --- a/include/uapi/linux/rtnetlink.h
->>>>> +++ b/include/uapi/linux/rtnetlink.h
->>>>> @@ -417,6 +417,9 @@ struct rtnexthop {
->>>>>   #define RTNH_COMPARE_MASK    (RTNH_F_DEAD | RTNH_F_LINKDOWN | \
->>>>>                                 RTNH_F_OFFLOAD | RTNH_F_TRAP)
->>>>>
->>>>> +/* these flags can't be set by the userspace */
->>>>> +#define RTNH_F_REJECT_MASK   (RTNH_F_DEAD | RTNH_F_LINKDOWN)
->>>>> +
->>>>>   /* Macros to handle hexthops */
->>>> Userspace can not set any of the flags in RTNH_COMPARE_MASK.
->>> Hi David,
->>>
->>> thanks! So, I have to prepare a patch which fixes current checks for
->>> rtnh_flags
->>> against RTNH_COMPARE_MASK. So, there is no need to introduce a separate
->>> RTNH_F_REJECT_MASK.
->>> Am I right?
->>>
->> Added Roopa to double check if Cumulus relies on this for their switchd.
->>
->> If that answer is no, then there is no need for a new mask.
->>
-> 
-> yes, these flags are already exposed to userspace and we do use it.
-> 
-> We have also considered optimizations where routing daemons set OFFLOAD
-> and drivers clear it when offload fails.
-> 
-> I wont be surprised if other open network os distributions are also
-> using it.
-> 
-> 
-> Thanks for the headsup David.
-> 
+On Thu, Nov 11, 2021 at 3:52 PM Arjun Roy <arjunroy.kdev@gmail.com> wrote:
+>
+> From: Arjun Roy <arjunroy@google.com>
+>
+> TCP Receive zerocopy iterates through the SKB queue via
+> tcp_recv_skb(), acquiring a pointer to an SKB and an offset within
+> that SKB to read from. From there, it iterates the SKB frags array to
+> determine which offset to start remapping pages from.
+>
+> However, this is built on the assumption that the offset read so far
+> within the SKB is smaller than the SKB length. If this assumption is
+> violated, we can attempt to read an invalid frags array element, which
+> would cause a fault.
+>
+> tcp_recv_skb() can cause such an SKB to be returned when the TCP FIN
+> flag is set. Therefore, we must guard against this occurrence inside
+> skb_advance_frag().
+>
+> One way that we can reproduce this error follows:
+> 1) In a receiver program, call getsockopt(TCP_ZEROCOPY_RECEIVE) with:
+> char some_array[32 * 1024];
+> struct tcp_zerocopy_receive zc = {
+>   .copybuf_address  = (__u64) &some_array[0],
+>   .copybuf_len = 32 * 1024,
+> };
+>
+> 2) In a sender program, after a TCP handshake, send the following
+> sequence of packets:
+>   i) Seq = [X, X+4000]
+>   ii) Seq = [X+4000, X+5000]
+>   iii) Seq = [X+4000, X+5000], Flags = FIN | URG, urgptr=1000
+>
+> (This can happen without URG, if we have a signal pending, but URG is
+> a convenient way to reproduce the behaviour).
+>
+> In this case, the following event sequence will occur on the receiver:
+>
+> tcp_zerocopy_receive():
+> -> receive_fallback_to_copy() // copybuf_len >= inq
+> -> tcp_recvmsg_locked() // reads 5000 bytes, then breaks due to URG
+> -> tcp_recv_skb() // yields skb with skb->len == offset
+> -> tcp_zerocopy_set_hint_for_skb()
+> -> skb_advance_to_frag() // will returns a frags ptr. >= nr_frags
+> -> find_next_mappable_frag() // will dereference this bad frags ptr.
+>
+> With this patch, skb_advance_to_frag() will no longer return an
+> invalid frags pointer, and will return NULL instead, fixing the issue.
+>
+> Signed-off-by: Arjun Roy <arjunroy@google.com>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Fixes: 05255b823a61 ("tcp: add TCP_ZEROCOPY_RECEIVE support for zerocopy receive")
+>
+> ---
+>  net/ipv4/tcp.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index bc7f419184aa..ef896847f190 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -1741,6 +1741,9 @@ static skb_frag_t *skb_advance_to_frag(struct sk_buff *skb, u32 offset_skb,
+>  {
+>         skb_frag_t *frag;
+>
+> +       if (unlikely(offset_skb >= skb->len))
+> +               return NULL;
+> +
+>         offset_skb -= skb_headlen(skb);
+>         if ((int)offset_skb < 0 || skb_has_frag_list(skb))
+>                 return NULL;
+> --
+> 2.34.0.rc1.387.gb447b232ab-goog
+>
 
-Thanks, Roopa. So then the separate mask is needed.
+Interestingly, netdevbpf list claims a netdev/build_32bit failure here:
+https://patchwork.kernel.org/project/netdevbpf/patch/20211111235215.2605384-1-arjunroy.kdev@gmail.com/
+
+But the v1 patch seemed to be fine (that one had a wrong "Fixes" tag,
+it's the only thing that changed in v2). Also, "make ARCH=i386" is
+working fine for me, and the significant amount of error output
+(https://patchwork.hopto.org/static/nipa/578999/12615889/build_32bit/)
+does not actually have any errors inside net/ipv4/tcp.c . I assume,
+then, this must be a tooling false positive, and I do not have to send
+a v3 (which would have no changes)?
+
+Thanks,
+-Arjun
