@@ -2,121 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8617B44E26A
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 08:39:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CFF644E282
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 08:42:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233387AbhKLHl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 02:41:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60554 "EHLO
+        id S234003AbhKLHpf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 02:45:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232346AbhKLHlu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 02:41:50 -0500
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5083FC061766
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 23:38:59 -0800 (PST)
-Received: by mail-wr1-x42e.google.com with SMTP id r8so13916077wra.7
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 23:38:59 -0800 (PST)
+        with ESMTP id S233806AbhKLHpd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 02:45:33 -0500
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC3CC061208
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 23:42:43 -0800 (PST)
+Received: by mail-wm1-x332.google.com with SMTP id i8-20020a7bc948000000b0030db7b70b6bso9151886wml.1
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 23:42:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=elmtw5JKXy45qzIUIcO3QrJwyTUW9zlTA4B18c8yXdg=;
-        b=c5C8KKaiq3Oroq/valkhfXoOl8O8ca0Ce7MNiP5wzrJcfz5MiB+FOwwHSrS1dGCWhG
-         Z5nhjv0CRCGxcIPkQjC77njo1G/glCmhS7bICEQ/JcDZVDrEVHpknfw1+vFIXkDGuY17
-         rpwGM+9U1JtO+QIjCCbyT643q8d+J2P/fjOKEaJsHZCNuP1Iljh5fRYhYcpfiWKZLM1/
-         Mec3JSJRnQTVtA3XeIvYcenaaBPFe5vD2f2AgTkyNTHj1cZPv6ddJJeEyb0Ts5XlDlbG
-         OLLaJpjPykEZy9dWzK6f04zFi8K4xIEu/VIbUo0z2Zqrweq5IhDhuHhQGtx/EYU1f7CN
-         dvKg==
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=d4YpBbYWP9wG3LFBKWknnju7IW21BdQrAXLAFoUfJjk=;
+        b=L0G7vqzIu4OmVtWPcfcfA5NzLtPk2i0H7s2BzObNlHQTFEkm03sqk/2QHQ4kjpk9BH
+         XMXouE5QpmwrxFfo6B5ZLvuccwWWhT/w9Ko9Yi7L+7BfDDnicqyRLnT+TM8ck5H5bQEY
+         cyD6P6qfh9iWldNqTQR7o5UJ+sXkSMXyDzLNU6kkBq7ka/+ZuUqEk/qcSbQ3GxXC7kiU
+         cm9dyledHK9n0gr3crraQGaAfhd3vfTQwfXVu/kwmwojjE1dRCSgNEVgeiJJB70r7ke9
+         OYePQHHEPa/usZJXytv516/nCeAGVXFsmZBOHnIcNaOTOhsULeXowN7ikvsxKqOo/gxw
+         3O2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=elmtw5JKXy45qzIUIcO3QrJwyTUW9zlTA4B18c8yXdg=;
-        b=IhKA3f79TSDJ8TlVm9k4ugy5EiWg9zxcAn4UmSmkcHVHr+zuQqirrZMThZsF2lNSwg
-         LEqOVWuVRIlP3R0RO563zcaZy4yD2DPjX6iGAZs76n6g+TBXqBl2W1b2FE3O9mueEpy7
-         JCMVcK3Il6CVQflTpgRcd/ft2Q8cxghKwH41qkwFYxwhTIdr9Loi3L4eeZfbXMwPeAZe
-         TaQMNMGR8ddKsXLBW0fhLOo44JgtV9tszEO+TuIqpUsd81QK+l2vdPi006ACXA8pkeCh
-         X7AIh4wtUE7JFotHSDdsAe7k0SPrYzn+UDGJqCU1JvV/APs5WuVhpo7ZqLcEokZ2jtEI
-         gwFQ==
-X-Gm-Message-State: AOAM532m85g09RUTyK4DZhmdc2AHRvdyCpgWQWaEL6MJ0wcccSogwpmo
-        IkGY/XO0Tme/N2ZdVA+Hped1z3xISmEGiLpVNN4=
-X-Google-Smtp-Source: ABdhPJw9IHWhmplvaIJHx7aDpyprzWyYudlCeJnWRB/SxgO/vVdHfQLW53AWzqWwZCX/BpLJIlWRXg==
-X-Received: by 2002:adf:f88c:: with SMTP id u12mr16645205wrp.29.1636702737927;
-        Thu, 11 Nov 2021 23:38:57 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id s13sm11485803wmc.47.2021.11.11.23.38.57
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=d4YpBbYWP9wG3LFBKWknnju7IW21BdQrAXLAFoUfJjk=;
+        b=AkpSn/DapfdRudD+tASTk0NY7oJ1LKJ4d68HfelexMC6vf/OREb5it91t8hnORpMPH
+         zIQoJa5s3B8SL7HQrPWqPCYXy8VxkG0ny58N7yfskqM32uSqa4ArgTbQwAlBWM8FN3BU
+         D6VM+/4WhTkC2f9PyLlpbUNqxXPn5lmYNex/PBMG+04C+nNiKW/OUm13zT0QvaDb74rS
+         bYRMdKT6vnHqKH6oeJk//41FQfcWI6sJSJRoSIuWv15srgDMvn/PAK2GbYhJlASxmcno
+         IejKo4pD2wVBbGZ1sVkMjnBjt2JpjaK6A+zW/2/vkpVZGPr1ecPWFdfs53Fg/Ge56nPV
+         4p2A==
+X-Gm-Message-State: AOAM531fpppHUiOdZyqAADenKBZGxT5fZvTWsz0NvyKtPDL4KuCVm5iT
+        /UeGmirdwsNCKjmIGVpYegyrmw==
+X-Google-Smtp-Source: ABdhPJyYtg+MHn61GMl0MRFqSO/sm1wnHgrm7yORmq7WT7ihtvN7d0mp317CBhRDaom5mAlXGDszmg==
+X-Received: by 2002:a05:600c:2107:: with SMTP id u7mr32377342wml.82.1636702961238;
+        Thu, 11 Nov 2021 23:42:41 -0800 (PST)
+Received: from google.com ([95.148.6.174])
+        by smtp.gmail.com with ESMTPSA id q8sm4978469wrx.71.2021.11.11.23.42.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Nov 2021 23:38:57 -0800 (PST)
-Date:   Fri, 12 Nov 2021 08:38:56 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Jason Gunthorpe <jgg@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@idosch.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        edwin.peer@broadcom.com
-Subject: Re: [PATCH net-next] devlink: Require devlink lock during device
- reload
-Message-ID: <YY4aEFkVuqR+vauw@nanopsycho>
-References: <20211108104608.378c106e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YYmBbJ5++iO4MOo7@unreal>
- <20211108153126.1f3a8fe8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20211109144358.GA1824154@nvidia.com>
- <20211109070702.17364ec7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20211109153335.GH1740502@nvidia.com>
- <20211109082042.31cf29c3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20211109182427.GJ1740502@nvidia.com>
- <YY0G90fJpu/OtF8L@nanopsycho>
- <YY0J8IOLQBBhok2M@unreal>
+        Thu, 11 Nov 2021 23:42:40 -0800 (PST)
+Date:   Fri, 12 Nov 2021 07:42:37 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     patrice.chotard@foss.st.com, Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        alexandre torgue <alexandre.torgue@foss.st.com>,
+        jonathan cameron <jic23@kernel.org>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        olivier moysan <olivier.moysan@foss.st.com>,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>,
+        linux-mtd@lists.infradead.org, linux-watchdog@vger.kernel.org,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        maxime coquelin <mcoquelin.stm32@gmail.com>,
+        Matt Mackall <mpm@selenic.com>, vinod koul <vkoul@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        baolin wang <baolin.wang7@gmail.com>,
+        linux-spi@vger.kernel.org, david airlie <airlied@linux.ie>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        netdev@vger.kernel.org,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        ohad ben-cohen <ohad@wizery.com>, linux-gpio@vger.kernel.org,
+        Jose Abreu <joabreu@synopsys.com>,
+        Le Ray <erwan.leray@foss.st.com>,
+        herbert xu <herbert@gondor.apana.org.au>,
+        michael turquette <mturquette@baylibre.com>,
+        Christophe Kerello <christophe.kerello@foss.st.com>,
+        Gabriel Fernandez <gabriel.fernandez@foss.st.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Christophe Roullier <christophe.roullier@foss.st.com>,
+        linux-serial@vger.kernel.org, Amit Kucheria <amitk@kernel.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Ludovic Barre <ludovic.barre@foss.st.com>,
+        "david s . miller" <davem@davemloft.net>,
+        Lionel Debieve <lionel.debieve@foss.st.com>,
+        linux-i2c@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        Guenter Roeck <linux@roeck-us.net>,
+        thierry reding <thierry.reding@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        philippe cornu <philippe.cornu@foss.st.com>,
+        linux-rtc@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Hugues Fruchet <hugues.fruchet@foss.st.com>,
+        alsa-devel@alsa-project.org, Zhang Rui <rui.zhang@intel.com>,
+        linux-crypto@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        linux-iio@vger.kernel.org, pascal Paillet <p.paillet@foss.st.com>,
+        Pierre-Yves MORDRET <pierre-yves.mordret@foss.st.com>,
+        Fabien Dessenne <fabien.dessenne@foss.st.com>,
+        linux-pm@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
+        stephen boyd <sboyd@kernel.org>,
+        dillon min <dillon.minfei@gmail.com>,
+        devicetree@vger.kernel.org,
+        yannick fertre <yannick.fertre@foss.st.com>,
+        linux-kernel@vger.kernel.org,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        linux-phy@lists.infradead.org,
+        benjamin gaignard <benjamin.gaignard@linaro.org>,
+        sam ravnborg <sam@ravnborg.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-clk@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Richard Weinberger <richard@nod.at>,
+        Rob Herring <robh+dt@kernel.org>, Marek Vasut <marex@denx.de>,
+        arnaud pouliquen <arnaud.pouliquen@foss.st.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        dmaengine@vger.kernel.org, linux-media@vger.kernel.org,
+        daniel vetter <daniel@ffwll.ch>, Marc Zyngier <maz@kernel.org>,
+        bjorn andersson <bjorn.andersson@linaro.org>,
+        lars-peter clausen <lars@metafoo.de>
+Subject: Re: [PATCH v3 2/5] dt-bindings: mfd: timers: Update maintainers for
+ st,stm32-timers
+Message-ID: <YY4a7ZxzhNq6Or+t@google.com>
+References: <20211110150144.18272-1-patrice.chotard@foss.st.com>
+ <20211110150144.18272-3-patrice.chotard@foss.st.com>
+ <YYwjPAoCtuM6iycz@robh.at.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YY0J8IOLQBBhok2M@unreal>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YYwjPAoCtuM6iycz@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Nov 11, 2021 at 01:17:52PM CET, leon@kernel.org wrote:
->On Thu, Nov 11, 2021 at 01:05:11PM +0100, Jiri Pirko wrote:
->> Tue, Nov 09, 2021 at 07:24:27PM CET, jgg@nvidia.com wrote:
->> >On Tue, Nov 09, 2021 at 08:20:42AM -0800, Jakub Kicinski wrote:
->> >> On Tue, 9 Nov 2021 11:33:35 -0400 Jason Gunthorpe wrote:
->> >> > > > I once sketched out fixing this by removing the need to hold the
->> >> > > > per_net_rwsem just for list iteration, which in turn avoids holding it
->> >> > > > over the devlink reload paths. It seemed like a reasonable step toward
->> >> > > > finer grained locking.  
->> >> > > 
->> >> > > Seems to me the locking is just a symptom.  
->> >> > 
->> >> > My fear is this reload during net ns destruction is devlink uAPI now
->> >> > and, yes it may be only a symptom, but the root cause may be unfixable
->> >> > uAPI constraints.
->> >> 
->> >> If I'm reading this right it locks up 100% of the time, what is a uAPI
->> >> for? DoS? ;)
->> >> 
->> >> Hence my questions about the actual use cases.
->> >
->> >Removing namespace support from devlink would solve the crasher. I
->> >certainly didn't feel bold enough to suggest such a thing :)
->> >
->> >If no other devlink driver cares about this it is probably the best
->> >idea.
->> 
->> Devlink namespace support is not generic, not related to any driver.
->
->What do you mean?
->
->devlink_pernet_pre_exit() calls to devlink reload, which means that only
->drivers that support reload care about it. The reload is driver thing.
+On Wed, 10 Nov 2021, Rob Herring wrote:
 
-However, Jason was talking about "namespace support removal from
-devlink"..
+> On Wed, 10 Nov 2021 16:01:41 +0100, patrice.chotard@foss.st.com wrote:
+> > From: Patrice Chotard <patrice.chotard@foss.st.com>
+> > 
+> > Benjamin has left the company, remove his name from maintainers.
+> > 
+> > Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
+> > ---
+> >  Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml | 1 -
+> >  1 file changed, 1 deletion(-)
+> > 
+> 
+> Lee indicated he was going to pick this one up, so:
+> 
+> Acked-by: Rob Herring <robh@kernel.org>
 
+Since you already merged the treewide patch, you may as well take
+this too.  We'll work through any conflicts that may occur as a
+result.
 
->
->Thanks
->
->> 
->> >
->> >Jason
+Acked-by: Lee Jones <lee.jones@linaro.org>
+
+-- 
+Lee Jones [李琼斯]
+Senior Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
