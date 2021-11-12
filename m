@@ -2,173 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 761C744EB79
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 17:33:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2691E44EB7B
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 17:35:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235472AbhKLQgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 11:36:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42078 "EHLO
+        id S235142AbhKLQiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 11:38:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235480AbhKLQgK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 11:36:10 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0249AC061767
-        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 08:33:20 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id d27so16515117wrb.6
-        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 08:33:19 -0800 (PST)
+        with ESMTP id S233776AbhKLQiD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 11:38:03 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 360A6C061766
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 08:35:12 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id d5so16549931wrc.1
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 08:35:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=z+4qzFGBXdcmzNkNV2HiNqWyKfVpBZLGwDHAUhK1hrg=;
-        b=ZcYzz5d3CzdooWVSvGrSIgO++T0VynCCrjMUNuYaxthMY3rLI4SBMB3Jj0a1xH30j8
-         wzGf1sPgECzDpB3FRwnE93pewwnIv5tT0wyk8xI69GmB9xcynovr1vBX+hpkskANmEJB
-         EFYF4W5sfFEvLX6keysbNXfNluONiSYpjR0vNWnpXQLaMjynOFra5dwtyoeTdpwYtN+H
-         Td/3LJ+W16MG14GKutulvAuC4/+WOc1zKc0lyZKx8CWKBrSiuBSclXP+Bec5FG3yT9gZ
-         ekBQ6xylIGCRu+3qu571aR0MeDGAVqVZnQ00wMrawlF7zPIZjSHD6pTOflkq/NT6JpBi
-         ZjRg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZxF0SV4mZtKjBCn/kCnLzi9dyDXyrgnZfX9ZorbsjfU=;
+        b=R0eyu3uGLr56+b7qzWdBxCY3DDuVPL9jjU771M0BGxb4yFeRynptkX+RzZFBlQ+IqM
+         6Sa7wgP3wAoIOu0sUcWPu7DYNmR4YQNTzVQxt3Tnr+bpPJpJgDxWSMfUJJWRcumKO6aA
+         tfT1Bs7kV0icHP++JLJS+D2lyfUQsimvMfcszqamPRTCpxoFQOHj2zGzEwT4KNCXr2jJ
+         oVE6D8XFRQk0fqYwxB/7z7YADT+cnD5vmwSqi7QmESuhYTLbUTQoCNohLLVDhg/gWoeg
+         traCI6/hBfs9hPTT0UH1VgNr0bsrKg5Q2Zguy7GsHmHQbqbS2tJ+jMJ8wepi7sisTmEm
+         lzTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=z+4qzFGBXdcmzNkNV2HiNqWyKfVpBZLGwDHAUhK1hrg=;
-        b=EX/Y3ZaRSPnSdvWuAe4TKWxD7IUG3BqGp4xv4wblL/sKo9USVjgq53QpPC2Ouc8+fd
-         HXOJc91BJx0/S5TJVAtkNEj+EuE4//eez/r+B4vtSZwS09EqQDTup1ufKUM80UyUmQJ5
-         vRsNzruk0/Xl7Iz16oLh3MRthYHT91cnpi8Jud9KIy6rcKYgrBX3t3bFyz2l10VQXzHx
-         Ua4esZSxivUmO8u0N4zM4f4yQb9x98aOJaZ/Kpr4jJHpoPGWc6ttAdxkC6v5kEhJ4Buw
-         xCS3mrVwhWpWpoVIRa6NX1R0m7WRyRUr9tlE0gKXIFoeGa7DygDa1BWvuI0Ug7izkZKs
-         HEjg==
-X-Gm-Message-State: AOAM530aHUbB55GQzfnueX8Ml6EFGDTC+jpO1URuJREeSWhgkGdnapiC
-        3MjXI0pRgIyh2mfAGN9w8ietoK+LAR02Uw==
-X-Google-Smtp-Source: ABdhPJxinoZFU83Aubf+HBTd0bYPF5dmF2OUshfamuFv8zgqK9jRcOy1GfmgXh9DzesVbniWPyuAEw==
-X-Received: by 2002:adf:9bdb:: with SMTP id e27mr20594740wrc.417.1636734798501;
-        Fri, 12 Nov 2021 08:33:18 -0800 (PST)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id c11sm8631595wmq.27.2021.11.12.08.33.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Nov 2021 08:33:18 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZxF0SV4mZtKjBCn/kCnLzi9dyDXyrgnZfX9ZorbsjfU=;
+        b=sgks6/88KWz2xrUgTX0R6eEATdZP8tM+JGixbdmO/I6pdJmZaUdlKQ4nd1Fa8+3p1I
+         5WkCXyTMPhzsXCx1OMH/MpQ6bBHtBK+oFDuTlATyU2vEaGaOT7Ml/jz/8K6xY3G7V7t0
+         pIwbjGhVglwzK2qZ03wUw0cUMX3aQU2Xuz5BLvQKeSIUqHAMv+P4RQ6D2mMs3vjlOrC/
+         5ASVU33lHkBNb/nmc8n4mXWFOsXntkDV+g3R36SrcQys57EcFTNw6q0ecOsC5lepltrW
+         1MuwHHZTmqKotcz+yFRtq51PBGVKT0llz1JG2VoFuf+/mIazoIb/nx9iEmWDNTBCfLzP
+         9i8g==
+X-Gm-Message-State: AOAM531nxs9UNLJlhmEsrkzQ3+TXwWw0Cl+j5HchvEADdd5QdzyeUsI1
+        B05ts8zhWTGk3FV8qMD+uSGp7VP5DFFA/q5GRKz5/Ev5lH8Yig==
+X-Google-Smtp-Source: ABdhPJxBd5zS89T9XewSTlBA7dOjaiJOGVZ4GmBJeDl3CxTBcp8osBHkOZPTLWYcW/Ooe8N9aNkkQObYpz3WxFpWYk4=
+X-Received: by 2002:a05:6000:11c3:: with SMTP id i3mr20355945wrx.426.1636734910653;
+ Fri, 12 Nov 2021 08:35:10 -0800 (PST)
+MIME-Version: 1.0
+References: <cover.1636734751.git.lucien.xin@gmail.com>
+In-Reply-To: <cover.1636734751.git.lucien.xin@gmail.com>
 From:   Xin Long <lucien.xin@gmail.com>
+Date:   Fri, 12 Nov 2021 11:34:59 -0500
+Message-ID: <CADvbK_eVXs_peRrz2-q=5KyZPsUGq=bXy-W7JsPGeNksRu96DQ@mail.gmail.com>
+Subject: Re: [PATCH net 0/2] net: fix the mirred packet drop due to the
+ incorrect dst
 To:     network dev <netdev@vger.kernel.org>
 Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, davem@davemloft.net,
-        kuba@kernel.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Subject: [PATCH net 2/2] selftests: add a test case for mirred egress to ingress
-Date:   Fri, 12 Nov 2021 11:33:12 -0500
-Message-Id: <c474e700611e6302e063ca967dd4f57836faeaf6.1636734751.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <cover.1636734751.git.lucien.xin@gmail.com>
-References: <cover.1636734751.git.lucien.xin@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Jiri Pirko <jiri@resnulli.us>, davem <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Davide Caratti <dcaratti@redhat.com>
++Cc Davide.
 
-add a selftest that verifies the correct behavior of TC act_mirred egress
-to ingress: in particular, it checks if the dst_entry is removed from skb
-before redirect egress -> ingress. The correct behavior is: an ICMP 'echo
-request' generated by ping will be received and generate a reply the same
-way as the one generated by mausezahn.
-
-Suggested-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
----
- tools/testing/selftests/net/forwarding/config |  1 +
- .../selftests/net/forwarding/tc_actions.sh    | 47 ++++++++++++++++++-
- 2 files changed, 47 insertions(+), 1 deletion(-)
-
-diff --git a/tools/testing/selftests/net/forwarding/config b/tools/testing/selftests/net/forwarding/config
-index a4bd1b087303..697994a9278b 100644
---- a/tools/testing/selftests/net/forwarding/config
-+++ b/tools/testing/selftests/net/forwarding/config
-@@ -6,6 +6,7 @@ CONFIG_IPV6_MULTIPLE_TABLES=y
- CONFIG_NET_VRF=m
- CONFIG_BPF_SYSCALL=y
- CONFIG_CGROUP_BPF=y
-+CONFIG_NET_ACT_CT=m
- CONFIG_NET_ACT_MIRRED=m
- CONFIG_NET_ACT_MPLS=m
- CONFIG_NET_ACT_VLAN=m
-diff --git a/tools/testing/selftests/net/forwarding/tc_actions.sh b/tools/testing/selftests/net/forwarding/tc_actions.sh
-index d9eca227136b..de19eb6c38f0 100755
---- a/tools/testing/selftests/net/forwarding/tc_actions.sh
-+++ b/tools/testing/selftests/net/forwarding/tc_actions.sh
-@@ -3,7 +3,7 @@
- 
- ALL_TESTS="gact_drop_and_ok_test mirred_egress_redirect_test \
- 	mirred_egress_mirror_test matchall_mirred_egress_mirror_test \
--	gact_trap_test"
-+	gact_trap_test mirred_egress_to_ingress_test"
- NUM_NETIFS=4
- source tc_common.sh
- source lib.sh
-@@ -13,10 +13,12 @@ tcflags="skip_hw"
- h1_create()
- {
- 	simple_if_init $h1 192.0.2.1/24
-+	tc qdisc add dev $h1 clsact
- }
- 
- h1_destroy()
- {
-+	tc qdisc del dev $h1 clsact
- 	simple_if_fini $h1 192.0.2.1/24
- }
- 
-@@ -153,6 +155,49 @@ gact_trap_test()
- 	log_test "trap ($tcflags)"
- }
- 
-+mirred_egress_to_ingress_test()
-+{
-+	RET=0
-+
-+	tc filter add dev $h1 protocol ip pref 100 handle 100 egress flower \
-+		ip_proto icmp src_ip 192.0.2.1 dst_ip 192.0.2.2 type 8 action \
-+			ct commit nat src addr 192.0.2.2 pipe \
-+			ct clear pipe \
-+			ct commit nat dst addr 192.0.2.1 pipe \
-+			mirred ingress redirect dev $h1
-+
-+	tc filter add dev $swp1 protocol ip pref 11 handle 111 ingress flower \
-+		ip_proto icmp src_ip 192.0.2.1 dst_ip 192.0.2.2 type 8 action drop
-+	tc filter add dev $swp1 protocol ip pref 12 handle 112 ingress flower \
-+		ip_proto icmp src_ip 192.0.2.1 dst_ip 192.0.2.2 type 0 action pass
-+
-+	$MZ $h1 -c 1 -p 64 -a $h1mac -b $h2mac -A 192.0.2.1 -B 192.0.2.2 \
-+		-t icmp "ping,id=42,seq=10" -q
-+
-+	tc_check_packets "dev $h1 egress" 100 1
-+	check_err $? "didn't mirror first packet"
-+
-+	tc_check_packets "dev $swp1 ingress" 111 1
-+	check_fail $? "didn't redirect first packet"
-+	tc_check_packets "dev $swp1 ingress" 112 1
-+	check_err $? "didn't receive reply to first packet"
-+
-+	ping 192.0.2.2 -I$h1 -c1 -w1 -q 1>/dev/null 2>&1
-+
-+	tc_check_packets "dev $h1 egress" 100 2
-+	check_err $? "didn't mirror second packet"
-+	tc_check_packets "dev $swp1 ingress" 111 1
-+	check_fail $? "didn't redirect second packet"
-+	tc_check_packets "dev $swp1 ingress" 112 2
-+	check_err $? "didn't receive reply to second packet"
-+
-+	tc filter del dev $h1 egress protocol ip pref 100 handle 100 flower
-+	tc filter del dev $swp1 ingress protocol ip pref 11 handle 111 flower
-+	tc filter del dev $swp1 ingress protocol ip pref 12 handle 112 flower
-+
-+	log_test "mirred_egress_to_ingress ($tcflags)"
-+}
-+
- setup_prepare()
- {
- 	h1=${NETIFS[p1]}
--- 
-2.27.0
-
+On Fri, Nov 12, 2021 at 11:33 AM Xin Long <lucien.xin@gmail.com> wrote:
+>
+> This issue was found when using OVS HWOL on OVN-k8s. These packets
+> dropped on rx path were seen with output dst, which should've been
+> dropped from the skbs when redirecting them.
+>
+> The 1st patch is to the fix and the 2nd is a selftest to reproduce
+> and verify it.
+>
+> Davide Caratti (1):
+>   selftests: add a test case for mirred egress to ingress
+>
+> Xin Long (1):
+>   net: sched: act_mirred: drop dst for the direction from egress to
+>     ingress
+>
+>  net/sched/act_mirred.c                        | 11 +++--
+>  tools/testing/selftests/net/forwarding/config |  1 +
+>  .../selftests/net/forwarding/tc_actions.sh    | 47 ++++++++++++++++++-
+>  3 files changed, 55 insertions(+), 4 deletions(-)
+>
+> --
+> 2.27.0
+>
