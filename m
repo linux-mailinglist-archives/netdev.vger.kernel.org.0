@@ -2,95 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCB3844EBC0
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 18:02:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3ACA44EBC2
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 18:04:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235510AbhKLRFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 12:05:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48780 "EHLO
+        id S235371AbhKLRHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 12:07:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235434AbhKLRFe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 12:05:34 -0500
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F21C061767
-        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 09:02:43 -0800 (PST)
-Received: by mail-wm1-x330.google.com with SMTP id c71-20020a1c9a4a000000b0032cdcc8cbafso7249513wme.3
-        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 09:02:43 -0800 (PST)
+        with ESMTP id S235142AbhKLRHn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 12:07:43 -0500
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3DC7C061767
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 09:04:52 -0800 (PST)
+Received: by mail-qt1-x82f.google.com with SMTP id q14so9036002qtx.10
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 09:04:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=VZGehk3+HjfLCRM6NGvoDoHhkCICOZhcoeDuxektNp4=;
-        b=i4r1TRjg5InRAmEoxfv3subbanekSTukrotGUQs6tEPZnyWwKL3C9wb+crae+VQFZ/
-         qZGR7XhjAeL4yhn9wM5iV4RxEaJNVgeqUYKbWYC54ecmwf3kxLtH33pXIbEK/ETTO0od
-         hr6I7svFxj2YBnHIgp4UDY8gI8oq0p1fI01q8XQGcgG3yj13qahLD8HecKfhSkbZSc6v
-         TUvt2oDXen92VsDd1TO4a2lM9tzODodBxYl56Yowa9Y+8RQc65Z3fdfJ1Y/6htAaVGmA
-         WqbHvDrENhi4upX0BQxdB83MxCtmu7FWfmkJcPmay1Nn7WSep4jl4+40keBvzi87iiE1
-         Y1qQ==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CKH3uQ8Puz8euGKdPmXcZTSsxpYwOvRFhDCsc/Y1RfA=;
+        b=PrDlCiGgVfz4z6UlLKoUH4RmKqGZ9uYINIF8DpsspNt3gcLsi9EpFsEwjH7c3Fkeow
+         1OLspzFzJ6CC7xByUsJX7DnXfEws5YnRETqNc+0uMJ0FkUcw2CifAGLGhM+JgBFEoJ3f
+         M41drxtOugzRNgAHBKU9Hl5z+Emx4iUCYPNBJZ4OSAbEsQxxsdj1C202RaPA5ohPNX9C
+         rja7JMd7voADCAaJKcTI75T3YWudj+p9uUxQ5lHhLXo2f85Xjg/UUP3GgXeEVk0+vPjD
+         zWLm2sYYy2Fw4rxLWz2s2sEr0FWW4dlMvI4rKDsSpIDIDpBjfISukr4SLtHZO4fDWoey
+         6biw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=VZGehk3+HjfLCRM6NGvoDoHhkCICOZhcoeDuxektNp4=;
-        b=DQzlgYcvHolkqi4CB5bSbgYKEPBdNr5NnQdko6wBrKbMsqHlJ4yzeBdKOe2iBJo8Ky
-         +a/8SJ1aIwLK3u7BCArYMD15hyKXESLScXdd/eK2sypbF02cox2t6oP+yEm34POuPHFd
-         D8m6cNs4g6/WsuR+lzSir1y25uazxH3j7TkJpioP228itJeaehzEiPaGJLVL3983Ujxx
-         q7FyPtdSw65dIT/H3xPRjPKKp6OMtrm5NLRw8B2Lby1ja9ifCIRw1bwnO3Ibnkn+ih5s
-         /ijivky+8gu4jNZjnLMDWqoDAwfcAYFaVvKyeBcDJWpgmca6duKvbsrulqkXc97QIuCE
-         mKEg==
-X-Gm-Message-State: AOAM532dem5I7JFxyYRhfKTMxi7hQd4ceVW9sQDkRRqN6+VY+r0AnYCO
-        zoBc2zns9VpEgqMj7HaKv33QsA==
-X-Google-Smtp-Source: ABdhPJw/3xnMi8Ie76412HjjQrPyQn2wdn5YkAl58VsGkXALq8TmEKdsCVBKKYWdXfsa4pYbudbycA==
-X-Received: by 2002:a1c:f31a:: with SMTP id q26mr18195693wmq.148.1636736561937;
-        Fri, 12 Nov 2021 09:02:41 -0800 (PST)
-Received: from [192.168.1.8] ([149.86.71.160])
-        by smtp.gmail.com with ESMTPSA id j8sm5973254wrh.16.2021.11.12.09.02.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Nov 2021 09:02:41 -0800 (PST)
-Message-ID: <2a34cc7d-1d84-99af-715e-5865dfdcc72b@isovalent.com>
-Date:   Fri, 12 Nov 2021 17:02:40 +0000
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CKH3uQ8Puz8euGKdPmXcZTSsxpYwOvRFhDCsc/Y1RfA=;
+        b=xyPYCVcA71Fu6xIIeTUWolBXOzpJEPcfzQzZdd78nVFoIXgJvhUdKcS854iyaWMCtP
+         6wK2jnLhz87/aKqQkkA39f2vPl20aQP2+wyqysZYqZ2FACNP1kseNO4GZD05f7+0yAfM
+         YFdeSVzFokve0ewOgiO0xV4YOjzpjSMbWPq1jqliLU2+uyzaQL7ZxKamHcfLCNmk05O6
+         XF/wDXq4bGGRv3MQf+Y7rj649oUYNQeC/2OUhEn6MXiUzlDinlFhadpyGLfAWtg7urRT
+         pIB4Zw7ojx2hzI/0XwGJCg6vO93bd9Ed1PVFSl9+P0nsfy2y8GhttMuYw+wY1+fjieOO
+         J5Uw==
+X-Gm-Message-State: AOAM532iFqAsGB9W+bGNlDns51wi289yTMvNwUJt3i8OgpUae7JQFB9s
+        YYFQj+x1lmWlVpJYCDvrStciVT2BjvyYnqzqgOZdVgpg1m5Rjw==
+X-Google-Smtp-Source: ABdhPJzNq/xWEEkTrzDu6JFaon5G7sxSJDCPZCfvLv4WPSFmWgEn8jZCjTz0M7v0CDWtXYh8m4xiGKxCuD1SmP1fBsg=
+X-Received: by 2002:a05:622a:4cd:: with SMTP id q13mr17781264qtx.180.1636736691682;
+ Fri, 12 Nov 2021 09:04:51 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
+References: <20211112164432.3138956-1-sdf@google.com> <2a34cc7d-1d84-99af-715e-5865dfdcc72b@isovalent.com>
+In-Reply-To: <2a34cc7d-1d84-99af-715e-5865dfdcc72b@isovalent.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Fri, 12 Nov 2021 09:04:40 -0800
+Message-ID: <CAKH8qBupNbmxSOAC+SuyDfjVD7JotmtnXMsO4fE4yNKUOD=jUw@mail.gmail.com>
 Subject: Re: [PATCH bpf-next] bpftool: add current libbpf_strict mode to
  version output
-Content-Language: en-GB
-To:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
-References: <20211112164432.3138956-1-sdf@google.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-In-Reply-To: <20211112164432.3138956-1-sdf@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2021-11-12 08:44 UTC-0800 ~ Stanislav Fomichev <sdf@google.com>
-> + bpftool --legacy version
-> bpftool v5.15.0
-> features: libbfd, skeletons
-> + bpftool version
-> bpftool v5.15.0
-> features: libbfd, libbpf_strict, skeletons
-> + bpftool --json --legacy version
-> {"version":"5.15.0","features":{"libbfd":true,"libbpf_strict":false,"skeletons":true}}
-> + bpftool --json version
-> {"version":"5.15.0","features":{"libbfd":true,"libbpf_strict":true,"skeletons":true}}
+On Fri, Nov 12, 2021 at 9:02 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>
+> 2021-11-12 08:44 UTC-0800 ~ Stanislav Fomichev <sdf@google.com>
+> > + bpftool --legacy version
+> > bpftool v5.15.0
+> > features: libbfd, skeletons
+> > + bpftool version
+> > bpftool v5.15.0
+> > features: libbfd, libbpf_strict, skeletons
+> > + bpftool --json --legacy version
+> > {"version":"5.15.0","features":{"libbfd":true,"libbpf_strict":false,"skeletons":true}}
+> > + bpftool --json version
+> > {"version":"5.15.0","features":{"libbfd":true,"libbpf_strict":true,"skeletons":true}}
+>
+> Nice, thanks!
+> The following doesn't work as expected, though:
+>
+>     $ ./bpftool --version --legacy
+>     ./bpftool v5.15.0
+>     features: libbfd, libbpf_strict, skeletons
+>
+> This is because we run do_version() immediately when parsing --version,
+> and we don't parse --legacy in that case. Could we postpone do_version()
+> until after we have parsed all options, so that the output from the
+> above is consistent with e.g. "bpftool --legacy --version"?
 
-Nice, thanks!
-The following doesn't work as expected, though:
-
-    $ ./bpftool --version --legacy
-    ./bpftool v5.15.0
-    features: libbfd, libbpf_strict, skeletons
-
-This is because we run do_version() immediately when parsing --version,
-and we don't parse --legacy in that case. Could we postpone do_version()
-until after we have parsed all options, so that the output from the
-above is consistent with e.g. "bpftool --legacy --version"?
-
-Thanks,
-Quentin
+Oh, good find! Let me move some code around to fix that.
