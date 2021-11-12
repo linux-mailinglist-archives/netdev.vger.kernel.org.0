@@ -2,92 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAD5844E027
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 03:11:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74C8544E047
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 03:27:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234214AbhKLCOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 21:14:45 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:45960 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S229908AbhKLCOo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 21:14:44 -0500
-X-UUID: 21e06842463d43bc821990a8da6df3f8-20211112
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=ufO+ZBf8QD7tWoExaa5T5GTQHOADopwfBVamDw5rnT8=;
-        b=WGNR5C6X6mNe9hpA9vwRUcTU0RpZ+MmlZaY7jez4e3CnJzapr5V2kQlzKqbAQQu+rUFQeu3QuTgN1Hp3VFE/gvn3ZDWUSeTGURKnQJ3Z/LO5fo3t1EkV66nFGaNjz5G2QanusQTSifCyApWAqNlOPOtzRpdaUJygJaIEco4qF3Y=;
-X-UUID: 21e06842463d43bc821990a8da6df3f8-20211112
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1869951413; Fri, 12 Nov 2021 10:11:52 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 12 Nov 2021 10:11:51 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 12 Nov 2021 10:11:50 +0800
-Message-ID: <5500319817253c3f0c01064c363089d6b0c95d48.camel@mediatek.com>
-Subject: Re: [PATCH v2 4/5] dt-bindings: net: dwmac: Convert mediatek-dwmac
- to DT schema
-From:   Biao Huang <biao.huang@mediatek.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        <srv_heupstream@mediatek.com>, <davem@davemloft.net>,
-        <linux-arm-kernel@lists.infradead.org>, <macpaul.lin@mediatek.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-Date:   Fri, 12 Nov 2021 10:11:50 +0800
-In-Reply-To: <1636642646.918741.3774088.nullmailer@robh.at.kernel.org>
-References: <20211111071214.21027-1-biao.huang@mediatek.com>
-         <20211111071214.21027-5-biao.huang@mediatek.com>
-         <1636642646.918741.3774088.nullmailer@robh.at.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        id S231965AbhKLCal (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 21:30:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49014 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233638AbhKLCal (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 21:30:41 -0500
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C16C061766
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 18:27:51 -0800 (PST)
+Received: by mail-oi1-x22d.google.com with SMTP id q124so15218183oig.3
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 18:27:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=SjyauEv+E4VZxaW4hhra9vLv0tm876Xi5p2mVPiJ/yE=;
+        b=GNfZcYNd4x2wsCJO52SKbIt73ABkOZzWFm+JRvLPPnLbJcAqKcvy6c809wlkg1HsDB
+         CXzWlJjlzcT+r+NBzSbkMUEtIE4TAdeqdZJTldw6/ARbnmjoGbT+xoCGqGkoKCCP6Ik/
+         05dkpUBo9osG8LdTmKEVMnT1AN2mvK+LT5Vh29/HhYeUG9jOLtxeAp3qO1MATTnOwH3e
+         idcT89jnSHYlETglkhexHh+BAJgzqaJyGcNpFLaG/0oBYbCBBte9+TMT4qoPtpGTpYwm
+         jx/Ktwr2RGJmUfsOpHjq6sG0W824Yj4u5tYUbZOP4G9GyDug1NEk4XM2k1gYZpfB2Eah
+         b/hQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SjyauEv+E4VZxaW4hhra9vLv0tm876Xi5p2mVPiJ/yE=;
+        b=cjGgiuCHHgJUyyP/DybXXzq8irLp23lS04qs7dgrYQYNjvEhW5a+MwLy4RyKL8Z11Q
+         D46YhfUeojaeoHMu4UDxD38RMiMWMulhU/8eaXZZYYgk9Lae/+ehWID6kIFdg0wItMTc
+         fNVTJi/A6cBHbC/yMvTNtZRC/SLpfREMXTPdvXEiVaPGV9P1m98RTgdUtggBBOErYsrR
+         Y+nVGEgzdmXzPXBn1bORN5SVKGmqGc7uODRul6EmOMd4q/79kBOQWTikah5TYo2QaCtC
+         UEyrW+njWDUWVl0epn4Xei+EcT0ojT4KeivwH6e2dC+HbJmnazbsVwL+vbupX2+GoUNH
+         ZowA==
+X-Gm-Message-State: AOAM533Hey9rpdMHfvhm5uoPOGZGaujnmFW+U4tiUJT1YDnu6XtZE58u
+        lJyc0AcTow90ZOU0bhYM6+Y=
+X-Google-Smtp-Source: ABdhPJw0Y69yAE9eTqfKpN+G90Bhqnb+/XA5J7RjHpdY5g3wADEmQqCKEEBQTumTPN4xtWgWMxvzkw==
+X-Received: by 2002:aca:61c6:: with SMTP id v189mr9674228oib.103.1636684070590;
+        Thu, 11 Nov 2021 18:27:50 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id 3sm978769otl.60.2021.11.11.18.27.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Nov 2021 18:27:50 -0800 (PST)
+Message-ID: <d7c2d8fa-052e-b941-2ef1-830c1ba655c1@gmail.com>
+Date:   Thu, 11 Nov 2021 19:27:48 -0700
 MIME-Version: 1.0
-X-MTK:  N
-Content-Transfer-Encoding: base64
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.3.0
+Subject: Re: [RFC PATCH net-next] rtnetlink: add RTNH_F_REJECT_MASK
+Content-Language: en-US
+To:     Roopa Prabhu <roopa@nvidia.com>,
+        Alexander Mikhalitsyn <alexander@mihalicyn.com>
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrei Vagin <avagin@gmail.com>,
+        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
+References: <20211111160240.739294-1-alexander.mikhalitsyn@virtuozzo.com>
+ <20211111160240.739294-2-alexander.mikhalitsyn@virtuozzo.com>
+ <1f4b9028-8dec-0b14-105a-3425898798c9@gmail.com>
+ <CAJqdLrqvNYm1YTA-dgGsrjsPG6efA8nsUCQLKmGXqoDM+dfpRQ@mail.gmail.com>
+ <b90e874b-30a7-81bb-a94f-b6cebda87e99@gmail.com>
+ <ff405eae-21d9-35f4-1397-b6f9a29a57ff@nvidia.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <ff405eae-21d9-35f4-1397-b6f9a29a57ff@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RGVhciBSb2IsDQoJVGhhbmtzIGZvciB5b3VyIGNvbW1lbnRzfg0KDQpPbiBUaHUsIDIwMjEtMTEt
-MTEgYXQgMDg6NTcgLTA2MDAsIFJvYiBIZXJyaW5nIHdyb3RlOg0KPiBPbiBUaHUsIDExIE5vdiAy
-MDIxIDE1OjEyOjEzICswODAwLCBCaWFvIEh1YW5nIHdyb3RlOg0KPiA+IENvbnZlcnQgbWVkaWF0
-ZWstZHdtYWMgdG8gRFQgc2NoZW1hLCBhbmQgZGVsZXRlIG9sZCBtZWRpYXRlay0NCj4gPiBkd21h
-Yy50eHQuDQo+ID4gDQo+ID4gU2lnbmVkLW9mZi1ieTogQmlhbyBIdWFuZyA8Ymlhby5odWFuZ0Bt
-ZWRpYXRlay5jb20+DQo+ID4gLS0tDQo+ID4gIC4uLi9iaW5kaW5ncy9uZXQvbWVkaWF0ZWstZHdt
-YWMudHh0ICAgICAgICAgICB8ICA5MSAtLS0tLS0tLQ0KPiA+ICAuLi4vYmluZGluZ3MvbmV0L21l
-ZGlhdGVrLWR3bWFjLnlhbWwgICAgICAgICAgfCAyMTENCj4gPiArKysrKysrKysrKysrKysrKysN
-Cj4gPiAgMiBmaWxlcyBjaGFuZ2VkLCAyMTEgaW5zZXJ0aW9ucygrKSwgOTEgZGVsZXRpb25zKC0p
-DQo+ID4gIGRlbGV0ZSBtb2RlIDEwMDY0NCBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGlu
-Z3MvbmV0L21lZGlhdGVrLQ0KPiA+IGR3bWFjLnR4dA0KPiA+ICBjcmVhdGUgbW9kZSAxMDA2NDQg
-RG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL25ldC9tZWRpYXRlay0NCj4gPiBkd21h
-Yy55YW1sDQo+ID4gDQo+IA0KPiBSdW5uaW5nICdtYWtlIGR0YnNfY2hlY2snIHdpdGggdGhlIHNj
-aGVtYSBpbiB0aGlzIHBhdGNoIGdpdmVzIHRoZQ0KPiBmb2xsb3dpbmcgd2FybmluZ3MuIENvbnNp
-ZGVyIGlmIHRoZXkgYXJlIGV4cGVjdGVkIG9yIHRoZSBzY2hlbWEgaXMNCj4gaW5jb3JyZWN0LiBU
-aGVzZSBtYXkgbm90IGJlIG5ldyB3YXJuaW5ncy4NCj4gDQo+IE5vdGUgdGhhdCBpdCBpcyBub3Qg
-eWV0IGEgcmVxdWlyZW1lbnQgdG8gaGF2ZSAwIHdhcm5pbmdzIGZvcg0KPiBkdGJzX2NoZWNrLg0K
-PiBUaGlzIHdpbGwgY2hhbmdlIGluIHRoZSBmdXR1cmUuDQo+IA0KPiBGdWxsIGxvZyBpcyBhdmFp
-bGFibGUgaGVyZTogDQo+IGh0dHBzOi8vcGF0Y2h3b3JrLm96bGFicy5vcmcvcGF0Y2gvMTU1Mzgw
-Mw0KPiANCj4gDQo+IGV0aGVybmV0QDExMDFjMDAwOiBjbG9jay1uYW1lczogWydheGknLCAnYXBi
-JywgJ21hY19tYWluJywgJ3B0cF9yZWYnXQ0KPiBpcyB0b28gc2hvcnQNCj4gCWFyY2gvYXJtNjQv
-Ym9vdC9kdHMvbWVkaWF0ZWsvbXQyNzEyLWV2Yi5kdC55YW1sDQo+IA0KPiBldGhlcm5ldEAxMTAx
-YzAwMDogY2xvY2tzOiBbWzI3LCAzNF0sIFsyNywgMzddLCBbNiwgMTU0XSwgWzYsIDE1NV1dDQo+
-IGlzIHRvbyBzaG9ydA0KPiAJYXJjaC9hcm02NC9ib290L2R0cy9tZWRpYXRlay9tdDI3MTItZXZi
-LmR0LnlhbWwNCj4gDQo+IGV0aGVybmV0QDExMDFjMDAwOiBjb21wYXRpYmxlOiBbJ21lZGlhdGVr
-LG10MjcxMi1nbWFjJ10gZG9lcyBub3QNCj4gY29udGFpbiBpdGVtcyBtYXRjaGluZyB0aGUgZ2l2
-ZW4gc2NoZW1hDQo+IAlhcmNoL2FybTY0L2Jvb3QvZHRzL21lZGlhdGVrL210MjcxMi1ldmIuZHQu
-eWFtbA0KPiANCj4gZXRoZXJuZXRAMTEwMWMwMDA6IGNvbXBhdGlibGU6ICdvbmVPZicgY29uZGl0
-aW9uYWwgZmFpbGVkLCBvbmUgbXVzdA0KPiBiZSBmaXhlZDoNCj4gCWFyY2gvYXJtNjQvYm9vdC9k
-dHMvbWVkaWF0ZWsvbXQyNzEyLWV2Yi5kdC55YW1sDQo+IA0KWWVzLCBJIHNob3VsZCBhZGQgYSBk
-dHMgcmVsYXRlZCBwYXRjaCB0byBmaXggdGhpcyBpc3N1ZSBpbiBuZXh0IHNlbmQuDQo=
+On 11/11/21 6:02 PM, Roopa Prabhu wrote:
+> 
+> On 11/11/21 2:19 PM, David Ahern wrote:
+>> [ cc roopa]
+>>
+>> On 11/11/21 12:23 PM, Alexander Mikhalitsyn wrote:
+>>> On Thu, Nov 11, 2021 at 10:13 PM David Ahern <dsahern@gmail.com> wrote:
+>>>> On 11/11/21 9:02 AM, Alexander Mikhalitsyn wrote:
+>>>>> diff --git a/include/uapi/linux/rtnetlink.h
+>>>>> b/include/uapi/linux/rtnetlink.h
+>>>>> index 5888492a5257..c15e591e5d25 100644
+>>>>> --- a/include/uapi/linux/rtnetlink.h
+>>>>> +++ b/include/uapi/linux/rtnetlink.h
+>>>>> @@ -417,6 +417,9 @@ struct rtnexthop {
+>>>>>   #define RTNH_COMPARE_MASK    (RTNH_F_DEAD | RTNH_F_LINKDOWN | \
+>>>>>                                 RTNH_F_OFFLOAD | RTNH_F_TRAP)
+>>>>>
+>>>>> +/* these flags can't be set by the userspace */
+>>>>> +#define RTNH_F_REJECT_MASK   (RTNH_F_DEAD | RTNH_F_LINKDOWN)
+>>>>> +
+>>>>>   /* Macros to handle hexthops */
+>>>> Userspace can not set any of the flags in RTNH_COMPARE_MASK.
+>>> Hi David,
+>>>
+>>> thanks! So, I have to prepare a patch which fixes current checks for
+>>> rtnh_flags
+>>> against RTNH_COMPARE_MASK. So, there is no need to introduce a separate
+>>> RTNH_F_REJECT_MASK.
+>>> Am I right?
+>>>
+>> Added Roopa to double check if Cumulus relies on this for their switchd.
+>>
+>> If that answer is no, then there is no need for a new mask.
+>>
+> 
+> yes, these flags are already exposed to userspace and we do use it.
+> 
+> We have also considered optimizations where routing daemons set OFFLOAD
+> and drivers clear it when offload fails.
+> 
+> I wont be surprised if other open network os distributions are also
+> using it.
+> 
+> 
+> Thanks for the headsup David.
+> 
 
+Thanks, Roopa. So then the separate mask is needed.
