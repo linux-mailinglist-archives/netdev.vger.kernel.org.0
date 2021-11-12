@@ -2,89 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4B8F44E0DD
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 04:39:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D263644E14A
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 06:06:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234543AbhKLDmf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 22:42:35 -0500
-Received: from asix.com.tw ([113.196.140.82]:59498 "EHLO asix.com.tw"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229698AbhKLDme (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Nov 2021 22:42:34 -0500
-Received: from localhost.localdomain (unknown [10.1.2.57])
-        by asix.com.tw (Postfix) with ESMTPA id 8204A101BCB66;
-        Fri, 12 Nov 2021 11:33:31 +0800 (CST)
-From:   Jacky Chou <jackychou@asix.com.tw>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, louis@asix.com.tw,
-        jackychou@asix.com.tw
-Subject: [PATCH] net: usb: ax88179_178a: add TSO feature
-Date:   Fri, 12 Nov 2021 11:33:22 +0800
-Message-Id: <20211112033322.741974-1-jackychou@asix.com.tw>
-X-Mailer: git-send-email 2.25.1
+        id S230194AbhKLFJb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 00:09:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55470 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229750AbhKLFJa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 00:09:30 -0500
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4DE5C061766;
+        Thu, 11 Nov 2021 21:06:39 -0800 (PST)
+Received: by mail-pf1-x42b.google.com with SMTP id n85so7491055pfd.10;
+        Thu, 11 Nov 2021 21:06:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/n+GN0QL32ZPG4TXED297nA7LqFZql5MFrW4dGLFaWU=;
+        b=kyImFrLY7nztfPU+Fic0Iz1UiJOcf+NrBP40K0Drnv2IUQqHM7HVuWtZm0sbf6Wvb3
+         l8Q1Hg4lI/tFLw0MTOnHnA6fVb7jwQimraXKNUX+K/0P2UDOjI8tT/CbPFvo9fIjGtJd
+         YSf8Efkws2ons0TdbXw9/Rob4JctFiOkZ3dDdowcurGjbkKLcDaN7oc4E9BEjc/uDeaY
+         Fex/1TxTxiRpFaeK/txB+epvlkTvCnH2tTIAxWCaYLjJGdS7foGDk+YJ50ofEvAZ+B2b
+         e+mVR5D0GuyzXYc09rHd6SoX3/SQ1NC8O5i9Sf/2zytRsQ/ycww8hV6ecYRuIvDWREoP
+         Zc1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/n+GN0QL32ZPG4TXED297nA7LqFZql5MFrW4dGLFaWU=;
+        b=WEw2K72grd7qnk/4o6boYpVdXvy6xig7RVMj9J1F+yHI0PkfJBRriQ2tgCHajII5W3
+         uOprhFtmCC9dA1FhIE3/j7EhbsjyDj9egZkHCcRnTB8gDVdbGYkscBIU+d3IgwsrXLGx
+         JP5rIQhsbXZq2RXCSNRztEJnUrbgalJj1GHJLzKJZAAGqic4t6kFMYeDr1lv5V439dhy
+         joLbcUQXR354a5hOw9wgwVfVylUKiQU/C7MzNT2xpcvB2S36wBPhWYc7qf8YSapJqhdu
+         /UhlKf/o2SUEj3x+rJcIVQdW0J/M3CkERV2psCSV5eS4syoIdk1NLiT0WMa9ayCO0WbD
+         L62w==
+X-Gm-Message-State: AOAM532lc/4YYMDnY2reTOKTRur4tSnZNn4ZNKPJ3k9RKsj6JMj4vXVd
+        X2LhqvbxVvx/TqN7ndAWuPaYNEzBQM2imvuEp4M=
+X-Google-Smtp-Source: ABdhPJwjASYotgwsahISTtFJ+UEq2OrcDTFdcqWJsYYHCQGtoCuNCus82SrbXfrtqy8PARFf94k0Xl0yF0QylVOtaFE=
+X-Received: by 2002:aa7:9a4e:0:b0:4a2:71f9:21e0 with SMTP id
+ x14-20020aa79a4e000000b004a271f921e0mr1918802pfj.77.1636693598591; Thu, 11
+ Nov 2021 21:06:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211112032704.4658-1-hanyihao@vivo.com>
+In-Reply-To: <20211112032704.4658-1-hanyihao@vivo.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 11 Nov 2021 21:06:27 -0800
+Message-ID: <CAADnVQJ3XvUQQe67OYe=9Dq_LKbUO4E4WdNO3LWFnKJvzM9qow@mail.gmail.com>
+Subject: Re: [PATCH] selftests/bpf: use swap() to make code cleaner
+To:     Yihao Han <hanyihao@vivo.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, kernel@vivo.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On low-effciency embedded platforms, transmission performance is poor
-due to on Bulk-out with single packet.
-Adding TSO feature improves the transmission performance and reduces
-the number of interrupt caused by Bulk-out complete.
+On Thu, Nov 11, 2021 at 7:27 PM Yihao Han <hanyihao@vivo.com> wrote:
+>
+> Use the macro 'swap()' defined in 'include/linux/minmax.h' to avoid
+> opencoding it.
+>
+> Signed-off-by: Yihao Han <hanyihao@vivo.com>
 
-Reference to module, net: usb: aqc111.
-
-Signed-off-by: Jacky Chou <jackychou@asix.com.tw>
----
- drivers/net/usb/ax88179_178a.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
-index c13167183..866954155 100644
---- a/drivers/net/usb/ax88179_178a.c
-+++ b/drivers/net/usb/ax88179_178a.c
-@@ -1368,6 +1368,9 @@ static int ax88179_bind(struct usbnet *dev, struct usb_interface *intf)
- 	dev->net->needed_headroom = 8;
- 	dev->net->max_mtu = 4088;
- 
-+	if (usb_device_no_sg_constraint(dev->udev))
-+		dev->can_dma_sg = 1;
-+
- 	/* Initialize MII structure */
- 	dev->mii.dev = dev->net;
- 	dev->mii.mdio_read = ax88179_mdio_read;
-@@ -1377,11 +1380,14 @@ static int ax88179_bind(struct usbnet *dev, struct usb_interface *intf)
- 	dev->mii.phy_id = 0x03;
- 	dev->mii.supports_gmii = 1;
- 
--	dev->net->features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
--			      NETIF_F_RXCSUM;
-+	dev->net->features |= NETIF_F_SG | NETIF_F_IP_CSUM |
-+			      NETIF_F_IPV6_CSUM | NETIF_F_RXCSUM | NETIF_F_TSO;
- 
--	dev->net->hw_features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
--				 NETIF_F_RXCSUM;
-+	dev->net->hw_features |= NETIF_F_SG | NETIF_F_IP_CSUM |
-+				 NETIF_F_IPV6_CSUM | NETIF_F_RXCSUM |
-+				 NETIF_F_TSO;
-+
-+	netif_set_gso_max_size(dev->net, 16384);
- 
- 	/* Enable checksum offload */
- 	*tmp = AX_RXCOE_IP | AX_RXCOE_TCP | AX_RXCOE_UDP |
-@@ -1537,6 +1543,10 @@ ax88179_tx_fixup(struct usbnet *dev, struct sk_buff *skb, gfp_t flags)
- 
- 	headroom = skb_headroom(skb) - 8;
- 
-+	if (!dev->can_dma_sg && (dev->net->features & NETIF_F_SG) &&
-+	    skb_linearize(skb))
-+		return NULL;
-+
- 	if ((skb_header_cloned(skb) || headroom < 0) &&
- 	    pskb_expand_head(skb, headroom < 0 ? 8 : 0, 0, GFP_ATOMIC)) {
- 		dev_kfree_skb_any(skb);
--- 
-2.25.1
-
+The point of the selftest is to open code it.
