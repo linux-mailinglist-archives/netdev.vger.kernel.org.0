@@ -2,121 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A810544E810
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 15:02:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E26E144E884
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 15:20:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235090AbhKLOFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 09:05:08 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:51418 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235071AbhKLOFH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 09:05:07 -0500
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1ACDfZAZ015490;
-        Fri, 12 Nov 2021 14:02:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=nDodJj57nnM0nM3L9GHbulclSK9+sUTDdF2zO6gw5wc=;
- b=CuEAwSEKWhv60po84XaJQ3FktK1FTgtULtrjIDNX4lUz8YbzSqeJvdBu0iFY/iR19tno
- GkVqSEL3at9wf1rARF+YyAX//xMjkHvO+MuZPh8D1fA1k/HQtMQ7OgkbN/sKGYzB8a1T
- CIivSXoiFwhzT14/HAv1XmejQTNJSgV0C6IQ8xKtl7nXmdJ7F2qnD677NFM2moHyvtd1
- K9uPnndLrcPwPGCt26HFZk58o3diQ0YGsWvYr3ywwX2/xvML89f2cF0bDO1gE/cYgM5C
- qBja93XlDds+nQx+qysFOzARZkD7Bma4UbvL/A1x5LiFlBQKhuHffBQAJRV2TPfw8Nrb eg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3c9rhbhfqk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 12 Nov 2021 14:02:15 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1ACE1LH5020171;
-        Fri, 12 Nov 2021 14:02:15 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3c9rhbhfpk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 12 Nov 2021 14:02:15 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1ACDcrjP011123;
-        Fri, 12 Nov 2021 14:02:13 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3c5gykh11x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 12 Nov 2021 14:02:12 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1ACDtOEt61145432
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 12 Nov 2021 13:55:24 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6FE3511C04C;
-        Fri, 12 Nov 2021 14:02:10 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 06CF811C052;
-        Fri, 12 Nov 2021 14:02:10 +0000 (GMT)
-Received: from osiris (unknown [9.145.153.146])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Fri, 12 Nov 2021 14:02:09 +0000 (GMT)
-Date:   Fri, 12 Nov 2021 15:02:08 +0100
-From:   Heiko Carstens <hca@linux.ibm.com>
-To:     Wen Gu <guwen@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, tonylu@linux.alibaba.com,
-        dust.li@linux.alibaba.com, xuanzhuo@linux.alibaba.com
-Subject: Re: [PATCH net] net/smc: Transfer remaining wait queue entries
- during fallback
-Message-ID: <YY5z4H5/CVpRtrwh@osiris>
-References: <1636687839-38962-1-git-send-email-guwen@linux.alibaba.com>
+        id S234172AbhKLOXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 09:23:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39158 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231131AbhKLOXF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 09:23:05 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FBEBC061766;
+        Fri, 12 Nov 2021 06:20:14 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id np3so6883763pjb.4;
+        Fri, 12 Nov 2021 06:20:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tKyWJgE04HxRAjq5nb7ERjx0vGYGSgiBeT5zkfHPsnw=;
+        b=c6tbwnM8EEdXQbXjZ6TBKu/GDieGFFzpHqyAv/x9gtsV7u9AbwnmumGLMO0/EiCoGN
+         Yf5qCS4fIkHQGwoyoL4ywdKyumfkWOKyjqw9Ct2rv2+6bZv53d/FbafgVZFrMTIvTt5D
+         eA/10d3nD6C+OXYQFt04R4CsZKRFYGumYpPBcd0kA0KkCHJQqztNuFVtkubP0ozjtChk
+         BzZ1QUnBwMBOcg41FLNlXK2oM+wpBHHGJxrNrVy//gB9kI7KQGphRKUzKziLBwjktIbz
+         3yfQyasiBzLSaitwbu4fR+QK+p8qI3zUzDDqkXL4GRpNe7PjG6B0XMXkYVuz+q/qHVq5
+         gvnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tKyWJgE04HxRAjq5nb7ERjx0vGYGSgiBeT5zkfHPsnw=;
+        b=hJlKLhsOJaQA+oe7go2nMLbXzmWOewvLBKKdUD61cP/DdaHk4al04IgAZe6F43JW0z
+         +GI0DbtpHIdKysTmgjRGqBKn89Fv3/du1pSq9aRm/G5HCbniIU9VpptfauH9mMeljsUY
+         mofvPb3fnfDaQeknaQiPxzL5s9loTKMvjPT7Om74/6enpF7ob/9R/6mnIYcDZzcrbMdV
+         QayN4LWJkYefVTCnI9riybxkFNsY2fsWnccFP1nkcr0rQxFzPJPhr+6DIvbXKWWdYXNf
+         1oDOGqHOdJdNBEgzkVCje6HgtqTaYRvUFMEWqjh3tjEfJ3jys8neEW0MbJKwgvH6QaPm
+         0UPA==
+X-Gm-Message-State: AOAM5304mVtMxlteT76+yTjnISYBXocg0lFlu6RXjmZ8nMrSHXKvXIPS
+        YlDTV3HJXU+bjKd5a7Nclaw=
+X-Google-Smtp-Source: ABdhPJwg92vrA9JI16k61zQqU2yfIiV/eDCJUm5tXXj6752EumHyQSBUbrIuJGcQ45rvBBQI07OUlQ==
+X-Received: by 2002:a17:902:8a93:b0:142:30fe:dd20 with SMTP id p19-20020a1709028a9300b0014230fedd20mr8309699plo.29.1636726813724;
+        Fri, 12 Nov 2021 06:20:13 -0800 (PST)
+Received: from fanta-arch.localdomain ([148.163.172.142])
+        by smtp.gmail.com with ESMTPSA id i2sm6409532pfe.70.2021.11.12.06.20.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Nov 2021 06:20:13 -0800 (PST)
+From:   Letu Ren <fantasquex@gmail.com>
+To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Letu Ren <fantasquex@gmail.com>,
+        Zheyu Ma <zheyuma97@gmail.com>
+Subject: [PATCH] net: igbvf: fix double free in `igbvf_probe`
+Date:   Fri, 12 Nov 2021 22:20:02 +0800
+Message-Id: <20211112142002.23156-1-fantasquex@gmail.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1636687839-38962-1-git-send-email-guwen@linux.alibaba.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: hLZJsSYm8M3wCHpbbHJMnvZbmjW-nvnr
-X-Proofpoint-GUID: aBw7o5ShLNFfLg7BX22CABdROqgtpRtZ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-11-12_05,2021-11-12_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 mlxscore=0
- phishscore=0 priorityscore=1501 malwarescore=0 lowpriorityscore=0
- suspectscore=0 spamscore=0 bulkscore=0 clxscore=1011 impostorscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2111120080
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 12, 2021 at 11:30:39AM +0800, Wen Gu wrote:
-...
-> +	wait_queue_head_t *smc_wait = sk_sleep(&smc->sk);
-> +	wait_queue_head_t *clc_wait = sk_sleep(smc->clcsock->sk);
-> +	unsigned long flags;
-> +
->  	smc->use_fallback = true;
->  	smc->fallback_rsn = reason_code;
->  	smc_stat_fallback(smc);
-> @@ -571,6 +575,16 @@ static void smc_switch_to_fallback(struct smc_sock *smc, int reason_code)
->  		smc->clcsock->file->private_data = smc->clcsock;
->  		smc->clcsock->wq.fasync_list =
->  			smc->sk.sk_socket->wq.fasync_list;
-> +
-> +		/* There might be some wait queue entries remaining
-> +		 * in smc socket->wq, which should be removed to
-> +		 * clcsocket->wq during the fallback.
-> +		 */
-> +		spin_lock_irqsave(&smc_wait->lock, flags);
-> +		spin_lock_irqsave(&clc_wait->lock, flags);
-> +		list_splice_init(&smc_wait->head, &clc_wait->head);
-> +		spin_unlock_irqrestore(&clc_wait->lock, flags);
-> +		spin_unlock_irqrestore(&smc_wait->lock, flags);
+In `igbvf_probe`, if register_netdev() fails, the program will go to
+label err_hw_init, and then to label err_ioremap. In free_netdev() which
+is just below label err_ioremap, there is `list_for_each_entry_safe` and
+`netif_napi_del` which aims to delete all entries in `dev->napi_list`.
+The program has added an entry `adapter->rx_ring->napi` which is added by
+`netif_napi_add` in igbvf_alloc_queues(). However, adapter->rx_ring has
+been freed below label err_hw_init. So this a UAF.
 
-No idea if the rest of the patch makes sense, however this usage of
-spin_lock_irqsave() is not correct. The second spin_lock_irqsave()
-would always save a state with irqs disabled into "flags", and
-therefore this path would always be left with irqs disabled,
-regardless if irqs were enabled or disabled when entering.
+In terms of how to patch the problem, we can refer to igbvf_remove() and
+delete the entry before `adapter->rx_ring`.
 
-You need to change it to something like
+The KASAN logs are as follows:
 
-> +		spin_lock_irqsave(&smc_wait->lock, flags);
-> +		spin_lock(&clc_wait->lock);
-> +		list_splice_init(&smc_wait->head, &clc_wait->head);
-> +		spin_unlock(&clc_wait->lock);
-> +		spin_unlock_irqrestore(&smc_wait->lock, flags);
+[   35.126075] BUG: KASAN: use-after-free in free_netdev+0x1fd/0x450
+[   35.127170] Read of size 8 at addr ffff88810126d990 by task modprobe/366
+[   35.128360]
+[   35.128643] CPU: 1 PID: 366 Comm: modprobe Not tainted 5.15.0-rc2+ #14
+[   35.129789] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+[   35.131749] Call Trace:
+[   35.132199]  dump_stack_lvl+0x59/0x7b
+[   35.132865]  print_address_description+0x7c/0x3b0
+[   35.133707]  ? free_netdev+0x1fd/0x450
+[   35.134378]  __kasan_report+0x160/0x1c0
+[   35.135063]  ? free_netdev+0x1fd/0x450
+[   35.135738]  kasan_report+0x4b/0x70
+[   35.136367]  free_netdev+0x1fd/0x450
+[   35.137006]  igbvf_probe+0x121d/0x1a10 [igbvf]
+[   35.137808]  ? igbvf_vlan_rx_add_vid+0x100/0x100 [igbvf]
+[   35.138751]  local_pci_probe+0x13c/0x1f0
+[   35.139461]  pci_device_probe+0x37e/0x6c0
+[   35.165526]
+[   35.165806] Allocated by task 366:
+[   35.166414]  ____kasan_kmalloc+0xc4/0xf0
+[   35.167117]  foo_kmem_cache_alloc_trace+0x3c/0x50 [igbvf]
+[   35.168078]  igbvf_probe+0x9c5/0x1a10 [igbvf]
+[   35.168866]  local_pci_probe+0x13c/0x1f0
+[   35.169565]  pci_device_probe+0x37e/0x6c0
+[   35.179713]
+[   35.179993] Freed by task 366:
+[   35.180539]  kasan_set_track+0x4c/0x80
+[   35.181211]  kasan_set_free_info+0x1f/0x40
+[   35.181942]  ____kasan_slab_free+0x103/0x140
+[   35.182703]  kfree+0xe3/0x250
+[   35.183239]  igbvf_probe+0x1173/0x1a10 [igbvf]
+[   35.184040]  local_pci_probe+0x13c/0x1f0
+
+Reported-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Letu Ren <fantasquex@gmail.com>
+---
+ drivers/net/ethernet/intel/igbvf/netdev.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/ethernet/intel/igbvf/netdev.c b/drivers/net/ethernet/intel/igbvf/netdev.c
+index d32e72d953c8..d051918dfdff 100644
+--- a/drivers/net/ethernet/intel/igbvf/netdev.c
++++ b/drivers/net/ethernet/intel/igbvf/netdev.c
+@@ -2861,6 +2861,7 @@ static int igbvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	return 0;
+ 
+ err_hw_init:
++	netif_napi_del(&adapter->rx_ring->napi);
+ 	kfree(adapter->tx_ring);
+ 	kfree(adapter->rx_ring);
+ err_sw_init:
+-- 
+2.33.1
+
