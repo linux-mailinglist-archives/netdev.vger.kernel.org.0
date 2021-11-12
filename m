@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB01044EA42
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 16:36:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13C5044EA46
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 16:36:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235292AbhKLPi6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 10:38:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56912 "EHLO
+        id S235323AbhKLPjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 10:39:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235240AbhKLPiz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 10:38:55 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C98C061766;
-        Fri, 12 Nov 2021 07:36:04 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id u1so16147002wru.13;
-        Fri, 12 Nov 2021 07:36:04 -0800 (PST)
+        with ESMTP id S235276AbhKLPi5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 10:38:57 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13CB5C061767;
+        Fri, 12 Nov 2021 07:36:06 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id b12so16224304wrh.4;
+        Fri, 12 Nov 2021 07:36:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=IwypWslryGEOUCdwRCWHFfnKAKA1I0ITX6IWEz1PyGA=;
-        b=D+1BNEy+IXKi93+WqRBgBkVgSyRLtOGDBDzI91k6meQQ1OUSSR4cpBQmgb5LUzi5VH
-         W4CwjFcAYd2SFvwOcmt1cvzO9skR3nw3cdgOjfl5Qj48opzDCLMaMxQDd2tQ8/pHTCCN
-         Nhn0tbwLYFWSvHsoe/h6CGkn1nAYx1LPlV/Rzd0sbLGGwNpMAvvL8XoJukJLYvAqdyhh
-         aWgJl5oVzcWPJBeczAKkiQnLCwlCLtSKPIdC4z/K4Pq24h12HYo6fXEqtAoSQvRtt5gI
-         vtTSw8P7HpsM8T89P3kwt9igpsKpwOf1tJtL5s2Q0j630xtIZKOnwk8Kb6WmuMt0g9Y9
-         bg2w==
+        bh=4jGWHLurbyA4/FNcd6iSsivOCVyFz9hIK/N30AnY3g4=;
+        b=dvUVdbRJz8af65msBLml9vdXAaDpZl4VJjWLFvbA/Fn9ZwxgBuyoH+HOAqNGn0ZD6Q
+         GM9NqIMPIv4wC8BT9nXMDb1VX+wNB0/m98lC7HHKtHaJZDcaAfRu+emCsQYdAJAezAec
+         W4sVnAezjgAqSW+b2Qml4ZcoZRQeRInEQs/ctLcRzPtlJxDs9g83+CG85P5RUOifrYDl
+         TcKFyzpe7TAIJ71+6HWc0vPcZpBqd5qu1R1pTe3GS3CVKCi6ZwNfaPwVWoeqCnt4MNDW
+         Fw/779dq+/kqakffVO7+km0P724Ry9mjVnryXOzxBCYD9iLheOen8Zf6Bwa+qdaFrh6b
+         UWdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=IwypWslryGEOUCdwRCWHFfnKAKA1I0ITX6IWEz1PyGA=;
-        b=4/HSfbATluuNC3dT4LKccNupqYomusgYznrdb6+kZjs6UzgrFu90iGQIY/fYuslo/q
-         S2UKUjE5C800qQ0W9zz9r6w/FWZqnPo+bTWMb38yzsVMmwLxvpybwZgKuf0ofN0DnIio
-         CROpQjNMT/0W1oaeeXZJEp9pvHFMJDmwKY/HJqOVW2VVPyzsHpulqGGq8f+jIpDfTC11
-         KzqXZKLKhFFpQuzIyZg8VB+QVaNynAROd/wvYmAc/kM1CaC9AasMP+97FAEQ/WAXMonH
-         pMo+lBT3kFkv3fhKSTu6paJMZTE3Hs+EeKXuU+0U+OnWmmTS6tj0daFM511Dshdq16Vh
-         XKXw==
-X-Gm-Message-State: AOAM533UrzZ3neZ+7ZbF9sVJpFdzr1WT0cs9yFrhP93MllmTt/Ayq4dx
-        LWaxZZifPCgRhD4SI8vEV1A=
-X-Google-Smtp-Source: ABdhPJz3ofOdqzNOuVTdKBpaZ3ny1prsA8kyETZphZX+WOFL0Xt3zp8jgoj1yWijqjJJkdYOTWyZkg==
-X-Received: by 2002:a05:6000:1869:: with SMTP id d9mr19353352wri.416.1636731363138;
-        Fri, 12 Nov 2021 07:36:03 -0800 (PST)
+        bh=4jGWHLurbyA4/FNcd6iSsivOCVyFz9hIK/N30AnY3g4=;
+        b=W8F0G9U/HPg+NzbLqxYcWTs/hJAlcIue+M3ZdlzoMYrdYzq2C4cDyUlIcPhp1ywsYn
+         mXPpGnXjlEqZUyVMU9bGzXgZ0R761qssjbqSXSaCZhGRkEGUsij5HkWrMquwbvBZ+an3
+         txFQPvG5ZvHJ4nPfr0reJwjIOQiK0KMRrtCE4qNypD4LbJbY64f1+RgpHjpnAMswSbsz
+         4ZoSXR+GLU2DEX9Y58S8Tb80bgG8/a6DYJKCKqTaP39rOE1V9wFZW+jzc0yjEbOAIjme
+         mYgXDgRjFsMgf02E3vY8EwPQS1xuUl3hN6PxcS0VfPLurENEdIPruAmqL2smWHDn5KH/
+         Rbpw==
+X-Gm-Message-State: AOAM533dgxMZ8BiuGIQ9QPTXk4+EUwXBDpk08XaQJJBJUkZ6TWaHL+rU
+        XmUTvvTwn4Rfh5WCeUgRc4U=
+X-Google-Smtp-Source: ABdhPJxHqBolAxoEFyGpKEC/hKiG0pOutcmXOe9vu935+06JxkMbxCN0idm2sjgonBaATYsVlvRgYA==
+X-Received: by 2002:a5d:5244:: with SMTP id k4mr20074388wrc.77.1636731364446;
+        Fri, 12 Nov 2021 07:36:04 -0800 (PST)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id az4sm4217543wmb.20.2021.11.12.07.36.01
+        by smtp.googlemail.com with ESMTPSA id az4sm4217543wmb.20.2021.11.12.07.36.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Nov 2021 07:36:02 -0800 (PST)
+        Fri, 12 Nov 2021 07:36:04 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -61,295 +61,112 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH v5 1/8] leds: add support for hardware driven LEDs
-Date:   Fri, 12 Nov 2021 16:35:50 +0100
-Message-Id: <20211112153557.26941-2-ansuelsmth@gmail.com>
+Subject: [PATCH v5 2/8] leds: document additional use of blink_set for hardware control
+Date:   Fri, 12 Nov 2021 16:35:51 +0100
+Message-Id: <20211112153557.26941-3-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211112153557.26941-1-ansuelsmth@gmail.com>
 References: <20211112153557.26941-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some LEDs can be driven by hardware (for example an LED connected to
-an ethernet PHY or an ethernet switch can be configured to blink on
-activity on the network, which in software is done by the netdev trigger).
+blink_set can now be used also to configure blink modes when hardware
+control is supported and active.
+Trigger will try to use blink_set and a LED driver will use the
+trigger_data to configure the blink_modes once blink_set is called.
+Setting a brightness to LED_OFF will reset any blink mode and disable
+hardware control setting the LED off.
 
-To do such offloading, LED driver must support this and a supported
-trigger must be used.
-
-LED driver should declare the correct control mode supported and should
-set the LED_SOFTWARE_CONTROLLED or LED_HARDWARE_CONTROLLED bit in the
-flags parameter.
-The trigger will check these bits and fail to activate if the control mode
-is not supported. By default if a LED driver doesn't declare a control
-mode, bit LED_SOFTWARE_CONTROLLED is assumed and set.
-
-The LED must implement 3 main APIs:
-- hw_control_status(): This asks the LED driver if hardware mode is
-    enabled or not.
-- hw_control_start(): This will simply enable the hardware mode for the
-    LED and the LED driver should reset any active blink_mode.
-- hw_control_stop(): This will simply disable the hardware mode for the
-    LED. It's advised for the driver to put the LED in the old state but
-    this is not enforced and putting the LED off is also accepted.
-
-If LED_HARDWARE_CONTROLLED bit is the only control mode set
-(LED_SOFTWARE_CONTROLLED not set) set hw_control_status/start/stop is
-optional as the LED supports only hardware mode and any software only
-trigger will reject activation.
-
-On init an LED driver that support a hardware mode should reset every
-blink mode set by default.
-
-By setting the config CONFIG_LEDS_TRIGGERS support for LEDs that can
-be controlled by hardware is also enabled.
-
-Cc: Marek Behún <kabel@kernel.org>
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- Documentation/leds/leds-class.rst | 32 ++++++++++++++++++++++++++++++
- drivers/leds/led-class.c          | 33 +++++++++++++++++++++++++++++++
- drivers/leds/led-triggers.c       | 22 +++++++++++++++++++++
- drivers/leds/trigger/Kconfig      | 10 +++++++++-
- include/linux/leds.h              | 32 +++++++++++++++++++++++++++++-
- 5 files changed, 127 insertions(+), 2 deletions(-)
+ Documentation/leds/leds-class.rst | 17 +++++++++++++++++
+ drivers/leds/led-class.c          |  7 +++++++
+ include/linux/leds.h              |  9 +++++++++
+ 3 files changed, 33 insertions(+)
 
 diff --git a/Documentation/leds/leds-class.rst b/Documentation/leds/leds-class.rst
-index cd155ead8703..e5d266919a19 100644
+index e5d266919a19..fa6e1cfc4628 100644
 --- a/Documentation/leds/leds-class.rst
 +++ b/Documentation/leds/leds-class.rst
-@@ -169,6 +169,38 @@ Setting the brightness to zero with brightness_set() callback function
- should completely turn off the LED and cancel the previously programmed
- hardware blinking function, if any.
+@@ -202,6 +202,23 @@ hardware mode and any software only trigger will reject activation.
+ On init an LED driver that support a hardware mode should reset every blink mode
+ set by default.
  
-+Hardware driven LEDs
-+===================================
++Once a trigger has declared support for hardware-controlled blinks, it will use
++blink_set() to try to offload his trigger on activation/configuration.
++blink_set() will return 0 if the requested modes set in trigger_data can be
++controlled by hardware or an error if both of the bitmap modes are not supported by
++the hardware or there was a problem in the configuration.
 +
-+Some LEDs can be driven by hardware (for example an LED connected to
-+an ethernet PHY or an ethernet switch can be configured to blink on activity on
-+the network, which in software is done by the netdev trigger).
++Following blink_set logic, setting brightness to LED_OFF with hardware control active
++will reset any active blink mode and disable hardware control setting the LED to off.
 +
-+To do such offloading, LED driver must support this and a supported trigger must
-+be used.
++It's in the LED driver's interest to know how to elaborate the trigger data and report support
++for a particular set of blink modes. For this exact reason explicit support for the specific
++trigger is mandatory or the driver returns -EOPNOTSUPP if asked to enter hardware mode
++with a not supported trigger.
++If the driver returns -EOPNOTSUPP on hw_control_configure(), the trigger activation will
++fail as the driver doesn't support that specific hardware blink mode or doesn't know
++how to handle the provided trigger data.
 +
-+LED driver should declare the correct control mode supported and should set
-+the LED_SOFTWARE_CONTROLLED or LED_HARDWARE_CONTROLLED bit in the flags
-+parameter.
-+The trigger will check these bits and fail to activate if the control mode
-+is not supported. By default if a LED driver doesn't declare a control mode,
-+bit LED_SOFTWARE_CONTROLLED is assumed and set.
-+
-+The LED must implement 3 main APIs:
-+- hw_control_status(): This asks the LED driver if hardware mode is enabled
-+    or not.
-+- hw_control_start(): This will simply enable the hardware mode for the LED
-+    and the LED driver should reset any active blink_mode.
-+- hw_control_stop(): This will simply disable the hardware mode for the LED.
-+    It's advised to the driver to put the LED in the old state but this is not
-+    enforced and putting the LED off is also accepted.
-+
-+If LED_HARDWARE_CONTROLLED bit is the only control mode set (LED_SOFTWARE_CONTROLLED
-+not set) set hw_control_status/start/stop is optional as the LED supports only
-+hardware mode and any software only trigger will reject activation.
-+
-+On init an LED driver that support a hardware mode should reset every blink mode
-+set by default.
- 
  Known Issues
  ============
+ 
 diff --git a/drivers/leds/led-class.c b/drivers/leds/led-class.c
-index f4bb02f6e042..dbe9840863d0 100644
+index dbe9840863d0..ebd023e480ac 100644
 --- a/drivers/leds/led-class.c
 +++ b/drivers/leds/led-class.c
-@@ -164,6 +164,26 @@ static void led_remove_brightness_hw_changed(struct led_classdev *led_cdev)
+@@ -180,6 +180,13 @@ static int led_classdev_check_hw_control_functions(struct led_classdev *led_cdev
+ 	    led_cdev->hw_control_stop))
+ 		return -EINVAL;
+ 
++	/* blink_set is mandatory to configure the blink modes
++	 * in hardware control.
++	 */
++	if ((LED_HARDWARE_CONTROLLED & led_cdev->flags) &&
++	    !led_cdev->blink_set)
++		return -EINVAL;
++
+ 	return 0;
  }
  #endif
- 
-+#ifdef CONFIG_LEDS_TRIGGERS
-+static int led_classdev_check_hw_control_functions(struct led_classdev *led_cdev)
-+{
-+	if ((LED_SOFTWARE_CONTROLLED & led_cdev->flags) &&
-+	    (LED_HARDWARE_CONTROLLED & led_cdev->flags) &&
-+	    (!led_cdev->hw_control_status ||
-+	    !led_cdev->hw_control_start ||
-+	    !led_cdev->hw_control_stop))
-+		return -EINVAL;
-+
-+	if ((LED_SOFTWARE_CONTROLLED & led_cdev->flags) &&
-+	    (led_cdev->hw_control_status ||
-+	    led_cdev->hw_control_start ||
-+	    led_cdev->hw_control_stop))
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+#endif
-+
- /**
-  * led_classdev_suspend - suspend an led_classdev.
-  * @led_cdev: the led_classdev to suspend.
-@@ -367,6 +387,19 @@ int led_classdev_register_ext(struct device *parent,
- 	if (ret < 0)
- 		return ret;
- 
-+	/* Make sure a control mode is set.
-+	 * With no control mode declared, set SOFTWARE_CONTROLLED by default.
-+	 */
-+	if (!(LED_SOFTWARE_CONTROLLED & led_cdev->flags) &&
-+	    !(LED_HARDWARE_CONTROLLED & led_cdev->flags))
-+		led_cdev->flags |= LED_SOFTWARE_CONTROLLED;
-+
-+#ifdef CONFIG_LEDS_TRIGGERS
-+	ret = led_classdev_check_hw_control_functions(led_cdev);
-+	if (ret < 0)
-+		return ret;
-+#endif
-+
- 	mutex_init(&led_cdev->led_access);
- 	mutex_lock(&led_cdev->led_access);
- 	led_cdev->dev = device_create_with_groups(leds_class, parent, 0,
-diff --git a/drivers/leds/led-triggers.c b/drivers/leds/led-triggers.c
-index 072491d3e17b..69dff5a29bea 100644
---- a/drivers/leds/led-triggers.c
-+++ b/drivers/leds/led-triggers.c
-@@ -154,6 +154,20 @@ ssize_t led_trigger_read(struct file *filp, struct kobject *kobj,
- }
- EXPORT_SYMBOL_GPL(led_trigger_read);
- 
-+static bool led_trigger_is_supported(struct led_classdev *led_cdev,
-+				     struct led_trigger *trigger)
-+{
-+	if (trigger->supported_blink_modes == SOFTWARE_ONLY &&
-+	    !(LED_SOFTWARE_CONTROLLED & led_cdev->flags))
-+		return 0;
-+
-+	if (trigger->supported_blink_modes == HARDWARE_ONLY &&
-+	    !(LED_HARDWARE_CONTROLLED & led_cdev->flags))
-+		return 0;
-+
-+	return 1;
-+}
-+
- /* Caller must ensure led_cdev->trigger_lock held */
- int led_trigger_set(struct led_classdev *led_cdev, struct led_trigger *trig)
- {
-@@ -179,6 +193,10 @@ int led_trigger_set(struct led_classdev *led_cdev, struct led_trigger *trig)
- 
- 		cancel_work_sync(&led_cdev->set_brightness_work);
- 		led_stop_software_blink(led_cdev);
-+		/* Disable hardware mode on trigger change if supported */
-+		if ((led_cdev->flags & LED_HARDWARE_CONTROLLED) &&
-+		    led_cdev->hw_control_status(led_cdev))
-+			led_cdev->hw_control_stop(led_cdev);
- 		if (led_cdev->trigger->deactivate)
- 			led_cdev->trigger->deactivate(led_cdev);
- 		device_remove_groups(led_cdev->dev, led_cdev->trigger->groups);
-@@ -188,6 +206,10 @@ int led_trigger_set(struct led_classdev *led_cdev, struct led_trigger *trig)
- 		led_set_brightness(led_cdev, LED_OFF);
- 	}
- 	if (trig) {
-+		/* Make sure the trigger support the LED blink mode */
-+		if (!led_trigger_is_supported(led_cdev, trig))
-+			return -EINVAL;
-+
- 		spin_lock(&trig->leddev_list_lock);
- 		list_add_tail_rcu(&led_cdev->trig_list, &trig->led_cdevs);
- 		spin_unlock(&trig->leddev_list_lock);
-diff --git a/drivers/leds/trigger/Kconfig b/drivers/leds/trigger/Kconfig
-index dc6816d36d06..18a8970bfae6 100644
---- a/drivers/leds/trigger/Kconfig
-+++ b/drivers/leds/trigger/Kconfig
-@@ -5,7 +5,15 @@ menuconfig LEDS_TRIGGERS
- 	help
- 	  This option enables trigger support for the leds class.
- 	  These triggers allow kernel events to drive the LEDs and can
--	  be configured via sysfs. If unsure, say Y.
-+	  be configured via sysfs.
-+
-+	  This option also enables Hardware control support used by LEDs
-+	  that can be driven in hardware by using supported triggers.
-+
-+	  Hardware blink modes will be exposed by sysfs class in
-+	  /sys/class/leds based on the trigger currently active.
-+
-+	  If unsure, say Y.
- 
- if LEDS_TRIGGERS
- 
 diff --git a/include/linux/leds.h b/include/linux/leds.h
-index ba4861ec73d3..c8e97fb9252f 100644
+index c8e97fb9252f..fa929215cdcc 100644
 --- a/include/linux/leds.h
 +++ b/include/linux/leds.h
-@@ -85,6 +85,11 @@ struct led_classdev {
- #define LED_BRIGHT_HW_CHANGED	BIT(21)
- #define LED_RETAIN_AT_SHUTDOWN	BIT(22)
- #define LED_INIT_DEFAULT_TRIGGER BIT(23)
-+/* LED can be controlled by software. This is set by default
-+ * if the LED driver doesn't report SOFTWARE or HARDWARE
-+ */
-+#define LED_SOFTWARE_CONTROLLED	BIT(24)
-+#define LED_HARDWARE_CONTROLLED	BIT(25)
- 
- 	/* set_brightness_work / blink_timer flags, atomic, private. */
- 	unsigned long		work_flags;
-@@ -154,6 +159,18 @@ struct led_classdev {
- 
- 	/* LEDs that have private triggers have this set */
- 	struct led_hw_trigger_type	*trigger_type;
-+
-+	/* Ask the LED driver if hardware mode is enabled or not.
-+	 * Triggers will check if the hardware mode is active or not.
-+	 */
-+	bool			(*hw_control_status)(struct led_classdev *led_cdev);
-+	/* Set LED in hardware mode and reset any blink mode active by default.
-+	 */
-+	int			(*hw_control_start)(struct led_classdev *led_cdev);
-+	/* Disable hardware mode for LED. It's advised to the LED driver to put it to
-+	 * the old status but that is not mandatory and also putting it off is accepted.
-+	 */
-+	int			(*hw_control_stop)(struct led_classdev *led_cdev);
- #endif
- 
- #ifdef CONFIG_LEDS_BRIGHTNESS_HW_CHANGED
-@@ -215,7 +232,6 @@ extern struct led_classdev *of_led_get(struct device_node *np, int index);
- extern void led_put(struct led_classdev *led_cdev);
- struct led_classdev *__must_check devm_of_led_get(struct device *dev,
- 						  int index);
--
- /**
-  * led_blink_set - set blinking with software fallback
-  * @led_cdev: the LED to start blinking
-@@ -350,12 +366,26 @@ static inline bool led_sysfs_is_disabled(struct led_classdev *led_cdev)
- 
- #define TRIG_NAME_MAX 50
- 
-+enum led_trigger_blink_supported_modes {
-+	SOFTWARE_ONLY = BIT(0),
-+	HARDWARE_ONLY = BIT(1),
-+	SOFTWARE_HARDWARE = BIT(2),
-+};
-+
- struct led_trigger {
- 	/* Trigger Properties */
- 	const char	 *name;
- 	int		(*activate)(struct led_classdev *led_cdev);
- 	void		(*deactivate)(struct led_classdev *led_cdev);
- 
-+	/* Declare if the Trigger supports hardware control to
-+	 * offload triggers or supports only software control.
-+	 * A trigger can also declare support for hardware control
-+	 * if is task is only configure LED blink modes and expose
-+	 * them in sysfs.
-+	 */
-+	enum led_trigger_blink_supported_modes supported_blink_modes;
-+
- 	/* LED-private triggers have this set */
- 	struct led_hw_trigger_type *trigger_type;
- 
+@@ -76,6 +76,7 @@ struct led_classdev {
+ 	/* Lower 16 bits reflect status */
+ #define LED_SUSPENDED		BIT(0)
+ #define LED_UNREGISTERING	BIT(1)
++#define LED_HARDWARE_CONTROL	BIT(2)
+ 	/* Upper 16 bits reflect control information */
+ #define LED_CORE_SUSPENDRESUME	BIT(16)
+ #define LED_SYSFS_DISABLE	BIT(17)
+@@ -123,6 +124,12 @@ struct led_classdev {
+ 	 * match the values specified exactly.
+ 	 * Deactivate blinking again when the brightness is set to LED_OFF
+ 	 * via the brightness_set() callback.
++	 * With LED_HARDWARE_CONTROL set in LED flags blink_set will also
++	 * configure blink modes requested by the current trigger if
++	 * supported by the LED driver.
++	 * Setting brightness to LED_OFF with hardware control active will
++	 * reset any active blink mode and disable hardware control setting
++	 * the LED off.
+ 	 */
+ 	int		(*blink_set)(struct led_classdev *led_cdev,
+ 				     unsigned long *delay_on,
+@@ -165,6 +172,8 @@ struct led_classdev {
+ 	 */
+ 	bool			(*hw_control_status)(struct led_classdev *led_cdev);
+ 	/* Set LED in hardware mode and reset any blink mode active by default.
++	 * A trigger supporting hardware mode will have to use blink_set to configure
++	 * the modes.
+ 	 */
+ 	int			(*hw_control_start)(struct led_classdev *led_cdev);
+ 	/* Disable hardware mode for LED. It's advised to the LED driver to put it to
 -- 
 2.32.0
 
