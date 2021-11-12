@@ -2,90 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC23B44E7DC
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 14:49:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A810544E810
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 15:02:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235124AbhKLNvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 08:51:42 -0500
-Received: from mail-oi1-f177.google.com ([209.85.167.177]:33422 "EHLO
-        mail-oi1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235099AbhKLNvg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 08:51:36 -0500
-Received: by mail-oi1-f177.google.com with SMTP id q25so12412410oiw.0;
-        Fri, 12 Nov 2021 05:48:45 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=lfnFk0Vk2nlPX6zE3Xuo6uqEuasd9Rkq/bqEgF/SFTA=;
-        b=zePNQAHqjeVvBXlkIBVgG+dLi0h6dnxadR3Z588HJf0gwM56IlZl7jjVAw8pXQZL01
-         wuTK5OxMiWsjqYMqt61owCnJKSJL0PD0BAzf9hRg5sum1aIJLqQi4eLR1977H6BdaSX1
-         F2VZfgccWWDKxpdOvquzPFvil7yDDOFFK0s71tYxcuLb70RpxRm/4o9eR1DJFDKAdHDe
-         rbfNjGanaGKoNFssi/hpYJq4Eqj5vOt/q9B0fylDwGo+JqUdIA73LWg8rMl5pEkc/frJ
-         d/Nvy/1hgkZD/puDsHXbfDduoy15+nmJO/1Gx/YfrDyEpxhZT93BdiRdNCBRbvaVWbPe
-         W0+Q==
-X-Gm-Message-State: AOAM532NaFN1BKvNB/71m8ds7hHspwQsmvm47qVhv44qY36t+48X98nh
-        x4P8awFf9oASvkG0bt/zDA==
-X-Google-Smtp-Source: ABdhPJwYvgxWt2U6crFb5cYgShEcV2k6Ksx10uPU+Y41+QNrwmhXTQw/q/at2PcM13hNbmCaEt2ZHA==
-X-Received: by 2002:a05:6808:14e:: with SMTP id h14mr23166380oie.28.1636724925287;
-        Fri, 12 Nov 2021 05:48:45 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id h3sm11658ooe.13.2021.11.12.05.48.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Nov 2021 05:48:44 -0800 (PST)
-Received: (nullmailer pid 2463377 invoked by uid 1000);
-        Fri, 12 Nov 2021 13:48:37 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Biao Huang <biao.huang@mediatek.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        angelogioacchino.delregno@collabora.com, davem@davemloft.net,
-        Jose Abreu <joabreu@synopsys.com>, srv_heupstream@mediatek.com,
-        Jakub Kicinski <kuba@kernel.org>, dkirjanov@suse.de,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        macpaul.lin@mediatek.com, linux-arm-kernel@lists.infradead.org,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        linux-stm32@st-md-mailman.stormreply.com
-In-Reply-To: <20211112093918.11061-8-biao.huang@mediatek.com>
-References: <20211112093918.11061-1-biao.huang@mediatek.com> <20211112093918.11061-8-biao.huang@mediatek.com>
-Subject: Re: [PATCH v3 7/7] net-next: dt-bindings: dwmac: add support for mt8195
-Date:   Fri, 12 Nov 2021 07:48:37 -0600
-Message-Id: <1636724917.173620.2463376.nullmailer@robh.at.kernel.org>
+        id S235090AbhKLOFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 09:05:08 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:51418 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235071AbhKLOFH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 09:05:07 -0500
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1ACDfZAZ015490;
+        Fri, 12 Nov 2021 14:02:16 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=nDodJj57nnM0nM3L9GHbulclSK9+sUTDdF2zO6gw5wc=;
+ b=CuEAwSEKWhv60po84XaJQ3FktK1FTgtULtrjIDNX4lUz8YbzSqeJvdBu0iFY/iR19tno
+ GkVqSEL3at9wf1rARF+YyAX//xMjkHvO+MuZPh8D1fA1k/HQtMQ7OgkbN/sKGYzB8a1T
+ CIivSXoiFwhzT14/HAv1XmejQTNJSgV0C6IQ8xKtl7nXmdJ7F2qnD677NFM2moHyvtd1
+ K9uPnndLrcPwPGCt26HFZk58o3diQ0YGsWvYr3ywwX2/xvML89f2cF0bDO1gE/cYgM5C
+ qBja93XlDds+nQx+qysFOzARZkD7Bma4UbvL/A1x5LiFlBQKhuHffBQAJRV2TPfw8Nrb eg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3c9rhbhfqk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 12 Nov 2021 14:02:15 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1ACE1LH5020171;
+        Fri, 12 Nov 2021 14:02:15 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3c9rhbhfpk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 12 Nov 2021 14:02:15 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1ACDcrjP011123;
+        Fri, 12 Nov 2021 14:02:13 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma06ams.nl.ibm.com with ESMTP id 3c5gykh11x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 12 Nov 2021 14:02:12 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1ACDtOEt61145432
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 12 Nov 2021 13:55:24 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6FE3511C04C;
+        Fri, 12 Nov 2021 14:02:10 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 06CF811C052;
+        Fri, 12 Nov 2021 14:02:10 +0000 (GMT)
+Received: from osiris (unknown [9.145.153.146])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Fri, 12 Nov 2021 14:02:09 +0000 (GMT)
+Date:   Fri, 12 Nov 2021 15:02:08 +0100
+From:   Heiko Carstens <hca@linux.ibm.com>
+To:     Wen Gu <guwen@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, tonylu@linux.alibaba.com,
+        dust.li@linux.alibaba.com, xuanzhuo@linux.alibaba.com
+Subject: Re: [PATCH net] net/smc: Transfer remaining wait queue entries
+ during fallback
+Message-ID: <YY5z4H5/CVpRtrwh@osiris>
+References: <1636687839-38962-1-git-send-email-guwen@linux.alibaba.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1636687839-38962-1-git-send-email-guwen@linux.alibaba.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: hLZJsSYm8M3wCHpbbHJMnvZbmjW-nvnr
+X-Proofpoint-GUID: aBw7o5ShLNFfLg7BX22CABdROqgtpRtZ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-11-12_05,2021-11-12_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 mlxscore=0
+ phishscore=0 priorityscore=1501 malwarescore=0 lowpriorityscore=0
+ suspectscore=0 spamscore=0 bulkscore=0 clxscore=1011 impostorscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2111120080
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 12 Nov 2021 17:39:18 +0800, Biao Huang wrote:
-> Add binding document for the ethernet on mt8195.
-> 
-> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-> ---
->  .../bindings/net/mediatek-dwmac.yaml          | 86 +++++++++++++++----
->  1 file changed, 70 insertions(+), 16 deletions(-)
-> 
+On Fri, Nov 12, 2021 at 11:30:39AM +0800, Wen Gu wrote:
+...
+> +	wait_queue_head_t *smc_wait = sk_sleep(&smc->sk);
+> +	wait_queue_head_t *clc_wait = sk_sleep(smc->clcsock->sk);
+> +	unsigned long flags;
+> +
+>  	smc->use_fallback = true;
+>  	smc->fallback_rsn = reason_code;
+>  	smc_stat_fallback(smc);
+> @@ -571,6 +575,16 @@ static void smc_switch_to_fallback(struct smc_sock *smc, int reason_code)
+>  		smc->clcsock->file->private_data = smc->clcsock;
+>  		smc->clcsock->wq.fasync_list =
+>  			smc->sk.sk_socket->wq.fasync_list;
+> +
+> +		/* There might be some wait queue entries remaining
+> +		 * in smc socket->wq, which should be removed to
+> +		 * clcsocket->wq during the fallback.
+> +		 */
+> +		spin_lock_irqsave(&smc_wait->lock, flags);
+> +		spin_lock_irqsave(&clc_wait->lock, flags);
+> +		list_splice_init(&smc_wait->head, &clc_wait->head);
+> +		spin_unlock_irqrestore(&clc_wait->lock, flags);
+> +		spin_unlock_irqrestore(&smc_wait->lock, flags);
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+No idea if the rest of the patch makes sense, however this usage of
+spin_lock_irqsave() is not correct. The second spin_lock_irqsave()
+would always save a state with irqs disabled into "flags", and
+therefore this path would always be left with irqs disabled,
+regardless if irqs were enabled or disabled when entering.
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
+You need to change it to something like
 
-Full log is available here: https://patchwork.ozlabs.org/patch/1554230
-
-
-ethernet@1101c000: clock-names: ['axi', 'apb', 'mac_main', 'ptp_ref'] is too short
-	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
-
-ethernet@1101c000: clocks: [[27, 34], [27, 37], [6, 154], [6, 155]] is too short
-	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
-
-ethernet@1101c000: compatible: ['mediatek,mt2712-gmac'] does not contain items matching the given schema
-	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
-
-ethernet@1101c000: compatible: 'oneOf' conditional failed, one must be fixed:
-	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
-
+> +		spin_lock_irqsave(&smc_wait->lock, flags);
+> +		spin_lock(&clc_wait->lock);
+> +		list_splice_init(&smc_wait->head, &clc_wait->head);
+> +		spin_unlock(&clc_wait->lock);
+> +		spin_unlock_irqrestore(&smc_wait->lock, flags);
