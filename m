@@ -2,123 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 665B544E635
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 13:17:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC79644E6E9
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 14:01:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234800AbhKLMUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 07:20:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39030 "EHLO
+        id S235011AbhKLNEU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 08:04:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231147AbhKLMUe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 07:20:34 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A90C061766
-        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 04:17:44 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id o6-20020a17090a0a0600b001a64b9a11aeso7424868pjo.3
-        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 04:17:44 -0800 (PST)
+        with ESMTP id S231652AbhKLNEP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 08:04:15 -0500
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67018C061766
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 05:01:24 -0800 (PST)
+Received: by mail-lj1-x235.google.com with SMTP id d11so18409786ljg.8
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 05:01:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=R8Wf0VQUaiy90EirTAD5Upj4b+og1WFU1VbLImU0Zak=;
-        b=CB9Bg7k9g01rHWfwFnoBazrtaYRz/jqwEOwXmw33VegeGlJH+xVUym9q7hvAaTYmnk
-         s4GxkPQiR9BljK9GTRrLK7jOnhMCKiD1oO5bIBuJJZuaJmXgvIDzxE1ja0F4+WsJ3nHf
-         D2uyjyeF7t1SukE9VgTBSgNXOMi/zFDMSRu7lpTgeRRPrAEaO4I+/pjiAi8ofhmVqiXg
-         kiC+1+FKkLLFYlFY3aGIHXqACjsaJqPkj7ZsmktJH1y7bdbIF1jc58RuaTal+OSwh9ds
-         Kf74Rh1Sv98ZfLS2klnRmwIDatZ9ZQT/eQJNqXFb1EAy8+r5x5w0fZmTRelGS/NYZfcJ
-         qFAg==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=pNPXYr/Bv/L+VmzGPgKR9ZiItCiRAut700iKN/YXrGY=;
+        b=Z+0oZZN3HtdZQqUvaDleZ0PBhRRoeLR1fQfD5vSl0uMSG4QNH2yCVMOSQhDyYYFIMu
+         vfKtfjoUvt7f74Z6wiS73X1MDa78edsav1dbt2Eqo4ZQLxi0KbLDOHisuAGlc0C1jjme
+         TRLvLnp3brUL7ZPvGeVVZzSdMmLSEgvouk+Lu4oYc8WnvemxLLP9TN4f9F3Ed8q2Qec0
+         dJRzk22rXyRuSgspBlrMoauzTaZiAmSlmBdas+lWGmOCcouH0HzMFYYOAou1ornArJlB
+         p/m1C0bVuEzT/tu+oPfdEu+sbksaxAkJ392bwEqs4zN3OmDhzlY6NoYg1qEvDP0aqZPr
+         NoOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=R8Wf0VQUaiy90EirTAD5Upj4b+og1WFU1VbLImU0Zak=;
-        b=FCvqEICBDavErAxJ1McV3asJqNPayD4cBA4ugHJT5mxo4KG2YHfvFu8mtstmYLTLp7
-         WprYbKKxTlz9A/eaYxxft6mRx5GoxPqCAq+M59zql/F2fxJSMpoCFQNQMGjj1g30/3y2
-         tjFlLd8eZesQ3xdlNi2shZ1bFATZw/IuxznKS4idTcZDrIa+1+4nTtnFSBxwtNxcr5Ux
-         BviWTL3y7D8oKjA/IJwnibIrjvwK3Dmp8K5reiZ3MZB/USauxccNH8LpEx2t9iilZMAD
-         n7DWGWV6ms6eZnk9CxJ8wNhQWDX+QGv+M5L2AGgZyPxn1zjK5CaOTcu7LvoXEzpAM7gY
-         bgsA==
-X-Gm-Message-State: AOAM53377/RAP+aCoTGe8RwpBC8IPFC2cnuPzT1OtU5fsZyLLb/W5wwG
-        NZWeX5Vzuc6MNtW6Viky4b3M+Hc0naI=
-X-Google-Smtp-Source: ABdhPJzllech+yrzeKG8oGRXU5pcClkkkBZ0YZ41utr9+fL9fLV0j3vef6Rkq9jCdhTzpuLtVMzuzQ==
-X-Received: by 2002:a17:902:a509:b0:143:7eb6:c953 with SMTP id s9-20020a170902a50900b001437eb6c953mr7339128plq.4.1636719463240;
-        Fri, 12 Nov 2021 04:17:43 -0800 (PST)
-Received: from [192.168.0.4] ([49.173.165.50])
-        by smtp.gmail.com with ESMTPSA id 32sm4791018pgn.31.2021.11.12.04.17.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Nov 2021 04:17:42 -0800 (PST)
-Subject: Re: [PATCH net] amt: use cancel_delayed_work() instead of
- flush_delayed_work() in amt_fini()
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-References: <20211108145340.17208-1-ap420073@gmail.com>
- <20211111073748.136d2e85@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Taehee Yoo <ap420073@gmail.com>
-Message-ID: <3282b92a-926e-a39f-b1f6-dc90e29dba06@gmail.com>
-Date:   Fri, 12 Nov 2021 21:17:39 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=pNPXYr/Bv/L+VmzGPgKR9ZiItCiRAut700iKN/YXrGY=;
+        b=3VA8NHBirNfFcm4LWwGvXmwSd1cALnqeq0J0gYBGCcYyyE6T68uIQ/8/qWNG/kdT7a
+         fuqj+Zfvl7B7c8EFaRtdjskzvgMCEzetOT0jLFhzasJu8lidpBukkIvRcVUJ4MvUIPwT
+         ZYHZm82J67jAgH52mtDpwiehYZPi0CiPGaLzDUyRqe5zkelaCYoVF07hrQzmfERySf5K
+         uFFBpvKEn+4uca85f3Dtoa/h1I5oGibMdMze3AHBn6O+eEuXEmITUuHcEHSxiTOHXYsA
+         hJ9Bmb579lPkPRn3S/Q7Gc1qS37DubE0iVaHiDrtWUFa19qt2J3i+AZyh6qk+lKs43JU
+         8Khw==
+X-Gm-Message-State: AOAM530BDDkJoy+261Z0hXir9QhZtNk71FuNPPxBpLU1+GMGTqpmPn0q
+        OMZoitRl8IruvkVYFU3GWuywXOJhgcldPQiq/Gw=
+X-Google-Smtp-Source: ABdhPJzO/sgkE+83vfgm5hx953IINmwmjZJzjuXDZl/OGiWuG0Jf6zpjS5+F5u5O3F/MUSbDZjs4NQ547uKT0aiES0M=
+X-Received: by 2002:a05:651c:984:: with SMTP id b4mr14954004ljq.170.1636722082738;
+ Fri, 12 Nov 2021 05:01:22 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20211111073748.136d2e85@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a05:6512:3b1e:0:0:0:0 with HTTP; Fri, 12 Nov 2021 05:01:22
+ -0800 (PST)
+Reply-To: kathrynh566@gmail.com
+From:   Kathryn Hensley <mohamedgeorge38@gmail.com>
+Date:   Fri, 12 Nov 2021 05:01:22 -0800
+Message-ID: <CAH=Y+GaRZKMF7iOpbdi-JvxoiE2PhLv-1Qxzaq1mJJCYh=A_mg@mail.gmail.com>
+Subject: Hello
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
-Thank you for your review!
-
-On 11/12/21 12:37 AM, Jakub Kicinski wrote:
- > On Mon,  8 Nov 2021 14:53:40 +0000 Taehee Yoo wrote:
- >> When the amt module is being removed, it calls flush_delayed_work() 
-to exit
- >> source_gc_wq. But it wouldn't be exited properly because the
- >> amt_source_gc_work(), which is the callback function of source_gc_wq
- >> internally calls mod_delayed_work() again.
- >> So, amt_source_gc_work() would be called after the amt module is 
-removed.
- >> Therefore kernel panic would occur.
- >> In order to avoid it, cancel_delayed_work() should be used instead of
- >> flush_delayed_work().
- >
- > Somehow I convinced myself this is correct but now I'm not sure, again.
- >
- >> diff --git a/drivers/net/amt.c b/drivers/net/amt.c
- >> index c384b2694f9e..47a04c330885 100644
- >> --- a/drivers/net/amt.c
- >> +++ b/drivers/net/amt.c
- >> @@ -3286,7 +3286,7 @@ static void __exit amt_fini(void)
- >>   {
- >>   	rtnl_link_unregister(&amt_link_ops);
- >>   	unregister_netdevice_notifier(&amt_notifier_block);
- >> -	flush_delayed_work(&source_gc_wq);
- >> +	cancel_delayed_work(&source_gc_wq);
- >
- > This doesn't guarantee that the work is not running _right_ now and
- > will re-arm itself on the next clock cycle, so to speak.
- >
- >   CPU 0                      CPU 1
- >   -----                      -----
- >
- >   worker gets the work
- >   clears pending
- >   work starts running
- >                              cancel_work
- >                              grabs pending
- >                              clears pending
- >   mod_delayed_work()
- >
- > You need cancel_delayed_work_sync(), right?
- >
-
-you're right!
-I think cancel_delayed_work() is async so that it can't clearly fix this 
-problem.
-So, I will send a new patch after some tests.
-Thank you so much for catching it!
-
-Thanks a lot,
-Taehee
+Dear Sir,
+I have a transaction that involves the transfer of $17.9 million for
+foreign investment, if you are interested kindly reply to:
+kathrynh566@gmail.com for more specific details.
+Thank you.
