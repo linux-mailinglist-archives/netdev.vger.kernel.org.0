@@ -2,246 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F7CA44EE3C
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 21:59:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1888244EE46
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 22:01:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235649AbhKLVBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 16:01:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45196 "EHLO
+        id S235707AbhKLVEY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 16:04:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235576AbhKLVBy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 16:01:54 -0500
-Received: from mail-vk1-xa36.google.com (mail-vk1-xa36.google.com [IPv6:2607:f8b0:4864:20::a36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1619C061767
-        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 12:59:02 -0800 (PST)
-Received: by mail-vk1-xa36.google.com with SMTP id f78so5803771vka.5
-        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 12:59:02 -0800 (PST)
+        with ESMTP id S232902AbhKLVEX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 16:04:23 -0500
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C30C061766;
+        Fri, 12 Nov 2021 13:01:32 -0800 (PST)
+Received: by mail-wm1-x336.google.com with SMTP id 77-20020a1c0450000000b0033123de3425so10932040wme.0;
+        Fri, 12 Nov 2021 13:01:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0UEENKmBa9LiKIEPSWM7tMclkKhdAImRhU/WUvedF2M=;
-        b=nRao6v784/sWVNgZWepxx9NA+kIBrnx8Lcn41Md6pehEXnJo5stwFZN8LX+RUJ8/e5
-         5EKKNm9w6aiyPSPIT0WQC3KXCgrxlMy1hd4PNrZQT0uvw7TedsVMZBmaIxFzbOzuFah6
-         o1KkQUf531ITe/BOqLvfRSw7RdkfqNKpHe88UFT//GZBu9RqqUvkJEW2pmjYYTMD7RT/
-         QZK3x3P4Ce5qmh9SSljlao/tVdcYaLsNhmUcyEQHMJN6KJCtT8F6bwMXMtSs1gZ+OHuR
-         ttWuxgyrD2A576HuxlnRvuLOtHUVK67kB1YkDRSOudY3lAeuCaE6x4oGrlgSBmAWGoQm
-         zpgQ==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=B3e+13s4p3dhI8Zf6QqfqzgmLP21sUtb60eTfseb1RM=;
+        b=pVO9n6kHKfA/tQZdTAfy5MF2d/CmjtqXvWOhNlddj/wlSkaOl+8h44Psb3F0cFxIgV
+         6JVlgYaTrOF+iDSy9aCmVN9nrgwgyv9uJoBYkRPkV0vI9lLGiotjxynXXdGjhxnkPHmP
+         5F7eCsOU3p1rVmrTMB6sWdvQTOQ0aZGhHdyHEE4UxkqtCwWV/5BghiVLAsaQ0jOIxaCn
+         LhsLT1T0O7H4lOjR7hU1XMIJx4pxCyrpBXN16yiZN7bOhmoSt2rGshpst07ZtpYSNoKq
+         +NNYLEzj/fOtlHt5BzR3JzIh/9cfvgwWJ4HYpnKR6JjFmvBpDdtzUTKSrsYUaUkpO5BB
+         39Bg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0UEENKmBa9LiKIEPSWM7tMclkKhdAImRhU/WUvedF2M=;
-        b=S+TTTSEzgyYP5BJI397d4dPa4TMxZ7DDkSZ1NGwm/38fA4Em539sauMgTWPaHOWv9v
-         UOJi7LdjqcGLOhCGR5CUXFDoxX+stNWgsn9qRG5TLcYwT4yK9ZDcN95hSaFv/Rme2+iw
-         Rml9n8sHRmvn1omPrpsoX/qX46Uafx6gWHW3f8iO5GMHnaQ8KXCA8FGTNqjDjUpakDzD
-         JE4LmyDeFG7FrhN53r15zaz//e9Zx7ChjXzlyg3U8DfpwZDkwifWvAF1MpQST1cDrOly
-         tz1ZL+1FWFdT8+5odVe+rMNhm74bjJTDsSlBammVB36MrRtk7M9oG2eu9pUvXKV4KC1t
-         Px7g==
-X-Gm-Message-State: AOAM531HZ1huV4qdA+EMWJeDSLDlhovUJSExwSPRW30Q/Ok9hwOKfjGb
-        l2+q4wvOZ4WO8/d2EQEqnNojmBw1Ec8ul+/fTDy0xQ==
-X-Google-Smtp-Source: ABdhPJx2V/Vy0gg+tqfofrh3t1F5vqIOpUU7ubnpez3E+EvAKBqzmT0Jmj+t2fKhwShh66Zi2jE7+2SAXzAWlw55pZM=
-X-Received: by 2002:a05:6122:d09:: with SMTP id az9mr27812925vkb.23.1636750741593;
- Fri, 12 Nov 2021 12:59:01 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=B3e+13s4p3dhI8Zf6QqfqzgmLP21sUtb60eTfseb1RM=;
+        b=QpVEAKr+z/bEK17GYQw40UsUFyjOIy+3sPXm4NMPu/aG3sZF36LSa5cRfNqm2wZ8/R
+         GsC7W0XUOhgLCVZAoW5OaT77E8iYYbjqOotpLOCdipN/ydOVJze93qEWaiAdZ/TlWhHn
+         HV4LYcB7j2Ej44jNByfuAXcT4uYrCzgsdQB94O1rukU09D+k0g5/KbcYiP0Qwx95h8V0
+         dGRPJJuBMiwXfxCGVDbmoqtVAhuvWpE+j3YTXedJLKCN7Vkrfv2rWIAAQnXWfQ5d1f4l
+         Fd1OpjifLqBUdVt3Y2Ieef+3PN6f5RD2jUcNVOZlqwWObDf+WhZfakgmPbUB19tgbS1z
+         50cg==
+X-Gm-Message-State: AOAM533bsFdJLAkb7pATFJXCGC6ZrJJ0HOpDd1Dl+dvzex1dgEetdJOH
+        b45CeqM9dPTjtfFcEdXi6VI=
+X-Google-Smtp-Source: ABdhPJyxSpGkAnhYPgRNQITd3yeWDvqC9pDE/arAD4iC++4J6Tpe6GShMf0YqEQbw7v0W6pxqfb4Aw==
+X-Received: by 2002:a05:600c:358a:: with SMTP id p10mr19821181wmq.180.1636750891230;
+        Fri, 12 Nov 2021 13:01:31 -0800 (PST)
+Received: from [10.168.10.170] ([170.253.36.171])
+        by smtp.gmail.com with ESMTPSA id t9sm7171558wrx.72.2021.11.12.13.01.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 12 Nov 2021 13:01:30 -0800 (PST)
+Message-ID: <ee12204f-0bfb-5b64-ef77-9217eb7dc456@gmail.com>
+Date:   Fri, 12 Nov 2021 22:01:29 +0100
 MIME-Version: 1.0
-References: <20210924235456.2413081-1-weiwan@google.com> <CAEA6p_CSbFFiEUQKy_n5dBd-oBWLq1L0CZYjECqBfjjkeQoSdg@mail.gmail.com>
- <6c5ac9d3-9e9a-12aa-7dc8-d89553790e7b@gmail.com> <CAEA6p_CXGaboJaO+LCM=c_tnf2P5oZZyXwJn1ybQDakWp+b=8g@mail.gmail.com>
- <de1c353c-2b3c-ff15-a8e7-dd8db8672c93@gmail.com>
-In-Reply-To: <de1c353c-2b3c-ff15-a8e7-dd8db8672c93@gmail.com>
-From:   Wei Wang <weiwan@google.com>
-Date:   Fri, 12 Nov 2021 12:58:50 -0800
-Message-ID: <CAEA6p_BN6U9rbDSugpESJV+W+f86-A45bYXc1mYhg_9n5NDzhQ@mail.gmail.com>
-Subject: Re: [patch v3] tcp.7: Add description for TCP_FASTOPEN and
- TCP_FASTOPEN_CONNECT options
-To:     "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
-Cc:     Michael Kerrisk <mtk.manpages@gmail.com>,
-        linux-man@vger.kernel.org, netdev@vger.kernel.org,
-        Yuchung Cheng <ycheng@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "G. Branden Robinson" <g.branden.robinson@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: netdevice.7 SIOCGIFFLAGS/SIOCSIFFLAGS
+Content-Language: en-US
+To:     Erik Flodin <erik@flodin.me>
+Cc:     mtk.manpages@gmail.com, linux-man@vger.kernel.org,
+        Stefan Rompf <stefan@loplof.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        John Dykstra <john.dykstra1@gmail.com>, netdev@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <CAAMKmof+Y+qrro7Ohd9FSw1bf+-tLMPzaTba-tVniAMY0zwTOQ@mail.gmail.com>
+ <b0a534b3-9bdf-868e-1f28-8e32d31013a2@gmail.com>
+ <CAAMKmodhSsckMxH9jLKKwXN_B76RoLmDttbq5X9apE-eCo0hag@mail.gmail.com>
+ <1cde5a72-033e-05e7-be58-b1b2ef95c80f@gmail.com>
+ <CAAMKmoe8rUuoxFK2gKZL4um79gmtn-__-1ZDWuBgGTqfqPjZdw@mail.gmail.com>
+ <ec0d0a2d-235c-a71f-92bc-45e1156bff9e@gmail.com>
+ <CAAMKmocBEr05EfidF9CfqJQw4uj1YcYwmkJPR=c0eCCYgsAHwg@mail.gmail.com>
+From:   "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
+In-Reply-To: <CAAMKmocBEr05EfidF9CfqJQw4uj1YcYwmkJPR=c0eCCYgsAHwg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 12, 2021 at 12:56 PM Alejandro Colomar (man-pages)
-<alx.manpages@gmail.com> wrote:
->
-> Hi Wei,
->
-> On 11/5/21 18:19, Wei Wang wrote:
-> > On Fri, Oct 15, 2021 at 3:12 PM Alejandro Colomar (man-pages)
-> > <alx.manpages@gmail.com> wrote:
-> >>
-> >> Hi Wei,
-> >>
-> >> On 10/15/21 6:08 PM, Wei Wang wrote:
-> >>> On Fri, Sep 24, 2021 at 4:54 PM Wei Wang <weiwan@google.com> wrote:
-> >>>>
-> >>>> TCP_FASTOPEN socket option was added by:
-> >>>> commit 8336886f786fdacbc19b719c1f7ea91eb70706d4
-> >>>> TCP_FASTOPEN_CONNECT socket option was added by the following patch
-> >>>> series:
-> >>>> commit 065263f40f0972d5f1cd294bb0242bd5aa5f06b2
-> >>>> commit 25776aa943401662617437841b3d3ea4693ee98a
-> >>>> commit 19f6d3f3c8422d65b5e3d2162e30ef07c6e21ea2
-> >>>> commit 3979ad7e82dfe3fb94a51c3915e64ec64afa45c3
-> >>>> Add detailed description for these 2 options.
-> >>>> Also add descriptions for /proc entry tcp_fastopen and tcp_fastopen_key.
-> >>>>
-> >>>> Signed-off-by: Wei Wang <weiwan@google.com>
->
-> Sorry for the delay.
-> I have applied it now.
-> I also applied some minor changes on top of your patch
-> (see below).
->
+Hi Erik,
 
-Thank you so much for the fixes and thanks for applying, Alex!
+On 10/2/21 18:35, Erik Flodin wrote:
+> A bit more than a month has passed so here's a ping :)
+> 
+> // Erik
 
-> Thanks!
-> Alex
->
->
-> ---
->
->      tcp.7: Minor tweaks to Wei's patch
->
->      - wsfix
->      - Boldface literals (see groff_man(7)).
->      - Replace '\ ' by \~, per Branden's advise.
->      - Use phrasal semantic newlines.
->      - Put '...' in a C comment, to avoid interfering with groff.
->        It has the side effect that the code example is pure C now.
->      - Remove incorrect trailing '.IP'.
->
->      Cc: Wei Wang <weiwan@google.com>
->      Signed-off-by: Alejandro Colomar <alx.manpages@gmail.com>
->
-> diff --git a/man7/tcp.7 b/man7/tcp.7
-> index 264e3ccc4..69d85c05a 100644
-> --- a/man7/tcp.7
-> +++ b/man7/tcp.7
-> @@ -423,26 +423,31 @@ option.
->   .\" Since 2.4.0-test7
->   Enable RFC\ 2883 TCP Duplicate SACK support.
->   .TP
-> -.IR tcp_fastopen  " (Bitmask; default: 0x1; since Linux 3.7)"
-> -Enables RFC\ 7413 Fast Open support.
-> +.IR tcp_fastopen " (Bitmask; default: 0x1; since Linux 3.7)"
-> +Enables RFC\~7413 Fast Open support.
->   The flag is used as a bitmap with the following values:
->   .RS
-> -.IP 0x1
-> +.TP
-> +.B 0x1
->   Enables client side Fast Open support
-> -.IP 0x2
-> +.TP
-> +.B 0x2
->   Enables server side Fast Open support
-> -.IP 0x4
-> +.TP
-> +.B 0x4
->   Allows client side to transmit data in SYN without Fast Open option
-> -.IP 0x200
-> +.TP
-> +.B 0x200
->   Allows server side to accept SYN data without Fast Open option
-> -.IP 0x400
-> +.TP
-> +.B 0x400
->   Enables Fast Open on all listeners without
->   .B TCP_FASTOPEN
->   socket option
->   .RE
->   .TP
->   .IR tcp_fastopen_key " (since Linux 3.7)"
-> -Set server side RFC\ 7413 Fast Open key to generate Fast Open cookie
-> +Set server side RFC\~7413 Fast Open key to generate Fast Open cookie
->   when server side Fast Open support is enabled.
->   .TP
->   .IR tcp_ecn " (Integer; default: see below; since Linux 2.4)"
-> @@ -1226,19 +1231,19 @@ This option should not be used in code intended
-> to be
->   portable.
->   .TP
->   .BR TCP_FASTOPEN " (since Linux 3.6)"
-> -This option enables Fast Open (RFC\ 7413) on the listener socket.
-> +This option enables Fast Open (RFC\~7413) on the listener socket.
->   The value specifies the maximum length of pending SYNs
->   (similar to the backlog argument in
->   .BR listen (2)).
->   Once enabled,
-> -the listener socket grants the TCP Fast Open cookie on incoming
-> -SYN with TCP Fast Open option.
-> +the listener socket grants the TCP Fast Open cookie
-> +on incoming SYN with TCP Fast Open option.
->   .IP
->   More importantly it accepts the data in SYN with a valid Fast Open cookie
->   and responds SYN-ACK acknowledging both the data and the SYN sequence.
->   .BR accept (2)
-> -returns a socket that is available for read and write when the handshake
-> -has not completed yet.
-> +returns a socket that is available for read and write
-> +when the handshake has not completed yet.
->   Thus the data exchange can commence before the handshake completes.
->   This option requires enabling the server-side support on sysctl
->   .IR net.ipv4.tcp_fastopen
-> @@ -1252,18 +1257,18 @@ or
->   below.
->   .TP
->   .BR TCP_FASTOPEN_CONNECT " (since Linux 4.11)"
-> -This option enables an alternative way to perform Fast Open on the active
-> -side (client).
-> +This option enables an alternative way to perform Fast Open
-> +on the active side (client).
->   When this option is enabled,
->   .BR connect (2)
-> -would behave differently depending on if a Fast Open cookie is available
-> -for the destination.
-> +would behave differently depending on
-> +if a Fast Open cookie is available for the destination.
->   .IP
->   If a cookie is not available (i.e. first contact to the destination),
->   .BR connect (2)
->   behaves as usual by sending a SYN immediately,
-> -except the SYN would include an empty Fast Open cookie option to solicit a
-> -cookie.
-> +except the SYN would include an empty Fast Open cookie option
-> +to solicit a cookie.
->   .IP
->   If a cookie is available,
->   .BR connect (2)
-> @@ -1297,13 +1302,12 @@ without
->   .BR write (2)
->   will cause the blocking socket to be blocked forever.
->   .IP
-> -The application should  either set
-> +The application should either set
->   .B TCP_FASTOPEN_CONNECT
->   socket option before
->   .BR write (2)
->   or
-> -.BR sendmsg (2)
-> -,
-> +.BR sendmsg (2),
->   or call
->   .BR write (2)
->   or
-> @@ -1322,11 +1326,10 @@ setsockopt(s, IPPROTO_TCP, TCP_FASTOPEN_CONNECT,
-> 1, ...);
->   connect(s);
->   write(s); // write() should always follow connect() in order to
-> trigger SYN to go out
->   read(s)/write(s);
-> -...
-> +/* ... */
->   close(s);
->   .EE
->   .in
-> -.IP
->   .SS Sockets API
->   TCP provides limited support for out-of-band data,
->   in the form of (a single byte of) urgent data.
+Thanks for the ping.
+
+alarm(3600 * 24 * 30);  // :)
+
+> 
+> On Fri, 30 Apr 2021 at 21:32, Alejandro Colomar (man-pages) 
+> <alx.manpages@gmail.com <mailto:alx.manpages@gmail.com>> wrote:
+> 
+>     [PING mtk, netdev@]
+>     [CC += linux-kernel]
+> 
+>     Hi Erik,
+> 
+>     On 4/29/21 9:45 PM, Erik Flodin wrote:
+>      > On Wed, 14 Apr 2021 at 21:56, Alejandro Colomar (man-pages)
+>      > <alx.manpages@gmail.com <mailto:alx.manpages@gmail.com>> wrote:
+>      >>
+>      >> [CC += netdev]
+>      >>
+>      >> Hi Erik,
+>      >>
+>      >> On 4/14/21 8:52 PM, Erik Flodin wrote:
+>      >>> Hi,
+>      >>>
+>      >>> On Fri, 19 Mar 2021 at 20:53, Alejandro Colomar (man-pages)
+>      >>> <alx.manpages@gmail.com <mailto:alx.manpages@gmail.com>> wrote:
+>      >>>> On 3/17/21 3:12 PM, Erik Flodin wrote:
+>      >>>>> The documentation for SIOCGIFFLAGS/SIOCSIFFLAGS in
+>     netdevice.7 lists
+>      >>>>> IFF_LOWER_UP, IFF_DORMANT and IFF_ECHO, but those can't be set in
+>      >>>>> ifr_flags as it is only a short and the flags start at 1<<16.
+>      >>>>>
+>      >>>>> See also
+>     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=746e6ad23cd6fec2edce056e014a0eabeffa838c
+>     <https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=746e6ad23cd6fec2edce056e014a0eabeffa838c>
+>      >>>>>
+>      >>>>
+>      >>>> I don't know what's the history of that.
+>      >>>
+>      >>> Judging from commit message in the commit linked above it was
+>     added by
+>      >>> mistake. As noted the flags are accessible via netlink, just
+>     not via
+>      >>> SIOCGIFFLAGS.
+>      >>>
+>      >>> // Erik
+>      >>>
+>      >>
+>      >> I should have CCd netdev@ before.  Thanks for the update.  Let's
+>     see if
+>      >> anyone there can comment.
+>      >>
+>      >> Thanks,
+>      >>
+>      >> Alex
+>      >>
+> 
+>      > Hi again,
+>      >
+>      > Have there been any updates on this one?
+> 
+>     No, Noone from the kernel answered.  And I'm sorry, but I'm not sure
+>     what is going on in the code, so I don't want to close this here by just
+>     removing those flags from the manual page, because I worry that the
+>     actual code may be wrong or something.  So I prefer that when Michael
+>     has some time he can maybe review this and say something.  Ideally,
+>     someone from the kernel would also respond, but they haven't.  I've CCd
+>     the LKML; let's see if someone reads this and can help.
+> 
+>     Thanks,
+> 
+>     Alex
+> 
+>     P.S.:  Please, if we haven't responded in a month from now, ping us
+>     again.  Thanks again.
+> 
+>      >
+>      > // Erik
+>      >
+>      >>
+>      >> --
+>      >> Alejandro Colomar
+>      >> Linux man-pages comaintainer;
+>     https://www.kernel.org/doc/man-pages/
+>     <https://www.kernel.org/doc/man-pages/>
+>      >> http://www.alejandro-colomar.es/ <http://www.alejandro-colomar.es/>
+> 
+>     -- 
+>     Alejandro Colomar
+>     Linux man-pages comaintainer; https://www.kernel.org/doc/man-pages/
+>     <https://www.kernel.org/doc/man-pages/>
+>     http://www.alejandro-colomar.es/ <http://www.alejandro-colomar.es/>
+> 
+
+-- 
+Alejandro Colomar
+Linux man-pages comaintainer; http://www.kernel.org/doc/man-pages/
+http://www.alejandro-colomar.es/
