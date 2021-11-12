@@ -2,92 +2,282 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EDC344EDA4
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 20:58:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A7DD44EDB0
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 21:06:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235497AbhKLUBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 15:01:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59840 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235519AbhKLUBM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 15:01:12 -0500
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF6DC061767
-        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 11:58:21 -0800 (PST)
-Received: by mail-oi1-x22d.google.com with SMTP id o83so19873900oif.4
-        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 11:58:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=OG+083V6tKlKMwvIsmyHrk8e+vRUb8a/Sxa88eSnKj0=;
-        b=mX5NwhSPxd6sKkrwnXx0HOeOD3AH6mYxu5G7BwR3bkyuuyfd4LNQuh9XH/lhl5CzP/
-         Uc8aHJ6i6vojT2MBfRBP+IxYpcz7GBhqkXPEbBi5jKs1Ana9glsBJSKw2T0/tLYjEaCg
-         LgaYYzocxLHV0WnBQ7hvvA1aH2cOmmamjS6M+AfTk0JjiL1vsFiKb04vp0dJEoKErhMa
-         I+EVmyBAHN9TmNuOAnu5rgwdXjsa35AlH8q5KPDwStPN87faGuTLPvGFW9QxEqF78gpP
-         YTcox0cv1TtdCDjRktyOULorC7Q8WDCsvkOW1/cOWa9hoDEFKURALe69Dag9vBMVfhs9
-         HUfA==
+        id S235541AbhKLUIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 15:08:53 -0500
+Received: from mail-oi1-f180.google.com ([209.85.167.180]:35551 "EHLO
+        mail-oi1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235519AbhKLUIx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 15:08:53 -0500
+Received: by mail-oi1-f180.google.com with SMTP id m6so19995001oim.2;
+        Fri, 12 Nov 2021 12:06:02 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=OG+083V6tKlKMwvIsmyHrk8e+vRUb8a/Sxa88eSnKj0=;
-        b=xFhqiEAC55RgJ2Bt6G6Y8W9qFXgfzHYfNxmF2ReYzKbBWKsyaie3Va05sN0C1V/whS
-         1JrVTuYnRvWrFEWAlDWQEa7SUh6XI+Falt3P6Mo5OXPEiDnoYkujGUd3tP//8W+inWHt
-         BloRrrb99JZimEo6b6JjCtKq2eo6E2gfQaIYlYfbKEQ6KPPY2NPlnRNAJAjgSKXvRoWQ
-         Edc1HA+JMcbbdNzse7eWiUtrmZ7+z6aKUdAwNeDyA1WR0jfcCQxLivOeiZdhg5bMEnLN
-         cwHXglocZEfg5xzEnmFn/t6wm4xICNTpedfKfJbXA4PF6Bqq7Pkq+lqog4K5ro5bSiF4
-         Ye+A==
-X-Gm-Message-State: AOAM5323lU6L0HBsTlJ8Fn5PUFgtZONxTppbV22KYNr587LyC5QAT3Ls
-        PYZanybt4XoxfiHb+MAqLMiiRA9cIy9oF9DVpa4=
-X-Google-Smtp-Source: ABdhPJxQQJoNH1L+ZqdfNSCsP0QMX4i5D3Fcu/XtXF1bRD8xuFWyCn8Y/6v2Z5rhzhMYR+Rs31CeeyYPwvVv5HZEuUw=
-X-Received: by 2002:aca:1a05:: with SMTP id a5mr16071302oia.146.1636747100383;
- Fri, 12 Nov 2021 11:58:20 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=oyHEoCbMEF48+l8kYeD/pLfiS+xeE7xkfFCLiVLSxpY=;
+        b=MroNEcxvDJTa0aI1cOZTmVyyHAZtYLZ1dUc6fmd6TEMT8CrnOvwmjSO6FpaLDqVZYT
+         GlOzsQu7MHJ/l9aKzG+3AARywfuOKJ5OYF6qMA1rU5E0P5lxfC1HDubvNEaWGOJNyxFg
+         yBZMK8laePmySPNX5UyF1i7PEcVB7PC9jhNKr+qGn8keQKRSnW+aAo2mnLvg/PPD2Ilm
+         Via048qhHc+n6zhkQauM6AIMeLOMcnjOgq9A3nQRGUAUuLtHNIBZckFzUdfSMcFH7Tf5
+         TFxYwSXCd9hJXDeqAi8NNpZzGBWK385Q9GwzW8CaZAIGBBn56sVFkjz9bs/CSVM+Lu+F
+         giQA==
+X-Gm-Message-State: AOAM533ErsydfkqdQ0ZJWamiM7MZ0CcH3nS86qs69m8+/3fCuSsKA6Ww
+        Hv1FqGTyumBILw4dJT3kONAMJKA+qQ==
+X-Google-Smtp-Source: ABdhPJzvD+UXToT8P6L5ufsBvQofzszsfnV4av3vxKZ/ni+7V56LH6TvgJoQI0aSZw5kQw1GJXZipw==
+X-Received: by 2002:aca:2408:: with SMTP id n8mr28869169oic.124.1636747561808;
+        Fri, 12 Nov 2021 12:06:01 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id ay42sm1668772oib.22.2021.11.12.12.06.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Nov 2021 12:06:01 -0800 (PST)
+Received: (nullmailer pid 3280416 invoked by uid 1000);
+        Fri, 12 Nov 2021 20:06:00 -0000
+Date:   Fri, 12 Nov 2021 14:06:00 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v2 2/6] dt-bindings: net: convert mscc,vsc7514-switch
+ bindings to yaml
+Message-ID: <YY7JKO/kisz+zmF8@robh.at.kernel.org>
+References: <20211103091943.3878621-1-clement.leger@bootlin.com>
+ <20211103091943.3878621-3-clement.leger@bootlin.com>
 MIME-Version: 1.0
-Received: by 2002:a4a:e381:0:0:0:0:0 with HTTP; Fri, 12 Nov 2021 11:58:19
- -0800 (PST)
-Reply-To: mr.luisfernando5050@gmail.com
-From:   "Mr. Luis Fernando" <drjubrilubaro36@gmail.com>
-Date:   Fri, 12 Nov 2021 11:58:19 -0800
-Message-ID: <CA+7yYtPigJB7bUvzoJhS1FNeHaggKF-_emDU3DQVLB4fCtdDjA@mail.gmail.com>
-Subject: GOOD DAY
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211103091943.3878621-3-clement.leger@bootlin.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-LS0gDQoNCuy5nOq1rOyXkOqyjCwNCg0K7J247IKs66eQLg0KDQrsmKTripgg7J6YIOyngOuCtOqz
-oCDsnojrgpjsmpQ/DQoNCuuPhOybgOydtCDtlYTsmpTtlaAg65WMIOqwnOyduCDqsoDsg4nsnYQg
-7ZWY6riwIOyghOyXkCDqt4DtlZjsnZgg7J2066mU7J28IOyXsOudveyymOulvCDrsJzqsqztlojs
-irXri4jri6QuDQrri7nsi6DsnZgg64+E7JuALiDrgrQg7J2066aE7J2AIE1yLmx1aXMgZmVybmFu
-ZG8gJ+yZgCDtlajqu5gg7J287ZWp64uI64ukLg0KVUJBIEJhbmsgb2YgQWZyaWNh7J2YIOqwkOyC
-rCDrsI8g7ZqM6rOEIOq0gOumrOyekCwNCuuqhyDrhYQg7KCE7JeQIOygnOqwgCDrs7TqtIDtlZjq
-s6Ag7J6I642YIOydtCDquLDquIjsnbQg7J6I7Iq164uI64ukLg0K7J20IOyekOq4iOydhCDqt4Dt
-lZjsnZgg7J2A7ZaJIOqzhOyijOuhnCDsnbTssrTtlZjquLAg7JyE7ZWcIOq3gO2VmOydmCDsp4Ds
-m5ANCuyasOumrCDrqqjrkZDsl5Dqsowg7Y+J7IOdIO2IrOyekOyXkCDrjIDtlZwg7Zic7YOd6rO8
-IOq4iOyVoeydgCAo66+46rWtDQoyNyw1MDDri6zrn6wuIOuwseunjCDri6zrn6wpLg0KDQrrgpjr
-ipQg7J2A7ZaJ7J20IOuLueyLoOydhCDrr7/qs6Ag66a066as7Iqk7ZWY64+E66GdIOuqqOuToCDr
-rLjsnZgg7IS467aAIOyCrO2VreydhCDqsIDsp4Dqs6Ag7J6I7Iq164uI64ukLg0K7J2A7ZaJIOyX
-heustOydvCDquLDspIAgN+ydvCDsnbTrgrTsl5Ag6reA7ZWY7J2YIOydgO2WiSDqs4TsoozroZwg
-7J6Q6riI7J2EDQrshLHqs7Ug7ZuEIOuCmOyZgOydmCDsmYTsoITtlZwg7ZiR66ClDQrsnYDtlons
-nLzroZwg7J6Q6riIIOydtOyytCDshLHqs7Ug7ZuEIDUwJQ0K6rOE7KCVIOq0nOywruyVhC4NCg0K
-6reA7ZWY7J2YIOydmOqyrOydhCDquLDri6Trpqzqs6Ag7J6I7Iq164uI64ukLg0K6rCQ7IKsIO2V
-tOyalC4NCg0K66Oo7J207IqkIO2OmOultOuCnOuPhCDslKgNCg0KDQoNCg0KDQoNCg0KRGVhciBG
-cmllbmQsDQoNCkdyZWV0aW5ncy4NCg0KSG93IGFyZSB5b3UgZG9pbmcgdG9kYXkgaSBob3BlIGZp
-bmU/DQoNCkkgY2FtZSBhY3Jvc3MgeW91ciBlLW1haWwgY29udGFjdCBwcmlvciBhIHByaXZhdGUg
-c2VhcmNoIHdoaWxlIGluIG5lZWQNCm9mIHlvdXIgYXNzaXN0YW5jZS4gTXkgbmFtZSBNci5sdWlz
-IGZlcm5hbmRvIOKAmSBJIHdvcmsgd2l0aCB0aGUNCmRlcGFydG1lbnQgb2YgQXVkaXQgYW5kIGFj
-Y291bnRpbmcgbWFuYWdlciBoZXJlIGluIFVCQSBCYW5rIG9mIEFmcmljYSwNClRoZXJlIGlzIHRo
-aXMgZnVuZCB0aGF0IHdhcyBrZWVwIGluIG15IGN1c3RvZHkgeWVhcnMgYWdvIGFuZCBJIG5lZWQN
-CnlvdXIgYXNzaXN0YW5jZSBmb3IgdGhlIHRyYW5zZmVycmluZyBvZiB0aGlzIGZ1bmQgdG8geW91
-ciBiYW5rIGFjY291bnQNCmZvciBib3RoIG9mIHVzIGJlbmVmaXQgZm9yIGxpZmUgdGltZSBpbnZl
-c3RtZW50IGFuZCB0aGUgYW1vdW50IGlzIChVUw0KJDI3LDUwMC4gTWlsbGlvbiBEb2xsYXJzKS4N
-Cg0KSSBoYXZlIGV2ZXJ5IGlucXVpcnkgZGV0YWlscyB0byBtYWtlIHRoZSBiYW5rIGJlbGlldmUg
-eW91IGFuZCByZWxlYXNlDQp0aGUgZnVuZCB0byB5b3VyIGJhbmsgYWNjb3VudCBpbiB3aXRoaW4g
-NyBiYW5raW5nIHdvcmtpbmcgZGF5cyB3aXRoDQp5b3VyIGZ1bGwgY28tb3BlcmF0aW9uIHdpdGgg
-bWUgYWZ0ZXIgc3VjY2VzcyBOb3RlIDUwJSBmb3IgeW91IHdoaWxlDQo1MCUgZm9yIG1lIGFmdGVy
-IHN1Y2Nlc3Mgb2YgdGhlIHRyYW5zZmVyIG9mIHRoZSBmdW5kcyB0byB5b3VyIGJhbmsNCmFjY291
-bnQgb2theS4NCg0KV0FJVElORyBUTyBIRUFSIEZST00gWU9VLg0KVEhBTktTLg0KDQpNci5sdWlz
-IGZlcm5hbmRvDQo=
+On Wed, Nov 03, 2021 at 10:19:39AM +0100, Clément Léger wrote:
+> Convert existing bindings to yaml format. In the same time, remove non
+> exiting properties ("inj" interrupt) and add fdma.
+> 
+> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+> ---
+>  .../bindings/net/mscc,vsc7514-switch.yaml     | 184 ++++++++++++++++++
+>  .../devicetree/bindings/net/mscc-ocelot.txt   |  83 --------
+>  2 files changed, 184 insertions(+), 83 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/mscc,vsc7514-switch.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/net/mscc-ocelot.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/net/mscc,vsc7514-switch.yaml b/Documentation/devicetree/bindings/net/mscc,vsc7514-switch.yaml
+> new file mode 100644
+> index 000000000000..0c96eabf9d2d
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/mscc,vsc7514-switch.yaml
+> @@ -0,0 +1,184 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/mscc,vsc7514-switch.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Microchip VSC7514 Ethernet switch controller
+> +
+> +maintainers:
+> +  - Vladimir Oltean <vladimir.oltean@nxp.com>
+> +  - Claudiu Manoil <claudiu.manoil@nxp.com>
+> +  - Alexandre Belloni <alexandre.belloni@bootlin.com>
+> +
+> +description: |
+> +  The VSC7514 Industrial IoT Ethernet switch contains four integrated dual media
+> +  10/100/1000BASE-T PHYs, two 1G SGMII/SerDes, two 1G/2.5G SGMII/SerDes, and an
+> +  option for either a 1G/2.5G SGMII/SerDes Node Processor Interface (NPI) or a
+> +  PCIe interface for external CPU connectivity. The NPI/PCIe can operate as a
+> +  standard Ethernet port.
+> +
+> +  The device provides a rich set of Industrial Ethernet switching features such
+> +  as fast protection switching, 1588 precision time protocol, and synchronous
+> +  Ethernet. Advanced TCAM-based VLAN and QoS processing enable delivery of
+> +  differentiated services. Security is assured through frame processing using
+> +  Microsemi’s TCAM-based Versatile Content Aware Processor.
+> +
+> +  In addition, the device contains a powerful 500 MHz CPU enabling full
+> +  management of the switch.
+> +
+> +properties:
+> +  $nodename:
+> +    pattern: "^switch@[0-9a-f]+$"
+> +
+> +  compatible:
+> +    const: mscc,vsc7514-switch
+> +
+> +  reg:
+> +    items:
+> +      - description: system target
+> +      - description: rewriter target
+> +      - description: qs target
+> +      - description: PTP target
+> +      - description: Port0 target
+> +      - description: Port1 target
+> +      - description: Port2 target
+> +      - description: Port3 target
+> +      - description: Port4 target
+> +      - description: Port5 target
+> +      - description: Port6 target
+> +      - description: Port7 target
+> +      - description: Port8 target
+> +      - description: Port9 target
+> +      - description: Port10 target
+> +      - description: QSystem target
+> +      - description: Analyzer target
+> +      - description: S0 target
+> +      - description: S1 target
+> +      - description: S2 target
+> +      - description: fdma target
+> +
+> +  reg-names:
+> +    items:
+> +      - const: sys
+> +      - const: rew
+> +      - const: qs
+> +      - const: ptp
+> +      - const: port0
+> +      - const: port1
+> +      - const: port2
+> +      - const: port3
+> +      - const: port4
+> +      - const: port5
+> +      - const: port6
+> +      - const: port7
+> +      - const: port8
+> +      - const: port9
+> +      - const: port10
+> +      - const: qsys
+> +      - const: ana
+> +      - const: s0
+> +      - const: s1
+> +      - const: s2
+> +      - const: fdma
+> +
+> +  interrupts:
+> +    minItems: 1
+> +    items:
+> +      - description: PTP ready
+> +      - description: register based extraction
+> +      - description: frame dma based extraction
+> +
+> +  interrupt-names:
+> +    minItems: 1
+> +    items:
+> +      - const: ptp_rdy
+> +      - const: xtr
+> +      - const: fdma
+> +
+> +  ethernet-ports:
+> +    type: object
+
+       additionalProperties: false
+
+> +    patternProperties:
+> +      "^port@[0-9a-f]+$":
+> +        type: object
+> +        description: Ethernet ports handled by the switch
+> +
+> +        allOf:
+
+You can drop 'allOf'.
+
+> +          - $ref: ethernet-controller.yaml#
+
+           unevaluatedProperties: false
+
+> +
+> +        properties:
+> +          '#address-cells':
+> +            const: 1
+> +          '#size-cells':
+> +            const: 0
+
+Wrong level for these.
+
+> +
+> +          reg:
+> +            description: Switch port number
+> +
+> +          phy-handle: true
+> +
+> +          mac-address: true
+> +
+> +        required:
+> +          - reg
+> +          - phy-handle
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - reg-names
+> +  - interrupts
+> +  - interrupt-names
+> +  - ethernet-ports
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    switch@1010000 {
+> +      compatible = "mscc,vsc7514-switch";
+> +      reg = <0x1010000 0x10000>,
+> +            <0x1030000 0x10000>,
+> +            <0x1080000 0x100>,
+> +            <0x10e0000 0x10000>,
+> +            <0x11e0000 0x100>,
+> +            <0x11f0000 0x100>,
+> +            <0x1200000 0x100>,
+> +            <0x1210000 0x100>,
+> +            <0x1220000 0x100>,
+> +            <0x1230000 0x100>,
+> +            <0x1240000 0x100>,
+> +            <0x1250000 0x100>,
+> +            <0x1260000 0x100>,
+> +            <0x1270000 0x100>,
+> +            <0x1280000 0x100>,
+> +            <0x1800000 0x80000>,
+> +            <0x1880000 0x10000>,
+> +            <0x1040000 0x10000>,
+> +            <0x1050000 0x10000>,
+> +            <0x1060000 0x10000>,
+> +            <0x1a0 0x1c4>;
+> +      reg-names = "sys", "rew", "qs", "ptp", "port0", "port1",
+> +            "port2", "port3", "port4", "port5", "port6",
+> +            "port7", "port8", "port9", "port10", "qsys",
+> +            "ana", "s0", "s1", "s2", "fdma";
+> +      interrupts = <18 21 16>;
+> +      interrupt-names = "ptp_rdy", "xtr", "fdma";
+> +
+> +      ethernet-ports {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        port0: port@0 {
+> +          reg = <0>;
+> +          phy-handle = <&phy0>;
+> +        };
+> +        port1: port@1 {
+> +          reg = <1>;
+> +          phy-handle = <&phy1>;
+> +        };
+> +      };
+> +    };
+> +
+> +...
+> +#  vim: set ts=2 sw=2 sts=2 tw=80 et cc=80 ft=yaml :
+
+Please drop this. 
+
+emacs settings are fine, but not vim. ;) JK, I don't use either.
+
