@@ -2,100 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A31C44E205
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 07:43:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1AAA44E237
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 08:05:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232430AbhKLGq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 01:46:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48436 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230259AbhKLGq3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 01:46:29 -0500
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02346C061766;
-        Thu, 11 Nov 2021 22:43:39 -0800 (PST)
-Received: by mail-ed1-x544.google.com with SMTP id f8so33926519edy.4;
-        Thu, 11 Nov 2021 22:43:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mXSkFnc6W0uhF72QqlDzmJCFzXvpezEdkesJtVNnp3E=;
-        b=UpRk14MJ7uYWNUuWq6RGfSl03WE0hF/rRg8e3ANeTB90dB9PQHvdgrgRwe6VL5aSnH
-         6LfrlZ/Zpc6PlQFibFSYVOURI+qcjWMI7rSVy/N0GMRAN22lvWnZvotdM13snSHe0AQ0
-         2OUWUTLJsnneMa7zKIneZxyqwbITw9onKJ/+yxLr8CZoOJeO8yG6u83bz0V5FaM+FLqU
-         AIXRkp/iXKAG0UCgSL0eqCMMEns5d1mCCRmXyPUxYHaiRTdfIkhm9FUc6ESHwxdvhSbo
-         bskx4+UDUpHjYA+R/km39C3L0gBtQ1xtJFlwFHeeMvfHTfotl3Sd9kZ198pyjgxjyKJJ
-         A2sQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mXSkFnc6W0uhF72QqlDzmJCFzXvpezEdkesJtVNnp3E=;
-        b=w/kuWxP/2ZjLtnkyWV9SezmOTDMwYliuP7RLAQlpSjFhy+usWioPVFB5kOBsCVN2T4
-         wbjChwNpCeu0L9dxDq3D3IMhV0hyWVX/TvM2hUJs8+eBtak7Ws9hVklqLhRNllv7Ymz2
-         D5TXPt7YkaX8Y1vqszJEjvJ+QPFoJakj0I7aALSq7DH2xSU/3akRxiBTD0uOulBd1y0V
-         MBFKkZ54gs4NBv7fsI+FqS9Ukd2k+jx//RF/KTWT5iNSYAMZq4Cwf8fn3yAMY4iiGeoT
-         qja0M/5wJvWNLMAfXFkBbYl285OD5sXBc5MyeX0f7lidNlfUwUmzZ97m3Oo/0YcaNtbO
-         wGLQ==
-X-Gm-Message-State: AOAM5311BkL4zFaMoesNh7vOHfEJVXXfK1ZM0sCbTMfrobzsLXgTwYbW
-        iIga29zhnnt8RUwXmlp9RYd+GQQGULSXw5hTNdI=
-X-Google-Smtp-Source: ABdhPJwbJWR2WlmTMbOdEF6bvWmcevTpX6YpBmODKhY0/OXyhaT7s03WYdjeMHmqzQQjTteukvUzoyLBuZqOB9LuTm4=
-X-Received: by 2002:a17:906:8a62:: with SMTP id hy2mr16490299ejc.347.1636699417619;
- Thu, 11 Nov 2021 22:43:37 -0800 (PST)
+        id S232791AbhKLHII (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 02:08:08 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:46272 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232346AbhKLHIH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 02:08:07 -0500
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1AC72og8023186
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 23:05:17 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=v88wNH+SO7MKD6P1/lFZoe4stJ84ryDclqwta/Kju40=;
+ b=J/ke9Elyl7vuxBhT6XMmqVfEUeuWTKZtpO9K3m5TdbtZN1biBXDZZbpFEhyv/MDb3AI3
+ xmll0DuhAsMukOYpEJCbK0ScdwCXP5JKH4L/tE4Jcrx0SddNrjj8FhykYPIh9CUOFv8G
+ eExvb9ID6ged8A26kwgtVQM61UfDN0ujRFQ= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 3c9k99820s-11
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 23:05:17 -0800
+Received: from intmgw001.37.frc1.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.14; Thu, 11 Nov 2021 23:01:49 -0800
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 40D0B1F8ACEA0; Thu, 11 Nov 2021 23:01:45 -0800 (PST)
+From:   Song Liu <songliubraving@fb.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kernel-team@fb.com>, Song Liu <songliubraving@fb.com>
+Subject: [PATCH v2 bpf-next 0/2] introduce btf_tracing_ids
+Date:   Thu, 11 Nov 2021 23:01:29 -0800
+Message-ID: <20211112070131.3131449-1-songliubraving@fb.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20211111133530.2156478-1-imagedong@tencent.com>
- <20211111060827.5906a2f9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CADxym3bk5+3t9jFmEgCBBYHWvNJx6BJGdjk+-zqiQaJPtLM=Ug@mail.gmail.com> <20211111175032.14999302@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211111175032.14999302@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Fri, 12 Nov 2021 14:42:23 +0800
-Message-ID: <CADxym3YzMGG3gZ1X6gc=qF182Ow0iO+782Hjn3QvnFnRhfEbRA@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/2] net: snmp: tracepoint support for snmp
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Steven Rostedt <rostedt@goodmis.org>, mingo@redhat.com,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        dsahern@kernel.org, Menglong Dong <imagedong@tencent.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-FB-Source: Intern
+X-Proofpoint-GUID: _F-gwne3xFgUipjByoyh-8Ik4l4GlxWu
+X-Proofpoint-ORIG-GUID: _F-gwne3xFgUipjByoyh-8Ik4l4GlxWu
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-11-12_02,2021-11-11_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ lowpriorityscore=0 impostorscore=0 priorityscore=1501 bulkscore=0
+ phishscore=0 mlxlogscore=391 malwarescore=0 mlxscore=0 clxscore=1015
+ spamscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2111120038
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Changes v1 =3D> v2:
+1. Add patch 2/2. (Alexei)
 
-On Fri, Nov 12, 2021 at 9:50 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Fri, 12 Nov 2021 09:40:47 +0800 Menglong Dong wrote:
-> > > I feel like I have seen this idea before. Is this your first posting?
-> > >
-> > > Would you mind including links to previous discussion if you're aware
-> > > of any?
-> >
-> > This is the first time that I post this patch. Do you mean that someone
-> > else has done this before? Sorry, I didn't find it~
->
-> I see. Yes, I believe very similar changes were proposed in the past.
->
-> I believe that concerns about the performance impact had prevented them
-> from being merged.
+1/2 fixes issue with btf_task_struct_ids w/o CONFIG_DEBUG_INFO_BTF.
+2/2 replaces btf_task_struct_ids with easier to understand btf_tracing_id=
+s.
 
-I have found a similar post:
-https://lore.kernel.org/netdev/20090303165747.GA1480@hmsreliant.think-freely.org/
+Song Liu (2):
+  bpf: extend BTF_ID_LIST_GLOBAL with parameter for number of IDs
+  bpf: introduce btf_tracing_ids
 
-And this is the tracepoint for kfree_skb().
+ include/linux/btf_ids.h       | 20 ++++++++++++++++----
+ kernel/bpf/bpf_task_storage.c |  4 ++--
+ kernel/bpf/btf.c              |  8 ++++----
+ kernel/bpf/stackmap.c         |  2 +-
+ kernel/bpf/task_iter.c        | 12 ++++++------
+ kernel/bpf/verifier.c         |  2 +-
+ kernel/trace/bpf_trace.c      |  4 ++--
+ net/core/filter.c             |  6 +-----
+ 8 files changed, 33 insertions(+), 25 deletions(-)
 
-I also concerns about the performance. However, with the tracepoints disabled,
-they don't have any impact; with enabled, their impact is no more than the
-tracepoint in kfree_skb() and consume_skb().
-
-What's more, I have also realized another version: create tracepoint for every
-statistics type, such as snmp_udp_incsumerrors, snmp_udp_rcvbuferrors, etc.
-This can solve performance issue, as users can enable part of them, which
-may be triggered not frequently. However, too many tracepoint are created, and
-I think it may be not applicable.
-
-Thanks!
-Menglong Dong
+--
+2.30.2
