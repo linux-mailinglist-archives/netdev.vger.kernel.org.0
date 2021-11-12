@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13C5044EA46
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 16:36:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 429D744EA51
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 16:36:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235323AbhKLPjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 10:39:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56924 "EHLO
+        id S235374AbhKLPjI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 10:39:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235276AbhKLPi5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 10:38:57 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13CB5C061767;
-        Fri, 12 Nov 2021 07:36:06 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id b12so16224304wrh.4;
-        Fri, 12 Nov 2021 07:36:06 -0800 (PST)
+        with ESMTP id S235290AbhKLPi6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 10:38:58 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 391CAC061766;
+        Fri, 12 Nov 2021 07:36:07 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id c4so16151925wrd.9;
+        Fri, 12 Nov 2021 07:36:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=4jGWHLurbyA4/FNcd6iSsivOCVyFz9hIK/N30AnY3g4=;
-        b=dvUVdbRJz8af65msBLml9vdXAaDpZl4VJjWLFvbA/Fn9ZwxgBuyoH+HOAqNGn0ZD6Q
-         GM9NqIMPIv4wC8BT9nXMDb1VX+wNB0/m98lC7HHKtHaJZDcaAfRu+emCsQYdAJAezAec
-         W4sVnAezjgAqSW+b2Qml4ZcoZRQeRInEQs/ctLcRzPtlJxDs9g83+CG85P5RUOifrYDl
-         TcKFyzpe7TAIJ71+6HWc0vPcZpBqd5qu1R1pTe3GS3CVKCi6ZwNfaPwVWoeqCnt4MNDW
-         Fw/779dq+/kqakffVO7+km0P724Ry9mjVnryXOzxBCYD9iLheOen8Zf6Bwa+qdaFrh6b
-         UWdA==
+        bh=aDae9VxboKRaYt/bmJ4i7DdbNxdsamkoSFhw7jBOT04=;
+        b=Mx+Y+GV2GKATil2tdoypyr/7UxBELXYHV/2UlF4TI/AgAdtRYcyARXmSxew1DUWdTe
+         6pRUW+Tj9P4xRUTPtxHlkA905GRrYIJDhGm9yR7AOMDuxR2lmlOcd/r2DUa/0aOaR8a3
+         76K6PtyN04d4/5OnoUenNb/hFOhz/I1FBNelAuYinCXtYmO9+lsOfSlcfG8SQ07DuBrx
+         W13UdO4nJnKXH5VeV89UMRtQjcsPRri5QEToi4d+xiE5d0j4f2ve6Sc+bzWkvuS3E2D2
+         Srk8qmrBa+wGcmSqkEjFw06slBz1L+nS6vQ+i55r0qW9VeGAJYsdCaOyhpr0eSyQkqMm
+         ZluQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4jGWHLurbyA4/FNcd6iSsivOCVyFz9hIK/N30AnY3g4=;
-        b=W8F0G9U/HPg+NzbLqxYcWTs/hJAlcIue+M3ZdlzoMYrdYzq2C4cDyUlIcPhp1ywsYn
-         mXPpGnXjlEqZUyVMU9bGzXgZ0R761qssjbqSXSaCZhGRkEGUsij5HkWrMquwbvBZ+an3
-         txFQPvG5ZvHJ4nPfr0reJwjIOQiK0KMRrtCE4qNypD4LbJbY64f1+RgpHjpnAMswSbsz
-         4ZoSXR+GLU2DEX9Y58S8Tb80bgG8/a6DYJKCKqTaP39rOE1V9wFZW+jzc0yjEbOAIjme
-         mYgXDgRjFsMgf02E3vY8EwPQS1xuUl3hN6PxcS0VfPLurENEdIPruAmqL2smWHDn5KH/
-         Rbpw==
-X-Gm-Message-State: AOAM533dgxMZ8BiuGIQ9QPTXk4+EUwXBDpk08XaQJJBJUkZ6TWaHL+rU
-        XmUTvvTwn4Rfh5WCeUgRc4U=
-X-Google-Smtp-Source: ABdhPJxHqBolAxoEFyGpKEC/hKiG0pOutcmXOe9vu935+06JxkMbxCN0idm2sjgonBaATYsVlvRgYA==
-X-Received: by 2002:a5d:5244:: with SMTP id k4mr20074388wrc.77.1636731364446;
-        Fri, 12 Nov 2021 07:36:04 -0800 (PST)
+        bh=aDae9VxboKRaYt/bmJ4i7DdbNxdsamkoSFhw7jBOT04=;
+        b=W9SdBOk6iG+LXCOvhIRrAD3X2r8cOFEWNMnHiZOCZpCIWHKs2ODU/pAr1KZuc9ZRB5
+         QnDFFW8IRwNWt6Isfd4iofOSaVYMYb0JW/6X2/a/oOULou4J/Nc887fkOCKH1/Pw/Dfs
+         T1jq3WDnhGh8FzMReywAXJp3fgj64qQS/ShkgCtT3HgqbLlV2bkpzXxZPPJePF6O6dqN
+         2WaTq1Rue5aLsiAtoIXbXiorjIJaXn5/sfQ9FkDsp+/MZLG0/B8tDMmrchRz436KHBsL
+         pwC3XvN7SHKEru1pGgCnWbqMrKviS8JU3jonPTmzbuQt8RP3kDFYxeOO3JEg8Z09FWI2
+         tLww==
+X-Gm-Message-State: AOAM531lOuTQESRZ94PwPqjb4uQ5ays/Kwm6P9qEuM765pgPCfsc6fMR
+        m+C8s7FOnFmfR9okJV3M/fkt7jMeYvY=
+X-Google-Smtp-Source: ABdhPJzmvlESmo0uzPUq1oRR9TgG9ZUW5Zqaa7duYCqHfLYbWeQ6PCuFOjeN7412d1HsOs/ZWgo2Gw==
+X-Received: by 2002:adf:e8c8:: with SMTP id k8mr19192896wrn.135.1636731365698;
+        Fri, 12 Nov 2021 07:36:05 -0800 (PST)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id az4sm4217543wmb.20.2021.11.12.07.36.03
+        by smtp.googlemail.com with ESMTPSA id az4sm4217543wmb.20.2021.11.12.07.36.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Nov 2021 07:36:04 -0800 (PST)
+        Fri, 12 Nov 2021 07:36:05 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -61,9 +61,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH v5 2/8] leds: document additional use of blink_set for hardware control
-Date:   Fri, 12 Nov 2021 16:35:51 +0100
-Message-Id: <20211112153557.26941-3-ansuelsmth@gmail.com>
+Subject: [PATCH v5 3/8] leds: trigger: netdev: drop NETDEV_LED_MODE_LINKUP from mode
+Date:   Fri, 12 Nov 2021 16:35:52 +0100
+Message-Id: <20211112153557.26941-4-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211112153557.26941-1-ansuelsmth@gmail.com>
 References: <20211112153557.26941-1-ansuelsmth@gmail.com>
@@ -73,100 +73,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-blink_set can now be used also to configure blink modes when hardware
-control is supported and active.
-Trigger will try to use blink_set and a LED driver will use the
-trigger_data to configure the blink_modes once blink_set is called.
-Setting a brightness to LED_OFF will reset any blink mode and disable
-hardware control setting the LED off.
+NETDEV_LED_MODE_LINKUP is not strictly a blink mode but really a status
+of the current situation of the carrier. It seems wrong to accomunate a
+link status to the blink mode list and would cause some confusion as
+someone would think that MODE_LINKUP is a separate mode that provide the
+netdev trigger with the other 3 LINK, RX and TX.
+
+Drop NETDEV_LED_MODE_LINKUP from mode list and convert to a simple bool
+that will be true or false based on the carrier link. No functional
+change intended.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- Documentation/leds/leds-class.rst | 17 +++++++++++++++++
- drivers/leds/led-class.c          |  7 +++++++
- include/linux/leds.h              |  9 +++++++++
- 3 files changed, 33 insertions(+)
+ drivers/leds/trigger/ledtrig-netdev.c | 16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
 
-diff --git a/Documentation/leds/leds-class.rst b/Documentation/leds/leds-class.rst
-index e5d266919a19..fa6e1cfc4628 100644
---- a/Documentation/leds/leds-class.rst
-+++ b/Documentation/leds/leds-class.rst
-@@ -202,6 +202,23 @@ hardware mode and any software only trigger will reject activation.
- On init an LED driver that support a hardware mode should reset every blink mode
- set by default.
+diff --git a/drivers/leds/trigger/ledtrig-netdev.c b/drivers/leds/trigger/ledtrig-netdev.c
+index d5e774d83021..66a81cc9b64d 100644
+--- a/drivers/leds/trigger/ledtrig-netdev.c
++++ b/drivers/leds/trigger/ledtrig-netdev.c
+@@ -50,10 +50,10 @@ struct led_netdev_data {
+ 	unsigned int last_activity;
  
-+Once a trigger has declared support for hardware-controlled blinks, it will use
-+blink_set() to try to offload his trigger on activation/configuration.
-+blink_set() will return 0 if the requested modes set in trigger_data can be
-+controlled by hardware or an error if both of the bitmap modes are not supported by
-+the hardware or there was a problem in the configuration.
-+
-+Following blink_set logic, setting brightness to LED_OFF with hardware control active
-+will reset any active blink mode and disable hardware control setting the LED to off.
-+
-+It's in the LED driver's interest to know how to elaborate the trigger data and report support
-+for a particular set of blink modes. For this exact reason explicit support for the specific
-+trigger is mandatory or the driver returns -EOPNOTSUPP if asked to enter hardware mode
-+with a not supported trigger.
-+If the driver returns -EOPNOTSUPP on hw_control_configure(), the trigger activation will
-+fail as the driver doesn't support that specific hardware blink mode or doesn't know
-+how to handle the provided trigger data.
-+
- Known Issues
- ============
+ 	unsigned long mode;
++	bool carrier_link_up;
+ #define NETDEV_LED_LINK	0
+ #define NETDEV_LED_TX	1
+ #define NETDEV_LED_RX	2
+-#define NETDEV_LED_MODE_LINKUP	3
+ };
  
-diff --git a/drivers/leds/led-class.c b/drivers/leds/led-class.c
-index dbe9840863d0..ebd023e480ac 100644
---- a/drivers/leds/led-class.c
-+++ b/drivers/leds/led-class.c
-@@ -180,6 +180,13 @@ static int led_classdev_check_hw_control_functions(struct led_classdev *led_cdev
- 	    led_cdev->hw_control_stop))
- 		return -EINVAL;
+ enum netdev_led_attr {
+@@ -73,9 +73,9 @@ static void set_baseline_state(struct led_netdev_data *trigger_data)
+ 	if (!led_cdev->blink_brightness)
+ 		led_cdev->blink_brightness = led_cdev->max_brightness;
  
-+	/* blink_set is mandatory to configure the blink modes
-+	 * in hardware control.
-+	 */
-+	if ((LED_HARDWARE_CONTROLLED & led_cdev->flags) &&
-+	    !led_cdev->blink_set)
-+		return -EINVAL;
-+
- 	return 0;
- }
- #endif
-diff --git a/include/linux/leds.h b/include/linux/leds.h
-index c8e97fb9252f..fa929215cdcc 100644
---- a/include/linux/leds.h
-+++ b/include/linux/leds.h
-@@ -76,6 +76,7 @@ struct led_classdev {
- 	/* Lower 16 bits reflect status */
- #define LED_SUSPENDED		BIT(0)
- #define LED_UNREGISTERING	BIT(1)
-+#define LED_HARDWARE_CONTROL	BIT(2)
- 	/* Upper 16 bits reflect control information */
- #define LED_CORE_SUSPENDRESUME	BIT(16)
- #define LED_SYSFS_DISABLE	BIT(17)
-@@ -123,6 +124,12 @@ struct led_classdev {
- 	 * match the values specified exactly.
- 	 * Deactivate blinking again when the brightness is set to LED_OFF
- 	 * via the brightness_set() callback.
-+	 * With LED_HARDWARE_CONTROL set in LED flags blink_set will also
-+	 * configure blink modes requested by the current trigger if
-+	 * supported by the LED driver.
-+	 * Setting brightness to LED_OFF with hardware control active will
-+	 * reset any active blink mode and disable hardware control setting
-+	 * the LED off.
- 	 */
- 	int		(*blink_set)(struct led_classdev *led_cdev,
- 				     unsigned long *delay_on,
-@@ -165,6 +172,8 @@ struct led_classdev {
- 	 */
- 	bool			(*hw_control_status)(struct led_classdev *led_cdev);
- 	/* Set LED in hardware mode and reset any blink mode active by default.
-+	 * A trigger supporting hardware mode will have to use blink_set to configure
-+	 * the modes.
- 	 */
- 	int			(*hw_control_start)(struct led_classdev *led_cdev);
- 	/* Disable hardware mode for LED. It's advised to the LED driver to put it to
+-	if (!test_bit(NETDEV_LED_MODE_LINKUP, &trigger_data->mode))
++	if (!trigger_data->carrier_link_up) {
+ 		led_set_brightness(led_cdev, LED_OFF);
+-	else {
++	} else {
+ 		if (test_bit(NETDEV_LED_LINK, &trigger_data->mode))
+ 			led_set_brightness(led_cdev,
+ 					   led_cdev->blink_brightness);
+@@ -131,10 +131,9 @@ static ssize_t device_name_store(struct device *dev,
+ 		trigger_data->net_dev =
+ 		    dev_get_by_name(&init_net, trigger_data->device_name);
+ 
+-	clear_bit(NETDEV_LED_MODE_LINKUP, &trigger_data->mode);
++	trigger_data->carrier_link_up = false;
+ 	if (trigger_data->net_dev != NULL)
+-		if (netif_carrier_ok(trigger_data->net_dev))
+-			set_bit(NETDEV_LED_MODE_LINKUP, &trigger_data->mode);
++		trigger_data->carrier_link_up = netif_carrier_ok(trigger_data->net_dev);
+ 
+ 	trigger_data->last_activity = 0;
+ 
+@@ -315,7 +314,7 @@ static int netdev_trig_notify(struct notifier_block *nb,
+ 
+ 	spin_lock_bh(&trigger_data->lock);
+ 
+-	clear_bit(NETDEV_LED_MODE_LINKUP, &trigger_data->mode);
++	trigger_data->carrier_link_up = false;
+ 	switch (evt) {
+ 	case NETDEV_CHANGENAME:
+ 	case NETDEV_REGISTER:
+@@ -330,8 +329,7 @@ static int netdev_trig_notify(struct notifier_block *nb,
+ 		break;
+ 	case NETDEV_UP:
+ 	case NETDEV_CHANGE:
+-		if (netif_carrier_ok(dev))
+-			set_bit(NETDEV_LED_MODE_LINKUP, &trigger_data->mode);
++		trigger_data->carrier_link_up = netif_carrier_ok(dev);
+ 		break;
+ 	}
+ 
 -- 
 2.32.0
 
