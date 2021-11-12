@@ -2,91 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C84C44E0A7
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 04:09:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E4AC44E0AA
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 04:10:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234532AbhKLDMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 22:12:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:23906 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234519AbhKLDMZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 22:12:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1636686574;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=cbFf9Y4tfnJWIhVRV32+TdEo+eOJtRq0/nlJWQrVoKs=;
-        b=BvJLcKiuRMqbRCWXiu8kkPGUG/pb11Bq1tuiWrEaCXONuo4cKwHeWNie84Q5DYgFG7grpy
-        U+sI0XbmQNWUgSZ++JvIx+yHjKm245xhjanASkVdRCCow62xOew5gMYUOsIH980QBisJOP
-        FiFhhlEpUCdMiGu/+IYXMj3aV7hv0Xc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-195-8nK3_GGjMnCvdz58Gbpk0A-1; Thu, 11 Nov 2021 22:09:29 -0500
-X-MC-Unique: 8nK3_GGjMnCvdz58Gbpk0A-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 69E1A15720;
-        Fri, 12 Nov 2021 03:09:28 +0000 (UTC)
-Received: from fs-i40c-03.fs.lab.eng.bos.redhat.com (fs-i40c-03.fs.lab.eng.bos.redhat.com [10.16.224.23])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E63125D6D7;
-        Fri, 12 Nov 2021 03:09:24 +0000 (UTC)
-From:   Alexander Aring <aahringo@redhat.com>
-To:     mudongliangabcd@gmail.com
-Cc:     stefan@datenfreihafen.org, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org, aahringo@redhat.com
-Subject: [PATCH wpan] net: ieee802154: handle iftypes as u32
-Date:   Thu, 11 Nov 2021 22:09:16 -0500
-Message-Id: <20211112030916.685793-1-aahringo@redhat.com>
+        id S234513AbhKLDMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 22:12:52 -0500
+Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:56568 "EHLO
+        out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234543AbhKLDMw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 22:12:52 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R251e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0Uw7Lai4_1636686599;
+Received: from guwendeMacBook-Pro.local(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0Uw7Lai4_1636686599)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 12 Nov 2021 11:10:00 +0800
+Subject: Re: [RFC PATCH 0/2] Two RFC patches for the same SMC socket wait
+ queue mismatch issue
+To:     Karsten Graul <kgraul@linux.ibm.com>, tonylu@linux.alibaba.com
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dust.li@linux.alibaba.com, xuanzhuo@linux.alibaba.com
+References: <1636548651-44649-1-git-send-email-guwen@linux.alibaba.com>
+ <369755c0-8b3e-cf69-d7f2-8993700efc4a@linux.ibm.com>
+From:   Wen Gu <guwen@linux.alibaba.com>
+Message-ID: <d3b7969f-4bc5-5834-0a03-d361854d909e@linux.alibaba.com>
+Date:   Fri, 12 Nov 2021 11:09:59 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+In-Reply-To: <369755c0-8b3e-cf69-d7f2-8993700efc4a@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes an issue that an u32 netlink value is handled as a
-signed enum value which doesn't fit into the range of u32 netlink type.
-If it's handled as -1 value some BIT() evaluation ends in a
-shift-out-of-bounds issue. To solve the issue we set the to u32 max which
-is s32 "-1" value to keep backwards compatibility and let the followed enum
-values start counting at 0. This brings the compiler to never handle the
-enum as signed and a check if the value is above NL802154_IFTYPE_MAX should
-filter -1 out.
 
-Fixes: f3ea5e44231a ("ieee802154: add new interface command")
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
----
- include/net/nl802154.h | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/nl802154.h b/include/net/nl802154.h
-index ddcee128f5d9..145acb8f2509 100644
---- a/include/net/nl802154.h
-+++ b/include/net/nl802154.h
-@@ -19,6 +19,8 @@
-  *
-  */
- 
-+#include <linux/types.h>
-+
- #define NL802154_GENL_NAME "nl802154"
- 
- enum nl802154_commands {
-@@ -150,10 +152,9 @@ enum nl802154_attrs {
- };
- 
- enum nl802154_iftype {
--	/* for backwards compatibility TODO */
--	NL802154_IFTYPE_UNSPEC = -1,
-+	NL802154_IFTYPE_UNSPEC = (~(__u32)0),
- 
--	NL802154_IFTYPE_NODE,
-+	NL802154_IFTYPE_NODE = 0,
- 	NL802154_IFTYPE_MONITOR,
- 	NL802154_IFTYPE_COORD,
- 
--- 
-2.27.0
+On 2021/11/11 10:21 pm, Karsten Graul wrote:
+> On 10/11/2021 13:50, Wen Gu wrote:
+>> Hi, Karsten
+>>
+>> Thanks for your reply. The previous discussion about the issue of socket
+>> wait queue mismatch in SMC fallback can be referred from:
+>> https://lore.kernel.org/all/db9acf73-abef-209e-6ec2-8ada92e2cfbc@linux.ibm.com/
+>>
+>> This set of patches includes two RFC patches, they are both aimed to fix
+>> the same issue, the mismatch of socket wait queue in SMC fallback.
+>>
+>> In your last reply, I am suggested to add the complete description about
+>> the intention of initial patch in order that readers can understand the
+>> idea behind it. This has been done in "[RFC PATCH net v2 0/2] net/smc: Fix
+>> socket wait queue mismatch issue caused by fallback" of this mail.
+>>
+>> Unfortunately, I found a defect later in the solution of the initial patch
+>> or the v2 patch mentioned above. The defect is about fasync_list and related
+>> to 67f562e3e14 ("net/smc: transfer fasync_list in case of fallback").
+>>
+>> When user applications use sock_fasync() to insert entries into fasync_list,
+>> the wait queue they operate is smc socket->wq. But in initial patch or
+>> the v2 patch, I swapped sk->sk_wq of smc socket and clcsocket in smc_create(),
+>> thus the sk_data_ready / sk_write_space.. of smc will wake up clcsocket->wq
+>> finally. So the entries added into smc socket->wq.fasync_list won't be woken
+>> up at all before fallback.
+>>
+>> So the solution in initial patch or the v2 patch of this mail by swapping
+>> sk->sk_wq of smc socket and clcsocket seems a bad way to fix this issue.
+>>
+>> Therefore, I tried another solution by removing the wait queue entries from
+>> smc socket->wq to clcsocket->wq during the fallback, which is described in the
+>> "[RFC PATCH net 2/2] net/smc: Transfer remaining wait queue entries" of this
+>> mail. In our test environment, this patch can fix the fallback issue well.
+> 
+> Still running final tests but overall its working well here, too.
+> Until we maybe find a 'cleaner' solution if this I would like to go with your
+> current fixes. But I would like to improve the wording of the commit message and
+> the comments a little bit if you are okay with that.
+> 
+> If you send a new series with the 2 patches then I would take them and post them
+> to the list again with my changes.
 
+Seems just the second patch alone will fix the issue.
+
+> 
+> What do you think?
+> 
+
+Thanks for your reply. I am glad that the second patch works well.
+
+To avoid there being any misunderstanding between us, I want to explain 
+that just the second patch "[RFC PATCH net 2/2] net/smc: Transfer 
+remaining wait queue entries" alone will fix the issue well.
+
+Because it transfers the remaining entries in smc socket->wq to 
+clcsocket->wq during the fallback, so that the entries added into smc 
+socket->wq before fallback will still works after fallback, even though 
+user applications start to use clcsocket.
+
+
+The first patch "[RFC PATCH net v2 0/2] net/smc: Fix socket wait queue 
+mismatch issue caused by fallback" should be abandoned.
+
+I sent it only to better explain the defect I found in my initial patch 
+or this v2 patch. Hope it didn't bother you. Swapping the sk->sk_wq 
+seems a bad way to fix the issue because it can not handle the 
+fasync_list well. Unfortunately I found this defect until I almost 
+finished it :(
+
+So, I think maybe it is fine that just send the second patch "[RFC PATCH 
+net 2/2] net/smc: Transfer remaining wait queue entries" again. I will 
+send it later.
+
+And, it is okay for me if you want to improve the commit messages or 
+comments.
+
+Thank you.
+
+Cheers,
+Wen Gu
