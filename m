@@ -2,282 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A7DD44EDB0
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 21:06:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3683244EE14
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 21:44:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235541AbhKLUIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 15:08:53 -0500
-Received: from mail-oi1-f180.google.com ([209.85.167.180]:35551 "EHLO
-        mail-oi1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235519AbhKLUIx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 15:08:53 -0500
-Received: by mail-oi1-f180.google.com with SMTP id m6so19995001oim.2;
-        Fri, 12 Nov 2021 12:06:02 -0800 (PST)
+        id S235831AbhKLUrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 15:47:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41922 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235833AbhKLUrM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 15:47:12 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B66C0613F5
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 12:44:21 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id z10so16104939edc.11
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 12:44:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=55PU7NCx+y3qp+yVH779Q0TOGJYQ+3HFYI6HIRyxT3U=;
+        b=htlSI9PbweXay3zAqrSqMP+DpA1ClH8JSrIOkKm4ThM5VQWQeSQcQTuWqsEfU+IDbe
+         QIUllEebtflPJL8Cv/ENnzIJTDRXjeJPxnccsg30WJ4yh/6GCPQx8bZfjt8NAF4Bh6Vd
+         1rJPvM8EESgHfctOmZ+HPr1SV7NkIGVI9BqW0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=oyHEoCbMEF48+l8kYeD/pLfiS+xeE7xkfFCLiVLSxpY=;
-        b=MroNEcxvDJTa0aI1cOZTmVyyHAZtYLZ1dUc6fmd6TEMT8CrnOvwmjSO6FpaLDqVZYT
-         GlOzsQu7MHJ/l9aKzG+3AARywfuOKJ5OYF6qMA1rU5E0P5lxfC1HDubvNEaWGOJNyxFg
-         yBZMK8laePmySPNX5UyF1i7PEcVB7PC9jhNKr+qGn8keQKRSnW+aAo2mnLvg/PPD2Ilm
-         Via048qhHc+n6zhkQauM6AIMeLOMcnjOgq9A3nQRGUAUuLtHNIBZckFzUdfSMcFH7Tf5
-         TFxYwSXCd9hJXDeqAi8NNpZzGBWK385Q9GwzW8CaZAIGBBn56sVFkjz9bs/CSVM+Lu+F
-         giQA==
-X-Gm-Message-State: AOAM533ErsydfkqdQ0ZJWamiM7MZ0CcH3nS86qs69m8+/3fCuSsKA6Ww
-        Hv1FqGTyumBILw4dJT3kONAMJKA+qQ==
-X-Google-Smtp-Source: ABdhPJzvD+UXToT8P6L5ufsBvQofzszsfnV4av3vxKZ/ni+7V56LH6TvgJoQI0aSZw5kQw1GJXZipw==
-X-Received: by 2002:aca:2408:: with SMTP id n8mr28869169oic.124.1636747561808;
-        Fri, 12 Nov 2021 12:06:01 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id ay42sm1668772oib.22.2021.11.12.12.06.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Nov 2021 12:06:01 -0800 (PST)
-Received: (nullmailer pid 3280416 invoked by uid 1000);
-        Fri, 12 Nov 2021 20:06:00 -0000
-Date:   Fri, 12 Nov 2021 14:06:00 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v2 2/6] dt-bindings: net: convert mscc,vsc7514-switch
- bindings to yaml
-Message-ID: <YY7JKO/kisz+zmF8@robh.at.kernel.org>
-References: <20211103091943.3878621-1-clement.leger@bootlin.com>
- <20211103091943.3878621-3-clement.leger@bootlin.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=55PU7NCx+y3qp+yVH779Q0TOGJYQ+3HFYI6HIRyxT3U=;
+        b=FpR58mxB1aJWotmp2JDus0+8/FToEHuPtx5eb7SSuhSL9oQV6mpB6lbFdkfcWlXugz
+         kqxun70HK/RrLxoeaS4UrkhGmgY8VJDAzo0/wyl/RGaWDlx28K6hKVP4dzkJu51sqppW
+         mObflS8d4bH+MLidOV2IuQT5eZT8iu6O3VEtypGUqHtnN3uPp8dJowsSv3FfVr5a+Fds
+         yRLufjyFtGo5KCtyn7EQXb2DI5DTgysLMGP10/7WF3zIB7Duv22VOrdhV9AvhgJjXmxf
+         nToRTdgeG+K3R2Y7csPQ0V+eatn+HuT0xxMDC8Pdfof7sbyHtbdgLsqdx1JunNlH/Fu4
+         ZURw==
+X-Gm-Message-State: AOAM530JVpTrXLVOMlG42OKfa4GBuBi8lH2BeW4g2ekn5Ifs1yBtDTVD
+        UfLBpbiienfnAy6AZtXsAAn13/O03kmCNvHoaeg=
+X-Google-Smtp-Source: ABdhPJxLq4EhUbZfuJ/bZDsoY93QldFyRX/2hyC/ZyJFmZiCn26f/NSnWRZjSk/xtGV2S+1goa4uag==
+X-Received: by 2002:a17:907:9156:: with SMTP id l22mr22895428ejs.220.1636749859469;
+        Fri, 12 Nov 2021 12:44:19 -0800 (PST)
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com. [209.85.221.44])
+        by smtp.gmail.com with ESMTPSA id y15sm3628434edd.70.2021.11.12.12.44.17
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 12 Nov 2021 12:44:18 -0800 (PST)
+Received: by mail-wr1-f44.google.com with SMTP id c4so17610161wrd.9
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 12:44:17 -0800 (PST)
+X-Received: by 2002:adf:dcd0:: with SMTP id x16mr22056131wrm.229.1636749857666;
+ Fri, 12 Nov 2021 12:44:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211103091943.3878621-3-clement.leger@bootlin.com>
+References: <20211111163301.1930617-1-kuba@kernel.org> <163667214755.13198.7575893429746378949.pr-tracker-bot@kernel.org>
+ <20211111174654.3d1f83e3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CAHk-=wiNEdrLirAbHwJvmp_s2Kjjd5eV680hTZnbBT2gXK4QbQ@mail.gmail.com>
+In-Reply-To: <CAHk-=wiNEdrLirAbHwJvmp_s2Kjjd5eV680hTZnbBT2gXK4QbQ@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 12 Nov 2021 12:44:01 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wi=w9_TXkQF9P5KranoL_=ChVQyahjecMo1wzRTe0UtEg@mail.gmail.com>
+Message-ID: <CAHk-=wi=w9_TXkQF9P5KranoL_=ChVQyahjecMo1wzRTe0UtEg@mail.gmail.com>
+Subject: Re: 32bit x86 build broken (was: Re: [GIT PULL] Networking for 5.16-rc1)
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        NetFilter <netfilter-devel@vger.kernel.org>,
+        linux-can@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 03, 2021 at 10:19:39AM +0100, Clément Léger wrote:
-> Convert existing bindings to yaml format. In the same time, remove non
-> exiting properties ("inj" interrupt) and add fdma.
-> 
-> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-> ---
->  .../bindings/net/mscc,vsc7514-switch.yaml     | 184 ++++++++++++++++++
->  .../devicetree/bindings/net/mscc-ocelot.txt   |  83 --------
->  2 files changed, 184 insertions(+), 83 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/net/mscc,vsc7514-switch.yaml
->  delete mode 100644 Documentation/devicetree/bindings/net/mscc-ocelot.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/net/mscc,vsc7514-switch.yaml b/Documentation/devicetree/bindings/net/mscc,vsc7514-switch.yaml
-> new file mode 100644
-> index 000000000000..0c96eabf9d2d
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/mscc,vsc7514-switch.yaml
-> @@ -0,0 +1,184 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/mscc,vsc7514-switch.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Microchip VSC7514 Ethernet switch controller
-> +
-> +maintainers:
-> +  - Vladimir Oltean <vladimir.oltean@nxp.com>
-> +  - Claudiu Manoil <claudiu.manoil@nxp.com>
-> +  - Alexandre Belloni <alexandre.belloni@bootlin.com>
-> +
-> +description: |
-> +  The VSC7514 Industrial IoT Ethernet switch contains four integrated dual media
-> +  10/100/1000BASE-T PHYs, two 1G SGMII/SerDes, two 1G/2.5G SGMII/SerDes, and an
-> +  option for either a 1G/2.5G SGMII/SerDes Node Processor Interface (NPI) or a
-> +  PCIe interface for external CPU connectivity. The NPI/PCIe can operate as a
-> +  standard Ethernet port.
-> +
-> +  The device provides a rich set of Industrial Ethernet switching features such
-> +  as fast protection switching, 1588 precision time protocol, and synchronous
-> +  Ethernet. Advanced TCAM-based VLAN and QoS processing enable delivery of
-> +  differentiated services. Security is assured through frame processing using
-> +  Microsemi’s TCAM-based Versatile Content Aware Processor.
-> +
-> +  In addition, the device contains a powerful 500 MHz CPU enabling full
-> +  management of the switch.
-> +
-> +properties:
-> +  $nodename:
-> +    pattern: "^switch@[0-9a-f]+$"
-> +
-> +  compatible:
-> +    const: mscc,vsc7514-switch
-> +
-> +  reg:
-> +    items:
-> +      - description: system target
-> +      - description: rewriter target
-> +      - description: qs target
-> +      - description: PTP target
-> +      - description: Port0 target
-> +      - description: Port1 target
-> +      - description: Port2 target
-> +      - description: Port3 target
-> +      - description: Port4 target
-> +      - description: Port5 target
-> +      - description: Port6 target
-> +      - description: Port7 target
-> +      - description: Port8 target
-> +      - description: Port9 target
-> +      - description: Port10 target
-> +      - description: QSystem target
-> +      - description: Analyzer target
-> +      - description: S0 target
-> +      - description: S1 target
-> +      - description: S2 target
-> +      - description: fdma target
-> +
-> +  reg-names:
-> +    items:
-> +      - const: sys
-> +      - const: rew
-> +      - const: qs
-> +      - const: ptp
-> +      - const: port0
-> +      - const: port1
-> +      - const: port2
-> +      - const: port3
-> +      - const: port4
-> +      - const: port5
-> +      - const: port6
-> +      - const: port7
-> +      - const: port8
-> +      - const: port9
-> +      - const: port10
-> +      - const: qsys
-> +      - const: ana
-> +      - const: s0
-> +      - const: s1
-> +      - const: s2
-> +      - const: fdma
-> +
-> +  interrupts:
-> +    minItems: 1
-> +    items:
-> +      - description: PTP ready
-> +      - description: register based extraction
-> +      - description: frame dma based extraction
-> +
-> +  interrupt-names:
-> +    minItems: 1
-> +    items:
-> +      - const: ptp_rdy
-> +      - const: xtr
-> +      - const: fdma
-> +
-> +  ethernet-ports:
-> +    type: object
+On Thu, Nov 11, 2021 at 6:48 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+>   +#include <linux/io-64-nonatomic-lo-hi.h>
 
-       additionalProperties: false
+I committed that fix just to have my tree build on x86-32.
 
-> +    patternProperties:
-> +      "^port@[0-9a-f]+$":
-> +        type: object
-> +        description: Ethernet ports handled by the switch
-> +
-> +        allOf:
+If the driver later gets disabled entirely for non-64bit builds,
+that's fine too, I guess. Presumably the hardware isn't relevant for
+old 32-bit processors anyway.
 
-You can drop 'allOf'.
-
-> +          - $ref: ethernet-controller.yaml#
-
-           unevaluatedProperties: false
-
-> +
-> +        properties:
-> +          '#address-cells':
-> +            const: 1
-> +          '#size-cells':
-> +            const: 0
-
-Wrong level for these.
-
-> +
-> +          reg:
-> +            description: Switch port number
-> +
-> +          phy-handle: true
-> +
-> +          mac-address: true
-> +
-> +        required:
-> +          - reg
-> +          - phy-handle
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - reg-names
-> +  - interrupts
-> +  - interrupt-names
-> +  - ethernet-ports
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    switch@1010000 {
-> +      compatible = "mscc,vsc7514-switch";
-> +      reg = <0x1010000 0x10000>,
-> +            <0x1030000 0x10000>,
-> +            <0x1080000 0x100>,
-> +            <0x10e0000 0x10000>,
-> +            <0x11e0000 0x100>,
-> +            <0x11f0000 0x100>,
-> +            <0x1200000 0x100>,
-> +            <0x1210000 0x100>,
-> +            <0x1220000 0x100>,
-> +            <0x1230000 0x100>,
-> +            <0x1240000 0x100>,
-> +            <0x1250000 0x100>,
-> +            <0x1260000 0x100>,
-> +            <0x1270000 0x100>,
-> +            <0x1280000 0x100>,
-> +            <0x1800000 0x80000>,
-> +            <0x1880000 0x10000>,
-> +            <0x1040000 0x10000>,
-> +            <0x1050000 0x10000>,
-> +            <0x1060000 0x10000>,
-> +            <0x1a0 0x1c4>;
-> +      reg-names = "sys", "rew", "qs", "ptp", "port0", "port1",
-> +            "port2", "port3", "port4", "port5", "port6",
-> +            "port7", "port8", "port9", "port10", "qsys",
-> +            "ana", "s0", "s1", "s2", "fdma";
-> +      interrupts = <18 21 16>;
-> +      interrupt-names = "ptp_rdy", "xtr", "fdma";
-> +
-> +      ethernet-ports {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        port0: port@0 {
-> +          reg = <0>;
-> +          phy-handle = <&phy0>;
-> +        };
-> +        port1: port@1 {
-> +          reg = <1>;
-> +          phy-handle = <&phy1>;
-> +        };
-> +      };
-> +    };
-> +
-> +...
-> +#  vim: set ts=2 sw=2 sts=2 tw=80 et cc=80 ft=yaml :
-
-Please drop this. 
-
-emacs settings are fine, but not vim. ;) JK, I don't use either.
-
+                Linus
