@@ -2,131 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E26E144E884
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 15:20:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 587CA44E88C
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 15:21:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234172AbhKLOXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 09:23:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39158 "EHLO
+        id S235134AbhKLOYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 09:24:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231131AbhKLOXF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 09:23:05 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FBEBC061766;
-        Fri, 12 Nov 2021 06:20:14 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id np3so6883763pjb.4;
-        Fri, 12 Nov 2021 06:20:14 -0800 (PST)
+        with ESMTP id S235115AbhKLOYn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 09:24:43 -0500
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EDCEC061766
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 06:21:52 -0800 (PST)
+Received: by mail-wm1-x331.google.com with SMTP id g191-20020a1c9dc8000000b0032fbf912885so6881322wme.4
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 06:21:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tKyWJgE04HxRAjq5nb7ERjx0vGYGSgiBeT5zkfHPsnw=;
-        b=c6tbwnM8EEdXQbXjZ6TBKu/GDieGFFzpHqyAv/x9gtsV7u9AbwnmumGLMO0/EiCoGN
-         Yf5qCS4fIkHQGwoyoL4ywdKyumfkWOKyjqw9Ct2rv2+6bZv53d/FbafgVZFrMTIvTt5D
-         eA/10d3nD6C+OXYQFt04R4CsZKRFYGumYpPBcd0kA0KkCHJQqztNuFVtkubP0ozjtChk
-         BzZ1QUnBwMBOcg41FLNlXK2oM+wpBHHGJxrNrVy//gB9kI7KQGphRKUzKziLBwjktIbz
-         3yfQyasiBzLSaitwbu4fR+QK+p8qI3zUzDDqkXL4GRpNe7PjG6B0XMXkYVuz+q/qHVq5
-         gvnA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fiCmxbpNpB6dUPct5On6J3mwsdN3UBO25bt1QCymEUc=;
+        b=XzhEDJdqfh6ybCFwLTSfqaBE7x945mjgiIGdLC2gwG1lIKuohMvHqe5n0uAM8jgXPO
+         2MmUf5yP8shiGeBCIm59wFVlGl1eZMYC0qCcOeFiXP1ao4rQDenS3FhVDdvayftzgdb2
+         i0JXJg5MhKSa9q2xI4FhlVZeHzScdqjfMbpLJwSyod64X5mXAfMKVlMTLk9VCObOaEP1
+         iWkR1FDwuP7kKvjQ8309rymfuCqEft+Rn7b/VKQ7PF8QgjprQZx4nlCMRV8s1Q+BZ1Fw
+         CEZD5Lx1C5ncjnYDK818leMUr8z+kHbmb0RDL/UjAt8kBpf5QiqkK1DpUfIQ3Y2rEcdE
+         e8Kw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tKyWJgE04HxRAjq5nb7ERjx0vGYGSgiBeT5zkfHPsnw=;
-        b=hJlKLhsOJaQA+oe7go2nMLbXzmWOewvLBKKdUD61cP/DdaHk4al04IgAZe6F43JW0z
-         +GI0DbtpHIdKysTmgjRGqBKn89Fv3/du1pSq9aRm/G5HCbniIU9VpptfauH9mMeljsUY
-         mofvPb3fnfDaQeknaQiPxzL5s9loTKMvjPT7Om74/6enpF7ob/9R/6mnIYcDZzcrbMdV
-         QayN4LWJkYefVTCnI9riybxkFNsY2fsWnccFP1nkcr0rQxFzPJPhr+6DIvbXKWWdYXNf
-         1oDOGqHOdJdNBEgzkVCje6HgtqTaYRvUFMEWqjh3tjEfJ3jys8neEW0MbJKwgvH6QaPm
-         0UPA==
-X-Gm-Message-State: AOAM5304mVtMxlteT76+yTjnISYBXocg0lFlu6RXjmZ8nMrSHXKvXIPS
-        YlDTV3HJXU+bjKd5a7Nclaw=
-X-Google-Smtp-Source: ABdhPJwg92vrA9JI16k61zQqU2yfIiV/eDCJUm5tXXj6752EumHyQSBUbrIuJGcQ45rvBBQI07OUlQ==
-X-Received: by 2002:a17:902:8a93:b0:142:30fe:dd20 with SMTP id p19-20020a1709028a9300b0014230fedd20mr8309699plo.29.1636726813724;
-        Fri, 12 Nov 2021 06:20:13 -0800 (PST)
-Received: from fanta-arch.localdomain ([148.163.172.142])
-        by smtp.gmail.com with ESMTPSA id i2sm6409532pfe.70.2021.11.12.06.20.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Nov 2021 06:20:13 -0800 (PST)
-From:   Letu Ren <fantasquex@gmail.com>
-To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Letu Ren <fantasquex@gmail.com>,
-        Zheyu Ma <zheyuma97@gmail.com>
-Subject: [PATCH] net: igbvf: fix double free in `igbvf_probe`
-Date:   Fri, 12 Nov 2021 22:20:02 +0800
-Message-Id: <20211112142002.23156-1-fantasquex@gmail.com>
-X-Mailer: git-send-email 2.33.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fiCmxbpNpB6dUPct5On6J3mwsdN3UBO25bt1QCymEUc=;
+        b=gKypkomROc1hoAx92y29OP+lCv+p5oXjHxOhT3rtnvsVQ0+jBh4SrfNyHuvTJxf2af
+         agxso06/Ay/wCiP1c02umQ+nzd4mRKXrzDIi5M7fivmhG/Eqd7jezl60hYo6Uhl3QEg9
+         NCWIdbjvXaJROk9djaRIQO6BaVQAyp9zEpP22nN0LEEEZHvXFG3q/FHnVS6AZLkW8ph8
+         eTUD1H5BD3fNZ7pODnJZFTeimSn+EBPQp+B0TlfKchFT6HPcqZPcCbDzhzigQ/LkwMbQ
+         3R7VJpa70NvVZvOSXCQo79UmWGKwAlcrN73lvtL/S/OYa9XZ90QklX26ZBmpi/QuXacp
+         f/yw==
+X-Gm-Message-State: AOAM533z+OH3qcgh4ayxaq1NiIu9+7aGv4kbHWVtWXgdC7vKLVLykp+/
+        ww2stvwVo8a3B4by4Yi6SwcmfKuAwUYRhz25MIWhWQ==
+X-Google-Smtp-Source: ABdhPJzeE2+SG0haALZ1ADr82j2z8X4zODi7QwUe9cbVKZxKIvTkSQ3EqoZHep58PF9riidbyjXrc8dyksQnIrYVp84=
+X-Received: by 2002:a7b:c8c8:: with SMTP id f8mr17454867wml.49.1636726910410;
+ Fri, 12 Nov 2021 06:21:50 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211111181025.2139131-1-eric.dumazet@gmail.com>
+ <CAKgT0UdmECakQTinbTagiG4PWfaniP_GP6T3rLvWdP+mVrB4xw@mail.gmail.com>
+ <CANn89iJAakUCC6UuUHSozT9wz7_rrgrRq3dv+hXJ1FL_DCZHyA@mail.gmail.com> <YY4wPgyt65Q6WOdK@hirez.programming.kicks-ass.net>
+In-Reply-To: <YY4wPgyt65Q6WOdK@hirez.programming.kicks-ass.net>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 12 Nov 2021 06:21:38 -0800
+Message-ID: <CANn89iJNvxatTTcHvzNKuUu2HyNfH=O7XesA3pHUwfn4Qy=pJQ@mail.gmail.com>
+Subject: Re: [PATCH v1] x86/csum: rewrite csum_partial()
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In `igbvf_probe`, if register_netdev() fails, the program will go to
-label err_hw_init, and then to label err_ioremap. In free_netdev() which
-is just below label err_ioremap, there is `list_for_each_entry_safe` and
-`netif_napi_del` which aims to delete all entries in `dev->napi_list`.
-The program has added an entry `adapter->rx_ring->napi` which is added by
-`netif_napi_add` in igbvf_alloc_queues(). However, adapter->rx_ring has
-been freed below label err_hw_init. So this a UAF.
+On Fri, Nov 12, 2021 at 1:13 AM Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> On Thu, Nov 11, 2021 at 02:30:50PM -0800, Eric Dumazet wrote:
+> > > For values 7 through 1 I wonder if you wouldn't be better served by
+> > > just doing a single QWORD read and a pair of shifts. Something along
+> > > the lines of:
+> > >     if (len) {
+> > >         shift = (8 - len) * 8;
+> > >         temp64 = (*(unsigned long)buff << shift) >> shift;
+> > >         result += temp64;
+> > >         result += result < temp64;
+> > >     }
+> >
+> > Again, KASAN will not be happy.
+>
+> If you do it in asm, kasan will not know, so who cares :-) as long as
+> the load is aligned, loading beyond @len shouldn't be a problem,
+> otherwise there's load_unaligned_zeropad().
 
-In terms of how to patch the problem, we can refer to igbvf_remove() and
-delete the entry before `adapter->rx_ring`.
+OK, but then in this case we have to align buff on qword boundary,
+or risk crossing page boundary.
 
-The KASAN logs are as follows:
+So this stuff has to be done at the beginning, and at the end.
 
-[   35.126075] BUG: KASAN: use-after-free in free_netdev+0x1fd/0x450
-[   35.127170] Read of size 8 at addr ffff88810126d990 by task modprobe/366
-[   35.128360]
-[   35.128643] CPU: 1 PID: 366 Comm: modprobe Not tainted 5.15.0-rc2+ #14
-[   35.129789] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-[   35.131749] Call Trace:
-[   35.132199]  dump_stack_lvl+0x59/0x7b
-[   35.132865]  print_address_description+0x7c/0x3b0
-[   35.133707]  ? free_netdev+0x1fd/0x450
-[   35.134378]  __kasan_report+0x160/0x1c0
-[   35.135063]  ? free_netdev+0x1fd/0x450
-[   35.135738]  kasan_report+0x4b/0x70
-[   35.136367]  free_netdev+0x1fd/0x450
-[   35.137006]  igbvf_probe+0x121d/0x1a10 [igbvf]
-[   35.137808]  ? igbvf_vlan_rx_add_vid+0x100/0x100 [igbvf]
-[   35.138751]  local_pci_probe+0x13c/0x1f0
-[   35.139461]  pci_device_probe+0x37e/0x6c0
-[   35.165526]
-[   35.165806] Allocated by task 366:
-[   35.166414]  ____kasan_kmalloc+0xc4/0xf0
-[   35.167117]  foo_kmem_cache_alloc_trace+0x3c/0x50 [igbvf]
-[   35.168078]  igbvf_probe+0x9c5/0x1a10 [igbvf]
-[   35.168866]  local_pci_probe+0x13c/0x1f0
-[   35.169565]  pci_device_probe+0x37e/0x6c0
-[   35.179713]
-[   35.179993] Freed by task 366:
-[   35.180539]  kasan_set_track+0x4c/0x80
-[   35.181211]  kasan_set_free_info+0x1f/0x40
-[   35.181942]  ____kasan_slab_free+0x103/0x140
-[   35.182703]  kfree+0xe3/0x250
-[   35.183239]  igbvf_probe+0x1173/0x1a10 [igbvf]
-[   35.184040]  local_pci_probe+0x13c/0x1f0
+And with IP_IP_ALIGN==0, this will unfortunately trigger for the 40-byte
+IPV6 header.
 
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Letu Ren <fantasquex@gmail.com>
----
- drivers/net/ethernet/intel/igbvf/netdev.c | 1 +
- 1 file changed, 1 insertion(+)
+IPv6 header :  <2 bytes before qword boundary><4 * 8 bytes> < 6 bytes at trail>
 
-diff --git a/drivers/net/ethernet/intel/igbvf/netdev.c b/drivers/net/ethernet/intel/igbvf/netdev.c
-index d32e72d953c8..d051918dfdff 100644
---- a/drivers/net/ethernet/intel/igbvf/netdev.c
-+++ b/drivers/net/ethernet/intel/igbvf/netdev.c
-@@ -2861,6 +2861,7 @@ static int igbvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	return 0;
- 
- err_hw_init:
-+	netif_napi_del(&adapter->rx_ring->napi);
- 	kfree(adapter->tx_ring);
- 	kfree(adapter->rx_ring);
- err_sw_init:
--- 
-2.33.1
-
+I will try, but I have some doubts it can save one or two cycles...
