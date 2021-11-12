@@ -2,101 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14A4144DFDC
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 02:42:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ECB044DFE8
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 02:47:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233638AbhKLBoy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 20:44:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38964 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231918AbhKLBow (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 20:44:52 -0500
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F9AC061766;
-        Thu, 11 Nov 2021 17:42:02 -0800 (PST)
-Received: by mail-ed1-x542.google.com with SMTP id m14so31632141edd.0;
-        Thu, 11 Nov 2021 17:42:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=C1DKB9QPoswajpoT5zwf2dnAIQyIiBvEOX2LE4AoRaM=;
-        b=FnY0Zq7uRksikoidOWVyVjuGm/jR9uhk4UCwmn0o1Akz2lm95Gf/LcTNcQ2qxvzItP
-         tzOr3zpPMZhgSybA4LXXWUu0e0AZNv++csiJnLgKpv6wJ+BmaxbPhh+T05x+qt7cT+Mo
-         zHQl6az9oVOlLbXH8i4CIcqgsZm7NphhUwtHxzUxyA4lbVfZTOZNe5127pMdmwBOlJph
-         HpIBKNGb6+MUF0Zi1Xx7jE4rvoPj3FodqMzqPFpUz78Wb/zxqioQcXuvZhwiWLBUSvl6
-         ocUPUnmzloUzkrpUaUr1+x70bZjz2EQkae0ydSa4ZSyRHkDtz3MwHWyoRl/VcZrOJOBb
-         z29g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=C1DKB9QPoswajpoT5zwf2dnAIQyIiBvEOX2LE4AoRaM=;
-        b=ZDEHAfiJElNGoBRzHNpeOLxHLh7hmhlrFYdK2IvmJRay8GFHqS7J3sE6qmuTGNsmJW
-         Je2VnNqgjAyrcjVI04XtwTEoosAdIxlwkNdyJ+fZQmty2cn81494LNTPL9Bv07UfTOLk
-         O8tun5R1IKMMj6/ixOoyMtC7CbSMJxLPc6zqfdH44jT53+s4A+niOmNyKx/lzef+8oQm
-         DpC1cVDZzAxELDERNuutL0QHHO7Kd2m3e/p9fwF6Y5I5piQThZly0TXTz9HUXKK2vo9j
-         +gNPkJ8K+3tKtGgrOMIWKnB2rHK6mVls1pUqP0FnBgNZ4miuIRpDgTfDEQxbIskBqkG4
-         IoyQ==
-X-Gm-Message-State: AOAM532vVvnihTagFdkkB96g2fqEZ/SvKcrqrh+nye6+Qn6fTs+9q9fS
-        LcSmz4Nd0wMjYLqmOlDzAfgo69NWFMme+zvB2w2CSXZG17s=
-X-Google-Smtp-Source: ABdhPJyp+brCCHZoPLdQuR+DxpRxnrLERSJSAhhfU+xiBwZFo4TJH6AZLKCNbvNQ4g2Yv49NsVzKbX/5HHTyvjO5yBY=
-X-Received: by 2002:a50:da48:: with SMTP id a8mr15904831edk.146.1636681321216;
- Thu, 11 Nov 2021 17:42:01 -0800 (PST)
+        id S233752AbhKLBtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 20:49:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41484 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230308AbhKLBtq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Nov 2021 20:49:46 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DFB5060F94;
+        Fri, 12 Nov 2021 01:46:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636681616;
+        bh=5aW4+ULRFBb8KEf0hwe2BA1rQMqSqqJAvuU8Wm2H1vQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hUw7PcSEd7Xslz0bH7qny/EW+RdY2tila+rkBNpfkPMK/Y++qidXBy+rhGy9uF7UB
+         iwO9aVI0WuOLxlBTsBEmtv4/lPiFATaUrQNZtL6Cy8qG6TxpfcC3O8u2Ttrlu90fXs
+         7ZPu8bAM2+V7Pkvhkc+xalN1ORr9LkRtGHFprGLYgnGftiDB5CUDxgBbI7L3zeTNkL
+         u/DyXKoJvQOh9O/uJHBpYP74F1V7A0+fImbHNIrTqxc/lmO/yaKTq1Y288E1ZEOWcZ
+         Q0u7NS/wCS4rTYtOEBP7WOK/HaRMx4coDiztGBes4I9lcz4WDlO0qVjIzjyQGk1/0E
+         cz8r8zTnK2tVg==
+Date:   Thu, 11 Nov 2021 17:46:54 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc:     torvalds@linux-foundation.org, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        linux-can@vger.kernel.org
+Subject: 32bit x86 build broken (was: Re: [GIT PULL] Networking for
+ 5.16-rc1)
+Message-ID: <20211111174654.3d1f83e3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <163667214755.13198.7575893429746378949.pr-tracker-bot@kernel.org>
+References: <20211111163301.1930617-1-kuba@kernel.org>
+        <163667214755.13198.7575893429746378949.pr-tracker-bot@kernel.org>
 MIME-Version: 1.0
-References: <20211111133530.2156478-1-imagedong@tencent.com> <20211111060827.5906a2f9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211111060827.5906a2f9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Fri, 12 Nov 2021 09:40:47 +0800
-Message-ID: <CADxym3bk5+3t9jFmEgCBBYHWvNJx6BJGdjk+-zqiQaJPtLM=Ug@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/2] net: snmp: tracepoint support for snmp
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Steven Rostedt <rostedt@goodmis.org>, mingo@redhat.com,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        dsahern@kernel.org, Menglong Dong <imagedong@tencent.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, 11 Nov 2021 23:09:07 +0000 pr-tracker-bot@kernel.org wrote:
+> The pull request you sent on Thu, 11 Nov 2021 08:33:01 -0800:
+>=20
+> > git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5=
+.16-rc1 =20
+>=20
+> has been merged into torvalds/linux.git:
+> https://git.kernel.org/torvalds/c/f54ca91fe6f25c2028f953ce82f19ca2ea0f07bb
 
-On Thu, Nov 11, 2021 at 10:08 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-[...]
->
-> I feel like I have seen this idea before. Is this your first posting?
->
-> Would you mind including links to previous discussion if you're aware
-> of any?
+Rafael, Srinivas, we're getting 32 bit build failures after pulling back
+from Linus today.
 
-This is the first time that I post this patch. Do you mean that someone
-else has done this before? Sorry, I didn't find it~
+make[1]: *** [/home/nipa/net/Makefile:1850: drivers] Error 2
+make: *** [Makefile:219: __sub-make] Error 2
+../drivers/thermal/intel/int340x_thermal/processor_thermal_mbox.c: In funct=
+ion =E2=80=98send_mbox_cmd=E2=80=99:
+../drivers/thermal/intel/int340x_thermal/processor_thermal_mbox.c:79:37: er=
+ror: implicit declaration of function =E2=80=98readq=E2=80=99; did you mean=
+ =E2=80=98readl=E2=80=99? [-Werror=3Dimplicit-function-declaration]
+   79 |                         *cmd_resp =3D readq((void __iomem *) (proc_=
+priv->mmio_base + MBOX_OFFSET_DATA));
+      |                                     ^~~~~
+      |                                     readl
 
->
-> Regardless:
->
->
-> # Form letter - net-next is closed
->
-> We have already sent the networking pull request for 5.16
-> and therefore net-next is closed for new drivers, features,
-> code refactoring and optimizations. We are currently accepting
-> bug fixes only.
->
-> Please repost when net-next reopens after 5.16-rc1 is cut.
->
+Is there an ETA on getting this fixed?
 
-Ok, I'll repost it later. By the way, is this idea acceptable? In fact,
-I also introduced the snmp-tracepoint for ICMP, TCP and IP.
 
-Thanks!
-Menglong Dong
-
-> Look out for the announcement on the mailing list or check:
-> http://vger.kernel.org/~davem/net-next.html
->
-> RFC patches sent for review only are obviously welcome at any time.
