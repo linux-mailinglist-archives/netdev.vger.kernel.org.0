@@ -2,107 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F31A44E2A8
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 08:54:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2020F44E2B4
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 08:56:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233593AbhKLH5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 02:57:05 -0500
-Received: from m43-7.mailgun.net ([69.72.43.7]:34070 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233016AbhKLH5E (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Nov 2021 02:57:04 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1636703654; h=Date: Message-ID: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=JhTHi+cjBy/VdffAN6fi4V1mo4GMP+yP7S70xPY2nOI=;
- b=atrmWHY3CR3T2xtvgc+/971f1p+9LOuqxe++CxoQboSKs1Sz6v/wolf6Po29dvUmcUTvbQ+X
- B5Lm11lnSddpsFAVfqSlkdPLOxGtMwXmGaHDoYRhWq1sW4VOr94DVSC9sYb4/O/mwKixuOFM
- IUvBIne/ts1mCNCBYhNJCGhCB38=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 618e1d9ea4b510b38f278536 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 12 Nov 2021 07:54:06
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 40EF3C43616; Fri, 12 Nov 2021 07:54:06 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.5 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,SPF_FAIL autolearn=no autolearn_force=no version=3.4.0
-Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A14F5C4338F;
-        Fri, 12 Nov 2021 07:54:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org A14F5C4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S233191AbhKLH7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 02:59:07 -0500
+Received: from host.78.145.23.62.rev.coltfrance.com ([62.23.145.78]:36732 "EHLO
+        smtpservice.6wind.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S230464AbhKLH7H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 02:59:07 -0500
+Received: from bretzel (bretzel.dev.6wind.com [10.17.1.57])
+        by smtpservice.6wind.com (Postfix) with ESMTPS id CC5C16001B;
+        Fri, 12 Nov 2021 08:56:15 +0100 (CET)
+Received: from dichtel by bretzel with local (Exim 4.92)
+        (envelope-from <dichtel@6wind.com>)
+        id 1mlRPz-0002PS-GN; Fri, 12 Nov 2021 08:56:15 +0100
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Subject: [PATCH net] tun: fix bonding active backup with arp monitoring
+Date:   Fri, 12 Nov 2021 08:56:03 +0100
+Message-Id: <20211112075603.6450-1-nicolas.dichtel@6wind.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ar5523: Fix null-ptr-deref with unexpected
- WDCMSG_TARGET_START reply
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <YXsmPQ3awHFLuAj2@10-18-43-117.dynapool.wireless.nyu.edu>
-References: <YXsmPQ3awHFLuAj2@10-18-43-117.dynapool.wireless.nyu.edu>
-To:     Zekun Shen <bruceshenzk@gmail.com>
-Cc:     bruceshenzk@gmail.com, Pontus Fuchs <pontus.fuchs@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <163670364142.27466.15677300491997142770.kvalo@codeaurora.org>
-Date:   Fri, 12 Nov 2021 07:54:06 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zekun Shen <bruceshenzk@gmail.com> wrote:
+As stated in the bonding doc, trans_start must be set manually for drivers
+using NETIF_F_LLTX:
+ Drivers that use NETIF_F_LLTX flag must also update
+ netdev_queue->trans_start. If they do not, then the ARP monitor will
+ immediately fail any slaves using that driver, and those slaves will stay
+ down.
 
-> Unexpected WDCMSG_TARGET_START replay can lead to null-ptr-deref
-> when ar->tx_cmd->odata is NULL. The patch adds a null check to
-> prevent such case.
-> 
-> KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
->  ar5523_cmd+0x46a/0x581 [ar5523]
->  ar5523_probe.cold+0x1b7/0x18da [ar5523]
->  ? ar5523_cmd_rx_cb+0x7a0/0x7a0 [ar5523]
->  ? __pm_runtime_set_status+0x54a/0x8f0
->  ? _raw_spin_trylock_bh+0x120/0x120
->  ? pm_runtime_barrier+0x220/0x220
->  ? __pm_runtime_resume+0xb1/0xf0
->  usb_probe_interface+0x25b/0x710
->  really_probe+0x209/0x5d0
->  driver_probe_device+0xc6/0x1b0
->  device_driver_attach+0xe2/0x120
-> 
-> I found the bug using a custome USBFuzz port. It's a research work
-> to fuzz USB stack/drivers. I modified it to fuzz ath9k driver only,
-> providing hand-crafted usb descriptors to QEMU.
-> 
-> After fixing the code (fourth byte in usb packet) to WDCMSG_TARGET_START,
-> I got the null-ptr-deref bug. I believe the bug is triggerable whenever
-> cmd->odata is NULL. After patching, I tested with the same input and no
-> longer see the KASAN report.
-> 
-> This was NOT tested on a real device.
-> 
-> Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://www.kernel.org/doc/html/v5.15/networking/bonding.html#arp-monitor-operation
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+---
+ drivers/net/tun.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Patch applied to ath-next branch of ath.git, thanks.
-
-ae80b6033834 ar5523: Fix null-ptr-deref with unexpected WDCMSG_TARGET_START reply
-
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index fecc9a1d293a..1572878c3403 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -1010,6 +1010,7 @@ static netdev_tx_t tun_net_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	struct tun_struct *tun = netdev_priv(dev);
+ 	int txq = skb->queue_mapping;
++	struct netdev_queue *queue;
+ 	struct tun_file *tfile;
+ 	int len = skb->len;
+ 
+@@ -1054,6 +1055,10 @@ static netdev_tx_t tun_net_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	if (ptr_ring_produce(&tfile->tx_ring, skb))
+ 		goto drop;
+ 
++	/* NETIF_F_LLTX requires to do our own update of trans_start */
++	queue = netdev_get_tx_queue(dev, txq);
++	queue->trans_start = jiffies;
++
+ 	/* Notify and wake up reader process */
+ 	if (tfile->flags & TUN_FASYNC)
+ 		kill_fasync(&tfile->fasync, SIGIO, POLL_IN);
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/YXsmPQ3awHFLuAj2@10-18-43-117.dynapool.wireless.nyu.edu/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.33.0
 
