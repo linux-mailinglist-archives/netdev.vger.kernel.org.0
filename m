@@ -2,151 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29EE644E932
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 15:49:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB78444E939
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 15:54:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235245AbhKLOw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 09:52:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58394 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235124AbhKLOw2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Nov 2021 09:52:28 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C9A1D61039;
-        Fri, 12 Nov 2021 14:49:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636728578;
-        bh=542ExInSeFahal2lHxYWLJ/CKxe0cym24ATsD09o1xE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TVMJeBUjYgC6LL0BBRbbMhXeNR+bDS0TxLSJBrUj2Nd2zejqp4UiJJ2fKtPFcGCy8
-         ggcSTYtWAEID/LaJQrmOMNRQRLNxDBzf196CaULofv//I5uMpEj2a/Wa114p4LpbiH
-         RPO6U0BL9U/vDYU+ZLPXCyKRk02U3j9xUXYmpyEbAgSYa+yuEDUQprsGkUE2HqtzbF
-         UHpzHpCcDc7fXpI4OaWrpqaiXPq2kaWn8+snRlO3/7iYpcHxDx1jiDJlkS+2qahHDs
-         5cNAIKB9Hy4tiEidp3h/Z7ME3gJBVGq5SEb9F/TkRRr2TxPY7cmijgx7yqjy0tD2R/
-         kjzMbQqZ+lExg==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 40282410A1; Fri, 12 Nov 2021 11:49:35 -0300 (-03)
-Date:   Fri, 12 Nov 2021 11:49:35 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Song Liu <songliubraving@fb.com>, linux-kernel@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Tiezhu Yang <yangtiezhu@loongson.cn>,
-        linux-perf-users@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH v2] perf bpf: Avoid memory leak from perf_env__insert_btf
-Message-ID: <YY5+/35QWGlGsyuF@kernel.org>
-References: <20211112074525.121633-1-irogers@google.com>
+        id S232403AbhKLO4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 09:56:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47268 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231553AbhKLO4y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 09:56:54 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D8E1C061766
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 06:54:03 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mlXwD-0001aA-OZ; Fri, 12 Nov 2021 15:53:57 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mlXwB-0009Zf-Sz; Fri, 12 Nov 2021 15:53:55 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mlXwB-0001QS-17; Fri, 12 Nov 2021 15:53:55 +0100
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
+        netdev@vger.kernel.org
+Subject: [PATCH net-next] net: dsa: vsc73xxx: Make vsc73xx_remove() return void
+Date:   Fri, 12 Nov 2021 15:53:52 +0100
+Message-Id: <20211112145352.1125971-1-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211112074525.121633-1-irogers@google.com>
-X-Url:  http://acmel.wordpress.com
+Content-Type: text/plain; charset=UTF-8
+X-Patch-Hashes: v=1; h=sha256; i=eu5lpI142438jSBFNGP4+xKeiLnKVvgxom/YjY+Unis=; m=RgdKUNZ4EmOBm5+JEA0/hy6eq01I+9XOcnBscgz91u8=; p=76VmQKWaksssuoIDXNJZgtpGwNXvTphGh9SX0rYbdic=; g=98cfe0fc15fa33be5087a62f98100c54ae0f6d5a
+X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmGOf/sACgkQwfwUeK3K7Akzawf+O6i Rgci3Ix26a92SC6UTdY+ai958pKaA+GhZJq21KnqKc2ZsLyRDBZ3MQDhzyQKGhmPL8NbLlXURoOjo +qY6OUbs2PRhDYgLwFb07iKA8FglOOKNEFlLFJxUoiipIY97kiM5YCXmqKKNlva6wr8N284gtL6Ad f8/bGiBIXpIZ1GUO57oEliex4VjNbzkwkraa6x9RC3T8hB82ZmBzdgc700QvD+jiHMnZs1GxNQUb/ GOBz4+85irMUdRcM7/Y+XYADSMlWMDzz16Ua2QTlQYcwpkhDLv9JmpgxGEMVaNu+8KWgmObXfOtEF X4gQgsEmF/WMieF7kssY/VVl28HP0Uw==
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Thu, Nov 11, 2021 at 11:45:25PM -0800, Ian Rogers escreveu:
-> perf_env__insert_btf doesn't insert if a duplicate btf id is
-> encountered and this causes a memory leak. Modify the function to return
-> a success/error value and then free the memory if insertion didn't
-> happen.
-> 
-> v2. Adds a return -1 when the insertion error occurs in
->     perf_env__fetch_btf. This doesn't affect anything as the result is
->     never checked.
+vsc73xx_remove() returns zero unconditionally and no caller checks the
+returned value. So convert the function to return no value.
 
-Thanks, applied.
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+Hello,
 
-- Arnaldo
+this is the successor of a patch I sent earlier[1], only doing the safe
+and undisputed part.
 
+Best regards
+Uwe
+
+[1] net: dsa: Some cleanups in remove code
+    https://lore.kernel.org/r/20211109113921.1020311-1-u.kleine-koenig@pengutronix.de
+
+ drivers/net/dsa/vitesse-vsc73xx-core.c | 4 +---
+ drivers/net/dsa/vitesse-vsc73xx.h      | 2 +-
+ 2 files changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/dsa/vitesse-vsc73xx-core.c b/drivers/net/dsa/vitesse-vsc73xx-core.c
+index a4b1447ff055..4c18f619ec02 100644
+--- a/drivers/net/dsa/vitesse-vsc73xx-core.c
++++ b/drivers/net/dsa/vitesse-vsc73xx-core.c
+@@ -1216,12 +1216,10 @@ int vsc73xx_probe(struct vsc73xx *vsc)
+ }
+ EXPORT_SYMBOL(vsc73xx_probe);
  
-> Fixes: 3792cb2ff43b ("perf bpf: Save BTF in a rbtree in perf_env")
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
->  tools/perf/util/bpf-event.c | 6 +++++-
->  tools/perf/util/env.c       | 5 ++++-
->  tools/perf/util/env.h       | 2 +-
->  3 files changed, 10 insertions(+), 3 deletions(-)
-> 
-> diff --git a/tools/perf/util/bpf-event.c b/tools/perf/util/bpf-event.c
-> index 4d3b4cdce176..d49cdff8fb39 100644
-> --- a/tools/perf/util/bpf-event.c
-> +++ b/tools/perf/util/bpf-event.c
-> @@ -119,7 +119,11 @@ static int perf_env__fetch_btf(struct perf_env *env,
->  	node->data_size = data_size;
->  	memcpy(node->data, data, data_size);
->  
-> -	perf_env__insert_btf(env, node);
-> +	if (!perf_env__insert_btf(env, node)) {
-> +		/* Insertion failed because of a duplicate. */
-> +		free(node);
-> +		return -1;
-> +	}
->  	return 0;
->  }
->  
-> diff --git a/tools/perf/util/env.c b/tools/perf/util/env.c
-> index 17f1dd0680b4..b9904896eb97 100644
-> --- a/tools/perf/util/env.c
-> +++ b/tools/perf/util/env.c
-> @@ -75,12 +75,13 @@ struct bpf_prog_info_node *perf_env__find_bpf_prog_info(struct perf_env *env,
->  	return node;
->  }
->  
-> -void perf_env__insert_btf(struct perf_env *env, struct btf_node *btf_node)
-> +bool perf_env__insert_btf(struct perf_env *env, struct btf_node *btf_node)
->  {
->  	struct rb_node *parent = NULL;
->  	__u32 btf_id = btf_node->id;
->  	struct btf_node *node;
->  	struct rb_node **p;
-> +	bool ret = true;
->  
->  	down_write(&env->bpf_progs.lock);
->  	p = &env->bpf_progs.btfs.rb_node;
-> @@ -94,6 +95,7 @@ void perf_env__insert_btf(struct perf_env *env, struct btf_node *btf_node)
->  			p = &(*p)->rb_right;
->  		} else {
->  			pr_debug("duplicated btf %u\n", btf_id);
-> +			ret = false;
->  			goto out;
->  		}
->  	}
-> @@ -103,6 +105,7 @@ void perf_env__insert_btf(struct perf_env *env, struct btf_node *btf_node)
->  	env->bpf_progs.btfs_cnt++;
->  out:
->  	up_write(&env->bpf_progs.lock);
-> +	return ret;
->  }
->  
->  struct btf_node *perf_env__find_btf(struct perf_env *env, __u32 btf_id)
-> diff --git a/tools/perf/util/env.h b/tools/perf/util/env.h
-> index 1383876f72b3..163e5ec503a2 100644
-> --- a/tools/perf/util/env.h
-> +++ b/tools/perf/util/env.h
-> @@ -167,7 +167,7 @@ void perf_env__insert_bpf_prog_info(struct perf_env *env,
->  				    struct bpf_prog_info_node *info_node);
->  struct bpf_prog_info_node *perf_env__find_bpf_prog_info(struct perf_env *env,
->  							__u32 prog_id);
-> -void perf_env__insert_btf(struct perf_env *env, struct btf_node *btf_node);
-> +bool perf_env__insert_btf(struct perf_env *env, struct btf_node *btf_node);
->  struct btf_node *perf_env__find_btf(struct perf_env *env, __u32 btf_id);
->  
->  int perf_env__numa_node(struct perf_env *env, int cpu);
-> -- 
-> 2.34.0.rc1.387.gb447b232ab-goog
+-int vsc73xx_remove(struct vsc73xx *vsc)
++void vsc73xx_remove(struct vsc73xx *vsc)
+ {
+ 	dsa_unregister_switch(vsc->ds);
+ 	gpiod_set_value(vsc->reset, 1);
+-
+-	return 0;
+ }
+ EXPORT_SYMBOL(vsc73xx_remove);
+ 
+diff --git a/drivers/net/dsa/vitesse-vsc73xx.h b/drivers/net/dsa/vitesse-vsc73xx.h
+index 30b951504e65..30b1f0a36566 100644
+--- a/drivers/net/dsa/vitesse-vsc73xx.h
++++ b/drivers/net/dsa/vitesse-vsc73xx.h
+@@ -26,5 +26,5 @@ struct vsc73xx_ops {
+ 
+ int vsc73xx_is_addr_valid(u8 block, u8 subblock);
+ int vsc73xx_probe(struct vsc73xx *vsc);
+-int vsc73xx_remove(struct vsc73xx *vsc);
++void vsc73xx_remove(struct vsc73xx *vsc);
+ void vsc73xx_shutdown(struct vsc73xx *vsc);
 
+base-commit: 5833291ab6de9c3e2374336b51c814e515e8f3a5
 -- 
+2.30.2
 
-- Arnaldo
