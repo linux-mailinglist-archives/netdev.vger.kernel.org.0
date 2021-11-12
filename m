@@ -2,120 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E4AC44E0AA
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 04:10:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5C8A44E0AE
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 04:12:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234513AbhKLDMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 22:12:52 -0500
-Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:56568 "EHLO
-        out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234543AbhKLDMw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 22:12:52 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R251e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0Uw7Lai4_1636686599;
-Received: from guwendeMacBook-Pro.local(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0Uw7Lai4_1636686599)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 12 Nov 2021 11:10:00 +0800
-Subject: Re: [RFC PATCH 0/2] Two RFC patches for the same SMC socket wait
- queue mismatch issue
-To:     Karsten Graul <kgraul@linux.ibm.com>, tonylu@linux.alibaba.com
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dust.li@linux.alibaba.com, xuanzhuo@linux.alibaba.com
-References: <1636548651-44649-1-git-send-email-guwen@linux.alibaba.com>
- <369755c0-8b3e-cf69-d7f2-8993700efc4a@linux.ibm.com>
-From:   Wen Gu <guwen@linux.alibaba.com>
-Message-ID: <d3b7969f-4bc5-5834-0a03-d361854d909e@linux.alibaba.com>
-Date:   Fri, 12 Nov 2021 11:09:59 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        id S234545AbhKLDPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 22:15:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58814 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230169AbhKLDPO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 22:15:14 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4C42C061766;
+        Thu, 11 Nov 2021 19:12:24 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id u18so13084105wrg.5;
+        Thu, 11 Nov 2021 19:12:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kyyZCz/c64azEPJMrNfaspdkXcPIMlzhsfOAzsY+TAE=;
+        b=bFrZhtd396ogw8yZKWVmQz4qUxlLV3mRx+DOSPzglfO68HAdSTIzTziS3BGLnLkzp1
+         nraR4q1e7wgtKrk0UiP8xV+WbTz+wtgEjKznjqLTT//V6ylR3EHiqcpC5FKY3MfpSM/Y
+         KpQGLPykD4Rj3uPh+qJ/noKbKrY8yTB7Ewvwy6i339xRqB1+nhw8Sspgz0B7Rzk0556w
+         zIsRa+34BXvVh88xpriCafP4dVUC2X8nWL4u+cCiquTDqhnE7+X4hp2tiG+uY7j3E5Wg
+         7NU4oVfBv1t4r0e20OWisng37Gre2J35pGBz2HQ/y+0+NDhxZUXSVa7IdzDm19IEnGEp
+         v+9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kyyZCz/c64azEPJMrNfaspdkXcPIMlzhsfOAzsY+TAE=;
+        b=S3nuG+i9m5qO3gWB9rkEw7YDD/AkkZezi/w+SsB1qUIDeDN5TWs0WD36UQ0UHboZy1
+         zHJgWS4/yvrS4UeUQFbB2uWA2cNEhN4nT7P3brZN6Nqf4AuXqACGcGzuBao+vN4XRd6J
+         0ZkLjHCYt9saSgJvNjAE9iKB8DOxhlozTlVQSThSRCzZQzvm9AkWAkYwbK62LbMpArEB
+         AA+3bBQiOdyOIo2eHGaA9XjOeNnrkZ0E1b4ZdJ8KRVhN2+A1jI0Q2hqGF3j+XhOsI72D
+         0WS49T/w1viIWibWPS1WCJmATpOgLVB/NEZrlSKR2BZJGKWZUFE3wcCEyUeQUu6Kgi66
+         iUXw==
+X-Gm-Message-State: AOAM530goV7c4PdhgQDcdqhV04BG5ip5tGMZgVKIKGAm8yiJfI3NNQaE
+        Ufg8GwBqg6ImK86tK5disDsYYKefoV7+Onu6E48=
+X-Google-Smtp-Source: ABdhPJxhzBSjyltJHOdHti0F2wT56KUnqMQSEjQAo0b9yjUNN3VlovELHxvMToJqLnIdVLSPtlclqXwgqOH/Gqymh/0=
+X-Received: by 2002:a5d:658c:: with SMTP id q12mr14618865wru.34.1636686743350;
+ Thu, 11 Nov 2021 19:12:23 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <369755c0-8b3e-cf69-d7f2-8993700efc4a@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20211111145847.1487241-1-mudongliangabcd@gmail.com>
+In-Reply-To: <20211111145847.1487241-1-mudongliangabcd@gmail.com>
+From:   Alexander Aring <alex.aring@gmail.com>
+Date:   Thu, 11 Nov 2021 22:12:12 -0500
+Message-ID: <CAB_54W6K+FTTRxLbUHp8csBbtJf=E+JU-zd3q7mQZpa-LHTX8A@mail.gmail.com>
+Subject: Re: [PATCH v2] net: ieee802154: fix shift-out-of-bound in nl802154_new_interface
+To:     Dongliang Mu <mudongliangabcd@gmail.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        kernel list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
+On Thu, 11 Nov 2021 at 09:59, Dongliang Mu <mudongliangabcd@gmail.com> wrote:
+>
+> In nl802154_new_interface, if type retrieved from info->attr is
+> NL802154_IFTYPE_UNSPEC(-1), i.e., less than NL802154_IFTYPE_MAX,
+> it will trigger a shift-out-of-bound bug in BIT(type) [1].
+>
+> Fix this by adding a condition to check if the variable type is
+> larger than NL802154_IFTYPE_UNSPEC(-1).
+>
 
-On 2021/11/11 10:21 pm, Karsten Graul wrote:
-> On 10/11/2021 13:50, Wen Gu wrote:
->> Hi, Karsten
->>
->> Thanks for your reply. The previous discussion about the issue of socket
->> wait queue mismatch in SMC fallback can be referred from:
->> https://lore.kernel.org/all/db9acf73-abef-209e-6ec2-8ada92e2cfbc@linux.ibm.com/
->>
->> This set of patches includes two RFC patches, they are both aimed to fix
->> the same issue, the mismatch of socket wait queue in SMC fallback.
->>
->> In your last reply, I am suggested to add the complete description about
->> the intention of initial patch in order that readers can understand the
->> idea behind it. This has been done in "[RFC PATCH net v2 0/2] net/smc: Fix
->> socket wait queue mismatch issue caused by fallback" of this mail.
->>
->> Unfortunately, I found a defect later in the solution of the initial patch
->> or the v2 patch mentioned above. The defect is about fasync_list and related
->> to 67f562e3e14 ("net/smc: transfer fasync_list in case of fallback").
->>
->> When user applications use sock_fasync() to insert entries into fasync_list,
->> the wait queue they operate is smc socket->wq. But in initial patch or
->> the v2 patch, I swapped sk->sk_wq of smc socket and clcsocket in smc_create(),
->> thus the sk_data_ready / sk_write_space.. of smc will wake up clcsocket->wq
->> finally. So the entries added into smc socket->wq.fasync_list won't be woken
->> up at all before fallback.
->>
->> So the solution in initial patch or the v2 patch of this mail by swapping
->> sk->sk_wq of smc socket and clcsocket seems a bad way to fix this issue.
->>
->> Therefore, I tried another solution by removing the wait queue entries from
->> smc socket->wq to clcsocket->wq during the fallback, which is described in the
->> "[RFC PATCH net 2/2] net/smc: Transfer remaining wait queue entries" of this
->> mail. In our test environment, this patch can fix the fallback issue well.
-> 
-> Still running final tests but overall its working well here, too.
-> Until we maybe find a 'cleaner' solution if this I would like to go with your
-> current fixes. But I would like to improve the wording of the commit message and
-> the comments a little bit if you are okay with that.
-> 
-> If you send a new series with the 2 patches then I would take them and post them
-> to the list again with my changes.
+Thanks.
 
-Seems just the second patch alone will fix the issue.
+I just sent another patch to fix this issue. The real problem here is
+that the enum type doesn't fit into the u32 netlink range as I
+mentioned some months ago. [0] Sorry for the delayed fix.
 
-> 
-> What do you think?
-> 
+- Alex
 
-Thanks for your reply. I am glad that the second patch works well.
-
-To avoid there being any misunderstanding between us, I want to explain 
-that just the second patch "[RFC PATCH net 2/2] net/smc: Transfer 
-remaining wait queue entries" alone will fix the issue well.
-
-Because it transfers the remaining entries in smc socket->wq to 
-clcsocket->wq during the fallback, so that the entries added into smc 
-socket->wq before fallback will still works after fallback, even though 
-user applications start to use clcsocket.
-
-
-The first patch "[RFC PATCH net v2 0/2] net/smc: Fix socket wait queue 
-mismatch issue caused by fallback" should be abandoned.
-
-I sent it only to better explain the defect I found in my initial patch 
-or this v2 patch. Hope it didn't bother you. Swapping the sk->sk_wq 
-seems a bad way to fix the issue because it can not handle the 
-fasync_list well. Unfortunately I found this defect until I almost 
-finished it :(
-
-So, I think maybe it is fine that just send the second patch "[RFC PATCH 
-net 2/2] net/smc: Transfer remaining wait queue entries" again. I will 
-send it later.
-
-And, it is okay for me if you want to improve the commit messages or 
-comments.
-
-Thank you.
-
-Cheers,
-Wen Gu
+[0] https://lore.kernel.org/linux-wpan/CAB_54W62WZCcPintGnu-kqzCmgAH7EsJxP9oaeD2NVZ03e_2Wg@mail.gmail.com/T/#t
