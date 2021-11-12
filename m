@@ -2,182 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1888244EE46
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 22:01:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5E2A44EE7D
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 22:21:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235707AbhKLVEY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 16:04:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45764 "EHLO
+        id S235727AbhKLVYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 16:24:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232902AbhKLVEX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 16:04:23 -0500
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C30C061766;
-        Fri, 12 Nov 2021 13:01:32 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id 77-20020a1c0450000000b0033123de3425so10932040wme.0;
-        Fri, 12 Nov 2021 13:01:32 -0800 (PST)
+        with ESMTP id S232183AbhKLVYK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 16:24:10 -0500
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 894CEC061766
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 13:21:19 -0800 (PST)
+Received: by mail-qv1-xf2f.google.com with SMTP id bu11so7208543qvb.0
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 13:21:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=B3e+13s4p3dhI8Zf6QqfqzgmLP21sUtb60eTfseb1RM=;
-        b=pVO9n6kHKfA/tQZdTAfy5MF2d/CmjtqXvWOhNlddj/wlSkaOl+8h44Psb3F0cFxIgV
-         6JVlgYaTrOF+iDSy9aCmVN9nrgwgyv9uJoBYkRPkV0vI9lLGiotjxynXXdGjhxnkPHmP
-         5F7eCsOU3p1rVmrTMB6sWdvQTOQ0aZGhHdyHEE4UxkqtCwWV/5BghiVLAsaQ0jOIxaCn
-         LhsLT1T0O7H4lOjR7hU1XMIJx4pxCyrpBXN16yiZN7bOhmoSt2rGshpst07ZtpYSNoKq
-         +NNYLEzj/fOtlHt5BzR3JzIh/9cfvgwWJ4HYpnKR6JjFmvBpDdtzUTKSrsYUaUkpO5BB
-         39Bg==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=XLeTIT2e+1GYs3LrVJnFg0lz8R1NW70HFsPjjOtgHhg=;
+        b=XffhQDV8dQLgqNFAiAcUtsRlOqecg22QHN7Omvnpkf03NCneNNgX26B72gSXTpbOl9
+         uW0u2VMT2wMl7aUv6DlaaS6wgjkDNWjKvnhKBmVEmC0nGEhDgaujkdxEqfyl1/L58Lp8
+         HuDo5fPw1cCrqQD88BBNPUnLOyNNTAzZJsxJ8jP72YPcuaDwDiG+qE9qVtFecgO3SFMb
+         Jak7b2tIFRBA+Q39ilCWJrfyvyfQgAMoC/EYG7rnfHRGmnNPUclBRZV6Edimui5TuLXz
+         bfjZmYFDeu08ydca8HPUp3I29fgm55UUzou0g9L2f8t2FyRinh3TWkvNsjHmNqGtDgmh
+         RXNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=B3e+13s4p3dhI8Zf6QqfqzgmLP21sUtb60eTfseb1RM=;
-        b=QpVEAKr+z/bEK17GYQw40UsUFyjOIy+3sPXm4NMPu/aG3sZF36LSa5cRfNqm2wZ8/R
-         GsC7W0XUOhgLCVZAoW5OaT77E8iYYbjqOotpLOCdipN/ydOVJze93qEWaiAdZ/TlWhHn
-         HV4LYcB7j2Ej44jNByfuAXcT4uYrCzgsdQB94O1rukU09D+k0g5/KbcYiP0Qwx95h8V0
-         dGRPJJuBMiwXfxCGVDbmoqtVAhuvWpE+j3YTXedJLKCN7Vkrfv2rWIAAQnXWfQ5d1f4l
-         Fd1OpjifLqBUdVt3Y2Ieef+3PN6f5RD2jUcNVOZlqwWObDf+WhZfakgmPbUB19tgbS1z
-         50cg==
-X-Gm-Message-State: AOAM533bsFdJLAkb7pATFJXCGC6ZrJJ0HOpDd1Dl+dvzex1dgEetdJOH
-        b45CeqM9dPTjtfFcEdXi6VI=
-X-Google-Smtp-Source: ABdhPJyxSpGkAnhYPgRNQITd3yeWDvqC9pDE/arAD4iC++4J6Tpe6GShMf0YqEQbw7v0W6pxqfb4Aw==
-X-Received: by 2002:a05:600c:358a:: with SMTP id p10mr19821181wmq.180.1636750891230;
-        Fri, 12 Nov 2021 13:01:31 -0800 (PST)
-Received: from [10.168.10.170] ([170.253.36.171])
-        by smtp.gmail.com with ESMTPSA id t9sm7171558wrx.72.2021.11.12.13.01.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Nov 2021 13:01:30 -0800 (PST)
-Message-ID: <ee12204f-0bfb-5b64-ef77-9217eb7dc456@gmail.com>
-Date:   Fri, 12 Nov 2021 22:01:29 +0100
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=XLeTIT2e+1GYs3LrVJnFg0lz8R1NW70HFsPjjOtgHhg=;
+        b=4PkSjflCGjJHOtVGsjkdrni71h7W33VQcozwXqneu7TtSOI6mtEKcmX1i/UGKMJBhn
+         OMdv/WDut6SwgxpJAuJvZScfdz8r3F+RE0whLBHCy4H9YvVTEzNkw/qMm6hCdUt/tBKd
+         WyFjmDncG4l+KvKV0/HkFREc7M5U1/9LNXUBgonlYlMOYOlXS3jvDObtCDAeRTQo9gn2
+         AiwaycHeQC4fWskuuXivmbnMlf5efiz/zB7SVMu7k5yyAkWfw979Oe2pdCx93G3t/mNf
+         wesTfRHOXdH5I7u5kSGtnPFQotjj744zPBtYvwcTYi0Bt2RBz/tU1kqDok1GkARVJwUW
+         aRYg==
+X-Gm-Message-State: AOAM533HvIsvgRATAe3eCHccoSDJKHf9IcRMro7/oouASbFxxC9SFqb+
+        XIKbBF/zhT7AyePa+iwdfQdmdnAe2a76vK5UFWc=
+X-Google-Smtp-Source: ABdhPJz93Zv5vsLQZEMFMvfZGg/W/sFzUxWOGrzCUGWLRjORQtJk+rbinR785xkiaDkVeXPKiR7MSrlWyqN+yG57tZM=
+X-Received: by 2002:a05:6214:1c8d:: with SMTP id ib13mr18063540qvb.64.1636752078648;
+ Fri, 12 Nov 2021 13:21:18 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: netdevice.7 SIOCGIFFLAGS/SIOCSIFFLAGS
-Content-Language: en-US
-To:     Erik Flodin <erik@flodin.me>
-Cc:     mtk.manpages@gmail.com, linux-man@vger.kernel.org,
-        Stefan Rompf <stefan@loplof.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        John Dykstra <john.dykstra1@gmail.com>, netdev@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <CAAMKmof+Y+qrro7Ohd9FSw1bf+-tLMPzaTba-tVniAMY0zwTOQ@mail.gmail.com>
- <b0a534b3-9bdf-868e-1f28-8e32d31013a2@gmail.com>
- <CAAMKmodhSsckMxH9jLKKwXN_B76RoLmDttbq5X9apE-eCo0hag@mail.gmail.com>
- <1cde5a72-033e-05e7-be58-b1b2ef95c80f@gmail.com>
- <CAAMKmoe8rUuoxFK2gKZL4um79gmtn-__-1ZDWuBgGTqfqPjZdw@mail.gmail.com>
- <ec0d0a2d-235c-a71f-92bc-45e1156bff9e@gmail.com>
- <CAAMKmocBEr05EfidF9CfqJQw4uj1YcYwmkJPR=c0eCCYgsAHwg@mail.gmail.com>
-From:   "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
-In-Reply-To: <CAAMKmocBEr05EfidF9CfqJQw4uj1YcYwmkJPR=c0eCCYgsAHwg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Received: by 2002:a05:6214:1c0b:0:0:0:0 with HTTP; Fri, 12 Nov 2021 13:21:18
+ -0800 (PST)
+Reply-To: fritzbogerelsa@yahoo.com
+From:   EU Aid Volunteers <frgilbertbougma@gmail.com>
+Date:   Fri, 12 Nov 2021 21:21:18 +0000
+Message-ID: <CAJF4ZTQAzLjmPJ5SNt-VtjdX7SUbxdJa2TfTOr0NRF3OUksvfQ@mail.gmail.com>
+Subject: Re; REF: 05ML-03NRI/EUAID/OPEC/TGF
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Erik,
-
-On 10/2/21 18:35, Erik Flodin wrote:
-> A bit more than a month has passed so here's a ping :)
-> 
-> // Erik
-
-Thanks for the ping.
-
-alarm(3600 * 24 * 30);  // :)
-
-> 
-> On Fri, 30 Apr 2021 at 21:32, Alejandro Colomar (man-pages) 
-> <alx.manpages@gmail.com <mailto:alx.manpages@gmail.com>> wrote:
-> 
->     [PING mtk, netdev@]
->     [CC += linux-kernel]
-> 
->     Hi Erik,
-> 
->     On 4/29/21 9:45 PM, Erik Flodin wrote:
->      > On Wed, 14 Apr 2021 at 21:56, Alejandro Colomar (man-pages)
->      > <alx.manpages@gmail.com <mailto:alx.manpages@gmail.com>> wrote:
->      >>
->      >> [CC += netdev]
->      >>
->      >> Hi Erik,
->      >>
->      >> On 4/14/21 8:52 PM, Erik Flodin wrote:
->      >>> Hi,
->      >>>
->      >>> On Fri, 19 Mar 2021 at 20:53, Alejandro Colomar (man-pages)
->      >>> <alx.manpages@gmail.com <mailto:alx.manpages@gmail.com>> wrote:
->      >>>> On 3/17/21 3:12 PM, Erik Flodin wrote:
->      >>>>> The documentation for SIOCGIFFLAGS/SIOCSIFFLAGS in
->     netdevice.7 lists
->      >>>>> IFF_LOWER_UP, IFF_DORMANT and IFF_ECHO, but those can't be set in
->      >>>>> ifr_flags as it is only a short and the flags start at 1<<16.
->      >>>>>
->      >>>>> See also
->     https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=746e6ad23cd6fec2edce056e014a0eabeffa838c
->     <https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=746e6ad23cd6fec2edce056e014a0eabeffa838c>
->      >>>>>
->      >>>>
->      >>>> I don't know what's the history of that.
->      >>>
->      >>> Judging from commit message in the commit linked above it was
->     added by
->      >>> mistake. As noted the flags are accessible via netlink, just
->     not via
->      >>> SIOCGIFFLAGS.
->      >>>
->      >>> // Erik
->      >>>
->      >>
->      >> I should have CCd netdev@ before.  Thanks for the update.  Let's
->     see if
->      >> anyone there can comment.
->      >>
->      >> Thanks,
->      >>
->      >> Alex
->      >>
-> 
->      > Hi again,
->      >
->      > Have there been any updates on this one?
-> 
->     No, Noone from the kernel answered.  And I'm sorry, but I'm not sure
->     what is going on in the code, so I don't want to close this here by just
->     removing those flags from the manual page, because I worry that the
->     actual code may be wrong or something.  So I prefer that when Michael
->     has some time he can maybe review this and say something.  Ideally,
->     someone from the kernel would also respond, but they haven't.  I've CCd
->     the LKML; let's see if someone reads this and can help.
-> 
->     Thanks,
-> 
->     Alex
-> 
->     P.S.:  Please, if we haven't responded in a month from now, ping us
->     again.  Thanks again.
-> 
->      >
->      > // Erik
->      >
->      >>
->      >> --
->      >> Alejandro Colomar
->      >> Linux man-pages comaintainer;
->     https://www.kernel.org/doc/man-pages/
->     <https://www.kernel.org/doc/man-pages/>
->      >> http://www.alejandro-colomar.es/ <http://www.alejandro-colomar.es/>
-> 
->     -- 
->     Alejandro Colomar
->     Linux man-pages comaintainer; https://www.kernel.org/doc/man-pages/
->     <https://www.kernel.org/doc/man-pages/>
->     http://www.alejandro-colomar.es/ <http://www.alejandro-colomar.es/>
-> 
-
 -- 
-Alejandro Colomar
-Linux man-pages comaintainer; http://www.kernel.org/doc/man-pages/
-http://www.alejandro-colomar.es/
+REF: 05ML-03NRI/EUAID/OPEC/TGF
+
+Congratulations, you are hereby being approved for a lump sum of
+USD$449,500.00 (Four Hundred and Forty-Nine Thousand Five Hundred
+United States Dollars) in your favor through an international bank
+draft cheque cash-able anywhere in the world. As decided by the
+Management Committee of EU Aid Volunteers in-conjunction with OPEC
+Fund and The Global Fund you have been automatically shortlisted among
+the beneficiaries of Proposals for EU Aid Volunteers in-conjunction
+with OPEC in 2021.
+
+EU Aid Volunteers brings volunteers and organizations together from
+different countries, providing practical support to humanitarian aid
+projects and contributing to strengthening local capacity and
+resilience of disaster-affected communities.
+
+The OPEC Fund provides emergency aid assistance and supports selected
+regional and global initiatives, especially those addressing priority
+issues on the sustainable development agenda.
+
+The Global Fund has a vital role to play in supporting individuals
+from countries that implement Global Fund-financed programs with their
+response to the COVID-19 pandemic, while maintaining its focus in
+continuing the fight against HIV, TB and malaria.
+
+Contact: Elsa Fritzboger here: fritzbogerelsa@yahoo.com with the below
+information as soon as possible for the delivery of your international
+bank draft cheque. We've authorized him to release the Bank Draft
+cheque to you whenever you contact him regarding it.
+
+Name in full:
+Nationality:
+Age:
+Occupation:
+Phone/Fax:
+Postal Address:
+
+Thanks for your Cooperation
+A A. Larsson
+EU Aid Volunteers.
+For more information visit: https://www.aidvolunteers.org/
+
+****************************** ******************************
+NOTE: If you received this message in your SPAM/BULK folder , that is
+because of the restrictions implemented by your server
+****************************** ******************************
