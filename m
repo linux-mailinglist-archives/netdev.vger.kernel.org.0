@@ -2,133 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35A0D44EAD4
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 16:47:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7220144EAEB
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 17:00:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235165AbhKLPuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 10:50:32 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:56702 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232194AbhKLPub (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 10:50:31 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id CF28A21979;
-        Fri, 12 Nov 2021 15:47:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1636732058; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=uGTkQenqxNe1pOZpE8fthF8UArXVjXhpTme9YoO3BrY=;
-        b=TP/SqoxeG3DGfdEiqEnfvbSoxxC7sqL8jIO2bhX+ehJJK+Z/vVQ0+YA1U7VOUcIBMdsemI
-        JNMnWc9H+MU51AmbpIlO2PHcJ8DXUFcZ0eSoEe9R6U/v5IH+JZxNOEonD8/IxCdhhlNRvp
-        jlPMpSYfcdEa2kro/w6I0grNg4ObEpY=
-Received: from suse.cz (unknown [10.100.224.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 8FC2CA3B81;
-        Fri, 12 Nov 2021 15:47:38 +0000 (UTC)
-Date:   Fri, 12 Nov 2021 16:47:38 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel test robot <oliver.sang@intel.com>,
-        kbuild test robot <lkp@intel.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        David Hildenbrand <david@redhat.com>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH] kthread: dynamically allocate memory to store kthread's
- full name
-Message-ID: <YY6MmmoDlkw+oZvA@alley>
-References: <20211108084142.4692-1-laoar.shao@gmail.com>
- <202111090930.75BBF4678@keescook>
- <CALOAHbCo9_qYHQOa4KbXeQgVOmyEqOOXbY7j_p+u4ZaSUjWnFA@mail.gmail.com>
+        id S234508AbhKLQC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 11:02:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45560 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229841AbhKLQC6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Nov 2021 11:02:58 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id B66C360F5B;
+        Fri, 12 Nov 2021 16:00:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636732807;
+        bh=PL2Ra1DzFzkfrpn2P81zJriwN/JiumNQ1gdK3BFiY6E=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=bTVpn9Ackn407AQI48LTTvJTnjZGryEp24aXXwFM/nik8KyUYHYlia3kF+zGxk3e5
+         e99XynmSt9WfuA4+uG0MOAQfPM+BCr5N+R54Ogn1wp6h0rN6PrsR/006au0EjlPhJJ
+         SNdrYJ3oik2Aa4HNcPh7upPN0ilIbUfwxjzHaPkgFO/P2g8xUIWnAhio4SO+XIDTap
+         qMbN4TQlFZ3ptcQ3gMf0xWwav2GAlAfo8AWUIOQjdxGywA+zURUjkXE/+xrxeR7vVd
+         VdpshZN9Q+fMMKD0Ql07LZBCh9MQ1/GqH2g9EvQPMp62uOtsbfBuBoH/Wqxw3JwzD6
+         Q/5u62GMsDQOQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A9B6A60A0C;
+        Fri, 12 Nov 2021 16:00:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALOAHbCo9_qYHQOa4KbXeQgVOmyEqOOXbY7j_p+u4ZaSUjWnFA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next v2] bpftool: enable libbpf's strict mode by default
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163673280769.32385.11029693657467793782.git-patchwork-notify@kernel.org>
+Date:   Fri, 12 Nov 2021 16:00:07 +0000
+References: <20211110192324.920934-1-sdf@google.com>
+In-Reply-To: <20211110192324.920934-1-sdf@google.com>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, quentin@isovalent.com,
+        john.fastabend@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed 2021-11-10 10:12:17, Yafang Shao wrote:
-> On Wed, Nov 10, 2021 at 1:34 AM Kees Cook <keescook@chromium.org> wrote:
-> >
-> > On Mon, Nov 08, 2021 at 08:41:42AM +0000, Yafang Shao wrote:
-> > > When I was implementing a new per-cpu kthread cfs_migration, I found the
-> > > comm of it "cfs_migration/%u" is truncated due to the limitation of
-> > > TASK_COMM_LEN. For example, the comm of the percpu thread on CPU10~19 are
-> > > all with the same name "cfs_migration/1", which will confuse the user. This
-> > > issue is not critical, because we can get the corresponding CPU from the
-> > > task's Cpus_allowed. But for kthreads correspoinding to other hardware
-> > > devices, it is not easy to get the detailed device info from task comm,
-> > > for example,
-> > >
-> > > After this change, the full name of these truncated kthreads will be
-> > > displayed via /proc/[pid]/comm:
-> > >
-> > > --- a/kernel/kthread.c
-> > > +++ b/kernel/kthread.c
-> > > @@ -399,12 +414,27 @@ struct task_struct *__kthread_create_on_node(int (*threadfn)(void *data),
-> > >       if (!IS_ERR(task)) {
-> > >               static const struct sched_param param = { .sched_priority = 0 };
-> > >               char name[TASK_COMM_LEN];
-> > > +             va_list aq;
-> > > +             int len;
-> > >
-> > >               /*
-> > >                * task is already visible to other tasks, so updating
-> > >                * COMM must be protected.
-> > >                */
-> > > -             vsnprintf(name, sizeof(name), namefmt, args);
-> > > +             va_copy(aq, args);
-> > > +             len = vsnprintf(name, sizeof(name), namefmt, aq);
-> > > +             va_end(aq);
-> > > +             if (len >= TASK_COMM_LEN) {
-> > > +                     struct kthread *kthread = to_kthread(task);
-> > > +                     char *full_name;
-> > > +
-> > > +                     full_name = kvasprintf(GFP_KERNEL, namefmt, args);
-> > > +                     if (!full_name) {
-> > > +                             kfree(create);
-> > > +                             return ERR_PTR(-ENOMEM);
-> >
-> > I'm not a fan of this out-of-line free/return. Why not just leave it
-> > truncated when out of memory? For example just do:
-> >
-> >                         struct kthread *kthread = to_kthread(task);
-> >
-> >                         kthread->full_name = kvasprintf(GFP_KERNEL, namefmt, args);
+Hello:
 
-> It is OK for me.
+This patch was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
 
-I agree. It is perfectly fine to continue here. The truncated name is
-a reasonable fallback.
+On Wed, 10 Nov 2021 11:23:24 -0800 you wrote:
+> Otherwise, attaching with bpftool doesn't work with strict section names.
+> 
+> Also:
+> 
+> - add --legacy option to switch back to pre-1.0 behavior
+> - print a warning when program fails to load in strict mode to point
+>   to --legacy flag
+> - by default, don't append / to the section name; in strict
+>   mode it's relevant only for a small subset of prog types
+> 
+> [...]
+
+Here is the summary with links:
+  - [bpf-next,v2] bpftool: enable libbpf's strict mode by default
+    https://git.kernel.org/bpf/bpf-next/c/314f14abdeca
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-> I will do it as you suggested and show a warning for this case.
-
-Yup. Just please, use only the truncated name in the warning. It is
-not important enough to add another va_copy() for this.
-
-> >
-> > > +                     }
-> > > +                     kthread->full_name = full_name;
-> > > +             }
-> > >               set_task_comm(task, name);
-> > >               /*
-> > >                * root may have changed our (kthreadd's) priority or CPU mask.
-
-Best Regards,
-Petr
