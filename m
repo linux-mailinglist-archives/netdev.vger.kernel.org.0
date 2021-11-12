@@ -2,106 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC29344EC40
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 18:52:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E27044EC88
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 19:20:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235550AbhKLRzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 12:55:20 -0500
-Received: from smtprelay0125.hostedemail.com ([216.40.44.125]:32784 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S235347AbhKLRzT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 12:55:19 -0500
-Received: from omf15.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay07.hostedemail.com (Postfix) with ESMTP id F2134181AC9CC;
-        Fri, 12 Nov 2021 17:52:24 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf15.hostedemail.com (Postfix) with ESMTPA id 1BF63200026E;
-        Fri, 12 Nov 2021 17:52:23 +0000 (UTC)
-Message-ID: <61c7ecf2ba3db984fbbced5b6e34b2de71c63e8d.camel@perches.com>
-Subject: Re: [PATCH v3 3/3] MAINTAINERS: Mark VMware mailing list entries as
- email aliases
-From:   Joe Perches <joe@perches.com>
-To:     "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Date:   Fri, 12 Nov 2021 09:52:23 -0800
-In-Reply-To: <20211112174458.GB11364@csail.mit.edu>
-References: <163657479269.84207.13658789048079672839.stgit@srivatsa-dev>
-         <163657493334.84207.11063282485812745766.stgit@srivatsa-dev>
-         <20211110173935.45a9f495@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <d7f3fec79287a149d6edc828583a771c84646b42.camel@perches.com>
-         <20211111055554.4f257fd2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <20211112174458.GB11364@csail.mit.edu>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Queue-Id: 1BF63200026E
-X-Spam-Status: No, score=-4.89
-X-Stat-Signature: wboa1t8w68sc39be84n6n9azc1k9cb7u
-X-Rspamd-Server: rspamout05
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX19yNH6uWKgJVIoR2k3jeozYNIUPs0DZ52M=
-X-HE-Tag: 1636739543-245155
+        id S235578AbhKLSWv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 13:22:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37898 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235552AbhKLSWt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 13:22:49 -0500
+Received: from forwardcorp1o.mail.yandex.net (forwardcorp1o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A98C061766
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 10:19:57 -0800 (PST)
+Received: from sas1-4cbebe29391b.qloud-c.yandex.net (sas1-4cbebe29391b.qloud-c.yandex.net [IPv6:2a02:6b8:c08:789:0:640:4cbe:be29])
+        by forwardcorp1o.mail.yandex.net (Yandex) with ESMTP id 24E722E0AF8;
+        Fri, 12 Nov 2021 21:19:54 +0300 (MSK)
+Received: from sas1-7470331623bb.qloud-c.yandex.net (sas1-7470331623bb.qloud-c.yandex.net [2a02:6b8:c08:bd1e:0:640:7470:3316])
+        by sas1-4cbebe29391b.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id 3l2jLeXzPL-JpsWuRV6;
+        Fri, 12 Nov 2021 21:19:54 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
+        t=1636741194; bh=vdLH+/aot9224MhSr/EbBx7Y+DB+nESGMCdUeQ4akDY=;
+        h=References:Date:Subject:To:From:Message-Id:In-Reply-To:Cc;
+        b=jAyO52PzTPunsW+64Vu8/E2glvthvHI6U18640ES3MuAelfguAxKG+o/A6MiwzRKX
+         cXmhU2Q5f1bbCj0i4rmpNOJQZhMDKlYTZPuhYPyWqR2Bo81BAmyvFdDXb3fFoAnXg5
+         MBIhvFGi/BbWtmmj2+Sdo7SLZzCnLgtokNIzvgik=
+Authentication-Results: sas1-4cbebe29391b.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
+Received: from vmhmukos.sas.yp-c.yandex.net (vmhmukos.sas.yp-c.yandex.net [2a02:6b8:c07:895:0:696:abd4:0])
+        by sas1-7470331623bb.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPS id vuM7zSALw5-JpxqtPD1;
+        Fri, 12 Nov 2021 21:19:51 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+X-Yandex-Fwd: 2
+From:   Akhmat Karakotov <hmukos@yandex-team.ru>
+To:     hmukos@yandex-team.ru
+Cc:     eric.dumazet@gmail.com, mitradir@yandex-team.ru,
+        netdev@vger.kernel.org, tom@herbertland.com, zeil@yandex-team.ru
+Subject: [RFC PATCH v2 net-next 0/4] txhash: Make hash rethink configurable
+Date:   Fri, 12 Nov 2021 21:19:35 +0300
+Message-Id: <20211112181939.11329-1-hmukos@yandex-team.ru>
+In-Reply-To: <20211025203521.13507-1-hmukos@yandex-team.ru>
+References: <20211025203521.13507-1-hmukos@yandex-team.ru>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2021-11-12 at 09:44 -0800, Srivatsa S. Bhat wrote:
-> On Thu, Nov 11, 2021 at 05:55:54AM -0800, Jakub Kicinski wrote:
-> > On Wed, 10 Nov 2021 21:19:53 -0800 Joe Perches wrote:
-> > > On Wed, 2021-11-10 at 17:39 -0800, Jakub Kicinski wrote:
-> > > > On Wed, 10 Nov 2021 12:09:06 -0800 Srivatsa S. Bhat wrote:  
-> > > > >  DRM DRIVER FOR VMWARE VIRTUAL GPU
-> > > > > -M:	"VMware Graphics" <linux-graphics-maintainer@vmware.com>
-> > > > >  M:	Zack Rusin <zackr@vmware.com>
-> > > > > +R:	VMware Graphics Reviewers <linux-graphics-maintainer@vmware.com>
-> > > > >  L:	dri-devel@lists.freedesktop.org
-> > > > >  S:	Supported
-> > > > >  T:	git git://anongit.freedesktop.org/drm/drm-misc  
-> > > > 
-> > > > It'd be preferable for these corporate entries to be marked or
-> > > > otherwise distinguishable so that we can ignore them when we try 
-> > > > to purge MAINTAINERS from developers who stopped participating.
-> > > > 
-> > > > These addresses will never show up in a commit tag which is normally
-> > > > sign of inactivity.  
-> > > 
-> > > Funny.
-> > > 
-> > > The link below is from over 5 years ago.
-> > > 
-> > > https://lore.kernel.org/lkml/1472081625.3746.217.camel@perches.com/
-> > > 
-> > > Almost all of those entries are still in MAINTAINERS.
-> > > 
-> > > I think the concept of purging is a non-issue.
-> > 
-> > I cleaned networking in January and intend to do it again in 2 months.
-> > See:
-[]
-> > 8b0f64b113d6 MAINTAINERS: remove names from mailing list maintainers
+As it was shown in the report by Alexander Azimov, hash rethink at the
+client-side may lead to connection timeout toward stateful anycast
+services. Tom Herbert created a patchset to address this issue by applying
+hash rethink only after a negative routing event (3RTOs) [1]. This change
+also affects server-side behavior, which we found undesirable. This
+patchset changes defaults in a way to make them safe: hash rethink at the
+client-side is disabled and enabled at the server-side upon each RTO
+event or in case of duplicate acknowledgments.
 
-I think the last removal of descriptive naming from exploder style
-reviewers or mailing lists is misguided/not good.
+This patchset provides two options to change default behaviour. The hash
+rethink may be disabled at the server-side by the new sysctl option.
+Changes in the sysctl option don't affect default behavior at the
+client-side.
 
-I suggest this change be reverted.
+Hash rethink can also be enabled/disabled with socket option or bpf
+syscalls which ovewrite both default and sysctl settings. This socket
+option is available on both client and server-side. This should provide
+mechanics to enable hash rethink inside administrative domain, such as DC,
+where hash rethink at the client-side can be desirable.
 
-> I'm assuming the purging is not totally automated, is it? As long as
-> the entries are informative to a human reader, it should be possible
-> to skip the relevant ones when purging inactive entries.
+[1] https://lore.kernel.org/netdev/20210809185314.38187-1-tom@herbertland.com/
 
-true
+v2:
+	- Changed sysctl default to ENABLED in all patches. Reduced sysctl
+	  and socket option size to u8. Fixed netns bug reported by kernel
+	  test robot.
 
-> I believe this patch makes the situation better than it is currently
-> (at least for the human reader), by marking lists without public
-> read-access in a format that is more appropriate. In the future, we
-> could perhaps improve on it to ease automation too, but for now I
-> think it is worthwhile to merge this change (unless there are strong
-> objections or better alternatives that everyone agrees on).
+Akhmat Karakotov (4):
+  txhash: Make rethinking txhash behavior configurable via sysctl
+  txhash: Add socket option to control TX hash rethink behavior
+  bpf: Add SO_TXREHASH setsockopt
+  tcp: change SYN ACK retransmit behaviour to account for rehash
 
-I think this VMware suggested patch to MAINTAINERS is good and
-improves readers ability to know how any suggested patch is going
-to be reviewed by a company..
+ arch/alpha/include/uapi/asm/socket.h  |  2 ++
+ arch/mips/include/uapi/asm/socket.h   |  2 ++
+ arch/parisc/include/uapi/asm/socket.h |  2 ++
+ arch/sparc/include/uapi/asm/socket.h  |  2 ++
+ include/net/netns/core.h              |  1 +
+ include/net/sock.h                    | 28 ++++++++++++++-------------
+ include/uapi/asm-generic/socket.h     |  2 ++
+ include/uapi/linux/socket.h           |  4 ++++
+ net/core/filter.c                     | 10 ++++++++++
+ net/core/net_namespace.c              |  2 ++
+ net/core/sock.c                       | 13 +++++++++++++
+ net/core/sysctl_net_core.c            | 15 ++++++++++++--
+ net/ipv4/inet_connection_sock.c       |  3 +++
+ net/ipv4/tcp_output.c                 |  3 ++-
+ 14 files changed, 73 insertions(+), 16 deletions(-)
 
+-- 
+2.17.1
 
