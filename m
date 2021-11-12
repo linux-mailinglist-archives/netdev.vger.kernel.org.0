@@ -2,133 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADA0D44DEAA
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 00:52:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58EE844DECC
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 01:04:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234476AbhKKXzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 18:55:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42692 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234473AbhKKXzK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 18:55:10 -0500
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6FA8C061766
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 15:52:20 -0800 (PST)
-Received: by mail-pf1-x42c.google.com with SMTP id n85so6893876pfd.10
-        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 15:52:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KpdC+HS7vrvA+pQ3eF/LseHwskJIDIWZDRzd+TXGi1I=;
-        b=iA71HoTuOTYRl8Rk2mn+5jMAsR/HYURVKh5PcGoDvw66pc1yYjiyAndpIGm/kWf54e
-         EoJx2uts5Cn/+fS+G/EvSZ+MIO6YSS0ZI+NN24xwKpyjmynHdI8IY7b4SiN6vqlMQfQQ
-         oIvsTXvvrb8Bl3M3num8flPQpF6mUhoQAq79pLoy0OUjp7mkjJN49Cmf5lDQRmIvloBU
-         jE2UiGgIfbgTz39AkKZqnu7fKBXWPe6rWxQPNx3IAjzRlp3WMFsgzZnJPU56QsR+5Zal
-         MfHxfsRODamgn3xMHP9pF7IXrXerk011lLEe512f5JghTSlwCYbyMePOR70Ki1Ke4N0J
-         KBfw==
+        id S234503AbhKLAG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 19:06:57 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:26090 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234453AbhKLAG4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 19:06:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1636675445;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+aI3vIA8L2jTbmaVH9PAGWa1rUBVm1aF92U3pHIQZow=;
+        b=K2wwtqM4IWkwjbr/E6w/R13bX0sx0I5f7hoKaFuw5sWoi3RpC8hzK+cuMXZZEMnQzQQvFz
+        fOcclhQnB4lWjoQICS9+YxXvmsKFRLHQomR7xnFoaXt5wGYaWKANdp5/7u70lQCbkn8qq1
+        wVUhKRUGLymVh52TxdbDMX2J82VEdkU=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-575-KzTSvW6FNquzyqJY7sCZEw-1; Thu, 11 Nov 2021 19:04:04 -0500
+X-MC-Unique: KzTSvW6FNquzyqJY7sCZEw-1
+Received: by mail-qv1-f72.google.com with SMTP id jo4-20020a056214500400b003a5cb094fb8so6860232qvb.22
+        for <netdev@vger.kernel.org>; Thu, 11 Nov 2021 16:04:04 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=KpdC+HS7vrvA+pQ3eF/LseHwskJIDIWZDRzd+TXGi1I=;
-        b=CTRmxoM2nBkbYJM9J1jWZN+S+ZHWcH/0yGhluPM3RXXQBIRQ/hitlrNTgbLuSjzPS/
-         Ka3VNahlDS+VlLhNAXu5jBGJ/A8DFHCRPNSn0I9y0y3tUdEw8H7ipgnGOPIZLweB1Kwd
-         OBEQu1D5O4C2hAYbypgn1jYq+UjRUUy4rEXvdBj9UndzU5GC7EcJjYHlRTwXLUNV2EIt
-         rOVfv/Tmoh4FBz5A778Udde9JVIlPxSjAdViKmpFu+QQKlwuleiwCodavefDpU7wI6sH
-         3gaVoSCHbQwllym0WD7bWHsXAh9pl0+jzi4evpfc6d0vyDb0VPVEvOfF383efscIM+ZZ
-         iPtg==
-X-Gm-Message-State: AOAM532hmVovdjreYpgl9RiWC6zNkh7jQLE1AoI3BHNZCTHj9mytGtAI
-        U2+PWRf4dkcouw1YzYRhEi0=
-X-Google-Smtp-Source: ABdhPJwHDc4nUx9jsSuIehjnTQTDGfbYe8bmfPQEOrphxCPh8jIHKjv8RcieLbR1MpbwVti/lYq3vQ==
-X-Received: by 2002:a63:3348:: with SMTP id z69mr7317350pgz.177.1636674740292;
-        Thu, 11 Nov 2021 15:52:20 -0800 (PST)
-Received: from phantasmagoria.svl.corp.google.com ([2620:15c:2c4:201:f3d1:9c31:c5ef:f3e0])
-        by smtp.gmail.com with ESMTPSA id f15sm4600325pfe.171.2021.11.11.15.52.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Nov 2021 15:52:19 -0800 (PST)
-From:   Arjun Roy <arjunroy.kdev@gmail.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     arjunroy@google.com, edumazet@google.com, soheil@google.com,
-        kuba@kernel.org
-Subject: [net v2] tcp: Fix uninitialized access in skb frags array for Rx 0cp.
-Date:   Thu, 11 Nov 2021 15:52:15 -0800
-Message-Id: <20211111235215.2605384-1-arjunroy.kdev@gmail.com>
-X-Mailer: git-send-email 2.34.0.rc1.387.gb447b232ab-goog
+        bh=+aI3vIA8L2jTbmaVH9PAGWa1rUBVm1aF92U3pHIQZow=;
+        b=Z+a39ke1D4uPgYjw+SbJBu5Wtx9ttsNXunZTd33PCIeR4TUMJyPFHslVw8/Fix/A7g
+         dBozUiSoLRmv+Q9RpxPZDgxlluc7lfMdCgBNrHkt9kBr3im1LV105NJOjfWhPolAEuDP
+         IjCjMosuxh8wo+aZyEr3qIx9qFwGHI9fVf+TguSsy9OH/zqMDC6oquBvWWmxZ1nXrR0h
+         EXEAKSjvZudy8dnnKc9e2b+trLjVWnu/+pSbdNxsB6VWJUaFygRQ27VmCvxkneTMQ3uz
+         +lDP/ccAZRV+2Ewe2MrN0GoVJiRZXAjcVS3qt93FSb9uaQdLSOJ/Mc0H+EUyrI6FVTy+
+         Nylg==
+X-Gm-Message-State: AOAM5321LhtW0p2CmcT0nf9k2bITyqMNSU/lXJTP2EU3Bx3+7EeQ5jrc
+        iQsVhye9KsDEjxETLPe+2/JkAf7W/wDEIcYSosxGbZGKiiPYXrt9KqcUv2s87FQZ1ZKm0Wb1QJ1
+        4+gsKuRfVFtn87vD5
+X-Received: by 2002:ac8:5996:: with SMTP id e22mr11956153qte.373.1636675443970;
+        Thu, 11 Nov 2021 16:04:03 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJymwzqftQwSVQz3EVwVZALeAzcSvuKspR4FbE1BNS8tjVDd4h2McovAbqJCNwooPT1nnA4EMA==
+X-Received: by 2002:ac8:5996:: with SMTP id e22mr11956129qte.373.1636675443741;
+        Thu, 11 Nov 2021 16:04:03 -0800 (PST)
+Received: from [10.0.0.96] ([24.225.241.171])
+        by smtp.gmail.com with ESMTPSA id o2sm2346985qtw.17.2021.11.11.16.04.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Nov 2021 16:04:03 -0800 (PST)
+Message-ID: <0f144d68-37c8-1e4a-1516-a3a572f06f8f@redhat.com>
+Date:   Thu, 11 Nov 2021 19:06:18 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.0
+Subject: Re: [PATCH] tipc: check for null after calling kmemdup
+Content-Language: en-US
+To:     Tadeusz Struk <tadeusz.struk@linaro.org>
+Cc:     Ying Xue <ying.xue@windriver.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Dmitry Vyukov <dvyukov@google.com>
+References: <20211111205916.37899-1-tadeusz.struk@linaro.org>
+From:   Jon Maloy <jmaloy@redhat.com>
+In-Reply-To: <20211111205916.37899-1-tadeusz.struk@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arjun Roy <arjunroy@google.com>
 
-TCP Receive zerocopy iterates through the SKB queue via
-tcp_recv_skb(), acquiring a pointer to an SKB and an offset within
-that SKB to read from. From there, it iterates the SKB frags array to
-determine which offset to start remapping pages from.
 
-However, this is built on the assumption that the offset read so far
-within the SKB is smaller than the SKB length. If this assumption is
-violated, we can attempt to read an invalid frags array element, which
-would cause a fault.
-
-tcp_recv_skb() can cause such an SKB to be returned when the TCP FIN
-flag is set. Therefore, we must guard against this occurrence inside
-skb_advance_frag().
-
-One way that we can reproduce this error follows:
-1) In a receiver program, call getsockopt(TCP_ZEROCOPY_RECEIVE) with:
-char some_array[32 * 1024];
-struct tcp_zerocopy_receive zc = {
-  .copybuf_address  = (__u64) &some_array[0],
-  .copybuf_len = 32 * 1024,
-};
-
-2) In a sender program, after a TCP handshake, send the following
-sequence of packets:
-  i) Seq = [X, X+4000]
-  ii) Seq = [X+4000, X+5000]
-  iii) Seq = [X+4000, X+5000], Flags = FIN | URG, urgptr=1000
-
-(This can happen without URG, if we have a signal pending, but URG is
-a convenient way to reproduce the behaviour).
-
-In this case, the following event sequence will occur on the receiver:
-
-tcp_zerocopy_receive():
--> receive_fallback_to_copy() // copybuf_len >= inq
--> tcp_recvmsg_locked() // reads 5000 bytes, then breaks due to URG
--> tcp_recv_skb() // yields skb with skb->len == offset
--> tcp_zerocopy_set_hint_for_skb()
--> skb_advance_to_frag() // will returns a frags ptr. >= nr_frags
--> find_next_mappable_frag() // will dereference this bad frags ptr.
-
-With this patch, skb_advance_to_frag() will no longer return an
-invalid frags pointer, and will return NULL instead, fixing the issue.
-
-Signed-off-by: Arjun Roy <arjunroy@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Fixes: 05255b823a61 ("tcp: add TCP_ZEROCOPY_RECEIVE support for zerocopy receive")
-
----
- net/ipv4/tcp.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index bc7f419184aa..ef896847f190 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1741,6 +1741,9 @@ static skb_frag_t *skb_advance_to_frag(struct sk_buff *skb, u32 offset_skb,
- {
- 	skb_frag_t *frag;
- 
-+	if (unlikely(offset_skb >= skb->len))
-+		return NULL;
-+
- 	offset_skb -= skb_headlen(skb);
- 	if ((int)offset_skb < 0 || skb_has_frag_list(skb))
- 		return NULL;
--- 
-2.34.0.rc1.387.gb447b232ab-goog
+On 11/11/21 15:59, Tadeusz Struk wrote:
+> kmemdup can return a null pointer so need to check for it, otherwise
+> the null key will be dereferenced later in tipc_crypto_key_xmit as
+> can be seen in the trace [1].
+>
+> Cc: Jon Maloy <jmaloy@redhat.com>
+> Cc: Ying Xue <ying.xue@windriver.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: netdev@vger.kernel.org
+> Cc: tipc-discussion@lists.sourceforge.net
+> Cc: linux-kernel@vger.kernel.org
+> Cc: stable@vger.kernel.org # 5.15, 5.14, 5.10
+>
+> [1] https://syzkaller.appspot.com/bug?id=bca180abb29567b189efdbdb34cbf7ba851c2a58
+>
+> Reported-by: Dmitry Vyukov <dvyukov@google.com>
+> Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+> ---
+>   net/tipc/crypto.c | 5 +++++
+>   1 file changed, 5 insertions(+)
+>
+> diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
+> index dc60c32bb70d..988a343f9fd5 100644
+> --- a/net/tipc/crypto.c
+> +++ b/net/tipc/crypto.c
+> @@ -597,6 +597,11 @@ static int tipc_aead_init(struct tipc_aead **aead, struct tipc_aead_key *ukey,
+>   	tmp->cloned = NULL;
+>   	tmp->authsize = TIPC_AES_GCM_TAG_SIZE;
+>   	tmp->key = kmemdup(ukey, tipc_aead_key_size(ukey), GFP_KERNEL);
+> +	if (!tmp->key) {
+> +		free_percpu(tmp->tfm_entry);
+> +		kfree_sensitive(tmp);
+> +		return -ENOMEM;
+> +	}
+>   	memcpy(&tmp->salt, ukey->key + keylen, TIPC_AES_GCM_SALT_SIZE);
+>   	atomic_set(&tmp->users, 0);
+>   	atomic64_set(&tmp->seqno, 0);
+Acked-by: Jon Maloy <jmaloy@redhat.com>
 
