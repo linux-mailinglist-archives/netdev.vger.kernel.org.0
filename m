@@ -2,188 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BA5444E34E
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 09:35:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4820D44E348
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 09:34:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234581AbhKLIiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 03:38:08 -0500
-Received: from mx0a-0064b401.pphosted.com ([205.220.166.238]:46212 "EHLO
-        mx0a-0064b401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234078AbhKLIiG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 03:38:06 -0500
-Received: from pps.filterd (m0250810.ppops.net [127.0.0.1])
-        by mx0a-0064b401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1AC7ZLew018020;
-        Fri, 12 Nov 2021 00:34:57 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=from : to : cc :
- subject : date : message-id : content-type : mime-version; s=PPS06212021;
- bh=p8rVCwZ0S0J7Kg4Qh/a9w7aTAIh3RhDOdzHaitv/auM=;
- b=VXZqmmFi1+U4aRt2j9RvGlThJMdBC8lkzoNygh1LILTFgSy/kT9NzqPx32RHdEhxtsjm
- wGr6Zz0hwNafc5sRuCAas0Ma9pbEMxxJ2X0ObA5WD70n8dGUu8JIWG6LIE6v9v4rxdn2
- Qmho3fNl2R//EYe1f0pVOURq07x4gsPqdlGg4/dGkQ5b8pFi0G4fHnSBExdSMsQ/eCGA
- NKTPzaBeS7qEKmSMiEFTbhTIrJTV5VspfnsqDsYgAEQzYzm1s06yL1p2r5IxScRTo0vP
- UywxUI6LeiThcDYiLCzqyn/dc45qZipyxfRwkN/UIDMxSSk1uTKlfEOhyoTsVsO0FXsP mQ== 
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2169.outbound.protection.outlook.com [104.47.56.169])
-        by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3c97bfrj1k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 12 Nov 2021 00:34:57 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QCX6bE7wrevlSj0zL9TuhXTFgyR28/oG2nJECjSO4GeUGK/36QFTaTtGsJs2A+gCYLZiHMxuERTOp/xsVgVGupSdj1U+tcsBsq0/R0ifZGcHpQmS8bwUFPvpuktjO0LQgLfZaRWeDc/M0UfkoX1I37T0BieFHkZrdcQ5Iy32A+xkGlla5aA0379vO9ztVKZACB7TF8v+j+xhI4iNLqTvrXc+gH6i0ocrGoHN7lb5BS7v5eGH8NJv+Kfn/xcC9CSmwbfa+mqkYcfoDtXayidW2CjBYnTVJeBmFNNXmXzC+2JvGlUImkmc09Ns6rZXk5X9wj20PG1av1jQYYbRLMLT3w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=p8rVCwZ0S0J7Kg4Qh/a9w7aTAIh3RhDOdzHaitv/auM=;
- b=TYT+RZTYTvto46b4m+IrzUJiBKee06oFBQduKhbgsb2EP8MDhwRezxcqQIGXXdRTBj/1ZHmBHxZbGaT1J8B9GHcK0Xe+5Z1JaYBeR9ECnckv1UDJjUa17zpChpqsnGSzefzy2TTDWmgBp/Qe3jlplYoLJ5e0eZHWLd8IMJVt+Ffz7koPBYMN4NcI0a0akGz7unR7pzk2RCEglKqJMhI87NP8GMQh9QEIgzzDPQEqMFc+E7Z8vtN1kLwAU2VWEVVl2wiaU+07R8jyhYQQYBzCp7CICiYZbgo4+SBdPEbiglpc++TJNJ0ECL0I0xlzlGn66u/QlQR0y2ZtfaRkUs3AgQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=windriver.com; dmarc=pass action=none
- header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
-Authentication-Results: st.com; dkim=none (message not signed)
- header.d=none;st.com; dmarc=none action=none header.from=windriver.com;
-Received: from PH0PR11MB5191.namprd11.prod.outlook.com (2603:10b6:510:3e::24)
- by PH0PR11MB4965.namprd11.prod.outlook.com (2603:10b6:510:34::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.13; Fri, 12 Nov
- 2021 08:34:54 +0000
-Received: from PH0PR11MB5191.namprd11.prod.outlook.com
- ([fe80::a090:40db:80ae:f06a]) by PH0PR11MB5191.namprd11.prod.outlook.com
- ([fe80::a090:40db:80ae:f06a%9]) with mapi id 15.20.4669.019; Fri, 12 Nov 2021
- 08:34:54 +0000
-From:   Meng Li <Meng.Li@windriver.com>
-To:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        mcoquelin.stm32@gmail.com
-Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, meng.li@windriver.com
-Subject: [PATCH v2] net: stmmac: socfpga: add runtime suspend/resume callback for stratix10 platform
-Date:   Fri, 12 Nov 2021 16:34:34 +0800
-Message-Id: <20211112083434.6459-1-Meng.Li@windriver.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: HK2PR0401CA0003.apcprd04.prod.outlook.com
- (2603:1096:202:2::13) To PH0PR11MB5191.namprd11.prod.outlook.com
- (2603:10b6:510:3e::24)
+        id S233883AbhKLIhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 03:37:23 -0500
+Received: from szxga03-in.huawei.com ([45.249.212.189]:27202 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230464AbhKLIhW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 03:37:22 -0500
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4HrBfn1dqbz8vKH;
+        Fri, 12 Nov 2021 16:32:49 +0800 (CST)
+Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Fri, 12 Nov 2021 16:34:27 +0800
+Received: from huawei.com (10.175.103.91) by dggpeml500017.china.huawei.com
+ (7.185.36.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.15; Fri, 12 Nov
+ 2021 16:34:27 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <stable@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <rds-devel@oss.oracle.com>,
+        <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <gregkh@linuxfoundation.org>, <sashal@kernel.org>,
+        <kuba@kernel.org>, <davem@davemloft.net>,
+        <santosh.shilimkar@oracle.com>
+Subject: [PATCH 5.10 0/1] fix null-ptr-deref in rds_ib_add_one()
+Date:   Fri, 12 Nov 2021 16:41:22 +0800
+Message-ID: <20211112084123.1091671-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Received: from pek-mli1-d2.wrs.com (60.247.85.82) by HK2PR0401CA0003.apcprd04.prod.outlook.com (2603:1096:202:2::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.15 via Frontend Transport; Fri, 12 Nov 2021 08:34:51 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 087d1c8e-35d4-4afe-c6d8-08d9a5b74d22
-X-MS-TrafficTypeDiagnostic: PH0PR11MB4965:
-X-Microsoft-Antispam-PRVS: <PH0PR11MB49652D5C1EFD5B669FC5665AF1959@PH0PR11MB4965.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:419;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9N6pzh1wRscqqBRrkYIvYsV5Zn2t/+5sdqXbVqkoCsKn18jhy0ZKgOL2PutVSD+9/sYEzj/KCbfkg122OLgnQFosrpHsLgFZsD7+KFEOIzBbYWfZFvLDPdc6hqP2WjMMjWXFISz3z+Bf55iJp6N9QSodPBVQ9ZapD2TcXlvw2JMkzbB3KTTvwjzKtgSZSNYiygPCge+kwPxJLUL4x4DnVpmNR85dXqRhHjfQp8Il64x+IU/j1vr++1n/pArK8SRxCmda7NKmB1pacUhF5kpJyvy1lnH7dYWG0WnP5utBH2K1MeUnXXyLZ6ai9EPmW2C8hFmQQgH2H1k/m3KOriCrv4Ba0Puwz7F0bSguPhovz/mFGYe5KFOjHcobhKr6M0AUneI2IYbrqQfLgvHE7Ez5WbmoNigvPQAUSM6idXqNTCxzDEetnXH9iqSzJHPgr0OOVepT/7e+FSSrvpibm074hS5W8tqPGsbuwL9VLhzGaiFzRG+UB8Wt64MoHeDdUy3gbTdsHt9b0pHvY6wVdPVOWATvPcjaIyuYkLgdIwOxF4iQqk5pT+2cVnsVxhdj4CykGzjOMnx5DDlq4k7Cg7NW60JOP92CRXPiheAlB19m7zBb60/NraNPOobZcpgNJQNIluUmbEDN2sm1BZa59xft6AqqJgcUQFgXJn3hr05oIRfvPB7bccWYF+EyR7qqjqsMUIuaUEYEnhC4TRygKI2bYA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5191.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6512007)(6486002)(4326008)(8936002)(6506007)(38100700002)(1076003)(38350700002)(316002)(107886003)(5660300002)(83380400001)(6666004)(26005)(86362001)(36756003)(2616005)(956004)(15650500001)(66556008)(508600001)(66476007)(2906002)(186003)(66946007)(52116002)(8676002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7H45z6zt+sT3tcidHCE11fVqhVbwRLODEbN3uNONkPBJZQ4Z9YchsLa28U3O?=
- =?us-ascii?Q?30ismfoObGzDZtPxxYVj8jUqJRxHwrdOLIBsRB6Dl1yZGSx8nM7rMGAAbv/0?=
- =?us-ascii?Q?L4MzhVVcZ4dUaoaE5kuAMsz3SmOYUhjWI93DFFni5KkAjn5e63LoPhbVZsxm?=
- =?us-ascii?Q?+5VosXRbVPQyGRE6yrBOcbsb0ZcbzkxPZ5bg0dxPqJIuUQNQ6OlxZ8+cMULD?=
- =?us-ascii?Q?CzuRVVJ+eI+XCP6gvvRqxAuNE95f9MiH5KJfq/Ikq2I1+7wGwUkCA0SveB6v?=
- =?us-ascii?Q?RI/oHtjiksRSXS2l0gwmcUDxdhpYoBOYgBuzbgdoJkZw4UbyA/dNb2bGcKKy?=
- =?us-ascii?Q?u0dN009QvKyClTVwrGWrMfnA3aPgUV0Rpb4l2PabjEfWWy491zeQss6O4Ud/?=
- =?us-ascii?Q?cfejbLz/yzeDPpe7VrXr9nPS2X1daSNFDjDeXnH5pkyst5Hkd3QeFeWwC1s/?=
- =?us-ascii?Q?BG4liyLCDKoXAwyd3dqrhVHdhLt1g8NnOivGBWp0aY8/0DOtBXGhNVhJncDu?=
- =?us-ascii?Q?dGtFnrmFB+DpZW+gO52ydS+pfsRVplbhzYhtD42AH4uyDDrPhWpgXXBijB0i?=
- =?us-ascii?Q?10doEM/P/xSZo6o2DGuBgQ2f/avibFNH+eY/VsRTpx5BMGFaynAQVhLiJPx5?=
- =?us-ascii?Q?i/AX+qiaGHZkkX+4MRdgrJ6VjD3cfsD+uCURmCZc2fERQFLku9ASMLDactKD?=
- =?us-ascii?Q?2tFuICsJDsLeyUehdnLofhZPBmhW4BFbhVmL/u954+1wrnLd0GazcjQKFHx8?=
- =?us-ascii?Q?itizAFqG5sriKrPQLl0cD66WJvTQtJidb+oIyqA+/nWv9NpVCjmHHl7Wijp8?=
- =?us-ascii?Q?+SNYvRrDHET7y3Wxj6Rv5plBxKyUyuPUirzN+DC+ZUMe4q982QSYUKVK9fa+?=
- =?us-ascii?Q?43prsoArQwYzM8BAhWKuu4HsEX47052ZFVYrb4s19hTg5ciOhdYCDj84G4Jt?=
- =?us-ascii?Q?+H+hu7EsNkc+p2mR1acToDOE4GDzR06KJ2qOfgThA2RQN3r4cbkQGFik4cQJ?=
- =?us-ascii?Q?Awenz0N8jbaWWrQRLd54tqT1QkuGs3rem6QLc8ptLGPyQo59WLvrOH4sM18d?=
- =?us-ascii?Q?bLa8BVgLHOyMN7YeDuuQg2Ga858qN/tf5MADT97ckiq08Q6NJVa2a6sXD+kU?=
- =?us-ascii?Q?4eYeIe/xYy22m1F1bPKlQvEPOLX5FFyxHpnnZU92VBVsaT5dYQexpPFVB9zn?=
- =?us-ascii?Q?KBjQIq91p2oRBtuU8o2ANB1vVffePErlxooXFHJ7OaveJ74hr6kcQ2L3n0iD?=
- =?us-ascii?Q?NfzVp6Jjw2/m1sa4aZb/ew5JHxVAUZGwXWtnyPaPZH60+3WhxZNN7xk9WEpJ?=
- =?us-ascii?Q?0+2YhpnsxP00WB0nywcC3XIdm2/tB9eY/Yzds6/qObuFUCIV74baZbvlYzQL?=
- =?us-ascii?Q?3+fQIrFPgam9YQhUNJjWRcGXYmPatQN+F63yW7UwChnfpNqQQeYsosX3ZhHo?=
- =?us-ascii?Q?q6bFJxX8LwVsEFUAoZo9Btw+tdhHZkb5Hyg/Cofn12Zf4NqGjm+VaHFzvSbp?=
- =?us-ascii?Q?Mq6Ri1iZqPCTezBOOwK8xlGzb4D6wdkoPF3zCgCLsvszutW4brz4ie3bci5Q?=
- =?us-ascii?Q?ypNZvIYE2A6nzR31ICeK3ouHYOOEfIMMOakF/tG981U+OjKVKJY4tYA/FByX?=
- =?us-ascii?Q?FJ/B/FGANhZ/qPnz90bU0zA=3D?=
-X-OriginatorOrg: windriver.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 087d1c8e-35d4-4afe-c6d8-08d9a5b74d22
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5191.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Nov 2021 08:34:54.3300
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: I0y9vwUvVZ0ijee7pLiHMONdSylRnAmtsNMQ2TBx7KyFDiPfUWeidvD/54AkQ+lFHSZ5TkevS/couxDE4rJ0lw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB4965
-X-Proofpoint-GUID: AToL47A_6rqM--CBi2uaCzcITg2hIDEJ
-X-Proofpoint-ORIG-GUID: AToL47A_6rqM--CBi2uaCzcITg2hIDEJ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-11-12_03,2021-11-11_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
- lowpriorityscore=0 impostorscore=0 mlxlogscore=999 phishscore=0
- priorityscore=1501 spamscore=0 suspectscore=0 bulkscore=0 mlxscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2111120046
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500017.china.huawei.com (7.185.36.243)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Meng Li <meng.li@windriver.com>
+I got this null-ptr-deref report while doing fuzz test:
 
-According to upstream commit 5ec55823438e("net: stmmac:
-add clocks management for gmac driver"), it improve clocks
-management for stmmac driver. So, it is necessary to implement
-the runtime callback in dwmac-socfpga driver because it doesn't
-use the common stmmac_pltfr_pm_ops instance. Otherwise, clocks
-are not disabled when system enters suspend status.
+[  158.820284][T12735] BUG: KASAN: null-ptr-deref in dma_pool_create+0xf7/0x440
+[  158.821192][T12735] Read of size 4 at addr 0000000000000298 by task syz-executor.7/12735
+[  158.822239][T12735]
+[  158.822539][T12735] CPU: 0 PID: 12735 Comm: syz-executor.7 Not tainted 5.10.78 #691
+[  158.823494][T12735] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
+[  158.824720][T12735] Call Trace:
+[  158.825889][T12735]  dump_stack+0x111/0x151
+[  158.826458][T12735]  ? dma_pool_create+0xf7/0x440
+[  158.827067][T12735]  ? dma_pool_create+0xf7/0x440
+[  158.827672][T12735]  kasan_report.cold.11+0x5/0x37
+[  158.828289][T12735]  ? dma_pool_create+0xf7/0x440
+[  158.828894][T12735]  dma_pool_create+0xf7/0x440
+[  158.829480][T12735]  rds_ib_add_one+0x448/0x570
+[  158.830062][T12735]  ? rds_ib_remove_one+0x150/0x150
+[  158.830702][T12735]  add_client_context+0x2ef/0x440
+[  158.831329][T12735]  ? ib_unregister_driver+0x1a0/0x1a0
+[  158.832005][T12735]  ? strchr+0x28/0x50
+[  158.832527][T12735]  enable_device_and_get+0x199/0x320
+[  158.833194][T12735]  ? add_one_compat_dev.part.20+0x3d0/0x3d0
+[  158.833924][T12735]  ? rxe_ib_alloc_hw_stats+0x84/0x90
+[  158.834590][T12735]  ? setup_hw_stats+0x40/0x520
+[  158.835184][T12735]  ? uevent_show+0x1e0/0x1e0
+[  158.835758][T12735]  ? rxe_ib_get_hw_stats+0xa0/0xa0
+[  158.836398][T12735]  ib_register_device+0x8ef/0x9d0
+[  158.837026][T12735]  ? netlink_unicast+0x3e1/0x510
+[  158.837644][T12735]  ? alloc_port_data.part.17+0x1f0/0x1f0
+[  158.838358][T12735]  ? __alloc_pages_nodemask+0x229/0x450
+[  158.839051][T12735]  ? kasan_unpoison_shadow+0x30/0x40
+[  158.839710][T12735]  ? __kasan_kmalloc.constprop.12+0xbe/0xd0
+[  158.840443][T12735]  ? kmem_cache_alloc_node_trace+0xa3/0x870
+[  158.841178][T12735]  ? __crypto_alg_lookup+0x26d/0x2d0
+[  158.841841][T12735]  ? __kasan_kmalloc.constprop.12+0xbe/0xd0
+[  158.842573][T12735]  ? crypto_shash_init_tfm+0x10d/0x160
+[  158.843255][T12735]  ? crc32_pclmul_cra_init+0x12/0x20
+[  158.843916][T12735]  ? crypto_create_tfm_node+0xb7/0x1a0
+[  158.844594][T12735]  ? crypto_alloc_tfm_node+0x12e/0x260
+[  158.845273][T12735]  rxe_register_device+0x21f/0x250
+[  158.845904][T12735]  rxe_add+0x9f9/0xa80
+[  158.846412][T12735]  rxe_net_add+0x56/0xa0
+[  158.846917][T12735]  rxe_newlink+0x8c/0xb0
+[  158.847427][T12735]  nldev_newlink+0x23d/0x360
+[  158.847973][T12735]  ? nldev_set_doit+0x2b0/0x2b0
+[  158.848562][T12735]  ? apparmor_capable+0x2e9/0x4e0
+[  158.849159][T12735]  ? apparmor_cred_prepare+0x3f0/0x3f0
+[  158.849811][T12735]  ? apparmor_cred_prepare+0x3f0/0x3f0
+[  158.850469][T12735]  ? ____sys_sendmsg+0x4db/0x500
+[  158.851064][T12735]  ? ___sys_sendmsg+0xf8/0x160
+[  158.851648][T12735]  ? entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[  158.852400][T12735]  ? cap_capable+0x125/0x140
+[  158.854398][T12735]  ? ns_capable_common+0x88/0xa0
+[  158.855012][T12735]  ? nldev_set_doit+0x2b0/0x2b0
+[  158.855611][T12735]  rdma_nl_rcv+0x41f/0x630
+[  158.856162][T12735]  ? rdma_nl_multicast+0xa0/0xa0
+[  158.856772][T12735]  ? netlink_lookup+0x273/0x3a0
+[  158.857374][T12735]  ? netlink_broadcast+0x40/0x40
+[  158.857984][T12735]  ? __kasan_kmalloc.constprop.12+0xbe/0xd0
+[  158.858724][T12735]  ? __rcu_read_unlock+0x34/0x260
+[  158.859349][T12735]  ? netlink_deliver_tap+0x65/0x450
+[  158.859991][T12735]  netlink_unicast+0x3e1/0x510
+[  158.860586][T12735]  ? netlink_attachskb+0x540/0x540
+[  158.861218][T12735]  ? _copy_from_iter_full+0x1b9/0x5e0
+[  158.861905][T12735]  ? __check_object_size+0x27c/0x300
+[  158.862561][T12735]  netlink_sendmsg+0x4aa/0x870
+[  158.863131][T12735]  ? netlink_unicast+0x510/0x510
+[  158.863728][T12735]  ? netlink_unicast+0x510/0x510
+[  158.864326][T12735]  sock_sendmsg+0x83/0xa0
+[  158.864849][T12735]  ____sys_sendmsg+0x4db/0x500
+[  158.865429][T12735]  ? __copy_msghdr_from_user+0x310/0x310
+[  158.866112][T12735]  ? kernel_sendmsg+0x50/0x50
+[  158.866700][T12735]  ? do_syscall_64+0x2d/0x70
+[  158.867256][T12735]  ? entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[  158.867996][T12735]  ___sys_sendmsg+0xf8/0x160
+[  158.868552][T12735]  ? sendmsg_copy_msghdr+0x70/0x70
+[  158.869175][T12735]  ? kasan_unpoison_shadow+0x30/0x40
+[  158.869824][T12735]  ? futex_exit_release+0x80/0x80
+[  158.870442][T12735]  ? apparmor_task_setrlimit+0x500/0x500
+[  158.871122][T12735]  ? kmem_cache_alloc+0x143/0x810
+[  158.871733][T12735]  ? __rcu_read_unlock+0x34/0x260
+[  158.872351][T12735]  ? __fget_files+0x14a/0x1b0
+[  158.872920][T12735]  ? __fget_light+0xeb/0x140
+[  158.873474][T12735]  __sys_sendmsg+0xfe/0x1c0
+[  158.874017][T12735]  ? __sys_sendmsg_sock+0x80/0x80
+[  158.874625][T12735]  ? _copy_to_user+0x97/0xb0
+[  158.875177][T12735]  ? put_timespec64+0xab/0xe0
+[  158.875740][T12735]  ? nsecs_to_jiffies+0x30/0x30
+[  158.876325][T12735]  ? fpregs_assert_state_consistent+0x8f/0xa0
+[  158.877054][T12735]  do_syscall_64+0x2d/0x70
+[  158.877585][T12735]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[  158.878297][T12735] RIP: 0033:0x45ecc9
+[  158.878769][T12735] Code: 1d b1 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 eb b0 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+[  158.881085][T12735] RSP: 002b:00007f2c7a09fc68 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+[  158.882086][T12735] RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000045ecc9
+[  158.883038][T12735] RDX: 0000000000000000 RSI: 00000000200001c0 RDI: 000000000000000a
+[  158.883983][T12735] RBP: 000000000119bfe0 R08: 0000000000000000 R09: 0000000000000000
+[  158.884929][T12735] R10: 0000000000000000 R11: 0000000000000246 R12: 000000000119bfac
+[  158.885877][T12735] R13: 00007fff86afff9f R14: 00007f2c7a0a09c0 R15: 000000000119bfac
 
-Fixes: 5ec55823438e ("net: stmmac: add clocks management for gmac driver")
-Cc: stable@vger.kernel.org
-Signed-off-by: Meng Li <Meng.Li@windriver.com>
----
 
-v2:
- - add static when define socfpga_dwmac_pm_ops
- - add fixed tag
- 
----
- .../ethernet/stmicro/stmmac/dwmac-socfpga.c   | 24 +++++++++++++++++--
- 1 file changed, 22 insertions(+), 2 deletions(-)
+In rxe_register_device(), it passes a null pointer to ib_register_device()
+the 'device->dma_device' will be set to null, when it used in rds_ib_add_one(),
+it leads a null-ptr-deref.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-index 85208128f135..e478a4017caa 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-@@ -485,8 +485,28 @@ static int socfpga_dwmac_resume(struct device *dev)
- }
- #endif /* CONFIG_PM_SLEEP */
- 
--static SIMPLE_DEV_PM_OPS(socfpga_dwmac_pm_ops, stmmac_suspend,
--					       socfpga_dwmac_resume);
-+static int __maybe_unused socfpga_dwmac_runtime_suspend(struct device *dev)
-+{
-+	struct net_device *ndev = dev_get_drvdata(dev);
-+	struct stmmac_priv *priv = netdev_priv(ndev);
-+
-+	stmmac_bus_clks_config(priv, false);
-+
-+	return 0;
-+}
-+
-+static int __maybe_unused socfpga_dwmac_runtime_resume(struct device *dev)
-+{
-+	struct net_device *ndev = dev_get_drvdata(dev);
-+	struct stmmac_priv *priv = netdev_priv(ndev);
-+
-+	return stmmac_bus_clks_config(priv, true);
-+}
-+
-+const static struct dev_pm_ops socfpga_dwmac_pm_ops = {
-+	SET_SYSTEM_SLEEP_PM_OPS(stmmac_suspend, socfpga_dwmac_resume)
-+	SET_RUNTIME_PM_OPS(socfpga_dwmac_runtime_suspend, socfpga_dwmac_runtime_resume, NULL)
-+};
- 
- static const struct socfpga_dwmac_ops socfpga_gen5_ops = {
- 	.set_phy_mode = socfpga_gen5_set_phy_mode,
+Christoph Hellwig (1):
+  rds: stop using dmapool
+
+ net/rds/ib.c      |  10 ----
+ net/rds/ib.h      |   6 ---
+ net/rds/ib_cm.c   | 128 ++++++++++++++++++++++++++++------------------
+ net/rds/ib_recv.c |  18 +++++--
+ net/rds/ib_send.c |   8 +++
+ 5 files changed, 101 insertions(+), 69 deletions(-)
+
 -- 
-2.17.1
+2.25.1
 
