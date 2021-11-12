@@ -2,80 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DD1A44DFF0
-	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 02:47:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0E1144DFFB
+	for <lists+netdev@lfdr.de>; Fri, 12 Nov 2021 02:50:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234449AbhKLBuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Nov 2021 20:50:32 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:37020 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S231470AbhKLBuc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Nov 2021 20:50:32 -0500
-X-UUID: 90d1e70834bd4ed7bbc780b50d3b8901-20211112
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=FsPSBY4kE9j2LqywphopQINupDGKsKOuuiiMQfxWJjs=;
-        b=rTtWc29ZVadOEIJKiHfF8btthiJhwuWbag7WgmNWt8BvdCAwGu9fXE/2XW4PgLGG4MJ+pOFrrRrA1G5eK/O6Z9xow8ESXlodDltTfSLUp2+KA1p9kQpVaqYz/tcQNKKHY2OFBZ/RVxU2syqa3xh1x6cNor/T4IMuzhreZY/C6mw=;
-X-UUID: 90d1e70834bd4ed7bbc780b50d3b8901-20211112
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1034506641; Fri, 12 Nov 2021 09:47:37 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 12 Nov 2021 09:47:37 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 12 Nov 2021 09:47:36 +0800
-Message-ID: <9df428e1f09fd25573eac78646d74699bd2c5712.camel@mediatek.com>
-Subject: Re: [PATCH v2 4/5] dt-bindings: net: dwmac: Convert mediatek-dwmac
- to DT schema
-From:   Biao Huang <biao.huang@mediatek.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <srv_heupstream@mediatek.com>, <macpaul.lin@mediatek.com>
-Date:   Fri, 12 Nov 2021 09:47:36 +0800
-In-Reply-To: <4214b222-6c43-3132-bcfe-07c43d29f5f9@collabora.com>
-References: <20211111071214.21027-1-biao.huang@mediatek.com>
-         <20211111071214.21027-5-biao.huang@mediatek.com>
-         <4214b222-6c43-3132-bcfe-07c43d29f5f9@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        id S234255AbhKLBxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Nov 2021 20:53:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42224 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232458AbhKLBxY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Nov 2021 20:53:24 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6DC0B6103A;
+        Fri, 12 Nov 2021 01:50:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636681833;
+        bh=BIHcLTzaRtNAXz+qvfUTOyZZ233jGsfuSnUE9AYSWXo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ryZejMKQZ4RMaHBNoEI9lAgdkoyB7mc8sKRKg/QgMFTfZRve5BMHp0HJIHQQxgQi8
+         4eFPso1U/lr/CK9iE7Y9bR5/gpvpepbxctET8kJyA97aZ6PtnkKsiaKTBXXLo9/+F4
+         w7xzDM0Ufjo9AOzi7lkdKY9ZdqFgRbGxe/NryghQbsOI2vJpZyonPzG6x6tzUPbmCK
+         E+ecC9Cw6yr5xeVADSj8Pl/UGPpOIVv5D/R/SbnG8YHq4mdYkFnh66sTVlG/YAN1MH
+         uaW8ekuRC/2E441lJacIxQRPBGaAexVt98VXT89RZIVb+2KEEGEB/bOgV0KMEn+gn6
+         hDR67fvrmwX/A==
+Date:   Thu, 11 Nov 2021 17:50:32 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Menglong Dong <menglong8.dong@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Steven Rostedt <rostedt@goodmis.org>, mingo@redhat.com,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        dsahern@kernel.org, Menglong Dong <imagedong@tencent.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 0/2] net: snmp: tracepoint support for snmp
+Message-ID: <20211111175032.14999302@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CADxym3bk5+3t9jFmEgCBBYHWvNJx6BJGdjk+-zqiQaJPtLM=Ug@mail.gmail.com>
+References: <20211111133530.2156478-1-imagedong@tencent.com>
+        <20211111060827.5906a2f9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CADxym3bk5+3t9jFmEgCBBYHWvNJx6BJGdjk+-zqiQaJPtLM=Ug@mail.gmail.com>
 MIME-Version: 1.0
-X-MTK:  N
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RGVhciBBbmdlbG9HaW9hY2NoaW5vLA0KCVRoYW5rcyBmb3IgeW91ciBjb21tZW50c34NCg0KT24g
-VGh1LCAyMDIxLTExLTExIGF0IDE0OjMwICswMTAwLCBBbmdlbG9HaW9hY2NoaW5vIERlbCBSZWdu
-byB3cm90ZToNCj4gSWwgMTEvMTEvMjEgMDg6MTIsIEJpYW8gSHVhbmcgaGEgc2NyaXR0bzoNCj4g
-PiBDb252ZXJ0IG1lZGlhdGVrLWR3bWFjIHRvIERUIHNjaGVtYSwgYW5kIGRlbGV0ZSBvbGQgbWVk
-aWF0ZWstDQo+ID4gZHdtYWMudHh0Lg0KPiA+IA0KPiA+IFNpZ25lZC1vZmYtYnk6IEJpYW8gSHVh
-bmcgPGJpYW8uaHVhbmdAbWVkaWF0ZWsuY29tPg0KPiA+IC0tLQ0KPiA+ICAgLi4uL2JpbmRpbmdz
-L25ldC9tZWRpYXRlay1kd21hYy50eHQgICAgICAgICAgIHwgIDkxIC0tLS0tLS0tDQo+ID4gICAu
-Li4vYmluZGluZ3MvbmV0L21lZGlhdGVrLWR3bWFjLnlhbWwgICAgICAgICAgfCAyMTENCj4gPiAr
-KysrKysrKysrKysrKysrKysNCj4gPiAgIDIgZmlsZXMgY2hhbmdlZCwgMjExIGluc2VydGlvbnMo
-KyksIDkxIGRlbGV0aW9ucygtKQ0KPiA+ICAgZGVsZXRlIG1vZGUgMTAwNjQ0DQo+ID4gRG9jdW1l
-bnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL25ldC9tZWRpYXRlay1kd21hYy50eHQNCj4gPiAg
-IGNyZWF0ZSBtb2RlIDEwMDY0NA0KPiA+IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5n
-cy9uZXQvbWVkaWF0ZWstZHdtYWMueWFtbA0KPiA+IA0KPiANCj4gVGhhbmtzIGZvciB0aGUgRFQg
-c2NoZW1hIGNvbnZlcnNpb24hDQo+IA0KPiBBbnl3YXksIHlvdSBzaG91bGQgc3BsaXQgdGhpcyBp
-biB0d28gY29tbWl0czogaW4gdGhlIGZpcnN0IG9uZSwgeW91DQo+IGNvbnZlcnQgdGhlDQo+IHR4
-dCBkb2N1bWVudGF0aW9uIHRvIHNjaGVtYSwgYXMgaXQgaXMuLi4gYW5kIGluIHRoZSBzZWNvbmQg
-b25lLCB5b3UNCj4gYWRkIG10ODE5NQ0KPiBiaW5kaW5ncy4NCk9LLCBJJ2xsIHNwbGl0IGl0IGlu
-IG5leHQgc2VuZC4NCg==
+On Fri, 12 Nov 2021 09:40:47 +0800 Menglong Dong wrote:
+> > I feel like I have seen this idea before. Is this your first posting?
+> >
+> > Would you mind including links to previous discussion if you're aware
+> > of any?  
+> 
+> This is the first time that I post this patch. Do you mean that someone
+> else has done this before? Sorry, I didn't find it~
 
+I see. Yes, I believe very similar changes were proposed in the past.
+
+I believe that concerns about the performance impact had prevented them
+from being merged.
