@@ -2,193 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3168744F40B
-	for <lists+netdev@lfdr.de>; Sat, 13 Nov 2021 16:48:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E52844F429
+	for <lists+netdev@lfdr.de>; Sat, 13 Nov 2021 17:34:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235939AbhKMPvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Nov 2021 10:51:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37220 "EHLO
+        id S235923AbhKMQhi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Nov 2021 11:37:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230001AbhKMPvP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Nov 2021 10:51:15 -0500
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C153DC061766;
-        Sat, 13 Nov 2021 07:48:22 -0800 (PST)
-Received: by mail-qv1-xf2c.google.com with SMTP id bu11so8359946qvb.0;
-        Sat, 13 Nov 2021 07:48:22 -0800 (PST)
+        with ESMTP id S231912AbhKMQhi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Nov 2021 11:37:38 -0500
+Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B90BDC061766;
+        Sat, 13 Nov 2021 08:34:45 -0800 (PST)
+Received: by mail-ot1-x32a.google.com with SMTP id g91-20020a9d12e4000000b0055ae68cfc3dso19073432otg.9;
+        Sat, 13 Nov 2021 08:34:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oXbQA6YsK/Yb8I1ufwTowmeWehU5ZLa6WqLwd/WJnR0=;
-        b=ImBzKERFqdjBGrGwyXdvLPxokVVH/YOD6syxy5Ry7EoZ7JA1ZgRpH36/Ir2IBUSx8W
-         gS0HmCEFLrPn8WeyKPwEHIKMJ8MsoQKXk07euxX0IcdQLNiTUxjGZQqX9d7aI435mJq7
-         QePMM1Q6vqImAExonnt61+8iV7HOUhqKsJvwCo+s5DSG0p8dfVub4pnX3y3g9rWeXJGP
-         s9Mi2AmGn/L6seJC8NjdI8dnnTh/v07eZIEcb9LSYEY+5wguwcQdBUGlxdKg1fR7SASX
-         PlYXoa7CPenBQheitAgVSHtWNxpkfdc6wMn6uumIY9JQJs7Eb1xfWp0PpdG4DXYQNu/x
-         ADAw==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Xs95fLVJUY3C0IFeTkqDcpFuWgNY0YQGMTpxIUpLmLg=;
+        b=m4gGM+sXRQARkbZ2e1u4jvRUD4gRb49E8MGcGgNbVBh9BesBxL/sboNaLQhPaRcPRD
+         ibW56sg1uFIGxEHVxCjZ4XHHxKI/yVBWMmGnaV05gwfPckxeLfZ2S8j8yEmE7zRhXvC/
+         qbOKrc1t5TYEpmhZiTvyfQuquKMhbAfD4aWmrwzPpSlFSk/pT1n9CcIV65U31wuGqjYP
+         ejgKGVupnOTm3WTKbGPE1IgweS+cq8ufkfVLSOoQBvj/2mUGG4JcZ7KqeqiSkCPaWkcR
+         gfsD2xodza45L8B+KXhi0HF2X+wv4uUgHzGdH+RFpOuHO4XESD27zWO8T6JT/HUvuFoD
+         AWOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oXbQA6YsK/Yb8I1ufwTowmeWehU5ZLa6WqLwd/WJnR0=;
-        b=Gk/WIU2vM07u3Zx6rEpgVFkjLlWAMk/MWTkuCjka30m4LQZGnLWqzbzMDMv6E1UllS
-         ihwXA/9gtyQUHELXOKx+KSrvrPSxr0lxLoFMhe2gLXOvd7Xef9mSKhYvSsTk3BX4Ytpj
-         BPMxZl8PChFqowG88kF/0bxsSPNUfGZ0qMUa4GFV1MWA7B9Fiin6uWmCI5VMBCASjFWx
-         lmyCapcRQOLv8LmCN1t4zArH3HaRo7qok6UzXpm+3JC6In1gdhvCJTPblhDcONtAo9BS
-         EGfS5GlQbsjpw9kLl1vGLedPh6hlUvwetHMxU86q8a77csS0tbLISRGPp4H6U4o9+r3u
-         HOGA==
-X-Gm-Message-State: AOAM531SEEUOXfA1ss0BGonTBbQ8kl6lo5bFZc8OBCevLOyozQ4rGt+8
-        CM6W8SKzoGhAJxF/82OaX7TrB/Usws++vsuuPzs=
-X-Google-Smtp-Source: ABdhPJwHPNIdUDZB1WofY0EyhE09P++WglgHkH4uOkSjWwuZbEIP1MOmjqdsr8nWmrB6p2F41NZVSXMsSppxTlGYQ68=
-X-Received: by 2002:a05:6214:f2d:: with SMTP id iw13mr23317601qvb.13.1636818501919;
- Sat, 13 Nov 2021 07:48:21 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Xs95fLVJUY3C0IFeTkqDcpFuWgNY0YQGMTpxIUpLmLg=;
+        b=OTASz17H2j58GHmAznp9ZNGRHr+xa3EIZgavJjoIwCkFXjs1CkdCdGL01/5V4DznLs
+         GAPFyRriHf1F+6/1YaaROOtZvN1X5W14cTat2fQsxcF6852AbmtFj5RmPpUfeYCt7RuH
+         /yt+YOZljv6KjEOaD6usmXberyRRlh9quHeWyIOZBjHzixOjTD0WdAdd5zw7mFDIJ0LT
+         VvNyqEv/E4hRkEWK0dIww6yqHae5J0VlieMCBAV7/o7S1yWP33pdFDvX99FSw3gLKJE2
+         i2IrQksx3TZ3wDAMgd1XgmsZTdYGadCVaZEddLjvZI6C8Wsc1beWLWjAxfndLNA7Zm0B
+         ketA==
+X-Gm-Message-State: AOAM530myWiBYUb3mQ0VFztjC5fH4B3hjkFfwCQWARHv49B0Vv8Bj7Kz
+        5DvDQ7efBH31Kw+/aCtqmTI=
+X-Google-Smtp-Source: ABdhPJwditGxKVOEK4CG2QnPnEjJjGEO9l0ypPWMpFFnRKeOH4Q2YTupHDhplGfYSR8GlwevHfzW+w==
+X-Received: by 2002:a9d:6394:: with SMTP id w20mr19793428otk.248.1636821284987;
+        Sat, 13 Nov 2021 08:34:44 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id y28sm2058931oix.57.2021.11.13.08.34.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 13 Nov 2021 08:34:44 -0800 (PST)
+Message-ID: <de051ecb-0efe-27e2-217c-60a502f4415f@gmail.com>
+Date:   Sat, 13 Nov 2021 09:34:42 -0700
 MIME-Version: 1.0
-References: <20211108084142.4692-1-laoar.shao@gmail.com> <YY6JhZK/oiLUwHyZ@alley>
-In-Reply-To: <YY6JhZK/oiLUwHyZ@alley>
-From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Sat, 13 Nov 2021 23:47:45 +0800
-Message-ID: <CALOAHbA5LBHyJn=EC1roHYt7ar-QqHzLE=KHQ6uC=a__3Pwxfw@mail.gmail.com>
-Subject: Re: [PATCH] kthread: dynamically allocate memory to store kthread's
- full name
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel test robot <oliver.sang@intel.com>,
-        kbuild test robot <lkp@intel.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        David Hildenbrand <david@redhat.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Kees Cook <keescook@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.3.0
+Subject: Re: [PATCH net-next] ipv6: don't generate link-local addr in random
+ or privacy mode
+Content-Language: en-US
+To:     Rocco Yue <rocco.yue@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, Rocco.Yue@gmail.com,
+        chao.song@mediatek.com, zhuoliang.zhang@mediatek.com
+References: <20211109065526.16772-1-rocco.yue@mediatek.com>
+ <20211113084636.11685-1-rocco.yue@mediatek.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20211113084636.11685-1-rocco.yue@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 12, 2021 at 11:34 PM Petr Mladek <pmladek@suse.com> wrote:
->
-> On Mon 2021-11-08 08:41:42, Yafang Shao wrote:
-> > When I was implementing a new per-cpu kthread cfs_migration, I found the
-> > comm of it "cfs_migration/%u" is truncated due to the limitation of
-> > TASK_COMM_LEN. For example, the comm of the percpu thread on CPU10~19 are
-> > all with the same name "cfs_migration/1", which will confuse the user. This
-> > issue is not critical, because we can get the corresponding CPU from the
-> > task's Cpus_allowed. But for kthreads correspoinding to other hardware
-> > devices, it is not easy to get the detailed device info from task comm,
-> > for example,
-> >
-> > After this change, the full name of these truncated kthreads will be
-> > displayed via /proc/[pid]/comm:
-> >
-> > --- a/fs/proc/array.c
-> > +++ b/fs/proc/array.c
-> > @@ -102,6 +103,8 @@ void proc_task_name(struct seq_file *m, struct task_struct *p, bool escape)
-> >
-> >       if (p->flags & PF_WQ_WORKER)
-> >               wq_worker_comm(tcomm, sizeof(tcomm), p);
->
-> Just for record. I though that this patch obsoleted wq_worker_comm()
-> but it did not. wq_worker_comm() returns different values
-> depending on the last proceed work item and has to stay.
->
+On 11/13/21 1:46 AM, Rocco Yue wrote:
+> 
+> Gentle ping on this patch. :-)
+> 
 
-Right. worker comm is changed dynamically, which is combined by
-(task_comm+worker_desc) or (task_comm-worker_desc).
-I planned to remove the whole worker->desc and set it dynamically to
-the new kthread full_name but I found it may not be a good idea.
+you sent the patch in the merge window; I believe it has been dropped
+from patchworks.
 
+Also, you did not add v2 (or whatever version this is) with a summary of
+changes between all versions, and you did not cc all the people who
+responded to previous versions.
 
-> > +     else if (p->flags & PF_KTHREAD)
-> > +             get_kthread_comm(tcomm, sizeof(tcomm), p);
-> >       else
-> >               __get_task_comm(tcomm, sizeof(tcomm), p);
-> >
-> > --- a/kernel/kthread.c
-> > +++ b/kernel/kthread.c
-> > @@ -121,6 +135,7 @@ void free_kthread_struct(struct task_struct *k)
->
-> Hmm, there is the following comment:
->
->         /*
->          * Can be NULL if this kthread was created by kernel_thread()
->          * or if kmalloc() in kthread() failed.
->          */
->         kthread = to_kthread(k);
->
-> And indeed, set_kthread_struct() is called only by kthread()
-> and init_idle().
->
-> For example, call_usermodehelper_exec_sync() calls kernel_thread()
-> but given @fn does not call set_kthread_struct(). Also init_idle()
-> continues even when the allocation failed.
->
-
-Yes, it really can be NULL.
-
->
-> >  #ifdef CONFIG_BLK_CGROUP
-> >       WARN_ON_ONCE(kthread && kthread->blkcg_css);
-> >  #endif
-> > +     kfree(kthread->full_name);
->
-> Hence, we have to make sure that it is not NULL here. I suggest
-> something like:
->
-
-Agreed.  I will do it.
-
-> void free_kthread_struct(struct task_struct *k)
-> {
->         struct kthread *kthread;
->
->         /*
->          * Can be NULL if this kthread was created by kernel_thread()
->          * or if kmalloc() in kthread() failed.
->          */
->         kthread = to_kthread(k);
->         if (!kthread)
->                 return;
->
-> #ifdef CONFIG_BLK_CGROUP
->         WARN_ON_ONCE(kthread->blkcg_css);
-> #endif
->         kfree(kthread->full_name);
->         kfree(kthread);
-> }
->
->
-> Side note: The possible NULL pointer looks dangerous to
->     me. to_kthread() is dereferenced without any check on
->     several locations.
->
->     For example, kthread_create_on_cpu() looks safe. It is a kthread
->     crated by kthread(). It will exists only when the allocation
->     succeeded.
->
->     kthread_stop() is probably safe only because it used only for
->     the classic kthreads created by kthread(). But the API
->     is not safe.
->
->     kthread_use_mm() is probably used only by classic kthreads as
->     well. But it is less clear to me.
->
->     All this unsafe APIs looks like a ticking bomb to me. But
->     it is beyond this patchset.
->
-
-I will analyze it in depth and try to dismantle this ticking bomb.
-
-
--- 
-Thanks
-Yafang
