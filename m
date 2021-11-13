@@ -2,101 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6411544F5A7
-	for <lists+netdev@lfdr.de>; Sat, 13 Nov 2021 23:42:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C757D44F5C1
+	for <lists+netdev@lfdr.de>; Sun, 14 Nov 2021 01:02:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234230AbhKMWoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Nov 2021 17:44:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41952 "EHLO
+        id S231920AbhKNAAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Nov 2021 19:00:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231147AbhKMWoz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Nov 2021 17:44:55 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D66C061766;
-        Sat, 13 Nov 2021 14:42:02 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id c32so32166113lfv.4;
-        Sat, 13 Nov 2021 14:42:02 -0800 (PST)
+        with ESMTP id S230388AbhKNAAN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Nov 2021 19:00:13 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F64DC061767
+        for <netdev@vger.kernel.org>; Sat, 13 Nov 2021 15:57:20 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id r12so53871954edt.6
+        for <netdev@vger.kernel.org>; Sat, 13 Nov 2021 15:57:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=36izzyIF76QglA+4uY44TduvmjedGPYh2aW443jQ/6M=;
-        b=Ur58Y8Cgwn0Mvb7e5C18L37sSlfq4+rxJ/nAi/hWXaDNDa/fn/rNaP93wmHZMPZhmg
-         sr3gF4GM/M6tSobleNDdgJO67gIFzKE/0UR21iupMPgtIy/olhmZsIb2mP8Go3TVpyH7
-         oV2JYlw6YezRI12eT+LvMiu8sbLo5nl3LufkNspJOnm5gMqKKN6OqaKyySImDN4wFGZT
-         B/4iPaDtoetVa6Z7a/Ka/tebHDJu8ulLyqBN7sfVUQ+YpRK2MlasHL3n7ZJsnDfL1YsL
-         ZSqwj7C0GRyN/Ut2vVQFVTcAobkf1ArsmdhcRrD0oz/imyLVeaEZ12BZulVvrI9miQ2l
-         RJjg==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=bdsvl1UwZuOHxPwopT9QunKFFT2xiibkhLWpB5BPk7U=;
+        b=ZyKKLpnq4e4hXZgNRkLXNtfpeG9RMeZ0irL1TXjT37A6WRVm3Vg2DP3oaJb8KrWoBA
+         WMa6F56/B25DJMfb7qDcE3NHrWvnUChrpbLd7dRXsv+bQ0LHkAh3X6N1BlQGz22YChQB
+         +szIGl5YgBlNdbVUYPv5hLNjLtT99U3c7besK2simglDDaFjHuXwYbd5Pfxg9U6HKUPO
+         8XaDTA7DgDR1KgKV81NFvHkjVhV5sv0gj3J7he3ypg1BL5pBf8Q1fKxSOIIQjQQs2zZf
+         aZfMKAGY4SfXInnz232lns+u4dBJ3IdX4t+jR/NUYwf0Y3a5SiqmR1tiMy0NpdMhgkAW
+         xj7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=36izzyIF76QglA+4uY44TduvmjedGPYh2aW443jQ/6M=;
-        b=j4RoZIV+RO72odXmh52AqrmJDQvuk9+3MsLSBlxSAt1Pu+v0QnSl61agyVX/gIH1Xk
-         eeJzHkczwXyQcO/0xbRftV0j4Z8JZ7JtE5qtz1Zeysaa5n3hdHg0/0byit/sWRpOENxg
-         Y9zL0FCYDlPVeqtCwDyOSXUytNzyOYuO0T4gjuzzfiJGTxYLmKdT6grpitVlWiagpUh3
-         uzfKPBvWZC6MhVWcLaBI0P2APNzJqg0TWHE4KEeljTmff2Ph5FtM/dtCibzYuCFn2n2H
-         EZEjFTifNT4UMADsTWd5ZWqRGkPDH9PIbTnjkUMP3l6dghzrpCZu9E1Hb9eqV4/bLS6A
-         L0hw==
-X-Gm-Message-State: AOAM531yWdTeGjtHgWA0mNaR1LTMNGxShVn3JZ3DhlRRr5q+gR0Z904/
-        GKxCya75P4yqA1WaEuMMu9feX9hQbUU=
-X-Google-Smtp-Source: ABdhPJz5ZaVlBwrOteLkOgNZYWD9O+dgnIwEsl8mRTOl+JGVVOS0nuyi3F3hB/oDOjRiKMbcrJ7UVQ==
-X-Received: by 2002:a05:6512:2202:: with SMTP id h2mr8166558lfu.576.1636843320509;
-        Sat, 13 Nov 2021 14:42:00 -0800 (PST)
-Received: from [192.168.1.11] ([94.103.224.112])
-        by smtp.gmail.com with ESMTPSA id c21sm976189lfv.29.2021.11.13.14.41.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 13 Nov 2021 14:41:59 -0800 (PST)
-Message-ID: <b99360be-feea-c33f-40ab-e7301307a794@gmail.com>
-Date:   Sun, 14 Nov 2021 01:41:59 +0300
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=bdsvl1UwZuOHxPwopT9QunKFFT2xiibkhLWpB5BPk7U=;
+        b=eK9cUneaUZpzRp1N7FboSu8HKRbmCPLEhUaxo1bhGSG7E6vDdT2tyjpW5xBHLQe7p6
+         GXdNL4O5+h60Ia6Kq2PBIqzH9Ofnb605WeqzTy1Lb2yRreQwUaPT40mVzBnk8HqGQLvP
+         DfmwDF3I6Q/l7e/i7N0EI6ErJnuZOL0m42AC45aAPMJCtGjpi7p4YVq5TGZjsck+aVU1
+         vPkXHhY/2fs0cvz2Y0mJLES8O4VQwPuhUl+50uCmDhUqmCw0fSwH8UaJB//Z3ELCQPpf
+         Kr/OkEk4eKgDe62vQlx1cUzILGWKCazVlGFt3nFlwX7myL8QDXEiZmuTOSq1X9ryNl2U
+         sh9g==
+X-Gm-Message-State: AOAM530h3cXLPG5s9i5KsLEwbtyc/jrS828ick6aFOm3GmHjn69NV8DM
+        xE/Jgejz27s6Fc7nxlpisPQuC6OKa6/jfcht4LA=
+X-Google-Smtp-Source: ABdhPJzd3orTr5960Fvy6lZJJLNT6Jbcwit7fngMmmWL7K0L/2hb9+GvTnMjgrI6BTZkb7iSocI0v8AzCWWSYbAOsuU=
+X-Received: by 2002:a17:907:3e25:: with SMTP id hp37mr34626416ejc.43.1636847838456;
+ Sat, 13 Nov 2021 15:57:18 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.1
-Subject: Re: [PATCH] net: bnx2x: fix variable dereferenced before check
-Content-Language: en-US
-To:     aelior@marvell.com, skalluru@marvell.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20211113223636.11446-1-paskripkin@gmail.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20211113223636.11446-1-paskripkin@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a7c:8107:0:b0:12b:761e:eba4 with HTTP; Sat, 13 Nov 2021
+ 15:57:17 -0800 (PST)
+Reply-To: mmamie_shimirah@yahoo.com
+From:   "Miss.Mmamie Shimirah" <ecobankafrica212@gmail.com>
+Date:   Sat, 13 Nov 2021 15:57:17 -0800
+Message-ID: <CACFetbF4as204bbdQ6FAK6pPj6qhu-w26w7z4_S5ZCGvB_CEkQ@mail.gmail.com>
+Subject: Regarding Of My Late Father's Fund $10,200,000,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/14/21 01:36, Pavel Skripkin wrote:
-> Smatch says:
-> 	bnx2x_init_ops.h:640 bnx2x_ilt_client_mem_op()
-> 	warn: variable dereferenced before check 'ilt' (see line 638)
-> 
-> Move ilt_cli variable initialization _after_ ilt validation, because
-> it's unsafe to deref the pointer before validation check.
-> 
-> Fixes: 523224a3b3cd ("bnx2x, cnic, bnx2i: use new FW/HSI")
-> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-> ---
->   drivers/net/ethernet/broadcom/bnx2x/bnx2x_init_ops.h | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
-> 
+dear,
 
-Btw, looks like GR-everest-linux-l2@marvell.com doesn't exist anymore. 
-It's listed in 2 MAINTAINERS entries. Should it be removed from 
-MAINTAINERS file?
+I got your contact through the internet due to serious searching for a
+reliable personality.  I am Mmamie Shimirah from FreeTown Capital of
+Sierra Leone.
 
+Time of opposed to the government of President Ahmad Tejan Kebbah the
+ex-leader since 21st November 2005 But I am current residing in Calavi
+Benin due to war of my country, my mother killed on 04/01/2002 for
+Sierra Leone civilian war and I am only child for my family bad news
+that my father passed away on 25/11/2018. During the war my father
+made a lot of money through the illegal sales of Diamonds to the tune
+of $10,200,000.
 
-Quoting private email from postmaster@marvel.com:
+This money is currently and secretly kept in ECOWAS security company
+in Porto-Novo Benin, but because of the political turmoil which still
+exists in Africa, I can not invest the money by myself, hence am
+soliciting your help to help me take these funds into your custody for
+invest.
 
-> Delivery has failed to these recipients or groups:
-> 
-> gr-everest-linux-l2@marvell.com<mailto:gr-everest-linux-l2@marvell.com>
-> The email address you entered couldn't be found. Please check the recipient's email address and try to resend the message. If the problem continues, please contact your helpdesk.
-
-
-
-
-
-With regards,
-Pavel Skripkin
+I want to add here that if agreed 35% that's $3,570,000 of the total
+worth of the fund will be yours minus your total expenses incurred
+during the clearing of the fund in Porto Novo Benin. I would like to
+invest on heavy duty agricultural equipment and earth moving machines
+to enable me go into a full scale mechanized farming. l wait to hear
