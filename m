@@ -2,154 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51E0D44F3F5
-	for <lists+netdev@lfdr.de>; Sat, 13 Nov 2021 16:35:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3168744F40B
+	for <lists+netdev@lfdr.de>; Sat, 13 Nov 2021 16:48:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235894AbhKMPhw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Nov 2021 10:37:52 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:59732 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231791AbhKMPhv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 13 Nov 2021 10:37:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=m/VPwTzIcUamU0kbv8QB/cFesCTqMC4F5Df7zmeye+c=; b=4GsTtK0PrJ2WsG7s8nD9R4R+c3
-        kPZsNka/L9w891OWL8XZWifwMQduur258iy+J19u2XtAOL7Vz4XeHbViFMKWaOnFFaVNvzWj5968Z
-        YAgLyDYs+/bPL9Z0KTHzOlLUYIwvFhar1tnnP5sBwXxtvbfRwtHf+8HvSF4ctfqsl5YI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mlv3K-00DLR0-6P; Sat, 13 Nov 2021 16:34:50 +0100
-Date:   Sat, 13 Nov 2021 16:34:50 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Wells Lu =?utf-8?B?5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
-Cc:     Denis Kirjanov <dkirjanov@suse.de>, Wells Lu <wellslutw@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        Vincent Shih =?utf-8?B?5pa96YyV6bS7?= 
-        <vincent.shih@sunplus.com>
-Subject: Re: [PATCH v2 2/2] net: ethernet: Add driver for Sunplus SP7021
-Message-ID: <YY/bGkVEKLS75sU0@lunn.ch>
-References: <cover.1635936610.git.wells.lu@sunplus.com>
- <cover.1636620754.git.wells.lu@sunplus.com>
- <519b61af544f4c6920012d44afd35a0f8761b24f.1636620754.git.wells.lu@sunplus.com>
- <cba74b41-7159-60e5-ec1f-007b27e72b22@suse.de>
- <07c59ab058a746c694b1c3a746525009@sphcmbx02.sunplus.com.tw>
+        id S235939AbhKMPvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Nov 2021 10:51:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37220 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230001AbhKMPvP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Nov 2021 10:51:15 -0500
+Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C153DC061766;
+        Sat, 13 Nov 2021 07:48:22 -0800 (PST)
+Received: by mail-qv1-xf2c.google.com with SMTP id bu11so8359946qvb.0;
+        Sat, 13 Nov 2021 07:48:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oXbQA6YsK/Yb8I1ufwTowmeWehU5ZLa6WqLwd/WJnR0=;
+        b=ImBzKERFqdjBGrGwyXdvLPxokVVH/YOD6syxy5Ry7EoZ7JA1ZgRpH36/Ir2IBUSx8W
+         gS0HmCEFLrPn8WeyKPwEHIKMJ8MsoQKXk07euxX0IcdQLNiTUxjGZQqX9d7aI435mJq7
+         QePMM1Q6vqImAExonnt61+8iV7HOUhqKsJvwCo+s5DSG0p8dfVub4pnX3y3g9rWeXJGP
+         s9Mi2AmGn/L6seJC8NjdI8dnnTh/v07eZIEcb9LSYEY+5wguwcQdBUGlxdKg1fR7SASX
+         PlYXoa7CPenBQheitAgVSHtWNxpkfdc6wMn6uumIY9JQJs7Eb1xfWp0PpdG4DXYQNu/x
+         ADAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oXbQA6YsK/Yb8I1ufwTowmeWehU5ZLa6WqLwd/WJnR0=;
+        b=Gk/WIU2vM07u3Zx6rEpgVFkjLlWAMk/MWTkuCjka30m4LQZGnLWqzbzMDMv6E1UllS
+         ihwXA/9gtyQUHELXOKx+KSrvrPSxr0lxLoFMhe2gLXOvd7Xef9mSKhYvSsTk3BX4Ytpj
+         BPMxZl8PChFqowG88kF/0bxsSPNUfGZ0qMUa4GFV1MWA7B9Fiin6uWmCI5VMBCASjFWx
+         lmyCapcRQOLv8LmCN1t4zArH3HaRo7qok6UzXpm+3JC6In1gdhvCJTPblhDcONtAo9BS
+         EGfS5GlQbsjpw9kLl1vGLedPh6hlUvwetHMxU86q8a77csS0tbLISRGPp4H6U4o9+r3u
+         HOGA==
+X-Gm-Message-State: AOAM531SEEUOXfA1ss0BGonTBbQ8kl6lo5bFZc8OBCevLOyozQ4rGt+8
+        CM6W8SKzoGhAJxF/82OaX7TrB/Usws++vsuuPzs=
+X-Google-Smtp-Source: ABdhPJwHPNIdUDZB1WofY0EyhE09P++WglgHkH4uOkSjWwuZbEIP1MOmjqdsr8nWmrB6p2F41NZVSXMsSppxTlGYQ68=
+X-Received: by 2002:a05:6214:f2d:: with SMTP id iw13mr23317601qvb.13.1636818501919;
+ Sat, 13 Nov 2021 07:48:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <07c59ab058a746c694b1c3a746525009@sphcmbx02.sunplus.com.tw>
+References: <20211108084142.4692-1-laoar.shao@gmail.com> <YY6JhZK/oiLUwHyZ@alley>
+In-Reply-To: <YY6JhZK/oiLUwHyZ@alley>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Sat, 13 Nov 2021 23:47:45 +0800
+Message-ID: <CALOAHbA5LBHyJn=EC1roHYt7ar-QqHzLE=KHQ6uC=a__3Pwxfw@mail.gmail.com>
+Subject: Re: [PATCH] kthread: dynamically allocate memory to store kthread's
+ full name
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel test robot <oliver.sang@intel.com>,
+        kbuild test robot <lkp@intel.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        David Hildenbrand <david@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Kees Cook <keescook@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > +//define MAC interrupt status bit
-> > please embrace all comments with /* */
-> 
-> Do you mean to modify comment, for example,
-> 
-> //define MAC interrupt status bit
-> 
-> to 
-> 
-> /* define MAC interrupt status bit */
+On Fri, Nov 12, 2021 at 11:34 PM Petr Mladek <pmladek@suse.com> wrote:
+>
+> On Mon 2021-11-08 08:41:42, Yafang Shao wrote:
+> > When I was implementing a new per-cpu kthread cfs_migration, I found the
+> > comm of it "cfs_migration/%u" is truncated due to the limitation of
+> > TASK_COMM_LEN. For example, the comm of the percpu thread on CPU10~19 are
+> > all with the same name "cfs_migration/1", which will confuse the user. This
+> > issue is not critical, because we can get the corresponding CPU from the
+> > task's Cpus_allowed. But for kthreads correspoinding to other hardware
+> > devices, it is not easy to get the detailed device info from task comm,
+> > for example,
+> >
+> > After this change, the full name of these truncated kthreads will be
+> > displayed via /proc/[pid]/comm:
+> >
+> > --- a/fs/proc/array.c
+> > +++ b/fs/proc/array.c
+> > @@ -102,6 +103,8 @@ void proc_task_name(struct seq_file *m, struct task_struct *p, bool escape)
+> >
+> >       if (p->flags & PF_WQ_WORKER)
+> >               wq_worker_comm(tcomm, sizeof(tcomm), p);
+>
+> Just for record. I though that this patch obsoleted wq_worker_comm()
+> but it did not. wq_worker_comm() returns different values
+> depending on the last proceed work item and has to stay.
+>
 
-Yes. The Kernel is written in C, so C style comments are preferred
-over C++ comments, even if later versions of the C standard allow C++
-style comments.
+Right. worker comm is changed dynamically, which is combined by
+(task_comm+worker_desc) or (task_comm-worker_desc).
+I planned to remove the whole worker->desc and set it dynamically to
+the new kthread full_name but I found it may not be a good idea.
 
-You should also read the netdev FAQ, which makes some specific
-comments about how multi-line comments should be formatted.
 
-> Yes, I'll add error check in next patch as shown below:
-> 
-> 		rx_skbinfo[j].mapping = dma_map_single(&comm->pdev->dev, skb->data,
-> 						       comm->rx_desc_buff_size,
-> 						       DMA_FROM_DEVICE);
-> 		if (dma_mapping_error(&comm->pdev->dev, rx_skbinfo[j].mapping))
-> 			goto mem_alloc_fail;
+> > +     else if (p->flags & PF_KTHREAD)
+> > +             get_kthread_comm(tcomm, sizeof(tcomm), p);
+> >       else
+> >               __get_task_comm(tcomm, sizeof(tcomm), p);
+> >
+> > --- a/kernel/kthread.c
+> > +++ b/kernel/kthread.c
+> > @@ -121,6 +135,7 @@ void free_kthread_struct(struct task_struct *k)
+>
+> Hmm, there is the following comment:
+>
+>         /*
+>          * Can be NULL if this kthread was created by kernel_thread()
+>          * or if kmalloc() in kthread() failed.
+>          */
+>         kthread = to_kthread(k);
+>
+> And indeed, set_kthread_struct() is called only by kthread()
+> and init_idle().
+>
+> For example, call_usermodehelper_exec_sync() calls kernel_thread()
+> but given @fn does not call set_kthread_struct(). Also init_idle()
+> continues even when the allocation failed.
+>
 
-If it is clear how to fix the code, just do it. No need to tell us
-what you are going to do, we will see the change when reviewing the
-next version.
+Yes, it really can be NULL.
 
-> > > +/* Transmit a packet (called by the kernel) */
-> > > +static int ethernet_start_xmit(struct sk_buff *skb, struct net_device *ndev)
-> > > +{
-> > > +	struct sp_mac *mac = netdev_priv(ndev);
-> > > +	struct sp_common *comm = mac->comm;
-> > > +	u32 tx_pos;
-> > > +	u32 cmd1;
-> > > +	u32 cmd2;
-> > > +	struct mac_desc *txdesc;
-> > > +	struct skb_info *skbinfo;
-> > > +	unsigned long flags;
-> > > +
-> > > +	if (unlikely(comm->tx_desc_full == 1)) {
-> > > +		// No TX descriptors left. Wait for tx interrupt.
-> > > +		netdev_info(ndev, "TX descriptor queue full when xmit!\n");
-> > > +		return NETDEV_TX_BUSY;
-> > Do you really have to return NETDEV_TX_BUSY?
-> 
-> (tx_desc_full == 1) means there is no TX descriptor left in ring buffer.
-> So there is no way to do new transmit. Return 'busy' directly.
-> I am not sure if this is a correct process or not.
-> Could you please teach is there any other way to take care of this case?
-> Drop directly?
- 
-There are a few hundred examples to follow, other MAC drivers. What do
-they do when out of TX buffers? Find the most common pattern, and
-follow it.
+>
+> >  #ifdef CONFIG_BLK_CGROUP
+> >       WARN_ON_ONCE(kthread && kthread->blkcg_css);
+> >  #endif
+> > +     kfree(kthread->full_name);
+>
+> Hence, we have to make sure that it is not NULL here. I suggest
+> something like:
+>
 
-You should also thinking about the netdev_info(). Do you really want
-to spam the kernel log? Say you are connected to a 10/Half link, and
-the application is trying to send UDP at 100Mbps, Won't you see a lot
-of these messages? change it to _debug(), or rate limit it.
+Agreed.  I will do it.
 
-> static void ethernet_tx_timeout(struct net_device *ndev, unsigned int txqueue)
+> void free_kthread_struct(struct task_struct *k)
 > {
-> 	struct sp_mac *mac = netdev_priv(ndev);
-> 	struct net_device *ndev2;
-> 	unsigned long flags;
-> 
-> 	netdev_err(ndev, "TX timed out!\n");
-> 	ndev->stats.tx_errors++;
-> 
-> 	spin_lock_irqsave(&mac->comm->tx_lock, flags);
-> 	netif_stop_queue(ndev);
-> 	ndev2 = mac->next_ndev;
-> 	if (ndev2)
-> 		netif_stop_queue(ndev2);
-> 
-> 	hal_mac_stop(mac);
-> 	hal_mac_init(mac);
-> 	hal_mac_start(mac);
-> 
-> 	// Accept TX packets again.
-> 	netif_trans_update(ndev);
-> 	netif_wake_queue(ndev);
-> 	if (ndev2) {
-> 		netif_trans_update(ndev2);
-> 		netif_wake_queue(ndev2);
-> 	}
-> 
-> 	spin_unlock_irqrestore(&mac->comm->tx_lock, flags);
+>         struct kthread *kthread;
+>
+>         /*
+>          * Can be NULL if this kthread was created by kernel_thread()
+>          * or if kmalloc() in kthread() failed.
+>          */
+>         kthread = to_kthread(k);
+>         if (!kthread)
+>                 return;
+>
+> #ifdef CONFIG_BLK_CGROUP
+>         WARN_ON_ONCE(kthread->blkcg_css);
+> #endif
+>         kfree(kthread->full_name);
+>         kfree(kthread);
 > }
-> 
-> Is that ok?
+>
+>
+> Side note: The possible NULL pointer looks dangerous to
+>     me. to_kthread() is dereferenced without any check on
+>     several locations.
+>
+>     For example, kthread_create_on_cpu() looks safe. It is a kthread
+>     crated by kthread(). It will exists only when the allocation
+>     succeeded.
+>
+>     kthread_stop() is probably safe only because it used only for
+>     the classic kthreads created by kthread(). But the API
+>     is not safe.
+>
+>     kthread_use_mm() is probably used only by classic kthreads as
+>     well. But it is less clear to me.
+>
+>     All this unsafe APIs looks like a ticking bomb to me. But
+>     it is beyond this patchset.
+>
 
-This ndev2 stuff is not nice. You probably need a cleaner abstract of
-two netdev's sharing one TX and RX ring. See if there are any other
-switchdev drivers with a similar structure you can copy. Maybe
-cpsw_new.c? But be careful with that driver. cpsw is a bit of a mess
-due to an incorrect initial design with respect to its L2 switch. A
-lot of my initial comments are to stop you making the same mistakes.
+I will analyze it in depth and try to dismantle this ticking bomb.
 
-    Andrew
+
+-- 
+Thanks
+Yafang
