@@ -2,119 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEE1844F05C
-	for <lists+netdev@lfdr.de>; Sat, 13 Nov 2021 02:04:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E25B44F06B
+	for <lists+netdev@lfdr.de>; Sat, 13 Nov 2021 02:13:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232571AbhKMBHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 20:07:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43604 "EHLO
+        id S233014AbhKMBQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 20:16:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbhKMBHN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 20:07:13 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FFDCC061766;
-        Fri, 12 Nov 2021 17:04:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:
-        Subject:Sender:Reply-To:Cc:Content-ID:Content-Description;
-        bh=W3pYbR+KVmnwM9kipI6oWi9/VlOqRdBW9731D/Unbls=; b=SirK07t7fUZav/KZHpehdWm2dg
-        smFKrI3HxOycN0XM7e5Z3I3VjABmpRwkJ9ojak4flvNLdePbVfQnhJu2CBAVGyJZIhjxgM/B1vjeQ
-        a2m66ITzael0Za5s9QT1rtT1CNiPhRa1ETLIofTfB/97h2Bi8wY1LfQuey1dIlJjBv7b3Ar3F+nlO
-        ZRKXc6Fb8CxrGsCMX+FEgPWoWmXwNMHah01n1yPtBDfDKb1jTvwM8ycck2w0dvtVYkixVQNdp5nAK
-        FndQ6j8iOUsGxN0821G9gIRw37/hr13KRusgBWRh4wQtcRZcQFEidlFbrdgxYXMN0XJKLb+fFCksU
-        DDu7SfhQ==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mlhSv-00BxSy-9a; Sat, 13 Nov 2021 01:04:21 +0000
-Subject: Re: [PATCH v5 1/8] leds: add support for hardware driven LEDs
-To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
-        =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>
-References: <20211112153557.26941-1-ansuelsmth@gmail.com>
- <20211112153557.26941-2-ansuelsmth@gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <523edf1d-ec7d-5915-0212-d7ab0b1ce1d6@infradead.org>
-Date:   Fri, 12 Nov 2021 17:04:20 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        with ESMTP id S231618AbhKMBQa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 20:16:30 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE828C061766
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 17:13:38 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id z10so18031543edc.11
+        for <netdev@vger.kernel.org>; Fri, 12 Nov 2021 17:13:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uLeJTssYC3H4f1dqUZkTgm2WEawAH18iY1t1rjoBB/M=;
+        b=UqGlPyMu56qsPp0F25J5Rx9+ZR7C5BfsnOo/cuIZqD9TFuY6zcLio9vE2kN1HKzs/A
+         V2sMrTyhZlelX5kUj0FGy/9YySeoEjBor85wxpW3YZRQ0ItFSj1pbDanWCFCo5igK9gA
+         OZkZZHFCeYsNw4BiCg15MkVjP1WFAdDMASbH87CYy5z6JnF9M9MRCphjuyT3cXEPIlbw
+         uhh76B92ThwqK6o6b/ll1+SW+ZIWX9CgXWpwqAcxCsFVYWroYq6VXU9om8Ws3gkLtcLn
+         0b5zIhIDF4qi5k+7bYFuQ+4uEwtj2wKCbiJmO2qoqy4fx5fAE8HrwNHQ1i/VDyalO3jj
+         T6Ng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uLeJTssYC3H4f1dqUZkTgm2WEawAH18iY1t1rjoBB/M=;
+        b=he7eAup/CwejV3e2DvLYVVuyLl+plTVtHUfuvaiXOMc5MPH+HmLIS4k2Gljgmj8ygE
+         33GoqBLFBDhikZsnr8AVOXauvu3j9P4MzzNpmv3CTQ+grRxku5lC7pYJZfGhw03E1yKU
+         rW0uOabUGlzKaJvSpkzzTWqawsc+h4+JIs6zLEiLqwpg/cs3Jadf/LEVAS3WOqLUdsOt
+         l1w8OT500bKfMVPaTEwmCU0zdDw5uwkQgySPo2WHZaMKr3wbuWjHScZTW9MqId1aq7JK
+         va88N8RO1/jRyjLmBL1G9gRuAZg/nBQzGbhm5vhKkONea8RS4RVlwut5SmKAUbcKHcP6
+         X1UA==
+X-Gm-Message-State: AOAM533TYVbEc3lzVV59Kbn/OPRJ4yG0QR4MTftBdIz0QPuBkXuCiMi4
+        3Sg7C2L9TFczGJ6wCRvh+LFUQUJ2a7enSHpxt7Y=
+X-Google-Smtp-Source: ABdhPJyiI/5Z+GASmjUbQCG8/pIDg1buPfKdg4fskmI+/yQOStMjK6GUa3pQFQGwF9HVAqNCd2f4Ic+epdnNdhwRyWE=
+X-Received: by 2002:a50:e089:: with SMTP id f9mr27756879edl.290.1636766017287;
+ Fri, 12 Nov 2021 17:13:37 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20211112153557.26941-2-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20211112161950.528886-1-eric.dumazet@gmail.com>
+In-Reply-To: <20211112161950.528886-1-eric.dumazet@gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Fri, 12 Nov 2021 17:13:26 -0800
+Message-ID: <CAKgT0UdmtdkjW2ManK72WgBP6MToJwv5sZQbGZV_RBdPS_X7eQ@mail.gmail.com>
+Subject: Re: [PATCH v2] x86/csum: rewrite csum_partial()
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Cooper <andrew.cooper3@citrix.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/12/21 7:35 AM, Ansuel Smith wrote:
-> diff --git a/Documentation/leds/leds-class.rst b/Documentation/leds/leds-class.rst
-> index cd155ead8703..e5d266919a19 100644
-> --- a/Documentation/leds/leds-class.rst
-> +++ b/Documentation/leds/leds-class.rst
-> @@ -169,6 +169,38 @@ Setting the brightness to zero with brightness_set() callback function
->   should completely turn off the LED and cancel the previously programmed
->   hardware blinking function, if any.
->   
-> +Hardware driven LEDs
-> +===================================
-> +
-> +Some LEDs can be driven by hardware (for example an LED connected to
-> +an ethernet PHY or an ethernet switch can be configured to blink on activity on
-> +the network, which in software is done by the netdev trigger).
-> +
-> +To do such offloading, LED driver must support this and a supported trigger must
-> +be used.
-> +
-> +LED driver should declare the correct control mode supported and should set
-> +the LED_SOFTWARE_CONTROLLED or LED_HARDWARE_CONTROLLED bit in the flags
-> +parameter.
-> +The trigger will check these bits and fail to activate if the control mode
-> +is not supported. By default if a LED driver doesn't declare a control mode,
+On Fri, Nov 12, 2021 at 8:19 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+> From: Eric Dumazet <edumazet@google.com>
+>
+> With more NIC supporting CHECKSUM_COMPLETE, and IPv6 being widely used.
+> csum_partial() is heavily used with small amount of bytes,
+> and is consuming many cycles.
+>
+> IPv6 header size for instance is 40 bytes.
+>
+> Another thing to consider is that NET_IP_ALIGN is 0 on x86,
+> meaning that network headers are not word-aligned, unless
+> the driver forces this.
+>
+> This means that csum_partial() fetches one u16
+> to 'align the buffer', then perform three u64 additions
+> with carry in a loop, then a remaining u32, then a remaining u16.
+>
+> With this new version, we perform a loop only for the 64 bytes blocks,
+> then the remaining is bisected.
+>
+> Tested on various cpus, all of them show a big reduction in
+> csum_partial() cost (by 50 to 80 %)
+>
+> v3: - use "+r" (temp64) asm constraints (Andrew).
+>     - fold do_csum() in csum_partial(), as gcc does not inline it.
+>     - fix bug added in v2 for the "odd" case.
+>     - back using addcq, as Andrew pointed the clang bug that was adding
+>           a stall on my hosts.
+>       (separate patch to add32_with_carry() will follow)
+>     - use load_unaligned_zeropad() for final 1-7 bytes (Peter & Alexander).
+>
+> v2: - removed the hard-coded switch(), as it was not RETPOLINE aware.
+>     - removed the final add32_with_carry() that we were doing
+>       in csum_partial(), we can simply pass @sum to do_csum().
+>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Alexander Duyck <alexander.duyck@gmail.com>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Andrew Cooper <andrew.cooper3@citrix.com>
+> ---
+>  arch/x86/lib/csum-partial_64.c | 162 ++++++++++++++-------------------
+>  1 file changed, 67 insertions(+), 95 deletions(-)
 
-                                 if an LED driver
+Looks good to me.
 
-> +bit LED_SOFTWARE_CONTROLLED is assumed and set.
-> +
-> +The LED must implement 3 main APIs:
-> +- hw_control_status(): This asks the LED driver if hardware mode is enabled
-> +    or not.
-> +- hw_control_start(): This will simply enable the hardware mode for the LED
-> +    and the LED driver should reset any active blink_mode.
-> +- hw_control_stop(): This will simply disable the hardware mode for the LED.
-> +    It's advised to the driver to put the LED in the old state but this is not
-> +    enforced and putting the LED off is also accepted.
-> +
-> +If LED_HARDWARE_CONTROLLED bit is the only control mode set (LED_SOFTWARE_CONTROLLED
-> +not set) set hw_control_status/start/stop is optional as the LED supports only
-
-             ^^^ is that an extra "set"?  I can't quite read this sentence.
-
-And it would be better with a comma added, like so:
-
-   not set),
-
-
-> +hardware mode and any software only trigger will reject activation.
-
-                          software-only
-
-> +
-> +On init an LED driver that support a hardware mode should reset every blink mode
-
-                               supports
-
-> +set by default.
-
-
--- 
-~Randy
+Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
