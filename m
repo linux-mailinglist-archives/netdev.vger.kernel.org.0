@@ -2,90 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E52844F429
-	for <lists+netdev@lfdr.de>; Sat, 13 Nov 2021 17:34:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 413AF44F441
+	for <lists+netdev@lfdr.de>; Sat, 13 Nov 2021 17:58:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235923AbhKMQhi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Nov 2021 11:37:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47132 "EHLO
+        id S235241AbhKMRAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Nov 2021 12:00:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231912AbhKMQhi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Nov 2021 11:37:38 -0500
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B90BDC061766;
-        Sat, 13 Nov 2021 08:34:45 -0800 (PST)
-Received: by mail-ot1-x32a.google.com with SMTP id g91-20020a9d12e4000000b0055ae68cfc3dso19073432otg.9;
-        Sat, 13 Nov 2021 08:34:45 -0800 (PST)
+        with ESMTP id S231912AbhKMRAx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Nov 2021 12:00:53 -0500
+Received: from mail-ua1-x92d.google.com (mail-ua1-x92d.google.com [IPv6:2607:f8b0:4864:20::92d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F5A6C061766
+        for <netdev@vger.kernel.org>; Sat, 13 Nov 2021 08:58:01 -0800 (PST)
+Received: by mail-ua1-x92d.google.com with SMTP id w23so2562662uao.5
+        for <netdev@vger.kernel.org>; Sat, 13 Nov 2021 08:58:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Xs95fLVJUY3C0IFeTkqDcpFuWgNY0YQGMTpxIUpLmLg=;
-        b=m4gGM+sXRQARkbZ2e1u4jvRUD4gRb49E8MGcGgNbVBh9BesBxL/sboNaLQhPaRcPRD
-         ibW56sg1uFIGxEHVxCjZ4XHHxKI/yVBWMmGnaV05gwfPckxeLfZ2S8j8yEmE7zRhXvC/
-         qbOKrc1t5TYEpmhZiTvyfQuquKMhbAfD4aWmrwzPpSlFSk/pT1n9CcIV65U31wuGqjYP
-         ejgKGVupnOTm3WTKbGPE1IgweS+cq8ufkfVLSOoQBvj/2mUGG4JcZ7KqeqiSkCPaWkcR
-         gfsD2xodza45L8B+KXhi0HF2X+wv4uUgHzGdH+RFpOuHO4XESD27zWO8T6JT/HUvuFoD
-         AWOQ==
+        h=mime-version:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=Y5xrcoQVIg2YEh3v1j5Qs7Wbw0zmiBD1dx0P9N3lmL4=;
+        b=gkcgJu7b2Ts2e71rbcSeOIGDBWBL5rtmHXS5dcljwSX+Qf8WECbYHFs8DCqZk4KeWf
+         OZXZjewppjZwdywG0WtMt8MQRucVBkvEBEQZTSqnni1Xpbz/Ni25y4WINEq0sy9G1Ivp
+         DA3MHdU+F4O7QLYYlSmtw2FzD7EZV1FPT6uYY/ts+kaV9JaurDL6KnD1bIJHM6oSN7uK
+         g7NDCD2+QdwtDiNwL51siOnTZn5nQ3q/sgLij2aUobGMIYBBSsOsnTIZ+FSHlpW3ei03
+         3WSi/cnxx3PyaBR2Ph65Lyro/TIlDT+KvD24lpYtt3HVZTlaeEmv7ntqRwVXPHJ2CKBa
+         3INw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Xs95fLVJUY3C0IFeTkqDcpFuWgNY0YQGMTpxIUpLmLg=;
-        b=OTASz17H2j58GHmAznp9ZNGRHr+xa3EIZgavJjoIwCkFXjs1CkdCdGL01/5V4DznLs
-         GAPFyRriHf1F+6/1YaaROOtZvN1X5W14cTat2fQsxcF6852AbmtFj5RmPpUfeYCt7RuH
-         /yt+YOZljv6KjEOaD6usmXberyRRlh9quHeWyIOZBjHzixOjTD0WdAdd5zw7mFDIJ0LT
-         VvNyqEv/E4hRkEWK0dIww6yqHae5J0VlieMCBAV7/o7S1yWP33pdFDvX99FSw3gLKJE2
-         i2IrQksx3TZ3wDAMgd1XgmsZTdYGadCVaZEddLjvZI6C8Wsc1beWLWjAxfndLNA7Zm0B
-         ketA==
-X-Gm-Message-State: AOAM530myWiBYUb3mQ0VFztjC5fH4B3hjkFfwCQWARHv49B0Vv8Bj7Kz
-        5DvDQ7efBH31Kw+/aCtqmTI=
-X-Google-Smtp-Source: ABdhPJwditGxKVOEK4CG2QnPnEjJjGEO9l0ypPWMpFFnRKeOH4Q2YTupHDhplGfYSR8GlwevHfzW+w==
-X-Received: by 2002:a9d:6394:: with SMTP id w20mr19793428otk.248.1636821284987;
-        Sat, 13 Nov 2021 08:34:44 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id y28sm2058931oix.57.2021.11.13.08.34.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 13 Nov 2021 08:34:44 -0800 (PST)
-Message-ID: <de051ecb-0efe-27e2-217c-60a502f4415f@gmail.com>
-Date:   Sat, 13 Nov 2021 09:34:42 -0700
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to:content-transfer-encoding;
+        bh=Y5xrcoQVIg2YEh3v1j5Qs7Wbw0zmiBD1dx0P9N3lmL4=;
+        b=n/LbLArp5zp4xERssVKR+Qjfet1kVNIb/H6xr/aQ0AEBB6f7X91lYBWcpr2LsJ6fJM
+         tYNSoHBzv04NFm3BnstgiJRshCfP2DKqEK8/aEtQ6/urnIuUE/R+3Q8OJGQYRbq7uWWo
+         EHbTTdJTFP6RE87XfYIJjRIHB7mXcq68gSkfZXkZFom5lwFaKAleNBOl75x+nk8OGh2B
+         kT6G/PeV8y7tdiipnuUzKxjTiq4ZGaA/f+Tn/uRL7FcvokdV9g6IJg0TLmwD+gmgHcfQ
+         sGnRR+NySF4WkR/lj2tU3kK0Ey6wc0NiQUg540e/dgAGS9UkCJ8K8Pi3HUGOO7k1vFGY
+         rSXA==
+X-Gm-Message-State: AOAM532x8xRdBPYmpzPBYkePEM5U7MQXxa7vis2XYPQ2OpOioE5OKkEr
+        JdRScHQVVBs3AEBy2zTdjKup95AHDHdp3ADYxPo=
+X-Google-Smtp-Source: ABdhPJwTP3jV3U3FZx0eHB4H5Ti+CyfNKPMm4t3EoG6J8pC6nZ+HzvTAhFY427zAUVB4Pz5M+G4vRW/Ca4sRkRaJNzA=
+X-Received: by 2002:a67:de88:: with SMTP id r8mr21663668vsk.15.1636822679978;
+ Sat, 13 Nov 2021 08:57:59 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.0
-Subject: Re: [PATCH net-next] ipv6: don't generate link-local addr in random
- or privacy mode
-Content-Language: en-US
-To:     Rocco Yue <rocco.yue@mediatek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, Rocco.Yue@gmail.com,
-        chao.song@mediatek.com, zhuoliang.zhang@mediatek.com
-References: <20211109065526.16772-1-rocco.yue@mediatek.com>
- <20211113084636.11685-1-rocco.yue@mediatek.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20211113084636.11685-1-rocco.yue@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Sender: jameswiliamsjw682@gmail.com
+Received: by 2002:a59:adcd:0:b0:238:c90d:602 with HTTP; Sat, 13 Nov 2021
+ 08:57:59 -0800 (PST)
+From:   DINA MCKENNA <dinamckennahowley@gmail.com>
+Date:   Sat, 13 Nov 2021 16:57:59 +0000
+X-Google-Sender-Auth: QL68xz_91zzkh6RUBQGhyKa-cpk
+Message-ID: <CAJMpOnc_5VKOjYD87JKtyFkSYRibtFX=wM=+BdhPxtm44G-Hjg@mail.gmail.com>
+Subject: Hello,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/13/21 1:46 AM, Rocco Yue wrote:
-> 
-> Gentle ping on this patch. :-)
-> 
+Hello my dear ,.
 
-you sent the patch in the merge window; I believe it has been dropped
-from patchworks.
+ I sent this mail praying it will get to you in a good condition of
+health, since I myself are in a very critical health condition in
+which I sleep every night without knowing if I may be alive to see the
+next day. I bring peace and love to you. It is by the grace of God, I
+had no choice than to do what is lawful and right in the sight of God
+for eternal life and in the sight of man, for witness of God=E2=80=99s merc=
+y
+and glory upon my life. I am Mrs. Dina Mckenna. Howley, a widow. I am
+suffering from a long time brain tumor, It has defiled all forms of
+medical treatment, and right now I have about a few months to leave,
+according to medical experts. The situation has gotten complicated
+recently with my inability to hear proper, am communicating with you
+with the help of the chief nurse herein the hospital, from all
+indication my conditions is really deteriorating and it is quite
+obvious that, according to my doctors they have advised me that I may
+not live too long, Because this illness has gotten to a very bad
+stage. I plead that you will not expose or betray this trust and
+confidence that I am about to repose on you for the mutual benefit of
+the orphans and the less privilege. I have some funds I inherited from
+my late husband, the sum of ($ 11,000,000.00, Eleven Million Dollars).
+Having known my condition, I decided to donate this fund to you
+believing that you will utilize it the way i am going to instruct
+herein. I need you to assist me and reclaim this money and use it for
+Charity works therein your country  for orphanages and gives justice
+and help to the poor, needy and widows says The Lord." Jeremiah
+22:15-16.=E2=80=9C and also build schools for less privilege that will be
+named after my late husband if possible and to promote the word of God
+and the effort that the house of God is maintained. I do not want a
+situation where this money will be used in an ungodly manner. That's
+why I'm taking this decision. I'm not afraid of death, so I know where
+I'm going. I accept this decision because I do not have any child who
+will inherit this money after I die.. Please I want your sincerely and
+urgent answer to know if you will be able to execute this project for
+the glory of God, and I will give you more information on how the fund
+will be transferred to your bank account. May the grace, peace, love
+and the truth in the Word of God be with you and all those that you
+love and care for.
 
-Also, you did not add v2 (or whatever version this is) with a summary of
-changes between all versions, and you did not cc all the people who
-responded to previous versions.
+I'm waiting for your immediate reply.
 
+May God Bless you,
+Mrs. Dina. Mckenna.
