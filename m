@@ -2,42 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 728A244F12D
-	for <lists+netdev@lfdr.de>; Sat, 13 Nov 2021 05:22:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EB6A44F129
+	for <lists+netdev@lfdr.de>; Sat, 13 Nov 2021 05:22:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235645AbhKMEXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 23:23:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60566 "EHLO mail.kernel.org"
+        id S235688AbhKMEXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 23:23:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60570 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235620AbhKMEXB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S235645AbhKMEXB (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 12 Nov 2021 23:23:01 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id BD1CA61104;
+Received: by mail.kernel.org (Postfix) with ESMTPS id CD13A61156;
         Sat, 13 Nov 2021 04:20:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1636777209;
-        bh=Ix6fDQS5ZE8+lVpjyL0lac20SB1SuTzE8UUJXm9EpQQ=;
+        bh=Vn/y4HuxFNGZs8+Sz1Od1OysTfu2eC5W5z1AsF3vlkk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=IzCS0brH71Nm1cN067PpMafpv+xLQyYHykqCs0UbNITIWnBq3E2wIIGBzH/fP4VRV
-         kIwmnVxENDYtXlMBalA8LTTvSDKBdiLpLNRrqxwGejjdHD8PaAf8aPbUeaWOfB/zO4
-         683fEoQ5Vfvmh0yk1x6gxKnhhvDuNnHnzF+vbCnvsHS7Qa7+WxSVZh2uUW5pEBtJbJ
-         VsoV/G9K6INoIUs2R1arbHsxriWpxx/tBtLIo2fJ++nHehQd7twHx9sSGcXhTFmgY9
-         rPcJiGc5ApTUePrwUYKarNokjldQHuQh944UeEGNZd4bdnubwNRVisy2fqR/H+ZWic
-         sNFidbs5aw6oA==
+        b=QK86idkK8cF231GyLc7hmXZLTabCLJDRJdXZh9t0HK7AKra5vNAQzzpzQ3SjQBIBQ
+         wa3H5cBkH6SNhFvQ3Ygqb0rK+prvexLwaGRvxn657Jh1ojb3XmT7WsI765Kt1ZdvPZ
+         MQwfpkiZ/BM1vdCvxZJ4EhRSX6NGVZ6Vudji9qcUUgNuY2+xCxSCNRwRuTwMbICsnK
+         UeSouU5ENpmzKuwCwLFCqUlRRWYRUyBRlrsRL2B9Tb9+SkeMcAcnlBqZS3hMVn7nGH
+         eXCarhJNG4WLia4Ugj72jTuAhfkv6gwy297+jYUvTUrYpKo0l3CrWDmPKj80ml3wYs
+         quFyLpkXjwhLw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AC3C160AA4;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B837660987;
         Sat, 13 Nov 2021 04:20:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net v2] tcp: Fix uninitialized access in skb frags array for Rx 0cp.
+Subject: Re: [PATCH v2] net/ipa: ipa_resource: Fix wrong for loop range
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163677720970.27008.1100209211155509466.git-patchwork-notify@kernel.org>
+Message-Id: <163677720974.27008.15285644696445470681.git-patchwork-notify@kernel.org>
 Date:   Sat, 13 Nov 2021 04:20:09 +0000
-References: <20211111235215.2605384-1-arjunroy.kdev@gmail.com>
-In-Reply-To: <20211111235215.2605384-1-arjunroy.kdev@gmail.com>
-To:     Arjun Roy <arjunroy.kdev@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, arjunroy@google.com,
-        edumazet@google.com, soheil@google.com, kuba@kernel.org
+References: <20211111183724.593478-1-konrad.dybcio@somainline.org>
+In-Reply-To: <20211111183724.593478-1-konrad.dybcio@somainline.org>
+To:     Konrad Dybcio <konrad.dybcio@somainline.org>
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, martin.botka@somainline.org,
+        angelogioacchino.delregno@somainline.org,
+        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
+        elder@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,19 +50,20 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu, 11 Nov 2021 15:52:15 -0800 you wrote:
-> From: Arjun Roy <arjunroy@google.com>
+On Thu, 11 Nov 2021 19:37:24 +0100 you wrote:
+> The source group count was mistakenly assigned to both dst and src loops.
+> Fix it to make IPA probe and work again.
 > 
-> TCP Receive zerocopy iterates through the SKB queue via
-> tcp_recv_skb(), acquiring a pointer to an SKB and an offset within
-> that SKB to read from. From there, it iterates the SKB frags array to
-> determine which offset to start remapping pages from.
+> Fixes: 4fd704b3608a ("net: ipa: record number of groups in data")
+> Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+> Reviewed-by: Marijn Suijten <marijn.suijten@somainline.org>
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v2] tcp: Fix uninitialized access in skb frags array for Rx 0cp.
-    https://git.kernel.org/netdev/net/c/70701b83e208
+  - [v2] net/ipa: ipa_resource: Fix wrong for loop range
+    https://git.kernel.org/netdev/net/c/27df68d579c6
 
 You are awesome, thank you!
 -- 
