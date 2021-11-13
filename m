@@ -2,82 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 579FE44F559
-	for <lists+netdev@lfdr.de>; Sat, 13 Nov 2021 22:05:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E13A44F5A5
+	for <lists+netdev@lfdr.de>; Sat, 13 Nov 2021 23:37:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236029AbhKMVH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Nov 2021 16:07:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49268 "EHLO
+        id S233469AbhKMWjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Nov 2021 17:39:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232203AbhKMVHz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Nov 2021 16:07:55 -0500
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F856C061766
-        for <netdev@vger.kernel.org>; Sat, 13 Nov 2021 13:05:03 -0800 (PST)
-Received: by mail-pg1-x533.google.com with SMTP id g28so11032079pgg.3
-        for <netdev@vger.kernel.org>; Sat, 13 Nov 2021 13:05:03 -0800 (PST)
+        with ESMTP id S229652AbhKMWjg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Nov 2021 17:39:36 -0500
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 308FFC061766;
+        Sat, 13 Nov 2021 14:36:43 -0800 (PST)
+Received: by mail-lj1-x232.google.com with SMTP id i63so26298652lji.3;
+        Sat, 13 Nov 2021 14:36:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=bdsvl1UwZuOHxPwopT9QunKFFT2xiibkhLWpB5BPk7U=;
-        b=Gb224wM9vWV2pqKpie6jaTXh6/MJgmvgAv59UX66s0tYBYrl/3kIle5Buccz7Ik/Xc
-         6f6zEiQQ+P7SMaWOY++BqHheK8tXzMet9LGG09x3YQcGhEqdmGLB+pXL9RQXNtLX8EWZ
-         8H7oeqFJaU+N1xaNKLITV1hP3aNHMS96kv+Rg6pSasz+Jk/JtJ1/4ZcQ3XAF6EpMQD9E
-         iqlBjrpkqdFvJsb3MKSYTYfEIru2w7BDItt8wmclSeZOsOikx8nn1igPiKDoi9y/DSu6
-         UFegf8OPyodE/iIQHaRjxrkUKlltOucVf/B9SUbeCj57hMuiaSsdl65P2D4anDsBSj5A
-         jFTg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=l7dkRItAesBmWLI3EQJRqqulRK8Cdr7rXiEqK0CwOuo=;
+        b=jpUBBYlqIW1tcMwkGsJTvZo3OaUsAultFqvSZCetrm1YWz+A6KOEwcYeOEM3kOk3w8
+         6aCGMg5o3aaMkUfy3cuVfdIv6NDB+/TikES02Hfzd6HwAJ3dn4Pzy/0QJNu1Tzmlt3r+
+         pQzGgBHfsVniSYeJoqb1Keo9ZX5vY7TYgDXMclaxJUzZ9igcgtr1qJ5557roPaSzvGCQ
+         UEwjZ+FucZZ8SfW9kctFzC8juaU4yFe1J9aKWS2IhRHiXFureR4JMcDQ91l6Y7r5AuBC
+         jpKEUHp8eZYyCVJEky1GBqhyMeux0fVFkSGRqujGweWC9l+kSVIEwCG1TW3eeraFcwOJ
+         GlnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=bdsvl1UwZuOHxPwopT9QunKFFT2xiibkhLWpB5BPk7U=;
-        b=kkBrD/wgdIb6ACpoLIeKk0npyEq8Zq6UA842n3lsq9NLeANSKkpz5G6WFNFVT2PGB9
-         S71l8iBu0YSwbtFAZM5EoJkwBvfw0xo0lwemC0T64h/kJIbp5QrvwZYJ/BGOkCRM0eP8
-         Mj7FU7BTehjKNECMpLnxrl0dwReeKbSXbK0nZIC5aFiMeIMJMxwDDN9inrtYHpbtl5VO
-         h4zl3iYtYcXYoMffGjsaaBl75GPWj9YPWIth6kyxB09dFJr3Kb1NrxUR7sEcaTcz0CHK
-         OqqrkNhtiQOCD9kDyIPUj8vMwXuS43dh2c2ASm0zUbg1kvrnzTitsbMK62V4ibCL/gG0
-         YvxQ==
-X-Gm-Message-State: AOAM530DOFdirJrkspiL8EKBccYVgW6+3V2qo2gcdUQWUCzRg3Hz2Jgl
-        DeZb+8e+PrwIfOC0Jzc/Y2zg2CIuBC2nBGAoZPc=
-X-Google-Smtp-Source: ABdhPJylN2eSTeyMMARUy8woQaN2XyQxz4Mu8NEVZND+4rUQdYC5T4uxwEumWCtZbNaKseW71wVSJXNE1FTWlUJUwKk=
-X-Received: by 2002:a63:ef02:: with SMTP id u2mr16309990pgh.363.1636837502728;
- Sat, 13 Nov 2021 13:05:02 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=l7dkRItAesBmWLI3EQJRqqulRK8Cdr7rXiEqK0CwOuo=;
+        b=GaVT1SHS+gV1O8N17tcduaXLXN8Icz5MX37+HekZInaV2UgHPGQYFppPEbvgjxqC93
+         R71+Aqrt/pVfL6BGxv366Ai7RtY7rjE17hnrZdKphH3PPxeFDzgmZhZ/r7WxycBw3cWt
+         jaFuHN0KNzxXW9CE3PLBYtohaDmrsmiz9HR7KGuaIeGNWQqUONhB/SpzCTR6VB2T8QD3
+         PzzrkllYQsCVqqApBzirpTlWGmQfBl6n0z0BlAZjMG4gs3lZ+gACKZVMWaqiTn8yA6bB
+         CxDDP2veHFyYxEfj70TYTLJ30fe6cjz6bxsAmHceETW1mpfOamF7JzmGnJFK8na+0l7o
+         SmFg==
+X-Gm-Message-State: AOAM531HarlY+iVrC9xeogNwXVt5IbGxJOqNT7ACskxMOJRlv/fDzHDP
+        NVJ0Z1vQXe6XeokNSc3OM7U=
+X-Google-Smtp-Source: ABdhPJzhxIEFtRicWymc3DNRN+JR4afa87kLP22vvdLW5R+ssmXdAnjM/KdPoc0Hs2dsjQ05CVrSPw==
+X-Received: by 2002:a2e:9a5a:: with SMTP id k26mr25746254ljj.9.1636843001413;
+        Sat, 13 Nov 2021 14:36:41 -0800 (PST)
+Received: from localhost.localdomain ([94.103.224.112])
+        by smtp.gmail.com with ESMTPSA id s13sm457958lfg.126.2021.11.13.14.36.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 13 Nov 2021 14:36:41 -0800 (PST)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     aelior@marvell.com, skalluru@marvell.com,
+        GR-everest-linux-l2@marvell.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>
+Subject: [PATCH] net: bnx2x: fix variable dereferenced before check
+Date:   Sun, 14 Nov 2021 01:36:36 +0300
+Message-Id: <20211113223636.11446-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Received: by 2002:a05:6a10:4753:b0:212:9ae8:4cda with HTTP; Sat, 13 Nov 2021
- 13:05:02 -0800 (PST)
-Reply-To: mmamie_shimirah@yahoo.com
-From:   "Miss.Mmamie Shimirah" <mcluver2006@gmail.com>
-Date:   Sat, 13 Nov 2021 13:05:02 -0800
-Message-ID: <CAA6bGXptuuQ_+0BTLJthmwBf2SiMq+h_nh-tZ284Pv6XRTOLsA@mail.gmail.com>
-Subject: Regarding Of My Late Father's Fund $10,200,000,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-dear,
+Smatch says:
+	bnx2x_init_ops.h:640 bnx2x_ilt_client_mem_op()
+	warn: variable dereferenced before check 'ilt' (see line 638)
 
-I got your contact through the internet due to serious searching for a
-reliable personality.  I am Mmamie Shimirah from FreeTown Capital of
-Sierra Leone.
+Move ilt_cli variable initialization _after_ ilt validation, because
+it's unsafe to deref the pointer before validation check.
 
-Time of opposed to the government of President Ahmad Tejan Kebbah the
-ex-leader since 21st November 2005 But I am current residing in Calavi
-Benin due to war of my country, my mother killed on 04/01/2002 for
-Sierra Leone civilian war and I am only child for my family bad news
-that my father passed away on 25/11/2018. During the war my father
-made a lot of money through the illegal sales of Diamonds to the tune
-of $10,200,000.
+Fixes: 523224a3b3cd ("bnx2x, cnic, bnx2i: use new FW/HSI")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_init_ops.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-This money is currently and secretly kept in ECOWAS security company
-in Porto-Novo Benin, but because of the political turmoil which still
-exists in Africa, I can not invest the money by myself, hence am
-soliciting your help to help me take these funds into your custody for
-invest.
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_init_ops.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_init_ops.h
+index 1835d2e451c0..fc7fce642666 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_init_ops.h
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_init_ops.h
+@@ -635,11 +635,13 @@ static int bnx2x_ilt_client_mem_op(struct bnx2x *bp, int cli_num,
+ {
+ 	int i, rc;
+ 	struct bnx2x_ilt *ilt = BP_ILT(bp);
+-	struct ilt_client_info *ilt_cli = &ilt->clients[cli_num];
++	struct ilt_client_info *ilt_cli;
+ 
+ 	if (!ilt || !ilt->lines)
+ 		return -1;
+ 
++	ilt_cli = &ilt->clients[cli_num];
++
+ 	if (ilt_cli->flags & (ILT_CLIENT_SKIP_INIT | ILT_CLIENT_SKIP_MEM))
+ 		return 0;
+ 
+-- 
+2.33.1
 
-I want to add here that if agreed 35% that's $3,570,000 of the total
-worth of the fund will be yours minus your total expenses incurred
-during the clearing of the fund in Porto Novo Benin. I would like to
-invest on heavy duty agricultural equipment and earth moving machines
-to enable me go into a full scale mechanized farming. l wait to hear
