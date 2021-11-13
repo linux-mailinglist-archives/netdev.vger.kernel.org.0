@@ -2,135 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9594644F113
-	for <lists+netdev@lfdr.de>; Sat, 13 Nov 2021 04:42:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0A5844F115
+	for <lists+netdev@lfdr.de>; Sat, 13 Nov 2021 04:43:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233171AbhKMDpq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Nov 2021 22:45:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49814 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232113AbhKMDpp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Nov 2021 22:45:45 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6A8C061766;
-        Fri, 12 Nov 2021 19:42:53 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id fv9-20020a17090b0e8900b001a6a5ab1392so9187271pjb.1;
-        Fri, 12 Nov 2021 19:42:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ey7VzgXF+r6CB0MM7r2mh3u+lhRQ2Cx2jmHmCPqFkI0=;
-        b=WFPwxEO+35l2OBZrdX6jjDMJZ0uyaEXbNSQqInGWdUebIcKE3vg3o1ncB30/a8rqbc
-         7dadMkJviYB5luqmjJGTa6d5UWuaba+UZSV8iv8eAHVmDNLTvUFkzczIQ1Toxz3Fhkaw
-         6aEO6Sh6vdDn3VVNEv8ac33A9WuPKhT2HsiDlE0NsizjBQjpXeJM8AVVdbyJdPy99UA+
-         7/hKQdU9BE6L7JErzD20Kb8dRTJUrGjxlWRyBzqCb5mwoyQd8R/BssnqKtB9vqKjt5wM
-         JAcrAjkeB9ZBMvsMbaBwcRzmSCP/swvaa83joNopH+yDkIIwjL82cFY1vQ5P7NlwZ/CO
-         tcyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ey7VzgXF+r6CB0MM7r2mh3u+lhRQ2Cx2jmHmCPqFkI0=;
-        b=Vs2f/17jiuovJiWUcEdYa2Hfnd4jjuSgC6ytYYzODES4kImFKunE9FZ5mxfP/WKkhH
-         Gu4JEI9YFzJUc9IFN/NiwT3tsD+eCrOTKSVS/pEkR09PN//N0Mu0zCzHMhCvJX07FRtb
-         eqm5pnfBFeYrCJpMltEyb620wHX58Obx4GfvPlXjjxLKGkSXRvTm03E/g35VVWf9NfiX
-         R9Rqawe2oEdTwW3PEkLlSAA0xtdN0+WHoe7mgc7yTUXS6RZGSPCiqAWVgF9pA0/B2OZU
-         Jh3lA8+sLeRHVO9+s09LOFU2o0U2MKLnZd+L89MJkVJV1aw0x06BQxu8dIrMl3S2RGRI
-         Gr5A==
-X-Gm-Message-State: AOAM532RlJhduYyBPt1IQRkZnC1SatzV3NWQOdemyL4/KZ2Tx6bGhg3U
-        JDkXt7Ayz35lS/DASehh706UDhCsCqeLa1WhRH8=
-X-Google-Smtp-Source: ABdhPJwb8DmjJU8Cmm3xS4cjfLlLFr0lmkXPwRHlmIgWmxscjjuDu9kaNBpudE/biRPTsnmuXckTyQ==
-X-Received: by 2002:a17:90b:1c87:: with SMTP id oo7mr18342123pjb.159.1636774973489;
-        Fri, 12 Nov 2021 19:42:53 -0800 (PST)
-Received: from fanta-arch.tsinghua.edu.cn ([148.163.172.142])
-        by smtp.gmail.com with ESMTPSA id f21sm1497000pfc.191.2021.11.12.19.42.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Nov 2021 19:42:52 -0800 (PST)
-From:   Letu Ren <fantasquex@gmail.com>
-To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Letu Ren <fantasquex@gmail.com>,
-        Zheyu Ma <zheyuma97@gmail.com>
-Subject: [PATCH v2] net: igbvf: fix double free in `igbvf_probe`
-Date:   Sat, 13 Nov 2021 11:42:34 +0800
-Message-Id: <20211113034235.8153-1-fantasquex@gmail.com>
-X-Mailer: git-send-email 2.33.1
+        id S235637AbhKMDqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Nov 2021 22:46:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51370 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235645AbhKMDqB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Nov 2021 22:46:01 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3F4C860F14;
+        Sat, 13 Nov 2021 03:43:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636774987;
+        bh=nXHbc968YifWE8fXr2jDpqgB5F2ixW3MpA1fE8gsZ7U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=iImbqWSdhzAU4vwoOR/hiz7P8/zXCz9bGz1ueJ3BTNxDwSEVPrILCtl31hIBMrHV1
+         v9W6CmNfCYlMuVUQhYGZz72CWhujzECtLUSWR0BJEm8Y8vtUOsT03Z2X1lELXZgDXL
+         5hEu7pRXtrlR63iC375IAgJjyGlpOMaZwfredJSjsWxmBs4TO7xhLMZL8hBPj8mnYt
+         iYODeNgDjOp9GTUBvEzWd9yxUh5bgAzIG1J2+lFcXp8TicKCceq0EKk/xK1439BeFF
+         XvkMsHouncyYW/xipAlP0vcrRrMlvmqAGC9WYMoka+FFH0LEaNlGBLBgTjn80jpxmt
+         PYa3Y+WNGVa7w==
+Date:   Fri, 12 Nov 2021 19:43:06 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Arjun Roy <arjunroy@google.com>
+Cc:     Arjun Roy <arjunroy.kdev@gmail.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, edumazet@google.com, soheil@google.com
+Subject: Re: [net v2] tcp: Fix uninitialized access in skb frags array for
+ Rx 0cp.
+Message-ID: <20211112194306.70195848@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAOFY-A0zLEQ_cbVFS_Rd16EiOP7R-gEkHTsZ6gNEmUCbeLK1OQ@mail.gmail.com>
+References: <20211111235215.2605384-1-arjunroy.kdev@gmail.com>
+        <CAOFY-A0zLEQ_cbVFS_Rd16EiOP7R-gEkHTsZ6gNEmUCbeLK1OQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In `igbvf_probe`, if register_netdev() fails, the program will go to
-label err_hw_init, and then to label err_ioremap. In free_netdev() which
-is just below label err_ioremap, there is `list_for_each_entry_safe` and
-`netif_napi_del` which aims to delete all entries in `dev->napi_list`.
-The program has added an entry `adapter->rx_ring->napi` which is added by
-`netif_napi_add` in igbvf_alloc_queues(). However, adapter->rx_ring has
-been freed below label err_hw_init. So this a UAF.
+On Thu, 11 Nov 2021 18:32:23 -0800 Arjun Roy wrote:
+> On Thu, Nov 11, 2021 at 3:52 PM Arjun Roy <arjunroy.kdev@gmail.com> wrote:
+> >
+> > From: Arjun Roy <arjunroy@google.com>
+> >
+> > TCP Receive zerocopy iterates through the SKB queue via
+> > tcp_recv_skb(), acquiring a pointer to an SKB and an offset within
+> > that SKB to read from. From there, it iterates the SKB frags array to
+> > determine which offset to start remapping pages from.
+> >
+> > However, this is built on the assumption that the offset read so far
+> > within the SKB is smaller than the SKB length. If this assumption is
+> > violated, we can attempt to read an invalid frags array element, which
+> > would cause a fault.
+> >
+> > tcp_recv_skb() can cause such an SKB to be returned when the TCP FIN
+> > flag is set. Therefore, we must guard against this occurrence inside
+> > skb_advance_frag().
+> >
+> > One way that we can reproduce this error follows:
+> > 1) In a receiver program, call getsockopt(TCP_ZEROCOPY_RECEIVE) with:
+> > char some_array[32 * 1024];
+> > struct tcp_zerocopy_receive zc = {
+> >   .copybuf_address  = (__u64) &some_array[0],
+> >   .copybuf_len = 32 * 1024,
+> > };
+> >
+> > 2) In a sender program, after a TCP handshake, send the following
+> > sequence of packets:
+> >   i) Seq = [X, X+4000]
+> >   ii) Seq = [X+4000, X+5000]
+> >   iii) Seq = [X+4000, X+5000], Flags = FIN | URG, urgptr=1000
+> >
+> > (This can happen without URG, if we have a signal pending, but URG is
+> > a convenient way to reproduce the behaviour).
+> >
+> > In this case, the following event sequence will occur on the receiver:
+> >
+> > tcp_zerocopy_receive():  
+> > -> receive_fallback_to_copy() // copybuf_len >= inq
+> > -> tcp_recvmsg_locked() // reads 5000 bytes, then breaks due to URG
+> > -> tcp_recv_skb() // yields skb with skb->len == offset
+> > -> tcp_zerocopy_set_hint_for_skb()
+> > -> skb_advance_to_frag() // will returns a frags ptr. >= nr_frags
+> > -> find_next_mappable_frag() // will dereference this bad frags ptr.  
+> >
+> > With this patch, skb_advance_to_frag() will no longer return an
+> > invalid frags pointer, and will return NULL instead, fixing the issue.
+> >
+> > Signed-off-by: Arjun Roy <arjunroy@google.com>
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > Fixes: 05255b823a61 ("tcp: add TCP_ZEROCOPY_RECEIVE support for zerocopy receive")
+> >
+> > ---
+> >  net/ipv4/tcp.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> >
+> > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> > index bc7f419184aa..ef896847f190 100644
+> > --- a/net/ipv4/tcp.c
+> > +++ b/net/ipv4/tcp.c
+> > @@ -1741,6 +1741,9 @@ static skb_frag_t *skb_advance_to_frag(struct sk_buff *skb, u32 offset_skb,
+> >  {
+> >         skb_frag_t *frag;
+> >
+> > +       if (unlikely(offset_skb >= skb->len))
+> > +               return NULL;
+> > +
+> >         offset_skb -= skb_headlen(skb);
+> >         if ((int)offset_skb < 0 || skb_has_frag_list(skb))
+> >                 return NULL;
+> > --
+> > 2.34.0.rc1.387.gb447b232ab-goog
+> >  
+> 
+> Interestingly, netdevbpf list claims a netdev/build_32bit failure here:
+> https://patchwork.kernel.org/project/netdevbpf/patch/20211111235215.2605384-1-arjunroy.kdev@gmail.com/
+> 
+> But the v1 patch seemed to be fine (that one had a wrong "Fixes" tag,
+> it's the only thing that changed in v2). Also, "make ARCH=i386" is
+> working fine for me, and the significant amount of error output
+> (https://patchwork.hopto.org/static/nipa/578999/12615889/build_32bit/)
+> does not actually have any errors inside net/ipv4/tcp.c . I assume,
+> then, this must be a tooling false positive, and I do not have to send
+> a v3 (which would have no changes)?
 
-In terms of how to patch the problem, we can refer to igbvf_remove() and
-delete the entry before `adapter->rx_ring`.
+Yes, see:
 
-The KASAN logs are as follows:
-
-[   35.126075] BUG: KASAN: use-after-free in free_netdev+0x1fd/0x450
-[   35.127170] Read of size 8 at addr ffff88810126d990 by task modprobe/366
-[   35.128360]
-[   35.128643] CPU: 1 PID: 366 Comm: modprobe Not tainted 5.15.0-rc2+ #14
-[   35.129789] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-[   35.131749] Call Trace:
-[   35.132199]  dump_stack_lvl+0x59/0x7b
-[   35.132865]  print_address_description+0x7c/0x3b0
-[   35.133707]  ? free_netdev+0x1fd/0x450
-[   35.134378]  __kasan_report+0x160/0x1c0
-[   35.135063]  ? free_netdev+0x1fd/0x450
-[   35.135738]  kasan_report+0x4b/0x70
-[   35.136367]  free_netdev+0x1fd/0x450
-[   35.137006]  igbvf_probe+0x121d/0x1a10 [igbvf]
-[   35.137808]  ? igbvf_vlan_rx_add_vid+0x100/0x100 [igbvf]
-[   35.138751]  local_pci_probe+0x13c/0x1f0
-[   35.139461]  pci_device_probe+0x37e/0x6c0
-[   35.165526]
-[   35.165806] Allocated by task 366:
-[   35.166414]  ____kasan_kmalloc+0xc4/0xf0
-[   35.167117]  foo_kmem_cache_alloc_trace+0x3c/0x50 [igbvf]
-[   35.168078]  igbvf_probe+0x9c5/0x1a10 [igbvf]
-[   35.168866]  local_pci_probe+0x13c/0x1f0
-[   35.169565]  pci_device_probe+0x37e/0x6c0
-[   35.179713]
-[   35.179993] Freed by task 366:
-[   35.180539]  kasan_set_track+0x4c/0x80
-[   35.181211]  kasan_set_free_info+0x1f/0x40
-[   35.181942]  ____kasan_slab_free+0x103/0x140
-[   35.182703]  kfree+0xe3/0x250
-[   35.183239]  igbvf_probe+0x1173/0x1a10 [igbvf]
-[   35.184040]  local_pci_probe+0x13c/0x1f0
-
-Fixes: d4e0fe01a38a0 (igbvf: add new driver to support 82576 virtual functions)
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Letu Ren <fantasquex@gmail.com>
----
-Changes in v2:
-    - Add fixes tag
----
- drivers/net/ethernet/intel/igbvf/netdev.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/ethernet/intel/igbvf/netdev.c b/drivers/net/ethernet/intel/igbvf/netdev.c
-index d32e72d953c8..d051918dfdff 100644
---- a/drivers/net/ethernet/intel/igbvf/netdev.c
-+++ b/drivers/net/ethernet/intel/igbvf/netdev.c
-@@ -2861,6 +2861,7 @@ static int igbvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	return 0;
- 
- err_hw_init:
-+	netif_napi_del(&adapter->rx_ring->napi);
- 	kfree(adapter->tx_ring);
- 	kfree(adapter->rx_ring);
- err_sw_init:
--- 
-2.33.1
-
+https://lore.kernel.org/all/20211111174654.3d1f83e3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
