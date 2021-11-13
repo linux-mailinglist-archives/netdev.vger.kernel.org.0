@@ -2,130 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA07744F235
-	for <lists+netdev@lfdr.de>; Sat, 13 Nov 2021 09:46:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82C5F44F238
+	for <lists+netdev@lfdr.de>; Sat, 13 Nov 2021 09:51:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235758AbhKMIs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Nov 2021 03:48:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58606 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230482AbhKMIs7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Nov 2021 03:48:59 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D55C061766
-        for <netdev@vger.kernel.org>; Sat, 13 Nov 2021 00:46:07 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id n29so19710230wra.11
-        for <netdev@vger.kernel.org>; Sat, 13 Nov 2021 00:46:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ZtDnCZ/w/psJS2PRIihRoZb3eaeTQIwGDkZv2udShjk=;
-        b=li607doaPUCb/xWMTz67AL9GZ9Pb3MRIpM7Nw+vkpA6TVMXwAwH8herBsCby7Q591x
-         YDu522PWnbNiiQv160pBddkTsiC1+K8+ZWgsb6AhQKeFPTjFhSYLqcFzoKGtLigEuREw
-         8DmvXcZI4YVT7kmxEU4myncpmY2OYZyDrRQ3ZHMTcA2ETAbZuSkK3EiPIUdQPz0LUCeu
-         40QKhHdNfdCrpi8z8sz0DYjgZaJ+dPNqKc9WRH+rvJ+lOUrepLgmQc5VIEn0fABJ3gTQ
-         IZ2J05SlDJpOlGkVDkd9VuTNIiASVG1RD6dI35WR72/pvipKffRI2JDl8SCLCoF766g4
-         4rkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ZtDnCZ/w/psJS2PRIihRoZb3eaeTQIwGDkZv2udShjk=;
-        b=LzGAbwyIDmcCxxvOgIaW3g8BQj76vK06gLUBdVPsHNgRXy3cCyTuD+90a2Knuan7rX
-         ZE21w5FsFf5pJ2UVpzez7Qmt7yfPA5J7OM+xx8OEs9MMWnNMTAtG7+DmzpV6WivWSBOa
-         FxsJwmX0oJZ/smv0jZvWr+1oTtiwUs6f2Rl/qwGQZ4OTgGePuT5PGJfbx0uo+RopdyAO
-         LXMcyLxodJ+fYFvG5PEIq/pGPPrr5nh7SLPEzM8EDM2Pcmm1B6SOFCYsLKwjPYt00u54
-         R/QUAQnmYdIZwsQJF8p+hZwAUZJ8bvDAtLAG181zPzolw+U1PFiFExkbPAA8LbgdWzQ4
-         k23A==
-X-Gm-Message-State: AOAM5334lhx30iu2IlpLO4So3PifKd6fZYNEm4GLznH5lE222SdDCzkK
-        Y2uRIq7hlzpck6Lp6SjF0hEjfw==
-X-Google-Smtp-Source: ABdhPJzfL02HdsRzG4Og/K2JWrEAxZfcZ6YSER9KY6jul7/fUwjNjtVbk7TR191IUwRViXJNdLACrQ==
-X-Received: by 2002:adf:cf05:: with SMTP id o5mr27250298wrj.325.1636793165247;
-        Sat, 13 Nov 2021 00:46:05 -0800 (PST)
-Received: from ?IPv6:2a01:e34:ed2f:f020:90b:17fa:42f:1e9c? ([2a01:e34:ed2f:f020:90b:17fa:42f:1e9c])
-        by smtp.googlemail.com with ESMTPSA id y6sm8480147wrh.18.2021.11.13.00.46.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 13 Nov 2021 00:46:04 -0800 (PST)
-Subject: Re: 32bit x86 build broken (was: Re: [GIT PULL] Networking for
- 5.16-rc1)
-To:     Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        id S234811AbhKMIyO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Nov 2021 03:54:14 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:34666 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S234733AbhKMIyN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Nov 2021 03:54:13 -0500
+X-UUID: 4810ab41a2604acba90e94de9dad1867-20211113
+X-UUID: 4810ab41a2604acba90e94de9dad1867-20211113
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <rocco.yue@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1115120072; Sat, 13 Nov 2021 16:51:18 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Sat, 13 Nov 2021 16:51:17 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sat, 13 Nov 2021 16:51:16 +0800
+From:   Rocco Yue <rocco.yue@mediatek.com>
+To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        NetFilter <netfilter-devel@vger.kernel.org>,
-        linux-can@vger.kernel.org
-References: <20211111163301.1930617-1-kuba@kernel.org>
- <163667214755.13198.7575893429746378949.pr-tracker-bot@kernel.org>
- <20211111174654.3d1f83e3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAHk-=wiNEdrLirAbHwJvmp_s2Kjjd5eV680hTZnbBT2gXK4QbQ@mail.gmail.com>
- <20211112063355.16cb9d3b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <9999b559abecea2eeb72b0b6973a31fcd39087c1.camel@linux.intel.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-Message-ID: <be9c603b-26a6-fb33-07d9-7aae8f9bf644@linaro.org>
-Date:   Sat, 13 Nov 2021 09:46:03 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        Jonathan Corbet <corbet@lwn.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <Rocco.Yue@gmail.com>,
+        <chao.song@mediatek.com>, <zhuoliang.zhang@mediatek.com>,
+        Rocco Yue <rocco.yue@mediatek.com>
+Subject: Re: [PATCH net-next] ipv6: don't generate link-local addr in random or privacy mode
+Date:   Sat, 13 Nov 2021 16:46:36 +0800
+Message-ID: <20211113084636.11685-1-rocco.yue@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20211109065526.16772-1-rocco.yue@mediatek.com>
+References: <20211109065526.16772-1-rocco.yue@mediatek.com>
 MIME-Version: 1.0
-In-Reply-To: <9999b559abecea2eeb72b0b6973a31fcd39087c1.camel@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/11/2021 16:04, Srinivas Pandruvada wrote:
-> On Fri, 2021-11-12 at 06:33 -0800, Jakub Kicinski wrote:
->> On Thu, 11 Nov 2021 18:48:43 -0800 Linus Torvalds wrote:
->>> On Thu, Nov 11, 2021 at 5:46 PM Jakub Kicinski <kuba@kernel.org>
->>> wrote:
->>>> Rafael, Srinivas, we're getting 32 bit build failures after pulling
->>>> back
->>>> from Linus today.
->>>>
->>>> make[1]: *** [/home/nipa/net/Makefile:1850: drivers] Error 2
->>>> make: *** [Makefile:219: __sub-make] Error 2
->>>> ../drivers/thermal/intel/int340x_thermal/processor_thermal_mbox.c:
->>>> In function ‘send_mbox_cmd’:
->>>> ../drivers/thermal/intel/int340x_thermal/processor_thermal_mbox.c:7
->>>> 9:37: error: implicit declaration of function ‘readq’; did you mean
->>>> ‘readl’? [-Werror=implicit-function-declaration]
->>>>    79 |                         *cmd_resp = readq((void __iomem *)
->>>> (proc_priv->mmio_base + MBOX_OFFSET_DATA));
->>>>       |                                     ^~~~~
->>>>       |                                     readl  
->>>
->>> Gaah.
->>>
->>> The trivial fix is *probably* just a simple
->>
->> To be sure - are you planning to wait for the fix to come via 
->> the usual path?  We can hold applying new patches to net on the 
->> off chance that you'd apply the fix directly and we can fast 
->> forward again :) 
->>
->> Not that 32bit x86 matters all that much in practice, it's just 
->> for preventing new errors (64b divs, mostly) from sneaking in.
->>
->> I'm guessing Rafeal may be AFK for the independence day weekend.
-> He was off, but not sure if he is back. I requested Daniel to send PULL
-> request for
-> https://lore.kernel.org/lkml/a22a1eeb-c7a0-74c1-46e2-0a7bada73520@infradead.org/T/
+On Tue, 2021-11-09 at 14:55 +0800, Rocco Yue wrote:
+> In the 3GPP TS 29.061, here is a description as follows:
+> "In order to avoid any conflict between the link-local address
+> of the MS and that of the GGSN, the Interface-Identifier used by
+> the MS to build its link-local address shall be assigned by the
+> GGSN. The GGSN ensures the uniqueness of this Interface-Identifier.
+> The MT shall then enforce the use of this Interface-Identifier by
+> the TE"
+> 
+> In other words, in the cellular network, GGSN determines whether
+> to reply a solicited RA message by identifying the bottom 64 bits
+> of the source address of the received RS message. Therefore,
+> cellular network device's ipv6 link-local address should be set
+> as the format of fe80::(GGSN assigned IID).
+> 
+> To meet the above spec requirement, this patch adds two new
+> addr_gen_mode:
+> 
+> 1) IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA, this mode is suitable
+> for cellular networks that support RFC7217. In this mode, the
+> kernel doesn't generate a link-local address for the cellular
+> NIC, and generates an ipv6 stable privacy global address after
+> receiving the RA message.
+> 
+> 2) IN6_ADDR_GEN_MODE_RANDOM_NO_LLA, in this mode, the kernel
+> doesn't generate a link-local address for the cellular NIC,
+> and will use the bottom 64 bits of the link-local address(same
+> as the IID assigned by GGSN) to form an ipv6 global address
+> after receiveing the RA message.
+> 
+> Signed-off-by: Rocco Yue <rocco.yue@mediatek.com>
+> ---
+>  include/uapi/linux/if_link.h       |  2 ++
+>  net/ipv6/addrconf.c                | 22 ++++++++++++++++------
+>  tools/include/uapi/linux/if_link.h |  2 ++
+>  3 files changed, 20 insertions(+), 6 deletions(-)
+> 
+> diff --git a/include/uapi/linux/if_link.h
+> b/include/uapi/linux/if_link.h
+> index eebd3894fe89..9c5695744c7d 100644
+> --- a/include/uapi/linux/if_link.h
+> +++ b/include/uapi/linux/if_link.h
+> @@ -428,6 +428,8 @@ enum in6_addr_gen_mode {
+>  	IN6_ADDR_GEN_MODE_NONE,
+>  	IN6_ADDR_GEN_MODE_STABLE_PRIVACY,
+>  	IN6_ADDR_GEN_MODE_RANDOM,
+> +	IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA,
+> +	IN6_ADDR_GEN_MODE_RANDOM_NO_LLA,
+>  };
+>  
+>  /* Bridge section */
+> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+> index 3445f8017430..0045de10f4b5 100644
+> --- a/net/ipv6/addrconf.c
+> +++ b/net/ipv6/addrconf.c
+> @@ -392,7 +392,8 @@ static struct inet6_dev *ipv6_add_dev(struct
+> net_device *dev)
+>  	timer_setup(&ndev->rs_timer, addrconf_rs_timer, 0);
+>  	memcpy(&ndev->cnf, dev_net(dev)->ipv6.devconf_dflt,
+> sizeof(ndev->cnf));
+>  
+> -	if (ndev->cnf.stable_secret.initialized)
+> +	if (ndev->cnf.stable_secret.initialized &&
+> +	    ndev->cnf.addr_gen_mode !=
+> IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA)
+>  		ndev->cnf.addr_gen_mode =
+> IN6_ADDR_GEN_MODE_STABLE_PRIVACY;
+>  
+>  	ndev->cnf.mtu6 = dev->mtu;
+> @@ -2578,7 +2579,8 @@ static void manage_tempaddrs(struct inet6_dev
+> *idev,
+>  static bool is_addr_mode_generate_stable(struct inet6_dev *idev)
+>  {
+>  	return idev->cnf.addr_gen_mode ==
+> IN6_ADDR_GEN_MODE_STABLE_PRIVACY ||
+> -	       idev->cnf.addr_gen_mode == IN6_ADDR_GEN_MODE_RANDOM;
+> +	       idev->cnf.addr_gen_mode == IN6_ADDR_GEN_MODE_RANDOM ||
+> +	       idev->cnf.addr_gen_mode ==
+> IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA;
+>  }
+>  
+>  int addrconf_prefix_rcv_add_addr(struct net *net, struct net_device
+> *dev,
+> @@ -3331,6 +3333,8 @@ static void addrconf_addr_gen(struct inet6_dev
+> *idev, bool prefix_route)
+>  					      0, 0, GFP_KERNEL);
+>  		break;
+>  	case IN6_ADDR_GEN_MODE_NONE:
+> +	case IN6_ADDR_GEN_MODE_RANDOM_NO_LLA:
+> +	case IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA:
+>  	default:
+>  		/* will not add any link local address */
+>  		break;
+> @@ -5798,7 +5802,9 @@ static int check_addr_gen_mode(int mode)
+>  	if (mode != IN6_ADDR_GEN_MODE_EUI64 &&
+>  	    mode != IN6_ADDR_GEN_MODE_NONE &&
+>  	    mode != IN6_ADDR_GEN_MODE_STABLE_PRIVACY &&
+> -	    mode != IN6_ADDR_GEN_MODE_RANDOM)
+> +	    mode != IN6_ADDR_GEN_MODE_RANDOM &&
+> +	    mode != IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA &&
+> +	    mode != IN6_ADDR_GEN_MODE_RANDOM_NO_LLA)
+>  		return -EINVAL;
+>  	return 1;
+>  }
+> @@ -6428,15 +6434,19 @@ static int
+> addrconf_sysctl_stable_secret(struct ctl_table *ctl, int write,
+>  		for_each_netdev(net, dev) {
+>  			struct inet6_dev *idev = __in6_dev_get(dev);
+>  
+> -			if (idev) {
+> +			if (idev && idev->cnf.addr_gen_mode !=
+> +			    IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA) {
+>  				idev->cnf.addr_gen_mode =
+>  					IN6_ADDR_GEN_MODE_STABLE_PRIVAC
+> Y;
+>  			}
+>  		}
+>  	} else {
+>  		struct inet6_dev *idev = ctl->extra1;
+> -
+> -		idev->cnf.addr_gen_mode =
+> IN6_ADDR_GEN_MODE_STABLE_PRIVACY;
+> +		if (idev->cnf.addr_gen_mode !=
+> +		    IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA) {
+> +			idev->cnf.addr_gen_mode =
+> +				IN6_ADDR_GEN_MODE_STABLE_PRIVACY;
+> +		}
+>  	}
+>  
+>  out:
+> diff --git a/tools/include/uapi/linux/if_link.h
+> b/tools/include/uapi/linux/if_link.h
+> index b3610fdd1fee..fb69137aea89 100644
+> --- a/tools/include/uapi/linux/if_link.h
+> +++ b/tools/include/uapi/linux/if_link.h
+> @@ -241,6 +241,8 @@ enum in6_addr_gen_mode {
+>  	IN6_ADDR_GEN_MODE_NONE,
+>  	IN6_ADDR_GEN_MODE_STABLE_PRIVACY,
+>  	IN6_ADDR_GEN_MODE_RANDOM,
+> +	IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA,
+> +	IN6_ADDR_GEN_MODE_RANDOM_NO_LLA,
+>  };
+>  
+>  /* Bridge section */
+> -- 
+> 2.18.0
+> 
 
-FYI
+Gentle ping on this patch. :-)
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d9c8e52ff9e84ff1a406330f9ea4de7c5eb40282
+Thanks,
 
+Rocco
 
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
