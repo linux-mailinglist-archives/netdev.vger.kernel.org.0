@@ -2,112 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C95844F454
-	for <lists+netdev@lfdr.de>; Sat, 13 Nov 2021 18:20:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB2DC44F534
+	for <lists+netdev@lfdr.de>; Sat, 13 Nov 2021 21:13:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235849AbhKMRXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Nov 2021 12:23:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57002 "EHLO
+        id S233868AbhKMUQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Nov 2021 15:16:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235762AbhKMRXJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Nov 2021 12:23:09 -0500
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CBA1C061766;
-        Sat, 13 Nov 2021 09:20:16 -0800 (PST)
-Received: by mail-lj1-x231.google.com with SMTP id i63so25260864lji.3;
-        Sat, 13 Nov 2021 09:20:16 -0800 (PST)
+        with ESMTP id S232555AbhKMUQG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Nov 2021 15:16:06 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7539AC061767
+        for <netdev@vger.kernel.org>; Sat, 13 Nov 2021 12:13:13 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id o8so52435554edc.3
+        for <netdev@vger.kernel.org>; Sat, 13 Nov 2021 12:13:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WNFzHLHqOcYwmclGfKEfsHkU2uoJX/3AP6GHSxwEVks=;
-        b=X2Kz6tEB5RBi+JM569YM4+JRM4AVOfx2umGJdmYreM/J5JsdNvhN1w1MVbpEsn2EYb
-         hY43cGtVYKsE9SmBbhPDLIUHAjQLAYzaR4lpPqT5KEVvUg28XlGczYaCm5/h1YYPA/9L
-         j42rAKjgXqnkzdX+gyU2pSlesqWceQ56FMzOlvpK735Q555sfDD+S3VymYv+YuPG9ybG
-         4NEHy6+WJRAEgd46yltkTLynGk4eNf3n455c65kanXcu3PsQcZJPaRhtbqWKM/g4r01e
-         gjkEluMch8Bjg0UU63pPBOWwwPlPLa7SDxvUSHnOcLRjlfT2RuDf81cSxnZ+BOuwsZqp
-         RyIg==
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=WeOVAkz9Du/PMbvz3f0ckve3VeQzpJMgdKgUBtKRVbo=;
+        b=LOeH8jTFwbeLbz6kb6PDHesu907Ohj4Dm0F3Ik8g8IFuDq96D/1DNSCHlxH1vcuqOz
+         2Pw0P3beNhUDkeZvItnb81y4ncmd2ckqpEH8YR0w2ASwJtBmuKHuUO2+GX1nUsMMgTYf
+         QMxUWq7REDPHcj+vMwKRc9prEzEfC1+6NUHmFibKT2ZaFFMIsbR9vUUKBaJ62DMyhskE
+         V3cfO5Z6NZSlKGRQGH7ojrBflqPAP/i3cyPYT+MCyG4D0TtHHY2pYX4qauHfVg03S222
+         btO6AS7FRlZ7QamIBj3MDwVdctr9P2mdc/zOQ0RLFtTeSAnuOIca7bqZ+5W7mbFb2AMH
+         /YhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WNFzHLHqOcYwmclGfKEfsHkU2uoJX/3AP6GHSxwEVks=;
-        b=QLoHdBh0KM/V6DkgVPjKWqm4Ff/WsM8OacT4z2aVMX3evIv6N1zedHY/bYl4ZlzBAO
-         xCsQsihJ29d1+c7CNX0Yb+OsC9jTsYt9ocyNxusX+winQ3EzHM2ZSpoTwL6/79rvccQj
-         /H/QSkLUXr5qERStmKR5ACYhmX4MIQHSloqNrkmK4rRRwT2uk59RSPH0HOmFn/HD/IAQ
-         S3Og6wOzu34epB2MAloT2DeFrGX9izcq7/ZRiZTt1sFPfjJZk0ehUj3fUcJge5Xh9HuZ
-         PeziF+XFRKRQu5tqjnWdLU2j+QQ2ZyAA5IR+wT8kxVVD4GAYSnlND7KVOYmGF9MUhqe5
-         Lw0w==
-X-Gm-Message-State: AOAM530kCeTlKFUwaQS88LIqP9DGwTd5ebME7TpHSnyUWbbSFLQtJnrk
-        H8m4BHd49wkeODbNiAwPTks=
-X-Google-Smtp-Source: ABdhPJyRu2pvsDQSnaCkzJ93ktRFKQxNuzG1dIY4Z3WZStOaVuetD+5AY++UgFMZshP+ri7CPongQg==
-X-Received: by 2002:a2e:b013:: with SMTP id y19mr24230385ljk.132.1636824014893;
-        Sat, 13 Nov 2021 09:20:14 -0800 (PST)
-Received: from localhost.localdomain ([94.103.224.112])
-        by smtp.gmail.com with ESMTPSA id n14sm894579lji.28.2021.11.13.09.20.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 13 Nov 2021 09:20:14 -0800 (PST)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     ioana.ciornei@nxp.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Pavel Skripkin <paskripkin@gmail.com>, stable@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH] net: dpaa2-eth: fix use-after-free in dpaa2_eth_remove
-Date:   Sat, 13 Nov 2021 20:20:13 +0300
-Message-Id: <20211113172013.19959-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.33.1
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=WeOVAkz9Du/PMbvz3f0ckve3VeQzpJMgdKgUBtKRVbo=;
+        b=l9VLxX3GOLAXi2j7A60E9Sp7x79+5IT6VZwh5KlLWy4EaTioFD86Lf1ty8jjkaeTvW
+         jfEkH1Vunfdaf6xUJgnWSH2rGNw0A3MGca7oqvBG71+8a8/wEIJrG8sFb/+zXhFB/eNN
+         JCMhtw/4WpIDHNE0zizXcT7kLpLKu5F/PTOJRI/i5iFKHxLrwe9wNLsHVrWwwbabOEx3
+         JsYQaN11gmnr0pyq3D8z0R2E4W612+v+5F8FuJ9Mr0OZulx4b00SrUDgLfyCUMGl6lxs
+         SR1G3MGRmmjmOeF/ni8CCstW6wve8lhzAHxSIhTIxIJlPsZoBLG/58O9xQHflnSOVZAY
+         YuoQ==
+X-Gm-Message-State: AOAM5305r/0DK3Tq3hVAMQtjTyVuTaI8+A99Ng8PddUzDM/IK/P+YNcO
+        trgzU6AJ/v6H4YDyfaN6+VxbZsZ9fGUQ/TIry4A=
+X-Google-Smtp-Source: ABdhPJynTBUydjJzVVWK9HPsOWTP79GZCRDeAAtUKvv82jBzppSeUkz4SEmqqFncSKL+qZ0QL4az7qruWAD42riC/qE=
+X-Received: by 2002:a05:6402:16cd:: with SMTP id r13mr7504702edx.264.1636834391913;
+ Sat, 13 Nov 2021 12:13:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Reply-To: lilianchrstph@gmail.com
+Sender: aishacoulibaly40@gmail.com
+Received: by 2002:a17:906:5487:0:0:0:0 with HTTP; Sat, 13 Nov 2021 12:13:11
+ -0800 (PST)
+From:   Miss lilian christoph <lilianchristophe.0@gmail.com>
+Date:   Sat, 13 Nov 2021 21:13:11 +0100
+X-Google-Sender-Auth: NPlLRNqrwaCVyb5gSXQWv9_7-_M
+Message-ID: <CAN3BMJ5BV039FBeTs_P3ziWOYQmbVZ660mrKC5fc4qvgJ4hw9Q@mail.gmail.com>
+Subject: Are you available?
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Access to netdev after free_netdev() will cause use-after-free bug.
-Move debug log before free_netdev() call to avoid it.
-
-Cc: stable@vger.kernel.org # v4.19+
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
-
-Note about Fixes: tag. The commit introduced it was before this driver
-was moved out from staging. I guess, Fixes tag cannot be used here.
-Please, let me know if I am wrong.
-
-Cc: Dan Carpenter <dan.carpenter@oracle.com>
-
-@Dan, is there a smatch checker for straigthforward use after free bugs?
-Like acessing pointer after free was called? I think, adding
-free_netdev() to check list might be good idea
-
-I've skimmed througth smatch source and didn't find one, so can you,
-please, point out to it if it exists.
-
-
-
-With regards,
-Pavel Skripkin
-
----
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index e0c3c58e2ac7..abd833d94eb3 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -4540,10 +4540,10 @@ static int dpaa2_eth_remove(struct fsl_mc_device *ls_dev)
- 
- 	fsl_mc_portal_free(priv->mc_io);
- 
--	free_netdev(net_dev);
--
- 	dev_dbg(net_dev->dev.parent, "Removed interface %s\n", net_dev->name);
- 
-+	free_netdev(net_dev);
-+
- 	return 0;
- }
- 
 -- 
-2.33.1
+Are you available?
 
+My name is Miss. Lilian Christophe I am a Canadian,
+
+I will like to request your services to be my partner,investor to
+support me transfer and manage my funds by investing in a profit
+investment and 30% of the money for you.
+
+
+I have a reasonable sum that I inherited from my late father, late Dr.
+Dan Christophe, the amount of $10.5 Million dollars
+presently with the with the bank.
+
+Below is the main reason why I am communicating with you.
+
+(1) Provide a new empty bank account which this Fund will be
+transferred into, in case you do not want us to use your
+personal account.
+
+(2) To serve as guardian of this fund as the bank insisted that its
+agreement with my late father that I should provide a foreign partner
+before the fund could be released.
+
+(3) To make arrangements for me to come over to your country,settle
+down and start a new life after the transfer of this money to your
+country.
+
+I will like to stop for now until I hear from you, have a great day.
+
+Yours Faithful
+
+Lilian Christophe.
