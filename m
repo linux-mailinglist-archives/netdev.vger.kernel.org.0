@@ -2,63 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 325B44552FD
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 03:59:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9584455309
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 04:02:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242324AbhKRDB5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 22:01:57 -0500
-Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:52216 "EHLO
-        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242292AbhKRDB4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 22:01:56 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R831e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0Ux7j-05_1637204334;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0Ux7j-05_1637204334)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 18 Nov 2021 10:58:55 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yang Li <yang.lee@linux.alibaba.com>
-Subject: [PATCH -next v2] ethernet: renesas: Use div64_ul instead of do_div
-Date:   Thu, 18 Nov 2021 10:58:49 +0800
-Message-Id: <1637204329-3314-1-git-send-email-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S242580AbhKRDFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 22:05:50 -0500
+Received: from mailgw.kylinos.cn ([123.150.8.42]:11716 "EHLO nksmu.kylinos.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S241265AbhKRDFt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Nov 2021 22:05:49 -0500
+X-UUID: e2680b37e17d4c76ac7c9f6a70b2469f-20211118
+X-UUID: e2680b37e17d4c76ac7c9f6a70b2469f-20211118
+X-User: zhangyue1@kylinos.cn
+Received: from localhost.localdomain [(172.17.127.2)] by nksmu.kylinos.cn
+        (envelope-from <zhangyue1@kylinos.cn>)
+        (Generic MTA)
+        with ESMTP id 828872036; Thu, 18 Nov 2021 11:11:20 +0800
+From:   zhangyue <zhangyue1@kylinos.cn>
+To:     davem@davemloft.net, jesse.brandeburg@intel.com,
+        gregkh@linuxfoundation.org, ecree@solarflare.com
+Cc:     netdev@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: tulip: de4x5: fix the problem that the array 'lp->phy[8]' may be out of bound
+Date:   Sun, 14 Nov 2021 05:29:21 +0800
+Message-Id: <20211113212921.356392-1-zhangyue1@kylinos.cn>
+X-Mailer: git-send-email 2.30.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-do_div() does a 64-by-32 division. Here the divisor is an
-unsigned long which on some platforms is 64 bit wide. So use
-div64_ul instead of do_div to avoid a possible truncation.
+In line 5001, if all id in the array 'lp->phy[8]' is not 0, when the
+'for' end, the 'k' is 8.
 
-Eliminate the following coccicheck warning:
-./drivers/net/ethernet/renesas/ravb_main.c:2492:1-7: WARNING: 
-do_div() does a 64-by-32 division, please consider using div64_ul instead.
+At this time, the array 'lp->phy[8]' may be out of bound.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+Signed-off-by: zhangyue <zhangyue1@kylinos.cn>
 ---
+ drivers/net/ethernet/dec/tulip/de4x5.c | 30 +++++++++++++++-----------
+ 1 file changed, 17 insertions(+), 13 deletions(-)
 
-change in v2:
---Fixed warning message
-
- drivers/net/ethernet/renesas/ravb_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-index b4c597f..2b89710 100644
---- a/drivers/net/ethernet/renesas/ravb_main.c
-+++ b/drivers/net/ethernet/renesas/ravb_main.c
-@@ -2489,7 +2489,7 @@ static int ravb_set_gti(struct net_device *ndev)
- 		return -EINVAL;
- 
- 	inc = 1000000000ULL << 20;
--	do_div(inc, rate);
-+	inc = div64_ul(inc, rate);
- 
- 	if (inc < GTI_TIV_MIN || inc > GTI_TIV_MAX) {
- 		dev_err(dev, "gti.tiv increment 0x%llx is outside the range 0x%x - 0x%x\n",
+diff --git a/drivers/net/ethernet/dec/tulip/de4x5.c b/drivers/net/ethernet/dec/tulip/de4x5.c
+index c813e6f2b371..a80252973171 100644
+--- a/drivers/net/ethernet/dec/tulip/de4x5.c
++++ b/drivers/net/ethernet/dec/tulip/de4x5.c
+@@ -4999,19 +4999,23 @@ mii_get_phy(struct net_device *dev)
+ 	}
+ 	if ((j == limit) && (i < DE4X5_MAX_MII)) {
+ 	    for (k=0; k < DE4X5_MAX_PHY && lp->phy[k].id; k++);
+-	    lp->phy[k].addr = i;
+-	    lp->phy[k].id = id;
+-	    lp->phy[k].spd.reg = GENERIC_REG;      /* ANLPA register         */
+-	    lp->phy[k].spd.mask = GENERIC_MASK;    /* 100Mb/s technologies   */
+-	    lp->phy[k].spd.value = GENERIC_VALUE;  /* TX & T4, H/F Duplex    */
+-	    lp->mii_cnt++;
+-	    lp->active++;
+-	    printk("%s: Using generic MII device control. If the board doesn't operate,\nplease mail the following dump to the author:\n", dev->name);
+-	    j = de4x5_debug;
+-	    de4x5_debug |= DEBUG_MII;
+-	    de4x5_dbg_mii(dev, k);
+-	    de4x5_debug = j;
+-	    printk("\n");
++	    if (k < DE4X5_MAX_PHY) {
++		lp->phy[k].addr = i;
++		lp->phy[k].id = id;
++		lp->phy[k].spd.reg = GENERIC_REG;      /* ANLPA register         */
++		lp->phy[k].spd.mask = GENERIC_MASK;    /* 100Mb/s technologies   */
++		lp->phy[k].spd.value = GENERIC_VALUE;  /* TX & T4, H/F Duplex    */
++		lp->mii_cnt++;
++		lp->active++;
++		printk("%s: Using generic MII device control. If the board doesn't operate,\nplease mail the following dump to the author:\n", dev->name);
++		j = de4x5_debug;
++		de4x5_debug |= DEBUG_MII;
++		de4x5_dbg_mii(dev, k);
++		de4x5_debug = j;
++		printk("\n");
++	    } else {
++		goto purgatory;
++	    }
+ 	}
+     }
+   purgatory:
 -- 
-1.8.3.1
+2.30.0
 
