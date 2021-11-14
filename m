@@ -2,145 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B014E44FA24
-	for <lists+netdev@lfdr.de>; Sun, 14 Nov 2021 20:24:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98C0544FB56
+	for <lists+netdev@lfdr.de>; Sun, 14 Nov 2021 20:51:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236178AbhKNT0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Nov 2021 14:26:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54928 "EHLO
+        id S236486AbhKNTxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Nov 2021 14:53:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236153AbhKNT0y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Nov 2021 14:26:54 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530B1C061746
-        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 11:23:59 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id s186so40284253yba.12
-        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 11:23:59 -0800 (PST)
+        with ESMTP id S236547AbhKNTxo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Nov 2021 14:53:44 -0500
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDD01C061766
+        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 11:50:47 -0800 (PST)
+Received: by mail-yb1-xb2e.google.com with SMTP id q74so40372842ybq.11
+        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 11:50:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6U3HI2L8FKbSjz7rw5IDvF8Xit/zG1CBcJEp+Nlge0k=;
-        b=csQbimD9nZJdajo1bMEfiRVFciDm/2L+v6sL2+J4BsJhdcWBNFcs5c5crzlIVQG5Pb
-         sKIUa5Y0CHVg4qzALaj6hG5gUs9Pj7JSd9RWjsncZsv4lPMqoYEjjiNZSzgZjg7njVZP
-         aoKFx1Sd+TBFXpR5I3x9XYRlM4JuiDtN20r52TrrjOXRljwncgB/KjJh0onA/SoS/37U
-         AHeGaSFn/qx7W0EiBbcuvjMeHmLeYUqoF0A+ukrFBbdLbZy9yoM3ajHw92r90ZsmtW3c
-         nozHH8cFte8o2MCcg/kOngAGx1p/amrEFzE4OAY/Oe1gI0HsiHVkYSQXAuTn/tv60IbD
-         RVJw==
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=GOdoDfOCH17GXWKOEIgdoVCfQMWr3Ap2PFspIqztr4M=;
+        b=C0jODrBbnhLDGGObJBmgmXv2BEgmux4jw/77TOpV+PK5MXFkdj66kUpqoUPESkbGRR
+         dnp0JqD70yyprBuGXDEjOm0qD5MPCvWIj/Rrpg+Ytl7YIKOByhdYaw2wCE+SwbBVnvkA
+         q9+WutJ0NEVb5Ds9zhE4u/U5RBDkO5qew4lRLQy3EPIp7ysFz2HyMFFZAUWERBVR+J6X
+         nYufr00AZzwzgkTXPA/OBp/bVC4uB96vqjUW4rbLFDJ7TkbvgjJeon5dy96kJt12cE3n
+         s1WVRYi/ryB1z/g44WixYUPAtde9FIYJBlJL7j7tEk/EMZaN42NKO/VUU84vfdCkr7sa
+         eYiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6U3HI2L8FKbSjz7rw5IDvF8Xit/zG1CBcJEp+Nlge0k=;
-        b=WGvjB4XYBVIP97mdNmZ8Su/Xfv89ukrSZWM2ZbDelWqxDxt/7k+zzkRyGOvFG4yxcq
-         iikkDC+p9AqmpHnwb0CAmEdtp0A5z963vqL0fxuPxEllax0xYOjyRTUk3qiliD1EqXVC
-         uwPyt1osRp0Nf4V3MgDNObMl03yTnEh8eaWh+Xi7W+8YjI6EO1lfdCqPnzUBmSSsV4ii
-         eJMZSsPe3d1QcJ8aYpwoPRgZ6JdafTlpqLaYO5addupRSqCjcqplA6d0sBiyxu6F7rht
-         A0Wv6V/MHPFfaSsgTa8EFz8MPVqFW3T9BWkRc0PbGXGGzmBtSbVxFbFFGq44EPdX7Z8p
-         7y8A==
-X-Gm-Message-State: AOAM5338xcrbEq+6ZG00P/CCO54qz+uqJUvzesOG7/heYPbBzMxNy+nJ
-        7rVNUsRarZiytYfpArAMmVByh04s+PG/0cb5nhbEtKRyqbc=
-X-Google-Smtp-Source: ABdhPJwu14CSzhzB3B6UN+TtaMTze6dsAVaDupv5xWbHIHf67Wmd95Xxfk4G6cQxXz/rYlMgwOvhvGrh1AG2FaDOYRU=
-X-Received: by 2002:a25:2fd1:: with SMTP id v200mr34513376ybv.78.1636917838145;
- Sun, 14 Nov 2021 11:23:58 -0800 (PST)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=GOdoDfOCH17GXWKOEIgdoVCfQMWr3Ap2PFspIqztr4M=;
+        b=IrtT/8R0i9V7s5vGZJKP0BCVrdGODmEcGgw8Z9zyIAhQhviftnKRb9PaHwpDpRGcik
+         XslmqEzJt5UzA6VDShnomGkXns37xTsm0lOddkhmFmJuKeERSn8SESinbvqAjwT3pRRD
+         EutB/P5RGg0G9WM8CIoRvIFASssIiQyhISZ34DoNsyhMgdTKBRmjz4reJadmupW037AV
+         DtfuwsRmD85crb7t16TdqJ63HXFbiUNzvULGdgMRTbW6mgpJhSLzIhlwmDOV6KvrQ6Vz
+         +FXPrl0Y4HiZQOpb5vmHqG9Lb3WgkRd+mHhR2MwY6WC6k1wthUEcen/QdqocjiOyaIkj
+         Ksyw==
+X-Gm-Message-State: AOAM531s433P4bSPBRNTQN4hiaHMgBk0jaZp52sgmnLk8/49RUw4dHdN
+        MbNAu/ESREvxWgrrDCbtzC1HnBPdGLoC6ueOSt8=
+X-Google-Smtp-Source: ABdhPJxoxkaXM+Q2bEYO0jma0BCbwaxRCFQraahHe4bEwSBdUhMhf4B2TmeS0U6tBq+0KRcWcnniYFRxDxGekcc4eNE=
+X-Received: by 2002:a25:d4d5:: with SMTP id m204mr38948993ybf.418.1636919447234;
+ Sun, 14 Nov 2021 11:50:47 -0800 (PST)
 MIME-Version: 1.0
-References: <20211111181025.2139131-1-eric.dumazet@gmail.com>
- <CAKgT0UdmECakQTinbTagiG4PWfaniP_GP6T3rLvWdP+mVrB4xw@mail.gmail.com>
- <CANn89iJAakUCC6UuUHSozT9wz7_rrgrRq3dv+hXJ1FL_DCZHyA@mail.gmail.com>
- <226c88f6446d43afb6d9b5dffda5ab2a@AcuMS.aculab.com> <CANn89iJtqTGuJL6JgfOAuHxbkej9faURhj3yf2a9Y43Uh_4+Kg@mail.gmail.com>
- <31bd81df79c4488c92c6a149eeceee3c@AcuMS.aculab.com>
-In-Reply-To: <31bd81df79c4488c92c6a149eeceee3c@AcuMS.aculab.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Sun, 14 Nov 2021 11:23:46 -0800
-Message-ID: <CANn89iLJe-M65NGbbj=wYjCKSz35yg3rtWoi4Lh7DMNcXmKNZg@mail.gmail.com>
-Subject: Re: [PATCH v1] x86/csum: rewrite csum_partial()
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>
+Received: by 2002:a05:7000:78c5:0:0:0:0 with HTTP; Sun, 14 Nov 2021 11:50:46
+ -0800 (PST)
+Reply-To: johnloanfirm2@gmail.com
+From:   JOHN WILLIAMS <marinshipcompany11@gmail.com>
+Date:   Sun, 14 Nov 2021 11:50:46 -0800
+Message-ID: <CACir1uNZQTiPMnTP0K72kkn58n0hy3J_=SEdPDkOuTe53QU9PA@mail.gmail.com>
+Subject: Erschwingliche Kreditgesellschaft
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 14, 2021 at 11:10 AM David Laight <David.Laight@aculab.com> wrote:
->
-> From: Eric Dumazet
-> > Sent: 14 November 2021 15:04
-> >
-> > On Sun, Nov 14, 2021 at 6:44 AM David Laight <David.Laight@aculab.com> wrote:
-> > >
-> > > From: Eric Dumazet
-> > > > Sent: 11 November 2021 22:31
-> > > ..
-> > > > That requires an extra add32_with_carry(), which unfortunately made
-> > > > the thing slower for me.
-> > > >
-> > > > I even hardcoded an inline fast_csum_40bytes() and got best results
-> > > > with the 10+1 addl,
-> > > > instead of
-> > > >  (5 + 1) acql +  mov (needing one extra  register) + shift + addl + adcl
-> > >
-> > > Did you try something like:
-> > >         sum = buf[0];
-> > >         val = buf[1]:
-> > >         asm(
-> > >                 add64 sum, val
-> > >                 adc64 sum, buf[2]
-> > >                 adc64 sum, buf[3]
-> > >                 adc64 sum, buf[4]
-> > >                 adc64 sum, 0
-> > >         }
-> > >         sum_hi = sum >> 32;
-> > >         asm(
-> > >                 add32 sum, sum_hi
-> > >                 adc32 sum, 0
-> > >         )
-> >
-> > This is what I tried. but the last part was using add32_with_carry(),
-> > and clang was adding stupid mov to temp variable on the stack,
-> > killing the perf.
->
-> Persuading the compile the generate the required assembler is an art!
->
-> I also ended up using __builtin_bswap32(sum) when the alignment
-> was 'odd' - the shift expression didn't always get converted
-> to a rotate. Byteswap32 DTRT.
->
-> I also noticed that any initial checksum was being added in at the end.
-> The 64bit code can almost always handle a 32 bit (or maybe 56bit!)
-> input value and add it in 'for free' into the code that does the
-> initial alignment.
+--=20
 
-This has been fixed in V2 : initial csum is used instead of 0
 
->
-> I don't remember testing misaligned buffers.
-> But I think it doesn't matter (on cpu anyone cares about!).
-> Even Sandy bridge can do two memory reads in one clock.
-> So should be able to do a single misaligned read every clock.
-> Which almost certainly means that aligning the addresses is pointless.
-> (Given you're not trying to do the adcx/adox loop.)
-> (Page spanning shouldn't matter.)
->
-> For buffers that aren't a multiple of 8 bytes it might be best to
-> read the last 8 bytes first and shift left to discard the ones that
-> would get added in twice.
-> This value can be added to the 32bit 'input' checksum.
-> Something like:
->         sum_in += buf[length - 8] << (64 - (length & 7) * 8));
-> Annoyingly a special case is needed for buffers shorter than 8 bytes
-> to avoid falling off the start of a page.
+--=20
 
-Yep, Alexander/Peter proposed this already, and it is implemented in V2
 
->
->         David
->
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
+--=20
+
+Hallo, Suchen Sie finanzielle Freiheit? Sind Sie verschuldet, ben=C3=B6tige=
+n Sie
+einen Kredit, um ein neues Unternehmen zu gr=C3=BCnden? oder Sie brechen
+finanziell zusammen, brauchen einen Kredit f=C3=BCr den Kauf eines Autos od=
+er
+eines Hauses? Hat Ihre Bank jemals abgelehnt? Sie m=C3=B6chten Ihre Finanze=
+n
+verbessern? Sie brauchen einen Kredit. Ihre Rechnungen zahlen sich aus?
+Suchen Sie nicht mehr, wir begr=C3=BC=C3=9Fen Sie f=C3=BCr eine Gelegenheit=
+ f=C3=BCr alle Arten
+von Darlehen zu einem sehr g=C3=BCnstigen Zinssatz von 2% f=C3=BCr andere. =
+F=C3=BCr
+Informationen kontaktieren Sie uns jetzt per E-Mail an: (
+johnloanfirm2@gmail.com) Darlehen? Sie ben=C3=B6tigen einen Privatkredit? S=
+ie
+m=C3=B6chten ein Auto kaufen? Sie m=C3=B6chten sich refinanzieren? Ben=C3=
+=B6tigen Sie ein
+Hypothekendarlehen? Ben=C3=B6tigen Sie ein riesiges Kapital, um Ihren
+Gesch=C3=A4ftsvorschlag oder Ihre Expansion zu starten? Sie haben die Hoffn=
+ung
+verloren und denken, es gibt keinen Ausweg und Ihre finanziellen
+Belastungen bleiben bestehen? Bitte z=C3=B6gern Sie nicht, uns f=C3=BCr ein=
+e m=C3=B6gliche
+gesch=C3=A4ftliche Zusammenarbeit zu kontaktieren. Kontaktieren Sie uns per
+E-Mail: johnloanfirm2@gmail.com
