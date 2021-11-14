@@ -2,131 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BED8144FB63
-	for <lists+netdev@lfdr.de>; Sun, 14 Nov 2021 21:02:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8B2E44FBAD
+	for <lists+netdev@lfdr.de>; Sun, 14 Nov 2021 21:59:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236016AbhKNUEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Nov 2021 15:04:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35110 "EHLO
+        id S234970AbhKNVCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Nov 2021 16:02:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236178AbhKNUEi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Nov 2021 15:04:38 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1E3DC061746
-        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 12:01:30 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id m24so2720485pls.10
-        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 12:01:30 -0800 (PST)
+        with ESMTP id S236357AbhKNVBm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Nov 2021 16:01:42 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D72FC061766;
+        Sun, 14 Nov 2021 12:58:45 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id z34so37857283lfu.8;
+        Sun, 14 Nov 2021 12:58:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=fxdLrUNdCdBTQXYpYAyJIpHQK1aQPT5DMRZe2BmyCxA=;
-        b=Oxa0AF5v48y4wfx9FprpQBmGOD0ODUN+9JgylONh8KW4Dex0G7LgU34EElY4Cu/kPV
-         lwmcTTh+h3LQtl+73/TOeHKJmxRa/y3wyYbyABWmoPcAk14mEbM37sXmlRb/OhQXaWx8
-         XwrvBZK0EnR7dpvnLG7tDIHnGQ55TEOZUys65N4HLHRgp8oj8Ggna5bb2k2LiRtLe6DP
-         3KeyXpJxPDzqcdnA7phqOXiNjTch9Y0VFLMMULMNKYNQFmDAnND6Y+BVuZk99YQiZtq+
-         QbTH92tuhIErAcfdHjcrM42DA+dFx34Grj4VGhoieKjRb7bjOewgGcqP+gamLyAm0Tkp
-         o65w==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vs9jSLKCmdkxQSqAksYeNKq9L10k5b5K0Jq3IZwJy9k=;
+        b=lazLZc7l+mVk/0XONP7Mn59/PS4C+2oozp93NEjYfStCesafIc5fV4EdfKnVneksag
+         9b+eip9jCfyPFZt833d9F74eqBVtfTdP8Dsyo0sVPJppAPlH04suNH/+ON4e0RWT4vZA
+         +mXl6YXP2V0cNxdpoSr90BuxnFZvnJqYdG/i9sHoU7I7dG94PZGLr1LNAUgc52PK/G7K
+         Jy8+N4x6C+Co1ALIFoG631/4g6SKxSOTlG2+MjGOB80jrwSafi3S4Ad4QzQqESRhttPs
+         4rQPSdDjxHNFYU/pY1AVA8BopBe8O25u3bODfKW1I8vg0zaqkz4+4ZmQqIo+2J6D92rB
+         tp+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=fxdLrUNdCdBTQXYpYAyJIpHQK1aQPT5DMRZe2BmyCxA=;
-        b=31sxfDpt0kPyYQnSZK8zVwmwGu3u+b7fyLoNgURKExHQd8IkNsNco/AjssDtOVp9mp
-         0/B8Voo2UmXqnk68XtHFW90HQ0aegrv3YGiqfVbbjfvEh7sHecb9kOEmw5rD7QEftGBK
-         JHWzKT7FdMcW5KfSgp0+28hneHirTLMqfReSnBHZhLZYfmQsbTSUwGhUuqIzYFzr8VW8
-         floVDjF4mX5sskT3dzCfYtPcVKS6xEJydEUFibRFlTqairyutCqnqA5pwHuhVOEkh/k2
-         gP1OzqL06EObmKJMvUZ0ajp0oVjtgjg1eOxBIuo1xSP7v6jxKPm9Fudt1yyfoYF0ft7V
-         yJqw==
-X-Gm-Message-State: AOAM532BVLMBf+XMbeJR9g1DlhJ/4UK3Xfj1nbGFTVhat0ANgEWHztYi
-        4xVIhTPUfWieIcyDqAWmGLFVe13eeVI=
-X-Google-Smtp-Source: ABdhPJyC44LVRi6VGeIffnclakiRO/DQfYXgaXu7uRr9M4Cp5rFf+8HgpwjiyGEYOkK+OcWSsxorxQ==
-X-Received: by 2002:a17:903:18d:b0:142:8ab:d11f with SMTP id z13-20020a170903018d00b0014208abd11fmr28780144plg.47.1636920089618;
-        Sun, 14 Nov 2021 12:01:29 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id i2sm12433271pfe.70.2021.11.14.12.01.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 14 Nov 2021 12:01:29 -0800 (PST)
-Subject: Re: [PATCH] sock: fix /proc/net/sockstat underflow in sk_clone_lock()
-To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        netdev@vger.kernel.org
-References: <20211114060222.3370-1-penguin-kernel@I-love.SAKURA.ne.jp>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <ee46d850-7dcb-b9d5-b61c-56638fa2f9ae@gmail.com>
-Date:   Sun, 14 Nov 2021 12:01:27 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        bh=vs9jSLKCmdkxQSqAksYeNKq9L10k5b5K0Jq3IZwJy9k=;
+        b=8DkuACursOpi2S0jFBO5aRpXhlWgnQI2oMaJlcjVSgLu0umrnjGW6AEJ/xZGv5z3y6
+         ktKQZbLRk0Iyr8terj7KsJB5ijWo6HzySneFBbG71eg1xyLWRoGNKfBmwXaQEDrq3EyJ
+         PPIX69HXbUooTZ8fjufHls4AY1WVQCe381/t0vZyYgaBBYk/BMPILdd2WeOKEuN8bnfk
+         tEoO31g8MKLjyyi9aYw7TsOyIkKlM6Erf8/Yd+YY/DdEkoDz7yYhbgncam4HZ4K5DOzm
+         MECZNB+9I7bheqmZZPimOX9UnRTV2aSb+fwK4vAZSRv8945CtSCw0hRoMoQDNRMXBsKY
+         0e2w==
+X-Gm-Message-State: AOAM531ZVxUaakLBAELNQiZqyLKdIhIT3qhsYZVyK6JzgZ5rwlK6bT7Q
+        fkQORExFXhL0UhQODSnp0xMJRuoHDmc=
+X-Google-Smtp-Source: ABdhPJx9FQWNUjwejcG9clOBfd37aRFDTH209egLnNLI14jJd8F7dHrpR2+6gUynrDd+4vxbPsviiQ==
+X-Received: by 2002:ac2:4c4e:: with SMTP id o14mr30222714lfk.148.1636923523497;
+        Sun, 14 Nov 2021 12:58:43 -0800 (PST)
+Received: from localhost.localdomain ([94.103.224.112])
+        by smtp.gmail.com with ESMTPSA id z8sm916289ljj.86.2021.11.14.12.58.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 Nov 2021 12:58:42 -0800 (PST)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     mailhol.vincent@wanadoo.fr, wg@grandegger.com, mkl@pengutronix.de,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>
+Subject: [PATCH] can: etas_es58x: fix error handling
+Date:   Sun, 14 Nov 2021 23:58:39 +0300
+Message-Id: <20211114205839.15316-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-In-Reply-To: <20211114060222.3370-1-penguin-kernel@I-love.SAKURA.ne.jp>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+When register_candev() fails there are 2 possible device states:
+NETREG_UNINITIALIZED and NETREG_UNREGISTERED. None of them are suitable
+for calling unregister_candev(), because of following checks in
+unregister_netdevice_many():
 
+	if (dev->reg_state == NETREG_UNINITIALIZED)
+		WARN_ON(1);
+...
+	BUG_ON(dev->reg_state != NETREG_REGISTERED);
 
-On 11/13/21 10:02 PM, Tetsuo Handa wrote:
-> sk_clone_lock() needs to call get_net() and sock_inuse_inc() together, or
-> socket_seq_show() will underflow when __sk_free() from sk_free() from
-> sk_free_unlock_clone() is called.
-> 
+To avoid possible BUG_ON or WARN_ON let's free current netdev before
+returning from es58x_init_netdev() and leave others (registered)
+net devices for es58x_free_netdevs().
 
-IMO, a "sock_inuse_get() underflow" is a very different problem,
-I suspect this should be fixed with the following patch.
+Fixes: 004653f0abf2 ("can: etas_es58x: add es58x_free_netdevs() to factorize code")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
+ drivers/net/can/usb/etas_es58x/es58x_core.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/net/core/sock.c b/net/core/sock.c
-index c57d9883f62c75f522b7f6bc68451aaf8429dc83..bac8e2b62521301ce897728fff9622c4c05419a3 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -3573,7 +3573,7 @@ int sock_inuse_get(struct net *net)
-        for_each_possible_cpu(cpu)
-                res += *per_cpu_ptr(net->core.sock_inuse, cpu);
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c b/drivers/net/can/usb/etas_es58x/es58x_core.c
+index 96a13c770e4a..41c721f2fbbe 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_core.c
++++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
+@@ -2098,8 +2098,11 @@ static int es58x_init_netdev(struct es58x_device *es58x_dev, int channel_idx)
+ 	netdev->flags |= IFF_ECHO;	/* We support local echo */
  
--       return res;
-+       return max(res, 0);
- }
+ 	ret = register_candev(netdev);
+-	if (ret)
++	if (ret) {
++		free_candev(netdev);
++		es58x_dev->netdev[channel_idx] = NULL;
+ 		return ret;
++	}
  
- EXPORT_SYMBOL_GPL(sock_inuse_get);
+ 	netdev_queue_set_dql_min_limit(netdev_get_tx_queue(netdev, 0),
+ 				       es58x_dev->param->dql_min_limit);
+-- 
+2.33.1
 
-
-Bug added in commit 648845ab7e200993dccd3948c719c858368c91e7
-Author: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Thu Dec 14 05:51:58 2017 -0800
-
-    sock: Move the socket inuse to namespace.
-
-
-> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> ---
->  net/core/sock.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/core/sock.c b/net/core/sock.c
-> index 8f2b2f2c0e7b..41e91d0f7061 100644
-> --- a/net/core/sock.c
-> +++ b/net/core/sock.c
-> @@ -2124,8 +2124,10 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
->  	newsk->sk_prot_creator = prot;
->  
->  	/* SANITY */
-> -	if (likely(newsk->sk_net_refcnt))
-> +	if (likely(newsk->sk_net_refcnt)) {
->  		get_net(sock_net(newsk));
-> +		sock_inuse_add(sock_net(newsk), 1);
-> +	}
->  	sk_node_init(&newsk->sk_node);
->  	sock_lock_init(newsk);
->  	bh_lock_sock(newsk);
-> @@ -2197,8 +2199,6 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
->  	newsk->sk_err_soft = 0;
->  	newsk->sk_priority = 0;
->  	newsk->sk_incoming_cpu = raw_smp_processor_id();
-> -	if (likely(newsk->sk_net_refcnt))
-> -		sock_inuse_add(sock_net(newsk), 1);
->  
->  	/* Before updating sk_refcnt, we must commit prior changes to memory
->  	 * (Documentation/RCU/rculist_nulls.rst for details)
-> 
