@@ -2,65 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B771844F773
-	for <lists+netdev@lfdr.de>; Sun, 14 Nov 2021 11:42:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BF8644F7DD
+	for <lists+netdev@lfdr.de>; Sun, 14 Nov 2021 13:30:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233469AbhKNKpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Nov 2021 05:45:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54758 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbhKNKpF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Nov 2021 05:45:05 -0500
-Received: from mail-vk1-xa2a.google.com (mail-vk1-xa2a.google.com [IPv6:2607:f8b0:4864:20::a2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD00EC061746
-        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 02:42:09 -0800 (PST)
-Received: by mail-vk1-xa2a.google.com with SMTP id t127so7492047vke.13
-        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 02:42:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=1sS046mTuN4ovWs+GBCt57s1Zu/Cbyu4cI8TIMXwEkc=;
-        b=RqWsRFAOfmaP+qLsAt1z/XrT44fX1GrooFBcdfsX6EKnBa41xQuJ6y+fFGTDzusYqe
-         vlWY+cSk+BO0a376zDcEBHuPLfY1OQgOaOCR8LJJ77NFYb2Efk7gGSTUDSHiwa42kkrV
-         v4V809I1XgYLv+fmp+XkhdZwIa7KcPRX/4StX8HKBfRSDdM1R5hKxKPy0J0f1JDcLVQm
-         qRuWmunqx/jnou001I+TZtv+YfVSxufJOsa5ciiVw8uK+BQ5LjeZy/JQhjlfnwSBVPgY
-         7GVRoJxNASUFdvidAuF7j0+KdPSvjrDXmqNatWHP5jaqb/rxgN1UYPDlhmhb8OZGTEoD
-         XQOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=1sS046mTuN4ovWs+GBCt57s1Zu/Cbyu4cI8TIMXwEkc=;
-        b=l7LPIBqp5n4jzCfPPqVrsb+6MLyG/d0O4NYzCXN2whnF2iG1o/3i/2lfXboJjdZhnB
-         r+aD8/Qp7o9mFZVeuy/tfHcMFBz+Aa+q9+wzLzVFUfZyUcGQSCL4V6IPA2SitThdGYTI
-         iHNA88XUaRGHMnKLEst2rnmSYAx6SGY5ic6dpXMHlVdUA1RKIPQFuaN37XkJgHsG53mJ
-         VsGWn6+1HKvq7NLDNpFAI+f76pUXXce2kOokIGysBhamI6hZlkpMM45MhzINKxIUt7j3
-         dfkxxbp47Fw/SqodQh5aZNBbkDTIYxHjb+SOpNXdFSJKWlN+7q7H3eQ2d/YlDapFaF2q
-         bWng==
-X-Gm-Message-State: AOAM53016eOZk754Nq2ZcW4HbT6ofa3PjD2KTdVM2PSjFw+T6qrfqAxw
-        2Jg/sIpdGhnPl6Q/3Ry66WlrN5xy1kIGL0omDos=
-X-Google-Smtp-Source: ABdhPJzwTwb1YpehsO0ibeEhXJUOYT8vV9slmA0VjDH9vXIROSiSkTXmv3rXrOAU5agwrh+bXLAWBEfMtT3xsYdTmY0=
-X-Received: by 2002:a05:6122:920:: with SMTP id j32mr45035557vka.20.1636886528508;
- Sun, 14 Nov 2021 02:42:08 -0800 (PST)
+        id S235894AbhKNMdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Nov 2021 07:33:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46888 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235756AbhKNMdB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 14 Nov 2021 07:33:01 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 8A40A61164;
+        Sun, 14 Nov 2021 12:30:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636893007;
+        bh=cx51PSUwREeky8Z/ulRMdAX/ywe1FUYhUu22mpwW6G8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=A3AS2d0qVE7XMFIbN0MVXlHCBNAqFuu0nJqROwLdzffBSbMTycjTlockDev8PZJyy
+         5bOxElLpl+nrzuQ0NipXN5EX89UNG5plBa4+3gInAFpsl9SFCUCdaZchi5E9AWNh/E
+         I8m9UWp7QQGbad/iZ0Fi6U2wltc+fH/zAoqonWO9WleVWyHayBxzrjd7bnHHhL0IVK
+         OAVAWhJpXcgPTmCW2MeHzCDSNhaDoUSKfE78XBP9PlwE/2wsWYGXueFsaDyWUeIiVR
+         ntkB2N0gvpDZwcfYUW6+rke1pJoDTS9AioTuN8KceoQw7PIko2wTlrYvMGr/kqMrJ8
+         Zw4WtjEMpUaYw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7E3456097A;
+        Sun, 14 Nov 2021 12:30:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Received: by 2002:a59:8e41:0:b0:246:9dba:f537 with HTTP; Sun, 14 Nov 2021
- 02:42:07 -0800 (PST)
-Reply-To: confianzayrentabilidad@gmail.com
-From:   "Prof. Dr Diane" <dmitrybogdanv07@gmail.com>
-Date:   Sun, 14 Nov 2021 02:42:07 -0800
-Message-ID: <CAPi14yJRvVyN67AVr16sR4icvHQ9mSi0kHuUDNxHuPey3-6q_g@mail.gmail.com>
-Subject: Greetings,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net,lsm,selinux: revert the security_sctp_assoc_established()
+ hook
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163689300751.19604.8326940151173653633.git-patchwork-notify@kernel.org>
+Date:   Sun, 14 Nov 2021 12:30:07 +0000
+References: <163675909043.176428.14878151490285663317.stgit@olly>
+In-Reply-To: <163675909043.176428.14878151490285663317.stgit@olly>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     selinux@vger.kernel.org, linux-security-module@vger.kernel.org,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-I'm Prof. Dr Diane, please a huge amount of payment was made into your
-account. as soon as your respond is noted the payment confirmation
-slip will immediately send to you.  please do not hesitate to reply as
-soon as you receive this message. awaiting your urgent reply please.
+Hello:
 
-Best regards
-Prof. Dr Diane,
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Fri, 12 Nov 2021 18:18:10 -0500 you wrote:
+> This patch reverts two prior patches, e7310c94024c
+> ("security: implement sctp_assoc_established hook in selinux") and
+> 7c2ef0240e6a ("security: add sctp_assoc_established hook"), which
+> create the security_sctp_assoc_established() LSM hook and provide a
+> SELinux implementation.  Unfortunately these two patches were merged
+> without proper review (the Reviewed-by and Tested-by tags from
+> Richard Haines were for previous revisions of these patches that
+> were significantly different) and there are outstanding objections
+> from the SELinux maintainers regarding these patches.
+> 
+> [...]
+
+Here is the summary with links:
+  - net,lsm,selinux: revert the security_sctp_assoc_established() hook
+    https://git.kernel.org/netdev/net/c/1aa3b2207e88
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
