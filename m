@@ -2,70 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F15DE44F7DF
-	for <lists+netdev@lfdr.de>; Sun, 14 Nov 2021 13:30:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 054C944F7E9
+	for <lists+netdev@lfdr.de>; Sun, 14 Nov 2021 13:34:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235910AbhKNMdF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Nov 2021 07:33:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46914 "EHLO mail.kernel.org"
+        id S235762AbhKNMho (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Nov 2021 07:37:44 -0500
+Received: from m43-7.mailgun.net ([69.72.43.7]:38037 "EHLO m43-7.mailgun.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235827AbhKNMdC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 14 Nov 2021 07:33:02 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 40BD8611AE;
-        Sun, 14 Nov 2021 12:30:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636893008;
-        bh=4JYK+nb3MGMSP+tgIz2mcAMU1W1ZOtFNhEZsWCPhqQs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=QFzCyDf3L2UbMAxCNe+Fgr8all/q8WIV5/tykCeNOSCqV45UyeKOvUrGu9mxc9ZB9
-         axjbVJiq7UzKQ8O0nYcMIy1rGg9i1nIhZjWwu4bd2phK6JPmnaz2MJnoFTM8md/1f6
-         KPiPuXUkx2h1nMerK4pplfeBefZizO7wLfcb2qMnyRHbbLDhmCMBaVNaG6eOTLCY74
-         Hz0foLo4Ut8hFp4vpv/wvosHKlfdwrtGFFO26R2tF3G/P05MbfhgLqv/l4TPBNtp0J
-         tSflge+nqyoqqABPpLJM/IaAs2P4AjWeF50G3Gxjmj/rzPkqmwNEc5ZscCqqlw+i0K
-         8IJ/vXydYwZMg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3157360A6D;
-        Sun, 14 Nov 2021 12:30:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S236090AbhKNMhe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 14 Nov 2021 07:37:34 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1636893264; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=HVRsN9vwc/sETBKRnZmJjyWP055/SwC0n0BaeHe47UE=;
+ b=FhRmIzhBeMHK3PdD79U2RHMKKmXwQFpUtLahGnTFz6UfJHR9AtDPGHXnyPL9Z5kd3OA6MSoL
+ 8FMu9/e+wgUXYHrtEIXJ+Unw50VthNv5OfdSr1FIVDDeSaaXvk4WzuwNB1wQYDgNqDLQ+KNS
+ NIUoOpnLucZ6vusFwOU+/T0YIjw=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
+ 6191023de10f164c25b3019c (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 14 Nov 2021 12:34:05
+ GMT
+Sender: zijuhu=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id E7562C43460; Sun, 14 Nov 2021 12:34:03 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: zijuhu)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id C97C0C4338F;
+        Sun, 14 Nov 2021 12:34:01 +0000 (UTC)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH linux-next] ipv6: Remove duplicate statements
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163689300819.19604.5480020679609941607.git-patchwork-notify@kernel.org>
-Date:   Sun, 14 Nov 2021 12:30:08 +0000
-References: <20211111150924.2576-1-luo.penghao@zte.com.cn>
-In-Reply-To: <20211111150924.2576-1-luo.penghao@zte.com.cn>
-To:     luo penghao <cgel.zte@gmail.com>
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luo.penghao@zte.com.cn,
-        zealci@zte.com.cn
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Sun, 14 Nov 2021 20:34:01 +0800
+From:   zijuhu@codeaurora.org
+To:     Rob Herring <robh@kernel.org>
+Cc:     davem@davemloft.net, rjliao@codeaurora.org, kuba@kernel.org,
+        bgodavar@codeaurora.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        devicetree@vger.kernel.org, Zijun Hu <quic_zijuhu@quicinc.com>
+Subject: Re: [PATCH v1 2/3] dt-bindings: net: bluetooth: Add device tree
+ bindings for QTI bluetooth MAPLE
+In-Reply-To: <YY6eD/r3ddU7PUxJ@robh.at.kernel.org>
+References: <1635837069-1293-1-git-send-email-zijuhu@codeaurora.org>
+ <YY6eD/r3ddU7PUxJ@robh.at.kernel.org>
+Message-ID: <18c17ac0a622f6d0b86b39b28cecea5f@codeaurora.org>
+X-Sender: zijuhu@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Thu, 11 Nov 2021 15:09:24 +0000 you wrote:
-> From: luo penghao <luo.penghao@zte.com.cn>
+On 2021-11-13 01:02, Rob Herring wrote:
+> On Tue, Nov 02, 2021 at 03:11:09PM +0800, Zijun Hu wrote:
+>> From: Zijun Hu <quic_zijuhu@quicinc.com>
 > 
-> This statement is repeated with the initialization statement
+> Subject space is valuable, don't say things twice:
 > 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: luo penghao <luo.penghao@zte.com.cn>
+> dt-bindings: net: bluetooth: Add Qualcomm MAPLE
 > 
-> [...]
+> Is MAPLE an SoC? Everything else used part numbers, why not here?
+> 
+thanks for your reply, please ignore this patch bcz part of the patch 
+series is refused.
 
-Here is the summary with links:
-  - [linux-next] ipv6: Remove duplicate statements
-    https://git.kernel.org/netdev/net-next/c/1274a4eb318d
+MAPLE is a name of BT controller which is integrated within a Soc, so it 
+doesn't regular part number.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+>> 
+>> Add device tree bindings for QTI bluetooth MAPLE.
+>> 
+>> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+>> ---
+>>  Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml | 1 +
+>>  1 file changed, 1 insertion(+)
+>> 
+>> diff --git 
+>> a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml 
+>> b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml
+>> index f93c6e7a1b59..9f0508c4dd16 100644
+>> --- a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml
+>> +++ b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml
+>> @@ -23,6 +23,7 @@ properties:
+>>        - qcom,wcn3998-bt
+>>        - qcom,qca6390-bt
+>>        - qcom,wcn6750-bt
+>> +      - qcom,maple-bt
+>> 
+>>    enable-gpios:
+>>      maxItems: 1
+>> --
+>> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora 
+>> Forum, a Linux Foundation Collaborative Project
+>> 
+>> 
