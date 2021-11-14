@@ -2,76 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D4A844F6FC
-	for <lists+netdev@lfdr.de>; Sun, 14 Nov 2021 07:03:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64E7244F707
+	for <lists+netdev@lfdr.de>; Sun, 14 Nov 2021 07:19:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234153AbhKNGFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Nov 2021 01:05:52 -0500
-Received: from smtpbg604.qq.com ([59.36.128.82]:55737 "EHLO smtpbg604.qq.com"
+        id S229537AbhKNGWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Nov 2021 01:22:01 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39844 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229537AbhKNGFv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 14 Nov 2021 01:05:51 -0500
-X-QQ-mid: bizesmtp43t1636869746t2squ0kq
-Received: from localhost.localdomain (unknown [125.69.41.88])
-        by esmtp6.qq.com (ESMTP) with 
-        id ; Sun, 14 Nov 2021 14:02:24 +0800 (CST)
-X-QQ-SSF: 01000000002000C0F000B00A0000000
-X-QQ-FEAT: Mzskoac49OiIv0KUitNHgBb3kgXFZxiGEiqTBvjSiDqRqg3yXuxl3T342JbHl
-        4g++JaVU0TN+1b89QYqwytK3N9VD2AwPd06cj/sJiTrh6+60krhMot3ZJ7ymCx6/+F1OQoW
-        vg5EyYg3eJ7FmovozeHiTiDTeUwxOMz8fVLeCpAsAzCThmgiXgbQX7rvUZ4OnTE2zU74AWM
-        fUyxv9ekDP9hjT0NxJLqDgA5fsGB60s6SWgr8FHYORSJqwr4YZQj1q66/FIX3kWuuoM/2tN
-        7TxQFoFFI+szTmwDjybybDhSCrExiaOtrOKHym0pTan0iEhXewZPMiIzLqkQTaoOPCKC4vS
-        ePvi43zoXYdPWJy5AFO16G6e9ICmkjWiOEvgBLl
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     kuba@kernel.org
-Cc:     davem@davemloft.net, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] igb: remove never changed variable `ret_val'
-Date:   Sun, 14 Nov 2021 14:02:22 +0800
-Message-Id: <20211114060222.231075-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.33.0
+        id S229469AbhKNGV7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 14 Nov 2021 01:21:59 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9E4FE60EC0;
+        Sun, 14 Nov 2021 06:19:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636870746;
+        bh=JlVUiwdc4qyknyw67PdGTWXoU+8TUzy/JW3C4ARk/bg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JaxqALHoZl2AAADp8zlXqbefKkVEkCr1BhTXjHpVMPh5jazAcZmfqZ0GO7k5002Kx
+         OGkk4GsMRayDqNLH59AmUgWW17KWzCjLzAZgTh27lOICdUp1jCSqMnAYNOPsjeQqr0
+         WyRaE8P7WLfCTamj9yE0i6fMWfP7k4mC9btGbjH/ARD4ca9pOeQAVwhaboMFFN0goR
+         y2I0UwzI7xMFp/Y+jdtB4VQz3KBPUG4w1tlYGTdfOPG7D/hha9LztrvGksSSd7TWDv
+         pIN/eNabrbpBYX5vulDbwvLSBlRq+NXf/phxbVkhSpTEBGmKcX2FODeOw7nrEJcg15
+         E5iKL783J6Eqw==
+Date:   Sun, 14 Nov 2021 08:19:02 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@idosch.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        edwin.peer@broadcom.com
+Subject: Re: [PATCH net-next] devlink: Require devlink lock during device
+ reload
+Message-ID: <YZCqVig9GQi/o1iz@unreal>
+References: <YYmBbJ5++iO4MOo7@unreal>
+ <20211108153126.1f3a8fe8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20211109144358.GA1824154@nvidia.com>
+ <20211109070702.17364ec7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20211109153335.GH1740502@nvidia.com>
+ <20211109082042.31cf29c3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20211109182427.GJ1740502@nvidia.com>
+ <YY0G90fJpu/OtF8L@nanopsycho>
+ <YY0J8IOLQBBhok2M@unreal>
+ <YY4aEFkVuqR+vauw@nanopsycho>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YY4aEFkVuqR+vauw@nanopsycho>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The variable used for return status in `igb_write_xmdio_reg' function
-is never changed  and this function is just need return 0. Thus, the
-`ret_val' can be removed and return 0 at the end of the
-`igb_write_xmdio_reg' function.
+On Fri, Nov 12, 2021 at 08:38:56AM +0100, Jiri Pirko wrote:
+> Thu, Nov 11, 2021 at 01:17:52PM CET, leon@kernel.org wrote:
+> >On Thu, Nov 11, 2021 at 01:05:11PM +0100, Jiri Pirko wrote:
+> >> Tue, Nov 09, 2021 at 07:24:27PM CET, jgg@nvidia.com wrote:
+> >> >On Tue, Nov 09, 2021 at 08:20:42AM -0800, Jakub Kicinski wrote:
+> >> >> On Tue, 9 Nov 2021 11:33:35 -0400 Jason Gunthorpe wrote:
+> >> >> > > > I once sketched out fixing this by removing the need to hold the
+> >> >> > > > per_net_rwsem just for list iteration, which in turn avoids holding it
+> >> >> > > > over the devlink reload paths. It seemed like a reasonable step toward
+> >> >> > > > finer grained locking.  
+> >> >> > > 
+> >> >> > > Seems to me the locking is just a symptom.  
+> >> >> > 
+> >> >> > My fear is this reload during net ns destruction is devlink uAPI now
+> >> >> > and, yes it may be only a symptom, but the root cause may be unfixable
+> >> >> > uAPI constraints.
+> >> >> 
+> >> >> If I'm reading this right it locks up 100% of the time, what is a uAPI
+> >> >> for? DoS? ;)
+> >> >> 
+> >> >> Hence my questions about the actual use cases.
+> >> >
+> >> >Removing namespace support from devlink would solve the crasher. I
+> >> >certainly didn't feel bold enough to suggest such a thing :)
+> >> >
+> >> >If no other devlink driver cares about this it is probably the best
+> >> >idea.
+> >> 
+> >> Devlink namespace support is not generic, not related to any driver.
+> >
+> >What do you mean?
+> >
+> >devlink_pernet_pre_exit() calls to devlink reload, which means that only
+> >drivers that support reload care about it. The reload is driver thing.
+> 
+> However, Jason was talking about "namespace support removal from
+> devlink"..
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- drivers/net/ethernet/intel/igb/e1000_i210.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+The code that sparkles deadlocks is in devlink_pernet_pre_exit() and
+this will be nice to remove. I just don't know if it is possible to do
+without ripping whole namespace support from devlink.
 
-diff --git a/drivers/net/ethernet/intel/igb/e1000_i210.c b/drivers/net/ethernet/intel/igb/e1000_i210.c
-index 9265901455cd..b9b9d35494d2 100644
---- a/drivers/net/ethernet/intel/igb/e1000_i210.c
-+++ b/drivers/net/ethernet/intel/igb/e1000_i210.c
-@@ -792,7 +792,6 @@ s32 igb_write_xmdio_reg(struct e1000_hw *hw, u16 addr, u8 dev_addr, u16 data)
-  **/
- s32 igb_init_nvm_params_i210(struct e1000_hw *hw)
- {
--	s32 ret_val = 0;
- 	struct e1000_nvm_info *nvm = &hw->nvm;
- 
- 	nvm->ops.acquire = igb_acquire_nvm_i210;
-@@ -813,7 +812,7 @@ s32 igb_init_nvm_params_i210(struct e1000_hw *hw)
- 		nvm->ops.validate = NULL;
- 		nvm->ops.update   = NULL;
- 	}
--	return ret_val;
-+	return 0;
- }
- 
- /**
--- 
-2.33.0
+Thanks
 
+> 
+> 
+> >
+> >Thanks
+> >
+> >> 
+> >> >
+> >> >Jason
