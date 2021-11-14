@@ -2,92 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98C0544FB56
-	for <lists+netdev@lfdr.de>; Sun, 14 Nov 2021 20:51:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BED8144FB63
+	for <lists+netdev@lfdr.de>; Sun, 14 Nov 2021 21:02:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236486AbhKNTxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Nov 2021 14:53:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60966 "EHLO
+        id S236016AbhKNUEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Nov 2021 15:04:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236547AbhKNTxo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Nov 2021 14:53:44 -0500
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDD01C061766
-        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 11:50:47 -0800 (PST)
-Received: by mail-yb1-xb2e.google.com with SMTP id q74so40372842ybq.11
-        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 11:50:47 -0800 (PST)
+        with ESMTP id S236178AbhKNUEi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Nov 2021 15:04:38 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1E3DC061746
+        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 12:01:30 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id m24so2720485pls.10
+        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 12:01:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=GOdoDfOCH17GXWKOEIgdoVCfQMWr3Ap2PFspIqztr4M=;
-        b=C0jODrBbnhLDGGObJBmgmXv2BEgmux4jw/77TOpV+PK5MXFkdj66kUpqoUPESkbGRR
-         dnp0JqD70yyprBuGXDEjOm0qD5MPCvWIj/Rrpg+Ytl7YIKOByhdYaw2wCE+SwbBVnvkA
-         q9+WutJ0NEVb5Ds9zhE4u/U5RBDkO5qew4lRLQy3EPIp7ysFz2HyMFFZAUWERBVR+J6X
-         nYufr00AZzwzgkTXPA/OBp/bVC4uB96vqjUW4rbLFDJ7TkbvgjJeon5dy96kJt12cE3n
-         s1WVRYi/ryB1z/g44WixYUPAtde9FIYJBlJL7j7tEk/EMZaN42NKO/VUU84vfdCkr7sa
-         eYiw==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=fxdLrUNdCdBTQXYpYAyJIpHQK1aQPT5DMRZe2BmyCxA=;
+        b=Oxa0AF5v48y4wfx9FprpQBmGOD0ODUN+9JgylONh8KW4Dex0G7LgU34EElY4Cu/kPV
+         lwmcTTh+h3LQtl+73/TOeHKJmxRa/y3wyYbyABWmoPcAk14mEbM37sXmlRb/OhQXaWx8
+         XwrvBZK0EnR7dpvnLG7tDIHnGQ55TEOZUys65N4HLHRgp8oj8Ggna5bb2k2LiRtLe6DP
+         3KeyXpJxPDzqcdnA7phqOXiNjTch9Y0VFLMMULMNKYNQFmDAnND6Y+BVuZk99YQiZtq+
+         QbTH92tuhIErAcfdHjcrM42DA+dFx34Grj4VGhoieKjRb7bjOewgGcqP+gamLyAm0Tkp
+         o65w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=GOdoDfOCH17GXWKOEIgdoVCfQMWr3Ap2PFspIqztr4M=;
-        b=IrtT/8R0i9V7s5vGZJKP0BCVrdGODmEcGgw8Z9zyIAhQhviftnKRb9PaHwpDpRGcik
-         XslmqEzJt5UzA6VDShnomGkXns37xTsm0lOddkhmFmJuKeERSn8SESinbvqAjwT3pRRD
-         EutB/P5RGg0G9WM8CIoRvIFASssIiQyhISZ34DoNsyhMgdTKBRmjz4reJadmupW037AV
-         DtfuwsRmD85crb7t16TdqJ63HXFbiUNzvULGdgMRTbW6mgpJhSLzIhlwmDOV6KvrQ6Vz
-         +FXPrl0Y4HiZQOpb5vmHqG9Lb3WgkRd+mHhR2MwY6WC6k1wthUEcen/QdqocjiOyaIkj
-         Ksyw==
-X-Gm-Message-State: AOAM531s433P4bSPBRNTQN4hiaHMgBk0jaZp52sgmnLk8/49RUw4dHdN
-        MbNAu/ESREvxWgrrDCbtzC1HnBPdGLoC6ueOSt8=
-X-Google-Smtp-Source: ABdhPJxoxkaXM+Q2bEYO0jma0BCbwaxRCFQraahHe4bEwSBdUhMhf4B2TmeS0U6tBq+0KRcWcnniYFRxDxGekcc4eNE=
-X-Received: by 2002:a25:d4d5:: with SMTP id m204mr38948993ybf.418.1636919447234;
- Sun, 14 Nov 2021 11:50:47 -0800 (PST)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=fxdLrUNdCdBTQXYpYAyJIpHQK1aQPT5DMRZe2BmyCxA=;
+        b=31sxfDpt0kPyYQnSZK8zVwmwGu3u+b7fyLoNgURKExHQd8IkNsNco/AjssDtOVp9mp
+         0/B8Voo2UmXqnk68XtHFW90HQ0aegrv3YGiqfVbbjfvEh7sHecb9kOEmw5rD7QEftGBK
+         JHWzKT7FdMcW5KfSgp0+28hneHirTLMqfReSnBHZhLZYfmQsbTSUwGhUuqIzYFzr8VW8
+         floVDjF4mX5sskT3dzCfYtPcVKS6xEJydEUFibRFlTqairyutCqnqA5pwHuhVOEkh/k2
+         gP1OzqL06EObmKJMvUZ0ajp0oVjtgjg1eOxBIuo1xSP7v6jxKPm9Fudt1yyfoYF0ft7V
+         yJqw==
+X-Gm-Message-State: AOAM532BVLMBf+XMbeJR9g1DlhJ/4UK3Xfj1nbGFTVhat0ANgEWHztYi
+        4xVIhTPUfWieIcyDqAWmGLFVe13eeVI=
+X-Google-Smtp-Source: ABdhPJyC44LVRi6VGeIffnclakiRO/DQfYXgaXu7uRr9M4Cp5rFf+8HgpwjiyGEYOkK+OcWSsxorxQ==
+X-Received: by 2002:a17:903:18d:b0:142:8ab:d11f with SMTP id z13-20020a170903018d00b0014208abd11fmr28780144plg.47.1636920089618;
+        Sun, 14 Nov 2021 12:01:29 -0800 (PST)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id i2sm12433271pfe.70.2021.11.14.12.01.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 14 Nov 2021 12:01:29 -0800 (PST)
+Subject: Re: [PATCH] sock: fix /proc/net/sockstat underflow in sk_clone_lock()
+To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        netdev@vger.kernel.org
+References: <20211114060222.3370-1-penguin-kernel@I-love.SAKURA.ne.jp>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <ee46d850-7dcb-b9d5-b61c-56638fa2f9ae@gmail.com>
+Date:   Sun, 14 Nov 2021 12:01:27 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Received: by 2002:a05:7000:78c5:0:0:0:0 with HTTP; Sun, 14 Nov 2021 11:50:46
- -0800 (PST)
-Reply-To: johnloanfirm2@gmail.com
-From:   JOHN WILLIAMS <marinshipcompany11@gmail.com>
-Date:   Sun, 14 Nov 2021 11:50:46 -0800
-Message-ID: <CACir1uNZQTiPMnTP0K72kkn58n0hy3J_=SEdPDkOuTe53QU9PA@mail.gmail.com>
-Subject: Erschwingliche Kreditgesellschaft
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20211114060222.3370-1-penguin-kernel@I-love.SAKURA.ne.jp>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=20
 
 
---=20
+On 11/13/21 10:02 PM, Tetsuo Handa wrote:
+> sk_clone_lock() needs to call get_net() and sock_inuse_inc() together, or
+> socket_seq_show() will underflow when __sk_free() from sk_free() from
+> sk_free_unlock_clone() is called.
+> 
+
+IMO, a "sock_inuse_get() underflow" is a very different problem,
+I suspect this should be fixed with the following patch.
+
+diff --git a/net/core/sock.c b/net/core/sock.c
+index c57d9883f62c75f522b7f6bc68451aaf8429dc83..bac8e2b62521301ce897728fff9622c4c05419a3 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -3573,7 +3573,7 @@ int sock_inuse_get(struct net *net)
+        for_each_possible_cpu(cpu)
+                res += *per_cpu_ptr(net->core.sock_inuse, cpu);
+ 
+-       return res;
++       return max(res, 0);
+ }
+ 
+ EXPORT_SYMBOL_GPL(sock_inuse_get);
 
 
---=20
+Bug added in commit 648845ab7e200993dccd3948c719c858368c91e7
+Author: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Thu Dec 14 05:51:58 2017 -0800
 
-Hallo, Suchen Sie finanzielle Freiheit? Sind Sie verschuldet, ben=C3=B6tige=
-n Sie
-einen Kredit, um ein neues Unternehmen zu gr=C3=BCnden? oder Sie brechen
-finanziell zusammen, brauchen einen Kredit f=C3=BCr den Kauf eines Autos od=
-er
-eines Hauses? Hat Ihre Bank jemals abgelehnt? Sie m=C3=B6chten Ihre Finanze=
-n
-verbessern? Sie brauchen einen Kredit. Ihre Rechnungen zahlen sich aus?
-Suchen Sie nicht mehr, wir begr=C3=BC=C3=9Fen Sie f=C3=BCr eine Gelegenheit=
- f=C3=BCr alle Arten
-von Darlehen zu einem sehr g=C3=BCnstigen Zinssatz von 2% f=C3=BCr andere. =
-F=C3=BCr
-Informationen kontaktieren Sie uns jetzt per E-Mail an: (
-johnloanfirm2@gmail.com) Darlehen? Sie ben=C3=B6tigen einen Privatkredit? S=
-ie
-m=C3=B6chten ein Auto kaufen? Sie m=C3=B6chten sich refinanzieren? Ben=C3=
-=B6tigen Sie ein
-Hypothekendarlehen? Ben=C3=B6tigen Sie ein riesiges Kapital, um Ihren
-Gesch=C3=A4ftsvorschlag oder Ihre Expansion zu starten? Sie haben die Hoffn=
-ung
-verloren und denken, es gibt keinen Ausweg und Ihre finanziellen
-Belastungen bleiben bestehen? Bitte z=C3=B6gern Sie nicht, uns f=C3=BCr ein=
-e m=C3=B6gliche
-gesch=C3=A4ftliche Zusammenarbeit zu kontaktieren. Kontaktieren Sie uns per
-E-Mail: johnloanfirm2@gmail.com
+    sock: Move the socket inuse to namespace.
+
+
+> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> ---
+>  net/core/sock.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/core/sock.c b/net/core/sock.c
+> index 8f2b2f2c0e7b..41e91d0f7061 100644
+> --- a/net/core/sock.c
+> +++ b/net/core/sock.c
+> @@ -2124,8 +2124,10 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
+>  	newsk->sk_prot_creator = prot;
+>  
+>  	/* SANITY */
+> -	if (likely(newsk->sk_net_refcnt))
+> +	if (likely(newsk->sk_net_refcnt)) {
+>  		get_net(sock_net(newsk));
+> +		sock_inuse_add(sock_net(newsk), 1);
+> +	}
+>  	sk_node_init(&newsk->sk_node);
+>  	sock_lock_init(newsk);
+>  	bh_lock_sock(newsk);
+> @@ -2197,8 +2199,6 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
+>  	newsk->sk_err_soft = 0;
+>  	newsk->sk_priority = 0;
+>  	newsk->sk_incoming_cpu = raw_smp_processor_id();
+> -	if (likely(newsk->sk_net_refcnt))
+> -		sock_inuse_add(sock_net(newsk), 1);
+>  
+>  	/* Before updating sk_refcnt, we must commit prior changes to memory
+>  	 * (Documentation/RCU/rculist_nulls.rst for details)
+> 
