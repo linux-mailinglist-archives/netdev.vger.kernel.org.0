@@ -2,145 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE9DF44F64F
-	for <lists+netdev@lfdr.de>; Sun, 14 Nov 2021 04:25:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5252744F65C
+	for <lists+netdev@lfdr.de>; Sun, 14 Nov 2021 04:47:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234673AbhKND1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Nov 2021 22:27:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45872 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231617AbhKND1l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Nov 2021 22:27:41 -0500
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42B93C061714;
-        Sat, 13 Nov 2021 19:24:48 -0800 (PST)
-Received: by mail-qv1-xf2e.google.com with SMTP id v2so8931671qve.11;
-        Sat, 13 Nov 2021 19:24:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=4ge+2NHH9JufrVRNeL90eQ7Qt84+3AXBtx69q6pXD+U=;
-        b=gkIgWHqWi3Z7TSGoUEWTuoDDNtC95mMxGu2TQT2uyPTQlJGQV1HbXHqGk8dMkMUM3N
-         896tcJejTWuIGENX+n/X4/mEI1nUPdcBnWggiKPj5hfqbqtjTP8UGHIXv4Ntd9TtN1Oh
-         4ZWyEK9UyfxU16o1JVWm5h+ql25xEUrOIEjiezCZa9Ft4yRNlRiq4QgTuPEQyDYjO7Rk
-         3D1z/VOI3m7FNjRmn5er9uMRULbOXCoQ2DerVjPlSSb1C+R8Vx6ZNSEnya3csZdjlOns
-         sBucWbT1fOkiQ0D3kk7p8yG9NKOZFqokMlPLE+0hc0TZh4CVvXEIpwgEH4J+DkNIrUOO
-         jCKA==
+        id S236124AbhKNDuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Nov 2021 22:50:11 -0500
+Received: from mail-io1-f72.google.com ([209.85.166.72]:44841 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235171AbhKNDuK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Nov 2021 22:50:10 -0500
+Received: by mail-io1-f72.google.com with SMTP id a1-20020a5d9801000000b005de11aa60b8so9249014iol.11
+        for <netdev@vger.kernel.org>; Sat, 13 Nov 2021 19:47:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=4ge+2NHH9JufrVRNeL90eQ7Qt84+3AXBtx69q6pXD+U=;
-        b=QbBf87k2irpI6Q//Ak1QbfdDwHMOTSRhg7aKRg9uEApFWrEQmSUe/IzW2EGM5nxM2/
-         +5d/klNwNSurSfkxoUxL1Zo0fK/hZfsfVLBbJ14JTKe2eOmFFvueenbPEgsHgQei8ql5
-         p+lJeJiegz7LgtmlDXi4NVHln9V9qCTcpxuGZb3ktV2jJ3qSyAsAm7TrnO1TeLBW3tcv
-         SP+zijsa3kuUkshLaggiXMpAeyAWCFbLuYiq5rXG8EtlzDjc/+9K7sLf9M0BOOdnIIjq
-         WGVsDr2ZliuZL9yc4N9Ad9/dNKE4lBwDj2dCwYyABTRpIvY+UBFSPjoG23mchiQAYl06
-         7XYw==
-X-Gm-Message-State: AOAM530j2hGoDhpsdZEOwzHKy27N0e2Ozt9W9dEyJKA+i8FwGI8Mrgne
-        mptKn5OcgDO3IKBHQqiZEYo=
-X-Google-Smtp-Source: ABdhPJyiB/3a62OlqHSkNMnT1YeWh1AdJxRlmcqp+tiC0JFLG9EQaXqCpj+oM+UK/LuXdNAxHbi/4A==
-X-Received: by 2002:a05:6214:96e:: with SMTP id do14mr26695697qvb.39.1636860286915;
-        Sat, 13 Nov 2021 19:24:46 -0800 (PST)
-Received: from Zekuns-MBP-16.fios-router.home (cpe-74-73-56-100.nyc.res.rr.com. [74.73.56.100])
-        by smtp.gmail.com with ESMTPSA id n20sm3569356qkk.3.2021.11.13.19.24.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 13 Nov 2021 19:24:46 -0800 (PST)
-Date:   Sat, 13 Nov 2021 22:24:40 -0500
-From:   Zekun Shen <bruceshenzk@gmail.com>
-To:     bruceshenzk@gmail.com
-Cc:     Igor Russkikh <irusskikh@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Zekun Shen <bruceshenzk@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, brendandg@nyu.edu
-Subject: [PATCH] atlantic: Fix OOB read and write in hw_atl_utils_fw_rpc_wait
-Message-ID: <YZCBeNdJaWqaH1jG@Zekuns-MBP-16.fios-router.home>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=biEAlanjXu5KZeV9Gu9FU+bDJjKpZ2YbWs2R3M2bcbg=;
+        b=aNxYU0Nvobnt59ZEQmOnBtjafVsjQGKKAVnhuWjgDYFJchm4bShNLDBGRYo+cykpzM
+         g7u7F+wffGz/yUZ/uA4y9fNPfT9S/SbtYdH/3PsOonUraC5gACkxvKx6DrvdayhvZQqt
+         r2VoPoOUvtgkZRRWNwsYYeNP1qBtcdsxSo1hmX5BxP5b90jjVulOXljZKqppOuYVbEDp
+         4J3G45MvHUZuSz92uFpZQl8feNxtTF7hsObScjtVgoURbrzd0I2UJV4n5IFrlyjEWRC2
+         1zln64fcAWSKbPd14iSuUkhXpkvjEZKB5upp+ROj6a/UARscYndmPQoKdoCc/PzomvHO
+         HpKQ==
+X-Gm-Message-State: AOAM531ZkJOZaPBbkVolQA+vKQbRomuZ93j6ouYt1DeIvZNet46UG51q
+        doNFniyPqkR6mE3jHTZvgryzYX11T5RwdXf7opRV/dnIWZ8R
+X-Google-Smtp-Source: ABdhPJw3imt+67b1yx3kVEiE/+yRzr8SduEln1gJPpEflAHp9Naeb4L5yP/1RvpuokljiQz8XzSNWQ/8ypuCecUrLFbEYxs25iav
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-Received: by 2002:a05:6638:1506:: with SMTP id b6mr11131891jat.31.1636861636892;
+ Sat, 13 Nov 2021 19:47:16 -0800 (PST)
+Date:   Sat, 13 Nov 2021 19:47:16 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000069e12f05d0b78c2d@google.com>
+Subject: [syzbot] BUG: MAX_LOCKDEP_CHAINS too low! (3)
+From:   syzbot <syzbot+8a249628ae32ea7de3a2@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, andy@greyhouse.net, ast@kernel.org,
+        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        hawk@kernel.org, j.vosburgh@gmail.com, john.fastabend@gmail.com,
+        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
+        vfalico@gmail.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This bug report shows up when running our research tools. The
-reports is SOOB read, but it seems SOOB write is also possible
-a few lines below.
+Hello,
 
-In details, fw.len and sw.len are inputs coming from io. A len
-over the size of self->rpc triggers SOOB. The patch fixes the
-bugs by adding sanity checks.
+syzbot found the following issue on:
 
-The bugs are triggerable with compromised/malfunctioning devices.
-They are potentially exploitable given they first leak up to
-0xffff bytes and able to overwrite the region later.
+HEAD commit:    66f4beaa6c1d Merge branch 'linus' of git://git.kernel.org/..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=16adc769b00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a262045c4c15a9e0
+dashboard link: https://syzkaller.appspot.com/bug?extid=8a249628ae32ea7de3a2
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-The patch is tested with QEMU emulater.
-This is NOT tested with a real device.
+Unfortunately, I don't have any reproducer for this issue yet.
 
-Attached is the log we found by fuzzing.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+8a249628ae32ea7de3a2@syzkaller.appspotmail.com
 
-BUG: KASAN: slab-out-of-bounds in
-	hw_atl_utils_fw_upload_dwords+0x393/0x3c0 [atlantic]
-Read of size 4 at addr ffff888016260b08 by task modprobe/213
-CPU: 0 PID: 213 Comm: modprobe Not tainted 5.6.0 #1
+BUG: MAX_LOCKDEP_CHAINS too low!
+turning off the locking correctness validator.
+CPU: 0 PID: 31504 Comm: kworker/u4:13 Not tainted 5.15.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: bond1944 bond_mii_monitor
 Call Trace:
- dump_stack+0x76/0xa0
- print_address_description.constprop.0+0x16/0x200
- ? hw_atl_utils_fw_upload_dwords+0x393/0x3c0 [atlantic]
- ? hw_atl_utils_fw_upload_dwords+0x393/0x3c0 [atlantic]
- __kasan_report.cold+0x37/0x7c
- ? aq_hw_read_reg_bit+0x60/0x70 [atlantic]
- ? hw_atl_utils_fw_upload_dwords+0x393/0x3c0 [atlantic]
- kasan_report+0xe/0x20
- hw_atl_utils_fw_upload_dwords+0x393/0x3c0 [atlantic]
- hw_atl_utils_fw_rpc_call+0x95/0x130 [atlantic]
- hw_atl_utils_fw_rpc_wait+0x176/0x210 [atlantic]
- hw_atl_utils_mpi_create+0x229/0x2e0 [atlantic]
- ? hw_atl_utils_fw_rpc_wait+0x210/0x210 [atlantic]
- ? hw_atl_utils_initfw+0x9f/0x1c8 [atlantic]
- hw_atl_utils_initfw+0x12a/0x1c8 [atlantic]
- aq_nic_ndev_register+0x88/0x650 [atlantic]
- ? aq_nic_ndev_init+0x235/0x3c0 [atlantic]
- aq_pci_probe+0x731/0x9b0 [atlantic]
- ? aq_pci_func_init+0xc0/0xc0 [atlantic]
- local_pci_probe+0xd3/0x160
- pci_device_probe+0x23f/0x3e0
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ add_chain_cache kernel/locking/lockdep.c:3649 [inline]
+ lookup_chain_cache_add kernel/locking/lockdep.c:3748 [inline]
+ validate_chain kernel/locking/lockdep.c:3769 [inline]
+ __lock_acquire.cold+0x372/0x3ab kernel/locking/lockdep.c:5027
+ lock_acquire kernel/locking/lockdep.c:5637 [inline]
+ lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5602
+ __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+ _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:162
+ lock_timer_base+0x5a/0x1f0 kernel/time/timer.c:946
+ __mod_timer+0x398/0xe30 kernel/time/timer.c:1019
+ __queue_delayed_work+0x1a7/0x270 kernel/workqueue.c:1678
+ queue_delayed_work_on+0x105/0x120 kernel/workqueue.c:1703
+ queue_delayed_work include/linux/workqueue.h:517 [inline]
+ bond_mii_monitor+0x95b/0x1af0 drivers/net/bonding/bond_main.c:2759
+ process_one_work+0x9b2/0x1690 kernel/workqueue.c:2298
+ worker_thread+0x658/0x11f0 kernel/workqueue.c:2445
+ kthread+0x405/0x4f0 kernel/kthread.c:327
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
 
-Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+
 ---
- .../ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c   | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
-index fc0e66006644..3f1704cbe1cb 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
-@@ -559,6 +559,11 @@ int hw_atl_utils_fw_rpc_wait(struct aq_hw_s *self,
- 			goto err_exit;
- 
- 		if (fw.len == 0xFFFFU) {
-+			if (sw.len > sizeof(self->rpc)) {
-+				printk(KERN_INFO "Invalid sw len: %x\n", sw.len);
-+				err = -EINVAL;
-+				goto err_exit;
-+			}
- 			err = hw_atl_utils_fw_rpc_call(self, sw.len);
- 			if (err < 0)
- 				goto err_exit;
-@@ -567,6 +572,11 @@ int hw_atl_utils_fw_rpc_wait(struct aq_hw_s *self,
- 
- 	if (rpc) {
- 		if (fw.len) {
-+			if (fw.len > sizeof(self->rpc)) {
-+				printk(KERN_INFO "Invalid fw len: %x\n", fw.len);
-+				err = -EINVAL;
-+				goto err_exit;
-+			}
- 			err =
- 			hw_atl_utils_fw_downld_dwords(self,
- 						      self->rpc_addr,
--- 
-2.25.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
