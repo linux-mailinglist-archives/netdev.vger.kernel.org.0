@@ -2,101 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5252744F65C
-	for <lists+netdev@lfdr.de>; Sun, 14 Nov 2021 04:47:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E2C644F6FB
+	for <lists+netdev@lfdr.de>; Sun, 14 Nov 2021 07:02:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236124AbhKNDuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Nov 2021 22:50:11 -0500
-Received: from mail-io1-f72.google.com ([209.85.166.72]:44841 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235171AbhKNDuK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Nov 2021 22:50:10 -0500
-Received: by mail-io1-f72.google.com with SMTP id a1-20020a5d9801000000b005de11aa60b8so9249014iol.11
-        for <netdev@vger.kernel.org>; Sat, 13 Nov 2021 19:47:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=biEAlanjXu5KZeV9Gu9FU+bDJjKpZ2YbWs2R3M2bcbg=;
-        b=aNxYU0Nvobnt59ZEQmOnBtjafVsjQGKKAVnhuWjgDYFJchm4bShNLDBGRYo+cykpzM
-         g7u7F+wffGz/yUZ/uA4y9fNPfT9S/SbtYdH/3PsOonUraC5gACkxvKx6DrvdayhvZQqt
-         r2VoPoOUvtgkZRRWNwsYYeNP1qBtcdsxSo1hmX5BxP5b90jjVulOXljZKqppOuYVbEDp
-         4J3G45MvHUZuSz92uFpZQl8feNxtTF7hsObScjtVgoURbrzd0I2UJV4n5IFrlyjEWRC2
-         1zln64fcAWSKbPd14iSuUkhXpkvjEZKB5upp+ROj6a/UARscYndmPQoKdoCc/PzomvHO
-         HpKQ==
-X-Gm-Message-State: AOAM531ZkJOZaPBbkVolQA+vKQbRomuZ93j6ouYt1DeIvZNet46UG51q
-        doNFniyPqkR6mE3jHTZvgryzYX11T5RwdXf7opRV/dnIWZ8R
-X-Google-Smtp-Source: ABdhPJw3imt+67b1yx3kVEiE/+yRzr8SduEln1gJPpEflAHp9Naeb4L5yP/1RvpuokljiQz8XzSNWQ/8ypuCecUrLFbEYxs25iav
-MIME-Version: 1.0
-X-Received: by 2002:a05:6638:1506:: with SMTP id b6mr11131891jat.31.1636861636892;
- Sat, 13 Nov 2021 19:47:16 -0800 (PST)
-Date:   Sat, 13 Nov 2021 19:47:16 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000069e12f05d0b78c2d@google.com>
-Subject: [syzbot] BUG: MAX_LOCKDEP_CHAINS too low! (3)
-From:   syzbot <syzbot+8a249628ae32ea7de3a2@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, andy@greyhouse.net, ast@kernel.org,
-        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        hawk@kernel.org, j.vosburgh@gmail.com, john.fastabend@gmail.com,
-        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
-        vfalico@gmail.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+        id S231570AbhKNGFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Nov 2021 01:05:25 -0500
+Received: from www262.sakura.ne.jp ([202.181.97.72]:59096 "EHLO
+        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229537AbhKNGFZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Nov 2021 01:05:25 -0500
+Received: from fsav119.sakura.ne.jp (fsav119.sakura.ne.jp [27.133.134.246])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 1AE62SL7015764;
+        Sun, 14 Nov 2021 15:02:28 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav119.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav119.sakura.ne.jp);
+ Sun, 14 Nov 2021 15:02:28 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav119.sakura.ne.jp)
+Received: from localhost.localdomain (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 1AE62NVd015754
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Sun, 14 Nov 2021 15:02:28 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+To:     netdev@vger.kernel.org
+Cc:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Subject: [PATCH] sock: fix /proc/net/sockstat underflow in sk_clone_lock()
+Date:   Sun, 14 Nov 2021 15:02:22 +0900
+Message-Id: <20211114060222.3370-1-penguin-kernel@I-love.SAKURA.ne.jp>
+X-Mailer: git-send-email 2.18.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+sk_clone_lock() needs to call get_net() and sock_inuse_inc() together, or
+socket_seq_show() will underflow when __sk_free() from sk_free() from
+sk_free_unlock_clone() is called.
 
-syzbot found the following issue on:
-
-HEAD commit:    66f4beaa6c1d Merge branch 'linus' of git://git.kernel.org/..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=16adc769b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a262045c4c15a9e0
-dashboard link: https://syzkaller.appspot.com/bug?extid=8a249628ae32ea7de3a2
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+8a249628ae32ea7de3a2@syzkaller.appspotmail.com
-
-BUG: MAX_LOCKDEP_CHAINS too low!
-turning off the locking correctness validator.
-CPU: 0 PID: 31504 Comm: kworker/u4:13 Not tainted 5.15.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: bond1944 bond_mii_monitor
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- add_chain_cache kernel/locking/lockdep.c:3649 [inline]
- lookup_chain_cache_add kernel/locking/lockdep.c:3748 [inline]
- validate_chain kernel/locking/lockdep.c:3769 [inline]
- __lock_acquire.cold+0x372/0x3ab kernel/locking/lockdep.c:5027
- lock_acquire kernel/locking/lockdep.c:5637 [inline]
- lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5602
- __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
- _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:162
- lock_timer_base+0x5a/0x1f0 kernel/time/timer.c:946
- __mod_timer+0x398/0xe30 kernel/time/timer.c:1019
- __queue_delayed_work+0x1a7/0x270 kernel/workqueue.c:1678
- queue_delayed_work_on+0x105/0x120 kernel/workqueue.c:1703
- queue_delayed_work include/linux/workqueue.h:517 [inline]
- bond_mii_monitor+0x95b/0x1af0 drivers/net/bonding/bond_main.c:2759
- process_one_work+0x9b2/0x1690 kernel/workqueue.c:2298
- worker_thread+0x658/0x11f0 kernel/workqueue.c:2445
- kthread+0x405/0x4f0 kernel/kthread.c:327
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
-
-
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ net/core/sock.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 8f2b2f2c0e7b..41e91d0f7061 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2124,8 +2124,10 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
+ 	newsk->sk_prot_creator = prot;
+ 
+ 	/* SANITY */
+-	if (likely(newsk->sk_net_refcnt))
++	if (likely(newsk->sk_net_refcnt)) {
+ 		get_net(sock_net(newsk));
++		sock_inuse_add(sock_net(newsk), 1);
++	}
+ 	sk_node_init(&newsk->sk_node);
+ 	sock_lock_init(newsk);
+ 	bh_lock_sock(newsk);
+@@ -2197,8 +2199,6 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
+ 	newsk->sk_err_soft = 0;
+ 	newsk->sk_priority = 0;
+ 	newsk->sk_incoming_cpu = raw_smp_processor_id();
+-	if (likely(newsk->sk_net_refcnt))
+-		sock_inuse_add(sock_net(newsk), 1);
+ 
+ 	/* Before updating sk_refcnt, we must commit prior changes to memory
+ 	 * (Documentation/RCU/rculist_nulls.rst for details)
+-- 
+2.32.0
+
