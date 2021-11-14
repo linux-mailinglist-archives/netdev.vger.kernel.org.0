@@ -2,107 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 054C944F7E9
-	for <lists+netdev@lfdr.de>; Sun, 14 Nov 2021 13:34:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A4B644F7FC
+	for <lists+netdev@lfdr.de>; Sun, 14 Nov 2021 14:07:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235762AbhKNMho (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Nov 2021 07:37:44 -0500
-Received: from m43-7.mailgun.net ([69.72.43.7]:38037 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236090AbhKNMhe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 14 Nov 2021 07:37:34 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1636893264; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=HVRsN9vwc/sETBKRnZmJjyWP055/SwC0n0BaeHe47UE=;
- b=FhRmIzhBeMHK3PdD79U2RHMKKmXwQFpUtLahGnTFz6UfJHR9AtDPGHXnyPL9Z5kd3OA6MSoL
- 8FMu9/e+wgUXYHrtEIXJ+Unw50VthNv5OfdSr1FIVDDeSaaXvk4WzuwNB1wQYDgNqDLQ+KNS
- NIUoOpnLucZ6vusFwOU+/T0YIjw=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
- 6191023de10f164c25b3019c (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 14 Nov 2021 12:34:05
- GMT
-Sender: zijuhu=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id E7562C43460; Sun, 14 Nov 2021 12:34:03 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: zijuhu)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id C97C0C4338F;
-        Sun, 14 Nov 2021 12:34:01 +0000 (UTC)
+        id S233170AbhKNNK0 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 14 Nov 2021 08:10:26 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:58608 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230186AbhKNNKP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Nov 2021 08:10:15 -0500
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-132-mj8KR5zHN0GbCvVfZp2Q6Q-1; Sun, 14 Nov 2021 13:07:08 +0000
+X-MC-Unique: mj8KR5zHN0GbCvVfZp2Q6Q-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.26; Sun, 14 Nov 2021 13:07:07 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.026; Sun, 14 Nov 2021 13:07:07 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Eric Dumazet' <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: RE: [RFC] x86/csum: rewrite csum_partial()
+Thread-Topic: [RFC] x86/csum: rewrite csum_partial()
+Thread-Index: AQHX1sjWUoYmK80LukOvYdZq9v09u6wC9Srg
+Date:   Sun, 14 Nov 2021 13:07:06 +0000
+Message-ID: <e6fcc05d59974ba9afa49ba07a7251aa@AcuMS.aculab.com>
+References: <20211111065322.1261275-1-eric.dumazet@gmail.com>
+In-Reply-To: <20211111065322.1261275-1-eric.dumazet@gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Sun, 14 Nov 2021 20:34:01 +0800
-From:   zijuhu@codeaurora.org
-To:     Rob Herring <robh@kernel.org>
-Cc:     davem@davemloft.net, rjliao@codeaurora.org, kuba@kernel.org,
-        bgodavar@codeaurora.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        devicetree@vger.kernel.org, Zijun Hu <quic_zijuhu@quicinc.com>
-Subject: Re: [PATCH v1 2/3] dt-bindings: net: bluetooth: Add device tree
- bindings for QTI bluetooth MAPLE
-In-Reply-To: <YY6eD/r3ddU7PUxJ@robh.at.kernel.org>
-References: <1635837069-1293-1-git-send-email-zijuhu@codeaurora.org>
- <YY6eD/r3ddU7PUxJ@robh.at.kernel.org>
-Message-ID: <18c17ac0a622f6d0b86b39b28cecea5f@codeaurora.org>
-X-Sender: zijuhu@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-11-13 01:02, Rob Herring wrote:
-> On Tue, Nov 02, 2021 at 03:11:09PM +0800, Zijun Hu wrote:
->> From: Zijun Hu <quic_zijuhu@quicinc.com>
+From: Eric Dumazet
+> Sent: 11 November 2021 06:53
 > 
-> Subject space is valuable, don't say things twice:
+> With more NIC supporting CHECKSUM_COMPLETE, and IPv6 being widely used.
+> csum_partial() is heavily used with small amount of bytes,
+> and is consuming many cycles.
 > 
-> dt-bindings: net: bluetooth: Add Qualcomm MAPLE
+> IPv6 header size for instance is 40 bytes.
 > 
-> Is MAPLE an SoC? Everything else used part numbers, why not here?
+> Another thing to consider is that NET_IP_ALIGN is 0 on x86,
+> meaning that network headers in RX path are not word-aligned,
+> unless the driver forces this.
 > 
-thanks for your reply, please ignore this patch bcz part of the patch 
-series is refused.
+> This means that csum_partial() fetches one u16
+> to 'align the buffer', then perform seven u64 additions
+> with carry in a loop, then a remaining u32, then a remaining u16.
+> 
+> With this new version, we perform 10 u32 adds with carry, to
+> avoid the expensive 64->32 transformation. Using 5 u64 adds
+> plus one add32_with_carry() is more expensive.
+> 
+> Also note that this avoids loops for less than ~60 bytes.
 
-MAPLE is a name of BT controller which is integrated within a Soc, so it 
-doesn't regular part number.
+I spent far too long looking at this code a while back :-)
+I did post a patch - probably 10th May 2020.
 
->> 
->> Add device tree bindings for QTI bluetooth MAPLE.
->> 
->> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
->> ---
->>  Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml | 1 +
->>  1 file changed, 1 insertion(+)
->> 
->> diff --git 
->> a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml 
->> b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml
->> index f93c6e7a1b59..9f0508c4dd16 100644
->> --- a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml
->> +++ b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml
->> @@ -23,6 +23,7 @@ properties:
->>        - qcom,wcn3998-bt
->>        - qcom,qca6390-bt
->>        - qcom,wcn6750-bt
->> +      - qcom,maple-bt
->> 
->>    enable-gpios:
->>      maxItems: 1
->> --
->> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora 
->> Forum, a Linux Foundation Collaborative Project
->> 
->> 
+Prior to Sandy bridge ADC always took two clocks.
+Even on Sandy bridge there is a two clock delay for the sum,
+only the carry flag is available earlier.
+Broadwell (and I think all AMD cpu) do ADC in 1 clock.
+This can be avoided by adding to alternate registers.
+There are also issues on some cpu with the partial updates
+to the flags register (DEC sets Z but not C) causing unwanted
+register dependencies.
+
+I think misaligned memory reads take an extra clock.
+But more recent cpu can do two memory reads per clock.
+So unless the code is trying to beat 8 bytes/clock it
+shouldn't have much effect.
+
+The fastest loop I found (for large buffers) used:
+
++       asm(    "       bt    $4, %[len]\n"
++               "       jnc   10f\n"
++               "       add   (%[buff], %[len]), %[sum_0]\n"
++               "       adc   8(%[buff], %[len]), %[sum_1]\n"
++               "       lea   16(%[len]), %[len]\n"
++               "10:    jecxz 20f\n"
++               "       adc   (%[buff], %[len]), %[sum_0]\n"
++               "       adc   8(%[buff], %[len]), %[sum_1]\n"
++               "       lea   32(%[len]), %[len_tmp]\n"
++               "       adc   16(%[buff], %[len]), %[sum_0]\n"
++               "       adc   24(%[buff], %[len]), %[sum_1]\n"
++               "       mov   %[len_tmp], %[len]\n"
++               "       jmp   10b\n"
++               "20:    adc   %[sum_0], %[sum]\n"
++               "       adc   %[sum_1], %[sum]\n"
++               "       adc   $0, %[sum]\n"
++           : [sum] "+&r" (sum), [sum_0] "+&r" (sum_0), [sum_1] "+&r" (sum_1),
++               [len] "+&c" (len), [len_tmp] "=&r" (len_tmp)
++           : [buff] "r" (buff)
++           : "memory" );
+
+The principle is that 'buff' points to the end on the buffer.
+The 'length' (in %cx) is negative and then increased until it hits zero.
+
+This runs at 8 bytes/clock on anything recent (and approaches it on Ivy bridge).
+Splitting the 'add 32' did make a slight improvement.
+If you aren't worried (too much) about cpu before Bradwell then IIRC
+this loop gets close to 8 bytes/clock:
+
++               "10:    jecxz 20f\n"
++               "       adc   (%[buff], %[len]), %[sum]\n"
++               "       adc   8(%[buff], %[len]), %[sum]\n"
++               "       lea   16(%[len]), %[tmp]\n"
++               "       jmp   10b\n"
++               " 20:"
+
+I also toyed with this loop:
+
+            count = (lim + 7 - buf) & -64;
+            buf += count;
+
+            count = -count;
+            asm(    "       xor   %[sum_odd], %[sum_odd]\n"    // Also clears carry and overflow
+                    "10:    jrcxz 20f\n"
+                    "       adcx    (%[buf], %[count]), %[sum]\n"
+                    "       adox   8(%[buf], %[count]), %[sum_odd]\n"
+                    "       adcx  16(%[buf], %[count]), %[sum]\n"
+                    "       adox  24(%[buf], %[count]), %[sum_odd]\n"
+                    "       adcx  32(%[buf], %[count]), %[sum]\n"
+                    "       adox  40(%[buf], %[count]), %[sum_odd]\n"
+                    "       adcx  48(%[buf], %[count]), %[sum]\n"
+                    "       adox  56(%[buf], %[count]), %[sum_odd]\n"
+                    "       lea   64(%[count]), %[count]\n"
+                    "       jmp   10b\n"
+                    "20:    adox  %[count], %[sum_odd]\n"  // [count] is zero
+                    "       adcx  %[sum_odd], %[sum]\n"
+                    "       adcx  %[count], %[sum]"
+                : [sum] "=&r" (sum), [count] "=&c" (count), [sum_odd] "=&r" (sum_odd)
+                : [buf] "r" (buf), "0" (sum), "1" (count)
+                : "memory");
+        }
+
+My notes say it achieved 12 bytes/clock on an i7-7700.
+However it is only really useful for long aligned buffers.
+
+It is completely annoying that you can't use LOOP (dec %cx and jump nz)
+because it is very slow on Intel cpu - even ones that support adox).
+JCZX is fine.
+
+It is also possible to reduce the checksum to 16 bits using:
+	sum = (sum % 0xffff) ^ 0xffff;
+I think this is faster if gcc uses a 'multiply by reciprocal'
+but (in my tests) it sometimes used a divide.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
