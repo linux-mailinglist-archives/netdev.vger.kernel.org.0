@@ -2,105 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C75D344FA0F
-	for <lists+netdev@lfdr.de>; Sun, 14 Nov 2021 20:10:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65E2F44FA1D
+	for <lists+netdev@lfdr.de>; Sun, 14 Nov 2021 20:19:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236187AbhKNTNE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Nov 2021 14:13:04 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:29080 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231128AbhKNTMw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Nov 2021 14:12:52 -0500
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-113-7zMf2WlYNGya6_H3Xv8G5g-1; Sun, 14 Nov 2021 19:09:55 +0000
-X-MC-Unique: 7zMf2WlYNGya6_H3Xv8G5g-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.26; Sun, 14 Nov 2021 19:09:54 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.026; Sun, 14 Nov 2021 19:09:54 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Eric Dumazet' <edumazet@google.com>
-CC:     Alexander Duyck <alexander.duyck@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: RE: [PATCH v1] x86/csum: rewrite csum_partial()
-Thread-Topic: [PATCH v1] x86/csum: rewrite csum_partial()
-Thread-Index: AQHX10vTenZORMUT80K7BTOhs+/or6wDGPzggAAKHwCAADq5sA==
-Date:   Sun, 14 Nov 2021 19:09:54 +0000
-Message-ID: <31bd81df79c4488c92c6a149eeceee3c@AcuMS.aculab.com>
-References: <20211111181025.2139131-1-eric.dumazet@gmail.com>
- <CAKgT0UdmECakQTinbTagiG4PWfaniP_GP6T3rLvWdP+mVrB4xw@mail.gmail.com>
- <CANn89iJAakUCC6UuUHSozT9wz7_rrgrRq3dv+hXJ1FL_DCZHyA@mail.gmail.com>
- <226c88f6446d43afb6d9b5dffda5ab2a@AcuMS.aculab.com>
- <CANn89iJtqTGuJL6JgfOAuHxbkej9faURhj3yf2a9Y43Uh_4+Kg@mail.gmail.com>
-In-Reply-To: <CANn89iJtqTGuJL6JgfOAuHxbkej9faURhj3yf2a9Y43Uh_4+Kg@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S236179AbhKNTWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Nov 2021 14:22:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53948 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236196AbhKNTWc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Nov 2021 14:22:32 -0500
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6979EC061746;
+        Sun, 14 Nov 2021 11:19:36 -0800 (PST)
+Received: by mail-lj1-x232.google.com with SMTP id k23so2543759lje.1;
+        Sun, 14 Nov 2021 11:19:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Smx2GT4U6hH7iOi/1cAa+TyFVS+CT1sHsL8FpqzaNu4=;
+        b=jyJ8oMAhhusNAOyaTldgTm6ov6aZJo7J45gYTadmnWyN7IpoLSjbpGT4OiU8zSIsQb
+         LzLYKv8U7x/mRTEeJo3/EcFLrRG13C8f2MjGYEquJ1TiaZbEMcfq8a/V0/sX5B1rdGXp
+         UaP/INv3Z9zFgoLYFpaICBY44t/ouP0XJ0H6BXOBQmCnI97oy7ATSqc57EtFuaexJrbL
+         Kg8dZxEEinoEm/+HcZYmdtIU02uxyNpOZKKfzYrJ4hMrQwQSTJ3UjIVcahvRvFpvG5Mb
+         tAlexfKhawnR+Wgu8D2IDZfch/xTjiTALKUuky0UIpIhpom9juIgwllRbR1aODWodS3M
+         lzbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Smx2GT4U6hH7iOi/1cAa+TyFVS+CT1sHsL8FpqzaNu4=;
+        b=k9BmxhQO3RLSDWkHZjlIkgsdEKvad/kTdR2fVmnBMxSgLaMlEw4yTFjjB/KVzJ38O7
+         G/X9K29ZQXgUBMQ43E9fqeBkEtZJuXzKIwJ0b3hJHhW4T+SF6RoAnfMaHsIkhCKGf5yc
+         ltyhzL+2TA7LLkwycOMposRmNVeb99Srl0F6J82E55WJwWyLcek0/QT4kfA7e8GriBXY
+         KfXQE1nFv5YbUXui4KMLDaISyqrnERVf+yOsCuS8wevcC9uVHV8gY5NDIU40TVlfQh1p
+         +M5UTN3Bto5Yx27LbihVnue5+AYW9N+Mfx6VCTPWuA9m/BrxLAk9IiYmvbafRsZG3GUA
+         UWUQ==
+X-Gm-Message-State: AOAM531VY0vowNrSQ1IsUnymq2/kf56tKiJp8d7mmEbZsdS/s9foJFZO
+        NcU1sdQXz5m+9nNa78B6k7eRgPOdEnQ=
+X-Google-Smtp-Source: ABdhPJzI9fS20qwc93wj1B/cBFKmjS/NEKhioBTw85bvrmdUlSYHx/3ku6lcga7NsytXKzsikLxCyw==
+X-Received: by 2002:a2e:3c13:: with SMTP id j19mr4771535lja.311.1636917574668;
+        Sun, 14 Nov 2021 11:19:34 -0800 (PST)
+Received: from [192.168.1.11] ([94.103.224.112])
+        by smtp.gmail.com with ESMTPSA id b14sm1192840lfs.174.2021.11.14.11.19.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 14 Nov 2021 11:19:33 -0800 (PST)
+Message-ID: <52dbf9c9-0fa6-d4c6-ed6e-bba39e6e921b@gmail.com>
+Date:   Sun, 14 Nov 2021 22:19:29 +0300
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.1
+Subject: Re: [PATCH 2/2] net: ethernet: Add driver for Sunplus SP7021
 Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+To:     Wells Lu <wellslutw@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, robh+dt@kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        p.zabel@pengutronix.de
+Cc:     Wells Lu <wells.lu@sunplus.com>
+References: <cover.1635936610.git.wells.lu@sunplus.com>
+ <650ec751dd782071dd56af5e36c0d509b0c66d7f.1635936610.git.wells.lu@sunplus.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <650ec751dd782071dd56af5e36c0d509b0c66d7f.1635936610.git.wells.lu@sunplus.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogRXJpYyBEdW1hemV0DQo+IFNlbnQ6IDE0IE5vdmVtYmVyIDIwMjEgMTU6MDQNCj4gDQo+
-IE9uIFN1biwgTm92IDE0LCAyMDIxIGF0IDY6NDQgQU0gRGF2aWQgTGFpZ2h0IDxEYXZpZC5MYWln
-aHRAYWN1bGFiLmNvbT4gd3JvdGU6DQo+ID4NCj4gPiBGcm9tOiBFcmljIER1bWF6ZXQNCj4gPiA+
-IFNlbnQ6IDExIE5vdmVtYmVyIDIwMjEgMjI6MzENCj4gPiAuLg0KPiA+ID4gVGhhdCByZXF1aXJl
-cyBhbiBleHRyYSBhZGQzMl93aXRoX2NhcnJ5KCksIHdoaWNoIHVuZm9ydHVuYXRlbHkgbWFkZQ0K
-PiA+ID4gdGhlIHRoaW5nIHNsb3dlciBmb3IgbWUuDQo+ID4gPg0KPiA+ID4gSSBldmVuIGhhcmRj
-b2RlZCBhbiBpbmxpbmUgZmFzdF9jc3VtXzQwYnl0ZXMoKSBhbmQgZ290IGJlc3QgcmVzdWx0cw0K
-PiA+ID4gd2l0aCB0aGUgMTArMSBhZGRsLA0KPiA+ID4gaW5zdGVhZCBvZg0KPiA+ID4gICg1ICsg
-MSkgYWNxbCArICBtb3YgKG5lZWRpbmcgb25lIGV4dHJhICByZWdpc3RlcikgKyBzaGlmdCArIGFk
-ZGwgKyBhZGNsDQo+ID4NCj4gPiBEaWQgeW91IHRyeSBzb21ldGhpbmcgbGlrZToNCj4gPiAgICAg
-ICAgIHN1bSA9IGJ1ZlswXTsNCj4gPiAgICAgICAgIHZhbCA9IGJ1ZlsxXToNCj4gPiAgICAgICAg
-IGFzbSgNCj4gPiAgICAgICAgICAgICAgICAgYWRkNjQgc3VtLCB2YWwNCj4gPiAgICAgICAgICAg
-ICAgICAgYWRjNjQgc3VtLCBidWZbMl0NCj4gPiAgICAgICAgICAgICAgICAgYWRjNjQgc3VtLCBi
-dWZbM10NCj4gPiAgICAgICAgICAgICAgICAgYWRjNjQgc3VtLCBidWZbNF0NCj4gPiAgICAgICAg
-ICAgICAgICAgYWRjNjQgc3VtLCAwDQo+ID4gICAgICAgICB9DQo+ID4gICAgICAgICBzdW1faGkg
-PSBzdW0gPj4gMzI7DQo+ID4gICAgICAgICBhc20oDQo+ID4gICAgICAgICAgICAgICAgIGFkZDMy
-IHN1bSwgc3VtX2hpDQo+ID4gICAgICAgICAgICAgICAgIGFkYzMyIHN1bSwgMA0KPiA+ICAgICAg
-ICAgKQ0KPiANCj4gVGhpcyBpcyB3aGF0IEkgdHJpZWQuIGJ1dCB0aGUgbGFzdCBwYXJ0IHdhcyB1
-c2luZyBhZGQzMl93aXRoX2NhcnJ5KCksDQo+IGFuZCBjbGFuZyB3YXMgYWRkaW5nIHN0dXBpZCBt
-b3YgdG8gdGVtcCB2YXJpYWJsZSBvbiB0aGUgc3RhY2ssDQo+IGtpbGxpbmcgdGhlIHBlcmYuDQoN
-ClBlcnN1YWRpbmcgdGhlIGNvbXBpbGUgdGhlIGdlbmVyYXRlIHRoZSByZXF1aXJlZCBhc3NlbWJs
-ZXIgaXMgYW4gYXJ0IQ0KDQpJIGFsc28gZW5kZWQgdXAgdXNpbmcgX19idWlsdGluX2Jzd2FwMzIo
-c3VtKSB3aGVuIHRoZSBhbGlnbm1lbnQNCndhcyAnb2RkJyAtIHRoZSBzaGlmdCBleHByZXNzaW9u
-IGRpZG4ndCBhbHdheXMgZ2V0IGNvbnZlcnRlZA0KdG8gYSByb3RhdGUuIEJ5dGVzd2FwMzIgRFRS
-VC4NCg0KSSBhbHNvIG5vdGljZWQgdGhhdCBhbnkgaW5pdGlhbCBjaGVja3N1bSB3YXMgYmVpbmcg
-YWRkZWQgaW4gYXQgdGhlIGVuZC4NClRoZSA2NGJpdCBjb2RlIGNhbiBhbG1vc3QgYWx3YXlzIGhh
-bmRsZSBhIDMyIGJpdCAob3IgbWF5YmUgNTZiaXQhKQ0KaW5wdXQgdmFsdWUgYW5kIGFkZCBpdCBp
-biAnZm9yIGZyZWUnIGludG8gdGhlIGNvZGUgdGhhdCBkb2VzIHRoZQ0KaW5pdGlhbCBhbGlnbm1l
-bnQuDQoNCkkgZG9uJ3QgcmVtZW1iZXIgdGVzdGluZyBtaXNhbGlnbmVkIGJ1ZmZlcnMuDQpCdXQg
-SSB0aGluayBpdCBkb2Vzbid0IG1hdHRlciAob24gY3B1IGFueW9uZSBjYXJlcyBhYm91dCEpLg0K
-RXZlbiBTYW5keSBicmlkZ2UgY2FuIGRvIHR3byBtZW1vcnkgcmVhZHMgaW4gb25lIGNsb2NrLg0K
-U28gc2hvdWxkIGJlIGFibGUgdG8gZG8gYSBzaW5nbGUgbWlzYWxpZ25lZCByZWFkIGV2ZXJ5IGNs
-b2NrLg0KV2hpY2ggYWxtb3N0IGNlcnRhaW5seSBtZWFucyB0aGF0IGFsaWduaW5nIHRoZSBhZGRy
-ZXNzZXMgaXMgcG9pbnRsZXNzLg0KKEdpdmVuIHlvdSdyZSBub3QgdHJ5aW5nIHRvIGRvIHRoZSBh
-ZGN4L2Fkb3ggbG9vcC4pDQooUGFnZSBzcGFubmluZyBzaG91bGRuJ3QgbWF0dGVyLikNCg0KRm9y
-IGJ1ZmZlcnMgdGhhdCBhcmVuJ3QgYSBtdWx0aXBsZSBvZiA4IGJ5dGVzIGl0IG1pZ2h0IGJlIGJl
-c3QgdG8NCnJlYWQgdGhlIGxhc3QgOCBieXRlcyBmaXJzdCBhbmQgc2hpZnQgbGVmdCB0byBkaXNj
-YXJkIHRoZSBvbmVzIHRoYXQNCndvdWxkIGdldCBhZGRlZCBpbiB0d2ljZS4NClRoaXMgdmFsdWUg
-Y2FuIGJlIGFkZGVkIHRvIHRoZSAzMmJpdCAnaW5wdXQnIGNoZWNrc3VtLg0KU29tZXRoaW5nIGxp
-a2U6DQoJc3VtX2luICs9IGJ1ZltsZW5ndGggLSA4XSA8PCAoNjQgLSAobGVuZ3RoICYgNykgKiA4
-KSk7DQpBbm5veWluZ2x5IGEgc3BlY2lhbCBjYXNlIGlzIG5lZWRlZCBmb3IgYnVmZmVycyBzaG9y
-dGVyIHRoYW4gOCBieXRlcw0KdG8gYXZvaWQgZmFsbGluZyBvZmYgdGhlIHN0YXJ0IG9mIGEgcGFn
-ZS4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBS
-b2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9u
-IE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
+Hi, Wells!
 
+On 11/3/21 14:02, Wells Lu wrote:
+
+[code snip]
+
+> +		if (comm->dual_nic) {
+> +			struct net_device *net_dev2 = mac->next_netdev;
+> +
+> +			if (!netif_running(net_dev2)) {
+> +				mac_hw_stop(mac);
+> +
+> +				mac2 = netdev_priv(net_dev2);
+> +
+
+(*)
+
+> +				// unregister and free net device.
+> +				unregister_netdev(net_dev2);
+> +				free_netdev(net_dev2);
+> +				mac->next_netdev = NULL;
+> +				pr_info(" Unregistered and freed net device \"eth1\"!\n");
+> +
+> +				comm->dual_nic = 0;
+> +				mac_switch_mode(mac);
+> +				rx_mode_set(net_dev);
+> +				mac_hw_addr_del(mac2);
+> +
+
+mac2 is net_dev2 private data (*), so it will become freed after 
+free_netdev() call.
+
+FWIW the latest `smatch` should warn about this type of bugs.
+
+> +				// If eth0 is up, turn on lan 0 and 1 when
+> +				// switching to daisy-chain mode.
+> +				if (comm->enable & 0x1)
+> +					comm->enable = 0x3;
+
+[code snip]
+
+> +static int l2sw_remove(struct platform_device *pdev)
+> +{
+> +	struct net_device *net_dev;
+> +	struct net_device *net_dev2;
+> +	struct l2sw_mac *mac;
+> +
+> +	net_dev = platform_get_drvdata(pdev);
+> +	if (!net_dev)
+> +		return 0;
+> +	mac = netdev_priv(net_dev);
+> +
+> +	// Unregister and free 2nd net device.
+> +	net_dev2 = mac->next_netdev;
+> +	if (net_dev2) {
+> +		unregister_netdev(net_dev2);
+> +		free_netdev(net_dev2);
+> +	}
+> +
+
+Is it save here to free mac->next_netdev before unregistering "parent" 
+netdev? I haven't checked the whole code, just asking :)
+
+> +	sysfs_remove_group(&pdev->dev.kobj, &l2sw_attribute_group);
+> +
+> +	mac->comm->enable = 0;
+> +	soc0_stop(mac);
+> +
+> +	napi_disable(&mac->comm->rx_napi);
+> +	netif_napi_del(&mac->comm->rx_napi);
+> +	napi_disable(&mac->comm->tx_napi);
+> +	netif_napi_del(&mac->comm->tx_napi);
+> +
+> +	mdio_remove(net_dev);
+> +
+> +	// Unregister and free 1st net device.
+> +	unregister_netdev(net_dev);
+> +	free_netdev(net_dev);
+> +
+> +	clk_disable(mac->comm->clk);
+> +
+> +	// Free 'common' area.
+> +	kfree(mac->comm);
+
+Same here with `mac`.
+
+> +	return 0;
+> +}
+
+
+I haven't read the whole thread, i am sorry if these questions were 
+already discussed.
+
+
+
+With regards,
+Pavel Skripkin
