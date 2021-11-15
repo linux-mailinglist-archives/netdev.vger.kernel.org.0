@@ -2,140 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C0F3450109
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 10:19:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74085450116
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 10:21:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236344AbhKOJWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 04:22:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40596 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230302AbhKOJV1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 04:21:27 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2102CC061746
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 01:18:29 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id x75-20020a25ce4e000000b005c5d04a1d52so25602044ybe.23
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 01:18:29 -0800 (PST)
+        id S230383AbhKOJX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 04:23:57 -0500
+Received: from mx1.tq-group.com ([93.104.207.81]:12298 "EHLO mx1.tq-group.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237544AbhKOJXR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Nov 2021 04:23:17 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=DDF7rvzqvHmq625R5p02Vn6Now2KuXQQZ3he1Jdx/98=;
-        b=gvItqONCSe9Lgo0mVcfxcD8u0ADitEl1DmjGuV057JIir+gsRFGNefA+DeS86rjXgB
-         9+TPeytX80zHkBMkpbCS8jsY7kilYBfniHGbcingyrkN4p4ACNYz6oYzgWZHTIxXIDjD
-         QgrbfTTwgOvF0a3FeFSoiQqrGpqr/c6K6Jgo2yAYEv6T9AstCy4Lfac2VeCyzAP69wtr
-         npZcw1CpiWiztpvE27CkVhH0PA4FAfG9ITRw3Lpjfo41QrncpFn5h8S/MXN8q6Vayerw
-         TiDQUkRybXtYl/ZL5vpf04wnKJKVUnBeAFjFmKWgZtxpg+/jQfrqXs3BXtwdTEnP83uI
-         R/lA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=DDF7rvzqvHmq625R5p02Vn6Now2KuXQQZ3he1Jdx/98=;
-        b=oa0eFk7WvjgJ4+Vzai++88A9ARpmDaJ48qKg5kP7Z/2B9H7RIy/q/m9b4UDa8igsKD
-         COhUm+pkgrxJU71X+YfY93GK23rTxBRsFM8WlcQ7mb1avFRxJe+lTcLTNWNoRRuIJq7Z
-         eGLCxOzcxUf+N9FkkAcdnMlXz+Yntu9g9pmJ83nlL31DhGn6xQlDMjZu1hVVGcFtrMbz
-         XEdyoKTr4C9WlMdU9jmauRIfNxUfvPnUxeOzu3ZisXtJPm1TZfJUMW2SG7Xzk2S1s+XQ
-         /XL0Gh9Uo8O92RC7LSecQcQAnwnopstrJt2/VmHNFAxU8IzKkypSE/WnNL4dt3sOILbc
-         N05w==
-X-Gm-Message-State: AOAM530kfyFBcQqGNVVQsHkBQWvIDAv1b6rBgqwUvC2IaUlt9pLJZShN
-        U4NZmopk8qoaCHVwJIaEyJiaKZvYEdvf
-X-Google-Smtp-Source: ABdhPJwgMN9sgvk0dg1l0x1FK4aZj77ai6ObMDU8GM0xv7Bs8/XrJHodlMYejoqmmXXHWMa2aJBmvYbbtzxC
-X-Received: from apusaka-p920.tpe.corp.google.com ([2401:fa00:1:10:5c8f:7191:e5ca:14fb])
- (user=apusaka job=sendgmr) by 2002:a25:8408:: with SMTP id
- u8mr41624153ybk.258.1636967908407; Mon, 15 Nov 2021 01:18:28 -0800 (PST)
-Date:   Mon, 15 Nov 2021 17:17:50 +0800
-In-Reply-To: <20211115171726.v2.1.Id7366eb14b6f48173fcbf17846ace59479179c7c@changeid>
-Message-Id: <20211115171726.v2.2.I35b7f3a496f834de6b43a32f94b6160cb1467c94@changeid>
-Mime-Version: 1.0
-References: <20211115171726.v2.1.Id7366eb14b6f48173fcbf17846ace59479179c7c@changeid>
-X-Mailer: git-send-email 2.34.0.rc1.387.gb447b232ab-goog
-Subject: [PATCH v2 2/2] Bluetooth: Limit duration of Remote Name Resolve
-From:   Archie Pusaka <apusaka@google.com>
-To:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>
-Cc:     CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1636968021; x=1668504021;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=mTBUnMaN2CwH+4/F0vBfQFDpL5MOx60vPr71EBqcjFM=;
+  b=YXXeVdRYbFpJRkoHUBi0G3E0osuhT9BtZeX+U1f11Sjml+y3Nh1xkvRp
+   qK9DgeVazofVJvlu6S/Ai6qL3/jAKxr8V4XySswoKlom7LyjPrv5+Md4a
+   epOTjEO/9u66q0s/qxkLAUtrUf8bkcC3/l4Bz/fvsyv5nxE8gu2hUOoeh
+   DH6QqJC7keNyiZOLT3eP4qVAaB7vR4L0lOEQTK321Ju17/b8wlBrzpEub
+   kwzCtaHWA4NKaYtpzalTcvxzOOAIoYDHapVVkuFgBv/yjXkIdTl1u9XFf
+   NDWMsTpZdYOxhmg40xM+5lO5sxrB+nRpMPK+UWKJUKkWA7vhSHTAjhUKk
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.87,236,1631570400"; 
+   d="scan'208";a="20459390"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 15 Nov 2021 10:20:19 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Mon, 15 Nov 2021 10:20:19 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Mon, 15 Nov 2021 10:20:19 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1636968019; x=1668504019;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=mTBUnMaN2CwH+4/F0vBfQFDpL5MOx60vPr71EBqcjFM=;
+  b=H22jx6mUIVt1bJCEgO5syVpxx8LxEvP3lDuNBnFtzXmxjcdkNZMyOc4G
+   9DnUIBiuepZsQ6UneOlTlQa2WoYSHhBWbJdX46w/cWaSc7JTW9A5rzqm/
+   cgNU8/x/OaQqLszm/E2r3M84l3DVfUyzK7S3E7f0flpvzAP838ZtqH5n5
+   Miw9rQ8AgFDMukrMAUH03kh+k82hUAMGJgyCG41lcjiL+5r5SdHqMJinH
+   cEdMqiDeBbXCPKdbCZIdp9t6m64PUCGfXJpq/mrdNFSd4WGqg0lHv/Nfn
+   mwQ3SDBqgvaBN5N3sM4sR8VWR9eUn8eBYkfWT7cIR74o8cb/wiKxko5Jn
+   A==;
+X-IronPort-AV: E=Sophos;i="5.87,236,1631570400"; 
+   d="scan'208";a="20459389"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 15 Nov 2021 10:20:18 +0100
+Received: from schifferm-ubuntu4.tq-net.de (schifferm-ubuntu4.tq-net.de [10.121.48.12])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id B0E83280065;
+        Mon, 15 Nov 2021 10:20:18 +0100 (CET)
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        "Felipe Balbi (Intel)" <balbi@kernel.org>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Subject: [PATCH net 0/4] Fix bit timings for m_can_pci (Elkhart Lake)
+Date:   Mon, 15 Nov 2021 10:18:48 +0100
+Message-Id: <cover.1636967198.git.matthias.schiffer@ew.tq-group.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Archie Pusaka <apusaka@chromium.org>
+This series fixes two issues we found with the setup of the CAN
+controller of Intel Elkhart Lake CPUs:
 
-When doing remote name request, we cannot scan. In the normal case it's
-OK since we can expect it to finish within a short amount of time.
-However, there is a possibility to scan lots of devices that
-(1) requires Remote Name Resolve
-(2) is unresponsive to Remote Name Resolve
-When this happens, we are stuck to do Remote Name Resolve until all is
-done before continue scanning.
+- Patch 1 fixes an incorrect reference clock rate, which caused the
+  configured and the actual bitrate always to differ by a factor of 2.
+- Patches 2-4 fix a deviation between the driver and the documentation.
+  We did not actually see issues without these patches, however we did
+  only superficial testing and may just not have hit the specific
+  bittiming values that violate the documented limits.
 
-This patch adds a time limit to stop us spending too long on remote
-name request.
 
-Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
----
+Matthias Schiffer (4):
+  can: m_can: pci: fix incorrect reference clock rate
+  Revert "can: m_can: remove support for custom bit timing"
+  can: m_can: make custom bittiming fields const
+  can: m_can: pci: use custom bit timings for Elkhart Lake
 
-(no changes since v1)
+ drivers/net/can/m_can/m_can.c     | 24 ++++++++++++----
+ drivers/net/can/m_can/m_can.h     |  3 ++
+ drivers/net/can/m_can/m_can_pci.c | 48 ++++++++++++++++++++++++++++---
+ 3 files changed, 65 insertions(+), 10 deletions(-)
 
- include/net/bluetooth/hci_core.h | 3 +++
- net/bluetooth/hci_event.c        | 7 +++++++
- 2 files changed, 10 insertions(+)
-
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index b5f061882c10..4112907bb49d 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -88,6 +88,7 @@ struct discovery_state {
- 	u8			(*uuids)[16];
- 	unsigned long		scan_start;
- 	unsigned long		scan_duration;
-+	unsigned long		name_resolve_timeout;
- };
- 
- #define SUSPEND_NOTIFIER_TIMEOUT	msecs_to_jiffies(2000) /* 2 seconds */
-@@ -1762,6 +1763,8 @@ void hci_mgmt_chan_unregister(struct hci_mgmt_chan *c);
- #define DISCOV_LE_FAST_ADV_INT_MIN	0x00A0	/* 100 msec */
- #define DISCOV_LE_FAST_ADV_INT_MAX	0x00F0	/* 150 msec */
- 
-+#define NAME_RESOLVE_DURATION		msecs_to_jiffies(10240)	/* msec */
-+
- void mgmt_fill_version_info(void *ver);
- int mgmt_new_settings(struct hci_dev *hdev);
- void mgmt_index_added(struct hci_dev *hdev);
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 2de3080659f9..6180ab0e8b8d 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -2129,6 +2129,12 @@ static bool hci_resolve_next_name(struct hci_dev *hdev)
- 	if (list_empty(&discov->resolve))
- 		return false;
- 
-+	/* We should stop if we already spent too much time resolving names. */
-+	if (time_after(jiffies, discov->name_resolve_timeout)) {
-+		bt_dev_dbg(hdev, "Name resolve takes too long, stopping.");
-+		return false;
-+	}
-+
- 	e = hci_inquiry_cache_lookup_resolve(hdev, BDADDR_ANY, NAME_NEEDED);
- 	if (!e)
- 		return false;
-@@ -2716,6 +2722,7 @@ static void hci_inquiry_complete_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 	if (e && hci_resolve_name(hdev, e) == 0) {
- 		e->name_state = NAME_PENDING;
- 		hci_discovery_set_state(hdev, DISCOVERY_RESOLVING);
-+		discov->name_resolve_timeout = jiffies + NAME_RESOLVE_DURATION;
- 	} else {
- 		/* When BR/EDR inquiry is active and no LE scanning is in
- 		 * progress, then change discovery state to indicate completion.
 -- 
-2.34.0.rc1.387.gb447b232ab-goog
+2.17.1
 
