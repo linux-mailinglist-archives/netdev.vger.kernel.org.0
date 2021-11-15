@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86A754514AB
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 21:09:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 201144514B0
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 21:10:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349075AbhKOULt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 15:11:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37296 "EHLO
+        id S1348888AbhKOUMH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 15:12:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345804AbhKOT3Y (ORCPT
+        with ESMTP id S1345807AbhKOT3Y (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 14:29:24 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34CC4C06EDC0
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 11:03:18 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id 8so3948971pfo.4
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 11:03:18 -0800 (PST)
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F22AFC06EDC1
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 11:03:20 -0800 (PST)
+Received: by mail-pl1-x62e.google.com with SMTP id y7so15380592plp.0
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 11:03:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=FooQCbUIJ+BdByiyKpi0sSy78LSDGfQV+hc2qyor+T8=;
-        b=SGwyGH6qeokESF/Z7IQT6gReROC3o8xjNBCiMMEG+G4oVusmw0sm88sft568c9ifcN
-         ERFZ9atwI45h8HtrSXLa1/F5Qy+2s3SLscwDlp9pOI0ix2G1Wj6VTu4TZiwmE0E13nWJ
-         olJKj3BLeLB/hoJYYuH7vTbjnhz97GWz6X4jKIllGPN34ufgqbdMCdOrQRGVDc99oWxp
-         XlXpwqjM/zAI/agfTa8x60gCoQtY/SWjuduC2i3BoG1PQmM9heDpv7DUpwcy3xOiPKsb
-         vsIo2F4CNFm6EI5+xh6OPKlH01WC0OL+zNbPC5xER+d0CBQdQ4AUsyQ9VnnvkbTD4c0J
-         YF+w==
+        bh=cE2uznwFrliA3ejhifpoOM8+JmuLRcxyYcIVXX2zOq8=;
+        b=hUJ8O3orunQ3G0Dvlo7UYIp0/XV4rL0LosDFUvn3E5utWaIxCkAEy6mC/0Dcjq86JK
+         xj/O13Go7TFS2saga+uIKt7vCpH9MYrt+O5vcr4G3AHOKifnf5y1uM2xx0aZOGxxenED
+         TDg+ML3DY0slvy+qs5rDVqZJoQpsBYUWuPGhUIzLZ7Oj63qQkKKtuq64nNog+x0B3u8+
+         UBruytinXo+Xf15XStrAiyTAYD7HHKvpeFu0PZyOHGpIQkF2mP1hGeTZqQgCOsTrByBq
+         7qKYe9LbF/XRHAcc1+MnEREkDpyC4DouAFOZyXEk6wq9IqhPMEBzKFiqr4WuaeiehmOx
+         Zn1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=FooQCbUIJ+BdByiyKpi0sSy78LSDGfQV+hc2qyor+T8=;
-        b=uWoOzJsUmVIzmmXO+mUnEVk/4iOytMXwtyoaTzTcgsdFqw9JMFtFSMmpqpFlsJHBZY
-         Ghg9TbG0eALnE7j6CFBm48TTMKV5TuyL2f7UfvBbyX4aUuONDQQED+dzgai6v4y08wn1
-         CQaOC9m6VDvLKVcguJxwKhkp2GYbAkUIH5Ep0XweUXyaK9S7VLohDsjLla8nAXTrrcVj
-         MswYHkjuK2ZQ0nW1wX6vLZ3/G0X+QrUkd+qVvE70HPD/ud3p+hQYNc8mOfdj9gOLcqP8
-         6e8/rV5PT6vTBQGYDyeU5mNQT/KRw/O8bbF7bkw1mAPyUVfT7xlfHZDkEfLoby2kGC4U
-         sKjw==
-X-Gm-Message-State: AOAM530w9I4tscf2oeOKel30bdCdXYBnjZz6V1HmA9OFFXsT4g5QCRzG
-        P7b4RX1qmHZsG9/Gst4lyuE=
-X-Google-Smtp-Source: ABdhPJzEJnWrdVzZl7jdiAPjDlSWwNwnMF62JKv5Y0Ng6YYG7BLqdLEJLudLNO2kd8H3mBO7Yzb6QQ==
-X-Received: by 2002:a05:6a00:ac6:b029:374:a33b:a74 with SMTP id c6-20020a056a000ac6b0290374a33b0a74mr35437530pfl.51.1637002997725;
-        Mon, 15 Nov 2021 11:03:17 -0800 (PST)
+        bh=cE2uznwFrliA3ejhifpoOM8+JmuLRcxyYcIVXX2zOq8=;
+        b=5V++DEXUxWYDTOGrtAyKYgl0fJKLoU+Nx9eISTRNubu8KP859I+q3QMy5/afppHX+e
+         fTdXHWL5gggqnKOsp5pXUdfWJKXZvkghZpYLAstda7asSu0hdZwGrlKz6u85wqodvjpY
+         gHcl03cjlQTNs3bT4imSS0MgkwSPkPgsR2nT4dZiPo4xZAqB1MWq31NEvRi8SXZOPAs2
+         XEJxT43Qm6cYWuS+xJVbUYJPzXHUWsUZbNPMf/lrPbU9iONmV45244NHTjlwAmQ0yQQ2
+         /lQRpwWyTokMqnNYi9WkOta9lutwqycqSgWf+2fK0PjPwUXEZ9HQY7AD/1LV6cy/dEDK
+         UH2g==
+X-Gm-Message-State: AOAM5327auYnwHly2NndxwL69PF8DUzgcPo4q5R7w+dhidYdLagkH8zq
+        mtDggZcdcDn9WW1nXiHEHMY=
+X-Google-Smtp-Source: ABdhPJxQg/DxPh000MK9J8csDabxIHZx/SSuBdi2BAZizn2Wx7u8STlYPctXBAuQfO7w8ok4LH0wMQ==
+X-Received: by 2002:a17:903:285:b0:142:7a83:6dd2 with SMTP id j5-20020a170903028500b001427a836dd2mr37381870plr.59.1637003000547;
+        Mon, 15 Nov 2021 11:03:20 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:4994:f3d6:2eb1:61cb])
-        by smtp.gmail.com with ESMTPSA id f21sm11850834pfe.69.2021.11.15.11.03.17
+        by smtp.gmail.com with ESMTPSA id f21sm11850834pfe.69.2021.11.15.11.03.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Nov 2021 11:03:17 -0800 (PST)
+        Mon, 15 Nov 2021 11:03:20 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -56,9 +56,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Soheil Hassas Yeganeh <soheil@google.com>,
         Neal Cardwell <ncardwell@google.com>,
         Arjun Roy <arjunroy@google.com>
-Subject: [PATCH net-next 13/20] tcp: annotate data-races on tp->segs_in and tp->data_segs_in
-Date:   Mon, 15 Nov 2021 11:02:42 -0800
-Message-Id: <20211115190249.3936899-14-eric.dumazet@gmail.com>
+Subject: [PATCH net-next 15/20] tcp: tp->urg_data is unlikely to be set
+Date:   Mon, 15 Nov 2021 11:02:44 -0800
+Message-Id: <20211115190249.3936899-16-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.34.0.rc1.387.gb447b232ab-goog
 In-Reply-To: <20211115190249.3936899-1-eric.dumazet@gmail.com>
 References: <20211115190249.3936899-1-eric.dumazet@gmail.com>
@@ -70,58 +70,81 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-tcp_segs_in() can be called from BH, while socket spinlock
-is held but socket owned by user, eventually reading these
-fields from tcp_get_info()
-
-Found by code inspection, no need to backport this patch
-to older kernels.
+Use some unlikely() hints in the fast path.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- include/net/tcp.h | 8 ++++++--
- net/ipv4/tcp.c    | 6 ++++--
- 2 files changed, 10 insertions(+), 4 deletions(-)
+ net/ipv4/tcp.c       | 10 +++++-----
+ net/ipv4/tcp_input.c |  4 ++--
+ 2 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 4da22b41bde688dec4a3741f510346dae0cf32e0..05c81677aaf782f23b8c63d6ed133df802b43064 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -2172,9 +2172,13 @@ static inline void tcp_segs_in(struct tcp_sock *tp, const struct sk_buff *skb)
- 	u16 segs_in;
- 
- 	segs_in = max_t(u16, 1, skb_shinfo(skb)->gso_segs);
--	tp->segs_in += segs_in;
-+
-+	/* We update these fields while other threads might
-+	 * read them from tcp_get_info()
-+	 */
-+	WRITE_ONCE(tp->segs_in, tp->segs_in + segs_in);
- 	if (skb->len > tcp_hdrlen(skb))
--		tp->data_segs_in += segs_in;
-+		WRITE_ONCE(tp->data_segs_in, tp->data_segs_in + segs_in);
- }
- 
- /*
 diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 24d77a32c9cbcdf0e4380ec6d9aa3e42d2cf8730..267b2b18f048c4df4cabd819433a99bf8b3f2678 100644
+index 313cf648c349a24ab7a04729180ec9b76b2f6aa2..9175e0d729f5e65b5fa39acadc5bf9de715854ad 100644
 --- a/net/ipv4/tcp.c
 +++ b/net/ipv4/tcp.c
-@@ -3769,10 +3769,12 @@ void tcp_get_info(struct sock *sk, struct tcp_info *info)
- 	tcp_get_info_chrono_stats(tp, info);
+@@ -547,7 +547,7 @@ __poll_t tcp_poll(struct file *file, struct socket *sock, poll_table *wait)
+ 		int target = sock_rcvlowat(sk, 0, INT_MAX);
+ 		u16 urg_data = READ_ONCE(tp->urg_data);
  
- 	info->tcpi_segs_out = tp->segs_out;
--	info->tcpi_segs_in = tp->segs_in;
-+
-+	/* segs_in and data_segs_in can be updated from tcp_segs_in() from BH */
-+	info->tcpi_segs_in = READ_ONCE(tp->segs_in);
-+	info->tcpi_data_segs_in = READ_ONCE(tp->data_segs_in);
+-		if (urg_data &&
++		if (unlikely(urg_data) &&
+ 		    READ_ONCE(tp->urg_seq) == READ_ONCE(tp->copied_seq) &&
+ 		    !sock_flag(sk, SOCK_URGINLINE))
+ 			target++;
+@@ -1633,7 +1633,7 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
  
- 	info->tcpi_min_rtt = tcp_min_rtt(tp);
--	info->tcpi_data_segs_in = tp->data_segs_in;
- 	info->tcpi_data_segs_out = tp->data_segs_out;
+ 			len = skb->len - offset;
+ 			/* Stop reading if we hit a patch of urgent data */
+-			if (tp->urg_data) {
++			if (unlikely(tp->urg_data)) {
+ 				u32 urg_offset = tp->urg_seq - seq;
+ 				if (urg_offset < len)
+ 					len = urg_offset;
+@@ -2326,7 +2326,7 @@ static int tcp_recvmsg_locked(struct sock *sk, struct msghdr *msg, size_t len,
+ 		u32 offset;
  
- 	info->tcpi_delivery_rate_app_limited = tp->rate_app_limited ? 1 : 0;
+ 		/* Are we at urgent data? Stop if we have read anything or have SIGURG pending. */
+-		if (tp->urg_data && tp->urg_seq == *seq) {
++		if (unlikely(tp->urg_data) && tp->urg_seq == *seq) {
+ 			if (copied)
+ 				break;
+ 			if (signal_pending(current)) {
+@@ -2431,7 +2431,7 @@ static int tcp_recvmsg_locked(struct sock *sk, struct msghdr *msg, size_t len,
+ 			used = len;
+ 
+ 		/* Do we have urgent data here? */
+-		if (tp->urg_data) {
++		if (unlikely(tp->urg_data)) {
+ 			u32 urg_offset = tp->urg_seq - *seq;
+ 			if (urg_offset < used) {
+ 				if (!urg_offset) {
+@@ -2465,7 +2465,7 @@ static int tcp_recvmsg_locked(struct sock *sk, struct msghdr *msg, size_t len,
+ 		tcp_rcv_space_adjust(sk);
+ 
+ skip_copy:
+-		if (tp->urg_data && after(tp->copied_seq, tp->urg_seq)) {
++		if (unlikely(tp->urg_data) && after(tp->copied_seq, tp->urg_seq)) {
+ 			WRITE_ONCE(tp->urg_data, 0);
+ 			tcp_fast_path_check(sk);
+ 		}
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 5ee07a337652696bdebb1117334ff39d88fd0276..3658b9c3dd2b6cd4610603c78509c9af25ddcdbc 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -5604,11 +5604,11 @@ static void tcp_urg(struct sock *sk, struct sk_buff *skb, const struct tcphdr *t
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 
+ 	/* Check if we get a new urgent pointer - normally not. */
+-	if (th->urg)
++	if (unlikely(th->urg))
+ 		tcp_check_urg(sk, th);
+ 
+ 	/* Do we wait for any urgent data? - normally not... */
+-	if (tp->urg_data == TCP_URG_NOTYET) {
++	if (unlikely(tp->urg_data == TCP_URG_NOTYET)) {
+ 		u32 ptr = tp->urg_seq - ntohl(th->seq) + (th->doff * 4) -
+ 			  th->syn;
+ 
 -- 
 2.34.0.rc1.387.gb447b232ab-goog
 
