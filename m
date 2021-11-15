@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 375644517EC
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 23:47:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C3934517EF
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 23:47:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243150AbhKOWuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 17:50:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47452 "EHLO mail.kernel.org"
+        id S233869AbhKOWuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 17:50:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47454 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1351196AbhKOWlU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1351198AbhKOWlU (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 15 Nov 2021 17:41:20 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5C4F763258;
-        Mon, 15 Nov 2021 22:35:11 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D7BBE63259;
+        Mon, 15 Nov 2021 22:35:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637015714;
-        bh=bpEma7GCeqWa7+Tfd2wf5411PzDaNcdrIj3xPXbB+CA=;
+        s=k20201202; t=1637015718;
+        bh=I0Elc0hfA1titTsiSCoZYcE37ypgrqj8u2Re/+tTr0k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kC1JjGKyR95fSW4iZFQuKucpys68P1APRRzZAZC6L3crZMNmWiwAqaTW7OyifSRmf
-         8gQYEue99JB8IdWPZeciAVtS3wWV/1/AM/Td0x9lvZdId4wNS4mS3l/vAXexTsGCnu
-         3fTbmB45GbBQsWrapfGi3tk+Vu1IXoRUZ7akfvZSU2fGiqEmnkilDPMvvQkAPjMeYm
-         YkMUPLONxLxT2ky+pl5cmA9axur+4vGgPMyAXqVoiZmWV6hBwjtorUUQHvaRup9bkv
-         B7Osxr24WINbZShPMu3/ShKmlKe1pSCCYRkC6Ko0l1CF7yp/DhKaw8oooTPUudEoU+
-         376/kqVUvrtCw==
+        b=j9DLO+YwSlaEggBAbtdJLSKmbF1GyKmgsYcwvaUODTixk157i3nOS1n5MsJJSEOzB
+         4qUZGXvsXMtxoVII4chFj3eLfRkBVqTQLbBa32zbNyQny+xGhferHBlLKL6KfLnyHo
+         MEQUTias1rqaaVpxDdhpCQ/oeRIvrpmsd/2A9hqoKNnHUw9SxjNmBntWiSxOIaqHrf
+         77InYzjpH6m4EP2gFGWDcjaBRCdw152h+nJNHhtRoDG5rUikUJizAFitp+/saJkwm6
+         r4kDLUg3odm1Tt3/5Ckzw3/81P2JEjlosSvAjAXqApGQO8xpvoCQQoZByRW0hE/yBq
+         P+9HceahneNjA==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
@@ -32,9 +32,9 @@ Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         alexander.duyck@gmail.com, saeed@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
         tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: [PATCH v18 bpf-next 20/23] net: xdp: introduce bpf_xdp_pointer utility routine
-Date:   Mon, 15 Nov 2021 23:33:14 +0100
-Message-Id: <ce5ad30af8f9b4d2b8128e7488818449a5c0d833.1637013639.git.lorenzo@kernel.org>
+Subject: [PATCH v18 bpf-next 21/23] bpf: selftests: introduce bpf_xdp_{load,store}_bytes selftest
+Date:   Mon, 15 Nov 2021 23:33:15 +0100
+Message-Id: <3369659c7ae5df147c890c8aa4555f94f5879529.1637013639.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1637013639.git.lorenzo@kernel.org>
 References: <cover.1637013639.git.lorenzo@kernel.org>
@@ -44,240 +44,152 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to skb_header_pointer, introduce bpf_xdp_pointer utility routine
-to return a pointer to a given position in the xdp_buff if the requested
-area (offset + len) is contained in a contiguous memory area otherwise it
-will be copied in a bounce buffer provided by the caller.
-Similar to the tc counterpart, introduce the two following xdp helpers:
-- bpf_xdp_load_bytes
-- bpf_xdp_store_bytes
+Introduce kernel selftest for new bpf_xdp_{load,store}_bytes helpers.
+and bpf_xdp_pointer/bpf_xdp_copy_buf utility routines.
 
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- include/uapi/linux/bpf.h       |  18 +++++
- net/core/filter.c              | 129 +++++++++++++++++++++++++++++++++
- tools/include/uapi/linux/bpf.h |  18 +++++
- 3 files changed, 165 insertions(+)
+ .../bpf/prog_tests/xdp_adjust_frags.c         | 81 +++++++++++++++++++
+ .../bpf/progs/test_xdp_update_frags.c         | 42 ++++++++++
+ 2 files changed, 123 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_adjust_frags.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_update_frags.c
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 556621a3f7b4..c20e9534fab5 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -4968,6 +4968,22 @@ union bpf_attr {
-  *		Get the total size of a given xdp buff (linear and paged area)
-  *	Return
-  *		The total size of a given xdp buffer.
-+ *
-+ * long bpf_xdp_load_bytes(struct xdp_buff *xdp_md, u32 offset, void *buf, u32 len)
-+ *	Description
-+ *		This helper is provided as an easy way to load data from a
-+ *		xdp buffer. It can be used to load *len* bytes from *offset* from
-+ *		the frame associated to *xdp_md*, into the buffer pointed by
-+ *		*buf*.
-+ *	Return
-+ *		0 on success, or a negative error in case of failure.
-+ *
-+ * long bpf_xdp_store_bytes(struct xdp_buff *xdp_md, u32 offset, void *buf, u32 len)
-+ *	Description
-+ *		Store *len* bytes from buffer *buf* into the frame
-+ *		associated to *xdp_md*, at *offset*.
-+ *	Return
-+ *		0 on success, or a negative error in case of failure.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -5152,6 +5168,8 @@ union bpf_attr {
- 	FN(kallsyms_lookup_name),	\
- 	FN(find_vma),			\
- 	FN(xdp_get_buff_len),		\
-+	FN(xdp_load_bytes),		\
-+	FN(xdp_store_bytes),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 975393300535..21a2c47809b5 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -3840,6 +3840,131 @@ static const struct bpf_func_proto bpf_xdp_adjust_head_proto = {
- 	.arg2_type	= ARG_ANYTHING,
- };
- 
-+static void bpf_xdp_copy_buf(struct xdp_buff *xdp, u32 offset,
-+			     u32 len, void *buf, bool flush)
+diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_frags.c b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_frags.c
+new file mode 100644
+index 000000000000..53febbcb8fd4
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_frags.c
+@@ -0,0 +1,81 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <test_progs.h>
++#include <network_helpers.h>
++
++void test_xdp_update_frags(void)
 +{
-+	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
-+	u32 headsize = xdp->data_end - xdp->data;
-+	u32 count = 0, frame_offset = headsize;
-+	int i;
++	const char *file = "./test_xdp_update_frags.o";
++	__u32 duration, retval, size;
++	struct bpf_object *obj;
++	int err, prog_fd;
++	__u32 *offset;
++	__u8 *buf;
 +
-+	if (offset < headsize) {
-+		int size = min_t(int, headsize - offset, len);
-+		void *src = flush ? buf : xdp->data + offset;
-+		void *dst = flush ? xdp->data + offset : buf;
++	err = bpf_prog_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
++	if (CHECK_FAIL(err))
++		return;
 +
-+		memcpy(dst, src, size);
-+		count = size;
-+		offset = 0;
-+	}
++	buf = malloc(128);
++	if (CHECK(!buf, "malloc()", "error:%s\n", strerror(errno)))
++		return;
 +
-+	for (i = 0; i < sinfo->nr_frags; i++) {
-+		skb_frag_t *frag = &sinfo->frags[i];
-+		u32 frag_size = skb_frag_size(frag);
++	memset(buf, 0, 128);
++	offset = (__u32 *)buf;
++	*offset = 16;
++	buf[*offset] = 0xaa;		/* marker at offset 16 */
++	buf[*offset + 15] = 0xaa;	/* marker at offset 31 */
 +
-+		if (count >= len)
-+			break;
++	err = bpf_prog_test_run(prog_fd, 1, buf, 128,
++				buf, &size, &retval, &duration);
 +
-+		if (offset < frame_offset + frag_size) {
-+			int size = min_t(int, frag_size - offset, len - count);
-+			void *addr = skb_frag_address(frag);
-+			void *src = flush ? buf + count : addr + offset;
-+			void *dst = flush ? addr + offset : buf + count;
++	/* test_xdp_update_frags: buf[16,31]: 0xaa -> 0xbb */
++	CHECK(err || retval != XDP_PASS || buf[16] != 0xbb || buf[31] != 0xbb,
++	      "128b", "err %d errno %d retval %d size %d\n",
++	      err, errno, retval, size);
 +
-+			memcpy(dst, src, size);
-+			count += size;
-+			offset = 0;
-+		}
-+		frame_offset += frag_size;
-+	}
++	free(buf);
++
++	buf = malloc(9000);
++	if (CHECK(!buf, "malloc()", "error:%s\n", strerror(errno)))
++		return;
++
++	memset(buf, 0, 9000);
++	offset = (__u32 *)buf;
++	*offset = 5000;
++	buf[*offset] = 0xaa;		/* marker at offset 5000 (frag0) */
++	buf[*offset + 15] = 0xaa;	/* marker at offset 5015 (frag0) */
++
++	err = bpf_prog_test_run(prog_fd, 1, buf, 9000,
++				buf, &size, &retval, &duration);
++
++	/* test_xdp_update_frags: buf[5000,5015]: 0xaa -> 0xbb */
++	CHECK(err || retval != XDP_PASS ||
++	      buf[5000] != 0xbb || buf[5015] != 0xbb,
++	      "9000b", "err %d errno %d retval %d size %d\n",
++	      err, errno, retval, size);
++
++	memset(buf, 0, 9000);
++	offset = (__u32 *)buf;
++	*offset = 3510;
++	buf[*offset] = 0xaa;		/* marker at offset 3510 (head) */
++	buf[*offset + 15] = 0xaa;	/* marker at offset 3525 (frag0) */
++
++	err = bpf_prog_test_run(prog_fd, 1, buf, 9000,
++				buf, &size, &retval, &duration);
++
++	/* test_xdp_update_frags: buf[3510,3525]: 0xaa -> 0xbb */
++	CHECK(err || retval != XDP_PASS ||
++	      buf[3510] != 0xbb || buf[3525] != 0xbb,
++	      "9000b", "err %d errno %d retval %d size %d\n",
++	      err, errno, retval, size);
++
++	free(buf);
++
++	bpf_object__close(obj);
 +}
 +
-+static void *bpf_xdp_pointer(struct xdp_buff *xdp, u32 offset,
-+			     u32 len, void *buf)
++void test_xdp_adjust_frags(void)
 +{
-+	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
-+	u32 size = xdp->data_end - xdp->data;
-+	void *addr = xdp->data;
-+	int i;
++	if (test__start_subtest("xdp_adjust_frags"))
++		test_xdp_update_frags();
++}
+diff --git a/tools/testing/selftests/bpf/progs/test_xdp_update_frags.c b/tools/testing/selftests/bpf/progs/test_xdp_update_frags.c
+new file mode 100644
+index 000000000000..5801f05219db
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_xdp_update_frags.c
+@@ -0,0 +1,42 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of version 2 of the GNU General Public
++ * License as published by the Free Software Foundation.
++ */
++#include <linux/bpf.h>
++#include <linux/if_ether.h>
++#include <bpf/bpf_helpers.h>
 +
-+	if (unlikely(offset > 0xffff || len > 0xffff))
-+		return ERR_PTR(-EFAULT);
++int _version SEC("version") = 1;
 +
-+	if (offset + len > xdp_get_buff_len(xdp))
-+		return ERR_PTR(-EINVAL);
++SEC("xdp_mb/xdp_adjust_frags")
++int _xdp_adjust_frags(struct xdp_md *xdp)
++{
++	__u8 *data_end = (void *)(long)xdp->data_end;
++	__u8 *data = (void *)(long)xdp->data;
++	__u8 val[16] = {};
++	__u32 offset;
++	int err;
 +
-+	if (offset < size) /* linear area */
-+		goto out;
++	if (data + sizeof(__u32) > data_end)
++		return XDP_DROP;
 +
-+	offset -= size;
-+	for (i = 0; i < sinfo->nr_frags; i++) { /* paged area */
-+		u32 frag_size = skb_frag_size(&sinfo->frags[i]);
++	offset = *(__u32 *)data;
++	err = bpf_xdp_load_bytes(xdp, offset, val, sizeof(val));
++	if (err < 0)
++		return XDP_DROP;
 +
-+		if  (offset < frag_size) {
-+			addr = skb_frag_address(&sinfo->frags[i]);
-+			size = frag_size;
-+			break;
-+		}
-+		offset -= frag_size;
-+	}
-+out:
-+	return offset + len < size ? addr + offset : NULL;
++	if (val[0] != 0xaa || val[15] != 0xaa) /* marker */
++		return XDP_DROP;
++
++	val[0] = 0xbb; /* update the marker */
++	val[15] = 0xbb;
++	err = bpf_xdp_store_bytes(xdp, offset, val, sizeof(val));
++	if (err < 0)
++		return XDP_DROP;
++
++	return XDP_PASS;
 +}
 +
-+BPF_CALL_4(bpf_xdp_load_bytes, struct xdp_buff *, xdp, u32, offset,
-+	   void *, buf, u32, len)
-+{
-+	void *ptr;
-+
-+	ptr = bpf_xdp_pointer(xdp, offset, len, buf);
-+	if (IS_ERR(ptr))
-+		return PTR_ERR(ptr);
-+
-+	if (!ptr)
-+		bpf_xdp_copy_buf(xdp, offset, len, buf, false);
-+	else
-+		memcpy(buf, ptr, len);
-+
-+	return 0;
-+}
-+
-+static const struct bpf_func_proto bpf_xdp_load_bytes_proto = {
-+	.func		= bpf_xdp_load_bytes,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_CTX,
-+	.arg2_type	= ARG_ANYTHING,
-+	.arg3_type	= ARG_PTR_TO_UNINIT_MEM,
-+	.arg4_type	= ARG_CONST_SIZE,
-+};
-+
-+BPF_CALL_4(bpf_xdp_store_bytes, struct xdp_buff *, xdp, u32, offset,
-+	   void *, buf, u32, len)
-+{
-+	void *ptr;
-+
-+	ptr = bpf_xdp_pointer(xdp, offset, len, NULL);
-+	if (IS_ERR(ptr))
-+		return PTR_ERR(ptr);
-+
-+	if (!ptr)
-+		bpf_xdp_copy_buf(xdp, offset, len, buf, true);
-+	else
-+		memcpy(ptr, buf, len);
-+
-+	return 0;
-+}
-+
-+static const struct bpf_func_proto bpf_xdp_store_bytes_proto = {
-+	.func		= bpf_xdp_store_bytes,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_CTX,
-+	.arg2_type	= ARG_ANYTHING,
-+	.arg3_type	= ARG_PTR_TO_UNINIT_MEM,
-+	.arg4_type	= ARG_CONST_SIZE,
-+};
-+
- static int bpf_xdp_mb_increase_tail(struct xdp_buff *xdp, int offset)
- {
- 	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
-@@ -7600,6 +7725,10 @@ xdp_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 		return &bpf_xdp_adjust_tail_proto;
- 	case BPF_FUNC_xdp_get_buff_len:
- 		return &bpf_xdp_get_buff_len_proto;
-+	case BPF_FUNC_xdp_load_bytes:
-+		return &bpf_xdp_load_bytes_proto;
-+	case BPF_FUNC_xdp_store_bytes:
-+		return &bpf_xdp_store_bytes_proto;
- 	case BPF_FUNC_fib_lookup:
- 		return &bpf_xdp_fib_lookup_proto;
- 	case BPF_FUNC_check_mtu:
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 556621a3f7b4..c20e9534fab5 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -4968,6 +4968,22 @@ union bpf_attr {
-  *		Get the total size of a given xdp buff (linear and paged area)
-  *	Return
-  *		The total size of a given xdp buffer.
-+ *
-+ * long bpf_xdp_load_bytes(struct xdp_buff *xdp_md, u32 offset, void *buf, u32 len)
-+ *	Description
-+ *		This helper is provided as an easy way to load data from a
-+ *		xdp buffer. It can be used to load *len* bytes from *offset* from
-+ *		the frame associated to *xdp_md*, into the buffer pointed by
-+ *		*buf*.
-+ *	Return
-+ *		0 on success, or a negative error in case of failure.
-+ *
-+ * long bpf_xdp_store_bytes(struct xdp_buff *xdp_md, u32 offset, void *buf, u32 len)
-+ *	Description
-+ *		Store *len* bytes from buffer *buf* into the frame
-+ *		associated to *xdp_md*, at *offset*.
-+ *	Return
-+ *		0 on success, or a negative error in case of failure.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -5152,6 +5168,8 @@ union bpf_attr {
- 	FN(kallsyms_lookup_name),	\
- 	FN(find_vma),			\
- 	FN(xdp_get_buff_len),		\
-+	FN(xdp_load_bytes),		\
-+	FN(xdp_store_bytes),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
++char _license[] SEC("license") = "GPL";
 -- 
 2.31.1
 
