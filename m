@@ -2,45 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E67FB450D3F
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 18:50:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F086B45112F
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 19:59:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237942AbhKORxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 12:53:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36298 "EHLO mail.kernel.org"
+        id S243125AbhKOTCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 14:02:16 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59676 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238357AbhKORtS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 12:49:18 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0E65A6331A;
-        Mon, 15 Nov 2021 17:30:36 +0000 (UTC)
+        id S243375AbhKOS5p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Nov 2021 13:57:45 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6E3516348C;
+        Mon, 15 Nov 2021 18:12:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1636997436;
-        bh=RvhLvZ/ApkAe4kgJ3nlQ6+LY5y0knpUdvM3VTNWyh6I=;
+        s=korg; t=1636999947;
+        bh=dO4Em7Otl80EnctTdADWwVVQuJMq6UvPT5Gx1yuNDcA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fWIbPnzPBAovpcHFKONNDf6lqkUtZp5CxMVwnTW9BN8weqrTIH171HKXWblgYC2gs
-         5CPELTKrlE0WcZlQ/YEPXLna5dzndZ0lL/SVeMu9BjbAOLPz7moH3QDyYr3dPWmgvb
-         Ck8BYs8yjE6MzfSrew/oWiKKzk460zqbmAZIKkaU=
+        b=pg5JkR089e+86QxjC/qHYiJm+JSwcRW/otTLp/Ns9NmU4TH+je+eitoOAbCIgghSy
+         RS2BHAfT3GGkxq28bktNwiIyExdWWJNwSBOnQ6qYvJW8NvGWiY0mgLvBf67YOqJE0u
+         jkvSIMG40PQMYRFNHRSDUTBc3RIOhSpNzxMv8lTI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Amitkumar Karwar <amit.karwar@redpinesignals.com>,
-        Angus Ainslie <angus@akkea.ca>,
+        stable@vger.kernel.org, Claudiu Manoil <claudiu.manoil@nxp.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Karun Eagalapati <karun256@gmail.com>,
-        Martin Fuzzey <martin.fuzzey@flowbird.group>,
-        Martin Kepplinger <martink@posteo.de>,
-        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
-        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
-        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
-Subject: [PATCH 5.10 114/575] rsi: Fix module dev_oper_mode parameter description
-Date:   Mon, 15 Nov 2021 17:57:19 +0100
-Message-Id: <20211115165347.606828636@linuxfoundation.org>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Tim Gardner <tim.gardner@canonical.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.14 481/849] net: enetc: unmap DMA in enetc_send_cmd()
+Date:   Mon, 15 Nov 2021 17:59:24 +0100
+Message-Id: <20211115165436.550986319@linuxfoundation.org>
 X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20211115165343.579890274@linuxfoundation.org>
-References: <20211115165343.579890274@linuxfoundation.org>
+In-Reply-To: <20211115165419.961798833@linuxfoundation.org>
+References: <20211115165419.961798833@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,95 +42,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Tim Gardner <tim.gardner@canonical.com>
 
-commit 31f97cf9f0c31143a2a6fcc89c4a1286ce20157e upstream.
+[ Upstream commit cd4bc63de774eee95e9bac26a565cd80e0fca421 ]
 
-The module parameters are missing dev_oper_mode 12, BT classic alone,
-add it. Moreover, the parameters encode newlines, which ends up being
-printed malformed e.g. by modinfo, so fix that too.
+Coverity complains of a possible dereference of a null return value.
 
-However, the module parameter string is duplicated in both USB and SDIO
-modules and the dev_oper_mode mode enumeration in those module parameters
-is a duplicate of macros used by the driver. Furthermore, the enumeration
-is confusing.
+   	5. returned_null: kzalloc returns NULL. [show details]
+   	6. var_assigned: Assigning: si_data = NULL return value from kzalloc.
+488        si_data = kzalloc(data_size, __GFP_DMA | GFP_KERNEL);
+489        cbd.length = cpu_to_le16(data_size);
+490
+491        dma = dma_map_single(&priv->si->pdev->dev, si_data,
+492                             data_size, DMA_FROM_DEVICE);
 
-So, deduplicate the module parameter string and use __stringify() to
-encode the correct mode enumeration values into the module parameter
-string. Finally, replace 'Wi-Fi' with 'Wi-Fi alone' and 'BT' with
-'BT classic alone' to clarify what those modes really mean.
+While this kzalloc() is unlikely to fail, I did notice that the function
+returned without unmapping si_data.
 
-Fixes: 898b255339310 ("rsi: add module parameter operating mode")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Amitkumar Karwar <amit.karwar@redpinesignals.com>
-Cc: Angus Ainslie <angus@akkea.ca>
-Cc: David S. Miller <davem@davemloft.net>
+Fix this by refactoring the error paths and checking for kzalloc()
+failure.
+
+Fixes: 888ae5a3952ba ("net: enetc: add tc flower psfp offload driver")
+Cc: Claudiu Manoil <claudiu.manoil@nxp.com>
+Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: Karun Eagalapati <karun256@gmail.com>
-Cc: Martin Fuzzey <martin.fuzzey@flowbird.group>
-Cc: Martin Kepplinger <martink@posteo.de>
-Cc: Prameela Rani Garnepudi <prameela.j04cs@gmail.com>
-Cc: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
-Cc: Siva Rebbagondla <siva8118@gmail.com>
 Cc: netdev@vger.kernel.org
-Cc: <stable@vger.kernel.org> # 4.17+
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20210916144245.10181-1-marex@denx.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org (open list)
+Signed-off-by: Tim Gardner <tim.gardner@canonical.com>
+Acked-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/rsi/rsi_91x_sdio.c |    5 +----
- drivers/net/wireless/rsi/rsi_91x_usb.c  |    5 +----
- drivers/net/wireless/rsi/rsi_hal.h      |   11 +++++++++++
- 3 files changed, 13 insertions(+), 8 deletions(-)
+ .../net/ethernet/freescale/enetc/enetc_qos.c   | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
 
---- a/drivers/net/wireless/rsi/rsi_91x_sdio.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_sdio.c
-@@ -24,10 +24,7 @@
- /* Default operating mode is wlan STA + BT */
- static u16 dev_oper_mode = DEV_OPMODE_STA_BT_DUAL;
- module_param(dev_oper_mode, ushort, 0444);
--MODULE_PARM_DESC(dev_oper_mode,
--		 "1[Wi-Fi], 4[BT], 8[BT LE], 5[Wi-Fi STA + BT classic]\n"
--		 "9[Wi-Fi STA + BT LE], 13[Wi-Fi STA + BT classic + BT LE]\n"
--		 "6[AP + BT classic], 14[AP + BT classic + BT LE]");
-+MODULE_PARM_DESC(dev_oper_mode, DEV_OPMODE_PARAM_DESC);
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+index 4577226d3c6ad..0536d2c76fbc4 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+@@ -486,14 +486,16 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
  
- /**
-  * rsi_sdio_set_cmd52_arg() - This function prepares cmd 52 read/write arg.
---- a/drivers/net/wireless/rsi/rsi_91x_usb.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_usb.c
-@@ -25,10 +25,7 @@
- /* Default operating mode is wlan STA + BT */
- static u16 dev_oper_mode = DEV_OPMODE_STA_BT_DUAL;
- module_param(dev_oper_mode, ushort, 0444);
--MODULE_PARM_DESC(dev_oper_mode,
--		 "1[Wi-Fi], 4[BT], 8[BT LE], 5[Wi-Fi STA + BT classic]\n"
--		 "9[Wi-Fi STA + BT LE], 13[Wi-Fi STA + BT classic + BT LE]\n"
--		 "6[AP + BT classic], 14[AP + BT classic + BT LE]");
-+MODULE_PARM_DESC(dev_oper_mode, DEV_OPMODE_PARAM_DESC);
+ 	data_size = sizeof(struct streamid_data);
+ 	si_data = kzalloc(data_size, __GFP_DMA | GFP_KERNEL);
++	if (!si_data)
++		return -ENOMEM;
+ 	cbd.length = cpu_to_le16(data_size);
  
- static int rsi_rx_urb_submit(struct rsi_hw *adapter, u8 ep_num, gfp_t flags);
+ 	dma = dma_map_single(&priv->si->pdev->dev, si_data,
+ 			     data_size, DMA_FROM_DEVICE);
+ 	if (dma_mapping_error(&priv->si->pdev->dev, dma)) {
+ 		netdev_err(priv->si->ndev, "DMA mapping failed!\n");
+-		kfree(si_data);
+-		return -ENOMEM;
++		err = -ENOMEM;
++		goto out;
+ 	}
  
---- a/drivers/net/wireless/rsi/rsi_hal.h
-+++ b/drivers/net/wireless/rsi/rsi_hal.h
-@@ -28,6 +28,17 @@
- #define DEV_OPMODE_AP_BT		6
- #define DEV_OPMODE_AP_BT_DUAL		14
+ 	cbd.addr[0] = cpu_to_le32(lower_32_bits(dma));
+@@ -512,12 +514,10 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
  
-+#define DEV_OPMODE_PARAM_DESC		\
-+	__stringify(DEV_OPMODE_WIFI_ALONE)	"[Wi-Fi alone], "	\
-+	__stringify(DEV_OPMODE_BT_ALONE)	"[BT classic alone], "	\
-+	__stringify(DEV_OPMODE_BT_LE_ALONE)	"[BT LE alone], "	\
-+	__stringify(DEV_OPMODE_BT_DUAL)		"[BT classic + BT LE alone], " \
-+	__stringify(DEV_OPMODE_STA_BT)		"[Wi-Fi STA + BT classic], " \
-+	__stringify(DEV_OPMODE_STA_BT_LE)	"[Wi-Fi STA + BT LE], "	\
-+	__stringify(DEV_OPMODE_STA_BT_DUAL)	"[Wi-Fi STA + BT classic + BT LE], " \
-+	__stringify(DEV_OPMODE_AP_BT)		"[Wi-Fi AP + BT classic], "	\
-+	__stringify(DEV_OPMODE_AP_BT_DUAL)	"[Wi-Fi AP + BT classic + BT LE]"
+ 	err = enetc_send_cmd(priv->si, &cbd);
+ 	if (err)
+-		return -EINVAL;
++		goto out;
+ 
+-	if (!enable) {
+-		kfree(si_data);
+-		return 0;
+-	}
++	if (!enable)
++		goto out;
+ 
+ 	/* Enable the entry overwrite again incase space flushed by hardware */
+ 	memset(&cbd, 0, sizeof(cbd));
+@@ -560,6 +560,10 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
+ 	}
+ 
+ 	err = enetc_send_cmd(priv->si, &cbd);
++out:
++	if (!dma_mapping_error(&priv->si->pdev->dev, dma))
++		dma_unmap_single(&priv->si->pdev->dev, dma, data_size, DMA_FROM_DEVICE);
 +
- #define FLASH_WRITE_CHUNK_SIZE		(4 * 1024)
- #define FLASH_SECTOR_SIZE		(4 * 1024)
+ 	kfree(si_data);
  
+ 	return err;
+-- 
+2.33.0
+
 
 
