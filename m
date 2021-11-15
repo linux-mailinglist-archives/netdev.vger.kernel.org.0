@@ -2,70 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8EA14504D8
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 14:00:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE6434504F8
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 14:07:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229998AbhKONDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 08:03:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42912 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231508AbhKONDD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 08:03:03 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8428661B97;
-        Mon, 15 Nov 2021 13:00:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636981208;
-        bh=BU9Hg+rVhcgBEZtCNFQRfrKQDndbf8SCThYxLL/P4Qs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Z6CpsbIXPRxAGAD/Eo7qR6NdxAT1HQo4zhyrzof3z+RRG9Uxxc3Psk/JbQBg4VIpI
-         2RNnqS6W1NLRoyCKFt/ovBomc2WAs+ArWiVH79tGLeDGerhqC86AnAxM1294wEts2b
-         9mQKOt1xOeQ+HG/PbU15xm7NnTHVaZFONgaAyTN7i7/JJ9KEamY/FnwTsD8JTcv99b
-         X3+rbaKgHZL1OQbQbOeQlcuZOPzznMF6rYwLwPUE0tFxGBMNxMFlnbhmiODR2aiISE
-         QuVxLv+/GGsXTOaYqGWO4M4VX0fzAc7HMj1MmZUpemr5TQ4gtDQnIyWvHJYZNZoWRw
-         8fIUnWQSOAthQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7238A60A4E;
-        Mon, 15 Nov 2021 13:00:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231693AbhKONKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 08:10:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36596 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229590AbhKONK3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 08:10:29 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67384C061570;
+        Mon, 15 Nov 2021 05:07:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=d2uMZhA9obk8T7w9uue+4zDbuPs/Bacv52+x2d/0HxI=; b=dj//C+i8LVGHtLiZnrNfvsTjD8
+        5OvL7/3yZ8EnybuWd9oSx2uo8Y22JGMhIznERQ7QNwqgydVJsrwDli4FWuqNRRqwSNG+XSoQ9v2iN
+        MJDmYzLKFMjOKXUaE5g3gqRmfwrV6kwq4EoQZqkVmnsHc+Sj09LfMPqfiuGiPFvbYjUuEVfeYneOv
+        kPp0EdksEXPYNw1hAtjDMgCg7aqVGxhQZJ0OIBreBXWA+tKlfYTkisLJk98kW6eApO6FI4mw4wfw/
+        K6lLcufv6JwGmq1JXTB2YXGSslbS2C5ne9GIXINzTIwL+zNvM+qr6k1JptisPjCc11ZYshmOamtsU
+        J7pTNmYw==;
+Received: from [2001:4bb8:192:3ffe:2cb6:6339:4f3e:fe11] (helo=localhost)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mmbhc-005hrZ-7N; Mon, 15 Nov 2021 13:07:17 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-doc@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: split up filter.rst
+Date:   Mon, 15 Nov 2021 14:07:13 +0100
+Message-Id: <20211115130715.121395-1-hch@lst.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] tipc: use consistent GFP flags
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163698120846.10163.14371622974741533436.git-patchwork-notify@kernel.org>
-Date:   Mon, 15 Nov 2021 13:00:08 +0000
-References: <20211111205916.37899-2-tadeusz.struk@linaro.org>
-In-Reply-To: <20211111205916.37899-2-tadeusz.struk@linaro.org>
-To:     Tadeusz Struk <tadeusz.struk@linaro.org>
-Cc:     jmaloy@redhat.com, ying.xue@windriver.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net, linux-kernel@vger.kernel.org
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi all,
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+for historical reasons filter.rst not only documents the classic Berkely
+Packet Filter, but also contains some of the most fundamental eBPF
+documentation.  This series moves the actual eBPF documentation into newly
+created files under Documentation/bpf/ instead.  Note that the instruction
+set document is still a bit of a mess due to all the references to classic
+BPF, but if this split goes through I plan to start on working to clean
+that up as well.
 
-On Thu, 11 Nov 2021 12:59:16 -0800 you wrote:
-> Some functions, like tipc_crypto_start use inconsisten GFP flags
-> when allocating memory. The mentioned function use GFP_ATOMIC to
-> to alloc a crypto instance, and then calls alloc_ordered_workqueue()
-> which allocates memory with GFP_KERNEL. tipc_aead_init() function
-> even uses GFP_KERNEL and GFP_ATOMIC interchangeably.
-> No doc comment specifies what context a function is designed to
-> work in, but the flags should at least be consistent within a function.
-> 
-> [...]
-
-Here is the summary with links:
-  - tipc: use consistent GFP flags
-    https://git.kernel.org/netdev/net/c/86c3a3e964d9
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Diffstat:
+ Documentation/bpf/index.rst           |   30 
+ Documentation/bpf/instruction-set.rst |  491 +++++++++++++++
+ Documentation/bpf/maps.rst            |   43 +
+ Documentation/bpf/verifier.rst        |  533 +++++++++++++++++
+ Documentation/networking/filter.rst   | 1064 ----------------------------------
+ arch/arm/net/bpf_jit_32.c             |    2 
+ arch/arm64/net/bpf_jit_comp.c         |    2 
+ arch/sparc/net/bpf_jit_comp_64.c      |    2 
+ arch/x86/net/bpf_jit_comp.c           |    2 
+ kernel/bpf/core.c                     |    4 
+ net/core/filter.c                     |   11 
+ 11 files changed, 1113 insertions(+), 1071 deletions(-)
