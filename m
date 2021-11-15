@@ -2,189 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6619545011B
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 10:21:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C23A645012D
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 10:23:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236975AbhKOJYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 04:24:05 -0500
-Received: from mx1.tq-group.com ([93.104.207.81]:45337 "EHLO mx1.tq-group.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236638AbhKOJX6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 04:23:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1636968063; x=1668504063;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=7+q5wOUq3ntaAvVRKhGKpGVjQieDwZAsdV21wJvDGe8=;
-  b=jV/RPWlW+DobyRIOZ+U6VaqCnybBOAHBC31ZY1peJ5ZCg5b0ldTQaxVk
-   YkEOc8f9z+K8EW6G3Qp5aeatoz4yK0mbSNaMqPzcdcT0EpeaCGCqwcrZQ
-   UuqT0kvJQ/tuK4CKPiPAWk9qtfQYcWtSCK3cV4VS1i7L+4DDXTLGljMdC
-   sOUcM1by/Uej/eZavcJFr+sqr+7mpXlk/miSxRbV8BJCugwjVhl/8Oi0M
-   lT9kDYgSNJg4iHbBrlz+bM0c0ubziH4ahC+lYrOxrrOHvJz5InR/JGpaN
-   CUqXDQ7RlqVuxHH3842eFfuSENI/M+z0Br6D7vxPjj+xLmFL+gKP0Wgin
-   w==;
-X-IronPort-AV: E=Sophos;i="5.87,236,1631570400"; 
-   d="scan'208";a="20459398"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 15 Nov 2021 10:20:19 +0100
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Mon, 15 Nov 2021 10:20:19 +0100
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Mon, 15 Nov 2021 10:20:19 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1636968019; x=1668504019;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=7+q5wOUq3ntaAvVRKhGKpGVjQieDwZAsdV21wJvDGe8=;
-  b=me7vdP7UgpW0m6fTZt9K17MMH0JXBBo5v34HGQ9nhmTbe5Il8YLpoaj8
-   OAOV2xuoe1DeQ/Y6jdhambzQG8WEOJWDvHSxJua2YihV40gAgr9tPjwui
-   LAxM/LhMluBIjyR2TTmAoRjO/e9Fju5PTREXmmryrPSan72sTUX0zKicM
-   9T7lYEMZOekB2/IkvzakDMTbRWHCXViLYQ+KbAKU9kON1DGXZeCDXRmaY
-   kv4jN9gIp6UyK1DNajXFYiIBjNBfTwu6HO8Qx62vIi1UZVBkRXjCjGppW
-   ypGRnr4ZyQRRSOOGu8ViiEQBivL2J9c9XL0tugyWprQSX4coyHRaVKNjY
-   A==;
-X-IronPort-AV: E=Sophos;i="5.87,236,1631570400"; 
-   d="scan'208";a="20459397"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 15 Nov 2021 10:20:19 +0100
-Received: from schifferm-ubuntu4.tq-net.de (schifferm-ubuntu4.tq-net.de [10.121.48.12])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 8B74428007F;
-        Mon, 15 Nov 2021 10:20:19 +0100 (CET)
-From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-To:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Felipe Balbi (Intel)" <balbi@kernel.org>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        id S236431AbhKOJ0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 04:26:22 -0500
+Received: from smtpbg701.qq.com ([203.205.195.86]:49694 "EHLO
+        smtpproxy21.qq.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S236563AbhKOJZg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 04:25:36 -0500
+X-Greylist: delayed 4053 seconds by postgrey-1.27 at vger.kernel.org; Mon, 15 Nov 2021 04:25:35 EST
+X-QQ-mid: bizesmtp54t1636968132tgkosmaa
+Received: from localhost.localdomain (unknown [113.57.152.160])
+        by esmtp6.qq.com (ESMTP) with 
+        id ; Mon, 15 Nov 2021 17:22:11 +0800 (CST)
+X-QQ-SSF: 01400000002000B0B000B00C0000000
+X-QQ-FEAT: bOEXdVvRX8Y572JsKxccmj89e1WDJA+VIFcPTVPcE5+QP2APXfGS2txs/OTS3
+        fmVzyUb9hg+EHZ4POH+fuvLED/JaUPK+ao9eIl1YSdAAMxy5+mHKz+XF/xsSHVIDrAnmd6N
+        GT8X1ksrxzTfUmj4vgu3HNScOQCgtLkVVbLBFy+hHddk5rEIZfywl0p0IfbpFOtkEMs2nZ7
+        g9XZ8252jg8T260MFnmerxeiT2PB3CBUltwaOjvkl3eTMpPSMyAA2vI/cOj48dKwALrtltk
+        a6LcXe+34WnfBM6Q7ylL2/aXkuj16nO1gL4si2oAxU2aJFZox83PrgBTGqa825JpgfMlNXa
+        rapg92CQauO5c2DNo08gW8CMqiJ3scFage9xINp
+X-QQ-GoodBg: 2
+From:   liuguoqiang <liuguoqiang@uniontech.com>
+To:     johannes@sipsolutions.net
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Subject: [PATCH net 4/4] can: m_can: pci: use custom bit timings for Elkhart Lake
-Date:   Mon, 15 Nov 2021 10:18:52 +0100
-Message-Id: <9eba5d7c05a48ead4024ffa6e5926f191d8c6b38.1636967198.git.matthias.schiffer@ew.tq-group.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <cover.1636967198.git.matthias.schiffer@ew.tq-group.com>
-References: <cover.1636967198.git.matthias.schiffer@ew.tq-group.com>
-In-Reply-To: <cover.1636967198.git.matthias.schiffer@ew.tq-group.com>
-References: <cover.1636967198.git.matthias.schiffer@ew.tq-group.com>
+        liuguoqiang <liuguoqiang@uniontech.com>
+Subject: [PATCH] cfg80211: delete redundant free code
+Date:   Mon, 15 Nov 2021 17:21:39 +0800
+Message-Id: <20211115092139.24407-1-liuguoqiang@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign2
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The relevant datasheet [1] specifies nonstandard limits for the bit timing
-parameters. While it is unclear what the exact effect of violating these
-limits is, it seems like a good idea to adhere to the documentation.
+When kzalloc failed and rdev->sacn_req or rdev->scan_msg is null, pass a
+null pointer to kfree is redundant, delete it and return directly.
 
-[1] Intel Atom® x6000E Series, and Intel® Pentium® and Celeron® N and J
-    Series Processors for IoT Applications Datasheet,
-    Volume 2 (Book 3 of 3), July 2021, Revision 001
-
-Fixes: cab7ffc0324f ("can: m_can: add PCI glue driver for Intel Elkhart Lake")
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Signed-off-by: liuguoqiang <liuguoqiang@uniontech.com>
 ---
- drivers/net/can/m_can/m_can_pci.c | 48 ++++++++++++++++++++++++++++---
- 1 file changed, 44 insertions(+), 4 deletions(-)
+ net/wireless/scan.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/can/m_can/m_can_pci.c b/drivers/net/can/m_can/m_can_pci.c
-index d3c030a13cbe..8bbbaa264f0d 100644
---- a/drivers/net/can/m_can/m_can_pci.c
-+++ b/drivers/net/can/m_can/m_can_pci.c
-@@ -18,9 +18,14 @@
+diff --git a/net/wireless/scan.c b/net/wireless/scan.c
+index 22e92be61938..011fcfabc846 100644
+--- a/net/wireless/scan.c
++++ b/net/wireless/scan.c
+@@ -2702,10 +2702,8 @@ int cfg80211_wext_siwscan(struct net_device *dev,
+ 	if (IS_ERR(rdev))
+ 		return PTR_ERR(rdev);
  
- #define M_CAN_PCI_MMIO_BAR		0
+-	if (rdev->scan_req || rdev->scan_msg) {
+-		err = -EBUSY;
+-		goto out;
+-	}
++	if (rdev->scan_req || rdev->scan_msg)
++		return -EBUSY;
  
--#define M_CAN_CLOCK_FREQ_EHL		200000000
- #define CTL_CSR_INT_CTL_OFFSET		0x508
+ 	wiphy = &rdev->wiphy;
  
-+struct m_can_pci_config {
-+	const struct can_bittiming_const *bit_timing;
-+	const struct can_bittiming_const *data_timing;
-+	unsigned int clock_freq;
-+};
-+
- struct m_can_pci_priv {
- 	struct m_can_classdev cdev;
+@@ -2718,10 +2716,8 @@ int cfg80211_wext_siwscan(struct net_device *dev,
+ 	creq = kzalloc(sizeof(*creq) + sizeof(struct cfg80211_ssid) +
+ 		       n_channels * sizeof(void *),
+ 		       GFP_ATOMIC);
+-	if (!creq) {
+-		err = -ENOMEM;
+-		goto out;
+-	}
++	if (!creq)
++		return -ENOMEM;
  
-@@ -74,9 +79,40 @@ static struct m_can_ops m_can_pci_ops = {
- 	.read_fifo = iomap_read_fifo,
- };
- 
-+static const struct can_bittiming_const m_can_bittiming_const_ehl = {
-+	.name = KBUILD_MODNAME,
-+	.tseg1_min = 2,		/* Time segment 1 = prop_seg + phase_seg1 */
-+	.tseg1_max = 64,
-+	.tseg2_min = 1,		/* Time segment 2 = phase_seg2 */
-+	.tseg2_max = 128,
-+	.sjw_max = 128,
-+	.brp_min = 1,
-+	.brp_max = 512,
-+	.brp_inc = 1,
-+};
-+
-+static const struct can_bittiming_const m_can_data_bittiming_const_ehl = {
-+	.name = KBUILD_MODNAME,
-+	.tseg1_min = 2,		/* Time segment 1 = prop_seg + phase_seg1 */
-+	.tseg1_max = 16,
-+	.tseg2_min = 1,		/* Time segment 2 = phase_seg2 */
-+	.tseg2_max = 8,
-+	.sjw_max = 4,
-+	.brp_min = 1,
-+	.brp_max = 32,
-+	.brp_inc = 1,
-+};
-+
-+static const struct m_can_pci_config m_can_pci_ehl = {
-+	.bit_timing = &m_can_bittiming_const_ehl,
-+	.data_timing = &m_can_data_bittiming_const_ehl,
-+	.clock_freq = 200000000,
-+};
-+
- static int m_can_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- {
- 	struct device *dev = &pci->dev;
-+	const struct m_can_pci_config *cfg;
- 	struct m_can_classdev *mcan_class;
- 	struct m_can_pci_priv *priv;
- 	void __iomem *base;
-@@ -104,6 +140,8 @@ static int m_can_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 	if (!mcan_class)
- 		return -ENOMEM;
- 
-+	cfg = (const struct m_can_pci_config *)id->driver_data;
-+
- 	priv = cdev_to_priv(mcan_class);
- 
- 	priv->base = base;
-@@ -115,7 +153,9 @@ static int m_can_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 	mcan_class->dev = &pci->dev;
- 	mcan_class->net->irq = pci_irq_vector(pci, 0);
- 	mcan_class->pm_clock_support = 1;
--	mcan_class->can.clock.freq = id->driver_data;
-+	mcan_class->bit_timing = cfg->bit_timing;
-+	mcan_class->data_timing = cfg->data_timing;
-+	mcan_class->can.clock.freq = cfg->clock_freq;
- 	mcan_class->ops = &m_can_pci_ops;
- 
- 	pci_set_drvdata(pci, mcan_class);
-@@ -168,8 +208,8 @@ static SIMPLE_DEV_PM_OPS(m_can_pci_pm_ops,
- 			 m_can_pci_suspend, m_can_pci_resume);
- 
- static const struct pci_device_id m_can_pci_id_table[] = {
--	{ PCI_VDEVICE(INTEL, 0x4bc1), M_CAN_CLOCK_FREQ_EHL, },
--	{ PCI_VDEVICE(INTEL, 0x4bc2), M_CAN_CLOCK_FREQ_EHL, },
-+	{ PCI_VDEVICE(INTEL, 0x4bc1), (kernel_ulong_t)&m_can_pci_ehl, },
-+	{ PCI_VDEVICE(INTEL, 0x4bc2), (kernel_ulong_t)&m_can_pci_ehl, },
- 	{  }	/* Terminating Entry */
- };
- MODULE_DEVICE_TABLE(pci, m_can_pci_id_table);
+ 	creq->wiphy = wiphy;
+ 	creq->wdev = dev->ieee80211_ptr;
 -- 
-2.17.1
+2.20.1
+
+
 
