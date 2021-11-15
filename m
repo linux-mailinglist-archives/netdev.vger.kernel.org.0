@@ -2,138 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3301F451647
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 22:18:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F75D45164A
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 22:18:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346475AbhKOVSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 16:18:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57182 "EHLO
+        id S1346670AbhKOVSm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 16:18:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353233AbhKOUza (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 15:55:30 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F40C028C35
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 12:37:47 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id b15so77094169edd.7
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 12:37:47 -0800 (PST)
+        with ESMTP id S243801AbhKOU4o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 15:56:44 -0500
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA5A8C043199
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 12:50:17 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id d72-20020a1c1d4b000000b00331140f3dc8so751419wmd.1
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 12:50:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UcRAOtSXPgqZi5vLAUvi/WYjlM16VpPNspIfN4MbJzQ=;
-        b=Q6iE8oqBDM7+3yCZv26pmtzuZpavST0kSvbqBfP6QLC+WcjVREFJXHlfDcqsp7pbrc
-         iN2EuWMzl4kgDVnkoWrB/GGviirreCzfcePuxUOGQVvgJ/tMoYNGGlaAu+6rrjJZopLr
-         kU4PF2QC5pJWfgmtsWKq78b/mJWvAYWekeXpemgv8sDyjm35dwQ8RZ8XwH1eFd+fkUVf
-         xuIaeEDvU/ehS9CSeVFwn14q4aoJRZaRqsL4MtZXnGRmUHBF+y2v5Fo7XhtBz/kvoepL
-         zrlNKQyupUSZagQ09zYfbjtG8zqvpzty37aRZrAwG8C4AB5zGtZ2tlzbmIzOvn7jt01m
-         7moA==
+        d=engleder-embedded-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jnv8npXCv54N1DuEN+HFku6Ylz9+k6G6ihrJJWo+LcA=;
+        b=tf63usdoGDd+SNg4hQPl5UeU1HJhBTI0k66aENThSKM8j+khkfkCqVqkfYenRBMVOT
+         d40Em5bPl88hAHZoJ9UFBlqgo/cuK6rr4avcGqPCNJEXqVnxFl8EhGkQcR9MZC349C0/
+         gNq2SkHQpOiCzCM4cm5WM27DXo8Tro8HjSd+sdWwB5RG93vD1wB2q1CKdGSHTon6df8V
+         Rfm/P1gc/fL65gtTdDjCMFC2A9JUqmBIDMvkjdio3bBHda9w7YqQ4bg9GyAKQtdjUGWp
+         aT1drm8BB5PMFE8OaRa8Dw/Ogy5tK7UUY6Psemaarcl1LpfFQmKDBXnSmEQmw559wQn1
+         xsqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UcRAOtSXPgqZi5vLAUvi/WYjlM16VpPNspIfN4MbJzQ=;
-        b=bYlmoEC+HgkL3QFTV8rWZlN4NZdaWEZC8CfUPMrekNs410WIUxutFTkzz9czdStKT7
-         TM5RI3XFjd5+WOaN44yPOOqczh3QTu1jIDBbX35LSfyi9a5lVorjSVg/VqCVrKbkvN8h
-         9cjqYaSc1ObDImHewMw23mWOj2h4x7hCoJnPldEu3VOB0X6GItX1FQ/eNSqfASsqGB+7
-         zRN6FSO/ZqD/NudalGENyuzRSMLW3IOrtSuJwYeZqEjFzSUbyHcdaYV09wBOvWYUVqMM
-         SmM0Dvsl9QPDU77So/kxv7s7ckhUSju9tyVZw9CaWwA/sdaRwusPY9cxpKur3BDGXu/m
-         s/EA==
-X-Gm-Message-State: AOAM531eaIvND1J9eHBs6pXZ8G78eUK227Njjni4R87/Pqy7OxSWHGGx
-        1pJdI0WIMJ5pJugbEKh2Xb1gvUBKmJnAshoNeyhZYw==
-X-Google-Smtp-Source: ABdhPJwf+95nvqDDTAU9nVXtgg7CTWNCJqerO7lmzoA/4FEBsMpuLnZfaHq+xT82t+og0M8vr7Zfb9W9kzaGrNn3gLs=
-X-Received: by 2002:aa7:ca4f:: with SMTP id j15mr2342884edt.178.1637008665630;
- Mon, 15 Nov 2021 12:37:45 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jnv8npXCv54N1DuEN+HFku6Ylz9+k6G6ihrJJWo+LcA=;
+        b=UFlE1RoCO1X19EPKBwl8+Ej2CZdszSKB535djBDWoZXC3dblCdKWw5BucSllLYrjwK
+         a4A8jXJGsESCTO5Qa5oknkmKxAySXItrIQg+xhIbj7FXEeX9wa/OkFJsskzV4DocMKtE
+         aIKdEkVMkvYILpbvBBMxl7I2QQL6EZRbQ8v0OaX5eK6UfquYIvh30LCSOtpgCikw2/tP
+         8pKgQnDKSP1UdGfJNiFGGy0nZtuoXBUzEwmSO+WdsCRScC+P0skkp8e5b2fTa+QmsXTg
+         KNM+7NMAxjQT7pd/2vAA5NhIaeqrwmeHbX9sHeWXLlLVRCgSrvr+OSL0abyxq9Qy31qj
+         YqXg==
+X-Gm-Message-State: AOAM5337xrVusgfurdyVjFH5lauLh6sK2epHuvgW1UHCpjdHYpGnau2q
+        aNKyUIxvfqs8hsLE6ybIkYYhrw==
+X-Google-Smtp-Source: ABdhPJxIa/svCwFSuNiQM/6EEwnSuyztpcpLILOuSu2pRKUudNlMdm9xumt+GyHL5xXplhBpTNjghA==
+X-Received: by 2002:a1c:287:: with SMTP id 129mr49345846wmc.49.1637009416566;
+        Mon, 15 Nov 2021 12:50:16 -0800 (PST)
+Received: from hornet.engleder.at (dynamic-2ent3hb60johxrmi81-pd01.res.v6.highway.a1.net. [2001:871:23a:8366:6e3b:e5ff:fe2c:34c1])
+        by smtp.gmail.com with ESMTPSA id z6sm15763704wrm.93.2021.11.15.12.50.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Nov 2021 12:50:16 -0800 (PST)
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+To:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch
+Cc:     netdev@vger.kernel.org,
+        Gerhard Engleder <gerhard@engleder-embedded.com>
+Subject: [PATCH net-next v5 0/3] TSN endpoint Ethernet MAC driver
+Date:   Mon, 15 Nov 2021 21:50:02 +0100
+Message-Id: <20211115205005.6132-1-gerhard@engleder-embedded.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20211115190249.3936899-1-eric.dumazet@gmail.com>
-In-Reply-To: <20211115190249.3936899-1-eric.dumazet@gmail.com>
-From:   Soheil Hassas Yeganeh <soheil@google.com>
-Date:   Mon, 15 Nov 2021 15:37:09 -0500
-Message-ID: <CACSApvZ47Z9pKGxH_UU=yY+bQqdNt=jc2kpxP-VfZkCXLVSbCg@mail.gmail.com>
-Subject: Re: [PATCH net-next 00/20] tcp: optimizations for linux-5.17
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Arjun Roy <arjunroy@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 15, 2021 at 2:02 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
-> From: Eric Dumazet <edumazet@google.com>
->
-> Mostly small improvements in this series.
->
-> The notable change is in "defer skb freeing after
-> socket lock is released" in recvmsg() (and RX zerocopy)
->
-> The idea is to try to let skb freeing to BH handler,
-> whenever possible, or at least perform the freeing
-> outside of the socket lock section, for much improved
-> performance. This idea can probably be extended
-> to other protocols.
->
->  Tests on a 100Gbit NIC
->  Max throughput for one TCP_STREAM flow, over 10 runs.
->
->  MTU : 1500  (1428 bytes of TCP payload per MSS)
->  Before: 55 Gbit
->  After:  66 Gbit
->
->  MTU : 4096+ (4096 bytes of TCP payload, plus TCP/IPv6 headers)
->  Before: 82 Gbit
->  After:  95 Gbit
+v5:
+ - rebase net-next/master
 
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+v4:
+ - fix sparse __iomem warnings (Jakub Kicinski, Andrew Lunn)
+ - fix sparse endian warnings (Jakub Kicinski, Andrew Lunn)
 
-Wow, this is really impressive. I reviewed all the patches and I can't
-point out any issues other than the typo that Arjun has pointed out.
-Thank you Eric!
+v3:
+ - set MAC mode based on PHY information (Andrew Lunn)
+ - remove/postpone loopback mode interface (Andrew Lunn)
+ - add suppress_preamble node support (Andrew Lunn)
+ - add mdio timeout (Andrew Lunn)
+ - no need to call phy_start_aneg (Andrew Lunn)
+ - remove unreachable code (Andrew Lunn)
+ - move 'struct napi_struct' closer to queues (Vinicius Costa Gomes)
+ - remove unused variable (kernel test robot)
+ - switch from mdio interrupt to polling
+ - mdio register without PHY address flag
+ - thread safe interrupt enable register
+ - add PTP_1588_CLOCK_OPTIONAL dependency to Kconfig
+ - introduce dmadev for DMA allocation
+ - mdiobus for platforms without device tree
+ - prepare MAC address support for platforms without device tree
+ - add missing interrupt disable to probe error path
 
-> Eric Dumazet (20):
->   tcp: minor optimization in tcp_add_backlog()
->   tcp: remove dead code in __tcp_v6_send_check()
->   tcp: small optimization in tcp_v6_send_check()
->   net: use sk_is_tcp() in more places
->   net: remove sk_route_forced_caps
->   net: remove sk_route_nocaps
->   ipv6: shrink struct ipcm6_cookie
->   net: shrink struct sock by 8 bytes
->   net: forward_alloc_get depends on CONFIG_MPTCP
->   net: cache align tcp_memory_allocated, tcp_sockets_allocated
->   tcp: small optimization in tcp recvmsg()
->   tcp: add RETPOLINE mitigation to sk_backlog_rcv
->   tcp: annotate data-races on tp->segs_in and tp->data_segs_in
->   tcp: annotate races around tp->urg_data
->   tcp: tp->urg_data is unlikely to be set
->   tcp: avoid indirect calls to sock_rfree
->   tcp: defer skb freeing after socket lock is released
->   tcp: check local var (timeo) before socket fields in one test
->   tcp: do not call tcp_cleanup_rbuf() if we have a backlog
->   net: move early demux fields close to sk_refcnt
->
->  include/linux/skbuff.h     |  2 +
->  include/linux/skmsg.h      |  6 ---
->  include/net/ip6_checksum.h | 12 ++---
->  include/net/ipv6.h         |  4 +-
->  include/net/sock.h         | 51 +++++++++++++--------
->  include/net/tcp.h          | 18 +++++++-
->  net/core/skbuff.c          |  6 +--
->  net/core/sock.c            | 18 +++++---
->  net/ipv4/tcp.c             | 91 ++++++++++++++++++++++++++------------
->  net/ipv4/tcp_input.c       |  8 ++--
->  net/ipv4/tcp_ipv4.c        | 10 ++---
->  net/ipv4/tcp_output.c      |  2 +-
->  net/ipv4/udp.c             |  2 +-
->  net/ipv6/ip6_output.c      |  2 +-
->  net/ipv6/tcp_ipv6.c        | 10 ++---
->  net/mptcp/protocol.c       |  2 +-
->  16 files changed, 149 insertions(+), 95 deletions(-)
->
-> --
-> 2.34.0.rc1.387.gb447b232ab-goog
->
+v2:
+ - add C45 check (Andrew Lunn)
+ - forward phy_connect_direct() return value (Andrew Lunn)
+ - use phy_remove_link_mode() (Andrew Lunn)
+ - do not touch PHY directly, use PHY subsystem (Andrew Lunn)
+ - remove management data lock (Andrew Lunn)
+ - use phy_loopback (Andrew Lunn)
+ - remove GMII2RGMII handling, use xgmiitorgmii (Andrew Lunn)
+ - remove char device for direct TX/RX queue access (Andrew Lunn)
+ - mdio node for mdiobus (Rob Herring)
+ - simplify compatible node (Rob Herring)
+ - limit number of items of reg and interrupts nodes (Rob Herring)
+ - restrict phy-connection-type node (Rob Herring)
+ - reference to mdio.yaml under mdio node (Rob Herring)
+ - remove device tree (Michal Simek)
+ - fix %llx warning (kernel test robot)
+ - fix unused tmp variable warning (kernel test robot)
+ - add missing of_node_put() for of_parse_phandle()
+ - use devm_mdiobus_alloc()
+ - simplify mdiobus read/write
+ - reduce required nodes
+ - ethtool priv flags interface for loopback
+ - add missing static for some functions
+ - remove obsolete hardware defines
+
+Gerhard Engleder (3):
+  dt-bindings: Add vendor prefix for Engleder
+  dt-bindings: net: Add tsnep Ethernet controller
+  tsnep: Add TSN endpoint Ethernet MAC driver
+
+ .../bindings/net/engleder,tsnep.yaml          |   79 ++
+ .../devicetree/bindings/vendor-prefixes.yaml  |    2 +
+ drivers/net/ethernet/Kconfig                  |    1 +
+ drivers/net/ethernet/Makefile                 |    1 +
+ drivers/net/ethernet/engleder/Kconfig         |   29 +
+ drivers/net/ethernet/engleder/Makefile        |    9 +
+ drivers/net/ethernet/engleder/tsnep.h         |  171 +++
+ drivers/net/ethernet/engleder/tsnep_ethtool.c |  288 ++++
+ drivers/net/ethernet/engleder/tsnep_hw.h      |  230 +++
+ drivers/net/ethernet/engleder/tsnep_main.c    | 1255 +++++++++++++++++
+ drivers/net/ethernet/engleder/tsnep_ptp.c     |  221 +++
+ drivers/net/ethernet/engleder/tsnep_tc.c      |  443 ++++++
+ drivers/net/ethernet/engleder/tsnep_test.c    |  811 +++++++++++
+ 13 files changed, 3540 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/engleder,tsnep.yaml
+ create mode 100644 drivers/net/ethernet/engleder/Kconfig
+ create mode 100644 drivers/net/ethernet/engleder/Makefile
+ create mode 100644 drivers/net/ethernet/engleder/tsnep.h
+ create mode 100644 drivers/net/ethernet/engleder/tsnep_ethtool.c
+ create mode 100644 drivers/net/ethernet/engleder/tsnep_hw.h
+ create mode 100644 drivers/net/ethernet/engleder/tsnep_main.c
+ create mode 100644 drivers/net/ethernet/engleder/tsnep_ptp.c
+ create mode 100644 drivers/net/ethernet/engleder/tsnep_tc.c
+ create mode 100644 drivers/net/ethernet/engleder/tsnep_test.c
+
+-- 
+2.20.1
+
