@@ -2,118 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E727045000C
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 09:38:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28F2545000D
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 09:38:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230162AbhKOIlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 03:41:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59552 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229944AbhKOIlQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 03:41:16 -0500
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74F6AC061746;
-        Mon, 15 Nov 2021 00:38:20 -0800 (PST)
-Received: by mail-lj1-x22c.google.com with SMTP id d11so33836830ljg.8;
-        Mon, 15 Nov 2021 00:38:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5BO6zupXKsq7QxwcvI+ZE0fQUmmRHhVHR5EykOjogIQ=;
-        b=eCxb09vAsBlDE2SDJArcqnAOet8mEGHcTLJFtsburnUVRDUd5/jTwmzvJkkV4nMfje
-         /S04ouHtVNbTJ4Xn1SjF9kJO80blQwp4cbIQsQC63Ie9NRPsPUuxRSTeyG+dk7cdR/5T
-         K99l7t51UNPFRC8ovf7oVm7jRcUfYJeGn2YuUMbaJ4wwxttiULYbvOLz1IVbL/p+lH9v
-         oys+yue0TJ1wGojTyetM2J4vDmCc4uexGCaqo9NqdniKDWv6bnAS/kqQaMief8t2x9SS
-         0MfFU7JKJ6/jmILUsYBmuOAwWNA1DZdfrvPEJ0s0vh1J0gtOvBL+5n2+KXLA4FIki45I
-         +A4w==
+        id S230237AbhKOIl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 03:41:29 -0500
+Received: from mail-il1-f198.google.com ([209.85.166.198]:33790 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230020AbhKOIlV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 03:41:21 -0500
+Received: by mail-il1-f198.google.com with SMTP id c17-20020a92b751000000b0027392cd873aso10156391ilm.0
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 00:38:26 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5BO6zupXKsq7QxwcvI+ZE0fQUmmRHhVHR5EykOjogIQ=;
-        b=ykb51liP1OoQrC9nCjP9IY2zrpVYTl5BIDeI/ZE73s16sEbSceb8sAbvBwKbq+AXPY
-         isxW5iK7avP257yjGYd16xfqIgKWr4S5lqgfn3FQAlAAZI9tdrj4eAL6j3JENIwq38YO
-         CIZLxJKlDxSHB8iacsAhRN/IZ6Bqeo+R5DpnaUcYpi/37a1vvW/MMCinYTu8tdQJdW7V
-         kF/0Xpa1CY8jWKr4EOPK0RX2TuGvWpOPC8ULTs/ypwdXZu9v3bGNAn3YXQXQT/t/XWue
-         OvLAkqmf5G7FKJEp8omXOrLjsL27+nxhEfpe+7Ew0JZJbOTvNxLag5cbFevuewb6XZqu
-         GrBQ==
-X-Gm-Message-State: AOAM530z00VV0+CudWaIfeSWgVK6PAaEz5FTeeOqS9Oj0FWkcNwOFdRw
-        GLofpRm36rBQUu5okViB+RA=
-X-Google-Smtp-Source: ABdhPJzZVk/Og28FR7o4EgCwydyOJJTERcZJyzie5FipEwjoYb/sP9+fiQ5SMZq2AVJ9QZvNsQY7vQ==
-X-Received: by 2002:a2e:81da:: with SMTP id s26mr35794403ljg.94.1636965498874;
-        Mon, 15 Nov 2021 00:38:18 -0800 (PST)
-Received: from localhost.localdomain ([94.103.224.112])
-        by smtp.gmail.com with ESMTPSA id r5sm1440797lji.132.2021.11.15.00.38.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Nov 2021 00:38:18 -0800 (PST)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     mailhol.vincent@wanadoo.fr, wg@grandegger.com, mkl@pengutronix.de,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>
-Subject: [PATCH v3] can: etas_es58x: fix error handling
-Date:   Mon, 15 Nov 2021 11:37:56 +0300
-Message-Id: <20211115083756.25971-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <YZIWT9ATzN611n43@hovoldconsulting.com>
-References: <YZIWT9ATzN611n43@hovoldconsulting.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=45KPnjgNpXV74fXbnG/ZGDYPdj4xK0W4REEDBd8I3to=;
+        b=YzG3wHhGZYKYSdc8m7L5lOg/yi95pSjvGoYIowFIYM8/roheeM1sk7cyEB3Zrxx5Zx
+         0sG4nKRx9pSjizqBs2b0fN1OO8De2VtUO8R0FoA9PwCarxYMyc/ugrIMSec2UxcB0JRk
+         SjRqb9UikmHBAYJgevNKbE+VmmgO7BCG95NDhaGqY0G9vrF60rjYnYvSZD2VHAaYmknY
+         NXHvM17xNvxeexA5RkNdaF9uGC04SHUg+fr0SzRzbh/I/7Tg7R08XS8UyCE6uC1L/ja8
+         88BaXy+2REQC+3JxkUK32I8OVGDAksD4LdasJT8zGkSYibThFzFrsBIzRxl2E2uZ49rL
+         HU0w==
+X-Gm-Message-State: AOAM530KxjiD/M7xr59J3Mqa5Ez04YQ5SxE47KnUgE69hzSmaBC41xml
+        cWGvCAate1/n925nvljUnXs5uo4CmyPDBwzti14fmWKnXuoO
+X-Google-Smtp-Source: ABdhPJwRgQGr9EeOkC+KCTUBhnSP/m0VgHnHjs2I2tJ7M/+PX+Hmz23heH5Bg+sNdDoDS7TWf3T155tJpzm/VH6FveybAeC4BKcs
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a5d:80c4:: with SMTP id h4mr24747166ior.40.1636965505998;
+ Mon, 15 Nov 2021 00:38:25 -0800 (PST)
+Date:   Mon, 15 Nov 2021 00:38:25 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000007ea16705d0cfbb53@google.com>
+Subject: [syzbot] kernel BUG in pskb_expand_head
+From:   syzbot <syzbot+4c63f36709a642f801c5@syzkaller.appspotmail.com>
+To:     anthony.l.nguyen@intel.com, davem@davemloft.net,
+        intel-wired-lan@lists.osuosl.org, jesse.brandeburg@intel.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When register_candev() fails there are 2 possible device states:
-NETREG_UNINITIALIZED and NETREG_UNREGISTERED. None of them are suitable
-for calling unregister_candev(), because of following checks in
-unregister_netdevice_many():
+Hello,
 
-	if (dev->reg_state == NETREG_UNINITIALIZED)
-		WARN_ON(1);
-...
-	BUG_ON(dev->reg_state != NETREG_REGISTERED);
+syzbot found the following issue on:
 
-To avoid possible BUG_ON or WARN_ON let's free current netdev before
-returning from es58x_init_netdev() and leave others (registered)
-net devices for es58x_free_netdevs().
+HEAD commit:    debe436e77c7 Merge tag 'ext4_for_linus' of git://git.kerne..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=17cdbcf1b00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=dcce4e862d74e466
+dashboard link: https://syzkaller.appspot.com/bug?extid=4c63f36709a642f801c5
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-Fixes: 8537257874e9 ("can: etas_es58x: add core support for ETAS ES58X CAN USB interfaces")
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+4c63f36709a642f801c5@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+kernel BUG at net/core/skbuff.c:1695!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 13268 Comm: syz-executor.1 Not tainted 5.15.0-syzkaller #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+RIP: 0010:pskb_expand_head+0xb28/0x1060 net/core/skbuff.c:1695
+Code: 8d 75 ff e9 60 fe ff ff e8 75 dd 5a fa 48 c7 c6 a0 60 8c 8a 4c 89 f7 e8 c6 d6 8d fa 0f 0b e8 5f dd 5a fa 0f 0b e8 58 dd 5a fa <0f> 0b e8 51 dd 5a fa 41 81 cc 00 00 02 00 e9 f6 f5 ff ff e8 40 dd
+RSP: 0018:ffffc90005a6f2e0 EFLAGS: 00010212
+RAX: 0000000000030e8b RBX: ffff88801fa215c0 RCX: ffffc90020bf5000
+RDX: 0000000000040000 RSI: ffffffff871c2298 RDI: 0000000000000003
+RBP: 00000000ffffffbb R08: 0000000000000001 R09: ffff88801fa2169f
+R10: ffffffff871c1842 R11: 0000000000000000 R12: 0000000000000a20
+R13: 0000000000000002 R14: 0000000000000001 R15: 0000000000000000
+FS:  00007f39135d8700(0000) GS:ffff88802ca00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020004038 CR3: 0000000065ef5000 CR4: 0000000000150ef0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000600
+Call Trace:
+ <TASK>
+ __skb_pad+0x181/0x5f0 net/core/skbuff.c:1929
+ __skb_put_padto include/linux/skbuff.h:3331 [inline]
+ skb_put_padto include/linux/skbuff.h:3350 [inline]
+ eth_skb_pad include/linux/etherdevice.h:584 [inline]
+ e1000_xmit_frame+0x2de3/0x4650 drivers/net/ethernet/intel/e1000/e1000_main.c:3125
+ __netdev_start_xmit include/linux/netdevice.h:4987 [inline]
+ netdev_start_xmit include/linux/netdevice.h:5001 [inline]
+ xmit_one net/core/dev.c:3590 [inline]
+ dev_hard_start_xmit+0x1eb/0x920 net/core/dev.c:3606
+ sch_direct_xmit+0x19f/0xbc0 net/sched/sch_generic.c:342
+ __dev_xmit_skb net/core/dev.c:3817 [inline]
+ __dev_queue_xmit+0x149c/0x3630 net/core/dev.c:4194
+ llc_sap_action_send_test_c+0x22e/0x2c0 net/llc/llc_s_ac.c:144
+ llc_exec_sap_trans_actions net/llc/llc_sap.c:153 [inline]
+ llc_sap_next_state net/llc/llc_sap.c:182 [inline]
+ llc_sap_state_process+0x22a/0x4f0 net/llc/llc_sap.c:209
+ llc_ui_sendmsg+0x9f3/0x10b0 net/llc/af_llc.c:964
+ sock_sendmsg_nosec net/socket.c:704 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:724
+ ____sys_sendmsg+0x331/0x810 net/socket.c:2409
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
+ __sys_sendmmsg+0x195/0x470 net/socket.c:2549
+ __do_sys_sendmmsg net/socket.c:2578 [inline]
+ __se_sys_sendmmsg net/socket.c:2575 [inline]
+ __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2575
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f3916062ae9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f39135d8188 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
+RAX: ffffffffffffffda RBX: 00007f3916175f60 RCX: 00007f3916062ae9
+RDX: 03fffffffffffeed RSI: 0000000020001380 RDI: 0000000000000005
+RBP: 00007f39160bcf6d R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ffe4b72644f R14: 00007f39135d8300 R15: 0000000000022000
+ </TASK>
+Modules linked in:
+---[ end trace 518f993fe030bf9b ]---
+RIP: 0010:pskb_expand_head+0xb28/0x1060 net/core/skbuff.c:1695
+Code: 8d 75 ff e9 60 fe ff ff e8 75 dd 5a fa 48 c7 c6 a0 60 8c 8a 4c 89 f7 e8 c6 d6 8d fa 0f 0b e8 5f dd 5a fa 0f 0b e8 58 dd 5a fa <0f> 0b e8 51 dd 5a fa 41 81 cc 00 00 02 00 e9 f6 f5 ff ff e8 40 dd
+RSP: 0018:ffffc90005a6f2e0 EFLAGS: 00010212
+RAX: 0000000000030e8b RBX: ffff88801fa215c0 RCX: ffffc90020bf5000
+RDX: 0000000000040000 RSI: ffffffff871c2298 RDI: 0000000000000003
+RBP: 00000000ffffffbb R08: 0000000000000001 R09: ffff88801fa2169f
+R10: ffffffff871c1842 R11: 0000000000000000 R12: 0000000000000a20
+R13: 0000000000000002 R14: 0000000000000001 R15: 0000000000000000
+FS:  00007f39135d8700(0000) GS:ffff88802ca00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020004038 CR3: 0000000065ef5000 CR4: 0000000000150ef0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000600
+
+
 ---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Changes in v3:
-	- Moved back es58x_dev->netdev[channel_idx] initialization,
-	  since it's unsafe to intialize it _after_ register_candev()
-	  call. Thanks to Johan Hovold <johan@kernel.org> for spotting
-	  it
-
-Changes in v2:
-	- Fixed Fixes: tag
-	- Moved es58x_dev->netdev[channel_idx] initialization at the end
-	  of the function
-
----
- drivers/net/can/usb/etas_es58x/es58x_core.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c b/drivers/net/can/usb/etas_es58x/es58x_core.c
-index 96a13c770e4a..41c721f2fbbe 100644
---- a/drivers/net/can/usb/etas_es58x/es58x_core.c
-+++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
-@@ -2098,8 +2098,11 @@ static int es58x_init_netdev(struct es58x_device *es58x_dev, int channel_idx)
- 	netdev->flags |= IFF_ECHO;	/* We support local echo */
- 
- 	ret = register_candev(netdev);
--	if (ret)
-+	if (ret) {
-+		free_candev(netdev);
-+		es58x_dev->netdev[channel_idx] = NULL;
- 		return ret;
-+	}
- 
- 	netdev_queue_set_dql_min_limit(netdev_get_tx_queue(netdev, 0),
- 				       es58x_dev->param->dql_min_limit);
--- 
-2.33.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
