@@ -2,168 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84B34450705
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 15:32:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22931450707
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 15:32:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236752AbhKOOe7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 09:34:59 -0500
-Received: from de-smtp-delivery-102.mimecast.com ([194.104.109.102]:60489 "EHLO
-        de-smtp-delivery-102.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236544AbhKOOeI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 09:34:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
-        t=1636986670;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=z1Tj1pKl+HW8nZjJt6edjKYQKjSzhOcjU4rKRNuV6gI=;
-        b=L06ssx/djln09Cuud+HhXz6B0koPMgskRQA4r26Ey8Z7Ytn4XVBze7LfKV8WlgpKqYDd2g
-        99uj8xLXpIVSZw79YQvEeBghW36P4Jfr5Q6VEbXCwXP0WVABx+dKkyCYoL0z3xuNQEyM53
-        ptslPrnB1QEZVVLenjKrsuRxN6dBKVo=
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com
- (mail-vi1eur04lp2056.outbound.protection.outlook.com [104.47.14.56]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- de-mta-27-hUyUvj3yNEORGLJmkPjDcA-2; Mon, 15 Nov 2021 15:31:09 +0100
-X-MC-Unique: hUyUvj3yNEORGLJmkPjDcA-2
+        id S236554AbhKOOfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 09:35:02 -0500
+Received: from mail-eopbgr20049.outbound.protection.outlook.com ([40.107.2.49]:24325
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S236500AbhKOOeK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Nov 2021 09:34:10 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QGq3UR+X+DertoOEgX5mTMEcYRnIlnobNKaGWcT/7lUJOj3c9tkiq2aTKdsbcZbh9DR5tVlYIoaqDB6mDQFYZ/blRFeFS4SHI0zhHgTX9HrMATCAlKl2fS1aJdspGdgTx1VcsyK5Pf4/dajn+3y+U6lv4PKeOImUO5Vuj3IYFjyzSZ9EVaRgOwNYZgeI3g/7uO4lRvpYqP47j157k5fStGezK4RZvy0bE9JbzkCG9CSMuBNyee+JXYaH//FYOK9ekg2aa7o8/8R0S9xxSPq2bR8qHosyW5T5X3mlcRApzPIhulFVZ7FiSSEL7qX+oxdaQcw+E6BliA3lceRLxqH7iA==
+ b=ATanutrBqKBM0nP3oeDYL1HPoYKH+8JenPNJLtG2+h6871Aa7IWISuaxPd5/JiopvWz9kASs12J8xBtUI1JutC5E8b3hSVHuUVCLztcarrPZRIiarVw1qHfaiNXIhM9hkZcUKQ/AN0hT/matctDejzTzvOp0jW4L5lDb5SEBIu1Lc7DpMvh3cfldvl//wrsrXGeSGoaLAQiaYNBS/vVLJyjnZ5W1no5YtSBd3IEc0HjSMLw8ayBudxpLQseFIG8lfhR71yOLbOTSgEbR/PP7zGyNxhxFxPa5FRiMA7tTa/SPrZIDmbkEWV8SNlPrhnNXcnemGXwni0MaF5tIFO3vyg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nzbb5NQB9kg8OzpfNh2c4a9P1v4HjvHX6JgJxmIddGQ=;
- b=gVZ+HHJ0hp0QNAVaURiUMhb7jVrIOvmeD4DqLSAnJIZHX/BEgtc0u/SIlxnaUwV56HV6asKGrNcded1wskYUGKsL/NGPowPFzhrUH3u9CfH29ST74bJxT9wUepYgSGkSAX+xF26RKKoFUMi4oUJzMsuayDFqi879viucNSxaIiiS/kMfxGyRlFBNc5lmofD8FtZ0rKY5XqYhfPiWFeB+Wc5hZSPwk2K+1+2KyAn1Wz9AkNMVJvGKJ45CzaO9BJPXEE+r5/JDHbS/lIm0Yyv6GFkaIPsU7sPwL5FqFyv5dBZzekPrMdr9HRCFGdUNvMDRpn6RgCeMKqRUQbe+pqTmxg==
+ bh=RyJjVwVF0gN+wvTndSuPyNlUu2zTXUxN0WhpL1A+hnA=;
+ b=PtFbtqtvVDAh3K24UXdgC1bsJuaF7McSH0nnBpmdmrzC9jPYxOXuilvKHpftREOhLF3/ArLR0UeDqT+luVMcMhfhO8zUpq12YwyrqwA1HNQwCj0YWHt6Mb5rAJ6iSOxnW2M/vHpFoyRQJps5A1zejxUfvG4hDp26fJr4v+gloTyPRVkC3N+864a+cX41g7izvg4MOVkj6ykW4ZGfZtQSgAUBoz8P+bQ8vzeipKc/dWVq+Cqfm18aFoIuO07P7GiDW4eIA7JhNBndTxODictjp7nq3/CYTRiTcqEuHNrBowuW8AUi6aTIVrciGv8tdFZLlYD5JJazwunvg5KCAPXddg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
- dkim=pass header.d=suse.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=suse.com;
-Received: from DB7PR04MB5050.eurprd04.prod.outlook.com (2603:10a6:10:22::23)
- by DB9PR04MB8284.eurprd04.prod.outlook.com (2603:10a6:10:25e::6) with
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RyJjVwVF0gN+wvTndSuPyNlUu2zTXUxN0WhpL1A+hnA=;
+ b=X1EjTDCHCAj2H7wQk1Emyk2IrfLBf4CaD2ACHtitAC6kaW5Tb3U8B57djwyASIVaMtS/nSexVRiWSKAZCEFaxIvWhP8kQQ2dafqHK3WBGNbFVDeGRWVXHcN4qjBXSRBT4IqR8XisTgvYAuRKD4CnQxqqZvJxyQe6geHm74gLWAo=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR0402MB3837.eurprd04.prod.outlook.com (2603:10a6:803:25::24) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.15; Mon, 15 Nov
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.26; Mon, 15 Nov
  2021 14:31:06 +0000
-Received: from DB7PR04MB5050.eurprd04.prod.outlook.com
- ([fe80::498c:7447:2e17:4a42]) by DB7PR04MB5050.eurprd04.prod.outlook.com
- ([fe80::498c:7447:2e17:4a42%4]) with mapi id 15.20.4690.027; Mon, 15 Nov 2021
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4669.022; Mon, 15 Nov 2021
  14:31:06 +0000
-Subject: Re: [syzbot] WARNING in usbnet_start_xmit/usb_submit_urb
-To:     syzbot <syzbot+63ee658b9a100ffadbe2@syzkaller.appspotmail.com>,
-        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        oneukum@suse.com, syzkaller-bugs@googlegroups.com
-References: <000000000000a56e9105d0cec021@google.com>
-From:   Oliver Neukum <oneukum@suse.com>
-Message-ID: <042900c4-7758-bb90-bac1-c01b12df49bc@suse.com>
-Date:   Mon, 15 Nov 2021 15:31:04 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
-In-Reply-To: <000000000000a56e9105d0cec021@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+CC:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v2 3/6] net: ocelot: pre-compute injection frame header
+ content
+Thread-Topic: [PATCH v2 3/6] net: ocelot: pre-compute injection frame header
+ content
+Thread-Index: AQHX0JQMizPbr20xM0ur1htXAvgjtKvxviqAgAAVJICAEp56AIAAQXQA////iQCAAAbqgA==
+Date:   Mon, 15 Nov 2021 14:31:06 +0000
+Message-ID: <20211115143105.tmjviz7z7ckmlquk@skbuf>
+References: <20211103091943.3878621-1-clement.leger@bootlin.com>
+ <20211103091943.3878621-4-clement.leger@bootlin.com>
+ <20211103123811.im5ua7kirogoltm7@skbuf> <20211103145351.793538c3@fixe.home>
+ <20211115111344.03376026@fixe.home>
+ <20211115060800.44493c2f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20211115150620.057674ae@fixe.home>
+In-Reply-To: <20211115150620.057674ae@fixe.home>
+Accept-Language: en-US
 Content-Language: en-US
-X-ClientProxiedBy: AS8PR04CA0025.eurprd04.prod.outlook.com
- (2603:10a6:20b:310::30) To DB7PR04MB5050.eurprd04.prod.outlook.com
- (2603:10a6:10:22::23)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: deb72273-39bc-4b3f-1a26-08d9a8448f7a
+x-ms-traffictypediagnostic: VI1PR0402MB3837:
+x-microsoft-antispam-prvs: <VI1PR0402MB3837129902311A2D71D9A31DE0989@VI1PR0402MB3837.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:220;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: l4hEGP/I52/S1DptJXxdroabRXzW0UWCv4D5U4Yau2HVNShfsxsddpSUVAJ4QOutbLk/w4wvin4KyoCQrhxmk+BPGijKslOZgSl1qnhQWZpa2rd+wPsZfzJOzMA96ALvbUhvluVJWF/suqFpSOft8ucl7QTx+035ZI6UfMFcX2yp7fOJygTCC3S0pWiCBRuwssx9IOECqoSNtImW8vyobQlKin4N+4U6Fvc8hBHa0oO/qOqBRPU3WWQ9laRyqhUSUoPKpfLNUrbvYNr3GrMakhRlgZ1KbkFXe1GdCWnsP/1PAKJCnQwLiGdqjvtzFTm0A8HEeZ0uoEzhsPTECFxbiytGm/ybWmIaETCB3A75Ig551uxZcp0AR2yCq/KgcT8lMZL4nemv8uUNawe8YvISayoayjE7wBTooeMwUmhYAJOpJ7x27YNmGJ7UjygsmsXe/hUKtE8ktrAMcwRCwTaIAsakXjP6DryaxfJIBTqg9G+zgjKK5tGfjVyrqc1enqoZ6mE/JXtQsR9mV9gOPnSySjsG3ar/1OJA5aqyQkSI6WerQb+PKQDKyc08ztuwRu5PIojO4qR32z3En/F9gmfpoAwq5rvKhlZU4AposP2feWRzWhNgsSqhw//L/u5zGh7Cdyajhzk8/uSyffmYkQkE+hLrM3ZSbcT9GtA8hBt0E+Lh/7v0yJ+Wd28gpyJe6ZPSmL1FR06CUXq1XRQqQY9DsA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(91956017)(76116006)(38070700005)(86362001)(44832011)(4326008)(8676002)(2906002)(5660300002)(38100700002)(33716001)(316002)(186003)(71200400001)(26005)(6506007)(6916009)(7416002)(6486002)(54906003)(64756008)(66556008)(66946007)(66476007)(66446008)(1076003)(8936002)(508600001)(9686003)(6512007)(122000001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?hOM6SBzSbdTeEtnr55VAMZaHZH0Zs1iYnaYoXOUxhjqSuJG8Rcby5urUI5?=
+ =?iso-8859-1?Q?EDPv0aslIfP7sOkyJcRG3RDivzEGJee5V8kWwKRoWLkR+vgXSu9nyc3JYD?=
+ =?iso-8859-1?Q?d4Z3Sj31HvrMs/8TP0OFB2WURsgPkF54TZfZ/WPgblbxd7RMrxS3t+t/N6?=
+ =?iso-8859-1?Q?nOSSblrQntS8wPSwxowWcXGANP1PBe1aZIg0/M7rxlX32yZoRVcYZU0tlQ?=
+ =?iso-8859-1?Q?AA0bdZI0pUPGcOh7l4YRgKz43ZERGRGfdwAvppv4GbGDEbY/HJmifwb7Qj?=
+ =?iso-8859-1?Q?7dLCHAtLsl2KyXG6q+vECfXagLkA0DWiCm3Frj1OvvRU1jW8YEMN2neHNx?=
+ =?iso-8859-1?Q?+JoQP07FjjJ06EpTiQ08cCD27E3Nx4PiqwFC5+elGzxzUmO1eJHMAzWzb8?=
+ =?iso-8859-1?Q?mEuA1mtX8igyL1aFl1QIzOVBB3Sh6q4YkZHHvQWrIE21P8SZF4LhvdrjSK?=
+ =?iso-8859-1?Q?fSeCyReoC/eBh63l7qbzSsxDXcISmqTlnU05EB7R1AI5KC6Io2eNQRZUNU?=
+ =?iso-8859-1?Q?04BUc3V/IIDnmCdmZXzNLS3IwmfL73xvgKqQL6FhOlFTEyaWJbl3xNcPpf?=
+ =?iso-8859-1?Q?2p9eeoUaU6VWWQPYnsVyeytPsSzfSTfoVpQKeILmkYIsCV6qCuyh/OpFjH?=
+ =?iso-8859-1?Q?ArIz8FfMco3glSv6fUgjsFkIr1CmbfsASdr3XOjXQNo5cGvllqaLafG89n?=
+ =?iso-8859-1?Q?wySPBw/K84NCCXKNEEKXYc7V2aiNTnonI5koLX3U6YXHEPfEe37jpci9jF?=
+ =?iso-8859-1?Q?cNKRqqNQWkDG23hsFc9OYa3JeG+uJAjog7JPS+EVq30G8vtc3octMLXiuS?=
+ =?iso-8859-1?Q?t3eDSwC5B09K732g7iSgR4Fxtt17FiTnfY2G8vuYwdyFtnvBeeuemf+1Yu?=
+ =?iso-8859-1?Q?0HJeXBWMM8ll0Zujka+sxyJA9jHHkC2+GGImtwSmpig1TuYyjMj//eX8yY?=
+ =?iso-8859-1?Q?nr797Mix/nW7j5/scvXroynaSPAPodp7pOBAM87ftoJTQ1EYDvjyAZMy7X?=
+ =?iso-8859-1?Q?Z5TbXYw21I66ZWzjQR3wXgn3PYDZFwfJFVogUea/QneFHIwmLUzvu/Mp5b?=
+ =?iso-8859-1?Q?5gnAe9t5LdEMmgnDwLo7lG3lJGku+h2Lex+82oZntBwO4ILjOlQyg/KV4J?=
+ =?iso-8859-1?Q?Fir/C9LOfJdjSin4c6taM72gnBKVNkLJRGZoibY7/payrclPx+zsfQOHDx?=
+ =?iso-8859-1?Q?qrW+rJaQvz6sPnvB/6NcRpFF+l9rsCLapZ4GN/iTT0FMhX2YdnK/FS4cus?=
+ =?iso-8859-1?Q?8qug5HVyylzjG72nVDmDF5Bow4sJcXGpByJQ3+D+CHgoE1deFeo7QoXKT0?=
+ =?iso-8859-1?Q?piR67Stjx9QwFBTl9hePFq5I1y4lkRffw7/CUoASp455Y2Pm6pEMUOzZNv?=
+ =?iso-8859-1?Q?G2U55tgbB3RekA0W3FQvtN4ZP3+t+W8fkE5PReLnvteE++cNXhM/+hLV6p?=
+ =?iso-8859-1?Q?bnvTurvHLZF6T+8xV326OaX6sh66j8Jl2cpcTs0j73EJtM6yvOAcbIDY6C?=
+ =?iso-8859-1?Q?GvXKCkKlE+L6nTFGNu0ecYeINQE132oy+D2L5uyhifLV4F0dO+Lt82zAuh?=
+ =?iso-8859-1?Q?Kyzw1n6Avff1x/yJfCfFX3J9+tGuSY4q1uZOUTepCyiwZaASHWLVYn9t3b?=
+ =?iso-8859-1?Q?lcG91YV0+crVVRZlH2Zs2JV1C3FWPsQlN5ZraJGPMw7f2tO/CPZIXaXAdx?=
+ =?iso-8859-1?Q?20mBr+Zfi+s8mYcfjAw=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-ID: <63C3D735D3354C4EADA76079B8540318@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Received: from localhost.localdomain (2001:a61:425:1e01:ddf3:4162:d0fe:1b62) by AS8PR04CA0025.eurprd04.prod.outlook.com (2603:10a6:20b:310::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.15 via Frontend Transport; Mon, 15 Nov 2021 14:31:05 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9b891262-41cc-441a-ad16-08d9a8448f4a
-X-MS-TrafficTypeDiagnostic: DB9PR04MB8284:
-X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
-X-Microsoft-Antispam-PRVS: <DB9PR04MB828470E072C9D6150B1569F7C7989@DB9PR04MB8284.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EqOgEXtANqsH9FKooohf7gUS6B/GNQ2uXxOe0FR3Nt0XCnStWoXvLLAZQ4uaO3ilHD0LgsOdW+x72CDSDRjjrMNpSRfW3xw/sXsJXxYJVKIHZX3rwvzD1ScvAGBaDrYEM0Kv8JHL1RqSB9FH7CrUjhnx9oFeGoYbWXhslOHPn0WV3MTgKLbJ6nedE79VejC8Vx0wD/s2O6TZmyRpyfXpBbUC62sFA3Rin29nFgZwsthLiSSTH0KKRxJzi6NMYf2FCO+ssR0bvJs/nHY7f8MS8aeJ1G9QPdStWFYotHNqXDcNQ3nU9d5O2sL9/rnj7MwAE56E5hY0MXEIvJRcakoEPuUr5jAvfJ9C+2eo2+yy5fPA6cu3PVS0ilVg0BEhd5eL2MUR6ZuB5mWoABYHbQDYzZHeEgEkIfmQIJtKuFYeKIv+PpTZpQj0dA8ub0di9lax0HMxTyBmTDbYOesEnh1D0i7dFyG7Vlz3xvHLurIWZoCFEbMz2LChyqtktSbomYrbrv0fOVCMAmrZMkH0G5m4tD6Wp6O55adixJhCUSYUWQxhy1eK4LCDXzMd+JvmUtnc5jTYDOy+cVhn1w4tNnZkXmG6Ru4f20ZAtfCCSPIXbsygFx9kliUX+tfqxFn0lZuJ7Dp0cWuVp2x5GZumQfN06C/bwNN9Kr5bJGqX44ee5WlO/0PL9wScqyhsfeC6vaw+0bwoxxojr60BM9ZYCdrRnW75+oLwhMWJEARVQaEaBGd4ZJgIJnEoaVTKC8kp36oLzjKqr6nYyT2+5UmCp6SL5p+oQ42HMxENLQODvgT4QFk/dhrcjX4JmouFn88G42kqBYJA13GEyTd/EDquQhSxZQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR04MB5050.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(8676002)(316002)(5660300002)(83380400001)(38100700002)(8936002)(508600001)(36756003)(6506007)(53546011)(2616005)(6486002)(6512007)(2906002)(86362001)(31686004)(31696002)(66476007)(186003)(66946007)(66556008)(966005)(99710200001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wnG8xXXgJWabLA52hY8o3uGEC9yWQE7sCAgch81d4uY7IW06QgzYYE7fTN9c?=
- =?us-ascii?Q?lSVqC975/0lxIZ/fjzpH46W/K6/iNuTAXn7XiWw8zZSWB0AcN04seY2WMnSH?=
- =?us-ascii?Q?wIxUuVkUxhn+j8naieBeBmuE6+AWu56XlHsKCG0KYFrPoRRbR+odYJuo/iwK?=
- =?us-ascii?Q?XpEstku0nVa8XFX/8zbfKNc/bU1WNK1nmLsd9ACAydFzdZkITBpTUpXzPf7C?=
- =?us-ascii?Q?Qvh2p0Y1hpxgseydCm8656+iqNlmQ5F3hL1+LmMlfCsXxL4AkfKeyhmRUFCp?=
- =?us-ascii?Q?u7O/VffGWQsLhpuhcU1X1JSRhzAf1CmERCizbc3YZ0/KHmiCxq0dTYtu7o+v?=
- =?us-ascii?Q?mp9D+eRjXNNKDVkg0oEsZQTHCEKL6be/Axph/Lg343PFzOUbYVj3xFWKTBoT?=
- =?us-ascii?Q?EMpKZ4brRXs8d6ZIraRdRVioZMOxQSSsa2TVSxhI+n2tYn7l3OiaW8XB515g?=
- =?us-ascii?Q?es9YFeQhoywZ56tyPpf+cuCQLGfHOi3BAI3cTyW9Pc4MMqOtah+eGQq9ipMa?=
- =?us-ascii?Q?3+JXWHf8fTUjVijdWlcqAJM1Cxo2X2elhQwjMO0uH4k0dAn2zBsCz/3B3lbP?=
- =?us-ascii?Q?M9lh8hF3mXbJxgQpgMV+2bzMZ5HMgVQI6presLavwVQp6mRBTdBkqDcZTUQl?=
- =?us-ascii?Q?7bkaS4u2TlCLSviQv4OnoYfA2n5RaEJy6LTUbi4HnqEfd57kGOHPPMcZ8iCN?=
- =?us-ascii?Q?iBcwSeY7a3yH8fAwxwR6UTlDGMj67d30LnEo2BDKydEpPhAMGul2TOGHv6Ut?=
- =?us-ascii?Q?M61em6ikRBo3aG8iLfNBXkmiKNm8lXKGw0tds7Mx2te1+zShBUJ1nMqdcXdE?=
- =?us-ascii?Q?fAmOErCmU/bst2p52S1bzwILzSClF5AOArHhJhwNwBAYk93oax0WSJH5vwCw?=
- =?us-ascii?Q?cU44r8rmBl7b36kXum4QkxVHmmt84i2SntGVhpuE8rZUFirspbtjC/ZVffQk?=
- =?us-ascii?Q?mB417v0/nP7nz4slPeCLdDDwPUlBU+8ToQtXMDEcEbpdow6B/RzsavUbgPTR?=
- =?us-ascii?Q?zXtF+6eRsWdhN1R4NF7DsluYbf2lFAFhcBQTNooI7FpV+Y5gqHofpkgJFI4w?=
- =?us-ascii?Q?3v34ouecdQQQ5Gwk+yUTTstduRHBi/RqYMm7qIiXUmK2Wun2g0n6hWJaJjlK?=
- =?us-ascii?Q?ti4jskbauMit71iRQPFE//nulV1tGHEbacrCPleCssxR9haIxIjakqBu4vbP?=
- =?us-ascii?Q?pOPUEmHw1iXmtsPmIj7e9y2XMW+9Pd5Wt9ZbY5cw/BNydn0bWmOM1BcAZzfu?=
- =?us-ascii?Q?FLV82iR3bsarTs73tHZTrFFAK13FkGLAsBVGAiuebKbhmYR5ubDUBFReXE11?=
- =?us-ascii?Q?2ARTljOQaQRQI4BEtujMIYBNYOm0ljlEZhq8+L6slSj8OGstFx8yr98/PTr9?=
- =?us-ascii?Q?9Q+SEivDO4mloyAPFIQCLVszM5zJmf9juX+LxP2nwREXKvDv5lDYwJYKsoHF?=
- =?us-ascii?Q?v1erLmSaU5rRctpIKNMzCmu/t/AohVOwInQqj5gRVuPyNP/+niZiW56m7hGJ?=
- =?us-ascii?Q?SbvfBaw96WrZnMYLo0U9HV0QqQ5EXT1PCyocp6Liar4LoZcJq5Pw64cJd72K?=
- =?us-ascii?Q?6tBsRdK5AlzCl5dx3uyXcqRdMBAXvRJMwljCyo17nt0DYmT/pwTITWTGTLIX?=
- =?us-ascii?Q?ZkhJ6D2MNmaYVjkknHkQ5tPkoAuriCKfCtsSrwtZw4tMfs01i+zjJGivqrkO?=
- =?us-ascii?Q?3brQZ0EInilDtoZA4JJ2pU5Yqxs=3D?=
-X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9b891262-41cc-441a-ad16-08d9a8448f4a
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR04MB5050.eurprd04.prod.outlook.com
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Nov 2021 14:31:06.6683
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: deb72273-39bc-4b3f-1a26-08d9a8448f7a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Nov 2021 14:31:06.6683
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hBe5lesLSI1fCEAMeHTOQW4NB140FhDx611WW3MA56kyG9+fSSkRx/hUN4cmn4erLxQ1kZAOb/R+i8/Pd/3IgA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB8284
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Zq+LshN35YEJLx4nRcia/ytKlRPw9R48q5ZY3rG+UfYQ5dZfmwV2usP0REHaevYn050emoQfdo6IjeIa9JSpOw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3837
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 15.11.21 08:28, syzbot wrote:
-> Hello,
+On Mon, Nov 15, 2021 at 03:06:20PM +0100, Cl=E9ment L=E9ger wrote:
+> Le Mon, 15 Nov 2021 06:08:00 -0800,
+> Jakub Kicinski <kuba@kernel.org> a =E9crit :
 >
-> syzbot found the following issue on:
+> > On Mon, 15 Nov 2021 11:13:44 +0100 Cl=E9ment L=E9ger wrote:
+> > > Test on standard packets with UDP (iperf3 -t 100 -l 1460 -u -b 0 -c *=
+)
+> > > - With pre-computed header: UDP TX: 	33Mbit/s
+> > > - Without UDP TX: 			31Mbit/s
+> > > -> 6.5% improvement
+> > >
+> > > Test on small packets with UDP (iperf3 -t 100 -l 700 -u -b 0 -c *)
+> > > - With pre-computed header: UDP TX: 	15.8Mbit/s
+> > > - Without UDP TX: 			16.4Mbit/s
+> > > -> 4.3% improvement
+> >
+> > Something's wrong with these numbers or I'm missing context.
+> > You say improvement in both cases yet in the latter case the
+> > new number is lower?
 >
-> HEAD commit:    048ff8629e11 Merge tag 'usb-5.16-rc1' of git://git.kernel=
-...
-> git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/us=
-b.git usb-testing
-> console output: https://syzkaller.appspot.com/x/log.txt?x=3D1480ade1b0000=
-0
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=3Dd6b387bc5d3e5=
-0f3
-> dashboard link: https://syzkaller.appspot.com/bug?extid=3D63ee658b9a100ff=
-adbe2
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binuti=
-ls for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=3D1313cb7cb00=
-000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=3D16a2f676b0000=
-0
+> You are right Jakub, I swapped the last two results,
 >
-> IMPORTANT: if you fix the issue, please add the following tag to the comm=
-it:
-> Reported-by: syzbot+63ee658b9a100ffadbe2@syzkaller.appspotmail.com
->
-> ------------[ cut here ]------------
-> usb 5-1: BOGUS urb xfer, pipe 3 !=3D type 1
-> WARNING: CPU: 0 PID: 1291 at drivers/usb/core/urb.c:502 usb_submit_urb+0x=
-ed2/0x18a0 drivers/usb/core/urb.c:502
+> Test on small packets with UDP (iperf3 -t 100 -l 700 -u -b 0 -c *)
+>  - With pre-computed header: UDP TX: 	16.4Mbit/s
+>  - Without UDP TX: 			15.8Mbit/s
+>  -> 4.3% improvement
 
-Hi,
-
-here I understand what is happening, but not why it can happen. Usbnet
-checks the endpoint type.
-
-May I request an addition to syzbot? Could you include the output of
-"lsusb -v" at the time
-of the error condition for USB bugs?
-
-=C2=A0=C2=A0=C2=A0 Regards
-=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 Oliver
-
+Even in reverse, something still seems wrong with the numbers.
+My DSPI controller can transfer at a higher data rate than that.
+Where is the rest of the time spent? Computing checksums?=
