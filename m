@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7740B4517C7
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 23:43:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DD1C4517CC
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 23:44:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237276AbhKOWqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 17:46:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46036 "EHLO mail.kernel.org"
+        id S1345289AbhKOWqx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 17:46:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46058 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240190AbhKOWgv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 17:36:51 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C81F361B6F;
-        Mon, 15 Nov 2021 22:33:49 +0000 (UTC)
+        id S241176AbhKOWhM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Nov 2021 17:37:12 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DB22C6141B;
+        Mon, 15 Nov 2021 22:33:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637015632;
-        bh=FdxDufx42oG2Uhhf2gTV6tStVhPE5m8IXwvTE7Oq8PM=;
+        s=k20201202; t=1637015637;
+        bh=OOwrzjwg5MbC4uyTQbcFiNJwyodtWvmko5GIuXdVkcs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UnU2OEMolQXtcK2sRi1UUQ+HRpBxYoDxSe25b+1/kgCIO+I4V8NKcGEOHEuR+JhSG
-         R1sDYHjkjeU4tYSoEAPwPjxEuqmYAkFs+/mncrQ3ebzHFPl73pac7gDn/G47BDJhko
-         o6NaZeP4QTYrkFx7NKmkRz3Xomh8jN1GVgp17Ig5W8BKFnqszPNNmszRdV32ChFIPj
-         5xiTp/cIAB9qPoHV2LZBJMHFznIv+eKTj7WQYkQd00KrkG9P0lelarB6pMtcT/qKBr
-         Ai4P/R0BAVDbNMIWEB65THqd5sG9IjADlNFhBlPfc6A9utVpyscSeWzwgQ0Bz08kZz
-         k4PvIiYJx/6DQ==
+        b=UEwlLAkY7JZe1xbfqwMNOiLqI1Wl+7PD0C8etB42duNm//2IIzvxasDLu5DHZLOSA
+         3rfEXvQTL3nuw5OtZAu+l2CMXYaneNEbXzD9UBWzllA+sDTry2cFoLV8iw+AdeKLjc
+         U+8KznS8jZvub2twTQYOI6xbwva9wyc1ajkmlWQ+zx7SpzirTUY/W4Rl3kRbR5ywva
+         Gp6lsU/+xpyA+Ubpo32gvf2ybhTpsOCLH+erIUv0osUSE9E5mO3jsjj/No/wskiNuG
+         fsWMlhuIQyajTHHErfeOiVX6/gKkk5kkGukpi0gFMVtCyvK2TUXtejCa9gvfj0R8zY
+         MHR0EiDDNBJaQ==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
@@ -32,9 +32,9 @@ Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         alexander.duyck@gmail.com, saeed@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
         tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: [PATCH v18 bpf-next 01/23] net: skbuff: add size metadata to skb_shared_info for xdp
-Date:   Mon, 15 Nov 2021 23:32:55 +0100
-Message-Id: <3dd1221d8bfdf05eac1461f5c5a1c9eb1c734316.1637013639.git.lorenzo@kernel.org>
+Subject: [PATCH v18 bpf-next 02/23] xdp: introduce flags field in xdp_buff/xdp_frame
+Date:   Mon, 15 Nov 2021 23:32:56 +0100
+Message-Id: <21437b1ac47f4bdd4d992a5efd08a38b51b33f56.1637013639.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1637013639.git.lorenzo@kernel.org>
 References: <cover.1637013639.git.lorenzo@kernel.org>
@@ -44,31 +44,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce xdp_frags_size field in skb_shared_info data structure
-to store xdp_buff/xdp_frame frame paged size (xdp_frags_size will
-be used in xdp multi-buff support). In order to not increase
-skb_shared_info size we will use a hole due to skb_shared_info
-alignment.
+Introduce flags field in xdp_frame and xdp_buffer data structures
+to define additional buffer features. At the moment the only
+supported buffer feature is multi-buffer bit (mb). Multi-buffer bit
+is used to specify if this is a linear buffer (mb = 0) or a multi-buffer
+frame (mb = 1). In the latter case the driver is expected to initialize
+the skb_shared_info structure at the end of the first buffer to link
+together subsequent buffers belonging to the same frame.
 
 Acked-by: John Fastabend <john.fastabend@gmail.com>
 Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- include/linux/skbuff.h | 1 +
- 1 file changed, 1 insertion(+)
+ include/net/xdp.h | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 0bd6520329f6..de85a76afbc1 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -529,6 +529,7 @@ struct skb_shared_info {
- 	 * Warning : all fields before dataref are cleared in __alloc_skb()
- 	 */
- 	atomic_t	dataref;
-+	unsigned int	xdp_frags_size;
+diff --git a/include/net/xdp.h b/include/net/xdp.h
+index 447f9b1578f3..4ec7bdf0d937 100644
+--- a/include/net/xdp.h
++++ b/include/net/xdp.h
+@@ -66,6 +66,10 @@ struct xdp_txq_info {
+ 	struct net_device *dev;
+ };
  
- 	/* Intermediate layers must ensure that destructor_arg
- 	 * remains valid until skb destructor */
++enum xdp_buff_flags {
++	XDP_FLAGS_MULTI_BUFF	= BIT(0), /* non-linear xdp buff */
++};
++
+ struct xdp_buff {
+ 	void *data;
+ 	void *data_end;
+@@ -74,13 +78,30 @@ struct xdp_buff {
+ 	struct xdp_rxq_info *rxq;
+ 	struct xdp_txq_info *txq;
+ 	u32 frame_sz; /* frame size to deduce data_hard_end/reserved tailroom*/
++	u32 flags; /* supported values defined in xdp_buff_flags */
+ };
+ 
++static __always_inline bool xdp_buff_is_mb(struct xdp_buff *xdp)
++{
++	return !!(xdp->flags & XDP_FLAGS_MULTI_BUFF);
++}
++
++static __always_inline void xdp_buff_set_mb(struct xdp_buff *xdp)
++{
++	xdp->flags |= XDP_FLAGS_MULTI_BUFF;
++}
++
++static __always_inline void xdp_buff_clear_mb(struct xdp_buff *xdp)
++{
++	xdp->flags &= ~XDP_FLAGS_MULTI_BUFF;
++}
++
+ static __always_inline void
+ xdp_init_buff(struct xdp_buff *xdp, u32 frame_sz, struct xdp_rxq_info *rxq)
+ {
+ 	xdp->frame_sz = frame_sz;
+ 	xdp->rxq = rxq;
++	xdp->flags = 0;
+ }
+ 
+ static __always_inline void
+@@ -122,8 +143,14 @@ struct xdp_frame {
+ 	 */
+ 	struct xdp_mem_info mem;
+ 	struct net_device *dev_rx; /* used by cpumap */
++	u32 flags; /* supported values defined in xdp_buff_flags */
+ };
+ 
++static __always_inline bool xdp_frame_is_mb(struct xdp_frame *frame)
++{
++	return !!(frame->flags & XDP_FLAGS_MULTI_BUFF);
++}
++
+ #define XDP_BULK_QUEUE_SIZE	16
+ struct xdp_frame_bulk {
+ 	int count;
+@@ -180,6 +207,7 @@ void xdp_convert_frame_to_buff(struct xdp_frame *frame, struct xdp_buff *xdp)
+ 	xdp->data_end = frame->data + frame->len;
+ 	xdp->data_meta = frame->data - frame->metasize;
+ 	xdp->frame_sz = frame->frame_sz;
++	xdp->flags = frame->flags;
+ }
+ 
+ static inline
+@@ -206,6 +234,7 @@ int xdp_update_frame_from_buff(struct xdp_buff *xdp,
+ 	xdp_frame->headroom = headroom - sizeof(*xdp_frame);
+ 	xdp_frame->metasize = metasize;
+ 	xdp_frame->frame_sz = xdp->frame_sz;
++	xdp_frame->flags = xdp->flags;
+ 
+ 	return 0;
+ }
 -- 
 2.31.1
 
