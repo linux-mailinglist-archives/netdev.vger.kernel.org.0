@@ -2,82 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E52584518AE
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 00:02:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0B6C4518E1
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 00:06:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348338AbhKOXFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 18:05:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55952 "EHLO mail.kernel.org"
+        id S1344884AbhKOXJk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 18:09:40 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:34508 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350947AbhKOXDI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 18:03:08 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 7B8146124B;
-        Mon, 15 Nov 2021 23:00:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637017209;
-        bh=N8vy7Ciqk3MUgXenShMP/984Gc3+qw7T2saMQMt4meQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=o5ILMxlQKhBlia8NToVIE/JiaA+lzdTYNM02/IaXtZxIfeNBN3h3IHVRga4kOnFBN
-         8RLq351UP05ECIqSCKjSCZc9zborUmxl2c7B4pqZW/eKvE1ZuXLguXpKGkcVpRx3ZT
-         J8VfnxVseZPlEWSobch4MptDZHhtnMTyLZmoNJ4YuxApJNesZeLV1J7oIS9mBjCMms
-         sduBa4sxE+K5Au3G+tLOu/8a2o96MAOX6AJBtB+IMV4YHLTLRiyGwJBbKaZ0nFgJQs
-         k7XdKeiOHHuboHAnMkir+OCps24pz2R8A2h6Vw+ySDoSizWgd0dMWxeEEXTpYshjTK
-         41uLR/q9K+EkQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6AE5C6095A;
-        Mon, 15 Nov 2021 23:00:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1344250AbhKOXHg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Nov 2021 18:07:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=lya67lQEfrZvJT5/YChF+rGikFvTido06jcXHSaCpiQ=; b=KBjBrSLXIsnfFAsbdKyjsk+NyO
+        1A8Ak4ANiDu1ltr4gnOzEeuHqrSYc3I1VOm6zOuHP8rZx4oHAdaCukruJyIjYzAERVScJ/OHWaSON
+        D90u0EosnlL+mX2Zb/jNjIvrnkPc+3+tYKAVa/ov9E5oONqWhmFloYMurpu8HOWzMp98=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mml1g-00DXcJ-VX; Tue, 16 Nov 2021 00:04:36 +0100
+Date:   Tue, 16 Nov 2021 00:04:36 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v5 3/3] tsnep: Add TSN endpoint Ethernet MAC
+ driver
+Message-ID: <YZLnhOUg7A66AL5p@lunn.ch>
+References: <20211115205005.6132-1-gerhard@engleder-embedded.com>
+ <20211115205005.6132-4-gerhard@engleder-embedded.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf] samples: bpf: fix build error due to -isystem removal
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163701720943.28601.12990584204511867827.git-patchwork-notify@kernel.org>
-Date:   Mon, 15 Nov 2021 23:00:09 +0000
-References: <20211115130741.3584-1-alexandr.lobakin@intel.com>
-In-Reply-To: <20211115130741.3584-1-alexandr.lobakin@intel.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, jesse.brandeburg@intel.com,
-        maciej.fijalkowski@intel.com, michal.swiatkowski@linux.intel.com,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, nathan@kernel.org,
-        ndesaulniers@google.com, adobriyan@gmail.com, masahiroy@kernel.org,
-        ardb@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211115205005.6132-4-gerhard@engleder-embedded.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+> +static int tsnep_ethtool_get_regs_len(struct net_device *netdev)
+> +{
+> +	struct tsnep_adapter *adapter = netdev_priv(netdev);
+> +	int len;
+> +	int num_queues;
+> +
+> +	len = TSNEP_MAC_SIZE;
+> +	num_queues = max(adapter->num_tx_queues, adapter->num_rx_queues);
+> +	len += TSNEP_QUEUE_SIZE * (num_queues - 1);
 
-This patch was applied to bpf/bpf.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
+Why the num_queues - 1 ? A comment here might be good explaining it.
 
-On Mon, 15 Nov 2021 14:07:41 +0100 you wrote:
-> Since recent Kbuild updates we no longer include files from compiler
-> directories. However, samples/bpf/hbm_kern.h hasn't been tuned for
-> this (LLVM 13):
-> 
->   CLANG-bpf  samples/bpf/hbm_out_kern.o
-> In file included from samples/bpf/hbm_out_kern.c:55:
-> samples/bpf/hbm_kern.h:12:10: fatal error: 'stddef.h' file not found
->          ^~~~~~~~~~
-> 1 error generated.
->   CLANG-bpf  samples/bpf/hbm_edt_kern.o
-> In file included from samples/bpf/hbm_edt_kern.c:53:
-> samples/bpf/hbm_kern.h:12:10: fatal error: 'stddef.h' file not found
->          ^~~~~~~~~~
-> 1 error generated.
-> 
-> [...]
+> +
+> +	return len;
+> +}
+> +
+> +static void tsnep_ethtool_get_regs(struct net_device *netdev,
+> +				   struct ethtool_regs *regs,
+> +				   void *p)
+> +{
+> +	struct tsnep_adapter *adapter = netdev_priv(netdev);
+> +
+> +	regs->version = 1;
+> +
+> +	memcpy_fromio(p, adapter->addr, regs->len);
+> +}
 
-Here is the summary with links:
-  - [bpf] samples: bpf: fix build error due to -isystem removal
-    https://git.kernel.org/bpf/bpf/c/6e528ca494d4
+So the registers and the queues are contiguous?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> +static int tsnep_ethtool_get_ts_info(struct net_device *dev,
+> +				     struct ethtool_ts_info *info)
+> +{
+> +	struct tsnep_adapter *adapter = netdev_priv(dev);
+> +
+> +	info->so_timestamping = SOF_TIMESTAMPING_TX_SOFTWARE |
+> +				SOF_TIMESTAMPING_RX_SOFTWARE |
+> +				SOF_TIMESTAMPING_SOFTWARE |
+> +				SOF_TIMESTAMPING_TX_HARDWARE |
+> +				SOF_TIMESTAMPING_RX_HARDWARE |
+> +				SOF_TIMESTAMPING_RAW_HARDWARE;
+> +
+> +	if (adapter->ptp_clock)
+> +		info->phc_index = ptp_clock_index(adapter->ptp_clock);
+> +	else
+> +		info->phc_index = -1;
+> +
+> +	info->tx_types = BIT(HWTSTAMP_TX_OFF) |
+> +			 BIT(HWTSTAMP_TX_ON);
+> +	info->rx_filters = BIT(HWTSTAMP_FILTER_NONE) |
+> +			   BIT(HWTSTAMP_FILTER_ALL);
+> +
+> +	return 0;
+> +}
+
+You should Cc: Richard Cochran <richardcochran@gmail.com> for the PTP
+parts.
+
+> +static int tsnep_mdio_init(struct tsnep_adapter *adapter)
+> +{
+> +	struct device_node *np = adapter->pdev->dev.of_node;
+> +	int retval;
+> +
+> +	if (np) {
+> +		np = of_get_child_by_name(np, "mdio");
+> +		if (!np)
+> +			return 0;
+> +
+> +		adapter->suppress_preamble =
+> +			of_property_read_bool(np, "suppress-preamble");
+> +	}
+> +
+> +	adapter->mdiobus = devm_mdiobus_alloc(&adapter->pdev->dev);
+> +	if (!adapter->mdiobus) {
+> +		retval = -ENOMEM;
+> +
+> +		goto out;
+> +	}
+> +
+> +	adapter->mdiobus->priv = (void *)adapter;
+> +	adapter->mdiobus->parent = &adapter->pdev->dev;
+> +	adapter->mdiobus->read = tsnep_mdiobus_read;
+> +	adapter->mdiobus->write = tsnep_mdiobus_write;
+> +	adapter->mdiobus->name = TSNEP "-mdiobus";
+> +	snprintf(adapter->mdiobus->id, MII_BUS_ID_SIZE, "%s",
+> +		 adapter->pdev->name);
+> +
+> +	if (np) {
+> +		retval = of_mdiobus_register(adapter->mdiobus, np);
+> +
+> +		of_node_put(np);
+> +	} else {
+> +		/* do not scan broadcast address */
+> +		adapter->mdiobus->phy_mask = 0x0000001;
+> +
+> +		retval = mdiobus_register(adapter->mdiobus);
+
+You can probably simply this. of_mdiobus_register() is happy to take a
+NULL pointer for np, and will fall back to mdiobus_register().
 
 
+> diff --git a/drivers/net/ethernet/engleder/tsnep_test.c b/drivers/net/ethernet/engleder/tsnep_test.c
+
+You have quite a lot of code in this file. Could it either be
+
+1) A loadable module which extends the base driver?
+2) A build time configuration option?
+
+What percentage of the overall driver binary does this test code take
+up?
+
+Apart from the minor comments above, ethtool, mdio, phy all looks
+good.
+
+	Andrew
