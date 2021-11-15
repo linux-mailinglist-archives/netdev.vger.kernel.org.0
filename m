@@ -2,168 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 786F84507E6
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 16:09:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 553634507F8
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 16:12:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236472AbhKOPMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 10:12:35 -0500
-Received: from mail-mw2nam12on2061.outbound.protection.outlook.com ([40.107.244.61]:15809
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236507AbhKOPMb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 10:12:31 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=X3Lo/XCeqAmgPvEzwrEYaU1EWHx4eEjFuga+5M/dQYu7HgdhqhVNm/cKPKch6XS+imUKaQVYBMfVhxMqPHHky4Ljp5e8NAuEAhL3tMBGjGy0UDH0y4gNdDaeE6U9o/vFz6rN/iRtFtfFUcDbxe+nGnfnWd8C/AJ8escnC6yT6ozzK3Jyupbe/iJz7AVBM+WhMZHwsKxPtJP5T4XmwetUAUDhJwkb2N5/Czt/LGLOQ+sHKF9nOa5phmtC5oJwD5Vd0dOO1o6plbGZuEo4wWsaxDwCFBL79uHE4pk9P1Rmm9xCCJ+QZUp4Kf1PbQku9MDAFoXPwugp3tU1RHqedzefBg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=elqeNjFXcpeu8+TMzux20j5tpH35irf1FxKhvZW1E4U=;
- b=KjeDxu1BmEx4pVeVfpQjRnuj9S4cWfQF+CgsSQgfxmMrQmryycmGqIj3c7B/KOBzO2dEs6dyd9+lhasGav0EDANHEGP+L6nGmJ93uJZjXHchVYWou1+nSwZ/IReGDIdjm91rSFyUBWKXupCv6y7xyuFpYrV8Ng/u5FxF3rh+0H5Yqebqs/ctY+S3/szWgvzkX/wR/4TvS7pGrSt3ij9X5SYnXhKtQRnfDiF/JHCMN3sKJBj+HOsI5KV73h9QCrzUWHbjDj/fSdIZECk/dE7L9RCIIq17sJqj2TPhehKeWX6qpclaR6M4voTn2uH9ElgaizSRTUFt3dsknzaIzjCsOA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=elqeNjFXcpeu8+TMzux20j5tpH35irf1FxKhvZW1E4U=;
- b=MrVfT3J+7B2RHC5S3TR4UF6jiXo8VrwPAOIvSALCdUZKZb5WQJITw/6z7ZJ/5IQW+PRj8dB6iT7iCpklV1Y0JFNryMDjmpbOeAnIR3oIsRXO39lkXdOBNl34u1v2rNKiUQByHxpoJTMwnuk3FhJoVP8l/rnJVY7Lo4tlGawVZltYVow/MI4hliBB+4iVCyVImKl+MmksnhAZb2N9x11pD0FuHmZewH/4E3Ob1JTQ9V0T0y0Bouo/rrDxizuvTZvhhgPlpd0KCRgj4pzkPBtFrQJu3tkxuuSSp4opwZJYoH+XqhPe+HRbmX2NK/nz5NmhwYpzHeYmzszwGwLK8ykjWw==
-Authentication-Results: resnulli.us; dkim=none (message not signed)
- header.d=none;resnulli.us; dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5191.namprd12.prod.outlook.com (2603:10b6:208:318::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.16; Mon, 15 Nov
- 2021 15:09:34 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::5897:83b2:a704:7909]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::5897:83b2:a704:7909%7]) with mapi id 15.20.4690.027; Mon, 15 Nov 2021
- 15:09:34 +0000
-Date:   Mon, 15 Nov 2021 11:09:31 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
-        Ido Schimmel <idosch@idosch.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        edwin.peer@broadcom.com
-Subject: Re: [PATCH net-next] devlink: Require devlink lock during device
- reload
-Message-ID: <20211115150931.GA2386342@nvidia.com>
-References: <20211109153335.GH1740502@nvidia.com>
- <20211109082042.31cf29c3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20211109182427.GJ1740502@nvidia.com>
- <YY0G90fJpu/OtF8L@nanopsycho>
- <YY0J8IOLQBBhok2M@unreal>
- <YY4aEFkVuqR+vauw@nanopsycho>
- <YZCqVig9GQi/o1iz@unreal>
- <YZJCdSy+wzqlwrE2@nanopsycho>
- <20211115125359.GM2105516@nvidia.com>
- <YZJx8raQt+FkKaeY@nanopsycho>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YZJx8raQt+FkKaeY@nanopsycho>
-X-ClientProxiedBy: YT3PR01CA0109.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:85::10) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+        id S236543AbhKOPPR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 10:15:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48760 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236613AbhKOPOH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Nov 2021 10:14:07 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E1A4663220;
+        Mon, 15 Nov 2021 15:11:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636989071;
+        bh=bcYj6Q8GqW3I6MVVnrq9F0y/4nVV0WtB/ff9SHPv/1M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=oVAV31zxNYUbO3vOu66A5bmeKWJdoSrD63BgGkXXimGVpQl9BrK4ouz7LRnKuGVRK
+         tzAvwoKaCKD5bG4pC2lxyEEcr+Nd0d0U3CeYrieWavPI/uQ38bPJxtJ81+LgFlExKe
+         An98zMle9CdEKpcteKDJuQbVwBVKGsc6tiIh1E2pNC4FxvZ4kROiFp/b8yTjv7uz0M
+         5SMomBb1U5LsAzlyGi9fATkW6KingQS768UnF94UUZLfLMPNnMrp6Z3V+HYqoofL6+
+         s+cAU5JMLwIEw6M/cn78s79/SOUrK0pOAdXv7MLhlv+C53R9cIY/OtzM50J37AA90O
+         V0sm7io13zyCA==
+Date:   Mon, 15 Nov 2021 07:11:09 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Roopa Prabhu <roopa@nvidia.com>
+Cc:     Ido Schimmel <idosch@idosch.org>,
+        sundeep subbaraya <sundeep.lkml@gmail.com>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Hariprasad Kelam <hkelam@marvell.com>,
+        Geethasowjanya Akula <gakula@marvell.com>,
+        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
+        Rakesh Babu Saladi <rsaladi2@marvell.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Andrew Lunn <andrew@lunn.ch>, <argeorge@cisco.com>
+Subject: Re: [EXT] Re: [net-next PATCH 1/2] octeontx2-pf: Add devlink param
+ to init and de-init serdes
+Message-ID: <20211115071109.1bf4875b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <952e8bb0-bc1e-5600-92f2-de4d6744fcb0@nvidia.com>
+References: <YXmWb2PZJQhpMfrR@shredder>
+        <BY3PR18MB473794E01049EC94156E2858C6859@BY3PR18MB4737.namprd18.prod.outlook.com>
+        <YXnRup1EJaF5Gwua@shredder>
+        <CALHRZuqpaqvunTga+8OK4GSa3oRao-CBxit6UzRvN3a1-T0dhA@mail.gmail.com>
+        <YXqq19HxleZd6V9W@shredder>
+        <CALHRZuoOWu0sEWjuanrYxyAVEUaO4-wea5+mET9UjPyoOrX5NQ@mail.gmail.com>
+        <YYeajTs6d4j39rJ2@shredder>
+        <20211108075450.1dbdedc3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YY0uB7OyTRCoNBJQ@shredder>
+        <20211111084719.600f072d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YZDK6JxwcoPvk/Zx@shredder>
+        <952e8bb0-bc1e-5600-92f2-de4d6744fcb0@nvidia.com>
 MIME-Version: 1.0
-Received: from mlx.ziepe.ca (206.223.160.26) by YT3PR01CA0109.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:85::10) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.26 via Frontend Transport; Mon, 15 Nov 2021 15:09:33 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1mmdbv-00A0s7-T1; Mon, 15 Nov 2021 11:09:31 -0400
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 39ab99da-2465-48ac-acfe-08d9a849ee8c
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5191:
-X-Microsoft-Antispam-PRVS: <BL1PR12MB51910DCB52C9C61D3BD7057AC2989@BL1PR12MB5191.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 429+yN8Xl01xszfUeWcQ+0LmOFIydpt0xersc3gth+BZU+ot1LdFOBnFlks9LwGaIN/lDM6oVg3vHqmDphKpg7mp2TS23VLjyr319eYEGtE3fDTwVRDIP2tJYoJceHuGSDMYPFpKPX7HlH7qXLWwWXP3NGHJtHhLSvg7kdkWmrp55niFfL56CzCjEkjN5EhxXaYEkPwR6RLFKfLmsi4Qq2L4e0n5zIsIif5aIl/wtbliOttl7fcMm/73j9pcC0JOXbNW/Quii9/HBR4ROGqC0T3fr50870kY3Gs26v4XYLRUGCJbdb0JFUJR8QTSbkeTt8eyKvrpoPx+ZsAvcEhuhicQftoke0zYzzg7q2OiGUNwkVSpUR89tNP5hjGeEdLQxVZqYOeztUQD0DmdeyFEcARbVrld4B0QkHpNeAoY7+xflEIlESBozy7irOieQ2VHTonTEsDW1dshBfM2/4e3FCjg8ltFFzfjhNmBsLeBvqBobDewTUS4cyyFBR4N2mfx31FTWrYWHFJc1Rqq8xPFYVrhpK/V89QtX40S80rDe5xszWqMoFcMa2ktoARSb1KTiWhc5mWBpVMk0aDvynpzeG05eV2kKfJCCmdT207gPyEMgn17I/P+rmrpIJuE1NxMLjLw7sEaiBxE46nQpvNOaw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(9786002)(9746002)(426003)(8676002)(66476007)(2616005)(6916009)(316002)(86362001)(54906003)(1076003)(66556008)(66946007)(508600001)(38100700002)(83380400001)(186003)(4326008)(26005)(2906002)(8936002)(5660300002)(36756003)(33656002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?WV3MCbCyJLBZTyLTOiDfRyISr3gy+gMML7uN1S9qus1RNWTXRbuNSaGssULn?=
- =?us-ascii?Q?DD4eQzVYZVRx1Yg+t5EJRNtTpTzYMgC7i/YEsBoJhCrkDuzYVpPMIA3jQyMh?=
- =?us-ascii?Q?OZEYwiCOY+e5an13g4u2jWusxTtXu/byZn9e6r6xTRE8GpHyoWgQaffPdx2K?=
- =?us-ascii?Q?ipZkqisM+LCNQLcL73LSPWff8UY/hLYRDUU9QCyEwoG7B22lQR7OqMAuHxp5?=
- =?us-ascii?Q?rvQVSYpz5XG7VlqFr/xIuIoieF8yyxC/xLBkCh1+8459js5V+6+sGLoxlyBe?=
- =?us-ascii?Q?cbRpdKTwUEQIqYoyQYuj1aGv5/RgSjE1SEnVchb8bX+I5uPjhFStavdpBdM0?=
- =?us-ascii?Q?klYMyjCQ5rZiTfmHgF1/jv0mau0+gBtGsrtHYcGgzH7c4glwHZTXuDVoZg+h?=
- =?us-ascii?Q?5vZG8i9AQh2s4OYS2hbDCEnlxCmonlOSip3q9p7T1JbZR3QQ3FOb6mhvEO2w?=
- =?us-ascii?Q?swe4AOU1JI2d+12DPgmtqSP6xijv976MkpiwmwyvI+dpIuc+Ox/G7UJCvCpu?=
- =?us-ascii?Q?qgimEAGy4yqw9rLKDKojf0AGIvwX18n38+4ejGZf34m9VmxswewUphpDv7py?=
- =?us-ascii?Q?SS8cGXZRwdrf/v+JA1Ez8pPzLTCFK8AvQUaqFflIX2oy6P0/fFcfQb5/h8vU?=
- =?us-ascii?Q?vt6vTud+n86jO01BSEBuEgIZj4yCAVlAO7ZRwUdcbniz8vg0tN+RDFXbmn/Q?=
- =?us-ascii?Q?pTq8ZjDnN5uT0/QgRlkqXcjVzCh9Z0YnrFD26GyJjUShuNa+5IvGSvX04y+Y?=
- =?us-ascii?Q?6glga/xpCFp6WwLvLbMdiksMywAPr85Pu+HM1Nx4DX5JcBLB8BWT53Renaq9?=
- =?us-ascii?Q?V3pVroJ2qq0wgc9TkPBC/A7zshW7MFbcuFEAxcT7I8SVnR+aXXlaBBqXpmFN?=
- =?us-ascii?Q?/knphwZlZbos4i1JeQh9n4K6SpbeVKWBjAsFDu9YAJegVzaCHmq3IGUekgvw?=
- =?us-ascii?Q?QBZVhswfaFuuKhB62lZPVQKIGaLWLo7SRkVm9p2wJWRWbPRqzR7M0z2tfY0+?=
- =?us-ascii?Q?iXhrj8spDU9/fBKFiUoTrJB7dNcym7pwJ1hRAG/IcGXnufOaeqlkfEFhZgSY?=
- =?us-ascii?Q?T19NKmB8uhtOLLeTvv+ti27j8bk8P8j5ViWlq+e3/sTp8HEgDqKc4cizpW6q?=
- =?us-ascii?Q?s/X0bMQywPv4AdyyeUbf8voH13laeFJEUFXvnt9s4K5CQLQhe4/ik7Tt50Cv?=
- =?us-ascii?Q?3YF/+5wtKZ14eamefFMvro1gb+TD5bC4S+HvYVFps1KaDdePnj61qULcJ9ah?=
- =?us-ascii?Q?91VjOYYT9FZaKjh8GCcfNIYmyfTtvENKUKlxqnzQcBJjBslDUycpmleh5GW+?=
- =?us-ascii?Q?m5hMkiCeOhL27weDzvagkD7DLif/6moy1W9TXRKoSAiTn1B54Rs1VWDJ+/IQ?=
- =?us-ascii?Q?sE2MgqA43lyppMBVkEhOLjgxzU3TwEtYASCIr5yJZGM0Sj/MOVRjjBjf2o0A?=
- =?us-ascii?Q?NqCJSCRoEPG/HqhWy3OBFxqEdYB80mHUeCrtA7di8xs/EWGog6mtGhQMfxiY?=
- =?us-ascii?Q?H9Wrtm+zsvEzLX2QiOnoHYhDeM4g6/KhYJKWmrA5CYLxClMxkeIlOnE0zgzj?=
- =?us-ascii?Q?l88Vw5SvmxtiPVbrO5Q=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 39ab99da-2465-48ac-acfe-08d9a849ee8c
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Nov 2021 15:09:33.9474
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3Lo4dDW5djThlW3GyZEuxDQaDWcWPbvtMvetz5+DcSJ9wka/mY94CUY4soQuZaMj
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5191
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 15, 2021 at 03:42:58PM +0100, Jiri Pirko wrote:
+On Sun, 14 Nov 2021 20:19:59 -0800 Roopa Prabhu wrote:
+> On 11/14/21 12:38 AM, Ido Schimmel wrote:
+> > On Thu, Nov 11, 2021 at 08:47:19AM -0800, Jakub Kicinski wrote:  
+> >> Hm. How do we come up with the appropriate wording here...
+> >>
+> >> I meant keeping the "PHY level link" up? I think we agree that all the
+> >> cases should behave like SFP power behaves today?
+> >>
+> >> The API is to control or query what is forcing the PHY link to stay up
+> >> after the netdev was set down. IOW why does the switch still see link
+> >> up if the link is down on Linux.  
+> > The SFP power policy doesn't affect that. In our systems (and I believe
+> > many others), by default, the transceivers are transitioned to high
+> > power mode upon plug-in, but the link is still down when the netdev is
+> > down because the MAC/PHY are not operational.
 
-> >Sorry, I don't agree that registering a net notifier in an aux device
-> >probe function is non-standard or wrong.
+Ah, GTK!
+
+> > With SRIOV/Multi-Host, the MAC/PHY are always operational which is why
+> > your link partner has a carrier even when the netdev is down.
+
+I see, I think you're talking about something like IFLA_VF_LINK_STATE_*
+but for the PF. That could make sense, although I don't think it was
+ever requested.
+
+> >> I don't think we should report carrier up when netdev is down?  
+> > This is what happens today, but it's misleading because the carrier is
+> > always up with these systems. When I take the netdev down, I expect my
+> > link partner to lose carrier. If this doesn't happen, then I believe the
+> > netdev should always report IFF_UP. Alternatively, to avoid user space
+> > breakage, this can be reported via a new attribute such as "protoup".
+
+Sounds sensible.
+
+> >> "proto" in "protodown" refers to STP, right?  
+> > Not really. I believe the main use case was vrrp / mlag. 
+
+VRRP is a proto, mlag maybe a little less clear-cut.
+
+> > The "protdown_reason" is just a bitmap of user enumerated reasons to keep
+> > the interface down. See commit 829eb208e80d ("rtnetlink: add support for
+> > protodown reason") for details.  
 > 
-> Listening to events which happen in different namespaces and react to
-> them is the non-standard behaviour which I refered to. If you would not
-> need to do it, you could just use netns notofier which would solve your
-> issue. You know it.
+> correct. Its equivalent to errDisable found on most commercial switch OS'es.
+> 
+> Can be used for any control-plane/mgmt-plane/protocol wanting to hold 
+> the link down.
+> 
+> Other use-cases where this can be used (as also quoted by other vendors):
+> 
+> mismatch of link properties
 
-Huh?
+What link properties?
 
-It calls the bog standard
+> Link Flapping detection and disable link
+> Port Security Violation
 
- register_netdevice_notifier() 
+Port security as established by a .. protocol like 802.1X ?
 
-Like hundreds of other drivers do from their probe functions
+> Broadcast Storms
+> etc
 
-Which does:
+Why not take the entire interface down for bcast storm?
 
-int register_netdevice_notifier(struct notifier_block *nb)
-{
-	struct net *net;
-	int err;
+> >> Not sure what "proto" in "protoup" would be.  
+> > sriov/multi-host/etc ?  
+> 
+> agree. Would be nice to re-use protodown ndo and state/reason here
 
-	/* Close race with setup_net() and cleanup_net() */
-	down_write(&pernet_ops_rwsem);
+You are the experts so correct me please but the point of protodown 
+is that the the link is held down for general traffic but you can 
+still exchange protocol messages on it. STP, VRRP, LAG, 802.1X etc.
 
-And deadlocks because devlink hols the pernet_ops_rwsem when it
-triggers reload in some paths.
+For anything that does not require special message exchange the link
+can be just brought down completely.
 
-There is nothing wrong with a driver doing this standard pattern.
+In my head link held up is a completely different beast, the local host
+does not participate or otherwise pay attention to any communication on
+the link. It's about what other entities do with the link.
 
-There is only one place in the entire kernel calling the per-ns
-register_netdevice_notifier_dev_net() and it is burred inside another
-part of mlx5 for some reason..
-
-I believe Parav already looked at using that in rdma and it didn't
-work for some reason I've forgotten. 
-
-It is not that we care about events in different namespaces, it is
-that rdma, like everything else, doesn't care about namespaces and
-wants events from the netdev no matter where it is located.
-
-Jason
+But if you prefer "protoup" strongly that's fine, I guess.
