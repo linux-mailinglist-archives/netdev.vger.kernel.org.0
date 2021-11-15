@@ -2,118 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 442B0450351
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 12:22:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B4E245034D
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 12:20:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231267AbhKOLZM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 06:25:12 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:39096 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231486AbhKOLXK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 06:23:10 -0500
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1AFBAfp0019208;
-        Mon, 15 Nov 2021 11:19:57 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=7A8WJnxEub7TjzKh/8V7/VNswiioRZU7+WSJNf5i2co=;
- b=dPjYjYyVgqesStpkaQIOwX0749NZD6T2zUgGQ3i/3V7RQvBO1fiVxgQF4GadxSRes+ho
- b26A4EIuDkm0dsLVqGDwBVBnvAZ88p37N4k2/iEt41TlAaxKsoTVERKPRoilgOrDSTAZ
- /JOSqnf1CDUyZuXsfhTMhGB2d7BszeiaVPgt4ikRixg+/rUwWW7AYptEYEUrDIBYJoD8
- BwCJPy6OWVdRwGBUTwtPSx5j9k9X/pgrHMV/NmG3vySTm1QfG8Ix8nGngOPn7TlDwyL2
- 8Cbw2oz9sLEu6aiGW2IsXb2tF8djMo+KzFlzyiitxAP39U+miQEVcVXsDAc8JAQSP4dE SA== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3cbkwq3cm3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Nov 2021 11:19:55 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1AFBDX9c026453;
-        Mon, 15 Nov 2021 11:19:53 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3ca509mpmb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Nov 2021 11:19:53 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1AFBCwYw64094594
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 15 Nov 2021 11:12:58 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1ECF64C05C;
-        Mon, 15 Nov 2021 11:19:51 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CC25B4C044;
-        Mon, 15 Nov 2021 11:19:49 +0000 (GMT)
-Received: from [9.171.2.161] (unknown [9.171.2.161])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 15 Nov 2021 11:19:49 +0000 (GMT)
-Message-ID: <a12f593a-a9e4-44bf-1740-92303ceb1dc3@linux.ibm.com>
-Date:   Mon, 15 Nov 2021 13:19:49 +0200
+        id S231215AbhKOLX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 06:23:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40474 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231629AbhKOLXV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 06:23:21 -0500
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 331FEC061766
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 03:20:24 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id b184-20020a1c1bc1000000b0033140bf8dd5so12095987wmb.5
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 03:20:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=dM9DRPgSpJ0jYURWvDVlbmzfJrqC6EeymCjwHEDZ6Es=;
+        b=xOD0AkPy2gwLWVAKrrvHs32rV78rbaPL2H73G5vr1U7KZToCSz6p8Rq5/Fb7N4JG08
+         TV5RsRwS5HOWrf2coQN+Eh4dXDHf30y4l4JJacFNzB/hyRZPZruRawHAhBzcUeBvcDK3
+         8iGBdem8Yy+s7rnZp1BlM2/pZRn20b0jI3HW9je2YyhS/jGw1xojFDA8U0IdktOwJOiL
+         zKK2gx/fp8DmK8gRttrY9e33y5O+6CPfv+WLUUkhvJ5oH0CYelVoz4m45WUEi/4NW4kj
+         Kce8QNtsMKuUCnVj4g6NM5hEh7vFlySUJ1NevVg2LCHRFkgWWZo+s8qA2ZvhjN9dv9QS
+         3c4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=dM9DRPgSpJ0jYURWvDVlbmzfJrqC6EeymCjwHEDZ6Es=;
+        b=bsw4iymR08revmkjSVJVhP58PDHMV8d2Nu0evBzaeSOuEFKpSfvMD1jhznYzxI05z0
+         6mFn45UCHChRrvePNtngIZSX8i59HPA6zzmijasn0x2c09n9Q+f+Mr1n2wUFybqXUsfD
+         yOAf6n42t9DOADmjLEVbRQz6l8opik27Kz55aWRQuYqDw0taW5mmD7V/nEsqk1aItkcJ
+         4k4hEIZhmzBbhO8Pd3pyFLd5L7olK6dhPoZoUkJrhqGhu0kjUL59WWU/tgKAnlr+yI5Z
+         eG4ofC+WUqzHVCWl05LCKoVf7sjWbgs5ybLG3oQb6yMMmS7KHY9jw2xJ+u1rCO/2u+NN
+         hhyQ==
+X-Gm-Message-State: AOAM5301ByeZr4AWjLm4icLa994+TJOZtRn297MsjvqO6g+4Rbi5sdY3
+        3VhbVHIGsGkjTqcZ1eAb51jGhA==
+X-Google-Smtp-Source: ABdhPJzYi8iIhkZycZ6PrR6eG5g7mUUosggXB1jNrJ6nd0jrj7CHwHF6FPbvwqNTXObdzBkNXznpHQ==
+X-Received: by 2002:a1c:9842:: with SMTP id a63mr58984430wme.102.1636975223009;
+        Mon, 15 Nov 2021 03:20:23 -0800 (PST)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id z7sm19191262wmi.33.2021.11.15.03.20.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Nov 2021 03:20:22 -0800 (PST)
+Date:   Mon, 15 Nov 2021 12:20:21 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@idosch.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        edwin.peer@broadcom.com
+Subject: Re: [PATCH net-next] devlink: Require devlink lock during device
+ reload
+Message-ID: <YZJCdSy+wzqlwrE2@nanopsycho>
+References: <20211108153126.1f3a8fe8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20211109144358.GA1824154@nvidia.com>
+ <20211109070702.17364ec7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20211109153335.GH1740502@nvidia.com>
+ <20211109082042.31cf29c3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20211109182427.GJ1740502@nvidia.com>
+ <YY0G90fJpu/OtF8L@nanopsycho>
+ <YY0J8IOLQBBhok2M@unreal>
+ <YY4aEFkVuqR+vauw@nanopsycho>
+ <YZCqVig9GQi/o1iz@unreal>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Subject: Re: [PATCH v2 1/6] net: ocelot: add support to get port mac from
- device-tree
-Content-Language: en-US
-To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-References: <20211103091943.3878621-1-clement.leger@bootlin.com>
- <20211103091943.3878621-2-clement.leger@bootlin.com>
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-In-Reply-To: <20211103091943.3878621-2-clement.leger@bootlin.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: H6wf7pqRbxGK-vgjJd6SfEEuOkcEhfVD
-X-Proofpoint-ORIG-GUID: H6wf7pqRbxGK-vgjJd6SfEEuOkcEhfVD
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-11-15_10,2021-11-12_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- suspectscore=0 phishscore=0 mlxlogscore=999 mlxscore=0 adultscore=0
- spamscore=0 malwarescore=0 clxscore=1011 bulkscore=0 impostorscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2111150061
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YZCqVig9GQi/o1iz@unreal>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03.11.21 11:19, Clément Léger wrote:
-> Add support to get mac from device-tree using of_get_mac_address.
-> 
-> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-> ---
->  drivers/net/ethernet/mscc/ocelot_net.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-> index eaeba60b1bba..d76def435b23 100644
-> --- a/drivers/net/ethernet/mscc/ocelot_net.c
-> +++ b/drivers/net/ethernet/mscc/ocelot_net.c
-> @@ -1704,7 +1704,10 @@ int ocelot_probe_port(struct ocelot *ocelot, int port, struct regmap *target,
->  		NETIF_F_HW_TC;
->  	dev->features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_TC;
->  
-> -	eth_hw_addr_gen(dev, ocelot->base_mac, port);
-> +	err = of_get_mac_address(portnp, dev->dev_addr);
+Sun, Nov 14, 2021 at 07:19:02AM CET, leon@kernel.org wrote:
+>On Fri, Nov 12, 2021 at 08:38:56AM +0100, Jiri Pirko wrote:
+>> Thu, Nov 11, 2021 at 01:17:52PM CET, leon@kernel.org wrote:
+>> >On Thu, Nov 11, 2021 at 01:05:11PM +0100, Jiri Pirko wrote:
+>> >> Tue, Nov 09, 2021 at 07:24:27PM CET, jgg@nvidia.com wrote:
+>> >> >On Tue, Nov 09, 2021 at 08:20:42AM -0800, Jakub Kicinski wrote:
+>> >> >> On Tue, 9 Nov 2021 11:33:35 -0400 Jason Gunthorpe wrote:
+>> >> >> > > > I once sketched out fixing this by removing the need to hold the
+>> >> >> > > > per_net_rwsem just for list iteration, which in turn avoids holding it
+>> >> >> > > > over the devlink reload paths. It seemed like a reasonable step toward
+>> >> >> > > > finer grained locking.  
+>> >> >> > > 
+>> >> >> > > Seems to me the locking is just a symptom.  
+>> >> >> > 
+>> >> >> > My fear is this reload during net ns destruction is devlink uAPI now
+>> >> >> > and, yes it may be only a symptom, but the root cause may be unfixable
+>> >> >> > uAPI constraints.
+>> >> >> 
+>> >> >> If I'm reading this right it locks up 100% of the time, what is a uAPI
+>> >> >> for? DoS? ;)
+>> >> >> 
+>> >> >> Hence my questions about the actual use cases.
+>> >> >
+>> >> >Removing namespace support from devlink would solve the crasher. I
+>> >> >certainly didn't feel bold enough to suggest such a thing :)
+>> >> >
+>> >> >If no other devlink driver cares about this it is probably the best
+>> >> >idea.
+>> >> 
+>> >> Devlink namespace support is not generic, not related to any driver.
+>> >
+>> >What do you mean?
+>> >
+>> >devlink_pernet_pre_exit() calls to devlink reload, which means that only
+>> >drivers that support reload care about it. The reload is driver thing.
+>> 
+>> However, Jason was talking about "namespace support removal from
+>> devlink"..
+>
+>The code that sparkles deadlocks is in devlink_pernet_pre_exit() and
+>this will be nice to remove. I just don't know if it is possible to do
+>without ripping whole namespace support from devlink.
 
-of_get_ethdev_address() maybe, so that this gets routed through Jakub's fancy
-new eth_hw_addr_set() infrastructure?
+As discussed offline, the non-standard mlx5/IB usage of network
+namespaces requires non standard mlx5/IB workaround. Does not make any
+sense to remove the devlink net namespace support removal.
 
-> +	if (err)
-> +		eth_hw_addr_gen(dev, ocelot->base_mac, port);
-> +
->  	ocelot_mact_learn(ocelot, PGID_CPU, dev->dev_addr,
->  			  OCELOT_VLAN_UNAWARE_PVID, ENTRYTYPE_LOCKED);
->  
-> 
 
+>
+>Thanks
+>
+>> 
+>> 
+>> >
+>> >Thanks
+>> >
+>> >> 
+>> >> >
+>> >> >Jason
