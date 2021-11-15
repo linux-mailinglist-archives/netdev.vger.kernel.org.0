@@ -2,30 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74085450116
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 10:21:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 618EA450123
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 10:21:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230383AbhKOJX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 04:23:57 -0500
+        id S237536AbhKOJYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 04:24:14 -0500
 Received: from mx1.tq-group.com ([93.104.207.81]:12298 "EHLO mx1.tq-group.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237544AbhKOJXR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 04:23:17 -0500
+        id S237590AbhKOJXf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Nov 2021 04:23:35 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1636968021; x=1668504021;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=mTBUnMaN2CwH+4/F0vBfQFDpL5MOx60vPr71EBqcjFM=;
-  b=YXXeVdRYbFpJRkoHUBi0G3E0osuhT9BtZeX+U1f11Sjml+y3Nh1xkvRp
-   qK9DgeVazofVJvlu6S/Ai6qL3/jAKxr8V4XySswoKlom7LyjPrv5+Md4a
-   epOTjEO/9u66q0s/qxkLAUtrUf8bkcC3/l4Bz/fvsyv5nxE8gu2hUOoeh
-   DH6QqJC7keNyiZOLT3eP4qVAaB7vR4L0lOEQTK321Ju17/b8wlBrzpEub
-   kwzCtaHWA4NKaYtpzalTcvxzOOAIoYDHapVVkuFgBv/yjXkIdTl1u9XFf
-   NDWMsTpZdYOxhmg40xM+5lO5sxrB+nRpMPK+UWKJUKkWA7vhSHTAjhUKk
-   Q==;
+  t=1636968041; x=1668504041;
+  h=from:to:cc:subject:date:message-id;
+  bh=9cFyr0y761pT/zVc4s7vOYwjjT571s07IyHIJLr/+MU=;
+  b=pczY0aIE0g8DKelIfHjTH/kPaNn0xLrhFV+0BxcbtEtqSjy9CmpaUUj8
+   2+GhkWRV9gi7nBXzVXXjWsiLMpWpcw6McZ8ZG9Xv2+wKf55a/9VhQye06
+   QcUSLtpDn2xiRuawltVvqIVGYWP/aZnHfKoxVFZyo/zIFkppdY5r5Vfgt
+   HA9xrbLckz1+qAtYqe1VzZQNckr74i07SqDu6Bg+c4fBNPaKt1FkT5m7M
+   Pf9B4Cc/et2B2Zv5y60W8IiDdp9gIaDTFfRMhXQIVc3i9/sagSdOZpjju
+   3aP9mGsmpVi9+QWHNpwb+0g7KyTM+aIPd2PLImD7xZU6C9Bl+T9lLOwMf
+   w==;
 X-IronPort-AV: E=Sophos;i="5.87,236,1631570400"; 
-   d="scan'208";a="20459390"
+   d="scan'208";a="20459392"
 Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
   by mx1-pgp.tq-group.com with ESMTP; 15 Nov 2021 10:20:19 +0100
 Received: from mx1.tq-group.com ([192.168.6.7])
@@ -36,22 +35,21 @@ X-PGP-Universal: processed;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
   t=1636968019; x=1668504019;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=mTBUnMaN2CwH+4/F0vBfQFDpL5MOx60vPr71EBqcjFM=;
-  b=H22jx6mUIVt1bJCEgO5syVpxx8LxEvP3lDuNBnFtzXmxjcdkNZMyOc4G
-   9DnUIBiuepZsQ6UneOlTlQa2WoYSHhBWbJdX46w/cWaSc7JTW9A5rzqm/
-   cgNU8/x/OaQqLszm/E2r3M84l3DVfUyzK7S3E7f0flpvzAP838ZtqH5n5
-   Miw9rQ8AgFDMukrMAUH03kh+k82hUAMGJgyCG41lcjiL+5r5SdHqMJinH
-   cEdMqiDeBbXCPKdbCZIdp9t6m64PUCGfXJpq/mrdNFSd4WGqg0lHv/Nfn
-   mwQ3SDBqgvaBN5N3sM4sR8VWR9eUn8eBYkfWT7cIR74o8cb/wiKxko5Jn
-   A==;
+  h=from:to:cc:subject:date:message-id;
+  bh=9cFyr0y761pT/zVc4s7vOYwjjT571s07IyHIJLr/+MU=;
+  b=VCWRnF0mHtbUxKzKlOLw/E05vf6qDAQp+V7XFiroaIrrJj/aR6puVzDI
+   +cL62+Hu60axwM9DNH82AZdGHJBf0ilqo8tDrIAFXnTimgIg2d98CqGot
+   SDAEFS4jmFdRL/jCrxea+D148ESf5LpzOMJt9nBhntFoRNlqzgAZLVfA5
+   fwahpJmpnN9L+s+LZTneAkKaUhHXHawwfSJ3SLUkNUKYClnsbPhMSMk+9
+   xl5NGn9NXA8tBluMb/R6P3/lTxnnGyqlBxqwSvderqWEHxFDRqYZ3qh6t
+   Apcg+anj63UH6x2D8AyhzScdOyOBKf9KtyNiPILkrWw42XihUSQn73uyw
+   w==;
 X-IronPort-AV: E=Sophos;i="5.87,236,1631570400"; 
-   d="scan'208";a="20459389"
+   d="scan'208";a="20459391"
 Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 15 Nov 2021 10:20:18 +0100
+  by mx1.tq-group.com with ESMTP; 15 Nov 2021 10:20:19 +0100
 Received: from schifferm-ubuntu4.tq-net.de (schifferm-ubuntu4.tq-net.de [10.121.48.12])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id B0E83280065;
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id E8FA4280075;
         Mon, 15 Nov 2021 10:20:18 +0100 (CET)
 From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 To:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
@@ -64,39 +62,43 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Subject: [PATCH net 0/4] Fix bit timings for m_can_pci (Elkhart Lake)
-Date:   Mon, 15 Nov 2021 10:18:48 +0100
-Message-Id: <cover.1636967198.git.matthias.schiffer@ew.tq-group.com>
+Subject: [PATCH net 1/4] can: m_can: pci: fix incorrect reference clock rate
+Date:   Mon, 15 Nov 2021 10:18:49 +0100
+Message-Id: <c9cf3995f45c363e432b3ae8eb1275e54f009fc8.1636967198.git.matthias.schiffer@ew.tq-group.com>
 X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <cover.1636967198.git.matthias.schiffer@ew.tq-group.com>
+References: <cover.1636967198.git.matthias.schiffer@ew.tq-group.com>
+In-Reply-To: <cover.1636967198.git.matthias.schiffer@ew.tq-group.com>
+References: <cover.1636967198.git.matthias.schiffer@ew.tq-group.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series fixes two issues we found with the setup of the CAN
-controller of Intel Elkhart Lake CPUs:
+When testing the CAN controller on our Ekhart Lake hardware, we
+determined that all communication was running with twice the configured
+bitrate. Changing the reference clock rate from 100MHz to 200MHz fixed
+this. Intel's support has confirmed to us that 200MHz is indeed the
+correct clock rate.
 
-- Patch 1 fixes an incorrect reference clock rate, which caused the
-  configured and the actual bitrate always to differ by a factor of 2.
-- Patches 2-4 fix a deviation between the driver and the documentation.
-  We did not actually see issues without these patches, however we did
-  only superficial testing and may just not have hit the specific
-  bittiming values that violate the documented limits.
+Fixes: cab7ffc0324f ("can: m_can: add PCI glue driver for Intel Elkhart Lake")
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+---
+ drivers/net/can/m_can/m_can_pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-Matthias Schiffer (4):
-  can: m_can: pci: fix incorrect reference clock rate
-  Revert "can: m_can: remove support for custom bit timing"
-  can: m_can: make custom bittiming fields const
-  can: m_can: pci: use custom bit timings for Elkhart Lake
-
- drivers/net/can/m_can/m_can.c     | 24 ++++++++++++----
- drivers/net/can/m_can/m_can.h     |  3 ++
- drivers/net/can/m_can/m_can_pci.c | 48 ++++++++++++++++++++++++++++---
- 3 files changed, 65 insertions(+), 10 deletions(-)
-
+diff --git a/drivers/net/can/m_can/m_can_pci.c b/drivers/net/can/m_can/m_can_pci.c
+index 89cc3d41e952..d3c030a13cbe 100644
+--- a/drivers/net/can/m_can/m_can_pci.c
++++ b/drivers/net/can/m_can/m_can_pci.c
+@@ -18,7 +18,7 @@
+ 
+ #define M_CAN_PCI_MMIO_BAR		0
+ 
+-#define M_CAN_CLOCK_FREQ_EHL		100000000
++#define M_CAN_CLOCK_FREQ_EHL		200000000
+ #define CTL_CSR_INT_CTL_OFFSET		0x508
+ 
+ struct m_can_pci_priv {
 -- 
 2.17.1
 
