@@ -2,86 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 413AC45069E
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 15:21:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ABF14506B4
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 15:23:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232572AbhKOOYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 09:24:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38606 "EHLO mail.kernel.org"
+        id S236222AbhKOO0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 09:26:45 -0500
+Received: from mga11.intel.com ([192.55.52.93]:41657 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236400AbhKOOXG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 09:23:06 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 70E6861BE2;
-        Mon, 15 Nov 2021 14:20:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636986011;
-        bh=BfZL5q0sK440f18vgm4f08TDEGzd0llC2s0A/rJ9bOo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Epks0kEWaYmiq+B9Vm7t/qnf7YAhJEpp7bRE4U61Nf5Lz0LowoUUH9FC1lv9LuvCs
-         GvsYe74YFH4zYePE6PUkI/D2gMVsMSuP8ocPPSHfpXQaQUz5y2qjOry1wTwz2zeDis
-         MSq4SPYh4bm6xxSVmLYgstZEWDaow+t9Bk+GWef/Ek/m6bZtJC3WT24NXC9P6kmpw5
-         coYFUP5mbDu4Ntv4DjBShcOEHlaXlTCldh4UFsacV9RsKD21RmLjVpFFH89CgWWkMv
-         D32PBKDTI2FrsCTkYVUUFAa/x7bwPBq9rxehxzsMgEuzeve15vWipchDEGU2Oh8b9a
-         qEtwT/ZOqs/dg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6824560A49;
-        Mon, 15 Nov 2021 14:20:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S234526AbhKOOZ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Nov 2021 09:25:27 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10168"; a="230908858"
+X-IronPort-AV: E=Sophos;i="5.87,236,1631602800"; 
+   d="scan'208";a="230908858"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2021 06:22:15 -0800
+X-IronPort-AV: E=Sophos;i="5.87,236,1631602800"; 
+   d="scan'208";a="566466218"
+Received: from smile.fi.intel.com ([10.237.72.184])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2021 06:22:10 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1mmcrx-0077Cm-Ex;
+        Mon, 15 Nov 2021 16:22:01 +0200
+Date:   Mon, 15 Nov 2021 16:22:01 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jani Nikula <jani.nikula@linux.intel.com>
+Cc:     Lucas De Marchi <lucas.demarchi@intel.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Mikita Lipski <mikita.lipski@amd.com>,
+        Eryk Brol <eryk.brol@amd.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        netdev@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH v1 1/3] string: Consolidate yesno() helpers under
+ string.h hood
+Message-ID: <YZJtCZm7YoBBoqUz@smile.fi.intel.com>
+References: <20210215142137.64476-1-andriy.shevchenko@linux.intel.com>
+ <20211005213423.dklsii4jx37pjvb4@ldmartin-desk2>
+ <YZI/VB+RhScL1wAi@smile.fi.intel.com>
+ <874k8d3ard.fsf@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3 0/6] MCTP I2C driver
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163698601142.19991.3686735228078461111.git-patchwork-notify@kernel.org>
-Date:   Mon, 15 Nov 2021 14:20:11 +0000
-References: <20211115024926.205385-1-matt@codeconstruct.com.au>
-In-Reply-To: <20211115024926.205385-1-matt@codeconstruct.com.au>
-To:     Matt Johnston <matt@codeconstruct.com.au>
-Cc:     zev@bewilderbeest.net, wsa@kernel.org, robh+dt@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, brendanhiggins@google.com,
-        benh@kernel.crashing.org, joel@jms.id.au, andrew@aj.id.au,
-        avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        jk@codeconstruct.com.au, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <874k8d3ard.fsf@intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Mon, 15 Nov 2021 10:49:20 +0800 you wrote:
-> Hi,
+On Mon, Nov 15, 2021 at 01:43:02PM +0200, Jani Nikula wrote:
+> On Mon, 15 Nov 2021, Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > On Tue, Oct 05, 2021 at 02:34:23PM -0700, Lucas De Marchi wrote:
+> >> On Mon, Feb 15, 2021 at 04:21:35PM +0200, Andy Shevchenko wrote:
+> >> > We have already few similar implementation and a lot of code that can benefit
+> >> > of the yesno() helper.  Consolidate yesno() helpers under string.h hood.
+> >> 
+> >> I was taking a look on i915_utils.h to reduce it and move some of it
+> >> elsewhere to be shared with others.  I was starting with these helpers
+> >> and had [1] done, then Jani pointed me to this thread and also his
+> >> previous tentative. I thought the natural place for this would be
+> >> include/linux/string_helpers.h, but I will leave it up to you.
+> >
+> > Seems reasonable to use string_helpers (headers and/or C-file).
+> >
+> >> After reading the threads, I don't see real opposition to it.
+> >> Is there a tree you plan to take this through?
+> >
+> > I rest my series in favour of Jani's approach, so I suppose there is no go
+> > for _this_ series.
 > 
-> This patch series adds a netdev driver providing MCTP transport over
-> I2C.
-> 
-> It applies against net-next using recent MCTP changes there, though also
-> has I2C core changes for review. I'll leave it to maintainers where it
-> should be applied - please let me know if it needs to be submitted
-> differently.
-> 
-> [...]
+> If you want to make it happen, please pick it up and drive it. I'm
+> thoroughly had enough of this.
 
-Here is the summary with links:
-  - [net-next,v3,1/6] i2c: core: Allow 255 byte transfers for SMBus 3.x
-    https://git.kernel.org/netdev/net-next/c/13cae4a104d2
-  - [net-next,v3,2/6] i2c: dev: Handle 255 byte blocks for i2c ioctl
-    https://git.kernel.org/netdev/net-next/c/84a107e68b34
-  - [net-next,v3,3/6] i2c: aspeed: Allow 255 byte block transfers
-    https://git.kernel.org/netdev/net-next/c/1b2ba1f591c9
-  - [net-next,v3,4/6] i2c: npcm7xx: Allow 255 byte block SMBus transfers
-    https://git.kernel.org/netdev/net-next/c/3ef2de27a05a
-  - [net-next,v3,5/6] dt-bindings: net: New binding mctp-i2c-controller
-    https://git.kernel.org/netdev/net-next/c/0b6141eb2b14
-  - [net-next,v3,6/6] mctp i2c: MCTP I2C binding driver
-    https://git.kernel.org/netdev/net-next/c/80be9b2c0d93
+My point is still the same, so it's more to Lucas.
 
-You are awesome, thank you!
+I'm not going to drive this activity due to lack of time.
+
+> >> [1] https://lore.kernel.org/lkml/20211005212634.3223113-1-lucas.demarchi@intel.com/T/#u
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+With Best Regards,
+Andy Shevchenko
 
 
