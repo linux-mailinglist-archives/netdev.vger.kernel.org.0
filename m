@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D8714527A4
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 03:27:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC2744527A8
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 03:27:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243303AbhKPC3s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 21:29:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36710 "EHLO
+        id S243701AbhKPC34 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 21:29:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237026AbhKORQM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 12:16:12 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8815EC06120C
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 09:11:58 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id j6-20020a17090a588600b001a78a5ce46aso13737945pji.0
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 09:11:58 -0800 (PST)
+        with ESMTP id S236770AbhKORQf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 12:16:35 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D72DDC061220
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 09:11:59 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id x7so13351128pjn.0
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 09:11:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=v9sQDD/4/Q8DJlCorQNfKu6150bTPmEtz37IdYnRvKY=;
-        b=Lrx8pdO4QmetG9vTbYCwYD7pU1xvquwvb3qoSX4Ozl/1LMBD5rOAQ+Fl1Rf9Qvwzbu
-         BnnVIg7wMdr9gQNs1EhT/lIeE4AsTMkLmgQsSTh/fRHsy4BUt2+JeL0LrrNE7G3vskDj
-         4Vry7k1lrvp83ZdOqEtQAcEmogmp/fbIQULggxwqCUk8vSIiLGgjwNWBQH9ujfz2CMof
-         D04uRGBW9V2Z7tjLkhPscaCmYUbqUyChSzpxw75WfMl4K3roSf5YAGwiNeN184af42Fd
-         twuS1/uSquFvW70q6qvkjdFX2RnPB2PqJaifwkWyTY23PM2Hebzmq9BYJLlImIgDggO7
-         Kp+A==
+        bh=ztiZtpvaPEESRC+ARrg5moYa1E+yP0K/qu/oBI/4DRE=;
+        b=pNZ1JIHCUGbBz0R0xepzgkii0ulprOHCuUUjAa9NWraJIajU0WSxxEayO6pT0IICRs
+         ZOQ6a5+w1rBzfs9RG7pZ5hHayvqtbN4vhKz1VIVMWKv5uKHEjWFjFLacJUKo4P97Iz4y
+         nsdxPetw0KcEBHWImbjyaeHYUlINzRiU4kJnCFJjq32GOZ1w/US19FehSNg3MUCgptRN
+         Rk/yoz19Lbxgr7HoE7ATKh1NlQn0+6Hf2wmabJaOd2rN92twpbd2yEbjH7HuyqJe6g4O
+         jcREE6I+Yu0b3SGS0qhfgucLxRb1ijAcVTQrISEorW43c7PrmPhFPIKDfWb+ErWIEGqf
+         FHzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=v9sQDD/4/Q8DJlCorQNfKu6150bTPmEtz37IdYnRvKY=;
-        b=jND1f1vmKYCasmxYPAmZp/9Jn5OXhEASfchS2exfd2xewKY/UtGYHAy3rd3JNrNtUu
-         L7GZThaCrc4iZGaBWSdL+rMKKXD3mgVUqtRLBsYlVo4AvZy1pAbDswwxoVeiEKU52yBH
-         XXM5u6OwmBWrQsWoYIC438wYnie8Q9sw+BLeq/FV8EyCGOflQlUTeJ8dYN0Qsn7dFZdP
-         5YXpJuhqMHiubQpmYF5GDGWqMSZftInI7p/0LZZc9AZXMrJiV/RqrE47QWL5MeiuEnRf
-         vBPPdYgfMjDfIzx7foaoUdHtpRszrIbPGBXptekLaQRrSJddJQMdVStMhiomecinM2wS
-         HAOw==
-X-Gm-Message-State: AOAM531IAped5Uog08S5s0MB49PwoQrR+yw2Z3diTz3NkUrIMz39Pash
-        A1BQUMd/Mi9DONVxMNNXKYo=
-X-Google-Smtp-Source: ABdhPJyC1bHhBSwGPU/ekoPpiXeAylG69a6kidwEX5JcKhMxw4JZzrOwS42KHgv3dcNzC10y31RScQ==
-X-Received: by 2002:a17:90b:314c:: with SMTP id ip12mr133285pjb.162.1636996318130;
-        Mon, 15 Nov 2021 09:11:58 -0800 (PST)
+        bh=ztiZtpvaPEESRC+ARrg5moYa1E+yP0K/qu/oBI/4DRE=;
+        b=ml6CqGNrMjOHpwjpSis2zpC90PmSIyiDl/ivGz7oIHa/hLUKtccbJmAjNYJmAUWzkh
+         Od0XooENkUikIS8QD2lwLb9KlXC/CjJXCeWVEw5lhirjS1uU3H4cJCf4FY/CI5UyZoHP
+         wSRlTKNvhpdcD0Sure6xHB7j7g0BoGZg+h6qdKdbK1d2cNcQEx8UWKywVvB4bBwQrVpy
+         hqxkjKp6xr6dmnYOzm2N1zi81FSS6KlAtRAkhmmcI/kPD95+yK4OQLPMrVvxni5tLX/c
+         d+dpDFy3dJ/S2bA3yR8XwAWmiZhTXI+NTadb93zCtvXom+1BvF6ttqtSleMoarTikHF5
+         i1ng==
+X-Gm-Message-State: AOAM530Us3/aWP750O3BwMDytRPn1qNGRXWBQ5qBTu/STPqcnr1V3ws/
+        5WiDiidEJ/BNFdKHQ1lclEfbOFDEchw=
+X-Google-Smtp-Source: ABdhPJzLhrXFe0/yyqjswPdHvEDSNNtxcSZIQxX42gJTwC9NE7T33kOD0c1uYPc4XDeBxTRR4Yocyw==
+X-Received: by 2002:a17:90a:d48f:: with SMTP id s15mr161188pju.64.1636996319379;
+        Mon, 15 Nov 2021 09:11:59 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:4994:f3d6:2eb1:61cb])
-        by smtp.gmail.com with ESMTPSA id j127sm16466632pfg.14.2021.11.15.09.11.57
+        by smtp.gmail.com with ESMTPSA id j127sm16466632pfg.14.2021.11.15.09.11.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Nov 2021 09:11:57 -0800 (PST)
+        Mon, 15 Nov 2021 09:11:59 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 2/4] net: make sock_inuse_add() available
-Date:   Mon, 15 Nov 2021 09:11:48 -0800
-Message-Id: <20211115171150.3646016-3-eric.dumazet@gmail.com>
+Subject: [PATCH net-next 3/4] net: merge net->core.prot_inuse and net->core.sock_inuse
+Date:   Mon, 15 Nov 2021 09:11:49 -0800
+Message-Id: <20211115171150.3646016-4-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.34.0.rc1.387.gb447b232ab-goog
 In-Reply-To: <20211115171150.3646016-1-eric.dumazet@gmail.com>
 References: <20211115171150.3646016-1-eric.dumazet@gmail.com>
@@ -67,93 +67,92 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-MPTCP hard codes it, let us instead provide this helper.
+net->core.sock_inuse is a per cpu variable (int),
+while net->core.prot_inuse is another per cpu variable
+of 64 integers.
+
+per cpu allocator tend to place them in very different places.
+
+Grouping them together makes sense, since it makes
+updates potentially faster, if hitting the same
+cache line.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- include/net/sock.h  | 10 ++++++++++
- net/core/sock.c     | 10 ----------
- net/mptcp/subflow.c |  4 +---
- 3 files changed, 11 insertions(+), 13 deletions(-)
+ include/net/netns/core.h |  1 -
+ include/net/sock.h       |  3 ++-
+ net/core/sock.c          | 12 +-----------
+ 3 files changed, 3 insertions(+), 13 deletions(-)
 
+diff --git a/include/net/netns/core.h b/include/net/netns/core.h
+index 36c2d998a43c015c4b917428ec33f5839cde89b1..552bc25b19335e2ee07effa2550bbe5944eb33aa 100644
+--- a/include/net/netns/core.h
++++ b/include/net/netns/core.h
+@@ -12,7 +12,6 @@ struct netns_core {
+ 	int	sysctl_somaxconn;
+ 
+ #ifdef CONFIG_PROC_FS
+-	int __percpu *sock_inuse;
+ 	struct prot_inuse __percpu *prot_inuse;
+ #endif
+ };
 diff --git a/include/net/sock.h b/include/net/sock.h
-index 3f08e9d55f0ceed4ec4593012e6c856b400fc33f..cdc7ebc049b41b00aa7c851a6f1df6e58bae8430 100644
+index cdc7ebc049b41b00aa7c851a6f1df6e58bae8430..fefffeb1cc3d5a11615afbc34e5cd7521bd6f502 100644
 --- a/include/net/sock.h
 +++ b/include/net/sock.h
-@@ -1429,6 +1429,12 @@ static inline void sock_prot_inuse_add(const struct net *net,
+@@ -1421,6 +1421,7 @@ proto_memory_pressure(struct proto *prot)
+ #ifdef CONFIG_PROC_FS
+ #define PROTO_INUSE_NR	64	/* should be enough for the first time */
+ struct prot_inuse {
++	int all;
+ 	int val[PROTO_INUSE_NR];
+ };
+ /* Called with local bh disabled */
+@@ -1432,7 +1433,7 @@ static inline void sock_prot_inuse_add(const struct net *net,
+ 
+ static inline void sock_inuse_add(const struct net *net, int val)
  {
- 	__this_cpu_add(net->core.prot_inuse->val[prot->inuse_idx], val);
+-	this_cpu_add(*net->core.sock_inuse, val);
++	this_cpu_add(net->core.prot_inuse->all, val);
  }
-+
-+static inline void sock_inuse_add(const struct net *net, int val)
-+{
-+	this_cpu_add(*net->core.sock_inuse, val);
-+}
-+
+ 
  int sock_prot_inuse_get(struct net *net, struct proto *proto);
- int sock_inuse_get(struct net *net);
- #else
-@@ -1436,6 +1442,10 @@ static inline void sock_prot_inuse_add(const struct net *net,
- 				       const struct proto *prot, int val)
- {
- }
-+
-+static inline void sock_inuse_add(const struct net *net, int val)
-+{
-+}
- #endif
- 
- 
 diff --git a/net/core/sock.c b/net/core/sock.c
-index fac46efd31fd44b4105c6004b4491aa11e1ed67c..214c2e816c63dba9146557a622516e73c1da142e 100644
+index 214c2e816c63dba9146557a622516e73c1da142e..2f58e4d3e76296280aece28314b8695d0d40cf02 100644
 --- a/net/core/sock.c
 +++ b/net/core/sock.c
-@@ -144,8 +144,6 @@
- static DEFINE_MUTEX(proto_list_mutex);
- static LIST_HEAD(proto_list);
- 
--static void sock_inuse_add(struct net *net, int val);
--
- /**
-  * sk_ns_capable - General socket capability test
-  * @sk: Socket to use a capability on or through
-@@ -3546,11 +3544,6 @@ int sock_prot_inuse_get(struct net *net, struct proto *prot)
- }
- EXPORT_SYMBOL_GPL(sock_prot_inuse_get);
- 
--static void sock_inuse_add(struct net *net, int val)
--{
--	this_cpu_add(*net->core.sock_inuse, val);
--}
--
- int sock_inuse_get(struct net *net)
- {
+@@ -3549,7 +3549,7 @@ int sock_inuse_get(struct net *net)
  	int cpu, res = 0;
-@@ -3629,9 +3622,6 @@ static inline void release_proto_idx(struct proto *prot)
- {
+ 
+ 	for_each_possible_cpu(cpu)
+-		res += *per_cpu_ptr(net->core.sock_inuse, cpu);
++		res += per_cpu_ptr(net->core.prot_inuse, cpu)->all;
+ 
+ 	return res;
+ }
+@@ -3561,22 +3561,12 @@ static int __net_init sock_inuse_init_net(struct net *net)
+ 	net->core.prot_inuse = alloc_percpu(struct prot_inuse);
+ 	if (net->core.prot_inuse == NULL)
+ 		return -ENOMEM;
+-
+-	net->core.sock_inuse = alloc_percpu(int);
+-	if (net->core.sock_inuse == NULL)
+-		goto out;
+-
+ 	return 0;
+-
+-out:
+-	free_percpu(net->core.prot_inuse);
+-	return -ENOMEM;
  }
  
--static void sock_inuse_add(struct net *net, int val)
--{
--}
- #endif
+ static void __net_exit sock_inuse_exit_net(struct net *net)
+ {
+ 	free_percpu(net->core.prot_inuse);
+-	free_percpu(net->core.sock_inuse);
+ }
  
- static void tw_prot_cleanup(struct timewait_sock_ops *twsk_prot)
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 6172f380dfb763b43c6d996b4896215cad9c7d7b..49787a1d7b3467acdfe284fd1494ac4c4a6eaf5c 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -1534,9 +1534,7 @@ int mptcp_subflow_create_socket(struct sock *sk, struct socket **new_sock)
- 	 */
- 	sf->sk->sk_net_refcnt = 1;
- 	get_net(net);
--#ifdef CONFIG_PROC_FS
--	this_cpu_add(*net->core.sock_inuse, 1);
--#endif
-+	sock_inuse_add(net, 1);
- 	err = tcp_set_ulp(sf->sk, "mptcp");
- 	release_sock(sf->sk);
- 
+ static struct pernet_operations net_inuse_ops = {
 -- 
 2.34.0.rc1.387.gb447b232ab-goog
 
