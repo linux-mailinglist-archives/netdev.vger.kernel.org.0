@@ -2,113 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D216E45149E
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 21:08:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED3D34511AE
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 20:10:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345523AbhKOULF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 15:11:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45398 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344908AbhKOTZm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 14:25:42 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A0B0C636E9;
-        Mon, 15 Nov 2021 19:06:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1637003202;
-        bh=pppEKA1xdqr9mZaw9WCFjTzjBBLvrCTXY22vIoJ0THM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AbUAYk+fkSZ1sQs2GP4Hfhb+M2himCo+SxJa1MNMmIi26FTBlApHnDb0IrYbLNkq+
-         0m/vIEVSvCGmORJBh++T4O/bg1etgzHhMv15jHINkCaCugk5QHlWvM3SZzAGT+4swv
-         5OTTAGVYo6yKRSwF1XLsgT1IGdOqTAliFeGKBQwg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ian Rogers <irogers@google.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jiri Olsa <jolsa@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Song Liu <songliubraving@fb.com>,
-        Stephane Eranian <eranian@google.com>,
-        Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 815/917] perf bpf: Add missing free to bpf_event__print_bpf_prog_info()
-Date:   Mon, 15 Nov 2021 18:05:10 +0100
-Message-Id: <20211115165456.664905447@linuxfoundation.org>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20211115165428.722074685@linuxfoundation.org>
-References: <20211115165428.722074685@linuxfoundation.org>
-User-Agent: quilt/0.66
+        id S244286AbhKOTNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 14:13:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33710 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237334AbhKOTLX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 14:11:23 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0AB1C0431A8;
+        Mon, 15 Nov 2021 09:59:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=OTCtPaHwniBROQ1KohHRpPYNoRP5VsY2XqJDv3P4Ku8=; b=p44p58onIF9Z6LsfhgifLQmpAQ
+        5rbfZ5rZCcIfYI1EN82K2qOPc31bzqeDPDxORr1CCmk6ghtzXIUolrh7rKherFqFYbEe7QAEUEHT+
+        C1ki1M6pI0QGkAvwgKH4ZYOKgZStlL9i3ZZKRfRq/TZO4kweYM5mhxufLO5fx+mCI9ryljqRdjiTP
+        avUby45C7olHbESiRE2qoMu8fLD1e727JeYNko6BxgWGbL6jeaTMH/A/XyLIMZamG6KaLbM11fL3J
+        T/SjN1AktjqOicD1baasIqVAuRpN8/TIMGtuz296vRO+qKCYMK2YvgFbzdIZ3PnPqlMUvmEtWYMhS
+        AWmJaU4Q==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mmgGk-00GcKy-2q; Mon, 15 Nov 2021 17:59:50 +0000
+Date:   Mon, 15 Nov 2021 09:59:50 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
+        Guillaume Tucker <guillaume.tucker@collabora.com>,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
+        hawk@kernel.org, akpm@linux-foundation.org, peterz@infradead.org,
+        will@kernel.org, jhubbard@nvidia.com, yuzhao@google.com,
+        mcroce@microsoft.com, fenghua.yu@intel.com, feng.tang@intel.com,
+        jgg@ziepe.ca, aarcange@redhat.com, guro@fb.com,
+        "kernelci@groups.io" <kernelci@groups.io>
+Subject: Re: [PATCH net-next v6] page_pool: disable dma mapping support for
+ 32-bit arch with 64-bit DMA
+Message-ID: <YZKgFqwJOIEObMg7@infradead.org>
+References: <20211013091920.1106-1-linyunsheng@huawei.com>
+ <b9c0e7ef-a7a2-66ad-3a19-94cc545bd557@collabora.com>
+ <1090744a-3de6-1dc2-5efe-b7caae45223a@huawei.com>
+ <644e10ca-87b8-b553-db96-984c0b2c6da1@collabora.com>
+ <93173400-1d37-09ed-57ef-931550b5a582@huawei.com>
+ <YZJKNLEm6YTkygHM@apalos.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YZJKNLEm6YTkygHM@apalos.home>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ian Rogers <irogers@google.com>
+This is just popping out of nowhere on lkml, but yes ARM LPAE
+uses a 64-bit dma_addr_t, as a 64-bit phys_addr_t implies that.
+Same for x86-32 PAE and similar cases on MIPS and probably a few
+other architectures.
 
-[ Upstream commit 88c42f4d6cb249eb68524282f8d4cc32f9059984 ]
-
-If btf__new() is called then there needs to be a corresponding btf__free().
-
-Fixes: f8dfeae009effc0b ("perf bpf: Show more BPF program info in print_bpf_prog_info()")
-Signed-off-by: Ian Rogers <irogers@google.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Andrii Nakryiko <andrii@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Jiri Olsa <jolsa@redhat.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: KP Singh <kpsingh@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Stephane Eranian <eranian@google.com>
-Cc: Tiezhu Yang <yangtiezhu@loongson.cn>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: bpf@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Link: http://lore.kernel.org/lkml/20211106053733.3580931-2-irogers@google.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- tools/perf/util/bpf-event.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/tools/perf/util/bpf-event.c b/tools/perf/util/bpf-event.c
-index 1a7112a87736a..a410b3968b3af 100644
---- a/tools/perf/util/bpf-event.c
-+++ b/tools/perf/util/bpf-event.c
-@@ -576,7 +576,7 @@ void bpf_event__print_bpf_prog_info(struct bpf_prog_info *info,
- 		synthesize_bpf_prog_name(name, KSYM_NAME_LEN, info, btf, 0);
- 		fprintf(fp, "# bpf_prog_info %u: %s addr 0x%llx size %u\n",
- 			info->id, name, prog_addrs[0], prog_lens[0]);
--		return;
-+		goto out;
- 	}
- 
- 	fprintf(fp, "# bpf_prog_info %u:\n", info->id);
-@@ -586,4 +586,6 @@ void bpf_event__print_bpf_prog_info(struct bpf_prog_info *info,
- 		fprintf(fp, "# \tsub_prog %u: %s addr 0x%llx size %u\n",
- 			i, name, prog_addrs[i], prog_lens[i]);
- 	}
-+out:
-+	btf__free(btf);
- }
--- 
-2.33.0
-
-
-
+But what is the actual problem with a 32-bit virtual and 64-bit
+pysical/dma address?  That is a pretty common setup and absolutely
+needs to be deal with in drivers and inrastructure.
