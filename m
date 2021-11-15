@@ -2,107 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C11144FC7D
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 00:54:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2D2644FCA1
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 01:56:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230139AbhKNX5Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Nov 2021 18:57:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57440 "EHLO
+        id S234737AbhKOA65 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Nov 2021 19:58:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229597AbhKNX5P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Nov 2021 18:57:15 -0500
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98476C061746
-        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 15:54:20 -0800 (PST)
-Received: by mail-pg1-x52f.google.com with SMTP id 200so13033898pga.1
-        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 15:54:20 -0800 (PST)
+        with ESMTP id S229627AbhKOA6x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Nov 2021 19:58:53 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7A68C061746
+        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 16:55:58 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id q17so12989299plr.11
+        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 16:55:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=1FPcrKXn5v0SnMCEZaBgTW6y30Qu4G6XAqp6/ZFFzM8=;
-        b=Rs4UBjXBVi7WnIuUnT9RwPAQyPylhbXY7MuIKb7nmibkLgeDaaZBKtv+GBj1twPvmJ
-         rCnnikzl3sGXwuhiF6k+mrZJbxwOSrlNv7evLZzY4/IdclAVtI4n+Xbl7+Et5y/QyUDQ
-         ZOjzqHK2523ECPWDGwIbbKCBmwOZ78qPp2AiVT7K1O4ur4VZ+KLMB+fmL2Vm1AUD6bRL
-         KaGLXCvx5dwxUt2PKdVHNVkiGj6Mguxzro6t0p27KbdHAsKqmoR4Y610aaQAkBqYuzOQ
-         ip1491YcHG/ASMP2m2JgPd6NuyZMUHV0bd03/yWZT04NI/q5mcVWLVt0MobxIgKrsccn
-         oggQ==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=7JGyB07y7ZByxWxdqdB4x0U4uTVlvMSKnrd7b8IAjS4=;
+        b=A93CTmu7m68BTidxF+r4t0NQoBAHJQgC+tfLLEcJJXEsYXVxm2MlCc1m0f8AsavMYu
+         LdVRZE0Xiw99di4brpd2LMWMhDaKxmTH6f6wXtyZs+9bvU5GO0hthkQGWGUp5MNaeiN3
+         745e8B0q0qETxg+dvPvoAImVxdSF2vJTY7L9R5O/EwPZ2Q4kbm3JLsdfsQ+Mz1Por6JH
+         +aTFdUqt6hiys5y/CJrximE9itKxtGlRfU3vNnvtNIxi5bNgASSLRKL0ce94dFmjTQDr
+         hnlWU3GWezr49GNlReNuLySvVSBzD4vy9anA8RRCmEhelya3HHnnWafqnLp3adOBgSx2
+         B97Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=1FPcrKXn5v0SnMCEZaBgTW6y30Qu4G6XAqp6/ZFFzM8=;
-        b=WorL5+T8n1kScf6PddbZlTmQc+KKzGCZoHNOl07sB/pyvF58wPTn2Hc6lXsULcQd3B
-         +RCGWQZjTWxGi5mRroJASFs3wz6KaE9Bf/JTDd71qer9MX/nkUTOd04uOLFlLA9/aC04
-         VPQgqbxIMNL3bIfpbaJpRI1RQLVWsPaOAfjRia2U1orf+YFzqOw/2n7uMGagh20kbPmB
-         6oyM3Nz7JH39CZuUBwrRMDSmAHk9uwVqlhPzImAzC868XU7q/sxvlKW2VJve5/HR3vqo
-         fKkfCCWTb0FXTyQyMW3az59a7ScBNakXW30EAj3TwaEEidZJBYo0PiI81QhBTYlD64Zt
-         7mYA==
-X-Gm-Message-State: AOAM533fciqG6g9FnhV3dmaxVSK6sPsnHRsCdfaMDBozyvaSyun+ijGd
-        kzv0QhnYvKX24ZJkgPo81Xye2cH+bjs=
-X-Google-Smtp-Source: ABdhPJxQUmY/SUp4VH36Hty60dfP3OQC1HAFy2lasqrhhw1LwSRYEjY1LTUid5dFiYzh7GNNGCKW1g==
-X-Received: by 2002:a05:6a00:a14:b0:4a0:945:16fa with SMTP id p20-20020a056a000a1400b004a0094516famr29538690pfh.9.1636934059755;
-        Sun, 14 Nov 2021 15:54:19 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id p2sm10458320pja.55.2021.11.14.15.54.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 14 Nov 2021 15:54:19 -0800 (PST)
-Subject: Re: [PATCH] sock: fix /proc/net/sockstat underflow in sk_clone_lock()
-To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org
-References: <20211114060222.3370-1-penguin-kernel@I-love.SAKURA.ne.jp>
- <ee46d850-7dcb-b9d5-b61c-56638fa2f9ae@gmail.com>
- <51c40730-5b75-fe91-560b-4c4ec4974c83@i-love.sakura.ne.jp>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <17179d2c-8dd2-216f-9c32-0f37ddd78cfa@gmail.com>
-Date:   Sun, 14 Nov 2021 15:54:18 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=7JGyB07y7ZByxWxdqdB4x0U4uTVlvMSKnrd7b8IAjS4=;
+        b=OwCyNpLBve/aLfE4/Rxg3qMXkktQRvmJ0SoXy4R/BhNte0p5j58tTc3yYtBsOyj0MN
+         u/Ftbg3tIGOgOWuOl/36NGrJNUDTjspH1A9CwMaimEE5o5Ssy+xBwqbTyoY6RNAtr6YV
+         W7pHTsCagRAtJZjBIW8b66eZenJnqbV3IG9GsQOapLd9blolk8AyxiP0u7jRharR8tzr
+         S3GeQbXIklNGxoht/BtWVGo9ylXmI/mBTFbq0GohEf6NEDyUVT1api6ls4LwIAITVGQd
+         S/Fuhoa/wZEan3Oo8pRLq8HL3vcRXDRzaemfcYaQAfafCIvM4Y1ZXsJfNZeLARlMLRyb
+         Em+Q==
+X-Gm-Message-State: AOAM533n7qD9OzOy138wyFKCZr2igcZ2DhTlhV8qWVMdmAe9BuwnVDmP
+        ST8LEQ6ViKoeBCQ5NwslJ4DvMtlkrX8tbm7oNPA=
+X-Google-Smtp-Source: ABdhPJwVdlErpMJINrF52Tse4fHUxHKFyA4kf6N+OnpFrgM6rlWIZaDKLdad93GVMJZ/9ngrH4dQr/e8RzoT4GKiN3U=
+X-Received: by 2002:a17:90b:1b45:: with SMTP id nv5mr41781957pjb.120.1636937758252;
+ Sun, 14 Nov 2021 16:55:58 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <51c40730-5b75-fe91-560b-4c4ec4974c83@i-love.sakura.ne.jp>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a05:6a10:680b:0:0:0:0 with HTTP; Sun, 14 Nov 2021 16:55:57
+ -0800 (PST)
+Reply-To: fionahill.usa@hotmail.com
+From:   Fiona Hill <grace.desmond2021@gmail.com>
+Date:   Sun, 14 Nov 2021 16:55:57 -0800
+Message-ID: <CAOW9D1tBWh_nK3Zpnp3RVGN3G3EmtfvqHh4=R3j4aRvSThesPg@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+-- 
 
 
-On 11/14/21 2:43 PM, Tetsuo Handa wrote:
-> On 2021/11/15 5:01, Eric Dumazet wrote:
->> On 11/13/21 10:02 PM, Tetsuo Handa wrote:
->>> sk_clone_lock() needs to call get_net() and sock_inuse_inc() together, or
-> 
-> s/sock_inuse_inc/sock_inuse_add/
-> 
->>> socket_seq_show() will underflow when __sk_free() from sk_free() from
->>> sk_free_unlock_clone() is called.
->>>
->>
->> IMO, a "sock_inuse_get() underflow" is a very different problem,
-> 
-> Yes, a different problem. I found this problem while trying to examine
-> https://syzkaller.appspot.com/bug?extid=694120e1002c117747ed where
-> somebody might be failing to call get_net() or we might be failing to
-> make sure that all timers are synchronously stopped before put_net().
-> 
->> I suspect this should be fixed with the following patch.
-> 
-> My patch addresses a permanent underflow problem which remains as long as
-> that namespace exists. Your patch addresses a temporal underflow problem
-> which happens due to calculating the sum without locks. Therefore, we can
-> apply both patches if we want.
-> 
-
-I think your changelog is a bit confusing.
-
-It would really help if you add the Fixes: tag, because if you do
-
-1) It makes the patch much easier to understand, by reading again the the old patch.
-
-2) We can tell if we can merge both fixes in the same submission (if they share the same bug origin)
-
-Thanks !
-
+I expect a letter from you i don't know if you receive  my message?
