@@ -2,38 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58D8C4525B3
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 02:54:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE273452419
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 02:33:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240494AbhKPB5V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 20:57:21 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55222 "EHLO mail.kernel.org"
+        id S1354287AbhKPBft (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 20:35:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44298 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239615AbhKOSOs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 13:14:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EF0D9633E1;
-        Mon, 15 Nov 2021 17:49:40 +0000 (UTC)
+        id S242030AbhKOSgM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Nov 2021 13:36:12 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 993B9619E3;
+        Mon, 15 Nov 2021 18:02:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636998581;
-        bh=yNKnuk1bL39Dgrvp3NQ6HDKeuMRMz+3ejwv+V0Z7Zj8=;
+        s=k20201202; t=1636999338;
+        bh=rchIZSvTy0GDopVKqAM7vszKatW6GF64RIwJMnf6JUg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ldF8JwkSvIdI/iq6+4z8n4Skh5t1jnSEsNvpyVRaZ5vozrFq+ITpN8g5wmrPMq+Vs
-         gCi9/xv1Q0DpNDyafOmJuBOolECFdY2UGLAqBxk+pm1FCPWP/tcvK6VwC0wj4h3P4y
-         fvjte1NobHBLlebQxnvjwRZ0mE+Zzf3mq0r0zMt1oGx0Ph1Ayhr1VRY9dioQ/5Icyi
-         +brunKE9f/OqNshhy/RuxsC4gCP6UV8bqJ2jy+M/rSAVR69xdNmaZ+1TEuJQgc/IIM
-         prqibyBX1rxo70WR2ro1rkzYiGVEIOBM+SaEmbzP+ns82YgVCUbrQ3COFZVDMwhiEF
-         iuEywHN4lJSzw==
-Date:   Mon, 15 Nov 2021 09:49:40 -0800
+        b=bDn9nyyM4PWkVwdd3wzFvEmLJtEnzqJKotKlWpyU3z5RRFbPYATQo1/1i0FRCpQZT
+         3rBuxCcjOebLpArOHMVPXrxoKmMI146Wyiwn1y6D7+0/ixL4avVnuEzw7YG+mLE2ao
+         1M/ehJhoSDvDIgwjsxC73QjPkKf00FQx69vu/GlHSTzgfwzrKKBzIuyhP7YDuXEEtf
+         fXyFY5ur+zj2lbJ5ToaPLDEcY5/J3xU/wN3zkDHR8kX5une7Xa5nspH3tqjKVruT6p
+         7HAnQt9pisHn4ISkbkvwVg+3DMxEwKTjmrwzCl2FHWQ0JUo3Ij1kTUomS6pZIqGJDG
+         gJlSVKwXBfg5g==
+Date:   Mon, 15 Nov 2021 10:02:16 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Petr Machata <petrm@nvidia.com>
-Cc:     Ziyang Xuan <william.xuanziyang@huawei.com>, <davem@davemloft.net>,
-        <jgg@nvidia.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net v2] net: vlan: fix a UAF in vlan_dev_real_dev()
-Message-ID: <20211115094940.138d86dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <87k0h9bb9x.fsf@nvidia.com>
-References: <20211102021218.955277-1-william.xuanziyang@huawei.com>
-        <87k0h9bb9x.fsf@nvidia.com>
+To:     Kumar Thangavel <kumarthangavel.hcl@gmail.com>
+Cc:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
+        "David S. Miller" <davem@davemloft.net>, openbmc@lists.ozlabs.org,
+        linux-aspeed@lists.ozlabs.org, netdev@vger.kernel.org,
+        patrickw3@fb.com, Amithash Prasad <amithash@fb.com>,
+        sdasari@fb.com, velumanit@hcl.com
+Subject: Re: [PATCH v5] Add payload to be 32-bit aligned to fix dropped
+ packets
+Message-ID: <20211115100216.57cc4591@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211115144846.GA12078@gmail.com>
+References: <20211115144846.GA12078@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -41,72 +43,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 15 Nov 2021 18:04:42 +0100 Petr Machata wrote:
-> Ziyang Xuan <william.xuanziyang@huawei.com> writes:
-> 
-> > diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
-> > index 55275ef9a31a..a3a0a5e994f5 100644
-> > --- a/net/8021q/vlan.c
-> > +++ b/net/8021q/vlan.c
-> > @@ -123,9 +123,6 @@ void unregister_vlan_dev(struct net_device *dev, struct list_head *head)
-> >  	}
-> >  
-> >  	vlan_vid_del(real_dev, vlan->vlan_proto, vlan_id);
-> > -
-> > -	/* Get rid of the vlan's reference to real_dev */
-> > -	dev_put(real_dev);
-> >  }
-> >  
-> >  int vlan_check_real_dev(struct net_device *real_dev,
-> > diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
-> > index 0c21d1fec852..aeeb5f90417b 100644
-> > --- a/net/8021q/vlan_dev.c
-> > +++ b/net/8021q/vlan_dev.c
-> > @@ -843,6 +843,9 @@ static void vlan_dev_free(struct net_device *dev)
-> >  
-> >  	free_percpu(vlan->vlan_pcpu_stats);
-> >  	vlan->vlan_pcpu_stats = NULL;
-> > +
-> > +	/* Get rid of the vlan's reference to real_dev */
-> > +	dev_put(vlan->real_dev);
-> >  }
-> >  
-> >  void vlan_setup(struct net_device *dev)  
-> 
-> This is causing reference counting issues when vetoing is involved.
-> Consider the following snippet:
-> 
->     ip link add name bond1 type bond mode 802.3ad
->     ip link set dev swp1 master bond1
->     ip link add name bond1.100 link bond1 type vlan protocol 802.1ad id 100
->     # ^ vetoed, no netdevice created
->     ip link del dev bond1
-> 
-> The setup process goes like this: vlan_newlink() calls
-> register_vlan_dev() calls netdev_upper_dev_link() calls
-> __netdev_upper_dev_link(), which issues a notifier
-> NETDEV_PRECHANGEUPPER, which yields a non-zero error,
-> because a listener vetoed it.
-> 
-> So it unwinds, skipping dev_hold(real_dev), but eventually the VLAN ends
-> up decreasing reference count of the real_dev. Then when when the bond
-> netdevice is removed, we get an endless loop of:
-> 
->     kernel:unregister_netdevice: waiting for bond1 to become free. Usage count = 0 
-> 
-> Moving the dev_hold(real_dev) to always happen even if the
-> netdev_upper_dev_link() call makes the issue go away.
-> 
-> I'm not sure why this wasn't happening before. After the veto,
-> register_vlan_dev() follows with a goto out_unregister_netdev, which
-> calls unregister_netdevice() calls unregister_netdevice_queue(), which
-> issues a notifier NETDEV_UNREGISTER, which invokes vlan_device_event(),
-> which calls unregister_vlan_dev(), which used to dev_put(real_dev),
-> which seems like it should have caused the same issue. Dunno.
+On Mon, 15 Nov 2021 20:18:46 +0530 Kumar Thangavel wrote:
+> @@ -213,12 +215,16 @@ static int ncsi_cmd_handler_oem(struct sk_buff *skb,
+>  {
+>  	struct ncsi_cmd_oem_pkt *cmd;
+>  	unsigned int len;
+> +	/* NC-SI spec DSP_0222_1.2.0, section 8.2.2.2
+> +	 * requires payload to be padded with 0 to
+> +	 * 32-bit boundary before the checksum field.
+> +	 * Ensure the padding bytes are accounted for in
+> +	 * skb allocation
+> +	 */
+>  
+> +	unsigned short payload = ALIGN(nca->payload, 4);
+>  	len = sizeof(struct ncsi_cmd_pkt_hdr) + 4;
 
-Does the notifier trigger unregister_vlan_dev()? I thought the notifier
-triggers when lower dev is unregistered.
+This looks like mixing code and declarations.
 
-I think we should move the dev_hold() to ndo_init(), otherwise 
-it's hard to reason if destructor was invoked or not if
-register_netdevice() errors out.
+If a piece of code is important enough to warrant a comment it should
+not be placed as variable init.
+
+> @@ -272,6 +278,7 @@ static struct ncsi_request *ncsi_alloc_command(struct ncsi_cmd_arg *nca)
+>  	struct net_device *dev = nd->dev;
+>  	int hlen = LL_RESERVED_SPACE(dev);
+>  	int tlen = dev->needed_tailroom;
+> +	int payload;
+>  	int len = hlen + tlen;
+>  	struct sk_buff *skb;
+>  	struct ncsi_request *nr;
+> @@ -281,14 +288,14 @@ static struct ncsi_request *ncsi_alloc_command(struct ncsi_cmd_arg *nca)
+>  		return NULL;
+>  
+>  	/* NCSI command packet has 16-bytes header, payload, 4 bytes checksum.
+> +	 * Payload needs padding so that the checksum field following payload is
+> +	 * aligned to 32-bit boundary.
+>  	 * The packet needs padding if its payload is less than 26 bytes to
+>  	 * meet 64 bytes minimal ethernet frame length.
+>  	 */
+>  	len += sizeof(struct ncsi_cmd_pkt_hdr) + 4;
+> -	if (nca->payload < 26)
+> -		len += 26;
+> -	else
+> -		len += nca->payload;
+> +	payload = ALIGN(nca->payload, 4);
+> +	len += max(payload, padding_bytes);
+
+payload is int here, and padding_bytes is unsigned short, you either
+have to use max_t() or change the types to agree.
