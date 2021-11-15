@@ -2,95 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26E6B44FF4A
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 08:38:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49B7644FF4E
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 08:38:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230389AbhKOHl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 02:41:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45994 "EHLO
+        id S231919AbhKOHlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 02:41:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230292AbhKOHlT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 02:41:19 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81340C061746
-        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 23:38:23 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id n26so9660563pff.3
-        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 23:38:23 -0800 (PST)
+        with ESMTP id S229694AbhKOHlU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 02:41:20 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26CAC061766
+        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 23:38:24 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id r130so14305475pfc.1
+        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 23:38:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=O8+izZQflhLzvCw5SVClPfXWryaLtselAorNr+cGRRg=;
-        b=Sv7SltjxK6gPORp4u8Ig5CyBZn0ydcGRvG2WH+J+2ZVD2Cn9lz/5nr6H9+AW9kyWP8
-         871gmEKn8BEGcb1EU0ucWQAg2cNMM2mg1TOQAknYVg+7IxBZxb54gZ924+Gcg/CCyma7
-         J1XfbjLFTN/ewwP9R5dzdmk9Oetv1Oro/5eP0=
+        bh=uQD7F3lOSd7D/p5RJx0H5yS5oh3qKn54cyd65zxscDs=;
+        b=V1rM/MWORDbYA+mOeKVnV6q4rV498+dPsCG2+ezxb3eI1L/u/+PpLkCRjVR6DPMKNl
+         DlX0G3rtq0Hzb05nCOwk/Ff5+Obtp9WWrNe7Grwbhn6WkAq3zSd5GgPeChjQjOSYzC91
+         zfIJldAhQ4j5NBoaVshT/M1t2dfotXGVc/d6A=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=O8+izZQflhLzvCw5SVClPfXWryaLtselAorNr+cGRRg=;
-        b=wNYhBAljK0t4j2oPT0U8G0exPJSnTmE93fMH2JUeYOC++y9DwijbWFjJe/Z4Z4ZH3S
-         XDIbWGxMY9ddHjkolcoMIXuBlNqOJYZB8C7MlAZuRQc5K9RPhbnn6qoYpWjIkC8kvdDn
-         lMX5uh2kQ3Mr3vTu685nnBwoT73KqchzvBzIPZZ/InUtG4m8Pk4AICX6H+PVZ3lJe5MU
-         uy257LakwyPqZvbYPz2gC3vS3lBCnJ+qCR8RVViPTNPyjany1onitlT+DrG8NhpQjQAt
-         wNIxaiyOtwnVv5IJkAc7vIAvGz+UNUimmMGCIjCOyPpr5zXiMKSlPfSRpRMuhc8fluPs
-         jwmQ==
-X-Gm-Message-State: AOAM532ftEvQ8osAkr0ot29ZI/EeqELd4K7P2sW0gcUJZ9DGuoFwqyof
-        RvNK/y5EDW2JGiLysMvtr61E/g==
-X-Google-Smtp-Source: ABdhPJwWdkSztsIwLxbUi40tQ4MNyi2yaztUffZ50YOCRc5rTCk9vcRXzxzj8Ffyn5Q2YW9E8HqToQ==
-X-Received: by 2002:a63:b50d:: with SMTP id y13mr23047608pge.286.1636961902905;
-        Sun, 14 Nov 2021 23:38:22 -0800 (PST)
+        bh=uQD7F3lOSd7D/p5RJx0H5yS5oh3qKn54cyd65zxscDs=;
+        b=Dw+lrV8dXUEwZgEKrSV+XRKRb86iLogbeK+4avWb6AM4YfRsMBwu/amabF9DqK+umf
+         vO9W9+HYBzm4gOr78PfoLQqJHE+KQVBxxoB6kK5pP5V297+bC1etd8uFhcw0DkdIgdYX
+         kMIKHJ/uTxNgzcluUlyObrq5kS4g+XOVXgAUrC9eFLRhCRx2Y0hVydLCnsCJrgc1IL3m
+         5geKPb1Uf+wA+9bzce9ElcWTQLqNwB9Nr78C9R2o3FinmGUkAXwQ9YrqDgxBdy8fCcFL
+         NTx/3yIXSudPfIVHgicextJvXkmV0EsFKSr0SJSXvfeYUcLWOgWUDuV+ur6jpKpGwc2f
+         7IrA==
+X-Gm-Message-State: AOAM533/Yqi+vOvGD8TckKPsx1JrGTo3zka97H6w2tu2zQROE7+BJ+4v
+        6FFwjDbM9m5+OKGbCRx/409/Ph06XneOyg==
+X-Google-Smtp-Source: ABdhPJzWZsO/ILmqTCg69UhrZGHC9Y7+ZSqOC0ZqQf6021pyOtF0XUSwAblR8QlHCz04FUKCSFEFBw==
+X-Received: by 2002:a62:dd0d:0:b0:494:6e7a:23d with SMTP id w13-20020a62dd0d000000b004946e7a023dmr31412627pff.17.1636961904225;
+        Sun, 14 Nov 2021 23:38:24 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id x135sm13961462pfd.78.2021.11.14.23.38.21
+        by smtp.gmail.com with ESMTPSA id x135sm13961462pfd.78.2021.11.14.23.38.23
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 14 Nov 2021 23:38:22 -0800 (PST)
+        Sun, 14 Nov 2021 23:38:23 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
-        gospo@broadcom.com
-Subject: [PATCH net 2/3] bnxt_en: fix format specifier in live patch error message
-Date:   Mon, 15 Nov 2021 02:38:00 -0500
-Message-Id: <1636961881-17824-3-git-send-email-michael.chan@broadcom.com>
+        gospo@broadcom.com,
+        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
+Subject: [PATCH net 3/3] bnxt_en: reject indirect blk offload when hw-tc-offload is off
+Date:   Mon, 15 Nov 2021 02:38:01 -0500
+Message-Id: <1636961881-17824-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1636961881-17824-1-git-send-email-michael.chan@broadcom.com>
 References: <1636961881-17824-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000c1c8ae05d0cee4b6"
+        boundary="000000000000d7a02e05d0cee42b"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000c1c8ae05d0cee4b6
+--000000000000d7a02e05d0cee42b
 
-From: Edwin Peer <edwin.peer@broadcom.com>
+From: Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
 
-This fixes type mismatch warning.
+The driver does not check if hw-tc-offload is enabled for the device
+before offloading a flow in the context of indirect block callback.
+Fix this by checking NETIF_F_HW_TC in the features flag and rejecting
+the offload request.  This will avoid unnecessary dmesg error logs when
+hw-tc-offload is disabled, such as these:
 
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 3c4153394e2c ("bnxt_en: implement firmware live patching")
-Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+bnxt_en 0000:19:00.1 eno2np1: dev(ifindex=294) not on same switch
+bnxt_en 0000:19:00.1 eno2np1: Error: bnxt_tc_add_flow: cookie=0xffff8dace1c88000 error=-22
+bnxt_en 0000:19:00.0 eno1np0: dev(ifindex=294) not on same switch
+bnxt_en 0000:19:00.0 eno1np0: Error: bnxt_tc_add_flow: cookie=0xffff8dace1c88000 error=-22
+
+Reported-by: Marcelo Ricardo Leitner <mleitner@redhat.com>
+Fixes: 627c89d00fb9 ("bnxt_en: flow_offload: offload tunnel decap rules via indirect callbacks")
+Signed-off-by: Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index a0a9af402642..6fe9e9b59f83 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -360,7 +360,7 @@ bnxt_dl_livepatch_report_err(struct bnxt *bp, struct netlink_ext_ack *extack,
- 		NL_SET_ERR_MSG_MOD(extack, "Live patch already applied");
- 		break;
- 	default:
--		netdev_err(bp->dev, "Unexpected live patch error: %hhd\n", err);
-+		netdev_err(bp->dev, "Unexpected live patch error: %d\n", err);
- 		NL_SET_ERR_MSG_MOD(extack, "Failed to activate live patch");
- 		break;
- 	}
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
+index e6a4a768b10b..1471b6130a2b 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
+@@ -1868,7 +1868,7 @@ static int bnxt_tc_setup_indr_block_cb(enum tc_setup_type type,
+ 	struct flow_cls_offload *flower = type_data;
+ 	struct bnxt *bp = priv->bp;
+ 
+-	if (flower->common.chain_index)
++	if (!tc_cls_can_offload_and_chain0(bp->dev, type_data))
+ 		return -EOPNOTSUPP;
+ 
+ 	switch (type) {
 -- 
 2.18.1
 
 
---000000000000c1c8ae05d0cee4b6
+--000000000000d7a02e05d0cee42b
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -161,13 +171,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBu4QvGQaOEGaw2Ln3nSZKnS0mU0nWiP
-MyIM4AwTQEEbMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTEx
-NTA3MzgyM1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIC/KLLhE5rZzwbvpF362clbtUI5O1yeh
+lziHMnYWq7dAMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTEx
+NTA3MzgyNFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAuMreAVu8grBarVIZCA0ZA+ikEtilznSBeq2DBDkoeHnKGjJY7
-RfzJTMvYDpmhbX54AX1wlFYIazDFtDTYook/UetmR1vXeCHOqFDemHQV5J8t7B51JhrMp71v3NGe
-H8EOxJizeK6/XwEAA8Oy6nEQibOhujQzZbXZnqxdf3iOcPAtqbBO509eVWTd3vDD3T0vflSWaSnc
-ZEjwxksHHo8V/9PYlM/YHsYCfDG8ZqOD48yi0tjKedp4n/hkw15KrJcOA/d1Stmf85FMMYMVPWn2
-b1jOezeJrymsyIf38BhCAVMNcsFSYgmAdTUKPKLY0p4uD6FmWoeAUGG+Cc5m3qlJ
---000000000000c1c8ae05d0cee4b6--
+ATANBgkqhkiG9w0BAQEFAASCAQDGTPrg9MpAv33AGdr3ff74JFGcoiTzRH6c7P6AuO3D6EwCD6u1
+GzOuQuX7ohWvDyKn7r5kRctiYq569wfDp/iOQnsHknKxg5V1zkiUWRJKweDTtUnrSNoCqy4Wnyhm
+RVVwF1aivpfmbAhbGy4D26oQ358FTr1+kx1nwRM9BkWsGhlDxajRrmSLDvT6AYU02lBv9vUBYysE
+GbMrG+5TcJ4gC0YKyjUPzOtbJNtDjGywuf2T0JnDgZDv/FOTbZYpw/MeOXfjvALRTKnlX3hoVPhR
+BJVnQM2393ODL/1UD2eR2b0q+you35V9Zt5JdTsU3D85H+AqzO3h7qItHIIdzo9Y
+--000000000000d7a02e05d0cee42b--
