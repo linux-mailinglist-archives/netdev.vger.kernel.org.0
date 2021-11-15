@@ -2,43 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E06B54506FA
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 15:31:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59D324506FD
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 15:31:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232021AbhKOOd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 09:33:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44970 "EHLO mail.kernel.org"
+        id S236598AbhKOOeI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 09:34:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44982 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231889AbhKOOdF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232572AbhKOOdF (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 15 Nov 2021 09:33:05 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id B0A8161B66;
+Received: by mail.kernel.org (Postfix) with ESMTPS id C1D7B63225;
         Mon, 15 Nov 2021 14:30:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1636986609;
-        bh=kS2GeY4/5G6kuEiLE0GEWGQPP+MVUm/E3x5jzPmZLfk=;
+        bh=vOLjlC7kLsvfUnaTGWlugnrD0CgOJl28Dql8PSJPsdQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=UFwp1Uzke1mC+BTRa53nU2UVOQkBK41QqpsAiSw/APmgr/f867KfjUUuSJ3LSHj1G
-         N/auafdGSbHVb81oXQB2d9jj+bDismgIMvPkoKElP+XFLoVImWVZKWHsVnpsYEHD2f
-         YYZJ5x3WNs0MeDDWh99SJ24Fam1s9N2HUdeXSx7vs88xfvEAY6jtk+C25SNXn3Z0ah
-         Y0T7JA2aUWO9EoCSRrYU48blmA1CnDp4bqFnUt1wpX1EmHcNQxWLWw0mpfWwDird+V
-         I1i6BzemajBuuM3O29n8EC4egbnJojvH86mEMYVeEANwcYO4GXy7MgQs+joJEOP5HI
-         fj7gntaFPrksA==
+        b=EfBZvD1TGZo7PakdI9vLa9Y7ZZVqVlwPRpBynAQvCQi5anvw7ITHmol6oZ6lqRpg4
+         0mZJdizW/v4Jv2q+4C6PksS8qYsQVVoslvOocRVuyeddjirUcO2YdIWBWsz8E8k6Ut
+         BsMBm3WlKZ90XcQRDb8IfM9dWPPjMxUNNCKRUJq0tIWECNQ4QfUBFl9MJLEG9gOZE5
+         aBEBLr/vAWkY7AyKro2oEJld6XKB1NbSou3oq2fLcMxCWM/RkgtTAV9r3yvRX6SKJK
+         mI8QwB6P7DKNXNre5nbnQA0c0MJMOYN/qANpUjN53Wd8G3RHZ2B6wj/CahzQ2C7G0O
+         /9ua4cPfZszgw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A5C1F6095A;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B10EC60AA1;
         Mon, 15 Nov 2021 14:30:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] tipc: only accept encrypted MSG_CRYPTO msgs
+Subject: Re: [PATCH v3] net: stmmac: socfpga: add runtime suspend/resume callback
+ for stratix10 platform
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163698660967.25242.6544784214334757611.git-patchwork-notify@kernel.org>
+Message-Id: <163698660972.25242.8236818279167028149.git-patchwork-notify@kernel.org>
 Date:   Mon, 15 Nov 2021 14:30:09 +0000
-References: <127f576a209dfaa9a4ada59b298e575296f6bc10.1636980324.git.lucien.xin@gmail.com>
-In-Reply-To: <127f576a209dfaa9a4ada59b298e575296f6bc10.1636980324.git.lucien.xin@gmail.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        jmaloy@redhat.com, ying.xue@windriver.com,
-        tuong.t.lien@dektech.com.au, davem@davemloft.net, kuba@kernel.org
+References: <20211115070423.6845-1-Meng.Li@windriver.com>
+In-Reply-To: <20211115070423.6845-1-Meng.Li@windriver.com>
+To:     Meng Li <Meng.Li@windriver.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        meng.li@windriver.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,21 +51,21 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Mon, 15 Nov 2021 07:45:24 -0500 you wrote:
-> The MSG_CRYPTO msgs are always encrypted and sent to other nodes
-> for keys' deployment. But when receiving in peers, if those nodes
-> do not validate it and make sure it's encrypted, one could craft
-> a malicious MSG_CRYPTO msg to deploy its key with no need to know
-> other nodes' keys.
+On Mon, 15 Nov 2021 15:04:23 +0800 you wrote:
+> From: Meng Li <meng.li@windriver.com>
 > 
-> This patch is to do that by checking TIPC_SKB_CB(skb)->decrypted
-> and discard it if this packet never got decrypted.
+> According to upstream commit 5ec55823438e("net: stmmac:
+> add clocks management for gmac driver"), it improve clocks
+> management for stmmac driver. So, it is necessary to implement
+> the runtime callback in dwmac-socfpga driver because it doesn't
+> use the common stmmac_pltfr_pm_ops instance. Otherwise, clocks
+> are not disabled when system enters suspend status.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] tipc: only accept encrypted MSG_CRYPTO msgs
-    https://git.kernel.org/netdev/net/c/271351d255b0
+  - [v3] net: stmmac: socfpga: add runtime suspend/resume callback for stratix10 platform
+    https://git.kernel.org/netdev/net/c/911957003948
 
 You are awesome, thank you!
 -- 
