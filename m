@@ -2,97 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDA53450ABC
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 18:11:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B064A450AE1
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 18:12:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236776AbhKOROS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 12:14:18 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44117 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236754AbhKORMd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 12:12:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1636996177;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=wscZ0cgeMoeQ6rtb9cbLe3FKWGxA97hDuF+nauPvdro=;
-        b=GnlsQbFYPrkgczbNEAcB8CG1O7fnodYCNUBE8YeTceWifkThFk5FEASpi7nPMndvG6AILo
-        sdsC131S8Z5aFtgf/vDvz9pPK8sc5zmBv47vOkUZVF9EI4H8250APWfglpBg1bq1+p+pfR
-        eS38o8gP2GMsfhlB6lO7L3V+fYnr9hM=
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
- [209.85.166.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-256-O21bYtZ9NOaNjINUEHC1Uw-1; Mon, 15 Nov 2021 12:09:35 -0500
-X-MC-Unique: O21bYtZ9NOaNjINUEHC1Uw-1
-Received: by mail-il1-f200.google.com with SMTP id a14-20020a927f0e000000b002597075cb35so10956038ild.18
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 09:09:35 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=wscZ0cgeMoeQ6rtb9cbLe3FKWGxA97hDuF+nauPvdro=;
-        b=DWfVwznkaOnsVtLCWdNVdIZP0UWuFTlNO/XD1tNdtmXLMXxpGHimy0Bd6o81TUxmk7
-         UCP3yeGw9bpVrLsqnfEgOYEQfeaG2MFVvl3ObjrMGtzISh70RN2rGR9/3zY4p0jvO+9X
-         hwyc6DZoaFZix8abWTi1cPkNPmX6VqRnRMhvwKN1zUBEQnJlSDMrVQr7s+zzxG91ErmW
-         hOa0zeoavNnncZI+6bVcCnOfR5WPv8UBaUnarLXj3ctt3UnGrsxWFXqni4fhRIUiYHYN
-         Ho+VALc/M+tuPuZkWlPeSnbdmizDIyQyoVNsVFamOfJPGXIl3eyd0p8pHFuW/9gP3q+b
-         vksw==
-X-Gm-Message-State: AOAM532fn+8yFeY40DJGJQGVPVqIdKUliO4mUrDcE9G5Yb6vAEw1lCFU
-        bY3RsWy7SmihVXbYNOu2ChtwV83fhryJJKIy/n/Un9Y36nw5A2Tl2j8RGRmcq1W6YaXiAK1ywuh
-        jZjtiF54nQGIYX2ZB
-X-Received: by 2002:a5e:9918:: with SMTP id t24mr234704ioj.161.1636996174268;
-        Mon, 15 Nov 2021 09:09:34 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwIq1SSOWARdDNhtSTT3PjZXFYqHRPnZwgI+hWF++rvFF1LFklRt/iRLXkUW/lJMDGY+eTpaw==
-X-Received: by 2002:a5e:9918:: with SMTP id t24mr234588ioj.161.1636996172536;
-        Mon, 15 Nov 2021 09:09:32 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id s17sm10547264iln.44.2021.11.15.09.09.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Nov 2021 09:09:32 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id C667E18026E; Mon, 15 Nov 2021 18:09:28 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org
-Subject: Re: [RFC PATCH 2/2] bpf: let bpf_warn_invalid_xdp_action() report
- more info
-In-Reply-To: <1b9bf5f4327699c74f93c297433012400769a60f.camel@redhat.com>
-References: <cover.1636987322.git.pabeni@redhat.com>
- <c48e1392bdb0937fd33d3524e1c955a1dae66f49.1636987322.git.pabeni@redhat.com>
- <8735nxo08o.fsf@toke.dk>
- <1b9bf5f4327699c74f93c297433012400769a60f.camel@redhat.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 15 Nov 2021 18:09:28 +0100
-Message-ID: <87zgq5mjlj.fsf@toke.dk>
+        id S236793AbhKORP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 12:15:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36720 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236835AbhKOROS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 12:14:18 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD42EC06121E;
+        Mon, 15 Nov 2021 09:11:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ZWqWmglAhpTjNuY3OWxZrnmPe0UYmnc6fFLUg64wrOU=; b=pEL6C7X4pF64tei5APlt7PXwkJ
+        L/JC9XQ0eAEBHjYvcS/grGeDuM3zOHbUvGfpb041uY+cchuMmBl0Bx8TuPDbx8oLL89G/Wf2QeLpX
+        CK1/9tvLmFAMezJjPZZd+p6tGD9mDwhxPTFcf/nIbkEUck2fx/FS9rL2UwFVC2TDIEs+emDZwpeAu
+        SYbjoKWUfRnVGzR6N4Xw9iMBC7W+TeUowgZ8Xzqdn9xbBMq7kgP19/ccRUwKWUoGzwjtTTpatXYgh
+        9S0nKjboKU0qRuqiRr02krXz697KdGdbX1zcN3a/Z5TclUrmzwdOpjHkXRmF2ngq5Puj5rk5F+ZR6
+        bFEbSwvQ==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:37376 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1mmfVl-0007th-G5; Mon, 15 Nov 2021 17:11:17 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1mmfVl-0075nP-14; Mon, 15 Nov 2021 17:11:17 +0000
+From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
+Subject: [PATCH net-next] net: document SMII and correct phylink's new
+ validation mechanism
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1mmfVl-0075nP-14@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Mon, 15 Nov 2021 17:11:17 +0000
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Paolo Abeni <pabeni@redhat.com> writes:
+SMII has not been documented in the kernel, but information on this PHY
+interface mode has been recently found. Document it, and correct the
+recently introduced phylink handling for this interface mode.
 
->> > -	pr_warn_once("%s XDP return value %u, expect packet loss!\n",
->> > +	pr_warn_once("%s XDP return value %u on prog %d dev %s attach type %d, expect packet loss!\n",
->> >  		     act > act_max ? "Illegal" : "Driver unsupported",
->> > -		     act);
->> > +		     act, prog->aux->id, dev->name, prog->expected_attach_type);
->> 
->> This will only ever trigger once per reboot even if the message differs,
->> right? Which makes it less useful as a debugging aid; so I'm not sure if
->> it's really worth it with this intrusive change unless we also do
->> something to add a proper debugging aid (like a tracepoint)...
->
-> Yes, the idea would be to add a tracepoint there, if there is general
-> agreement about this change.
->
-> I think this patch is needed because the WARN_ONCE splat gives
-> implicitly information about the related driver and attach type.
-> Replacing with a simple printk we lose them.
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ Documentation/networking/phy.rst | 5 +++++
+ drivers/net/phy/phylink.c        | 2 +-
+ include/linux/phy.h              | 2 +-
+ 3 files changed, 7 insertions(+), 2 deletions(-)
 
-Ah, right, good point. Pointing that out in the commit message might be
-a good idea; otherwise people may miss that ;)
-
--Toke
+diff --git a/Documentation/networking/phy.rst b/Documentation/networking/phy.rst
+index 571ba08386e7..d43da709bf40 100644
+--- a/Documentation/networking/phy.rst
++++ b/Documentation/networking/phy.rst
+@@ -237,6 +237,11 @@ negotiation results.
+ 
+ Some of the interface modes are described below:
+ 
++``PHY_INTERFACE_MODE_SMII``
++    This is serial MII, clocked at 125MHz, supporting 100M and 10M speeds.
++    Some details can be found in
++    https://opencores.org/ocsvn/smii/smii/trunk/doc/SMII.pdf
++
+ ``PHY_INTERFACE_MODE_1000BASEX``
+     This defines the 1000BASE-X single-lane serdes link as defined by the
+     802.3 standard section 36.  The link operates at a fixed bit rate of
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 33462fdc7add..f7156b6868e7 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -336,6 +336,7 @@ void phylink_get_linkmodes(unsigned long *linkmodes, phy_interface_t interface,
+ 
+ 	case PHY_INTERFACE_MODE_REVRMII:
+ 	case PHY_INTERFACE_MODE_RMII:
++	case PHY_INTERFACE_MODE_SMII:
+ 	case PHY_INTERFACE_MODE_REVMII:
+ 	case PHY_INTERFACE_MODE_MII:
+ 		caps |= MAC_10HD | MAC_10FD;
+@@ -385,7 +386,6 @@ void phylink_get_linkmodes(unsigned long *linkmodes, phy_interface_t interface,
+ 
+ 	case PHY_INTERFACE_MODE_NA:
+ 	case PHY_INTERFACE_MODE_MAX:
+-	case PHY_INTERFACE_MODE_SMII:
+ 		break;
+ 	}
+ 
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 96e43fbb2dd8..1e57cdd95da3 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -99,7 +99,7 @@ extern const int phy_10gbit_features_array[1];
+  * @PHY_INTERFACE_MODE_RGMII_RXID: RGMII with Internal RX delay
+  * @PHY_INTERFACE_MODE_RGMII_TXID: RGMII with Internal RX delay
+  * @PHY_INTERFACE_MODE_RTBI: Reduced TBI
+- * @PHY_INTERFACE_MODE_SMII: ??? MII
++ * @PHY_INTERFACE_MODE_SMII: Serial MII
+  * @PHY_INTERFACE_MODE_XGMII: 10 gigabit media-independent interface
+  * @PHY_INTERFACE_MODE_XLGMII:40 gigabit media-independent interface
+  * @PHY_INTERFACE_MODE_MOCA: Multimedia over Coax
+-- 
+2.30.2
 
