@@ -2,84 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AD5644FF48
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 08:38:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACEBC44FF49
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 08:38:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230028AbhKOHlR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 02:41:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45978 "EHLO
+        id S230360AbhKOHlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 02:41:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229694AbhKOHlP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 02:41:15 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2031EC061746
-        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 23:38:21 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id x7so12035372pjn.0
-        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 23:38:21 -0800 (PST)
+        with ESMTP id S229727AbhKOHlR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 02:41:17 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 589CAC061746
+        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 23:38:22 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id nh10-20020a17090b364a00b001a69adad5ebso13313165pjb.2
+        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 23:38:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=v3nZVygfkeqbA2dwLPjB5gTeFCwZvDZ1249UOUDe2dE=;
-        b=PKHxec5oUhf5nlMQJrdQnBHMZwa3dbb++pvqlK+fRPPu4L7cX7ZV3YyX0fkt+B6gGE
-         NEBsjTvUMp9kXjVx56rZhXhr1QxUtd42dvsaxAimWVZhUCfUJu/15CbyFWUQFvkKvIzv
-         q14HU/TNGQYPQ83T5+R0+arHsFqHCNrFeRGxI=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=L4a9KT7ocpQb8HI9E51O+AVzEY/sVWV6nrefQL+wNd0=;
+        b=L0yK65533wXWdr34EjOehGpk8e8LGzDL4EgkZLgWV0ZroMMDDJf+JkGXUli/PqbIfI
+         NvGn4lFVEbyRqsNFBJNIdOPQzwfWffcQSRZxBOt2wrGSZ3Goyg1u9Ue26SUsBx7BKarw
+         n7H8AceoflfmYkvlq94hWIX9Z0U+S2FKhX06E=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=v3nZVygfkeqbA2dwLPjB5gTeFCwZvDZ1249UOUDe2dE=;
-        b=OL6COs2dS8VzxLNUGHRe40gYncNAN2aJ8kH5vCCd+0srzYZ0a3dcwPD7/V/MydfP/p
-         YjkP4hxdYAi3B9u9AAF2LCKe9ov706yZncKtI0eC0jsA3h1iux3DkELP/jMXvLOeZeRg
-         3YUxj/MQ5LlQfHNOn47ChFqflKlwR6UZ4c4kiAaL8wfBJIhjRw7WIE8y8TT/S5Vvbaqk
-         l7ucc0QzHtwJZrI+5N7zIvibwcvlWvb3rtFERJVkHYmOZN5lY5Y1BW7gGmeLpqwegsLf
-         Y5nDDyix40lJxvKGunyeJgVPS7S2Y6JyLtV92ZEPTGr3wRyNDHsLQkGhOY2IUXwlKTA3
-         Medw==
-X-Gm-Message-State: AOAM532ffgYr1bhXyw6YXlYZjZgwlk9vJpZZCmQ4L6ZdvdOy3rVTGx9V
-        +CIcGFnF++1aXKKH7TS+6IiBWg==
-X-Google-Smtp-Source: ABdhPJxeYwdKf1iZoIbVTwoJ1PwfBYbKPmSJrFmTwGInR73YlXfLX42pIEJrymIjQTnLjVe90uXjDQ==
-X-Received: by 2002:a17:902:c20d:b0:142:21e:b1e8 with SMTP id 13-20020a170902c20d00b00142021eb1e8mr32569515pll.27.1636961900540;
-        Sun, 14 Nov 2021 23:38:20 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=L4a9KT7ocpQb8HI9E51O+AVzEY/sVWV6nrefQL+wNd0=;
+        b=PRe3FDS5hZjEc15/1+K85g4o4uMZgzhokDmolfPycbO7WBbIiAOd/GzEnVpnCZI5kQ
+         rFmTA/sSv7B/XFG8vS2pccFMMydQxbzboanNmcO6Je256S0QhsvnYi+BiTiHKicX9VAt
+         CUHKo5hSEsGTH65/hNZGSCWKt2u7jf5xaEXK4phZcaJTPdQjpXpiGnLmwYBBsvM0YV+h
+         povZJTTXmb/NxwLSt+fmYo7TYDTQXRxem3VoO9GtYs/6jQNkFqC7Cxs96MWU+YNnwewt
+         0uSkKr24lsZeB6cFduKDucYrXHoDbKmrroDHnJYeEsyHLraNlNKgcmT6Lnf99Cvs2GCR
+         oNmg==
+X-Gm-Message-State: AOAM532qG8artAIY9ZpZYaRCz4elona4jr3WNJdLXezwZwiAFikWx/gs
+        2CeuBYNMVb0Y0nY7m2hOzqSUYQOkaESSzQ==
+X-Google-Smtp-Source: ABdhPJzzZV/W9Q4jx5EyY0s3eyVWWW5pCokcnDhfSz0bXXPz9rC+1TO5IvqEYU4g0xacjtKNKvZxjg==
+X-Received: by 2002:a17:903:2344:b0:142:25b4:76c1 with SMTP id c4-20020a170903234400b0014225b476c1mr33095239plh.43.1636961901726;
+        Sun, 14 Nov 2021 23:38:21 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id x135sm13961462pfd.78.2021.11.14.23.38.19
+        by smtp.gmail.com with ESMTPSA id x135sm13961462pfd.78.2021.11.14.23.38.20
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 14 Nov 2021 23:38:20 -0800 (PST)
+        Sun, 14 Nov 2021 23:38:21 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
-        gospo@broadcom.com
-Subject: [PATCH net 0/3] bnxt_en: Bug fixes
-Date:   Mon, 15 Nov 2021 02:37:58 -0500
-Message-Id: <1636961881-17824-1-git-send-email-michael.chan@broadcom.com>
+        gospo@broadcom.com, Leon Romanovsky <leon@kernel.org>
+Subject: [PATCH net 1/3] bnxt_en: extend RTNL to VF check in devlink driver_reinit
+Date:   Mon, 15 Nov 2021 02:37:59 -0500
+Message-Id: <1636961881-17824-2-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1636961881-17824-1-git-send-email-michael.chan@broadcom.com>
+References: <1636961881-17824-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000009d45d405d0cee457"
+        boundary="000000000000af86f905d0cee45b"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000009d45d405d0cee457
+--000000000000af86f905d0cee45b
 
-This series includes 3 fixes.  The first one fixes a race condition
-between devlink reload and SR-IOV configuration.  The second one
-fixes a type mismatch warning in devlink fw live patching.  The
-last one fixes unwanted OVS TC dmesg error logs when tc-hw-offload is
-disabled on bnxt_en.
+From: Edwin Peer <edwin.peer@broadcom.com>
 
-Edwin Peer (2):
-  bnxt_en: extend RTNL to VF check in devlink driver_reinit
-  bnxt_en: fix format specifier in live patch error message
+The fixes the race condition between configuring SR-IOV and devlink
+reload.  The SR-IOV configure logic already takes the RTNL lock,
+setting sriov_cfg under the lock while changes are underway. Extend
+the lock scope in devlink driver_reinit to cover the VF check and
+don't run concurrently with SR-IOV configure.
 
-Sriharsha Basavapatna (1):
-  bnxt_en: reject indirect blk offload when hw-tc-offload is off
+Reported-by: Leon Romanovsky <leon@kernel.org>
+Fixes: 228ea8c187d8 ("bnxt_en: implement devlink dev reload driver_reinit")
+Cc: Leon Romanovsky <leon@kernel.org>
+Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
+Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 9 +++++----
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c      | 2 +-
- 2 files changed, 6 insertions(+), 5 deletions(-)
-
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+index 5c464ea73576..a0a9af402642 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+@@ -441,12 +441,13 @@ static int bnxt_dl_reload_down(struct devlink *dl, bool netns_change,
+ 
+ 	switch (action) {
+ 	case DEVLINK_RELOAD_ACTION_DRIVER_REINIT: {
+-		if (BNXT_PF(bp) && bp->pf.active_vfs) {
++		rtnl_lock();
++		if (BNXT_PF(bp) && (bp->pf.active_vfs || bp->sriov_cfg)) {
+ 			NL_SET_ERR_MSG_MOD(extack,
+-					   "reload is unsupported when VFs are allocated");
++					   "reload is unsupported while VFs are allocated or being configured");
++			rtnl_unlock();
+ 			return -EOPNOTSUPP;
+ 		}
+-		rtnl_lock();
+ 		if (bp->dev->reg_state == NETREG_UNREGISTERED) {
+ 			rtnl_unlock();
+ 			return -ENODEV;
 -- 
 2.18.1
 
 
---0000000000009d45d405d0cee457
+--000000000000af86f905d0cee45b
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -150,13 +177,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIFB2WHVVry0V+nJ358vChMOodQUjqNwF
-WoqqMdAkQmjVMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTEx
-NTA3MzgyMFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIEU33l1UGc0neg2eBfeDYBjR9DQThxdE
+VjgEUrZWQbTYMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTEx
+NTA3MzgyMlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCxbHjBys4RA/0O9Z+WR9R5KjhG0vT7Ed9uKl0mFZ14lf+oqSQZ
-2dn7/6cqQ3vnz1C8TB+P+q5hHip6YJMkTlHc2kzuZZNazZEhn8MwC5WoD1R5z97uVAt8MfBxGv2e
-t15lbnYrQLsmPY72WkFoimRUY/Fy6G8Fa1M4kGx1+IZElI7po+JxC6iYvbIZiTyOQ+NV7avRuOMx
-mnx7gSKYoNn76IP6UvWUpyiPctTnFM3bVAGZUOLrMsifgZ+5n60U9ghItYzSlR7i6Pcmn7uOM4XE
-wGMZAsFaQ1swWUQr/qLo/Mdz3YH+rzHKuPF0C7NsTwFJQMfAS7KZvySCvgG+fc3l
---0000000000009d45d405d0cee457--
+ATANBgkqhkiG9w0BAQEFAASCAQDIqflIyqqeMz2Rn6u/YzJyFuJQQn6CVGNJgE3sPCbFNluqxLdk
+NTgTTWY7oe5pTBf5J+KYDjGkWyuPB7Wg//Lp5QBhBdQN6MgzySXMh812RIhugM8Rr6fq01Hs/5my
+R3BdG6927QXUX+ENesWYzu5Wm46YfMz9NOasE86haFGk6dWd6yg0FgWzpzgdGO1F1M+zzlPPq+xY
+Iyh/evhsxzSHVrPdO1LkimuG7YEsrbTp6s4WOV0u22cyA6hxmrDyTu/s17/ZkQccnErNss8jWRKs
+enN1sk+u9wOIHnxcxSuTo4F2S2WsXzQsuhSR0T9dk+U3UZdqwL4KM3ilndRBhBrd
+--000000000000af86f905d0cee45b--
