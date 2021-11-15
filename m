@@ -2,102 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7D474517BF
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 23:43:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A4094516D2
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 22:43:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242809AbhKOWqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 17:46:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48924 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348096AbhKOW14 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 17:27:56 -0500
-Received: from mail-ua1-x931.google.com (mail-ua1-x931.google.com [IPv6:2607:f8b0:4864:20::931])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BA92C0A3BDB;
-        Mon, 15 Nov 2021 13:40:42 -0800 (PST)
-Received: by mail-ua1-x931.google.com with SMTP id y5so20019752ual.7;
-        Mon, 15 Nov 2021 13:40:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=A5J469ns3XG7OVxeYptfcPiuHXSrmzCSL7lcsf9OaQw=;
-        b=B1RIvix8dh5HgGXRvFDIOm+oro/0IBnw20lxQztddbYySaAjwpwaJluTNf+d7hLTa3
-         HLXY2zsyaN/wpPIye6RJnjYcTgX8QBKGHiEStqXXjR7u8GeTDyvCIOKxihUjEoaqcO6S
-         Uf6Bt4SznAVTI7tFzhrj5aPJp8WQ43XTNc9QWHqze53+KDWKwiwAb3WfPFuZw9Zo6OoM
-         YU0ihnDG8l1Csj3wMCg7g1kP8tU6/dHG2Z9OsQsBs8nb2ochiLRYWcerujmLXL1lOQLE
-         xU7lm2dlQPZoEsrs8AFaeFHCls5IO8bFmNAQAo1XeXl01YmfM8P8j+Pd9fOEcaSlwMfd
-         f4EQ==
+        id S1345541AbhKOVqI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 16:46:08 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:46901 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1351035AbhKOVno (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 16:43:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1637012444;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zs+2+ZTATogosdjkaXzNr5IQQ1VQzDW6+yjOk4xp5yY=;
+        b=JqcO0gHPGL5SJB4DBeFOMXTl/clauRD93KwRIDfL0v2GZY32JMsLRanAcYzrqgFOqOv+aq
+        gBClGipYcx5SHMea+eqa3+/sDIQy21oIf33xojiNGt3sTRLSLFy1z313vLa0iG2jeidGCn
+        tZjyzU4Nyce0wtSvzbDjGkBxamiWmgg=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-105-ypbvF-8DMfKLbAOF4Nh2MA-1; Mon, 15 Nov 2021 16:40:43 -0500
+X-MC-Unique: ypbvF-8DMfKLbAOF4Nh2MA-1
+Received: by mail-ed1-f70.google.com with SMTP id q17-20020aa7da91000000b003e7c0641b9cso3606800eds.12
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 13:40:43 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=A5J469ns3XG7OVxeYptfcPiuHXSrmzCSL7lcsf9OaQw=;
-        b=itsY06RepjezWsdUw5t1kgHYOhBPUT8DhfMoTdmrC0nYZ2YTpqClQPXPs/lqlQfcPH
-         Oz25z9Cbx/13Z7flMJZg9I08bMB4LCg3rsazCkKXqrl7BCjiNS1vvu3wiQ+erEJjsT8u
-         HPGD9Re8Mx3Qeaj2PzZkWsZ0Hr6I2FACDbHZGUzWvU+z9aBvGdqqVC51zrzb1jSHK0vu
-         Cbz/i8+JaBN1WtPARwio3cfI4zxI4Esm9tiioxyZ82XhP8+BhtHnIp8P87R0qWNcH/g6
-         jqPW8RDFjEa6JDomz9YiFjVWiBXDyAvw9k3Q6+wYsrz1Hb185vLsTrL7xplQFMRjUqy/
-         Hpsw==
-X-Gm-Message-State: AOAM531FogDWH6iKenHoPTNmDzcCjgaT7YXH0c/bwpHxsZphTr7IRkjD
-        slDn4UQa6laALnesd0aaoFw20bCNxYwuJ+vA/Hs=
-X-Google-Smtp-Source: ABdhPJwOejlN4PJ2DDBI7npw4cDbQmBCrA0aLmnL1zZgrVrrBYwz3boiGcioyN8r2cio4O9gpdXJYvkiKkJNhXvIjsk=
-X-Received: by 2002:ab0:25da:: with SMTP id y26mr3108397uan.72.1637012441004;
- Mon, 15 Nov 2021 13:40:41 -0800 (PST)
-MIME-Version: 1.0
-References: <20211102213321.18680-1-luiz.dentz@gmail.com> <CABBYNZ+i4aR5OjMppG+3+EkaOyFh06p18u6FNr6pZA8wws-hpg@mail.gmail.com>
- <CABBYNZJPanQzSx=Nf9mgORvqixbgwd6ypx=irGiQ3CEr6xUT1A@mail.gmail.com> <20211115130938.49b97c8f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211115130938.49b97c8f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Mon, 15 Nov 2021 13:40:30 -0800
-Message-ID: <CABBYNZ+fAVW1Go+UUirgFsbNjffEKdUv-9ArM6MiFxMYEGOM6w@mail.gmail.com>
-Subject: Re: pull request: bluetooth 2021-11-02
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=zs+2+ZTATogosdjkaXzNr5IQQ1VQzDW6+yjOk4xp5yY=;
+        b=dQP6iKrZ+TQq6Bs3kaQmE4+Kj5DRvzVJU+I6hkm25W172qG5dGyicBuY6zVu1PUCOW
+         rNKn6wdRqFTmpueUP7oyOJGEayGD2CRwtKcs2STfSXKQ1KoYZEXXwDcL1Y5uK38DQJdN
+         IwI0Csyvi2I5lwinFYM9/ksrJQc4RDp32WQTpnCQnO2Pgp29Sm2qpcPmkOXgHSoI6won
+         C5gmOsaRzSfZyr0sdxmm2BGvGBI5UxKZndR31Fi0e0JmQhAr6YP+x4iSCDX1maT1Z5CJ
+         7U5+LB/OJaeyBLQoVy832NGAr0tZaBioMYSigi5k2LclmB3zU/QP9zCrWSuyY+mwmqCE
+         wayA==
+X-Gm-Message-State: AOAM533KH61lszq253qPEsB3lzK4zvR63Nf5HmI5yjOG6kdiyQ16wPpQ
+        ZpbETCO5xkGQyI8qybSnyrcB4ic3zIuoTIlrF1iuZTFRO6/3NqzXOtyzijSAi75uhPCQhQtMnY7
+        6jrLTVY+56/wNGVZv
+X-Received: by 2002:a05:6402:22a5:: with SMTP id cx5mr2810139edb.334.1637012442515;
+        Mon, 15 Nov 2021 13:40:42 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy6JGHZ1j9puFyPzQlALmhRP6cyIrgxmU0wBVb2LuvpeEiSC3bFn2n7vSiL9S23J9RL5DqfRw==
+X-Received: by 2002:a05:6402:22a5:: with SMTP id cx5mr2810111edb.334.1637012442373;
+        Mon, 15 Nov 2021 13:40:42 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-229-135.dyn.eolo.it. [146.241.229.135])
+        by smtp.gmail.com with ESMTPSA id z9sm8517435edb.50.2021.11.15.13.40.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Nov 2021 13:40:41 -0800 (PST)
+Message-ID: <dacd415c06bc854136ba93ef258e92292b782037.camel@redhat.com>
+Subject: Re: [PATCH net-next 00/20] tcp: optimizations for linux-5.17
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Soheil Hassas Yeganeh <soheil@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Arjun Roy <arjunroy@google.com>
+Date:   Mon, 15 Nov 2021 22:40:40 +0100
+In-Reply-To: <CACSApvZ47Z9pKGxH_UU=yY+bQqdNt=jc2kpxP-VfZkCXLVSbCg@mail.gmail.com>
+References: <20211115190249.3936899-1-eric.dumazet@gmail.com>
+         <CACSApvZ47Z9pKGxH_UU=yY+bQqdNt=jc2kpxP-VfZkCXLVSbCg@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.1 (3.42.1-1.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+Hello,
 
-On Mon, Nov 15, 2021 at 1:09 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Mon, 15 Nov 2021 11:53:15 -0800 Luiz Augusto von Dentz wrote:
-> > > Any chance to get these changes in before the merge window closes?
-> >
-> > I guess these won't be able to be merged after all, is there a define
-> > process on how/when pull-request shall be sent to net-next, Ive assume
-> > next-next is freezed now the documentation says the the merge window
-> > lasts for approximately two weeks but I guess that is for the Linus
-> > tree not net-next?
->
-> I'm not sure what the exact rules are for net-next.
->
-> We had some glitches this time around, IMHO. Here is what I have in
-> mind for the next merge window but note that I haven't had a chance
-> to discuss it with Dave yet, so it's more of me blabbering at this
-> point than a plan:
->  - net-next would not apply patches posted after Linus cuts final;
->  - make sure all trees feeding net-next submit their changes around
->    rc6 time so that we don't get a large code dump right as the merge
->    window opens;
+On Mon, 2021-11-15 at 15:37 -0500, Soheil Hassas Yeganeh wrote:
+> On Mon, Nov 15, 2021 at 2:02 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> > 
+> > From: Eric Dumazet <edumazet@google.com>
+> > 
+> > Mostly small improvements in this series.
+> > 
+> > The notable change is in "defer skb freeing after
+> > socket lock is released" in recvmsg() (and RX zerocopy)
+> > 
+> > The idea is to try to let skb freeing to BH handler,
+> > whenever possible, or at least perform the freeing
+> > outside of the socket lock section, for much improved
+> > performance. This idea can probably be extended
+> > to other protocols.
+> > 
+> >  Tests on a 100Gbit NIC
+> >  Max throughput for one TCP_STREAM flow, over 10 runs.
+> > 
+> >  MTU : 1500  (1428 bytes of TCP payload per MSS)
+> >  Before: 55 Gbit
+> >  After:  66 Gbit
+> > 
+> >  MTU : 4096+ (4096 bytes of TCP payload, plus TCP/IPv6 headers)
+> >  Before: 82 Gbit
+> >  After:  95 Gbit
+> 
+> Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+> 
+> Wow, this is really impressive. I reviewed all the patches and I can't
+> point out any issues other than the typo that Arjun has pointed out.
+> Thank you Eric!
 
-So net-next has a merge window open during the rc phase, until rc6? I
-assume if the rc goes further than rc7 it also would extend the merge
-window of net-next as well?
+Possibly there has been some issues with the ML while processing these
+patches?!? only an handful of them reached patchwork (and my mailbox :)
 
->  - any last minute net-next PRs should be ready by Monday night PST;
->  - we'd give the tree one day to settle, have build issues reported etc
->    and submit PR on Wednesday.
->
-> If we go with a more structured timeline along these lines I'll try
-> to send reminders.
+(/me was just curious about the code ;)
 
-+1, that would be great to have reminders for the merge window
-open/close that way if for some reason if you guys decide to change
-your merge window that would be noticed by us.
+Cheers,
 
--- 
-Luiz Augusto von Dentz
+Paolo
+
