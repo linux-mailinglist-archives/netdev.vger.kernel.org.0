@@ -2,142 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 486D74524FC
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 02:43:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D8714527A4
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 03:27:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344580AbhKPBqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 20:46:21 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36898 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241924AbhKOSZx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 13:25:53 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9D92863280;
-        Mon, 15 Nov 2021 17:56:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1636998995;
-        bh=RvhLvZ/ApkAe4kgJ3nlQ6+LY5y0knpUdvM3VTNWyh6I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wQIW10EEg95D9YhB6AY3YfdZo/v91yYGc/pwgpqEvwczX+YDf4gJEuLaWio5zJVy4
-         ciYNcN73TN0+1sCzsO6vne9E3w/RAH8+TUW0raNEcCexzSfd1mh5IH2vgxnkXEMsNq
-         RJ8a9oKumC7bZGOUbWzwroxUrrtka2z9nH7tI9RQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Amitkumar Karwar <amit.karwar@redpinesignals.com>,
-        Angus Ainslie <angus@akkea.ca>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Karun Eagalapati <karun256@gmail.com>,
-        Martin Fuzzey <martin.fuzzey@flowbird.group>,
-        Martin Kepplinger <martink@posteo.de>,
-        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
-        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
-        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
-Subject: [PATCH 5.14 136/849] rsi: Fix module dev_oper_mode parameter description
-Date:   Mon, 15 Nov 2021 17:53:39 +0100
-Message-Id: <20211115165424.721074697@linuxfoundation.org>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20211115165419.961798833@linuxfoundation.org>
-References: <20211115165419.961798833@linuxfoundation.org>
-User-Agent: quilt/0.66
+        id S243303AbhKPC3s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 21:29:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36710 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237026AbhKORQM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 12:16:12 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8815EC06120C
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 09:11:58 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id j6-20020a17090a588600b001a78a5ce46aso13737945pji.0
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 09:11:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=v9sQDD/4/Q8DJlCorQNfKu6150bTPmEtz37IdYnRvKY=;
+        b=Lrx8pdO4QmetG9vTbYCwYD7pU1xvquwvb3qoSX4Ozl/1LMBD5rOAQ+Fl1Rf9Qvwzbu
+         BnnVIg7wMdr9gQNs1EhT/lIeE4AsTMkLmgQsSTh/fRHsy4BUt2+JeL0LrrNE7G3vskDj
+         4Vry7k1lrvp83ZdOqEtQAcEmogmp/fbIQULggxwqCUk8vSIiLGgjwNWBQH9ujfz2CMof
+         D04uRGBW9V2Z7tjLkhPscaCmYUbqUyChSzpxw75WfMl4K3roSf5YAGwiNeN184af42Fd
+         twuS1/uSquFvW70q6qvkjdFX2RnPB2PqJaifwkWyTY23PM2Hebzmq9BYJLlImIgDggO7
+         Kp+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=v9sQDD/4/Q8DJlCorQNfKu6150bTPmEtz37IdYnRvKY=;
+        b=jND1f1vmKYCasmxYPAmZp/9Jn5OXhEASfchS2exfd2xewKY/UtGYHAy3rd3JNrNtUu
+         L7GZThaCrc4iZGaBWSdL+rMKKXD3mgVUqtRLBsYlVo4AvZy1pAbDswwxoVeiEKU52yBH
+         XXM5u6OwmBWrQsWoYIC438wYnie8Q9sw+BLeq/FV8EyCGOflQlUTeJ8dYN0Qsn7dFZdP
+         5YXpJuhqMHiubQpmYF5GDGWqMSZftInI7p/0LZZc9AZXMrJiV/RqrE47QWL5MeiuEnRf
+         vBPPdYgfMjDfIzx7foaoUdHtpRszrIbPGBXptekLaQRrSJddJQMdVStMhiomecinM2wS
+         HAOw==
+X-Gm-Message-State: AOAM531IAped5Uog08S5s0MB49PwoQrR+yw2Z3diTz3NkUrIMz39Pash
+        A1BQUMd/Mi9DONVxMNNXKYo=
+X-Google-Smtp-Source: ABdhPJyC1bHhBSwGPU/ekoPpiXeAylG69a6kidwEX5JcKhMxw4JZzrOwS42KHgv3dcNzC10y31RScQ==
+X-Received: by 2002:a17:90b:314c:: with SMTP id ip12mr133285pjb.162.1636996318130;
+        Mon, 15 Nov 2021 09:11:58 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:4994:f3d6:2eb1:61cb])
+        by smtp.gmail.com with ESMTPSA id j127sm16466632pfg.14.2021.11.15.09.11.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Nov 2021 09:11:57 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH net-next 2/4] net: make sock_inuse_add() available
+Date:   Mon, 15 Nov 2021 09:11:48 -0800
+Message-Id: <20211115171150.3646016-3-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.34.0.rc1.387.gb447b232ab-goog
+In-Reply-To: <20211115171150.3646016-1-eric.dumazet@gmail.com>
+References: <20211115171150.3646016-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 31f97cf9f0c31143a2a6fcc89c4a1286ce20157e upstream.
+MPTCP hard codes it, let us instead provide this helper.
 
-The module parameters are missing dev_oper_mode 12, BT classic alone,
-add it. Moreover, the parameters encode newlines, which ends up being
-printed malformed e.g. by modinfo, so fix that too.
-
-However, the module parameter string is duplicated in both USB and SDIO
-modules and the dev_oper_mode mode enumeration in those module parameters
-is a duplicate of macros used by the driver. Furthermore, the enumeration
-is confusing.
-
-So, deduplicate the module parameter string and use __stringify() to
-encode the correct mode enumeration values into the module parameter
-string. Finally, replace 'Wi-Fi' with 'Wi-Fi alone' and 'BT' with
-'BT classic alone' to clarify what those modes really mean.
-
-Fixes: 898b255339310 ("rsi: add module parameter operating mode")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Amitkumar Karwar <amit.karwar@redpinesignals.com>
-Cc: Angus Ainslie <angus@akkea.ca>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: Karun Eagalapati <karun256@gmail.com>
-Cc: Martin Fuzzey <martin.fuzzey@flowbird.group>
-Cc: Martin Kepplinger <martink@posteo.de>
-Cc: Prameela Rani Garnepudi <prameela.j04cs@gmail.com>
-Cc: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
-Cc: Siva Rebbagondla <siva8118@gmail.com>
-Cc: netdev@vger.kernel.org
-Cc: <stable@vger.kernel.org> # 4.17+
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20210916144245.10181-1-marex@denx.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- drivers/net/wireless/rsi/rsi_91x_sdio.c |    5 +----
- drivers/net/wireless/rsi/rsi_91x_usb.c  |    5 +----
- drivers/net/wireless/rsi/rsi_hal.h      |   11 +++++++++++
- 3 files changed, 13 insertions(+), 8 deletions(-)
+ include/net/sock.h  | 10 ++++++++++
+ net/core/sock.c     | 10 ----------
+ net/mptcp/subflow.c |  4 +---
+ 3 files changed, 11 insertions(+), 13 deletions(-)
 
---- a/drivers/net/wireless/rsi/rsi_91x_sdio.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_sdio.c
-@@ -24,10 +24,7 @@
- /* Default operating mode is wlan STA + BT */
- static u16 dev_oper_mode = DEV_OPMODE_STA_BT_DUAL;
- module_param(dev_oper_mode, ushort, 0444);
--MODULE_PARM_DESC(dev_oper_mode,
--		 "1[Wi-Fi], 4[BT], 8[BT LE], 5[Wi-Fi STA + BT classic]\n"
--		 "9[Wi-Fi STA + BT LE], 13[Wi-Fi STA + BT classic + BT LE]\n"
--		 "6[AP + BT classic], 14[AP + BT classic + BT LE]");
-+MODULE_PARM_DESC(dev_oper_mode, DEV_OPMODE_PARAM_DESC);
- 
- /**
-  * rsi_sdio_set_cmd52_arg() - This function prepares cmd 52 read/write arg.
---- a/drivers/net/wireless/rsi/rsi_91x_usb.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_usb.c
-@@ -25,10 +25,7 @@
- /* Default operating mode is wlan STA + BT */
- static u16 dev_oper_mode = DEV_OPMODE_STA_BT_DUAL;
- module_param(dev_oper_mode, ushort, 0444);
--MODULE_PARM_DESC(dev_oper_mode,
--		 "1[Wi-Fi], 4[BT], 8[BT LE], 5[Wi-Fi STA + BT classic]\n"
--		 "9[Wi-Fi STA + BT LE], 13[Wi-Fi STA + BT classic + BT LE]\n"
--		 "6[AP + BT classic], 14[AP + BT classic + BT LE]");
-+MODULE_PARM_DESC(dev_oper_mode, DEV_OPMODE_PARAM_DESC);
- 
- static int rsi_rx_urb_submit(struct rsi_hw *adapter, u8 ep_num, gfp_t flags);
- 
---- a/drivers/net/wireless/rsi/rsi_hal.h
-+++ b/drivers/net/wireless/rsi/rsi_hal.h
-@@ -28,6 +28,17 @@
- #define DEV_OPMODE_AP_BT		6
- #define DEV_OPMODE_AP_BT_DUAL		14
- 
-+#define DEV_OPMODE_PARAM_DESC		\
-+	__stringify(DEV_OPMODE_WIFI_ALONE)	"[Wi-Fi alone], "	\
-+	__stringify(DEV_OPMODE_BT_ALONE)	"[BT classic alone], "	\
-+	__stringify(DEV_OPMODE_BT_LE_ALONE)	"[BT LE alone], "	\
-+	__stringify(DEV_OPMODE_BT_DUAL)		"[BT classic + BT LE alone], " \
-+	__stringify(DEV_OPMODE_STA_BT)		"[Wi-Fi STA + BT classic], " \
-+	__stringify(DEV_OPMODE_STA_BT_LE)	"[Wi-Fi STA + BT LE], "	\
-+	__stringify(DEV_OPMODE_STA_BT_DUAL)	"[Wi-Fi STA + BT classic + BT LE], " \
-+	__stringify(DEV_OPMODE_AP_BT)		"[Wi-Fi AP + BT classic], "	\
-+	__stringify(DEV_OPMODE_AP_BT_DUAL)	"[Wi-Fi AP + BT classic + BT LE]"
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 3f08e9d55f0ceed4ec4593012e6c856b400fc33f..cdc7ebc049b41b00aa7c851a6f1df6e58bae8430 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1429,6 +1429,12 @@ static inline void sock_prot_inuse_add(const struct net *net,
+ {
+ 	__this_cpu_add(net->core.prot_inuse->val[prot->inuse_idx], val);
+ }
 +
- #define FLASH_WRITE_CHUNK_SIZE		(4 * 1024)
- #define FLASH_SECTOR_SIZE		(4 * 1024)
++static inline void sock_inuse_add(const struct net *net, int val)
++{
++	this_cpu_add(*net->core.sock_inuse, val);
++}
++
+ int sock_prot_inuse_get(struct net *net, struct proto *proto);
+ int sock_inuse_get(struct net *net);
+ #else
+@@ -1436,6 +1442,10 @@ static inline void sock_prot_inuse_add(const struct net *net,
+ 				       const struct proto *prot, int val)
+ {
+ }
++
++static inline void sock_inuse_add(const struct net *net, int val)
++{
++}
+ #endif
  
-
+ 
+diff --git a/net/core/sock.c b/net/core/sock.c
+index fac46efd31fd44b4105c6004b4491aa11e1ed67c..214c2e816c63dba9146557a622516e73c1da142e 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -144,8 +144,6 @@
+ static DEFINE_MUTEX(proto_list_mutex);
+ static LIST_HEAD(proto_list);
+ 
+-static void sock_inuse_add(struct net *net, int val);
+-
+ /**
+  * sk_ns_capable - General socket capability test
+  * @sk: Socket to use a capability on or through
+@@ -3546,11 +3544,6 @@ int sock_prot_inuse_get(struct net *net, struct proto *prot)
+ }
+ EXPORT_SYMBOL_GPL(sock_prot_inuse_get);
+ 
+-static void sock_inuse_add(struct net *net, int val)
+-{
+-	this_cpu_add(*net->core.sock_inuse, val);
+-}
+-
+ int sock_inuse_get(struct net *net)
+ {
+ 	int cpu, res = 0;
+@@ -3629,9 +3622,6 @@ static inline void release_proto_idx(struct proto *prot)
+ {
+ }
+ 
+-static void sock_inuse_add(struct net *net, int val)
+-{
+-}
+ #endif
+ 
+ static void tw_prot_cleanup(struct timewait_sock_ops *twsk_prot)
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 6172f380dfb763b43c6d996b4896215cad9c7d7b..49787a1d7b3467acdfe284fd1494ac4c4a6eaf5c 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -1534,9 +1534,7 @@ int mptcp_subflow_create_socket(struct sock *sk, struct socket **new_sock)
+ 	 */
+ 	sf->sk->sk_net_refcnt = 1;
+ 	get_net(net);
+-#ifdef CONFIG_PROC_FS
+-	this_cpu_add(*net->core.sock_inuse, 1);
+-#endif
++	sock_inuse_add(net, 1);
+ 	err = tcp_set_ulp(sf->sk, "mptcp");
+ 	release_sock(sf->sk);
+ 
+-- 
+2.34.0.rc1.387.gb447b232ab-goog
 
