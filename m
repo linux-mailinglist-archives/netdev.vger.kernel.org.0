@@ -2,110 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30F0C45091F
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 17:02:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CDA5450941
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 17:07:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236608AbhKOQFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 11:05:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49150 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232638AbhKOQFM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 11:05:12 -0500
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A52A1C061766
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 08:02:13 -0800 (PST)
-Received: by mail-pg1-x52a.google.com with SMTP id q12so3267564pgh.5
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 08:02:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tivrXntTWIbCkVzZC4y1HIyO4FqKtX6bYEAzYxt9B4c=;
-        b=oWCc1n4tm5zCJxae3xkGIvL4qNO5jJQK2PhsxaekoUCUdhsyS7fg9L2yaSfdbujV6o
-         Nxst2ng8GqpnJQDUI63bIJ9xF+qaMBDWS8GZZ6aPcOTldEZM5rehKQwQnphbJz2UsHyt
-         VEiEBBs85fhJgJd4r6lseabO8YMZjqRaKncMOBiOVwBIu1Mujam77+cBPU1X303T/eNA
-         f4jYM1hLklyJnwCD4BJBnhFX1rkPuAGRZkO/m4okbBL/i6/JnjpAP82/ZWWkSfaFR+xY
-         r1NWO0EsdOZt6G/ek3HGZRAaKGon42iM9vQaiXnB8LBn52A3DXSZYYIzW1UCu3zHOHp0
-         GLBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tivrXntTWIbCkVzZC4y1HIyO4FqKtX6bYEAzYxt9B4c=;
-        b=SSnij01RLHwUotqZbVFh3SZvrhe6vVkYNuzxj+NNoaKn7b/RwRCdq0JTmqgHugFneZ
-         qt+SGWEy6U80E2ImK5TpsogyuzVrXxCUWyqS1dTWzpb1pzGQHjgmG1bCY7zUgbIO+39k
-         lRRwGgwKlLsUD6rzMGpw2Q1zuNiR9uciTxWv4P2CUR8Kf/BmeMSLLhF2sLKnziQjyfHL
-         1Oay2t0whyHwtu11YiXWhIw1Bf3Ies/kfaQDjnMbpb9aQ+dS007EV5LEuL0pr7qVC512
-         mFMreyZhUre2PgoaNLUXK/dbPvbNNf949GAkL+40seT5RLQ2FqFsG+l/CSJt2L0HGJgV
-         cLSQ==
-X-Gm-Message-State: AOAM533ecn+k9hyDZBV3lEMJJgUl8CUGLO6CKB0IYzqaqyWAkhRWRPzv
-        Tfm6nlTIOOX5Sib46YXHCzxZzw==
-X-Google-Smtp-Source: ABdhPJzwcqJ6KzoH1s6JCM7i7hqtm/wv2VNT0LxCOTZuK4dKTRSpry+DXx0j2CMmYHa146COp1uoBw==
-X-Received: by 2002:a63:bf45:: with SMTP id i5mr25148151pgo.161.1636992133191;
-        Mon, 15 Nov 2021 08:02:13 -0800 (PST)
-Received: from localhost.localdomain ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id o2sm16331383pfu.206.2021.11.15.08.02.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Nov 2021 08:02:12 -0800 (PST)
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-To:     davem@davemloft.net
-Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Dmitry Vyukov <dvyukov@google.com>
-Subject: [PATCH v2] tipc: check for null after calling kmemdup
-Date:   Mon, 15 Nov 2021 08:01:43 -0800
-Message-Id: <20211115160143.5099-1-tadeusz.struk@linaro.org>
-X-Mailer: git-send-email 2.33.1
+        id S232111AbhKOQKs convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 15 Nov 2021 11:10:48 -0500
+Received: from relay9-d.mail.gandi.net ([217.70.183.199]:52489 "EHLO
+        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236787AbhKOQKd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 11:10:33 -0500
+X-Greylist: delayed 18334 seconds by postgrey-1.27 at vger.kernel.org; Mon, 15 Nov 2021 11:10:32 EST
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 727CAFF817;
+        Mon, 15 Nov 2021 16:07:28 +0000 (UTC)
+Date:   Mon, 15 Nov 2021 17:03:41 +0100
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v2 3/6] net: ocelot: pre-compute injection frame header
+ content
+Message-ID: <20211115170341.7d48de0d@fixe.home>
+In-Reply-To: <20211115143105.tmjviz7z7ckmlquk@skbuf>
+References: <20211103091943.3878621-1-clement.leger@bootlin.com>
+        <20211103091943.3878621-4-clement.leger@bootlin.com>
+        <20211103123811.im5ua7kirogoltm7@skbuf>
+        <20211103145351.793538c3@fixe.home>
+        <20211115111344.03376026@fixe.home>
+        <20211115060800.44493c2f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20211115150620.057674ae@fixe.home>
+        <20211115143105.tmjviz7z7ckmlquk@skbuf>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-kmemdup can return a null pointer so need to check for it, otherwise
-the null key will be dereferenced later in tipc_crypto_key_xmit as
-can be seen in the trace [1].
+Le Mon, 15 Nov 2021 14:31:06 +0000,
+Vladimir Oltean <vladimir.oltean@nxp.com> a écrit :
 
-Cc: Jon Maloy <jmaloy@redhat.com>
-Cc: Ying Xue <ying.xue@windriver.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org
-Cc: tipc-discussion@lists.sourceforge.net
-Cc: linux-kernel@vger.kernel.org
-Cc: stable@vger.kernel.org # 5.15, 5.14, 5.10
+> On Mon, Nov 15, 2021 at 03:06:20PM +0100, Clément Léger wrote:
+> > Le Mon, 15 Nov 2021 06:08:00 -0800,
+> > Jakub Kicinski <kuba@kernel.org> a écrit :
+> >  
+> > > On Mon, 15 Nov 2021 11:13:44 +0100 Clément Léger wrote:  
+> > > > Test on standard packets with UDP (iperf3 -t 100 -l 1460 -u -b 0 -c *)
+> > > > - With pre-computed header: UDP TX: 	33Mbit/s
+> > > > - Without UDP TX: 			31Mbit/s  
+> > > > -> 6.5% improvement  
+> > > >
+> > > > Test on small packets with UDP (iperf3 -t 100 -l 700 -u -b 0 -c *)
+> > > > - With pre-computed header: UDP TX: 	15.8Mbit/s
+> > > > - Without UDP TX: 			16.4Mbit/s  
+> > > > -> 4.3% improvement  
+> > >
+> > > Something's wrong with these numbers or I'm missing context.
+> > > You say improvement in both cases yet in the latter case the
+> > > new number is lower?  
+> >
+> > You are right Jakub, I swapped the last two results,
+> >
+> > Test on small packets with UDP (iperf3 -t 100 -l 700 -u -b 0 -c *)
+> >  - With pre-computed header: UDP TX: 	16.4Mbit/s
+> >  - Without UDP TX: 			15.8Mbit/s  
+> >  -> 4.3% improvement  
+> 
+> Even in reverse, something still seems wrong with the numbers.
+> My DSPI controller can transfer at a higher data rate than that.
+> Where is the rest of the time spent? Computing checksums?
 
-[1] https://syzkaller.appspot.com/bug?id=bca180abb29567b189efdbdb34cbf7ba851c2a58
+While adding FDMA support, I was surprised by the low performances I
+encountered so I spent some times trying to understand and find where
+the time was spent. First, I ran a iperf in loopback (using lo) and it
+yielded the following results (of course RX/TX runs on the same CPU in
+this case):
 
-Reported-by: Dmitry Vyukov <dvyukov@google.com>
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
----
-Changed in v2:
-- use tipc_aead_free() to free all crytpo tfm instances
-  that might have been allocated before the fail.
----
- net/tipc/crypto.c | 4 ++++
- 1 file changed, 4 insertions(+)
+TCP (iperf3 -c localhost):
+ - RX/TX: 84.0Mbit/s
 
-diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
-index dc60c32bb70d..d293614d5fc6 100644
---- a/net/tipc/crypto.c
-+++ b/net/tipc/crypto.c
-@@ -597,6 +597,10 @@ static int tipc_aead_init(struct tipc_aead **aead, struct tipc_aead_key *ukey,
- 	tmp->cloned = NULL;
- 	tmp->authsize = TIPC_AES_GCM_TAG_SIZE;
- 	tmp->key = kmemdup(ukey, tipc_aead_key_size(ukey), GFP_KERNEL);
-+	if (!tmp->key) {
-+		tipc_aead_free(&tmp->rcu);
-+		return -ENOMEM;
-+	}
- 	memcpy(&tmp->salt, ukey->key + keylen, TIPC_AES_GCM_SALT_SIZE);
- 	atomic_set(&tmp->users, 0);
- 	atomic64_set(&tmp->seqno, 0);
+UDP (iperf3 -u -b 0 -c localhost):
+ - RX/TX: 65.0Mbit/s
+
+So even in localhost mode, the CPU is already really slow and can only
+sustain a really small "throughput". I then tried to check the
+performances using the CPU based injection/extraction, and I obtained
+the following results:
+
+TCP: (iperf3 -u -b 0 -c)
+ - TX: 11.8MBit/s
+ - RX: 21.6Mbit/s
+
+UDP (iperf3 -u -b 0 -c)
+ - TX: 13.4Mbit/s
+ - RX: Not even possible, CPU never succeed to extract a single packet
+
+I then tried to find where was the time spent with ftrace (I kept only
+the relevant functions that consume most of the time), the following
+results were recorded when using iperf3 with CPU based
+injection/extraction.
+
+In TCP TX, a lot of time is spent doing copy from user:
+
+41.71%  iperf3   [kernel.kallsyms]  [k] __raw_copy_to_user
+ 6.65%  iperf3   [kernel.kallsyms]  [k] _raw_spin_unlock_irqrestore
+ 3.23%  iperf3   [kernel.kallsyms]  [k] do_ade
+ 2.10%  iperf3   [kernel.kallsyms]  [k] __ocelot_write_ix
+ 2.10%  iperf3   [kernel.kallsyms]  [k] handle_adel_int
+ ...
+
+In TCP RX, numbers are even worse for the time spent in
+__raw_copy_to_user:
+
+62.95% iperf3   [kernel.kallsyms]  [k] __raw_copy_to_user
+ 1.97% iperf3   [kernel.kallsyms]  [k] _raw_spin_unlock_irqrestore
+ 1.15% iperf3   [kernel.kallsyms]  [k] __copy_page_start
+ 1.07% iperf3   [kernel.kallsyms]  [k] __skb_datagram_iter
+ ...
+
+
+In UDP TX, some time is spent handling locking and unaligned copies
+as well as pushing packets. Unaligned copies are due to the driver
+accessing all directly the bytes of the packets as word whhich might be
+bad when there is misalignement.
+
+17.97%  iperf3   [kernel.kallsyms]  [k] _raw_spin_unlock_irqrestore
+11.94%  iperf3   [kernel.kallsyms]  [k] do_ade
+ 9.07%  iperf3   [kernel.kallsyms]  [k] __ocelot_write_ix
+ 7.74%  iperf3   [kernel.kallsyms]  [k] handle_adel_int
+ 5.78%  iperf3   [kernel.kallsyms]  [k] copy_from_kernel_nofault
+ 4.71%  iperf3   [kernel.kallsyms]  [k] __compute_return_epc_for_insn
+ 2.51%  iperf3   [kernel.kallsyms]  [k] regmap_write
+ 2.31%  iperf3   [kernel.kallsyms]  [k] __compute_return_epc
+ ...
+
+In UDP RX (iperf3 with -b 5M to ensure packets are received), time is
+spent in floating point emulation and other various function.
+
+7.26% iperf3   [kernel.kallsyms]  [k] cop1Emulate
+2.84% iperf3   [kernel.kallsyms]  [k] do_select
+2.08% iperf3   [kernel.kallsyms]  [k] _raw_spin_unlock_irqrestore
+2.06% iperf3   [kernel.kallsyms]  [k] fpu_emulator_cop1Handler
+2.01% iperf3   [kernel.kallsyms]  [k] tcp_poll
+2.00% iperf3   [kernel.kallsyms]  [k] __raw_copy_to_user
+
+
+When using the FDMA, the results are the following:
+
+In TCP TX, copy from user is still present and checksuming takes quite
+some time. 
+
+31.31% iperf3   [kernel.kallsyms]  [k] __raw_copy_to_user
+10.48% iperf3   [kernel.kallsyms]  [k] __csum_partial_copy_to_user
+ 3.73% iperf3   [kernel.kallsyms]  [k] _raw_spin_unlock_irqrestore
+ 2.08% iperf3   [kernel.kallsyms]  [k] tcp_ack
+ 1.68% iperf3   [kernel.kallsyms]  [k] ocelot_fdma_napi_poll
+ 1.63% iperf3   [kernel.kallsyms]  [k] tcp_write_xmit
+ 1.05% iperf3   [kernel.kallsyms]  [k] finish_task_switch
+
+In TCP RX, the majority of time is still taken by __raw_copy_to_user.
+
+63.95%[[m  iperf3   [kernel.kallsyms]  [k] __raw_copy_to_user
+ 1.29%[[m  iperf3   [kernel.kallsyms]  [k] _raw_spin_unlock_irqrestore
+ 1.23%[[m  iperf3   [kernel.kallsyms]  [k] tcp_recvmsg_locked
+ 1.23%[[m  iperf3   [kernel.kallsyms]  [k] __skb_datagram_iter
+ 1.07%[[m  iperf3   [kernel.kallsyms]  [k] vfs_read
+
+In UDP TX, time is spent in softirq entry and in checksuming.
+
+9.01% iperf3   [kernel.kallsyms]  [k] __softirqentry_text_start
+7.07% iperf3   [kernel.kallsyms]  [k] __csum_partial_copy_to_user
+2.28% iperf3   [kernel.kallsyms]  [k] __ip_append_data.isra.0
+2.10% iperf3   [kernel.kallsyms]  [k] __dev_queue_xmit
+2.08% iperf3   [kernel.kallsyms]  [k] siphash_3u32
+2.06% iperf3   [kernel.kallsyms]  [k] udp_sendmsg
+
+And in UDP RX, again, time is spent in floating point emulation and
+cheksuming.
+
+10.33% iperf3   [kernel.kallsyms]  [k] cop1Emulate
+ 7.62% iperf3   [kernel.kallsyms]  [k] csum_partial
+ 3.32% iperf3   [kernel.kallsyms]  [k] do_select
+ 2.69% iperf3   [kernel.kallsyms]  [k] ieee754dp_sub
+ 2.68% iperf3   [kernel.kallsyms]  [k] fpu_emulator_cop1Handler
+ 2.56% iperf3   [kernel.kallsyms]  [k] ieee754dp_add
+ 2.33% iperf3   [kernel.kallsyms]  [k] ieee754dp_div
+
+After all these measurements, the CPU appears to be the bottleneck and
+simply spend a lot of time in various functions. I did not went further
+using perf events since there was no real reason to dig up more in that
+way.
+
 -- 
-2.33.1
-
+Clément Léger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
