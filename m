@@ -2,121 +2,654 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33598450A4C
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 17:56:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 133E7450A67
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 18:01:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231458AbhKOQ7Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 11:59:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33470 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231328AbhKOQ7J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 11:59:09 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31918C061570
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 08:56:12 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id fv9-20020a17090b0e8900b001a6a5ab1392so343088pjb.1
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 08:56:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6CYW2tFTzVdRHssNmv7sHrogTIFxEBRrawEEJJ4nn60=;
-        b=L+yrRi/L/pUQjxiYiTQQcqhrZKmevOMXIohm4/uUkx+NM8chfhxu5CPz7LDNZnv2Bo
-         qmQ7LhDZihTa4kjSQzMJUAU3b7IQJFKSe8K4p6WEqQYGIvnZOnF0xf+g+Kimuq+kf1qW
-         3DXEkfquHzqjQSrIkdqfd7m/0eJkeDr+BM3aQ/nX3SW3URoK13TB3xPB7Ekry3ncDEww
-         GhRewRu8bPdNU+vWi6XDP9hdW2okwN6QOCnoMbpEv3t9pqEmByahyPSPx6rYVJMxDqAw
-         xY57mbDElnmRaPf/kyV1eJ8joyOLiyjRm5kBIuAGvkLPQPfsXQSwVY1IWGG3eGXhu3Jg
-         ltgQ==
+        id S231393AbhKOREZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 12:04:25 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55205 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232281AbhKORDq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 12:03:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1636995650;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cW5g5aKagFne/G1zoQiQ/IlBuxC8PWxj81b/2xSsnGA=;
+        b=M9yxiRKZsZhDK+l4dnHMlqNB7zR+U8w6BxZfJSk/9Z3LFHdYSdInrDi+s2/DG9KMkW/MUj
+        B49t3n2EPlOXZAzbRWAQIeHf9et88gRjJT1RGot9nRtm6V1jUTNj+MQptpxqYbtDRLjcFT
+        II5kaz4XCc+dcGnaBZdLcNfeXZHWZDU=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-460-nmypoqG_MLyUKyjzb07qcg-1; Mon, 15 Nov 2021 12:00:49 -0500
+X-MC-Unique: nmypoqG_MLyUKyjzb07qcg-1
+Received: by mail-ed1-f71.google.com with SMTP id d11-20020a50cd4b000000b003da63711a8aso14529340edj.20
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 09:00:48 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6CYW2tFTzVdRHssNmv7sHrogTIFxEBRrawEEJJ4nn60=;
-        b=6Gf5jyZ4H0/nU+UMukTIKkx01sBiplPytof2gTMGOBcBFUs5EkmlYcU6fjF/b+rKae
-         wH6VGg1uovopw34v6Tr6CJNeSZYxqbTw1K+nSri5HU+/w/sI2cT88yRsCxv96zF5EvYP
-         73mhOOVIZ8qxmmelqUDSRz8cfbXgG6eF4b+mwtrW/wbrkSiL9c6ks37aYwCXhpratHWV
-         yyy7W+WvcaXe1ZbhzDCARMHV4rRw61KABtGz32ZeGsF83Kdhpi6vnlbTEb4s/iDPsMQJ
-         yuZzr0p0RY5EFbj2xr0OMbGdo9mxT876KkZZAyEHyHv5G/HBaLMweJy6ZO14yzc0Csyd
-         oCXg==
-X-Gm-Message-State: AOAM531x/5ewX3/UVKL+X1Jf6Efa4PAqQprEMiGjXreOKbi8jcIQoE3v
-        tiLR8XAK5H5JDIErSVZRCIE=
-X-Google-Smtp-Source: ABdhPJyKg/cQlSkHa+m4u3XySq9zfrVObIrQSbcr2qYE3V9F9yCPCV1AXjk0A76iOkw/X4FwSYDFdA==
-X-Received: by 2002:a17:902:eec5:b0:143:982a:85c with SMTP id h5-20020a170902eec500b00143982a085cmr36915447plb.66.1636995371705;
-        Mon, 15 Nov 2021 08:56:11 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id f16sm12697306pgi.28.2021.11.15.08.56.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Nov 2021 08:56:11 -0800 (PST)
-Subject: Re: [RFC net-next] net: guard drivers against shared skbs
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com, hawk@kernel.org,
-        syzbot+4c63f36709a642f801c5@syzkaller.appspotmail.com
-References: <20211115163205.1116673-1-kuba@kernel.org>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <88391a1a-b8e4-96ca-7d80-df5c6674796d@gmail.com>
-Date:   Mon, 15 Nov 2021 08:56:10 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=cW5g5aKagFne/G1zoQiQ/IlBuxC8PWxj81b/2xSsnGA=;
+        b=wG6u3y6SV2ggfA3FONeETmmbeEYcyrAaH1Qrq+puDx5FOUTOWQP0gXq4Y8njCZVmk5
+         RNZjVXjce/OEdsVJJd5mTZZtpSSJ5FrOy/X9IkeAAvm1pUnLibFuXdHBOoNuN7dixC1J
+         tOPhE/ZYbffcxVw+4CdM0OhzpzfjTdhKCrsI755pjNQIB4zcXmaPLB7+CIv53Izn9+2B
+         c9WrcLB9vVS484m1xXnvwyGcY+G47YEEE3yWw4c71l6dfu5sNs+2xLTf10kcf+f5GIz1
+         SDllttZ2ZeLAG/zQcb0MjFsLyWcsO6SH2fvuPlKuSymnqQjL2AHzU57tIP/9xz720MdE
+         yHHg==
+X-Gm-Message-State: AOAM531CkTnrYqxCBlo9LTLXj9vyyLg3JeC0x4ZMsRPfC91OndRr4i9J
+        xRiNmtftfUyLwnDRkhsadEfcQsHvuj5LzggGpl8S8Oapn/tyM+wdkbp/kozZqthW4XyXCDxD7G6
+        QNxJolOqWJ4Ey/yLS
+X-Received: by 2002:a05:6402:2930:: with SMTP id ee48mr180557edb.295.1636995646321;
+        Mon, 15 Nov 2021 09:00:46 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzMVIJavaf4gkAWe6IN+a6weW9PtLJUKb1ISowQrePYSqAlho9vOKV2oQiFDGjYHBQudfZ+WQ==
+X-Received: by 2002:a05:6402:2930:: with SMTP id ee48mr180487edb.295.1636995645919;
+        Mon, 15 Nov 2021 09:00:45 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-229-135.dyn.eolo.it. [146.241.229.135])
+        by smtp.gmail.com with ESMTPSA id e7sm8070952edk.3.2021.11.15.09.00.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Nov 2021 09:00:45 -0800 (PST)
+Message-ID: <1b9bf5f4327699c74f93c297433012400769a60f.camel@redhat.com>
+Subject: Re: [RFC PATCH 2/2] bpf: let bpf_warn_invalid_xdp_action() report
+ more info
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org
+Date:   Mon, 15 Nov 2021 18:00:44 +0100
+In-Reply-To: <8735nxo08o.fsf@toke.dk>
+References: <cover.1636987322.git.pabeni@redhat.com>
+         <c48e1392bdb0937fd33d3524e1c955a1dae66f49.1636987322.git.pabeni@redhat.com>
+         <8735nxo08o.fsf@toke.dk>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.1 (3.42.1-1.fc35) 
 MIME-Version: 1.0
-In-Reply-To: <20211115163205.1116673-1-kuba@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 11/15/21 8:32 AM, Jakub Kicinski wrote:
-> Commit d8873315065f ("net: add IFF_SKB_TX_SHARED flag to priv_flags")
-> introduced IFF_SKB_TX_SHARED to protect drivers which are not ready
-> for getting shared skbs from pktgen sending such frames.
+On Mon, 2021-11-15 at 17:24 +0100, Toke Høiland-Jørgensen wrote:
+> Paolo Abeni <pabeni@redhat.com> writes:
 > 
-> Some drivers dutifully clear the flag but most don't, even though
-> they modify the skb or call skb helpers which expect private skbs.
+> > In non trivial scenarios, the single action id is not sufficient
+> > to identify the program causing the warning. Let's additionally
+> > include the program id, the attach type and the relevant device
+> > name.
+> > 
+> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > ---
+> >  drivers/net/ethernet/amazon/ena/ena_netdev.c           | 2 +-
+> >  drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c          | 2 +-
+> >  drivers/net/ethernet/cavium/thunder/nicvf_main.c       | 2 +-
+> >  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c         | 2 +-
+> >  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c       | 2 +-
+> >  drivers/net/ethernet/freescale/enetc/enetc.c           | 2 +-
+> >  drivers/net/ethernet/intel/i40e/i40e_txrx.c            | 2 +-
+> >  drivers/net/ethernet/intel/i40e/i40e_xsk.c             | 2 +-
+> >  drivers/net/ethernet/intel/ice/ice_txrx.c              | 2 +-
+> >  drivers/net/ethernet/intel/ice/ice_xsk.c               | 2 +-
+> >  drivers/net/ethernet/intel/igb/igb_main.c              | 2 +-
+> >  drivers/net/ethernet/intel/igc/igc_main.c              | 2 +-
+> >  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c          | 2 +-
+> >  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c           | 2 +-
+> >  drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c      | 2 +-
+> >  drivers/net/ethernet/marvell/mvneta.c                  | 2 +-
+> >  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c        | 2 +-
+> >  drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c | 2 +-
+> >  drivers/net/ethernet/mellanox/mlx4/en_rx.c             | 2 +-
+> >  drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c       | 2 +-
+> >  drivers/net/ethernet/netronome/nfp/nfp_net_common.c    | 2 +-
+> >  drivers/net/ethernet/qlogic/qede/qede_fp.c             | 2 +-
+> >  drivers/net/ethernet/sfc/rx.c                          | 2 +-
+> >  drivers/net/ethernet/socionext/netsec.c                | 2 +-
+> >  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c      | 2 +-
+> >  drivers/net/ethernet/ti/cpsw_priv.c                    | 2 +-
+> >  drivers/net/hyperv/netvsc_bpf.c                        | 2 +-
+> >  drivers/net/tun.c                                      | 2 +-
+> >  drivers/net/veth.c                                     | 4 ++--
+> >  drivers/net/virtio_net.c                               | 4 ++--
+> >  drivers/net/xen-netfront.c                             | 2 +-
+> >  include/linux/filter.h                                 | 2 +-
+> >  kernel/bpf/cpumap.c                                    | 4 ++--
+> >  kernel/bpf/devmap.c                                    | 4 ++--
+> >  net/core/dev.c                                         | 2 +-
+> >  net/core/filter.c                                      | 6 +++---
+> >  36 files changed, 42 insertions(+), 42 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> > index 7d5d885d85d5..3b46f1df5609 100644
+> > --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> > +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> > @@ -434,7 +434,7 @@ static int ena_xdp_execute(struct ena_ring *rx_ring, struct xdp_buff *xdp)
+> >  		xdp_stat = &rx_ring->rx_stats.xdp_pass;
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(verdict);
+> > +		bpf_warn_invalid_xdp_action(rx_ring->netdev, xdp_prog, verdict);
+> >  		xdp_stat = &rx_ring->rx_stats.xdp_invalid;
+> >  	}
+> >  
+> > diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+> > index c8083df5e0ab..52fad0fdeacf 100644
+> > --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+> > +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+> > @@ -195,7 +195,7 @@ bool bnxt_rx_xdp(struct bnxt *bp, struct bnxt_rx_ring_info *rxr, u16 cons,
+> >  		*event |= BNXT_REDIRECT_EVENT;
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(bp->dev, xdp_prog, act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  		trace_xdp_exception(bp->dev, xdp_prog, act);
+> > diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_main.c b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
+> > index bb45d5df2856..30450efccad7 100644
+> > --- a/drivers/net/ethernet/cavium/thunder/nicvf_main.c
+> > +++ b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
+> > @@ -590,7 +590,7 @@ static inline bool nicvf_xdp_rx(struct nicvf *nic, struct bpf_prog *prog,
+> >  		nicvf_xdp_sq_append_pkt(nic, sq, (u64)xdp.data, dma_addr, len);
+> >  		return true;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(action);
+> > +		bpf_warn_invalid_xdp_action(nic->netdev, prog, action);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  		trace_xdp_exception(nic->netdev, prog, action);
+> > diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> > index 6b2927d863e2..39fafb7d43b2 100644
+> > --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> > +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> > @@ -2623,7 +2623,7 @@ static u32 dpaa_run_xdp(struct dpaa_priv *priv, struct qm_fd *fd, void *vaddr,
+> >  		}
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(xdp_act);
+> > +		bpf_warn_invalid_xdp_action(priv->net_dev, xdp_prog, xdp_act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  		trace_xdp_exception(priv->net_dev, xdp_prog, xdp_act);
+> > diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> > index 714e961e7a77..f113469bd479 100644
+> > --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> > +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> > @@ -374,7 +374,7 @@ static u32 dpaa2_eth_run_xdp(struct dpaa2_eth_priv *priv,
+> >  		dpaa2_eth_xdp_enqueue(priv, ch, fd, vaddr, rx_fq->flowid);
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(xdp_act);
+> > +		bpf_warn_invalid_xdp_action(priv->net_dev, xdp_prog, xdp_act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  		trace_xdp_exception(priv->net_dev, xdp_prog, xdp_act);
+> > diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
+> > index 504e12554079..eacb41f86bdb 100644
+> > --- a/drivers/net/ethernet/freescale/enetc/enetc.c
+> > +++ b/drivers/net/ethernet/freescale/enetc/enetc.c
+> > @@ -1547,7 +1547,7 @@ static int enetc_clean_rx_ring_xdp(struct enetc_bdr *rx_ring,
+> >  
+> >  		switch (xdp_act) {
+> >  		default:
+> > -			bpf_warn_invalid_xdp_action(xdp_act);
+> > +			bpf_warn_invalid_xdp_action(rx_ring->ndev, prog, xdp_act);
+> >  			fallthrough;
+> >  		case XDP_ABORTED:
+> >  			trace_xdp_exception(rx_ring->ndev, prog, xdp_act);
+> > diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> > index 10a83e5385c7..b399ca649f09 100644
+> > --- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> > +++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> > @@ -2322,7 +2322,7 @@ static int i40e_run_xdp(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
+> >  		result = I40E_XDP_REDIR;
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(rx_ring->netdev, xdp_prog, act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  out_failure:
+> > diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> > index ea06e957393e..945b1bb9c6f4 100644
+> > --- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> > +++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> > @@ -176,7 +176,7 @@ static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
+> >  			goto out_failure;
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(rx_ring->netdev, xdp_prog, act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  out_failure:
+> > diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
+> > index bc3ba19dc88f..56940bb908bc 100644
+> > --- a/drivers/net/ethernet/intel/ice/ice_txrx.c
+> > +++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
+> > @@ -561,7 +561,7 @@ ice_run_xdp(struct ice_rx_ring *rx_ring, struct xdp_buff *xdp,
+> >  			goto out_failure;
+> >  		return ICE_XDP_REDIR;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(rx_ring->netdev, xdp_prog, act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  out_failure:
+> > diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
+> > index ff55cb415b11..eb68a5824e9a 100644
+> > --- a/drivers/net/ethernet/intel/ice/ice_xsk.c
+> > +++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
+> > @@ -482,7 +482,7 @@ ice_run_xdp_zc(struct ice_rx_ring *rx_ring, struct xdp_buff *xdp,
+> >  			goto out_failure;
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(rx_ring->netdev, xdp_prog, act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  out_failure:
+> > diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+> > index 836be0d3b291..bdce483d4c0e 100644
+> > --- a/drivers/net/ethernet/intel/igb/igb_main.c
+> > +++ b/drivers/net/ethernet/intel/igb/igb_main.c
+> > @@ -8422,7 +8422,7 @@ static struct sk_buff *igb_run_xdp(struct igb_adapter *adapter,
+> >  		result = IGB_XDP_REDIR;
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(adapter->netdev, xdp_prog, act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  out_failure:
+> > diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+> > index 8e448288ee26..4ea212ddcc9b 100644
+> > --- a/drivers/net/ethernet/intel/igc/igc_main.c
+> > +++ b/drivers/net/ethernet/intel/igc/igc_main.c
+> > @@ -2231,7 +2231,7 @@ static int __igc_xdp_run_prog(struct igc_adapter *adapter,
+> >  		return IGC_XDP_REDIRECT;
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(adapter->netdev, prog, act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  out_failure:
+> > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> > index 0f9f022260d7..265bc52aacf8 100644
+> > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> > @@ -2235,7 +2235,7 @@ static struct sk_buff *ixgbe_run_xdp(struct ixgbe_adapter *adapter,
+> >  		result = IXGBE_XDP_REDIR;
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(rx_ring->netdev, xdp_prog, act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  out_failure:
+> > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+> > index db2bc58dfcfd..b3fd8e5cd85b 100644
+> > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+> > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+> > @@ -131,7 +131,7 @@ static int ixgbe_run_xdp_zc(struct ixgbe_adapter *adapter,
+> >  			goto out_failure;
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(rx_ring->netdev, xdp_prog, act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  out_failure:
+> > diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+> > index d81811ab4ec4..757fe0dace88 100644
+> > --- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+> > +++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+> > @@ -1070,7 +1070,7 @@ static struct sk_buff *ixgbevf_run_xdp(struct ixgbevf_adapter *adapter,
+> >  			goto out_failure;
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(rx_ring->netdev, xdp_prog, act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  out_failure:
+> > diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+> > index 5a7bdca22a63..c457a765a828 100644
+> > --- a/drivers/net/ethernet/marvell/mvneta.c
+> > +++ b/drivers/net/ethernet/marvell/mvneta.c
+> > @@ -2212,7 +2212,7 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+> >  			mvneta_xdp_put_buff(pp, rxq, xdp, sinfo, sync);
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(pp->dev, prog, act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  		trace_xdp_exception(pp->dev, prog, act);
+> > diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > index 2b18d89d9756..e7b7200af5c3 100644
+> > --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > @@ -3820,7 +3820,7 @@ mvpp2_run_xdp(struct mvpp2_port *port, struct bpf_prog *prog,
+> >  		}
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(port->dev, prog, act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  		trace_xdp_exception(port->dev, prog, act);
+> > diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+> > index 0cc6353254bf..7c4068c5d1ac 100644
+> > --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+> > +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+> > @@ -1198,7 +1198,7 @@ static bool otx2_xdp_rcv_pkt_handler(struct otx2_nic *pfvf,
+> >  		put_page(page);
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(pfvf->netdev, prog, act);
+> >  		break;
+> >  	case XDP_ABORTED:
+> >  		trace_xdp_exception(pfvf->netdev, prog, act);
+> > diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+> > index 650e6a1844ae..8cfc649f226b 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+> > @@ -812,7 +812,7 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
+> >  				trace_xdp_exception(dev, xdp_prog, act);
+> >  				goto xdp_drop_no_cnt; /* Drop on xmit failure */
+> >  			default:
+> > -				bpf_warn_invalid_xdp_action(act);
+> > +				bpf_warn_invalid_xdp_action(dev, xdp_prog, act);
+> >  				fallthrough;
+> >  			case XDP_ABORTED:
+> >  				trace_xdp_exception(dev, xdp_prog, act);
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+> > index 2f0df5cc1a2d..338d65e2c9ce 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+> > @@ -151,7 +151,7 @@ bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct mlx5e_dma_info *di,
+> >  		rq->stats->xdp_redirect++;
+> >  		return true;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(rq->netdev, prog, act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  xdp_abort:
+> > diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+> > index 850bfdf83d0a..56ef3d64e30d 100644
+> > --- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+> > +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+> > @@ -1944,7 +1944,7 @@ static int nfp_net_rx(struct nfp_net_rx_ring *rx_ring, int budget)
+> >  							    xdp_prog, act);
+> >  				continue;
+> >  			default:
+> > -				bpf_warn_invalid_xdp_action(act);
+> > +				bpf_warn_invalid_xdp_action(dp->netdev, xdp_prog, act);
+> >  				fallthrough;
+> >  			case XDP_ABORTED:
+> >  				trace_xdp_exception(dp->netdev, xdp_prog, act);
+> > diff --git a/drivers/net/ethernet/qlogic/qede/qede_fp.c b/drivers/net/ethernet/qlogic/qede/qede_fp.c
+> > index 065e9004598e..32c6e14814bb 100644
+> > --- a/drivers/net/ethernet/qlogic/qede/qede_fp.c
+> > +++ b/drivers/net/ethernet/qlogic/qede/qede_fp.c
+> > @@ -1152,7 +1152,7 @@ static bool qede_rx_xdp(struct qede_dev *edev,
+> >  		qede_rx_bd_ring_consume(rxq);
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(edev->ndev, prog, act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  		trace_xdp_exception(edev->ndev, prog, act);
+> > diff --git a/drivers/net/ethernet/sfc/rx.c b/drivers/net/ethernet/sfc/rx.c
+> > index 606750938b89..2375cef577e4 100644
+> > --- a/drivers/net/ethernet/sfc/rx.c
+> > +++ b/drivers/net/ethernet/sfc/rx.c
+> > @@ -338,7 +338,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
+> >  		break;
+> >  
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(xdp_act);
+> > +		bpf_warn_invalid_xdp_action(efx->net_dev, xdp_prog, xdp_act);
+> >  		efx_free_rx_buffers(rx_queue, rx_buf, 1);
+> >  		channel->n_rx_xdp_bad_drops++;
+> >  		trace_xdp_exception(efx->net_dev, xdp_prog, xdp_act);
+> > diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+> > index de7d8bf2c226..25dcd8eda5fc 100644
+> > --- a/drivers/net/ethernet/socionext/netsec.c
+> > +++ b/drivers/net/ethernet/socionext/netsec.c
+> > @@ -933,7 +933,7 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
+> >  		}
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(priv->ndev, prog, act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  		trace_xdp_exception(priv->ndev, prog, act);
+> > diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> > index d3f350c25b9b..4cb34001c9ac 100644
+> > --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> > +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> > @@ -4690,7 +4690,7 @@ static int __stmmac_xdp_run_prog(struct stmmac_priv *priv,
+> >  			res = STMMAC_XDP_REDIRECT;
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(priv->dev, prog, act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  		trace_xdp_exception(priv->dev, prog, act);
+> > diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
+> > index ecc2a6b7e28f..e9fdf60ba1a8 100644
+> > --- a/drivers/net/ethernet/ti/cpsw_priv.c
+> > +++ b/drivers/net/ethernet/ti/cpsw_priv.c
+> > @@ -1360,7 +1360,7 @@ int cpsw_run_xdp(struct cpsw_priv *priv, int ch, struct xdp_buff *xdp,
+> >  		xdp_do_flush_map();
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(ndev, prog, act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  		trace_xdp_exception(ndev, prog, act);
+> > diff --git a/drivers/net/hyperv/netvsc_bpf.c b/drivers/net/hyperv/netvsc_bpf.c
+> > index aa877da113f8..7856905414eb 100644
+> > --- a/drivers/net/hyperv/netvsc_bpf.c
+> > +++ b/drivers/net/hyperv/netvsc_bpf.c
+> > @@ -68,7 +68,7 @@ u32 netvsc_run_xdp(struct net_device *ndev, struct netvsc_channel *nvchan,
+> >  		break;
+> >  
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(ndev, prog, act);
+> >  	}
+> >  
+> >  out:
+> > diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> > index fecc9a1d293a..0d47d34ba4e7 100644
+> > --- a/drivers/net/tun.c
+> > +++ b/drivers/net/tun.c
+> > @@ -1546,7 +1546,7 @@ static int tun_xdp_act(struct tun_struct *tun, struct bpf_prog *xdp_prog,
+> >  	case XDP_PASS:
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(tun->dev, xdp_prog, act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  		trace_xdp_exception(tun->dev, xdp_prog, act);
+> > diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+> > index 50eb43e5bf45..f64dbd8b6403 100644
+> > --- a/drivers/net/veth.c
+> > +++ b/drivers/net/veth.c
+> > @@ -651,7 +651,7 @@ static struct xdp_frame *veth_xdp_rcv_one(struct veth_rq *rq,
+> >  			rcu_read_unlock();
+> >  			goto xdp_xmit;
+> >  		default:
+> > -			bpf_warn_invalid_xdp_action(act);
+> > +			bpf_warn_invalid_xdp_action(rq->dev, xdp_prog, act);
+> >  			fallthrough;
+> >  		case XDP_ABORTED:
+> >  			trace_xdp_exception(rq->dev, xdp_prog, act);
+> > @@ -801,7 +801,7 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
+> >  		rcu_read_unlock();
+> >  		goto xdp_xmit;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(rq->dev, xdp_prog, act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  		trace_xdp_exception(rq->dev, xdp_prog, act);
+> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > index 1771d6e5224f..105cd413df52 100644
+> > --- a/drivers/net/virtio_net.c
+> > +++ b/drivers/net/virtio_net.c
+> > @@ -812,7 +812,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
+> >  			rcu_read_unlock();
+> >  			goto xdp_xmit;
+> >  		default:
+> > -			bpf_warn_invalid_xdp_action(act);
+> > +			bpf_warn_invalid_xdp_action(vi->dev, xdp_prog, act);
+> >  			fallthrough;
+> >  		case XDP_ABORTED:
+> >  			trace_xdp_exception(vi->dev, xdp_prog, act);
+> > @@ -1025,7 +1025,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+> >  			rcu_read_unlock();
+> >  			goto xdp_xmit;
+> >  		default:
+> > -			bpf_warn_invalid_xdp_action(act);
+> > +			bpf_warn_invalid_xdp_action(vi->dev, xdp_prog, act);
+> >  			fallthrough;
+> >  		case XDP_ABORTED:
+> >  			trace_xdp_exception(vi->dev, xdp_prog, act);
+> > diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
+> > index 911f43986a8c..7b7eb617051a 100644
+> > --- a/drivers/net/xen-netfront.c
+> > +++ b/drivers/net/xen-netfront.c
+> > @@ -930,7 +930,7 @@ static u32 xennet_run_xdp(struct netfront_queue *queue, struct page *pdata,
+> >  		break;
+> >  
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(queue->info->netdev, prog, act);
+> >  	}
+> >  
+> >  	return act;
+> > diff --git a/include/linux/filter.h b/include/linux/filter.h
+> > index 24b7ed2677af..c21d14fe0156 100644
+> > --- a/include/linux/filter.h
+> > +++ b/include/linux/filter.h
+> > @@ -1030,7 +1030,7 @@ void xdp_do_flush(void);
+> >   */
+> >  #define xdp_do_flush_map xdp_do_flush
+> >  
+> > -void bpf_warn_invalid_xdp_action(u32 act);
+> > +void bpf_warn_invalid_xdp_action(struct net_device *dev, struct bpf_prog *prog, u32 act);
+> >  
+> >  #ifdef CONFIG_INET
+> >  struct sock *bpf_run_sk_reuseport(struct sock_reuseport *reuse, struct sock *sk,
+> > diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
+> > index 585b2b77ccc4..f7359bcb8fa3 100644
+> > --- a/kernel/bpf/cpumap.c
+> > +++ b/kernel/bpf/cpumap.c
+> > @@ -195,7 +195,7 @@ static void cpu_map_bpf_prog_run_skb(struct bpf_cpu_map_entry *rcpu,
+> >  			}
+> >  			return;
+> >  		default:
+> > -			bpf_warn_invalid_xdp_action(act);
+> > +			bpf_warn_invalid_xdp_action(skb->dev,
+> >  rcpu->prog, act);
 > 
-> syzbot has also discovered more sources of shared skbs than just
-> pktgen (e.g. llc).
+> I'm not sure if including the device from the map run points is the
+> right thing to do: the error message refers to "driver unsupported"
+> actions which is not the case for these instances. So I think it would
+> make more sense to not include the device for these, and adjust the
+> error message correspondingly.
 > 
-> I think defaulting to opt-in is doing more harm than good, those
-> who care about fast pktgen should inspect their drivers and opt-in.
-> It's far too risky to enable this flag in ether_setup().
+> >  			fallthrough;
+> >  		case XDP_ABORTED:
+> >  			trace_xdp_exception(skb->dev, rcpu->prog, act);
+> > @@ -254,7 +254,7 @@ static int cpu_map_bpf_prog_run_xdp(struct bpf_cpu_map_entry *rcpu,
+> >  			}
+> >  			break;
+> >  		default:
+> > -			bpf_warn_invalid_xdp_action(act);
+> > +			bpf_warn_invalid_xdp_action(xdpf->dev_rx, rcpu->prog, act);
+> >  			fallthrough;
+> >  		case XDP_DROP:
+> >  			xdp_return_frame(xdpf);
+> > diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+> > index f02d04540c0c..79bcf2169881 100644
+> > --- a/kernel/bpf/devmap.c
+> > +++ b/kernel/bpf/devmap.c
+> > @@ -348,7 +348,7 @@ static int dev_map_bpf_prog_run(struct bpf_prog *xdp_prog,
+> >  				frames[nframes++] = xdpf;
+> >  			break;
+> >  		default:
+> > -			bpf_warn_invalid_xdp_action(act);
+> > +			bpf_warn_invalid_xdp_action(dev, xdp_prog, act);
+> >  			fallthrough;
+> >  		case XDP_ABORTED:
+> >  			trace_xdp_exception(dev, xdp_prog, act);
+> > @@ -507,7 +507,7 @@ static u32 dev_map_bpf_prog_run_skb(struct sk_buff *skb, struct bpf_dtab_netdev
+> >  		__skb_push(skb, skb->mac_len);
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(dst->dev, dst->xdp_prog, act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  		trace_xdp_exception(dst->dev, dst->xdp_prog, act);
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index 15ac064b5562..cf2691d17dd2 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -4824,7 +4824,7 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+> >  	case XDP_PASS:
+> >  		break;
+> >  	default:
+> > -		bpf_warn_invalid_xdp_action(act);
+> > +		bpf_warn_invalid_xdp_action(skb->dev, xdp_prog, act);
+> >  		fallthrough;
+> >  	case XDP_ABORTED:
+> >  		trace_xdp_exception(skb->dev, xdp_prog, act);
+> > diff --git a/net/core/filter.c b/net/core/filter.c
+> > index 3ba584bb23f8..348e392a337f 100644
+> > --- a/net/core/filter.c
+> > +++ b/net/core/filter.c
+> > @@ -8179,13 +8179,13 @@ static bool xdp_is_valid_access(int off, int size,
+> >  	return __is_valid_xdp_access(off, size);
+> >  }
+> >  
+> > -void bpf_warn_invalid_xdp_action(u32 act)
+> > +void bpf_warn_invalid_xdp_action(struct net_device *dev, struct bpf_prog *prog, u32 act)
+> >  {
+> >  	const u32 act_max = XDP_REDIRECT;
+> >  
+> > -	pr_warn_once("%s XDP return value %u, expect packet loss!\n",
+> > +	pr_warn_once("%s XDP return value %u on prog %d dev %s attach type %d, expect packet loss!\n",
+> >  		     act > act_max ? "Illegal" : "Driver unsupported",
+> > -		     act);
+> > +		     act, prog->aux->id, dev->name, prog->expected_attach_type);
 > 
-> Reported-by: syzbot+4c63f36709a642f801c5@syzkaller.appspotmail.com
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  drivers/net/dummy.c | 1 +
->  net/core/dev.c      | 4 ++++
->  net/ethernet/eth.c  | 1 -
->  3 files changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/dummy.c b/drivers/net/dummy.c
-> index f82ad7419508..530eaaee2d25 100644
-> --- a/drivers/net/dummy.c
-> +++ b/drivers/net/dummy.c
-> @@ -123,6 +123,7 @@ static void dummy_setup(struct net_device *dev)
->  	dev->flags |= IFF_NOARP;
->  	dev->flags &= ~IFF_MULTICAST;
->  	dev->priv_flags |= IFF_LIVE_ADDR_CHANGE | IFF_NO_QUEUE;
-> +	dev->priv_flags |= IFF_TX_SKB_SHARING;
->  	dev->features	|= NETIF_F_SG | NETIF_F_FRAGLIST;
->  	dev->features	|= NETIF_F_GSO_SOFTWARE;
->  	dev->features	|= NETIF_F_HW_CSUM | NETIF_F_HIGHDMA | NETIF_F_LLTX;
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 15ac064b5562..476a826bb4f0 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -3661,6 +3661,10 @@ static struct sk_buff *validate_xmit_skb(struct sk_buff *skb, struct net_device
->  	if (unlikely(!skb))
->  		goto out_null;
->  
-> +	if (unlikely(skb_shared(skb)) &&
-> +	    !(dev->priv_flags & IFF_TX_SKB_SHARING))
-> +		goto out_kfree_skb;
+> This will only ever trigger once per reboot even if the message differs,
+> right? Which makes it less useful as a debugging aid; so I'm not sure if
+> it's really worth it with this intrusive change unless we also do
+> something to add a proper debugging aid (like a tracepoint)...
 
+Yes, the idea would be to add a tracepoint there, if there is general
+agreement about this change.
 
-So this will break llc, right ?
+I think this patch is needed because the WARN_ONCE splat gives
+implicitly information about the related driver and attach type.
+Replacing with a simple printk we lose them.
 
-I am sad we are adding so much tests in fast path.
+Cheers,
+
+Paolo
+
