@@ -2,68 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 812C144FFE2
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 09:15:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D03C44FFDF
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 09:15:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235183AbhKOIS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 03:18:27 -0500
-Received: from smtpbguseast3.qq.com ([54.243.244.52]:35593 "EHLO
-        smtpbguseast3.qq.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230028AbhKOISM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 03:18:12 -0500
-X-QQ-mid: bizesmtp41t1636964092tsmkw1nx
-Received: from localhost.localdomain (unknown [113.57.152.160])
-        by esmtp6.qq.com (ESMTP) with 
-        id ; Mon, 15 Nov 2021 16:14:51 +0800 (CST)
-X-QQ-SSF: 01400000002000B0B000B00B0000000
-X-QQ-FEAT: z8a0vINfhrtNSltTRFQVi7zD2KGLsink0a6FYFTjNKtJPhJu3ZofsDF7kCNpW
-        bsShleOKT486OHYy6j5gJrLiHYjxPGvqPqQkocHkAII3cQQX87df/+l8hQgeJiQCH0H8JH8
-        zGRUDW1WpFV1ePIK5Kqs/CYPfwxyI84fBflP38HyKmU56ityOw0aiE/Tem5JI+k+REpI7yU
-        OqrQMj+EICvGbB8qc+BEAz4EDS5nRhQsN/q0+0zj2+yI5rYrnNs/mOivX4EywtRi6X6tw/7
-        l314oCAz4LXYJwTFR18POYt76WaOAb6moz12CWsPAZnNiMGGMDKwoJw9xYSAjR6VszpvzMi
-        5mtmSo/2MItJDu1R0Q=
-X-QQ-GoodBg: 2
-From:   liuguoqiang <liuguoqiang@uniontech.com>
-To:     davem@davemloft.net
-Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        liuguoqiang <liuguoqiang@uniontech.com>
-Subject: [PATCH] net: return correct error code
-Date:   Mon, 15 Nov 2021 16:14:48 +0800
-Message-Id: <20211115081448.18564-1-liuguoqiang@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        id S236443AbhKOISZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 03:18:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54442 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229694AbhKOISI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 03:18:08 -0500
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A2B4C061746;
+        Mon, 15 Nov 2021 00:15:10 -0800 (PST)
+Received: by mail-lj1-x22c.google.com with SMTP id e7so19144045ljq.12;
+        Mon, 15 Nov 2021 00:15:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=vjZtW2yOA4ipiduDRxx2P8rLLSDU/9rSfz8tUGlqKdo=;
+        b=ODeM+eDuFwz+njRiCpqbRTdsL13vUAE3/GTm3khgg6Y5cmejzpF68G2QLf6/Q6dQYQ
+         y2Gr7HuH3UjcrRy++bBkmjuAIidGVXCDw03NO9YIfMRHnhz6o8yNV79xFr1JZqOrCgmL
+         oGtK/rmwpU8FAxjhNrd0JT1Z8fM0S9yRsg7lVm2PhOaOHHD3jQ5tsGwtubH/W70INg+P
+         UVPGBpYxdaGEYN7XG1rBI+QmH6iYn+ZATQRfeHzC8v1tIrrUE54/1DyjH202IuFqPOJ5
+         b8Vd/GDHdd1q/OM0lV8ibkainzL2hstoX9J1CXlykJbGCVKzZ6LsSwYe2qH1z1FiDMA7
+         7lbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=vjZtW2yOA4ipiduDRxx2P8rLLSDU/9rSfz8tUGlqKdo=;
+        b=u1tVjHsC4HW1tDzWhqg9nJG6DroJ25bpa/OnyHaqEsLLurd0LPa3FU8oueQGXDQzLP
+         MBHRxSkflCx+7P8bWzfHz7itUgBU4cv7AZqq/dxhl+zDo9E+xHs/lo+hQo7wtH/eoF3h
+         O/syIv0v1Tav5MGpRAMLn0QQItxNImBBPZr1zjb9/prokV+Arm0GoHHtpS+xlnbLrGni
+         fSJ5e3/Vgi8l14C7e+0oxqr8h+fVkNylb6HCynH6kXrA9p82CDZvmd+5Lzp/NRqgTrc6
+         U2Dbt7JA2KkINoHG54Qf4on0qWy0nUozwOEUFLgBOvGg+roA/naPo2c4HgkRFQNXiydH
+         9G5w==
+X-Gm-Message-State: AOAM530rrT2KFV7xKnDDztl+dPSu8pNsdpdIGDHHChOZR8WFwWc0ou3H
+        R56Px6tbv7Wzfs/OnN1Vl6nypWsO/88=
+X-Google-Smtp-Source: ABdhPJzMME3J70IDo9VX+mChVcZPS1XKxbNyKJOdMlu12dcqBLC05aeTVi+arQIxcWROqbMP+pQGFQ==
+X-Received: by 2002:a05:651c:2102:: with SMTP id a2mr37611576ljq.112.1636964108672;
+        Mon, 15 Nov 2021 00:15:08 -0800 (PST)
+Received: from [192.168.1.11] ([94.103.224.112])
+        by smtp.gmail.com with ESMTPSA id z41sm1496917lfu.100.2021.11.15.00.15.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Nov 2021 00:15:08 -0800 (PST)
+Message-ID: <7a98b159-f9bf-c0dd-f244-aec6c9a7dcaa@gmail.com>
+Date:   Mon, 15 Nov 2021 11:15:07 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign7
-X-QQ-Bgrelay: 1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v2] can: etas_es58x: fix error handling
+Content-Language: en-US
+To:     Johan Hovold <johan@kernel.org>
+Cc:     mailhol.vincent@wanadoo.fr, wg@grandegger.com, mkl@pengutronix.de,
+        davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <CAMZ6Rq+orfUuUCCgeWyGc7P0vp3t-yjf_g9H=Jhk43f1zXGfDQ@mail.gmail.com>
+ <20211115075124.17713-1-paskripkin@gmail.com>
+ <YZIWT9ATzN611n43@hovoldconsulting.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <YZIWT9ATzN611n43@hovoldconsulting.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When kmemdup called failed and register_net_sysctl return NULL, should
-return ENOMEM instead of ENOBUFS
+On 11/15/21 11:11, Johan Hovold wrote:
+> Just a drive-by comment:
+> 
+> Are you sure about this move of the netdev[channel_idx] initialisation?
+> What happens if the registered can device is opened before you
+> initialise the pointer? NULL-deref in es58x_send_msg()?
+> 
+> You generally want the driver data fully initialised before you register
+> the device so this looks broken.
+> 
+> And either way it is arguably an unrelated change that should go in a
+> separate patch explaining why it is needed and safe.
+> 
 
-Signed-off-by: liuguoqiang <liuguoqiang@uniontech.com>
----
- net/ipv4/devinet.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
-index ec73a0d52d3e..323e622ff9b7 100644
---- a/net/ipv4/devinet.c
-+++ b/net/ipv4/devinet.c
-@@ -2591,7 +2591,7 @@ static int __devinet_sysctl_register(struct net *net, char *dev_name,
- free:
- 	kfree(t);
- out:
--	return -ENOBUFS;
-+	return -ENOMEM;
- }
- 
- static void __devinet_sysctl_unregister(struct net *net,
--- 
-2.20.1
+It was suggested by Vincent who is the maintainer of this driver [1].
 
 
 
+[1] 
+https://lore.kernel.org/linux-can/CAMZ6Rq+orfUuUCCgeWyGc7P0vp3t-yjf_g9H=Jhk43f1zXGfDQ@mail.gmail.com/
+
+
+
+With regards,
+Pavel Skripkin
