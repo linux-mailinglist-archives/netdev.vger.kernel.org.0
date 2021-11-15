@@ -2,78 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0326145187C
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 23:57:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EA4F4516F9
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 22:53:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349534AbhKOXAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 18:00:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50302 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353134AbhKOWfA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 17:35:00 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05D03C04A499
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 13:48:06 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id az33-20020a05600c602100b00333472fef04so333815wmb.5
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 13:48:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Z3OdB0x5a+j+jlf0dMOM0PWdUuZx3BRJAftWyyfklE0=;
-        b=KRI9Y3d00cSsH127LkaUftW84wb8FqH2u1z+N60FXxQ2soKq8sjAnxAlwnbduKCPML
-         /4IkuXMD8n8U0fHde/j45ykHVjyJqzm0SWH/Te8dmeYi7TR6Of4XhlmtVXa5+mcRqEwh
-         OHg8Yd/Osg1Sgs3lEREKQ69nZCtwnk5TSdD/EEkMkjhDzmpbAMmO03dyries1w9DP5lw
-         jOZlkc2zPdMwbEXJzBn4LqVJPGHCFhXi0piJpwBi7O7Rfb4ryxaS8USTjLIAtAHeLNcw
-         EMczlV8fRNpI5MlazrQ8FQYjtcnAhzbmLxuP7orbJEOxGjHl1xZjk5kGJUutjt92JQHk
-         nq3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Z3OdB0x5a+j+jlf0dMOM0PWdUuZx3BRJAftWyyfklE0=;
-        b=xyVLPRAfNyiz4sW3ozQIVJBaLPaQWOwhBiIWqRqSY39hIZmmd00uIjKT/GvuH+KVIM
-         JvgJi1Lej0XvaZkORogPG/CjhUvCFOqC7ovU0mzOEJfyYIHxKeXvIgx/YCVZI0o/Rgj8
-         m1bZ7NvADcuQlk6Xn+oZUF3Aoq1scQI0JpIDkky3TJnwwfbCvKmELc2lCFnW8kQKM7sb
-         Gvaq4MpIwfHKScfwF8UMA1eZLhCABKskH1mRyO0S2MffhPNJfm2iGi/98gPttTt4orBt
-         0xxdBhoFeI5p/IuY2aSRQ+qnJBTqsdtmFFpZzbguj+Z706Rfe5w7MNNkkQh35XRmeeCh
-         943g==
-X-Gm-Message-State: AOAM533IP6zaYny5lZLp0ozrbuYzj+M+FpUby1gNSRS++5z6f624O0zZ
-        vJhspTVfMF2iOfKp2EIzwCdffuW2OSpM4yaD+AZTmQ==
-X-Google-Smtp-Source: ABdhPJzEfz1Qot4z5PKhEs/srjUPwDOGWKQF6gQMAHpJOZdOH8/zzmkPX1UjudMdlTaNVrYqU1uoa1wcnNnoqW/CIrg=
-X-Received: by 2002:a05:600c:3ba3:: with SMTP id n35mr2012524wms.88.1637012884230;
- Mon, 15 Nov 2021 13:48:04 -0800 (PST)
+        id S1348075AbhKOV4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 16:56:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38514 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1347883AbhKOVz7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Nov 2021 16:55:59 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 90413619E3;
+        Mon, 15 Nov 2021 21:53:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637013183;
+        bh=aopc2cQN9EBmwspgyuB9J0jVCEM1SuUTAj8Bjg4Kses=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cp2GNhEpJ61QNkwpjv1Fe7yTRAXwy3LpeuxpLnF/9Irgm8XyoQbSJnxn26yKeIlho
+         JwhQGfk2pCjzXOS2oYqtIjGqFcSyMfT7UCfBnjGyF7vsIPJrPEhJZDegBHY+tv7reY
+         HGs5prlZN6rf2pwGe9H8EqmaWqCJMdwcgw73oUlJia3Vr6WDcnMjix3BDYiBqdAaMY
+         +bwQ8iKm2jIqjgi4HRFnicngadGaKjNZJf2BdHjtQfCiDkFXft+B1kaf7RZa+VSvEI
+         pLeLFus5x3Z+0KZNb/kEFSJnplGEqLqIhFYE23569TZv4EjBEhJg+gJL5z/PfSMXhv
+         4cUWNKTl7wMvA==
+Date:   Mon, 15 Nov 2021 13:53:02 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Subject: Re: pull request: bluetooth 2021-11-02
+Message-ID: <20211115135302.4ad246e7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CABBYNZ+fAVW1Go+UUirgFsbNjffEKdUv-9ArM6MiFxMYEGOM6w@mail.gmail.com>
+References: <20211102213321.18680-1-luiz.dentz@gmail.com>
+        <CABBYNZ+i4aR5OjMppG+3+EkaOyFh06p18u6FNr6pZA8wws-hpg@mail.gmail.com>
+        <CABBYNZJPanQzSx=Nf9mgORvqixbgwd6ypx=irGiQ3CEr6xUT1A@mail.gmail.com>
+        <20211115130938.49b97c8f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CABBYNZ+fAVW1Go+UUirgFsbNjffEKdUv-9ArM6MiFxMYEGOM6w@mail.gmail.com>
 MIME-Version: 1.0
-References: <20211115190249.3936899-1-eric.dumazet@gmail.com>
- <CACSApvZ47Z9pKGxH_UU=yY+bQqdNt=jc2kpxP-VfZkCXLVSbCg@mail.gmail.com> <dacd415c06bc854136ba93ef258e92292b782037.camel@redhat.com>
-In-Reply-To: <dacd415c06bc854136ba93ef258e92292b782037.camel@redhat.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 15 Nov 2021 13:47:52 -0800
-Message-ID: <CANn89iJFFQxo9qA-cLXRjbw9ob5g+dzRp7H0016JJdtALHKikg@mail.gmail.com>
-Subject: Re: [PATCH net-next 00/20] tcp: optimizations for linux-5.17
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Soheil Hassas Yeganeh <soheil@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Neal Cardwell <ncardwell@google.com>,
-        Arjun Roy <arjunroy@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 15, 2021 at 1:40 PM Paolo Abeni <pabeni@redhat.com> wrote:
->
+On Mon, 15 Nov 2021 13:40:30 -0800 Luiz Augusto von Dentz wrote:
+> > > I guess these won't be able to be merged after all, is there a define
+> > > process on how/when pull-request shall be sent to net-next, Ive assume
+> > > next-next is freezed now the documentation says the the merge window
+> > > lasts for approximately two weeks but I guess that is for the Linus
+> > > tree not net-next?  
+> >
+> > I'm not sure what the exact rules are for net-next.
+> >
+> > We had some glitches this time around, IMHO. Here is what I have in
+> > mind for the next merge window but note that I haven't had a chance
+> > to discuss it with Dave yet, so it's more of me blabbering at this
+> > point than a plan:
+> >  - net-next would not apply patches posted after Linus cuts final;
+> >  - make sure all trees feeding net-next submit their changes around
+> >    rc6 time so that we don't get a large code dump right as the merge
+> >    window opens;  
+> 
+> So net-next has a merge window open during the rc phase, until rc6? I
+> assume if the rc goes further than rc7 it also would extend the merge
+> window of net-next as well?
 
->
-> Possibly there has been some issues with the ML while processing these
-> patches?!? only an handful of them reached patchwork (and my mailbox :)
->
+Yes, net-next has the inverse rules to Linus's tree basically. 
+We accumulate the code outside the merge window. And then during
+the merge window try to focus on fixes and conflicts introduced 
+by merging with other -next trees outside networking.
 
-Yeah, this sort of thing happens. Let's wait a bit before re-sending ?
-
-Maybe too much traffic today on vger or gmail, I honestly do not know.
-
-I will send the series privately to you in the meantime :)
+> >  - any last minute net-next PRs should be ready by Monday night PST;
+> >  - we'd give the tree one day to settle, have build issues reported etc
+> >    and submit PR on Wednesday.
+> >
+> > If we go with a more structured timeline along these lines I'll try
+> > to send reminders.  
+> 
+> +1, that would be great to have reminders for the merge window
+> open/close that way if for some reason if you guys decide to change
+> your merge window that would be noticed by us.
