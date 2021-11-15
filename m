@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DB524514AE
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 21:09:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B75F64514A5
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 21:09:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349281AbhKOUL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 15:11:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38350 "EHLO
+        id S1348878AbhKOULg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 15:11:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345801AbhKOT3Y (ORCPT
+        with ESMTP id S1345802AbhKOT3Y (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 14:29:24 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C5FDC0BC9B2
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 11:03:15 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id p18-20020a17090ad31200b001a78bb52876so46552pju.3
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 11:03:15 -0800 (PST)
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B7CC0BC9B3
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 11:03:17 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id v23so13659988pjr.5
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 11:03:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/TovmZ1K9tI8NqkLQ22dxDQKHjvouGKJ4E5JFP7fCMI=;
-        b=LaTELH5xEJ7GuwtDwCpPRABIlLYpzMHtMFTcnJzjvv8mhwM1piwT8wN872jz993JFs
-         lZ3uGPctLaor9B3wZwfNJSBdROVnEM0pbktSKtDRO4i1x14Zd+yJ9ztd/j2H4N0oQ3J2
-         BL6VxWSUAeoUKXIaChpE9J8KbXW4H0DPBrEWzNy7mfp3D4M6/JEPXseT3eg31vZdF/Ns
-         nhHpXX2LZI6wDI3eJTCekHlucQY3A8PxoIdV9gGASUykjw1bPTS1KacumUqetCL+uFiK
-         qti3ODBzSHwN3jLhBF0M17crwWDIiTGkc2p6e2E+vsYgQoWVT0J72qMEjc0i8iSmuX06
-         LU0g==
+        bh=LTc6Dee33uJ2iM5GtkCRCjbFA1CHZSBcy3vujWmv5u0=;
+        b=KTfF3PIDGdoQGXweNs1CBj4XaRpu9S4ADSEdXfzBaljYYitpMtvvoFslOkR65Hy61Q
+         QgDoJoiyNSBpiZbjGP/qmjkh+nB7PFIiasyMeqg1V1mjY9lcmfV5gesURwv/Xfx5IIGk
+         iLrn0RmQtgj2Fnzi0I6rwkoPOYxEEaw6YyIrB4UPzewQNcyD5ihVHff+XtPLjiu+r7Uy
+         S+3aR5iKC12NfQ1crPJ2s7K9nspn2W4dfVz7xpW1e/vTHC/Sp1yfd0f/B9vGNawbWUct
+         LDLN84fzjYF3i+8I9x2MxCo7DXmM9VZmJ22hhWnGirXwneJP6ayr7duWequBpx3SQU/W
+         iIww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/TovmZ1K9tI8NqkLQ22dxDQKHjvouGKJ4E5JFP7fCMI=;
-        b=elB1WS/Pv6K9720JqKSwJ42mCyuJDQm4IC3FKABzq/CXtMtONXe3ubfT0np1qAGTQ3
-         lJvXNXLloimc1l6mvpkfD8C+STiVKOABpyOdzzPgWvOruWMmI6sMTwcja6SORHo3TSzK
-         ENWRebj6bCOUqkX1zCe19qdRfhDW9X4OUdcUuLkVpO6QvrBnDIR1Iq4CkK/sFkiH3ThS
-         tCcoQZXwuidycm2nb9JJTZqFVAFwFSgX38DRlpuYDT7I3dewUheevdOemfopbr3cFvjF
-         FMYzFgmlPxRZXCM8DbvwLRSOWn5lX1tN9tnqk978d+6LAw838P0+wp1SUs2NO7YfWimS
-         IZrA==
-X-Gm-Message-State: AOAM531Ni6s9mK2JpmAZnhRt6xr0uaupL4htYq7lPs9t2immGv0Q+zke
-        ncG7+4b+7YAxnE5ajLDKVL4=
-X-Google-Smtp-Source: ABdhPJyxbtPnWrfk5qbBYM656FNSH3TD/LAiC2K2Kba/d01i/1MEWglfXLEH9Vqds3sFW1Y0tSBncw==
-X-Received: by 2002:a17:90b:4f83:: with SMTP id qe3mr68157606pjb.56.1637002995217;
-        Mon, 15 Nov 2021 11:03:15 -0800 (PST)
+        bh=LTc6Dee33uJ2iM5GtkCRCjbFA1CHZSBcy3vujWmv5u0=;
+        b=KNC9IYqYuul68S7Taafnru8C3F57sMOHyhHNZfU3zGusfkCgzWjYtVmLa4Rd6/os21
+         Mg5A7FmBm7DAgymqNCpdKHb2bgMSZy8w7HDKHP4MIk9fDFFi0nSsRRcPVCn4sQtTrNmV
+         EVa39KrYcpG2USpzx8u/EoXS83N9V+HHNKNp7PA3uOHtUXHaTSkSOzpT2lnhN4Wkyj5G
+         nTTYPs2fjpGtDTtb5pg0NrR4g1Xuh6KHbfYtK6oI959XzHWKAxojjmXWeZDPQy8dMB03
+         hCDABwKsdmFqIIit/KPwHNx9fVJDqZGdBudPWTMBPcBajNvblBJU/CC4ewL8QdB6+UZr
+         SkQg==
+X-Gm-Message-State: AOAM533HMY6xEg0S24QwnEGyXOjCbb4NSeyI+NGaRyqg6UycFvIPt166
+        z91Hb6QB6FbpMSjx6bLCyeYOjJZEMqU=
+X-Google-Smtp-Source: ABdhPJxrXDoSXowmwEsh0uWdK4tV3jhxkjqyfEcvZ4+102cy33gdrYOpUR75OQjoILkcAGRJf47MSQ==
+X-Received: by 2002:a17:902:74cb:b0:143:6fe9:ca4 with SMTP id f11-20020a17090274cb00b001436fe90ca4mr38689418plt.2.1637002996446;
+        Mon, 15 Nov 2021 11:03:16 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:4994:f3d6:2eb1:61cb])
-        by smtp.gmail.com with ESMTPSA id f21sm11850834pfe.69.2021.11.15.11.03.14
+        by smtp.gmail.com with ESMTPSA id f21sm11850834pfe.69.2021.11.15.11.03.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Nov 2021 11:03:14 -0800 (PST)
+        Mon, 15 Nov 2021 11:03:16 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -56,9 +56,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Soheil Hassas Yeganeh <soheil@google.com>,
         Neal Cardwell <ncardwell@google.com>,
         Arjun Roy <arjunroy@google.com>
-Subject: [PATCH net-next 11/20] tcp: small optimization in tcp recvmsg()
-Date:   Mon, 15 Nov 2021 11:02:40 -0800
-Message-Id: <20211115190249.3936899-12-eric.dumazet@gmail.com>
+Subject: [PATCH net-next 12/20] tcp: add RETPOLINE mitigation to sk_backlog_rcv
+Date:   Mon, 15 Nov 2021 11:02:41 -0800
+Message-Id: <20211115190249.3936899-13-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.34.0.rc1.387.gb447b232ab-goog
 In-Reply-To: <20211115190249.3936899-1-eric.dumazet@gmail.com>
 References: <20211115190249.3936899-1-eric.dumazet@gmail.com>
@@ -70,34 +70,79 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-When reading large chunks of data, incoming packets might
-be added to the backlog from BH.
-
-tcp recvmsg() detects the backlog queue is not empty, and uses
-a release_sock()/lock_sock() pair to process this backlog.
-
-We now have __sk_flush_backlog() to perform this
-a bit faster.
+Use INDIRECT_CALL_INET() to avoid an indirect call
+when/if CONFIG_RETPOLINE=y
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/ipv4/tcp.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ include/net/sock.h  | 8 +++++++-
+ net/core/sock.c     | 5 ++++-
+ net/ipv6/tcp_ipv6.c | 5 +++--
+ 3 files changed, 14 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 862e8cb8dda51e76300a427783a7d8c32e82cc7f..24d77a32c9cbcdf0e4380ec6d9aa3e42d2cf8730 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -2409,8 +2409,7 @@ static int tcp_recvmsg_locked(struct sock *sk, struct msghdr *msg, size_t len,
+diff --git a/include/net/sock.h b/include/net/sock.h
+index cb97c448472aa5af3055916df844cbe422578190..2d40fe4c7718ee702bf7e5a847ceff6f8f2f5b7d 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1018,12 +1018,18 @@ static inline __must_check int sk_add_backlog(struct sock *sk, struct sk_buff *s
  
- 		if (copied >= target) {
- 			/* Do not sleep, just process backlog. */
--			release_sock(sk);
--			lock_sock(sk);
-+			__sk_flush_backlog(sk);
- 		} else {
- 			sk_wait_data(sk, &timeo, last);
- 		}
+ int __sk_backlog_rcv(struct sock *sk, struct sk_buff *skb);
+ 
++INDIRECT_CALLABLE_DECLARE(int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb));
++INDIRECT_CALLABLE_DECLARE(int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb));
++
+ static inline int sk_backlog_rcv(struct sock *sk, struct sk_buff *skb)
+ {
+ 	if (sk_memalloc_socks() && skb_pfmemalloc(skb))
+ 		return __sk_backlog_rcv(sk, skb);
+ 
+-	return sk->sk_backlog_rcv(sk, skb);
++	return INDIRECT_CALL_INET(sk->sk_backlog_rcv,
++				  tcp_v6_do_rcv,
++				  tcp_v4_do_rcv,
++				  sk, skb);
+ }
+ 
+ static inline void sk_incoming_cpu_update(struct sock *sk)
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 99738e14224c44e5aa4b88857620fb162e9c265f..c57d9883f62c75f522b7f6bc68451aaf8429dc83 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -327,7 +327,10 @@ int __sk_backlog_rcv(struct sock *sk, struct sk_buff *skb)
+ 	BUG_ON(!sock_flag(sk, SOCK_MEMALLOC));
+ 
+ 	noreclaim_flag = memalloc_noreclaim_save();
+-	ret = sk->sk_backlog_rcv(sk, skb);
++	ret = INDIRECT_CALL_INET(sk->sk_backlog_rcv,
++				 tcp_v6_do_rcv,
++				 tcp_v4_do_rcv,
++				 sk, skb);
+ 	memalloc_noreclaim_restore(noreclaim_flag);
+ 
+ 	return ret;
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index 1f1a89f096de9f77ab1bd2d871eb90a3f12e91e0..f41f14b701233dd2d0f5ad464a623a5ba9774763 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -72,7 +72,7 @@ static void	tcp_v6_send_reset(const struct sock *sk, struct sk_buff *skb);
+ static void	tcp_v6_reqsk_send_ack(const struct sock *sk, struct sk_buff *skb,
+ 				      struct request_sock *req);
+ 
+-static int	tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb);
++INDIRECT_CALLABLE_SCOPE int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb);
+ 
+ static const struct inet_connection_sock_af_ops ipv6_mapped;
+ const struct inet_connection_sock_af_ops ipv6_specific;
+@@ -1466,7 +1466,8 @@ INDIRECT_CALLABLE_DECLARE(struct dst_entry *ipv4_dst_check(struct dst_entry *,
+  * This is because we cannot sleep with the original spinlock
+  * held.
+  */
+-static int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
++INDIRECT_CALLABLE_SCOPE
++int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
+ {
+ 	struct ipv6_pinfo *np = tcp_inet6_sk(sk);
+ 	struct sk_buff *opt_skb = NULL;
 -- 
 2.34.0.rc1.387.gb447b232ab-goog
 
