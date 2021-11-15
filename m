@@ -2,63 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 114A5450788
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 15:50:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B279445078C
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 15:50:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232109AbhKOOxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 09:53:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52734 "EHLO mail.kernel.org"
+        id S232314AbhKOOxJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 09:53:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52760 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229661AbhKOOxE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232125AbhKOOxE (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 15 Nov 2021 09:53:04 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 95CE963210;
-        Mon, 15 Nov 2021 14:50:08 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6386B63225;
+        Mon, 15 Nov 2021 14:50:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636987808;
-        bh=OduRMaYoWZ50aq6QqlHRFad+aATEFuiz3vqGqVTukO8=;
+        s=k20201202; t=1636987809;
+        bh=mixMEjVP5uAAW4hcAl654j7hmJ72WJ73N82+mHaEluM=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tolMupHayptmQepYR4Koy5zb/k/FTIUDVLfBZHvkjXI1eDXsQpsHdy29wniHnnxI2
-         uY5ydclE5zVV4rSw6vmEe8X619pKi9uBdbjbO2rjn2OWNR7lETCbFFHkLQpPlWfZ3H
-         S6O4lsaopPkGiT2i/WpN5iJMSNDbR7HCLgg4arF+5Y0Q0a91yXTHx1OhRirkblK6Pb
-         IAb0YrCrxMDi0vqhE0N9b8GyNxoFkq/np9I/Lwh05EGPR5bYk0DAslkfxd1n33VT8R
-         gr1tTDruhqKbp11KVt5sbB4Rsc2dXJSP/elpdch5D/gM9faQOmdMvVF0nxVXY1F877
-         uggsqyVyfe45A==
+        b=AG1sisEVi6FqowALsciNpsLyA51WooDYQCJA6RKlJQ7f5UfnmIM57/dOfOIK5o4Lq
+         1q0X0dRouDe9khwQes8ZwB0uSbhXUXwt/h8aIZ1WjB+v/G+YpZRNQV83tdwGd1YFc+
+         P3sSAUbEcRIZZ/tbOXqlXnOMVgr7qi/+ymuDN8r3yFjjP3gRTxzPqxZk6hg8w5jYYQ
+         vJrIQkoS4m9hwbajFg0bcJoot6v9aF0XPWRPAhAIUhqllt334abx5kLBSg03CbCSPj
+         LMhWHj/EmNgBE1MgZ57NfRut9BFwsNKCqvHvRz7LO5fxteFTzQNJqVdGTRnr5eSWwr
+         1SXPZQvAcHV+Q==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 84F1060A88;
-        Mon, 15 Nov 2021 14:50:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5C4EB60A3B;
+        Mon, 15 Nov 2021 14:50:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] sock: fix /proc/net/sockstat underflow in sk_clone_lock()
+Subject: Re: [PATCH net-next 0/3] introduce generic phylink validation
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163698780854.3779.2306010069762632945.git-patchwork-notify@kernel.org>
-Date:   Mon, 15 Nov 2021 14:50:08 +0000
-References: <8ef55b45-8850-f811-b996-5a16ee4dd97f@i-love.sakura.ne.jp>
-In-Reply-To: <8ef55b45-8850-f811-b996-5a16ee4dd97f@i-love.sakura.ne.jp>
-To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc:     eric.dumazet@gmail.com, netdev@vger.kernel.org, davem@davemloft.net
+Message-Id: <163698780937.3779.747027399718560228.git-patchwork-notify@kernel.org>
+Date:   Mon, 15 Nov 2021 14:50:09 +0000
+References: <YZIvnerLwnMkxx3p@shell.armlinux.org.uk>
+In-Reply-To: <YZIvnerLwnMkxx3p@shell.armlinux.org.uk>
+To:     Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, mw@semihalf.com, netdev@vger.kernel.org,
+        thomas.petazzoni@bootlin.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Mon, 15 Nov 2021 19:16:56 +0900 you wrote:
-> sk_clone_lock() needs to call sock_inuse_add(1) before entering the
-> sk_free_unlock_clone() error path, for __sk_free() from sk_free() from
-> sk_free_unlock_clone() calls sock_inuse_add(-1).
+On Mon, 15 Nov 2021 09:59:57 +0000 you wrote:
+> Hi,
 > 
-> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> Fixes: 648845ab7e200993 ("sock: Move the socket inuse to namespace.")
+> The various validate method implementations we have in phylink users
+> have been quite repetitive but also prone to bugs. These patches
+> introduce a generic implementation which relies solely on the
+> supported_interfaces bitmap introduced during last cycle, and in the
+> first patch, a bit array of MAC capabilities.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2] sock: fix /proc/net/sockstat underflow in sk_clone_lock()
-    https://git.kernel.org/netdev/net/c/938cca9e4109
+  - [net-next,1/3] net: phylink: add generic validate implementation
+    https://git.kernel.org/netdev/net-next/c/34ae2c09d46a
+  - [net-next,2/3] net: mvneta: use phylink_generic_validate()
+    https://git.kernel.org/netdev/net-next/c/02a0988b9893
+  - [net-next,3/3] net: mvpp2: use phylink_generic_validate()
+    https://git.kernel.org/netdev/net-next/c/5038ffea0c6c
 
 You are awesome, thank you!
 -- 
