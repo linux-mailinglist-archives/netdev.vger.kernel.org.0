@@ -2,91 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB450451D14
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 01:22:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6523451DAE
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 01:29:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244788AbhKPAZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 19:25:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45366 "EHLO
+        id S1353191AbhKPAc2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 19:32:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243745AbhKPAVT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 19:21:19 -0500
-Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8E19C0337C2
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 14:55:06 -0800 (PST)
-Received: by mail-qv1-xf2b.google.com with SMTP id u16so12421919qvk.4
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 14:55:06 -0800 (PST)
+        with ESMTP id S245510AbhKPAa0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 19:30:26 -0500
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97FB6C06FD8E
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 14:57:09 -0800 (PST)
+Received: by mail-lj1-x236.google.com with SMTP id d11so38864309ljg.8
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 14:57:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:from:to:date:message-id:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=hHRqpbMk8KlizvRktIEx8fg9ZAb1LqAifrqvXZPACPE=;
-        b=q1qjegsF+R0ppMPJrgtQfY9aatA/CGgASR/l3D+ckUcoemc7AIz2mrI3UgRgJUUMea
-         9vh56QJQ/yRPQA64qNS8qtg+G5QNkV4cuXeln+xNbKGTjpwc8mu008Q062gpcunsZZq+
-         cStWHJ8+EVRF4t+sQKpiWdCVdAoccEzubUfhfflQ5eBIhZe4WTr9fApShwfUl6unmIp8
-         5a7GlZ0N5AowocjwgtVBWNQaT4+hOKI2lyo0KAdEIKEJdv4O7Wb5XhnIAPsGBEYxPlH7
-         nUrKWQvF6HAUx6/6AIx8BkcAXOWwpeXaIeVghgnWcbVyFcYoy4b2zJ3aKOJVJmlj3JBK
-         QP0w==
+        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=RmphX0MvgxPcyZ1NxD5xM+drSKIWrzBdfK3vQGpFT0Y=;
+        b=PTAG7zydJ+Czx1L/qKKrEFKvHQHR2PHUkLnV7dbMJ0n9YPER5y8gWhw+0A4fU6ji6l
+         qe9M0vz8I2Nxj7j6lsb9kI9plzoSWN7+JLBMq4KpxUh8j0gnIaO11fHllhUFtKqmVOM3
+         jX5Gg5k0vSUQZJbx+Sgc6lISP4h2zVzGzcl7sZ5b+45aqLYzrwGX9DGu4/yrwOZDy/xI
+         I6PGAxCTOCUA3Iyf9CgUJoadM29jrjtnvrK5KCtQJA0wjA5lBqGHOx3ViTI6D5IIyZRy
+         FGUKigyHPNq2VwV2ZcoSimpbSN7GB0on28jjQ7ZYWSUev9o3eZOeQr5KPdN3/1Nk985Q
+         m2iA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:from:to:date:message-id:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=hHRqpbMk8KlizvRktIEx8fg9ZAb1LqAifrqvXZPACPE=;
-        b=0R55IL6ESQzIMe0bUfbqPNpEvSQSIc9QMC2wD73FhuJeBKJeG6P4El4jCRoB78t0wO
-         zVwrrijnmTUK7PMimG6urfBBIkDufHfxPVpTl8MrFWEkTPDOnmotzVS28HvRAB4JTmSZ
-         BSRkbHL53DXHLq26SMcesM/G3RnnO+HW13aF4QHorVPRLNVHS1f7lYDeW/3SQ6f0OroX
-         CBl0dJvr5lwAR+rVXATgp0i3YU7xda/Stab5X7bozlTzaZN3oa1WSRM3Dg9iMmc06TIx
-         G1z+IFaobwkuYayWSEzuGlZ58SkmD+p8ftd3gfVDFjjIezid3c3JpfmbWj/+ab4OWLUu
-         t5bQ==
-X-Gm-Message-State: AOAM530Pg1PJ3ByqRxYWn8lLT1+5j3Vch6gVTrY8Qr85rseRyF2Vi9Rb
-        rSBe/nSg1ujdIYNRTKUic8ybbk33wc4=
-X-Google-Smtp-Source: ABdhPJz73UnPhuBq78TSHOhDjMXZvvUFWswIRQvypfUwvbo3rDxR/800B2da3wRt4b/3C+h0TrcQYw==
-X-Received: by 2002:a05:6214:18e2:: with SMTP id ep2mr40502826qvb.45.1637016905391;
-        Mon, 15 Nov 2021 14:55:05 -0800 (PST)
-Received: from localhost.localdomain ([50.43.104.120])
-        by smtp.gmail.com with ESMTPSA id u21sm5594554qtw.29.2021.11.15.14.55.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Nov 2021 14:55:04 -0800 (PST)
-Subject: [ethtool PATCH] ethtool: Set mask correctly for dumping advertised
- FEC modes
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-To:     mkubecek@suse.cz, netdev@vger.kernel.org
-Date:   Mon, 15 Nov 2021 14:52:54 -0800
-Message-ID: <163701677432.25599.14085739652121434612.stgit@localhost.localdomain>
-User-Agent: StGit/0.23
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=RmphX0MvgxPcyZ1NxD5xM+drSKIWrzBdfK3vQGpFT0Y=;
+        b=6KgjdHaa+OeaqiILnEV4MRYK1tOr7JMqCke9EJFrvCG8tVhybQcjxrHOYvPgWEJFxg
+         gtnYAYND2zGvmqmzJbKElwSLDENrS5qFwPPronYxPKdic9n5CTRPCj2VX/JwpVYb+Uhy
+         YUhzgqrQbTV7IHXgvbv/ske9oj5IBhxrxL4o4v0BK8D37SXt8MNlnJsH8q9bT60cbpZT
+         RkoUqsbXpVDpoCaSgBzbA3dFRl/4xz98wPqfxdp5WDsMSYVBFe23y5mjasgs/Ooa0/pq
+         eLYLAdOH42tczLtpw5JGMs77Obj4IGA2+JaNF6wQE7jihc0KEHHIjp0B77t/rzL3MK8I
+         6yKQ==
+X-Gm-Message-State: AOAM532vkrM9B/0jbnoLESy5PmSA2pyEKP7GHrPUKBCL9fNlDxbszknU
+        1IbfJ2vqDrw8+UIZNcyZ6AeIFC+LUzbhGCUjzQHCXQ==
+X-Google-Smtp-Source: ABdhPJx7gdgAc+IXgszBD3wr3x5nZ4t8p3VJpeJTlxk1cFk85uFsL1LfgIM2zpoAdMMdZYsRUKVnSbLxhRvEXvqbe6U=
+X-Received: by 2002:a2e:8906:: with SMTP id d6mr1464579lji.454.1637017027772;
+ Mon, 15 Nov 2021 14:57:07 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+References: <20211115153024.209083-1-mw@semihalf.com> <YZK2bPgHE0BFlDMd@lunn.ch>
+In-Reply-To: <YZK2bPgHE0BFlDMd@lunn.ch>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Mon, 15 Nov 2021 23:56:54 +0100
+Message-ID: <CAPv3WKcUO7fnbOJH5tQ0hKATV2WpOBTog2WpzgEYjQk-JQa5_g@mail.gmail.com>
+Subject: Re: [net: PATCH] net: mvmdio: fix compilation warning
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, upstream@semihalf.com,
+        kernel test robot <lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Duyck <alexanderduyck@fb.com>
-
-Set the "mask" value to false when dumping the advertised FEC modes.
-The advertised values are stored in the value field, while the supported
-values are what is stored in the mask.
-
-Without this change the supported value is displayed for both the supported
-and advertised modes resulting in the advertised value being ignored.
-
-Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
----
- netlink/settings.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/netlink/settings.c b/netlink/settings.c
-index c4f5d61923aa..ff1e783d099c 100644
---- a/netlink/settings.c
-+++ b/netlink/settings.c
-@@ -402,7 +402,7 @@ static int dump_our_modes(struct nl_context *nlctx, const struct nlattr *attr)
- 		return ret;
- 	printf("\tAdvertised auto-negotiation: %s\n", autoneg ? "Yes" : "No");
- 
--	ret = dump_link_modes(nlctx, attr, true, LM_CLASS_FEC,
-+	ret = dump_link_modes(nlctx, attr, false, LM_CLASS_FEC,
- 			      "Advertised FEC modes: ", " ", "\n",
- 			      "Not reported");
- 	return ret;
+Hi Andrew,
 
 
+pon., 15 lis 2021 o 20:35 Andrew Lunn <andrew@lunn.ch> napisa=C5=82(a):
+>
+> On Mon, Nov 15, 2021 at 04:30:24PM +0100, Marcin Wojtas wrote:
+> > The kernel test robot reported a following issue:
+> >
+> > >> drivers/net/ethernet/marvell/mvmdio.c:426:36: warning:
+> > unused variable 'orion_mdio_acpi_match' [-Wunused-const-variable]
+> >    static const struct acpi_device_id orion_mdio_acpi_match[] =3D {
+>
+> How come OF never gives these warning, just ACPI? If there something
+> missing in ACPI which OF has?
+
+It was enough to compile mvebu_v7_defconfig with W=3D1 to get it (so
+CONFIG_ACPI disabled). There may be a similar case for config _OF, but
+I couldn't deselect it easily and compile mvmdio at the same time.
+
+>
+> > Fixes: c54da4c1acb1 ("net: mvmdio: add ACPI support")
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+>
+
+Thanks,
+Marcin
