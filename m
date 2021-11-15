@@ -2,118 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CBF0451642
+	by mail.lfdr.de (Postfix) with ESMTP id D54F4451643
 	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 22:18:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240093AbhKOVSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 16:18:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49264 "EHLO
+        id S243008AbhKOVSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 16:18:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350451AbhKOUXw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 15:23:52 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F87C0432CA
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 12:18:10 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id w29so32973588wra.12
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 12:18:10 -0800 (PST)
+        with ESMTP id S1350482AbhKOUX4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 15:23:56 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C64C061206
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 12:20:43 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id bi37so41798517lfb.5
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 12:20:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:to:cc:content-language
-         :subject:content-transfer-encoding;
-        bh=VoxwCzYwQGbno9RbtsIIyYkVXvs51MPgjgV/WkLpkWs=;
-        b=ks5P5bpGtRrua1CrctmHTWnL6jjzS07a/rzMiISmin2xVmV7AzUtmxFxyC4EDahsuI
-         5CG7YKF9vvTmDqnh4uYk9uA602Dd6gmgd2UvYzjxj9bUAqPxus2xB/BVBAzpKdT4muVI
-         oU7vS98rq8k17Mi1waRJW0e+9cf3ceRt1IyJPkiraDtW1wAaDrgKEhDRnfHA14Q94Xsx
-         8Jo3jMv/fjvQ5fW+y+HI72jQm4N/ZSXLdVa1M7hX/8mrXjJX3bslb134XvpEtpbX2sL/
-         PjX2RTt4U/fQxQ/fIMZYVIcinnttyn9z7DmkX1yCaR8gl+YL5UVOjGJ+2EyLrH4LppcM
-         ThmQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=FWOr3QrE6ptqw2sQO4bDDCW0CNVpympwt1gaE5gu95A=;
+        b=NfNBcI2RI3Jut3vXhRnuEPqguRgu/ZuuzT94vXmIJdsrAgcYVGzXTEMMr/iuM4CoMy
+         UXUYEX2Wfs1YkiFqzbDhP8iXO+WnNBMAu7gSFZj6n/iEDt61x48amjMUk1cfc2kEw5Tf
+         xUUCX5P2RuUJ2sPXQwZwWe0iz10j03DpPfIL8WNuHgBqTy+asj1bA6eq9KpvMaChhhA/
+         qI+o8uZaiSkMKgFJQ0U0W245L5+9HYC8aidt/xlLKJwjDU+BkmAwaF3YfE/EEqKNpK3n
+         fInZJcrQnmHMvYg5WHe/P73U3NQ5BG3ZnGTUNSUTz26FT42LhWACFu63bp+9jo7DEk9M
+         BSiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from:to
-         :cc:content-language:subject:content-transfer-encoding;
-        bh=VoxwCzYwQGbno9RbtsIIyYkVXvs51MPgjgV/WkLpkWs=;
-        b=nDvrXom5poSp1dLdJXrXCyG8djoF3PYt8Of/kJziV2BPKCx4wEk4i43IVFA4ZH3CTE
-         IAOyNbXirjOzSj3N7jZKF4KI2il+7gzFDurFlyf285DV4vEgO5ObodPifCWmdGXRC9kk
-         h/qk6uaUwCKesogxcNFe/nBnI51ck/3YditacM43OEimA1qjcSS2riDLl67MykJ2kVTF
-         b4ZFdlq66w58a1E1MLQL36WJHHhExQcPTYs65n0Dbj9CHPwmvhRS8Veo8VU2p3DX4qFt
-         TfdXwq6aKzfie0qzRYy0pQ1DQLbmUV0tClOV4681RQ4Gf7vu1GRogdjLH0lEeJcms2nC
-         sc2w==
-X-Gm-Message-State: AOAM531L6vQzhdFowf7+iBa3gJZuDn+r7NbTM/RZshvkf6n/wGm00q4l
-        OE+69r/Fjmta/JCzwyoRUulCBb7ygO4=
-X-Google-Smtp-Source: ABdhPJwxr9O00XPbkDnKF1mLhfkevWXTQGbLR9BWhDf6b63uLv8EABqMiz2lJB4phaxtnFhLxQFezQ==
-X-Received: by 2002:adf:f907:: with SMTP id b7mr2250734wrr.5.1637007488861;
-        Mon, 15 Nov 2021 12:18:08 -0800 (PST)
-Received: from ?IPV6:2003:ea:8f1a:f00:a554:6e71:73b4:f32d? (p200300ea8f1a0f00a5546e7173b4f32d.dip0.t-ipconnect.de. [2003:ea:8f1a:f00:a554:6e71:73b4:f32d])
-        by smtp.googlemail.com with ESMTPSA id o3sm379211wms.10.2021.11.15.12.18.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Nov 2021 12:18:08 -0800 (PST)
-Message-ID: <36feb8c4-a0b6-422a-899c-e61f2e869dfe@gmail.com>
-Date:   Mon, 15 Nov 2021 21:17:56 +0100
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=FWOr3QrE6ptqw2sQO4bDDCW0CNVpympwt1gaE5gu95A=;
+        b=J6Tg9VY/E/4amJH0+51vfqOjEwf5d4r7nDKWBfu7sUOFjWW89w8e4G0beGjxo/Ux7m
+         dISwf/9yUGKuDoCfu+V9gomC+QPTWLQbpUYcUsRjglk66sCAtoqxWdUfNRY5MpKJ3mPK
+         lHpiUTA4fNeLnjF4THXGDThiPkQuKCC0CVC3pXPb7QVnD63TFG8dr33WoT8ROreZK+qq
+         l6/vwG42LjKQUdBlMD0onV/ZQ9bWwVb2PoVNyCayMsCptzA9CnbqE0DQVk4xdJPS1dno
+         zoI926ityAALvmzRu//M2OvvMe8Ti3lqHZ09XLhrdnxSptuYdznvYDepV8/cxhmXJMQb
+         Y7TA==
+X-Gm-Message-State: AOAM532KgP8cPw7WP6IvYOVxq6heJQ/BI+k1t8YBnLukEV15z5N5vuUm
+        /sAwOzyv9Z7VEZM5ja3CnaP7s9zMLu0=
+X-Google-Smtp-Source: ABdhPJzPK7TUneYhnn+AnevVRTMOjBxGybCuvk4cYoE1ZcW3XxZPFJm8M5DMvrsAZTrlrNwHxOnPYg==
+X-Received: by 2002:a05:6512:33a5:: with SMTP id i5mr1383320lfg.324.1637007641727;
+        Mon, 15 Nov 2021 12:20:41 -0800 (PST)
+Received: from localhost.localdomain ([94.103.224.112])
+        by smtp.gmail.com with ESMTPSA id g3sm3940ljj.37.2021.11.15.12.20.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Nov 2021 12:20:41 -0800 (PST)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     kuba@kernel.org, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, aelior@marvell.com, skalluru@marvell.com,
+        Pavel Skripkin <paskripkin@gmail.com>
+Subject: [PATCH] MAINTAINERS: remove GR-everest-linux-l2@marvell.com
+Date:   Mon, 15 Nov 2021 23:20:28 +0300
+Message-Id: <20211115202028.26637-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20211115061231.0426ceb4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20211115061231.0426ceb4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Language: en-US
-Subject: [PATCH net-next] r8169: enable ASPM L1/L1.1 from RTL8168h
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With newer chip versions ASPM-related issues seem to occur only if
-L1.2 is enabled. I have a test system with RTL8168h that gives a
-number of rx_missed errors when running iperf and L1.2 is enabled.
-With L1.2 disabled (and L1 + L1.1 active) everything is fine.
-See also [0]. Can't test this, but L1 + L1.1 being active should be
-sufficient to reach higher package power saving states.
+I've sent a patch to GR-everest-linux-l2@marvell.com few days ago and
+got a reply from postmaster@marvell.com:
 
-[0] https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1942830
+	Delivery has failed to these recipients or groups:
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+	gr-everest-linux-l2@marvell.com<mailto:gr-everest-linux-l2@marvell.com>
+	The email address you entered couldn't be found. Please check the
+	recipient's email address and try to resend the message. If the problem
+	continues, please contact your helpdesk.
+
+Since this email bounces, let's remove it from MAINTAINERS file.
+
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index bbe21db20..6e46397f0 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -5271,12 +5271,6 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	if (rc)
- 		return rc;
+CCed others related maintainers from marvell, maybe they know what
+happened with this email
+
+---
+ MAINTAINERS | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 7a2345ce8521..305008573765 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3733,7 +3733,6 @@ F:	drivers/scsi/bnx2i/
+ BROADCOM BNX2X 10 GIGABIT ETHERNET DRIVER
+ M:	Ariel Elior <aelior@marvell.com>
+ M:	Sudarsana Kalluru <skalluru@marvell.com>
+-M:	GR-everest-linux-l2@marvell.com
+ L:	netdev@vger.kernel.org
+ S:	Supported
+ F:	drivers/net/ethernet/broadcom/bnx2x/
+@@ -15593,7 +15592,6 @@ F:	drivers/scsi/qedi/
  
--	/* Disable ASPM L1 as that cause random device stop working
--	 * problems as well as full system hangs for some PCIe devices users.
--	 */
--	rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
--	tp->aspm_manageable = !rc;
--
- 	/* enable device (incl. PCI PM wakeup and hotplug setup) */
- 	rc = pcim_enable_device(pdev);
- 	if (rc < 0) {
-@@ -5319,6 +5313,17 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	tp->mac_version = chipset;
- 
-+	/* Disable ASPM L1 as that cause random device stop working
-+	 * problems as well as full system hangs for some PCIe devices users.
-+	 * Chips from RTL8168h partially have issues with L1.2, but seem
-+	 * to work fine with L1 and L1.1.
-+	 */
-+	if (tp->mac_version >= RTL_GIGA_MAC_VER_45)
-+		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1_2);
-+	else
-+		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
-+	tp->aspm_manageable = !rc;
-+
- 	tp->dash_type = rtl_check_dash(tp);
- 
- 	tp->cp_cmd = RTL_R16(tp, CPlusCmd) & CPCMD_MASK;
+ QLOGIC QL4xxx ETHERNET DRIVER
+ M:	Ariel Elior <aelior@marvell.com>
+-M:	GR-everest-linux-l2@marvell.com
+ L:	netdev@vger.kernel.org
+ S:	Supported
+ F:	drivers/net/ethernet/qlogic/qed/
 -- 
 2.33.1
 
