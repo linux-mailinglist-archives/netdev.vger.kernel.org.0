@@ -2,144 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 553634507F8
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 16:12:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13829450814
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 16:17:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236543AbhKOPPR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 10:15:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48760 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236613AbhKOPOH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 10:14:07 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E1A4663220;
-        Mon, 15 Nov 2021 15:11:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636989071;
-        bh=bcYj6Q8GqW3I6MVVnrq9F0y/4nVV0WtB/ff9SHPv/1M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oVAV31zxNYUbO3vOu66A5bmeKWJdoSrD63BgGkXXimGVpQl9BrK4ouz7LRnKuGVRK
-         tzAvwoKaCKD5bG4pC2lxyEEcr+Nd0d0U3CeYrieWavPI/uQ38bPJxtJ81+LgFlExKe
-         An98zMle9CdEKpcteKDJuQbVwBVKGsc6tiIh1E2pNC4FxvZ4kROiFp/b8yTjv7uz0M
-         5SMomBb1U5LsAzlyGi9fATkW6KingQS768UnF94UUZLfLMPNnMrp6Z3V+HYqoofL6+
-         s+cAU5JMLwIEw6M/cn78s79/SOUrK0pOAdXv7MLhlv+C53R9cIY/OtzM50J37AA90O
-         V0sm7io13zyCA==
-Date:   Mon, 15 Nov 2021 07:11:09 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Roopa Prabhu <roopa@nvidia.com>
-Cc:     Ido Schimmel <idosch@idosch.org>,
-        sundeep subbaraya <sundeep.lkml@gmail.com>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Hariprasad Kelam <hkelam@marvell.com>,
-        Geethasowjanya Akula <gakula@marvell.com>,
-        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
-        Rakesh Babu Saladi <rsaladi2@marvell.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Andrew Lunn <andrew@lunn.ch>, <argeorge@cisco.com>
-Subject: Re: [EXT] Re: [net-next PATCH 1/2] octeontx2-pf: Add devlink param
- to init and de-init serdes
-Message-ID: <20211115071109.1bf4875b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <952e8bb0-bc1e-5600-92f2-de4d6744fcb0@nvidia.com>
-References: <YXmWb2PZJQhpMfrR@shredder>
-        <BY3PR18MB473794E01049EC94156E2858C6859@BY3PR18MB4737.namprd18.prod.outlook.com>
-        <YXnRup1EJaF5Gwua@shredder>
-        <CALHRZuqpaqvunTga+8OK4GSa3oRao-CBxit6UzRvN3a1-T0dhA@mail.gmail.com>
-        <YXqq19HxleZd6V9W@shredder>
-        <CALHRZuoOWu0sEWjuanrYxyAVEUaO4-wea5+mET9UjPyoOrX5NQ@mail.gmail.com>
-        <YYeajTs6d4j39rJ2@shredder>
-        <20211108075450.1dbdedc3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YY0uB7OyTRCoNBJQ@shredder>
-        <20211111084719.600f072d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YZDK6JxwcoPvk/Zx@shredder>
-        <952e8bb0-bc1e-5600-92f2-de4d6744fcb0@nvidia.com>
+        id S236406AbhKOPUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 10:20:10 -0500
+Received: from mx0b-002c1b01.pphosted.com ([148.163.155.12]:26736 "EHLO
+        mx0b-002c1b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232269AbhKOPTl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 10:19:41 -0500
+Received: from pps.filterd (m0127844.ppops.net [127.0.0.1])
+        by mx0b-002c1b01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1AFC24Vi025273;
+        Mon, 15 Nov 2021 07:16:36 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nutanix.com; h=from : to : cc :
+ subject : date : message-id : content-type : mime-version;
+ s=proofpoint20171006; bh=kYhs0KX2JV1N9Yt2+N/Cz8SXMuqrGZeSPwS2gpJMwdQ=;
+ b=FqUF785z9LgtQM98bzmr30aolHTetbnyjqD3H4sHGsUlgiDfPLaxWOFnE6PFQM2VrmsM
+ HTvKyFmzeBi3DZO6x/PyKWm3ndITwkSA1vMzmpTHimY1p8K4oSDM6iyiEW5Mp5H7UwwR
+ KMGYh9Vh3dFLoTFYx45SBoMDbMF5gITJ8ZqSYXgmSo7K/Hfb9aTk5t5TUwj81ORwjRRN
+ zqt8e79MuKkimcOYBrVEcZAcDtKCxhsXI82Ku3diOq4L4kI2wi9IWh9yHNtVPT61fhxe
+ Zk9XhVym+gxobUn8P5KYdwW66PEChQQl4wyo4DpdsonYIbdbHe6VWP9o/FrtP388oHIk Kw== 
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2173.outbound.protection.outlook.com [104.47.58.173])
+        by mx0b-002c1b01.pphosted.com (PPS) with ESMTPS id 3cbdrg1a9a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 15 Nov 2021 07:16:36 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Jukzx3cRLmbHqn4jJYVjjcRVpOtcgr/aLzhheAtEGpBc5pBS14st8qi1IMEbfEkqgQESshqwgwF7Qgcvepr+fa2312QKu91zo/Nw/pzRfpwH97gg0BF1Iwqkp9o66vOFvLr6mgjChpGiBrT+RAp6L9i3fszWwqKTzOZfOIPWLs8UEKnq/r/2jhw5rPnkCHlYH9zv1isWhrJLEW6za5PpjG1MilDQtARW4JC0RZYxyHE7mtQrTC8WjSYUqic4pOHPwYHqv6PZcPpMeVCFx3vedi807UpQiNiwZ+zZF231uTu3SsU2Q6ChZQ7FCpckmMg81PzD9pNZlxDJhHKHwWIeGw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kYhs0KX2JV1N9Yt2+N/Cz8SXMuqrGZeSPwS2gpJMwdQ=;
+ b=gi736cwhxpUT3EyN/X5zgNCn41nYbyHvzDWD4fISb+X/hRXXiKgEzvXDgeTQ8xZwB8O5LSLTBXYE8C62elbWftEIq3wpEyFVku/DtSJlGwh2zIueOIa2UaoYf5U49Mkh6K1Ppfy0Z6Urf/4peLqtKQgPJ16So3hcjJxNGJrBMF5t6ilPZ5z5LSFi9Ws0CG32RYzKA52S13ESwUOm/UiGP7c3fLUKM2eK0/jQzJ7/nPlZQylRAC4jkCc+BjzhW94XjnC9Or3jbGIVOUnltgyp98v4nK4bnty7MijQh8w39j2wQJOLiOPTPjJEcY2xpwmqcgcs2eSu156JDPE9TculvA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nutanix.com; dmarc=pass action=none header.from=nutanix.com;
+ dkim=pass header.d=nutanix.com; arc=none
+Received: from CH0PR02MB7964.namprd02.prod.outlook.com (2603:10b6:610:105::16)
+ by CH0PR02MB8196.namprd02.prod.outlook.com (2603:10b6:610:f3::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.26; Mon, 15 Nov
+ 2021 15:16:34 +0000
+Received: from CH0PR02MB7964.namprd02.prod.outlook.com
+ ([fe80::cbb:e155:fd25:4b52]) by CH0PR02MB7964.namprd02.prod.outlook.com
+ ([fe80::cbb:e155:fd25:4b52%5]) with mapi id 15.20.4690.027; Mon, 15 Nov 2021
+ 15:16:34 +0000
+From:   Jonathan Davies <jonathan.davies@nutanix.com>
+To:     Willem de Bruijn <willemb@google.com>
+Cc:     netdev@vger.kernel.org, Florian Schmidt <flosch@nutanix.com>,
+        Thilak Raj Surendra Babu <thilakraj.sb@nutanix.com>,
+        Jonathan Davies <jonathan.davies@nutanix.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net] net: virtio_net_hdr_to_skb: count transport header in UFO
+Date:   Mon, 15 Nov 2021 15:16:17 +0000
+Message-Id: <20211115151618.126875-1-jonathan.davies@nutanix.com>
+X-Mailer: git-send-email 2.9.3
+Content-Type: text/plain
+X-ClientProxiedBy: SJ0PR03CA0141.namprd03.prod.outlook.com
+ (2603:10b6:a03:33c::26) To CH0PR02MB7964.namprd02.prod.outlook.com
+ (2603:10b6:610:105::16)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Received: from nutanix.com (192.146.154.247) by SJ0PR03CA0141.namprd03.prod.outlook.com (2603:10b6:a03:33c::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.13 via Frontend Transport; Mon, 15 Nov 2021 15:16:33 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1527e440-b9e3-4cfb-975c-08d9a84ae946
+X-MS-TrafficTypeDiagnostic: CH0PR02MB8196:
+X-Microsoft-Antispam-PRVS: <CH0PR02MB8196415ECDBD156266C795D1CB989@CH0PR02MB8196.namprd02.prod.outlook.com>
+x-proofpoint-crosstenant: true
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 3Z4mZYcKtKDea2pzyuwPcxFSfRGLQE1pWICYlwnHufzYA0zd5Hv0NeKhC6/6v4Sxgr1U0WB+TbIHpOYl2YJgb4l66tAI6Sv7MBUSC3aFrK6BfpNWsaK6jxVXHVFdGFxmAKbOJ0KJ7ZccpFnTOj7GnG/TngbDU0XscpCIqCkPH4iNVrt5MYqWLcotquX8yPYAasNjufRp//+8cCr2Q3UFrOFMj614M9q23lpNAIbcilBPuomeP6RW6piE5Gl89rNTwnTF8b7ejEQyhajuAP0eDMkXB57buvSf8FpC3vpxxhcI0IpWO9sbeE7lNAWhYoMe9gaq9U6vFwRE9jPHo35w3wMW4iKhSLOlkYUZfLxWHsv+OaK7uyRzLT2NALTobF6So7RFvaX1lR0qFTlOxUTSBjicXlq3q20nXMGu4YYBvfGij10W0dYTiGrOPw6YKVQmpwbWzLuHjpQ5h2L86Ul5PyjsPxFNmh83++xud090gz/tie3isBkt0Q5WiuGoFo0rRxOovLh6KM583IMeEtkgdMO0xymV7hD1+kuSZBNSOP61PC9ChlHwGyyJgUbRw7W5Ey29+nG30X129wjKPxEi5FCFPs1kJLRGmJTWkpwUT16LFVXi74CQgayqgrw9WNHVVWBYi5tZ+aSDjvbF3tcf3JVN9ovKMGMY7UqFmmGA8kWI38u+ReefIp38UsyncHnsN1AJbLDtNYsiGML8ph2GcA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR02MB7964.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(6916009)(38100700002)(38350700002)(4326008)(316002)(26005)(2616005)(2906002)(5660300002)(8936002)(52116002)(7696005)(956004)(6666004)(36756003)(8676002)(54906003)(1076003)(66476007)(186003)(66556008)(66946007)(508600001)(44832011)(83380400001)(55016002)(8886007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fTvBzqj6F3GSKAIxQ6xfylnuAOWwaC41IHbeYyKlZkHIVMrQ+rcM//E3EguQ?=
+ =?us-ascii?Q?17AGswJZEGJzej5JDk6UkNjxgH7VZIe26KKKrpMXcaLrPrpNYqMSmuuA2A/q?=
+ =?us-ascii?Q?VDATEu9YuN6qPxbKmnj4f3ssYXVa7Do05THbEj+PwcWWnVJGyKc+VNwUDulB?=
+ =?us-ascii?Q?YG8BPz+0klqPIBp+81FYmcRJaou+MScjpuFI/0VGKSrQqIBO8FCejjH7vng2?=
+ =?us-ascii?Q?3maV/ABGxJ/DACZDcBS2CAOTNMIp77XRuDQNqfp6jQFUetfh3WRn+5pHdl3H?=
+ =?us-ascii?Q?vwgQrIi2mLZJf5m8Kx41L3fztqQWd10EIhmX4CtZQuej2znTASQOXL+M2r65?=
+ =?us-ascii?Q?sUkrX+JBPTSOPSGYdnVJMj1bJtQnRATDrTUclQ+34LWrqmhxiT76M/1VxjIx?=
+ =?us-ascii?Q?mo6nBaD8ddHmcoYQJ7ITVY/Q9RQp+RBLhqkxzOFE/7/0yRMBPgCI7BMkbWN/?=
+ =?us-ascii?Q?uYevNk531A3kLUl6KwqnVvwhVC7F25k/UKleauu1oA190/diTOxmxa0yzBK2?=
+ =?us-ascii?Q?Cdd17JEGB36pOcAKBfmHWzBqROCNiamSmYeWokD7CBuKsdAKKVgj/X2bSIwE?=
+ =?us-ascii?Q?l+/g83PFUhIEm2iM7kvjZnxjpddZtfubxmYhqy+LPQfpxr96g2iZtRFhY5cC?=
+ =?us-ascii?Q?u2KaBmPqwwFYAVJ/pQCxPJ2DejB9t9Xj+8qpxAbfLR5J2j//E6I5qZqJWlCz?=
+ =?us-ascii?Q?+UhpwBk2LH9obDY773WShFKQI9ROvRoKxQiy/Pk+LsZNybyLrr4X21gaCh0+?=
+ =?us-ascii?Q?AJi8xWWznigiMP81XFmDbRpKYPgXHb+yOL7XJCsgDrUpns2mU9hjnFtcrcmE?=
+ =?us-ascii?Q?ai6ANWV81mCX+GC+N+rzRso8IaMuTyhmi2FbCvQU/nceFsLjIfB9mzb+8BEe?=
+ =?us-ascii?Q?T52EJx+YRkOMpAAIAdN/JfEkIofacKjxv4C+xOWiY4XyBPHD9I+FdfGvw8eS?=
+ =?us-ascii?Q?aDsaadeQ7atQBEoB3Des5GRGTZ9vq/qnz7EycaxIY3yWsaUsrhYPM0NwXot8?=
+ =?us-ascii?Q?0GYXmT+DJft/L9v2FLH6UbuCd5pf125OBwW6vbHfQgFGX0QM1NGkYOjAVf+t?=
+ =?us-ascii?Q?qA+kClItwbsnrPGPnQDDvwV9SYztocjruNmJwug/yykcdpitSBczt/TckDJ4?=
+ =?us-ascii?Q?S30blNy/r7wdw/pIE98Syc1CMNxtvANUGc19PVkHjJvZkLzxaeX3baAx5DU5?=
+ =?us-ascii?Q?RnUK1eBsCJMQtNXS0W6F0+j51hc3GM96i4rOWVWTHXt63KSTNGoT6aftuScc?=
+ =?us-ascii?Q?6BwaHUwxKldnE7rmODRf/K9aXqQtWlzyZd9BGUXfTJSPZZHWRNfVHpaLlaat?=
+ =?us-ascii?Q?hiiyvkhQa4lqQ8X+RKi9KkZgt8zWuIW4OUcOeSNAjXdw37aA/RzXRDVeSb/F?=
+ =?us-ascii?Q?i1O3vVby3kvY00+9Ca+9YoUiJZURdqJ+ZlmTjx/GG/bSV5RGbtstvsER1OK6?=
+ =?us-ascii?Q?Rbtm3MHOhgZz7ExYYar41fJmWOw9fY40mLXFArRlBZfwgUfmrX5waLPzT967?=
+ =?us-ascii?Q?UVMs881e1snUWF/HXHDN3461k6hoAoZQ7B6LI9lSgooB5ulPwczgp3AOraYY?=
+ =?us-ascii?Q?tqwA0x1y7jZQaXDtO1hxYS3wIvK6OzEQTew8Zgdb6HA4yVu0DrDp7nL/Eqko?=
+ =?us-ascii?Q?aAYUs/wIfNBZS+OTYSLMJ/ShK5uknN+GDv+VqtEyUrjg/QHBx44fwSgQvoth?=
+ =?us-ascii?Q?ipHx+05xjohlpYKoivt8KPCJPFA=3D?=
+X-OriginatorOrg: nutanix.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1527e440-b9e3-4cfb-975c-08d9a84ae946
+X-MS-Exchange-CrossTenant-AuthSource: CH0PR02MB7964.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Nov 2021 15:16:34.5614
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bb047546-786f-4de1-bd75-24e5b6f79043
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lI50B9vlkMp00sLOZzHXejDG/OsQEyKpiDaH8DCJyLwd8F2NK+UM0/tjZ2NDFWpTle7+itwbo6PC78H1VAqWm1k8DzTBg3KBL50VsbAIPTA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR02MB8196
+X-Proofpoint-GUID: JUobVU0qhuTIUbtkcsCzPZn8CyilNWp_
+X-Proofpoint-ORIG-GUID: JUobVU0qhuTIUbtkcsCzPZn8CyilNWp_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-11-15_10,2021-11-15_01,2020-04-07_01
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 14 Nov 2021 20:19:59 -0800 Roopa Prabhu wrote:
-> On 11/14/21 12:38 AM, Ido Schimmel wrote:
-> > On Thu, Nov 11, 2021 at 08:47:19AM -0800, Jakub Kicinski wrote:  
-> >> Hm. How do we come up with the appropriate wording here...
-> >>
-> >> I meant keeping the "PHY level link" up? I think we agree that all the
-> >> cases should behave like SFP power behaves today?
-> >>
-> >> The API is to control or query what is forcing the PHY link to stay up
-> >> after the netdev was set down. IOW why does the switch still see link
-> >> up if the link is down on Linux.  
-> > The SFP power policy doesn't affect that. In our systems (and I believe
-> > many others), by default, the transceivers are transitioned to high
-> > power mode upon plug-in, but the link is still down when the netdev is
-> > down because the MAC/PHY are not operational.
+virtio_net_hdr_to_skb does not set the skb's gso_size and gso_type
+correctly for UFO packets received via virtio-net that are a little over
+the GSO size. This can lead to problems elsewhere in the networking
+stack, e.g. ovs_vport_send dropping over-sized packets if gso_size is
+not set.
 
-Ah, GTK!
+This is due to the comparison
 
-> > With SRIOV/Multi-Host, the MAC/PHY are always operational which is why
-> > your link partner has a carrier even when the netdev is down.
+  if (skb->len - p_off > gso_size)
 
-I see, I think you're talking about something like IFLA_VF_LINK_STATE_*
-but for the PF. That could make sense, although I don't think it was
-ever requested.
+not properly accounting for the transport layer header.
 
-> >> I don't think we should report carrier up when netdev is down?  
-> > This is what happens today, but it's misleading because the carrier is
-> > always up with these systems. When I take the netdev down, I expect my
-> > link partner to lose carrier. If this doesn't happen, then I believe the
-> > netdev should always report IFF_UP. Alternatively, to avoid user space
-> > breakage, this can be reported via a new attribute such as "protoup".
+p_off includes the size of the transport layer header (thlen), so
+skb->len - p_off is the size of the TCP/UDP payload.
 
-Sounds sensible.
+gso_size is read from the virtio-net header. For UFO, fragmentation
+happens at the IP level so does not need to include the UDP header.
 
-> >> "proto" in "protodown" refers to STP, right?  
-> > Not really. I believe the main use case was vrrp / mlag. 
+Hence the calculation could be comparing a TCP/UDP payload length with
+an IP payload length, causing legitimate virtio-net packets to have
+lack gso_type/gso_size information.
 
-VRRP is a proto, mlag maybe a little less clear-cut.
+Example: a UDP packet with payload size 1473 has IP payload size 1481.
+If the guest used UFO, it is not fragmented and the virtio-net header's
+flags indicate that it is a GSO frame (VIRTIO_NET_HDR_GSO_UDP), with
+gso_size = 1480 for an MTU of 1500.  skb->len will be 1515 and p_off
+will be 42, so skb->len - p_off = 1473.  Hence the comparison fails, and
+shinfo->gso_size and gso_type are not set as they should be.
 
-> > The "protdown_reason" is just a bitmap of user enumerated reasons to keep
-> > the interface down. See commit 829eb208e80d ("rtnetlink: add support for
-> > protodown reason") for details.  
-> 
-> correct. Its equivalent to errDisable found on most commercial switch OS'es.
-> 
-> Can be used for any control-plane/mgmt-plane/protocol wanting to hold 
-> the link down.
-> 
-> Other use-cases where this can be used (as also quoted by other vendors):
-> 
-> mismatch of link properties
+Instead, add the UDP header length before comparing to gso_size when
+using UFO. In this way, it is the size of the IP payload that is
+compared to gso_size.
 
-What link properties?
+Fixes: 6dd912f8 ("net: check untrusted gso_size at kernel entry")
+Signed-off-by: Jonathan Davies <jonathan.davies@nutanix.com>
+---
+ include/linux/virtio_net.h | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-> Link Flapping detection and disable link
-> Port Security Violation
+diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
+index b465f8f..bea56af 100644
+--- a/include/linux/virtio_net.h
++++ b/include/linux/virtio_net.h
+@@ -122,8 +122,11 @@ static inline int virtio_net_hdr_to_skb(struct sk_buff *skb,
+ 		u16 gso_size = __virtio16_to_cpu(little_endian, hdr->gso_size);
+ 		struct skb_shared_info *shinfo = skb_shinfo(skb);
+ 
+-		/* Too small packets are not really GSO ones. */
+-		if (skb->len - p_off > gso_size) {
++		/* Too small packets are not really GSO ones.
++		 * UFO may not include transport header in gso_size.
++		 */
++		if (gso_type & SKB_GSO_UDP && skb->len - p_off + thlen > gso_size ||
++		    skb->len - p_off > gso_size) {
+ 			shinfo->gso_size = gso_size;
+ 			shinfo->gso_type = gso_type;
+ 
+-- 
+2.9.3
 
-Port security as established by a .. protocol like 802.1X ?
-
-> Broadcast Storms
-> etc
-
-Why not take the entire interface down for bcast storm?
-
-> >> Not sure what "proto" in "protoup" would be.  
-> > sriov/multi-host/etc ?  
-> 
-> agree. Would be nice to re-use protodown ndo and state/reason here
-
-You are the experts so correct me please but the point of protodown 
-is that the the link is held down for general traffic but you can 
-still exchange protocol messages on it. STP, VRRP, LAG, 802.1X etc.
-
-For anything that does not require special message exchange the link
-can be just brought down completely.
-
-In my head link held up is a completely different beast, the local host
-does not participate or otherwise pay attention to any communication on
-the link. It's about what other entities do with the link.
-
-But if you prefer "protoup" strongly that's fine, I guess.
