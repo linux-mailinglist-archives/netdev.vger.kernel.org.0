@@ -2,205 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E7B3452854
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 04:15:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2364445288C
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 04:28:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238974AbhKPDSE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 22:18:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55470 "EHLO
+        id S237299AbhKPDau (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 22:30:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232032AbhKPDR4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 22:17:56 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1607C043193;
-        Mon, 15 Nov 2021 15:45:49 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id r11so15423913edd.9;
-        Mon, 15 Nov 2021 15:45:49 -0800 (PST)
+        with ESMTP id S238339AbhKPD3h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 22:29:37 -0500
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 319E6C02C457
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 15:54:45 -0800 (PST)
+Received: by mail-qk1-x72d.google.com with SMTP id a11so12089586qkh.13
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 15:54:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=hvMLW+1fEeSE2j4ofzxMa1EFtQorNCxPN7SvY+4csoQ=;
-        b=iv/0b7C/mWXCvUCEKp/92nOuVFKckxb0xiPZ67bOdd4NUtyUGGhup6AKkft3GFSmRK
-         aVjIL5jH0GAtBT+TZGkq1+lMmFL/boYhhZdkjvhiqPHk7XOgcPEEDwLQgHfus8hnYVvn
-         jjfh36TfcFd6rSOpHjMIfVCKpoUGUBnl5Blo3rOgEJj1Gf73pWHqmoEajU+AYFsDsP5M
-         o5kOzWKuUud71BDjruRpyQ4SeyGy+/t1iJ+OBZK/huSIl1WqkIT/NDogj5Lc/0V8+b8x
-         zoq5iaAuabEBNXwt+XhCFCckujRIux6yN/HTjmM0+tihskuTdKBlbK3ziOk5B2druSjK
-         XD+A==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=G+/bouhr0g6roUEU7Fddd7LC5VyrkOdz3lZQw0/47D8=;
+        b=X285JdSttOtPBvl6Z1jxhKa4UksVYcC6cheVD+x7w8JTfkR+g4zcNetpvvcOddfAjJ
+         g4AEppYcYULq+CtMLNAdIkevdKqI2PMjIyS6zeDmOISVyGNTmG6wYRflgFP5uoXfixKr
+         1y6JSteSx62JQX/z1uXe+Rp77T15dFPUpUWnD7t6Lraglg+sOtKkT827sEs6Y4bJjSix
+         D4ahoQJIBL83k18eg1yXjk/74Qe9U0HpVjC1ny5lBAtR/V8RGvW8qqEvoiuZsb3Re97w
+         Uk1cMeADoPiw9AEogBLlXGHr08UNVUnrbDWlmctlIzHkNla6W+PpHvTiY+XzWOAUF6ro
+         DXNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=hvMLW+1fEeSE2j4ofzxMa1EFtQorNCxPN7SvY+4csoQ=;
-        b=N+HgoeGbxXo11DKlO9++LE/w/FUrVLV9ylMUYth28EsKC5u2R6s8QRHFBrULSH/5BH
-         dIwkllobljgIFjv6189j/5IPp8XCmQhqU7TwJZm6fK+fm43YFs/KoDJjw4vKVDK7BkH0
-         PqoSR20F6WyWeyoJeQcTqQcgftlSbq634ARTYA3109fHk5PiC2rkM7w5CI0S/0Jm+dlh
-         Nn2zDnwvOBrRQjFfhKfmU7snFGbcgvXeyUpNMDZdilUQevPRrmgw3qMyHTyEIsE1i8jN
-         4dUTSRyQma+I9aXzhH58tiAxBXehEU6wxLGrvaDtuniqRBNCkuB5fn7QQt3fpTJvpPs1
-         xJVg==
-X-Gm-Message-State: AOAM530hVWLGXNqMjbSdcIWyQuKQ9uwP5HV6xgmSmNVEGqszgjE76sPw
-        R3XY9E+2pz/g8U60CpLtBLdYyacsLPk=
-X-Google-Smtp-Source: ABdhPJwyuMzphOXOmMTNF+MeDQ7TxDrz0zy1e2htZhRB5s1OvI6bL9HaIJqHA0H+iBAvpwdbVa1EVA==
-X-Received: by 2002:a17:906:3745:: with SMTP id e5mr3750975ejc.400.1637019948132;
-        Mon, 15 Nov 2021 15:45:48 -0800 (PST)
-Received: from skbuf ([188.25.175.102])
-        by smtp.gmail.com with ESMTPSA id qf8sm7280490ejc.8.2021.11.15.15.45.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Nov 2021 15:45:47 -0800 (PST)
-Date:   Tue, 16 Nov 2021 01:45:46 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        kernel@pengutronix.de, Jakub Kicinski <kuba@kernel.org>,
-        UNGLinuxDriver@microchip.com,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [RFC PATCH net-next] net: dsa: microchip: implement multi-bridge
- support
-Message-ID: <20211115234546.spi7hz2fsxddn4dz@skbuf>
-References: <20211108111034.2735339-1-o.rempel@pengutronix.de>
- <20211110123640.z5hub3nv37dypa6m@skbuf>
- <20211112075823.GJ12195@pengutronix.de>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=G+/bouhr0g6roUEU7Fddd7LC5VyrkOdz3lZQw0/47D8=;
+        b=PtWao5Nl+wLQBBavO9rMmPARnCs76knSFIdjWJ4FviNIffWWAU5UkmXf34YIykmh5x
+         HaP516+bO6i1UXo3qzkreIy3Ove1ljCAW1xZY7KtePYdNzKchbBhCj9lgCZBa4avE2bs
+         w6uYcG+gpoH0LQrdxfRyU8rW3BdPrWqAq88wG7PmfxDQs6ljIZVgSa//s0WJTdxKH4sN
+         F+uQW8su7B9b17OX4+mvuqP0tCkbYbErJqoQz5RKMhXKkhBfmYBCzNXimOxXaOQyPjdd
+         8fAk2gdL8q3LWtVqFsc3krLvf82yPJAmaneVa47of9DiMgbJjTLlZ0Q9rzXPuOZMtmni
+         OP5w==
+X-Gm-Message-State: AOAM531L0qHPjoF6hqDIkxms184/oKWBRkoOIK92jq0YNK4b5hBOsRTw
+        MVjw8+zK7BlRjgdEI+7nCZbLNNqGjKg8NQOlVFLybg==
+X-Google-Smtp-Source: ABdhPJzGnE/SBFJQSV7oGw6VVY2cWccREW/J1N/VsQZTOZgOwA2NJT3EYn7c5y6wyikTxrdQNRMsQMpNbo+Grp95vQ0=
+X-Received: by 2002:a37:2750:: with SMTP id n77mr2587387qkn.490.1637020484118;
+ Mon, 15 Nov 2021 15:54:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211112075823.GJ12195@pengutronix.de>
+References: <20211115193105.1952656-1-sdf@google.com> <CACdoK4L0YOKXbKdLdBgGpZd_nrVq39wiZ+KoWUtAHP2CsR6RCg@mail.gmail.com>
+In-Reply-To: <CACdoK4L0YOKXbKdLdBgGpZd_nrVq39wiZ+KoWUtAHP2CsR6RCg@mail.gmail.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Mon, 15 Nov 2021 15:54:33 -0800
+Message-ID: <CAKH8qBtR6tYXLWpnO4W69DxnxmEXZTad5H2oM7YT_DE0OHu+vg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2] bpftool: add current libbpf_strict mode to
+ version output
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 12, 2021 at 08:58:23AM +0100, Oleksij Rempel wrote:
-> On Wed, Nov 10, 2021 at 02:36:40PM +0200, Vladimir Oltean wrote:
-> > On Mon, Nov 08, 2021 at 12:10:34PM +0100, Oleksij Rempel wrote:
-> > > Current driver version is able to handle only one bridge at time.
-> > > Configuring two bridges on two different ports would end up shorting this
-> > > bridges by HW. To reproduce it:
-> > > 
-> > > 	ip l a name br0 type bridge
-> > > 	ip l a name br1 type bridge
-> > > 	ip l s dev br0 up
-> > > 	ip l s dev br1 up
-> > > 	ip l s lan1 master br0
-> > > 	ip l s dev lan1 up
-> > > 	ip l s lan2 master br1
-> > > 	ip l s dev lan2 up
-> > > 
-> > > 	Ping on lan1 and get response on lan2, which should not happen.
-> > > 
-> > > This happened, because current driver version is storing one global "Port VLAN
-> > > Membership" and applying it to all ports which are members of any
-> > > bridge.
-> > > To solve this issue, we need to handle each port separately.
-> > > 
-> > > This patch is dropping the global port member storage and calculating
-> > > membership dynamically depending on STP state and bridge participation.
-> > > 
-> > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > > ---
-> > 
-> > Because there wasn't any restriction in the driver against multiple
-> > bridges, I would be tempted to send to the "net" tree and provide a
-> > Fixes: tag.
-> 
-> This patch looks too intrusive to me. It will be hard to backport it to
-> older versions. How about have two patches: add limit to one bridge for
-> net and add support for multiple bridges for net-next?
+On Mon, Nov 15, 2021 at 3:34 PM Quentin Monnet <quentin@isovalent.com> wrote:
+>
+> On Mon, 15 Nov 2021 at 19:31, Stanislav Fomichev <sdf@google.com> wrote:
+> >
+> > + bpftool --legacy --version
+> > bpftool v5.15.0
+> > features: libbfd, skeletons
+> > + bpftool --version
+> > bpftool v5.15.0
+> > features: libbfd, libbpf_strict, skeletons
+> >
+> > + bpftool --legacy --help
+> > Usage: bpftool [OPTIONS] OBJECT { COMMAND | help }
+> >        bpftool batch file FILE
+> >        bpftool version
+> >
+> >        OBJECT := { prog | map | link | cgroup | perf | net | feature | btf | gen | struct_ops | iter }
+> >        OPTIONS := { {-j|--json} [{-p|--pretty}] | {-d|--debug} | {-l|--legacy} |
+> >                     {-V|--version} }
+> > + bpftool --help
+> > Usage: bpftool [OPTIONS] OBJECT { COMMAND | help }
+> >        bpftool batch file FILE
+> >        bpftool version
+> >
+> >        OBJECT := { prog | map | link | cgroup | perf | net | feature | btf | gen | struct_ops | iter }
+> >        OPTIONS := { {-j|--json} [{-p|--pretty}] | {-d|--debug} | {-l|--legacy} |
+> >                     {-V|--version} }
+> >
+> > + bpftool --legacy
+> > Usage: bpftool [OPTIONS] OBJECT { COMMAND | help }
+> >        bpftool batch file FILE
+> >        bpftool version
+> >
+> >        OBJECT := { prog | map | link | cgroup | perf | net | feature | btf | gen | struct_ops | iter }
+> >        OPTIONS := { {-j|--json} [{-p|--pretty}] | {-d|--debug} | {-l|--legacy} |
+> >                     {-V|--version} }
+> > + bpftool
+> > Usage: bpftool [OPTIONS] OBJECT { COMMAND | help }
+> >        bpftool batch file FILE
+> >        bpftool version
+> >
+> >        OBJECT := { prog | map | link | cgroup | perf | net | feature | btf | gen | struct_ops | iter }
+> >        OPTIONS := { {-j|--json} [{-p|--pretty}] | {-d|--debug} | {-l|--legacy} |
+> >                     {-V|--version} }
+> >
+> > + bpftool --legacy version
+> > bpftool v5.15.0
+> > features: libbfd, skeletons
+> > + bpftool version
+> > bpftool v5.15.0
+> > features: libbfd, libbpf_strict, skeletons
+> >
+> > + bpftool --json --legacy version
+> > {"version":"5.15.0","features":{"libbfd":true,"libbpf_strict":false,"skeletons":true}}
+> > + bpftool --json version
+> > {"version":"5.15.0","features":{"libbfd":true,"libbpf_strict":true,"skeletons":true}}
+> >
+> > v2:
+> > - fixes for -h and -V (Quentin Monnet)
+> >
+> > Suggested-by: Quentin Monnet <quentin@isovalent.com>
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+>
+> The behaviour will change in a few cases where both the help and
+> version commands and/or options are provided, e.g. "bpftool -h
+> version" used to print the help and will do the version instead,
+> "bpftool -V help" changes in an opposite fashion. Given that there's
+> no practical interest in having both commands/options, and that the
+> behaviour was not really consistent so far, I consider that this is
+> not an issue.
+>
+> However, we now have "bpftool --version" returning -1 (instead of 0).
+> Any chance we can fix that? Maybe simply something like the change
+> below instead?
 
-That would work.
-
-> > > +	dp = dsa_to_port(ds, port);
-> > > +
-> > > +	for (i = 0; i < ds->num_ports; i++) {
-> > > +		const struct dsa_port *dpi = dsa_to_port(ds, i);
-> > 
-> > Other drivers name this "other_dp", I don't think that name is too bad.
-> > Also, you can use "dsa_switch_for_each_user_port", which is also more
-> > efficient, although you can't if you target 'stable' with this change,
-> > since it has been introduced rather recently.
-> 
-> ok
-> 
-> > > +		struct ksz_port *pi = &dev->ports[i];
-> > 
-> > and this could be "other_p" rather than "pi".
-> 
-> ok
-> 
-> > > +		u8 val = 0;
-> > > +
-> > > +		if (!dsa_is_user_port(ds, i))
-> > >  			continue;
-> > > -		p = &dev->ports[i];
-> > > -		if (!(dev->member & (1 << i)))
-> > > +		if (port == i)
-> > >  			continue;
-> > > +		if (!dp->bridge_dev || dp->bridge_dev != dpi->bridge_dev)
-> > > +			continue;
-> > > +
-> > > +		pi = &dev->ports[i];
-> > > +		if (pi->stp_state != BR_STATE_DISABLED)
-> > > +			val |= BIT(dsa_upstream_port(ds, i));
-> > >  
-> > 
-> > This is saying:
-> > For each {user port, other port} pair, if the other port isn't DISABLED,
-> > then allow the user port to forward towards the CPU port of the other port.
-> > What sense does that make? You don't support multiple CPU ports, so this
-> > port's CPU port is that port's CPU port, and you have one more (broken)
-> > forwarding rule towards the CPU port below.
-> 
-> Ok, understand.
-> 
-> > > -		/* Port is a member of the bridge and is forwarding. */
-> > > -		if (p->stp_state == BR_STATE_FORWARDING &&
-> > > -		    p->member != dev->member)
-> > > -			dev->dev_ops->cfg_port_member(dev, i, dev->member);
-> > > +		if (pi->stp_state == BR_STATE_FORWARDING &&
-> > > +		    p->stp_state == BR_STATE_FORWARDING) {
-> > > +			val |= BIT(port);
-> > > +			port_member |= BIT(i);
-> > > +		}
-> > > +
-> > > +		dev->dev_ops->cfg_port_member(dev, i, val);
-> > >  	}
-> > > +
-> > > +	if (p->stp_state != BR_STATE_DISABLED)
-> > > +		port_member |= BIT(dsa_upstream_port(ds, port));
-> > 
-> > Why != DISABLED? I expect that dev_ops->cfg_port_member() affects only
-> > data packet forwarding, not control packet forwarding, right?
-> 
-> No. According to the KSZ9477S datasheet:
-> "The processor should program the “Static MAC Table” with the entries that it
-> needs to receive (for example, BPDU packets). The “overriding” bit should be set
-> so that the switch will forward those specific packets to the processor. The
-> processor may send packets to the port(s) in this state. Address learning is
-> disabled on the port in this state."
-> 
-> This part is not implemented.
-> 
-> In current driver implementation (before or after this patch), all
-> packets are forwarded. It looks like, current STP implementation in this driver
-> is not complete. If I create a loop, the bridge will permanently toggle one of
-> ports between blocking and listening. 
-> 
-> Currently I do not know how to proceed with it. Remove stp callback and
-> make proper, straightforward bride_join/leave? Implement common soft STP
-> for all switches without HW STP support?
-
-What does "soft STP" mean? You need to have a port state in which data
-plane packets are blocked, but BPDUs can pass. Unless you trap all
-packets to the CPU and make the selection in software (therefore,
-including the forwarding, I don't know if that is so desirable), you
-don't have much of a choice except to do what you've said above, program
-the static MAC table with entries for 01-80-c2-00-00-0x which trap those
-link-local multicast addresses to the CPU and set the STP state override
-bit for them and for them only.
-
-BTW, see the "bridge link set" section in "man bridge" for a list of
-what you should do in each STP state.
+That works as well. I didn't want to special case it, but agreed that
+changing exit value might not be a good idea (I was assuming they
+already return -1 and didn't check).
+Will resend shortly with your version.
