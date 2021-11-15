@@ -2,71 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6426450CDD
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 18:42:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CDDF450BF7
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 18:30:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237166AbhKORok (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 12:44:40 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57856 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238535AbhKORlP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 12:41:15 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 38D94632F6;
-        Mon, 15 Nov 2021 17:27:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636997233;
-        bh=DTMdIMHyWh2Eh+YLVzW/EpbqPbssKK+n7c5025oioHg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=LZaB9NmICvcPW9vprQOetM70QfLXQvoEnlpgYA6HQk6tIMi80H+san2G3YVC30meq
-         W2QE6cJlKANpZZCSIMb3h6L70WhFJ8SP9oG8nAqNl3omagbxSn3SS4jxAcq6yQdywv
-         JxLk+u5rRYi19Jv01tTPSFsACa8O2QzOS9hhsJj5P2cBlWbQc+pjuZjHf6KVH9WgVB
-         Jy2LeBipMDcBE26Hj2Pb06bHyfUbxtIyf9i2BPQ3pJzbTpYc3yagSWQKx+STD8QMar
-         25ddbJd+fG1gWwvf+46cj71YK3I/5wTdJLdvQesg0zE65fruzoiA0jAT5DZI6t+xYI
-         7b9Pxw34gqGpw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2FB8C60A49;
-        Mon, 15 Nov 2021 17:27:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: bpf-next 2021-11-15
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163699723319.3295.15019546591268634921.git-patchwork-notify@kernel.org>
-Date:   Mon, 15 Nov 2021 17:27:13 +0000
-References: <20211115162008.25916-1-daniel@iogearbox.net>
-In-Reply-To: <20211115162008.25916-1-daniel@iogearbox.net>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        andrii@kernel.org, quentin@isovalent.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
+        id S232164AbhKORcm convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 15 Nov 2021 12:32:42 -0500
+Received: from coyote.holtmann.net ([212.227.132.17]:47475 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237137AbhKORab (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 12:30:31 -0500
+Received: from smtpclient.apple (p4fefc15c.dip0.t-ipconnect.de [79.239.193.92])
+        by mail.holtmann.org (Postfix) with ESMTPSA id D2B04CED38;
+        Mon, 15 Nov 2021 18:27:33 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.20.0.1.32\))
+Subject: Re: [PATCH] bluetooth: fix uninitialized variables notify_evt
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20211115085613.1924762-1-liu.yun@linux.dev>
+Date:   Mon, 15 Nov 2021 18:27:33 +0100
+Cc:     "Tumkur Narayan, Chethan" <chethan.tumkur.narayan@intel.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <73AF4476-F5B2-4E83-9F43-72D98B4615FF@holtmann.org>
+References: <20211115085613.1924762-1-liu.yun@linux.dev>
+To:     Jackie Liu <liu.yun@linux.dev>
+X-Mailer: Apple Mail (2.3693.20.0.1.32)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi Jackie,
 
-This pull request was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Mon, 15 Nov 2021 17:20:08 +0100 you wrote:
-> Hi David, hi Jakub,
-> 
-> The following pull-request contains BPF updates for your *net-next* tree.
-> 
-> There are two merge conflicts in tools/bpf/bpftool/Makefile due to commit
-> e41ac2020bca ("bpftool: Install libbpf headers for the bootstrap version, too")
-> from bpf tree and commit 6501182c08f7 ("bpftool: Normalize compile rules to
-> specify output file last") from bpf-next tree. Resolve as follows:
+> Coverity Scan report:
 > 
 > [...]
+> *** CID 1493985:  Uninitialized variables  (UNINIT)
+> /net/bluetooth/hci_event.c: 4535 in hci_sync_conn_complete_evt()
+> 4529
+> 4530     	/* Notify only in case of SCO over HCI transport data path which
+> 4531     	 * is zero and non-zero value shall be non-HCI transport data path
+> 4532     	 */
+> 4533     	if (conn->codec.data_path == 0) {
+> 4534     		if (hdev->notify)
+>>>>    CID 1493985:  Uninitialized variables  (UNINIT)
+>>>>    Using uninitialized value "notify_evt" when calling "*hdev->notify".
+> 4535     			hdev->notify(hdev, notify_evt);
+> 4536     	}
+> 4537
+> 4538     	hci_connect_cfm(conn, ev->status);
+> 4539     	if (ev->status)
+> 4540     		hci_conn_del(conn);
+> [...]
+> 
+> Although only btusb uses air_mode, and he only handles HCI_NOTIFY_ENABLE_SCO_CVSD
+> and HCI_NOTIFY_ENABLE_SCO_TRANSP, there is still a very small chance that
+> ev->air_mode is not equal to 0x2 and 0x3, but notify_evt is initialized to
+> HCI_NOTIFY_ENABLE_SCO_CVSD or HCI_NOTIFY_ENABLE_SCO_TRANSP. the context is
+> maybe not correct.
+> 
+> In order to ensure 100% correctness, we directly give him a default value 0.
+> 
+> Addresses-Coverity: ("Uninitialized variables")
+> Fixes: f4f9fa0c07bb ("Bluetooth: Allow usb to auto-suspend when SCO use	non-HCI transport")
+> Signed-off-by: Jackie Liu <liuyun01@kylinos.cn>
+> ---
+> net/bluetooth/hci_event.c | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+> index 7d0db1ca1248..f898fa42a183 100644
+> --- a/net/bluetooth/hci_event.c
+> +++ b/net/bluetooth/hci_event.c
+> @@ -4445,7 +4445,7 @@ static void hci_sync_conn_complete_evt(struct hci_dev *hdev,
+> {
+> 	struct hci_ev_sync_conn_complete *ev = (void *) skb->data;
+> 	struct hci_conn *conn;
+> -	unsigned int notify_evt;
+> +	unsigned int notify_evt = 0;
+> 
+> 	BT_DBG("%s status 0x%2.2x", hdev->name, ev->status);
 
-Here is the summary with links:
-  - pull-request: bpf-next 2021-11-15
-    https://git.kernel.org/netdev/net-next/c/a5bdc36354cb
+lets modify the switch statement and add a default case. And then lets add a check to notify_evt != 0.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+With that in mind, I wonder if this is not better
 
+        /* Notify only in case of SCO over HCI transport data path which
+         * is zero and non-zero value shall be non-HCI transport data path
+         */ 
+	if (conn->codec.data_path == 0 && hdev->notify) {
+		switch (ev->air_mode) {
+		case 0x02:
+			hdev->notify(hdev, HCI_NOTIFY_ENABLE_SCO_CVSD);
+			break;
+		case 0x03:
+			hdev->notify(hdev, HCI_NOTIFY_ENABLE_SCO_TRANSP);
+			break;
+		}
+	}
+
+Regards
+
+Marcel
 
