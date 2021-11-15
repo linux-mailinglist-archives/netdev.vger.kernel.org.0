@@ -2,113 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85F5544FFFB
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 09:31:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E727045000C
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 09:38:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229999AbhKOId6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 03:33:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57914 "EHLO
+        id S230162AbhKOIlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 03:41:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229944AbhKOId4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 03:33:56 -0500
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8C07C061746;
-        Mon, 15 Nov 2021 00:30:56 -0800 (PST)
-Received: by mail-lj1-x235.google.com with SMTP id z8so33743164ljz.9;
-        Mon, 15 Nov 2021 00:30:56 -0800 (PST)
+        with ESMTP id S229944AbhKOIlQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 03:41:16 -0500
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74F6AC061746;
+        Mon, 15 Nov 2021 00:38:20 -0800 (PST)
+Received: by mail-lj1-x22c.google.com with SMTP id d11so33836830ljg.8;
+        Mon, 15 Nov 2021 00:38:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=QQ+tRnGMv7HCE8tWnOOxb60WEdKs2mEC1kY560cUZIc=;
-        b=kal1w4vxwyqTIc3+EQZ9fx++Hhza9E8rptgelO8UtlTrjFAxtIqINF2mUDHvZUTKRu
-         4R5do/lLz5ihmzWLAlM2QzhsYVNo6+OuQs8Y1PaDIijqoMVFpwXaPVtONroDEJez3PdW
-         zggeo81bghaayjMTcpa2YBV8U98u9ny+N385gHlQoJg7EOWO3S88GtCNK6McwsuzJbHE
-         tIxAhCbIMOSGJUy2DWoPuy9fToeyClQKGf+QeVEJT3A5joHGsiKPQGHQkmWEudueZJwq
-         cS5OdYNtI1GCa+TDedyLeoonSzARKTlo89TPn7QgH07i2S9XI89PlFR0evv/Wp1TbZCk
-         Humw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=5BO6zupXKsq7QxwcvI+ZE0fQUmmRHhVHR5EykOjogIQ=;
+        b=eCxb09vAsBlDE2SDJArcqnAOet8mEGHcTLJFtsburnUVRDUd5/jTwmzvJkkV4nMfje
+         /S04ouHtVNbTJ4Xn1SjF9kJO80blQwp4cbIQsQC63Ie9NRPsPUuxRSTeyG+dk7cdR/5T
+         K99l7t51UNPFRC8ovf7oVm7jRcUfYJeGn2YuUMbaJ4wwxttiULYbvOLz1IVbL/p+lH9v
+         oys+yue0TJ1wGojTyetM2J4vDmCc4uexGCaqo9NqdniKDWv6bnAS/kqQaMief8t2x9SS
+         0MfFU7JKJ6/jmILUsYBmuOAwWNA1DZdfrvPEJ0s0vh1J0gtOvBL+5n2+KXLA4FIki45I
+         +A4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=QQ+tRnGMv7HCE8tWnOOxb60WEdKs2mEC1kY560cUZIc=;
-        b=1uf7fzKbw3zd7BaXeiZRsLxFbcZ5djvahFOzYzEWxNxzBOh9Rw0vvVqS52cjOR9LFV
-         vuV3BHPIeFgs1jCQ9ezjSOiAFLoR2DqQK5EumqCPy5DDC07h6wFw++hxOjhwZjvVJe1P
-         7xV11pCMsiztFe8+UF+5Qm2xFabwnZyt+jEdRj2O8fUQm6vYtyV25PL6bAcYc9e4PBB8
-         0Mio/yd5p10HbwhfrOdZTFhmeGOPW4o7KQ853DWuSHUSfVrfBGgjo489TXHvxrt6B0RI
-         ZBPDZn11WYNNgjtlRotOHKHAK3s5cdHvQv/wWl6Cqw2mml8UuH9PJsC0UC5DnZF/r4Jz
-         aPAg==
-X-Gm-Message-State: AOAM530RLHib5u/amVBXq0JNE27jyd7vGLyocHDMlY2B0VmbqTaP1fgP
-        BVW+WYmqmZBmfkIfQd+ulg/FrLgBWBA=
-X-Google-Smtp-Source: ABdhPJyXpogCQSJ8M5IwEkKXOzIFkcg2itll7gpYGdqO02lwiXj6KcJQpgFYG2bUPGaja1S2c7rMMw==
-X-Received: by 2002:a2e:890d:: with SMTP id d13mr36341168lji.396.1636965055101;
-        Mon, 15 Nov 2021 00:30:55 -0800 (PST)
-Received: from [192.168.1.11] ([94.103.224.112])
-        by smtp.gmail.com with ESMTPSA id a6sm1344734lfs.115.2021.11.15.00.30.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Nov 2021 00:30:54 -0800 (PST)
-Message-ID: <e91eb5b1-295e-1a21-d153-5e0fa52b2ffe@gmail.com>
-Date:   Mon, 15 Nov 2021 11:30:53 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v2] can: etas_es58x: fix error handling
-Content-Language: en-US
-To:     Johan Hovold <johan@kernel.org>
-Cc:     mailhol.vincent@wanadoo.fr, wg@grandegger.com, mkl@pengutronix.de,
-        davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <CAMZ6Rq+orfUuUCCgeWyGc7P0vp3t-yjf_g9H=Jhk43f1zXGfDQ@mail.gmail.com>
- <20211115075124.17713-1-paskripkin@gmail.com>
- <YZIWT9ATzN611n43@hovoldconsulting.com>
- <7a98b159-f9bf-c0dd-f244-aec6c9a7dcaa@gmail.com>
- <YZIXdnFQcDcC2QvE@hovoldconsulting.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=5BO6zupXKsq7QxwcvI+ZE0fQUmmRHhVHR5EykOjogIQ=;
+        b=ykb51liP1OoQrC9nCjP9IY2zrpVYTl5BIDeI/ZE73s16sEbSceb8sAbvBwKbq+AXPY
+         isxW5iK7avP257yjGYd16xfqIgKWr4S5lqgfn3FQAlAAZI9tdrj4eAL6j3JENIwq38YO
+         CIZLxJKlDxSHB8iacsAhRN/IZ6Bqeo+R5DpnaUcYpi/37a1vvW/MMCinYTu8tdQJdW7V
+         kF/0Xpa1CY8jWKr4EOPK0RX2TuGvWpOPC8ULTs/ypwdXZu9v3bGNAn3YXQXQT/t/XWue
+         OvLAkqmf5G7FKJEp8omXOrLjsL27+nxhEfpe+7Ew0JZJbOTvNxLag5cbFevuewb6XZqu
+         GrBQ==
+X-Gm-Message-State: AOAM530z00VV0+CudWaIfeSWgVK6PAaEz5FTeeOqS9Oj0FWkcNwOFdRw
+        GLofpRm36rBQUu5okViB+RA=
+X-Google-Smtp-Source: ABdhPJzZVk/Og28FR7o4EgCwydyOJJTERcZJyzie5FipEwjoYb/sP9+fiQ5SMZq2AVJ9QZvNsQY7vQ==
+X-Received: by 2002:a2e:81da:: with SMTP id s26mr35794403ljg.94.1636965498874;
+        Mon, 15 Nov 2021 00:38:18 -0800 (PST)
+Received: from localhost.localdomain ([94.103.224.112])
+        by smtp.gmail.com with ESMTPSA id r5sm1440797lji.132.2021.11.15.00.38.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Nov 2021 00:38:18 -0800 (PST)
 From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <YZIXdnFQcDcC2QvE@hovoldconsulting.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To:     mailhol.vincent@wanadoo.fr, wg@grandegger.com, mkl@pengutronix.de,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>
+Subject: [PATCH v3] can: etas_es58x: fix error handling
+Date:   Mon, 15 Nov 2021 11:37:56 +0300
+Message-Id: <20211115083756.25971-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <YZIWT9ATzN611n43@hovoldconsulting.com>
+References: <YZIWT9ATzN611n43@hovoldconsulting.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/15/21 11:16, Johan Hovold wrote:
-> On Mon, Nov 15, 2021 at 11:15:07AM +0300, Pavel Skripkin wrote:
->> On 11/15/21 11:11, Johan Hovold wrote:
->> > Just a drive-by comment:
->> > 
->> > Are you sure about this move of the netdev[channel_idx] initialisation?
->> > What happens if the registered can device is opened before you
->> > initialise the pointer? NULL-deref in es58x_send_msg()?
->> > 
->> > You generally want the driver data fully initialised before you register
->> > the device so this looks broken.
->> > 
->> > And either way it is arguably an unrelated change that should go in a
->> > separate patch explaining why it is needed and safe.
->> > 
->> 
->> 
->> It was suggested by Vincent who is the maintainer of this driver [1].
-> 
-> Yeah, I saw that, but that doesn't necessarily mean it is correct.
-> 
-> You're still responsible for the changes you make and need to be able to
-> argue why they are correct.
-> 
+When register_candev() fails there are 2 possible device states:
+NETREG_UNINITIALIZED and NETREG_UNREGISTERED. None of them are suitable
+for calling unregister_candev(), because of following checks in
+unregister_netdevice_many():
 
-Sure! I should have check it before sending v2 :( My bad, sorry. I see 
-now, that there is possible calltrace which can hit NULL defer.
+	if (dev->reg_state == NETREG_UNINITIALIZED)
+		WARN_ON(1);
+...
+	BUG_ON(dev->reg_state != NETREG_REGISTERED);
 
-One thing I am wondering about is why in some code parts there are 
-validation checks for es58x_dev->netdev[i] and in others they are missing.
+To avoid possible BUG_ON or WARN_ON let's free current netdev before
+returning from es58x_init_netdev() and leave others (registered)
+net devices for es58x_free_netdevs().
 
-Anyway, it's completely out of scope of current patch, I am going to 
-resend v1 with fixed Fixes tag. Thank you for review!
+Fixes: 8537257874e9 ("can: etas_es58x: add core support for ETAS ES58X CAN USB interfaces")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
 
+Changes in v3:
+	- Moved back es58x_dev->netdev[channel_idx] initialization,
+	  since it's unsafe to intialize it _after_ register_candev()
+	  call. Thanks to Johan Hovold <johan@kernel.org> for spotting
+	  it
 
+Changes in v2:
+	- Fixed Fixes: tag
+	- Moved es58x_dev->netdev[channel_idx] initialization at the end
+	  of the function
 
+---
+ drivers/net/can/usb/etas_es58x/es58x_core.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c b/drivers/net/can/usb/etas_es58x/es58x_core.c
+index 96a13c770e4a..41c721f2fbbe 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_core.c
++++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
+@@ -2098,8 +2098,11 @@ static int es58x_init_netdev(struct es58x_device *es58x_dev, int channel_idx)
+ 	netdev->flags |= IFF_ECHO;	/* We support local echo */
+ 
+ 	ret = register_candev(netdev);
+-	if (ret)
++	if (ret) {
++		free_candev(netdev);
++		es58x_dev->netdev[channel_idx] = NULL;
+ 		return ret;
++	}
+ 
+ 	netdev_queue_set_dql_min_limit(netdev_get_tx_queue(netdev, 0),
+ 				       es58x_dev->param->dql_min_limit);
+-- 
+2.33.1
 
-With regards,
-Pavel Skripkin
