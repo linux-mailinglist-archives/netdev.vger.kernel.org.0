@@ -2,79 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1041C4516DB
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 22:45:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0326145187C
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 23:57:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348954AbhKOVrq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 16:47:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36934 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1351184AbhKOVps (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 16:45:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 576FD61B2C;
-        Mon, 15 Nov 2021 21:42:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637012569;
-        bh=LVsPdaw2yY7qWBTlOQrq7wYxukq/AP9opsWvdVtsMmI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uqkD3GfTytoMGYLQ5dXGmYjfMgpBUh/3gTTpinb9tYV/suVLU0EYuVg2ADRV+5Kg3
-         sZcYfzrcwmXpyTAzz3Q6u5CEZ/fJGhwoq+vr28dO5Z+T5fox2MNJQhQNeG/0cJxl9v
-         vcslsPEb0h49jfKWUABZYDqf/eBEA2NFd6jifzYkJseGOdFm062QuHB7MlDAlwpomE
-         1J2j4xBNOTZu7Qm+MR0a0sKFyn0vqpkp4PeGqBIM2MGsdxnZFjbsdA6JGvULL4di7f
-         s1R3O9qYO7tqUoTEdnKiffTE/X5gBUvCRCp1D6v1EJkUHtI+YMYmmkSPQDNfFmTkkX
-         kPUyjALAmgHYQ==
-Date:   Mon, 15 Nov 2021 13:42:48 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Machnikowski, Maciej" <maciej.machnikowski@intel.com>,
-        Vadim Fedorenko <vfedorenko@novek.ru>
-Cc:     Petr Machata <petrm@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "abyagowi@fb.com" <abyagowi@fb.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "idosch@idosch.org" <idosch@idosch.org>,
-        "mkubecek@suse.cz" <mkubecek@suse.cz>,
-        "saeed@kernel.org" <saeed@kernel.org>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>
-Subject: Re: [PATCH v2 net-next 6/6] docs: net: Add description of SyncE
- interfaces
-Message-ID: <20211115134248.5d111036@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <MW5PR11MB58121DC2755B9AADA3516E75EA989@MW5PR11MB5812.namprd11.prod.outlook.com>
-References: <20211105205331.2024623-1-maciej.machnikowski@intel.com>
-        <20211105205331.2024623-7-maciej.machnikowski@intel.com>
-        <87r1bqcyto.fsf@nvidia.com>
-        <MW5PR11MB5812B0A4E6227C6896AC12B5EA929@MW5PR11MB5812.namprd11.prod.outlook.com>
-        <87mtmdcrf2.fsf@nvidia.com>
-        <MW5PR11MB5812D4A8419C37FE9C890D3AEA929@MW5PR11MB5812.namprd11.prod.outlook.com>
-        <87bl2scnly.fsf@nvidia.com>
-        <MW5PR11MB5812034EA5FC331FA5A2D37CEA939@MW5PR11MB5812.namprd11.prod.outlook.com>
-        <874k8kca9t.fsf@nvidia.com>
-        <MW5PR11MB5812757CFF0ACED1D9CFC5A2EA939@MW5PR11MB5812.namprd11.prod.outlook.com>
-        <87y25vbu19.fsf@nvidia.com>
-        <MW5PR11MB58121DC2755B9AADA3516E75EA989@MW5PR11MB5812.namprd11.prod.outlook.com>
+        id S1349534AbhKOXAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 18:00:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50302 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353134AbhKOWfA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 17:35:00 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05D03C04A499
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 13:48:06 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id az33-20020a05600c602100b00333472fef04so333815wmb.5
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 13:48:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Z3OdB0x5a+j+jlf0dMOM0PWdUuZx3BRJAftWyyfklE0=;
+        b=KRI9Y3d00cSsH127LkaUftW84wb8FqH2u1z+N60FXxQ2soKq8sjAnxAlwnbduKCPML
+         /4IkuXMD8n8U0fHde/j45ykHVjyJqzm0SWH/Te8dmeYi7TR6Of4XhlmtVXa5+mcRqEwh
+         OHg8Yd/Osg1Sgs3lEREKQ69nZCtwnk5TSdD/EEkMkjhDzmpbAMmO03dyries1w9DP5lw
+         jOZlkc2zPdMwbEXJzBn4LqVJPGHCFhXi0piJpwBi7O7Rfb4ryxaS8USTjLIAtAHeLNcw
+         EMczlV8fRNpI5MlazrQ8FQYjtcnAhzbmLxuP7orbJEOxGjHl1xZjk5kGJUutjt92JQHk
+         nq3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Z3OdB0x5a+j+jlf0dMOM0PWdUuZx3BRJAftWyyfklE0=;
+        b=xyVLPRAfNyiz4sW3ozQIVJBaLPaQWOwhBiIWqRqSY39hIZmmd00uIjKT/GvuH+KVIM
+         JvgJi1Lej0XvaZkORogPG/CjhUvCFOqC7ovU0mzOEJfyYIHxKeXvIgx/YCVZI0o/Rgj8
+         m1bZ7NvADcuQlk6Xn+oZUF3Aoq1scQI0JpIDkky3TJnwwfbCvKmELc2lCFnW8kQKM7sb
+         Gvaq4MpIwfHKScfwF8UMA1eZLhCABKskH1mRyO0S2MffhPNJfm2iGi/98gPttTt4orBt
+         0xxdBhoFeI5p/IuY2aSRQ+qnJBTqsdtmFFpZzbguj+Z706Rfe5w7MNNkkQh35XRmeeCh
+         943g==
+X-Gm-Message-State: AOAM533IP6zaYny5lZLp0ozrbuYzj+M+FpUby1gNSRS++5z6f624O0zZ
+        vJhspTVfMF2iOfKp2EIzwCdffuW2OSpM4yaD+AZTmQ==
+X-Google-Smtp-Source: ABdhPJzEfz1Qot4z5PKhEs/srjUPwDOGWKQF6gQMAHpJOZdOH8/zzmkPX1UjudMdlTaNVrYqU1uoa1wcnNnoqW/CIrg=
+X-Received: by 2002:a05:600c:3ba3:: with SMTP id n35mr2012524wms.88.1637012884230;
+ Mon, 15 Nov 2021 13:48:04 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20211115190249.3936899-1-eric.dumazet@gmail.com>
+ <CACSApvZ47Z9pKGxH_UU=yY+bQqdNt=jc2kpxP-VfZkCXLVSbCg@mail.gmail.com> <dacd415c06bc854136ba93ef258e92292b782037.camel@redhat.com>
+In-Reply-To: <dacd415c06bc854136ba93ef258e92292b782037.camel@redhat.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 15 Nov 2021 13:47:52 -0800
+Message-ID: <CANn89iJFFQxo9qA-cLXRjbw9ob5g+dzRp7H0016JJdtALHKikg@mail.gmail.com>
+Subject: Re: [PATCH net-next 00/20] tcp: optimizations for linux-5.17
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Soheil Hassas Yeganeh <soheil@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Neal Cardwell <ncardwell@google.com>,
+        Arjun Roy <arjunroy@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 15 Nov 2021 10:12:25 +0000 Machnikowski, Maciej wrote:
-> > > Netdev owns the PHY, so it needs to enable/disable clock from a given
-> > > port/lane - other than that it's EECs task. Technically - those subsystems
-> > > are separate.  
-> > 
-> > So why is the UAPI conflating the two?  
-> 
-> Because EEC can be a separate external device, but also can be integrated
-> inside the netdev. In the second case it makes more sense to just return
-> the state from a netdev 
+On Mon, Nov 15, 2021 at 1:40 PM Paolo Abeni <pabeni@redhat.com> wrote:
+>
 
-I mentioned that we are in a need of such API to Vadim who, among other
-things, works on the OCP Timecard. He indicated interest in developing
-the separate netlink interface for "DPLLs" (the timecard is just an
-atomic clock + GPS, no netdev to hang from). Let's wait for Vadim's work
-to materialize and build on top of that.
+>
+> Possibly there has been some issues with the ML while processing these
+> patches?!? only an handful of them reached patchwork (and my mailbox :)
+>
+
+Yeah, this sort of thing happens. Let's wait a bit before re-sending ?
+
+Maybe too much traffic today on vger or gmail, I honestly do not know.
+
+I will send the series privately to you in the meantime :)
