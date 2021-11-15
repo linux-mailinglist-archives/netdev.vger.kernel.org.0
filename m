@@ -2,160 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 033A844FEE6
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 07:58:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F0B144FEFA
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 08:05:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230018AbhKOHBl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 02:01:41 -0500
-Received: from mail-eopbgr1320095.outbound.protection.outlook.com ([40.107.132.95]:14112
-        "EHLO APC01-PU1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229648AbhKOHBh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 02:01:37 -0500
+        id S230018AbhKOHII (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 02:08:08 -0500
+Received: from mx0b-0064b401.pphosted.com ([205.220.178.238]:22892 "EHLO
+        mx0b-0064b401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229780AbhKOHIE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 02:08:04 -0500
+Received: from pps.filterd (m0250812.ppops.net [127.0.0.1])
+        by mx0a-0064b401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1AF6wuc3021157;
+        Mon, 15 Nov 2021 07:04:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=from : to : cc :
+ subject : date : message-id : content-type : mime-version; s=PPS06212021;
+ bh=SMMJ6I2xKwpW9ucyu2HeQXwSMFCnAuPrToLR550oqCM=;
+ b=K8NvO+Km7dJvmpjgA8oCVJjcj0fcEYDRr1Cv+vTxe67BTTOUFLSapPSWC8fVlaHz37Yu
+ 2ClSL73sGmxPXZX6JzCBXvlSVRVKg5AkjWwkWTo9kbT6K3v563DCqdZyuFE6Y78THB4Y
+ OH3SUFkYtYc7mjvcxmnVmhKdkOrrpMg7e/GIsvFtyXN63X1sToUthScmQU7Jk2mSM+tp
+ eQpd45V+pNqxdoLItBvVKZjycpsfljnShk0Db/8OhA0CD6eiwTjG+L1RUzuh84YZRgSS
+ vWLyBwajgG4ZFunlIgr5WARIc/ofC944SDMtcl5IIlsY6TR05N7hn9nwZI/O6v2RzXBN IQ== 
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2171.outbound.protection.outlook.com [104.47.57.171])
+        by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3cbg66831s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 15 Nov 2021 07:04:41 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=I57pJpZATR8JhS0xmJNPMqCuawfOilmO2b1yYAkboJ5kKu1Sg2g8nVouwS8ntCLHYBU4dxBGJdxcjLXLp/eXh3qlYNXjGQ0XdegZVnkvR0aXsY2xlgO9/xADljFNISbDGFwEx4evB4mv3un18b6Ubds0bZydS1ANMtlU6cJ5f2nZ+U3MPPQpD4RsH19Ya7L5xGqu022kpOWbAFtPX5UgHCdRGROVo0cMvrFCovhou78QiqSkURPe4lWm+zMw9MP8bC2GkO7q19JDQxGMgyLY2sBQEeNc4AJ9HgCIjjF+ZtPhPqARsAAZ6BUvviEnjRm2pJpG1Ae/ZlVYzAmsbetc3g==
+ b=MM5kDSQPC3ZGXUJTBZLwgaSo8EZbBVsTPt/7ZkWGJSROlhCXCgia8AjpTDRAlDxwWaNLtzxzvwC8ZnejX0AB18UmGz3NUcDqv4qmTgOfaXfrCGxcHZPiwUZWNu2CrAAh1hgZ05q3Aip7R10UygjWQjRBy26y036MSPNtTAw4vEaYMxW0kwu+I6tJrd4/jRIPyPyAEZKejw2fxAN9EuzCe8/x2rsoc/80yr8iwrtJCPUE+tvrIqaXRkaewHIWOedeApcmAU9Wb6dqXF7ZRIGQ0oymGUs1GGDoXCmq67scRcA3MkzC8GGZmn/1dNM0Vob2dqfymwMYGr8/oXT99kn8yg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pT6cMV4Uyi7hhIjl2AxnrMX9RBtqr5Qo1YVtPZX4eS4=;
- b=fqV8Uu/YMCTzB1RYrFmJXYjzB7gIU0dE/94EgBJfDCDQRhOqE/k9OgGzKhr8AyIPvV8RXOseUS9utF8k98MEzjNJeD0VtVZ7fbUfdsu1RzZphdQ9l3NbQgBEWU/Kppx/R6ZOwX74UisjbJEXI0qe1lwZ5H9WQ9tx2n3lx0NHgkDc0Nx6wMknVwGhe9iog5vlQhip7BAr8aM11HR+aNi3cFdWi5MRJTWs9nL3ecuTZt8gHterNnjK9+0zYdnRmk1tIwpsLXCGnpD7m8i4W+whZyGB9umy0rEBBbygHpi6EiLUkLi0uLAr4ZNplLk2tmqJ78ztijqgpUPy++Z42SAc7Q==
+ bh=SMMJ6I2xKwpW9ucyu2HeQXwSMFCnAuPrToLR550oqCM=;
+ b=Jo1wIXEmI+z4OYQVN+4d3LEqlFwSo3dRP/g9XuF9ecjcN8gcM9VvIwm32PuqOwghEpbLR/yaEeIo7BWxhKbjQfyxOgsiJPLrTmRVa7xgjGVvVdTttKUY37MoKAmOgrMwi8/vDZd11w+33SKMJ9B/mnKBYGr6BMnqx6H7C61xYCVewl1Vprgb+tKjTQ74ybJVQ2doE6tJVzI3aS5oU67aix3uvx5kuEnjh17C3X3JIwwhH8et9Omc6WYjS11uFpfnO1Me1zJxwJEiL3TYgd93ZjJENj+D9Bb0j6R5ExaZUBau8wy47gDtXBIdp1pN1RAQB3iucEtOEouRYfOVny9Qgg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pT6cMV4Uyi7hhIjl2AxnrMX9RBtqr5Qo1YVtPZX4eS4=;
- b=Ht5AL/4yybUsmTA/ZY6lrVVntQiIo1Do1xesAB5AooxZUBUyJRJPjY3CYDEi962f6GRb1TBSNkE1Z7oDsGTtbUtUJsJtqoQmSvN7CTgNLrox34p+v3RYOyUFOIRSGJ+0XHN7ickXpBtDPzZ/dWlomEPEuTv3LLGMrnA1IH7ABgg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from TYZPR06MB4173.apcprd06.prod.outlook.com (2603:1096:400:26::14)
- by TYZPR06MB3951.apcprd06.prod.outlook.com (2603:1096:400:25::8) with
+ smtp.mailfrom=windriver.com; dmarc=pass action=none
+ header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
+Received: from PH0PR11MB5191.namprd11.prod.outlook.com (2603:10b6:510:3e::24)
+ by PH0PR11MB4981.namprd11.prod.outlook.com (2603:10b6:510:39::6) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.18; Mon, 15 Nov
- 2021 06:58:40 +0000
-Received: from TYZPR06MB4173.apcprd06.prod.outlook.com
- ([fe80::5e:78e1:eba3:7d0e]) by TYZPR06MB4173.apcprd06.prod.outlook.com
- ([fe80::5e:78e1:eba3:7d0e%8]) with mapi id 15.20.4669.016; Mon, 15 Nov 2021
- 06:58:40 +0000
-From:   Yihao Han <hanyihao@vivo.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Yihao Han <hanyihao@vivo.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     kernel@vivo.com
-Subject: [PATCH] net: fddi: use swap() to make code cleaner
-Date:   Sun, 14 Nov 2021 22:58:16 -0800
-Message-Id: <20211115065826.5221-1-hanyihao@vivo.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.15; Mon, 15 Nov
+ 2021 07:04:40 +0000
+Received: from PH0PR11MB5191.namprd11.prod.outlook.com
+ ([fe80::a090:40db:80ae:f06a]) by PH0PR11MB5191.namprd11.prod.outlook.com
+ ([fe80::a090:40db:80ae:f06a%9]) with mapi id 15.20.4690.027; Mon, 15 Nov 2021
+ 07:04:40 +0000
+From:   Meng Li <Meng.Li@windriver.com>
+To:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        mcoquelin.stm32@gmail.com
+Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, meng.li@windriver.com
+Subject: [PATCH v3] net: stmmac: socfpga: add runtime suspend/resume callback for stratix10 platform
+Date:   Mon, 15 Nov 2021 15:04:23 +0800
+Message-Id: <20211115070423.6845-1-Meng.Li@windriver.com>
 X-Mailer: git-send-email 2.17.1
 Content-Type: text/plain
-X-ClientProxiedBy: HK2PR02CA0190.apcprd02.prod.outlook.com
- (2603:1096:201:21::26) To TYZPR06MB4173.apcprd06.prod.outlook.com
- (2603:1096:400:26::14)
+X-ClientProxiedBy: HK0PR03CA0108.apcprd03.prod.outlook.com
+ (2603:1096:203:b0::24) To PH0PR11MB5191.namprd11.prod.outlook.com
+ (2603:10b6:510:3e::24)
 MIME-Version: 1.0
-Received: from ubuntu.localdomain (218.213.202.189) by HK2PR02CA0190.apcprd02.prod.outlook.com (2603:1096:201:21::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.15 via Frontend Transport; Mon, 15 Nov 2021 06:58:38 +0000
+Received: from pek-mli1-d2.wrs.com (60.247.85.82) by HK0PR03CA0108.apcprd03.prod.outlook.com (2603:1096:203:b0::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.19 via Frontend Transport; Mon, 15 Nov 2021 07:04:37 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 31f76079-1556-46e5-6669-08d9a8055a6a
-X-MS-TrafficTypeDiagnostic: TYZPR06MB3951:
-X-Microsoft-Antispam-PRVS: <TYZPR06MB395133FA5DC735FD73C7C390A2989@TYZPR06MB3951.apcprd06.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2958;
+X-MS-Office365-Filtering-Correlation-Id: 2c10b091-fd33-4bcb-40fb-08d9a806314e
+X-MS-TrafficTypeDiagnostic: PH0PR11MB4981:
+X-Microsoft-Antispam-PRVS: <PH0PR11MB4981AF0A7179C065B7E17D36F1989@PH0PR11MB4981.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:419;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Mgf6u/y/b86Kbpe+2bP63341Enjaqq00EdrXPCqGF6qrebBUhFXzmTGbwPWvNXcaq+xrST44omLz6XU6h7AQcty9qYN2IRTznNkz522IuNf65pbkTvdLAQOInvHlYMeAGGiUYektZBHV3ZfQrpfkPZeXaPsUhIWIjxnQCOxioAyjXErpO0cfHg646c5iGQdctISb9fg/uJPhL64LDe6tvBIKCXStNVTMGEHKuHs0QBwcjh/DwYH9DKpvEssK8eKkdDNrnCw9qebJANTkxbPVdw0NUx9P7SqjnYytC2beVGS2E/QycoHYP/Jmse4PEgUO803HRUK3di+QqtUjyVUWJ8gd4/LO1dpStjOsZU1hMLf1ykmpH4ys7kE8E1Mdq7VDNyPmGphjGNJkhU55NWUGnePy6Tn42DpUziepqJcFzmhvy98DwW50eDg2BVyICcAO4n0FH5obLNiFsDjbR3YL3ykvwzHDeYsHbJNWH+eCt+UJQKu+DY5VToTH0gT3mHvaSKtpVjGc2gjVKO3Q4u2JyFUmN1JH6TwT3NboaTOh1MYSS4/DoWJFdyBmlmHrOsR924Z4E+vQ4XZ3lEQrLr5HHMWHgZulDTF683VL8Y8zx72viCUpuJcnPR2EUFzAPdEzTIcFMioBZOJW3NegpO6/an1NdmHqJKz0WXJBrEsD8xlSoKfuBzovfoapI26eV3454Tl1tVHlbo94qSC73Zji5Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYZPR06MB4173.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(4326008)(8676002)(66476007)(66946007)(6512007)(66556008)(316002)(83380400001)(52116002)(6506007)(38350700002)(38100700002)(2906002)(1076003)(26005)(110136005)(186003)(107886003)(6486002)(5660300002)(2616005)(956004)(8936002)(6666004)(86362001)(36756003)(508600001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: BuqAupyPcnzOTguILoB3ZeFIWwlkFPqqYNqEPqg6H1/KkKmylOU+buzQs67dXOUXv1BAq0593sqtIgKjro1qWfI3EzCJorA+Xafdq7lwUHgBU9yA7BhFBT8wTB6RaTQKhBa2SMKSA3GWI7luu/qRxo8BE1qR4eeIb2YI68l8HuxPMHKU8L8Yh5j03hXb+b5SUOsTYTRMx4v8Z2s+99Uurj694td1KL3L9X1jLapyNQPH1Oun6X2KoxsGgDWB4rS5li3NAp2bA0fBr3W2izKaojAVSEkBFTkMwL47nRkwJRrAYuwgba7rnspLBRcQTJXQlfMrtEXshtjsBZDoo0sh7uIB6THAtpYDk59KBtJcDN/3oaprKHNRwbAJHqtTstkpB2A9y6r2e/dU8zbv1Q9h3fPZSs2UH3xoonBetPATsMKy9l0VxqEL94ajC+5vJc/Jkl7ETA4Sd16aRZHh7imAajlpvg7LhuELcWgxpz1uOLUCGOxpLxvfUCe9JrL4SKsUdejSRUUqEXI52Ze5t8CBPUf84LJhGUAHtOL9qDAsk8bK/bLLQ7Lio6T2qU/wiKWgG6vmAUSVgpXqW9YfGlGwRe0VfWPEn/yzPr0BeECnhfWy4sQZXfH+wNw64mS3IUBkLT9DlCltoCq93mzJJob0dWsePA0PRw2Y5dBccTAOVPa2jqYM8Q6Qnsid6PCfmdA362gqwFfbT23wssfFJzvSdg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5191.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(956004)(1076003)(66946007)(66556008)(6486002)(66476007)(38100700002)(36756003)(107886003)(2616005)(6512007)(83380400001)(8676002)(26005)(6506007)(38350700002)(186003)(6666004)(2906002)(86362001)(5660300002)(508600001)(15650500001)(4326008)(52116002)(316002)(8936002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fw8/AewPLZ8J8rJKvCoJ75TqEhFAJ+XbAtZY/o1s7bqP3MQTjy65NCrDC0NE?=
- =?us-ascii?Q?xguQXOdA6mzSgnL6ZAKsrN3j/8s+3SG0tW7DL191cVacmrbJUcVYtLFBDDel?=
- =?us-ascii?Q?1V0xCpxRmUCkldMDaseyk/mRme/5sB7On1uLUt6C6FG26HpTtxWWEYCtO40/?=
- =?us-ascii?Q?bdBj/h1YRtbBZ/++es+9s+NIX2KM1vVN5bc47OswkOzHpHKGmRqBxGMkKioE?=
- =?us-ascii?Q?2PlBsVLDMfuMxuOQ1TXSMfAQ/6/KkfpCp8olRkXxvaoUDMdatd2fVeH1Xm6I?=
- =?us-ascii?Q?uIRgQpLNe9rwoBKJf0i4O2P3VvHD4IRNHPYpJZI+trB5o89gOlC2TqYHN/Xs?=
- =?us-ascii?Q?9ywmJ8BXCs9okgYr827T7AAxo8gfl6aW+zJ0ZM2PBwYJ3LwZOyPuNCGRe1tW?=
- =?us-ascii?Q?cVezHRVmU/lPkP5hbOx/RwwEtMdxJkRUdVpX69ONb9O1MMMUp36/L3E0UybD?=
- =?us-ascii?Q?yzpoL1NPbP0HvJUjKpVntMhwNKeO09TpUrEM9MMiOpsECT01SSeZnUgeVCt1?=
- =?us-ascii?Q?myPA3vdsRuAYCDpSetgWSLbwYlgKU/9x8TkOPHT3ngNbuRGKSGJlrau2j1p7?=
- =?us-ascii?Q?gyVu4KuYB0/92NyJ/ze+cFaySV6OV48r5nH1jXDChf0ThiNB4ns7fLHMjWyD?=
- =?us-ascii?Q?sM649H/nKtp10Rf1JVpnqXIOwloAbhodRwdXfDtE4EY9A4KMApNSqbzeszDR?=
- =?us-ascii?Q?W0VsVay3MQ7QaMg9R0IhJwnsLiJStZAoP/09rxh6VJUHBBKF6j3cd4wXONI/?=
- =?us-ascii?Q?1ryIt4RXlEBJvFZLV6AwEijHjbbEEwa0aLJaSVEP27OgFAyi3jczTxD0UEp2?=
- =?us-ascii?Q?ElHzAAzaPEApkOt8dUAXaUi2kZ5wMNdDcAhky3j2qEwUk9vPHd2W6NuFC5kU?=
- =?us-ascii?Q?fARABVOXRZ0RpH6d9nrad0ngFyNrBXGCmMJ8vfF5a5h7Cs4okfBuxUVJc/r8?=
- =?us-ascii?Q?zWLYjCiFm9a1njlKD8aoTMARmP5tlhAHN05e9NcYnkn5aD5Q42XUK5fIYcTA?=
- =?us-ascii?Q?u8Yktjc7PSC2EP5y892MxBWMwSQ+C/90PJCcoOHf5+iseYYmUGS8ojAj1dP7?=
- =?us-ascii?Q?4bfxJ5ygtGSs//gMAQMr9w575EjTfO0ahGeZt/+XLMN1npNh1oTI2lFwOf78?=
- =?us-ascii?Q?NwpJSU8CkKN8I9YTOsWznkv6pkWX3KEz6f+Hnt0L5Aep2LfT5OpyaCrLmTUX?=
- =?us-ascii?Q?JmDqf62gAuXrjds0vxEgNBOl51kk9CGIneYumTFbxWfAdVd5r0uAEpYdZ5rc?=
- =?us-ascii?Q?H0U6YNtrAI0nNUBHQgchfyNiBEJfKcIfsAEOaS63LdX94J8iqcMg08Jh3iCE?=
- =?us-ascii?Q?zh/Xhh3sX44aSh9IiOO+VhHaPfi7bPJEGzDJxmof/fT7HLI8kdKDhfM/2TPs?=
- =?us-ascii?Q?WW65zi3PGPsAkuNu9oTQNB1BW4AMsXhK9dEcH2JQwqhElatRVLrFp9VA2BX3?=
- =?us-ascii?Q?P2saQGs0rftkcuA9R6fZmPU38c0h/b6ENwh08WhqPEbxryEPlxAuElNDzGCa?=
- =?us-ascii?Q?N0oQjpopVY4P0v/PmPCeBOME9uvjEZOawLyjYvk+A8k5+prcYMhN4s0K7Nl1?=
- =?us-ascii?Q?osPVSJtu4abO10FVChagKWfs594bIdGRpmfYgqAQd2FX8VRA5DbQNVzxIMRR?=
- =?us-ascii?Q?C7HY1vDynL4jMjgRuBGQZqA=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 31f76079-1556-46e5-6669-08d9a8055a6a
-X-MS-Exchange-CrossTenant-AuthSource: TYZPR06MB4173.apcprd06.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?37mFAozxmzqYcXcZzC5Qr3lgf/h/4mLHOMHj+KRBAmp+27sLXVYwsyj2AKN8?=
+ =?us-ascii?Q?Seh2MLn5feYZhBvEtub6YknR0hWV3Wc4B+aOzoRFeL6bzXnckCfpJCntzNhr?=
+ =?us-ascii?Q?aKoMXFAWDEyW8Jls2M+JrPunrHLodwnItIwoP4MaiO+cV3O6HGNnJEExY9T8?=
+ =?us-ascii?Q?jybQrrTVyfQtfPyKxk+XL2Z1q2wsGkdcaxrllAetFN7rnBhuJEhWNqfyEQlt?=
+ =?us-ascii?Q?SG+DCF41fuWZuga74KCIkx0X36oS4/mRxwgdtdaN8ty84qfpwsoBdOXtf8sf?=
+ =?us-ascii?Q?y7MseLUfQk3aeIN/URFTvQxu0XiCvOcLSnc4mqX7OApQGGKoGhe8OC4fA+EK?=
+ =?us-ascii?Q?JxJGb1uZ+soFlS0CsVJetZepphQ839ACZvL1n1o64v4Pz2hTrypVQObIR5HN?=
+ =?us-ascii?Q?x/LjYbUHghOKx2gIxEa8CrA1sbQZ3sbG1BvmSRAUcKiK7FE7kibMz/0S5Ndd?=
+ =?us-ascii?Q?is8g2j2JlPmqGW2NUnWCLeO0C1+O6uFaTpOBTB4Jx4/m/1Gx3MUIcwDu8iOG?=
+ =?us-ascii?Q?Ga0H1ww1/ZkCwBZQU/z6hzra/Al2nrgwdBAwb0eXMPqT7VYzWJnkwu+GuY7q?=
+ =?us-ascii?Q?9S2qHHQTkSKEkIVM+Bp4XUeZW9Btvvr22fhFc2nkSDvznKYUIqCkMqb4IJ6n?=
+ =?us-ascii?Q?AmOqBpIg2ipzAEHWJSLF/hR28cKT7SIReE/NmYWV2JUSrbDg7CgwxaXivK4n?=
+ =?us-ascii?Q?eMy6qmF/oUnBLaZO4iV3Wk1Rsh+FTeAjYdkbCGh0ozpgX1IblJtAQRWu8XLr?=
+ =?us-ascii?Q?cjqMOW5Mq9EmFnCq1d+hVJRTQqAdTvlhdfWF6bVEBWwGfNYPgBvwhPrTQgq0?=
+ =?us-ascii?Q?wLGvSFj84ReIhGSpebQRsDwIOOed0wVDOXbxZgOM39UKDIgphUTGdVl0802F?=
+ =?us-ascii?Q?l/XxTPmT3erXZVeR44RQ1v41A+HgEpIjRVcnDO14/o7PMRP9VaX24SH8322F?=
+ =?us-ascii?Q?OVY+y5KmAV0pAzjtKhV8nPNAG6NBFUZ1DdIHRvqQdXdLXCujiEG8AAVak/ns?=
+ =?us-ascii?Q?MVyUqI+Zupi1ugTwNHWPg2eB4NX0+f/Mpe+82cOroc63ZkUtYYRX4hyLpRr3?=
+ =?us-ascii?Q?9GKY67niHTxstyrCsCCezl6LwMYTAYGQP457ogvnou0IR6pee2LthdHPBLTH?=
+ =?us-ascii?Q?JJ0ibCkfoEXmqGFG79DnSpNexv7zf5Ht9IaofEjpvIU9Qo7XLM9gNZ0sR2NM?=
+ =?us-ascii?Q?SXADHz7Z7/zzgK3hOz7Vt2PitiOhbpKQvx6Ot79EL33Eq2GcmPeO+hib0SKx?=
+ =?us-ascii?Q?VsK0CsbfBk/rk9u5hcd8yXGc29dd9fdjjvocESNKblp4+AsZtTS3XCqEtr71?=
+ =?us-ascii?Q?psJzSrjr3+b2nGmZdCiyCM4+Qj5pfVC2atFiFyx+cDC6RgwXi9BbqRg6/C1L?=
+ =?us-ascii?Q?Yvqn3fZFX4h0lQKC2rU27x9hGVH89jfqLvfqU8fwRShcZpjtApnnf40/CRh4?=
+ =?us-ascii?Q?0Ry6LcYk77e0qW+pdQYUBWFsJOFExRwNb65ZLcGRvkr1kQg27dszUSNLBVrv?=
+ =?us-ascii?Q?ZXlSk3gVEOPwWuZtE8P7YMAfZrzvcY63bKBzNqv/3IKHHTj7xsjfp0ULAiS9?=
+ =?us-ascii?Q?iTJpBYPte6Tv8xVPMnUjyNFKbHGuYKFoNYeSUsCIc5ECaCQBGsLhCmLtP6DZ?=
+ =?us-ascii?Q?aCFsIg1bO56a9o7C1786ZCE=3D?=
+X-OriginatorOrg: windriver.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2c10b091-fd33-4bcb-40fb-08d9a806314e
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5191.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Nov 2021 06:58:40.2398
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Nov 2021 07:04:40.2079
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VVqLlg4+mUEB/pC4jskPlnVIomGd3jkhVphYcSU7ltZej4yZM1R1dpgb2yZ1L3r5wy85DtWoaicXPCeTUiqXcA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR06MB3951
+X-MS-Exchange-CrossTenant-UserPrincipalName: ZIQArLNgkTykwhem+VBHwTlJZr3EVp7sxsN7Ayu+zxpEoWqp95gOpcyzdXf3etFVFKBgB1DbOHZPiRcg+IGAdg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB4981
+X-Proofpoint-ORIG-GUID: rxQUH702JIPAJpOx7dSjkwPvzr-MbVUP
+X-Proofpoint-GUID: rxQUH702JIPAJpOx7dSjkwPvzr-MbVUP
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-11-15_04,2021-11-12_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 impostorscore=0
+ mlxlogscore=999 suspectscore=0 mlxscore=0 bulkscore=0 spamscore=0
+ priorityscore=1501 adultscore=0 malwarescore=0 phishscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2111150039
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the macro 'swap()' defined in 'include/linux/minmax.h' to avoid
-opencoding it.
+From: Meng Li <meng.li@windriver.com>
 
-Signed-off-by: Yihao Han <hanyihao@vivo.com>
+According to upstream commit 5ec55823438e("net: stmmac:
+add clocks management for gmac driver"), it improve clocks
+management for stmmac driver. So, it is necessary to implement
+the runtime callback in dwmac-socfpga driver because it doesn't
+use the common stmmac_pltfr_pm_ops instance. Otherwise, clocks
+are not disabled when system enters suspend status.
+
+Fixes: 5ec55823438e ("net: stmmac: add clocks management for gmac driver")
+Cc: stable@vger.kernel.org
+Signed-off-by: Meng Li <Meng.Li@windriver.com>
 ---
- drivers/net/fddi/skfp/smt.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/fddi/skfp/smt.c b/drivers/net/fddi/skfp/smt.c
-index 6b68a53f1b38..72c31f0013ad 100644
---- a/drivers/net/fddi/skfp/smt.c
-+++ b/drivers/net/fddi/skfp/smt.c
-@@ -1846,10 +1846,10 @@ void smt_swap_para(struct smt_header *sm, int len, int direction)
- 	}
+v3:
+ - adjust the static position to fix a building warning
+
+v2:
+ - add static when define socfpga_dwmac_pm_ops
+ - add fixed tag
+ 
+---
+ .../ethernet/stmicro/stmmac/dwmac-socfpga.c   | 24 +++++++++++++++++--
+ 1 file changed, 22 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
+index 85208128f135..e478a4017caa 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
+@@ -485,8 +485,28 @@ static int socfpga_dwmac_resume(struct device *dev)
  }
+ #endif /* CONFIG_PM_SLEEP */
  
+-static SIMPLE_DEV_PM_OPS(socfpga_dwmac_pm_ops, stmmac_suspend,
+-					       socfpga_dwmac_resume);
++static int __maybe_unused socfpga_dwmac_runtime_suspend(struct device *dev)
++{
++	struct net_device *ndev = dev_get_drvdata(dev);
++	struct stmmac_priv *priv = netdev_priv(ndev);
 +
- static void smt_string_swap(char *data, const char *format, int len)
- {
- 	const char	*open_paren = NULL ;
--	int	x ;
++	stmmac_bus_clks_config(priv, false);
++
++	return 0;
++}
++
++static int __maybe_unused socfpga_dwmac_runtime_resume(struct device *dev)
++{
++	struct net_device *ndev = dev_get_drvdata(dev);
++	struct stmmac_priv *priv = netdev_priv(ndev);
++
++	return stmmac_bus_clks_config(priv, true);
++}
++
++static const struct dev_pm_ops socfpga_dwmac_pm_ops = {
++	SET_SYSTEM_SLEEP_PM_OPS(stmmac_suspend, socfpga_dwmac_resume)
++	SET_RUNTIME_PM_OPS(socfpga_dwmac_runtime_suspend, socfpga_dwmac_runtime_resume, NULL)
++};
  
- 	while (len > 0  && *format) {
- 		switch (*format) {
-@@ -1876,19 +1876,13 @@ static void smt_string_swap(char *data, const char *format, int len)
- 			len-- ;
- 			break ;
- 		case 's' :
--			x = data[0] ;
--			data[0] = data[1] ;
--			data[1] = x ;
-+			swap(data[0], data[1]) ;
- 			data += 2 ;
- 			len -= 2 ;
- 			break ;
- 		case 'l' :
--			x = data[0] ;
--			data[0] = data[3] ;
--			data[3] = x ;
--			x = data[1] ;
--			data[1] = data[2] ;
--			data[2] = x ;
-+			swap(data[0], data[3]) ;
-+			swap(data[1], data[2]) ;
- 			data += 4 ;
- 			len -= 4 ;
- 			break ;
+ static const struct socfpga_dwmac_ops socfpga_gen5_ops = {
+ 	.set_phy_mode = socfpga_gen5_set_phy_mode,
 -- 
 2.17.1
 
