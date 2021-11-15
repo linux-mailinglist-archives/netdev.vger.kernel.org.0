@@ -2,93 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACFC345086C
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 16:31:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30F0C45091F
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 17:02:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236742AbhKOPeK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 10:34:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52992 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236719AbhKOPdu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 10:33:50 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4278563212;
-        Mon, 15 Nov 2021 15:30:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636990242;
-        bh=8XoL+Ikkp+UiQCwAF2fR0hsh2hPoC6nkuXKsFj8Ke6o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=c5IWYzAI9rmakPDUZ05vSErJ66cE+baCDmNjCJjdP3NNcWu2TuP1zZaGmckrFCtWp
-         O414uhjrfq5BCTBteQ+Umuvnmmgqghifjjuw38X5AkS3Q+DjgDTAuhkwEFgmqG5HyN
-         u8+rQsK4wvNU4o1iHmdhZJXQNpVtjRJT3SpjmKR3RlJ09ollWWuHqgpeOKILgyQ28o
-         Biran/J4NwCPRXFZrmRY4sJh/3IEC/1kwljSmbtXD6C6QI3BP+jA59Kfr2G/Cmncvy
-         zWT3/jfHK0NJJZ258EKDR3aOEMhuRrI7GLU7HTnyKeV64LV/0hsJmzKMoYHlrXjWqa
-         CY4gfJ+wN3j3Q==
-Date:   Mon, 15 Nov 2021 16:30:39 +0100
-From:   Wolfram Sang <wsa@kernel.org>
-To:     patchwork-bot+netdevbpf@kernel.org
-Cc:     Matt Johnston <matt@codeconstruct.com.au>, zev@bewilderbeest.net,
-        robh+dt@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        brendanhiggins@google.com, benh@kernel.crashing.org,
-        joel@jms.id.au, andrew@aj.id.au, avifishman70@gmail.com,
-        tmaimon77@gmail.com, tali.perry1@gmail.com, venture@google.com,
-        yuenn@google.com, benjaminfair@google.com, jk@codeconstruct.com.au,
-        linux-i2c@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v3 0/6] MCTP I2C driver
-Message-ID: <YZJ9H4eM/M7OXVN0@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        patchwork-bot+netdevbpf@kernel.org,
-        Matt Johnston <matt@codeconstruct.com.au>, zev@bewilderbeest.net,
-        robh+dt@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        brendanhiggins@google.com, benh@kernel.crashing.org, joel@jms.id.au,
-        andrew@aj.id.au, avifishman70@gmail.com, tmaimon77@gmail.com,
-        tali.perry1@gmail.com, venture@google.com, yuenn@google.com,
-        benjaminfair@google.com, jk@codeconstruct.com.au,
-        linux-i2c@vger.kernel.org, netdev@vger.kernel.org
-References: <20211115024926.205385-1-matt@codeconstruct.com.au>
- <163698601142.19991.3686735228078461111.git-patchwork-notify@kernel.org>
+        id S236608AbhKOQFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 11:05:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49150 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232638AbhKOQFM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 11:05:12 -0500
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A52A1C061766
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 08:02:13 -0800 (PST)
+Received: by mail-pg1-x52a.google.com with SMTP id q12so3267564pgh.5
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 08:02:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tivrXntTWIbCkVzZC4y1HIyO4FqKtX6bYEAzYxt9B4c=;
+        b=oWCc1n4tm5zCJxae3xkGIvL4qNO5jJQK2PhsxaekoUCUdhsyS7fg9L2yaSfdbujV6o
+         Nxst2ng8GqpnJQDUI63bIJ9xF+qaMBDWS8GZZ6aPcOTldEZM5rehKQwQnphbJz2UsHyt
+         VEiEBBs85fhJgJd4r6lseabO8YMZjqRaKncMOBiOVwBIu1Mujam77+cBPU1X303T/eNA
+         f4jYM1hLklyJnwCD4BJBnhFX1rkPuAGRZkO/m4okbBL/i6/JnjpAP82/ZWWkSfaFR+xY
+         r1NWO0EsdOZt6G/ek3HGZRAaKGon42iM9vQaiXnB8LBn52A3DXSZYYIzW1UCu3zHOHp0
+         GLBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tivrXntTWIbCkVzZC4y1HIyO4FqKtX6bYEAzYxt9B4c=;
+        b=SSnij01RLHwUotqZbVFh3SZvrhe6vVkYNuzxj+NNoaKn7b/RwRCdq0JTmqgHugFneZ
+         qt+SGWEy6U80E2ImK5TpsogyuzVrXxCUWyqS1dTWzpb1pzGQHjgmG1bCY7zUgbIO+39k
+         lRRwGgwKlLsUD6rzMGpw2Q1zuNiR9uciTxWv4P2CUR8Kf/BmeMSLLhF2sLKnziQjyfHL
+         1Oay2t0whyHwtu11YiXWhIw1Bf3Ies/kfaQDjnMbpb9aQ+dS007EV5LEuL0pr7qVC512
+         mFMreyZhUre2PgoaNLUXK/dbPvbNNf949GAkL+40seT5RLQ2FqFsG+l/CSJt2L0HGJgV
+         cLSQ==
+X-Gm-Message-State: AOAM533ecn+k9hyDZBV3lEMJJgUl8CUGLO6CKB0IYzqaqyWAkhRWRPzv
+        Tfm6nlTIOOX5Sib46YXHCzxZzw==
+X-Google-Smtp-Source: ABdhPJzwcqJ6KzoH1s6JCM7i7hqtm/wv2VNT0LxCOTZuK4dKTRSpry+DXx0j2CMmYHa146COp1uoBw==
+X-Received: by 2002:a63:bf45:: with SMTP id i5mr25148151pgo.161.1636992133191;
+        Mon, 15 Nov 2021 08:02:13 -0800 (PST)
+Received: from localhost.localdomain ([50.39.160.154])
+        by smtp.gmail.com with ESMTPSA id o2sm16331383pfu.206.2021.11.15.08.02.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Nov 2021 08:02:12 -0800 (PST)
+From:   Tadeusz Struk <tadeusz.struk@linaro.org>
+To:     davem@davemloft.net
+Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Dmitry Vyukov <dvyukov@google.com>
+Subject: [PATCH v2] tipc: check for null after calling kmemdup
+Date:   Mon, 15 Nov 2021 08:01:43 -0800
+Message-Id: <20211115160143.5099-1-tadeusz.struk@linaro.org>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="eRxy3H0oCy728e+K"
-Content-Disposition: inline
-In-Reply-To: <163698601142.19991.3686735228078461111.git-patchwork-notify@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+kmemdup can return a null pointer so need to check for it, otherwise
+the null key will be dereferenced later in tipc_crypto_key_xmit as
+can be seen in the trace [1].
 
---eRxy3H0oCy728e+K
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Cc: Jon Maloy <jmaloy@redhat.com>
+Cc: Ying Xue <ying.xue@windriver.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org
+Cc: tipc-discussion@lists.sourceforge.net
+Cc: linux-kernel@vger.kernel.org
+Cc: stable@vger.kernel.org # 5.15, 5.14, 5.10
 
+[1] https://syzkaller.appspot.com/bug?id=bca180abb29567b189efdbdb34cbf7ba851c2a58
 
-> This series was applied to netdev/net-next.git (master)
-> by David S. Miller <davem@davemloft.net>:
+Reported-by: Dmitry Vyukov <dvyukov@google.com>
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+---
+Changed in v2:
+- use tipc_aead_free() to free all crytpo tfm instances
+  that might have been allocated before the fail.
+---
+ net/tipc/crypto.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-NACK. Please revert. Besides the driver in net, it modifies the I2C core
-code. This has not been acked by the I2C maintainer (in this case me).
-So, please don't pull this in via the net tree. The question raised here
-(extending SMBus calls to 255 byte) is complicated because we need ABI
-backwards compatibility.
+diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
+index dc60c32bb70d..d293614d5fc6 100644
+--- a/net/tipc/crypto.c
++++ b/net/tipc/crypto.c
+@@ -597,6 +597,10 @@ static int tipc_aead_init(struct tipc_aead **aead, struct tipc_aead_key *ukey,
+ 	tmp->cloned = NULL;
+ 	tmp->authsize = TIPC_AES_GCM_TAG_SIZE;
+ 	tmp->key = kmemdup(ukey, tipc_aead_key_size(ukey), GFP_KERNEL);
++	if (!tmp->key) {
++		tipc_aead_free(&tmp->rcu);
++		return -ENOMEM;
++	}
+ 	memcpy(&tmp->salt, ukey->key + keylen, TIPC_AES_GCM_SALT_SIZE);
+ 	atomic_set(&tmp->users, 0);
+ 	atomic64_set(&tmp->seqno, 0);
+-- 
+2.33.1
 
-
---eRxy3H0oCy728e+K
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmGSfR8ACgkQFA3kzBSg
-KbacqBAAqZ84qtLwwyREg6zMlaeQlM8gdgS9bKi7XXf5hsQ8ATVnHVQ5dqNP6WyQ
-6NOw7zA22nsqzyKXHpm4WxewPz0E3QD4iNyrBaVKse3qIXJS16+ANcfmxOrm0GhL
-pEllnhDer81kJwXVBUrC3fzatGcM2thiWiIba3VSdP2O+cemdetu6seNFo4VTgXx
-lv1DDdgjqbhT+oHxntSvxkQt2cJeY4b+9CrRhV5o5N3MKnwOp8mZa4fzt5fZHn2k
-c47X3oB8QebWHj5xjQxnL0Ms+ytqX+8L5fmzDazX+N0dHgvPmIdRA1R3xxZ5SfAJ
-gIp5buJkirvRH+RWqLLN4I4aNlm2xlxU+kBcYT87/e553TWy/4tr7rdx/+SLYKpu
-SFG0+X/Z12xLFmSCD8SBvQWbLml08n2Lc6tJOqrrXpopHDwaRyzNh+jrhT6octKL
-HNhLTMtzPmjh8O70dWSLdQTGbXQcuT5qyPvuY0IwQ+tguZLVpM+t3lsBpt72RDrD
-7mm8wl9C0af7PetM4zWX8HIGSVuwKm8aEIAqhIQ0ONi/IEHxou6Psz2A3E061yo8
-xC3TUETj3WhWdBboByQ7q00NTWPEj5La6nSSb8Oi5Oc0PwpQfKFyfjrX8JrOgQVn
-nycG6assjzWRunTH3CWbBBGfcVxTj837DmArmn3R1h92VduzHJE=
-=SVLh
------END PGP SIGNATURE-----
-
---eRxy3H0oCy728e+K--
