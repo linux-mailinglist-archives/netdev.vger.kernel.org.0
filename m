@@ -2,397 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2DCB4501EA
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 11:01:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 723F24501EB
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 11:01:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237270AbhKOKD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 05:03:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50358 "EHLO
+        id S237538AbhKOKEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 05:04:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237544AbhKOKD3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 05:03:29 -0500
+        with ESMTP id S237566AbhKOKDg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 05:03:36 -0500
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 850A4C061207
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 02:00:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16CBC061746
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 02:00:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
         In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=3mIfNbQcg+C4XAaGHh8vRqI64FGS/5dDsYd18n5aX8U=; b=ylKRjsKiIg0aMy4WCHz63pooWY
-        8uZTcZuKT/aXnKWdUmjY5SabDodspUs+fJYmee/cYjUqs4+lxGr49tsvA1Qr0TsJOD/PVdraurHLR
-        JNb1TB83JqjQy8pGL2c1XLeHTVR07wAVQmcpNZ9ru5twkZSq+t1DmdqVX9KxhXvTGR7VZdVcmut0Y
-        MviuyjPPtYN/eNYEnQucNUCt4/VOdf2vvWhhzmYfuEw+kzFp8wMZd2ZsdpV4sSUZJzqfA8AcRvlm0
-        dSbmD7bbKXDXenkbyd56C7vXeKK7qrfRB2VX8txpXrMVfMXt0PTffGJqXju9pIO7Kfjyx9lNOmtnm
-        doBxk4tA==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:36176 helo=rmk-PC.armlinux.org.uk)
+        bh=eQMgCiuRVUQhi5JqxP1feSyUK4p9jJrCpkyuFhGoo+Q=; b=ktFKQGAYfGZcy5gwLGHQ6ULxoX
+        9lvsSSJqIadiudkynG5F5Kj54duUHNhdpw0uEq3GOxN1W1Ok/e9mEb5gFmKza9Nqvarb5EplM0V5X
+        E7YY1pSoCrAEl7u+C0O85uMeXPZmW18qNp/IuNT1tbXs7xFcmTm5W8i6HSaOzAhRNsfZ54KiYRXLe
+        Y9LcG7bJc8HDz326Qtrr5bWuM3lQw3hqDIkMDUnmQstQwaFqlzNxIBYHXvsoNLhepHm0fzDwNQV/d
+        mVAUbpQ3XQ6gcOuID/MoqLPz64DAWBCM53E6pYqUcqFXTWjKTuHWRqvUAF2M+NieHBXEscZulj9hB
+        /sT4rpqw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:36178 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1mmYmp-0007SF-VS; Mon, 15 Nov 2021 10:00:27 +0000
+        id 1mmYmv-0007SP-5K; Mon, 15 Nov 2021 10:00:33 +0000
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1mmYmp-006nOe-Gs; Mon, 15 Nov 2021 10:00:27 +0000
+        id 1mmYmu-006nOl-MD; Mon, 15 Nov 2021 10:00:32 +0000
 In-Reply-To: <YZIvnerLwnMkxx3p@shell.armlinux.org.uk>
 References: <YZIvnerLwnMkxx3p@shell.armlinux.org.uk>
 From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 1/3] net: phylink: add generic validate
- implementation
+Subject: [PATCH net-next 2/3] net: mvneta: use phylink_generic_validate()
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1mmYmp-006nOe-Gs@rmk-PC.armlinux.org.uk>
+Message-Id: <E1mmYmu-006nOl-MD@rmk-PC.armlinux.org.uk>
 Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Mon, 15 Nov 2021 10:00:27 +0000
+Date:   Mon, 15 Nov 2021 10:00:32 +0000
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a generic validate() implementation using the supported_interfaces
-and a bitmask of MAC pause/speed/duplex capabilities. This allows us
-to entirely eliminate many driver private validate() implementations.
-
-We expose the underlying phylink_get_linkmodes() function so that
-drivers which have special needs can still benefit from conversion.
+Convert mvneta to use phylink_generic_validate() for the bulk of its
+validate() implementation. This network adapter has a restriction
+that for 802.3z links, autonegotiation must be enabled.
 
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/phy/phylink.c | 252 ++++++++++++++++++++++++++++++++++++++
- include/linux/phylink.h   |  31 +++++
- 2 files changed, 283 insertions(+)
+ drivers/net/ethernet/marvell/mvneta.c | 34 ++++-----------------------
+ 1 file changed, 4 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 3ad7397b8119..33462fdc7add 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -166,6 +166,258 @@ static const char *phylink_an_mode_str(unsigned int mode)
- 	return mode < ARRAY_SIZE(modestr) ? modestr[mode] : "unknown";
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index 5a7bdca22a63..67a644177880 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -3823,8 +3823,6 @@ static void mvneta_validate(struct phylink_config *config,
+ 			    unsigned long *supported,
+ 			    struct phylink_link_state *state)
+ {
+-	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
+-
+ 	/* We only support QSGMII, SGMII, 802.3z and RGMII modes.
+ 	 * When in 802.3z mode, we must have AN enabled:
+ 	 * "Bit 2 Field InBandAnEn In-band Auto-Negotiation enable. ...
+@@ -3836,34 +3834,7 @@ static void mvneta_validate(struct phylink_config *config,
+ 		return;
+ 	}
+ 
+-	/* Allow all the expected bits */
+-	phylink_set(mask, Autoneg);
+-	phylink_set_port_modes(mask);
+-
+-	/* Asymmetric pause is unsupported */
+-	phylink_set(mask, Pause);
+-
+-	/* Half-duplex at speeds higher than 100Mbit is unsupported */
+-	if (state->interface != PHY_INTERFACE_MODE_2500BASEX) {
+-		phylink_set(mask, 1000baseT_Full);
+-		phylink_set(mask, 1000baseX_Full);
+-	}
+-
+-	if (state->interface == PHY_INTERFACE_MODE_2500BASEX) {
+-		phylink_set(mask, 2500baseT_Full);
+-		phylink_set(mask, 2500baseX_Full);
+-	}
+-
+-	if (!phy_interface_mode_is_8023z(state->interface)) {
+-		/* 10M and 100M are only supported in non-802.3z mode */
+-		phylink_set(mask, 10baseT_Half);
+-		phylink_set(mask, 10baseT_Full);
+-		phylink_set(mask, 100baseT_Half);
+-		phylink_set(mask, 100baseT_Full);
+-	}
+-
+-	linkmode_and(supported, supported, mask);
+-	linkmode_and(state->advertising, state->advertising, mask);
++	phylink_generic_validate(config, supported, state);
  }
  
-+static void phylink_caps_to_linkmodes(unsigned long *linkmodes,
-+				      unsigned long caps)
-+{
-+	if (caps & MAC_SYM_PAUSE)
-+		__set_bit(ETHTOOL_LINK_MODE_Pause_BIT, linkmodes);
-+
-+	if (caps & MAC_ASYM_PAUSE)
-+		__set_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, linkmodes);
-+
-+	if (caps & MAC_10HD)
-+		__set_bit(ETHTOOL_LINK_MODE_10baseT_Half_BIT, linkmodes);
-+
-+	if (caps & MAC_10FD)
-+		__set_bit(ETHTOOL_LINK_MODE_10baseT_Full_BIT, linkmodes);
-+
-+	if (caps & MAC_100HD) {
-+		__set_bit(ETHTOOL_LINK_MODE_100baseT_Half_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_100baseFX_Half_BIT, linkmodes);
-+	}
-+
-+	if (caps & MAC_100FD) {
-+		__set_bit(ETHTOOL_LINK_MODE_100baseT_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_100baseT1_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_100baseFX_Full_BIT, linkmodes);
-+	}
-+
-+	if (caps & MAC_1000HD)
-+		__set_bit(ETHTOOL_LINK_MODE_1000baseT_Half_BIT, linkmodes);
-+
-+	if (caps & MAC_1000FD) {
-+		__set_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_1000baseX_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_1000baseT1_Full_BIT, linkmodes);
-+	}
-+
-+	if (caps & MAC_2500FD) {
-+		__set_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_2500baseX_Full_BIT, linkmodes);
-+	}
-+
-+	if (caps & MAC_5000FD)
-+		__set_bit(ETHTOOL_LINK_MODE_5000baseT_Full_BIT, linkmodes);
-+
-+	if (caps & MAC_10000FD) {
-+		__set_bit(ETHTOOL_LINK_MODE_10000baseT_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_10000baseKX4_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_10000baseKR_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_10000baseR_FEC_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_10000baseCR_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_10000baseSR_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_10000baseLR_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_10000baseLRM_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_10000baseER_Full_BIT, linkmodes);
-+	}
-+
-+	if (caps & MAC_25000FD) {
-+		__set_bit(ETHTOOL_LINK_MODE_25000baseCR_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_25000baseKR_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_25000baseSR_Full_BIT, linkmodes);
-+	}
-+
-+	if (caps & MAC_40000FD) {
-+		__set_bit(ETHTOOL_LINK_MODE_40000baseKR4_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_40000baseCR4_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_40000baseSR4_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_40000baseLR4_Full_BIT, linkmodes);
-+	}
-+
-+	if (caps & MAC_50000FD) {
-+		__set_bit(ETHTOOL_LINK_MODE_50000baseCR2_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_50000baseKR2_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_50000baseSR2_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_50000baseKR_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_50000baseSR_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_50000baseCR_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_50000baseLR_ER_FR_Full_BIT,
-+			  linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_50000baseDR_Full_BIT, linkmodes);
-+	}
-+
-+	if (caps & MAC_56000FD) {
-+		__set_bit(ETHTOOL_LINK_MODE_56000baseKR4_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_56000baseCR4_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_56000baseSR4_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_56000baseLR4_Full_BIT, linkmodes);
-+	}
-+
-+	if (caps & MAC_100000FD) {
-+		__set_bit(ETHTOOL_LINK_MODE_100000baseKR4_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_100000baseSR4_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_100000baseCR4_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_100000baseLR4_ER4_Full_BIT,
-+			  linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_100000baseKR2_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_100000baseSR2_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_100000baseCR2_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_100000baseLR2_ER2_FR2_Full_BIT,
-+			  linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_100000baseDR2_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_100000baseKR_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_100000baseSR_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_100000baseLR_ER_FR_Full_BIT,
-+			  linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_100000baseCR_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_100000baseDR_Full_BIT, linkmodes);
-+	}
-+
-+	if (caps & MAC_200000FD) {
-+		__set_bit(ETHTOOL_LINK_MODE_200000baseKR4_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_200000baseSR4_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_200000baseLR4_ER4_FR4_Full_BIT,
-+			  linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_200000baseDR4_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_200000baseCR4_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_200000baseKR2_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_200000baseSR2_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_200000baseLR2_ER2_FR2_Full_BIT,
-+			  linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_200000baseDR2_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_200000baseCR2_Full_BIT, linkmodes);
-+	}
-+
-+	if (caps & MAC_400000FD) {
-+		__set_bit(ETHTOOL_LINK_MODE_400000baseKR8_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_400000baseSR8_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_400000baseLR8_ER8_FR8_Full_BIT,
-+			  linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_400000baseDR8_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_400000baseCR8_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_400000baseKR4_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_400000baseSR4_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_400000baseLR4_ER4_FR4_Full_BIT,
-+			  linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_400000baseDR4_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_400000baseCR4_Full_BIT, linkmodes);
-+	}
-+}
-+
-+/**
-+ * phylink_get_linkmodes() - get acceptable link modes
-+ * @linkmodes: ethtool linkmode mask (must be already initialised)
-+ * @interface: phy interface mode defined by &typedef phy_interface_t
-+ * @mac_capabilities: bitmask of MAC capabilities
-+ *
-+ * Set all possible pause, speed and duplex linkmodes in @linkmodes that
-+ * are supported by the @interface mode and @mac_capabilities. @linkmodes
-+ * must have been initialised previously.
-+ */
-+void phylink_get_linkmodes(unsigned long *linkmodes, phy_interface_t interface,
-+			   unsigned long mac_capabilities)
-+{
-+	unsigned long caps = MAC_SYM_PAUSE | MAC_ASYM_PAUSE;
-+
-+	switch (interface) {
-+	case PHY_INTERFACE_MODE_USXGMII:
-+		caps |= MAC_10000FD | MAC_5000FD | MAC_2500FD;
-+		fallthrough;
-+
-+	case PHY_INTERFACE_MODE_RGMII_TXID:
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+	case PHY_INTERFACE_MODE_RGMII:
-+	case PHY_INTERFACE_MODE_QSGMII:
-+	case PHY_INTERFACE_MODE_SGMII:
-+	case PHY_INTERFACE_MODE_GMII:
-+		caps |= MAC_1000HD | MAC_1000FD;
-+		fallthrough;
-+
-+	case PHY_INTERFACE_MODE_REVRMII:
-+	case PHY_INTERFACE_MODE_RMII:
-+	case PHY_INTERFACE_MODE_REVMII:
-+	case PHY_INTERFACE_MODE_MII:
-+		caps |= MAC_10HD | MAC_10FD;
-+		fallthrough;
-+
-+	case PHY_INTERFACE_MODE_100BASEX:
-+		caps |= MAC_100HD | MAC_100FD;
-+		break;
-+
-+	case PHY_INTERFACE_MODE_TBI:
-+	case PHY_INTERFACE_MODE_MOCA:
-+	case PHY_INTERFACE_MODE_RTBI:
-+	case PHY_INTERFACE_MODE_1000BASEX:
-+		caps |= MAC_1000HD;
-+		fallthrough;
-+	case PHY_INTERFACE_MODE_TRGMII:
-+		caps |= MAC_1000FD;
-+		break;
-+
-+	case PHY_INTERFACE_MODE_2500BASEX:
-+		caps |= MAC_2500FD;
-+		break;
-+
-+	case PHY_INTERFACE_MODE_5GBASER:
-+		caps |= MAC_5000FD;
-+		break;
-+
-+	case PHY_INTERFACE_MODE_XGMII:
-+	case PHY_INTERFACE_MODE_RXAUI:
-+	case PHY_INTERFACE_MODE_XAUI:
-+	case PHY_INTERFACE_MODE_10GBASER:
-+	case PHY_INTERFACE_MODE_10GKR:
-+		caps |= MAC_10000FD;
-+		break;
-+
-+	case PHY_INTERFACE_MODE_25GBASER:
-+		caps |= MAC_25000FD;
-+		break;
-+
-+	case PHY_INTERFACE_MODE_XLGMII:
-+		caps |= MAC_40000FD;
-+		break;
-+
-+	case PHY_INTERFACE_MODE_INTERNAL:
-+		caps |= ~0;
-+		break;
-+
-+	case PHY_INTERFACE_MODE_NA:
-+	case PHY_INTERFACE_MODE_MAX:
-+	case PHY_INTERFACE_MODE_SMII:
-+		break;
-+	}
-+
-+	phylink_caps_to_linkmodes(linkmodes, caps & mac_capabilities);
-+}
-+EXPORT_SYMBOL_GPL(phylink_get_linkmodes);
-+
-+/**
-+ * phylink_generic_validate() - generic validate() callback implementation
-+ * @config: a pointer to a &struct phylink_config.
-+ * @supported: ethtool bitmask for supported link modes.
-+ * @state: a pointer to a &struct phylink_link_state.
-+ *
-+ * Generic implementation of the validate() callback that MAC drivers can
-+ * use when they pass the range of supported interfaces and MAC capabilities.
-+ * This makes use of phylink_get_linkmodes().
-+ */
-+void phylink_generic_validate(struct phylink_config *config,
-+			      unsigned long *supported,
-+			      struct phylink_link_state *state)
-+{
-+	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
-+
-+	phylink_set_port_modes(mask);
-+	phylink_set(mask, Autoneg);
-+	phylink_get_linkmodes(mask, state->interface, config->mac_capabilities);
-+
-+	linkmode_and(supported, supported, mask);
-+	linkmode_and(state->advertising, state->advertising, mask);
-+}
-+EXPORT_SYMBOL_GPL(phylink_generic_validate);
-+
- static int phylink_validate_any(struct phylink *pl, unsigned long *supported,
- 				struct phylink_link_state *state)
- {
-diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index f037470b6fb3..3563820a1765 100644
---- a/include/linux/phylink.h
-+++ b/include/linux/phylink.h
-@@ -20,6 +20,29 @@ enum {
- 	MLO_AN_PHY = 0,	/* Conventional PHY */
- 	MLO_AN_FIXED,	/* Fixed-link mode */
- 	MLO_AN_INBAND,	/* In-band protocol */
-+
-+	MAC_SYM_PAUSE	= BIT(0),
-+	MAC_ASYM_PAUSE	= BIT(1),
-+	MAC_10HD	= BIT(2),
-+	MAC_10FD	= BIT(3),
-+	MAC_10		= MAC_10HD | MAC_10FD,
-+	MAC_100HD	= BIT(4),
-+	MAC_100FD	= BIT(5),
-+	MAC_100		= MAC_100HD | MAC_100FD,
-+	MAC_1000HD	= BIT(6),
-+	MAC_1000FD	= BIT(7),
-+	MAC_1000	= MAC_1000HD | MAC_1000FD,
-+	MAC_2500FD	= BIT(8),
-+	MAC_5000FD	= BIT(9),
-+	MAC_10000FD	= BIT(10),
-+	MAC_20000FD	= BIT(11),
-+	MAC_25000FD	= BIT(12),
-+	MAC_40000FD	= BIT(13),
-+	MAC_50000FD	= BIT(14),
-+	MAC_56000FD	= BIT(15),
-+	MAC_100000FD	= BIT(16),
-+	MAC_200000FD	= BIT(17),
-+	MAC_400000FD	= BIT(18),
- };
+ static void mvneta_mac_pcs_get_state(struct phylink_config *config,
+@@ -5166,6 +5137,9 @@ static int mvneta_probe(struct platform_device *pdev)
  
- static inline bool phylink_autoneg_inband(unsigned int mode)
-@@ -69,6 +92,7 @@ enum phylink_op_type {
-  *		     if MAC link is at %MLO_AN_FIXED mode.
-  * @supported_interfaces: bitmap describing which PHY_INTERFACE_MODE_xxx
-  *                        are supported by the MAC/PCS.
-+ * @mac_capabilities: MAC pause/speed/duplex capabilities.
-  */
- struct phylink_config {
- 	struct device *dev;
-@@ -79,6 +103,7 @@ struct phylink_config {
- 	void (*get_fixed_state)(struct phylink_config *config,
- 				struct phylink_link_state *state);
- 	DECLARE_PHY_INTERFACE_MASK(supported_interfaces);
-+	unsigned long mac_capabilities;
- };
- 
- /**
-@@ -442,6 +467,12 @@ void pcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
- 		 phy_interface_t interface, int speed, int duplex);
- #endif
- 
-+void phylink_get_linkmodes(unsigned long *linkmodes, phy_interface_t interface,
-+			   unsigned long mac_capabilities);
-+void phylink_generic_validate(struct phylink_config *config,
-+			      unsigned long *supported,
-+			      struct phylink_link_state *state);
+ 	pp->phylink_config.dev = &dev->dev;
+ 	pp->phylink_config.type = PHYLINK_NETDEV;
++	pp->phylink_config.mac_capabilities = MAC_SYM_PAUSE | MAC_10 |
++		MAC_100 | MAC_1000FD | MAC_2500FD;
 +
- struct phylink *phylink_create(struct phylink_config *, struct fwnode_handle *,
- 			       phy_interface_t iface,
- 			       const struct phylink_mac_ops *mac_ops);
+ 	phy_interface_set_rgmii(pp->phylink_config.supported_interfaces);
+ 	__set_bit(PHY_INTERFACE_MODE_QSGMII,
+ 		  pp->phylink_config.supported_interfaces);
 -- 
 2.30.2
 
