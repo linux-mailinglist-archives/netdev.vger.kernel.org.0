@@ -2,105 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB10444FF4C
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 08:38:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E76844FF50
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 08:40:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230462AbhKOHlc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 02:41:32 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:38893 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230111AbhKOHlT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 02:41:19 -0500
-Received: by mail-il1-f198.google.com with SMTP id m14-20020a92870e000000b0027586f7fb06so10020321ild.5
-        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 23:38:23 -0800 (PST)
+        id S231235AbhKOHnd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 02:43:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46446 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229842AbhKOHnW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 02:43:22 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3027C061746;
+        Sun, 14 Nov 2021 23:40:25 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id l22so41131103lfg.7;
+        Sun, 14 Nov 2021 23:40:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=hD+y9+QPBxPIEHLp2C5nAr71aH7yvAgfpLbqsq9aZ20=;
+        b=aHa5zLbymxJfKWMSKuuwCIgwPfTWfAFmUOyDgzniMmSzRrIDS0rjcrnDo5E7FO/6hG
+         9OcfykS8DzQo4JtVBnLU2azMeMQmgjeJnH4F6xpq54i8akSRJZe6Q9hbFqaObu72xAMI
+         RmsRReglCA2C4w6SKQsb8+CfFG1wFlG7+CV/ZxauYzdIDceiUsy621RP5rw5mAGB3ObQ
+         ylI99/FN3BuDSDDl36lwMBN09peOteR5zpil2LEE04OP7uyStv9qngvRbsbF5+ByvN/c
+         Utfnny6kjs5HEihZlKA48ZoLxiOiFzyyK/slIdCW002pnLksHNIpHW3wuKroM9IeRtYJ
+         jgrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=wAcAJvwVLUQg9owDLLhZ6P7Y4ndIiH5QD0qB5tdkIn8=;
-        b=F38AGgSUCMiRGoq8/+ycH3yQkpVFFeVU6xGAlx7pOxJipL3RlDMLX535lvwPZDcSKc
-         MdAfBdA97qcaQQlPTKMEsn75xCUbSNzFDSRqAJMeirmatMTbdSshutlwiZEca19nRft1
-         u7Vjwrzfenhc9c/1chMPwZVz+KSHT++mvxXUZDdIU0J/kfnR5jepCjsCRWYMlZkjjgTF
-         YrRk+LiXmuXEvkx1+aB7p4La8GqrzM+Xf0Y+n9aoBMBmZolQc/PDKJ/BDEO9vBtfsPuE
-         PSM62q8j6R73rC2fUPajCYRiNH+JAZ1+i3FBhLacVXkTa7PoK4+pbKyQPbtuBW7X1am6
-         ef4Q==
-X-Gm-Message-State: AOAM533cScsF7ddjz1J8Ma0UlROSTknFcfQIyyyW3kH5z+L+pLytLlJD
-        S2TYtJ3Dt+1huIQqRe+Y0Gio+CTSbMlQhWWV1Domk4dZ9Ogq
-X-Google-Smtp-Source: ABdhPJwUDoRWDhgTf8XrfrouKYXV1uId24KuTAbyeov6j2HHWcumh9j0lVSFqB9YAlAsPxsj0yhKc8QrUtXV3ONFYEosPH60L30m
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=hD+y9+QPBxPIEHLp2C5nAr71aH7yvAgfpLbqsq9aZ20=;
+        b=oaFoojGDqyQDSQGnqhIYswAo+Rd5RkcPD9KM64z/4Lh1Z6vOAzvxQDaGoyj709JDWB
+         9FJn8k5u6Z96DUCHw0vZ5RoZy/m4YEFS2JjDknGmK1f3+U1rRcCmFaYA2aSCgWligEGw
+         dWNhwyYjRaF6FnzjA+GHP+2NoG+LSYpUmqQG1W82GbR4groD9bKaOhnBqiS6YClOYzcu
+         euIfykquak1AT50Fokx1B/jOwMTOrpt3cqLodz5YnPVu1daC0P0MGZy8+ifcQctIryg7
+         kkM5QAdigTjm187onrTnBIxjfRMgc0+nu/oELUQ89N6drRDMyo8LORBXkQ2IiVCJh6TQ
+         IcBw==
+X-Gm-Message-State: AOAM532gb4tt9wnq18QkfFrba7TQtqowsFP348IpFvR5eby55XMJ0YkM
+        CtoXCqj17WQ1f7qfRkYGKRW1Hs14o2A=
+X-Google-Smtp-Source: ABdhPJz/1l54205h8je5+/DlGM4h3RRIPAHFZqLGoWjlpkXdR7oZotRHyGHQxVCVy6i9CYcQKMF70g==
+X-Received: by 2002:a05:6512:220e:: with SMTP id h14mr34728927lfu.310.1636962023930;
+        Sun, 14 Nov 2021 23:40:23 -0800 (PST)
+Received: from [192.168.1.11] ([94.103.224.112])
+        by smtp.gmail.com with ESMTPSA id c15sm1332667lft.244.2021.11.14.23.40.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 14 Nov 2021 23:40:23 -0800 (PST)
+Message-ID: <9a811cfb-1e9c-763f-0c8f-577f21d8f3cc@gmail.com>
+Date:   Mon, 15 Nov 2021 10:40:22 +0300
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1529:: with SMTP id i9mr19982807ilu.23.1636961903367;
- Sun, 14 Nov 2021 23:38:23 -0800 (PST)
-Date:   Sun, 14 Nov 2021 23:38:23 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c2dccb05d0cee49a@google.com>
-Subject: [syzbot] WARNING in ieee80211_free_ack_frame (2)
-From:   syzbot <syzbot+ac648b0525be1feba506@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH] can: etas_es58x: fix error handling
+Content-Language: en-US
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
+        kuba@kernel.org, linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20211114205839.15316-1-paskripkin@gmail.com>
+ <CAMZ6Rq+orfUuUCCgeWyGc7P0vp3t-yjf_g9H=Jhk43f1zXGfDQ@mail.gmail.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <CAMZ6Rq+orfUuUCCgeWyGc7P0vp3t-yjf_g9H=Jhk43f1zXGfDQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 11/15/21 08:27, Vincent MAILHOL wrote:
+> Hi Pavel,
+> 
+> Thanks for the patch!
+> 
+> On Mon. 15 Nov 2021 at 05:58, Pavel Skripkin <paskripkin@gmail.com> wrote:
+>> When register_candev() fails there are 2 possible device states:
+>> NETREG_UNINITIALIZED and NETREG_UNREGISTERED. None of them are suitable
+>> for calling unregister_candev(), because of following checks in
+>> unregister_netdevice_many():
+>>
+>>         if (dev->reg_state == NETREG_UNINITIALIZED)
+>>                 WARN_ON(1);
+>> ...
+>>         BUG_ON(dev->reg_state != NETREG_REGISTERED);
+>>
+>> To avoid possible BUG_ON or WARN_ON let's free current netdev before
+>> returning from es58x_init_netdev() and leave others (registered)
+>> net devices for es58x_free_netdevs().
+>>
+>> Fixes: 004653f0abf2 ("can: etas_es58x: add es58x_free_netdevs() to factorize code")
+> 
 
-syzbot found the following issue on:
+Hi, Vincent!
 
-HEAD commit:    89d714ab6043 Merge tag 'linux-watchdog-5.16-rc1' of git://..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=108e7c3eb00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=dcce4e862d74e466
-dashboard link: https://syzkaller.appspot.com/bug?extid=ac648b0525be1feba506
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> Fixes: 8537257874e9 ("can: etas_es58x: add core support for ETAS ES58X
+> CAN USB interfaces")
+> 
+> The bug existed from the initial commit.  Prior to the
+> introduction of es58x_free_netdevs(), unregister_candev() was
+> called in the error handling of es58x_probe():
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/can/usb/etas_es58x/es58x_core.c?id=8537257874e949a59c834cecfd5a063e11b64b0b#n2234
+> 
 
-Unfortunately, I don't have any reproducer for this issue yet.
+I see, will fix in v2
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+ac648b0525be1feba506@syzkaller.appspotmail.com
+>> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+>> ---
+>>  drivers/net/can/usb/etas_es58x/es58x_core.c | 5 ++++-
+>>  1 file changed, 4 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c b/drivers/net/can/usb/etas_es58x/es58x_core.c
+>> index 96a13c770e4a..41c721f2fbbe 100644
+>> --- a/drivers/net/can/usb/etas_es58x/es58x_core.c
+>> +++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
+>> @@ -2098,8 +2098,11 @@ static int es58x_init_netdev(struct es58x_device *es58x_dev, int channel_idx)
+>>         netdev->flags |= IFF_ECHO;      /* We support local echo */
+>>
+>>         ret = register_candev(netdev);
+>> -       if (ret)
+>> +       if (ret) {
+>> +               free_candev(netdev);
+>> +               es58x_dev->netdev[channel_idx] = NULL;
+> 
+> A nitpick, but if you don’t mind, I would prefer to set
+> es58x_dev->netdev[channel_idx] after register_candev() succeeds
+> so that we do not have to reset it to NULL in the error handling.
+> 
+> diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c
+> b/drivers/net/can/usb/etas_es58x/es58x_core.c
+> index ce2b9e1ce3af..fb0daad9b9c8 100644
+> --- a/drivers/net/can/usb/etas_es58x/es58x_core.c
+> +++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
+> @@ -2091,18 +2091,20 @@ static int es58x_init_netdev(struct
+> es58x_device *es58x_dev, int channel_idx)
+>                  return -ENOMEM;
+>          }
+>          SET_NETDEV_DEV(netdev, dev);
+> -       es58x_dev->netdev[channel_idx] = netdev;
+>          es58x_init_priv(es58x_dev, es58x_priv(netdev), channel_idx);
+> 
+>          netdev->netdev_ops = &es58x_netdev_ops;
+>          netdev->flags |= IFF_ECHO;      /* We support local echo */
+> 
+>          ret = register_candev(netdev);
+> -       if (ret)
+> +       if (ret) {
+> +               free_candev(netdev);
+>                  return ret;
+> +       }
+> 
+>          netdev_queue_set_dql_min_limit(netdev_get_tx_queue(netdev, 0),
+>                                         es58x_dev->param->dql_min_limit);
+> +       es58x_dev->netdev[channel_idx] = netdev;
+> 
+>          return ret;
+>   }
+> 
 
-netdevsim netdevsim1 netdevsim2 (unregistering): unset [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim1 netdevsim1 (unregistering): unset [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim1 netdevsim0 (unregistering): unset [1, 0] type 2 family 0 port 6081 - 0
-------------[ cut here ]------------
-Have pending ack frames!
-WARNING: CPU: 0 PID: 10 at net/mac80211/main.c:1419 ieee80211_free_ack_frame+0x48/0x50 net/mac80211/main.c:1419
-Modules linked in:
-CPU: 0 PID: 10 Comm: kworker/u4:1 Not tainted 5.15.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: netns cleanup_net
-RIP: 0010:ieee80211_free_ack_frame+0x48/0x50 net/mac80211/main.c:1419
-Code: e8 0d dc f3 f8 48 89 ef e8 d5 c6 97 fe 31 c0 5b 5d c3 e8 fb db f3 f8 48 c7 c7 00 9b ab 8a c6 05 b3 00 d8 04 01 e8 89 e9 72 00 <0f> 0b eb d2 0f 1f 40 00 41 57 41 56 49 89 f6 41 55 41 54 49 89 d4
-RSP: 0018:ffffc90000f0f9d8 EFLAGS: 00010286
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff888011c3c280 RSI: ffffffff815e6b88 RDI: fffff520001e1f2d
-RBP: ffff8880781a6000 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff815e095e R11: 0000000000000000 R12: dffffc0000000000
-R13: ffffffff888320f0 R14: 0000000000000000 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055c247c48cf0 CR3: 0000000021d96000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- idr_for_each+0x113/0x220 lib/idr.c:208
- ieee80211_free_hw+0x9b/0x2b0 net/mac80211/main.c:1435
- mac80211_hwsim_del_radio drivers/net/wireless/mac80211_hwsim.c:3586 [inline]
- hwsim_exit_net+0x55f/0xca0 drivers/net/wireless/mac80211_hwsim.c:4346
- ops_exit_list+0xb0/0x160 net/core/net_namespace.c:168
- cleanup_net+0x4ea/0xb00 net/core/net_namespace.c:593
- process_one_work+0x9b2/0x1690 kernel/workqueue.c:2298
- worker_thread+0x658/0x11f0 kernel/workqueue.c:2445
- kthread+0x405/0x4f0 kernel/kthread.c:327
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
+Also will do in v2. Thank you for your review :)
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+
+
+With regards,
+Pavel Skripkin
