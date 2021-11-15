@@ -2,125 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4BD74500CB
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 10:02:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBD8A4500F9
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 10:15:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236867AbhKOJFb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 04:05:31 -0500
-Received: from out0.migadu.com ([94.23.1.103]:23360 "EHLO out0.migadu.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236127AbhKOJAo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 04:00:44 -0500
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1636966661;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=RxPeFCT20glhLqQ5eY/Vl8C9iprAbdhuCAS4bnE3hdk=;
-        b=cuorowxW6xc6iHoVQfS9e1jHkqtwUX4xURi/nX6M63g13f6/SOaeOSYOsg8dWw8wnLm27B
-        MgEKZmwk5u/MLvWdX4lovVIvPBF/eEnuroj4BafGalRg3UOEAzFHZQG7Pv2xA3n2Bnh9h4
-        wFIIFXNBkAR6cubvaxj5xkS4jjgCGRI=
-From:   Yajun Deng <yajun.deng@linux.dev>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Yajun Deng <yajun.deng@linux.dev>
-Subject: [PATCH net-next] skbuff: Add helper function for head_frag and pfmemalloc
-Date:   Mon, 15 Nov 2021 16:57:08 +0800
-Message-Id: <20211115085708.13901-1-yajun.deng@linux.dev>
+        id S230316AbhKOJSi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 04:18:38 -0500
+Received: from mail-yb1-f172.google.com ([209.85.219.172]:38776 "EHLO
+        mail-yb1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230126AbhKOJSW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 04:18:22 -0500
+Received: by mail-yb1-f172.google.com with SMTP id v64so45030562ybi.5;
+        Mon, 15 Nov 2021 01:15:27 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Jyzl7oZfTfctjkCbDjpVsRa/ezMbHf5XSEZ7cgOuE0g=;
+        b=yHoi3O63Yyj0yY5wa5oiwVLQ853NE+qzHS53eaA3aTfFxJn9+DAYy9ZbJTVIIJoVdh
+         tKh00J75J2zfVLsee0gSJozRnPny0UjVI9kDPcM+dnfNwRmrfYtynumxqmeylylErkLl
+         76auhotkYGW7yfyBu02oRdcFqIS1LcfiLBk4S8BMiU6jUja1hyOdybvk7xJKbj1Nmgrn
+         9IFoZUeof6HB33QNgLhwQrRxWJlc0HwFYRlGuyG54KjnXtsm/CaURx2E8DLNMP8rKTRo
+         lgerOi7BknyKLwHDXDExw3JcsbTInLBJsUYqA8X3BFBkLmfYUusLsxWRzB+Y087TYsJc
+         KMWg==
+X-Gm-Message-State: AOAM530Ux8j5kx4QBBzznGpZXclgwTqALk+AjSe8FsvQ5Nj1bA9Zpf1Q
+        GdWAJrFe7MmIqeY843MICVMadypXxMQRaHSezHG7ogYZsaKHgQ==
+X-Google-Smtp-Source: ABdhPJwrV32VxQ+3kGtTABQunws8sfYjJXxMQtaGBbZ51iMbAmJ7LEFHHSOKyt6zRPScDJ2poZ/Ui+emLSD6bmwQ+2E=
+X-Received: by 2002:a25:3d1:: with SMTP id 200mr41631260ybd.113.1636967725954;
+ Mon, 15 Nov 2021 01:15:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: yajun.deng@linux.dev
+References: <YZIWT9ATzN611n43@hovoldconsulting.com> <20211115083756.25971-1-paskripkin@gmail.com>
+In-Reply-To: <20211115083756.25971-1-paskripkin@gmail.com>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Mon, 15 Nov 2021 18:15:15 +0900
+Message-ID: <CAMZ6RqJZqXHLrrbzerR6GzSKqtYE8j8qVSzH-Hdd_zjR6YUv9Q@mail.gmail.com>
+Subject: Re: [PATCH v3] can: etas_es58x: fix error handling
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
+        kuba@kernel.org, linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series of build_skb() has the same code, add skb_set_head_frag_pfmemalloc()
-for it, at the same time, in-line skb_propagate_pfmemalloc().
+On Mon. 15 Nov 2021 at 17:37, Pavel Skripkin <paskripkin@gmail.com> wrote:
+> When register_candev() fails there are 2 possible device states:
+> NETREG_UNINITIALIZED and NETREG_UNREGISTERED. None of them are suitable
+> for calling unregister_candev(), because of following checks in
+> unregister_netdevice_many():
+>
+>         if (dev->reg_state == NETREG_UNINITIALIZED)
+>                 WARN_ON(1);
+> ...
+>         BUG_ON(dev->reg_state != NETREG_REGISTERED);
+>
+> To avoid possible BUG_ON or WARN_ON let's free current netdev before
+> returning from es58x_init_netdev() and leave others (registered)
+> net devices for es58x_free_netdevs().
+>
+> Fixes: 8537257874e9 ("can: etas_es58x: add core support for ETAS ES58X CAN USB interfaces")
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
----
- include/linux/skbuff.h | 19 ++++++++++++-------
- net/core/skbuff.c      | 19 +++++--------------
- 2 files changed, 17 insertions(+), 21 deletions(-)
+Acked-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 0bd6520329f6..3e26b80bde29 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -3007,15 +3007,20 @@ static inline bool dev_page_is_reusable(const struct page *page)
- }
- 
- /**
-- *	skb_propagate_pfmemalloc - Propagate pfmemalloc if skb is allocated after RX page
-- *	@page: The page that was allocated from skb_alloc_page
-- *	@skb: The skb that may need pfmemalloc set
-+ *	skb_set_head_frag_pfmemalloc - Set head_frag and pfmemalloc
-+ *	@skb: The skb that may need head_frag and pfmemalloc set
-+ *      @data: data buffer provided by caller
-+ *      @frag_size: size of data, or 0 if head was kmalloced
-  */
--static inline void skb_propagate_pfmemalloc(const struct page *page,
--					    struct sk_buff *skb)
-+static inline void skb_set_head_frag_pfmemalloc(struct sk_buff *skb, void *data,
-+						unsigned int frag_size)
- {
--	if (page_is_pfmemalloc(page))
--		skb->pfmemalloc = true;
-+
-+	if (likely(skb) && frag_size) {
-+		skb->head_frag = 1;
-+		if (page_is_pfmemalloc(virt_to_head_page(data)))
-+			skb->pfmemalloc = 1;
-+	}
- }
- 
- /**
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 67a9188d8a49..7b3d2bf746ae 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -255,11 +255,8 @@ struct sk_buff *build_skb(void *data, unsigned int frag_size)
- {
- 	struct sk_buff *skb = __build_skb(data, frag_size);
- 
--	if (skb && frag_size) {
--		skb->head_frag = 1;
--		if (page_is_pfmemalloc(virt_to_head_page(data)))
--			skb->pfmemalloc = 1;
--	}
-+	skb_set_head_frag_pfmemalloc(skb, data, frag_size);
-+
- 	return skb;
- }
- EXPORT_SYMBOL(build_skb);
-@@ -278,11 +275,8 @@ struct sk_buff *build_skb_around(struct sk_buff *skb,
- 
- 	__build_skb_around(skb, data, frag_size);
- 
--	if (frag_size) {
--		skb->head_frag = 1;
--		if (page_is_pfmemalloc(virt_to_head_page(data)))
--			skb->pfmemalloc = 1;
--	}
-+	skb_set_head_frag_pfmemalloc(skb, data, frag_size);
-+
- 	return skb;
- }
- EXPORT_SYMBOL(build_skb_around);
-@@ -325,10 +319,7 @@ struct sk_buff *napi_build_skb(void *data, unsigned int frag_size)
- {
- 	struct sk_buff *skb = __napi_build_skb(data, frag_size);
- 
--	if (likely(skb) && frag_size) {
--		skb->head_frag = 1;
--		skb_propagate_pfmemalloc(virt_to_head_page(data), skb);
--	}
-+	skb_set_head_frag_pfmemalloc(skb, data, frag_size);
- 
- 	return skb;
- }
--- 
-2.32.0
+> ---
+>
+> Changes in v3:
+>         - Moved back es58x_dev->netdev[channel_idx] initialization,
+>           since it's unsafe to intialize it _after_ register_candev()
+>           call. Thanks to Johan Hovold <johan@kernel.org> for spotting
+>           it
 
+My bad on that. I missed the fact that the netdev_ops becomes
+active once register_candev() returns.
+
+> Changes in v2:
+>         - Fixed Fixes: tag
+>         - Moved es58x_dev->netdev[channel_idx] initialization at the end
+>           of the function
+>
+> ---
+>  drivers/net/can/usb/etas_es58x/es58x_core.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c b/drivers/net/can/usb/etas_es58x/es58x_core.c
+> index 96a13c770e4a..41c721f2fbbe 100644
+> --- a/drivers/net/can/usb/etas_es58x/es58x_core.c
+> +++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
+> @@ -2098,8 +2098,11 @@ static int es58x_init_netdev(struct es58x_device *es58x_dev, int channel_idx)
+>         netdev->flags |= IFF_ECHO;      /* We support local echo */
+>
+>         ret = register_candev(netdev);
+> -       if (ret)
+> +       if (ret) {
+> +               free_candev(netdev);
+> +               es58x_dev->netdev[channel_idx] = NULL;
+>                 return ret;
+> +       }
+>
+>         netdev_queue_set_dql_min_limit(netdev_get_tx_queue(netdev, 0),
+>                                        es58x_dev->param->dql_min_limit);
+> --
+> 2.33.1
+>
