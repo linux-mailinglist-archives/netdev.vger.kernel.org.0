@@ -2,74 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B279445078C
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 15:50:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 642664507AB
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 15:56:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232314AbhKOOxJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 09:53:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52760 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232125AbhKOOxE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 09:53:04 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 6386B63225;
-        Mon, 15 Nov 2021 14:50:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636987809;
-        bh=mixMEjVP5uAAW4hcAl654j7hmJ72WJ73N82+mHaEluM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=AG1sisEVi6FqowALsciNpsLyA51WooDYQCJA6RKlJQ7f5UfnmIM57/dOfOIK5o4Lq
-         1q0X0dRouDe9khwQes8ZwB0uSbhXUXwt/h8aIZ1WjB+v/G+YpZRNQV83tdwGd1YFc+
-         P3sSAUbEcRIZZ/tbOXqlXnOMVgr7qi/+ymuDN8r3yFjjP3gRTxzPqxZk6hg8w5jYYQ
-         vJrIQkoS4m9hwbajFg0bcJoot6v9aF0XPWRPAhAIUhqllt334abx5kLBSg03CbCSPj
-         LMhWHj/EmNgBE1MgZ57NfRut9BFwsNKCqvHvRz7LO5fxteFTzQNJqVdGTRnr5eSWwr
-         1SXPZQvAcHV+Q==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5C4EB60A3B;
-        Mon, 15 Nov 2021 14:50:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S234996AbhKOO7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 09:59:44 -0500
+Received: from mail.zju.edu.cn ([61.164.42.155]:29340 "EHLO zju.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232314AbhKOO7D (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Nov 2021 09:59:03 -0500
+Received: from localhost.localdomain (unknown [222.205.2.245])
+        by mail-app3 (Coremail) with SMTP id cC_KCgCX6G0AdZJhnaEtCA--.51040S4;
+        Mon, 15 Nov 2021 22:56:00 +0800 (CST)
+From:   Lin Ma <linma@zju.edu.cn>
+To:     netdev@vger.kernel.org
+Cc:     krzysztof.kozlowski@canonical.com, davem@davemloft.net,
+        kuba@kernel.org, jirislaby@kernel.org, gregkh@linuxfoundation.org,
+        linux-kernel@vger.kernel.org, Lin Ma <linma@zju.edu.cn>
+Subject: [PATCH v1] NFC: reorganize the functions in nci_request
+Date:   Mon, 15 Nov 2021 22:56:00 +0800
+Message-Id: <20211115145600.8320-1-linma@zju.edu.cn>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/3] introduce generic phylink validation
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163698780937.3779.747027399718560228.git-patchwork-notify@kernel.org>
-Date:   Mon, 15 Nov 2021 14:50:09 +0000
-References: <YZIvnerLwnMkxx3p@shell.armlinux.org.uk>
-In-Reply-To: <YZIvnerLwnMkxx3p@shell.armlinux.org.uk>
-To:     Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, mw@semihalf.com, netdev@vger.kernel.org,
-        thomas.petazzoni@bootlin.com
+X-CM-TRANSID: cC_KCgCX6G0AdZJhnaEtCA--.51040S4
+X-Coremail-Antispam: 1UD129KBjvJXoW7urWxGw4fJr1rWF1DKF4Durg_yoW8XF1kpa
+        95KFyayFyxZ3y7Zr40yw18Xw15ZF10ka97Ga4Yyw18Cr9xXwnrtr1UtFW5Xryfu395ZFZx
+        XFy5ta4F9r1UWaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvY1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJr0_GcWl84ACjcxK6I8E
+        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
+        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_
+        Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
+        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6ry5MxAIw28IcxkI7VAKI48J
+        MxAIw28IcVCjz48v1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c
+        02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_
+        GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7
+        CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v2
+        6r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0J
+        UmzuXUUUUU=
+X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+There is a possible data race as shown below:
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+thread-A in nci_request()       | thread-B in nci_close_device()
+                                | mutex_lock(&ndev->req_lock);
+test_bit(NCI_UP, &ndev->flags); |
+...                             | test_and_clear_bit(NCI_UP, &ndev->flags)
+mutex_lock(&ndev->req_lock);    |
+                                |
 
-On Mon, 15 Nov 2021 09:59:57 +0000 you wrote:
-> Hi,
-> 
-> The various validate method implementations we have in phylink users
-> have been quite repetitive but also prone to bugs. These patches
-> introduce a generic implementation which relies solely on the
-> supported_interfaces bitmap introduced during last cycle, and in the
-> first patch, a bit array of MAC capabilities.
-> 
-> [...]
+This race will allow __nci_request() to be awaked while the device is
+getting removed.
 
-Here is the summary with links:
-  - [net-next,1/3] net: phylink: add generic validate implementation
-    https://git.kernel.org/netdev/net-next/c/34ae2c09d46a
-  - [net-next,2/3] net: mvneta: use phylink_generic_validate()
-    https://git.kernel.org/netdev/net-next/c/02a0988b9893
-  - [net-next,3/3] net: mvpp2: use phylink_generic_validate()
-    https://git.kernel.org/netdev/net-next/c/5038ffea0c6c
+Similar to commit e2cb6b891ad2 ("bluetooth: eliminate the potential race
+condition when removing the HCI controller"). this patch alters the
+function sequence in nci_request() to prevent the data races between the
+nci_close_device().
 
-You are awesome, thank you!
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Fixes: 6a2968aaf50c ("NFC: basic NCI protocol implementation")
+---
+ net/nfc/nci/core.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
+index 6fd873aa86be..1dd0269c1a72 100644
+--- a/net/nfc/nci/core.c
++++ b/net/nfc/nci/core.c
+@@ -144,12 +144,15 @@ inline int nci_request(struct nci_dev *ndev,
+ {
+ 	int rc;
+ 
+-	if (!test_bit(NCI_UP, &ndev->flags))
+-		return -ENETDOWN;
+-
+ 	/* Serialize all requests */
+ 	mutex_lock(&ndev->req_lock);
+-	rc = __nci_request(ndev, req, opt, timeout);
++	/* check the state after obtaing the lock against any races
++	 * from nci_close_device when the device gets removed.
++	 */
++	if (test_bit(NCI_UP, &ndev->flags))
++		rc = __nci_request(ndev, req, opt, timeout);
++	else
++		rc = -ENETDOWN;
+ 	mutex_unlock(&ndev->req_lock);
+ 
+ 	return rc;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.33.1
 
