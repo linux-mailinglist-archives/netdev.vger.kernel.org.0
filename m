@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89E4C4517E2
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 23:47:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95F3B4517DE
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 23:47:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349508AbhKOWtN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 17:49:13 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46928 "EHLO mail.kernel.org"
+        id S1347680AbhKOWsX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 17:48:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46930 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1353536AbhKOWjQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1353537AbhKOWjQ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 15 Nov 2021 17:39:16 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7E6B66324D;
-        Mon, 15 Nov 2021 22:34:22 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8108D6324E;
+        Mon, 15 Nov 2021 22:34:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637015665;
-        bh=fKn8nl4xMokijsaqlH5e4iD92f9ISlML84Gu26Ft1MU=;
+        s=k20201202; t=1637015669;
+        bh=qY5DdSZWv4jcXWcIIMXiqwGuB+uIsQT0vjsVJj4CKFQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s0VtsbWimr4t6f1n7/8goqBcsnUNEHQd2HPJe6Svs056CYE0lVGbePphZJCMQbXSi
-         3XwGW4GBYcBiZDST389+BTEKEaym+oTq1ZCN+5Pk360qvsBJ/DMEAqblJRQDV8d32r
-         ia6FOsMUneEMeEByeGUsbp91f6QlZUh26opAI4dkOI6pF4N+nbl24C4zoLTbRBcCBj
-         nS5pyyM/faEX6vqsRyvh4yebiNUgPdBCKooo5wz0rvA5h+ajiMK2aB+nrofSF/huf9
-         MI6LrJUYXgmKa4QX0N4r0nmodvy/nZl00uaKmVIX/jmJOx+JYQaAxhzslI024H2Jpi
-         9VLGICBCGqfJg==
+        b=iSSyklQ6047wqvDhJQGbrSzafQ8piEpMrv9T/Fn9pQHtGHV+j+TUOVWqQ3VhTbIJ7
+         duNX4KeQE96+JBBBlbjmLJHYl/4SAJXvu4ppfDutLx5Z54fpZ7c6zvd7EbSVA3qmiP
+         xTkUJ7S8j75lIw5zjrd7quL0gqNCUtehKOSCogHGqEEO+ep6T+GSHabUj/HuUbWg03
+         mB2w2LJr6B37GOzyEC/yMy9MmcF/Ksb8ydBEJB8HPrGu/L9vAfUdNsQwNui54WYtQ5
+         KwYJe8Bg2pHva2t8KUX0h9c97C2HVoQYCzg76UzgWD3iBOi2/R/hK5lwv0TdyzFOa9
+         wxDPRC75SPK9Q==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
@@ -32,9 +32,9 @@ Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         alexander.duyck@gmail.com, saeed@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
         tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: [PATCH v18 bpf-next 09/23] bpf: introduce BPF_F_XDP_MB flag in prog_flags loading the ebpf program
-Date:   Mon, 15 Nov 2021 23:33:03 +0100
-Message-Id: <a529aaef48486deb1dac2ce0f058fdefea4c411a.1637013639.git.lorenzo@kernel.org>
+Subject: [PATCH v18 bpf-next 10/23] net: mvneta: enable jumbo frames if the loaded XDP program support mb
+Date:   Mon, 15 Nov 2021 23:33:04 +0100
+Message-Id: <08ac2e9f772bc1a559dbde7d0e694d56122decde.1637013639.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1637013639.git.lorenzo@kernel.org>
 References: <cover.1637013639.git.lorenzo@kernel.org>
@@ -44,83 +44,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce BPF_F_XDP_MB and the related field in bpf_prog_aux in order to
-notify the driver the loaded program support xdp multi-buffer.
+Enable the capability to receive jumbo frames even if the interface is
+running in XDP mode if the loaded program declare to properly support
+xdp multi-buff. At same time reject a xdp program not supporting xdp
+multi-buffer if the driver is running in xdp multi-buffer mode.
 
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- include/linux/bpf.h            | 1 +
- include/uapi/linux/bpf.h       | 5 +++++
- kernel/bpf/syscall.c           | 4 +++-
- tools/include/uapi/linux/bpf.h | 5 +++++
- 4 files changed, 14 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/marvell/mvneta.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index df3410bff4b0..c1b5d3ec57e7 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -869,6 +869,7 @@ struct bpf_prog_aux {
- 	bool func_proto_unreliable;
- 	bool sleepable;
- 	bool tail_call_reachable;
-+	bool xdp_mb;
- 	struct hlist_node tramp_hlist;
- 	/* BTF_KIND_FUNC_PROTO for valid attach_btf_id */
- 	const struct btf_type *attach_func_proto;
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 6297eafdc40f..875ae723eb6b 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -1111,6 +1111,11 @@ enum bpf_link_type {
-  */
- #define BPF_F_SLEEPABLE		(1U << 4)
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index 8842c9c8c665..8b26d733b3cd 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -3750,6 +3750,7 @@ static void mvneta_percpu_disable(void *arg)
+ static int mvneta_change_mtu(struct net_device *dev, int mtu)
+ {
+ 	struct mvneta_port *pp = netdev_priv(dev);
++	struct bpf_prog *prog = pp->xdp_prog;
+ 	int ret;
  
-+/* If BPF_F_XDP_MB is used in BPF_PROG_LOAD command, the loaded program
-+ * fully support xdp multi-buffer
-+ */
-+#define BPF_F_XDP_MB		(1U << 5)
+ 	if (!IS_ALIGNED(MVNETA_RX_PKT_SIZE(mtu), 8)) {
+@@ -3758,8 +3759,11 @@ static int mvneta_change_mtu(struct net_device *dev, int mtu)
+ 		mtu = ALIGN(MVNETA_RX_PKT_SIZE(mtu), 8);
+ 	}
+ 
+-	if (pp->xdp_prog && mtu > MVNETA_MAX_RX_BUF_SIZE) {
+-		netdev_info(dev, "Illegal MTU value %d for XDP mode\n", mtu);
++	if (prog && !prog->aux->xdp_mb && mtu > MVNETA_MAX_RX_BUF_SIZE) {
++		netdev_info(dev,
++			    "Illegal MTU %d for XDP prog without multi-buf\n",
++			    mtu);
 +
- /* When BPF ldimm64's insn[0].src_reg != 0 then this can have
-  * the following extensions:
-  *
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 50f96ea4452a..fbae37d5b329 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -2202,7 +2202,8 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr)
- 				 BPF_F_ANY_ALIGNMENT |
- 				 BPF_F_TEST_STATE_FREQ |
- 				 BPF_F_SLEEPABLE |
--				 BPF_F_TEST_RND_HI32))
-+				 BPF_F_TEST_RND_HI32 |
-+				 BPF_F_XDP_MB))
  		return -EINVAL;
+ 	}
  
- 	if (!IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) &&
-@@ -2288,6 +2289,7 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr)
- 	prog->aux->dst_prog = dst_prog;
- 	prog->aux->offload_requested = !!attr->prog_ifindex;
- 	prog->aux->sleepable = attr->prog_flags & BPF_F_SLEEPABLE;
-+	prog->aux->xdp_mb = attr->prog_flags & BPF_F_XDP_MB;
+@@ -4457,8 +4461,9 @@ static int mvneta_xdp_setup(struct net_device *dev, struct bpf_prog *prog,
+ 	struct mvneta_port *pp = netdev_priv(dev);
+ 	struct bpf_prog *old_prog;
  
- 	err = security_bpf_prog_alloc(prog->aux);
- 	if (err)
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 6297eafdc40f..875ae723eb6b 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -1111,6 +1111,11 @@ enum bpf_link_type {
-  */
- #define BPF_F_SLEEPABLE		(1U << 4)
+-	if (prog && dev->mtu > MVNETA_MAX_RX_BUF_SIZE) {
+-		NL_SET_ERR_MSG_MOD(extack, "MTU too large for XDP");
++	if (prog && !prog->aux->xdp_mb && dev->mtu > MVNETA_MAX_RX_BUF_SIZE) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "prog does not support XDP multi-buff");
+ 		return -EOPNOTSUPP;
+ 	}
  
-+/* If BPF_F_XDP_MB is used in BPF_PROG_LOAD command, the loaded program
-+ * fully support xdp multi-buffer
-+ */
-+#define BPF_F_XDP_MB		(1U << 5)
-+
- /* When BPF ldimm64's insn[0].src_reg != 0 then this can have
-  * the following extensions:
-  *
 -- 
 2.31.1
 
