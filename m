@@ -2,104 +2,433 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93401450958
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 17:13:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7516A450986
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 17:21:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232111AbhKOQQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 11:16:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51766 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231716AbhKOQQZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 11:16:25 -0500
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5139FC061570
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 08:13:29 -0800 (PST)
-Received: by mail-wr1-x431.google.com with SMTP id d24so31829481wra.0
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 08:13:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=aEbkD0MZHqHf+9rUBNePxHoQt3EslhmQ3qory9m4aBw=;
-        b=qJiQaeIuAgllVmJUuFNC1h5TImJDelh4OXDLlpZ7k+9WtKriPiDcrW/MPpghG12dMV
-         KRE3VcWl/dT/QMyfLQ0qlaKJksIXCnscBmhIAgZVNFOa9iDG/DjINXbk8xpiISFArOEj
-         kYtgW8KABZnJzqaE0bv5b7uZCJJHtnEKy1WBgt9AQRxV/aMw0DE7YAil3gFsVcwnyrVk
-         Q9shymYqF7mlHGIMINkQWRcURE6D8Acx55fcqkIJ18r4OT3OOAix95M5T99/Pm6zF326
-         7X/r/0Gs4jyKWBtUiG5QeuNxGLTttyGNAqKRA7G3UHXHY5flPBRAT3/TWtIwwXQCMKHi
-         lP3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=aEbkD0MZHqHf+9rUBNePxHoQt3EslhmQ3qory9m4aBw=;
-        b=EtZbKfe6X5tTbKoiBAVsp4+Du2Uii5oADlN9rDS01jJXadFE+USp5FtMjtVS9l6+eu
-         Gfe6zJfTmZ/lDpPiL7viDxENr7/k/+TSXhik3ZFOP4uZNqRSMemc+iHIG4SqXs4Lt3L9
-         hH1GBH7F3eYqyt5n8+knHpkB9+A/FVFnbTFzmtdD6p1Ld1IHiGVXstVk+NH2RE8bTTLv
-         hN0rNubQYehNPfteGW9HvU7AdXVdYVw3zlqbDVtFLy6pUbQJ7W+fH0LmfOF/Utwy2r5X
-         9uoNholkSIYmK5IC0wiBK3vOS81PypItXsWngWT5iXUMyAB0pbMOh49bEgr/5iRebWv8
-         n4sQ==
-X-Gm-Message-State: AOAM530POyn8K24TgbLWXmr9vrzCXBkgrGp0xYnEmi9PdDSCmmrijx3c
-        FWb+J0G8h4i1gfogCoirQePLMBsMfyeUuWUIqf0=
-X-Google-Smtp-Source: ABdhPJzpazre36ajnqeMKpJTTSvuoiUqZAQG8M/SDoEhedZccCKfQLo4YmRHFwcStj73RgrphcxmakQ1whvWQzCJO6g=
-X-Received: by 2002:adf:eb52:: with SMTP id u18mr226745wrn.90.1636992807928;
- Mon, 15 Nov 2021 08:13:27 -0800 (PST)
+        id S236709AbhKOQXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 11:23:36 -0500
+Received: from www62.your-server.de ([213.133.104.62]:47448 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236780AbhKOQXJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 11:23:09 -0500
+Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mmeiH-00017B-14; Mon, 15 Nov 2021 17:20:09 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        andrii@kernel.org, quentin@isovalent.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: pull-request: bpf-next 2021-11-15
+Date:   Mon, 15 Nov 2021 17:20:08 +0100
+Message-Id: <20211115162008.25916-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Received: by 2002:a5d:6587:0:0:0:0:0 with HTTP; Mon, 15 Nov 2021 08:13:27
- -0800 (PST)
-Reply-To: liampayen50@gmail.com
-From:   liam payen <sankarahamadou9@gmail.com>
-Date:   Mon, 15 Nov 2021 08:13:27 -0800
-Message-ID: <CABmAao-5DU6qGHN8ywdYLzErFj_YW3o0AwnMXPRbHC=Fm_NV5A@mail.gmail.com>
-Subject: =?UTF-8?B?5oiR6ZyA6KaB5L2g55qE5biu5Yqp?=
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26354/Mon Nov 15 10:21:07 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-5oiR5piv5Yip5Lqa5aeGwrfkvanmgankuK3lo6vlpKvkurrjgIINCg0K5Zyo576O5Zu96ZmG5Yab
-55qE5Yab5LqL6YOo6Zeo44CC576O5Zu977yM5LiA5ZCN5Lit5aOr77yMMzIg5bKB77yM5oiR5Y2V
-6Lqr77yM5p2l6Ieq576O5Zu955Sw57qz6KW/5bee5YWL5Yip5aSr5YWw77yM55uu5YmN6am75omO
-5Zyo5Y+Z5Yip5Lqa77yM5LiO5oGQ5oCW5Li75LmJ5L2c5oiY44CC5oiR55qE5Y2V5L2N5piv56ys
-NOaKpOeQhumYn+esrDc4MuaXheaUr+aPtOiQpeOAgg0KDQrmiJHmmK/kuIDkuKrlhYXmu6HniLHl
-v4PjgIHor5rlrp7lkozmt7Hmg4XnmoTkurrvvIzlhbfmnInoia/lpb3nmoTlub3pu5jmhJ/vvIzm
-iJHllpzmrKLnu5Por4bmlrDmnIvlj4vlubbkuobop6Pku5bku6znmoTnlJ/mtLvmlrnlvI/vvIzm
-iJHllpzmrKLnnIvliLDlpKfmtbfnmoTms6LmtarlkozlsbHohInnmoTnvo7kuL3ku6Xlj4rlpKfo
-h6rnhLbmiYDmi6XmnInnmoTkuIDliIfmj5DkvpvjgILlvojpq5jlhbTog73mm7TlpJrlnLDkuobo
-p6PmgqjvvIzmiJHorqTkuLrmiJHku6zlj6/ku6Xlu7rnq4voia/lpb3nmoTllYbkuJrlj4vosIrj
-gIINCg0K5oiR5LiA55u05b6I5LiN5byA5b+D77yM5Zug5Li66L+Z5Lqb5bm05p2l55Sf5rS75a+5
-5oiR5LiN5YWs5bmz77yb5oiR5aSx5Y675LqG54i25q+N77yM6YKj5bm05oiRIDIxDQrlsoHjgILm
-iJHniLbkurLlj6vkuZTlsJTCt+S9qeaBqe+8jOavjeS6suWPq+eOm+S4vcK35L2p5oGp44CC5rKh
-5pyJ5Lq65biu5Yqp5oiR77yM5L2G5b6I6auY5YW05oiR57uI5LqO5Zyo576O5Yab5Lit5om+5Yiw
-5LqG6Ieq5bex44CCDQoNCuaIkee7k+WpmueUn+S6huWtqeWtkO+8jOS9huS7luatu+S6hu+8jOS4
-jeS5heaIkeS4iOWkq+W8gOWni+asuumql+aIke+8jOaJgOS7peaIkeS4jeW+l+S4jeaUvuW8g+Wp
-muWnu+OAgg0KDQrlnKjmiJHnmoTlm73lrrbjgIHnvo7lm73lkozlj5nliKnkuprov5nph4zvvIzm
-iJHkuZ/lvojlubjov5DvvIzmi6XmnInmiJHnlJ/mtLvkuK3miYDpnIDnmoTkuIDliIfvvIzkvYbm
-sqHmnInkurrnu5nmiJHlu7rorq7jgILmiJHpnIDopoHkuIDkuKror5rlrp7nmoTkurrmnaXkv6Hk
-u7vvvIzku5bkuZ/kvJrlsLHlpoLkvZXmipXotYTmiJHnmoTpkrHmj5Dkvpvlu7rorq7jgILlm6Dk
-uLrmiJHmmK/miJHniLbmr43lnKjku5bku6zljrvkuJbliY3nlJ/kuIvnmoTllK/kuIDkuIDkuKrl
-pbPlranjgIINCg0K5oiR5LiN6K6k6K+G5L2g5pys5Lq677yM5L2G5oiR6K6k5Li65pyJ5LiA5Liq
-5YC85b6X5L+h6LWW55qE5aW95Lq677yM5LuW5Y+v5Lul5bu656uL55yf5q2j55qE5L+h5Lu75ZKM
-6Imv5aW955qE5ZWG5Lia5Y+L6LCK77yM5aaC5p6c5L2g55yf55qE5pyJ5LiA5Liq6K+a5a6e55qE
-5ZCN5a2X77yM5oiR5Lmf5pyJ5LiA5Lqb5Lic6KW/6KaB5ZKM5L2g5YiG5Lqr55u45L+h44CC5Zyo
-5L2g6Lqr5LiK77yM5Zug5Li65oiR6ZyA6KaB5L2g55qE5biu5Yqp44CC5oiR5oul5pyJ5oiR5Zyo
-5Y+Z5Yip5Lqa6L+Z6YeM6LWa5Yiw55qE5oC76aKd77yIMjUwDQrkuIfnvo7lhYPvvInjgILmiJHk
-vJrlnKjkuIvkuIDlsIHnlLXlrZDpgq7ku7bkuK3lkYror4nkvaDmiJHmmK/lpoLkvZXlgZrliLDn
-moTvvIzkuI3opoHmg4rmhYzvvIzku5bku6zmsqHmnInpo47pmanvvIzogIzkuJTmiJHov5jlnKjk
-uI4gUmVkDQrmnInogZTns7vnmoTkurrpgZPkuLvkuYnljLvnlJ/nmoTluK7liqnkuIvlsIbov5nn
-rJTpkrHlrZjlhaXkuobpk7booYzjgILmiJHluIzmnJvmgqjlsIboh6rlt7HkvZzkuLrmiJHnmoTl
-j5fnm4rkurrmnaXmjqXmlLbln7rph5HlubblnKjmiJHlnKjov5nph4zlrozmiJDlkI7noa7kv53l
-roPnmoTlronlhajlubbojrflvpfmiJHnmoTlhpvkuovpgJrooYzor4Hku6XlnKjmgqjnmoTlm73l
-rrbkuI7mgqjkvJrpnaLvvJvkuI3opoHlrrPmgJXpk7booYzkvJrlsIbotYTph5HlrZjlgqjlnKgN
-CkFUTSBWSVNBIOWNoeS4re+8jOi/meWvueaIkeS7rOadpeivtOaYr+WuieWFqOS4lOW/q+aNt+ea
-hOOAgg0KDQrnrJTorrA75oiR5LiN55+l6YGT5oiR5Lus6KaB5Zyo6L+Z6YeM5ZGG5aSa5LmF77yM
-5oiR55qE5ZG96L+Q77yM5Zug5Li65oiR5Zyo6L+Z6YeM5Lik5qyh54K45by56KKt5Ye75Lit5bm4
-5a2Y5LiL5p2l77yM6L+Z5L+D5L2/5oiR5a+75om+5LiA5Liq5YC85b6X5L+h6LWW55qE5Lq65p2l
-5biu5Yqp5oiR5o6l5pS25ZKM5oqV6LWE5Z+66YeR77yM5Zug5Li65oiR5bCG5p2l5Yiw5L2g5Lus
-55qE5Zu95a625Ye66Lqr5oqV6LWE77yM5byA5aeL5paw55Sf5rS777yM5LiN5YaN5b2T5YW144CC
-DQoNCuWmguaenOaCqOaEv+aEj+iwqOaFjuWkhOeQhu+8jOivt+WbnuWkjeaIkeOAguaIkeS8muWR
-iuivieS9oOS4i+S4gOatpeeahOa1geeoi++8jOW5tuWPkemAgeabtOWkmuWFs+S6juWfuumHkeWt
-mOWFpemTtuihjOeahOS/oeaBr+OAguS7peWPiumTtuihjOWwhuWmguS9leW4ruWKqeaIkeS7rOmA
-mui/hyBBVE0gVklTQQ0KQ0FSRCDlsIbotYTph5Hovaznp7vliLDmgqjnmoTlm73lrrYv5Zyw5Yy6
-44CC5aaC5p6c5L2g5pyJ5YW06Laj77yM6K+35LiO5oiR6IGU57O744CCDQo=
+Hi David, hi Jakub,
+
+The following pull-request contains BPF updates for your *net-next* tree.
+
+There are two merge conflicts in tools/bpf/bpftool/Makefile due to commit
+e41ac2020bca ("bpftool: Install libbpf headers for the bootstrap version, too")
+from bpf tree and commit 6501182c08f7 ("bpftool: Normalize compile rules to
+specify output file last") from bpf-next tree. Resolve as follows:
+
+Conflict 1:
+
+<<<<<<< HEAD
+                -I$(LIBBPF_BOOTSTRAP_INCLUDE) \
+                -g -O2 -Wall -target bpf -c $< -o $@ && $(LLVM_STRIP) -g $@
+=======
+                -I$(LIBBPF_INCLUDE) \
+                -g -O2 -Wall -target bpf -c $< -o $@
+        $(Q)$(LLVM_STRIP) -g $@
+>>>>>>> e5043894b21f7d99d3db31ad06308d6c5726caa6
+
+Result should look like:
+
+$(OUTPUT)%.bpf.o: skeleton/%.bpf.c $(OUTPUT)vmlinux.h $(LIBBPF_BOOTSTRAP)
+        $(QUIET_CLANG)$(CLANG) \
+                -I$(if $(OUTPUT),$(OUTPUT),.) \
+                -I$(srctree)/tools/include/uapi/ \
+                -I$(LIBBPF_BOOTSTRAP_INCLUDE) \
+                -g -O2 -Wall -target bpf -c $< -o $@
+        $(Q)$(LLVM_STRIP) -g $@
+
+Conflict 2:
+
+<<<<<<< HEAD
+$(BOOTSTRAP_OUTPUT)%.o: %.c $(LIBBPF_BOOTSTRAP_INTERNAL_HDRS) | $(BOOTSTRAP_OUTPUT)
+        $(QUIET_CC)$(HOSTCC) \
+                $(subst -I$(LIBBPF_INCLUDE),-I$(LIBBPF_BOOTSTRAP_INCLUDE),$(CFLAGS)) \
+                -c -MMD -o $@ $<
+=======
+$(BOOTSTRAP_OUTPUT)%.o: %.c $(LIBBPF_INTERNAL_HDRS) | $(BOOTSTRAP_OUTPUT)
+        $(QUIET_CC)$(HOSTCC) $(CFLAGS) -c -MMD $< -o $@
+>>>>>>> e5043894b21f7d99d3db31ad06308d6c5726caa6
+
+Result should look like:
+
+$(BOOTSTRAP_OUTPUT)%.o: %.c $(LIBBPF_BOOTSTRAP_INTERNAL_HDRS) | $(BOOTSTRAP_OUTPUT)
+        $(QUIET_CC)$(HOSTCC) \
+                $(subst -I$(LIBBPF_INCLUDE),-I$(LIBBPF_BOOTSTRAP_INCLUDE),$(CFLAGS)) \
+                -c -MMD $< -o $@
+
+We've added 72 non-merge commits during the last 13 day(s) which contain
+a total of 171 files changed, 2728 insertions(+), 1143 deletions(-).
+
+The main changes are:
+
+1) Add btf_type_tag attributes to bring kernel annotations like __user/__rcu to
+   BTF such that BPF verifier will be able to detect misuse, from Yonghong Song.
+
+2) Big batch of libbpf improvements including various fixes, future proofing APIs,
+   and adding a unified, OPTS-based bpf_prog_load() low-level API, from Andrii Nakryiko.
+
+3) Add ingress_ifindex to BPF_SK_LOOKUP program type for selectively applying the
+   programmable socket lookup logic to packets from a given netdev, from Mark Pashmfouroush.
+
+4) Remove the 128M upper JIT limit for BPF programs on arm64 and add selftest to
+   ensure exception handling still works, from Russell King and Alan Maguire.
+
+5) Add a new bpf_find_vma() helper for tracing to map an address to the backing
+   file such as shared library, from Song Liu.
+
+6) Batch of various misc fixes to bpftool, fixing a memory leak in BPF program dump,
+   updating documentation and bash-completion among others, from Quentin Monnet.
+
+7) Deprecate libbpf bpf_program__get_prog_info_linear() API and migrate its users as
+   the API is heavily tailored around perf and is non-generic, from Dave Marchevsky.
+
+8) Enable libbpf's strict mode by default in bpftool and add a --legacy option as an
+   opt-out for more relaxed BPF program requirements, from Stanislav Fomichev.
+
+9) Fix bpftool to use libbpf_get_error() to check for errors, from Hengqi Chen.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Alan Maguire, Alexei Starovoitov, Andrii Nakryiko, Dave Marchevsky, Eric 
+Dumazet, Hengqi Chen, Jakub Kicinski, Jean-Philippe Brucker, Jesper 
+Dangaard Brouer, Joe Stringer, Kumar Kartikeya Dwivedi, Quentin Monnet, 
+Song Liu, Tobias Klauser, Yonghong Song
+
+----------------------------------------------------------------
+
+The following changes since commit cc0356d6a02e064387c16a83cb96fe43ef33181e:
+
+  Merge tag 'x86_core_for_v5.16_rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip (2021-11-02 07:56:47 -0700)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
+
+for you to fetch changes up to e5043894b21f7d99d3db31ad06308d6c5726caa6:
+
+  bpftool: Use libbpf_get_error() to check error (2021-11-14 18:38:13 -0800)
+
+----------------------------------------------------------------
+Alan Maguire (1):
+      selftests/bpf: Add exception handling selftests for tp_bpf program
+
+Alexei Starovoitov (9):
+      Merge branch 'libbpf ELF sanity checking improvements'
+      Merge branch 'libbpf: add unified bpf_prog_load() low-level API'
+      Merge branch 'Fix leaks in libbpf and selftests'
+      Merge branch 'introduce bpf_find_vma'
+      Merge branch 'Get ingress_ifindex in BPF_SK_LOOKUP prog type'
+      Merge branch 'selftests/bpf: fix test_progs' log_level logic'
+      Merge branch 'Future-proof more tricky libbpf APIs'
+      Merge branch 'Support BTF_KIND_TYPE_TAG for btf_type_tag attributes'
+      Merge branch 'introduce btf_tracing_ids'
+
+Andrii Nakryiko (41):
+      Merge branch 'libbpf: deprecate bpf_program__get_prog_info_linear'
+      libbpf: Detect corrupted ELF symbols section
+      libbpf: Improve sanity checking during BTF fix up
+      libbpf: Validate that .BTF and .BTF.ext sections contain data
+      libbpf: Fix section counting logic
+      libbpf: Improve ELF relo sanitization
+      libbpf: Deprecate bpf_program__load() API
+      libbpf: Fix non-C89 loop variable declaration in gen_loader.c
+      libbpf: Rename DECLARE_LIBBPF_OPTS into LIBBPF_OPTS
+      libbpf: Pass number of prog load attempts explicitly
+      libbpf: Unify low-level BPF_PROG_LOAD APIs into bpf_prog_load()
+      libbpf: Remove internal use of deprecated bpf_prog_load() variants
+      libbpf: Stop using to-be-deprecated APIs
+      bpftool: Stop using deprecated bpf_load_program()
+      libbpf: Remove deprecation attribute from struct bpf_prog_prep_result
+      selftests/bpf: Fix non-strict SEC() program sections
+      selftests/bpf: Convert legacy prog load APIs to bpf_prog_load()
+      selftests/bpf: Merge test_stub.c into testing_helpers.c
+      selftests/bpf: Use explicit bpf_prog_test_load() calls everywhere
+      selftests/bpf: Use explicit bpf_test_load_program() helper calls
+      selftests/bpf: Pass sanitizer flags to linker through LDFLAGS
+      libbpf: Free up resources used by inner map definition
+      selftests/bpf: Fix memory leaks in btf_type_c_dump() helper
+      selftests/bpf: Free per-cpu values array in bpf_iter selftest
+      selftests/bpf: Free inner strings index in btf selftest
+      selftests/bpf: Clean up btf and btf_dump in dump_datasec test
+      selftests/bpf: Avoid duplicate btf__parse() call
+      selftests/bpf: Destroy XDP link correctly
+      selftests/bpf: Fix bpf_object leak in skb_ctx selftest
+      libbpf: Add ability to get/set per-program load flags
+      selftests/bpf: Fix bpf_prog_test_load() logic to pass extra log level
+      bpftool: Normalize compile rules to specify output file last
+      selftests/bpf: Minor cleanups and normalization of Makefile
+      libbpf: Turn btf_dedup_opts into OPTS-based struct
+      libbpf: Ensure btf_dump__new() and btf_dump_opts are future-proof
+      libbpf: Make perf_buffer__new() use OPTS-based interface
+      selftests/bpf: Migrate all deprecated perf_buffer uses
+      selftests/bpf: Update btf_dump__new() uses to v1.0+ variant
+      tools/runqslower: Update perf_buffer__new() calls
+      bpftool: Update btf_dump__new() and perf_buffer__new_raw() calls
+      Merge branch 'bpftool: miscellaneous fixes'
+
+Dave Marchevsky (4):
+      bpftool: Migrate -1 err checks of libbpf fn calls
+      bpftool: Use bpf_obj_get_info_by_fd directly
+      perf: Pull in bpf_program__get_prog_info_linear
+      libbpf: Deprecate bpf_program__get_prog_info_linear
+
+Hengqi Chen (1):
+      bpftool: Use libbpf_get_error() to check error
+
+Kumar Kartikeya Dwivedi (1):
+      libbpf: Compile using -std=gnu89
+
+Mark Pashmfouroush (2):
+      bpf: Add ingress_ifindex to bpf_sk_lookup
+      selftests/bpf: Add tests for accessing ingress_ifindex in bpf_sk_lookup
+
+Quentin Monnet (6):
+      bpftool: Fix SPDX tag for Makefiles and .gitignore
+      bpftool: Fix memory leak in prog_dump()
+      bpftool: Remove inclusion of utilities.mak from Makefiles
+      bpftool: Fix indent in option lists in the documentation
+      bpftool: Update the lists of names for maps and prog-attach types
+      bpftool: Fix mixed indentation in documentation
+
+Russell King (1):
+      arm64/bpf: Remove 128MB limit for BPF JIT programs
+
+Song Liu (4):
+      bpf: Introduce helper bpf_find_vma
+      selftests/bpf: Add tests for bpf_find_vma
+      bpf: Extend BTF_ID_LIST_GLOBAL with parameter for number of IDs
+      bpf: Introduce btf_tracing_ids
+
+Stanislav Fomichev (1):
+      bpftool: Enable libbpf's strict mode by default
+
+Yonghong Song (12):
+      bpf: Support BTF_KIND_TYPE_TAG for btf_type_tag attributes
+      libbpf: Support BTF_KIND_TYPE_TAG
+      bpftool: Support BTF_KIND_TYPE_TAG
+      selftests/bpf: Test libbpf API function btf__add_type_tag()
+      selftests/bpf: Add BTF_KIND_TYPE_TAG unit tests
+      selftests/bpf: Test BTF_KIND_DECL_TAG for deduplication
+      selftests/bpf: Rename progs/tag.c to progs/btf_decl_tag.c
+      selftests/bpf: Add a C test for btf_type_tag
+      selftests/bpf: Clarify llvm dependency with btf_tag selftest
+      docs/bpf: Update documentation for BTF_KIND_TYPE_TAG support
+      selftests/bpf: Fix an unused-but-set-variable compiler warning
+      selftests/bpf: Fix a tautological-constant-out-of-range-compare compiler warning
+
+ Documentation/bpf/btf.rst                          |  13 +-
+ arch/arm64/include/asm/extable.h                   |   9 -
+ arch/arm64/include/asm/memory.h                    |   5 +-
+ arch/arm64/kernel/traps.c                          |   2 +-
+ arch/arm64/mm/ptdump.c                             |   2 -
+ arch/arm64/net/bpf_jit_comp.c                      |   7 +-
+ include/linux/bpf.h                                |   1 +
+ include/linux/btf_ids.h                            |  20 +-
+ include/linux/filter.h                             |   7 +-
+ include/uapi/linux/bpf.h                           |  21 ++
+ include/uapi/linux/btf.h                           |   3 +-
+ kernel/bpf/bpf_task_storage.c                      |   4 +-
+ kernel/bpf/btf.c                                   |  19 +-
+ kernel/bpf/mmap_unlock_work.h                      |  65 ++++
+ kernel/bpf/stackmap.c                              |  82 +----
+ kernel/bpf/task_iter.c                             |  82 ++++-
+ kernel/bpf/verifier.c                              |  34 ++
+ kernel/trace/bpf_trace.c                           |   6 +-
+ net/core/filter.c                                  |  13 +-
+ net/ipv4/inet_hashtables.c                         |   8 +-
+ net/ipv4/udp.c                                     |   8 +-
+ net/ipv6/inet6_hashtables.c                        |   8 +-
+ net/ipv6/udp.c                                     |   8 +-
+ tools/bpf/bpftool/.gitignore                       |   2 +-
+ tools/bpf/bpftool/Documentation/Makefile           |   3 +-
+ tools/bpf/bpftool/Documentation/bpftool-btf.rst    |   2 +-
+ tools/bpf/bpftool/Documentation/bpftool-cgroup.rst |  12 +-
+ tools/bpf/bpftool/Documentation/bpftool-gen.rst    |   2 +-
+ tools/bpf/bpftool/Documentation/bpftool-link.rst   |   2 +-
+ tools/bpf/bpftool/Documentation/bpftool-map.rst    |   8 +-
+ tools/bpf/bpftool/Documentation/bpftool-net.rst    |  66 ++--
+ tools/bpf/bpftool/Documentation/bpftool-prog.rst   |   8 +-
+ tools/bpf/bpftool/Documentation/bpftool.rst        |   6 +-
+ tools/bpf/bpftool/Documentation/common_options.rst |   9 +
+ tools/bpf/bpftool/Makefile                         |  19 +-
+ tools/bpf/bpftool/bash-completion/bpftool          |   5 +-
+ tools/bpf/bpftool/btf.c                            |  13 +-
+ tools/bpf/bpftool/btf_dumper.c                     |  42 ++-
+ tools/bpf/bpftool/common.c                         |   1 +
+ tools/bpf/bpftool/feature.c                        |   2 +-
+ tools/bpf/bpftool/gen.c                            |  12 +-
+ tools/bpf/bpftool/iter.c                           |   7 +-
+ tools/bpf/bpftool/main.c                           |  13 +-
+ tools/bpf/bpftool/main.h                           |   3 +-
+ tools/bpf/bpftool/map.c                            |  13 +-
+ tools/bpf/bpftool/map_perf_ring.c                  |   9 +-
+ tools/bpf/bpftool/prog.c                           | 214 +++++++++---
+ tools/bpf/bpftool/struct_ops.c                     |  16 +-
+ tools/bpf/runqslower/runqslower.c                  |   6 +-
+ tools/include/uapi/linux/bpf.h                     |  21 ++
+ tools/include/uapi/linux/btf.h                     |   3 +-
+ tools/lib/bpf/Makefile                             |   1 +
+ tools/lib/bpf/bpf.c                                | 166 +++++----
+ tools/lib/bpf/bpf.h                                |  74 +++-
+ tools/lib/bpf/bpf_gen_internal.h                   |   8 +-
+ tools/lib/bpf/btf.c                                |  69 ++--
+ tools/lib/bpf/btf.h                                |  80 ++++-
+ tools/lib/bpf/btf_dump.c                           |  40 ++-
+ tools/lib/bpf/gen_loader.c                         |  33 +-
+ tools/lib/bpf/libbpf.c                             | 376 ++++++++++++---------
+ tools/lib/bpf/libbpf.h                             | 102 +++++-
+ tools/lib/bpf/libbpf.map                           |  13 +
+ tools/lib/bpf/libbpf_common.h                      |  14 +-
+ tools/lib/bpf/libbpf_internal.h                    |  33 +-
+ tools/lib/bpf/libbpf_legacy.h                      |   1 +
+ tools/lib/bpf/libbpf_probes.c                      |  20 +-
+ tools/lib/bpf/linker.c                             |   4 +-
+ tools/lib/bpf/xsk.c                                |  34 +-
+ tools/perf/Documentation/perf.data-file-format.txt |   2 +-
+ tools/perf/util/Build                              |   1 +
+ tools/perf/util/annotate.c                         |   3 +-
+ tools/perf/util/bpf-event.c                        |  41 ++-
+ tools/perf/util/bpf-event.h                        |   2 +-
+ tools/perf/util/bpf-utils.c                        | 261 ++++++++++++++
+ tools/perf/util/bpf-utils.h                        |  76 +++++
+ tools/perf/util/bpf_counter.c                      |   6 +-
+ tools/perf/util/dso.c                              |   1 +
+ tools/perf/util/env.c                              |   1 +
+ tools/perf/util/header.c                           |  13 +-
+ tools/testing/selftests/bpf/Makefile               |  71 ++--
+ tools/testing/selftests/bpf/README.rst             |   9 +-
+ .../selftests/bpf/benchs/bench_bloom_filter_map.c  |  17 +-
+ .../testing/selftests/bpf/benchs/bench_ringbufs.c  |   8 +-
+ tools/testing/selftests/bpf/btf_helpers.c          |  17 +-
+ tools/testing/selftests/bpf/flow_dissector_load.h  |   3 +-
+ tools/testing/selftests/bpf/get_cgroup_id_user.c   |   5 +-
+ tools/testing/selftests/bpf/prog_tests/align.c     |  11 +-
+ tools/testing/selftests/bpf/prog_tests/bpf_iter.c  |   8 +-
+ .../testing/selftests/bpf/prog_tests/bpf_obj_id.c  |   2 +-
+ tools/testing/selftests/bpf/prog_tests/btf.c       | 207 +++++++++---
+ .../selftests/bpf/prog_tests/btf_dedup_split.c     |   6 +-
+ tools/testing/selftests/bpf/prog_tests/btf_dump.c  |  41 ++-
+ tools/testing/selftests/bpf/prog_tests/btf_split.c |   4 +-
+ tools/testing/selftests/bpf/prog_tests/btf_tag.c   |  44 ++-
+ tools/testing/selftests/bpf/prog_tests/btf_write.c |  67 ++--
+ .../bpf/prog_tests/cgroup_attach_autodetach.c      |   2 +-
+ .../selftests/bpf/prog_tests/cgroup_attach_multi.c |   2 +-
+ .../bpf/prog_tests/cgroup_attach_override.c        |   2 +-
+ .../testing/selftests/bpf/prog_tests/core_reloc.c  |   2 +-
+ tools/testing/selftests/bpf/prog_tests/exhandler.c |  43 +++
+ .../selftests/bpf/prog_tests/fexit_bpf2bpf.c       |   8 +-
+ .../selftests/bpf/prog_tests/fexit_stress.c        |  33 +-
+ tools/testing/selftests/bpf/prog_tests/find_vma.c  | 117 +++++++
+ .../bpf/prog_tests/flow_dissector_load_bytes.c     |   2 +-
+ .../bpf/prog_tests/flow_dissector_reattach.c       |   4 +-
+ .../selftests/bpf/prog_tests/get_stack_raw_tp.c    |   9 +-
+ .../testing/selftests/bpf/prog_tests/global_data.c |   2 +-
+ .../selftests/bpf/prog_tests/global_func_args.c    |   2 +-
+ tools/testing/selftests/bpf/prog_tests/kfree_skb.c |   8 +-
+ tools/testing/selftests/bpf/prog_tests/l4lb_all.c  |   2 +-
+ .../selftests/bpf/prog_tests/load_bytes_relative.c |   2 +-
+ tools/testing/selftests/bpf/prog_tests/map_lock.c  |   4 +-
+ .../selftests/bpf/prog_tests/migrate_reuseport.c   |   4 +-
+ .../testing/selftests/bpf/prog_tests/perf_buffer.c |   6 +-
+ .../testing/selftests/bpf/prog_tests/pkt_access.c  |   2 +-
+ .../selftests/bpf/prog_tests/pkt_md_access.c       |   2 +-
+ .../selftests/bpf/prog_tests/queue_stack_map.c     |   2 +-
+ .../raw_tp_writable_reject_nbd_invalid.c           |  14 +-
+ .../bpf/prog_tests/raw_tp_writable_test_run.c      |  29 +-
+ .../selftests/bpf/prog_tests/signal_pending.c      |   2 +-
+ tools/testing/selftests/bpf/prog_tests/sk_lookup.c |  31 ++
+ tools/testing/selftests/bpf/prog_tests/skb_ctx.c   |   4 +-
+ .../testing/selftests/bpf/prog_tests/skb_helpers.c |   2 +-
+ tools/testing/selftests/bpf/prog_tests/sockopt.c   |  19 +-
+ tools/testing/selftests/bpf/prog_tests/spinlock.c  |   4 +-
+ .../selftests/bpf/prog_tests/stacktrace_map.c      |   2 +-
+ .../bpf/prog_tests/stacktrace_map_raw_tp.c         |   2 +-
+ tools/testing/selftests/bpf/prog_tests/tailcalls.c |  18 +-
+ .../selftests/bpf/prog_tests/task_fd_query_rawtp.c |   2 +-
+ .../selftests/bpf/prog_tests/task_fd_query_tp.c    |   4 +-
+ .../testing/selftests/bpf/prog_tests/tcp_estats.c  |   2 +-
+ .../selftests/bpf/prog_tests/tp_attach_query.c     |   2 +-
+ tools/testing/selftests/bpf/prog_tests/xdp.c       |   2 +-
+ .../selftests/bpf/prog_tests/xdp_adjust_tail.c     |   6 +-
+ .../testing/selftests/bpf/prog_tests/xdp_attach.c  |   6 +-
+ .../testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c |   7 +-
+ tools/testing/selftests/bpf/prog_tests/xdp_info.c  |   2 +-
+ tools/testing/selftests/bpf/prog_tests/xdp_perf.c  |   2 +-
+ .../selftests/bpf/progs/{tag.c => btf_decl_tag.c}  |   4 -
+ tools/testing/selftests/bpf/progs/btf_type_tag.c   |  25 ++
+ tools/testing/selftests/bpf/progs/exhandler_kern.c |  43 +++
+ tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c  |   2 +-
+ tools/testing/selftests/bpf/progs/find_vma.c       |  69 ++++
+ tools/testing/selftests/bpf/progs/find_vma_fail1.c |  29 ++
+ tools/testing/selftests/bpf/progs/find_vma_fail2.c |  29 ++
+ tools/testing/selftests/bpf/progs/test_l4lb.c      |   2 +-
+ .../selftests/bpf/progs/test_l4lb_noinline.c       |   2 +-
+ tools/testing/selftests/bpf/progs/test_map_lock.c  |   2 +-
+ .../selftests/bpf/progs/test_queue_stack_map.h     |   2 +-
+ tools/testing/selftests/bpf/progs/test_sk_lookup.c |   8 +
+ tools/testing/selftests/bpf/progs/test_skb_ctx.c   |   2 +-
+ tools/testing/selftests/bpf/progs/test_spin_lock.c |   2 +-
+ .../testing/selftests/bpf/progs/test_tcp_estats.c  |   2 +-
+ tools/testing/selftests/bpf/test_btf.h             |   3 +
+ tools/testing/selftests/bpf/test_cgroup_storage.c  |   3 +-
+ tools/testing/selftests/bpf/test_dev_cgroup.c      |   3 +-
+ tools/testing/selftests/bpf/test_lirc_mode2_user.c |   6 +-
+ tools/testing/selftests/bpf/test_lru_map.c         |   9 +-
+ tools/testing/selftests/bpf/test_maps.c            |   7 +-
+ tools/testing/selftests/bpf/test_sock.c            |  23 +-
+ tools/testing/selftests/bpf/test_sock_addr.c       |  13 +-
+ tools/testing/selftests/bpf/test_stub.c            |  44 ---
+ tools/testing/selftests/bpf/test_sysctl.c          |  23 +-
+ tools/testing/selftests/bpf/test_tag.c             |   3 +-
+ tools/testing/selftests/bpf/test_tcpnotify_user.c  |   7 +-
+ tools/testing/selftests/bpf/test_verifier.c        |  38 +--
+ tools/testing/selftests/bpf/testing_helpers.c      |  60 ++++
+ tools/testing/selftests/bpf/testing_helpers.h      |   6 +
+ .../testing/selftests/bpf/verifier/ctx_sk_lookup.c |  32 ++
+ tools/testing/selftests/bpf/xdping.c               |   3 +-
+ tools/testing/selftests/bpf/xdpxceiver.c           |   2 -
+ 171 files changed, 2728 insertions(+), 1143 deletions(-)
+ create mode 100644 kernel/bpf/mmap_unlock_work.h
+ create mode 100644 tools/perf/util/bpf-utils.c
+ create mode 100644 tools/perf/util/bpf-utils.h
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/exhandler.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/find_vma.c
+ rename tools/testing/selftests/bpf/progs/{tag.c => btf_decl_tag.c} (94%)
+ create mode 100644 tools/testing/selftests/bpf/progs/btf_type_tag.c
+ create mode 100644 tools/testing/selftests/bpf/progs/exhandler_kern.c
+ create mode 100644 tools/testing/selftests/bpf/progs/find_vma.c
+ create mode 100644 tools/testing/selftests/bpf/progs/find_vma_fail1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/find_vma_fail2.c
+ delete mode 100644 tools/testing/selftests/bpf/test_stub.c
