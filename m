@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB2464517E8
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 23:47:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AED84517E4
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 23:47:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351401AbhKOWt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 17:49:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47432 "EHLO mail.kernel.org"
+        id S1350341AbhKOWt2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 17:49:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46810 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1351166AbhKOWlU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1351194AbhKOWlU (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 15 Nov 2021 17:41:20 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7AC9F63256;
-        Mon, 15 Nov 2021 22:34:54 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6D29D63255;
+        Mon, 15 Nov 2021 22:34:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637015697;
-        bh=4S3O8whqH0V5ZiJypFNmSFiR73aDZLUOOlDLfBYn4NU=;
+        s=k20201202; t=1637015701;
+        bh=73lxYFHaHxeaMF6Swom4qxMjlX8GumGdORwW2xtMj8A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cYsjTjhjDp3cuDdt+AZyUPtq2uTcbhUJ/yvI55vKF//iiTeebcKR/t+tXZDGsrJ2V
-         pfS+Ue08F5xZE3ovBoFGOt+f9hvqeW6ZZL5YWEpsvvtDS0c4LTuwPyiCDMPM2jBppG
-         OXALKygkwYr0kqAPwI4bqwsfUkwgW48QK1iFHBX5+YVfN4tEM04lRVJYZS51zHF0I9
-         zFeqQn9joarIGO5Bwtbd5wE9vwQJxYoX5vA0ZWHTjXNAtybRM+qJhJThVdT0lDFLwF
-         qvNsi+dyLt6OlWtsEJamSXz7+9kdgOhv+r+9Q/bE+QPakYloLcAX0X8lMtyF29DX1W
-         wP15fAqPRlm3g==
+        b=eM+UElAqTmuKMzw3CxuUSHdcxJM+Ybnlu/PLTocPGcwImWIaedZxv1+lsTmPEjvxZ
+         DE9/7q2LPHxLZ/XzTA009qvUoQq/b+ffH2njJcP3NRuLKcrT5YojyEryUyMkuqLHGR
+         qibKVTY/35YDb18Mej5ANaRQ0zZpP8eSjJ+q314V2PXq/5hr1UpiSR2w3GNey64169
+         52xU3Eyxo7xHoDoG5tdWWJVISdkQK0G/1bS/9CYe7tVzL8yG9qgQZXRr1RygMmNxqn
+         3awvTi+XDFd2PHtoBemYtWGDmtysisMyQhBsRMwLJVstwzBCezHfYLnxjB4O/Oq5t9
+         w6POuBsN1zrcw==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
@@ -32,9 +32,9 @@ Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         alexander.duyck@gmail.com, saeed@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
         tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: [PATCH v18 bpf-next 17/23] bpf: selftests: update xdp_adjust_tail selftest to include multi-buffer
-Date:   Mon, 15 Nov 2021 23:33:11 +0100
-Message-Id: <3331c08f3c38cba9f5facbb58a372942bd7dac5e.1637013639.git.lorenzo@kernel.org>
+Subject: [PATCH v18 bpf-next 18/23] libbpf: Add SEC name for xdp_mb programs
+Date:   Mon, 15 Nov 2021 23:33:12 +0100
+Message-Id: <847d484d767e81d845c628e8f24693b45c2dfaf0.1637013639.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1637013639.git.lorenzo@kernel.org>
 References: <cover.1637013639.git.lorenzo@kernel.org>
@@ -44,231 +44,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eelco Chaudron <echaudro@redhat.com>
+Introduce support for the following SEC entries for XDP multi-buff
+property:
+- SEC("xdp_mb/")
+- SEC("xdp_devmap_mb/")
+- SEC("xdp_cpumap_mb/")
 
-This change adds test cases for the multi-buffer scenarios when shrinking
-and growing.
-
-Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- .../bpf/prog_tests/xdp_adjust_tail.c          | 118 ++++++++++++++++++
- .../bpf/progs/test_xdp_adjust_tail_grow.c     |  10 +-
- .../bpf/progs/test_xdp_adjust_tail_shrink.c   |  32 ++++-
- 3 files changed, 153 insertions(+), 7 deletions(-)
+ tools/lib/bpf/libbpf.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
-index 3f5a17c38be5..de9ca2a34490 100644
---- a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
-@@ -130,6 +130,120 @@ static void test_xdp_adjust_tail_grow2(void)
- 	bpf_object__close(obj);
- }
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index de7e09a6b5ec..fc0540d334c4 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -246,6 +246,8 @@ enum sec_def_flags {
+ 	SEC_SLEEPABLE = 8,
+ 	/* allow non-strict prefix matching */
+ 	SEC_SLOPPY_PFX = 16,
++	/* BPF program support XDP multi-buff */
++	SEC_XDP_MB = 32,
+ };
  
-+void test_xdp_adjust_mb_tail_shrink(void)
-+{
-+	const char *file = "./test_xdp_adjust_tail_shrink.o";
-+	__u32 duration, retval, size, exp_size;
-+	struct bpf_object *obj;
-+	int err, prog_fd;
-+	__u8 *buf;
-+
-+	/* For the individual test cases, the first byte in the packet
-+	 * indicates which test will be run.
-+	 */
-+
-+	err = bpf_prog_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
-+	if (CHECK_FAIL(err))
-+		return;
-+
-+	buf = malloc(9000);
-+	if (CHECK(!buf, "malloc()", "error:%s\n", strerror(errno)))
-+		return;
-+
-+	memset(buf, 0, 9000);
-+
-+	/* Test case removing 10 bytes from last frag, NOT freeing it */
-+	exp_size = 8990; /* 9000 - 10 */
-+	err = bpf_prog_test_run(prog_fd, 1, buf, 9000,
-+				buf, &size, &retval, &duration);
-+
-+	CHECK(err || retval != XDP_TX || size != exp_size,
-+	      "9k-10b", "err %d errno %d retval %d[%d] size %d[%u]\n",
-+	      err, errno, retval, XDP_TX, size, exp_size);
-+
-+	/* Test case removing one of two pages, assuming 4K pages */
-+	buf[0] = 1;
-+	exp_size = 4900; /* 9000 - 4100 */
-+	err = bpf_prog_test_run(prog_fd, 1, buf, 9000,
-+				buf, &size, &retval, &duration);
-+
-+	CHECK(err || retval != XDP_TX || size != exp_size,
-+	      "9k-1p", "err %d errno %d retval %d[%d] size %d[%u]\n",
-+	      err, errno, retval, XDP_TX, size, exp_size);
-+
-+	/* Test case removing two pages resulting in a non mb xdp_buff */
-+	buf[0] = 2;
-+	exp_size = 800; /* 9000 - 8200 */
-+	err = bpf_prog_test_run(prog_fd, 1, buf, 9000,
-+				buf, &size, &retval, &duration);
-+
-+	CHECK(err || retval != XDP_TX || size != exp_size,
-+	      "9k-2p", "err %d errno %d retval %d[%d] size %d[%u]\n",
-+	      err, errno, retval, XDP_TX, size, exp_size);
-+
-+	free(buf);
-+
-+	bpf_object__close(obj);
-+}
-+
-+void test_xdp_adjust_mb_tail_grow(void)
-+{
-+	const char *file = "./test_xdp_adjust_tail_grow.o";
-+	__u32 duration, retval, size, exp_size;
-+	struct bpf_object *obj;
-+	int err, i, prog_fd;
-+	__u8 *buf;
-+
-+	err = bpf_prog_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
-+	if (CHECK_FAIL(err))
-+		return;
-+
-+	buf = malloc(16384);
-+	if (CHECK(!buf, "malloc()", "error:%s\n", strerror(errno)))
-+		return;
-+
-+	/* Test case add 10 bytes to last frag */
-+	memset(buf, 1, 16384);
-+	size = 9000;
-+	exp_size = size + 10;
-+	err = bpf_prog_test_run(prog_fd, 1, buf, size,
-+				buf, &size, &retval, &duration);
-+
-+	CHECK(err || retval != XDP_TX || size != exp_size,
-+	      "9k+10b", "err %d retval %d[%d] size %d[%u]\n",
-+	      err, retval, XDP_TX, size, exp_size);
-+
-+	for (i = 0; i < 9000; i++)
-+		CHECK(buf[i] != 1, "9k+10b-old",
-+		      "Old data not all ok, offset %i is failing [%u]!\n",
-+		      i, buf[i]);
-+
-+	for (i = 9000; i < 9010; i++)
-+		CHECK(buf[i] != 0, "9k+10b-new",
-+		      "New data not all ok, offset %i is failing [%u]!\n",
-+		      i, buf[i]);
-+
-+	for (i = 9010; i < 16384; i++)
-+		CHECK(buf[i] != 1, "9k+10b-untouched",
-+		      "Unused data not all ok, offset %i is failing [%u]!\n",
-+		      i, buf[i]);
-+
-+	/* Test a too large grow */
-+	memset(buf, 1, 16384);
-+	size = 9001;
-+	exp_size = size;
-+	err = bpf_prog_test_run(prog_fd, 1, buf, size,
-+				buf, &size, &retval, &duration);
-+
-+	CHECK(err || retval != XDP_DROP || size != exp_size,
-+	      "9k+10b", "err %d retval %d[%d] size %d[%u]\n",
-+	      err, retval, XDP_TX, size, exp_size);
-+
-+	free(buf);
-+
-+	bpf_object__close(obj);
-+}
-+
- void test_xdp_adjust_tail(void)
- {
- 	if (test__start_subtest("xdp_adjust_tail_shrink"))
-@@ -138,4 +252,8 @@ void test_xdp_adjust_tail(void)
- 		test_xdp_adjust_tail_grow();
- 	if (test__start_subtest("xdp_adjust_tail_grow2"))
- 		test_xdp_adjust_tail_grow2();
-+	if (test__start_subtest("xdp_adjust_mb_tail_shrink"))
-+		test_xdp_adjust_mb_tail_shrink();
-+	if (test__start_subtest("xdp_adjust_mb_tail_grow"))
-+		test_xdp_adjust_mb_tail_grow();
- }
-diff --git a/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_grow.c b/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_grow.c
-index 199c61b7d062..53b64c999450 100644
---- a/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_grow.c
-+++ b/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_grow.c
-@@ -7,11 +7,10 @@ int _xdp_adjust_tail_grow(struct xdp_md *xdp)
- {
- 	void *data_end = (void *)(long)xdp->data_end;
- 	void *data = (void *)(long)xdp->data;
--	unsigned int data_len;
-+	int data_len = bpf_xdp_get_buff_len(xdp);
- 	int offset = 0;
+ struct bpf_sec_def {
+@@ -6384,6 +6386,9 @@ static int libbpf_preload_prog(struct bpf_program *prog,
+ 	if (def & SEC_SLEEPABLE)
+ 		opts->prog_flags |= BPF_F_SLEEPABLE;
  
- 	/* Data length determine test case */
--	data_len = data_end - data;
- 
- 	if (data_len == 54) { /* sizeof(pkt_v4) */
- 		offset = 4096; /* test too large offset */
-@@ -20,7 +19,12 @@ int _xdp_adjust_tail_grow(struct xdp_md *xdp)
- 	} else if (data_len == 64) {
- 		offset = 128;
- 	} else if (data_len == 128) {
--		offset = 4096 - 256 - 320 - data_len; /* Max tail grow 3520 */
-+		/* Max tail grow 3520 */
-+		offset = 4096 - 256 - 320 - data_len;
-+	} else if (data_len == 9000) {
-+		offset = 10;
-+	} else if (data_len == 9001) {
-+		offset = 4096;
- 	} else {
- 		return XDP_ABORTED; /* No matching test */
- 	}
-diff --git a/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_shrink.c b/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_shrink.c
-index b7448253d135..eeff48997b6e 100644
---- a/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_shrink.c
-+++ b/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_shrink.c
-@@ -12,14 +12,38 @@
- SEC("xdp")
- int _xdp_adjust_tail_shrink(struct xdp_md *xdp)
- {
--	void *data_end = (void *)(long)xdp->data_end;
--	void *data = (void *)(long)xdp->data;
-+	__u8 *data_end = (void *)(long)xdp->data_end;
-+	__u8 *data = (void *)(long)xdp->data;
- 	int offset = 0;
- 
--	if (data_end - data == 54) /* sizeof(pkt_v4) */
-+	switch (bpf_xdp_get_buff_len(xdp)) {
-+	case 54:
-+		/* sizeof(pkt_v4) */
- 		offset = 256; /* shrink too much */
--	else
-+		break;
-+	case 9000:
-+		/* Multi-buffer test cases */
-+		if (data + 1 > data_end)
-+			return XDP_DROP;
++	if (prog->type == BPF_PROG_TYPE_XDP && (def & SEC_XDP_MB))
++		opts->prog_flags |= BPF_F_XDP_MB;
 +
-+		switch (data[0]) {
-+		case 0:
-+			offset = 10;
-+			break;
-+		case 1:
-+			offset = 4100;
-+			break;
-+		case 2:
-+			offset = 8200;
-+			break;
-+		default:
-+			return XDP_DROP;
-+		}
-+		break;
-+	default:
- 		offset = 20;
-+		break;
-+	}
- 	if (bpf_xdp_adjust_tail(xdp, 0 - offset))
- 		return XDP_DROP;
- 	return XDP_TX;
+ 	if ((prog->type == BPF_PROG_TYPE_TRACING ||
+ 	     prog->type == BPF_PROG_TYPE_LSM ||
+ 	     prog->type == BPF_PROG_TYPE_EXT) && !prog->attach_btf_id) {
+@@ -8350,8 +8355,11 @@ static const struct bpf_sec_def section_defs[] = {
+ 	SEC_DEF("lsm.s/",		LSM, BPF_LSM_MAC, SEC_ATTACH_BTF | SEC_SLEEPABLE, attach_lsm),
+ 	SEC_DEF("iter/",		TRACING, BPF_TRACE_ITER, SEC_ATTACH_BTF, attach_iter),
+ 	SEC_DEF("syscall",		SYSCALL, 0, SEC_SLEEPABLE),
++	SEC_DEF("xdp_devmap_mb/",	XDP, BPF_XDP_DEVMAP, SEC_ATTACHABLE | SEC_XDP_MB),
+ 	SEC_DEF("xdp_devmap/",		XDP, BPF_XDP_DEVMAP, SEC_ATTACHABLE),
++	SEC_DEF("xdp_cpumap_mb/",	XDP, BPF_XDP_CPUMAP, SEC_ATTACHABLE | SEC_XDP_MB),
+ 	SEC_DEF("xdp_cpumap/",		XDP, BPF_XDP_CPUMAP, SEC_ATTACHABLE),
++	SEC_DEF("xdp_mb/",		XDP, BPF_XDP, SEC_ATTACHABLE_OPT | SEC_SLOPPY_PFX | SEC_XDP_MB),
+ 	SEC_DEF("xdp",			XDP, BPF_XDP, SEC_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
+ 	SEC_DEF("perf_event",		PERF_EVENT, 0, SEC_NONE | SEC_SLOPPY_PFX),
+ 	SEC_DEF("lwt_in",		LWT_IN, 0, SEC_NONE | SEC_SLOPPY_PFX),
 -- 
 2.31.1
 
