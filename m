@@ -2,157 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B832D44FE98
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 07:09:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 033A844FEE6
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 07:58:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231248AbhKOGMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 01:12:16 -0500
-Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:59499 "EHLO
-        out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230292AbhKOGML (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 01:12:11 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R701e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=cuibixuan@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0UwYcpfw_1636956548;
-Received: from VM20210331-25.tbsite.net(mailfrom:cuibixuan@linux.alibaba.com fp:SMTPD_---0UwYcpfw_1636956548)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 15 Nov 2021 14:09:14 +0800
-From:   Bixuan Cui <cuibixuan@linux.alibaba.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org
-Cc:     cuibixuan@linux.alibaba.com, johannes@sipsolutions.net,
-        davem@davemloft.ne, kuba@kernel.org
-Subject: [PATCH -next] mac80211: fix suspicious RCU usage in ieee80211_set_tx_power()
-Date:   Mon, 15 Nov 2021 14:09:08 +0800
-Message-Id: <1636956548-114723-1-git-send-email-cuibixuan@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S230018AbhKOHBl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 02:01:41 -0500
+Received: from mail-eopbgr1320095.outbound.protection.outlook.com ([40.107.132.95]:14112
+        "EHLO APC01-PU1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229648AbhKOHBh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Nov 2021 02:01:37 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=I57pJpZATR8JhS0xmJNPMqCuawfOilmO2b1yYAkboJ5kKu1Sg2g8nVouwS8ntCLHYBU4dxBGJdxcjLXLp/eXh3qlYNXjGQ0XdegZVnkvR0aXsY2xlgO9/xADljFNISbDGFwEx4evB4mv3un18b6Ubds0bZydS1ANMtlU6cJ5f2nZ+U3MPPQpD4RsH19Ya7L5xGqu022kpOWbAFtPX5UgHCdRGROVo0cMvrFCovhou78QiqSkURPe4lWm+zMw9MP8bC2GkO7q19JDQxGMgyLY2sBQEeNc4AJ9HgCIjjF+ZtPhPqARsAAZ6BUvviEnjRm2pJpG1Ae/ZlVYzAmsbetc3g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pT6cMV4Uyi7hhIjl2AxnrMX9RBtqr5Qo1YVtPZX4eS4=;
+ b=fqV8Uu/YMCTzB1RYrFmJXYjzB7gIU0dE/94EgBJfDCDQRhOqE/k9OgGzKhr8AyIPvV8RXOseUS9utF8k98MEzjNJeD0VtVZ7fbUfdsu1RzZphdQ9l3NbQgBEWU/Kppx/R6ZOwX74UisjbJEXI0qe1lwZ5H9WQ9tx2n3lx0NHgkDc0Nx6wMknVwGhe9iog5vlQhip7BAr8aM11HR+aNi3cFdWi5MRJTWs9nL3ecuTZt8gHterNnjK9+0zYdnRmk1tIwpsLXCGnpD7m8i4W+whZyGB9umy0rEBBbygHpi6EiLUkLi0uLAr4ZNplLk2tmqJ78ztijqgpUPy++Z42SAc7Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pT6cMV4Uyi7hhIjl2AxnrMX9RBtqr5Qo1YVtPZX4eS4=;
+ b=Ht5AL/4yybUsmTA/ZY6lrVVntQiIo1Do1xesAB5AooxZUBUyJRJPjY3CYDEi962f6GRb1TBSNkE1Z7oDsGTtbUtUJsJtqoQmSvN7CTgNLrox34p+v3RYOyUFOIRSGJ+0XHN7ickXpBtDPzZ/dWlomEPEuTv3LLGMrnA1IH7ABgg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from TYZPR06MB4173.apcprd06.prod.outlook.com (2603:1096:400:26::14)
+ by TYZPR06MB3951.apcprd06.prod.outlook.com (2603:1096:400:25::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.18; Mon, 15 Nov
+ 2021 06:58:40 +0000
+Received: from TYZPR06MB4173.apcprd06.prod.outlook.com
+ ([fe80::5e:78e1:eba3:7d0e]) by TYZPR06MB4173.apcprd06.prod.outlook.com
+ ([fe80::5e:78e1:eba3:7d0e%8]) with mapi id 15.20.4669.016; Mon, 15 Nov 2021
+ 06:58:40 +0000
+From:   Yihao Han <hanyihao@vivo.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Yihao Han <hanyihao@vivo.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     kernel@vivo.com
+Subject: [PATCH] net: fddi: use swap() to make code cleaner
+Date:   Sun, 14 Nov 2021 22:58:16 -0800
+Message-Id: <20211115065826.5221-1-hanyihao@vivo.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: HK2PR02CA0190.apcprd02.prod.outlook.com
+ (2603:1096:201:21::26) To TYZPR06MB4173.apcprd06.prod.outlook.com
+ (2603:1096:400:26::14)
+MIME-Version: 1.0
+Received: from ubuntu.localdomain (218.213.202.189) by HK2PR02CA0190.apcprd02.prod.outlook.com (2603:1096:201:21::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.15 via Frontend Transport; Mon, 15 Nov 2021 06:58:38 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 31f76079-1556-46e5-6669-08d9a8055a6a
+X-MS-TrafficTypeDiagnostic: TYZPR06MB3951:
+X-Microsoft-Antispam-PRVS: <TYZPR06MB395133FA5DC735FD73C7C390A2989@TYZPR06MB3951.apcprd06.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2958;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Mgf6u/y/b86Kbpe+2bP63341Enjaqq00EdrXPCqGF6qrebBUhFXzmTGbwPWvNXcaq+xrST44omLz6XU6h7AQcty9qYN2IRTznNkz522IuNf65pbkTvdLAQOInvHlYMeAGGiUYektZBHV3ZfQrpfkPZeXaPsUhIWIjxnQCOxioAyjXErpO0cfHg646c5iGQdctISb9fg/uJPhL64LDe6tvBIKCXStNVTMGEHKuHs0QBwcjh/DwYH9DKpvEssK8eKkdDNrnCw9qebJANTkxbPVdw0NUx9P7SqjnYytC2beVGS2E/QycoHYP/Jmse4PEgUO803HRUK3di+QqtUjyVUWJ8gd4/LO1dpStjOsZU1hMLf1ykmpH4ys7kE8E1Mdq7VDNyPmGphjGNJkhU55NWUGnePy6Tn42DpUziepqJcFzmhvy98DwW50eDg2BVyICcAO4n0FH5obLNiFsDjbR3YL3ykvwzHDeYsHbJNWH+eCt+UJQKu+DY5VToTH0gT3mHvaSKtpVjGc2gjVKO3Q4u2JyFUmN1JH6TwT3NboaTOh1MYSS4/DoWJFdyBmlmHrOsR924Z4E+vQ4XZ3lEQrLr5HHMWHgZulDTF683VL8Y8zx72viCUpuJcnPR2EUFzAPdEzTIcFMioBZOJW3NegpO6/an1NdmHqJKz0WXJBrEsD8xlSoKfuBzovfoapI26eV3454Tl1tVHlbo94qSC73Zji5Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYZPR06MB4173.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(4326008)(8676002)(66476007)(66946007)(6512007)(66556008)(316002)(83380400001)(52116002)(6506007)(38350700002)(38100700002)(2906002)(1076003)(26005)(110136005)(186003)(107886003)(6486002)(5660300002)(2616005)(956004)(8936002)(6666004)(86362001)(36756003)(508600001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fw8/AewPLZ8J8rJKvCoJ75TqEhFAJ+XbAtZY/o1s7bqP3MQTjy65NCrDC0NE?=
+ =?us-ascii?Q?xguQXOdA6mzSgnL6ZAKsrN3j/8s+3SG0tW7DL191cVacmrbJUcVYtLFBDDel?=
+ =?us-ascii?Q?1V0xCpxRmUCkldMDaseyk/mRme/5sB7On1uLUt6C6FG26HpTtxWWEYCtO40/?=
+ =?us-ascii?Q?bdBj/h1YRtbBZ/++es+9s+NIX2KM1vVN5bc47OswkOzHpHKGmRqBxGMkKioE?=
+ =?us-ascii?Q?2PlBsVLDMfuMxuOQ1TXSMfAQ/6/KkfpCp8olRkXxvaoUDMdatd2fVeH1Xm6I?=
+ =?us-ascii?Q?uIRgQpLNe9rwoBKJf0i4O2P3VvHD4IRNHPYpJZI+trB5o89gOlC2TqYHN/Xs?=
+ =?us-ascii?Q?9ywmJ8BXCs9okgYr827T7AAxo8gfl6aW+zJ0ZM2PBwYJ3LwZOyPuNCGRe1tW?=
+ =?us-ascii?Q?cVezHRVmU/lPkP5hbOx/RwwEtMdxJkRUdVpX69ONb9O1MMMUp36/L3E0UybD?=
+ =?us-ascii?Q?yzpoL1NPbP0HvJUjKpVntMhwNKeO09TpUrEM9MMiOpsECT01SSeZnUgeVCt1?=
+ =?us-ascii?Q?myPA3vdsRuAYCDpSetgWSLbwYlgKU/9x8TkOPHT3ngNbuRGKSGJlrau2j1p7?=
+ =?us-ascii?Q?gyVu4KuYB0/92NyJ/ze+cFaySV6OV48r5nH1jXDChf0ThiNB4ns7fLHMjWyD?=
+ =?us-ascii?Q?sM649H/nKtp10Rf1JVpnqXIOwloAbhodRwdXfDtE4EY9A4KMApNSqbzeszDR?=
+ =?us-ascii?Q?W0VsVay3MQ7QaMg9R0IhJwnsLiJStZAoP/09rxh6VJUHBBKF6j3cd4wXONI/?=
+ =?us-ascii?Q?1ryIt4RXlEBJvFZLV6AwEijHjbbEEwa0aLJaSVEP27OgFAyi3jczTxD0UEp2?=
+ =?us-ascii?Q?ElHzAAzaPEApkOt8dUAXaUi2kZ5wMNdDcAhky3j2qEwUk9vPHd2W6NuFC5kU?=
+ =?us-ascii?Q?fARABVOXRZ0RpH6d9nrad0ngFyNrBXGCmMJ8vfF5a5h7Cs4okfBuxUVJc/r8?=
+ =?us-ascii?Q?zWLYjCiFm9a1njlKD8aoTMARmP5tlhAHN05e9NcYnkn5aD5Q42XUK5fIYcTA?=
+ =?us-ascii?Q?u8Yktjc7PSC2EP5y892MxBWMwSQ+C/90PJCcoOHf5+iseYYmUGS8ojAj1dP7?=
+ =?us-ascii?Q?4bfxJ5ygtGSs//gMAQMr9w575EjTfO0ahGeZt/+XLMN1npNh1oTI2lFwOf78?=
+ =?us-ascii?Q?NwpJSU8CkKN8I9YTOsWznkv6pkWX3KEz6f+Hnt0L5Aep2LfT5OpyaCrLmTUX?=
+ =?us-ascii?Q?JmDqf62gAuXrjds0vxEgNBOl51kk9CGIneYumTFbxWfAdVd5r0uAEpYdZ5rc?=
+ =?us-ascii?Q?H0U6YNtrAI0nNUBHQgchfyNiBEJfKcIfsAEOaS63LdX94J8iqcMg08Jh3iCE?=
+ =?us-ascii?Q?zh/Xhh3sX44aSh9IiOO+VhHaPfi7bPJEGzDJxmof/fT7HLI8kdKDhfM/2TPs?=
+ =?us-ascii?Q?WW65zi3PGPsAkuNu9oTQNB1BW4AMsXhK9dEcH2JQwqhElatRVLrFp9VA2BX3?=
+ =?us-ascii?Q?P2saQGs0rftkcuA9R6fZmPU38c0h/b6ENwh08WhqPEbxryEPlxAuElNDzGCa?=
+ =?us-ascii?Q?N0oQjpopVY4P0v/PmPCeBOME9uvjEZOawLyjYvk+A8k5+prcYMhN4s0K7Nl1?=
+ =?us-ascii?Q?osPVSJtu4abO10FVChagKWfs594bIdGRpmfYgqAQd2FX8VRA5DbQNVzxIMRR?=
+ =?us-ascii?Q?C7HY1vDynL4jMjgRuBGQZqA=3D?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 31f76079-1556-46e5-6669-08d9a8055a6a
+X-MS-Exchange-CrossTenant-AuthSource: TYZPR06MB4173.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Nov 2021 06:58:40.2398
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VVqLlg4+mUEB/pC4jskPlnVIomGd3jkhVphYcSU7ltZej4yZM1R1dpgb2yZ1L3r5wy85DtWoaicXPCeTUiqXcA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR06MB3951
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix suspicious RCU usage warning:
+Use the macro 'swap()' defined in 'include/linux/minmax.h' to avoid
+opencoding it.
 
-=============================
-WARNING: suspicious RCU usage
-5.15.0-syzkaller #0 Not tainted
------------------------------
-net/mac80211/cfg.c:2710 suspicious rcu_dereference_protected() usage!
-
-other info that might help us debug this:
-
-rcu_scheduler_active = 2, debug_locks = 1
-2 locks held by syz-executor.0/3744:
- #0: ffffffff8d199ed0 (cb_lock){++++}-{3:3}, at: genl_rcv+0x15/0x40
-net/netlink/genetlink.c:802
- #1: ffff8880282f8628 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: wiphy_lock
-include/net/cfg80211.h:5377 [inline]
- #1: ffff8880282f8628 (&rdev->wiphy.mtx){+.+.}-{3:3}, at:
-nl80211_set_wiphy+0x1c6/0x2c20 net/wireless/nl80211.c:3287
-
-stack backtrace:
-CPU: 0 PID: 3744 Comm: syz-executor.0 Not tainted 5.15.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- ieee80211_set_tx_power+0x74c/0x860 net/mac80211/cfg.c:2710
- rdev_set_tx_power net/wireless/rdev-ops.h:580 [inline]
- nl80211_set_wiphy+0xd5b/0x2c20 net/wireless/nl80211.c:3384
- genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:731
- genl_family_rcv_msg net/netlink/genetlink.c:775 [inline]
- genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:792
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2491
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:803
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x86d/0xda0 net/netlink/af_netlink.c:1916
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:724
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2492
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Reported-by: syzbot+79fbc232a705a30d93cd@syzkaller.appspotmail.com
-Signed-off-by: Bixuan Cui <cuibixuan@linux.alibaba.com>
+Signed-off-by: Yihao Han <hanyihao@vivo.com>
 ---
- net/mac80211/cfg.c | 27 +++++++++++++++++++--------
- 1 file changed, 19 insertions(+), 8 deletions(-)
+ drivers/net/fddi/skfp/smt.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
-diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
-index 1ab8483..14fbe9e 100644
---- a/net/mac80211/cfg.c
-+++ b/net/mac80211/cfg.c
-@@ -2702,14 +2702,19 @@ static int ieee80211_set_tx_power(struct wiphy *wiphy,
- 	enum nl80211_tx_power_setting txp_type = type;
- 	bool update_txp_type = false;
- 	bool has_monitor = false;
-+	int ret = 0;
-+
-+	rtnl_lock();
- 
- 	if (wdev) {
- 		sdata = IEEE80211_WDEV_TO_SUB_IF(wdev);
- 
- 		if (sdata->vif.type == NL80211_IFTYPE_MONITOR) {
- 			sdata = rtnl_dereference(local->monitor_sdata);
--			if (!sdata)
--				return -EOPNOTSUPP;
-+			if (!sdata) {
-+				ret = -EOPNOTSUPP;
-+				goto out;
-+			}
- 		}
- 
- 		switch (type) {
-@@ -2719,8 +2724,10 @@ static int ieee80211_set_tx_power(struct wiphy *wiphy,
- 			break;
- 		case NL80211_TX_POWER_LIMITED:
- 		case NL80211_TX_POWER_FIXED:
--			if (mbm < 0 || (mbm % 100))
--				return -EOPNOTSUPP;
-+			if (mbm < 0 || (mbm % 100)) {
-+				ret = -EOPNOTSUPP;
-+				goto out;
-+			}
- 			sdata->user_power_level = MBM_TO_DBM(mbm);
- 			break;
- 		}
-@@ -2732,7 +2739,7 @@ static int ieee80211_set_tx_power(struct wiphy *wiphy,
- 
- 		ieee80211_recalc_txpower(sdata, update_txp_type);
- 
--		return 0;
-+		goto out;
+diff --git a/drivers/net/fddi/skfp/smt.c b/drivers/net/fddi/skfp/smt.c
+index 6b68a53f1b38..72c31f0013ad 100644
+--- a/drivers/net/fddi/skfp/smt.c
++++ b/drivers/net/fddi/skfp/smt.c
+@@ -1846,10 +1846,10 @@ void smt_swap_para(struct smt_header *sm, int len, int direction)
  	}
- 
- 	switch (type) {
-@@ -2742,8 +2749,10 @@ static int ieee80211_set_tx_power(struct wiphy *wiphy,
- 		break;
- 	case NL80211_TX_POWER_LIMITED:
- 	case NL80211_TX_POWER_FIXED:
--		if (mbm < 0 || (mbm % 100))
--			return -EOPNOTSUPP;
-+		if (mbm < 0 || (mbm % 100)) {
-+			ret = -EOPNOTSUPP;
-+			goto out;
-+		}
- 		local->user_power_level = MBM_TO_DBM(mbm);
- 		break;
- 	}
-@@ -2778,7 +2787,9 @@ static int ieee80211_set_tx_power(struct wiphy *wiphy,
- 		}
- 	}
- 
--	return 0;
-+out:
-+	rtnl_unlock();
-+	return ret;
  }
  
- static int ieee80211_get_tx_power(struct wiphy *wiphy,
++
+ static void smt_string_swap(char *data, const char *format, int len)
+ {
+ 	const char	*open_paren = NULL ;
+-	int	x ;
+ 
+ 	while (len > 0  && *format) {
+ 		switch (*format) {
+@@ -1876,19 +1876,13 @@ static void smt_string_swap(char *data, const char *format, int len)
+ 			len-- ;
+ 			break ;
+ 		case 's' :
+-			x = data[0] ;
+-			data[0] = data[1] ;
+-			data[1] = x ;
++			swap(data[0], data[1]) ;
+ 			data += 2 ;
+ 			len -= 2 ;
+ 			break ;
+ 		case 'l' :
+-			x = data[0] ;
+-			data[0] = data[3] ;
+-			data[3] = x ;
+-			x = data[1] ;
+-			data[1] = data[2] ;
+-			data[2] = x ;
++			swap(data[0], data[3]) ;
++			swap(data[1], data[2]) ;
+ 			data += 4 ;
+ 			len -= 4 ;
+ 			break ;
 -- 
-1.8.3.1
+2.17.1
 
