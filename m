@@ -2,64 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 989BA450619
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 14:55:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47BDE450660
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 15:11:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231926AbhKON54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 08:57:56 -0500
-Received: from mga04.intel.com ([192.55.52.120]:65200 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231788AbhKON5u (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 08:57:50 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10168"; a="232162978"
-X-IronPort-AV: E=Sophos;i="5.87,236,1631602800"; 
-   d="scan'208";a="232162978"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2021 05:54:53 -0800
-X-IronPort-AV: E=Sophos;i="5.87,236,1631602800"; 
-   d="scan'208";a="494026503"
-Received: from mckumar-mobl1.gar.corp.intel.com (HELO [10.215.188.166]) ([10.215.188.166])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2021 05:54:50 -0800
-Message-ID: <8a6e9a45-2307-f3e3-04b1-2c7cefe53614@linux.intel.com>
-Date:   Mon, 15 Nov 2021 19:24:47 +0530
+        id S232163AbhKOONp convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 15 Nov 2021 09:13:45 -0500
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:56605 "EHLO
+        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232200AbhKOONK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 09:13:10 -0500
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 4A2FAE001A;
+        Mon, 15 Nov 2021 14:10:08 +0000 (UTC)
+Date:   Mon, 15 Nov 2021 15:06:20 +0100
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v2 3/6] net: ocelot: pre-compute injection frame header
+ content
+Message-ID: <20211115150620.057674ae@fixe.home>
+In-Reply-To: <20211115060800.44493c2f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20211103091943.3878621-1-clement.leger@bootlin.com>
+        <20211103091943.3878621-4-clement.leger@bootlin.com>
+        <20211103123811.im5ua7kirogoltm7@skbuf>
+        <20211103145351.793538c3@fixe.home>
+        <20211115111344.03376026@fixe.home>
+        <20211115060800.44493c2f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH net-next] net: wwan: iosm: device trace collection using
- relayfs
-Content-Language: en-US
-To:     Denis Kirjanov <dkirjanov@suse.de>, netdev@vger.kernel.org
-Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        krishna.c.sudi@intel.com, m.chetan.kumar@intel.com,
-        linuxwwan@intel.com
-References: <20211115105659.331730-1-m.chetan.kumar@linux.intel.com>
- <33704bcc-a4a7-9933-0d5c-56f602b6a163@suse.de>
-From:   "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>
-In-Reply-To: <33704bcc-a4a7-9933-0d5c-56f602b6a163@suse.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Le Mon, 15 Nov 2021 06:08:00 -0800,
+Jakub Kicinski <kuba@kernel.org> a écrit :
 
+> On Mon, 15 Nov 2021 11:13:44 +0100 Clément Léger wrote:
+> > Test on standard packets with UDP (iperf3 -t 100 -l 1460 -u -b 0 -c *)
+> > - With pre-computed header: UDP TX: 	33Mbit/s
+> > - Without UDP TX: 			31Mbit/s  
+> > -> 6.5% improvement    
+> > 
+> > Test on small packets with UDP (iperf3 -t 100 -l 700 -u -b 0 -c *)
+> > - With pre-computed header: UDP TX: 	15.8Mbit/s
+> > - Without UDP TX: 			16.4Mbit/s  
+> > -> 4.3% improvement    
+> 
+> Something's wrong with these numbers or I'm missing context.
+> You say improvement in both cases yet in the latter case the 
+> new number is lower?
 
-On 11/15/2021 6:59 PM, Denis Kirjanov wrote:
+You are right Jakub, I swapped the last two results, 
 
->>   /* Check the wwan ips if it is valid with Channel as input. */
->>   static int ipc_imem_check_wwan_ips(struct ipc_mem_channel *chnl)
->> @@ -265,9 +266,14 @@ static void ipc_imem_dl_skb_process(struct 
->> iosm_imem *ipc_imem,
->>       switch (pipe->channel->ctype) {
->>       case IPC_CTYPE_CTRL:
->>           port_id = pipe->channel->channel_id;
->> +        ipc_pcie_addr_unmap(ipc_imem->pcie, IPC_CB(skb)->len,
->> +                    IPC_CB(skb)->mapping,
->> +                    IPC_CB(skb)->direction);
-> Looks like the hunk above is not related to the subject, right?
+Test on small packets with UDP (iperf3 -t 100 -l 700 -u -b 0 -c *)
+ - With pre-computed header: UDP TX: 	16.4Mbit/s 
+ - Without UDP TX: 			15.8Mbit/s
+ -> 4.3% improvement
 
-It is related.
-Trace SKB->data is unmapped before passing SKB->data to relayfs.
-
-
+-- 
+Clément Léger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
