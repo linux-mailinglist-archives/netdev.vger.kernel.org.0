@@ -2,209 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CDA5450941
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 17:07:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7581445093D
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 17:07:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232111AbhKOQKs convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 15 Nov 2021 11:10:48 -0500
-Received: from relay9-d.mail.gandi.net ([217.70.183.199]:52489 "EHLO
-        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236787AbhKOQKd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 11:10:33 -0500
-X-Greylist: delayed 18334 seconds by postgrey-1.27 at vger.kernel.org; Mon, 15 Nov 2021 11:10:32 EST
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 727CAFF817;
-        Mon, 15 Nov 2021 16:07:28 +0000 (UTC)
-Date:   Mon, 15 Nov 2021 17:03:41 +0100
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v2 3/6] net: ocelot: pre-compute injection frame header
- content
-Message-ID: <20211115170341.7d48de0d@fixe.home>
-In-Reply-To: <20211115143105.tmjviz7z7ckmlquk@skbuf>
-References: <20211103091943.3878621-1-clement.leger@bootlin.com>
-        <20211103091943.3878621-4-clement.leger@bootlin.com>
-        <20211103123811.im5ua7kirogoltm7@skbuf>
-        <20211103145351.793538c3@fixe.home>
-        <20211115111344.03376026@fixe.home>
-        <20211115060800.44493c2f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20211115150620.057674ae@fixe.home>
-        <20211115143105.tmjviz7z7ckmlquk@skbuf>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S236667AbhKOQKE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 11:10:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50278 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236696AbhKOQJ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 11:09:56 -0500
+Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D8EDC061208
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 08:06:52 -0800 (PST)
+Received: by mail-oi1-x22b.google.com with SMTP id q25so30229550oiw.0
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 08:06:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=2daD3ZB5RRSPMtCIfVP6vXWT0sbo6IGM8cl9T2YYA6A=;
+        b=cQ/8Wjy3DisvffjGw7oaVkhWLxWlULIYEpGPHKdtiQIRcqPy2ei3LiGlFoZ714A6/3
+         j9IzVtAr2SBfYsNa8Sp7eYHefbdPFULii7p2oK+0DKFCK+ipdn3dMIqYHWTWliTK8lzd
+         x7ZCWl0nsBDLXIUy3eY4itHsJU+XaC9nmxDlczq6SkBhlJtosqN7pU1X12K7Q3yHVN84
+         685xp63wBtXpljl1flSXl3ZDECO6+rZ2vRvdHvXpzy9Ng4tUKZ0ZnVxm+D/wOD2bUSsQ
+         fiSIhrAmXvyaKrCEmKGXXYRt5VhNeVoERI8FGV4jRysxWc5u9lF97CWejhUhP0PCXiVc
+         sIpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=2daD3ZB5RRSPMtCIfVP6vXWT0sbo6IGM8cl9T2YYA6A=;
+        b=ASP+/Lx/3PW/4K9kE0FyWX4etMi14UO3CENX2KAN7mBDLleXy1qm9qmB89ET7pOeyx
+         Mf6Y3dVcvYqbGGeYSd9zgdVt4Fujq1Oaj79Q/hF/z6TDN96q6AcdWN9vzDgeOwBx3ruo
+         BwKAcFcBYeHbodDL6FEP8fS6/2dFjwxgd2O7joWrBNWiIdGVDrmCvohb7u7UnWvPcRKm
+         dUDAluTBqmbQo4wD4LAYtG7pwqz/bTaUD//I++LuI1VVy4XBubyCo8Vc3dvsXRQmrFOe
+         iXGxF2tSCtzAbp5ruJDdGKJ3pyRZx0BZQ8hDnSUR1jun/x6RJEFiubzttX5d95kGapRO
+         FqhA==
+X-Gm-Message-State: AOAM5331yJDLep7FoVXxJo43pDAY4kK4btaLLOHvyPWA+f4+h5SfFryD
+        B3P0LqDqUVj755wT3GhtMKA=
+X-Google-Smtp-Source: ABdhPJzeQf02N8+lw1XQTa/YFV2i1AmuFyQLJdxubpB8u2e72gsPLgL4D3N52/w6Lt4/VptlZBA+9g==
+X-Received: by 2002:aca:ab84:: with SMTP id u126mr45116014oie.41.1636992411724;
+        Mon, 15 Nov 2021 08:06:51 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id j187sm3188314oih.5.2021.11.15.08.06.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Nov 2021 08:06:51 -0800 (PST)
+Message-ID: <50364490-9e86-a26e-3a56-78459b3b5151@gmail.com>
+Date:   Mon, 15 Nov 2021 09:06:50 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.3.0
+Subject: Re: [Patch net v3 2/2] selftests: add a test case for rp_filter
+Content-Language: en-US
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <20190717214159.25959-1-xiyou.wangcong@gmail.com>
+ <20190717214159.25959-3-xiyou.wangcong@gmail.com>
+ <YYuObqtyYUuWLarX@Laptop-X1>
+ <CAM_iQpV99vbCOZUj_9chHt8TXeiXqbvwKW7r8T9t1hpTa79qdQ@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <CAM_iQpV99vbCOZUj_9chHt8TXeiXqbvwKW7r8T9t1hpTa79qdQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Mon, 15 Nov 2021 14:31:06 +0000,
-Vladimir Oltean <vladimir.oltean@nxp.com> a écrit :
-
-> On Mon, Nov 15, 2021 at 03:06:20PM +0100, Clément Léger wrote:
-> > Le Mon, 15 Nov 2021 06:08:00 -0800,
-> > Jakub Kicinski <kuba@kernel.org> a écrit :
-> >  
-> > > On Mon, 15 Nov 2021 11:13:44 +0100 Clément Léger wrote:  
-> > > > Test on standard packets with UDP (iperf3 -t 100 -l 1460 -u -b 0 -c *)
-> > > > - With pre-computed header: UDP TX: 	33Mbit/s
-> > > > - Without UDP TX: 			31Mbit/s  
-> > > > -> 6.5% improvement  
-> > > >
-> > > > Test on small packets with UDP (iperf3 -t 100 -l 700 -u -b 0 -c *)
-> > > > - With pre-computed header: UDP TX: 	15.8Mbit/s
-> > > > - Without UDP TX: 			16.4Mbit/s  
-> > > > -> 4.3% improvement  
-> > >
-> > > Something's wrong with these numbers or I'm missing context.
-> > > You say improvement in both cases yet in the latter case the
-> > > new number is lower?  
-> >
-> > You are right Jakub, I swapped the last two results,
-> >
-> > Test on small packets with UDP (iperf3 -t 100 -l 700 -u -b 0 -c *)
-> >  - With pre-computed header: UDP TX: 	16.4Mbit/s
-> >  - Without UDP TX: 			15.8Mbit/s  
-> >  -> 4.3% improvement  
+On 11/14/21 10:08 PM, Cong Wang wrote:
+> On Wed, Nov 10, 2021 at 1:18 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
+>>
+>> On Wed, Jul 17, 2019 at 02:41:59PM -0700, Cong Wang wrote:
+>>> Add a test case to simulate the loopback packet case fixed
+>>> in the previous patch.
+>>>
+>>> This test gets passed after the fix:
+>>>
+>>> IPv4 rp_filter tests
+>>>     TEST: rp_filter passes local packets                                [ OK ]
+>>>     TEST: rp_filter passes loopback packets                             [ OK ]
+>>
+>> Hi Wang Cong,
+>>
+>> Have you tried this test recently? I got this test failed for a long time.
+>> Do you have any idea?
+>>
+>> IPv4 rp_filter tests
+>>     TEST: rp_filter passes local packets                                [FAIL]
+>>     TEST: rp_filter passes loopback packets                             [FAIL]
 > 
-> Even in reverse, something still seems wrong with the numbers.
-> My DSPI controller can transfer at a higher data rate than that.
-> Where is the rest of the time spent? Computing checksums?
+> Hm, I think another one also reported this before, IIRC, it is
+> related to ping version or cmd option. Please look into this if
+> you can, otherwise I will see if I can reproduce this on my side.
+> 
 
-While adding FDMA support, I was surprised by the low performances I
-encountered so I spent some times trying to understand and find where
-the time was spent. First, I ran a iperf in loopback (using lo) and it
-yielded the following results (of course RX/TX runs on the same CPU in
-this case):
-
-TCP (iperf3 -c localhost):
- - RX/TX: 84.0Mbit/s
-
-UDP (iperf3 -u -b 0 -c localhost):
- - RX/TX: 65.0Mbit/s
-
-So even in localhost mode, the CPU is already really slow and can only
-sustain a really small "throughput". I then tried to check the
-performances using the CPU based injection/extraction, and I obtained
-the following results:
-
-TCP: (iperf3 -u -b 0 -c)
- - TX: 11.8MBit/s
- - RX: 21.6Mbit/s
-
-UDP (iperf3 -u -b 0 -c)
- - TX: 13.4Mbit/s
- - RX: Not even possible, CPU never succeed to extract a single packet
-
-I then tried to find where was the time spent with ftrace (I kept only
-the relevant functions that consume most of the time), the following
-results were recorded when using iperf3 with CPU based
-injection/extraction.
-
-In TCP TX, a lot of time is spent doing copy from user:
-
-41.71%  iperf3   [kernel.kallsyms]  [k] __raw_copy_to_user
- 6.65%  iperf3   [kernel.kallsyms]  [k] _raw_spin_unlock_irqrestore
- 3.23%  iperf3   [kernel.kallsyms]  [k] do_ade
- 2.10%  iperf3   [kernel.kallsyms]  [k] __ocelot_write_ix
- 2.10%  iperf3   [kernel.kallsyms]  [k] handle_adel_int
- ...
-
-In TCP RX, numbers are even worse for the time spent in
-__raw_copy_to_user:
-
-62.95% iperf3   [kernel.kallsyms]  [k] __raw_copy_to_user
- 1.97% iperf3   [kernel.kallsyms]  [k] _raw_spin_unlock_irqrestore
- 1.15% iperf3   [kernel.kallsyms]  [k] __copy_page_start
- 1.07% iperf3   [kernel.kallsyms]  [k] __skb_datagram_iter
- ...
-
-
-In UDP TX, some time is spent handling locking and unaligned copies
-as well as pushing packets. Unaligned copies are due to the driver
-accessing all directly the bytes of the packets as word whhich might be
-bad when there is misalignement.
-
-17.97%  iperf3   [kernel.kallsyms]  [k] _raw_spin_unlock_irqrestore
-11.94%  iperf3   [kernel.kallsyms]  [k] do_ade
- 9.07%  iperf3   [kernel.kallsyms]  [k] __ocelot_write_ix
- 7.74%  iperf3   [kernel.kallsyms]  [k] handle_adel_int
- 5.78%  iperf3   [kernel.kallsyms]  [k] copy_from_kernel_nofault
- 4.71%  iperf3   [kernel.kallsyms]  [k] __compute_return_epc_for_insn
- 2.51%  iperf3   [kernel.kallsyms]  [k] regmap_write
- 2.31%  iperf3   [kernel.kallsyms]  [k] __compute_return_epc
- ...
-
-In UDP RX (iperf3 with -b 5M to ensure packets are received), time is
-spent in floating point emulation and other various function.
-
-7.26% iperf3   [kernel.kallsyms]  [k] cop1Emulate
-2.84% iperf3   [kernel.kallsyms]  [k] do_select
-2.08% iperf3   [kernel.kallsyms]  [k] _raw_spin_unlock_irqrestore
-2.06% iperf3   [kernel.kallsyms]  [k] fpu_emulator_cop1Handler
-2.01% iperf3   [kernel.kallsyms]  [k] tcp_poll
-2.00% iperf3   [kernel.kallsyms]  [k] __raw_copy_to_user
-
-
-When using the FDMA, the results are the following:
-
-In TCP TX, copy from user is still present and checksuming takes quite
-some time. 
-
-31.31% iperf3   [kernel.kallsyms]  [k] __raw_copy_to_user
-10.48% iperf3   [kernel.kallsyms]  [k] __csum_partial_copy_to_user
- 3.73% iperf3   [kernel.kallsyms]  [k] _raw_spin_unlock_irqrestore
- 2.08% iperf3   [kernel.kallsyms]  [k] tcp_ack
- 1.68% iperf3   [kernel.kallsyms]  [k] ocelot_fdma_napi_poll
- 1.63% iperf3   [kernel.kallsyms]  [k] tcp_write_xmit
- 1.05% iperf3   [kernel.kallsyms]  [k] finish_task_switch
-
-In TCP RX, the majority of time is still taken by __raw_copy_to_user.
-
-63.95%[[m  iperf3   [kernel.kallsyms]  [k] __raw_copy_to_user
- 1.29%[[m  iperf3   [kernel.kallsyms]  [k] _raw_spin_unlock_irqrestore
- 1.23%[[m  iperf3   [kernel.kallsyms]  [k] tcp_recvmsg_locked
- 1.23%[[m  iperf3   [kernel.kallsyms]  [k] __skb_datagram_iter
- 1.07%[[m  iperf3   [kernel.kallsyms]  [k] vfs_read
-
-In UDP TX, time is spent in softirq entry and in checksuming.
-
-9.01% iperf3   [kernel.kallsyms]  [k] __softirqentry_text_start
-7.07% iperf3   [kernel.kallsyms]  [k] __csum_partial_copy_to_user
-2.28% iperf3   [kernel.kallsyms]  [k] __ip_append_data.isra.0
-2.10% iperf3   [kernel.kallsyms]  [k] __dev_queue_xmit
-2.08% iperf3   [kernel.kallsyms]  [k] siphash_3u32
-2.06% iperf3   [kernel.kallsyms]  [k] udp_sendmsg
-
-And in UDP RX, again, time is spent in floating point emulation and
-cheksuming.
-
-10.33% iperf3   [kernel.kallsyms]  [k] cop1Emulate
- 7.62% iperf3   [kernel.kallsyms]  [k] csum_partial
- 3.32% iperf3   [kernel.kallsyms]  [k] do_select
- 2.69% iperf3   [kernel.kallsyms]  [k] ieee754dp_sub
- 2.68% iperf3   [kernel.kallsyms]  [k] fpu_emulator_cop1Handler
- 2.56% iperf3   [kernel.kallsyms]  [k] ieee754dp_add
- 2.33% iperf3   [kernel.kallsyms]  [k] ieee754dp_div
-
-After all these measurements, the CPU appears to be the bottleneck and
-simply spend a lot of time in various functions. I did not went further
-using perf events since there was no real reason to dig up more in that
-way.
-
--- 
-Clément Léger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+The test does 'ping -I dummy1'. As I recall newer version of ping uses
+SO_BINDTODEVICE vs cmsg to specify the device binding. The setsockopt is
+stronger and I bet the socket lookup is failing. If that is the case,
+the test needs to be fixed because it will never pass again.
