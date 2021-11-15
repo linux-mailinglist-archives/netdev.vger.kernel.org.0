@@ -2,70 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 685E545115A
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 20:03:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4C55451499
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 21:08:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237825AbhKOTFx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 14:05:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34350 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243401AbhKOTB0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 14:01:26 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C16E963351;
-        Mon, 15 Nov 2021 18:14:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637000079;
-        bh=1jdsajeUX88NVAQocP9iDcgTXEzKovNOFexILtdxPxM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pKKgWeM6XQqj7skT8X/vS0XZMvZndQIDJ3HBoelJssrLAok/ETmJUoFJIp7Nmp8U/
-         bHd/V2wbBTRigCWsTkBtKFI3vxfCEhTnY1cWmPrNun0Lf0q/Pb5ofkGB27SRO+PGbi
-         k0tPgbf4Vf0ntgBFLmikNhk2KezFLVp36Yg37o+MwoQBFhkN5UVXTHof3prq3bkIvE
-         SCvU9rQA2tO7bnrZjYumGYGCcL5QRj/gwyRaJ5bsuuBrViVpqCHtaiVYIr/T3oSmi0
-         7/l3/7pPNIHb9Yop0ZSETYUWuwBEhwUgcU+xvAjJZOTjg3/PweAcOiE8S9gMoU9I6r
-         T7X7PNEAZ0Ciw==
-Date:   Mon, 15 Nov 2021 10:14:37 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Amit Cohen <amcohen@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net] devlink: Remove extra assertion from flash
- notification logic
-Message-ID: <20211115101437.33bd531f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1d750b6f4991c16995c4d0927b709eb23647ff85.1636999616.git.leonro@nvidia.com>
-References: <1d750b6f4991c16995c4d0927b709eb23647ff85.1636999616.git.leonro@nvidia.com>
+        id S1345410AbhKOUKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 15:10:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36822 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344744AbhKOTZU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 14:25:20 -0500
+X-Greylist: delayed 866 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 15 Nov 2021 10:38:18 PST
+Received: from mx0b-00206401.pphosted.com (mx0b-00206401.pphosted.com [IPv6:2620:100:9005:15::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36893C04F54D;
+        Mon, 15 Nov 2021 10:38:17 -0800 (PST)
+Received: from pps.filterd (m0093025.ppops.net [127.0.0.1])
+        by mx0b-00206401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1AFGRe0r013173;
+        Mon, 15 Nov 2021 10:23:24 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crowdstrike.com; h=from : to : cc :
+ subject : date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=default; bh=a0aGUTT83/LL+eF5quHv5xRe7ePbAt9odq1NU78fU9A=;
+ b=TkEKZezp3eAmSWPK/NzQ2GYfT9mzux9Vvsw9jAwBW6MJEVKYruXD5JkNTyLQ1+9p8oWZ
+ jGwmR29K7GwuSyajlk20BT/bFv0QVzZkTtBhxkJ/+uRh3kDn3lKyqdg5zdoqbikFNI9q
+ Pdj86jLAaeVKq1UJNF/g/xue2wDOUfktu4iGiPrA8yIktP7WeU7ypogmMODg0OIMy8pa
+ GTBTtcLG8yXSTMxVqm4Fft0mSmG1T+Mafo+stPGiTKM7fdvYq0Hv7tGAYcTucfnRRODn
+ IctmBqZiD+TohhZdXH3cpIwU3XOdvB+RpukUsey6EAzWlebbUstU9Mu4+5C4tPt6+0CU Ug== 
+Received: from 04wpexch04.crowdstrike.sys (dragosx.crowdstrike.com [208.42.231.60])
+        by mx0b-00206401.pphosted.com (PPS) with ESMTPS id 3cb9d89dr9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 15 Nov 2021 10:23:24 -0800
+Received: from 04wpexch03.crowdstrike.sys (10.100.11.93) by
+ 04wpexch04.crowdstrike.sys (10.100.11.94) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.14; Mon, 15 Nov 2021 18:23:23 +0000
+Received: from 04wpexch03.crowdstrike.sys ([fe80::79d6:26ee:13ba:99d2]) by
+ 04wpexch03.crowdstrike.sys ([fe80::79d6:26ee:13ba:99d2%5]) with mapi id
+ 15.02.0922.014; Mon, 15 Nov 2021 18:23:23 +0000
+From:   Martin Kelly <martin.kelly@crowdstrike.com>
+To:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-team@fb.com" <kernel-team@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Subject: Clarification on bpftool dual licensing
+Thread-Topic: Clarification on bpftool dual licensing
+Thread-Index: AdfaSwvKSqjQdenjT462p++ykpRerg==
+Date:   Mon, 15 Nov 2021 18:20:59 +0000
+Deferred-Delivery: Mon, 15 Nov 2021 18:20:03 +0000
+Message-ID: <54d3cb9669644995b6ae787b4d532b73@crowdstrike.com>
+Accept-Language: en-US, en-GB
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.100.11.84]
+x-disclaimer: USA
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-11-15_14,2021-11-15_01,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 15 Nov 2021 20:07:47 +0200 Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> The mlxsw driver calls to various devlink flash routines even before
-> users can get any access to the devlink instance itself. For example,
-> mlxsw_core_fw_rev_validate() one of such functions.
-> 
-> It causes to the WARN_ON to trigger warning about devlink not
-> registered, while the flow is valid.
+Hi,
 
-So the fix is to remove the warning and keep generating notifications
-about objects which to the best understanding of the user space do not
-exist?
+I have a question regarding the dual licensing provision of bpftool. I=20
+understand that bpftool can be distributed as either GPL 2.0 or BSD 2-claus=
+e.=20
+That said, bpftool can also auto-generate BPF code that gets specified inli=
+ne=20
+in the skeleton header file, and it's possible that the BPF code generated =
+is=20
+GPL. What I'm wondering is what happens if bpftool generates GPL-licensed B=
+PF=20
+code inside the skeleton header, so that you get a header like this:
 
-> diff --git a/net/core/devlink.c b/net/core/devlink.c
-> index 5ba4f9434acd..6face738b16a 100644
-> --- a/net/core/devlink.c
-> +++ b/net/core/devlink.c
-> @@ -4229,7 +4229,6 @@ static void __devlink_flash_update_notify(struct devlink *devlink,
->  	WARN_ON(cmd != DEVLINK_CMD_FLASH_UPDATE &&
->  		cmd != DEVLINK_CMD_FLASH_UPDATE_END &&
->  		cmd != DEVLINK_CMD_FLASH_UPDATE_STATUS);
-> -	WARN_ON(!xa_get_mark(&devlinks, devlink->index, DEVLINK_REGISTERED));
->  
->  	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
->  	if (!msg)
+something.skel.h:
+/* this file is BSD 2-clause, by nature of dual licensing */
 
+/* THIS FILE IS AUTOGENERATED! */
+
+/* standard skeleton definitions */
+
+...
+
+s->data_sz =3D XXX;
+s->data =3D (void *)"\
+<eBPF bytecode, produced by GPL 2.0 sources, specified in binary>
+";
+
+My guess is that, based on the choice to dual-license bpftool, the header i=
+s=20
+meant to still be BSD 2-clause, and the s->data inline code's GPL license i=
+s=20
+not meant to change the licensing of the header itself, but I wanted to=20
+double-check, especially as I am not a lawyer. If this is indeed the intent=
+,=20
+is there any opposition to a patch clarifying this more explicitly in=20
+Documentation/bpf/bpf_licensing.rst?
+
+Thanks,
+Martin
