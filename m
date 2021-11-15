@@ -2,87 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C23A645012D
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 10:23:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 877B9450140
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 10:24:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236431AbhKOJ0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 04:26:22 -0500
-Received: from smtpbg701.qq.com ([203.205.195.86]:49694 "EHLO
-        smtpproxy21.qq.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S236563AbhKOJZg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 04:25:36 -0500
-X-Greylist: delayed 4053 seconds by postgrey-1.27 at vger.kernel.org; Mon, 15 Nov 2021 04:25:35 EST
-X-QQ-mid: bizesmtp54t1636968132tgkosmaa
-Received: from localhost.localdomain (unknown [113.57.152.160])
-        by esmtp6.qq.com (ESMTP) with 
-        id ; Mon, 15 Nov 2021 17:22:11 +0800 (CST)
-X-QQ-SSF: 01400000002000B0B000B00C0000000
-X-QQ-FEAT: bOEXdVvRX8Y572JsKxccmj89e1WDJA+VIFcPTVPcE5+QP2APXfGS2txs/OTS3
-        fmVzyUb9hg+EHZ4POH+fuvLED/JaUPK+ao9eIl1YSdAAMxy5+mHKz+XF/xsSHVIDrAnmd6N
-        GT8X1ksrxzTfUmj4vgu3HNScOQCgtLkVVbLBFy+hHddk5rEIZfywl0p0IfbpFOtkEMs2nZ7
-        g9XZ8252jg8T260MFnmerxeiT2PB3CBUltwaOjvkl3eTMpPSMyAA2vI/cOj48dKwALrtltk
-        a6LcXe+34WnfBM6Q7ylL2/aXkuj16nO1gL4si2oAxU2aJFZox83PrgBTGqa825JpgfMlNXa
-        rapg92CQauO5c2DNo08gW8CMqiJ3scFage9xINp
-X-QQ-GoodBg: 2
-From:   liuguoqiang <liuguoqiang@uniontech.com>
-To:     johannes@sipsolutions.net
+        id S237634AbhKOJ1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 04:27:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41928 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230302AbhKOJ1S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 04:27:18 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 378AAC061767;
+        Mon, 15 Nov 2021 01:24:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=mNgU5pUYaHtlF59ucnQsQussw2U6EkDAA888QTxBoI4=;
+        t=1636968256; x=1638177856; b=Z6dCNfBoKkzUfEQ0kqM7scWj1Jw9zMPFSyx5qnGHSnS1KDT
+        rN56fGllAP/pkJ34H5g9aT1+t4r5J64zUHyGWEUJ1MPr25xr2O6V+VVLV9xoRiZojmQuEsZ9kE0NK
+        NkQeZpLLyEuOkHEk5IbTAvKepd+rgcP478cUV/Qe8PCkJaOWi9P1uDpnOqmn30egmUCmdM9w8T2l+
+        mIyYhqKj0hMPmW34T3NipT3d4UgXSksIF6ZqtsA4chaWTx2VEfnOrzMe5VnWXACWHdzPud9go2/U8
+        OrXzShslLNOxxk7z6pD6iVMqJqTd8mj/WiQTj1lyX7O1Oi8XUB7bJBgWPve4NwvQ==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.95)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1mmYDb-00FWpe-60;
+        Mon, 15 Nov 2021 10:24:03 +0100
+Message-ID: <ed1c17fad8c824d8e0be6fa55babbbe2c92caaad.camel@sipsolutions.net>
+Subject: Re: [PATCH] cfg80211: delete redundant free code
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     liuguoqiang <liuguoqiang@uniontech.com>
 Cc:     davem@davemloft.net, kuba@kernel.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        liuguoqiang <liuguoqiang@uniontech.com>
-Subject: [PATCH] cfg80211: delete redundant free code
-Date:   Mon, 15 Nov 2021 17:21:39 +0800
-Message-Id: <20211115092139.24407-1-liuguoqiang@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        linux-kernel@vger.kernel.org
+Date:   Mon, 15 Nov 2021 10:24:02 +0100
+In-Reply-To: <20211115092139.24407-1-liuguoqiang@uniontech.com>
+References: <20211115092139.24407-1-liuguoqiang@uniontech.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.1 (3.42.1-1.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign2
-X-QQ-Bgrelay: 1
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When kzalloc failed and rdev->sacn_req or rdev->scan_msg is null, pass a
-null pointer to kfree is redundant, delete it and return directly.
+On Mon, 2021-11-15 at 17:21 +0800, liuguoqiang wrote:
+> When kzalloc failed and rdev->sacn_req or rdev->scan_msg is null, pass a
+> null pointer to kfree is redundant, delete it and return directly.
+> 
 
-Signed-off-by: liuguoqiang <liuguoqiang@uniontech.com>
----
- net/wireless/scan.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+Arguably then we should not set creq=NULL at the beginning?
 
-diff --git a/net/wireless/scan.c b/net/wireless/scan.c
-index 22e92be61938..011fcfabc846 100644
---- a/net/wireless/scan.c
-+++ b/net/wireless/scan.c
-@@ -2702,10 +2702,8 @@ int cfg80211_wext_siwscan(struct net_device *dev,
- 	if (IS_ERR(rdev))
- 		return PTR_ERR(rdev);
- 
--	if (rdev->scan_req || rdev->scan_msg) {
--		err = -EBUSY;
--		goto out;
--	}
-+	if (rdev->scan_req || rdev->scan_msg)
-+		return -EBUSY;
- 
- 	wiphy = &rdev->wiphy;
- 
-@@ -2718,10 +2716,8 @@ int cfg80211_wext_siwscan(struct net_device *dev,
- 	creq = kzalloc(sizeof(*creq) + sizeof(struct cfg80211_ssid) +
- 		       n_channels * sizeof(void *),
- 		       GFP_ATOMIC);
--	if (!creq) {
--		err = -ENOMEM;
--		goto out;
--	}
-+	if (!creq)
-+		return -ENOMEM;
- 
- 	creq->wiphy = wiphy;
- 	creq->wdev = dev->ieee80211_ptr;
--- 
-2.20.1
-
-
-
+johannes
