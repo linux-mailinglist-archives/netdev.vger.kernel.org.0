@@ -2,77 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F100F44FE0C
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 06:05:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 041FB44FE14
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 06:08:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229915AbhKOFIa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 00:08:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40534 "EHLO
+        id S229651AbhKOFLt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 00:11:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229651AbhKOFI2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 00:08:28 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65BEDC061746
-        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 21:05:32 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id i194so10050140yba.6
-        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 21:05:32 -0800 (PST)
+        with ESMTP id S229448AbhKOFLt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 00:11:49 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B032C061746
+        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 21:08:53 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id u60so43308720ybi.9
+        for <netdev@vger.kernel.org>; Sun, 14 Nov 2021 21:08:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=J0qLIAiCCeQaeMne00+YGcYkspJR1Ag1MB1rrFJNF80=;
-        b=o1xuXN82UJoYSADlX1DazqLxiZ+H1Pdhwn9+y0JehesTjPw6U72amjfidFI6P6/QLH
-         +vwhZqFWDVNtBBdu2SdNj1d5wcQ64Qc+uUjuK2eGLU7E6pCqaBVsMm6zKQ3tmSYulOHT
-         mIWNVY4QgPa47Wdig2QY3K0XloIimuFSZa5A7WKrCB5Ji8AKk9g0Qd+8fi1XnvGNzXbx
-         48Dt7BV1n3/QMWsvcrk72NKP1aV143enfcAJW87h1viGEsRcSLoAMqGDIlFVF1d7Z9PJ
-         0LcfE4sdRzCcUDDHi4NL4bN7Jcx5P195tHJyFRzCtiEkZqDRAydNsoKLgeGXHUpJ67BG
-         2sXA==
+        bh=f3ouGoYXHhWL6NCT4LYaFGCUbt9wZCfLipDgThRGPP0=;
+        b=hk6IWo+kYUzNq1PK/4Dp/OnQn3o1qvf7tzJUew4qo0PS6AAASdDzgavPQLqfIO/67o
+         FfT9/RMe5aujmPHpTtKU3Bk1PUqm62m2eTD+oOyr+qos/M1P/kb1gU/psNUPqWWGS+k7
+         4fudDTC4T76gR3sg5GyCO6PNxZ2yFeTIKrCJv4FbcVruTuaJOzlVLvJNk36gQKfYqmjy
+         WKRV7CBea/EnFq+QEU5s1dMNlVD2yja1tUjui+J8ecMNnC01KPtFmd5VYygxkWZ0XoHM
+         rxsSfZVAgFKgZU4UIt5zlYUMIRHpovikosSwqeSSCGq/bHmEcBpW1FNqwmk9FoIRlTmV
+         DfSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=J0qLIAiCCeQaeMne00+YGcYkspJR1Ag1MB1rrFJNF80=;
-        b=fyJ6u/VUV9HTlDVpsTUF7eYci1W9NrsjhuYWbWEKUdBx+kVJOUkgqnl9tyElkF0d6N
-         bs6Siz4D9CP2fqFc6iJFH5pnqXLAoNz7WtpHIq1q9+YqrAbyVrikyoyhLeXjzd1piKQU
-         2to7e9F9aFTpV9TolATiboMinp3gHRxh5skW4YS+hQkCdxgokWMHBoifhQW4Bxl/xX1g
-         yw0ouY0ho8Bf3KER7XgddqDrZxRMS84zIHHB+hVRADTtY2YHowxKoVx+e0fxM2k74m2B
-         aR4R4BW47zYurtWm3wf4lkfUqkrcPOoRdb9onajPUwcAPAA183YKYmL+6yuk/qfd3PiB
-         eXWQ==
-X-Gm-Message-State: AOAM530ZEzykZYr6vZxChOFA3YGotIe7qFNduZ9y585p9U3myBvnfonr
-        6EgxvKHW0Ndyrb8btKkl7Q61Xr68GadIWHYz602Vx0BZHwY=
-X-Google-Smtp-Source: ABdhPJxOuI/ubvUORY1Jq+Si7mwoo19fPCuIIofcmS3Y128YM5v21bn4kz6kmkQTF4iu6miZQYNQ5UGIvUFq0k6agUI=
-X-Received: by 2002:a25:287:: with SMTP id 129mr40301904ybc.524.1636952731738;
- Sun, 14 Nov 2021 21:05:31 -0800 (PST)
+        bh=f3ouGoYXHhWL6NCT4LYaFGCUbt9wZCfLipDgThRGPP0=;
+        b=L3rgwV93XAVcfs4Nkrf0ERTff14UFG4sqUXms0ybj9gHq4XkN259BKHzB5OxqMvPk8
+         KkLJV5XinXZKpQLFcXO7Vsnn0B3WV/qP74YlHvBRB4N9e7FlBKXIPA2hzjvUkPyxqsfk
+         6scjCoJAvzZCK23dExo7sI/NR9/h4B8Rw36/9XBgxY5QHCrFvVYFda+H9srANMQiDn3W
+         fVk7k1rrTQpRGqVo/BLt4P2jHJLXCqr1MX2Lcn9n1EZrZv66Y4nR96+TpFAl9jZIt1eD
+         3gcN9WF+VpUNaiE8alaPxzm3zG4M6ynyfcIhgbA/QmUD1Ihh9nvAsE0nWdS3QKn1K1+O
+         q0rw==
+X-Gm-Message-State: AOAM533gjk2r3uiBgdLcNjnAPFtZKg0bpO2wWKerBN3q65B9jd/wlzG5
+        NsO2Hv6n7B+HumRTnuPWytaqncC6PKTBqmewGVai3KW0
+X-Google-Smtp-Source: ABdhPJzvOlc9XNv+nP6aX5CnmfTYrA0Fk6kh8kNyAtEajqNfFmh8FbvDa1oNM3TSHUBItvrIZp/4j6lm+2BsWVvh9VE=
+X-Received: by 2002:a25:5003:: with SMTP id e3mr37438129ybb.482.1636952932745;
+ Sun, 14 Nov 2021 21:08:52 -0800 (PST)
 MIME-Version: 1.0
-References: <cover.1636734751.git.lucien.xin@gmail.com>
-In-Reply-To: <cover.1636734751.git.lucien.xin@gmail.com>
+References: <20190717214159.25959-1-xiyou.wangcong@gmail.com>
+ <20190717214159.25959-3-xiyou.wangcong@gmail.com> <YYuObqtyYUuWLarX@Laptop-X1>
+In-Reply-To: <YYuObqtyYUuWLarX@Laptop-X1>
 From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sun, 14 Nov 2021 21:05:20 -0800
-Message-ID: <CAM_iQpV7gf3QgWoFD=cyRtO0XT6Pu7=n5V5zCCuotWEtzihQLA@mail.gmail.com>
-Subject: Re: [PATCH net 0/2] net: fix the mirred packet drop due to the
- incorrect dst
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Davide Caratti <dcaratti@redhat.com>
+Date:   Sun, 14 Nov 2021 21:08:41 -0800
+Message-ID: <CAM_iQpV99vbCOZUj_9chHt8TXeiXqbvwKW7r8T9t1hpTa79qdQ@mail.gmail.com>
+Subject: Re: [Patch net v3 2/2] selftests: add a test case for rp_filter
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        David Ahern <dsahern@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 12, 2021 at 8:33 AM Xin Long <lucien.xin@gmail.com> wrote:
+On Wed, Nov 10, 2021 at 1:18 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
 >
-> This issue was found when using OVS HWOL on OVN-k8s. These packets
-> dropped on rx path were seen with output dst, which should've been
-> dropped from the skbs when redirecting them.
+> On Wed, Jul 17, 2019 at 02:41:59PM -0700, Cong Wang wrote:
+> > Add a test case to simulate the loopback packet case fixed
+> > in the previous patch.
+> >
+> > This test gets passed after the fix:
+> >
+> > IPv4 rp_filter tests
+> >     TEST: rp_filter passes local packets                                [ OK ]
+> >     TEST: rp_filter passes loopback packets                             [ OK ]
 >
-> The 1st patch is to the fix and the 2nd is a selftest to reproduce
-> and verify it.
+> Hi Wang Cong,
+>
+> Have you tried this test recently? I got this test failed for a long time.
+> Do you have any idea?
+>
+> IPv4 rp_filter tests
+>     TEST: rp_filter passes local packets                                [FAIL]
+>     TEST: rp_filter passes loopback packets                             [FAIL]
 
-Acked-by: Cong Wang <cong.wang@bytedance.com>
+Hm, I think another one also reported this before, IIRC, it is
+related to ping version or cmd option. Please look into this if
+you can, otherwise I will see if I can reproduce this on my side.
 
 Thanks.
