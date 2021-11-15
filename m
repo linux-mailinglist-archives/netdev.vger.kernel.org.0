@@ -2,85 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14080451641
+	by mail.lfdr.de (Postfix) with ESMTP id 8CBF0451642
 	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 22:18:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345553AbhKOVRy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 16:17:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49716 "EHLO
+        id S240093AbhKOVSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 16:18:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350418AbhKOUXs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 15:23:48 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E5E7C079780
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 12:10:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=rO40oQ3O9yVpjfN38ey7A4JW/711UQ4OKFfu46UmQ6Y=; b=iGSzQ0Uys9TL1OCJO6bs7LFel3
-        OpPr9a7+qHjDvg/HwqqQrVCvOkqTxkVh0Xiu869gLaJa8/53mwrAEzeYSBzKrpmoI4TKTNcA94bSK
-        chzc/38j1ZjOnhUzRdIdossVIALnGQfA2t9Qn6JoV6UhO7f1nrAfByywsoGrUDBQdk287OH/d5MyM
-        dKtzMYPWNgLdY2H82TEHCp6IlueJ+Za0XTt62Xjz92gQp2R2HCK/l+9wQL7zQvgKGm262hUQKqQND
-        iYKKjfnQl9NjgfjitwPNl/mZ3H5OxPGr7426nvIoLd+nQjB0UlmpdtcbCOlaW7onOV45dcE8EzhRT
-        tOfbH5wQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55640)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mmiJc-00086U-LB; Mon, 15 Nov 2021 20:10:56 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mmiJa-0001Iu-MV; Mon, 15 Nov 2021 20:10:54 +0000
-Date:   Mon, 15 Nov 2021 20:10:54 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net-next 1/3] net: phylink: add generic validate
- implementation
-Message-ID: <YZK+zvONUjtWe0HA@shell.armlinux.org.uk>
-References: <YZIvnerLwnMkxx3p@shell.armlinux.org.uk>
- <E1mmYmp-006nOe-Gs@rmk-PC.armlinux.org.uk>
- <YZK6863Q8m5RgY9D@lunn.ch>
+        with ESMTP id S1350451AbhKOUXw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 15:23:52 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F87C0432CA
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 12:18:10 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id w29so32973588wra.12
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 12:18:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:from:to:cc:content-language
+         :subject:content-transfer-encoding;
+        bh=VoxwCzYwQGbno9RbtsIIyYkVXvs51MPgjgV/WkLpkWs=;
+        b=ks5P5bpGtRrua1CrctmHTWnL6jjzS07a/rzMiISmin2xVmV7AzUtmxFxyC4EDahsuI
+         5CG7YKF9vvTmDqnh4uYk9uA602Dd6gmgd2UvYzjxj9bUAqPxus2xB/BVBAzpKdT4muVI
+         oU7vS98rq8k17Mi1waRJW0e+9cf3ceRt1IyJPkiraDtW1wAaDrgKEhDRnfHA14Q94Xsx
+         8Jo3jMv/fjvQ5fW+y+HI72jQm4N/ZSXLdVa1M7hX/8mrXjJX3bslb134XvpEtpbX2sL/
+         PjX2RTt4U/fQxQ/fIMZYVIcinnttyn9z7DmkX1yCaR8gl+YL5UVOjGJ+2EyLrH4LppcM
+         ThmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from:to
+         :cc:content-language:subject:content-transfer-encoding;
+        bh=VoxwCzYwQGbno9RbtsIIyYkVXvs51MPgjgV/WkLpkWs=;
+        b=nDvrXom5poSp1dLdJXrXCyG8djoF3PYt8Of/kJziV2BPKCx4wEk4i43IVFA4ZH3CTE
+         IAOyNbXirjOzSj3N7jZKF4KI2il+7gzFDurFlyf285DV4vEgO5ObodPifCWmdGXRC9kk
+         h/qk6uaUwCKesogxcNFe/nBnI51ck/3YditacM43OEimA1qjcSS2riDLl67MykJ2kVTF
+         b4ZFdlq66w58a1E1MLQL36WJHHhExQcPTYs65n0Dbj9CHPwmvhRS8Veo8VU2p3DX4qFt
+         TfdXwq6aKzfie0qzRYy0pQ1DQLbmUV0tClOV4681RQ4Gf7vu1GRogdjLH0lEeJcms2nC
+         sc2w==
+X-Gm-Message-State: AOAM531L6vQzhdFowf7+iBa3gJZuDn+r7NbTM/RZshvkf6n/wGm00q4l
+        OE+69r/Fjmta/JCzwyoRUulCBb7ygO4=
+X-Google-Smtp-Source: ABdhPJwxr9O00XPbkDnKF1mLhfkevWXTQGbLR9BWhDf6b63uLv8EABqMiz2lJB4phaxtnFhLxQFezQ==
+X-Received: by 2002:adf:f907:: with SMTP id b7mr2250734wrr.5.1637007488861;
+        Mon, 15 Nov 2021 12:18:08 -0800 (PST)
+Received: from ?IPV6:2003:ea:8f1a:f00:a554:6e71:73b4:f32d? (p200300ea8f1a0f00a5546e7173b4f32d.dip0.t-ipconnect.de. [2003:ea:8f1a:f00:a554:6e71:73b4:f32d])
+        by smtp.googlemail.com with ESMTPSA id o3sm379211wms.10.2021.11.15.12.18.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Nov 2021 12:18:08 -0800 (PST)
+Message-ID: <36feb8c4-a0b6-422a-899c-e61f2e869dfe@gmail.com>
+Date:   Mon, 15 Nov 2021 21:17:56 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YZK6863Q8m5RgY9D@lunn.ch>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Language: en-US
+Subject: [PATCH net-next] r8169: enable ASPM L1/L1.1 from RTL8168h
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 15, 2021 at 08:54:27PM +0100, Andrew Lunn wrote:
-> Hi Russell
-> 
-> > +	case PHY_INTERFACE_MODE_TBI:
-> > +	case PHY_INTERFACE_MODE_MOCA:
-> > +	case PHY_INTERFACE_MODE_RTBI:
-> 
-> For some reason, i think one of these can do 2.5G. But i cannot
-> remember where i have seen this. Maybe b53?
+With newer chip versions ASPM-related issues seem to occur only if
+L1.2 is enabled. I have a test system with RTL8168h that gives a
+number of rx_missed errors when running iperf and L1.2 is enabled.
+With L1.2 disabled (and L1 + L1.1 active) everything is fine.
+See also [0]. Can't test this, but L1 + L1.1 being active should be
+sufficient to reach higher package power saving states.
 
-I asked Florian about MoCA, who said "1G, and then the MoCA Ethernet
-adaptation layer will do what it can" - I did trip over some
-information that suggests that could do 2.5G.
+[0] https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1942830
 
-However, none of the drivers I've converted make use of these, so if
-these interface modes need other speeds added, it won't be a problem
-just yet and can be addressed later.
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
-I haven't addressed DSA yet - DSA drivers don't have the same signature
-for their validate() implementations, so it is harder to have a generic
-implementation there without more wrapping. It would also need changing
-the phylink_get_interfaces method introduced last time around since DSA
-drivers need to set both the supported_interfaces and mac_capabilities
-members in phylink_config. So this rules out b53 conversion for the
-moment, but it would be really nice to also have DSA drivers converted.
-
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index bbe21db20..6e46397f0 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -5271,12 +5271,6 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	if (rc)
+ 		return rc;
+ 
+-	/* Disable ASPM L1 as that cause random device stop working
+-	 * problems as well as full system hangs for some PCIe devices users.
+-	 */
+-	rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
+-	tp->aspm_manageable = !rc;
+-
+ 	/* enable device (incl. PCI PM wakeup and hotplug setup) */
+ 	rc = pcim_enable_device(pdev);
+ 	if (rc < 0) {
+@@ -5319,6 +5313,17 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	tp->mac_version = chipset;
+ 
++	/* Disable ASPM L1 as that cause random device stop working
++	 * problems as well as full system hangs for some PCIe devices users.
++	 * Chips from RTL8168h partially have issues with L1.2, but seem
++	 * to work fine with L1 and L1.1.
++	 */
++	if (tp->mac_version >= RTL_GIGA_MAC_VER_45)
++		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1_2);
++	else
++		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
++	tp->aspm_manageable = !rc;
++
+ 	tp->dash_type = rtl_check_dash(tp);
+ 
+ 	tp->cp_cmd = RTL_R16(tp, CPlusCmd) & CPCMD_MASK;
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.33.1
+
