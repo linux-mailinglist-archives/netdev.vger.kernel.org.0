@@ -2,57 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62D204514BF
-	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 21:10:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 462664514C8
+	for <lists+netdev@lfdr.de>; Mon, 15 Nov 2021 21:13:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349417AbhKOUMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 15:12:51 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:34128 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346991AbhKOTiL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 14:38:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=nW5K4LQEM487yoxv+Y8zAaOQtnroY01SoDtHwL7Mio0=; b=PtrGvvxPoPkYxF+U69ta6Na9LK
-        xn63pEQr5OmM5Ot2IfKV0ic0p42gY8V4aggGqBx4lUx0do4DoehVxteVkhDGDHx2DeXD5vpGoVfd9
-        a85OCM2s6mNATqeK/5McdaMqbthdqpxbiKNSYdWPfPnpQIKG9HY63XJFaDOqyB9hK1Bk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mmhky-00DWaj-NC; Mon, 15 Nov 2021 20:35:08 +0100
-Date:   Mon, 15 Nov 2021 20:35:08 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, upstream@semihalf.com,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [net: PATCH] net: mvmdio: fix compilation warning
-Message-ID: <YZK2bPgHE0BFlDMd@lunn.ch>
-References: <20211115153024.209083-1-mw@semihalf.com>
+        id S1345985AbhKOUNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 15:13:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46384 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348723AbhKOUJz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 15:09:55 -0500
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734EBC061230
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 11:51:30 -0800 (PST)
+Received: by mail-ed1-x543.google.com with SMTP id y13so1979122edd.13
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 11:51:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=43RF+GLjWfQcH52TycKW7dpol6FZ6MhCw6uy4xjR348=;
+        b=IL8/Vp/xlyIo8YoHut/efNnd4t1pqMNPG1ejzB7bMJYzbbwcW3gbDBI+moBmrTFyfk
+         wcX4Hz/oeLD/USChjOdw3oE6UEtZtf85PetAHFnFOLfB5FSIqqzyV38wEfcgWucMQVFW
+         uvhe2P/eZLBLKuzRXncdt53O5GJU4olzBaJdCYRwBjWbU+juwbsl5oUUC410ALokYyOf
+         n1RSbzhbXBlkorad/4BLckKP/NyWXR7hhaj8tw92wNKgNKLAnFq7Q2Gzb3jDVmWwldde
+         lPPaWHUPzsiLUT0Saqmk0062VB44VXOPQ7u0VY4drbGX9D6OjfAR5FwM6OYwGYJjEBtc
+         YGHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=43RF+GLjWfQcH52TycKW7dpol6FZ6MhCw6uy4xjR348=;
+        b=IYTWtuC1hChmuTUD4egGKAYZt3+hqbuWuNLQ9kcfeU6mQpIPgdDZF7FA5TohKI/Gpp
+         Sb5UrnxGXAsdTpbFVH+nVhfzagTwPwGH/fAOP+RY8jDUpAjvkPIMsNCN84rLTZAfkXKk
+         cuta7s86Jn6O3r+LvDzExWXtuC2hyMu6OyRWMX/T03bdxb1L5rCOpU1rec1qbcKlFFk9
+         VtSfNI4LHXHcXdjfnHoN05HPUzz+lt/bdsoCO2COiZiipsWcZilpBGoAlboD4msZDYuq
+         L/alpb7iynuZMJT6t2JWS/oPhvvOWjDbw6iqRTJi6NAqkgMYh4oiLAKlLeNlE4gtYn2u
+         k4jQ==
+X-Gm-Message-State: AOAM533D+Pid+1oFzNeUM3NVNnGSBSSwKMePRwc0T0vvwSC4/rhZO8+j
+        lGUYDkwhoXW4kgvROOmd4OiH7rw2chWQjZ1XPPk=
+X-Google-Smtp-Source: ABdhPJyteupCrH7lO/583+5XI4zdg8yvVAESLk7+ipuEKqaZ0cQL+o+HYnocxru4DPp/PF7cty6Mv+Ae3sBLSOzMh5Y=
+X-Received: by 2002:a50:e683:: with SMTP id z3mr1957119edm.206.1637005889013;
+ Mon, 15 Nov 2021 11:51:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211115153024.209083-1-mw@semihalf.com>
+Received: by 2002:a17:907:2d94:0:0:0:0 with HTTP; Mon, 15 Nov 2021 11:51:28
+ -0800 (PST)
+Reply-To: barr.kone@aol.com
+From:   "Richard K. Wilson" <mr.franckedson1@gmail.com>
+Date:   Mon, 15 Nov 2021 19:51:28 +0000
+Message-ID: <CABRJEK3mGMmmJz2Bn2QdMGyo17XNOvjzB5Ndi3JZr0uyAH=g+w@mail.gmail.com>
+Subject: Hello
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 15, 2021 at 04:30:24PM +0100, Marcin Wojtas wrote:
-> The kernel test robot reported a following issue:
-> 
-> >> drivers/net/ethernet/marvell/mvmdio.c:426:36: warning:
-> unused variable 'orion_mdio_acpi_match' [-Wunused-const-variable]
->    static const struct acpi_device_id orion_mdio_acpi_match[] = {
+-- 
+Dear
 
-How come OF never gives these warning, just ACPI? If there something
-missing in ACPI which OF has?
+I am contacting you to assist retrieve his huge deposit Mr. Alexander
+left in the bank before its get confiscated by the bank. Get back to
+me for more detail's
 
-> Fixes: c54da4c1acb1 ("net: mvmdio: add ACPI support")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Marcin Wojtas <mw@semihalf.com>
-
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
+Barr's Richard Wilson
