@@ -2,103 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E77345344E
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 15:36:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 327F8453454
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 15:36:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237384AbhKPOim (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 09:38:42 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:45302 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237449AbhKPOiR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 09:38:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637073319;
+        id S237466AbhKPOiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 09:38:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44768 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237483AbhKPOiw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 09:38:52 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8B50363213;
+        Tue, 16 Nov 2021 14:35:54 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="PCkrc5GM"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1637073352;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=rDz1YUR0AgNW1PyJTJkx0fL4NDM6le7gN2iBvKWyYhY=;
-        b=F461NkN5XJy0TyHWHh++eUOeXHbreq2b16hQfVk5nW/axYSZw/gLPE2oKHiX9KDD3v+HLX
-        IuovUxyT+HPAbPcYvG6++Pjvy14ZqtRhsAOd/u5KBUcQ5jHH0NNMPtqbjfBHSLB42OeKn9
-        U/zel0LZZ/erT3hMlEaFlyz2SlAJf3M=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-431-APNCZaYtOCiNigW1E_uapw-1; Tue, 16 Nov 2021 09:35:18 -0500
-X-MC-Unique: APNCZaYtOCiNigW1E_uapw-1
-Received: by mail-wr1-f70.google.com with SMTP id f3-20020a5d50c3000000b00183ce1379feso4521196wrt.5
-        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 06:35:18 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rDz1YUR0AgNW1PyJTJkx0fL4NDM6le7gN2iBvKWyYhY=;
-        b=sO5jbLjXOzPOvr53B4O5mH9iIUaXVL2xcMRP0waSTKL93RPOFw8QCwZ2cgxIisAAZ6
-         +KrPNrnu3CxD7hL+7Nze5LixMXxmFIOz2BbclgrHGKrqo0EYzMcoRJVWZmOafGtrwtGI
-         ZbmmncMj/C0zaRXPSCYvB43i9rtYqh98TJI8sJgfK5N8mScdkbkEmCWzHE+rKPuwLCQn
-         VqlwMH4E2tdY6zhi5ixjlOEB2R2/TYPjXyTBv83MWWU7AWuO6CJk/zfQ3jFjaVqrsbpB
-         Q/oCGbUJ8zFugiZGqO5+zUMMLZ3UYiFilI0Tl2m63/zJbWFi6gm58sb8VtnwvbVTBOFw
-         mb+Q==
-X-Gm-Message-State: AOAM532D0DxYZa0iVUttJh6RHXMFoqgGUeRL/uInXAjMTDg1fbP8Fvn9
-        12z+oSoo8izEMG1hIy+xaBkeP4MvgkcVPNPPQWWTDiy2bTBM2XUFM5ln1saBhTtFlOiZNr2c5wo
-        f4JUjbSw+lDYaB9RN
-X-Received: by 2002:adf:ded0:: with SMTP id i16mr10045253wrn.335.1637073317269;
-        Tue, 16 Nov 2021 06:35:17 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyTqQ6byTlaJB2mMvVBJPVz/03fWQs2QX2Z7ktgMC1OpQia0Z85aodMjtpJrgMPy+iqkkZfiQ==
-X-Received: by 2002:adf:ded0:: with SMTP id i16mr10045215wrn.335.1637073317064;
-        Tue, 16 Nov 2021 06:35:17 -0800 (PST)
-Received: from steredhat (host-87-10-72-39.retail.telecomitalia.it. [87.10.72.39])
-        by smtp.gmail.com with ESMTPSA id s8sm4988581wra.9.2021.11.16.06.35.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Nov 2021 06:35:16 -0800 (PST)
-Date:   Tue, 16 Nov 2021 15:35:14 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Andrey Ryabinin <arbn@yandex-team.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/6] vhost_vsock: simplify vhost_vsock_flush()
-Message-ID: <20211116143514.2jvemtjrds4453me@steredhat>
-References: <20211115153003.9140-1-arbn@yandex-team.com>
- <20211115153003.9140-4-arbn@yandex-team.com>
+        bh=aVvWJd39MYeyeXC45cmKJyUS0lCWpXog0spU1EM+noY=;
+        b=PCkrc5GMc1qWLgfXCw1ItycqGQOu16H22orWQS0UumpbaOR014iB/b+YmU9zD6xZiBxnrg
+        v6ryvudDe58myVnXCPEBKtwE8M+HN5gAREkBmdEdxC9sK7GgUGER9wHF3pbluSchxBTpv/
+        by8XlzzBi+BVw5iqYt65+fYkWG1IvWw=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id ddbeaefd (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 16 Nov 2021 14:35:52 +0000 (UTC)
+Received: by mail-yb1-f180.google.com with SMTP id v7so58222856ybq.0;
+        Tue, 16 Nov 2021 06:35:52 -0800 (PST)
+X-Gm-Message-State: AOAM53204i6fU7997TW3T1nsIC3AkK7tXE1niHJpIUX9mrfQ6OWMex0H
+        1/PvgmoB9Tbq6FRT3hjKK+XE076PPzE3ouVixOk=
+X-Google-Smtp-Source: ABdhPJyK8fZhJKugHashqCWYgbrM0WK5WAdHzetQ2HIizA6DknS8jNCPsJEtvdY389KpOzysx5m3hyDpAUEIf1bTVzU=
+X-Received: by 2002:a5b:783:: with SMTP id b3mr8299681ybq.328.1637073351028;
+ Tue, 16 Nov 2021 06:35:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20211115153003.9140-4-arbn@yandex-team.com>
+References: <20211116081359.975655-1-liuhangbin@gmail.com>
+In-Reply-To: <20211116081359.975655-1-liuhangbin@gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 16 Nov 2021 15:35:40 +0100
+X-Gmail-Original-Message-ID: <CAHmME9pNFe7grqhW7=YQgRq10g4K5bqVuJrq0HonEVNbQSRuYg@mail.gmail.com>
+Message-ID: <CAHmME9pNFe7grqhW7=YQgRq10g4K5bqVuJrq0HonEVNbQSRuYg@mail.gmail.com>
+Subject: Re: [PATCH wireguard] wireguard: selftests: refactor the test structure
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     Shuah Khan <shuah@kernel.org>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Netdev <netdev@vger.kernel.org>, linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 15, 2021 at 06:30:01PM +0300, Andrey Ryabinin wrote:
->vhost_vsock_flush() calls vhost_work_dev_flush(vsock->vqs[i].poll.dev)
->before vhost_work_dev_flush(&vsock->dev). This seems pointless
->as vsock->vqs[i].poll.dev is the same as &vsock->dev and several flushes
->in a row doesn't do anything useful, one is just enough.
->
->Signed-off-by: Andrey Ryabinin <arbn@yandex-team.com>
->---
-> drivers/vhost/vsock.c | 5 -----
-> 1 file changed, 5 deletions(-)
->
->diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
->index b0361ebbd695..b4dcefbb7e60 100644
->--- a/drivers/vhost/vsock.c
->+++ b/drivers/vhost/vsock.c
->@@ -707,11 +707,6 @@ static int vhost_vsock_dev_open(struct inode *inode, struct file *file)
->
-> static void vhost_vsock_flush(struct vhost_vsock *vsock)
-> {
->-	int i;
->-
->-	for (i = 0; i < ARRAY_SIZE(vsock->vqs); i++)
->-		if (vsock->vqs[i].handle_kick)
->-			vhost_work_dev_flush(vsock->vqs[i].poll.dev);
-> 	vhost_work_dev_flush(&vsock->dev);
-> }
->
->-- 
->2.32.0
->
+Hi Hangbin,
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+I don't know how interested in this I am. Splitting things into two
+files means more confusing maintenance, and categorizing sections
+strictly into functions means there's more overhead when adding tests
+(e.g. "where do they fit?"), because the categories you've chosen are
+fairly broad, rather than being functions for each specific test. I'd
+be more amenable to something _entirely_ granular, because that'd be
+consistent, or what we have now, which is just linear. Full
+granularity, though, has its own downsides, of increased clutter.
+Alternatively, if you'd like to add some comments around the different
+areas to better document what's happening, perhaps that'd accomplish
+the same thing as this patch.
 
+Jason
