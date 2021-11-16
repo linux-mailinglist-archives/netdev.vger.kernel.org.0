@@ -2,121 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98725453957
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 19:21:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 361AA453970
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 19:32:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239406AbhKPSYb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 13:24:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37298 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239400AbhKPSY2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 13:24:28 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 509C7C061570;
-        Tue, 16 Nov 2021 10:21:31 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id y68so54854985ybe.1;
-        Tue, 16 Nov 2021 10:21:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cJYcvBRlxencL1QuT8wtPHz9c1IHoV/swUV2N7c4Fbg=;
-        b=Zqfxcye2w4sp8vm8MZzyONAjI6jjTILR2e6urkXZ/yMIbl1K/49BFS43iwRivgNj5S
-         g5QEAhMsTH4bSS4IIvdjmOofkWWdeqsbzzQhf7rqW3Q7mPAz9O65Y50iYPe5+YYaYgBL
-         0sMmMnUkM53fI1j6ksP38N/wiI6pEuKY7eiAKQ0MDRPK8rRaYPi1vuCz7M8HvdO3st3c
-         Ydb/WJJTW39TOERsa/zaUJ7/aoSUGs1Fwd1aBtcjkQSw0N/V2MHr/dSPJ9mo1LAANoAc
-         cX15ditnm9Wnlwurr1bXV33d+TMKA0+WCqeEHV17yGm26f+6zKD6Ref1ldVd+YJDG7ys
-         4j3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cJYcvBRlxencL1QuT8wtPHz9c1IHoV/swUV2N7c4Fbg=;
-        b=50JyASWynmi8lW6oxQ6tcXjlCUnFraKVdlxQjUaHVItzlY5HPZqszWeTtRLPPBPfkE
-         dQCff4UiBuCzmb9WBeN3yjCsAC+ARgGhp0+JNicAP6bjfEQVK62IOlNBn79FJzeV8QhF
-         1nqCTyEl33vc6hM+LZtKcbxH4VJH+UbjJnuSb3My9Zvzh36BGTGVqAmKDHUYIHsnzvuc
-         YxYaE0sGiySwUSekbmh8fKad8vDxb7ay2QGjWcJbCuZgk25xgokO+Rfz91WI/e0J6nKq
-         lw2QwR67b2SqLhGvjRb/h1CGQmwnHrndO0RJJjsQ0XpFBMt2Njzcm04/Rt/uolssPBGb
-         w4QQ==
-X-Gm-Message-State: AOAM533gbWmQ98gt2s2XDT7t67VgaUCoEKhJ1O9702U2/z1x5c3+n+WY
-        0gZaZ2W11ZA1MKc0IYsf5JEu2mJkDDScg08BEic=
-X-Google-Smtp-Source: ABdhPJx4ORrkmRdky4w3AuasGzVKGGyGqc5szOr+0p/deWht8f7yaVhCy9UHiJm6q95V1Abdbn0bF1mR97gXYiE0BtQ=
-X-Received: by 2002:a25:afcd:: with SMTP id d13mr10518308ybj.504.1637086890557;
- Tue, 16 Nov 2021 10:21:30 -0800 (PST)
+        id S239517AbhKPSe5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 13:34:57 -0500
+Received: from proxima.lasnet.de ([78.47.171.185]:58680 "EHLO
+        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239510AbhKPSes (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 13:34:48 -0500
+Received: from [172.29.15.1] (unknown [185.214.200.54])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 0479CC0387;
+        Tue, 16 Nov 2021 19:31:47 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1637087508;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=q33VKNmnBYWaMgxXXz7vJiugiVjwWfFa7bPXnZywGAI=;
+        b=A401T7QmAKbJcVQAOdyXhmRhUTrRslyXmUWgf/vhhq0DJM0/o0EDdn7atSuONXikAqB99a
+        Kjvmok8KyCNfrVCYGeq3kCTnyUQ9gkafPYqVpM1+MeZwZnypfrmKdVf9ksZiB6/UA/4XjM
+        MPngdNWuWGezOqH2JY/nuG+ZKP6vm7pgd+iiQz6wVNx85jOSwjpNDvFLZNyGtw68IFJCHs
+        lxbkgyXMxYGtjPDknIu2I3xMy7TT26vfDVnwDapZ0O3+5gQFoQSo0yrfu6HH1zA1w3yHeH
+        GupMNlnckiila01DNDs7sArQgQNmGovGUBGR8zaMFOEX9AhlK2eqFKaFqZRIuQ==
+Message-ID: <9442473c-27fc-12d5-d520-206796e4edfa@datenfreihafen.org>
+Date:   Tue, 16 Nov 2021 19:31:46 +0100
 MIME-Version: 1.0
-References: <YZPQ6+u2wTHRfR+W@kernel.org>
-In-Reply-To: <YZPQ6+u2wTHRfR+W@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 16 Nov 2021 10:21:19 -0800
-Message-ID: <CAEf4BzbOnpL-=2Xi1DOheUtzc-JG5FmHqdvs4B_+0OeaCTgY=w@mail.gmail.com>
-Subject: Re: [PATCH 1/1] Documentation: Add minimum pahole version
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jiri Olsa <jolsa@redhat.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.0
+Subject: Re: [PATCH wpan] net: ieee802154: handle iftypes as u32
+Content-Language: en-US
+To:     Alexander Aring <aahringo@redhat.com>, mudongliangabcd@gmail.com
+Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org
+References: <20211112030916.685793-1-aahringo@redhat.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <20211112030916.685793-1-aahringo@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 16, 2021 at 7:40 AM Arnaldo Carvalho de Melo
-<acme@kernel.org> wrote:
->
-> A report was made in https://github.com/acmel/dwarves/issues/26 about
-> pahole not being listed in the process/changes.rst file as being needed
-> for building the kernel, address that.
->
-> Link: https://github.com/acmel/dwarves/issues/26
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Cc: Andrii Nakryiko <andrii@kernel.org>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Jiri Olsa <jolsa@redhat.com>
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: bpf@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Hello.
+
+On 12.11.21 04:09, Alexander Aring wrote:
+> This patch fixes an issue that an u32 netlink value is handled as a
+> signed enum value which doesn't fit into the range of u32 netlink type.
+> If it's handled as -1 value some BIT() evaluation ends in a
+> shift-out-of-bounds issue. To solve the issue we set the to u32 max which
+> is s32 "-1" value to keep backwards compatibility and let the followed enum
+> values start counting at 0. This brings the compiler to never handle the
+> enum as signed and a check if the value is above NL802154_IFTYPE_MAX should
+> filter -1 out.
+> 
+> Fixes: f3ea5e44231a ("ieee802154: add new interface command")
+> Signed-off-by: Alexander Aring <aahringo@redhat.com>
 > ---
->  Documentation/process/changes.rst | 9 +++++++++
->  1 file changed, 9 insertions(+)
->
-> diff --git a/Documentation/process/changes.rst b/Documentation/process/changes.rst
-> index e35ab74a0f804b04..c45f167a1b6c02a4 100644
-> --- a/Documentation/process/changes.rst
-> +++ b/Documentation/process/changes.rst
-> @@ -35,6 +35,7 @@ GNU make               3.81             make --version
->  binutils               2.23             ld -v
->  flex                   2.5.35           flex --version
->  bison                  2.0              bison --version
-> +pahole                 1.16             pahole --version
->  util-linux             2.10o            fdformat --version
->  kmod                   13               depmod -V
->  e2fsprogs              1.41.4           e2fsck -V
-> @@ -108,6 +109,14 @@ Bison
->  Since Linux 4.16, the build system generates parsers
->  during build.  This requires bison 2.0 or later.
->
-> +pahole:
-> +-------
+>   include/net/nl802154.h | 7 ++++---
+>   1 file changed, 4 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/net/nl802154.h b/include/net/nl802154.h
+> index ddcee128f5d9..145acb8f2509 100644
+> --- a/include/net/nl802154.h
+> +++ b/include/net/nl802154.h
+> @@ -19,6 +19,8 @@
+>    *
+>    */
+>   
+> +#include <linux/types.h>
 > +
-> +Since Linux 5.2 the build system generates BTF (BPF Type Format) from DWARF in
-> +vmlinux, a bit later from kernel modules as well, if CONFIG_DEBUG_INFO_BTF is
+>   #define NL802154_GENL_NAME "nl802154"
+>   
+>   enum nl802154_commands {
+> @@ -150,10 +152,9 @@ enum nl802154_attrs {
+>   };
+>   
+>   enum nl802154_iftype {
+> -	/* for backwards compatibility TODO */
+> -	NL802154_IFTYPE_UNSPEC = -1,
+> +	NL802154_IFTYPE_UNSPEC = (~(__u32)0),
+>   
+> -	NL802154_IFTYPE_NODE,
+> +	NL802154_IFTYPE_NODE = 0,
+>   	NL802154_IFTYPE_MONITOR,
+>   	NL802154_IFTYPE_COORD,
+>   
 
-I'd probably emphasize a bit more that pahole is required only if
-CONFIG_DEBUG_INFO_BTF is selected by moving "If CONFIG_DEBUG_INFO_BTF
-is selected, " to the front. But either way looks good.
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
+This patch has been applied to the wpan tree and will be
+part of the next pull request to net. Thanks!
 
-> +selected.  This requires pahole v1.16 or later. It is found in the 'dwarves' or
-> +'pahole' distro packages or from https://fedorapeople.org/~acme/dwarves/.
-> +
->  Perl
->  ----
->
-> --
-> 2.31.1
->
+regards
+Stefan Schmidt
