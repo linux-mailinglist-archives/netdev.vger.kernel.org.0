@@ -2,83 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53982452F31
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 11:34:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67660452FBA
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 12:04:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234205AbhKPKhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 05:37:32 -0500
-Received: from mga12.intel.com ([192.55.52.136]:10019 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234199AbhKPKha (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Nov 2021 05:37:30 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10169"; a="213700719"
-X-IronPort-AV: E=Sophos;i="5.87,238,1631602800"; 
-   d="scan'208";a="213700719"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2021 02:34:33 -0800
-X-IronPort-AV: E=Sophos;i="5.87,238,1631602800"; 
-   d="scan'208";a="454200794"
-Received: from smile.fi.intel.com ([10.237.72.184])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2021 02:34:26 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1mmvn7-007O4Y-CJ;
-        Tue, 16 Nov 2021 12:34:17 +0200
-Date:   Tue, 16 Nov 2021 12:34:17 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Colin Foster <colin.foster@in-advantage.com>,
-        Daniel Scally <djrscally@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: Re: [RFC PATCH v4 net-next 00/23] add support for VSC75XX control
- over SPI
-Message-ID: <YZOJKZZSVQ9wvUTS@smile.fi.intel.com>
-References: <20211116062328.1949151-1-colin.foster@in-advantage.com>
+        id S234724AbhKPLGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 06:06:08 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:51746 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234645AbhKPLFa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 06:05:30 -0500
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1637060552;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=e10OOvD1u94xS1GIboSwL6Wuc+WCr9I2DZUFe4rpbtc=;
+        b=FMvhaX4kB8DiRB3Y0+aRBO2m9ILwQaDzzDjIuuSP7ybiynoiE7y+6vlCC0ffCgB5whAKqe
+        wji6zoUFSUOj7qtaa9jJO92IX6CGn+HzUND7MvTYKf6XXyNbgGmASYzWdxLBsVSwDrFbPE
+        ExWt2gPdx9ads9cBqdWycGs8i4a9e4+EPfZXsHfAkll8oDNqcxB3X9Alz3AOBI8aFDgRyV
+        g6W5S0uSIV5eq3mIgLYLAfR1J9MSXb66VHr4dXtSWLPCQTWdPF08FhwgCkgQwKLr8zFwON
+        EV4gBz5D+so8mPYqvkD6Xs4bXDulCIvYPWbdfNNVtn9OA9BCfTGUBG15/DLnGw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1637060552;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=e10OOvD1u94xS1GIboSwL6Wuc+WCr9I2DZUFe4rpbtc=;
+        b=xrfnTvU+0HOOavO+mLbWCo6RkmxZo0uconkWrKQSXfBhww+JwGZuCctDNbyFBwDbkOsNpE
+        QDV03R1dWmSrL9BQ==
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bridge@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: Re: RFC: PTP Boundary Clock over UDPv4/UDPv6 on Linux bridge
+In-Reply-To: <20211116102138.26vkpeh23el6akya@skbuf>
+References: <871r3gbdxv.fsf@kurt> <20211116102138.26vkpeh23el6akya@skbuf>
+Date:   Tue, 16 Nov 2021 12:02:31 +0100
+Message-ID: <87y25o9xdk.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211116062328.1949151-1-colin.foster@in-advantage.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 15, 2021 at 10:23:05PM -0800, Colin Foster wrote:
-> My apologies for this next RFC taking so long. Life got in the way.
-> 
-> 
-> The patch set in general is to add support for the VSC7511, VSC7512,
-> VSC7513 and VSC7514 devices controlled over SPI. The driver is
-> relatively functional for the internal phy ports (0-3) on the VSC7512.
-> As I'll discuss, it is not yet functional for other ports yet.
+--=-=-=
+Content-Type: text/plain
 
+On Tue Nov 16 2021, Vladimir Oltean wrote:
+> This should do the trick as well?
+>
+> /sbin/ebtables --table broute --append BROUTING --protocol 0x88F7 --jump DROP
+>
+> /sbin/ebtables --table broute --append BROUTING --protocol 0x0800 --ip-protocol udp --ip-destination-port 320 --jump DROP
+> /sbin/ebtables --table broute --append BROUTING --protocol 0x0800 --ip-protocol udp --ip-destination-port 319 --jump DROP
+>
+> /sbin/ebtables --table broute --append BROUTING --protocol 0x86DD --ip6-protocol udp --ip6-destination-port 320 --jump DROP
+> /sbin/ebtables --table broute --append BROUTING --protocol 0x86DD --ip6-protocol udp --ip6-destination-port 319 --jump DROP
 
-Since series touches fwnode, please Cc next time to Daniel Scally.
-It also appears [1] that somewhere in PHY code a bug is hidden
-(at least I think so).
+After quick test, indeed it does. Thanks, problem solved.
 
-[1]: https://lore.kernel.org/lkml/20211113204141.520924-1-djrscally@gmail.com/T/#u
+Thanks,
+Kurt
 
--- 
-With Best Regards,
-Andy Shevchenko
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
+iQJHBAEBCgAxFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmGTj8cTHGt1cnRAbGlu
+dXRyb25peC5kZQAKCRB5KluBy5jwpgo2D/9ijxk4btdfvAuyAOy2VgeGlA78Ly1D
+CKC8U6MlRW56YdY1u92mwKzJS7o2Bef3I8Lb2Axemg6WGpzIG7fMMlVd+Dfa39/v
+957Z+XcwD50JsfARhDwQkpx841UN0N5QjFL2eHTIpZ1iIGv6++6rQcYv72jxUHpC
+MopX8ahmqP6LkFMmoIc7oSCJJTGhjMCNGzbuBoRHddxYh+alT/v9EyZyx6WflCWT
+w3wt2u8fVyIDty+SwD0Ktyvi9X9tbOY3yFjPU40KrXdvtUGnqFTT1IHQ5Kch7v8Z
+mdydY23AkKcdT02GHiV+IylaAsUx2UUVSGbgLoWu8bXoxY92xDvjeFiGhdPcLbnV
+RiMjeQdZ5AAdxaFDdLP45OHqhmnDNydp3gnRQizbNRdNgVuvy7JL4I2gnOYl0zuM
+e/ZEWL0dyoaoTOwN/L87phQtykopion5VVyj8z0RZN/x0zxjiUS3Vnud3/Os34+9
+J/ohMiiF0DJmWj+xtufuaCvz2EgvIDPiRYIm5oY+IMyM2gGkhpbauNKStQGFuP7x
+tc5J/LHdcxatVxV8THPFzuM5dWS1U/pn/TCgDqmtVk6Fb0lJhn7bMVhf0jYJei/R
+Vv0bHlVAj0XfQeu0xEnjHIczx2AnnI4UEa4txKxkWFnk8CuL4mahXdiUoN5sVhn/
+e3xs4ArAMUKVUQ==
+=hk+a
+-----END PGP SIGNATURE-----
+--=-=-=--
