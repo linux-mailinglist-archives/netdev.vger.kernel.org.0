@@ -2,119 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30282453C0C
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 23:01:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6C83453C20
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 23:07:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231773AbhKPWD3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 17:03:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59234 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231699AbhKPWD2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 17:03:28 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E608C061570;
-        Tue, 16 Nov 2021 14:00:31 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id e136so1077902ybc.4;
-        Tue, 16 Nov 2021 14:00:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IhxZXD5NEyOlbJBzVToA3gUj1KVfrk+O3Zu96bMrpOk=;
-        b=H9C6fELVjUQLJuG9T4sRvylDFgeWhj7p59TauhrHUIYRpQGfmZgfmtf9x3vHstCKuc
-         wtHaS+69PAbJnNs3onAIUBO9lH8fszRfLIgxpL23l1CRQOMDFhZZsFuWJLIx2A5GGtym
-         Rxy5nWJSl1QtjguUgzC9SlUKdv1cpqPkUcmehGMz2zvQ2gXFfLkTj1SzDH/nyLKqPCAM
-         uH3QffC67U+Pb0dJp6e+cWdUjb8bBfMozObFDfaKspyJk002gK0p47/ycgZ7PCdgJYJB
-         8EEkCCB0ZTp08yp3sDZ0dI6zuzJXxYA9db6MskdNE62SXCsWNykKNH7CgjACt8YsHNdF
-         BdzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IhxZXD5NEyOlbJBzVToA3gUj1KVfrk+O3Zu96bMrpOk=;
-        b=COzRBU54/ZsPMjDR1ePp6loFZcdHBHbqdU4/Y+R1YaXfvDRqslzHKlXxYa/hVe7+5o
-         gqVOOoPQy+aiXVuECE0oPB/nY+j8Fwhat5YmgC8vX8C1x+TI7E+cD/CaPG7HNZBevYMd
-         7TzuJHQC2cr7EBgHALsarAynZCyTLkO9W0f5fUl2UuVxyzKeVuVvzReHd9iAFiqVv8zE
-         Yp5fqx9FgduswMc9y0/22fV1eWg05cmUsLR1bnmzsW5ZzMdK7SKjG2Kpd/MTQta1kcG2
-         Otb6j6ALLJUQee3ZU12rcPpl0cd/aaGA7b5DuhiKmcfw3nI8BIfB74yMYu44GSdqxmMk
-         yaFQ==
-X-Gm-Message-State: AOAM532o2khbxzUYd90DQkHGJmglm8VUGGBBipGTkakA5ocDbx/QLorU
-        iFn0yJr8RFY7tBvnvs0jCUAOr/ENthCj9qJwi1w=
-X-Google-Smtp-Source: ABdhPJx39gY4v+RDAEyNKPNnkxArx5NkgQPrhzVox7loApPpnqfkAGM+708ESMPgFkPM8zEajuE2xRnD5EcsrzxR2LA=
-X-Received: by 2002:a25:cc4c:: with SMTP id l73mr11561801ybf.114.1637100030581;
- Tue, 16 Nov 2021 14:00:30 -0800 (PST)
+        id S231773AbhKPWK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 17:10:28 -0500
+Received: from mout.gmx.net ([212.227.15.19]:42335 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231370AbhKPWK1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 17:10:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1637100441;
+        bh=RIc6Wv7HzTnmQXNy6Xs25l5nQkvi+3gn5IR+o2WfY1Y=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=TL/uTuflJY0VuLaGVXRKwC5fa859R50Bahviv0zgmsU51KHIg5K/PuBAebZh02Fi1
+         jw/fh+bwodN6Gyc3EV8B1s5o7e4tm4x4HYj7iHM/rqKIvRM863s6Y6/njdYnlOrGOM
+         /uc+hqa3mqBQDfWD7H+3Q5gLH9TeB7QygC7Dh00A=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from localhost.fritz.box ([62.216.209.243]) by mail.gmx.net
+ (mrgmx004 [212.227.17.190]) with ESMTPSA (Nemesis) id
+ 1M8QS2-1miit72sU4-004VZG; Tue, 16 Nov 2021 23:07:21 +0100
+From:   Peter Seiderer <ps.report@gmx.net>
+To:     linux-wireless@vger.kernel.org
+Cc:     ath9k-devel@qca.qualcomm.com,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH v1] ath9k: fix intr_txqs setting
+Date:   Tue, 16 Nov 2021 23:07:20 +0100
+Message-Id: <20211116220720.30145-1-ps.report@gmx.net>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-References: <54d3cb9669644995b6ae787b4d532b73@crowdstrike.com> <0b80c79b-de0c-931c-262d-4da6e2add9f9@iogearbox.net>
-In-Reply-To: <0b80c79b-de0c-931c-262d-4da6e2add9f9@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 16 Nov 2021 14:00:19 -0800
-Message-ID: <CAEf4BzaheW1EGczxS8zXmObBte81gR7pepa9cLi8Z=UvwJdnrg@mail.gmail.com>
-Subject: Re: Clarification on bpftool dual licensing
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Martin Kelly <martin.kelly@crowdstrike.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kernel-team@fb.com" <kernel-team@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+X-Provags-ID: V03:K1:Box3XGQPFl2JGGKJGy26znZeVn1xoVH/6uzAf3I+fQL/gCYWRzH
+ H/YJqr6N3npf3FwTvpblKrwvyCbIRuA5PrciFKR2/lgo85nS8o+9BDD8j6ae3mHXFKIhTcR
+ chInRKKxcXZPALlLKcP5mGXki+a72LnCsg0TzbU+518p4MjsHU47rlsP1ydJeo0E64sTNmQ
+ jzCWg3KfyQZGHg/f9Akiw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:ah2Lq1R+nbg=:6OZywLbYMDRAm9fk4keKvW
+ 1z8ZYMX8nskJzE+1FBPXE0bKJl/+CVQUBzUVpdWlpqKm9MJEHwoCeDMmP2gMZKcNGF4r95049
+ zzM3RIqGw2y+ijYtRmgvJQRb/rvYWCg7lDpKufLLCEeMdvwV9+UHvjLq6nzUmv3JzxxahrZvz
+ 0Dk3sUk4uxd6ZrkH2Urz6fzfuJA3FSDakp0tDhFPBAmJmHmCP3QkRGmiQ2P/ItXLMLsKqTz3G
+ F1lrX0eQJk/L6r1viIa6wXLCVF36/HO3KVH59J4BRda5MQcrgeZBJW0ZC/NzVCm9vC8Rit1ZJ
+ k0rWxlpom3RkBloWT17kyJcRVnxzNkGTXc1f8qG0QsESs8WdyB9B6uxShxbDPt5FO20CKeAYR
+ Nahix/jHET9L+DgWLOOQp6kJxm8i2jg50nV26m/yrlBsPPis+Y46OOdJ3LwqN4LxW1bLL13WO
+ VL26RFAf9w+TFyYz5z1lQyOUIhopNMz3KFoThYJCHNV29soY1BBLmAZ4k4w/DdBiv5AVlNG5G
+ GQpCH7e485ojoDDk95VgXgSX/sV4xL5UoQo0sfPLx/LH52sBq6dPxSvnIwvNDq8CGIoM23wiF
+ P4DJfPcVxOLedZJ+SQDo9ptgSzTwRyHf8B2/X4/xwFPXJqtpBZkLMc9p45KuyQ1BS4VjUkWMB
+ 1VNNOE8GCDYfLP9/WbNxVIGEUd9TgjdvZmM2x8z3zF6grBSwi32JFBFYV/0+0UMEodpougoQm
+ s1g8cYfHWV12oMnVLkMe8QjnPRil7h9J4uTHP7EQM4DBkm368YddvB4/pYGaD1ZeMviod/6TP
+ jhUllgiZi3252XayAHFYd9ofRst2tV3If+0DFA+aYTYvGahNsCk5w66U2P4j3Dg4XiwE5u+AO
+ TF56bx4a1gesUM4/4zCr9oUCdsDiv91jKIYLtG5/F26O+E4s3ZaXk1HYZJaWVFIfQ7eXVHqmD
+ XzAeyFnAiSDD/U+sbqJTzkcATYS7ex7Uf70pKbaw1XrxqR8U1SZ/B4xUQnMgFSd+/V8MHZv4H
+ bPdxMmo/ii+n9T65iMVFYqVTUe+3u2v7pj7nblwbj1Iv495pk2zaNhhwk783SRUj4Bal6XVAM
+ uXWqYupX6heC7c=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 16, 2021 at 2:16 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 11/15/21 7:20 PM, Martin Kelly wrote:
-> > Hi,
-> >
-> > I have a question regarding the dual licensing provision of bpftool. I
-> > understand that bpftool can be distributed as either GPL 2.0 or BSD 2-clause.
-> > That said, bpftool can also auto-generate BPF code that gets specified inline
-> > in the skeleton header file, and it's possible that the BPF code generated is
-> > GPL. What I'm wondering is what happens if bpftool generates GPL-licensed BPF
-> > code inside the skeleton header, so that you get a header like this:
-> >
-> > something.skel.h:
-> > /* this file is BSD 2-clause, by nature of dual licensing */
->
-> Fwiw, the generated header contains an SPDX identifier:
->
->   /* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
->   /* THIS FILE IS AUTOGENERATED! */
->
-> > /* THIS FILE IS AUTOGENERATED! */
-> >
-> > /* standard skeleton definitions */
-> >
-> > ...
-> >
-> > s->data_sz = XXX;
-> > s->data = (void *)"\
-> > <eBPF bytecode, produced by GPL 2.0 sources, specified in binary>
-> > ";
-> >
-> > My guess is that, based on the choice to dual-license bpftool, the header is
-> > meant to still be BSD 2-clause, and the s->data inline code's GPL license is
-> > not meant to change the licensing of the header itself, but I wanted to
-
-Yes, definitely that is the intent (but not a lawyer either).
-
-
-> > double-check, especially as I am not a lawyer. If this is indeed the intent,
-> > is there any opposition to a patch clarifying this more explicitly in
-> > Documentation/bpf/bpf_licensing.rst?
->
-> Not a lawyer either, but my interpretation is that this point related to "packaging"
-> of BPF programs from the bpf_licensing.rst would apply here (given this is what it
-> does after all):
->
->    Packaging BPF programs with user space applications
->    ===================================================
->
->    Generally, proprietary-licensed applications and GPL licensed BPF programs
->    written for the Linux kernel in the same package can co-exist because they are
->    separate executable processes. This applies to both cBPF and eBPF programs.
-
-Yep. If someone packages proprietary BPF ELF into a skeleton, that
-doesn't make the BPF ELF suddenly GPL or BSD, I'd imagine.
+VGhlIHN0cnVjdCBhdGhfaHcgbWVtYmVyIGludHJfdHhxcyBpcyBuZXZlciByZXNldC9hc3NpZ25l
+ZCBvdXRzaWRlCm9mIGF0aDlrX2h3X2luaXRfcXVldWVzKCkgYW5kIHdpdGggdGhlIHVzZWQgYml0
+d2lzZS1vciBpbiB0aGUgaW50ZXJydXB0CmhhbmRsaW5nIGFyOTAwMl9od19nZXRfaXNyKCkgYWNj
+dW11bGF0ZXMgYWxsIGV2ZXIgc2V0IGludGVycnVwdCBmbGFncy4KCkZpeCB0aGlzIGJ5IHVzaW5n
+IGEgcHVyZSBhc3NpZ24gaW5zdGVhZCBvZiBiaXR3aXNlLW9yIGZvciB0aGUKZmlyc3QgbGluZSAo
+bm90ZTogaW50cl90eHFzIGlzIG9ubHkgZXZhbHVhdGVkIGluIGNhc2UgQVRIOUtfSU5UX1RYIGJp
+dAppcyBzZXQpLgoKU2lnbmVkLW9mZi1ieTogUGV0ZXIgU2VpZGVyZXIgPHBzLnJlcG9ydEBnbXgu
+bmV0PgotLS0KTm90ZToKICAtIHRoZSBhdGg1a19odyBtZW1iZXIgYWhfdHhxX2lzcl90eG9rX2Fs
+bCBpbiBhdGg1a19od19nZXRfaXNyKCkKICAgIChzZWUgZHJpdmVycy9uZXQvd2lyZWxlc3MvYXRo
+L2F0aDVrL2RtYS5jKSBzdWZmZXJlcyBmcm9tIHRoZQogICAgc2FtZSBwcm9ibGVtIGFuZCBjYW4g
+YmUgZml4ZWQgYnkgYW4gYXNzaWdubWVudCB0byB6ZXJvIGJlZm9yZQogICAgZnVyaHRlciB1c2Fn
+ZSAoYnV0IEkgbGFjayBzdWl0YWJsZSBoYXJkd2FyZSBmb3IgdGVzdGluZykKLS0tCiBkcml2ZXJz
+L25ldC93aXJlbGVzcy9hdGgvYXRoOWsvYXI5MDAyX21hYy5jIHwgMiArLQogMSBmaWxlIGNoYW5n
+ZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9u
+ZXQvd2lyZWxlc3MvYXRoL2F0aDlrL2FyOTAwMl9tYWMuYyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNz
+L2F0aC9hdGg5ay9hcjkwMDJfbWFjLmMKaW5kZXggY2U5YTBhNTM3NzFlLi5mYmE1YTg0N2MzYmIg
+MTAwNjQ0Ci0tLSBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL2F0aC9hdGg5ay9hcjkwMDJfbWFjLmMK
+KysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDlrL2FyOTAwMl9tYWMuYwpAQCAtMTIw
+LDcgKzEyMCw3IEBAIHN0YXRpYyBib29sIGFyOTAwMl9od19nZXRfaXNyKHN0cnVjdCBhdGhfaHcg
+KmFoLCBlbnVtIGF0aDlrX2ludCAqbWFza2VkLAogCQkJCQkgQVJfSVNSX1RYRU9MKTsKIAkJCX0K
+IAotCQkJYWgtPmludHJfdHhxcyB8PSBNUyhzMF9zLCBBUl9JU1JfUzBfUUNVX1RYT0spOworCQkJ
+YWgtPmludHJfdHhxcyA9IE1TKHMwX3MsIEFSX0lTUl9TMF9RQ1VfVFhPSyk7CiAJCQlhaC0+aW50
+cl90eHFzIHw9IE1TKHMwX3MsIEFSX0lTUl9TMF9RQ1VfVFhERVNDKTsKIAkJCWFoLT5pbnRyX3R4
+cXMgfD0gTVMoczFfcywgQVJfSVNSX1MxX1FDVV9UWEVSUik7CiAJCQlhaC0+aW50cl90eHFzIHw9
+IE1TKHMxX3MsIEFSX0lTUl9TMV9RQ1VfVFhFT0wpOwotLSAKMi4zMy4xCgo=
