@@ -2,125 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A74D452B64
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 08:13:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFD4D452B6E
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 08:16:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230170AbhKPHQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 02:16:11 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:50560 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230249AbhKPHOu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 02:14:50 -0500
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1637046711;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FnGDRiA2GCNHA7+o/Kt/Z6WrOLAsUftsLdDJdaf+aMk=;
-        b=PLI5G4tFO+Iv8x/Ap8BE/ME6/KHpWVxrO12NvgsmxN4L4a6Wqf39IMzObA05L2vH28O+B4
-        ixNuzzZtpe5OR9C3FmKTZIpD/S/Ldk9pQrWkMqgi7OjK/JXK9j3wH5mlkup57alLiQQ8CQ
-        J4GJLQUcAv/JrPgcJzP7kkXyKCghd/r63loFkKHqDkJT4UBfqBQEv3t+mRvdP/jCO/Mj+T
-        VLCodYQaDBVsfIlHgVc6V+Qzycsfoi+BRjES4XWEMKvjTiohG5atlu3HUFDx4v1YcYzqoz
-        /zm2lDBcX/kWR31p9Gfw1Usdbe7UK5zUyeIVHVNM5DSwt4TIPRgSzHJBRrqLlw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1637046711;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FnGDRiA2GCNHA7+o/Kt/Z6WrOLAsUftsLdDJdaf+aMk=;
-        b=GJZcFJJ2kjRHGyRRr6IMHztvaC5EwyDNRZmM55GsyFJ+iW5tqE+L50H622ToCKGNVZSTmK
-        bD6N6z4PxhIERIBQ==
-To:     Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Benedikt Spranger <b.spranger@linutronix.de>,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>
-Subject: Re: [PATCH] net: stmmac: Fix signed/unsigned wreckage
-In-Reply-To: <87mtm578cs.ffs@tglx>
-References: <87mtm578cs.ffs@tglx>
-Date:   Tue, 16 Nov 2021 08:11:49 +0100
-Message-ID: <87fsrwbmmi.fsf@kurt>
+        id S230214AbhKPHTD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 02:19:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53212 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230033AbhKPHSq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 02:18:46 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F110CC061766
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 23:15:49 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1mmsgq-0000S2-Bh; Tue, 16 Nov 2021 08:15:36 +0100
+Received: from pengutronix.de (2a03-f580-87bc-d400-a4ec-1e51-dfc5-35f4.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:a4ec:1e51:dfc5:35f4])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 17C0A6ACF73;
+        Tue, 16 Nov 2021 07:15:31 +0000 (UTC)
+Date:   Tue, 16 Nov 2021 08:15:30 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Jarkko Nikula <jarkko.nikula@linux.intel.com>
+Cc:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Felipe Balbi (Intel)" <balbi@kernel.org>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 1/4] can: m_can: pci: fix incorrect reference clock
+ rate
+Message-ID: <20211116071530.k2qaccz5qixgt2jj@pengutronix.de>
+References: <cover.1636967198.git.matthias.schiffer@ew.tq-group.com>
+ <c9cf3995f45c363e432b3ae8eb1275e54f009fc8.1636967198.git.matthias.schiffer@ew.tq-group.com>
+ <48d37d59-e7d1-e151-4201-1dcc151819fe@linux.intel.com>
+ <0400022a-0515-db87-03cc-30b83c2aede2@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="c7fuwfwv5pgm7und"
+Content-Disposition: inline
+In-Reply-To: <0400022a-0515-db87-03cc-30b83c2aede2@linux.intel.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
 
+--c7fuwfwv5pgm7und
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-+ BL
+On 16.11.2021 09:11:40, Jarkko Nikula wrote:
+> > ip link set can0 type can bitrate 1000000 dbitrate 2000000 fd on
+>=20
+> I got confirmation the clock to CAN controller is indeed changed from 100
+> MHz to 200 MHz in release HW & firmware.
+>=20
+> I haven't upgraded the FW in a while on our HW so that perhaps explain
+> why I was seeing expected rate :-)
 
-On Mon Nov 15 2021, Thomas Gleixner wrote:
-> The recent addition of timestamp correction to compensate the CDC error
-> introduced a subtle signed/unsigned bug in stmmac_get_tx_hwtstamp() while
-> it managed for some obscure reason to avoid that in stmmac_get_rx_hwtstamp().
->
-> The issue is:
->
->     s64 adjust = 0;
->     u64 ns;
->
->     adjust += -(2 * (NSEC_PER_SEC / priv->plat->clk_ptp_rate));
->     ns += adjust;
->
-> works by chance on 64bit, but falls apart on 32bit because the compiler
-> knows that adjust fits into 32bit and then treats the addition as a u64 +
-> u32 resulting in an off by ~2 seconds failure.
->
-> The RX variant uses an u64 for adjust and does the adjustment via
->
->     ns -= adjust;
->
-> because consistency is obviously overrated.
->
-> Get rid of the pointless zero initialized adjust variable and do:
->
-> 	ns -= (2 * NSEC_PER_SEC) / priv->plat->clk_ptp_rate;
->
-> which is obviously correct and spares the adjust obfuscation. Aside of that
-> it yields a more accurate result because the multiplication takes place
-> before the integer divide truncation and not afterwards.
->
-> Stick the calculation into an inline so it can't be accidentaly
-> disimproved. Return an u32 from that inline as the result is guaranteed
-> to fit which lets the compiler optimize the substraction.
->
-> Fixes: 3600be5f58c1 ("net: stmmac: add timestamp correction to rid CDC sync error")
-> Reported-by: Benedikt Spranger <b.spranger@linutronix.de>
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Tested-by: Benedikt Spranger <b.spranger@linutronix.de>
-> Cc: stable@vger.kernel.org
+Can we query the FW version in the driver and set the clock rate
+accordingly?
 
-Thanks!
+> So which one is more appropriate:
+>=20
+> Acked-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+> or
+> Reviewed-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
 
-Tested-by: Kurt Kanzenbach <kurt@linutronix.de> # Intel EHL
+regards,
+Marc
 
---=-=-=
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--c7fuwfwv5pgm7und
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQJHBAEBCgAxFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmGTWbUTHGt1cnRAbGlu
-dXRyb25peC5kZQAKCRB5KluBy5jwpipkD/9MkdVNwJ84dNRdtUwmfnQlsI0n2kQ0
-QMO1jWI59xY8lA4XWOVOEY0AekbhUCWUArZBoDsCLrAEWCIMAIZttxhtXqcy6c6p
-x6t0IpgZ7aR0Tvs1MPgbxziIrJ2G9GMr3AE/NOrumCZZP9AObNbaryvVLcqU3Xjr
-RDwcuAFINPM6Efn2XTP5k3Jn4dMJ8oE/m4AcsXX4RwX0FhoqmbjUKYJ3zwl4D8Iv
-XNSbvC7OfMYLms6s2i/uQgceQytskCyvgcxo5QqUvv/O+K5wpads0xO+ufomanhZ
-WRdKdbQoxLv+OavVMUw2HjviX3fQL1BmEm8Rtsm9fLQwquyIOc7Zcr2AxxWSW1q/
-t3a0zVubbyJTUBB3Snp+KET8iCMytaWEEWgXZPParopENix+k1+dRaeQg9NdWSzf
-rxxfAMVrA6wmSji3+9ncMLZHY0za73Rg5IGB+Zr4myTZCZ+dKED09URyuWmvtBPF
-SafxnISUTaUsoOGtvPNy6SkMNjoZ2aeOrazT3szOCVG6naI+D44ah1e8eEqz+r+R
-hgBwOYPQmvpSz9wm7kgi2GlaVsOvSMU7VspXkA8wVnx6rkBUpzbDB+LsakzFlTAt
-bh/F2XFgnBWElq2JsIIxaiBuzbMFlbpC7z+7BtUbAFG/mfcMbypJY/neGFbEdpUY
-4W+Azq1JFAZbPQ==
-=ykXB
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmGTWo8ACgkQqclaivrt
+76nKDAf/Xc7Mj3LR7IgGI1jF2bN0zLidqH9pHqlcRF2wiOkrK/VK7DWXqHwdpf3G
+FtQK/Dz7A/mPPMTs6Z9Iqn4fv9vrL8oypftFlie62KIdB+c2v3P+uzt2EP9XoSTr
+6LZbSSTPf5a2D8xaY/E++Pm2M3eSyDnksvc0hWRT3QEuQqxpnFaCkt2bkpnn9iED
+REraCBzsyJqRvqkJPixrte23qN9vVju5q+Kz+fIvVTNzZ98A5jmA/vmGBgmwMUcL
+nNp9I1hHeyxGd9Sc0daZ9FU4w6W3XhiOZeZknd6HWfcSAuGqD6FCcTjUAzdDl32x
+ox9KSrotDqHU5UmpnZn5MoNhTGXl+Q==
+=ShOs
 -----END PGP SIGNATURE-----
---=-=-=--
+
+--c7fuwfwv5pgm7und--
