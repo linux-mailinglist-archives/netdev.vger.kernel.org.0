@@ -2,100 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD607452A03
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 06:46:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 414B9452A05
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 06:48:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236559AbhKPFtb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 00:49:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60474 "EHLO
+        id S237039AbhKPFvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 00:51:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236383AbhKPFtN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 00:49:13 -0500
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A01C04E217
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 20:01:56 -0800 (PST)
-Received: by mail-pg1-x532.google.com with SMTP id r23so553575pgu.13
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 20:01:56 -0800 (PST)
+        with ESMTP id S236895AbhKPFuw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 00:50:52 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD21CC07AF6F;
+        Mon, 15 Nov 2021 20:16:53 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id c32so49544250lfv.4;
+        Mon, 15 Nov 2021 20:16:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8kP6wmSDyXAWSQKk8ozhtBFSP3AEfj41pxw6AIYIArQ=;
-        b=rscerWIrBkvuYKKAjOdKfjWUyn34O8E7V+ghFZvLOEiaIixcB0ivwvdvEMeWbKwJeA
-         RZRkZjinrNsgprMSHrMkM6pd9heWAaG3+Es1ydP+xF/1A8yR81TY+3JCiUqG3ct2n+Ow
-         JDx/4YwDAq8x/MKPCH6C00qE3KKGP0nX7RysbHbWOSv3L6Xs141mEcHFq050rEui0Ef3
-         SJ8rWaYsUSIAAudRiAuQVX5MyDbXDLq31JdbloONreKkQJNTR2+iYYTDfig4W00jjLY6
-         LGxmQw7Ug0zFnDH6oJVEGLFQIjKjHAZL3tfLIIYYVSVYEa8zy4TE3ECvE+oHbaLke1sk
-         w4QQ==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=tj2K3jSiGWH1FMb04NTt49avhaO6LiWgdXeAiKO0RXQ=;
+        b=m+m10IXZOfOVR3GJb0QDfHXOQwUuYZdz9nMsbTKZhs0hh8XRQ2QxgwnQE/VO+FcbTs
+         lCAJLC25KkE79IIacO1nTn4g5df8s2YCv/qMrKsG2LU0idfNrTF1EEANhmWXBs4w++7Y
+         3uObe2uhJx0OXR/HY5w5/IU4aWx+9562mkmPAbIcTsT3HjyHg0CBE7RRlqzhjGvClGXZ
+         KhgRaF41jhASaCPZM2BeYfrO5H7KZEOH06I5KIQCiFM9OWUOYnmMzFqYBPWY3q+aDxzM
+         yXoD1rLik341l4dre6KJctwOsteQZqi6OZQbw/Pdm4OGtip8C5ICx2WLE8jYguWExLu+
+         G4CQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8kP6wmSDyXAWSQKk8ozhtBFSP3AEfj41pxw6AIYIArQ=;
-        b=5idOJCqsNRi4gk3B42dl0BAyUvj3rl1NH2NWYPhnvLBubmJ7KA89NnlkXsSSS0RBVZ
-         pkGZRnSbYBvb66dJ4/Gx7WJ1gVb08HV1hDVn3zvMQGjzyPz1vsIa1241/pDlR+BMcCK/
-         0EilPYlolKD8fbuFd6VNLB0jRdJ1ciBSPBJKJ98CEllC2/i3zN4XkKCuQsaozzYqLU3q
-         QGrvtYyUdHG+RxJzj/pvmj14p51pMB476e//RvnDGltIFm1TqDI2t/RAEG1/JI/IEgLs
-         EQKNQ+0+UlX5QR+FgXibVxAhyMSWteAz08SZ0wNWsrOnWJaHwZxaALum7T8aWVEvD4wz
-         jjNQ==
-X-Gm-Message-State: AOAM53201rAmOimWNqK3/RNE5ugvlGI2FnalyvHP0QUygqKhOYzlKHYu
-        lZyj7Os5F4jz1t/aKgaano8JvMnBZaCQ6oCRi+XfCg==
-X-Google-Smtp-Source: ABdhPJzUqAUkD3+tkkdfSKswPa2lduAOjjYiq+DhmFAFGiWTPGO2mADh1HM4aFkUh2wtwSvGV/Jsi1CkzsBW508Q3JE=
-X-Received: by 2002:aa7:88d6:0:b0:49f:dd4b:ddbc with SMTP id
- k22-20020aa788d6000000b0049fdd4bddbcmr37875096pff.31.1637035316250; Mon, 15
- Nov 2021 20:01:56 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=tj2K3jSiGWH1FMb04NTt49avhaO6LiWgdXeAiKO0RXQ=;
+        b=gXOf4RBlDCfbGRQ4UMUI87LUkmKTdZU1GzvVyvpCFtKKRystRjMC6LxLgYAvwKLkw+
+         ExYrUC5kTyKbj8KxiRiS9xOjuGXON0s2g8rRVCRTClZorBA1mfFejEzfb4f8C9LONxwg
+         QJpp5JfbOMhEoLeacHM29H9Jt0B17wAJ5Gewt8mSYLZn2K965Li4fQRJZt35E4cBWMtX
+         oQNDd49O8AxoseMtVXa0uAAFjibzLmq1cidMfn6V16efvg/Wkubs3wrRApUwXf3pFRJx
+         etKmq8sw6cXNNtNYmEXCFCZwAZTpugKK20r0QLPttU6ogtB/q1zCGT9PjXT/5RjnAkgz
+         SUHA==
+X-Gm-Message-State: AOAM530O4wwlYfZXXDRVIq9v18tfLUh5TVCRTQntkGEPxrc+aDcU1b2d
+        093M9NhRef3cLxktAjAEBiu5yyYwoWQ=
+X-Google-Smtp-Source: ABdhPJxW/ws02JUvdtZZ5oXaJn+Ug43HkLKFSyKlZp4QiG1JN7DShwT/dtu5SXvmOE47SAlUIdPU4A==
+X-Received: by 2002:a05:6512:3a8d:: with SMTP id q13mr3621131lfu.73.1637036211439;
+        Mon, 15 Nov 2021 20:16:51 -0800 (PST)
+Received: from [172.28.2.233] ([46.61.204.60])
+        by smtp.gmail.com with ESMTPSA id v19sm1700371ljg.8.2021.11.15.20.16.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Nov 2021 20:16:50 -0800 (PST)
+Message-ID: <0e94dae1-dd77-861d-1e13-856cb1b145d2@gmail.com>
+Date:   Tue, 16 Nov 2021 07:16:49 +0300
 MIME-Version: 1.0
-References: <20211115190249.3936899-1-eric.dumazet@gmail.com>
- <CACSApvZ47Z9pKGxH_UU=yY+bQqdNt=jc2kpxP-VfZkCXLVSbCg@mail.gmail.com>
- <dacd415c06bc854136ba93ef258e92292b782037.camel@redhat.com>
- <CANn89iJFFQxo9qA-cLXRjbw9ob5g+dzRp7H0016JJdtALHKikg@mail.gmail.com> <CANn89iJ2vjOrH_asxiPtPbJmPiyWXf1gpE5EKYTf+3zMrVt_Bw@mail.gmail.com>
-In-Reply-To: <CANn89iJ2vjOrH_asxiPtPbJmPiyWXf1gpE5EKYTf+3zMrVt_Bw@mail.gmail.com>
-From:   Arjun Roy <arjunroy@google.com>
-Date:   Mon, 15 Nov 2021 20:01:45 -0800
-Message-ID: <CAOFY-A0KEfE37=sr8UiJdH3VbqShY5Miaa0UGDQcwZX54sLnfg@mail.gmail.com>
-Subject: Re: [PATCH net-next 00/20] tcp: optimizations for linux-5.17
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Neal Cardwell <ncardwell@google.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.0
+Subject: Re: [PATCH] net: dpaa2-eth: fix use-after-free in dpaa2_eth_remove
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     ioana.ciornei@nxp.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+References: <20211113172013.19959-1-paskripkin@gmail.com>
+ <20211115080817.GE27562@kadam>
+ <20211115172722.6a582623@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <20211115172722.6a582623@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 15, 2021 at 6:06 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Mon, Nov 15, 2021 at 1:47 PM Eric Dumazet <edumazet@google.com> wrote:
-> >
-> > On Mon, Nov 15, 2021 at 1:40 PM Paolo Abeni <pabeni@redhat.com> wrote:
-> > >
-> >
-> > >
-> > > Possibly there has been some issues with the ML while processing these
-> > > patches?!? only an handful of them reached patchwork (and my mailbox :)
-> > >
-> >
-> > Yeah, this sort of thing happens. Let's wait a bit before re-sending ?
-> >
-> > Maybe too much traffic today on vger or gmail, I honestly do not know.
-> >
-> > I will send the series privately to you in the meantime :)
->
-> Apparently the series is now complete on patchwork
-> https://patchwork.kernel.org/project/netdevbpf/list/?series=580363
->
-> Let me know if I need to resend (with few typos fixed)
->
+On 11/16/21 04:27, Jakub Kicinski wrote:
+> I'd ignore that path, it's just special casing that's supposed to keep
+> the driver-visible API sane. Nobody should be touching netdev past
+> free_netdev(). Actually if you can it'd be interesting to add checks
+> for using whatever netdev_priv(ndev) returned past free_netdev(ndev).
+> 
+> Most UAFs that come to mind from the past were people doing something
+> like:
+> 
+> 	struct my_priv *mine = netdev_priv(ndev);
+> 
+> 	netdev_unregister(ndev);
+> 	free_netdev(ndev);
+> 
+> 	free(mine->bla); /* UAF, free_netdev() frees the priv */
+> 
+I've implemented this checker couple of months ago. The latest smatch 
+(v1.72) should warn about this type of bugs. All reported bugs are fixed 
+already :)
 
-Deferred SKB free looks good.
+My checker warns about using priv pointer after free_netdev() and 
+free_candev() calls. There are a few more wrappers like 
+free_sja1000dev(), so it worth to add them to check list too. Will add 
+them today later
 
-Acked-by: Arjun Roy <arjunroy@google.com>
 
-Thanks,
--Arjun
+Important thing, that there are complex situations like
 
-> Thanks.
+	struct priv *priv = get_priv_from_smth(smth);
+
+	free_netdev(priv->netdev);
+	clean_up_priv(priv);
+
+and for now I have no idea how to handle it (ex: ems_usb_disconnect).
+
+
+
+
+With regards,
+Pavel Skripkin
