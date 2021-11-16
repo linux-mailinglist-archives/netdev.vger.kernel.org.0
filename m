@@ -2,243 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBBA34527C6
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 03:31:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21CF14527FF
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 03:49:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237441AbhKPCeA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 21:34:00 -0500
-Received: from szxga03-in.huawei.com ([45.249.212.189]:27211 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243630AbhKPCcG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 21:32:06 -0500
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4HtVMK3TQjz8vRm;
-        Tue, 16 Nov 2021 10:27:25 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 16 Nov 2021 10:29:07 +0800
-Received: from [10.67.102.67] (10.67.102.67) by kwepemm600016.china.huawei.com
- (7.193.23.20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.15; Tue, 16 Nov
- 2021 10:29:06 +0800
-Subject: Re: [PATCH V6 net-next 0/6] ethtool: add support to set/get tx
- copybreak buf size and rx buf len
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <mkubecek@suse.cz>,
-        <andrew@lunn.ch>, <amitc@mellanox.com>, <idosch@idosch.org>,
-        <danieller@nvidia.com>, <jesse.brandeburg@intel.com>,
-        <anthony.l.nguyen@intel.com>, <jdike@addtoit.com>,
-        <richard@nod.at>, <anton.ivanov@cambridgegreys.com>,
-        <netanel@amazon.com>, <akiyano@amazon.com>, <gtzalik@amazon.com>,
-        <saeedb@amazon.com>, <chris.snook@gmail.com>,
-        <ulli.kroll@googlemail.com>, <linus.walleij@linaro.org>,
-        <jeroendb@google.com>, <csully@google.com>,
-        <awogbemila@google.com>, <jdmason@kudzu.us>,
-        <rain.1986.08.12@gmail.com>, <zyjzyj2000@gmail.com>,
-        <kys@microsoft.com>, <haiyangz@microsoft.com>, <mst@redhat.com>,
-        <jasowang@redhat.com>, <doshir@vmware.com>,
-        <pv-drivers@vmware.com>, <jwi@linux.ibm.com>,
-        <kgraul@linux.ibm.com>, <hca@linux.ibm.com>, <gor@linux.ibm.com>,
-        <johannes@sipsolutions.net>
-CC:     <netdev@vger.kernel.org>, <lipeng321@huawei.com>,
-        <chenhao288@hisilicon.com>, <linux-s390@vger.kernel.org>
-References: <20211102134613.30367-1-huangguangbin2@huawei.com>
-From:   "huangguangbin (A)" <huangguangbin2@huawei.com>
-Message-ID: <2fdf21c4-57f9-0a51-a598-c5494aeae6a6@huawei.com>
-Date:   Tue, 16 Nov 2021 10:29:05 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S241486AbhKPCwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 21:52:22 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:57033 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356309AbhKPCuU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 21:50:20 -0500
+Received: by mail-il1-f197.google.com with SMTP id h14-20020a056e021d8e00b002691dcecdbaso11739918ila.23
+        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 18:47:22 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=DHz4tYl7fmFr21ztJVimAN7NjI6wBKI+gvZVUU1J4Fc=;
+        b=ZZ8fdeymkQPRUa0pPDav+SxRI98MBPEYeaiEAnF6dixQTWPRU7QcWuywc6rJNGuKry
+         we++GXMuLkvugW68q4r/i1Z1tV3DdTeXwPdYRKgR/1j+OIFevApF8OsKzROiL5QpClpn
+         ODF/1IEzTlDkK7b7M7dQiMujLQXaJaUiG+LUuEvkhhzREwzFhPT9JvRD4/OH5ocat54/
+         +c9MWPDdKWZDHsHJBojhKe+x0sqFgemfncb3rsHxYDpm3fK2JITmQrYNhrZdchez4zzf
+         UElvZWT0b5tUjqDcaf5sUlrF+t2EphsKHnIRaqmAopA444YJrGAnKRtEYnCZbO8Dtuah
+         tlFQ==
+X-Gm-Message-State: AOAM531jsiDobgqc3F8fzsRXQWynBZ2lYkr85DHjuDgNA3FXYhdKtjYQ
+        zPv1jBYgCkeBtMJT8MhDI3xbdT89X8joK4K6BHLnWBG39yrb
+X-Google-Smtp-Source: ABdhPJwn76R14uPMgDJvWEqy3Z5Fo+P1OY81YVX4+dP+6QBLaeYoXkp8z60PC2jcROikO4vB1PfWeK8W+2pDkagPj43ABNnD/SGw
 MIME-Version: 1.0
-In-Reply-To: <20211102134613.30367-1-huangguangbin2@huawei.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.102.67]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+X-Received: by 2002:a92:c5cc:: with SMTP id s12mr2351600ilt.239.1637030842559;
+ Mon, 15 Nov 2021 18:47:22 -0800 (PST)
+Date:   Mon, 15 Nov 2021 18:47:22 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000db71f005d0def148@google.com>
+Subject: [syzbot] INFO: trying to register non-static key in nr_release
+From:   syzbot <syzbot+877d38583024775941be@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, linux-hams@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        ralf@linux-mips.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Gentle ping.
-Are there any suggestions for this series?
+Hello,
+
+syzbot found the following issue on:
+
+HEAD commit:    ca2ef2d9f2aa Merge tag 'kcsan.2021.11.11a' of git://git.ke..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=15860f8ab00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=dcce4e862d74e466
+dashboard link: https://syzkaller.appspot.com/bug?extid=877d38583024775941be
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+877d38583024775941be@syzkaller.appspotmail.com
+
+INFO: trying to register non-static key.
+The code is fine but needs lockdep annotation, or maybe
+you didn't initialize this object before use?
+turning off the locking correctness validator.
+CPU: 1 PID: 6116 Comm: syz-executor.0 Not tainted 5.15.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ assign_lock_key kernel/locking/lockdep.c:951 [inline]
+ register_lock_class+0xf79/0x10c0 kernel/locking/lockdep.c:1263
+ __lock_acquire+0x105/0x54a0 kernel/locking/lockdep.c:4906
+ lock_acquire kernel/locking/lockdep.c:5637 [inline]
+ lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5602
+ __raw_write_lock_bh include/linux/rwlock_api_smp.h:201 [inline]
+ _raw_write_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:324
+ sock_orphan include/net/sock.h:1968 [inline]
+ nr_release+0xc2/0x450 net/netrom/af_netrom.c:521
+ __sock_release+0xcd/0x280 net/socket.c:649
+ sock_close+0x18/0x20 net/socket.c:1314
+ __fput+0x286/0x9f0 fs/file_table.c:280
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+ exit_task_work include/linux/task_work.h:32 [inline]
+ do_exit+0xc14/0x2b40 kernel/exit.c:832
+ do_group_exit+0x125/0x310 kernel/exit.c:929
+ get_signal+0x47d/0x2220 kernel/signal.c:2830
+ arch_do_signal_or_restart+0x2a9/0x1c40 arch/x86/kernel/signal.c:868
+ handle_signal_work kernel/entry/common.c:148 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
+ exit_to_user_mode_prepare+0x17d/0x290 kernel/entry/common.c:207
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
+ syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
+ do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f53b3d53ae9
+Code: Unable to access opcode bytes at RIP 0x7f53b3d53abf.
+RSP: 002b:00007f53b1287218 EFLAGS: 00000246 ORIG_RAX: 00000000000000ca
+RAX: fffffffffffffe00 RBX: 00007f53b3e670e8 RCX: 00007f53b3d53ae9
+RDX: 0000000000000000 RSI: 0000000000000080 RDI: 00007f53b3e670e8
+RBP: 00007f53b3e670e0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f53b3e670ec
+R13: 00007fff58d6162f R14: 00007f53b1287300 R15: 0000000000022000
+ </TASK>
 
 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-
-On 2021/11/2 21:46, Guangbin Huang wrote:
-> From: Hao Chen <chenhao288@hisilicon.com>
-> 
-> This series add support to set/get tx copybreak buf size and rx buf len via
-> ethtool and hns3 driver implements them.
-> 
-> Tx copybreak buf size is used for tx copybreak feature which for small size
-> packet or frag. Use ethtool --get-tunable command to get it, and ethtool
-> --set-tunable command to set it, examples are as follow:
-> 
-> 1. set tx spare buf size to 102400:
-> $ ethtool --set-tunable eth1 tx-buf-size 102400
-> 
-> 2. get tx spare buf size:
-> $ ethtool --get-tunable eth1 tx-buf-size
-> tx-buf-size: 102400
-> 
-> Rx buf len is buffer length of each rx BD. Use ethtool -g command to get
-> it, and ethtool -G command to set it, examples are as follow:
-> 
-> 1. set rx buf len to 4096
-> $ ethtool -G eth1 rx-buf-len 4096
-> 
-> 2. get rx buf len
-> $ ethtool -g eth1
-> ...
-> RX Buf Len:     4096
-> 
-> 
-> Change log:
-> V5 -> V6
-> 1.Fix compile error for divers/s390.
-> 
-> V4 -> V5
-> 1.Change struct ethtool_ringparam_ext to kernel_ethtool_ringparam.
-> 2.change "__u32 rx_buf_len" to "u32 rx_buf_len".
-> 
-> V3 -> V4
-> 1.Fix a few allmodconfig compile warning.
-> 2.Add more '=' synbol to ethtool-netlink.rst to refine format.
-> 3.Move definement of struct ethtool_ringparam_ext to include/linux/ethtool.h.
-> 4.Move related modify of rings_fill_reply() from patch 4/6 to patch 3/6.
-> 
-> V2 -> V3
-> 1.Remove documentation for tx copybreak buf size, there is description for
-> it in userspace ethtool.
-> 2.Move extending parameters for get/set_ringparam function from patch3/6
-> to patch 4/6.
-> 
-> V1 -> V2
-> 1.Add documentation for rx buf len and tx copybreak buf size.
-> 2.Extend structure ringparam_ext for extenal ring params.
-> 3.Change type of ETHTOOL_A_RINGS_RX_BUF_LEN from NLA_U32 to
->    NLA_POLICY_MIN(NLA_U32, 1).
-> 4.Add supported_ring_params in ethtool_ops to indicate if support external
->    params.
-> 
-> 
-> Hao Chen (6):
->    ethtool: add support to set/get tx copybreak buf size via ethtool
->    net: hns3: add support to set/get tx copybreak buf size via ethtool
->      for hns3 driver
->    ethtool: add support to set/get rx buf len via ethtool
->    ethtool: extend ringparam setting/getting API with rx_buf_len
->    net: hns3: add support to set/get rx buf len via ethtool for hns3
->      driver
->    net: hns3: remove the way to set tx spare buf via module parameter
-> 
->   Documentation/networking/ethtool-netlink.rst  |  10 +-
->   arch/um/drivers/vector_kern.c                 |   4 +-
->   drivers/net/can/c_can/c_can_ethtool.c         |   4 +-
->   drivers/net/ethernet/3com/typhoon.c           |   4 +-
->   drivers/net/ethernet/amazon/ena/ena_ethtool.c |   8 +-
->   drivers/net/ethernet/amd/pcnet32.c            |   8 +-
->   drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c  |  11 +-
->   .../ethernet/aquantia/atlantic/aq_ethtool.c   |   8 +-
->   drivers/net/ethernet/atheros/atlx/atl1.c      |   8 +-
->   drivers/net/ethernet/broadcom/b44.c           |   8 +-
->   drivers/net/ethernet/broadcom/bcm63xx_enet.c  |  25 ++--
->   drivers/net/ethernet/broadcom/bnx2.c          |   8 +-
->   .../ethernet/broadcom/bnx2x/bnx2x_ethtool.c   |   8 +-
->   .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |   8 +-
->   drivers/net/ethernet/broadcom/tg3.c           |  10 +-
->   .../net/ethernet/brocade/bna/bnad_ethtool.c   |   8 +-
->   drivers/net/ethernet/cadence/macb_main.c      |   8 +-
->   .../ethernet/cavium/liquidio/lio_ethtool.c    |  11 +-
->   .../ethernet/cavium/thunder/nicvf_ethtool.c   |   8 +-
->   drivers/net/ethernet/chelsio/cxgb/cxgb2.c     |   8 +-
->   .../net/ethernet/chelsio/cxgb3/cxgb3_main.c   |   8 +-
->   .../ethernet/chelsio/cxgb4/cxgb4_ethtool.c    |   8 +-
->   .../ethernet/chelsio/cxgb4vf/cxgb4vf_main.c   |   8 +-
->   .../net/ethernet/cisco/enic/enic_ethtool.c    |   8 +-
->   drivers/net/ethernet/cortina/gemini.c         |   8 +-
->   .../net/ethernet/emulex/benet/be_ethtool.c    |   4 +-
->   drivers/net/ethernet/ethoc.c                  |   8 +-
->   drivers/net/ethernet/faraday/ftgmac100.c      |  14 ++-
->   .../ethernet/freescale/enetc/enetc_ethtool.c  |   4 +-
->   .../net/ethernet/freescale/gianfar_ethtool.c  |   8 +-
->   .../net/ethernet/freescale/ucc_geth_ethtool.c |   8 +-
->   drivers/net/ethernet/google/gve/gve_ethtool.c |   4 +-
->   .../net/ethernet/hisilicon/hns/hns_ethtool.c  |   6 +-
->   .../net/ethernet/hisilicon/hns3/hns3_enet.c   |  11 +-
->   .../net/ethernet/hisilicon/hns3/hns3_enet.h   |   2 +
->   .../ethernet/hisilicon/hns3/hns3_ethtool.c    | 116 ++++++++++++++++--
->   .../net/ethernet/huawei/hinic/hinic_ethtool.c |   8 +-
->   drivers/net/ethernet/ibm/emac/core.c          |   7 +-
->   drivers/net/ethernet/ibm/ibmvnic.c            |   8 +-
->   drivers/net/ethernet/intel/e100.c             |   8 +-
->   .../net/ethernet/intel/e1000/e1000_ethtool.c  |   8 +-
->   drivers/net/ethernet/intel/e1000e/ethtool.c   |   8 +-
->   .../net/ethernet/intel/fm10k/fm10k_ethtool.c  |   8 +-
->   .../net/ethernet/intel/i40e/i40e_ethtool.c    |   8 +-
->   .../net/ethernet/intel/iavf/iavf_ethtool.c    |  12 +-
->   drivers/net/ethernet/intel/ice/ice_ethtool.c  |   8 +-
->   drivers/net/ethernet/intel/igb/igb_ethtool.c  |   8 +-
->   drivers/net/ethernet/intel/igbvf/ethtool.c    |   8 +-
->   drivers/net/ethernet/intel/igc/igc_ethtool.c  |  14 ++-
->   .../net/ethernet/intel/ixgb/ixgb_ethtool.c    |   8 +-
->   .../net/ethernet/intel/ixgbe/ixgbe_ethtool.c  |   8 +-
->   drivers/net/ethernet/intel/ixgbevf/ethtool.c  |   8 +-
->   drivers/net/ethernet/marvell/mv643xx_eth.c    |   8 +-
->   drivers/net/ethernet/marvell/mvneta.c         |  14 ++-
->   .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  14 ++-
->   .../marvell/octeontx2/nic/otx2_ethtool.c      |   8 +-
->   drivers/net/ethernet/marvell/skge.c           |   8 +-
->   drivers/net/ethernet/marvell/sky2.c           |   8 +-
->   .../net/ethernet/mellanox/mlx4/en_ethtool.c   |   8 +-
->   .../ethernet/mellanox/mlx5/core/en_ethtool.c  |   8 +-
->   .../net/ethernet/mellanox/mlx5/core/en_rep.c  |  14 ++-
->   .../mellanox/mlx5/core/ipoib/ethtool.c        |   8 +-
->   .../mellanox/mlxbf_gige/mlxbf_gige_ethtool.c  |   7 +-
->   drivers/net/ethernet/micrel/ksz884x.c         |   6 +-
->   .../net/ethernet/myricom/myri10ge/myri10ge.c  |   4 +-
->   drivers/net/ethernet/neterion/s2io.c          |   7 +-
->   .../ethernet/netronome/nfp/nfp_net_ethtool.c  |   8 +-
->   drivers/net/ethernet/nvidia/forcedeth.c       |  10 +-
->   .../oki-semi/pch_gbe/pch_gbe_ethtool.c        |  12 +-
->   .../net/ethernet/pasemi/pasemi_mac_ethtool.c  |   4 +-
->   .../ethernet/pensando/ionic/ionic_ethtool.c   |   8 +-
->   .../qlogic/netxen/netxen_nic_ethtool.c        |   8 +-
->   .../net/ethernet/qlogic/qede/qede_ethtool.c   |   8 +-
->   .../ethernet/qlogic/qlcnic/qlcnic_ethtool.c   |   8 +-
->   .../net/ethernet/qualcomm/emac/emac-ethtool.c |   8 +-
->   drivers/net/ethernet/qualcomm/qca_debug.c     |   8 +-
->   drivers/net/ethernet/realtek/8139cp.c         |   4 +-
->   drivers/net/ethernet/realtek/r8169_main.c     |   4 +-
->   drivers/net/ethernet/renesas/ravb_main.c      |   8 +-
->   drivers/net/ethernet/renesas/sh_eth.c         |   8 +-
->   drivers/net/ethernet/sfc/ef100_ethtool.c      |   7 +-
->   drivers/net/ethernet/sfc/ethtool.c            |  14 ++-
->   drivers/net/ethernet/sfc/falcon/ethtool.c     |  14 ++-
->   .../ethernet/stmicro/stmmac/stmmac_ethtool.c  |   8 +-
->   drivers/net/ethernet/tehuti/tehuti.c          |  12 +-
->   drivers/net/ethernet/ti/am65-cpsw-ethtool.c   |   7 +-
->   drivers/net/ethernet/ti/cpmac.c               |   8 +-
->   drivers/net/ethernet/ti/cpsw_ethtool.c        |   8 +-
->   drivers/net/ethernet/ti/cpsw_priv.h           |   8 +-
->   .../net/ethernet/toshiba/spider_net_ethtool.c |   4 +-
->   drivers/net/ethernet/xilinx/ll_temac_main.c   |  14 ++-
->   .../net/ethernet/xilinx/xilinx_axienet_main.c |  14 ++-
->   drivers/net/hyperv/netvsc_drv.c               |   8 +-
->   drivers/net/netdevsim/ethtool.c               |   8 +-
->   drivers/net/usb/r8152.c                       |   8 +-
->   drivers/net/virtio_net.c                      |   4 +-
->   drivers/net/vmxnet3/vmxnet3_ethtool.c         |  10 +-
->   drivers/s390/net/qeth_ethtool.c               |   4 +-
->   include/linux/ethtool.h                       |  26 +++-
->   include/uapi/linux/ethtool.h                  |   1 +
->   include/uapi/linux/ethtool_netlink.h          |   1 +
->   net/ethtool/common.c                          |   1 +
->   net/ethtool/ioctl.c                           |  11 +-
->   net/ethtool/netlink.h                         |   2 +-
->   net/ethtool/rings.c                           |  32 ++++-
->   net/mac80211/ethtool.c                        |   8 +-
->   106 files changed, 772 insertions(+), 235 deletions(-)
-> 
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
