@@ -2,147 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0052E4533CE
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 15:11:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA7F24533D0
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 15:12:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237199AbhKPOOe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 09:14:34 -0500
-Received: from www62.your-server.de ([213.133.104.62]:59430 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237169AbhKPOOd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 09:14:33 -0500
-Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mmzBO-000CTx-NC; Tue, 16 Nov 2021 15:11:34 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        andrii@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf 2021-11-16
-Date:   Tue, 16 Nov 2021 15:11:34 +0100
-Message-Id: <20211116141134.6490-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26355/Tue Nov 16 10:24:27 2021)
+        id S237256AbhKPOOn convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 16 Nov 2021 09:14:43 -0500
+Received: from coyote.holtmann.net ([212.227.132.17]:46169 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237247AbhKPOOl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 09:14:41 -0500
+Received: from smtpclient.apple (p4fefc15c.dip0.t-ipconnect.de [79.239.193.92])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 54CB7CECD7;
+        Tue, 16 Nov 2021 15:11:43 +0100 (CET)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.20.0.1.32\))
+Subject: Re: [PATCH v2 2/2] Bluetooth: Limit duration of Remote Name Resolve
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20211115171726.v2.2.I35b7f3a496f834de6b43a32f94b6160cb1467c94@changeid>
+Date:   Tue, 16 Nov 2021 15:11:42 +0100
+Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        Miao-chen Chou <mcchou@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <19C4C970-8259-46EF-B56C-15658F58EABC@holtmann.org>
+References: <20211115171726.v2.1.Id7366eb14b6f48173fcbf17846ace59479179c7c@changeid>
+ <20211115171726.v2.2.I35b7f3a496f834de6b43a32f94b6160cb1467c94@changeid>
+To:     Archie Pusaka <apusaka@google.com>
+X-Mailer: Apple Mail (2.3693.20.0.1.32)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub,
+Hi Archie,
 
-The following pull-request contains BPF updates for your *net* tree.
+> When doing remote name request, we cannot scan. In the normal case it's
+> OK since we can expect it to finish within a short amount of time.
+> However, there is a possibility to scan lots of devices that
+> (1) requires Remote Name Resolve
+> (2) is unresponsive to Remote Name Resolve
+> When this happens, we are stuck to do Remote Name Resolve until all is
+> done before continue scanning.
+> 
+> This patch adds a time limit to stop us spending too long on remote
+> name request.
+> 
+> Signed-off-by: Archie Pusaka <apusaka@chromium.org>
+> Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
+> ---
+> 
+> (no changes since v1)
+> 
+> include/net/bluetooth/hci_core.h | 3 +++
+> net/bluetooth/hci_event.c        | 7 +++++++
+> 2 files changed, 10 insertions(+)
+> 
+> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
+> index b5f061882c10..4112907bb49d 100644
+> --- a/include/net/bluetooth/hci_core.h
+> +++ b/include/net/bluetooth/hci_core.h
+> @@ -88,6 +88,7 @@ struct discovery_state {
+> 	u8			(*uuids)[16];
+> 	unsigned long		scan_start;
+> 	unsigned long		scan_duration;
+> +	unsigned long		name_resolve_timeout;
+> };
+> 
+> #define SUSPEND_NOTIFIER_TIMEOUT	msecs_to_jiffies(2000) /* 2 seconds */
+> @@ -1762,6 +1763,8 @@ void hci_mgmt_chan_unregister(struct hci_mgmt_chan *c);
+> #define DISCOV_LE_FAST_ADV_INT_MIN	0x00A0	/* 100 msec */
+> #define DISCOV_LE_FAST_ADV_INT_MAX	0x00F0	/* 150 msec */
+> 
+> +#define NAME_RESOLVE_DURATION		msecs_to_jiffies(10240)	/* msec */
+> +
 
-We've added 12 non-merge commits during the last 5 day(s) which contain
-a total of 23 files changed, 573 insertions(+), 73 deletions(-).
+It is nice that you define the unit here, but we also want the amount. So 10.24 seconds.
 
-The main changes are:
+> void mgmt_fill_version_info(void *ver);
+> int mgmt_new_settings(struct hci_dev *hdev);
+> void mgmt_index_added(struct hci_dev *hdev);
+> diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+> index 2de3080659f9..6180ab0e8b8d 100644
+> --- a/net/bluetooth/hci_event.c
+> +++ b/net/bluetooth/hci_event.c
+> @@ -2129,6 +2129,12 @@ static bool hci_resolve_next_name(struct hci_dev *hdev)
+> 	if (list_empty(&discov->resolve))
+> 		return false;
+> 
+> +	/* We should stop if we already spent too much time resolving names. */
+> +	if (time_after(jiffies, discov->name_resolve_timeout)) {
+> +		bt_dev_dbg(hdev, "Name resolve takes too long, stopping.");
 
-1) Fix pruning regression where verifier went overly conservative rejecting
-   previsouly accepted programs, from Alexei Starovoitov and Lorenz Bauer.
+I might be better to have bt_dev_warn_ratelimited here. I mean if this happens, you want to have something actionable in your logs. Or if you don’t care, then also scrap the message and include more details in the comments that you just abort since it is taking too long.
 
-2) Fix verifier TOCTOU bug when using read-only map's values as constant
-   scalars during verification, from Daniel Borkmann.
+> +		return false;
+> +	}
+> +
+> 	e = hci_inquiry_cache_lookup_resolve(hdev, BDADDR_ANY, NAME_NEEDED);
+> 	if (!e)
+> 		return false;
+> @@ -2716,6 +2722,7 @@ static void hci_inquiry_complete_evt(struct hci_dev *hdev, struct sk_buff *skb)
+> 	if (e && hci_resolve_name(hdev, e) == 0) {
+> 		e->name_state = NAME_PENDING;
+> 		hci_discovery_set_state(hdev, DISCOVERY_RESOLVING);
+> +		discov->name_resolve_timeout = jiffies + NAME_RESOLVE_DURATION;
+> 	} else {
+> 		/* When BR/EDR inquiry is active and no LE scanning is in
+> 		 * progress, then change discovery state to indicate completion.
 
-3) Fix a crash due to a double free in XSK's buffer pool, from Magnus Karlsson.
+Regards
 
-4) Fix libbpf regression when cross-building runqslower, from Jean-Philippe Brucker.
+Marcel
 
-5) Forbid use of bpf_ktime_get_coarse_ns() and bpf_timer_*() helpers in tracing
-   programs due to deadlock possibilities, from Dmitrii Banshchikov.
-
-6) Fix checksum validation in sockmap's udp_read_sock() callback, from Cong Wang.
-
-7) Various BPF sample fixes such as XDP stats in xdp_sample_user, from Alexander Lobakin.
-
-8) Fix libbpf gen_loader error handling wrt fd cleanup, from Kumar Kartikeya Dwivedi.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Alexander Lobakin, Alexei Starovoitov, Andrii Nakryiko, Björn Töpel, 
-Daniel Borkmann, Jesse Brandeburg, John Fastabend, Kumar Kartikeya 
-Dwivedi, Lorenz Bauer, Michal Swiatkowski, Quentin Monnet
-
-----------------------------------------------------------------
-
-The following changes since commit 5833291ab6de9c3e2374336b51c814e515e8f3a5:
-
-  Merge tag 'pci-v5.16-fixes-1' of git://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci (2021-11-11 15:10:18 -0800)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to 099f896f498a2b26d84f4ddae039b2c542c18b48:
-
-  udp: Validate checksum in udp_read_sock() (2021-11-16 13:18:23 +0100)
-
-----------------------------------------------------------------
-Alexander Lobakin (2):
-      samples/bpf: Fix summary per-sec stats in xdp_sample_user
-      samples/bpf: Fix build error due to -isystem removal
-
-Alexei Starovoitov (2):
-      bpf: Fix inner map state pruning regression.
-      Merge branch 'Forbid bpf_ktime_get_coarse_ns and bpf_timer_* in tracing progs'
-
-Cong Wang (1):
-      udp: Validate checksum in udp_read_sock()
-
-Daniel Borkmann (1):
-      bpf: Fix toctou on read-only map's constant scalar tracking
-
-Dmitrii Banshchikov (2):
-      bpf: Forbid bpf_ktime_get_coarse_ns and bpf_timer_* in tracing progs
-      selftests/bpf: Add tests for restricted helpers
-
-Jean-Philippe Brucker (1):
-      tools/runqslower: Fix cross-build
-
-Kumar Kartikeya Dwivedi (2):
-      samples/bpf: Fix incorrect use of strlen in xdp_redirect_cpu
-      libbpf: Perform map fd cleanup for gen_loader in case of error
-
-Lorenz Bauer (1):
-      selftests/bpf: Check map in map pruning
-
-Magnus Karlsson (1):
-      xsk: Fix crash on double free in buffer pool
-
- include/linux/bpf.h                                |   3 +-
- kernel/bpf/cgroup.c                                |   2 +
- kernel/bpf/helpers.c                               |   2 -
- kernel/bpf/syscall.c                               |  57 +++---
- kernel/bpf/verifier.c                              |  27 ++-
- kernel/trace/bpf_trace.c                           |   2 -
- net/core/filter.c                                  |   6 +
- net/ipv4/bpf_tcp_ca.c                              |   2 +
- net/ipv4/udp.c                                     |  11 ++
- net/xdp/xsk_buff_pool.c                            |   7 +-
- samples/bpf/hbm_kern.h                             |   2 -
- samples/bpf/xdp_redirect_cpu_user.c                |   5 +-
- samples/bpf/xdp_sample_user.c                      |  28 +--
- tools/bpf/runqslower/Makefile                      |   3 +-
- tools/lib/bpf/bpf_gen_internal.h                   |   4 +-
- tools/lib/bpf/gen_loader.c                         |  47 +++--
- tools/lib/bpf/libbpf.c                             |   4 +-
- tools/testing/selftests/bpf/Makefile               |   2 +-
- .../selftests/bpf/prog_tests/helper_restricted.c   |  33 ++++
- .../selftests/bpf/progs/test_helper_restricted.c   | 123 +++++++++++++
- tools/testing/selftests/bpf/test_verifier.c        |  46 ++++-
- .../selftests/bpf/verifier/helper_restricted.c     | 196 +++++++++++++++++++++
- tools/testing/selftests/bpf/verifier/map_in_map.c  |  34 ++++
- 23 files changed, 573 insertions(+), 73 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/helper_restricted.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_helper_restricted.c
- create mode 100644 tools/testing/selftests/bpf/verifier/helper_restricted.c
