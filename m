@@ -2,114 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B70E4533DC
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 15:13:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 164BD4533E6
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 15:15:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237247AbhKPOQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 09:16:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35986 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237250AbhKPOQG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 09:16:06 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5295EC061570;
-        Tue, 16 Nov 2021 06:13:09 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id l22so53578407lfg.7;
-        Tue, 16 Nov 2021 06:13:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=SAFo3rW8eZqicBwfdhly0zJ3f49mYTVHGsP4fwuNE6M=;
-        b=MUBZmLYHsWTdx+5/t1Gnba93NEA1+CzW6up/O8ayTi9yXCkqkPRb5LM7i9iyAOYpdt
-         nQsSmAiVJJJet3zOnm1bL7QX5oW1JHGe7qEqh0eTTXKOqaXGiNG78R6fC+vguErWG0eq
-         McCafKtF0gG6DbNjpp8HukkNDCP7ZJhNa1pjuj2h8SRtDnW1dl3SZS7ZetoxKw2Y9vfM
-         pzzpcVhkTfsypm5ZjYIJ+saBBTJlMUIZVrMNIp3/AcZIxBfkOQsjtrar9q6AU2ccEl5C
-         xjkDM4a4zblFULgbYABH8iDIfvnVr1IAnz0kx+un20/AzvG9dk84Kx9BFp2OEZJ7xyoz
-         qrtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=SAFo3rW8eZqicBwfdhly0zJ3f49mYTVHGsP4fwuNE6M=;
-        b=tmjq9ptD5lWWGAlkEQvZR8GrGJREs5lCRQrXjOe6HmGLyMssgf7m/x9TThx+a92TOk
-         vH8Lut4kIScV6pFA9lrtNyZ3950eDJ50C1pn2VTaTNB2EkyeeRB9K0ShBHWt9NNJb30p
-         a1ZM9tzyCfxNDRDv6Pnr1fZjSFa69jGivPv3GnYH9CBYyEEfgzMmtqR3OIamoe3r93nc
-         2LCg4NUf4fXHVMmQPDRTq/CjNuZfgZzBklD4qvZxpmQLmE8CGwFkHFPfVdmJBekm+ejZ
-         UD1s7EidZoSJw0Ln2ktlf2SodIJqTY/9di/i1EYtAM9Tjh7/ux/Ey62lM2Adjfratpk/
-         p43g==
-X-Gm-Message-State: AOAM533iBJtczYyzjctbTawIkT3FvP7PnNWyG7FN81s9p9Y+xSPdd6jX
-        t3vqNkphIx+ewXq1P+2QLYE=
-X-Google-Smtp-Source: ABdhPJwLRyDiXtrBK8Po6LmQf+B7tKRmIG7EcnOt9NFPYmPQI/2U4h1HjQQJf29P0sG7sEqT1WJ3XA==
-X-Received: by 2002:a05:6512:1520:: with SMTP id bq32mr7019710lfb.232.1637071987677;
-        Tue, 16 Nov 2021 06:13:07 -0800 (PST)
-Received: from localhost.localdomain ([94.103.224.112])
-        by smtp.gmail.com with ESMTPSA id bt3sm1770397lfb.132.2021.11.16.06.13.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Nov 2021 06:13:07 -0800 (PST)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     kuba@kernel.org, davem@davemloft.net, manishc@marvell.com
-Cc:     netdev@vger.kernel.org, aelior@marvell.com, skalluru@marvell.com,
-        linux-kernel@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>
-Subject: [PATCH v2] MAINTAINERS: remove GR-everest-linux-l2@marvell.com
-Date:   Tue, 16 Nov 2021 17:13:03 +0300
-Message-Id: <20211116141303.32180-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20211116081601.11208-1-palok@marvell.com>
-References: <20211116081601.11208-1-palok@marvell.com>
+        id S237252AbhKPOSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 09:18:00 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:36068 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237212AbhKPORz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 09:17:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=3AIZ41+tqVRM1/xAiVsE723Y0TQuUEbBW9w9e6TgV3Y=; b=0s4GLgMY4QwvUzfOUF+u2Ihr84
+        jc983K1vxOEmD4fnmJrC0uj0R3kyx2tRPKr3Zm2tsAtVj5AueuHBkE9xsBbDRwMZhDb9xlBsiWKBK
+        E/KA3aI0x06d+F7CMDIsT8ity6epg/0GJGgaJICwMbVsy+cDpdfS65+BBljBVFdhiJkQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mmzEe-00DesX-NR; Tue, 16 Nov 2021 15:14:56 +0100
+Date:   Tue, 16 Nov 2021 15:14:56 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, g@pengutronix.de,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        kernel@pengutronix.de, Jakub Kicinski <kuba@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: Re: [RFC PATCH net-next] net: dsa: microchip: implement multi-bridge
+ support
+Message-ID: <YZO84IfL87dxg3n+@lunn.ch>
+References: <20211108111034.2735339-1-o.rempel@pengutronix.de>
+ <20211110123640.z5hub3nv37dypa6m@skbuf>
+ <20211112075823.GJ12195@pengutronix.de>
+ <20211115234546.spi7hz2fsxddn4dz@skbuf>
+ <20211116083903.GA16121@pengutronix.de>
+ <20211116124723.kivonrdbgqdxlryd@skbuf>
+ <20211116131657.GC16121@pengutronix.de>
+ <YZO0tuMtDUIbRfcC@lunn.ch>
+ <20211116135335.j5mmvpnfzw4hfz67@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211116135335.j5mmvpnfzw4hfz67@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I've sent a patch to GR-everest-linux-l2@marvell.com few days ago and
-got a reply from postmaster@marvell.com:
+On Tue, Nov 16, 2021 at 03:53:35PM +0200, Vladimir Oltean wrote:
+> On Tue, Nov 16, 2021 at 02:40:06PM +0100, Andrew Lunn wrote:
+> > > > What logging noise?
+> > > 
+> > > I get this with current ksz driver:
+> > > [   40.185928] br0: port 2(lan2) entered blocking state
+> > > [   40.190924] br0: port 2(lan2) entered listening state
+> > > [   41.043186] br0: port 2(lan2) entered blocking state
+> > > [   55.512832] br0: port 1(lan1) entered learning state
+> > > [   61.272802] br0: port 2(lan2) neighbor 8000.ae:1b:91:58:77:8b lost
+> > > [   61.279192] br0: port 2(lan2) entered listening state
+> > > [   63.113236] br0: received packet on lan1 with own address as source address (addr:00:0e:cd:00:cd:be, vlan:0)
+> > 
+> > I would guess that transmission from the CPU is broken in this
+> > case. It could be looking up the destination address in the
+> > translation table and not finding an entry. So it floods the packet
+> > out all interfaces, including the CPU. So the CPU receives its own
+> > packet and gives this warning.
+> > 
+> > Flooding should exclude where the frame came from.
+> 
+> I interpret this very differently. If Oleksij is looping lan1 with lan2
+> and he keeps the MAC addresses the way DSA sets them up by default, i.e.
+> equal and inherited from the DSA master, then receiving a packet with a
+> MAC SA (lan2) equal with the address of the receiving interface (lan1)
+> is absolutely natural. What is not natural is that the bridge attempts
+> to learn from this packet (the message is printed from br_fdb_update),
+> which in turn is caused by the fact that the port is allowed to proceed
+> to the LEARNING state despite there being a loop (which is not detected
+> by STP because STP is broken as Oleksij describes).
 
-	Delivery has failed to these recipients or groups:
+Ah, yes, that is more likely.
 
-	gr-everest-linux-l2@marvell.com<mailto:gr-everest-linux-l2@marvell.com>
-	The email address you entered couldn't be found. Please check the
-	recipient's email address and try to resend the message. If the problem
-	continues, please contact your helpdesk.
+Sorry, should not of jumped in without reading all the context. If STP
+is broken, odd things will happen.
 
-As requested by Alok Prasad, replacing GR-everest-linux-l2@marvell.com
-with Manish Chopra's email address. [0]
-
-Link: https://lore.kernel.org/all/20211116081601.11208-1-palok@marvell.com/ [0]
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
-
-Changes in v2:
-	Replaced GR-everest-linux-l2@marvell.com with Manish Chopra's email, as
-	requested by Alok.
-
----
- MAINTAINERS | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 7a2345ce8521..10c8ae3a8c73 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3733,7 +3733,7 @@ F:	drivers/scsi/bnx2i/
- BROADCOM BNX2X 10 GIGABIT ETHERNET DRIVER
- M:	Ariel Elior <aelior@marvell.com>
- M:	Sudarsana Kalluru <skalluru@marvell.com>
--M:	GR-everest-linux-l2@marvell.com
-+M:	Manish Chopra <manishc@marvell.com>
- L:	netdev@vger.kernel.org
- S:	Supported
- F:	drivers/net/ethernet/broadcom/bnx2x/
-@@ -15593,7 +15593,7 @@ F:	drivers/scsi/qedi/
- 
- QLOGIC QL4xxx ETHERNET DRIVER
- M:	Ariel Elior <aelior@marvell.com>
--M:	GR-everest-linux-l2@marvell.com
-+M:	Manish Chopra <manishc@marvell.com>
- L:	netdev@vger.kernel.org
- S:	Supported
- F:	drivers/net/ethernet/qlogic/qed/
--- 
-2.33.1
-
+   Andrew
