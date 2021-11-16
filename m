@@ -2,72 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 017AF453C27
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 23:13:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 107E2453C2A
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 23:15:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231953AbhKPWPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 17:15:51 -0500
-Received: from mout.gmx.net ([212.227.15.18]:34037 "EHLO mout.gmx.net"
+        id S231820AbhKPWSM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 17:18:12 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:36846 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230484AbhKPWPv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Nov 2021 17:15:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1637100766;
-        bh=BccBlK1Ruuzqsg+QAu3HJjwlyo+NyXNPJ95yePLNa4Y=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=BAus9mz4Z11wS0n5FERhJMqvlp3EQcJw/nldMzOiJZlHDOEM6jt69FXg4NFpDQmyL
-         64eezF6p4HsY8T7F8CqmvVEqWAL2oTTZrDwqVxUQQDUhQLZW1hypiXUCImILfPZumD
-         U84xRlWAePv9WIMFKbXygyI0tza20FXSWNA62U1M=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from localhost.fritz.box ([62.216.209.243]) by mail.gmx.net
- (mrgmx005 [212.227.17.190]) with ESMTPSA (Nemesis) id
- 1MGQjH-1msqvI3gdx-00GsE8; Tue, 16 Nov 2021 23:12:46 +0100
-From:   Peter Seiderer <ps.report@gmx.net>
-To:     linux-wireless@vger.kernel.org
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH v1] mac80211: minstrel_ht: remove unused SAMPLE_SWITCH_THR define
-Date:   Tue, 16 Nov 2021 23:12:44 +0100
-Message-Id: <20211116221244.30844-1-ps.report@gmx.net>
-X-Mailer: git-send-email 2.33.1
+        id S230484AbhKPWSL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 17:18:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=hodBCJqu6DrYhRyFZgnOax5xrSZCHSnQVs9tmJudSdU=; b=mknBv1g28v8YIZCaSKyS+jkYJB
+        yd0ueYWiA1nFKZTT1mvhbLE/gXGwKBtMIFiYl1u58oQxdTPgNjgGSD1EadJKg5hRPOQnVmNfbe7rQ
+        aNtDmjtjV5V5D3R2L82MrTd54pnrJq25naHiEB22VJsIAluba/AJpBHcNT4/HMd0eeQY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mn6jH-00Djdt-TU; Tue, 16 Nov 2021 23:15:03 +0100
+Date:   Tue, 16 Nov 2021 23:15:03 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Wells Lu =?utf-8?B?5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
+Cc:     Wells Lu <wellslutw@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        Vincent Shih =?utf-8?B?5pa96YyV6bS7?= 
+        <vincent.shih@sunplus.com>
+Subject: Re: [PATCH v2 2/2] net: ethernet: Add driver for Sunplus SP7021
+Message-ID: <YZQtZ4kMEGa+tFuU@lunn.ch>
+References: <cover.1636620754.git.wells.lu@sunplus.com>
+ <519b61af544f4c6920012d44afd35a0f8761b24f.1636620754.git.wells.lu@sunplus.com>
+ <YY7/v1msiaqJF3Uy@lunn.ch>
+ <452b9aa57d034bed988a685d320906c6@sphcmbx02.sunplus.com.tw>
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:dpQUTq3IL3tnxxKPwfQypVkgjv7WAgl2Q41kibAYmwcWlJiatee
- eRZ/Dag1uyG8ORAwK6GTYsIzjZbFMyY0O21xrQunHO5My2orvChN8e+FBIBOLgyuHHIzR27
- 9iTXNrqnnQ5dHRqw4Zti0ReqtRi9l5lSa/B9oIc/NWzxPXNniqV2jMcj7NHwpmxKNaNxUTQ
- seN7t0U22fz7QeKWHtZBw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:qzCgml5Qd1Y=:xIYRCfAGKdS4O/D4JXvMNQ
- VLPh46VXzPhQ6c4K29HpuJRzE5YZRCR3FiIDzwoTDzpu4rwiYEOBh4VCX+41qL2X7bJL1sF3U
- Yh3LE3Pji0kFiM2cPNJGWaIpGZNzOx3+qoZa6uDXPACFdij5sCbmfX/X/fueyvBSF1RwffslM
- tfe9RmhktvVUNjC86tljJ5ZBq6nP29MJjMf3UrqOZumHDx2dRTY27+7KvyvMEndFQ7+/VrXO2
- Z8tYm+N0Ersu2RXu82mKSgPZ8DKjA2yLsnOizjxpx+BPlwBXGBIKznltarHv1C9xLZko9cLqV
- YBZLp/dPCgsI4/WYSJ4ZbxB1uHJEDVoblzc0KPRlIMVdTBeOW2mAKeqRpGr24aOVy20n1kvNJ
- /mJACSukC1UFssCRdK7ifvDqK2QkO5pjSZKajm+8CKPDY9Mjd3yQSg2h5pW83lTjtaFGK6znt
- 7yfRVL2eaLLdWEnj7HLwvXygcjbo4wtZMh6hOCq8LH9mvrc2UbkxuJwRwpGiMKQnc4BGfAua/
- 1AMl9Z8UCco8G59veqx1tn0DezOYeegOG8DxsbUsMGsI3ZDx9qcX0nZPwxYVxnaKdNcmi5GFM
- VEBOV2tOuECRPiJXF8cm/9/FvU4oltceW/M1P6+t1DpzdI6yYIuzesQwnmWZ7S9zNhmCHUUpV
- 2lB4cdWGTeWd/AQnSuq3kM66OlJJz/R+xkkJrbOsJvBVK/152sVr1MiVtPEsvJlfjBuo+OieX
- ojXrvy9iTxu6ew+lD2vcu0JgFPb0bw8KCyRizBq1FByUEGOia2+QdkXMVJTRmimCeaLQOj/Ll
- U6eOq16j4Kuc4HESnsjbWSQz3C513sgCgJtMUprnJXVdboXJSWl+JWwhaxJ1H7wRTwX9l9dfb
- Vuqy9jWzv1hULvnGolrzhD/gHn5livf3IZOGhTQCt2wc+YkCWZ1aSSmlYefldrTvNomnjxmEW
- 3p9ptLVk0bMFAoTwbAjpCSEi4LKbjsgqvVugPZjCculdT8f/6sJuRXvCrh0OR/X1olqJEX8VY
- cGmhoVUwIJBoI9SVYVladYZcjMCaahC9+sZWY/kjdCe8ZRZbLNBupPuu8x3uPm3Oobu124L+J
- FMz1WNrn/jWMqI=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <452b9aa57d034bed988a685d320906c6@sphcmbx02.sunplus.com.tw>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-UmVtb3ZlIHVudXNlZCBTQU1QTEVfU1dJVENIX1RIUiBkZWZpbmUuCgpTaWduZWQtb2ZmLWJ5OiBQ
-ZXRlciBTZWlkZXJlciA8cHMucmVwb3J0QGdteC5uZXQ+Ci0tLQogbmV0L21hYzgwMjExL3JjODAy
-MTFfbWluc3RyZWxfaHQuYyB8IDIgLS0KIDEgZmlsZSBjaGFuZ2VkLCAyIGRlbGV0aW9ucygtKQoK
-ZGlmZiAtLWdpdCBhL25ldC9tYWM4MDIxMS9yYzgwMjExX21pbnN0cmVsX2h0LmMgYi9uZXQvbWFj
-ODAyMTEvcmM4MDIxMV9taW5zdHJlbF9odC5jCmluZGV4IDcyYjQ0ZDRjNDJkMC4uOWMzYjdmYzM3
-N2MxIDEwMDY0NAotLS0gYS9uZXQvbWFjODAyMTEvcmM4MDIxMV9taW5zdHJlbF9odC5jCisrKyBi
-L25ldC9tYWM4MDIxMS9yYzgwMjExX21pbnN0cmVsX2h0LmMKQEAgLTE4LDggKzE4LDYgQEAKICNk
-ZWZpbmUgQVZHX0FNUERVX1NJWkUJMTYKICNkZWZpbmUgQVZHX1BLVF9TSVpFCTEyMDAKIAotI2Rl
-ZmluZSBTQU1QTEVfU1dJVENIX1RIUgkxMDAKLQogLyogTnVtYmVyIG9mIGJpdHMgZm9yIGFuIGF2
-ZXJhZ2Ugc2l6ZWQgcGFja2V0ICovCiAjZGVmaW5lIE1DU19OQklUUyAoKEFWR19QS1RfU0laRSAq
-IEFWR19BTVBEVV9TSVpFKSA8PCAzKQogCi0tIAoyLjMzLjEKCg==
+> > > +static const char def_mac_addr[ETHERNET_MAC_ADDR_LEN] = {
+> > > +	0xfc, 0x4b, 0xbc, 0x00, 0x00, 0x00
+> > 
+> > This does not have the locally administered bit set. Should it? Or is this and address
+> > from your OUI?
+> 
+> This is default MAC address when MAC address in NVMEM is not found.
+> Fc:4b:bc:00:00:00 is OUI of "Sunplus Technology Co., Ltd.".
+> Can I keep this? or it should be removed?
+
+Please add a comment about whos OUI it is.
+
+It is however more normal to use a random MAC address if no other MAC
+address is available. That way, you avoid multiple devices on one LAN
+using the same default MAC address.
+
+> > > +	if (mac->next_ndev) {
+> > > +		struct net_device *ndev2 = mac->next_ndev;
+> > > +
+> > > +		if (!netif_carrier_ok(ndev2) && (reg & PORT_ABILITY_LINK_ST_P1)) {
+> > > +			netif_carrier_on(ndev2);
+> > > +			netif_start_queue(ndev2);
+> > > +		} else if (netif_carrier_ok(ndev2) && !(reg & PORT_ABILITY_LINK_ST_P1)) {
+> > > +			netif_carrier_off(ndev2);
+> > > +			netif_stop_queue(ndev2);
+> > > +		}
+> > 
+> > Looks very odd. The two netdev should be independent.
+> 
+> I don't understand your comment.
+> ndev checks PORT_ABILITY_LINK_ST_P0
+> ndev2 checks PORT_ABILITY_LINK_ST_P1
+> They are independent already.
+
+I would try to remove the mac->next_ndev. I think without that, you
+will get a cleaner abstraction. You might want to keep an array of mac
+pointers in your top level shared structure.
+
+	 Andrew
