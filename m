@@ -2,100 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 361AA453970
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 19:32:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 546194539CD
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 20:06:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239517AbhKPSe5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 13:34:57 -0500
-Received: from proxima.lasnet.de ([78.47.171.185]:58680 "EHLO
-        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239510AbhKPSes (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 13:34:48 -0500
-Received: from [172.29.15.1] (unknown [185.214.200.54])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 0479CC0387;
-        Tue, 16 Nov 2021 19:31:47 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1637087508;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=q33VKNmnBYWaMgxXXz7vJiugiVjwWfFa7bPXnZywGAI=;
-        b=A401T7QmAKbJcVQAOdyXhmRhUTrRslyXmUWgf/vhhq0DJM0/o0EDdn7atSuONXikAqB99a
-        Kjvmok8KyCNfrVCYGeq3kCTnyUQ9gkafPYqVpM1+MeZwZnypfrmKdVf9ksZiB6/UA/4XjM
-        MPngdNWuWGezOqH2JY/nuG+ZKP6vm7pgd+iiQz6wVNx85jOSwjpNDvFLZNyGtw68IFJCHs
-        lxbkgyXMxYGtjPDknIu2I3xMy7TT26vfDVnwDapZ0O3+5gQFoQSo0yrfu6HH1zA1w3yHeH
-        GupMNlnckiila01DNDs7sArQgQNmGovGUBGR8zaMFOEX9AhlK2eqFKaFqZRIuQ==
-Message-ID: <9442473c-27fc-12d5-d520-206796e4edfa@datenfreihafen.org>
-Date:   Tue, 16 Nov 2021 19:31:46 +0100
+        id S239787AbhKPTIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 14:08:00 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51418 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239755AbhKPTHv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 14:07:51 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DE73F63241;
+        Tue, 16 Nov 2021 19:04:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637089494;
+        bh=StF9zvIyiI8CbHePB2sRe3ydWwyn5ypRVDzxRXBi2dE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DxjKHO14BvbFdU9Hm3UCZqrGVetxQdYaZBLkcT9qNsyBxO/q68Luaf876UOMCaCpJ
+         U/yfLs5yB1AjlBDR3cj/+sXRJOZncvGmvqj5kg8XGUHrgLJHP3HBrOyNpxUYr9OYTW
+         UkTh8yUkru8PmrPkMoUR5Fo64CnCppvEF9L5FFgNTWhfiLCfeoGVSYE2GAPCgenFKE
+         JD4QG6mOFyBb+M7p9L7hd+fQlv8RH4q0vjVoC8o+6Lx8kVNnk1FNNWReTXeL8yH07I
+         IDO3Sa+2BIgkoWrslVyzn9PxRqL8L6GVNV1B4WB6Z6Nwgdpz/obKPnwfUggHdDgekx
+         d2Jvq+mCy60rg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>,
+        "J . Bruce Fields" <bfields@redhat.com>,
+        Sasha Levin <sashal@kernel.org>,
+        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        bfields@fieldses.org, chuck.lever@oracle.com, davem@davemloft.net,
+        kuba@kernel.org, colin.king@intel.com, neilb@suse.de,
+        linux-nfs@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 04/65] UNRPC: Return specific error code on kmalloc failure
+Date:   Tue, 16 Nov 2021 14:03:24 -0500
+Message-Id: <20211116190443.2418144-4-sashal@kernel.org>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20211116190443.2418144-1-sashal@kernel.org>
+References: <20211116190443.2418144-1-sashal@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.0
-Subject: Re: [PATCH wpan] net: ieee802154: handle iftypes as u32
-Content-Language: en-US
-To:     Alexander Aring <aahringo@redhat.com>, mudongliangabcd@gmail.com
-Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org
-References: <20211112030916.685793-1-aahringo@redhat.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <20211112030916.685793-1-aahringo@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+From: Yang Li <yang.lee@linux.alibaba.com>
 
-On 12.11.21 04:09, Alexander Aring wrote:
-> This patch fixes an issue that an u32 netlink value is handled as a
-> signed enum value which doesn't fit into the range of u32 netlink type.
-> If it's handled as -1 value some BIT() evaluation ends in a
-> shift-out-of-bounds issue. To solve the issue we set the to u32 max which
-> is s32 "-1" value to keep backwards compatibility and let the followed enum
-> values start counting at 0. This brings the compiler to never handle the
-> enum as signed and a check if the value is above NL802154_IFTYPE_MAX should
-> filter -1 out.
-> 
-> Fixes: f3ea5e44231a ("ieee802154: add new interface command")
-> Signed-off-by: Alexander Aring <aahringo@redhat.com>
-> ---
->   include/net/nl802154.h | 7 ++++---
->   1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/net/nl802154.h b/include/net/nl802154.h
-> index ddcee128f5d9..145acb8f2509 100644
-> --- a/include/net/nl802154.h
-> +++ b/include/net/nl802154.h
-> @@ -19,6 +19,8 @@
->    *
->    */
->   
-> +#include <linux/types.h>
-> +
->   #define NL802154_GENL_NAME "nl802154"
->   
->   enum nl802154_commands {
-> @@ -150,10 +152,9 @@ enum nl802154_attrs {
->   };
->   
->   enum nl802154_iftype {
-> -	/* for backwards compatibility TODO */
-> -	NL802154_IFTYPE_UNSPEC = -1,
-> +	NL802154_IFTYPE_UNSPEC = (~(__u32)0),
->   
-> -	NL802154_IFTYPE_NODE,
-> +	NL802154_IFTYPE_NODE = 0,
->   	NL802154_IFTYPE_MONITOR,
->   	NL802154_IFTYPE_COORD,
->   
+[ Upstream commit 458032fcfa91c8714859b1f01b9ac7dccea5d6cd ]
 
+Although the callers of this function only care about whether the
+return value is null or not, we should still give a rigorous
+error code.
 
-This patch has been applied to the wpan tree and will be
-part of the next pull request to net. Thanks!
+Smatch tool warning:
+net/sunrpc/auth_gss/svcauth_gss.c:784 gss_write_verf() warn: returning
+-1 instead of -ENOMEM is sloppy
 
-regards
-Stefan Schmidt
+No functional change, just more standardized.
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+Signed-off-by: J. Bruce Fields <bfields@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/sunrpc/auth_gss/svcauth_gss.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/sunrpc/auth_gss/svcauth_gss.c b/net/sunrpc/auth_gss/svcauth_gss.c
+index 1f2817195549b..b87565b64928d 100644
+--- a/net/sunrpc/auth_gss/svcauth_gss.c
++++ b/net/sunrpc/auth_gss/svcauth_gss.c
+@@ -781,7 +781,7 @@ gss_write_verf(struct svc_rqst *rqstp, struct gss_ctx *ctx_id, u32 seq)
+ 	svc_putnl(rqstp->rq_res.head, RPC_AUTH_GSS);
+ 	xdr_seq = kmalloc(4, GFP_KERNEL);
+ 	if (!xdr_seq)
+-		return -1;
++		return -ENOMEM;
+ 	*xdr_seq = htonl(seq);
+ 
+ 	iov.iov_base = xdr_seq;
+-- 
+2.33.0
+
