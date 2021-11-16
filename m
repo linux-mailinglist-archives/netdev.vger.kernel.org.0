@@ -2,96 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35BAE452B65
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 08:13:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A74D452B64
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 08:13:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229921AbhKPHQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 02:16:09 -0500
-Received: from mga04.intel.com ([192.55.52.120]:14099 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230170AbhKPHOl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Nov 2021 02:14:41 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10169"; a="232358867"
-X-IronPort-AV: E=Sophos;i="5.87,238,1631602800"; 
-   d="scan'208";a="232358867"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2021 23:11:43 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,238,1631602800"; 
-   d="scan'208";a="494352268"
-Received: from mylly.fi.intel.com (HELO [10.237.72.56]) ([10.237.72.56])
-  by orsmga007.jf.intel.com with ESMTP; 15 Nov 2021 23:11:41 -0800
-Subject: Re: [PATCH net 1/4] can: m_can: pci: fix incorrect reference clock
- rate
-From:   Jarkko Nikula <jarkko.nikula@linux.intel.com>
-To:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
+        id S230170AbhKPHQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 02:16:11 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:50560 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230249AbhKPHOu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 02:14:50 -0500
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1637046711;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FnGDRiA2GCNHA7+o/Kt/Z6WrOLAsUftsLdDJdaf+aMk=;
+        b=PLI5G4tFO+Iv8x/Ap8BE/ME6/KHpWVxrO12NvgsmxN4L4a6Wqf39IMzObA05L2vH28O+B4
+        ixNuzzZtpe5OR9C3FmKTZIpD/S/Ldk9pQrWkMqgi7OjK/JXK9j3wH5mlkup57alLiQQ8CQ
+        J4GJLQUcAv/JrPgcJzP7kkXyKCghd/r63loFkKHqDkJT4UBfqBQEv3t+mRvdP/jCO/Mj+T
+        VLCodYQaDBVsfIlHgVc6V+Qzycsfoi+BRjES4XWEMKvjTiohG5atlu3HUFDx4v1YcYzqoz
+        /zm2lDBcX/kWR31p9Gfw1Usdbe7UK5zUyeIVHVNM5DSwt4TIPRgSzHJBRrqLlw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1637046711;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FnGDRiA2GCNHA7+o/Kt/Z6WrOLAsUftsLdDJdaf+aMk=;
+        b=GJZcFJJ2kjRHGyRRr6IMHztvaC5EwyDNRZmM55GsyFJ+iW5tqE+L50H622ToCKGNVZSTmK
+        bD6N6z4PxhIERIBQ==
+To:     Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Felipe Balbi (Intel)" <balbi@kernel.org>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1636967198.git.matthias.schiffer@ew.tq-group.com>
- <c9cf3995f45c363e432b3ae8eb1275e54f009fc8.1636967198.git.matthias.schiffer@ew.tq-group.com>
- <48d37d59-e7d1-e151-4201-1dcc151819fe@linux.intel.com>
-Message-ID: <0400022a-0515-db87-03cc-30b83c2aede2@linux.intel.com>
-Date:   Tue, 16 Nov 2021 09:11:40 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.14.0
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Wong Vee Khee <vee.khee.wong@intel.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Benedikt Spranger <b.spranger@linutronix.de>,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>
+Subject: Re: [PATCH] net: stmmac: Fix signed/unsigned wreckage
+In-Reply-To: <87mtm578cs.ffs@tglx>
+References: <87mtm578cs.ffs@tglx>
+Date:   Tue, 16 Nov 2021 08:11:49 +0100
+Message-ID: <87fsrwbmmi.fsf@kurt>
 MIME-Version: 1.0
-In-Reply-To: <48d37d59-e7d1-e151-4201-1dcc151819fe@linux.intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi
+--=-=-=
+Content-Type: text/plain
 
-On 11/15/21 4:48 PM, Jarkko Nikula wrote:
-> Hi
-> 
-> On 11/15/21 11:18 AM, Matthias Schiffer wrote:
->> When testing the CAN controller on our Ekhart Lake hardware, we
->> determined that all communication was running with twice the configured
->> bitrate. Changing the reference clock rate from 100MHz to 200MHz fixed
->> this. Intel's support has confirmed to us that 200MHz is indeed the
->> correct clock rate.
->>
->> Fixes: cab7ffc0324f ("can: m_can: add PCI glue driver for Intel 
->> Elkhart Lake")
->> Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
->> ---
->>   drivers/net/can/m_can/m_can_pci.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/can/m_can/m_can_pci.c 
->> b/drivers/net/can/m_can/m_can_pci.c
->> index 89cc3d41e952..d3c030a13cbe 100644
->> --- a/drivers/net/can/m_can/m_can_pci.c
->> +++ b/drivers/net/can/m_can/m_can_pci.c
->> @@ -18,7 +18,7 @@
->>   #define M_CAN_PCI_MMIO_BAR        0
->> -#define M_CAN_CLOCK_FREQ_EHL        100000000
->> +#define M_CAN_CLOCK_FREQ_EHL        200000000
->>   #define CTL_CSR_INT_CTL_OFFSET        0x508
-> I'll double check this from HW people but at quick test on an HW I have 
-> the signals on an oscilloscope were having 1 us shortest cycle (~500 ns 
-> low, ~500 ns high) when testing like below:
-> 
-> ip link set can0 type can bitrate 1000000 dbitrate 2000000 fd on
 
-I got confirmation the clock to CAN controller is indeed changed from 
-100 MHz to 200 MHz in release HW & firmware.
++ BL
 
-I haven't upgraded the FW in a while on our HW so that perhaps explain 
-why I was seeing expected rate :-)
+On Mon Nov 15 2021, Thomas Gleixner wrote:
+> The recent addition of timestamp correction to compensate the CDC error
+> introduced a subtle signed/unsigned bug in stmmac_get_tx_hwtstamp() while
+> it managed for some obscure reason to avoid that in stmmac_get_rx_hwtstamp().
+>
+> The issue is:
+>
+>     s64 adjust = 0;
+>     u64 ns;
+>
+>     adjust += -(2 * (NSEC_PER_SEC / priv->plat->clk_ptp_rate));
+>     ns += adjust;
+>
+> works by chance on 64bit, but falls apart on 32bit because the compiler
+> knows that adjust fits into 32bit and then treats the addition as a u64 +
+> u32 resulting in an off by ~2 seconds failure.
+>
+> The RX variant uses an u64 for adjust and does the adjustment via
+>
+>     ns -= adjust;
+>
+> because consistency is obviously overrated.
+>
+> Get rid of the pointless zero initialized adjust variable and do:
+>
+> 	ns -= (2 * NSEC_PER_SEC) / priv->plat->clk_ptp_rate;
+>
+> which is obviously correct and spares the adjust obfuscation. Aside of that
+> it yields a more accurate result because the multiplication takes place
+> before the integer divide truncation and not afterwards.
+>
+> Stick the calculation into an inline so it can't be accidentaly
+> disimproved. Return an u32 from that inline as the result is guaranteed
+> to fit which lets the compiler optimize the substraction.
+>
+> Fixes: 3600be5f58c1 ("net: stmmac: add timestamp correction to rid CDC sync error")
+> Reported-by: Benedikt Spranger <b.spranger@linutronix.de>
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Tested-by: Benedikt Spranger <b.spranger@linutronix.de>
+> Cc: stable@vger.kernel.org
 
-So which one is more appropriate:
+Thanks!
 
-Acked-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
-or
-Reviewed-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+Tested-by: Kurt Kanzenbach <kurt@linutronix.de> # Intel EHL
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQJHBAEBCgAxFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmGTWbUTHGt1cnRAbGlu
+dXRyb25peC5kZQAKCRB5KluBy5jwpipkD/9MkdVNwJ84dNRdtUwmfnQlsI0n2kQ0
+QMO1jWI59xY8lA4XWOVOEY0AekbhUCWUArZBoDsCLrAEWCIMAIZttxhtXqcy6c6p
+x6t0IpgZ7aR0Tvs1MPgbxziIrJ2G9GMr3AE/NOrumCZZP9AObNbaryvVLcqU3Xjr
+RDwcuAFINPM6Efn2XTP5k3Jn4dMJ8oE/m4AcsXX4RwX0FhoqmbjUKYJ3zwl4D8Iv
+XNSbvC7OfMYLms6s2i/uQgceQytskCyvgcxo5QqUvv/O+K5wpads0xO+ufomanhZ
+WRdKdbQoxLv+OavVMUw2HjviX3fQL1BmEm8Rtsm9fLQwquyIOc7Zcr2AxxWSW1q/
+t3a0zVubbyJTUBB3Snp+KET8iCMytaWEEWgXZPParopENix+k1+dRaeQg9NdWSzf
+rxxfAMVrA6wmSji3+9ncMLZHY0za73Rg5IGB+Zr4myTZCZ+dKED09URyuWmvtBPF
+SafxnISUTaUsoOGtvPNy6SkMNjoZ2aeOrazT3szOCVG6naI+D44ah1e8eEqz+r+R
+hgBwOYPQmvpSz9wm7kgi2GlaVsOvSMU7VspXkA8wVnx6rkBUpzbDB+LsakzFlTAt
+bh/F2XFgnBWElq2JsIIxaiBuzbMFlbpC7z+7BtUbAFG/mfcMbypJY/neGFbEdpUY
+4W+Azq1JFAZbPQ==
+=ykXB
+-----END PGP SIGNATURE-----
+--=-=-=--
