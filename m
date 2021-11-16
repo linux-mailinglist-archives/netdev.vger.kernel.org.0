@@ -2,62 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0DE54532CA
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 14:22:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A6274532DE
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 14:30:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236683AbhKPNY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 08:24:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52476 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230471AbhKPNY6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 08:24:58 -0500
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B18DC061746
-        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 05:22:01 -0800 (PST)
-Received: by mail-ed1-x544.google.com with SMTP id x15so87788710edv.1
-        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 05:22:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=pNPXYr/Bv/L+VmzGPgKR9ZiItCiRAut700iKN/YXrGY=;
-        b=Lx7fLF0HiTuS2xNMP5UJl3MsalhEiwsj7l0VPQhHduxfqmbQf/DB8GJpFzip5LWJBK
-         R+WewzD8WLLJ+lppotPK/RdxjF36GcGq/1YS5UFry9t5GC1t8qPE9LGkt6P+49LA4sxC
-         OTRX9VkVgGE7RzIUgAHiecdYtWYs9yGSO0CRABUymNOg43i3pDXRPp9iiPwig59XSjOt
-         wy/sL/r/wxEK0h3D46OlWwwT765AHA6CnK/iqxMIRkns0HpcwOJVMQXW4s28dXueNrDr
-         2pK1DB4Sl18tokQ/eKFrt+rzrr2qUd8OLwlagEkNPreVh0p/aV0wIH8LIgxADgTgGMj3
-         97iA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=pNPXYr/Bv/L+VmzGPgKR9ZiItCiRAut700iKN/YXrGY=;
-        b=pj3hjgTbMrUqtAB4/zIMU+5y4he1Q1K6zr8I9JZcO+UI6ZEoGI5RHjzBiqfcj09Afc
-         MvH1z8mjJXWLvBulJurAs7YIG8ChwV8ZaO3fYzxA6l8udxeiR52iHOvFwkSzX/w6/MKf
-         w2Drvd3c4eczX/9XfX14Lz43vqcCJAoOy2roy8eTG6oRD1o4x5N5s+VoGO4YD1TL4hoj
-         IWJMfWQ5PnvJCYp0Xm1RsG5BFp5UA+YADCND89ln+NqxJJYwVtYv0dEc+AdpTICK3Ors
-         9z5yS6J5mP4UtWHO03ADTROIjybSrP5agSzj8uAlgH+bgKdpmTuh4++Y6xFJw/ugr4jt
-         7s5g==
-X-Gm-Message-State: AOAM5323OlIdcHSE1NyAf8TxqeH830cCpZ2+jRd8YexNzLAEne8NtQvH
-        n5AnRiOHiZVKEolb0dhkdrGU8BHH3uvMg+d2bbo=
-X-Google-Smtp-Source: ABdhPJwQqrCqhAwsPxuRJ0FLRmmLK1c3elFwM6QM1lP+TS3CbLJnsQCf4qEQItg1KhFy+a/f91Vr1BtjuyoYoTHNDLU=
-X-Received: by 2002:a17:906:2bd5:: with SMTP id n21mr9777693ejg.337.1637068920249;
- Tue, 16 Nov 2021 05:22:00 -0800 (PST)
+        id S236776AbhKPNdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 08:33:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51048 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236729AbhKPNdL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 08:33:11 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 2803761B49;
+        Tue, 16 Nov 2021 13:30:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637069414;
+        bh=9o8hvU0fK1XFsXz34XreeARe1v8RmQpSo8N9uDuNqE4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZlntJ0MX1R1kww1aulQYKefEUbjvbSw2I5K4mm07o2fbqYPeO/vqu7FODmjhNIbmF
+         9Xk8BxJw/rEvSnpxbDzu/OhTVP+pXvOMn5TkklMIbWZjx/ePUA5ZLe2Tzhx3EARogk
+         yj8PrJe1H/LVRFZwuAt6AkGzTGztdOFYS471EZXEyGzDLtvWq/33ol8bXelZmUM9Jh
+         QCuq24XOQBikNLZkvmwDw8i3ei9BkhJTDu2HnPv1CE3s/ZvDIFRjlAEcOtwvH482OM
+         wxV8vRc5/HFWk0bhMwGUU59VFMvoWzuE6hHbS/gaWapSESuGczSYil2WdQvXgr2Wy4
+         spM8bZ/Wdiepw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 15DC6609D3;
+        Tue, 16 Nov 2021 13:30:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Received: by 2002:a05:6402:3490:0:0:0:0 with HTTP; Tue, 16 Nov 2021 05:22:00
- -0800 (PST)
-Reply-To: kathrynh566@gmail.com
-From:   Kathryn Hensley <marinavanessa534@gmail.com>
-Date:   Tue, 16 Nov 2021 05:22:00 -0800
-Message-ID: <CAAPyjrtRoR9ZRn5Lvx-3ugApbRyPZXa5qkW3MM3mospNSQ2bHA@mail.gmail.com>
-Subject: Hello
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/4] gro: get out of core files
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163706941408.24146.13534152124004338198.git-patchwork-notify@kernel.org>
+Date:   Tue, 16 Nov 2021 13:30:14 +0000
+References: <20211115170554.3645322-1-eric.dumazet@gmail.com>
+In-Reply-To: <20211115170554.3645322-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        edumazet@google.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Sir,
-I have a transaction that involves the transfer of $17.9 million for
-foreign investment, if you are interested kindly reply to:
-kathrynh566@gmail.com for more specific details.
-Thank you.
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Mon, 15 Nov 2021 09:05:50 -0800 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> Move GRO related content into net/core/gro.c
+> and include/net/gro.h.
+> 
+> This reduces GRO scope to where it is really needed,
+> and shrinks too big files (include/linux/netdevice.h
+> and net/core/dev.c)
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,1/4] net: move gro definitions to include/net/gro.h
+    https://git.kernel.org/netdev/net-next/c/4721031c3559
+  - [net-next,2/4] net: gro: move skb_gro_receive_list to udp_offload.c
+    https://git.kernel.org/netdev/net-next/c/0b935d7f8c07
+  - [net-next,3/4] net: gro: move skb_gro_receive into net/core/gro.c
+    https://git.kernel.org/netdev/net-next/c/e456a18a390b
+  - [net-next,4/4] net: gro: populate net/core/gro.c
+    https://git.kernel.org/netdev/net-next/c/587652bbdd06
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
