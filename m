@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9924D452AB8
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 07:26:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0597A452AC4
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 07:26:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231764AbhKPG3J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 01:29:09 -0500
-Received: from mail-bn8nam12on2108.outbound.protection.outlook.com ([40.107.237.108]:61728
+        id S231993AbhKPG3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 01:29:40 -0500
+Received: from mail-bn8nam12on2106.outbound.protection.outlook.com ([40.107.237.106]:43904
         "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229945AbhKPG1R (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Nov 2021 01:27:17 -0500
+        id S230448AbhKPG1U (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 01:27:20 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UrWgF+wyaW/tK7LM1TE9u9X+pgRCo7xhGXrxfBrCQEqIjT1oI1GpdD3zoxZZktqfTLVWAOdru4EofYzOUWWl4tPZfHo3NpgL3wlh60hF03L0YNxDM1cPOpe2kI9CHUh4xrsny60v3XXf00QMeGWy5yttkJpC2/8s79Wdb0EOcIeGcs5AWbWusW9dlvdSSsKqwSHPO3CmPLjY8ug38vM6oNk8gg7S84hzMn9Blc5z8oIy+mGHrBtuP69ihbWdx6f4lXbNRhNFWIfXV0GITxlMMPvBzMy9i/cKRWjlc8s5673fhJIJYDrsJ7NQo3tQlcFO7yZm6tYvop2Kre0KCyNSEA==
+ b=Y23ZrD9hs65Mukg6TXkwpw2I1kjjjF5DZtLg9/Dg9RMB3wk9uTQKU/wk4GODQ9vzPcUnQdN7JHdo0W2jeiHgTrRZcIuh5bBG9UXdc7iPwiTAO1kUdshbIBhDwIelcDJuCjOFY0aHV0YxlvKuZobk4EFGYwtH/5wPfSaIiBvjWnZ26X2WkIyXolKW1Uw7u9LeorXRKvU/23FUYfUSEbf0TWZh8VJ6F4RfTI5LdOQ4kC0tS/gvfjiH0AJ6ZTztiBMlU4f32z6GEaqpiQfkVaWBPws+G3jmNybWkQvaTHNotTJmnoWzp4qdGQwg91gs6W7jZc1GWUwaDm7HgKgB+7xtuw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VLZm14PaoFv/fWWguHry8auKUDqPRVRARNbV1Owv7hA=;
- b=CzSMn3zCGlhVJlcThsiSUMRUarPmkkfI6kdz4x3gkdxIbpOuc12arVcek5/kwEXhwl4Xs83tfAZrntp/+pYHY6zApO8HiBBl+p99UBjIlAGVupRaPiJce82OnTjwVAoAXk/GzIwYjBim2XCyV0i/voKR2ndBVVMMwLAmAC6OWYWwQfg4g+k/qBOUXwcEVN1xk0LUlQUK1jVhzE9izrfxbf6gY0k7bJ4jNb1uvhV153fUqfuHcDxLnd90+hyKwqU0Ng4z7wKyTEyNxbonxvB5mCs+LrRK/UB/JwOVolhsL76nxT8KcXxM2ubTMJB8PhMIh0QASNvsFTIcUaQfppoXPQ==
+ bh=ugxxeNhoCd+QUZYaL+ZQni1pVGcyQnP46C2Xz/dU7Qc=;
+ b=eEwLv3E1utaoUV+SsghgrWWydFDg6/lq0btVXYAjbjoevVw62i+AhY7xBnbLfDHZS4+yNbnN/umnnCwM3GguGa5DR4825YYP8vpp+a3SifREB0Xbki8q8dkCV4BZiPIIeGGNghNwJxZ+4DdkPehWeGvCV8eMjjlQTnX2v1XmXP3ifJ1XF1IEn0iFfWMA7g4jGN069V1t3xssNRxE1tC3sGevYuBmdVguQA9YYUiU9/2sohLn4d2SbtfLdrikVueEk599FmsO2zwZXS7183jULpCi9ovQgpBrtIyy+PNdBV+SnCt+oCS0e3U3CTN/lAA+e4tK5j2LVHmqPbMbNsj0/w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=in-advantage.com; dmarc=pass action=none
  header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VLZm14PaoFv/fWWguHry8auKUDqPRVRARNbV1Owv7hA=;
- b=s2RW6pWIIpaHpp/3u1oLFB1xw60akPLZKEB8gJmhseSPymWCYNmy55BmRxC4yo0fYe/5FHPrOP7WQB7+CYCpG4RbqWG/5ZrnEr7+rwlSvOPE3Qa4CTr8By2GOkfYh6VaWIwEbUlIhA9TlE+ZynILRomVrNIU9n5IoIoe5HUxde8=
+ bh=ugxxeNhoCd+QUZYaL+ZQni1pVGcyQnP46C2Xz/dU7Qc=;
+ b=0aRBOEUEljkV18D5LvBBe6zmbk35ashwsYAg5Wn6RVD/3rbZCSxjeVYCq/4pEwOvznQ1AUPmXYo1yO09PK/iYJzE+hYO9vTupleRuaScCoATKW5yW5A3M3s+CHfkCmuqGhmj0ldD2mc+q96hTGev2aRA142dyiXAmP+wTzhg8gs=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=in-advantage.com;
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
@@ -60,9 +60,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Philipp Zabel <p.zabel@pengutronix.de>,
         Heikki Krogerus <heikki.krogerus@linux.intel.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [RFC PATCH v4 net-next 02/23] net: mdio: mscc-miim: convert to a regmap implementation
-Date:   Mon, 15 Nov 2021 22:23:07 -0800
-Message-Id: <20211116062328.1949151-3-colin.foster@in-advantage.com>
+Subject: [RFC PATCH v4 net-next 03/23] net: dsa: ocelot: seville: utilize of_mdiobus_register
+Date:   Mon, 15 Nov 2021 22:23:08 -0800
+Message-Id: <20211116062328.1949151-4-colin.foster@in-advantage.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211116062328.1949151-1-colin.foster@in-advantage.com>
 References: <20211116062328.1949151-1-colin.foster@in-advantage.com>
@@ -74,317 +74,82 @@ X-ClientProxiedBy: MWHPR11CA0028.namprd11.prod.outlook.com
 MIME-Version: 1.0
 Received: from localhost.localdomain (67.185.175.147) by MWHPR11CA0028.namprd11.prod.outlook.com (2603:10b6:300:115::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.26 via Frontend Transport; Tue, 16 Nov 2021 06:23:43 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8c9536c5-fb5c-4f91-23af-08d9a8c9a38f
+X-MS-Office365-Filtering-Correlation-Id: a649a4a5-e780-4c6a-4f53-08d9a8c9a407
 X-MS-TrafficTypeDiagnostic: MWHPR1001MB2383:
-X-Microsoft-Antispam-PRVS: <MWHPR1001MB2383EA3A03B71EFA297BA5B5A4999@MWHPR1001MB2383.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:655;
+X-Microsoft-Antispam-PRVS: <MWHPR1001MB23834404C308135761C909E3A4999@MWHPR1001MB2383.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 29nSh9+IdhNi598BX5yn4bPiFzmniyrsrLV4DT65N0z1Z03uKnPbvWLJPMx7SgyRpG67WaC6HCiv9/jgW9keVRaltHGjO511ajbSsm9OI6t6tYkDXUoGKyWj+EcEmWbBKM+uuuXpN1friS+0Ign8R2muj93RuKcqMKgYVGCnuHjqzEVElmxf5wca5c7k8AKdZkHSaDWnHZ1IC20sMRVgZcD+rZwoLznZhoPhBxT67RWi5m600z4xIZ2ALhaXjg4ukP0tRgA4b5Vu1lLAeZSkeIX3hzF7sXYlJr8ZQ9xsNr5rssTfmVMeo1+g7xbE4TyGhhDJP9cFL+43hWBw5Lqr+rmSc1HehzmO7AA1aTSHpcw/UZeYX7cGZqmLNejZf9xI6LTg3OZ8sAkGNK5yFeUl5lNQWrDSF/MqrdnZ2ZYtlmXETr8Yxkme+GzBk6adOixWcpGrNGenSs0dGwkmxurbbWJT6qlMzCpL8/ssDDmECit4/qzwwgxJEY6Bzr3O3faYaSz6DIbfOeXy8YPuZVLfa60SRMAzaAvM4B7Qr1+EWsSAIWhtdHnVjh/aAODb6pkzMayb7Bbonaqgo6U5Fsy37wR4in3v7o17XRfrbH4RhXGk4YRJlEuzdr8hy0IVgc10X43ckYm2v0AQ7TONPVXiYBORbvO7zdIebszT56NvNm4kgWn7v9U15h+Lnlet4ftBr4t433ZOBTVJ1prHzXEXIA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(39840400004)(136003)(366004)(346002)(396003)(6512007)(54906003)(316002)(4326008)(83380400001)(8676002)(86362001)(44832011)(1076003)(2906002)(66946007)(38100700002)(38350700002)(508600001)(956004)(26005)(66476007)(66556008)(6666004)(6486002)(6506007)(52116002)(5660300002)(36756003)(7416002)(8936002)(186003)(2616005);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: b0GlSwoXlp7i+BIfXxIgq6pvs5zRc4EO1fzVHTa9mcuBRXZwDWw9Sm8JnvkEvtGC5YfJgcLSZQc7BJ6KW15Wsebhdv9b0nELuECC60/Ff8jQwhAjDxqtuppaqiUdonpvpOLvdjwgZhfbYiQtgCYS/OaupuMrV32DdPWbF0raVbgMPogC+0+Uofeuz6SF1t+B3g+poOK8vwGlslNE/z8Saj9gXaURGiAExRLo1hYnjWo6jkle3aFPOnAGwNhAJPFurVejt7BGp6llRJ55SibgTVKwPtl6mwZG4ELsmQ+YR+zz0482o1SAfiCwZ3dxeWrjKotK8EqWunmd8Ur0MM8v2NHrpnVZeiQnxHBloxJQ03pX2scb87VVxtojVZbYw1z9rfIOXCXOXRuBsvHXqpu4REySeadQ7tfb178t/Xb8VFouFTfEAO0x2awbDLjmyq2NHJRZzvcu8hDqAwsg7oCoQ1VklQIPVtWy1m3IAB1fGzCg0mAd2cH+XwhBqeXRN1pWJYZI5m/EG29Xq2tCH7iBwCocEvnBbls5xhtXDU4cAeVz3QlKAdbLh5GWx0FUb4mlTfbeVDuVKw5CwhxVAmut/cllV0pUkxEqZxwYuRMkheSpm1MmSCoHoh9PWw2FjxlOONgmd2bSwUM5L04mUStIupfmJxOnDB0ENZpb3HdjxeRy3xVJ5oBtAdyUFU5TfLO0uNCfHgFT+U15tTS3g9vigQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(39840400004)(136003)(366004)(346002)(396003)(6512007)(54906003)(316002)(4326008)(83380400001)(8676002)(86362001)(44832011)(1076003)(2906002)(66946007)(38100700002)(38350700002)(508600001)(956004)(26005)(66476007)(66556008)(6666004)(4744005)(6486002)(6506007)(52116002)(5660300002)(36756003)(7416002)(8936002)(186003)(2616005);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wOYyiHBg4OpsD+5Tc04k/cQnCf8x3X7oc8yLQeOPFy8lyoQz2vd7/XBsqjUC?=
- =?us-ascii?Q?QZ2rJq0wIJhIEB1GIS8s2931gkvrdwVU9hJqOCBJvpAGcSeL8m2hF+ytcpnl?=
- =?us-ascii?Q?Fxk7bDN2rTI5wMnQqW+I5EP6ivA17j5cc5W0FwKyWNZ50y+mBh2QhxEKDMFE?=
- =?us-ascii?Q?J3bO0r5ACP/J2NlvHXaILE8mr974X/weYmxyQUUeF1cNMgaADKW34u2SMwrP?=
- =?us-ascii?Q?n54xS8Xnfixzu6ML/TCmpsjW/ZHqlfLZqDiPzK7Wz6r2ErSglR0uCXtW+/SK?=
- =?us-ascii?Q?UWOEJ/qEKrdhIdv532jNt6QVuFm777nN21eBPdlTD1AUDhrelNvuQYd/ae0H?=
- =?us-ascii?Q?ISv1GtOIMNEC71QXBT2+zT6xmOACPb7f5jzRN9vHI9oW/kutAfssIwgRZVGp?=
- =?us-ascii?Q?f+H5es6CYlm18Ky21g36b3xwtyrAFHZqPWr/HMRzKeJDPM8wrqq70tDfeGFx?=
- =?us-ascii?Q?7i6CfvPYLzA06En74mhV4t+ljSA/XcOx3FxfjJFKOFPKUD/RhHwAjWCbZJOj?=
- =?us-ascii?Q?ukT12xeLtx/GS6nVOUgLim5FsgIDUwLMwsa25Qjvs6N9E0G+cFbXOR3SiZcK?=
- =?us-ascii?Q?q38ubjJZq3twztRlIZD0XFS2vm+qjPVFowZVDGfyxRYZFaZI3DnqB//lievx?=
- =?us-ascii?Q?b+gTlJoW5TabDWl3Wa7CxpS+RQRRUNP/wze+vqipK/ovxqYcv9NQ2HzjYP0q?=
- =?us-ascii?Q?2xtmuFQ04JaXoFaHcEFYNHINMtAiv0YJY10mk9GJY3HXfIwSSvninCHE0kpN?=
- =?us-ascii?Q?60JsNXhItpunQP3QSKhWUBzkpkQj++lhhGjPrx92hdK+rnmshFbsXTrRg0ZT?=
- =?us-ascii?Q?6ljkOadQcDCu9K0fIhIA4KQlA8Qy1SGiWXnykJD84FVuPrKsPJ5BRq87gMqK?=
- =?us-ascii?Q?ojhlUxRpMkiSK8f6wsSL9eoDIfobPNx0aa+yrGbhN5t4RDxXcr6DlBn92n1t?=
- =?us-ascii?Q?m6TGzplQ0Ty2BB3s3mwZY+vb8vsXcTPBJk0nYqqPSgSIBwEJ9B1sedETzHww?=
- =?us-ascii?Q?LYirUOlou99ONwnA9hsPvbcQdpJIkpQ6PBsLOo/c0/jTUKH9wuihWlAREJdy?=
- =?us-ascii?Q?L+CSG098HpD8NOkHkrQAz2ax9XIbyc/XW2nf02OT6H8BZqkYHJpARQJCfUMZ?=
- =?us-ascii?Q?CZwg3HOLFtX7PLAP60Za/MfrTgaWcDzdKAgJtm3cNXltmt8jKySx7M+qgXof?=
- =?us-ascii?Q?NZ9J6CyFdSt9QDc0co2uOaBbFwUglfQEcEBPLjRpNIdWCyrgzm304YWs9qw3?=
- =?us-ascii?Q?oo5yfzCBVYU4/CqvbWVLs0iTlwFlB6fw/Y8QvPMqtUta6Iyr0HxHi/rk2oVG?=
- =?us-ascii?Q?Z29jTolqybr0JTFccMK7a970K1MNSv2rX2hEKQu1J9jB7QPkAiS0k5lerKO9?=
- =?us-ascii?Q?3PjJ7Ss19za23lT6VT6dMGt30avo51bAjuceJQpKhb7mZg2fsl9HhjflJkDh?=
- =?us-ascii?Q?BhCp6S5jwwasWl3dAxmbugQPI8BFErPntzZSeOg4/UTbB+tdOfSYjtpw5pqb?=
- =?us-ascii?Q?dAamCWL06F+fLW4RsVE2h3va6UmrTPtEK2QkFwTtZdWu5tbbVU4C3hBm/Ukx?=
- =?us-ascii?Q?FbsmH9qYXMKDjXPfIeiUyJKnLgEIbKkGRE/BvQKjnI5diHb4fxLUfja+BBVw?=
- =?us-ascii?Q?6Og8Zb/G088xWkFIfWy9e4dxlw8tVaC3mrplIyC6Tu4AbNoIsavZaK0KrOCO?=
- =?us-ascii?Q?xwiUyY1FDuPwbabQydRMhTCkMcw=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2wrIoONKNu/wsTJYkqneW4X9lPOLx5TzJVBZiRz6S3AsVAM6aqAPSzFcASg8?=
+ =?us-ascii?Q?3RqDMw3oidDNRJDTnXsSB3PRQ6RqAuHJ4RZxkyrxxXAXgsmx9rkDLrBLY8YX?=
+ =?us-ascii?Q?bc9cdF1oj8d1VLoIbfhTinAxvRe/K8tCbJMq6QyKXNLNk5VM2DLMVwr3IyWJ?=
+ =?us-ascii?Q?IMXBFXhBZMxN0RgVkvp99oIp1RuZlhtBDKECzC/ylNXgTCkWo3jPK2B9QIqQ?=
+ =?us-ascii?Q?dvU5kvz+xX11LLGLXW4bE4hEKh7ewROXhwqQiSxpjmQO/lK1MOk1ignyNspT?=
+ =?us-ascii?Q?2ZX197PeYDpjqPFodsmQPngxAsUHEVXp6BZVJD4t9nEgWVRPwJq6m1q0PVHT?=
+ =?us-ascii?Q?J27h8VwDXhNWufvjo6N3eRV+ysgBtW0kpojPwUUBlrxzUsjLp+hyq5ZFfrAh?=
+ =?us-ascii?Q?nRln8A7cVeEur6MAXzn0ZoiH26di6NGN/68I/LSnpaHoTIk5vcCAtvSNeUlV?=
+ =?us-ascii?Q?Omr/D8s6giuUVuwY3bpbvgDIZ0iY3gaBcid/Ewn+9fgdfBkUh6LoEpnwJyEg?=
+ =?us-ascii?Q?fEPQB2Ajt0MwbyLBpD7WaAiVFsXIyt0CKsl0hmEdjPOysYtyqZvhdoNTqHCw?=
+ =?us-ascii?Q?hLtO3jZ3nmo8anXhjPLDo5tPXUGtY98r9ADxr6hAoCmbbmf2mbJOdoqbHbpp?=
+ =?us-ascii?Q?fzvXi/S+e8vfsgx+fQVRbi2xOvBaLvduSPYTBoC2O22vvwRRhG4A15Fx9QDG?=
+ =?us-ascii?Q?F/oc5DmPI8bC4arCiFQ+iqx0YudRE/fGopBluW1wmMwrgTsekRI5PBSBqg8h?=
+ =?us-ascii?Q?F5cNNScqBqeGPIZsXktvqcrsgJ19B8OQPWptwzqyDaZANX7hQDSGjn7hseOl?=
+ =?us-ascii?Q?BWj5T2UFiI7u0/aXekBsLbogPYL3e/wY3rY5a1HGWbgJ4gwB3gmmQVtGH8zL?=
+ =?us-ascii?Q?qDyEEYTFlmnCrMEqtqQO6/Yo9B7irALNxW/jdO5EcgcNQXoDZYgDg0TLf5xB?=
+ =?us-ascii?Q?GQxyr/Q7WWXCYlooHyW1CWCzi67lCg319JvGw6kkAhJ6oNhZVfSNVaaFdIJm?=
+ =?us-ascii?Q?q7clWnzQYtFlO6OJNyp/1z5//+mWapnJd8RPSLxRsVBjDsCgUlNOvVLPZqol?=
+ =?us-ascii?Q?Hbl+CHpRlxSQ/SOiWRnWb8b2N1XwCQ2dk5R800ONrV5ACxYqHUqJQdXXfNjB?=
+ =?us-ascii?Q?gXcLZDPYY5707Nm+KHdDHsODXjoNOAJll0DdQRfDvEhvKwMy3yDwVu7HFFXl?=
+ =?us-ascii?Q?gpg8ntbvfhEqTChgLBLb4wNkQRa9R4+XEyWA+W0btUSG/JymYPgSahg9VePz?=
+ =?us-ascii?Q?aYViyU0cEYaPCc/75LePENcsxSUXVsxCkaiY7BFgxTK/r5/e0+FBJx5fmK6f?=
+ =?us-ascii?Q?UpobS68ZJxao68b+IydG1GD3jOa2UpPMXOIOX6XKMspE3e51wuirzafZSsgr?=
+ =?us-ascii?Q?QbRDp9Bt/manherk5FvXk2jjo9rLhtX8T9urNOqE3nuS+xhDlb7kFvCWuyBI?=
+ =?us-ascii?Q?uATcdU0zIUOMz248L/ov4xUABAv/+dCTxJzt51Sike8drB2nm6KcSRFtV8Oe?=
+ =?us-ascii?Q?1rEkCWgdIKNyEkHHpLrm/Tuz2Dxm8xLH8uNN5chwZ+XYFhRinsFgUZi9y9tB?=
+ =?us-ascii?Q?G5k6xtf6ncgMVqkgGgo/Jtu7X9BPQVF2j/7NMsyylUOF5tHgB8ltmckHUSg9?=
+ =?us-ascii?Q?CiPiFXrQlwFGi2UlWgts2mNLJwzG6Z23wtvtOKrUIq1ERRJGMkkNJLPPWLuT?=
+ =?us-ascii?Q?CwatqvtweWBTeYzB0zCTWRbEdug=3D?=
 X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8c9536c5-fb5c-4f91-23af-08d9a8c9a38f
+X-MS-Exchange-CrossTenant-Network-Message-Id: a649a4a5-e780-4c6a-4f53-08d9a8c9a407
 X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2021 06:23:43.7474
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2021 06:23:44.5300
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IAI4vqOp7L33bZD3jCoXNJKdM5CAcoK8PARKnoMX1hfb45/itZH+75lYrHO6jLhkVz6fdTQxGb8XLmhFrAWKISnqyUKzaMhjDm1WHzAexGw=
+X-MS-Exchange-CrossTenant-UserPrincipalName: LzVNENqOEH+iJQH7AnbpwWZQaODwG8DqGgtRAVqNQLh/71pxUTez9VEkxEh1+tWbM+NU8mioBGI2gdyNSK8G/BtJHSvmtEEyh88TJNJmnrg=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1001MB2383
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Utilize regmap instead of __iomem to perform indirect mdio access. This
-will allow for custom regmaps to be used by way of the mscc_miim_setup
-function.
+Switch seville to use of_mdiobus_register(bus, NULL) instead of just
+mdiobus_register. This code is about to be pulled into a separate module
+that can optionally define ports by the device_node.
 
 Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
 ---
- drivers/net/mdio/mdio-mscc-miim.c | 148 +++++++++++++++++++++---------
- 1 file changed, 105 insertions(+), 43 deletions(-)
+ drivers/net/dsa/ocelot/seville_vsc9953.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
-index 17f98f609ec8..ea599b980bbf 100644
---- a/drivers/net/mdio/mdio-mscc-miim.c
-+++ b/drivers/net/mdio/mdio-mscc-miim.c
-@@ -14,6 +14,7 @@
- #include <linux/of_mdio.h>
- #include <linux/phy.h>
- #include <linux/platform_device.h>
-+#include <linux/regmap.h>
+diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
+index 92eae63150ea..84681642d237 100644
+--- a/drivers/net/dsa/ocelot/seville_vsc9953.c
++++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
+@@ -1108,7 +1108,7 @@ static int vsc9953_mdio_bus_alloc(struct ocelot *ocelot)
+ 	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-imdio", dev_name(dev));
  
- #define MSCC_MIIM_REG_STATUS		0x0
- #define		MSCC_MIIM_STATUS_STAT_PENDING	BIT(2)
-@@ -35,37 +36,47 @@
- #define MSCC_PHY_REG_PHY_STATUS	0x4
- 
- struct mscc_miim_dev {
--	void __iomem *regs;
--	void __iomem *phy_regs;
-+	struct regmap *regs;
-+	struct regmap *phy_regs;
- };
- 
- /* When high resolution timers aren't built-in: we can't use usleep_range() as
-  * we would sleep way too long. Use udelay() instead.
-  */
--#define mscc_readl_poll_timeout(addr, val, cond, delay_us, timeout_us)	\
--({									\
--	if (!IS_ENABLED(CONFIG_HIGH_RES_TIMERS))			\
--		readl_poll_timeout_atomic(addr, val, cond, delay_us,	\
--					  timeout_us);			\
--	readl_poll_timeout(addr, val, cond, delay_us, timeout_us);	\
-+#define mscc_readx_poll_timeout(op, addr, val, cond, delay_us, timeout_us)\
-+({									  \
-+	if (!IS_ENABLED(CONFIG_HIGH_RES_TIMERS))			  \
-+		readx_poll_timeout_atomic(op, addr, val, cond, delay_us,  \
-+					  timeout_us);			  \
-+	readx_poll_timeout(op, addr, val, cond, delay_us, timeout_us);	  \
- })
- 
--static int mscc_miim_wait_ready(struct mii_bus *bus)
-+static int mscc_miim_status(struct mii_bus *bus)
- {
- 	struct mscc_miim_dev *miim = bus->priv;
-+	int val, err;
-+
-+	err = regmap_read(miim->regs, MSCC_MIIM_REG_STATUS, &val);
-+	if (err < 0)
-+		WARN_ONCE(1, "mscc miim status read error %d\n", err);
-+
-+	return val;
-+}
-+
-+static int mscc_miim_wait_ready(struct mii_bus *bus)
-+{
- 	u32 val;
- 
--	return mscc_readl_poll_timeout(miim->regs + MSCC_MIIM_REG_STATUS, val,
-+	return mscc_readx_poll_timeout(mscc_miim_status, bus, val,
- 				       !(val & MSCC_MIIM_STATUS_STAT_BUSY), 50,
- 				       10000);
- }
- 
- static int mscc_miim_wait_pending(struct mii_bus *bus)
- {
--	struct mscc_miim_dev *miim = bus->priv;
- 	u32 val;
- 
--	return mscc_readl_poll_timeout(miim->regs + MSCC_MIIM_REG_STATUS, val,
-+	return mscc_readx_poll_timeout(mscc_miim_status, bus, val,
- 				       !(val & MSCC_MIIM_STATUS_STAT_PENDING),
- 				       50, 10000);
- }
-@@ -73,22 +84,30 @@ static int mscc_miim_wait_pending(struct mii_bus *bus)
- static int mscc_miim_read(struct mii_bus *bus, int mii_id, int regnum)
- {
- 	struct mscc_miim_dev *miim = bus->priv;
-+	int ret, err;
- 	u32 val;
--	int ret;
- 
- 	ret = mscc_miim_wait_pending(bus);
- 	if (ret)
- 		goto out;
- 
--	writel(MSCC_MIIM_CMD_VLD | (mii_id << MSCC_MIIM_CMD_PHYAD_SHIFT) |
--	       (regnum << MSCC_MIIM_CMD_REGAD_SHIFT) | MSCC_MIIM_CMD_OPR_READ,
--	       miim->regs + MSCC_MIIM_REG_CMD);
-+	err = regmap_write(miim->regs, MSCC_MIIM_REG_CMD, MSCC_MIIM_CMD_VLD |
-+			   (mii_id << MSCC_MIIM_CMD_PHYAD_SHIFT) |
-+			   (regnum << MSCC_MIIM_CMD_REGAD_SHIFT) |
-+			   MSCC_MIIM_CMD_OPR_READ);
-+
-+	if (err < 0)
-+		WARN_ONCE(1, "mscc miim write cmd reg error %d\n", err);
- 
- 	ret = mscc_miim_wait_ready(bus);
- 	if (ret)
- 		goto out;
- 
--	val = readl(miim->regs + MSCC_MIIM_REG_DATA);
-+	err = regmap_read(miim->regs, MSCC_MIIM_REG_DATA, &val);
-+
-+	if (err < 0)
-+		WARN_ONCE(1, "mscc miim read data reg error %d\n", err);
-+
- 	if (val & MSCC_MIIM_DATA_ERROR) {
- 		ret = -EIO;
- 		goto out;
-@@ -103,18 +122,20 @@ static int mscc_miim_write(struct mii_bus *bus, int mii_id,
- 			   int regnum, u16 value)
- {
- 	struct mscc_miim_dev *miim = bus->priv;
--	int ret;
-+	int err, ret;
- 
- 	ret = mscc_miim_wait_pending(bus);
- 	if (ret < 0)
- 		goto out;
- 
--	writel(MSCC_MIIM_CMD_VLD | (mii_id << MSCC_MIIM_CMD_PHYAD_SHIFT) |
--	       (regnum << MSCC_MIIM_CMD_REGAD_SHIFT) |
--	       (value << MSCC_MIIM_CMD_WRDATA_SHIFT) |
--	       MSCC_MIIM_CMD_OPR_WRITE,
--	       miim->regs + MSCC_MIIM_REG_CMD);
-+	err = regmap_write(miim->regs, MSCC_MIIM_REG_CMD, MSCC_MIIM_CMD_VLD |
-+			   (mii_id << MSCC_MIIM_CMD_PHYAD_SHIFT) |
-+			   (regnum << MSCC_MIIM_CMD_REGAD_SHIFT) |
-+			   (value << MSCC_MIIM_CMD_WRDATA_SHIFT) |
-+			   MSCC_MIIM_CMD_OPR_WRITE);
- 
-+	if (err < 0)
-+		WARN_ONCE(1, "mscc miim write error %d\n", err);
- out:
- 	return ret;
- }
-@@ -122,24 +143,37 @@ static int mscc_miim_write(struct mii_bus *bus, int mii_id,
- static int mscc_miim_reset(struct mii_bus *bus)
- {
- 	struct mscc_miim_dev *miim = bus->priv;
-+	int err;
- 
- 	if (miim->phy_regs) {
--		writel(0, miim->phy_regs + MSCC_PHY_REG_PHY_CFG);
--		writel(0x1ff, miim->phy_regs + MSCC_PHY_REG_PHY_CFG);
-+		err = regmap_write(miim->phy_regs, MSCC_PHY_REG_PHY_CFG, 0);
-+		if (err < 0)
-+			WARN_ONCE(1, "mscc reset set error %d\n", err);
-+
-+		err = regmap_write(miim->phy_regs, MSCC_PHY_REG_PHY_CFG, 0x1ff);
-+		if (err < 0)
-+			WARN_ONCE(1, "mscc reset clear error %d\n", err);
-+
- 		mdelay(500);
- 	}
- 
- 	return 0;
- }
- 
--static int mscc_miim_probe(struct platform_device *pdev)
-+static const struct regmap_config mscc_miim_regmap_config = {
-+	.reg_bits	= 32,
-+	.val_bits	= 32,
-+	.reg_stride	= 4,
-+};
-+
-+static int mscc_miim_setup(struct device *dev, struct mii_bus *bus,
-+			   struct regmap *mii_regmap, struct regmap *phy_regmap)
- {
--	struct mscc_miim_dev *dev;
--	struct resource *res;
-+	struct mscc_miim_dev *miim;
- 	struct mii_bus *bus;
- 	int ret;
- 
--	bus = devm_mdiobus_alloc_size(&pdev->dev, sizeof(*dev));
-+	bus = devm_mdiobus_alloc_size(dev, sizeof(*miim));
- 	if (!bus)
- 		return -ENOMEM;
- 
-@@ -147,26 +181,54 @@ static int mscc_miim_probe(struct platform_device *pdev)
- 	bus->read = mscc_miim_read;
- 	bus->write = mscc_miim_write;
- 	bus->reset = mscc_miim_reset;
--	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-mii", dev_name(&pdev->dev));
--	bus->parent = &pdev->dev;
-+	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-mii", dev_name(dev));
-+	bus->parent = dev;
-+
-+	miim = bus->priv;
-+
-+	miim->regs = mii_regmap;
-+	miim->phy_regs = phy_regmap;
-+
-+	return 0;
-+}
-+
-+static int mscc_miim_probe(struct platform_device *pdev)
-+{
-+	struct regmap *mii_regmap, *phy_regmap;
-+	void __iomem *regs, *phy_regs;
-+	struct mscc_miim_dev *dev;
-+	struct mii_bus *bus;
-+	int ret;
- 
--	dev = bus->priv;
--	dev->regs = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
--	if (IS_ERR(dev->regs)) {
-+	regs = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
-+	if (IS_ERR(regs)) {
- 		dev_err(&pdev->dev, "Unable to map MIIM registers\n");
--		return PTR_ERR(dev->regs);
-+		return PTR_ERR(regs);
- 	}
- 
--	/* This resource is optional */
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
--	if (res) {
--		dev->phy_regs = devm_ioremap_resource(&pdev->dev, res);
--		if (IS_ERR(dev->phy_regs)) {
--			dev_err(&pdev->dev, "Unable to map internal phy registers\n");
--			return PTR_ERR(dev->phy_regs);
--		}
-+	mii_regmap = devm_regmap_init_mmio(&pdev->dev, regs,
-+					   &mscc_miim_regmap_config);
-+
-+	if (IS_ERR(mii_regmap)) {
-+		dev_err(&pdev->dev, "Unable to create MIIM regmap\n");
-+		return PTR_ERR(mii_regmap);
- 	}
- 
-+	phy_regs = devm_platform_ioremap_resource(pdev, 1);
-+	if (IS_ERR(dev->phy_regs)) {
-+		dev_err(&pdev->dev, "Unable to map internal phy registers\n");
-+		return PTR_ERR(dev->phy_regs);
-+	}
-+
-+	phy_regmap = devm_regmap_init_mmio(&pdev->dev, phy_regs,
-+					   &mscc_miim_regmap_config);
-+	if (IS_ERR(phy_regmap)) {
-+		dev_err(&pdev->dev, "Unable to create phy register regmap\n");
-+		return PTR_ERR(dev->phy_regs);
-+	}
-+
-+	mscc_miim_setup(&pdev->dev, bus, mii_regmap, phy_regmap);
-+
- 	ret = of_mdiobus_register(bus, pdev->dev.of_node);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "Cannot register MDIO bus (%d)\n", ret);
+ 	/* Needed in order to initialize the bus mutex lock */
+-	rc = mdiobus_register(bus);
++	rc = of_mdiobus_register(bus, NULL);
+ 	if (rc < 0) {
+ 		dev_err(dev, "failed to register MDIO bus\n");
+ 		return rc;
 -- 
 2.25.1
 
