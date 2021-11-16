@@ -2,47 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E36E34532E7
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 14:32:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F6F8453300
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 14:40:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234548AbhKPNfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 08:35:30 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:54852 "EHLO
-        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234290AbhKPNfY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 08:35:24 -0500
-Received: from localhost (unknown [149.11.102.75])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id AF65C503A7F8B;
-        Tue, 16 Nov 2021 05:32:24 -0800 (PST)
-Date:   Tue, 16 Nov 2021 13:32:19 +0000 (GMT)
-Message-Id: <20211116.133219.63511987274053306.davem@davemloft.net>
-To:     edumazet@google.com
-Cc:     pabeni@redhat.com, soheil@google.com, eric.dumazet@gmail.com,
-        kuba@kernel.org, netdev@vger.kernel.org, ncardwell@google.com,
-        arjunroy@google.com
-Subject: Re: [PATCH net-next 00/20] tcp: optimizations for linux-5.17
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <CANn89iJ2vjOrH_asxiPtPbJmPiyWXf1gpE5EKYTf+3zMrVt_Bw@mail.gmail.com>
-References: <dacd415c06bc854136ba93ef258e92292b782037.camel@redhat.com>
-        <CANn89iJFFQxo9qA-cLXRjbw9ob5g+dzRp7H0016JJdtALHKikg@mail.gmail.com>
-        <CANn89iJ2vjOrH_asxiPtPbJmPiyWXf1gpE5EKYTf+3zMrVt_Bw@mail.gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 27.2
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Tue, 16 Nov 2021 05:32:26 -0800 (PST)
+        id S236792AbhKPNnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 08:43:07 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:35906 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236566AbhKPNnH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 08:43:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=/ZTRNnUNEgr3hlsthAHSmJ8lnNXuu59AnWYQvhB9PG4=; b=ccCyq4GiHwe9oaJJZGgJwkwKyp
+        2GsAJntl5p5+Gvi9TMowlgtcGJIC8VpNQtKlCXKfsfDAShDZggb3MfUZcJx4qkWXqoRJECAvXH41m
+        KrWAJ8Ph9+rBMB/lVJUb0FclkepNodv1QpU4hdarlirG2f62G5lFxD8jkzJ3kqjimWVo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mmygw-00DeWd-Gp; Tue, 16 Nov 2021 14:40:06 +0100
+Date:   Tue, 16 Nov 2021 14:40:06 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, g@pengutronix.de,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        kernel@pengutronix.de, Jakub Kicinski <kuba@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: Re: [RFC PATCH net-next] net: dsa: microchip: implement multi-bridge
+ support
+Message-ID: <YZO0tuMtDUIbRfcC@lunn.ch>
+References: <20211108111034.2735339-1-o.rempel@pengutronix.de>
+ <20211110123640.z5hub3nv37dypa6m@skbuf>
+ <20211112075823.GJ12195@pengutronix.de>
+ <20211115234546.spi7hz2fsxddn4dz@skbuf>
+ <20211116083903.GA16121@pengutronix.de>
+ <20211116124723.kivonrdbgqdxlryd@skbuf>
+ <20211116131657.GC16121@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211116131657.GC16121@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
-Date: Mon, 15 Nov 2021 18:06:29 -0800
-
-> On Mon, Nov 15, 2021 at 1:47 PM Eric Dumazet <edumazet@google.com> wrote:
+> > What logging noise?
 > 
-> Apparently the series is now complete on patchwork
-> https://patchwork.kernel.org/project/netdevbpf/list/?series=580363
-> 
-> Let me know if I need to resend (with few typos fixed)
+> I get this with current ksz driver:
+> [   40.185928] br0: port 2(lan2) entered blocking state
+> [   40.190924] br0: port 2(lan2) entered listening state
+> [   41.043186] br0: port 2(lan2) entered blocking state
+> [   55.512832] br0: port 1(lan1) entered learning state
+> [   61.272802] br0: port 2(lan2) neighbor 8000.ae:1b:91:58:77:8b lost
+> [   61.279192] br0: port 2(lan2) entered listening state
+> [   63.113236] br0: received packet on lan1 with own address as source address (addr:00:0e:cd:00:cd:be, vlan:0)
 
-No need to resend, all applied, thanks Eric!
+I would guess that transmission from the CPU is broken in this
+case. It could be looking up the destination address in the
+translation table and not finding an entry. So it floods the packet
+out all interfaces, including the CPU. So the CPU receives its own
+packet and gives this warning.
+
+Flooding should exclude where the frame came from.
+
+	 Andrew
+
