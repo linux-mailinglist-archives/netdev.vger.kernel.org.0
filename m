@@ -2,102 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F810453574
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 16:14:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3A5745357E
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 16:17:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235340AbhKPPQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 10:16:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35938 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230513AbhKPPQ4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Nov 2021 10:16:56 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4DEE761A09;
-        Tue, 16 Nov 2021 15:13:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637075638;
-        bh=sCRg+YijOR+Er2GVfz1HNXQ37gOOQOAsgSeLP69+EDQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Wdtzbmqpmc8SgD6FHndv+hrtby+jhtCp1/ITiH2PYb0vzdUDymB0+CG8BGzR6LMkJ
-         kWn6UapDp2SAmAyi6ZbKtUO96OTcez+6Zc/fg2IYmwkRybuvslq7442gacoi2d3zTz
-         ucj/NGeggj51B1EE6SSRB0LN6LwdOlH2h+IGn6IC1RfQkhMESU5VELsizkdn8KgnF8
-         6H1Sd8Rp8cvnEJi0E4tsmpMULABeVWi5evD+sa/Ak1aP6jH80+eUkLiaeOGAo/Cwyn
-         RwYlKG4rywZqCCYUOJ8toGhq0zSQ2fGgMjIyy+sFQKJn1h81DLjRfRI54PMf3CkOUl
-         LDZahupLZGz1A==
-Date:   Tue, 16 Nov 2021 07:13:57 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, davem@davemloft.net, ast@kernel.org,
-        daniel@iogearbox.net, shayagr@amazon.com, john.fastabend@gmail.com,
-        dsahern@kernel.org, brouer@redhat.com, echaudro@redhat.com,
-        jasowang@redhat.com, alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
-        tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: Re: [PATCH v18 bpf-next 20/23] net: xdp: introduce bpf_xdp_pointer
- utility routine
-Message-ID: <20211116071357.36c18edf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <ce5ad30af8f9b4d2b8128e7488818449a5c0d833.1637013639.git.lorenzo@kernel.org>
-References: <cover.1637013639.git.lorenzo@kernel.org>
-        <ce5ad30af8f9b4d2b8128e7488818449a5c0d833.1637013639.git.lorenzo@kernel.org>
+        id S237910AbhKPPUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 10:20:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50890 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237778AbhKPPUP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 10:20:15 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4618DC061570;
+        Tue, 16 Nov 2021 07:17:18 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id z34so54111073lfu.8;
+        Tue, 16 Nov 2021 07:17:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=WcoJy80pB25ieScn7Lo5XNT/vxhf72hZpDaOFdShM24=;
+        b=cehjgrQ04ABWjjl09/yx2ATVh91dBPRAHe6rqkzWa4CSlIQPQDwFx7PMoZNxUcdj5U
+         Manxn0EpdBMVxP4jDietXGoDplKe7847slUL9jQHlreSYdjN/yEHGDx83VuAmP4pxnd9
+         HK+v6uNkYj4XIGvhfkJPvZqgEbsoh4xR04JsxThuJbwXw2wV7mI7vTEtq4xaEWtISfCs
+         IyDitnfeXGUbX5m7ITAbiYEGHT+CQbxxlBCcCiXzjAj+E3LwDzI0i1YgnRBiV8nlJA8c
+         9cDrw6YuFfQhJihxjdqKR1GxybwXgwX8D53EQEUt4Alfv+ZTmmCRVfLGxh2T2/iDPN8d
+         J5fg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=WcoJy80pB25ieScn7Lo5XNT/vxhf72hZpDaOFdShM24=;
+        b=eHU2ireD7lv9XXgUJGK/xyDL3aKAdoTjuRuE5dy8RWWHAzzL5UbaIE7uOfLzuVmNwj
+         lK6LTG6eVSCSjD3wCUZGJl3psiIsX8zVmp7fsQf+O78ktf1LcO3DibaMsI9z+SZQ20h1
+         cL4OMoHqrCUj3AwKNy2o9Uub2Fg/5n4MwekiWblben4DkpXQJh0BuhCVIzob7MXB0/RY
+         P7XM2wZpB6GXNab5mAJ/3u7mLMW5zvC9iS+BxFNu1PwQIze9gAvtucUW+2D6feFRdrgD
+         njo1HjVC7vjCQnhQZIMvHJQlaivRjUJir9mYMfX2cC5cVv9i9lV2ZC7uYR/FEECWdJOq
+         +XYw==
+X-Gm-Message-State: AOAM530w/BhbWMJLxzLeJiBIFzdShKQwE7Wd9opCAGgGExOOIwm+oFgI
+        G/F42M/5mYw8OwPBg7xTPZw=
+X-Google-Smtp-Source: ABdhPJxy0ozf+KtbGX++iM5WsPR27dld7nSBAWctEockkzGZMFb08QHpePq8XQjA3e87LCQEi045Rg==
+X-Received: by 2002:ac2:53ad:: with SMTP id j13mr7049306lfh.225.1637075836596;
+        Tue, 16 Nov 2021 07:17:16 -0800 (PST)
+Received: from localhost.localdomain ([94.103.224.112])
+        by smtp.gmail.com with ESMTPSA id w15sm1789484lfe.245.2021.11.16.07.17.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Nov 2021 07:17:16 -0800 (PST)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     ioana.ciornei@nxp.com, davem@davemloft.net, kuba@kernel.org,
+        ruxandra.radulescu@nxp.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>
+Subject: [PATCH v2] net: dpaa2-eth: fix use-after-free in dpaa2_eth_remove
+Date:   Tue, 16 Nov 2021 18:17:12 +0300
+Message-Id: <20211116151712.14338-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20211115080817.GE27562@kadam>
+References: <20211115080817.GE27562@kadam>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 15 Nov 2021 23:33:14 +0100 Lorenzo Bianconi wrote:
-> +	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
-> +	u32 headsize = xdp->data_end - xdp->data;
-> +	u32 count = 0, frame_offset = headsize;
-> +	int i;
-> +
-> +	if (offset < headsize) {
-> +		int size = min_t(int, headsize - offset, len);
-> +		void *src = flush ? buf : xdp->data + offset;
-> +		void *dst = flush ? xdp->data + offset : buf;
-> +
-> +		memcpy(dst, src, size);
-> +		count = size;
-> +		offset = 0;
-> +	}
+Access to netdev after free_netdev() will cause use-after-free bug.
+Move debug log before free_netdev() call to avoid it.
 
-is this missing
-	else
-		offset -= headsize;
-?
+Fixes: 7472dd9f6499 ("staging: fsl-dpaa2/eth: Move print message")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
 
-I'm struggling to understand this. Say
-	headsize = 400
-	frag[0].size = 200
+Changes in v2:
+	replaced Cc: stable with Fixes: tag
 
-	offset = 500
-	len = 50
+---
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-we enter the loop having missed the previous if...
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index 714e961e7a77..6451c8383639 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -4550,10 +4550,10 @@ static int dpaa2_eth_remove(struct fsl_mc_device *ls_dev)
+ 
+ 	fsl_mc_portal_free(priv->mc_io);
+ 
+-	free_netdev(net_dev);
+-
+ 	dev_dbg(net_dev->dev.parent, "Removed interface %s\n", net_dev->name);
+ 
++	free_netdev(net_dev);
++
+ 	return 0;
+ }
+ 
+-- 
+2.33.1
 
-> +	for (i = 0; i < sinfo->nr_frags; i++) {
-> +		skb_frag_t *frag = &sinfo->frags[i];
-> +		u32 frag_size = skb_frag_size(frag);
-> +
-> +		if (count >= len)
-> +			break;
-> +
-> +		if (offset < frame_offset + frag_size) {
-
-		500 < 400 + 200 => true
-
-> +			int size = min_t(int, frag_size - offset, len - count);
-
-			size = min(200 - 500, 50 - 0)
-			size = -300 ??
-
-> +			void *addr = skb_frag_address(frag);
-> +			void *src = flush ? buf + count : addr + offset;
-> +			void *dst = flush ? addr + offset : buf + count;
-> +
-> +			memcpy(dst, src, size);
-> +			count += size;
-> +			offset = 0;
-> +		}
-> +		frame_offset += frag_size;
