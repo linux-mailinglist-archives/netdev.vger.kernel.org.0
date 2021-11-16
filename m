@@ -2,102 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A40F453807
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 17:46:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E59AB453834
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 18:01:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236398AbhKPQtu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 11:49:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44056 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234638AbhKPQtu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 11:49:50 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFF92C061570
-        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 08:46:52 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id i5so38867398wrb.2
-        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 08:46:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ge2UfQvIG7BcQ6jGlMWeh47LcVrmBB2jXUcPMoNRU9w=;
-        b=KEmhohCGxyyrmfrpbJi6nlw5P9Uy8PjK58h8qCBoUqTFxLd3Z1Myp1NSYNryw292T9
-         qGr0gwT5u9uqd04ew4j0iFcRXZPRsiTNYZ9EjCoKXno9VrS90tAl9B+R0H3G/W1v87w3
-         xsa9eaXmuBx2MEhxxh9ntrFIcOzPsL4CWKp5guSG6zreQKu/Ie5Lo6wTxHkMzT2wviyW
-         pBZfokipJf604qwnt+y4ChaNrqf5PnYP+gv3rZzE66aB2xua39vGhGWc5xUAaLRuAZOv
-         OvZv9zLObDg2N3M3sKxa786wEaNkguG8Lcqq2QVAJwTOT+XbETawmOcpUC4iheCt/k4+
-         BD6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ge2UfQvIG7BcQ6jGlMWeh47LcVrmBB2jXUcPMoNRU9w=;
-        b=xCBw6nDwtCjLK5E5C0KxxPZ/8fah+J/hZaBq1f5tNFkgCMfGho8gvYEXN8a0o4uI2U
-         iBLJZqyBdRagCGvRZqn3CB2ZMU3/7KYUMN1WGbRyRnkitTYNuYMUbHoQCCFzqhBaWQU4
-         D2T+8xDXCCPoADgBNpA4+pRubojYnA093hTs/L3g30LAqJhSbNFN1ggukeoIOLD4WDDN
-         T2I8j8S5G1XCyLoRKlSdLXVqabLdwryThHu2EmY9hQIHnw1wHCsHEtjcxirMykWLUiTr
-         O+Byz4yIV7gHqSnw4/VtLOPTE/O2fixtQaOKj+q3TAOSlIrvjFagpRIOHs5SdcWF+aSv
-         9Lvg==
-X-Gm-Message-State: AOAM533LvV49f2eLbf1na1nXbnuez66AVKaNgxIO++ZUwPFCnWH/7x7/
-        BxtnyniU/1dJUtwtqDp3S5xr1mZd0Ug1wq183T0bwg==
-X-Google-Smtp-Source: ABdhPJxNIkCyAjz2I70TCapyEJGuGkts62yh34yc/k+wdmtoSfctgMDeufoQEogZ7BmP+n0s1kAqsqrfl9CWJN9X7u4=
-X-Received: by 2002:a05:6000:1548:: with SMTP id 8mr11504049wry.279.1637081210373;
- Tue, 16 Nov 2021 08:46:50 -0800 (PST)
+        id S236928AbhKPRDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 12:03:54 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:48114 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236447AbhKPRDx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 12:03:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1637082056;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1Gf8mldySlliat3YgGc9PO17qf3daXpBQySoi5xxCq0=;
+        b=GEuHE2pzc6RrF5gl6cKhANPOXB8MJOpEIWOP/LrvkRCqRsBdGWutrD6opvXuGJgkAXRiV0
+        5fiaowgjeefg6CdrBNxM+YfkyfRBAPeBpavyWhCwhZIUfck/nQ9UIS5v6VFEkIFBY5Y8d9
+        vbBFT99+RUOqavgX2fYIoGgeIhhQ7m8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-286-L5ty1teGOjSKV0JufnXwJg-1; Tue, 16 Nov 2021 12:00:53 -0500
+X-MC-Unique: L5ty1teGOjSKV0JufnXwJg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 25C2580414B;
+        Tue, 16 Nov 2021 17:00:51 +0000 (UTC)
+Received: from localhost (unknown [10.39.193.89])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id BA37760C0F;
+        Tue, 16 Nov 2021 16:59:51 +0000 (UTC)
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Alex Williamson <alex.williamson@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
+ for mlx5 devices
+In-Reply-To: <878ry2a6hw.fsf@redhat.com>
+Organization: Red Hat GmbH
+References: <20211028234750.GP2744544@nvidia.com>
+ <20211029160621.46ca7b54.alex.williamson@redhat.com>
+ <20211101172506.GC2744544@nvidia.com>
+ <20211102085651.28e0203c.alex.williamson@redhat.com>
+ <20211102155420.GK2744544@nvidia.com>
+ <20211102102236.711dc6b5.alex.williamson@redhat.com>
+ <20211102163610.GG2744544@nvidia.com>
+ <20211102141547.6f1b0bb3.alex.williamson@redhat.com>
+ <20211103120955.GK2744544@nvidia.com>
+ <20211103094409.3ea180ab.alex.williamson@redhat.com>
+ <20211103161019.GR2744544@nvidia.com>
+ <20211103120411.3a470501.alex.williamson@redhat.com>
+ <877ddob233.fsf@redhat.com> <878ry2a6hw.fsf@redhat.com>
+User-Agent: Notmuch/0.33.1 (https://notmuchmail.org)
+Date:   Tue, 16 Nov 2021 17:59:49 +0100
+Message-ID: <87sfvwkpdm.fsf@redhat.com>
 MIME-Version: 1.0
-References: <20211115190249.3936899-1-eric.dumazet@gmail.com>
- <20211115190249.3936899-18-eric.dumazet@gmail.com> <20211116062732.60260cd2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CANn89iJL=pGQDgqqKDrL5scxs_S5yMP013ch3-5zwSkMqfMn3A@mail.gmail.com>
- <CANn89iJ5kWdq+agqif+72mrvkBSyHovphrHOUxb2rj-vg5EL8w@mail.gmail.com> <20211116072735.68c104ee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211116072735.68c104ee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 16 Nov 2021 08:46:37 -0800
-Message-ID: <CANn89iJb7s-JoCCfn=eoxZ_tX_2RaeEPZKO1aHyHtgHxLXsd2A@mail.gmail.com>
-Subject: Re: [PATCH net-next 17/20] tcp: defer skb freeing after socket lock
- is released
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Arjun Roy <arjunroy@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 16, 2021 at 7:27 AM Jakub Kicinski <kuba@kernel.org> wrote:
+On Fri, Nov 05 2021, Cornelia Huck <cohuck@redhat.com> wrote:
+
+> On Thu, Nov 04 2021, Cornelia Huck <cohuck@redhat.com> wrote:
 >
-> On Tue, 16 Nov 2021 07:22:02 -0800 Eric Dumazet wrote:
-> > Here is the perf top profile on cpu used by user thread doing the
-> > recvmsg(), at 96 Gbit/s
-> >
-> > We no longer see skb freeing related costs, but we still see costs of
-> > having to process the backlog.
-> >
-> >    81.06%  [kernel]       [k] copy_user_enhanced_fast_string
-> >      2.50%  [kernel]       [k] __skb_datagram_iter
-> >      2.25%  [kernel]       [k] _copy_to_iter
-> >      1.45%  [kernel]       [k] tcp_recvmsg_locked
-> >      1.39%  [kernel]       [k] tcp_rcv_established
+>> So, I doubt that I'm the only person trying to follow this discussion
+>> who has lost the overview about issues and possible solutions here. I
+>> think it would be a good idea to summarize what has been brought up so
+>> far outside of this thread.
+>>
+>> To that effect, I've created an etherpad at
+>> https://etherpad.opendev.org/p/VFIOMigrationDiscussions and started
+>> filling it with some points. It would be great if others could fill in
+>> the blanks so that everyone has a chance to see what is on the table so
+>> far, so that we can hopefully discuss this on-list and come up with
+>> something that works.
 >
-> Huh, somehow I assumed your 4k MTU numbers were with zero-copy :o
+> ...just to clarify, my idea was that we could have a writeup of the
+> various issues and proposed solutions on the etherpad, and then post the
+> contents on-list next week as a starting point for a discussion that is
+> not hidden deeply inside the discussion on a patch set.
 >
-> Out of curiosity - what's the softirq load with 4k? Do you have an
-> idea what the load is on the CPU consuming the data vs the softirq
-> processing with 1500B ?
+> So, please continue adding points :)
 
-On my testing host,
+Last call for anything you want to add to the etherpad; I'll post the
+contents tomorrow.
 
-4K MTU : processing ~2,600.000 packets per second in GRO and other parts
-use about 60% of the core in BH.
-(Some of this cost comes from a clang issue, and the csum_partial() one
-I was working on last week)
-NIC RX interrupts are firing about 25,000 times per second in this setup.
+[Yes, I wanted to post it last week, but got sidetracked.]
 
-1500 MTU : processing ~ 5,800,000 packets per second uses one core in
-BH (and also one core in recvmsg()),
-We stay in NAPI mode (no IRQ rearming)
-(That was with a TCP_STREAM run sustaining 70Gbit)
-
-BH numbers also depend on IRQ coalescing parameters.
