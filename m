@@ -2,98 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B93A84539E3
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 20:12:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F63D4539FE
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 20:18:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239683AbhKPTPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 14:15:42 -0500
-Received: from mail.skyhub.de ([5.9.137.197]:39940 "EHLO mail.skyhub.de"
+        id S239940AbhKPTVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 14:21:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53890 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232659AbhKPTPm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Nov 2021 14:15:42 -0500
-Received: from zn.tnic (p200300ec2f1b8100142ca11f4b264b2f.dip0.t-ipconnect.de [IPv6:2003:ec:2f1b:8100:142c:a11f:4b26:4b2f])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 63CAB1EC056D;
-        Tue, 16 Nov 2021 20:12:43 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1637089963;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=MvK45/ux9p/D3P3nIzsezA5z0FVwGNzV1VvGxFtGLKQ=;
-        b=DYO/tXGYfoiflcnBZ3TlKfZZ+/Nly9hyIxYswP+umYZWIDlAGYy77xh7aqb7mOF0MVFTU+
-        +GG5FsAU39HXZwuLfIERLqvO7NAOXLMV4qlBiPeZkbRl9YG9fRZFW3kcoexW0VM/khZZpy
-        Hn5p4xjCfVD7JeZRj+4M3EhGy/fJ6lk=
-Date:   Tue, 16 Nov 2021 20:12:39 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Tianyu Lan <ltykernel@gmail.com>
-Cc:     dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        tglx@linutronix.de, mingo@redhat.com, x86@kernel.org,
-        hpa@zytor.com, jgross@suse.com, sstabellini@kernel.org,
-        boris.ostrovsky@oracle.com, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, joro@8bytes.org, will@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, hch@lst.de, m.szyprowski@samsung.com,
-        robin.murphy@arm.com, xen-devel@lists.xenproject.org,
-        michael.h.kelley@microsoft.com,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        iommu@lists.linux-foundation.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        netdev@vger.kernel.org, vkuznets@redhat.com, brijesh.singh@amd.com,
-        konrad.wilk@oracle.com, parri.andrea@gmail.com,
-        thomas.lendacky@amd.com, dave.hansen@intel.com
-Subject: Re: [PATCH 3/5] hyperv/IOMMU: Enable swiotlb bounce buffer for
- Isolation VM
-Message-ID: <YZQCp6WWKAdOCbh8@zn.tnic>
-References: <20211116153923.196763-1-ltykernel@gmail.com>
- <20211116153923.196763-4-ltykernel@gmail.com>
+        id S239873AbhKPTVC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 14:21:02 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6711863220;
+        Tue, 16 Nov 2021 19:18:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637090284;
+        bh=StF9zvIyiI8CbHePB2sRe3ydWwyn5ypRVDzxRXBi2dE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=g9BbynV/nzZCGY+kAeg5+egq79sKFig/v9cLiOzyi9dpG9XqDxmI2FKTMyBcSSxxL
+         rT9Bk4F1ZwR53BW7l8hCPu3uR7w2i3uzJdNORxf2qR/dbG6JEgbDbC5VANXZgPweEF
+         TRsuqkVYZF/HFuH8B49g6FkHEtlrNpfJ/9IEXalUCuN54VdRPUhVHFStepHqkVCBc/
+         8GPai/ZcYWu6pt/nI8cHVnHfGx/s5RNHg2lGWpdCaL5zBMQxWingVVdSXddCgSdYZy
+         2kJzQulC6IYnRwv9iIRT3Jz8EOPkcCA/RXkjoz0Cu07Zb9RJS/W71E2UGrUTuMp5Yc
+         Y7jX0h6or2KyQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>,
+        "J . Bruce Fields" <bfields@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, bfields@fieldses.org,
+        chuck.lever@oracle.com, trond.myklebust@hammerspace.com,
+        anna.schumaker@netapp.com, davem@davemloft.net, kuba@kernel.org,
+        colin.king@intel.com, neilb@suse.de, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 04/65] UNRPC: Return specific error code on kmalloc failure
+Date:   Tue, 16 Nov 2021 14:16:49 -0500
+Message-Id: <20211116191754.2419097-4-sashal@kernel.org>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20211116191754.2419097-1-sashal@kernel.org>
+References: <20211116191754.2419097-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20211116153923.196763-4-ltykernel@gmail.com>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 16, 2021 at 10:39:21AM -0500, Tianyu Lan wrote:
-> diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
-> index 35487305d8af..65bc385ae07a 100644
-> --- a/arch/x86/mm/mem_encrypt.c
-> +++ b/arch/x86/mm/mem_encrypt.c
-> @@ -31,6 +31,7 @@
->  #include <asm/processor-flags.h>
->  #include <asm/msr.h>
->  #include <asm/cmdline.h>
-> +#include <asm/mshyperv.h>
->  
->  #include "mm_internal.h"
->  
-> @@ -203,7 +204,8 @@ void __init sev_setup_arch(void)
->  	phys_addr_t total_mem = memblock_phys_mem_size();
->  	unsigned long size;
->  
-> -	if (!cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
-> +	if (!cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT)
-> +	    && !hv_is_isolation_supported())
+From: Yang Li <yang.lee@linux.alibaba.com>
 
-Are we gonna start sprinkling this hv_is_isolation_supported() check
-everywhere now?
+[ Upstream commit 458032fcfa91c8714859b1f01b9ac7dccea5d6cd ]
 
-Are those isolation VMs SEV-like guests? Is CC_ATTR_GUEST_MEM_ENCRYPT
-set on them?
+Although the callers of this function only care about whether the
+return value is null or not, we should still give a rigorous
+error code.
 
-What you should do, instead, is add an isol. VM specific
-hv_cc_platform_has() just like amd_cc_platform_has() and handle
-the cc_attrs there for your platform, like return false for
-CC_ATTR_GUEST_MEM_ENCRYPT and then you won't need to add that hv_* thing
-everywhere.
+Smatch tool warning:
+net/sunrpc/auth_gss/svcauth_gss.c:784 gss_write_verf() warn: returning
+-1 instead of -ENOMEM is sloppy
 
-And then fix it up in __set_memory_enc_dec() too.
+No functional change, just more standardized.
 
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+Signed-off-by: J. Bruce Fields <bfields@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/sunrpc/auth_gss/svcauth_gss.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/sunrpc/auth_gss/svcauth_gss.c b/net/sunrpc/auth_gss/svcauth_gss.c
+index 1f2817195549b..b87565b64928d 100644
+--- a/net/sunrpc/auth_gss/svcauth_gss.c
++++ b/net/sunrpc/auth_gss/svcauth_gss.c
+@@ -781,7 +781,7 @@ gss_write_verf(struct svc_rqst *rqstp, struct gss_ctx *ctx_id, u32 seq)
+ 	svc_putnl(rqstp->rq_res.head, RPC_AUTH_GSS);
+ 	xdr_seq = kmalloc(4, GFP_KERNEL);
+ 	if (!xdr_seq)
+-		return -1;
++		return -ENOMEM;
+ 	*xdr_seq = htonl(seq);
+ 
+ 	iov.iov_base = xdr_seq;
 -- 
-Regards/Gruss,
-    Boris.
+2.33.0
 
-https://people.kernel.org/tglx/notes-about-netiquette
