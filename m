@@ -2,112 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDA8C452C5D
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 09:03:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62D48452C73
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 09:10:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231697AbhKPIGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 03:06:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35648 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231429AbhKPIGk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 03:06:40 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD99EC061570;
-        Tue, 16 Nov 2021 00:03:42 -0800 (PST)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1637049819;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=FteyQfbIgJx3ib+ogxM6J1I2KQpLjIzS+DlwgvLilnI=;
-        b=3p0H7i3+4SOsv7kN1EOC12EXToXhOpfF+Lyz4QLstBDZeev8GgqXRNpkywXQ5C9HQbsAwg
-        TfnF9JaTkzzle6Q+WJ6sG+CcM2EC5ipSwbt3w8+i+OIgWUe58Bce3E1o2k7wG5durpbhqn
-        afKQ9EchPO533tSJxJOJr36tJa/oybMYQp5ywpx0Yb8yaTNGRf9wESQQtMWQPfduhw1m5a
-        jhhEOqSjcNYYTagm78gFKma1RzNM7CCW+Q7cRtVQM8sHIwodkbgSwS5pmDyc/c16yyaQpE
-        P53sjWSUvN7Cikm3l8SG4nv1c6jmU/0mGb8kH1pFq7W51NwfwZksHPSfSJou4Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1637049819;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=FteyQfbIgJx3ib+ogxM6J1I2KQpLjIzS+DlwgvLilnI=;
-        b=WS/0Up9IHDqldGoUyVfy+OVZb8It2O0qBUR7Bni1dAwvdZM05aJZOrz+H1U5er4CfIgfNf
-        xOiVttxtoIseCzCQ==
-To:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
-        Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH net-next] net: ethernet: ti: cpsw: Enable PHY timestamping
-Date:   Tue, 16 Nov 2021 09:03:25 +0100
-Message-Id: <20211116080325.92830-1-kurt@linutronix.de>
+        id S231824AbhKPIN3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 03:13:29 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:64302 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231701AbhKPIN2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 03:13:28 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1AG7KXQD003838;
+        Tue, 16 Nov 2021 00:10:23 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=pfpt0220; bh=RoV/3perCx3nA3ocAZ1FkkrS31YYqIs5qPGVY/qK65Q=;
+ b=hVvq1Yw+gSX1yuTENkS30zWffcdDDhpcRQuMpg2a5zyNHfE77S3aVzj7jt1xBrIrHPnr
+ xoHwgMYXBa8K2nz+GBr5xuzqo0FP9lP+LNy40hMJs57t3YzuIWWq9ubOGQzW3tvoRdVk
+ Q2690+JKBC3+GdY1ua4rz6pg4wy/frq6fmHDIMywdlVbMBAMyeKhtwxTfFN4EQtvRgmT
+ wyWNLu+AmQg9oU7y6K19kqa/mLtaR6kLDGgrfldiH1RMziV3ZOasSAHq+7x8AERwYgUu
+ +CUBvACqG0dyg1mbb+UJ2l0bGGIP4rm1tEZjcYV+MWInXv9qSNs1vsSvJPAw5GaruBPK MA== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3cc85x85hy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 16 Nov 2021 00:10:23 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 16 Nov
+ 2021 00:10:16 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Tue, 16 Nov 2021 00:10:16 -0800
+Received: from alpha-dell-r720.punelab.qlogic.com032qlogic.org032qlogic.com032mv.qlogic.com032av.na032marvell.com (unknown [10.30.46.139])
+        by maili.marvell.com (Postfix) with ESMTP id E351C3F70E5;
+        Tue, 16 Nov 2021 00:10:06 -0800 (PST)
+From:   Alok Prasad <palok@marvell.com>
+To:     <paskripkin@gmail.com>
+CC:     <aelior@marvell.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <netdev@vger.kernel.org>, <skalluru@marvell.com>,
+        <mchopra@marvell.com>, <palok@marvell.com>
+Subject: Re: [PATCH] MAINTAINERS: remove GR-everest-linux-l2@marvell.com
+Date:   Tue, 16 Nov 2021 08:10:04 +0000
+Message-ID: <20211116081004.11148-1-palok@marvell.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20211115202028.26637-1-paskripkin@gmail.com>
+References: <20211115202028.26637-1-paskripkin@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: MJAflol41ctueZp5l-_yz6v79e_q09td
+X-Proofpoint-ORIG-GUID: MJAflol41ctueZp5l-_yz6v79e_q09td
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-11-15_16,2021-11-15_01,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the used PHYs also support hardware timestamping, all configuration requests
-should be forwared to the PHYs instead of being processed by the MAC driver
-itself.
+> I've sent a patch to GR-everest-linux-l2@marvell.com few days ago and
+> got a reply from postmaster@marvell.com:
+> 
+>      Delivery has failed to these recipients or groups:
+> 
+>      gr-everest-linux-l2@marvell.com<mailto:gr-everest-linux-l2@marvell.com>
+>      The email address you entered couldn't be found. Please check the
+>      recipient's email address and try to resend the message. If the problem
+>      continues, please contact your helpdesk.
+> 
+> Since this email bounces, let's remove it from MAINTAINERS file.
+> 
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+> ---
+> 
+> CCed others related maintainers from marvell, maybe they know what
+> happened with this email
+> 
 
-This enables PHY timestamping in combination with the cpsw driver.
+Pavel,
+Yes gr-everest-linux-l2@marvell.com has been disabled, But please
+add Manish Chopra <mchopra@marvell.com> to the maintainer list.
 
-Tested with an am335x based board with two DP83640 PHYs connected to the cpsw
-switch.
+Thanks,
+Alok
 
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
----
- drivers/net/ethernet/ti/cpsw_priv.c | 22 ++++++++++++++--------
- 1 file changed, 14 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
-index ecc2a6b7e28f..c99dd9735087 100644
---- a/drivers/net/ethernet/ti/cpsw_priv.c
-+++ b/drivers/net/ethernet/ti/cpsw_priv.c
-@@ -710,20 +710,26 @@ int cpsw_ndo_ioctl(struct net_device *dev, struct ifreq *req, int cmd)
- 	struct cpsw_priv *priv = netdev_priv(dev);
- 	struct cpsw_common *cpsw = priv->cpsw;
- 	int slave_no = cpsw_slave_index(cpsw, priv);
-+	struct phy_device *phy;
- 
- 	if (!netif_running(dev))
- 		return -EINVAL;
- 
--	switch (cmd) {
--	case SIOCSHWTSTAMP:
--		return cpsw_hwtstamp_set(dev, req);
--	case SIOCGHWTSTAMP:
--		return cpsw_hwtstamp_get(dev, req);
-+	phy = cpsw->slaves[slave_no].phy;
-+
-+	if (!phy_has_hwtstamp(phy)) {
-+		switch (cmd) {
-+		case SIOCSHWTSTAMP:
-+			return cpsw_hwtstamp_set(dev, req);
-+		case SIOCGHWTSTAMP:
-+			return cpsw_hwtstamp_get(dev, req);
-+		}
- 	}
- 
--	if (!cpsw->slaves[slave_no].phy)
--		return -EOPNOTSUPP;
--	return phy_mii_ioctl(cpsw->slaves[slave_no].phy, req, cmd);
-+	if (phy)
-+		return phy_mii_ioctl(phy, req, cmd);
-+
-+	return -EOPNOTSUPP;
- }
- 
- int cpsw_ndo_set_tx_maxrate(struct net_device *ndev, int queue, u32 rate)
--- 
-2.30.2
+> ---
 
