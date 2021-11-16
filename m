@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC026452BAD
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 08:38:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A631452BB1
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 08:39:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230415AbhKPHls (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 02:41:48 -0500
-Received: from mga11.intel.com ([192.55.52.93]:42900 "EHLO mga11.intel.com"
+        id S230494AbhKPHlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 02:41:53 -0500
+Received: from mga11.intel.com ([192.55.52.93]:42935 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230403AbhKPHln (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Nov 2021 02:41:43 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10169"; a="231099102"
+        id S230482AbhKPHls (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 02:41:48 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10169"; a="231099116"
 X-IronPort-AV: E=Sophos;i="5.87,238,1631602800"; 
-   d="scan'208";a="231099102"
+   d="scan'208";a="231099116"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2021 23:38:47 -0800
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2021 23:38:50 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,238,1631602800"; 
-   d="scan'208";a="671857381"
+   d="scan'208";a="671857396"
 Received: from silpixa00401086.ir.intel.com (HELO localhost.localdomain) ([10.55.129.110])
-  by orsmga005.jf.intel.com with ESMTP; 15 Nov 2021 23:38:43 -0800
+  by orsmga005.jf.intel.com with ESMTP; 15 Nov 2021 23:38:47 -0800
 From:   Ciara Loftus <ciara.loftus@intel.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
         kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
         toke@redhat.com, bjorn@kernel.org, magnus.karlsson@intel.com,
         jonathan.lemon@gmail.com, maciej.fijalkowski@intel.com,
-        Ciara Loftus <ciara.loftus@intel.com>,
-        Cristian Dumitrescu <cristian.dumitrescu@intel.com>
-Subject: [RFC PATCH bpf-next 7/8] i40e: introduce batched XDP rx descriptor processing
-Date:   Tue, 16 Nov 2021 07:37:41 +0000
-Message-Id: <20211116073742.7941-8-ciara.loftus@intel.com>
+        Ciara Loftus <ciara.loftus@intel.com>
+Subject: [RFC PATCH bpf-next 8/8] libbpf: use bpf_redirect_xsk in the default program
+Date:   Tue, 16 Nov 2021 07:37:42 +0000
+Message-Id: <20211116073742.7941-9-ciara.loftus@intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211116073742.7941-1-ciara.loftus@intel.com>
 References: <20211116073742.7941-1-ciara.loftus@intel.com>
@@ -42,317 +41,144 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce batched processing of XDP frames in the i40e driver. The batch
-size is fixed at 64.
+NOTE: This will be committed to libxdp, not libbpf as the xsk support in
+that library has been deprecated. It is only here to serve as an example
+of what will be added into libxdp.
 
-First, the driver performs a lookahead in the rx ring to determine if
-there are 64 contiguous descriptors available to be processed. If so,
-and if the action returned from the bpf program run for each of the 64
-descriptors is XDP_REDIRECT_XSK, the new xsk_rcv_batch API is used to
-push the batch to the XDP socket Rx ring.
-
-Logic to fallback to scalar processing is included for situations where
-batch processing is not possible eg. not enough descriptors, ring wrap,
-different actions returned from bpf program, etc.
+Use the new bpf_redirect_xsk helper in the default program if the kernel
+supports it.
 
 Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
-Signed-off-by: Cristian Dumitrescu <cristian.dumitrescu@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_xsk.c | 219 +++++++++++++++++++--
- 1 file changed, 200 insertions(+), 19 deletions(-)
+ tools/include/uapi/linux/bpf.h | 13 +++++++++
+ tools/lib/bpf/xsk.c            | 50 ++++++++++++++++++++++++++++++++--
+ 2 files changed, 60 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-index c994b4d9c38a..a578bb7b3b99 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-@@ -10,6 +10,9 @@
- #include "i40e_txrx_common.h"
- #include "i40e_xsk.h"
- 
-+#define I40E_DESCS_PER_BATCH 64
-+#define I40E_XSK_BATCH_MASK ~(I40E_DESCS_PER_BATCH - 1)
-+
- int i40e_alloc_rx_bi_zc(struct i40e_ring *rx_ring)
- {
- 	unsigned long sz = sizeof(*rx_ring->rx_bi_zc) * rx_ring->count;
-@@ -139,26 +142,12 @@ int i40e_xsk_pool_setup(struct i40e_vsi *vsi, struct xsk_buff_pool *pool,
- 		i40e_xsk_pool_disable(vsi, qid);
- }
- 
--/**
-- * i40e_run_xdp_zc - Executes an XDP program on an xdp_buff
-- * @rx_ring: Rx ring
-- * @xdp: xdp_buff used as input to the XDP program
-- *
-- * Returns any of I40E_XDP_{PASS, CONSUMED, TX, REDIR, REDIR_XSK}
-- **/
--static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
-+static int i40e_handle_xdp_action(struct i40e_ring *rx_ring, struct xdp_buff *xdp,
-+				  struct bpf_prog *xdp_prog, u32 act)
- {
- 	int err, result = I40E_XDP_PASS;
- 	struct i40e_ring *xdp_ring;
--	struct bpf_prog *xdp_prog;
- 	struct xdp_sock *xs;
--	u32 act;
--
--	/* NB! xdp_prog will always be !NULL, due to the fact that
--	 * this path is enabled by setting an XDP program.
--	 */
--	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
--	act = bpf_prog_run_xdp(xdp_prog, xdp);
- 
- 	if (likely(act == XDP_REDIRECT_XSK)) {
- 		xs = xsk_get_redirect_xsk(&rx_ring->netdev->_rx[xdp->rxq->queue_index]);
-@@ -197,6 +186,21 @@ static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
- 	return result;
- }
- 
-+/**
-+ * i40e_run_xdp_zc - Executes an XDP program on an xdp_buff
-+ * @rx_ring: Rx ring
-+ * @xdp: xdp_buff used as input to the XDP program
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 6297eafdc40f..a33cc63c8e6f 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -4957,6 +4957,17 @@ union bpf_attr {
+  *		**-ENOENT** if *task->mm* is NULL, or no vma contains *addr*.
+  *		**-EBUSY** if failed to try lock mmap_lock.
+  *		**-EINVAL** for invalid **flags**.
 + *
-+ * Returns any of I40E_XDP_{PASS, CONSUMED, TX, REDIR, REDIR_XSK}
-+ **/
-+static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp,
-+			   struct bpf_prog *xdp_prog)
-+{
-+	u32 act = bpf_prog_run_xdp(xdp_prog, xdp);
-+
-+	return i40e_handle_xdp_action(rx_ring, xdp, xdp_prog, act);
-+}
-+
- bool i40e_alloc_rx_buffers_zc(struct i40e_ring *rx_ring, u16 count)
- {
- 	u16 ntu = rx_ring->next_to_use;
-@@ -218,6 +222,7 @@ bool i40e_alloc_rx_buffers_zc(struct i40e_ring *rx_ring, u16 count)
- 		dma = xsk_buff_xdp_get_dma(*xdp);
- 		rx_desc->read.pkt_addr = cpu_to_le64(dma);
- 		rx_desc->read.hdr_addr = 0;
-+		rx_desc->wb.qword1.status_error_len = 0;
- 
- 		rx_desc++;
- 		xdp++;
-@@ -324,6 +329,7 @@ static void i40e_handle_xdp_result_zc(struct i40e_ring *rx_ring,
- }
- 
- static inline void i40e_clean_rx_desc_zc(struct i40e_ring *rx_ring,
-+					 struct bpf_prog *xdp_prog,
- 					 unsigned int *stat_rx_packets,
- 					 unsigned int *stat_rx_bytes,
- 					 unsigned int *xmit,
-@@ -370,7 +376,7 @@ static inline void i40e_clean_rx_desc_zc(struct i40e_ring *rx_ring,
- 		xsk_buff_set_size(bi, size);
- 		xsk_buff_dma_sync_for_cpu(bi, rx_ring->xsk_pool);
- 
--		xdp_res = i40e_run_xdp_zc(rx_ring, bi);
-+		xdp_res = i40e_run_xdp_zc(rx_ring, bi, xdp_prog);
- 		i40e_handle_xdp_result_zc(rx_ring, bi, rx_desc, &rx_packets,
- 					  &rx_bytes, size, xdp_res);
- 		total_rx_packets += rx_packets;
-@@ -385,6 +391,172 @@ static inline void i40e_clean_rx_desc_zc(struct i40e_ring *rx_ring,
- 	*xmit = xdp_xmit;
- }
- 
-+/**
-+ * i40_rx_ring_lookahead - check for new descriptors in the rx ring
-+ * @rx_ring: Rx ring
-+ * @budget: NAPI budget
++ * long bpf_redirect_xsk(void *ctx, struct bpf_map *map, u32 key, u64 flags)
++ *	Description
++ *		Redirect the packet to the XDP socket associated with the netdev queue if
++ *		the socket has an rx ring configured and is the only socket attached to the
++ *		queue. Fall back to bpf_redirect_map behavior if either condition is not met.
++ *	Return
++ *		**XDP_REDIRECT_XSK** if successful.
 + *
-+ * Returns the number of available descriptors in contiguous memory ie.
-+ * without a ring wrap.
-+ *
-+ **/
-+static inline unsigned int i40_rx_ring_lookahead(struct i40e_ring *rx_ring,
-+						 unsigned int budget)
-+{
-+	u32 used = (rx_ring->next_to_clean - rx_ring->next_to_use - 1) & (rx_ring->count - 1);
-+	union i40e_rx_desc *rx_desc0 = (union i40e_rx_desc *)rx_ring->desc, *rx_desc;
-+	u32 next_to_clean = rx_ring->next_to_clean;
-+	u32 potential = rx_ring->count - used;
-+	u16 count_mask = rx_ring->count - 1;
-+	unsigned int size;
-+	u64 qword;
++ *		**XDP_REDIRECT** if the fall back was successful, or the value of the
++ *		two lower bits of the *flags* argument on error
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -5140,6 +5151,7 @@ union bpf_attr {
+ 	FN(skc_to_unix_sock),		\
+ 	FN(kallsyms_lookup_name),	\
+ 	FN(find_vma),			\
++	FN(redirect_xsk),		\
+ 	/* */
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+@@ -5520,6 +5532,7 @@ enum xdp_action {
+ 	XDP_PASS,
+ 	XDP_TX,
+ 	XDP_REDIRECT,
++	XDP_REDIRECT_XSK,
+ };
+ 
+ /* user accessible metadata for XDP packet hook
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index fdb22f5405c9..ec66d4206af0 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -50,6 +50,7 @@
+ enum xsk_prog {
+ 	XSK_PROG_FALLBACK,
+ 	XSK_PROG_REDIRECT_FLAGS,
++	XSK_PROG_REDIRECT_XSK_FLAGS,
+ };
+ 
+ struct xsk_umem {
+@@ -374,7 +375,15 @@ static enum xsk_prog get_xsk_prog(void)
+ 		BPF_EMIT_CALL(BPF_FUNC_redirect_map),
+ 		BPF_EXIT_INSN(),
+ 	};
+-	int prog_fd, map_fd, ret, insn_cnt = ARRAY_SIZE(insns);
++	struct bpf_insn insns_xsk[] = {
++		BPF_MOV64_REG(BPF_REG_CTX, BPF_REG_ARG1),
++		BPF_LD_MAP_FD(BPF_REG_2, 0),
++		BPF_MOV64_IMM(BPF_REG_3, 0),
++		BPF_MOV64_IMM(BPF_REG_4, XDP_PASS),
++		BPF_EMIT_CALL(BPF_FUNC_redirect_xsk),
++		BPF_EXIT_INSN(),
++	};
++	int prog_fd, map_fd, ret;
+ 
+ 	memset(&map_attr, 0, sizeof(map_attr));
+ 	map_attr.map_type = BPF_MAP_TYPE_XSKMAP;
+@@ -386,9 +395,25 @@ static enum xsk_prog get_xsk_prog(void)
+ 	if (map_fd < 0)
+ 		return detected;
+ 
++	insns_xsk[1].imm = map_fd;
 +
-+	budget &= I40E_XSK_BATCH_MASK;
++	prog_fd = bpf_prog_load(BPF_PROG_TYPE_XDP, NULL, "GPL", insns_xsk, ARRAY_SIZE(insns_xsk),
++				NULL);
++	if (prog_fd < 0)
++		goto prog_redirect;
 +
-+	while (budget) {
-+		if (budget > potential)
-+			goto next;
-+		rx_desc = rx_desc0 + ((next_to_clean + budget - 1) & count_mask);
-+		qword = le64_to_cpu(rx_desc->wb.qword1.status_error_len);
-+		dma_rmb();
-+
-+		size = (qword & I40E_RXD_QW1_LENGTH_PBUF_MASK) >>
-+			I40E_RXD_QW1_LENGTH_PBUF_SHIFT;
-+		if (size && ((next_to_clean + budget) <= count_mask))
-+			return budget;
-+
-+next:
-+		budget >>= 1;
-+		budget &= I40E_XSK_BATCH_MASK;
++	ret = bpf_prog_test_run(prog_fd, 0, &data_in, 1, &data_out, &size_out, &retval, &duration);
++	if (!ret && retval == XDP_PASS) {
++		detected = XSK_PROG_REDIRECT_XSK_FLAGS;
++		close(map_fd);
++		close(prog_fd);
++		return detected;
 +	}
 +
-+	return 0;
-+}
++prog_redirect:
+ 	insns[0].imm = map_fd;
+ 
+-	prog_fd = bpf_prog_load(BPF_PROG_TYPE_XDP, NULL, "GPL", insns, insn_cnt, NULL);
++	prog_fd = bpf_prog_load(BPF_PROG_TYPE_XDP, NULL, "GPL", insns, ARRAY_SIZE(insns), NULL);
+ 	if (prog_fd < 0) {
+ 		close(map_fd);
+ 		return detected;
+@@ -483,10 +508,29 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
+ 		BPF_EMIT_CALL(BPF_FUNC_redirect_map),
+ 		BPF_EXIT_INSN(),
+ 	};
 +
-+/**
-+ * i40e_run_xdp_zc_batch - Executes an XDP program on an array of xdp_buffs
-+ * @rx_ring: Rx ring
-+ * @bufs: array of xdp_buffs used as input to the XDP program
-+ * @res: array of ints with result for each buf if an error occurs or slow path taken.
-+ *
-+ * Returns zero if all xdp_buffs successfully took the fast path (XDP_REDIRECT_XSK).
-+ * Otherwise returns -1 and sets individual results for each buf in the array *res.
-+ * Individual results are one of I40E_XDP_{PASS, CONSUMED, TX, REDIR, REDIR_XSK}
-+ **/
-+static int i40e_run_xdp_zc_batch(struct i40e_ring *rx_ring, struct xdp_buff **bufs,
-+				 struct bpf_prog *xdp_prog, int *res)
-+{
-+	u32 last_act = XDP_REDIRECT_XSK;
-+	int runs = 0, ret = 0, err, i;
-+
-+	while ((runs < I40E_DESCS_PER_BATCH) && (last_act == XDP_REDIRECT_XSK))
-+		last_act = bpf_prog_run_xdp(xdp_prog, *(bufs + runs++));
-+
-+	if (likely(runs == I40E_DESCS_PER_BATCH)) {
-+		struct xdp_sock *xs =
-+			xsk_get_redirect_xsk(&rx_ring->netdev->_rx[(*bufs)->rxq->queue_index]);
-+
-+		err = xsk_rcv_batch(xs, bufs, I40E_DESCS_PER_BATCH);
-+		if (unlikely(err)) {
-+			ret = -1;
-+			for (i = 0; i < I40E_DESCS_PER_BATCH; i++)
-+				*(res + i) = I40E_XDP_PASS;
-+		}
-+	} else {
-+		/* Handle the result of each program run individually */
-+		u32 act;
-+
-+		ret = -1;
-+		for (i = 0; i < I40E_DESCS_PER_BATCH; i++) {
-+			struct xdp_buff *xdp = *(bufs + i);
-+
-+			/* The result of the first runs-2 programs was XDP_REDIRECT_XSK.
-+			 * The result of the subsequent program run was last_act.
-+			 * Any remaining bufs have not yet had the program executed, so
-+			 * execute it now.
-+			 */
-+
-+			if (i < runs - 2)
-+				act = XDP_REDIRECT_XSK;
-+			else if (i == runs - 1)
-+				act = last_act;
-+			else
-+				act = bpf_prog_run_xdp(xdp_prog, xdp);
-+
-+			*(res + i) = i40e_handle_xdp_action(rx_ring, xdp, xdp_prog, act);
-+		}
-+	}
-+
-+	return ret;
-+}
-+
-+static inline void i40e_clean_rx_desc_zc_batch(struct i40e_ring *rx_ring,
-+					       struct bpf_prog *xdp_prog,
-+					       unsigned int *total_rx_packets,
-+					       unsigned int *total_rx_bytes,
-+					       unsigned int *xdp_xmit)
-+{
-+	u16 next_to_clean = rx_ring->next_to_clean;
-+	unsigned int xdp_res[I40E_DESCS_PER_BATCH];
-+	unsigned int size[I40E_DESCS_PER_BATCH];
-+	unsigned int rx_packets, rx_bytes = 0;
-+	union i40e_rx_desc *rx_desc;
-+	struct xdp_buff **bufs;
-+	int j, ret;
-+	u64 qword;
-+
-+	rx_desc = I40E_RX_DESC(rx_ring, next_to_clean);
-+
-+	prefetch(rx_desc + I40E_DESCS_PER_BATCH);
-+
-+	for (j = 0; j < I40E_DESCS_PER_BATCH; j++) {
-+		qword = le64_to_cpu((rx_desc + j)->wb.qword1.status_error_len);
-+		size[j] = (qword & I40E_RXD_QW1_LENGTH_PBUF_MASK) >>
-+			I40E_RXD_QW1_LENGTH_PBUF_SHIFT;
-+	}
-+
-+	/* This memory barrier is needed to keep us from reading
-+	 * any other fields out of the rx_descs until we have
-+	 * verified the descriptors have been written back.
++	/* This is the post-5.13 kernel C-program:
++	 * SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
++	 * {
++	 *     return bpf_redirect_xsk(ctx, &xsks_map, ctx->rx_queue_index, XDP_PASS);
++	 * }
 +	 */
-+	dma_rmb();
-+
-+	bufs = i40e_rx_bi(rx_ring, next_to_clean);
-+
-+	for (j = 0; j < I40E_DESCS_PER_BATCH; j++)
-+		xsk_buff_set_size(*(bufs + j), size[j]);
-+
-+	xsk_buff_dma_sync_for_cpu_batch(bufs, rx_ring->xsk_pool, I40E_DESCS_PER_BATCH);
-+
-+	ret = i40e_run_xdp_zc_batch(rx_ring, bufs, xdp_prog, xdp_res);
-+
-+	if (unlikely(ret)) {
-+		unsigned int err_rx_packets = 0, err_rx_bytes = 0;
-+
-+		rx_packets = 0;
-+		rx_bytes = 0;
-+
-+		for (j = 0; j < I40E_DESCS_PER_BATCH; j++) {
-+			i40e_handle_xdp_result_zc(rx_ring, *(bufs + j), rx_desc + j,
-+						  &err_rx_packets, &err_rx_bytes, size[j],
-+						  xdp_res[j]);
-+			*xdp_xmit |= (xdp_res[j] & (I40E_XDP_TX | I40E_XDP_REDIR |
-+						    I40E_XDP_REDIR_XSK));
-+			rx_packets += err_rx_packets;
-+			rx_bytes += err_rx_bytes;
-+		}
-+	} else {
-+		rx_packets = I40E_DESCS_PER_BATCH;
-+		for (j = 0; j < I40E_DESCS_PER_BATCH; j++)
-+			rx_bytes += size[j];
-+		*xdp_xmit |= I40E_XDP_REDIR_XSK;
-+	}
-+
-+	rx_ring->next_to_clean += I40E_DESCS_PER_BATCH;
-+	*total_rx_packets += rx_packets;
-+	*total_rx_bytes += rx_bytes;
-+}
-+
- /**
-  * i40e_clean_rx_irq_zc - Consumes Rx packets from the hardware ring
-  * @rx_ring: Rx ring
-@@ -394,17 +566,26 @@ static inline void i40e_clean_rx_desc_zc(struct i40e_ring *rx_ring,
-  **/
- int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
- {
-+	int batch_budget = i40_rx_ring_lookahead(rx_ring, (unsigned int)budget);
-+	struct bpf_prog *xdp_prog = READ_ONCE(rx_ring->xdp_prog);
- 	unsigned int total_rx_bytes = 0, total_rx_packets = 0;
- 	u16 count_mask = rx_ring->count - 1;
- 	unsigned int xdp_xmit = 0;
- 	bool failure = false;
- 	u16 cleaned_count;
-+	int i;
-+
-+	for (i = 0; i < batch_budget; i += I40E_DESCS_PER_BATCH)
-+		i40e_clean_rx_desc_zc_batch(rx_ring, xdp_prog,
-+					    &total_rx_packets,
-+					    &total_rx_bytes,
-+					    &xdp_xmit);
- 
--	i40e_clean_rx_desc_zc(rx_ring,
-+	i40e_clean_rx_desc_zc(rx_ring, xdp_prog,
- 			      &total_rx_packets,
- 			      &total_rx_bytes,
- 			      &xdp_xmit,
--			      budget);
-+			      (unsigned int)budget - total_rx_packets);
- 
- 	cleaned_count = (rx_ring->next_to_clean - rx_ring->next_to_use - 1) & count_mask;
- 
++	struct bpf_insn prog_redirect_xsk_flags[] = {
++		/* r3 = *(u32 *)(r1 + 16) */
++		BPF_LDX_MEM(BPF_W, BPF_REG_3, BPF_REG_1, 16),
++		/* r2 = xskmap[] */
++		BPF_LD_MAP_FD(BPF_REG_2, ctx->xsks_map_fd),
++		/* r4 = XDP_PASS */
++		BPF_MOV64_IMM(BPF_REG_4, 2),
++		/* call bpf_redirect_xsk */
++		BPF_EMIT_CALL(BPF_FUNC_redirect_xsk),
++		BPF_EXIT_INSN(),
++	};
+ 	size_t insns_cnt[] = {sizeof(prog) / sizeof(struct bpf_insn),
+ 			      sizeof(prog_redirect_flags) / sizeof(struct bpf_insn),
++			      sizeof(prog_redirect_xsk_flags) / sizeof(struct bpf_insn),
+ 	};
+-	struct bpf_insn *progs[] = {prog, prog_redirect_flags};
++	struct bpf_insn *progs[] = {prog, prog_redirect_flags, prog_redirect_xsk_flags};
+ 	enum xsk_prog option = get_xsk_prog();
+ 	LIBBPF_OPTS(bpf_prog_load_opts, opts,
+ 		.log_buf = log_buf,
 -- 
 2.17.1
 
