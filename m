@@ -2,157 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B174E45325C
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 13:45:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 323DF453261
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 13:47:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236338AbhKPMrq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 07:47:46 -0500
-Received: from mail-bn8nam12on2068.outbound.protection.outlook.com ([40.107.237.68]:25793
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234318AbhKPMrn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Nov 2021 07:47:43 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hWy7KuhizoH4p0qAG9KL/7q/4krV2WZ/mMhdg++bLxgkjS4VWDbLOYn8LBgoxTb1uoPqwRf4H3FvQ6iYm03SDHfNLegIMS0mepiXhSl9by/IewL4m5C5psxX72AtTEFbL/qP77MHvJMvwtT29eaD0NttfDRpmtsj1pjOUqETmo7fuZtL3CY2itmafcPIT1iOe0CTUY29nk9ia9ZSPBWK3h28jCmfjBm7j9yij/M4+UkqwN13ABwJ6Jz5r5paDGL2vihlZVgFKoGfcUDt4ns5yjH8msY2VRCnapTlBThLIKWGOjiuHO1+fTV5X0ffeRnGHdrtHnR+FGz/5KEm9E2wLA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5jEnXAcBqfr8HD8qnwTbhn+6/Y6odnDfu5vHqlMV6oA=;
- b=cUwUxA0FhH75Yh3K+kTRG3sAK3l3vDxacXRrxP05+x/Z1lklTCCy1kHX+gGNo+m8yfuDU08bHYo13DiQ9BldbaJNxk56zRpsrsyiJXIv+S6l8BMOffOWqhEW/JWGmvR1L0eNvItun/jniGpfemWZhkl4hzuhGtC+ydRIpcNCO66kXJbMRLpomKZp5gMFm6qWRnwF+LHNeazwH1QKkpzVA95vTIJBQy0W8wSNys6Ug+CGqYcoXUqNZQna0pxSctDvDo9PT+RmaLeK857ZV2bUanCA1shfdlzUCaJD66l2P/UiQp75IhOGkjz267nmiNc4EfKNCAhQpfJU14klXkFujw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5jEnXAcBqfr8HD8qnwTbhn+6/Y6odnDfu5vHqlMV6oA=;
- b=sLeFn7dNm9/FAK1vr/Ktqx6VZta3UgXC9OpGyIzvrQERIdInwAIqugeTmfpCRrNqKJbqd+E3+Et0xjIsNlpxGlq56b5PKMHztUQ8z1REhsUBFakZCKWSOyk7iH59uO/vmwyKnxAL0pVZ2vRWPp9iYa+RdfiglmMPNIQt5pWYCVDKmJaLhy8ujjRparv6LOILW6n4Q8CZNiuIwAtKj8vXIz0/tiY+VmunYopEhv/gqqGnVMkpxNf3KXIEY2cJRHRwAVGDEaiwvJo7s7WFM453JUq4oEJ7JUVDPbgsOJoLDtMI77wadZXoYV3Zg16qrNhINpXAg7XyqbomljvW2SgQjQ==
-Authentication-Results: resnulli.us; dkim=none (message not signed)
- header.d=none;resnulli.us; dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5141.namprd12.prod.outlook.com (2603:10b6:208:309::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.11; Tue, 16 Nov
- 2021 12:44:44 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::5897:83b2:a704:7909]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::5897:83b2:a704:7909%7]) with mapi id 15.20.4690.027; Tue, 16 Nov 2021
- 12:44:44 +0000
-Date:   Tue, 16 Nov 2021 08:44:42 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
-        Ido Schimmel <idosch@idosch.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        edwin.peer@broadcom.com
-Subject: Re: [PATCH net-next] devlink: Require devlink lock during device
- reload
-Message-ID: <20211116124442.GX2105516@nvidia.com>
-References: <20211109182427.GJ1740502@nvidia.com>
- <YY0G90fJpu/OtF8L@nanopsycho>
- <YY0J8IOLQBBhok2M@unreal>
- <YY4aEFkVuqR+vauw@nanopsycho>
- <YZCqVig9GQi/o1iz@unreal>
- <YZJCdSy+wzqlwrE2@nanopsycho>
- <20211115125359.GM2105516@nvidia.com>
- <YZJx8raQt+FkKaeY@nanopsycho>
- <20211115150931.GA2386342@nvidia.com>
- <YZNWRXzzRYMNhUEO@nanopsycho>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YZNWRXzzRYMNhUEO@nanopsycho>
-X-ClientProxiedBy: YT3PR01CA0003.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:86::23) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+        id S236332AbhKPMu1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 07:50:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44550 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234318AbhKPMuX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 07:50:23 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B1C5C061570;
+        Tue, 16 Nov 2021 04:47:26 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id y13so12332256edd.13;
+        Tue, 16 Nov 2021 04:47:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=PC9x1cgBw93P53AgN5U5KNeA285xXCtmQFdlTLxZXtw=;
+        b=RZrLyEw5KWKEERg/PuINuxssHIBa8N73E923wFGbauYaYDmhl7p+feedjAhW/wiorN
+         a/7/nnu11iYYjxLPlNCucNsqGlD9Cu14l6RDUXd0tuqhbzMmd66FPU5A9xJrg7O9ecGJ
+         Edt7buQNRDCJG7PzVyW1yk89b1SEGhbuxw5DJLYYAUWiSWt/sydb68Y2S5ZEhgLbQQnb
+         9H7JRc+6GAD3NbDgatl6DjVgp6HUKiVGhxZJlQ6BlzMXDXY+6aiN3i+BCIZ4+Cxsp+Vl
+         gQ9KOmz8k8W8a3bHmjPZv5/vttfcDktxmdsX6AJIh4RgaQuR09kpz+WD/hZ4NWlT/XX7
+         7GiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=PC9x1cgBw93P53AgN5U5KNeA285xXCtmQFdlTLxZXtw=;
+        b=vxAFN6qwuu0CxP8410OqJoeUCRSINtx2OFcvJX28A3G9F7HlWXW0AAFlHUdb928cMI
+         csC+0I3SMOFclIyhp9nhFAgM+xXoRV+kFM0i8i7dFiAjGVmWc4CZkDl0k3CmZlqL2kY3
+         DGFJxm8qWOVvZFJPRCxIHC6RUqQh0/F749HvVDfpVTEQVG0ojvplAtVvtn0aop6+ib9j
+         djWZsuERWLbYQSUQOn7Gh465rRaeJIxgbd34Qc7MJ2qqIbyfYVDiQtuCmbPWan3PpgwE
+         UXnX1RlIMNmYWAdAhPsdnNFzpII64c+RrWc0RrPs9pER7fw1lifJpFaaXYrjB9rp2nnR
+         nItA==
+X-Gm-Message-State: AOAM532TDNxUqB5H+hksQazMq+7dMhURfaGlOUlDo3YUVoL8X1mrmf37
+        Dy7REIr/yxYalGJxyxHtiIw=
+X-Google-Smtp-Source: ABdhPJzmM7Jm0Plk96yqW20zocxqgfgoNwA1vAy7BKhyVjVMaKAX7ggmH8ITu4kza1UOIJHaVbTnKw==
+X-Received: by 2002:a17:906:9941:: with SMTP id zm1mr9628075ejb.466.1637066844805;
+        Tue, 16 Nov 2021 04:47:24 -0800 (PST)
+Received: from skbuf ([188.25.163.189])
+        by smtp.gmail.com with ESMTPSA id sd28sm8934405ejc.37.2021.11.16.04.47.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Nov 2021 04:47:24 -0800 (PST)
+Date:   Tue, 16 Nov 2021 14:47:23 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     g@pengutronix.de, Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        kernel@pengutronix.de, Jakub Kicinski <kuba@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: Re: [RFC PATCH net-next] net: dsa: microchip: implement multi-bridge
+ support
+Message-ID: <20211116124723.kivonrdbgqdxlryd@skbuf>
+References: <20211108111034.2735339-1-o.rempel@pengutronix.de>
+ <20211110123640.z5hub3nv37dypa6m@skbuf>
+ <20211112075823.GJ12195@pengutronix.de>
+ <20211115234546.spi7hz2fsxddn4dz@skbuf>
+ <20211116083903.GA16121@pengutronix.de>
 MIME-Version: 1.0
-Received: from mlx.ziepe.ca (206.223.160.26) by YT3PR01CA0003.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:86::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.26 via Frontend Transport; Tue, 16 Nov 2021 12:44:44 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1mmxpK-00AwdV-Ae; Tue, 16 Nov 2021 08:44:42 -0400
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cd5d21dd-4f77-405b-2eb9-08d9a8fedda1
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5141:
-X-Microsoft-Antispam-PRVS: <BL1PR12MB5141A3C718D1E95053ABC110C2999@BL1PR12MB5141.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 60b9uBOTGP+oSMb4JhPy5ymixLO4W+ouXkWqCbcnlGhUJwuy1mDIlrfCMdfDLeEE4fdxFNE8djFEXu/ejxCtZqfbTs41bPSzGyjor71Q5a6oxhGLPCzHY0afa0O8CGnX1XBdsE4GAl8BzMSLuKExDlUCHfEOBGnBOvJ12LoXQZhRKn1jmAiruR/G0acJi5tI36AIdhQSFxgz2roTx8JX75Q9QqD0PhU5uzuvFg441Q0oJl0Yol3YovEapC+K0Tr0Vw4rgVdpzCFGQIphAEG2w7ucZRp59MsvmZCn3limTnHr/O1z6umc6U7TFAXND6zKk0xgjEw4E/9ATjizu3a/cbDczVXSb2qA8abhMe5mezCsfBp8EmkNAoyTqMLi6nDGxk+JOx76kCx/+u9SNpA0SuosyoopVAY3DyraHJFCjWjEWYVYACCT5LvYoHd3lTH6AMNgEd4EVtbCQBk76Ivx0sZAZHcPYzxj8WEFcQs2RSLKNo3TbRHytO2vSTj1SY+Jciq7BQP4No7w4j7rHhbMqJZMknUqKC0olZ1daWopR4ZtNPItTScDb1nxv/ZEtM/huDJkqh+4TYTqffSB7bSsYlF1sGGgeerbAKAoooXbWLGmnXj8JVUah91CG1VaDn9BWtorBXRFfqSX8xqAgUl0oQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(8936002)(38100700002)(316002)(1076003)(9746002)(66946007)(9786002)(83380400001)(54906003)(8676002)(5660300002)(186003)(2616005)(508600001)(4326008)(86362001)(2906002)(426003)(66476007)(36756003)(6916009)(33656002)(26005)(66556008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wdsloqoW7au7Fyx5HY3rByGYSjYk5vGwYzRR/Zw/zZ0RAXQyx7z5RkSoQvdC?=
- =?us-ascii?Q?qbqeEeJk8pdkdqkzz2HaCcl3cUIVTJbOnK7h3WdJ9HR4G2p+aXPEyK5I9HdZ?=
- =?us-ascii?Q?yp7h82Z0YaDZw2uuVZuk7g7w+zR+wR3g9IisQhGOjIo4I4sZwZzJVaQOgxR4?=
- =?us-ascii?Q?Onh6c8Hu9GEf2D9BRoiOJ1NXJHSPNgm4KQlsvwnThimMysutPBUyTfsFwpN7?=
- =?us-ascii?Q?qu9w7LDMyIlVf7fQk8QBSxVI4FVJrnK3ql7VCA2CaX4CcTuT50TdBL2YdZBB?=
- =?us-ascii?Q?VWPTOp3YxJNXfmkfzxWGFh8vk0T8b4rX/Aac3kw5DAyQ9JflZ+++Lp7UhOk0?=
- =?us-ascii?Q?9t2s4aEIce2M77tZQbE+TBvv/fMe5d9LhNO13/WQ20GUuJnWvbNZuBH66j9h?=
- =?us-ascii?Q?wd15PZxKgfpyNSJtmbgwKsntf5DNTUXNCFSa8uk2oF0+dxxHB0iP7LO/ilBn?=
- =?us-ascii?Q?9swZRK9jmlBPpTxnV+SG3fiNxxva32JFdUazJbDzzHtsOGOTW3ummckI1Eea?=
- =?us-ascii?Q?c+egrb8eUFxNiHa1JrzTPe2TBaPFuCFqUnW9Tn3Ecc1stGpZzmuQ+PpvX1Uw?=
- =?us-ascii?Q?8TrpQYE201SW/FDGHJISA5wRDK8Ct4n/9d91iFQ2Va+YfaCvaNTgkTGiJizH?=
- =?us-ascii?Q?3sXy0Q/iu9iTvweZf+j4JJYmipRPDQVoRTNUUKAR7dm6yfsNplYxX0jkWcaD?=
- =?us-ascii?Q?FVPUmyfbCevAUs2Sv62NyvtUHRJbnO15VkcX2uOKFPQQSfoj33QZwp4+yGCa?=
- =?us-ascii?Q?rTNohX1W42UuTxSHH162fYMxykYUAh4J7WJ6xqk01jBAcRde6UDNZdd9LL3E?=
- =?us-ascii?Q?Tu25morYpQCNBkvYKChjegnFOT+3H8rDV13PdENYVjkI5IIZacPCUqNNc8VO?=
- =?us-ascii?Q?6/+oxvn7afmBkJIfG7b4bagGYxWvfWrlidflBhUNiAtT+TCRO9bvhjrnraP5?=
- =?us-ascii?Q?f3q8BEX7/SgticIBsy4NSk75LPg0sryWNHKFkigl5iktKu/YUHlcO7t5xCxr?=
- =?us-ascii?Q?AcYs3SoiH/VjGgTREaZVY5OmtmD3YrRuUBrmzths3HbeSUemJxFnUV2PdU3I?=
- =?us-ascii?Q?O6YzGO76HypTh/SOAZA1gaiCBRXp1DGqC16U5GUMAiobCLlckwb5iqYsEbKv?=
- =?us-ascii?Q?3+DbUvemIeXurbOWwxnYLKeQy/OJzYD7r0zWwdeLRaHZKKXaIsC6HlwFxmPR?=
- =?us-ascii?Q?E38Dy9c1T/74LC4FBNDY1A5c1+OHL8ZaDuxAR+cWKhmYfpKuZBZiMrqPTSn/?=
- =?us-ascii?Q?zdwcCZiaiRNOaFXmHvOyTCEHUvbdfA8mKF0sUmTsgT/t6o7F/9zJFZAWVt56?=
- =?us-ascii?Q?74sx6+4FK3q5cvQEFJJ0CXbItZhfo+CuA2bKdOLml2PpMC2fQeKyvT+Gitme?=
- =?us-ascii?Q?SOu1Uee5pT+mnJUsULOduPr1msIMrQ8AfOFJRvqYyJIOvsZNUF6ABU6/pdPi?=
- =?us-ascii?Q?7plE4Cm56uKMHAvH594S4Ko70g4Adks51ZFazHkDLJS+akwLY0Gj0gWB3IM9?=
- =?us-ascii?Q?romTPQ9xnAnZIbsfOzNNE2PNzwYrw5hhtR7AsxEtVzmzPoFhcObsiksLK+0v?=
- =?us-ascii?Q?40dEnEbVi+XcprD6SXM=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cd5d21dd-4f77-405b-2eb9-08d9a8fedda1
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2021 12:44:44.5224
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NE9qY5qOIH622hNmRKdKBv2opqsq8atJB6301GFwpTftePX9R4L+NHLlzb4tR6ae
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5141
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211116083903.GA16121@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 16, 2021 at 07:57:09AM +0100, Jiri Pirko wrote:
-
-> >There is only one place in the entire kernel calling the per-ns
-> >register_netdevice_notifier_dev_net() and it is burred inside another
-> >part of mlx5 for some reason..
+On Tue, Nov 16, 2021 at 09:39:03AM +0100, Oleksij Rempel wrote:
+> On Tue, Nov 16, 2021 at 01:45:46AM +0200, Vladimir Oltean wrote:
 > 
-> Yep. I added it there to solve this deadlock.
-
-I wonder how it can work safely inside a driver, since when are
-drivers NS aware?
-
-        uplink_priv->bond->nb.notifier_call = mlx5e_rep_esw_bond_netevent;
-        ret = register_netdevice_notifier_dev_net(netdev,
-                                                  &uplink_priv->bond->nb,
-                                                  &uplink_priv->bond->nn);
-
-Doesn't that just loose events when the user moves netdev to another
-namespace?
-
-> >I believe Parav already looked at using that in rdma and it didn't
-> >work for some reason I've forgotten. 
-> >
-> >It is not that we care about events in different namespaces, it is
-> >that rdma, like everything else, doesn't care about namespaces and
-> >wants events from the netdev no matter where it is located.
+> .....
 > 
-> Wait, so there is no notion of netnamespaces in rdma? I was under
-> impression rdma supports netnamespaces...
+> > > > Why != DISABLED? I expect that dev_ops->cfg_port_member() affects only
+> > > > data packet forwarding, not control packet forwarding, right?
+> > > 
+> > > No. According to the KSZ9477S datasheet:
+> > > "The processor should program the “Static MAC Table” with the entries that it
+> > > needs to receive (for example, BPDU packets). The “overriding” bit should be set
+> > > so that the switch will forward those specific packets to the processor. The
+> > > processor may send packets to the port(s) in this state. Address learning is
+> > > disabled on the port in this state."
+> > > 
+> > > This part is not implemented.
+> > > 
+> > > In current driver implementation (before or after this patch), all
+> > > packets are forwarded. It looks like, current STP implementation in this driver
+> > > is not complete. If I create a loop, the bridge will permanently toggle one of
+> > > ports between blocking and listening. 
+> > > 
+> > > Currently I do not know how to proceed with it. Remove stp callback and
+> > > make proper, straightforward bride_join/leave? Implement common soft STP
+> > > for all switches without HW STP support?
+> > 
+> > What does "soft STP" mean?
+> 
+> Some HW seems to provide configuration bits for ports STP states. For
+> example by enabling it, I can just set listening state and it will only pass
+> BPDU packets without need to program static MAC table. (At least, this
+> would be my expectation)
+> 
+> For example like this:
+> https://elixir.bootlin.com/linux/v5.16-rc1/source/drivers/net/dsa/mt7530.c#L1121
+> 
+> If this HW really exist and works as expected, how should I name it?
 
-It does, but that doesn't change things, when it is attached to a
-netdev it needs events, without any loss, no matter what NS that
-netdev is in.
+You are simply talking about the kind of registers that a switch exposes.
+That doesn't really matter, the end result should be the same.
+For example, sja1105 doesn't have named STP states, but it allows the
+driver to specify whether data plane packets can be received and sent on
+a given port.
+https://elixir.bootlin.com/linux/v5.16-rc1/source/drivers/net/dsa/sja1105/sja1105_main.c#L2030
+On other switches it's even more interesting, you need to calibrate STP
+states from the port forwarding mask.
+https://elixir.bootlin.com/linux/v5.16-rc1/source/drivers/net/ethernet/mscc/ocelot.c#L1476
+In any case, the switch should be able (somehow) to distinguish
+link-local multicast packets and send them to the CPU port regardless of
+the source port's STP state, and also be able to inject a link-local
+multicast packet into a port regardless of its STP state.
+For Micrel/Microchip switches, at least BPDU injection should be
+supported, I believe that's what this piece of code does:
+https://elixir.bootlin.com/linux/v5.16-rc1/source/net/dsa/tag_ksz.c#L127
 
-Jason
+> > You need to have a port state in which data  plane packets are blocked,
+> > but BPDUs can pass.
+> 
+> ack.
+> 
+> > Unless you trap all packets to the CPU and make the selection in software
+> > (therefore, including the forwarding, I don't know if that is so desirable),
+> 
+> Yes, this is my point, on plain linux bridge with two simple USB ethernet
+> adapters, I'm able to use STP without any HW offloading.
+> 
+> If my HW do not provide straightforward way to trap BPDU packets to CPU,
+> i should be able to reuse functionality already provided by the linux
+> bridge.
+
+At least on net-next you can return -EOPNOTSUPP in ->port_bridge_join
+and DSA will leave your port to operate in standalone mode and what will
+happen is exactly what you describe. But if lack of STP support is what
+you're trying to fix, there might be better ways of fixing it than doing
+software bridging.
+
+> Probably I need to signal it some how from dsa driver, to let linux
+> bridge make proper decision and reduce logging noise.
+
+What logging noise?
+
+> For example:
+> - Have flag like: ds->sta_without_bpdu_trap = true;
+
+:-/ what would this flag do?
+
+> - If no .port_mdb_add/.port_fdb_add callbacks are implemented, handle
+>   all incoming packet by the linux bridge without making lots of noise,
+>   and use .port_bridge_join/.port_bridge_leave to separate ports.
+
+You can already let forwarding be partially done in software. For
+example qca8k sets up the CPU port as the only destination for multicast
+and for flooding:
+https://elixir.bootlin.com/linux/v5.16-rc1/source/drivers/net/dsa/qca8k.c#L1157
+Notice how its tagging protocol driver does not call
+dsa_default_offload_fwd_mark(), in order to let the bridge forward the
+packets in software:
+https://elixir.bootlin.com/linux/v5.16-rc1/source/net/dsa/tag_qca.c#L51
+
+> - If .port_mdb_add/.port_fdb_add are implemented, program the static MAC table.
+
+You want DSA to program the static MAC table for link-local traffic?
+Why? DSA doesn't care how you trap your link-local traffic to the CPU,
+it might vary wildly between one switch and another. Also,
+->port_mdb_add() is for data plane multicast packets (aka not BPDUs),
+and ->port_fdb_add() is for unicast data plane packets (again not
+BPDUs). Your driver wouldn't even be the first one that traps link-local
+traffic privately.
+https://elixir.bootlin.com/linux/v5.16-rc1/source/drivers/net/dsa/hirschmann/hellcreek.c#L1050
+https://elixir.bootlin.com/linux/v5.16-rc1/source/drivers/net/dsa/sja1105/sja1105_main.c#L868
+There isn't any good way for user space to have visibility into which
+packets a switch will trap. There is devlink-trap which AFAIK allows you
+to see but not modify the traps that are built-in to the hardware/driver:
+https://www.kernel.org/doc/html/latest/networking/devlink/devlink-trap.html
+There are also traps which you can add using the tc-trap action
+(amazingly I could not find documentation for this). But I don't think
+it would surprise anyone if you would trap BPDUs by default in the
+driver - as mentioned, some switches already do this with no way to disable it.
+
+> > you don't have much of a choice except to do what you've said above, program
+> > the static MAC table with entries for 01-80-c2-00-00-0x which trap those
+> > link-local multicast addresses to the CPU and set the STP state override
+> > bit for them and for them only.
+> 
+> Hm... Microchip documentation do not describes it as STP state override. Only
+> as "port state override".
+
+Potato, patato, it should be the same thing.
+
+> And since STP state is not directly configurable on this switch, it
+> probably means receive/transmit enable state of the port.  So, packets
+> with matching MAC should be forwarded even if port is in the receive
+> disabled state. Correct?
+
+In the context we've been discussing so far, "forwarding" has a pretty
+specific meaning, which is autonomously redirecting from one front port
+to another. For link-local packets, what you want is "trapping", i.e.
+send to the CPU and to the CPU only.
+
+> 
+> > BTW, see the "bridge link set" section in "man bridge" for a list of
+> > what you should do in each STP state.
+> 
+> ack. Thank you.
+> 
+> Regards,
+> Oleksij
+> -- 
+> Pengutronix e.K.                           |                             |
+> Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+> 31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+> Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
