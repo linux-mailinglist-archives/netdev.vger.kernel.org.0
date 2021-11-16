@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74AE64537F1
+	by mail.lfdr.de (Postfix) with ESMTP id BCC624537F2
 	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 17:44:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235700AbhKPQp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 11:45:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43036 "EHLO
+        id S235624AbhKPQp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 11:45:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235167AbhKPQpZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 11:45:25 -0500
-Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5DDEC061570
-        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 08:42:27 -0800 (PST)
-Received: by mail-qk1-x734.google.com with SMTP id o63so7930674qkb.4
-        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 08:42:27 -0800 (PST)
+        with ESMTP id S235680AbhKPQp0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 11:45:26 -0500
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88373C061570
+        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 08:42:29 -0800 (PST)
+Received: by mail-qk1-x729.google.com with SMTP id o63so7930734qkb.4
+        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 08:42:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=kinvolk.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Sxz4D6uLOmqsmbyo2QO6wq5cXgoWWcc31npQo/Aiwtg=;
-        b=jAq2hNFk8MaTn0aZHXzRrlb5ocwWptvh72PyzwxQqZZWMX+eqaGYZJouQSROdnUKWb
-         yOHAJquGCUM3FX+hZDuMp2adj2tuW+jM75i7TeSYxFrUkbBFte9wfINyyQCuppRVfDeT
-         JqkkGe63hepnhLlC0nKqzmCAqbv/jsYPevv0c=
+        bh=vJaZyE4cWklZpcj1EXpkF5GSkXswhgzeKTA29r6DnZ4=;
+        b=XwNJGEs32xP+j98M3sP5f9czORdq9M64m4iTKS7w1jFwHldc/4KuuoTUHfftJyBoTi
+         wwjY7E6eFcP3GAFpgjg70Bbs89wpH0UAclL8PgqwSr//CSjb5fsetLf1720Qx+lkeB+y
+         WzDDPJDyZwoFnSPikk0T4vok0CUEIUC8GdKZY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Sxz4D6uLOmqsmbyo2QO6wq5cXgoWWcc31npQo/Aiwtg=;
-        b=xN3hbvLGxhZ2YrjoAbn1Ttlo2ytBdaCBEycyKE8DEhF6+e8dOgksYtpLb4YKuMi4h1
-         diF52+gMbe1cDJ+qfif5/l1iuzNYqzI9oNCKRxfcBLqZclS5yzCYmAfmTxKw3RnOrmQn
-         CFZDc1MZtxQOaoz/dOTb9RwVG4GgLjnvmzKHYeI2Qb66WUVdRuteE0BRnICVqE5tYmwf
-         4V8DaCbCH1NW5BCiwVUCdYFpnC6IK2ty8Bu7mDB/uXzScvgQ/iJteeBEXOm8vWeUQ4Tb
-         JSks+iwF11+9j3l8Hy0T5mxyj1/0fXcZUtJL4vdqx39OOeXylM+T0fkLvv04hgjkYG96
-         2hnw==
-X-Gm-Message-State: AOAM5339cpsGP/tgYHp/HGLOLZcC7qVmHiUh36pk6y67EfC0wYOQ2IYl
-        jK6C+DPHZtIa0uccQOSaBhSM7H36bZ5azHLWCdAyXjF7PyuJsGEPfDkHtH9vOMICCn8s8FECDGj
-        KulhJMekLYNLTIiS8PyWi9ehxHg44NC5N5rj3DLava0yb7qE7PSRwjE7h62n1fWB41ML2qH0F
-X-Google-Smtp-Source: ABdhPJxQdlx5k20QPqy421Fx3yQW6Vxvr/3v+SmCGcLsjvKUmXKqbYIygSIn15UJkuVfQl7khR8o1A==
-X-Received: by 2002:ae9:e30b:: with SMTP id v11mr7513837qkf.329.1637080945413;
-        Tue, 16 Nov 2021 08:42:25 -0800 (PST)
+        bh=vJaZyE4cWklZpcj1EXpkF5GSkXswhgzeKTA29r6DnZ4=;
+        b=LdkeFQBphD1ivE9qvfHHbdBXll0I73VYbxB3s2wNxl7jCfAuzs8DF24da6pAiN3PC+
+         6Hef2CFkbgrhY/nk/ULwjY59nve0keDOKsPRkAVC1la860a7Fw0CnfIVqjNFQq1LSrBC
+         4rHlvEe8afuqjUP03trfa8TeNtIv8e+aSpDzY102LUmeKvdKnjdM/qwmCkIN0IXCO2NX
+         D9Nx7YnucG7TNCdPqMa5/AkAJH8SosG3SbgFPkBr6RV14maXCubGCDgZWluSHMQThyqa
+         B6R41dUJGp77crC6qcYb8OQpjOfnnoKiPbaphyw/H4U56rKl928HJGf+bQQNeDOAdMcD
+         37Yg==
+X-Gm-Message-State: AOAM532GiH531Tib3zd15cYEswnFshCq98VAdED8a+9wPya/aqkupD/T
+        vv+yyNkDEu2BYzzPCmD5t4xk3FXeerURgGFRzubXpbgxe6mt/s86MK3dKJnRyDWPU5behLHcWPd
+        7WP9Wgqd4FiBTcXoilwuhOUvfrQcSkPM+C9L/pUUISRIKFb6IRAsKWv3MCSZY14bXY6OA4QvB
+X-Google-Smtp-Source: ABdhPJy9tHkPY0oAP+i9/wOl0KoT83M+cF4tvBOvj4ooWOkJnmFIt2hnvfc3sBH62lBeWSyfVsCHBw==
+X-Received: by 2002:a05:620a:16b9:: with SMTP id s25mr7353292qkj.409.1637080947012;
+        Tue, 16 Nov 2021 08:42:27 -0800 (PST)
 Received: from localhost.localdomain ([191.91.82.96])
-        by smtp.gmail.com with ESMTPSA id bk18sm7309121qkb.35.2021.11.16.08.42.24
+        by smtp.gmail.com with ESMTPSA id bk18sm7309121qkb.35.2021.11.16.08.42.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Nov 2021 08:42:25 -0800 (PST)
+        Tue, 16 Nov 2021 08:42:26 -0800 (PST)
 From:   =?UTF-8?q?Mauricio=20V=C3=A1squez?= <mauricio@kinvolk.io>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -53,9 +53,9 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Rafael David Tinoco <rafaeldtinoco@gmail.com>,
         Lorenzo Fontana <lorenzo.fontana@elastic.co>,
         Leonardo Di Donato <leonardo.didonato@elastic.co>
-Subject: [PATCH bpf-next v2 1/4] libbpf: Implement btf__save_raw()
-Date:   Tue, 16 Nov 2021 11:42:05 -0500
-Message-Id: <20211116164208.164245-2-mauricio@kinvolk.io>
+Subject: [PATCH bpf-next v2 2/4] libbpf: Introduce 'btf_custom' to 'bpf_obj_open_opts'
+Date:   Tue, 16 Nov 2021 11:42:06 -0500
+Message-Id: <20211116164208.164245-3-mauricio@kinvolk.io>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211116164208.164245-1-mauricio@kinvolk.io>
 References: <20211116164208.164245-1-mauricio@kinvolk.io>
@@ -66,83 +66,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement helper function to save the contents of a BTF object to a
-file.
+Commit 1373ff599556 ("libbpf: Introduce 'btf_custom_path' to
+'bpf_obj_open_opts'") introduced btf_custom_path which allows developers
+to specify a BTF file path to be used for CO-RE relocations. This
+implementation parses and releases the BTF file for each bpf object.
+
+This commit introduces a new 'btf_custom' option to allow users to
+specify directly the btf object instead of the path. This avoids
+parsing/releasing the same BTF file multiple times when the application
+loads multiple bpf objects.
+
+Our specific use case is BTFGen[0], where we want to reuse the same BTF
+file with multiple bpf objects. In this case passing btf_custom_path is
+not only inefficient but it also complicates the implementation as we
+want to save pointers of BTF types but they are invalidated after the
+bpf object is closed with bpf_object__close().
+
+[0]: https://github.com/kinvolk/btfgen/
 
 Signed-off-by: Mauricio Vásquez <mauricio@kinvolk.io>
 Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
 Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
 Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
 ---
- tools/lib/bpf/btf.c      | 30 ++++++++++++++++++++++++++++++
- tools/lib/bpf/btf.h      |  2 ++
- tools/lib/bpf/libbpf.map |  1 +
- 3 files changed, 33 insertions(+)
+ tools/lib/bpf/libbpf.c | 20 ++++++++++++++++----
+ tools/lib/bpf/libbpf.h |  9 ++++++++-
+ 2 files changed, 24 insertions(+), 5 deletions(-)
 
-diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-index fadf089ae8fe..96a242f91832 100644
---- a/tools/lib/bpf/btf.c
-+++ b/tools/lib/bpf/btf.c
-@@ -1121,6 +1121,36 @@ struct btf *btf__parse_split(const char *path, struct btf *base_btf)
- 	return libbpf_ptr(btf_parse(path, base_btf, NULL));
- }
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index de7e09a6b5ec..6ca76365c6da 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -542,6 +542,8 @@ struct bpf_object {
+ 	char *btf_custom_path;
+ 	/* vmlinux BTF override for CO-RE relocations */
+ 	struct btf *btf_vmlinux_override;
++	/* true when the user provided the btf structure with the btf_custom opt */
++	bool user_provided_btf_vmlinux;
+ 	/* Lazily initialized kernel module BTFs */
+ 	struct module_btf *btf_modules;
+ 	bool btf_modules_loaded;
+@@ -2886,7 +2888,7 @@ static int bpf_object__load_vmlinux_btf(struct bpf_object *obj, bool force)
+ 	int err;
  
-+int btf__save_raw(const struct btf *btf, const char *path)
-+{
-+	const void *data;
-+	FILE *f = NULL;
-+	__u32 data_sz;
-+	int err = 0;
-+
-+	data = btf__raw_data(btf, &data_sz);
-+	if (!data) {
-+		err = -ENOMEM;
-+		goto out;
-+	}
-+
-+	f = fopen(path, "wb");
-+	if (!f) {
-+		err = -errno;
-+		goto out;
-+	}
-+
-+	if (fwrite(data, 1, data_sz, f) != data_sz) {
-+		err = -errno;
-+		goto out;
-+	}
-+
-+out:
-+	if (f)
-+		fclose(f);
-+	return libbpf_err(err);
-+}
-+
- static void *btf_get_raw_data(const struct btf *btf, __u32 *size, bool swap_endian);
+ 	/* btf_vmlinux could be loaded earlier */
+-	if (obj->btf_vmlinux || obj->gen_loader)
++	if (obj->btf_vmlinux || obj->btf_vmlinux_override || obj->gen_loader)
+ 		return 0;
  
- int btf__load_into_kernel(struct btf *btf)
-diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
-index 5c73a5b0a044..4f8d3f303aa6 100644
---- a/tools/lib/bpf/btf.h
-+++ b/tools/lib/bpf/btf.h
-@@ -114,6 +114,8 @@ LIBBPF_API struct btf *btf__parse_elf_split(const char *path, struct btf *base_b
- LIBBPF_API struct btf *btf__parse_raw(const char *path);
- LIBBPF_API struct btf *btf__parse_raw_split(const char *path, struct btf *base_btf);
+ 	if (!force && !obj_needs_vmlinux_btf(obj))
+@@ -5474,7 +5476,7 @@ bpf_object__relocate_core(struct bpf_object *obj, const char *targ_btf_path)
+ 	if (obj->btf_ext->core_relo_info.len == 0)
+ 		return 0;
  
-+LIBBPF_API int btf__save_raw(const struct btf *btf, const char *path);
+-	if (targ_btf_path) {
++	if (!obj->user_provided_btf_vmlinux && targ_btf_path) {
+ 		obj->btf_vmlinux_override = btf__parse(targ_btf_path, NULL);
+ 		err = libbpf_get_error(obj->btf_vmlinux_override);
+ 		if (err) {
+@@ -5543,8 +5545,10 @@ bpf_object__relocate_core(struct bpf_object *obj, const char *targ_btf_path)
+ 
+ out:
+ 	/* obj->btf_vmlinux and module BTFs are freed after object load */
+-	btf__free(obj->btf_vmlinux_override);
+-	obj->btf_vmlinux_override = NULL;
++	if (!obj->user_provided_btf_vmlinux) {
++		btf__free(obj->btf_vmlinux_override);
++		obj->btf_vmlinux_override = NULL;
++	}
+ 
+ 	if (!IS_ERR_OR_NULL(cand_cache)) {
+ 		hashmap__for_each_entry(cand_cache, entry, i) {
+@@ -6767,6 +6771,10 @@ __bpf_object__open(const char *path, const void *obj_buf, size_t obj_buf_sz,
+ 	if (!OPTS_VALID(opts, bpf_object_open_opts))
+ 		return ERR_PTR(-EINVAL);
+ 
++	/* btf_custom_path and btf_custom can't be used together */
++	if (OPTS_GET(opts, btf_custom_path, NULL) && OPTS_GET(opts, btf_custom, NULL))
++		return ERR_PTR(-EINVAL);
 +
- LIBBPF_API struct btf *btf__load_vmlinux_btf(void);
- LIBBPF_API struct btf *btf__load_module_btf(const char *module_name, struct btf *vmlinux_btf);
- LIBBPF_API struct btf *libbpf_find_kernel_btf(void);
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index 6a59514a48cf..c9555f8655af 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -414,4 +414,5 @@ LIBBPF_0.6.0 {
- 		perf_buffer__new_deprecated;
- 		perf_buffer__new_raw;
- 		perf_buffer__new_raw_deprecated;
-+		btf__save_raw;
- } LIBBPF_0.5.0;
+ 	obj_name = OPTS_GET(opts, object_name, NULL);
+ 	if (obj_buf) {
+ 		if (!obj_name) {
+@@ -6796,6 +6804,10 @@ __bpf_object__open(const char *path, const void *obj_buf, size_t obj_buf_sz,
+ 		}
+ 	}
+ 
++	obj->btf_vmlinux_override = OPTS_GET(opts, btf_custom, NULL);
++	if (obj->btf_vmlinux_override)
++		obj->user_provided_btf_vmlinux = true;
++
+ 	kconfig = OPTS_GET(opts, kconfig, NULL);
+ 	if (kconfig) {
+ 		obj->kconfig = strdup(kconfig);
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index 4ec69f224342..908ab04dc9bd 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -104,8 +104,15 @@ struct bpf_object_open_opts {
+ 	 * struct_ops, etc) will need actual kernel BTF at /sys/kernel/btf/vmlinux.
+ 	 */
+ 	const char *btf_custom_path;
++	/* Pointer to the custom BTF object to be used for BPF CO-RE relocations.
++	 * This custom BTF completely replaces the use of vmlinux BTF
++	 * for the purpose of CO-RE relocations.
++	 * NOTE: any other BPF feature (e.g., fentry/fexit programs,
++	 * struct_ops, etc) will need actual kernel BTF at /sys/kernel/btf/vmlinux.
++	 */
++	struct btf *btf_custom;
+ };
+-#define bpf_object_open_opts__last_field btf_custom_path
++#define bpf_object_open_opts__last_field btf_custom
+ 
+ LIBBPF_API struct bpf_object *bpf_object__open(const char *path);
+ LIBBPF_API struct bpf_object *
 -- 
 2.25.1
 
