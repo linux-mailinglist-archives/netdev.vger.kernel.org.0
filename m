@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F3BE452BA5
+	by mail.lfdr.de (Postfix) with ESMTP id B4D5B452BA7
 	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 08:38:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230378AbhKPHlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 02:41:31 -0500
+        id S230406AbhKPHle (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 02:41:34 -0500
 Received: from mga11.intel.com ([192.55.52.93]:42900 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230356AbhKPHla (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Nov 2021 02:41:30 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10169"; a="231099053"
+        id S230385AbhKPHle (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 02:41:34 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10169"; a="231099064"
 X-IronPort-AV: E=Sophos;i="5.87,238,1631602800"; 
-   d="scan'208";a="231099053"
+   d="scan'208";a="231099064"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2021 23:38:34 -0800
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2021 23:38:37 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,238,1631602800"; 
-   d="scan'208";a="671857324"
+   d="scan'208";a="671857339"
 Received: from silpixa00401086.ir.intel.com (HELO localhost.localdomain) ([10.55.129.110])
-  by orsmga005.jf.intel.com with ESMTP; 15 Nov 2021 23:38:31 -0800
+  by orsmga005.jf.intel.com with ESMTP; 15 Nov 2021 23:38:34 -0800
 From:   Ciara Loftus <ciara.loftus@intel.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
@@ -28,9 +28,9 @@ Cc:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
         toke@redhat.com, bjorn@kernel.org, magnus.karlsson@intel.com,
         jonathan.lemon@gmail.com, maciej.fijalkowski@intel.com,
         Ciara Loftus <ciara.loftus@intel.com>
-Subject: [RFC PATCH bpf-next 3/8] xsk: handle XDP_REDIRECT_XSK and expose xsk_rcv/flush
-Date:   Tue, 16 Nov 2021 07:37:37 +0000
-Message-Id: <20211116073742.7941-4-ciara.loftus@intel.com>
+Subject: [RFC PATCH bpf-next 4/8] i40e: handle the XDP_REDIRECT_XSK action
+Date:   Tue, 16 Nov 2021 07:37:38 +0000
+Message-Id: <20211116073742.7941-5-ciara.loftus@intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211116073742.7941-1-ciara.loftus@intel.com>
 References: <20211116073742.7941-1-ciara.loftus@intel.com>
@@ -41,171 +41,146 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Handle the XDP_REDIRECT_XSK action on the SKB path by retrieving the
-handle to the socket from the netdev_rx_queue struct and immediately
-calling the xsk_generic_rcv function. Also, prepare for supporting
-this action in the drivers by exposing the xsk_rcv and xsk_flush functions
-so they can be used directly in the drivers.
+If the BPF program returns XDP_REDIRECT_XSK, obtain the pointer to the
+socket from the netdev_rx_queue struct and call the newly exposed xsk_rcv
+function to push the XDP descriptor to the Rx ring. Then use xsk_flush to
+flush the socket.
 
 Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
 ---
- include/net/xdp_sock_drv.h | 21 +++++++++++++++++++++
- net/core/dev.c             | 14 ++++++++++++++
- net/core/filter.c          |  4 ++++
- net/xdp/xsk.c              |  6 ++++--
- 4 files changed, 43 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c   | 13 +++++++++++-
+ .../ethernet/intel/i40e/i40e_txrx_common.h    |  1 +
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c    | 21 +++++++++++++------
+ 3 files changed, 28 insertions(+), 7 deletions(-)
 
-diff --git a/include/net/xdp_sock_drv.h b/include/net/xdp_sock_drv.h
-index 443d45951564..e923f5d1adb6 100644
---- a/include/net/xdp_sock_drv.h
-+++ b/include/net/xdp_sock_drv.h
-@@ -22,6 +22,8 @@ void xsk_set_tx_need_wakeup(struct xsk_buff_pool *pool);
- void xsk_clear_rx_need_wakeup(struct xsk_buff_pool *pool);
- void xsk_clear_tx_need_wakeup(struct xsk_buff_pool *pool);
- bool xsk_uses_need_wakeup(struct xsk_buff_pool *pool);
-+int xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp);
-+void xsk_flush(struct xdp_sock *xs);
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+index 10a83e5385c7..b6a883a8d088 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+@@ -4,6 +4,7 @@
+ #include <linux/prefetch.h>
+ #include <linux/bpf_trace.h>
+ #include <net/xdp.h>
++#include <net/xdp_sock_drv.h>
+ #include "i40e.h"
+ #include "i40e_trace.h"
+ #include "i40e_prototype.h"
+@@ -2296,6 +2297,7 @@ static int i40e_run_xdp(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
+ 	int err, result = I40E_XDP_PASS;
+ 	struct i40e_ring *xdp_ring;
+ 	struct bpf_prog *xdp_prog;
++	struct xdp_sock *xs;
+ 	u32 act;
  
- static inline u32 xsk_pool_get_headroom(struct xsk_buff_pool *pool)
- {
-@@ -130,6 +132,11 @@ static inline void xsk_buff_raw_dma_sync_for_device(struct xsk_buff_pool *pool,
- 	xp_dma_sync_for_device(pool, dma, size);
- }
- 
-+static inline struct xdp_sock *xsk_get_redirect_xsk(struct netdev_rx_queue *q)
-+{
-+	return READ_ONCE(q->xsk);
-+}
-+
- #else
- 
- static inline void xsk_tx_completed(struct xsk_buff_pool *pool, u32 nb_entries)
-@@ -179,6 +186,15 @@ static inline bool xsk_uses_need_wakeup(struct xsk_buff_pool *pool)
- 	return false;
- }
- 
-+static inline int xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
-+{
-+	return 0;
-+}
-+
-+static inline void xsk_flush(struct xdp_sock *xs)
-+{
-+}
-+
- static inline u32 xsk_pool_get_headroom(struct xsk_buff_pool *pool)
- {
- 	return 0;
-@@ -264,6 +280,11 @@ static inline void xsk_buff_raw_dma_sync_for_device(struct xsk_buff_pool *pool,
- {
- }
- 
-+static inline struct xdp_sock *xsk_get_redirect_xsk(struct netdev_rx_queue *q)
-+{
-+	return NULL;
-+}
-+
- #endif /* CONFIG_XDP_SOCKETS */
- 
- #endif /* _LINUX_XDP_SOCK_DRV_H */
-diff --git a/net/core/dev.c b/net/core/dev.c
-index edeb811c454e..9b38b50f1f97 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -106,6 +106,7 @@
- #include <net/pkt_sched.h>
- #include <net/pkt_cls.h>
- #include <net/checksum.h>
-+#include <net/xdp_sock.h>
- #include <net/xfrm.h>
- #include <linux/highmem.h>
- #include <linux/init.h>
-@@ -4771,6 +4772,7 @@ u32 bpf_prog_run_generic_xdp(struct sk_buff *skb, struct xdp_buff *xdp,
- 	 * kfree_skb in response to actions it cannot handle/XDP_DROP).
- 	 */
- 	switch (act) {
+ 	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
+@@ -2315,6 +2317,12 @@ static int i40e_run_xdp(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
+ 		if (result == I40E_XDP_CONSUMED)
+ 			goto out_failure;
+ 		break;
 +	case XDP_REDIRECT_XSK:
++		xs = xsk_get_redirect_xsk(&rx_ring->netdev->_rx[xdp->rxq->queue_index]);
++		err = xsk_rcv(xs, xdp);
++		if (err)
++			goto out_failure;
++		return I40E_XDP_REDIR_XSK;
  	case XDP_REDIRECT:
- 	case XDP_TX:
- 		__skb_push(skb, mac_len);
-@@ -4819,6 +4821,7 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+ 		err = xdp_do_redirect(rx_ring->netdev, xdp, xdp_prog);
+ 		if (err)
+@@ -2401,6 +2409,9 @@ void i40e_update_rx_stats(struct i40e_ring *rx_ring,
+  **/
+ void i40e_finalize_xdp_rx(struct i40e_ring *rx_ring, unsigned int xdp_res)
+ {
++	if (xdp_res & I40E_XDP_REDIR_XSK)
++		xsk_flush(xsk_get_redirect_xsk(&rx_ring->netdev->_rx[rx_ring->queue_index]));
++
+ 	if (xdp_res & I40E_XDP_REDIR)
+ 		xdp_do_flush_map();
  
- 	act = bpf_prog_run_generic_xdp(skb, xdp, xdp_prog);
+@@ -2516,7 +2527,7 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget)
+ 		}
+ 
+ 		if (xdp_res) {
+-			if (xdp_res & (I40E_XDP_TX | I40E_XDP_REDIR)) {
++			if (xdp_res & (I40E_XDP_TX | I40E_XDP_REDIR | I40E_XDP_REDIR_XSK)) {
+ 				xdp_xmit |= xdp_res;
+ 				i40e_rx_buffer_flip(rx_ring, rx_buffer, size);
+ 			} else {
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx_common.h b/drivers/net/ethernet/intel/i40e/i40e_txrx_common.h
+index 19da3b22160f..17e521a71201 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_txrx_common.h
++++ b/drivers/net/ethernet/intel/i40e/i40e_txrx_common.h
+@@ -20,6 +20,7 @@ void i40e_release_rx_desc(struct i40e_ring *rx_ring, u32 val);
+ #define I40E_XDP_CONSUMED	BIT(0)
+ #define I40E_XDP_TX		BIT(1)
+ #define I40E_XDP_REDIR		BIT(2)
++#define I40E_XDP_REDIR_XSK	BIT(3)
+ 
+ /*
+  * build_ctob - Builds the Tx descriptor (cmd, offset and type) qword
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+index ea06e957393e..31b794672ea5 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+@@ -144,13 +144,14 @@ int i40e_xsk_pool_setup(struct i40e_vsi *vsi, struct xsk_buff_pool *pool,
+  * @rx_ring: Rx ring
+  * @xdp: xdp_buff used as input to the XDP program
+  *
+- * Returns any of I40E_XDP_{PASS, CONSUMED, TX, REDIR}
++ * Returns any of I40E_XDP_{PASS, CONSUMED, TX, REDIR, REDIR_XSK}
+  **/
+ static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
+ {
+ 	int err, result = I40E_XDP_PASS;
+ 	struct i40e_ring *xdp_ring;
+ 	struct bpf_prog *xdp_prog;
++	struct xdp_sock *xs;
+ 	u32 act;
+ 
+ 	/* NB! xdp_prog will always be !NULL, due to the fact that
+@@ -159,14 +160,21 @@ static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
+ 	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
+ 	act = bpf_prog_run_xdp(xdp_prog, xdp);
+ 
+-	if (likely(act == XDP_REDIRECT)) {
+-		err = xdp_do_redirect(rx_ring->netdev, xdp, xdp_prog);
++	if (likely(act == XDP_REDIRECT_XSK)) {
++		xs = xsk_get_redirect_xsk(&rx_ring->netdev->_rx[xdp->rxq->queue_index]);
++		err = xsk_rcv(xs, xdp);
+ 		if (err)
+ 			goto out_failure;
+-		return I40E_XDP_REDIR;
++		return I40E_XDP_REDIR_XSK;
+ 	}
+ 
  	switch (act) {
-+	case XDP_REDIRECT_XSK:
- 	case XDP_REDIRECT:
- 	case XDP_TX:
++	case XDP_REDIRECT:
++		err = xdp_do_redirect(rx_ring->netdev, xdp, xdp_prog);
++		if (err)
++			goto out_failure;
++		result = I40E_XDP_REDIR;
++		break;
  	case XDP_PASS:
-@@ -4875,6 +4878,17 @@ int do_xdp_generic(struct bpf_prog *xdp_prog, struct sk_buff *skb)
- 		act = netif_receive_generic_xdp(skb, &xdp, xdp_prog);
- 		if (act != XDP_PASS) {
- 			switch (act) {
-+#ifdef CONFIG_XDP_SOCKETS
-+			case XDP_REDIRECT_XSK:
-+				struct xdp_sock *xs =
-+					READ_ONCE(skb->dev->_rx[xdp.rxq->queue_index].xsk);
-+
-+				err = xsk_generic_rcv(xs, &xdp);
-+				if (err)
-+					goto out_redir;
-+				consume_skb(skb);
-+				break;
-+#endif
- 			case XDP_REDIRECT:
- 				err = xdp_do_generic_redirect(skb->dev, skb,
- 							      &xdp, xdp_prog);
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 4497ad046790..c65262722c64 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -8203,7 +8203,11 @@ static bool xdp_is_valid_access(int off, int size,
+ 		break;
+ 	case XDP_TX:
+@@ -275,7 +283,8 @@ static void i40e_handle_xdp_result_zc(struct i40e_ring *rx_ring,
+ 	*rx_packets = 1;
+ 	*rx_bytes = size;
  
- void bpf_warn_invalid_xdp_action(u32 act)
- {
-+#ifdef CONFIG_XDP_SOCKETS
-+	const u32 act_max = XDP_REDIRECT_XSK;
-+#else
- 	const u32 act_max = XDP_REDIRECT;
-+#endif
+-	if (likely(xdp_res == I40E_XDP_REDIR) || xdp_res == I40E_XDP_TX)
++	if (likely(xdp_res == I40E_XDP_REDIR_XSK) || xdp_res == I40E_XDP_REDIR ||
++	    xdp_res == I40E_XDP_TX)
+ 		return;
  
- 	WARN_ONCE(1, "%s XDP return value %u, expect packet loss!\n",
- 		  act > act_max ? "Illegal" : "Driver unsupported",
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 94ee524b9ca8..ce004f5fae64 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -226,12 +226,13 @@ static int xsk_rcv_check(struct xdp_sock *xs, struct xdp_buff *xdp)
- 	return 0;
- }
+ 	if (xdp_res == I40E_XDP_CONSUMED) {
+@@ -371,7 +380,7 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
+ 					  &rx_bytes, size, xdp_res);
+ 		total_rx_packets += rx_packets;
+ 		total_rx_bytes += rx_bytes;
+-		xdp_xmit |= xdp_res & (I40E_XDP_TX | I40E_XDP_REDIR);
++		xdp_xmit |= xdp_res & (I40E_XDP_TX | I40E_XDP_REDIR | I40E_XDP_REDIR_XSK);
+ 		next_to_clean = (next_to_clean + 1) & count_mask;
+ 	}
  
--static void xsk_flush(struct xdp_sock *xs)
-+void xsk_flush(struct xdp_sock *xs)
- {
- 	xskq_prod_submit(xs->rx);
- 	__xskq_cons_release(xs->pool->fq);
- 	sock_def_readable(&xs->sk);
- }
-+EXPORT_SYMBOL(xsk_flush);
- 
- int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
- {
-@@ -247,7 +248,7 @@ int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
- 	return err;
- }
- 
--static int xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
-+int xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
- {
- 	int err;
- 	u32 len;
-@@ -266,6 +267,7 @@ static int xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
- 		xdp_return_buff(xdp);
- 	return err;
- }
-+EXPORT_SYMBOL(xsk_rcv);
- 
- int __xsk_map_redirect(struct xdp_sock *xs, struct xdp_buff *xdp)
- {
 -- 
 2.17.1
 
