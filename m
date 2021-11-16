@@ -2,121 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA7F24533D0
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 15:12:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B70E4533DC
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 15:13:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237256AbhKPOOn convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 16 Nov 2021 09:14:43 -0500
-Received: from coyote.holtmann.net ([212.227.132.17]:46169 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237247AbhKPOOl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 09:14:41 -0500
-Received: from smtpclient.apple (p4fefc15c.dip0.t-ipconnect.de [79.239.193.92])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 54CB7CECD7;
-        Tue, 16 Nov 2021 15:11:43 +0100 (CET)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.20.0.1.32\))
-Subject: Re: [PATCH v2 2/2] Bluetooth: Limit duration of Remote Name Resolve
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20211115171726.v2.2.I35b7f3a496f834de6b43a32f94b6160cb1467c94@changeid>
-Date:   Tue, 16 Nov 2021 15:11:42 +0100
-Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <19C4C970-8259-46EF-B56C-15658F58EABC@holtmann.org>
-References: <20211115171726.v2.1.Id7366eb14b6f48173fcbf17846ace59479179c7c@changeid>
- <20211115171726.v2.2.I35b7f3a496f834de6b43a32f94b6160cb1467c94@changeid>
-To:     Archie Pusaka <apusaka@google.com>
-X-Mailer: Apple Mail (2.3693.20.0.1.32)
+        id S237247AbhKPOQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 09:16:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35986 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237250AbhKPOQG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 09:16:06 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5295EC061570;
+        Tue, 16 Nov 2021 06:13:09 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id l22so53578407lfg.7;
+        Tue, 16 Nov 2021 06:13:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=SAFo3rW8eZqicBwfdhly0zJ3f49mYTVHGsP4fwuNE6M=;
+        b=MUBZmLYHsWTdx+5/t1Gnba93NEA1+CzW6up/O8ayTi9yXCkqkPRb5LM7i9iyAOYpdt
+         nQsSmAiVJJJet3zOnm1bL7QX5oW1JHGe7qEqh0eTTXKOqaXGiNG78R6fC+vguErWG0eq
+         McCafKtF0gG6DbNjpp8HukkNDCP7ZJhNa1pjuj2h8SRtDnW1dl3SZS7ZetoxKw2Y9vfM
+         pzzpcVhkTfsypm5ZjYIJ+saBBTJlMUIZVrMNIp3/AcZIxBfkOQsjtrar9q6AU2ccEl5C
+         xjkDM4a4zblFULgbYABH8iDIfvnVr1IAnz0kx+un20/AzvG9dk84Kx9BFp2OEZJ7xyoz
+         qrtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=SAFo3rW8eZqicBwfdhly0zJ3f49mYTVHGsP4fwuNE6M=;
+        b=tmjq9ptD5lWWGAlkEQvZR8GrGJREs5lCRQrXjOe6HmGLyMssgf7m/x9TThx+a92TOk
+         vH8Lut4kIScV6pFA9lrtNyZ3950eDJ50C1pn2VTaTNB2EkyeeRB9K0ShBHWt9NNJb30p
+         a1ZM9tzyCfxNDRDv6Pnr1fZjSFa69jGivPv3GnYH9CBYyEEfgzMmtqR3OIamoe3r93nc
+         2LCg4NUf4fXHVMmQPDRTq/CjNuZfgZzBklD4qvZxpmQLmE8CGwFkHFPfVdmJBekm+ejZ
+         UD1s7EidZoSJw0Ln2ktlf2SodIJqTY/9di/i1EYtAM9Tjh7/ux/Ey62lM2Adjfratpk/
+         p43g==
+X-Gm-Message-State: AOAM533iBJtczYyzjctbTawIkT3FvP7PnNWyG7FN81s9p9Y+xSPdd6jX
+        t3vqNkphIx+ewXq1P+2QLYE=
+X-Google-Smtp-Source: ABdhPJwLRyDiXtrBK8Po6LmQf+B7tKRmIG7EcnOt9NFPYmPQI/2U4h1HjQQJf29P0sG7sEqT1WJ3XA==
+X-Received: by 2002:a05:6512:1520:: with SMTP id bq32mr7019710lfb.232.1637071987677;
+        Tue, 16 Nov 2021 06:13:07 -0800 (PST)
+Received: from localhost.localdomain ([94.103.224.112])
+        by smtp.gmail.com with ESMTPSA id bt3sm1770397lfb.132.2021.11.16.06.13.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Nov 2021 06:13:07 -0800 (PST)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     kuba@kernel.org, davem@davemloft.net, manishc@marvell.com
+Cc:     netdev@vger.kernel.org, aelior@marvell.com, skalluru@marvell.com,
+        linux-kernel@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>
+Subject: [PATCH v2] MAINTAINERS: remove GR-everest-linux-l2@marvell.com
+Date:   Tue, 16 Nov 2021 17:13:03 +0300
+Message-Id: <20211116141303.32180-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20211116081601.11208-1-palok@marvell.com>
+References: <20211116081601.11208-1-palok@marvell.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Archie,
+I've sent a patch to GR-everest-linux-l2@marvell.com few days ago and
+got a reply from postmaster@marvell.com:
 
-> When doing remote name request, we cannot scan. In the normal case it's
-> OK since we can expect it to finish within a short amount of time.
-> However, there is a possibility to scan lots of devices that
-> (1) requires Remote Name Resolve
-> (2) is unresponsive to Remote Name Resolve
-> When this happens, we are stuck to do Remote Name Resolve until all is
-> done before continue scanning.
-> 
-> This patch adds a time limit to stop us spending too long on remote
-> name request.
-> 
-> Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-> Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
-> ---
-> 
-> (no changes since v1)
-> 
-> include/net/bluetooth/hci_core.h | 3 +++
-> net/bluetooth/hci_event.c        | 7 +++++++
-> 2 files changed, 10 insertions(+)
-> 
-> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-> index b5f061882c10..4112907bb49d 100644
-> --- a/include/net/bluetooth/hci_core.h
-> +++ b/include/net/bluetooth/hci_core.h
-> @@ -88,6 +88,7 @@ struct discovery_state {
-> 	u8			(*uuids)[16];
-> 	unsigned long		scan_start;
-> 	unsigned long		scan_duration;
-> +	unsigned long		name_resolve_timeout;
-> };
-> 
-> #define SUSPEND_NOTIFIER_TIMEOUT	msecs_to_jiffies(2000) /* 2 seconds */
-> @@ -1762,6 +1763,8 @@ void hci_mgmt_chan_unregister(struct hci_mgmt_chan *c);
-> #define DISCOV_LE_FAST_ADV_INT_MIN	0x00A0	/* 100 msec */
-> #define DISCOV_LE_FAST_ADV_INT_MAX	0x00F0	/* 150 msec */
-> 
-> +#define NAME_RESOLVE_DURATION		msecs_to_jiffies(10240)	/* msec */
-> +
+	Delivery has failed to these recipients or groups:
 
-It is nice that you define the unit here, but we also want the amount. So 10.24 seconds.
+	gr-everest-linux-l2@marvell.com<mailto:gr-everest-linux-l2@marvell.com>
+	The email address you entered couldn't be found. Please check the
+	recipient's email address and try to resend the message. If the problem
+	continues, please contact your helpdesk.
 
-> void mgmt_fill_version_info(void *ver);
-> int mgmt_new_settings(struct hci_dev *hdev);
-> void mgmt_index_added(struct hci_dev *hdev);
-> diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-> index 2de3080659f9..6180ab0e8b8d 100644
-> --- a/net/bluetooth/hci_event.c
-> +++ b/net/bluetooth/hci_event.c
-> @@ -2129,6 +2129,12 @@ static bool hci_resolve_next_name(struct hci_dev *hdev)
-> 	if (list_empty(&discov->resolve))
-> 		return false;
-> 
-> +	/* We should stop if we already spent too much time resolving names. */
-> +	if (time_after(jiffies, discov->name_resolve_timeout)) {
-> +		bt_dev_dbg(hdev, "Name resolve takes too long, stopping.");
+As requested by Alok Prasad, replacing GR-everest-linux-l2@marvell.com
+with Manish Chopra's email address. [0]
 
-I might be better to have bt_dev_warn_ratelimited here. I mean if this happens, you want to have something actionable in your logs. Or if you don’t care, then also scrap the message and include more details in the comments that you just abort since it is taking too long.
+Link: https://lore.kernel.org/all/20211116081601.11208-1-palok@marvell.com/ [0]
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
 
-> +		return false;
-> +	}
-> +
-> 	e = hci_inquiry_cache_lookup_resolve(hdev, BDADDR_ANY, NAME_NEEDED);
-> 	if (!e)
-> 		return false;
-> @@ -2716,6 +2722,7 @@ static void hci_inquiry_complete_evt(struct hci_dev *hdev, struct sk_buff *skb)
-> 	if (e && hci_resolve_name(hdev, e) == 0) {
-> 		e->name_state = NAME_PENDING;
-> 		hci_discovery_set_state(hdev, DISCOVERY_RESOLVING);
-> +		discov->name_resolve_timeout = jiffies + NAME_RESOLVE_DURATION;
-> 	} else {
-> 		/* When BR/EDR inquiry is active and no LE scanning is in
-> 		 * progress, then change discovery state to indicate completion.
+Changes in v2:
+	Replaced GR-everest-linux-l2@marvell.com with Manish Chopra's email, as
+	requested by Alok.
 
-Regards
+---
+ MAINTAINERS | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Marcel
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 7a2345ce8521..10c8ae3a8c73 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3733,7 +3733,7 @@ F:	drivers/scsi/bnx2i/
+ BROADCOM BNX2X 10 GIGABIT ETHERNET DRIVER
+ M:	Ariel Elior <aelior@marvell.com>
+ M:	Sudarsana Kalluru <skalluru@marvell.com>
+-M:	GR-everest-linux-l2@marvell.com
++M:	Manish Chopra <manishc@marvell.com>
+ L:	netdev@vger.kernel.org
+ S:	Supported
+ F:	drivers/net/ethernet/broadcom/bnx2x/
+@@ -15593,7 +15593,7 @@ F:	drivers/scsi/qedi/
+ 
+ QLOGIC QL4xxx ETHERNET DRIVER
+ M:	Ariel Elior <aelior@marvell.com>
+-M:	GR-everest-linux-l2@marvell.com
++M:	Manish Chopra <manishc@marvell.com>
+ L:	netdev@vger.kernel.org
+ S:	Supported
+ F:	drivers/net/ethernet/qlogic/qed/
+-- 
+2.33.1
 
