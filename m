@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7F65453AE5
+	by mail.lfdr.de (Postfix) with ESMTP id 5DC90453AE4
 	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 21:23:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230090AbhKPU0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 15:26:40 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46404 "EHLO mail.kernel.org"
+        id S230076AbhKPU0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 15:26:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46408 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230039AbhKPU0e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230071AbhKPU0e (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 16 Nov 2021 15:26:34 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B1B5261AFB;
-        Tue, 16 Nov 2021 20:23:36 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2F36C617E4;
+        Tue, 16 Nov 2021 20:23:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1637094217;
-        bh=c2ICkdRb1J6JAwnn9IKkQJRE0cnf6czzraMghVV8XqE=;
+        bh=hcCAV6GNORiVHaVcsTD0f/8awC9SuMe2dTVVr/VJLxo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n0qYfmauNq20qkPXK4pOq6EiRQizKVBGvx/bwZRQTizsbCMA0Xvw7N77lUSg2b+Gf
-         Hu6qipxxZTAMHStVuiNWyv90UVxVRYCuZuzIXtlfEnZPWLnKXxKY0ocX88nUVKDW5U
-         UKwRPiQrkJZ7toqZMcKVVwGhjAJyYhhozMqRSdclWTjJtNLxEMcClVH4MycDBwzsVn
-         DqqxJDWN41o7QN+EgDe1AYJyty9qY3dqKkawrtExZsG8iMqNwupZETENN3kfABgQmc
-         cy4VNNalM+J+yUy0CkYuxZWazqwYOu2M0miJZQZef2huRWlzvJLAzkZ/8pMme5Dh+f
-         jxu3F9aC0V2fQ==
+        b=qFRVi2E0jXumOH3Xg1HrRygYqU9sfAwmQVcXfHel1DYHDQKdhTQgc5jkeW418g5kZ
+         qGITY2Whq48eRbDVRQLIUtrBdJvyH/Ax/lpGkRS51haFLyI+xYuGRfZMo6W8DJ1txf
+         PBvYvoxL59t2FSU1VGY70AZ13AAjmpwy/oA0AHs9edlJDhDErY78TysaCuUF9js36d
+         gMH6oPxN3rko09kHSlsqYsgw3csc8om5y8ei31Ac7SQoXXoumnkiO01DVxeif4LYHD
+         ky5Fm6vf6GDGynzPXpp+XU7TcXBYN+6qdGVXS13TtxM6pNXQXn09/ZkLP+cWbWYkLS
+         pTeyM1pO7Vc/Q==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Valentine Fatiev <valentinef@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 04/12] net/mlx5e: nullify cq->dbg pointer in mlx5_debug_cq_remove()
-Date:   Tue, 16 Nov 2021 12:23:13 -0800
-Message-Id: <20211116202321.283874-5-saeed@kernel.org>
+Subject: [net 05/12] net/mlx5: DR, Handle eswitch manager and uplink vports separately
+Date:   Tue, 16 Nov 2021 12:23:14 -0800
+Message-Id: <20211116202321.283874-6-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211116202321.283874-1-saeed@kernel.org>
 References: <20211116202321.283874-1-saeed@kernel.org>
@@ -41,97 +40,164 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Valentine Fatiev <valentinef@nvidia.com>
+From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-Prior to this patch in case mlx5_core_destroy_cq() failed it proceeds
-to rest of destroy operations. mlx5_core_destroy_cq() could be called again
-by user and cause additional call of mlx5_debug_cq_remove().
-cq->dbg was not nullify in previous call and cause the crash.
+When querying eswitch manager vport capabilities as "other = 1",
+we encounter a FW compatibility issue with older FW versions.
+To maintain backward compatibility, eswitch manager vport should
+be queried as "other = 0" vport both for ECPF and non-ECPF cases.
 
-Fix it by nullify cq->dbg pointer after removal.
+This patch fixes these queries and improves the code readability
+by handling eswitch manager and uplink vports separately, avoiding
+the excessive 'if' conditions. Also, uplink caps are stored similar
+to esw manager and not as part of xarray.
 
-Also proceed to destroy operations only if FW return 0
-for MLX5_CMD_OP_DESTROY_CQ command.
-
-general protection fault, probably for non-canonical address 0x2000300004058: 0000 [#1] SMP PTI
-CPU: 5 PID: 1228 Comm: python Not tainted 5.15.0-rc5_for_upstream_min_debug_2021_10_14_11_06 #1
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
-RIP: 0010:lockref_get+0x1/0x60
-Code: 5d e9 53 ff ff ff 48 8d 7f 70 e8 0a 2e 48 00 c7 85 d0 00 00 00 02
-00 00 00 c6 45 70 00 fb 5d c3 c3 cc cc cc cc cc cc cc cc 53 <48> 8b 17
-48 89 fb 85 d2 75 3d 48 89 d0 bf 64 00 00 00 48 89 c1 48
-RSP: 0018:ffff888137dd7a38 EFLAGS: 00010206
-RAX: 0000000000000000 RBX: ffff888107d5f458 RCX: 00000000fffffffe
-RDX: 000000000002c2b0 RSI: ffffffff8155e2e0 RDI: 0002000300004058
-RBP: ffff888137dd7a88 R08: 0002000300004058 R09: ffff8881144a9f88
-R10: 0000000000000000 R11: 0000000000000000 R12: ffff8881141d4000
-R13: ffff888137dd7c68 R14: ffff888137dd7d58 R15: ffff888137dd7cc0
-FS:  00007f4644f2a4c0(0000) GS:ffff8887a2d40000(0000)
-knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055b4500f4380 CR3: 0000000114f7a003 CR4: 0000000000170ea0
-Call Trace:
-  simple_recursive_removal+0x33/0x2e0
-  ? debugfs_remove+0x60/0x60
-  debugfs_remove+0x40/0x60
-  mlx5_debug_cq_remove+0x32/0x70 [mlx5_core]
-  mlx5_core_destroy_cq+0x41/0x1d0 [mlx5_core]
-  devx_obj_cleanup+0x151/0x330 [mlx5_ib]
-  ? __pollwait+0xd0/0xd0
-  ? xas_load+0x5/0x70
-  ? xa_load+0x62/0xa0
-  destroy_hw_idr_uobject+0x20/0x80 [ib_uverbs]
-  uverbs_destroy_uobject+0x3b/0x360 [ib_uverbs]
-  uobj_destroy+0x54/0xa0 [ib_uverbs]
-  ib_uverbs_cmd_verbs+0xaf2/0x1160 [ib_uverbs]
-  ? uverbs_finalize_object+0xd0/0xd0 [ib_uverbs]
-  ib_uverbs_ioctl+0xc4/0x1b0 [ib_uverbs]
-  __x64_sys_ioctl+0x3e4/0x8e0
-
-Fixes: 94b960b9deff ("net/mlx5e: Fix memory leak in mlx5_core_destroy_cq() error path")
-Signed-off-by: Valentine Fatiev <valentinef@nvidia.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Fixes: dd4acb2a0954 ("net/mlx5: DR, Add missing query for vport 0")
+Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/cq.c      | 5 +++--
- drivers/net/ethernet/mellanox/mlx5/core/debugfs.c | 4 +++-
- 2 files changed, 6 insertions(+), 3 deletions(-)
+ .../mellanox/mlx5/core/steering/dr_domain.c   | 56 ++++++++-----------
+ .../mellanox/mlx5/core/steering/dr_types.h    |  1 +
+ 2 files changed, 24 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cq.c b/drivers/net/ethernet/mellanox/mlx5/core/cq.c
-index 02e77ffe5c3e..5371ad0a12eb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/cq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/cq.c
-@@ -164,13 +164,14 @@ int mlx5_core_destroy_cq(struct mlx5_core_dev *dev, struct mlx5_core_cq *cq)
- 	MLX5_SET(destroy_cq_in, in, cqn, cq->cqn);
- 	MLX5_SET(destroy_cq_in, in, uid, cq->uid);
- 	err = mlx5_cmd_exec_in(dev, destroy_cq, in);
-+	if (err)
-+		return err;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
+index 49089cbe897c..8cbd36c82b3b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
+@@ -135,25 +135,14 @@ static void dr_domain_fill_uplink_caps(struct mlx5dr_domain *dmn,
  
- 	synchronize_irq(cq->irqn);
+ static int dr_domain_query_vport(struct mlx5dr_domain *dmn,
+ 				 u16 vport_number,
++				 bool other_vport,
+ 				 struct mlx5dr_cmd_vport_cap *vport_caps)
+ {
+-	u16 cmd_vport = vport_number;
+-	bool other_vport = true;
+ 	int ret;
+ 
+-	if (vport_number == MLX5_VPORT_UPLINK) {
+-		dr_domain_fill_uplink_caps(dmn, vport_caps);
+-		return 0;
+-	}
 -
- 	mlx5_cq_put(cq);
- 	wait_for_completion(&cq->free);
+-	if (dmn->info.caps.is_ecpf && vport_number == MLX5_VPORT_ECPF) {
+-		other_vport = false;
+-		cmd_vport = 0;
+-	}
+-
+ 	ret = mlx5dr_cmd_query_esw_vport_context(dmn->mdev,
+ 						 other_vport,
+-						 cmd_vport,
++						 vport_number,
+ 						 &vport_caps->icm_address_rx,
+ 						 &vport_caps->icm_address_tx);
+ 	if (ret)
+@@ -161,7 +150,7 @@ static int dr_domain_query_vport(struct mlx5dr_domain *dmn,
  
--	return err;
-+	return 0;
+ 	ret = mlx5dr_cmd_query_gvmi(dmn->mdev,
+ 				    other_vport,
+-				    cmd_vport,
++				    vport_number,
+ 				    &vport_caps->vport_gvmi);
+ 	if (ret)
+ 		return ret;
+@@ -176,9 +165,15 @@ static int dr_domain_query_esw_mngr(struct mlx5dr_domain *dmn)
+ {
+ 	return dr_domain_query_vport(dmn,
+ 				     dmn->info.caps.is_ecpf ? MLX5_VPORT_ECPF : 0,
++				     false,
+ 				     &dmn->info.caps.vports.esw_manager_caps);
  }
- EXPORT_SYMBOL(mlx5_core_destroy_cq);
  
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/debugfs.c b/drivers/net/ethernet/mellanox/mlx5/core/debugfs.c
-index 07c8d9811bc8..10d195042ab5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/debugfs.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/debugfs.c
-@@ -507,6 +507,8 @@ void mlx5_debug_cq_remove(struct mlx5_core_dev *dev, struct mlx5_core_cq *cq)
- 	if (!mlx5_debugfs_root)
- 		return;
++static void dr_domain_query_uplink(struct mlx5dr_domain *dmn)
++{
++	dr_domain_fill_uplink_caps(dmn, &dmn->info.caps.vports.uplink_caps);
++}
++
+ static struct mlx5dr_cmd_vport_cap *
+ dr_domain_add_vport_cap(struct mlx5dr_domain *dmn, u16 vport)
+ {
+@@ -190,7 +185,7 @@ dr_domain_add_vport_cap(struct mlx5dr_domain *dmn, u16 vport)
+ 	if (!vport_caps)
+ 		return NULL;
  
--	if (cq->dbg)
-+	if (cq->dbg) {
- 		rem_res_tree(cq->dbg);
-+		cq->dbg = NULL;
-+	}
+-	ret = dr_domain_query_vport(dmn, vport, vport_caps);
++	ret = dr_domain_query_vport(dmn, vport, true, vport_caps);
+ 	if (ret) {
+ 		kvfree(vport_caps);
+ 		return NULL;
+@@ -207,16 +202,26 @@ dr_domain_add_vport_cap(struct mlx5dr_domain *dmn, u16 vport)
+ 	return vport_caps;
  }
+ 
++static bool dr_domain_is_esw_mgr_vport(struct mlx5dr_domain *dmn, u16 vport)
++{
++	struct mlx5dr_cmd_caps *caps = &dmn->info.caps;
++
++	return (caps->is_ecpf && vport == MLX5_VPORT_ECPF) ||
++	       (!caps->is_ecpf && vport == 0);
++}
++
+ struct mlx5dr_cmd_vport_cap *
+ mlx5dr_domain_get_vport_cap(struct mlx5dr_domain *dmn, u16 vport)
+ {
+ 	struct mlx5dr_cmd_caps *caps = &dmn->info.caps;
+ 	struct mlx5dr_cmd_vport_cap *vport_caps;
+ 
+-	if ((caps->is_ecpf && vport == MLX5_VPORT_ECPF) ||
+-	    (!caps->is_ecpf && vport == 0))
++	if (dr_domain_is_esw_mgr_vport(dmn, vport))
+ 		return &caps->vports.esw_manager_caps;
+ 
++	if (vport == MLX5_VPORT_UPLINK)
++		return &caps->vports.uplink_caps;
++
+ vport_load:
+ 	vport_caps = xa_load(&caps->vports.vports_caps_xa, vport);
+ 	if (vport_caps)
+@@ -241,17 +246,6 @@ static void dr_domain_clear_vports(struct mlx5dr_domain *dmn)
+ 	}
+ }
+ 
+-static int dr_domain_query_uplink(struct mlx5dr_domain *dmn)
+-{
+-	struct mlx5dr_cmd_vport_cap *vport_caps;
+-
+-	vport_caps = mlx5dr_domain_get_vport_cap(dmn, MLX5_VPORT_UPLINK);
+-	if (!vport_caps)
+-		return -EINVAL;
+-
+-	return 0;
+-}
+-
+ static int dr_domain_query_fdb_caps(struct mlx5_core_dev *mdev,
+ 				    struct mlx5dr_domain *dmn)
+ {
+@@ -281,11 +275,7 @@ static int dr_domain_query_fdb_caps(struct mlx5_core_dev *mdev,
+ 		goto free_vports_caps_xa;
+ 	}
+ 
+-	ret = dr_domain_query_uplink(dmn);
+-	if (ret) {
+-		mlx5dr_err(dmn, "Failed to query uplink vport caps (err: %d)", ret);
+-		goto free_vports_caps_xa;
+-	}
++	dr_domain_query_uplink(dmn);
+ 
+ 	return 0;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
+index 3028b776da00..2333c2439c28 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
+@@ -764,6 +764,7 @@ struct mlx5dr_roce_cap {
+ 
+ struct mlx5dr_vports {
+ 	struct mlx5dr_cmd_vport_cap esw_manager_caps;
++	struct mlx5dr_cmd_vport_cap uplink_caps;
+ 	struct xarray vports_caps_xa;
+ };
+ 
 -- 
 2.31.1
 
