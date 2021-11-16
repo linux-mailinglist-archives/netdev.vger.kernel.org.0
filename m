@@ -2,357 +2,277 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57B61453A1B
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 20:24:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2872F453A1E
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 20:25:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239802AbhKPT1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 14:27:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51852 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229944AbhKPT1K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 14:27:10 -0500
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C26BC061746
-        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 11:24:12 -0800 (PST)
-Received: by mail-lj1-x236.google.com with SMTP id i63so755944lji.3
-        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 11:24:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kinvolk.io; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=3PSgyrapkFOKU3o8DSdLliFS+3YAZg3FkTQ8U/TL7VA=;
-        b=UI4n43xtXr0yEedrW+NnzMrcrsv2hXOpIN2vp2cYnCUK7MxFeXfQ4MdAfOzpsnuCyc
-         4Th9bQwxqQEahUu/ehUqWdS7OPNEvOBE5pLyTLeEub99Ux1LC4qZkdN//bK/9iUbpk2I
-         vXm/SmwWGqRMko39kw9VtHT80/vNMXRJDOS4M=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=3PSgyrapkFOKU3o8DSdLliFS+3YAZg3FkTQ8U/TL7VA=;
-        b=eeRGQUBZ8xsu5+3RrqeuwgPPcDEmviBdAJ3I3Lm4E2LFLAQSFYV6oVCKPwp+PDY6Hm
-         //c4dNbtmqm9Jk4lhuD4ihSgIDkXbusmNWQM+KiTM0Z65h606cbYqcF2J/e+uKKuir/N
-         eKCeEnOC0ZrTDuvtTxHHj0RW7aQqXVeTjVg/31NNRn89e1J8j7qR5KFFnaTjCPIYJbK3
-         05jLm1dhIhVY3tQx6/tAOV+qS2I3854ww3103e3NYNBnBJzjvk/RtZ4j6LsIkm/mPeHT
-         /d5aoS7Ol1FY3WAMN2o6bX570jOwI5Y25S5okd+6Ibn4M5nVGsC5eKbL5p3f7+oOwsST
-         mxrg==
-X-Gm-Message-State: AOAM533X1V1F/NojCg4zPidqHJkokapeKdIvDsx0VlwRwUwd/7LI+Krq
-        Glx25lOLwC4IntMUODTllWWS6bRDL0dDWMQCnBt/ztft0VE=
-X-Google-Smtp-Source: ABdhPJyU7fmOlbiji4ddM69LF02t4pcts+b6Bcfsl+pKoX9DCzRJDM4ORRS9rbFl+B62vkIWg7pMN/V0nq4hIA/Ka+4=
-X-Received: by 2002:a2e:890c:: with SMTP id d12mr1765281lji.218.1637090650634;
- Tue, 16 Nov 2021 11:24:10 -0800 (PST)
+        id S239820AbhKPT2I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 14:28:08 -0500
+Received: from mail-bn1nam07on2054.outbound.protection.outlook.com ([40.107.212.54]:13383
+        "EHLO NAM02-BN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229663AbhKPT2G (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 14:28:06 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Cw2rFcD76YZmFzjEKcpKVWNdTSBe3h5CnHe+pApRViou3Ggd/PWoLx0LEI6gQVl2Pxy0k38j84pw9Cc27HpmjJnpHzXgOxhjDSxgFmptqYLvFQBNwN48KDlx7uly9TLBeidXY6zXutAzptetclEXORCbUgmpJUbrhE/p9szoAQGtjZsJER3SpU61875LZInJp/4qJzPL9z3jK+FKI53JjVOsypmH6y8odXASaGXxC+HRH/bZ98tAotKLwqZWRXrqD3eFdmODkMPJNEMmwrkOqb8Lpg9KIk9qPFt4Np68XN29g4RobnsDg3D4wHcqYq60ut+F8G2/Bf5BkHG6GAryow==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JcYIsBopb7Nrl3M4T9gj59ScRZb1+9TAYMDXXKld4cM=;
+ b=Ljx2USncGAtXlOqSxut5CbhBtf+SzFKlj6rd6TWAjsSozBQB7Nx6fPppbV6kGFCWxx3Y3qBFgCpbWCyy8kAp3cAnrcg+huFhn4ldhtpsb6+xPJbVZNYVAhulfqMe99K6UQ27uk7lDsdPifcUAZ6+yA3BsRR06545qL0PkaJqJXhYCl/QoraUC0qCsfRzUtCT/spsCsLQGCE8HZOVRG1Lb8OHJPNoBa3YGCLB+dnxcOaAagzB2MaJwdAcaUfxBsot2BG8VL9z8mc+x1I7Ic3QY5KNq5WKXqEhEAuYZ3eoIC3Pw7E/LfKn2pbZU2kEfLDPHArm6NVfazwvKQQUxQQb7A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JcYIsBopb7Nrl3M4T9gj59ScRZb1+9TAYMDXXKld4cM=;
+ b=Pe+5TFQUl6i/2lFAQzMs3GpeCxb2wBBMc3c40z7PDalaOZUIzay47+jbHDnd8LJ/c/WFt0jdsoBI4uPs9Gj3gbdZetFvNxLWeVbNiiwS318MIYeNgg/0WFP1AunDfwU/iq+WlCKMt8yKqLdq9GDn2ljoVJMXSDpyN3lvEDkYKaG43VTC1Ef6rtuZwHZOjoBkcO57TpyxMLXItIDNZejLIpCYBdcB+h2FG2n7J33LdrzPRWxTMTrt9LslIBSJ2z+1y6fm9X8tPSUj3M9qolw97GCZXnM6KxknxOYlnW5yj4AfQCKB7m5qRDIBCgzUkrk3FlfKKLtKa9dAXr26Ir0oiQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5208.namprd12.prod.outlook.com (2603:10b6:208:311::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.27; Tue, 16 Nov
+ 2021 19:25:07 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::5897:83b2:a704:7909]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::5897:83b2:a704:7909%7]) with mapi id 15.20.4690.027; Tue, 16 Nov 2021
+ 19:25:07 +0000
+Date:   Tue, 16 Nov 2021 15:25:05 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
+ for mlx5 devices
+Message-ID: <20211116192505.GB2105516@nvidia.com>
+References: <20211102163610.GG2744544@nvidia.com>
+ <20211102141547.6f1b0bb3.alex.williamson@redhat.com>
+ <20211103120955.GK2744544@nvidia.com>
+ <20211103094409.3ea180ab.alex.williamson@redhat.com>
+ <20211103161019.GR2744544@nvidia.com>
+ <20211103120411.3a470501.alex.williamson@redhat.com>
+ <20211105132404.GB2744544@nvidia.com>
+ <20211105093145.386d0e89.alex.williamson@redhat.com>
+ <20211115232921.GV2105516@nvidia.com>
+ <20211116105736.0388a183.alex.williamson@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211116105736.0388a183.alex.williamson@redhat.com>
+X-ClientProxiedBy: YTOPR0101CA0030.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b00:15::43) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
-References: <20211116164208.164245-1-mauricio@kinvolk.io> <20211116164208.164245-4-mauricio@kinvolk.io>
-In-Reply-To: <20211116164208.164245-4-mauricio@kinvolk.io>
-From:   =?UTF-8?Q?Mauricio_V=C3=A1squez_Bernal?= <mauricio@kinvolk.io>
-Date:   Tue, 16 Nov 2021 14:23:59 -0500
-Message-ID: <CAHap4zv=-YV6oXdncZW9DRaBu16b6-81HXretRX-orL2d=B4sQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 3/4] libbpf: Introduce 'bpf_object__prepare()'
-To:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
-        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
-        Leonardo Di Donato <leonardo.didonato@elastic.co>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Received: from mlx.ziepe.ca (206.223.160.26) by YTOPR0101CA0030.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b00:15::43) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.26 via Frontend Transport; Tue, 16 Nov 2021 19:25:07 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1mn44n-00BBc8-7J; Tue, 16 Nov 2021 15:25:05 -0400
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 44c38903-adf9-4be6-036d-08d9a936cc47
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5208:
+X-Microsoft-Antispam-PRVS: <BL1PR12MB52081A96C75EEEF55E7ACB7BC2999@BL1PR12MB5208.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FeKkiuf4Un00qSqhA59o/eq5j7pcNFLaRBJx/uqeCDerB6C0SrJgKjBcg93C66iRXvJ1KBI8gxQMF2UHq3Hh3eaSiyohVw6oymkj6nLgR3hMkeD8nLe0z2pRegoSZ9Br9eCDRO75QKO3xFUXG0LgTw7w2gxrGP2WH18yGemPPFGMgsloQMZiKtqZyYul9Vcnd0C48QjKFj6qeoOhw9kcmF7npUUSFobplEOnhK0OxITF2bS0uUfGSlGNdxfoeeWX1r+YfTQuUk+mev2F0YFBxTNzd0fIGhtqt1oFxdsHeWIxSzGg6pTv1LExEqaGdYkJF2A2puDRlLbEYZvf50JzY46nnGfI2OodyICy5rko6PBYDTS/VGOwhBI1u3H16HNvgBNVEoF/FOgeN7FaprCBi+U0d5HBU8rQKJJ46tWIp8YkSd4pH/MqJKshbYOMMSSzHO8Mb+dlPuneyqgfdFNGlSWjVx/WJoXSJoB5kWxTZttUy4Cgtp60bzu/3UI0H87DesNkuNGcjKoZWuFARgTcNfgfjmpXvWQyKszqhOAwASIv6DDjgr4qAV4MNBcificFOYelHzyO0XvxC6qno9/DiiQ5tP7Lb5liLJ3xQIJEqbLHhNWhX3NQXmvp42mO5DbOnNwHZL1NjIotGtkpsuCjmQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(5660300002)(38100700002)(426003)(2616005)(316002)(9786002)(186003)(66556008)(66946007)(8936002)(86362001)(26005)(2906002)(36756003)(54906003)(6916009)(66476007)(9746002)(8676002)(1076003)(4326008)(508600001)(83380400001)(33656002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UzTrAXt3mvBKqbfELn17LQibFTYZbJ/EBfp40R8g9nDcKV5a/JXWlW7DkLnM?=
+ =?us-ascii?Q?svUaDgnbSF/0QT8ujrz/LKcpotBcYQAhNfr1jZXVEpg8K55eU69FYSfrAY+1?=
+ =?us-ascii?Q?IlEim6XQYRkLVG7vQavzOzWGIJheV4ey/o44pvq9fp4u/P1WjBJxuT6mbUdO?=
+ =?us-ascii?Q?OTa3VazCNmZWPiw74kBA7oASo0qIJOkPEfcP5XRL0FCoI0+NTZuFGLIcM5ph?=
+ =?us-ascii?Q?MNZFzD++/2Ra/gBJPC2r9Y/ldz9HUYOTAyuibSqKZNw49dH0dEZh0ItJDYpl?=
+ =?us-ascii?Q?7qs5wVBeXi9TdEUmaCt5kcOR9iQq+GJEpQYQ/jlWZq1xRBeLP7pZmg0a17Js?=
+ =?us-ascii?Q?FVK3aVJg6Fb+u6tjv/IJhg3q8zL68Ubmk/d3+fS/x0U17jcZTGcrhZ5j8IBq?=
+ =?us-ascii?Q?5Fpu7enhz6asKJSBOsyPIcRh79ymsefL08wwZBL2tlXiXaRu+jSPtNx902bC?=
+ =?us-ascii?Q?MCpwUTePM1bpsKr6mN5pAz3vCljsJcK7PDVt//NcgDNxAYuJ6Sj7orNZClze?=
+ =?us-ascii?Q?0AQP1f5zrC1ZEFAxTezL2ab6XafJmr6ct3c76w17tw8Jonb2OD8EvA1IpX6b?=
+ =?us-ascii?Q?mMz9rba7XYb2GuLBhOKXfRaV3U9gb4BMqzSvcwnBWMUIxwbtpvyezsES6oxZ?=
+ =?us-ascii?Q?P/ePTWMJFUi7wlTJWeCOLqXPP8eALOAoFyPFQvqm9RBLv0Mx/1OGHO2GefEC?=
+ =?us-ascii?Q?9XRbUxf7Q6SK7zq9WprQh+DcKmp4TmV4uXNu454G4W1/SE4mV/H2ri+cxT+P?=
+ =?us-ascii?Q?YQOVvNCWqF3v1I6EPFMx/6sWXXta3KkfS45tyKgEWXjF8sYPvhysLxK0BYBb?=
+ =?us-ascii?Q?48vHhfKdENuWlTMHXn5WgkeP+Km7korEZ0Sckey0fk48DF1xPRlnXy3EOMcR?=
+ =?us-ascii?Q?Sk89CuutOIvdXesFr9ne69NE4ez5T29/ye6mImSJ1KILYf9qk8x2PmEPO6fw?=
+ =?us-ascii?Q?ayT7gqiwOIShM2gRWsnE/4pIDRxcLzlVPBYWjE0z4dO+CdeRpTnbtWi+29L1?=
+ =?us-ascii?Q?0tmISQqg62SHmY9Nmy5m1MhmcEO6ZSkUifmBjRa6UnQdYXcYh8ltQu9i3Z+G?=
+ =?us-ascii?Q?OrB4wN6izf1CtVDI/w8lfnL17btjijdcqnAw9EUzYIpQWcNxEGbpApWHTeye?=
+ =?us-ascii?Q?IKca5MvLglODBl761GoTTAEqD1Dyit0xUaetYt+ONntYo2wpXVCJQjXtOxE2?=
+ =?us-ascii?Q?zPGDA9KMnPFs8WOnotWor/SXZjyfKbGUQrTj+zwJUfJS0LC3z/SyQizt4P6n?=
+ =?us-ascii?Q?+qtxKHnrKSFzaocdxM30cuuQbH/tCaA4DdlAUJ/+KRDYtUXsqfNv32iCoqJG?=
+ =?us-ascii?Q?dR0PU2U3lL/FowHINq6Zn8fvdkE38GM5DKBebsESMQ2LGpUR8OcfL8rZ25Si?=
+ =?us-ascii?Q?H7agdFjX4jXPEj1Iov5TbwdCbIZ4xm14KA5szHByE72AI+8JxOvU55cU/jCt?=
+ =?us-ascii?Q?ivFewT8VoUcjIoGRtlP0cJ1lqG/1r+l1Af4dJxYfWfZVZgEW64gfQXW+JMXt?=
+ =?us-ascii?Q?PDoCLcpyihdjY3+iPkbVJrWzojPB2bKEuK/R9TQBMK1DymnLfKSGw7BLc0EH?=
+ =?us-ascii?Q?V5L8nNmEZlBeyytO5sg=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 44c38903-adf9-4be6-036d-08d9a936cc47
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2021 19:25:07.1822
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ghEfWaj3Bk9Cww3t2enNJP80eAqdaLTA4/phLLz7uXzxq3HSj3g0zQUBfO1dJkhu
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5208
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 16, 2021 at 11:42 AM Mauricio V=C3=A1squez <mauricio@kinvolk.io=
-> wrote:
->
-> BTFGen[0] requires access to the result of the CO-RE relocations without
-> actually loading the bpf programs. The current libbpf API doesn't allow
-> it because all the object preparation (subprogs, relocations: co-re,
-> elf, maps) happens inside bpf_object__load().
->
-> This commit introduces a new bpf_object__prepare() function to perform
-> all the preparation steps than an ebpf object requires, allowing users
-> to access the result of those preparation steps without having to load
-> the program. Almost all the steps that were done in bpf_object__load()
-> are now done in bpf_object__prepare(), except map creation and program
-> loading.
->
-> Map relocations require a bit more attention as maps are only created in
-> bpf_object__load(). For this reason bpf_object__prepare() relocates maps
-> using BPF_PSEUDO_MAP_IDX, if someone dumps the instructions before
-> loading the program they get something meaningful. Map relocations are
-> completed in bpf_object__load() once the maps are created and we have
-> their fd to use with BPF_PSEUDO_MAP_FD.
->
-> Users won=E2=80=99t see any visible changes if they=E2=80=99re using bpf_=
-object__open()
-> + bpf_object__load() because this commit keeps backwards compatibility
-> by calling bpf_object__prepare() in bpf_object_load() if it wasn=E2=80=99=
-t
-> called by the user.
->
-> bpf_object__prepare_xattr() is not implemented as their counterpart
-> bpf_object__load_xattr() will be deprecated[1]. New options will be
-> added only to bpf_object_open_opts.
->
-> [0]: https://github.com/kinvolk/btfgen/
-> [1]: https://github.com/libbpf/libbpf/wiki/Libbpf:-the-road-to-v1.0#libbp=
-fh-high-level-apis
->
-> Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
-> Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
-> Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
-> Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
-> ---
->  tools/lib/bpf/libbpf.c   | 130 ++++++++++++++++++++++++++++-----------
->  tools/lib/bpf/libbpf.h   |   2 +
->  tools/lib/bpf/libbpf.map |   1 +
->  3 files changed, 98 insertions(+), 35 deletions(-)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 6ca76365c6da..f50f9428bb03 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -514,6 +514,7 @@ struct bpf_object {
->         int nr_extern;
->         int kconfig_map_idx;
->
-> +       bool prepared;
->         bool loaded;
->         bool has_subcalls;
->         bool has_rodata;
-> @@ -5576,34 +5577,19 @@ bpf_object__relocate_data(struct bpf_object *obj,=
- struct bpf_program *prog)
->
->                 switch (relo->type) {
->                 case RELO_LD64:
-> -                       if (obj->gen_loader) {
-> -                               insn[0].src_reg =3D BPF_PSEUDO_MAP_IDX;
-> -                               insn[0].imm =3D relo->map_idx;
-> -                       } else {
-> -                               insn[0].src_reg =3D BPF_PSEUDO_MAP_FD;
-> -                               insn[0].imm =3D obj->maps[relo->map_idx].=
-fd;
-> -                       }
-> +                       insn[0].src_reg =3D BPF_PSEUDO_MAP_IDX;
-> +                       insn[0].imm =3D relo->map_idx;
->                         break;
->                 case RELO_DATA:
->                         insn[1].imm =3D insn[0].imm + relo->sym_off;
-> -                       if (obj->gen_loader) {
-> -                               insn[0].src_reg =3D BPF_PSEUDO_MAP_IDX_VA=
-LUE;
-> -                               insn[0].imm =3D relo->map_idx;
-> -                       } else {
-> -                               insn[0].src_reg =3D BPF_PSEUDO_MAP_VALUE;
-> -                               insn[0].imm =3D obj->maps[relo->map_idx].=
-fd;
-> -                       }
-> +                       insn[0].src_reg =3D BPF_PSEUDO_MAP_IDX_VALUE;
-> +                       insn[0].imm =3D relo->map_idx;
->                         break;
->                 case RELO_EXTERN_VAR:
->                         ext =3D &obj->externs[relo->sym_off];
->                         if (ext->type =3D=3D EXT_KCFG) {
-> -                               if (obj->gen_loader) {
-> -                                       insn[0].src_reg =3D BPF_PSEUDO_MA=
-P_IDX_VALUE;
-> -                                       insn[0].imm =3D obj->kconfig_map_=
-idx;
-> -                               } else {
-> -                                       insn[0].src_reg =3D BPF_PSEUDO_MA=
-P_VALUE;
-> -                                       insn[0].imm =3D obj->maps[obj->kc=
-onfig_map_idx].fd;
-> -                               }
-> +                               insn[0].src_reg =3D BPF_PSEUDO_MAP_IDX_VA=
-LUE;
-> +                               insn[0].imm =3D obj->kconfig_map_idx;
->                                 insn[1].imm =3D ext->kcfg.data_off;
->                         } else /* EXT_KSYM */ {
->                                 if (ext->ksym.type_id && ext->is_set) { /=
-* typed ksyms */
-> @@ -6144,8 +6130,50 @@ bpf_object__relocate(struct bpf_object *obj, const=
- char *targ_btf_path)
->                         return err;
->                 }
->         }
-> -       if (!obj->gen_loader)
-> -               bpf_object__free_relocs(obj);
-> +
-> +       return 0;
-> +}
-> +
-> +/* relocate instructions that refer to map fds */
-> +static int
-> +bpf_object__finish_relocate(struct bpf_object *obj)
-> +{
-> +       int i, j;
-> +
-> +       if (obj->gen_loader)
-> +               return 0;
-> +
-> +       for (i =3D 0; i < obj->nr_programs; i++) {
-> +               struct bpf_program *prog =3D &obj->programs[i];
-> +
-> +               if (prog_is_subprog(obj, prog))
-> +                       continue;
-> +               for (j =3D 0; j < prog->nr_reloc; j++) {
-> +                       struct reloc_desc *relo =3D &prog->reloc_desc[j];
-> +                       struct bpf_insn *insn =3D &prog->insns[relo->insn=
-_idx];
-> +                       struct extern_desc *ext;
-> +
-> +                       switch (relo->type) {
-> +                       case RELO_LD64:
-> +                               insn[0].src_reg =3D BPF_PSEUDO_MAP_FD;
-> +                               insn[0].imm =3D obj->maps[relo->map_idx].=
-fd;
-> +                               break;
-> +                       case RELO_DATA:
-> +                               insn[0].src_reg =3D BPF_PSEUDO_MAP_VALUE;
-> +                               insn[0].imm =3D obj->maps[relo->map_idx].=
-fd;
-> +                               break;
-> +                       case RELO_EXTERN_VAR:
-> +                               ext =3D &obj->externs[relo->sym_off];
-> +                               if (ext->type =3D=3D EXT_KCFG) {
-> +                                       insn[0].src_reg =3D BPF_PSEUDO_MA=
-P_VALUE;
-> +                                       insn[0].imm =3D obj->maps[obj->kc=
-onfig_map_idx].fd;
-> +                               }
-> +                       default:
-> +                               break;
-> +                       }
-> +               }
-> +       }
-> +
->         return 0;
->  }
->
-> @@ -6706,8 +6734,8 @@ bpf_object__load_progs(struct bpf_object *obj, int =
-log_level)
->                 if (err)
->                         return err;
->         }
-> -       if (obj->gen_loader)
-> -               bpf_object__free_relocs(obj);
-> +
-> +       bpf_object__free_relocs(obj);
->         return 0;
->  }
->
-> @@ -7258,6 +7286,39 @@ static int bpf_object__resolve_externs(struct bpf_=
-object *obj,
->         return 0;
->  }
->
-> +static int __bpf_object__prepare(struct bpf_object *obj, int log_level,
-> +                                const char *target_btf_path)
-> +{
-> +       int err;
-> +
-> +       if (obj->prepared) {
-> +               pr_warn("object '%s': prepare can't be attempted twice\n"=
-, obj->name);
-> +               return libbpf_err(-EINVAL);
-> +       }
-> +
-> +       if (obj->gen_loader)
-> +               bpf_gen__init(obj->gen_loader, log_level);
-> +
-> +       err =3D bpf_object__probe_loading(obj);
-> +       err =3D err ? : bpf_object__load_vmlinux_btf(obj, false);
-> +       err =3D err ? : bpf_object__resolve_externs(obj, obj->kconfig);
-> +       err =3D err ? : bpf_object__sanitize_and_load_btf(obj);
-> +       err =3D err ? : bpf_object__sanitize_maps(obj);
-> +       err =3D err ? : bpf_object__init_kern_struct_ops_maps(obj);
-> +       err =3D err ? : bpf_object__relocate(obj, obj->btf_custom_path ? =
-: target_btf_path);
-> +
-> +       obj->prepared =3D true;
-> +
-> +       return err;
-> +}
-> +
-> +LIBBPF_API int bpf_object__prepare(struct bpf_object *obj)
-> +{
-> +       if (!obj)
-> +               return libbpf_err(-EINVAL);
-> +       return __bpf_object__prepare(obj, 0, NULL);
-> +}
-> +
->  int bpf_object__load_xattr(struct bpf_object_load_attr *attr)
->  {
->         struct bpf_object *obj;
-> @@ -7274,17 +7335,14 @@ int bpf_object__load_xattr(struct bpf_object_load=
-_attr *attr)
->                 return libbpf_err(-EINVAL);
->         }
->
-> -       if (obj->gen_loader)
-> -               bpf_gen__init(obj->gen_loader, attr->log_level);
-> +       if (!obj->prepared) {
-> +               err =3D __bpf_object__prepare(obj, attr->log_level, attr-=
->target_btf_path);
-> +               if (err)
-> +                       return err;
-> +       }
->
-> -       err =3D bpf_object__probe_loading(obj);
+On Tue, Nov 16, 2021 at 10:57:36AM -0700, Alex Williamson wrote:
 
-After sending the patches we realized they weren't working without
-root privileges in systems with unprivileged BPF disabled. This line
-should not be moved to bpf_object__prepare indeed. We'll fix it in the
-next iteration.
+> > I think userspace should decide if it wants to use mlx5 built in or
+> > the system IOMMU to do dirty tracking.
+> 
+> What information does userspace use to inform such a decision?
 
+Kernel can't know which approach performs better. Operators should
+benchmark and make a choice for their deployment HW. Maybe device
+tracking severely impacts device performance or vice versa.
 
-> -       err =3D err ? : bpf_object__load_vmlinux_btf(obj, false);
-> -       err =3D err ? : bpf_object__resolve_externs(obj, obj->kconfig);
-> -       err =3D err ? : bpf_object__sanitize_and_load_btf(obj);
-> -       err =3D err ? : bpf_object__sanitize_maps(obj);
-> -       err =3D err ? : bpf_object__init_kern_struct_ops_maps(obj);
-> -       err =3D err ? : bpf_object__create_maps(obj);
-> -       err =3D err ? : bpf_object__relocate(obj, obj->btf_custom_path ? =
-: attr->target_btf_path);
-> +       err =3D bpf_object__create_maps(obj);
-> +       err =3D err ? : bpf_object__finish_relocate(obj);
->         err =3D err ? : bpf_object__load_progs(obj, attr->log_level);
->
->         if (obj->gen_loader) {
-> @@ -7940,6 +7998,8 @@ void bpf_object__close(struct bpf_object *obj)
->         bpf_object__elf_finish(obj);
->         bpf_object_unload(obj);
->         btf__free(obj->btf);
-> +       if (!obj->user_provided_btf_vmlinux)
-> +               btf__free(obj->btf_vmlinux_override);
->         btf_ext__free(obj->btf_ext);
->
->         for (i =3D 0; i < obj->nr_maps; i++)
-> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> index 908ab04dc9bd..d206b4400a4d 100644
-> --- a/tools/lib/bpf/libbpf.h
-> +++ b/tools/lib/bpf/libbpf.h
-> @@ -148,6 +148,8 @@ LIBBPF_API int bpf_object__unpin_programs(struct bpf_=
-object *obj,
->  LIBBPF_API int bpf_object__pin(struct bpf_object *object, const char *pa=
-th);
->  LIBBPF_API void bpf_object__close(struct bpf_object *object);
->
-> +LIBBPF_API int bpf_object__prepare(struct bpf_object *obj);
-> +
->  struct bpf_object_load_attr {
->         struct bpf_object *obj;
->         int log_level;
-> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> index c9555f8655af..459b41228933 100644
-> --- a/tools/lib/bpf/libbpf.map
-> +++ b/tools/lib/bpf/libbpf.map
-> @@ -415,4 +415,5 @@ LIBBPF_0.6.0 {
->                 perf_buffer__new_raw;
->                 perf_buffer__new_raw_deprecated;
->                 btf__save_raw;
-> +               bpf_object__prepare;
->  } LIBBPF_0.5.0;
-> --
-> 2.25.1
->
+Kernel doesn't easily know what userspace has done, maybe one device
+supports migration driver dirty tracking and one device does not.
+
+Is user space going to use a system IOMMU for both devices? 
+
+Is it going to put the simple device in NDMA early and continue to
+dirty track to shutdown the other devices?
+
+> Ultimately userspace just wants the finest granularity of tracking,
+> shouldn't that guide our decisions which to provide?
+
+At least for mlx5 there is going to some trade off curve of device
+performance, dirty tracking page size, and working set.
+
+Even lower is better is not necessarily true. After overheads on a
+400GB RDMA NIC there is not such a big difference between doing a 4k
+and 16k scatter transfer. The CPU work to process all the extra bitmap
+data may not be a net win compared to block transfer times.
+
+Conversly someone doing 1G TCP transfers probably cares a lot to
+minimize block size.
+
+Overall, I think there is far too much up in the air and unmeasured to
+firmly commit the kernel to a fixed policy.
+
+So, I would like to see userspace control most of the policy aspects,
+including the dirty track provider.
+
+> I believe the intended progression of dirty tracking is that by default
+> all mapped ranges are dirty.  If the device supports page pinning, then
+> we reduce the set of dirty pages to those pages which are pinned.  A
+> device that doesn't otherwise need page pinning, such as a fully IOMMU
+
+How does userspace know if dirty tracking works or not? All I see
+VFIO_IOMMU_DIRTY_PAGES_FLAG_START unconditionally allocs some bitmaps.
+
+I'm surprised it doesn't check that only NO_IOMMU's devices are
+attached to the container and refuse to dirty track otherwise - since
+it doesn't work..
+
+> backed device, would use gratuitous page pinning triggered by the
+> _SAVING state activation on the device.  It sounds like mlx5 could use
+> this existing support today.
+
+How does mlx5 know if it should turn on its dirty page tracking on
+SAVING or if the system IOMMU covers it? Or for some reason userspace
+doesn't want dirty tracking but is doing pre-copy?
+
+When we mix dirty track with pre-copy, the progression seems to be:
+
+  DITRY TRACKING | RUNNING
+     Copy every page to the remote
+  DT | SAVING | RUNNING
+     Copy pre-copy migration data to the remote
+  SAVING | NDMA | RUNNING
+     Read and clear dirty track device bitmap
+  DT | SAVING | RUNNING
+     Copy new dirtied data
+     (maybe loop back to NDMA a few times?)
+  SAVING | NDMA | RUNNING
+     P2P grace state
+  0
+    Read the dirty track and copy data
+    Read and send the migration state
+
+Can we do something so complex using only SAVING?
+
+.. and along the lines of the above how do we mix in NDMA to the iommu
+container, and how does it work if only some devices support NDMA?
+
+> We had also discussed variants to page pinning that might be more
+> useful as device dirty page support improves.  For example calls to
+> mark pages dirty once rather than the perpetual dirtying of pinned
+> pages, calls to pin pages for read vs write, etc.  We didn't dive much
+> into system IOMMU dirtying, but presumably we'd have a fault handler
+> triggered if a page is written by the device and go from there.
+
+Would be interesting to know for sure what current IOMMU HW has
+done. I'm supposing the easiest implementation is to write a dirty bit
+to the IO PTE the same as the CPU writes a dirty bit the normal PTE.
+
+> > In light of all this I'm wondering if device dirty tracking should
+> > exist as new ioctls on the device FD and reserve the type1 code to
+> > only work the IOMMU dirty tracking.
+> 
+> Our existing model is working towards the IOMMU, ie. container,
+> interface aggregating dirty page context.  
+
+This creates inefficiencies in the kernel, we copy from the mlx5
+formed data structure to new memory in the iommu through a very
+ineffficent API and then again we do an ioctl to copy it once more and
+throw all the extra work away. It does not seem good for something
+where we want performance.
+
+> For example when page pinning is used, it's only when all devices
+> within the container are using page pinning that we can report the
+> pinned subset as dirty.  Otherwise userspace needs to poll each
+> device, which I suppose enables your idea that userspace decides
+> which source to use, but why?
+
+Efficiency, and user selectable policy.
+
+Userspace can just allocate an all zeros bitmap and feed it to each of
+the providers in the kernel using a 'or in your dirty' semantic.
+
+No redundant kernel data marshaling, userspace gets to decide which
+tracking provider to use, and it is simple to implement in the kernel.
+
+Userspace has to do this anyhow if it has configurations with multiple
+containers. For instance because it was forced to split the containers
+due to one device not supporting NDMA.
+
+> Does the IOMMU dirty page tracking exclude devices if the user
+> queries the device separately?  
+
+What makes sense to me is multiple tracking providers. Each can be
+turned on and off.
+
+If the container tracking provider says it supports tracking then it
+means it can track DMA from every device it is connected to (unlike
+today?). eg by using IOMMU HW that naturally does this, or by only
+having only NO_IOMMU devices.
+
+If the migration driver says it supports tracking, then it only tracks
+DMA from that device.
+
+> How would it know?  What's the advantage?  It seems like this
+> creates too many support paths that all need to converge on the same
+> answer.  Consolidating DMA dirty page tracking to the DMA mapping
+> interface for all devices within a DMA context makes more sense to
+> me.
+
+What I see is a lot of questions and limitations with this
+approach. If we stick to funneling everything through the iommu then
+answering the questions seem to create a large amount of kernel
+work. Enough to ask if it is worthwhile..
+
+.. and then we have to ask how does this all work in IOMMUFD where it
+is not so reasonable to tightly couple the migration driver and the
+IOAS and I get more questions :)
+
+Jason
