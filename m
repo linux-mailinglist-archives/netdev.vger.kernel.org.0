@@ -2,97 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D047453798
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 17:34:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 210814537D8
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 17:41:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234008AbhKPQhD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 11:37:03 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:39891 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233936AbhKPQg6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 11:36:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637080439;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=89B3KAajPsnmRgt1eJkzLJIZzPXyMcrglgmWMTrg9Xs=;
-        b=G6SZH0P/DPhZ7zO3/QpuClJUb6HQOwTDziJ2ZzHg1FNUPfC9KLlrVzF5n4Iuog+nssjP4/
-        n29R8wOIaSAkXrTqP40GrDXDNDqGgLczrbRZwW726lPK4QWfi0mUch1gFeAg+cdKpGd86Z
-        M8eZRiIKb6NN4ZF1jrsL0yosVdEuZHc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-219-LB8b4PKZMCSjCNK4782rCQ-1; Tue, 16 Nov 2021 11:33:55 -0500
-X-MC-Unique: LB8b4PKZMCSjCNK4782rCQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5DB971922025;
-        Tue, 16 Nov 2021 16:33:54 +0000 (UTC)
-Received: from maya.cloud.tilaa.com (unknown [10.40.208.30])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 21F5D60D30;
-        Tue, 16 Nov 2021 16:33:54 +0000 (UTC)
-Date:   Tue, 16 Nov 2021 17:33:52 +0100
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     Nikita Yushchenko <nikita.yushchenko@virtuozzo.com>
-Cc:     Netdev <netdev@vger.kernel.org>, netfilter-devel@vger.kernel.org
-Subject: Re: "AVX2-based lookup implementation" has broken ebtables
- --among-src
-Message-ID: <20211116173352.1a5ff66a@elisabeth>
-In-Reply-To: <d35db9d6-0727-1296-fa78-4efeadf3319c@virtuozzo.com>
-References: <d35db9d6-0727-1296-fa78-4efeadf3319c@virtuozzo.com>
-Organization: Red Hat
+        id S235497AbhKPQnu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 11:43:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42640 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234059AbhKPQnr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 11:43:47 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7222C061746
+        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 08:40:50 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id o4so18661623pfp.13
+        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 08:40:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=cxePJecZE2WrH9xlN/wiiMl9PdujliUhViJjtEXdKvM=;
+        b=CjI6nPGXTaxn1IUbfuqmnU7jsgsOyaLVHes0gJhzOZ46AANKKa37G0+jgykyF0dKym
+         FEYdNOgTSaNFbIQRbyJ9CFdCElqQ95aRRv/8SaKbW177/x4fdhTdC2LLjhav7FtDSiCq
+         kKVvlBvAXDabF+3odlIj64NYQo9cwxjEkO/w7ZWm0VRdkX61bcEeGNgjfJhBxW1FXZJW
+         8mvJkjYcqPnx1pBOaJ/HTx05g6gdMc19q8Lm4yOYxsWJAGrVZA413mS5GS3swKmwYKUg
+         AR6kpkZ9ySGoV2ZnJRU6RHBHdoNsJ4/WQPaVakiM9hslKLFtvs03ofnjXcXkwgE4JhPP
+         Qxaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=cxePJecZE2WrH9xlN/wiiMl9PdujliUhViJjtEXdKvM=;
+        b=e6JggV0/GmZAS1U+J5HfJLkSyEU7Tkc1kDG0jhdTiCU/oa3J8objIlO64AsE61BsjB
+         GW2w+3uU5Fcgo7/4Wje0JbVw73i4DAHLecLhnT+TbVAl4WC1H7mT5J7ahI8qC3/JNadB
+         OXxVTj6H69abOu1gcQpJqyTdVj21aUFHbD2phJx/4uYFENM3bWLsfbOz5OaV9Rwm3UX2
+         6LAOa7Lkmxu9DdTv+6SRnvCad5uAfC9qra46lMREKd7+8n8LIANitJbFLsbI8GmXyYKc
+         /IA/Mcj7uQWXSqti4++Yd1GLedMpCGkrD7WR3UW1v+L0VTYMmiox7Wmkpcv4ohzLyd68
+         k3oA==
+X-Gm-Message-State: AOAM533k9U+3c91b2o3UV9gSGTRPKlcEs2pWSOkMBUTuZALHnRGFNEH4
+        HWwFB8KXXCpfzuO5AiuV0WlPcA==
+X-Google-Smtp-Source: ABdhPJx1VgKF3eHPsymFLYS3ut78yITSt0gbbo3PvB3yrcy/kif0ctGWaMIcQM8nAiTCtSHwoZFYjg==
+X-Received: by 2002:a05:6a00:a8e:b0:480:ab08:1568 with SMTP id b14-20020a056a000a8e00b00480ab081568mr41832261pfl.28.1637080850233;
+        Tue, 16 Nov 2021 08:40:50 -0800 (PST)
+Received: from [192.168.254.17] ([50.39.160.154])
+        by smtp.gmail.com with ESMTPSA id h25sm14182861pgm.33.2021.11.16.08.40.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Nov 2021 08:40:50 -0800 (PST)
+Message-ID: <a0baf2b6-70f9-3185-cd92-d83533c63ff0@linaro.org>
+Date:   Tue, 16 Nov 2021 08:40:49 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH] tipc: use consistent GFP flags
+Content-Language: en-US
+To:     patchwork-bot+netdevbpf@kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     jmaloy@redhat.com, ying.xue@windriver.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net, linux-kernel@vger.kernel.org
+References: <20211111205916.37899-2-tadeusz.struk@linaro.org>
+ <163698120846.10163.14371622974741533436.git-patchwork-notify@kernel.org>
+From:   Tadeusz Struk <tadeusz.struk@linaro.org>
+In-Reply-To: <163698120846.10163.14371622974741533436.git-patchwork-notify@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[Adding netfilter-devel]
+On 11/15/21 05:00, patchwork-bot+netdevbpf@kernel.org wrote:
+> This patch was applied to netdev/net.git (master)
+> by David S. Miller<davem@davemloft.net>:
+> 
+> On Thu, 11 Nov 2021 12:59:16 -0800 you wrote:
+>> Some functions, like tipc_crypto_start use inconsisten GFP flags
+>> when allocating memory. The mentioned function use GFP_ATOMIC to
+>> to alloc a crypto instance, and then calls alloc_ordered_workqueue()
+>> which allocates memory with GFP_KERNEL. tipc_aead_init() function
+>> even uses GFP_KERNEL and GFP_ATOMIC interchangeably.
+>> No doc comment specifies what context a function is designed to
+>> work in, but the flags should at least be consistent within a function.
+>>
+>> [...]
+> Here is the summary with links:
+>    - tipc: use consistent GFP flags
+>      https://git.kernel.org/netdev/net/c/86c3a3e964d9
+> 
+> You are awesome, thank you!
 
-Hi Nikita,
-
-On Tue, 16 Nov 2021 11:51:01 +0300
-Nikita Yushchenko <nikita.yushchenko@virtuozzo.com> wrote:
-
-> Hello Stefano.
-> 
-> I've found that nftables rule added by
-> 
-> # ebtables -A INPUT --among-src 8:0:27:40:f7:9=192.168.56.10 -j log
-> 
-> does not match packets on kernel 5.14 and on current mainline.
-> Although it matched correctly on kernel 4.18
-> 
-> I've bisected this issue. It was introduced by your commit 7400b063969b ("nft_set_pipapo: Introduce 
-> AVX2-based lookup implementation") from 5.7 development cycle.
-> 
-> The nftables rule created by the above command uses concatenation:
-> 
-> # nft list chain bridge filter INPUT
-> table bridge filter {
->          chain INPUT {
->                  type filter hook input priority filter; policy accept;
->                  ether saddr . ip saddr { 08:00:27:40:f7:09 . 192.168.56.10 } counter packets 0 bytes 0 
-> log level notice flags ether
->          }
-> }
-> 
-> Looks like the AVX2-based lookup does not process this correctly.
-
-Thanks for bisecting and reporting this! I'm looking into it now, I
-might be a bit slow as I'm currently traveling.
-
-If you need a quick workaround, by the way, defining a "ether . ip"
-set without the 'interval' flag and using a reference to it from the
-nft rule will cause a switch to the nft_hash back-end (which presumably
-doesn't have the same issue), see also:
-
-	https://wiki.nftables.org/wiki-nftables/index.php/Portal:DeveloperDocs/set_internals
+Thanks, you are awesome too! ;)
+Any feedback about the patch:
+[PATCH v2] tipc: check for null after calling kmemdup
 
 -- 
-Stefano
-
+Thanks,
+Tadeusz
