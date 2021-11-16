@@ -2,185 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 574CC452EE4
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 11:19:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 217D7452EE6
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 11:21:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233917AbhKPKWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 05:22:45 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:51486 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233959AbhKPKWX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 05:22:23 -0500
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1637057965;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=tmef5BxDew8mQ5tumKAD4FZtWpS8npOjZyM1kVOj4Uw=;
-        b=R6XnQ837cXV36YauZrLhJ7mcb4dB7DxaDgpY0E6yCJ+Bpj/gRX3fZlpqj5bcgDhjcrjM8g
-        tMLNGBSA9m9llridhOs+LhwgT34keT3P3EEDSvUxXUYqPm5ql5DZSxHF7alAvBf3ZP8KZm
-        /WrQDwk9Q+2kT3WPB7kXCdClSpID5dDncjttgbDnpO7EzyHIyGEHdgbuyaHq5Db7kTk4RO
-        L/camCVyYNnpcc2/EU+4Pp7spLE0+n7evkoblGPnD9Vg6l9lcoqHLKFfrBxcyIopYBBPzI
-        7a3iGZFV4kDH6Lyl0ryTXkqly1AJqWiu6yctMYhVOHD/4la7KMZqSgwzpgd9cw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1637057965;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=tmef5BxDew8mQ5tumKAD4FZtWpS8npOjZyM1kVOj4Uw=;
-        b=kfQhV4D6ptRcHR4h21mtVX0dnQLgp901RfzVER4WMw/ZNMjdSKY2JkdIoTdAqpK9Cu7Il7
-        9AikHsembFp1WWCQ==
-To:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: RFC: PTP Boundary Clock over UDPv4/UDPv6 on Linux bridge
-Date:   Tue, 16 Nov 2021 11:19:24 +0100
-Message-ID: <871r3gbdxv.fsf@kurt>
+        id S233949AbhKPKYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 05:24:14 -0500
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:40404 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233985AbhKPKXT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 05:23:19 -0500
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 1AGAKGkG006916;
+        Tue, 16 Nov 2021 04:20:16 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1637058016;
+        bh=yw3Zn538UUufhn6YldPan2L87sqBIQnrLSut4wY/nic=;
+        h=From:To:CC:Subject:Date;
+        b=bEdnNbs4+C6CEAYYWs+679xwN1FQ+7BhmRJ3WozlVf9B7cogi65EeEqJqJXqH85Ff
+         p/B5JMuWQcoVRDuTQJuH725IIYuelVZ3v/uVoSlm5C0C7iPAVh93PLhb2gYaPBLvAn
+         aXbsroj8vKFaoUQZmZ8L9QuTk7pxUbYsDTcCDSP4=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 1AGAKG3B024157
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 16 Nov 2021 04:20:16 -0600
+Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 16
+ Nov 2021 04:20:16 -0600
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 16 Nov 2021 04:20:16 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 1AGAKGoB010737;
+        Tue, 16 Nov 2021 04:20:16 -0600
+From:   <hnagalla@ti.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <geet.modi@ti.com>, <vikram.sharma@ti.com>, <hnagalla@ti.com>,
+        <grygorii.strashko@ti.com>
+Subject: [PATCH net-next] net: phy: add support for TI DP83561-SP phy
+Date:   Tue, 16 Nov 2021 04:20:15 -0600
+Message-ID: <20211116102015.15495-1-hnagalla@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+From: Hari Nagalla <hnagalla@ti.com>
 
-Hi all,
+Add support for the TI DP83561-SP Gigabit ethernet phy device.
 
-I'm currently trying to setup a PTP Boundary Clock over UDPv4 or UDPv6
-on top of a switch using a Linux bridge. It works fine using PTP Layer 2
-transport, but not for UDP. I'm wondering whether this is supported
-using Linux or if I'm doing something wrong.
+The dp83561-sp is a high reliability gigabit ethernet PHY designed for
+the high-radiation environment of space. It interfaces directly to
+twisted pair media through an external transformer. The device
+interfaces directly to the MAC layer through Reduced GMII (RGMII) and MII.
 
-My setup looks like this:
+DP83867, DP83869 and DP83561-SP, all these parts support 1000Base-T/
+100Base-TX/ and 10Base-Te standards and have similar register map for
+the core functionality.
 
-Bridge (DSA):
+The data sheet for this part is at https://www.ti.com/product/DP83561-SP
 
-|$ ip link set eth0 up
-|$ ip link set lan0 up
-|$ ip link set lan1 up
-|$ ip link add name br0 type bridge
-|$ ip link set dev lan0 master br0
-|$ ip link set dev lan1 master br0
-|$ ip link set br0 up
-|$ dhclient br0
+Signed-off-by: Hari Nagalla <hnagalla@ti.com>
+Signed-off-by: Geet Modi <geet.modi@ti.com>
+---
+ drivers/net/phy/dp83869.c | 42 ++++++++++++++++++++-------------------
+ 1 file changed, 22 insertions(+), 20 deletions(-)
 
-PTP:
+diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
+index 7113925606f7..b4ff9c5073a3 100644
+--- a/drivers/net/phy/dp83869.c
++++ b/drivers/net/phy/dp83869.c
+@@ -16,6 +16,7 @@
+ #include <dt-bindings/net/ti-dp83869.h>
+ 
+ #define DP83869_PHY_ID		0x2000a0f1
++#define DP83561_PHY_ID		0x2000a1a4
+ #define DP83869_DEVADDR		0x1f
+ 
+ #define MII_DP83869_PHYCTRL	0x10
+@@ -878,34 +879,35 @@ static int dp83869_phy_reset(struct phy_device *phydev)
+ 	return dp83869_config_init(phydev);
+ }
+ 
+-static struct phy_driver dp83869_driver[] = {
+-	{
+-		PHY_ID_MATCH_MODEL(DP83869_PHY_ID),
+-		.name		= "TI DP83869",
+-
+-		.probe          = dp83869_probe,
+-		.config_init	= dp83869_config_init,
+-		.soft_reset	= dp83869_phy_reset,
+-
+-		/* IRQ related */
+-		.config_intr	= dp83869_config_intr,
+-		.handle_interrupt = dp83869_handle_interrupt,
+-		.read_status	= dp83869_read_status,
+ 
+-		.get_tunable	= dp83869_get_tunable,
+-		.set_tunable	= dp83869_set_tunable,
++#define DP83869_PHY_DRIVER(_id, _name)				\
++{								\
++	PHY_ID_MATCH_MODEL(_id),				\
++	.name		= (_name),				\
++	.probe          = dp83869_probe,			\
++	.config_init	= dp83869_config_init,			\
++	.soft_reset	= dp83869_phy_reset,			\
++	.config_intr	= dp83869_config_intr,			\
++	.handle_interrupt = dp83869_handle_interrupt,		\
++	.read_status	= dp83869_read_status,			\
++	.get_tunable	= dp83869_get_tunable,			\
++	.set_tunable	= dp83869_set_tunable,			\
++	.get_wol	= dp83869_get_wol,			\
++	.set_wol	= dp83869_set_wol,			\
++	.suspend	= genphy_suspend,			\
++	.resume		= genphy_resume,			\
++}
+ 
+-		.get_wol	= dp83869_get_wol,
+-		.set_wol	= dp83869_set_wol,
++static struct phy_driver dp83869_driver[] = {
++	DP83869_PHY_DRIVER(DP83869_PHY_ID, "TI DP83869"),
++	DP83869_PHY_DRIVER(DP83561_PHY_ID, "TI DP83561-SP"),
+ 
+-		.suspend	= genphy_suspend,
+-		.resume		= genphy_resume,
+-	},
+ };
+ module_phy_driver(dp83869_driver);
+ 
+ static struct mdio_device_id __maybe_unused dp83869_tbl[] = {
+ 	{ PHY_ID_MATCH_MODEL(DP83869_PHY_ID) },
++	{ PHY_ID_MATCH_MODEL(DP83561_PHY_ID) },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(mdio, dp83869_tbl);
+-- 
+2.17.1
 
-|$ ptp4l -4 -i lan0 -i lan1 --tx_timestamp_timeout=3D40 -m
-
-It seems like ptp4l cannot receive any PTP messages. Tx works fine.
-
-The following hack solves the problem for me. However, I'm not sure
-whether that's the correct approach or not. Any opinions, ideas,
-comments?
-
-Thanks,
-Kurt
-
-|From 2e8b429b3ebabda8e81693b9704dbe5e5205ab09 Mon Sep 17 00:00:00 2001
-|From: Kurt Kanzenbach <kurt@linutronix.de>
-|Date: Wed, 4 Aug 2021 09:33:12 +0200
-|Subject: [PATCH] net: bridge: input: Handle PTP over UDPv4 and UDPv6
-|
-|PTP is considered management traffic. A time aware switch should intercept=
- all
-|PTP messages and handle them accordingly. The corresponding Linux setup is=
- like
-|this:
-|
-|         +-- br0 --+
-|        / /   |     \
-|       / /    |      \
-|      /  |    |     / \
-|     /   |    |    /   \
-|   swp0 swp1 swp2 swp3 swp4
-|
-|ptp4l runs on all individual switch ports and needs full control over send=
-ing
-|and receiving messages on these ports.
-|
-|However, the bridge code treats PTP messages over UDP transport as regular=
- IP
-|messages and forwards them to br0. This way, the running ptp4l instances c=
-annot
-|receive these frames on the individual switch port interfaces.
-|
-|Fix it by intercepting PTP UDP traffic in the bridge code and pass them to=
- the
-|regular network processing.
-|
-|Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-|---
-| net/bridge/br_input.c | 13 +++++++++++++
-| 1 file changed, 13 insertions(+)
-|
-|diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-|index b50382f957c1..4e12be70a003 100644
-|--- a/net/bridge/br_input.c
-|+++ b/net/bridge/br_input.c
-|@@ -271,6 +271,13 @@ static int br_process_frame_type(struct net_bridge_po=
-rt *p,
-| 	return 0;
-| }
-|=20
-|+static const unsigned char ptp_ip_destinations[][ETH_ALEN] =3D {
-|+	{ 0x01, 0x00, 0x5e, 0x00, 0x01, 0x81 }, /* IPv4 PTP */
-|+	{ 0x01, 0x00, 0x5e, 0x00, 0x00, 0x6b }, /* IPv4 P2P */
-|+	{ 0x33, 0x33, 0x00, 0x00, 0x01, 0x81 }, /* IPv6 PTP */
-|+	{ 0x33, 0x33, 0x00, 0x00, 0x00, 0x6b }, /* IPv6 P2P */
-|+};
-|+
-| /*
-|  * Return NULL if skb is handled
-|  * note: already called with rcu_read_lock
-|@@ -280,6 +287,7 @@ static rx_handler_result_t br_handle_frame(struct sk_b=
-uff **pskb)
-| 	struct net_bridge_port *p;
-| 	struct sk_buff *skb =3D *pskb;
-| 	const unsigned char *dest =3D eth_hdr(skb)->h_dest;
-|+	int i;
-|=20
-| 	if (unlikely(skb->pkt_type =3D=3D PACKET_LOOPBACK))
-| 		return RX_HANDLER_PASS;
-|@@ -360,6 +368,11 @@ static rx_handler_result_t br_handle_frame(struct sk_=
-buff **pskb)
-| 	if (unlikely(br_process_frame_type(p, skb)))
-| 		return RX_HANDLER_PASS;
-|=20
-|+	/* Check for PTP over UDPv4 or UDPv6. */
-|+	for (i =3D 0; i < ARRAY_SIZE(ptp_ip_destinations); ++i)
-|+		if (ether_addr_equal(ptp_ip_destinations[i], dest))
-|+			return RX_HANDLER_PASS;
-|+
-| forward:
-| 	switch (p->state) {
-| 	case BR_STATE_FORWARDING:
-|--=20
-|2.30.2
-
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQJHBAEBCgAxFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmGThawTHGt1cnRAbGlu
-dXRyb25peC5kZQAKCRB5KluBy5jwpqtJEAC/5q6nEuYpfxhRoSb/OvMHUEXIF+hR
-IQFlPaxHAiar+LxWmxRF5O8We/YfpZNSDwj5OXhquPxYsfLLQzINB8RRBkagRgtk
-oYOVlluR68iSQhpiG0SYMjlaGE4I0RSgHT2I+uVn2pWYhNznZrt1Nu8h+OMJfsgV
-wATbnOWD33YiefUdl8eW43L2z0fIXuxRA5ad2SImvBSsE3gsZi10sF1BVowPmL4j
-Ch3b6dNRU653455Q/M8ZJ0hEGIisblSVvV0msyjWgyLCtnPRHWXi1AmczqopODLQ
-a9nPiPKTjY0Lu9dGhCPuM4TgZZrNJYuBUHBy6Twg4DBQp1I8DKI4esECH3g6vpFA
-H+72cLplqPpIXfnF3C/d6NY7nLITVS5zKlvyCIbz0Igz7TCH0JzEJ9jMMY+zr4Cv
-yp4/IoCqBicz1ZQN7eA4LnTjslzGPdQVcfWV7UNBbqtZ+AQ7pN6vhvIiLrhb09PI
-woFC9lZP24ZV5a59EcbLbGjhHPz1BBu8jinP7FYXdbn9wsTzrk6aBPmr1u/djoN3
-qJOhxxukultUyXiu9n9nWutoD+8LPTWWRNHFdcG4uzNd0UOQ4wKeVcSmgd4rKTFT
-YnpEqjRm3WGFe5yQsrJb7J4ffLYa5o5R9XDD7k+WM60UbOoPjpSY7m7v0euuxBr5
-DDN0N+s+Hpnayg==
-=5oM/
------END PGP SIGNATURE-----
---=-=-=--
