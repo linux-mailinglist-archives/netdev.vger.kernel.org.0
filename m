@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37CCB452AEC
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 07:29:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA507452AF1
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 07:29:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232920AbhKPGbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 01:31:44 -0500
-Received: from mail-bn8nam12on2126.outbound.protection.outlook.com ([40.107.237.126]:60901
+        id S232586AbhKPGch (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 01:32:37 -0500
+Received: from mail-bn8nam12on2094.outbound.protection.outlook.com ([40.107.237.94]:48724
         "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232002AbhKPG3m (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Nov 2021 01:29:42 -0500
+        id S232289AbhKPGaS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 01:30:18 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lEDPE5DAz5dgjysi+kPvXjqcQILu4PTDKQWZ3ovEmpppv+Tl2K+JlutbMU2rzZXx3oywB50NG0E66wjFc+65z4x0o2sfYfH7z4xQO3z9cZMhdiZnogqgsMVEztAKokDKKmfYD4RU9IbwGKwGGdgCYJCQA7aBag/h8bCF965JBSnJqIKjyc6YFQfdX8wovsnBgvkQqMz6OsOGB+uoT8x86QHUmIr5wUJSool1AxQ8NUUp7XyhHlX4xpJRWm0MIJfdKYeOhbkLnyFD+PB4PPg2gaLaxaN0V/eSZ7iydDaPgQSEpWdYY1+AquoZE/UPLeB27YoKqCkBxIjnsWQ7dM7xIg==
+ b=DtZwll/dLcSz+95bR61kzFvhjgKr8ySxM7kOn5e3ub1cKbJEuijKl+tHk2yiHCR4iM2SjgQ/A1YJnaczA1HiNSge/OWytSD6AfMsf0W9neOKpNWKsFRN3SdMEIgl5L1pBewH3pgkPtmgiUVHMo8zTOipcz4OjEWGStLLP8GnWXHgGLUsTxoL+P/7Cf46e7dh8CLckbBwLU9Ze0ukUhBid3iN6sgBmw/SSCmm6biz5QYy1Zhwt2ITWRvfKY8sCF2+Dn60+R2QLOPEDVt2ksPiGeV4+oKGduZWIRXPVYxAjNj0l2bcDYESpyc9IBcY+8BJqEpyPuwAQ+1bJf0dkFc52g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=P9JsKGSxS8228sE3prsCueXlIcq72l2sV5T89kpzo+w=;
- b=kEWI+CMbkiMDRoyPTRsRI/+wzP2AbxEFCdcgI5aqI10uze4vdAj0Uetr1arop5P/IGapzCKJtqa6Hc+SxzJSAP0l2w5GNCvGlVwYS4dsUnn9uhoLWPyR7fMbKxJonG65OBVG9LZ/2ZmscM9mNojaGEolkZZO5a84sTBEZUDmqfKT5QazSGz4LL19rulmJcqkHyxnLngHfuSzIj7qaTWgKAcG4q3Djc91wAuK7cdKP5jeRv3O/0N3miG29NHJvdnZmww5jUvcku/8rCFX7UK1gyhyCadibScr11owCuesa6GjPt2NnDeewr6h70k4CT53abmUQMULXwR415TfqA0ODA==
+ bh=zWV4Upnmxwx/szBkLrr9MPQtQbkM2sq/JfT0exYhS/I=;
+ b=n2W7o4j8M+SibLlXlB/BO/O1Eei5Swbrkq1d1X49ICH0k+IDQbhRvPzWHSuhHwEoPcOMC7ASbImzyFzFArnSPpN6yMHzpIuLO57ORowTD51wMvz7SIFd05tjKTzNsiMs6p9kfCsfsDoRyXr8g1rGvPiFwjRqQisX3SC1LL3p4aIrJOSfKpyB4fegG7zpLxWnvt3yiEDDc2GgmAb4ZOuQv+fnhCIAUZ0gOL/MGE6vXqA0pHxrbM89a42nv0GX9QzQWbxbOn3yw6MfSJNUyL0I4hJLep7W1diAHHeGcIq4Cia8Zv/USDbCDYCYBmQEplYbYzdr9u1j5x+6wUEb4K2Gbw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=in-advantage.com; dmarc=pass action=none
  header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=P9JsKGSxS8228sE3prsCueXlIcq72l2sV5T89kpzo+w=;
- b=e8a1pkmpXenm9UcerxYfZaEXrl4Lsb9j7n44p54hUCic9cwYVV+GyDnF141YchVNk6wYjbBzfPuL8Bj4Ia7McqIihjD11bnGUrVExRlp8/EVNe5q1s0JEdIf6GLOARa5D6LYGPW24Eh8GsyIudx5m9IgCOsgof0DAXi0GqHawxk=
+ bh=zWV4Upnmxwx/szBkLrr9MPQtQbkM2sq/JfT0exYhS/I=;
+ b=x8Ak4PN7NRKlmCadBLeVsjIOGPYeHTHHirUMOUlY1B/EfM0Saf4/cNH6qIECeaPkbsDp58JZ0DeNvA2xPQeIVJi4jHxf147++yXeENgbIbNZFmZdi7l9KrXIL1DVJ5MBG7gN5YZef6RPXj2gWYn+chHZD6jq0vSyxwni8Wt4MYA=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=in-advantage.com;
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
@@ -60,9 +60,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Philipp Zabel <p.zabel@pengutronix.de>,
         Heikki Krogerus <heikki.krogerus@linux.intel.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [RFC PATCH v4 net-next 16/23] pinctrl: microchip-sgpio: change device tree matches to use nodes instead of device
-Date:   Mon, 15 Nov 2021 22:23:21 -0800
-Message-Id: <20211116062328.1949151-17-colin.foster@in-advantage.com>
+Subject: [RFC PATCH v4 net-next 17/23] pinctrl: microchip-sgpio: expose microchip_sgpio_core_probe interface
+Date:   Mon, 15 Nov 2021 22:23:22 -0800
+Message-Id: <20211116062328.1949151-18-colin.foster@in-advantage.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211116062328.1949151-1-colin.foster@in-advantage.com>
 References: <20211116062328.1949151-1-colin.foster@in-advantage.com>
@@ -72,228 +72,174 @@ X-ClientProxiedBy: MWHPR11CA0028.namprd11.prod.outlook.com
  (2603:10b6:300:115::14) To MWHPR1001MB2351.namprd10.prod.outlook.com
  (2603:10b6:301:35::37)
 MIME-Version: 1.0
-Received: from localhost.localdomain (67.185.175.147) by MWHPR11CA0028.namprd11.prod.outlook.com (2603:10b6:300:115::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.26 via Frontend Transport; Tue, 16 Nov 2021 06:23:54 +0000
+Received: from localhost.localdomain (67.185.175.147) by MWHPR11CA0028.namprd11.prod.outlook.com (2603:10b6:300:115::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.26 via Frontend Transport; Tue, 16 Nov 2021 06:23:55 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 31ebb60a-afb1-4c9c-dc01-08d9a8c9aa38
+X-MS-Office365-Filtering-Correlation-Id: 1ad762ad-df57-4e9e-b8f0-08d9a8c9aab9
 X-MS-TrafficTypeDiagnostic: CO1PR10MB4722:
-X-Microsoft-Antispam-PRVS: <CO1PR10MB4722965224C3DF890C4009E3A4999@CO1PR10MB4722.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:60;
+X-Microsoft-Antispam-PRVS: <CO1PR10MB4722D1FC0D2E635C9A596471A4999@CO1PR10MB4722.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:849;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7JxSQuGsUDBv9BfrPg0uFYGQfsmmA+Y5GFmT9iJLvjAj0I5vGKVA+yVn3ssSi1xnpUf/P7XfedX/filvg9ykXMZwsnqSrGpA4QeUa73v8gtW7KwxhL2BOiu8Oj1ixOZ/epaAsMj/ghIzjxeHqju9jaWFCGMMFtK+wOIR065NZMMpDanwvIik7u9/KOMFKaAchq1Tou4E3LI23w7daL4QkN2ZohPLFCIu22jX7mP3TAqdIAFH8w0B1mA5GGGNkv9wQGIYqvxFRLNRoJlyRqq4CLAy/p1jvXoBki4Uj0F2ab2BcRktEQr/w5npGrgLvXS7Zil//jgf/+RVBVqVavZAeqZ4IxS+H1/3GzJ2aUo0tsuSfYLnbQ+P6eyapyoog8fA2QaU4vvgZk7hzgJ9ft8JaENB65k74xCY4xxGfXtA2eF7Rzi6vzi/DawKdSLtlcNdJO5jlgBqAPFIgcriJkSGPl7vJowwb0HADeR7R08kqmYBQ+Gwc58RnaXo1DNGGDyO27rZwNJPWpe9vSM9XAeqhC7vaPwO7pqpaNsxsZU74nDmgnSkLHS5dLBB4frnJqsshZ57q3pnKyIIKLyEwlQGzB4uf/plaNmCE0SGhKyWEwzqNFr887LOTry2pQoYv547IkPrjAgKIasXuPURcMRgnCe14hybMMixGs+HefyvTW0wGgAQ8IosLmO1keIxSnRo450TJqz4MALhDnPnGFerwg==
+X-Microsoft-Antispam-Message-Info: kS45hXHanBSlrfzYedCDAM6T4juGP2HJc2eopBxckGMye7Kka86o/iSW7kicCtTDgvD4gvWZkt3+ZMdVIUPQV441jgReRZxRIn6SQdNGj+F5oSvZu4wS0L1c1+HzfrBkXFwkCyfTzwSldcPpG3uk6Vs6bvNj3I/Ni1ilsA+hY65GUWAUwnZrNEruJtLl78RCVyptUzBTOdFTPJvNQEdZ6gVr7kGJV/LLk5Rt/M9CCNNyLVhk1anzUapuA0BJHmJGI7e6BLMCUxOxkn+9PW8UT+5GdONqsnCYPzoMwWxHgU7KMgTaVTmTAKY+1HOqUT9bhDxtlsWjg1LRKK2lfNZOcgMSul7GIYA6YcAlAMLFzQM8Lg6DmrSKioJ+sm0sXr1iFGJhM8xhOcLp66hat3VDhbh3rUPlgg+jFVi/R9ODhy3ymrgMhlO36PBeU4q2dGm9+N1M+2GGmKwtTwjqRI5k82P4O64FlZnqxdTkphCoO2FWHDqUbEpKjloMRSIKlIemo3PGYn7KP2cd4EYmGD68/PqdAIObZEpOVmNMt3YvkAmTS7ms0PE55gpSRYStTxcDih5p6YhZ/gtH8riMuYG4VOq3SUw4zF/kTQATr/fZyWxnm4HYjjWNGg/4mvTOOcKiAfEK40z+Zdq6vthRMhZodnAEOiMotPs43pUPSWfQgYNcfnrSRl/bXsPTeZAjSwqMLTKsDLA0HQxmcIZimFs9Rg==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(136003)(366004)(396003)(39840400004)(346002)(83380400001)(6666004)(54906003)(5660300002)(2906002)(7416002)(6486002)(44832011)(956004)(86362001)(2616005)(4326008)(316002)(508600001)(8676002)(186003)(6512007)(38100700002)(38350700002)(1076003)(8936002)(52116002)(26005)(6506007)(36756003)(66556008)(66476007)(66946007);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ovQZyD5yHb206BAUWWEvD8IPChkVlbS0bqQrlGgCw9yux7zH15mc1cI3Yc6V?=
- =?us-ascii?Q?z4aq2OW0b6li5uHU4BmZn6XT64Xnsfgg6gvocuXRgqTwkEDxIsYEyAGEeTkx?=
- =?us-ascii?Q?S8vKLzhNyaUR07he4kbDCmXxN3Rn3kIZDDQPbmZjKeVoryVGw95uDTYdiKRT?=
- =?us-ascii?Q?X6QhCb0JcR7/x2abzcs8MzikmTHM6zKVtiq44idpL4BLAJn3bXnHYDfLCkDn?=
- =?us-ascii?Q?H0jDdXjDIp5VFG5GHziMTS2icnw6aRs0owe2LYnp8b8iUe8ZCILxQyD6irwP?=
- =?us-ascii?Q?v24pzbGGM29yyl3+jEYBVD5P0V3dHQGe0+MGomyM1iIEC+F5Ae+4KGenCm/A?=
- =?us-ascii?Q?KmWHG1NJ08R3Tv7nz2AseCMTBdeZNOxsgh4O5TxbjrXMTcCOuLvph6jmcIPe?=
- =?us-ascii?Q?ba/YYwZ1SOgRjrajp6CLyllvR7KXNWYTnkqhP8nvew/aZAj7mYStlHa2eNAf?=
- =?us-ascii?Q?+nope7afYKLpYjoTUdHHNOxKwP+2L1ZPt9ajjkyTb8UPTneeQTArwfNRa0DR?=
- =?us-ascii?Q?roALuS7Q/cHZojNwxDeTSCJELs1WW/F9sofe7udIhy1Qs4fIaWoRFk11Gldn?=
- =?us-ascii?Q?mXE12jDz2/zqSTk7xiCZadlmTBfSqVgFt75agoTUxl2WmUE7HYX0PIExO/8j?=
- =?us-ascii?Q?b5vmHKgl2yMd33bkur3KG+Sk/hhbcj8ZcJ5XPPlyDIizAh1znLCkRjAGcjyU?=
- =?us-ascii?Q?Lc43WLKPKuFAS5PY9ZW0DUo8y7Yh96CkFDocoZ/fCX83UjINVXG63PPld/2K?=
- =?us-ascii?Q?6msTdeddvX1vkG2wR9ObiPPifa6ps986/MyirtiJAvMe2lLepi4hPGgcRqVP?=
- =?us-ascii?Q?O5gA4lIhH/FGRsyg87s0lJIpz+eOSB4NKkxkEPEQnDcpVS2PKDhn4R8i0sUx?=
- =?us-ascii?Q?QpWrp7MeycfLW0+Z/NvAOy8ML/MKYwhm+adWE0Rv6up/+ow+cyH6Cz5aVC1J?=
- =?us-ascii?Q?KsD/UYgnlwLHaMp21cYSprCYTLzke1XWIIPWFhFuUmrGI83K5Lgc4yxyfBZj?=
- =?us-ascii?Q?KslFzvTQPOLKYA/zoPmlNSAkT7l6OkDZk4wVvs3HDi2fz0QHJaVHsweJvG+G?=
- =?us-ascii?Q?yhSy5Oaj6zUwbZJiMlb0bHl64inMobCDlyP2ycSmeXz8wQb9YlG/2xUbgPRb?=
- =?us-ascii?Q?F0C9GCJoHdm8afbpz8tIoAcQLU4IKbft5DThvf5zH0y4Ft52npRqlfG5oyKS?=
- =?us-ascii?Q?uVNe2ZDKdAMf5yPPrLNiFmsR9dDnlQE9c+RNYU29AC2ofkZNXPs1mbXb+VXL?=
- =?us-ascii?Q?2YOrkWkzzKm8KTDHObuHf0FyNJJW1BcELIvY+S4lfiG/Dk9UAn256YKnJlAR?=
- =?us-ascii?Q?aY85OtaW2agFL2A9HRMIxaYgUG2tLaw46SPmzNEFEZUhuhOD2vvMOC1o7ZjP?=
- =?us-ascii?Q?xrZRcm3H19GflwNTxZZ5BKL+M/KaJuY4g171RnmNshsXureFVTBCSdAZAQma?=
- =?us-ascii?Q?WECykoKiJJE/h1XFaSip06Q4UAA522C+xBZiWQrHX8co8l5LzKUnbvYErXN9?=
- =?us-ascii?Q?lKihp2wh/omQjtFhL9UGekBgnQSwfyAH0gGdO6DZ384kIVDb9io75xFMs7ar?=
- =?us-ascii?Q?GC1/IPEcAn1iDtCQ/LFvqpE7dqC/J7h3uHp4oqFGQec3Esodc1HCeWZpKNGL?=
- =?us-ascii?Q?h1tlk5Rk+JjJHp7TFEtZsv3gLWwATL1KJbMC44WYyMNuypiTPAuQTEzuRTM8?=
- =?us-ascii?Q?Iu8q9K0+E56BaR6j8HRGLG9CZ38=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?eeUgueAHwrs+OgmQjdHZN2UiHb9Hn2fR/Y6MTEkC/bvnNHUUXcPDeuO8FXZF?=
+ =?us-ascii?Q?7lIhcYgVjHX3JutrS7hhSCFlSoxEH5aGR8Awwa6VxBE5ORuJUTZR4k7YOJIv?=
+ =?us-ascii?Q?1+ja91Mpq0oiTxrAcCMqRraBhXhi1lt/panZ1uz8ZIz/wEVPbfx2j2i4Q5Kk?=
+ =?us-ascii?Q?sK+GGtClTyVgHoP/mZuUm2LX5fIDeI4dvSFGooYTbq3HgxOXOZzI/u2YY415?=
+ =?us-ascii?Q?O0BZEHvQFR3+IbUiRg3IeosN71c5NXLqFKbE4X4M0c/M47U6jqPWcS3n+7pl?=
+ =?us-ascii?Q?ICccugvlqp8nc0/4htYdwn+V1s6ICAS3/66m1ItyKZQ9rUoB75OO3she4PDM?=
+ =?us-ascii?Q?2SvqvgMkyZAme0+ECXHPO8QN/oC5uvpYweC4+Xyo4SXa6ciMuFoAHEEnDrsX?=
+ =?us-ascii?Q?OjiZJabAMJB9I4EQau6SAvlBK6Jv5hIixrVq7zyhWJUkBdispnDNDj1YaH75?=
+ =?us-ascii?Q?qjgzjQte1sljSxu0BBb4d6Cv+/D+rifd9jVxUqGZrdnuc8xb7JiNxeTUP8rs?=
+ =?us-ascii?Q?1ppw2mvqog0UAE7fG3Gn5giIi1ZuqulJTdd1B4TZDBfZSLFKE8bxVluVL27i?=
+ =?us-ascii?Q?gjKxJhUGpILRVnlv+RolccGehTkXd3pYxUHff23YVPePpUPBRflIrQUvjQSY?=
+ =?us-ascii?Q?wyMA+QrXS1nQNBvz0wS50pHJ6OHIZ2bmIHh9E+3CQi6/Sfd11mB9G2RcFX0c?=
+ =?us-ascii?Q?p1yEbw0/45VToZ0RIh8T7unaRv20tNE51kN807VA7f4cRoJ823i3TD5IvIIV?=
+ =?us-ascii?Q?KN2qNgCtOXDnUvGBeq12HSYf2ns5YBY087I7sUVt3Ln2pHjSNCRL3gnYHZ68?=
+ =?us-ascii?Q?6vDI0RsHVRMJbv6ZeOZsH09fyyOAM9NfMFtdWwKXxQCjAa+MLilO1Vq3gydU?=
+ =?us-ascii?Q?In0li2OpiMi7O6Leu0QC3lh0yPqiHepx2Ia3YoejaWtIwROsMI3W61e761KZ?=
+ =?us-ascii?Q?Fv7wLX1604NpaWKd99flM+RRElc6NNBQChcNtSlEqRcF1hlkaiuahwV/iCCs?=
+ =?us-ascii?Q?s+9Otc80ZoWz219PC0o2kAkRp51gGQoQr9VajPYtQviMwkQcONtPXc/lM75R?=
+ =?us-ascii?Q?w05DSoqgpwP9CLA807Oq5mQTW5d7qUehXYrWZq+KeGWTBhSoIr0WRxcmbYC2?=
+ =?us-ascii?Q?rJDayU/oVqoWx5iI7PLEATW/dzlFtCYgCRHsDUFcowxRg7EvCJT5dvTr2GZi?=
+ =?us-ascii?Q?gZOKfYNYSxaGWCOgRqMyqvqAj04buJc/XCdqSWqyV/E3jSbD5LdOmm+Jfd1h?=
+ =?us-ascii?Q?VpKiaA3Hb3v/OJqUhUhRFJY7hZUwQn82nMt6J2vxMrowqGXnscbFJIz9uXsI?=
+ =?us-ascii?Q?7O+W5P/JdAYsGHcH3bkUDRJDb53OnlNx1xUIXsmkhetrhPonFTZ5nWLoD0qG?=
+ =?us-ascii?Q?2LUvja5iStIXKFTxVjSobxy5WwwN6fPEKUgvLezWHibEKxM/ybvXhw73Z7sZ?=
+ =?us-ascii?Q?5UcVSmG5t0SBIBEj0lHIfxzWujibD3qEyl/ZgkB/9gjJ8iKEeiTWUqoRbSXD?=
+ =?us-ascii?Q?wFpNQBa24QqQ+aAJWQv71R6osPAgbr0bEn5+jUURU4SfRad8CttyHXWP2le4?=
+ =?us-ascii?Q?zcSpHFsonNqc1vUb7/c7AF4vt+cRD7or2zGfrI1fUHgXQfx64Kt8KKvDgyrN?=
+ =?us-ascii?Q?UlmzqWTKAlAgwUANmTFabsTP13l+waPYUfvA6GkLhxIn4gmKkmW1+0NifKWo?=
+ =?us-ascii?Q?BV7kQEwjmf6t+L2Vf575wwzff3w=3D?=
 X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 31ebb60a-afb1-4c9c-dc01-08d9a8c9aa38
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1ad762ad-df57-4e9e-b8f0-08d9a8c9aab9
 X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2021 06:23:55.0060
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2021 06:23:55.7515
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Hkld14XiAxcTxehD+SDIA7KAN25w3nKSduh+wazbFn0lW/+TUb+xeAWPUxD2tqzePUUcmJmshxkCZQef1t3JNxJjWcj1qzjiozjIAeEHVyk=
+X-MS-Exchange-CrossTenant-UserPrincipalName: MxeY9zuyQ1XCkUDoXbK+zm5lWwLpvZxR7jB/BYE0c6m3cZeapaVdbc9SvJJw1lwaKSWeBniOGzu2mjoC/p40hWg6KUilgA0kaMxmVF2aeSs=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4722
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-microchip-sgpio is being updated to support being a device of a device. As
-such, standard devicetree parsing functions (device_property_count_u32) are
-being changed to a lower level functions like fwnode_property_count_u32.
+Allow external drivers to hook into microchip_sgpio with custom regmaps. In
+the case where the sgpio is part of an external chip like a VSC7512
+controlled over SPI, a pre-existing SPI regmap can be used.
 
 Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
 ---
- drivers/pinctrl/pinctrl-microchip-sgpio.c | 72 +++++++++++++++--------
- 1 file changed, 46 insertions(+), 26 deletions(-)
+ drivers/pinctrl/pinctrl-microchip-sgpio.c | 46 ++++++++++++++---------
+ include/soc/mscc/ocelot.h                 | 11 ++++++
+ 2 files changed, 40 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/pinctrl/pinctrl-microchip-sgpio.c b/drivers/pinctrl/pinctrl-microchip-sgpio.c
-index 762611f76438..10736ef5c6ca 100644
+index 10736ef5c6ca..2ddee50707d0 100644
 --- a/drivers/pinctrl/pinctrl-microchip-sgpio.c
 +++ b/drivers/pinctrl/pinctrl-microchip-sgpio.c
-@@ -109,6 +109,7 @@ struct sgpio_bank {
- 
- struct sgpio_priv {
- 	struct device *dev;
-+	struct device_node *dev_node;
- 	struct sgpio_bank in;
- 	struct sgpio_bank out;
- 	u32 bitcount;
-@@ -524,12 +525,16 @@ static int microchip_sgpio_of_xlate(struct gpio_chip *gc,
- static int microchip_sgpio_get_ports(struct sgpio_priv *priv)
- {
- 	const char *range_property_name = "microchip,sgpio-port-ranges";
-+	struct device_node *dev_node = priv->dev_node;
-+	const struct fwnode_handle *fwnode_handle;
- 	struct device *dev = priv->dev;
- 	u32 range_params[64];
- 	int i, nranges, ret;
- 
-+	fwnode_handle = of_fwnode_handle(dev_node);
-+
- 	/* Calculate port mask */
--	nranges = device_property_count_u32(dev, range_property_name);
-+	nranges = fwnode_property_count_u32(fwnode_handle, range_property_name);
- 	if (nranges < 2 || nranges % 2 || nranges > ARRAY_SIZE(range_params)) {
- 		dev_err(dev, "%s port range: '%s' property\n",
- 			nranges == -EINVAL ? "Missing" : "Invalid",
-@@ -537,7 +542,7 @@ static int microchip_sgpio_get_ports(struct sgpio_priv *priv)
- 		return -EINVAL;
- 	}
- 
--	ret = device_property_read_u32_array(dev, range_property_name,
-+	ret = fwnode_property_read_u32_array(fwnode_handle, range_property_name,
- 					     range_params, nranges);
- 	if (ret) {
- 		dev_err(dev, "failed to parse '%s' property: %d\n",
-@@ -804,11 +809,38 @@ static int microchip_sgpio_register_bank(struct device *dev,
- 	return ret;
+@@ -835,22 +835,15 @@ static struct sgpio_properties
+ 	return NULL;
  }
  
-+static const struct of_device_id microchip_sgpio_gpio_of_match[] = {
-+	{
-+		.compatible = "microchip,sparx5-sgpio",
-+		.data = &properties_sparx5,
-+	}, {
-+		.compatible = "mscc,luton-sgpio",
-+		.data = &properties_luton,
-+	}, {
-+		.compatible = "mscc,ocelot-sgpio",
-+		.data = &properties_ocelot,
-+	}, {
-+		/* sentinel */
-+	}
-+};
-+
-+static struct sgpio_properties
-+*microchip_sgpio_match_from_node(struct device_node *node)
-+{
-+	const struct of_device_id *match;
-+
-+	match = of_match_node(of_match_ptr(microchip_sgpio_gpio_of_match), node);
-+	if (match)
-+		return (struct sgpio_properties *)match->data;
-+	return NULL;
-+}
-+
- static int microchip_sgpio_probe(struct platform_device *pdev)
+-static int microchip_sgpio_probe(struct platform_device *pdev)
++int microchip_sgpio_core_probe(struct device *dev, struct device_node *node,
++			       struct regmap *regmap, u32 offset)
  {
  	int div_clock = 0, ret, port, i, nbanks;
- 	struct device *dev = &pdev->dev;
--	struct fwnode_handle *fwnode;
-+	struct device_node *node = dev_of_node(dev);
-+	struct fwnode_handle *child, *fwnode;
+-	struct device *dev = &pdev->dev;
+-	struct device_node *node = dev_of_node(dev);
+ 	struct fwnode_handle *child, *fwnode;
  	struct reset_control *reset;
  	struct sgpio_priv *priv;
  	struct clk *clk;
-@@ -825,18 +857,21 @@ static int microchip_sgpio_probe(struct platform_device *pdev)
- 		return -ENOMEM;
+-	u32 __iomem *regs;
+ 	u32 val;
+-	struct regmap_config regmap_config = {
+-		.reg_bits = 32,
+-		.val_bits = 32,
+-		.reg_stride = 4,
+-	};
  
- 	priv->dev = dev;
-+	priv->dev_node = node;
-+
-+	fwnode = of_fwnode_handle(node);
- 
--	reset = devm_reset_control_get_optional_shared(&pdev->dev, "switch");
-+	reset = devm_reset_control_get_optional_shared(dev, "switch");
- 	if (IS_ERR(reset))
- 		return dev_err_probe(dev, PTR_ERR(reset), "Failed to get reset\n");
- 	reset_control_reset(reset);
- 
--	clk = devm_clk_get(dev, NULL);
-+	clk = devm_get_clk_from_child(dev, node, NULL);
- 	if (IS_ERR(clk))
- 		return dev_err_probe(dev, PTR_ERR(clk), "Failed to get clock\n");
- 
- 	div_clock = clk_get_rate(clk);
--	if (device_property_read_u32(dev, "bus-frequency", &priv->clock))
-+	if (fwnode_property_read_u32(fwnode, "bus-frequency", &priv->clock))
- 		priv->clock = 12500000;
- 	if (priv->clock == 0 || priv->clock > (div_clock / 2)) {
- 		dev_err(dev, "Invalid frequency %d\n", priv->clock);
-@@ -852,7 +887,7 @@ static int microchip_sgpio_probe(struct platform_device *pdev)
- 		return PTR_ERR(priv->regs);
- 
- 	priv->regs_offset = 0;
--	priv->properties = device_get_match_data(dev);
-+	priv->properties = microchip_sgpio_match_from_node(node);
- 	priv->in.is_input = true;
- 
- 	/* Get rest of device properties */
-@@ -860,17 +895,17 @@ static int microchip_sgpio_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	nbanks = device_get_child_node_count(dev);
-+	nbanks = fwnode_get_child_node_count(fwnode);
- 	if (nbanks != 2) {
- 		dev_err(dev, "Must have 2 banks (have %d)\n", nbanks);
+ 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+ 	if (!priv)
+@@ -878,18 +871,14 @@ static int microchip_sgpio_probe(struct platform_device *pdev)
  		return -EINVAL;
  	}
  
- 	i = 0;
--	device_for_each_child_node(dev, fwnode) {
--		ret = microchip_sgpio_register_bank(dev, priv, fwnode, i++);
-+	fwnode_for_each_child_node(fwnode, child) {
-+		ret = microchip_sgpio_register_bank(dev, priv, child, i++);
- 		if (ret) {
--			fwnode_handle_put(fwnode);
-+			fwnode_handle_put(child);
- 			return ret;
- 		}
- 	}
-@@ -892,21 +927,6 @@ static int microchip_sgpio_probe(struct platform_device *pdev)
+-	regs = devm_platform_ioremap_resource(pdev, 0);
+-	if (IS_ERR(regs))
+-		return PTR_ERR(regs);
+-
+-	priv->regs = devm_regmap_init_mmio(dev, regs, &regmap_config);
+-	if (IS_ERR(priv->regs))
+-		return PTR_ERR(priv->regs);
+-
++	priv->regs = regmap;
+ 	priv->regs_offset = 0;
+ 	priv->properties = microchip_sgpio_match_from_node(node);
+ 	priv->in.is_input = true;
+ 
++	if (!priv->properties)
++		return dev_err_probe(dev, -EINVAL, "No property match found\n");
++
+ 	/* Get rest of device properties */
+ 	ret = microchip_sgpio_get_ports(priv);
+ 	if (ret)
+@@ -926,6 +915,29 @@ static int microchip_sgpio_probe(struct platform_device *pdev)
+ 
  	return 0;
  }
++EXPORT_SYMBOL(microchip_sgpio_core_probe);
++
++static int microchip_sgpio_probe(struct platform_device *pdev)
++{
++	struct regmap_config regmap_config = {0};
++	struct device *dev = &pdev->dev;
++	struct regmap *regmap;
++	u32 __iomem *regs;
++
++	regmap_config.reg_bits = 32;
++	regmap_config.val_bits = 32;
++	regmap_config.reg_stride = 4;
++
++	regs = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(regs))
++		return PTR_ERR(regs);
++
++	regmap = devm_regmap_init_mmio(dev, regs, &regmap_config);
++	if (IS_ERR(regmap))
++		return PTR_ERR(regmap);
++
++	return microchip_sgpio_core_probe(dev, dev->of_node, regmap, 0);
++}
  
--static const struct of_device_id microchip_sgpio_gpio_of_match[] = {
--	{
--		.compatible = "microchip,sparx5-sgpio",
--		.data = &properties_sparx5,
--	}, {
--		.compatible = "mscc,luton-sgpio",
--		.data = &properties_luton,
--	}, {
--		.compatible = "mscc,ocelot-sgpio",
--		.data = &properties_ocelot,
--	}, {
--		/* sentinel */
--	}
--};
--
  static struct platform_driver microchip_sgpio_pinctrl_driver = {
  	.driver = {
- 		.name = "pinctrl-microchip-sgpio",
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index 14acfe82d0a4..8c27f8f79fff 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -930,4 +930,15 @@ int ocelot_pinctrl_core_probe(struct device *dev,
+ }
+ #endif
+ 
++#if IS_ENABLED(CONFIG_PINCTRL_MICROCHIP_SGPIO)
++int microchip_sgpio_core_probe(struct device *dev, struct device_node *node,
++			       struct regmap *regmap, u32 offset);
++#else
++int microchip_sgpio_core_probe(struct device *dev, struct device_node *node,
++			       struct regmap *regmap, u32 offset)
++{
++	return -EOPNOTSUPP;
++}
++#endif
++
+ #endif
 -- 
 2.25.1
 
