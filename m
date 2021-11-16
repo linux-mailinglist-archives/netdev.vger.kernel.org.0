@@ -2,72 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F6F8453300
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 14:40:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB2084532FF
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 14:40:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236792AbhKPNnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S236648AbhKPNnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 16 Nov 2021 08:43:07 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:35906 "EHLO vps0.lunn.ch"
+Received: from mail.kernel.org ([198.145.29.99]:57296 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236566AbhKPNnH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Nov 2021 08:43:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=/ZTRNnUNEgr3hlsthAHSmJ8lnNXuu59AnWYQvhB9PG4=; b=ccCyq4GiHwe9oaJJZGgJwkwKyp
-        2GsAJntl5p5+Gvi9TMowlgtcGJIC8VpNQtKlCXKfsfDAShDZggb3MfUZcJx4qkWXqoRJECAvXH41m
-        KrWAJ8Ph9+rBMB/lVJUb0FclkepNodv1QpU4hdarlirG2f62G5lFxD8jkzJ3kqjimWVo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mmygw-00DeWd-Gp; Tue, 16 Nov 2021 14:40:06 +0100
-Date:   Tue, 16 Nov 2021 14:40:06 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, g@pengutronix.de,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        kernel@pengutronix.de, Jakub Kicinski <kuba@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: Re: [RFC PATCH net-next] net: dsa: microchip: implement multi-bridge
- support
-Message-ID: <YZO0tuMtDUIbRfcC@lunn.ch>
-References: <20211108111034.2735339-1-o.rempel@pengutronix.de>
- <20211110123640.z5hub3nv37dypa6m@skbuf>
- <20211112075823.GJ12195@pengutronix.de>
- <20211115234546.spi7hz2fsxddn4dz@skbuf>
- <20211116083903.GA16121@pengutronix.de>
- <20211116124723.kivonrdbgqdxlryd@skbuf>
- <20211116131657.GC16121@pengutronix.de>
+        id S236765AbhKPNnG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 08:43:06 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 337E461B49;
+        Tue, 16 Nov 2021 13:40:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637070009;
+        bh=37tZG4elhoAdWVqcl+AIV4z56JHbTshGPOqSm4iZCfM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=rwXUdLCKWzM8MefDOObe+lsuScAjOl5EQGc6MjUAMqhMY6yEkiF2uZwCix1zDM5qf
+         hx7VAbmfJUZATkc1qzkcghYveFynEDycdjKvMH/HmYeZSR+COZrQ9iUSlqXBUOyENj
+         zrt1DiGrnDrqtD8PkFffIemUU8ZuyKv0AC38vt/uwjmro28a+sDjoAMMvdo8kH7WJm
+         ktT2tuXHdDcxic+e4FpVH+TdJV8TIfCoja1UES5QS4Wx8s3DplziazZOOgD+9kc4i/
+         wJpkWlSUGZJt8rD0aXI25KQIheQ4I94mKykrPuEUWM13xh+MZnjpI4GEQuAmz4U1KN
+         zWM0qJ3JBKBYQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 27FD160A49;
+        Tue, 16 Nov 2021 13:40:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211116131657.GC16121@pengutronix.de>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next v6] bpf: Change value of MAX_TAIL_CALL_CNT from 32 to
+ 33
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163707000915.28808.15563696632863009519.git-patchwork-notify@kernel.org>
+Date:   Tue, 16 Nov 2021 13:40:09 +0000
+References: <1636075800-3264-1-git-send-email-yangtiezhu@loongson.cn>
+In-Reply-To: <1636075800-3264-1-git-send-email-yangtiezhu@loongson.cn>
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lixuefeng@loongson.cn,
+        johan.almbladh@anyfinetworks.com, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, illusionist.neo@gmail.com, zlim.lnx@gmail.com,
+        naveen.n.rao@linux.ibm.com, luke.r.nels@gmail.com,
+        xi.wang@gmail.com, bjorn@kernel.org, iii@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, udknight@gmail.com,
+        davem@davemloft.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > What logging noise?
+Hello:
+
+This patch was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
+
+On Fri,  5 Nov 2021 09:30:00 +0800 you wrote:
+> In the current code, the actual max tail call count is 33 which is greater
+> than MAX_TAIL_CALL_CNT (defined as 32), the actual limit is not consistent
+> with the meaning of MAX_TAIL_CALL_CNT, there is some confusion and need to
+> spend some time to think about the reason at the first glance.
 > 
-> I get this with current ksz driver:
-> [   40.185928] br0: port 2(lan2) entered blocking state
-> [   40.190924] br0: port 2(lan2) entered listening state
-> [   41.043186] br0: port 2(lan2) entered blocking state
-> [   55.512832] br0: port 1(lan1) entered learning state
-> [   61.272802] br0: port 2(lan2) neighbor 8000.ae:1b:91:58:77:8b lost
-> [   61.279192] br0: port 2(lan2) entered listening state
-> [   63.113236] br0: received packet on lan1 with own address as source address (addr:00:0e:cd:00:cd:be, vlan:0)
+> We can see the historical evolution from commit 04fd61ab36ec ("bpf: allow
+> bpf programs to tail-call other bpf programs") and commit f9dabe016b63
+> ("bpf: Undo off-by-one in interpreter tail call count limit").
+> 
+> [...]
 
-I would guess that transmission from the CPU is broken in this
-case. It could be looking up the destination address in the
-translation table and not finding an entry. So it floods the packet
-out all interfaces, including the CPU. So the CPU receives its own
-packet and gives this warning.
+Here is the summary with links:
+  - [bpf-next,v6] bpf: Change value of MAX_TAIL_CALL_CNT from 32 to 33
+    https://git.kernel.org/bpf/bpf-next/c/ebf7f6f0a6cd
 
-Flooding should exclude where the frame came from.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-	 Andrew
 
