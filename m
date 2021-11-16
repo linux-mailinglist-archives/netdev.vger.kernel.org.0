@@ -2,123 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 479904538B8
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 18:43:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55EEE4538BA
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 18:43:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239020AbhKPRqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 12:46:03 -0500
-Received: from mx0a-002c1b01.pphosted.com ([148.163.151.68]:61864 "EHLO
-        mx0a-002c1b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238934AbhKPRqD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 12:46:03 -0500
-Received: from pps.filterd (m0127838.ppops.net [127.0.0.1])
-        by mx0a-002c1b01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1AGCEDXC027240;
-        Tue, 16 Nov 2021 09:43:00 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nutanix.com; h=from : to : cc :
- subject : date : message-id : content-type : mime-version;
- s=proofpoint20171006; bh=nBbgQqfkCcSYLm7PbA4DIjEwip7LRenRfeCF1CmjuEA=;
- b=NJs/0AXbrqvPoYPoGNkyMkbq0NTN2/s1oOtGWA+dNBLqx7g3u1oBKvq5EvpCSj6dpNE6
- bAWQ15y9LriieaY86UWGox/OJaYQ7lC6OJoJCLBk19AAffUItEZZ8qkrxHq/6L6gIfBx
- GSK+xc0BeVaj/p0f4wTCuHq9HRlIzFezt/KKR4Tc9cZ5+i69h1HUnkR5oRbpoRlbnIlH
- fqh072b2pep133S/feA5mrbttjnsMt2GrctrRXjfmCXB1hC43roToQKzDgY3ulvsy/4x
- uuOXq7SHzCPypDL9cQv04cpeU1IGNHA5pxt5eLqMKD0nbpMpvmTnC8wAeWpYNQzrYbx8 3A== 
-Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2171.outbound.protection.outlook.com [104.47.59.171])
-        by mx0a-002c1b01.pphosted.com (PPS) with ESMTPS id 3cccfjrue0-1
+        id S239032AbhKPRqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 12:46:20 -0500
+Received: from mx0b-002c1b01.pphosted.com ([148.163.155.12]:2544 "EHLO
+        mx0b-002c1b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238976AbhKPRqR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 12:46:17 -0500
+Received: from pps.filterd (m0127843.ppops.net [127.0.0.1])
+        by mx0b-002c1b01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1AGE0Uon030966;
+        Tue, 16 Nov 2021 09:43:15 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nutanix.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=proofpoint20171006;
+ bh=HYKUDdDBB/xPW4EDOQy2x2qk0wvESY2IWLDINJ5AtmE=;
+ b=mXs1NfCiHp/sEoeUteAxm3gIh9L7aSwUDqyfqi77cFCIlfRS5k0lVx6PWXf8f68k91tq
+ yGkZM79BYiMNJYVKeEephzAemLd0pYLrjOTKDP1IV10iS7aC7RfnnU9j/gkXTEszF699
+ t/2N2lJLHJEBRuwhZP+pCDT5iuRa6b/rPEDz+yRRMs05YU4UdbmcVboX+9fKPLQpiKTA
+ dY/z9ViM4gUx8uQhT1wzwLWvfxjIkQ07HiFEiJJexInasyoTcaqIe+TTlXJk6v9ovJ1g
+ mtYxiEsBofTzDCsdNdJZVM+rwGi1MJyAinweCOxiE32cgW1PaAw8vSrGFWnxPrkEiGtq Ow== 
+Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1anam02lp2041.outbound.protection.outlook.com [104.47.57.41])
+        by mx0b-002c1b01.pphosted.com (PPS) with ESMTPS id 3cc6wr9kj1-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 Nov 2021 09:43:00 -0800
+        Tue, 16 Nov 2021 09:43:15 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gXJC48hZe8r/Xc/atFGoSDxlNqapaq7QJLxRWnxTgI/TI4tV6xfEuSW0/9AszlSFwh9NNoYeb9LMHzNEciMrdcVZmlGPLX0hElLgd3XnT172O5OYkXx8ZMHJ9kKbvd5qVzDsAB8gtqnzxEDNEjdzUD54ADKJmtbghfR3UVp2ZjLS4jl6ou/529/xmEqOsOIBJba7yYsybH7dIM3rOA6F4La4cyOH7KsW1ZZb/IrWP3J7SLcTSYCmwipF0Emqqo10TqHaCB4Xi996ccR0t1z8vrFSdaXNGkPOSFADzhe6TQBR/Xj2bxb6e8f6ml3nCCiVWkBgs7oOFNXWRZkfao26BQ==
+ b=Gc5Qcjqe8NHyArCdrAwXpwEXCrlKsg6SQlOWReMfPX6bzqiHF9FSqmCoWTVE2gI8qYOedKEB9CxSgyYhHzcypt2fhBZR1qbgPBW8gViOwyoKwRnMcU0FGdbGy4u8Rzz9F7Iq7ZK3bZS7kpsi10C91Ps4EzkPVLjLHe1D9jUFTRqCh5CXEcIRFOWzRGJZ+FWOlDpiVNNz78allFBMaccU3ecvEWDNfXZ7BhlZeFEWK1B5P/6rOmqO1BZVf6ukafm2TSVikVuoOMnIQOV4UIuXkEV1ssKsj5J00bDMeAq4FvVAZ5r1TAgF+HJg3imCjiEItirjZ59LOqROXGFY++GHGw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nBbgQqfkCcSYLm7PbA4DIjEwip7LRenRfeCF1CmjuEA=;
- b=HpkJdtPILoyoPpsug698b1N+TuIOGu0ew8wY1YVjvE7hsuMrLkZrhJt6mL9chKMI/l4rQtcXHXKKRScyndIUB1+wbd0mfd4kh7Nq0fjuMB1cwjzUejXQ7LIEP5NJ+pqKy+x026fQT7hwjzsbkoZ4pCJGsBSE2hyW+vqCqNydc7Z1EumStOwjxxf1lmOSm5Jrea+nWANrYUsz5USEgcFl5Bmm9nVpXWuolP6kPMFdLyeK7ZgbLHV8w2sGNHMnlAHCF/wDZgt+UAsxl1GIdW+anGmuI7Q5yzoP2ycqDQZa4iyyivhxC1VfrbY1Eb4qgZeDItR87zpeXqwMUA+r43X1gw==
+ bh=HYKUDdDBB/xPW4EDOQy2x2qk0wvESY2IWLDINJ5AtmE=;
+ b=VY4t+APUlBclOs6x40R7dknbqkEwjuntOGYpXUyFLFcuvxoq8NdqQTzNHXamq1nPCu/Ha3H0ssVHOWk7ryBbNtaZuxC2WYEP/7jwe/z/YWa0mEQGyPpn1Qj85AFe1MQa0b4gDFashXuqqr4jutParg0M7JIkoSIaDiK5Z8FJ2kvlzUo1X1/btA6saIIfxhCPqWH+gqrMclc7WPhbVdd/EnrFuO+M5Ou0Q8mOhtaWqL79cwa+PjwVyc5kVMxfvV0KLX1SdAP0Grs1MCnK5hg1JgFFP0rQE5W0CmccleYYsUBQqtwrCMfedU3EOqt3jszwNCHZmzJ27KhjHaftCfT4AQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nutanix.com; dmarc=pass action=none header.from=nutanix.com;
  dkim=pass header.d=nutanix.com; arc=none
 Received: from CH0PR02MB7964.namprd02.prod.outlook.com (2603:10b6:610:105::16)
- by CH2PR02MB6727.namprd02.prod.outlook.com (2603:10b6:610:ac::10) with
+ by CH2PR02MB6808.namprd02.prod.outlook.com (2603:10b6:610:79::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.26; Tue, 16 Nov
- 2021 17:42:58 +0000
+ 2021 17:43:14 +0000
 Received: from CH0PR02MB7964.namprd02.prod.outlook.com
  ([fe80::cbb:e155:fd25:4b52]) by CH0PR02MB7964.namprd02.prod.outlook.com
  ([fe80::cbb:e155:fd25:4b52%5]) with mapi id 15.20.4690.027; Tue, 16 Nov 2021
- 17:42:57 +0000
-From:   Jonathan Davies <jonathan.davies@nutanix.com>
-To:     Willem de Bruijn <willemb@google.com>
+ 17:43:14 +0000
+Subject: Re: [PATCH net] net: virtio_net_hdr_to_skb: count transport header in
+ UFO
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
 Cc:     netdev@vger.kernel.org, Florian Schmidt <flosch@nutanix.com>,
         Thilak Raj Surendra Babu <thilakraj.sb@nutanix.com>,
-        Jonathan Davies <jonathan.davies@nutanix.com>,
         "Michael S. Tsirkin" <mst@redhat.com>,
         Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         virtualization@lists.linux-foundation.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net] net: virtio_net_hdr_to_skb: count transport header in UFO
-Date:   Tue, 16 Nov 2021 17:42:42 +0000
-Message-Id: <20211116174242.32681-1-jonathan.davies@nutanix.com>
-X-Mailer: git-send-email 2.9.3
-Content-Type: text/plain
-X-ClientProxiedBy: SJ0PR05CA0011.namprd05.prod.outlook.com
- (2603:10b6:a03:33b::16) To CH0PR02MB7964.namprd02.prod.outlook.com
+References: <20211115151618.126875-1-jonathan.davies@nutanix.com>
+ <CA+FuTScqWToamoOqAWkf1VbzYnjoM-y+-rQe_wEkPmBsOZbsLA@mail.gmail.com>
+From:   Jonathan Davies <jonathan.davies@nutanix.com>
+Message-ID: <180bcfc1-a66f-1ecd-7b96-85eb871448d7@nutanix.com>
+Date:   Tue, 16 Nov 2021 17:43:05 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+In-Reply-To: <CA+FuTScqWToamoOqAWkf1VbzYnjoM-y+-rQe_wEkPmBsOZbsLA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM9P193CA0023.EURP193.PROD.OUTLOOK.COM
+ (2603:10a6:20b:21e::28) To CH0PR02MB7964.namprd02.prod.outlook.com
  (2603:10b6:610:105::16)
 MIME-Version: 1.0
-Received: from nutanix.com (192.146.154.247) by SJ0PR05CA0011.namprd05.prod.outlook.com (2603:10b6:a03:33b::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.4 via Frontend Transport; Tue, 16 Nov 2021 17:42:56 +0000
+Received: from [10.10.20.228] (46.17.161.146) by AM9P193CA0023.EURP193.PROD.OUTLOOK.COM (2603:10a6:20b:21e::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.26 via Frontend Transport; Tue, 16 Nov 2021 17:43:12 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d3b3be91-9779-4fd8-56f4-08d9a92886f0
-X-MS-TrafficTypeDiagnostic: CH2PR02MB6727:
-X-Microsoft-Antispam-PRVS: <CH2PR02MB6727DDD26C7E9046F556EB1DCB999@CH2PR02MB6727.namprd02.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 89a1747c-e9b7-4e28-6768-08d9a9289098
+X-MS-TrafficTypeDiagnostic: CH2PR02MB6808:
+X-Microsoft-Antispam-PRVS: <CH2PR02MB680809D8A0D98220084F56CBCB999@CH2PR02MB6808.namprd02.prod.outlook.com>
 x-proofpoint-crosstenant: true
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6N6Q38n4LaLapCh/xHxCuWAxsDzrHg9+Rkl61fcWzh1HT6Sjb3B/+JE7UIM8vNb3R4usqNrpnGZ/ek5RAK/T/Ic0ALx1RZMrl0jty4hA5InBa3aLz5GShVX/8I8j+jYKFaXsg5GVEHjD1hG1Ip/hKOPkIqkuKdZ008Nq80cYjNJ9Cn71hth5x457YYbAxICyexoWo8lykd1Cgcny0BvOsM+O/IjDDm8Apk6KdBElBt8f5zQgaU2OFz4+ZTgkKLa+TpSel+j7LRXCBvGrl3rUFuq5YXb2nNgRcIWuzUy71Rvz27w9JMIDKfV9h+RTz3rfupkCrs2KjWwHfZ2Ti9SP4t7Rn6DGzaMXI9ri4i4MFus5uvbn4FPvIw1cBmzXe4fu4cVKT0mfcQ0T9uNMcPz1wLbiOYDb7j8GJ7WXqF61LUL8ogmygLBzinbOx8WdGpWoMhXDKCtrn5+dwSu8UKxhII9c0y7YsGK/ltOx9SmqgfakSUaoxdaqz2VjI1DIwCqPsjNl07Sa+v5zQ/HKD52Mde3kB5oLDfnJ4wCBbCYmS5ldIXnaleWH3qhu5aZF3Dy5azjAMlS3hb+jlO0WIkdK6IwLbp18jyzSol9X2gVFljfdp7jskHLMZ9nRd3bKNKlUd/2n7025ILx+Umyay7dTRiF5ohyFfCFRUPRu3AN3XaNMsIO1ZVScJTOw8W4yQamS6SIYeRZbshuJcmz/vsCMDg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR02MB7964.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(54906003)(52116002)(83380400001)(8886007)(5660300002)(2906002)(956004)(44832011)(38350700002)(38100700002)(8676002)(66476007)(66946007)(66556008)(508600001)(316002)(2616005)(6666004)(55016002)(6916009)(7696005)(26005)(186003)(8936002)(4326008)(36756003)(1076003);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: D4riAiFmLJepVACAAyC7P/rMnc1V48/3wvbah/echx5UvUozB5LVwuRqZyumNVS83CvhX1q2XIZ4zbl210LEDuwX1dD5Wf3RDC9F6g2aQXcpdtWoEruhw4ny5LKlNwbdkObg4VmbzwaUNvPV5oWuE8irqoRLGNqmbSjUvqNNZwcfUXCr5AzvJzqHLOE9THQUHmZIpyiwiuzgzLc8RRxiJEXqi3yHVL3mq45nx8i8n83kVLP2H/2i2+R0U7U/t3s+6AVQEYx/GLzman4Eel2ETC++UVT/SWduggKj88RV+ngmkvCBaID8UzxrmO3CwYmydEbhJbcEq3Iyqm2CIIusTgWEeXjTYFtHJpJh/1nk6kQIhk8RXIbmMvGvx4EMfU/9rMNRd8ZoHkpCLnQkin5cRjUxX8VbhTWmozJOelEinACJH3A4DELrylt2svObASC7001fs6izk1fD5+Rivdrn4yRJAY6eZUkoFlpWat4QUcBJbB5yaYCriWCumu78fZlajGTUZXN4f6pBrY98sjmE1c6g9k10Mv/Xt84s2zpAupyn7lxHlZjAlh/zfcPa9Z5cRyXDX0/RHn7JMS74LhaDFyYHYyZwmUrM0K4NlPQ5Y6uhctf3FUrRfOSlfCP1sKAlkYtuIjeRZCSuBnxVZhphboNuAp2rCFlwOSnpumLo9g2A3iCuHDI4MBrGJZ1RA7A6WqxpDaiF3fWktGLAaXBomqjTR4xDifd1XRndLVZbo/bHZg0VIXhsL+/LQeYAXrngtuoPKgJyH7PM3YKgz6FQMg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR02MB7964.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(44832011)(186003)(36756003)(31696002)(31686004)(4326008)(8676002)(5660300002)(2906002)(956004)(2616005)(38100700002)(52116002)(6666004)(38350700002)(16576012)(26005)(316002)(6916009)(6486002)(66946007)(66476007)(54906003)(8936002)(53546011)(66556008)(508600001)(83380400001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?HLPkaS84FJpdNRZw3eIrAQU4MTgf7r7WjINrhOq87xxJB4/w4XCig87aj3wS?=
- =?us-ascii?Q?Qd+QiowTxcsiVfdgD781wFPHZggMpzmsozNZKXYepaf0bfhWrEFslV8LX6DE?=
- =?us-ascii?Q?9P5JEuTzAKYQR7dm7vQCxYPVw6cNnzvfmEWPMORD3d+K2GwxOScp/Fb4LAKU?=
- =?us-ascii?Q?EmHlx7Sf67ogz64Wx6bUotLPhFPg8Sec/N+C7UmC3naHcV6lEy3kpmMascpI?=
- =?us-ascii?Q?OenvQ+BfpicrfdNLL0W4BjC5tOBYxEIHAF3Yyr4vii/xpxa0nNSWIuOSJF+P?=
- =?us-ascii?Q?ZoSqoii2Cu6O8OAOOja5iRi2JUAIEtEYa9BkasDzRAqwIRxMBatUrGLpn9/5?=
- =?us-ascii?Q?AIH7M+R2CRYUdPrgr8yVM1Y7VnIyqY6reNZ7xPGPD29mofzKTIQksKya8+j5?=
- =?us-ascii?Q?WkOSaue9hkHJH3prSdXcLC2q1G1badHaIJY1Hr15hTZaJBe9NSBCU7Qmp8Zw?=
- =?us-ascii?Q?hBPKcrn9RMEyb+ssE3V4/BpFhIKekXck5HvruymkrkjEAtgdUsC83bEEI5j5?=
- =?us-ascii?Q?tMgSjYowr3QOpTSTeU/m2HDXLC9EGg+Z2k9pl9UGrVvkBAxRFbhDF5gj+kNM?=
- =?us-ascii?Q?h+/1P9cLs023msyJimSqYHoXQVUHaHIA78sae0FIIc1Tc6uJ6eRaHUCVQTYg?=
- =?us-ascii?Q?K0KLyx3Cx/R83HM9knc/ziG9zpqELWealTKzLBJq46SEFht2QkafXmcxgCIA?=
- =?us-ascii?Q?2l4lAoJ94mkLDRjfgo0PgA3ZpkdLQ+JsoR1PxdpHG/7ZaaBdfewQwXBT3vXu?=
- =?us-ascii?Q?TlXPa98EGVX5+gVS6HdNQ5Z/hv+amwIkRgOI2EKmzd9KK6/Q+Kr+INFX3BD7?=
- =?us-ascii?Q?t+qX1SSKNknLpdJoPw9oU7/xlXaWAZQAUNIza5ItTcGCBruNX7Ax6pqJz1Ga?=
- =?us-ascii?Q?jSTnrgaATsAoHqSBmq7CkvnNO8XdRymYk0guFUPSjiuVZyOnDphdTFQG8HLu?=
- =?us-ascii?Q?vbTgXaUuYRqmbd3TMPh2KdK+2ioR+0IiVMRHEe5h6EB2Z1lZHtENteSIIrhv?=
- =?us-ascii?Q?903PRf/9twV8jxXk8GdKzd8Tb4tziNDKmY0ozUZEKs+9mem0NxnYkkOdExUv?=
- =?us-ascii?Q?DW8x9GZIz0gendXGDpAk38FryEHxZATZFeJgGB/2Hoqdp2siX7HEt8RaSMDS?=
- =?us-ascii?Q?8hFWDvAtcCm9GJO+LfbfKMbLOOQ0wPcd/JssgE/oZsw3bYE/Ku1TrdtrgCjN?=
- =?us-ascii?Q?hed9cC1T8ZYT2hDwNOOdPIXgMmNpl1O2028MUecQ1AEIHCd+OL3EpZD2RLKn?=
- =?us-ascii?Q?ljfiL64AfBMODgO9ct+xkhvL31jLAnF1DO0Ax3Wv8Dzg1F+saJt9w06JGnGV?=
- =?us-ascii?Q?UHLPRHBG71vopL1hlqWTImq8ZEiS7khThqA16z7WsFaugzQ8aJq3i3kHMueD?=
- =?us-ascii?Q?izr7fZm/a//u04vR9gcDObup4yGvVXMRRB709EuV5jAhEQzUz23o8rB6u/Hj?=
- =?us-ascii?Q?o6DEfiBcYJ/OClMOTBC0OUiIYYJUBgRb+KX6rHGHm1l+91aS7doQft4YiF58?=
- =?us-ascii?Q?z7SLEnDjLm9zRa6JLic9BhqbhL4MJhM1nMCf31aMebDuQaWLimjiAgxfao16?=
- =?us-ascii?Q?+bdwL2rmv1y3wfHk6elcpWMdHVFRqlUYmjQmvbqUM+y3rgxGLXqkjzFvhUGY?=
- =?us-ascii?Q?y/yxQ1+tKP0iPpKDa8eSzIiZrzAsZwDxK+vgzFa063YheFnIVtu/pwUDVM8r?=
- =?us-ascii?Q?MwYxHgDG2vl7asCHrTM+sv4Xw4M=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dTZEdFVnZDZKMEF4OG8wUTcvN1pYblUyRG9VYlZGM0htbHlwc3NmV2dMaEdM?=
+ =?utf-8?B?NXBVK1N5OThXSVJOTjhVb3NYbVpiSktEMGJ1UVlpY0c5cEtvUWVlR3lnQzZ0?=
+ =?utf-8?B?a01PZUplTWg5ZE5jZ292Y2thTkpWYSt1MTNkaldJNVdreWVYbE1oRHo2VTF4?=
+ =?utf-8?B?TnBXRE9oa2ZlS20zU3craFVsRVJXZTNmU0Y2SzM2aHZ3aTE2Sk0vR204bitL?=
+ =?utf-8?B?a21hdWpiK1AvOXRQWHRlMjRrNVRsOHdGZFNyVWliS1J0UHMvdEkxd2lLSWdr?=
+ =?utf-8?B?S3BkdEI5SC9zbHdkWnhpQ05Fd2F5aHdIeVExOG40L1dPbW9jakJJOHlNT0hO?=
+ =?utf-8?B?M045N2J1bWFCVmlSTWRoZVJaRzJHRjhzSmxkUjRDRXBQTzMzeVJ6MzJmajhK?=
+ =?utf-8?B?UGtocTY0ZXA2aThiT08rNWRVT3EwV1FJU2VWbWhYdjZ5TUdKVVQrVkxzSGk0?=
+ =?utf-8?B?TWdVcStER2dNVklnZGhHSEh0WWNGZENVdWZsV3JPVTVEa1FuUVl4NllkRnlI?=
+ =?utf-8?B?MWNSWnN5YTIzcWJmcWx6Wlk0TnNTdjZkd3pUMWhWZ0ZKdEs2USsyZkRUNmRO?=
+ =?utf-8?B?R3Qxd05zMnFGbUhqdzhmYTFBYk1xbTVsa0tLKy9XakthZkdCRGV3T0h1Yk1V?=
+ =?utf-8?B?VUt3amRTNjY3bUo2MDlMdzN4ODkxTmkrcXRrVDJOOEFyekxUU3o2aE1oR255?=
+ =?utf-8?B?VTBVQXh5T2lvcHhaK3E5R2FaWmFuT0dDMXQ5VnQwMU9lb29xVkJNaG9xa05x?=
+ =?utf-8?B?bGJLYlljQ1FoVThER0hPZ3JlMDNiazlZUVBxc3FmeFNhd0VPZ0t5L0dmSWdm?=
+ =?utf-8?B?VjFiY2VRTHlwc3kvOWExOG1WMFZoa0NMZG9RUnI4RTZHOHI4dkM0SEMzN0tP?=
+ =?utf-8?B?aUdDNTZ0YWRxVHd6M3JjdzVUZGJ3Z1ZrQ21kSjlzUzVxVmxUTERLS3JNcVd6?=
+ =?utf-8?B?cHpJZVRpV3k1L2M3Ymp1WkJGaGk3S1hkTGZhdjlqSWxHNWpSeTZEQWZ3TW11?=
+ =?utf-8?B?bGFRaCtUdlo1N3pVTDVTR0JKQmd1NzdGM0htZXFEZEk4eVEyYjBlbXhMYTFx?=
+ =?utf-8?B?dWZZeHhDY09TR1c3a3A2UmE2bDBYYlMzWkZyRmV5a0lwZmFuWldLclNlcFg0?=
+ =?utf-8?B?bkFWZ3dJZUIvZEhTMHlZZys2OVFMUy9hYkJxdWRPY0pqSGRiZ3NLcVJXS1hL?=
+ =?utf-8?B?ODE0VUlDbXlaSk9xQWYwMkVrTlBtYWY5aVhqYmtxTTBOQ1ppQzEyVW9vVnNI?=
+ =?utf-8?B?QnlvVVlhaUdTSzNndnZibjhKMzBHKzM3Rk14UE51OGxYcjNmNTdiYU82ZGJP?=
+ =?utf-8?B?U2EyYUJTMDdVNDJIWUx2MVhaVWlJZklQS1JuNkw3V2NXVmV5eG9GMVR4S204?=
+ =?utf-8?B?V2RRakw3MktlTW4rY2VrMmw1OG5ZbUgvQXk0OVhkdXFWM2krMDVuLzd6MVNH?=
+ =?utf-8?B?RTFPWklYQzBhdU44Q0F1ekhIaEdSVkZIYm9oU3k4dllIS2hBRS9BTUZqM3U5?=
+ =?utf-8?B?Zjg0ODRDeTBsYXNjR0tEWjR0WXp2TW05VHQwNnlHbFV2ZUVDcm9vVUV1aEp4?=
+ =?utf-8?B?dGdqSWtQNUJnd0JrNk14QUM0Njl2Y2czSWIvWlYzcEliT0U3QTZLNEdLUlVX?=
+ =?utf-8?B?U0VXM1daUS94NUNTeHprSUtUUlFEN29VRjVMc3hvOGwwMVJWZSs5eXI1czhX?=
+ =?utf-8?B?SzVadzdZWHhPYzFjdWVwbmdUd2podThFdXNiSlFZZnM2a1ZDWm15aGd0Z3M5?=
+ =?utf-8?B?SFZRaWlFYjQxS2ZXaWJuc1lmb2ZPSzlPVGJiSjNFNitJaW1sWkRycHJmaDl5?=
+ =?utf-8?B?SlBwd1lRSHZIdnlORTlUWkI5eGNWYkVnRGZPaG9XNHZ4a2k0U3pRbHBjM3VE?=
+ =?utf-8?B?aFZoTXc2QlJrMFVQc2FhMkI5VUNHVXBDQ3g1ZVk4eVp5c0w0ektWblIydlEy?=
+ =?utf-8?B?Y201L1YyVzhIeVpWNElOQy9JSnJlamprOStSV0FyTFlJalNiaUFUZWNaQUFQ?=
+ =?utf-8?B?R2ppaGVhVlBlQVVxV04rYmVHNXJmUXNCR0Q0b3lUd0srdGhBWkVjZzJQMlZQ?=
+ =?utf-8?B?ckZUY1Y0TStCZDZkSi9hdEhKMW1oR1cvOEdya3F1OWtaVWl4OHhoUzNaSlVm?=
+ =?utf-8?B?aWNMZThMRjZCZHZJSGU0K3M2N25udnp6SFZQZXlzS3NUU2loWGwwVnBiSVc2?=
+ =?utf-8?B?aHZydXd0UmpJSitQckJmbzdNcGRqK2duVkNiMjU0cU5oSDhVY0ZsOFJnMU9p?=
+ =?utf-8?B?NDVDYUdUYUxaQXRWb0NPQjR5RkdBPT0=?=
 X-OriginatorOrg: nutanix.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d3b3be91-9779-4fd8-56f4-08d9a92886f0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 89a1747c-e9b7-4e28-6768-08d9a9289098
 X-MS-Exchange-CrossTenant-AuthSource: CH0PR02MB7964.namprd02.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2021 17:42:57.8653
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2021 17:43:14.1170
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bb047546-786f-4de1-bd75-24e5b6f79043
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XGDqDO0sxS1q1MezXv0qc1N7RlawDuiA2N2pPm7blCFtSjDAJlDFKEkTyc+iHE8LaJjqSJyuCdBa/Yj9iC9AIzB6jihEUe3iul7g77KuLzE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6727
-X-Proofpoint-ORIG-GUID: spJqN8wY0ufEqNuiIPJ01a0KdcL1Nd_d
-X-Proofpoint-GUID: spJqN8wY0ufEqNuiIPJ01a0KdcL1Nd_d
+X-MS-Exchange-CrossTenant-UserPrincipalName: e5QWWleYsgjsuM+jvyRtZxz8pe3ArNTS/+gqTsOxbDiegDKWDokmzWbJLw+zOtJpGUXo1P4PoRvIx23qW/PbM6ObAzmqr9iUuA7ro0OdIp4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6808
+X-Proofpoint-GUID: uZQF3fJxW3nzpCiB9jqw5rCKZVunC8S1
+X-Proofpoint-ORIG-GUID: uZQF3fJxW3nzpCiB9jqw5rCKZVunC8S1
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
  definitions=2021-11-16_04,2021-11-16_01,2020-04-07_01
@@ -127,70 +143,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-virtio_net_hdr_to_skb does not set the skb's gso_size and gso_type
-correctly for UFO packets received via virtio-net that are a little over
-the GSO size. This can lead to problems elsewhere in the networking
-stack, e.g. ovs_vport_send dropping over-sized packets if gso_size is
-not set.
+On 15/11/2021 16:34, Willem de Bruijn wrote:
+> On Mon, Nov 15, 2021 at 4:16 PM Jonathan Davies
+> <jonathan.davies@nutanix.com> wrote:
+>>
+>> virtio_net_hdr_to_skb does not set the skb's gso_size and gso_type
+>> correctly for UFO packets received via virtio-net that are a little over
+>> the GSO size. This can lead to problems elsewhere in the networking
+>> stack, e.g. ovs_vport_send dropping over-sized packets if gso_size is
+>> not set.
+>>
+>> This is due to the comparison
+>>
+>>    if (skb->len - p_off > gso_size)
+>>
+>> not properly accounting for the transport layer header.
+>>
+>> p_off includes the size of the transport layer header (thlen), so
+>> skb->len - p_off is the size of the TCP/UDP payload.
+>>
+>> gso_size is read from the virtio-net header. For UFO, fragmentation
+>> happens at the IP level so does not need to include the UDP header.
+>>
+>> Hence the calculation could be comparing a TCP/UDP payload length with
+>> an IP payload length, causing legitimate virtio-net packets to have
+>> lack gso_type/gso_size information.
+>>
+>> Example: a UDP packet with payload size 1473 has IP payload size 1481.
+>> If the guest used UFO, it is not fragmented and the virtio-net header's
+>> flags indicate that it is a GSO frame (VIRTIO_NET_HDR_GSO_UDP), with
+>> gso_size = 1480 for an MTU of 1500.  skb->len will be 1515 and p_off
+>> will be 42, so skb->len - p_off = 1473.  Hence the comparison fails, and
+>> shinfo->gso_size and gso_type are not set as they should be.
+>>
+>> Instead, add the UDP header length before comparing to gso_size when
+>> using UFO. In this way, it is the size of the IP payload that is
+>> compared to gso_size.
+>>
+>> Fixes: 6dd912f8 ("net: check untrusted gso_size at kernel entry")
+>> Signed-off-by: Jonathan Davies <jonathan.davies@nutanix.com>
+> 
+> Thanks for the fix, and the detailed explanation of the bug.
+> 
+> Reviewed-by: Willem de Bruijn <willemb@google.com>
+> 
+>> ---
+>>   include/linux/virtio_net.h | 7 +++++--
+>>   1 file changed, 5 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
+>> index b465f8f..bea56af 100644
+>> --- a/include/linux/virtio_net.h
+>> +++ b/include/linux/virtio_net.h
+>> @@ -122,8 +122,11 @@ static inline int virtio_net_hdr_to_skb(struct sk_buff *skb,
+>>                  u16 gso_size = __virtio16_to_cpu(little_endian, hdr->gso_size);
+>>                  struct skb_shared_info *shinfo = skb_shinfo(skb);
+>>
+>> -               /* Too small packets are not really GSO ones. */
+>> -               if (skb->len - p_off > gso_size) {
+>> +               /* Too small packets are not really GSO ones.
+>> +                * UFO may not include transport header in gso_size.
+>> +                */
+>> +               if (gso_type & SKB_GSO_UDP && skb->len - p_off + thlen > gso_size ||
+>> +                   skb->len - p_off > gso_size) {
+> 
+> Perhaps for readability instead something like
+> 
+>    unsigned int nh_off = p_off;
+> 
+>    if (gso_type & SKB_GSO_UDP)
+>      nh_off -= thlen;
 
-This is due to the comparison
+Thanks for the suggestion. I agree that improves readability. v2 posted.
 
-  if (skb->len - p_off > gso_size)
+Jonathan
 
-not properly accounting for the transport layer header.
-
-p_off includes the size of the transport layer header (thlen), so
-skb->len - p_off is the size of the TCP/UDP payload.
-
-gso_size is read from the virtio-net header. For UFO, fragmentation
-happens at the IP level so does not need to include the UDP header.
-
-Hence the calculation could be comparing a TCP/UDP payload length with
-an IP payload length, causing legitimate virtio-net packets to have
-lack gso_type/gso_size information.
-
-Example: a UDP packet with payload size 1473 has IP payload size 1481.
-If the guest used UFO, it is not fragmented and the virtio-net header's
-flags indicate that it is a GSO frame (VIRTIO_NET_HDR_GSO_UDP), with
-gso_size = 1480 for an MTU of 1500.  skb->len will be 1515 and p_off
-will be 42, so skb->len - p_off = 1473.  Hence the comparison fails, and
-shinfo->gso_size and gso_type are not set as they should be.
-
-Instead, add the UDP header length before comparing to gso_size when
-using UFO. In this way, it is the size of the IP payload that is
-compared to gso_size.
-
-Fixes: 6dd912f8 ("net: check untrusted gso_size at kernel entry")
-Signed-off-by: Jonathan Davies <jonathan.davies@nutanix.com>
-
----
-Changes in v2:
- - refactor to use variable for readability
----
- include/linux/virtio_net.h | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
-index b465f8f..04e87f4b 100644
---- a/include/linux/virtio_net.h
-+++ b/include/linux/virtio_net.h
-@@ -120,10 +120,15 @@ static inline int virtio_net_hdr_to_skb(struct sk_buff *skb,
- 
- 	if (hdr->gso_type != VIRTIO_NET_HDR_GSO_NONE) {
- 		u16 gso_size = __virtio16_to_cpu(little_endian, hdr->gso_size);
-+		unsigned int nh_off = p_off;
- 		struct skb_shared_info *shinfo = skb_shinfo(skb);
- 
-+		/* UFO may not include transport header in gso_size. */
-+		if (gso_type & SKB_GSO_UDP)
-+			nh_off -= thlen;
-+
- 		/* Too small packets are not really GSO ones. */
--		if (skb->len - p_off > gso_size) {
-+		if (skb->len - nh_off > gso_size) {
- 			shinfo->gso_size = gso_size;
- 			shinfo->gso_type = gso_type;
- 
--- 
-2.9.3
-
+> 
+> 
+> 
+> 
+>>                          shinfo->gso_size = gso_size;
+>>                          shinfo->gso_type = gso_type;
+>>
+>> --
+>> 2.9.3
+>>
