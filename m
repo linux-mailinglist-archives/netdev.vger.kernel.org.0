@@ -2,146 +2,282 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98565452D26
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 09:51:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5908452DE1
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 10:23:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232481AbhKPIyH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 03:54:07 -0500
-Received: from mail-eopbgr70119.outbound.protection.outlook.com ([40.107.7.119]:39137
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232473AbhKPIyD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Nov 2021 03:54:03 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XEggXUSMN+S577v3CTDBaUytQdJ6I2fgOjS/ZqDpVDFhr0eBRusEv8Bm+h1br3D/PZW8A3SC84L4jBP8N8PEvSP8PrMB1l6z96c12drtVXOWqW+bAP22a5ITKFxcFj9ZtqLZDzBzmFQvtpxDvEgR47yXLBNvMYHGIuUWSIVAFOgfNnyig3Y09KDFxFBXAewFSwhIs+ICJJRVAUWX+xEw/yRDRkZs8sEJW84hjA62NfNxFshBRuvsP1UGPj2lCaX7qVNuNRXkgArexAlRntrvJ6kn3l/2rAEPNbf5Ez5nrD62QHJCQ0Xp8/wJljtO0eZ7SD9evcz48DRdnDXyHTtA0Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GbHlC4YnSYNpRh4B0SnuAIhv40Ak4qV82rzlMWRMrVE=;
- b=B1/3uBskg8FS/9ARTFFA2HLObJJChUlizUayaEB6mS9IKe55/kc9NqFdRGHq9tKRs265kUSc2usPcrSgEmoTsBpd5uXC5SLUMIQfclWdLgxExpNYQP3d/wkltDMeD5pnutqimxPRdV4O1+kkJZvFhWJdW1ssV5t9ay/4vLt9U4hqUXsEzP4EG8lJj/YLuv1zSYtBhG3Xi3x1YTo6rUSDiKwyp3Fr1akdDzyotBPir6FOGffuG2d+ZA7dj8fco4RgynWUqT0yAgZs7sfONzh3K2txuItx9xsSpVYZD6AiMyr8lAOFBa9fgp8YY8lpXb3hcYf0BxekYiyLVSv/ng9cVA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=virtuozzo.com; dmarc=pass action=none
- header.from=virtuozzo.com; dkim=pass header.d=virtuozzo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=virtuozzo.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GbHlC4YnSYNpRh4B0SnuAIhv40Ak4qV82rzlMWRMrVE=;
- b=ARNj+g0jL050MqxNdxqkSIKZLzwwJ1XRfE6S+T8M/roXhkLfjwT3GhJh+xs2lJ9cVQ4VBqMkmoHCpduNVBn6oVgbDXNXTATdSBjuUVhimC+nv7N2AT+61N2TxfVZs+dU0gj0ZECx7cm5/+pr6dd/4F+7CNJtohrdTi2JItfjtNw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=virtuozzo.com;
-Received: from VE1PR08MB5630.eurprd08.prod.outlook.com (2603:10a6:800:1ae::7)
- by VI1PR08MB3710.eurprd08.prod.outlook.com (2603:10a6:803:c5::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.26; Tue, 16 Nov
- 2021 08:51:03 +0000
-Received: from VE1PR08MB5630.eurprd08.prod.outlook.com
- ([fe80::f875:8aa8:47af:3b75]) by VE1PR08MB5630.eurprd08.prod.outlook.com
- ([fe80::f875:8aa8:47af:3b75%5]) with mapi id 15.20.4690.027; Tue, 16 Nov 2021
- 08:51:03 +0000
-To:     Stefano Brivio <sbrivio@redhat.com>
-Cc:     Netdev <netdev@vger.kernel.org>
-From:   Nikita Yushchenko <nikita.yushchenko@virtuozzo.com>
-Subject: "AVX2-based lookup implementation" has broken ebtables --among-src
-Message-ID: <d35db9d6-0727-1296-fa78-4efeadf3319c@virtuozzo.com>
-Date:   Tue, 16 Nov 2021 11:51:01 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AS8PR05CA0023.eurprd05.prod.outlook.com
- (2603:10a6:20b:311::28) To VE1PR08MB5630.eurprd08.prod.outlook.com
- (2603:10a6:800:1ae::7)
+        id S233106AbhKPJ0X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 04:26:23 -0500
+Received: from mail-io1-f69.google.com ([209.85.166.69]:56155 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233054AbhKPJ0R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 04:26:17 -0500
+Received: by mail-io1-f69.google.com with SMTP id y74-20020a6bc84d000000b005e700290338so12307278iof.22
+        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 01:23:20 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=uC7AWDcvfTfXFe8xNqJbFueuOQA6vkHzPFdtRiX4guA=;
+        b=ts/bkSIH9FrwsBPiilxTwsMiTgsU8FdMdMX2EO6uLW7H6HrfvRD4GN+EzRuv1dgzI7
+         E2SLNm9KFWa/bItTs+eb/5BSBTTGANlhgQ3D92DufjUXSyFMABsI7Ey07vleQcy1Y/f/
+         FhcruxaaX28nJIKb7WMXMagb7ZocMTJ0RUjLtpg0oBxidC14HYRAj2dWpBlpQqpLe0hV
+         FIwu2iQ9Q0sXL8PPAXaJyuQ1rIJcYWG0mhNSs9MumhicG1MZka+bORJ5HvLKKQu6t8TX
+         nlxBVw/GIuy7MtZsH3aj7Y3mvhVBJuyhYsPOBcjO8nirYFsPHSreO+mxz6bUyUVQWFPm
+         /pQg==
+X-Gm-Message-State: AOAM532co+6CWgTI3pEnyJXjVZiGavF0SCjsOwwQVqm2oH0bWNMkmQmV
+        vEesZ0JqMRL5OwK+lItXOZA3SeMPXu4f2Tgx37Jq8KAJMUSL
+X-Google-Smtp-Source: ABdhPJzL++KdbZQd4ra287jGiy2IvztMUKRiLKkTrEGbLfm4F0BH1ly4zJomWzjKpnLpdAQtIJswunF7ZCTPndEwkXWLRIktZJ2z
 MIME-Version: 1.0
-Received: from [192.168.112.17] (94.141.168.29) by AS8PR05CA0023.eurprd05.prod.outlook.com (2603:10a6:20b:311::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.19 via Frontend Transport; Tue, 16 Nov 2021 08:51:03 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c2600f66-ae91-49b1-5e4b-08d9a8de3891
-X-MS-TrafficTypeDiagnostic: VI1PR08MB3710:
-X-Microsoft-Antispam-PRVS: <VI1PR08MB3710AEC471D9CBB657BC5E74F4999@VI1PR08MB3710.eurprd08.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:541;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZtCymPROSmrBOhyInjtqXyTxZAtEA0f8bh5dk+UY/yK3Lvn0a3kjGAhGs33EWMQ3cLUX3dwuMoQjXhgSntOqJcWl6rSfwDm75984Ixl4UCKo7Sqt91QxSC3vJ4g0JaDepkNmx8MT1uI6ClcnokVpF9XXE6meCeawJn3cuXLIYJDQonjpvIf9irJVao+uboslYhF9BHrCaeQ6sXyeorco41HdNBXs4HfzrLmB1tGWf+ixhlpYSYdjVLO4+yJonH/fLRCZDIJ8yOHcptnFYJgx5CqHJCiMF3N3XNBtDDECArk2wPpNGUI/VF0WJYmj7D0gcXV9js6CDW0CRuQPH+fRpQoTofcy4MIt9xP1XNwbAtdPDOfKsrN/f34pUzrLiMQGdRxVcTIB7vHVKB9wJ2jPkj88YRbXUhPhjUeYUwY5fJP5JH9d/WmsQJwUixDcvrH9ODX6/jYPqlSojaTfGlwriq0FrsMntXGZpW9xvfAELdvoRc0yJUkwyA58Hka+T+o/u1C/ybvYTI23m2SDuaCfTo9oV493mYOepNjy+clYWfxJ0TuLmP2t1KDZlRBRVfqAav29q8dF76ZkAtKw3m6+uFdavGhR01uIBkr4vJZyt6pyzGd5EuJke43fwD3MqwSDOxohBnrJP1X1x9x50wqrLhrIO7cR/GrWJJW8zssHMdYclysCr40Vxzm+MzJoFcodXG3utiel9fqNMz8HcZmLLWJ9TAVzb69X2d/oED7RjvA=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR08MB5630.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(2616005)(6916009)(66946007)(36756003)(956004)(508600001)(44832011)(186003)(66476007)(5660300002)(31696002)(2906002)(66556008)(38100700002)(316002)(16576012)(26005)(4744005)(6486002)(86362001)(8936002)(83380400001)(4326008)(31686004)(8676002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OUY5MndlNEZISkx5R0NTalJjdVhESmtXTUt0TFBxbHpmaWxSV29jNGVGTkc2?=
- =?utf-8?B?Z2w5allsMmZGbEpaRW1GcXM5cTFxOTJROWdjcUVwenFEYUNES0ExMGkzUDdo?=
- =?utf-8?B?VzYxNlAzMytodkZHaVR1c0xWR3hQdEVrZDh0cGwvUXJ1UFRPbjFlTXhGd29q?=
- =?utf-8?B?VjhxK1JzYmpWcGZPWmJaS001MzdkQWtkTWkrdWd2S1R2R2JWWEZYZG5GRGtQ?=
- =?utf-8?B?c3Jaak16QUo2and3My9IOVNnYmw2Z1UxV201REJlRXNFVUtzQkliNlFEakhZ?=
- =?utf-8?B?ZjlHTFU2UUxOT3hlQlM4U3poYzFCQzhvSHZ5YndEcm53Nkt6ajk2M1hndEFr?=
- =?utf-8?B?SWM1dUJXRW5ZMUpzN1Q1cDI1RHBRNVdnV0Vkd3B5NnpSK0VqZ2VrQXF6cFpL?=
- =?utf-8?B?R1pWRnpNeUUvSDZqSXBZVUV5Z3Nrb1lJYk5xMkI2OW5ibkZZRHhaMVBHTXJ1?=
- =?utf-8?B?WFBCdmxXN21pU0FjaXlBR2FyOEZ1dTdUOVNRZjJwVjIyMlVKUFluNG10d0xD?=
- =?utf-8?B?OXJaanVLREMvRTIrMnp1VGo5c0lCSTNjaVFBKzBtZkFXUDlXakduQnI2cTY3?=
- =?utf-8?B?QWRYRE1IR1RkdFJ5U05KTmdDSjJ2cmJSd0I3dklhZkE4azdTL1BwZDc3YkNm?=
- =?utf-8?B?aW1Yc25kcHBLSG1tOWxyMDViQWVQOGw5aTh2SFN4TEoxbWtwdjV6WUphNVlv?=
- =?utf-8?B?NGt5cXRhSFZnalJJU0daOHlLOUpITm9pRlgvbnYzWjd5clpHMFI0SC9GZWho?=
- =?utf-8?B?S01Jb0x3V2Ztdk8wWUdFakdjVGtISU9aOUNYNnYxVHFwTm9xNVkwMnplekhH?=
- =?utf-8?B?cWowMDRIdmtXKzVMaVZ2d3A2dDRNaVNEbG5qSXgrYTd2ZExSN2czVnlHa1NZ?=
- =?utf-8?B?c0xOQzFIT3F5eUZpRHQ4NzFKNlhLM3NmYlF1RXBiYUd5S0JuS2podERSSk9O?=
- =?utf-8?B?VEhpZXZtS1dGajVPL0VKaXBKK3RQZytQWDNkWTBPdjBjazlnSFZMVnZ0OEdT?=
- =?utf-8?B?V1MzUjB4V2RRVDdNS0FsTDBOZTR6andtaithNWhEV1hhb2wxdjZlY1FpZ29W?=
- =?utf-8?B?cTd6dzVHTXM2d1lmMVRVTXppNHRPWXZqcVVHUE1taHRjZ3pWaElTalo3d0ZU?=
- =?utf-8?B?amRuakNRK2phK0c1TmlkYUhvRVIxdXpWQkEzcTQvUVBLZSs0Q2U5eUtMWjRZ?=
- =?utf-8?B?VHI0WEIvVVAvSm1OTmtkSC9mbk1XWFRuUytGOW1XTEpjQUpGN2hkUlZaRHpq?=
- =?utf-8?B?V1RxUWtld2UyblF3QjhZY0JrOWs5aE03RU1UZWFVUHBBRGVPZTcxYUZGWFZK?=
- =?utf-8?B?UzA0Qkw3RmlUY0Q2MGVWZmhac25XbEdMUG5nY2RLY091a3l0S00raGovVFA2?=
- =?utf-8?B?ZzVwTEdZNHJjUTYrSFFoTWlmK3NuZFV0ZldJS0g0K2Fzak5Wa2w4UlNYUER3?=
- =?utf-8?B?ZXdZMkU0dCt3bVFkOVZnZXdJcjZHL0hrTCtNK2U2YjNDMStGQ3dzd2k5YlhR?=
- =?utf-8?B?UXZRVnUrOEV5NkpDckcxbFRBMTZJMUVzTDNsQXg0WjVBcGRmTDVVTytubFlH?=
- =?utf-8?B?ekVtQjJJR202M1JPempiSUYzQ0dObVFUcS9vZ3VHNGdpRENXd0hKMG5XcTND?=
- =?utf-8?B?Qm82TXFkK3l4OXN6aUtsNzJGZGlLZGI4bEdjcVY0WDgzU3dBcHlTMWxQbngy?=
- =?utf-8?B?MlNsUkFteFlVRGc4R0tvei9jM0hRNVBocW1weCtOV3RJejNKWGRxZUpQRFJM?=
- =?utf-8?B?QnFZeTQxNzcvZUxYbzRMTUQxd3RUVE9sSm0wMEVTWDJ3YXdXN3BEY2xxdDQ3?=
- =?utf-8?B?OHZUU2l0Tmhwb2V3TWZtakZWSnc5V2tvMUp1L3FMN3cvcVRBNFhmUmRHSTZK?=
- =?utf-8?B?dTJsMjN5LzNtdTZxc1E1Rkp4ekRtY25UdzQ1THdkUjJ2YmhIWmJVeDdGMkdw?=
- =?utf-8?B?cXA0U3NXdCt6RlJVMWs1SUpsNU9FNk0wdGtQQmdXWXR2dkNnR2RNVUd6T09G?=
- =?utf-8?B?eU1qYkdNa3E3aVZBbUZTUDVMMWNXb1hrRXNNc0FCaHdkYldjRUJ3YkRBd3lx?=
- =?utf-8?B?ZEc5YkpnckJNNGFWSHZOUTc3WXA5TTVZblh6Y3pVZmpkeGlKdC9Cem9sYXp3?=
- =?utf-8?B?b2dodk5aRnAxdGFXWUt1TDd6eEZFbXF4SHJGcG5LeHE3bEtpMDZqVkF5T3hZ?=
- =?utf-8?B?ZTV6c2QyZ3gwMTNRTmc3TElZTG05cGJOOStGSXNBUHNuSS9HM21XQmd2R2hz?=
- =?utf-8?B?UkhCVVdRanFobmhDdG9ZR2YwdVJBPT0=?=
-X-OriginatorOrg: virtuozzo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c2600f66-ae91-49b1-5e4b-08d9a8de3891
-X-MS-Exchange-CrossTenant-AuthSource: VE1PR08MB5630.eurprd08.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2021 08:51:03.6227
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 0bc7f26d-0264-416e-a6fc-8352af79c58f
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CWIQWKYGajxB+l2t3WLiS/SnGpfD0DtpTee70ZTKCmUstblGbPedDp6TeTacq3+xlGojjnnsXnKHOCwqaeRvz9vC9aN25jJPHKGobfoIpx4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR08MB3710
+X-Received: by 2002:a92:4b06:: with SMTP id m6mr3417501ilg.123.1637054599983;
+ Tue, 16 Nov 2021 01:23:19 -0800 (PST)
+Date:   Tue, 16 Nov 2021 01:23:19 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e8f8f505d0e479a5@google.com>
+Subject: [syzbot] KASAN: use-after-free Read in remove_wait_queue (3)
+From:   syzbot <syzbot+cdb5dd11c97cc532efad@syzkaller.appspotmail.com>
+To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        viro@zeniv.linux.org.uk
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Stefano.
+Hello,
 
-I've found that nftables rule added by
+syzbot found the following issue on:
 
-# ebtables -A INPUT --among-src 8:0:27:40:f7:9=192.168.56.10 -j log
+HEAD commit:    cc0356d6a02e Merge tag 'x86_core_for_v5.16_rc1' of git://g..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=102e7ce6b00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a5d447cdc3ae81d9
+dashboard link: https://syzkaller.appspot.com/bug?extid=cdb5dd11c97cc532efad
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-does not match packets on kernel 5.14 and on current mainline.
-Although it matched correctly on kernel 4.18
+Unfortunately, I don't have any reproducer for this issue yet.
 
-I've bisected this issue. It was introduced by your commit 7400b063969b ("nft_set_pipapo: Introduce 
-AVX2-based lookup implementation") from 5.7 development cycle.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+cdb5dd11c97cc532efad@syzkaller.appspotmail.com
 
-The nftables rule created by the above command uses concatenation:
+==================================================================
+BUG: KASAN: use-after-free in __lock_acquire+0x3d86/0x54a0 kernel/locking/lockdep.c:4885
+Read of size 8 at addr ffff888032563540 by task syz-executor.2/8869
 
-# nft list chain bridge filter INPUT
-table bridge filter {
-         chain INPUT {
-                 type filter hook input priority filter; policy accept;
-                 ether saddr . ip saddr { 08:00:27:40:f7:09 . 192.168.56.10 } counter packets 0 bytes 0 
-log level notice flags ether
-         }
-}
+CPU: 1 PID: 8869 Comm: syz-executor.2 Not tainted 5.15.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0x6c/0x309 mm/kasan/report.c:256
+ __kasan_report mm/kasan/report.c:442 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+ __lock_acquire+0x3d86/0x54a0 kernel/locking/lockdep.c:4885
+ lock_acquire kernel/locking/lockdep.c:5625 [inline]
+ lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5590
+ __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+ _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:162
+ remove_wait_queue+0x1d/0x180 kernel/sched/wait.c:55
+ ep_remove_wait_queue+0x88/0x1a0 fs/eventpoll.c:545
+ ep_unregister_pollwait fs/eventpoll.c:561 [inline]
+ ep_free+0x18a/0x390 fs/eventpoll.c:756
+ ep_eventpoll_release+0x41/0x60 fs/eventpoll.c:788
+ __fput+0x286/0x9f0 fs/file_table.c:280
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+ exit_task_work include/linux/task_work.h:32 [inline]
+ do_exit+0xbaa/0x2a20 kernel/exit.c:826
+ do_group_exit+0x125/0x310 kernel/exit.c:923
+ get_signal+0x47d/0x21d0 kernel/signal.c:2855
+ arch_do_signal_or_restart+0x2a9/0x1c40 arch/x86/kernel/signal.c:868
+ handle_signal_work kernel/entry/common.c:148 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
+ exit_to_user_mode_prepare+0x17d/0x290 kernel/entry/common.c:207
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
+ syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
+ do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f8b46801ae9
+Code: Unable to access opcode bytes at RIP 0x7f8b46801abf.
+RSP: 002b:00007f8b43d77218 EFLAGS: 00000246 ORIG_RAX: 00000000000000ca
+RAX: 0000000000000000 RBX: 00007f8b46914f68 RCX: 00007f8b46801ae9
+RDX: 0000000000000000 RSI: 0000000000000080 RDI: 00007f8b46914f68
+RBP: 00007f8b46914f60 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f8b46914f6c
+R13: 00007fff0432647f R14: 00007f8b43d77300 R15: 0000000000022000
+ </TASK>
 
-Looks like the AVX2-based lookup does not process this correctly.
+Allocated by task 8869:
+ kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+ kasan_set_track mm/kasan/common.c:46 [inline]
+ set_alloc_info mm/kasan/common.c:434 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:513 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:472 [inline]
+ __kasan_kmalloc+0xa4/0xd0 mm/kasan/common.c:522
+ kmalloc include/linux/slab.h:591 [inline]
+ psi_trigger_create.part.0+0x15e/0x7f0 kernel/sched/psi.c:1141
+ cgroup_pressure_write+0x15d/0x6b0 kernel/cgroup/cgroup.c:3622
+ cgroup_file_write+0x1ec/0x780 kernel/cgroup/cgroup.c:3829
+ kernfs_fop_write_iter+0x342/0x500 fs/kernfs/file.c:296
+ call_write_iter include/linux/fs.h:2161 [inline]
+ new_sync_write+0x429/0x660 fs/read_write.c:503
+ vfs_write+0x7cd/0xae0 fs/read_write.c:590
+ ksys_write+0x12d/0x250 fs/read_write.c:643
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Freed by task 8869:
+ kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+ kasan_set_track+0x1c/0x30 mm/kasan/common.c:46
+ kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:360
+ ____kasan_slab_free mm/kasan/common.c:366 [inline]
+ ____kasan_slab_free mm/kasan/common.c:328 [inline]
+ __kasan_slab_free+0xff/0x130 mm/kasan/common.c:374
+ kasan_slab_free include/linux/kasan.h:235 [inline]
+ slab_free_hook mm/slub.c:1700 [inline]
+ slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1726
+ slab_free mm/slub.c:3492 [inline]
+ kfree+0xf3/0x550 mm/slub.c:4552
+ cgroup_pressure_write+0x18d/0x6b0 kernel/cgroup/cgroup.c:3628
+ cgroup_file_write+0x1ec/0x780 kernel/cgroup/cgroup.c:3829
+ kernfs_fop_write_iter+0x342/0x500 fs/kernfs/file.c:296
+ call_write_iter include/linux/fs.h:2161 [inline]
+ new_sync_write+0x429/0x660 fs/read_write.c:503
+ vfs_write+0x7cd/0xae0 fs/read_write.c:590
+ ksys_write+0x12d/0x250 fs/read_write.c:643
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Last potentially related work creation:
+ kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+ kasan_record_aux_stack+0xe9/0x110 mm/kasan/generic.c:348
+ insert_work+0x48/0x370 kernel/workqueue.c:1353
+ __queue_work+0x5ca/0xee0 kernel/workqueue.c:1519
+ queue_work_on+0xee/0x110 kernel/workqueue.c:1546
+ queue_work include/linux/workqueue.h:501 [inline]
+ call_usermodehelper_exec+0x1f0/0x4c0 kernel/umh.c:435
+ kobject_uevent_env+0xf8f/0x1650 lib/kobject_uevent.c:618
+ rx_queue_add_kobject net/core/net-sysfs.c:1069 [inline]
+ net_rx_queue_update_kobjects+0xf8/0x500 net/core/net-sysfs.c:1109
+ register_queue_kobjects net/core/net-sysfs.c:1766 [inline]
+ netdev_register_kobject+0x275/0x430 net/core/net-sysfs.c:2014
+ register_netdevice+0xd31/0x1500 net/core/dev.c:10330
+ __ip_tunnel_create+0x398/0x5c0 net/ipv4/ip_tunnel.c:267
+ ip_tunnel_init_net+0x2e4/0x9d0 net/ipv4/ip_tunnel.c:1070
+ ops_init+0xaf/0x470 net/core/net_namespace.c:140
+ setup_net+0x40f/0xa30 net/core/net_namespace.c:326
+ copy_net_ns+0x319/0x760 net/core/net_namespace.c:470
+ create_new_namespaces+0x3f6/0xb20 kernel/nsproxy.c:110
+ unshare_nsproxy_namespaces+0xc1/0x1f0 kernel/nsproxy.c:226
+ ksys_unshare+0x445/0x920 kernel/fork.c:3076
+ __do_sys_unshare kernel/fork.c:3150 [inline]
+ __se_sys_unshare kernel/fork.c:3148 [inline]
+ __x64_sys_unshare+0x2d/0x40 kernel/fork.c:3148
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Second to last potentially related work creation:
+ kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+ kasan_record_aux_stack+0xe9/0x110 mm/kasan/generic.c:348
+ insert_work+0x48/0x370 kernel/workqueue.c:1353
+ __queue_work+0x5ca/0xee0 kernel/workqueue.c:1519
+ queue_work_on+0xee/0x110 kernel/workqueue.c:1546
+ queue_work include/linux/workqueue.h:501 [inline]
+ call_usermodehelper_exec+0x1f0/0x4c0 kernel/umh.c:435
+ kobject_uevent_env+0xf8f/0x1650 lib/kobject_uevent.c:618
+ rx_queue_add_kobject net/core/net-sysfs.c:1069 [inline]
+ net_rx_queue_update_kobjects+0xf8/0x500 net/core/net-sysfs.c:1109
+ register_queue_kobjects net/core/net-sysfs.c:1766 [inline]
+ netdev_register_kobject+0x275/0x430 net/core/net-sysfs.c:2014
+ register_netdevice+0xd31/0x1500 net/core/dev.c:10330
+ __ip_tunnel_create+0x398/0x5c0 net/ipv4/ip_tunnel.c:267
+ ip_tunnel_init_net+0x2e4/0x9d0 net/ipv4/ip_tunnel.c:1070
+ vti_init_net+0x2a/0x370 net/ipv4/ip_vti.c:504
+ ops_init+0xaf/0x470 net/core/net_namespace.c:140
+ setup_net+0x40f/0xa30 net/core/net_namespace.c:326
+ copy_net_ns+0x319/0x760 net/core/net_namespace.c:470
+ create_new_namespaces+0x3f6/0xb20 kernel/nsproxy.c:110
+ unshare_nsproxy_namespaces+0xc1/0x1f0 kernel/nsproxy.c:226
+ ksys_unshare+0x445/0x920 kernel/fork.c:3076
+ __do_sys_unshare kernel/fork.c:3150 [inline]
+ __se_sys_unshare kernel/fork.c:3148 [inline]
+ __x64_sys_unshare+0x2d/0x40 kernel/fork.c:3148
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+The buggy address belongs to the object at ffff888032563500
+ which belongs to the cache kmalloc-192 of size 192
+The buggy address is located 64 bytes inside of
+ 192-byte region [ffff888032563500, ffff8880325635c0)
+The buggy address belongs to the page:
+page:ffffea0000c958c0 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x32563
+flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000000200 ffffea0001ef2780 0000000600000002 ffff888010c41a00
+raw: 0000000000000000 0000000000100010 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0x112cc0(GFP_USER|__GFP_NOWARN|__GFP_NORETRY), pid 3310, ts 611411618313, free_ts 611397869806
+ prep_new_page mm/page_alloc.c:2426 [inline]
+ get_page_from_freelist+0xa72/0x2f80 mm/page_alloc.c:4155
+ __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5381
+ alloc_pages+0x1a7/0x300 mm/mempolicy.c:2191
+ alloc_slab_page mm/slub.c:1770 [inline]
+ allocate_slab mm/slub.c:1907 [inline]
+ new_slab+0x319/0x490 mm/slub.c:1970
+ ___slab_alloc+0x921/0xfe0 mm/slub.c:3001
+ __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3088
+ slab_alloc_node mm/slub.c:3179 [inline]
+ slab_alloc mm/slub.c:3221 [inline]
+ __kmalloc_track_caller+0x2ef/0x310 mm/slub.c:4916
+ __do_krealloc mm/slab_common.c:1208 [inline]
+ krealloc+0x87/0xf0 mm/slab_common.c:1241
+ push_jmp_history kernel/bpf/verifier.c:2278 [inline]
+ is_state_visited kernel/bpf/verifier.c:10967 [inline]
+ do_check kernel/bpf/verifier.c:11107 [inline]
+ do_check_common+0x3521/0xcf50 kernel/bpf/verifier.c:13374
+ do_check_main kernel/bpf/verifier.c:13437 [inline]
+ bpf_check+0x87ca/0xbc90 kernel/bpf/verifier.c:14004
+ bpf_prog_load+0xf4c/0x21e0 kernel/bpf/syscall.c:2329
+ __sys_bpf+0x67e/0x5f00 kernel/bpf/syscall.c:4618
+ __do_sys_bpf kernel/bpf/syscall.c:4722 [inline]
+ __se_sys_bpf kernel/bpf/syscall.c:4720 [inline]
+ __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:4720
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1340 [inline]
+ free_pcp_prepare+0x326/0x810 mm/page_alloc.c:1391
+ free_unref_page_prepare mm/page_alloc.c:3317 [inline]
+ free_unref_page+0x19/0x690 mm/page_alloc.c:3396
+ __vunmap+0x781/0xb70 mm/vmalloc.c:2621
+ __vfree+0x3c/0xd0 mm/vmalloc.c:2669
+ vfree+0x5a/0x90 mm/vmalloc.c:2700
+ bpf_jit_free+0xbb/0x1c0
+ bpf_prog_free_deferred+0x5c1/0x790 kernel/bpf/core.c:2292
+ process_one_work+0x9b2/0x1690 kernel/workqueue.c:2297
+ worker_thread+0x658/0x11f0 kernel/workqueue.c:2444
+ kthread+0x405/0x4f0 kernel/kthread.c:327
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+
+Memory state around the buggy address:
+ ffff888032563400: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff888032563480: 04 fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff888032563500: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                           ^
+ ffff888032563580: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+ ffff888032563600: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
 
-Nikita
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
