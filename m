@@ -2,82 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 040C1453C79
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 23:59:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79E82453CC7
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 00:41:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232171AbhKPXBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 18:01:22 -0500
-Received: from smtprelay0131.hostedemail.com ([216.40.44.131]:40256 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229775AbhKPXBW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 18:01:22 -0500
-Received: from omf05.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay02.hostedemail.com (Postfix) with ESMTP id AB5BB86E90;
-        Tue, 16 Nov 2021 22:58:23 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf05.hostedemail.com (Postfix) with ESMTPA id 2FC745092ECC;
-        Tue, 16 Nov 2021 22:58:15 +0000 (UTC)
-Message-ID: <f03d59adc565c1cf2e97c97c5ea6083e614549dd.camel@perches.com>
-Subject: Re: [PATCH v4 3/3] MAINTAINERS: Mark VMware mailing list entries as
- email aliases
-From:   Joe Perches <joe@perches.com>
-To:     "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>, jgross@suse.com,
-        x86@kernel.org, pv-drivers@vmware.com
-Cc:     Zack Rusin <zackr@vmware.com>, Nadav Amit <namit@vmware.com>,
-        Vivek Thampi <vithampi@vmware.com>,
-        Vishal Bhakta <vbhakta@vmware.com>,
-        Ronak Doshi <doshir@vmware.com>,
-        linux-graphics-maintainer@vmware.com,
-        dri-devel@lists.freedesktop.org, linux-rdma@vger.kernel.org,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        linux-input@vger.kernel.org, sdeep@vmware.com,
-        amakhalov@vmware.com, keerthanak@vmware.com, srivatsab@vmware.com,
-        anishs@vmware.com, linux-kernel@vger.kernel.org, kuba@kernel.org,
-        rostedt@goodmis.org
-Date:   Tue, 16 Nov 2021 14:58:17 -0800
-In-Reply-To: <163710245724.123451.10205809430483374831.stgit@csail.mit.edu>
-References: <163710239472.123451.5004514369130059881.stgit@csail.mit.edu>
-         <163710245724.123451.10205809430483374831.stgit@csail.mit.edu>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1 
+        id S230451AbhKPXoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 18:44:07 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:36918 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230234AbhKPXoG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 18:44:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=7705HG4ZlrbNLiEXh/P6zNUSAQ7e6Y+XWcknyhkXF3w=; b=qJCczi+weTYxTCM4oCVyEvXQKz
+        RhT4QP9CdyAsxs0lgTJmoxkiG+7KzUgs3FAHS/bDlzhgzG7gNe/s5ZA5yg0kxVzwNUSTWl3lx/Eyv
+        QrZkmSk6chDw+d6k7ayUy44bzE+zkLCAA67C1vUvbp6bUTsltBFj4wDWTdkZS+ZQ+tCw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mn84W-00DkMc-QV; Wed, 17 Nov 2021 00:41:04 +0100
+Date:   Wed, 17 Nov 2021 00:41:04 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v5 3/3] tsnep: Add TSN endpoint Ethernet MAC
+ driver
+Message-ID: <YZRBkMsOhKB7nFW1@lunn.ch>
+References: <20211115205005.6132-1-gerhard@engleder-embedded.com>
+ <20211115205005.6132-4-gerhard@engleder-embedded.com>
+ <YZLnhOUg7A66AL5p@lunn.ch>
+ <CANr-f5y339dz5Q2Qazw_6-q81dXma=fEPQMm2Qfk78AjvhG=7Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Queue-Id: 2FC745092ECC
-X-Spam-Status: No, score=0.10
-X-Stat-Signature: bag15ygnb7zycjmij7n8krsg37adfghn
-X-Rspamd-Server: rspamout03
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1+Z1DWOQKC1GCVRxp1buSNRLZLwazhnR2M=
-X-HE-Tag: 1637103495-673145
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANr-f5y339dz5Q2Qazw_6-q81dXma=fEPQMm2Qfk78AjvhG=7Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-11-16 at 14:41 -0800, Srivatsa S. Bhat wrote:
-> From: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+> > > diff --git a/drivers/net/ethernet/engleder/tsnep_test.c b/drivers/net/ethernet/engleder/tsnep_test.c
+> >
+> > You have quite a lot of code in this file. Could it either be
+> >
+> > 1) A loadable module which extends the base driver?
+> > 2) A build time configuration option?
+> >
+> > What percentage of the overall driver binary does this test code take
+> > up?
 > 
-> VMware mailing lists in the MAINTAINERS file are private lists meant
-> for VMware-internal review/notification for patches to the respective
-> subsystems. Anyone can post to these addresses, but there is no public
-> read access like open mailing lists, which makes them more like email
-> aliases instead (to reach out to reviewers).
-> 
-> So update all the VMware mailing list references in the MAINTAINERS
-> file to mark them as such, using "R: email-alias@vmware.com".
-> 
-> Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+> Driver is 484kB with test code and 396kB without. So test code is roughly
+> 20% currently. In my opinion a configuration option makes more sense,
 
-Acked-by: Joe Perches <joe@perches.com>
+Yes, that is good, please add one.
 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-[]
-> @@ -6223,8 +6223,8 @@ T:	git git://anongit.freedesktop.org/drm/drm-misc
->  F:	drivers/gpu/drm/vboxvideo/
->  
->  DRM DRIVER FOR VMWARE VIRTUAL GPU
-> -M:	"VMware Graphics" <linux-graphics-maintainer@vmware.com>
->  M:	Zack Rusin <zackr@vmware.com>
-> +R:	VMware Graphics Reviewers <linux-graphics-maintainer@vmware.com>
-
-etc...
-
-
+     Andrew
