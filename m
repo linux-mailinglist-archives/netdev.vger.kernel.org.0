@@ -2,71 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15281453953
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 19:20:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98725453957
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 19:21:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239395AbhKPSVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 13:21:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36480 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239393AbhKPSVr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Nov 2021 13:21:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3A7616139F;
-        Tue, 16 Nov 2021 18:18:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637086730;
-        bh=95XzXX0ytFfrQCZH4RRlvS2TYSmMBrwhtkneueu/VHg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KAPs4g846YU87w8MH8I/Ry/+9L6gYF4N33vFOU0IrXIR6jaaCXk8iWFiatnuwEgiu
-         7zYt04DFIVhd6e2FF+nylUT/9xfmYftb1gjJRlW1+2s8fv0K1udEAYnTTo0QwaD4ZE
-         6xrOyDsqyCDk1B17EKlG96HQpnLNEr2XNpeXTiQ9E8Bo2y2HyDbvgiWxRyMslFvipg
-         E0SYbcVcvn+W4C/vmW6otUZJgQbUzP+CZuG4HJa0DWpGb9mr77krytHPgtrkY/p+CK
-         tlg8ookEni7CXFz9j4viZcV+3W/+o1mRcMGYDSy83K195dmiLi6TJygEEBcZ7szEef
-         pc7XzWYaVBiAQ==
-Date:   Tue, 16 Nov 2021 10:18:49 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Arjun Roy <arjunroy@google.com>
-Subject: Re: [PATCH net-next 17/20] tcp: defer skb freeing after socket lock
- is released
-Message-ID: <20211116101849.07930a33@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CANn89iJb7s-JoCCfn=eoxZ_tX_2RaeEPZKO1aHyHtgHxLXsd2A@mail.gmail.com>
-References: <20211115190249.3936899-1-eric.dumazet@gmail.com>
-        <20211115190249.3936899-18-eric.dumazet@gmail.com>
-        <20211116062732.60260cd2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CANn89iJL=pGQDgqqKDrL5scxs_S5yMP013ch3-5zwSkMqfMn3A@mail.gmail.com>
-        <CANn89iJ5kWdq+agqif+72mrvkBSyHovphrHOUxb2rj-vg5EL8w@mail.gmail.com>
-        <20211116072735.68c104ee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CANn89iJb7s-JoCCfn=eoxZ_tX_2RaeEPZKO1aHyHtgHxLXsd2A@mail.gmail.com>
+        id S239406AbhKPSYb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 13:24:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37298 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239400AbhKPSY2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 13:24:28 -0500
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 509C7C061570;
+        Tue, 16 Nov 2021 10:21:31 -0800 (PST)
+Received: by mail-yb1-xb29.google.com with SMTP id y68so54854985ybe.1;
+        Tue, 16 Nov 2021 10:21:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cJYcvBRlxencL1QuT8wtPHz9c1IHoV/swUV2N7c4Fbg=;
+        b=Zqfxcye2w4sp8vm8MZzyONAjI6jjTILR2e6urkXZ/yMIbl1K/49BFS43iwRivgNj5S
+         g5QEAhMsTH4bSS4IIvdjmOofkWWdeqsbzzQhf7rqW3Q7mPAz9O65Y50iYPe5+YYaYgBL
+         0sMmMnUkM53fI1j6ksP38N/wiI6pEuKY7eiAKQ0MDRPK8rRaYPi1vuCz7M8HvdO3st3c
+         Ydb/WJJTW39TOERsa/zaUJ7/aoSUGs1Fwd1aBtcjkQSw0N/V2MHr/dSPJ9mo1LAANoAc
+         cX15ditnm9Wnlwurr1bXV33d+TMKA0+WCqeEHV17yGm26f+6zKD6Ref1ldVd+YJDG7ys
+         4j3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cJYcvBRlxencL1QuT8wtPHz9c1IHoV/swUV2N7c4Fbg=;
+        b=50JyASWynmi8lW6oxQ6tcXjlCUnFraKVdlxQjUaHVItzlY5HPZqszWeTtRLPPBPfkE
+         dQCff4UiBuCzmb9WBeN3yjCsAC+ARgGhp0+JNicAP6bjfEQVK62IOlNBn79FJzeV8QhF
+         1nqCTyEl33vc6hM+LZtKcbxH4VJH+UbjJnuSb3My9Zvzh36BGTGVqAmKDHUYIHsnzvuc
+         YxYaE0sGiySwUSekbmh8fKad8vDxb7ay2QGjWcJbCuZgk25xgokO+Rfz91WI/e0J6nKq
+         lw2QwR67b2SqLhGvjRb/h1CGQmwnHrndO0RJJjsQ0XpFBMt2Njzcm04/Rt/uolssPBGb
+         w4QQ==
+X-Gm-Message-State: AOAM533gbWmQ98gt2s2XDT7t67VgaUCoEKhJ1O9702U2/z1x5c3+n+WY
+        0gZaZ2W11ZA1MKc0IYsf5JEu2mJkDDScg08BEic=
+X-Google-Smtp-Source: ABdhPJx4ORrkmRdky4w3AuasGzVKGGyGqc5szOr+0p/deWht8f7yaVhCy9UHiJm6q95V1Abdbn0bF1mR97gXYiE0BtQ=
+X-Received: by 2002:a25:afcd:: with SMTP id d13mr10518308ybj.504.1637086890557;
+ Tue, 16 Nov 2021 10:21:30 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <YZPQ6+u2wTHRfR+W@kernel.org>
+In-Reply-To: <YZPQ6+u2wTHRfR+W@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 16 Nov 2021 10:21:19 -0800
+Message-ID: <CAEf4BzbOnpL-=2Xi1DOheUtzc-JG5FmHqdvs4B_+0OeaCTgY=w@mail.gmail.com>
+Subject: Re: [PATCH 1/1] Documentation: Add minimum pahole version
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jiri Olsa <jolsa@redhat.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 16 Nov 2021 08:46:37 -0800 Eric Dumazet wrote:
-> On my testing host,
-> 
-> 4K MTU : processing ~2,600.000 packets per second in GRO and other parts
-> use about 60% of the core in BH.
-> (Some of this cost comes from a clang issue, and the csum_partial() one
-> I was working on last week)
-> NIC RX interrupts are firing about 25,000 times per second in this setup.
-> 
-> 1500 MTU : processing ~ 5,800,000 packets per second uses one core in
-> BH (and also one core in recvmsg()),
-> We stay in NAPI mode (no IRQ rearming)
-> (That was with a TCP_STREAM run sustaining 70Gbit)
-> 
-> BH numbers also depend on IRQ coalescing parameters.
+On Tue, Nov 16, 2021 at 7:40 AM Arnaldo Carvalho de Melo
+<acme@kernel.org> wrote:
+>
+> A report was made in https://github.com/acmel/dwarves/issues/26 about
+> pahole not being listed in the process/changes.rst file as being needed
+> for building the kernel, address that.
+>
+> Link: https://github.com/acmel/dwarves/issues/26
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Cc: Andrii Nakryiko <andrii@kernel.org>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Jiri Olsa <jolsa@redhat.com>
+> Cc: Jonathan Corbet <corbet@lwn.net>
+> Cc: bpf@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+> ---
+>  Documentation/process/changes.rst | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+>
+> diff --git a/Documentation/process/changes.rst b/Documentation/process/changes.rst
+> index e35ab74a0f804b04..c45f167a1b6c02a4 100644
+> --- a/Documentation/process/changes.rst
+> +++ b/Documentation/process/changes.rst
+> @@ -35,6 +35,7 @@ GNU make               3.81             make --version
+>  binutils               2.23             ld -v
+>  flex                   2.5.35           flex --version
+>  bison                  2.0              bison --version
+> +pahole                 1.16             pahole --version
+>  util-linux             2.10o            fdformat --version
+>  kmod                   13               depmod -V
+>  e2fsprogs              1.41.4           e2fsck -V
+> @@ -108,6 +109,14 @@ Bison
+>  Since Linux 4.16, the build system generates parsers
+>  during build.  This requires bison 2.0 or later.
+>
+> +pahole:
+> +-------
+> +
+> +Since Linux 5.2 the build system generates BTF (BPF Type Format) from DWARF in
+> +vmlinux, a bit later from kernel modules as well, if CONFIG_DEBUG_INFO_BTF is
 
-Very interesting, curious to see what not doing the copy under socket
-lock will do to the 1.5k case. 
+I'd probably emphasize a bit more that pahole is required only if
+CONFIG_DEBUG_INFO_BTF is selected by moving "If CONFIG_DEBUG_INFO_BTF
+is selected, " to the front. But either way looks good.
 
-Thanks a lot for sharing the detailed info!
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+
+> +selected.  This requires pahole v1.16 or later. It is found in the 'dwarves' or
+> +'pahole' distro packages or from https://fedorapeople.org/~acme/dwarves/.
+> +
+>  Perl
+>  ----
+>
+> --
+> 2.31.1
+>
