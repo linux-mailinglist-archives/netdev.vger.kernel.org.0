@@ -2,76 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A6274532DE
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 14:30:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E36E34532E7
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 14:32:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236776AbhKPNdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 08:33:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51048 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236729AbhKPNdL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Nov 2021 08:33:11 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2803761B49;
-        Tue, 16 Nov 2021 13:30:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637069414;
-        bh=9o8hvU0fK1XFsXz34XreeARe1v8RmQpSo8N9uDuNqE4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ZlntJ0MX1R1kww1aulQYKefEUbjvbSw2I5K4mm07o2fbqYPeO/vqu7FODmjhNIbmF
-         9Xk8BxJw/rEvSnpxbDzu/OhTVP+pXvOMn5TkklMIbWZjx/ePUA5ZLe2Tzhx3EARogk
-         yj8PrJe1H/LVRFZwuAt6AkGzTGztdOFYS471EZXEyGzDLtvWq/33ol8bXelZmUM9Jh
-         QCuq24XOQBikNLZkvmwDw8i3ei9BkhJTDu2HnPv1CE3s/ZvDIFRjlAEcOtwvH482OM
-         wxV8vRc5/HFWk0bhMwGUU59VFMvoWzuE6hHbS/gaWapSESuGczSYil2WdQvXgr2Wy4
-         spM8bZ/Wdiepw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 15DC6609D3;
-        Tue, 16 Nov 2021 13:30:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/4] gro: get out of core files
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163706941408.24146.13534152124004338198.git-patchwork-notify@kernel.org>
-Date:   Tue, 16 Nov 2021 13:30:14 +0000
-References: <20211115170554.3645322-1-eric.dumazet@gmail.com>
-In-Reply-To: <20211115170554.3645322-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com
+        id S234548AbhKPNfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 08:35:30 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:54852 "EHLO
+        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234290AbhKPNfY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 08:35:24 -0500
+Received: from localhost (unknown [149.11.102.75])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id AF65C503A7F8B;
+        Tue, 16 Nov 2021 05:32:24 -0800 (PST)
+Date:   Tue, 16 Nov 2021 13:32:19 +0000 (GMT)
+Message-Id: <20211116.133219.63511987274053306.davem@davemloft.net>
+To:     edumazet@google.com
+Cc:     pabeni@redhat.com, soheil@google.com, eric.dumazet@gmail.com,
+        kuba@kernel.org, netdev@vger.kernel.org, ncardwell@google.com,
+        arjunroy@google.com
+Subject: Re: [PATCH net-next 00/20] tcp: optimizations for linux-5.17
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <CANn89iJ2vjOrH_asxiPtPbJmPiyWXf1gpE5EKYTf+3zMrVt_Bw@mail.gmail.com>
+References: <dacd415c06bc854136ba93ef258e92292b782037.camel@redhat.com>
+        <CANn89iJFFQxo9qA-cLXRjbw9ob5g+dzRp7H0016JJdtALHKikg@mail.gmail.com>
+        <CANn89iJ2vjOrH_asxiPtPbJmPiyWXf1gpE5EKYTf+3zMrVt_Bw@mail.gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 27.2
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Tue, 16 Nov 2021 05:32:26 -0800 (PST)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Eric Dumazet <edumazet@google.com>
+Date: Mon, 15 Nov 2021 18:06:29 -0800
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Mon, 15 Nov 2021 09:05:50 -0800 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+> On Mon, Nov 15, 2021 at 1:47 PM Eric Dumazet <edumazet@google.com> wrote:
 > 
-> Move GRO related content into net/core/gro.c
-> and include/net/gro.h.
+> Apparently the series is now complete on patchwork
+> https://patchwork.kernel.org/project/netdevbpf/list/?series=580363
 > 
-> This reduces GRO scope to where it is really needed,
-> and shrinks too big files (include/linux/netdevice.h
-> and net/core/dev.c)
-> 
-> [...]
+> Let me know if I need to resend (with few typos fixed)
 
-Here is the summary with links:
-  - [net-next,1/4] net: move gro definitions to include/net/gro.h
-    https://git.kernel.org/netdev/net-next/c/4721031c3559
-  - [net-next,2/4] net: gro: move skb_gro_receive_list to udp_offload.c
-    https://git.kernel.org/netdev/net-next/c/0b935d7f8c07
-  - [net-next,3/4] net: gro: move skb_gro_receive into net/core/gro.c
-    https://git.kernel.org/netdev/net-next/c/e456a18a390b
-  - [net-next,4/4] net: gro: populate net/core/gro.c
-    https://git.kernel.org/netdev/net-next/c/587652bbdd06
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+No need to resend, all applied, thanks Eric!
