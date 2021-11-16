@@ -2,106 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00A194536F9
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 17:09:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E3274536FF
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 17:11:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238840AbhKPQMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 11:12:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35016 "EHLO
+        id S232628AbhKPQNG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 11:13:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238947AbhKPQLx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 11:11:53 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6894C061746;
-        Tue, 16 Nov 2021 08:08:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Content-Type:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-To:Resent-Cc:
-        Resent-Message-ID:In-Reply-To:References;
-        bh=1kQoXqxgBOvqoeUGobCEXZnGk+ezCOczJQpIwyP64mc=; t=1637078935; x=1638288535; 
-        b=X/TrbHHmPM26UQOqfeniI/Q3U3grAeQMgv6XKik65fKALINZvn57d4E5lvwFfzOWctQV8LQjbQL
-        +ZFRNc1Y6YroWqspMwCYER2OLJRK+y9/Mo4fM5qC5k2FBmXq5+wBbxKsGOj4F4c+Hj7ST5RWWMiDP
-        TU9tdgRpJy2bFdLGDbDeDWodpYdtldiAeWw6Jy5xwk9ECnsn8kPDxRwmOzf3WNwd5jYYeo/JI2RJ4
-        qxo0lIjZj56oLjS3fmkjBujGMcQIR0MJzPZQWPl3ftkkgocHF3u33VZdurGp7ilzuLlCGZGMqNfHh
-        w6+wrDmHKZSYthjHjPS27/Oi7wWxyBW4NxWQ==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1mn10t-00G8LM-Fj;
-        Tue, 16 Nov 2021 17:08:51 +0100
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Subject: pull-request: mac80211 2021-11-16
-Date:   Tue, 16 Nov 2021 17:08:44 +0100
-Message-Id: <20211116160845.157214-1-johannes@sipsolutions.net>
-X-Mailer: git-send-email 2.33.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        with ESMTP id S236141AbhKPQM3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 11:12:29 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7FB5C061766
+        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 08:09:30 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id fv9-20020a17090b0e8900b001a6a5ab1392so3322241pjb.1
+        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 08:09:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=cYi+0J3O/mkcKeZzLi5DGW4y3mf5Tpi9h27G7Z0Z+s0=;
+        b=aIidVUoF96NPZLmoQ6GuA1JwSGjzrRa447n5m3oBiGEl/5MtqExZl6sG/0gyAGxVu1
+         jUXzMJnTdUp/uzVoqwSU5sTdJOzux+fpKQCmBs+hLFncuRTDYvGPTGUKemskhSjzN8DX
+         OKmlxS35D4uXHjiek8eZAIY7t7Bh4BG1V6wHOHWP2q0kgcXFz0TB5PE6aXGuGS85qbKX
+         DSPLAERJXY3FRrEWhfrsKcpcaGfS3Z7U82bvq8Er2v71JJFwf25Q/7tu/4t3sasjz1qf
+         Zkbzxocv1JgfY4oOL/negnXJd3p0Q1AKg8dghOuoW1QyFqLcwKTcj2aLG/5zPdl74czh
+         H1ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=cYi+0J3O/mkcKeZzLi5DGW4y3mf5Tpi9h27G7Z0Z+s0=;
+        b=6By9lJoVHpah1fjv7f74RIpNSQnw+yjIIyNpxarBOsak82ipLpPoLYjfHC6ey6rFS5
+         myCzLSCWUqeMxV43s6KEBN274i3++OQyReWB5VvKhMR1IXCPnK2wHfPk4RuA7JCxpG1A
+         N8Z19oHgmZ8Ew8+fFM+OLhUW4yWuWsI3Ym4R4G9ZzmMlFyeFLU0Ebl+ZghxtN7LJNV73
+         r+IBPSmeRE/J29ICnoPwU7ZzPxnhUEybMjowSFfv5TFdmIOTMK7MKq5K9FmyQGUyTL4f
+         FJgTMm6b2rgNXzbw+Jo3zJF/kxiaRByaL3S/Ix8GTK6+sH+fHM+cLthNuUYeVMgttmJd
+         6Wtg==
+X-Gm-Message-State: AOAM532tjX+0ZwXswtECQqOTDoSUNHyfqwW1ecczfamcgnt/Zg6NnX0s
+        yQ4N1Z+YZnwfBhExpZqPjYA=
+X-Google-Smtp-Source: ABdhPJzi12ni2CNOHgq1sd7HhrfW3FxAavqT/ltT82MqOaNhsFXrl2QHHORo/BB2DyFpwB0h/Jl43Q==
+X-Received: by 2002:a17:90a:7004:: with SMTP id f4mr341317pjk.156.1637078970357;
+        Tue, 16 Nov 2021 08:09:30 -0800 (PST)
+Received: from localhost.localdomain ([182.213.254.91])
+        by smtp.gmail.com with ESMTPSA id lt5sm2727526pjb.43.2021.11.16.08.09.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Nov 2021 08:09:29 -0800 (PST)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     ap420073@gmail.com
+Subject: [PATCH net] amt: cancel delayed_work synchronously in amt_fini()
+Date:   Tue, 16 Nov 2021 16:09:23 +0000
+Message-Id: <20211116160923.25258-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+When the amt module is being removed, it calls cancel_delayed_work()
+to cancel pending delayed_work. But this function doesn't wait for
+canceling delayed_work.
+So, workers can be still doing after module delete.
 
-We've already got a couple of fixes for this cycle, and in
-particular the radiotap one has been bothering users.
+In order to avoid this, cancel_delayed_work_sync() should be used instead.
 
-Please pull and let me know if there's any problem.
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: bc54e49c140b ("amt: add multicast(IGMP) report message handler")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+---
+ drivers/net/amt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-johannes
-
-
-
-The following changes since commit 1aa3b2207e889a948049c9a8016cedb0218c2389:
-
-  net,lsm,selinux: revert the security_sctp_assoc_established() hook (2021-11-14 12:21:53 +0000)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git tags/mac80211-for-net-2021-11-16
-
-for you to fetch changes up to 30f6cf96912b638d0ddfc325204b598f94efddc2:
-
-  mac80211: fix throughput LED trigger (2021-11-15 10:56:57 +0100)
-
-----------------------------------------------------------------
-Couple of fixes:
- * bad dont-reorder check
- * throughput LED trigger for various new(ish) paths
- * radiotap header generation
- * locking assertions in mac80211 with monitor mode
- * radio statistics
- * don't try to access IV when not present
- * call stop_ap for P2P_GO as well as we should
-
-----------------------------------------------------------------
-Felix Fietkau (2):
-      mac80211: drop check for DONT_REORDER in __ieee80211_select_queue
-      mac80211: fix throughput LED trigger
-
-Johannes Berg (3):
-      nl80211: fix radio statistics in survey dump
-      mac80211: fix radiotap header generation
-      mac80211: fix monitor_sdata RCU/locking assertions
-
-Nguyen Dinh Phi (1):
-      cfg80211: call cfg80211_stop_ap when switch from P2P_GO type
-
-Xing Song (1):
-      mac80211: do not access the IV when it was stripped
-
- net/mac80211/cfg.c     | 12 ++++++++----
- net/mac80211/iface.c   |  4 +++-
- net/mac80211/led.h     |  8 ++++----
- net/mac80211/rx.c      | 12 +++++++-----
- net/mac80211/tx.c      | 34 +++++++++++++++-------------------
- net/mac80211/util.c    |  7 ++++---
- net/mac80211/wme.c     |  3 +--
- net/wireless/nl80211.c | 34 +++++++++++++++++++---------------
- net/wireless/nl80211.h |  6 +-----
- net/wireless/util.c    |  1 +
- 10 files changed, 63 insertions(+), 58 deletions(-)
+diff --git a/drivers/net/amt.c b/drivers/net/amt.c
+index 47a04c330885..b732ee9a50ef 100644
+--- a/drivers/net/amt.c
++++ b/drivers/net/amt.c
+@@ -3286,7 +3286,7 @@ static void __exit amt_fini(void)
+ {
+ 	rtnl_link_unregister(&amt_link_ops);
+ 	unregister_netdevice_notifier(&amt_notifier_block);
+-	cancel_delayed_work(&source_gc_wq);
++	cancel_delayed_work_sync(&source_gc_wq);
+ 	__amt_source_gc_work();
+ 	destroy_workqueue(amt_wq);
+ }
+-- 
+2.17.1
 
