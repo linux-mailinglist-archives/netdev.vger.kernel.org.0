@@ -2,113 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 334D8452B86
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 08:24:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F892452B9E
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 08:38:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230199AbhKPH1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 02:27:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:54169 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230249AbhKPH1Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 02:27:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637047467;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=i6znEgLYKXbODUstiMvYpW5sQGMh+IInfSfVWduPSHQ=;
-        b=b5NEeOLM2XYmRLUcProFGnBsdWNE2TAIRjhkLpHqGjwfuRMue9JrBuoGJ76NUmRqOEdDe2
-        KxTp0PQaxZc3uA0G2ilBSaF4ts6PhDFyFhfSm6NQ4E7CuYTdmXyIoLwwYu5U8GGsA/l+o0
-        7hgQcNSShRSZOwBg8AoOAAhBtLMZv8w=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-459-q3liniVBPQ6BCx9nPWeA8w-1; Tue, 16 Nov 2021 02:24:26 -0500
-X-MC-Unique: q3liniVBPQ6BCx9nPWeA8w-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 93922804141;
-        Tue, 16 Nov 2021 07:24:24 +0000 (UTC)
-Received: from p1 (unknown [10.40.192.98])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id E53ED1017CE4;
-        Tue, 16 Nov 2021 07:24:22 +0000 (UTC)
-Date:   Tue, 16 Nov 2021 08:24:21 +0100
-From:   Stefan Assmann <sassmann@redhat.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        netdev@vger.kernel.org, Tony Brelinski <tony.brelinski@intel.com>
-Subject: Re: [PATCH net 06/10] iavf: prevent accidental free of filter
- structure
-Message-ID: <20211116072421.jar25sc7plvql7gw@p1>
-References: <20211115235934.880882-1-anthony.l.nguyen@intel.com>
- <20211115235934.880882-7-anthony.l.nguyen@intel.com>
+        id S230321AbhKPHlW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 02:41:22 -0500
+Received: from mga11.intel.com ([192.55.52.93]:42900 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230232AbhKPHlV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 02:41:21 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10169"; a="231099039"
+X-IronPort-AV: E=Sophos;i="5.87,238,1631602800"; 
+   d="scan'208";a="231099039"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2021 23:38:25 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,238,1631602800"; 
+   d="scan'208";a="671857290"
+Received: from silpixa00401086.ir.intel.com (HELO localhost.localdomain) ([10.55.129.110])
+  by orsmga005.jf.intel.com with ESMTP; 15 Nov 2021 23:38:22 -0800
+From:   Ciara Loftus <ciara.loftus@intel.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
+        toke@redhat.com, bjorn@kernel.org, magnus.karlsson@intel.com,
+        jonathan.lemon@gmail.com, maciej.fijalkowski@intel.com,
+        Ciara Loftus <ciara.loftus@intel.com>
+Subject: [RFC PATCH bpf-next 0/8] XDP_REDIRECT_XSK and Batched AF_XDP Rx
+Date:   Tue, 16 Nov 2021 07:37:34 +0000
+Message-Id: <20211116073742.7941-1-ciara.loftus@intel.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211115235934.880882-7-anthony.l.nguyen@intel.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-11-15 15:59, Tony Nguyen wrote:
-> From: Jacob Keller <jacob.e.keller@intel.com>
-> 
-> In iavf_config_clsflower, the filter structure could be accidentally
-> released at the end, if iavf_parse_cls_flower or iavf_handle_tclass ever
-> return a non-zero but positive value.
-> 
-> In this case, the function continues through to the end, and will call
-> kfree() on the filter structure even though it has been added to the
-> linked list.
-> 
-> This can actually happen because iavf_parse_cls_flower will return
-> a positive IAVF_ERR_CONFIG value instead of the traditional negative
-> error codes.
+The common case for AF_XDP sockets (xsks) is creating a single xsk on a queue for sending and 
+receiving frames as this is analogous to HW packet steering through RSS and other classification 
+methods in the NIC. AF_XDP uses the xdp redirect infrastructure to direct packets to the socket. It 
+was designed for the much more complicated case of DEVMAP xdp_redirects which directs traffic to 
+another netdev and thus potentially another driver. In the xsk redirect case, by skipping the 
+unnecessary parts of this common code we can significantly improve performance and pave the way 
+for batching in the driver. This RFC proposes one such way to simplify the infrastructure which 
+yields a 27% increase in throughput and a decrease in cycles per packet of 24 cycles [1]. The goal 
+of this RFC is to start a discussion on how best to simplify the single-socket datapath while 
+providing one method as an example.
 
-Hi Jacob,
+Current approach:
+1. XSK pointer: an xsk is created and a handle to the xsk is stored in the XSKMAP.
+2. XDP program: bpf_redirect_map helper triggers the XSKMAP lookup which stores the result (handle 
+to the xsk) and the map type (XSKMAP) in the percpu bpf_redirect_info struct. The XDP_REDIRECT 
+action is returned.
+3. XDP_REDIRECT handling called by the driver: the map type (XSKMAP) is read from the 
+bpf_redirect_info which selects the xsk_map_redirect path. The xsk pointer is retrieved from the
+bpf_redirect_info and the XDP descriptor is pushed to the xsk's Rx ring. The socket is added to a
+list for flushing later.
+4. xdp_do_flush: iterate through the lists of all maps that can be used for redirect (CPUMAP, 
+DEVMAP and XSKMAP). When XSKMAP is flushed, go through all xsks that had any traffic redirected to 
+them and bump the Rx ring head pointer(s).
 
-where exactly does this happen?
-Looking at iavf_parse_cls_flower() I see all returns of IAVF_ERR_CONFIG
-as "return IAVF_ERR_CONFIG;" while IAVF_ERR_CONFIG is defined as
-        IAVF_ERR_CONFIG                         = -4,
+For the end goal of submitting the descriptor to the Rx ring and bumping the head pointer of that 
+ring, only some of these steps are needed. The rest is overhead. The bpf_redirect_map 
+infrastructure is needed for all other redirect operations, but is not necessary when redirecting 
+to a single AF_XDP socket. And similarly, flushing the list for every map type in step 4 is not 
+necessary when only one socket needs to be flushed.
 
-I'm not opposed to this change, just wondering what's going on.
+Proposed approach:
+1. XSK pointer: an xsk is created and a handle to the xsk is stored both in the XSKMAP and also the 
+netdev_rx_queue struct.
+2. XDP program: new bpf_redirect_xsk helper returns XDP_REDIRECT_XSK.
+3. XDP_REDIRECT_XSK handling called by the driver: the xsk pointer is retrieved from the 
+netdev_rx_queue struct and the XDP descriptor is pushed to the xsk's Rx ring.
+4. xsk_flush: fetch the handle from the netdev_rx_queue and flush the xsk.
 
-  Stefan
+This fast path is triggered on XDP_REDIRECT_XSK if:
+  (i) AF_XDP socket SW Rx ring configured
+ (ii) Exactly one xsk attached to the queue
+If any of these conditions are not met, fall back to the same behavior as the original approach: 
+xdp_redirect_map. This is handled under-the-hood in the new bpf_xdp_redirect_xsk helper so the user
+does not need to be aware of these conditions.
 
-> Fix this by ensuring that the kfree() check and error checks are
-> similar. Use the more idiomatic "if (err)" to catch all non-zero error
-> codes.
-> 
-> Fixes: 0075fa0fadd0 ("i40evf: Add support to apply cloud filters")
-> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-> Tested-by: Tony Brelinski <tony.brelinski@intel.com>
-> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-> ---
->  drivers/net/ethernet/intel/iavf/iavf_main.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-> index 76c4ca0f055e..9c68c8628512 100644
-> --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-> +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-> @@ -3108,11 +3108,11 @@ static int iavf_configure_clsflower(struct iavf_adapter *adapter,
->  	/* start out with flow type and eth type IPv4 to begin with */
->  	filter->f.flow_type = VIRTCHNL_TCP_V4_FLOW;
->  	err = iavf_parse_cls_flower(adapter, cls_flower, filter);
-> -	if (err < 0)
-> +	if (err)
->  		goto err;
->  
->  	err = iavf_handle_tclass(adapter, tc, filter);
-> -	if (err < 0)
-> +	if (err)
->  		goto err;
->  
->  	/* add filter to the list */
-> -- 
-> 2.31.1
-> 
+Batching:
+With this new approach it is possible to optimize the driver by submitting a batch of descriptors 
+to the Rx ring in Step 3 of the new approach by simply verifying that the action returned from 
+every program run of each packet in a batch equals XDP_REDIRECT_XSK. That's because with this 
+action we know the socket to redirect to will be the same for each packet in the batch. This is 
+not possible with XDP_REDIRECT because the xsk pointer is stored in the bpf_redirect_info and not
+guaranteed to be the same for every packet in a batch.
+
+[1] Performance:
+The benchmarks were performed on VM running a 2.4GHz Ice Lake host with an i40e device passed 
+through. The xdpsock app was run on a single core with busy polling and configured in 'rxonly' mode.
+./xdpsock -i <iface> -r -B
+The improvement in throughput when using the new bpf helper and XDP action was measured at ~13% for 
+scalar processing, with reduction in cycles per packet of ~13. A further ~14% improvement in 
+throughput and reduction of ~11 cycles per packet was measured when the batched i40e driver path 
+was used, for a total improvement of ~27% in throughput and reduction of ~24 cycles per packet.
+
+Other approaches considered:
+Two other approaches were considered. The advantage of both being that neither involved introducing 
+a new XDP action. The first alternative approach considered was to create a new map type 
+BPF_MAP_TYPE_XSKMAP_DIRECT. When the XDP_REDIRECT action was returned, this map type could be 
+checked and used as an indicator to skip the map lookup and use the netdev_rx_queue xsk instead. 
+The second approach considered was similar and involved using a new bpf_redirect_info flag which 
+could be used in a similar fashion.
+While both approaches yielded a performance improvement they were measured at about half of what 
+was measured for the approach outlined in this RFC. It seems using bpf_redirect_info is too 
+expensive.
+Also, centralised processing of XDP actions was investigated. This would involve porting all drivers
+to a common interface for handling XDP actions which would greatly simplify the work involved in
+adding support for new XDP actions such as XDP_REDIRECT_XSK. However it was deemed at this point to
+be more complex than adding support for the new action to every driver. Should this series be
+considered worth pursuing for a proper patch set, the intention would be to update each driver 
+individually.
+
+Thank you to Magnus Karlsson and Maciej Fijalkowski for several suggestions and insight provided.
+
+TODO:
+* Add selftest(s)
+* Add support for all copy and zero copy drivers
+* Libxdp support
+
+The series applies on commit e5043894b21f ("bpftool: Use libbpf_get_error() to check error")
+
+Thanks,
+Ciara
+
+Ciara Loftus (8):
+  xsk: add struct xdp_sock to netdev_rx_queue
+  bpf: add bpf_redirect_xsk helper and XDP_REDIRECT_XSK action
+  xsk: handle XDP_REDIRECT_XSK and expose xsk_rcv/flush
+  i40e: handle the XDP_REDIRECT_XSK action
+  xsk: implement a batched version of xsk_rcv
+  i40e: isolate descriptor processing in separate function
+  i40e: introduce batched XDP rx descriptor processing
+  libbpf: use bpf_redirect_xsk in the default program
+
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c   |  13 +-
+ .../ethernet/intel/i40e/i40e_txrx_common.h    |   1 +
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c    | 285 +++++++++++++++---
+ include/linux/netdevice.h                     |   2 +
+ include/net/xdp_sock_drv.h                    |  49 +++
+ include/net/xsk_buff_pool.h                   |  22 ++
+ include/uapi/linux/bpf.h                      |  13 +
+ kernel/bpf/verifier.c                         |   7 +-
+ net/core/dev.c                                |  14 +
+ net/core/filter.c                             |  26 ++
+ net/xdp/xsk.c                                 |  69 ++++-
+ net/xdp/xsk_queue.h                           |  31 ++
+ tools/include/uapi/linux/bpf.h                |  13 +
+ tools/lib/bpf/xsk.c                           |  50 ++-
+ 14 files changed, 551 insertions(+), 44 deletions(-)
+
+-- 
+2.17.1
 
