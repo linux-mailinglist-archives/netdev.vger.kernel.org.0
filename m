@@ -2,66 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 236EF453324
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 14:47:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2662D453343
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 14:53:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236848AbhKPNtk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 08:49:40 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59420 "EHLO mail.kernel.org"
+        id S231842AbhKPN4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 08:56:36 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:35988 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232201AbhKPNtg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Nov 2021 08:49:36 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C11BB61B48;
-        Tue, 16 Nov 2021 13:46:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637070399;
-        bh=EgQplENZaeOvhDzRFGaIFPHsohxrN9W/R5malDha0bI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EpAedvKvM/MRQIel4JHZjIXYJ19mx55lI4myurnteF9NPrinVp/h9kIs4QhWz7lIC
-         IwvYpirxBdMyFDArF7z2nTNSzUPgk43cD/4csTqaUdQiCxIH0Tk+oojhrsNGRn6t/w
-         gs1EvOaGWzR/0vilSOe5oI7iI5l0P34+Cfb8znUsSgOplFWy5wR5UgkiVeop27nSDQ
-         Ch/g4ilNXlXaOScKOiG4QH7VTUFpsToCMCES5vKgT3K2FK8Pae4EbZh++2VGY6L5nz
-         WBfnsRjALMTmV4xZd8miftocnXQB72ikAKlvbG8vR1HzNBcAX8SLspFkVwnAO4+8kL
-         mY7VRWqujmkDw==
-Date:   Tue, 16 Nov 2021 05:46:37 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "huangguangbin (A)" <huangguangbin2@huawei.com>
-Cc:     <davem@davemloft.net>, <mkubecek@suse.cz>, <andrew@lunn.ch>,
-        <amitc@mellanox.com>, <idosch@idosch.org>, <danieller@nvidia.com>,
-        <jesse.brandeburg@intel.com>, <anthony.l.nguyen@intel.com>,
-        <jdike@addtoit.com>, <richard@nod.at>,
-        <anton.ivanov@cambridgegreys.com>, <netanel@amazon.com>,
-        <akiyano@amazon.com>, <gtzalik@amazon.com>, <saeedb@amazon.com>,
-        <chris.snook@gmail.com>, <ulli.kroll@googlemail.com>,
-        <linus.walleij@linaro.org>, <jeroendb@google.com>,
-        <csully@google.com>, <awogbemila@google.com>, <jdmason@kudzu.us>,
-        <rain.1986.08.12@gmail.com>, <zyjzyj2000@gmail.com>,
-        <kys@microsoft.com>, <haiyangz@microsoft.com>, <mst@redhat.com>,
-        <jasowang@redhat.com>, <doshir@vmware.com>,
-        <pv-drivers@vmware.com>, <jwi@linux.ibm.com>,
-        <kgraul@linux.ibm.com>, <hca@linux.ibm.com>, <gor@linux.ibm.com>,
-        <johannes@sipsolutions.net>, <netdev@vger.kernel.org>,
-        <lipeng321@huawei.com>, <chenhao288@hisilicon.com>,
-        <linux-s390@vger.kernel.org>
-Subject: Re: [PATCH V6 net-next 0/6] ethtool: add support to set/get tx
- copybreak buf size and rx buf len
-Message-ID: <20211116054637.22ba87c7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <2fdf21c4-57f9-0a51-a598-c5494aeae6a6@huawei.com>
-References: <20211102134613.30367-1-huangguangbin2@huawei.com>
-        <2fdf21c4-57f9-0a51-a598-c5494aeae6a6@huawei.com>
+        id S229908AbhKPN4e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 08:56:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Nh8cmk8Fo0ciQF/jP1Q2J8McTirBtCHFTSJnjGjcRZs=; b=GdJ+O7q5EGokkRf1qskAURyOyp
+        PyUsl1xesLQBhFnHs2xFvaw5EYOkHTTXqd7hC5iItNv0x4BHQRVcXoG1n1AWLmI2PNp21oBhG9omS
+        2fvi3wuijYMLm/X0cvGymXVVrnfvHrretdw219jJyKsZkPJdwDX8ebdr0AA89Hmmh3YY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mmytx-00DeeU-FT; Tue, 16 Nov 2021 14:53:33 +0100
+Date:   Tue, 16 Nov 2021 14:53:33 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     hnagalla@ti.com
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, geet.modi@ti.com,
+        vikram.sharma@ti.com, grygorii.strashko@ti.com
+Subject: Re: [PATCH net-next] net: phy: add support for TI DP83561-SP phy
+Message-ID: <YZO33aidzEwo3YFC@lunn.ch>
+References: <20211116102015.15495-1-hnagalla@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211116102015.15495-1-hnagalla@ti.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 16 Nov 2021 10:29:05 +0800 huangguangbin (A) wrote:
-> Gentle ping.
-> Are there any suggestions for this series?
+On Tue, Nov 16, 2021 at 04:20:15AM -0600, hnagalla@ti.com wrote:
+> From: Hari Nagalla <hnagalla@ti.com>
+> 
+> Add support for the TI DP83561-SP Gigabit ethernet phy device.
+> 
+> The dp83561-sp is a high reliability gigabit ethernet PHY designed for
 
-You posted it during the merge window when net-next was closed:
+Does anybody manufacture low reliability devices? Please avoid
+meaningless Marketing.
 
-https://www.kernel.org/doc/html/v5.12/networking/netdev-FAQ.html#how-often-do-changes-from-these-trees-make-it-to-the-mainline-linus-tree
+Please add my Reviewed-by: Andrew Lunn <andrew@lunn.ch> to version 2.
 
-Please repost.
+    Andrew
