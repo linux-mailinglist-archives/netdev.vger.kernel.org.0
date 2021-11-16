@@ -2,97 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E59AB453834
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 18:01:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 986C7453854
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 18:11:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236928AbhKPRDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 12:03:54 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:48114 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236447AbhKPRDx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 12:03:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637082056;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1Gf8mldySlliat3YgGc9PO17qf3daXpBQySoi5xxCq0=;
-        b=GEuHE2pzc6RrF5gl6cKhANPOXB8MJOpEIWOP/LrvkRCqRsBdGWutrD6opvXuGJgkAXRiV0
-        5fiaowgjeefg6CdrBNxM+YfkyfRBAPeBpavyWhCwhZIUfck/nQ9UIS5v6VFEkIFBY5Y8d9
-        vbBFT99+RUOqavgX2fYIoGgeIhhQ7m8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-286-L5ty1teGOjSKV0JufnXwJg-1; Tue, 16 Nov 2021 12:00:53 -0500
-X-MC-Unique: L5ty1teGOjSKV0JufnXwJg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 25C2580414B;
-        Tue, 16 Nov 2021 17:00:51 +0000 (UTC)
-Received: from localhost (unknown [10.39.193.89])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id BA37760C0F;
-        Tue, 16 Nov 2021 16:59:51 +0000 (UTC)
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Alex Williamson <alex.williamson@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
-        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
-        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
-        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
- for mlx5 devices
-In-Reply-To: <878ry2a6hw.fsf@redhat.com>
-Organization: Red Hat GmbH
-References: <20211028234750.GP2744544@nvidia.com>
- <20211029160621.46ca7b54.alex.williamson@redhat.com>
- <20211101172506.GC2744544@nvidia.com>
- <20211102085651.28e0203c.alex.williamson@redhat.com>
- <20211102155420.GK2744544@nvidia.com>
- <20211102102236.711dc6b5.alex.williamson@redhat.com>
- <20211102163610.GG2744544@nvidia.com>
- <20211102141547.6f1b0bb3.alex.williamson@redhat.com>
- <20211103120955.GK2744544@nvidia.com>
- <20211103094409.3ea180ab.alex.williamson@redhat.com>
- <20211103161019.GR2744544@nvidia.com>
- <20211103120411.3a470501.alex.williamson@redhat.com>
- <877ddob233.fsf@redhat.com> <878ry2a6hw.fsf@redhat.com>
-User-Agent: Notmuch/0.33.1 (https://notmuchmail.org)
-Date:   Tue, 16 Nov 2021 17:59:49 +0100
-Message-ID: <87sfvwkpdm.fsf@redhat.com>
+        id S238247AbhKPROC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 12:14:02 -0500
+Received: from mga03.intel.com ([134.134.136.65]:13940 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229509AbhKPROA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 12:14:00 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10169"; a="233679322"
+X-IronPort-AV: E=Sophos;i="5.87,239,1631602800"; 
+   d="scan'208";a="233679322"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2021 09:05:27 -0800
+X-IronPort-AV: E=Sophos;i="5.87,239,1631602800"; 
+   d="scan'208";a="592781765"
+Received: from smile.fi.intel.com ([10.237.72.184])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2021 09:05:20 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1mn1tP-007Usv-ML;
+        Tue, 16 Nov 2021 19:05:11 +0200
+Date:   Tue, 16 Nov 2021 19:05:11 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     Daniel Scally <djrscally@gmail.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-gpio@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: Re: [RFC PATCH v4 net-next 00/23] add support for VSC75XX control
+ over SPI
+Message-ID: <YZPkx05aORIvd73N@smile.fi.intel.com>
+References: <20211116062328.1949151-1-colin.foster@in-advantage.com>
+ <YZOJKZZSVQ9wvUTS@smile.fi.intel.com>
+ <20211116150404.GA8651@DESKTOP-LAINLKC.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211116150404.GA8651@DESKTOP-LAINLKC.localdomain>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 05 2021, Cornelia Huck <cohuck@redhat.com> wrote:
+On Tue, Nov 16, 2021 at 07:04:04AM -0800, Colin Foster wrote:
+> On Tue, Nov 16, 2021 at 12:34:17PM +0200, Andy Shevchenko wrote:
+> > On Mon, Nov 15, 2021 at 10:23:05PM -0800, Colin Foster wrote:
+> > > My apologies for this next RFC taking so long. Life got in the way.
+> > > 
+> > > The patch set in general is to add support for the VSC7511, VSC7512,
+> > > VSC7513 and VSC7514 devices controlled over SPI. The driver is
+> > > relatively functional for the internal phy ports (0-3) on the VSC7512.
+> > > As I'll discuss, it is not yet functional for other ports yet.
+> > 
+> > Since series touches fwnode, please Cc next time to Daniel Scally.
+> 
+> Thank you. I will do this next time.
+> 
+> For my future reference, is there a way that I could have known this? Or
+> is this just knowledge that comes with experience? The email list I got
+> was from running the patch set through get_maintainers.
 
-> On Thu, Nov 04 2021, Cornelia Huck <cohuck@redhat.com> wrote:
->
->> So, I doubt that I'm the only person trying to follow this discussion
->> who has lost the overview about issues and possible solutions here. I
->> think it would be a good idea to summarize what has been brought up so
->> far outside of this thread.
->>
->> To that effect, I've created an etherpad at
->> https://etherpad.opendev.org/p/VFIOMigrationDiscussions and started
->> filling it with some points. It would be great if others could fill in
->> the blanks so that everyone has a chance to see what is on the table so
->> far, so that we can hopefully discuss this on-list and come up with
->> something that works.
->
-> ...just to clarify, my idea was that we could have a writeup of the
-> various issues and proposed solutions on the etherpad, and then post the
-> contents on-list next week as a starting point for a discussion that is
-> not hidden deeply inside the discussion on a patch set.
->
-> So, please continue adding points :)
+It's just an ad-hoc since there are a few independent teams are doing
+something that related to fwnode APIs: Daniel due to camera work for ACPI
+enabled platforms, Qian due to a design bug with fwnode, Anand due to IIO
+drivers, you are due to PHY (and possibly others I have no knowledge about).
 
-Last call for anything you want to add to the etherpad; I'll post the
-contents tomorrow.
+I haven't asked for the others I listed above since their work probably
+doesn't cross what you are doing, but camera might be closer.
 
-[Yes, I wanted to post it last week, but got sidetracked.]
+> > It also appears [1] that somewhere in PHY code a bug is hidden
+> > (at least I think so).
+> 
+> Thank you for this information. I'll keep an eye out!
+> 
+> > [1]: https://lore.kernel.org/lkml/20211113204141.520924-1-djrscally@gmail.com/T/#u
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
