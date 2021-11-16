@@ -2,97 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55F07452DE0
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 10:23:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA3F0452E10
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 10:33:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233093AbhKPJ0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 04:26:22 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:49706 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232975AbhKPJ0Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 04:26:16 -0500
-Received: by mail-il1-f197.google.com with SMTP id w6-20020a056e021a6600b0027553e5c4e9so12344996ilv.16
-        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 01:23:20 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Y7UlQEH6EdHJbA9CWN3d6nE2lWq3kJRX9/GAEL2WvUA=;
-        b=ozJ9IiOftYLc11EnJ1F9vb+w7IdYuILDD3KXmbez05ZSqvR4ezDW7MbqFTlZlVKkEZ
-         1l3Cl53Jf5HQrzfpbHeRwkAE+I+JCpAex3/73RkgZLDLeoUaD9dU+cZZcn/KQp+FKEyw
-         tSTWGzLHeFGzRsdn8IWWNKp2sjCRyRYjsgLXzegZnc5jkmmse93L6c4ykg2Gz8v+2mja
-         Sc78Q2+n3eZsZtAiI6hWXm0TIxFWn90BdDVa2MXFuDgExKGWRQvHZQRaAKnyHq1fKOT5
-         dMwsaiw2oU0DRfrwO3WlgBP97TwrY5L0EByuDuYJuJeeNfk/KSDjdhn9Y5Be6kFqG0H+
-         XxYA==
-X-Gm-Message-State: AOAM531hW430aITfAbPVddbuGJcUGyT2AVSo4k4n/B6ujEcXyNSQlpLB
-        oz5rOKNebesgXjWOy8FREDaI96Uk/cjSOC0dcGPiYL3d7Wor
-X-Google-Smtp-Source: ABdhPJxakJsMDMwcVxWEwcQ8+Leib/kyutWGFWgbYb+GtTRCg4Mi5Dj7l0kp9aJnbqgYYoTsUrzT7NxhERT2cFTddShLbx48ibfn
+        id S232554AbhKPJgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 04:36:16 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33658 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233059AbhKPJgI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 04:36:08 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A239C63222;
+        Tue, 16 Nov 2021 09:33:09 +0000 (UTC)
+Date:   Tue, 16 Nov 2021 10:33:06 +0100
+From:   Christian Brauner <christian.brauner@ubuntu.com>
+To:     Andrea Righi <andrea.righi@canonical.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] selftests/seccomp: fix check of fds being assigned
+Message-ID: <20211116093306.wlrtk4p5rbvnrxm7@wittgenstein>
+References: <20211115165227.101124-1-andrea.righi@canonical.com>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:7705:: with SMTP id n5mr3878792iom.173.1637054599679;
- Tue, 16 Nov 2021 01:23:19 -0800 (PST)
-Date:   Tue, 16 Nov 2021 01:23:19 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e4810705d0e479d5@google.com>
-Subject: [syzbot] WARNING: refcount bug in __linkwatch_run_queue
-From:   syzbot <syzbot+6f8ddb9f2ff4adf065cb@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com, w@1wt.eu
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20211115165227.101124-1-andrea.righi@canonical.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, Nov 15, 2021 at 05:52:27PM +0100, Andrea Righi wrote:
+> There might be an arbitrary free open fd slot when we run the addfd
+> sub-test, so checking for progressive numbers of file descriptors
+> starting from memfd is not always a reliable check and we could get the
+> following failure:
+> 
+>   #  RUN           global.user_notification_addfd ...
+>   # seccomp_bpf.c:3989:user_notification_addfd:Expected listener (18) == nextfd++ (9)
+>   # user_notification_addfd: Test terminated by assertion
+> 
+> Simply check if memfd and listener are valid file descriptors and start
+> counting for progressive file checking with the listener fd.
+> 
+> Fixes: 93e720d710df ("selftests/seccomp: More closely track fds being assigned")
+> Signed-off-by: Andrea Righi <andrea.righi@canonical.com>
+> ---
 
-syzbot found the following issue on:
-
-HEAD commit:    fa55b7dcdc43 Linux 5.16-rc1
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=109339e1b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=6c3ab72998e7f1a4
-dashboard link: https://syzkaller.appspot.com/bug?extid=6f8ddb9f2ff4adf065cb
-compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.2
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+6f8ddb9f2ff4adf065cb@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-refcount_t: decrement hit 0; leaking memory.
-WARNING: CPU: 1 PID: 26140 at lib/refcount.c:31 refcount_warn_saturate+0x17c/0x1a0 lib/refcount.c:31
-Modules linked in:
-CPU: 1 PID: 26140 Comm: kworker/1:26 Not tainted 5.16.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events linkwatch_event
-RIP: 0010:refcount_warn_saturate+0x17c/0x1a0 lib/refcount.c:31
-Code: f4 8a 31 c0 e8 f5 45 38 fd 0f 0b e9 64 ff ff ff e8 49 6a 6e fd c6 05 06 40 f5 09 01 48 c7 c7 80 fe f4 8a 31 c0 e8 d4 45 38 fd <0f> 0b e9 43 ff ff ff 89 d9 80 e1 07 80 c1 03 38 c1 0f 8c a2 fe ff
-RSP: 0018:ffffc90003537b68 EFLAGS: 00010246
-RAX: 26aa35cdf4075e00 RBX: 0000000000000004 RCX: ffff88803baaba00
-RDX: 0000000000000000 RSI: 0000000080000000 RDI: 0000000000000000
-RBP: 0000000000000004 R08: ffffffff8169fb82 R09: ffffed10173667b1
-R10: ffffed10173667b1 R11: 0000000000000000 R12: ffff88807ccac000
-R13: 1ffff1100f9958b7 R14: 1ffff1100f9958b8 R15: ffff88807ccac5b8
-FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f217b0e6740 CR3: 0000000019e96000 CR4: 00000000003526e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 000000000000ff46
-DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- __linkwatch_run_queue+0x4f5/0x800 net/core/link_watch.c:213
- linkwatch_event+0x48/0x50 net/core/link_watch.c:252
- process_one_work+0x853/0x1140 kernel/workqueue.c:2298
- worker_thread+0xac1/0x1320 kernel/workqueue.c:2445
- kthread+0x468/0x490 kernel/kthread.c:327
- ret_from_fork+0x1f/0x30
- </TASK>
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Thanks!
+Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
