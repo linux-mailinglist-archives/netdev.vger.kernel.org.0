@@ -2,60 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C728A45387A
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 18:26:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9E7F4538A0
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 18:36:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238745AbhKPR3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 12:29:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52866 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235906AbhKPR3l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 12:29:41 -0500
-Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0DD2C061570
-        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 09:26:44 -0800 (PST)
-Received: by mail-il1-x130.google.com with SMTP id w15so21222263ill.2
-        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 09:26:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-        b=aiszIOjFGZ+Ed+0/vsAzYgPCATpDsN4yLoVBIGviy3c0tZUHSNQRyxKisRmb8CRVGR
-         yF9YfziejLyZMNEtH4fWHj5ii/PSeTtHvnrJ8SMJnIl1jB1zC//1WA5T+jJxh9Px2srT
-         +SLyvdRDw9sM/psC3PdnSKjNHpj59D1OrSh0OJ4nvnhAtY9A3mbECYGwmmYcxXvor25r
-         co0onzRQGV/sZYblautz/ZFgHHV69b0evg6d9ejzgBU9n9HlayT6bXW8mYJIGl643eaT
-         TU4CpfOKtNShj1/WEPqGTVesDDgV2TeWjGf0tVnfXifIcfY4ZNbn5vsDPwNg63oC0gvt
-         S1jQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-        b=v4YaUvezsQFpQVXNB0pj+/l8hJ5HuKMZ53CuLwzG5eSuz8dBt7Zvk9pmb4lUkS6pu+
-         vUK+GYHdK4rbGwI4KosoSlkzl+mA+pydoqxb1XZp9H8D8bAewbVpbrLvmEObslQbmY/7
-         CppXJZ13pPgb0DN0DuLWTSi/ktClShD85HWodWSbHShLFkT6QfZPla2lZ9x2/gOjvfHn
-         0IeTGplsNNqc51Qzgxpo8/2JcS+QQ+sZy95HbTJ3afZxVdG922R26NWjsVpfN0kcVqBa
-         AzBcnV3HGNM6uNwj51PYap4sYlB000J3utuOxCnHoRvyYO7S0HReSamkmh6N89nfrknv
-         nz0A==
-X-Gm-Message-State: AOAM531bslHShxJLpKjVtZmm7zPojbnOGQvOGhwvNR6VvLiOvebhWnfa
-        KLNw6nR9I+MvXL8S9cjXjodF3j3YYjbABOTmkBQ=
-X-Google-Smtp-Source: ABdhPJxQuj3ZKIwE/bbxhhBBN6k+t85rkppUOUT6Zrq+JyuL7uPuDy9/fnzNmrHzO1gN5oH8a10P/i9LpCG19ClFxHY=
-X-Received: by 2002:a92:7607:: with SMTP id r7mr6088981ilc.317.1637083604068;
- Tue, 16 Nov 2021 09:26:44 -0800 (PST)
+        id S238944AbhKPRjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 12:39:37 -0500
+Received: from relay3-d.mail.gandi.net ([217.70.183.195]:47763 "EHLO
+        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233537AbhKPRjg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 12:39:36 -0500
+Received: (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id 67A7560011;
+        Tue, 16 Nov 2021 17:36:34 +0000 (UTC)
+Date:   Tue, 16 Nov 2021 18:36:33 +0100
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Colin Foster <colin.foster@in-advantage.com>,
+        =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [RFC PATCH v4 net-next 11/23] pinctrl: ocelot: update pinctrl to
+ automatic base address
+Message-ID: <YZPsIW2bfbBThtWj@piout.net>
+References: <20211116062328.1949151-1-colin.foster@in-advantage.com>
+ <20211116062328.1949151-12-colin.foster@in-advantage.com>
 MIME-Version: 1.0
-Sender: residonn000@gmail.com
-Received: by 2002:a5d:8988:0:0:0:0:0 with HTTP; Tue, 16 Nov 2021 09:26:43
- -0800 (PST)
-From:   "t::" <mnclbrwn@gmail.com>
-Date:   Tue, 16 Nov 2021 17:26:43 +0000
-X-Google-Sender-Auth: oQ16HHRY4JVLnG3pNknWVC5lnu8
-Message-ID: <CAA2rHC0faPvcRr4de5qWUS7STA3YCvE=vg0SLX39SHaMCa-HdQ@mail.gmail.com>
-Subject: =?UTF-8?B?6K+36Zeu5L2g5pS25Yiw5oiR5Y+R57uZ5L2g55qE56ys5LiA5p2h5L+h5oGv5LqG5ZCX?=
-        =?UTF-8?B?77yfIFlvdSBzcGVhayBFbmdsaXNoID8gLi4uLg==?=
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211116062328.1949151-12-colin.foster@in-advantage.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
+On 15/11/2021 22:23:16-0800, Colin Foster wrote:
+> struct gpio_chip recommends passing -1 as base to gpiolib. Doing so avoids
+> conflicts when the chip is external and gpiochip0 already exists.
+> 
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> ---
+>  drivers/pinctrl/pinctrl-ocelot.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/pinctrl/pinctrl-ocelot.c b/drivers/pinctrl/pinctrl-ocelot.c
+> index cc7fb0556169..f015404c425c 100644
+> --- a/drivers/pinctrl/pinctrl-ocelot.c
+> +++ b/drivers/pinctrl/pinctrl-ocelot.c
+> @@ -1308,7 +1308,7 @@ static int ocelot_gpiochip_register(struct platform_device *pdev,
+>  	gc = &info->gpio_chip;
+>  	gc->ngpio = info->desc->npins;
+>  	gc->parent = &pdev->dev;
+> -	gc->base = 0;
+> +	gc->base = -1;
+
+I can't remember why but I'm pretty sure I did that on purpose but this
+indeed cause issues when the chip is external. I've asked Clément to
+check, let's see what the result is ;)
+
+>  	gc->of_node = info->dev->of_node;
+>  	gc->label = "ocelot-gpio";
+>  
+> -- 
+> 2.25.1
+> 
+
+-- 
+Alexandre Belloni, co-owner and COO, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
