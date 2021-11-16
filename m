@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EEF4452AB4
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 07:26:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F29C452AC6
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 07:26:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231510AbhKPG2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 01:28:41 -0500
-Received: from mail-bn8nam12on2092.outbound.protection.outlook.com ([40.107.237.92]:48451
+        id S232011AbhKPG3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 01:29:41 -0500
+Received: from mail-bn8nam12on2099.outbound.protection.outlook.com ([40.107.237.99]:36352
         "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230347AbhKPG1A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Nov 2021 01:27:00 -0500
+        id S231181AbhKPG1d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 01:27:33 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ada02No2Bl14pUcezpmePNI7FVrCriF82l+iFi7ahMFq0+qVccH2/fo187drZutaZ3/L/xWiowZSCEzTKL6qb65/HlLfRZ2NhnB1OuZCrsakHxRzT52DFJ6WOCCVR0eis1RmcxjZ0ho1e2eBSy1wc09yTlo7M+oGWRrr5DnxSItJhbIbyuY8etLgEcMR6VH0S18AoNRqGKgfq10I5YFbF0CXjSofwWLPeOlN32CZOscnKQfB+algAEh+wKX7ejgj9yYEfnX/PCjjWBU3t6LVSfFg9hgwgLU2sxvcAYC8nI3YVQKu+KZ7yKhoCsOpljQpo2HyIY3EtKB7l00P864JIw==
+ b=Nhm/fxRLMv7+GnHn5OHZ5XR25rMyImX/Llm/Lj+Xrjrvsh5rPu9Iw15MYveB8NtauoXEqF8ybMempOimfBWcXnx9dQODFaOy+VuASRkUrhCJsG8NbCu4EkGgGgJZTSqb3c7/17bnNDlSr1WVLxGwGn0fwuAVT7GXRka5sISJlP1xA6NOWLk4CVBLalSnYoVXgXjpwxsod/NmWi5mXty3z+WvwM9YIFo4Szp/ZVOQQgkI76fBH3yCgxh8UikcdYg3rIDgRR/6u1LBOyJmQJ72K0vYaKdjduLVi2FUYFNnVN3SqLuI+y9xvPs27pEu2nBAQecnuRWHj26wwh+oWI+kFw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xsQvCcoN1ya9H9lyAdQq4tD5YpOPIRUXipAnY7zRVYA=;
- b=B7QO0NeWMYy7+x+M24omIE0wr5jUZ/yMv0HcDqAc/Z7hA6JXp40R/ieT8p25NxYueG2s2MNjZ99obQJlow60aXBJE2zIIJoqxzVFD27tslnkn8uNpIMkqPIrrKF5840wxocs6+rZu3X/A1dPg5D7ySO1S6O75y87AEjIbtvmb7mXjEqaQRKqMhGfTucFsOYPhafC0pr+Rr5+/34b3yAHhDdKEmUC8NiNIA+QmFh/P7g/7vF8WeFiVbqH3z93rv85oeEtpOIGZMs3frzuqhsxkPWhlTFd6vn8QNMcpGhrXpvFTRaCha0uAcdId/6kaEVryQFWRyrHxB/uCob84WQ3GQ==
+ bh=toz/kREwsP45vdGNTdO8e4m3bTuuZYfc/3+TCfHILJk=;
+ b=bKqTjm/jxZv4oAOHIhID15uFXQb26am2EBox2tKytl4lcSqbcyp1bAiu3deMaB21354g3I8t+M+scpsNE50QkqPAj6eTNWZFcCRdp7NHFzSOYTOi10TqNVB84r90u8GgS7HluQgTTR9VuWofUTMRBHHmpb+zBaiU2kKSxWhaasVJlnqYGoaKyI+fhpbquE8ysJJEPFtuEDzVTN7w+fUUCvUuWBJwB0zGC94c4BHc04eolcF2st4VU4eyX0+lPKVxPP923R4Tr6IL65qizPMpwvOLdXPA/Xrh86nYW9AsRM3DiwdyPzPTbkLRxeCuUGFinxzMyOwdIs+q0i5bFPCDuQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=in-advantage.com; dmarc=pass action=none
  header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xsQvCcoN1ya9H9lyAdQq4tD5YpOPIRUXipAnY7zRVYA=;
- b=GH4dSUwE3MHWsZE9vzoo3J6N0zL6743pLAhfInt182KEjc8Fc3upyr80LvQh8acGqclvEUcZ0JQcv7Cv2tdfyASL1AKCpuYAJFhnYfRp+V9fj+BFEXfE9ReGdDNSSZ/MzNZUqQoHz89Me0fCuNycgcYyoTNtavNEmzDU2CgunWw=
+ bh=toz/kREwsP45vdGNTdO8e4m3bTuuZYfc/3+TCfHILJk=;
+ b=fAJ8MT1NruGCMg2wGgvZWt/ZdT1c6xvg+N5q7wL/6luvIASFQQuf97dm6jW+Bhg9Wgn+3x6LTMfA9jqUYlsSu7jVJrLzhw17js8epx6UdKVKFfk0/ptTO/fDUuTqRnPhNC0E974SmnVqfnQxFeDddqtg/bngivr7KTXKvVg873g=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=in-advantage.com;
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
@@ -60,9 +60,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Philipp Zabel <p.zabel@pengutronix.de>,
         Heikki Krogerus <heikki.krogerus@linux.intel.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [RFC PATCH v4 net-next 21/23] net: ethernet: enetc: name change for clarity from pcs to mdio_device
-Date:   Mon, 15 Nov 2021 22:23:26 -0800
-Message-Id: <20211116062328.1949151-22-colin.foster@in-advantage.com>
+Subject: [RFC PATCH v4 net-next 22/23] net: pcs: lynx: use a common naming scheme for all lynx_pcs variables
+Date:   Mon, 15 Nov 2021 22:23:27 -0800
+Message-Id: <20211116062328.1949151-23-colin.foster@in-advantage.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211116062328.1949151-1-colin.foster@in-advantage.com>
 References: <20211116062328.1949151-1-colin.foster@in-advantage.com>
@@ -72,106 +72,99 @@ X-ClientProxiedBy: MWHPR11CA0028.namprd11.prod.outlook.com
  (2603:10b6:300:115::14) To MWHPR1001MB2351.namprd10.prod.outlook.com
  (2603:10b6:301:35::37)
 MIME-Version: 1.0
-Received: from localhost.localdomain (67.185.175.147) by MWHPR11CA0028.namprd11.prod.outlook.com (2603:10b6:300:115::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.26 via Frontend Transport; Tue, 16 Nov 2021 06:23:58 +0000
+Received: from localhost.localdomain (67.185.175.147) by MWHPR11CA0028.namprd11.prod.outlook.com (2603:10b6:300:115::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.26 via Frontend Transport; Tue, 16 Nov 2021 06:23:59 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e916da9a-195c-41fb-264e-08d9a8c9ac9d
+X-MS-Office365-Filtering-Correlation-Id: 9a505f9a-d6a9-4f5a-81eb-08d9a8c9ad11
 X-MS-TrafficTypeDiagnostic: MWHPR10MB1501:
-X-Microsoft-Antispam-PRVS: <MWHPR10MB1501E39A02E59CF3A8BB8E32A4999@MWHPR10MB1501.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2657;
+X-Microsoft-Antispam-PRVS: <MWHPR10MB150143068A6F6A0ADE67F1AEA4999@MWHPR10MB1501.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QWLnwdr2GCIiayFpDcW6MqHJRfFg/Non6mNJqklBwUX+plxfjoepDyZ3NnMqvcnORy+sJHz7Wm6EYV8t0f2u17Vt8ArpBCWCr3+ey2NwPRTM7Ftel9JZ/0KBumkeaW4GauSMHJ9n9mQK9fy24MrmrYbBQOMapRD3hRA0JIzhfjB7jc1B5BSQQ59jWVa2rA8huPSdPHCPczR4/nBzyZ626uRfYW+ebl6NmLHJaxUweUgWkRPMEDpwxGMuN0/F/o+YFdPpvtE/9figMrUgpHpfUl1GoHHyzEbV+uhwFL45174LgTbuzow1rNXxzkDTCFyj0Np6NVitkS+G6Wv5u+BJUwiv/IUDb8K/kMg8Q3zq3WwGdRVgYstoLr82yFmpBkV9e/61dKXQ1QkbEaePgNXmgFxRD8VlOtNg6lw/eYkWPRfZ8rMuv3mEwloNyQZoplnA7sjlkU4XTyjObw8dGHUSaeJEfgzg6KVkUIsM1W8GPFtTsmLu48LR3E/+6Tu3rC27BikwNbO1tLYWSfXiVSo/M/NtdhOeuX+wvslvDLTRZzdAor+94K4w4LfK86a33g1lHTvrDZfYDsHBXfWIgykUtPJmp+Z3SelwjCgtee+By66rIkEUVpV+1ZyJBXeAnp+vFSct/5s0nwwvYPeUIlgO9wUbOZfcJvRy1jj96nd20vI9JNd9/bwygLDeRtkoQ1qG93aqqn8FfVQnLPIoGNXJhA==
+X-Microsoft-Antispam-Message-Info: 0rcLOJrc0wDmKl/6UGsDY395uEWNPgzjYJsKb8XmcxHTQqY32l7N7FWtQ7Lc79x/ZXlpz2yBMzrK4372bAxHyXrKAH0Njx7l2RmQjGjWboVJZITubWxkU4IDuVpNW1kKFqjWwiP3XrBiWfqm7xlaemZ+ulU7Fi5sJ0qS4SEkrWq5iuNU7zY5HKtL6hX7ScYFpo6wpYz+FTcNNcardcViDy1Q7uHA5h4sUWiGKhmN5t/8kEFCXDCWKZfwXM9mU48xLxXZxb+RN5IKaUI8XV6o/vUHF7Xj0avwMn0c4Lf1IzWQMH2rVY4PV7ci+zkrKCRyRDbrQgXdweQVbIErmkNfKQhDfTOPGfvJlXoBecoOJfQcaZiUV62Ljlo7hQvuz+xSRAv/lKcQ4KXjwKq+V3DSacrEub0eeNwnCF9b+67QO0esNu/MuojgllTDqqh15elkpI5z3a9xgequIGGgFDClnHCoKpmp6pVkAhtOcr+/KTgs4EGzYKT2jqQhFc5I1GXKY28Rqy3sPkYNa7jVCEWG3c0MBlxgyBQfxVmAWs5k639DNf9k7ZdylIJf5VuvA92ii3lOTNop6dILbV5vb38GCabiybGPSBtOaV1Cu0ive4Xl3If2z33VYDXZ7LcsGJh7ABBcBy8Efglgx5u+7BDC/F7cg+fraGCyybURGvt2zlmq6BiDYs0XZuPN3mKd8aw5gC5T9qLtrgaXPqqqV8qVTg==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(136003)(396003)(366004)(39840400004)(346002)(4326008)(2616005)(956004)(186003)(44832011)(7416002)(6506007)(1076003)(26005)(86362001)(6486002)(38350700002)(66946007)(54906003)(36756003)(38100700002)(316002)(6512007)(5660300002)(2906002)(508600001)(66556008)(8676002)(66476007)(6666004)(8936002)(83380400001)(52116002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?68OxWCR6wt3ZjsRnutmBZheoW2+qvrobTZraqTNII4M1tKP+F6dXU59MaABa?=
- =?us-ascii?Q?JEQWSVEDYLSvLfzblj8/qg0x9nTsGomye/iXGYRqqFvvtztEwotMsCmFJKDc?=
- =?us-ascii?Q?9UcG4myfnhUSVzCiIrhgHFk2URDy841C6g6pLjuCVBa+H9EWWtcs1HlgymoP?=
- =?us-ascii?Q?2X0TtEENBX5oWXXMcROXhgEf+Uea/Yul4luriQhB26b0GAjZJRlgjgIGs0Bc?=
- =?us-ascii?Q?HLn/s6MqaXmv6k/p7csyLvqLFBnRJvpD4sIgxlYoJwrnXmAOk9nyl0ZCLKr6?=
- =?us-ascii?Q?MuFDeaKQ+VgVCnfk7h8TGYJpUR6xGmZd2FvPhFP77E92EyJM5ORHSmlDqPEI?=
- =?us-ascii?Q?mG2jMOvXXY1EBayReUj+NpAkx6aqggcMKZOgnE/6+R+wxL9/x7/lf1bVtrjG?=
- =?us-ascii?Q?Q9asAcCmx9vJGhxC2EfpHtYiyHSDc5jQE9B/0/Uw7RgQo7F1EPfoueukAOS+?=
- =?us-ascii?Q?sAGum1KT2E33iM6zpprTypZjv8KjRcY3CnFxUPqfh5A0pTd7YzqsqiuUocxr?=
- =?us-ascii?Q?rDwDrHEUMPM4RxZdeORlW3h5jwt6N4s1WNo+9w/cjoTkfq0VB+8JhfeqDmCt?=
- =?us-ascii?Q?6/VJRYe6ParhA0+Zt2WcvNkJJzvUOICUZ9YBPnTwk8HPZhnDDnF44GsvJoxD?=
- =?us-ascii?Q?8P3u9GU0xebJOVgSZf3Qd+VR7wsIBvKAC39EKdQ4wCPqCljd5DHAfnIER/ez?=
- =?us-ascii?Q?ANob6MrcwtaJYoGvuG/+yGf0i4fTKxb4/xp3obvPj0RDHxeQhi6zI5lV4QyS?=
- =?us-ascii?Q?azEZEVHfCzfnwQB+17M+ps8aiiqUEwcQFQmW6aPMceMAZMPM0tXAabJOTWBM?=
- =?us-ascii?Q?Eu2oni09xTjD+PY/2bMTKZ2OtgD7EWZ6eswiQ7T0NDwtGizX/Xt3RRKSP6tn?=
- =?us-ascii?Q?WrWV7aRE2LWtvoUTAwTtTM383lnKsz98mvJDa9341LbZzBGmLcX05fx0xfMZ?=
- =?us-ascii?Q?jMQADtYxiRUDAqyeAClmvK0hzz6JDXGDn7oELp5Vil+b9wEr/SZ2vo4iOUxX?=
- =?us-ascii?Q?MvI2P9ITxwCeTI1BGmF+zqa1spYC45S3+XU+Y9WmE2db36kiyicWUEM+w9o7?=
- =?us-ascii?Q?wvNuT7fW6UPSplMVfE+6fDJ4l+6Wzcbqfd9Ok/N7EuC0GyBKjcVOyPGNSDyr?=
- =?us-ascii?Q?BzL0ap5/NWIBjrslgh8pQakouEt7N5qfXAA57Rb4ZihN91qhjRfHO49o9JH5?=
- =?us-ascii?Q?u0MJQFDXifKYIA6qBBqLmvRLFw1/u3gAI62Yp2Scx//DS88lTdqx3mTYbCyx?=
- =?us-ascii?Q?b7qFZaq8KuuUFFd5EXOZCDMiU77F9ZHKemKiXN3puftAldzX/VzXrNvj18J+?=
- =?us-ascii?Q?YwEHakENVTX6LXM/V3dkM8jki7VQw8Ua6a3a4DcCs3RmwBJquBaNa+O7hKbZ?=
- =?us-ascii?Q?aeegREV+TT06Yu7Tm41V98ctzm8y6yEHXDzTuZVxanhm/ualeRSJP4UE4ttY?=
- =?us-ascii?Q?rbTk26iG7jzIsRhpkZLEt092U+B2DVQQq5dBtU3IWkqwv8NgpPKMSFMC3TTb?=
- =?us-ascii?Q?pQ0bweq3+qcCoeIqUFd2Q8CwVj3W2Y8cjUEzXIo9UZi19ZQqBkWRzN1BQIQX?=
- =?us-ascii?Q?zYU9OFpPn5rsMF4wO+hV4yIqhz/DCm/CQj5AlxxXT4NxLOCD+6T0JHtRev/q?=
- =?us-ascii?Q?PaoaNCW9dGcMXTVd7AL4O1Mt7hr2PDMk8LfLUeIKeCmzUeYIw4ke9j8oiRHR?=
- =?us-ascii?Q?38vGmxVDwdyOF2A4OHLp+NpQg/Q=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?WeSiCUSvtvjxoDPN8SpS22Dif9mZcENxURzKD41iPjV4sCVQhz9Z4KS3xY99?=
+ =?us-ascii?Q?ejwjqI1/RrKkVaIPcZpA+dKx/P5DMzr9yLDOyLwS/b4xyTnEYSA11DWI90TI?=
+ =?us-ascii?Q?tQrZqwTfZyVELJfG1oQWac+/EpBvL+RvJT1bYffrmTcnDggL++TIZ4At0vKF?=
+ =?us-ascii?Q?l+QqaWrDppT4slRR0Pauek6couWsoEIriXEmxvBebQvIMMXTifWcBQAIaMFs?=
+ =?us-ascii?Q?mmqWAU/DEwxST/gfOAKfKi5EkET67S/5P+h+BJD5a7n2isIyESTBaN2grH5/?=
+ =?us-ascii?Q?xoziw651pO/KDFywjpTjTsebYVYTSZxBjgOrPqnJ5Jf0G1NXALigj4DMrrg0?=
+ =?us-ascii?Q?stmrgir5BcETffRaU3d2E3+1OSQJNRxYrBCHPH5cDAkMpZi7Q5TowxYaF7c7?=
+ =?us-ascii?Q?uLrpwf7jNtyeuL/3hrB84G6/RlCJB2yYTswwPPnw4RQ1HMKQb0TfOfoSwdDS?=
+ =?us-ascii?Q?5fKmnJoXn7MBrGEvrE3z9ZnG5bH54Dyh7Yc8Vy9Hm573TtZEAmwAC0EwIhyN?=
+ =?us-ascii?Q?5ClbYmoEzmTBMYo+ocW8YnA1gwiXTfff2C1CR5unnIGpnmJj5WGBrlgLkj4m?=
+ =?us-ascii?Q?Zh4C1cPPsxZ1Ep486O8/rp3ixXhZuHM8S8zIZq79kV9DCMz3mFF0Fbhkj8PY?=
+ =?us-ascii?Q?/uzZ1uheuMPCRpuiciyLSzmCWJ5mY5nw210USkTWJDsgTtnfN/pMgE9eRX75?=
+ =?us-ascii?Q?ObGrarhTf2DXNtuvx2rVdZhLC2k6Tknc73KRzR643K2+ujldzT+CjcMukCmM?=
+ =?us-ascii?Q?pXaUFVReD6Np2uGbcVRSZFnj0e3R5U3ayf6R3aLl6mLSapl3/+leC3FxtqVs?=
+ =?us-ascii?Q?eyylq0V+B3VQZfWIPPGCfU1OKlFMTGsAdG0JZ4Pzp3pksbNqbl7P4dbswddG?=
+ =?us-ascii?Q?evjROAH0UBOVdfqiC0T2p+f53wM/GwqjavAvyyQKtH8iO5gvhp3RtmNWp4Ad?=
+ =?us-ascii?Q?l6JGRgQ7y2Sma78PSw8cQemGyiFeLh6BSO2L7xfYcQUvvqZjRIXZfAkn/8QR?=
+ =?us-ascii?Q?cI9oIbWZVRa1uu20k0tXD0yF33laTK74s8kwCcQX4SOTt7eSkfv/ACf4GR33?=
+ =?us-ascii?Q?JCDRsL6rMhyQ99UlCJGdayMPQrt+9YE69n2l9S+j09TpjTul/uIpoL3x1mTm?=
+ =?us-ascii?Q?9xGoIp/iWJt3BY3RmDUTfCcdOVTgGBKCPNhKflE8BoB+t/GI+7OnwFMW22t8?=
+ =?us-ascii?Q?FAnEVNKkd9dE/aaxqks2OVW+ebt/DROZLMRk5ZN48SUXNLFDmJIwKGyGElcN?=
+ =?us-ascii?Q?swCL+PrfaW9KnqgRMPedPJihcLeScDTzQkYxBWxUCJc42ZOHB2GWocY97uS8?=
+ =?us-ascii?Q?Edkjs2H1v5szOGGHVaiiHT2XG96u3we+XKUd0sZzGUoZKQdzesqtwyB8uBoV?=
+ =?us-ascii?Q?x9AW5PQp662SKnlYtBnB8Yt78e/8yRW/L+qMYPW2IdETuLFev41tAGFReCKy?=
+ =?us-ascii?Q?/8eeN+fPVgEFzzU/Wo2Tq7zYN0gx4TQqW9GPXqc7W8cDd8ney4EfEq/UVzsB?=
+ =?us-ascii?Q?1K38p3x66DdTLW0WI8nPOQGdackPFu5DK6UXE5tSSNUnGWQz9+FEU7YKLv1e?=
+ =?us-ascii?Q?C0r8urlrQnq3yx+fnJxIbe/MKuUGdetlUlN5cUgTtZXnY/MD/ba4VNYAw8DQ?=
+ =?us-ascii?Q?wtFW8iI2NlaYQQ0cs5wIJ8BA+XArrlU7AoGRST5YnE4MMYCFKXgiM2S2+yQE?=
+ =?us-ascii?Q?V5P7u0mXjCnpcsBSRyh3o60cdMs=3D?=
 X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e916da9a-195c-41fb-264e-08d9a8c9ac9d
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9a505f9a-d6a9-4f5a-81eb-08d9a8c9ad11
 X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2021 06:23:58.9267
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2021 06:23:59.6873
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: q7GkHt8hVjG44/FuFgaBSKkL0T4sM9gjlkeepuukjQUPJeHN+A3DsB+2Vmout5K8rVg9IBzKDKvSUd/+UcVGV3Vn/uofZ8XLKQ7yoI37EuQ=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1Q03CBOEP3dr8CgSiLPORCP2zDNFh54qVL1Xf7kToPhutU6xJ46swX7fLzOo56QKNQjvQ4zv8IFiMZiibZk09xGIDPxXMppU9yAORhPayiw=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB1501
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A simple variable update from "pcs" to "mdio_device" for the mdio device
-will make things a little cleaner.
+pcs-lynx.c used lynx_pcs and lynx as a variable name within the same file.
+This standardizes all internal variables to just "lynx"
 
 Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
 ---
- drivers/net/ethernet/freescale/enetc/enetc_pf.c | 14 +++++++-------
+ drivers/net/pcs/pcs-lynx.c | 14 +++++++-------
  1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-index 125a539b0654..3d93ac1376c6 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-@@ -829,7 +829,7 @@ static int enetc_imdio_create(struct enetc_pf *pf)
- 	struct device *dev = &pf->si->pdev->dev;
- 	struct enetc_mdio_priv *mdio_priv;
- 	struct phylink_pcs *phylink_pcs;
--	struct mdio_device *pcs;
-+	struct mdio_device *mdio_device;
- 	struct mii_bus *bus;
- 	int err;
+diff --git a/drivers/net/pcs/pcs-lynx.c b/drivers/net/pcs/pcs-lynx.c
+index 7ff7f86ad430..fd3445374955 100644
+--- a/drivers/net/pcs/pcs-lynx.c
++++ b/drivers/net/pcs/pcs-lynx.c
+@@ -345,17 +345,17 @@ static const struct phylink_pcs_ops lynx_pcs_phylink_ops = {
  
-@@ -853,16 +853,16 @@ static int enetc_imdio_create(struct enetc_pf *pf)
- 		goto free_mdio_bus;
- 	}
+ struct phylink_pcs *lynx_pcs_create(struct mdio_device *mdio)
+ {
+-	struct lynx_pcs *lynx_pcs;
++	struct lynx_pcs *lynx;
  
--	pcs = mdio_device_create(bus, 0);
--	if (IS_ERR(pcs)) {
--		err = PTR_ERR(pcs);
--		dev_err(dev, "cannot create pcs (%d)\n", err);
-+	mdio_device = mdio_device_create(bus, 0);
-+	if (IS_ERR(mdio_device)) {
-+		err = PTR_ERR(mdio_device);
-+		dev_err(dev, "cannot create mdio device (%d)\n", err);
- 		goto unregister_mdiobus;
- 	}
+-	lynx_pcs = kzalloc(sizeof(*lynx_pcs), GFP_KERNEL);
+-	if (!lynx_pcs)
++	lynx = kzalloc(sizeof(*lynx), GFP_KERNEL);
++	if (!lynx)
+ 		return NULL;
  
--	phylink_pcs = lynx_pcs_create(pcs);
-+	phylink_pcs = lynx_pcs_create(mdio_device);
- 	if (!phylink_pcs) {
--		mdio_device_free(pcs);
-+		mdio_device_free(mdio_device);
- 		err = -ENOMEM;
- 		dev_err(dev, "cannot create lynx pcs (%d)\n", err);
- 		goto unregister_mdiobus;
+-	lynx_pcs->mdio = mdio;
+-	lynx_pcs->pcs.ops = &lynx_pcs_phylink_ops;
+-	lynx_pcs->pcs.poll = true;
++	lynx->mdio = mdio;
++	lynx->pcs.ops = &lynx_pcs_phylink_ops;
++	lynx->pcs.poll = true;
+ 
+-	return lynx_to_phylink_pcs(lynx_pcs);
++	return lynx_to_phylink_pcs(lynx);
+ }
+ EXPORT_SYMBOL(lynx_pcs_create);
+ 
 -- 
 2.25.1
 
