@@ -2,85 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AED5D452907
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 05:14:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBFFE452895
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 04:31:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242869AbhKPERl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 23:17:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40448 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241086AbhKPERg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 23:17:36 -0500
-Received: from mail-ua1-x92a.google.com (mail-ua1-x92a.google.com [IPv6:2607:f8b0:4864:20::92a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB8BEC1FE13B
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 17:07:30 -0800 (PST)
-Received: by mail-ua1-x92a.google.com with SMTP id ay21so38805188uab.12
-        for <netdev@vger.kernel.org>; Mon, 15 Nov 2021 17:07:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0v9/w1kwlZe3Y9CHxIJ95jhpL8Uq6xy89EP65EB4GHE=;
-        b=ALaZ4vVRfcHQAkTsI8ASUsFGHmwLOMJSuIiIsJ45eUKW/brbgm7GRmyaQ1HIhVozZk
-         zAxVem/ZO7o33RA/vO6xVyC93QFSOpRsCLQq6kSnzx9hiickXKnvDZ04Z5oUnQSRla1B
-         VPZ0l60pIr9fVtpCbjZVM+6qLB1Da/Yp239wOeDH+/PreWgHTDYVpKBs20/sc1y9azeC
-         n66Rj67mzQEJ8SlkA+4rtuW5nsG6AGUJz+EJQiamncBPHNc2s0cszkA8zY8CcldrlLs2
-         Lcbrfty/yg7cZnoZtoTlmyPQ8kFSHhMzdbS0BWsUfFrZtScf380oXtd6qqs3mOC42pUH
-         MjHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0v9/w1kwlZe3Y9CHxIJ95jhpL8Uq6xy89EP65EB4GHE=;
-        b=gMyn3ZVD6Hg5ONOsjjpr8ztQjqAJJFLUmPJUVIQaBbfs7HssN8of2wWciNiRiv2lc8
-         zSqgMrgIS/K7QZFuN6hh2vLQC/25XCsBpJJ+7sw82t6HwwwjJPP0H7DzrU6QLW8kL+q0
-         jdektOiCKmZ649pyvqoK+vodZWFbUAUNEHxfJVq/8ueplPrijVNHflnuVCgb75l9Thd0
-         x7te0kFpBbHzb07gdfCqRh9xHk8WamLb5I8bxzKSZ8bOqfo/tRMCYsg/yhFaE7qb+LLA
-         BF4/RFoRIdxWULfZUW3xSaVGl3HcoRECMH92e/ZfFiW0TRHOPsGze5IMhGjpoy5T9wfU
-         XX8Q==
-X-Gm-Message-State: AOAM5304koDp3WxDIrQsO/hloQoAafs17Jbpfo9ssJw/AszXQu8ishl4
-        qa4AS6lDb1iiwwo010/2PAb5dkcHjFTzVjLfYDlzntoTDx0=
-X-Google-Smtp-Source: ABdhPJzbcWmlRLdA6MIM0qLD1PKwDmCChyk0clrDxyXB80Eevf0CCpdAoYHBlF/79xHquhLQCeGojNnkcd5GgJc5A7Q=
-X-Received: by 2002:a05:6102:d8d:: with SMTP id d13mr49477683vst.54.1637024849982;
- Mon, 15 Nov 2021 17:07:29 -0800 (PST)
+        id S1346957AbhKPDey (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 22:34:54 -0500
+Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:48912 "EHLO
+        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1347205AbhKPDd7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Nov 2021 22:33:59 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0UwnkGTh_1637033457;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0UwnkGTh_1637033457)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 16 Nov 2021 11:30:58 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     kgraul@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, guwen@linux.alibaba.com,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH RFC net] net/smc: Ensure the active closing peer first closes clcsock
+Date:   Tue, 16 Nov 2021 11:30:12 +0800
+Message-Id: <20211116033011.16658-1-tonylu@linux.alibaba.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-References: <20211116000448.2918854-1-sdf@google.com>
-In-Reply-To: <20211116000448.2918854-1-sdf@google.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-Date:   Tue, 16 Nov 2021 01:07:18 +0000
-Message-ID: <CACdoK4L-72V1wWDBZPyLMhqUE0NVj+9BEq74Kwq+PZ6q4cGg5g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3] bpftool: add current libbpf_strict mode to
- version output
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 16 Nov 2021 at 00:04, Stanislav Fomichev <sdf@google.com> wrote:
->
-> + bpftool --legacy --version
-> bpftool v5.15.0
-> features: libbfd, skeletons
-> + bpftool --version
-> bpftool v5.15.0
-> features: libbfd, libbpf_strict, skeletons
+We found an issue when replacing TCP with SMC. When the actively closed
+peer called close() in userspace, the clcsock of peer doesn't enter TCP
+active close progress, but the passive closed peer close it first, and
+enters TIME_WAIT state. It means the behavior doesn't match what we
+expected. After reading RFC7609, there is no clear description of the
+order in which we close clcsock during close progress.
 
-[...]
+Consider this, an application listen and accept connections, and a client
+connects the server. When client actively closes the socket, the peer's
+conneciton in server enters TIME_WAIT state, which means the address
+is occupied and won't be reused before TIME_WAIT dismissing. The server
+will be restarted failed for EADDRINUSE. Although SO_REUSEADDR can solve
+this issue, but not all the applications use it. It is very common to
+restart the server process for some reasons in product environment. If
+we wait for TIME_WAIT dismissing, the service will be unavailable for a
+long time.
 
-> v3:
-> - preserve proper exit status (Quentin Monnet)
->
-> v2:
-> - fixes for -h and -V (Quentin Monnet)
->
-> Suggested-by: Quentin Monnet <quentin@isovalent.com>
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+Here is a simple example to reproduce this issue. Run these commands:
+  server: smc_run ./sockperf server --tcp -p 12345
+  client: smc_run ./sockperf pp --tcp -m 14 -i ${SERVER_IP} -t 10 -p 12345
 
-Looks all good, thanks a lot!
+After client benchmark finished, a TIME_WAIT connection will show up in
+the server, not the client, which will occupy the address:
+  tcp        0      0 100.200.30.40:12345      100.200.30.41:53010      TIME_WAIT   -
 
-Reviewed-by: Quentin Monnet <quentin@isovalent.com>
+If we restart server's sockperf, it will fail for:
+  sockperf: ERROR: [fd=3] Can`t bind socket, IP to bind: 0.0.0.0:12345
+   (errno=98 Address already in use)
+
+Here is the process of closing for PeerConnAbort. We can observe this
+issue both in PeerConnAbort and PeerConnClosed.
+
+Client                                                |  Server
+close() // client actively close                      |
+  smc_release()                                       |
+      smc_close_active() // SMC_PEERCLOSEWAIT1        |
+          smc_close_final() // abort or closed = 1    |
+              smc_cdc_get_slot_and_msg_send()         |
+          [ A ]                                       |
+                                                      |smc_cdc_msg_recv_action() // SMC_ACTIVE
+                                                      |  queue_work(smc_close_wq, &conn->close_work)
+                                                      |    smc_close_passive_work() // SMC_PROCESSABORT or SMC_APPCLOSEWAIT1
+                                                      |      smc_close_passive_abort_received() // only in abort
+                                                      |
+                                                      |close() // server recv zero, close
+                                                      |  smc_release() // SMC_PROCESSABORT or SMC_APPCLOSEWAIT1
+                                                      |    smc_close_active()
+                                                      |      smc_close_abort() or smc_close_final() // SMC_CLOSED
+                                                      |        smc_cdc_get_slot_and_msg_send() // abort or closed = 1
+smc_cdc_msg_recv_action()                             |    smc_clcsock_release()
+  queue_work(smc_close_wq, &conn->close_work)         |      sock_release(tcp) // actively close clc, enter TIME_WAIT
+    smc_close_passive_work() // SMC_PEERCLOSEWAIT1    |    smc_conn_free()
+      smc_close_passive_abort_received() // SMC_CLOSED|
+      smc_conn_free()                                 |
+      smc_clcsock_release()                           |
+        sock_release(tcp) // passive close clc        |
+
+To solve this issue, clcsock can be shutdown before the passive closed
+peer closing it, to perform the TCP active close progress first. RFC7609
+said the main idea of termination flows, is to terminate the normal TCP
+connection in the end [1]. But there is no possible to release clcsock
+before server calling sock_release(tcp), so shutdown the clcsock in [A],
+which is the only place before server closing it.
+
+Link: https://datatracker.ietf.org/doc/html/rfc7609#section-4.8.1 [1]
+Fixes: b38d732477e4 ("smc: socket closing and linkgroup cleanup")
+Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
+Reviewed-by: Wen Gu <guwen@linux.alibaba.com>
+---
+ net/smc/smc_close.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/net/smc/smc_close.c b/net/smc/smc_close.c
+index 0f9ffba07d26..04620b53b74a 100644
+--- a/net/smc/smc_close.c
++++ b/net/smc/smc_close.c
+@@ -228,6 +228,12 @@ int smc_close_active(struct smc_sock *smc)
+ 			/* send close request */
+ 			rc = smc_close_final(conn);
+ 			sk->sk_state = SMC_PEERCLOSEWAIT1;
++
++			/* actively shutdown clcsock before peer close it,
++			 * prevent peer from entering TIME_WAIT state.
++			 */
++			if (smc->clcsock && smc->clcsock->sk)
++				rc = kernel_sock_shutdown(smc->clcsock, SHUT_RDWR);
+ 		} else {
+ 			/* peer event has changed the state */
+ 			goto again;
+-- 
+2.32.0.3.g01195cf9f
+
