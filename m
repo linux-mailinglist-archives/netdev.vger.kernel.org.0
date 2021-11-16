@@ -2,86 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF6BC453878
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 18:26:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C728A45387A
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 18:26:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238721AbhKPR3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 12:29:20 -0500
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:58736 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235906AbhKPR3T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 12:29:19 -0500
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 1AGHQEVW028157;
-        Tue, 16 Nov 2021 11:26:14 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1637083574;
-        bh=96YNMg5oGFv9Huoe6KaX52iFJcNPsRAYA6BmzYzF2Yw=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To;
-        b=ip3gfasZdBw3cC51gF1lGPSPEM+9rrBqJQTG4Z3Q4KQMWLYdhhGyS7AhQQi641EUT
-         3iZjqSSWkNtzHDPHiq1re/NLi8WWeoUK45uyUZ11ClAEhlEa+wAaU8WWgWWb9GCKpe
-         p0vn+IaAbBes9kKEHMRZiDEZTAWXdnvbLQPh9hJ0=
-Received: from DFLE106.ent.ti.com (dfle106.ent.ti.com [10.64.6.27])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 1AGHQEVE106258
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 16 Nov 2021 11:26:14 -0600
-Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 16
- Nov 2021 11:26:13 -0600
-Received: from DFLE103.ent.ti.com ([fe80::7431:ea48:7659:dc14]) by
- DFLE103.ent.ti.com ([fe80::7431:ea48:7659:dc14%17]) with mapi id
- 15.01.2308.014; Tue, 16 Nov 2021 11:26:13 -0600
-From:   "Modi, Geet" <geet.modi@ti.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "Nagalla, Hari" <hnagalla@ti.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Sharma, Vikram" <vikram.sharma@ti.com>,
-        "Strashko, Grygorii" <grygorii.strashko@ti.com>
-Subject: Re: [EXTERNAL] Re: [EXTERNAL] Re: [PATCH net-next] net: phy: add
- support for TI DP83561-SP phy
-Thread-Topic: [EXTERNAL] Re: [EXTERNAL] Re: [PATCH net-next] net: phy: add
- support for TI DP83561-SP phy
-Thread-Index: AQHX2tOMsbw4hsZEBUufpuxwWJPtqKwGkZ6A//+cxQCAAIqzgP//jdKA
-Date:   Tue, 16 Nov 2021 17:26:13 +0000
-Message-ID: <BBC60868-73DB-47E5-B38C-A733DD8D5A35@ti.com>
-References: <20211116102015.15495-1-hnagalla@ti.com>
- <YZO33aidzEwo3YFC@lunn.ch> <722B4304-CE9B-436C-A157-48007D289956@ti.com>
- <YZPY+WSLVcTtkDwm@lunn.ch>
-In-Reply-To: <YZPY+WSLVcTtkDwm@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Microsoft-MacOutlook/16.54.21101001
-x-originating-ip: [10.250.200.196]
-x-exclaimer-md-config: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <F3880C8E3D3CCF46A500BFD044C95D5C@owa.mail.ti.com>
-Content-Transfer-Encoding: base64
+        id S238745AbhKPR3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 12:29:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52866 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235906AbhKPR3l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 12:29:41 -0500
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0DD2C061570
+        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 09:26:44 -0800 (PST)
+Received: by mail-il1-x130.google.com with SMTP id w15so21222263ill.2
+        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 09:26:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
+        b=aiszIOjFGZ+Ed+0/vsAzYgPCATpDsN4yLoVBIGviy3c0tZUHSNQRyxKisRmb8CRVGR
+         yF9YfziejLyZMNEtH4fWHj5ii/PSeTtHvnrJ8SMJnIl1jB1zC//1WA5T+jJxh9Px2srT
+         +SLyvdRDw9sM/psC3PdnSKjNHpj59D1OrSh0OJ4nvnhAtY9A3mbECYGwmmYcxXvor25r
+         co0onzRQGV/sZYblautz/ZFgHHV69b0evg6d9ejzgBU9n9HlayT6bXW8mYJIGl643eaT
+         TU4CpfOKtNShj1/WEPqGTVesDDgV2TeWjGf0tVnfXifIcfY4ZNbn5vsDPwNg63oC0gvt
+         S1jQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
+        b=v4YaUvezsQFpQVXNB0pj+/l8hJ5HuKMZ53CuLwzG5eSuz8dBt7Zvk9pmb4lUkS6pu+
+         vUK+GYHdK4rbGwI4KosoSlkzl+mA+pydoqxb1XZp9H8D8bAewbVpbrLvmEObslQbmY/7
+         CppXJZ13pPgb0DN0DuLWTSi/ktClShD85HWodWSbHShLFkT6QfZPla2lZ9x2/gOjvfHn
+         0IeTGplsNNqc51Qzgxpo8/2JcS+QQ+sZy95HbTJ3afZxVdG922R26NWjsVpfN0kcVqBa
+         AzBcnV3HGNM6uNwj51PYap4sYlB000J3utuOxCnHoRvyYO7S0HReSamkmh6N89nfrknv
+         nz0A==
+X-Gm-Message-State: AOAM531bslHShxJLpKjVtZmm7zPojbnOGQvOGhwvNR6VvLiOvebhWnfa
+        KLNw6nR9I+MvXL8S9cjXjodF3j3YYjbABOTmkBQ=
+X-Google-Smtp-Source: ABdhPJxQuj3ZKIwE/bbxhhBBN6k+t85rkppUOUT6Zrq+JyuL7uPuDy9/fnzNmrHzO1gN5oH8a10P/i9LpCG19ClFxHY=
+X-Received: by 2002:a92:7607:: with SMTP id r7mr6088981ilc.317.1637083604068;
+ Tue, 16 Nov 2021 09:26:44 -0800 (PST)
 MIME-Version: 1.0
+Sender: residonn000@gmail.com
+Received: by 2002:a5d:8988:0:0:0:0:0 with HTTP; Tue, 16 Nov 2021 09:26:43
+ -0800 (PST)
+From:   "t::" <mnclbrwn@gmail.com>
+Date:   Tue, 16 Nov 2021 17:26:43 +0000
+X-Google-Sender-Auth: oQ16HHRY4JVLnG3pNknWVC5lnu8
+Message-ID: <CAA2rHC0faPvcRr4de5qWUS7STA3YCvE=vg0SLX39SHaMCa-HdQ@mail.gmail.com>
+Subject: =?UTF-8?B?6K+36Zeu5L2g5pS25Yiw5oiR5Y+R57uZ5L2g55qE56ys5LiA5p2h5L+h5oGv5LqG5ZCX?=
+        =?UTF-8?B?77yfIFlvdSBzcGVhayBFbmdsaXNoID8gLi4uLg==?=
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VGhhbmtzIEFuZHJldy4gDQoNCkhhcmksIHBsZWFzZSB1cGRhdGUgdGhlIGNvbW1pdCBtZXNzYWdl
-IGFuZCByZS1zdWJtaXQuDQoNCg0KUmVnYXJkcywNCkdlZXQNCg0K77u/T24gMTEvMTYvMjEsIDg6
-MTUgQU0sICJBbmRyZXcgTHVubiIgPGFuZHJld0BsdW5uLmNoPiB3cm90ZToNCg0KICAgIE9uIFR1
-ZSwgTm92IDE2LCAyMDIxIGF0IDAzOjU4OjI3UE0gKzAwMDAsIE1vZGksIEdlZXQgd3JvdGU6DQog
-ICAgPiBIZWxsbyBBbmRyZXcsDQogICAgPiANCiAgICA+ICANCiAgICA+IA0KICAgID4gV2UgYmVp
-bmcgVGV4YXMgSW5zdHJ1bWVudHMgYXJlIGNvbnNlcnZhdGl2ZSBhbmQgZG9uJ3QgcHJvbW90ZSBt
-ZWFuaW5nbGVzcw0KICAgID4gbWFya2V0aW5nIGFzIHdlbGwuIFBsZWFzZSBub3RlIERQODM1NjEt
-U1AgaXMgYSBSYWRpYXRpb24gSGFyZGVuZWQgU3BhY2UgR3JhZGUNCiAgICA+IEdpZ2FiaXQgUEhZ
-LiBJdCBoYXMgYmVlbiB0ZXN0ZWQgZm9yIFNpbmdsZSBFdmVudCBMYXRjaCB1cCB1cHRvIDEyMSBN
-ZVYsIHRoZQ0KICAgID4gY3JpdGljYWwgcmVsaWFiaWxpdHkgcGFyYW1ldGVyIFNwYWNlIERlc2ln
-bnMgbG9vayBmb3IuDQoNCiAgICBUaGF0IHN0YXRlbWVudCBpIGhhdmUgbm8gcHJvYmxlbXMgd2l0
-aCwgaXQgaXMgY2xlYXJseSBmYWN0dWFsLg0KDQogICAgPiBUaGUgZHA4MzU2MS1zcCBpcyBhIGhp
-Z2ggcmVsaWFiaWxpdHkgZ2lnYWJpdCBldGhlcm5ldCBQSFkgZGVzaWduZWQNCg0KICAgIGlzIGNs
-ZWFybHkgTWFya2V0aW5nLCB3aG8gd291bGQgZGVzaWduIGEgbG93IHJlbGlhYmlsaXR5IGdpZ2Fi
-aXQNCiAgICBldGhlcm5ldCBQSFk/IEl0IGlzIG1lYW5pbmdsZXNzLg0KDQogICAgU28gcGxlYXNl
-IHVzZSB5b3VyIHRleHQgZnJvbSBhYm92ZSBpbiB0aGUgY29tbWl0IG1lc3NhZ2UsIGl0IG5pY2Vs
-eQ0KICAgIGRlc2NyaWJlcyB3aGF0IHRoaXMgUEhZIGlzIGluIGVuZ2luZWVyaW5nIHRlcm1zLg0K
-DQogICAgICAgQW5kcmV3DQoNCg==
+
