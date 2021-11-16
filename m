@@ -2,112 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E08D4535B0
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 16:24:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 018EF4535BE
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 16:28:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238223AbhKPPZf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 10:25:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52106 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238262AbhKPPZS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 10:25:18 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C89EC061200
-        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 07:22:16 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id i5so38342993wrb.2
-        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 07:22:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BRoTzAi8DELPagI4OEPtjrVPhqomnGXRwr1h/q3kitA=;
-        b=hLcEIX9LM53HadnNd9WMN3oBF/ZkBzarHhwWwFWvgKEdWnsjTdTTxDBxYoZ5m44Z14
-         WYcW62eOnhT9vSh1Z3PgH28z8LF3PGwhGKjS6IhS7z6qKKC21fcCEdqsA14YPmpWfVFh
-         skfwKR/qtQh5lpJIrsaOPSNg5km+Pr4V0MS1wNIxC8PFtlrsnG+hH+rJtpe+8mUzC0aV
-         P3ZW7ymqMQS3eY2Bji3GPyUkbrq+qRZD9wfQ2q2I8KpdxLHnj3ZgE8yuWiiWTEtiu6hW
-         7Hy77iHuDXXvFL7bDYNq54gz/z9Zn834tVz35ZVRLmiD+1M5UP9ApAkx/BIO2TD4U681
-         PUYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BRoTzAi8DELPagI4OEPtjrVPhqomnGXRwr1h/q3kitA=;
-        b=uAxyLWcoJZ2N0Cr62rjG1XPlqsUSPKU9wajQLsv4vAZy3t07c/sBdyxln8lIzcmU0O
-         Gs6lfFO7W77iwyFXwbif2HH2qfMQUON7DOOA8q3h+UndEmIJmC9qCeaK/4F788NvW2ms
-         /mrvec0Dfeq7aVnAjQlDKW70UxmY6JLK36TaO0sM79F/7wYsuuTRMmUxYjy/VwOOGZGH
-         oltMrvOv+mTlMxWkcAJqgjD1XwP0dHRdXUK892EqjJ7hd57CwuP7sXLXYllwMBGqA2YI
-         4dsrYr+UQY6Nj1s3qgGGbVpsC5Ldris4ghzPQ70waSMSVqtimf7zLaby5+neuPfZDgE2
-         yRzA==
-X-Gm-Message-State: AOAM532ZqBJZd8T0kdm0xEDMPjkJAgAYYPY+x64DpxNpmycJW4ArdVls
-        kA2DB9TNJdDUQQ9J9XjY+Q6YqKDPaS6FyMYLJ2UjLA==
-X-Google-Smtp-Source: ABdhPJwpRV7jv4f9lVAw34wNCbHo6pfdDak70///IYeMGozpZOuklLvKuH7AIKXRPfMLofDSc+zDzBKz4ci5Ycc+c7A=
-X-Received: by 2002:adf:f40b:: with SMTP id g11mr10589064wro.296.1637076134003;
- Tue, 16 Nov 2021 07:22:14 -0800 (PST)
+        id S238124AbhKPPaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 10:30:04 -0500
+Received: from spam.zju.edu.cn ([61.164.42.155]:18668 "EHLO zju.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S238078AbhKPPaD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 10:30:03 -0500
+Received: from localhost.localdomain (unknown [222.205.2.245])
+        by mail-app3 (Coremail) with SMTP id cC_KCgC3vxvBzZNhONFDCA--.11582S4;
+        Tue, 16 Nov 2021 23:26:58 +0800 (CST)
+From:   Lin Ma <linma@zju.edu.cn>
+To:     netdev@vger.kernel.org
+Cc:     krzysztof.kozlowski@canonical.com, davem@davemloft.net,
+        kuba@kernel.org, Lin Ma <linma@zju.edu.cn>
+Subject: [PATCH net v5 1/2] NFC: reorder the logic in nfc_{un,}register_device
+Date:   Tue, 16 Nov 2021 23:26:52 +0800
+Message-Id: <20211116152652.19217-1-linma@zju.edu.cn>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-References: <20211115190249.3936899-1-eric.dumazet@gmail.com>
- <20211115190249.3936899-18-eric.dumazet@gmail.com> <20211116062732.60260cd2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CANn89iJL=pGQDgqqKDrL5scxs_S5yMP013ch3-5zwSkMqfMn3A@mail.gmail.com>
-In-Reply-To: <CANn89iJL=pGQDgqqKDrL5scxs_S5yMP013ch3-5zwSkMqfMn3A@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 16 Nov 2021 07:22:02 -0800
-Message-ID: <CANn89iJ5kWdq+agqif+72mrvkBSyHovphrHOUxb2rj-vg5EL8w@mail.gmail.com>
-Subject: Re: [PATCH net-next 17/20] tcp: defer skb freeing after socket lock
- is released
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Arjun Roy <arjunroy@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: cC_KCgC3vxvBzZNhONFDCA--.11582S4
+X-Coremail-Antispam: 1UD129KBjvJXoWxZw1UAFy7WFWftw4kJFW7CFg_yoW5Kr47p3
+        WrGas3KryDKr4UWr4fZr47JFy5ur48tw4rZryFkryjkrZxZrWftr93Jry8Jas5Ja95AayY
+        qrWUZw48ur45XF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvY1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJr0_GcWl84ACjcxK6I8E
+        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
+        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_
+        Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
+        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6ryrMxAIw28IcxkI7VAKI48J
+        MxAIw28IcVCjz48v1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c
+        02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_
+        Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7
+        CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v2
+        6r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0J
+        U3Ma8UUUUU=
+X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 16, 2021 at 7:05 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Tue, Nov 16, 2021 at 6:27 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Mon, 15 Nov 2021 11:02:46 -0800 Eric Dumazet wrote:
-> > > One cpu can now be fully utilized for the kernel->user copy,
-> > > and another cpu is handling BH processing and skb/page
-> > > allocs/frees (assuming RFS is not forcing use of a single CPU)
-> >
-> > Are you saying the kernel->user copy is not under the socket lock
-> > today? I'm working on getting the crypto & copy from under the socket
-> > lock for ktls, and it looked like tcp does the copy under the lock.
->
-> Copy is done currently with socket lock owned.
->
-> But each skb is freed one at a time, after its payload has been consumed.
->
-> Note that I am also working on performing the copy while still allowing BH
-> to process incoming packets.
->
-> This is a bit more complex, but I think it is doable.
+There is a potential UAF between the unregistration routine and the NFC
+netlink operations.
 
-Here is the perf top profile on cpu used by user thread doing the
-recvmsg(), at 96 Gbit/s
+The race that cause that UAF can be shown as below:
 
-We no longer see skb freeing related costs, but we still see costs of
-having to process the backlog.
+ (FREE)                      |  (USE)
+nfcmrvl_nci_unregister_dev   |  nfc_genl_dev_up
+  nci_close_device           |
+  nci_unregister_device      |    nfc_get_device
+    nfc_unregister_device    |    nfc_dev_up
+      rfkill_destory         |
+      device_del             |      rfkill_blocked
+  ...                        |    ...
 
-   81.06%  [kernel]       [k] copy_user_enhanced_fast_string
-     2.50%  [kernel]       [k] __skb_datagram_iter
-     2.25%  [kernel]       [k] _copy_to_iter
-     1.45%  [kernel]       [k] tcp_recvmsg_locked
-     1.39%  [kernel]       [k] tcp_rcv_established
-     0.93%  [kernel]       [k] skb_try_coalesce
-     0.79%  [kernel]       [k] sock_rfree
-     0.72%  [kernel]       [k] tcp_v6_do_rcv
-     0.57%  [kernel]       [k] skb_release_data
-     0.50%  [kernel]       [k] tcp_queue_rcv
-     0.43%  [kernel]       [k] __direct_call_clocksource_read1
-     0.43%  [kernel]       [k] __release_sock
-     0.39%  [kernel]       [k] _raw_spin_lock
-     0.25%  [kernel]       [k] __direct_call_hrtimer_clock_base_get_time1
-     0.20%  [kernel]       [k] __tcp_transmit_skb
-     0.19%  [kernel]       [k] __dev_queue_xmit
-     0.18%  [kernel]       [k] __tcp_select_window
-     0.18%  [kernel]       [k] _raw_spin_lock_bh
+The root cause for this race is concluded below:
+1. The rfkill_blocked (USE) in nfc_dev_up is supposed to be placed after
+the device_is_registered check.
+2. Since the netlink operations are possible just after the device_add
+in nfc_register_device, the nfc_dev_up() can happen anywhere during the
+rfkill creation process, which leads to data race.
+
+This patch reorder these actions to permit
+1. Once device_del is finished, the nfc_dev_up cannot dereference the
+rfkill object.
+2. The rfkill_register need to be placed after the device_add of nfc_dev
+because the parent device need to be created first. So this patch keeps
+the order but inject device_lock to prevent the data race.
+
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Fixes: be055b2f89b5 ("NFC: RFKILL support")
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+
+
+---
+ net/nfc/core.c | 32 ++++++++++++++++++--------------
+ 1 file changed, 18 insertions(+), 14 deletions(-)
+
+diff --git a/net/nfc/core.c b/net/nfc/core.c
+index 3c645c1d99c9..dc7a2404efdf 100644
+--- a/net/nfc/core.c
++++ b/net/nfc/core.c
+@@ -94,13 +94,13 @@ int nfc_dev_up(struct nfc_dev *dev)
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (dev->rfkill && rfkill_blocked(dev->rfkill)) {
+-		rc = -ERFKILL;
++	if (!device_is_registered(&dev->dev)) {
++		rc = -ENODEV;
+ 		goto error;
+ 	}
+ 
+-	if (!device_is_registered(&dev->dev)) {
+-		rc = -ENODEV;
++	if (dev->rfkill && rfkill_blocked(dev->rfkill)) {
++		rc = -ERFKILL;
+ 		goto error;
+ 	}
+ 
+@@ -1125,11 +1125,7 @@ int nfc_register_device(struct nfc_dev *dev)
+ 	if (rc)
+ 		pr_err("Could not register llcp device\n");
+ 
+-	rc = nfc_genl_device_added(dev);
+-	if (rc)
+-		pr_debug("The userspace won't be notified that the device %s was added\n",
+-			 dev_name(&dev->dev));
+-
++	device_lock(&dev->dev);
+ 	dev->rfkill = rfkill_alloc(dev_name(&dev->dev), &dev->dev,
+ 				   RFKILL_TYPE_NFC, &nfc_rfkill_ops, dev);
+ 	if (dev->rfkill) {
+@@ -1138,6 +1134,12 @@ int nfc_register_device(struct nfc_dev *dev)
+ 			dev->rfkill = NULL;
+ 		}
+ 	}
++	device_unlock(&dev->dev);
++
++	rc = nfc_genl_device_added(dev);
++	if (rc)
++		pr_debug("The userspace won't be notified that the device %s was added\n",
++			 dev_name(&dev->dev));
+ 
+ 	return 0;
+ }
+@@ -1154,10 +1156,17 @@ void nfc_unregister_device(struct nfc_dev *dev)
+ 
+ 	pr_debug("dev_name=%s\n", dev_name(&dev->dev));
+ 
++	rc = nfc_genl_device_removed(dev);
++	if (rc)
++		pr_debug("The userspace won't be notified that the device %s "
++			 "was removed\n", dev_name(&dev->dev));
++
++	device_lock(&dev->dev);
+ 	if (dev->rfkill) {
+ 		rfkill_unregister(dev->rfkill);
+ 		rfkill_destroy(dev->rfkill);
+ 	}
++	device_unlock(&dev->dev);
+ 
+ 	if (dev->ops->check_presence) {
+ 		device_lock(&dev->dev);
+@@ -1167,11 +1176,6 @@ void nfc_unregister_device(struct nfc_dev *dev)
+ 		cancel_work_sync(&dev->check_pres_work);
+ 	}
+ 
+-	rc = nfc_genl_device_removed(dev);
+-	if (rc)
+-		pr_debug("The userspace won't be notified that the device %s "
+-			 "was removed\n", dev_name(&dev->dev));
+-
+ 	nfc_llcp_unregister_device(dev);
+ 
+ 	mutex_lock(&nfc_devlist_mutex);
+-- 
+2.33.1
+
