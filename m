@@ -2,138 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5096451BF1
-	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 01:06:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FE4345205C
+	for <lists+netdev@lfdr.de>; Tue, 16 Nov 2021 01:49:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348822AbhKPAJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Nov 2021 19:09:19 -0500
-Received: from mga02.intel.com ([134.134.136.20]:18510 "EHLO mga02.intel.com"
+        id S242502AbhKPAwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Nov 2021 19:52:35 -0500
+Received: from out2.migadu.com ([188.165.223.204]:48528 "EHLO out2.migadu.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233486AbhKPAGm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Nov 2021 19:06:42 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10169"; a="220768897"
-X-IronPort-AV: E=Sophos;i="5.87,237,1631602800"; 
-   d="scan'208";a="220768897"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2021 16:01:04 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,237,1631602800"; 
-   d="scan'208";a="506163139"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga008.jf.intel.com with ESMTP; 15 Nov 2021 16:00:57 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Akeem G Abodunrin <akeem.g.abodunrin@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        sassmann@redhat.com,
-        George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
-Subject: [PATCH net 10/10] iavf: Restore VLAN filters after link down
-Date:   Mon, 15 Nov 2021 15:59:34 -0800
-Message-Id: <20211115235934.880882-11-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211115235934.880882-1-anthony.l.nguyen@intel.com>
-References: <20211115235934.880882-1-anthony.l.nguyen@intel.com>
+        id S1350501AbhKPAuC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Nov 2021 19:50:02 -0500
+Subject: Re: [PATCH] bluetooth: fix uninitialized variables notify_evt
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1637023624;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SCice28xuZZAc41fE60nr3s0IgXGGl/rTAATNISezms=;
+        b=DIIVhgdFFfEYFNLUC+GikeCQY2YRK8ieNu0bzrwwwFHhvsvpseaXmKcDdgMKIJn9JBAjRr
+        sM8GvXwF1KxYzoxJUnbiVsRVDHyA5hCy7BfkMCD9fR69M3Nc4/XhM7uMlDTXXA8q4/+e0g
+        9fVcXxophtkH+U9duWzTbqhgxlv9Hoc=
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     "Tumkur Narayan, Chethan" <chethan.tumkur.narayan@intel.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <20211115085613.1924762-1-liu.yun@linux.dev>
+ <73AF4476-F5B2-4E83-9F43-72D98B4615FF@holtmann.org>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Jackie Liu <liu.yun@linux.dev>
+Message-ID: <e2d72c6c-3bf0-0d88-8033-af885259223c@linux.dev>
+Date:   Tue, 16 Nov 2021 08:46:55 +0800
 MIME-Version: 1.0
+In-Reply-To: <73AF4476-F5B2-4E83-9F43-72D98B4615FF@holtmann.org>
+Content-Type: text/plain; charset=gbk; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: liu.yun@linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Akeem G Abodunrin <akeem.g.abodunrin@intel.com>
+Hi, Marcel.
 
-Restore VLAN filters after the link is brought down, and up - since all
-filters are deleted from HW during the netdev link down routine.
+ÔÚ 2021/11/16 ÉÏÎç1:27, Marcel Holtmann Ð´µÀ:
+> Hi Jackie,
+> 
+>> Coverity Scan report:
+>>
+>> [...]
+>> *** CID 1493985:  Uninitialized variables  (UNINIT)
+>> /net/bluetooth/hci_event.c: 4535 in hci_sync_conn_complete_evt()
+>> 4529
+>> 4530     	/* Notify only in case of SCO over HCI transport data path which
+>> 4531     	 * is zero and non-zero value shall be non-HCI transport data path
+>> 4532     	 */
+>> 4533     	if (conn->codec.data_path == 0) {
+>> 4534     		if (hdev->notify)
+>>>>>     CID 1493985:  Uninitialized variables  (UNINIT)
+>>>>>     Using uninitialized value "notify_evt" when calling "*hdev->notify".
+>> 4535     			hdev->notify(hdev, notify_evt);
+>> 4536     	}
+>> 4537
+>> 4538     	hci_connect_cfm(conn, ev->status);
+>> 4539     	if (ev->status)
+>> 4540     		hci_conn_del(conn);
+>> [...]
+>>
+>> Although only btusb uses air_mode, and he only handles HCI_NOTIFY_ENABLE_SCO_CVSD
+>> and HCI_NOTIFY_ENABLE_SCO_TRANSP, there is still a very small chance that
+>> ev->air_mode is not equal to 0x2 and 0x3, but notify_evt is initialized to
+>> HCI_NOTIFY_ENABLE_SCO_CVSD or HCI_NOTIFY_ENABLE_SCO_TRANSP. the context is
+>> maybe not correct.
+>>
+>> In order to ensure 100% correctness, we directly give him a default value 0.
+>>
+>> Addresses-Coverity: ("Uninitialized variables")
+>> Fixes: f4f9fa0c07bb ("Bluetooth: Allow usb to auto-suspend when SCO use	non-HCI transport")
+>> Signed-off-by: Jackie Liu <liuyun01@kylinos.cn>
+>> ---
+>> net/bluetooth/hci_event.c | 2 +-
+>> 1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+>> index 7d0db1ca1248..f898fa42a183 100644
+>> --- a/net/bluetooth/hci_event.c
+>> +++ b/net/bluetooth/hci_event.c
+>> @@ -4445,7 +4445,7 @@ static void hci_sync_conn_complete_evt(struct hci_dev *hdev,
+>> {
+>> 	struct hci_ev_sync_conn_complete *ev = (void *) skb->data;
+>> 	struct hci_conn *conn;
+>> -	unsigned int notify_evt;
+>> +	unsigned int notify_evt = 0;
+>>
+>> 	BT_DBG("%s status 0x%2.2x", hdev->name, ev->status);
+> 
+> lets modify the switch statement and add a default case. And then lets add a check to notify_evt != 0.
+> 
+> With that in mind, I wonder if this is not better
+> 
+>          /* Notify only in case of SCO over HCI transport data path which
+>           * is zero and non-zero value shall be non-HCI transport data path
+>           */
+> 	if (conn->codec.data_path == 0 && hdev->notify) {
+> 		switch (ev->air_mode) {
+> 		case 0x02:
+> 			hdev->notify(hdev, HCI_NOTIFY_ENABLE_SCO_CVSD);
+> 			break;
+> 		case 0x03:
+> 			hdev->notify(hdev, HCI_NOTIFY_ENABLE_SCO_TRANSP);
+> 			break;
+> 		}
+> 	}
 
-Fixes: ed1f5b58ea01 ("i40evf: remove VLAN filters on close")
-Signed-off-by: Akeem G Abodunrin <akeem.g.abodunrin@intel.com>
-Tested-by: George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/iavf/iavf.h      |  1 +
- drivers/net/ethernet/intel/iavf/iavf_main.c | 35 ++++++++++++++++++---
- 2 files changed, 31 insertions(+), 5 deletions(-)
+I prefer this, because it is a restoration of earlier logic, rather than
+changing his logic. I will resend a patch, thank you.
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
-index e6e7c1da47fb..75635bd57cf6 100644
---- a/drivers/net/ethernet/intel/iavf/iavf.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf.h
-@@ -39,6 +39,7 @@
- #include "iavf_txrx.h"
- #include "iavf_fdir.h"
- #include "iavf_adv_rss.h"
-+#include <linux/bitmap.h>
- 
- #define DEFAULT_DEBUG_LEVEL_SHIFT 3
- #define PFX "iavf: "
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 9ca9208aa896..336e6bf95e48 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -696,6 +696,23 @@ static void iavf_del_vlan(struct iavf_adapter *adapter, u16 vlan)
- 	spin_unlock_bh(&adapter->mac_vlan_list_lock);
- }
- 
-+/**
-+ * iavf_restore_filters
-+ * @adapter: board private structure
-+ *
-+ * Restore existing non MAC filters when VF netdev comes back up
-+ **/
-+static void iavf_restore_filters(struct iavf_adapter *adapter)
-+{
-+	/* re-add all VLAN filters */
-+	if (VLAN_ALLOWED(adapter)) {
-+		u16 vid;
-+
-+		for_each_set_bit(vid, adapter->vsi.active_vlans, VLAN_N_VID)
-+			iavf_add_vlan(adapter, vid);
-+	}
-+}
-+
- /**
-  * iavf_vlan_rx_add_vid - Add a VLAN filter to a device
-  * @netdev: network device struct
-@@ -709,8 +726,11 @@ static int iavf_vlan_rx_add_vid(struct net_device *netdev,
- 
- 	if (!VLAN_ALLOWED(adapter))
- 		return -EIO;
-+
- 	if (iavf_add_vlan(adapter, vid) == NULL)
- 		return -ENOMEM;
-+
-+	set_bit(vid, adapter->vsi.active_vlans);
- 	return 0;
- }
- 
-@@ -725,11 +745,13 @@ static int iavf_vlan_rx_kill_vid(struct net_device *netdev,
- {
- 	struct iavf_adapter *adapter = netdev_priv(netdev);
- 
--	if (VLAN_ALLOWED(adapter)) {
--		iavf_del_vlan(adapter, vid);
--		return 0;
--	}
--	return -EIO;
-+	if (!VLAN_ALLOWED(adapter))
-+		return -EIO;
-+
-+	iavf_del_vlan(adapter, vid);
-+	clear_bit(vid, adapter->vsi.active_vlans);
-+
-+	return 0;
- }
- 
- /**
-@@ -3309,6 +3331,9 @@ static int iavf_open(struct net_device *netdev)
- 
- 	spin_unlock_bh(&adapter->mac_vlan_list_lock);
- 
-+	/* Restore VLAN filters that were removed with IFF_DOWN */
-+	iavf_restore_filters(adapter);
-+
- 	iavf_configure(adapter);
- 
- 	iavf_up_complete(adapter);
--- 
-2.31.1
+--
+Jackie Liu
 
+> 
+> Regards
+> 
+> Marcel
+> 
