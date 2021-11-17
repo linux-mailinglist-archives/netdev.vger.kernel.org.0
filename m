@@ -2,92 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6049F454434
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 10:52:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A96C454436
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 10:52:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235564AbhKQJyH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 04:54:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49510 "EHLO
+        id S235512AbhKQJzN convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 17 Nov 2021 04:55:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232917AbhKQJyG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 04:54:06 -0500
-Received: from mail-ua1-x92a.google.com (mail-ua1-x92a.google.com [IPv6:2607:f8b0:4864:20::92a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A10A6C061570
-        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 01:51:07 -0800 (PST)
-Received: by mail-ua1-x92a.google.com with SMTP id i6so4554292uae.6
-        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 01:51:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6oHxCHdQqk1gh3FI9+RJPzkWEREzp+khMC/c8pj77v0=;
-        b=YcoRJxjwrtTyqW2qbj7FcIlHAZHzUpSqJD3/jwPU17gBIgwXX8bClDU4AGEa6CsGcW
-         SQPY9DvEJiMxr34YDITdg7chA6y4IfS+AOYqb5HtS1uOYLY+YlJKF15ocuXn1w6hwBdP
-         ZubXsmXuLlLks+zSTc8HlZycwcUQQsDPqCt20e+vf/2uxEKVZu/CFMw8UuyiVyH6ZGuE
-         0ouB7pwpJezqDbAR9M9NO8rm2C8R0AmOmRWNArG2q0Nk9ePetXThkZcDAdHCtycJ7v0C
-         ggR242uBjrTkh9wKQPObQ37WFcMYKxYxXmf5N3rdrthB/ZwGA2gk0gqIVPgQsynKWtWo
-         PUMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6oHxCHdQqk1gh3FI9+RJPzkWEREzp+khMC/c8pj77v0=;
-        b=woXKlBhETokYna9Zy/i+Gi1jRf6Rr+pqKpW9xl4AdiPpIr+4FotikmzEOXzR/R2fMh
-         0Li8wcUBJ0eYQXujwNtUgR6GgsEHs00ipmLGw459QnpI2FLGfJqOkCJTyLTuT4yJnMfD
-         PMwncCjfC1d3wCZaEX3jTo/xHWm5g9+m51Qg0mOiUG4JHnj7n4grw+WtJSA9XZrCYvyf
-         hVdX3uuiH3KKakEjDLtnTfe7kXBlXWRGjVpYpZGoUUDSwXFYykwpg5a22wW4F6PzsSr5
-         GnsbBaPJ68Qf7/XFjdcNRJirHxbtOgJg8l+g8c+0a+wchjcMxJ9XfEOrV7Tc0mT1JQQm
-         /BZg==
-X-Gm-Message-State: AOAM530LbydsepwwxVr4FnLpZ8LtyocpFp7a0ucAqmwMDaJP2lBVfqP0
-        GDrjjHd6BTRW6Z6MwW2QdCau8fhSQIeaIWd6/r8r3g==
-X-Google-Smtp-Source: ABdhPJxSidgB1PW9yP9u9BdHEQuv2rP1drUYCBdYh8is5tDtH4wIN5ovaQZc3DJK07EXhI6g5X/uImaIFGytGxx1GLM=
-X-Received: by 2002:ab0:6998:: with SMTP id t24mr21846787uaq.60.1637142666659;
- Wed, 17 Nov 2021 01:51:06 -0800 (PST)
-MIME-Version: 1.0
-References: <CAKD1Yr02W-WuLx8ouvP+wTtkxeyTBW_dp1deo9sim7wfLA2LXQ@mail.gmail.com>
- <20211117071732.7455-1-rocco.yue@mediatek.com> <CAKD1Yr3CMPWMmNNU6YvpBiaXVttS9T8qGVgmddijYfLSfK-Rog@mail.gmail.com>
-In-Reply-To: <CAKD1Yr3CMPWMmNNU6YvpBiaXVttS9T8qGVgmddijYfLSfK-Rog@mail.gmail.com>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
-Date:   Wed, 17 Nov 2021 01:50:54 -0800
-Message-ID: <CANP3RGdrhrSYOnRRq1r6Uq6a4hK90f_KsUW2VOYQGW0GHMv-oQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] ipv6: don't generate link-local addr in random
- or privacy mode
-To:     Lorenzo Colitti <lorenzo@google.com>
-Cc:     Rocco Yue <rocco.yue@mediatek.com>, dsahern@gmail.com,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, rocco.yue@gmail.com,
-        chao.song@mediatek.com, yanjie.jiang@mediatek.com,
-        kuohong.wang@mediatek.com, Zhuoliang.Zhang@mediatek.com,
-        markzzzsmith@gmail.com
+        with ESMTP id S234710AbhKQJzM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 04:55:12 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8506C061570
+        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 01:52:13 -0800 (PST)
+Received: from lupine.hi.pengutronix.de ([2001:67c:670:100:3ad5:47ff:feaf:1a17] helo=lupine)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1mnHbn-0003nK-Fo; Wed, 17 Nov 2021 10:52:03 +0100
+Received: from pza by lupine with local (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1mnHbl-0004T6-Q4; Wed, 17 Nov 2021 10:52:01 +0100
+Message-ID: <9ab98fba364f736b267dbd5e1d305d3e8426e877.camel@pengutronix.de>
+Subject: Re: [PATCH net-next 2/5] net: lan966x: add the basic lan966x driver
+From:   Philipp Zabel <p.zabel@pengutronix.de>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>, davem@davemloft.net,
+        kuba@kernel.org, robh+dt@kernel.org, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Wed, 17 Nov 2021 10:52:01 +0100
+In-Reply-To: <20211117091858.1971414-3-horatiu.vultur@microchip.com>
+References: <20211117091858.1971414-1-horatiu.vultur@microchip.com>
+         <20211117091858.1971414-3-horatiu.vultur@microchip.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.38.3-1 
+MIME-Version: 1.0
+X-SA-Exim-Connect-IP: 2001:67c:670:100:3ad5:47ff:feaf:1a17
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Can't 4 be the same as 3? The same netlink message can configure both
-> the addr_gen_mode and the token, no?
->
-> It seems to me that the following should work, and would be much simpler.
->
-> 1. Bring the interface down. All addresses are deleted.
-> 2. Send a netlink request to set addr_gen_mode RANDOM_LL_TOKEN or
-> PRIVACY_LL_TOKEN and set the token.
-> 3. Bring the interface up. Autoconf runs. The link-local address is
-> generated from the token. An RS is sent. When the RA is received, the
-> global address is generated using RFC 7217 or randomly.
+Hi Horatio,
 
-Could you simply manually add an ipv6 link local address to the
-interface while it is down (ip -6 addr add fe80::..../64 dev X), then
-bring the interface up (ip link set dev X up)...
-All that would need to happen is the automatic link local generation
-would need to be suppressed if there's already a link local ip
-configured - which sounds like a good idea anyway, since why have two?
-(btw. even a manually added link local ip will get deleted when the
-interface gets brought back down)
+On Wed, 2021-11-17 at 10:18 +0100, Horatiu Vultur wrote:
+> +static int lan966x_reset_switch(struct lan966x *lan966x)
+> +{
+> +	struct reset_control *reset;
+> +	int val = 0;
+> +	int ret;
+> +
+> +	reset = devm_reset_control_get_shared(lan966x->dev, "switch");
+> +	if (IS_ERR(reset))
+> +		dev_warn(lan966x->dev, "Could not obtain switch reset: %ld\n",
+> +			 PTR_ERR(reset));
+> +	else
+> +		reset_control_reset(reset);
+
+According to the device tree bindings, both resets are required.
+I'd expect this to return on error.
+Is there any chance of the device working with out the switch reset
+being triggered?
+
+> +
+> +	reset = devm_reset_control_get_shared(lan966x->dev, "phy");
+> +	if (IS_ERR(reset)) {
+> +		dev_warn(lan966x->dev, "Could not obtain phy reset: %ld\n",
+> +			 PTR_ERR(reset));
+> +	} else {
+> +		reset_control_reset(reset);
+> +	}
+
+Same as above.
+Consider printing errors with %pe or dev_err_probe().
+
+> +	lan_wr(SYS_RESET_CFG_CORE_ENA_SET(0), lan966x, SYS_RESET_CFG);
+> +	lan_wr(SYS_RAM_INIT_RAM_INIT_SET(1), lan966x, SYS_RAM_INIT);
+> +	ret = readx_poll_timeout(lan966x_ram_init, lan966x,
+> +				 val, (val & BIT(1)) == 0, READL_SLEEP_US,
+> +				 READL_TIMEOUT_US);
+> +	if (ret)
+> +		return ret;
+> +
+> +	lan_wr(SYS_RESET_CFG_CORE_ENA_SET(1), lan966x, SYS_RESET_CFG);
+> +
+> +	return 0;
+> +}
+> +
+> +static int lan966x_probe(struct platform_device *pdev)
+> +{
+> +	struct fwnode_handle *ports, *portnp;
+> +	struct lan966x *lan966x;
+> +	int err, i;
+> +
+> +	lan966x = devm_kzalloc(&pdev->dev, sizeof(*lan966x), GFP_KERNEL);
+> +	if (!lan966x)
+> +		return -ENOMEM;
+> +
+> +	platform_set_drvdata(pdev, lan966x);
+> +	lan966x->dev = &pdev->dev;
+> +
+> +	ports = device_get_named_child_node(&pdev->dev, "ethernet-ports");
+> +	if (!ports) {
+> +		dev_err(&pdev->dev, "no ethernet-ports child not found\n");
+> +		err = -ENODEV;
+> +		goto out;
+
+No need to goto as long as there's just a "return err;" after the out:
+label.
+
+> +	}
+> +
+> +	err = lan966x_create_targets(pdev, lan966x);
+> +	if (err)
+> +		goto out;
+> +
+> +	if (lan966x_reset_switch(lan966x)) {
+> +		err = -EINVAL;
+
+This should propagate the error returned from lan966x_reset_switch()
+instead.
+
+> +		goto out;
+> +	}
+> +
+> +	i = 0;
+> +	fwnode_for_each_available_child_node(ports, portnp)
+> +		++i;
+> +
+> +	lan966x->num_phys_ports = i;
+> +	lan966x->ports = devm_kcalloc(&pdev->dev, lan966x->num_phys_ports,
+> +				      sizeof(struct lan966x_port *),
+> +				      GFP_KERNEL);
+
+	if (!lan966x->ports)
+		return -ENOMEM;
+
+regards
+Philipp
