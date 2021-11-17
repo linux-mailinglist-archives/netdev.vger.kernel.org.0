@@ -2,93 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0315E454061
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 06:47:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFAB7454099
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 07:04:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233401AbhKQFtg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 00:49:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49764 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233393AbhKQFtg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 00:49:36 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ABF8C061746;
-        Tue, 16 Nov 2021 21:46:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description;
-        bh=FfkD+q87eHWGTXiAr2sBn0a4XKYgLxkUZ91bqq+Qj7I=; b=f0IaqUKiZEGLG0LZzJADOdJIdw
-        0pJknKD7fnMGb6un+ujetf2mhKSonM9EAiBWj2v75CglUCSD7yox0oIQ1U4ntRT/V/cIXH/fSURs5
-        jneLPWyTj9kQGoUnlckLP/WAqNN2v1NES0jCoAK0WfoURgcVHBjBKDP5A3zd6GSYxf2iORlZFnkDE
-        NMKJsA5vJYuUsXprmJWBXDlLzjVujZfp3FeQKyAZfOplAZGdZw5EjOm0uiT1/N0rndWTgNF+Ln1hc
-        CXFx+dArgN1ArnG4ckBCpMTfyLGESQz2JNkg3Mum4Hp8o+03QaO9n8+owAfNNncGFr8ol27fA/l56
-        NFJynLXQ==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mnDmF-003MgV-V5; Wed, 17 Nov 2021 05:46:36 +0000
-Subject: Re: linux-next: Tree for Nov 17 (uml, no IPV6)
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20211117135800.0b7072cd@canb.auug.org.au>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <268ae204-efae-3081-a5dd-44fc07d048ba@infradead.org>
-Date:   Tue, 16 Nov 2021 21:46:35 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S232932AbhKQGHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 01:07:09 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:54168 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S232363AbhKQGHJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 01:07:09 -0500
+X-UUID: e078f548793348a1979d7570e5abb280-20211117
+X-UUID: e078f548793348a1979d7570e5abb280-20211117
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <rocco.yue@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 575398198; Wed, 17 Nov 2021 14:04:09 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 17 Nov 2021 14:04:08 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 17 Nov 2021 14:04:07 +0800
+From:   Rocco Yue <rocco.yue@mediatek.com>
+To:     Jakub Kicinski <kuba@kernel.org>, David Ahern <dsahern@kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <Rocco.Yue@gmail.com>,
+        <chao.song@mediatek.com>, <yanjie.jiang@mediatek.com>,
+        <kuohong.wang@mediatek.com>, <zhuoliang.zhang@mediatek.com>,
+        <lorenzo@google.com>, <maze@google.com>, <markzzzsmith@gmail.com>,
+        Rocco Yue <rocco.yue@mediatek.com>
+Subject: Re: [PATCH net-next] ipv6: don't generate link-local addr in random or privacy mode
+Date:   Wed, 17 Nov 2021 13:59:30 +0800
+Message-ID: <20211117055930.6810-1-rocco.yue@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+Reply-To: <20211116193456.54436652@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-In-Reply-To: <20211117135800.0b7072cd@canb.auug.org.au>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/16/21 6:58 PM, Stephen Rothwell wrote:
-> Hi all,
-> 
-> Changes since 20211116:
-> 
+On Wed, 2021-11-17 at 11:34 +0800, Jakub Kicinski wrote:
+> On Tue, 16 Nov 2021 13:21:12 -0700 David Ahern wrote:
+>> Reviewed-by: David Ahern <dsahern@kernel.org>
+>>
+>> you should add tests under tools/testing/selftests/net.
+>
+> Please keep David's review tag and repost with a selftest.
 
-ARCH=um SUBARCH=x86_64:
-# CONFIG_IPV6 is not set
+Hi David and Jakub,
 
+Thanks for your review. :-)
 
-In file included from ../net/ethernet/eth.c:62:0:
-../include/net/gro.h: In function ‘ip6_gro_compute_pseudo’:
-../include/net/gro.h:413:22: error: implicit declaration of function ‘csum_ipv6_magic’; did you mean ‘csum_tcpudp_magic’? [-Werror=implicit-function-declaration]
-   return ~csum_unfold(csum_ipv6_magic(&iph->saddr, &iph->daddr,
-                       ^~~~~~~~~~~~~~~
-                       csum_tcpudp_magic
+I heard about selftest for the first time, and I am thinking
+about how to write a selftest for this patch, and I will
+repost thses patches again when finished.
 
+Thanks,
 
-After I made ip6_gro_compute_pseudo() conditional on CONFIG_IPV6,
-I got this build error:
+Rocco
 
-In file included from ../net/ipv6/tcpv6_offload.c:10:0:
-../net/ipv6/tcpv6_offload.c: In function ‘tcp6_gro_receive’:
-../net/ipv6/tcpv6_offload.c:22:11: error: implicit declaration of function ‘ip6_gro_compute_pseudo’; did you mean ‘inet_gro_compute_pseudo’? [-Werror=implicit-function-declaration]
-            ip6_gro_compute_pseudo)) {
-            ^
-../include/net/gro.h:235:5: note: in definition of macro ‘__skb_gro_checksum_validate’
-      compute_pseudo(skb, proto));  \
-      ^~~~~~~~~~~~~~
-../net/ipv6/tcpv6_offload.c:21:6: note: in expansion of macro ‘skb_gro_checksum_validate’
-       skb_gro_checksum_validate(skb, IPPROTO_TCP,
-       ^~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-This is UML x86_64 defconfig:
-
-$ make ARCH=um SUBARCH=x86_64 defconfig all
-
-
--- 
-~Randy
