@@ -2,62 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B78C0453D2A
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 01:32:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62D32453D65
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 02:01:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230034AbhKQAe7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 19:34:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43160 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229694AbhKQAe7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Nov 2021 19:34:59 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 93F8461BBD;
-        Wed, 17 Nov 2021 00:32:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637109121;
-        bh=6D72CXxrpJoipILvmzEalBbO3LRwJUbFZI/GQU3YKwg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pJWA3xGu3neA8Dr9/4JkpxA9UubuwCaJVHiwR83rm/mWeJgV4zXWAp/jLbkcMRc+S
-         15ebV7VXI4TPJm6CGsbWDFFqGm0ck6u7kMj0iD3lEd92o5nl44RJlN9KJWPQe3qxvM
-         20MGwdYS1K9+LxPWIv3253bnNuEinUjWPsBZ0PG3f39/BQ4ZPrL4wViq5L1wDpZYjO
-         nJc3mES5QYvOZEi7c8LJgQGBRttJFLuuNiIvdhaMljYMtMhRXdIF76QbbKwy2XzniM
-         eabl5BBAyEx/EbwudMGJvnkw0cOWCuO6XlmCVuv5pIJN4jHgrDDcyxY5snew6ThkKh
-         w0+W2CFGuw/BA==
-Date:   Tue, 16 Nov 2021 16:31:59 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, davem@davemloft.net, ast@kernel.org,
-        daniel@iogearbox.net, shayagr@amazon.com, john.fastabend@gmail.com,
-        dsahern@kernel.org, brouer@redhat.com, echaudro@redhat.com,
-        jasowang@redhat.com, alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
-        tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: Re: [PATCH v18 bpf-next 20/23] net: xdp: introduce bpf_xdp_pointer
- utility routine
-Message-ID: <20211116163159.56e1c957@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YZRI+ac4c0j/eue5@lore-desk>
-References: <cover.1637013639.git.lorenzo@kernel.org>
-        <ce5ad30af8f9b4d2b8128e7488818449a5c0d833.1637013639.git.lorenzo@kernel.org>
-        <20211116071357.36c18edf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YZRI+ac4c0j/eue5@lore-desk>
+        id S229635AbhKQBEV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 20:04:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42876 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229544AbhKQBEU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 20:04:20 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D975CC061570
+        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 17:01:22 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id x7so935293pjn.0
+        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 17:01:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Q/0e654LrQv/vaE9GBCL2FeX5qIGYA4WIFxR7/U11U0=;
+        b=Kun1wbZ2BuFvVXD9QcS6/eMctQEZ15f2vm3P7mrtOLzQaZrNQ26/MuOVXzWUymhm0m
+         uQ30aXtQhoUV4lx5LeXAphUK/D4HRa2/zjv/hK+EXyTHLP1hE0Zbo80MURNpfHb7rych
+         L+IPcODUikRMrno5d/QkYdc66BXb3WmhowbV+RdTeqABzx5389ncFj7bDePR/bEh8U7C
+         9ny17ZYuRpfebrkEx6QWfNqYn759S8aJeSOs4/7Uo37XvBW2fHTIAus0aqM9AbO4JRYS
+         FJJeXnwqBpL96oVZfIPEam3ZzZqHSTyQWce8gsxsb7W04tNe8sRW1t8tu+UHIQYoDcTu
+         2R5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Q/0e654LrQv/vaE9GBCL2FeX5qIGYA4WIFxR7/U11U0=;
+        b=h2+HEU0EizYT2fK689DBcCNrG67XllQXMElMVFK3IM/xZ+uaqjQaoJzEkPI14qNRP7
+         JW15bgiva3LQ2cLOaWridHUy4kfcjyq+tw+a1uR1eL4O3uWKHXAj9CP1n5bK/Hup5kmq
+         xbLwC3MND+UthtYZG4Y7BeZTqxCS+kwuzCZrLeSRvmeHrN1K/2JezIF26zkVutEZHyvo
+         jjWJbbyDSahXD0U+FEEBYa7hTM1xytKsHCD10ciNrOuUp2Hm8ZMkhKfmnI7KZFu7Kbm1
+         0Wu+FIRmVQPC+Lk4Q4zCJsG5jjqEF6J/NuVDsQTOQ/rOlObu78KXJeqd0h/HJVAYx3IO
+         GfLw==
+X-Gm-Message-State: AOAM53370nJ5pSSIHhwdznXncfnAR/t7QK2gFavFJ+MW5i4z8kpvS/sX
+        1PqM1uc0jEpDajYjEV/0kIU=
+X-Google-Smtp-Source: ABdhPJwbqKR0GLpp7maE0jkfHUshnyHNUuqdjPr/I3+w2MDHDB+gF4RqpgLBkxjdMNR6z1pqCJUdcA==
+X-Received: by 2002:a17:90b:4a4d:: with SMTP id lb13mr4395946pjb.97.1637110882424;
+        Tue, 16 Nov 2021 17:01:22 -0800 (PST)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id c1sm21805984pfv.54.2021.11.16.17.01.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Nov 2021 17:01:21 -0800 (PST)
+Date:   Wed, 17 Nov 2021 09:01:15 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Jarod Wilson <jarod@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        "David S . Miller" <davem@davemloft.net>,
+        Denis Kirjanov <dkirjanov@suse.de>,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH net-next] Bonding: add missed_max option
+Message-ID: <YZRUW6wfMdI1aN1o@Laptop-X1>
+References: <20211116084840.978383-1-liuhangbin@gmail.com>
+ <20211116120058.494d6204@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211116120058.494d6204@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 17 Nov 2021 01:12:41 +0100 Lorenzo Bianconi wrote:
-> ack, you are right. Sorry for the issue.
-> I did not trigger the problem with xdp-mb self-tests since we will not run
-> bpf_xdp_copy_buf() in this specific case, but just the memcpy()
-> (but what you reported is a bug and must be fixed). I will add more
-> self-tests.
-> Moreover, reviewing the code I guess we can just update bpf_xdp_copy() for our case.
-> Something like:
+On Tue, Nov 16, 2021 at 12:00:58PM -0800, Jakub Kicinski wrote:
+> On Tue, 16 Nov 2021 16:48:40 +0800 Hangbin Liu wrote:
+> > +	[IFLA_BOND_MISSED_MAX]		= { .type = NLA_U32 },
+> 
+> Why NLA_U32...
+> 
+> >  
+> >  static const struct nla_policy bond_slave_policy[IFLA_BOND_SLAVE_MAX + 1] = {
+> > @@ -453,6 +454,15 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+> >  			return err;
+> >  	}
+> >  
+> > +	if (data[IFLA_BOND_MISSED_MAX]) {
+> > +		int missed_max = nla_get_u8(data[IFLA_BOND_MISSED_MAX]);
+> 
+> If you read and write a u8?
 
-Seems reasonable.  We could probably play some tricks with double
-pointers to avoid the ternary operator being re-evaluated for each
-chunk. But even if it's faster it is probably not worth the ugliness
-of the code.
+Ah, that's a typo. I planed to use nla_get_u32(). But looks NLA_U8 also should
+be enough. WDYT?
+
+Thanks
+Hangbin
