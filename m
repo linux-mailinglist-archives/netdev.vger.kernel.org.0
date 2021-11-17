@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C125345492B
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 15:50:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86F65454928
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 15:50:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233205AbhKQOxL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 09:53:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59742 "EHLO mail.kernel.org"
+        id S232359AbhKQOxK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 09:53:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59730 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232209AbhKQOxI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229751AbhKQOxI (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 17 Nov 2021 09:53:08 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 1529361BCF;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 07D4361BAA;
         Wed, 17 Nov 2021 14:50:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1637160610;
-        bh=nivLXWPIItXyELugbroJwojIvmx9DNTHps75iyew6ds=;
+        bh=4LRUd1jOUtDBuuZzyOEfdajmOfsCpWPB28K4HNI2MTQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=qCv9tMtXQl9uMfcw36EJUwvHrJrMM9yQAyWmkfQ56KA62PgyCiUg4fuXcygQvv4Xi
-         mKoaie78OfHvi/1/m25ghghICWnGJUv8lEb1RBl6J6iWqs7O7po08gA4pS5xkDaJSk
-         uJ22YtAYUfvjIoq1tc9axZa0ylmAbUKFeq4C2aoTCDtZP8euu6c9azvigg7KELA2vl
-         dZu7XXBX7/X41pNuRC2AALDIxryPariyup6g9nJjsnOFYTtp8+TaL+W6jHK35iqVEF
-         6KjXzXSb+ptUAkvsGiQaA1CvgmGlFPoNAf8nfgFG9FoWMmidoUVqvm1cJGOKx6jOef
-         fyuunbXIcrY6g==
+        b=b+s7ZJ7D9/f9tUxTPKYZcieDB/jM2FUoynhsGIN3jrRk4KS7IuhSgCe59T3bMZQg9
+         wB2TQ++c7yUhoFTUNuPIbTv9Xis/S0hSfbKbMnA8OAyAS0sA7SWSmEBd7aTa/ovQzB
+         I/akuYnVF5u5GXeY8kZBn47eri4B53WcVcMRCLFpgNeDmD1AKH0H251TT/ImmuaQSd
+         vtTJyuKcg3rQWkjTL2Wi9Y5OLKS/Q2iiOfK5X6XZ902wdr1pImz32TT3cXMazb3zo1
+         Xi1x5R7g3NART4rsP932JTUhRiC3S7d8aeeBVEee78rPyT6gZ/uw3jqnptuxBf61ZH
+         oVANiy98mEpvw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0D17160BD0;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 02CB36095D;
         Wed, 17 Nov 2021 14:50:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: usb: r8152: Add MAC passthrough support for more Lenovo
- Docks
+Subject: Re: [PATCH v2] net: dpaa2-eth: fix use-after-free in dpaa2_eth_remove
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163716061004.12308.10463476878060001504.git-patchwork-notify@kernel.org>
+Message-Id: <163716061000.12308.11700471249404021576.git-patchwork-notify@kernel.org>
 Date:   Wed, 17 Nov 2021 14:50:10 +0000
-References: <20211116141917.31661-1-aaron.ma@canonical.com>
-In-Reply-To: <20211116141917.31661-1-aaron.ma@canonical.com>
-To:     Aaron Ma <aaron.ma@canonical.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, hayeswang@realtek.com,
-        tiwai@suse.de, linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+References: <20211116151712.14338-1-paskripkin@gmail.com>
+In-Reply-To: <20211116151712.14338-1-paskripkin@gmail.com>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     ioana.ciornei@nxp.com, davem@davemloft.net, kuba@kernel.org,
+        ruxandra.radulescu@nxp.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -49,19 +48,19 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Tue, 16 Nov 2021 22:19:17 +0800 you wrote:
-> Like ThinkaPad Thunderbolt 4 Dock, more Lenovo docks start to use the original
-> Realtek USB ethernet chip ID 0bda:8153.
+On Tue, 16 Nov 2021 18:17:12 +0300 you wrote:
+> Access to netdev after free_netdev() will cause use-after-free bug.
+> Move debug log before free_netdev() call to avoid it.
 > 
-> Lenovo Docks always use their own IDs for usb hub, even for older Docks.
-> If parent hub is from Lenovo, then r8152 should try MAC passthrough.
-> Verified on Lenovo TBT3 dock too.
+> Fixes: 7472dd9f6499 ("staging: fsl-dpaa2/eth: Move print message")
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+> ---
 > 
 > [...]
 
 Here is the summary with links:
-  - net: usb: r8152: Add MAC passthrough support for more Lenovo Docks
-    https://git.kernel.org/netdev/net/c/f77b83b5bbab
+  - [v2] net: dpaa2-eth: fix use-after-free in dpaa2_eth_remove
+    https://git.kernel.org/netdev/net/c/9b5a333272a4
 
 You are awesome, thank you!
 -- 
