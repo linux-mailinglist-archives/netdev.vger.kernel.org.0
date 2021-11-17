@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26E6A453ED2
+	by mail.lfdr.de (Postfix) with ESMTP id 9477E453ED3
 	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 04:10:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232820AbhKQDNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 22:13:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41622 "EHLO mail.kernel.org"
+        id S232831AbhKQDNK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 22:13:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41646 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229757AbhKQDNH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232720AbhKQDNH (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 16 Nov 2021 22:13:07 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 4F82C61BF9;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7213A63215;
         Wed, 17 Nov 2021 03:10:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1637118609;
-        bh=KeKZK4NfFw+XeRWvxZTjeXhn5HYOELRMB9po1qn1lMM=;
+        bh=xvvpKMv3n9dn1UYPou3YZDc2ijbgJ/EyVMjkBykdOrw=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=J+fTHaItsvbom3Nj+/6L/2oTw/0giXjhkVGSYDxVhYVJ8DZ2nhJ+6a7nM2ZOS0nQx
-         fSkh9U7v4VnstEYArtTWDGDfqupwOmIuZc7WsrFcnuhkzo5zeIzstdfpdbFE5zTCgu
-         Bbv5/wX+dFfSZNUEd1rGclc++KgitOL6+OW+g8Y9z/e0WISs4eh5QFvZHsF+1ck5h6
-         ioesIAiI7kjFr3KzpNYifJb2ohhvWvJ9dvwanzGnDnG4UjBvI/FogFFD3xVYlip8pN
-         0mClcaZ60Wo7L3PzSBAbU9yH8V6W2bV6DueYqa5UBp6ZUn0Ivi+PbHpXBD32GdkAtT
-         jjsXHKG7iUK8w==
+        b=d03We4CsBOySfNPcHr5vvV8sqj1jAbhBYYRKzgrmvPNZvvaeBnmmngWjZOyjvm/9F
+         LCRJN2d37zkUEG49wYrwhShe7XUMveJcaV7uht4kHmcKSjIbwhhoIDtpVtYOrjqUVD
+         kWpEY6UjcodHOSszlieT/IOWg2gJB/onsORvrqYZfZWZiel63Z43XV2FyBojOXmIsQ
+         w01LX++9PES16DhBSy2N+NO25Emap1OT+8ParJjt5M1ZvkB9pHrP9B/7QbMnxszfrH
+         5lPLtlXnBu6YwiPKuc3JL5VMy3hgVk3HIlxOh/oNiewGFC4pMJEOts6+oHL67KdZ+c
+         8mCfd0o78hPnA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 40F3660A0C;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 56CF460BBF;
         Wed, 17 Nov 2021 03:10:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net: PATCH] net: mvmdio: fix compilation warning
+Subject: Re: [PATCH net] bnxt_en: Fix compile error regression when
+ CONFIG_BNXT_SRIOV is not set
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163711860926.28737.8115206647292837561.git-patchwork-notify@kernel.org>
+Message-Id: <163711860934.28737.16471011801645396630.git-patchwork-notify@kernel.org>
 Date:   Wed, 17 Nov 2021 03:10:09 +0000
-References: <20211115153024.209083-1-mw@semihalf.com>
-In-Reply-To: <20211115153024.209083-1-mw@semihalf.com>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, upstream@semihalf.com,
-        lkp@intel.com
+References: <1637090770-22835-1-git-send-email-michael.chan@broadcom.com>
+In-Reply-To: <1637090770-22835-1-git-send-email-michael.chan@broadcom.com>
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        edwin.peer@broadcom.com, gospo@broadcom.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,20 +48,22 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Mon, 15 Nov 2021 16:30:24 +0100 you wrote:
-> The kernel test robot reported a following issue:
+On Tue, 16 Nov 2021 14:26:10 -0500 you wrote:
+> bp->sriov_cfg is not defined when CONFIG_BNXT_SRIOV is not set.  Fix
+> it by adding a helper function bnxt_sriov_cfg() to handle the logic
+> with or without the config option.
 > 
-> >> drivers/net/ethernet/marvell/mvmdio.c:426:36: warning:
-> unused variable 'orion_mdio_acpi_match' [-Wunused-const-variable]
->    static const struct acpi_device_id orion_mdio_acpi_match[] = {
->                                       ^
->    1 warning generated.
+> Fixes: 46d08f55d24e ("bnxt_en: extend RTNL to VF check in devlink driver_reinit")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+> Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
+> Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net:] net: mvmdio: fix compilation warning
-    https://git.kernel.org/netdev/net/c/2460386bef0b
+  - [net] bnxt_en: Fix compile error regression when CONFIG_BNXT_SRIOV is not set
+    https://git.kernel.org/netdev/net/c/9f5363916a50
 
 You are awesome, thank you!
 -- 
