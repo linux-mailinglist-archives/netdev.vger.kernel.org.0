@@ -2,85 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5134B454BCA
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 18:17:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85806454BE3
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 18:24:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239327AbhKQRUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 12:20:16 -0500
-Received: from h2.fbrelay.privateemail.com ([131.153.2.43]:59763 "EHLO
-        h2.fbrelay.privateemail.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229585AbhKQRUP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 12:20:15 -0500
-Received: from MTA-13-4.privateemail.com (mta-13-1.privateemail.com [198.54.122.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by h1.fbrelay.privateemail.com (Postfix) with ESMTPS id 5946A80AFB;
-        Wed, 17 Nov 2021 12:17:15 -0500 (EST)
-Received: from mta-13.privateemail.com (localhost [127.0.0.1])
-        by mta-13.privateemail.com (Postfix) with ESMTP id 8557F18000A1;
-        Wed, 17 Nov 2021 12:17:13 -0500 (EST)
-Received: from localhost.localdomain (unknown [10.20.151.206])
-        by mta-13.privateemail.com (Postfix) with ESMTPA id 10EA918000AB;
-        Wed, 17 Nov 2021 12:17:11 -0500 (EST)
-From:   Jordy Zomer <jordy@pwning.systems>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jordy Zomer <jordy@pwning.systems>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        id S239376AbhKQR1E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 12:27:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40966 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239374AbhKQR1E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 12:27:04 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7CF4C061570
+        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 09:24:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=/5pJKAu86clUfne3m1qNFiQsezJ+QXOL8gtg93QnGOs=; b=kH2rl90bLU7bBb8ZHN5Ju6nQ0Q
+        /Fe7INUXnly45loGkg+uuCePb4mATT9u4ipjhxGEg6rft4v8aMb753MSTecS6bZHYH9869hhDlvaa
+        Gj0U/AqPw1pjQSHDaR2UC7vFVf6NmZeML6BWNDDAXqsZHZba9wJgI/yTO84wTSjP3kJQCMi6zfhCG
+        pGZR84UrE2CYIcWzZot6u2JzKsoLimO77I0nPgPyboEC+flWABxZaLSbjnhc49xyRBU7yoxEq1WA1
+        l25vf3p4y3NoPzMU64U7WKUWJubMWcLwqerWpA8SE/QbpB7l3V1xvu8NwJgtTKz29IbiYI56oB3hk
+        wr5xWoSA==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:46360 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1mnOfD-00029K-63; Wed, 17 Nov 2021 17:24:03 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1mnOfC-0085Ij-MK; Wed, 17 Nov 2021 17:24:02 +0000
+In-Reply-To: <YZU1oGJuGBpQF+vi@shell.armlinux.org.uk>
+References: <YZU1oGJuGBpQF+vi@shell.armlinux.org.uk>
+From:   Russell King <rmk+kernel@armlinux.org.uk>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH] nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION
-Date:   Wed, 17 Nov 2021 18:17:03 +0100
-Message-Id: <20211117171706.2731410-1-jordy@pwning.systems>
-X-Mailer: git-send-email 2.27.0
+Subject: [PATCH net-next 1/3] net: dpaa2-mac: populate supported_interfaces
+ member
 MIME-Version: 1.0
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1mnOfC-0085Ij-MK@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Wed, 17 Nov 2021 17:24:02 +0000
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It appears that there are some buffer overflows in EVT_TRANSACTION.
-This happens because the length parameters that are passed to memcpy
-come directly from skb->data and are not guarded in any way.
+Populate the phy interface mode bitmap for the Freescale DPAA2 driver
+with interfaces modes supported by the MAC.
 
-It would be nice if someone can review and test this patch because
-I don't own the hardware :)
-
-Signed-off-by: Jordy Zomer <jordy@pwning.systems>
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- drivers/nfc/st21nfca/se.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 21 +++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-diff --git a/drivers/nfc/st21nfca/se.c b/drivers/nfc/st21nfca/se.c
-index a43fc4117fa5..e3483aca3280 100644
---- a/drivers/nfc/st21nfca/se.c
-+++ b/drivers/nfc/st21nfca/se.c
-@@ -316,6 +316,11 @@ int st21nfca_connectivity_event_received(struct nfc_hci_dev *hdev, u8 host,
- 			return -ENOMEM;
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+index ef8f0a055024..176ce0a03716 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+@@ -336,9 +336,30 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
+ 			return err;
+ 	}
  
- 		transaction->aid_len = skb->data[1];
-+
-+		// Checking if the length of the AID is valid
-+		if (transaction->aid_len > sizeof(transaction->aid))
-+			return -EINVAL;
-+
- 		memcpy(transaction->aid, &skb->data[2],
- 		       transaction->aid_len);
++	memset(&mac->phylink_config, 0, sizeof(mac->phylink_config));
+ 	mac->phylink_config.dev = &net_dev->dev;
+ 	mac->phylink_config.type = PHYLINK_NETDEV;
  
-@@ -325,6 +330,14 @@ int st21nfca_connectivity_event_received(struct nfc_hci_dev *hdev, u8 host,
- 			return -EPROTO;
- 
- 		transaction->params_len = skb->data[transaction->aid_len + 3];
++	/* We support the current interface mode, and if we have a PCS
++	 * similar interface modes that do not require the PLLs to be
++	 * reconfigured.
++	 */
++	__set_bit(mac->if_mode, mac->phylink_config.supported_interfaces);
++	if (mac->pcs) {
++		switch (mac->if_mode) {
++		case PHY_INTERFACE_MODE_1000BASEX:
++		case PHY_INTERFACE_MODE_SGMII:
++			__set_bit(PHY_INTERFACE_MODE_1000BASEX,
++				  mac->phylink_config.supported_interfaces);
++			__set_bit(PHY_INTERFACE_MODE_SGMII,
++				  mac->phylink_config.supported_interfaces);
++			break;
 +
-+		// check if the length of the parameters is valid
-+		// we can't use sizeof(transaction->params) because it's
-+		// a flexible array member so we have to check if params_len
-+		// is bigger than the space allocated for the array
-+		if (transaction->params_len > ((skb->len - 2) - sizeof(struct nfc_evt_transaction)))
-+			return -EINVAL;
++		default:
++			break;
++		}
++	}
 +
- 		memcpy(transaction->params, skb->data +
- 		       transaction->aid_len + 4, transaction->params_len);
- 
+ 	phylink = phylink_create(&mac->phylink_config,
+ 				 dpmac_node, mac->if_mode,
+ 				 &dpaa2_mac_phylink_ops);
 -- 
-2.27.0
+2.30.2
 
