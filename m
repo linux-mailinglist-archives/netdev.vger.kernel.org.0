@@ -2,198 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF9D54545FF
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 12:52:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C2A2454613
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 13:02:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237033AbhKQLz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 06:55:27 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:49343 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237040AbhKQLzY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 06:55:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637149945;
+        id S237107AbhKQMFs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 07:05:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51312 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229656AbhKQMFs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 07:05:48 -0500
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A33C061746;
+        Wed, 17 Nov 2021 04:02:49 -0800 (PST)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1637150567;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HvX66XOs0ZBobeStnWySNo3Mavv4MDJzDS3S8I8/fiQ=;
-        b=fKGyi/uWf77UnqujzuIBmu29DfwuzcPaCcAn5DiMl3+u6JHeovoV2AJPgjH4BMEmGVJlF+
-        EWRYRtmxHsMUg32arKbdJYaiBAMT7sx/6LRjHZvhbV+OwrVtVhoXT8oWlc/2fuUCxMgOwI
-        PuBSGbplCDhPq28sbYjEtHrI6J0/fZ8=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-558-7JWAaD73NmevCRv3vkQ46w-1; Wed, 17 Nov 2021 06:52:24 -0500
-X-MC-Unique: 7JWAaD73NmevCRv3vkQ46w-1
-Received: by mail-ed1-f70.google.com with SMTP id v9-20020a50d849000000b003dcb31eabaaso1903166edj.13
-        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 03:52:23 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
-         :subject:content-language:to:references:in-reply-to
-         :content-transfer-encoding;
-        bh=HvX66XOs0ZBobeStnWySNo3Mavv4MDJzDS3S8I8/fiQ=;
-        b=7dQCKq6ipwjCWjmibgaQ5RdfYM75i8BCTJMi4DB7Fkugxd3vWy4d1Vr7WSkRbuDVVs
-         RCDOtuarkHFJ7O2SwqrfkjeiS7RCZipymhoQFJBU62cPWWoh6dj8UZOhbLKGFji2CgU1
-         oi/o4/DvdtjFCl96+aRgr3LTH0sYRAu1tGwvvBtdKkaP5hgwmi1HtIUATGCq0i78Aelh
-         QoukrE4+BD/3NWPz/5b6DGCswMWoY1U7PbEPgVVtdGU75MV0/mx5VtIzAT9noYmC0Nfe
-         NfsndsdoMwSBhzfM4SHC8ebiheAi15GPgnPaacfyLofT83meEnb6r+gXUCU2BZjyvNoC
-         7f1w==
-X-Gm-Message-State: AOAM532rTd3JppzBoKPAOGmCyGfmdZ2MYTdgbAtH8atgen/4eY2PvBT8
-        SlJg/b6XmgO9TfPxkhDiKNkHq1wA9gOGBbaHVJ7PFxH+zlGAoQVS3hTAwCjCuAEjjQnA8liO3zy
-        3MQR6OYcxs4nPUD41
-X-Received: by 2002:a05:6402:438a:: with SMTP id o10mr21205072edc.353.1637149942142;
-        Wed, 17 Nov 2021 03:52:22 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwKZxP+dS8RoGlJQ+jqQ+6CML1qsEojuHmMVRttO2pMm8MZB+vTKc9ip9N+Y8IFaFMLR5LTjQ==
-X-Received: by 2002:a05:6402:438a:: with SMTP id o10mr21205045edc.353.1637149941916;
-        Wed, 17 Nov 2021 03:52:21 -0800 (PST)
-Received: from [192.168.2.13] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
-        by smtp.gmail.com with ESMTPSA id b14sm7872857edw.6.2021.11.17.03.52.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Nov 2021 03:52:21 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <712f3c04-ffc4-0ae1-00e2-1acb1af81154@redhat.com>
-Date:   Wed, 17 Nov 2021 12:52:18 +0100
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=sylWkYuumGpx/o95w1HfoTWXOYpU1oA4v54KTqim028=;
+        b=vJ3/meiCbaJ4q7W6WWrbVLi38bQXZxopJJYF51aRV4U7ff72k1eTmvfS4vcopF9IgXHkN/
+        LtlIv1N6MpnJvCJCkVABUT/yACblhf6BiSjbJCoLDoWMIo6dCXAjw8zpCd722cayQyknGt
+        pEtfVKbySuUr5s39y3wdbFRvLbcz1qo=
+From:   Yajun Deng <yajun.deng@linux.dev>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yajun Deng <yajun.deng@linux.dev>
+Subject: [PATCH net-next] neigh: introduce __neigh_confirm() for __ipv{4, 6}_confirm_neigh
+Date:   Wed, 17 Nov 2021 20:02:15 +0800
+Message-Id: <20211117120215.30209-1-yajun.deng@linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Cc:     brouer@redhat.com, Yunsheng Lin <linyunsheng@huawei.com>,
-        Guillaume Tucker <guillaume.tucker@collabora.com>,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
-        akpm@linux-foundation.org, peterz@infradead.org, will@kernel.org,
-        jhubbard@nvidia.com, yuzhao@google.com, mcroce@microsoft.com,
-        fenghua.yu@intel.com, feng.tang@intel.com, jgg@ziepe.ca,
-        aarcange@redhat.com, guro@fb.com,
-        "kernelci@groups.io" <kernelci@groups.io>
-Subject: Re: [PATCH net-next v6] page_pool: disable dma mapping support for
- 32-bit arch with 64-bit DMA
-Content-Language: en-US
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>
-References: <20211013091920.1106-1-linyunsheng@huawei.com>
- <b9c0e7ef-a7a2-66ad-3a19-94cc545bd557@collabora.com>
- <1090744a-3de6-1dc2-5efe-b7caae45223a@huawei.com>
- <644e10ca-87b8-b553-db96-984c0b2c6da1@collabora.com>
- <93173400-1d37-09ed-57ef-931550b5a582@huawei.com>
- <YZJKNLEm6YTkygHM@apalos.home>
- <CAC_iWjKFLr932sMt9G2T+MFYUAQZNWPqp6YsnmSd3rMia7OpoA@mail.gmail.com>
- <d0223831-44ff-3e1a-1be9-27d751dc39f2@huawei.com>
- <8c688448-e8a9-5a6b-7b17-ccd294a416d3@redhat.com>
- <YZKtD4+13gQBXEX6@apalos.home>
-In-Reply-To: <YZKtD4+13gQBXEX6@apalos.home>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Those __ipv4_confirm_neigh(), __ipv6_confirm_neigh() and __ipv6_confirm_neigh_stub()
+functions have similar code. introduce __neigh_confirm() for it.
 
+Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+---
+ include/net/arp.h        | 21 ++++++---------------
+ include/net/ndisc.h      | 26 ++------------------------
+ include/net/neighbour.h  | 19 +++++++++++++++++++
+ include/net/route.h      |  2 +-
+ net/core/filter.c        |  3 +--
+ net/core/neighbour.c     |  4 +---
+ net/ipv4/fib_semantics.c |  2 +-
+ net/ipv4/nexthop.c       |  3 +--
+ 8 files changed, 32 insertions(+), 48 deletions(-)
 
-On 15/11/2021 19.55, Ilias Apalodimas wrote:
-> 
-> [...]
-> 
->>>>>>>>> Some more details can be found here:
->>>>>>>>>
->>>>>>>>>     https://linux.kernelci.org/test/case/id/6189968c3ec0a3c06e3358fe/
->>>>>>>>>
->>>>>>>>> Here's the same revision on the same platform booting fine with a
->>>>>>>>> plain multi_v7_defconfig build:
->>>>>>>>>
->>>>>>>>>     https://linux.kernelci.org/test/plan/id/61899d322c0e9fee7e3358ec/
->>>>>>>>>
->>>>>>>>> Please let us know if you need any help debugging this issue or
->>>>>>>>> if you have a fix to try.
->>>>>>>>
->>>>>>>> The patch below is removing the dma mapping support in page pool
->>>>>>>> for 32 bit systems with 64 bit dma address, so it seems there
->>>>>>>> is indeed a a drvier using the the page pool with PP_FLAG_DMA_MAP
->>>>>>>> flags set in a 32 bit systems with 64 bit dma address.
->>>>>>>>
->>>>>>>> It seems we might need to revert the below patch or implement the
->>>>>>>> DMA-mapping tracking support in the driver as mentioned in the below
->>>>>>>> commit log.
->>>>>>>>
->>>>>>>> which ethernet driver do you use in your system?
->>>>>>>
->>>>>>> Thanks for taking a look and sorry for the slow reply.  Here's a
->>>>>>> booting test job with LPAE disabled:
->>>>>>>
->>>>>>>       https://linux.kernelci.org/test/plan/id/618dbb81c60c4d94503358f1/
->>>>>>>       https://storage.kernelci.org/mainline/master/v5.15-12452-g5833291ab6de/arm/multi_v7_defconfig/gcc-10/lab-collabora/baseline-nfs-rk3288-rock2-square.html#L812
->>>>>>>
->>>>>>> [    8.314523] rk_gmac-dwmac ff290000.ethernet eth0: Link is Up - 1Gbps/Full - flow control rx/tx
->>>>>>>
->>>>>>> So the driver is drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
->>>>>>
->>>>>> Thanks for the report, this patch seems to cause problem for 32-bit
->>>>>> system with LPAE enabled.
->>>>>>
->>>>>> As LPAE seems like a common feature for 32 bits system, this patch
->>>>>> might need to be reverted.
->>>>>>
->>>>>> @Jesper, @Ilias, what do you think?
->>>>>
->>>>>
->>>>> So enabling LPAE also enables CONFIG_ARCH_DMA_ADDR_T_64BIT on that board?
->>>>> Doing a quick grep only selects that for XEN.  I am ok reverting that,  but
->>>>> I think we need to understand how the dma address ended up being 64bit.
->>>>
->>>> So looking a bit closer, indeed enabling LPAE always enables this.  So
->>>> we need to revert the patch.
->>>> Yunsheng will you send that?
->>>
->>> Sure.
->>
->> Why don't we change that driver[1] to not use page_pool_get_dma_addr() ?
->>
->>   [1] drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
->>
->> I took a closer look and it seems the driver have struct stmmac_rx_buffer in
->> which is stored the dma_addr it gets from page_pool_get_dma_addr().
->>
->> See func: stmmac_init_rx_buffers
->>
->>   static int stmmac_init_rx_buffers(struct stmmac_priv *priv,
->> 				struct dma_desc *p,
->> 				int i, gfp_t flags, u32 queue)
->>   {
->>
->> 	if (!buf->page) {
->> 		buf->page = page_pool_dev_alloc_pages(rx_q->page_pool);
->> 		if (!buf->page)
->> 			return -ENOMEM;
->> 		buf->page_offset = stmmac_rx_offset(priv);
->> 	}
->> 	[...]
->>
->> 	buf->addr = page_pool_get_dma_addr(buf->page) + buf->page_offset;
->>
->> 	stmmac_set_desc_addr(priv, p, buf->addr);
->> 	[...]
->>   }
->>
->> I question if this driver really to use page_pool for storing the dma_addr
->> as it just extract it and store it outside page_pool?
->>
->> @Ilias it looks like you added part of the page_pool support in this driver,
->> so I hope you can give a qualified guess on:
->> How much work will it be to let driver do the DMA-map itself?
->> (and not depend on the DMA-map feature provided by page_pool)
-> 
-> It shouldn't be that hard.   However when we removed that we were hoping we
-> had no active consumers.  So we'll have to fix this and check for other
-> 32-bit boards with LPAE and page_pool handling the DMA mappings.
-> But the point now is that this is far from a 'hardware configuration' of
-> 32-bit CPU + 64-bit DMA.  Every armv7 and x86 board can get that.  So I was
-> thinking it's better to revert this and live with the 'weird' handling in the
-> code.
-
-Okay, I acked the revert.  After discussing this over IRC with Ilias (my 
-page_pool co-maintainer). Guess we will have to live with maintaining 
-this code for 32-bit CPU + 64-bit DMA.
-
---Jesper
+diff --git a/include/net/arp.h b/include/net/arp.h
+index 4950191f6b2b..4772510851d7 100644
+--- a/include/net/arp.h
++++ b/include/net/arp.h
+@@ -19,8 +19,10 @@ static inline u32 arp_hashfn(const void *pkey, const struct net_device *dev, u32
+ }
+ 
+ #ifdef CONFIG_INET
+-static inline struct neighbour *__ipv4_neigh_lookup_noref(struct net_device *dev, u32 key)
++static inline struct neighbour *__ipv4_neigh_lookup_noref(struct net_device *dev, const void *pkey)
+ {
++	u32 key = *(const u32 *)pkey;
++
+ 	if (dev->flags & (IFF_LOOPBACK | IFF_POINTOPOINT))
+ 		key = INADDR_ANY;
+ 
+@@ -28,7 +30,7 @@ static inline struct neighbour *__ipv4_neigh_lookup_noref(struct net_device *dev
+ }
+ #else
+ static inline
+-struct neighbour *__ipv4_neigh_lookup_noref(struct net_device *dev, u32 key)
++struct neighbour *__ipv4_neigh_lookup_noref(struct net_device *dev, const void *pkey)
+ {
+ 	return NULL;
+ }
+@@ -39,7 +41,7 @@ static inline struct neighbour *__ipv4_neigh_lookup(struct net_device *dev, u32
+ 	struct neighbour *n;
+ 
+ 	rcu_read_lock_bh();
+-	n = __ipv4_neigh_lookup_noref(dev, key);
++	n = __ipv4_neigh_lookup_noref(dev, &key);
+ 	if (n && !refcount_inc_not_zero(&n->refcnt))
+ 		n = NULL;
+ 	rcu_read_unlock_bh();
+@@ -49,18 +51,7 @@ static inline struct neighbour *__ipv4_neigh_lookup(struct net_device *dev, u32
+ 
+ static inline void __ipv4_confirm_neigh(struct net_device *dev, u32 key)
+ {
+-	struct neighbour *n;
+-
+-	rcu_read_lock_bh();
+-	n = __ipv4_neigh_lookup_noref(dev, key);
+-	if (n) {
+-		unsigned long now = jiffies;
+-
+-		/* avoid dirtying neighbour */
+-		if (READ_ONCE(n->confirmed) != now)
+-			WRITE_ONCE(n->confirmed, now);
+-	}
+-	rcu_read_unlock_bh();
++	__neigh_confirm(dev, &key, __ipv4_neigh_lookup_noref);
+ }
+ 
+ void arp_init(void);
+diff --git a/include/net/ndisc.h b/include/net/ndisc.h
+index 04341d86585d..4ea4dc167a53 100644
+--- a/include/net/ndisc.h
++++ b/include/net/ndisc.h
+@@ -407,35 +407,13 @@ static inline struct neighbour *__ipv6_neigh_lookup(struct net_device *dev, cons
+ static inline void __ipv6_confirm_neigh(struct net_device *dev,
+ 					const void *pkey)
+ {
+-	struct neighbour *n;
+-
+-	rcu_read_lock_bh();
+-	n = __ipv6_neigh_lookup_noref(dev, pkey);
+-	if (n) {
+-		unsigned long now = jiffies;
+-
+-		/* avoid dirtying neighbour */
+-		if (READ_ONCE(n->confirmed) != now)
+-			WRITE_ONCE(n->confirmed, now);
+-	}
+-	rcu_read_unlock_bh();
++	__neigh_confirm(dev, pkey, __ipv6_neigh_lookup_noref);
+ }
+ 
+ static inline void __ipv6_confirm_neigh_stub(struct net_device *dev,
+ 					     const void *pkey)
+ {
+-	struct neighbour *n;
+-
+-	rcu_read_lock_bh();
+-	n = __ipv6_neigh_lookup_noref_stub(dev, pkey);
+-	if (n) {
+-		unsigned long now = jiffies;
+-
+-		/* avoid dirtying neighbour */
+-		if (READ_ONCE(n->confirmed) != now)
+-			WRITE_ONCE(n->confirmed, now);
+-	}
+-	rcu_read_unlock_bh();
++	__neigh_confirm(dev, pkey, __ipv6_neigh_lookup_noref_stub);
+ }
+ 
+ /* uses ipv6_stub and is meant for use outside of IPv6 core */
+diff --git a/include/net/neighbour.h b/include/net/neighbour.h
+index 38a0c1d24570..a8c99a7d4f39 100644
+--- a/include/net/neighbour.h
++++ b/include/net/neighbour.h
+@@ -335,6 +335,25 @@ static inline struct neighbour *neigh_create(struct neigh_table *tbl,
+ {
+ 	return __neigh_create(tbl, pkey, dev, true);
+ }
++
++static inline void __neigh_confirm(struct net_device *dev, const void *pkey,
++				   struct neighbour *(*neigh_lookup_noref)(
++				   struct net_device *, const void *))
++{
++	struct neighbour *n;
++
++	rcu_read_lock_bh();
++	n = neigh_lookup_noref(dev, pkey);
++	if (n) {
++		unsigned long now = jiffies;
++
++		/* avoid dirtying neighbour */
++		if (READ_ONCE(n->confirmed) != now)
++			WRITE_ONCE(n->confirmed, now);
++	}
++	rcu_read_unlock_bh();
++}
++
+ void neigh_destroy(struct neighbour *neigh);
+ int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb);
+ int neigh_update(struct neighbour *neigh, const u8 *lladdr, u8 new, u32 flags,
+diff --git a/include/net/route.h b/include/net/route.h
+index 2e6c0e153e3a..7188f6e48ae8 100644
+--- a/include/net/route.h
++++ b/include/net/route.h
+@@ -369,7 +369,7 @@ static inline struct neighbour *ip_neigh_gw4(struct net_device *dev,
+ {
+ 	struct neighbour *neigh;
+ 
+-	neigh = __ipv4_neigh_lookup_noref(dev, daddr);
++	neigh = __ipv4_neigh_lookup_noref(dev, &daddr);
+ 	if (unlikely(!neigh))
+ 		neigh = __neigh_create(&arp_tbl, &daddr, dev, false);
+ 
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 26e0276aa00d..16a4b7fb281c 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -5478,8 +5478,7 @@ static int bpf_ipv4_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
+ 		if (nhc->nhc_gw_family)
+ 			params->ipv4_dst = nhc->nhc_gw.ipv4;
+ 
+-		neigh = __ipv4_neigh_lookup_noref(dev,
+-						 (__force u32)params->ipv4_dst);
++		neigh = __ipv4_neigh_lookup_noref(dev, &params->ipv4_dst);
+ 	} else {
+ 		struct in6_addr *dst = (struct in6_addr *)params->ipv6_dst;
+ 
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index 47931c8be04b..2f05473bcad0 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -3091,9 +3091,7 @@ int neigh_xmit(int index, struct net_device *dev,
+ 			goto out;
+ 		rcu_read_lock_bh();
+ 		if (index == NEIGH_ARP_TABLE) {
+-			u32 key = *((u32 *)addr);
+-
+-			neigh = __ipv4_neigh_lookup_noref(dev, key);
++			neigh = __ipv4_neigh_lookup_noref(dev, addr);
+ 		} else {
+ 			neigh = __neigh_lookup_noref(tbl, addr, dev);
+ 		}
+diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+index 3364cb9c67e0..0ea7d243ac5f 100644
+--- a/net/ipv4/fib_semantics.c
++++ b/net/ipv4/fib_semantics.c
+@@ -2161,7 +2161,7 @@ static bool fib_good_nh(const struct fib_nh *nh)
+ 
+ 		if (likely(nh->fib_nh_gw_family == AF_INET))
+ 			n = __ipv4_neigh_lookup_noref(nh->fib_nh_dev,
+-						   (__force u32)nh->fib_nh_gw4);
++						      &nh->fib_nh_gw4);
+ 		else if (nh->fib_nh_gw_family == AF_INET6)
+ 			n = __ipv6_neigh_lookup_noref_stub(nh->fib_nh_dev,
+ 							   &nh->fib_nh_gw6);
+diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+index 9e8100728d46..ce618965896c 100644
+--- a/net/ipv4/nexthop.c
++++ b/net/ipv4/nexthop.c
+@@ -1141,8 +1141,7 @@ static bool ipv4_good_nh(const struct fib_nh *nh)
+ 
+ 	rcu_read_lock_bh();
+ 
+-	n = __ipv4_neigh_lookup_noref(nh->fib_nh_dev,
+-				      (__force u32)nh->fib_nh_gw4);
++	n = __ipv4_neigh_lookup_noref(nh->fib_nh_dev, &nh->fib_nh_gw4);
+ 	if (n)
+ 		state = n->nud_state;
+ 
+-- 
+2.32.0
 
