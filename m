@@ -2,68 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D00C453EF8
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 04:30:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B7DF453EF6
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 04:30:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232913AbhKQDdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 22:33:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45986 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232890AbhKQDdH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232910AbhKQDdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 16 Nov 2021 22:33:07 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 6E9B9617E4;
+Received: from mail.kernel.org ([198.145.29.99]:45968 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229791AbhKQDdG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 22:33:06 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1F7D6613A3;
         Wed, 17 Nov 2021 03:30:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1637119809;
-        bh=aUJxR7/AxG2LydPzILMvjaTrdWYcN3YlfwlE6JlB0Zo=;
+        bh=PtzhUfn7bXK4j7af+kNRfPgnlZRUjJywXDhtbWAzhuY=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=XuM9AhiAReZzyguxjq3YsoaBc6ZrAtOuT1/n3PUDFrAOQS0ipDNXZs5cTo92PDaP1
-         BScpWLnWCYz43TAsHWWzYdHpcY1qTDCJakejE+E3RNquJH+4tGaiJuz/xwfUjP3Grp
-         594ySgGNEQp5m1rW3lzrdmLVHwMGAVttOkCl3aXE5RFGYNaoHAv4UBIY0/zD8ZjY4k
-         gpD/wItMhbekGAZaMaEdqY2mh7SECIc6nHNA1g3WP7EEvNzq1Pg+788F2M7WrGeG8B
-         J+sVS+0gQZiQxWvDsxEvhwSHgiTSmn6eftFQwemduo/OTlr/xN0/w1qU4TtSEXhv0M
-         o6NalprLRsW5g==
+        b=bB1ezkpehjjWQkQ8JG+uo8pPCwNwfjDQnH1R2uMk7MXQEGDUERNoUx+IkGRm8ZUhy
+         l5OPZzqWvynQOLV3AF4DU1hVLo3rFwfMP6GKUQXNabI6ek/jxNrY/TikwijKF/6mxG
+         hejQzoeZ+aXc1YStWmZCFdBFuD75QB5Lz8vEOWf8d2hoBxd+CgIni905fk68F2FEYk
+         mgCbBpBZ3k11t1dou4jaY7+gjgqfOIdjWskhycznPDld6Tfm+Klg631QWihb+bvd9H
+         IsoWN42IzqoPpsS9zO6gZFwb75BmWqCX1HCBdRgYvMMYVpZAN1Zb0fx1+V1hkP0Z2a
+         cR3wnLiIbYVIQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6929360A4E;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 168AB60A0C;
         Wed, 17 Nov 2021 03:30:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: document SMII and correct phylink's new
- validation mechanism
+Subject: Re: [PATCH net] amt: cancel delayed_work synchronously in amt_fini()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163711980942.5825.15434052999657595052.git-patchwork-notify@kernel.org>
+Message-Id: <163711980908.5825.9169772862051371831.git-patchwork-notify@kernel.org>
 Date:   Wed, 17 Nov 2021 03:30:09 +0000
-References: <E1mmfVl-0075nP-14@rmk-PC.armlinux.org.uk>
-In-Reply-To: <E1mmfVl-0075nP-14@rmk-PC.armlinux.org.uk>
-To:     Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org, corbet@lwn.net,
-        linux-doc@vger.kernel.org
+References: <20211116160923.25258-1-ap420073@gmail.com>
+In-Reply-To: <20211116160923.25258-1-ap420073@gmail.com>
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Mon, 15 Nov 2021 17:11:17 +0000 you wrote:
-> SMII has not been documented in the kernel, but information on this PHY
-> interface mode has been recently found. Document it, and correct the
-> recently introduced phylink handling for this interface mode.
+On Tue, 16 Nov 2021 16:09:23 +0000 you wrote:
+> When the amt module is being removed, it calls cancel_delayed_work()
+> to cancel pending delayed_work. But this function doesn't wait for
+> canceling delayed_work.
+> So, workers can be still doing after module delete.
 > 
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> ---
->  Documentation/networking/phy.rst | 5 +++++
->  drivers/net/phy/phylink.c        | 2 +-
->  include/linux/phy.h              | 2 +-
->  3 files changed, 7 insertions(+), 2 deletions(-)
+> In order to avoid this, cancel_delayed_work_sync() should be used instead.
+> 
+> [...]
 
 Here is the summary with links:
-  - [net-next] net: document SMII and correct phylink's new validation mechanism
-    https://git.kernel.org/netdev/net-next/c/b9241f54138c
+  - [net] amt: cancel delayed_work synchronously in amt_fini()
+    https://git.kernel.org/netdev/net/c/b0024a04e488
 
 You are awesome, thank you!
 -- 
