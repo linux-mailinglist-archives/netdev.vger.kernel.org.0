@@ -2,95 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3732453F56
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 05:16:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA48D453F75
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 05:26:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232021AbhKQES5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 23:18:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58012 "EHLO
+        id S233037AbhKQE3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 23:29:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229629AbhKQES5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 23:18:57 -0500
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DD5FC061570
-        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 20:15:59 -0800 (PST)
-Received: by mail-ot1-x334.google.com with SMTP id o15-20020a9d410f000000b0055c942cc7a0so2345850ote.8
-        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 20:15:59 -0800 (PST)
+        with ESMTP id S229632AbhKQE3q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 23:29:46 -0500
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D9C2C061570;
+        Tue, 16 Nov 2021 20:26:48 -0800 (PST)
+Received: by mail-pl1-x633.google.com with SMTP id t21so1035302plr.6;
+        Tue, 16 Nov 2021 20:26:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=xWqTH1RstVYTGuS4Vj0YJf/DNrjplEcQgUfE7e5VoLk=;
-        b=DZ7Jp3lsao83Vp0NnRmqXfoEJ6XhX96khr2Nm5Nn6BwyBHtqUsiPvyuKIDa1ExW22+
-         artyRnXDjFW+JyHJ5v6liDvRhDmECRgG8Tc6G/wDDWqHma0FLrwOO1iqOWscq8HymU9w
-         yWk/IyO3LWfwWg79hEoU3OcJexD8w/yivBG5yLnVgRA+C1BOXLErNp0eDidwE5cZ9MUb
-         k6cnrAYBuBaZYsXPmqtWIrZccZLOLtU5mGMTWlxdYyC8QpX67lbHIQDhGM1fsd3klJCs
-         wLqt8GIq7T0CfmPbPjQHSPYhIMDhP908cSBb4G7AXgPSo9Jhvd0ZoXfdxv3Il+3xkwrc
-         BJbw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=tS1+hrsrVzfQyOyashnDo/1MOiewYsmRz2aYDUPV49o=;
+        b=lxBEbNwMW1lHDoIwuqj28c8tm0NjGUuTFBJSUJHyDJJG0UBSxIbqIwauHI92BqEfDH
+         HlUQ6j4o9XAZV3+4Gn4iXZNIZiN5H7Ak/qSk7DOCrgPrJs+cONqpLeWAcIAnJlwl5f+u
+         ZSvkGwyybv1XH46QPpr6zCt50wqyxdq5rytd6EUFf8TFl54TSY+LnC8wKgOgILTwjpTJ
+         P726ugo3RfyuzY7qT7z1kri6+Qw9r88k5JiiOIE1BqfxfgsUUnPX+sAVhFoNkKwScK/9
+         H1O7UYICoJtlq9e3ryf5+LDrmunurg9DkPN0O+alJHD29pKf+02VCedH6IHaVT55pb0f
+         VVSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=xWqTH1RstVYTGuS4Vj0YJf/DNrjplEcQgUfE7e5VoLk=;
-        b=Wqc2IelgRy25ecOHGHczk6s4HjPIK7Qk1uBJ79esj5uHnBGp9zHlwi/xnu41vGdp28
-         Riy5TzGAM/9/43DkHMOcnbTfCbJf3n1rm252dfGgSadKeHsarwMi2rjPI61NWwkMUenm
-         4KXzOEikkJIJUvHMCHpbUNGCqWNfm4tLUpOcehE0u/jYHcZh7T4XWd6fMJ5GeeGBkHfo
-         EsEvBXpB4uyZCZ6kncQBREbe47+PH7Avxs2ssbTVJkCWDvI0i3pwGBsDHCMWvjcEI54t
-         TBtBMPOCEgjP+c1ibdRUqHUD5Sa67B9LbtLR7pqIMBExaH9kJmxKCb+ZN8Ou/YrvtXOQ
-         8Qsw==
-X-Gm-Message-State: AOAM531FbaoArrb7cenSJ8AIt/lxu+c94FspYQCd2F8z30o4372A2HjE
-        s6Dk7DmdZNoJf708H4fhtLc=
-X-Google-Smtp-Source: ABdhPJwcD9CyU+VzGKFMKeZG5rltUYpF8DWD2mJWqZj/DEAkbDHcfUufsRfi1lTVOfSKszzBLE5QDA==
-X-Received: by 2002:a05:6830:1358:: with SMTP id r24mr11167238otq.8.1637122558917;
-        Tue, 16 Nov 2021 20:15:58 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id j5sm721481ots.68.2021.11.16.20.15.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Nov 2021 20:15:58 -0800 (PST)
-Message-ID: <d83d3013-0a06-b633-fded-b563fa52b200@gmail.com>
-Date:   Tue, 16 Nov 2021 21:15:57 -0700
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=tS1+hrsrVzfQyOyashnDo/1MOiewYsmRz2aYDUPV49o=;
+        b=hv561G5qzU8xoriLL16RGmD8XdNUzq+TYvJkkXc7uFpikHvvyrMopC9U3UQyQV3TLj
+         E4DRWwRLkyksyl/Ur+OF8eSovn49sEeIy+S9vQL30iLB/uMxUxdm2ttPlBVMZV5ZxMID
+         w90Jh46m5voagPl3/y2SHxD6N2dpCrxCIDPG71zUWkAgD1+tiZ/PLmvHT37quqqapXdQ
+         HS7c0sNwy6IZImy8zVBaahK7ZEAS7xsqxcQli83yFYVO8LQCxRW/LbehBeeler8lJhZv
+         ez0L6Jvglvd+3Qc409+DBX6SqMO3B28WWRJPObGcSKKeEH2wHL2zRkYk3ywltxfjtoed
+         h8ow==
+X-Gm-Message-State: AOAM533cMXu52DTsVJbr60T57GPoQl6VP/l+4OfmXWrI7XMFgr7B5Dl5
+        K5ItnXGq3azNqOFkSd+2sWw=
+X-Google-Smtp-Source: ABdhPJxGxJv0Zv2wAjmIKvIusG0vR1m1fkt+DrH84i9dq3xSvWRzSH/46yZBdmayD2vtxIliNe0+YQ==
+X-Received: by 2002:a17:902:db12:b0:142:3ac:7ec3 with SMTP id m18-20020a170902db1200b0014203ac7ec3mr51376829plx.2.1637123207961;
+        Tue, 16 Nov 2021 20:26:47 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:645:c000:2163:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id pj12sm3909958pjb.51.2021.11.16.20.26.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Nov 2021 20:26:47 -0800 (PST)
+Date:   Tue, 16 Nov 2021 20:26:45 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        linux-omap@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: ethernet: ti: cpsw: Enable PHY timestamping
+Message-ID: <20211117042645.GB23271@hoboy.vegasvil.org>
+References: <20211116080325.92830-1-kurt@linutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.1
-Subject: Re: [Patch net v3 2/2] selftests: add a test case for rp_filter
-Content-Language: en-US
-To:     Hangbin Liu <liuhangbin@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-References: <20190717214159.25959-1-xiyou.wangcong@gmail.com>
- <20190717214159.25959-3-xiyou.wangcong@gmail.com>
- <YYuObqtyYUuWLarX@Laptop-X1>
- <CAM_iQpV99vbCOZUj_9chHt8TXeiXqbvwKW7r8T9t1hpTa79qdQ@mail.gmail.com>
- <YZR0y7J/MeYD9Hfm@Laptop-X1>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <YZR0y7J/MeYD9Hfm@Laptop-X1>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211116080325.92830-1-kurt@linutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/16/21 8:19 PM, Hangbin Liu wrote:
-> On Sun, Nov 14, 2021 at 09:08:41PM -0800, Cong Wang wrote:
->>> Hi Wang Cong,
->>>
->>> Have you tried this test recently? I got this test failed for a long time.
->>> Do you have any idea?
->>>
->>> IPv4 rp_filter tests
->>>     TEST: rp_filter passes local packets                                [FAIL]
->>>     TEST: rp_filter passes loopback packets                             [FAIL]
->>
->> Hm, I think another one also reported this before, IIRC, it is
->> related to ping version or cmd option. Please look into this if
->> you can, otherwise I will see if I can reproduce this on my side.
+On Tue, Nov 16, 2021 at 09:03:25AM +0100, Kurt Kanzenbach wrote:
+> If the used PHYs also support hardware timestamping, all configuration requests
+> should be forwared to the PHYs instead of being processed by the MAC driver
+> itself.
 > 
-> I tried both iputils-s20180629 and iputils-20210722 on 5.15.0. All tests
-> failed. Not sure where goes wrong.
+> This enables PHY timestamping in combination with the cpsw driver.
 > 
+> Tested with an am335x based board with two DP83640 PHYs connected to the cpsw
+> switch.
+> 
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 
-no idea. If you have the time can you verify that indeed the failure is
-due to socket lookup ... ie., no raw socket found because of the bind to
-device setting. Relax that and it should work which is indicative of the
-cmsg bind works but SO_BINDTODEVICE does not.
+Acked-by: Richard Cochran <richardcochran@gmail.com>
