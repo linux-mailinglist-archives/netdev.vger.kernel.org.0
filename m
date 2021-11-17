@@ -2,73 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01BEC454B2E
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 17:40:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E94D454B39
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 17:42:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232255AbhKQQnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 11:43:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59358 "EHLO mail.kernel.org"
+        id S229997AbhKQQpr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 11:45:47 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:38578 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231874AbhKQQnI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Nov 2021 11:43:08 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 9736761B98;
-        Wed, 17 Nov 2021 16:40:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637167209;
-        bh=e8PFDOqel6oPMIOhEK5zQb+W+cnWUJehWMdjSM+NByc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=auASmfwZbggP6aJc1h6vxafrVNBqANtbEVFnOE/fNjspPyXHPRvvKc69VWYVKv/j5
-         9B6V9a1MtoHbID2kHOIw4rjLfjtuzBLQ3ZNSYkA73FryAtgdbRBjo6Ikb3fP93sUpi
-         STHSAhuSfQJjBaS8IU55R9k56IzcqvxiMXrz33TMuzbJFBlCQiReh1qSpLgTXuMmZ2
-         ejOjLYGcraDzFhAfGFuE7NInKgMuvZuCrZ7sG/iDJhOK8tMsh3g255QmUS5FL8OmHc
-         hzXQozPuE5gRuXedY9FL2HBOwQkkfrw7nlzMQTr28M4QSx7094N6EaEJkbM95Olv2z
-         nAUXoI76eSEoA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 847F560A0C;
-        Wed, 17 Nov 2021 16:40:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S238842AbhKQQpm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Nov 2021 11:45:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=iqSiA3LmgA7H/XJNRSJpFE5oYX/xAJgapN7ANdzkkOY=; b=UFWbDCumNUu8hl3441QMaycJ4D
+        9FdiAy8fmiS6NZ0WyK0rBNvdY7wH7KIZg+Vhgij3MH71mDviNwGDETwUQ5NovnrQLLKgkMFFhpsiA
+        l5/4hvWndDbd0H5Gf4LJDfEH1kViEc91eg0BZvjlmCCoJj2eQGVobdQygwjDLBN+9bKs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mnO0h-00DsK3-J1; Wed, 17 Nov 2021 17:42:11 +0100
+Date:   Wed, 17 Nov 2021 17:42:11 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jonas Gorski <jonas.gorski@gmail.com>
+Cc:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Dejin Zheng <zhengdejin5@gmail.com>, netdev@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com
+Subject: Re: [PATCH] Revert "net: ethernet: bgmac: Use
+ devm_platform_ioremap_resource_byname"
+Message-ID: <YZUw4w3NsfuDO4qS@lunn.ch>
+References: <20211117160718.122929-1-jonas.gorski@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 1/1] net: add missing include in include/net/gro.h
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163716720953.30858.10436677081749649893.git-patchwork-notify@kernel.org>
-Date:   Wed, 17 Nov 2021 16:40:09 +0000
-References: <20211117100130.2368319-1-eric.dumazet@gmail.com>
-In-Reply-To: <20211117100130.2368319-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, sfr@canb.auug.org.au, rdunlap@infradead.org,
-        geert@linux-m68k.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211117160718.122929-1-jonas.gorski@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed, 17 Nov 2021 02:01:30 -0800 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Wed, Nov 17, 2021 at 05:07:18PM +0100, Jonas Gorski wrote:
+> This reverts commit 3710e80952cf2dc48257ac9f145b117b5f74e0a5.
 > 
-> This is needed for some arches, as reported by Geert Uytterhoeven,
-> Randy Dunlap and Stephen Rothwell
+> Since idm_base and nicpm_base are still optional resources not present
+> on all platforms, this breaks the driver for everything except Northstar
+> 2 (which has both).
 > 
-> Fixes: 4721031c3559 ("net: move gro definitions to include/net/gro.h")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Stephen Rothwell <sfr@canb.auug.org.au>
-> Cc: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> The same change was already reverted once with 755f5738ff98 ("net:
+> broadcom: fix a mistake about ioremap resource").
 > 
-> [...]
+> So let's do it again.
 
-Here is the summary with links:
-  - [net-next,1/1] net: add missing include in include/net/gro.h
-    https://git.kernel.org/netdev/net-next/c/75082e7f4680
+Hi Jonas
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+It is worth adding a comment in the code about them being optional. It
+seems like bot handlers are dumber than the bots they use, but they
+might read a comment and not make the same mistake a 3rd time.
 
-
+  Andrew
