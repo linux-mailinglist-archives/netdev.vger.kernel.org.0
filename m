@@ -2,99 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AB9C45471B
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 14:23:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2D6145471F
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 14:23:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237505AbhKQNZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 08:25:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41154 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232163AbhKQNZj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 08:25:39 -0500
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4810C061570;
-        Wed, 17 Nov 2021 05:22:40 -0800 (PST)
-Received: by mail-pg1-x534.google.com with SMTP id 28so2232919pgq.8;
-        Wed, 17 Nov 2021 05:22:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=n7Jf+5/Jh7KOEFSs12H1gnleHX5Ul1EJihf5cWALbbw=;
-        b=NMtrHwlhumZZGG7ACQ5UZwJN7rtTqhVOALh7ylXTR9G6Y8zmsKtbGjwSxvzwVD314V
-         mFlCILMpoJPcOxUNV38QoEdCs8zz43HlJK1GNiNc4P2QVifmYL23tPn/GqSDrxCGPg16
-         bvAIjKJA0lzwI5sAj/KKF7Bc8fhHe/9Wx28bmwIGJrkCjDmdcCDuD5dw7cCpuvtFoqub
-         iSkzJKRMidoqCXXQSY0sUPKp3Cs63451CNuN8JlBUt7M7BBJqI/PFOoctzgC3YAkmPjZ
-         yOWSQXVn3LZwrWkLZBlx3QxZWWBmdX22onr58Glga9JdD2AAQeBuO5o77eDt6FelUOw8
-         iVxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=n7Jf+5/Jh7KOEFSs12H1gnleHX5Ul1EJihf5cWALbbw=;
-        b=b9UyN0TiiyTrrUM5mEVW0SLXg+DC3fOTfUw4UTOuK/YxkehoAr9f6NSymOWOyBqOCw
-         ZP/wzZEt0UizfGSypZaR5lD2XT/ZI19sJx/zX0Pda6CY93KZL5jSyTngq6TDoDmcN0o6
-         Gw8qnnpoZl7W8FvZ3XCnIV31/N5IrQE0M0sA4N5VomOGcZTXqA9xoXB4UQBUGcns37h9
-         vM1R+zFAj3tR1DSoo821Zfw1D/HCw/3y4+fscstgFsiT1pC1M0UcwdOFhrdjVqk/MbZS
-         8OG8xhSOFBDVTaeMzO/7Fr6GBa8W8b5DpsyjzOl5UrjyXCQ9J6XDWaqGDQNYOWqpM+XC
-         Lv/g==
-X-Gm-Message-State: AOAM532Kmw5b5iLYFPgryVggLtRMLp0ZCft1Kg2ILRAx9cHtwmA4swM8
-        Hlj8fOcvkwa1WS7nEfL5Vy0=
-X-Google-Smtp-Source: ABdhPJwYIet5fq/8KowjGXs7GPhnQ/zbG+7NtQHLznln3NXsAVsDB6ZMleQEQVqBwkPH6jdcXK5meg==
-X-Received: by 2002:a05:6a00:2146:b0:44c:2922:8abf with SMTP id o6-20020a056a00214600b0044c29228abfmr48946221pfk.27.1637155360284;
-        Wed, 17 Nov 2021 05:22:40 -0800 (PST)
-Received: from ?IPV6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
-        by smtp.gmail.com with ESMTPSA id t40sm23310231pfg.107.2021.11.17.05.22.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Nov 2021 05:22:39 -0800 (PST)
-Message-ID: <fb9809f5-a830-733e-745b-aa1b1d2671f5@gmail.com>
-Date:   Wed, 17 Nov 2021 21:22:27 +0800
+        id S237515AbhKQN0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 08:26:21 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42290 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232163AbhKQN0U (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Nov 2021 08:26:20 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6815161B1E;
+        Wed, 17 Nov 2021 13:23:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637155402;
+        bh=Nj1uKc2EkifSQan/WNCoa5AVp4mItgc+N2imWgIyhas=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=s47RPcDC44PhuMahrkT3itzzSrNuE+3Sat8qCsS7AjC2M/RJXasQ2008XVizOEkx9
+         7ILMW4LTRokn2HpQJ6Q5aEDByhLUNJwmBRYT0xipSA7tJo+sb5E+yG41t7RxQUmPJl
+         Eoavq1qvL8SpYhNZF7/80NXg6YrVxryc664Omzr6mxLnlffFtkTo8litoOEbgaiaBN
+         zk1BmjOczAPtjceY3YJJEfqAzmXEM0KqgBOVcQ99czc+TxjKzVRHl49cgnmthdNqI0
+         HMGmRTbzXQREpKSHewnvFEOvY2xoc0dRX8KeFw2wxdNjWg5o+ouOO8r7B/JOhm006B
+         mN9R1+alGrB/Q==
+Date:   Wed, 17 Nov 2021 15:23:18 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Amit Cohen <amcohen@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net] devlink: Remove extra assertion from flash
+ notification logic
+Message-ID: <YZUCRk8nz1rnnRRL@unreal>
+References: <1d750b6f4991c16995c4d0927b709eb23647ff85.1636999616.git.leonro@nvidia.com>
+ <20211115101437.33bd531f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YZKmlzhu0gtKpvXW@unreal>
+ <20211115171530.432f5753@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH 3/5] hyperv/IOMMU: Enable swiotlb bounce buffer for
- Isolation VM
-Content-Language: en-US
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        tglx@linutronix.de, mingo@redhat.com, x86@kernel.org,
-        hpa@zytor.com, jgross@suse.com, sstabellini@kernel.org,
-        boris.ostrovsky@oracle.com, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, joro@8bytes.org, will@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, hch@lst.de, m.szyprowski@samsung.com,
-        robin.murphy@arm.com, xen-devel@lists.xenproject.org,
-        michael.h.kelley@microsoft.com,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        iommu@lists.linux-foundation.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        netdev@vger.kernel.org, vkuznets@redhat.com, brijesh.singh@amd.com,
-        konrad.wilk@oracle.com, parri.andrea@gmail.com,
-        thomas.lendacky@amd.com, dave.hansen@intel.com
-References: <20211116153923.196763-1-ltykernel@gmail.com>
- <20211116153923.196763-4-ltykernel@gmail.com> <YZQCp6WWKAdOCbh8@zn.tnic>
-From:   Tianyu Lan <ltykernel@gmail.com>
-In-Reply-To: <YZQCp6WWKAdOCbh8@zn.tnic>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211115171530.432f5753@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 11/17/2021 3:12 AM, Borislav Petkov wrote:
-> What you should do, instead, is add an isol. VM specific
-> hv_cc_platform_has() just like amd_cc_platform_has() and handle
-> the cc_attrs there for your platform, like return false for
-> CC_ATTR_GUEST_MEM_ENCRYPT and then you won't need to add that hv_* thing
-> everywhere.
+On Mon, Nov 15, 2021 at 05:15:30PM -0800, Jakub Kicinski wrote:
+> On Mon, 15 Nov 2021 20:27:35 +0200 Leon Romanovsky wrote:
+> > On Mon, Nov 15, 2021 at 10:14:37AM -0800, Jakub Kicinski wrote:
+> > > On Mon, 15 Nov 2021 20:07:47 +0200 Leon Romanovsky wrote:  
+> > > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > > 
+> > > > The mlxsw driver calls to various devlink flash routines even before
+> > > > users can get any access to the devlink instance itself. For example,
+> > > > mlxsw_core_fw_rev_validate() one of such functions.
+> > > > 
+> > > > It causes to the WARN_ON to trigger warning about devlink not
+> > > > registered, while the flow is valid.  
+> > > 
+> > > So the fix is to remove the warning and keep generating notifications
+> > > about objects which to the best understanding of the user space do not
+> > > exist?  
+> > 
+> > If we delay this mlxsw specific notification, the user will get
+> > DEVLINK_CMD_FLASH_UPDATE and DEVLINK_CMD_FLASH_UPDATE_END at the
+> > same time. I didn't like this, probably users won't like it either,
+> > so decided to go with less invasive solution as possible.
 > 
-> And then fix it up in __set_memory_enc_dec() too.
->
+> I'd drop these notifications, the user didn't ask to flash the device,
+> it's just code reuse in the driver, right?
 
-Yes, agree. Will add hv cc_attrs and check via cc_platform_has().
+Sorry, I missed your reply.
 
+I'm not sure about code reuse, from the code, it looks like attempt to
+burn FW during mlxsw register.
 
+__mlxsw_core_bus_device_register
+ -> mlxsw_core_fw_rev_validate
+  -> mlxsw_core_fw_flash
+   -> mlxfw_firmware_flash
+    -> mlxfw_status_notify
+     -> devlink_flash_update_status_notify
+      -> __devlink_flash_update_notify
+       -> WARN_ON(...)
+
+The mlxfw_firmware_flash() routine is called by mlx5 too, so I can't
+remove mlxfw_status_notify() calls without too much changes.
+
+Easiest solution was to remove WARN_ON(), because no one really
+interested in these events anyway. I searched in github and didn't
+find any user who listened to them.
+
+Thanks
