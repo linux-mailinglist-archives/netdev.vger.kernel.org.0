@@ -2,43 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8130B453E87
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 03:42:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DE0D453EA7
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 03:51:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232479AbhKQCoy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 21:44:54 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35210 "EHLO mail.kernel.org"
+        id S229854AbhKQCyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 21:54:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37516 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229889AbhKQCoy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Nov 2021 21:44:54 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0ACC861BFB;
-        Wed, 17 Nov 2021 02:41:55 +0000 (UTC)
+        id S229635AbhKQCyo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 21:54:44 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5A0AD61B73;
+        Wed, 17 Nov 2021 02:51:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637116916;
-        bh=2wKO4aZV/Ef6jWjcHPr52Bnu8Xgxou22b8sHQOvfvP8=;
+        s=k20201202; t=1637117506;
+        bh=DnHVrGE1X8Bru+OWag+cxpQmAf1N6UOQoBQssEVOADg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XfsfGBzvJqwSi0QVfz0nPOY0SmpJ0LRQyClQBNHiYgixkSqSq1ANfmu8fJp/NWxP3
-         oEeSAPusT2kYvtnyP+5pyK3eQGg4rHf5oio5Y6hk6Ya7ORRm9qZpO1xI+zPAtsuSev
-         70XKrQmgJhssLmOtMfNp4+OZN9RZU3ktGugHvsXNmxFZb/Qzq64xbNtE9zi64ihrKS
-         l4fd/JkMUwOs8CAGDFXXmf5/TgQxJTikxuyOo9Y87HUo+JrdarsVKE4G2bKU1Vr2vj
-         cQJ9aL0e5UE0P8P26ZLv1KII0tXL9iEEdFOxErsm7z3s1lSlfhVBA6cAKVGEUxl73l
-         BrfjIxsEsoaUA==
-Date:   Tue, 16 Nov 2021 18:41:55 -0800
+        b=Wr0S2vWJ4HUULoYCnmWxnk2eqNhdr5XoT/Y58XBTkjTKgkKV2PkOxPPszzjBWNjiv
+         yEmx8si7sybsFnFKoKXgP9kv5xShm19w2AFhjjus/wL2bbeYS+p2QpfEMDel6K6jBX
+         hRIByPBDPSIrqIV6eorxcgBSOC49DOlBtPDbzcA808/YDzNxACMiLv3HtjWlpO/CA8
+         nrRROzP6pkUjZuKpkuyhgRWNAz2wl44l2lmsckwQXJiqUh6O5WPx3Jo5wnacq8J42X
+         BlMPBr35Q5o/1Cc4hZtKGiEV0+/rmFS9yECBOEHN9OWUpFy7A7041cjIB2nN9DBSre
+         9Bbdx7X2RV+5Q==
+Date:   Tue, 16 Nov 2021 18:51:45 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Jarod Wilson <jarod@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        "David S . Miller" <davem@davemloft.net>,
-        Denis Kirjanov <dkirjanov@suse.de>,
-        David Ahern <dsahern@gmail.com>
-Subject: Re: [PATCH net-next] Bonding: add missed_max option
-Message-ID: <20211116184155.6c81b042@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YZRUW6wfMdI1aN1o@Laptop-X1>
-References: <20211116084840.978383-1-liuhangbin@gmail.com>
-        <20211116120058.494d6204@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YZRUW6wfMdI1aN1o@Laptop-X1>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: Set __LINK_STATE_NOCARRIER in register_netdevice() ?
+Message-ID: <20211116185145.4ee927d2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <82793a62-054b-75e1-d302-74375f61ae03@gmail.com>
+References: <82793a62-054b-75e1-d302-74375f61ae03@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -46,20 +39,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 17 Nov 2021 09:01:15 +0800 Hangbin Liu wrote:
-> > >  
-> > >  static const struct nla_policy bond_slave_policy[IFLA_BOND_SLAVE_MAX + 1] = {
-> > > @@ -453,6 +454,15 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
-> > >  			return err;
-> > >  	}
-> > >  
-> > > +	if (data[IFLA_BOND_MISSED_MAX]) {
-> > > +		int missed_max = nla_get_u8(data[IFLA_BOND_MISSED_MAX]);  
-> > 
-> > If you read and write a u8?  
+On Tue, 16 Nov 2021 21:47:21 +0100 Heiner Kallweit wrote:
+> Quite some network drivers call netif_carrier_off() in their probe() function.
+> So I'm wondering whether we can/should add a
+> set_bit(__LINK_STATE_NOCARRIER, &dev->state)
+> to register_netdevice() and remove all these netif_carrier_off() calls.
 > 
-> Ah, that's a typo. I planed to use nla_get_u32(). But looks NLA_U8 also should
-> be enough. WDYT?
+> Question is whether there's any scenario where a driver would depend on bit
+> __LINK_STATE_NOCARRIER being cleared after registering the netdevice
+> or where we want to preserve the state of this bit.
 
-Either way is fine. To be sure we don't need to enforce any lower limit
-here? 0 is a valid setting?
+I thought that conversely many sw devices never touch carrier, hence
+letting it remain up with operstate unknown. We'd be changing that,
+dunno if it matters.
