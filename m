@@ -2,127 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6909C454088
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 07:01:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 408FC4540EF
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 07:37:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233345AbhKQGDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 01:03:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52828 "EHLO
+        id S233661AbhKQGj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 01:39:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232511AbhKQGDB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 01:03:01 -0500
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BD0AC061570
-        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 22:00:03 -0800 (PST)
-Received: by mail-oi1-x22f.google.com with SMTP id bf8so4008219oib.6
-        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 22:00:03 -0800 (PST)
+        with ESMTP id S233135AbhKQGjZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 01:39:25 -0500
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3C57C061570;
+        Tue, 16 Nov 2021 22:36:27 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id u11so1283030plf.3;
+        Tue, 16 Nov 2021 22:36:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daynix-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kSGc4ZU3kMNV4pDWr3dTCqenmyUswpL++6XUnwpYb58=;
-        b=7c7d9HtTbjMh1xMFTx5QGxIrdsXn1JI9YRElbu+ZqHFJsqK2AF17sH/DWoIcAvgO1L
-         FUKjZ6HlMNIsRREeVQH86AcW1VL8HH3mT/9F8Fw09xBw1/cNGqBKlV01Zk9PYpIITM/n
-         1PA5O0SPFyvEnx44UPrNPp2GJyX9kB7wvCzdxZpz/V8DwrCAhaa9ixkAWLRYejYpPfoO
-         hxxvH37k+OMXfLmA5IKJV5bqUhY2ZXlEQsj0KUYy2nxapOOtl3keoGl6u+6R+amyebt4
-         UAdiaraI25ZMwqbwnNvzH+IG/64wWtPcPfRSUuMuePLek4E3SJ+i2cmlWrgQP6M5Hxd1
-         bjQg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Lk2g9E/UqZh2uMhoLR6EkK47x8ZuyfZNR/2euLyi71Y=;
+        b=mKTrdafpDhDezv5nTtvQwcErLpJmmsBBzk6i+kGnHq6O05J8gQqq984hvR3eD8nOEc
+         1VzD0Vja007MaUAPWwl8Pgm6LfWb6Jf4rNtT6tAEufm7XR/l65qa6XvH9BvEHcrNmEm+
+         62WAZmAOAf2gjrJtoLrpjCu+7KFM8s+3AoR8V5hEihZ2C/xQjYjRMf5X7eVqoYTXRe9+
+         1kZWgREZgSWfkcF/hluNXdatATVMkSFDgZ8awpEAk0K6e58zb2e62kBt6ZPxN1IFKuUe
+         epf9sTRkmeOel+ct0jCgiT2A1vJTN7tYXQ4VQFocgu4cY7F1mt55Oah/QUpRLFsffsA3
+         Ka9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kSGc4ZU3kMNV4pDWr3dTCqenmyUswpL++6XUnwpYb58=;
-        b=XYHYR5Cj5jY5fzKQa/DUBsc6mOP8VnP8r3JgnV6kIlFDDINI06EVz/b22NSIYP6ZWW
-         iUUetJR3G34dtvigDM0CPQByAIc4RomNCWvnLmub59xrrLl+WS4jraor1htygOYWA7nv
-         MiR9I5F9NFbrbIYGRUXLw29mdIucB/NEoQC56hD+TPDN9T6XrVEkyxfhWu8SSY4SHg27
-         xjomNBd5TEN5EQqpVFvDZDaZmETPOfsu6xoRwjSeho6+tL/X6DilyTNJzfIr/M0D4pRr
-         /V5Oo3pviwPWqKO6D4W1/rZ7oEXuq5KPj9YkYIKfxiaNdTZ2ZelWVNtxOPL4Lelczu2k
-         QU2g==
-X-Gm-Message-State: AOAM530kFRThac+FDo1rVTUsopSRVSkHomlvJ45/ZVgLOaQU83MQvFPu
-        ulYjT2rI7hCJjalGxAVr7IG3LN4Zfj4aFPUnweXhuA==
-X-Google-Smtp-Source: ABdhPJyY/WqLFoKyV7MDHc0Omfxi30xLTaWZemyxDXwUFuCZxXL/MS1QKFZhNHj9aUUnq4wuTADld82ehMllqGmhACk=
-X-Received: by 2002:a54:4f8f:: with SMTP id g15mr11417825oiy.169.1637128802620;
- Tue, 16 Nov 2021 22:00:02 -0800 (PST)
-MIME-Version: 1.0
-References: <20211031045959.143001-1-andrew@daynix.com> <20211031045959.143001-3-andrew@daynix.com>
- <20211101044051-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20211101044051-mutt-send-email-mst@kernel.org>
-From:   Andrew Melnichenko <andrew@daynix.com>
-Date:   Wed, 17 Nov 2021 08:00:00 +0200
-Message-ID: <CABcq3pGuM6tD3P+zfBE6SZ3y7uxV5wYUZZ6GVqRsydtHkeTM2Q@mail.gmail.com>
-Subject: Re: [RFC PATCH 2/4] drivers/net/virtio_net: Changed mergeable buffer
- length calculation.
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>, davem@davemloft.net,
-        kuba@kernel.org, virtualization@lists.linux-foundation.org,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Lk2g9E/UqZh2uMhoLR6EkK47x8ZuyfZNR/2euLyi71Y=;
+        b=jBW4DkrBfDAnLpNUhMdyVXi939GbujJfsNVBGWuYio3rvhag1clYkW0cahM4Dki98p
+         yZ6T/T9TcG+WxxpCYssrpmtAvb7emYp6EtsGsdQLefmTZJd1tb3SF2Vf8gmDWOw+78+c
+         A1MrTT5gwY+ukMaFYZwAf5KJR14UD4v+ncA/ovg9pBJHGmnxy6hlPXV0OajNtVC8F8qM
+         bdKL7zeF4WFrV5UtHoCAAMh6fkY7thrXgJHX0aALz0NaWH5Bfs0ZgbE3fn4WNwMZXJjC
+         fE/EezSona4DPTpvbh5vOj3uf8QMu9YaLq7w5ZZ+h7veUOSGekODB1nL84I0DzvKfpBW
+         Qs8g==
+X-Gm-Message-State: AOAM533ff2eNaJWwOCXE6PCBqFE6xEvyh4+1Y5sqrmGC8QXBZ+PFktQr
+        b0uZdoyEIS2nRHATJkC7JVk=
+X-Google-Smtp-Source: ABdhPJwM/otgjYa51boTGlRd/bCVd+iUUdLif+7FKr0HaIK6a7VZkY6Y3r5V+VQz67NUBz5e33Fcsw==
+X-Received: by 2002:a17:902:b588:b0:143:b732:834 with SMTP id a8-20020a170902b58800b00143b7320834mr39033212pls.22.1637130987270;
+        Tue, 16 Nov 2021 22:36:27 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id b10sm22225515pfl.200.2021.11.16.22.36.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Nov 2021 22:36:26 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: ye.guojin@zte.com.cn
+To:     luciano.coelho@intel.com
+Cc:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
+        miriam.rachel.korenblit@intel.com, ye.guojin@zte.com.cn,
+        johannes.berg@intel.com, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yuri Benditovich <yuri.benditovich@daynix.com>,
-        Yan Vugenfirer <yan@daynix.com>
-Content-Type: text/plain; charset="UTF-8"
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] iwlwifi: rs: fixup the return value type of iwl_legacy_rate_to_fw_idx()
+Date:   Wed, 17 Nov 2021 06:36:21 +0000
+Message-Id: <20211117063621.160695-1-ye.guojin@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 1, 2021 at 10:44 AM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Sun, Oct 31, 2021 at 06:59:57AM +0200, Andrew Melnychenko wrote:
-> > Now minimal virtual header length is may include the entire v1 header
-> > if the hash report were populated.
-> >
-> > Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
->
-> subject isn't really descriptive. changed it how?
->
-> And I couldn't really decypher what this log entry means either.
->
+From: Ye Guojin <ye.guojin@zte.com.cn>
 
-I'll change it in the next patch.
-So, I've tried to ensure that the v1 header with the hash report will
-be available if required in new patches.
+This was found by coccicheck:
+./drivers/net/wireless/intel/iwlwifi/fw/rs.c, 147, 10-21, WARNING
+Unsigned expression compared with zero legacy_rate < 0
 
-> > ---
-> >  drivers/net/virtio_net.c | 8 +++++---
-> >  1 file changed, 5 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index b72b21ac8ebd..abca2e93355d 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -393,7 +393,9 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
-> >       hdr_p = p;
-> >
-> >       hdr_len = vi->hdr_len;
-> > -     if (vi->mergeable_rx_bufs)
-> > +     if (vi->has_rss_hash_report)
-> > +             hdr_padded_len = sizeof(struct virtio_net_hdr_v1_hash);
-> > +     else if (vi->mergeable_rx_bufs)
-> >               hdr_padded_len = sizeof(*hdr);
-> >       else
-> >               hdr_padded_len = sizeof(struct padded_vnet_hdr);
-> > @@ -1252,7 +1254,7 @@ static unsigned int get_mergeable_buf_len(struct receive_queue *rq,
-> >                                         struct ewma_pkt_len *avg_pkt_len,
-> >                                         unsigned int room)
-> >  {
-> > -     const size_t hdr_len = sizeof(struct virtio_net_hdr_mrg_rxbuf);
-> > +     const size_t hdr_len = ((struct virtnet_info *)(rq->vq->vdev->priv))->hdr_len;
-> >       unsigned int len;
-> >
-> >       if (room)
->
-> Is this pointer chasing the best we can do?
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Ye Guojin <ye.guojin@zte.com.cn>
+---
+ drivers/net/wireless/intel/iwlwifi/fw/api/rs.h | 2 +-
+ drivers/net/wireless/intel/iwlwifi/fw/rs.c     | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-I'll change that.
+diff --git a/drivers/net/wireless/intel/iwlwifi/fw/api/rs.h b/drivers/net/wireless/intel/iwlwifi/fw/api/rs.h
+index a09081d7ed45..7794cd6d289d 100644
+--- a/drivers/net/wireless/intel/iwlwifi/fw/api/rs.h
++++ b/drivers/net/wireless/intel/iwlwifi/fw/api/rs.h
+@@ -710,7 +710,7 @@ struct iwl_lq_cmd {
+ 
+ u8 iwl_fw_rate_idx_to_plcp(int idx);
+ u32 iwl_new_rate_from_v1(u32 rate_v1);
+-u32 iwl_legacy_rate_to_fw_idx(u32 rate_n_flags);
++int iwl_legacy_rate_to_fw_idx(u32 rate_n_flags);
+ const struct iwl_rate_mcs_info *iwl_rate_mcs(int idx);
+ const char *iwl_rs_pretty_ant(u8 ant);
+ const char *iwl_rs_pretty_bw(int bw);
+diff --git a/drivers/net/wireless/intel/iwlwifi/fw/rs.c b/drivers/net/wireless/intel/iwlwifi/fw/rs.c
+index a21c3befd93b..3850881210e6 100644
+--- a/drivers/net/wireless/intel/iwlwifi/fw/rs.c
++++ b/drivers/net/wireless/intel/iwlwifi/fw/rs.c
+@@ -142,7 +142,7 @@ u32 iwl_new_rate_from_v1(u32 rate_v1)
+ 		}
+ 	/* if legacy format */
+ 	} else {
+-		u32 legacy_rate = iwl_legacy_rate_to_fw_idx(rate_v1);
++		int legacy_rate = iwl_legacy_rate_to_fw_idx(rate_v1);
+ 
+ 		WARN_ON(legacy_rate < 0);
+ 		rate_v2 |= legacy_rate;
+@@ -172,7 +172,7 @@ u32 iwl_new_rate_from_v1(u32 rate_v1)
+ }
+ IWL_EXPORT_SYMBOL(iwl_new_rate_from_v1);
+ 
+-u32 iwl_legacy_rate_to_fw_idx(u32 rate_n_flags)
++int iwl_legacy_rate_to_fw_idx(u32 rate_n_flags)
+ {
+ 	int rate = rate_n_flags & RATE_LEGACY_RATE_MSK_V1;
+ 	int idx;
+-- 
+2.25.1
 
->
-> > @@ -2817,7 +2819,7 @@ static void virtnet_del_vqs(struct virtnet_info *vi)
-> >   */
-> >  static unsigned int mergeable_min_buf_len(struct virtnet_info *vi, struct virtqueue *vq)
-> >  {
-> > -     const unsigned int hdr_len = sizeof(struct virtio_net_hdr_mrg_rxbuf);
-> > +     const unsigned int hdr_len = vi->hdr_len;
-> >       unsigned int rq_size = virtqueue_get_vring_size(vq);
-> >       unsigned int packet_len = vi->big_packets ? IP_MAX_MTU : vi->dev->max_mtu;
-> >       unsigned int buf_len = hdr_len + ETH_HLEN + VLAN_HLEN + packet_len;
-> > --
-> > 2.33.1
->
