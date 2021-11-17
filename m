@@ -2,78 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C26124545AF
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 12:30:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EA174545D8
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 12:42:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235212AbhKQLdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 06:33:15 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46346 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235203AbhKQLdK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Nov 2021 06:33:10 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 1B56763236;
-        Wed, 17 Nov 2021 11:30:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637148612;
-        bh=9NAWKiUPeaw8SPyXsy2T6rO5y9Fvz/XK5iqN1WAx2SY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=MMYpEL2nGIV7Aw/0VwnZ+sAhkcpG72oqd3/aTrrRHwi/XJb4sxXRnNWyKpBEi6IRQ
-         A4SDl9bzlLr4kYWDP3q248H3/kd4gDOjsYWjQoYOaLvei1BCEl8Zv8fK9rshz/h2rV
-         mUEwPPcdQeVRUBShp6LBdvA4orjUvWwJbEgDCFtQxnylHxVZdyL+EBU3bCSLpFBqjk
-         hNc7+H7h541KBOrWLJfF9nOz8QIg09EWOuygIVXH1z7oNeukk5cUUFIozW92nLuI8T
-         iHce+lH5xTIByT/mLP8sxggY0qvEeXZQzYcOQ8xMxRAe2WkvhwJaiGC/5OYDvfUgTG
-         +J6z5aH1SQkaA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0F9BF60A4E;
-        Wed, 17 Nov 2021 11:30:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S236897AbhKQLo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 06:44:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46536 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235061AbhKQLo5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 06:44:57 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3199EC061746;
+        Wed, 17 Nov 2021 03:41:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=mBBJF2yawl0kgACqc2HujgjVeeJsd5fX8mPLwpdeQ10=; b=shC1P+sQyMdlspE6psXkKoiUrl
+        j2A1Nvj3lJMLEhXPba0eldUERms+FosQ1L5h4dqlpR9CnFr3yau/XUJ3AF+W7idsJR0L02r4Hbv1f
+        uh8TGrycL4QyANpN5yCMH0WI2Y0omr49y5vG3pTpf0Wpf4+Pfh/TJh5cC9WujOsXc76qytzdnuJkp
+        yz8LKzcSMwFJFhosQ5f2XURIcmipf2izNAnvgTq3mm8e+f78YMGKN8MwbcoNyOiqKGN5s3VJAIebV
+        XuZL8daeTzGv8V8Ne5k1JDpXdNj06CvQyjt+6A0AEhvliWpgptE2vmo5c0LJzx/gZjUhgnQgerinO
+        2SpQPU3Q==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55678)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mnJK0-0001l5-5Q; Wed, 17 Nov 2021 11:41:48 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mnJJy-0002uI-KG; Wed, 17 Nov 2021 11:41:46 +0000
+Date:   Wed, 17 Nov 2021 11:41:46 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        p.zabel@pengutronix.de, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 3/5] net: lan966x: add port module support
+Message-ID: <YZTqekOTK8pm86G+@shell.armlinux.org.uk>
+References: <20211117091858.1971414-1-horatiu.vultur@microchip.com>
+ <20211117091858.1971414-4-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/4] net: mtk_eth_soc: phylink validate
- implementation updates
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163714861205.14428.6218012722892751788.git-patchwork-notify@kernel.org>
-Date:   Wed, 17 Nov 2021 11:30:12 +0000
-References: <YZOCn1vMUAbhq3j0@shell.armlinux.org.uk>
-In-Reply-To: <YZOCn1vMUAbhq3j0@shell.armlinux.org.uk>
-To:     Russell King (Oracle) <linux@armlinux.org.uk>
-Cc:     nbd@nbd.name, john@phrozen.org, Mark-MC.Lee@mediatek.com,
-        matthias.bgg@gmail.com, sean.wang@mediatek.com,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211117091858.1971414-4-horatiu.vultur@microchip.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi,
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+By the way...
 
-On Tue, 16 Nov 2021 10:06:23 +0000 you wrote:
-> Hi,
-> 
-> This series converts mtk_eth_soc to fill in the supported_interfaces
-> member of phylink_config, cleans up the validate() implementation, and
-> then converts to phylink_generic_validate().
-> 
->  drivers/net/ethernet/mediatek/mtk_eth_soc.c | 111 ++++++----------------------
->  1 file changed, 24 insertions(+), 87 deletions(-)
+On Wed, Nov 17, 2021 at 10:18:56AM +0100, Horatiu Vultur wrote:
+> +	port->phylink_config.mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
+> +		MAC_10 | MAC_100 | MAC_1000FD | MAC_2500FD;
+> +
+> +	__set_bit(PHY_INTERFACE_MODE_MII,
+> +		  port->phylink_config.supported_interfaces);
+> +	__set_bit(PHY_INTERFACE_MODE_GMII,
+> +		  port->phylink_config.supported_interfaces);
+> +	__set_bit(PHY_INTERFACE_MODE_SGMII,
+> +		  port->phylink_config.supported_interfaces);
+> +	__set_bit(PHY_INTERFACE_MODE_QSGMII,
+> +		  port->phylink_config.supported_interfaces);
+> +	__set_bit(PHY_INTERFACE_MODE_1000BASEX,
+> +		  port->phylink_config.supported_interfaces);
+> +	__set_bit(PHY_INTERFACE_MODE_2500BASEX,
+> +		  port->phylink_config.supported_interfaces);
+...
+> +const struct phylink_mac_ops lan966x_phylink_mac_ops = {
+> +	.validate = phylink_generic_validate,
 
-Here is the summary with links:
-  - [net-next,1/4] net: mtk_eth_soc: populate supported_interfaces member
-    https://git.kernel.org/netdev/net-next/c/83800d29f0c5
-  - [net-next,2/4] net: mtk_eth_soc: remove interface checks in mtk_validate()
-    https://git.kernel.org/netdev/net-next/c/db81ca153814
-  - [net-next,3/4] net: mtk_eth_soc: drop use of phylink_helper_basex_speed()
-    https://git.kernel.org/netdev/net-next/c/71d927494463
-  - [net-next,4/4] net: mtk_eth_soc: use phylink_generic_validate()
-    https://git.kernel.org/netdev/net-next/c/a4238f6ce151
+Thank you for switching the driver to use phylink_generic_validate(),
+that's really very useful, and saves a chunk of code in your driver!
 
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
