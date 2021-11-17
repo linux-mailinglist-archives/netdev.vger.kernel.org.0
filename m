@@ -2,100 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0554454DA5
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 20:07:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 980EA454DB1
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 20:11:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240346AbhKQTKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 14:10:14 -0500
-Received: from mout.gmx.net ([212.227.17.22]:55857 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240338AbhKQTKO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Nov 2021 14:10:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1637176023;
-        bh=xwC46mm+72ZQCm15/bVMv9FqczPa4aPsJ4i0DvPIWMk=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:In-Reply-To:References;
-        b=i12xtPkFKEY1+mpcKCogQScdYhgI+IYXZkFxUcF0ao65ieV4/YGR8rse32G5Qc+34
-         WEXazWe9mh77eUHevZbllrlqdiEZ+S4b8vDsZV/S6TmxXcNySHfepAo6Wu00Jaj6AQ
-         n7HsoCOC/vymcOjF+mLk8X2QCXJrMrVv3uxrlB5I=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from localhost ([62.216.209.243]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N0XD2-1mQNZS433k-00wRzg; Wed, 17
- Nov 2021 20:07:03 +0100
-Date:   Wed, 17 Nov 2021 20:07:01 +0100
-From:   Peter Seiderer <ps.report@gmx.net>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     linux-wireless@vger.kernel.org, ath9k-devel@qca.qualcomm.com,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v1] ath9k: fix intr_txqs setting
-Message-ID: <20211117200701.02e5ea74@gmx.net>
-In-Reply-To: <163713885373.10263.4223864617658431026.kvalo@codeaurora.org>
-References: <20211116220720.30145-1-ps.report@gmx.net>
-        <163713885373.10263.4223864617658431026.kvalo@codeaurora.org>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-suse-linux-gnu)
+        id S240382AbhKQTO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 14:14:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37656 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239360AbhKQTOZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 14:14:25 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B38DAC061570
+        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 11:11:26 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id f18so13495862lfv.6
+        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 11:11:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=t4KdzWqRZvguZku+DSabljz+eRf14D3dKHCVcvgDtsc=;
+        b=EqBV2qR1ypuwvsPQz3k6DWYCQJa5062g0xgQwzKnx3HDM+0KIT3sOpNmzK9PJTFZtQ
+         XzSfC1MOornLtkL3t4MzBTP0YrHycRSUB3MISiPt+fl9WNy/Klb5x/cPOEWKRIPdyiJQ
+         PB8FTlmOQOd859Ul8/6GdHA6phdhuixvBZ6PWwbnN5BETqvaeNPRYw7Pxl0UhYV3TrnS
+         CgB5Nr2RZwvBJowxaoRdnsty532kHgWS2ws6DdQRG4CvCF2GTJJwTEpGS8bK7uXPWjRp
+         2Ke8h+aXV0aG7BruH6HDXULAIeNnQbJWjVZTpoj7rr42RmMlCmMcDqR2MBMD5BHoWhpl
+         G/Lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=t4KdzWqRZvguZku+DSabljz+eRf14D3dKHCVcvgDtsc=;
+        b=JvvHOGirKlkJk1EBhEDHUKczKm+9/LS3w3AB6/EFBtgECra1OoXD+AIUdeUnxVu7CM
+         L3owAydRmEqiCGcptYxmKiYBpEFVKJzE9Aw3pw3+DszQcnzPeV3gPPO6RoiW/1gdS0S5
+         HnqRVVcVyBT2lGsQ58nWRjQXdePNiX9CeaAkL2FbXGnPKgsSpnpI7EPg6oNYJ+9vyGCf
+         lCagmnZ1BKsGHDoknyuZ+Hv30kBechYi9qcdD0KlyhYa4IAsAXfPoeM90IF+8LLQD8kk
+         x2ZPQuMxtznnfL9ErPPChGQEkFH1gGtHCRu9iQnAVUXBXPHrLOE8t4QVht1WjlfnJZJu
+         tZ7Q==
+X-Gm-Message-State: AOAM5329WGw1ehTrm/Ai7N6bmzOl8gYFr5Y3BJTFWatzueooqAymqV2V
+        YyUEvqjlW/ixcBmgicLCS9iKweLNmUh9ig==
+X-Google-Smtp-Source: ABdhPJyAaraQWvT5aky8nLgUko4E+Ck9UXnc3JGC+gwrw+d5U+34zhU+gH+YrXpaDPE8L+PWA0oknw==
+X-Received: by 2002:ac2:4347:: with SMTP id o7mr17152680lfl.139.1637176285025;
+        Wed, 17 Nov 2021 11:11:25 -0800 (PST)
+Received: from [192.168.88.200] ([178.71.193.198])
+        by smtp.gmail.com with ESMTPSA id x6sm62929lff.125.2021.11.17.11.11.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 17 Nov 2021 11:11:24 -0800 (PST)
+To:     netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        David Miller <davem@davemloft.net>, mmrmaximuzz@gmail.com
+From:   Maxim Petrov <mmrmaximuzz@gmail.com>
+Subject: [PATCH iproute2] ip/ipnexthop: fix unsigned overflow in
+ parse_nh_group_type_res()
+Message-ID: <91362fa6-46df-c134-63b1-cc2b0d2832ee@gmail.com>
+Date:   Wed, 17 Nov 2021 22:11:24 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:SibizoRZJF31qU3eUhQNOByzzifqIF8NTHeCJISvjhg5Hcd/Yet
- vqvGlaKb2uym8hIX53IUZcE63C5Ix41O42jiyZjzrXnw9YQ8tjhqUdBKQzLmTt8KtfE9QcR
- IEsX4rJOkXVodq2sg/VpDg1VLMm4FQAF+zuh8+gcNUZIWDcEKd2oGXEOKw/NUAtiqcWwgo8
- 4gSfl+sFLjdkpbIII9fSg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:u9+Oh2e9Z1Y=:2xBJYOoe2TPdXM0kpjeLVB
- n4TBfwZRaCt+r0+p5hVFc+gH0Ju2sZU7pPJsQiqQEnZYWkvkV45jzrgBaiXCA7h0uEEZKVZw1
- 9G7h7mBWkWx6NkoyIbm/idsjMBoLQupXB3mN1zOyT7gNybKgby7eTI+QEwLIR2xcTopDo0DxN
- L8f8f3wCua0OL0v8sqq08eWiMAgpWXCVm8l0ITzh0rWjYgjbkYykTz6Oik+OV6v03xR46nEpH
- 2QRigaGI56nFzym4G+Fh4n6Ie+Z+/CM1vr8cGh1QZlrtOym1nFTJUXbxwERWnkWA3lgrqCfux
- 7qjAuDkOkHAVCrLcvjOCaiMdsERrkJC80JATdAbvvKl+bSq3jWiBimli1uicY1C0imqTeo+vz
- d5F4eOlLn5nMTUNpmo6V/eN2ucbVzL+dtkRLEkLMgwP4oLKqniQdwebPeWVCZ8t4sg5sHxcQk
- 8lEagZgemnLmoJoiLuNfRAb4QknWRTllPSVflmXZrE+K5XzYuiKZX1hD2pyKLnIXqMHoHAayU
- x/Z+SVzkh7MdlF0IxSuKOkBTZAs3aC6ca5lpEqDtkTBeCtIa8Lhl1oFVPPVQ7kM852G5gTUsf
- CyfPDW14DH0gJo7JfMoT+sM6HNaEKat39y9AMWL94UwxKWjWjsepYnFe8GCGffOOrQuxCFTL+
- uBpeQGvwZDL7dYnICRB3K2TB222K1xo59DQ0TGMYHkEdw/KZQLyand36tGDQorGUVlruovr+g
- NGYEUqPsGtHKSaiGVuGUU+ZrARPVy0rl2eaBGSS2Amml76+GfNRqJPgw2g89W79zgBzDBlzkT
- JnS50SiSEfjK0zbAVHNsammQMai5Ma4NKmOAbb9uRswEMJU8mSb1L4Mwrawwz5W2M7jZ6TF4u
- VjE8oQ9UOwoaiIP1Tde+lVZu1fdf5UfRFy32XPdzNmgtoeeNs7tj3oyRLVSJ3eWBojCAMPqST
- TVN6bE3pvddl8J9lNIT8PCO3Rl5LQdivppjTBbMp+QyAV+wQ259Z/Sj9DCAdv4eTiqknhTasO
- 7tMvu00BxvVNP6Nc9Z8pwjk+t94lLYtECR8+Ma7LcY9iHc6nDYv/VzmbS4oQm4GUxYWnj7ibG
- nPXjExW9YWk3uk=
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Kalle,
+0UL has type 'unsigned long' which is likely to be 64bit on modern machines. At
+the same time, the '{idle,unbalanced}_timer' variables are declared as u32, so
+these variables cannot be greater than '~0UL / 100' when 'unsigned long' is 64
+bits. In such condition it is still possible to pass the check but get the
+overflow later when the timers are multiplied by 100 in 'addattr32'.
 
-On Wed, 17 Nov 2021 08:47:40 +0000 (UTC), Kalle Valo <kvalo@codeaurora.org=
-> wrote:
+Fix the possible overflow by changing '~0UL' to 'UINT32_MAX'.
 
-> Peter Seiderer <ps.report@gmx.net> wrote:
->
-> > The struct ath_hw member intr_txqs is never reset/assigned outside
-> > of ath9k_hw_init_queues() and with the used bitwise-or in the interrup=
-t
-> > handling ar9002_hw_get_isr() accumulates all ever set interrupt flags.
-> >
-> > Fix this by using a pure assign instead of bitwise-or for the
-> > first line (note: intr_txqs is only evaluated in case ATH9K_INT_TX bit
-> > is set).
-> >
-> > Signed-off-by: Peter Seiderer <ps.report@gmx.net>
-> > Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
->
-> How did you test this? I'm getting way too many ath9k patches which have=
- not
-> been tested on a real device.
->
+Signed-off-by: Maxim Petrov <mmrmaximuzz@gmail.com>
+---
+ ip/ipnexthop.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Did test it with an Compex WLE200NX 7A card (AR9280) running IBSS mode
-against one older (madwifi) and one newer (ath10k) Atheros card using
-ping and iperf traffic (investigating some performance degradation
-compared to two older cards...., but getting better with the latest
-rc80211_minstrel/rc80211_minstrel_ht changes), checked via printk
-debugging intr_txqs is not cleared when entering ar9002_hw_get_isr(),
-and checked wifi is still working after the change...., can provide more
-info and/or debug traces if needed...
-
-Regards,
-Peter
+diff --git a/ip/ipnexthop.c b/ip/ipnexthop.c
+index 83a5540e..2f448449 100644
+--- a/ip/ipnexthop.c
++++ b/ip/ipnexthop.c
+@@ -6,6 +6,7 @@
+  */
+ 
+ #include <linux/nexthop.h>
++#include <stdint.h>
+ #include <stdio.h>
+ #include <string.h>
+ #include <rt_names.h>
+@@ -840,7 +841,7 @@ static void parse_nh_group_type_res(struct nlmsghdr *n, int maxlen, int *argcp,
+ 
+ 			NEXT_ARG();
+ 			if (get_unsigned(&idle_timer, *argv, 0) ||
+-			    idle_timer >= ~0UL / 100)
++			    idle_timer >= UINT32_MAX / 100)
+ 				invarg("invalid idle timer value", *argv);
+ 
+ 			addattr32(n, maxlen, NHA_RES_GROUP_IDLE_TIMER,
+@@ -850,7 +851,7 @@ static void parse_nh_group_type_res(struct nlmsghdr *n, int maxlen, int *argcp,
+ 
+ 			NEXT_ARG();
+ 			if (get_unsigned(&unbalanced_timer, *argv, 0) ||
+-			    unbalanced_timer >= ~0UL / 100)
++			    unbalanced_timer >= UINT32_MAX / 100)
+ 				invarg("invalid unbalanced timer value", *argv);
+ 
+ 			addattr32(n, maxlen, NHA_RES_GROUP_UNBALANCED_TIMER,
+-- 
+2.25.1
