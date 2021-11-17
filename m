@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0D70454DCC
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 20:20:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B9A8454DCD
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 20:20:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239272AbhKQTXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 14:23:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39736 "EHLO
+        id S240443AbhKQTXk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 14:23:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235568AbhKQTXg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 14:23:36 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A5E8C061570
-        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 11:20:38 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id u17so3044371plg.9
-        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 11:20:38 -0800 (PST)
+        with ESMTP id S235568AbhKQTXi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 14:23:38 -0500
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F151C061570
+        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 11:20:39 -0800 (PST)
+Received: by mail-pg1-x52e.google.com with SMTP id r5so3132373pgi.6
+        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 11:20:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=W0dczHRTuF0MtcdBihOYS7TZ7Ay8loThSAgm6mpvJ4g=;
-        b=jOvlT/xXCtd54iVSPo+5lwvMKpOrdRV9WDZtiCtCKc0aCp9/8165h80HTnY7l/iwm/
-         A/zPzpgRrTKAe/lOosc+mmS2x5HHDoANHLYKtEpSEmffcloxGO8w2UOlwLvywenSbJKZ
-         bhZwVXht0Vd5/V/SzRWioa21YgA73aol9Sj9aGN+T8iSpI6Kgw2jigGVf7+NzySeZOJ/
-         RWrVvF3hpOpGdUkYASchfvqDNP5MGk3jlkX7/Nadh4YS9bJ1EuoeqapMUjxKCPKtCSxP
-         T0+i9sVn1LcoSyyeaxC0JpU5Vk7fT+P46CoOPjCQvFZbz9yjdiHf7uGB8iw7sfMuZOY3
-         u6fA==
+        bh=W7vCecyRZQC0zF+8D4yWbOmb3Fl32zqV6l3NsN+7lfg=;
+        b=pfZiIfCoAqZqwQ228e7GuKM7w4bRdSL5R1v8XUuYNg98wMIcghdlh6EwawFggNjaE9
+         XG/DjBfE5hdpCX/34fPPgMeH01eHjO6oGxqgwhtxsmgmdlpWDCJgC8mpipRExLjIAUP7
+         zUzifI7/dA2gyug9UzDVFA+3fT9+S3xaITKsgLkjdQmfCvuwCXDVOdNj/2UzdVHxUflu
+         X7tfiNZsZszxE75IttX+WfcZU6+LNiRViJ3V2wSLK+lD5NmUWVLXNPzA+jDQhy+T7qDx
+         q+NzCdS74YfFRJ5AgPszaG8EdObISQUNj3wo/jHbFZHX4mcZe+vS2fzjZBhtsAkBU6Pe
+         iNGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=W0dczHRTuF0MtcdBihOYS7TZ7Ay8loThSAgm6mpvJ4g=;
-        b=yEDclH/j/FPSDkbtSUpvmNVIwOteH5wrfxhqYDiiuppA0xhcFsd8sFLcJKZdila5EL
-         dDIO6M2V822XyU58OYVq5cax8uBtFTjroHcMUc2sRcv8smpBz/KLmmDYrxbvQygCdrrf
-         i4denpz55PjIHCbS1S7HBohh5zGyhPLwqK3r3kd/MRKnP+2og24guwdBiQx6TJCNxls1
-         qNIIo43HsFekFyzCHrOrPHW1BavSaxfJvjICZo1qB77D5AClRxQCzr1TqDyfgyJQDdVw
-         mRDTHFgAkRD6bI/MaYSne5vpWitgFQW2H62QxGnl2NuaMLeiepVsX5zEWYtDTLdx3AHM
-         Fr3g==
-X-Gm-Message-State: AOAM53187UpjrzVjttEDXS6cBl9yE8dmO9Wt32n/trbqEOCDjSdOEvwd
-        iUphp59eMj026leBJCNWDOlPwagBe50=
-X-Google-Smtp-Source: ABdhPJyHC1ru0n68eMAna0+PEUrltYFjjLp0NpSwnatoJaZ31tgbJnHUVQZnbuHA+1rAvkfi7K5wDg==
-X-Received: by 2002:a17:902:7595:b0:144:ce0e:d42 with SMTP id j21-20020a170902759500b00144ce0e0d42mr495818pll.39.1637176837671;
-        Wed, 17 Nov 2021 11:20:37 -0800 (PST)
+        bh=W7vCecyRZQC0zF+8D4yWbOmb3Fl32zqV6l3NsN+7lfg=;
+        b=J5GrSSOYNGOIdc/UZyrZK+/SZkv8ti1S+oHfilckv3RTQ1RX6nA74d6RH1NliXLHsH
+         986tYww61uuK/nm+d5cqisNP0qFUB7ne6P6Ilfy67AUifkJdjg1gXsYAHe2DmHkxZiqm
+         7wpH4DWBylttDdem9CXDFQ8t3eWw+cD1WJqYODfcGIsieRHwv30vYZMm3Ra48suq4xdj
+         P7gahzsRVB++OddymY+ThSOX0yBAwQgv/5Rlw4L09j5CsvNQGnMx/jO51nxyiHLYkhEF
+         FwLuy1NxLNm9LwrvMs4HEwqwXTr7IdLypuhiTX3MVW14Y/vc46Cr6h8KZHNXKKJbOSgD
+         CayQ==
+X-Gm-Message-State: AOAM533zf+gUf21RvumUfFNIjflj09/bUFAF3mlyxqC9ktwK1VeCJZJd
+        4Vu6r0N9Gcs2ozj2W0o+v7bFUdN9yqA=
+X-Google-Smtp-Source: ABdhPJyKOIxKMV4HxBB6M9XrqzL/Q/Bphlr7tZ4dxhyt2vgIbF8dCaNGXaBIAtBEgBZmtTyRKcqrrg==
+X-Received: by 2002:a05:6a00:986:b0:4a2:c1fa:8899 with SMTP id u6-20020a056a00098600b004a2c1fa8899mr25152221pfg.61.1637176839120;
+        Wed, 17 Nov 2021 11:20:39 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:bea:143e:3360:c708])
-        by smtp.gmail.com with ESMTPSA id e15sm376698pfc.134.2021.11.17.11.20.37
+        by smtp.gmail.com with ESMTPSA id e15sm376698pfc.134.2021.11.17.11.20.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Nov 2021 11:20:37 -0800 (PST)
+        Wed, 17 Nov 2021 11:20:38 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [RFC -next 1/2] lib: add reference counting infrastructure
-Date:   Wed, 17 Nov 2021 11:20:30 -0800
-Message-Id: <20211117192031.3906502-2-eric.dumazet@gmail.com>
+Subject: [RFC -next 2/2] net: add dev_hold_track() and dev_put_track() helpers
+Date:   Wed, 17 Nov 2021 11:20:31 -0800
+Message-Id: <20211117192031.3906502-3-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.34.0.rc1.387.gb447b232ab-goog
 In-Reply-To: <20211117192031.3906502-1-eric.dumazet@gmail.com>
 References: <20211117192031.3906502-1-eric.dumazet@gmail.com>
@@ -67,265 +67,130 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-It can be hard to track where references are taken and released.
+They should replace dev_hold() and dev_put().
 
-In networking, we have annoying issues at device dismantles,
-and we had various proposals to ease root causing them.
+To use these helpers, each data structure owning a refcount
+should also use a "struct ref_tracker" to pair the hold and put.
 
-This patch adds new infrastructure pairing refcount increases
-and decreases. This will self document code, because programmer
-will have to associate increments/decrements.
-
-This is controled by CONFIG_REF_TRACKER which can be selected
-by users of this feature.
-
-This adds both cpu and memory costs, and thus should be reserved
-for debug kernel builds, or be enabled on demand with a static key.
+Whenever a leak happens, we will get precise stack traces
+of the point dev_hold_track() happened, at device dismantle phase.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- include/linux/ref_tracker.h |  78 ++++++++++++++++++++++++
- lib/Kconfig                 |   4 ++
- lib/Makefile                |   2 +
- lib/ref_tracker.c           | 116 ++++++++++++++++++++++++++++++++++++
- 4 files changed, 200 insertions(+)
- create mode 100644 include/linux/ref_tracker.h
- create mode 100644 lib/ref_tracker.c
+ include/linux/netdevice.h | 23 +++++++++++++++++++++++
+ net/Kconfig               |  8 ++++++++
+ net/core/dev.c            |  3 +++
+ 3 files changed, 34 insertions(+)
 
-diff --git a/include/linux/ref_tracker.h b/include/linux/ref_tracker.h
-new file mode 100644
-index 0000000000000000000000000000000000000000..1a2a3696682d40b38f9f1dd2b14663716e37d9d3
---- /dev/null
-+++ b/include/linux/ref_tracker.h
-@@ -0,0 +1,78 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+#ifndef _LINUX_REF_TRACKER_H
-+#define _LINUX_REF_TRACKER_H
-+#include <linux/types.h>
-+#include <linux/spinlock.h>
-+#include <linux/stackdepot.h>
-+
-+struct ref_tracker {
-+#ifdef CONFIG_REF_TRACKER
-+	struct list_head	head;   /* anchor into dir->list or dir->quarantine */
-+	bool			dead;
-+	depot_stack_handle_t	alloc_stack_handle;
-+	depot_stack_handle_t	free_stack_handle;
-+#endif
-+};
-+
-+struct ref_tracker_dir {
-+#ifdef CONFIG_REF_TRACKER
-+	spinlock_t		lock;
-+	unsigned int		quarantine_avail;
-+	struct list_head	list; /* List of active trackers */
-+	struct list_head	quarantine; /* List of dead trackers */
-+#endif
-+};
-+
-+#ifdef CONFIG_REF_TRACKER
-+static inline void ref_tracker_dir_init(struct ref_tracker_dir *dir,
-+					unsigned int quarantine_count)
-+{
-+	INIT_LIST_HEAD(&dir->list);
-+	INIT_LIST_HEAD(&dir->quarantine);
-+	spin_lock_init(&dir->lock);
-+	dir->quarantine_avail = quarantine_count;
-+}
-+
-+void ref_tracker_dir_exit(struct ref_tracker_dir *dir);
-+
-+void ref_tracker_dir_print(struct ref_tracker_dir *dir,
-+			   unsigned int display_limit);
-+
-+int ref_tracker_alloc(struct ref_tracker_dir *dir,
-+		      struct ref_tracker **trackerp, gfp_t gfp);
-+
-+int ref_tracker_free(struct ref_tracker_dir *dir,
-+		     struct ref_tracker **trackerp);
-+
-+#else /* CONFIG_REF_TRACKER */
-+
-+static inline void ref_tracker_dir_init(struct ref_tracker_dir *dir,
-+					unsigned int quarantine_count)
-+{
-+}
-+
-+static inline void ref_tracker_dir_exit(struct ref_tracker_dir *dir)
-+{
-+}
-+
-+static inline void ref_tracker_dir_print(struct ref_tracker_dir *dir,
-+					 unsigned int display_limit)
-+{
-+}
-+
-+static inline int ref_tracker_alloc(struct ref_tracker_dir *dir,
-+				    struct ref_tracker **trackerp,
-+				    gfp_t gfp)
-+{
-+	return 0;
-+}
-+
-+static inline int ref_tracker_free(struct ref_tracker_dir *dir,
-+				   struct ref_tracker **trackerp)
-+{
-+	return 0;
-+}
-+
-+#endif
-+
-+#endif /* _LINUX_REF_TRACKER_H */
-diff --git a/lib/Kconfig b/lib/Kconfig
-index 5e7165e6a346c9bec878b78c8c8c3d175fc98dfd..d01be8e9593992a7d94a46bd1716460bc33c3ae1 100644
---- a/lib/Kconfig
-+++ b/lib/Kconfig
-@@ -680,6 +680,10 @@ config STACK_HASH_ORDER
- 	 Select the hash size as a power of 2 for the stackdepot hash table.
- 	 Choose a lower value to reduce the memory impact.
- 
-+config REF_TRACKER
-+	bool
-+	select STACKDEPOT
-+
- config SBITMAP
- 	bool
- 
-diff --git a/lib/Makefile b/lib/Makefile
-index 364c23f1557816f73aebd8304c01224a4846ac6c..c1fd9243ddb9cc1ac5252d7eb8009f9290782c4a 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -270,6 +270,8 @@ obj-$(CONFIG_STACKDEPOT) += stackdepot.o
- KASAN_SANITIZE_stackdepot.o := n
- KCOV_INSTRUMENT_stackdepot.o := n
- 
-+obj-$(CONFIG_REF_TRACKER) += ref_tracker.o
-+
- libfdt_files = fdt.o fdt_ro.o fdt_wip.o fdt_rw.o fdt_sw.o fdt_strerror.o \
- 	       fdt_empty_tree.o fdt_addresses.o
- $(foreach file, $(libfdt_files), \
-diff --git a/lib/ref_tracker.c b/lib/ref_tracker.c
-new file mode 100644
-index 0000000000000000000000000000000000000000..e907c58c31ed49719e31c6e46abd1715d9884924
---- /dev/null
-+++ b/lib/ref_tracker.c
-@@ -0,0 +1,116 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+#include <linux/export.h>
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 4f4a299e92de7ba9f61507ad4df7e334775c07a6..91957aa0779195a962ec95f491d826bdd536808e 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -48,6 +48,7 @@
+ #include <uapi/linux/pkt_cls.h>
+ #include <linux/hashtable.h>
+ #include <linux/rbtree.h>
 +#include <linux/ref_tracker.h>
-+#include <linux/slab.h>
-+#include <linux/stacktrace.h>
-+
-+#define REF_TRACKER_STACK_ENTRIES 16
-+
-+void ref_tracker_dir_exit(struct ref_tracker_dir *dir)
+ 
+ struct netpoll_info;
+ struct device;
+@@ -2181,6 +2182,7 @@ struct net_device {
+ #else
+ 	refcount_t		dev_refcnt;
+ #endif
++	struct ref_tracker_dir	refcnt_tracker;
+ 
+ 	struct list_head	link_watch_list;
+ 
+@@ -3807,6 +3809,7 @@ void netdev_run_todo(void);
+  *	@dev: network device
+  *
+  * Release reference to device to allow it to be freed.
++ * Try using dev_put_track() instead.
+  */
+ static inline void dev_put(struct net_device *dev)
+ {
+@@ -3824,6 +3827,7 @@ static inline void dev_put(struct net_device *dev)
+  *	@dev: network device
+  *
+  * Hold reference to device to keep it from being freed.
++ * Try using dev_hold_track() instead.
+  */
+ static inline void dev_hold(struct net_device *dev)
+ {
+@@ -3836,6 +3840,25 @@ static inline void dev_hold(struct net_device *dev)
+ 	}
+ }
+ 
++static inline void dev_hold_track(struct net_device *dev,
++				  struct ref_tracker **tracker,
++				  gfp_t gfp)
 +{
-+	struct ref_tracker *tracker, *n;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&dir->lock, flags);
-+	list_for_each_entry_safe(tracker, n, &dir->quarantine, head) {
-+		list_del(&tracker->head);
-+		kfree(tracker);
-+		dir->quarantine_avail++;
++	if (dev) {
++		dev_hold(dev);
++		ref_tracker_alloc(&dev->refcnt_tracker, tracker, gfp);
 +	}
-+	list_for_each_entry_safe(tracker, n, &dir->list, head) {
-+		pr_err("leaked reference.\n");
-+		if (tracker->alloc_stack_handle)
-+			stack_depot_print(tracker->alloc_stack_handle);
-+		list_del(&tracker->head);
-+		kfree(tracker);
-+	}
-+	spin_unlock_irqrestore(&dir->lock, flags);
 +}
-+EXPORT_SYMBOL(ref_tracker_dir_exit);
 +
-+void ref_tracker_dir_print(struct ref_tracker_dir *dir,
-+			   unsigned int display_limit)
++static inline void dev_put_track(struct net_device *dev,
++				 struct ref_tracker **tracker)
 +{
-+	struct ref_tracker *tracker;
-+	unsigned long flags;
-+	unsigned int i = 0;
-+
-+	spin_lock_irqsave(&dir->lock, flags);
-+	list_for_each_entry(tracker, &dir->list, head) {
-+		tracker->dead = true;
-+		if (i < display_limit) {
-+			pr_err("leaked reference.\n");
-+			if (tracker->alloc_stack_handle)
-+				stack_depot_print(tracker->alloc_stack_handle);
-+		}
-+		i++;
++	if (dev) {
++		ref_tracker_free(&dev->refcnt_tracker, tracker);
++		dev_put(dev);
 +	}
-+	spin_unlock_irqrestore(&dir->lock, flags);
 +}
-+EXPORT_SYMBOL(ref_tracker_dir_print);
 +
-+int ref_tracker_alloc(struct ref_tracker_dir *dir,
-+		      struct ref_tracker **trackerp,
-+		      gfp_t gfp)
-+{
-+	unsigned long entries[REF_TRACKER_STACK_ENTRIES];
-+	struct ref_tracker *tracker;
-+	unsigned int nr_entries;
-+	unsigned long flags;
+ /* Carrier loss detection, dial on demand. The functions netif_carrier_on
+  * and _off may be called from IRQ context, but it is caller
+  * who is responsible for serialization of these calls.
+diff --git a/net/Kconfig b/net/Kconfig
+index 074472dfa94ae78081b7391b8ca4a73b9d0be7b7..a4743e59a35c2978ecc6d704b388ca07efe3e95c 100644
+--- a/net/Kconfig
++++ b/net/Kconfig
+@@ -253,6 +253,14 @@ config PCPU_DEV_REFCNT
+ 	  network device refcount are using per cpu variables if this option is set.
+ 	  This can be forced to N to detect underflows (with a performance drop).
+ 
++config NET_DEV_REFCNT_TRACKER
++	bool "Enable tracking in dev_put_track() and dev_hold_track()"
++	select REF_TRACKER
++	default n
++	help
++	  Enable debugging feature to track leaked device references.
++	  This adds memory and cpu costs.
 +
-+	*trackerp = tracker = kzalloc(sizeof(*tracker), gfp);
-+	if (!tracker) {
-+		pr_err_once("memory allocation failure, unreliable refcount tracker.\n");
-+		return -ENOMEM;
-+	}
-+	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 1);
-+	tracker->alloc_stack_handle = stack_depot_save(entries, nr_entries, gfp);
-+
-+	spin_lock_irqsave(&dir->lock, flags);
-+	list_add(&tracker->head, &dir->list);
-+	spin_unlock_irqrestore(&dir->lock, flags);
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(ref_tracker_alloc);
-+
-+int ref_tracker_free(struct ref_tracker_dir *dir,
-+		     struct ref_tracker **trackerp)
-+{
-+	unsigned long entries[REF_TRACKER_STACK_ENTRIES];
-+	struct ref_tracker *tracker = *trackerp;
-+	unsigned int nr_entries;
-+	unsigned long flags;
-+
-+	if (!tracker)
-+		return -EEXIST;
-+	spin_lock_irqsave(&dir->lock, flags);
-+	if (tracker->dead) {
-+		pr_err("reference already released.\n");
-+		if (tracker->alloc_stack_handle) {
-+			pr_err("allocated in:\n");
-+			stack_depot_print(tracker->alloc_stack_handle);
-+		}
-+		if (tracker->free_stack_handle) {
-+			pr_err("freed in:\n");
-+			stack_depot_print(tracker->free_stack_handle);
-+		}
-+		spin_unlock_irqrestore(&dir->lock, flags);
-+		return -EINVAL;
-+	}
-+	tracker->dead = true;
-+
-+	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 1);
-+	tracker->free_stack_handle = stack_depot_save(entries, nr_entries, GFP_ATOMIC);
-+
-+	list_move_tail(&tracker->head, &dir->quarantine);
-+	if (!dir->quarantine_avail) {
-+		tracker = list_first_entry(&dir->quarantine, struct ref_tracker, head);
-+		list_del(&tracker->head);
-+		kfree(tracker);
-+	} else {
-+		dir->quarantine_avail--;
-+	}
-+	spin_unlock_irqrestore(&dir->lock, flags);
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(ref_tracker_free);
+ config RPS
+ 	bool
+ 	depends on SMP && SYSFS
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 92c9258cbf28556e68f9112343f5ebc98b2c163b..90ee2ba8717bf74bd3a1f72f7034744773ef69c4 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -9878,6 +9878,7 @@ static void netdev_wait_allrefs(struct net_device *dev)
+ 			       netdev_unregister_timeout_secs * HZ)) {
+ 			pr_emerg("unregister_netdevice: waiting for %s to become free. Usage count = %d\n",
+ 				 dev->name, refcnt);
++			ref_tracker_dir_print(&dev->refcnt_tracker, 10);
+ 			warning_time = jiffies;
+ 		}
+ 	}
+@@ -10168,6 +10169,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
+ 	dev = PTR_ALIGN(p, NETDEV_ALIGN);
+ 	dev->padded = (char *)dev - (char *)p;
+ 
++	ref_tracker_dir_init(&dev->refcnt_tracker, 128);
+ #ifdef CONFIG_PCPU_DEV_REFCNT
+ 	dev->pcpu_refcnt = alloc_percpu(int);
+ 	if (!dev->pcpu_refcnt)
+@@ -10284,6 +10286,7 @@ void free_netdev(struct net_device *dev)
+ 	list_for_each_entry_safe(p, n, &dev->napi_list, dev_list)
+ 		netif_napi_del(p);
+ 
++	ref_tracker_dir_exit(&dev->refcnt_tracker);
+ #ifdef CONFIG_PCPU_DEV_REFCNT
+ 	free_percpu(dev->pcpu_refcnt);
+ 	dev->pcpu_refcnt = NULL;
 -- 
 2.34.0.rc1.387.gb447b232ab-goog
 
