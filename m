@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B94A1454EF8
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 22:06:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9991B454EFB
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 22:06:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240809AbhKQVI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 16:08:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35000 "EHLO
+        id S240476AbhKQVJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 16:09:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240374AbhKQVI1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 16:08:27 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1CE2C061570;
-        Wed, 17 Nov 2021 13:05:28 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id z5so17019640edd.3;
-        Wed, 17 Nov 2021 13:05:28 -0800 (PST)
+        with ESMTP id S240725AbhKQVI3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 16:08:29 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE371C061202;
+        Wed, 17 Nov 2021 13:05:29 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id t5so17245656edd.0;
+        Wed, 17 Nov 2021 13:05:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=d+SVoTAK5C5wl38ctM2piKl8MvU2Rt+cFsxV/drb/dE=;
-        b=PQncZbT1J4amBfAODMyQjDAzKPhvlbV6i4e4tLMf91PR2hDXKNK8uBNh7ADgk5OjOj
-         IZaILl1ZvN7BcBkf9ihslBh07biYh4vxjKDWPKJv55mlWmFt6zsUqANGf9HSD4a5WvKg
-         WICFtcBVrnf74+NLbtVdjusRa+F9sVhCvpNFjCH/p327rHpMaGROE+uTa1Jyv6Raja/V
-         W9ZvjTPDoO485HkrK3krBmWcS0KQVBFuV3CNpXlC0jj3HMNAsx7Ijye9ZuPMrDghOgAB
-         RbUXRXDkQDwCr1InoQO8Bx0tkQ0XBdhmRokJsIVCrjZHKZWtIS7lONgSjh62lYuGUvqU
-         5VeQ==
+        bh=Vo6cAfjs/htr35w2rIRklqSudZBIEyLbTN6ICJxY3Uk=;
+        b=LNCD6PsNRLRMGhp6gKBkoIaU+mV7Nhe3Ef/GTdf/F/Zf2rVgwMc1x8MzqQnd+FLLag
+         M9tH7mr0NcKWwBHaMDGUmx92h+ErNwcxA+WXupn3HpmgC6yKSyDUlm4/3gRukIyofIE2
+         Cu0ESfk1YwCZ/+f+5AD23af3/QAr6+hhLIXAzwKXSQm2Jgem0fzmKqv94BKynVnontzq
+         4V65u1JDsGc21hUd8WL7hkRnwiBhBMcXPflrY5Pp4vCzu1doGX5nNO0rNxgaWlmK3kWy
+         RIZXzzI8oWHIbUGLfOw5NJMEgAYx5Z8ejic8S2paOP6xFRQ/akRNrc5sAAnn217VVUuh
+         xvKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=d+SVoTAK5C5wl38ctM2piKl8MvU2Rt+cFsxV/drb/dE=;
-        b=tnwYvS8ZsA0z+ETAHxt50UryrjI7sE/y7rfOgpSuVFnLtd6K94OSHPmtM7KLdeUrfe
-         f/Bp3fHtrnECvMMWanAZedUZh0+HnC1bVygFULJuWnHNLX8fq7FbKCyqf0xD45PjTEiE
-         sUygSUmcwkomxuBrNWSQNeWCM67lDfeQ5crtUsceTdktJ+ttqdNj2Mbb5K6Otrpq4sJA
-         izQpEwuup7nREF2mf4gJOlIJdh9jHxeSflkH6n/JtyCgtsfjjKjNfIR4eShfY1wV+kpc
-         lSJgU5qxL82z6+A2ZUCobeKyJGD0GLzb4QICIpQ1ZDsxGe8SI0Ug/Onijgh7E6DwovNX
-         JULw==
-X-Gm-Message-State: AOAM532dSVC75sVtJ8twwKrUpaJF30va96NTi5dqCWL95RdfVBSAGHen
-        qytTz6G+hW+qurYQyBP0/Dc=
-X-Google-Smtp-Source: ABdhPJxlXdSLOpdcWeTLvlkdwjgRIMP6De05oHi6jyDKTpdy0hqeHSeZjIWV8pvpsjNbtQQjmbzxog==
-X-Received: by 2002:a05:6402:516c:: with SMTP id d12mr2652815ede.391.1637183127332;
-        Wed, 17 Nov 2021 13:05:27 -0800 (PST)
+        bh=Vo6cAfjs/htr35w2rIRklqSudZBIEyLbTN6ICJxY3Uk=;
+        b=6ARXAYoFgoYV7WyrfZFs1dpRupAVHfWDXukCNDDW4R4QS1BS/5awyiPq+lcqUr2HXy
+         Jdi62FlHgIQF/iWoOSWAYJZDOrU5R4nOG+GePPCNaevA6wqfvsruBM4KaS0dimNtS/tc
+         Sw4xPzCTwQotJFwnHs0Aq4vrMP89mkrzb7qCRq6nTO9OQYUALHRkdOEcNVfj5DJyDVgy
+         C958AyHAxI3FgRfhA6lEFbAs5wN0DzgVrodD8BlqS56mEqh2PEy4MYKdR4S61IXWsGl9
+         AUCUFKcjctm8jsHiPIhOiGRDNwpCECkePPM+RRJrP9QSwzxb4jTnyjzhxgo34OnO8yVS
+         l5fQ==
+X-Gm-Message-State: AOAM53031GewRhSwzkaDVrSjil4ULkgg/7UFVx9mNHeJWEdBATq85SBs
+        3AW7GfefcfS/qdEjqNIIqp0=
+X-Google-Smtp-Source: ABdhPJxW1eYue4tIhZOFwIbC6kcXdkHrl2GStBjV9W4g2INHRXVlzzEX0JGt6agpaeloVle8MankdQ==
+X-Received: by 2002:a17:906:ce2a:: with SMTP id sd10mr25635129ejb.154.1637183128359;
+        Wed, 17 Nov 2021 13:05:28 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id di4sm467070ejc.11.2021.11.17.13.05.25
+        by smtp.googlemail.com with ESMTPSA id di4sm467070ejc.11.2021.11.17.13.05.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Nov 2021 13:05:26 -0800 (PST)
+        Wed, 17 Nov 2021 13:05:28 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -57,9 +57,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Russell King <linux@armlinux.org.uk>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [net-next PATCH 09/19] net: dsa: qca8k: add additional MIB counter and make it dynamic
-Date:   Wed, 17 Nov 2021 22:04:41 +0100
-Message-Id: <20211117210451.26415-10-ansuelsmth@gmail.com>
+Subject: [net-next PATCH 10/19] net: dsa: qca8k: add support for port fast aging
+Date:   Wed, 17 Nov 2021 22:04:42 +0100
+Message-Id: <20211117210451.26415-11-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211117210451.26415-1-ansuelsmth@gmail.com>
 References: <20211117210451.26415-1-ansuelsmth@gmail.com>
@@ -69,123 +69,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We are currently missing 2 additional MIB counter present in QCA833x
-switch.
-QC832x switch have 39 MIB counter and QCA833X have 41 MIB counter.
-Add the additional MIB counter and rework the MIB function to print the
-correct supported counter from the match_data struct.
+The switch doesn't support fast aging but it does support the flush of
+the ARL table for a specific port. Add this function to simulate
+fast aging and proprely support stp state set.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 23 ++++++++++++++++++++---
- drivers/net/dsa/qca8k.h |  4 ++++
- 2 files changed, 24 insertions(+), 3 deletions(-)
+ drivers/net/dsa/qca8k.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
 diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 7f71607bec3f..cf4f69b36b47 100644
+index cf4f69b36b47..d73886b36e6a 100644
 --- a/drivers/net/dsa/qca8k.c
 +++ b/drivers/net/dsa/qca8k.c
-@@ -70,6 +70,8 @@ static const struct qca8k_mib_desc ar8327_mib[] = {
- 	MIB_DESC(1, 0x9c, "TxExcDefer"),
- 	MIB_DESC(1, 0xa0, "TxDefer"),
- 	MIB_DESC(1, 0xa4, "TxLateCol"),
-+	MIB_DESC(1, 0xa8, "RXUnicast"),
-+	MIB_DESC(1, 0xac, "TXUnicast"),
- };
- 
- /* The 32bit switch registers are accessed indirectly. To achieve this we need
-@@ -1638,12 +1640,16 @@ qca8k_phylink_mac_link_up(struct dsa_switch *ds, int port, unsigned int mode,
- static void
- qca8k_get_strings(struct dsa_switch *ds, int port, u32 stringset, uint8_t *data)
- {
-+	const struct qca8k_match_data *match_data;
-+	struct qca8k_priv *priv = ds->priv;
- 	int i;
- 
- 	if (stringset != ETH_SS_STATS)
- 		return;
- 
--	for (i = 0; i < ARRAY_SIZE(ar8327_mib); i++)
-+	match_data = of_device_get_match_data(priv->dev);
-+
-+	for (i = 0; i < match_data->mib_count; i++)
- 		strncpy(data + i * ETH_GSTRING_LEN, ar8327_mib[i].name,
- 			ETH_GSTRING_LEN);
- }
-@@ -1653,12 +1659,15 @@ qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
- 			uint64_t *data)
- {
- 	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
-+	const struct qca8k_match_data *match_data;
- 	const struct qca8k_mib_desc *mib;
- 	u32 reg, i, val;
- 	u32 hi = 0;
- 	int ret;
- 
--	for (i = 0; i < ARRAY_SIZE(ar8327_mib); i++) {
-+	match_data = of_device_get_match_data(priv->dev);
-+
-+	for (i = 0; i < match_data->mib_count; i++) {
- 		mib = &ar8327_mib[i];
- 		reg = QCA8K_PORT_MIB_COUNTER(port) + mib->offset;
- 
-@@ -1681,10 +1690,15 @@ qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
- static int
- qca8k_get_sset_count(struct dsa_switch *ds, int port, int sset)
- {
-+	const struct qca8k_match_data *match_data;
-+	struct qca8k_priv *priv = ds->priv;
-+
- 	if (sset != ETH_SS_STATS)
- 		return 0;
- 
--	return ARRAY_SIZE(ar8327_mib);
-+	match_data = of_device_get_match_data(priv->dev);
-+
-+	return match_data->mib_count;
+@@ -1823,6 +1823,16 @@ qca8k_port_bridge_leave(struct dsa_switch *ds, int port, struct net_device *br)
+ 			   QCA8K_PORT_LOOKUP_MEMBER, BIT(cpu_port));
  }
  
- static int
-@@ -2143,14 +2157,17 @@ static SIMPLE_DEV_PM_OPS(qca8k_pm_ops,
- static const struct qca8k_match_data qca8327 = {
- 	.id = QCA8K_ID_QCA8327,
- 	.reduced_package = true,
-+	.mib_count = QCA8K_QCA832X_MIB_COUNT,
- };
- 
- static const struct qca8k_match_data qca8328 = {
- 	.id = QCA8K_ID_QCA8327,
-+	.mib_count = QCA8K_QCA832X_MIB_COUNT,
- };
- 
- static const struct qca8k_match_data qca833x = {
- 	.id = QCA8K_ID_QCA8337,
-+	.mib_count = QCA8K_QCA833X_MIB_COUNT,
- };
- 
- static const struct of_device_id qca8k_of_match[] = {
-diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-index 3722fbb6b461..c5d83514ad2e 100644
---- a/drivers/net/dsa/qca8k.h
-+++ b/drivers/net/dsa/qca8k.h
-@@ -21,6 +21,9 @@
- #define PHY_ID_QCA8337					0x004dd036
- #define QCA8K_ID_QCA8337				0x13
- 
-+#define QCA8K_QCA832X_MIB_COUNT				39
-+#define QCA8K_QCA833X_MIB_COUNT				41
++static void
++qca8k_port_fast_age(struct dsa_switch *ds, int port)
++{
++	struct qca8k_priv *priv = ds->priv;
 +
- #define QCA8K_BUSY_WAIT_TIMEOUT				2000
- 
- #define QCA8K_NUM_FDB_RECORDS				2048
-@@ -279,6 +282,7 @@ struct ar8xxx_port_status {
- struct qca8k_match_data {
- 	u8 id;
- 	bool reduced_package;
-+	u8 mib_count;
- };
- 
- enum {
++	mutex_lock(&priv->reg_mutex);
++	qca8k_fdb_access(priv, QCA8K_FDB_FLUSH_PORT, port);
++	mutex_unlock(&priv->reg_mutex);
++}
++
+ static int
+ qca8k_port_enable(struct dsa_switch *ds, int port,
+ 		  struct phy_device *phy)
+@@ -2031,6 +2041,7 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
+ 	.port_stp_state_set	= qca8k_port_stp_state_set,
+ 	.port_bridge_join	= qca8k_port_bridge_join,
+ 	.port_bridge_leave	= qca8k_port_bridge_leave,
++	.port_fast_age		= qca8k_port_fast_age,
+ 	.port_fdb_add		= qca8k_port_fdb_add,
+ 	.port_fdb_del		= qca8k_port_fdb_del,
+ 	.port_fdb_dump		= qca8k_port_fdb_dump,
 -- 
 2.32.0
 
