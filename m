@@ -2,124 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5279F454EDD
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 22:01:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1441454EEA
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 22:05:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239825AbhKQVEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 16:04:31 -0500
-Received: from mga12.intel.com ([192.55.52.136]:53253 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239777AbhKQVE3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Nov 2021 16:04:29 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10171"; a="214088389"
-X-IronPort-AV: E=Sophos;i="5.87,241,1631602800"; 
-   d="scan'208";a="214088389"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2021 13:01:29 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,241,1631602800"; 
-   d="scan'208";a="604878278"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga004.jf.intel.com with ESMTP; 17 Nov 2021 13:01:29 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Vaibhav Gupta <vaibhavgupta40@gmail.com>,
-        Alexey Kuznetsov <axet@me.com>
-Subject: [PATCH net 1/1] e100: fix device suspend/resume
-Date:   Wed, 17 Nov 2021 12:59:52 -0800
-Message-Id: <20211117205952.3792122-1-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
+        id S240169AbhKQVIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 16:08:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34938 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240297AbhKQVIQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 16:08:16 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A71C061570;
+        Wed, 17 Nov 2021 13:05:17 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id x15so17055529edv.1;
+        Wed, 17 Nov 2021 13:05:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Faw8cIvG+RI1BhwkS1A22U+SiHmOAQoNP8Yl5CPDSYk=;
+        b=nQQnCTsj3utUHIUwQStjB55zDSZU04WMfhlqKbJVQ2W1frXy+AL8SgPMiCD7BPS4Ga
+         Lg8de3OB1XSYWS9dxTHrE/KfJgbTMjqiAtAsMftKzyuPVAPAVRDbV2oTnYSMV0ZlDXO9
+         i7rBeuS35UrW1dPgQXCIp0EnZeEAe8SsEM18x2oOQXdmXafVTqFCSTxjpM7b59Uckzpc
+         JiQqyKQUMKkMwUIuQcMSa2YCDZkBn7ATfVmhz8XxGkor1sZZ9hD2qb3NllSRypPMJwYy
+         ft32TgVxmJuwG/TmgHE2tzunkta9NoKyLVZKBTPRqEuxGKa9cyp1opplQTSUPyM3bA+i
+         CUng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Faw8cIvG+RI1BhwkS1A22U+SiHmOAQoNP8Yl5CPDSYk=;
+        b=48oJqt2tjM5BxevJ+2g9mfXd4FomOKBjw02FAtUCF3dTbRWYOjEi8muKGeMnHZyyjJ
+         4DNAsVtVzT70F88v5oJk6eYDeq3VVp252I6nBIgL1BACkiZAUPz7PvJQM8NE00R1c5hb
+         Z/NcX7tqR5xBy4OLg98tKeuQy2flYS9pROIEnl7tzOsTVci28/FjHQwYUuIJfNq1Q763
+         bcVTZtH/JwNHMCfiQ1H2WKR/Tiw0vmjK3Ek+4dxwh2oJhYFeqJ+Q3isA2XXBcbMyEP51
+         Qaa05NJzKEgb69rHUAyxxzH5M+hTTRSsa4iRbOMSP1CVo45FMNehLvcY5SeXQ9qdSjPL
+         TSuA==
+X-Gm-Message-State: AOAM533FeeXeRddxgOY5sm/BpR83aaKzmLxEHgAS/Sn3V1Ng4Paazi0D
+        rTPQ/HOKyTtaMp5nBEr/DF4=
+X-Google-Smtp-Source: ABdhPJwTmE8dSej2DgsV+NUj3urTuwSOu6pgej6yujxodqRI7ypIJoAaLBSNfWiD1CSlQ7Cgkxf09A==
+X-Received: by 2002:a17:906:3408:: with SMTP id c8mr25358911ejb.41.1637183116021;
+        Wed, 17 Nov 2021 13:05:16 -0800 (PST)
+Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.googlemail.com with ESMTPSA id di4sm467070ejc.11.2021.11.17.13.05.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Nov 2021 13:05:15 -0800 (PST)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [net-next PATCH 00/19] Multiple cleanup and feature for qca8k
+Date:   Wed, 17 Nov 2021 22:04:32 +0100
+Message-Id: <20211117210451.26415-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesse Brandeburg <jesse.brandeburg@intel.com>
+This series contains 3 main patch groups:
+- Cleanup with conversion of the driver to bitfield macro and regmap.
+- Add multiple feature mdb add/del, lag support, ageing and fast age.
+- Code split of common code from specific code.
 
-As reported in [1], e100 was no longer working for suspend/resume
-cycles. The previous commit mentioned in the fixes appears to have
-broken things and this attempts to practice best known methods for
-device power management and keep wake-up working while allowing
-suspend/resume to work. To do this, I reorder a little bit of code
-and fix the resume path to make sure the device is enabled.
+The first patch is just a reference from linux-next needed for the
+regmap conversion.
 
-[1] https://bugzilla.kernel.org/show_bug.cgi?id=214933
+As said in the commits, the code split is required as ipq40xx internal
+switch is based on the same qca8k reg but use a different way to
+read/write to the switch regs. We convert the driver to the generic
+regmap and we split the driver to common and specific code.
 
-Fixes: 69a74aef8a18 ("e100: use generic power management")
-Cc: Vaibhav Gupta <vaibhavgupta40@gmail.com>
-Reported-by: Alexey Kuznetsov <axet@me.com>
-Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Tested-by: Alexey Kuznetsov <axet@me.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/e100.c | 18 +++++++++++++-----
- 1 file changed, 13 insertions(+), 5 deletions(-)
+This also contains a patch to fix a corner case when and if multi cpu
+will be supported to DSA.
+We add mdb add/del using the ARL table.
+We add ageing support and fast age.
+We add support for mirror mode.
+We add 2 additional MIB present on qca8337.
 
-diff --git a/drivers/net/ethernet/intel/e100.c b/drivers/net/ethernet/intel/e100.c
-index 5039a2536951..0bf3d47bb90d 100644
---- a/drivers/net/ethernet/intel/e100.c
-+++ b/drivers/net/ethernet/intel/e100.c
-@@ -3003,9 +3003,10 @@ static void __e100_shutdown(struct pci_dev *pdev, bool *enable_wake)
- 	struct net_device *netdev = pci_get_drvdata(pdev);
- 	struct nic *nic = netdev_priv(netdev);
- 
-+	netif_device_detach(netdev);
-+
- 	if (netif_running(netdev))
- 		e100_down(nic);
--	netif_device_detach(netdev);
- 
- 	if ((nic->flags & wol_magic) | e100_asf(nic)) {
- 		/* enable reverse auto-negotiation */
-@@ -3022,7 +3023,7 @@ static void __e100_shutdown(struct pci_dev *pdev, bool *enable_wake)
- 		*enable_wake = false;
- 	}
- 
--	pci_clear_master(pdev);
-+	pci_disable_device(pdev);
- }
- 
- static int __e100_power_off(struct pci_dev *pdev, bool wake)
-@@ -3042,8 +3043,6 @@ static int __maybe_unused e100_suspend(struct device *dev_d)
- 
- 	__e100_shutdown(to_pci_dev(dev_d), &wake);
- 
--	device_wakeup_disable(dev_d);
--
- 	return 0;
- }
- 
-@@ -3051,6 +3050,14 @@ static int __maybe_unused e100_resume(struct device *dev_d)
- {
- 	struct net_device *netdev = dev_get_drvdata(dev_d);
- 	struct nic *nic = netdev_priv(netdev);
-+	int err;
-+
-+	err = pci_enable_device(to_pci_dev(dev_d));
-+	if (err) {
-+		netdev_err(netdev, "Resume cannot enable PCI device, aborting\n");
-+		return err;
-+	}
-+	pci_set_master(to_pci_dev(dev_d));
- 
- 	/* disable reverse auto-negotiation */
- 	if (nic->phy == phy_82552_v) {
-@@ -3062,10 +3069,11 @@ static int __maybe_unused e100_resume(struct device *dev_d)
- 		           smartspeed & ~(E100_82552_REV_ANEG));
- 	}
- 
--	netif_device_attach(netdev);
- 	if (netif_running(netdev))
- 		e100_up(nic);
- 
-+	netif_device_attach(netdev);
-+
- 	return 0;
- }
- 
+The regmap conversion patch and the lag patch contains checkpatch
+warning for too long line and these error are not fixed to not make the
+definition of these regs pratically not readable.
+
+Ansuel Smith (19):
+  regmap: allow to define reg_update_bits for no bus configuration
+  net: dsa: qca8k: remove redundant check in parse_port_config
+  net: dsa: qca8k: skip sgmii delay on double cpu conf
+  net: dsa: qca8k: convert to GENMASK/FIELD_PREP/FIELD_GET
+  net: dsa: qca8k: move read switch id function in qca8k_setup
+  net: dsa: qca8k: remove extra mutex_init in qca8k_setup
+  net: dsa: qca8k: set regmap init as mandatory for regmap conversion
+  net: dsa: qca8k: convert qca8k to regmap helper
+  net: dsa: qca8k: add additional MIB counter and make it dynamic
+  net: dsa: qca8k: add support for port fast aging
+  net: dsa: qca8k: add support for mirror mode
+  net: dsa: qca8k: add set_ageing_time support
+  net: dsa: qca8k: add min/max ageing time
+  net: dsa: qca8k: add support for mdb_add/del
+  net: dsa: qca8k: add LAG support
+  net: dsa: qca8k: enable mtu_enforcement_ingress
+  net: dsa: qca8k: move qca8k to qca dir
+  net: dsa: qca8k: use device_get_match_data instead of the OF variant
+  net: dsa: qca8k: split qca8k in common and 8xxx specific code
+
+ drivers/base/regmap/regmap.c                  |    1 +
+ drivers/net/dsa/Kconfig                       |    8 -
+ drivers/net/dsa/Makefile                      |    1 -
+ drivers/net/dsa/qca/Kconfig                   |    9 +
+ drivers/net/dsa/qca/Makefile                  |    2 +
+ drivers/net/dsa/{qca8k.c => qca/qca8k-8xxx.c} | 1144 +++-------------
+ drivers/net/dsa/qca/qca8k-common.c            | 1157 +++++++++++++++++
+ drivers/net/dsa/qca/qca8k.h                   |  413 ++++++
+ drivers/net/dsa/qca8k.h                       |  311 -----
+ include/linux/regmap.h                        |    7 +
+ 10 files changed, 1750 insertions(+), 1303 deletions(-)
+ rename drivers/net/dsa/{qca8k.c => qca/qca8k-8xxx.c} (56%)
+ create mode 100644 drivers/net/dsa/qca/qca8k-common.c
+ create mode 100644 drivers/net/dsa/qca/qca8k.h
+ delete mode 100644 drivers/net/dsa/qca8k.h
+
 -- 
-2.31.1
+2.32.0
 
