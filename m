@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9931E454EEB
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 22:05:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1E39454EED
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 22:05:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240239AbhKQVIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 16:08:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34944 "EHLO
+        id S240350AbhKQVI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 16:08:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240349AbhKQVIR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 16:08:17 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A0CC061570;
-        Wed, 17 Nov 2021 13:05:18 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id l25so512185eda.11;
-        Wed, 17 Nov 2021 13:05:18 -0800 (PST)
+        with ESMTP id S240391AbhKQVIS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 16:08:18 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6095EC061570;
+        Wed, 17 Nov 2021 13:05:19 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id e3so16990288edu.4;
+        Wed, 17 Nov 2021 13:05:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=W8VEPkIJ+G9KDOOFEoKmrVPN7jMCAsjenX9iNG15oUo=;
-        b=XRu6M3iQuOXjNWyPkNAzPR7F62BSOazpeWz9IDhVcwnE217NX98sixNEIVVjVOj7ST
-         FvbK9J+wwRU6DyEi9yROmqzv1KZmexSq/IJZ16Bnq8xCkhdrAMsxIP23X02HG7kxa42k
-         eDn+9A+zNVfwBMXwoUm9KzHH2hFZjLU7kScZgEmYh4+dg+FH014EovCSyNIueJyHy0Qf
-         I3ZEa0hcXO+ty7A/8Zd7lieYdFSpbsIPKpSBsrtU1/jo8TQXRqz+vGmR+dgUP/fvQ56B
-         S+POrdafrCbtzxKPi3QliheUmc7cXIveNneOHyrcUx3ujzBioh/QIJbOh9cvYmAxhETO
-         3xtA==
+        bh=Moo6C6ux3Max+74jfwWrTQaUIS07OsmKfAQTULmbues=;
+        b=oxNuq3iaqHNFEvebZeULCPIkxAZqRtvK1AkgC3Ma+PPCZEC9JJ1pruVdLcZZDp7YmS
+         UH7fD+ZRjIlvohXHSTfDW+VNm5zW26t2LBOFqqzUKTHZvOLJYVjO8/OizFj1nA2khY/z
+         uLZNOW5L7iIxCDMpA9mKgRmrC687mImv1R+vzXT55lKWCs8Pd9PepAjPCcTiybhNbZ6E
+         1Oka6kkP3LOITU/bMJiA8DosFbaHGn13sYeM9v9fjQRU8fvybaYiskXd5gH4iWSUG2wf
+         ysIKsv4cP06LbFQ+JIpdHPFvgo4t+Yc+sM0OY0mf9RJNmgCFMcqTyt2T13me5hMlXVeF
+         p8yQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=W8VEPkIJ+G9KDOOFEoKmrVPN7jMCAsjenX9iNG15oUo=;
-        b=Rr46anYQtjDqKxwx5hMOdmBFEQUocb2JSmOI7mh6RbTjIjFRl/PMioeoEgF5yE9J10
-         xONDeDj6SMjvQg0w1T1aMRdLxvfbVRgPyBi6nPBT4JbLXq4SttwctArccQrvTPV+ULTk
-         yXhhI0qvOvft7LWNuA2OHPLVG5GCcx+fy5/eJGmRpYBRW3mlNQ/Vj3oqCVUgYGT0CPfs
-         eAbMgvKAufsuqej9xapgxUjpYwG5HMVYTJVZQF+TJRX1R//U/RyxRCzGg5X9wHNCHZR7
-         RQF1iIzUq/Lv1HT6q0XS4Lp0LBMeAQcaDJdWT2/JvnrfoBwYdF/pK4hpuvMd+jtxOL/z
-         1y1w==
-X-Gm-Message-State: AOAM531NRa2ToXgBw3T/2rplgYtsHkrMJ1z5vxTmdUCFfUEb2wERWDhb
-        QWo9ADS8b76OhhOYEZJRUxo=
-X-Google-Smtp-Source: ABdhPJwNvor4DawGjeJMCNUv/gg3npFezWRsUL5kc+6ix6gAptWXcwTRX47h2QxAxyiFjDYWGjniDw==
-X-Received: by 2002:a17:906:2ed5:: with SMTP id s21mr25243566eji.30.1637183116945;
-        Wed, 17 Nov 2021 13:05:16 -0800 (PST)
+        bh=Moo6C6ux3Max+74jfwWrTQaUIS07OsmKfAQTULmbues=;
+        b=csZd8dBPn1buGrjsfEhyJMYw+vaQ1ge8s3deZtJGC48wlJtNLpCUIaaNOvLyQ507+a
+         QCJ4KKL6151B5bc76RSacAS9Wp4ap2X8kfKKmLc0Rty0HMfquA9Y7KmzDCafME34Jqho
+         Tic3yp26dYims+58Xa2ihRb3RrGuzxhIxUhrFZsRs/8BQ0usD/G9x9jbRBJqf5GkmDAW
+         mhkooyam1SONjyN/L++l9Vb45QoxDVo0bQeMZogCX9nVMxIQa4imJP/d7vgTSUxWueXD
+         QwQ4WRlEwcwUgWrBGLnamVOaOQEs6NjXWRBVNO1pGsiYqakStAh+uxLtD0JTXfthHmDY
+         vu1g==
+X-Gm-Message-State: AOAM533fUCOzTS+w3LTpSBd7iAlxMgJ8iCDXryfcthGQy3SGvuAZZukJ
+        zjFGmRLkS0cvY6wYg09iK+g=
+X-Google-Smtp-Source: ABdhPJzkDuTqDHeE4UME6g9rnaR3ooTieU2fHLNozwyxHqcsDBA00FSjg89N8GMr/xEJfAMgY42ayg==
+X-Received: by 2002:a17:907:2622:: with SMTP id aq2mr25873180ejc.76.1637183117881;
+        Wed, 17 Nov 2021 13:05:17 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id di4sm467070ejc.11.2021.11.17.13.05.16
+        by smtp.googlemail.com with ESMTPSA id di4sm467070ejc.11.2021.11.17.13.05.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Nov 2021 13:05:16 -0800 (PST)
+        Wed, 17 Nov 2021 13:05:17 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -57,10 +57,11 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Russell King <linux@armlinux.org.uk>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>
-Subject: regmap: allow to define reg_update_bits for no bus configuration
-Date:   Wed, 17 Nov 2021 22:04:33 +0100
-Message-Id: <20211117210451.26415-2-ansuelsmth@gmail.com>
+Cc:     kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [net-next PATCH 02/19] net: dsa: qca8k: remove redundant check in parse_port_config
+Date:   Wed, 17 Nov 2021 22:04:34 +0100
+Message-Id: <20211117210451.26415-3-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211117210451.26415-1-ansuelsmth@gmail.com>
 References: <20211117210451.26415-1-ansuelsmth@gmail.com>
@@ -70,57 +71,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some device requires a special handling for reg_update_bits and can't use
-the normal regmap read write logic. An example is when locking is
-handled by the device and rmw operations requires to do atomic operations.
-Allow to declare a dedicated function in regmap_config for
-reg_update_bits in no bus configuration.
+The very next check for port 0 and 6 already make sure we don't go out
+of bounds with the ports_config delay table.
+Remove the redundant check.
 
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-Link: https://lore.kernel.org/r/20211104150040.1260-1-ansuelsmth@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
 ---
- drivers/base/regmap/regmap.c | 1 +
- include/linux/regmap.h       | 7 +++++++
- 2 files changed, 8 insertions(+)
+ drivers/net/dsa/qca8k.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
-index 21a0c2562ec06..2d74f9f82aa92 100644
---- a/drivers/base/regmap/regmap.c
-+++ b/drivers/base/regmap/regmap.c
-@@ -876,6 +876,7 @@ struct regmap *__regmap_init(struct device *dev,
- 	if (!bus) {
- 		map->reg_read  = config->reg_read;
- 		map->reg_write = config->reg_write;
-+		map->reg_update_bits = config->reg_update_bits;
+diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+index a429c9750add..bfffc1fb7016 100644
+--- a/drivers/net/dsa/qca8k.c
++++ b/drivers/net/dsa/qca8k.c
+@@ -983,7 +983,7 @@ qca8k_parse_port_config(struct qca8k_priv *priv)
+ 	u32 delay;
  
- 		map->defer_caching = false;
- 		goto skip_format_initialization;
-diff --git a/include/linux/regmap.h b/include/linux/regmap.h
-index e3c9a25a853a8..22652e5fbc380 100644
---- a/include/linux/regmap.h
-+++ b/include/linux/regmap.h
-@@ -290,6 +290,11 @@ typedef void (*regmap_unlock)(void *);
-  *		  read operation on a bus such as SPI, I2C, etc. Most of the
-  *		  devices do not need this.
-  * @reg_write:	  Same as above for writing.
-+ * @reg_update_bits: Optional callback that if filled will be used to perform
-+ *		     all the update_bits(rmw) operation. Should only be provided
-+ *		     if the function require special handling with lock and reg
-+ *		     handling and the operation cannot be represented as a simple
-+ *		     update_bits operation on a bus such as SPI, I2C, etc.
-  * @fast_io:	  Register IO is fast. Use a spinlock instead of a mutex
-  *	     	  to perform locking. This field is ignored if custom lock/unlock
-  *	     	  functions are used (see fields lock/unlock of struct regmap_config).
-@@ -372,6 +377,8 @@ struct regmap_config {
- 
- 	int (*reg_read)(void *context, unsigned int reg, unsigned int *val);
- 	int (*reg_write)(void *context, unsigned int reg, unsigned int val);
-+	int (*reg_update_bits)(void *context, unsigned int reg,
-+			       unsigned int mask, unsigned int val);
- 
- 	bool fast_io;
- 
+ 	/* We have 2 CPU port. Check them */
+-	for (port = 0; port < QCA8K_NUM_PORTS && cpu_port_index < QCA8K_NUM_CPU_PORTS; port++) {
++	for (port = 0; port < QCA8K_NUM_PORTS; port++) {
+ 		/* Skip every other port */
+ 		if (port != 0 && port != 6)
+ 			continue;
 -- 
 2.32.0
 
