@@ -2,126 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5FE1454B4E
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 17:46:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C268E454B83
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 18:02:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239242AbhKQQtk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 11:49:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60576 "EHLO
+        id S238215AbhKQRF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 12:05:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239247AbhKQQtd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 11:49:33 -0500
+        with ESMTP id S230228AbhKQRF2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 12:05:28 -0500
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B63C061764
-        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 08:46:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24080C061570
+        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 09:02:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ewiFRHsp9/s0aet6bxtSjzPcLw7Ix6IoZEtWFK/tm6U=; b=BRsE4iaATwfF57w81wWqqPzrUW
-        6XudiFPAMWzoegV9UaQ31ZrsN51nOjCisE+1YClpP/+znRTQenqpQYAvsuhkIdEzGqGgNiNCj7d+R
-        x0Rwoaxja5KaITvaZH/hNyaGOpMtR6eNnPeqJJ5qyQ3hpsY7G0wEJk9i5T3jMoxlmwnb7Lhy6rnyv
-        N3Q6kYN1tANI1PeN36T4HvH+ZvgkAyGuTN3osXMNG78oVGVbQCofNJnTUT5fy5S+RgugoHXBMCFbw
-        sTec/gnToZ5ckCC0E8mrQGHn4fL12+l30Ez4KytIOi0TvBO3v2KgBLSVs6/F4WnlYTsK9KBN3ZChx
-        7mUhVNpg==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:46120 helo=rmk-PC.armlinux.org.uk)
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=0ojhjukEX/Jo7dqtKOX0zqCK2Gxi/grOJtmqvIhgW5c=; b=hq/iC1mdFN7Izht2JbDAKpeShc
+        jQJAC1PkfVyMJlUo2yXzaLB3fgV8mV2AhvHqeLBtL3szBioEaV+SJqz5dlAdw2G93sgcrTeEnJWE/
+        LR/qMk+MdcYzJ2q1972Mg0Bw7g+TburjP6rrFuAKCNcUXdNL3sceut5G65QdvxsCDeuxMF/6Asbdu
+        SxWJtrwf8AV+SV4NbSVMX84A7x3K6NgJCyhkELBnmdo2xdYbJ+UKSyWc9QgTl6T4d93HhPatMhW4N
+        4UOAOVxT0fGWw+NJyrcNpZ6E7IPeOG1W/+AvaI8r2GvMvs6EBL78f/zSG25vj0p1vqPY4Zr+zU0aH
+        w/WRNrqA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55690)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1mnO4t-00027n-Do; Wed, 17 Nov 2021 16:46:31 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1mnO4t-007ynF-0E; Wed, 17 Nov 2021 16:46:31 +0000
-In-Reply-To: <YZUxxU30M4IgNNPi@shell.armlinux.org.uk>
-References: <YZUxxU30M4IgNNPi@shell.armlinux.org.uk>
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     Chris Snook <chris.snook@gmail.com>,
-        Oleksij Rempel <linux@rempel-privat.de>
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mnOKH-00028K-8d; Wed, 17 Nov 2021 17:02:26 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mnOKG-00036z-Bp; Wed, 17 Nov 2021 17:02:24 +0000
+Date:   Wed, 17 Nov 2021 17:02:24 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net-next 3/3] net: ag71xx: use phylink_generic_validate()
+Subject: Re: [PATCH net-next 0/3] net: dpaa2: phylink validate implementation
+ updates
+Message-ID: <YZU1oGJuGBpQF+vi@shell.armlinux.org.uk>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1mnO4t-007ynF-0E@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Wed, 17 Nov 2021 16:46:31 +0000
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ag71xx apparently only supports MII port type, which makes it different
-from other implementations. However, Oleksij says there is no special
-reason for this.
+Hi,
 
-Convert the driver to use phylink_generic_validate(), which will allow
-all ethtool port linkmodes instead of only MII, giving the driver
-consistent behaviour with other drivers.
+This series converts dpaa2 to fill in the supported_interfaces member
+of phylink_config, cleans up the validate() implementation, and then
+converts to phylink_generic_validate(). Previous behaviour should be
+preserved.
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- drivers/net/ethernet/atheros/ag71xx.c | 31 +++------------------------
- 1 file changed, 3 insertions(+), 28 deletions(-)
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 109 ++++++-----------------
+ 1 file changed, 26 insertions(+), 83 deletions(-)
 
-diff --git a/drivers/net/ethernet/atheros/ag71xx.c b/drivers/net/ethernet/atheros/ag71xx.c
-index 20c2cfdc30da..c747dc7984fd 100644
---- a/drivers/net/ethernet/atheros/ag71xx.c
-+++ b/drivers/net/ethernet/atheros/ag71xx.c
-@@ -1024,33 +1024,6 @@ static void ag71xx_mac_config(struct phylink_config *config, unsigned int mode,
- 	ag71xx_wr(ag, AG71XX_REG_FIFO_CFG3, ag->fifodata[2]);
- }
- 
--static void ag71xx_mac_validate(struct phylink_config *config,
--			    unsigned long *supported,
--			    struct phylink_link_state *state)
--{
--	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
--
--	phylink_set(mask, MII);
--
--	phylink_set(mask, Pause);
--	phylink_set(mask, Asym_Pause);
--	phylink_set(mask, Autoneg);
--	phylink_set(mask, 10baseT_Half);
--	phylink_set(mask, 10baseT_Full);
--	phylink_set(mask, 100baseT_Half);
--	phylink_set(mask, 100baseT_Full);
--
--	if (state->interface == PHY_INTERFACE_MODE_SGMII ||
--	    state->interface == PHY_INTERFACE_MODE_RGMII ||
--	    state->interface == PHY_INTERFACE_MODE_GMII) {
--		phylink_set(mask, 1000baseT_Full);
--		phylink_set(mask, 1000baseX_Full);
--	}
--
--	linkmode_and(supported, supported, mask);
--	linkmode_and(state->advertising, state->advertising, mask);
--}
--
- static void ag71xx_mac_pcs_get_state(struct phylink_config *config,
- 				     struct phylink_link_state *state)
- {
-@@ -1124,7 +1097,7 @@ static void ag71xx_mac_link_up(struct phylink_config *config,
- }
- 
- static const struct phylink_mac_ops ag71xx_phylink_mac_ops = {
--	.validate = ag71xx_mac_validate,
-+	.validate = phylink_generic_validate,
- 	.mac_pcs_get_state = ag71xx_mac_pcs_get_state,
- 	.mac_an_restart = ag71xx_mac_an_restart,
- 	.mac_config = ag71xx_mac_config,
-@@ -1138,6 +1111,8 @@ static int ag71xx_phylink_setup(struct ag71xx *ag)
- 
- 	ag->phylink_config.dev = &ag->ndev->dev;
- 	ag->phylink_config.type = PHYLINK_NETDEV;
-+	ag->phylink_config.mac_capabilities = MAC_SYM_PAUSE | MAC_ASYM_PAUSE |
-+		MAC_10 | MAC_100 | MAC_1000FD;
- 
- 	if ((ag71xx_is(ag, AR9330) && ag->mac_idx == 0) ||
- 	    ag71xx_is(ag, AR9340) ||
 -- 
-2.30.2
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
