@@ -2,168 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 210D34544F8
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 11:28:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C45D454509
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 11:33:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236371AbhKQKbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 05:31:08 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:47100 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236294AbhKQKbH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 05:31:07 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: gtucker)
-        with ESMTPSA id 378DD1F45D3D
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=collabora.com; s=mail;
-        t=1637144887; bh=Vg2m2exil937GTPYwJbOzulKtOt63WQfO/CTQsl/0XY=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=ogb7b7NEQ8Gxx9gh/OVDcGL8xx54STxdy4i/fmEVqvlCInY/LsjfZB9cl6T2zaeOq
-         3gCW6j7Qia50perVMXwtpKRjzFkogo4d1IfDzH5v8l1Ol8siBx+0EqsfgraqNiEQ78
-         Flh5v6JxoVl3yBHVwebCNqoL4WSDvTcbsyyW8SrJ0pV7VLb5/JbHSAfPdLwqO0tog7
-         Bs+0IWyTuQVL/0A23X8UC251wlP8g2MzTtMpO60aJ2LzujvZTWJBsPQ7M1gYH/rrHJ
-         OU+q0DvrvFo66T8GNMPpWO7Uotb69H7XcIq6A0gawPjJjiw1PM7n3oQ0Q5JRWB+EYs
-         /0ec1Gb9oKgWg==
-Subject: Re: [PATCH net] page_pool: Revert "page_pool: disable dma mapping
- support..."
-To:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxarm@openeuler.org, hawk@kernel.org,
-        ilias.apalodimas@linaro.org, akpm@linux-foundation.org,
-        peterz@infradead.org, vbabka@suse.cz, willy@infradead.org,
-        will@kernel.org, feng.tang@intel.com, jgg@ziepe.ca,
-        ebiederm@xmission.com, aarcange@redhat.com,
-        "kernelci@groups.io" <kernelci@groups.io>
-References: <20211117075652.58299-1-linyunsheng@huawei.com>
-From:   Guillaume Tucker <guillaume.tucker@collabora.com>
-Message-ID: <b5638a79-ee37-fd52-2d9c-ded2675529da@collabora.com>
-Date:   Wed, 17 Nov 2021 10:28:04 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S236413AbhKQKfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 05:35:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59206 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234663AbhKQKff (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 05:35:35 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E66C061570
+        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 02:32:37 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id 131so6017984ybc.7
+        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 02:32:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=1mWmKyg34vlNfOejQ4Q/r+QB+22yx7RmVHSk6pM+Glg=;
+        b=bcXesqMjSCMj155y+BUh5cT0JNK3ZCfQbuOpqr9xKd4EOA6Z+J/jCagMPnVNyNrYcf
+         b5XXZstkx7CjXe1tS5NlUQIjj1H73QlDzFfX+RFSXTSPcuxX+zYuPt9PP1VdoNbIlGA2
+         7WRUlcoz2hn3LuTo3TG7GaP/q2QY3jdpw04TwZcqqNR0ZYcgd+WLeHdlnC6aKxN1SOI9
+         fSckXW1CcDH2qTDKdvrniVvsUhE+lvhKalP+6299e8u0pURo0ygFDtkbRq1gK7dv8dIb
+         XIdZWduQuWuN/E/relL8slhavnI0fk3yvB7V4I/2enxLkzJi7ygKfW0TrQMUi7Vrz4Tk
+         8jjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=1mWmKyg34vlNfOejQ4Q/r+QB+22yx7RmVHSk6pM+Glg=;
+        b=bdN30Yoty+WejcYUQ4NEHfmH5JeMUy+dIkxGTIfEpcUNYiYSxisAuWPJjuRBb5uwU7
+         ++2EhJgry6LIEgBzH7X8N06ux2aMroJAVFAHzMnVCPRI3/OFpugA2MvlRb6z/FKWAUQF
+         pN8iNsSz+GeCQ8DRA9vcEZjrIzb8y2sCat+CJ8UxeyuLzJS8PHQ+Ww+rklo87bl2HFVk
+         S2vY0o2elCkJIQoVkUcBHsNAXyxY5WS++40vRppA/gJqLstW5+02Ipxg2I7AX3X7H/zp
+         aOFe0Rqb3M723e0gKxAdhszqVp7lHRK6QtPGgXzSnSZmh0lATo4pyPCJzPZKLpXAesLt
+         +hdA==
+X-Gm-Message-State: AOAM532mUXMOAV+ThK1smJ7s2x5Z7v61PWDt97W+D7S3V78bOn7HSDMx
+        EdxRPUd3CRzortT7W0mIWYjzuWAGBcl/EORCv+M=
+X-Google-Smtp-Source: ABdhPJwcPpLb3UDvDCyfvo/M6V8R+kOSWAdw0QzuqQUDD8pbAEWtW/iLDjzj2Lw4tnAtGCaOE5y1YNSAnXNsX5fa2uI=
+X-Received: by 2002:a25:ba0f:: with SMTP id t15mr17782592ybg.62.1637145156750;
+ Wed, 17 Nov 2021 02:32:36 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20211117075652.58299-1-linyunsheng@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a05:7110:7117:b0:105:18ec:fa8a with HTTP; Wed, 17 Nov 2021
+ 02:32:36 -0800 (PST)
+Reply-To: uchennailobitenone@gmail.com
+From:   uhenna <tochiuju11@gmail.com>
+Date:   Wed, 17 Nov 2021 02:32:36 -0800
+Message-ID: <CA+6axKvFczRd44D_WBHWOCddJ_C1hXgO=vS846m3p0zyT-jEyQ@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17/11/2021 07:56, Yunsheng Lin wrote:
-> This reverts commit d00e60ee54b12de945b8493cf18c1ada9e422514.
-> 
-> As reported by Guillaume in [1]:
-> Enabling LPAE always enables CONFIG_ARCH_DMA_ADDR_T_64BIT
-> in 32-bit systems, which breaks the bootup proceess when a
-> ethernet driver is using page pool with PP_FLAG_DMA_MAP flag.
-> As we were hoping we had no active consumers for such system
-> when we removed the dma mapping support, and LPAE seems like
-> a common feature for 32 bits system, so revert it.
-> 
-> 1. https://www.spinics.net/lists/netdev/msg779890.html
-> 
-> Fixes: d00e60ee54b1 ("page_pool: disable dma mapping support for 32-bit arch with 64-bit DMA")
-> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+May the Almighty Lord be with you....
+Am A WIDOW TO LATE MR David Lunner,  I AM 59 .YEARS OLD. My name is
+Josephine HOLLAND.  I am married to Late Mr. David HOLLAND, who worked
+in the France Embassy a here in Lome -Togo West Africa for nine years
+before he died in the
+year 2019.
 
-Reported-by: "kernelci.org bot" <bot@kernelci.org>
+You are chosen to Receive A Donation Cash Grant of my late husband
+that funds $5.7,000,  000,00 (Five Million Seven Hundred Thousand
+United States Dollars) to help the poor and orphanages through your
+sincere help before my death. I am suffering from long time cancer of
+the Breast, from all indication my conditions is really deteriorating
+and it is quite obvious that I wouldn't live any more longer according
+to my doctor because the cancer has gotten to a very bad stage that no
+hope for me to be a living person again, All i need from you is your
+sincerity to use this funds to do this project as i desired and I need
+your information as where My Bank will be sending the funds,
 
-Tested-by: "kernelci.org bot" <bot@kernelci.org>
+such as:
+Receiver's name:_ Address:_ Phone
+number:_ Country:_
 
-Here's some test results with the revert patch applied on top of
-mainline, to confirm the platform boots again:
+Please do not be offended by the way or manner I came to you as a
+stranger to do this, it is about the only way I could get to you after
+going through your contacts Id. I shall give you the contacts of the
+bank. For legitimacy with  a letter of authority that will establish
+you as my appointed beneficiary of this money.
 
-  https://staging.kernelci.org/test/plan/id/6194d88fbe0f345a9b1760aa/
+I am waiting for your reply.
+From Sister Josephine HOLLAND.
 
-Thanks,
-Guillaume
+You should contact me through my private email address:
 
-> ---
->  include/linux/mm_types.h | 13 ++++++++++++-
->  include/net/page_pool.h  | 12 +++++++++++-
->  net/core/page_pool.c     | 10 ++++------
->  3 files changed, 27 insertions(+), 8 deletions(-)
-> 
-> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-> index bb8c6f5f19bc..c3a6e6209600 100644
-> --- a/include/linux/mm_types.h
-> +++ b/include/linux/mm_types.h
-> @@ -105,7 +105,18 @@ struct page {
->  			struct page_pool *pp;
->  			unsigned long _pp_mapping_pad;
->  			unsigned long dma_addr;
-> -			atomic_long_t pp_frag_count;
-> +			union {
-> +				/**
-> +				 * dma_addr_upper: might require a 64-bit
-> +				 * value on 32-bit architectures.
-> +				 */
-> +				unsigned long dma_addr_upper;
-> +				/**
-> +				 * For frag page support, not supported in
-> +				 * 32-bit architectures with 64-bit DMA.
-> +				 */
-> +				atomic_long_t pp_frag_count;
-> +			};
->  		};
->  		struct {	/* slab, slob and slub */
->  			union {
-> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-> index 3855f069627f..a4082406a003 100644
-> --- a/include/net/page_pool.h
-> +++ b/include/net/page_pool.h
-> @@ -216,14 +216,24 @@ static inline void page_pool_recycle_direct(struct page_pool *pool,
->  	page_pool_put_full_page(pool, page, true);
->  }
->  
-> +#define PAGE_POOL_DMA_USE_PP_FRAG_COUNT	\
-> +		(sizeof(dma_addr_t) > sizeof(unsigned long))
-> +
->  static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
->  {
-> -	return page->dma_addr;
-> +	dma_addr_t ret = page->dma_addr;
-> +
-> +	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
-> +		ret |= (dma_addr_t)page->dma_addr_upper << 16 << 16;
-> +
-> +	return ret;
->  }
->  
->  static inline void page_pool_set_dma_addr(struct page *page, dma_addr_t addr)
->  {
->  	page->dma_addr = addr;
-> +	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
-> +		page->dma_addr_upper = upper_32_bits(addr);
->  }
->  
->  static inline void page_pool_set_frag_count(struct page *page, long nr)
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index 9b60e4301a44..1a6978427d6c 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -49,12 +49,6 @@ static int page_pool_init(struct page_pool *pool,
->  	 * which is the XDP_TX use-case.
->  	 */
->  	if (pool->p.flags & PP_FLAG_DMA_MAP) {
-> -		/* DMA-mapping is not supported on 32-bit systems with
-> -		 * 64-bit DMA mapping.
-> -		 */
-> -		if (sizeof(dma_addr_t) > sizeof(unsigned long))
-> -			return -EOPNOTSUPP;
-> -
->  		if ((pool->p.dma_dir != DMA_FROM_DEVICE) &&
->  		    (pool->p.dma_dir != DMA_BIDIRECTIONAL))
->  			return -EINVAL;
-> @@ -75,6 +69,10 @@ static int page_pool_init(struct page_pool *pool,
->  		 */
->  	}
->  
-> +	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT &&
-> +	    pool->p.flags & PP_FLAG_PAGE_FRAG)
-> +		return -EINVAL;
-> +
->  	if (ptr_ring_init(&pool->ring, ring_qsize, GFP_KERNEL) < 0)
->  		return -ENOMEM;
->  
-> 
-
+mrsjosephineoneholland@gmail.com
