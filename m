@@ -2,98 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0209745504F
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 23:20:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90B79455093
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 23:33:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241150AbhKQWXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 17:23:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51838 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241148AbhKQWXD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 17:23:03 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8065C061570;
-        Wed, 17 Nov 2021 14:20:03 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id z5so17767535edd.3;
-        Wed, 17 Nov 2021 14:20:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=F4QdOr9bJ3YUb5WTpB8Vwlmm3Z7xVDJFxij0GVR1z1M=;
-        b=jT8esgGLHrFpOPuo93+nKpOnY87kqUQmpH+WjUUMdyeocaVFe3YDyW/W+FflCXugGG
-         yLBd2EOFT4qcFKkqcgYcIaoTR7FkwDeBmKCrbP9elR+ZVkvnPQsFnXmAJM+88RPzV8g3
-         nmr7H8k8G5eilQD7QnSRdaViBwHtBf/8KmdNYDgy1p7Bz/qV7cFckrWcZqsGQ3tKtPl9
-         9roBx2KH2c2AfmbDi/t0+Xr2yrubZCFKV0EVWCi6v0Ikdaputi0NPd0wlMXg/nYG6zbJ
-         cYZ1DPEOE0/I7wp0eIRyCoz5+AWZiUetvGgEdYx0cSVo9PdlTSJijSHyswaETN3jhiL4
-         V0og==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=F4QdOr9bJ3YUb5WTpB8Vwlmm3Z7xVDJFxij0GVR1z1M=;
-        b=TkTiDKpNX/bTiv0fpOsd6sKWzA47WOrZXo/LiIW01YOOt205e1ONMUE4ArLWaWq6MR
-         cJKm2brRrFVw9fGg5bGvZlyW2luHTgCApSvRICzo2YjXUZgG46XmsyQaJtFlBLtdgpKi
-         g0GI8HDQnVFf0pyrfPQX/iz+zDfXkVqs9rlDIWcDGf+NugW0Tcc83PKpyJvlb2iGpEkb
-         sYy2U1nxWwuK7d1zAq/jgsT9AFtdjx4pt7Xts/e4qO+nmwNXi85oJo7Ostd/nvNQV6Fn
-         XRJGEYcbs7uFvhxQitGCZU68zgmCjrhr7mZVFBHorZ2wcNpBND6e5uIlvccMTpBAqcwA
-         XLkg==
-X-Gm-Message-State: AOAM533/qbmV7XcJinZ4zpnRpG5pT7F/oHqFfHO6GZWPem291P9qSxjE
-        iv59VTrkU6KR3Dam8vaJuUM=
-X-Google-Smtp-Source: ABdhPJyL15Yc/wO/2IvYZlErTW4szvjPzGyHKT8vBbRfzgNo1RQ4CRR3+PJ+T34n7LeaQPzQFh0FLA==
-X-Received: by 2002:a17:906:4791:: with SMTP id cw17mr26846073ejc.493.1637187602267;
-        Wed, 17 Nov 2021 14:20:02 -0800 (PST)
-Received: from Ansuel-xps. (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id z7sm586067edj.51.2021.11.17.14.20.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Nov 2021 14:20:01 -0800 (PST)
-Message-ID: <61958011.1c69fb81.31272.2dd5@mx.google.com>
-X-Google-Original-Message-ID: <YZV/++cUA2rfKKyj@Ansuel-xps.>
-Date:   Wed, 17 Nov 2021 23:19:39 +0100
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: regmap: allow to define reg_update_bits for no bus configuration
-References: <20211117210451.26415-1-ansuelsmth@gmail.com>
- <20211117210451.26415-2-ansuelsmth@gmail.com>
- <YZV/GYJXKTE4RaEj@sirena.org.uk>
+        id S241314AbhKQWga (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 17:36:30 -0500
+Received: from www62.your-server.de ([213.133.104.62]:51022 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241359AbhKQWga (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 17:36:30 -0500
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mnTUb-0008nM-IJ; Wed, 17 Nov 2021 23:33:25 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mnTUb-000RY3-AB; Wed, 17 Nov 2021 23:33:25 +0100
+Subject: Re: [PATCH 1/1] Documentation: Add minimum pahole version
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <YZPQ6+u2wTHRfR+W@kernel.org>
+ <CAEf4BzbOnpL-=2Xi1DOheUtzc-JG5FmHqdvs4B_+0OeaCTgY=w@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <df39b24d-7813-c6fb-a9eb-a5c199e002d0@iogearbox.net>
+Date:   Wed, 17 Nov 2021 23:33:24 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YZV/GYJXKTE4RaEj@sirena.org.uk>
+In-Reply-To: <CAEf4BzbOnpL-=2Xi1DOheUtzc-JG5FmHqdvs4B_+0OeaCTgY=w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26356/Wed Nov 17 10:26:25 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 17, 2021 at 10:15:53PM +0000, Mark Brown wrote:
-> On Wed, Nov 17, 2021 at 10:04:33PM +0100, Ansuel Smith wrote:
-> > Some device requires a special handling for reg_update_bits and can't use
-> > the normal regmap read write logic. An example is when locking is
-> > handled by the device and rmw operations requires to do atomic operations.
-> > Allow to declare a dedicated function in regmap_config for
-> > reg_update_bits in no bus configuration.
-> > 
-> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > Link: https://lore.kernel.org/r/20211104150040.1260-1-ansuelsmth@gmail.com
-> > Signed-off-by: Mark Brown <broonie@kernel.org>
-> > ---
-> >  drivers/base/regmap/regmap.c | 1 +
-> >  include/linux/regmap.h       | 7 +++++++
-> >  2 files changed, 8 insertions(+)
+On 11/16/21 7:21 PM, Andrii Nakryiko wrote:
+> On Tue, Nov 16, 2021 at 7:40 AM Arnaldo Carvalho de Melo
+> <acme@kernel.org> wrote:
+>>
+>> A report was made in https://github.com/acmel/dwarves/issues/26 about
+>> pahole not being listed in the process/changes.rst file as being needed
+>> for building the kernel, address that.
+>>
+>> Link: https://github.com/acmel/dwarves/issues/26
+>> Cc: Alexei Starovoitov <ast@kernel.org>
+>> Cc: Andrii Nakryiko <andrii@kernel.org>
+>> Cc: Daniel Borkmann <daniel@iogearbox.net>
+>> Cc: Jiri Olsa <jolsa@redhat.com>
+>> Cc: Jonathan Corbet <corbet@lwn.net>
+>> Cc: bpf@vger.kernel.org
+>> Cc: netdev@vger.kernel.org
+>> Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+>> ---
+>>   Documentation/process/changes.rst | 9 +++++++++
+>>   1 file changed, 9 insertions(+)
+>>
+>> diff --git a/Documentation/process/changes.rst b/Documentation/process/changes.rst
+>> index e35ab74a0f804b04..c45f167a1b6c02a4 100644
+>> --- a/Documentation/process/changes.rst
+>> +++ b/Documentation/process/changes.rst
+>> @@ -35,6 +35,7 @@ GNU make               3.81             make --version
+>>   binutils               2.23             ld -v
+>>   flex                   2.5.35           flex --version
+>>   bison                  2.0              bison --version
+>> +pahole                 1.16             pahole --version
+>>   util-linux             2.10o            fdformat --version
+>>   kmod                   13               depmod -V
+>>   e2fsprogs              1.41.4           e2fsck -V
+>> @@ -108,6 +109,14 @@ Bison
+>>   Since Linux 4.16, the build system generates parsers
+>>   during build.  This requires bison 2.0 or later.
+>>
+>> +pahole:
+>> +-------
+>> +
+>> +Since Linux 5.2 the build system generates BTF (BPF Type Format) from DWARF in
+>> +vmlinux, a bit later from kernel modules as well, if CONFIG_DEBUG_INFO_BTF is
 > 
-> I've applied this already?  If it's needed by something in another tree
-> let me know and I'll make a signed tag for it.
+> I'd probably emphasize a bit more that pahole is required only if
+> CONFIG_DEBUG_INFO_BTF is selected by moving "If CONFIG_DEBUG_INFO_BTF
+> is selected, " to the front. But either way looks good.
 
-Yes, I posted this in this series as net-next still doesn't have this
-commit. Don't really know how to hanle this kind of corner
-case. Do you have some hint about that and how to proceed?
++1, I presume Jonathan will later pick up the v2?
 
--- 
-	Ansuel
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> 
+>> +selected.  This requires pahole v1.16 or later. It is found in the 'dwarves' or
+>> +'pahole' distro packages or from https://fedorapeople.org/~acme/dwarves/.
+>> +
+>>   Perl
+>>   ----
+>>
+>> --
+>> 2.31.1
+>>
+
