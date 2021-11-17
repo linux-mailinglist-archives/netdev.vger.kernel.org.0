@@ -2,79 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BA82453EC7
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 04:06:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26E6A453ED2
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 04:10:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232052AbhKQDIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 22:08:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42454 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229614AbhKQDIk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 22:08:40 -0500
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C20BC061746
-        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 19:05:42 -0800 (PST)
-Received: by mail-wm1-x330.google.com with SMTP id 67-20020a1c1946000000b0030d4c90fa87so947842wmz.2
-        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 19:05:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UKZ6GaRD6run3c1PJPskqzhUzQy+wsAa2zgVKl5+4u8=;
-        b=IGaA7Fhphxaznr+UYSLE09+pej6AmCx0QFzafA1J3gvETz6n84x/7uHPT1goftadgz
-         oH1n8NH12lL+ny/jzQmx1GwD7lR4vo8+Tz6ypBlpSz0jTJbfMBgIif3OllUWjsecLwIn
-         Y2V6Ay2vZomXg9PdU6QKQjspKTkKuJGSaXiUtm8df0ILGg9Cniit0xgQtJ4qfwk2rbXp
-         CxK7IeP5YkznIOYHdUvbz/wRs04z573RbStv1lHuDsL8M5zdx+g0Ce+ntYHLFj0Qf3J9
-         4uwQhWkVo2XpVC5ZdIBUP4A+abKzMAxb1yrUP2npWS+ptewmSl8KoburFWIaVeMbz9BO
-         E8Lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UKZ6GaRD6run3c1PJPskqzhUzQy+wsAa2zgVKl5+4u8=;
-        b=T/0Fr/oPwOeATAerc8pHtr4jWwO7Weq8IjdHB3NmN2PAr+Bq9u3yKCY6MQLHxJVe7+
-         tvA/6cBlalbT1cR0/4kY5tlJC9EbrNYciDvjsyEd2mpxfsAmD38yQtc9ujjLAcsXAf5p
-         dRLajYSIaLtqS/BdS82h25kEVraZlzHX+aRZvqXL0QY6rRa7VNBzymNfCQwR5t0Oldvk
-         inH0xIVoQ8LtVOz1pbaKAx1sEwtRNq1j1PT91N28dTUfjlZCF8rcf6xgpbI8JiEcZ4Mt
-         w62P9or194yqmu8b+dE5NcNwzneNOVMuL2R26vz6LvHdAXKQT0aHElsZ3grJDZPPRQT3
-         KWLg==
-X-Gm-Message-State: AOAM533a4qebF/q6q2Zcdmw28ze+2sfQGJApRHng/A57sPRAk/2XMfRx
-        OkeT41VBrU/4Jg9apFW/7n/Fcbg3pyUScJP8mni7CHpeQuk=
-X-Google-Smtp-Source: ABdhPJy4vo81ZBn+uQt56I0zEdMolI+WBTQ4qIs/blKZxO0eNUos1D3u/BgeLEce8BEwH2HAjPDjKINMSft8z1bJbG0=
-X-Received: by 2002:a05:600c:3ba3:: with SMTP id n35mr14188808wms.88.1637118340213;
- Tue, 16 Nov 2021 19:05:40 -0800 (PST)
+        id S232820AbhKQDNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 22:13:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41622 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229757AbhKQDNH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 22:13:07 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 4F82C61BF9;
+        Wed, 17 Nov 2021 03:10:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637118609;
+        bh=KeKZK4NfFw+XeRWvxZTjeXhn5HYOELRMB9po1qn1lMM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=J+fTHaItsvbom3Nj+/6L/2oTw/0giXjhkVGSYDxVhYVJ8DZ2nhJ+6a7nM2ZOS0nQx
+         fSkh9U7v4VnstEYArtTWDGDfqupwOmIuZc7WsrFcnuhkzo5zeIzstdfpdbFE5zTCgu
+         Bbv5/wX+dFfSZNUEd1rGclc++KgitOL6+OW+g8Y9z/e0WISs4eh5QFvZHsF+1ck5h6
+         ioesIAiI7kjFr3KzpNYifJb2ohhvWvJ9dvwanzGnDnG4UjBvI/FogFFD3xVYlip8pN
+         0mClcaZ60Wo7L3PzSBAbU9yH8V6W2bV6DueYqa5UBp6ZUn0Ivi+PbHpXBD32GdkAtT
+         jjsXHKG7iUK8w==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 40F3660A0C;
+        Wed, 17 Nov 2021 03:10:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20211117135510.0307294e@canb.auug.org.au>
-In-Reply-To: <20211117135510.0307294e@canb.auug.org.au>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 16 Nov 2021 19:05:28 -0800
-Message-ID: <CANn89iL=gHkZg5YUVYmPMB79xA_d5eDXjQLS_85Ks_NU6q97HA@mail.gmail.com>
-Subject: Re: linux-next: build warning after merge of the net-next tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [net: PATCH] net: mvmdio: fix compilation warning
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163711860926.28737.8115206647292837561.git-patchwork-notify@kernel.org>
+Date:   Wed, 17 Nov 2021 03:10:09 +0000
+References: <20211115153024.209083-1-mw@semihalf.com>
+In-Reply-To: <20211115153024.209083-1-mw@semihalf.com>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, upstream@semihalf.com,
+        lkp@intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 16, 2021 at 6:55 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->
-> Hi all,
->
-> After merging the net-next tree, today's linux-next build (htmldocs)
-> produced this warning:
->
-> include/net/sock.h:540: warning: Function parameter or member 'defer_list' not described in 'sock'
->
-> Introduced by commit
->
->   f35f821935d8 ("tcp: defer skb freeing after socket lock is released")
->
-> --
-> Cheers,
-> Stephen Rothwell
+Hello:
 
-Thanks for the report, I thought we got rid of these htmldocs for sock already.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Mon, 15 Nov 2021 16:30:24 +0100 you wrote:
+> The kernel test robot reported a following issue:
+> 
+> >> drivers/net/ethernet/marvell/mvmdio.c:426:36: warning:
+> unused variable 'orion_mdio_acpi_match' [-Wunused-const-variable]
+>    static const struct acpi_device_id orion_mdio_acpi_match[] = {
+>                                       ^
+>    1 warning generated.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net:] net: mvmdio: fix compilation warning
+    https://git.kernel.org/netdev/net/c/2460386bef0b
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
