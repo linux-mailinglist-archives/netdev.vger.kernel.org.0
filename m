@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C10B454D1F
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 19:26:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8D8E454D17
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 19:26:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240033AbhKQS3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 13:29:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55732 "EHLO mail.kernel.org"
+        id S240008AbhKQS3d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 13:29:33 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55478 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239997AbhKQS3j (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Nov 2021 13:29:39 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7EB1661BC1;
-        Wed, 17 Nov 2021 18:26:39 +0000 (UTC)
+        id S239997AbhKQS3c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Nov 2021 13:29:32 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0897A61BD3;
+        Wed, 17 Nov 2021 18:26:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637173600;
-        bh=izROKGtj2qGswj8IP0BBhpttn4JyaHRA3FFLjvXH5II=;
+        s=k20201202; t=1637173593;
+        bh=egTOWZok2LDjlwNFZaUiL4p9ekcH/5KxuwhLpRQVX54=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dY2SlZM5kOLoZwHT19k8dHtMl2WdlYpkOIi2kN8xtLC5ziMYIvzEW3pcnP2zJv8dB
-         dr3gj+TdWXE5Q9mNY2HkTF0qifPOddZzMSHgcmnB/ayolP+YJQ5OfOsx7Bn8bFUK59
-         nfJ4+LcbScXrGFTyuaH21nU7BOfKOKG2pkZ+ldUjl59xmDcBfb2VyQ1g0Ii8a/1sPV
-         115SjaHlKE1ND4ScrMlQFwKxYI8jabrvbueATCiYMkKIwgu2Xh/kiIvU6HFm3HyVHY
-         LbKwEzgbzvKyUubLQJvQ5XCD/TKvqWXE/6yzvf9rlkw6pRi+zDbYZHDkMaW8jLwlbH
-         MWr0QZ5m69SbQ==
+        b=qM01AiRFituJX5zzSS2GSL824fLNVYiatRUoewCIYAB3QvufLFANfD47AvKp4k6J+
+         ZC3KzlYBKZVJIdRgvJ+9VOWwZ1/YaKFbih6WQG6R5ehJFjUnXkTWZyV+9WYRT1swja
+         PeDdCRerL/TO9HKwe1HWNdf73cwnN0LbyKBoSnhEuE7lXKw/DfccPOQPX8dHBzaaFc
+         80wYBuMTFlnwwHTjEzkjgULzLLa03ZxP7coBq9Ye3BSwmT6KgO/EPwDzX9w7CHkMB+
+         07mTZYULQRTWns+UpJ4Bp0ktaw6UFrv3HTnclLYtLonPqU9p8lf8XIpw2KeQNm2KX/
+         XEnzzMu7Rb7sw==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -48,9 +48,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         UNGLinuxDriver@microchip.com,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next 1/6] devlink: Remove misleading internal_flags from health reporter dump
-Date:   Wed, 17 Nov 2021 20:26:17 +0200
-Message-Id: <cbca8d8874fe2dc9d7b13975705916907df90899.1637173517.git.leonro@nvidia.com>
+Subject: [PATCH net-next 2/6] devlink: Delete useless checks of holding devlink lock
+Date:   Wed, 17 Nov 2021 20:26:18 +0200
+Message-Id: <de107b4b9e547f0adc5946b0cc720de7ee3e8c14.1637173517.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <cover.1637173517.git.leonro@nvidia.com>
 References: <cover.1637173517.git.leonro@nvidia.com>
@@ -62,28 +62,73 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-DEVLINK_CMD_HEALTH_REPORTER_DUMP_GET command doesn't have .doit callback
-and has no use in internal_flags at all. Remove this misleading assignment.
+The snapshot API is fully protected by devlink->lock and these internal
+functions are not exported directly to the code outside of the devlink.c.
+This makes the checks of holding devlink lock as completely redundant.
 
-Fixes: e44ef4e4516c ("devlink: Hang reporter's dump method on a dumpit cb")
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- net/core/devlink.c | 2 --
- 1 file changed, 2 deletions(-)
+ net/core/devlink.c | 12 ------------
+ 1 file changed, 12 deletions(-)
 
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 5ba4f9434acd..1cb2e0ae9173 100644
+index 1cb2e0ae9173..dcc09c62f3e5 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -8838,8 +8838,6 @@ static const struct genl_small_ops devlink_nl_ops[] = {
- 			    GENL_DONT_VALIDATE_DUMP_STRICT,
- 		.dumpit = devlink_nl_cmd_health_reporter_dump_get_dumpit,
- 		.flags = GENL_ADMIN_PERM,
--		.internal_flags = DEVLINK_NL_FLAG_NEED_DEVLINK_OR_PORT |
--				  DEVLINK_NL_FLAG_NO_LOCK,
- 	},
- 	{
- 		.cmd = DEVLINK_CMD_HEALTH_REPORTER_DUMP_CLEAR,
+@@ -5223,8 +5223,6 @@ static int __devlink_snapshot_id_increment(struct devlink *devlink, u32 id)
+ 	unsigned long count;
+ 	void *p;
+ 
+-	lockdep_assert_held(&devlink->lock);
+-
+ 	p = xa_load(&devlink->snapshot_ids, id);
+ 	if (WARN_ON(!p))
+ 		return -EINVAL;
+@@ -5259,8 +5257,6 @@ static void __devlink_snapshot_id_decrement(struct devlink *devlink, u32 id)
+ 	unsigned long count;
+ 	void *p;
+ 
+-	lockdep_assert_held(&devlink->lock);
+-
+ 	p = xa_load(&devlink->snapshot_ids, id);
+ 	if (WARN_ON(!p))
+ 		return;
+@@ -5298,8 +5294,6 @@ static void __devlink_snapshot_id_decrement(struct devlink *devlink, u32 id)
+  */
+ static int __devlink_snapshot_id_insert(struct devlink *devlink, u32 id)
+ {
+-	lockdep_assert_held(&devlink->lock);
+-
+ 	if (xa_load(&devlink->snapshot_ids, id))
+ 		return -EEXIST;
+ 
+@@ -5325,8 +5319,6 @@ static int __devlink_snapshot_id_insert(struct devlink *devlink, u32 id)
+  */
+ static int __devlink_region_snapshot_id_get(struct devlink *devlink, u32 *id)
+ {
+-	lockdep_assert_held(&devlink->lock);
+-
+ 	return xa_alloc(&devlink->snapshot_ids, id, xa_mk_value(1),
+ 			xa_limit_32b, GFP_KERNEL);
+ }
+@@ -5353,8 +5345,6 @@ __devlink_region_snapshot_create(struct devlink_region *region,
+ 	struct devlink_snapshot *snapshot;
+ 	int err;
+ 
+-	lockdep_assert_held(&devlink->lock);
+-
+ 	/* check if region can hold one more snapshot */
+ 	if (region->cur_snapshots == region->max_snapshots)
+ 		return -ENOSPC;
+@@ -5391,8 +5381,6 @@ static void devlink_region_snapshot_del(struct devlink_region *region,
+ {
+ 	struct devlink *devlink = region->devlink;
+ 
+-	lockdep_assert_held(&devlink->lock);
+-
+ 	devlink_nl_region_notify(region, snapshot, DEVLINK_CMD_REGION_DEL);
+ 	region->cur_snapshots--;
+ 	list_del(&snapshot->list);
 -- 
 2.33.1
 
