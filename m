@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B248453F90
+	by mail.lfdr.de (Postfix) with ESMTP id E46A2453F91
 	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 05:34:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233145AbhKQEhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 23:37:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41570 "EHLO mail.kernel.org"
+        id S233132AbhKQEhS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 23:37:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41576 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233109AbhKQEhJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Nov 2021 23:37:09 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 21DE361155;
+        id S233110AbhKQEhK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Nov 2021 23:37:10 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9D4F6613A2;
         Wed, 17 Nov 2021 04:34:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1637123651;
-        bh=Dr/RM5IMWN97wlWq6QEcpwKh6cRWK6NlljFkbHtJSc8=;
+        bh=A+5PETo5MR9vCScCQQmU0qbqMXgepGG2kkXw8HPUlbw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EXxOQlJ4EqfFlDBY6tVP8oFI+0pDDnZZCa7euxyuf7rZGS1RZ239X6PfIhJUNZ707
-         1/MNbSPF0BCN54/2/zcdYKv8mOEiV1hV6YU05yXtQO5h1ZPGNNmtGl1ag5A+v8OIGQ
-         Yi9uZ0CwBLh8NfYbFTaLQtl2Mb2F7jZdpRA7oPJOdTWXjUqiX3i+9+kWH1OQqdU8H7
-         7HoBRx7L5jYDPNgj3NlahiQUntEdDIUr4hQko6ASVgohyDvdSihOTaibIZSnw9TcTy
-         omVK4CNBecP6zTRUSdDYrpdCTSVwSGxNSxLaqQmSgiXlMyu/d+uPxM4R4tp6YQpt52
-         1FOddpOsfPRnQ==
+        b=PMpIpHo8cGkc7Q9JTZJiKfyRoXTpv3NiL7VR0m/LlvYJ72XGMNYCO4dz7AXJjZPkK
+         xZb3JorY6ZdrsTsh2iSU6FqCeP+bFxgTLVfnhhqrTtmxuGhlQrXtPaT+mhekSM06ke
+         AebDkiUTEJlvvAGnJx2spuywLQ7/J5PfVTMJrnzCUBJVBKio4awMRlPNRt8u2GLKuy
+         6HmQFGi68HnRMpBxRtl3iOTkQBBHifDvbGV/YYEjWR5KQMRyA4sxIJem20Rg+6NJbt
+         lP4r7H4P4i0Q1/h1ecRo55uS9tqhWyecNNKxcZW8cZd3Hu6DmkLI2o5Qb6QDzamqKB
+         VtLyn/ZSv7cUQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Parav Pandit <parav@nvidia.com>,
-        Sunil Sudhakar Rani <sunrani@nvidia.com>,
         Mark Bloch <mbloch@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next v0 11/15] net/mlx5: E-switch, Remove vport enabled check
-Date:   Tue, 16 Nov 2021 20:33:53 -0800
-Message-Id: <20211117043357.345072-12-saeed@kernel.org>
+Subject: [net-next v0 12/15] net/mlx5: E-switch, Reuse mlx5_eswitch_set_vport_mac
+Date:   Tue, 16 Nov 2021 20:33:54 -0800
+Message-Id: <20211117043357.345072-13-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211117043357.345072-1-saeed@kernel.org>
 References: <20211117043357.345072-1-saeed@kernel.org>
@@ -44,71 +43,51 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Parav Pandit <parav@nvidia.com>
 
-An eswitch vport of the devlink port is always enabled before a
-devlink port is registered. And a eswitch vport is always disabled
-after a devlink port is unregistered.
-Hence avoid the vport enabled check in the devlink callback routine.
-Such check is only applicable in the legacy SR-IOV callbacks.
+mlx5_eswitch_set_vport_mac() routine already does necessary checks which
+are duplicated in implementation of
+mlx5_devlink_port_function_hw_addr_set().
+
+Hence, reuse mlx5_eswitch_set_vport_mac() and cut down the code.
 
 Signed-off-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Sunil Sudhakar Rani <sunrani@nvidia.com>
 Reviewed-by: Mark Bloch <mbloch@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/eswitch.c   | 17 +++++------------
- 1 file changed, 5 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c | 12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-index ec136b499204..b039f8b07d31 100644
+index b039f8b07d31..c0526fc27ad6 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-@@ -1704,7 +1704,6 @@ int mlx5_devlink_port_function_hw_addr_get(struct devlink_port *port,
+@@ -1732,9 +1732,7 @@ int mlx5_devlink_port_function_hw_addr_set(struct devlink_port *port,
+ 					   struct netlink_ext_ack *extack)
  {
  	struct mlx5_eswitch *esw;
- 	struct mlx5_vport *vport;
--	int err = -EOPNOTSUPP;
+-	struct mlx5_vport *vport;
  	u16 vport_num;
- 
- 	esw = mlx5_devlink_eswitch_get(port->devlink);
-@@ -1722,13 +1721,10 @@ int mlx5_devlink_port_function_hw_addr_get(struct devlink_port *port,
- 	}
- 
- 	mutex_lock(&esw->state_lock);
--	if (vport->enabled) {
--		ether_addr_copy(hw_addr, vport->info.mac);
--		*hw_addr_len = ETH_ALEN;
--		err = 0;
--	}
-+	ether_addr_copy(hw_addr, vport->info.mac);
-+	*hw_addr_len = ETH_ALEN;
- 	mutex_unlock(&esw->state_lock);
--	return err;
-+	return 0;
- }
- 
- int mlx5_devlink_port_function_hw_addr_set(struct devlink_port *port,
-@@ -1737,8 +1733,8 @@ int mlx5_devlink_port_function_hw_addr_set(struct devlink_port *port,
- {
- 	struct mlx5_eswitch *esw;
- 	struct mlx5_vport *vport;
--	int err = -EOPNOTSUPP;
- 	u16 vport_num;
-+	int err;
+-	int err;
  
  	esw = mlx5_devlink_eswitch_get(port->devlink);
  	if (IS_ERR(esw)) {
-@@ -1758,10 +1754,7 @@ int mlx5_devlink_port_function_hw_addr_set(struct devlink_port *port,
+@@ -1747,16 +1745,8 @@ int mlx5_devlink_port_function_hw_addr_set(struct devlink_port *port,
+ 		NL_SET_ERR_MSG_MOD(extack, "Port doesn't support set hw_addr");
+ 		return -EINVAL;
  	}
+-	vport = mlx5_eswitch_get_vport(esw, vport_num);
+-	if (IS_ERR(vport)) {
+-		NL_SET_ERR_MSG_MOD(extack, "Invalid port");
+-		return PTR_ERR(vport);
+-	}
  
- 	mutex_lock(&esw->state_lock);
--	if (vport->enabled)
--		err = mlx5_esw_set_vport_mac_locked(esw, vport, hw_addr);
--	else
--		NL_SET_ERR_MSG_MOD(extack, "Eswitch vport is disabled");
-+	err = mlx5_esw_set_vport_mac_locked(esw, vport, hw_addr);
- 	mutex_unlock(&esw->state_lock);
- 	return err;
+-	mutex_lock(&esw->state_lock);
+-	err = mlx5_esw_set_vport_mac_locked(esw, vport, hw_addr);
+-	mutex_unlock(&esw->state_lock);
+-	return err;
++	return mlx5_eswitch_set_vport_mac(esw, vport_num, hw_addr);
  }
+ 
+ int mlx5_eswitch_set_vport_state(struct mlx5_eswitch *esw,
 -- 
 2.31.1
 
