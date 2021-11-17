@@ -2,122 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95E1A4541B9
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 08:22:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF6D94541B5
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 08:21:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231542AbhKQHZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 02:25:15 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:48080 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S230227AbhKQHZP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 02:25:15 -0500
-X-UUID: 05cee36b6c4e40ee9a66387a00787b33-20211117
-X-UUID: 05cee36b6c4e40ee9a66387a00787b33-20211117
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <rocco.yue@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 717158995; Wed, 17 Nov 2021 15:22:12 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 17 Nov 2021 15:22:11 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 17 Nov 2021 15:22:10 +0800
-From:   Rocco Yue <rocco.yue@mediatek.com>
-To:     <lorenzo@google.com>, <dsahern@gmail.com>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <Rocco.Yue@gmail.com>,
-        <chao.song@mediatek.com>, <yanjie.jiang@mediatek.com>,
-        <kuohong.wang@mediatek.com>, <zhuoliang.zhang@mediatek.com>,
-        <maze@google.com>, <markzzzsmith@gmail.com>,
-        Rocco Yue <rocco.yue@mediatek.com>
-Subject: Re: [PATCH net-next] ipv6: don't generate link-local addr in random or privacy mode
-Date:   Wed, 17 Nov 2021 15:17:32 +0800
-Message-ID: <20211117071732.7455-1-rocco.yue@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <CAKD1Yr02W-WuLx8ouvP+wTtkxeyTBW_dp1deo9sim7wfLA2LXQ@mail.gmail.com>
-References: <CAKD1Yr02W-WuLx8ouvP+wTtkxeyTBW_dp1deo9sim7wfLA2LXQ@mail.gmail.com>
+        id S231539AbhKQHXk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 02:23:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43196 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229973AbhKQHXj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 02:23:39 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD682C061570
+        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 23:20:41 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id z6so171275plk.6
+        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 23:20:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=QxmuFfCaxgsz4KW6/sSRpOtCBikOyWQfYGvNQ0EqHsY=;
+        b=OMDD7ayDii2zAT/nPW5+xjJnxLXFSPzj9finY3RsFqD/79d0CmW9PcwIKEoayes1W1
+         VEw232cOE9fm5UsWm+xeaz+1QN8sQgROjG/tvolMxbNqTCdvAxO6b4ODgaPtJm16Axib
+         0mRvc/MgPxHaaPfmKmLmx5MGwJkYOvguzg9Ryzpjglbw2l9xmSFoCG9ok6pRXs/mYJgG
+         KC2stl+Uo4BiLAwHb0QRuEZD9jW8Jtgg6G8Zw2ecPROvSSpwJYhRfZMz6ighdd0xYnWZ
+         ESg8Q+rWtjzwV6Hexwj6JHL+MLkKyotpJkbwcSiBSxS6HfepgBZKccL/pd8XcD5oYNMa
+         oIGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=QxmuFfCaxgsz4KW6/sSRpOtCBikOyWQfYGvNQ0EqHsY=;
+        b=mFoMmGkLuLSZIR9l9pv9WhA6K3OTtEwOQEZznJKSWw3RessJadZfEOOMTlaXYwOg8U
+         VHXgtaR90bLJWXPdmBTXxPgdg+OwF1Tx08e1tzlaH8NQSKHW9wPvEJK1JQ490uX1nwaz
+         hhKRiPI2FF2GZH2t4d5BNk67/TJIb8pYCn1dpPUFCqc7MrQvt+MPVT9gBIJer26tGpkU
+         HMZ7eaRifHORFiVAFX075Rqk4yfNSoVpgAvH+8igp3zI/sEubPJxXk0FRtKp5N0bQl23
+         4zFfd45KyMQiXW0dUfBwBeZUyZRVVL5SJ35Ys5GeTK5YTRNDRAKCAVwuqO5FWnmo/skQ
+         njoA==
+X-Gm-Message-State: AOAM530e1LgODruVxVh+Sdsg4LzUdkaOjlKTPR3DIRoHOGb+n0yea40a
+        W2zacucm8gMs1DgmfZGNgoA=
+X-Google-Smtp-Source: ABdhPJwni+cSfxv6xfUaDFMgFW/UHFctWtMlEsC6TlhrR4QCEDGl2F2x44ClPRB4h/QJr0a+BQzzwg==
+X-Received: by 2002:a17:90b:3908:: with SMTP id ob8mr6878791pjb.57.1637133641485;
+        Tue, 16 Nov 2021 23:20:41 -0800 (PST)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id mu4sm5032031pjb.8.2021.11.16.23.20.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Nov 2021 23:20:40 -0800 (PST)
+Date:   Wed, 17 Nov 2021 15:20:34 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Jarod Wilson <jarod@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        "David S . Miller" <davem@davemloft.net>,
+        Denis Kirjanov <dkirjanov@suse.de>,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH net-next] Bonding: add missed_max option
+Message-ID: <YZStQmciqidnkL3/@Laptop-X1>
+References: <20211116084840.978383-1-liuhangbin@gmail.com>
+ <20211116120058.494d6204@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YZRUW6wfMdI1aN1o@Laptop-X1>
+ <20211116184155.6c81b042@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211116184155.6c81b042@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-11-17 at 13:09 +0800, Lorenzo Colitti wrote:
-> On Tue, Nov 16, 2021 at 3:15 PM Rocco Yue <rocco.yue@mediatek.com>
-> wrote:
->> 
->> In the 3GPP TS 29.061, here is a description as follows:
->> "In order to avoid any conflict between the link-local address
->> of the MS and that of the GGSN, the Interface-Identifier used by
->> the MS to build its link-local address shall be assigned by the
->> GGSN.
->> [...]
->> 1) IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA, this mode is suitable
->> for cellular networks that support RFC7217. In this mode, the
->> kernel doesn't generate a link-local address for the cellular
->> NIC, and generates an ipv6 stable privacy global address after
->> receiving the RA message.
+On Tue, Nov 16, 2021 at 06:41:55PM -0800, Jakub Kicinski wrote:
+> On Wed, 17 Nov 2021 09:01:15 +0800 Hangbin Liu wrote:
+> > > >  
+> > > >  static const struct nla_policy bond_slave_policy[IFLA_BOND_SLAVE_MAX + 1] = {
+> > > > @@ -453,6 +454,15 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+> > > >  			return err;
+> > > >  	}
+> > > >  
+> > > > +	if (data[IFLA_BOND_MISSED_MAX]) {
+> > > > +		int missed_max = nla_get_u8(data[IFLA_BOND_MISSED_MAX]);  
+> > > 
+> > > If you read and write a u8?  
+> > 
+> > Ah, that's a typo. I planed to use nla_get_u32(). But looks NLA_U8 also should
+> > be enough. WDYT?
 > 
-> 
-> It sounds like this would violate RFC 4291 section 2.1 which says
-> "All
-> interfaces are required to have at least one Link-Local unicast
-> address. It is also not what 3GPP requires. 3GPP *does* require a
-> link-local address. It just requires that that the bottom 64 bits of
-> that link-local address be assigned by the network, not randomly.
->
+> Either way is fine. To be sure we don't need to enforce any lower limit
+> here? 0 is a valid setting?
 
-Hi Lorenzo,
+Re-considered and I agree that the value should not be set to 0.
 
-Thanks for your reply. :-)
-
-Disabling the kernel's automatic link-local address generation
-doesn't mean that it violates RFC 4291, because an appropriate
-link-local addr can be added to the cellulal NIC through ioctl.
-
-In fact, the current kernel has similar precedents. For example,
-when device type is ARPHRD_NONE, and its addr_gen_mode is NONE,
-the kernel will never generate a link-local addr for such interface.
-
-> Given that the kernel already supports tokenized interface addresses,
-> a better option here would be to add new addrgen modes where the
-> link-local address is formed from the interface token (idev->token),
-> and the other addresses are formed randomly or via RFC7217. These
-> modes could be called IN6_ADDR_GEN_MODE_RANDOM_LL_TOKEN and
-> IN6_ADDR_GEN_MODE_STABLE_PRIVACY_LL_TOKEN. When setting up the
-> interface, userspace could set disable_ipv6 to 1, then set the
-> interface token and the address generation mode via RTM_SETLINK, then
-> set disable_ipv6 to 0 to start autoconf. The kernel would then form
-> the link-local address via the token (which comes from the network),
-> and then set the global addresses either randomly or via RFC 7217.
-
-The method you mentioned can also solve the current problem, but it
-seems to introduce more logic: 
-  (1) set the cellular interface addr_gen_mode to RANDOM_LL_TOKEN or PRIVACY_LL_TOKEN;
-  (2) set the cellular interface up;
-  (3) disable ipv6 first;
-  (4) set token addr through netlink;
-  (5) autoconf through the kernel;
-  (6) kernel trigger send RS message;
-
-For the current patch, it is simpler, the configure process as follows:
-  (1) set the cellular NIC addr_gen_mode to RANDOM_NO_LLA or PRIVACY_NO_LLA;
-  (2) set the cellular interface up;
-  (3) configure the link-local addr for the NIC by ioctl;
-  (4) kernel trigger send RS message;
-
-I wonder to hear what you and David think.
-
-Thanks,
-
-Rocco
-
+Thanks
+Hangbin
