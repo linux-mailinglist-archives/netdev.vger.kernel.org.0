@@ -2,362 +2,419 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2C2445499D
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 16:11:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A650B4549AB
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 16:15:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230347AbhKQPOa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 10:14:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38638 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229737AbhKQPOa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 10:14:30 -0500
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EFEAC061570;
-        Wed, 17 Nov 2021 07:11:31 -0800 (PST)
-Received: by mail-wm1-x330.google.com with SMTP id 133so2581809wme.0;
-        Wed, 17 Nov 2021 07:11:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=i2fGpCFq5dlk4KXZv+j/KK/kGkCDdNyv44HSjPDhCjo=;
-        b=lw0AVF9yy05NUBv2qeb6GmI0remHWso9tJGVs+EYbznT/z8rcz3a/niCt4ELu05UCY
-         bttPQwfzhHTv8WY4/K//hizyuOUQlZQM5YgHOrTThDO9r5UPiDsbfdP1EQilVAX1zphf
-         Hky6ChA9CTIVBGpsyloUbSmIxpF9aE1tmz9YpmBNiflo+8bxpDga5c2D2TdDSsGtFzA0
-         40HsgloHXC9HD9DM/ss170vkzHOG7rGEB618CQr5HldippEqVpeMCM30j1adh+FbUg6J
-         hJCEnlOvbkwLngR0qs+kijtYn7TTngIWsitXw9PFCweQZKl2+S1dz8K0Dv3mat6p1U+d
-         ZZxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=i2fGpCFq5dlk4KXZv+j/KK/kGkCDdNyv44HSjPDhCjo=;
-        b=pwAfxhrrrZ4mIZybVqAnl8Q691WzaGWwu1ip9g/k09wRKV2wJ63t1eo7OK7/A/VuZs
-         E06KmLF13ZHSX7gbU6heeUoejT0BsXdqRH2XI8+e4SbQkT7TVekYevqWdoFOlg5Qj3Cx
-         f5Jvc5Sf8msdOf84cU/DR+pka0gRvUyd6JE0vOttYbsN9fqTPmvPixLSV8PckPolAv+j
-         IEV1IBeibYtIBcDOgbcGVmLdA+9ubDU5w7KMDJPyjxBrl1+8VKSvWDhQ854IbqPO58IW
-         v72FXF2tCQm7eveBYIhPBC+8Am7O6QIESU51VP3eaPrFumGwWD3iaD5AZ40Vpe2l+OBD
-         79EA==
-X-Gm-Message-State: AOAM532ppM0z8VqY+kI1gsc2FMLxb7s2M1+2Nsw3+J+HGaKELfOuO21X
-        p9Rm4bSJHRWMmryHy2xL1pk=
-X-Google-Smtp-Source: ABdhPJyGqCR2lyV+TqKa1Hs7R6vHMvtjlsk4SjUFBqqmAplr58wrwIKwyXfOHg8BiIloQHL7gHEf3w==
-X-Received: by 2002:a7b:cf0f:: with SMTP id l15mr471604wmg.92.1637161889941;
-        Wed, 17 Nov 2021 07:11:29 -0800 (PST)
-Received: from [192.168.0.18] (static-160-219-86-188.ipcom.comunitel.net. [188.86.219.160])
-        by smtp.gmail.com with ESMTPSA id z12sm121240wrv.78.2021.11.17.07.11.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Nov 2021 07:11:29 -0800 (PST)
-Message-ID: <04051f18-a955-9397-d94e-0c61fc8f595b@gmail.com>
-Date:   Wed, 17 Nov 2021 16:11:27 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Subject: Re: [PATCH v3 4/7] net-next: dt-bindings: dwmac: Convert
- mediatek-dwmac to DT schema
-Content-Language: en-US
-To:     Biao Huang <biao.huang@mediatek.com>, davem@davemloft.net,
+        id S233016AbhKQPSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 10:18:32 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:51190 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233221AbhKQPRq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 10:17:46 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id F0AFE1FD33;
+        Wed, 17 Nov 2021 15:14:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1637162086; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GbSdAooRoS2DO33gnPAdSWjgkyJjv7iK+C/k6Sg+a1k=;
+        b=xanDyxdoZ28JcendnC7BLSIL11vxLp7//1fkFv1so0JfFsV//i89nHOAxDnevrlQHxRIDb
+        as/bwTEfC0WRSiSntXCYr0rrBRwK9on5DV56HjbvjuFrE727MuEfArou4mwtpjsJar5e9t
+        5xLy5O+uyxHmM9QjD+8R/cerEx+14ok=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1637162086;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GbSdAooRoS2DO33gnPAdSWjgkyJjv7iK+C/k6Sg+a1k=;
+        b=IiOEHC6llnYCSNRzibLC1aElFg7G9X6Q4tVUaNDFVzrhHkJyxI2lvV018UoZILm2XBdXY8
+        UelNng1le8+mDMAQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5573A13AAD;
+        Wed, 17 Nov 2021 15:14:46 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id rYAtDWYclWFlCgAAMHmgww
+        (envelope-from <dkirjanov@suse.de>); Wed, 17 Nov 2021 15:14:46 +0000
+Subject: Re: [PATCH v2] ipv4/raw: support binding to nonlocal addresses
+To:     Riccardo Paolo Bestetti <pbl@bestov.io>
+Cc:     David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        srv_heupstream@mediatek.com, macpaul.lin@mediatek.com,
-        angelogioacchino.delregno@collabora.com, dkirjanov@suse.de
-References: <20211112093918.11061-1-biao.huang@mediatek.com>
- <20211112093918.11061-5-biao.huang@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20211112093918.11061-5-biao.huang@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+References: <20211102141921.197561-1-pbl@bestov.io>
+ <20211117090010.125393-1-pbl@bestov.io>
+From:   Denis Kirjanov <dkirjanov@suse.de>
+Message-ID: <1bbdd04b-26e6-9d02-6d8f-49bd4abedee4@suse.de>
+Date:   Wed, 17 Nov 2021 18:14:45 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+MIME-Version: 1.0
+In-Reply-To: <20211117090010.125393-1-pbl@bestov.io>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: ru
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 12/11/2021 10:39, Biao Huang wrote:
-> Convert mediatek-dwmac to DT schema, and delete old mediatek-dwmac.txt.
+11/17/21 12:00 PM, Riccardo Paolo Bestetti пишет:
+> Add support to inet v4 raw sockets for binding to nonlocal addresses
+> through the IP_FREEBIND and IP_TRANSPARENT socket options, as well as
+> the ipv4.ip_nonlocal_bind kernel parameter.
 > 
-> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+> Add helper function to inet_sock.h to check for bind address validity on
+> the base of the address type and whether nonlocal address are enabled
+> for the socket via any of the sockopts/sysctl, deduplicating checks in
+> ipv4/ping.c, ipv4/af_inet.c, ipv6/af_inet6.c (for mapped v4->v6
+> addresses), and ipv4/raw.c.
+> 
+> Add test cases with IP[V6]_FREEBIND verifying that both v4 and v6 raw
+> sockets support binding to nonlocal addresses after the change. Add
+> necessary support for the test cases to nettest.
+> 
+> Signed-off-by: Riccardo Paolo Bestetti <pbl@bestov.io>
+> Reviewed-by: David Ahern <dsahern@kernel.org>
 > ---
->   .../bindings/net/mediatek-dwmac.txt           |  91 ----------
->   .../bindings/net/mediatek-dwmac.yaml          | 157 ++++++++++++++++++
->   2 files changed, 157 insertions(+), 91 deletions(-)
->   delete mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.txt
->   create mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+> 20211117: resending this, as Patchwork didn't pick it up last time
 > 
+> Responding to review by David Ahern (21 March 2021),
+> 
+> Thank you for your review.
+> 
+>> Please add test cases to ipv4_addr_bind and ipv6_addr_bind in
+>> tools/testing/selftests/net/fcnal-test.sh. The latter will verify if
+>> IPv6 works the same or needs a change.
+> I have added the tests for both v4 and v6.  IPv6 raw sockets already
+> supported the functionality (under the IPV6_* sockopts), and the (new)
+> related tests pass, confirming this.
+> 
+> I have not added negative tests (i.e. checking that the same addresses
+> /fail/ to bind without the necessary flags) because I haven't seen such
+> tests for other features.  If you feel that's needed, I can look into
+> it.
+> 
+>> Also, this check duplicates the ones in __inet_bind and __inet6_bind; it
+>> would be good to use an inline helper to reduce the duplication.
+> Done.  The same check was also duplicated in net/ipv4/ping.c, as
+> detailed in the commit message.  I have also deduplicated that, if it
+> should have been left alone I'll quickly fire up a v3 and revert that.
+> 
+> Sorry for the delay with v2, had a busy year.
+> 
+> 
+>   include/net/inet_sock.h                   | 12 +++++++
+>   net/ipv4/af_inet.c                        |  7 ++--
+>   net/ipv4/ping.c                           | 14 +++-----
+>   net/ipv4/raw.c                            | 13 ++++----
+>   net/ipv6/af_inet6.c                       |  7 ++--
+>   tools/testing/selftests/net/fcnal-test.sh | 40 +++++++++++++++++++++++
+>   tools/testing/selftests/net/nettest.c     | 33 ++++++++++++++++++-
+>   7 files changed, 100 insertions(+), 26 deletions(-)
+> 
+> diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
+> index 89163ef8cf4b..13b05d116f6b 100644
+> --- a/include/net/inet_sock.h
+> +++ b/include/net/inet_sock.h
+> @@ -373,4 +373,16 @@ static inline bool inet_can_nonlocal_bind(struct net *net,
+>   		inet->freebind || inet->transparent;
+>   }
+>   
+> +static inline bool inet_addr_valid_or_nonlocal(struct net *net,
+> +					       struct inet_sock *inet,
+> +					       __be32 addr,
+> +					       int addr_type)
+> +{
+> +	return inet_can_nonlocal_bind(net, inet) ||
+> +		addr == htonl(INADDR_ANY) ||
+> +		addr_type == RTN_LOCAL ||
+> +		addr_type == RTN_MULTICAST ||
+> +		addr_type == RTN_BROADCAST;
+> +}
+> +
+>   #endif	/* _INET_SOCK_H */
+> diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+> index 1d816a5fd3eb..fb5cf3623e03 100644
+> --- a/net/ipv4/af_inet.c
+> +++ b/net/ipv4/af_inet.c
+> @@ -492,11 +492,8 @@ int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
+>   	 *  is temporarily down)
+>   	 */
+>   	err = -EADDRNOTAVAIL;
+> -	if (!inet_can_nonlocal_bind(net, inet) &&
+> -	    addr->sin_addr.s_addr != htonl(INADDR_ANY) &&
+> -	    chk_addr_ret != RTN_LOCAL &&
+> -	    chk_addr_ret != RTN_MULTICAST &&
+> -	    chk_addr_ret != RTN_BROADCAST)
+> +	if (!inet_addr_valid_or_nonlocal(net, inet, addr->sin_addr.s_addr,
+> +	                                 chk_addr_ret))
+>   		goto out;
+>   
+>   	snum = ntohs(addr->sin_port);
+> diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
+> index 1e44a43acfe2..e540b0dcf085 100644
+> --- a/net/ipv4/ping.c
+> +++ b/net/ipv4/ping.c
+> @@ -311,15 +311,11 @@ static int ping_check_bind_addr(struct sock *sk, struct inet_sock *isk,
+>   		pr_debug("ping_check_bind_addr(sk=%p,addr=%pI4,port=%d)\n",
+>   			 sk, &addr->sin_addr.s_addr, ntohs(addr->sin_port));
+>   
+> -		if (addr->sin_addr.s_addr == htonl(INADDR_ANY))
+> -			chk_addr_ret = RTN_LOCAL;
+> -		else
+> -			chk_addr_ret = inet_addr_type(net, addr->sin_addr.s_addr);
 
- From a quick look you are converting the binding to yaml and in the same patch 
-change the binding. Please do that in two different patches as otherwise it's 
-dificult to review.
+That was done intentionally in commit 0ce779a9f501
 
-Regards,
-Matthias
-
-> diff --git a/Documentation/devicetree/bindings/net/mediatek-dwmac.txt b/Documentation/devicetree/bindings/net/mediatek-dwmac.txt
-> deleted file mode 100644
-> index afbcaebf062e..000000000000
-> --- a/Documentation/devicetree/bindings/net/mediatek-dwmac.txt
-> +++ /dev/null
-> @@ -1,91 +0,0 @@
-> -MediaTek DWMAC glue layer controller
 > -
-> -This file documents platform glue layer for stmmac.
-> -Please see stmmac.txt for the other unchanged properties.
-> -
-> -The device node has following properties.
-> -
-> -Required properties:
-> -- compatible:  Should be "mediatek,mt2712-gmac" for MT2712 SoC
-> -- reg:  Address and length of the register set for the device
-> -- interrupts:  Should contain the MAC interrupts
-> -- interrupt-names: Should contain a list of interrupt names corresponding to
-> -	the interrupts in the interrupts property, if available.
-> -	Should be "macirq" for the main MAC IRQ
-> -- clocks: Must contain a phandle for each entry in clock-names.
-> -- clock-names: The name of the clock listed in the clocks property. These are
-> -	"axi", "apb", "mac_main", "ptp_ref", "rmii_internal" for MT2712 SoC.
-> -- mac-address: See ethernet.txt in the same directory
-> -- phy-mode: See ethernet.txt in the same directory
-> -- mediatek,pericfg: A phandle to the syscon node that control ethernet
-> -	interface and timing delay.
-> -
-> -Optional properties:
-> -- mediatek,tx-delay-ps: TX clock delay macro value. Default is 0.
-> -	It should be defined for RGMII/MII interface.
-> -	It should be defined for RMII interface when the reference clock is from MT2712 SoC.
-> -- mediatek,rx-delay-ps: RX clock delay macro value. Default is 0.
-> -	It should be defined for RGMII/MII interface.
-> -	It should be defined for RMII interface.
-> -Both delay properties need to be a multiple of 170 for RGMII interface,
-> -or will round down. Range 0~31*170.
-> -Both delay properties need to be a multiple of 550 for MII/RMII interface,
-> -or will round down. Range 0~31*550.
-> -
-> -- mediatek,rmii-rxc: boolean property, if present indicates that the RMII
-> -	reference clock, which is from external PHYs, is connected to RXC pin
-> -	on MT2712 SoC.
-> -	Otherwise, is connected to TXC pin.
-> -- mediatek,rmii-clk-from-mac: boolean property, if present indicates that
-> -	MT2712 SoC provides the RMII reference clock, which outputs to TXC pin only.
-> -- mediatek,txc-inverse: boolean property, if present indicates that
-> -	1. tx clock will be inversed in MII/RGMII case,
-> -	2. tx clock inside MAC will be inversed relative to reference clock
-> -	   which is from external PHYs in RMII case, and it rarely happen.
-> -	3. the reference clock, which outputs to TXC pin will be inversed in RMII case
-> -	   when the reference clock is from MT2712 SoC.
-> -- mediatek,rxc-inverse: boolean property, if present indicates that
-> -	1. rx clock will be inversed in MII/RGMII case.
-> -	2. reference clock will be inversed when arrived at MAC in RMII case, when
-> -	   the reference clock is from external PHYs.
-> -	3. the inside clock, which be sent to MAC, will be inversed in RMII case when
-> -	   the reference clock is from MT2712 SoC.
-> -- assigned-clocks: mac_main and ptp_ref clocks
-> -- assigned-clock-parents: parent clocks of the assigned clocks
-> -
-> -Example:
-> -	eth: ethernet@1101c000 {
-> -		compatible = "mediatek,mt2712-gmac";
-> -		reg = <0 0x1101c000 0 0x1300>;
-> -		interrupts = <GIC_SPI 237 IRQ_TYPE_LEVEL_LOW>;
-> -		interrupt-names = "macirq";
-> -		phy-mode ="rgmii-rxid";
-> -		mac-address = [00 55 7b b5 7d f7];
-> -		clock-names = "axi",
-> -			      "apb",
-> -			      "mac_main",
-> -			      "ptp_ref",
-> -			      "rmii_internal";
-> -		clocks = <&pericfg CLK_PERI_GMAC>,
-> -			 <&pericfg CLK_PERI_GMAC_PCLK>,
-> -			 <&topckgen CLK_TOP_ETHER_125M_SEL>,
-> -			 <&topckgen CLK_TOP_ETHER_50M_SEL>,
-> -			 <&topckgen CLK_TOP_ETHER_50M_RMII_SEL>;
-> -		assigned-clocks = <&topckgen CLK_TOP_ETHER_125M_SEL>,
-> -				  <&topckgen CLK_TOP_ETHER_50M_SEL>,
-> -				  <&topckgen CLK_TOP_ETHER_50M_RMII_SEL>;
-> -		assigned-clock-parents = <&topckgen CLK_TOP_ETHERPLL_125M>,
-> -					 <&topckgen CLK_TOP_APLL1_D3>,
-> -					 <&topckgen CLK_TOP_ETHERPLL_50M>;
-> -		power-domains = <&scpsys MT2712_POWER_DOMAIN_AUDIO>;
-> -		mediatek,pericfg = <&pericfg>;
-> -		mediatek,tx-delay-ps = <1530>;
-> -		mediatek,rx-delay-ps = <1530>;
-> -		mediatek,rmii-rxc;
-> -		mediatek,txc-inverse;
-> -		mediatek,rxc-inverse;
-> -		snps,txpbl = <1>;
-> -		snps,rxpbl = <1>;
-> -		snps,reset-gpio = <&pio 87 GPIO_ACTIVE_LOW>;
-> -		snps,reset-active-low;
-> -	};
-> diff --git a/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml b/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
-> new file mode 100644
-> index 000000000000..2eb4781536f7
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
-> @@ -0,0 +1,157 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/mediatek-dwmac.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> -		if ((!inet_can_nonlocal_bind(net, isk) &&
+> -		     chk_addr_ret != RTN_LOCAL) ||
+> -		    chk_addr_ret == RTN_MULTICAST ||
+> -		    chk_addr_ret == RTN_BROADCAST)
+> +		chk_addr_ret = inet_addr_type(net, addr->sin_addr.s_addr);
 > +
-> +title: MediaTek DWMAC glue layer controller
+> +		if (!inet_addr_valid_or_nonlocal(net, inet_sk(sk),
+> +					         addr->sin_addr.s_addr,
+> +	                                         chk_addr_ret))
+>   			return -EADDRNOTAVAIL;
+>   
+>   #if IS_ENABLED(CONFIG_IPV6)
+> diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
+> index bb446e60cf58..fa60517372b5 100644
+> --- a/net/ipv4/raw.c
+> +++ b/net/ipv4/raw.c
+> @@ -717,6 +717,7 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+>   {
+>   	struct inet_sock *inet = inet_sk(sk);
+>   	struct sockaddr_in *addr = (struct sockaddr_in *) uaddr;
+> +	struct net *net = sock_net(sk);
+>   	u32 tb_id = RT_TABLE_LOCAL;
+>   	int ret = -EINVAL;
+>   	int chk_addr_ret;
+> @@ -725,16 +726,16 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+>   		goto out;
+>   
+>   	if (sk->sk_bound_dev_if)
+> -		tb_id = l3mdev_fib_table_by_index(sock_net(sk),
+> -						 sk->sk_bound_dev_if) ? : tb_id;
+> +		tb_id = l3mdev_fib_table_by_index(net,
+> +						  sk->sk_bound_dev_if) ? : tb_id;
+>   
+> -	chk_addr_ret = inet_addr_type_table(sock_net(sk), addr->sin_addr.s_addr,
+> -					    tb_id);
+> +	chk_addr_ret = inet_addr_type_table(net, addr->sin_addr.s_addr, tb_id);
+>   
+>   	ret = -EADDRNOTAVAIL;
+> -	if (addr->sin_addr.s_addr && chk_addr_ret != RTN_LOCAL &&
+> -	    chk_addr_ret != RTN_MULTICAST && chk_addr_ret != RTN_BROADCAST)
+> +	if (!inet_addr_valid_or_nonlocal(net, inet, addr->sin_addr.s_addr,
+> +					 chk_addr_ret))
+>   		goto out;
 > +
-> +maintainers:
-> +  - Biao Huang <biao.huang@mediatek.com>
+>   	inet->inet_rcv_saddr = inet->inet_saddr = addr->sin_addr.s_addr;
+>   	if (chk_addr_ret == RTN_MULTICAST || chk_addr_ret == RTN_BROADCAST)
+>   		inet->inet_saddr = 0;  /* Use device */
+> diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+> index b5878bb8e419..0c557edbbd20 100644
+> --- a/net/ipv6/af_inet6.c
+> +++ b/net/ipv6/af_inet6.c
+> @@ -337,11 +337,8 @@ static int __inet6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
+>   		chk_addr_ret = inet_addr_type_dev_table(net, dev, v4addr);
+>   		rcu_read_unlock();
+>   
+> -		if (!inet_can_nonlocal_bind(net, inet) &&
+> -		    v4addr != htonl(INADDR_ANY) &&
+> -		    chk_addr_ret != RTN_LOCAL &&
+> -		    chk_addr_ret != RTN_MULTICAST &&
+> -		    chk_addr_ret != RTN_BROADCAST) {
+> +		if (!inet_addr_valid_or_nonlocal(net, inet, v4addr,
+> +						 chk_addr_ret)) {
+>   			err = -EADDRNOTAVAIL;
+>   			goto out;
+>   		}
+> diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
+> index 3313566ce906..7caa4f0e067d 100755
+> --- a/tools/testing/selftests/net/fcnal-test.sh
+> +++ b/tools/testing/selftests/net/fcnal-test.sh
+> @@ -66,6 +66,10 @@ NSB_LO_IP=172.16.2.2
+>   NSA_LO_IP6=2001:db8:2::1
+>   NSB_LO_IP6=2001:db8:2::2
+>   
+> +# non-local addresses for freebind tests
+> +NL_IP=172.17.1.1
+> +NL_IP6=2001:db8:4::1
 > +
-> +description:
-> +  This file documents platform glue layer for stmmac.
+>   MD5_PW=abc123
+>   MD5_WRONG_PW=abc1234
+>   
+> @@ -316,6 +320,9 @@ addr2str()
+>   	${NSB_LO_IP6})	echo "ns-B loopback IPv6";;
+>   	${NSB_LINKIP6}|${NSB_LINKIP6}%*) echo "ns-B IPv6 LLA";;
+>   
+> +	${NL_IP})       echo "nonlocal IP";;
+> +	${NL_IP6})      echo "nonlocal IPv6";;
 > +
-> +# We need a select here so we don't match all nodes with 'snps,dwmac'
-> +select:
-> +  properties:
-> +    compatible:
-> +      contains:
-> +        enum:
-> +          - mediatek,mt2712-gmac
-> +  required:
-> +    - compatible
+>   	${VRF_IP})	echo "VRF IP";;
+>   	${VRF_IP6})	echo "VRF IPv6";;
+>   
+> @@ -1767,6 +1774,14 @@ ipv4_addr_bind_novrf()
+>   		log_test_addr ${a} $? 0 "Raw socket bind to local address after device bind"
+>   	done
+>   
+> +	#
+> +	# raw socket with nonlocal bind
+> +	#
+> +	a=${NL_IP}
+> +	log_start
+> +	run_cmd nettest -s -R -P icmp -f -l ${a} -I ${NSA_DEV} -b
+> +	log_test_addr ${a} $? 0 "Raw socket bind to nonlocal address after device bind"
 > +
-> +allOf:
-> +  - $ref: "snps,dwmac.yaml#"
-> +  - $ref: "ethernet-controller.yaml#"
+>   	#
+>   	# tcp sockets
+>   	#
+> @@ -1815,6 +1830,14 @@ ipv4_addr_bind_vrf()
+>   	run_cmd nettest -s -R -P icmp -l ${a} -I ${VRF} -b
+>   	log_test_addr ${a} $? 1 "Raw socket bind to out of scope address after VRF bind"
+>   
+> +	#
+> +	# raw socket with nonlocal bind
+> +	#
+> +	a=${NL_IP}
+> +	log_start
+> +	run_cmd nettest -s -R -P icmp -f -l ${a} -I ${VRF} -b
+> +	log_test_addr ${a} $? 0 "Raw socket bind to nonlocal address after VRF bind"
 > +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - items:
-> +          - enum:
-> +              - mediatek,mt2712-gmac
-> +          - const: snps,dwmac-4.20a
+>   	#
+>   	# tcp sockets
+>   	#
+> @@ -1965,6 +1988,7 @@ ipv4_rt()
+>   
+>   	a=${NSA_IP}
+>   	log_start
 > +
-> +  clocks:
-> +    items:
-> +      - description: AXI clock
-> +      - description: APB clock
-> +      - description: MAC Main clock
-> +      - description: PTP clock
-> +      - description: RMII reference clock provided by MAC
+>   	run_cmd nettest ${varg} -s &
+>   	sleep 1
+>   	run_cmd nettest ${varg} -d ${NSA_DEV} -r ${a} &
+> @@ -3402,6 +3426,14 @@ ipv6_addr_bind_novrf()
+>   		log_test_addr ${a} $? 0 "Raw socket bind to local address after device bind"
+>   	done
+>   
+> +	#
+> +	# raw socket with nonlocal bind
+> +	#
+> +	a=${NL_IP6}
+> +	log_start
+> +	run_cmd nettest -6 -s -R -P icmp -f -l ${a} -I ${NSA_DEV} -b
+> +	log_test_addr ${a} $? 0 "Raw socket bind to nonlocal address"
 > +
-> +  clock-names:
-> +    items:
-> +      - const: axi
-> +      - const: apb
-> +      - const: mac_main
-> +      - const: ptp_ref
-> +      - const: rmii_internal
+>   	#
+>   	# tcp sockets
+>   	#
+> @@ -3443,6 +3475,14 @@ ipv6_addr_bind_vrf()
+>   	run_cmd nettest -6 -s -R -P ipv6-icmp -l ${a} -I ${VRF} -b
+>   	log_test_addr ${a} $? 1 "Raw socket bind to invalid local address after vrf bind"
+>   
+> +	#
+> +	# raw socket with nonlocal bind
+> +	#
+> +	a=${NL_IP6}
+> +	log_start
+> +	run_cmd nettest -6 -s -R -P icmp -f -l ${a} -I ${VRF} -b
+> +	log_test_addr ${a} $? 0 "Raw socket bind to nonlocal address after VRF bind"
 > +
-> +  mediatek,pericfg:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    description:
-> +      The phandle to the syscon node that control ethernet
-> +      interface and timing delay.
+>   	#
+>   	# tcp sockets
+>   	#
+> diff --git a/tools/testing/selftests/net/nettest.c b/tools/testing/selftests/net/nettest.c
+> index b599003eb5ba..d9a6fd2cd9d3 100644
+> --- a/tools/testing/selftests/net/nettest.c
+> +++ b/tools/testing/selftests/net/nettest.c
+> @@ -85,6 +85,7 @@ struct sock_args {
+>   	int version;   /* AF_INET/AF_INET6 */
+>   
+>   	int use_setsockopt;
+> +	int use_freebind;
+>   	int use_cmsg;
+>   	const char *dev;
+>   	const char *server_dev;
+> @@ -514,6 +515,29 @@ static int set_membership(int sd, uint32_t grp, uint32_t addr, int ifindex)
+>   	return 0;
+>   }
+>   
+> +static int set_freebind(int sd, int version)
+> +{
+> +	unsigned int one = 1;
+> +	int rc = 0;
 > +
-> +  mediatek,tx-delay-ps:
-> +    description:
-> +      The internal TX clock delay (provided by this driver) in nanoseconds.
-> +      For MT2712 RGMII interface, Allowed value need to be a multiple of 170,
-> +      or will round down. Range 0~31*170.
-> +      For MT2712 RMII/MII interface, Allowed value need to be a multiple of 550,
-> +      or will round down. Range 0~31*550.
+> +	switch (version) {
+> +	case AF_INET:
+> +		if (setsockopt(sd, SOL_IP, IP_FREEBIND, &one, sizeof(one))) {
+> +			log_err_errno("setsockopt(IP_FREEBIND)");
+> +			rc = -1;
+> +		}
+> +		break;
+> +	case AF_INET6:
+> +		if (setsockopt(sd, SOL_IPV6, IPV6_FREEBIND, &one, sizeof(one))) {
+> +			log_err_errno("setsockopt(IPV6_FREEBIND");
+> +			rc = -1;
+> +		}
+> +		break;
+> +	}
 > +
-> +  mediatek,rx-delay-ps:
-> +    description:
-> +      The internal RX clock delay (provided by this driver) in nanoseconds.
-> +      For MT2712 RGMII interface, Allowed value need to be a multiple of 170,
-> +      or will round down. Range 0~31*170.
-> +      For MT2712 RMII/MII interface, Allowed value need to be a multiple of 550,
-> +      or will round down. Range 0~31*550.
+> +	return rc;
+> +}
 > +
-> +  mediatek,rmii-rxc:
-> +    type: boolean
-> +    description:
-> +      If present, indicates that the RMII reference clock, which is from external
-> +      PHYs, is connected to RXC pin. Otherwise, is connected to TXC pin.
+>   static int set_broadcast(int sd)
+>   {
+>   	unsigned int one = 1;
+> @@ -1419,6 +1443,9 @@ static int lsock_init(struct sock_args *args)
+>   		 set_unicast_if(sd, args->ifindex, args->version))
+>   		goto err;
+>   
+> +	if (args->use_freebind && set_freebind(sd, args->version))
+> +		goto err;
 > +
-> +  mediatek,rmii-clk-from-mac:
-> +    type: boolean
-> +    description:
-> +      If present, indicates that MAC provides the RMII reference clock, which
-> +      outputs to TXC pin only.
-> +
-> +  mediatek,txc-inverse:
-> +    type: boolean
-> +    description:
-> +      If present, indicates that
-> +      1. tx clock will be inversed in MII/RGMII case,
-> +      2. tx clock inside MAC will be inversed relative to reference clock
-> +         which is from external PHYs in RMII case, and it rarely happen.
-> +      3. the reference clock, which outputs to TXC pin will be inversed in RMII case
-> +         when the reference clock is from MAC.
-> +
-> +  mediatek,rxc-inverse:
-> +    type: boolean
-> +    description:
-> +      If present, indicates that
-> +      1. rx clock will be inversed in MII/RGMII case.
-> +      2. reference clock will be inversed when arrived at MAC in RMII case, when
-> +         the reference clock is from external PHYs.
-> +      3. the inside clock, which be sent to MAC, will be inversed in RMII case when
-> +         the reference clock is from MAC.
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - interrupt-names
-> +  - clocks
-> +  - clock-names
-> +  - phy-mode
-> +  - mediatek,pericfg
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/clock/mt2712-clk.h>
-> +    #include <dt-bindings/gpio/gpio.h>
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    #include <dt-bindings/power/mt2712-power.h>
-> +
-> +    eth: ethernet@1101c000 {
-> +        compatible = "mediatek,mt2712-gmac", "snps,dwmac-4.20a";
-> +        reg = <0x1101c000 0x1300>;
-> +        interrupts = <GIC_SPI 237 IRQ_TYPE_LEVEL_LOW>;
-> +        interrupt-names = "macirq";
-> +        phy-mode ="rgmii-rxid";
-> +        mac-address = [00 55 7b b5 7d f7];
-> +        clock-names = "axi",
-> +                      "apb",
-> +                      "mac_main",
-> +                      "ptp_ref",
-> +                      "rmii_internal";
-> +        clocks = <&pericfg CLK_PERI_GMAC>,
-> +                 <&pericfg CLK_PERI_GMAC_PCLK>,
-> +                 <&topckgen CLK_TOP_ETHER_125M_SEL>,
-> +                 <&topckgen CLK_TOP_ETHER_50M_SEL>,
-> +                 <&topckgen CLK_TOP_ETHER_50M_RMII_SEL>;
-> +        assigned-clocks = <&topckgen CLK_TOP_ETHER_125M_SEL>,
-> +                          <&topckgen CLK_TOP_ETHER_50M_SEL>,
-> +                          <&topckgen CLK_TOP_ETHER_50M_RMII_SEL>;
-> +        assigned-clock-parents = <&topckgen CLK_TOP_ETHERPLL_125M>,
-> +                                 <&topckgen CLK_TOP_APLL1_D3>,
-> +                                 <&topckgen CLK_TOP_ETHERPLL_50M>;
-> +        power-domains = <&scpsys MT2712_POWER_DOMAIN_AUDIO>;
-> +        mediatek,pericfg = <&pericfg>;
-> +        mediatek,tx-delay-ps = <1530>;
-> +        snps,txpbl = <1>;
-> +        snps,rxpbl = <1>;
-> +        snps,reset-gpio = <&pio 87 GPIO_ACTIVE_LOW>;
-> +        snps,reset-delays-us = <0 10000 10000>;
-> +    };
+>   	if (bind_socket(sd, args))
+>   		goto err;
+>   
+> @@ -1827,7 +1854,7 @@ static int ipc_parent(int cpid, int fd, struct sock_args *args)
+>   	return client_status;
+>   }
+>   
+> -#define GETOPT_STR  "sr:l:c:p:t:g:P:DRn:M:X:m:d:I:BN:O:SCi6xL:0:1:2:3:Fbq"
+> +#define GETOPT_STR  "sr:l:c:p:t:g:P:DRn:M:X:m:d:I:BN:O:SCi6xL:0:1:2:3:Fbqf"
+>   #define OPT_FORCE_BIND_KEY_IFINDEX 1001
+>   #define OPT_NO_BIND_KEY_IFINDEX 1002
+>   
+> @@ -1864,6 +1891,7 @@ static void print_usage(char *prog)
+>   	"    -I dev        bind socket to given device name - server mode\n"
+>   	"    -S            use setsockopt (IP_UNICAST_IF or IP_MULTICAST_IF)\n"
+>   	"                  to set device binding\n"
+> +	"    -f            bind socket with the IP[V6]_FREEBIND option\n"
+>   	"    -C            use cmsg and IP_PKTINFO to specify device binding\n"
+>   	"\n"
+>   	"    -L len        send random message of given length\n"
+> @@ -1999,6 +2027,9 @@ int main(int argc, char *argv[])
+>   		case 'S':
+>   			args.use_setsockopt = 1;
+>   			break;
+> +		case 'f':
+> +			args.use_freebind = 1;
+> +			break;
+>   		case 'C':
+>   			args.use_cmsg = 1;
+>   			break;
 > 
