@@ -2,116 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16A654542C9
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 09:40:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08A1D4542C3
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 09:37:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231214AbhKQImG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 03:42:06 -0500
-Received: from 163-172-96-212.rev.poneytelecom.eu ([163.172.96.212]:46544 "EHLO
-        1wt.eu" rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org with ESMTP
-        id S229774AbhKQImG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Nov 2021 03:42:06 -0500
-X-Greylist: delayed 1191 seconds by postgrey-1.27 at vger.kernel.org; Wed, 17 Nov 2021 03:42:05 EST
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 1AH8J7Tx006680;
-        Wed, 17 Nov 2021 09:19:07 +0100
-Date:   Wed, 17 Nov 2021 09:19:07 +0100
-From:   Willy Tarreau <w@1wt.eu>
-To:     syzbot <syzbot+6f8ddb9f2ff4adf065cb@syzkaller.appspotmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] WARNING: refcount bug in __linkwatch_run_queue
-Message-ID: <20211117081907.GA6276@1wt.eu>
-References: <000000000000e4810705d0e479d5@google.com>
+        id S232862AbhKQIj5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 03:39:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60430 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229516AbhKQIj4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 03:39:56 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37BE8C061570
+        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 00:36:58 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id n29so3019475wra.11
+        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 00:36:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WrPEvEbWf6Wc0DXft8xWpwNHryeVDMkAQS+5Bf1seZQ=;
+        b=Rd51I7u6tzAIugOkmci8FtxptCl14VCBCDb6jJFoovrmWDH0iwZXNjmaPZnEmwGHB7
+         w72ZBxf27jaCOtqb58DxUYnlcqiVFDRteNX2hZjDkqikexdq9zY8qFmJL60i0CYki3QD
+         X9AUTtQ7351p7c+fOqHxRmC9YJy6mOquiKUw6didobc2+/sMQSG35P0qyqB1PAPtnYu6
+         lniKzdhUFjxVi2BurMR1evX1WltkWpjTQHo60fKPgciofbGIRdLywt8znfsPKg9Q/OAC
+         A/zLFZV3heNlL2xnW+IVAZjbMw9m+vYJXrcyDLH9/h1WCxh44tFaiO0oG38pzlCK9LII
+         q+mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WrPEvEbWf6Wc0DXft8xWpwNHryeVDMkAQS+5Bf1seZQ=;
+        b=aqiiXbfaDi2BVpaL/c4YCB8XOLIlsEilU/xQJA2EUtTtZ1ICmZs5+Mnz5ip9XTgW/8
+         TfH1Li73Fko0GAJzkLnPHz3OvKjLQlyGO6noay95SO/0L7nb4wPUxg4Z7p0jf2ZbPLR4
+         cagztxcDIb28w08oOu9oBAExbpN07D1Cbm4GDPay+Y3QnjqTr5DpbLPp23e/h2szsUNw
+         nFFUvn07JQXclGt+FbnNAtkzT5IcV3ViHV/kW5FkBjjuGJqlgLMK2rITeaOacjbtzEWL
+         d2jOkHSQN+9ESrfccjYvr6Moa+B/PNa3E7YPEYvty4YbjJ8cMVScMNsoYxFYhk60xbLE
+         VrTQ==
+X-Gm-Message-State: AOAM531DYcNBsmLPr9aPYS829LA6eKVHnVj8zsdsuuu3RGupRUyBU0sw
+        l2In+mRHSviaSHG6uTlY45No7JspSWn8vH2evklSXg==
+X-Google-Smtp-Source: ABdhPJyttg1bVl2qBGNNhXrWHmcwegsT28FZnB6NKWXtHkaTk8EOWeGGvP1WXHR4QqR/ZZ1eg9EHTJJxDmxDy6c+SF4=
+X-Received: by 2002:a5d:6d07:: with SMTP id e7mr17009629wrq.311.1637138216539;
+ Wed, 17 Nov 2021 00:36:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <000000000000e4810705d0e479d5@google.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <CAKD1Yr02W-WuLx8ouvP+wTtkxeyTBW_dp1deo9sim7wfLA2LXQ@mail.gmail.com>
+ <20211117071732.7455-1-rocco.yue@mediatek.com>
+In-Reply-To: <20211117071732.7455-1-rocco.yue@mediatek.com>
+From:   Lorenzo Colitti <lorenzo@google.com>
+Date:   Wed, 17 Nov 2021 17:36:44 +0900
+Message-ID: <CAKD1Yr3CMPWMmNNU6YvpBiaXVttS9T8qGVgmddijYfLSfK-Rog@mail.gmail.com>
+Subject: Re: [PATCH net-next] ipv6: don't generate link-local addr in random
+ or privacy mode
+To:     Rocco Yue <rocco.yue@mediatek.com>
+Cc:     dsahern@gmail.com, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, rocco.yue@gmail.com,
+        chao.song@mediatek.com, yanjie.jiang@mediatek.com,
+        kuohong.wang@mediatek.com, Zhuoliang.Zhang@mediatek.com,
+        maze@google.com, markzzzsmith@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 16, 2021 at 01:23:19AM -0800, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    fa55b7dcdc43 Linux 5.16-rc1
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=109339e1b00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=6c3ab72998e7f1a4
-> dashboard link: https://syzkaller.appspot.com/bug?extid=6f8ddb9f2ff4adf065cb
-> compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.2
-> 
-> Unfortunately, I don't have any reproducer for this issue yet.
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+6f8ddb9f2ff4adf065cb@syzkaller.appspotmail.com
-> 
-> ------------[ cut here ]------------
-> refcount_t: decrement hit 0; leaking memory.
-> WARNING: CPU: 1 PID: 26140 at lib/refcount.c:31 refcount_warn_saturate+0x17c/0x1a0 lib/refcount.c:31
-> Modules linked in:
-> CPU: 1 PID: 26140 Comm: kworker/1:26 Not tainted 5.16.0-rc1-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Workqueue: events linkwatch_event
-> RIP: 0010:refcount_warn_saturate+0x17c/0x1a0 lib/refcount.c:31
-> Code: f4 8a 31 c0 e8 f5 45 38 fd 0f 0b e9 64 ff ff ff e8 49 6a 6e fd c6 05 06 40 f5 09 01 48 c7 c7 80 fe f4 8a 31 c0 e8 d4 45 38 fd <0f> 0b e9 43 ff ff ff 89 d9 80 e1 07 80 c1 03 38 c1 0f 8c a2 fe ff
-> RSP: 0018:ffffc90003537b68 EFLAGS: 00010246
-> RAX: 26aa35cdf4075e00 RBX: 0000000000000004 RCX: ffff88803baaba00
-> RDX: 0000000000000000 RSI: 0000000080000000 RDI: 0000000000000000
-> RBP: 0000000000000004 R08: ffffffff8169fb82 R09: ffffed10173667b1
-> R10: ffffed10173667b1 R11: 0000000000000000 R12: ffff88807ccac000
-> R13: 1ffff1100f9958b7 R14: 1ffff1100f9958b8 R15: ffff88807ccac5b8
-> FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007f217b0e6740 CR3: 0000000019e96000 CR4: 00000000003526e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 000000000000ff46
-> DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7: 0000000000000400
-> Call Trace:
->  <TASK>
->  __linkwatch_run_queue+0x4f5/0x800 net/core/link_watch.c:213
->  linkwatch_event+0x48/0x50 net/core/link_watch.c:252
->  process_one_work+0x853/0x1140 kernel/workqueue.c:2298
->  worker_thread+0xac1/0x1320 kernel/workqueue.c:2445
->  kthread+0x468/0x490 kernel/kthread.c:327
->  ret_from_fork+0x1f/0x30
->  </TASK>
+On Wed, Nov 17, 2021 at 4:22 PM Rocco Yue <rocco.yue@mediatek.com> wrote:
+> Disabling the kernel's automatic link-local address generation
+> doesn't mean that it violates RFC 4291, because an appropriate
+> link-local addr can be added to the cellulal NIC through ioctl.
 
-Thanks for the report. I'm seeing that linkwatch_do_dev() is also
-called in linkwatch_forget_dev(), and am wondering if we're not
-seeing a sequence like this one:
+Well, it would mean that the kernel requires additional work from
+userspace to respect the RFC.
 
-  linkwatch_forget_dev()
-    list_del_init()
-    linkwatch_do_dev()
-      netdev_state_change()
-        ... one of the notifiers
-           ... linkwatch_add_event() => adds to watch list
-      dev_put()
-  ...
-  
-  __linkwatch_run_queue()
-    linkwatch_do_dev()
-      dev_put()
-        => bang!
+> The method you mentioned can also solve the current problem, but it
+> seems to introduce more logic:
+>   (1) set the cellular interface addr_gen_mode to RANDOM_LL_TOKEN or PRIVACY_LL_TOKEN;
+>   (2) set the cellular interface up;
+>   (3) disable ipv6 first;
 
-Well, in theory, no, since linkwatch_add_event() will call dev_hold()
-when adding to the list, so we ought to leave the first call with a
-refcount still covering the list's presence, and I don't see how it
-can reach zero before reaching dev_put() in linkwatch_do_dev() as this
-function is only called when the event was picked from the list.
+I don't think you need to set the interface up to disable IPv6. Also I
+think that if the interface is down autoconf won't run so you don't
+actually need to do this.
 
-The only difference I'm seeing is that before the patch, a call to
-linkwatch_forget_dev() on a non-present device would call dev_put()
-without going through dev_activate(), dev_deactivate(), nor
-netdev_state_change(), but I'm not seeing how that could make a
-difference. linkwatch_forget_dev() is called from netdev_wait_allrefs()
-which will wait for the refcnt to be exactly 1, thus even if we queue
-an extra event we cant leave that function until the event has been
-processed.
+>   (4) set token addr through netlink;
 
-Thus for now I'm puzzled :-/
+Can't 4 be the same as 3? The same netlink message can configure both
+the addr_gen_mode and the token, no?
 
-Willy
+It seems to me that the following should work, and would be much simpler.
+
+1. Bring the interface down. All addresses are deleted.
+2. Send a netlink request to set addr_gen_mode RANDOM_LL_TOKEN or
+PRIVACY_LL_TOKEN and set the token.
+3. Bring the interface up. Autoconf runs. The link-local address is
+generated from the token. An RS is sent. When the RA is received, the
+global address is generated using RFC 7217 or randomly.
+
+Cheers,
+Lorenzo
