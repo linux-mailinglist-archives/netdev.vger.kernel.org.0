@@ -2,119 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35E21455020
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 23:03:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFF36455032
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 23:16:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241022AbhKQWGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 17:06:50 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:27215 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240924AbhKQWGr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 17:06:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637186627;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UM3rOln8kBcAURl+w/UPvP+woZK+h5DIoF92PXfCfdQ=;
-        b=A9EkBiBsYgbYeMpc3cMEg8y0HwGyFAEYhTtWpp7yGnGNazZmr+MNcL4qEvISdgF4X3lFuJ
-        ZzA4sXHZczv9NGs+m3MPuUBBNR+We7p30qNgeT1Eh2r3jJ1cc/upMcuRtIeFIDWQ3ZLlsR
-        fupRH/VIidjzM8ZSSAbKdE5caUqR6iI=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-249-efY2qvC-Pt64TDu3ZIbEdA-1; Wed, 17 Nov 2021 17:03:46 -0500
-X-MC-Unique: efY2qvC-Pt64TDu3ZIbEdA-1
-Received: by mail-qk1-f199.google.com with SMTP id bk21-20020a05620a1a1500b004631b196a46so3102977qkb.4
-        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 14:03:46 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=UM3rOln8kBcAURl+w/UPvP+woZK+h5DIoF92PXfCfdQ=;
-        b=aC1LDQzfAooK9IuFcPcKGB4LdKpL9+T3qEInJlVj1Ys9LYev65e5V6rAQ3TMZjM3lD
-         bzL8MbMKZIE42AuyQkF4qSOG6/BfcugP/UFzQz92R0pHPqYcp+R7MQPhdL432FYjT9/f
-         fXSk6GrfqYLvtgP8ucb+obKHJBZqWSHISVqdRDmRItO0cV8zyAF44+vsVN60X03LDFVP
-         dhwZUTh25wFFjPNkRTxAPMe9QtorZMKgqw/fYo/FCZmcTzZF8pBwbAWy4K9FJA/dhggC
-         ll50/eexOuKRdFtyoNSJ9qzlEK81kNSzntjGve1Y+HjFnDYakqRDzQHwHhEa7eZQ7/UD
-         jYRw==
-X-Gm-Message-State: AOAM532x0/sjKscMeX5K9VhcELKgX8nPKs74SVUQKs8OgkiiqFXWz+dk
-        erT/8LCDLBpHEbfuT7WEgVLddQV1wXV0litVCG4bq84P6mnqWFmE5luTZwIqbTcUcUdJckfPiGV
-        9jLrcOarG6O3tHsi9
-X-Received: by 2002:ac8:5c53:: with SMTP id j19mr21301629qtj.40.1637186625533;
-        Wed, 17 Nov 2021 14:03:45 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwKbmfhLXEcjpNEixYPWQ886lMm649m9jzw2P56FDGKONoExY3utbgtPOsfA1loXEghxgDNQQ==
-X-Received: by 2002:ac8:5c53:: with SMTP id j19mr21301599qtj.40.1637186625332;
-        Wed, 17 Nov 2021 14:03:45 -0800 (PST)
-Received: from [10.0.0.96] ([24.225.241.171])
-        by smtp.gmail.com with ESMTPSA id w10sm691272qkp.121.2021.11.17.14.03.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Nov 2021 14:03:44 -0800 (PST)
-Message-ID: <0aea60c5-28d5-258a-3a32-bae1895a96ee@redhat.com>
-Date:   Wed, 17 Nov 2021 17:06:02 -0500
+        id S241092AbhKQWS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 17:18:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36610 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241020AbhKQWS6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Nov 2021 17:18:58 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D854F61B3E;
+        Wed, 17 Nov 2021 22:15:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637187359;
+        bh=18kkfrg4AgOIt1mZK6Dedmf6SMs42bal/deXI6yPuLA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=vKhNq7Uk0AGaKm34w3Qhgetrs5Bq+0eEZlXqFRkOII8l0t70tvC4u2PLYKEIpai9o
+         VaKqVCE68b9yLAIsZTJHLMe6S02IOuSUTCgLFXYCIveWbto1504Q7TEIKpRU9UN0pp
+         BcVUtHlOCylmgbimSFqYTWdjcUooZKc8vSdqVV94OvSZ/OtOVZW/yyq9hffR/A/jpF
+         JV+D+9futCUOGj3UUrXnf0yyNaWPQNJOTVvQebjxkapUd82om6Z0aD3+RAhVJVmXF8
+         Oku+vfruHMaVoWBJ5vKel1NpjDcEW+2fMfl5l7CDjsBXSOBwKC/0FDQKF9ICyFXYJ6
+         sG81BcVMUNFCg==
+Date:   Wed, 17 Nov 2021 22:15:53 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: regmap: allow to define reg_update_bits for no bus configuration
+Message-ID: <YZV/GYJXKTE4RaEj@sirena.org.uk>
+References: <20211117210451.26415-1-ansuelsmth@gmail.com>
+ <20211117210451.26415-2-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.0
-Subject: Re: [PATCH v2] tipc: check for null after calling kmemdup
-Content-Language: en-US
-To:     Tadeusz Struk <tadeusz.struk@linaro.org>, davem@davemloft.net
-Cc:     Ying Xue <ying.xue@windriver.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Dmitry Vyukov <dvyukov@google.com>
-References: <20211115160143.5099-1-tadeusz.struk@linaro.org>
-From:   Jon Maloy <jmaloy@redhat.com>
-In-Reply-To: <20211115160143.5099-1-tadeusz.struk@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="/Q9YqCthrNTTr8b+"
+Content-Disposition: inline
+In-Reply-To: <20211117210451.26415-2-ansuelsmth@gmail.com>
+X-Cookie: I smell a wumpus.
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Acked-by: Jon Maloy <jmaloy@redhat.com>
 
-On 11/15/21 11:01, Tadeusz Struk wrote:
-> kmemdup can return a null pointer so need to check for it, otherwise
-> the null key will be dereferenced later in tipc_crypto_key_xmit as
-> can be seen in the trace [1].
->
-> Cc: Jon Maloy <jmaloy@redhat.com>
-> Cc: Ying Xue <ying.xue@windriver.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: netdev@vger.kernel.org
-> Cc: tipc-discussion@lists.sourceforge.net
-> Cc: linux-kernel@vger.kernel.org
-> Cc: stable@vger.kernel.org # 5.15, 5.14, 5.10
->
-> [1] https://syzkaller.appspot.com/bug?id=bca180abb29567b189efdbdb34cbf7ba851c2a58
->
-> Reported-by: Dmitry Vyukov <dvyukov@google.com>
-> Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-> ---
-> Changed in v2:
-> - use tipc_aead_free() to free all crytpo tfm instances
->    that might have been allocated before the fail.
-> ---
->   net/tipc/crypto.c | 4 ++++
->   1 file changed, 4 insertions(+)
->
-> diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
-> index dc60c32bb70d..d293614d5fc6 100644
-> --- a/net/tipc/crypto.c
-> +++ b/net/tipc/crypto.c
-> @@ -597,6 +597,10 @@ static int tipc_aead_init(struct tipc_aead **aead, struct tipc_aead_key *ukey,
->   	tmp->cloned = NULL;
->   	tmp->authsize = TIPC_AES_GCM_TAG_SIZE;
->   	tmp->key = kmemdup(ukey, tipc_aead_key_size(ukey), GFP_KERNEL);
-> +	if (!tmp->key) {
-> +		tipc_aead_free(&tmp->rcu);
-> +		return -ENOMEM;
-> +	}
->   	memcpy(&tmp->salt, ukey->key + keylen, TIPC_AES_GCM_SALT_SIZE);
->   	atomic_set(&tmp->users, 0);
->   	atomic64_set(&tmp->seqno, 0);
+--/Q9YqCthrNTTr8b+
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Wed, Nov 17, 2021 at 10:04:33PM +0100, Ansuel Smith wrote:
+> Some device requires a special handling for reg_update_bits and can't use
+> the normal regmap read write logic. An example is when locking is
+> handled by the device and rmw operations requires to do atomic operations.
+> Allow to declare a dedicated function in regmap_config for
+> reg_update_bits in no bus configuration.
+>=20
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> Link: https://lore.kernel.org/r/20211104150040.1260-1-ansuelsmth@gmail.com
+> Signed-off-by: Mark Brown <broonie@kernel.org>
+> ---
+>  drivers/base/regmap/regmap.c | 1 +
+>  include/linux/regmap.h       | 7 +++++++
+>  2 files changed, 8 insertions(+)
+
+I've applied this already?  If it's needed by something in another tree
+let me know and I'll make a signed tag for it.
+
+--/Q9YqCthrNTTr8b+
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmGVfxkACgkQJNaLcl1U
+h9Cu5Af/Zw71VW8AU+geoTpjR5nlUgdZQBHtrqEucSzknp7TE6Bb4IGYEwAmxfJ8
+k62rok0LG6hGrkiujUd2TRBhGAEvoCOiwnnRzirGD++i+vl3sqYIyBr1kASLMppv
+iL3vcGpgq/dtc71EEziurFzFPQy1pOe8MH2IVLB7FxAEFn3zZc0NlxYsDjKsFSZA
+GymChTVLiQfyiKvVwR4QBPgpLiZLeW0BfFPqhWtydKuGxltnKH8A83Z5kPP/KBLA
+9P4W1BSLXPXI2whoDyEGXl4ewJf4CzcwVjMDVZL/U3WirB2wJgdc42rtvMmho5Pk
+gf8u47l9pDNPPTRVMJ0LTQQYLrtsqw==
+=vOjt
+-----END PGP SIGNATURE-----
+
+--/Q9YqCthrNTTr8b+--
