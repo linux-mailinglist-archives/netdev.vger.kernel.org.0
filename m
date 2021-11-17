@@ -2,118 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF168454223
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 08:52:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85A9645422D
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 08:55:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234285AbhKQHzI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 02:55:08 -0500
-Received: from mout.kundenserver.de ([212.227.17.24]:58779 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231827AbhKQHzH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 02:55:07 -0500
-Received: from mail-wr1-f48.google.com ([209.85.221.48]) by
- mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MYNW8-1n9oxW1yV8-00VPkY; Wed, 17 Nov 2021 08:52:08 +0100
-Received: by mail-wr1-f48.google.com with SMTP id b12so2842829wrh.4;
-        Tue, 16 Nov 2021 23:52:08 -0800 (PST)
-X-Gm-Message-State: AOAM533hqx0xaEglkXOUTHf4G8VOJF/v4cv1KY6Y9zj9ANVjKxATSVPs
-        6lu4zKCbANlFH5hkKq6DZaqllUCVKYJTqTo968o=
-X-Google-Smtp-Source: ABdhPJxSEhmOEG2At2Qpv9ehXJ2gMv9z+ztXEndPhKnCn0xjFqNoJBfrRBZgU9Q5Vu+jTIatGNY4B54vHi0fnKoOTHQ=
-X-Received: by 2002:adf:d1c2:: with SMTP id b2mr17725726wrd.369.1637135528065;
- Tue, 16 Nov 2021 23:52:08 -0800 (PST)
+        id S234016AbhKQH6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 02:58:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51052 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232594AbhKQH6T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 02:58:19 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C23C061570
+        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 23:55:21 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id o6-20020a17090a0a0600b001a64b9a11aeso1847419pjo.3
+        for <netdev@vger.kernel.org>; Tue, 16 Nov 2021 23:55:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=sMn+kSB0SMtbbATrssAZXo2j9mtwfINp7shAhK0Hg3Q=;
+        b=Dtqz9Zpll3J6Dmv7AZRqvZ1dam1bRud/Q/5TkSCwzoe2rImvngB+rdOX59L8zxUKue
+         kBqSdWdc6ZV/ycLotIthDYezPOMReEBTfSTUtlPfHTyMN433WYBggGnPIUU6ao4dNA9u
+         TyM9GFBvuaaO5/9bZ+N7E/XlgoZh8WY6yGJ7f1lmYpvgUPcIhhJTGhcY9l6slzZj52uA
+         uWRx3tKebh6HnW8EM7U4oC/eO9UDefOlQuSZ6F4pmNZxFNBYnIP/B+bSHUbgDGT0M1eu
+         xBnfQ5MvbzWzhJhsc1ZAiRhP/ZZa9yeP1f4ek39DV6AVUQQ02DBUqhI4FHSGAWmd1PeU
+         JHtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=sMn+kSB0SMtbbATrssAZXo2j9mtwfINp7shAhK0Hg3Q=;
+        b=Cl6ySpUQgy51Ix5JfDE1T0sfaYlxy1EAKUix0HBXyTITH9gYBGBTSJRKEqXL52W+Dk
+         lIhN1os4NouD2hpJYEMars85LGiyXmfKd3GjSmKf1Xlzl15DntBAtJfoqntpdWiettPw
+         u8J1UmSfZO5smbwJbhBOYz6rGiZRhZBrjpVjcGuuRoVREb9nLX2my5rDpGP3MPqfFGh5
+         zK2rB7Jqq0ngMWxuPEoeb8tDaub/QLvFbbylHp2KkLPXQcr8mrdrarClX0MOWGvDazfQ
+         YXOgcyoUNH8Yz04Z4np9jeY6H8hnlXP/rdgXdiwTraz/OtSGkFA+s5zZA/VSD6Q38He2
+         07cg==
+X-Gm-Message-State: AOAM531+ARgmEf6QfJk2IUoEW0+8gv423ge1IG3L0fqbahStekpGrx4I
+        Y0UvmahVziACYJ+EM7okqQE=
+X-Google-Smtp-Source: ABdhPJyApPE4b+5l7e4PSnCiyjleMBXoErF+yJ9jBacOCYdXaAkKP6/njIkHGl/3u7f5L7TdRqWQQg==
+X-Received: by 2002:a17:90b:3ec6:: with SMTP id rm6mr7136137pjb.41.1637135720945;
+        Tue, 16 Nov 2021 23:55:20 -0800 (PST)
+Received: from gmail.com ([117.217.177.105])
+        by smtp.gmail.com with ESMTPSA id ls14sm4862214pjb.49.2021.11.16.23.55.16
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 16 Nov 2021 23:55:20 -0800 (PST)
+From:   Kumar Thangavel <kumarthangavel.hcl@gmail.com>
+X-Google-Original-From: Kumar Thangavel <thangavel.k@hcl.com>
+Date:   Wed, 17 Nov 2021 13:25:13 +0530
+To:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     openbmc@lists.ozlabs.org, linux-aspeed@lists.ozlabs.org,
+        netdev@vger.kernel.org, patrickw3@fb.com,
+        Amithash Prasad <amithash@fb.com>, sdasari@fb.com,
+        velumanit@hcl.com
+Subject: [PATCH v6] Add payload to be 32-bit aligned to fix dropped packets
+Message-ID: <20211117075513.GA12199@gmail.com>
 MIME-Version: 1.0
-References: <20211117033738.28734-1-starmiku1207184332@gmail.com>
-In-Reply-To: <20211117033738.28734-1-starmiku1207184332@gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 17 Nov 2021 08:51:52 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a2b9F5E8EEK4cBWpmK7X463GSYj3VBPqOz_jEu_Mad-Nw@mail.gmail.com>
-Message-ID: <CAK8P3a2b9F5E8EEK4cBWpmK7X463GSYj3VBPqOz_jEu_Mad-Nw@mail.gmail.com>
-Subject: Re: [PATCH] net: ethernet: dec: tulip: de4x5: fix possible array
- overflows in type3_infoblock()
-To:     Teng Qi <starmiku1207184332@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, tanghui20@huawei.com,
-        Networking <netdev@vger.kernel.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>, islituo@gmail.com,
-        TOTE Robot <oslab@tsinghua.edu.cn>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:YXUj9swxAphR+zDeXhTD9rV5F6HGsA4IsTy59gxAxCk0p08c27b
- XwO3qwnxaKo0LMFpcGzjKchFfgBHa57AhDA1B8QP+XUfBZobFW/qaaub88c4sFE2E3rqNcP
- fDxlTC/8GJ6lkjrJCKGRl5n43aDBDUxPDhciXxrP6h/Jha2OzHkcRbQT04zl8I0vIxlrQ6A
- USvKTfneT6KeOawXC86SA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:QkVpiIC31Xc=:ugunMVEF6b9KNzn0Pm1yCU
- wBdRfpX+8fSG3A9uP4xy9JTf1AORcqKXzFkQTPtZjL6MM7ullY4KYVBDtbWCedaAT9Vttru9G
- U2Sq48bL80HpFdJ1rZjTxAVfs/8pCEO56mohRj9/w2E+ew2kJ22Ry/fKbC9ywFTqMH6Qy2J9p
- XuRCA79nLVO3At2P7QxRthUQY6UkjzAqh89124++q/wfOwkpAU0FXvUtvbRDXXFlW93sy7llP
- LXZecPv+XZBKDsUu6xgXmhWD5lMhsRutbaVWTY6l7Jq/hO7uRPpCVKd2qiYqEk3zsJ7Tf8HF2
- k7jWTKcWVfv8HEGMa20CQRiy1zopYzyDrXlFXUa9/l9X0xSbQuTDOQkfWEpL46aWZ+q2kft2h
- kXvCsFXLE/52EiTOBb2odgsM1WHyUjfD5UoMPl2H5sbsjTPJF0ZeCA++P7NL59U8WI5MftCz2
- XOwKE1rBJHsThlY+W3iF+sPI8bUZpFTthBhQzK7Zza7b2F6xf10LrXtqQZvnH6ID/5dwnRXYz
- GI57vOgQ9kdIbyvVNHHptlHrJQL/29zvLU/EJo8DsBqpS/hVPzcf1QbWrATlX6f1xc7afDRYE
- 7H0IDI/BWv+ooxkAk0U7E5W4QAfHF4VLebdl00V6YaGFpZHKw7veuvLMKNLn07LNNwk8D+RsJ
- JUDrq/rmauEEyoEyFxYVxH0JmHDal9Ti85RGPSdgNH1c4TMZ9K9vLLuCIDVJbzovuqnFA9NqN
- f6hkBzdzZkZlFBWaVWibNSq2OOp2I35QW8xirwzge/2Ie+nV2rjrIxHPMGUCzsnMqiiN/e7z3
- IE1/o5WY52aszLkFj7xxgHOLnPLx2eyzc0tc+0sWg0ejMmJlo4=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 17, 2021 at 4:37 AM Teng Qi <starmiku1207184332@gmail.com> wrote:
->
-> The definition of macro MOTO_SROM_BUG is:
->   #define MOTO_SROM_BUG    (lp->active == 8 && (get_unaligned_le32(
->   dev->dev_addr) & 0x00ffffff) == 0x3e0008)
->
-> and the if statement
->   if (MOTO_SROM_BUG) lp->active = 0;
->
-> using this macro indicates lp->active could be 8. If lp->active is 8 and
-> the second comparison of this macro is false. lp->active will remain 8 in:
->   lp->phy[lp->active].gep = (*p ? p : NULL); p += (2 * (*p) + 1);
->   lp->phy[lp->active].rst = (*p ? p : NULL); p += (2 * (*p) + 1);
->   lp->phy[lp->active].mc  = get_unaligned_le16(p); p += 2;
->   lp->phy[lp->active].ana = get_unaligned_le16(p); p += 2;
->   lp->phy[lp->active].fdx = get_unaligned_le16(p); p += 2;
->   lp->phy[lp->active].ttm = get_unaligned_le16(p); p += 2;
->   lp->phy[lp->active].mci = *p;
+Update NC-SI command handler (both standard and OEM) to take into
+account of payload paddings in allocating skb (in case of payload
+size is not 32-bit aligned).
 
-This is a very nice analysis of the problem!
+The checksum field follows payload field, without taking payload
+padding into account can cause checksum being truncated, leading to
+dropped packets.
 
-> However, the length of array lp->phy is 8, so array overflows can occur.
-> To fix these possible array overflows, we first check lp->active and then
-> set it to 0 if it is equal to DE4X5_MAX_PHY (i.e., 8).
->
-> Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-> Signed-off-by: Teng Qi <starmiku1207184332@gmail.com>
+Fixes: fb4ee67529ff ("net/ncsi: Add NCSI OEM command support")
+Signed-off-by: Kumar Thangavel <thangavel.k@hcl.com>
+Acked-by: Samuel Mendoza-Jonas <sam@mendozajonas.com>
+Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
 
-> diff --git a/drivers/net/ethernet/dec/tulip/de4x5.c b/drivers/net/ethernet/dec/tulip/de4x5.c
-> index 13121c4dcfe6..18132deac2bf 100644
-> --- a/drivers/net/ethernet/dec/tulip/de4x5.c
-> +++ b/drivers/net/ethernet/dec/tulip/de4x5.c
-> @@ -4708,7 +4708,8 @@ type3_infoblock(struct net_device *dev, u_char count, u_char *p)
->      if (lp->state == INITIALISED) {
->          lp->ibn = 3;
->          lp->active = *p++;
-> -       if (MOTO_SROM_BUG) lp->active = 0;
-> +       /* The DE4X5_MAX_PHY is length of lp->phy, and its value is 8 */
-> +       if (MOTO_SROM_BUG || lp->active == DE4X5_MAX_PHY) lp->active = 0;
+---
+  v6:
+   - Updated type of padding_bytes variable
+   - Updated type of payload variable
+   - Seperated variable declarations and code
 
-I don't think this is a good fix, since this is technically the same as leaving
-out the 'if (MOTO_SROM_BUG)' check and just checking for lp->active==8.
+  v5:
+   - Added Fixes tag
+   - Added const variable for padding_bytes
 
-I would suggest leaving the existing logic in place (as I have no idea where
-that came from), but adding a more defensive range check like:
+  v4:
+   - Used existing macro for max function
 
-       if (WARN_ON(lp->active >= ARRAY_SIZE(lp->phy))
-                   return -EINVAL;
+  v3:
+   - Added Macro for MAX
+   - Fixed the missed semicolon
 
-Note also that this driver is already very old and orphaned, if your bot has a
-lot more findings like this one, it may be best to prioritize fixing
-drivers that
-are actively used and maintained.
+  v2:
+   - Added NC-SI spec version and section
+   - Removed blank line
+   - corrected spellings
 
-      Arnd
+  v1:
+   - Initial draft
+
+---
+---
+ net/ncsi/ncsi-cmd.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
+
+diff --git a/net/ncsi/ncsi-cmd.c b/net/ncsi/ncsi-cmd.c
+index ba9ae482141b..78376d88e788 100644
+--- a/net/ncsi/ncsi-cmd.c
++++ b/net/ncsi/ncsi-cmd.c
+@@ -18,6 +18,8 @@
+ #include "internal.h"
+ #include "ncsi-pkt.h"
+ 
++const int padding_bytes = 26;
++
+ u32 ncsi_calculate_checksum(unsigned char *data, int len)
+ {
+ 	u32 checksum = 0;
+@@ -213,12 +215,17 @@ static int ncsi_cmd_handler_oem(struct sk_buff *skb,
+ {
+ 	struct ncsi_cmd_oem_pkt *cmd;
+ 	unsigned int len;
++	int payload;
++	/* NC-SI spec DSP_0222_1.2.0, section 8.2.2.2
++	 * requires payload to be padded with 0 to
++	 * 32-bit boundary before the checksum field.
++	 * Ensure the padding bytes are accounted for in
++	 * skb allocation
++	 */
+ 
++	payload = ALIGN(nca->payload, 4);
+ 	len = sizeof(struct ncsi_cmd_pkt_hdr) + 4;
+-	if (nca->payload < 26)
+-		len += 26;
+-	else
+-		len += nca->payload;
++	len += max(payload, padding_bytes);
+ 
+ 	cmd = skb_put_zero(skb, len);
+ 	memcpy(&cmd->mfr_id, nca->data, nca->payload);
+@@ -272,6 +279,7 @@ static struct ncsi_request *ncsi_alloc_command(struct ncsi_cmd_arg *nca)
+ 	struct net_device *dev = nd->dev;
+ 	int hlen = LL_RESERVED_SPACE(dev);
+ 	int tlen = dev->needed_tailroom;
++	int payload;
+ 	int len = hlen + tlen;
+ 	struct sk_buff *skb;
+ 	struct ncsi_request *nr;
+@@ -281,14 +289,14 @@ static struct ncsi_request *ncsi_alloc_command(struct ncsi_cmd_arg *nca)
+ 		return NULL;
+ 
+ 	/* NCSI command packet has 16-bytes header, payload, 4 bytes checksum.
++	 * Payload needs padding so that the checksum field following payload is
++	 * aligned to 32-bit boundary.
+ 	 * The packet needs padding if its payload is less than 26 bytes to
+ 	 * meet 64 bytes minimal ethernet frame length.
+ 	 */
+ 	len += sizeof(struct ncsi_cmd_pkt_hdr) + 4;
+-	if (nca->payload < 26)
+-		len += 26;
+-	else
+-		len += nca->payload;
++	payload = ALIGN(nca->payload, 4);
++	len += max(payload, padding_bytes);
+ 
+ 	/* Allocate skb */
+ 	skb = alloc_skb(len, GFP_ATOMIC);
+-- 
+2.17.1
+
