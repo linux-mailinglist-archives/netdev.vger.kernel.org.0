@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1441454EEA
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 22:05:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9931E454EEB
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 22:05:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240169AbhKQVIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 16:08:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34938 "EHLO
+        id S240239AbhKQVIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 16:08:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240297AbhKQVIQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 16:08:16 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A71C061570;
-        Wed, 17 Nov 2021 13:05:17 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id x15so17055529edv.1;
-        Wed, 17 Nov 2021 13:05:17 -0800 (PST)
+        with ESMTP id S240349AbhKQVIR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 16:08:17 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A0CC061570;
+        Wed, 17 Nov 2021 13:05:18 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id l25so512185eda.11;
+        Wed, 17 Nov 2021 13:05:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Faw8cIvG+RI1BhwkS1A22U+SiHmOAQoNP8Yl5CPDSYk=;
-        b=nQQnCTsj3utUHIUwQStjB55zDSZU04WMfhlqKbJVQ2W1frXy+AL8SgPMiCD7BPS4Ga
-         Lg8de3OB1XSYWS9dxTHrE/KfJgbTMjqiAtAsMftKzyuPVAPAVRDbV2oTnYSMV0ZlDXO9
-         i7rBeuS35UrW1dPgQXCIp0EnZeEAe8SsEM18x2oOQXdmXafVTqFCSTxjpM7b59Uckzpc
-         JiQqyKQUMKkMwUIuQcMSa2YCDZkBn7ATfVmhz8XxGkor1sZZ9hD2qb3NllSRypPMJwYy
-         ft32TgVxmJuwG/TmgHE2tzunkta9NoKyLVZKBTPRqEuxGKa9cyp1opplQTSUPyM3bA+i
-         CUng==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=W8VEPkIJ+G9KDOOFEoKmrVPN7jMCAsjenX9iNG15oUo=;
+        b=XRu6M3iQuOXjNWyPkNAzPR7F62BSOazpeWz9IDhVcwnE217NX98sixNEIVVjVOj7ST
+         FvbK9J+wwRU6DyEi9yROmqzv1KZmexSq/IJZ16Bnq8xCkhdrAMsxIP23X02HG7kxa42k
+         eDn+9A+zNVfwBMXwoUm9KzHH2hFZjLU7kScZgEmYh4+dg+FH014EovCSyNIueJyHy0Qf
+         I3ZEa0hcXO+ty7A/8Zd7lieYdFSpbsIPKpSBsrtU1/jo8TQXRqz+vGmR+dgUP/fvQ56B
+         S+POrdafrCbtzxKPi3QliheUmc7cXIveNneOHyrcUx3ujzBioh/QIJbOh9cvYmAxhETO
+         3xtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Faw8cIvG+RI1BhwkS1A22U+SiHmOAQoNP8Yl5CPDSYk=;
-        b=48oJqt2tjM5BxevJ+2g9mfXd4FomOKBjw02FAtUCF3dTbRWYOjEi8muKGeMnHZyyjJ
-         4DNAsVtVzT70F88v5oJk6eYDeq3VVp252I6nBIgL1BACkiZAUPz7PvJQM8NE00R1c5hb
-         Z/NcX7tqR5xBy4OLg98tKeuQy2flYS9pROIEnl7tzOsTVci28/FjHQwYUuIJfNq1Q763
-         bcVTZtH/JwNHMCfiQ1H2WKR/Tiw0vmjK3Ek+4dxwh2oJhYFeqJ+Q3isA2XXBcbMyEP51
-         Qaa05NJzKEgb69rHUAyxxzH5M+hTTRSsa4iRbOMSP1CVo45FMNehLvcY5SeXQ9qdSjPL
-         TSuA==
-X-Gm-Message-State: AOAM533FeeXeRddxgOY5sm/BpR83aaKzmLxEHgAS/Sn3V1Ng4Paazi0D
-        rTPQ/HOKyTtaMp5nBEr/DF4=
-X-Google-Smtp-Source: ABdhPJwTmE8dSej2DgsV+NUj3urTuwSOu6pgej6yujxodqRI7ypIJoAaLBSNfWiD1CSlQ7Cgkxf09A==
-X-Received: by 2002:a17:906:3408:: with SMTP id c8mr25358911ejb.41.1637183116021;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=W8VEPkIJ+G9KDOOFEoKmrVPN7jMCAsjenX9iNG15oUo=;
+        b=Rr46anYQtjDqKxwx5hMOdmBFEQUocb2JSmOI7mh6RbTjIjFRl/PMioeoEgF5yE9J10
+         xONDeDj6SMjvQg0w1T1aMRdLxvfbVRgPyBi6nPBT4JbLXq4SttwctArccQrvTPV+ULTk
+         yXhhI0qvOvft7LWNuA2OHPLVG5GCcx+fy5/eJGmRpYBRW3mlNQ/Vj3oqCVUgYGT0CPfs
+         eAbMgvKAufsuqej9xapgxUjpYwG5HMVYTJVZQF+TJRX1R//U/RyxRCzGg5X9wHNCHZR7
+         RQF1iIzUq/Lv1HT6q0XS4Lp0LBMeAQcaDJdWT2/JvnrfoBwYdF/pK4hpuvMd+jtxOL/z
+         1y1w==
+X-Gm-Message-State: AOAM531NRa2ToXgBw3T/2rplgYtsHkrMJ1z5vxTmdUCFfUEb2wERWDhb
+        QWo9ADS8b76OhhOYEZJRUxo=
+X-Google-Smtp-Source: ABdhPJwNvor4DawGjeJMCNUv/gg3npFezWRsUL5kc+6ix6gAptWXcwTRX47h2QxAxyiFjDYWGjniDw==
+X-Received: by 2002:a17:906:2ed5:: with SMTP id s21mr25243566eji.30.1637183116945;
         Wed, 17 Nov 2021 13:05:16 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id di4sm467070ejc.11.2021.11.17.13.05.15
+        by smtp.googlemail.com with ESMTPSA id di4sm467070ejc.11.2021.11.17.13.05.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Nov 2021 13:05:15 -0800 (PST)
+        Wed, 17 Nov 2021 13:05:16 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -57,77 +57,70 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Russell King <linux@armlinux.org.uk>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [net-next PATCH 00/19] Multiple cleanup and feature for qca8k
-Date:   Wed, 17 Nov 2021 22:04:32 +0100
-Message-Id: <20211117210451.26415-1-ansuelsmth@gmail.com>
+Cc:     Mark Brown <broonie@kernel.org>
+Subject: regmap: allow to define reg_update_bits for no bus configuration
+Date:   Wed, 17 Nov 2021 22:04:33 +0100
+Message-Id: <20211117210451.26415-2-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20211117210451.26415-1-ansuelsmth@gmail.com>
+References: <20211117210451.26415-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains 3 main patch groups:
-- Cleanup with conversion of the driver to bitfield macro and regmap.
-- Add multiple feature mdb add/del, lag support, ageing and fast age.
-- Code split of common code from specific code.
+Some device requires a special handling for reg_update_bits and can't use
+the normal regmap read write logic. An example is when locking is
+handled by the device and rmw operations requires to do atomic operations.
+Allow to declare a dedicated function in regmap_config for
+reg_update_bits in no bus configuration.
 
-The first patch is just a reference from linux-next needed for the
-regmap conversion.
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+Link: https://lore.kernel.org/r/20211104150040.1260-1-ansuelsmth@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+---
+ drivers/base/regmap/regmap.c | 1 +
+ include/linux/regmap.h       | 7 +++++++
+ 2 files changed, 8 insertions(+)
 
-As said in the commits, the code split is required as ipq40xx internal
-switch is based on the same qca8k reg but use a different way to
-read/write to the switch regs. We convert the driver to the generic
-regmap and we split the driver to common and specific code.
-
-This also contains a patch to fix a corner case when and if multi cpu
-will be supported to DSA.
-We add mdb add/del using the ARL table.
-We add ageing support and fast age.
-We add support for mirror mode.
-We add 2 additional MIB present on qca8337.
-
-The regmap conversion patch and the lag patch contains checkpatch
-warning for too long line and these error are not fixed to not make the
-definition of these regs pratically not readable.
-
-Ansuel Smith (19):
-  regmap: allow to define reg_update_bits for no bus configuration
-  net: dsa: qca8k: remove redundant check in parse_port_config
-  net: dsa: qca8k: skip sgmii delay on double cpu conf
-  net: dsa: qca8k: convert to GENMASK/FIELD_PREP/FIELD_GET
-  net: dsa: qca8k: move read switch id function in qca8k_setup
-  net: dsa: qca8k: remove extra mutex_init in qca8k_setup
-  net: dsa: qca8k: set regmap init as mandatory for regmap conversion
-  net: dsa: qca8k: convert qca8k to regmap helper
-  net: dsa: qca8k: add additional MIB counter and make it dynamic
-  net: dsa: qca8k: add support for port fast aging
-  net: dsa: qca8k: add support for mirror mode
-  net: dsa: qca8k: add set_ageing_time support
-  net: dsa: qca8k: add min/max ageing time
-  net: dsa: qca8k: add support for mdb_add/del
-  net: dsa: qca8k: add LAG support
-  net: dsa: qca8k: enable mtu_enforcement_ingress
-  net: dsa: qca8k: move qca8k to qca dir
-  net: dsa: qca8k: use device_get_match_data instead of the OF variant
-  net: dsa: qca8k: split qca8k in common and 8xxx specific code
-
- drivers/base/regmap/regmap.c                  |    1 +
- drivers/net/dsa/Kconfig                       |    8 -
- drivers/net/dsa/Makefile                      |    1 -
- drivers/net/dsa/qca/Kconfig                   |    9 +
- drivers/net/dsa/qca/Makefile                  |    2 +
- drivers/net/dsa/{qca8k.c => qca/qca8k-8xxx.c} | 1144 +++-------------
- drivers/net/dsa/qca/qca8k-common.c            | 1157 +++++++++++++++++
- drivers/net/dsa/qca/qca8k.h                   |  413 ++++++
- drivers/net/dsa/qca8k.h                       |  311 -----
- include/linux/regmap.h                        |    7 +
- 10 files changed, 1750 insertions(+), 1303 deletions(-)
- rename drivers/net/dsa/{qca8k.c => qca/qca8k-8xxx.c} (56%)
- create mode 100644 drivers/net/dsa/qca/qca8k-common.c
- create mode 100644 drivers/net/dsa/qca/qca8k.h
- delete mode 100644 drivers/net/dsa/qca8k.h
-
+diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
+index 21a0c2562ec06..2d74f9f82aa92 100644
+--- a/drivers/base/regmap/regmap.c
++++ b/drivers/base/regmap/regmap.c
+@@ -876,6 +876,7 @@ struct regmap *__regmap_init(struct device *dev,
+ 	if (!bus) {
+ 		map->reg_read  = config->reg_read;
+ 		map->reg_write = config->reg_write;
++		map->reg_update_bits = config->reg_update_bits;
+ 
+ 		map->defer_caching = false;
+ 		goto skip_format_initialization;
+diff --git a/include/linux/regmap.h b/include/linux/regmap.h
+index e3c9a25a853a8..22652e5fbc380 100644
+--- a/include/linux/regmap.h
++++ b/include/linux/regmap.h
+@@ -290,6 +290,11 @@ typedef void (*regmap_unlock)(void *);
+  *		  read operation on a bus such as SPI, I2C, etc. Most of the
+  *		  devices do not need this.
+  * @reg_write:	  Same as above for writing.
++ * @reg_update_bits: Optional callback that if filled will be used to perform
++ *		     all the update_bits(rmw) operation. Should only be provided
++ *		     if the function require special handling with lock and reg
++ *		     handling and the operation cannot be represented as a simple
++ *		     update_bits operation on a bus such as SPI, I2C, etc.
+  * @fast_io:	  Register IO is fast. Use a spinlock instead of a mutex
+  *	     	  to perform locking. This field is ignored if custom lock/unlock
+  *	     	  functions are used (see fields lock/unlock of struct regmap_config).
+@@ -372,6 +377,8 @@ struct regmap_config {
+ 
+ 	int (*reg_read)(void *context, unsigned int reg, unsigned int *val);
+ 	int (*reg_write)(void *context, unsigned int reg, unsigned int val);
++	int (*reg_update_bits)(void *context, unsigned int reg,
++			       unsigned int mask, unsigned int val);
+ 
+ 	bool fast_io;
+ 
 -- 
 2.32.0
 
