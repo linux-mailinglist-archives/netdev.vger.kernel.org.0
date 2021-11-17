@@ -2,548 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D9E9454C6D
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 18:47:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43882454C6F
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 18:47:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239611AbhKQRue (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 12:50:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47048 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239616AbhKQRub (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Nov 2021 12:50:31 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 32C2362F90;
-        Wed, 17 Nov 2021 17:47:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637171252;
-        bh=R5UqN0eO6LTlWmOxysnZEzJ2ekVsBfMFOIPQ1OyV02Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PkEvU5F0RMtHEViW5dyJVpFMJcbeaIUKneh2F8aefPfdvVWj/ZBLzEmcSmOuox+Hx
-         k49Y0OjrCnIWP0XyTsPaVO229gB0MQiCBfc7b/ZthmbNvMO8LYwWTAdwc2nWOf13kH
-         ici1ORCJjcEEt7AetJSH8pXPcGOgx2dS7lzJDtwnOtO8R9xu9POMY9ECcfRBNlPP1k
-         5kjCTY+8ekS5iY8kAxc7QicbMYUHKSXA5iDg9xTkSaVpBDeFzQ9eqpzJPfD8s9LKe0
-         W5YmkJCMOyKeGpdY05dL5B5vEpnLPFpwBDGwJ358eEoqBnlUbkUF8mXG78W2l6XR3j
-         YAos+85GQl83Q==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, eric.dumazet@gmail.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [RFC net-next 2/2] vlan: use new netdev_refs infra
-Date:   Wed, 17 Nov 2021 09:47:23 -0800
-Message-Id: <20211117174723.2305681-3-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211117174723.2305681-1-kuba@kernel.org>
-References: <20211117174723.2305681-1-kuba@kernel.org>
+        id S239617AbhKQRuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 12:50:44 -0500
+Received: from mail-sn1anam02on2086.outbound.protection.outlook.com ([40.107.96.86]:27973
+        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S239622AbhKQRul (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Nov 2021 12:50:41 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ILHoj/Kum0U1K8MneqCV6G5NatWdY/l4Bvm6vx0wen23tzrInDEse7NfYuXcARVEHElCwMbq2v/ulYyuxjcmH9zSPxVj8LWf0KqySu06NFx7oZjxh14sNNoQZmMqzn/cw/f7gD1HBSC6UxFMvJl7kS8FLZ1GCkwmdvq3AFm9VC9JCvy3Z9SS8X4n9YhRch5h3XgbLEENA3mGgsDbudWX8MVC/HG0F4fkT0Cq+iEHRB9N3ozPb+wrbKIzVITCHI+xKVe2SR5Gjg9r/LPit2W2cMLFh4FMveYoNLEl82HYInMC03GFpHGPZyl7RT+6f9kuT18eEPnPccqRp/WvEWzTmw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vpAsVs1o9GKBM4YD8jiWLWx282UHCfyvkjV/vwWdup8=;
+ b=HczpS2kDVCsdMQZZn3/Jrt+HS6Fo+FsO6bzC0ByphVRwEs5Jn2bKtlxsh7oUuRHIyZpBaRUczu8y4KOr8Z0pIQQ+PRYwjNzeTI7hY7F9JPLG8PMlRQHz4ZZLY84Uom1aLis5/mUAWAqxoiScmE4808r43eMUToKht4Ndkwmxwk9mSkpwJDSE9rYvRwnnrdKyC+zA2/D4Z8TCosO9NP6roL+zheFgQcI5SM7NPkPxD8K2Tfbi49c1nbeTnHjSTVP3riAEtpXXtOB4sEYleJOTfV33iQXvekhAPIVG8Ps/7RGIkmeTo7suMFTO0dfcRG7MhSceOnEQ66V0lFZrtTJnZg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vpAsVs1o9GKBM4YD8jiWLWx282UHCfyvkjV/vwWdup8=;
+ b=VAI+tVnd/4THm5Fq0+fvemmIhJ1heod/+GMX7mqrznQQQJ7F63ycWL8To/CQ5Ai0iEyfbzf1+gOBT5ZUz/F0SPncerlBaYz3DEgZxvvO8A59BBeTCI7NC/JJeWB5/avkzeQQPDIwHK392C4IF5yW8nWU3Bje/wfSPR6TPX4U0H7xbfGJOy8wZ3P+3SfRk6lhRQQe5Qn1m1myFJkXBnswZJrbdD33wK+4FSf7XgJEnax1PFqWfoVxe2Oeb3P1988hxPRY8Bv6eFRviK4qcRiD4nmHnEe1yjvJyZxsBaQw76uxtPU1a9+V35Rhx34PHZ0+zqLkzpAGiGMywVrARju/mA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5301.namprd12.prod.outlook.com (2603:10b6:208:31f::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.19; Wed, 17 Nov
+ 2021 17:47:40 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::5897:83b2:a704:7909]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::5897:83b2:a704:7909%7]) with mapi id 15.20.4713.021; Wed, 17 Nov 2021
+ 17:47:40 +0000
+Date:   Wed, 17 Nov 2021 13:47:38 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Cornelia Huck <cohuck@redhat.com>
+Cc:     Yishai Hadas <yishaih@nvidia.com>, alex.williamson@redhat.com,
+        bhelgaas@google.com, saeedm@nvidia.com, linux-pci@vger.kernel.org,
+        kvm@vger.kernel.org, netdev@vger.kernel.org, kuba@kernel.org,
+        leonro@nvidia.com, kwankhede@nvidia.com, mgurtovoy@nvidia.com,
+        maorg@nvidia.com
+Subject: Re: vfio migration discussions (was: [PATCH V2 mlx5-next 00/14] Add
+ mlx5 live migration driver)
+Message-ID: <20211117174738.GL2105516@nvidia.com>
+References: <20211019105838.227569-1-yishaih@nvidia.com>
+ <87mtm2loml.fsf@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87mtm2loml.fsf@redhat.com>
+X-ClientProxiedBy: MN2PR08CA0023.namprd08.prod.outlook.com
+ (2603:10b6:208:239::28) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: from mlx.ziepe.ca (142.162.113.129) by MN2PR08CA0023.namprd08.prod.outlook.com (2603:10b6:208:239::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.19 via Frontend Transport; Wed, 17 Nov 2021 17:47:39 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1mnP22-00BVMa-H3; Wed, 17 Nov 2021 13:47:38 -0400
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: fe1fc7e5-0812-4ee5-f172-08d9a9f2596c
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5301:
+X-Microsoft-Antispam-PRVS: <BL1PR12MB53010EEB95E357D5EFEE7AD8C29A9@BL1PR12MB5301.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: JEvmjv9qDxQO2Kln6PaHC0IrY56fE8+62PNftLTtkZGERR4EB+Jr0hed6BLLiF5V/Yl29ZClMT47X3H/wLiPkXph1eCWvs9dtdklk1l7xCtyNCbJOQ8c8cIdVHOVp+TaNoiq4ynwSGxV7IH6YbZ7+kW/iDOBGyGEhIu5KTfMhlvs4+37iJJWF2kDeTrgr5MhtQbEc/kWtBERhqx8Yg4jpLh3VavS1wiIw4AH5G2lB/gC9to1v9M01V4na2tWYDXAf3gqW55TNtlOF4taHeNu/o/PSfFhh61gJEkCH2iSU6DtAqyPL2aLvlpWYq3639XxN1lZ91jc/Wdll0V86W/X2LpS3hDSnnpWifIcwVCyZcBSxLghcSlpptT2egQfnLcaAXaDMKLBz07Gj0uc2BTij/FS0MLIrzzcbCtoibHuRUneFbNpBzCilRwRqVdybnXPg8qLuuXvNHF+COqOsxHjcUiwmnctbwhsWk/s5zag2ZYr05QjjGBBnP8L2wqAJBF2Steip+5Pf7QwKKgCWn8k18QyH3tsRbJcei3IunsytLLiQDBGzZLABm6UzSLYflok0mMSV7d6ltMtN7VslA1Pa6u6ZlwAILUckc8y9E7fuabb4oGGMzh49EOF/bA411NNM/0mXGaGxTTr8pmwv8J9sYCamZulxy00XytuJL8IFCHfQt80dok4cStcTvJnf92Hiq2Tny4Z5MlS6VTyo9o9xeCa258rhUh3VBOWkoZFlp4=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(36756003)(8676002)(5660300002)(508600001)(966005)(4001150100001)(1076003)(38100700002)(8936002)(26005)(66476007)(66556008)(83380400001)(316002)(4326008)(9786002)(86362001)(2906002)(9746002)(6916009)(186003)(426003)(2616005)(66946007)(33656002)(107886003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+dhixhhHQFA25cuZaEysw424rgSTeiHb7ypr7nynUxhv3e1n2M30X5vmAhwd?=
+ =?us-ascii?Q?AZKDMxHfbyP8Q4DXISTQSFTvBmumaK1W9ZgE5GR2ZinpO/ebZkfHmdqME+dS?=
+ =?us-ascii?Q?Nusq91AOvNbS64N/b5FFpHhGdAaHyc7FZcJ9Zo8mHjSgVL2h+B37xtPhfpf5?=
+ =?us-ascii?Q?PBaJAdBsCmWGVRVGscc5bMHWYDhCW3nmnKVfPmgaCUAkZfZ0BFGfnWx7eBz7?=
+ =?us-ascii?Q?S3I48jghNyb6rAIg0AOTj2UVcc2C0ALdddkuXvuX78Ep2v1xxGk+hCVpk3n4?=
+ =?us-ascii?Q?x1koyQ9FyG2X6+PZqdZNgG0ApkXO6BLSXmEM64rec24Fm2A0Os80bCACZzJT?=
+ =?us-ascii?Q?6dRIpyEbmtKxnMT7SrI0p0lLgymW/LFfIdEwhSB2H1luk5mlN0U+UDxjp2Lp?=
+ =?us-ascii?Q?TAwjvdESMW2sKzrf8DxaoVQA6vccXlfjrXlRbiKuz2QXT4+si/XDpjTgjwJq?=
+ =?us-ascii?Q?vHp4ENtIXGi520B3JaW8Yz44jmUAFySUrGRPWeTczfh/INBZcfI6ufVJtKve?=
+ =?us-ascii?Q?yLExRxj5AdLH0AVVLP9yPOvTmXpdm/BkpIf3QApZS2Oj7EIY0sCNlYqCKAcV?=
+ =?us-ascii?Q?yCxkigDzcwH0hc/Pf5dcqsfaAdVWDb1EomFyl8AIAo4ezq4TPgT33aN1+/h+?=
+ =?us-ascii?Q?MK+gEWga11znyQ+0+7vqRijeJPgdM62yRw74XnLVMUU31ccAtZ3ilv1IpmcH?=
+ =?us-ascii?Q?jNHwrMz2VV8NISaMKPopW7DcKJgBFu+NL2ZRZSu3/oFBncNbDpiq9EIPSzq8?=
+ =?us-ascii?Q?lnMIR1bar+bGn5CUGLDXLFTORiS9RxnrfoL4yhd6P+Iy/WDx3vjd02KSWt+A?=
+ =?us-ascii?Q?UzQlUykGdHS9PytmKRkGEmEj5JPgnhC+BFchyvC6DZ+G4Jh1cof9hRNLkBC+?=
+ =?us-ascii?Q?Kk5xOfX/UfdIIT+1RIAVUkEy2CCT4Yn8fns61tdpS0hEVQkKfRJgWbISBKly?=
+ =?us-ascii?Q?mONouY40yXy66NmxSYnHnosY6ZE2GH1xaSzjDb8mVFTgK+u5+kCUGUuYN7Lx?=
+ =?us-ascii?Q?jm59K8SvJw3DDtiSUOtbMFZGiOaa5cfBxhBTyrUY39hFlvr7Mt3heOisFVUi?=
+ =?us-ascii?Q?36GE2ybcmV0t5acp3vzKt0mtHoRvJIFC8X6jo/ZEs3n4HRZ/Oj6ZgPCECpNg?=
+ =?us-ascii?Q?X2hzliTLm/H+HOpMAHhTjS/AsLmrZ+hNjeNaiHiF63bMIlXvu5lQPy25rNTb?=
+ =?us-ascii?Q?7CRzOg2Et/rdVjtfXcc/8blLYiL0T5R7g6iqfoU66+JWIyd17GvBl5jkIhV/?=
+ =?us-ascii?Q?8OmqjgJNJKYJ/LHYVk5VZ2vZFUd1Eiw+pwxgWXI+rR8sQDAVqZ20Ez2hPBzV?=
+ =?us-ascii?Q?hjnslz/mkaxhCvviqUW0Q8cpXEguVPgD/ZgZGoWqW90NNnm1f05LGQ3lIcr/?=
+ =?us-ascii?Q?n3UUyFXF/UVUtDxE4GLTPortej8KQusfEUpzXqIOpGz7fCZ1fqgPy/eaFnpZ?=
+ =?us-ascii?Q?qonuddIcu60LeRl+krv3Xu2HN0IrMbzJGPjPTt/4OikS6Oyg9pTni6w4njdz?=
+ =?us-ascii?Q?0u5IhAF8/o2WLkqZ26Skin+HLLNkOG0x6VlV0ePFwVfqt60z4wy7AwXeYnUC?=
+ =?us-ascii?Q?606QGPz5XqJJ5hNU98E=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fe1fc7e5-0812-4ee5-f172-08d9a9f2596c
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Nov 2021 17:47:39.8650
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KurL9kEW8R9RurC1kAqVdhUa+aWIGqufomYTLp/i7EGpEl7j4Rk1NwZyX+P7O4mH
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5301
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Example user of the new netdev_refs infra.
+On Wed, Nov 17, 2021 at 05:42:58PM +0100, Cornelia Huck wrote:
+> Ok, here's the contents (as of 2021-11-17 16:30 UTC) of the etherpad at
+> https://etherpad.opendev.org/p/VFIOMigrationDiscussions -- in the hope
+> of providing a better starting point for further discussion (I know that
+> discussions are still ongoing in other parts of this thread; but
+> frankly, I'm getting a headache trying to follow them, and I think it
+> would be beneficial to concentrate on the fundamental questions
+> first...)
 
-VLAN is not the simplest - the ref ptr is stored on the IOCTL path
-and netlink path but only taken during netdev registration.
+In my mind several of these topics now have answers:
 
-No changes to the assembly output with debug disabled,
-save for the few places where explicit temporary variables
-were added.
+>       * Jason proposed a new NDMA (no-dma) state that seems to match the
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c |  3 +-
- include/linux/if_vlan.h                      | 11 +++-
- net/8021q/vlan.c                             | 13 ++--
- net/8021q/vlan_core.c                        |  4 +-
- net/8021q/vlan_dev.c                         | 63 ++++++++++----------
- net/8021q/vlan_gvrp.c                        |  5 +-
- net/8021q/vlan_mvrp.c                        |  5 +-
- net/8021q/vlan_netlink.c                     |  4 +-
- net/8021q/vlanproc.c                         |  6 +-
- 9 files changed, 66 insertions(+), 48 deletions(-)
+NDMA solves the PRI problem too, and allows dirty tracking to be
+iterative. So yes to adding to device_state vs implicit via !RUNNING
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-index e6a4a768b10b..459c17fc9287 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-@@ -1250,9 +1250,10 @@ static int bnxt_tc_resolve_tunnel_hdrs(struct bnxt *bp,
- 	dst_dev = rt->dst.dev;
- 	if (is_vlan_dev(dst_dev)) {
- #if IS_ENABLED(CONFIG_VLAN_8021Q)
-+		struct net_device *real_dev = __vlan_dev_real_dev(dst_dev);
- 		struct vlan_dev_priv *vlan = vlan_dev_priv(dst_dev);
- 
--		if (vlan->real_dev != real_dst_dev) {
-+		if (real_dev != real_dst_dev) {
- 			netdev_info(bp->dev,
- 				    "dst_dev(%s) doesn't use PF-if(%s)\n",
- 				    netdev_name(dst_dev),
-diff --git a/include/linux/if_vlan.h b/include/linux/if_vlan.h
-index 41a518336673..bb46fa2b1327 100644
---- a/include/linux/if_vlan.h
-+++ b/include/linux/if_vlan.h
-@@ -8,6 +8,7 @@
- #define _LINUX_IF_VLAN_H_
- 
- #include <linux/netdevice.h>
-+#include <linux/netdev_refs.h>
- #include <linux/etherdevice.h>
- #include <linux/rtnetlink.h>
- #include <linux/bug.h>
-@@ -176,7 +177,7 @@ struct vlan_dev_priv {
- 	u16					vlan_id;
- 	u16					flags;
- 
--	struct net_device			*real_dev;
-+	struct netdev_ref			real_dev;
- 	unsigned char				real_dev_addr[ETH_ALEN];
- 
- 	struct proc_dir_entry			*dent;
-@@ -191,6 +192,14 @@ static inline struct vlan_dev_priv *vlan_dev_priv(const struct net_device *dev)
- 	return netdev_priv(dev);
- }
- 
-+static inline struct net_device *
-+__vlan_dev_real_dev(const struct net_device *dev)
-+{
-+	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
-+
-+	return netdev_ref_ptr(&vlan->real_dev);
-+}
-+
- static inline u16
- vlan_dev_get_egress_qos_mask(struct net_device *dev, u32 skprio)
- {
-diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
-index a3a0a5e994f5..b5a8677e89ad 100644
---- a/net/8021q/vlan.c
-+++ b/net/8021q/vlan.c
-@@ -89,7 +89,7 @@ static void vlan_stacked_transfer_operstate(const struct net_device *rootdev,
- void unregister_vlan_dev(struct net_device *dev, struct list_head *head)
- {
- 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
--	struct net_device *real_dev = vlan->real_dev;
-+	struct net_device *real_dev = netdev_ref_ptr(&vlan->real_dev);
- 	struct vlan_info *vlan_info;
- 	struct vlan_group *grp;
- 	u16 vlan_id = vlan->vlan_id;
-@@ -148,7 +148,7 @@ int vlan_check_real_dev(struct net_device *real_dev,
- int register_vlan_dev(struct net_device *dev, struct netlink_ext_ack *extack)
- {
- 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
--	struct net_device *real_dev = vlan->real_dev;
-+	struct net_device *real_dev = __netdev_ref_ptr(&vlan->real_dev);
- 	u16 vlan_id = vlan->vlan_id;
- 	struct vlan_info *vlan_info;
- 	struct vlan_group *grp;
-@@ -185,7 +185,7 @@ int register_vlan_dev(struct net_device *dev, struct netlink_ext_ack *extack)
- 		goto out_unregister_netdev;
- 
- 	/* Account for reference in struct vlan_dev_priv */
--	dev_hold(real_dev);
-+	__netdev_hold_stored(&vlan->real_dev);
- 
- 	vlan_stacked_transfer_operstate(real_dev, dev, vlan);
- 	linkwatch_fire_event(dev); /* _MUST_ call rfc2863_policy() */
-@@ -272,7 +272,7 @@ static int register_vlan_device(struct net_device *real_dev, u16 vlan_id)
- 	vlan = vlan_dev_priv(new_dev);
- 	vlan->vlan_proto = htons(ETH_P_8021Q);
- 	vlan->vlan_id = vlan_id;
--	vlan->real_dev = real_dev;
-+	__netdev_ref_store(&vlan->real_dev, real_dev);
- 	vlan->dent = NULL;
- 	vlan->flags = VLAN_FLAG_REORDER_HDR;
- 
-@@ -321,6 +321,7 @@ static void vlan_transfer_features(struct net_device *dev,
- 				   struct net_device *vlandev)
- {
- 	struct vlan_dev_priv *vlan = vlan_dev_priv(vlandev);
-+	struct net_device *real_dev = netdev_ref_ptr(&vlan->real_dev);
- 
- 	vlandev->gso_max_size = dev->gso_max_size;
- 	vlandev->gso_max_segs = dev->gso_max_segs;
-@@ -335,8 +336,8 @@ static void vlan_transfer_features(struct net_device *dev,
- #endif
- 
- 	vlandev->priv_flags &= ~IFF_XMIT_DST_RELEASE;
--	vlandev->priv_flags |= (vlan->real_dev->priv_flags & IFF_XMIT_DST_RELEASE);
--	vlandev->hw_enc_features = vlan_tnl_features(vlan->real_dev);
-+	vlandev->priv_flags |= (real_dev->priv_flags & IFF_XMIT_DST_RELEASE);
-+	vlandev->hw_enc_features = vlan_tnl_features(real_dev);
- 
- 	netdev_update_features(vlandev);
- }
-diff --git a/net/8021q/vlan_core.c b/net/8021q/vlan_core.c
-index 59bc13b5f14f..ab183724374d 100644
---- a/net/8021q/vlan_core.c
-+++ b/net/8021q/vlan_core.c
-@@ -101,10 +101,10 @@ EXPORT_SYMBOL(__vlan_find_dev_deep_rcu);
- 
- struct net_device *vlan_dev_real_dev(const struct net_device *dev)
- {
--	struct net_device *ret = vlan_dev_priv(dev)->real_dev;
-+	struct net_device *ret = __vlan_dev_real_dev(dev);
- 
- 	while (is_vlan_dev(ret))
--		ret = vlan_dev_priv(ret)->real_dev;
-+		ret = __vlan_dev_real_dev(ret);
- 
- 	return ret;
- }
-diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
-index ab6dee28536d..c78f2cbc42c3 100644
---- a/net/8021q/vlan_dev.c
-+++ b/net/8021q/vlan_dev.c
-@@ -78,7 +78,7 @@ static int vlan_dev_hard_header(struct sk_buff *skb, struct net_device *dev,
- 		saddr = dev->dev_addr;
- 
- 	/* Now make the underlying real hard header */
--	dev = vlan->real_dev;
-+	dev = netdev_ref_ptr(&vlan->real_dev);
- 	rc = dev_hard_header(skb, dev, type, daddr, saddr, len + vhdrlen);
- 	if (rc > 0)
- 		rc += vhdrlen;
-@@ -116,7 +116,7 @@ static netdev_tx_t vlan_dev_hard_start_xmit(struct sk_buff *skb,
- 		__vlan_hwaccel_put_tag(skb, vlan->vlan_proto, vlan_tci);
- 	}
- 
--	skb->dev = vlan->real_dev;
-+	skb->dev = netdev_ref_ptr(&vlan->real_dev);
- 	len = skb->len;
- 	if (unlikely(netpoll_tx_running(dev)))
- 		return vlan_netpoll_send_skb(vlan, skb);
-@@ -140,7 +140,7 @@ static netdev_tx_t vlan_dev_hard_start_xmit(struct sk_buff *skb,
- 
- static int vlan_dev_change_mtu(struct net_device *dev, int new_mtu)
- {
--	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
-+	struct net_device *real_dev = __vlan_dev_real_dev(dev);
- 	unsigned int max_mtu = real_dev->mtu;
- 
- 	if (netif_reduces_vlan_mtu(real_dev))
-@@ -241,7 +241,7 @@ int vlan_dev_change_flags(const struct net_device *dev, u32 flags, u32 mask)
- 
- void vlan_dev_get_realdev_name(const struct net_device *dev, char *result, size_t size)
- {
--	strscpy_pad(result, vlan_dev_priv(dev)->real_dev->name, size);
-+	strscpy_pad(result, __vlan_dev_real_dev(dev)->name, size);
- }
- 
- bool vlan_dev_inherit_address(struct net_device *dev,
-@@ -258,7 +258,7 @@ bool vlan_dev_inherit_address(struct net_device *dev,
- static int vlan_dev_open(struct net_device *dev)
- {
- 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
--	struct net_device *real_dev = vlan->real_dev;
-+	struct net_device *real_dev = netdev_ref_ptr(&vlan->real_dev);
- 	int err;
- 
- 	if (!(real_dev->flags & IFF_UP) &&
-@@ -310,7 +310,7 @@ static int vlan_dev_open(struct net_device *dev)
- static int vlan_dev_stop(struct net_device *dev)
- {
- 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
--	struct net_device *real_dev = vlan->real_dev;
-+	struct net_device *real_dev = netdev_ref_ptr(&vlan->real_dev);
- 
- 	dev_mc_unsync(real_dev, dev);
- 	dev_uc_unsync(real_dev, dev);
-@@ -329,7 +329,7 @@ static int vlan_dev_stop(struct net_device *dev)
- 
- static int vlan_dev_set_mac_address(struct net_device *dev, void *p)
- {
--	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
-+	struct net_device *real_dev = __vlan_dev_real_dev(dev);
- 	struct sockaddr *addr = p;
- 	int err;
- 
-@@ -355,7 +355,7 @@ static int vlan_dev_set_mac_address(struct net_device *dev, void *p)
- 
- static int vlan_dev_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- {
--	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
-+	struct net_device *real_dev = __vlan_dev_real_dev(dev);
- 	const struct net_device_ops *ops = real_dev->netdev_ops;
- 	struct ifreq ifrr;
- 	int err = -EOPNOTSUPP;
-@@ -385,7 +385,7 @@ static int vlan_dev_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 
- static int vlan_dev_neigh_setup(struct net_device *dev, struct neigh_parms *pa)
- {
--	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
-+	struct net_device *real_dev = __vlan_dev_real_dev(dev);
- 	const struct net_device_ops *ops = real_dev->netdev_ops;
- 	int err = 0;
- 
-@@ -399,7 +399,7 @@ static int vlan_dev_neigh_setup(struct net_device *dev, struct neigh_parms *pa)
- static int vlan_dev_fcoe_ddp_setup(struct net_device *dev, u16 xid,
- 				   struct scatterlist *sgl, unsigned int sgc)
- {
--	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
-+	struct net_device *real_dev = __vlan_dev_real_dev(dev);
- 	const struct net_device_ops *ops = real_dev->netdev_ops;
- 	int rc = 0;
- 
-@@ -411,7 +411,7 @@ static int vlan_dev_fcoe_ddp_setup(struct net_device *dev, u16 xid,
- 
- static int vlan_dev_fcoe_ddp_done(struct net_device *dev, u16 xid)
- {
--	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
-+	struct net_device *real_dev = __vlan_dev_real_dev(dev);
- 	const struct net_device_ops *ops = real_dev->netdev_ops;
- 	int len = 0;
- 
-@@ -423,7 +423,7 @@ static int vlan_dev_fcoe_ddp_done(struct net_device *dev, u16 xid)
- 
- static int vlan_dev_fcoe_enable(struct net_device *dev)
- {
--	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
-+	struct net_device *real_dev = __vlan_dev_real_dev(dev);
- 	const struct net_device_ops *ops = real_dev->netdev_ops;
- 	int rc = -EINVAL;
- 
-@@ -434,7 +434,7 @@ static int vlan_dev_fcoe_enable(struct net_device *dev)
- 
- static int vlan_dev_fcoe_disable(struct net_device *dev)
- {
--	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
-+	struct net_device *real_dev = __vlan_dev_real_dev(dev);
- 	const struct net_device_ops *ops = real_dev->netdev_ops;
- 	int rc = -EINVAL;
- 
-@@ -446,7 +446,7 @@ static int vlan_dev_fcoe_disable(struct net_device *dev)
- static int vlan_dev_fcoe_ddp_target(struct net_device *dev, u16 xid,
- 				    struct scatterlist *sgl, unsigned int sgc)
- {
--	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
-+	struct net_device *real_dev = __vlan_dev_real_dev(dev);
- 	const struct net_device_ops *ops = real_dev->netdev_ops;
- 	int rc = 0;
- 
-@@ -460,7 +460,7 @@ static int vlan_dev_fcoe_ddp_target(struct net_device *dev, u16 xid,
- #ifdef NETDEV_FCOE_WWNN
- static int vlan_dev_fcoe_get_wwn(struct net_device *dev, u64 *wwn, int type)
- {
--	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
-+	struct net_device *real_dev = __vlan_dev_real_dev(dev);
- 	const struct net_device_ops *ops = real_dev->netdev_ops;
- 	int rc = -EINVAL;
- 
-@@ -472,7 +472,7 @@ static int vlan_dev_fcoe_get_wwn(struct net_device *dev, u64 *wwn, int type)
- 
- static void vlan_dev_change_rx_flags(struct net_device *dev, int change)
- {
--	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
-+	struct net_device *real_dev = __vlan_dev_real_dev(dev);
- 
- 	if (dev->flags & IFF_UP) {
- 		if (change & IFF_ALLMULTI)
-@@ -484,8 +484,10 @@ static void vlan_dev_change_rx_flags(struct net_device *dev, int change)
- 
- static void vlan_dev_set_rx_mode(struct net_device *vlan_dev)
- {
--	dev_mc_sync(vlan_dev_priv(vlan_dev)->real_dev, vlan_dev);
--	dev_uc_sync(vlan_dev_priv(vlan_dev)->real_dev, vlan_dev);
-+	struct net_device *real_dev = __vlan_dev_real_dev(vlan_dev);
-+
-+	dev_mc_sync(real_dev, vlan_dev);
-+	dev_uc_sync(real_dev, vlan_dev);
- }
- 
- /*
-@@ -529,7 +531,7 @@ static int vlan_passthru_hard_header(struct sk_buff *skb, struct net_device *dev
- 				     unsigned int len)
- {
- 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
--	struct net_device *real_dev = vlan->real_dev;
-+	struct net_device *real_dev = netdev_ref_ptr(&vlan->real_dev);
- 
- 	if (saddr == NULL)
- 		saddr = dev->dev_addr;
-@@ -552,7 +554,7 @@ static const struct net_device_ops vlan_netdev_ops;
- static int vlan_dev_init(struct net_device *dev)
- {
- 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
--	struct net_device *real_dev = vlan->real_dev;
-+	struct net_device *real_dev = netdev_ref_ptr(&vlan->real_dev);
- 
- 	netif_carrier_off(dev);
- 
-@@ -636,7 +638,7 @@ void vlan_dev_uninit(struct net_device *dev)
- static netdev_features_t vlan_dev_fix_features(struct net_device *dev,
- 	netdev_features_t features)
- {
--	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
-+	struct net_device *real_dev = __vlan_dev_real_dev(dev);
- 	netdev_features_t old_features = features;
- 	netdev_features_t lower_features;
- 
-@@ -659,9 +661,9 @@ static netdev_features_t vlan_dev_fix_features(struct net_device *dev,
- static int vlan_ethtool_get_link_ksettings(struct net_device *dev,
- 					   struct ethtool_link_ksettings *cmd)
- {
--	const struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
-+	struct net_device *real_dev = __vlan_dev_real_dev(dev);
- 
--	return __ethtool_get_link_ksettings(vlan->real_dev, cmd);
-+	return __ethtool_get_link_ksettings(real_dev, cmd);
- }
- 
- static void vlan_ethtool_get_drvinfo(struct net_device *dev,
-@@ -676,13 +678,14 @@ static int vlan_ethtool_get_ts_info(struct net_device *dev,
- 				    struct ethtool_ts_info *info)
- {
- 	const struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
--	const struct ethtool_ops *ops = vlan->real_dev->ethtool_ops;
--	struct phy_device *phydev = vlan->real_dev->phydev;
-+	struct net_device *real_dev = netdev_ref_ptr(&vlan->real_dev);
-+	const struct ethtool_ops *ops = real_dev->ethtool_ops;
-+	struct phy_device *phydev = real_dev->phydev;
- 
- 	if (phy_has_tsinfo(phydev)) {
- 		return phy_ts_info(phydev, info);
- 	} else if (ops->get_ts_info) {
--		return ops->get_ts_info(vlan->real_dev, info);
-+		return ops->get_ts_info(real_dev, info);
- 	} else {
- 		info->so_timestamping = SOF_TIMESTAMPING_RX_SOFTWARE |
- 			SOF_TIMESTAMPING_SOFTWARE;
-@@ -735,7 +738,7 @@ static void vlan_dev_poll_controller(struct net_device *dev)
- static int vlan_dev_netpoll_setup(struct net_device *dev, struct netpoll_info *npinfo)
- {
- 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
--	struct net_device *real_dev = vlan->real_dev;
-+	struct net_device *real_dev = netdev_ref_ptr(&vlan->real_dev);
- 	struct netpoll *netpoll;
- 	int err = 0;
- 
-@@ -771,7 +774,7 @@ static void vlan_dev_netpoll_cleanup(struct net_device *dev)
- 
- static int vlan_dev_get_iflink(const struct net_device *dev)
- {
--	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
-+	struct net_device *real_dev = __vlan_dev_real_dev(dev);
- 
- 	return real_dev->ifindex;
- }
-@@ -785,7 +788,7 @@ static int vlan_dev_fill_forward_path(struct net_device_path_ctx *ctx,
- 	path->encap.id = vlan->vlan_id;
- 	path->encap.proto = vlan->vlan_proto;
- 	path->dev = ctx->dev;
--	ctx->dev = vlan->real_dev;
-+	ctx->dev = netdev_ref_ptr(&vlan->real_dev);
- 	if (ctx->num_vlans >= ARRAY_SIZE(ctx->vlan))
- 		return -ENOSPC;
- 
-@@ -845,7 +848,7 @@ static void vlan_dev_free(struct net_device *dev)
- 	vlan->vlan_pcpu_stats = NULL;
- 
- 	/* Get rid of the vlan's reference to real_dev */
--	dev_put(vlan->real_dev);
-+	netdev_put(&vlan->real_dev);
- }
- 
- void vlan_setup(struct net_device *dev)
-diff --git a/net/8021q/vlan_gvrp.c b/net/8021q/vlan_gvrp.c
-index 6b34b72aa466..aa8df972f93c 100644
---- a/net/8021q/vlan_gvrp.c
-+++ b/net/8021q/vlan_gvrp.c
-@@ -31,7 +31,8 @@ int vlan_gvrp_request_join(const struct net_device *dev)
- 
- 	if (vlan->vlan_proto != htons(ETH_P_8021Q))
- 		return 0;
--	return garp_request_join(vlan->real_dev, &vlan_gvrp_app,
-+	return garp_request_join(netdev_ref_ptr(&vlan->real_dev),
-+				 &vlan_gvrp_app,
- 				 &vlan_id, sizeof(vlan_id), GVRP_ATTR_VID);
- }
- 
-@@ -42,7 +43,7 @@ void vlan_gvrp_request_leave(const struct net_device *dev)
- 
- 	if (vlan->vlan_proto != htons(ETH_P_8021Q))
- 		return;
--	garp_request_leave(vlan->real_dev, &vlan_gvrp_app,
-+	garp_request_leave(netdev_ref_ptr(&vlan->real_dev), &vlan_gvrp_app,
- 			   &vlan_id, sizeof(vlan_id), GVRP_ATTR_VID);
- }
- 
-diff --git a/net/8021q/vlan_mvrp.c b/net/8021q/vlan_mvrp.c
-index 689eceeaa360..ab534307fb89 100644
---- a/net/8021q/vlan_mvrp.c
-+++ b/net/8021q/vlan_mvrp.c
-@@ -37,7 +37,8 @@ int vlan_mvrp_request_join(const struct net_device *dev)
- 
- 	if (vlan->vlan_proto != htons(ETH_P_8021Q))
- 		return 0;
--	return mrp_request_join(vlan->real_dev, &vlan_mrp_app,
-+	return mrp_request_join(netdev_ref_ptr(&vlan->real_dev),
-+				&vlan_mrp_app,
- 				&vlan_id, sizeof(vlan_id), MVRP_ATTR_VID);
- }
- 
-@@ -48,7 +49,7 @@ void vlan_mvrp_request_leave(const struct net_device *dev)
- 
- 	if (vlan->vlan_proto != htons(ETH_P_8021Q))
- 		return;
--	mrp_request_leave(vlan->real_dev, &vlan_mrp_app,
-+	mrp_request_leave(netdev_ref_ptr(&vlan->real_dev), &vlan_mrp_app,
- 			  &vlan_id, sizeof(vlan_id), MVRP_ATTR_VID);
- }
- 
-diff --git a/net/8021q/vlan_netlink.c b/net/8021q/vlan_netlink.c
-index 0db85aeb119b..7499f73d9961 100644
---- a/net/8021q/vlan_netlink.c
-+++ b/net/8021q/vlan_netlink.c
-@@ -166,7 +166,7 @@ static int vlan_newlink(struct net *src_net, struct net_device *dev,
- 
- 	vlan->vlan_proto = proto;
- 	vlan->vlan_id	 = nla_get_u16(data[IFLA_VLAN_ID]);
--	vlan->real_dev	 = real_dev;
-+	__netdev_ref_store(&vlan->real_dev, real_dev);
- 	dev->priv_flags |= (real_dev->priv_flags & IFF_XMIT_DST_RELEASE);
- 	vlan->flags	 = VLAN_FLAG_REORDER_HDR;
- 
-@@ -274,7 +274,7 @@ static int vlan_fill_info(struct sk_buff *skb, const struct net_device *dev)
- 
- static struct net *vlan_get_link_net(const struct net_device *dev)
- {
--	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
-+	struct net_device *real_dev = __vlan_dev_real_dev(dev);
- 
- 	return dev_net(real_dev);
- }
-diff --git a/net/8021q/vlanproc.c b/net/8021q/vlanproc.c
-index ec87dea23719..5784fb5fa2a9 100644
---- a/net/8021q/vlanproc.c
-+++ b/net/8021q/vlanproc.c
-@@ -231,9 +231,10 @@ static int vlan_seq_show(struct seq_file *seq, void *v)
- 	} else {
- 		const struct net_device *vlandev = v;
- 		const struct vlan_dev_priv *vlan = vlan_dev_priv(vlandev);
-+		struct net_device *real_dev = netdev_ref_ptr(&vlan->real_dev);
- 
- 		seq_printf(seq, "%-15s| %d  | %s\n",  vlandev->name,
--			   vlan->vlan_id,    vlan->real_dev->name);
-+			   vlan->vlan_id,    real_dev->name);
- 	}
- 	return 0;
- }
-@@ -242,6 +243,7 @@ static int vlandev_seq_show(struct seq_file *seq, void *offset)
- {
- 	struct net_device *vlandev = (struct net_device *) seq->private;
- 	const struct vlan_dev_priv *vlan = vlan_dev_priv(vlandev);
-+	struct net_device *real_dev = netdev_ref_ptr(&vlan->real_dev);
- 	struct rtnl_link_stats64 temp;
- 	const struct rtnl_link_stats64 *stats;
- 	static const char fmt64[] = "%30s %12llu\n";
-@@ -262,7 +264,7 @@ static int vlandev_seq_show(struct seq_file *seq, void *offset)
- 	seq_puts(seq, "\n");
- 	seq_printf(seq, fmt64, "total frames transmitted", stats->tx_packets);
- 	seq_printf(seq, fmt64, "total bytes transmitted", stats->tx_bytes);
--	seq_printf(seq, "Device: %s", vlan->real_dev->name);
-+	seq_printf(seq, "Device: %s", real_dev->name);
- 	/* now show all PRIORITY mappings relating to this VLAN */
- 	seq_printf(seq, "\nINGRESS priority mappings: "
- 			"0:%u  1:%u  2:%u  3:%u  4:%u  5:%u  6:%u 7:%u\n",
--- 
-2.31.1
+>     * No definition of what HW needs to preserve when RESUMING toggles
+>     off - (eg today SET_IRQS must work, what else?).
 
+Everything in the device controlled by other kernel subystems (IRQs,
+MSI, PCI config space) must continue to work across !RUNNING and must
+not be disturbed by the migration driver during RESUME.
+
+So, clear yes that SET_IRQs during !RUNNING must be supported
+
+>     * In general, what operations or accesses is the user restricted
+>     from performing on the device while !RUNNING
+
+Still a need on this other than the carve out for above. HNS won't
+work without restrictions, for instance.
+
+>     * PRI into the guest (guest user process SVA) has a sequencing
+>     problem with RUNNING - can not migrate a vIOMMU in the middle of a
+>     page fault, must stop and flush faults before stopping vCPUs
+
+NDMA|RUNNING allows to suspend the vIOMMU
+
+> The uAPI could benefit from some more detailed documentation
+> (e.g. how to use it, what to do in edge cases, ...) outside of the
+> header file.
+
+We have an internal draft of this now
+
+> Trying to use the mlx5 support currently on the list has unearthed
+> some problems in QEMU <please summarize :)>
+
+If the kernel does anything odd qemu does abort()
+
+Performance is bad, Yishai sent a patch
+
+Jason
