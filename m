@@ -2,120 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0570C454D0B
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 19:24:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83964454D13
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 19:26:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238982AbhKQS1U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 13:27:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55012 "EHLO mail.kernel.org"
+        id S239994AbhKQS3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 13:29:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55430 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231303AbhKQS1U (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Nov 2021 13:27:20 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9B63261A62;
-        Wed, 17 Nov 2021 18:24:20 +0000 (UTC)
+        id S235342AbhKQS32 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Nov 2021 13:29:28 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2B58D61A62;
+        Wed, 17 Nov 2021 18:26:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637173461;
-        bh=2JEh2UwgYz/xIl5eN50ViP5URkEEheWC3AhWGRhlF64=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=M/7lZOwFEjjWYviIBZZ4C7EZknMatGMqyTWY5YiwooZito6dUdsnVJEtjE1UB8dGV
-         GEz5kzV4jkyPSYiM3Xh57H/SAxu2QaGHdDX6IwmmRRmfVFM++HTOlksjrOm4u1XSrA
-         /Pu/MhuLLfRSZ9ar4rWD9jJdcaHSjVTv7/qjEtXZZlxgm1xiD36oEbNaO32oCa0GMh
-         kHGe1bjGppVZSHsv3+ymWlapCAHlzNbSfOfaofxknKbaueZZ5yhc4mPw4wvQziB0DJ
-         82IvqsHfTNs/pzI+Zta+MjjrifSa8VJPMlVrgXUbwc9Smj6AGPy6jZku3LA6J5MaJS
-         09eUbeKWgQmFA==
-Date:   Wed, 17 Nov 2021 20:24:17 +0200
+        s=k20201202; t=1637173589;
+        bh=aX7kR5mhhKUKPo/3xI2LEWmDxKJnOScXHCAboHytXl4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=gMCay+Zg6c1ByKP22PhL3E+8cYanJkrIMvHTpPD5eRYdefeOg/XAVnIEXakYKH4KT
+         REX9w4+8T4FyzV/zPC1gL+pGtYT6s/D4Ys8gA2UfCoKAKB/e0v8htOX5sONPAGY5ny
+         cugK13ngC3k1R+mG5+BKHwxNCk72BJS0VJP6pJ4DxtJYXBxpbmZDlo8hhKANCzUzww
+         YQVUbdlYL110olnJVWvoOep7xklaN+wime9vBv6KhcOjsB8gSOTFOVy+89PZfy4WsE
+         K0IKEjPzmkPdQCPU8xpyWlEVKi2aaapuxHjfoQk7k/xDvXTEyOCN8RLbsQtu0ewpB7
+         gDMj35Thxe5/Q==
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, eric.dumazet@gmail.com
-Subject: Re: [RFC net-next 1/2] net: add netdev_refs debug
-Message-ID: <YZVI0cNLwd2flBkd@unreal>
-References: <20211117174723.2305681-1-kuba@kernel.org>
- <20211117174723.2305681-2-kuba@kernel.org>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Leon Romanovsky <leonro@nvidia.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>, Aya Levin <ayal@mellanox.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>, drivers@pensando.io,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        intel-wired-lan@lists.osuosl.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org,
+        Michael Chan <michael.chan@broadcom.com>,
+        netdev@vger.kernel.org, oss-drivers@corigine.com,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Simon Horman <simon.horman@corigine.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 0/6] Devlink cleanups
+Date:   Wed, 17 Nov 2021 20:26:16 +0200
+Message-Id: <cover.1637173517.git.leonro@nvidia.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211117174723.2305681-2-kuba@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 17, 2021 at 09:47:22AM -0800, Jakub Kicinski wrote:
-> Debugging netdev ref leaks is still pretty hard. Eric added
-> optional use of a normal refcount which is useful for tracking
-> abuse of existing users.
-> 
-> For new code, however, it'd be great if we could actually track
-> the refs per-user. Allowing us to detect leaks where they happen.
-> This patch introduces a netdev_ref type and uses the debug_objects
-> infra to track refs being lost or misused.
-> 
-> In the future we can extend this structure to also catch those
-> who fail to release the ref on unregistering notification.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  MAINTAINERS                 |   1 +
->  include/linux/netdev_refs.h | 104 ++++++++++++++++++++++++++++++++++++
->  lib/Kconfig.debug           |   7 +++
->  net/core/dev.c              |   8 +++
->  4 files changed, 120 insertions(+)
->  create mode 100644 include/linux/netdev_refs.h
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 4c74516e4353..47fe27175c9f 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -18482,6 +18482,7 @@ F:	include/uapi/linux/pkt_sched.h
->  F:	include/uapi/linux/tc_act/
->  F:	include/uapi/linux/tc_ematch/
->  F:	net/sched/
-> +F:	tools/testing/selftests/tc-testing/
->  
->  TC90522 MEDIA DRIVER
->  M:	Akihiro Tsukada <tskd08@gmail.com>
-> diff --git a/include/linux/netdev_refs.h b/include/linux/netdev_refs.h
-> new file mode 100644
-> index 000000000000..326772ea0a63
-> --- /dev/null
-> +++ b/include/linux/netdev_refs.h
-> @@ -0,0 +1,104 @@
-> +/* SPDX-License-Identifier: GPL-2.0-or-later */
-> +
-> +#ifndef _LINUX_NETDEV_REFS_H
-> +#define _LINUX_NETDEV_REFS_H
-> +
-> +#include <linux/debugobjects.h>
-> +#include <linux/netdevice.h>
-> +
-> +/* Explicit netdevice references
-> + * struct netdev_ref is a storage for a reference. It's equivalent
-> + * to a netdev pointer, but when debug is enabled it performs extra checks.
-> + * Most users will want to take a reference with netdev_hold(), access it
-> + * via netdev_ref_ptr() and release with netdev_put().
-> + */
-> +
-> +struct netdev_ref {
-> +	struct net_device *dev;
-> +#ifdef CONFIG_DEBUG_OBJECTS_NETDEV_REFS
-> +	refcount_t cnt;
-> +#endif
-> +};
-> +
-> +extern const struct debug_obj_descr netdev_ref_debug_descr;
-> +
-> +/* Store a raw, unprotected pointer */
-> +static inline void __netdev_ref_store(struct netdev_ref *ref,
-> +				      struct net_device *dev)
-> +{
-> +	ref->dev = dev;
-> +
-> +#ifdef CONFIG_DEBUG_OBJECTS_NETDEV_REFS
-> +	refcount_set(&ref->cnt, 0);
+From: Leon Romanovsky <leonro@nvidia.com>
 
-This is very uncommon pattern. I would expect that first pointer access
-will start from 1, like all refcount_t users. If you still prefer to
-start from 0, i suggest you to use atomic_t. 
+Hi,
 
-IMHO, much better will be to use kref for this type of reference counting.
+This series is non-controversial subset of my RFC [1], where I proposed
+a way to allow parallel devlink execution.
 
 Thanks
+
+[1] https://lore.kernel.org/all/cover.1636390483.git.leonro@nvidia.com
+
+Leon Romanovsky (6):
+  devlink: Remove misleading internal_flags from health reporter dump
+  devlink: Delete useless checks of holding devlink lock
+  devlink: Simplify devlink resources unregister call
+  devlink: Clean registration of devlink port
+  devlink: Reshuffle resource registration logic
+  devlink: Inline sb related functions
+
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.c |   7 +-
+ .../freescale/dpaa2/dpaa2-eth-devlink.c       |   7 +-
+ drivers/net/ethernet/intel/ice/ice_devlink.c  |  23 +-
+ .../marvell/prestera/prestera_devlink.c       |   8 +-
+ drivers/net/ethernet/mellanox/mlx4/main.c     |   4 +-
+ .../ethernet/mellanox/mlx5/core/en/devlink.c  |   5 +-
+ .../ethernet/mellanox/mlx5/core/en/devlink.h  |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |   7 +-
+ .../mellanox/mlx5/core/esw/devlink_port.c     |   9 +-
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  15 +-
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |   4 +-
+ drivers/net/ethernet/mscc/ocelot_net.c        |   4 +-
+ .../net/ethernet/netronome/nfp/nfp_devlink.c  |   4 +-
+ .../ethernet/pensando/ionic/ionic_devlink.c   |   8 +-
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c      |  14 +-
+ drivers/net/netdevsim/dev.c                   |  11 +-
+ include/net/devlink.h                         |   9 +-
+ net/core/devlink.c                            | 220 ++++++------------
+ net/dsa/dsa.c                                 |   2 +-
+ net/dsa/dsa2.c                                |   9 +-
+ 20 files changed, 115 insertions(+), 257 deletions(-)
+
+-- 
+2.33.1
+
