@@ -2,122 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E78A5454C0F
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 18:36:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C920454C14
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 18:37:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239460AbhKQRjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 12:39:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
+        id S239483AbhKQRkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 12:40:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232047AbhKQRjb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 12:39:31 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 333A0C061570;
-        Wed, 17 Nov 2021 09:36:33 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id gt5so2925464pjb.1;
-        Wed, 17 Nov 2021 09:36:33 -0800 (PST)
+        with ESMTP id S239479AbhKQRkB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 12:40:01 -0500
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48290C061570;
+        Wed, 17 Nov 2021 09:37:02 -0800 (PST)
+Received: by mail-pg1-x532.google.com with SMTP id d64so860342pgc.7;
+        Wed, 17 Nov 2021 09:37:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=29Rmx8DNucNaV/O5h3+ze87UeXRGQizoKrqkXB/wnKs=;
-        b=L+tXqFx6v3RMA5EJy5wqOYro16Hbwhddv3N6Fyq20UykDSytRd5B3kge8Dplrt5NpO
-         qUK1GRsbG6euqPYMbCAFI0kRBjv9f5Rxv6OJWpXq60gmSWFqJ6catLnOz2u2sCVR/tkh
-         OA22/6GlyrDinFzL/BW7a9J+O3ZHHvEOxfeS1bMowIlPdRgq21RO4I/AXCIJYwBbbPFf
-         bq5GXavUHBq3MNhGzvZeSsBQKsbiD63dyG0Oq9Ml9vn1y3jWB5ob4hImZkwvurbR1GLg
-         IvcOtvfE3Np2rUa6EUYTG6WmU1hf8eH0C5fPdoIttPV5Sr1UwSqW8SoqCgz3XBfSYjvD
-         ygBQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=tJhnrf74q/jH7xONckSlHbxsu26bF8IfZRrOkBk3520=;
+        b=bd6dNnz3rWuvW49USLmvm1mxRnWOK2Z8Re3hjGYRMxXERcydK4/DXfJw12hMMSJjNh
+         Q8PFqKeosskRJFSXMnNJHEFVXPPjhVXYrX+hgEktLJcGmXONH7Kaxuy05YDmEXM6r8Si
+         Q6cuHAaDiAsCPAF3vY+lBPTdkYMG4tzkTmXgfAIDTBpys4y2abNE+XFoOUxWzDe0EWDh
+         DhgY5/jN/IYDZKMsSg4XMwdQcSmrI05sNP7CTkOz6Vg1CJqVjMWIWZm3i+hJcXlzMdPI
+         SCENrU7+VL0yGM3GjVfFwmbmyBmAvotc2tA9PHT1KpmO2gbf1exupjIEr3t9rpjKi6qQ
+         2AHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=29Rmx8DNucNaV/O5h3+ze87UeXRGQizoKrqkXB/wnKs=;
-        b=kZravSMOYYhZv3aQG3+pJuGxkCCqaf1sE54wvhtNgmyiBc3c08bkxvyhY6dd2bjmZf
-         Od5vcGmXVRtHCR5/F3JRJ3Mbpp+VgN7kdL3gXD5rLp6rpLpyzJPefooPOiGxygJUh4mx
-         bVKJHKxUavFnszrT2Fdfs/jRTWEJO4kwM46nJJMKIpONEp+utvwMcpmsUB7Li/jYd8W4
-         +/E17Jtc8I0aahKiEHWtbjxssQGYGzpHRZnIzZlCaT4aua+O+oZJC10G42VKG9eSS238
-         x2CzhaFZhVbk3ERxevuB3AlODiQ0ljnNxHjDORz9idi51BZwOXd/GiZMzOZvOps//aOH
-         zJOQ==
-X-Gm-Message-State: AOAM5331lxqftBuG8wbiRuJCR/p8tCVgBCo84sV/igOiAfrnmdXANaJ0
-        sW4/RWclQuOL129VinkpLWf8yhe/NOg=
-X-Google-Smtp-Source: ABdhPJyhYj3ig9G6O1tcNZk7fddyL2FNgrquaK7YmQ9OK18CO8mIQ0EA1mM/CgS0i1UMqyDwH2Le2A==
-X-Received: by 2002:a17:90a:6e41:: with SMTP id s1mr1709580pjm.166.1637170592276;
-        Wed, 17 Nov 2021 09:36:32 -0800 (PST)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id g7sm263092pfv.159.2021.11.17.09.36.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Nov 2021 09:36:31 -0800 (PST)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next] net: mdio: Replaced BUG_ON() with WARN()
-Date:   Wed, 17 Nov 2021 09:36:29 -0800
-Message-Id: <20211117173629.2734752-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        bh=tJhnrf74q/jH7xONckSlHbxsu26bF8IfZRrOkBk3520=;
+        b=vPFhJBa36caT622VlYg7bYZzeb232/0/GuTAesPDtcL8ktX2fV89RbQ5Ee0f8Y2/MW
+         mNDqd0XsIZi4SDXKOMU4lanM5ekmonkgqzZ5/UIh2tcpH78CTNn/AFGvu33rWKbWWXCD
+         HKmTulTSZrCoExA+Bgnh2VkOgS9rKT7B6icJfGe37GsbXUw+Cz8SCst8WpGpQD0x4qgK
+         0UJiEjyLPNqWSBv85p7UuBXodivjwcFCOx329jTJjla/sklGE96nOTawKEPRtmcKjO+g
+         xlHTknuEpyAqyLXDBmaKwLuMk3kDAGeiBCcOmhUx4Qf9W9UbKrto0qhu9FFh2RHWUhEV
+         lZyg==
+X-Gm-Message-State: AOAM533ubmiiTgoN2IvA5iA56aziIlWUGrwPHwf0dCuFR43gKJ7Rzuhq
+        HH5FL8vpGXHso0IihFlBQxeoXLX1KO8=
+X-Google-Smtp-Source: ABdhPJxmz0Hx1ZicfrwrQ+uSOWs7iI0wCgkeGPzqeHzuulM7nqZdaJDktR9r2Bmr4NZ0d34e6qDQ1g==
+X-Received: by 2002:a63:f74b:: with SMTP id f11mr6225896pgk.403.1637170621617;
+        Wed, 17 Nov 2021 09:37:01 -0800 (PST)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id e23sm260852pgg.68.2021.11.17.09.37.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 17 Nov 2021 09:37:01 -0800 (PST)
+Subject: Re: [PATCH net-next] neigh: introduce __neigh_confirm() for __ipv{4,
+ 6}_confirm_neigh
+To:     Yajun Deng <yajun.deng@linux.dev>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20211117120215.30209-1-yajun.deng@linux.dev>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <8696b472-efee-7801-8480-dd0a5ebf173b@gmail.com>
+Date:   Wed, 17 Nov 2021 09:36:59 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211117120215.30209-1-yajun.deng@linux.dev>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Killing the kernel because a certain MDIO bus object is not in the
-desired state at various points in the registration or unregistration
-paths is excessive and is not helping in troubleshooting or fixing
-issues. Replace the BUG_ON() with WARN() and print out the MDIO bus name
-to facilitate debugging.
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/phy/mdio_bus.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-index c204067f1890..9b6f2df07211 100644
---- a/drivers/net/phy/mdio_bus.c
-+++ b/drivers/net/phy/mdio_bus.c
-@@ -176,9 +176,11 @@ static void mdiobus_release(struct device *d)
- {
- 	struct mii_bus *bus = to_mii_bus(d);
- 
--	BUG_ON(bus->state != MDIOBUS_RELEASED &&
--	       /* for compatibility with error handling in drivers */
--	       bus->state != MDIOBUS_ALLOCATED);
-+	WARN(bus->state != MDIOBUS_RELEASED &&
-+	     /* for compatibility with error handling in drivers */
-+	     bus->state != MDIOBUS_ALLOCATED,
-+	     "%s: not in RELEASED or ALLOCATED state\n",
-+	     bus->id);
- 	kfree(bus);
- }
- 
-@@ -529,8 +531,9 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
- 		bus->parent->of_node->fwnode.flags |=
- 					FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD;
- 
--	BUG_ON(bus->state != MDIOBUS_ALLOCATED &&
--	       bus->state != MDIOBUS_UNREGISTERED);
-+	WARN(bus->state != MDIOBUS_ALLOCATED &&
-+	     bus->state != MDIOBUS_UNREGISTERED,
-+	     "%s: not in ALLOCATED or UNREGISTERED state\n", bus->id);
- 
- 	bus->owner = owner;
- 	bus->dev.parent = bus->parent;
-@@ -658,7 +661,8 @@ void mdiobus_free(struct mii_bus *bus)
- 		return;
- 	}
- 
--	BUG_ON(bus->state != MDIOBUS_UNREGISTERED);
-+	WARN(bus->state != MDIOBUS_UNREGISTERED,
-+	     "%s: not in UNREGISTERED state\n", bus->id);
- 	bus->state = MDIOBUS_RELEASED;
- 
- 	put_device(&bus->dev);
--- 
-2.25.1
+On 11/17/21 4:02 AM, Yajun Deng wrote:
+> Those __ipv4_confirm_neigh(), __ipv6_confirm_neigh() and __ipv6_confirm_neigh_stub()
+> functions have similar code. introduce __neigh_confirm() for it.
+> 
 
+At first glance, this might add an indirect call ?
