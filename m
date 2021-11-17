@@ -2,67 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E388454926
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 15:50:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C125345492B
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 15:50:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232206AbhKQOxI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 09:53:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59704 "EHLO mail.kernel.org"
+        id S233205AbhKQOxL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 09:53:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59742 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229751AbhKQOxI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232209AbhKQOxI (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 17 Nov 2021 09:53:08 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 5F71661269;
-        Wed, 17 Nov 2021 14:50:09 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1529361BCF;
+        Wed, 17 Nov 2021 14:50:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637160609;
-        bh=uOkBXmF0eKEMD5cHiFoZj2GHd8g6R7EKxmFyrk/Xe8g=;
+        s=k20201202; t=1637160610;
+        bh=nivLXWPIItXyELugbroJwojIvmx9DNTHps75iyew6ds=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=LHbWmiVRsxQpFheMi0kDVhYCtB57wodeEgGT0QBlJphbPgXC3l7oqurye/o4UEuEL
-         /9l/4SjiMVjQCfhAsvQ6/yuKjjCotZR7yKISJqIlOw9f9qGVdqTTv+CUqOPPjOkpv0
-         sKWQ0icRk7KUNChkSPGffHMUpRT3IhL5iKXrErtLFcq5YjI8J3xzwRTK2amo0FjNMP
-         WUW4rziraEFtihMa3e2R4+G1B3jdX22sgNSZC7prIEj8r4X4A7hhcPIb47LzheVPuL
-         5Au1I1ct2zfhbxjwzqbv0L9RVNfWffF9eU9FpJVUUmSdaZhts0N1N8JImSNkZ0jK76
-         kk3J/FQ9v5VnA==
+        b=qCv9tMtXQl9uMfcw36EJUwvHrJrMM9yQAyWmkfQ56KA62PgyCiUg4fuXcygQvv4Xi
+         mKoaie78OfHvi/1/m25ghghICWnGJUv8lEb1RBl6J6iWqs7O7po08gA4pS5xkDaJSk
+         uJ22YtAYUfvjIoq1tc9axZa0ylmAbUKFeq4C2aoTCDtZP8euu6c9azvigg7KELA2vl
+         dZu7XXBX7/X41pNuRC2AALDIxryPariyup6g9nJjsnOFYTtp8+TaL+W6jHK35iqVEF
+         6KjXzXSb+ptUAkvsGiQaA1CvgmGlFPoNAf8nfgFG9FoWMmidoUVqvm1cJGOKx6jOef
+         fyuunbXIcrY6g==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4F4FB60A4E;
-        Wed, 17 Nov 2021 14:50:09 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0D17160BD0;
+        Wed, 17 Nov 2021 14:50:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf] bpf, x86: Fix "no previous prototype" warning
+Subject: Re: [PATCH] net: usb: r8152: Add MAC passthrough support for more Lenovo
+ Docks
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163716060931.12308.3728121323940964364.git-patchwork-notify@kernel.org>
-Date:   Wed, 17 Nov 2021 14:50:09 +0000
-References: <20211117125708.769168-1-bjorn@kernel.org>
-In-Reply-To: <20211117125708.769168-1-bjorn@kernel.org>
-To:     =?utf-8?b?QmrDtnJuIFTDtnBlbCA8Ympvcm5Aa2VybmVsLm9yZz4=?=@ci.codeaurora.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkp@intel.com
+Message-Id: <163716061004.12308.10463476878060001504.git-patchwork-notify@kernel.org>
+Date:   Wed, 17 Nov 2021 14:50:10 +0000
+References: <20211116141917.31661-1-aaron.ma@canonical.com>
+In-Reply-To: <20211116141917.31661-1-aaron.ma@canonical.com>
+To:     Aaron Ma <aaron.ma@canonical.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, hayeswang@realtek.com,
+        tiwai@suse.de, linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to bpf/bpf.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-On Wed, 17 Nov 2021 13:57:08 +0100 you wrote:
-> The arch_prepare_bpf_dispatcher function does not have a prototype,
-> and yields the following warning when W=1 is enabled for the kernel
-> build.
+On Tue, 16 Nov 2021 22:19:17 +0800 you wrote:
+> Like ThinkaPad Thunderbolt 4 Dock, more Lenovo docks start to use the original
+> Realtek USB ethernet chip ID 0bda:8153.
 > 
->   >> arch/x86/net/bpf_jit_comp.c:2188:5: warning: no previous \
->   prototype for 'arch_prepare_bpf_dispatcher' [-Wmissing-prototypes]
->         2188 | int arch_prepare_bpf_dispatcher(void *image, s64 *funcs, \
-> 	int num_funcs)
->              |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+> Lenovo Docks always use their own IDs for usb hub, even for older Docks.
+> If parent hub is from Lenovo, then r8152 should try MAC passthrough.
+> Verified on Lenovo TBT3 dock too.
 > 
 > [...]
 
 Here is the summary with links:
-  - [bpf] bpf, x86: Fix "no previous prototype" warning
-    https://git.kernel.org/bpf/bpf/c/f45b2974cc0a
+  - net: usb: r8152: Add MAC passthrough support for more Lenovo Docks
+    https://git.kernel.org/netdev/net/c/f77b83b5bbab
 
 You are awesome, thank you!
 -- 
