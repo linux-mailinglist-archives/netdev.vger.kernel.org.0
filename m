@@ -2,197 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 686B2453D0B
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 01:12:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92008453D14
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 01:16:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230113AbhKQAPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Nov 2021 19:15:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41024 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229544AbhKQAPm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Nov 2021 19:15:42 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4BA8261A7D;
-        Wed, 17 Nov 2021 00:12:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637107964;
-        bh=bnxLxXhbTIGvV08pkQI2uRDy+1S2Cvb0CnyBspITtFA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tqcCwoCqHG81hXrszQlfop41TQ6qJ4jcv9+r/UfjNiDqugsgejMicyxBEj2z55N5Q
-         z9+wgTBO/wCnJikknShXCENmCUe+Cyb7wSd/jxEk/6CNOeU1Gvi3HxcNVIa8ZLjO98
-         3uDPMDSrEqoR4AaCr1dlcLnelkjAIqPteCWFyfgV0c2M23BC6enHe/aZgOmczT9DuS
-         oaU6CzsnFnU1MJdvwWcnnrGSSJ35bqk4KGaL5QreJdcQlNsJ5qB9Dd2s5bJ9UhnpW/
-         REfbAvKaWPamQGYGwpvUF4HxVE9Zt4F1Z1F0PB2hn3rw0/caQldpqtJxh9pZGah4kw
-         uKdO2zRshCX/g==
-Date:   Wed, 17 Nov 2021 01:12:41 +0100
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, davem@davemloft.net, ast@kernel.org,
-        daniel@iogearbox.net, shayagr@amazon.com, john.fastabend@gmail.com,
-        dsahern@kernel.org, brouer@redhat.com, echaudro@redhat.com,
-        jasowang@redhat.com, alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
-        tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: Re: [PATCH v18 bpf-next 20/23] net: xdp: introduce bpf_xdp_pointer
- utility routine
-Message-ID: <YZRI+ac4c0j/eue5@lore-desk>
-References: <cover.1637013639.git.lorenzo@kernel.org>
- <ce5ad30af8f9b4d2b8128e7488818449a5c0d833.1637013639.git.lorenzo@kernel.org>
- <20211116071357.36c18edf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S230034AbhKQATS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Nov 2021 19:19:18 -0500
+Received: from smtp-fw-9103.amazon.com ([207.171.188.200]:45981 "EHLO
+        smtp-fw-9103.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229544AbhKQATS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Nov 2021 19:19:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1637108180; x=1668644180;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=38M2OZVWZsZRmQJb99RzG//KA+w6dxr8jva+BHUXPTI=;
+  b=KxI1ZMPrav+91GNfWTpWF3d29RV/tM2JdnwIHSBrZubzYiSbQR90mYjq
+   PrhERRJT7FxB6oj3Fzj5EXuEdjJOyMRyc2X1ZS7m9VgPFCYGJ7/oIdndr
+   SC6qavK+u62kchZDEHbc7s1VM+eOcTWrVfUZhVGHc+JsPPmvAflJGFZ5s
+   8=;
+X-IronPort-AV: E=Sophos;i="5.87,239,1631577600"; 
+   d="scan'208";a="972134081"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1e-b69ea591.us-east-1.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-9103.sea19.amazon.com with ESMTP; 17 Nov 2021 00:16:19 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1e-b69ea591.us-east-1.amazon.com (Postfix) with ESMTPS id 8CA1FC032C;
+        Wed, 17 Nov 2021 00:16:18 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.26; Wed, 17 Nov 2021 00:16:17 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.159) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.26; Wed, 17 Nov 2021 00:16:14 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <kuniyu@amazon.co.jp>
+CC:     <benh@amazon.com>, <davem@davemloft.net>, <eric.dumazet@gmail.com>,
+        <kuba@kernel.org>, <kuni1840@gmail.com>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 net-next 12/13] af_unix: Replace the big lock with small locks.
+Date:   Wed, 17 Nov 2021 09:16:11 +0900
+Message-ID: <20211117001611.74123-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20211114012428.81743-13-kuniyu@amazon.co.jp>
+References: <20211114012428.81743-13-kuniyu@amazon.co.jp>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="TrINBws+5W8mkGW0"
-Content-Disposition: inline
-In-Reply-To: <20211116071357.36c18edf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.159]
+X-ClientProxiedBy: EX13D29UWC004.ant.amazon.com (10.43.162.25) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Date:   Sun, 14 Nov 2021 10:24:27 +0900
+> The hash table of AF_UNIX sockets is protected by the single lock.  This
+> patch replaces it with per-hash locks.
+[...]
+> +static void unix_table_double_lock(unsigned int hash1, unsigned int hash2)
+> +{
+> +	/* hash1 and hash2 is never the same because
+> +	 * one is between 0 and UNIX_HASH_SIZE - 1, and
+> +	 * another is between UNIX_HASH_SIZE and UNIX_HASH_SIZE * 2.
+> +	 */
+> +	if (hash1 > hash2)
+> +		swap(hash1, hash2);
+> +
+> +	spin_lock(&unix_table_locks[hash1]);
+> +	spin_lock_nested(&unix_table_locks[hash2], SINGLE_DEPTH_NESTING);
+> +}
+> +
+> +static void unix_table_double_unlock(unsigned int hash1, unsigned int hash2)
+> +{
+> +	spin_unlock(&unix_table_locks[hash1]);
+> +	spin_unlock(&unix_table_locks[hash2]);
+> +}
 
---TrINBws+5W8mkGW0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The status is "Changes Requested" on patchwork because of some newly added
+sparse warnings.  There are two kinds of warnings.  One is about
+unix_table_double_lock/unlock() and the other is about unix_seq_start/stop().
 
-> On Mon, 15 Nov 2021 23:33:14 +0100 Lorenzo Bianconi wrote:
-> > +	struct skb_shared_info *sinfo =3D xdp_get_shared_info_from_buff(xdp);
-> > +	u32 headsize =3D xdp->data_end - xdp->data;
-> > +	u32 count =3D 0, frame_offset =3D headsize;
-> > +	int i;
-> > +
-> > +	if (offset < headsize) {
-> > +		int size =3D min_t(int, headsize - offset, len);
-> > +		void *src =3D flush ? buf : xdp->data + offset;
-> > +		void *dst =3D flush ? xdp->data + offset : buf;
-> > +
-> > +		memcpy(dst, src, size);
-> > +		count =3D size;
-> > +		offset =3D 0;
-> > +	}
->=20
-> is this missing
-> 	else
-> 		offset -=3D headsize;
-> ?
->=20
-> I'm struggling to understand this. Say
-> 	headsize =3D 400
-> 	frag[0].size =3D 200
->=20
-> 	offset =3D 500
-> 	len =3D 50
->=20
-> we enter the loop having missed the previous if...
->=20
-> > +	for (i =3D 0; i < sinfo->nr_frags; i++) {
-> > +		skb_frag_t *frag =3D &sinfo->frags[i];
-> > +		u32 frag_size =3D skb_frag_size(frag);
-> > +
-> > +		if (count >=3D len)
-> > +			break;
-> > +
-> > +		if (offset < frame_offset + frag_size) {
->=20
-> 		500 < 400 + 200 =3D> true
->=20
-> > +			int size =3D min_t(int, frag_size - offset, len - count);
->=20
-> 			size =3D min(200 - 500, 50 - 0)
-> 			size =3D -300 ??
+https://patchwork.hopto.org/static/nipa/579645/12617773/build_32bit/summary
 
-ack, you are right. Sorry for the issue.
-I did not trigger the problem with xdp-mb self-tests since we will not run
-bpf_xdp_copy_buf() in this specific case, but just the memcpy()
-(but what you reported is a bug and must be fixed). I will add more
-self-tests.
-Moreover, reviewing the code I guess we can just update bpf_xdp_copy() for =
-our case.
-Something like:
-
-static void bpf_xdp_copy_buf(struct xdp_buff *xdp, unsigned long off,
-			     void *buf, unsigned long len, bool flush)
-{
-	unsigned long ptr_len, ptr_off =3D 0;
-	skb_frag_t *next_frag, *end_frag;
-	struct skb_shared_info *sinfo;
-	void *src, *dst;
-	u8 *ptr_buf;
-
-	if (likely(xdp->data_end - xdp->data >=3D off + len)) {
-		src =3D flush ? buf : xdp->data + off;
-		dst =3D flush ? xdp->data + off : buf;
-		memcpy(dst, src, len);
-		return;
-	}
-
-	sinfo =3D xdp_get_shared_info_from_buff(xdp);
-	end_frag =3D &sinfo->frags[sinfo->nr_frags];
-	next_frag =3D &sinfo->frags[0];
-
-	ptr_len =3D xdp->data_end - xdp->data;
-	ptr_buf =3D xdp->data;
-
-	while (true) {
-		if (off < ptr_off + ptr_len) {
-			unsigned long copy_off =3D off - ptr_off;
-			unsigned long copy_len =3D min(len, ptr_len - copy_off);
-
-			src =3D flush ? buf : ptr_buf + copy_off;
-			dst =3D flush ? ptr_buf + copy_off : buf;
-			memcpy(dst, src, copy_len);
-
-			off +=3D copy_len;
-			len -=3D copy_len;
-			buf +=3D copy_len;
-		}
-
-		if (!len || next_frag =3D=3D end_frag)
-			break;
-
-		ptr_off +=3D ptr_len;
-		ptr_buf =3D skb_frag_address(next_frag);
-		ptr_len =3D skb_frag_size(next_frag);
-		next_frag++;
-	}
-}
-
-=2E..
-
-static unsigned long bpf_xdp_copy(void *dst, const void *ctx,
-				  unsigned long off, unsigned long len)
-{
-	struct xdp_buff *xdp =3D (struct xdp_buff *)ctx;
-
-	bpf_xdp_copy_buf(xdp, off, dst, len, false);
-	return 0;
-}
-
-What do you think?
-
-Regards,
-Lorenzo
+---8<---
++../net/unix/af_unix.c:159:13: warning: context imbalance in 'unix_table_double_lock' - wrong count at exit
++../net/unix/af_unix.c:172:13: warning: context imbalance in 'unix_table_double_unlock' - unexpected unlock
++../net/unix/af_unix.c:1258:13: warning: context imbalance in 'unix_state_double_lock' - wrong count at exit
++../net/unix/af_unix.c:1276:17: warning: context imbalance in 'unix_state_double_unlock' - unexpected unlock
++../net/unix/af_unix.c:1579:9: warning: context imbalance in 'unix_stream_connect' - different lock contexts for basic block
++../net/unix/af_unix.c:1944:25: warning: context imbalance in 'unix_dgram_sendmsg' - unexpected unlock
++../net/unix/af_unix.c:3255:28: warning: context imbalance in 'unix_next_socket' - unexpected unlock
++../net/unix/af_unix.c:3284:28: warning: context imbalance in 'unix_seq_stop' - unexpected unlock
+---8<---
 
 
->=20
-> > +			void *addr =3D skb_frag_address(frag);
-> > +			void *src =3D flush ? buf + count : addr + offset;
-> > +			void *dst =3D flush ? addr + offset : buf + count;
-> > +
-> > +			memcpy(dst, src, size);
-> > +			count +=3D size;
-> > +			offset =3D 0;
-> > +		}
-> > +		frame_offset +=3D frag_size;
+We can avoid the former by adding these annotations, but it seems a little
+bit redundant.  Also, there has already been the same kind of warnings for
+unix_state_double_lock() without sparse annotations.
 
---TrINBws+5W8mkGW0
-Content-Type: application/pgp-signature; name="signature.asc"
+---8<---
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 89a844e7141b..b26a2ea26029 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -157,6 +157,8 @@ static unsigned int unix_abstract_hash(struct sockaddr_un *sunaddr,
+ }
+ 
+ static void unix_table_double_lock(unsigned int hash1, unsigned int hash2)
++	__acquires(unix_table_locks)
++	__acquires(unix_table_locks)
+ {
+ 	/* hash1 and hash2 is never the same because
+ 	 * one is between 0 and UNIX_HASH_SIZE - 1, and
+@@ -170,6 +172,8 @@ static void unix_table_double_lock(unsigned int hash1, unsigned int hash2)
+ }
+ 
+ static void unix_table_double_unlock(unsigned int hash1, unsigned int hash2)
++	__releases(unix_table_locks)
++	__releases(unix_table_locks)
+ {
+ 	spin_unlock(&unix_table_locks[hash1]);
+ 	spin_unlock(&unix_table_locks[hash2]);
+---8<---
 
------BEGIN PGP SIGNATURE-----
 
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYZRI+QAKCRA6cBh0uS2t
-rA1KAQC0qvrK2dx8H1heh+zjVq02R9Jx+GP8qtGLeUrlJs9HCQD/Ze6+i31A7sPZ
-Nx3kP6SD6vmetGa7P5aK7WMuNcseFw8=
-=lUF4
------END PGP SIGNATURE-----
+[...]
+> @@ -3216,7 +3235,7 @@ static struct sock *unix_next_socket(struct seq_file *seq,
+>  				     struct sock *sk,
+>  				     loff_t *pos)
+>  {
+> -	unsigned long bucket;
+> +	unsigned long bucket = get_bucket(*pos);
+>  
+>  	while (sk > (struct sock *)SEQ_START_TOKEN) {
+>  		sk = sk_next(sk);
+> @@ -3227,12 +3246,13 @@ static struct sock *unix_next_socket(struct seq_file *seq,
+>  	}
+>  
+>  	do {
+> +		spin_lock(&unix_table_locks[bucket]);
+>  		sk = unix_from_bucket(seq, pos);
+>  		if (sk)
+>  			return sk;
+>  
+>  next_bucket:
+> -		bucket = get_bucket(*pos) + 1;
+> +		spin_unlock(&unix_table_locks[bucket++]);
+>  		*pos = set_bucket_offset(bucket, 1);
+>  	} while (bucket < ARRAY_SIZE(unix_socket_table));
+>  
+> @@ -3240,10 +3260,7 @@ static struct sock *unix_next_socket(struct seq_file *seq,
+>  }
+>  
+>  static void *unix_seq_start(struct seq_file *seq, loff_t *pos)
+> -	__acquires(unix_table_lock)
+>  {
+> -	spin_lock(&unix_table_lock);
+> -
+>  	if (!*pos)
+>  		return SEQ_START_TOKEN;
+>  
+> @@ -3260,9 +3277,11 @@ static void *unix_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+>  }
+>  
+>  static void unix_seq_stop(struct seq_file *seq, void *v)
+> -	__releases(unix_table_lock)
+>  {
+> -	spin_unlock(&unix_table_lock);
+> +	struct sock *sk = v;
+> +
+> +	if (sk)
+> +		spin_unlock(&unix_table_locks[sk->sk_hash]);
+>  }
+>  
+>  static int unix_seq_show(struct seq_file *seq, void *v)
+[...]
 
---TrINBws+5W8mkGW0--
+The latter happens by replacing the big lock with per-hash locks.
+It moves spin_lock() from unix_seq_start() to unix_next_socket().
+unix_next_socket() keeps holding a lock until it returns NULL, so Sparse
+cannot understand the logic.  At least, we can add __releases annotation in
+unix_seq_stop(), but it rather increases warnings.  And tcp_seq_stop() does
+not have annotations.
+
+Are these warnings acceptable, or is there any better way?
