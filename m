@@ -2,117 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 408FC4540EF
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 07:37:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCE454540F3
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 07:37:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233661AbhKQGj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 01:39:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60960 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233135AbhKQGjZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 01:39:25 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3C57C061570;
-        Tue, 16 Nov 2021 22:36:27 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id u11so1283030plf.3;
-        Tue, 16 Nov 2021 22:36:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Lk2g9E/UqZh2uMhoLR6EkK47x8ZuyfZNR/2euLyi71Y=;
-        b=mKTrdafpDhDezv5nTtvQwcErLpJmmsBBzk6i+kGnHq6O05J8gQqq984hvR3eD8nOEc
-         1VzD0Vja007MaUAPWwl8Pgm6LfWb6Jf4rNtT6tAEufm7XR/l65qa6XvH9BvEHcrNmEm+
-         62WAZmAOAf2gjrJtoLrpjCu+7KFM8s+3AoR8V5hEihZ2C/xQjYjRMf5X7eVqoYTXRe9+
-         1kZWgREZgSWfkcF/hluNXdatATVMkSFDgZ8awpEAk0K6e58zb2e62kBt6ZPxN1IFKuUe
-         epf9sTRkmeOel+ct0jCgiT2A1vJTN7tYXQ4VQFocgu4cY7F1mt55Oah/QUpRLFsffsA3
-         Ka9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Lk2g9E/UqZh2uMhoLR6EkK47x8ZuyfZNR/2euLyi71Y=;
-        b=jBW4DkrBfDAnLpNUhMdyVXi939GbujJfsNVBGWuYio3rvhag1clYkW0cahM4Dki98p
-         yZ6T/T9TcG+WxxpCYssrpmtAvb7emYp6EtsGsdQLefmTZJd1tb3SF2Vf8gmDWOw+78+c
-         A1MrTT5gwY+ukMaFYZwAf5KJR14UD4v+ncA/ovg9pBJHGmnxy6hlPXV0OajNtVC8F8qM
-         bdKL7zeF4WFrV5UtHoCAAMh6fkY7thrXgJHX0aALz0NaWH5Bfs0ZgbE3fn4WNwMZXJjC
-         fE/EezSona4DPTpvbh5vOj3uf8QMu9YaLq7w5ZZ+h7veUOSGekODB1nL84I0DzvKfpBW
-         Qs8g==
-X-Gm-Message-State: AOAM533ff2eNaJWwOCXE6PCBqFE6xEvyh4+1Y5sqrmGC8QXBZ+PFktQr
-        b0uZdoyEIS2nRHATJkC7JVk=
-X-Google-Smtp-Source: ABdhPJwM/otgjYa51boTGlRd/bCVd+iUUdLif+7FKr0HaIK6a7VZkY6Y3r5V+VQz67NUBz5e33Fcsw==
-X-Received: by 2002:a17:902:b588:b0:143:b732:834 with SMTP id a8-20020a170902b58800b00143b7320834mr39033212pls.22.1637130987270;
-        Tue, 16 Nov 2021 22:36:27 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id b10sm22225515pfl.200.2021.11.16.22.36.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Nov 2021 22:36:26 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: ye.guojin@zte.com.cn
-To:     luciano.coelho@intel.com
-Cc:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        miriam.rachel.korenblit@intel.com, ye.guojin@zte.com.cn,
-        johannes.berg@intel.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] iwlwifi: rs: fixup the return value type of iwl_legacy_rate_to_fw_idx()
-Date:   Wed, 17 Nov 2021 06:36:21 +0000
-Message-Id: <20211117063621.160695-1-ye.guojin@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        id S233681AbhKQGkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 01:40:19 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:40635 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233680AbhKQGkS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 01:40:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1637131039;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=AnnDd8YZ4vyOlJjo3rcZsM+w/aKPEgM8EgOmw6rHdwI=;
+        b=aRSs2zEyhTEahJ1Ib47xoRz/O+wLT9fBjMcQ3ZeCMB8e+BltoaoWTk25DOQfB9EQbTWfHk
+        PI0fexV9kMmQgrh3HIURxxDi0euXn6CO/u2yejHTNMvF6nUjI/KgLUwU32mvGmHJwZew4g
+        fRm1tadW7KgAJb4UKNuNCb5ovt/8Br0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-416-48273EVbOCmR47IwyCJTkg-1; Wed, 17 Nov 2021 01:37:13 -0500
+X-MC-Unique: 48273EVbOCmR47IwyCJTkg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5E7D91006AA5;
+        Wed, 17 Nov 2021 06:37:12 +0000 (UTC)
+Received: from p1 (unknown [10.40.192.98])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 888E41017E35;
+        Wed, 17 Nov 2021 06:37:10 +0000 (UTC)
+Date:   Wed, 17 Nov 2021 07:37:08 +0100
+From:   Stefan Assmann <sassmann@redhat.com>
+To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
+Cc:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Brelinski, Tony" <tony.brelinski@intel.com>
+Subject: Re: [PATCH net 06/10] iavf: prevent accidental free of filter
+ structure
+Message-ID: <20211117063708.ekrxtv7e6jn5thvp@p1>
+References: <20211115235934.880882-1-anthony.l.nguyen@intel.com>
+ <20211115235934.880882-7-anthony.l.nguyen@intel.com>
+ <20211116072421.jar25sc7plvql7gw@p1>
+ <a7adb8a7-800e-6761-b791-e877ff79210a@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a7adb8a7-800e-6761-b791-e877ff79210a@intel.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ye Guojin <ye.guojin@zte.com.cn>
+On 2021-11-16 20:18, Keller, Jacob E wrote:
+> On 11/15/2021 11:24 PM, Stefan Assmann wrote:
+> > On 2021-11-15 15:59, Tony Nguyen wrote:
+> >> From: Jacob Keller <jacob.e.keller@intel.com>
+> >>
+> >> In iavf_config_clsflower, the filter structure could be accidentally
+> >> released at the end, if iavf_parse_cls_flower or iavf_handle_tclass ever
+> >> return a non-zero but positive value.
+> >>
+> >> In this case, the function continues through to the end, and will call
+> >> kfree() on the filter structure even though it has been added to the
+> >> linked list.
+> >>
+> >> This can actually happen because iavf_parse_cls_flower will return
+> >> a positive IAVF_ERR_CONFIG value instead of the traditional negative
+> >> error codes.
+> > 
+> > Hi Jacob,
+> > 
+> > where exactly does this happen?
+> > Looking at iavf_parse_cls_flower() I see all returns of IAVF_ERR_CONFIG
+> > as "return IAVF_ERR_CONFIG;" while IAVF_ERR_CONFIG is defined as
+> >         IAVF_ERR_CONFIG                         = -4,
+> > 
+> > I'm not opposed to this change, just wondering what's going on.
+> > 
+> >   Stefan
+> > 
+> 
+> Heh.
+> 
+> I don't have memory of the full context for the original work. We've
+> been going through and trying to pull in fixes that we've done for our
+> out-of-tree driver and get everything upstream.
+> 
+> At first I thought this might be because of some history where these
+> values used to be positive in the out-of-tree history at some point...
+> But I think this wasn't true. It is possible that some other flow
+> accidentally sends a positive value, but I've long since lost memory of
+> if I had an example of that. You're correct that IAVF_ERR_CONFIG is (and
+> has been in both upstream and out-of-tree code since its inception)
+> negative.
+> 
+> I don't think this change is harmful, but I think you're right in
+> pointing out the description isn't really valid.
+> 
+> I'm happy to re-write this commit message for clarity.
+> 
+> I do think switching to "if (err)" is more idiomatic and the correct
+> thing to do.
 
-This was found by coccicheck:
-./drivers/net/wireless/intel/iwlwifi/fw/rs.c, 147, 10-21, WARNING
-Unsigned expression compared with zero legacy_rate < 0
+Great feedback thanks, I totally agree.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Ye Guojin <ye.guojin@zte.com.cn>
----
- drivers/net/wireless/intel/iwlwifi/fw/api/rs.h | 2 +-
- drivers/net/wireless/intel/iwlwifi/fw/rs.c     | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/wireless/intel/iwlwifi/fw/api/rs.h b/drivers/net/wireless/intel/iwlwifi/fw/api/rs.h
-index a09081d7ed45..7794cd6d289d 100644
---- a/drivers/net/wireless/intel/iwlwifi/fw/api/rs.h
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/api/rs.h
-@@ -710,7 +710,7 @@ struct iwl_lq_cmd {
- 
- u8 iwl_fw_rate_idx_to_plcp(int idx);
- u32 iwl_new_rate_from_v1(u32 rate_v1);
--u32 iwl_legacy_rate_to_fw_idx(u32 rate_n_flags);
-+int iwl_legacy_rate_to_fw_idx(u32 rate_n_flags);
- const struct iwl_rate_mcs_info *iwl_rate_mcs(int idx);
- const char *iwl_rs_pretty_ant(u8 ant);
- const char *iwl_rs_pretty_bw(int bw);
-diff --git a/drivers/net/wireless/intel/iwlwifi/fw/rs.c b/drivers/net/wireless/intel/iwlwifi/fw/rs.c
-index a21c3befd93b..3850881210e6 100644
---- a/drivers/net/wireless/intel/iwlwifi/fw/rs.c
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/rs.c
-@@ -142,7 +142,7 @@ u32 iwl_new_rate_from_v1(u32 rate_v1)
- 		}
- 	/* if legacy format */
- 	} else {
--		u32 legacy_rate = iwl_legacy_rate_to_fw_idx(rate_v1);
-+		int legacy_rate = iwl_legacy_rate_to_fw_idx(rate_v1);
- 
- 		WARN_ON(legacy_rate < 0);
- 		rate_v2 |= legacy_rate;
-@@ -172,7 +172,7 @@ u32 iwl_new_rate_from_v1(u32 rate_v1)
- }
- IWL_EXPORT_SYMBOL(iwl_new_rate_from_v1);
- 
--u32 iwl_legacy_rate_to_fw_idx(u32 rate_n_flags)
-+int iwl_legacy_rate_to_fw_idx(u32 rate_n_flags)
- {
- 	int rate = rate_n_flags & RATE_LEGACY_RATE_MSK_V1;
- 	int idx;
--- 
-2.25.1
+  Stefan
 
