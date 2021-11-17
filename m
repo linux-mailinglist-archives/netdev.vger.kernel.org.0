@@ -2,126 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FFDE454A88
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 17:07:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C127454AC5
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 17:16:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237626AbhKQQKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 11:10:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51468 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233995AbhKQQKZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 11:10:25 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 847C3C061570
-        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 08:07:26 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id a9so5671253wrr.8
-        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 08:07:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XXUl1J4Yjw0CBovSGazX2BrNb57TY0RNQOkDUEKFWVo=;
-        b=W7UVNH6jRnL00Cg7pSSQfVHpTpkbkHBDx5fpuegLXu2XC+oiZutzhlGaZv/WA8BuUs
-         h8bH6FW/W0wESZPffwJTOeiY2m75LdFfShfmn7XMOxQTTrcDii/DAJ4EKe1g+ZpKwGup
-         tytqTqsYGQN9wHWiOLi4RImwScbgtyDcxGGyipHUcKWQQ09uft47n1AntIWXhdT8DmTW
-         QymUrc2vDbzsClep0VQP1qwV1JaO3zC0elqzzsrflt3pi8Kt3m4epu8Iriu4B+dcduv+
-         HUjMQP9J+mRr3rCwT/7F4dZLtMDEPvgY+jt+UYteco9YURNtvMWIbXmGk3ONCx7dm2el
-         ZJwQ==
+        id S238074AbhKQQTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 11:19:50 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:54342
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236705AbhKQQTt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 11:19:49 -0500
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com [209.85.221.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id A22423F1FC
+        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 16:16:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1637165808;
+        bh=rbNRuBbmDWqlqFKfFvW31w/wL3KSG1UWbc2Mqf+JMCg=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=Fwnq9B/Ztlc/zl7VfVhiJFVY8Qh0QZCVs8oI2ID1iJKshnBKSAW67dgehLIcts2E+
+         fSctYCtcM3mOV9EWJD7WEP7bPwYMYwveZBEtu9Z+2vAOBiJsSADG09+JvldtkTnoeN
+         rGK+mQihu9AyafttrZrbbfvktd/mbGqeJ0W/k19lwcf5w9C8qGQ/vihqyrsitqHuOA
+         y/l1LkyvW3UQ0Rp5MG8DPFH8shv9naWQ3mjqHVox9senvJGM4IPWq/89Z033u2s/0E
+         gxXudAHo6p2eERJG0/8ZCqouaYAXbKt92HY9Un1jX/ypD3jom2JjpHfQr9rRbbrGl4
+         s+5sftVbeqZNA==
+Received: by mail-wr1-f72.google.com with SMTP id q5-20020a5d5745000000b00178abb72486so508429wrw.9
+        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 08:16:48 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XXUl1J4Yjw0CBovSGazX2BrNb57TY0RNQOkDUEKFWVo=;
-        b=7Gf7DREcg19/ej76djsRWSFi9+9kYCMT2+m9Vi59ggiGhZKrQxGg5gcN2sEPpzbr1k
-         evD1IGacl7OqUd8ckUYoRuG7W+RtY5VNQln7j2mOdOW6B0jZLaNj1WVgFt7YMUVBzLcQ
-         iLterriy/gOPY0z21ubxK2GtTrcIwmVhKiexN3u8B9eb25MnBd7ajW16C2Rb5bvcrI2T
-         j280vCJkT8IhoF37TUgynshCF3N44MPNKTcxKTBJXaP7MWP5ct27O+53KXCWsqqgXmLR
-         ziOyM6kmfrBkM3ULyu3SRJ9To3t5u3JUc6NFAlRh7lSD15Sv75ovMnIyIlEZe5B1F97+
-         yJ7g==
-X-Gm-Message-State: AOAM533hdPUOtn+h3bH0L7juNqO6HcBza0z4l7eedMkSfJWBEdaD0HB6
-        nxvUrb/Py+lhLEt8umKOFA0=
-X-Google-Smtp-Source: ABdhPJxDoLLMa2vAPOsjko9uRYtQq0B4WQD7JgYwzFlfP3w4tTTHyDNJmvUd6rXX/bC6tnfBNY7geA==
-X-Received: by 2002:a5d:6a4d:: with SMTP id t13mr21589412wrw.104.1637165245183;
-        Wed, 17 Nov 2021 08:07:25 -0800 (PST)
-Received: from jonas-desktop.lan (dslb-088-076-253-246.088.076.pools.vodafone-ip.de. [88.76.253.246])
-        by smtp.gmail.com with ESMTPSA id p19sm174493wmq.4.2021.11.17.08.07.24
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references
+         :comments:mime-version:content-id:date:message-id;
+        bh=rbNRuBbmDWqlqFKfFvW31w/wL3KSG1UWbc2Mqf+JMCg=;
+        b=xmANaerdSSxgve/cK/md4a0jMRZVs/i4F/yYzOAU78Ya+lO4ulRlf0eeRou+ULvAtn
+         J3ZT4wZNVyMWnu/hEOHy3/JDuMm/Zln6bjQP5Euc790+DaCw93pq2HwJYt8OXs3tPGhF
+         lxPEl7obKsfcxyiOBPdC0xrAjYBiYq0vqdTQiEMAePQxPNsgP9GOnhc5EU7495+50JJH
+         rCGzN0Layfszcs5k+NkNvtJVEbERBNZ4azU6RUM19d79SenQenv+0esiQYTvjkPXHzfh
+         6LxycwHXRI+oDflBcdL1FiGrgmtB7pR6WTg9HB61rJmB0w7k8+EiNwe9unNgPNoGlwVo
+         RAkA==
+X-Gm-Message-State: AOAM531iTZX1rx4LghudFOstHX3EaIFxpLDdjBDJfka36yF5CSwV56Pa
+        /k6+BaVjm3eiAb6xDm6eXYDvMUBJ6wn6Tj3HJFgDk37200EheoEICK97xrbtQbuw2p2DguBSMNL
+        0/rbWInpdETFga4LaClHNev0bBoCoGK694w==
+X-Received: by 2002:a05:600c:354b:: with SMTP id i11mr1018796wmq.61.1637165808221;
+        Wed, 17 Nov 2021 08:16:48 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJz+W3AU7giazDCbRIX4xSugqMalFi05DGw5uHzfXoomWba1mB5whs0OptP+4HE4M9zI/6IS/A==
+X-Received: by 2002:a05:600c:354b:: with SMTP id i11mr1018774wmq.61.1637165808037;
+        Wed, 17 Nov 2021 08:16:48 -0800 (PST)
+Received: from nyx.localdomain (faun.canonical.com. [91.189.93.182])
+        by smtp.gmail.com with ESMTPSA id p2sm6680429wmq.23.2021.11.17.08.16.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Nov 2021 08:07:24 -0800 (PST)
-From:   Jonas Gorski <jonas.gorski@gmail.com>
-To:     =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        "David S. Miller" <davem@davemloft.net>,
+        Wed, 17 Nov 2021 08:16:47 -0800 (PST)
+Received: by nyx.localdomain (Postfix, from userid 1000)
+        id 5D2C72404A3; Wed, 17 Nov 2021 16:16:46 +0000 (GMT)
+Received: from nyx (localhost [127.0.0.1])
+        by nyx.localdomain (Postfix) with ESMTP id 55E9728023B;
+        Wed, 17 Nov 2021 16:16:46 +0000 (GMT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+cc:     netdev@vger.kernel.org, Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Jarod Wilson <jarod@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Dejin Zheng <zhengdejin5@gmail.com>
-Cc:     netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
-Subject: [PATCH] Revert "net: ethernet: bgmac: Use devm_platform_ioremap_resource_byname"
-Date:   Wed, 17 Nov 2021 17:07:18 +0100
-Message-Id: <20211117160718.122929-1-jonas.gorski@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Jiri Pirko <jiri@resnulli.us>, davem@davemloft.net,
+        Denis Kirjanov <dkirjanov@suse.de>,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCHv2 net-next] Bonding: add missed_max option
+In-reply-to: <YZTSUh0vA1gVZFr3@Laptop-X1>
+References: <20211117080337.1038647-1-liuhangbin@gmail.com> <70666.1637138425@nyx> <YZTSUh0vA1gVZFr3@Laptop-X1>
+Comments: In-reply-to Hangbin Liu <liuhangbin@gmail.com>
+   message dated "Wed, 17 Nov 2021 17:58:42 +0800."
+X-Mailer: MH-E 8.6+git; nmh 1.7.1; Emacs 29.0.50
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <86276.1637165806.1@nyx>
+Date:   Wed, 17 Nov 2021 16:16:46 +0000
+Message-ID: <86277.1637165806@nyx>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 3710e80952cf2dc48257ac9f145b117b5f74e0a5.
+Hangbin Liu <liuhangbin@gmail.com> wrote:
 
-Since idm_base and nicpm_base are still optional resources not present
-on all platforms, this breaks the driver for everything except Northstar
-2 (which has both).
+>On Wed, Nov 17, 2021 at 08:40:25AM +0000, Jay Vosburgh wrote:
+>> Hangbin Liu <liuhangbin@gmail.com> wrote:
+>> 
+>> >Currently, we use hard code number to verify if we are in the
+>> >arp_interval timeslice. But some user may want to reduce/extend
+>> >the verify timeslice. With the similar team option 'missed_max'
+>> >the uers could change that number based on their own environment.
+>> >
+>> >The name of arp_misssed_max is not used as we may use this option for
+>> >Bonding IPv6 NS/NA monitor in future.
+>> 
+>> 	Why reserve "arp_missed_max" for IPv6 which doesn't use ARP?  If
+>> the option is for the ARP monitor, then prefixing it with "arp_" would
+>> be consistent with the other arp_* options.
+>
+>I didn't explain it clearly. I want to say:
+>
+>I'm not using arp_misssed_max as the new option name because I plan to add
+>bonding IPv6 NS/NA monitor in future. At that time the option "missed_max"
+>could be used for both IPv4/IPv6 monitor.
+>
+>I will update the commit description in next version.
 
-The same change was already reverted once with 755f5738ff98 ("net:
-broadcom: fix a mistake about ioremap resource").
+	There has been talk of adding an IPv6 NS monitor for years, but
+it hasn't manifested.  I would prefer to see a consistent set of options
+nomenclature in what we have here and now.  If and when an IPv6 version
+is added, depending on the implementation, either the IPv6 item can be a
+discrete tunable, or an alias could be added, similar to num_grat_arp /
+num_unsol_na.
 
-So let's do it again.
+	-J
 
-Fixes: 3710e80952cf ("net: ethernet: bgmac: Use devm_platform_ioremap_resource_byname")
-Signed-off-by: Jonas Gorski <jonas.gorski@gmail.com>
 ---
- .../net/ethernet/broadcom/bgmac-platform.c    | 21 ++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/ethernet/broadcom/bgmac-platform.c b/drivers/net/ethernet/broadcom/bgmac-platform.c
-index c6412c523637..d8b5e8dca7d0 100644
---- a/drivers/net/ethernet/broadcom/bgmac-platform.c
-+++ b/drivers/net/ethernet/broadcom/bgmac-platform.c
-@@ -172,6 +172,7 @@ static int bgmac_probe(struct platform_device *pdev)
- {
- 	struct device_node *np = pdev->dev.of_node;
- 	struct bgmac *bgmac;
-+	struct resource *regs;
- 	int ret;
- 
- 	bgmac = bgmac_alloc(&pdev->dev);
-@@ -208,15 +209,21 @@ static int bgmac_probe(struct platform_device *pdev)
- 	if (IS_ERR(bgmac->plat.base))
- 		return PTR_ERR(bgmac->plat.base);
- 
--	bgmac->plat.idm_base = devm_platform_ioremap_resource_byname(pdev, "idm_base");
--	if (IS_ERR(bgmac->plat.idm_base))
--		return PTR_ERR(bgmac->plat.idm_base);
--	else
-+	regs = platform_get_resource_byname(pdev, IORESOURCE_MEM, "idm_base");
-+	if (regs) {
-+		bgmac->plat.idm_base = devm_ioremap_resource(&pdev->dev, regs);
-+		if (IS_ERR(bgmac->plat.idm_base))
-+			return PTR_ERR(bgmac->plat.idm_base);
- 		bgmac->feature_flags &= ~BGMAC_FEAT_IDM_MASK;
-+	}
- 
--	bgmac->plat.nicpm_base = devm_platform_ioremap_resource_byname(pdev, "nicpm_base");
--	if (IS_ERR(bgmac->plat.nicpm_base))
--		return PTR_ERR(bgmac->plat.nicpm_base);
-+	regs = platform_get_resource_byname(pdev, IORESOURCE_MEM, "nicpm_base");
-+	if (regs) {
-+		bgmac->plat.nicpm_base = devm_ioremap_resource(&pdev->dev,
-+							       regs);
-+		if (IS_ERR(bgmac->plat.nicpm_base))
-+			return PTR_ERR(bgmac->plat.nicpm_base);
-+	}
- 
- 	bgmac->read = platform_bgmac_read;
- 	bgmac->write = platform_bgmac_write;
--- 
-2.25.1
-
+	-Jay Vosburgh, jay.vosburgh@canonical.com
