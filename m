@@ -2,104 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21ADC4550AF
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 23:43:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E58844550C8
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 23:51:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241420AbhKQWq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 17:46:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57230 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241317AbhKQWqZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 17:46:25 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73F07C061570
-        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 14:43:26 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id gt5so3524344pjb.1
-        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 14:43:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=w92BPw+JYD1+cyHeq4g7llgJ1M5JbiDVw55lB6Aq+E0=;
-        b=nlWVO3R9c+har3uYmf2cTskMbVSx+5qwwlNK/lzrSOV4DS+aJyM7vAaOXTCAbVkuPq
-         +hsqutLHk64+OlqGK3ezc2mpusYxZ0/v+dwM/QXcRheKd2BlDAAm9WvtqMTTFBIZ20Gm
-         LLP0NeEtd818vTQuuO2Ph02wYiwK+LjOA/VjwS3n4Ca3fgmU3px0Gr9pkTEuLIUfTIFu
-         po0c3Jw8NQfO2vZiOdWutJ/3yqkAQ3z4spDAv+LKODiRjlmTdeV/ZHY+jyGtJEoYbB+V
-         erQ6FeWIL+UlZs9ocrA8RovRHlyxHxbOE3D2oBRXh0DqMcUKKBRdA+mOzeexH2NdrKS/
-         X3RQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=w92BPw+JYD1+cyHeq4g7llgJ1M5JbiDVw55lB6Aq+E0=;
-        b=Trt1jjlhnVSkOQCgQUQ+/JLPNbb7/fw9ENpy4iOhEndCXUh6+Y689aRMDDRi/in98L
-         r58WeBl+5t37BLkjuEhigayw9yjfbsaPw/mUfCNvjchj2SH6UqfZ+NZRDbAPurnhDJL4
-         MT6qz0UDKvod5jtkAYyDwyhQNSDC94aZ6UdHe9owa3qjlj6HQAVd2n03WuEyn+IVfMVS
-         Ox8Ssg/vs1nD4ObDLraZcviCnbgX3Xe0Ng7l5CzuZkwmdKKon1SG/hfy0Dg+hdfOMLIO
-         Lg6kzhtACOHdKqaUaAH0nHO3PfzSs+7/0Dyi/U99TSsodLyGq9UVydg7/5oJpvO7sIx9
-         p3LQ==
-X-Gm-Message-State: AOAM533yPFU7+Ir9HBpeGCJA1E0pxZejFjq3syLxDKAQJ6SNos/GMmoP
-        d9J0L8cirn4mSocdluek/QRb4TVGFjo=
-X-Google-Smtp-Source: ABdhPJwpyT7kNYeXnskV/6lny/kiQkLMFVvE6Ws6mxU44mDDdovxCV0gD0+3akPyIaSI0VCBZN5khQ==
-X-Received: by 2002:a17:90a:df01:: with SMTP id gp1mr4202757pjb.28.1637189005726;
-        Wed, 17 Nov 2021 14:43:25 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id f15sm681073pfe.171.2021.11.17.14.43.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Nov 2021 14:43:25 -0800 (PST)
-Subject: Re: [RFC -next 1/2] lib: add reference counting infrastructure
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
-References: <20211117192031.3906502-1-eric.dumazet@gmail.com>
- <20211117192031.3906502-2-eric.dumazet@gmail.com>
- <20211117120347.5176b96f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CANn89iJ8HLjjpBPyFOn3xTXSnOJCbOGq5gORgPnsws-+sB8ipA@mail.gmail.com>
- <20211117124706.79fd08c1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <b7c0fed4-bb30-e905-aae2-5e380b582f4c@gmail.com>
-Date:   Wed, 17 Nov 2021 14:43:24 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S241462AbhKQWx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 17:53:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51180 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241453AbhKQWx4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Nov 2021 17:53:56 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3BA9B6101C;
+        Wed, 17 Nov 2021 22:50:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637189455;
+        bh=Gp4cZyvkkY3yWz+J9l2y1gO5FE6wWKBpohI3wxcnrqg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=BKfYiaKAVSoWNJRHPjwteoNNBeToVYlvmk7rR9uZ+CRu7I4FzML8kXe0wqv7pd1n6
+         uInDumDLzI3JFBk0d39aoI2fikssz0oTVsZaBAm92YCSHcY8eSZg4258lQD+VLhPRA
+         pamsfWTy/U4j5mP9fYw3yTLvzdRte6/uyYhj4tf8joDhnISu3roGC2oX1nYoZnH9vN
+         hQV8JwYYylN536mHy63V44oc7ywDfrCnRKar0P/QbR2gq7x9N7nQuA0ong5EkFq3Mp
+         Wmpz4G/LOqKf7RDm2/JlgB6P9B842CruX6V7bXLsbWE6LnzhrbkqwQ2+vAwrCvOG1d
+         P19NXabb7NKiw==
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [PATCH net-next 0/8] Extend `phy-mode` to string array
+Date:   Wed, 17 Nov 2021 23:50:42 +0100
+Message-Id: <20211117225050.18395-1-kabel@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-In-Reply-To: <20211117124706.79fd08c1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
+this series extends the `phy-connection-type` / `phy-mode` property to
+be an array of strings, instead of just one string, and makes the
+corresponding changes to code. It then uses this changes to make
+marvell10g PHY driver choose the best MACTYPE according to which
+phy-modes are supported by the MAC, the PHY and the board.
 
-On 11/17/21 12:47 PM, Jakub Kicinski wrote:
-> On Wed, 17 Nov 2021 12:16:15 -0800 Eric Dumazet wrote:
->> On Wed, Nov 17, 2021 at 12:03 PM Jakub Kicinski <kuba@kernel.org> wrote:
->>> Looks great, this is what I had in mind when I said:
->>>
->>> | In the future we can extend this structure to also catch those
->>> | who fail to release the ref on unregistering notification.
->>>
->>> I realized today we can get quite a lot of coverage by just plugging
->>> in object debug infra.
->>>
->>> The main differences I see:
->>>  - do we ever want to use this in prod? - if not why allocate the
->>>    tracker itself dynamically? The double pointer interface seems
->>>    harder to compile out completely  
->>
->> I think that maintaining the tracking state in separate storage would
->> detect cases where the object has been freed, without the help of KASAN.
-> 
-> Makes sense, I guess we can hang more of the information of a secondary
-> object?
-> 
-> Maybe I'm missing a trick on how to make the feature consume no space
-> when disabled via Kconfig.
+Conventionaly the `phy-mode` means "this is the mode I want the PHY to
+operate in". But we now have some PHYs that may need to change the PHY
+mode during operation (marvell10g PHY driver), and so we need to know
+all the supported modes. Russell King is working on MAC and PHY drivers
+to inform phylink on which PHY interface modes they support, but it is
+not enough, because even if a MAC/PHY driver fills all the modes
+supported by the driver, still each individual board may have only some
+of these modes actually wired.
 
-If not enabled in Kconfig, the structures are empty, so consume no space.
+This series
+- changes the type of the `phy-mode` property to be an array of PHY
+  interface strings,
+- updated documentation of of_get_phy_mode() and related to inform that
+  only first mode is returned by these functions (since this function
+  is needed to still support conventional usage of the `phy-mode`
+  property),
+- adds fwnode_get_phy_modes() function which reads the `phy-mode` array
+  and fills bitmap with mentioned modes,
+- adds code to phylink to intersect the supported interfaces bitmap
+  supplied by MAC driver, with interface modes defined in device-tree
+  (and keeps backwards compatibility with conventional usage of the
+   phy-mode property, for more information read the commit message of
+   patch 4/8),
+- passes supported interfaces to PHY driver so that it may configure
+  a PHY to a specific mode given these interfaces,
+- uses this information in marvell10g driver.
 
-Basically this should a nop.
+Changes since RFC:
+- update also description of the `phy-connection-type` property
+
+Marek Behún (7):
+  dt-bindings: ethernet-controller: support multiple PHY connection
+    types
+  net: Update documentation for *_get_phy_mode() functions
+  device property: add helper function for getting phy mode bitmap
+  net: phylink: update supported_interfaces with modes from fwnode
+  net: phylink: pass supported PHY interface modes to phylib
+  net: phy: marvell10g: Use generic macro for supported interfaces
+  net: phy: marvell10g: Use tabs instead of spaces for indentation
+
+Russell King (1):
+  net: phy: marvell10g: select host interface configuration
+
+ .../bindings/net/ethernet-controller.yaml     |  94 ++++++------
+ drivers/base/property.c                       |  48 +++++-
+ drivers/net/phy/marvell10g.c                  | 140 ++++++++++++++++--
+ drivers/net/phy/phylink.c                     |  91 ++++++++++++
+ include/linux/phy.h                           |  10 ++
+ include/linux/property.h                      |   3 +
+ net/core/of_net.c                             |   9 +-
+ 7 files changed, 325 insertions(+), 70 deletions(-)
+
+-- 
+2.32.0
 
