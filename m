@@ -2,103 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 826524547B4
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 14:47:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 654774547DE
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 14:54:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237864AbhKQNuN convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 17 Nov 2021 08:50:13 -0500
-Received: from relay12.mail.gandi.net ([217.70.178.232]:39405 "EHLO
-        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233591AbhKQNuM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 08:50:12 -0500
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by relay12.mail.gandi.net (Postfix) with ESMTPSA id D910C20000B;
-        Wed, 17 Nov 2021 13:47:05 +0000 (UTC)
-Date:   Wed, 17 Nov 2021 14:47:05 +0100
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     Colin Foster <colin.foster@in-advantage.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        id S237957AbhKQN5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 08:57:47 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:44288 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229587AbhKQN5q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 08:57:46 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 150BE1FD35;
+        Wed, 17 Nov 2021 13:54:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1637157287; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lmVYrj9bSmv1XTSzwcd/4V0mgANHB4/cgRf2N2QFAj0=;
+        b=ctPYvlE+DztX3LTIYNxQ34sSypoOozdCTskzMjgtqzrJyqULwOatGkFwV/fCKzxxCr6eIg
+        4M2dpE761nxADzXEQ0XvDUx8t9kJ7hoyiaKhG7Lj7mZ3qhe2SqXJFrmmTg7xDY1n7NDcgv
+        ohTtK0EI3RXHGIqRxp+XaSmMoPfxOUQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1637157287;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lmVYrj9bSmv1XTSzwcd/4V0mgANHB4/cgRf2N2QFAj0=;
+        b=eOEjQN7ESlJg9KXWrgY3zE69c685vfQ4HSSoJdBpX+Bo2sX4HlnOdfM716CcQuCTIzNfUN
+        MwCoKlCDQ2Vz6vBw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6CD1F13C94;
+        Wed, 17 Nov 2021 13:54:46 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id QgubFqYJlWGwaAAAMHmgww
+        (envelope-from <dkirjanov@suse.de>); Wed, 17 Nov 2021 13:54:46 +0000
+Subject: Re: include/net/gro.h:413:22: error: implicit declaration of function
+ 'csum_ipv6_magic
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [RFC PATCH v4 net-next 11/23] pinctrl: ocelot: update pinctrl
- to automatic base address
-Message-ID: <20211117144705.24f21ef1@fixe.home>
-In-Reply-To: <YZPsIW2bfbBThtWj@piout.net>
-References: <20211116062328.1949151-1-colin.foster@in-advantage.com>
-        <20211116062328.1949151-12-colin.foster@in-advantage.com>
-        <YZPsIW2bfbBThtWj@piout.net>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Jakub Kicinski <kuba@kernel.org>, lkft-triage@lists.linaro.org
+References: <CA+G9fYsFwhPGCmsYoBkx+LTRWqaKrzQTLedZugnK2qieyTFoxQ@mail.gmail.com>
+From:   Denis Kirjanov <dkirjanov@suse.de>
+Message-ID: <5538d955-1679-6a24-d101-11e2eb39f71b@suse.de>
+Date:   Wed, 17 Nov 2021 16:54:45 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <CA+G9fYsFwhPGCmsYoBkx+LTRWqaKrzQTLedZugnK2qieyTFoxQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: ru
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Tue, 16 Nov 2021 18:36:33 +0100,
-Alexandre Belloni <alexandre.belloni@bootlin.com> a écrit :
 
-> Hello,
+
+11/17/21 3:47 PM, Naresh Kamboju пишет:
+> Regression found on riscv and arc gcc-11 build.
+> Following build warnings / errors reported on linux next 20211117.
 > 
-> On 15/11/2021 22:23:16-0800, Colin Foster wrote:
-> > struct gpio_chip recommends passing -1 as base to gpiolib. Doing so avoids
-> > conflicts when the chip is external and gpiochip0 already exists.
-> > 
-> > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> > ---
-> >  drivers/pinctrl/pinctrl-ocelot.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/pinctrl/pinctrl-ocelot.c b/drivers/pinctrl/pinctrl-ocelot.c
-> > index cc7fb0556169..f015404c425c 100644
-> > --- a/drivers/pinctrl/pinctrl-ocelot.c
-> > +++ b/drivers/pinctrl/pinctrl-ocelot.c
-> > @@ -1308,7 +1308,7 @@ static int ocelot_gpiochip_register(struct platform_device *pdev,
-> >  	gc = &info->gpio_chip;
-> >  	gc->ngpio = info->desc->npins;
-> >  	gc->parent = &pdev->dev;
-> > -	gc->base = 0;
-> > +	gc->base = -1;  
+> metadata:
+>      git_describe: next-20211117
+>      git_repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
+>      git_short_log: fd96a4057bd0 (\"Add linux-next specific files for 20211117\")
+>      target_arch: riscv
+>      toolchain: gcc-11
 > 
-> I can't remember why but I'm pretty sure I did that on purpose but this
-> indeed cause issues when the chip is external. I've asked Clément to
-> check, let's see what the result is ;)
+> build error :
+> --------------
+> In file included from net/core/dev.c:105:
+> include/net/gro.h: In function 'ip6_gro_compute_pseudo':
+> include/net/gro.h:413:22: error: implicit declaration of function
+> 'csum_ipv6_magic'; did you mean 'csum_tcpudp_magic'?
+> [-Werror=implicit-function-declaration]
+>    return ~csum_unfold(csum_ipv6_magic(&iph->saddr, &iph->daddr,
+>                        ^~~~~~~~~~~~~~~
+>                        csum_tcpudp_magic
+> cc1: some warnings being treated as errors
 
-After testing, it works on ocelot pcb123 board.
-
-Tested-by: Clément Léger <clement.leger@bootlin.com>
+See 
+https://patchwork.kernel.org/project/netdevbpf/patch/20211117100130.2368319-1-eric.dumazet@gmail.com/
 
 > 
-> >  	gc->of_node = info->dev->of_node;
-> >  	gc->label = "ocelot-gpio";
-> >  
-> > -- 
-> > 2.25.1
-> >   
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
 > 
-
-
-
--- 
-Clément Léger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+> link:
+> https://gitlab.com/Linaro/lkft/mirrors/next/linux-next/-/jobs/1790398957#L73
+> 
+> build link:
+> -----------
+> https://builds.tuxbuild.com/211schgBXkq5zjdda7io29wMONF/build.log
+> 
+> build config:
+> -------------
+> https://builds.tuxbuild.com/211schgBXkq5zjdda7io29wMONF/config
+> 
+> # To install tuxmake on your system globally
+> # sudo pip3 install -U tuxmake
+> tuxmake --runtime podman --target-arch riscv --toolchain gcc-11
+> --kconfig defconfig
+> 
