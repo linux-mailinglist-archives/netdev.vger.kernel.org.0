@@ -2,92 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7CFC454DB4
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 20:12:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA93A454DB9
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 20:13:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240390AbhKQTPO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 14:15:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37834 "EHLO
+        id S233475AbhKQTQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 14:16:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239360AbhKQTPM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 14:15:12 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32CECC061570
-        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 11:12:14 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id o14so3034448plg.5
-        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 11:12:14 -0800 (PST)
+        with ESMTP id S233430AbhKQTQO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 14:16:14 -0500
+Received: from mail-vk1-xa2f.google.com (mail-vk1-xa2f.google.com [IPv6:2607:f8b0:4864:20::a2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52132C061570
+        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 11:13:15 -0800 (PST)
+Received: by mail-vk1-xa2f.google.com with SMTP id k83so2289676vke.7
+        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 11:13:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Kj1hPgoy1NujK9T9y4QWmTDZ2y+LhA1E0FDsruIlBro=;
-        b=GK3Lfp+icgkhq4mw7yso0WHnFBAc+cWWSvfU93NFIs2O3/KGsAVlf7kgpjYSf5Fu7D
-         qKxJSBR0sSPwz8hfGlM/V/qOMYb9IY+us1FDOOA0k/r3ayr8QCtoCNfwlqSOAVMy+yjV
-         C4TsWw4yxq8h7XEXOIcnjUViLieRdiV9WtTo6KbpEC3EvamHzJ0FW2O8bvfqcwE7n0ui
-         wy9uzCNPzbbIfKHehLxSNj1tkCWPjJHREanUWJeXyFtJaW+9ipNJ9eCfrpGbKTH8D0Vd
-         U8cebtzr18PeOawFtL5w6FjL3mp+45l9C+RlIqtpuFn+7jWIZJ2GFPoB1eFSxG0urOaS
-         qjlQ==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rjfNJXYss0yM1d0G3ZncAxHFz1pqCZPuxVhI/HjUUcw=;
+        b=iLfpRASuYoy71DN7niN8lFYMGrBpObaI9d6bOAo995J38FUHRIQCuT/CgtCihL6Zkf
+         RAIFGHUG91+ro/JDRE17HvLPKCsb56I1irDVWuCzFIoCnZy64qdi/4+ojImSECoswkPi
+         cKikRBr4RFinRDI0TlxIg00slaJWSdnJIgv6ys5iNfT6sUSIET6BUQZ0HH5ZQdsOcy+9
+         m4mA308Q6Yy4n0S4M+Jh0JAHKVJa4KW3XEjgLv4nSEkUIcjIU/ttd8pr72b2lPm4O83Z
+         YQxuQB8W+8v2qwfsNYcJ7x3+VYhtb1pyKxyg8WXMNdT9UkNwfY2/MTU55WVvvXoukum0
+         r7XQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Kj1hPgoy1NujK9T9y4QWmTDZ2y+LhA1E0FDsruIlBro=;
-        b=Mta2J48/fuutplVnReXRhL2bu9RCUFg7WFm1uMo4RMU4HEVuRHNwuwoPbP4YJjn/JD
-         /iZ1YxVarJric42tccY0zTqyRI9iasuab7oDoVSmGkOcmG263hGsccH/3eOE2hR3y4Pf
-         BN33eFv2YqsEFMSfi0o5AuYsTwfTeAIyc3T9ARTdNDU5RLMw7u1tmYrghKE7vOx/Z5h0
-         TVNc+8U41iMsHsTryXP+wAQHfedrsN2FFHhcVWT/zjpjZLm55B2hxeQ+EDtRflrjlv6M
-         zAIW8vTGGT59I7xK5ZMcR1SkIZ9DCc7y2kzV13DGGEe7fh9652jQ09aMn/NI0xD8J+nB
-         3O6g==
-X-Gm-Message-State: AOAM531X5M6GO2K3npRy2J6nG2p4vbH/DomXPkg8VTJRyKVoybe67BgE
-        clvQ/O26Jx5NMhl7e6+Mdjxkge28SF/7cw==
-X-Google-Smtp-Source: ABdhPJxM4u7m6G5emgQKMgcD877el/2Oh/s56dEFYBQ1cfdfx/CXai25r7Hu4DJSlOryfTdtPASRCg==
-X-Received: by 2002:a17:902:e547:b0:141:ddbc:a8d6 with SMTP id n7-20020a170902e54700b00141ddbca8d6mr58101284plf.27.1637176333656;
-        Wed, 17 Nov 2021 11:12:13 -0800 (PST)
-Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
-        by smtp.gmail.com with ESMTPSA id d21sm359243pfu.52.2021.11.17.11.12.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Nov 2021 11:12:13 -0800 (PST)
-Date:   Wed, 17 Nov 2021 11:12:10 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Maxim Petrov <mmrmaximuzz@gmail.com>
-Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
-        gnault@redhat.com
-Subject: Re: [PATCH iproute2] tc/m_vlan: fix print_vlan() conditional on
- TCA_VLAN_ACT_PUSH_ETH
-Message-ID: <20211117111210.5b5741c9@hermes.local>
-In-Reply-To: <091bdc88-9386-288e-25ba-7d369ad9a6b5@gmail.com>
-References: <091bdc88-9386-288e-25ba-7d369ad9a6b5@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rjfNJXYss0yM1d0G3ZncAxHFz1pqCZPuxVhI/HjUUcw=;
+        b=ZpCOwt4cSpfitZn2ZhbC0Z93IFVsovEOTf/Py8mG10+OaxbYMaqQilVHdsRRLu86mM
+         sIAF2h7fTKtkiU8J+0gSCyeFiaD/Ab/6tKmEFVa8U9bu+NbjJjGK0VDYa+vvQMukbVda
+         Wx0dPEqq0QM5FL44jgWHb/35MqFszeA8KiAFc7NqFDjfj7YumS3qcDxxU2ToDJDdrXOb
+         aub7KOE3pYvKk79dIuh6pJSVcJ5xaSPN9FSNp8JBpVvdUD7k4Q8N4uHRbM3iz39DvZRB
+         RaGtWwg5Q1XUUzi1EgLqTMrTQHGhSQhbp++54CN0/SVcLinG38DrjyLnATYJs+7aOsoS
+         YiKQ==
+X-Gm-Message-State: AOAM531VF8U4I44DF0yD3UzB+YU/93zH/T3zQaQ1+/EPN6aAVNR52tYa
+        CB9felfGRo4BOWw6g5Iwjnayr3y6vkgG9iTPipEYSz57
+X-Google-Smtp-Source: ABdhPJxmUaAw3MnJMcV9caDqaqSdkyrNRmsjdyNtIZ7bc8J6PuqmITslykA/a/RDUpCkjhGCL9Cb9rA4IcN+1+sY/08=
+X-Received: by 2002:a05:6122:1812:: with SMTP id ay18mr93848051vkb.18.1637176394573;
+ Wed, 17 Nov 2021 11:13:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20211117174723.2305681-1-kuba@kernel.org> <20211117174723.2305681-2-kuba@kernel.org>
+In-Reply-To: <20211117174723.2305681-2-kuba@kernel.org>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Date:   Wed, 17 Nov 2021 11:13:03 -0800
+Message-ID: <CAL4WiipFY_YKMGbtEmYq0M=18yCEvLoGvXRSgui4+-NJR-ReiA@mail.gmail.com>
+Subject: Re: [RFC net-next 1/2] net: add netdev_refs debug
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 17 Nov 2021 21:05:33 +0300
-Maxim Petrov <mmrmaximuzz@gmail.com> wrote:
-
-> Fix the wild bracket in the if clause leading to the error in the condition.
-> 
-> Signed-off-by: Maxim Petrov <mmrmaximuzz@gmail.com>
+On Wed, Nov 17, 2021 at 9:47 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> Debugging netdev ref leaks is still pretty hard. Eric added
+> optional use of a normal refcount which is useful for tracking
+> abuse of existing users.
+>
+> For new code, however, it'd be great if we could actually track
+> the refs per-user. Allowing us to detect leaks where they happen.
+> This patch introduces a netdev_ref type and uses the debug_objects
+> infra to track refs being lost or misused.
+>
+> In the future we can extend this structure to also catch those
+> who fail to release the ref on unregistering notification.
+>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 > ---
->  tc/m_vlan.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tc/m_vlan.c b/tc/m_vlan.c
-> index 221083df..1b2b1d51 100644
-> --- a/tc/m_vlan.c
-> +++ b/tc/m_vlan.c
-> @@ -279,8 +279,8 @@ static int print_vlan(struct action_util *au, FILE *f, struct rtattr *arg)
->  				    ETH_ALEN, 0, b1, sizeof(b1));
->  			print_string(PRINT_ANY, "dst_mac", " dst_mac %s", b1);
->  		}
-> -		if (tb[TCA_VLAN_PUSH_ETH_SRC &&
-> -		       RTA_PAYLOAD(tb[TCA_VLAN_PUSH_ETH_SRC]) == ETH_ALEN]) {
-> +		if (tb[TCA_VLAN_PUSH_ETH_SRC] &&
-> +		       RTA_PAYLOAD(tb[TCA_VLAN_PUSH_ETH_SRC]) == ETH_ALEN) {
->  			ll_addr_n2a(RTA_DATA(tb[TCA_VLAN_PUSH_ETH_SRC]),
->  				    ETH_ALEN, 0, b1, sizeof(b1));
->  			print_string(PRINT_ANY, "src_mac", " src_mac %s", b1);
 
-Fixes: d61167dd88b4 ("m_vlan: add pop_eth and push_eth actions")
+Interesting, I was working on something very different, let me send
+the RFC (it is absolutely not complete at this point)
