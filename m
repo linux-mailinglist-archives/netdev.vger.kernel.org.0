@@ -2,61 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29BB845458B
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 12:23:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8C224545B2
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 12:30:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236739AbhKQL0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 06:26:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42290 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233972AbhKQL0G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 06:26:06 -0500
-Received: from mail-vk1-xa2f.google.com (mail-vk1-xa2f.google.com [IPv6:2607:f8b0:4864:20::a2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70660C061570
-        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 03:23:08 -0800 (PST)
-Received: by mail-vk1-xa2f.google.com with SMTP id q21so1420304vkn.2
-        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 03:23:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=scciJUWADJAzJ2OL5/6fVJTBg5bUzuj3o1jbsiqqQ8g=;
-        b=hjljwKjxsiGF0Xe/yZowJFw+2JUm1xlkjG7O3tt6ziJI80i7MxytJMuJoU/PkObdec
-         GbhENeOfEQ6B85L7T9nw3hei55SrwDgf31xv2xhXuoWgtyQgYdUbbgcAAnyBgs1ZTqtn
-         Nw/7VKGH8CTNvAwJZzH7qLodIJ1sZ/doWBNTqyTfCmSLG0hPdtl23nIy/+UQLue8CIEt
-         0sD58ZfT7w00hWkRgU+GN79GB5eeGyXHmqg3OqDxZQ41v4MWwGsZjKyHOvigcKdar7Rn
-         jnPMHe9Z0huuvqMU7paJiroEaJSc8HROSxj+Pm32LKfHVGYy2kRR6E45CyiRt/36hH6m
-         SNcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=scciJUWADJAzJ2OL5/6fVJTBg5bUzuj3o1jbsiqqQ8g=;
-        b=q0wX+680JkYKKx8ouiAkwypniqJoKvj94cVVpMS/Wxh2kOv7RsV97wBhrAgetKGSNz
-         GnJVbC9hw24ygevz16uzahk5mmM7tN5BI1M58l6xhS5LKBzCM8a2oM9uki41TebhbLVR
-         /gcUHEgqIATicV79VfBOZGTfhhpGh42JcDEGh1RUs+8lgALy0xsfE8C32wZldD5m4T3E
-         xc1gc+rorUo7v8S11Lwj70hCTfWofOIthITLkkH9337SYLcta87FR0/IafMWm/hVJk9e
-         0GNPE7L1/e1Sc2kmW8Qs9+Pc/wEc/LKXK3BQum6ytt39A/WCZExgQyaI0MyyhwSb0Q01
-         iVCw==
-X-Gm-Message-State: AOAM5312BzNS3uWrjcI7gkWa6NRQTIEFAqgdx03rKg1jbxt5t/ihao4t
-        qofR1Pvr7lJ1LG6YgMeFi2yiD/qjno5PmuHk/dI=
-X-Google-Smtp-Source: ABdhPJwq/moaIcMphMrYAfp7XxTh2Hcm3qp57z2wyhTHR3iEtyw69M58bxQY8HhSgOHnENnnUm8Uze6kS/j3c7t7KxQ=
-X-Received: by 2002:a05:6122:1788:: with SMTP id o8mr86726788vkf.8.1637148187642;
- Wed, 17 Nov 2021 03:23:07 -0800 (PST)
+        id S236815AbhKQLdT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 06:33:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46320 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235024AbhKQLdK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Nov 2021 06:33:10 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id EB73161BD4;
+        Wed, 17 Nov 2021 11:30:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637148612;
+        bh=+4UkogvX7MWmUXG4MP1pSECUepXmv13B1vebNAG9YZw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=DiKLiCO36qAL6EFVufUUUheEuvA6frB8b0WmWEcuHSvNtAXA1wpRNRaMM6uSMwQn3
+         2jm+v1VHHHKZogxM6VuwS1uqddQdUE/JVNX2vhw4wVl4FqTxgD2j+bFWNJx3gQ4WRy
+         er101R/Tft4V5797OSjUbCeHurkgnHuXpkLaWx1Ry38c5J2+fxDzT/oYOH9nBQitJB
+         nDuOgO/ZyCsb9FSopMZUVrlPSo8RCHF++2Vqd30oTuj+fVAsvPLP9q2M5uqYB8zMjT
+         3MvcxzhWiIZqO6Pkl0oxh+ue3f+InCnXJ+ghGY1EsPOzl1qg9LRj+wXlfvhLxhn0RS
+         tf5SPgpHmQrEw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DE92F609D3;
+        Wed, 17 Nov 2021 11:30:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Received: by 2002:a67:ac07:0:0:0:0:0 with HTTP; Wed, 17 Nov 2021 03:23:06
- -0800 (PST)
-Reply-To: jeai2nasri@yahoo.com
-From:   Jean Nasri <eri121ce@gmail.com>
-Date:   Wed, 17 Nov 2021 12:23:06 +0100
-Message-ID: <CAPYmmOEugR9N9_sB3s_DS49wbfuKkh1shuNUn1b+2eG9oOOeJg@mail.gmail.com>
-Subject: My friend please confirm
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/3] net: ocelot_net: phylink validate
+ implementation updates
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163714861190.14428.7153356692022354036.git-patchwork-notify@kernel.org>
+Date:   Wed, 17 Nov 2021 11:30:11 +0000
+References: <YZODOgRlR3RY/JWX@shell.armlinux.org.uk>
+In-Reply-To: <YZODOgRlR3RY/JWX@shell.armlinux.org.uk>
+To:     Russell King (Oracle) <linux@armlinux.org.uk>
+Cc:     alexandre.belloni@bootlin.com, claudiu.manoil@nxp.com,
+        vladimir.oltean@nxp.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-An email was sent to you but I am surprised that you never bothered to
-reply. Please answer for further explanation.
+Hello:
 
-Nasri
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Tue, 16 Nov 2021 10:08:58 +0000 you wrote:
+> Hi,
+> 
+> This series converts ocelot_net to fill in the supported_interfaces
+> member of phylink_config, cleans up the validate() implementation,
+> and then converts to phylink_generic_validate().
+> 
+>  drivers/net/ethernet/mscc/ocelot_net.c | 41 +++++-----------------------------
+>  1 file changed, 6 insertions(+), 35 deletions(-)
+
+Here is the summary with links:
+  - [net-next,1/3] net: ocelot_net: populate supported_interfaces member
+    https://git.kernel.org/netdev/net-next/c/8ea8c5b492d4
+  - [net-next,2/3] net: ocelot_net: remove interface checks in macb_validate()
+    https://git.kernel.org/netdev/net-next/c/a6f5248bc0a3
+  - [net-next,3/3] net: ocelot_net: use phylink_generic_validate()
+    https://git.kernel.org/netdev/net-next/c/7258aa5094db
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
