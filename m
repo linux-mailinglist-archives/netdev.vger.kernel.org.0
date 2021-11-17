@@ -2,69 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50E3E454CE9
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 19:16:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AE6E454CF6
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 19:20:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239898AbhKQSTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 13:19:39 -0500
-Received: from mta-13-4.privateemail.com ([198.54.127.109]:47381 "EHLO
-        MTA-13-4.privateemail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238577AbhKQSTj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 13:19:39 -0500
-X-Greylist: delayed 3611 seconds by postgrey-1.27 at vger.kernel.org; Wed, 17 Nov 2021 13:19:39 EST
-Received: from mta-13.privateemail.com (localhost [127.0.0.1])
-        by mta-13.privateemail.com (Postfix) with ESMTP id 36EAA18000AC;
-        Wed, 17 Nov 2021 13:16:40 -0500 (EST)
-Received: from localhost.localdomain (unknown [10.20.151.217])
-        by mta-13.privateemail.com (Postfix) with ESMTPA id 9797618000A5;
-        Wed, 17 Nov 2021 13:16:37 -0500 (EST)
-From:   Jordy Zomer <jordy@pwning.systems>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-hardening@vger.kernel.org,
-        Jordy Zomer <jordy@pwning.systems>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH] ipv6: check return value of ipv6_skip_exthdr
-Date:   Wed, 17 Nov 2021 19:16:10 +0100
-Message-Id: <20211117181610.2731938-1-jordy@pwning.systems>
-X-Mailer: git-send-email 2.27.0
+        id S238907AbhKQSXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 13:23:03 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54206 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230094AbhKQSXD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Nov 2021 13:23:03 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 086C861BC1;
+        Wed, 17 Nov 2021 18:20:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1637173204;
+        bh=FBrlAqhn871oYVvr9mvGIxAz/ecPOq96bNZqG0+QPFw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=0i+lTezY0Kf4tMj/aQXa51W3F7kfNg0IeEMYP8aAH1Vj4tckDivXscIMPB24/bpSf
+         D/n+vqhCc16u7dHF050vKvuueoMRr5PbrgfWny6PDKQsn6AL9/AvGZQvO8/GfzUW44
+         ucCfYdRWsT/9MJvFXmbvLrFdE7cC6rEtS5oT7ocQ=
+Date:   Wed, 17 Nov 2021 19:20:02 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     stable@vger.kernel.org, Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        "open list:ETHERNET PHY LIBRARY" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH stable 4.9] net: mdio-mux: fix unbalanced put_device
+Message-ID: <YZVH0u5bTOXhQw56@kroah.com>
+References: <20211117180309.2737514-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211117180309.2737514-1-f.fainelli@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The offset value is used in pointer math on skb->data.
-Since ipv6_skip_exthdr may return -1 the pointer to uh and th
-may not point to the actual udp and tcp headers and potentially
-overwrite other stuff. This is why I think this should be checked.
+On Wed, Nov 17, 2021 at 10:03:08AM -0800, Florian Fainelli wrote:
+> From: Corentin Labbe <clabbe.montjoie@gmail.com>
+> 
+> commit 60f786525032432af1b7d9b8935cb12936244ccd upstream
+> 
+> mdio_mux_uninit() call put_device (unconditionally) because of
+> of_mdio_find_bus() in mdio_mux_init.
+> But of_mdio_find_bus is only called if mux_bus is empty.
+> If mux_bus is set, mdio_mux_uninit will print a "refcount_t: underflow"
+> trace.
+> 
+> This patch add a get_device in the other branch of "if (mux_bus)".
+> 
+> Signed-off-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: David S. Miller <davem@davemloft.net>
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+> Note: this patch did not get any fixes tag, but it does fix issues
+> introduced by  fdf3b78df4d2 ("mdio: mux: Correct mdio_mux_init error
+> path issues").
 
-Signed-off-by: Jordy Zomer <jordy@pwning.systems>
----
- net/ipv6/esp6.c | 5 +++++
- 1 file changed, 5 insertions(+)
+Now queued up, thanks.
 
-diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
-index ed2f061b8768..dc4251655df9 100644
---- a/net/ipv6/esp6.c
-+++ b/net/ipv6/esp6.c
-@@ -808,6 +808,11 @@ int esp6_input_done2(struct sk_buff *skb, int err)
- 		struct tcphdr *th;
- 
- 		offset = ipv6_skip_exthdr(skb, offset, &nexthdr, &frag_off);
-+
-+		if (offset < 0)
-+			err = -EINVAL;
-+			goto out;
-+
- 		uh = (void *)(skb->data + offset);
- 		th = (void *)(skb->data + offset);
- 		hdr_len += offset;
--- 
-2.27.0
-
+greg k-h
