@@ -2,192 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45CB34545E8
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 12:49:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 542B74545EB
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 12:51:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236935AbhKQLv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 06:51:27 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:21170 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236928AbhKQLv1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 06:51:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637149708;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iXfUNSShjqrOA5sFM+cPOF/5WanWiLYTnJjk+TI27xQ=;
-        b=N3QIICV0wVNtybdKvbk4B9+2aXi2DP32eWqhyHfsoD6iOWZxFiM4q+Fx2L+9CYXfEvqEVA
-        bAjLKNUIHxuY0m8pL+peJGazOAEUptFMfaijttlvg7tfQkb3MzwS+kocEwHf98cUrwIdZ7
-        iBdZSGHpr+/y4JcZXiAp2+ajZoPauhk=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-378-AGjrYwz2PceQscjL8U15Ig-1; Wed, 17 Nov 2021 06:48:27 -0500
-X-MC-Unique: AGjrYwz2PceQscjL8U15Ig-1
-Received: by mail-ed1-f69.google.com with SMTP id i19-20020a05640242d300b003e7d13ebeedso1905376edc.7
-        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 03:48:26 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
-         :subject:content-language:to:references:in-reply-to
-         :content-transfer-encoding;
-        bh=iXfUNSShjqrOA5sFM+cPOF/5WanWiLYTnJjk+TI27xQ=;
-        b=Uw4wetTeOwCH47rDQy2z5em+PyKX8yYZu4piThBPkEnTdtp5vjrowUv9LTiyNvy8MR
-         hYyPMH3dQL5Ja69hgshOwZw75nR6/Wp12cht5WvV0Va4gzS3WPxeOESEaTE62d5vkDF7
-         5+64DhHH0qcAT6MuvFft8QRImV21tSfeTmeskRoNUPHVbGgEQBOa6jWF+CAVK1Bvc17q
-         jJz5e4qOlGjZ3BqvIrPRBqzjmjq9faarwosEZr5xCKx/0Gb9GLJfpNHw8zwYfBpOxHcG
-         1p8eqp7zXCH9vj6v8qx/zvFxvN6k+BE/7SWDc1/hce/5tLcDL2gRaXPdN17c4SZeXg5z
-         wlGQ==
-X-Gm-Message-State: AOAM531VQ/Ziapiy6Y/F4cx8IaXleghD3GiEM28EibAjO+1goqTb6uH/
-        xJgHzXA2DSx5qMPo2DxrQYxmZCYFcbxEohJWuBdZ7EOYYbPeQ9wt+A1QLYwTd6/mMuUNcyQxH4q
-        ZOlTnteohVO0cKJvr
-X-Received: by 2002:a05:6402:f:: with SMTP id d15mr20189713edu.331.1637149705854;
-        Wed, 17 Nov 2021 03:48:25 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxUXbRpsBwacbhC5r9gwH3TbtqimZxKl4AHr1KbPCKpjs1keI//W8jCBdq29CWmoEM8k5iNFQ==
-X-Received: by 2002:a05:6402:f:: with SMTP id d15mr20189668edu.331.1637149705640;
-        Wed, 17 Nov 2021 03:48:25 -0800 (PST)
-Received: from [192.168.2.13] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
-        by smtp.gmail.com with ESMTPSA id gz26sm2422534ejc.100.2021.11.17.03.48.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Nov 2021 03:48:25 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <b7476c7a-3fd2-b774-9123-929969d00b28@redhat.com>
-Date:   Wed, 17 Nov 2021 12:48:23 +0100
+        id S236957AbhKQLyF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 06:54:05 -0500
+Received: from mail-bn8nam12on2076.outbound.protection.outlook.com ([40.107.237.76]:1409
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S235112AbhKQLyE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Nov 2021 06:54:04 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=A71/fXdbX0KZaA/xdnqluJoY0jzSmyVSin5/D/78JQhW1z+tqsiB+yaAcLlFADZtv4Xv3N9EqXaSEG2s/tb/irYA7JY6sLNWMAbGKO6bbtaA02g3z5cF+vmzw4YqvD8YTSS3qP0pml30Rb5LkNhGk+7SZAPg7LlkGPYi3yBd9sqT+aregh8aImlpL0o/IQqvBGj7v2vLdBAG9lVy4X11kZMS16P8I12Gtgu50dR5RdUEmiHPiwMXMq2f+nG2P75abPzgPePYDZZQdMdIdEJyaQ/PVUkmOfNk2znZMaPYAMNAIvVPxNqn9L4GugJyXWx6uR1Z5fT9iZ6llqcMGxqaHQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ywzj5ckhSkdfw2s45nkx4XxIax6S7lMiWZ/7x4q1yWQ=;
+ b=ekxx4GvS6Jmy6xzBi+aEXtEz/ubT2ciByZLydUmCheTOxuqW/RbIjlu0oL6aJEKN3q4j2nR+BHfuxps7UFNZp5dgoiKXMGGb7SXyKqIUZsJRkKhDm4s9GGCAIbPDK7RdVwSIFXglnkOebcKezTBsf/FWxCMq2TXGqQDtepcFLvs1+bH0pjaNpzn3IlDHAfeDF/lgBDPM1ShOSCgSAevNwroh92+xgDPwp0o0eBgn0w3IJROViJWM3CTxGBfAZ8jENyXL9EPdwyI8fwFL4XtvTXroW4mlbcBHyFrsUMqYOpGkZGRs7yyOu4xl9n5aYtbdtkLbmrmqepv36oujVchggQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=nvidia.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ywzj5ckhSkdfw2s45nkx4XxIax6S7lMiWZ/7x4q1yWQ=;
+ b=dvDy5eR4dawAV8LEJlS7pr9U8Y2ZPfkDRCVBXLgJ7VpYdeR9uq37BRh0qtD3jbdd+qY4movPNLUfi4KYikt5dXY879Hkcs2WnQjO+rG/dtm+Yk2MtbKvA7wXM3XPgAqj6cHzSGJ4FQ3YxmYtcd9EAgy2hknQZliFvKZorEAhD81yCEMWp9zudhSMTESAnU8a6skImJ7gGqDxMbao/hffbJZ13dh1efKMig+h3kyKeYP4PAgDjv3sMWFohO6SEPF0jvo0aaxzErm2NOHQuwFdaPUNdK4NtHD7wGn0P90oyK0YwHbA5AbvaM502xGhmjWCRY4tlUbViZUT53oy6uhZQA==
+Received: from BN9P222CA0012.NAMP222.PROD.OUTLOOK.COM (2603:10b6:408:10c::17)
+ by MN2PR12MB2912.namprd12.prod.outlook.com (2603:10b6:208:ac::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.19; Wed, 17 Nov
+ 2021 11:51:04 +0000
+Received: from BN8NAM11FT038.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:10c:cafe::e0) by BN9P222CA0012.outlook.office365.com
+ (2603:10b6:408:10c::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.20 via Frontend
+ Transport; Wed, 17 Nov 2021 11:51:04 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ BN8NAM11FT038.mail.protection.outlook.com (10.13.176.246) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4690.15 via Frontend Transport; Wed, 17 Nov 2021 11:51:04 +0000
+Received: from yaviefel (172.20.187.6) by HQMAIL107.nvidia.com (172.20.187.13)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 17 Nov 2021 11:51:02
+ +0000
+References: <20211102021218.955277-1-william.xuanziyang@huawei.com>
+ <87k0h9bb9x.fsf@nvidia.com>
+ <20211115094940.138d86dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-agent: mu4e 1.4.15; emacs 27.2
+From:   Petr Machata <petrm@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Petr Machata <petrm@nvidia.com>,
+        Ziyang Xuan <william.xuanziyang@huawei.com>,
+        <davem@davemloft.net>, <jgg@nvidia.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net v2] net: vlan: fix a UAF in vlan_dev_real_dev()
+In-Reply-To: <20211115094940.138d86dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Date:   Wed, 17 Nov 2021 12:50:59 +0100
+Message-ID: <87a6i3t2zg.fsf@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Cc:     brouer@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
-        hawk@kernel.org, ilias.apalodimas@linaro.org,
-        akpm@linux-foundation.org, peterz@infradead.org, vbabka@suse.cz,
-        willy@infradead.org, will@kernel.org, feng.tang@intel.com,
-        jgg@ziepe.ca, ebiederm@xmission.com, aarcange@redhat.com,
-        guillaume.tucker@collabora.com, Linux-MM <linux-mm@kvack.org>
-Subject: Re: [PATCH net] page_pool: Revert "page_pool: disable dma mapping
- support..."
-Content-Language: en-US
-To:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
-        kuba@kernel.org
-References: <20211117075652.58299-1-linyunsheng@huawei.com>
-In-Reply-To: <20211117075652.58299-1-linyunsheng@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [172.20.187.6]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6cf1f4a7-652c-4255-9aad-08d9a9c0891e
+X-MS-TrafficTypeDiagnostic: MN2PR12MB2912:
+X-Microsoft-Antispam-PRVS: <MN2PR12MB2912FB0C9F491AE6336D411ED69A9@MN2PR12MB2912.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2582;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: otyNsYERDTNvLSM4uT5r3/7UXPoTyCPldBoW7gv4gKiu1e52vm0l8F/UCC9jnU0QjUNg5mbQWofXcmTPsWf5ZxSojGrNkaHK/t7labI53/vYpcBfItB6P0Q0EI5wb9HjcptfEOnUn+GM7H5UkfehXr17jzyszxChIHiN8hhx1lt2X9rDYiEteRYfVBBPXjL5IBQoqkSnNu2uqD14dwsE1YPyGIXlwzR3cjF8ixuHO9tjSXKZ+tRTXzV0WrQLHOeiqHEaVGfXJXOCft0M00HNY8cxQHrv6TmSGMlBuwrHPW/+r6YSOSMhzPonpR4YVyVOO2sxE53Z8VC4SKp556/Jeb1jgEjF1698J37afatFZ+CXxRI/dp9OzmIR/9638KBpDJHbeNt6rIGZ18pYDfEfq5goEStbB4wZKDajRmG0QEisL7mKKgwqUl8W6KAB6MsyUKyKoFnz7seaLhCZ2G8q6tbMA44AddH1sSAlruqO2x/EABA2X4A3SU+yz3/MNJ1cOaSPrUGFppvXrhvxb9F1j1giC1hjm/XBPLU17C8a7c4HQN+pDf6PRf0xk5EqncahB2Ut9yuFMVrYj1Glt+NDPQzfmwD0y3gG6i12EoLCWer98WA7Fnt/vSi0tz976KW+pCGSB+ObWCiMaV+grISX1N644PNduBiklVGrYS3nSfUWc085D/fmOA7KHLhZNKDhr20J9IagrprOfJNEp9LuZA==
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(86362001)(2906002)(26005)(6916009)(4326008)(36906005)(316002)(54906003)(82310400003)(6666004)(70206006)(70586007)(426003)(336012)(186003)(2616005)(36860700001)(508600001)(16526019)(5660300002)(36756003)(8676002)(8936002)(47076005)(356005)(7636003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Nov 2021 11:51:04.7146
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6cf1f4a7-652c-4255-9aad-08d9a9c0891e
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT038.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB2912
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added CC: linux-mm@kvack.org
 
-On 17/11/2021 08.56, Yunsheng Lin wrote:
-> This reverts commit d00e60ee54b12de945b8493cf18c1ada9e422514.
-> 
-> As reported by Guillaume in [1]:
-> Enabling LPAE always enables CONFIG_ARCH_DMA_ADDR_T_64BIT
-> in 32-bit systems, which breaks the bootup proceess when a
-> ethernet driver is using page pool with PP_FLAG_DMA_MAP flag.
-> As we were hoping we had no active consumers for such system
-> when we removed the dma mapping support, and LPAE seems like
-> a common feature for 32 bits system, so revert it.
-> 
-> 1. https://www.spinics.net/lists/netdev/msg779890.html
-> 
-> Fixes: d00e60ee54b1 ("page_pool: disable dma mapping support for 32-bit arch with 64-bit DMA")
-> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-> ---
->   include/linux/mm_types.h | 13 ++++++++++++-
->   include/net/page_pool.h  | 12 +++++++++++-
->   net/core/page_pool.c     | 10 ++++------
->   3 files changed, 27 insertions(+), 8 deletions(-)
+Jakub Kicinski <kuba@kernel.org> writes:
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> On Mon, 15 Nov 2021 18:04:42 +0100 Petr Machata wrote:
+>> Ziyang Xuan <william.xuanziyang@huawei.com> writes:
+>> 
+>> > diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
+>> > index 55275ef9a31a..a3a0a5e994f5 100644
+>> > --- a/net/8021q/vlan.c
+>> > +++ b/net/8021q/vlan.c
+>> > @@ -123,9 +123,6 @@ void unregister_vlan_dev(struct net_device *dev, struct list_head *head)
+>> >  	}
+>> >  
+>> >  	vlan_vid_del(real_dev, vlan->vlan_proto, vlan_id);
+>> > -
+>> > -	/* Get rid of the vlan's reference to real_dev */
+>> > -	dev_put(real_dev);
+>> >  }
+>> >  
+>> >  int vlan_check_real_dev(struct net_device *real_dev,
+>> > diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
+>> > index 0c21d1fec852..aeeb5f90417b 100644
+>> > --- a/net/8021q/vlan_dev.c
+>> > +++ b/net/8021q/vlan_dev.c
+>> > @@ -843,6 +843,9 @@ static void vlan_dev_free(struct net_device *dev)
+>> >  
+>> >  	free_percpu(vlan->vlan_pcpu_stats);
+>> >  	vlan->vlan_pcpu_stats = NULL;
+>> > +
+>> > +	/* Get rid of the vlan's reference to real_dev */
+>> > +	dev_put(vlan->real_dev);
+>> >  }
+>> >  
+>> >  void vlan_setup(struct net_device *dev)  
+>> 
+>> This is causing reference counting issues when vetoing is involved.
+>> Consider the following snippet:
+>> 
+>>     ip link add name bond1 type bond mode 802.3ad
+>>     ip link set dev swp1 master bond1
+>>     ip link add name bond1.100 link bond1 type vlan protocol 802.1ad id 100
+>>     # ^ vetoed, no netdevice created
+>>     ip link del dev bond1
+>> 
+>> The setup process goes like this: vlan_newlink() calls
+>> register_vlan_dev() calls netdev_upper_dev_link() calls
+>> __netdev_upper_dev_link(), which issues a notifier
+>> NETDEV_PRECHANGEUPPER, which yields a non-zero error,
+>> because a listener vetoed it.
+>> 
+>> So it unwinds, skipping dev_hold(real_dev), but eventually the VLAN ends
+>> up decreasing reference count of the real_dev. Then when when the bond
+>> netdevice is removed, we get an endless loop of:
+>> 
+>>     kernel:unregister_netdevice: waiting for bond1 to become free. Usage count = 0 
+>> 
+>> Moving the dev_hold(real_dev) to always happen even if the
+>> netdev_upper_dev_link() call makes the issue go away.
+>
+> I think we should move the dev_hold() to ndo_init(), otherwise 
+> it's hard to reason if destructor was invoked or not if
+> register_netdevice() errors out.
 
-Too bad that we have to keep this code-uglyness in struct page, and 
-handling in page_pool.
-
-
-> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-> index bb8c6f5f19bc..c3a6e6209600 100644
-> --- a/include/linux/mm_types.h
-> +++ b/include/linux/mm_types.h
-> @@ -105,7 +105,18 @@ struct page {
->   			struct page_pool *pp;
->   			unsigned long _pp_mapping_pad;
->   			unsigned long dma_addr;
-> -			atomic_long_t pp_frag_count;
-> +			union {
-> +				/**
-> +				 * dma_addr_upper: might require a 64-bit
-> +				 * value on 32-bit architectures.
-> +				 */
-> +				unsigned long dma_addr_upper;
-> +				/**
-> +				 * For frag page support, not supported in
-> +				 * 32-bit architectures with 64-bit DMA.
-> +				 */
-> +				atomic_long_t pp_frag_count;
-> +			};
->   		};
->   		struct {	/* slab, slob and slub */
->   			union {
-> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-> index 3855f069627f..a4082406a003 100644
-> --- a/include/net/page_pool.h
-> +++ b/include/net/page_pool.h
-> @@ -216,14 +216,24 @@ static inline void page_pool_recycle_direct(struct page_pool *pool,
->   	page_pool_put_full_page(pool, page, true);
->   }
->   
-> +#define PAGE_POOL_DMA_USE_PP_FRAG_COUNT	\
-> +		(sizeof(dma_addr_t) > sizeof(unsigned long))
-> +
->   static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
->   {
-> -	return page->dma_addr;
-> +	dma_addr_t ret = page->dma_addr;
-> +
-> +	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
-> +		ret |= (dma_addr_t)page->dma_addr_upper << 16 << 16;
-> +
-> +	return ret;
->   }
->   
->   static inline void page_pool_set_dma_addr(struct page *page, dma_addr_t addr)
->   {
->   	page->dma_addr = addr;
-> +	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
-> +		page->dma_addr_upper = upper_32_bits(addr);
->   }
->   
->   static inline void page_pool_set_frag_count(struct page *page, long nr)
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index 9b60e4301a44..1a6978427d6c 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -49,12 +49,6 @@ static int page_pool_init(struct page_pool *pool,
->   	 * which is the XDP_TX use-case.
->   	 */
->   	if (pool->p.flags & PP_FLAG_DMA_MAP) {
-> -		/* DMA-mapping is not supported on 32-bit systems with
-> -		 * 64-bit DMA mapping.
-> -		 */
-> -		if (sizeof(dma_addr_t) > sizeof(unsigned long))
-> -			return -EOPNOTSUPP;
-> -
->   		if ((pool->p.dma_dir != DMA_FROM_DEVICE) &&
->   		    (pool->p.dma_dir != DMA_BIDIRECTIONAL))
->   			return -EINVAL;
-> @@ -75,6 +69,10 @@ static int page_pool_init(struct page_pool *pool,
->   		 */
->   	}
->   
-> +	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT &&
-> +	    pool->p.flags & PP_FLAG_PAGE_FRAG)
-> +		return -EINVAL;
-> +
->   	if (ptr_ring_init(&pool->ring, ring_qsize, GFP_KERNEL) < 0)
->   		return -ENOMEM;
->   
-> 
-
+Ziyang Xuan, do you intend to take care of this?
