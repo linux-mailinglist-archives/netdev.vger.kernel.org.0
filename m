@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83964454D13
-	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 19:26:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C10B454D1F
+	for <lists+netdev@lfdr.de>; Wed, 17 Nov 2021 19:26:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239994AbhKQS3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 13:29:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55430 "EHLO mail.kernel.org"
+        id S240033AbhKQS3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 13:29:41 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55732 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235342AbhKQS32 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Nov 2021 13:29:28 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2B58D61A62;
-        Wed, 17 Nov 2021 18:26:28 +0000 (UTC)
+        id S239997AbhKQS3j (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Nov 2021 13:29:39 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7EB1661BC1;
+        Wed, 17 Nov 2021 18:26:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637173589;
-        bh=aX7kR5mhhKUKPo/3xI2LEWmDxKJnOScXHCAboHytXl4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=gMCay+Zg6c1ByKP22PhL3E+8cYanJkrIMvHTpPD5eRYdefeOg/XAVnIEXakYKH4KT
-         REX9w4+8T4FyzV/zPC1gL+pGtYT6s/D4Ys8gA2UfCoKAKB/e0v8htOX5sONPAGY5ny
-         cugK13ngC3k1R+mG5+BKHwxNCk72BJS0VJP6pJ4DxtJYXBxpbmZDlo8hhKANCzUzww
-         YQVUbdlYL110olnJVWvoOep7xklaN+wime9vBv6KhcOjsB8gSOTFOVy+89PZfy4WsE
-         K0IKEjPzmkPdQCPU8xpyWlEVKi2aaapuxHjfoQk7k/xDvXTEyOCN8RLbsQtu0ewpB7
-         gDMj35Thxe5/Q==
+        s=k20201202; t=1637173600;
+        bh=izROKGtj2qGswj8IP0BBhpttn4JyaHRA3FFLjvXH5II=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dY2SlZM5kOLoZwHT19k8dHtMl2WdlYpkOIi2kN8xtLC5ziMYIvzEW3pcnP2zJv8dB
+         dr3gj+TdWXE5Q9mNY2HkTF0qifPOddZzMSHgcmnB/ayolP+YJQ5OfOsx7Bn8bFUK59
+         nfJ4+LcbScXrGFTyuaH21nU7BOfKOKG2pkZ+ldUjl59xmDcBfb2VyQ1g0Ii8a/1sPV
+         115SjaHlKE1ND4ScrMlQFwKxYI8jabrvbueATCiYMkKIwgu2Xh/kiIvU6HFm3HyVHY
+         LbKwEzgbzvKyUubLQJvQ5XCD/TKvqWXE/6yzvf9rlkw6pRi+zDbYZHDkMaW8jLwlbH
+         MWr0QZ5m69SbQ==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -48,10 +48,12 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         UNGLinuxDriver@microchip.com,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next 0/6] Devlink cleanups
-Date:   Wed, 17 Nov 2021 20:26:16 +0200
-Message-Id: <cover.1637173517.git.leonro@nvidia.com>
+Subject: [PATCH net-next 1/6] devlink: Remove misleading internal_flags from health reporter dump
+Date:   Wed, 17 Nov 2021 20:26:17 +0200
+Message-Id: <cbca8d8874fe2dc9d7b13975705916907df90899.1637173517.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.33.1
+In-Reply-To: <cover.1637173517.git.leonro@nvidia.com>
+References: <cover.1637173517.git.leonro@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -60,45 +62,28 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Hi,
+DEVLINK_CMD_HEALTH_REPORTER_DUMP_GET command doesn't have .doit callback
+and has no use in internal_flags at all. Remove this misleading assignment.
 
-This series is non-controversial subset of my RFC [1], where I proposed
-a way to allow parallel devlink execution.
+Fixes: e44ef4e4516c ("devlink: Hang reporter's dump method on a dumpit cb")
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+ net/core/devlink.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-Thanks
-
-[1] https://lore.kernel.org/all/cover.1636390483.git.leonro@nvidia.com
-
-Leon Romanovsky (6):
-  devlink: Remove misleading internal_flags from health reporter dump
-  devlink: Delete useless checks of holding devlink lock
-  devlink: Simplify devlink resources unregister call
-  devlink: Clean registration of devlink port
-  devlink: Reshuffle resource registration logic
-  devlink: Inline sb related functions
-
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.c |   7 +-
- .../freescale/dpaa2/dpaa2-eth-devlink.c       |   7 +-
- drivers/net/ethernet/intel/ice/ice_devlink.c  |  23 +-
- .../marvell/prestera/prestera_devlink.c       |   8 +-
- drivers/net/ethernet/mellanox/mlx4/main.c     |   4 +-
- .../ethernet/mellanox/mlx5/core/en/devlink.c  |   5 +-
- .../ethernet/mellanox/mlx5/core/en/devlink.h  |   2 +-
- .../net/ethernet/mellanox/mlx5/core/en_main.c |   7 +-
- .../mellanox/mlx5/core/esw/devlink_port.c     |   9 +-
- drivers/net/ethernet/mellanox/mlxsw/core.c    |  15 +-
- .../net/ethernet/mellanox/mlxsw/spectrum.c    |   4 +-
- drivers/net/ethernet/mscc/ocelot_net.c        |   4 +-
- .../net/ethernet/netronome/nfp/nfp_devlink.c  |   4 +-
- .../ethernet/pensando/ionic/ionic_devlink.c   |   8 +-
- drivers/net/ethernet/ti/am65-cpsw-nuss.c      |  14 +-
- drivers/net/netdevsim/dev.c                   |  11 +-
- include/net/devlink.h                         |   9 +-
- net/core/devlink.c                            | 220 ++++++------------
- net/dsa/dsa.c                                 |   2 +-
- net/dsa/dsa2.c                                |   9 +-
- 20 files changed, 115 insertions(+), 257 deletions(-)
-
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 5ba4f9434acd..1cb2e0ae9173 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -8838,8 +8838,6 @@ static const struct genl_small_ops devlink_nl_ops[] = {
+ 			    GENL_DONT_VALIDATE_DUMP_STRICT,
+ 		.dumpit = devlink_nl_cmd_health_reporter_dump_get_dumpit,
+ 		.flags = GENL_ADMIN_PERM,
+-		.internal_flags = DEVLINK_NL_FLAG_NEED_DEVLINK_OR_PORT |
+-				  DEVLINK_NL_FLAG_NO_LOCK,
+ 	},
+ 	{
+ 		.cmd = DEVLINK_CMD_HEALTH_REPORTER_DUMP_CLEAR,
 -- 
 2.33.1
 
