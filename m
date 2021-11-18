@@ -2,319 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B15D4553AD
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 05:15:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F38A4553B9
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 05:18:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242886AbhKREST (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 23:18:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36130 "EHLO mail.kernel.org"
+        id S242908AbhKREVq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 23:21:46 -0500
+Received: from m43-7.mailgun.net ([69.72.43.7]:39856 "EHLO m43-7.mailgun.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242868AbhKRESI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Nov 2021 23:18:08 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7B39D61B62;
-        Thu, 18 Nov 2021 04:15:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637208908;
-        bh=xyVC4OChGFUwEq6Z6pKHHvA5Oi6gDuSM17+9o2j3+NA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UvszWgeEf0ViN4gxqbUQnbPXZ8l++q0M2Nb4qP5oJYttTyH6l1CF5MzLqC+JAh+rv
-         KLRQpPYaNl43b81I6LbJBawv0NCGoE096y5RMdItLaP9YRJUUrTwnU3K8nQErPsIQx
-         sxkfkQygKgH4u6XTgR5uqg7sb4kXOTv5kdAkXI7vaSxofO4BsOmbNxpbLAOQb/u9y0
-         L1GEfcuS21l0J/KU2XDQ6RfykIEpHGaA1PS0FO3RZhPG8IilGi3974XWIBtYGQkLBz
-         7HvzyUwg77wg6kIwDM39XPVKtKTOdbf5tKM4PugBpkqXXdHMPVQhXCNnALZMbwEN0J
-         Amjy7XnTl1rYg==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 9/9] net: kunit: add a test for dev_addr_lists
-Date:   Wed, 17 Nov 2021 20:15:01 -0800
-Message-Id: <20211118041501.3102861-10-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211118041501.3102861-1-kuba@kernel.org>
-References: <20211118041501.3102861-1-kuba@kernel.org>
+        id S242890AbhKREVl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Nov 2021 23:21:41 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1637209120; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=9KaZdUGuQot18Jkcjti0iEYdEE3ufjOGhrHqZODW42Y=; b=WQE2w6jFVDJY3E/ohhSXno2I4kty4Hni1kyvPTv/BxCRYwX55lyFsKObKoAqSN6W/3GHjUBc
+ PDmj/rXl1OHJ3UqXlBl2bJteayL0O5n1VVhe/zrXgVXB497mxdVgZmg91kPS95vMF7I7FRsS
+ c8mu4tryJQl4Qi9swAsn8HEOyhU=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
+ 6195d420665450d43ae90982 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 18 Nov 2021 04:18:40
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 840A9C43616; Thu, 18 Nov 2021 04:18:39 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from tynnyri.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 37FA3C4338F;
+        Thu, 18 Nov 2021 04:18:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 37FA3C4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Peter Seiderer <ps.report@gmx.net>
+Cc:     linux-wireless@vger.kernel.org, ath9k-devel@qca.qualcomm.com,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v1] ath9k: fix intr_txqs setting
+References: <20211116220720.30145-1-ps.report@gmx.net>
+        <163713885373.10263.4223864617658431026.kvalo@codeaurora.org>
+        <20211117200701.02e5ea74@gmx.net>
+Date:   Thu, 18 Nov 2021 06:18:34 +0200
+In-Reply-To: <20211117200701.02e5ea74@gmx.net> (Peter Seiderer's message of
+        "Wed, 17 Nov 2021 20:07:01 +0100")
+Message-ID: <87k0h6w0yt.fsf@tynnyri.adurom.net>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a KUnit test for the dev_addr API.
+Peter Seiderer <ps.report@gmx.net> writes:
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- net/Kconfig                    |   5 +
- net/core/Makefile              |   2 +
- net/core/dev_addr_lists_test.c | 234 +++++++++++++++++++++++++++++++++
- 3 files changed, 241 insertions(+)
- create mode 100644 net/core/dev_addr_lists_test.c
+> On Wed, 17 Nov 2021 08:47:40 +0000 (UTC), Kalle Valo <kvalo@codeaurora.org> wrote:
+>
+>> Peter Seiderer <ps.report@gmx.net> wrote:
+>>
+>> > The struct ath_hw member intr_txqs is never reset/assigned outside
+>> > of ath9k_hw_init_queues() and with the used bitwise-or in the interrupt
+>> > handling ar9002_hw_get_isr() accumulates all ever set interrupt flags.
+>> >
+>> > Fix this by using a pure assign instead of bitwise-or for the
+>> > first line (note: intr_txqs is only evaluated in case ATH9K_INT_TX bit
+>> > is set).
+>> >
+>> > Signed-off-by: Peter Seiderer <ps.report@gmx.net>
+>> > Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+>>
+>> How did you test this? I'm getting way too many ath9k patches which have not
+>> been tested on a real device.
+>>
+>
+> Did test it with an Compex WLE200NX 7A card (AR9280) running IBSS mode
+> against one older (madwifi) and one newer (ath10k) Atheros card using
+> ping and iperf traffic (investigating some performance degradation
+> compared to two older cards...., but getting better with the latest
+> rc80211_minstrel/rc80211_minstrel_ht changes), checked via printk
+> debugging intr_txqs is not cleared when entering ar9002_hw_get_isr(),
+> and checked wifi is still working after the change...., can provide more
+> info and/or debug traces if needed...
 
-diff --git a/net/Kconfig b/net/Kconfig
-index 074472dfa94a..8a1f9d0287de 100644
---- a/net/Kconfig
-+++ b/net/Kconfig
-@@ -455,4 +455,9 @@ config ETHTOOL_NETLINK
- 	  netlink. It provides better extensibility and some new features,
- 	  e.g. notification messages.
- 
-+config NETDEV_ADDR_LIST_TEST
-+	tristate "Unit tests for device address list"
-+	default KUNIT_ALL_TESTS
-+	depends on KUNIT
-+
- endif   # if NET
-diff --git a/net/core/Makefile b/net/core/Makefile
-index 6bdcb2cafed8..a8e4f737692b 100644
---- a/net/core/Makefile
-+++ b/net/core/Makefile
-@@ -13,6 +13,8 @@ obj-y		     += dev.o dev_addr_lists.o dst.o netevent.o \
- 			sock_diag.o dev_ioctl.o tso.o sock_reuseport.o \
- 			fib_notifier.o xdp.o flow_offload.o gro.o
- 
-+obj-$(CONFIG_NETDEV_ADDR_LIST_TEST) += dev_addr_lists_test.o
-+
- obj-y += net-sysfs.o
- obj-$(CONFIG_PAGE_POOL) += page_pool.o
- obj-$(CONFIG_PROC_FS) += net-procfs.o
-diff --git a/net/core/dev_addr_lists_test.c b/net/core/dev_addr_lists_test.c
-new file mode 100644
-index 000000000000..b4faad5c98b2
---- /dev/null
-+++ b/net/core/dev_addr_lists_test.c
-@@ -0,0 +1,234 @@
-+#include <kunit/test.h>
-+#include <linux/etherdevice.h>
-+#include <linux/netdevice.h>
-+#include <linux/rtnetlink.h>
-+
-+static const struct net_device_ops dummy_netdev_ops = {
-+};
-+
-+struct dev_addr_test_priv {
-+	u32 addr_seen;
-+};
-+
-+static int dev_addr_test_sync(struct net_device *netdev, const unsigned char *a)
-+{
-+	struct dev_addr_test_priv *datp = netdev_priv(netdev);
-+
-+	if (a[0] < 31 && !memchr_inv(a, a[0], ETH_ALEN))
-+		datp->addr_seen |= 1 << a[0];
-+	return 0;
-+}
-+
-+static int dev_addr_test_unsync(struct net_device *netdev,
-+				const unsigned char *a)
-+{
-+	struct dev_addr_test_priv *datp = netdev_priv(netdev);
-+
-+	if (a[0] < 31 && !memchr_inv(a, a[0], ETH_ALEN))
-+		datp->addr_seen &= ~(1 << a[0]);
-+	return 0;
-+}
-+
-+static int dev_addr_test_init(struct kunit *test)
-+{
-+	struct dev_addr_test_priv *datp;
-+	struct net_device *netdev;
-+	int err;
-+
-+	netdev = alloc_etherdev(sizeof(*datp));
-+	KUNIT_ASSERT_TRUE(test, netdev != NULL);
-+
-+	test->priv = netdev;
-+	netdev->netdev_ops = &dummy_netdev_ops;
-+
-+	err = register_netdev(netdev);
-+	if (err) {
-+		free_netdev(netdev);
-+		KUNIT_FAIL(test, "Can't register netdev %d", err);
-+	}
-+
-+	rtnl_lock();
-+	return 0;
-+}
-+
-+static void dev_addr_test_exit(struct kunit *test)
-+{
-+	struct net_device *netdev = test->priv;
-+
-+	rtnl_unlock();
-+	unregister_netdev(netdev);
-+	free_netdev(netdev);
-+}
-+
-+static void dev_addr_test_basic(struct kunit *test)
-+{
-+	struct net_device *netdev = test->priv;
-+	u8 addr[ETH_ALEN];
-+
-+        KUNIT_EXPECT_TRUE(test, netdev->dev_addr != NULL);
-+
-+	memset(addr, 2, sizeof(addr));
-+	eth_hw_addr_set(netdev, addr);
-+	KUNIT_EXPECT_EQ(test, 0, memcmp(netdev->dev_addr, addr, sizeof(addr)));
-+
-+	memset(addr, 3, sizeof(addr));
-+	dev_addr_set(netdev, addr);
-+	KUNIT_EXPECT_EQ(test, 0, memcmp(netdev->dev_addr, addr, sizeof(addr)));
-+}
-+
-+static void dev_addr_test_sync_one(struct kunit *test)
-+{
-+	struct net_device *netdev = test->priv;
-+	struct dev_addr_test_priv *datp;
-+	u8 addr[ETH_ALEN];
-+
-+	datp = netdev_priv(netdev);
-+
-+	memset(addr, 1, sizeof(addr));
-+	eth_hw_addr_set(netdev, addr);
-+
-+	__hw_addr_sync_dev(&netdev->dev_addrs, netdev, dev_addr_test_sync,
-+			   dev_addr_test_unsync);
-+	KUNIT_EXPECT_EQ(test, 2, datp->addr_seen);
-+
-+	memset(addr, 2, sizeof(addr));
-+	eth_hw_addr_set(netdev, addr);
-+
-+	datp->addr_seen = 0;
-+	__hw_addr_sync_dev(&netdev->dev_addrs, netdev, dev_addr_test_sync,
-+			   dev_addr_test_unsync);
-+	/* It's not going to sync anything because the main address is
-+	 * considered synced and we overwrite in place.
-+	 */
-+	KUNIT_EXPECT_EQ(test, 0, datp->addr_seen);
-+}
-+
-+static void dev_addr_test_add_del(struct kunit *test)
-+{
-+	struct net_device *netdev = test->priv;
-+	struct dev_addr_test_priv *datp;
-+	u8 addr[ETH_ALEN];
-+	int i;
-+
-+	datp = netdev_priv(netdev);
-+
-+	for (i = 1; i < 4; i++) {
-+		memset(addr, i, sizeof(addr));
-+		KUNIT_EXPECT_EQ(test, 0, dev_addr_add(netdev, addr,
-+						      NETDEV_HW_ADDR_T_LAN));
-+	}
-+	/* Add 3 again */
-+	KUNIT_EXPECT_EQ(test, 0, dev_addr_add(netdev, addr,
-+					      NETDEV_HW_ADDR_T_LAN));
-+
-+	__hw_addr_sync_dev(&netdev->dev_addrs, netdev, dev_addr_test_sync,
-+			   dev_addr_test_unsync);
-+	KUNIT_EXPECT_EQ(test, 0xf, datp->addr_seen);
-+
-+	KUNIT_EXPECT_EQ(test, 0, dev_addr_del(netdev, addr,
-+					      NETDEV_HW_ADDR_T_LAN));
-+
-+	__hw_addr_sync_dev(&netdev->dev_addrs, netdev, dev_addr_test_sync,
-+			   dev_addr_test_unsync);
-+	KUNIT_EXPECT_EQ(test, 0xf, datp->addr_seen);
-+
-+	for (i = 1; i < 4; i++) {
-+		memset(addr, i, sizeof(addr));
-+		KUNIT_EXPECT_EQ(test, 0, dev_addr_del(netdev, addr,
-+						      NETDEV_HW_ADDR_T_LAN));
-+	}
-+
-+	__hw_addr_sync_dev(&netdev->dev_addrs, netdev, dev_addr_test_sync,
-+			   dev_addr_test_unsync);
-+	KUNIT_EXPECT_EQ(test, 1, datp->addr_seen);
-+}
-+
-+static void dev_addr_test_del_main(struct kunit *test)
-+{
-+	struct net_device *netdev = test->priv;
-+	u8 addr[ETH_ALEN];
-+
-+	memset(addr, 1, sizeof(addr));
-+	eth_hw_addr_set(netdev, addr);
-+
-+	KUNIT_EXPECT_EQ(test, -ENOENT, dev_addr_del(netdev, addr,
-+						    NETDEV_HW_ADDR_T_LAN));
-+	KUNIT_EXPECT_EQ(test, 0, dev_addr_add(netdev, addr,
-+					      NETDEV_HW_ADDR_T_LAN));
-+	KUNIT_EXPECT_EQ(test, 0, dev_addr_del(netdev, addr,
-+					      NETDEV_HW_ADDR_T_LAN));
-+	KUNIT_EXPECT_EQ(test, -ENOENT, dev_addr_del(netdev, addr,
-+						    NETDEV_HW_ADDR_T_LAN));
-+}
-+
-+static void dev_addr_test_add_set(struct kunit *test)
-+{
-+	struct net_device *netdev = test->priv;
-+	struct dev_addr_test_priv *datp;
-+	u8 addr[ETH_ALEN];
-+	int i;
-+
-+	datp = netdev_priv(netdev);
-+
-+	/* There is no external API like dev_addr_add_excl(),
-+	 * so shuffle the tree a little bit and exploit aliasing.
-+	 */
-+	for (i = 1; i < 16; i++) {
-+		memset(addr, i, sizeof(addr));
-+		KUNIT_EXPECT_EQ(test, 0, dev_addr_add(netdev, addr,
-+						      NETDEV_HW_ADDR_T_LAN));
-+	}
-+
-+	memset(addr, i, sizeof(addr));
-+	eth_hw_addr_set(netdev, addr);
-+	KUNIT_EXPECT_EQ(test, 0, dev_addr_add(netdev, addr,
-+					      NETDEV_HW_ADDR_T_LAN));
-+	memset(addr, 0, sizeof(addr));
-+	eth_hw_addr_set(netdev, addr);
-+
-+	__hw_addr_sync_dev(&netdev->dev_addrs, netdev, dev_addr_test_sync,
-+			   dev_addr_test_unsync);
-+	KUNIT_EXPECT_EQ(test, 0xffff, datp->addr_seen);
-+}
-+
-+static void dev_addr_test_add_excl(struct kunit *test)
-+{
-+	struct net_device *netdev = test->priv;
-+	u8 addr[ETH_ALEN];
-+	int i;
-+
-+	for (i = 0; i < 10; i++) {
-+		memset(addr, i, sizeof(addr));
-+		KUNIT_EXPECT_EQ(test, 0, dev_uc_add_excl(netdev, addr));
-+	}
-+	KUNIT_EXPECT_EQ(test, -EEXIST, dev_uc_add_excl(netdev, addr));
-+
-+	for (i = 0; i < 10; i += 2) {
-+		memset(addr, i, sizeof(addr));
-+		KUNIT_EXPECT_EQ(test, 0, dev_uc_del(netdev, addr));
-+	}
-+	for (i = 1; i < 10; i += 2) {
-+		memset(addr, i, sizeof(addr));
-+		KUNIT_EXPECT_EQ(test, -EEXIST, dev_uc_add_excl(netdev, addr));
-+	}
-+}
-+
-+static struct kunit_case dev_addr_test_cases[] = {
-+        KUNIT_CASE(dev_addr_test_basic),
-+        KUNIT_CASE(dev_addr_test_sync_one),
-+        KUNIT_CASE(dev_addr_test_add_del),
-+        KUNIT_CASE(dev_addr_test_del_main),
-+        KUNIT_CASE(dev_addr_test_add_set),
-+        KUNIT_CASE(dev_addr_test_add_excl),
-+        {}
-+};
-+
-+static struct kunit_suite dev_addr_test_suite = {
-+        .name = "dev-addr-list-test",
-+        .test_cases = dev_addr_test_cases,
-+	.init = dev_addr_test_init,
-+	.exit = dev_addr_test_exit,
-+};
-+kunit_test_suite(dev_addr_test_suite);
-+
-+MODULE_LICENSE("GPL");
+Perfect, thanks!
+
 -- 
-2.31.1
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
