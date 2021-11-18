@@ -2,184 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE7604551EE
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 02:01:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D0C84551F2
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 02:01:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242093AbhKRBDx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 20:03:53 -0500
-Received: from mga09.intel.com ([134.134.136.24]:30896 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242098AbhKRBDj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Nov 2021 20:03:39 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10171"; a="233923247"
-X-IronPort-AV: E=Sophos;i="5.87,243,1631602800"; 
-   d="scan'208";a="233923247"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2021 17:00:12 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,243,1631602800"; 
-   d="scan'208";a="646235560"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga001.fm.intel.com with ESMTP; 17 Nov 2021 17:00:11 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Radoslaw Tyl <radoslawx.tyl@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com,
-        Tony Brelinski <tony.brelinski@intel.com>
-Subject: [PATCH net-next 5/5] ixgbevf: Add support for new mailbox communication between PF and VF
-Date:   Wed, 17 Nov 2021 16:58:32 -0800
-Message-Id: <20211118005832.245978-6-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211118005832.245978-1-anthony.l.nguyen@intel.com>
-References: <20211118005832.245978-1-anthony.l.nguyen@intel.com>
+        id S242109AbhKRBEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 20:04:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59706 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242118AbhKRBEA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 20:04:00 -0500
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 644A7C061766;
+        Wed, 17 Nov 2021 17:01:01 -0800 (PST)
+Received: by mail-pg1-x532.google.com with SMTP id p17so3792056pgj.2;
+        Wed, 17 Nov 2021 17:01:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=CldWxF+xHdMGvS6Ww1B8FNZQUYPzrzWUDuo2TU0I4PM=;
+        b=IXgkU6U+xtO8Ku5gLtxEqkE+vVeF2WpddqjXMgSDNbjqghnhEYbjAq0UKoge6akEA3
+         tIyUDzAoUHxIAC5WF4aVf2dWN9i6drJVqdfWMwjb0R2wH7gLmWN3Eni/PSW1zaRP7h3Y
+         9d3tL7uqSuQ8MHTy4hbKSw3mlz3SkZvcAkof6wkMyrbLdfU0tJ0rmBh5fdRPY1x80AvW
+         A/wpKOr/u4mV4kf1yqeiF6ItMSbYAvzteKET1BwFU6pPXCufKCrGhJvkQ9KjOJ3fl1At
+         F9eqjhTpZJS9e+n1lEGQaWrSjSBeqL1ADwvSdnHfQmsWfyMcOmgqbIg7iqvLJwgk4l7m
+         Qd/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CldWxF+xHdMGvS6Ww1B8FNZQUYPzrzWUDuo2TU0I4PM=;
+        b=MTnNzfgKQZq4dSoEaw1wMpIbVMmb5Q61lHBgIhgPPlYxetnOK9qhiOogyPrYxKQQah
+         snufY3BvUtPUQglBbupqJVDAjABhZXdwZvYCRE3cJgSmM/nrV3AbIR3fnq2ciPLT5V23
+         Vt0hTOW0uyoLZaNqRuzU57P1yyA5gyMGx7OYCfoiWF5yhf2FT3UbKwKSTKqMsgKTDIPE
+         UbiIB1SlpVUlnm6Ta5i1ZZVuNAdQo5dWsLgpyxjF4Yqib4/iHqPrZZcYK3o1t4dorO0G
+         zYzpvR8GZ055GmB/TiFXlRIv1tVnI8f1T5B0wk5fqPsR0PypiXoMFIgAxEhclecUtTIu
+         e2cA==
+X-Gm-Message-State: AOAM530aXoYyjWfriCQNI68vEvJyinV+Kz1Yo1m36tVakQfnt5DavyiB
+        0inX4a5ZRKZ3eyyGaocAOPg=
+X-Google-Smtp-Source: ABdhPJwvQI25wT11ooPWmvblcwDtsd2TZz/VblITP8t0Z8TTBiF4LO6D6NNriPTY1X6BIjEfcMRIsA==
+X-Received: by 2002:a62:18d2:0:b0:4a2:b2d0:c39f with SMTP id 201-20020a6218d2000000b004a2b2d0c39fmr30558131pfy.69.1637197260931;
+        Wed, 17 Nov 2021 17:01:00 -0800 (PST)
+Received: from ast-mbp ([2620:10d:c090:400::5:6d])
+        by smtp.gmail.com with ESMTPSA id d3sm860320pfv.57.2021.11.17.17.00.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Nov 2021 17:01:00 -0800 (PST)
+Date:   Wed, 17 Nov 2021 17:00:59 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH bpf] selftests: bpf: check map in map pruning
+Message-ID: <20211118010059.c2mixoshcrcz4ywq@ast-mbp>
+References: <20211111161452.86864-1-lmb@cloudflare.com>
+ <CAADnVQKWk5VNT9Z_Cy6COO9NMjkUg1p9gYTsPPzH-fi1qCrDiw@mail.gmail.com>
+ <CACAyw99EhJ8k4f3zeQMf3pRC+L=hQhK=Rb3UwSz19wt9gnMPrA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACAyw99EhJ8k4f3zeQMf3pRC+L=hQhK=Rb3UwSz19wt9gnMPrA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Radoslaw Tyl <radoslawx.tyl@intel.com>
+On Wed, Nov 17, 2021 at 08:47:45AM +0000, Lorenz Bauer wrote:
+> On Sat, 13 Nov 2021 at 01:27, Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > Not sure how you've tested it, but it doesn't work in unpriv:
+> > $ test_verifier 789
+> > #789/u map in map state pruning FAIL
+> > processed 26 insns (limit 1000000) max_states_per_insn 0 total_states
+> > 2 peak_states 2 mark_read 1
+> > #789/p map in map state pruning OK
+> 
+> Strange, I have a script that I use for bisecting which uses a minimal
+> .config + virtue to run a vm, plus I was debugging in gdb at the same
+> time. I might have missed this, apologies.
+> 
+> I guess vmtest.sh is the canonical way to run tests now?
 
-Provide improved mailbox communication, between PF and VF,
-which is defined as API version 1.5.
-
-Signed-off-by: Radoslaw Tyl <radoslawx.tyl@intel.com>
-Tested-by: Tony Brelinski <tony.brelinski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ixgbevf/ipsec.c        |  1 +
- drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c |  9 +++++++++
- drivers/net/ethernet/intel/ixgbevf/mbx.h          |  1 +
- drivers/net/ethernet/intel/ixgbevf/vf.c           | 14 ++++++++++++--
- 4 files changed, 23 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ixgbevf/ipsec.c b/drivers/net/ethernet/intel/ixgbevf/ipsec.c
-index d9935a42f0b7..e763cee0695e 100644
---- a/drivers/net/ethernet/intel/ixgbevf/ipsec.c
-+++ b/drivers/net/ethernet/intel/ixgbevf/ipsec.c
-@@ -623,6 +623,7 @@ void ixgbevf_init_ipsec_offload(struct ixgbevf_adapter *adapter)
- 
- 	switch (adapter->hw.api_version) {
- 	case ixgbe_mbox_api_14:
-+	case ixgbe_mbox_api_15:
- 		break;
- 	default:
- 		return;
-diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-index cd93b47a61cd..b1dfbaff8b31 100644
---- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-+++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-@@ -2266,6 +2266,7 @@ static void ixgbevf_negotiate_api(struct ixgbevf_adapter *adapter)
- {
- 	struct ixgbe_hw *hw = &adapter->hw;
- 	static const int api[] = {
-+		ixgbe_mbox_api_15,
- 		ixgbe_mbox_api_14,
- 		ixgbe_mbox_api_13,
- 		ixgbe_mbox_api_12,
-@@ -2284,6 +2285,12 @@ static void ixgbevf_negotiate_api(struct ixgbevf_adapter *adapter)
- 		idx++;
- 	}
- 
-+	if (hw->api_version >= ixgbe_mbox_api_15) {
-+		hw->mbx.ops.init_params(hw);
-+		memcpy(&hw->mbx.ops, &ixgbevf_mbx_ops,
-+		       sizeof(struct ixgbe_mbx_operations));
-+	}
-+
- 	spin_unlock_bh(&adapter->mbx_lock);
- }
- 
-@@ -2627,6 +2634,7 @@ static void ixgbevf_set_num_queues(struct ixgbevf_adapter *adapter)
- 		case ixgbe_mbox_api_12:
- 		case ixgbe_mbox_api_13:
- 		case ixgbe_mbox_api_14:
-+		case ixgbe_mbox_api_15:
- 			if (adapter->xdp_prog &&
- 			    hw->mac.max_tx_queues == rss)
- 				rss = rss > 3 ? 2 : 1;
-@@ -4625,6 +4633,7 @@ static int ixgbevf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	case ixgbe_mbox_api_12:
- 	case ixgbe_mbox_api_13:
- 	case ixgbe_mbox_api_14:
-+	case ixgbe_mbox_api_15:
- 		netdev->max_mtu = IXGBE_MAX_JUMBO_FRAME_SIZE -
- 				  (ETH_HLEN + ETH_FCS_LEN);
- 		break;
-diff --git a/drivers/net/ethernet/intel/ixgbevf/mbx.h b/drivers/net/ethernet/intel/ixgbevf/mbx.h
-index b3b83c95babf..7346ccf014a5 100644
---- a/drivers/net/ethernet/intel/ixgbevf/mbx.h
-+++ b/drivers/net/ethernet/intel/ixgbevf/mbx.h
-@@ -65,6 +65,7 @@ enum ixgbe_pfvf_api_rev {
- 	ixgbe_mbox_api_12,	/* API version 1.2, linux/freebsd VF driver */
- 	ixgbe_mbox_api_13,	/* API version 1.3, linux/freebsd VF driver */
- 	ixgbe_mbox_api_14,	/* API version 1.4, linux/freebsd VF driver */
-+	ixgbe_mbox_api_15,	/* API version 1.5, linux/freebsd VF driver */
- 	/* This value should always be last */
- 	ixgbe_mbox_api_unknown,	/* indicates that API version is not known */
- };
-diff --git a/drivers/net/ethernet/intel/ixgbevf/vf.c b/drivers/net/ethernet/intel/ixgbevf/vf.c
-index a1672e518d97..61d8970c6d1d 100644
---- a/drivers/net/ethernet/intel/ixgbevf/vf.c
-+++ b/drivers/net/ethernet/intel/ixgbevf/vf.c
-@@ -74,6 +74,9 @@ static s32 ixgbevf_reset_hw_vf(struct ixgbe_hw *hw)
- 
- 	/* reset the api version */
- 	hw->api_version = ixgbe_mbox_api_10;
-+	hw->mbx.ops.init_params(hw);
-+	memcpy(&hw->mbx.ops, &ixgbevf_mbx_ops_legacy,
-+	       sizeof(struct ixgbe_mbx_operations));
- 
- 	IXGBE_WRITE_REG(hw, IXGBE_VFCTRL, IXGBE_CTRL_RST);
- 	IXGBE_WRITE_FLUSH(hw);
-@@ -310,6 +313,7 @@ int ixgbevf_get_reta_locked(struct ixgbe_hw *hw, u32 *reta, int num_rx_queues)
- 	 * is not supported for this device type.
- 	 */
- 	switch (hw->api_version) {
-+	case ixgbe_mbox_api_15:
- 	case ixgbe_mbox_api_14:
- 	case ixgbe_mbox_api_13:
- 	case ixgbe_mbox_api_12:
-@@ -378,6 +382,7 @@ int ixgbevf_get_rss_key_locked(struct ixgbe_hw *hw, u8 *rss_key)
- 	 * or if the operation is not supported for this device type.
- 	 */
- 	switch (hw->api_version) {
-+	case ixgbe_mbox_api_15:
- 	case ixgbe_mbox_api_14:
- 	case ixgbe_mbox_api_13:
- 	case ixgbe_mbox_api_12:
-@@ -544,8 +549,9 @@ static s32 ixgbevf_update_xcast_mode(struct ixgbe_hw *hw, int xcast_mode)
- 		if (xcast_mode == IXGBEVF_XCAST_MODE_PROMISC)
- 			return -EOPNOTSUPP;
- 		fallthrough;
--	case ixgbe_mbox_api_14:
- 	case ixgbe_mbox_api_13:
-+	case ixgbe_mbox_api_14:
-+	case ixgbe_mbox_api_15:
- 		break;
- 	default:
- 		return -EOPNOTSUPP;
-@@ -704,8 +710,11 @@ static s32 ixgbevf_check_mac_link_vf(struct ixgbe_hw *hw,
- 	/* if the read failed it could just be a mailbox collision, best wait
- 	 * until we are called again and don't report an error
- 	 */
--	if (mbx->ops.read(hw, &in_msg, 1))
-+	if (mbx->ops.read(hw, &in_msg, 1)) {
-+		if (hw->api_version >= ixgbe_mbox_api_15)
-+			mac->get_link_status = false;
- 		goto out;
-+	}
- 
- 	if (!(in_msg & IXGBE_VT_MSGTYPE_CTS)) {
- 		/* msg is not CTS and is NACK we must have lost CTS status */
-@@ -901,6 +910,7 @@ int ixgbevf_get_queues(struct ixgbe_hw *hw, unsigned int *num_tcs,
- 	case ixgbe_mbox_api_12:
- 	case ixgbe_mbox_api_13:
- 	case ixgbe_mbox_api_14:
-+	case ixgbe_mbox_api_15:
- 		break;
- 	default:
- 		return 0;
--- 
-2.31.1
-
+vmtest.sh runs test_progs only. That's the minimum bar that
+developers have to pass before sending patches.
+BPF CI runs test_progs, test_progs-no_alu32, test_verifier and test_maps.
+If in doubt run them all.
