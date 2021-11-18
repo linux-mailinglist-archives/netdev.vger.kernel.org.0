@@ -2,93 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D0C84551F2
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 02:01:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED9874551FC
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 02:08:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242109AbhKRBEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 20:04:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59706 "EHLO
+        id S242103AbhKRBLT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 20:11:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242118AbhKRBEA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 20:04:00 -0500
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 644A7C061766;
-        Wed, 17 Nov 2021 17:01:01 -0800 (PST)
-Received: by mail-pg1-x532.google.com with SMTP id p17so3792056pgj.2;
-        Wed, 17 Nov 2021 17:01:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CldWxF+xHdMGvS6Ww1B8FNZQUYPzrzWUDuo2TU0I4PM=;
-        b=IXgkU6U+xtO8Ku5gLtxEqkE+vVeF2WpddqjXMgSDNbjqghnhEYbjAq0UKoge6akEA3
-         tIyUDzAoUHxIAC5WF4aVf2dWN9i6drJVqdfWMwjb0R2wH7gLmWN3Eni/PSW1zaRP7h3Y
-         9d3tL7uqSuQ8MHTy4hbKSw3mlz3SkZvcAkof6wkMyrbLdfU0tJ0rmBh5fdRPY1x80AvW
-         A/wpKOr/u4mV4kf1yqeiF6ItMSbYAvzteKET1BwFU6pPXCufKCrGhJvkQ9KjOJ3fl1At
-         F9eqjhTpZJS9e+n1lEGQaWrSjSBeqL1ADwvSdnHfQmsWfyMcOmgqbIg7iqvLJwgk4l7m
-         Qd/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CldWxF+xHdMGvS6Ww1B8FNZQUYPzrzWUDuo2TU0I4PM=;
-        b=MTnNzfgKQZq4dSoEaw1wMpIbVMmb5Q61lHBgIhgPPlYxetnOK9qhiOogyPrYxKQQah
-         snufY3BvUtPUQglBbupqJVDAjABhZXdwZvYCRE3cJgSmM/nrV3AbIR3fnq2ciPLT5V23
-         Vt0hTOW0uyoLZaNqRuzU57P1yyA5gyMGx7OYCfoiWF5yhf2FT3UbKwKSTKqMsgKTDIPE
-         UbiIB1SlpVUlnm6Ta5i1ZZVuNAdQo5dWsLgpyxjF4Yqib4/iHqPrZZcYK3o1t4dorO0G
-         zYzpvR8GZ055GmB/TiFXlRIv1tVnI8f1T5B0wk5fqPsR0PypiXoMFIgAxEhclecUtTIu
-         e2cA==
-X-Gm-Message-State: AOAM530aXoYyjWfriCQNI68vEvJyinV+Kz1Yo1m36tVakQfnt5DavyiB
-        0inX4a5ZRKZ3eyyGaocAOPg=
-X-Google-Smtp-Source: ABdhPJwvQI25wT11ooPWmvblcwDtsd2TZz/VblITP8t0Z8TTBiF4LO6D6NNriPTY1X6BIjEfcMRIsA==
-X-Received: by 2002:a62:18d2:0:b0:4a2:b2d0:c39f with SMTP id 201-20020a6218d2000000b004a2b2d0c39fmr30558131pfy.69.1637197260931;
-        Wed, 17 Nov 2021 17:01:00 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:400::5:6d])
-        by smtp.gmail.com with ESMTPSA id d3sm860320pfv.57.2021.11.17.17.00.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Nov 2021 17:01:00 -0800 (PST)
-Date:   Wed, 17 Nov 2021 17:00:59 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH bpf] selftests: bpf: check map in map pruning
-Message-ID: <20211118010059.c2mixoshcrcz4ywq@ast-mbp>
-References: <20211111161452.86864-1-lmb@cloudflare.com>
- <CAADnVQKWk5VNT9Z_Cy6COO9NMjkUg1p9gYTsPPzH-fi1qCrDiw@mail.gmail.com>
- <CACAyw99EhJ8k4f3zeQMf3pRC+L=hQhK=Rb3UwSz19wt9gnMPrA@mail.gmail.com>
+        with ESMTP id S237831AbhKRBLR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 20:11:17 -0500
+X-Greylist: delayed 2139 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 17 Nov 2021 17:08:18 PST
+Received: from mx0a-00206401.pphosted.com (mx0a-00206401.pphosted.com [IPv6:2620:100:9001:15::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 962E1C061570;
+        Wed, 17 Nov 2021 17:08:18 -0800 (PST)
+Received: from pps.filterd (m0207806.ppops.net [127.0.0.1])
+        by mx0b-00206401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1AHIGOmd007251;
+        Wed, 17 Nov 2021 16:32:18 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crowdstrike.com; h=from : to : cc :
+ subject : date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=default; bh=E9sLE13DG/10KzQQ/ubPchdVW3nTVeEooj1hU69PEOM=;
+ b=OZrapIq3/9N3J/XFg0Me7yFTX84MjZeiBmVFw1E9RwpLE4mnnyINMdx+3UGPkBkQ5y6n
+ XmS2X/TIUW3cvpisx48WDdwslgyQALz5aVPddQJRY+6tTe2SSFtOu8M70oi6m9lrO4W+
+ zaLIaGBVRghyv770sDW6T+UJivW9QoiFzZZNwBH0uHv4xv+32f3b5p3HCpp6x81NObWk
+ gZ7RM0VGacxpHnBBiuB4lQPms3Epd7q2FbpUDcsXij1PYJSm0f+XyZD2L3uzL2TEvmnB
+ wyRfshK7gaeNX3cmOwuqruTXJmS8qN/Rkjs8B0npRgno1Ll3BvMuk7e/m0Z7deqk+41G ZQ== 
+Received: from 04wpexch03.crowdstrike.sys (dragosx.crowdstrike.com [208.42.231.60])
+        by mx0b-00206401.pphosted.com (PPS) with ESMTPS id 3cd6vcgh4e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 17 Nov 2021 16:32:18 -0800
+Received: from 04wpexch03.crowdstrike.sys (10.100.11.93) by
+ 04wpexch03.crowdstrike.sys (10.100.11.93) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Thu, 18 Nov 2021 00:32:17 +0000
+Received: from 04wpexch03.crowdstrike.sys ([fe80::79d6:26ee:13ba:99d2]) by
+ 04wpexch03.crowdstrike.sys ([fe80::79d6:26ee:13ba:99d2%5]) with mapi id
+ 15.02.0922.019; Thu, 18 Nov 2021 00:32:17 +0000
+From:   Martin Kelly <martin.kelly@crowdstrike.com>
+To:     "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>
+CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-team@fb.com" <kernel-team@fb.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "andrii@kernel.org" <andrii@kernel.org>
+Subject: RE: Re: Clarification on bpftool dual licensing
+Thread-Topic: Re: Clarification on bpftool dual licensing
+Thread-Index: AdfcC7I4ay3ZuRCwQHqFumJ1n8mnnw==
+Date:   Thu, 18 Nov 2021 00:31:52 +0000
+Deferred-Delivery: Thu, 18 Nov 2021 00:31:43 +0000
+Message-ID: <a126299d31954240a7490428feccb5b1@crowdstrike.com>
+Accept-Language: en-US, en-GB
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.100.11.84]
+x-disclaimer: USA
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACAyw99EhJ8k4f3zeQMf3pRC+L=hQhK=Rb3UwSz19wt9gnMPrA@mail.gmail.com>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-11-17_09,2021-11-17_01,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 17, 2021 at 08:47:45AM +0000, Lorenz Bauer wrote:
-> On Sat, 13 Nov 2021 at 01:27, Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > Not sure how you've tested it, but it doesn't work in unpriv:
-> > $ test_verifier 789
-> > #789/u map in map state pruning FAIL
-> > processed 26 insns (limit 1000000) max_states_per_insn 0 total_states
-> > 2 peak_states 2 mark_read 1
-> > #789/p map in map state pruning OK
-> 
-> Strange, I have a script that I use for bisecting which uses a minimal
-> .config + virtue to run a vm, plus I was debugging in gdb at the same
-> time. I might have missed this, apologies.
-> 
-> I guess vmtest.sh is the canonical way to run tests now?
-
-vmtest.sh runs test_progs only. That's the minimum bar that
-developers have to pass before sending patches.
-BPF CI runs test_progs, test_progs-no_alu32, test_verifier and test_maps.
-If in doubt run them all.
+Pg0KPiBPbiBUdWUsIE5vdiAxNiwgMjAyMSBhdCAyOjE2IEFNIERhbmllbCBCb3JrbWFubiA8ZGFu
+aWVsQGlvZ2VhcmJveC5uZXQ+DQo+IHdyb3RlOg0KPiA+DQo+ID4gT24gMTEvMTUvMjEgNzoyMCBQ
+TSwgTWFydGluIEtlbGx5IHdyb3RlOg0KPiA+ID4gSGksDQo+ID4gPg0KPiA+ID4gSSBoYXZlIGEg
+cXVlc3Rpb24gcmVnYXJkaW5nIHRoZSBkdWFsIGxpY2Vuc2luZyBwcm92aXNpb24gb2YgYnBmdG9v
+bC4gSQ0KPiA+ID4gdW5kZXJzdGFuZCB0aGF0IGJwZnRvb2wgY2FuIGJlIGRpc3RyaWJ1dGVkIGFz
+IGVpdGhlciBHUEwgMi4wIG9yIEJTRCAyLQ0KPiBjbGF1c2UuDQo+ID4gPiBUaGF0IHNhaWQsIGJw
+ZnRvb2wgY2FuIGFsc28gYXV0by1nZW5lcmF0ZSBCUEYgY29kZSB0aGF0IGdldHMgc3BlY2lmaWVk
+IGlubGluZQ0KPiA+ID4gaW4gdGhlIHNrZWxldG9uIGhlYWRlciBmaWxlLCBhbmQgaXQncyBwb3Nz
+aWJsZSB0aGF0IHRoZSBCUEYgY29kZSBnZW5lcmF0ZWQgaXMNCj4gPiA+IEdQTC4gV2hhdCBJJ20g
+d29uZGVyaW5nIGlzIHdoYXQgaGFwcGVucyBpZiBicGZ0b29sIGdlbmVyYXRlcyBHUEwtbGljZW5z
+ZWQNCj4gQlBGDQo+ID4gPiBjb2RlIGluc2lkZSB0aGUgc2tlbGV0b24gaGVhZGVyLCBzbyB0aGF0
+IHlvdSBnZXQgYSBoZWFkZXIgbGlrZSB0aGlzOg0KPiA+ID4NCj4gPiA+IHNvbWV0aGluZy5za2Vs
+Lmg6DQo+ID4gPiAvKiB0aGlzIGZpbGUgaXMgQlNEIDItY2xhdXNlLCBieSBuYXR1cmUgb2YgZHVh
+bCBsaWNlbnNpbmcgKi8NCj4gPg0KPiA+IEZ3aXcsIHRoZSBnZW5lcmF0ZWQgaGVhZGVyIGNvbnRh
+aW5zIGFuIFNQRFggaWRlbnRpZmllcjoNCj4gPg0KPiA+ICAgLyogU1BEWC1MaWNlbnNlLUlkZW50
+aWZpZXI6IChMR1BMLTIuMSBPUiBCU0QtMi1DbGF1c2UpICovDQo+ID4gICAvKiBUSElTIEZJTEUg
+SVMgQVVUT0dFTkVSQVRFRCEgKi8NCj4gPg0KPiA+ID4gLyogVEhJUyBGSUxFIElTIEFVVE9HRU5F
+UkFURUQhICovDQo+ID4gPg0KPiA+ID4gLyogc3RhbmRhcmQgc2tlbGV0b24gZGVmaW5pdGlvbnMg
+Ki8NCj4gPiA+DQo+ID4gPiAuLi4NCj4gPiA+DQo+ID4gPiBzLT5kYXRhX3N6ID0gWFhYOw0KPiA+
+ID4gcy0+ZGF0YSA9ICh2b2lkICopIlwNCj4gPiA+IDxlQlBGIGJ5dGVjb2RlLCBwcm9kdWNlZCBi
+eSBHUEwgMi4wIHNvdXJjZXMsIHNwZWNpZmllZCBpbiBiaW5hcnk+DQo+ID4gPiAiOw0KPiA+ID4N
+Cj4gPiA+IE15IGd1ZXNzIGlzIHRoYXQsIGJhc2VkIG9uIHRoZSBjaG9pY2UgdG8gZHVhbC1saWNl
+bnNlIGJwZnRvb2wsIHRoZSBoZWFkZXIgaXMNCj4gPiA+IG1lYW50IHRvIHN0aWxsIGJlIEJTRCAy
+LWNsYXVzZSwgYW5kIHRoZSBzLT5kYXRhIGlubGluZSBjb2RlJ3MgR1BMIGxpY2Vuc2UgaXMNCj4g
+PiA+IG5vdCBtZWFudCB0byBjaGFuZ2UgdGhlIGxpY2Vuc2luZyBvZiB0aGUgaGVhZGVyIGl0c2Vs
+ZiwgYnV0IEkgd2FudGVkIHRvDQo+DQo+IFllcywgZGVmaW5pdGVseSB0aGF0IGlzIHRoZSBpbnRl
+bnQgKGJ1dCBub3QgYSBsYXd5ZXIgZWl0aGVyKS4NCg0KIFRoYW5rcyBldmVyeW9uZSwgdGhhdCdz
+IHdoYXQgSSBhc3N1bWVkIGFzIHdlbGwuIEFueSBvYmplY3Rpb24gdG8gYSBwYXRjaCBjbGFyaWZ5
+aW5nIHRoaXMgbW9yZSBleHBsaWNpdGx5Pw0KDQpPbmUgb3RoZXIsIHJlbGF0ZWQgcXVlc3Rpb246
+IHZtbGludXguaCAoZ2VuZXJhdGVkIGJ5ICJicGZ0b29sIGJ0ZiBkdW1wIGZpbGUgL3N5cy9rZXJu
+ZWwvYnRmL3ZtbGludXggZm9ybWF0IGMiKSwgZG9lcyBub3QgY3VycmVudGx5IGNvbnRhaW4gYSBs
+aWNlbnNlIGRlY2xhcmF0aW9uLiBJIGFzc3VtZSB0aGlzIHdvdWxkIGhhdmUgdG8gYmUgYSBHUEwg
+aGVhZGVyLCBzaW5jZSB2bWxpbnV4LmggcmVmZXJlbmNlcyBtYW55IEdQTCdkIExpbnV4IGtlcm5l
+bCBzdHJ1Y3RzIGFuZCBzaW1pbGFyLCB0aG91Z2ggYWdhaW4gSSdtIG5vdCBhIGxhd3llciBhbmQg
+dGhlcmVmb3JlIGFtIG5vdCBjZXJ0YWluLiBXb3VsZCB5b3UgYWxsIGFncmVlIHdpdGggdGhpcz8g
+SWYgc28sIGFueSBvYmplY3Rpb24gdG8gYSBwYXRjaCBhZGRpbmcgYW4gU1BEWCBsaW5lIHRvIHRo
+ZSBnZW5lcmF0ZWQgdm1saW51eC5oPw0K
