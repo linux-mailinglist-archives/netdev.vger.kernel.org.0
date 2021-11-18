@@ -2,118 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 033544551FE
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 02:09:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B853455209
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 02:13:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242105AbhKRBMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 20:12:39 -0500
-Received: from prt-mail.chinatelecom.cn ([42.123.76.227]:39136 "EHLO
-        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S235976AbhKRBMj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 20:12:39 -0500
-HMM_SOURCE_IP: 172.18.0.48:51592.85767161
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-110.86.5.93 (unknown [172.18.0.48])
-        by chinatelecom.cn (HERMES) with SMTP id DF2A628008F;
-        Thu, 18 Nov 2021 09:09:20 +0800 (CST)
-X-189-SAVE-TO-SEND: zhenggy@chinatelecom.cn
-Received: from  ([172.18.0.48])
-        by app0024 with ESMTP id 80432f6858924d939d5209d0796bb61f for linux-kernel@vger.kernel.org;
-        Thu, 18 Nov 2021 09:09:23 CST
-X-Transaction-ID: 80432f6858924d939d5209d0796bb61f
-X-Real-From: zhenggy@chinatelecom.cn
-X-Receive-IP: 172.18.0.48
-X-MEDUSA-Status: 0
-Sender: zhenggy@chinatelecom.cn
-Subject: Re: [PATCH] ipvs: remove unused variable for ip_vs_new_dest
-To:     Simon Horman <horms@verge.net.au>, Julian Anastasov <ja@ssi.bg>,
-        pablo@netfilter.org
-Cc:     lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org, coreteam@netfilter.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-References: <1636112380-11040-1-git-send-email-zhenggy@chinatelecom.cn>
- <25e945b7-9027-43cb-f79c-573fdce42a26@ssi.bg>
- <20211114180206.GA2757@vergenet.net>
-From:   zhenggy <zhenggy@chinatelecom.cn>
-Message-ID: <97494860-f9d3-44e6-7515-0031ea64f86c@chinatelecom.cn>
-Date:   Thu, 18 Nov 2021 09:09:17 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        id S242144AbhKRBQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 20:16:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34176 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242143AbhKRBQO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 20:16:14 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83806C061764
+        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 17:13:15 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id m14so4290814pfc.9
+        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 17:13:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=JmdBiBLxPyJxJAfjQJGiOnZa1z5gV9qSkM8eUa4HDxw=;
+        b=qv92XP3uilvr8IZszD1kzgxDdfEjeYaphCCN39khN+/cgA4202VOTpmhEFJWzS1Qdx
+         i9A9/oN6gk88TEc1nR57CVrABIYgB2K+V/SkBzZJkjsU7lJ7r2AmZyxGejQ0LiNY47XK
+         uLgFzFClLz7uv9d+et72/q3iPb1gElXOXHNE0fufIP1qKzRrxVAZZ3kCUeIBf3Xz8Tdl
+         5NaLR1TJl8k4CaWSCoESxAgZ4MosL504GvrFnP2aT0jgUVQxoFb8gghcitOlK7MoDocQ
+         gfHLBOwX0zECwESamvL3V8gPdSpeT1MQUKClQDIl442YcTjYL9KKMbpj4mj1OZFzd/2x
+         S6IA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JmdBiBLxPyJxJAfjQJGiOnZa1z5gV9qSkM8eUa4HDxw=;
+        b=jicv1yQJQOQlvDmG5QPlLzqC426U4kJHXHlncOVM8bgTyVhL+gedihXmgunqDfoK0A
+         vLCZNOT0KrtVXAGXSlZIOIUwLvbZVdMHHbjLLAQe8X/sYvpg7SKUJlsfUCBse5xD0SZY
+         3NKWupiFaDHjqoUNSvO+iSiqyCliSvc136+7gpboevg8OlCB0XPzG385jNuxOCk7Bz+3
+         0icfTWgyHwZwfKqBR+ncUZqMAkpeA7MYAcGIOpMdz9kwWBysvYr/9MtLXN1OTOAK/Lvv
+         dpBBDthyq8o5I0qiPsqb8u3XMuGkmy5A9TtWYUdn7/GMluMfX/e2aYyIef0HHqMOIWmo
+         tzhg==
+X-Gm-Message-State: AOAM532aMaKyuwuVTgCa8oCNUj6vooM5D4QwXw9eNEw7DRXOCvGgllxo
+        EuUFl1o8hNzDP/4HBQZP0D8=
+X-Google-Smtp-Source: ABdhPJwaKdNa5Tl7fczyLDuyD05XW33tRqn0ozbKJK+qZeiJj32+W4yWnIMsdiPf6EjlfTmybCCwUg==
+X-Received: by 2002:a05:6a00:14c8:b0:49f:af00:d5cd with SMTP id w8-20020a056a0014c800b0049faf00d5cdmr52190696pfu.59.1637197995127;
+        Wed, 17 Nov 2021 17:13:15 -0800 (PST)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id l12sm817692pfu.100.2021.11.17.17.13.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Nov 2021 17:13:14 -0800 (PST)
+Date:   Thu, 18 Nov 2021 09:13:07 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     netdev@vger.kernel.org, Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Jarod Wilson <jarod@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>, davem@davemloft.net,
+        Denis Kirjanov <dkirjanov@suse.de>,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCHv2 net-next] Bonding: add missed_max option
+Message-ID: <YZWooyiGT9Z3mPwh@Laptop-X1>
+References: <20211117080337.1038647-1-liuhangbin@gmail.com>
+ <70666.1637138425@nyx>
+ <YZTSUh0vA1gVZFr3@Laptop-X1>
+ <86277.1637165806@nyx>
 MIME-Version: 1.0
-In-Reply-To: <20211114180206.GA2757@vergenet.net>
-Content-Type: text/plain; charset=gbk
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <86277.1637165806@nyx>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for review.
+On Wed, Nov 17, 2021 at 04:16:46PM +0000, Jay Vosburgh wrote:
+> >I didn't explain it clearly. I want to say:
+> >
+> >I'm not using arp_misssed_max as the new option name because I plan to add
+> >bonding IPv6 NS/NA monitor in future. At that time the option "missed_max"
+> >could be used for both IPv4/IPv6 monitor.
+> >
+> >I will update the commit description in next version.
+> 
+> 	There has been talk of adding an IPv6 NS monitor for years, but
+> it hasn't manifested.  I would prefer to see a consistent set of options
 
-ÔÚ 2021/11/15 2:02, Simon Horman Ð´µÀ:
-> On Sat, Nov 13, 2021 at 11:56:36AM +0200, Julian Anastasov wrote:
->>
->> 	Hello,
->>
->> On Fri, 5 Nov 2021, GuoYong Zheng wrote:
->>
->>> The dest variable is not used after ip_vs_new_dest anymore in
->>> ip_vs_add_dest, do not need pass it to ip_vs_new_dest, remove it.
->>>
->>> Signed-off-by: GuoYong Zheng <zhenggy@chinatelecom.cn>
->>
->> 	Looks good to me for -next, thanks!
->>
->> Acked-by: Julian Anastasov <ja@ssi.bg>
-> 
-> Thanks GuoYong,
-> 
-> Acked-by: Simon Horman <horms@verge.net.au>
-> 
-> Pablo, please consider this for nf-next at your convenience.
-> 
->>
->>> ---
->>>  net/netfilter/ipvs/ip_vs_ctl.c | 7 ++-----
->>>  1 file changed, 2 insertions(+), 5 deletions(-)
->>>
->>> diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
->>> index e62b40b..494399d 100644
->>> --- a/net/netfilter/ipvs/ip_vs_ctl.c
->>> +++ b/net/netfilter/ipvs/ip_vs_ctl.c
->>> @@ -959,8 +959,7 @@ static void ip_vs_trash_cleanup(struct netns_ipvs *ipvs)
->>>   *	Create a destination for the given service
->>>   */
->>>  static int
->>> -ip_vs_new_dest(struct ip_vs_service *svc, struct ip_vs_dest_user_kern *udest,
->>> -	       struct ip_vs_dest **dest_p)
->>> +ip_vs_new_dest(struct ip_vs_service *svc, struct ip_vs_dest_user_kern *udest)
->>>  {
->>>  	struct ip_vs_dest *dest;
->>>  	unsigned int atype, i;
->>> @@ -1020,8 +1019,6 @@ static void ip_vs_trash_cleanup(struct netns_ipvs *ipvs)
->>>  	spin_lock_init(&dest->stats.lock);
->>>  	__ip_vs_update_dest(svc, dest, udest, 1);
->>>  
->>> -	*dest_p = dest;
->>> -
->>>  	LeaveFunction(2);
->>>  	return 0;
->>>  
->>> @@ -1095,7 +1092,7 @@ static void ip_vs_trash_cleanup(struct netns_ipvs *ipvs)
->>>  		/*
->>>  		 * Allocate and initialize the dest structure
->>>  		 */
->>> -		ret = ip_vs_new_dest(svc, udest, &dest);
->>> +		ret = ip_vs_new_dest(svc, udest);
->>>  	}
->>>  	LeaveFunction(2);
->>>  
->>> -- 
->>> 1.8.3.1
->>
->> Regards
->>
->> --
->> Julian Anastasov <ja@ssi.bg>
->>
+I'm working on it now. I should send a simple draft patch in 2 weeks.
+
+> nomenclature in what we have here and now.  If and when an IPv6 version
+> is added, depending on the implementation, either the IPv6 item can be a
+> discrete tunable, or an alias could be added, similar to num_grat_arp /
+> num_unsol_na.
+
+The name of num_grat_arp looks better than missed_max :) . In my
+IPv6 implementation, the function bond_ab_arp_inspect() will be reused
+directly. So one name or an alias looks more reasonable.
+
+For the alias options, do you mean to let both num_grat_arp and num_unsol_na
+change a same option in bond->params?
+
+Thanks
+Hangbin
