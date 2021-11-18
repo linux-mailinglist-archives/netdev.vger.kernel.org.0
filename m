@@ -2,116 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45B07455256
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 02:46:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 205D545526F
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 02:57:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242347AbhKRBt2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 20:49:28 -0500
-Received: from szxga01-in.huawei.com ([45.249.212.187]:14951 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239516AbhKRBt1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 20:49:27 -0500
-Received: from dggeml757-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HvjJJ55DHzZd6c;
-        Thu, 18 Nov 2021 09:44:00 +0800 (CST)
-Received: from [10.174.179.200] (10.174.179.200) by
- dggeml757-chm.china.huawei.com (10.1.199.137) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.20; Thu, 18 Nov 2021 09:46:24 +0800
-Subject: Re: [PATCH net v2] net: vlan: fix a UAF in vlan_dev_real_dev()
-To:     Petr Machata <petrm@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <jgg@nvidia.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20211102021218.955277-1-william.xuanziyang@huawei.com>
- <87k0h9bb9x.fsf@nvidia.com>
- <20211115094940.138d86dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <87a6i3t2zg.fsf@nvidia.com>
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Message-ID: <7f7cbbec-8c4e-a2dc-787b-570d1049a6b4@huawei.com>
-Date:   Thu, 18 Nov 2021 09:46:24 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S241219AbhKRCAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 21:00:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44208 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233128AbhKRCAb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 21:00:31 -0500
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C38CBC061570
+        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 17:57:32 -0800 (PST)
+Received: by mail-pg1-x536.google.com with SMTP id s138so3883020pgs.4
+        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 17:57:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0gsA4Q+OPSpoP/q7gMfkEufnSK+DRnwBwLG7Y8j79Nk=;
+        b=IjfpVeypwDxp5FoFUAIdDaWw0N9UpcejYl/6TUnxWd/6DvZ2/xOMOReb8bBr2sb5ZT
+         e8d0235rlMITmgvc0ip+ubpgrU/EbPvA+WIKepXIXBNqf5UbEgsToHpIWS9lMUMLUW/e
+         Xh2MIoxZKO+K8vAjsiQSeyRk6Vv7a63nDt9SCh3lj+MoLgAHPKSHHFqaZldq1vQnuUnu
+         JRKMrKA7PB/P37qeNHGkhFIhrgA7dhxycAm+OTBr9PvguIhdl3wadmZ1n1yyIU0ZsN0Q
+         CIqYCWWjj1odbozoCFuzT1yDbjrGD9RA4HzSLxoZnpJBgO7R5zW8ze4tdkjIC60nKZ6S
+         ySCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0gsA4Q+OPSpoP/q7gMfkEufnSK+DRnwBwLG7Y8j79Nk=;
+        b=V2o727Vlhv7g1AUqcy4w7O3vVgyJICSDvIJ5GcmEHf/pB+QAnwgvXMixhmtxe4Mgp4
+         5H24u0u3cWl6w9DocjVBb1/7Ha8CdvoksBzqg/R3pTd9MhYh2Xp8Y6tyb4i3kyXBoIZO
+         8l0fpP7qRVyfIoTOVuPxHC45YFJBQPA0wQi8gt6nVTluZ1rFdBgI43QyREo0Sx7ypq3U
+         /lmuz7kDR7eQkPYLQa3MjAAJRNhQdeYct3O6XAa24Px+0nGRFIjc0ZcdpUniDHUaVIbP
+         2dQpQy6P/D/uEtUwk6aUD6fMERE+q7qG5t0WcsbQLkF9D1ANX1VCSwm5puD9U14ZZ0KP
+         pfGw==
+X-Gm-Message-State: AOAM530RaHOevl1WqdNH4TtasIt9D3AJzvRCl1IlJi/mSKhOP9wZm9Ro
+        bGhm7zOfAmctIt4G3zrfjcw=
+X-Google-Smtp-Source: ABdhPJxMb9f0ME5jbdRT+Md6L3d47cpNB986iFMpAAzP5CZeF/5y9KjpzlFGZWcSVmJryzrHrL3f7Q==
+X-Received: by 2002:a05:6a00:a8e:b0:47b:a658:7f4d with SMTP id b14-20020a056a000a8e00b0047ba6587f4dmr52221197pfl.82.1637200652408;
+        Wed, 17 Nov 2021 17:57:32 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:db6:6273:9e40:bea5])
+        by smtp.gmail.com with ESMTPSA id i33sm744083pgi.71.2021.11.17.17.57.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Nov 2021 17:57:31 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Subject: [PATCH net-next] tcp: add missing htmldocs for skb->ll_node and sk->defer_list
+Date:   Wed, 17 Nov 2021 17:57:29 -0800
+Message-Id: <20211118015729.994115-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.34.0.rc1.387.gb447b232ab-goog
 MIME-Version: 1.0
-In-Reply-To: <87a6i3t2zg.fsf@nvidia.com>
-Content-Type: text/plain; charset="gbk"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.200]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggeml757-chm.china.huawei.com (10.1.199.137)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> 
-> Jakub Kicinski <kuba@kernel.org> writes:
-> 
->> On Mon, 15 Nov 2021 18:04:42 +0100 Petr Machata wrote:
->>> Ziyang Xuan <william.xuanziyang@huawei.com> writes:
->>>
->>>> diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
->>>> index 55275ef9a31a..a3a0a5e994f5 100644
->>>> --- a/net/8021q/vlan.c
->>>> +++ b/net/8021q/vlan.c
->>>> @@ -123,9 +123,6 @@ void unregister_vlan_dev(struct net_device *dev, struct list_head *head)
->>>>  	}
->>>>  
->>>>  	vlan_vid_del(real_dev, vlan->vlan_proto, vlan_id);
->>>> -
->>>> -	/* Get rid of the vlan's reference to real_dev */
->>>> -	dev_put(real_dev);
->>>>  }
->>>>  
->>>>  int vlan_check_real_dev(struct net_device *real_dev,
->>>> diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
->>>> index 0c21d1fec852..aeeb5f90417b 100644
->>>> --- a/net/8021q/vlan_dev.c
->>>> +++ b/net/8021q/vlan_dev.c
->>>> @@ -843,6 +843,9 @@ static void vlan_dev_free(struct net_device *dev)
->>>>  
->>>>  	free_percpu(vlan->vlan_pcpu_stats);
->>>>  	vlan->vlan_pcpu_stats = NULL;
->>>> +
->>>> +	/* Get rid of the vlan's reference to real_dev */
->>>> +	dev_put(vlan->real_dev);
->>>>  }
->>>>  
->>>>  void vlan_setup(struct net_device *dev)  
->>>
->>> This is causing reference counting issues when vetoing is involved.
->>> Consider the following snippet:
->>>
->>>     ip link add name bond1 type bond mode 802.3ad
->>>     ip link set dev swp1 master bond1
->>>     ip link add name bond1.100 link bond1 type vlan protocol 802.1ad id 100
->>>     # ^ vetoed, no netdevice created
->>>     ip link del dev bond1
->>>
->>> The setup process goes like this: vlan_newlink() calls
->>> register_vlan_dev() calls netdev_upper_dev_link() calls
->>> __netdev_upper_dev_link(), which issues a notifier
->>> NETDEV_PRECHANGEUPPER, which yields a non-zero error,
->>> because a listener vetoed it.
->>>
->>> So it unwinds, skipping dev_hold(real_dev), but eventually the VLAN ends
->>> up decreasing reference count of the real_dev. Then when when the bond
->>> netdevice is removed, we get an endless loop of:
->>>
->>>     kernel:unregister_netdevice: waiting for bond1 to become free. Usage count = 0 
->>>
->>> Moving the dev_hold(real_dev) to always happen even if the
->>> netdev_upper_dev_link() call makes the issue go away.
->>
->> I think we should move the dev_hold() to ndo_init(), otherwise 
->> it's hard to reason if destructor was invoked or not if
->> register_netdevice() errors out.
-> 
-> Ziyang Xuan, do you intend to take care of this?
-> .
+From: Eric Dumazet <edumazet@google.com>
 
-I am reading the related processes according to the problem scenario.
-And I will give a more clear sequence and root cause as soon as possible
-by some necessary tests.
+Add missing entries to fix these "make htmldocs" warnings.
 
-Thank you!
+./include/linux/skbuff.h:953: warning: Function parameter or member 'll_node' not described in 'sk_buff'
+./include/net/sock.h:540: warning: Function parameter or member 'defer_list' not described in 'sock'
+
+Fixes: f35f821935d8 ("tcp: defer skb freeing after socket lock is released")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+---
+ include/linux/skbuff.h | 1 +
+ include/net/sock.h     | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index b8b806512e1615fad2bc9935baba3fff14996012..100fd604fbc9a32180a6f43626249d19bf415c4f 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -627,6 +627,7 @@ typedef unsigned char *sk_buff_data_t;
+  *		for retransmit timer
+  *	@rbnode: RB tree node, alternative to next/prev for netem/tcp
+  *	@list: queue head
++ *	@ll_node: anchor in an llist (eg socket defer_list)
+  *	@sk: Socket we are owned by
+  *	@ip_defrag_offset: (aka @sk) alternate use of @sk, used in
+  *		fragmentation management
+diff --git a/include/net/sock.h b/include/net/sock.h
+index f09c0c4736c46a18b820949ba3c8ea4e7c6fee57..a79fc772324e5da7b9f489de2e06698695d3e7d7 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -292,6 +292,7 @@ struct bpf_local_storage;
+   *	@sk_pacing_shift: scaling factor for TCP Small Queues
+   *	@sk_lingertime: %SO_LINGER l_linger setting
+   *	@sk_backlog: always used with the per-socket spinlock held
++  *	@defer_list: head of llist storing skbs to be freed
+   *	@sk_callback_lock: used with the callbacks in the end of this struct
+   *	@sk_error_queue: rarely used
+   *	@sk_prot_creator: sk_prot of original sock creator (see ipv6_setsockopt,
+-- 
+2.34.0.rc1.387.gb447b232ab-goog
+
