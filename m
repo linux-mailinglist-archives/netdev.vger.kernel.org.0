@@ -2,131 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ED2E456197
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 18:37:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CCF04561A5
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 18:39:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234152AbhKRRkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 12:40:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59458 "EHLO
+        id S234163AbhKRRmZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 12:42:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232058AbhKRRkF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 12:40:05 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB908C061574
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 09:37:04 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id h24so5714364pjq.2
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 09:37:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=y6JG8t+9/4oW2UNmN7dKbz4GRgFS2eQMvm+xiLNfXHc=;
-        b=e4Wjrj7DLSd4a2YD6Nm6tCYLhb+dDkXTgVSPv5j8hlt2HW3kihvhx9KMbj3m30tihB
-         OtrrQmz4iEVmErJyMO7QQgD/Dv1Q+gjYoiEv+qNiPVDAjaIykVmEE28y9jVTra6Hf1Af
-         r0voEroSpcHGkunCrJ1o6s/wdGcMOXBjlJOe8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=y6JG8t+9/4oW2UNmN7dKbz4GRgFS2eQMvm+xiLNfXHc=;
-        b=MzLf+IO8tLQgZHYT4pvBYE5w8WipFV1D897z1S7Nv4zXbmPOkhcKMJUl3cLPnUVhAi
-         GM27UXAiIbllikzkr0bmZkaQ5MY6Q14EjpxkEx/itiEmqy1OKXaXfD2IDsJi1l/Gs8MA
-         f/pvakjfN2n+3wobJ1/BbYvuI2+QFP84AxMPKrLA+rYzVQ9LHlIIuXa2ju5HKlZA1goI
-         FdoHjL4rROjkVJiGkQmKIYr32efA58CrxvKGtWwToUvTxDLt712/e9LRbROLOVCr+XUC
-         /Po6RxOROAZlaM6W17Xv2RQhqAnmI9Fs5wQRMayow9sbKAUhvKVxHfHkPe+vw98BgUJi
-         VAgQ==
-X-Gm-Message-State: AOAM531JHfBI3Q/CV5EMlhPKe1czcbE4EDp5KiIT/omiVtBpi/YIyYbt
-        M2OoUyoDzaR75tT9RjTzgRO+u3lD0vzywg==
-X-Google-Smtp-Source: ABdhPJwz/SCMC1A/H+aQ5Qi8UQ+2A92EEqkr1i9U9wbEjc2GAiyfw6LUpHMj9IhIWbrkaDafzAmexA==
-X-Received: by 2002:a17:902:7797:b0:143:88c3:7ff1 with SMTP id o23-20020a170902779700b0014388c37ff1mr67380354pll.22.1637257024390;
-        Thu, 18 Nov 2021 09:37:04 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id j18sm221300pgi.39.2021.11.18.09.37.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Nov 2021 09:37:04 -0800 (PST)
-Date:   Thu, 18 Nov 2021 09:37:03 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Andrea Righi <andrea.righi@canonical.com>
-Cc:     Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] selftests/seccomp: fix check of fds being assigned
-Message-ID: <202111180933.BE5101720@keescook>
-References: <20211115165227.101124-1-andrea.righi@canonical.com>
+        with ESMTP id S232597AbhKRRmZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 12:42:25 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33690C061574;
+        Thu, 18 Nov 2021 09:39:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=G6vwF896R9vK6ajugRYWK8Vbv0JXeNCUVwfNbElIQOw=; b=Y/9tMx1630WIhrfXHt5KMkZGcA
+        p2HA1/G2tw3DqV6iiGT/K38NiFgXo32bErWNDTDqG+pGxn//SqsfpQuPDrF/Dy5ZcaIRJIK/d/9Zv
+        KEg+Sp00RQZFBDOm0Pb9yxfgp9s/++q4/COmuDscuYSQkae6sPQN5ZVnRV9zely1ncf4cj0joloWc
+        0yDrVGCm39jy8g1sPdvrkM544Wzz8uwhsZEIM5Iw2xYreX23CaWpHMqnobmwN2p08wWBsdHpv5hoN
+        +EU3EmJjV1fRhwzOOiHE5B7axy8lDHNcOBb07NsGiCCPvbUxYEy9xeCtsnzDSdqDtc2r4Rqc9qang
+        TKD6TKIQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55734)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mnlNa-0003CH-DS; Thu, 18 Nov 2021 17:39:22 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mnlNZ-00047b-PW; Thu, 18 Nov 2021 17:39:21 +0000
+Date:   Thu, 18 Nov 2021 17:39:21 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next 4/8] net: phylink: update supported_interfaces
+ with modes from fwnode
+Message-ID: <YZaPyZ6VjTWvP1Kr@shell.armlinux.org.uk>
+References: <20211117225050.18395-1-kabel@kernel.org>
+ <20211117225050.18395-5-kabel@kernel.org>
+ <YZYXctnC168PrV18@shell.armlinux.org.uk>
+ <YZaAXadMIduFZr08@lunn.ch>
+ <YZaIeiOyhqyVNG8D@shell.armlinux.org.uk>
+ <20211118183301.50dab085@thinkpad>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20211115165227.101124-1-andrea.righi@canonical.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211118183301.50dab085@thinkpad>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 15, 2021 at 05:52:27PM +0100, Andrea Righi wrote:
-> There might be an arbitrary free open fd slot when we run the addfd
-> sub-test, so checking for progressive numbers of file descriptors
-> starting from memfd is not always a reliable check and we could get the
-> following failure:
+On Thu, Nov 18, 2021 at 06:33:01PM +0100, Marek Behún wrote:
+> On Thu, 18 Nov 2021 17:08:10 +0000
+> "Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
 > 
->   #  RUN           global.user_notification_addfd ...
->   # seccomp_bpf.c:3989:user_notification_addfd:Expected listener (18) == nextfd++ (9)
-
-What injected 9 extra fds into this test?
-
->   # user_notification_addfd: Test terminated by assertion
+> > I'm quite certain that as we try to develop phylink, such as adding
+> > extra facilities like specifying the interface modes, we're going to
+> > end up running into these kinds of problems that we can't solve, and
+> > we are going to have to keep compatibility for the old ways of doing
+> > stuff going for years to come - which is just going to get more and
+> > more painful.
 > 
-> Simply check if memfd and listener are valid file descriptors and start
-> counting for progressive file checking with the listener fd.
+> One way to move this forward would be to check compatible of the
+> corresponding MAC in this new function. If it belongs to an unconverted
+> driver, we can ensure the old behaviour. This would require to add a
+> comment to the driver saying "if you convert this, please drop the
+> exception in phylink_update_phy_modes()".
 
-Hm, so I attempted to fix this once already:
-93e720d710df ("selftests/seccomp: More closely track fds being assigned")
-so I'm not sure the proposed patch really improves it in the general
-case.
+That could work when drivers pass the fwnode as the "device" node.
+Some drivers don't do that, they pass a sub-node instead - such as
+mvpp2. However, mvpp2 is of course up to date with all phylink
+developments.
 
-> Fixes: 93e720d710df ("selftests/seccomp: More closely track fds being assigned")
-> Signed-off-by: Andrea Righi <andrea.righi@canonical.com>
-> ---
->  tools/testing/selftests/seccomp/seccomp_bpf.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/seccomp/seccomp_bpf.c b/tools/testing/selftests/seccomp/seccomp_bpf.c
-> index d425688cf59c..4f37153378a1 100644
-> --- a/tools/testing/selftests/seccomp/seccomp_bpf.c
-> +++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
-> @@ -3975,18 +3975,17 @@ TEST(user_notification_addfd)
->  	/* There may be arbitrary already-open fds at test start. */
->  	memfd = memfd_create("test", 0);
->  	ASSERT_GE(memfd, 0);
-> -	nextfd = memfd + 1;
->  
->  	ret = prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
->  	ASSERT_EQ(0, ret) {
->  		TH_LOG("Kernel does not support PR_SET_NO_NEW_PRIVS!");
->  	}
->  
-> -	/* fd: 4 */
->  	/* Check that the basic notification machinery works */
->  	listener = user_notif_syscall(__NR_getppid,
->  				      SECCOMP_FILTER_FLAG_NEW_LISTENER);
-> -	ASSERT_EQ(listener, nextfd++);
-> +	ASSERT_GE(listener, 0);
-> +	nextfd = listener + 1;
-
-e.g. if there was a hole in the fd map for memfd, why not listener too?
-
-Should the test dup2 memfd up to fd 100 and start counting there or
-something? What is the condition that fills the fds for this process?
-
--Kees
-
->  
->  	pid = fork();
->  	ASSERT_GE(pid, 0);
-> -- 
-> 2.32.0
-> 
+However, the same issue exists with DSA - the fwnode passed to
+phylink doesn't have a compatible. I suppose we could walk up the
+fwnode tree until we do find a node with a compatible property,
+that may work.
 
 -- 
-Kees Cook
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
