@@ -2,64 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B2F04562A2
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 19:41:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 384914562A9
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 19:41:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233609AbhKRSoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 13:44:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46224 "EHLO
+        id S233989AbhKRSoq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 13:44:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233705AbhKRSoX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 13:44:23 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 617C0C061756
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 10:41:23 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id o14so6025044plg.5
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 10:41:23 -0800 (PST)
+        with ESMTP id S233895AbhKRSop (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 13:44:45 -0500
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15649C06174A
+        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 10:41:45 -0800 (PST)
+Received: by mail-pg1-x52a.google.com with SMTP id 200so6222234pga.1
+        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 10:41:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=RbUTIPyfuQU3KvEwbLJbeU9iwD29PEErUjBhpe3f1nk=;
-        b=Co+TIeRJL09Rq3VPI76nMtEKLH/eE+0ZvB8aRWw0Yi+6DgAd9bRSPauVUzKvqEeMK1
-         hT1e0mHlV6mDk225eu1z8Lo9YAC9bcPXiC7i39eZ5PAvNdOPGhiaHeh64Q1FqeJM60zz
-         KzPl31m9ey7qhQdqvq8xeaHux2ki+1q97tYd8=
+        bh=5E2IB/Cp5SuCY2sMyx1cHvM233breYUpupZJuCXffq8=;
+        b=YvYFLqdU3Oi4flhk7q3El5kZ7FqV051hMCCD6VF5Tb/poiUbX0drReNeKn+G5awMb9
+         cp5wNl1XUbpv7xo5VqqrtHhqHgIa2kocOk5Gczd0xN2FgV81OUfoRES8XHkPsqUQLR22
+         TDj9BvAFvDLK4iZUAhYFUcP0HgO6A5ci+WDQQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=RbUTIPyfuQU3KvEwbLJbeU9iwD29PEErUjBhpe3f1nk=;
-        b=0fU6J+odrJ4ZPCdvjrq35SAo0AN3lOE4+WF1kFMZFIDCJKGbRXmj1NLPUtEct9tZN2
-         LHfXcBZsAcgrtHOeGFx3ifGv5trApJTP/5dC0KQ5JY1/hCM+qNtTtgnQHSiGdGPH85OV
-         VgnUVb5ypeEhpi8gUHotSrxAGZ5eXR4qKFdiESGEDJ5EmQ05MyK/IDPe9TypdYZ/Xrr+
-         kQNu4+1XNAtgZpNe5Qct7gm3YyG4BIbwB50qqwys8PkdMWgI0/6PpJDViuHFCHs9U76g
-         DIle8fhaOY5aAFEvScENeFYED6oUDYZgJIi87bBW2OElXe4Q5XjFR/GNaLCsTpaiaB7y
-         QBOQ==
-X-Gm-Message-State: AOAM530x6EkMQRogzJSDfZ1KU02Pc7+OjyJ98IHqP8jd+E5eZ2aVrHas
-        4l/AEvWV73vtZFsvmfhCGzRUtg==
-X-Google-Smtp-Source: ABdhPJzodK/I+eeNuN3Xk06+n5zhrWUoOkx/5chP0/yt93UK8GaJ8Jr/gwEyIDSs3RSJwJEYECbGVw==
-X-Received: by 2002:a17:902:e804:b0:142:1c0b:c2a6 with SMTP id u4-20020a170902e80400b001421c0bc2a6mr67605456plg.23.1637260882951;
-        Thu, 18 Nov 2021 10:41:22 -0800 (PST)
+        bh=5E2IB/Cp5SuCY2sMyx1cHvM233breYUpupZJuCXffq8=;
+        b=bb4gW7cnfwhT0A6ejKWF8BjTTPomkUms3o02dQtTnXZ1Q2gFazu8AAaULp0Q0MLO9i
+         dNRKF+ZVoDG4DoWqnMMzVmpKS/KCucO8qhm/GHipkR9CydGAbWsUzSzhabEBpPBRWtUL
+         dWHoQJs29GzfZqlrhhrJ8SPbA9BXhb55n2nvIk83zxeO92kLJwp14f0xGMO2JK6sXihf
+         mWpinN77Ar2uwrHCPXxuWlIZsodaM/eFAL+Bg6PoQSvLahng3KJhvOvM0rkthYPpeyhc
+         A1wxbLSKqPuxM1VzWuPkwN1OKZaeeQBtGFAQeHJHcemmdsd6aE0CzzBifeYi13dyeHi/
+         P2YQ==
+X-Gm-Message-State: AOAM533dUt73t2MhifRsGL6D3Gt44wtMJZCWvifoQJQP/szCCKZ+57Mr
+        I/axR69BEceKDajYHsj4o8kRLA==
+X-Google-Smtp-Source: ABdhPJwc7dnnWYpM/BII7semDW5K7ZTw5EQ3iZo3X0zK2n9opbpjrbcZJyR+C92Td6Eikt6CMY98eQ==
+X-Received: by 2002:a63:b25d:: with SMTP id t29mr12824824pgo.79.1637260904633;
+        Thu, 18 Nov 2021 10:41:44 -0800 (PST)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id j8sm343200pfc.8.2021.11.18.10.41.22
+        by smtp.gmail.com with ESMTPSA id pg13sm302472pjb.8.2021.11.18.10.41.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Nov 2021 10:41:22 -0800 (PST)
+        Thu, 18 Nov 2021 10:41:44 -0800 (PST)
 From:   Kees Cook <keescook@chromium.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
+To:     Raju Rangoju <rajur@chelsio.com>
 Cc:     Kees Cook <keescook@chromium.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Wan Jiabing <wanjiabing@vivo.com>,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: [PATCH] libertas_tf: Use struct_group() for memcpy() region
-Date:   Thu, 18 Nov 2021 10:41:21 -0800
-Message-Id: <20211118184121.1283821-1-keescook@chromium.org>
+Subject: [PATCH] cxgb3: Use struct_group() for memcpy() region
+Date:   Thu, 18 Nov 2021 10:41:42 -0800
+Message-Id: <20211118184142.1283993-1-keescook@chromium.org>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2474; h=from:subject; bh=aN5SRWSO0jhRLPZQ+xEXk4KxeSHDMCg25qp77Fv8hh8=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhlp5Qeg0TURmPLYxq0mwE2hFWy/0AYNHuIKbeAQlp DWoEAlmJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYZaeUAAKCRCJcvTf3G3AJuSiD/ 4wcpmRD5px9n6yd6xWv+gt3hCr1H9791Cboykwo0Lpp/SHFjH4FZFXODl+Yk+h1qKLUNAVhyaeHdD5 ADLhR1hGYi57Gv7cSAZI9hjopIS2JhOKy8SseJvoBH9XV+zEvzMxVRyIJHkaPpMjvA8Rw8VHba+0wD qBVapKp9KITa6HKnH/imrMShxTcyssHL8gq7t4yipfOjliNPO4LikA2ppq8Z11+vyhvi2BKm9VNl8m LAnFs3PVt1PVVsGYYMBO5TNmu6kZWu9HeDnikMMc4NOBKNWusiT/fPonzIeYVmgzRAGeHQnsQcQ84h qyfKFYGtvKXCn2YSM/TNcxk0h1b5fG1TaLmNtKtuImNhbZylnnK6tq3kgBrTTIq7MjdwvVDT3/24pO zTYInji5mjFrii4gSkR119Ov/UFizJsDhaOrkbDX+b3kNW9xt8DvboOv7WNaKXUg/jZGuBsfhHsWOg uuZPI6u5uYPndGRgLsAfIxMuPQHyi+1w9L/EKxOOZ6NsEn2LjfzmGTYs/ZdFr07sW/YYyaXIWQTrCk UXpaSTtRRrfX+R5NUiIVO1r+Q6qcTtLAHfNeQToQct7l4M12U+Esi6lwI8XmDpPMmuupWueu9v3q1s PL+z3lUwp41eD44PcKvy0a7/bHVNO04v5GifSaKwueC/Yo6IR64WA/+8I85g==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1623; h=from:subject; bh=9/lgDnWvjAG/e4OtiG74R7yvt2mCPlf+g9R0v4twSTc=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhlp5mtFisJPPeiK7VACEqYNfq6Fb60V+qwJbzbWt+ +nC/xFuJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYZaeZgAKCRCJcvTf3G3AJhcsEA CcpVmG8yZhgXbmKlGecnQW49FYZz8akEQcu30+t5gK9rn3YgcTKqBf7yP2/wHuVKHScvVYapnJnr/V JX3B3H0+0XhdAGePr6HGr6rPI+RBTybQnCXU8gEC+T+bpO7m0x7xBFwJ3fv1e+G7oDTH1n9b2V6pGB aJa+En3kTyCshKf81CKABUBYBzy0bH0ZBBP6775HWbLdFKLSe01VtQtxdViYEfU27rBhJ87VlPVD5G ti9Apzrhyzk2/aEWeQjzMGro0SeCcy3b+pE38w3SuvDdqdjO06YVBfjm0oos09tXbj0y2N7oWUooCG W0ZmUusrutmfVAiECbkhQaUvPNznzIQZyNwVAEyRSRrQF9I1SnovoyXAmW2I4tO8R/Ab3xTBaRJPf3 CHF2uzIKx4c1oKhwz5EMbZPVqZLZ1DAGPzDZwk2enfQekZab4BUe8sYhfrkxl6smpYEL0Pa7ApBNPS UV13xkGPy2xWQCUauX2D5H9/QwUjWh558+BQH0zrMelESZ1OIO44v9K0MU4qTGlZ125ukZa0r2yLCO PBusfdLqKb6vy2+GzBZcUSb4ir3nGKNkQOrXM/BJfk6imvBq+bgABBi97mLjrXc/EFe+vHVRhroR2P TvUrhPtSG7MVAKPYsIEa8tjvhkNeE8tqUFa6ccc7+UiDgZIfyMlxfkZTBNZw==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -67,59 +63,49 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 In preparation for FORTIFY_SOURCE performing compile-time and run-time
-field array bounds checking for memcpy(), memmove(), and memset(),
-avoid intentionally writing across neighboring fields.
+field bounds checking for memcpy(), memmove(), and memset(), avoid
+intentionally writing across neighboring fields.
 
-Use struct_group() in struct txpd around members tx_dest_addr_high
-and tx_dest_addr_low so they can be referenced together. This will
-allow memcpy() and sizeof() to more easily reason about sizes, improve
-readability, and avoid future warnings about writing beyond the end
-of tx_dest_addr_high.
+Use struct_group() in struct rss_hdr around members imm_data and intr_gen,
+so they can be referenced together. This will allow memcpy() and sizeof()
+to more easily reason about sizes, improve readability, and avoid future
+warnings about writing beyond the end of imm_data.
 
-"pahole" shows no size nor member offset changes to struct txpd.
+"pahole" shows no size nor member offset changes to struct rss_hdr.
 "objdump -d" shows no object code changes.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- drivers/net/wireless/marvell/libertas_tf/libertas_tf.h | 10 ++++++----
- drivers/net/wireless/marvell/libertas_tf/main.c        |  3 ++-
- 2 files changed, 8 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/chelsio/cxgb3/sge.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/libertas_tf/libertas_tf.h b/drivers/net/wireless/marvell/libertas_tf/libertas_tf.h
-index 5d726545d987..b2af2ddb6bc4 100644
---- a/drivers/net/wireless/marvell/libertas_tf/libertas_tf.h
-+++ b/drivers/net/wireless/marvell/libertas_tf/libertas_tf.h
-@@ -268,10 +268,12 @@ struct txpd {
- 	__le32 tx_packet_location;
- 	/* Tx packet length */
- 	__le16 tx_packet_length;
--	/* First 2 byte of destination MAC address */
--	u8 tx_dest_addr_high[2];
--	/* Last 4 byte of destination MAC address */
--	u8 tx_dest_addr_low[4];
-+	struct_group(tx_dest_addr,
-+		/* First 2 byte of destination MAC address */
-+		u8 tx_dest_addr_high[2];
-+		/* Last 4 byte of destination MAC address */
-+		u8 tx_dest_addr_low[4];
+diff --git a/drivers/net/ethernet/chelsio/cxgb3/sge.c b/drivers/net/ethernet/chelsio/cxgb3/sge.c
+index c3afec1041f8..70f528a9c727 100644
+--- a/drivers/net/ethernet/chelsio/cxgb3/sge.c
++++ b/drivers/net/ethernet/chelsio/cxgb3/sge.c
+@@ -126,8 +126,10 @@ struct rsp_desc {		/* response queue descriptor */
+ 	struct rss_header rss_hdr;
+ 	__be32 flags;
+ 	__be32 len_cq;
+-	u8 imm_data[47];
+-	u8 intr_gen;
++	struct_group(immediate,
++		u8 imm_data[47];
++		u8 intr_gen;
 +	);
- 	/* Pkt Priority */
- 	u8 priority;
- 	/* Pkt Trasnit Power control */
-diff --git a/drivers/net/wireless/marvell/libertas_tf/main.c b/drivers/net/wireless/marvell/libertas_tf/main.c
-index 71492211904b..02a1e1f547d8 100644
---- a/drivers/net/wireless/marvell/libertas_tf/main.c
-+++ b/drivers/net/wireless/marvell/libertas_tf/main.c
-@@ -232,7 +232,8 @@ static void lbtf_tx_work(struct work_struct *work)
- 			     ieee80211_get_tx_rate(priv->hw, info)->hw_value);
+ };
  
- 	/* copy destination address from 802.11 header */
--	memcpy(txpd->tx_dest_addr_high, skb->data + sizeof(struct txpd) + 4,
-+	BUILD_BUG_ON(sizeof(txpd->tx_dest_addr) != ETH_ALEN);
-+	memcpy(&txpd->tx_dest_addr, skb->data + sizeof(struct txpd) + 4,
- 		ETH_ALEN);
- 	txpd->tx_packet_length = cpu_to_le16(len);
- 	txpd->tx_packet_location = cpu_to_le32(sizeof(struct txpd));
+ /*
+@@ -925,7 +927,8 @@ static inline struct sk_buff *get_imm_packet(const struct rsp_desc *resp)
+ 
+ 	if (skb) {
+ 		__skb_put(skb, IMMED_PKT_SIZE);
+-		skb_copy_to_linear_data(skb, resp->imm_data, IMMED_PKT_SIZE);
++		BUILD_BUG_ON(IMMED_PKT_SIZE != sizeof(resp->immediate));
++		skb_copy_to_linear_data(skb, &resp->immediate, IMMED_PKT_SIZE);
+ 	}
+ 	return skb;
+ }
 -- 
 2.30.2
 
