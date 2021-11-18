@@ -2,102 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09CD64551D7
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 01:49:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA9C94551DE
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 01:56:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242018AbhKRAwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 19:52:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56972 "EHLO
+        id S242052AbhKRA7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 19:59:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229606AbhKRAvz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 19:51:55 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D78C061570;
-        Wed, 17 Nov 2021 16:48:55 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id c4so4273895pfj.2;
-        Wed, 17 Nov 2021 16:48:55 -0800 (PST)
+        with ESMTP id S234120AbhKRA7P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 19:59:15 -0500
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63A6AC061570;
+        Wed, 17 Nov 2021 16:56:16 -0800 (PST)
+Received: by mail-pg1-x52e.google.com with SMTP id 136so3816463pgc.0;
+        Wed, 17 Nov 2021 16:56:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=M+VVH7P9oSSw9TsC4kNhREhaeLsuTxMplY157IL//Lc=;
-        b=O2WSArcGVwWDQs1d/nCjEMCGFCWd9we54121so04rDuQsYVARpBZ6dZn46zHqECMSJ
-         E8j6Rk6OcU+7ePregLkNIbEMtLpJ/M7zLUaNRO2Qly+Srb+TH9N2acyWwZv72VrMprUd
-         36W0riJYXUP28AqpxbcdrFyHj0U2aXwvgc0O9WcAvc4TlI4htwsbuuPvX9iNQMmidTZx
-         DmaSYNv1XeTRwaX1ji0CxWjzOvvCWKu+ZS1Z2STSnpJIl/rExWZM4THgVRxqBEVGjql4
-         Xtxj/lmohRNb5YPEa0MB+us4nE9LtoUr+2Lzy4AG0efbcESNrgIFWWUkUf+YJqzvSXem
-         7xZQ==
+         :content-disposition:in-reply-to;
+        bh=8D2EoFezMd3GTWFdDBCZbiurCMPRo1KyJLa15TK9Byo=;
+        b=RbjRLOfVDGBdoY7zWUE6TdkffsS7DYP3K33hmYf+OC3fOP5zbXy/r+KGVkg8y501FK
+         DInXykxRLrUB4ixBwL95nkLmTXw7KaWRits/UIsu6YtCk/C9FeQlWOzllLLOF2+QLF0b
+         AAQqG0HqkTrObSGLmG8rVjv4+npv2150DbyRm4DdRtZPXOEZHGmVsBXuDwUhX0B5Lq07
+         E4YPMBkHRQkytNTRUUwz96mJjkYtE2kMYtJCRCBWhvw9HXC19+GrvwwjncX1LjrLSGkX
+         Sk5XAUDoqDXyFpqY1LBwwE3h0eLMFm1tHUje75fk1vp482OYe3pZC0ZhiBL0xrZuA94c
+         MOFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=M+VVH7P9oSSw9TsC4kNhREhaeLsuTxMplY157IL//Lc=;
-        b=08ZccyZPdhvLD8e6/qQqjCgprOus3Ft5lvIj9irQHVOm7U8pRlFQJIOOWvQVKqOk5h
-         zVsLt0c/yHyJTxhP4y+LfTD9bCVRos++mXzA2QcUHEsr7Pu3Odug5/GD+0PyhdmTuT0S
-         TMoCllUrimTZY7GNDw1L0tY1v+MepanvxVFmD4U0DWBTb2kk0JGrt+QSRC5e6ifcojfq
-         51g9rmti8bIQubtAq8xrNjWxh95e1+yTbGYNmbTbTmnqKXFN9zOZNcdNnYiexdpZu5+O
-         vahD8EbJJ5uYDcBygj9PL0HXoPkEUm3MVYsZ5qoUOu20JmLgjt7bvWKH5zZCjVFwolar
-         hCfw==
-X-Gm-Message-State: AOAM531dnwVks3IKiO2Ixz9g7hIOD1B6p0OkpCU1Nj/VgjzzmpRRY3oS
-        2HGJRuPy08RgPYTD5jXLlAb/bXQ+/Xo=
-X-Google-Smtp-Source: ABdhPJyXeRUmvI/YhPogLo7x/+o8WDy+s8HkKY3VGbpAb9JipH1QoQVlC4zY39jyVD8xxlqxmazr1Q==
-X-Received: by 2002:a65:6854:: with SMTP id q20mr8343346pgt.38.1637196535427;
-        Wed, 17 Nov 2021 16:48:55 -0800 (PST)
+         :mime-version:content-disposition:in-reply-to;
+        bh=8D2EoFezMd3GTWFdDBCZbiurCMPRo1KyJLa15TK9Byo=;
+        b=2Ltw+6I2m3FU00zgOQ3ScpICDDYfewn97YTrJEwbSoQfd3piWJJIjA00O17ANfxRKQ
+         SRV+rmblvn6sILu/kTFwMdSwTyw7eO2eSqBwwdZIpfYQ+dipyMRLY9n5bD7J3HSBitcj
+         XsvuSAgq4G1T4DRMhx2mpaQrCFm/dC6IRTfuw+fe2DMj+uDCKBql7gQ7Tk58Eo/0Dx7i
+         XVQaenpHDoaTeng9xqhRLsXDqvGHAG6SeP0+38n5hP3XW/bXG5RbOYboB2JEfU2wjg3U
+         1LxnHbY/+JfZgUTRXeum3eoRhXIA9F+4xYsV4pzzFEj7lvOTWThcfWR2Q2ZEcOzNrD1X
+         57Iw==
+X-Gm-Message-State: AOAM532+X1RkfN3XzNZ6eZnsSbdQjVoOagL0TosfzVOdCngiJuQAG5ju
+        68CpCthomIRmFS6kfgElAlg=
+X-Google-Smtp-Source: ABdhPJz7QPstrYe55jfGRBxbYgFm9OJvEy1hOMtX21l0BSLPBkW0ZVQfZ6Rr4OMMZu/oQFirdEyeNw==
+X-Received: by 2002:a62:884c:0:b0:49f:9947:e5cd with SMTP id l73-20020a62884c000000b0049f9947e5cdmr11149344pfd.45.1637196975898;
+        Wed, 17 Nov 2021 16:56:15 -0800 (PST)
 Received: from ast-mbp ([2620:10d:c090:400::5:6d])
-        by smtp.gmail.com with ESMTPSA id z2sm847739pfh.135.2021.11.17.16.48.54
+        by smtp.gmail.com with ESMTPSA id c20sm809202pfl.201.2021.11.17.16.56.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Nov 2021 16:48:54 -0800 (PST)
-Date:   Wed, 17 Nov 2021 16:48:52 -0800
+        Wed, 17 Nov 2021 16:56:15 -0800 (PST)
+Date:   Wed, 17 Nov 2021 16:56:13 -0800
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org
-Subject: Re: [RFC PATCH 2/2] bpf: let bpf_warn_invalid_xdp_action() report
- more info
-Message-ID: <20211118004852.tn2jewjm55dwwa5y@ast-mbp>
-References: <cover.1636987322.git.pabeni@redhat.com>
- <c48e1392bdb0937fd33d3524e1c955a1dae66f49.1636987322.git.pabeni@redhat.com>
- <8735nxo08o.fsf@toke.dk>
- <1b9bf5f4327699c74f93c297433012400769a60f.camel@redhat.com>
- <87zgq5mjlj.fsf@toke.dk>
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-doc@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH 2/2] bpf, doc: split general purpose eBPF documentation
+ out of filter.rst
+Message-ID: <20211118005613.g4sqaq2ucgykqk2m@ast-mbp>
+References: <20211115130715.121395-1-hch@lst.de>
+ <20211115130715.121395-3-hch@lst.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87zgq5mjlj.fsf@toke.dk>
+In-Reply-To: <20211115130715.121395-3-hch@lst.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 15, 2021 at 06:09:28PM +0100, Toke Høiland-Jørgensen wrote:
-> Paolo Abeni <pabeni@redhat.com> writes:
+On Mon, Nov 15, 2021 at 02:07:15PM +0100, Christoph Hellwig wrote:
+> filter.rst starts out documenting the classic BPF and then spills into
+> introducing and documentating eBPF.  Split the eBPF documentation into
+> three new files under Documentation/bpf/ and link to that.
 > 
-> >> > -	pr_warn_once("%s XDP return value %u, expect packet loss!\n",
-> >> > +	pr_warn_once("%s XDP return value %u on prog %d dev %s attach type %d, expect packet loss!\n",
-> >> >  		     act > act_max ? "Illegal" : "Driver unsupported",
-> >> > -		     act);
-> >> > +		     act, prog->aux->id, dev->name, prog->expected_attach_type);
-> >> 
-> >> This will only ever trigger once per reboot even if the message differs,
-> >> right? Which makes it less useful as a debugging aid; so I'm not sure if
-> >> it's really worth it with this intrusive change unless we also do
-> >> something to add a proper debugging aid (like a tracepoint)...
-> >
-> > Yes, the idea would be to add a tracepoint there, if there is general
-> > agreement about this change.
-> >
-> > I think this patch is needed because the WARN_ONCE splat gives
-> > implicitly information about the related driver and attach type.
-> > Replacing with a simple printk we lose them.
-> 
-> Ah, right, good point. Pointing that out in the commit message might be
-> a good idea; otherwise people may miss that ;)
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  Documentation/bpf/index.rst           |   30 +-
+>  Documentation/bpf/instruction-set.rst |  491 ++++++++++++
+>  Documentation/bpf/maps.rst            |   43 +
+>  Documentation/bpf/verifier.rst        |  533 +++++++++++++
+>  Documentation/networking/filter.rst   | 1059 +------------------------
+...
+> +.. Links:
+> +.. _eBPF: ../bpf/instrution-set.rst
 
-Though it's quite a churn across the drivers I think extra verbosity here is justified.
-I'd only suggest to print stable things. Like prog->aux->id probably has
-little value for the person looking at the logs. That prog id is likely gone.
-If it was prog->aux->name it would be more helpful.
-Same with expected_attach_type. Why print it at all?
-tracepoint is probably good idea too.
+I think the split would be good in the long term, but please make the links
+more obvious somehow in the filter.rst, since a bunch of posts on the web
+link back to that file. The folks who will be reading the revamped filter.rst
+would need a very obvious way to navigate to new pages.
+
+In terms of followups and cleanup... please share what you have in mind.
