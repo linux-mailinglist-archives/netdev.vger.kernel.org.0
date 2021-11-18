@@ -2,39 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8DD14551B3
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 01:33:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CE9E4551B4
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 01:33:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241953AbhKRAgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 19:36:24 -0500
-Received: from mga14.intel.com ([192.55.52.115]:3443 "EHLO mga14.intel.com"
+        id S241956AbhKRAgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 19:36:25 -0500
+Received: from mga14.intel.com ([192.55.52.115]:3448 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241949AbhKRAgX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Nov 2021 19:36:23 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10171"; a="234324562"
+        id S241952AbhKRAgY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Nov 2021 19:36:24 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10171"; a="234324565"
 X-IronPort-AV: E=Sophos;i="5.87,243,1631602800"; 
-   d="scan'208";a="234324562"
+   d="scan'208";a="234324565"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2021 16:33:24 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,243,1631602800"; 
-   d="scan'208";a="736447989"
+   d="scan'208";a="736447994"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga005.fm.intel.com with ESMTP; 17 Nov 2021 16:33:23 -0800
+  by fmsmga005.fm.intel.com with ESMTP; 17 Nov 2021 16:33:24 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Michal Maloszewski <michal.maloszewski@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        sassmann@redhat.com,
-        Grzegorz Szczurek <grzegorzx.szczurek@intel.com>,
+Cc:     Eryk Rybak <eryk.roch.rybak@intel.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com, sassmann@redhat.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
         Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
-        Witold Fijalkowski <witoldx.fijalkowski@intel.com>,
-        Jaroslaw Gawin <jaroslawx.gawin@intel.com>,
-        Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
         Tony Brelinski <tony.brelinski@intel.com>
-Subject: [PATCH net 2/7] i40e: Fix NULL ptr dereference on VSI filter sync
-Date:   Wed, 17 Nov 2021 16:31:54 -0800
-Message-Id: <20211118003159.245561-3-anthony.l.nguyen@intel.com>
+Subject: [PATCH net 3/7] i40e: Fix changing previously set num_queue_pairs for PFs
+Date:   Wed, 17 Nov 2021 16:31:55 -0800
+Message-Id: <20211118003159.245561-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211118003159.245561-1-anthony.l.nguyen@intel.com>
 References: <20211118003159.245561-1-anthony.l.nguyen@intel.com>
@@ -44,63 +40,130 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Maloszewski <michal.maloszewski@intel.com>
+From: Eryk Rybak <eryk.roch.rybak@intel.com>
 
-Remove the reason of null pointer dereference in sync VSI filters.
-Added new I40E_VSI_RELEASING flag to signalize deleting and releasing
-of VSI resources to sync this thread with sync filters subtask.
-Without this patch it is possible to start update the VSI filter list
-after VSI is removed, that's causing a kernel oops.
+Currently, the i40e_vsi_setup_queue_map is basing the count of queues in
+TCs on a VSI's alloc_queue_pairs member which is not changed throughout
+any user's action (for example via ethtool's set_channels callback).
 
-Fixes: 41c445ff0f48 ("i40e: main driver core")
-Signed-off-by: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
-Signed-off-by: Michal Maloszewski <michal.maloszewski@intel.com>
-Reviewed-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
-Reviewed-by: Witold Fijalkowski <witoldx.fijalkowski@intel.com>
-Reviewed-by: Jaroslaw Gawin <jaroslawx.gawin@intel.com>
-Reviewed-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
+This implies that vsi->tc_config.tc_info[n].qcount value that is given
+to the kernel via netdev_set_tc_queue() that notifies about the count of
+queues per particular traffic class is constant even if user has changed
+the total count of queues.
+
+This in turn caused the kernel warning after setting the queue count to
+the lower value than the initial one:
+
+$ ethtool -l ens801f0
+Channel parameters for ens801f0:
+Pre-set maximums:
+RX:             0
+TX:             0
+Other:          1
+Combined:       64
+Current hardware settings:
+RX:             0
+TX:             0
+Other:          1
+Combined:       64
+
+$ ethtool -L ens801f0 combined 40
+
+[dmesg]
+Number of in use tx queues changed invalidating tc mappings. Priority
+traffic classification disabled!
+
+Reason was that vsi->alloc_queue_pairs stayed at 64 value which was used
+to set the qcount on TC0 (by default only TC0 exists so all of the
+existing queues are assigned to TC0). we update the offset/qcount via
+netdev_set_tc_queue() back to the old value but then the
+netif_set_real_num_tx_queues() is using the vsi->num_queue_pairs as a
+value which got set to 40.
+
+Fix it by using vsi->req_queue_pairs as a queue count that will be
+distributed across TCs. Do it only for non-zero values, which implies
+that user actually requested the new count of queues.
+
+For VSIs other than main, stay with the vsi->alloc_queue_pairs as we
+only allow manipulating the queue count on main VSI.
+
+Fixes: bc6d33c8d93f ("i40e: Fix the number of queues available to be mapped for use")
+Co-developed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Co-developed-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+Signed-off-by: Eryk Rybak <eryk.roch.rybak@intel.com>
 Tested-by: Tony Brelinski <tony.brelinski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e.h      | 1 +
- drivers/net/ethernet/intel/i40e/i40e_main.c | 5 +++--
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 35 ++++++++++++++-------
+ 1 file changed, 23 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e.h b/drivers/net/ethernet/intel/i40e/i40e.h
-index 3d528fba754b..35a83a161b6f 100644
---- a/drivers/net/ethernet/intel/i40e/i40e.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e.h
-@@ -161,6 +161,7 @@ enum i40e_vsi_state_t {
- 	__I40E_VSI_OVERFLOW_PROMISC,
- 	__I40E_VSI_REINIT_REQUESTED,
- 	__I40E_VSI_DOWN_REQUESTED,
-+	__I40E_VSI_RELEASING,
- 	/* This must be last as it determines the size of the BITMAP */
- 	__I40E_VSI_STATE_SIZE__,
- };
 diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index ba862131b9bd..6e309d6ce37d 100644
+index 6e309d6ce37d..8437cc14bfc6 100644
 --- a/drivers/net/ethernet/intel/i40e/i40e_main.c
 +++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -2623,7 +2623,8 @@ static void i40e_sync_filters_subtask(struct i40e_pf *pf)
+@@ -1790,6 +1790,7 @@ static void i40e_vsi_setup_queue_map(struct i40e_vsi *vsi,
+ 				     bool is_add)
+ {
+ 	struct i40e_pf *pf = vsi->back;
++	u16 num_tc_qps = 0;
+ 	u16 sections = 0;
+ 	u8 netdev_tc = 0;
+ 	u16 numtc = 1;
+@@ -1797,13 +1798,29 @@ static void i40e_vsi_setup_queue_map(struct i40e_vsi *vsi,
+ 	u8 offset;
+ 	u16 qmap;
+ 	int i;
+-	u16 num_tc_qps = 0;
  
- 	for (v = 0; v < pf->num_alloc_vsi; v++) {
- 		if (pf->vsi[v] &&
--		    (pf->vsi[v]->flags & I40E_VSI_FLAG_FILTER_CHANGED)) {
-+		    (pf->vsi[v]->flags & I40E_VSI_FLAG_FILTER_CHANGED) &&
-+		    !test_bit(__I40E_VSI_RELEASING, pf->vsi[v]->state)) {
- 			int ret = i40e_sync_vsi_filters(pf->vsi[v]);
+ 	sections = I40E_AQ_VSI_PROP_QUEUE_MAP_VALID;
+ 	offset = 0;
  
- 			if (ret) {
-@@ -13771,7 +13772,7 @@ int i40e_vsi_release(struct i40e_vsi *vsi)
- 		dev_info(&pf->pdev->dev, "Can't remove PF VSI\n");
- 		return -ENODEV;
++	if (vsi->type == I40E_VSI_MAIN) {
++		/* This code helps add more queue to the VSI if we have
++		 * more cores than RSS can support, the higher cores will
++		 * be served by ATR or other filters. Furthermore, the
++		 * non-zero req_queue_pairs says that user requested a new
++		 * queue count via ethtool's set_channels, so use this
++		 * value for queues distribution across traffic classes
++		 */
++		if (vsi->req_queue_pairs > 0)
++			vsi->num_queue_pairs = vsi->req_queue_pairs;
++		else if (pf->flags & I40E_FLAG_MSIX_ENABLED)
++			vsi->num_queue_pairs = pf->num_lan_msix;
++	}
++
+ 	/* Number of queues per enabled TC */
+-	num_tc_qps = vsi->alloc_queue_pairs;
++	if (vsi->type == I40E_VSI_MAIN)
++		num_tc_qps = vsi->num_queue_pairs;
++	else
++		num_tc_qps = vsi->alloc_queue_pairs;
+ 	if (enabled_tc && (vsi->back->flags & I40E_FLAG_DCB_ENABLED)) {
+ 		/* Find numtc from enabled TC bitmap */
+ 		for (i = 0, numtc = 0; i < I40E_MAX_TRAFFIC_CLASS; i++) {
+@@ -1881,16 +1898,10 @@ static void i40e_vsi_setup_queue_map(struct i40e_vsi *vsi,
+ 		}
+ 		ctxt->info.tc_mapping[i] = cpu_to_le16(qmap);
  	}
 -
-+	set_bit(__I40E_VSI_RELEASING, vsi->state);
- 	uplink_seid = vsi->uplink_seid;
- 	if (vsi->type != I40E_VSI_SRIOV) {
- 		if (vsi->netdev_registered) {
+-	/* Set actual Tx/Rx queue pairs */
+-	vsi->num_queue_pairs = offset;
+-	if ((vsi->type == I40E_VSI_MAIN) && (numtc == 1)) {
+-		if (vsi->req_queue_pairs > 0)
+-			vsi->num_queue_pairs = vsi->req_queue_pairs;
+-		else if (pf->flags & I40E_FLAG_MSIX_ENABLED)
+-			vsi->num_queue_pairs = pf->num_lan_msix;
+-	}
+-
++	/* Do not change previously set num_queue_pairs for PFs */
++	if ((vsi->type == I40E_VSI_MAIN && numtc != 1) ||
++	    vsi->type != I40E_VSI_MAIN)
++		vsi->num_queue_pairs = offset;
+ 	/* Scheduler section valid can only be set for ADD VSI */
+ 	if (is_add) {
+ 		sections |= I40E_AQ_VSI_PROP_SCHED_VALID;
 -- 
 2.31.1
 
