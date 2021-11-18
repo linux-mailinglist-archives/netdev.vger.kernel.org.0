@@ -2,127 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 999CD45602A
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 17:06:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFEFB456035
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 17:11:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232984AbhKRQJi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 11:09:38 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:16836 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232973AbhKRQJd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 11:09:33 -0500
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1AIFIV2N005279;
-        Thu, 18 Nov 2021 16:06:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=F6HckeyXeZaZHMsQFsGgNpilOsihzSfaR3LRKMf7ErY=;
- b=XjnXFAGkhIy5qBqVi/Fb8YuOU7kjl2haWQxvHUr+iq0WlOuQSEk9O3GhBgpp+gc0fwtk
- 5Z0IW2jTZASkl2OH8kqy5wgSVR7yKC1FOslEE/kmMCAZyvneLsv1zk7asFdBCWopFzsY
- rTdaR+ObdLMHuw3P3B/s9JbqSdl9Z5/RFprE23LwvXAeHhilKtXJNT15rNF1a4PhwTDR
- 5qlXRQ319ROIHDJSs1oK/rNQCTSiL+rSwRsPyJjZS3QYUKV9NskVPiM5yVPzZS7v9FeU
- oT+LsM8bqHuYANkeDqr24l5hTP8yeEoLKd/dseGI9k4P2t0pc/BZNkgPy88RYixIFcRu Jw== 
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3cds8n9gev-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Nov 2021 16:06:32 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1AIG29iN029864;
-        Thu, 18 Nov 2021 16:06:30 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma01fra.de.ibm.com with ESMTP id 3ca50aduu0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Nov 2021 16:06:29 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1AIFxPwD34472292
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 18 Nov 2021 15:59:25 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D4575AE064;
-        Thu, 18 Nov 2021 16:06:25 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9E428AE057;
-        Thu, 18 Nov 2021 16:06:25 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 18 Nov 2021 16:06:25 +0000 (GMT)
-From:   Karsten Graul <kgraul@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH net-next 6/6] s390/lcs: add braces around empty function body
-Date:   Thu, 18 Nov 2021 17:06:07 +0100
-Message-Id: <20211118160607.2245947-7-kgraul@linux.ibm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211118160607.2245947-1-kgraul@linux.ibm.com>
-References: <20211118160607.2245947-1-kgraul@linux.ibm.com>
+        id S232944AbhKRQOb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 11:14:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39650 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231167AbhKRQOa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 11:14:30 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69E7CC061574;
+        Thu, 18 Nov 2021 08:11:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=FqXFoFJw+7zJvJVEr7OM4grmg4IXaSw/6BDungSGX3M=; b=UdZmhO2yxjiDYqVx0mJPhHmAXP
+        1xmDfU3ls0wpkOvHqul7NfP9ZH57q66zhNDNdjHcD5wU2X9N5fSzEGw9/LznZlR8xWHGJZzNh2rlr
+        RlAmCBln22+Riad2x+HlUDaaHlBnXQT6CQkxQUYb/lFUI1TLxdUpjN7366uGxrRxN/ANzBIm5Pp6F
+        Xq3f4nlm1x0k5i2QRQF35FLpr75oDBGDtICjAi/gYxQKXvWru4gK8VKXJJYgdylaWpHFDDDPEDjPS
+        zRgXXfzYNxivqAWtfeaUuso/lgdqQV15IHxxQwUmJjN/Pd9AuhFpQYhfIgWB/lmntzQxpy9SbjJ7D
+        40QGIvTw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55728)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mnk0S-000381-Ac; Thu, 18 Nov 2021 16:11:24 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mnk0R-000448-9U; Thu, 18 Nov 2021 16:11:23 +0000
+Date:   Thu, 18 Nov 2021 16:11:23 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>, davem@davemloft.net,
+        kuba@kernel.org, robh+dt@kernel.org, p.zabel@pengutronix.de,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 3/5] net: lan966x: add port module support
+Message-ID: <YZZ7KwKw8i6EPcFL@shell.armlinux.org.uk>
+References: <20211117091858.1971414-1-horatiu.vultur@microchip.com>
+ <20211117091858.1971414-4-horatiu.vultur@microchip.com>
+ <YZTRUfvPPu5qf7mE@shell.armlinux.org.uk>
+ <20211118095703.owsb2nen5hb5vjz2@soft-dev3-1.localhost>
+ <YZYj9fwCeWdIZJOt@shell.armlinux.org.uk>
+ <20211118125928.tav7k5xlbnhrgp3o@soft-dev3-1.localhost>
+ <YZZVn6jve4BvSqyX@shell.armlinux.org.uk>
+ <e973b8e6-f8ca-eec9-f5ac-9ae401deea81@seco.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: LoWeeUYIG5wYdww2hPX4xPzC2Z3yKgPF
-X-Proofpoint-ORIG-GUID: LoWeeUYIG5wYdww2hPX4xPzC2Z3yKgPF
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-11-18_12,2021-11-17_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
- lowpriorityscore=0 mlxlogscore=999 clxscore=1015 priorityscore=1501
- spamscore=0 suspectscore=0 mlxscore=0 adultscore=0 impostorscore=0
- phishscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2110150000 definitions=main-2111180089
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e973b8e6-f8ca-eec9-f5ac-9ae401deea81@seco.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Heiko Carstens <hca@linux.ibm.com>
+On Thu, Nov 18, 2021 at 10:36:58AM -0500, Sean Anderson wrote:
+> Hi Russell,
+> 
+> On 11/18/21 8:31 AM, Russell King (Oracle) wrote:
+> > On Thu, Nov 18, 2021 at 01:59:28PM +0100, Horatiu Vultur wrote:
+> > > The 11/18/2021 09:59, Russell King (Oracle) wrote:
+> > > > Another approach would be to split phylink_mii_c22_pcs_decode_state()
+> > > > so that the appropriate decode function is selected depending on the
+> > > > interface state, which may be a better idea.
+> > > 
+> > > I have tried to look for phylink_mii_c22_pcs_decode_state() and I
+> > > have found it only here [1], and seems that it depends on [2]. But not
+> > > much activity happened to these series since October.
+> > > Do you think they will still get in?
+> > 
+> > I don't see any reason the first two patches should not be sent. I'm
+> > carrying the second one locally because I use it in some changes I've
+> > made to the mv88e6xxx code - as I mentioned in the patchwork entry you
+> > linked to. See:
+> > 
+> >   http://git.armlinux.org.uk/cgit/linux-arm.git/log/?h=net-queue
+> > 
+> >   "net: phylink: Add helpers for c22 registers without MDIO"
+> > 
+> > Although I notice I committed it to my tree with the wrong author. :(
+> > 
+> > Sean, please can you submit the mdiodev patch and this patch for
+> > net-next as they have general utility? Thanks.
+> 
+> The mdiodev patch is already in the tree as 0ebecb2644c8 ("net: mdio:
+> Add helper functions for accessing MDIO devices"). The c22 patch is
+> submitted as [1].
+> 
+> --Sean
+> 
+> [1] https://lore.kernel.org/netdev/20211022160959.3350916-1-sean.anderson@seco.com/
 
-Fix allmodconfig + W=1 compile breakage:
+Patchwork says its deferrred:
 
-drivers/s390/net/lcs.c: In function ‘lcs_get_frames_cb’:
-drivers/s390/net/lcs.c:1823:25: error: suggest braces around empty body in an ‘else’ statement [-Werror=empty-body]
- 1823 |                         ; // FIXME: error message ?
-      |                         ^
+https://patchwork.kernel.org/project/netdevbpf/patch/20211022160959.3350916-1-sean.anderson@seco.com/
 
-Acked-by: Julian Wiedmann <jwi@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
----
- drivers/s390/net/lcs.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+However, it does apply to current net-next, but Jakub did ask for
+it to be resubmitted. Given that patches are being quickly applied
+to net-next, I suggest resubmission may be just what's neeeded!
 
-diff --git a/drivers/s390/net/lcs.c b/drivers/s390/net/lcs.c
-index 2a6479740600..a61d38a1b4ed 100644
---- a/drivers/s390/net/lcs.c
-+++ b/drivers/s390/net/lcs.c
-@@ -1808,19 +1808,20 @@ lcs_get_frames_cb(struct lcs_channel *channel, struct lcs_buffer *buffer)
- 			return;
- 		}
- 		/* What kind of frame is it? */
--		if (lcs_hdr->type == LCS_FRAME_TYPE_CONTROL)
-+		if (lcs_hdr->type == LCS_FRAME_TYPE_CONTROL) {
- 			/* Control frame. */
- 			lcs_get_control(card, (struct lcs_cmd *) lcs_hdr);
--		else if (lcs_hdr->type == LCS_FRAME_TYPE_ENET ||
--			 lcs_hdr->type == LCS_FRAME_TYPE_TR ||
--			 lcs_hdr->type == LCS_FRAME_TYPE_FDDI)
-+		} else if (lcs_hdr->type == LCS_FRAME_TYPE_ENET ||
-+			   lcs_hdr->type == LCS_FRAME_TYPE_TR ||
-+			   lcs_hdr->type == LCS_FRAME_TYPE_FDDI) {
- 			/* Normal network packet. */
- 			lcs_get_skb(card, (char *)(lcs_hdr + 1),
- 				    lcs_hdr->offset - offset -
- 				    sizeof(struct lcs_header));
--		else
-+		} else {
- 			/* Unknown frame type. */
- 			; // FIXME: error message ?
-+		}
- 		/* Proceed to next frame. */
- 		offset = lcs_hdr->offset;
- 		lcs_hdr->offset = LCS_ILLEGAL_OFFSET;
+Thanks.
+
 -- 
-2.25.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
