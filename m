@@ -2,67 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2362345578A
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 09:59:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06928455794
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 10:01:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244952AbhKRJBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 04:01:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53294 "EHLO
+        id S245067AbhKRJEL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 04:04:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244930AbhKRJBj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 04:01:39 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BCB5C061570
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 00:58:39 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id q17so4639221plr.11
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 00:58:39 -0800 (PST)
+        with ESMTP id S244972AbhKRJD1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 04:03:27 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 888B5C061570;
+        Thu, 18 Nov 2021 01:00:25 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id b40so22556266lfv.10;
+        Thu, 18 Nov 2021 01:00:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=1Br/N6WhyVMlujnGsxiPG2oa5QW+rtf7KlXAbdHBbwA=;
-        b=D1rCCJ7pipjR98qMU7Fsc74cGguN9Mf2I7n7Pl/+NpJGB+ICezbytur5byFtsxC1qE
-         PWGdkaByxmII3WoQaRZufRIfn3WngVL0SEh1I/QFv/sYcMrWO4/X/Z6L0q4432lVieHi
-         Ra8oKIs7M+GLWjr2CP3/PeSiX/HyAF7xiT/Myou6hOS1CnCWSLjPsBqJe7l3ZioWdQoC
-         Sm1NqM3Go12u5XqybwoQ62H7WXbdhz0BaiabNxbBDhxOo5w/tPv2j79nS77r3G7i9oSu
-         SLv6E4kmN9hJik0OW5P0ReMZuu/o7ECXEag94sW4uutPZs2+uHvBBPRfp4a+l8FEwSdm
-         WQNw==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=G27YXSER0dL2xbw6ocbzN4KLUhffd2ytCL7vYepxLzQ=;
+        b=DaSp/3BbRNe4OzvN71UWlGcQ7tazW/+flxn4NmwK8LsDJDQxkUpOxM0PIukahVOmnV
+         nNg0cYv/ypwZXdMS/uzmcI/mXX8ogO0vjNrgH921bOsLpplp6utWDLGbUpZtOrcNtBVR
+         LRiwBftbOUVwVOUQHDjMj51IzoR5aVOu8O5i+6luh5VYNTPFiMlzcVFVxyvWNUwLYJlF
+         z9E8rf1EtdfAwWvbHNWHmGk3XbU3IVT6GwUivtb/kxNrKpCahFTzKhkUXPgdJ+WUlftP
+         IHPt9nlDPiFrInO6c9Gud+Q5PPESyh2J7n+Iioolhw/7bE7w/I/fAQjpEfMLL2KARddA
+         TN+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=1Br/N6WhyVMlujnGsxiPG2oa5QW+rtf7KlXAbdHBbwA=;
-        b=R+4s50kftOsvphqwV6SSxyoTSY+9n38kQBmvLrYfdYvSRFF3+P9JZbRBC/dZmpVGqa
-         gl0AjtCH/7LYhRRRuCn/euafyKdsl1BKVC4T2TPpu49Sf8PMITOIVu3FOvv13BQg+6GS
-         cxRjhm7UVS4Uj0Slp3orzAL63usYBEhsHBsMOGgdxvssGJaJMwvZJAYShRzKWpW4s/bQ
-         QDJ2soWnH9SxQMfE/r35vUGVo7q+lCweadjlb9x9358iarEEfvHGJwMB6kDxjaIdIKJt
-         b7Knn7z2GWzN7uW6uYQTwJiBsJqy/J5bbQk9Lr9WVQ+ZtuvoTWvFcM5EMB7F3SzgcRCD
-         awcg==
-X-Gm-Message-State: AOAM533fvFy0KZJJFEAkOn9y/+QwY2/Db86KQbzCc4srUoSJJJMoQ74m
-        la90Kzm6tW0uPDHP9HN9vGdHjXgk4HMz93LNq5o=
-X-Google-Smtp-Source: ABdhPJwytwjMSotItk5t1QKVrnFOp01C+H1duNFXuL8PDpuF2LT0jmCIYZGzkkasghWOsFrfd5qb6dWzWVscOHSJ1bk=
-X-Received: by 2002:a17:90b:4f85:: with SMTP id qe5mr8549634pjb.167.1637225918598;
- Thu, 18 Nov 2021 00:58:38 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=G27YXSER0dL2xbw6ocbzN4KLUhffd2ytCL7vYepxLzQ=;
+        b=m1Ce2N2gVMzOOQkOQj9VeC6MTUAzYpgfiqKdVZLi7A7Eoosk3d5exf2bfCY5BXx4UB
+         dc4gbvgnhExpH7emBAr3eQTehpToYW6/ngpa3zUdFDDyjbeNsaALh+ONOSUk5+Fb3cZK
+         e274mAPMtQ2aa0QyuuJpngPj8fQgF6ni3q3OHXjqEIPTeb2mJB0QGDfv1IambM7yDogl
+         mfYtOGe4r3FoZGKpBCu7vLGMztasZFHS7rtKgIB7NlBKnv7rrm5XgaRuy5yQKIziwPnH
+         jUqVTbkTGTqxusFXpfYt+g9Ry7hd/MwfC+qF/s8CtdM05lrnGhk2mr9lAZoJc7yZv9aq
+         67Zg==
+X-Gm-Message-State: AOAM5321PSle5x5xqk80aRT++0YRirAPCWITBrzRjKfJVY9dRsjjr7zM
+        TgzDcv9iSr9z/8QgJFqYXf0=
+X-Google-Smtp-Source: ABdhPJziFAWTi66Q6JLiFDlf2F5623Cb+gphUPFq1reuEs4jYW3mOjks4xhyHREDQP1ye/+oXXMY7w==
+X-Received: by 2002:a05:6512:e91:: with SMTP id bi17mr22424116lfb.14.1637226023900;
+        Thu, 18 Nov 2021 01:00:23 -0800 (PST)
+Received: from [192.168.1.11] ([217.117.245.43])
+        by smtp.gmail.com with ESMTPSA id y11sm250477ljh.54.2021.11.18.01.00.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Nov 2021 01:00:23 -0800 (PST)
+Message-ID: <018ada52-3e9b-8909-2346-ea2ce1d817fa@gmail.com>
+Date:   Thu, 18 Nov 2021 12:00:21 +0300
 MIME-Version: 1.0
-Received: by 2002:a17:90a:1ca:0:0:0:0 with HTTP; Thu, 18 Nov 2021 00:58:38
- -0800 (PST)
-Reply-To: mrsbillchantallawrence58@gmail.com
-From:   mrsbillchantal <visacarddapartbf@gmail.com>
-Date:   Thu, 18 Nov 2021 09:58:38 +0100
-Message-ID: <CAHYB686cSpbd_n3o5Vajey_80Yt=yszSHSPANg=uFzkD9hbvXw@mail.gmail.com>
-Subject: Dear Friend, My present internet connection is very slow in case you
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH] net: bnx2x: fix variable dereferenced before check
+Content-Language: en-US
+To:     Johan Hovold <johan@kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     aelior@marvell.com, skalluru@marvell.com,
+        GR-everest-linux-l2@marvell.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20211113223636.11446-1-paskripkin@gmail.com>
+ <YZYULWjK34xL6BeW@hovoldconsulting.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <YZYULWjK34xL6BeW@hovoldconsulting.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hello....
+On 11/18/21 11:51, Johan Hovold wrote:
+> [ Adding Dan. ]
+> 
+> On Sun, Nov 14, 2021 at 01:36:36AM +0300, Pavel Skripkin wrote:
+>> Smatch says:
+>> 	bnx2x_init_ops.h:640 bnx2x_ilt_client_mem_op()
+>> 	warn: variable dereferenced before check 'ilt' (see line 638)
+>> 
+>> Move ilt_cli variable initialization _after_ ilt validation, because
+>> it's unsafe to deref the pointer before validation check.
+> 
+> It seems smatch is confused here. There is no dereference happening
+> until after the check, we're just determining the address when
+> initialising ilt_cli.
+> 
+> I know this has been applied, and the change itself is fine, but the
+> patch description is wrong and the Fixes tag is unwarranted.
+>   
 
-You have been compensated with the sum of 5.5 million dollars in this
-united nation the payment will be issue into atm visa card and send to
-you from the santander bank we need your address and your  Whatsapp
-this my email.ID (  mrsbillchantallawrence58@gmail.com)  contact  me
+I agree. I came up with same thing after the patch has been applied. I 
+thought about a revert, but seems it's not necessary, since there is no 
+function change.
 
-Thanks my
+I should check smatch warnings more carefully next time, can't say why I 
+didn't notice it before sending :(
 
-mrs chantal
+thanks
+
+
+
+With regards,
+Pavel Skripkin
