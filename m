@@ -2,91 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51D9E455C11
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 14:02:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BFFD455C3A
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 14:06:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235158AbhKRNEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 08:04:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52682 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244433AbhKRNDN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Nov 2021 08:03:13 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 981556124B;
-        Thu, 18 Nov 2021 13:00:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637240412;
-        bh=drOXdrLs1gvxQSOKb/m+6uXo0ib3X0iwjOT3EhXYufc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=XhVIs/APCZwGNgxPeyzyqSOIFuYciUYZvt+ZmsQIwovvN0Wxvpcz7lzQvvejShbBW
-         LBNoVsCjWt4GuLldwQBlDnRFHrtxP7bdKqA5muuKNuVM2+jZj+DOB3+Krit7dr6Ov9
-         tq2ypRWvYliiz3CFK0tJaXt8c/OuWq4C+46BmQOJTCM5MWTFnHUNmxb4tjZaxGamt8
-         r763GSWBlQA9d+uSXlVY6/yWwKgomBk2EJEGOFl11W20vbceCQVcx5S8oSBOCkW8g6
-         CLTjCAdogrHwHUj/BdGvNmzm7n45s4GlFJz+ORaRKXRGfl3gQ1CKOW8SDH9awblP2M
-         7pLnadp/UHv0w==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8511860BE1;
-        Thu, 18 Nov 2021 13:00:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229585AbhKRNJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 08:09:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51884 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231796AbhKRNHa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 08:07:30 -0500
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8F81C061202
+        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 05:03:53 -0800 (PST)
+Received: by mail-ed1-x541.google.com with SMTP id w1so26604490edd.10
+        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 05:03:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=N10Ik8i4pTfkLCjtwdmN2M7JDIIsmzYmpfVJ+R96Yo4=;
+        b=Mc2ceP6Vc6vFuN8JuLqqq2kzNr52tgaD60aRTLcJx0GB+F0De29KqSJKvzgJFI3lPj
+         NH+P1Lm8baKz3l38Uxysjk7q1ZsbB+PkKGXNPP5ljDTjMcZUT73FVmVH6ytH9I8UKWU+
+         3ADczuzwtWV8XYwQZIGP/NI5wM+A4s6JbjsBdA7vG9kPnBjuWxuMo0lpyfVzvY9HA7du
+         xKW1q9nubTvTTWW+mFwaG6Pbdn6eMLf052HbDDT3+nCOC5NFvNK+fjNeGtmoo95KAnTs
+         SGOXWhXAiML0pf/ELuHbf35oRhBYWmjVv/9+TNMwpVpmP2WnugTH2XNvIphpV8LYGPrz
+         Cjsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=N10Ik8i4pTfkLCjtwdmN2M7JDIIsmzYmpfVJ+R96Yo4=;
+        b=ANUgiwcG8txBTybS85EYiVx0pWQm5jdTga2ycKP4smTY48DrZkB7kOomZySZ7gBFul
+         kIZrX4qSjNaraV3bTYIbJ4zmZMSm1Bh0sDwZlWhnghF/9z28RFzDAIzr7L/SQrn62EI6
+         907RCf+vxhN5kuboNbmJ4G9KAOcsp4RSd1HABJIfaHf0C5akr0IDuXtKN1X10RDLDoqY
+         ZJ8Cjs4q/hmYf83w9YFWAASJPLtOjVkSWLHT3ysOo280khYz93WDSR1Ns7ruHVwuTK1F
+         eta7mo1WC3vaGk6JG1lDtvv28RRIG83N+JmmYyQ0F6Go4erufhrgnIFz1gMubEe5WHsW
+         gIvA==
+X-Gm-Message-State: AOAM531h5zoPoAf1ymjLAEt2KzT/ZAkRvshKMJh5Ah4AuI+9Miz0AYcY
+        dDcLmIoKDEXgTJzOa1KM7+c45doyVSlBV0ZijH4=
+X-Google-Smtp-Source: ABdhPJyt+3YS8wkDRLAX9p5ud8RZgF53jTiMueOtWdk/koLhaJZWi9NXp19qPbTslNoD84diaHJG0+1ImBkzE2tfeC8=
+X-Received: by 2002:a17:906:cd03:: with SMTP id oz3mr34049230ejb.252.1637240632283;
+ Thu, 18 Nov 2021 05:03:52 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v7 net-next 0/8] net: dsa: felix: psfp support on vsc9959
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163724041253.16944.2537212050004573959.git-patchwork-notify@kernel.org>
-Date:   Thu, 18 Nov 2021 13:00:12 +0000
-References: <20211118101204.4338-1-xiaoliang.yang_1@nxp.com>
-In-Reply-To: <20211118101204.4338-1-xiaoliang.yang_1@nxp.com>
-To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, allan.nielsen@microchip.com,
-        joergen.andreasen@microchip.com, UNGLinuxDriver@microchip.com,
-        vinicius.gomes@intel.com, jiri@mellanox.com, idosch@mellanox.com,
-        alexandre.belloni@bootlin.com, po.liu@nxp.com, leoyang.li@nxp.com,
-        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        claudiu.manoil@nxp.com, matthias.bgg@gmail.com,
-        horatiu.vultur@microchip.com, vladimir.oltean@nxp.com,
-        kuba@kernel.org, mingkai.hu@nxp.com
+Received: by 2002:a17:906:8a48:0:0:0:0 with HTTP; Thu, 18 Nov 2021 05:03:51
+ -0800 (PST)
+Reply-To: UNCC-CH@outlook.com
+From:   United Nations Compensation Commission <goodunpon@gmail.com>
+Date:   Thu, 18 Nov 2021 05:03:51 -0800
+Message-ID: <CAD7PGe+W+jBn1bsBW5w9iOMw6ZN4XKyuXKcp23b4+phMDSGXqg@mail.gmail.com>
+Subject: re
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+--=20
+Achtung: Beg=C3=BCnstigter,
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Bereits zum zweiten Mal informieren wir Sie =C3=BCber die H=C3=B6he Ihres
+Ausgleichsfonds in H=C3=B6he von 5.500.000,00 =E2=82=AC (f=C3=BCnf Millione=
+n
+f=C3=BCnfhunderttausend Euro). Beachten Sie, dass wir von der
+Entsch=C3=A4digungskommission der Vereinten Nationen (UNCC) autorisiert
+wurden, Ihnen Ihre Entsch=C3=A4digungsgelder in H=C3=B6he von 5.500.000,00 =
+=E2=82=AC per
+Bank=C3=BCberweisung freizugeben.
 
-On Thu, 18 Nov 2021 18:11:56 +0800 you wrote:
-> VSC9959 hardware supports Per-Stream Filtering and Policing(PSFP).
-> This patch series add PSFP support on tc flower offload of ocelot
-> driver. Use chain 30000 to distinguish PSFP from VCAP blocks. Add gate
-> and police set to support PSFP in VSC9959 driver.
-> 
-> v6-v7 changes:
->  - Add a patch to restrict psfp rules on ingress port.
->  - Using stats.drops to show the packet count discarded by the rule.
-> 
-> [...]
+Webseite
+https://uncc.ch/home
 
-Here is the summary with links:
-  - [v7,net-next,1/8] net: mscc: ocelot: add MAC table stream learn and lookup operations
-    https://git.kernel.org/netdev/net-next/c/0568c3bf3f34
-  - [v7,net-next,2/8] net: mscc: ocelot: set vcap IS2 chain to goto PSFP chain
-    https://git.kernel.org/netdev/net-next/c/5b1918a54a91
-  - [v7,net-next,3/8] net: mscc: ocelot: add gate and police action offload to PSFP
-    https://git.kernel.org/netdev/net-next/c/23e2c506ad6c
-  - [v7,net-next,4/8] net: dsa: felix: support psfp filter on vsc9959
-    https://git.kernel.org/netdev/net-next/c/7d4b564d6add
-  - [v7,net-next,5/8] net: dsa: felix: add stream gate settings for psfp
-    https://git.kernel.org/netdev/net-next/c/23ae3a787771
-  - [v7,net-next,6/8] net: mscc: ocelot: use index to set vcap policer
-    https://git.kernel.org/netdev/net-next/c/77043c37096d
-  - [v7,net-next,7/8] net: dsa: felix: use vcap policer to set flow meter for psfp
-    https://git.kernel.org/netdev/net-next/c/76c13ede7120
-  - [v7,net-next,8/8] net: dsa: felix: restrict psfp rules on ingress port
-    https://git.kernel.org/netdev/net-next/c/a7e13edf37be
+F=C3=BCr Ihre Geldforderung kontaktieren Sie die folgenden Informationen
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Regisseur
+Herr Hartmut Wenner
+E-MAIL: UNCC-CH@outlook.com
+Entsch=C3=A4digungskommission der Vereinten Nationen
 
-
+Mit freundlichen Gr=C3=BC=C3=9Fen
+Frau Susan Borowoski.
