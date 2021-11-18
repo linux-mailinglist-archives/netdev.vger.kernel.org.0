@@ -2,79 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A79584551A2
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 01:26:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A225A4551B0
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 01:33:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240899AbhKRA32 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 19:29:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44980 "EHLO mail.kernel.org"
+        id S241945AbhKRAgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 19:36:23 -0500
+Received: from mga14.intel.com ([192.55.52.115]:3443 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233465AbhKRA30 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Nov 2021 19:29:26 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E8D7A61B72;
-        Thu, 18 Nov 2021 00:26:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637195187;
-        bh=zdH4ims6ORqlp7r/6go3bLPn1Js1OpYHIvtqpJI5JSw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KEVmLjNAAA49I6BLbsPKlY2oBmAAFkWR0oe2JLJc/3vlqp4pk7x261e7DIWCCxICR
-         wd6x4oepDgctHFUNymP/etXHOSHnEOSWsk3J7uT4amoaApa1Y8x3wsUuziL0Ma7I7W
-         0l2f7p9YCd+kB9ungBIj9OsiBBFVmXIUiQayUFKZNYuhEEc6evoU1EMcegN+TJRTIv
-         uWlOUcxh6K/Cxms++MRIeXNAaNy4tzq2T77FsjaAJp2jECVyYk2IT/Kvu1FI6aYTSj
-         X4xLnT5M7ihNlwE+BJiXN4LuNJdvQXqWIPqUj2osricO+Nn/Il/JRI7knbp/tlKn0F
-         B2ts+YJeOWP1Q==
-Date:   Wed, 17 Nov 2021 16:26:26 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [RFC -next 1/2] lib: add reference counting infrastructure
-Message-ID: <20211117162626.72c711c1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <b7c0fed4-bb30-e905-aae2-5e380b582f4c@gmail.com>
-References: <20211117192031.3906502-1-eric.dumazet@gmail.com>
-        <20211117192031.3906502-2-eric.dumazet@gmail.com>
-        <20211117120347.5176b96f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CANn89iJ8HLjjpBPyFOn3xTXSnOJCbOGq5gORgPnsws-+sB8ipA@mail.gmail.com>
-        <20211117124706.79fd08c1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <b7c0fed4-bb30-e905-aae2-5e380b582f4c@gmail.com>
+        id S241939AbhKRAgW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Nov 2021 19:36:22 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10171"; a="234324555"
+X-IronPort-AV: E=Sophos;i="5.87,243,1631602800"; 
+   d="scan'208";a="234324555"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2021 16:33:23 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,243,1631602800"; 
+   d="scan'208";a="736447977"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga005.fm.intel.com with ESMTP; 17 Nov 2021 16:33:23 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com
+Subject: [PATCH net 0/7][pull request] Intel Wired LAN Driver Updates 2021-11-17
+Date:   Wed, 17 Nov 2021 16:31:52 -0800
+Message-Id: <20211118003159.245561-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 17 Nov 2021 14:43:24 -0800 Eric Dumazet wrote:
-> On 11/17/21 12:47 PM, Jakub Kicinski wrote:
-> > On Wed, 17 Nov 2021 12:16:15 -0800 Eric Dumazet wrote:  
-> >> I think that maintaining the tracking state in separate storage would
-> >> detect cases where the object has been freed, without the help of KASAN.  
-> > 
-> > Makes sense, I guess we can hang more of the information of a secondary
-> > object?
-> > 
-> > Maybe I'm missing a trick on how to make the feature consume no space
-> > when disabled via Kconfig.  
-> 
-> If not enabled in Kconfig, the structures are empty, so consume no space.
-> 
-> Basically this should a nop.
+This series contains updates to i40e driver only.
 
-Right, probably not worth going back and forth, example use will clarify
-this.
+Eryk adds accounting for VLAN header in packet size when VF port VLAN is
+configured. He also fixes TC queue distribution when the user has changed
+queue counts as well as for configuration of VF ADQ which caused dropped
+packets.
 
-I feel like the two approaches are somewhat complementary, object debug
-can help us pin point where ref got freed / lost. Could be useful if
-there are many release paths for the same struct.
+Michal adds tracking for when a VSI is being released to prevent null
+pointer dereference when managing filters.
 
-How do you feel about the struct netdev_ref wrapper I made?  Do you
-prefer to keep the tracking independent or can we provide the sort of
-API I had in mind as well as yours:
+Karen ensures PF successfully initiates VF requested reset which could
+cause a call trace otherwise.
 
-void netdev_hold(struct netdev_ref *ref, struct net_device *dev)
-void netdev_put(struct netdev_ref *ref)
+Jedrzej moves validation of channel queue value earlier to prevent
+partial configuration when the value is invalid.
 
-struct net_device *netdev_ref_ptr(const struct netdev_ref *ref)
+Grzegorz corrects the reported error when adding filter fails.
 
-(doing both your tracking and object debug behind the scenes)
+The following are changes since commit c366ce28750e9633f8d4b07829a9cde0e59034eb:
+  net: ax88796c: use bit numbers insetad of bit masks
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 40GbE
+
+Eryk Rybak (3):
+  i40e: Fix correct max_pkt_size on VF RX queue
+  i40e: Fix changing previously set num_queue_pairs for PFs
+  i40e: Fix ping is lost after configuring ADq on VF
+
+Grzegorz Szczurek (1):
+  i40e: Fix display error code in dmesg
+
+Jedrzej Jagielski (1):
+  i40e: Fix creation of first queue by omitting it if is not power of
+    two
+
+Karen Sornek (1):
+  i40e: Fix warning message and call stack during rmmod i40e driver
+
+Michal Maloszewski (1):
+  i40e: Fix NULL ptr dereference on VSI filter sync
+
+ drivers/net/ethernet/intel/i40e/i40e.h        |   2 +
+ drivers/net/ethernet/intel/i40e/i40e_main.c   | 160 ++++++++++++------
+ .../ethernet/intel/i40e/i40e_virtchnl_pf.c    | 121 +++++--------
+ 3 files changed, 147 insertions(+), 136 deletions(-)
+
+-- 
+2.31.1
+
