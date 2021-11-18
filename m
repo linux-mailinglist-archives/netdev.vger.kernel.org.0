@@ -2,120 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCAE1456012
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 17:04:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC802456016
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 17:05:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232807AbhKRQHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 11:07:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44332 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229936AbhKRQHG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Nov 2021 11:07:06 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1BD2B613A3;
-        Thu, 18 Nov 2021 16:04:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637251445;
-        bh=oa7oSmJxHRoFc+bzoJMwa3+/zIjqvCBcVLfQMRXh6d4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cepdl9GxzCeJczoIb9omidGHLGmWsBUuiq31lUe/OvdnSh1CiOuhPyx/W6S+8szGJ
-         ZrCUzLyrcCNXtlhzWndtlnFyDq9nEmdztk2YN1fdtJuDzG12UU/W1PpVHP1cTYIgs+
-         InUTz28W7wy7dd9i7Zc/v7eQu+kIAozGh+mqyTFT12aEZpH+U9mbBg0TPd9Fcr4SSK
-         z8sPG4htZ+grxKcOMVB6OtNUd43RKijEBU/oHsz9cBsDVHAjoS9ClDOdqCcKWBKoEG
-         8MMWvB+K2MhSwiRsKtMnsafQQlm7f1iDRM9sfCj5hFgmEryQcpo37BYfP7PRVaAfo6
-         aYD6dXP1Jeq4A==
-Date:   Thu, 18 Nov 2021 09:03:59 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        kernel test robot <lkp@intel.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Yaara Baruch <yaara.baruch@intel.com>,
-        Matti Gottlieb <matti.gottlieb@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: Re: [PATCH] [v3] iwlwifi: pcie: fix constant-conversion warning
-Message-ID: <YZZ5b0FoppEBRcdL@archlinux-ax161>
-References: <20211118142124.526901-1-arnd@kernel.org>
+        id S232862AbhKRQID (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 11:08:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38184 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232856AbhKRQID (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 11:08:03 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B48E8C061574
+        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 08:05:02 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id np6-20020a17090b4c4600b001a90b011e06so6111593pjb.5
+        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 08:05:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=9Wi+Td4r6H8IIPLc8dF3k1j/ASIXAJ6TaqjW3jefuu4=;
+        b=y8BrdIWd6j3fW08uIhNafxOmUTaRaAPfhiyhQhOeooRKedZI3RpfTRhlQ+Vfo7SaIR
+         Xr2fL7Xv/lmDfO2wWkzoq8vWGyRWblh/L0Hfqs5K0Us31pQe6etNyd4b4JkCzZHZLQwT
+         q/L5kkr+q3xbVdbQAldvQJra4tCYbzptGTKjnS+ABaEkHfAlui6uHFa+ssHoYLAyenWQ
+         iHG1jDOjk1lZ3WG/upN1shTtN0DcKHjo/z6O+xdHqbIgyfZU2tYoBtZomn4fNFUEz+ZY
+         3UyIL0GX/JY8WIuBkQ6drZJH+yYB5Z2axDxMivR9ZrLtWzKFtshDrwdHNPG4YXBIre2n
+         PrBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=9Wi+Td4r6H8IIPLc8dF3k1j/ASIXAJ6TaqjW3jefuu4=;
+        b=7yko7luL4p1uzicpZIOAaK/sJjMYFfUrzzPl2nr5aZbZpT0XpQbQj/0mk4iqM7FEoz
+         VCwV6q4D/P8lMGhehr8SHdZy+/tfeILwFCCI0y0AmNu/7CbQYho7X8BZwf6EMi4i67Ra
+         p0C/xeEqL/ZtN8Uf4fakcsGXkNlK+z9rR6w61aBaMYZD6VBvr3KHvlNefRkoq+QLJH3I
+         kMrXVMMRaUvJOSvSYdZNKFFNOTf/Ixr+KGvnfRykcP9R45fDgIOL8/um8Vb5E8LgDiOa
+         xTrkDhOL69o5KNe/R2ovUJN0gl7O/MLepSKcL55Qa8v+TC5rLkh5wEkx0qBGWLk3i+KC
+         VlUg==
+X-Gm-Message-State: AOAM531tyWLqqXX/i2aNLzzhEW6tvwmUBOFg3bT+Q6kdpSJbTVsF7LbG
+        sxtYATEOLeZrQty6cjT4Nr0ouw==
+X-Google-Smtp-Source: ABdhPJz1llsX1uFZObnslzRKEjH6GvDzvEMwxhybikyDQV7QNbEw5Dwz6b/Y9m4zt+2VA9kQIyfu5g==
+X-Received: by 2002:a17:90b:4c89:: with SMTP id my9mr11577476pjb.229.1637251502237;
+        Thu, 18 Nov 2021 08:05:02 -0800 (PST)
+Received: from [192.168.254.17] ([50.39.160.154])
+        by smtp.gmail.com with ESMTPSA id j8sm104637pfc.8.2021.11.18.08.05.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Nov 2021 08:05:01 -0800 (PST)
+Message-ID: <90fece34-14af-8c91-98f5-daf6fad1825b@linaro.org>
+Date:   Thu, 18 Nov 2021 08:05:01 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211118142124.526901-1-arnd@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH] skbuff: suppress clang object-size-mismatch error
+Content-Language: en-US
+To:     David Miller <davem@davemloft.net>, kuba@kernel.org
+Cc:     elver@google.com, nathan@kernel.org, ndesaulniers@google.com,
+        jonathan.lemon@gmail.com, alobakin@pm.me, willemb@google.com,
+        pabeni@redhat.com, cong.wang@bytedance.com, haokexin@gmail.com,
+        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        keescook@chromium.org, edumazet@google.com
+References: <CANpmjNNuWfauPoUxQ6BETrZ8JMjWgrAAhAEqEXW=5BNsfWfyDA@mail.gmail.com>
+ <931f1038-d7ab-f236-8052-c5e5b9753b18@linaro.org>
+ <20211111095444.461b900e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20211112.154238.1786308722975241620.davem@davemloft.net>
+From:   Tadeusz Struk <tadeusz.struk@linaro.org>
+In-Reply-To: <20211112.154238.1786308722975241620.davem@davemloft.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 18, 2021 at 03:21:02PM +0100, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+On 11/12/21 07:42, David Miller wrote:
+> From: Jakub Kicinski <kuba@kernel.org>
+> Date: Thu, 11 Nov 2021 09:54:44 -0800
 > 
-> gcc-11 points out a potential issue with integer overflow when
-> the iwl_dev_info_table[] array is empty:
+>> I'm not sure if that stalled due to lack of time or some fundamental
+>> problems.
 > 
-> drivers/net/wireless/intel/iwlwifi/pcie/drv.c:1344:42: error: implicit conversion from 'unsigned long' to 'int' changes value from 18446744073709551615 to -1 [-Werror,-Wconstant-conversion]
->         for (i = ARRAY_SIZE(iwl_dev_info_table) - 1; i >= 0; i--) {
->                ~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-
-For what it's worth, I do see this warning with Clang when both
-CONFIG_IWLDVM and CONFIG_IWLMVM are disabled and looking through the GCC
-warning docs [1], I do not see a -Wconstant-conversion option? Maybe
-there is another warning that is similar but that warning right there
-appears to have come from clang, as it matches mine exactly.
-
-drivers/net/wireless/intel/iwlwifi/pcie/drv.c:1344:42: error: implicit conversion from 'unsigned long' to 'int' changes value from 18446744073709551615 to -1 [-Werror,-Wconstant-conversion]
-        for (i = ARRAY_SIZE(iwl_dev_info_table) - 1; i >= 0; i--) {
-               ~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-1 error generated.
-
-[1]: https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
-
-> This is still harmless, as the loop correctly terminates, but adding
-> an extra range check makes that obvious to both readers and to the
-> compiler.
+> ran out of time, then had a stroke...
 > 
-> Fixes: 3f7320428fa4 ("iwlwifi: pcie: simplify iwl_pci_find_dev_info()")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Cc: Nick Desaulniers <ndesaulniers@google.com>
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-
-Regardless of above, this resolves the warning for clang.
-
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-
-> ---
-> Changes in v3:
-> - make it actually work with gcc-11
-> - fix commit message s/clang/gcc-11/
+>> Seems like finishing that would let us clean up such misuses?
 > 
-> Changes in v2:
-> - replace int cast with a range check
-> ---
->  drivers/net/wireless/intel/iwlwifi/pcie/drv.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
+> yes it would
 > 
-> diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-> index c574f041f096..395e328c6a07 100644
-> --- a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-> +++ b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-> @@ -1339,9 +1339,13 @@ iwl_pci_find_dev_info(u16 device, u16 subsystem_device,
->  		      u16 mac_type, u8 mac_step,
->  		      u16 rf_type, u8 cdb, u8 rf_id, u8 no_160, u8 cores)
->  {
-> +	int num_devices = ARRAY_SIZE(iwl_dev_info_table);
->  	int i;
->  
-> -	for (i = ARRAY_SIZE(iwl_dev_info_table) - 1; i >= 0; i--) {
-> +	if (!num_devices)
-> +		return NULL;
-> +
-> +	for (i = num_devices - 1; i >= 0; i--) {
->  		const struct iwl_dev_info *dev_info = &iwl_dev_info_table[i];
->  
->  		if (dev_info->device != (u16)IWL_CFG_ANY &&
-> -- 
-> 2.29.2
-> 
+
+so since there is not better way of suppressing the issue atm are
+you ok with taking this fix for now?
+
+-- 
+Thanks,
+Tadeusz
