@@ -2,376 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39665455FA1
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 16:35:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9820A455FA5
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 16:37:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232425AbhKRPh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 10:37:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59398 "EHLO
+        id S232453AbhKRPj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 10:39:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231923AbhKRPh7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 10:37:59 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BAF3C061574
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 07:34:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=q0UaIYt3KOZ0azhRYf3EdbyBFPj3Ta9pbRL+Dqk02gQ=; b=YFBOOxR975pmvRCRX7VhBOqZHy
-        Yv9ChigUZQ7jh5FWWPf4ELMU+XnhADLTz5xJD/Y8xHqNll2bYSSS1mdHn8BniXDWLKqrxjxUoDsQw
-        /DmCs/anc7uA3S/1vsHeuVCM3onCeapsl77E27M9WQOTMkipHVD1hxLzUes3JKCwPrcOmAXTsDNkD
-        P7a7ACQM0ICVow2ANNrrwGWUTDkfFlOkFYCaPZjCnmcxnBqK9KXahSbKoF67WG0jIIKenuFmMAVe3
-        fujveQ1lobw5UqatkOoZZ4FCgBq1XkdUVtnAlL4Gu21NvCXdOQVviMHja2mdcsK9rekpXKRIeRTcq
-        3EL9kocQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55724)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mnjR6-000368-Ae; Thu, 18 Nov 2021 15:34:52 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mnjR2-000423-6l; Thu, 18 Nov 2021 15:34:48 +0000
-Date:   Thu, 18 Nov 2021 15:34:48 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Parshuram Thombare <pthombar@cadence.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Milind Parab <mparab@cadence.com>
-Subject: Re: [net-next PATCH v6] net: macb: Fix several edge cases in validate
-Message-ID: <YZZymBHimAhx8lja@shell.armlinux.org.uk>
-References: <20211112190400.1937855-1-sean.anderson@seco.com>
- <YZKOdibmws3vlMUh@shell.armlinux.org.uk>
- <684f843f-e5a7-e894-d2cc-3a79a22faf36@seco.com>
- <YZRLQqLblRurUd4V@shell.armlinux.org.uk>
+        with ESMTP id S232287AbhKRPj6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 10:39:58 -0500
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B329C061574;
+        Thu, 18 Nov 2021 07:36:58 -0800 (PST)
+Received: by mail-ot1-x32e.google.com with SMTP id h19-20020a9d3e53000000b0056547b797b2so11602472otg.4;
+        Thu, 18 Nov 2021 07:36:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=dZlZJATQ/YmcJWgA31Q7e7yJH81G5LLLJ42PGoSP0yI=;
+        b=EJXnXAqgwaqGjyZXZVTkLHK0Qp8VQFd7iFh+WtunxBelUvtr0lgK4lVp9UkuwxQTeY
+         8D0rpyErhdP5ZwYzWKyuVP0lsQFNCKSGJVAS8Ea7c3HteDQg+YKfiEo9WEaDmZpieO34
+         5cC+kbDe/VQVw8ouBPT/6xW1WxCxr3otNxvLAGF+RGuO5lBwdDBsSja2xazPLxoSA8QH
+         6dvmXESOrug6o0IZxqZm5p5ysLRraui14a2Y2wfe7B/ZKET0mIjZH7ARPNYTBiqbbGHK
+         tEyqZrCM4tz7qlgxCJDal9+NsRF7TKESmiuAUqqu9BuYkXTKtZlu/39ci0zWxxQJ20Hr
+         XXXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=dZlZJATQ/YmcJWgA31Q7e7yJH81G5LLLJ42PGoSP0yI=;
+        b=rphVHOivmvPMQIfe2TyFpXJ+atXdiIx3VoAZx7WlCPujJkHzGOlBfH2otK4w4Y8rua
+         0DIuUpULY5MTiXRJtVmkVyCXgDKsBpQaUFM7+3tnG/dBwDUW8Hd8XfMS9mRVfDtY+YOl
+         dVL7g7pWPHb6G2OJ2vJRvZjOXRLuB98bygJUzI5g5X600jbqA2nzNavG14ipn299+ZZk
+         UhAqqpQ6bPEfGjV78+ErTZiq3bDIJw1Z6Zg0NuPw+2HXb6iFOR9oDwtsch9lxJyH1FCh
+         4GeGDYG91Iw7lKHbph9NH81zr1qVfUQXGLJVpfS8I3WCSCVRBmKZZgQkKKHYn+dtucKv
+         wWNw==
+X-Gm-Message-State: AOAM533KMmWxt2tFWnzEVEQuPVMhDzyekqAXwXlpd9uhv6qlZoJJYXrX
+        77+QPhahFCkBGWNwhX/RoNU=
+X-Google-Smtp-Source: ABdhPJzBnDAazNpr2RMobQK1UpRc2NWjCOCOE7f0HrPAtpc5UHuOh8P96ocIpy4uoI5W39b5Pad0cg==
+X-Received: by 2002:a9d:24c3:: with SMTP id z61mr21930817ota.100.1637249817453;
+        Thu, 18 Nov 2021 07:36:57 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id l23sm33822oti.16.2021.11.18.07.36.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Nov 2021 07:36:57 -0800 (PST)
+Message-ID: <67b36bd8-2477-88ac-83a0-35a1eeaf40c9@gmail.com>
+Date:   Thu, 18 Nov 2021 08:36:55 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YZRLQqLblRurUd4V@shell.armlinux.org.uk>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.3.1
+Subject: Re: [PATCH v2 net-next 0/2] net: snmp: tracepoint support for snmp
+Content-Language: en-US
+To:     menglong8.dong@gmail.com, kuba@kernel.org, rostedt@goodmis.org
+Cc:     davem@davemloft.net, mingo@redhat.com, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, imagedong@tencent.com, ycheng@google.com,
+        kuniyu@amazon.co.jp, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20211118124812.106538-1-imagedong@tencent.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20211118124812.106538-1-imagedong@tencent.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 17, 2021 at 12:22:26AM +0000, Russell King (Oracle) wrote:
-> On Tue, Nov 16, 2021 at 05:56:43PM -0500, Sean Anderson wrote:
-> > Hi Russell,
-> > 
-> > I have a few questions/comments about your tree (and pl in general).
-> > This is not particularly relevant to the above patch, but this is as
-> > good a place as any to ask.
-> > 
-> > What is the intent for the supported link modes in validate()? The docs
-> > say
+On 11/18/21 5:48 AM, menglong8.dong@gmail.com wrote:
+> From: Menglong Dong <imagedong@tencent.com>
 > 
-> The _link_ modes describe what gets reported to userspace via the
-> ethtool APIs, and therefore what appears in ethtool as the supported
-> and advertised capabilities for the media, whatever the "media" is
-> defined to be.
+> snmp is the network package statistics module in kernel, and it is
+> useful in network issue diagnosis, such as packet drop.
 > 
-> Generally, the "media" is what the user gets to play with to connect
-> two network interfaces together - so twisted pair, fibre, direct-attach
-> cable, etc.
+> However, it is hard to get the detail information about the packet.
+> For example, we can know that there is something wrong with the
+> checksum of udp packet though 'InCsumErrors' of UDP protocol in
+> /proc/net/snmp, but we can't figure out the ip and port of the packet
+> that this error is happening on.
 > 
-> > > Note that the PHY may be able to transform from one connection
-> > > technology to another, so, eg, don't clear 1000BaseX just
-> > > because the MAC is unable to BaseX mode. This is more about
-> > > clearing unsupported speeds and duplex settings. The port modes
-> > > should not be cleared; phylink_set_port_modes() will help with this.
-> > 
-> > But this is not how validate() has been/is currently implemented in many
-> > drivers. In 34ae2c09d46a ("net: phylink: add generic validate
-> > implementation"), it appears you are hewing closer to the documented
-> > purpose (e.g. MAC_1000FD selects all the full-duplex 1G link modes).
-> > Should new code try to stick to the above documentation?
+> Add tracepoint for snmp. Therefor, users can use some tools (such as
+> eBPF) to get the information of the exceptional packet.
 > 
-> I try to encourage new code to stick to this - and this is one of the
-> motivations behind moving to this new model, so people don't make
-> these kinds of mistakes.
+> In the first patch, the frame of snmp-tracepoint is created. And in
+> the second patch, tracepoint for udp-snmp is introduced.
 > 
-> In the case of nothing between the MAC and the media performing any
-> kind of speed conversion, the MAC itself doesn't have much to do with
-> which ethtool link modes are supported - and here's why.
-> 
-> Take a gigabit capable MAC that is connected via SGMII to a PHY that
-> supports both conventional twisted-pair media and fiber. If the
-> twisted-pair port is in use at 1G speeds, then we're using 1000base-T.
-> If the fiber port is being used, then we're using 1000base-X. The
-> protocol between the PHY and MAC makes no difference to what link
-> modes are supported.
-> 
-> A more extreme case could be: a 10G MAC connected to a backplane PHY
-> via 10G BASE-KR which is then connected to a PHY that connects to
-> conventional twisted-pair media.
-> 
-> Or a multi-speed PHY where it switches between SGMII, 2500BASE-X,
-> 5GBASE-R, 10GBASE-R depending on the results of negotiation on the
-> twisted-pair media. The MAC supports operating at 10M, 100M, 1G,
-> 2.5G, 5G, and 10G speeds, and can select between PCS that support
-> SGMII, 2500BASE-X, 5GBASE-R and 10GBASE-R. However, ultimately for
-> userspace, what matters is the media capabilities - the base-T*
-> ethtool link modes. 2500base-X in this situation doesn't come up
-> unless the PHY offers 2500base-X on the media.
-> 
-> The same PHY might be embedded within a SFP module, and that SFP
-> module might be plugged into a cage where the MAC is unable to
-> support the faster speeds - maybe it is only capable of up to
-> 2.5G speeds. In which case, the system supports up to 2500BASE-T.
-> 
-> So you can see, the MAC side has little relevance for link modes
-> except for defining the speeds and duplexes that can be supported.
-> The type of media (-T, -X, -*R) is of no concern at this stage.
-> 
-> It is of little concern at the PCS except when the PCS is the
-> endpoint for connecting to the media (like it is in _some_ 802.3z
-> connections.) I say "some" because its entirely possible to use
-> 1000base-X to talk to a PHY that connects to 1000base-T media
-> (and there are SFPs around that will do this by default.)
-> 
-> > Of course, the above leaves me quite confused about where the best place
-> > is to let the PCS have a say about what things are supported, and (as
-> > discussed below) whether it can support such a thing. The general
-> > perspective taken in existing drivers seems to be that PCSs are
-> > integrated with the MAC. This is in contrast to the IEEE specs, which
-> > take the pespective that the PCS is a part of the PHY. It's unclear to
-> > me what stance the above documentation takes.
-> 
-> Things can get quite complex, and I have to say the IEEE specs give
-> a simplified view. When you have a SGMII link to a PHY that then
-> connects to twisted pair media, you actually have multiple PCS:
-> 
->                                  PHY
->                       /----------------------\
-> MAC -- PCS ---<SGMII>--- PCS --- PCS --- PMA ---- media
->      (sgmii)           (sgmii)   (1000baseT)
-> 
-> This can be seen in PHYs such as Marvell 88E151x, where the fiber
-> interface is re-used for SGMII, and if you read the datasheet and/or
-> read the fiber page registers, you find that this is being used for
-> the fiber side. So the PHY can be thought of two separate PHYs
-> back-to-back. Remember that the PCS for 1000BASE-X (and SGMII) is
-> different from the PCS for 1000BASE-T in IEEE802.3.
-> 
-> The point I'm making here is that the capability of the link between
-> the MAC and the PHY doesn't define what the media link modes are. It
-> may define the speeds and duplexes that can be supported, and that
-> restricts the available link modes, but it doesn't define which
-> media "technologies" can be supported.
-> 
-> Hence, for example, the validate() implementation masking out
-> 1000base-X but leaving 1000base-T on a *GMII link is pretty silly,
-> because whether one or the other is supported depends ultimately
-> what the *GMII link ends up being connected to.
-> 
-> > Consider the Xilinx 1G PCS. This PCS supports 1000BASE-X and SGMII, but
-> > only at full duplex. This caveat already rules out a completely
-> > bitmap-based solution (as phylink_get_linkmodes thinks that both of
-> > those interfaces are always full-duplex).
-> 
-> I don't see why you say this rules out a bitmap solution. You say that
-> it only supports full-duplex, and that is catered for in the current
-> solution: MAC_10 for example is actually MAC_10HD | MAC_10FD - which
-> allows one to specify that only MAC_10FD is supported and not MAC_10HD
-> in such a scenario.
-> 
-> Hmm. Also note that the validate() callback is not going away -
-> phylink_generic_validate() is a generic implementation of this that
-> gets rid of a lot of duplication and variability of implementation
-> that really shouldn't be there.
-> 
-> There are cases where the generic implementation will not be suitable,
-> and for this phylink_get_linkmodes() can be called directly, or I'd
-> even consider making phylink_caps_to_linkmodes() available if it is
-> useful. Or one can do it the "old way" that we currently have.
-> 
-> > There are also config options
-> > which (either as a feature or a consequence) disable SPEED_10 SGMII or
-> > autonegotiation (although I don't plan on supporting either of those).
-> > The "easiest" solution is simply to provide two callbacks like
-> > 
-> > 	void pcs_set_modes(struct phylink_pcs *pcs, ulong *supported,
-> > 			   phy_interface_t interface);
-> > 	bool pcs_mode_supported(struct phylink_pcs *pcs,
-> > 				phy_interface_t interface, int speed,
-> > 				int duplex);
-> > 
-> > perhaps with some generic substitutes. The former would need to be
-> > called from mac_validate, and the latter from mac_select_pcs/
-> > mac_prepare. This design is rather averse to genericization, so perhaps
-> > you have some suggestion?
-> 
-> I don't have a good answer for you at the moment - the PCS support
-> is something that has been recently added and is still quite young,
-> so these are the kinds of issues I'd expect to crop up.
-> 
-> > On the subject of PCS selection, mac_select_pcs should supply the whole
-> > state.
-> 
-> That may seem like a good thing to ask for, but not even phylink
-> knows what the full state is when calling the validation function,
-> nor when calling mac_select_pcs.
-> 
-> Let's take an example of the Marvell 88X3310 multi-speed PHY, which
-> supports 10G, 5G, 2.5G, 1G, 100M and 10M on copper, and 1G and 100M
-> on fiber, and can do all of that while connected to a single serdes
-> connection back to the MAC. As I've said above, it does this by
-> switching its MAC connection under its internal firmware between
-> 10000Base-R, 5000Base-R, 2500Base-X, and SGMII. This PHY has been
-> found to be used in platforms, and discovered to also be in SFP
-> modules. Beyond programming the overall "host interface" mode, we
-> don't get a choice in which mode the PHY picks - that is determined
-> by the results of which interface comes up and autonegotiation on
-> that interface.
-> 
-> So, if the PHY decides to link on copper at 2500BASE-T, then we end
-> up with the MAC link operating at 2500BASE-X, and there's nothing
-> we can do about that.
-> 
-> The only way to restrict this is to know ahead of time what the
-> capabilities of the MAC and PCSes are, and to restrict the link
-> modes that phylib gives us in both the "supported" and "advertising"
-> fields, so the PHY will be programmed to e.g. not support 2500BASE-T
-> on copper if 2500BASE-X is not supported by the PCS, or 2.5G speeds
-> are not supported by the MAC.
-> 
-> This isn't something one can do when trying to bring the link up,
-> it's something that needs to be done when we are "putting the system
-> together" - in other words, when we are binding the PHY into the
-> link setup.
-> 
-> Now, this is quite horrible right now, because for PHYs like this,
-> phylink just asks the MAC's validate function "give me everything
-> you can support" when working this out - which won't be sufficient
-> going forward. With some of the changes you've prompted - making
-> more use of the supported_interfaces bitmap, and with further
-> adaption of phylib to also provide that information, we can start to
-> work out which interface modes the PHY _could_ select, and we can then
-> query the validate() function for what is possible for each of those
-> interface modes, and use that to bound the PHY capabilities. However,
-> at the moment, we just don't have that information available from
-> phylib.
-> 
-> > This is because the interface alone is insufficient to determine
-> > which PCS to select. For example, a PCS which supports full duplex but
-> > not half duplex should not be selected if the config specifies half
-> > duplex. Additionally, it should also support a selection of "no pcs".
-> 
-> Right now, "no pcs" is really not an option I'm afraid. The presence
-> of a PCS changes the phylink behaviour slightly . This is one of my
-> bug-bears. The evolution of phylink has meant that we need to keep
-> compatibility with how phylink used to work before we split the PCS
-> support - and we detect that by whether there is a PCS to determine
-> whether we need to operate with that compatibility. It probably was
-> a mistake to do that in hind sight.
-> 
-> If we can find a way to identify the old vs new drivers that doesn't
-> rely on the presence of a PCS, then we should be able to fix this to
-> allow the PCS to "vanish" in certain modes, but I do question whether
-> there would be any realistic implementations using it. If we have a
-> PHY connected to a serdes lane back to a set of PCS to support
-> different protocols on the serdes, then under what scenario would we
-> select "no pcs" - doesn't "no pcs" in that situation mean "we don't
-> know what protocol to drive the serdes link" ?
-> 
-> > Otherwise MACs which (optionally!) have PCSs will fail to configure. We
-> > should not fail when no PCS has yet been selected or when there is no
-> > PCS at all in some hardware configuration.  Further, why do we have this
-> > callback in the first place? Why don't we have drivers just do this in
-> > prepare()?
-> 
-> I added mac_select_pcs() because finding out that something isn't
-> supported in mac_prepare() is way too late - as explained above
-> where I talked about binding the PHY into the link setup. E.g. if
-> the "system" as a whole can't operate at 2.5G speeds, then we should
-> not allow the PHY to advertise 2500BASE-T. It is no good advertising
-> 2500BASE-T, then having the PHY negotiate 2500BASE-T, select 2500BASE-X,
-> and then have mac_prepare() decide that can't be supported. The link
-> won't come up, and there's nothing that can be sensibly done. The
-> user sees the PHY indicating link, the link partner indicates link,
-> but the link is non-functional. That isn't a good user experience.
-> 
-> Whereas, if we know ahead of time that 2.5G can't be supported, we can
-> remove 2500BASE-T from the advertisement, and the PHY will instead
-> negotiate a slower speed - resulting in a working link, albiet slower.
-> 
-> I hope that explains why it is so important not to error out in
-> mac_prepare() because something wasn't properly handled in the
-> validate() step.
 
-What I haven't described in the above (it was rather late when I was
-writing that email!) is where we need to head with a PHY that does
-rate adaption - and yet again an example of such a PHY is the 88X3310.
-This is actually a good example for many of the issues right now.
+there is already good infrastructure around kfree_skb - e.g., drop watch
+monitor. Why not extend that in a way that other drop points can benefit
+over time?
 
-If the 88X3310 is configured to have a host interface that only
-supports 10GBASE-R, then rate adaption within the PHY is activated,
-meaning the PHY is able to operate at, e.g. 10BASE-T while the host
-MAC operates at 10GBASE-R. There are some provisos to this though:
+e.g., something like this (uncompiled and not tested; and to which
+Steven is going to suggest strings for the reason):
 
-1) If the 88X3310 supports MACSEC, then it has internal MACs that
-   are able to generate pause frames, and pause frames will be sent
-   over the 10GBASE-R link as necessary to control the rate at which
-   the MAC sends packets.
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 0bd6520329f6..e66e634acad0 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -1075,8 +1075,13 @@ static inline bool skb_unref(struct sk_buff *skb)
+        return true;
+ }
 
-2) If the 88X3310 does not support MACSEC, then it is expected that
-   the MAC is paced according to the link speed to avoid overflowing
-   the 88X3310 internal FIFOs (what happens when the internal FIFOs
-   overflow is not known.) There are no pause frames generated.
-   (This is the case on Macchiatobin boards if we configured the PHY
-   for 10GBASE-R rate-adaption mode.)
++enum skb_drop_reason {
++       SKB_DROP_REASON_NOT_SPECIFIED,
++       SKB_DROP_REASON_CSUM,
++}
+ void skb_release_head_state(struct sk_buff *skb);
+ void kfree_skb(struct sk_buff *skb);
++void kfree_skb_with_reason(struct sk_buff *skb, enum skb_drop_reason);
+ void kfree_skb_list(struct sk_buff *segs);
+ void skb_dump(const char *level, const struct sk_buff *skb, bool full_pkt);
+ void skb_tx_error(struct sk_buff *skb);
+diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
+index 9e92f22eb086..2a2d263f9d46 100644
+--- a/include/trace/events/skb.h
++++ b/include/trace/events/skb.h
+@@ -14,7 +14,7 @@
+  */
+ TRACE_EVENT(kfree_skb,
 
-We have no "real" support for rate adaption at either phylib or phylink
-level - phylib has no way to tell us whether rate adaption is enabled
-on the PHY, nor does it have a way to tell us if we either need to pace
-the MAC or whether to expect pause frames from the PHY.
+-       TP_PROTO(struct sk_buff *skb, void *location),
++       TP_PROTO(struct sk_buff *skb, void *location, enum
+skb_drop_reason reason),
 
-If we have a PHY in rate adaption mode, the current behaviour will be
-that mac_link_up() and pcs_link_up() will be passed the negotiated
-media parameters as "speed", "duplex" and any flow control information,
-which will confuse PCS and MAC drivers at the moment, because it isn't
-something they expect to happen. What I mean is, if we are using
-PHY_INTERFACE_MODE_10GBASER, then most people will expect "speed" to be
-SPEED_10000, but with a rate adapting PHY it may not be.
+        TP_ARGS(skb, location),
 
-In order to properly support this, we need to update the documentation
-at the very least to say that what gets passed to mac_link_up() for
-"speed" and "duplex" are the media negotiated parameters. Then we need
-to have a think about how to handle flow control, and this is where
-extending phylib to tell us whether the PHY supports rate adaption
-becomes important. Flow control on the MAC needs to be enabled if (the
-PHY has rate adaption disabled but the media negotiated flow control)
-or (the PHY has rate adaption enabled _and_ the PHY is capable of
-issuing flow control frames - presumably the PHY will respond itself
-to flow control) or (the PHY has rate adaption enabled and the media
-negotiated flow control but the PHY is not capable of issuing flow
-control frames).
+@@ -22,16 +22,18 @@ TRACE_EVENT(kfree_skb,
+                __field(        void *,         skbaddr         )
+                __field(        void *,         location        )
+                __field(        unsigned short, protocol        )
++               __field(        unsigned int,   reason          )
+        ),
 
-Then there's the issue of implementing transmission pacing in any MAC
-driver that wants to be usable with a rate adapting PHY.
+        TP_fast_assign(
+                __entry->skbaddr = skb;
+                __entry->location = location;
+                __entry->protocol = ntohs(skb->protocol);
++               __entry->reason = reason;
+        ),
 
-Lastly, there's the issue of the "speed" and "duplex" parameters passed
-to pcs_link_up(), which I'm currently thinking should be the interface
-parameters and not the media parameters. In other words, if it's a
-10GBASE-R connection between the PHY and PCS, we really should not be
-passing the media negotiated speed there.
+-       TP_printk("skbaddr=%p protocol=%u location=%p",
+-               __entry->skbaddr, __entry->protocol, __entry->location)
++       TP_printk("skbaddr=%p protocol=%u location=%p reason %u",
++               __entry->skbaddr, __entry->protocol, __entry->location,
+__entry->reason)
+ );
 
-So, to sum up, rate adaption isn't something that is well supported in
-the kernel - it's possible to bodge around phylib and phylink to make
-it work, but this really needs to be handled properly.
+ TRACE_EVENT(consume_skb,
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 67a9188d8a49..388059bda3d1 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -770,11 +770,29 @@ void kfree_skb(struct sk_buff *skb)
+        if (!skb_unref(skb))
+                return;
 
+-       trace_kfree_skb(skb, __builtin_return_address(0));
++       trace_kfree_skb(skb, __builtin_return_address(0),
+SKB_DROP_REASON_NOT_SPECIFIED);
+        __kfree_skb(skb);
+ }
+ EXPORT_SYMBOL(kfree_skb);
 
-Rate adaption is fairly low priority at the moment as it is in a
-minority, although it seems we are seeing more systems that have PHYs
-with this feature.
-
-So, I hope these two emails have provides some useful insights.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
++/**
++ *     kfree_skb_with_reason - free an sk_buff
++ *     @skb: buffer to free
++ *     @reason: enum describing why the skb is dropped
++ *
++ *     Drop a reference to the buffer and free it if the usage count has
++ *     hit zero.
++ */
++void kfree_skb_with_reason(struct sk_buff *skb, enum skb_drop_reason
+reason);
++{
++       if (!skb_unref(skb))
++               return;
++
++       trace_kfree_skb(skb, __builtin_return_address(0), reason);
++       __kfree_skb(skb);
++}
++EXPORT_SYMBOL(kfree_skb_with_reason);
++
+ void kfree_skb_list(struct sk_buff *segs)
+ {
+        while (segs) {
