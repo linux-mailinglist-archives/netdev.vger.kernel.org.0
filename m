@@ -2,98 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D2B34556E8
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 09:26:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C358455727
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 09:40:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244478AbhKRI27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 03:28:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45810 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244270AbhKRI26 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 03:28:58 -0500
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82AA4C061764
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 00:25:58 -0800 (PST)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:8d84:8075:bcc:d376])
-        by albert.telenet-ops.be with bizsmtp
-        id KkRv260044DeBRs06kRv0q; Thu, 18 Nov 2021 09:25:55 +0100
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1mncjy-00DJaP-D6; Thu, 18 Nov 2021 09:25:54 +0100
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1mnci4-0047wv-Dz; Thu, 18 Nov 2021 09:23:56 +0100
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-To:     Alexander Aring <aahringo@redhat.com>,
-        Christine Caulfield <ccaulfie@redhat.com>,
-        David Teigland <teigland@redhat.com>
-Cc:     "Reported-by : Randy Dunlap" <rdunlap@infradead.org>,
-        cluster-devel@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH] fs: dlm: Protect IPV6 field access by CONFIG_IPV6
-Date:   Thu, 18 Nov 2021 09:23:55 +0100
-Message-Id: <20211118082355.983825-1-geert@linux-m68k.org>
-X-Mailer: git-send-email 2.25.1
+        id S244698AbhKRIm6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 03:42:58 -0500
+Received: from mail-vk1-f178.google.com ([209.85.221.178]:33464 "EHLO
+        mail-vk1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242185AbhKRImz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 03:42:55 -0500
+Received: by mail-vk1-f178.google.com with SMTP id d130so3379869vke.0;
+        Thu, 18 Nov 2021 00:39:55 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jRhaJP30xRfGoC6YfQR1gJhdJCfA0BcIWGwc3ucBNgY=;
+        b=eP4RJ2wYhz2Aod0sWLHh3u8VGOjWWffBO5antXYK6ZvykOLwg7Fk65vJOafO9wWeoH
+         Za1eTahl3P8stzkWSetnagkc0eq4V8gnnYOeTOCdelO7W/S85KFeJzoMpF2Qhmiy6yss
+         gOdb/O8SK5LyV6wVljcRRDdq70Et5UV2TRoF/EeNABiMKALQRPyA+IzGuoLBmut7zEw7
+         kn+VgGfIlZEXtGSXoQqskd5fqmTpKEHYcvfh8aLRD54+4jcDUUkn4t3Az8BbzCD+jy8T
+         Qeo7V9YUgsRtl0L4Y1zltWfiVfzgZlC4JcZ/ueEOOje3XNE50SsR734xvbsdkbgk/2A9
+         VZ4Q==
+X-Gm-Message-State: AOAM531G8DZAIkZ7M4XEa0o7UmqaB+Osz1iMmHO9jTKF6utvsIKVGx3R
+        +Rta+oSKWhcLYUyTj88guhZFP4H0ZPLVhg==
+X-Google-Smtp-Source: ABdhPJw6TFS2OAxiO9CEBXu37PgWmucGjUZy3O0qTJmxjSvOWLW3HvjdYpV98A4hxhApXn5vYYnZXg==
+X-Received: by 2002:a05:6122:2158:: with SMTP id m24mr34049603vkd.1.1637224794868;
+        Thu, 18 Nov 2021 00:39:54 -0800 (PST)
+Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com. [209.85.222.51])
+        by smtp.gmail.com with ESMTPSA id 92sm1396828uav.9.2021.11.18.00.39.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Nov 2021 00:39:54 -0800 (PST)
+Received: by mail-ua1-f51.google.com with SMTP id o1so12010161uap.4;
+        Thu, 18 Nov 2021 00:39:54 -0800 (PST)
+X-Received: by 2002:a05:6102:2910:: with SMTP id cz16mr78807614vsb.9.1637224794088;
+ Thu, 18 Nov 2021 00:39:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <1637204329-3314-1-git-send-email-yang.lee@linux.alibaba.com>
+In-Reply-To: <1637204329-3314-1-git-send-email-yang.lee@linux.alibaba.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 18 Nov 2021 09:39:42 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXL4nfiq8B-PtAiQmCQkZMBP8t-CUBO4bbMZumiA=QpaQ@mail.gmail.com>
+Message-ID: <CAMuHMdXL4nfiq8B-PtAiQmCQkZMBP8t-CUBO4bbMZumiA=QpaQ@mail.gmail.com>
+Subject: Re: [PATCH -next v2] ethernet: renesas: Use div64_ul instead of do_div
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If CONFIG_IPV6=n:
+Hi Yang,
 
-    In file included from fs/dlm/lowcomms.c:46:
-    fs/dlm/lowcomms.c: In function ‘lowcomms_error_report’:
-    ./include/net/sock.h:386:34: error: ‘struct sock_common’ has no member named ‘skc_v6_daddr’; did you mean ‘skc_daddr’?
-      386 | #define sk_v6_daddr  __sk_common.skc_v6_daddr
-	  |                                  ^~~~~~~~~~~~
-    ./include/linux/printk.h:422:19: note: in expansion of macro ‘sk_v6_daddr’
-      422 |   _p_func(_fmt, ##__VA_ARGS__);    \
-	  |                   ^~~~~~~~~~~
-    ./include/linux/printk.h:450:26: note: in expansion of macro ‘printk_index_wrap’
-      450 | #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
-	  |                          ^~~~~~~~~~~~~~~~~
-    ./include/linux/printk.h:644:3: note: in expansion of macro ‘printk’
-      644 |   printk(fmt, ##__VA_ARGS__);    \
-	  |   ^~~~~~
-    fs/dlm/lowcomms.c:612:3: note: in expansion of macro ‘printk_ratelimited’
-      612 |   printk_ratelimited(KERN_ERR "dlm: node %d: socket error "
-	  |   ^~~~~~~~~~~~~~~~~~
+On Thu, Nov 18, 2021 at 4:13 AM Yang Li <yang.lee@linux.alibaba.com> wrote:
+> do_div() does a 64-by-32 division. Here the divisor is an
+> unsigned long which on some platforms is 64 bit wide. So use
+> div64_ul instead of do_div to avoid a possible truncation.
+>
+> Eliminate the following coccicheck warning:
+> ./drivers/net/ethernet/renesas/ravb_main.c:2492:1-7: WARNING:
+> do_div() does a 64-by-32 division, please consider using div64_ul instead.
+>
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 
-Fix this by protecting the code that accesses IPV6-only fields by a
-check for CONFIG_IPV6.
+Thanks for your patch!
 
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Fixes: 4c3d90570bcc2b33 ("fs: dlm: don't call kernel_getpeername() in error_report()")
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
----
- fs/dlm/lowcomms.c | 2 ++
- 1 file changed, 2 insertions(+)
+> --- a/drivers/net/ethernet/renesas/ravb_main.c
+> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+> @@ -2489,7 +2489,7 @@ static int ravb_set_gti(struct net_device *ndev)
+>                 return -EINVAL;
+>
+>         inc = 1000000000ULL << 20;
+> -       do_div(inc, rate);
+> +       inc = div64_ul(inc, rate);
+>
+>         if (inc < GTI_TIV_MIN || inc > GTI_TIV_MAX) {
+>                 dev_err(dev, "gti.tiv increment 0x%llx is outside the range 0x%x - 0x%x\n",
 
-diff --git a/fs/dlm/lowcomms.c b/fs/dlm/lowcomms.c
-index 203470189011102d..f7fc1ac76ce83a5f 100644
---- a/fs/dlm/lowcomms.c
-+++ b/fs/dlm/lowcomms.c
-@@ -608,6 +608,7 @@ static void lowcomms_error_report(struct sock *sk)
- 				   ntohs(inet->inet_dport), sk->sk_err,
- 				   sk->sk_err_soft);
- 		break;
-+#if IS_ENABLED(CONFIG_IPV6)
- 	case AF_INET6:
- 		printk_ratelimited(KERN_ERR "dlm: node %d: socket error "
- 				   "sending to node %d at %pI6c, "
-@@ -616,6 +617,7 @@ static void lowcomms_error_report(struct sock *sk)
- 				   ntohs(inet->inet_dport), sk->sk_err,
- 				   sk->sk_err_soft);
- 		break;
-+#endif
- 	default:
- 		printk_ratelimited(KERN_ERR "dlm: node %d: socket error "
- 				   "invalid socket family %d set, "
--- 
-2.25.1
+Please also replace
 
+    #include <asm/div64.h>
+
+by
+
+#include <linux/math64.h>
+
+With that added:
+
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
