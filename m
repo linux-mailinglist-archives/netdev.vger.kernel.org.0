@@ -2,115 +2,298 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4826A456598
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 23:26:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EF2A45659B
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 23:26:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231907AbhKRW3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S231939AbhKRW3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 18 Nov 2021 17:29:31 -0500
-Received: from mail.netfilter.org ([217.70.188.207]:58256 "EHLO
+Received: from mail.netfilter.org ([217.70.188.207]:58258 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230378AbhKRW3b (ORCPT
+        with ESMTP id S231610AbhKRW3b (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 17:29:31 -0500
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 034C764972;
-        Thu, 18 Nov 2021 23:24:21 +0100 (CET)
+        by mail.netfilter.org (Postfix) with ESMTPSA id F0F2D6499B;
+        Thu, 18 Nov 2021 23:24:22 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 00/11] Netfilter fixes for net
-Date:   Thu, 18 Nov 2021 23:26:07 +0100
-Message-Id: <20211118222618.433273-1-pablo@netfilter.org>
+Subject: [PATCH net 01/11] selftests: netfilter: add a vrf+conntrack testcase
+Date:   Thu, 18 Nov 2021 23:26:08 +0100
+Message-Id: <20211118222618.433273-2-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20211118222618.433273-1-pablo@netfilter.org>
+References: <20211118222618.433273-1-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Florian Westphal <fw@strlen.de>
 
-The following patchset contains Netfilter/IPVS fixes for net:
+Rework the reproducer for the vrf+conntrack regression reported
+by Eugene into a selftest and also add a test for ip masquerading
+that Lahav fixed recently.
 
-1) Add selftest for vrf+conntrack, from Florian Westphal.
+With net or net-next tree, the first test fails and the latter
+two pass.
 
-2) Extend nfqueue selftest to cover nfqueue, also from Florian.
+With 09e856d54bda5f28 ("vrf: Reset skb conntrack connection on VRF rcv")
+reverted first test passes but the last two fail.
 
-3) Remove duplicated include in nft_payload, from Wan Jiabing.
+A proper fix needs more work, for time being a revert seems to be
+the best choice, snat/masquerade did not work before the fix.
 
-4) Several improvements to the nat port shadowing selftest,
-   from Phil Sutter.
-
-5) Fix filtering of reply tuple in ctnetlink, from Florent Fourcot.
-
-6) Do not override error with -EINVAL in filter setup path, also
-   from Florent.
-
-7) Honor sysctl_expire_nodest_conn regardless conn_reuse_mode for
-   reused connections, from yangxingwu.
-
-8) Replace snprintf() by sysfs_emit() in xt_IDLETIMER as reported
-   by Coccinelle, from Jing Yao.
-
-9) Incorrect IPv6 tunnel match in flowtable offload, from Will
-   Mortensen.
-
-10) Switch port shadow selftest to use socat, from Florian Westphal.
-
-Please, pull these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
-
-Thanks.
-
-----------------------------------------------------------------
-
-The following changes since commit c45231a7668d6b632534f692b10592ea375b55b0:
-
-  litex_liteeth: Fix a double free in the remove function (2021-11-07 21:51:17 +0000)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
-
-for you to fetch changes up to a2acf0c0e2da29950d0361a3b5ea05e8d0351dfe:
-
-  selftests: nft_nat: switch port shadow test cases to socat (2021-11-15 12:02:11 +0100)
-
-----------------------------------------------------------------
-Florent Fourcot (2):
-      netfilter: ctnetlink: fix filtering with CTA_TUPLE_REPLY
-      netfilter: ctnetlink: do not erase error code with EINVAL
-
-Florian Westphal (3):
-      selftests: netfilter: add a vrf+conntrack testcase
-      selftests: netfilter: extend nfqueue tests to cover vrf device
-      selftests: nft_nat: switch port shadow test cases to socat
-
-Jing Yao (1):
-      netfilter: xt_IDLETIMER: replace snprintf in show functions with sysfs_emit
-
-Phil Sutter (2):
-      selftests: nft_nat: Improve port shadow test stability
-      selftests: nft_nat: Simplify port shadow notrack test
-
-Wan Jiabing (1):
-      netfilter: nft_payload: Remove duplicated include in nft_payload.c
-
-Will Mortensen (1):
-      netfilter: flowtable: fix IPv6 tunnel addr match
-
-yangxingwu (1):
-      netfilter: ipvs: Fix reuse connection if RS weight is 0
-
- Documentation/networking/ipvs-sysctl.rst           |   3 +-
- net/netfilter/ipvs/ip_vs_core.c                    |   8 +-
- net/netfilter/nf_conntrack_netlink.c               |   6 +-
- net/netfilter/nf_flow_table_offload.c              |   4 +-
- net/netfilter/nft_payload.c                        |   1 -
- net/netfilter/xt_IDLETIMER.c                       |   4 +-
- tools/testing/selftests/netfilter/Makefile         |   3 +-
- tools/testing/selftests/netfilter/conntrack_vrf.sh | 219 +++++++++++++++++++++
- tools/testing/selftests/netfilter/nft_nat.sh       |  33 +++-
- tools/testing/selftests/netfilter/nft_queue.sh     |  54 +++++
- 10 files changed, 309 insertions(+), 26 deletions(-)
+Link: https://lore.kernel.org/netdev/378ca299-4474-7e9a-3d36-2350c8c98995@gmail.com/T/#m95358a31810df7392f541f99d187227bc75c9963
+Reported-by: Eugene Crosser <crosser@average.org>
+Cc: Lahav Schlesinger <lschlesinger@drivenets.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ tools/testing/selftests/netfilter/Makefile    |   3 +-
+ .../selftests/netfilter/conntrack_vrf.sh      | 219 ++++++++++++++++++
+ 2 files changed, 221 insertions(+), 1 deletion(-)
  create mode 100755 tools/testing/selftests/netfilter/conntrack_vrf.sh
+
+diff --git a/tools/testing/selftests/netfilter/Makefile b/tools/testing/selftests/netfilter/Makefile
+index 8748199ac109..ffca314897c4 100644
+--- a/tools/testing/selftests/netfilter/Makefile
++++ b/tools/testing/selftests/netfilter/Makefile
+@@ -5,7 +5,8 @@ TEST_PROGS := nft_trans_stress.sh nft_fib.sh nft_nat.sh bridge_brouter.sh \
+ 	conntrack_icmp_related.sh nft_flowtable.sh ipvs.sh \
+ 	nft_concat_range.sh nft_conntrack_helper.sh \
+ 	nft_queue.sh nft_meta.sh nf_nat_edemux.sh \
+-	ipip-conntrack-mtu.sh conntrack_tcp_unreplied.sh
++	ipip-conntrack-mtu.sh conntrack_tcp_unreplied.sh \
++	conntrack_vrf.sh
+ 
+ LDLIBS = -lmnl
+ TEST_GEN_FILES =  nf-queue
+diff --git a/tools/testing/selftests/netfilter/conntrack_vrf.sh b/tools/testing/selftests/netfilter/conntrack_vrf.sh
+new file mode 100755
+index 000000000000..91f3ef0f1192
+--- /dev/null
++++ b/tools/testing/selftests/netfilter/conntrack_vrf.sh
+@@ -0,0 +1,219 @@
++#!/bin/sh
++
++# This script demonstrates interaction of conntrack and vrf.
++# The vrf driver calls the netfilter hooks again, with oif/iif
++# pointing at the VRF device.
++#
++# For ingress, this means first iteration has iifname of lower/real
++# device.  In this script, thats veth0.
++# Second iteration is iifname set to vrf device, tvrf in this script.
++#
++# For egress, this is reversed: first iteration has the vrf device,
++# second iteration is done with the lower/real/veth0 device.
++#
++# test_ct_zone_in demonstrates unexpected change of nftables
++# behavior # caused by commit 09e856d54bda5f28 "vrf: Reset skb conntrack
++# connection on VRF rcv"
++#
++# It was possible to assign conntrack zone to a packet (or mark it for
++# `notracking`) in the prerouting chain before conntrack, based on real iif.
++#
++# After the change, the zone assignment is lost and the zone is assigned based
++# on the VRF master interface (in case such a rule exists).
++# assignment is lost. Instead, assignment based on the `iif` matching
++# Thus it is impossible to distinguish packets based on the original
++# interface.
++#
++# test_masquerade_vrf and test_masquerade_veth0 demonstrate the problem
++# that was supposed to be fixed by the commit mentioned above to make sure
++# that any fix to test case 1 won't break masquerade again.
++
++ksft_skip=4
++
++IP0=172.30.30.1
++IP1=172.30.30.2
++PFXL=30
++ret=0
++
++sfx=$(mktemp -u "XXXXXXXX")
++ns0="ns0-$sfx"
++ns1="ns1-$sfx"
++
++cleanup()
++{
++	ip netns pids $ns0 | xargs kill 2>/dev/null
++	ip netns pids $ns1 | xargs kill 2>/dev/null
++
++	ip netns del $ns0 $ns1
++}
++
++nft --version > /dev/null 2>&1
++if [ $? -ne 0 ];then
++	echo "SKIP: Could not run test without nft tool"
++	exit $ksft_skip
++fi
++
++ip -Version > /dev/null 2>&1
++if [ $? -ne 0 ];then
++	echo "SKIP: Could not run test without ip tool"
++	exit $ksft_skip
++fi
++
++ip netns add "$ns0"
++if [ $? -ne 0 ];then
++	echo "SKIP: Could not create net namespace $ns0"
++	exit $ksft_skip
++fi
++ip netns add "$ns1"
++
++trap cleanup EXIT
++
++ip netns exec $ns0 sysctl -q -w net.ipv4.conf.default.rp_filter=0
++ip netns exec $ns0 sysctl -q -w net.ipv4.conf.all.rp_filter=0
++ip netns exec $ns0 sysctl -q -w net.ipv4.conf.all.rp_filter=0
++
++ip link add veth0 netns "$ns0" type veth peer name veth0 netns "$ns1" > /dev/null 2>&1
++if [ $? -ne 0 ];then
++	echo "SKIP: Could not add veth device"
++	exit $ksft_skip
++fi
++
++ip -net $ns0 li add tvrf type vrf table 9876
++if [ $? -ne 0 ];then
++	echo "SKIP: Could not add vrf device"
++	exit $ksft_skip
++fi
++
++ip -net $ns0 li set lo up
++
++ip -net $ns0 li set veth0 master tvrf
++ip -net $ns0 li set tvrf up
++ip -net $ns0 li set veth0 up
++ip -net $ns1 li set veth0 up
++
++ip -net $ns0 addr add $IP0/$PFXL dev veth0
++ip -net $ns1 addr add $IP1/$PFXL dev veth0
++
++ip netns exec $ns1 iperf3 -s > /dev/null 2>&1&
++if [ $? -ne 0 ];then
++	echo "SKIP: Could not start iperf3"
++	exit $ksft_skip
++fi
++
++# test vrf ingress handling.
++# The incoming connection should be placed in conntrack zone 1,
++# as decided by the first iteration of the ruleset.
++test_ct_zone_in()
++{
++ip netns exec $ns0 nft -f - <<EOF
++table testct {
++	chain rawpre {
++		type filter hook prerouting priority raw;
++
++		iif { veth0, tvrf } counter meta nftrace set 1
++		iif veth0 counter ct zone set 1 counter return
++		iif tvrf counter ct zone set 2 counter return
++		ip protocol icmp counter
++		notrack counter
++	}
++
++	chain rawout {
++		type filter hook output priority raw;
++
++		oif veth0 counter ct zone set 1 counter return
++		oif tvrf counter ct zone set 2 counter return
++		notrack counter
++	}
++}
++EOF
++	ip netns exec $ns1 ping -W 1 -c 1 -I veth0 $IP0 > /dev/null
++
++	# should be in zone 1, not zone 2
++	count=$(ip netns exec $ns0 conntrack -L -s $IP1 -d $IP0 -p icmp --zone 1 2>/dev/null | wc -l)
++	if [ $count -eq 1 ]; then
++		echo "PASS: entry found in conntrack zone 1"
++	else
++		echo "FAIL: entry not found in conntrack zone 1"
++		count=$(ip netns exec $ns0 conntrack -L -s $IP1 -d $IP0 -p icmp --zone 2 2> /dev/null | wc -l)
++		if [ $count -eq 1 ]; then
++			echo "FAIL: entry found in zone 2 instead"
++		else
++			echo "FAIL: entry not in zone 1 or 2, dumping table"
++			ip netns exec $ns0 conntrack -L
++			ip netns exec $ns0 nft list ruleset
++		fi
++	fi
++}
++
++# add masq rule that gets evaluated w. outif set to vrf device.
++# This tests the first iteration of the packet through conntrack,
++# oifname is the vrf device.
++test_masquerade_vrf()
++{
++	ip netns exec $ns0 conntrack -F 2>/dev/null
++
++ip netns exec $ns0 nft -f - <<EOF
++flush ruleset
++table ip nat {
++	chain postrouting {
++		type nat hook postrouting priority 0;
++		# NB: masquerade should always be combined with 'oif(name) bla',
++		# lack of this is intentional here, we want to exercise double-snat.
++		ip saddr 172.30.30.0/30 counter masquerade random
++	}
++}
++EOF
++	ip netns exec $ns0 ip vrf exec tvrf iperf3 -t 1 -c $IP1 >/dev/null
++	if [ $? -ne 0 ]; then
++		echo "FAIL: iperf3 connect failure with masquerade + sport rewrite on vrf device"
++		ret=1
++		return
++	fi
++
++	# must also check that nat table was evaluated on second (lower device) iteration.
++	ip netns exec $ns0 nft list table ip nat |grep -q 'counter packets 2'
++	if [ $? -eq 0 ]; then
++		echo "PASS: iperf3 connect with masquerade + sport rewrite on vrf device"
++	else
++		echo "FAIL: vrf masq rule has unexpected counter value"
++		ret=1
++	fi
++}
++
++# add masq rule that gets evaluated w. outif set to veth device.
++# This tests the 2nd iteration of the packet through conntrack,
++# oifname is the lower device (veth0 in this case).
++test_masquerade_veth()
++{
++	ip netns exec $ns0 conntrack -F 2>/dev/null
++ip netns exec $ns0 nft -f - <<EOF
++flush ruleset
++table ip nat {
++	chain postrouting {
++		type nat hook postrouting priority 0;
++		meta oif veth0 ip saddr 172.30.30.0/30 counter masquerade random
++	}
++}
++EOF
++	ip netns exec $ns0 ip vrf exec tvrf iperf3 -t 1 -c $IP1 > /dev/null
++	if [ $? -ne 0 ]; then
++		echo "FAIL: iperf3 connect failure with masquerade + sport rewrite on veth device"
++		ret=1
++		return
++	fi
++
++	# must also check that nat table was evaluated on second (lower device) iteration.
++	ip netns exec $ns0 nft list table ip nat |grep -q 'counter packets 2'
++	if [ $? -eq 0 ]; then
++		echo "PASS: iperf3 connect with masquerade + sport rewrite on veth device"
++	else
++		echo "FAIL: vrf masq rule has unexpected counter value"
++		ret=1
++	fi
++}
++
++test_ct_zone_in
++test_masquerade_vrf
++test_masquerade_veth
++
++exit $ret
+-- 
+2.30.2
+
