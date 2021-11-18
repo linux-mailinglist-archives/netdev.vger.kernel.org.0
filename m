@@ -2,280 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 444DA455DD8
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 15:19:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7406E455DDF
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 15:20:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232240AbhKROWU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 09:22:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41420 "EHLO
+        id S232538AbhKROXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 09:23:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232009AbhKROWT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 09:22:19 -0500
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26749C061570;
-        Thu, 18 Nov 2021 06:19:19 -0800 (PST)
-Received: by mail-qv1-xf33.google.com with SMTP id i13so4665524qvm.1;
-        Thu, 18 Nov 2021 06:19:19 -0800 (PST)
+        with ESMTP id S232554AbhKROXo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 09:23:44 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14CF9C0FD238;
+        Thu, 18 Nov 2021 06:20:43 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id x15so27795104edv.1;
+        Thu, 18 Nov 2021 06:20:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=e6eAxrQg08U61GwOYJ6FpVD9sNYF+r9lJrh7l4b1WNE=;
-        b=ceQLeWGFJlX01qZKM0k8jv8h/NV/ImHyioYkbmAt3d5LnHO1Pgd1K5ENEamypIsbeM
-         dl7Pk6S1eDhQr70u1reiTESUSjldgDV8OK6VKS1LB2Ec9tLs78+TeVoAT6l5kfRR5cWy
-         Uzn5r7Oyf7lf4C72vEcBPTUPRGaeKzd53YEVRtFlyThGBN+6ciYt3ABHGjTYVvBg6S6T
-         LuPqtSWYF2oGzPzvtf3btc+hajGp7n1Vy3Oxbq5FWO3RacQlS0qS14WaGCjAT0d+vdUm
-         uVei/f5SZJ0S5dDKWGRrRB8L1ewiBrJDvDZ6AThxrQMp3r6mfBCNDA1NdpN02tmNNoO/
-         Dn9g==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=J3cGlN2KXuV9opgm+aB2NzNfTAZSU0XmtFn6B7EFXis=;
+        b=FU/dWTe9sueJLnDLmMZUXxbHPEWBCHYWWzKosVmq+MDhnKLy7UipNSk3K3TulD4B1N
+         ebEhjdO0S+J53DLXuN1DyvetbWSUbDGJnnC5sUzckw7HZxU4XQd+1lUhoZEv4Aqn052c
+         +67xppxqY4Cl4oRHpyjHU+uuZBxB6D2d/Wke/uexldTM6oQIdYkdlVZstKTuhrxlpjup
+         ZlZbusXm0xn66/soK48bs5YitCXDs/9EnYZxAYO1lZSCK7Te/LL0myMi8grUPHlDDwBt
+         vztlTK0NhFX+Yz4ED6C3LVDRXHfbsEXSb1D3zDpS3/zgaUymDqoWJy892GeElDZVQUTG
+         SE4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e6eAxrQg08U61GwOYJ6FpVD9sNYF+r9lJrh7l4b1WNE=;
-        b=tmVu+rBgKGWQK0ZVXVVERW7pc9HaQn0M0L5zI2bUZmQEMf1va2FuI6Wio14UQeIlDM
-         IXl+IeNvfGov6pI+J1RAaS/Ih3wbmbPTrYopizyRzS+0mYKkYAnnwoJ2cyCCls1SNTEs
-         O2KgDD7wXIVh8GWSfeyQHoyOAp4hl0i+9/UIUqym7Gm43vkQHcQNf2gAqLvVteDMf/1R
-         yoKzG1yi8eNLKSNFGA31GsPW7hlGVvoIgHFc57ufpVWBA20HIh3ms+/J73Uz2KkLrdyb
-         BoRYdKqakwfUWepbVPTLNNNhjOdzDudD6oJqWvoHkEs8leUQZ7N6ggt7OZi9r++uQMGf
-         DF3g==
-X-Gm-Message-State: AOAM5327L6CX8BbApQB/NWPwWEJP+HVPjvn8s8PzA2JpF8JSi/fKciIs
-        ZWvLkSfeRcaz007OE44tSM1caQweiatc4JOX9uQ=
-X-Google-Smtp-Source: ABdhPJz4dvN9TbvidJ1IREL08Pf8NNt1u3tGdxzzmc1QnHnlHcrTa+cHIEZ6g53Ci2pGTfQBeJENQHyAu6T8AQ7SC6M=
-X-Received: by 2002:ad4:5dea:: with SMTP id jn10mr64653681qvb.17.1637245158273;
- Thu, 18 Nov 2021 06:19:18 -0800 (PST)
-MIME-Version: 1.0
-References: <20211101060419.4682-1-laoar.shao@gmail.com> <20211101060419.4682-9-laoar.shao@gmail.com>
- <YZUSJQqDeY06nBsB@kernel.org>
-In-Reply-To: <YZUSJQqDeY06nBsB@kernel.org>
-From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Thu, 18 Nov 2021 22:18:42 +0800
-Message-ID: <CALOAHbC1Cn7RA_X5TrKQb9nmKMxuinfh+Z9j51yMoaSBPx3DuA@mail.gmail.com>
-Subject: Re: [PATCH v7 08/11] tools/perf/test: make perf test adopt to task
- comm size change
-To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Qiang Zhang <qiang.zhang@windriver.com>,
-        robdclark <robdclark@chromium.org>,
-        christian <christian@brauner.io>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        David Miller <davem@davemloft.net>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=J3cGlN2KXuV9opgm+aB2NzNfTAZSU0XmtFn6B7EFXis=;
+        b=dVf5khHylWu6SL49IMKvh5A36ZQG4d57AD0YJqFUPJ22FSiYTYlR1sGzaY8UtjyWTD
+         V4u7c8Oz/dIpSblS2OR3A5YWLLEAL4sndRs1DqaSVYg3vsfGIaOjb+gAU1v6xIbW/Pey
+         xXICsUleNjhkCKKBJCOh+QhIIZ3vDkxgsjaZw+P9e6PkOJ7M0j1hBJQBV+3m0yK+mAif
+         r1MbeCewJGaGubriK9U7pdI2oipb4Sot8Y8UQeLTcJewM+rHvqjetAruF/T1sah2kQJ7
+         2fF0AhpP928dpNkigiw7uUIDaNeO5hyyJSs6JxhpIZf4ZzqVtnc5F+XUrprduKfS2u6P
+         kQ/w==
+X-Gm-Message-State: AOAM532MUwsPtazP3Y66zqXm+NKcADjlVYNU7jFm9ATK9y3ZF1dVO5oS
+        9E5zGt7IDPneTxvhWHGv57NyTAzdch8=
+X-Google-Smtp-Source: ABdhPJwzrKj3RiUS7+Ps+3jyCuqQpkrbYwzlw6aFePObg0vEOz2r0EQFyXMPLaDgUcvXlrXMXAOt/w==
+X-Received: by 2002:a05:6402:270d:: with SMTP id y13mr12190449edd.362.1637245241465;
+        Thu, 18 Nov 2021 06:20:41 -0800 (PST)
+Received: from skbuf ([188.25.163.189])
+        by smtp.gmail.com with ESMTPSA id b11sm1886501ede.62.2021.11.18.06.20.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Nov 2021 06:20:41 -0800 (PST)
+Date:   Thu, 18 Nov 2021 16:20:39 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        mike.marciniszyn@cornelisnetworks.com, dledford@redhat.com,
-        jgg@ziepe.ca, linux-rdma@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel test robot <oliver.sang@intel.com>,
-        kbuild test robot <lkp@intel.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        David Miller <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next 8/8] net: phy: marvell10g: select host interface
+ configuration
+Message-ID: <20211118142039.uocgddbpplwwsfdk@skbuf>
+References: <20211117225050.18395-1-kabel@kernel.org>
+ <20211117225050.18395-9-kabel@kernel.org>
+ <20211118120334.jjujutp5cnjgwjq2@skbuf>
+ <YZZTinTgX3SPWIZM@shell.armlinux.org.uk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YZZTinTgX3SPWIZM@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 17, 2021 at 10:31 PM Arnaldo Carvalho de Melo
-<arnaldo.melo@gmail.com> wrote:
->
-> Em Mon, Nov 01, 2021 at 06:04:16AM +0000, Yafang Shao escreveu:
-> > kernel test robot reported a perf-test failure after I extended task comm
-> > size from 16 to 24. The failure as follows,
-> >
-> > 2021-10-13 18:00:46 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-317419b91ef4eff4e2f046088201e4dc4065caa0/tools/perf/perf test 15
-> > 15: Parse sched tracepoints fields                                  : FAILED!
-> >
-> > The reason is perf-test requires a fixed-size task comm. If we extend
-> > task comm size to 24, it will not equil with the required size 16 in perf
-> > test.
-> >
-> > After some analyzation, I found perf itself can adopt to the size
-> > change, for example, below is the output of perf-sched after I extend
-> > comm size to 24 -
-> >
-> > task    614 (            kthreadd:        84), nr_events: 1
-> > task    615 (             systemd:       843), nr_events: 1
-> > task    616 (     networkd-dispat:      1026), nr_events: 1
-> > task    617 (             systemd:       846), nr_events: 1
-> >
-> > $ cat /proc/843/comm
-> > networkd-dispatcher
-> >
-> > The task comm can be displayed correctly as expected.
-> >
-> > Replace old hard-coded 16 with the new one can fix the warning, but we'd
-> > better make the test accept both old and new sizes, then it can be
-> > backward compatibility.
-> >
-> > After this patch, the perf-test succeeds no matter task comm is 16 or
-> > 24 -
-> >
-> > 15: Parse sched tracepoints fields                                  : Ok
-> >
-> > This patch is a preparation for the followup patch.
-> >
-> > Reported-by: kernel test robot <oliver.sang@intel.com>
-> > Suggested-by: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-> > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> > Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> > Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-> > Cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-> > Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> > Cc: Peter Zijlstra <peterz@infradead.org>
-> > Cc: Steven Rostedt <rostedt@goodmis.org>
-> > Cc: Al Viro <viro@zeniv.linux.org.uk>
-> > Cc: Kees Cook <keescook@chromium.org>
-> > Cc: Petr Mladek <pmladek@suse.com>
-> > ---
-> >  tools/include/linux/sched.h       | 11 +++++++++++
-> >  tools/perf/tests/evsel-tp-sched.c | 26 ++++++++++++++++++++------
-> >  2 files changed, 31 insertions(+), 6 deletions(-)
-> >  create mode 100644 tools/include/linux/sched.h
-> >
-> > diff --git a/tools/include/linux/sched.h b/tools/include/linux/sched.h
-> > new file mode 100644
-> > index 000000000000..0d575afd7f43
-> > --- /dev/null
-> > +++ b/tools/include/linux/sched.h
-> > @@ -0,0 +1,11 @@
-> > +/* SPDX-License-Identifier: GPL-2.0 */
-> > +#ifndef _TOOLS_LINUX_SCHED_H
-> > +#define _TOOLS_LINUX_SCHED_H
-> > +
-> > +/* Keep both length for backward compatibility */
-> > +enum {
-> > +     TASK_COMM_LEN_16 = 16,
-> > +     TASK_COMM_LEN = 24,
-> > +};
-> > +
->
-> I don't think this is a good idea, to have it in tools/include/linux/,
-> we have /usr/include/linux/sched.h, this may end up confusing the build
-> at some point as your proposal is for a trimmed down header while what
-> is in /usr/include/linux/sched.h doesn't have just this.
->
-> But since we're using enums for this, we can't check for it with:
->
-> #ifdef TASK_COMM_LEN_16
-> #define TASK_COMM_LEN_16 16
-> #endif
->
-> ditto for TASK_COMM_LEN and be future proof, so I'd say just use
-> hardcoded values in tools/perf/tests/evsel-tp-sched.c?
->
+On Thu, Nov 18, 2021 at 01:22:18PM +0000, Russell King (Oracle) wrote:
+> On Thu, Nov 18, 2021 at 02:03:34PM +0200, Vladimir Oltean wrote:
+> > On Wed, Nov 17, 2021 at 11:50:50PM +0100, Marek Behún wrote:
+> > > +static int mv3310_select_mactype(unsigned long *interfaces)
+> > > +{
+> > > +	if (test_bit(PHY_INTERFACE_MODE_USXGMII, interfaces))
+> > > +		return MV_V2_33X0_PORT_CTRL_MACTYPE_USXGMII;
+> > > +	else if (test_bit(PHY_INTERFACE_MODE_SGMII, interfaces) &&
+> > > +		 test_bit(PHY_INTERFACE_MODE_10GBASER, interfaces))
+> > > +		return MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER;
+> > > +	else if (test_bit(PHY_INTERFACE_MODE_SGMII, interfaces) &&
+> > > +		 test_bit(PHY_INTERFACE_MODE_RXAUI, interfaces))
+> > > +		return MV_V2_33X0_PORT_CTRL_MACTYPE_RXAUI;
+> > > +	else if (test_bit(PHY_INTERFACE_MODE_SGMII, interfaces) &&
+> > > +		 test_bit(PHY_INTERFACE_MODE_XAUI, interfaces))
+> > > +		return MV_V2_3310_PORT_CTRL_MACTYPE_XAUI;
+> > > +	else if (test_bit(PHY_INTERFACE_MODE_10GBASER, interfaces))
+> > > +		return MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH;
+> > > +	else if (test_bit(PHY_INTERFACE_MODE_RXAUI, interfaces))
+> > > +		return MV_V2_33X0_PORT_CTRL_MACTYPE_RXAUI_RATE_MATCH;
+> > > +	else if (test_bit(PHY_INTERFACE_MODE_XAUI, interfaces))
+> > > +		return MV_V2_3310_PORT_CTRL_MACTYPE_XAUI_RATE_MATCH;
+> > > +	else if (test_bit(PHY_INTERFACE_MODE_SGMII, interfaces))
+> > > +		return MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER;
+> > > +	else
+> > > +		return -1;
+> > > +}
+> > > +
+> > 
+> > I would like to understand this heuristic better. Both its purpose and
+> > its implementation.
+> > 
+> > It says:
+> > (a) If the intersection between interface modes supported by the MAC and
+> >     the PHY contains USXGMII, then use USXGMII as a MACTYPE
+> > (b) Otherwise, if the intersection contains both 10GBaseR and SGMII, then
+> >     use 10GBaseR as MACTYPE
+> > (...)
+> > (c) Otherwise, if the intersection contains just 10GBaseR (no SGMII), then
+> >     use 10GBaseR with rate matching as MACTYPE
+> > (...)
+> > (d) Otherwise, if the intersection contains just SGMII (no 10GBaseR), then
+> >     use 10GBaseR as MACTYPE (no rate matching).
+> 
+> What is likely confusing you is a misinterpretation of the constant.
+> MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER actually means the PHY will
+> choose between 10GBASE-R, 5GBASE-R, 2500BASE-X, and SGMII depending
+> on the speed negotiated by the media. In this setting, the PHY
+> dictates which interface mode will be used.
+> 
+> I could have named "MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER" as
+> "MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER_5GBASER_2500BASEX_SGMII_AUTONEG_ON".
+> Similar with "MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER_NO_SGMII_AN", which
+> would be
+> "MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER_5GBASER_2500BASEX_SGMII_AUTONEG_OFF".
+> And "MV_V2_3310_PORT_CTRL_MACTYPE_XAUI" would be
+> "MV_V2_3310_PORT_CTRL_MACTYPE_XAUI_5GBASER_2500BASEX_SGMII_AUTONEG_ON".
+> 
+> Clearly using such long identifiers would have been rediculous,
+> especially the second one at 74 characters.
 
-Hi Arnaldo,
+True, but at least there could be a comment above each definition.
+There's no size limit to that.
 
-Thanks for the review.
-This perf tests code won't be changed in the latest version as we
-don't want to extend comm size any more, see also
-https://lore.kernel.org/lkml/20211108083840.4627-1-laoar.shao@gmail.com/
-The hard-coded 16 in tools/perf/tests/evsel-tp-sched.c is kept as-is.
+> > First of all, what is MACTYPE exactly? And what is the purpose of
+> > changing it? What would happen if this configuration remained fixed, as
+> > it were?
+> 
+> The PHY defines the MAC interface mode depending on the MACTYPE
+> setting selected and the results of the media side negotiation.
+> 
+> I think the above answers your remaining questions.
 
->
-> > +#endif  /* _TOOLS_LINUX_SCHED_H */
-> > diff --git a/tools/perf/tests/evsel-tp-sched.c b/tools/perf/tests/evsel-tp-sched.c
-> > index f9e34bd26cf3..029f2a8c8e51 100644
-> > --- a/tools/perf/tests/evsel-tp-sched.c
-> > +++ b/tools/perf/tests/evsel-tp-sched.c
-> > @@ -1,11 +1,13 @@
-> >  // SPDX-License-Identifier: GPL-2.0
-> >  #include <linux/err.h>
-> > +#include <linux/sched.h>
-> >  #include <traceevent/event-parse.h>
-> >  #include "evsel.h"
-> >  #include "tests.h"
-> >  #include "debug.h"
-> >
-> > -static int evsel__test_field(struct evsel *evsel, const char *name, int size, bool should_be_signed)
-> > +static int evsel__test_field_alt(struct evsel *evsel, const char *name,
-> > +                              int size, int alternate_size, bool should_be_signed)
-> >  {
-> >       struct tep_format_field *field = evsel__field(evsel, name);
-> >       int is_signed;
-> > @@ -23,15 +25,24 @@ static int evsel__test_field(struct evsel *evsel, const char *name, int size, bo
-> >               ret = -1;
-> >       }
-> >
-> > -     if (field->size != size) {
-> > -             pr_debug("%s: \"%s\" size (%d) should be %d!\n",
-> > +     if (field->size != size && field->size != alternate_size) {
-> > +             pr_debug("%s: \"%s\" size (%d) should be %d",
-> >                        evsel->name, name, field->size, size);
-> > +             if (alternate_size > 0)
-> > +                     pr_debug(" or %d", alternate_size);
-> > +             pr_debug("!\n");
-> >               ret = -1;
-> >       }
-> >
-> >       return ret;
-> >  }
-> >
-> > +static int evsel__test_field(struct evsel *evsel, const char *name,
-> > +                          int size, bool should_be_signed)
-> > +{
-> > +     return evsel__test_field_alt(evsel, name, size, -1, should_be_signed);
-> > +}
-> > +
-> >  int test__perf_evsel__tp_sched_test(struct test *test __maybe_unused, int subtest __maybe_unused)
-> >  {
-> >       struct evsel *evsel = evsel__newtp("sched", "sched_switch");
-> > @@ -42,7 +53,8 @@ int test__perf_evsel__tp_sched_test(struct test *test __maybe_unused, int subtes
-> >               return -1;
-> >       }
-> >
-> > -     if (evsel__test_field(evsel, "prev_comm", 16, false))
-> > +     if (evsel__test_field_alt(evsel, "prev_comm", TASK_COMM_LEN_16,
-> > +                               TASK_COMM_LEN, false))
-> >               ret = -1;
-> >
-> >       if (evsel__test_field(evsel, "prev_pid", 4, true))
-> > @@ -54,7 +66,8 @@ int test__perf_evsel__tp_sched_test(struct test *test __maybe_unused, int subtes
-> >       if (evsel__test_field(evsel, "prev_state", sizeof(long), true))
-> >               ret = -1;
-> >
-> > -     if (evsel__test_field(evsel, "next_comm", 16, false))
-> > +     if (evsel__test_field_alt(evsel, "next_comm", TASK_COMM_LEN_16,
-> > +                               TASK_COMM_LEN, false))
-> >               ret = -1;
-> >
-> >       if (evsel__test_field(evsel, "next_pid", 4, true))
-> > @@ -72,7 +85,8 @@ int test__perf_evsel__tp_sched_test(struct test *test __maybe_unused, int subtes
-> >               return -1;
-> >       }
-> >
-> > -     if (evsel__test_field(evsel, "comm", 16, false))
-> > +     if (evsel__test_field_alt(evsel, "comm", TASK_COMM_LEN_16,
-> > +                               TASK_COMM_LEN, false))
-> >               ret = -1;
-> >
-> >       if (evsel__test_field(evsel, "pid", 4, true))
-> > --
-> > 2.17.1
->
-> --
->
-> - Arnaldo
+Ok, so going back to case (d). You said that the full name would be
+MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER_5GBASER_2500BASEX_SGMII_AUTONEG_ON.
+This means that when the only interface mode supported by the host would
+be SGMII, the PHY's MACTYPE is still configured to use 2500basex,
+5gbaser, 10gbaser for the higher link speeds. Clearly this won't work.
+But on the other hand, the phylink validate method will remove
+2500baseT, 5000baseT, 1000baseT from the advertising mask of the PHY, so
+the system will never end up operating at those speeds, so it should be fine.
 
 
 
--- 
-Thanks
-Yafang
+The reason why I'm looking at these patches is to see whether they would
+bring something useful to Aquantia PHYs. These come with firmware on a
+flash that is customized by Aquantia themselves based on the specifications
+of a single board. These PHYs have an ability which is very similar to
+what I'm seeing here, which is to select, for each negotiated link speed
+on the media side, the SERDES protocol to use on the system side. This
+is pre-programmed by the firmware, but could be fixed up by the
+operating system if done carefully.
+
+The way Layerscape boards use Aquantia PHYs is to always select the
+"rate matching" option and keep the SERDES protocol fixed, just
+configure the mini MAC inside the PHY to emit PAUSE frames towards the
+system to keep the data rate under control. We would be using these PHYs
+with the generic C45 driver, which would be mostly enough except for
+lack of PHY interrupts, because the firmware already configures
+everything.
+
+But on the other hand it gets a bit tiring, especially for PHYs on riser
+cards, to have to change firmware in order to test a different SERDES
+protocol, so we were experimenting with some changes in the PHY driver
+that would basically keep the firmware image fixed, and just fix up the
+configuration it made, and do things like "use 2500base-x for the
+2500base-T speed, and sgmii for 1000base-T/100base-TX". The ability for
+a PHY to work on a board where its firmware image wasn't specifically
+designed for it comes in handy sometimes.
+
+I was reluctant to submit any changes to the Aquantia PHY driver because
+we don't really have any guarantees that we wouldn't break any system
+that uses it. I do know that there are users who do expect SERDES
+protocol changes currently, because I do see that aqr107_read_status()
+checks for a possibly modified phydev->interface. But without the
+ability of knowing what SERDES protocols does the system-side support,
+it is pretty difficult to modify the SERDES protocol used for a certain
+link speed without breaking something.
+
+I see that this patch set basically introduces the phydev->host_interfaces
+bitmap which is an attempt to find the answer to that question. But when
+will we know enough about phydev->host_interfaces in order to safely
+make decisions in the PHY driver based on it? phylink sets it, phylib does not.
+And many Aquantia systems use the generic PHY driver, as mentioned.
+Additionally, there are old device trees at play here, which only define
+the initial SERDES protocol. Would we be changing the behavior for those,
+in that we would be configuring the PHY to keep the SERDES protocol
+fixed whereas it would have dynamically changed before?
+
+Another question is what to do if there are multiple ways of
+establishing a system-side link. For example 1000 Mbps can be achieved
+either through SGMII, or USXGMII with symbol replication, or 2500base-x
+with flow control, or 10GBaseR with flow control. And I want to test
+them all. What would I need to do to change the SERDES protocol from one
+value to the other? Changing the phy-mode array in the device tree would
+be one option, but that may not always be possible.
