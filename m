@@ -2,114 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33C5C4565B4
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 23:27:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07C2C4566CB
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 01:00:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232262AbhKRW3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 17:29:43 -0500
-Received: from mail.netfilter.org ([217.70.188.207]:58282 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232292AbhKRW3h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 17:29:37 -0500
-Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id A6DCE64B41;
-        Thu, 18 Nov 2021 23:24:28 +0100 (CET)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 11/11] selftests: nft_nat: switch port shadow test cases to socat
-Date:   Thu, 18 Nov 2021 23:26:18 +0100
-Message-Id: <20211118222618.433273-12-pablo@netfilter.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211118222618.433273-1-pablo@netfilter.org>
-References: <20211118222618.433273-1-pablo@netfilter.org>
+        id S231368AbhKSADD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 19:03:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33706 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230315AbhKSADD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 19:03:03 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36E1BC061574;
+        Thu, 18 Nov 2021 16:00:02 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id y13so34470341edd.13;
+        Thu, 18 Nov 2021 16:00:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=M1g96wvk2fScmlQSqAqL2X6S00BnYHNLyt+afv0QIyo=;
+        b=f4hMsNyqdGbMXPCmS7JBsFq5cINp+XBRNmd+Ngv+5KFE8Cts4wsg8Cph4EUvQHOxjm
+         WpLQx/zxTxK58pk7EDJtnn6cY0jBbMeS8wCyKd9AwOfaijBLuO211kp1Zg0izgyO7IfG
+         tMs7cUFxYE6Awm8qjPO6VoJ0EOFZGymjcDVlTttVw+hbKDwPwdYjFRaqhpKVaWVNT0Rs
+         NktUwqVisrFf6fCgDgklOfwWga2KLZQ2OLwmf1YBTxveujJTGrIv4rJZx24KG8v8XUUz
+         yIUFuK1nRr/t972kNf8R9AFKw1NmdITTR2Vn4T57sOQlKzxXDE67bzAAQm0aFp0xEH3V
+         4vAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=M1g96wvk2fScmlQSqAqL2X6S00BnYHNLyt+afv0QIyo=;
+        b=1w+M8I0DFCw0uWxiJ5vGbgsmgKcc2ZNltkENTcP3vA4Vx0Ke01S62sJcXboEOqWl3t
+         sE3cMkpDa1eH6fGQDfV0F6QXt0PgF4r1Ppdiw7UFjq2QqaXwRQHn5XDNcYsSIYw8hrn0
+         JZo1s2yYUhZfaP0K/GhI8FbaSaQ9xQcMOgmLsoswa/KRuIiOVnc4LKZwKupdxY0YBhcF
+         gw2IzuLvA/dyHpUDv+bBa914ufMDvHpQOVlEOA5RmvN8xg6lPHP5fO3Ge1P+0zmFQlJo
+         GHrtn5ZZ/CI2oKdSJVJ3gPx1P/YYqeuvNxQviGXu/22A6FiWGD1TaeZXHufB11p3tQCw
+         j4eQ==
+X-Gm-Message-State: AOAM531n/VKnAwqkUeD/gLomRR6arsQ8pN9PAOAgeRrA9D1X3NftYLYm
+        FJjaSYxZZlfuZAj5ON5UEFuIT8Zpb7w=
+X-Google-Smtp-Source: ABdhPJwXQm9GW8Bslhks3s+dd8TXkWn3/JGGMaJAGtolwirXi/bEsG0qoA3BRG3j5KCeRdfIrD2AbA==
+X-Received: by 2002:a05:6402:2551:: with SMTP id l17mr14848060edb.142.1637280000795;
+        Thu, 18 Nov 2021 16:00:00 -0800 (PST)
+Received: from skbuf ([188.25.163.189])
+        by smtp.gmail.com with ESMTPSA id s12sm643476edc.48.2021.11.18.15.59.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Nov 2021 16:00:00 -0800 (PST)
+Date:   Fri, 19 Nov 2021 01:59:58 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: Re: [net-next PATCH 02/19] net: dsa: qca8k: remove redundant check
+ in parse_port_config
+Message-ID: <20211118235958.ojpquokxwrh3zvji@skbuf>
+References: <20211117210451.26415-1-ansuelsmth@gmail.com>
+ <20211117210451.26415-3-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211117210451.26415-3-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+On Wed, Nov 17, 2021 at 10:04:34PM +0100, Ansuel Smith wrote:
+> The very next check for port 0 and 6 already make sure we don't go out
+                                               ~~~~
+                                               makes
+> of bounds with the ports_config delay table.
+> Remove the redundant check.
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
 
-There are now at least three distinct flavours of netcat/nc tool:
-'original' version, one version ported from openbsd and nmap-ncat.
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
-The script only works with original because it sets SOREUSEPORT option.
-
-Other nc versions return 'port already in use' error and port shadow test fails:
-
-PASS: inet IPv6 redirection for ns2-hMHcaRvx
-nc: bind failed: Address already in use
-ERROR: portshadow test default: got reply from "ROUTER", not CLIENT as intended
-
-Switch to socat instead.
-
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- tools/testing/selftests/netfilter/nft_nat.sh | 26 ++++++++++++++------
- 1 file changed, 19 insertions(+), 7 deletions(-)
-
-diff --git a/tools/testing/selftests/netfilter/nft_nat.sh b/tools/testing/selftests/netfilter/nft_nat.sh
-index c62e4e26252c..d88867d2fed7 100755
---- a/tools/testing/selftests/netfilter/nft_nat.sh
-+++ b/tools/testing/selftests/netfilter/nft_nat.sh
-@@ -760,20 +760,20 @@ test_port_shadow()
- 	local logmsg=""
- 
- 	# make shadow entry, from client (ns2), going to (ns1), port 41404, sport 1405.
--	echo "fake-entry" | ip netns exec "$ns2" nc -w 1 -p 1405 -u "$daddrc" 41404 > /dev/null
-+	echo "fake-entry" | ip netns exec "$ns2" timeout 1 socat -u STDIN UDP:"$daddrc":41404,sourceport=1405
- 
--	echo ROUTER | ip netns exec "$ns0" nc -w 5 -u -l -p 1405 >/dev/null 2>&1 &
--	nc_r=$!
-+	echo ROUTER | ip netns exec "$ns0" timeout 5 socat -u STDIN UDP4-LISTEN:1405 &
-+	sc_r=$!
- 
--	echo CLIENT | ip netns exec "$ns2" nc -w 5 -u -l -p 1405 >/dev/null 2>&1 &
--	nc_c=$!
-+	echo CLIENT | ip netns exec "$ns2" timeout 5 socat -u STDIN UDP4-LISTEN:1405,reuseport &
-+	sc_c=$!
- 
- 	sleep 0.3
- 
- 	# ns1 tries to connect to ns0:1405.  With default settings this should connect
- 	# to client, it matches the conntrack entry created above.
- 
--	result=$(echo "" | ip netns exec "$ns1" nc -w 1 -p 41404 -u "$daddrs" 1405)
-+	result=$(echo "data" | ip netns exec "$ns1" timeout 1 socat - UDP:"$daddrs":1405,sourceport=41404)
- 
- 	if [ "$result" = "$expect" ] ;then
- 		echo "PASS: portshadow test $test: got reply from ${expect}${logmsg}"
-@@ -782,7 +782,7 @@ test_port_shadow()
- 		ret=1
- 	fi
- 
--	kill $nc_r $nc_c 2>/dev/null
-+	kill $sc_r $sc_c 2>/dev/null
- 
- 	# flush udp entries for next test round, if any
- 	ip netns exec "$ns0" conntrack -F >/dev/null 2>&1
-@@ -852,6 +852,18 @@ test_port_shadowing()
- {
- 	local family="ip"
- 
-+	conntrack -h >/dev/null 2>&1
-+	if [ $? -ne 0 ];then
-+		echo "SKIP: Could not run nat port shadowing test without conntrack tool"
-+		return
-+	fi
-+
-+	socat -h > /dev/null 2>&1
-+	if [ $? -ne 0 ];then
-+		echo "SKIP: Could not run nat port shadowing test without socat tool"
-+		return
-+	fi
-+
- 	ip netns exec "$ns0" sysctl net.ipv4.conf.veth0.forwarding=1 > /dev/null
- 	ip netns exec "$ns0" sysctl net.ipv4.conf.veth1.forwarding=1 > /dev/null
- 
--- 
-2.30.2
-
+>  drivers/net/dsa/qca8k.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> index a429c9750add..bfffc1fb7016 100644
+> --- a/drivers/net/dsa/qca8k.c
+> +++ b/drivers/net/dsa/qca8k.c
+> @@ -983,7 +983,7 @@ qca8k_parse_port_config(struct qca8k_priv *priv)
+>  	u32 delay;
+>  
+>  	/* We have 2 CPU port. Check them */
+> -	for (port = 0; port < QCA8K_NUM_PORTS && cpu_port_index < QCA8K_NUM_CPU_PORTS; port++) {
+> +	for (port = 0; port < QCA8K_NUM_PORTS; port++) {
+>  		/* Skip every other port */
+>  		if (port != 0 && port != 6)
+>  			continue;
+> -- 
+> 2.32.0
+> 
