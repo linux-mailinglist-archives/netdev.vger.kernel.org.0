@@ -2,241 +2,345 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B902745603F
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 17:14:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95C43456042
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 17:14:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232992AbhKRQRg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 11:17:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40364 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232944AbhKRQRg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 11:17:36 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FF04C061574;
-        Thu, 18 Nov 2021 08:14:35 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id g14so29393403edz.2;
-        Thu, 18 Nov 2021 08:14:35 -0800 (PST)
+        id S233046AbhKRQRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 11:17:51 -0500
+Received: from mail-vi1eur05on2075.outbound.protection.outlook.com ([40.107.21.75]:20192
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232984AbhKRQRv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Nov 2021 11:17:51 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LPGUWaJ3FPvFPSGTYwXcCpifp+PidZ2tMh87nBwpfHoxN/YEGLnP/8nBB8rpe/qmk786SYjtRhW55cCeS2h/QnOzpBy7MUbNuBweJglcfclm0vS/1P5gTURo9MrWB6Jsi/UjiayEKBI5EIG5CeMpApce1S+tK4/Wz8ba7KATYbU4ED+NECCjwwutoyFqOHqI/Pub441Eqk/n0YPhoLrS0oCK/fOLr270WikP7IIzhHd3woZSPCvm4Rw19dUNc2eIlOHG1HbBKfHpm0u4OwWUOf026pITty2OeUTnejY/VcZAQnsIJT6z4dg1Yz+SrtTahvGZxJ16FLkyl/+uB6bLDg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9P2MW9B0HbMGkOayZcyzEFkCxDs+6up/RovQOgz/3uM=;
+ b=j39kdwx+RammrEuTGr44h8E9tTs9nyeuupm8xLtt2pGlQ47NsFjl5Gp9FHH77ll7BHggc0aKT8IiPO7oHM74+PYzAeLbbxgrtXmgg4M2+A7vqqh+9SFHedGV0fNiDoQeboJFmp4shzmk8NgwNHLAf88YPCGrloA6fzEBo0TbIn8li/f0IXFS6bulzFbGA3NmzNkW0qEIPYGkrZQvVumReOpQ21jE9oYPjjrnXzxXRc95bOT1Dg+oeP7PYYCHoFV4jlom4+liBA3/0IZ/GihON1kj+UALHeonEUgwqIadwrUnwCFhBX2tVo6ncZBlmRTG1xywCqs7lSaf9Q5IWU/ycA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vVkdhLYZ2yghvtsnBfZx6aX0rdaLftB2qrWz+Mjn2N4=;
-        b=oxrMvtf7Ey8hzWQwNMB6/6bW7mFP3QERmTbgfftiUP3eHaqMIltdavOJTOQJI5/ehL
-         KxMBRasz0uCx3+dwDLHkZ93Nck7q5W7fBdJUQGxu0f9IT9oev5+tHSL69heIj4pFMrZO
-         S7mItovjhdXQJ+cBq2Fzgu1ekRgvgUSyaUnZCyLg+LgcqIrbmztmrPgBXGE0poua1s73
-         uvGbX/ehxNJCjIwcG5q6tQ1V68V39LTRPtEWL2zdMj25Lugb/u3dTBaFqT/Ol0RG4Py5
-         RsDsuKyrrnCXjWg0phgB2ixl/5FwhNRA7PPoXThSFmJ9+4if9pB/nR+cEoFEmokLGyWV
-         x9tw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vVkdhLYZ2yghvtsnBfZx6aX0rdaLftB2qrWz+Mjn2N4=;
-        b=Ft2nB7GSkU10/Kcro0ZcaZcI5zKrCfj12kElZZAmWsi3qgH0qLCdofIF3JElWcP1qM
-         fJ83bRakvGtD/J4jOZ75WRjXX6CfVSvEXPkMhXyE6j6RUWR8H+troZbc52e1CZOjpTr/
-         NJZNxFsseazmcsLJTO4V/CEX5oyM9y8YxV6cz7p/1duzmIEcYmZ+VQz5rSob7TI8nSCR
-         PCtySIWSyGdO4kwI6FjN4jfFuTVJL3iEsiHL1iZQFyxxA+2pHAW+GlD7bbML0v5Ge8Y+
-         WuTREYFCN9tlF5lKm95x+QXXu+DRJ8o6TtSakZSqg/LNUKwBu6+IZJv+kqmOh7knZ3Tf
-         Lgzg==
-X-Gm-Message-State: AOAM532MwF2OFH5EYHU5kzpBC8+w0JEJh+yilsyr//D0WQLPzRcAeSAf
-        DAR0OSx6I8Rsv0Ocx6RKnSIVNpKKPEmmFwnlTNE=
-X-Google-Smtp-Source: ABdhPJygbDY2ytW54uSb3bg9nnG5ICbHH/9W96c67TGZ90zluvUpU01RLAswsPq7zXbBk1v4b2NIzRT4YKwHcXpRjhk=
-X-Received: by 2002:aa7:c347:: with SMTP id j7mr13173830edr.272.1637252073533;
- Thu, 18 Nov 2021 08:14:33 -0800 (PST)
-MIME-Version: 1.0
-References: <DM6PR12MB45165BFF3AB84602238FA595D89B9@DM6PR12MB4516.namprd12.prod.outlook.com>
-In-Reply-To: <DM6PR12MB45165BFF3AB84602238FA595D89B9@DM6PR12MB4516.namprd12.prod.outlook.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Thu, 18 Nov 2021 08:14:22 -0800
-Message-ID: <CAKgT0UfGvcGXAC5VBjXRpR5Y5uAPEPPCsYWjQR8RmW_1kw8TMQ@mail.gmail.com>
-Subject: Re: [igb] netconsole triggers warning in netpoll_poll_dev
-To:     Danielle Ratson <danieller@nvidia.com>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
+ d=secospa.onmicrosoft.com; s=selector2-secospa-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9P2MW9B0HbMGkOayZcyzEFkCxDs+6up/RovQOgz/3uM=;
+ b=jR8cO2y3Mu7W9OjIz2U0GRGiIfhEGHS7GcXgAHBA+TVd0kHU/HPdmbHVWBuYAIPvCCr/KY5s9Al3msyzbjzB70ThlmK5hFQlx4BwqlJUaeJF7hE8vZdRDkIhEVMc2XupwcyT/zHbZHuwhqOgP8aP7cCTdZJKIYzPnNSPOq6afLg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
+ by DBBPR03MB5367.eurprd03.prod.outlook.com (2603:10a6:10:dd::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.27; Thu, 18 Nov
+ 2021 16:14:46 +0000
+Received: from DB7PR03MB4523.eurprd03.prod.outlook.com
+ ([fe80::9093:a60b:46b7:32ee]) by DB7PR03MB4523.eurprd03.prod.outlook.com
+ ([fe80::9093:a60b:46b7:32ee%4]) with mapi id 15.20.4713.022; Thu, 18 Nov 2021
+ 16:14:46 +0000
+From:   Sean Anderson <sean.anderson@seco.com>
+To:     netdev@vger.kernel.org, Russell King <linux@armlinux.org.uk>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Sean Anderson <sean.anderson@seco.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Subject: [RESEND PATCH net-next v2] net: phylink: Add helpers for c22 registers without MDIO
+Date:   Thu, 18 Nov 2021 11:14:30 -0500
+Message-Id: <20211118161430.2547168-1-sean.anderson@seco.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MN2PR18CA0011.namprd18.prod.outlook.com
+ (2603:10b6:208:23c::16) To DB7PR03MB4523.eurprd03.prod.outlook.com
+ (2603:10a6:10:19::27)
+MIME-Version: 1.0
+Received: from plantagenet.inhand.com (50.195.82.171) by MN2PR18CA0011.namprd18.prod.outlook.com (2603:10b6:208:23c::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.22 via Frontend Transport; Thu, 18 Nov 2021 16:14:45 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c6f304d4-a2c1-42c4-2f4f-08d9aaae8a07
+X-MS-TrafficTypeDiagnostic: DBBPR03MB5367:
+X-Microsoft-Antispam-PRVS: <DBBPR03MB53673E01A491EA97EB977B2D969B9@DBBPR03MB5367.eurprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qgjXm/1GwqBICwLIS+oNjfAOtzjNINVljs+JWeKeUGnuAt7nwHpeSXXRkW8onAHDjKCtUaRGMHJT1Vvg2JTN6iN8wMUIn3cpe7OYM0By3ZtfVm2804+tqmo+SjHJZpMhTzYqOMl/5eJkpcKLGcA89oPHpKtOJhKvfQwoF956XARlFowMGwDsX7VXmXTLguK+2aNY1GRbgac8HlFaVQC0eEQDuJ2UfvsBGpThYdxy8ZGj+ncsCoEVrKj92RuwRo46Tcf5mRZq7IKTpKs0UPR+3uxgreLgElTnKrrkhgjm4vin0ZhPrAeNahYJXPGfH2jbwvOdQw48BhKD8eh8ubL8qm4z8j10c/8HzUl9tkXqLiCUYs+/zV+EAs0WI+vE9wp3ttW5E7lFyP/+UFS+Izjdc3EyHkUnNxgeOfyFGSyW0ghKyODegrEJqHg4eGzUIEtAOf+wOSnb2gmwL3kM+KOkXyuTEpuImh3jcpSn6L53BEfgAfFravKC4UsOjmVFKE1sQLyziwpQJ+Bl287KOvfrrTZQ0H5WsI1GyA38/hmfbT4Yj+2pPnOAXigwFmc/lgnJDKRTZ2+j0k+vWuS9d1ql4uagcep3f9kdmQPoknECm9l/Q4fYLaPBKdpMoG14uRKT/d4he9NAWEXqqwHQNWSyuht2l07UN264gy7ZEL0yCZtXLVPR2Ni5BE/xTFOUXbW/2YEr6h1r5uQRJso+aNGkThEctWIOwoLPET3ncZaaWlmqQriOSAlWTDKVuZB5r79MYsknhsHNGnsc6aWHznOgtwx5NPms4NnjQJiTNidRyZk=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(956004)(6506007)(2616005)(186003)(66556008)(52116002)(6512007)(66476007)(4326008)(6916009)(966005)(86362001)(44832011)(66946007)(26005)(38350700002)(36756003)(38100700002)(6486002)(1076003)(316002)(5660300002)(6666004)(2906002)(8676002)(83380400001)(508600001)(8936002)(54906003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?G/XywhvoBhTfgmSmtlgHcOJwEG77nEoLOnOhV6WYk6EFvgM/g1aMz0tJ1R05?=
+ =?us-ascii?Q?IZAseFzaREUNdDODKlapK97XJqrYZgblgyzjKdNN0+aIh2lZFH+fNbqe7smW?=
+ =?us-ascii?Q?jiY59YF/dy6r1N7kys57XgmA9xslp9T8dQ5gp0VLpGqZCtUPabdFbEXbFXC7?=
+ =?us-ascii?Q?CzXznSXXRlCZBL0UijkmYSc87mXWo7dd0Rk5bZfnoSGlVOdDQpTKK75/q+an?=
+ =?us-ascii?Q?Tul5dbIzl9YxtnX2qS2LU+5Ulp0oTIq1bDBpQdWoDGRRhNfivt1wCY4jlV01?=
+ =?us-ascii?Q?ZrdRiJAc8EjKDtuvWqIXrH3kXRcgytsIDQw2rRFoMh78GiB4HckbBomoj/FQ?=
+ =?us-ascii?Q?u7X+hc9/dQZxMQkZPDehNH7w22sRMSlvEBA0pPjGUU6w1fW/LH2dZ/lruZzu?=
+ =?us-ascii?Q?gJEaWnZHtW0jeWsuGdZq1KryTesL4+9OKpJHELxaDhM+8OKpcN/jKkoAWhXy?=
+ =?us-ascii?Q?pcXWuZjMkBOh4ctPAna3S81Ao1yp6ZOB5xzz7oCFzh0IK2ukdjdwqOv0YMag?=
+ =?us-ascii?Q?I9/0CDLbPfs3ea1V86Z1GU3+I0L6C6pK4xcuPpC7ycAhmk0uHRnRj1qM8lBm?=
+ =?us-ascii?Q?nNm21GP6ShuHAzmKxhP/xBf96QbnRb+JqvtJkyGx1tbwwEblKDGdhLc9mIZW?=
+ =?us-ascii?Q?/ejpJAVLDjJ8uk995j0vz1eWziqiwKW4vWR37RwNy9gfrmhehgh+d93/oT4K?=
+ =?us-ascii?Q?APEqGjSPt6NEkMRkph3HmdEOipQd3OFE8oGGzt16uhv+t/tWfL5QA8oBWlWu?=
+ =?us-ascii?Q?90rHlSO2x03Crh153FT9lBWnbDcTnULDbfGnTP0plj8Du0Y1hIj81ypHBgwQ?=
+ =?us-ascii?Q?q909ioTlMYIvM+K+RWT/ahlfhi5sEmGT5yreDkXnS6Jbf9W+xES4mv2rAHEW?=
+ =?us-ascii?Q?hMSFr817ef0s61zBj3NDWJRzmrx2A+SrnJPdvmSZ7iKmcSabxoDHIZmnT4QZ?=
+ =?us-ascii?Q?9kljNqM4ZZixbaEasBwUULmM3CIv89/AHXoYOYy9Hy9T927UxpZ4dnsrLaPG?=
+ =?us-ascii?Q?TnUdj1XKWWzqkDOLX+tdJrBRqEila+/sJcvEFqF+YA1GdGXuQDkhiC8ItUBn?=
+ =?us-ascii?Q?VHQbVYTweL5poe3yYHcfBVUkP+8r6yvFnS1JcJmLchuNe9LJjoIXZOnFOs2g?=
+ =?us-ascii?Q?pER8boCmok+JsuUx7ov2EUpv2r56jQHcB3mG5wQsU6C2bT8GX/Bw8opXHN4w?=
+ =?us-ascii?Q?kumYMCVm7aUT3jgfziwiXCOQCO7tELY43BVqHK8h5PYTdRpd9dWOPAHdsSWf?=
+ =?us-ascii?Q?I9U72SJ5Ltd72h3gqHhP+6D3szmCrBYrQxvqx33gROrSSqNwATWkfivuWZh2?=
+ =?us-ascii?Q?077p7O+iBkiJ0DCW2uj854/3V489kggf6Xv2rS0DjmOdtj6aAMzrEuoMoJSI?=
+ =?us-ascii?Q?IeN7xX05/2kr0UWblllCPHwVEFoPMRg/HnB8hrIuI/vGyvFr4Ldu50Fu4/Ee?=
+ =?us-ascii?Q?3HW18oW6GzfJraXbTTc6IJ0L3vzmvzhnidV/QSAxZQipGM81eOgbneZTIFEW?=
+ =?us-ascii?Q?oS0mYh8dxRkUrJKYnl8U0XK2T1kB/qMm4Zgl1ye7Vg86rz5HY0LXzhbBDYNL?=
+ =?us-ascii?Q?UFDsPwDTZLfELv50Yf8eekx0RdgKduuD+yznq1djyzTwlAqPX5CngQSIqjdl?=
+ =?us-ascii?Q?X2FUvylKMuVA0QrkDz4b3sQ=3D?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c6f304d4-a2c1-42c4-2f4f-08d9aaae8a07
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4523.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2021 16:14:46.8392
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0e0RqUeeeSsbWyN02T5H/6/9M8Tu1FJ0RkyJev1slgH4k6fZ6t+Mj8kgeTH6uWCVIhyQn4tcfIFlp7VIAzming==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR03MB5367
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 18, 2021 at 7:30 AM Danielle Ratson <danieller@nvidia.com> wrote:
->
-> > On Thu, May 6, 2021 at 4:32 PM Jesse Brandeburg
-> > <jesse.brandeburg@intel.com> wrote:
-> > >
-> > > Alexander Duyck wrote:
-> > >
-> > > > On Sun, Apr 25, 2021 at 11:47 PM Oleksandr Natalenko
-> > > > <oleksandr@natalenko.name> wrote:
-> > > > >
-> > > > > Hello.
-> > > > >
-> > > > > On Fri, Apr 23, 2021 at 03:58:36PM -0700, Jakub Kicinski wrote:
-> > > > > > On Fri, 23 Apr 2021 10:19:44 +0200 Oleksandr Natalenko wrote:
-> > > > > > > On Wed, Apr 07, 2021 at 04:06:29PM -0700, Alexander Duyck wrote:
-> > > > > > > > On Wed, Apr 7, 2021 at 11:07 AM Jakub Kicinski
-> > <kuba@kernel.org> wrote:
-> > > > > > > > > Sure, that's simplest. I wasn't sure something is supposed
-> > > > > > > > > to prevent this condition or if it's okay to cover it up.
-> > > > > > > >
-> > > > > > > > I'm pretty sure it is okay to cover it up. In this case the
-> > > > > > > > "budget - 1" is supposed to be the upper limit on what can
-> > > > > > > > be reported. I think it was assuming an unsigned value anyway.
-> > > > > > > >
-> > > > > > > > Another alternative would be to default clean_complete to
-> > !!budget.
-> > > > > > > > Then if budget is 0 clean_complete would always return false.
-> > > > > > >
-> > > > > > > So, among all the variants, which one to try? Or there was a
-> > > > > > > separate patch sent to address this?
-> > > > > >
-> > > > > > Alex's suggestion is probably best.
-> > > > > >
-> > > > > > I'm not aware of the fix being posted. Perhaps you could take
-> > > > > > over and post the patch if Intel doesn't chime in?
-> > > > >
-> > > > > So, IIUC, Alex suggests this:
-> > > > >
-> > > > > ```
-> > > > > diff --git a/drivers/net/ethernet/intel/igb/igb_main.c
-> > > > > b/drivers/net/ethernet/intel/igb/igb_main.c
-> > > > > index a45cd2b416c8..7503d5bf168a 100644
-> > > > > --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> > > > > +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> > > > > @@ -7981,7 +7981,7 @@ static int igb_poll(struct napi_struct *napi, int
-> > budget)
-> > > > >                                                      struct igb_q_vector,
-> > > > >                                                      napi);
-> > > > >         bool clean_complete = true;
-> > > > > -       int work_done = 0;
-> > > > > +       unsigned int work_done = 0;
-> > > > >
-> > > > >  #ifdef CONFIG_IGB_DCA
-> > > > >         if (q_vector->adapter->flags & IGB_FLAG_DCA_ENABLED) @@
-> > > > > -8008,7 +8008,7 @@ static int igb_poll(struct napi_struct *napi, int
-> > budget)
-> > > > >         if (likely(napi_complete_done(napi, work_done)))
-> > > > >                 igb_ring_irq_enable(q_vector);
-> > > > >
-> > > > > -       return min(work_done, budget - 1);
-> > > > > +       return min_t(unsigned int, work_done, budget - 1);
-> > > > >  }
-> > > > >
-> > > > >  /**
-> > > > > ```
-> > > > >
-> > > > > Am I right?
-> > > > >
-> > > > > Thanks.
-> > > >
-> > > > Actually a better way to go would be to probably just initialize
-> > > > "clean_complete = !!budget". With that we don't have it messing with
-> > > > the interrupt enables which would probably be a better behavior.
-> > >
-> > >
-> > > Thanks guys for the suggestions here! Finally got some time for this,
-> > > so here is the patch I'm going to queue shortly.
-> > >
-> > > From ffd24e90d688ee347ab051266bfc7fca00324a68 Mon Sep 17 00:00:00
-> > 2001
-> > > From: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> > > Date: Thu, 6 May 2021 14:41:11 -0700
-> > > Subject: [PATCH net] igb: fix netpoll exit with traffic
-> > > To: netdev,
-> > >     Oleksandr Natalenko <oleksandr@natalenko.name>
-> > > Cc: Jakub Kicinski <kuba@kernel.org>, LKML
-> > > <linux-kernel@vger.kernel.org>, "Brandeburg, Jesse"
-> > > <jesse.brandeburg@intel.com>, "Nguyen, Anthony L"
-> > > <anthony.l.nguyen@intel.com>, "David S. Miller"
-> > <davem@davemloft.net>,
-> > > intel-wired-lan <intel-wired-lan@lists.osuosl.org>, Alexander Duyck
-> > > <alexander.duyck@gmail.com>
-> > >
-> > > Oleksandr brought a bug report where netpoll causes trace messages in
-> > > the log on igb.
-> > >
-> > > [22038.710800] ------------[ cut here ]------------ [22038.710801]
-> > > igb_poll+0x0/0x1440 [igb] exceeded budget in poll [22038.710802]
-> > > WARNING: CPU: 12 PID: 40362 at net/core/netpoll.c:155
-> > > netpoll_poll_dev+0x18a/0x1a0
-> > >
-> > > After some discussion and debug from the list, it was deemed that the
-> > > right thing to do is initialize the clean_complete variable to false
-> > > when the "netpoll mode" of passing a zero budget is used.
-> > >
-> > > This logic should be sane and not risky because the only time budget
-> > > should be zero on entry is netpoll.  Change includes a small refactor
-> > > of local variable assignments to clean up the look.
-> > >
-> > > Fixes: 16eb8815c235 ("igb: Refactor clean_rx_irq to reduce overhead
-> > > and improve performance")
-> > > Reported-by: Oleksandr Natalenko <oleksandr@natalenko.name>
-> > > Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
-> > > Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> > > ---
-> > >
-> > > Compile tested ONLY, but functionally it should be exactly the same
-> > > for all cases except when budget is zero on entry, which will
-> > > hopefully fix the bug.
-> > > ---
-> > >  drivers/net/ethernet/intel/igb/igb_main.c | 12 ++++++++----
-> > >  1 file changed, 8 insertions(+), 4 deletions(-)
-> > >
-> > > diff --git a/drivers/net/ethernet/intel/igb/igb_main.c
-> > > b/drivers/net/ethernet/intel/igb/igb_main.c
-> > > index 0cd37ad81b4e..b0a9bed14071 100644
-> > > --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> > > +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> > > @@ -7991,12 +7991,16 @@ static void igb_ring_irq_enable(struct
-> > igb_q_vector *q_vector)
-> > >   **/
-> > >  static int igb_poll(struct napi_struct *napi, int budget)  {
-> > > -       struct igb_q_vector *q_vector = container_of(napi,
-> > > -                                                    struct igb_q_vector,
-> > > -                                                    napi);
-> > > -       bool clean_complete = true;
-> > > +       struct igb_q_vector *q_vector;
-> > > +       bool clean_complete;
-> > >         int work_done = 0;
-> > >
-> > > +       /* if budget is zero, we have a special case for netconsole, so
-> > > +        * make sure to set clean_complete to false in that case.
-> > > +        */
-> > > +       clean_complete = !!budget;
-> > > +
-> > > +       q_vector = container_of(napi, struct igb_q_vector, napi);
-> > >  #ifdef CONFIG_IGB_DCA
-> > >         if (q_vector->adapter->flags & IGB_FLAG_DCA_ENABLED)
-> > >                 igb_update_dca(q_vector);
-> >
-> > I'm not a big fan of moving the q_vector init as a part of this patch since it
-> > just means more backport work.
-> >
-> > That said the change itself should be harmless so I am good with it either
-> > way.
-> >
-> > Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
->
-> Hi,
->
-> I have lately added the netconsole module, and since then we see the same warning constantly in the logs.
-> I have tried to apply Jesse's patch but it didn't seem to solve the issue.
->
-> Did anyone managed to solve the issue and can share with us?
->
-> Thanks,
-> Danielle
+Some devices expose memory-mapped c22-compliant PHYs. Because these
+devices do not have an MDIO bus, we cannot use the existing helpers.
+Refactor the existing helpers to allow supplying the values for c22
+registers directly, instead of using MDIO to access them. Only get_state
+and set_advertisement are converted, since they contain the most complex
+logic. Because set_advertisement is never actually used outside
+phylink_mii_c22_pcs_config, move the MDIO-writing part into that
+function. Because some modes do not need the advertisement register set
+at all, we use -EINVAL for this purpose.
 
-The one issue I can see is that it basically leaves the igb_poll call
-stuck in polling mode.
+Additionally, a new function phylink_pcs_enable_an is provided to
+determine whether to enable autonegotiation.
 
-The easiest fix for all of this in the in-kernel driver is to just get
-rid of the "min" at the end and instead just "return work_done;". The
-extra complication is only needed if you were to be polling multiple
-queues and that isn't the case here so we should simplify it and get
-rid of the buggy "budget - 1" return value.
+Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+This series was originally submitted as [1]. Although does not include
+its intended user (macb), I have submitted it separately at the behest
+of Russel.
+
+[1] https://lore.kernel.org/netdev/YVtypfZJfivfDnu7@lunn.ch/T/#m50877e4daf344ac0b5efced38c79246ad2b9cb6e
+
+Changes in v2:
+- Add phylink_pcs_enable_an
+- Also remove set_advertisement
+- Use mdiobus_modify_changed
+
+ drivers/net/phy/phylink.c | 120 +++++++++++++++++++++-----------------
+ include/linux/phylink.h   |   7 ++-
+ 2 files changed, 72 insertions(+), 55 deletions(-)
+
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 33462fdc7add..36d7784e7a17 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -2813,6 +2813,52 @@ void phylink_decode_usxgmii_word(struct phylink_link_state *state,
+ }
+ EXPORT_SYMBOL_GPL(phylink_decode_usxgmii_word);
+ 
++/**
++ * phylink_mii_c22_pcs_decode_state() - Decode MAC PCS state from MII registers
++ * @state: a pointer to a &struct phylink_link_state.
++ * @bmsr: The value of the %MII_BMSR register
++ * @lpa: The value of the %MII_LPA register
++ *
++ * Helper for MAC PCS supporting the 802.3 clause 22 register set for
++ * clause 37 negotiation and/or SGMII control.
++ *
++ * Parse the Clause 37 or Cisco SGMII link partner negotiation word into
++ * the phylink @state structure. This is suitable to be used for implementing
++ * the mac_pcs_get_state() member of the struct phylink_mac_ops structure if
++ * accessing @bmsr and @lpa cannot be done with MDIO directly.
++ */
++void phylink_mii_c22_pcs_decode_state(struct phylink_link_state *state,
++				      u16 bmsr, u16 lpa)
++{
++	state->link = !!(bmsr & BMSR_LSTATUS);
++	state->an_complete = !!(bmsr & BMSR_ANEGCOMPLETE);
++	/* If there is no link or autonegotiation is disabled, the LP advertisement
++	 * data is not meaningful, so don't go any further.
++	 */
++	if (!state->link || !state->an_enabled)
++		return;
++
++	switch (state->interface) {
++	case PHY_INTERFACE_MODE_1000BASEX:
++		phylink_decode_c37_word(state, lpa, SPEED_1000);
++		break;
++
++	case PHY_INTERFACE_MODE_2500BASEX:
++		phylink_decode_c37_word(state, lpa, SPEED_2500);
++		break;
++
++	case PHY_INTERFACE_MODE_SGMII:
++	case PHY_INTERFACE_MODE_QSGMII:
++		phylink_decode_sgmii_word(state, lpa);
++		break;
++
++	default:
++		state->link = false;
++		break;
++	}
++}
++EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_decode_state);
++
+ /**
+  * phylink_mii_c22_pcs_get_state() - read the MAC PCS state
+  * @pcs: a pointer to a &struct mdio_device.
+@@ -2839,55 +2885,26 @@ void phylink_mii_c22_pcs_get_state(struct mdio_device *pcs,
+ 		return;
+ 	}
+ 
+-	state->link = !!(bmsr & BMSR_LSTATUS);
+-	state->an_complete = !!(bmsr & BMSR_ANEGCOMPLETE);
+-	/* If there is no link or autonegotiation is disabled, the LP advertisement
+-	 * data is not meaningful, so don't go any further.
+-	 */
+-	if (!state->link || !state->an_enabled)
+-		return;
+-
+-	switch (state->interface) {
+-	case PHY_INTERFACE_MODE_1000BASEX:
+-		phylink_decode_c37_word(state, lpa, SPEED_1000);
+-		break;
+-
+-	case PHY_INTERFACE_MODE_2500BASEX:
+-		phylink_decode_c37_word(state, lpa, SPEED_2500);
+-		break;
+-
+-	case PHY_INTERFACE_MODE_SGMII:
+-	case PHY_INTERFACE_MODE_QSGMII:
+-		phylink_decode_sgmii_word(state, lpa);
+-		break;
+-
+-	default:
+-		state->link = false;
+-		break;
+-	}
++	phylink_mii_c22_pcs_decode_state(state, bmsr, lpa);
+ }
+ EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_get_state);
+ 
+ /**
+- * phylink_mii_c22_pcs_set_advertisement() - configure the clause 37 PCS
++ * phylink_mii_c22_pcs_encode_advertisement() - configure the clause 37 PCS
+  *	advertisement
+- * @pcs: a pointer to a &struct mdio_device.
+  * @interface: the PHY interface mode being configured
+  * @advertising: the ethtool advertisement mask
+  *
+  * Helper for MAC PCS supporting the 802.3 clause 22 register set for
+  * clause 37 negotiation and/or SGMII control.
+  *
+- * Configure the clause 37 PCS advertisement as specified by @state. This
+- * does not trigger a renegotiation; phylink will do that via the
+- * mac_an_restart() method of the struct phylink_mac_ops structure.
++ * Encode the clause 37 PCS advertisement as specified by @interface and
++ * @advertising.
+  *
+- * Returns negative error code on failure to configure the advertisement,
+- * zero if no change has been made, or one if the advertisement has changed.
++ * Return: The new value for @adv, or ``-EINVAL`` if it should not be changed.
+  */
+-int phylink_mii_c22_pcs_set_advertisement(struct mdio_device *pcs,
+-					  phy_interface_t interface,
+-					  const unsigned long *advertising)
++int phylink_mii_c22_pcs_encode_advertisement(phy_interface_t interface,
++					     const unsigned long *advertising)
+ {
+ 	u16 adv;
+ 
+@@ -2901,18 +2918,15 @@ int phylink_mii_c22_pcs_set_advertisement(struct mdio_device *pcs,
+ 		if (linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
+ 				      advertising))
+ 			adv |= ADVERTISE_1000XPSE_ASYM;
+-
+-		return mdiodev_modify_changed(pcs, MII_ADVERTISE, 0xffff, adv);
+-
++		return adv;
+ 	case PHY_INTERFACE_MODE_SGMII:
+-		return mdiodev_modify_changed(pcs, MII_ADVERTISE, 0xffff, 0x0001);
+-
++		return 0x0001;
+ 	default:
+ 		/* Nothing to do for other modes */
+-		return 0;
++		return -EINVAL;
+ 	}
+ }
+-EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_set_advertisement);
++EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_encode_advertisement);
+ 
+ /**
+  * phylink_mii_c22_pcs_config() - configure clause 22 PCS
+@@ -2930,16 +2944,18 @@ int phylink_mii_c22_pcs_config(struct mdio_device *pcs, unsigned int mode,
+ 			       phy_interface_t interface,
+ 			       const unsigned long *advertising)
+ {
+-	bool changed;
+-	u16 bmcr;
++	bool changed = 0;
++	u16 adv, bmcr;
+ 	int ret;
+ 
+-	ret = phylink_mii_c22_pcs_set_advertisement(pcs, interface,
+-						    advertising);
+-	if (ret < 0)
+-		return ret;
+-
+-	changed = ret > 0;
++	adv = phylink_mii_c22_pcs_encode_advertisement(interface, advertising);
++	if (adv != -EINVAL) {
++		ret = mdiobus_modify_changed(pcs->bus, pcs->addr,
++					     MII_ADVERTISE, 0xffff, adv);
++		if (ret < 0)
++			return ret;
++		changed = ret;
++	}
+ 
+ 	/* Ensure ISOLATE bit is disabled */
+ 	if (mode == MLO_AN_INBAND &&
+@@ -2952,7 +2968,7 @@ int phylink_mii_c22_pcs_config(struct mdio_device *pcs, unsigned int mode,
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	return changed ? 1 : 0;
++	return changed;
+ }
+ EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_config);
+ 
+diff --git a/include/linux/phylink.h b/include/linux/phylink.h
+index 3563820a1765..01224235df0f 100644
+--- a/include/linux/phylink.h
++++ b/include/linux/phylink.h
+@@ -527,11 +527,12 @@ void phylink_set_port_modes(unsigned long *bits);
+ void phylink_set_10g_modes(unsigned long *mask);
+ void phylink_helper_basex_speed(struct phylink_link_state *state);
+ 
++void phylink_mii_c22_pcs_decode_state(struct phylink_link_state *state,
++				      u16 bmsr, u16 lpa);
+ void phylink_mii_c22_pcs_get_state(struct mdio_device *pcs,
+ 				   struct phylink_link_state *state);
+-int phylink_mii_c22_pcs_set_advertisement(struct mdio_device *pcs,
+-					  phy_interface_t interface,
+-					  const unsigned long *advertising);
++int phylink_mii_c22_pcs_encode_advertisement(phy_interface_t interface,
++					     const unsigned long *advertising);
+ int phylink_mii_c22_pcs_config(struct mdio_device *pcs, unsigned int mode,
+ 			       phy_interface_t interface,
+ 			       const unsigned long *advertising);
+-- 
+2.25.1
+
