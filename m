@@ -2,118 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41E45455E83
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 15:48:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7043455EB1
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 15:53:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230415AbhKROux (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 09:50:53 -0500
-Received: from mx1.tq-group.com ([93.104.207.81]:17159 "EHLO mx1.tq-group.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230014AbhKROux (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Nov 2021 09:50:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1637246873; x=1668782873;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Ooc+9ajbFTu8Zm2ebiyDnY2oS/xRRKmFnMNQRhlZffs=;
-  b=q9S7pnG96kPhTK7kfiImYUe05JKg+/tE6d1JnwkvuAzmv8hoLsz+4qyn
-   v1eN4FDpxGngtn4uRF7uC/i+TGEI/YkCytW1tdONfnln4cWgMCJoz3/hw
-   Kj/EvXL9CIte8C70BGC23j9PQMC4/bJQlMFiJwNyc4wSm+U7m9PK8jsI5
-   C/sFi2RAl4rF3QU43ctmALLpLukCYUiThfGCpMD1gYKKBArD7FM1YzAHI
-   lgNsSmbk+b1yyDIvFiKhq0LXQ6B3cSEphNWVtAEDtNbVcCZRt6W069rNi
-   xDVPKoYRbObk9kZVbZvuLUss/jrWETdP861jQ1zjwUYE/aFt59WOjeGJw
-   A==;
-X-IronPort-AV: E=Sophos;i="5.87,245,1631570400"; 
-   d="scan'208";a="20545537"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 18 Nov 2021 15:47:52 +0100
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Thu, 18 Nov 2021 15:47:52 +0100
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Thu, 18 Nov 2021 15:47:52 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1637246872; x=1668782872;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Ooc+9ajbFTu8Zm2ebiyDnY2oS/xRRKmFnMNQRhlZffs=;
-  b=fqnNGU12oPlc4efoN99xDo6coQd1LUMUOvWXqutBzKveKEImrXBpuSUy
-   H9g2qaxIzQySASSIedGt6G/xiUU6cG83d2A3v7nXGljSMYQ8ecqqbcGcc
-   pmAxmT0IQEP00Ukdl7PwAeV6I4Qix9LZsP5E2Q/tKSJ2iplwhXGGKzhoZ
-   RAquUJwU+0MB3OKqGAdkkP1BjudG9AbR/L4A3mnRoB7SGVsvlvr4+zjqI
-   vM/arFSK+fdeaWQDtA+y7Kw10yeZx3cai5SmCbUtXJKulzlskq1KBAd0G
-   9tTkfL71NCKhtVnEXYYGNbtXbKhb6/hRSkkLhxdbS3Go2S/xWJrsQn5JG
-   g==;
-X-IronPort-AV: E=Sophos;i="5.87,245,1631570400"; 
-   d="scan'208";a="20545536"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 18 Nov 2021 15:47:52 +0100
-Received: from schifferm-ubuntu4.tq-net.de (schifferm-ubuntu4.tq-net.de [10.121.48.12])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 75326280065;
-        Thu, 18 Nov 2021 15:47:50 +0100 (CET)
-Message-ID: <c17640ea3468b78ffe1f073f0a0c51ddfe89836f.camel@ew.tq-group.com>
-Subject: Re: [PATCH net 0/4] Fix bit timings for m_can_pci (Elkhart Lake)
-From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-To:     Jarkko Nikula <jarkko.nikula@linux.intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Felipe Balbi (Intel)" <balbi@kernel.org>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Date:   Thu, 18 Nov 2021 15:47:47 +0100
-In-Reply-To: <72489ea7-cf81-2446-3620-06a98f53ce54@linux.intel.com>
-References: <cover.1636967198.git.matthias.schiffer@ew.tq-group.com>
-         <e38eb4ca0a03c60c8bbeccbd8126ffc5bf97d490.camel@ew.tq-group.com>
-         <72489ea7-cf81-2446-3620-06a98f53ce54@linux.intel.com>
+        id S230367AbhKRO4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 09:56:13 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:46455 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229623AbhKRO4K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 09:56:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1637247189;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ktZwmNj2i6HRghsgzsPdqkJk4QpYNvRhiEpD3DouXpc=;
+        b=TvXzHUGo14MPME6da1vCoaZ7+VD8KP2gSj5pdmOKJLM5Z8FBiyylHsce4DigTxoAjlbKMj
+        U73qeXX+XfsIoff8bw/+xhgR1lpT2sp6kRpUed6+UTZEwQ+rHH3bBKwictLVpHTrbBQV3B
+        eSSG85PPGWRfvplJm0thnGABFzHvfw4=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-193-yR9LcULyPdy_Y8OpDAH3TA-1; Thu, 18 Nov 2021 09:53:08 -0500
+X-MC-Unique: yR9LcULyPdy_Y8OpDAH3TA-1
+Received: by mail-qk1-f197.google.com with SMTP id v14-20020a05620a0f0e00b0043355ed67d1so5021209qkl.7
+        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 06:53:08 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ktZwmNj2i6HRghsgzsPdqkJk4QpYNvRhiEpD3DouXpc=;
+        b=zzDChMUgSuU6NQ4ZeM9LZjXQk+jrOLyKByLaOTsKCXIL2j/2o9UyDqjZiZE+BkV7ki
+         OTDaCQZ2PlDMB2bglI8jYscFYO+B8YFtuoqiF/l2xawI4FD0+h3447aghkFxmEjyr0Sn
+         fDM0Ikayvurcs26HgYl1c0KNz+1rovChb2qI8f7aSu8QZtZBYTDuZjmzW3bvBywjzjw/
+         0IB8FDrJuFYeBZ+sv0EF418P85zVObhNzMYB+nCmpqiwhU0u5lPUHUdaZtD4xHa14ea6
+         6dR+JZxBSg0AtGxKu+2+IcBwiAB5sTuB9LZtWD6V/rcFuM0VhpRLiSzfpfTSeUMf1lSc
+         xgGA==
+X-Gm-Message-State: AOAM532+2dVAJDEWrJR/TKifqtuAdSF5o6LDXDGAfiai6eA2/y9/T+Ex
+        xKW4HPWqQ/3qxzw0FiFCbMeBpykiXP+wwFh6qwjRJXUf+azmS8b4r1RmZ0ghz+27NBOxrpjXIzN
+        ZBmSlTzA1WaYG4iKtdkTouruP/+BQ4SJp
+X-Received: by 2002:a05:620a:2403:: with SMTP id d3mr21281687qkn.281.1637247188138;
+        Thu, 18 Nov 2021 06:53:08 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxSc+hBdpB8rrN3UkT8yniJtEKjtj0Ij4dD3He2By/RfQJkikWJixdi13MzE6tEqilPyDs+LXKP7bNIxMaR/4o=
+X-Received: by 2002:a05:620a:2403:: with SMTP id d3mr21281669qkn.281.1637247187998;
+ Thu, 18 Nov 2021 06:53:07 -0800 (PST)
+MIME-Version: 1.0
+References: <20211118082355.983825-1-geert@linux-m68k.org>
+In-Reply-To: <20211118082355.983825-1-geert@linux-m68k.org>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Thu, 18 Nov 2021 09:52:57 -0500
+Message-ID: <CAK-6q+gQCzJeV5VbCJUbg1dt=4nPvgBAOP5cPmLchmnro1pQ_A@mail.gmail.com>
+Subject: Re: [PATCH] fs: dlm: Protect IPV6 field access by CONFIG_IPV6
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Christine Caulfield <ccaulfie@redhat.com>,
+        David Teigland <teigland@redhat.com>,
+        "Reported-by : Randy Dunlap" <rdunlap@infradead.org>,
+        cluster-devel@redhat.com,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-11-17 at 14:14 +0200, Jarkko Nikula wrote:
-> Hi
-> 
-> On 11/16/21 3:58 PM, Matthias Schiffer wrote:
-> > I just noticed that m_can_pci is completely broken on 5.15.2, while
-> > it's working fine on 5.14.y.
-> > 
-> 
-> Hmm.. so that may explain why I once saw candump received just zeroes on 
-> v5.15-rc something but earlier kernels were ok. What's odd then next 
-> time v5.15-rc was ok so went blaming sun spots instead of bisecting.
-> 
-> > I assume something simliar to [1] will be necessary in m_can_pci as
-> > well, however I'm not really familiar with the driver. There is no
-> > "mram_base" in m_can_plat_pci, only "base". Is using "base" with
-> > iowrite32/ioread32 + manual increment the correct solution here?
-> > 
-> > 
-> > [1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=99d173fbe8944861a00ebd1c73817a1260d21e60
-> > 
-> 
-> If your test case after 5.15 reliably fails are you able to bisect or 
-> check does the regression originate from the same commit?
-> 
-> Jarkko
+Hi,
 
-The Fixes tag of 99d173fbe894 ("can: m_can: fix iomap_read_fifo() and
-iomap_write_fifo()") is off AFAICT, the actual breakage happened with
-812270e5445b ("can: m_can: Batch FIFO writes during CAN transmit") and
-1aa6772f64b4 ("can: m_can: Batch FIFO reads during CAN receive");
-reverting these two patches fixes the regression.
+On Thu, Nov 18, 2021 at 3:26 AM Geert Uytterhoeven <geert@linux-m68k.org> w=
+rote:
+>
+> If CONFIG_IPV6=3Dn:
+>
+>     In file included from fs/dlm/lowcomms.c:46:
+>     fs/dlm/lowcomms.c: In function =E2=80=98lowcomms_error_report=E2=80=
+=99:
+>     ./include/net/sock.h:386:34: error: =E2=80=98struct sock_common=E2=80=
+=99 has no member named =E2=80=98skc_v6_daddr=E2=80=99; did you mean =E2=80=
+=98skc_daddr=E2=80=99?
+>       386 | #define sk_v6_daddr  __sk_common.skc_v6_daddr
+>           |                                  ^~~~~~~~~~~~
+>     ./include/linux/printk.h:422:19: note: in expansion of macro =E2=80=
+=98sk_v6_daddr=E2=80=99
+>       422 |   _p_func(_fmt, ##__VA_ARGS__);    \
+>           |                   ^~~~~~~~~~~
+>     ./include/linux/printk.h:450:26: note: in expansion of macro =E2=80=
+=98printk_index_wrap=E2=80=99
+>       450 | #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__=
+VA_ARGS__)
+>           |                          ^~~~~~~~~~~~~~~~~
+>     ./include/linux/printk.h:644:3: note: in expansion of macro =E2=80=98=
+printk=E2=80=99
+>       644 |   printk(fmt, ##__VA_ARGS__);    \
+>           |   ^~~~~~
+>     fs/dlm/lowcomms.c:612:3: note: in expansion of macro =E2=80=98printk_=
+ratelimited=E2=80=99
+>       612 |   printk_ratelimited(KERN_ERR "dlm: node %d: socket error "
+>           |   ^~~~~~~~~~~~~~~~~~
+>
+> Fix this by protecting the code that accesses IPV6-only fields by a
+> check for CONFIG_IPV6.
+>
+> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> Fixes: 4c3d90570bcc2b33 ("fs: dlm: don't call kernel_getpeername() in err=
+or_report()")
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> ---
 
-I just sent a patch for m_can_pci that applies the same fix that was
-done in m_can_platform in 99d173fbe894, and verified that this makes
-CAN communication work on Elkhart Lake with Linux 5.15.y together with
-my other patches.
+Thanks, but the issue has already been fixed in the same way [0].
 
-Matthias
+- Alex
+
+[0] https://git.kernel.org/pub/scm/linux/kernel/git/teigland/linux-dlm.git/=
+commit/?h=3Dnext&id=3D1b9beda83e27a0c2cd75d1cb743c297c7b36c844
 
