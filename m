@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E3BE455A97
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 12:37:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37A9B455A8E
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 12:36:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344131AbhKRLjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 06:39:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60126 "EHLO
+        id S1344092AbhKRLjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 06:39:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344217AbhKRLjB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 06:39:01 -0500
+        with ESMTP id S1344206AbhKRLiz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 06:38:55 -0500
 Received: from ustc.edu.cn (email6.ustc.edu.cn [IPv6:2001:da8:d800::8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1C74AC061210;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 14CA6C06120D;
         Thu, 18 Nov 2021 03:35:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mail.ustc.edu.cn; s=dkim; h=Received:Date:From:To:Cc:Subject:
         Message-ID:In-Reply-To:References:MIME-Version:Content-Type:
-        Content-Transfer-Encoding; bh=3i4Rp/q45W+TZIYLx/C3ZWYjrNyJFZoaEf
-        azRHAUX/o=; b=R7L6Vq068WV7uimSlqXh2xRnhfbz3P3uUPJ43k2X8EZXRHEj4b
-        Yq1efcLblCThAwNAEmRWo0kzIxW3/bi3pA763T/YIIQGCguwUso/Ck8LY1LG2dX2
-        1d+8Z8aLkb4Fw2StcKU7ylLXYT/3w9uzvCGFtcGkONca+cg8WoWW+DGAA=
+        Content-Transfer-Encoding; bh=u2o84AxwU8xhUErO2FYo4Qh1EzNzUfFohy
+        WOsjH5TgM=; b=FCw9PF9iQ0HmsuVEkUsMUR+WnYxOM6yTs3ro59rzdA/R+mHtGP
+        Lw4wRDt7BIyWivvAH8ysLNS3XpkAcFFZ6U2JuEGmWvAXnUMbndFKRTfgiDz6bvy3
+        4VUNrWxbPOyxIgM/BgISi5xuNZonEYDy4szSfYL3nKn97NPFrD6h4TWHU=
 Received: from xhacker (unknown [101.86.18.22])
-        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygAHD99XOpZhwZ1cAQ--.27562S7;
-        Thu, 18 Nov 2021 19:34:56 +0800 (CST)
-Date:   Thu, 18 Nov 2021 19:25:14 +0800
+        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygAHD99XOpZhwZ1cAQ--.27562S5;
+        Thu, 18 Nov 2021 19:34:53 +0800 (CST)
+Date:   Thu, 18 Nov 2021 19:25:45 +0800
 From:   Jisheng Zhang <jszhang3@mail.ustc.edu.cn>
 To:     Paul Walmsley <paul.walmsley@sifive.com>,
         Palmer Dabbelt <palmer@dabbelt.com>,
@@ -45,30 +45,30 @@ Cc:     Kefeng Wang <wangkefeng.wang@huawei.com>,
         linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kbuild@vger.kernel.org
-Subject: [PATCH 07/12] riscv: lib: uaccess: fold fixups into body
-Message-ID: <20211118192514.13d3e873@xhacker>
+Subject: [PATCH 08/12] riscv: extable: consolidate definitions
+Message-ID: <20211118192545.349f59b7@xhacker>
 In-Reply-To: <20211118192130.48b8f04c@xhacker>
 References: <20211118192130.48b8f04c@xhacker>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: LkAmygAHD99XOpZhwZ1cAQ--.27562S7
-X-Coremail-Antispam: 1UD129KBjvJXoW7KFy3ur13GF4DZFW3AFy7ZFb_yoW8Ww13pw
-        1xur9rKw45Wrn7uFZ2yry5XF1rWa1fXF1UArW7Kw15ZrnFvr1vyFnYq39rWryDJFWrAF4x
-        WF9ayr4rGryYk37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUBCb7Iv0xC_tr1lb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I2
+X-CM-TRANSID: LkAmygAHD99XOpZhwZ1cAQ--.27562S5
+X-Coremail-Antispam: 1UD129KBjvJXoWxury3XrWrCw1rWFy5tFykuFg_yoW5ZF1kpF
+        4qkF95KrZ5Cr1xCw1ayF9F9r4UKan8Ww1ayry7uFyqvw42ya10yrn0gr9rtrykAa1kZFyx
+        Was29r45Wr4UZw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUBmb7Iv0xC_Zr1lb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I2
         0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI
-        8067AKxVWUAVCq3wA2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28C
-        jxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0cI
-        8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E
-        87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64
-        kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8JwAm
-        72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l42
-        xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWU
-        GwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a6rW5MIIYrxkI7VAKI4
-        8JMIIF0xvE2Ix0cI8IcVAFwI0_Gr0_Xr1lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4UJVWx
-        Jr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF0x
-        vEx4A2jsIEc7CjxVAFwI0_Gr1j6F4UJbIYCTnIWIevJa73UjIFyTuYvjxU775rUUUUU
+        8067AKxVWUWwA2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF
+        64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0cI8IcV
+        CY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv
+        6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c
+        02F40Ex7xfMcIj6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE
+        4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l42xK82
+        IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC2
+        0s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a6rW5MIIYrxkI7VAKI48JMI
+        IF0xvE2Ix0cI8IcVAFwI0_JFI_Gr1lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1l
+        IxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4
+        A2jsIEc7CjxVAFwI0_Gr1j6F4UJbIYCTnIWIevJa73UjIFyTuYvjxU7BMKDUUUU
 X-CM-SenderInfo: xmv2xttqjtqzxdloh3xvwfhvlgxou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -76,64 +76,114 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jisheng Zhang <jszhang@kernel.org>
 
-uaccess functions such __asm_copy_to_user(),  __arch_copy_from_user()
-and __clear_user() place their exception fixups in the `.fixup` section
-without any clear association with themselves. If we backtrace the
-fixup code, it will be symbolized as an offset from the nearest prior
-symbol.
+This is a riscv port of commit 819771cc2892 ("arm64: extable:
+consolidate definitions").
 
-Similar as arm64 does, we must move fixups into the body of the
-functions themselves, after the usual fast-path returns.
-
-Inline assembly will be dealt with in subsequent patches.
+In subsequent patches we'll alter the structure and usage of struct
+exception_table_entry.
 
 Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
 ---
- arch/riscv/lib/uaccess.S | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ arch/riscv/include/asm/asm-extable.h | 33 ++++++++++++++++++++++++++++
+ arch/riscv/include/asm/futex.h       |  1 +
+ arch/riscv/include/asm/uaccess.h     |  7 +-----
+ arch/riscv/lib/uaccess.S             |  6 ++---
+ 4 files changed, 37 insertions(+), 10 deletions(-)
+ create mode 100644 arch/riscv/include/asm/asm-extable.h
 
+diff --git a/arch/riscv/include/asm/asm-extable.h b/arch/riscv/include/asm/asm-extable.h
+new file mode 100644
+index 000000000000..b790c02dbdda
+--- /dev/null
++++ b/arch/riscv/include/asm/asm-extable.h
+@@ -0,0 +1,33 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++#ifndef __ASM_ASM_EXTABLE_H
++#define __ASM_ASM_EXTABLE_H
++
++#ifdef __ASSEMBLY__
++
++#define __ASM_EXTABLE_RAW(insn, fixup)		\
++	.pushsection	__ex_table, "a";	\
++	.balign		4;			\
++	.long		((insn) - .);		\
++	.long		((fixup) - .);		\
++	.popsection;
++
++	.macro		_asm_extable, insn, fixup
++	__ASM_EXTABLE_RAW(\insn, \fixup)
++	.endm
++
++#else /* __ASSEMBLY__ */
++
++#include <linux/stringify.h>
++
++#define __ASM_EXTABLE_RAW(insn, fixup)			\
++	".pushsection	__ex_table, \"a\"\n"		\
++	".balign	4\n"				\
++	".long		((" insn ") - .)\n"		\
++	".long		((" fixup ") - .)\n"		\
++	".popsection\n"
++
++#define _ASM_EXTABLE(insn, fixup) __ASM_EXTABLE_RAW(#insn, #fixup)
++
++#endif /* __ASSEMBLY__ */
++
++#endif /* __ASM_ASM_EXTABLE_H */
+diff --git a/arch/riscv/include/asm/futex.h b/arch/riscv/include/asm/futex.h
+index 3191574e135c..2e15e8e89502 100644
+--- a/arch/riscv/include/asm/futex.h
++++ b/arch/riscv/include/asm/futex.h
+@@ -11,6 +11,7 @@
+ #include <linux/uaccess.h>
+ #include <linux/errno.h>
+ #include <asm/asm.h>
++#include <asm/asm-extable.h>
+ 
+ /* We don't even really need the extable code, but for now keep it simple */
+ #ifndef CONFIG_MMU
+diff --git a/arch/riscv/include/asm/uaccess.h b/arch/riscv/include/asm/uaccess.h
+index 0f2c5b9d2e8f..40e6099af488 100644
+--- a/arch/riscv/include/asm/uaccess.h
++++ b/arch/riscv/include/asm/uaccess.h
+@@ -8,14 +8,9 @@
+ #ifndef _ASM_RISCV_UACCESS_H
+ #define _ASM_RISCV_UACCESS_H
+ 
++#include <asm/asm-extable.h>
+ #include <asm/pgtable.h>		/* for TASK_SIZE */
+ 
+-#define _ASM_EXTABLE(from, to)						\
+-	"	.pushsection	__ex_table, \"a\"\n"			\
+-	"	.balign		4\n"					\
+-	"	.long		(" #from " - .), (" #to " - .)\n"	\
+-	"	.popsection\n"
+-
+ /*
+  * User space memory access functions
+  */
 diff --git a/arch/riscv/lib/uaccess.S b/arch/riscv/lib/uaccess.S
-index 55f80f84e23f..047f517ac780 100644
+index 047f517ac780..8c475f4da308 100644
 --- a/arch/riscv/lib/uaccess.S
 +++ b/arch/riscv/lib/uaccess.S
-@@ -173,6 +173,13 @@ ENTRY(__asm_copy_from_user)
- 	csrc CSR_STATUS, t6
- 	li	a0, 0
- 	ret
-+
-+	/* Exception fixup code */
-+10:
-+	/* Disable access to user memory */
-+	csrs CSR_STATUS, t6
-+	mv a0, t5
-+	ret
- ENDPROC(__asm_copy_to_user)
- ENDPROC(__asm_copy_from_user)
- EXPORT_SYMBOL(__asm_copy_to_user)
-@@ -218,19 +225,12 @@ ENTRY(__clear_user)
- 	addi a0, a0, 1
- 	bltu a0, a3, 5b
- 	j 3b
--ENDPROC(__clear_user)
--EXPORT_SYMBOL(__clear_user)
+@@ -1,15 +1,13 @@
+ #include <linux/linkage.h>
+ #include <asm-generic/export.h>
+ #include <asm/asm.h>
++#include <asm/asm-extable.h>
+ #include <asm/csr.h>
  
--	.section .fixup,"ax"
+ 	.macro fixup op reg addr lbl
+ 100:
+ 	\op \reg, \addr
+-	.section __ex_table,"a"
 -	.balign 4
--	/* Fixup code for __copy_user(10) and __clear_user(11) */
--10:
--	/* Disable access to user memory */
--	csrs CSR_STATUS, t6
--	mv a0, t5
--	ret
-+	/* Exception fixup code */
- 11:
-+	/* Disable access to user memory */
- 	csrs CSR_STATUS, t6
- 	mv a0, a1
- 	ret
+-	.long (100b - .), (\lbl - .)
 -	.previous
-+ENDPROC(__clear_user)
-+EXPORT_SYMBOL(__clear_user)
++	_asm_extable	100b, \lbl
+ 	.endm
+ 
+ ENTRY(__asm_copy_to_user)
 -- 
 2.33.0
 
