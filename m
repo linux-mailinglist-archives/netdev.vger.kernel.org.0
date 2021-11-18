@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 831C84551B5
+	by mail.lfdr.de (Postfix) with ESMTP id CC8384551B6
 	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 01:33:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241959AbhKRAgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 19:36:25 -0500
+        id S241963AbhKRAg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 19:36:27 -0500
 Received: from mga14.intel.com ([192.55.52.115]:3450 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241938AbhKRAgY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S241954AbhKRAgY (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 17 Nov 2021 19:36:24 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10171"; a="234324569"
+X-IronPort-AV: E=McAfee;i="6200,9189,10171"; a="234324572"
 X-IronPort-AV: E=Sophos;i="5.87,243,1631602800"; 
-   d="scan'208";a="234324569"
+   d="scan'208";a="234324572"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2021 16:33:25 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,243,1631602800"; 
-   d="scan'208";a="736448000"
+   d="scan'208";a="736448005"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga005.fm.intel.com with ESMTP; 17 Nov 2021 16:33:24 -0800
+  by fmsmga005.fm.intel.com with ESMTP; 17 Nov 2021 16:33:25 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Eryk Rybak <eryk.roch.rybak@intel.com>, netdev@vger.kernel.org,
+Cc:     Karen Sornek <karen.sornek@intel.com>, netdev@vger.kernel.org,
         anthony.l.nguyen@intel.com, sassmann@redhat.com,
-        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
+        Grzegorz Szczurek <grzegorzx.szczurek@intel.com>,
         Tony Brelinski <tony.brelinski@intel.com>
-Subject: [PATCH net 4/7] i40e: Fix ping is lost after configuring ADq on VF
-Date:   Wed, 17 Nov 2021 16:31:56 -0800
-Message-Id: <20211118003159.245561-5-anthony.l.nguyen@intel.com>
+Subject: [PATCH net 5/7] i40e: Fix warning message and call stack during rmmod i40e driver
+Date:   Wed, 17 Nov 2021 16:31:57 -0800
+Message-Id: <20211118003159.245561-6-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211118003159.245561-1-anthony.l.nguyen@intel.com>
 References: <20211118003159.245561-1-anthony.l.nguyen@intel.com>
@@ -39,179 +39,158 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eryk Rybak <eryk.roch.rybak@intel.com>
+From: Karen Sornek <karen.sornek@intel.com>
 
-Properly reconfigure VF VSIs after VF request ADQ.
-Created new function to update queue mapping and queue pairs per TC
-with AQ update VSI. This sets proper RSS size on NIC.
-VFs num_queue_pairs should not be changed during setup of queue maps.
-Previously, VF main VSI in ADQ had configured too many queues and had
-wrong RSS size, which lead to packets not being consumed and drops in
-connectivity.
+Restore part of reset functionality used when reset is called
+from the VF to reset itself. Without this fix warning message
+is displayed when VF is being removed via sysfs.
 
-Fixes: bc6d33c8d93f ("i40e: Fix the number of queues available to be mapped for use")
-Co-developed-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
-Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
-Signed-off-by: Eryk Rybak <eryk.roch.rybak@intel.com>
+Fix the crash of the VF during reset by ensuring
+that the PF receives the reset message successfully.
+Refactor code to use one function instead of two.
+
+Fixes: 5c3c48ac6bf5 ("i40e: implement virtual device interface")
+Signed-off-by: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
+Signed-off-by: Karen Sornek <karen.sornek@intel.com>
 Tested-by: Tony Brelinski <tony.brelinski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e.h        |  1 +
- drivers/net/ethernet/intel/i40e/i40e_main.c   | 64 ++++++++++++++++++-
- .../ethernet/intel/i40e/i40e_virtchnl_pf.c    | 17 +++--
- 3 files changed, 74 insertions(+), 8 deletions(-)
+ .../ethernet/intel/i40e/i40e_virtchnl_pf.c    | 53 ++++++++-----------
+ 1 file changed, 21 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e.h b/drivers/net/ethernet/intel/i40e/i40e.h
-index 35a83a161b6f..4d939af0a626 100644
---- a/drivers/net/ethernet/intel/i40e/i40e.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e.h
-@@ -1248,6 +1248,7 @@ void i40e_ptp_restore_hw_time(struct i40e_pf *pf);
- void i40e_ptp_init(struct i40e_pf *pf);
- void i40e_ptp_stop(struct i40e_pf *pf);
- int i40e_ptp_alloc_pins(struct i40e_pf *pf);
-+int i40e_update_adq_vsi_queues(struct i40e_vsi *vsi, int vsi_offset);
- int i40e_is_vsi_uplink_mode_veb(struct i40e_vsi *vsi);
- i40e_status i40e_get_partition_bw_setting(struct i40e_pf *pf);
- i40e_status i40e_set_partition_bw_setting(struct i40e_pf *pf);
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 8437cc14bfc6..37386a270db5 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -1801,6 +1801,8 @@ static void i40e_vsi_setup_queue_map(struct i40e_vsi *vsi,
- 
- 	sections = I40E_AQ_VSI_PROP_QUEUE_MAP_VALID;
- 	offset = 0;
-+	/* zero out queue mapping, it will get updated on the end of the function */
-+	memset(ctxt->info.queue_mapping, 0, sizeof(ctxt->info.queue_mapping));
- 
- 	if (vsi->type == I40E_VSI_MAIN) {
- 		/* This code helps add more queue to the VSI if we have
-@@ -1817,10 +1819,12 @@ static void i40e_vsi_setup_queue_map(struct i40e_vsi *vsi,
- 	}
- 
- 	/* Number of queues per enabled TC */
--	if (vsi->type == I40E_VSI_MAIN)
-+	if (vsi->type == I40E_VSI_MAIN ||
-+	    (vsi->type == I40E_VSI_SRIOV && vsi->num_queue_pairs != 0))
- 		num_tc_qps = vsi->num_queue_pairs;
- 	else
- 		num_tc_qps = vsi->alloc_queue_pairs;
-+
- 	if (enabled_tc && (vsi->back->flags & I40E_FLAG_DCB_ENABLED)) {
- 		/* Find numtc from enabled TC bitmap */
- 		for (i = 0, numtc = 0; i < I40E_MAX_TRAFFIC_CLASS; i++) {
-@@ -1898,10 +1902,12 @@ static void i40e_vsi_setup_queue_map(struct i40e_vsi *vsi,
- 		}
- 		ctxt->info.tc_mapping[i] = cpu_to_le16(qmap);
- 	}
--	/* Do not change previously set num_queue_pairs for PFs */
-+	/* Do not change previously set num_queue_pairs for PFs and VFs*/
- 	if ((vsi->type == I40E_VSI_MAIN && numtc != 1) ||
--	    vsi->type != I40E_VSI_MAIN)
-+	    (vsi->type == I40E_VSI_SRIOV && vsi->num_queue_pairs == 0) ||
-+	    (vsi->type != I40E_VSI_MAIN && vsi->type != I40E_VSI_SRIOV))
- 		vsi->num_queue_pairs = offset;
-+
- 	/* Scheduler section valid can only be set for ADD VSI */
- 	if (is_add) {
- 		sections |= I40E_AQ_VSI_PROP_SCHED_VALID;
-@@ -5438,6 +5444,58 @@ static void i40e_vsi_update_queue_map(struct i40e_vsi *vsi,
- 	       sizeof(vsi->info.tc_mapping));
- }
- 
-+/**
-+ * i40e_update_adq_vsi_queues - update queue mapping for ADq VSI
-+ * @vsi: the VSI being reconfigured
-+ * @vsi_offset: offset from main VF VSI
-+ */
-+int i40e_update_adq_vsi_queues(struct i40e_vsi *vsi, int vsi_offset)
-+{
-+	struct i40e_vsi_context ctxt = {};
-+	struct i40e_pf *pf;
-+	struct i40e_hw *hw;
-+	int ret;
-+
-+	if (!vsi)
-+		return I40E_ERR_PARAM;
-+	pf = vsi->back;
-+	hw = &pf->hw;
-+
-+	ctxt.seid = vsi->seid;
-+	ctxt.pf_num = hw->pf_id;
-+	ctxt.vf_num = vsi->vf_id + hw->func_caps.vf_base_id + vsi_offset;
-+	ctxt.uplink_seid = vsi->uplink_seid;
-+	ctxt.connection_type = I40E_AQ_VSI_CONN_TYPE_NORMAL;
-+	ctxt.flags = I40E_AQ_VSI_TYPE_VF;
-+	ctxt.info = vsi->info;
-+
-+	i40e_vsi_setup_queue_map(vsi, &ctxt, vsi->tc_config.enabled_tc,
-+				 false);
-+	if (vsi->reconfig_rss) {
-+		vsi->rss_size = min_t(int, pf->alloc_rss_size,
-+				      vsi->num_queue_pairs);
-+		ret = i40e_vsi_config_rss(vsi);
-+		if (ret) {
-+			dev_info(&pf->pdev->dev, "Failed to reconfig rss for num_queues\n");
-+			return ret;
-+		}
-+		vsi->reconfig_rss = false;
-+	}
-+
-+	ret = i40e_aq_update_vsi_params(hw, &ctxt, NULL);
-+	if (ret) {
-+		dev_info(&pf->pdev->dev, "Update vsi config failed, err %s aq_err %s\n",
-+			 i40e_stat_str(hw, ret),
-+			 i40e_aq_str(hw, hw->aq.asq_last_status));
-+		return ret;
-+	}
-+	/* update the local VSI info with updated queue map */
-+	i40e_vsi_update_queue_map(vsi, &ctxt);
-+	vsi->info.valid_sections = 0;
-+
-+	return ret;
-+}
-+
- /**
-  * i40e_vsi_config_tc - Configure VSI Tx Scheduler for given TC map
-  * @vsi: VSI to be configured
 diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-index 815661632e7a..2102db11972a 100644
+index 2102db11972a..80ae264c99ba 100644
 --- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
 +++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-@@ -2220,11 +2220,12 @@ static int i40e_vc_config_queues_msg(struct i40e_vf *vf, u8 *msg)
- 	struct virtchnl_vsi_queue_config_info *qci =
- 	    (struct virtchnl_vsi_queue_config_info *)msg;
- 	struct virtchnl_queue_pair_info *qpi;
--	struct i40e_pf *pf = vf->pf;
- 	u16 vsi_id, vsi_queue_id = 0;
--	u16 num_qps_all = 0;
-+	struct i40e_pf *pf = vf->pf;
- 	i40e_status aq_ret = 0;
- 	int i, j = 0, idx = 0;
-+	struct i40e_vsi *vsi;
-+	u16 num_qps_all = 0;
+@@ -183,17 +183,18 @@ void i40e_vc_notify_vf_reset(struct i40e_vf *vf)
+ /***********************misc routines*****************************/
  
- 	if (!test_bit(I40E_VF_STATE_ACTIVE, &vf->vf_states)) {
- 		aq_ret = I40E_ERR_PARAM;
-@@ -2313,9 +2314,15 @@ static int i40e_vc_config_queues_msg(struct i40e_vf *vf, u8 *msg)
- 		pf->vsi[vf->lan_vsi_idx]->num_queue_pairs =
- 			qci->num_queue_pairs;
- 	} else {
--		for (i = 0; i < vf->num_tc; i++)
--			pf->vsi[vf->ch[i].vsi_idx]->num_queue_pairs =
--			       vf->ch[i].num_qps;
-+		for (i = 0; i < vf->num_tc; i++) {
-+			vsi = pf->vsi[vf->ch[i].vsi_idx];
-+			vsi->num_queue_pairs = vf->ch[i].num_qps;
-+
-+			if (i40e_update_adq_vsi_queues(vsi, i)) {
-+				aq_ret = I40E_ERR_CONFIG;
-+				goto error_param;
-+			}
-+		}
+ /**
+- * i40e_vc_disable_vf
++ * i40e_vc_reset_vf
+  * @vf: pointer to the VF info
+- *
+- * Disable the VF through a SW reset.
++ * @notify_vf: notify vf about reset or not
++ * Reset VF handler.
+  **/
+-static inline void i40e_vc_disable_vf(struct i40e_vf *vf)
++static void i40e_vc_reset_vf(struct i40e_vf *vf, bool notify_vf)
+ {
+ 	struct i40e_pf *pf = vf->pf;
+ 	int i;
+ 
+-	i40e_vc_notify_vf_reset(vf);
++	if (notify_vf)
++		i40e_vc_notify_vf_reset(vf);
+ 
+ 	/* We want to ensure that an actual reset occurs initiated after this
+ 	 * function was called. However, we do not want to wait forever, so
+@@ -211,9 +212,14 @@ static inline void i40e_vc_disable_vf(struct i40e_vf *vf)
+ 		usleep_range(10000, 20000);
  	}
  
+-	dev_warn(&vf->pf->pdev->dev,
+-		 "Failed to initiate reset for VF %d after 200 milliseconds\n",
+-		 vf->vf_id);
++	if (notify_vf)
++		dev_warn(&vf->pf->pdev->dev,
++			 "Failed to initiate reset for VF %d after 200 milliseconds\n",
++			 vf->vf_id);
++	else
++		dev_dbg(&vf->pf->pdev->dev,
++			"Failed to initiate reset for VF %d after 200 milliseconds\n",
++			vf->vf_id);
+ }
+ 
+ /**
+@@ -2108,20 +2114,6 @@ static int i40e_vc_get_vf_resources_msg(struct i40e_vf *vf, u8 *msg)
+ 	return ret;
+ }
+ 
+-/**
+- * i40e_vc_reset_vf_msg
+- * @vf: pointer to the VF info
+- *
+- * called from the VF to reset itself,
+- * unlike other virtchnl messages, PF driver
+- * doesn't send the response back to the VF
+- **/
+-static void i40e_vc_reset_vf_msg(struct i40e_vf *vf)
+-{
+-	if (test_bit(I40E_VF_STATE_ACTIVE, &vf->vf_states))
+-		i40e_reset_vf(vf, false);
+-}
+-
+ /**
+  * i40e_vc_config_promiscuous_mode_msg
+  * @vf: pointer to the VF info
+@@ -2617,8 +2609,7 @@ static int i40e_vc_request_queues_msg(struct i40e_vf *vf, u8 *msg)
+ 	} else {
+ 		/* successful request */
+ 		vf->num_req_queues = req_pairs;
+-		i40e_vc_notify_vf_reset(vf);
+-		i40e_reset_vf(vf, false);
++		i40e_vc_reset_vf(vf, true);
+ 		return 0;
+ 	}
+ 
+@@ -3813,8 +3804,7 @@ static int i40e_vc_add_qch_msg(struct i40e_vf *vf, u8 *msg)
+ 	vf->num_req_queues = 0;
+ 
+ 	/* reset the VF in order to allocate resources */
+-	i40e_vc_notify_vf_reset(vf);
+-	i40e_reset_vf(vf, false);
++	i40e_vc_reset_vf(vf, true);
+ 
+ 	return I40E_SUCCESS;
+ 
+@@ -3854,8 +3844,7 @@ static int i40e_vc_del_qch_msg(struct i40e_vf *vf, u8 *msg)
+ 	}
+ 
+ 	/* reset the VF in order to allocate resources */
+-	i40e_vc_notify_vf_reset(vf);
+-	i40e_reset_vf(vf, false);
++	i40e_vc_reset_vf(vf, true);
+ 
+ 	return I40E_SUCCESS;
+ 
+@@ -3917,7 +3906,7 @@ int i40e_vc_process_vf_msg(struct i40e_pf *pf, s16 vf_id, u32 v_opcode,
+ 		i40e_vc_notify_vf_link_state(vf);
+ 		break;
+ 	case VIRTCHNL_OP_RESET_VF:
+-		i40e_vc_reset_vf_msg(vf);
++		i40e_vc_reset_vf(vf, false);
+ 		ret = 0;
+ 		break;
+ 	case VIRTCHNL_OP_CONFIG_PROMISCUOUS_MODE:
+@@ -4171,7 +4160,7 @@ int i40e_ndo_set_vf_mac(struct net_device *netdev, int vf_id, u8 *mac)
+ 	/* Force the VF interface down so it has to bring up with new MAC
+ 	 * address
+ 	 */
+-	i40e_vc_disable_vf(vf);
++	i40e_vc_reset_vf(vf, true);
+ 	dev_info(&pf->pdev->dev, "Bring down and up the VF interface to make this change effective.\n");
+ 
  error_param:
+@@ -4235,7 +4224,7 @@ int i40e_ndo_set_vf_port_vlan(struct net_device *netdev, int vf_id,
+ 		/* duplicate request, so just return success */
+ 		goto error_pvid;
+ 
+-	i40e_vc_disable_vf(vf);
++	i40e_vc_reset_vf(vf, true);
+ 	/* During reset the VF got a new VSI, so refresh a pointer. */
+ 	vsi = pf->vsi[vf->lan_vsi_idx];
+ 	/* Locked once because multiple functions below iterate list */
+@@ -4613,7 +4602,7 @@ int i40e_ndo_set_vf_trust(struct net_device *netdev, int vf_id, bool setting)
+ 		goto out;
+ 
+ 	vf->trusted = setting;
+-	i40e_vc_disable_vf(vf);
++	i40e_vc_reset_vf(vf, true);
+ 	dev_info(&pf->pdev->dev, "VF %u is now %strusted\n",
+ 		 vf_id, setting ? "" : "un");
+ 
 -- 
 2.31.1
 
