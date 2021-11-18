@@ -2,249 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17904455DFF
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 15:29:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 270D1455E67
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 15:41:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232493AbhKROcz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 09:32:55 -0500
-Received: from host.78.145.23.62.rev.coltfrance.com ([62.23.145.78]:53998 "EHLO
-        smtpservice.6wind.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S232307AbhKROcy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 09:32:54 -0500
-Received: from bretzel (bretzel.dev.6wind.com [10.17.1.57])
-        by smtpservice.6wind.com (Postfix) with ESMTPS id 2BCCF6064C;
-        Thu, 18 Nov 2021 15:29:53 +0100 (CET)
-Received: from dichtel by bretzel with local (Exim 4.92)
-        (envelope-from <dichtel@6wind.com>)
-        id 1mniQD-0001Pm-0h; Thu, 18 Nov 2021 15:29:53 +0100
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
-        antony.antony@secunet.com
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Subject: [PATCH net-next] xfrm: rework default policy structure
-Date:   Thu, 18 Nov 2021 15:29:37 +0100
-Message-Id: <20211118142937.5425-1-nicolas.dichtel@6wind.com>
-X-Mailer: git-send-email 2.33.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S230228AbhKROop (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 09:44:45 -0500
+Received: from mx1.tq-group.com ([93.104.207.81]:53891 "EHLO mx1.tq-group.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230134AbhKROop (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Nov 2021 09:44:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1637246505; x=1668782505;
+  h=from:to:cc:subject:date:message-id;
+  bh=t2I8o2x03tIkjpXNO1UmbqLdi++NbU1U5tYQ4OEwDhc=;
+  b=AqhOkEPKqC/eIKagvUYToeUq1hiJhqv+0VPvwOveVHQNHA3YigK7QWKm
+   fpjC/CY2cv75yuAlofCJb23amgmTY7c5BcO/ZhHuRid6va2sUkSr0FcE8
+   XpHwHWeYQaU41HPWJFW8kXZzSWY2quF2+Pc1oItYzDFoNTXwB30H5r9HY
+   fdIDa4cRzTf2I0SJEiMlgDdWodz8HE0NnvfNuiB6ilg+UT92eqag81xvR
+   Vj1h8C+YsI0soIiwo9c9B4fJpwAEqrnPQJRUDP5B9+9AKy628FIlU/Az8
+   +QMbuVruRedP64paf2sHIH9+SkAg8tppd3h2KF+CRXX30/sKCBPRyrMZ7
+   g==;
+X-IronPort-AV: E=Sophos;i="5.87,245,1631570400"; 
+   d="scan'208";a="20545389"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 18 Nov 2021 15:41:43 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Thu, 18 Nov 2021 15:41:43 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Thu, 18 Nov 2021 15:41:43 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1637246503; x=1668782503;
+  h=from:to:cc:subject:date:message-id;
+  bh=t2I8o2x03tIkjpXNO1UmbqLdi++NbU1U5tYQ4OEwDhc=;
+  b=Q9qMcRqt67tJDEwR9Od0PYclll5wYhs1g+1Cbfb/rXcBunPz4afdyDix
+   Jd1lQcGVRk4WAXfqRDfImjVfdZn6wmjsULdDFDFQ89NhczMubKonrnqRD
+   ZfLPvGOLFsA+Mo7i36US1PtN4rvUkm1rxQunLeNvTRJZJgERHd8vS4UbN
+   SqMsHZsh9PwBaXjtKEWGBuveZEuHsTGt3SKVO/PguPmRsHxpkvKqrISJ+
+   eh2xrR1+PnLKOb6LNheAU+Q0lHMY74H5ryG7pTu/5A86rKaciueLC5Wk2
+   QKrhzORcp76Mx/ppyQT+itYCzUm56N9iU9ZSTK8pm7V8dWuCgBY96X3Op
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.87,245,1631570400"; 
+   d="scan'208";a="20545388"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 18 Nov 2021 15:41:43 +0100
+Received: from schifferm-ubuntu4.tq-net.de (schifferm-ubuntu4.tq-net.de [10.121.48.12])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 487DA280065;
+        Thu, 18 Nov 2021 15:41:43 +0100 (CET)
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Felipe Balbi (Intel)" <balbi@kernel.org>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Matt Kline <matt@bitbashing.io>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Subject: [PATCH net] can: m_can: pci: fix iomap_read_fifo() and iomap_write_fifo()
+Date:   Thu, 18 Nov 2021 15:40:11 +0100
+Message-Id: <20211118144011.10921-1-matthias.schiffer@ew.tq-group.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a follow up of commit f8d858e607b2 ("xfrm: make user policy API
-complete"). The goal is to align userland API to the internal structures.
+The same fix that was previously done in m_can_platform in commit
+99d173fbe894 ("can: m_can: fix iomap_read_fifo() and iomap_write_fifo()")
+is required in m_can_pci as well to make iomap_read_fifo() and
+iomap_write_fifo() work for val_count > 1.
 
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Fixes: 812270e5445b ("can: m_can: Batch FIFO writes during CAN transmit")
+Fixes: 1aa6772f64b4 ("can: m_can: Batch FIFO reads during CAN receive")
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 ---
+ drivers/net/can/m_can/m_can_pci.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-This patch targets ipsec-next, but because ipsec-next has not yet been
-rebased on top of net-next, I based the patch on top of net-next.
-
- include/net/netns/xfrm.h |  6 +-----
- include/net/xfrm.h       | 38 ++++++++---------------------------
- net/xfrm/xfrm_policy.c   | 10 +++++++---
- net/xfrm/xfrm_user.c     | 43 +++++++++++++++++-----------------------
- 4 files changed, 34 insertions(+), 63 deletions(-)
-
-diff --git a/include/net/netns/xfrm.h b/include/net/netns/xfrm.h
-index 947733a639a6..bd7c3be4af5d 100644
---- a/include/net/netns/xfrm.h
-+++ b/include/net/netns/xfrm.h
-@@ -66,11 +66,7 @@ struct netns_xfrm {
- 	int			sysctl_larval_drop;
- 	u32			sysctl_acq_expires;
- 
--	u8			policy_default;
--#define XFRM_POL_DEFAULT_IN	1
--#define XFRM_POL_DEFAULT_OUT	2
--#define XFRM_POL_DEFAULT_FWD	4
--#define XFRM_POL_DEFAULT_MASK	7
-+	u8			policy_default[XFRM_POLICY_MAX];
- 
- #ifdef CONFIG_SYSCTL
- 	struct ctl_table_header	*sysctl_hdr;
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 2308210793a0..3fd1e052927e 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -1075,22 +1075,6 @@ xfrm_state_addr_cmp(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x, un
- }
- 
- #ifdef CONFIG_XFRM
--static inline bool
--xfrm_default_allow(struct net *net, int dir)
--{
--	u8 def = net->xfrm.policy_default;
--
--	switch (dir) {
--	case XFRM_POLICY_IN:
--		return def & XFRM_POL_DEFAULT_IN ? false : true;
--	case XFRM_POLICY_OUT:
--		return def & XFRM_POL_DEFAULT_OUT ? false : true;
--	case XFRM_POLICY_FWD:
--		return def & XFRM_POL_DEFAULT_FWD ? false : true;
--	}
--	return false;
--}
--
- int __xfrm_policy_check(struct sock *, int dir, struct sk_buff *skb,
- 			unsigned short family);
- 
-@@ -1104,13 +1088,10 @@ static inline int __xfrm_policy_check2(struct sock *sk, int dir,
- 	if (sk && sk->sk_policy[XFRM_POLICY_IN])
- 		return __xfrm_policy_check(sk, ndir, skb, family);
- 
--	if (xfrm_default_allow(net, dir))
--		return (!net->xfrm.policy_count[dir] && !secpath_exists(skb)) ||
--		       (skb_dst(skb) && (skb_dst(skb)->flags & DST_NOPOLICY)) ||
--		       __xfrm_policy_check(sk, ndir, skb, family);
--	else
--		return (skb_dst(skb) && (skb_dst(skb)->flags & DST_NOPOLICY)) ||
--		       __xfrm_policy_check(sk, ndir, skb, family);
-+	return (net->xfrm.policy_default[dir] == XFRM_USERPOLICY_ACCEPT &&
-+		(!net->xfrm.policy_count[dir] && !secpath_exists(skb))) ||
-+	       (skb_dst(skb) && (skb_dst(skb)->flags & DST_NOPOLICY)) ||
-+	       __xfrm_policy_check(sk, ndir, skb, family);
- }
- 
- static inline int xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb, unsigned short family)
-@@ -1162,13 +1143,10 @@ static inline int xfrm_route_forward(struct sk_buff *skb, unsigned short family)
+diff --git a/drivers/net/can/m_can/m_can_pci.c b/drivers/net/can/m_can/m_can_pci.c
+index 8bbbaa264f0d..b56a54d6c5a9 100644
+--- a/drivers/net/can/m_can/m_can_pci.c
++++ b/drivers/net/can/m_can/m_can_pci.c
+@@ -47,8 +47,13 @@ static u32 iomap_read_reg(struct m_can_classdev *cdev, int reg)
+ static int iomap_read_fifo(struct m_can_classdev *cdev, int offset, void *val, size_t val_count)
  {
- 	struct net *net = dev_net(skb->dev);
+ 	struct m_can_pci_priv *priv = cdev_to_priv(cdev);
++	void __iomem *src = priv->base + offset;
  
--	if (xfrm_default_allow(net, XFRM_POLICY_FWD))
--		return !net->xfrm.policy_count[XFRM_POLICY_OUT] ||
--			(skb_dst(skb)->flags & DST_NOXFRM) ||
--			__xfrm_route_forward(skb, family);
--	else
--		return (skb_dst(skb)->flags & DST_NOXFRM) ||
--			__xfrm_route_forward(skb, family);
-+	return (net->xfrm.policy_default[XFRM_POLICY_FWD] == XFRM_USERPOLICY_ACCEPT &&
-+		!net->xfrm.policy_count[XFRM_POLICY_OUT]) ||
-+	       (skb_dst(skb)->flags & DST_NOXFRM) ||
-+	       __xfrm_route_forward(skb, family);
+-	ioread32_rep(priv->base + offset, val, val_count);
++	while (val_count--) {
++		*(unsigned int *)val = ioread32(src);
++		val += 4;
++		src += 4;
++	}
+ 
+ 	return 0;
  }
- 
- static inline int xfrm4_route_forward(struct sk_buff *skb)
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 1a06585022ab..1a3bdc3521cb 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -3156,7 +3156,7 @@ struct dst_entry *xfrm_lookup_with_ifid(struct net *net,
- 
- nopol:
- 	if (!(dst_orig->dev->flags & IFF_LOOPBACK) &&
--	    !xfrm_default_allow(net, dir)) {
-+	    net->xfrm.policy_default[dir] == XFRM_USERPOLICY_BLOCK) {
- 		err = -EPERM;
- 		goto error;
- 	}
-@@ -3548,7 +3548,7 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
- 	}
- 
- 	if (!pol) {
--		if (!xfrm_default_allow(net, dir)) {
-+		if (net->xfrm.policy_default[dir] == XFRM_USERPOLICY_BLOCK) {
- 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINNOPOLS);
- 			return 0;
- 		}
-@@ -3608,7 +3608,8 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
- 		}
- 		xfrm_nr = ti;
- 
--		if (!xfrm_default_allow(net, dir) && !xfrm_nr) {
-+		if (net->xfrm.policy_default[dir] == XFRM_USERPOLICY_BLOCK &&
-+		    !xfrm_nr) {
- 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINNOSTATES);
- 			goto reject;
- 		}
-@@ -4097,6 +4098,9 @@ static int __net_init xfrm_net_init(struct net *net)
- 	spin_lock_init(&net->xfrm.xfrm_policy_lock);
- 	seqcount_spinlock_init(&net->xfrm.xfrm_policy_hash_generation, &net->xfrm.xfrm_policy_lock);
- 	mutex_init(&net->xfrm.xfrm_cfg_mutex);
-+	net->xfrm.policy_default[XFRM_POLICY_IN] = XFRM_USERPOLICY_ACCEPT;
-+	net->xfrm.policy_default[XFRM_POLICY_FWD] = XFRM_USERPOLICY_ACCEPT;
-+	net->xfrm.policy_default[XFRM_POLICY_OUT] = XFRM_USERPOLICY_ACCEPT;
- 
- 	rv = xfrm_statistics_init(net);
- 	if (rv < 0)
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index 7c36cc1f3d79..a13161111cf4 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -1980,12 +1980,9 @@ static int xfrm_notify_userpolicy(struct net *net)
- 	}
- 
- 	up = nlmsg_data(nlh);
--	up->in = net->xfrm.policy_default & XFRM_POL_DEFAULT_IN ?
--			XFRM_USERPOLICY_BLOCK : XFRM_USERPOLICY_ACCEPT;
--	up->fwd = net->xfrm.policy_default & XFRM_POL_DEFAULT_FWD ?
--			XFRM_USERPOLICY_BLOCK : XFRM_USERPOLICY_ACCEPT;
--	up->out = net->xfrm.policy_default & XFRM_POL_DEFAULT_OUT ?
--			XFRM_USERPOLICY_BLOCK : XFRM_USERPOLICY_ACCEPT;
-+	up->in = net->xfrm.policy_default[XFRM_POLICY_IN];
-+	up->fwd = net->xfrm.policy_default[XFRM_POLICY_FWD];
-+	up->out = net->xfrm.policy_default[XFRM_POLICY_OUT];
- 
- 	nlmsg_end(skb, nlh);
- 
-@@ -1996,26 +1993,26 @@ static int xfrm_notify_userpolicy(struct net *net)
- 	return err;
- }
- 
-+static bool xfrm_userpolicy_is_valid(__u8 policy)
-+{
-+	return policy == XFRM_USERPOLICY_BLOCK ||
-+	       policy == XFRM_USERPOLICY_ACCEPT;
-+}
-+
- static int xfrm_set_default(struct sk_buff *skb, struct nlmsghdr *nlh,
- 			    struct nlattr **attrs)
+@@ -66,8 +71,13 @@ static int iomap_write_fifo(struct m_can_classdev *cdev, int offset,
+ 			    const void *val, size_t val_count)
  {
- 	struct net *net = sock_net(skb->sk);
- 	struct xfrm_userpolicy_default *up = nlmsg_data(nlh);
+ 	struct m_can_pci_priv *priv = cdev_to_priv(cdev);
++	void __iomem *dst = priv->base + offset;
  
--	if (up->in == XFRM_USERPOLICY_BLOCK)
--		net->xfrm.policy_default |= XFRM_POL_DEFAULT_IN;
--	else if (up->in == XFRM_USERPOLICY_ACCEPT)
--		net->xfrm.policy_default &= ~XFRM_POL_DEFAULT_IN;
-+	if (xfrm_userpolicy_is_valid(up->in))
-+		net->xfrm.policy_default[XFRM_POLICY_IN] = up->in;
+-	iowrite32_rep(priv->base + offset, val, val_count);
++	while (val_count--) {
++		iowrite32(*(unsigned int *)val, dst);
++		val += 4;
++		dst += 4;
++	}
  
--	if (up->fwd == XFRM_USERPOLICY_BLOCK)
--		net->xfrm.policy_default |= XFRM_POL_DEFAULT_FWD;
--	else if (up->fwd == XFRM_USERPOLICY_ACCEPT)
--		net->xfrm.policy_default &= ~XFRM_POL_DEFAULT_FWD;
-+	if (xfrm_userpolicy_is_valid(up->fwd))
-+		net->xfrm.policy_default[XFRM_POLICY_FWD] = up->fwd;
- 
--	if (up->out == XFRM_USERPOLICY_BLOCK)
--		net->xfrm.policy_default |= XFRM_POL_DEFAULT_OUT;
--	else if (up->out == XFRM_USERPOLICY_ACCEPT)
--		net->xfrm.policy_default &= ~XFRM_POL_DEFAULT_OUT;
-+	if (xfrm_userpolicy_is_valid(up->out))
-+		net->xfrm.policy_default[XFRM_POLICY_OUT] = up->out;
- 
- 	rt_genid_bump_all(net);
- 
-@@ -2045,13 +2042,9 @@ static int xfrm_get_default(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	}
- 
- 	r_up = nlmsg_data(r_nlh);
--
--	r_up->in = net->xfrm.policy_default & XFRM_POL_DEFAULT_IN ?
--			XFRM_USERPOLICY_BLOCK : XFRM_USERPOLICY_ACCEPT;
--	r_up->fwd = net->xfrm.policy_default & XFRM_POL_DEFAULT_FWD ?
--			XFRM_USERPOLICY_BLOCK : XFRM_USERPOLICY_ACCEPT;
--	r_up->out = net->xfrm.policy_default & XFRM_POL_DEFAULT_OUT ?
--			XFRM_USERPOLICY_BLOCK : XFRM_USERPOLICY_ACCEPT;
-+	r_up->in = net->xfrm.policy_default[XFRM_POLICY_IN];
-+	r_up->fwd = net->xfrm.policy_default[XFRM_POLICY_FWD];
-+	r_up->out = net->xfrm.policy_default[XFRM_POLICY_OUT];
- 	nlmsg_end(r_skb, r_nlh);
- 
- 	return nlmsg_unicast(net->xfrm.nlsk, r_skb, portid);
+ 	return 0;
+ }
 -- 
-2.33.0
+2.17.1
 
