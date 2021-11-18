@@ -2,207 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFC79455465
+	by mail.lfdr.de (Postfix) with ESMTP id 3C581455463
 	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 06:44:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243151AbhKRFrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 00:47:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37672 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243147AbhKRFrD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 00:47:03 -0500
-Received: from mail-ua1-x92c.google.com (mail-ua1-x92c.google.com [IPv6:2607:f8b0:4864:20::92c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58DBC061764;
-        Wed, 17 Nov 2021 21:44:03 -0800 (PST)
-Received: by mail-ua1-x92c.google.com with SMTP id w23so11218617uao.5;
-        Wed, 17 Nov 2021 21:44:03 -0800 (PST)
+        id S243144AbhKRFrD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 00:47:03 -0500
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:36280 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243139AbhKRFrB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 00:47:01 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FVy3FNnBFcKLJXcnpbtykq1xYntqBN9ieNbLU4C5z0g=;
-        b=aPBHEIevttwCR7gAlJqA1f8miBxmqcPxb6KqW6IroV5/071F9ACwBj8yPoviAhKsNk
-         36J3GaCSZnxFpUfa2/vpZrswUca40RvKY9NMyu2XMNDTM3XdCpvVrSksKivYNA5SXBcg
-         QV+vz7unBAPyINAnGNRkNFvmg7vMCtag6gEdo/S9d7Rk/UlXbN0jLPt2//Ct1diNs4JS
-         8YlNrh8845EfmTiSwJqMmVVZgVH+vU4zCbdsQziadigNKecp3NUhKS7FNOb8TyGpED7P
-         3n+Wg9N0Z3pAseB2hmRfX/1+bo2TdnVL048QX3Z6UEXzmRyH0aKGVTuIIfgaVflR3yb3
-         jNlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FVy3FNnBFcKLJXcnpbtykq1xYntqBN9ieNbLU4C5z0g=;
-        b=MSpN+Ia246niMtEU2sw3FVVFTFQ0XSUfNZDbJGA2Lw88QcXnYluyRZw59ncl1r9gnK
-         IaRdJQuizgDJPEOlRod1z9/veHBvrzzUI+p5l/OzBZ+vNeeHw92t2hPR+eb48tIF26tT
-         szh6DVtlHgSi12RXYvSvRJ72c1V8BfXVURNkPGuA8G0gKCtbPdVpfPhN3Ryf6Cd6pvHM
-         yMTnNP1/gglwPeWj4WdAxTY9suyuGsKKtcah1O0cRS+Sy/D255HAery/60tf3PnRqZT8
-         dfFxqR7w4D2DA/9+q6mh/OpPkxYtHpuGSlaaYnydayZOQpLea7OqGVHoIsaSFcUyRelw
-         A0lA==
-X-Gm-Message-State: AOAM53284TFBcyLpOrOnVSc1H8puR0as/uh4Nz2dGUPx23BMWn2p49cP
-        PZH1mhphwp/0X/S9z38f/p0rpt7laY8tl5U665SyCaBm
-X-Google-Smtp-Source: ABdhPJxcVUaUD0D5mqcyxovyXA/V3u0V9Tcr7bZUEiJPIEfG2nQM2mKdjhAzBbAhK7bm7V6AFI/Vv2NOb2cxxztZKCc=
-X-Received: by 2002:ab0:6942:: with SMTP id c2mr32580204uas.92.1637214242701;
- Wed, 17 Nov 2021 21:44:02 -0800 (PST)
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1637214243; x=1668750243;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Ay8ZR0PXuPKuC2XChYPhgWXqj53aNF7+Hv0kWWr0c7Q=;
+  b=ReLUDeQCH5zljNoP18vtcORCeEQTwjHU+oau26a1pbZuP3ZQ+cBiIoA7
+   ji+FcK59yF8nRScX0O7USDpf2ktb8S5Zq6PgOqtNb4Os2aYSYdpjR9z2O
+   hKMfa6cQSrDu+JSbDul6FrFf/pFHdijUWcKIMlyFE7DIScYGA1NfrGF4o
+   E=;
+X-IronPort-AV: E=Sophos;i="5.87,243,1631577600"; 
+   d="scan'208";a="157415215"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-39fdda15.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP; 18 Nov 2021 05:44:02 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2a-39fdda15.us-west-2.amazon.com (Postfix) with ESMTPS id EE30B41783;
+        Thu, 18 Nov 2021 05:44:00 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.26; Thu, 18 Nov 2021 05:44:00 +0000
+Received: from 88665a182662.ant.amazon.com.com (10.43.160.106) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.26; Thu, 18 Nov 2021 05:43:57 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <kuniyu@amazon.co.jp>, <benh@amazon.com>, <eric.dumazet@gmail.com>,
+        <kuni1840@gmail.com>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 net-next 12/13] af_unix: Replace the big lock with small locks.
+Date:   Thu, 18 Nov 2021 14:43:51 +0900
+Message-ID: <20211118054351.9907-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20211114012428.81743-13-kuniyu@amazon.co.jp>
+References: <20211114012428.81743-13-kuniyu@amazon.co.jp>
 MIME-Version: 1.0
-References: <CAA=hcWSRO7Khj8XZbq6fzA6sEN0urR4SeJZh2YcrGe6g8d9ZdA@mail.gmail.com>
-In-Reply-To: <CAA=hcWSRO7Khj8XZbq6fzA6sEN0urR4SeJZh2YcrGe6g8d9ZdA@mail.gmail.com>
-From:   Jupiter <jupiter.hce@gmail.com>
-Date:   Thu, 18 Nov 2021 16:43:26 +1100
-Message-ID: <CAA=hcWQSCmuWsVNcjeyS5BYY9pFQ12KUzozRY3i=9TnHkGsvMg@mail.gmail.com>
-Subject: Re: mwifiex_sdio and mwifiex failure
-To:     linux-wireless <linux-wireless@vger.kernel.org>
-Cc:     netdev@vger.kernel.org, Nishant Sarmukadam <nishants@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.106]
+X-ClientProxiedBy: EX13D18UWC003.ant.amazon.com (10.43.162.237) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+I'm resending this not to be missed because I sent this to myself by
+mistake..
+I'm sorry for bothering you.
 
-After debugging, I figured out why mwifiex failed and could not be
-recovered, but I don't understand why, appreciate anyone's kind
-advice.
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Date:   Sun, 14 Nov 2021 10:24:27 +0900
+> The hash table of AF_UNIX sockets is protected by the single lock.  This
+> patch replaces it with per-hash locks.
+[...]
+> +static void unix_table_double_lock(unsigned int hash1, unsigned int hash2)
+> +{
+> +	/* hash1 and hash2 is never the same because
+> +	 * one is between 0 and UNIX_HASH_SIZE - 1, and
+> +	 * another is between UNIX_HASH_SIZE and UNIX_HASH_SIZE * 2.
+> +	 */
+> +	if (hash1 > hash2)
+> +		swap(hash1, hash2);
+> +
+> +	spin_lock(&unix_table_locks[hash1]);
+> +	spin_lock_nested(&unix_table_locks[hash2], SINGLE_DEPTH_NESTING);
+> +}
+> +
+> +static void unix_table_double_unlock(unsigned int hash1, unsigned int hash2)
+> +{
+> +	spin_unlock(&unix_table_locks[hash1]);
+> +	spin_unlock(&unix_table_locks[hash2]);
+> +}
 
-I have both mwifiex_sdio and mwifiex modules installed during kernel
-booting, here is how I manually made it failure:
+The status is "Changes Requested" on patchwork because of some newly added
+sparse warnings.  There are two kinds of warnings.  One is about
+unix_table_double_lock/unlock() and the other is about unix_seq_start/stop().
 
-# lsmod
-Module                  Size  Used by
-mwifiex_sdio           36864  0
-mwifiex               278528  1 mwifiex_sdio
-option                 45056  0
-usb_wwan               20480  1 option
-usbserial              36864  2 option,usb_wwan
-evbug                  16384  0
+https://patchwork.hopto.org/static/nipa/579645/12617773/build_32bit/summary
 
-# ifconfig
-mlan0     Link encap:Ethernet  HWaddr D4:CA:6E:A4:E9:D4
-          inet addr:192.168.0.102  Bcast:192.168.0.255  Mask:255.255.255.0
-          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
-          RX packets:107 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:113 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000
-          RX bytes:13059 (12.7 KiB)  TX bytes:13989 (13.6 KiB)
-
-Now I made it failure:
-
-# modprobe -r mwifiex_sdio
-[ 1609.691798] mwifiex_sdio mmc0:0001:1: info: shutdown mwifiex...
-[ 1609.774118] mwifiex_sdio mmc0:0001:1: PREP_CMD: card is removed
-[ 1610.019431] mwifiex_sdio mmc0:0001:1: deleting the crypto keys
-
-# lsmod
-Module                  Size  Used by
-option                 45056  0
-usb_wwan               20480  1 option
-usbserial              36864  2 option,usb_wwan
-evbug                  16384  0
-
-The WiFi interface was gone.
-
-# modprobe mwifiex_sdio
-[ 1634.073391] mwifiex_sdio mmc0:0001:1: WLAN FW already running! Skip FW dnld
-[ 1634.080781] mwifiex_sdio mmc0:0001:1: WLAN FW is active
-
-[ 1644.176847] mwifiex_sdio mmc0:0001:1: mwifiex_cmd_timeout_func:
-Timeout cmd id = 0xa9, act = 0x0
-[ 1644.186272] mwifiex_sdio mmc0:0001:1: num_data_h2c_failure = 0
-[ 1644.192181] mwifiex_sdio mmc0:0001:1: num_cmd_h2c_failure = 0
-[ 1644.198224] mwifiex_sdio mmc0:0001:1: is_cmd_timedout = 1
-[ 1644.203691] mwifiex_sdio mmc0:0001:1: num_tx_timeout = 0
-[ 1644.209181] mwifiex_sdio mmc0:0001:1: last_cmd_index = 1
-[ 1644.214563] mwifiex_sdio mmc0:0001:1: last_cmd_id: 00 00 a9 00 00
-00 00 00 00 00
-[ 1644.222127] mwifiex_sdio mmc0:0001:1: last_cmd_act: 00 00 00 00 00
-00 00 00 00 00
-[ 1644.229767] mwifiex_sdio mmc0:0001:1: last_cmd_resp_index = 0
-[ 1644.235576] mwifiex_sdio mmc0:0001:1: last_cmd_resp_id: 00 00 00 00
-00 00 00 00 00 00
-[ 1644.243565] mwifiex_sdio mmc0:0001:1: last_event_index = 0
-[ 1644.249200] mwifiex_sdio mmc0:0001:1: last_event: 00 00 00 00 00 00
-00 00 00 00
-[ 1644.256667] mwifiex_sdio mmc0:0001:1: data_sent=0 cmd_sent=0
-[ 1644.262386] mwifiex_sdio mmc0:0001:1: ps_mode=0 ps_state=0
-[ 1644.277044] mwifiex_sdio mmc0:0001:1: info: _mwifiex_fw_dpc:
-unregister device
-
-That made mwifiex_sdio failed and no longer be able to be recovered
-
-# lsmod
-Module                  Size  Used by
-mwifiex_sdio           36864  0
-mwifiex               278528  1 mwifiex_sdio
-option                 45056  0
-usb_wwan               20480  1 option
-usbserial              36864  2 option,usb_wwan
-evbug                  16384  0
-
-# ifconfig
-lo        Link encap:Local Loopback
-          inet addr:127.0.0.1  Mask:255.0.0.0
-          UP LOOPBACK RUNNING  MTU:65536  Metric:1
-          RX packets:102 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:102 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000
-          RX bytes:8222 (8.0 KiB)  TX bytes:8222 (8.0 KiB)
-
-Is it because restoring mwifiex_sdio could not restore crypto keys?
-
-Could you please advise why running modprobe mwifiex_sdio is not working?
-
-Thank you very much.
-
-Kind regards,
-
-- jupiter
+---8<---
++../net/unix/af_unix.c:159:13: warning: context imbalance in 'unix_table_double_lock' - wrong count at exit
++../net/unix/af_unix.c:172:13: warning: context imbalance in 'unix_table_double_unlock' - unexpected unlock
++../net/unix/af_unix.c:1258:13: warning: context imbalance in 'unix_state_double_lock' - wrong count at exit
++../net/unix/af_unix.c:1276:17: warning: context imbalance in 'unix_state_double_unlock' - unexpected unlock
++../net/unix/af_unix.c:1579:9: warning: context imbalance in 'unix_stream_connect' - different lock contexts for basic block
++../net/unix/af_unix.c:1944:25: warning: context imbalance in 'unix_dgram_sendmsg' - unexpected unlock
++../net/unix/af_unix.c:3255:28: warning: context imbalance in 'unix_next_socket' - unexpected unlock
++../net/unix/af_unix.c:3284:28: warning: context imbalance in 'unix_seq_stop' - unexpected unlock
+---8<---
 
 
-On 11/13/21, Jupiter <jupiter.hce@gmail.com> wrote:
-> Hi,
->
-> I am work on a Linux embedded IoT device including both 4G LTE and
-> WiFi modems, I use linux-firmware-sd8801 and Marvell driver
-> mwifiex_sdio.ko and mwifiex.ko drivers, it works well for a couple of
-> days, then the WiFi failed which could be caused by low WiFi signal
-> strength level, but that should not cause the mwifiex_sdio errors.
-> While the connman was able to switch from WiFi connection to 4G LTE
-> connection automatically, following error messages popped up in
-> console and kernel logs every second to consume lots of resources
-> despite the 4G LTE being connected and worked perfectly.
-> ...............
-> [924785.415505] mwifiex_sdio mmc0:0001:1: PREP_CMD: card is removed
-> [924807.818102] mwifiex_sdio mmc0:0001:1: Ignore scan. Card removed or
-> firmware in bad state
-> [924808.406775] mwifiex_sdio mmc0:0001:1: PREP_CMD: card is removed
-> ...........
->
-> I am not quite sure if the error message indicated the mwifiex_sdio or
-> kernel crash or not, but given the 4G LTE was connected fine, the
-> device was still in good operation, I don't think it is a kernel crash
-> sign.
->
-> My questions are:
->
-> (a) Is there any way to recover the mwifiex_sdio or reset
-> mwifiex_sdio? I tried modprobe -r mwifiex_sdio, modprobe mwifiex_sdio
-> and modprobe mwifiex, but that crashed my debug console despite the
-> device was still in good operation. I could only make it recover by
-> rebooting the device which was not a good solution as it was operated
-> 24 / 7.
->
-> (b) If there is no way to recover or reset mwifiex_sdio, are there any
-> methods to suppress mwifiex_sdio endless error messages to both debug
-> console and to kernel logs?
->
-> Thank you.
->
-> Kind regards,
->
-> - jh
->
+We can avoid the former by adding these annotations, but it seems a little
+bit redundant.  Also, there has already been the same kind of warnings for
+unix_state_double_lock() without sparse annotations.
+
+---8<---
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 89a844e7141b..b26a2ea26029 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -157,6 +157,8 @@ static unsigned int unix_abstract_hash(struct sockaddr_un *sunaddr,
+ }
+ 
+ static void unix_table_double_lock(unsigned int hash1, unsigned int hash2)
++	__acquires(unix_table_locks)
++	__acquires(unix_table_locks)
+ {
+ 	/* hash1 and hash2 is never the same because
+ 	 * one is between 0 and UNIX_HASH_SIZE - 1, and
+@@ -170,6 +172,8 @@ static void unix_table_double_lock(unsigned int hash1, unsigned int hash2)
+ }
+ 
+ static void unix_table_double_unlock(unsigned int hash1, unsigned int hash2)
++	__releases(unix_table_locks)
++	__releases(unix_table_locks)
+ {
+ 	spin_unlock(&unix_table_locks[hash1]);
+ 	spin_unlock(&unix_table_locks[hash2]);
+---8<---
 
 
---
-"A man can fail many times, but he isn't a failure until he begins to
-blame somebody else."
--- John Burroughs
+[...]
+> @@ -3216,7 +3235,7 @@ static struct sock *unix_next_socket(struct seq_file *seq,
+>  				     struct sock *sk,
+>  				     loff_t *pos)
+>  {
+> -	unsigned long bucket;
+> +	unsigned long bucket = get_bucket(*pos);
+>  
+>  	while (sk > (struct sock *)SEQ_START_TOKEN) {
+>  		sk = sk_next(sk);
+> @@ -3227,12 +3246,13 @@ static struct sock *unix_next_socket(struct seq_file *seq,
+>  	}
+>  
+>  	do {
+> +		spin_lock(&unix_table_locks[bucket]);
+>  		sk = unix_from_bucket(seq, pos);
+>  		if (sk)
+>  			return sk;
+>  
+>  next_bucket:
+> -		bucket = get_bucket(*pos) + 1;
+> +		spin_unlock(&unix_table_locks[bucket++]);
+>  		*pos = set_bucket_offset(bucket, 1);
+>  	} while (bucket < ARRAY_SIZE(unix_socket_table));
+>  
+> @@ -3240,10 +3260,7 @@ static struct sock *unix_next_socket(struct seq_file *seq,
+>  }
+>  
+>  static void *unix_seq_start(struct seq_file *seq, loff_t *pos)
+> -	__acquires(unix_table_lock)
+>  {
+> -	spin_lock(&unix_table_lock);
+> -
+>  	if (!*pos)
+>  		return SEQ_START_TOKEN;
+>  
+> @@ -3260,9 +3277,11 @@ static void *unix_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+>  }
+>  
+>  static void unix_seq_stop(struct seq_file *seq, void *v)
+> -	__releases(unix_table_lock)
+>  {
+> -	spin_unlock(&unix_table_lock);
+> +	struct sock *sk = v;
+> +
+> +	if (sk)
+> +		spin_unlock(&unix_table_locks[sk->sk_hash]);
+>  }
+>  
+>  static int unix_seq_show(struct seq_file *seq, void *v)
+[...]
+
+The latter happens by replacing the big lock with per-hash locks.
+It moves spin_lock() from unix_seq_start() to unix_next_socket().
+unix_next_socket() keeps holding a lock until it returns NULL, so Sparse
+cannot understand the logic.  At least, we can add __releases annotation in
+unix_seq_stop(), but it rather increases warnings.  And tcp_seq_stop() does
+not have annotations.
+
+Are these warnings acceptable, or is there any better way?
