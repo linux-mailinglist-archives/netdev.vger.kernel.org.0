@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B44C7455A4E
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 12:29:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 757B0455A50
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 12:29:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344010AbhKRLb7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 06:31:59 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:58932 "EHLO
+        id S1344097AbhKRLcD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 06:32:03 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:32500 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1343683AbhKRL3y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 06:29:54 -0500
+        by vger.kernel.org with ESMTP id S1343777AbhKRLaB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 06:30:01 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637234814;
+        s=mimecast20190719; t=1637234820;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=TOfVinV1OwrahdFosss8ebQPODUryvfBCcrymxnr+48=;
-        b=RKp+ka902JSCl1FWj+WchQta33qycBMeGxN+y1SvoR5OWx8/l90m47n21BS66hgLSi+n69
-        bqOQPxRAZFdFGAxHLKrt8CpRa2VNUKPzB4/RzL/qNzTl3FUBxwnAFunYVDNFKyLtDMBRZd
-        0zE8+nZea4BRzbmuJ9HcspzMk5BIuLQ=
+        bh=trNwr7SPOVoQqmM8yn9ktA9tP84bxy9JXX7Q0ADRDic=;
+        b=huVc9GXmlpQsMFxxdT5VzNwEjO6pnzh96RpNiOoBBuyQYjWJ/UEj8MtKua5WIfDP867Q/h
+        xSFFFXfMmqaczaxhNvhGZp9wH5qwUSbVhD64aoWVD9ZHS5A3ho3dW6hcuT/CZMzlFfgWjT
+        PfMoJOOuoDjpcAr3gAvsbq5YBvDcDDg=
 Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
  [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-281-lX_AMYJIPa65JCWiZ3uI2w-1; Thu, 18 Nov 2021 06:26:53 -0500
-X-MC-Unique: lX_AMYJIPa65JCWiZ3uI2w-1
-Received: by mail-ed1-f72.google.com with SMTP id b15-20020aa7c6cf000000b003e7cf0f73daso4942553eds.22
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 03:26:53 -0800 (PST)
+ us-mta-473-FTzmLfGBMlaDOurPOjn14w-1; Thu, 18 Nov 2021 06:26:59 -0500
+X-MC-Unique: FTzmLfGBMlaDOurPOjn14w-1
+Received: by mail-ed1-f72.google.com with SMTP id w4-20020aa7cb44000000b003e7c0f7cfffso5017123edt.2
+        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 03:26:59 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TOfVinV1OwrahdFosss8ebQPODUryvfBCcrymxnr+48=;
-        b=LVkZAblIxvLHIvvOEianMm1JIiKSroHnEkVgFywlCqGuqS/26ol8FK6I+dNlHn7aRi
-         zKAAkU9573KQIYX+NdZ9dtj8tp6AFvu9xTXzFIrIs5M0jHOvreztBpRt8r5n8AILq1qB
-         0BHTimXwM4YZ0YcSJb70GuHTi+AJZVtES5/BuJNtDNWdPqwKSyWKHQPz5BxzaoWWhcdj
-         nY0rjPyNbYI9/KD0fgqkdXlxXwPNz4FMMMXAckl0SSy0hbYzx65FHBy/X9+vImbrpVBH
-         TQFeXgADNk5qSICSMTgijff/Ri85n4syMAtnOiJmUy64LBtGreTwuCst9mF9hf3CSUVe
-         AAtw==
-X-Gm-Message-State: AOAM531keZsX9RNk80LY15ZRnQPCvOIueCNQIof7RweesXcxK7ckpsDD
-        GNOVMZU1Sh70sj1NRy2ukuypNb76TsJ1hbXzjwLYO8wNNijpsLaH/nAWMV8pWNsIBQEpqPvzvNF
-        ZCOCz1sTalQLuPnES
-X-Received: by 2002:a05:6402:84a:: with SMTP id b10mr10356566edz.285.1637234811523;
-        Thu, 18 Nov 2021 03:26:51 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxdhtrH0x0C1LuZPAcXgxWcJKClEgNx7h9ri68aOBwa0f7ej6zn7komo/FHcd/h2kPyI6qfSA==
-X-Received: by 2002:a05:6402:84a:: with SMTP id b10mr10356500edz.285.1637234811081;
-        Thu, 18 Nov 2021 03:26:51 -0800 (PST)
+        bh=trNwr7SPOVoQqmM8yn9ktA9tP84bxy9JXX7Q0ADRDic=;
+        b=Q4ofx/+D9eBD36VAzDgJVFSM2ZQ3h8EeYFxgnXrmZoPqItgn4JXB/i1m1JoZXLJk+X
+         3F+07qN+cZ0JX0qIgidq9QrzVuM0Uk4KHkEkiTIxeZeL5rfqiNsYNuVo2nUYWkwcyK7M
+         OGXCiruL+L5g+zgigfExxZzR5hXAD0GGgu3n2s+o8NQMHsF+ktefM1vcl4c3Sek18n86
+         UdFR/hJd9ohGCEdIXFHXIx7CmhD1Xp0cr7Am0llY7PCAskg9n8SjtTW2hEc9X1PbzBHN
+         eSgOQRze5Gqfw0l6Qzjt3qtMRiEwVI9ErkCim2wRuu2klzS/Q2lYtE7uZxrATw2bqe5C
+         mi/g==
+X-Gm-Message-State: AOAM5320fPkN6rTyNfLFssH/LJbXTA8Bw0FWXwElArVL4uRS/4WH0Z62
+        2A1PrIN0LxMTsDvsAf94d8RcV74Ek3TOG7Hd/zf4w4X8sWuRdtYkpVlKJZbIcIGmKJYPH//z3Yo
+        xYjAoXXSBb0zK4Bws
+X-Received: by 2002:a17:906:579a:: with SMTP id k26mr33154972ejq.250.1637234817398;
+        Thu, 18 Nov 2021 03:26:57 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxKJHJ6x9ROA7IxQZgLLzVIxfF3mQIcI90cAxeAkLLzDgP1YWIht9JazeROo4R4KRo8iwygmg==
+X-Received: by 2002:a17:906:579a:: with SMTP id k26mr33154947ejq.250.1637234817188;
+        Thu, 18 Nov 2021 03:26:57 -0800 (PST)
 Received: from krava.redhat.com (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id y17sm170797edd.31.2021.11.18.03.26.50
+        by smtp.gmail.com with ESMTPSA id v3sm1613657edc.69.2021.11.18.03.26.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Nov 2021 03:26:50 -0800 (PST)
+        Thu, 18 Nov 2021 03:26:56 -0800 (PST)
 From:   Jiri Olsa <jolsa@redhat.com>
 X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
@@ -61,9 +61,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>
-Subject: [PATCH bpf-next 19/29] bpf: Add support to attach trampolines with multiple IDs
-Date:   Thu, 18 Nov 2021 12:24:45 +0100
-Message-Id: <20211118112455.475349-20-jolsa@kernel.org>
+Subject: [PATCH bpf-next 20/29] bpf: Add support for tracing multi link
+Date:   Thu, 18 Nov 2021 12:24:46 +0100
+Message-Id: <20211118112455.475349-21-jolsa@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211118112455.475349-1-jolsa@kernel.org>
 References: <20211118112455.475349-1-jolsa@kernel.org>
@@ -73,469 +73,145 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding support to attach trampolines with multiple IDs.
+Adding new link to allow to attach program to multiple
+function BTF IDs.
 
-This patch adds support to bpf_tramp_attach function to
-attach given program to bpf_tramp_id object that holds
-multiple BTF function IDs.
+New fields are added to bpf_attr::link_create to pass
+array of BTF IDs:
 
-The process of attaching in bpf_tramp_attach is as follows:
+  struct {
+    __aligned_u64   btf_ids;        /* addresses to attach */
+    __u32           btf_ids_cnt;    /* addresses count */
+  } multi;
 
-  - IDs in bpf_tramp_id object are sorted out to several new
-    bpf_tramp_id objects based on number of arguments of each
-    ID - so we end up with up to 6 bpf_tramp_id objects, that
-    we will create or find suitable trampoline for
+The new link code will load these IDs into bpf_tramp_id
+and resolve their ips.
 
-  - separating function IDs that have same number of arguments
-    save us troubles of handling different argument counts
-    within one trampoline
+The resolve itself is done as per Andrii's suggestion:
 
-  - now for each such bpf_tramp_id object we do following:
+  - lookup all names for given IDs
+  - store and sort them by name
+  - go through all kallsyms symbols and use bsearch
+    to find it in provided names
+  - if name is found, store the address for the name
+  - resort the names array based on ID
 
-     * search existing trampolines to find match or intersection
+If there are multi symbols of the same name the first one
+will be used to resolve the address.
 
-     * if there's full match on IDs, we add program to existing
-       trampoline and we are done
-
-     * if there's intersection with existing trampoline,
-       we split it and add new program to the common part,
-       the rest of the IDs are attached to new trampoline
-
-  - we keep trampoline_table as place holder for all trampolines,
-    (while the has works only for single ID trampolines) so in case
-    there is no multi-id trampoline defined, we still use the fast
-    hash trampoline lookup
-
-The bpf_tramp_attach assumes ID array is coming in sorted so it's
-possible to run bsearch on it to do all the needed searches.
-
-The splitting of the trampoline use the fact that we carry
-'bpf_tramp_attach' object for each bpf_program, so when we split
-trampoline that the program is attached to, we just add new
-'bpf_tramp_node' object to the program's attach 'nodes'. This way
-we keep track of all program's trampolines and it will be properly
-detached when the program goes away.
-
-The splitting of the trampoline is done with following steps:
-
-   - lock the trampoline
-   - unregister trampoline
-   - alloc the duplicate, which means that for all attached programs
-     of the original trampoline we create new bpf_tramp_node objects
-     and add them to these programs' attach objects
-   - then we assign new IDs (common and the rest) to both (original
-     and the duplicated) trampolines
-   - register both trampolines
-   - unlock the original trampoline
-
-This patch only adds bpf_tramp_attach support to attach multiple
-ID bpf_tramp_id object. The actual user interface for that comes
-in following patch.
-
-Now when each call to bpf_tramp_attach can change any program's attach
-object, we need to take trampoline_mutex in both bpf_tramp_attach_link
-and bpf_tramp_attach_unlink functions. Perhaps we could add new lock
-to bpf_tramp_attach object to get rid of single lock for all.
+The new link will pass them to the bpf_tramp_attach that
+does all the work of attaching.
 
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- include/linux/bpf.h     |  12 +-
- kernel/bpf/trampoline.c | 717 +++++++++++++++++++++++++++++++++++++---
- 2 files changed, 674 insertions(+), 55 deletions(-)
+ include/uapi/linux/bpf.h       |   5 +
+ kernel/bpf/syscall.c           | 252 +++++++++++++++++++++++++++++++++
+ kernel/kallsyms.c              |   2 +-
+ tools/include/uapi/linux/bpf.h |   5 +
+ 4 files changed, 263 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 04ada1d2495e..6ceb3bb39e1d 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -24,6 +24,13 @@
- #include <linux/percpu-refcount.h>
- #include <linux/bpfptr.h>
- #include <linux/refcount.h>
-+#ifdef CONFIG_FUNCTION_TRACER
-+#ifndef CC_USING_FENTRY
-+#define CC_USING_FENTRY
-+#endif
-+#endif
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index ca05e35e0478..a03a5bc1d141 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -1009,6 +1009,7 @@ enum bpf_link_type {
+ 	BPF_LINK_TYPE_NETNS = 5,
+ 	BPF_LINK_TYPE_XDP = 6,
+ 	BPF_LINK_TYPE_PERF_EVENT = 7,
++	BPF_LINK_TYPE_TRACING_MULTI = 8,
+ 
+ 	MAX_BPF_LINK_TYPE,
+ };
+@@ -1470,6 +1471,10 @@ union bpf_attr {
+ 				 */
+ 				__u64		bpf_cookie;
+ 			} perf_event;
++			struct {
++				__aligned_u64	btf_ids;	/* addresses to attach */
++				__u32		btf_ids_cnt;	/* addresses count */
++			} multi;
+ 		};
+ 	} link_create;
+ 
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index bfbd81869818..e6f48dc9dd48 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -32,6 +32,9 @@
+ #include <linux/rcupdate_trace.h>
+ #include <linux/memcontrol.h>
+ #include <linux/btf_ids.h>
 +#include <linux/ftrace.h>
-+#include <linux/types.h>
- 
- struct bpf_verifier_env;
- struct bpf_verifier_log;
-@@ -703,6 +710,9 @@ struct bpf_trampoline {
- 	struct {
- 		struct btf_func_model model;
- 		bool ftrace_managed;
-+#ifdef CONFIG_FUNCTION_TRACER
-+		struct ftrace_ops ops;
-+#endif
- 	} func;
- 	/* if !NULL this is BPF_PROG_TYPE_EXT program that extends another BPF
- 	 * program by replacing one of its functions. id->addr is the address
-@@ -763,7 +773,6 @@ struct bpf_tramp_id *bpf_tramp_id_single(const struct bpf_prog *tgt_prog,
- 					 struct bpf_attach_target_info *tgt_info);
- int bpf_trampoline_link_prog(struct bpf_tramp_node *node, struct bpf_trampoline *tr);
- int bpf_trampoline_unlink_prog(struct bpf_tramp_node *node, struct bpf_trampoline *tr);
--void bpf_trampoline_put(struct bpf_trampoline *tr);
- 
- struct bpf_tramp_attach *bpf_tramp_attach(struct bpf_tramp_id *id,
- 					  struct bpf_prog *tgt_prog,
-@@ -831,7 +840,6 @@ static inline struct bpf_trampoline *bpf_trampoline_get(struct bpf_tramp_id *id,
- {
- 	return ERR_PTR(-EOPNOTSUPP);
- }
--static inline void bpf_trampoline_put(struct bpf_trampoline *tr) {}
- #define DEFINE_BPF_DISPATCHER(name)
- #define DECLARE_BPF_DISPATCHER(name)
- #define BPF_DISPATCHER_FUNC(name) bpf_dispatcher_nop_func
-diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-index 39600fb78c9e..7a9e3126e256 100644
---- a/kernel/bpf/trampoline.c
-+++ b/kernel/bpf/trampoline.c
-@@ -12,6 +12,8 @@
- #include <linux/module.h>
- #include <linux/static_call.h>
- #include <linux/bpf_verifier.h>
++#include <linux/sort.h>
 +#include <linux/bsearch.h>
-+#include <linux/minmax.h>
  
- /* dummy _ops. The verifier will operate on target program's ops. */
- const struct bpf_verifier_ops bpf_extension_verifier_ops = {
-@@ -24,8 +26,9 @@ const struct bpf_prog_ops bpf_extension_prog_ops = {
- #define TRAMPOLINE_TABLE_SIZE (1 << TRAMPOLINE_HASH_BITS)
- 
- static struct hlist_head trampoline_table[TRAMPOLINE_TABLE_SIZE];
-+static int nr_bpf_trampoline_multi;
- 
--/* serializes access to trampoline_table */
-+/* serializes access to trampoline_table, nr_bpf_trampoline_multi */
- static DEFINE_MUTEX(trampoline_mutex);
- 
- void *bpf_jit_alloc_exec_page(void)
-@@ -62,15 +65,12 @@ void bpf_image_ksym_del(struct bpf_ksym *ksym)
- 
- static bool bpf_tramp_id_is_multi(struct bpf_tramp_id *id)
- {
--	return id->cnt > 1;
-+	return id && id->cnt > 1;
- }
- 
- static u64 bpf_tramp_id_key(struct bpf_tramp_id *id)
- {
--	if (bpf_tramp_id_is_multi(id))
--		return (u64) &id;
--	else
--		return ((u64) id->obj_id << 32) | id->id[0];
-+	return ((u64) id->obj_id << 32) | id->id[0];
- }
- 
- bool bpf_tramp_id_is_empty(struct bpf_tramp_id *id)
-@@ -151,26 +151,14 @@ void bpf_tramp_id_put(struct bpf_tramp_id *id)
- 	kfree(id);
- }
- 
--static struct bpf_trampoline *bpf_trampoline_get(struct bpf_tramp_id *id)
-+static void bpf_trampoline_init(struct bpf_trampoline *tr, struct bpf_tramp_id *id)
- {
--	struct bpf_trampoline *tr;
- 	struct hlist_head *head;
- 	u64 key;
- 	int i;
- 
- 	key = bpf_tramp_id_key(id);
--	mutex_lock(&trampoline_mutex);
- 	head = &trampoline_table[hash_64(key, TRAMPOLINE_HASH_BITS)];
--	hlist_for_each_entry(tr, head, hlist) {
--		if (bpf_tramp_id_is_equal(tr->id, id)) {
--			refcount_inc(&tr->refcnt);
--			goto out;
--		}
--	}
--	tr = kzalloc(sizeof(*tr), GFP_KERNEL);
--	if (!tr)
--		goto out;
--
- 	tr->id = bpf_tramp_id_get(id);
- 	INIT_HLIST_NODE(&tr->hlist);
- 	hlist_add_head(&tr->hlist, head);
-@@ -178,11 +166,39 @@ static struct bpf_trampoline *bpf_trampoline_get(struct bpf_tramp_id *id)
- 	mutex_init(&tr->mutex);
- 	for (i = 0; i < BPF_TRAMP_MAX; i++)
- 		INIT_HLIST_HEAD(&tr->progs_hlist[i]);
--out:
--	mutex_unlock(&trampoline_mutex);
-+	if (bpf_tramp_id_is_multi(id))
-+		nr_bpf_trampoline_multi++;
-+}
-+
-+static struct bpf_trampoline *bpf_trampoline_alloc(struct bpf_tramp_id *id)
-+{
-+	struct bpf_trampoline *tr;
-+
-+	tr = kzalloc(sizeof(*tr), GFP_KERNEL);
-+	if (!tr)
-+		return NULL;
-+
-+	bpf_trampoline_init(tr, id);
- 	return tr;
- }
- 
-+static struct bpf_trampoline *bpf_trampoline_get(struct bpf_tramp_id *id)
-+{
-+	struct bpf_trampoline *tr;
-+	struct hlist_head *head;
-+	u64 key;
-+
-+	key = bpf_tramp_id_key(id);
-+	head = &trampoline_table[hash_64(key, TRAMPOLINE_HASH_BITS)];
-+	hlist_for_each_entry(tr, head, hlist) {
-+		if (bpf_tramp_id_is_equal(tr->id, id)) {
-+			refcount_inc(&tr->refcnt);
-+			return tr;
-+		}
-+	}
-+	return bpf_trampoline_alloc(id);
-+}
-+
- static int bpf_trampoline_module_get(struct bpf_trampoline *tr)
- {
- 	struct module *mod;
-@@ -220,6 +236,9 @@ static int unregister_fentry(struct bpf_trampoline *tr, void *old_addr)
- 	void *ip = tr->id->addr[0];
- 	int ret;
- 
-+	if (bpf_tramp_id_is_multi(tr->id))
-+		return unregister_ftrace_direct_multi(&tr->func.ops, (long) old_addr);
-+
- 	if (tr->func.ftrace_managed)
- 		ret = unregister_ftrace_direct((long)ip, (long)old_addr);
- 	else
-@@ -235,6 +254,9 @@ static int modify_fentry(struct bpf_trampoline *tr, void *old_addr, void *new_ad
- 	void *ip = tr->id->addr[0];
- 	int ret;
- 
-+	if (bpf_tramp_id_is_multi(tr->id))
-+		return modify_ftrace_direct_multi(&tr->func.ops, (long) new_addr);
-+
- 	if (tr->func.ftrace_managed)
- 		ret = modify_ftrace_direct((long)ip, (long)old_addr, (long)new_addr);
- 	else
-@@ -248,6 +270,9 @@ static int register_fentry(struct bpf_trampoline *tr, void *new_addr)
- 	void *ip = tr->id->addr[0];
- 	int ret;
- 
-+	if (bpf_tramp_id_is_multi(tr->id))
-+		return register_ftrace_direct_multi(&tr->func.ops, (long) new_addr);
-+
- 	ret = is_ftrace_location(ip);
- 	if (ret < 0)
- 		return ret;
-@@ -435,17 +460,19 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
- 	struct bpf_tramp_progs *tprogs;
- 	u32 flags = BPF_TRAMP_F_RESTORE_REGS;
- 	bool ip_arg = false;
--	int err, total;
-+	int err = 0, total;
- 
- 	tprogs = bpf_trampoline_get_progs(tr, &total, &ip_arg);
- 	if (IS_ERR(tprogs))
- 		return PTR_ERR(tprogs);
- 
- 	if (total == 0) {
--		err = unregister_fentry(tr, tr->cur_image->image);
--		bpf_tramp_image_put(tr->cur_image);
--		tr->cur_image = NULL;
--		tr->selector = 0;
-+		if (tr->cur_image) {
-+			err = unregister_fentry(tr, tr->cur_image->image);
-+			bpf_tramp_image_put(tr->cur_image);
-+			tr->cur_image = NULL;
-+			tr->selector = 0;
-+		}
- 		goto out;
- 	}
- 
-@@ -456,8 +483,11 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
- 	}
- 
- 	if (tprogs[BPF_TRAMP_FEXIT].nr_progs ||
--	    tprogs[BPF_TRAMP_MODIFY_RETURN].nr_progs)
-+	    tprogs[BPF_TRAMP_MODIFY_RETURN].nr_progs) {
- 		flags = BPF_TRAMP_F_CALL_ORIG | BPF_TRAMP_F_SKIP_FRAME;
-+		if (bpf_tramp_id_is_multi(tr->id))
-+			flags |= BPF_TRAMP_F_ORIG_STACK;
-+	}
- 
- 	if (ip_arg)
- 		flags |= BPF_TRAMP_F_IP_ARG;
-@@ -582,29 +612,29 @@ int bpf_trampoline_unlink_prog(struct bpf_tramp_node *node, struct bpf_trampolin
+ #define IS_FD_ARRAY(map) ((map)->map_type == BPF_MAP_TYPE_PERF_EVENT_ARRAY || \
+ 			  (map)->map_type == BPF_MAP_TYPE_CGROUP_ARRAY || \
+@@ -2905,6 +2908,251 @@ static int bpf_tracing_prog_attach(struct bpf_prog *prog,
  	return err;
  }
  
--void bpf_trampoline_put(struct bpf_trampoline *tr)
-+static void bpf_trampoline_put(struct bpf_trampoline *tr)
- {
- 	if (!tr)
- 		return;
--	mutex_lock(&trampoline_mutex);
- 	if (!refcount_dec_and_test(&tr->refcnt))
--		goto out;
-+		return;
- 	WARN_ON_ONCE(mutex_is_locked(&tr->mutex));
- 	if (WARN_ON_ONCE(!hlist_empty(&tr->progs_hlist[BPF_TRAMP_FENTRY])))
--		goto out;
-+		return;
- 	if (WARN_ON_ONCE(!hlist_empty(&tr->progs_hlist[BPF_TRAMP_FEXIT])))
--		goto out;
-+		return;
- 	/* This code will be executed even when the last bpf_tramp_image
- 	 * is alive. All progs are detached from the trampoline and the
- 	 * trampoline image is patched with jmp into epilogue to skip
- 	 * fexit progs. The fentry-only trampoline will be freed via
- 	 * multiple rcu callbacks.
- 	 */
-+	if (bpf_tramp_id_is_multi(tr->id))
-+		nr_bpf_trampoline_multi--;
- 	hlist_del(&tr->hlist);
- 	bpf_tramp_id_put(tr->id);
-+	ftrace_free_filter(&tr->func.ops);
- 	kfree(tr);
--out:
--	mutex_unlock(&trampoline_mutex);
- }
- 
- static struct bpf_tramp_node *node_alloc(struct bpf_trampoline *tr, struct bpf_prog *prog)
-@@ -628,18 +658,442 @@ static void node_free(struct bpf_tramp_node *node)
- 	kfree(node);
- }
- 
--struct bpf_tramp_attach *bpf_tramp_attach(struct bpf_tramp_id *id,
--					  struct bpf_prog *tgt_prog,
--					  struct bpf_prog *prog)
-+static void bpf_func_model_nargs(struct btf_func_model *m, int nr_args)
-+{
-+	int i;
-+
-+	for (i = 0; i < nr_args; i++)
-+		m->arg_size[i] = 8;
-+	m->ret_size = 8;
-+	m->nr_args = nr_args;
-+}
-+
-+struct attach_args {
-+	int nr_args;
-+	struct bpf_prog *tgt_prog;
-+	struct bpf_prog *prog;
++struct bpf_tracing_multi_link {
++	struct bpf_link link;
++	enum bpf_attach_type attach_type;
++	struct bpf_tramp_attach *attach;
 +};
 +
-+static int bpf_trampoline_setup(struct bpf_trampoline *tr,
-+				struct attach_args *att)
++static void bpf_tracing_multi_link_release(struct bpf_link *link)
 +{
-+	struct bpf_tramp_id *id = tr->id;
++	struct bpf_prog *prog = link->prog;
++	struct bpf_tramp_attach *attach = prog->aux->attach;
 +
-+	if (bpf_tramp_id_is_multi(id)) {
-+		bpf_func_model_nargs(&tr->func.model, att->nr_args);
-+		return ftrace_set_filter_ips(&tr->func.ops, (long*) id->addr,
-+					     id->cnt, 0, 1);
-+	} else {
-+		return bpf_check_attach_model(att->prog, att->tgt_prog,
-+					      id->id[0], &tr->func.model);
-+	}
++	WARN_ON_ONCE(bpf_tramp_attach_unlink(attach));
++
++	if (prog->type != BPF_PROG_TYPE_EXT)
++		prog->aux->attach = NULL;
++	bpf_tramp_detach(attach);
 +}
 +
-+static int
-+bpf_trampoline_create(struct bpf_tramp_attach *attach,
-+		      struct bpf_tramp_id *id, struct attach_args *att)
- {
- 	struct bpf_trampoline *tr = NULL;
--	struct bpf_tramp_attach *attach;
- 	struct bpf_tramp_node *node;
- 	int err;
- 
--	attach = kzalloc(sizeof(*attach), GFP_KERNEL);
--	if (!attach)
--		return ERR_PTR(-ENOMEM);
-+	tr = bpf_trampoline_alloc(id);
-+	if (!tr) {
-+		err = -ENOMEM;
-+		goto out;
-+	}
++static void bpf_tracing_multi_link_dealloc(struct bpf_link *link)
++{
++	struct bpf_tracing_multi_link *tr_link =
++		container_of(link, struct bpf_tracing_multi_link, link);
 +
-+	err = bpf_trampoline_setup(tr, att);
-+	if (err)
-+		goto out;
++	kfree(tr_link);
++}
 +
-+	node = node_alloc(tr, att->prog);
-+	if (!node) {
-+		err = -ENOMEM;
-+		goto out;
-+	}
++static void bpf_tracing_multi_link_show_fdinfo(const struct bpf_link *link,
++					       struct seq_file *seq)
++{
++	struct bpf_tracing_multi_link *tr_link =
++		container_of(link, struct bpf_tracing_multi_link, link);
 +
-+	hlist_add_head(&node->hlist_attach, &attach->nodes);
++	seq_printf(seq, "attach_type:\t%d\n", tr_link->attach_type);
++}
++
++static int bpf_tracing_multi_link_fill_link_info(const struct bpf_link *link,
++						 struct bpf_link_info *info)
++{
++	struct bpf_tracing_multi_link *tr_link =
++		container_of(link, struct bpf_tracing_multi_link, link);
++
++	info->tracing.attach_type = tr_link->attach_type;
 +	return 0;
-+
-+out:
-+	bpf_trampoline_put(tr);
-+	return err;
 +}
 +
-+static void bpf_trampoline_dup_destroy(struct bpf_trampoline *tr)
++static const struct bpf_link_ops bpf_tracing_multi_link_lops = {
++	.release = bpf_tracing_multi_link_release,
++	.dealloc = bpf_tracing_multi_link_dealloc,
++	.show_fdinfo = bpf_tracing_multi_link_show_fdinfo,
++	.fill_link_info = bpf_tracing_multi_link_fill_link_info,
++};
++
++static int check_multi_prog_type(struct bpf_prog *prog)
 +{
-+	struct bpf_tramp_node *node;
-+	struct hlist_node *n;
-+	int kind;
-+
-+	if (!tr)
-+		return;
-+
-+	for (kind = 0; kind < BPF_TRAMP_MAX; kind++) {
-+		hlist_for_each_entry_safe(node, n, &tr->progs_hlist[kind],
-+					  hlist_tramp) {
-+			hlist_del(&node->hlist_tramp);
-+			hlist_del(&node->hlist_attach);
-+			node_free(node);
-+		}
-+	}
-+
-+	WARN_ON_ONCE(refcount_read(&tr->refcnt) != 1);
-+	bpf_trampoline_put(tr);
++	if (prog->expected_attach_type != BPF_TRACE_FENTRY &&
++	    prog->expected_attach_type != BPF_TRACE_FEXIT)
++		return -EINVAL;
++	return 0;
 +}
 +
-+static struct bpf_trampoline*
-+bpf_trampoline_dup(struct bpf_trampoline *tr, struct bpf_tramp_id *id)
-+{
-+	struct bpf_tramp_node *node, *iter;
-+	struct bpf_trampoline *dup;
-+	int kind;
-+
-+	/* Allocate new trampoline and duplicate all
-+	* the program attachments it has.
-+	*/
-+	dup = bpf_trampoline_alloc(id);
-+	if (!dup)
-+		return NULL;
-+
-+	dup->refcnt = tr->refcnt;
-+
-+	for (kind = 0; kind < BPF_TRAMP_MAX; kind++) {
-+		hlist_for_each_entry(iter, &tr->progs_hlist[kind], hlist_tramp) {
-+			struct bpf_prog *prog = iter->prog;
-+
-+			node = node_alloc(dup, prog);
-+			if (!node)
-+				goto out_free;
-+			hlist_add_head(&node->hlist_tramp, &dup->progs_hlist[kind]);
-+			hlist_add_head(&node->hlist_attach, &prog->aux->attach->nodes);
-+			dup->progs_cnt[kind]++;
-+		}
-+	}
-+	return dup;
-+
-+out_free:
-+	bpf_trampoline_dup_destroy(dup);
-+	return NULL;
-+}
-+
-+static int btf_id_cmp(const void *a, const void *b)
++static int btf_ids_cmp(const void *a, const void *b)
 +{
 +	const u32 *x = a;
 +	const u32 *y = b;
@@ -545,544 +221,238 @@ index 39600fb78c9e..7a9e3126e256 100644
 +	return *x < *y ? -1 : 1;
 +}
 +
-+static void id_add(struct bpf_tramp_id *id, u32 btf_id, void *addr)
-+{
-+	if (WARN_ON_ONCE(id->cnt >= id->max))
-+		return;
-+	id->id[id->cnt] = btf_id;
-+	id->addr[id->cnt] = addr;
-+	id->cnt++;
-+}
-+
-+static struct bpf_tramp_id *id_check(struct bpf_tramp_id *id)
-+{
-+	if (bpf_tramp_id_is_empty(id)) {
-+		bpf_tramp_id_put(id);
-+		id = NULL;
-+	}
-+	return id;
-+}
-+
-+static int id_and(struct bpf_tramp_id *a, struct bpf_tramp_id *b,
-+		  struct bpf_tramp_id **pand, struct bpf_tramp_id **pother)
-+{
-+	struct bpf_tramp_id *and, *other;
-+	u32 i, id;
-+
-+	and = bpf_tramp_id_alloc(min(a->cnt, b->cnt));
-+	other = bpf_tramp_id_alloc(max(a->cnt, b->cnt));
-+	if (!and || !other) {
-+		bpf_tramp_id_put(and);
-+		bpf_tramp_id_put(other);
-+		return -ENOMEM;
-+	}
-+
-+	and->obj_id = a->obj_id;
-+	other->obj_id = a->obj_id;
-+
-+	for (i = 0; i < a->cnt; i++) {
-+		id = a->id[i];
-+		if (bsearch(&id, b->id, b->cnt, sizeof(u32), btf_id_cmp))
-+			id_add(and, id, a->addr[i]);
-+		else
-+			id_add(other, id, a->addr[i]);
-+	}
-+
-+	*pand = id_check(and);
-+	*pother = id_check(other);
-+	return 0;
-+}
-+
-+static int id_sub(struct bpf_tramp_id *a, struct bpf_tramp_id *b,
-+		  struct bpf_tramp_id **psub)
-+{
-+	struct bpf_tramp_id *sub;
-+	u32 i, id;
-+
-+	sub = bpf_tramp_id_alloc(max(a->cnt, b->cnt));
-+	if (!sub)
-+		return -ENOMEM;
-+
-+	sub->obj_id = a->obj_id;
-+
-+	if (a->cnt < b->cnt)
-+		swap(a, b);
-+
-+	for (i = 0; i < a->cnt; i++) {
-+		id = a->id[i];
-+		if (!bsearch(&id, b->id, b->cnt, sizeof(u32), btf_id_cmp))
-+			id_add(sub, id, a->addr[i]);
-+	}
-+
-+	*psub = id_check(sub);
-+	return 0;
-+}
-+
-+struct tramp_state {
-+	struct bpf_trampoline *tr_common;
-+	struct bpf_trampoline *tr_other;
-+	struct bpf_tramp_id *id_common;
-+	struct bpf_tramp_id *id_other;
-+	struct bpf_tramp_id *id;
++struct resolve_id {
++	const char *name;
++	void *addr;
++	u32 id;
 +};
 +
-+#define MAX_TRAMP_STATE 20
++static int rid_name_cmp(const void *a, const void *b)
++{
++	const struct resolve_id *x = a;
++	const struct resolve_id *y = b;
 +
-+struct attach_state {
-+	struct tramp_state ts[MAX_TRAMP_STATE];
-+	int cnt;
++	return strcmp(x->name, y->name);
++}
++
++static int rid_id_cmp(const void *a, const void *b)
++{
++	const struct resolve_id *x = a;
++	const struct resolve_id *y = b;
++
++	if (x->id == y->id)
++		return 0;
++	return x->id < y->id ? -1 : 1;
++}
++
++struct kallsyms_data {
++	struct resolve_id *rid;
++	u32 cnt;
++	u32 found;
 +};
 +
-+static struct tramp_state* tramp_state_get(struct attach_state *state)
++static int kallsyms_callback(void *data, const char *name,
++			     struct module *mod, unsigned long addr)
 +{
-+	if (state->cnt == MAX_TRAMP_STATE)
-+		return NULL;
-+	return &state->ts[state->cnt];
-+}
++	struct kallsyms_data *args = data;
++	struct resolve_id *rid, id = {
++		.name = name,
++	};
 +
-+static void state_next(struct attach_state *state)
-+{
-+	state->cnt++;
-+}
-+
-+static void state_cleanup(struct attach_state *state)
-+{
-+	struct tramp_state *ts;
-+	int i;
-+
-+	for (i = 0; i < state->cnt; i++) {
-+		ts = &state->ts[state->cnt];
-+		bpf_tramp_id_put(ts->id_common);
-+		bpf_tramp_id_put(ts->id_other);
-+		bpf_tramp_id_put(ts->id);
++	rid = bsearch(&id, args->rid, args->cnt, sizeof(*rid), rid_name_cmp);
++	if (rid && !rid->addr) {
++		rid->addr = (void *) addr;
++		args->found++;
 +	}
++	return args->found == args->cnt ? 1 : 0;
 +}
 +
-+static int tramp_state_compute(struct attach_state *state,
-+			       struct bpf_trampoline *tr,
-+			       struct bpf_tramp_id *id,
-+			       struct bpf_tramp_id **id_cont)
++static int bpf_tramp_id_resolve(struct bpf_tramp_id *id, struct bpf_prog *prog)
 +{
-+	struct bpf_tramp_id *id_new, *id_common, *id_other;
-+	struct tramp_state *ts;
-+
-+	ts = tramp_state_get(state);
-+	if (!ts)
-+		return -EBUSY;
-+
-+	/* different playground.. bail out */
-+	if (tr->id->obj_id != id->obj_id) {
-+		*id_cont = bpf_tramp_id_get(id);
-+		return 0;
-+	}
-+
-+	/* complete match with trampoline */
-+	if (bpf_tramp_id_is_equal(tr->id, id)) {
-+		ts->id_common = bpf_tramp_id_get(id);
-+		*id_cont = NULL;
-+		goto out;
-+	}
-+
-+	/* find out if there's common set of ids */
-+	if (id_and(id, tr->id, &id_common, &id_new))
-+		return -ENOMEM;
-+
-+	/* nothing in common, bail out */
-+	if (!id_common) {
-+		bpf_tramp_id_put(id_new);
-+		*id_cont = bpf_tramp_id_get(id);
-+		return 0;
-+	}
-+
-+	/* we have common set, let's get the rest of the matched
-+	 * trampoline ids as new id for split trampoline
-+	 */
-+	if (id_sub(id_common, tr->id, &id_other)) {
-+		bpf_tramp_id_put(id_common);
-+		bpf_tramp_id_put(id_new);
-+		return -ENOMEM;
-+	}
-+
-+	ts->id_common = id_common;
-+	ts->id_other = id_other;
-+	ts->id = bpf_tramp_id_get(tr->id);
-+	*id_cont = id_new;
-+
-+out:
-+	ts->tr_common = tr;
-+	state_next(state);
-+	return 0;
-+}
-+
-+static int bpf_trampoline_register(struct bpf_trampoline *tr)
-+{
-+	return bpf_trampoline_update(tr);
-+}
-+
-+static int bpf_trampoline_unregister(struct bpf_trampoline *tr)
-+{
-+	int err;
-+
-+	if (!tr->cur_image)
-+		return 0;
-+	err = unregister_fentry(tr, tr->cur_image->image);
-+	bpf_tramp_image_put(tr->cur_image);
-+	tr->cur_image = NULL;
-+	tr->selector = 0;
-+	return err;
-+}
-+
-+static void bpf_trampoline_id_assign(struct bpf_trampoline *tr, struct bpf_tramp_id *id)
-+{
-+	bool multi1 = bpf_tramp_id_is_multi(tr->id);
-+	bool multi2 = bpf_tramp_id_is_multi(id);
-+
-+	/* We can split into single ID trampolines and that
-+	 * might affect nr_bpf_trampoline_multi and the fast
-+	 * path trigger, so we need to check on that.
-+	 */
-+	if (multi1 && !multi2)
-+		nr_bpf_trampoline_multi--;
-+	if (!multi1 && multi2)
-+		nr_bpf_trampoline_multi++;
-+
-+	tr->id = id;
-+}
-+
-+static int bpf_trampoline_split(struct tramp_state *ts, struct attach_args *att)
-+{
-+	struct bpf_trampoline *tr_other, *tr_common = ts->tr_common;
-+	struct bpf_tramp_id *id_common = ts->id_common;
-+	struct bpf_tramp_id *id_other = ts->id_other;
-+	int err;
-+
-+	mutex_lock(&tr_common->mutex);
-+
-+	err = bpf_trampoline_unregister(tr_common);
-+	if (err)
-+		goto out;
-+
-+	tr_other = bpf_trampoline_dup(tr_common, id_other);
-+	if (!tr_other) {
-+		err = -ENOMEM;
-+		goto out_free;
-+	}
-+
-+	err = bpf_trampoline_setup(tr_other, att);
-+	if (err)
-+		goto out_free;
-+
-+	bpf_trampoline_id_assign(tr_common, id_common);
-+
-+	err = bpf_trampoline_setup(tr_common, att);
-+	if (err)
-+		goto out_free;
-+
-+	ts->tr_other = tr_other;
-+	WARN_ON_ONCE(bpf_trampoline_register(tr_common));
-+	WARN_ON_ONCE(bpf_trampoline_register(tr_other));
-+
-+	mutex_unlock(&tr_common->mutex);
-+	return 0;
-+
-+out_free:
-+	bpf_trampoline_dup_destroy(tr_other);
-+	tr_common->id = ts->id;
-+	WARN_ON_ONCE(bpf_trampoline_register(tr_common));
-+out:
-+	mutex_unlock(&tr_common->mutex);
-+	return err;
-+}
-+
-+static int tramp_state_apply(struct bpf_tramp_attach *attach,
-+			     struct tramp_state *ts, struct attach_args *att)
-+{
-+	struct bpf_tramp_node *node;
-+	int err;
-+
-+	/* The program will be attached to the common part. */
-+	node = node_alloc(ts->tr_common, att->prog);
-+	if (!node)
-+		return -ENOMEM;
-+
-+	refcount_inc(&ts->tr_common->refcnt);
-+
-+	/* If there are also 'other' IDs in the trampoline,
-+	 * we need to do the split. */
-+	if (ts->id_other) {
-+		err = bpf_trampoline_split(ts, att);
-+		if (err) {
-+			node_free(node);
-+			return err;
-+		}
-+	}
-+
-+	hlist_add_head(&node->hlist_attach, &attach->nodes);
-+	return 0;
-+}
-+
-+static int tramp_state_revert(struct tramp_state *ts, struct attach_args *att)
-+{
-+	struct bpf_trampoline *tr_common = ts->tr_common;
-+	int err;
-+
-+	bpf_trampoline_dup_destroy(ts->tr_other);
-+
-+	mutex_lock(&tr_common->mutex);
-+	err = bpf_trampoline_unregister(tr_common);
-+	if (err)
-+		goto out;
-+
-+	tr_common->id = ts->id;
-+	err = bpf_trampoline_setup(tr_common, att);
-+	if (err)
-+		goto out;
-+
-+	WARN_ON_ONCE(bpf_trampoline_register(tr_common));
-+out:
-+	mutex_unlock(&tr_common->mutex);
-+	return err;
-+}
-+
-+static int
-+bpf_tramp_attach_single(struct bpf_tramp_attach *attach,
-+			struct bpf_tramp_id *id, struct attach_args *att)
-+{
-+	struct bpf_trampoline *tr = NULL;
-+	struct bpf_tramp_node *node;
-+	int err;
- 
- 	tr = bpf_trampoline_get(id);
- 	if (!tr) {
-@@ -647,22 +1101,175 @@ struct bpf_tramp_attach *bpf_tramp_attach(struct bpf_tramp_id *id,
- 		goto out;
- 	}
- 
--	node = node_alloc(tr, prog);
-+	node = node_alloc(tr, att->prog);
- 	if (!node)
- 		goto out;
- 
--	err = bpf_check_attach_model(prog, tgt_prog, id->id[0], &tr->func.model);
-+	err = bpf_check_attach_model(att->prog, att->tgt_prog,
-+				     id->id[0], &tr->func.model);
- 	if (err)
- 		goto out;
- 
--	attach->id = id;
- 	hlist_add_head(&node->hlist_attach, &attach->nodes);
--	return attach;
-+	return 0;
- 
- out:
- 	bpf_trampoline_put(tr);
--	kfree(attach);
--	return ERR_PTR(err);
-+	return err;
-+}
-+
-+#define list_for_each_trampoline(tr, i)					\
-+	for (i = 0; i < TRAMPOLINE_TABLE_SIZE; i++)			\
-+		hlist_for_each_entry(tr, &trampoline_table[i], hlist)
-+
-+static int __bpf_tramp_attach(struct bpf_tramp_attach *attach,
-+			      struct bpf_tramp_id *id,
-+			      struct attach_args *att)
-+{
-+	struct attach_state state = {};
-+	struct bpf_tramp_id *id_cont;
-+	struct bpf_trampoline *tr;
-+	bool id_put = false;
-+	int err = 0, i, j;
-+
-+	mutex_lock(&trampoline_mutex);
-+
-+	/* If we are ataching single ID trampoline and there's no multi ID
-+	 * trampoline registered, there's no need to iterate all trampolines
-+	 * for intersection, we can do the fast path and use hash search.
-+	 * */
-+	if (!bpf_tramp_id_is_multi(id) && !nr_bpf_trampoline_multi) {
-+		err = bpf_tramp_attach_single(attach, id, att);
-+		goto out;
-+	}
-+
-+	/* Iterate all trampolines to find all the interesections. */
-+	list_for_each_trampoline(tr, i) {
-+		err = tramp_state_compute(&state, tr, id, &id_cont);
-+		if (err)
-+			goto out_multi;
-+		id_put = true;
-+		id = id_cont;
-+		if (!id)
-+			goto out_break;
-+	}
-+out_break:
-+
-+	/* Do the actuall trampoline splits if there's any .. */
-+	for (i = 0; i < state.cnt; i++) {
-+		err = tramp_state_apply(attach, &state.ts[i], att);
-+		if (err)
-+			goto revert;
-+	}
-+
-+	/* .. and create new trampoline if needed. */
-+	if (id)
-+		err = bpf_trampoline_create(attach, id, att);
-+
-+revert:
-+	/* Attach failed, let's revert already changed trampolines */
-+	if (err) {
-+		for (j = 0; j < i; j++)
-+			WARN_ON_ONCE(tramp_state_revert(&state.ts[j], att));
-+	}
-+
-+out_multi:
-+	if (id_put)
-+		bpf_tramp_id_put(id);
-+out:
-+	mutex_unlock(&trampoline_mutex);
-+	state_cleanup(&state);
-+	return err;
-+}
-+
-+#define MAX_ARGS 7
-+
-+static void put_args(struct bpf_tramp_id **args)
-+{
-+	int i;
-+
-+	for (i = 0; i < MAX_ARGS; i++)
-+		bpf_tramp_id_put(args[i]);
-+}
-+
-+static int get_args(struct bpf_tramp_id *id, struct bpf_tramp_id **args,
-+		    struct bpf_prog *tgt_prog, struct bpf_prog *prog)
-+{
++	struct kallsyms_data args;
 +	const struct btf_type *t;
-+	struct bpf_tramp_id *a;
-+	const struct btf *btf;
-+	int err = -EINVAL;
-+	u32 i, nargs;
++	struct resolve_id *rid;
++	const char *name;
++	struct btf *btf;
++	int err = 0;
++	u32 i;
 +
-+	btf = tgt_prog ? tgt_prog->aux->btf : prog->aux->attach_btf;
++	btf = prog->aux->attach_btf;
 +	if (!btf)
 +		return -EINVAL;
 +
-+	for (i = 0; i < id->cnt; i++){
++	rid = kzalloc(id->cnt * sizeof(*rid), GFP_KERNEL);
++	if (!rid)
++		return -ENOMEM;
++
++	err = -EINVAL;
++	for (i = 0; i < id->cnt; i++) {
 +		t = btf_type_by_id(btf, id->id[i]);
-+		if (!btf_type_is_func(t))
++		if (!t)
 +			goto out_free;
-+		t = btf_type_by_id(btf, t->type);
-+		if (!btf_type_is_func_proto(t))
++
++		name = btf_name_by_offset(btf, t->name_off);
++		if (!name)
 +			goto out_free;
-+		nargs = btf_type_vlen(t);
-+		if (nargs >= MAX_ARGS)
++
++		rid[i].name = name;
++		rid[i].id = id->id[i];
++	}
++
++	sort(rid, id->cnt, sizeof(*rid), rid_name_cmp, NULL);
++
++	args.rid = rid;
++	args.cnt = id->cnt;
++	args.found = 0;
++	kallsyms_on_each_symbol(kallsyms_callback, &args);
++
++	sort(rid, id->cnt, sizeof(*rid), rid_id_cmp, NULL);
++
++	for (i = 0; i < id->cnt; i++) {
++		if (!rid[i].addr) {
++			err = -EINVAL;
 +			goto out_free;
-+		a = args[nargs];
-+		if (!a) {
-+			a = bpf_tramp_id_alloc(id->cnt);
-+			if (!a) {
-+				err = -ENOMEM;
-+				goto out_free;
-+			}
-+			a->obj_id = id->obj_id;
-+			args[nargs] = a;
 +		}
-+		id_add(a, id->id[i], id->addr[i]);
++		id->addr[i] = rid[i].addr;
 +	}
 +	err = 0;
 +out_free:
-+	if (err)
-+		put_args(args);
++	kfree(rid);
 +	return err;
 +}
 +
-+struct bpf_tramp_attach *bpf_tramp_attach(struct bpf_tramp_id *id,
-+					  struct bpf_prog *tgt_prog,
-+					  struct bpf_prog *prog)
++static int bpf_tracing_multi_attach(struct bpf_prog *prog,
++				    const union bpf_attr *attr)
 +{
-+	struct bpf_tramp_id *args[MAX_ARGS] = {};
++	void __user *uids = u64_to_user_ptr(attr->link_create.multi.btf_ids);
++	u32 cnt_size, cnt = attr->link_create.multi.btf_ids_cnt;
++	struct bpf_tracing_multi_link *link = NULL;
++	struct bpf_link_primer link_primer;
 +	struct bpf_tramp_attach *attach;
-+	struct attach_args att = {
-+		.tgt_prog = tgt_prog,
-+		.prog = prog,
-+	};
-+	int i, err;
++	struct bpf_tramp_id *id = NULL;
++	int err = -EINVAL;
 +
-+	err = get_args(id, args, tgt_prog, prog);
++	if (check_multi_prog_type(prog))
++		return -EINVAL;
++	if (!cnt || !uids)
++		return -EINVAL;
++
++	id = bpf_tramp_id_alloc(cnt);
++	if (!id)
++		return -ENOMEM;
++
++	err = -EFAULT;
++	cnt_size = cnt * sizeof(id->id[0]);
++	if (copy_from_user(id->id, uids, cnt_size))
++		goto out_free_id;
++
++	id->cnt = cnt;
++	id->obj_id = btf_obj_id(prog->aux->attach_btf);
++
++	/* Sort user provided BTF ids, so we can use memcmp
++	 * and bsearch on top of it later.
++	 */
++	sort(id->id, cnt, sizeof(u32), btf_ids_cmp, NULL);
++
++	err = bpf_tramp_id_resolve(id, prog);
 +	if (err)
-+		return ERR_PTR(err);
++		goto out_free_id;
 +
-+	attach = kzalloc(sizeof(*attach), GFP_KERNEL);
-+	if (!attach)
-+		return ERR_PTR(-ENOMEM);
-+
-+	for (i = 0; i < MAX_ARGS; i++) {
-+		if (!args[i] || !args[i]->cnt)
-+			continue;
-+		att.nr_args = i;
-+		err = __bpf_tramp_attach(attach, args[i], &att);
-+		if (err)
-+			break;
++	attach = bpf_tramp_attach(id, NULL, prog);
++	if (IS_ERR(attach)) {
++		err = PTR_ERR(attach);
++		goto out_free_id;
 +	}
 +
-+	if (err)
-+		bpf_tramp_detach(attach);
-+	else
-+		attach->id = id;
++	link = kzalloc(sizeof(*link), GFP_KERNEL);
++	if (!link) {
++		err = -ENOMEM;
++		goto out_detach;
++	}
 +
-+	put_args(args);
-+	return err ? ERR_PTR(err) : attach;
- }
- 
- void bpf_tramp_detach(struct bpf_tramp_attach *attach)
-@@ -670,8 +1277,10 @@ void bpf_tramp_detach(struct bpf_tramp_attach *attach)
- 	struct bpf_tramp_node *node;
- 	struct hlist_node *n;
- 
-+	mutex_lock(&trampoline_mutex);
- 	hlist_for_each_entry_safe(node, n, &attach->nodes, hlist_attach)
- 		node_free(node);
-+	mutex_unlock(&trampoline_mutex);
- 
- 	bpf_tramp_id_put(attach->id);
- 	kfree(attach);
-@@ -682,13 +1291,14 @@ int bpf_tramp_attach_link(struct bpf_tramp_attach *attach)
- 	struct bpf_tramp_node *node;
- 	int err;
- 
-+	mutex_lock(&trampoline_mutex);
- 	hlist_for_each_entry(node, &attach->nodes, hlist_attach) {
- 		err = bpf_trampoline_link_prog(node, node->tr);
- 		if (err)
--			return err;
-+			break;
- 	}
--
--	return 0;
-+	mutex_unlock(&trampoline_mutex);
++	bpf_link_init(&link->link, BPF_LINK_TYPE_TRACING_MULTI,
++		      &bpf_tracing_multi_link_lops, prog);
++	link->attach_type = prog->expected_attach_type;
++
++	err = bpf_link_prime(&link->link, &link_primer);
++	if (err) {
++		kfree(link);
++		goto out_detach;
++	}
++
++	err = bpf_tramp_attach_link(attach);
++	if (err) {
++		bpf_link_cleanup(&link_primer);
++		goto out_detach;
++	}
++	prog->aux->attach = attach;
++	return bpf_link_settle(&link_primer);
++
++out_detach:
++	bpf_tramp_detach(attach);
 +	return err;
- }
- 
- int bpf_tramp_attach_unlink(struct bpf_tramp_attach *attach)
-@@ -696,13 +1306,14 @@ int bpf_tramp_attach_unlink(struct bpf_tramp_attach *attach)
- 	struct bpf_tramp_node *node;
- 	int err;
- 
-+	mutex_lock(&trampoline_mutex);
- 	hlist_for_each_entry(node, &attach->nodes, hlist_attach) {
- 		err = bpf_trampoline_unlink_prog(node, node->tr);
- 		if (err)
--			return err;
-+			break;
- 	}
--
--	return 0;
-+	mutex_unlock(&trampoline_mutex);
++out_free_id:
++	bpf_tramp_id_put(id);
 +	return err;
++}
++
+ struct bpf_raw_tp_link {
+ 	struct bpf_link link;
+ 	struct bpf_raw_event_map *btp;
+@@ -3211,6 +3459,8 @@ attach_type_to_prog_type(enum bpf_attach_type attach_type)
+ 	case BPF_CGROUP_SETSOCKOPT:
+ 		return BPF_PROG_TYPE_CGROUP_SOCKOPT;
+ 	case BPF_TRACE_ITER:
++	case BPF_TRACE_FENTRY:
++	case BPF_TRACE_FEXIT:
+ 		return BPF_PROG_TYPE_TRACING;
+ 	case BPF_SK_LOOKUP:
+ 		return BPF_PROG_TYPE_SK_LOOKUP;
+@@ -4270,6 +4520,8 @@ static int tracing_bpf_link_attach(const union bpf_attr *attr, bpfptr_t uattr,
+ 
+ 	if (prog->expected_attach_type == BPF_TRACE_ITER)
+ 		return bpf_iter_link_attach(attr, uattr, prog);
++	else if (prog->aux->multi_func)
++		return bpf_tracing_multi_attach(prog, attr);
+ 	else if (prog->type == BPF_PROG_TYPE_EXT)
+ 		return bpf_tracing_prog_attach(prog,
+ 					       attr->link_create.target_fd,
+diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
+index 3011bc33a5ba..904e140c3491 100644
+--- a/kernel/kallsyms.c
++++ b/kernel/kallsyms.c
+@@ -224,7 +224,7 @@ unsigned long kallsyms_lookup_name(const char *name)
+ 	return module_kallsyms_lookup_name(name);
  }
  
- #define NO_START_TIME 1
+-#ifdef CONFIG_LIVEPATCH
++#if  defined(CONFIG_LIVEPATCH) || defined(CONFIG_BPF)
+ /*
+  * Iterate over all symbols in vmlinux.  For symbols from modules use
+  * module_kallsyms_on_each_symbol instead.
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index ca05e35e0478..a03a5bc1d141 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -1009,6 +1009,7 @@ enum bpf_link_type {
+ 	BPF_LINK_TYPE_NETNS = 5,
+ 	BPF_LINK_TYPE_XDP = 6,
+ 	BPF_LINK_TYPE_PERF_EVENT = 7,
++	BPF_LINK_TYPE_TRACING_MULTI = 8,
+ 
+ 	MAX_BPF_LINK_TYPE,
+ };
+@@ -1470,6 +1471,10 @@ union bpf_attr {
+ 				 */
+ 				__u64		bpf_cookie;
+ 			} perf_event;
++			struct {
++				__aligned_u64	btf_ids;	/* addresses to attach */
++				__u32		btf_ids_cnt;	/* addresses count */
++			} multi;
+ 		};
+ 	} link_create;
+ 
 -- 
 2.31.1
 
