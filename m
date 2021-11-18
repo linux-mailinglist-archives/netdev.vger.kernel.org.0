@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9EFD4553AA
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 05:15:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B15D4553AD
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 05:15:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242877AbhKRESP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 23:18:15 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36138 "EHLO mail.kernel.org"
+        id S242886AbhKREST (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 23:18:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36130 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242859AbhKRESH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Nov 2021 23:18:07 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3647861B9F;
+        id S242868AbhKRESI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Nov 2021 23:18:08 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7B39D61B62;
         Thu, 18 Nov 2021 04:15:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1637208908;
-        bh=ltUoO/KxmSnTQdtFvsm7WXNAq3nBA75DgWHprYlQ67w=;
+        bh=xyVC4OChGFUwEq6Z6pKHHvA5Oi6gDuSM17+9o2j3+NA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o5NhMdFlkeOAM66mNxNNZ8tP2UyhyjL16rTfLsk0rFbAbmKU6YwdWYS2AepYzxHoP
-         uSTWQKc+I/8esCbjouzy8qiN1iFMJjtusX10UmefdD9Nq8/j/DPxDPNqpRq3qcKGsA
-         nRClKFZyvAv4Qyw/OktvYnsK3kNLwZ/P+xX4SVoK4oVTXGoFVJ6hNwGzhc7m94q7LC
-         +wfdpKPXqcg1kWoqcauN7f+3CJETBPr5cQUVaHnmhv2HzMLc2ddV1tDIC2sLfaRrQK
-         QC2uWf0D5OlNuEBzLX2aDfEwDIfuTKy93JDV8nWF1D+TcslqbqxJnOuumHK89w6n5C
-         aKTw44PtmMufQ==
+        b=UvszWgeEf0ViN4gxqbUQnbPXZ8l++q0M2Nb4qP5oJYttTyH6l1CF5MzLqC+JAh+rv
+         KLRQpPYaNl43b81I6LbJBawv0NCGoE096y5RMdItLaP9YRJUUrTwnU3K8nQErPsIQx
+         sxkfkQygKgH4u6XTgR5uqg7sb4kXOTv5kdAkXI7vaSxofO4BsOmbNxpbLAOQb/u9y0
+         L1GEfcuS21l0J/KU2XDQ6RfykIEpHGaA1PS0FO3RZhPG8IilGi3974XWIBtYGQkLBz
+         7HvzyUwg77wg6kIwDM39XPVKtKTOdbf5tKM4PugBpkqXXdHMPVQhXCNnALZMbwEN0J
+         Amjy7XnTl1rYg==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 8/9] dev_addr_list: put the first addr on the tree
-Date:   Wed, 17 Nov 2021 20:15:00 -0800
-Message-Id: <20211118041501.3102861-9-kuba@kernel.org>
+Subject: [PATCH net-next 9/9] net: kunit: add a test for dev_addr_lists
+Date:   Wed, 17 Nov 2021 20:15:01 -0800
+Message-Id: <20211118041501.3102861-10-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211118041501.3102861-1-kuba@kernel.org>
 References: <20211118041501.3102861-1-kuba@kernel.org>
@@ -38,134 +38,283 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since all netdev->dev_addr modifications go via dev_addr_mod()
-we can put it on the list. When address is change remove it
-and add it back.
+Add a KUnit test for the dev_addr API.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- net/core/dev_addr_lists.c | 62 +++++++++++++++++++++------------------
- 1 file changed, 34 insertions(+), 28 deletions(-)
+ net/Kconfig                    |   5 +
+ net/core/Makefile              |   2 +
+ net/core/dev_addr_lists_test.c | 234 +++++++++++++++++++++++++++++++++
+ 3 files changed, 241 insertions(+)
+ create mode 100644 net/core/dev_addr_lists_test.c
 
-diff --git a/net/core/dev_addr_lists.c b/net/core/dev_addr_lists.c
-index 969942734951..bead38ca50bd 100644
---- a/net/core/dev_addr_lists.c
-+++ b/net/core/dev_addr_lists.c
-@@ -16,6 +16,35 @@
-  * General list handling functions
-  */
+diff --git a/net/Kconfig b/net/Kconfig
+index 074472dfa94a..8a1f9d0287de 100644
+--- a/net/Kconfig
++++ b/net/Kconfig
+@@ -455,4 +455,9 @@ config ETHTOOL_NETLINK
+ 	  netlink. It provides better extensibility and some new features,
+ 	  e.g. notification messages.
  
-+static int __hw_addr_insert(struct netdev_hw_addr_list *list,
-+			    struct netdev_hw_addr *new, int addr_len)
++config NETDEV_ADDR_LIST_TEST
++	tristate "Unit tests for device address list"
++	default KUNIT_ALL_TESTS
++	depends on KUNIT
++
+ endif   # if NET
+diff --git a/net/core/Makefile b/net/core/Makefile
+index 6bdcb2cafed8..a8e4f737692b 100644
+--- a/net/core/Makefile
++++ b/net/core/Makefile
+@@ -13,6 +13,8 @@ obj-y		     += dev.o dev_addr_lists.o dst.o netevent.o \
+ 			sock_diag.o dev_ioctl.o tso.o sock_reuseport.o \
+ 			fib_notifier.o xdp.o flow_offload.o gro.o
+ 
++obj-$(CONFIG_NETDEV_ADDR_LIST_TEST) += dev_addr_lists_test.o
++
+ obj-y += net-sysfs.o
+ obj-$(CONFIG_PAGE_POOL) += page_pool.o
+ obj-$(CONFIG_PROC_FS) += net-procfs.o
+diff --git a/net/core/dev_addr_lists_test.c b/net/core/dev_addr_lists_test.c
+new file mode 100644
+index 000000000000..b4faad5c98b2
+--- /dev/null
++++ b/net/core/dev_addr_lists_test.c
+@@ -0,0 +1,234 @@
++#include <kunit/test.h>
++#include <linux/etherdevice.h>
++#include <linux/netdevice.h>
++#include <linux/rtnetlink.h>
++
++static const struct net_device_ops dummy_netdev_ops = {
++};
++
++struct dev_addr_test_priv {
++	u32 addr_seen;
++};
++
++static int dev_addr_test_sync(struct net_device *netdev, const unsigned char *a)
 +{
-+	struct rb_node **ins_point = &list->tree.rb_node, *parent = NULL;
-+	struct netdev_hw_addr *ha;
++	struct dev_addr_test_priv *datp = netdev_priv(netdev);
 +
-+	while (*ins_point) {
-+		int diff;
-+
-+		ha = rb_entry(*ins_point, struct netdev_hw_addr, node);
-+		diff = memcmp(new->addr, ha->addr, addr_len);
-+		if (diff == 0)
-+			diff = memcmp(&new->type, &ha->type, sizeof(new->type));
-+
-+		parent = *ins_point;
-+		if (diff < 0)
-+			ins_point = &parent->rb_left;
-+		else if (diff > 0)
-+			ins_point = &parent->rb_right;
-+		else
-+			return -EEXIST;
-+	}
-+
-+	rb_link_node_rcu(&new->node, parent, ins_point);
-+	rb_insert_color(&new->node, &list->tree);
-+
++	if (a[0] < 31 && !memchr_inv(a, a[0], ETH_ALEN))
++		datp->addr_seen |= 1 << a[0];
 +	return 0;
 +}
 +
- static struct netdev_hw_addr*
- __hw_addr_create(const unsigned char *addr, int addr_len,
- 		 unsigned char addr_type, bool global, bool sync)
-@@ -50,11 +79,6 @@ static int __hw_addr_add_ex(struct netdev_hw_addr_list *list,
- 	if (addr_len > MAX_ADDR_LEN)
- 		return -EINVAL;
- 
--	ha = list_first_entry(&list->list, struct netdev_hw_addr, list);
--	if (ha && !memcmp(addr, ha->addr, addr_len) &&
--	    (!addr_type || addr_type == ha->type))
--		goto found_it;
--
- 	while (*ins_point) {
- 		int diff;
- 
-@@ -69,7 +93,6 @@ static int __hw_addr_add_ex(struct netdev_hw_addr_list *list,
- 		} else if (diff > 0) {
- 			ins_point = &parent->rb_right;
- 		} else {
--found_it:
- 			if (exclusive)
- 				return -EEXIST;
- 			if (global) {
-@@ -94,16 +117,8 @@ static int __hw_addr_add_ex(struct netdev_hw_addr_list *list,
- 	if (!ha)
- 		return -ENOMEM;
- 
--	/* The first address in dev->dev_addrs is pointed to by dev->dev_addr
--	 * and mutated freely by device drivers and netdev ops, so if we insert
--	 * it into the tree we'll end up with an invalid rbtree.
--	 */
--	if (list->count > 0) {
--		rb_link_node(&ha->node, parent, ins_point);
--		rb_insert_color(&ha->node, &list->tree);
--	} else {
--		RB_CLEAR_NODE(&ha->node);
--	}
-+	rb_link_node(&ha->node, parent, ins_point);
-+	rb_insert_color(&ha->node, &list->tree);
- 
- 	list_add_tail_rcu(&ha->list, &list->list);
- 	list->count++;
-@@ -138,8 +153,7 @@ static int __hw_addr_del_entry(struct netdev_hw_addr_list *list,
- 	if (--ha->refcount)
- 		return 0;
- 
--	if (!RB_EMPTY_NODE(&ha->node))
--		rb_erase(&ha->node, &list->tree);
-+	rb_erase(&ha->node, &list->tree);
- 
- 	list_del_rcu(&ha->list);
- 	kfree_rcu(ha, rcu_head);
-@@ -151,18 +165,8 @@ static struct netdev_hw_addr *__hw_addr_lookup(struct netdev_hw_addr_list *list,
- 					       const unsigned char *addr, int addr_len,
- 					       unsigned char addr_type)
- {
--	struct netdev_hw_addr *ha;
- 	struct rb_node *node;
- 
--	/* The first address isn't inserted into the tree because in the dev->dev_addrs
--	 * list it's the address pointed to by dev->dev_addr which is freely mutated
--	 * in place, so we need to check it separately.
--	 */
--	ha = list_first_entry(&list->list, struct netdev_hw_addr, list);
--	if (ha && !memcmp(addr, ha->addr, addr_len) &&
--	    (!addr_type || addr_type == ha->type))
--		return ha;
--
- 	node = list->tree.rb_node;
- 
- 	while (node) {
-@@ -571,8 +575,10 @@ void dev_addr_mod(struct net_device *dev, unsigned int offset,
- 	dev_addr_check(dev);
- 
- 	ha = container_of(dev->dev_addr, struct netdev_hw_addr, addr[0]);
-+	rb_erase(&ha->node, &dev->dev_addrs.tree);
- 	memcpy(&ha->addr[offset], addr, len);
- 	memcpy(&dev->dev_addr_shadow[offset], addr, len);
-+	WARN_ON(__hw_addr_insert(&dev->dev_addrs, ha, dev->addr_len));
- }
- EXPORT_SYMBOL(dev_addr_mod);
- 
++static int dev_addr_test_unsync(struct net_device *netdev,
++				const unsigned char *a)
++{
++	struct dev_addr_test_priv *datp = netdev_priv(netdev);
++
++	if (a[0] < 31 && !memchr_inv(a, a[0], ETH_ALEN))
++		datp->addr_seen &= ~(1 << a[0]);
++	return 0;
++}
++
++static int dev_addr_test_init(struct kunit *test)
++{
++	struct dev_addr_test_priv *datp;
++	struct net_device *netdev;
++	int err;
++
++	netdev = alloc_etherdev(sizeof(*datp));
++	KUNIT_ASSERT_TRUE(test, netdev != NULL);
++
++	test->priv = netdev;
++	netdev->netdev_ops = &dummy_netdev_ops;
++
++	err = register_netdev(netdev);
++	if (err) {
++		free_netdev(netdev);
++		KUNIT_FAIL(test, "Can't register netdev %d", err);
++	}
++
++	rtnl_lock();
++	return 0;
++}
++
++static void dev_addr_test_exit(struct kunit *test)
++{
++	struct net_device *netdev = test->priv;
++
++	rtnl_unlock();
++	unregister_netdev(netdev);
++	free_netdev(netdev);
++}
++
++static void dev_addr_test_basic(struct kunit *test)
++{
++	struct net_device *netdev = test->priv;
++	u8 addr[ETH_ALEN];
++
++        KUNIT_EXPECT_TRUE(test, netdev->dev_addr != NULL);
++
++	memset(addr, 2, sizeof(addr));
++	eth_hw_addr_set(netdev, addr);
++	KUNIT_EXPECT_EQ(test, 0, memcmp(netdev->dev_addr, addr, sizeof(addr)));
++
++	memset(addr, 3, sizeof(addr));
++	dev_addr_set(netdev, addr);
++	KUNIT_EXPECT_EQ(test, 0, memcmp(netdev->dev_addr, addr, sizeof(addr)));
++}
++
++static void dev_addr_test_sync_one(struct kunit *test)
++{
++	struct net_device *netdev = test->priv;
++	struct dev_addr_test_priv *datp;
++	u8 addr[ETH_ALEN];
++
++	datp = netdev_priv(netdev);
++
++	memset(addr, 1, sizeof(addr));
++	eth_hw_addr_set(netdev, addr);
++
++	__hw_addr_sync_dev(&netdev->dev_addrs, netdev, dev_addr_test_sync,
++			   dev_addr_test_unsync);
++	KUNIT_EXPECT_EQ(test, 2, datp->addr_seen);
++
++	memset(addr, 2, sizeof(addr));
++	eth_hw_addr_set(netdev, addr);
++
++	datp->addr_seen = 0;
++	__hw_addr_sync_dev(&netdev->dev_addrs, netdev, dev_addr_test_sync,
++			   dev_addr_test_unsync);
++	/* It's not going to sync anything because the main address is
++	 * considered synced and we overwrite in place.
++	 */
++	KUNIT_EXPECT_EQ(test, 0, datp->addr_seen);
++}
++
++static void dev_addr_test_add_del(struct kunit *test)
++{
++	struct net_device *netdev = test->priv;
++	struct dev_addr_test_priv *datp;
++	u8 addr[ETH_ALEN];
++	int i;
++
++	datp = netdev_priv(netdev);
++
++	for (i = 1; i < 4; i++) {
++		memset(addr, i, sizeof(addr));
++		KUNIT_EXPECT_EQ(test, 0, dev_addr_add(netdev, addr,
++						      NETDEV_HW_ADDR_T_LAN));
++	}
++	/* Add 3 again */
++	KUNIT_EXPECT_EQ(test, 0, dev_addr_add(netdev, addr,
++					      NETDEV_HW_ADDR_T_LAN));
++
++	__hw_addr_sync_dev(&netdev->dev_addrs, netdev, dev_addr_test_sync,
++			   dev_addr_test_unsync);
++	KUNIT_EXPECT_EQ(test, 0xf, datp->addr_seen);
++
++	KUNIT_EXPECT_EQ(test, 0, dev_addr_del(netdev, addr,
++					      NETDEV_HW_ADDR_T_LAN));
++
++	__hw_addr_sync_dev(&netdev->dev_addrs, netdev, dev_addr_test_sync,
++			   dev_addr_test_unsync);
++	KUNIT_EXPECT_EQ(test, 0xf, datp->addr_seen);
++
++	for (i = 1; i < 4; i++) {
++		memset(addr, i, sizeof(addr));
++		KUNIT_EXPECT_EQ(test, 0, dev_addr_del(netdev, addr,
++						      NETDEV_HW_ADDR_T_LAN));
++	}
++
++	__hw_addr_sync_dev(&netdev->dev_addrs, netdev, dev_addr_test_sync,
++			   dev_addr_test_unsync);
++	KUNIT_EXPECT_EQ(test, 1, datp->addr_seen);
++}
++
++static void dev_addr_test_del_main(struct kunit *test)
++{
++	struct net_device *netdev = test->priv;
++	u8 addr[ETH_ALEN];
++
++	memset(addr, 1, sizeof(addr));
++	eth_hw_addr_set(netdev, addr);
++
++	KUNIT_EXPECT_EQ(test, -ENOENT, dev_addr_del(netdev, addr,
++						    NETDEV_HW_ADDR_T_LAN));
++	KUNIT_EXPECT_EQ(test, 0, dev_addr_add(netdev, addr,
++					      NETDEV_HW_ADDR_T_LAN));
++	KUNIT_EXPECT_EQ(test, 0, dev_addr_del(netdev, addr,
++					      NETDEV_HW_ADDR_T_LAN));
++	KUNIT_EXPECT_EQ(test, -ENOENT, dev_addr_del(netdev, addr,
++						    NETDEV_HW_ADDR_T_LAN));
++}
++
++static void dev_addr_test_add_set(struct kunit *test)
++{
++	struct net_device *netdev = test->priv;
++	struct dev_addr_test_priv *datp;
++	u8 addr[ETH_ALEN];
++	int i;
++
++	datp = netdev_priv(netdev);
++
++	/* There is no external API like dev_addr_add_excl(),
++	 * so shuffle the tree a little bit and exploit aliasing.
++	 */
++	for (i = 1; i < 16; i++) {
++		memset(addr, i, sizeof(addr));
++		KUNIT_EXPECT_EQ(test, 0, dev_addr_add(netdev, addr,
++						      NETDEV_HW_ADDR_T_LAN));
++	}
++
++	memset(addr, i, sizeof(addr));
++	eth_hw_addr_set(netdev, addr);
++	KUNIT_EXPECT_EQ(test, 0, dev_addr_add(netdev, addr,
++					      NETDEV_HW_ADDR_T_LAN));
++	memset(addr, 0, sizeof(addr));
++	eth_hw_addr_set(netdev, addr);
++
++	__hw_addr_sync_dev(&netdev->dev_addrs, netdev, dev_addr_test_sync,
++			   dev_addr_test_unsync);
++	KUNIT_EXPECT_EQ(test, 0xffff, datp->addr_seen);
++}
++
++static void dev_addr_test_add_excl(struct kunit *test)
++{
++	struct net_device *netdev = test->priv;
++	u8 addr[ETH_ALEN];
++	int i;
++
++	for (i = 0; i < 10; i++) {
++		memset(addr, i, sizeof(addr));
++		KUNIT_EXPECT_EQ(test, 0, dev_uc_add_excl(netdev, addr));
++	}
++	KUNIT_EXPECT_EQ(test, -EEXIST, dev_uc_add_excl(netdev, addr));
++
++	for (i = 0; i < 10; i += 2) {
++		memset(addr, i, sizeof(addr));
++		KUNIT_EXPECT_EQ(test, 0, dev_uc_del(netdev, addr));
++	}
++	for (i = 1; i < 10; i += 2) {
++		memset(addr, i, sizeof(addr));
++		KUNIT_EXPECT_EQ(test, -EEXIST, dev_uc_add_excl(netdev, addr));
++	}
++}
++
++static struct kunit_case dev_addr_test_cases[] = {
++        KUNIT_CASE(dev_addr_test_basic),
++        KUNIT_CASE(dev_addr_test_sync_one),
++        KUNIT_CASE(dev_addr_test_add_del),
++        KUNIT_CASE(dev_addr_test_del_main),
++        KUNIT_CASE(dev_addr_test_add_set),
++        KUNIT_CASE(dev_addr_test_add_excl),
++        {}
++};
++
++static struct kunit_suite dev_addr_test_suite = {
++        .name = "dev-addr-list-test",
++        .test_cases = dev_addr_test_cases,
++	.init = dev_addr_test_init,
++	.exit = dev_addr_test_exit,
++};
++kunit_test_suite(dev_addr_test_suite);
++
++MODULE_LICENSE("GPL");
 -- 
 2.31.1
 
