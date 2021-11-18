@@ -2,166 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D01B455F40
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 16:20:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50909455F4B
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 16:22:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231897AbhKRPXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 10:23:47 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33460 "EHLO mail.kernel.org"
+        id S231804AbhKRPZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 10:25:01 -0500
+Received: from foss.arm.com ([217.140.110.172]:42138 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231650AbhKRPXq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Nov 2021 10:23:46 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A45A061B3B
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 15:20:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637248846;
-        bh=fDSaj4n747JDrUMPlz/uNu/yZWTaXEmTjYVO6855SdQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=mBkZDfjzMRzfSMcNmqKbAooe07712jwjaiZCYt3eKcUEFNEIuGRAAgmOUtsiFhnlv
-         gl/po49mueHA4EB62rc4dGKzUWRu/11VbwlqCraQBDcyPZMhXF4BqjjZ6jwlyIq7rR
-         rW4MO+WnAFuc18X6nS3aQuXpSxKRxnsQdHrXDXcfRZnJ8PwdZHhrulndltVwrqgQcI
-         u0N62TsYA0vimtTzUpHRqbJ+lvb6d64/ZlFmCzCy8+cBWfZimDbBqV77YCVoZqaR6k
-         x3dr8a0/uKHjv2s9tEBAMYBoq/QjWVm3lDmntMQtNRFpxzqDrmsrz02NdCwnksnRA9
-         ANRNqzlfviwUw==
-Received: by mail-ed1-f53.google.com with SMTP id y13so28380216edd.13
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 07:20:46 -0800 (PST)
-X-Gm-Message-State: AOAM530UUKj/myoHdEo0oZ2BQ+k+VLtsVILWKB7egNs2K25hETS3pybK
-        +ys4jIIS8ED3n2rKfIVYywEF72flm/mi+Lk9JEgCCw==
-X-Google-Smtp-Source: ABdhPJxrIyECmt0iA265eD0cyb9vvkwUMTacYpNtXPpnWBgJ7E+nmyeeG6x9UlEBQtDG163W9048JAyA5Hp/brmfTAE=
-X-Received: by 2002:a17:907:7f1a:: with SMTP id qf26mr34115379ejc.543.1637248845008;
- Thu, 18 Nov 2021 07:20:45 -0800 (PST)
-MIME-Version: 1.0
-References: <20211111161452.86864-1-lmb@cloudflare.com> <CAADnVQKWk5VNT9Z_Cy6COO9NMjkUg1p9gYTsPPzH-fi1qCrDiw@mail.gmail.com>
- <CACAyw99EhJ8k4f3zeQMf3pRC+L=hQhK=Rb3UwSz19wt9gnMPrA@mail.gmail.com>
- <20211118010059.c2mixoshcrcz4ywq@ast-mbp> <CAEf4Bza=ZipeiwhvUvLLs9r4dbOUQ6JQTAotmgF6tUr1DAc9pw@mail.gmail.com>
- <CAEf4BzZTiyyKLg2y_dSvEEgzjSsCRCeRgt99DmFAHJyGqht8tw@mail.gmail.com> <06aa2d62d09bcd0a39898f7dcc7fb2fcdc262081.camel@linux.ibm.com>
-In-Reply-To: <06aa2d62d09bcd0a39898f7dcc7fb2fcdc262081.camel@linux.ibm.com>
-From:   KP Singh <kpsingh@kernel.org>
-Date:   Thu, 18 Nov 2021 16:20:34 +0100
-X-Gmail-Original-Message-ID: <CACYkzJ5rTQH+NgxmNv+SYc+OdYKuOLHi=_8y1RVap+SjeQUAbw@mail.gmail.com>
-Message-ID: <CACYkzJ5rTQH+NgxmNv+SYc+OdYKuOLHi=_8y1RVap+SjeQUAbw@mail.gmail.com>
-Subject: Re: [PATCH bpf] selftests: bpf: check map in map pruning
-To:     Ilya Leoshkevich <iii@linux.ibm.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Shuah Khan <shuah@kernel.org>,
+        id S231574AbhKRPZA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Nov 2021 10:25:00 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0DA69D6E;
+        Thu, 18 Nov 2021 07:22:00 -0800 (PST)
+Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 76CBE3F766;
+        Thu, 18 Nov 2021 07:21:57 -0800 (PST)
+Date:   Thu, 18 Nov 2021 15:21:55 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Jisheng Zhang <jszhang3@mail.ustc.edu.cn>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Tong Tiangen <tongtiangen@huawei.com>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kbuild@vger.kernel.org
+Subject: Re: [PATCH 09/12] riscv: extable: add `type` and `data` fields
+Message-ID: <20211118152155.GB9977@lakrids.cambridge.arm.com>
+References: <20211118192130.48b8f04c@xhacker>
+ <20211118192605.57e06d6b@xhacker>
+ <20211118193332.79799a9c@xhacker>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211118193332.79799a9c@xhacker>
+User-Agent: Mutt/1.11.1+11 (2f07cb52) (2018-12-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 18, 2021 at 12:56 PM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
->
-> On Wed, 2021-11-17 at 17:38 -0800, Andrii Nakryiko wrote:
-> > On Wed, Nov 17, 2021 at 5:29 PM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> > >
-> > > On Wed, Nov 17, 2021 at 5:01 PM Alexei Starovoitov
-> > > <alexei.starovoitov@gmail.com> wrote:
-> > > >
-> > > > On Wed, Nov 17, 2021 at 08:47:45AM +0000, Lorenz Bauer wrote:
-> > > > > On Sat, 13 Nov 2021 at 01:27, Alexei Starovoitov
-> > > > > <alexei.starovoitov@gmail.com> wrote:
-> > > > > >
-> > > > > > Not sure how you've tested it, but it doesn't work in unpriv:
-> > > > > > $ test_verifier 789
-> > > > > > #789/u map in map state pruning FAIL
-> > > > > > processed 26 insns (limit 1000000) max_states_per_insn 0
-> > > > > > total_states
-> > > > > > 2 peak_states 2 mark_read 1
-> > > > > > #789/p map in map state pruning OK
-> > > > >
-> > > > > Strange, I have a script that I use for bisecting which uses a
-> > > > > minimal
-> > > > > .config + virtue to run a vm, plus I was debugging in gdb at the
-> > > > > same
-> > > > > time. I might have missed this, apologies.
-> > > > >
-> > > > > I guess vmtest.sh is the canonical way to run tests now?
-> > > >
-> > > > vmtest.sh runs test_progs only. That's the minimum bar that
-> > >
-> > > It runs test_progs by default, unless something else is requested.
-> > > You
-> > > can run anything inside it, e.g.:
-> > >
-> > > ./vmtest.sh -- ./test_maps
-> > >
-> > > BTW, we recently moved configs around in libbpf repo on Github, so
-> > > this script broke. I'm sending a fix in a few minutes, hopefully.
-> >
-> > ... and of course it's not that simple. [0] recently changed how we
-> > build qemu image and vmtest.sh had some assumptions. Some trivial
-> > things I fixed, but I'm not too familiar with the init scripts stuff.
-> > Adding Ilya and KP to hopefully help with this. Ilya, KP, can you
-> > please help restore vmtest.sh functionality?
-> >
-> > After fixing few paths:
-> >
-> > diff --git a/tools/testing/selftests/bpf/vmtest.sh
-> > b/tools/testing/selftests/bpf/vmtest.sh
-> > index 027198768fad..7ea40108b85d 100755
-> > --- a/tools/testing/selftests/bpf/vmtest.sh
-> > +++ b/tools/testing/selftests/bpf/vmtest.sh
-> > @@ -13,8 +13,8 @@ DEFAULT_COMMAND="./test_progs"
-> >  MOUNT_DIR="mnt"
-> >  ROOTFS_IMAGE="root.img"
-> >  OUTPUT_DIR="$HOME/.bpf_selftests"
-> > -
-> > KCONFIG_URL="https://raw.githubusercontent.com/libbpf/libbpf/master/travis-ci/vmtest/configs/latest.config
-> > "
-> > -
-> > KCONFIG_API_URL="https://api.github.com/repos/libbpf/libbpf/contents/travis-ci/vmtest/configs/latest.config
-> > "
-> > +KCONFIG_URL="https://raw.githubusercontent.com/libbpf/libbpf/master/travis-ci/vmtest/configs/config-latest.x86_64
-> > "
-> > +KCONFIG_API_URL="https://api.github.com/repos/libbpf/libbpf/contents/travis-ci/vmtest/configs/config-latest.x86_64
-> > "
-> >  INDEX_URL="https://raw.githubusercontent.com/libbpf/libbpf/master/travis-ci/vmtest/configs/INDEX
-> > "
-> >  NUM_COMPILE_JOBS="$(nproc)"
-> >  LOG_FILE_BASE="$(date +"bpf_selftests.%Y-%m-%d_%H-%M-%S")"
-> > @@ -85,7 +85,7 @@ newest_rootfs_version()
-> >  {
-> >         {
-> >         for file in "${!URLS[@]}"; do
-> > -               if [[ $file =~ ^libbpf-vmtest-rootfs-(.*)\.tar\.zst$
-> > ]]; then
-> > +               if [[ $file =~
-> > ^x86_64/libbpf-vmtest-rootfs-(.*)\.tar\.zst$ ]]; then
-> >                         echo "${BASH_REMATCH[1]}"
-> >                 fi
-> >         done
-> >
-> > ... the next problem is more severe. Script complains about missing
-> > /etc/rcS.d, if I just force-created it, when kernel boots we get:
-> >
-> >
-> > [    1.050803] ---[ end Kernel panic - not syncing: No working init
-> > found.  Try passing init= option to kernel. See Linux
-> > Documentation/admin-guide/init.rst for guidance. ]---
-> >
-> >
-> > Please help.
-> >
-> >   [0] https://github.com/libbpf/libbpf/pull/204
->
-> I've posted a fix, please give it a try:
->
-> https://lore.kernel.org/bpf/20211118115225.1349726-1-iii@linux.ibm.com/
->
-> Missing was the ${ARCH} prefix when downloading the image, so it ended
-> up being empty. Now your ~/.bpf_selftests is poisoned with it, so
-> you'll need to run vmtest.sh with -i switch once in order to remove the
-> bad image.
+On Thu, Nov 18, 2021 at 07:42:49PM +0800, Jisheng Zhang wrote:
+> On Thu, 18 Nov 2021 19:26:05 +0800 Jisheng Zhang wrote:
+> 
+> > From: Jisheng Zhang <jszhang@kernel.org>
+> > 
+> > This is a riscv port of commit d6e2cc564775("arm64: extable: add `type`
+> > and `data` fields").
+> > 
+> > We will add specialized handlers for fixups, the `type` field is for
+> > fixup handler type, the `data` field is used to pass specific data to
+> > each handler, for example register numbers.
+> > 
+> > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
 
-Thanks for taking a look and sending a fix.
+> > diff --git a/scripts/sorttable.c b/scripts/sorttable.c
+> > index 0c031e47a419..5b5472b543f5 100644
+> > --- a/scripts/sorttable.c
+> > +++ b/scripts/sorttable.c
+> > @@ -376,9 +376,11 @@ static int do_file(char const *const fname, void *addr)
+> >  	case EM_PARISC:
+> >  	case EM_PPC:
+> >  	case EM_PPC64:
+> > -	case EM_RISCV:
+> >  		custom_sort = sort_relative_table;
+> >  		break;
+> > +	case EM_RISCV:
+> > +		custom_sort = arm64_sort_relative_table;
+> 
+> Hi Mark, Thomas,
+> 
+> x86 and arm64 version of sort_relative_table routine are the same, I want to
+> unify them, and then use the common function for riscv, but I'm not sure
+> which name is better. Could you please suggest?
+
+I sent a patch last week which unifies them as
+sort_relative_table_with_data():
+
+  https://lore.kernel.org/linux-arm-kernel/20211108114220.32796-1-mark.rutland@arm.com/
+
+Thomas, are you happy with that patch?
+
+With your ack it could go via the riscv tree for v5.17 as a preparatory
+cleanup in this series.
+
+Maybe we could get it in as a cleanup for v5.16-rc{2,3} ?
+
+Thanks,
+Mark.
