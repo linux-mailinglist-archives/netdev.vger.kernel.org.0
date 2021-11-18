@@ -2,156 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC836455FB8
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 16:42:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BEC2456001
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 16:58:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232519AbhKRPpA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 10:45:00 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:53220 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230376AbhKRPo7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 10:44:59 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1AIEYDMt026889;
-        Thu, 18 Nov 2021 07:41:52 -0800
-Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2177.outbound.protection.outlook.com [104.47.55.177])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3cd802cdq3-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Nov 2021 07:41:52 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oJbsELRbYaaikrME8uKgYQI/3fiTKMqyWCI0w35tNNwo0+Qb1VXvEC8VJrPinC+m9f3BGSjc8AWU6OzrkPjJ+d2FtmAvDNtvB23PB1h39XWLSRJoq2sbWg1bhqrppB2KX2P+Vy0+mHNZNZmu+USWcVC1SgMIySKM27KyNnmFdZVQzF4ZJArGym/MdTTWZ0ei0JhNu0uuWF1+qsn3vwPg1Nde0owiLhv6LIMz63yhjyM/RUtiiV5ymvQI540j52BdGLcol6PBCapPBUjmeWq0QbCzYZ//OlOhEGi53yOn6Kg4R88aFPBxrpnTGF2sO7JeQthAXxkZRBaCg5Qsyok/7Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wFgTKFXVonStw4hgDLsfwwUd725MWZF8dLOmDeO4iA0=;
- b=R0Lc1rxOmGGzr++ztuR2UyziRaaK4BFFJIy3cAU7DMz2ce8n6P7PGnYfDnDqHdyXZZ9DrbTtTR1ZNYzc07BbEwniUmi6luDuSd8H/AC6EX11NWKkQQjkh4wkrXitbPjyk/1fgyxXeU60GYhPHRs26V60k72NzhzrDrH+BAKdJDja239719smI/f431cHsmLVGPoH6f366x+G24j1K6GqAF2YuKfYUP8e7qUs837VXuDWXcoJtM6+R/4gOpuK1Py7SAV3GetSMQXJXITG5jyMiL2mMZh54bi8vTkgFvUqE2m6DoHoT3Ak1VihTSNf0SScrPQamxjDOwJRQUsNlUO3Pw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wFgTKFXVonStw4hgDLsfwwUd725MWZF8dLOmDeO4iA0=;
- b=NH7GH/b2Qf0VM6OxwXf2AC5AVoAwN1kz+uE/6kIH1dTvH1gjftXOo1ydP2FW+q+8Zu1Y2iT5ZlKyzvfCR+d2dZYmMVDFGNGE9TtQ4Hr2s51lg+8sWtB7sHXuQPLXGi2p+aDI0VyxOGK81fVgUGh0kSl/5SjhpmYfJA+AitqOQBM=
-Received: from SJ0PR18MB4009.namprd18.prod.outlook.com (2603:10b6:a03:2eb::24)
- by BYAPR18MB2903.namprd18.prod.outlook.com (2603:10b6:a03:10d::26) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.26; Thu, 18 Nov
- 2021 15:41:49 +0000
-Received: from SJ0PR18MB4009.namprd18.prod.outlook.com
- ([fe80::f5d7:4f64:40f1:2c31]) by SJ0PR18MB4009.namprd18.prod.outlook.com
- ([fe80::f5d7:4f64:40f1:2c31%5]) with mapi id 15.20.4713.022; Thu, 18 Nov 2021
- 15:41:48 +0000
-From:   "Volodymyr Mytnyk [C]" <vmytnyk@marvell.com>
-To:     "linux-firmware@kernel.org" <linux-firmware@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Vadym Kochan <vadym.kochan@plvision.eu>,
-        Yevhen Orlov <yevhen.orlov@plvision.eu>
-Subject: [GIT PULL v2] linux-firmware: mrvl: prestera: Update Marvell Prestera
- Switchdev v4.0
-Thread-Topic: [GIT PULL v2] linux-firmware: mrvl: prestera: Update Marvell
- Prestera Switchdev v4.0
-Thread-Index: AQHX3I6Bw+UkR9aHykq17j+pfuWtug==
-Date:   Thu, 18 Nov 2021 15:41:48 +0000
-Message-ID: <SJ0PR18MB4009A38C84F0529CFA8B8FD3B29B9@SJ0PR18MB4009.namprd18.prod.outlook.com>
-Accept-Language: en-GB, uk-UA, en-US
-Content-Language: en-GB
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-suggested_attachment_session_id: 17f2d3c3-ca6f-9a92-3642-d3a311d90a57
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b8ebf4e6-e31e-4140-cbcc-08d9aaa9ef30
-x-ms-traffictypediagnostic: BYAPR18MB2903:
-x-ld-processed: 70e1fb47-1155-421d-87fc-2e58f638b6e0,ExtAddr
-x-microsoft-antispam-prvs: <BYAPR18MB29032EF09AC43D1359F269E8B29B9@BYAPR18MB2903.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:376;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: cs1G/kA8srpQci/AXvGEesxsoJzeFi4wnxvf+l0zik0VeZj9rpJIbfzuw4vkMJFKBzkQtORsJreXYw2OE/dWHv3cWOKx8TaWBx6YWMPDn6nOn0Xiz8KSlzpJzO+qVDsUN5AZi30Dek58X7UY2s7VtzovSoE/2I3Nyh0qcKCWlPQqLCvJvqMsjJ9TFFZSemgoLgqHYh+C+7k2p7AnyRFradmLOx4Ml72+kvAGvW0wb2cihuMqp6pg/RtO0PwU3he6XLsyNkm47/x1kGHTRx/0UI+ahaly3ULOM0ue13JbenXbfTSGiNa+JslKof+dyN4FLyXyoUG29kRXczD3nPk+BZzYuasUH/MWVyrPBD2Iq55WohA6mwpVTAYV5BtaehK1RgBP2WCUBPzI04hzbMh+mDXbEUBg4p3xWaLOyyWh26mEJ5xNYKfxyaD/Il8aezQoZ5wDNPua0KPUAWjoEoUMjKIdV95BQM/O7SNrPpkwkJTRHAXgXWCDK0wq+TUjosgRNWLco/oyEc6x0nYpY8V9OP+/8en2SNEJur2PDziy4DjMkSIm+iggZZ2YTAb8DSqtCfvOqcU0yN2nsIPwHLPHufCJG6ZgHLZ1CZlGmL9AFh3H0Zm47ySHG8HKJu9Gf76cAMlQDZWVlkL8qj0rCDq7a4iMxIWClvzgJBEY1L5A6WTw9iXndhE5s3D/FrO07FwSBoXabHjpQ5SOLt1+trBWSlZX4O1ta7V49U5rbAK6PYeJLhoz1ZbRTL3gXKgKScB06lzmrF3Q8kR2+LXxmP4Vpccj8dfLZRWsHXichsXloxw=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR18MB4009.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(7416002)(9686003)(6916009)(508600001)(55016002)(8676002)(7696005)(966005)(5660300002)(54906003)(38070700005)(15650500001)(122000001)(86362001)(38100700002)(71200400001)(6506007)(4326008)(52536014)(8936002)(186003)(26005)(83380400001)(2906002)(66556008)(64756008)(66446008)(33656002)(76116006)(316002)(4744005)(4001150100001)(66476007)(66946007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?l3VN2i0Uu8HEKl4bGHKd6T+tnzAyOsRztyopWWd3lEmf5qkOzEgqUJ7SyM?=
- =?iso-8859-1?Q?qaB2sCHczVSRcsfL/ftpAM7igyyaXMnBXwIdqBXq8Ahm98OQcOrj3DyUlf?=
- =?iso-8859-1?Q?LbXdcovBjpAq5ebmh8PpEK2tsw6sv8Fd9xFLUFMJ6AGw3glYTJ8+IqMNOt?=
- =?iso-8859-1?Q?tKf0iW8OagNNBK+UUJJk8zkAign4twRtCNAvZtBt0nxU0mI9t05BsJxpvX?=
- =?iso-8859-1?Q?I6K1Tce/HnNG55wKXl9qed5nIFkO6LlEhFYL38+IIMbemo6Rlm74jx+5q7?=
- =?iso-8859-1?Q?PqAvnUY53pKLkTsZ/LYPN5MG5ZeJo+LhMIH6g853qJyWb7tt1VXsfzU1hB?=
- =?iso-8859-1?Q?/wt/hgztSpcHz/v0Y0FefoVgyB6MPQN9htAXskJL9XiyFXhdUNb1G0zroe?=
- =?iso-8859-1?Q?aAKXAMSFSzGs92dFfv+HAHYjXGkzhI/ru2pTDsi0C2ItEGgODu6b5NohvL?=
- =?iso-8859-1?Q?YZEG4Pnm+4+XSmoI8iwmQ6SGouLYxV+zOiiUhCcYYzr9bDCfbkZF0bURPF?=
- =?iso-8859-1?Q?YGzQDfZGjC+yxvCKkNKIVd42Am3oPCc90XrLQdR17LMyqKGL1MrTrBKPQU?=
- =?iso-8859-1?Q?nP+UJ9vRzVwl3+3SQbec3XNaZXHiducwMxnzf2Cfz+V6zWFWGQ4ZP8TCpD?=
- =?iso-8859-1?Q?0EvyMr3Zhp4xIsTQadZQJ7awNMkFPD5sZ3urbh1veI/JNW+GPFpfzy6QdN?=
- =?iso-8859-1?Q?hlZ9wRG78OxklDxDOt1w6HJxkLyqoRhH7UdCk81ntlMyxm+ELMdQMr55mv?=
- =?iso-8859-1?Q?dWWvgEQ49ck3jJpB0ankzRaIu929I8ww5uCmgw7NdnqOklYLaPj6Ao1UPg?=
- =?iso-8859-1?Q?dIcSL+uhxhWGdImXo9eVUu8e4v26UFOYDIGhxEBGC+LxxR/Zpz20qdMish?=
- =?iso-8859-1?Q?3VtTWXiNByeP04lqNfkkyMwzANtvwnTFnvEw7nVxkRCpVhBzbQxDVQpBWI?=
- =?iso-8859-1?Q?pVZHsjhteVenJX86cRct2UVpYvCHvfHrX4SCRazSMfMsFYNr7XbgtO7iF+?=
- =?iso-8859-1?Q?gkAx79BgXFMsO05HN5QK5whzr7zdcM5VGZJy/DROtKLw+TZU9Pjmxpid/y?=
- =?iso-8859-1?Q?z3epOAVf47noWZM3iTuN8v2uAfEGXBxrDjV61CgaFEzUi2qbLMPJ7zUJ8t?=
- =?iso-8859-1?Q?x0LOEhLPvAj2l1JLNEj+gFWNsU8Z1XYvqZ5PakDbj5Gl/sbqjpds/SlUOq?=
- =?iso-8859-1?Q?SdIbNgDcHPyzvFYoYvmttnaXHDg9n944LhZi+2y4xQc2aMNWMsgl7xVNaZ?=
- =?iso-8859-1?Q?OyGMbeTmkvVOhUrp7vABd8qsGV1vsaNTfrbpTGU518Xn6QHIg39TWZaLil?=
- =?iso-8859-1?Q?+xdC9CQ2QQTWCJLy24petnt2uL9WIfm+8rTg+46j+0VKFF1H0VRxgWE0YU?=
- =?iso-8859-1?Q?YBnGNXU/q/mAMwGe49pINYyfktUhLjbGfkqeumZajbUfCQFGyiREBIYdNV?=
- =?iso-8859-1?Q?a9DmKl+8mo5U9lwh8SG1gOne7SbDJcUxHYIPiXsJekPc5WG1QrBX5eGwgw?=
- =?iso-8859-1?Q?IaA9d46Mn9OVC+79+BwemKNN2OVHjfy2iaRHOKT/5SV/sG/0bzgPzuMABN?=
- =?iso-8859-1?Q?Q4DmLOn4jeqe1aI/KfTVXZEQdB9KbrHfZYvVAdMFTubi5cLE0L+1vbHmzC?=
- =?iso-8859-1?Q?tkyWqyuIyDLH7dqb4p4YmDw+M/vctDFpsmt1/Z0JQFGznYYt0IYtfhKA?=
- =?iso-8859-1?Q?=3D=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S232782AbhKRQA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 11:00:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43064 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232079AbhKRQA4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Nov 2021 11:00:56 -0500
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5093C6152B;
+        Thu, 18 Nov 2021 15:57:55 +0000 (UTC)
+Date:   Thu, 18 Nov 2021 10:57:52 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     menglong8.dong@gmail.com
+Cc:     kuba@kernel.org, davem@davemloft.net, mingo@redhat.com,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, imagedong@tencent.com,
+        ycheng@google.com, kuniyu@amazon.co.jp,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 1/2] net: snmp: add tracepoint support for
+ snmp
+Message-ID: <20211118105752.1d46e990@gandalf.local.home>
+In-Reply-To: <20211118124812.106538-2-imagedong@tencent.com>
+References: <20211118124812.106538-1-imagedong@tencent.com>
+        <20211118124812.106538-2-imagedong@tencent.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-OriginatorOrg: marvell.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR18MB4009.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b8ebf4e6-e31e-4140-cbcc-08d9aaa9ef30
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Nov 2021 15:41:48.4830
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: gIkGaZ5+Xua/OMcNsrsK5GlGsy5o+Ybv98AEkaHQtny5S1Vk9E3p23fUJa5sBMTazsB2ua3GrG2Kgj2XjOrN8g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR18MB2903
-X-Proofpoint-ORIG-GUID: fnDBTKOw2jnGuHsDqy1jpp76wVFHX5tb
-X-Proofpoint-GUID: fnDBTKOw2jnGuHsDqy1jpp76wVFHX5tb
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-11-18_12,2021-11-17_01,2020-04-07_01
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit f5d519563ac9d2d1f382a817aae5ec5473811ac8=
-:=0A=
-=0A=
-  linux-firmware: Update AMD cpu microcode (2021-11-15 12:49:19 -0500)=0A=
-=0A=
-are available in the git repository at:=0A=
-=0A=
-  https://github.com/PLVision/linux-firmware.git prestera-v4.0=0A=
-=0A=
-for you to fetch changes up to 77e72100290150317c3a29baddf97f8fd27b58b4:=0A=
-=0A=
-  mrvl: prestera: Update Marvell Prestera Switchdev v4.0 (2021-11-18 17:05:=
-16 +0200)=0A=
-=0A=
-----------------------------------------------------------------=0A=
-Changes in V2:=0A=
-  - Add entry into WHENCE=0A=
-=0A=
-Volodymyr Mytnyk (1):=0A=
-      mrvl: prestera: Update Marvell Prestera Switchdev v4.0=0A=
-=0A=
- WHENCE                                  |   1 +=0A=
- mrvl/prestera/mvsw_prestera_fw-v4.0.img | Bin 0 -> 14965408 bytes=0A=
- 2 files changed, 1 insertion(+)=0A=
- create mode 100644 mrvl/prestera/mvsw_prestera_fw-v4.0.img=
+On Thu, 18 Nov 2021 20:48:11 +0800
+menglong8.dong@gmail.com wrote:
+
+> From: Menglong Dong <imagedong@tencent.com>
+> 
+> snmp is the network package statistics module in kernel, and it is
+> useful in network issue diagnosis, such as packet drop.
+> 
+> However, it is hard to get the detail information about the packet.
+> For example, we can know that there is something wrong with the
+> checksum of udp packet though 'InCsumErrors' of UDP protocol in
+> /proc/net/snmp, but we can't figure out the ip and port of the packet
+> that this error is happening on.
+> 
+> Add tracepoint for snmp. Therefor, users can use some tools (such as
+> eBPF) to get the information of the exceptional packet.
+> 
+> Signed-off-by: Menglong Dong <imagedong@tencent.com>
+> v2:
+> - use a single event, instead of creating events for every protocols
+> ---
+>  include/trace/events/snmp.h | 44 +++++++++++++++++++++++++++++++++++++
+>  include/uapi/linux/snmp.h   | 21 ++++++++++++++++++
+>  net/core/net-traces.c       |  3 +++
+>  3 files changed, 68 insertions(+)
+>  create mode 100644 include/trace/events/snmp.h
+> 
+> diff --git a/include/trace/events/snmp.h b/include/trace/events/snmp.h
+> new file mode 100644
+> index 000000000000..1fa2e31056e0
+> --- /dev/null
+> +++ b/include/trace/events/snmp.h
+> @@ -0,0 +1,44 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#undef TRACE_SYSTEM
+> +#define TRACE_SYSTEM snmp
+> +
+> +#if !defined(_TRACE_SNMP_H) || defined(TRACE_HEADER_MULTI_READ)
+> +#define _TRACE_SNMP_H
+> +
+> +#include <linux/tracepoint.h>
+> +#include <linux/skbuff.h>
+> +#include <linux/snmp.h>
+
+Add:
+
+#define TRACE_MIB_VALUES			\
+	EM(TRACE_MIB_NUM,	NUM)		\
+	EM(TRACE_MIB_IP,	IP)		\
+	EM(TRACE_MIB_IPV6,	IPV6)		\
+	EM(TRACE_MIB_TCP,	TCP)		\
+	EM(TRACE_MIB_NET,	NET)		\
+	EM(TRACE_MIB_ICMP,	ICMP)		\
+	EM(TRACE_MIB_ICMPV6,	ICMPV6)		\
+	EM(TRACE_MIB_ICMPMSG,	ICMPMSG)	\
+	EM(TRACE_MIB_ICMPV6MSG,	ICMPV6MSG)	\
+	EM(TRACE_MIB_UDP,	UDP)		\
+	EM(TRACE_MIB_UDPV6,	UDPV6)		\
+	EM(TRACE_MIB_UDPLITE,	UDPLITE)	\
+	EM(TRACE_MIB_UDPV6LITE,	UDPV6LITE)	\
+	EM(TRACE_MIB_XFRM,	XFRM)		\
+	EM(TRACE_MIB_TLS,	TLS)		\
+	EMe(TRACE_MIB_MPTCP,	MPTCP)
+
+#define TRACE_UDP_MIB_VALUES				\
+	EM(UDP_MIB_NUM,		NUM)			\
+	EM(UDP_MIB_INDATAGRAMS,		INDATAGRAMS)	\
+	EM(UDP_MIB_NOPORTS,		NOPORTS)	\
+	EM(UDP_MIB_INERRORS,		INERRORS)	\
+	EM(UDP_MIB_OUTDATAGRAMS,	OUTDATAGRAMS)	\
+	EM(UDP_MIB_RCVBUFERRORS,	RCVBUFERRORS)	\
+	EM(UDP_MIB_SNDBUFERRORS,	SNDBUFERRORS)	\
+	EM(UDP_MIB_CSUMERRORS,		CSUMERRORS)	\
+	EM(UDP_MIB_IGNOREDMULTI,	IGNOREDMULTI)	\
+	EMe(UDP_MIB_MEMERRORS,		MEMERRORS)
+
+#undef EM
+#undef EMe
+#define EM(a, b)        TRACE_DEFINE_ENUM(a);
+#define EMe(a, b)       TRACE_DEFINE_ENUM(a);
+
+TRACE_MIB_VALUES
+TRACE_UDP_MIB_VALES
+
+#undef EM
+#undef EMe
+#define EM(a,b)		{ a , #b },
+#define EMe(a,b)	{ a , #b }
+
+> +
+> +DECLARE_EVENT_CLASS(snmp_template,
+> +
+> +	TP_PROTO(struct sk_buff *skb, int type, int field, int val),
+> +
+> +	TP_ARGS(skb, type, field, val),
+> +
+> +	TP_STRUCT__entry(
+> +		__field(void *, skbaddr)
+> +		__field(int, type)
+> +		__field(int, field)
+> +		__field(int, val)
+> +	),
+> +
+> +	TP_fast_assign(
+> +		__entry->skbaddr = skb;
+> +		__entry->type = type;
+> +		__entry->field = field;
+> +		__entry->val = val;
+> +	),
+> +
+> +	TP_printk("skbaddr=%p, type=%d, field=%d, val=%d",
+
+Then have here:
+
+	__enrty->skbaddr, __print_symbolic(__entry->type, TRACE_MIB_VALUES),
+	__print_symbolic(__entry->field, TRACE_UDP_MIB_VALUES),
+	__print_symbolic(__entry->val, { 0, "Decrease" }, { 1, "Increase" })
+
+And then the output will have the proper English terms and not have to rely
+on the user knowing what the numbers represent. Also, it allows them to
+change in the future.
+
+-- Steve
+
+> +		  __entry->skbaddr, __entry->type,
+> +		  __entry->field, __entry->val)
+> +);
+> +
+> +DEFINE_EVENT(snmp_template, snmp,
+> +	TP_PROTO(struct sk_buff *skb, int type, int field, int val),
+> +	TP_ARGS(skb, type, field, val)
+> +);
+> +
+> +#endif
+> +
+> +#include <trace/define_trace.h>
+> diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
+> index 904909d020e2..b96077e09a58 100644
+> --- a/include/uapi/linux/snmp.h
+> +++ b/include/uapi/linux/snmp.h
+> @@ -347,4 +347,25 @@ enum
+>  	__LINUX_MIB_TLSMAX
+>  };
+>  
+> +/* mib type definitions for trace event */
+> +enum {
+> +	TRACE_MIB_NUM = 0,
+> +	TRACE_MIB_IP,
+> +	TRACE_MIB_IPV6,
+> +	TRACE_MIB_TCP,
+> +	TRACE_MIB_NET,
+> +	TRACE_MIB_ICMP,
+> +	TRACE_MIB_ICMPV6,
+> +	TRACE_MIB_ICMPMSG,
+> +	TRACE_MIB_ICMPV6MSG,
+> +	TRACE_MIB_UDP,
+> +	TRACE_MIB_UDPV6,
+> +	TRACE_MIB_UDPLITE,
+> +	TRACE_MIB_UDPV6LITE,
+> +	TRACE_MIB_XFRM,
+> +	TRACE_MIB_TLS,
+> +	TRACE_MIB_MPTCP,
+> +	__TRACE_MIB_MAX
+> +};
+> +
+>  #endif	/* _LINUX_SNMP_H */
+> diff --git a/net/core/net-traces.c b/net/core/net-traces.c
+> index c40cd8dd75c7..e291c0974438 100644
+> --- a/net/core/net-traces.c
+> +++ b/net/core/net-traces.c
+> @@ -35,6 +35,7 @@
+>  #include <trace/events/tcp.h>
+>  #include <trace/events/fib.h>
+>  #include <trace/events/qdisc.h>
+> +#include <trace/events/snmp.h>
+>  #if IS_ENABLED(CONFIG_BRIDGE)
+>  #include <trace/events/bridge.h>
+>  EXPORT_TRACEPOINT_SYMBOL_GPL(br_fdb_add);
+> @@ -61,3 +62,5 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(napi_poll);
+>  
+>  EXPORT_TRACEPOINT_SYMBOL_GPL(tcp_send_reset);
+>  EXPORT_TRACEPOINT_SYMBOL_GPL(tcp_bad_csum);
+> +
+> +EXPORT_TRACEPOINT_SYMBOL_GPL(snmp);
+
