@@ -2,215 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4375B4564F0
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 22:16:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 215E0456521
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 22:42:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229600AbhKRVTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 16:19:20 -0500
-Received: from mail-eopbgr60077.outbound.protection.outlook.com ([40.107.6.77]:17565
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229521AbhKRVTU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Nov 2021 16:19:20 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BOPuClXbkgilvUzHdC6zpEcaD5wCHjKZqhSLONta6x0nFH++0YT8XxrsqZpq1Hw1J/CrveAHC5wg8mOok/PZGU0qjYzTtIOObzLXnIDRWL1U2bjqxIM7OJ5F/S4FwOm2S1WDpdEllyOyXHPCfym01Z/rG3CrVY2C9QC1iiPQjHkm1X/sFO4stQtzbKIkCf5aKimFf34W/j9f7TQvmhheB1QUB5EkVg0/SO2tnTwL78U69KHKbl7KyLRsRJ/UYtyoXyGa4Yat6JZTrsojxIMjuqz3BfjHlXfLaiTw4xXasDEaOat+5SXX+qABPmCwupQSQt3m16gKOy+nTHTzOkdaGQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JIcHC96cODxVuvt/nDoQDnR0+bfG3CbLoZTRJ/bvKHw=;
- b=TENwWJI9gagBLsCl7rI+J/sEMgUhUYh1nYaGvSJ4kfKIFfRVwTaB+4htt5h4qCQ1Dj43ODOUCFxbWbF/Iurz+3h/7jFTDc7jW9ATaE1PuuR+moDCz7SF376PlfthQuhq277G/ZNGAv7vNtoPLMBKPzj0ZBRtA4flJe2+++ygxklRJ+Y2LT/hwjZ8VZ5LRRUTa1vyopUbWlR0XVckAY1Ig0aVlGin56EJ+yEEktNszh29fVaAFllTxnyzY4xcLpRDwbDIpBiAgU11vQHelby4cNVtOlIhfrjEFw1IievsWRQfazlRBb2mjh2JpnvulShz2AIsyIkPghuJ0BZaLpYK5A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
+        id S231377AbhKRVpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 16:45:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59430 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229777AbhKRVpw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 16:45:52 -0500
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9575DC061574;
+        Thu, 18 Nov 2021 13:42:51 -0800 (PST)
+Received: by mail-qt1-x82f.google.com with SMTP id a2so7560464qtx.11;
+        Thu, 18 Nov 2021 13:42:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=secospa.onmicrosoft.com; s=selector2-secospa-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JIcHC96cODxVuvt/nDoQDnR0+bfG3CbLoZTRJ/bvKHw=;
- b=qw03tD/VE6Gs4ij9qwgMiUvv8ta9JPOxQcSjUXZA3UbTVa4yhRQMoQm+oMW9QXjUd7lPC8KxnRLCZC0jhDmqCv0ZJmDICyLA7PKLiUvzrCnYryldmmr7u0d+t6IvixDFK/RIYFCBOYtUOHOQs/M/y6vHEIg1BhFxKUptYAkd4Ew=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
- by DB9PR03MB7418.eurprd03.prod.outlook.com (2603:10a6:10:22e::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.22; Thu, 18 Nov
- 2021 21:16:17 +0000
-Received: from DB7PR03MB4523.eurprd03.prod.outlook.com
- ([fe80::9093:a60b:46b7:32ee]) by DB7PR03MB4523.eurprd03.prod.outlook.com
- ([fe80::9093:a60b:46b7:32ee%4]) with mapi id 15.20.4713.022; Thu, 18 Nov 2021
- 21:16:17 +0000
-Subject: Re: [RESEND PATCH net-next v2] net: phylink: Add helpers for c22
- registers without MDIO
-To:     kernel test robot <lkp@intel.com>, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20211118161430.2547168-1-sean.anderson@seco.com>
- <202111190547.Axd0pXwW-lkp@intel.com>
-From:   Sean Anderson <sean.anderson@seco.com>
-Message-ID: <4565f83b-849e-0b12-93ba-5e861bbd8f7a@seco.com>
-Date:   Thu, 18 Nov 2021 16:16:12 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <202111190547.Axd0pXwW-lkp@intel.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BL0PR01CA0030.prod.exchangelabs.com (2603:10b6:208:71::43)
- To DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=bozUgf/JVDF2e98+kGGhI0ahPdp4o4xUb4tT8hjMa9U=;
+        b=fH70x1KjXkm8uy3kmKPOTiZnE/rXw9bnp9IGFoT6JpzTna6lLNGEUDXFNUA5+k6CNR
+         vNiFUuAD3BcGAXp8eoAvx0jtcU+pftXPljd4AOMGOjyn/QOb2ICo7/Qfa8DYFSV+OLuA
+         CgQGXdEmZ7S8A9PcSGOT++N8of31R4Hki9/k0OeUZ+MaECZ3AX3jLkRLONiDCXGcr5A6
+         uAHhw/js1ZOfXHwBvAbFyoFZAJ3Tp/lfQGxu2HJP52DG6M3aIboV82ruOOQm+PWJ5vSl
+         vjhe1VAW2DD1Ip7q6PP/YgdwW8RY+987CoCdaVGO/FTgXGdDPpDdvkrKM4pv3cHkOKGk
+         w6vA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=bozUgf/JVDF2e98+kGGhI0ahPdp4o4xUb4tT8hjMa9U=;
+        b=4aZJRLcJHqqdZJaYYsF50+PhlhRZHroNrvCOfVX/ntguaGIpM3SFXvvC3CeUgTiQtR
+         a6dUN6WfC2d4O14fawzCDP4n7j8rny4CcrqiZnMLPZv1XXa1kWb3ziMH6qg4MsuIicFO
+         a7xCY74mcjjhvf2dr/sMI9mmGEUW0kX797flq/xa133oITdhSNHWegZCeaOwYv6YRtPI
+         DHtie+o1pdtCS/KyK66pXb+REiM6PSj/B2PBtvgSDSMJ2RoyWnOwkvuCCoTNqHFLonGM
+         QewMZ7sAneKxPDSd7MEzniKtepZUtp2pYV3CSyOn9XoR46bG4t6d4XMBH0t6xASDxylK
+         4T5g==
+X-Gm-Message-State: AOAM531Ppf0S8R4jZL6KbXg3DZGki+88RfdzeVEVl6ltkI5I6miQuhq4
+        PyAW6x12H/oE/DtJZtLS1ZnCNGe7nXV4QuU0
+X-Google-Smtp-Source: ABdhPJx2j983TdsJHGBzYG1RBGVSh/tKIu6Ok29h5ntWsS4UxYP0c+eQXGFl2kzxAVfPBqMiMLLOHw==
+X-Received: by 2002:ac8:57ca:: with SMTP id w10mr830467qta.88.1637271770675;
+        Thu, 18 Nov 2021 13:42:50 -0800 (PST)
+Received: from a-10-27-17-117.dynapool.vpn.nyu.edu (vpnrasa-wwh-pat-01.natpool.nyu.edu. [216.165.95.84])
+        by smtp.gmail.com with ESMTPSA id t11sm528153qkm.96.2021.11.18.13.42.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Nov 2021 13:42:50 -0800 (PST)
+Date:   Thu, 18 Nov 2021 16:42:47 -0500
+From:   Zekun Shen <bruceshenzk@gmail.com>
+To:     bruceshenzk@gmail.com
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        brendandg@nyu.edu
+Subject: [PATCH] stmmac_pci: Fix underflow size in stmmac_rx
+Message-ID: <YZbI12/g04GlzdIU@a-10-27-17-117.dynapool.vpn.nyu.edu>
 MIME-Version: 1.0
-Received: from [172.27.1.65] (50.195.82.171) by BL0PR01CA0030.prod.exchangelabs.com (2603:10b6:208:71::43) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.21 via Frontend Transport; Thu, 18 Nov 2021 21:16:15 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 08947098-8848-4dae-093a-08d9aad8a8aa
-X-MS-TrafficTypeDiagnostic: DB9PR03MB7418:
-X-Microsoft-Antispam-PRVS: <DB9PR03MB741823F2E74911FACF17DE68969B9@DB9PR03MB7418.eurprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: pLa6WvRpZ/l1JxkSeSJLq0urnoH4vNRxNNUtmL02jzbPekihXQcwBJw3sv+tgzX/cUJmy2HLJqFJAO6c8w9NsJ2XwSLPBvorleeul02G1NHIkBB8TSCQp7VL6o9jqFwgeSRe4z53Ft6Ie/cKQj3eDDZGrklMQPkOzBpkeL0pMJIxkL8PkJgakQuZjisioOAVh2UcrSl9BY7Lp5iSPUnJcHRqDDvi0aczQohdjMXJ1VZONm9DIT7LxjSOMr6Q05mgbZ3+oMmUS8T8DkJj1InflrIMqqC/dkHsi1lNonSgA5hhFjZLR8EAV7EYlDgYUadFSEPmQmRd7c6LNrIOjYrL90/Qc6792FTNCFgaqhIIzSlRVcjuZ0loACHBAiiew9Pdd8ZL50KVzjZiL8fQNMswZiNiTL+SrRkWm+Gf3zzvAn+MUlyFrJrIftNLvFRD52GbtqKxr6cQ35wnjHBB0hL/Is2DcQLuecLAAJAEoa4Pgq5tqxuXN83zW1hqy6akAvVGrp+E9+H0GMY4UScQtBfd0FUcPpAMBfRv74siv9sb1aIljm3Eh46LFxh+6oHW8wUzVoUfPcJmdJwsn52w9KE2WrfyVjZqfAw3BLZtAW2ToZkLqPjzCdczoKJ5T2elUUv3GeVqkdBQZYNGLIbatvkr8tH41KufdKxcSqZqJwyaAsoKOS09NHtqWJIXJ5qmU+6UsjvPNG3HEm4ax5idkMnPIAshFYIiRNBlhHXQk1c4SsgITYyafff2jHbpZPv5/fO7D+cIt0iEF+sWNrPiUERSj8Rl++O3yTmfop2LkWn36BOS97HycHFuYXB4ppjnQ8HK
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(110136005)(66476007)(83380400001)(54906003)(316002)(6666004)(86362001)(8936002)(66556008)(66946007)(186003)(31696002)(6486002)(31686004)(16576012)(52116002)(44832011)(508600001)(38350700002)(38100700002)(4326008)(2616005)(36756003)(2906002)(8676002)(956004)(53546011)(5660300002)(966005)(26005)(7416002)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?Windows-1252?Q?IXD+ji7e/rqubMHOzb7MD/HuR7mxZoM3lEhLzKC7snL6frSz4OwqYZFU?=
- =?Windows-1252?Q?wB5venodAIpAUgEKdId5gKTLteUpL3XiQe7zyArexgKVHQZuVW3Dvzao?=
- =?Windows-1252?Q?XbNmGQ9nmi1R2sr+Tl12klLCPrjeUb7JoNmzkSKURrfQzT3jPDer92a8?=
- =?Windows-1252?Q?agQ8f66kJMrDM1drjecfA189HD4LNLDxszyY3BUDMmRVieep2wLzA329?=
- =?Windows-1252?Q?MYpJVCbQa6iS6QK+x5O6b629ydLcwVOhrvf4UVn/zNVZejMU4Z/fF9pv?=
- =?Windows-1252?Q?PQvawi70Upa2ZSQvIIBWt8SJELY9AG6GZsv02SPSL9rlurt2t470sgT2?=
- =?Windows-1252?Q?y6t9PioS1DQ7+1uReUTjvrSN/3TMs97fL/W3Rex0fu+aeP/cVrR2e35B?=
- =?Windows-1252?Q?Afkn8a93o3QZP7b0zb2lZ4aLZdrevWaqhqnyDGj+3LUOC5C7vDWHtXWB?=
- =?Windows-1252?Q?BUZ6k8tcgtxTYzGlW3NNVqvKu/oSQkyPhGb3YV00nkbT10HgvnAW8pEk?=
- =?Windows-1252?Q?SjskImgP2JDGCVdE18i2pg+666tBaDXRNVM+v3Rz7QUKd6xm6gk0Xt3D?=
- =?Windows-1252?Q?SXpyrtePIxRGQozRa9l0x9KbdM6+yYN3Rm16TqCOH2QkoOgGyR1wLxGi?=
- =?Windows-1252?Q?dDFH0zbz34wu36fOctoBAy/KBxw0gNWJNUa5JCBw3wkvTj/cz7aI0sZc?=
- =?Windows-1252?Q?EuCCap6zlXrDIO6ttX2Klfm7xSUQC2fFLW9MAWo81wOIdWv8tim0IUUU?=
- =?Windows-1252?Q?YxodRXS8QHyUlP3o6mN1/lSS9QM06KHNm1Q+uZnWk7vubXb0T/UlhHQl?=
- =?Windows-1252?Q?EjuflAJjKoZPdS/8cNbsSS/bS9pgE1kgP7KZVAkFPo09DvrHAKHQgpF6?=
- =?Windows-1252?Q?z+npNDxuYHp7+dkb1h7/AHJEtNLz2imeqTznAgQOfIATIjM78CYCzdlr?=
- =?Windows-1252?Q?c2hfvB70TAtH2PGxKgYgQtRJ9xsOXoYvG/uN5+d173vHU/x0j4eo/xzW?=
- =?Windows-1252?Q?49rAU8JJFudzE9SvOK0COKsmglQTAWXcYkM3mjjeB49i2NSKuDDQ01Wv?=
- =?Windows-1252?Q?Shry1+Ar/U5ctniRhVKoOFbw1gAebxxKwETrmrkDZEz8u4rMxPNcE8xQ?=
- =?Windows-1252?Q?hA4i9SasLtnhVr4OlRyP8GRPails3xBp3P+qQvpu6UTMOvKGBz7ctDhq?=
- =?Windows-1252?Q?MBoKshKIx2LHwNLXK4BNue1IoPNJOi4UW+55fVo53S1YpBXfCmXfqw1V?=
- =?Windows-1252?Q?e7tpEg/g77sj370mu6lj/XCrwbso/ahMm2BtRDczl44m4FFCsBCXpDvR?=
- =?Windows-1252?Q?2I8aJ6huWaIk3yVoGegQYmNVaZXND2I5s6UoB5QxUUtE4ml8Hv1sK7dR?=
- =?Windows-1252?Q?3a+CVnUNuxFOMeBghoMq5FuNyPznA8Z/99MAby6Vgsf3Tb26UIdV/Gpb?=
- =?Windows-1252?Q?Pj0LZP3GS0uPM3FEQ70yenqd4vXcOiRukRWPkzWmF46D6R9u5OjtT/+Y?=
- =?Windows-1252?Q?6ttltoDPCdW/imOJiG/c4E11zHRZpKwQ/TSfdJGe5q7LsUp6IJMpwe3M?=
- =?Windows-1252?Q?3cNJwrAYLMMaV27a+11TB2tSA/XgwPsFb+FYZPwZRXcZCtf/ltaNWT1c?=
- =?Windows-1252?Q?DambnJWQSrEf8ci/+MSrvX7TwpMfuiW6Lo4rQBrSKnep8C4CVp62YO6p?=
- =?Windows-1252?Q?Cdgnx/35G9n2csgXCorXvT4fcLitlhZNm/cYNShC6ySuOqZU02PUpSM2?=
- =?Windows-1252?Q?425/o5gk1IEYd6v3M3A=3D?=
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 08947098-8848-4dae-093a-08d9aad8a8aa
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4523.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2021 21:16:16.9998
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: heX5NAR4mjsrua46S1/yChnyEJQPYyJjBD6aneQhdW8DKQWI/RjAaoHDV0+FcYpvpFJqv8ijpHpb/GjsUyU8DQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR03MB7418
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This bug report came up when we were testing the device driver
+by fuzzing. It shows that buf1_len can get underflowed and be
+0xfffffffc (4294967292).
 
+This bug is triggerable with a compromised/malfunctioning device.
+We found the bug through QEMU emulation tested the patch with
+emulation. We did NOT test it on real hardware.
 
-On 11/18/21 4:07 PM, kernel test robot wrote:
-> Hi Sean,
-> 
-> Thank you for the patch! Perhaps something to improve:
-> 
-> [auto build test WARNING on net-next/master]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Sean-Anderson/net-phylink-Add-helpers-for-c22-registers-without-MDIO/20211119-002726
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git bb8cecf8ba127abca8ccd102207a59c55fdae515
-> config: hexagon-randconfig-r045-20211118 (attached as .config)
-> reproduce (this is a W=1 build):
->          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->          chmod +x ~/bin/make.cross
->          # https://github.com/0day-ci/linux/commit/1af77aa70fbd03602e8db3d621fdaf4e8a301e98
->          git remote add linux-review https://github.com/0day-ci/linux
->          git fetch --no-tags linux-review Sean-Anderson/net-phylink-Add-helpers-for-c22-registers-without-MDIO/20211119-002726
->          git checkout 1af77aa70fbd03602e8db3d621fdaf4e8a301e98
->          # save the attached .config to linux build tree
->          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 ARCH=hexagon
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All warnings (new ones prefixed by >>):
-> 
->>> drivers/net/phy/phylink.c:2952:10: warning: result of comparison of constant -22 with expression of type 'u16' (aka 'unsigned short') is always true [-Wtautological-constant-out-of-range-compare]
->             if (adv != -EINVAL) {
->                 ~~~ ^  ~~~~~~~
->     1 warning generated.
+Attached is the bug report by fuzzing.
 
-Hmm, looks like this should be
+BUG: KASAN: use-after-free in stmmac_napi_poll_rx+0x1c08/0x36e0 [stmmac]
+Read of size 4294967292 at addr ffff888016358000 by task ksoftirqd/0/9
 
-	ret = phylink_mii_c22_pcs_encode_advertisement();
-	if (ret > 0) {
-		...
-	}
+CPU: 0 PID: 9 Comm: ksoftirqd/0 Tainted: G        W         5.6.0 #1
+Call Trace:
+ dump_stack+0x76/0xa0
+ print_address_description.constprop.0+0x16/0x200
+ ? stmmac_napi_poll_rx+0x1c08/0x36e0 [stmmac]
+ ? stmmac_napi_poll_rx+0x1c08/0x36e0 [stmmac]
+ __kasan_report.cold+0x37/0x7c
+ ? stmmac_napi_poll_rx+0x1c08/0x36e0 [stmmac]
+ kasan_report+0xe/0x20
+ check_memory_region+0x15a/0x1d0
+ memcpy+0x20/0x50
+ stmmac_napi_poll_rx+0x1c08/0x36e0 [stmmac]
+ ? stmmac_suspend+0x850/0x850 [stmmac]
+ ? __next_timer_interrupt+0xba/0xf0
+ net_rx_action+0x363/0xbd0
+ ? call_timer_fn+0x240/0x240
+ ? __switch_to_asm+0x40/0x70
+ ? napi_busy_loop+0x520/0x520
+ ? __schedule+0x839/0x15a0
+ __do_softirq+0x18c/0x634
+ ? takeover_tasklets+0x5f0/0x5f0
+ run_ksoftirqd+0x15/0x20
+ smpboot_thread_fn+0x2f1/0x6b0
+ ? smpboot_unregister_percpu_thread+0x160/0x160
+ ? __kthread_parkme+0x80/0x100
+ ? smpboot_unregister_percpu_thread+0x160/0x160
+ kthread+0x2b5/0x3b0
+ ? kthread_create_on_node+0xd0/0xd0
+ ret_from_fork+0x22/0x40
 
-and just eliminate adv
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
---Sean
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index d3f350c25b9b..bb35378d93bc 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -5164,12 +5164,13 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
+ 		if (likely(!(status & rx_not_ls)) &&
+ 		    (likely(priv->synopsys_id >= DWMAC_CORE_4_00) ||
+ 		     unlikely(status != llc_snap))) {
+-			if (buf2_len)
++			if (buf2_len) {
+ 				buf2_len -= ETH_FCS_LEN;
+-			else
++				len -= ETH_FCS_LEN;
++			} else if (buf1_len) {
+ 				buf1_len -= ETH_FCS_LEN;
+-
+-			len -= ETH_FCS_LEN;
++				len -= ETH_FCS_LEN;
++			}
+ 		}
+ 
+ 		if (!skb) {
+-- 
+2.25.1
 
->
-> vim +2952 drivers/net/phy/phylink.c
-> 
->    2930	
->    2931	/**
->    2932	 * phylink_mii_c22_pcs_config() - configure clause 22 PCS
->    2933	 * @pcs: a pointer to a &struct mdio_device.
->    2934	 * @mode: link autonegotiation mode
->    2935	 * @interface: the PHY interface mode being configured
->    2936	 * @advertising: the ethtool advertisement mask
->    2937	 *
->    2938	 * Configure a Clause 22 PCS PHY with the appropriate negotiation
->    2939	 * parameters for the @mode, @interface and @advertising parameters.
->    2940	 * Returns negative error number on failure, zero if the advertisement
->    2941	 * has not changed, or positive if there is a change.
->    2942	 */
->    2943	int phylink_mii_c22_pcs_config(struct mdio_device *pcs, unsigned int mode,
->    2944				       phy_interface_t interface,
->    2945				       const unsigned long *advertising)
->    2946	{
->    2947		bool changed = 0;
->    2948		u16 adv, bmcr;
->    2949		int ret;
->    2950	
->    2951		adv = phylink_mii_c22_pcs_encode_advertisement(interface, advertising);
->> 2952		if (adv != -EINVAL) {
->    2953			ret = mdiobus_modify_changed(pcs->bus, pcs->addr,
->    2954						     MII_ADVERTISE, 0xffff, adv);
->    2955			if (ret < 0)
->    2956				return ret;
->    2957			changed = ret;
->    2958		}
->    2959	
->    2960		/* Ensure ISOLATE bit is disabled */
->    2961		if (mode == MLO_AN_INBAND &&
->    2962		    linkmode_test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, advertising))
->    2963			bmcr = BMCR_ANENABLE;
->    2964		else
->    2965			bmcr = 0;
->    2966	
->    2967		ret = mdiodev_modify(pcs, MII_BMCR, BMCR_ANENABLE | BMCR_ISOLATE, bmcr);
->    2968		if (ret < 0)
->    2969			return ret;
->    2970	
->    2971		return changed;
->    2972	}
->    2973	EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_config);
->    2974	
-> 
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
-> 
