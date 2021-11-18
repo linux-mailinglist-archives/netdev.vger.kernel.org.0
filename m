@@ -2,77 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CF804561F2
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 19:07:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52BB14561FF
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 19:10:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231176AbhKRSKK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 13:10:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38112 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229660AbhKRSKK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 13:10:10 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95417C061574
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 10:07:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Hp3d1Eb76xj+eIbQf7jC32aXQhU5l7M+Jkz+szJjcr0=; b=YKCCFNZiZSXMAOyek3+7fAEdCQ
-        ZOiz22T5NbZKIJkB6e+CjO4InxAbsnTC4i+nUnsRb6DXp6m/ewa8A5thFYfVEcZkdDTiWicCBv/sK
-        iPIa/JdQvm5q0DiQE9plevYuMcgYkW0mNkQyjN9lciKIpTjy8vuWtETfaEjcHtbc9qHH9V9V+kJQ7
-        iHTH91ownHD28OezzTc6a1aKp97F9HEK6Xx8p15wWHolrJPYMdSOjStfayErj9nrStl9OrmPtgyN0
-        MQqhz1tLeFj4GqKNzV+kJ6Bi/loMe8WNgjnMdk8/Wn0d1iHsq167KAmm+QH1xamHf79qUbj4XctfB
-        86hA7KzQ==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:53030 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1mnloR-0003D7-9v; Thu, 18 Nov 2021 18:07:07 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1mnloQ-008LYK-Rp; Thu, 18 Nov 2021 18:07:06 +0000
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] net: phylink: add 1000base-KX to
- phylink_caps_to_linkmodes()
-MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+        id S234263AbhKRSNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 13:13:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45912 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230446AbhKRSNJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Nov 2021 13:13:09 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id DB33E61A52;
+        Thu, 18 Nov 2021 18:10:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637259008;
+        bh=od7Xk/qLwGguJl7h/Ti1c+uxmWV5zHb/1lUF701p6jU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=HgzbmFRjmeek6ZhrP9o3VaBvllII0HL5vGlazgbXMhMAxanAEY4Hdsm3LQDhMOzmP
+         5fqMN12FtmphxKfJhyAVR+cu245q8emRf8pBALoUhDD5Ly4++cX/tmdrOzMq2zPjkh
+         LG33gf4Y1TzvQ/YhcdBJhgVQ1JePSQxU7RI9CAULh5dANj2vhylO45mETSracrKU4t
+         EGZW1Ie/2w9sLXmTbshi35TazhVGvp2eEioDyLK8Aj8AJ88QfL/o52ggH/pxRDOjSQ
+         nkqL92S8HAy5QAgOXDdIzFKFdcrnzm7gbPybQ2Uwxl7rA9KnQqjo61uZa3fCmZP5JL
+         Hhm7OlTr2pV2g==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id CBF9B60A54;
+        Thu, 18 Nov 2021 18:10:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1mnloQ-008LYK-Rp@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Thu, 18 Nov 2021 18:07:06 +0000
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH iproute2] vdpa: align uapi headers
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163725900883.587.15945763914190641822.git-patchwork-notify@kernel.org>
+Date:   Thu, 18 Nov 2021 18:10:08 +0000
+References: <20211118180000.30627-1-stephen@networkplumber.org>
+In-Reply-To: <20211118180000.30627-1-stephen@networkplumber.org>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     parav@nvidia.com, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1000base-KX was missed in phylink_caps_to_linkmodes(), add it. This
-will be necessary to convert stmmac with xpcs to ensure we don't drop
-any supported linkmodes.
+Hello:
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- drivers/net/phy/phylink.c | 1 +
- 1 file changed, 1 insertion(+)
+This patch was applied to iproute2/iproute2.git (main)
+by Stephen Hemminger <stephen@networkplumber.org>:
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index f7156b6868e7..da17b874a5e7 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -197,6 +197,7 @@ static void phylink_caps_to_linkmodes(unsigned long *linkmodes,
- 
- 	if (caps & MAC_1000FD) {
- 		__set_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_1000baseKX_Full_BIT, linkmodes);
- 		__set_bit(ETHTOOL_LINK_MODE_1000baseX_Full_BIT, linkmodes);
- 		__set_bit(ETHTOOL_LINK_MODE_1000baseT1_Full_BIT, linkmodes);
- 	}
+On Thu, 18 Nov 2021 10:00:00 -0800 you wrote:
+> Update vdpa headers based on 5.16.0-rc1 and remove redundant copy.
+> 
+> Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+> ---
+>  include/uapi/linux/vdpa.h            | 47 ----------------------------
+>  vdpa/include/uapi/linux/vdpa.h       |  7 +++++
+>  vdpa/include/uapi/linux/virtio_ids.h | 26 +++++++++++++++
+>  3 files changed, 33 insertions(+), 47 deletions(-)
+>  delete mode 100644 include/uapi/linux/vdpa.h
+
+Here is the summary with links:
+  - [iproute2] vdpa: align uapi headers
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=fa58de9b0c73
+
+You are awesome, thank you!
 -- 
-2.30.2
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
