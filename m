@@ -2,218 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91D63455342
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 04:15:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F517455372
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 04:35:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241835AbhKRDSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 22:18:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33318 "EHLO
+        id S235648AbhKRDh6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 22:37:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235648AbhKRDSJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 22:18:09 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B83DC061570;
-        Wed, 17 Nov 2021 19:15:10 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id w33-20020a17090a6ba400b001a722a06212so5714826pjj.0;
-        Wed, 17 Nov 2021 19:15:10 -0800 (PST)
+        with ESMTP id S234745AbhKRDhx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 22:37:53 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D961C061570
+        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 19:34:53 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id t30so8652337wra.10
+        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 19:34:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=tVH+ANs06Wfy5W6ZjG+wmEXeHmhH1/UzCvJA73QslpE=;
-        b=JFrol9FX09JIk4s19qK0aEbF/dNHIl5qa7Vox5+bnt5s6yUMtZr+be+hQZRPNlwBnt
-         GQZ9fecaT6+d645kfl9jnqj6MkMf24LunYeDjBf6/cKIMsHfA4VOj3ilI7PCJekrBTRG
-         VSDcibP2F+TLSc88Xt27xbPPfzu2qY4Mnz0JwqjwpFhMU03FVDs8CwBfudAAimw0MXqu
-         DnL2d7ITVEDw4NIPVv/ztRgUZz99nuEbptrRfCUsNGXhrDJvbKh22u/M2WK5rMBPo1Ih
-         fLg19kl9rmNhFI6+OW+xTMJnfoibliT6Iq2otbYu49XdYmWa/OlsaIzWoUrtKDhXTLju
-         TXdQ==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jRtFMV/osJvgK1V7WSaGHgRkunLHZlIkaEnRGwhTsCg=;
+        b=Y1KzxCkdt0hvVfhTYYT7hpXaYiNh++KpgIby/2eD7gUa4jQKKkZoIc6xiCfZJIRnhh
+         /eyAGt5EWOaMmJTC90Fd1WAB+SApokHPL4uUpbQDXK2kVhBWnW+Pvr908Dw0PMttelIW
+         Myf0eH1/NNEzr+7E5hrzoNNXPgIhea8zCgAsaUQJdDEo3srdKuPl2tySFshQznRbwQHp
+         H+a4DETUdNxxiLpz1xCzccSYI3LP7wiEhhAX3iq65jNkEkpGaMd5xwEwD4S+yMj+XEYg
+         yX7tnVRmjB247dkfLCHY17zQiX/TfxvnDkVyqXyPynJvwpnlcY4sy5JZ4hRCwQ9A8Pst
+         JISw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=tVH+ANs06Wfy5W6ZjG+wmEXeHmhH1/UzCvJA73QslpE=;
-        b=GxeLuPluwN4VSBENUpbM84teAvzWyzWcPsM6/uXLtVExy9ViD5bKG9FWZ4pPnJ5wi5
-         kCcpM7B5VDJJs0GpBd47GbKsPc6D/Q6pwrfwK+48KuOvXPhlX/d1rPnNFny0QQimktXw
-         xvklq2uoR1xotzsI6fMD1msoBX94MwMHmUfhqo1eZWOwyRWhv3viPaM+LN5AxdXxil7Q
-         SBhD2zUlRORJVDxdKi68Xh9k+8n9GO/rNM3lXKzgnDsfDwVbMzhPG5jxHIUFK2Fxm+jI
-         fbfDraTIgHfRIDfwAVv6rSpmU0IM6FNjL/02UOTAu3qzJYn7A3Gf39JuiN6zu0OomiFa
-         8GWw==
-X-Gm-Message-State: AOAM533u0o99TrPHJutcGzAz+aoELn9vySI8IrBwWGUe+U0O16zAQwD7
-        5LrAuBwPJVxjKVfgGZMugNcTnuvWuupRHplZ4w==
-X-Google-Smtp-Source: ABdhPJwOednNFUEmC8sxZI2ebEdLq5L3wUxQJxV+Pfo4YXh2jgFfgIh2IfBeurW5Mipy6CpsyQJ8fTLjMEpAs1rVUic=
-X-Received: by 2002:a17:903:2348:b0:141:d60b:ee90 with SMTP id
- c8-20020a170903234800b00141d60bee90mr61833375plh.15.1637205309703; Wed, 17
- Nov 2021 19:15:09 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jRtFMV/osJvgK1V7WSaGHgRkunLHZlIkaEnRGwhTsCg=;
+        b=NChALe0mEDbTQualwUozF3ZCqxwfbtKk5L04WQaezqWTmkkt2Am6lixyhBpxKRjBET
+         aPULpqF34Tz6mqg9+aI7Xekmp6FWESwAtDjoiEVHG4nOt2wBN5jNW1Bs7q6WQd9MHrM9
+         ABfq1/d94CP/X5KhjTEtckAKQj5d/S4FR3io3pgoo6O4pAHxT+BOWjMDoL91YROmic9J
+         PL8rvi7TF6H/l6M7Fcp7rVtZq9/z4L3dLhk/s7o3Pk/LTPWxb/nhbdiQVYWWY+eUMgJm
+         Zo6Rr9YIAQU8scjKF841sTY8KFjHLm9N2YktdZkpZ5jp0Smr+0ba4ya8zlIb9Toz5RLw
+         pqoA==
+X-Gm-Message-State: AOAM5338bIbh5PwY7PXRw27AnlxidMOPzLjy3JZfJ+H0EyjhRX+8K+BB
+        XlwN+jlPadXXRxY8dPMeh6KgJZtsKusNfHja0GcoPw==
+X-Google-Smtp-Source: ABdhPJyKMgZ0pPyWDMkxK3ZKRAk28DpriZYI27lKRt1nfByJLVurNYQH5TReo5tEEpopYz+L8hIICK8tP1Kzws0lFIs=
+X-Received: by 2002:a5d:4a0a:: with SMTP id m10mr28590961wrq.221.1637206491488;
+ Wed, 17 Nov 2021 19:34:51 -0800 (PST)
 MIME-Version: 1.0
-From:   Hao Sun <sunhao.th@gmail.com>
-Date:   Thu, 18 Nov 2021 11:14:56 +0800
-Message-ID: <CACkBjsbS6DQCgSz4c6gYS1CqgmF7=OCwm9=4vRxLHc3_uRbBRA@mail.gmail.com>
-Subject: general protection fault in mpls_dev_sysctl_unregister
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        jiapeng.chong@linux.alibaba.com, l4stpr0gr4m@gmail.com,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <YZXEY90dRsBjJckd@Laptop-X1>
+In-Reply-To: <YZXEY90dRsBjJckd@Laptop-X1>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 17 Nov 2021 19:34:40 -0800
+Message-ID: <CANn89iLKKX7+opENOa2oQpH_JmpPYeDPZtb+srYF2O3UgdUT5g@mail.gmail.com>
+Subject: Re: [DISCUSS] Bond arp monitor not works with veth due to flag NETIF_F_LLTX.
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <jay.vosburgh@canonical.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Jarod Wilson <jarod@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>, davem@davemloft.net,
+        Denis Kirjanov <dkirjanov@suse.de>,
+        David Ahern <dsahern@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, Nov 17, 2021 at 7:11 PM Hangbin Liu <liuhangbin@gmail.com> wrote:
+>
+> Hi,
+>
+> When I test bond arp monitor with veth interface, the bond link flaps rapidly.
+> After checking, in bond_ab_arp_inspect():
+>
+>                 trans_start = dev_trans_start(slave->dev);
+>                 if (bond_is_active_slave(slave) &&
+>                     (!bond_time_in_interval(bond, trans_start, bond->params.missed_max) ||
+>                      !bond_time_in_interval(bond, last_rx, bond->params.missed_max))) {
+>                         bond_propose_link_state(slave, BOND_LINK_DOWN);
+>                         commit++;
+>                 }
+>
+> it checks both slave's trans_start and last_rx. While veth interface's
+> trans_start never get updated due to flag "NETIF_F_LLTX". As when NETIF_F_LLTX
+> set, in netdev_start_xmit() -> txq_trans_update() the txq->trans_start
+> never get updated because txq->xmit_lock_owner is always -1.
+>
+> If we remove the flag NETIF_F_LLTX, the HARD_TX_LOCK() will acquire the
+> spin_lock and update txq->xmit_lock_owner. I expected there may have some
+> performance drop. But I tested with xdp_redirect_map and pktgen by forwarding
+> a 10G NIC's traffic to veth interface and didn't see much performance drop. e.g.
+> With xdpgeneric mode, with the flag, it's 2.18M pps, after removing the flag,
+> it's 2.11M pps. Not sure if I missed anything.
 
-When using Healer to fuzz the latest Linux kernel, the following crash
-was triggered.
+A non contended lock is not that expensive.
 
-HEAD commit: 8ab774587903 Merge tag 'trace-v5.16-5'
-git tree: upstream
-console output: https://paste.ubuntu.com/p/47pQmsD3xY/plain/
-kernel config: https://paste.ubuntu.com/p/cFf8tS9V8w/plain/
-C reproducer: https://paste.ubuntu.com/p/Pkh4d4d9T4/plain/
-Syzlang reproducer: https://paste.ubuntu.com/p/hBQDn8Kth7/plain/
+Have you tried using many threads, instead of mono-thread pktgen ?
+This will likely be bad.
 
-If you fix this issue, please add the following tag to the commit:
-Reported-by: Hao Sun <sunhao.th@gmail.com>
+>
+> So what do you think? Should we remove this flag on veth to fix the issue?
+> Some user may want to use bonding active-backup arp monitor mode on netns.
 
-FAULT_INJECTION: forcing a failure.
-name failslab, interval 1, probability 0, space 0, times 0
-CPU: 2 PID: 1118 Comm: syz-executor Not tainted 5.16.0-rc1+ #7
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-1.13.0-1ubuntu1.1 04/01/2014
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- fail_dump lib/fault-inject.c:52 [inline]
- should_fail.cold+0x5/0xa lib/fault-inject.c:146
- should_failslab+0x5/0x10 mm/slab_common.c:1320
- slab_pre_alloc_hook mm/slab.h:494 [inline]
- slab_alloc_node mm/slub.c:3148 [inline]
- slab_alloc mm/slub.c:3242 [inline]
- __kmalloc+0x7e/0x3d0 mm/slub.c:4419
- kmalloc include/linux/slab.h:595 [inline]
- kzalloc include/linux/slab.h:724 [inline]
- __register_sysctl_table+0xc3/0x1000 fs/proc/proc_sysctl.c:1318
- mpls_dev_sysctl_register+0x1b7/0x2d0 net/mpls/af_mpls.c:1421
- mpls_dev_notify+0x37c/0x730 net/mpls/af_mpls.c:1632
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info net/core/dev.c:2002 [inline]
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1987
- call_netdevice_notifiers_extack net/core/dev.c:2014 [inline]
- call_netdevice_notifiers net/core/dev.c:2028 [inline]
- dev_change_name+0x439/0x690 net/core/dev.c:1285
- do_setlink+0x2d8c/0x39d0 net/core/rtnetlink.c:2699
- __rtnl_newlink+0xb07/0x1600 net/core/rtnetlink.c:3391
- rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3506
- rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5571
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2491
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x533/0x740 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x86d/0xda0 net/netlink/af_netlink.c:1916
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:724
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
- ___sys_sendmsg+0x100/0x170 net/socket.c:2463
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2492
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7fcfbc2f9c4d
-Code: 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48
-89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d
-01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fcfb9861c58 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007fcfbc4200a0 RCX: 00007fcfbc2f9c4d
-RDX: 0000000000000000 RSI: 00000000200005c0 RDI: 000000000000000b
-RBP: 00007fcfb9861c90 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000000002f
-R13: 00007ffd59fb09df R14: 00007ffd59fb0b80 R15: 00007fcfb9861dc0
- </TASK>
-general protection fault, probably for non-canonical address
-0xdffffc0000000004: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000020-0x0000000000000027]
-CPU: 2 PID: 1118 Comm: syz-executor Not tainted 5.16.0-rc1+ #7
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-1.13.0-1ubuntu1.1 04/01/2014
-RIP: 0010:mpls_dev_sysctl_unregister+0x6e/0xc0 net/mpls/af_mpls.c:1440
-Code: fc ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 75 5c 48 b8 00 00 00
-00 00 fc ff df 49 8b 6c 24 18 48 8d 7d 20 48 89 fa 48 c1 ea 03 <80> 3c
-02 00 75 35 4c 8b 75 20 48 89 ef e8 e0 1f df ff 4c 89 f7 e8
-RSP: 0018:ffffc9000798ecd0 EFLAGS: 00010212
-RAX: dffffc0000000000 RBX: ffff88810b7be000 RCX: 0000000000040000
-RDX: 0000000000000004 RSI: ffff88802b3b9cc0 RDI: 0000000000000020
-RBP: 0000000000000000 R08: ffffffff88fd2d73 R09: 0000000000000000
-R10: 0000000000000001 R11: fffffbfff1b210c2 R12: ffff8880220cf480
-R13: ffff888107523480 R14: ffff8880220cf480 R15: ffffffff8d76fb20
-FS:  00007fcfb9862700(0000) GS:ffff888063f00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f9511730358 CR3: 0000000104e4e000 CR4: 0000000000350ee0
-Call Trace:
- <TASK>
- mpls_dev_notify+0x371/0x730 net/mpls/af_mpls.c:1631
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info net/core/dev.c:2002 [inline]
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1987
- call_netdevice_notifiers_extack net/core/dev.c:2014 [inline]
- call_netdevice_notifiers net/core/dev.c:2028 [inline]
- dev_change_name+0x439/0x690 net/core/dev.c:1285
- do_setlink+0x2d8c/0x39d0 net/core/rtnetlink.c:2699
- __rtnl_newlink+0xb07/0x1600 net/core/rtnetlink.c:3391
- rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3506
- rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5571
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2491
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x533/0x740 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x86d/0xda0 net/netlink/af_netlink.c:1916
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:724
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
- ___sys_sendmsg+0x100/0x170 net/socket.c:2463
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2492
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7fcfbc2f9c4d
-Code: 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48
-89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d
-01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fcfb9861c58 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007fcfbc4200a0 RCX: 00007fcfbc2f9c4d
-RDX: 0000000000000000 RSI: 00000000200005c0 RDI: 000000000000000b
-RBP: 00007fcfb9861c90 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000000002f
-R13: 00007ffd59fb09df R14: 00007ffd59fb0b80 R15: 00007fcfb9861dc0
- </TASK>
-Modules linked in:
-Dumping ftrace buffer:
-   (ftrace buffer empty)
----[ end trace 7b6ee0d94ba006f4 ]---
-RIP: 0010:mpls_dev_sysctl_unregister+0x6e/0xc0 net/mpls/af_mpls.c:1440
-Code: fc ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 75 5c 48 b8 00 00 00
-00 00 fc ff df 49 8b 6c 24 18 48 8d 7d 20 48 89 fa 48 c1 ea 03 <80> 3c
-02 00 75 35 4c 8b 75 20 48 89 ef e8 e0 1f df ff 4c 89 f7 e8
-RSP: 0018:ffffc9000798ecd0 EFLAGS: 00010212
-RAX: dffffc0000000000 RBX: ffff88810b7be000 RCX: 0000000000040000
-RDX: 0000000000000004 RSI: ffff88802b3b9cc0 RDI: 0000000000000020
-RBP: 0000000000000000 R08: ffffffff88fd2d73 R09: 0000000000000000
-R10: 0000000000000001 R11: fffffbfff1b210c2 R12: ffff8880220cf480
-R13: ffff888107523480 R14: ffff8880220cf480 R15: ffffffff8d76fb20
-FS:  00007fcfb9862700(0000) GS:ffff888063f00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f9511730358 CR3: 0000000104e4e000 CR4: 0000000000350ee0
-----------------
-Code disassembly (best guess), 2 bytes skipped:
-   0:    df 48 89                 fisttps -0x77(%rax)
-   3:    fa                       cli
-   4:    48 c1 ea 03              shr    $0x3,%rdx
-   8:    80 3c 02 00              cmpb   $0x0,(%rdx,%rax,1)
-   c:    75 5c                    jne    0x6a
-   e:    48 b8 00 00 00 00 00     movabs $0xdffffc0000000000,%rax
-  15:    fc ff df
-  18:    49 8b 6c 24 18           mov    0x18(%r12),%rbp
-  1d:    48 8d 7d 20              lea    0x20(%rbp),%rdi
-  21:    48 89 fa                 mov    %rdi,%rdx
-  24:    48 c1 ea 03              shr    $0x3,%rdx
-* 28:    80 3c 02 00              cmpb   $0x0,(%rdx,%rax,1) <--
-trapping instruction
-  2c:    75 35                    jne    0x63
-  2e:    4c 8b 75 20              mov    0x20(%rbp),%r14
-  32:    48 89 ef                 mov    %rbp,%rdi
-  35:    e8 e0 1f df ff           callq  0xffdf201a
-  3a:    4c 89 f7                 mov    %r14,%rdi
-  3d:    e8                       .byte 0xe8
+Removing LLTX will have performance impact.
+
+Updating ->trans_start at most once per jiffy should be ok.
+
+Here is a patch against net-next
+
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+index 750cea23e9cd02bba139a58553c4b1753956ad10..f706efecf0555974e8df562084d5770cc62126e1
+100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+@@ -356,7 +356,7 @@ static void
+am65_cpsw_nuss_ndo_host_tx_timeout(struct net_device *ndev,
+
+        if (netif_tx_queue_stopped(netif_txq)) {
+                /* try recover if stopped by us */
+-               txq_trans_update(netif_txq);
++               txq_trans_cond_update(netif_txq);
+                netif_tx_wake_queue(netif_txq);
+        }
+ }
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 4f4a299e92de7ba9f61507ad4df7e334775c07a6..dfd2f38023c75fb6a4181af4b4a511a9955e6a0b
+100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -4098,12 +4098,6 @@ static inline void __netif_tx_unlock_bh(struct
+netdev_queue *txq)
+ /*
+  * txq->trans_start can be read locklessly from dev_watchdog()
+  */
+-static inline void txq_trans_update(struct netdev_queue *txq)
+-{
+-       if (txq->xmit_lock_owner != -1)
+-               WRITE_ONCE(txq->trans_start, jiffies);
+-}
+-
+ static inline void txq_trans_cond_update(struct netdev_queue *txq)
+ {
+        unsigned long now = jiffies;
+@@ -4626,7 +4620,7 @@ static inline netdev_tx_t
+netdev_start_xmit(struct sk_buff *skb, struct net_devi
+
+        rc = __netdev_start_xmit(ops, skb, dev, more);
+        if (rc == NETDEV_TX_OK)
+-               txq_trans_update(txq);
++               txq_trans_cond_update(txq);
+
+        return rc;
+ }
