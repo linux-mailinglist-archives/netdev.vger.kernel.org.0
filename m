@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AEE945642F
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 21:30:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 809B8456436
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 21:30:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231732AbhKRUdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 15:33:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42862 "EHLO
+        id S233286AbhKRUds (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 15:33:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231359AbhKRUdX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 15:33:23 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6A73C06174A
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 12:30:21 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id d64so4444691pgc.7
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 12:30:21 -0800 (PST)
+        with ESMTP id S231872AbhKRUdr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 15:33:47 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D5EC061574
+        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 12:30:47 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id gb13-20020a17090b060d00b001a674e2c4a8so6790717pjb.4
+        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 12:30:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=iu7U35TLsSX6gA69t+3VJK/DHYP3v2WkEHmDvw5qjGo=;
-        b=Oz7anz2rJ42T1oV7T6o4alhUei5UNKjjSsAWaqFKjILKgCjFAH98uxcKIZdojsylA7
-         oP/HbD1DOieg9KPfQJwuLLZVc6/AOgmPMKDb/+75mfJcaKTYnMjvEpV9+NnJMrxUEViK
-         yYFc4VkMLlkmexi5tcLNOXGS4624S9oJiWjic=
+        bh=w84daomfe6hfopN5Cs7jpNoKXOg+qjUqDxAnOKxUhcE=;
+        b=Ly8shi92M6kpZ+Y3K3Dpu8E4rmTJJtgNCVmADnJzldvJmGZLYnzElXh5eKgXNkVV0s
+         TvolnEDNiV9fBotXo8nx4+bvODp5C3Rva2uXpiTGxGpgVeaKQ9XfQiSBxLKn75xH20nW
+         JPMgihoNd6N0uOs+cHx1sbLth6tICIBlARQMc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=iu7U35TLsSX6gA69t+3VJK/DHYP3v2WkEHmDvw5qjGo=;
-        b=o+0Ykr/US/R2LyibTXELBI2191rHTC9/N9m40L9DA4VY/T6zpNCBdNfHa3MmKU8NxF
-         yjWMTLIw2V0ATxMouw2EyAzAJbV1TL4+F4dC0vY/XFp+E1yHnC8oZ4b9f395X5sUKM8S
-         hptKlb3V6JOS2EPnQuN5ErZrGO4LrG7ZfsvwV7bvuuRN2DDtzL2ltAD5gUlzvlQGUHEI
-         pUBo2I09ntivSEJ3r8MqkNceFCNFMn7lvJsE8hJIw7GAaAmyHtMiLzKTWzonkJEQ5ZqN
-         ghIdN7vwLL7d+EfoJ0StqBMJr3AHxR4myEUzAqyc146fu/gS3xWDjENcjVrPTqlwt9/t
-         AS/A==
-X-Gm-Message-State: AOAM530yCCQoQIFEVYIB4TSqRy9jb2rK2/v274yshaQRhbN93YLlqFMt
-        SpP9vKohfg1x7x8s5Xt8dItSyA==
-X-Google-Smtp-Source: ABdhPJwBLwTMtsGbZvSVYwVsbT0lUiJKofe81XSZqHxg2FZ1ltbh91iXmFOSVysPaoKl6EDYkRyM6A==
-X-Received: by 2002:a05:6a00:13a4:b0:49f:add2:3c83 with SMTP id t36-20020a056a0013a400b0049fadd23c83mr17283853pfg.28.1637267421227;
-        Thu, 18 Nov 2021 12:30:21 -0800 (PST)
+        bh=w84daomfe6hfopN5Cs7jpNoKXOg+qjUqDxAnOKxUhcE=;
+        b=pv8vsgi5fr4fz2bhMPtnNIO+c3nClJI1p39gNTiT3FL7TgxYoKKqcIXfGWbkj2pWwc
+         tUlxDLX9pZKHAu8rrnhoE1Gi4vBQZfaalAXjzZRzzkHQK/7fsLdvH/fzxU7j7mSfDBWR
+         vVB2Ag43XBianO23tAIAz/EsjMvuHPPiLHFvJatlVcz2guvXfGYYlixaEA5RWGJjLT1Y
+         VKvRS9f9o670MOAuMT2MH8SaiWbx6vbFKCoSzBK4ROKGyw1qE1vDbHL1pmWXPkaiCYsG
+         q8g4ZAGGAyVeF1FHuuyYZkdWh63ngcDr1V+aXt4WgTsNKmSlMo8OQugGMod2QCm4KbgL
+         4TMw==
+X-Gm-Message-State: AOAM533ZwffUGz8RU0F4Z11pEbTABh2NxfTNtSU9f9DA2fv1V3QUrK3e
+        nnPuLUE//nPu7h7TEWleY91WPw==
+X-Google-Smtp-Source: ABdhPJx2vAcS9/vY0mIWPnR5A57X4N8eHJFkUERChCQt0fnmyy5WCrJGY65CwE4cJVY3oWg9qDM8mA==
+X-Received: by 2002:a17:90a:ba13:: with SMTP id s19mr13660401pjr.62.1637267446667;
+        Thu, 18 Nov 2021 12:30:46 -0800 (PST)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id oc10sm9932941pjb.26.2021.11.18.12.30.20
+        by smtp.gmail.com with ESMTPSA id p17sm376544pgj.93.2021.11.18.12.30.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Nov 2021 12:30:20 -0800 (PST)
+        Thu, 18 Nov 2021 12:30:46 -0800 (PST)
 From:   Kees Cook <keescook@chromium.org>
-To:     "David S. Miller" <davem@davemloft.net>
+To:     Jes Sorensen <jes@trained-monkey.org>
 Cc:     Kees Cook <keescook@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        dccp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-hippi@sunsite.dk, netdev@vger.kernel.org,
         linux-hardening@vger.kernel.org
-Subject: [PATCH] net: dccp: Use memset_startat() for TP zeroing
-Date:   Thu, 18 Nov 2021 12:30:19 -0800
-Message-Id: <20211118203019.1286474-1-keescook@chromium.org>
+Subject: [PATCH] net: 802: Use memset_startat() to clear struct fields
+Date:   Thu, 18 Nov 2021 12:30:45 -0800
+Message-Id: <20211118203045.1286717-1-keescook@chromium.org>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=956; h=from:subject; bh=tL6Zd8mHif0zgpnxOE5SiGN4U+GuNNxpaAv5++LURlc=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhlrfakwyr07L6bDqrWWfqR7Vt6SJluCb6DznklYrj I8TnpuSJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYZa32gAKCRCJcvTf3G3AJosXD/ 9ooZFwhPpDQbbhdeEOYfd9RUIBmboebLiEgB0L/dTPwju5kUUPaFL9JLkQbEacliDC0bi8F+sj/UHD Dcnud5ljv5lgexma98YxJnna1UfFtrIXCs+X22Zlz1bMQlVDk0FC+bpFFCwXqn/epchgEFxJYLp6Yu HU4ptDP/pXVzpzhT2zgRqPadCLanixeoquzAR9mz4sKpN5bF5SCy1sZe77xzbYVHH1uXPkQ5OSL9DY VJBiFIbzgTAuuJMyO712Qq1HjnWgPSm8wXAOudC9ebdVhtE5MQ0plUTjivdNAsFWtR6jFZj8SzAD/X r1BZeO8mPiSCeCzSagoyy+dbdmjG5atshC/brAuGi0+FliQrvXGGl9EiW3I4kqGRQrH96H2uXRewNA MOtFkZuMQyv2WsQsQxJ/WQwqAXM29m2Zc7q+w/tPZZjSgyKWiKsXHauQhTuQteybHWJEl7qUxBNJHd O52k6Y+vM/Wr6oFwAnrjDmh6MxIoK5uHpFu9U7zUB2GNXKPL7v8mz0Vb7I16T9sZYOSj+Up4T+uxxe sRH4lVwTyvbwyCWtTSleibIirJXToi74NqY6p6LvQUjJjDhrlBp/Mt7knFs3MAdpFYJBgLySAzt+to F/vkn6qiuDeem6sqtYNJ4+Krf2pJ6tHaZWsWjpzq8Ah0Z8wL8u2m/DTlya2Q==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=999; h=from:subject; bh=AlW+JDFW6jqRIzJL4RY1vWRN1xRCOE2m/xf4mW3pemc=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhlrf0AJMzHn+ibkUThsPkOuaX46Vd7l22wLWDrvnO zAAgm2eJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYZa39AAKCRCJcvTf3G3AJv1REA Ccbf7X4b7/zgOqLpYWunpw0I38jf/46bwqqgrY3DjCySlzix+Qv6cIe1e3/ZNUafVa4z/gh+SFXbxR Z8f+7PhQ/VwE4yuE28B6ydcEhT3BuDkfH2oSW/qqjAs+7vHTz1jhk0Vrg6nFMX82rhZnktPUS+jjK+ m/lNO/BlAf3LZ26rXSxZWudpP7sEjNB0n7k2z1YXcJtjNNvEWHX7gnd06aINSk00ti2XjtWBn3S2wV OiB3NMNTuPzRZwe2J92gEDIy7oHshYVLGvaHST240knjikt/XaiMdx7CN7LQh4buZaVycQnBxkwsHd AeTtcH1FrrpjmlMEeghcI8HFXNLvCDxC75bH60ySkpvGLtXZTmWyw9u/4BE6JCcX4rcMsy6cLZFlE8 x4pKsyTJXlsRPJkwugT80OXYkSh+mtplP7esK7S2Jfd1tZgCdQn+Bqgd0m5pHxG6bh4NQvPu0US1S9 TXw+vMdAVoSSi910PghJV/aseod9n0wEjk2EqpwjdDeVcfMDXaKTKj1jTzWcc+AA9LHCMrr9KUyy48 kHMjWwdI+nkFDIxiEuVjcfQtVPGhA3ModVCDTe5Oz2J5ACcT6VK8GqhdW/P12LazHCAlAzzTEU4chN XnJ/PM3rTL1xNYE1bWFt9wTWCVMLytchhjeozTnWGTLS1Ws14CxQHcHIDWXg==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -72,24 +73,22 @@ of zeroing through the end of the struct.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- net/dccp/trace.h | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ net/802/hippi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/dccp/trace.h b/net/dccp/trace.h
-index 5062421beee9..5a43b3508c7f 100644
---- a/net/dccp/trace.h
-+++ b/net/dccp/trace.h
-@@ -60,9 +60,7 @@ TRACE_EVENT(dccp_probe,
- 			__entry->tx_t_ipi = hc->tx_t_ipi;
- 		} else {
- 			__entry->tx_s = 0;
--			memset(&__entry->tx_rtt, 0, (void *)&__entry->tx_t_ipi -
--			       (void *)&__entry->tx_rtt +
--			       sizeof(__entry->tx_t_ipi));
-+			memset_startat(__entry, 0, tx_rtt);
- 		}
- 	),
+diff --git a/net/802/hippi.c b/net/802/hippi.c
+index 887e73d520e4..1997b7dd265e 100644
+--- a/net/802/hippi.c
++++ b/net/802/hippi.c
+@@ -65,7 +65,7 @@ static int hippi_header(struct sk_buff *skb, struct net_device *dev,
+ 	hip->le.src_addr_type	= 2;	/* 12 bit SC address */
  
+ 	memcpy(hip->le.src_switch_addr, dev->dev_addr + 3, 3);
+-	memset(&hip->le.reserved, 0, 16);
++	memset_startat(&hip->le, 0, reserved);
+ 
+ 	hip->snap.dsap		= HIPPI_EXTENDED_SAP;
+ 	hip->snap.ssap		= HIPPI_EXTENDED_SAP;
 -- 
 2.30.2
 
