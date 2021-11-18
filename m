@@ -2,42 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA189455AEE
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 12:51:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87941455AF0
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 12:51:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344292AbhKRLx7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 06:53:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36018 "EHLO mail.kernel.org"
+        id S1344249AbhKRLyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 06:54:01 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36004 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344350AbhKRLxJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1344348AbhKRLxJ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 18 Nov 2021 06:53:09 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 4DD54613DB;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 400E461108;
         Thu, 18 Nov 2021 11:50:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1637236209;
-        bh=7kgdo1NyG7wX8rwxg1MlaziF0aHzwtvraPGAuiWFHyc=;
+        bh=NYXsHSj9PHtXZQN0iPC8T9b/KBiBOhIM6rsNnNDem/A=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=lzXgI9HKazZdECkJSKWlvj4hwNg9d9txJu9IQ20DCu5Jq/PdtroMVM5DJ8tpPyJG3
-         lIkrrIWGPjlN/Ts1paNR+c04Cue4gCe7toN5mNoJkcb0SxMKepsYA3E03W+njaOp0v
-         KPNttR2GfIYFXSqt+cHeT1t+++L+dZCK0SFvZW1iMz5iyyQjJBg7bAmeUQgSJDr4gi
-         WD0QhJKzurns5uxGaFZSIQHMHCaXwlSXoc37TZNnA4X0Y0deFuCKfFXsAyqRbJ4gGl
-         Cb39y8nBA5L28PGjSkG5lTjFruku5nTW16WYpuW0LBrEwr4/caLLHeYswJVpLrzyBt
-         j2CpRqNcdJAAA==
+        b=OQA00w95Q4u+LTDDSLzRrWV6ropQZHNXuEtSJyqm+ewlyZ3jaicwLtVTisg1lY7wt
+         17UIGhLkquEc7ypq046k/z+Ti5OO3K7vZI/oj3Kt5t/EnFYvHgeGkOx1x+aKW9ktyp
+         n7RwLKFFHc1X87oAH+ClZZ7hDmk5lyo0NLTfm3djh1Sh2Ixq8FFA79z5/jy0K/7jeU
+         05OdE8Iom405s6G6HVTWK+JLvTviiIcsW0LiVQoqtOrd3uWQFV1ESMkC37Kct6dUnF
+         EEwDpq0k9FRgFWPUQB2ntPzZ9+4neu7wCNX+cL08l3SF1FUuuO28mbLDNE/zFIvxok
+         v5yu2iVcV3Q4A==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3D82460A4E;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 315CB60A94;
         Thu, 18 Nov 2021 11:50:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 1/1] e100: fix device suspend/resume
+Subject: Re: [PATCH v2] ipv6: check return value of ipv6_skip_exthdr
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163723620924.17258.12932119103111984410.git-patchwork-notify@kernel.org>
+Message-Id: <163723620919.17258.7739860306001029002.git-patchwork-notify@kernel.org>
 Date:   Thu, 18 Nov 2021 11:50:09 +0000
-References: <20211117205952.3792122-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20211117205952.3792122-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, jesse.brandeburg@intel.com,
-        netdev@vger.kernel.org, vaibhavgupta40@gmail.com, axet@me.com
+References: <20211117190648.2732560-1-jordy@pwning.systems>
+In-Reply-To: <20211117190648.2732560-1-jordy@pwning.systems>
+To:     Jordy Zomer <jordy@pwning.systems>
+Cc:     linux-kernel@vger.kernel.org, keescook@chromium.org,
+        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,21 +49,19 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Wed, 17 Nov 2021 12:59:52 -0800 you wrote:
-> From: Jesse Brandeburg <jesse.brandeburg@intel.com>
+On Wed, 17 Nov 2021 20:06:48 +0100 you wrote:
+> The offset value is used in pointer math on skb->data.
+> Since ipv6_skip_exthdr may return -1 the pointer to uh and th
+> may not point to the actual udp and tcp headers and potentially
+> overwrite other stuff. This is why I think this should be checked.
 > 
-> As reported in [1], e100 was no longer working for suspend/resume
-> cycles. The previous commit mentioned in the fixes appears to have
-> broken things and this attempts to practice best known methods for
-> device power management and keep wake-up working while allowing
-> suspend/resume to work. To do this, I reorder a little bit of code
-> and fix the resume path to make sure the device is enabled.
+> EDIT:  added {}'s, thanks Kees
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/1] e100: fix device suspend/resume
-    https://git.kernel.org/netdev/net/c/5d2ca2e12dfb
+  - [v2] ipv6: check return value of ipv6_skip_exthdr
+    https://git.kernel.org/netdev/net/c/5f9c55c8066b
 
 You are awesome, thank you!
 -- 
