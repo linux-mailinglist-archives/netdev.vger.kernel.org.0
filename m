@@ -2,216 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB6E9455A41
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 12:29:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3A7B455AA5
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 12:37:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343964AbhKRLb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 06:31:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58730 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1343904AbhKRL3a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 06:29:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637234789;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rJqHmk+ZMyp6K5b8ACnyHPg6ZEhvFJYuOs2AT1VL5MI=;
-        b=fMb9m2x4tVYgMIenE/tOHs8nKTnX0XuDWLbkCgOiN0Z5N5MTn+AwCsabiPxbn4EdXInqEp
-        Jl2xN2EVyWILSzWw7awQ76gghlQj0wdXhIXyvRv8+HAlurkY4y1Qd7i3TumKy+8pi5aDkw
-        P/vEouKnZZ0OramkJDoRJNqymIGj0mU=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-288-T94u8MQGNmqPKgeB3ah8HQ-1; Thu, 18 Nov 2021 06:26:28 -0500
-X-MC-Unique: T94u8MQGNmqPKgeB3ah8HQ-1
-Received: by mail-ed1-f69.google.com with SMTP id t9-20020aa7d709000000b003e83403a5cbso3026857edq.19
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 03:26:28 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=rJqHmk+ZMyp6K5b8ACnyHPg6ZEhvFJYuOs2AT1VL5MI=;
-        b=M45cQtcBzMs4iHolFvC2HsApniP35kkcxwCC9Ld2ZAu3d0axmhXQQTGXbmuOIh6HZC
-         /GSiRDOwy58Mxv2bwj7CJ7Gi6Y9tDf0RnsyXPAFfo+aLJJizBhxpsDOpIrKw+WpAXmbg
-         n0XUtkGbN9RGMChJWSdKTMOYjaqNR+XTO9WMlta3Nv7H+KIWflKR95pVegxTadz4vAxs
-         tGjaNG3+326L67xOpWJhjPfuQsRLP0Azmu2+fHuNfbXg+D7YDq0YK9YCsHkAvQ+k0u2n
-         Go6gpf+fLUOnPr5pq9eBy+cQUeANNZlY1vZrFWMdbCVLHJFfW8/Fk38/6GcWnNP4zt0z
-         OzPQ==
-X-Gm-Message-State: AOAM5319mRtfdveKWcJFkBdciOtJhjzWsnrNz6PrOK87QfGR8V7V6anh
-        9fHhqyThNohcP/azQYZ/g3gBgVLEB60G/rLCvyd/SkMUmc7yLRlbEC3nfE2Ee7gc51aMnLi8Sk3
-        krc0aVPYOI68urMtM
-X-Received: by 2002:a50:e089:: with SMTP id f9mr10346388edl.290.1637234787260;
-        Thu, 18 Nov 2021 03:26:27 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwjRG3EqPq6/SddZG4kWdHXZSl6WAkMfMmgkquhQDqfXX+KAqWQtWyPEbl+yp/g6O1neegfYw==
-X-Received: by 2002:a50:e089:: with SMTP id f9mr10346357edl.290.1637234787106;
-        Thu, 18 Nov 2021 03:26:27 -0800 (PST)
-Received: from krava.redhat.com (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id l26sm1403725eda.20.2021.11.18.03.26.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Nov 2021 03:26:26 -0800 (PST)
-From:   Jiri Olsa <jolsa@redhat.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
+        id S1344237AbhKRLkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 06:40:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60420 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344264AbhKRLjU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 06:39:20 -0500
+Received: from ustc.edu.cn (email6.ustc.edu.cn [IPv6:2001:da8:d800::8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 34951C061227;
+        Thu, 18 Nov 2021 03:35:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mail.ustc.edu.cn; s=dkim; h=Received:Date:From:To:Cc:Subject:
+        Message-ID:In-Reply-To:References:MIME-Version:Content-Type:
+        Content-Transfer-Encoding; bh=2FKmJS6pPsuFItuqwY5/BZNuOqJxZWzsh/
+        DAz8KS9ck=; b=Ki5YfVoOfVm5ifuMWBYH8GFbkiM/fkkj9SyV3yNcGZ2gA2de1H
+        maQk39tTqQ+V2MFQ1PUUxy2hR8t3Pl57rjNL0RLfAR0TltLmUOdJgSnp0sBr+2E9
+        8cWGJFhBxydmHw/hW65F0isu5GH1BsI7P4hKjOIV0996V5ErqabxA5ubg=
+Received: from xhacker (unknown [101.86.18.22])
+        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygBnLsxMOpZhi51cAQ--.6032S3;
+        Thu, 18 Nov 2021 19:34:38 +0800 (CST)
+Date:   Thu, 18 Nov 2021 19:24:42 +0800
+From:   Jisheng Zhang <jszhang3@mail.ustc.edu.cn>
+To:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "=?UTF-8?B?Qmo=?= =?UTF-8?B?w7ZybiBUw7ZwZWw=?=" <bjorn@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: [PATCH bpf-next 15/29] bpf: Add support to store multiple addrs in bpf_tramp_id object
-Date:   Thu, 18 Nov 2021 12:24:41 +0100
-Message-Id: <20211118112455.475349-16-jolsa@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211118112455.475349-1-jolsa@kernel.org>
-References: <20211118112455.475349-1-jolsa@kernel.org>
+        KP Singh <kpsingh@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Tong Tiangen <tongtiangen@huawei.com>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kbuild@vger.kernel.org
+Subject: [PATCH 06/12] riscv: extable: use `ex` for `exception_table_entry`
+Message-ID: <20211118192442.3ef1c1cc@xhacker>
+In-Reply-To: <20211118192130.48b8f04c@xhacker>
+References: <20211118192130.48b8f04c@xhacker>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID: LkAmygBnLsxMOpZhi51cAQ--.6032S3
+X-Coremail-Antispam: 1UD129KBjvdXoW7GFy3GFyxJF1UurW3Cw4rKrg_yoWkKFX_Ga
+        4I9a4kWrW5JF4fGF1DKrs5Ary8KrZaqr4kGw4Iy34qyF17WrWjkr4qv3ZxJrn2gr1rZr47
+        AFZ7XrW3GryaqjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbSAYjsxI4VWxJwAYFVCjjxCrM7AC8VAFwI0_Wr0E3s1l1xkIjI8I
+        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l82xGYIkIc2x26280x7
+        IE14v26r18M28IrcIa0xkI8VCY1x0267AKxVW5JVCq3wA2ocxC64kIII0Yj41l84x0c7CE
+        w4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6x
+        kF7I0E14v26r4UJVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIE
+        c7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I
+        8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCF
+        s4IE7xkEbVWUJVW8JwACjcxG0xvEwIxGrwACI402YVCY1x02628vn2kIc2xKxwCF04k20x
+        vY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I
+        3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_GFv_WrylIxkGc2Ij64vIr41lIx
+        AIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAI
+        cVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2js
+        IEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07j1T5LUUUUU=
+X-CM-SenderInfo: xmv2xttqjtqzxdloh3xvwfhvlgxou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding support to store multiple addrs in bpf_tramp_id object,
-to provide address values for id values stored in the object.
+From: Jisheng Zhang <jszhang@kernel.org>
 
-The id->addr[idx] returns address value for id->id[idx] id.
+The var name "fixup" is a bit confusing, since this is a
+exception_table_entry. Use "ex" instead  to refer to an entire entry.
+In subsequent patches we'll use `fixup` to refer to the fixup
+field specifically.
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
 ---
- include/linux/bpf.h     |  2 +-
- kernel/bpf/syscall.c    |  2 +-
- kernel/bpf/trampoline.c | 20 ++++++++++++--------
- kernel/bpf/verifier.c   |  2 +-
- 4 files changed, 15 insertions(+), 11 deletions(-)
+ arch/riscv/mm/extable.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 47e25d8be600..13e9dcfd47e7 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -676,7 +676,7 @@ struct bpf_tramp_id {
- 	u32 cnt;
- 	u32 obj_id;
- 	u32 *id;
--	void *addr;
-+	void **addr;
- };
+diff --git a/arch/riscv/mm/extable.c b/arch/riscv/mm/extable.c
+index d41bf38e37e9..3c561f1d0115 100644
+--- a/arch/riscv/mm/extable.c
++++ b/arch/riscv/mm/extable.c
+@@ -13,15 +13,15 @@
  
- struct bpf_tramp_node {
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 216fcce07326..0ae3b5b7419a 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -2853,7 +2853,7 @@ static int bpf_tracing_prog_attach(struct bpf_prog *prog,
- 		if (err)
- 			goto out_unlock;
- 
--		id->addr = (void *) tgt_info.tgt_addr;
-+		id->addr[0] = (void *) tgt_info.tgt_addr;
- 
- 		attach = bpf_tramp_attach(id, tgt_prog, prog);
- 		if (IS_ERR(attach)) {
-diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-index d65f463c532d..d9675d619963 100644
---- a/kernel/bpf/trampoline.c
-+++ b/kernel/bpf/trampoline.c
-@@ -92,7 +92,10 @@ struct bpf_tramp_id *bpf_tramp_id_alloc(u32 max)
- 	id = kzalloc(sizeof(*id), GFP_KERNEL);
- 	if (id) {
- 		id->id = kzalloc(sizeof(u32) * max, GFP_KERNEL);
--		if (!id->id) {
-+		id->addr = kzalloc(sizeof(*id->addr) * max, GFP_KERNEL);
-+		if (!id->id || !id->addr) {
-+			kfree(id->id);
-+			kfree(id->addr);
- 			kfree(id);
- 			return NULL;
- 		}
-@@ -117,6 +120,7 @@ void bpf_tramp_id_free(struct bpf_tramp_id *id)
+ bool fixup_exception(struct pt_regs *regs)
  {
- 	if (!id)
- 		return;
-+	kfree(id->addr);
- 	kfree(id->id);
- 	kfree(id);
+-	const struct exception_table_entry *fixup;
++	const struct exception_table_entry *ex;
+ 
+-	fixup = search_exception_tables(regs->epc);
+-	if (!fixup)
++	ex = search_exception_tables(regs->epc);
++	if (!ex)
+ 		return false;
+ 
+ 	if (regs->epc >= BPF_JIT_REGION_START && regs->epc < BPF_JIT_REGION_END)
+-		return rv_bpf_fixup_exception(fixup, regs);
++		return rv_bpf_fixup_exception(ex, regs);
+ 
+-	regs->epc = (unsigned long)&fixup->fixup + fixup->fixup;
++	regs->epc = (unsigned long)&ex->fixup + ex->fixup;
+ 	return true;
  }
-@@ -159,7 +163,7 @@ static int bpf_trampoline_module_get(struct bpf_trampoline *tr)
- 	int err = 0;
- 
- 	preempt_disable();
--	mod = __module_text_address((unsigned long) tr->id->addr);
-+	mod = __module_text_address((unsigned long) tr->id->addr[0]);
- 	if (mod && !try_module_get(mod))
- 		err = -ENOENT;
- 	preempt_enable();
-@@ -187,7 +191,7 @@ static int is_ftrace_location(void *ip)
- 
- static int unregister_fentry(struct bpf_trampoline *tr, void *old_addr)
- {
--	void *ip = tr->id->addr;
-+	void *ip = tr->id->addr[0];
- 	int ret;
- 
- 	if (tr->func.ftrace_managed)
-@@ -202,7 +206,7 @@ static int unregister_fentry(struct bpf_trampoline *tr, void *old_addr)
- 
- static int modify_fentry(struct bpf_trampoline *tr, void *old_addr, void *new_addr)
- {
--	void *ip = tr->id->addr;
-+	void *ip = tr->id->addr[0];
- 	int ret;
- 
- 	if (tr->func.ftrace_managed)
-@@ -215,7 +219,7 @@ static int modify_fentry(struct bpf_trampoline *tr, void *old_addr, void *new_ad
- /* first time registering */
- static int register_fentry(struct bpf_trampoline *tr, void *new_addr)
- {
--	void *ip = tr->id->addr;
-+	void *ip = tr->id->addr[0];
- 	int ret;
- 
- 	ret = is_ftrace_location(ip);
-@@ -434,7 +438,7 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
- 
- 	err = arch_prepare_bpf_trampoline(im, im->image, im->image + PAGE_SIZE,
- 					  &tr->func.model, flags, tprogs,
--					  tr->id->addr);
-+					  tr->id->addr[0]);
- 	if (err < 0)
- 		goto out;
- 
-@@ -503,7 +507,7 @@ int bpf_trampoline_link_prog(struct bpf_tramp_node *node, struct bpf_trampoline
- 			goto out;
- 		}
- 		tr->extension_prog = prog;
--		err = bpf_arch_text_poke(tr->id->addr, BPF_MOD_JUMP, NULL,
-+		err = bpf_arch_text_poke(tr->id->addr[0], BPF_MOD_JUMP, NULL,
- 					 prog->bpf_func);
- 		goto out;
- 	}
-@@ -539,7 +543,7 @@ int bpf_trampoline_unlink_prog(struct bpf_tramp_node *node, struct bpf_trampolin
- 	mutex_lock(&tr->mutex);
- 	if (kind == BPF_TRAMP_REPLACE) {
- 		WARN_ON_ONCE(!tr->extension_prog);
--		err = bpf_arch_text_poke(tr->id->addr, BPF_MOD_JUMP,
-+		err = bpf_arch_text_poke(tr->id->addr[0], BPF_MOD_JUMP,
- 					 tr->extension_prog->bpf_func, NULL);
- 		tr->extension_prog = NULL;
- 		goto out;
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 1903d5d256b6..56c518efa2d2 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -14000,7 +14000,7 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
- 		return -ENOMEM;
- 
- 	bpf_tramp_id_init(id, tgt_prog, prog->aux->attach_btf, btf_id);
--	id->addr = (void *) tgt_info.tgt_addr;
-+	id->addr[0] = (void *) tgt_info.tgt_addr;
- 
- 	attach = bpf_tramp_attach(id, tgt_prog, prog);
- 	if (IS_ERR(attach)) {
 -- 
-2.31.1
+2.33.0
+
 
