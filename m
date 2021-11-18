@@ -2,75 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68A434551B8
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 01:33:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0F0C4551CE
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 01:37:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241976AbhKRAgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Nov 2021 19:36:33 -0500
-Received: from mga14.intel.com ([192.55.52.115]:3450 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241957AbhKRAgZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Nov 2021 19:36:25 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10171"; a="234324577"
-X-IronPort-AV: E=Sophos;i="5.87,243,1631602800"; 
-   d="scan'208";a="234324577"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2021 16:33:26 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,243,1631602800"; 
-   d="scan'208";a="736448014"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga005.fm.intel.com with ESMTP; 17 Nov 2021 16:33:25 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Grzegorz Szczurek <grzegorzx.szczurek@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        sassmann@redhat.com,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Dave Switzer <david.switzer@intel.com>
-Subject: [PATCH net 7/7] i40e: Fix display error code in dmesg
-Date:   Wed, 17 Nov 2021 16:31:59 -0800
-Message-Id: <20211118003159.245561-8-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211118003159.245561-1-anthony.l.nguyen@intel.com>
-References: <20211118003159.245561-1-anthony.l.nguyen@intel.com>
+        id S242021AbhKRAkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Nov 2021 19:40:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54540 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242011AbhKRAkj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Nov 2021 19:40:39 -0500
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28335C061764;
+        Wed, 17 Nov 2021 16:37:40 -0800 (PST)
+Received: by mail-yb1-xb2c.google.com with SMTP id v138so12697262ybb.8;
+        Wed, 17 Nov 2021 16:37:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=l0eAQkoN5MfrV8Zwpa3zpxrt+NVaxic7EC5nmSfkK00=;
+        b=HcnWMSTpFrjKUHd6J4y2NzTIDjmwysdGhjKly1DZJPfit4fMbAZz7dKMLcwAFi2QrS
+         8n+zxZ2JEVNOwb7bZ4UeD05yG2npPMiOgeHrmu/Fn1uhVcehUQAA/Y2FNz2qz3+NeRC0
+         cD4M99BXtzkX6XYol3m+kzJG1fgHPZ1jYPaP7c7lmNwR5d81LJg4JSbkCALu2ttMYaE+
+         SYSh9yB4hVbZNTnQ2d1IX/QNhOofG20nb3zSjpXC21gwSaWtrek8H73d1Dqt4+dDyfOv
+         P1dhOhLV3EEhDlAvR3/D8YUTASFD3q5VF0/cZ11hXo9nVYRJyrsCCoTuBbBvS9R/7o9g
+         uItA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=l0eAQkoN5MfrV8Zwpa3zpxrt+NVaxic7EC5nmSfkK00=;
+        b=va1JpajkQLCd9YcTzIMOaD86qXc/F4fTXQJ0OLt0cxSb6vEQ67Byg0ANsx6qqDxnXv
+         h7mIzcrctmH9hyNmZZ9ghKVHdYDEmEypr4ThLBZeZATmBsbsvxMhcXkF5ZVL42/T+gte
+         Se3ktKQxNFqyfkvQvCZazyjN2rrsczlkgQGUmEZapzfe1ztwNWcrBqVoUgrRFrROLX8J
+         AM4QJOLilB6YpI+CpftyIu3ZkipRkQ5BOY5nYVjCfhFKD68BKfzl5kv0aii7UHv6/mhQ
+         JXhjaIH7I5omfIzhVbVHSVwSyvF9Sd7SN2ViW76PSGXJ3LJhwOreFN1Q2zYiU6dU8rsk
+         95rQ==
+X-Gm-Message-State: AOAM532wEI60iTVK5zed26ZoY7KGjb0iI1TRwEC4Vc3c2q2+jtyxBhjq
+        ZB4Zi5tD2+fNzdnRu1gxWmkQ/zi6JOoB+gaHBPU/l0ZC
+X-Google-Smtp-Source: ABdhPJxmSHmSCA0k81Dt7z/VDq1nWAPxKeik2VEsqK6lTpx757G9wrRjGX+hkbqPrHCIvZCOkAcEc5jhklsXN82j3zU=
+X-Received: by 2002:a25:d187:: with SMTP id i129mr22485784ybg.2.1637195859315;
+ Wed, 17 Nov 2021 16:37:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <a126299d31954240a7490428feccb5b1@crowdstrike.com>
+In-Reply-To: <a126299d31954240a7490428feccb5b1@crowdstrike.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 17 Nov 2021 16:37:28 -0800
+Message-ID: <CAEf4BzaKr9qbujWZxENWPDL-GDU2CQHzRdcwnk6ui6kLwH5bqw@mail.gmail.com>
+Subject: Re: Re: Clarification on bpftool dual licensing
+To:     Martin Kelly <martin.kelly@crowdstrike.com>
+Cc:     "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-team@fb.com" <kernel-team@fb.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "andrii@kernel.org" <andrii@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
+On Wed, Nov 17, 2021 at 4:32 PM Martin Kelly
+<martin.kelly@crowdstrike.com> wrote:
+>
+> >
+> > On Tue, Nov 16, 2021 at 2:16 AM Daniel Borkmann <daniel@iogearbox.net>
+> > wrote:
+> > >
+> > > On 11/15/21 7:20 PM, Martin Kelly wrote:
+> > > > Hi,
+> > > >
+> > > > I have a question regarding the dual licensing provision of bpftool=
+. I
+> > > > understand that bpftool can be distributed as either GPL 2.0 or BSD=
+ 2-
+> > clause.
+> > > > That said, bpftool can also auto-generate BPF code that gets specif=
+ied inline
+> > > > in the skeleton header file, and it's possible that the BPF code ge=
+nerated is
+> > > > GPL. What I'm wondering is what happens if bpftool generates GPL-li=
+censed
+> > BPF
+> > > > code inside the skeleton header, so that you get a header like this=
+:
+> > > >
+> > > > something.skel.h:
+> > > > /* this file is BSD 2-clause, by nature of dual licensing */
+> > >
+> > > Fwiw, the generated header contains an SPDX identifier:
+> > >
+> > >   /* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+> > >   /* THIS FILE IS AUTOGENERATED! */
+> > >
+> > > > /* THIS FILE IS AUTOGENERATED! */
+> > > >
+> > > > /* standard skeleton definitions */
+> > > >
+> > > > ...
+> > > >
+> > > > s->data_sz =3D XXX;
+> > > > s->data =3D (void *)"\
+> > > > <eBPF bytecode, produced by GPL 2.0 sources, specified in binary>
+> > > > ";
+> > > >
+> > > > My guess is that, based on the choice to dual-license bpftool, the =
+header is
+> > > > meant to still be BSD 2-clause, and the s->data inline code's GPL l=
+icense is
+> > > > not meant to change the licensing of the header itself, but I wante=
+d to
+> >
+> > Yes, definitely that is the intent (but not a lawyer either).
+>
+>  Thanks everyone, that's what I assumed as well. Any objection to a patch=
+ clarifying this more explicitly?
+>
+> One other, related question: vmlinux.h (generated by "bpftool btf dump fi=
+le /sys/kernel/btf/vmlinux format c"), does not currently contain a license=
+ declaration. I assume this would have to be a GPL header, since vmlinux.h =
+references many GPL'd Linux kernel structs and similar, though again I'm no=
+t a lawyer and therefore am not certain. Would you all agree with this? If =
+so, any objection to a patch adding an SPDX line to the generated vmlinux.h=
+?
 
-Fix misleading display error in dmesg if tc filter return fail.
-Only i40e status error code should be converted to string, not linux
-error code. Otherwise, we return false information about the error.
-
-Fixes: 2f4b411a3d67 ("i40e: Enable cloud filters via tc-flower")
-Signed-off-by: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Tested-by: Dave Switzer <david.switzer@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/i40e/i40e_main.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 0a98fab6d019..e118cf9265c7 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -8531,9 +8531,8 @@ static int i40e_configure_clsflower(struct i40e_vsi *vsi,
- 		err = i40e_add_del_cloud_filter(vsi, filter, true);
- 
- 	if (err) {
--		dev_err(&pf->pdev->dev,
--			"Failed to add cloud filter, err %s\n",
--			i40e_stat_str(&pf->hw, err));
-+		dev_err(&pf->pdev->dev, "Failed to add cloud filter, err %d\n",
-+			err);
- 		goto err;
- 	}
- 
--- 
-2.31.1
-
+Is vmlinux DWARF data GPL'ed? I certainly hope not. So vmlinux.h
+shouldn't be licensed under GPL.
