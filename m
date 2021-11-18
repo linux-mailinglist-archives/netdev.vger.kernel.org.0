@@ -2,61 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4131045629F
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 19:41:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B2F04562A2
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 19:41:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233693AbhKRSoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 13:44:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46140 "EHLO
+        id S233609AbhKRSoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 13:44:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229846AbhKRSoG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 13:44:06 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45CF5C06173E
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 10:41:06 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id np3so5826469pjb.4
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 10:41:06 -0800 (PST)
+        with ESMTP id S233705AbhKRSoX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 13:44:23 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 617C0C061756
+        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 10:41:23 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id o14so6025044plg.5
+        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 10:41:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=FMXWh89VZYemVKOC1nOMHXOf0EkNJ7d1gpgnv25tUVA=;
-        b=e0gTQuWbEEtIR6jAswuqe+bkuCE6ahVYPnYSdcovJFIrFzZ/E5K/EHyURvZC+zqcR4
-         Ud0ZAXqm7TsnXdZci3MKz31N1Wl7VXOcibg3+0aUK3Ajr9vqznw44JW+gKqMiqJYqrur
-         yY0Y00qptmYuAtm918Hnbl0GEk/U430JYyiRk=
+        bh=RbUTIPyfuQU3KvEwbLJbeU9iwD29PEErUjBhpe3f1nk=;
+        b=Co+TIeRJL09Rq3VPI76nMtEKLH/eE+0ZvB8aRWw0Yi+6DgAd9bRSPauVUzKvqEeMK1
+         hT1e0mHlV6mDk225eu1z8Lo9YAC9bcPXiC7i39eZ5PAvNdOPGhiaHeh64Q1FqeJM60zz
+         KzPl31m9ey7qhQdqvq8xeaHux2ki+1q97tYd8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=FMXWh89VZYemVKOC1nOMHXOf0EkNJ7d1gpgnv25tUVA=;
-        b=Wxi5U/T2WSATUWogqS5O52CQ6135j5z59x3z08H+a0gRn81bijoVd7gWl7hpVI3oMw
-         iGqLV+Sw+5+jwuJz0bUxj8E9TunL7UCQzENCoVmuXlytOz/MsBpNhd5c8zWgcd4WLfr6
-         b9iKrzPn/hjytsd1GqmL6SXMuSOsvu6EjFHon22hMompCHujvirXllcceMzO2HTovTme
-         8YOMwAv84SuS9xTiISqfwtbz48ai+SBL3YVrCrtM8KKVTpwNStFvwAlIehC3kEB4mDsQ
-         pZUP23wB2xXiYxW+gvUgJo2Ezzh6Xz13Ow95o39dyCy7ySKSqFIVDEoKtkCK5Jw5k+U6
-         JH6Q==
-X-Gm-Message-State: AOAM533fPEtNTgwEjD32oJArTHbqIrIIJGB9nzaY4c7LCAOIir7PYdx9
-        NKphSQCk3GmhfjybD5IeSc704Q==
-X-Google-Smtp-Source: ABdhPJzW+zKuM2db9SP+myHZwjczhP0UwUeIL3sioy/PloyCYSpO2ZFN4/7xzppaWZPkVNuT6wdSfQ==
-X-Received: by 2002:a17:902:9047:b0:143:6e5f:a480 with SMTP id w7-20020a170902904700b001436e5fa480mr69200036plz.66.1637260865870;
-        Thu, 18 Nov 2021 10:41:05 -0800 (PST)
+        bh=RbUTIPyfuQU3KvEwbLJbeU9iwD29PEErUjBhpe3f1nk=;
+        b=0fU6J+odrJ4ZPCdvjrq35SAo0AN3lOE4+WF1kFMZFIDCJKGbRXmj1NLPUtEct9tZN2
+         LHfXcBZsAcgrtHOeGFx3ifGv5trApJTP/5dC0KQ5JY1/hCM+qNtTtgnQHSiGdGPH85OV
+         VgnUVb5ypeEhpi8gUHotSrxAGZ5eXR4qKFdiESGEDJ5EmQ05MyK/IDPe9TypdYZ/Xrr+
+         kQNu4+1XNAtgZpNe5Qct7gm3YyG4BIbwB50qqwys8PkdMWgI0/6PpJDViuHFCHs9U76g
+         DIle8fhaOY5aAFEvScENeFYED6oUDYZgJIi87bBW2OElXe4Q5XjFR/GNaLCsTpaiaB7y
+         QBOQ==
+X-Gm-Message-State: AOAM530x6EkMQRogzJSDfZ1KU02Pc7+OjyJ98IHqP8jd+E5eZ2aVrHas
+        4l/AEvWV73vtZFsvmfhCGzRUtg==
+X-Google-Smtp-Source: ABdhPJzodK/I+eeNuN3Xk06+n5zhrWUoOkx/5chP0/yt93UK8GaJ8Jr/gwEyIDSs3RSJwJEYECbGVw==
+X-Received: by 2002:a17:902:e804:b0:142:1c0b:c2a6 with SMTP id u4-20020a170902e80400b001421c0bc2a6mr67605456plg.23.1637260882951;
+        Thu, 18 Nov 2021 10:41:22 -0800 (PST)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id y4sm316063pfi.178.2021.11.18.10.41.05
+        by smtp.gmail.com with ESMTPSA id j8sm343200pfc.8.2021.11.18.10.41.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Nov 2021 10:41:05 -0800 (PST)
+        Thu, 18 Nov 2021 10:41:22 -0800 (PST)
 From:   Kees Cook <keescook@chromium.org>
 To:     Kalle Valo <kvalo@codeaurora.org>
 Cc:     Kees Cook <keescook@chromium.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: [PATCH] libertas: Use struct_group() for memcpy() region
-Date:   Thu, 18 Nov 2021 10:41:04 -0800
-Message-Id: <20211118184104.1283637-1-keescook@chromium.org>
+Subject: [PATCH] libertas_tf: Use struct_group() for memcpy() region
+Date:   Thu, 18 Nov 2021 10:41:21 -0800
+Message-Id: <20211118184121.1283821-1-keescook@chromium.org>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2740; h=from:subject; bh=aefCoJhV9lyPmgKpvdOWTp1eHgAAy3wtBLWPOfGvPCw=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhlp4/xcQA7hFiK/M9yqFXiZTlrkWV9wESsqNUkUC3 ENS25TmJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYZaePwAKCRCJcvTf3G3AJpVQD/ 9sfbXlovmw71iDiRDrMna0brdH2vsTbqkC/68UeZ2f5OthAyzd5wKbCPrZMdk8rRAwTgObYWAY+Hpu M3FLiHgD0jkpiyx5wHMTVKlmqSb6hin9nXuWshmEIIAcKh+PJcGgLAVjLa+g/QCyJPzH9dkSUt/7Yk Y8eXABrgwWnvNUvQc6sikL8b2jgJMR0Nr5yV44SxTstHd1OwFSi8FIk/q0nFcmk2hH3q46R2YlLV/Y 24aF3/ryOhyXvagYXYvxsi8g12kUXh0xVR98IcF/R29YNsEv/ZxrNUK8rIakUfuBi1LguyHjEFgyNc KGa0XOdHCCZ9EeLvIltgNYTUkgnS2yirWlBqOweZoLOd14b3NRhHYOdB9jMHt/m85Kas0rokjzikHZ 5SSg4mNgvAGuhST54qxVm5CYjI2R+8Yofr30tjtMJq0kYfjjdEH7YagXkzawvV5eVkwagv124BYBbh MB0avOFv7P3J170sM8LqUU+7QxF0TiIVUqCeaw3eNIeYWfB5bl4amU5sOxBFx7LajLHnQpnhwhe/hq jJgA4LFryoMmXs0vcgmRq/+n5EjpmVJvajEsP6PNO6fcnx15h0ozpmKelxVzynP9+FKZ6D7tILJG28 DYW0f65jkCsw8PJzgaZhPYdEABv1NMAVcQEXN9E+I8K8vuUztRSnjGha+0Vg==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2474; h=from:subject; bh=aN5SRWSO0jhRLPZQ+xEXk4KxeSHDMCg25qp77Fv8hh8=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhlp5Qeg0TURmPLYxq0mwE2hFWy/0AYNHuIKbeAQlp DWoEAlmJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYZaeUAAKCRCJcvTf3G3AJuSiD/ 4wcpmRD5px9n6yd6xWv+gt3hCr1H9791Cboykwo0Lpp/SHFjH4FZFXODl+Yk+h1qKLUNAVhyaeHdD5 ADLhR1hGYi57Gv7cSAZI9hjopIS2JhOKy8SseJvoBH9XV+zEvzMxVRyIJHkaPpMjvA8Rw8VHba+0wD qBVapKp9KITa6HKnH/imrMShxTcyssHL8gq7t4yipfOjliNPO4LikA2ppq8Z11+vyhvi2BKm9VNl8m LAnFs3PVt1PVVsGYYMBO5TNmu6kZWu9HeDnikMMc4NOBKNWusiT/fPonzIeYVmgzRAGeHQnsQcQ84h qyfKFYGtvKXCn2YSM/TNcxk0h1b5fG1TaLmNtKtuImNhbZylnnK6tq3kgBrTTIq7MjdwvVDT3/24pO zTYInji5mjFrii4gSkR119Ov/UFizJsDhaOrkbDX+b3kNW9xt8DvboOv7WNaKXUg/jZGuBsfhHsWOg uuZPI6u5uYPndGRgLsAfIxMuPQHyi+1w9L/EKxOOZ6NsEn2LjfzmGTYs/ZdFr07sW/YYyaXIWQTrCk UXpaSTtRRrfX+R5NUiIVO1r+Q6qcTtLAHfNeQToQct7l4M12U+Esi6lwI8XmDpPMmuupWueu9v3q1s PL+z3lUwp41eD44PcKvy0a7/bHVNO04v5GifSaKwueC/Yo6IR64WA/+8I85g==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -64,29 +67,29 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 In preparation for FORTIFY_SOURCE performing compile-time and run-time
-field bounds checking for memcpy(), memmove(), and memset(), avoid
-intentionally writing across neighboring fields.
+field array bounds checking for memcpy(), memmove(), and memset(),
+avoid intentionally writing across neighboring fields.
 
 Use struct_group() in struct txpd around members tx_dest_addr_high
 and tx_dest_addr_low so they can be referenced together. This will
 allow memcpy() and sizeof() to more easily reason about sizes, improve
 readability, and avoid future warnings about writing beyond the end
-of queue_id.
+of tx_dest_addr_high.
 
 "pahole" shows no size nor member offset changes to struct txpd.
 "objdump -d" shows no object code changes.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- drivers/net/wireless/marvell/libertas/host.h | 10 ++++++----
- drivers/net/wireless/marvell/libertas/tx.c   |  5 +++--
- 2 files changed, 9 insertions(+), 6 deletions(-)
+ drivers/net/wireless/marvell/libertas_tf/libertas_tf.h | 10 ++++++----
+ drivers/net/wireless/marvell/libertas_tf/main.c        |  3 ++-
+ 2 files changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/libertas/host.h b/drivers/net/wireless/marvell/libertas/host.h
-index dfa22468b14a..af96bdba3b2b 100644
---- a/drivers/net/wireless/marvell/libertas/host.h
-+++ b/drivers/net/wireless/marvell/libertas/host.h
-@@ -308,10 +308,12 @@ struct txpd {
+diff --git a/drivers/net/wireless/marvell/libertas_tf/libertas_tf.h b/drivers/net/wireless/marvell/libertas_tf/libertas_tf.h
+index 5d726545d987..b2af2ddb6bc4 100644
+--- a/drivers/net/wireless/marvell/libertas_tf/libertas_tf.h
++++ b/drivers/net/wireless/marvell/libertas_tf/libertas_tf.h
+@@ -268,10 +268,12 @@ struct txpd {
  	__le32 tx_packet_location;
  	/* Tx packet length */
  	__le16 tx_packet_length;
@@ -103,31 +106,20 @@ index dfa22468b14a..af96bdba3b2b 100644
  	/* Pkt Priority */
  	u8 priority;
  	/* Pkt Trasnit Power control */
-diff --git a/drivers/net/wireless/marvell/libertas/tx.c b/drivers/net/wireless/marvell/libertas/tx.c
-index aeb481740df6..27304a98787d 100644
---- a/drivers/net/wireless/marvell/libertas/tx.c
-+++ b/drivers/net/wireless/marvell/libertas/tx.c
-@@ -113,6 +113,7 @@ netdev_tx_t lbs_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	p802x_hdr = skb->data;
- 	pkt_len = skb->len;
+diff --git a/drivers/net/wireless/marvell/libertas_tf/main.c b/drivers/net/wireless/marvell/libertas_tf/main.c
+index 71492211904b..02a1e1f547d8 100644
+--- a/drivers/net/wireless/marvell/libertas_tf/main.c
++++ b/drivers/net/wireless/marvell/libertas_tf/main.c
+@@ -232,7 +232,8 @@ static void lbtf_tx_work(struct work_struct *work)
+ 			     ieee80211_get_tx_rate(priv->hw, info)->hw_value);
  
+ 	/* copy destination address from 802.11 header */
+-	memcpy(txpd->tx_dest_addr_high, skb->data + sizeof(struct txpd) + 4,
 +	BUILD_BUG_ON(sizeof(txpd->tx_dest_addr) != ETH_ALEN);
- 	if (priv->wdev->iftype == NL80211_IFTYPE_MONITOR) {
- 		struct tx_radiotap_hdr *rtap_hdr = (void *)skb->data;
- 
-@@ -124,10 +125,10 @@ netdev_tx_t lbs_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 		pkt_len -= sizeof(*rtap_hdr);
- 
- 		/* copy destination address from 802.11 header */
--		memcpy(txpd->tx_dest_addr_high, p802x_hdr + 4, ETH_ALEN);
-+		memcpy(&txpd->tx_dest_addr, p802x_hdr + 4, ETH_ALEN);
- 	} else {
- 		/* copy destination address from 802.3 header */
--		memcpy(txpd->tx_dest_addr_high, p802x_hdr, ETH_ALEN);
-+		memcpy(&txpd->tx_dest_addr, p802x_hdr, ETH_ALEN);
- 	}
- 
- 	txpd->tx_packet_length = cpu_to_le16(pkt_len);
++	memcpy(&txpd->tx_dest_addr, skb->data + sizeof(struct txpd) + 4,
+ 		ETH_ALEN);
+ 	txpd->tx_packet_length = cpu_to_le16(len);
+ 	txpd->tx_packet_location = cpu_to_le32(sizeof(struct txpd));
 -- 
 2.30.2
 
