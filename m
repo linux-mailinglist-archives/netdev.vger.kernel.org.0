@@ -2,166 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14613455AAE
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 12:38:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 032DF455A21
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 12:26:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344255AbhKRLkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 06:40:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60450 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344280AbhKRLj0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 06:39:26 -0500
-Received: from ustc.edu.cn (email6.ustc.edu.cn [IPv6:2001:da8:d800::8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9F0ABC06122B;
-        Thu, 18 Nov 2021 03:35:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mail.ustc.edu.cn; s=dkim; h=Received:Date:From:To:Cc:Subject:
-        Message-ID:In-Reply-To:References:MIME-Version:Content-Type:
-        Content-Transfer-Encoding; bh=UDqCaonUErBkG0UT8jd/OWpcu02UqrjqL2
-        rLnvms00s=; b=lhFZd3ArxTgRlp/DnW1MYpEcOtNdAO1fHOMJ834ctgQd+zFTxE
-        94DNmNMEhAj+adYOI2XI0rUIC82YZ6gdiwS9MvXEVkGicq4+fP2Bb2fWndE5LfEN
-        QRCbsGI2+HBpQ0xTbX+J4D+m//7Ltv+YSicJihwq/VcvILHkGsfc0l9YA=
-Received: from xhacker (unknown [101.86.18.22])
-        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygBnLsxMOpZhi51cAQ--.6032S5;
-        Thu, 18 Nov 2021 19:34:41 +0800 (CST)
-Date:   Thu, 18 Nov 2021 19:24:14 +0800
-From:   Jisheng Zhang <jszhang3@mail.ustc.edu.cn>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        "=?UTF-8?B?Qmo=?= =?UTF-8?B?w7ZybiBUw7ZwZWw=?=" <bjorn@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S1343699AbhKRL2w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 06:28:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:55104 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1343807AbhKRL2A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 06:28:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1637234699;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ZxrU+YdlzdoK9MwbrDEtnXiUcR0OkL5aLQFUj4RP96M=;
+        b=H+gtDUqrNFkiSYvhtr5AtNQSzYHg4Br6CCGVVPj26+QhXiJ6smjh6m+Slw7KQmQmoFcyQx
+        6r2ymArKlva0at6vVOCaXsEbUtY/78ZKx6PDDe5bvGEcAK4ZXol/Vf885DwBli8isqqXkb
+        PvDUnxBOod86USgyqSrDL1GPaOiTcUk=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-53-6GeNkAMWNLKt8M7CXAhN2Q-1; Thu, 18 Nov 2021 06:24:58 -0500
+X-MC-Unique: 6GeNkAMWNLKt8M7CXAhN2Q-1
+Received: by mail-ed1-f71.google.com with SMTP id i19-20020a05640242d300b003e7d13ebeedso4995316edc.7
+        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 03:24:58 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZxrU+YdlzdoK9MwbrDEtnXiUcR0OkL5aLQFUj4RP96M=;
+        b=X24NuR0/QafXrPgxsbs9uuG/dk9ySIjKH2y9O0o1whnltCyHNag/IL1pJUuyRRElVX
+         1FzRlem+DGr4dbXRFlpBIYYyYQpVPSyWK+oDpm9gbONMGZyVAVyo37j7xVhxSFqVzuql
+         ucOxPdVMGfnyDulOB7neOhins4lUp1zHqmWjkbtWMYQwEYuP5cays/aSdVvALDOx15rG
+         MW5DpBlxUSqWu+p+BbbszmE7g20VUyNbkex48pKXoUX/JM4iqLIJJUgnDtYBBQ7+fGoV
+         Z5ybsL6O2AVp5KSeAOj0OpjTfNbx+x1L2q0owToq/1dXKF166X9vbbDEnLdO9KwuknDU
+         eUaA==
+X-Gm-Message-State: AOAM531ZcILoySeA6EXiW5VywQlf8q/A6AbqsD8pejdbcK7sHF/NA5qZ
+        MkR/3Gim2vQHsrX+roqy221PzbkOGPVyx9mByhhQGGjkIO6M9BKBEUs6lGLphL9qS4R0pN3zi2n
+        bXrPUm2pT0+c7Vlqk
+X-Received: by 2002:a17:906:7951:: with SMTP id l17mr32406000ejo.284.1637234697172;
+        Thu, 18 Nov 2021 03:24:57 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx1jBWluEfOkRv0RU793HSUUfqq0SJBCZSfZque6kDo4eh9az4prr608fExDmItOCEOF335Rw==
+X-Received: by 2002:a17:906:7951:: with SMTP id l17mr32405959ejo.284.1637234696948;
+        Thu, 18 Nov 2021 03:24:56 -0800 (PST)
+Received: from krava.redhat.com (nat-pool-brq-u.redhat.com. [213.175.37.12])
+        by smtp.gmail.com with ESMTPSA id he17sm1131074ejc.110.2021.11.18.03.24.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Nov 2021 03:24:56 -0800 (PST)
+From:   Jiri Olsa <jolsa@redhat.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Steven Rostedt <srostedt@vmware.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Tong Tiangen <tongtiangen@huawei.com>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kbuild@vger.kernel.org
-Subject: [PATCH 05/12] riscv: extable: make fixup_exception() return bool
-Message-ID: <20211118192414.2c574541@xhacker>
-In-Reply-To: <20211118192130.48b8f04c@xhacker>
-References: <20211118192130.48b8f04c@xhacker>
+        KP Singh <kpsingh@chromium.org>
+Subject: [RFC bpf-next v5 00/29] bpf: Add batch support for attaching trampolines
+Date:   Thu, 18 Nov 2021 12:24:26 +0100
+Message-Id: <20211118112455.475349-1-jolsa@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: LkAmygBnLsxMOpZhi51cAQ--.6032S5
-X-Coremail-Antispam: 1UD129KBjvJXoWxury3ZryfWry5Gr4xKF17KFg_yoW5CFWkpF
-        4DCas7GrZYgrn3ur47tw40gF15Kw40g34xCr18Gwn8t3W2krWrJr1ftasIyr15CrWUWF18
-        AFySgryrCws5Z37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUBqb7Iv0xC_Cr1lb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I2
-        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI
-        8067AKxVWUWwA2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF
-        64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0cI8IcV
-        CY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv
-        6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c
-        02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE
-        4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l42xK82
-        IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC2
-        0s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a6rW5MIIYrxkI7VAKI48JMI
-        IF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26F4j6r4UJwCI
-        42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z2
-        80aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7IU8FD73UUUUU==
-X-CM-SenderInfo: xmv2xttqjtqzxdloh3xvwfhvlgxou0/
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jisheng Zhang <jszhang@kernel.org>
+hi,
+sending new version of batch attach support, previous post is in
+here [1].
 
-The return values of fixup_exception() and riscv_bpf_fixup_exception()
-represent a boolean condition rather than an error code, so it's better
-to return `bool` rather than `int`.
+As discussed in previous post adding this version is adding generic
+approach to attach program to multiple functions, meaning you are
+now able to attach multiple trampolines on top of each other with
+no limitations, which was not possible in previous version.
 
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+v5 changes:
+  - ftrace new direct batch api got merged, so it's not longer
+    part of this patchset (thanks Steven!), adding just few small
+    related fixes 
+  - added code that allows attach trampolines on top of each other
+    as per previous version comments
+  - fixed btf__find_by_glob_kind as per Andrii's comments
+  - added new selftest to check on the trampoline's splitting
+  - added in bpf_arg/bpf_ret_value helpers with tests
+
+I'm not completely sure about the approach, because it was quite
+difficult to debug/finalize, but I can't think of anything better
+for now.. so sending this as RFC ;)
+
+Also available at:
+  https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
+  bpf/batch
+
+thanks,
+jirka
+
+
+[1] https://lore.kernel.org/bpf/20210826193922.66204-1-jolsa@kernel.org/
+Cc: Steven Rostedt <srostedt@vmware.com>
 ---
- arch/riscv/include/asm/extable.h | 8 ++++----
- arch/riscv/mm/extable.c          | 6 +++---
- arch/riscv/net/bpf_jit_comp64.c  | 6 +++---
- 3 files changed, 10 insertions(+), 10 deletions(-)
+Jiri Olsa (29):
+      ftrace: Use direct_ops hash in unregister_ftrace_direct
+      ftrace: Add cleanup to unregister_ftrace_direct_multi
+      ftrace: Add ftrace_set_filter_ips function
+      bpf: Factor bpf_check_attach_target function
+      bpf: Add bpf_check_attach_model function
+      bpf: Add bpf_arg/bpf_ret_value helpers for tracing programs
+      bpf, x64: Allow to use caller address from stack
+      bpf: Keep active attached trampoline in bpf_prog
+      bpf: Add support to load multi func tracing program
+      bpf: Add bpf_trampoline_id object
+      bpf: Add addr to bpf_trampoline_id object
+      bpf: Add struct bpf_tramp_node layer
+      bpf: Add bpf_tramp_attach layer for trampoline attachment
+      bpf: Add support to store multiple ids in bpf_tramp_id object
+      bpf: Add support to store multiple addrs in bpf_tramp_id object
+      bpf: Add bpf_tramp_id_single function
+      bpf: Resolve id in bpf_tramp_id_single
+      bpf: Add refcount_t to struct bpf_tramp_id
+      bpf: Add support to attach trampolines with multiple IDs
+      bpf: Add support for tracing multi link
+      libbpf: Add btf__find_by_glob_kind function
+      libbpf: Add support to link multi func tracing program
+      selftests/bpf: Add bpf_arg/bpf_ret_value test
+      selftests/bpf: Add fentry multi func test
+      selftests/bpf: Add fexit multi func test
+      selftests/bpf: Add fentry/fexit multi func test
+      selftests/bpf: Add mixed multi func test
+      selftests/bpf: Add ret_mod multi func test
+      selftests/bpf: Add attach multi func test
 
-diff --git a/arch/riscv/include/asm/extable.h b/arch/riscv/include/asm/extable.h
-index c48c020fcf4d..e4374dde02b4 100644
---- a/arch/riscv/include/asm/extable.h
-+++ b/arch/riscv/include/asm/extable.h
-@@ -21,16 +21,16 @@ struct exception_table_entry {
- 
- #define ARCH_HAS_RELATIVE_EXTABLE
- 
--int fixup_exception(struct pt_regs *regs);
-+bool fixup_exception(struct pt_regs *regs);
- 
- #if defined(CONFIG_BPF_JIT) && defined(CONFIG_ARCH_RV64I)
--int rv_bpf_fixup_exception(const struct exception_table_entry *ex, struct pt_regs *regs);
-+bool rv_bpf_fixup_exception(const struct exception_table_entry *ex, struct pt_regs *regs);
- #else
--static inline int
-+static inline bool
- rv_bpf_fixup_exception(const struct exception_table_entry *ex,
- 		       struct pt_regs *regs)
- {
--	return 0;
-+	return false;
- }
- #endif
- 
-diff --git a/arch/riscv/mm/extable.c b/arch/riscv/mm/extable.c
-index cbb0db11b28f..d41bf38e37e9 100644
---- a/arch/riscv/mm/extable.c
-+++ b/arch/riscv/mm/extable.c
-@@ -11,17 +11,17 @@
- #include <linux/module.h>
- #include <linux/uaccess.h>
- 
--int fixup_exception(struct pt_regs *regs)
-+bool fixup_exception(struct pt_regs *regs)
- {
- 	const struct exception_table_entry *fixup;
- 
- 	fixup = search_exception_tables(regs->epc);
- 	if (!fixup)
--		return 0;
-+		return false;
- 
- 	if (regs->epc >= BPF_JIT_REGION_START && regs->epc < BPF_JIT_REGION_END)
- 		return rv_bpf_fixup_exception(fixup, regs);
- 
- 	regs->epc = (unsigned long)&fixup->fixup + fixup->fixup;
--	return 1;
-+	return true;
- }
-diff --git a/arch/riscv/net/bpf_jit_comp64.c b/arch/riscv/net/bpf_jit_comp64.c
-index 2ca345c7b0bf..7714081cbb64 100644
---- a/arch/riscv/net/bpf_jit_comp64.c
-+++ b/arch/riscv/net/bpf_jit_comp64.c
-@@ -459,8 +459,8 @@ static int emit_call(bool fixed, u64 addr, struct rv_jit_context *ctx)
- #define BPF_FIXUP_OFFSET_MASK   GENMASK(26, 0)
- #define BPF_FIXUP_REG_MASK      GENMASK(31, 27)
- 
--int rv_bpf_fixup_exception(const struct exception_table_entry *ex,
--				struct pt_regs *regs)
-+bool rv_bpf_fixup_exception(const struct exception_table_entry *ex,
-+			    struct pt_regs *regs)
- {
- 	off_t offset = FIELD_GET(BPF_FIXUP_OFFSET_MASK, ex->fixup);
- 	int regs_offset = FIELD_GET(BPF_FIXUP_REG_MASK, ex->fixup);
-@@ -468,7 +468,7 @@ int rv_bpf_fixup_exception(const struct exception_table_entry *ex,
- 	*(unsigned long *)((void *)regs + pt_regmap[regs_offset]) = 0;
- 	regs->epc = (unsigned long)&ex->fixup - offset;
- 
--	return 1;
-+	return true;
- }
- 
- /* For accesses to BTF pointers, add an entry to the exception table */
--- 
-2.33.0
-
+ arch/x86/net/bpf_jit_comp.c                                      |  31 ++-
+ include/linux/bpf.h                                              |  76 +++++--
+ include/linux/bpf_verifier.h                                     |  23 +--
+ include/linux/ftrace.h                                           |   3 +
+ include/uapi/linux/bpf.h                                         |  26 +++
+ kernel/bpf/core.c                                                |   4 +-
+ kernel/bpf/syscall.c                                             | 379 +++++++++++++++++++++++++++++++----
+ kernel/bpf/trampoline.c                                          | 926 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------
+ kernel/bpf/verifier.c                                            | 173 +++++++++++++---
+ kernel/kallsyms.c                                                |   2 +-
+ kernel/trace/bpf_trace.c                                         |  38 +++-
+ kernel/trace/ftrace.c                                            |  61 +++++-
+ tools/include/uapi/linux/bpf.h                                   |  26 +++
+ tools/lib/bpf/bpf.c                                              |   7 +
+ tools/lib/bpf/bpf.h                                              |   6 +-
+ tools/lib/bpf/btf.c                                              |  77 ++++++++
+ tools/lib/bpf/btf.h                                              |   3 +
+ tools/lib/bpf/libbpf.c                                           |  66 +++++++
+ tools/testing/selftests/bpf/Makefile                             |  10 +-
+ tools/testing/selftests/bpf/prog_tests/args_test.c               |  34 ++++
+ tools/testing/selftests/bpf/prog_tests/modify_return.c           | 114 ++++++++++-
+ tools/testing/selftests/bpf/prog_tests/multi_attach_test.c       | 176 +++++++++++++++++
+ tools/testing/selftests/bpf/prog_tests/multi_fentry_fexit_test.c |  32 +++
+ tools/testing/selftests/bpf/prog_tests/multi_fentry_test.c       |  30 +++
+ tools/testing/selftests/bpf/prog_tests/multi_fexit_test.c        |  31 +++
+ tools/testing/selftests/bpf/prog_tests/multi_mixed_test.c        |  34 ++++
+ tools/testing/selftests/bpf/progs/args_test.c                    |  30 +++
+ tools/testing/selftests/bpf/progs/multi_attach.c                 | 105 ++++++++++
+ tools/testing/selftests/bpf/progs/multi_check.c                  |  86 ++++++++
+ tools/testing/selftests/bpf/progs/multi_fentry.c                 |  17 ++
+ tools/testing/selftests/bpf/progs/multi_fentry_fexit.c           |  28 +++
+ tools/testing/selftests/bpf/progs/multi_fexit.c                  |  20 ++
+ tools/testing/selftests/bpf/progs/multi_mixed.c                  |  43 ++++
+ tools/testing/selftests/bpf/progs/multi_modify_return.c          |  17 ++
+ 34 files changed, 2539 insertions(+), 195 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/args_test.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/multi_attach_test.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/multi_fentry_fexit_test.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/multi_fentry_test.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/multi_fexit_test.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/multi_mixed_test.c
+ create mode 100644 tools/testing/selftests/bpf/progs/args_test.c
+ create mode 100644 tools/testing/selftests/bpf/progs/multi_attach.c
+ create mode 100644 tools/testing/selftests/bpf/progs/multi_check.c
+ create mode 100644 tools/testing/selftests/bpf/progs/multi_fentry.c
+ create mode 100644 tools/testing/selftests/bpf/progs/multi_fentry_fexit.c
+ create mode 100644 tools/testing/selftests/bpf/progs/multi_fexit.c
+ create mode 100644 tools/testing/selftests/bpf/progs/multi_mixed.c
+ create mode 100644 tools/testing/selftests/bpf/progs/multi_modify_return.c
 
