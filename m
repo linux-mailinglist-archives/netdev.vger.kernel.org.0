@@ -2,160 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58D534562B3
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 19:42:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B265B4562C6
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 19:44:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233868AbhKRSpz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 13:45:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46652 "EHLO
+        id S231843AbhKRSrt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 13:47:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229840AbhKRSpz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 13:45:55 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42AEFC061574
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 10:42:55 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id p18so5993669plf.13
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 10:42:55 -0800 (PST)
+        with ESMTP id S229632AbhKRSrs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 13:47:48 -0500
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39297C061574;
+        Thu, 18 Nov 2021 10:44:48 -0800 (PST)
+Received: by mail-lf1-x132.google.com with SMTP id u3so30633362lfl.2;
+        Thu, 18 Nov 2021 10:44:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=trgLLdRoT+n1b1ZyQJumup4Q5cZa0mbWekdA7zJj1aM=;
-        b=Di6C5t/oTv3r1M+4hIZu+IuHmC/NkjBaUp7qqEB8dQzFNX1tUoZrx9VGvcI5Bv3zkK
-         XTsInu31PXildGkudmD7tZIAEyHfihd7Ill8iQ3ux9WcQ7F5ddMZ8u2wlYyCm/JCcP1u
-         Un9+rbXIqOqQyRi2YfoGTq1QknX/osZq0Ntqs=
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KtBf3b/XHtk1bqoyzceQSEj+SyTHp41FF2tWEqfwnLw=;
+        b=buQn+iZM9hwMl0Gk9RdXKnnAf/E/uLVBWm7VBqTqhi6RS/ynPzXTQocvXe4q6gFupy
+         c1pu5ohqU2BD9dJasj+QURvXwsKgJUTRk45Hk31gQhqPNT+Z5y1EPSUde+St2VwwT7DK
+         h0M+lZXL54d1V7OG3GhMY7VfO+GZV48SI28SPDBZVNmJyhGRCr172x+yxpuHa0zd3kxe
+         YGf3IX+0COPwKMXGdsjOsCBXHh20eMpiV8nNopR80lIi3M45oNhmx2qx+LVb2E+ufEAW
+         CZosKf2jSR6o134g1UsmOjhVuuub0efyJLxLewm7hItoTrEtskEuPQWzb0y+5htrMR9P
+         EslA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=trgLLdRoT+n1b1ZyQJumup4Q5cZa0mbWekdA7zJj1aM=;
-        b=sbojrq2QL+aqMb7tSCx9iLPdiD3Lqc1ViZXPtoFZH+cgR595BhrPFI2ztjj9nZMBfd
-         Q8SJEAnHo5yUGJXMrqmO4OQjakEkmJEFT1XAuXrdteOwQ00OK7TzktE9zESunti7n60o
-         PexfoquJC3Uon8jbPgDO19TCwSTx7Y7W2ETqTIvP7bSqi8X++2d2BaB28y7XOM1S6UDM
-         wiu1YfC8U+1IW+jT/eSBNrEWxd2acjo8DmoBmkesd4Fapi4rAwgIILfpzEFZ928RIzd5
-         dahdMVw9Rx2VWSlfKHatnXXhSGqr2IsPo83Rr3jH4tAlET3vOybXYHpkH/jKp+BNfu2+
-         SZLQ==
-X-Gm-Message-State: AOAM530+z03Hr5lG2uaPZ7PsBfQMj4bHPl++UptjPqRKgdOoloGOEZlB
-        waMhXe9P8amN7NzVoG+LoWOEAg==
-X-Google-Smtp-Source: ABdhPJy5jA9oURWO/IdEb+TEeg6tSEfrABxABtNmnaCStJglp5gHxTLDbkr428ogTAAJMamcnx43Mw==
-X-Received: by 2002:a17:903:22cc:b0:142:d31:bd9 with SMTP id y12-20020a17090322cc00b001420d310bd9mr68301328plg.64.1637260974821;
-        Thu, 18 Nov 2021 10:42:54 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id pj12sm9636583pjb.51.2021.11.18.10.42.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Nov 2021 10:42:54 -0800 (PST)
-From:   Kees Cook <keescook@chromium.org>
-To:     Ariel Elior <aelior@marvell.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Prabhakar Kushwaha <pkushwaha@marvell.com>,
-        Sudarsana Kalluru <skalluru@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        GR-everest-linux-l2@marvell.com, netdev@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH] bnx2x: Use struct_group() for memcpy() region
-Date:   Thu, 18 Nov 2021 10:42:53 -0800
-Message-Id: <20211118184253.1284535-1-keescook@chromium.org>
-X-Mailer: git-send-email 2.30.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KtBf3b/XHtk1bqoyzceQSEj+SyTHp41FF2tWEqfwnLw=;
+        b=V1KgUhQzZ9V/6k6F9rfvlcSC1OaZgpigDC199kaBsU5y0AJigfSfI/xa05CoCOQvMJ
+         m9MmENEkTLucF3cXbsQW4+vdDfXsvQnqQ1SRXcvwiArLwbe/3IxiK+IW9VHFBwDeznHF
+         Zbpe5LWnndYddmiWlyMIgxlzK/LqPDXwXcmLnKZrZuJLMJRpEn0piaDSWxJxc3I1H7i2
+         NYsTNT7rGdHuFrhvKIq7ST4mQVsqzwuGV91uZybQibM8qkXMnzWKiUuEcGUoEjRcwo6h
+         OAVmm8R+O6fWWYxKi0ZfgneUoc0Ye3upqIvb/TktpM8K1as/zEbX1TbytyUvsUTwa/y7
+         ucRQ==
+X-Gm-Message-State: AOAM531CJ42drX5FFdLXYw2p5sFhVWnm+LCY4u3hrQNdRHOffTPpI3kY
+        dyJ4k3q82jq5BvOGVHtmJsknurNqY07nDCj1U00=
+X-Google-Smtp-Source: ABdhPJwdjFq/6ndUGke0X96RAeuKW7QfP7GtmnYgdBZsHbyy+1ZplNrF1S0qIjKJ9TF2gDhwfHbMDv7GptCo0knLVAQ=
+X-Received: by 2002:a2e:a451:: with SMTP id v17mr19299608ljn.85.1637261086361;
+ Thu, 18 Nov 2021 10:44:46 -0800 (PST)
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3770; h=from:subject; bh=6hEwDO0xCiVwAnLg85cXqg70QHmcnaSDSuC1mUGRrWU=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhlp6s9ZWd2LgEbJd7SUPDgW+6bEFR1SxPLBnQO7ja DhC5E4qJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYZaerAAKCRCJcvTf3G3AJkoMD/ 46Sjcyi/9leOEaXQUWHSHGcVuhgVsYRm81DoGsbSucKamBD0J9BCsf6zw93ldojsRK0JUtUfW570PS qoZ42PwYS2gqV0L8F8fdKjnxVUbO+/Jbo7m6w6qFTS3yTPyQ6hJgiEclkE72d2zOmBKqqme+Zw+83Z U1s8ReI/CGgTey4mqdC2koRH0PyNPTl1pOVvyLsmsllgvqnjqvlh0RTrzeyO7n/bDLVi/40zQS/pDe BtGUDWxyYkRB4frRMfS2/h4DmwixorTYqu8tjxI+k0ZICqZfoP6NpdrATy7qKLvnziMdqSVVUzRRoi y6KOJc9iDKM1CQfwafsjLIBZGzhDYS5OKhXbekY4fUk8qfnGrEKIItg3NLGGIFNqCVxNinsY7R3o6L CinZm8SxgApls7KFtK8j3JrtpjdqC7J6iAL3nYhXHSVPsZwv7P20iC0uNawe63E73tJHh6md9i/nH8 mDGZgtWoZh7zPDuobkobw2hE1lkdvGcaVZqLh6AwxMh4bcYUbMusE3TxzM0OHtXCpGsYeX+RQ5AOPu /rfWw5byHpAt3cPIqo52nu9+SGMlYoTbjYW+ShjqIgXfCT+OSCsl6aF1B3NOyPGvzHNTgBsHg2KZj4 AaRvsRJOFe/vR35PXp4PP4xjmVAyJy+IHo5yjf2vMFP7xP2fuKisnLSQmTcA==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
-Content-Transfer-Encoding: 8bit
+References: <20211118115225.1349726-1-iii@linux.ibm.com>
+In-Reply-To: <20211118115225.1349726-1-iii@linux.ibm.com>
+From:   "sunyucong@gmail.com" <sunyucong@gmail.com>
+Date:   Thu, 18 Nov 2021 10:44:20 -0800
+Message-ID: <CAJygYd31WmTyhKkMNiP0gOJv7XA3PYXp_+Fqxi6Pd6K1004cbg@mail.gmail.com>
+Subject: Re: [PATCH bpf] selfetests/bpf: Adapt vmtest.sh to s390 libbpf CI changes
+To:     Ilya Leoshkevich <iii@linux.ibm.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Shuah Khan <shuah@kernel.org>, kernel-team@cloudflare.com,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In preparation for FORTIFY_SOURCE performing compile-time and run-time
-field bounds checking for memcpy(), memmove(), and memset(), avoid
-intentionally writing across neighboring fields.
+On Thu, Nov 18, 2021 at 3:54 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
+>
+> [1] added s390 support to libbpf CI and added an ${ARCH} prefix to a
+> number of paths and identifiers in libbpf GitHub repo, which vmtest.sh
+> relies upon. Update these and make use of the new s390 support.
+>
+> [1] https://github.com/libbpf/libbpf/pull/204
+>
+> Co-developed-by: Andrii Nakryiko <andrii@kernel.org>
+> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+> Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
+> ---
+>  tools/testing/selftests/bpf/vmtest.sh | 46 ++++++++++++++++++---------
+>  1 file changed, 31 insertions(+), 15 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/vmtest.sh b/tools/testing/selftests/bpf/vmtest.sh
+> index 027198768fad..5e43c79ddc6e 100755
+> --- a/tools/testing/selftests/bpf/vmtest.sh
+> +++ b/tools/testing/selftests/bpf/vmtest.sh
+> @@ -4,17 +4,34 @@
+>  set -u
+>  set -e
+>
+> -# This script currently only works for x86_64, as
+> -# it is based on the VM image used by the BPF CI which is
+> -# x86_64.
+> -QEMU_BINARY="${QEMU_BINARY:="qemu-system-x86_64"}"
+> -X86_BZIMAGE="arch/x86/boot/bzImage"
+> +# This script currently only works for x86_64 and s390x, as
+> +# it is based on the VM image used by the BPF CI, which is
+> +# available only for these architectures.
+> +ARCH="$(uname -m)"
+> +case "${ARCH}" in
+> +s390x)
+> +       QEMU_BINARY=qemu-system-s390x
+> +       QEMU_CONSOLE="ttyS1"
+> +       QEMU_FLAGS=(-smp 2)
+> +       BZIMAGE="arch/s390/boot/compressed/vmlinux"
+> +       ;;
+> +x86_64)
+> +       QEMU_BINARY=qemu-system-x86_64
+> +       QEMU_CONSOLE="ttyS0,115200"
+> +       QEMU_FLAGS=(-cpu host -smp 8)
+> +       BZIMAGE="arch/x86/boot/bzImage"
+> +       ;;
+> +*)
+> +       echo "Unsupported architecture"
+> +       exit 1
+> +       ;;
+> +esac
+>  DEFAULT_COMMAND="./test_progs"
+>  MOUNT_DIR="mnt"
+>  ROOTFS_IMAGE="root.img"
+>  OUTPUT_DIR="$HOME/.bpf_selftests"
+> -KCONFIG_URL="https://raw.githubusercontent.com/libbpf/libbpf/master/travis-ci/vmtest/configs/latest.config"
+> -KCONFIG_API_URL="https://api.github.com/repos/libbpf/libbpf/contents/travis-ci/vmtest/configs/latest.config"
+> +KCONFIG_URL="https://raw.githubusercontent.com/libbpf/libbpf/master/travis-ci/vmtest/configs/config-latest.${ARCH}"
+> +KCONFIG_API_URL="https://api.github.com/repos/libbpf/libbpf/contents/travis-ci/vmtest/configs/config-latest.${ARCH}"
+>  INDEX_URL="https://raw.githubusercontent.com/libbpf/libbpf/master/travis-ci/vmtest/configs/INDEX"
+>  NUM_COMPILE_JOBS="$(nproc)"
+>  LOG_FILE_BASE="$(date +"bpf_selftests.%Y-%m-%d_%H-%M-%S")"
+> @@ -85,7 +102,7 @@ newest_rootfs_version()
+>  {
+>         {
+>         for file in "${!URLS[@]}"; do
+> -               if [[ $file =~ ^libbpf-vmtest-rootfs-(.*)\.tar\.zst$ ]]; then
+> +               if [[ $file =~ ^"${ARCH}"/libbpf-vmtest-rootfs-(.*)\.tar\.zst$ ]]; then
+>                         echo "${BASH_REMATCH[1]}"
+>                 fi
+>         done
+> @@ -102,7 +119,7 @@ download_rootfs()
+>                 exit 1
+>         fi
+>
+> -       download "libbpf-vmtest-rootfs-$rootfsversion.tar.zst" |
+> +       download "${ARCH}/libbpf-vmtest-rootfs-$rootfsversion.tar.zst" |
+>                 zstd -d | sudo tar -C "$dir" -x
+>  }
+>
+> @@ -224,13 +241,12 @@ EOF
+>                 -nodefaults \
+>                 -display none \
+>                 -serial mon:stdio \
+> -               -cpu host \
+> +               "${qemu_flags[@]}" \
+>                 -enable-kvm \
+> -               -smp 8 \
+>                 -m 4G \
+>                 -drive file="${rootfs_img}",format=raw,index=1,media=disk,if=virtio,cache=none \
+>                 -kernel "${kernel_bzimage}" \
+> -               -append "root=/dev/vda rw console=ttyS0,115200"
+> +               -append "root=/dev/vda rw console=${QEMU_CONSOLE}"
+>  }
+>
+>  copy_logs()
+> @@ -282,7 +298,7 @@ main()
+>         local kernel_checkout=$(realpath "${script_dir}"/../../../../)
+>         # By default the script searches for the kernel in the checkout directory but
+>         # it also obeys environment variables O= and KBUILD_OUTPUT=
+> -       local kernel_bzimage="${kernel_checkout}/${X86_BZIMAGE}"
+> +       local kernel_bzimage="${kernel_checkout}/${BZIMAGE}"
+>         local command="${DEFAULT_COMMAND}"
+>         local update_image="no"
+>         local exit_command="poweroff -f"
+> @@ -337,13 +353,13 @@ main()
+>                 if is_rel_path "${O}"; then
+>                         O="$(realpath "${PWD}/${O}")"
+>                 fi
+> -               kernel_bzimage="${O}/${X86_BZIMAGE}"
+> +               kernel_bzimage="${O}/${BZIMAGE}"
+>                 make_command="${make_command} O=${O}"
+>         elif [[ "${KBUILD_OUTPUT:=""}" != "" ]]; then
+>                 if is_rel_path "${KBUILD_OUTPUT}"; then
+>                         KBUILD_OUTPUT="$(realpath "${PWD}/${KBUILD_OUTPUT}")"
+>                 fi
+> -               kernel_bzimage="${KBUILD_OUTPUT}/${X86_BZIMAGE}"
+> +               kernel_bzimage="${KBUILD_OUTPUT}/${BZIMAGE}"
+>                 make_command="${make_command} KBUILD_OUTPUT=${KBUILD_OUTPUT}"
+>         fi
+>
+> --
+> 2.31.1
+>
 
-Use struct_group() in struct nig_stats around members egress_mac_pkt0_lo,
-egress_mac_pkt0_hi, egress_mac_pkt1_lo, and egress_mac_pkt1_hi (and the
-respective members in struct bnx2x_eth_stats), so they can be referenced
-together. This will allow memcpy() and sizeof() to more easily reason
-about sizes, improve readability, and avoid future warnings about writing
-beyond the end of struct bnx2x_eth_stats's rx_stat_ifhcinbadoctets_hi.
-
-"pahole" shows no size nor member offset changes to either struct.
-"objdump -d" shows no meaningful object code changes (i.e. only source
-line number induced differences and optimizations).
-
-Additionally adds BUILD_BUG_ON() to compare the separate struct group
-sizes.
-
-Reviewed-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
-Link: https://lore.kernel.org/lkml/DM5PR18MB2229B0413C372CC6E49D59A3B2C59@DM5PR18MB2229.namprd18.prod.outlook.com
-Signed-off-by: Kees Cook <keescook@chromium.org>
----
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.c |  7 ++++---
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.h | 14 ++++++++++----
- 2 files changed, 14 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.c
-index 0b193edb73b8..2bb133ae61c3 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.c
-@@ -849,7 +849,8 @@ static int bnx2x_hw_stats_update(struct bnx2x *bp)
- 
- 	memcpy(old, new, sizeof(struct nig_stats));
- 
--	memcpy(&(estats->rx_stat_ifhcinbadoctets_hi), &(pstats->mac_stx[1]),
-+	BUILD_BUG_ON(sizeof(estats->shared) != sizeof(pstats->mac_stx[1]));
-+	memcpy(&(estats->shared), &(pstats->mac_stx[1]),
- 	       sizeof(struct mac_stx));
- 	estats->brb_drop_hi = pstats->brb_drop_hi;
- 	estats->brb_drop_lo = pstats->brb_drop_lo;
-@@ -1634,9 +1635,9 @@ void bnx2x_stats_init(struct bnx2x *bp)
- 			REG_RD(bp, NIG_REG_STAT0_BRB_TRUNCATE + port*0x38);
- 	if (!CHIP_IS_E3(bp)) {
- 		REG_RD_DMAE(bp, NIG_REG_STAT0_EGRESS_MAC_PKT0 + port*0x50,
--			    &(bp->port.old_nig_stats.egress_mac_pkt0_lo), 2);
-+			    &(bp->port.old_nig_stats.egress_mac_pkt0), 2);
- 		REG_RD_DMAE(bp, NIG_REG_STAT0_EGRESS_MAC_PKT1 + port*0x50,
--			    &(bp->port.old_nig_stats.egress_mac_pkt1_lo), 2);
-+			    &(bp->port.old_nig_stats.egress_mac_pkt1), 2);
- 	}
- 
- 	/* Prepare statistics ramrod data */
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.h
-index d55e63692cf3..ae93c078707b 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.h
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.h
-@@ -36,10 +36,14 @@ struct nig_stats {
- 	u32 pbf_octets;
- 	u32 pbf_packet;
- 	u32 safc_inp;
--	u32 egress_mac_pkt0_lo;
--	u32 egress_mac_pkt0_hi;
--	u32 egress_mac_pkt1_lo;
--	u32 egress_mac_pkt1_hi;
-+	struct_group(egress_mac_pkt0,
-+		u32 egress_mac_pkt0_lo;
-+		u32 egress_mac_pkt0_hi;
-+	);
-+	struct_group(egress_mac_pkt1,
-+		u32 egress_mac_pkt1_lo;
-+		u32 egress_mac_pkt1_hi;
-+	);
- };
- 
- enum bnx2x_stats_event {
-@@ -83,6 +87,7 @@ struct bnx2x_eth_stats {
- 	u32 no_buff_discard_hi;
- 	u32 no_buff_discard_lo;
- 
-+	struct_group(shared,
- 	u32 rx_stat_ifhcinbadoctets_hi;
- 	u32 rx_stat_ifhcinbadoctets_lo;
- 	u32 tx_stat_ifhcoutbadoctets_hi;
-@@ -159,6 +164,7 @@ struct bnx2x_eth_stats {
- 	u32 tx_stat_dot3statsinternalmactransmiterrors_lo;
- 	u32 tx_stat_bmac_ufl_hi;
- 	u32 tx_stat_bmac_ufl_lo;
-+	);
- 
- 	u32 pause_frames_received_hi;
- 	u32 pause_frames_received_lo;
--- 
-2.30.2
-
+Acked-By: Yucong Sun <sunyucong@gmail.com>
