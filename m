@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88284455A2A
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 12:26:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36998455A2C
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 12:26:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343961AbhKRL32 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 06:29:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:46223 "EHLO
+        id S1343972AbhKRL3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 06:29:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:30113 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1343901AbhKRL2T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 06:28:19 -0500
+        by vger.kernel.org with ESMTP id S1343906AbhKRL2Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 06:28:24 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637234717;
+        s=mimecast20190719; t=1637234723;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=aOPx437JJnxykUVvS3fHDcXPxIroZ8aiAi9DUKmIWiE=;
-        b=KNx5KDLyYIGiP+MOQvgs6dkCbFY+hJO2+ua1T3r8nfzmdzkKMlS/OzIf0lQ9I0iVGEPpA+
-        pJFYijDQ1zNn5eOrMQy5TNa37+9KTqhXpc8MR75KvszabSWjlV/soOMPF82mJgHCSIaEYZ
-        TRM9AGJ7HRiSWEEY8Qpwywms59RyG0I=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=lWJS1A2VobZl6UHVtIe8xy1WCp4+zjRZoPdV1CZlw20=;
+        b=AvfrDfO/LtkL/vo6oW4XST7VHyAmSPdQRNuk/Y7XLcMVhoxwp9JNJUrCRNvDSyCMv3dAha
+        l58/iQxsLRdktRXFQYaEBXamZDDMnHWU9gaBZuzdcpkE+n89BKEFoTLE9rNpwgYA0aZwvH
+        fWIvloaV04XPmctlSr7wnTITJ4e3qdU=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-552-QGtM66PXNEO5_l7X59iV_g-1; Thu, 18 Nov 2021 06:25:16 -0500
-X-MC-Unique: QGtM66PXNEO5_l7X59iV_g-1
-Received: by mail-ed1-f70.google.com with SMTP id v10-20020aa7d9ca000000b003e7bed57968so4954517eds.23
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 03:25:16 -0800 (PST)
+ us-mta-82-l65cDXg5P5--3zNtYzZiQg-1; Thu, 18 Nov 2021 06:25:22 -0500
+X-MC-Unique: l65cDXg5P5--3zNtYzZiQg-1
+Received: by mail-ed1-f69.google.com with SMTP id f4-20020a50e084000000b003db585bc274so4958471edl.17
+        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 03:25:22 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=aOPx437JJnxykUVvS3fHDcXPxIroZ8aiAi9DUKmIWiE=;
-        b=bEeEN/1E0ZO1J3hxFTSHZLuoR5uH6v6upJGD8Ou6tfT1aG9mtH33VHQZlCpzwigYYk
-         1AJrr0f/nNj6V39XgsyUeBnXzlaPuDvs4Q3dW34L+BfVL3rXDyk9k5SuzQsjS+07g2MD
-         ynCMlTm9sYLCQ2SN89RI1RSoB0yU3anLG1AaMqNUcrtjd6gWamC8vjo+Vhut76CvAFK1
-         qPRXZYtuXHYE/+DfJyrdogeQoHLCOD1cGsC/ZD/jcJ8fuzSUxIfPUtk8WXu0WF0II8QL
-         V3HOfGHzgxyQuVM3YRQZD57+LOS2k0P49EvclTyXTrVhp6eRmaIDmWp2EpKdAN4E3abt
-         Bb0A==
-X-Gm-Message-State: AOAM533PeSsAYq0bRwCZbc95O34umtKLbCTEHFElqvFKPfVLaBUQeLOC
-        8DemzVnVTOBknwUe4ndIjm4KwY4izwh5XZSvVFWLughQJ+eQwB+EGzihvTJgBbcGvPWBfGiwJsD
-        po5QNKg/nFrDQL26M
-X-Received: by 2002:a17:906:974f:: with SMTP id o15mr32691472ejy.229.1637234715309;
-        Thu, 18 Nov 2021 03:25:15 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyxOov2hZwwKPIGKlNsoDOMYKKO4GIWaL19bfPkqeSwudPArCIhLayqKvZSWhhQ/ORkx5MW3Q==
-X-Received: by 2002:a17:906:974f:: with SMTP id o15mr32691447ejy.229.1637234715148;
-        Thu, 18 Nov 2021 03:25:15 -0800 (PST)
+        bh=lWJS1A2VobZl6UHVtIe8xy1WCp4+zjRZoPdV1CZlw20=;
+        b=PYrcpWt3oUQi+sBz5rJB6YoklxYqQqs6qIyYnlLCrYZucrsk0R6sVh8YIadEHAjCo2
+         BXvQZFZk53VARYcv+jDYO1DKCkG8Il3sOsVKyWnArXIowuAFGaodYs+7s8ING2lIogsT
+         yMvCjDGk6/4JAHrqa/DQzoc7/cPjDeJ9drnIvTDHXe9yxJqJpHbKgcpyM0CiI0cYltQx
+         tUU2UJIxOz4L93C6JW9D+J219iN6YieoasiF8ONKw9j2eVtDrXrBkPoBl731wHk1frTk
+         IVAotKBlvJF5tRXIPI68Q7oSGE4WuvGL1dqdma+T4VTLFo9kcPqWCCtvtqCWLgI+Sfgu
+         nK8Q==
+X-Gm-Message-State: AOAM530URv6zaT6l5QkjLZn4lJ6Uq+TnivFPIpSOtFFo/R33OCrnXc7z
+        UqhHZiZfxYF0g3l3KKEzUK63VliImXgW1ksQE9fcScZ90sEqGTsNJO/R3lE0lsEyFxe+mKxcriA
+        RLx7BvD9J56MRSnba
+X-Received: by 2002:a17:907:868e:: with SMTP id qa14mr33652129ejc.564.1637234721268;
+        Thu, 18 Nov 2021 03:25:21 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJz/teIMbtVpauVKwlK8uwMZzmXtH92/ajUedOTRqBR2Kz0Du+ywf6IJq9LdpyGserDhW7HpIQ==
+X-Received: by 2002:a17:907:868e:: with SMTP id qa14mr33652095ejc.564.1637234721109;
+        Thu, 18 Nov 2021 03:25:21 -0800 (PST)
 Received: from krava.redhat.com (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id ho17sm1140971ejc.111.2021.11.18.03.25.14
+        by smtp.gmail.com with ESMTPSA id x14sm1140515ejs.124.2021.11.18.03.25.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Nov 2021 03:25:14 -0800 (PST)
+        Thu, 18 Nov 2021 03:25:20 -0800 (PST)
 From:   Jiri Olsa <jolsa@redhat.com>
 X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>
-Cc:     Steven Rostedt <srostedt@vmware.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>
-Subject: [PATCH bpf-next 03/29] ftrace: Add ftrace_set_filter_ips function
-Date:   Thu, 18 Nov 2021 12:24:29 +0100
-Message-Id: <20211118112455.475349-4-jolsa@kernel.org>
+Subject: [PATCH bpf-next 04/29] bpf: Factor bpf_check_attach_target function
+Date:   Thu, 18 Nov 2021 12:24:30 +0100
+Message-Id: <20211118112455.475349-5-jolsa@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211118112455.475349-1-jolsa@kernel.org>
 References: <20211118112455.475349-1-jolsa@kernel.org>
@@ -73,149 +73,162 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding ftrace_set_filter_ips function to be able to set filter on
-multiple ip addresses at once.
+Separating the check itself from model distilling and
+address search into __bpf_check_attach_target function.
 
-With the *direct_multi interface we have cases where we need to
-initialize ftrace_ops object with thousands of functions, so having
-single function diving into ftrace_hash_move_and_update_ops with
-ftrace_lock is better.
+This way we can easily add function in following patch
+that gets only function model without the address search,
+while using the same code as bpf_check_attach_target.
 
-The functions ips are passed as unsigned ong array with count.
-
-Cc: Steven Rostedt <srostedt@vmware.com>
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- include/linux/ftrace.h |  3 +++
- kernel/trace/ftrace.c  | 53 +++++++++++++++++++++++++++++++++++-------
- 2 files changed, 47 insertions(+), 9 deletions(-)
+ kernel/bpf/verifier.c | 79 ++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 59 insertions(+), 20 deletions(-)
 
-diff --git a/include/linux/ftrace.h b/include/linux/ftrace.h
-index 9999e29187de..60847cbce0da 100644
---- a/include/linux/ftrace.h
-+++ b/include/linux/ftrace.h
-@@ -512,6 +512,8 @@ struct dyn_ftrace {
- 
- int ftrace_set_filter_ip(struct ftrace_ops *ops, unsigned long ip,
- 			 int remove, int reset);
-+int ftrace_set_filter_ips(struct ftrace_ops *ops, unsigned long *ips,
-+			  unsigned int cnt, int remove, int reset);
- int ftrace_set_filter(struct ftrace_ops *ops, unsigned char *buf,
- 		       int len, int reset);
- int ftrace_set_notrace(struct ftrace_ops *ops, unsigned char *buf,
-@@ -802,6 +804,7 @@ static inline unsigned long ftrace_location(unsigned long ip)
- #define ftrace_regex_open(ops, flag, inod, file) ({ -ENODEV; })
- #define ftrace_set_early_filter(ops, buf, enable) do { } while (0)
- #define ftrace_set_filter_ip(ops, ip, remove, reset) ({ -ENODEV; })
-+#define ftrace_set_filter_ips(ops, ips, cnt, remove, reset) ({ -ENODEV; })
- #define ftrace_set_filter(ops, buf, len, reset) ({ -ENODEV; })
- #define ftrace_set_notrace(ops, buf, len, reset) ({ -ENODEV; })
- #define ftrace_free_filter(ops) do { } while (0)
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index be5f6b32a012..39350aa38649 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -4958,7 +4958,7 @@ ftrace_notrace_write(struct file *file, const char __user *ubuf,
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 0763cca139a7..cbbbf47e1832 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -13568,20 +13568,26 @@ static int check_non_sleepable_error_inject(u32 btf_id)
+ 	return btf_id_set_contains(&btf_non_sleepable_error_inject, btf_id);
  }
  
- static int
--ftrace_match_addr(struct ftrace_hash *hash, unsigned long ip, int remove)
-+__ftrace_match_addr(struct ftrace_hash *hash, unsigned long ip, int remove)
- {
- 	struct ftrace_func_entry *entry;
- 
-@@ -4976,9 +4976,25 @@ ftrace_match_addr(struct ftrace_hash *hash, unsigned long ip, int remove)
- 	return add_hash_entry(hash, ip);
- }
- 
-+static int
-+ftrace_match_addr(struct ftrace_hash *hash, unsigned long *ips,
-+		  unsigned int cnt, int remove)
-+{
-+	unsigned int i;
-+	int err;
+-int bpf_check_attach_target(struct bpf_verifier_log *log,
+-			    const struct bpf_prog *prog,
+-			    const struct bpf_prog *tgt_prog,
+-			    u32 btf_id,
+-			    struct bpf_attach_target_info *tgt_info)
++struct attach_target {
++	const struct btf_type *t;
++	const char *tname;
++	int subprog;
++	struct btf *btf;
++};
 +
-+	for (i = 0; i < cnt; i++) {
-+		err = __ftrace_match_addr(hash, ips[i], remove);
-+		if (err)
-+			return err;
++static int __bpf_check_attach_target(struct bpf_verifier_log *log,
++				     const struct bpf_prog *prog,
++				     const struct bpf_prog *tgt_prog,
++				     u32 btf_id,
++				     struct attach_target *target)
+ {
+ 	bool prog_extension = prog->type == BPF_PROG_TYPE_EXT;
+ 	const char prefix[] = "btf_trace_";
+-	int ret = 0, subprog = -1, i;
++	int subprog = -1, i;
+ 	const struct btf_type *t;
+ 	bool conservative = true;
+ 	const char *tname;
+ 	struct btf *btf;
+-	long addr = 0;
+ 
+ 	if (!btf_id) {
+ 		bpf_log(log, "Tracing programs must provide btf_id\n");
+@@ -13706,9 +13712,6 @@ int bpf_check_attach_target(struct bpf_verifier_log *log,
+ 		t = btf_type_by_id(btf, t->type);
+ 		if (!btf_type_is_func_proto(t))
+ 			return -EINVAL;
+-		ret = btf_distill_func_proto(log, btf, t, tname, &tgt_info->fmodel);
+-		if (ret)
+-			return ret;
+ 		break;
+ 	default:
+ 		if (!prog_extension)
+@@ -13737,22 +13740,57 @@ int bpf_check_attach_target(struct bpf_verifier_log *log,
+ 
+ 		if (tgt_prog && conservative)
+ 			t = NULL;
 +	}
++
++	target->t = t;
++	target->tname = tname;
++	target->subprog = subprog;
++	target->btf = btf;
 +	return 0;
 +}
 +
- static int
- ftrace_set_hash(struct ftrace_ops *ops, unsigned char *buf, int len,
--		unsigned long ip, int remove, int reset, int enable)
-+		unsigned long *ips, unsigned int cnt,
-+		int remove, int reset, int enable)
- {
- 	struct ftrace_hash **orig_hash;
- 	struct ftrace_hash *hash;
-@@ -5008,8 +5024,8 @@ ftrace_set_hash(struct ftrace_ops *ops, unsigned char *buf, int len,
- 		ret = -EINVAL;
- 		goto out_regex_unlock;
- 	}
--	if (ip) {
--		ret = ftrace_match_addr(hash, ip, remove);
-+	if (ips) {
-+		ret = ftrace_match_addr(hash, ips, cnt, remove);
- 		if (ret < 0)
- 			goto out_regex_unlock;
- 	}
-@@ -5026,10 +5042,10 @@ ftrace_set_hash(struct ftrace_ops *ops, unsigned char *buf, int len,
- }
- 
- static int
--ftrace_set_addr(struct ftrace_ops *ops, unsigned long ip, int remove,
--		int reset, int enable)
-+ftrace_set_addr(struct ftrace_ops *ops, unsigned long *ips, unsigned int cnt,
-+		int remove, int reset, int enable)
- {
--	return ftrace_set_hash(ops, NULL, 0, ip, remove, reset, enable);
-+	return ftrace_set_hash(ops, NULL, 0, ips, cnt, remove, reset, enable);
- }
- 
- #ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
-@@ -5634,10 +5650,29 @@ int ftrace_set_filter_ip(struct ftrace_ops *ops, unsigned long ip,
- 			 int remove, int reset)
- {
- 	ftrace_ops_init(ops);
--	return ftrace_set_addr(ops, ip, remove, reset, 1);
-+	return ftrace_set_addr(ops, &ip, 1, remove, reset, 1);
- }
- EXPORT_SYMBOL_GPL(ftrace_set_filter_ip);
- 
-+/**
-+ * ftrace_set_filter_ips - set a functions to filter on in ftrace by addresses
-+ * @ops - the ops to set the filter with
-+ * @ips - the array of addresses to add to or remove from the filter.
-+ * @cnt - the number of addresses in @ips
-+ * @remove - non zero to remove ips from the filter
-+ * @reset - non zero to reset all filters before applying this filter.
-+ *
-+ * Filters denote which functions should be enabled when tracing is enabled
-+ * If @ips array or any ip specified within is NULL , it fails to update filter.
-+ */
-+int ftrace_set_filter_ips(struct ftrace_ops *ops, unsigned long *ips,
-+			  unsigned int cnt, int remove, int reset)
++int bpf_check_attach_target(struct bpf_verifier_log *log,
++			    const struct bpf_prog *prog,
++			    const struct bpf_prog *tgt_prog,
++			    u32 btf_id,
++			    struct bpf_attach_target_info *tgt_info)
 +{
-+	ftrace_ops_init(ops);
-+	return ftrace_set_addr(ops, ips, cnt, remove, reset, 1);
-+}
-+EXPORT_SYMBOL_GPL(ftrace_set_filter_ips);
++	struct attach_target target = { };
++	long addr = 0;
++	int ret;
+ 
+-		ret = btf_distill_func_proto(log, btf, t, tname, &tgt_info->fmodel);
++	ret = __bpf_check_attach_target(log, prog, tgt_prog, btf_id, &target);
++	if (ret)
++		return ret;
 +
- /**
-  * ftrace_ops_set_global_filter - setup ops to use global filters
-  * @ops - the ops which will use the global filters
-@@ -5659,7 +5694,7 @@ static int
- ftrace_set_regex(struct ftrace_ops *ops, unsigned char *buf, int len,
- 		 int reset, int enable)
- {
--	return ftrace_set_hash(ops, buf, len, 0, 0, reset, enable);
-+	return ftrace_set_hash(ops, buf, len, NULL, 0, 0, reset, enable);
++	switch (prog->expected_attach_type) {
++	case BPF_TRACE_RAW_TP:
++		break;
++	case BPF_TRACE_ITER:
++		ret = btf_distill_func_proto(log, target.btf, target.t, target.tname, &tgt_info->fmodel);
++		if (ret)
++			return ret;
++		break;
++	default:
++	case BPF_MODIFY_RETURN:
++	case BPF_LSM_MAC:
++	case BPF_TRACE_FENTRY:
++	case BPF_TRACE_FEXIT:
++		ret = btf_distill_func_proto(log, target.btf, target.t, target.tname, &tgt_info->fmodel);
+ 		if (ret < 0)
+ 			return ret;
+ 
+ 		if (tgt_prog) {
+-			if (subprog == 0)
++			if (target.subprog == 0)
+ 				addr = (long) tgt_prog->bpf_func;
+ 			else
+-				addr = (long) tgt_prog->aux->func[subprog]->bpf_func;
++				addr = (long) tgt_prog->aux->func[target.subprog]->bpf_func;
+ 		} else {
+-			addr = kallsyms_lookup_name(tname);
++			addr = kallsyms_lookup_name(target.tname);
+ 			if (!addr) {
+ 				bpf_log(log,
+ 					"The address of function %s cannot be found\n",
+-					tname);
++					target.tname);
+ 				return -ENOENT;
+ 			}
+ 		}
+@@ -13779,7 +13817,7 @@ int bpf_check_attach_target(struct bpf_verifier_log *log,
+ 				break;
+ 			}
+ 			if (ret) {
+-				bpf_log(log, "%s is not sleepable\n", tname);
++				bpf_log(log, "%s is not sleepable\n", target.tname);
+ 				return ret;
+ 			}
+ 		} else if (prog->expected_attach_type == BPF_MODIFY_RETURN) {
+@@ -13787,18 +13825,19 @@ int bpf_check_attach_target(struct bpf_verifier_log *log,
+ 				bpf_log(log, "can't modify return codes of BPF programs\n");
+ 				return -EINVAL;
+ 			}
+-			ret = check_attach_modify_return(addr, tname);
++			ret = check_attach_modify_return(addr, target.tname);
+ 			if (ret) {
+-				bpf_log(log, "%s() is not modifiable\n", tname);
++				bpf_log(log, "%s() is not modifiable\n", target.tname);
+ 				return ret;
+ 			}
+ 		}
+ 
+ 		break;
+ 	}
++
+ 	tgt_info->tgt_addr = addr;
+-	tgt_info->tgt_name = tname;
+-	tgt_info->tgt_type = t;
++	tgt_info->tgt_name = target.tname;
++	tgt_info->tgt_type = target.t;
+ 	return 0;
  }
  
- /**
 -- 
 2.31.1
 
