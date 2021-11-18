@@ -2,63 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC74B45643A
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 21:31:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2EC7456441
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 21:32:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233324AbhKRUeQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 15:34:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43128 "EHLO
+        id S233048AbhKRUfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 15:35:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232005AbhKRUeQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 15:34:16 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBD82C061748
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 12:31:15 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id j5-20020a17090a318500b001a6c749e697so7383560pjb.1
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 12:31:15 -0800 (PST)
+        with ESMTP id S232995AbhKRUfn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 15:35:43 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C0CFC061748
+        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 12:32:43 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id gf14-20020a17090ac7ce00b001a7a2a0b5c3so9192073pjb.5
+        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 12:32:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=TcLB7MvG3K4Ke10h1bINRCs3q+QDRcCT3lfYvCR0Icg=;
-        b=eF6YFsU21ZNpUT9ttG8va6xfpqx992IvMr6iI4uWNx3Pi4DmcbDIos4Wu0d7fCnbOa
-         2i0Q2JaqJO6RFFFu7I3C9jpN+/7Gfho/SD4r6QgMcQxBKiyIpei3Irq/AsGzMdTeNNPi
-         qsXM+DEypZ3V0IH04X71UaBa7n7L2U77ZXVyE=
+        bh=KYX4Z2exB3jwtaqcfI8gZcFYfqs7exom+PHX0M7oQsE=;
+        b=WtS8ExWj/v7fj4+FuOYEI4WmiHmOEsDoSEqfWE+gOpcnWHPw5lUtiGgsIT5v07RaI8
+         YkB+DyBIFcQBFAi/+aFHWUkQHa1dlrlcFvTMm8Dr/r0zMgz6J4KzIk2PBZIFrzUVmoEv
+         XPS13oYdYcZJsYJkoZISyaT83c2uHEwCV16Mg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=TcLB7MvG3K4Ke10h1bINRCs3q+QDRcCT3lfYvCR0Icg=;
-        b=1B1qHO7sjs68K+m+opZmmxVPAvTY8rwV8Uu0ZIQPmsEhZUBgeIGG09kHyxbBeIe4jp
-         4PzAJtbCb7RasAE0/jFDnGI78uVAtqTejmOXtSNou8nP1YKI6ePeqTAXc915B1KRYoID
-         FR3lEcvW+tnWmvVupirO/zCYyhvcBKGWcQELcEHrBXAV+b0oF+OxqVzNnTKQzly5aqBG
-         G53bL+1ajT4L37OYVAdhhmEdrzSwm0r30lPqb29tLfaTvV7LoNJvfRNMvgEMtWzTg3zm
-         Fpqsr/c3NKdxmOYQIxtiodPouHF82+RbRFVC2/lmI5t3T+pt6GxybCjAEnl3/UoOmrru
-         TcdA==
-X-Gm-Message-State: AOAM530Aw3/IwF8hVJcgjQkLyGCWvy+kIf3D1pcUt355MZt1cUx9AQpM
-        esEKhQ333zTCPpXYDuhmSXD1PA==
-X-Google-Smtp-Source: ABdhPJzRya15wHW2UAKLnXUjjo2OcJuImXw4tuyrV18/sEsTXSQY7dn3QqXgLgUi5g6uysZtaiNrKA==
-X-Received: by 2002:a17:90a:df83:: with SMTP id p3mr13827388pjv.145.1637267475336;
-        Thu, 18 Nov 2021 12:31:15 -0800 (PST)
+        bh=KYX4Z2exB3jwtaqcfI8gZcFYfqs7exom+PHX0M7oQsE=;
+        b=V2Pvksa/sA3SNA84RVx/CcYtZvs3Xy+E5lRT7B0vfTU4MK5TC/6IUwC+gScD2kobN4
+         CEvxbcV7Bbj3E54lLTmYtkQWVKNxOW3yVrHfBwj08p08Y+9hSWbGZnAE4hUVI05XzCDB
+         V/dNM+zMo1IUbrngAGvLqcuWT2IGTZeS/tuKwfd78GJrtFrwe0Gi+Bv+VtbxjwzaO9h+
+         BPFMa/qlKpahhB7zdVvaA81G0JgQUVpbTN/clvzTebjevGAAL4mLfYj/M+WQ+iH3BuAr
+         ovNmqlJ9EOkWo/4GrX331sbSooyOD4D4wX2Ibs4R76Mo9ZtzSN9UkxjHF0CawfFKFI0B
+         HJZw==
+X-Gm-Message-State: AOAM532hxd0zn9h3r7BIERx6Cgvr5qXRMvqn76ZCysPFxFZTDxfoGH69
+        uHidciMwT7S6qJ9cdLfqHh1TMQ==
+X-Google-Smtp-Source: ABdhPJz+6CMtLisvghnTrLjCObiLbIPTpDt7QNLisEDJycYs13b/WcjKuguDRYR+9vb7ucQ/c706AA==
+X-Received: by 2002:a17:90b:351:: with SMTP id fh17mr14200484pjb.19.1637267562836;
+        Thu, 18 Nov 2021 12:32:42 -0800 (PST)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id g17sm453059pfv.136.2021.11.18.12.31.14
+        by smtp.gmail.com with ESMTPSA id y8sm472069pfi.56.2021.11.18.12.32.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Nov 2021 12:31:15 -0800 (PST)
+        Thu, 18 Nov 2021 12:32:42 -0800 (PST)
 From:   Kees Cook <keescook@chromium.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
+To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Kees Cook <keescook@chromium.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         netdev@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: [PATCH] netfilter: conntrack: Use memset_startat() to zero struct nf_conn
-Date:   Thu, 18 Nov 2021 12:31:13 -0800
-Message-Id: <20211118203113.1286928-1-keescook@chromium.org>
+Subject: [PATCH] ipv6: Use memset_after() to zero rt6_info
+Date:   Thu, 18 Nov 2021 12:32:41 -0800
+Message-Id: <20211118203241.1287533-1-keescook@chromium.org>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=989; h=from:subject; bh=8G8ELxCaYyImypCEBWdgERqa1W0PnBKrxOA03FjrnuI=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhlrgQ81go+amAV4Ra130N28YvcOlvVMevTi2OsK0V PP+vTgmJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYZa4EAAKCRCJcvTf3G3AJhlGEA CjA7esHrkQXRc1xiiREdoZsmG60wWX92CFRgE+X8+C993iK8CaPdrfi+8Rhz2iOksVsnAYaNX8DR3T jKd0zhYJMa7TtVHL8OMDF3GCDJib0UYXjG1ocqe/hwTOyyANGytLztehRyHb7B7Kb1b02ea+gw65wW xjiAan5E9RVw90+50uTGqkK9d2GfBsv2XcF3HEXzhktA0zkH4Aurk6CtKXr8Xprwysw32Xc9Omk8Su ARAP1kfq+qgC+vKE/wCvXvSEJ0xYbq959PtCQW41dbwGQTYiPvCNBc2zs/lnuNEwqr+D7ZJ7oFg5ct 6ftzPlVwPlX5ij7oit5cn9nSXzMlvAu2MCBlQnRij4gi0VTWmbdUNh5q1tQGnEk90rLXrfom5OGd66 /F46gyg6mlZi0u6cv51ZtnacUdXkjVSZfaguaj3I4owqxrNcw4LzyemNqfAHEcLAR/Ra5feQB8Ovjx jZe/OEwgFXlP+LeVKvotPY45hztqforSJyNLWlWsCopwG7wyt0uZKXVApXDKR39N+mMy41d1nRitT9 Cvb3wb5aH6OPXhaQ6BfWwRAzWtnvOmVSd9K/CHbQtRw/g55Qt0jT2raJQQlGD9oCarRkGQeA2wfy1o JNg+0TmqxKV1SHFoj+KWXJbJvzv9wT6Bt4kbwdO1rEkoaojBo8A7ObRgzmeQ==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=847; h=from:subject; bh=yNLj0JvA8w3tbHCKTH2NRjDpod/tQGXj33yCFFSnwHs=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhlrhovJJ6+6q/2apZn6MVU1adP4a3K12BQjadQKIF rqvdvuGJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYZa4aAAKCRCJcvTf3G3AJj28EA CzOjycg1txLJwXW53E9yu8IMaRzAevuaRC5WjA8Ml179IkuCXmybvPChwJTjIa3zdqOS+J4+Udh6KF Kb/79IcZw+tE53TMesKftH/xEW3QMIpdGvP8jlv9EllD+HQI0Gbn0v8HDmou21qYz2suowm7wPJQBP ymEUEkmkykB77NjbiC18qeP0sWfPjP4S51Nt80NeId0Dxo54mxFGs6ophDiX6IWMrnktpDSRvlmLJe YJKvQU/AXJkZYY9YcSEGmfKTIzr93Y1RSR6NFxtHfoeOq5QcdJGpNXOTP7MrfxU557TtdjoQHEamW1 OJi2MoGayWzqDU+9vC2/qmfhGN1Iiu7h1rZhe+Q6IOgs8vn2YTxqLpQSxaqQH1v3nrq9rT9TGSAhuy o8gumzFGqLSg1/tM+1rKUtwylRPvHcql4vV99B41szGLp85RsfJy8eZwZxpqrcTpY3bXiL8MKvuy32 LUmfFHhVjrp5cylQq43MvXL2rtyHhQjePzlsiBH8i/grQUGV5FngU4XMK66aKalDO9l8HJgz8nzcsD Rqm7kYy7aSMK92fQxjthHk2m9Nwg5aRLOOri+FhtMdUskIu5iaT7hDm8gKhp1jlYXk0OXYOTRk5rTA /g73bZ27I7cjY/QGMmWFsdCKgN1WNA+uSrN654B5xKDqGIr72b1qpQ09QM1Q==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -69,28 +67,28 @@ In preparation for FORTIFY_SOURCE performing compile-time and run-time
 field bounds checking for memset(), avoid intentionally writing across
 neighboring fields.
 
-Use memset_startat() to avoid confusing memset() about writing beyond
-the target struct member.
+Use memset_after() to clear everything after the dst_entry member of
+struct rt6_info.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- net/netfilter/nf_conntrack_core.c | 4 +---
+ net/ipv6/route.c | 4 +---
  1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index 770a63103c7a..cdfb63509501 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -1562,9 +1562,7 @@ __nf_conntrack_alloc(struct net *net,
- 	ct->status = 0;
- 	ct->timeout = 0;
- 	write_pnet(&ct->ct_net, net);
--	memset(&ct->__nfct_init_offset, 0,
--	       offsetof(struct nf_conn, proto) -
--	       offsetof(struct nf_conn, __nfct_init_offset));
-+	memset_after(ct, 0, __nfct_init_offset);
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 3ae25b8ffbd6..0cf616b2d013 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -328,9 +328,7 @@ static const struct rt6_info ip6_blk_hole_entry_template = {
  
- 	nf_ct_zone_add(ct, zone);
+ static void rt6_info_init(struct rt6_info *rt)
+ {
+-	struct dst_entry *dst = &rt->dst;
+-
+-	memset(dst + 1, 0, sizeof(*rt) - sizeof(*dst));
++	memset_after(rt, 0, dst);
+ 	INIT_LIST_HEAD(&rt->rt6i_uncached);
+ }
  
 -- 
 2.30.2
