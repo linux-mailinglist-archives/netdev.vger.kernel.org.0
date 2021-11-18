@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70252456418
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 21:29:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B416456423
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 21:29:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232262AbhKRUbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 15:31:55 -0500
-Received: from mail-dm6nam12on2046.outbound.protection.outlook.com ([40.107.243.46]:2785
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        id S234108AbhKRUcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 15:32:06 -0500
+Received: from mail-bn7nam10on2087.outbound.protection.outlook.com ([40.107.92.87]:45825
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231377AbhKRUby (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Nov 2021 15:31:54 -0500
+        id S233918AbhKRUb7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Nov 2021 15:31:59 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZDPr/t08HLkE2+OZS7T4GI90llVYSftOdqUlL3i+NXMGyXvlfaiWjWyMAKqG7pSkk7TAZPDQXzx6UGnZjsQTiuPq5ghJsUFDsn3bgS7eLSKSwr33zKPMoHimnI2y323t7npZVkyemvYkgzUyl7zSse79JzVqHcC3g8JgarVKtIkHHOnliNszMZCGuIDmWLVrTgu4VOXZLrjZXoP3qOcRwUNzDDTRhPcY2iSZ/ZDZj26QO8XykEGzD+Zy6X/wnYQL2gwgAQNRxpLU5M7xx3PjtIrgmrgHP6sbi+75ZS1rxAz66Se5M5dnjiZ5x13EJFqzh0v+77atHaCNYAhY6abu4w==
+ b=kA/iyLG/p0Z8wvtYA+kuFOpL2+XzUsmbM9Nldw57kHLOnW/cglV8hSe2wWokiT+H1d07KCfS/enbYBnZTbZ1OF3iZtjDjINGn/j63EzvXIlIsyhCDDy3yfjQfxfTag6upj/txhR0hJVDw/0Qb7Zs+7Cg/YI+eafiwnG4KFg8vyR7PjXkbcjzF/J7yxY9Nb2wTJlFAOSE1xlOxmL8TXtOB7Ka+6wvG3AHOZHKbxdDh9qYMDEl6UFEqHl10AHoAZjEOSAzY/5kJ2k9hjYqMPmBE5fWk8vU2oPxo8BpCbb6gtcrwQVC9CDwbKk16VRM0odMbcZFxi9kZMolakL6As1kag==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=T73Z7+mHYZvKeeLZYHXHafx8/Qc7zeDlNYSdd4qtgbo=;
- b=Yl2q7gAq3wbUdSIUdZZBhLOq478GvdEZyJfp0zx1eFlnq1koS+Txvlg4fyKnRb06mbSBAyhsTTzyHBXjocyCxU/1jGF4wGAzrRK6FfJa7LqO08xQKRTD2idTUPZtiexfoGIyD4mCIX4HPDMiWXts9yrhvze1m1qwWaWkGQYz340ODl+cnJCCDocpsRfCxHyHkEErLd4mhu9Xvc9HiB9auFTRKeRneeNNDJX9va10YRp504j8myjSVI2cdyDi6ggw8SSDJ9RJm8pdeKGLfTf/RilqzcGRMHikY+oZTfgQiC5mgFj8V8fHvJyKw5PPG3rpC+/bBnRSSLP66+nGpAvBZw==
+ bh=9LTCxDJv3hxoUKuAs/bDMtp2aWzOrmYrLj1GHD61d7s=;
+ b=BaNMWAK86OrCRHumfAzuCfkeAhxmeub4/zVYIcuHNJX79n9XPsM//Raxm11e25EZhSB5vU8ifAHN/0BYAEdmA+zM9KTUSJhGi1EcWS6Uq3bcpf4t61Aux4esoAUXGlq+Gg+q5bZ598UR6nn7v/iVUJqWmSH2xmflHUyNyVVVwqW39s3bwKSeQj4TwNVDz/2lfsNs+BBEeX4t8pvXu+HSbSvFm9NmKReE7kx7uNiIIwz6RXo4NrvoQ0IvFCoBwLnQXgMIPHldszQB2dx5ZWWNb0coMofa7GaI0NlNGYDScsEsCh6S4dwNiYKXgBEJUIsN1EaWDMCOzy/die19zqKdFw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=T73Z7+mHYZvKeeLZYHXHafx8/Qc7zeDlNYSdd4qtgbo=;
- b=wxcAhmkVD9KITXfdrfqNJoaxKdmvkDxIo3OS3l8HuvtFtZAjzGw/9TSEqfMARb6VnPlttvf6EWlkaXu4UHwHgKvnKfewCsdoy65QdKce6TZUCdFLB8g9favxHatOhIdawqe+agtj/JlXRyjfrDIi6aX6ipVSYaLdksWBKbgERd0=
-Received: from MW4PR03CA0232.namprd03.prod.outlook.com (2603:10b6:303:b9::27)
- by MWHPR12MB1838.namprd12.prod.outlook.com (2603:10b6:300:106::23) with
+ bh=9LTCxDJv3hxoUKuAs/bDMtp2aWzOrmYrLj1GHD61d7s=;
+ b=ApN7FpnWJgqBMOzvj8slk3X08GPp57/v2+cNanaKEgPqjegxvtz3347IPTRrSvrek4f4tL/M5DmZnjC/TFa9HHUAooH40Fo78JPeZERa+z77stRYrNwE26g2gnjX+RQsXBtkab95HUWPTk5ZtbuIsM0SOhOO1NFA5WwS0O+CytY=
+Received: from CO1PR15CA0100.namprd15.prod.outlook.com (2603:10b6:101:21::20)
+ by DM5PR12MB1884.namprd12.prod.outlook.com (2603:10b6:3:10d::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.22; Thu, 18 Nov
- 2021 20:28:51 +0000
-Received: from CO1NAM11FT066.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:b9:cafe::8d) by MW4PR03CA0232.outlook.office365.com
- (2603:10b6:303:b9::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.19; Thu, 18 Nov
+ 2021 20:28:54 +0000
+Received: from CO1NAM11FT006.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:101:21:cafe::69) by CO1PR15CA0100.outlook.office365.com
+ (2603:10b6:101:21::20) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.19 via Frontend
- Transport; Thu, 18 Nov 2021 20:28:51 +0000
+ Transport; Thu, 18 Nov 2021 20:28:54 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -44,20 +44,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT066.mail.protection.outlook.com (10.13.175.18) with Microsoft SMTP
+ CO1NAM11FT006.mail.protection.outlook.com (10.13.174.246) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4713.20 via Frontend Transport; Thu, 18 Nov 2021 20:28:51 +0000
-Received: from SATLEXMB05.amd.com (10.181.40.146) by SATLEXMB04.amd.com
+ 15.20.4713.20 via Frontend Transport; Thu, 18 Nov 2021 20:28:53 +0000
+Received: from SATLEXMB07.amd.com (10.181.41.45) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Thu, 18 Nov
- 2021 14:28:50 -0600
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB05.amd.com
- (10.181.40.146) with Microsoft SMTP Server (version=TLS1_2,
+ 2021 14:28:52 -0600
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB07.amd.com
+ (10.181.41.45) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Thu, 18 Nov
- 2021 14:28:50 -0600
+ 2021 12:28:52 -0800
 Received: from yuho-dev.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Thu, 18 Nov 2021 14:28:47 -0600
+ Transport; Thu, 18 Nov 2021 14:28:50 -0600
 From:   Kenny Ho <Kenny.Ho@amd.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -80,9 +80,9 @@ To:     Alexei Starovoitov <ast@kernel.org>,
         <cgroups@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
         <y2kenny@gmail.com>, <Kenny.Ho@amd.com>,
         <amd-gfx@lists.freedesktop.org>
-Subject: [PATCH RFC 1/4] cgroup, perf: Add ability to connect to perf cgroup from other cgroup controller
-Date:   Thu, 18 Nov 2021 15:28:37 -0500
-Message-ID: <20211118202840.1001787-2-Kenny.Ho@amd.com>
+Subject: [PATCH RFC 2/4] bpf, perf: add ability to attach complete array of bpf prog to perf event
+Date:   Thu, 18 Nov 2021 15:28:38 -0500
+Message-ID: <20211118202840.1001787-3-Kenny.Ho@amd.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211118202840.1001787-1-Kenny.Ho@amd.com>
 References: <20211118202840.1001787-1-Kenny.Ho@amd.com>
@@ -91,117 +91,102 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bb775d17-7613-4d35-a35a-08d9aad208b6
-X-MS-TrafficTypeDiagnostic: MWHPR12MB1838:
-X-Microsoft-Antispam-PRVS: <MWHPR12MB18385944D1553925C8EC169A839B9@MWHPR12MB1838.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Office365-Filtering-Correlation-Id: be50af72-0c38-4f0f-df92-08d9aad20a22
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1884:
+X-Microsoft-Antispam-PRVS: <DM5PR12MB18842DBD53F68C3EA10FCAE4839B9@DM5PR12MB1884.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:949;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JK+oj26aoQC1ub443bHMQHXqzxAoSF2xwS4bFsJwuMTS7mnVFAaxEfGKX6UEyLnaSow3sK8/9cF25HEoQ8GgD1oxo5gBRcRXRABIGSJ8Yp2w5xqwMie4VNAq+/6OyDalEIlNvAO3AG60fknLGy7PFdHJnhSUZL1dZ4IwXDxiXI6T3XrYYkNWq+d55jDBDMyuGiBStfR2iKr4WiYnn8m9YLc9S/0FGebW016lgh45+QagXQz0x25wJU1b3x9spqJY9XtsmdbcT5iEbLzgeGD6MXE3MoH9+JJ2/9cXeqQh3+0tHEsdCY0z9kTEJ6i0KL4jZYWbHRZoSXses3yezEibROzZT8qj4ebO2/QZFkWLA5PFmZe27l4sJWT7z6bRKz23bHpV/YowdI4Q6PQQ5wEwqqdKHlMP+sSma86JuOe6dd6/INKYTWZRbwCBpYF9w/CLIyLV0tMVsZ5X7XIJwfJ0iLTe+YG89/rw6p+yCxnaB+TV0rVbwhExL3SsSuXxhP82Gk/Hb/iTaWMndKohuSyidbytYW+8JGHh0A7xUvjVZ9/FAungfvLH8iLvcKSUZWDUZ2cEiFEh86xyPrTt/Ssfld7QnI11of6TTIVxuI9JSdBoJilkaRc9FNZjUsKYWKwbTKaPrZe8ucyZHPEliLSUtjhRnhbgoWu023mkuTQMeG65HBh936jMYYPEDkKuCYQD54RpzrebBBVOgGe/xdK+XdkWwUvz49DvbgrNyDyuRBGbVSQRGIeBsebtjiENDsMO
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(82310400003)(336012)(186003)(47076005)(426003)(5660300002)(508600001)(70586007)(2616005)(70206006)(83380400001)(36756003)(8936002)(8676002)(7416002)(356005)(316002)(36860700001)(110136005)(81166007)(921005)(7696005)(1076003)(86362001)(26005)(2906002)(6666004)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 1WZwLl9IAM2ZRnfg9gPck5Of6ZECwY/ibq3TKbVkdNuKLAX9SZXMR/k2vitWydD5ylQ0712qRpizTCFosrvtLJiEeCc4KdPA4hzHOpKvfGpwsO/LR1bW9VGP+4/aUFfz2UwlLUiWJ0NrPVJHVRYv6AA4UjiV0geERUaENmmxtZ4AuuyhYlIhaD9Hc2LTu7od5rzgg1+2BZEDa/QqC1rICF3ocNb5538sKBq3Z9Uj8AFXK48wHWoRHej0ErZ/SioQcVgowqcJtBiZvwF2qK/LnhmwIe3/Y2HUUk0ddBo5z141uElM/YACQxwwoUPCaHWfS8FgTjI/tOItdKm1BB4PCPxrq5maOdL2ww7VYHVmmZwr0YmVybhQckLsH/fOb2DVz/pOaItajv7OwjK3D/32akzFA3ULou6zXF/1q36SrQi50vqNBizanlSrgZ1L0la88wlGiTrSB1gnmgCKQL+sNNbEA9YovZDexJYR/RRjMahrBxdYaJRasN+MLoZ+vjr56cARr1ZO4RLqk3lLN3kvxSvxlEMnWW68IGZjpdUTp8fOe4PauM/HgzI1DrWdS4Chrcu2bqO9fD9Fsj8o33k7ws0G/HatwZvLlA3k50LlMUhr/NH4PVQRm02t50/RNtPXUMBBhsfUW4BMmOwo3N8XeneT6Z9npr6LKQMpr7u+JueDw6Qwx27CbIrKVRCIibF/pYXHG+pGJ1UShXGJz7OcbihXXj34kq+uZJ88Z+0oMtR4HfX9X+aGS3KokxWrsouO
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(316002)(7416002)(36860700001)(426003)(110136005)(336012)(2906002)(83380400001)(47076005)(508600001)(8936002)(921005)(1076003)(356005)(70586007)(70206006)(7696005)(82310400003)(36756003)(5660300002)(81166007)(186003)(26005)(2616005)(86362001)(6666004)(8676002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2021 20:28:51.4117
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2021 20:28:53.8038
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: bb775d17-7613-4d35-a35a-08d9aad208b6
+X-MS-Exchange-CrossTenant-Network-Message-Id: be50af72-0c38-4f0f-df92-08d9aad20a22
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT066.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT006.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1838
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1884
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This provides the ability to allocate cgroup specific perf_event by
-bpf-cgroup in later patch
-
-Change-Id: I13aa7f3dfc2883ba3663c0b94744a6169504bbd8
+Change-Id: Ie2580c3a71e2a5116551879358cb5304b04d3838
 Signed-off-by: Kenny Ho <Kenny.Ho@amd.com>
 ---
- include/linux/cgroup.h     |  2 ++
- include/linux/perf_event.h |  2 ++
- kernel/cgroup/cgroup.c     |  4 ++--
- kernel/events/core.c       | 17 +++++++++++++++++
- 4 files changed, 23 insertions(+), 2 deletions(-)
+ include/linux/trace_events.h |  9 +++++++++
+ kernel/trace/bpf_trace.c     | 28 ++++++++++++++++++++++++++++
+ 2 files changed, 37 insertions(+)
 
-diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
-index 75c151413fda..1754e33cfe5e 100644
---- a/include/linux/cgroup.h
-+++ b/include/linux/cgroup.h
-@@ -97,6 +97,8 @@ extern struct css_set init_css_set;
+diff --git a/include/linux/trace_events.h b/include/linux/trace_events.h
+index 3e475eeb5a99..5cfe3d08966c 100644
+--- a/include/linux/trace_events.h
++++ b/include/linux/trace_events.h
+@@ -725,6 +725,8 @@ trace_trigger_soft_disabled(struct trace_event_file *file)
  
- bool css_has_online_children(struct cgroup_subsys_state *css);
- struct cgroup_subsys_state *css_from_id(int id, struct cgroup_subsys *ss);
-+struct cgroup_subsys_state *cgroup_tryget_css(struct cgroup *cgroup,
-+					      struct cgroup_subsys *ss);
- struct cgroup_subsys_state *cgroup_e_css(struct cgroup *cgroup,
- 					 struct cgroup_subsys *ss);
- struct cgroup_subsys_state *cgroup_get_e_css(struct cgroup *cgroup,
-diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
-index 0cbc5dfe1110..9c440db65c18 100644
---- a/include/linux/perf_event.h
-+++ b/include/linux/perf_event.h
-@@ -926,6 +926,8 @@ struct perf_cgroup {
- 	struct perf_cgroup_info	__percpu *info;
- };
- 
-+extern struct perf_cgroup *cgroup_tryget_perf_cgroup(struct cgroup *cgrp);
-+
- /*
-  * Must ensure cgroup is pinned (css_get) before calling
-  * this function. In other words, we cannot call this function
-diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-index 570b0c97392a..a645b212b69b 100644
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -495,8 +495,8 @@ static struct cgroup_subsys_state *cgroup_css(struct cgroup *cgrp,
-  * Find and get @cgrp's css associated with @ss.  If the css doesn't exist
-  * or is offline, %NULL is returned.
-  */
--static struct cgroup_subsys_state *cgroup_tryget_css(struct cgroup *cgrp,
--						     struct cgroup_subsys *ss)
-+struct cgroup_subsys_state *cgroup_tryget_css(struct cgroup *cgrp,
-+					      struct cgroup_subsys *ss)
- {
- 	struct cgroup_subsys_state *css;
- 
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 20367196fa9a..d34e00749c9b 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -941,6 +941,18 @@ static int perf_cgroup_ensure_storage(struct perf_event *event,
- 	return ret;
+ #ifdef CONFIG_BPF_EVENTS
+ unsigned int trace_call_bpf(struct trace_event_call *call, void *ctx);
++int perf_event_attach_bpf_prog_array(struct perf_event *event,
++				     struct bpf_prog_array *new_array);
+ int perf_event_attach_bpf_prog(struct perf_event *event, struct bpf_prog *prog, u64 bpf_cookie);
+ void perf_event_detach_bpf_prog(struct perf_event *event);
+ int perf_event_query_prog_array(struct perf_event *event, void __user *info);
+@@ -741,6 +743,13 @@ static inline unsigned int trace_call_bpf(struct trace_event_call *call, void *c
+ 	return 1;
  }
  
-+struct perf_cgroup *cgroup_tryget_perf_cgroup(struct cgroup *cgrp)
++static inline int
++int perf_event_attach_bpf_prog_array(struct perf_event *event,
++				     struct bpf_prog_array *new_array)
 +{
-+	struct cgroup_subsys_state *css;
-+
-+	css = cgroup_tryget_css(cgrp, &perf_event_cgrp_subsys);
-+
-+	if (!css)
-+		return NULL;
-+
-+	return container_of(css, struct perf_cgroup, css);
++	return -EOPNOTSUPP;
 +}
 +
- static inline int perf_cgroup_connect(int fd, struct perf_event *event,
- 				      struct perf_event_attr *attr,
- 				      struct perf_event *group_leader)
-@@ -1080,6 +1092,11 @@ static inline void perf_cgroup_sched_in(struct task_struct *prev,
+ static inline int
+ perf_event_attach_bpf_prog(struct perf_event *event, struct bpf_prog *prog, u64 bpf_cookie)
  {
- }
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index 6b3153841a33..8addd10202c2 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -1802,6 +1802,34 @@ static DEFINE_MUTEX(bpf_event_mutex);
  
-+struct perf_cgroup *cgroup_tryget_perf_cgroup(struct cgroup *cgrp)
+ #define BPF_TRACE_MAX_PROGS 64
+ 
++int perf_event_attach_bpf_prog_array(struct perf_event *event,
++				     struct bpf_prog_array *new_array)
 +{
-+	return NULL;
++	struct bpf_prog_array_item *item;
++	struct bpf_prog_array *old_array;
++
++	if (!new_array)
++		return -EINVAL;
++
++	if (bpf_prog_array_length(new_array) >= BPF_TRACE_MAX_PROGS)
++		return -E2BIG;
++
++	if (!trace_kprobe_on_func_entry(event->tp_event) ||
++	     !trace_kprobe_error_injectable(event->tp_event))
++		for (item = new_array->items; item->prog; item++)
++			if (item->prog->kprobe_override)
++				return -EINVAL;
++
++	mutex_lock(&bpf_event_mutex);
++
++	old_array = bpf_event_rcu_dereference(event->tp_event->prog_array);
++	rcu_assign_pointer(event->tp_event->prog_array, new_array);
++	bpf_prog_array_free(old_array);
++
++	mutex_unlock(&bpf_event_mutex);
++	return 0;
 +}
 +
- static inline int perf_cgroup_connect(pid_t pid, struct perf_event *event,
- 				      struct perf_event_attr *attr,
- 				      struct perf_event *group_leader)
+ int perf_event_attach_bpf_prog(struct perf_event *event,
+ 			       struct bpf_prog *prog,
+ 			       u64 bpf_cookie)
 -- 
 2.25.1
 
