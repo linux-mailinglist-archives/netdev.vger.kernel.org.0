@@ -2,91 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B02F74555CF
-	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 08:40:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF445455613
+	for <lists+netdev@lfdr.de>; Thu, 18 Nov 2021 08:51:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243674AbhKRHnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 02:43:40 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:49386
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243729AbhKRHnS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 02:43:18 -0500
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com [209.85.167.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 0E3AE3F197
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 07:40:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1637221218;
-        bh=6O/A/IhU2XeX9QN2oJl3uiU3cJm6GUQ4n07BCEIs3FI=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=Mjdk6P8uVHfBXLKON+R0N/2qsRDAy823Y/xqrt/58DvEivVDZdFNvFOOfwezNu3E1
-         9HIRQ79FJP2/FGY7APXb07toxEIw448N1oC/hpeCi2USjhq5mx8GKTMk/IwvzKRezy
-         +O/rRPwMpiym41IoYKOZJvlXbCmWKEm0ZJ8tR2jtMN5KfD6Mjxkki3kkkTaqsAY9rd
-         FM/bdqKdR8vs1v6AduNOQSr3joHi8Q4bKpdxtg+kmFDFmk0N/Aas3z2QL5Yg+hIggZ
-         A7oFvC0hO4spBZA5MxZIB7KOVrj2SrzFT3jTyk/6NJQPV/y/WU6kJiT3Hxyx1EI12u
-         cBdlxFPhcCuGg==
-Received: by mail-lf1-f70.google.com with SMTP id k5-20020a05651210c500b0040934a07fbdso3376733lfg.22
-        for <netdev@vger.kernel.org>; Wed, 17 Nov 2021 23:40:18 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=6O/A/IhU2XeX9QN2oJl3uiU3cJm6GUQ4n07BCEIs3FI=;
-        b=l+TCEQqqpTok1+gIYveLEFHN8zo5ZYn3S8EHhpcF8q1LWEgkel4+UVJ+bVgPuM/gxu
-         z4WWh0WEn4QL02XS6tFkjnTsjuZT/D8uDOEz7FT2QG6dskb6fS0DLEHH50C5nJg5w6No
-         EKmKhXghoYFqppOi/hjyNwHFRvsitxd7JuvvPkgXt4ubRDsNCFjw8veX/9hAT9fvObte
-         Cqc8O+oyZKWTSPiASNpc3/rDY9s78y0MXHL72nm+6d7KlXYSWvIEP23gVIZ7q0rVufif
-         GHPvkYfpF2qBpUaDCx0pRTJYisiEZySQSLVHLYsSAxDWy008Cvz8K+461AQFldUv0d1F
-         ZL9Q==
-X-Gm-Message-State: AOAM5338rvjXibCHYHvFDHNEc0g3RF85LPJ30L2XipdeF2E09QZ654Yb
-        8C0TalY3RHNQ52vpqu/UqGVXhsCxIlzd+I/roHlv0tnkbRzRnqzVIDJB92Xyuhx3/CVMTnIchPk
-        i/NH7ImjzHqq9m9h+SJgO5k/KWlmWgLePmQ==
-X-Received: by 2002:a05:651c:2123:: with SMTP id a35mr15191913ljq.174.1637221217551;
-        Wed, 17 Nov 2021 23:40:17 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzYyujL48SlrjMMONApWRnv27oqukk19+pBLjhDOBjnbg/qDDNCUWm7BY38HQ6cjBUqNBMsLg==
-X-Received: by 2002:a05:651c:2123:: with SMTP id a35mr15191883ljq.174.1637221217276;
-        Wed, 17 Nov 2021 23:40:17 -0800 (PST)
-Received: from [192.168.3.67] (89-77-68-124.dynamic.chello.pl. [89.77.68.124])
-        by smtp.gmail.com with ESMTPSA id r19sm213195lff.207.2021.11.17.23.40.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Nov 2021 23:40:16 -0800 (PST)
-Message-ID: <879d53ad-1819-d556-3403-daf26b08ba41@canonical.com>
-Date:   Thu, 18 Nov 2021 08:40:16 +0100
+        id S244030AbhKRHyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 02:54:03 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58372 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244093AbhKRHxY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Nov 2021 02:53:24 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D7D6C61AF0;
+        Thu, 18 Nov 2021 07:50:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637221824;
+        bh=KAG7SN0Nsukz5N3+M2JeOStH3aani0FQz1yVYpMxlI4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=U/rCN1F5P7OJGKozjYIbfysxd1GNoJ7r2XbViuikvAKkPDKKnksCbzJa2IlbHnRax
+         GoWEfisdL0drlW2opov+3kvSMtdymX3KwC9CSx24ibrIoE2wHpH/c7irksbGH7gCXW
+         Q0h6qL7SSdphsv4RS+Mfpa5oRKD4q0K89KOfSTE4myt5TH3/fTYkWlEfO4FLCP3sP+
+         0zdH/5WvExcVwBbWzxoMWRPvlXY+fKCPsUn24Llx2zkf79eennDsgYutbug/fZ1agB
+         KhkNMnssPhXu7tzV+BBf3QYXcyhYEGTax+k0QCz2kH4UZ+pBEFmZQ+Et0intFBkLWn
+         4KRAyyeFsgTjA==
+Date:   Thu, 18 Nov 2021 09:50:20 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>, Aya Levin <ayal@mellanox.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>, drivers@pensando.io,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        intel-wired-lan@lists.osuosl.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org,
+        Michael Chan <michael.chan@broadcom.com>,
+        netdev@vger.kernel.org, oss-drivers@corigine.com,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Simon Horman <simon.horman@corigine.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next 5/6] devlink: Reshuffle resource registration
+ logic
+Message-ID: <YZYFvIK9mkP107tD@unreal>
+References: <cover.1637173517.git.leonro@nvidia.com>
+ <6176a137a4ded48501e8a06fda0e305f9cfc787c.1637173517.git.leonro@nvidia.com>
+ <20211117204956.6a36963b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.1
-Subject: Re: [PATCH v2] nfc: st21nfca: Fix potential buffer overflows in
- EVT_TRANSACTION
-Content-Language: en-US
-To:     Jordy Zomer <jordy@pwning.systems>, linux-kernel@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-References: <20211117171706.2731410-1-jordy@pwning.systems>
- <20211118070426.2739243-1-jordy@pwning.systems>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20211118070426.2739243-1-jordy@pwning.systems>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211117204956.6a36963b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/11/2021 08:04, Jordy Zomer wrote:
-> It appears that there are some buffer overflows in EVT_TRANSACTION.
-> This happens because the length parameters that are passed to memcpy
-> come directly from skb->data and are not guarded in any way.
+On Wed, Nov 17, 2021 at 08:49:56PM -0800, Jakub Kicinski wrote:
+> On Wed, 17 Nov 2021 20:26:21 +0200 Leon Romanovsky wrote:
+> > -	top_hierarchy = parent_resource_id == DEVLINK_RESOURCE_ID_PARENT_TOP;
+> > -
+> > -	mutex_lock(&devlink->lock);
+> > -	resource = devlink_resource_find(devlink, NULL, resource_id);
+> > -	if (resource) {
+> > -		err = -EINVAL;
+> > -		goto out;
+> > -	}
+> > +	WARN_ON(devlink_resource_find(devlink, NULL, resource_id));
 > 
-> It would be nice if someone can review and test this patch because
-> I don't own the hardware :)
-> 
-> EDIT: Changed the comment styles and removed double newlines
-> 
+> This is not atomic with the add now.
 
-Same comments apply. :)
+And it shouldn't. devlink_resource_find() will return valid resource only
+if there driver is completely bogus with races or incorrect allocations of
+resource_id.
 
+devlink_*_register(..)
+ mutex_lock(&devlink->lock);
+ if (devlink_*_find(...)) {
+    mutex_unlock(&devlink->lock);
+    return ....;
+ }
+ .....
 
-Best regards,
-Krzysztof
+It is almost always wrong from locking and layering perspective the pattern above,
+as it is racy by definition if not protected by top layer.
+
+There are exceptions from the rule above, but devlink is clearly not the
+one of such exceptions.
+
+Thanks
