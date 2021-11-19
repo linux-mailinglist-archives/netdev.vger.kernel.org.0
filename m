@@ -2,92 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA875456AA5
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 08:08:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EA18456AA8
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 08:09:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233161AbhKSHLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 02:11:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43844 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230169AbhKSHLW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 02:11:22 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91A0AC06173E
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 23:08:21 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id y196so7539382wmc.3
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 23:08:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yMZ/XNTo6RdS+Y76BX8L/1avH0l3gqSxfoRyoU72ZXU=;
-        b=TEZ76Ij2PibkzQa+i31y+/rQqy7gx//lmogS0896ix3RFSrlHmp54DLJJZre77q+Gi
-         5d5A0Jd4Z/fTt7Yw2io0/9sZLVeLj5euM8F/6JY09hJzsLRzcAPO+y9tdce0rQGux8VC
-         A9hhI13M/ALeDBf5Ht+uawSApu7UijOaB3k0Qa1/M+LYGJbCMCH/0QPCrWVvHsMwAcfE
-         KYVz7wRzHGwgYvsnZKiAYDhs0vxwO3hiTfuKNqYQtG9hW1tVD2/HWrOrUa6jQ8J0/Ab/
-         BlUPBnLVIC12Ky+6jfg61ZlZLrwdFkIZN4VC4X3AuQCcut2WvYEAUbhvPTVq3u62wHJ3
-         wfBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yMZ/XNTo6RdS+Y76BX8L/1avH0l3gqSxfoRyoU72ZXU=;
-        b=oUrTaJp0l43luZwRbzuqPOoFlf36iLYT6hn8k9OHEylWVESn5qv2cGU99NBVjaHVDA
-         EvwBXUwxtfMdPRtmQS8aPJW+kZs3dk7giQtFihV7BdhiypMJ1EBa+/aTeqVQPZ5534ja
-         hFm4df6/LfiMRpO4JGiP48uLrvcH4MgVK2mQrT1wELE29sfxT7Gp/HqTPJNwFXnGALTE
-         RLNuaH7bP5I90hyKPA/K+CghZlHUN7Y+UzOyzJYT9DHcxpE89ouRd5JnuAWDSMHQh971
-         TfUq9IDP+XmigfCqcA8n9ISM6aJCqUA3L/BDnXvv1UgCnoGA0j9liap3yjqI/kgbMA1K
-         c4XQ==
-X-Gm-Message-State: AOAM532LrLnys7RZmxYQ3/BdWXVx2s3ur4pLVsLIF/SMvjfeEtLJYuaK
-        DAcJeRv25LOpK1Vx8i8Dp41i2g==
-X-Google-Smtp-Source: ABdhPJym+3NtXcKichGqNPRGRokZ3hBAxiKdCB4mfrjpGZX7l+yh9GWHtzLOoUf0qXmErUS3af+gEA==
-X-Received: by 2002:a05:600c:1d0e:: with SMTP id l14mr3966207wms.64.1637305700038;
-        Thu, 18 Nov 2021 23:08:20 -0800 (PST)
-Received: from apalos.home (ppp-94-66-220-79.home.otenet.gr. [94.66.220.79])
-        by smtp.gmail.com with ESMTPSA id m2sm11074548wml.15.2021.11.18.23.08.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Nov 2021 23:08:19 -0800 (PST)
-Date:   Fri, 19 Nov 2021 09:08:17 +0200
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Bernard Zhao <bernard@vivo.com>
-Cc:     Jesper Dangaard Brouer <hawk@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net/core: remove useless type conversion to bool
-Message-ID: <YZdNYWfr89/9NcD0@apalos.home>
-References: <20211119015421.108124-1-bernard@vivo.com>
+        id S233297AbhKSHMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 02:12:14 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:50657 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232076AbhKSHMM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 02:12:12 -0500
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id 7A8DA5C0164;
+        Fri, 19 Nov 2021 02:09:10 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Fri, 19 Nov 2021 02:09:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm2; bh=QaZ4kQkBwfl6pmoXTzA36xpXN3r
+        RHPjH+yb5eFOnaBg=; b=QZ5evm8dtiVXNdbuGk9932rhY3PzNB0bpS+YAHbnDFd
+        RVioXW5W/jiZX92Av3rzcSZQd/S4Bn2XKOSjV/IA+5H+ynCd6pjYktPXtsDoAJbJ
+        cMR36n4Zv5h+FFQm5wtAiLXuKlKRpgfehNsiNOMp+Zk8hMtT1USvWfe60WEzHKLB
+        IGjaqUfgwjeFbYm7crHFkxlTXW3LK+OyoRoAE8O9rXAdm6onG+yRXlPa6d9hgLRW
+        n5y9hSriV1hb9TF3DTFBsd43NmFwD9Qr1qfF/ThtDYnYUlFgshv1aC//tbGBBNRF
+        SbH1ZVlqlTTbROYj0AdrslcQE7Yd26ngLumfJLaXJng==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=QaZ4kQ
+        kBwfl6pmoXTzA36xpXN3rRHPjH+yb5eFOnaBg=; b=iQvKEIrYrnYe3RiM2+hh0O
+        wz7n1hs4NT9WuxgFpcyKXkrjECiEw5exXaGJU/fdYlVjmJllKnAWksxJARNl3fNR
+        BaQ9XixohdyEg+PM0uySwN1yQ6BJfpOTo0PeAPK1pCpe4MQxIYlUzTgnTo5LzZyL
+        qoE0gIva67huC7nweiOh+Mjh1L2sDv1KZiTlfNH6naGozlFyObkHzFv6/gZfvzlc
+        RaO1S9Nf/Dk4YvBJ8dlwEfEJedHDw9iX3vTXhVp+0+lBZVYKFqBt2u2xqBmwxrAB
+        LS9hpc6nKYu8YeWq1DFUEMwZKJGcFoF3hxry1GR7iwaqk9q36t9B28/2AMzVjvYA
+        ==
+X-ME-Sender: <xms:lk2XYfEFBpHmzw810WH5HcDIFeXVJxeXioZQkgI7DPywTWIFnXaCeQ>
+    <xme:lk2XYcUpCelmuj7Evtc9iIjzDrRqeeSrpG6tvG08HbHybIq-rj71YvFaOwKmth1hn
+    R-ddUDPh9rkHQ>
+X-ME-Received: <xmr:lk2XYRIfasMU_EliYv88rYk7MOJbtfeZnLCjqgcElaLU25eBKQakmXfMNlYZXo60qzWjILHhpxZoV1UjxW-mqtNe9rsy_60m>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrfeejgddutdefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujgesthdtre
+    dttddtvdenucfhrhhomhepfdhgrhgvgheskhhrohgrhhdrtghomhdfuceoghhrvghgsehk
+    rhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpedvvefhlefgffeitddtjeeivdeffe
+    elheejtdekgfejgeegudfhheeuteetieffheenucevlhhushhtvghrufhiiigvpedtnecu
+    rfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhhdrtghomh
+X-ME-Proxy: <xmx:lk2XYdHSlBFF5QvcaQG8Txsx6pn9lQTlnNutXQ-PKoPsVSigXvmwyw>
+    <xmx:lk2XYVVNtQROyqvJiS-UQzvAEL3XrPI7hLtknzkPPi4Rm11TbPk1lA>
+    <xmx:lk2XYYPn7mWvkSl-vI1UQlGHYHXKamRAR5masSMWUEVCwVXsbWBXhw>
+    <xmx:lk2XYXLJNJtfCFuYroE-G_WUhMFm1x_E1T6c0PGD2b7PCVkOv273Zg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 19 Nov 2021 02:09:08 -0500 (EST)
+Date:   Fri, 19 Nov 2021 08:09:06 +0100
+From:   "greg@kroah.com" <greg@kroah.com>
+To:     guodaxing <guodaxing@huawei.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Chenzhe <chenzhe@huawei.com>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>
+Subject: Re: [PATCH] net/smc: loop in smc_listen
+Message-ID: <YZdNks4CQ7CS8ILg@kroah.com>
+References: <aec0a1e1964b4696b8636ce3945e6551@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211119015421.108124-1-bernard@vivo.com>
+In-Reply-To: <aec0a1e1964b4696b8636ce3945e6551@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 18, 2021 at 05:54:21PM -0800, Bernard Zhao wrote:
-> (ret == 0) is bool value, the type conversion to true/false value
-> is not needed.
-> 
-> Signed-off-by: Bernard Zhao <bernard@vivo.com>
-> ---
->  net/core/page_pool.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index 9b60e4301a44..d660d46f6ad6 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -398,7 +398,7 @@ static bool page_pool_recycle_in_ring(struct page_pool *pool, struct page *page)
->  	else
->  		ret = ptr_ring_produce_bh(&pool->ring, page);
->  
-> -	return (ret == 0) ? true : false;
-> +	return (ret == 0);
->  }
->  
->  /* Only allow direct recycling in special circumstances, into the
-> -- 
-> 2.33.1
-> 
-Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+On Fri, Nov 19, 2021 at 03:21:16AM +0000, guodaxing wrote:
+> The kernel_listen function in smc_listen will fail when all the available
+
+<snip>
+
+You need to resend this without html, as the mailing list rejects html
+patches and we can not apply them.
+
+thanks,
+
+greg k-h
