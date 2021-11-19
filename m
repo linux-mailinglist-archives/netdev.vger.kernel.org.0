@@ -2,231 +2,281 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C27E8457218
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 16:48:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B41D845721F
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 16:50:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235933AbhKSPvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 10:51:37 -0500
-Received: from mga05.intel.com ([192.55.52.43]:52526 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229936AbhKSPvg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Nov 2021 10:51:36 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10172"; a="320648553"
-X-IronPort-AV: E=Sophos;i="5.87,248,1631602800"; 
-   d="scan'208";a="320648553"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2021 07:48:21 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,248,1631602800"; 
-   d="scan'208";a="594414118"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmsmga002.fm.intel.com with ESMTP; 19 Nov 2021 07:48:21 -0800
-Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Fri, 19 Nov 2021 07:48:21 -0800
-Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
- fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Fri, 19 Nov 2021 07:48:20 -0800
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12 via Frontend Transport; Fri, 19 Nov 2021 07:48:20 -0800
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.42) by
- edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.12; Fri, 19 Nov 2021 07:48:20 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aoun9H1kVeRRLfgFE/xA4MQkvGio5NLrIk/RbJUsDlcHznR0Wd/EkSfjfx1SCiA4jj1/kfB9tDqPhMMDg0yW69cOwHe5g0marRowOXtvCF8Gzsh8rGlpG3gHtwkLZ4n7qSQHoTDsBqM6LNmGdtbeFKq4/c3wk27ZLu/mR+T4jf5OX9JOSkGBR4Igz7+6V9CGTLpSPf4L+yZ0zCH/RNSxDXPcKj2dLly0T57WiJCGscdr7bMAXbjk2P/N7t/sXoke/FJ3tUHLvmw2Lvx9HPGmcjfb/ag9PsWdHTFtSZulAp3ybImhRfwoEj3fFUQYjS+/lsjkuvEQlAfVYNxxdlMERg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4aUQ5kFsrKisL1xazpoxVm8Ljid2SG7TPlsW2b06Gbk=;
- b=D4tv99GdGUFrbNA76OoLasmShVb+eUS1JK6FY+9FEEa4r0pXIX9hzgDZ7iFGZBRbAEMrooqML1kABXonyli/QK883Gp7O0tKtXbVMwjyWC0YCTbBRD1Nr6Lxr88FyhrPpmp6gWrqceAtOFwQB1Zi2v7ZNEhsOb0mDNiJ0ZvjIsJ5Do8n8IMLAim+HpnKBcwJyiJyWqZZinm732jkYMgqRVbhRrSscrvWOS1p/QKPlHtINsdu5x+kE+Q/KYHuOP43TVDpPTj8DCz+Sxaa0p8PGAOfCcKaOWk+gmGb9yEg8ZWpyXA0xi8GeqK4V4Qsv9Yr8me7QxZr14KlgLgdZ306xw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4aUQ5kFsrKisL1xazpoxVm8Ljid2SG7TPlsW2b06Gbk=;
- b=KXLcNnQ8m/PtSD6fZ5w+VwiKQSyrypL9Yt8nz3YIhD0ytLx4d2vG+0py2L9J/ty9MvR/Hsd+bEMV3I2fFGGTNv2jd+UStr4TFVcUmK+xizqrRPFmuhq1ge5V8BiPXSF8b+R0fLVcjMXZ/ZY7wHfuAUvWGv7UC3zQO+8lQsdkHpU=
-Received: from PH0PR11MB4791.namprd11.prod.outlook.com (2603:10b6:510:43::10)
- by PH0PR11MB5112.namprd11.prod.outlook.com (2603:10b6:510:3b::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.22; Fri, 19 Nov
- 2021 15:48:13 +0000
-Received: from PH0PR11MB4791.namprd11.prod.outlook.com
- ([fe80::3439:fc74:680b:8766]) by PH0PR11MB4791.namprd11.prod.outlook.com
- ([fe80::3439:fc74:680b:8766%3]) with mapi id 15.20.4690.027; Fri, 19 Nov 2021
- 15:48:13 +0000
-From:   "Loftus, Ciara" <ciara.loftus@intel.com>
-To:     =?iso-8859-1?Q?Toke_H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        "Jesper Dangaard Brouer" <jbrouer@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-CC:     "brouer@redhat.com" <brouer@redhat.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "hawk@kernel.org" <hawk@kernel.org>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "bjorn@kernel.org" <bjorn@kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>
-Subject: RE: [RFC PATCH bpf-next 0/8] XDP_REDIRECT_XSK and Batched AF_XDP Rx
-Thread-Topic: [RFC PATCH bpf-next 0/8] XDP_REDIRECT_XSK and Batched AF_XDP Rx
-Thread-Index: AQHX2rz04f2C6hNUIkOAw3chF6vlUKwF51OAgABwpHCAAXBIAIADNhdg
-Date:   Fri, 19 Nov 2021 15:48:13 +0000
-Message-ID: <PH0PR11MB4791ABCE7F631A4BBEAF1B5E8E9C9@PH0PR11MB4791.namprd11.prod.outlook.com>
-References: <20211116073742.7941-1-ciara.loftus@intel.com>
- <5a121fc4-fb6c-c70b-d674-9bf13c325b64@redhat.com>
- <PH0PR11MB4791D63AFE9595CAA9A6EC378E999@PH0PR11MB4791.namprd11.prod.outlook.com>
- <87mtm2g8r9.fsf@toke.dk>
-In-Reply-To: <87mtm2g8r9.fsf@toke.dk>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.6.200.16
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ca711157-4b16-47a0-0a6a-08d9ab73febb
-x-ms-traffictypediagnostic: PH0PR11MB5112:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <PH0PR11MB511263AD5FFA7D773AE59F398E9C9@PH0PR11MB5112.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: /pZOsIharzXCrUDP6dHq4wMEjWonKhFoXGoxtJMbOwAv4qb4mEArBABnF+dK2Z6Q5amAYzVNGcll9hfSTt+Ha7xoLjWY3e/QTyq73LgMVDnEVcON0F/ZrjgHQIE5DOAtDb5/RreFzGPuQQhI7BgpnyWrk9pV1k9soiLU78WB7tb7ZHZvmZCqCXcjZ2xavfijHDqP7U4q+zJ7NYi1c30WL3UizqedhivHmV8qFsuht7j8Wl99L4ks757YcQmkZ7m53FkwSd+XH3xCLx+Bn84LJYl7jbNjdQpyJyr4H4OJVnWzV3lh1acAtJpc3ViQ+v1PRTcCcRTnOE/tZ+PBeBE21yzCAdvKNaMeAiuSGAgKI++CKaR7Auzl/pZ6voZy35eVm1vBCtNVAoUjC2qNdAFOx8O2J4XyOe/7ueeR+SQgX5iSw/D3I4xACSyvCHzn8RsDR7oZLwI4ASn7ur/R+GjHt7dEJDVykFPSM60pberVGzXSpDdL9oCFXWksBiXLwr7BYYXmMTxdgrmLm1mqfIyJbOdYz1XVSfn2JGx/vFY4MFdk09vPGOLTsci2WOJrhZ6lxCHtIWZe3fXtsSc3/geJCkPD8dE5Rrwd+j0gicz6sletYyAPgic2RReb4bYTa48hQHkQs8ANaJfYIbohC2TkUwf64zMtOxkGy4hI3DgdpCyaa0iu4yl0wHBsX4lWMa9zTCqQjQahcMVea2BTue5l2rC5fodNOOSgKKRA23VZVkM=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB4791.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(8676002)(38070700005)(6506007)(122000001)(316002)(508600001)(7696005)(8936002)(2906002)(33656002)(64756008)(66556008)(52536014)(38100700002)(66446008)(86362001)(54906003)(71200400001)(5660300002)(110136005)(82960400001)(186003)(7416002)(66946007)(9686003)(76116006)(4326008)(107886003)(26005)(66476007)(83380400001)(55016002)(83323001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?LwG4/EqfSoej7H4FUbPV/ORgYFd/ClwnaXV7q6cmli+PKoLLunOzC0fRoX?=
- =?iso-8859-1?Q?olnXwSyLwpB4FyYxJlqW6/1dzHdkLEl8c33Gf87rx8LAbBssiXSh+e5AJ+?=
- =?iso-8859-1?Q?Oddjbwvof1uohp2CNiZcCr5Ed3nDA/DK6rdLnWwGvT8Mlo5TDrH2v7cBDm?=
- =?iso-8859-1?Q?eGj3hu0SVA7nmlXfwoI1YD0hMidhge7z8mHINqvNbZB9HxzThbNqFxoYsn?=
- =?iso-8859-1?Q?Bq2h90mVm/5oJTeSh6oJsNIi/MvizPTMnmUYsSABqZM0nL17FFfpcT9LYr?=
- =?iso-8859-1?Q?Dvp90RMh0MyOgQ1a7OQfUYL4cmIjgRgGXkGM2rv2UdCatrFrbdU7xsF3E/?=
- =?iso-8859-1?Q?QfLHuVR1Ho+IldjXMJYIZowMju4u45zL+fT+fPIrebi4w9u4ntxbEWUt+p?=
- =?iso-8859-1?Q?y6c1VCRal3+KIS7jnHzQ1ndF21rM6f/FQ77tPUsW9kNb04B9Cv7ei9yC6m?=
- =?iso-8859-1?Q?aUy4Wl2T4QpdlfoGJsFOumFPzo4a57BQbIc1ej8UDleyCXzxFo9JCKYU30?=
- =?iso-8859-1?Q?Dbp5nKcAwHHzoxmhpLHBXLdKGk5shQIqA9MPQ7IibBgPlsIPc4BsCAkVNW?=
- =?iso-8859-1?Q?ClyAJJcrvTxIC5kHQziyYeByPbG8cu8a9wT0s/8O9zfyUKVXLKI1a3vBz3?=
- =?iso-8859-1?Q?UgWfHSVIDaCajFAg698OJ3AXFgWuJ4Dwvd/EG7FFd8zuoxgXf6riU+YK0Z?=
- =?iso-8859-1?Q?MAkKoQuTmXiy170/cM4XqCnLUij1I2BASyBpGUw2G4WoKA1ol7MNo377n3?=
- =?iso-8859-1?Q?jn5Mrqk5jZI7pSSAJBAzX6N6z6QH4ebg8bM+34AVxjvOFJiMBZ9kpD4grm?=
- =?iso-8859-1?Q?m/ZhmR0xOOpN8WxgIOdTBBhHfR5gfJAG5khkdoo5AzqrgUbNz99j2DI2Qy?=
- =?iso-8859-1?Q?QFn5uA+gFvPf13BzYHa5gInCJyPqTD9hEQXBZjWwpqxlM2vcxyWdq4fHf3?=
- =?iso-8859-1?Q?pIDT4Ju+/aaejA8Ch7Lm1zoD3jDnajSk2qgUoBWGfh7n9qZpEtV8Y5HdIT?=
- =?iso-8859-1?Q?lk0RuX9BEnqhDeg1n/6wcBnkDsCVI3KpbGRwSMKZrkSmVt1rfI6nXJB1ed?=
- =?iso-8859-1?Q?0XXQM7iM+tFSvjdQeUYa/hkRv47Q59I0vSmx+MYvDOoFA4a66kjfYZYHYL?=
- =?iso-8859-1?Q?N7IBj2KX2GbYH2pTSQ7ZTKjLXU/HR1imgyQzPEDbgr9VzK90g7cPZPqkOP?=
- =?iso-8859-1?Q?J+czQAAoF751mtzuKriSyAV43VIV2V9AXBo76QQKrrjsaYPLXmI+X30cUX?=
- =?iso-8859-1?Q?j4nF6W03UcHjhifa4Ze8U2YFB3PA23ZzLMn9oAnd9BzmNQyYr8A9nbsXTz?=
- =?iso-8859-1?Q?h/E2LjcCx6AM7YqzzLc97ZaI5ix9wN831HMWhaZs7F9HyR2PS2j4O0P4aI?=
- =?iso-8859-1?Q?0NaH7ULqljwh3qVraclJ95rYVMNgk2iqK7EITMQI8UHC6quUuIxIqp8+cO?=
- =?iso-8859-1?Q?1GrW6ot1lajP8vUgsj+vYwW1mnYY+NuWCjPINodLPQgNQHum9MkbANM8ru?=
- =?iso-8859-1?Q?A9Csg3nUPNCYt8YWvBq54mYgnrqMQdhWa5nnUs29WiA1nxLeePSUzf3Mmf?=
- =?iso-8859-1?Q?LYBu9/nzCchmVJiQiDCBLbAnIZ+a8tYW/rHGXs8Yc9BK22x4T/A+DE5ped?=
- =?iso-8859-1?Q?7AIXk63yBSfFzrxfH9Ne2MivGN6/Inbtwtx8/EbOz2RxqWJwYqu4D48A?=
- =?iso-8859-1?Q?=3D=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S236033AbhKSPxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 10:53:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49876 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229936AbhKSPxE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 10:53:04 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E402C061574;
+        Fri, 19 Nov 2021 07:50:02 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id v19so8422731plo.7;
+        Fri, 19 Nov 2021 07:50:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=6Oub29HtHKw27XgXl6QzKZzINw/d1ukHGMRSg8LMs0o=;
+        b=ktyZJumK0x2Hlw8isa9Dfz9SKQb2hKAYynkHRW+k2TfKljZdMfQ/qsj5SrJ7Mblfj0
+         C0MbEz2qZmp68WYmai5kIMI2QuurDRgaAaZLZtcDPPKAOY+mioC3JLCt0spSSnyOKTSW
+         dVn/j81kdmGRGNJm/DFu7o8FItb8Jp/zLmW7ymolWYSXR6KTj/cJMZNN1clHQf2Z0uW5
+         xs0HBHmRZ+/j/PCqS0BDSKCPpZL9GwYigZ2lGyWIWima6AycksZ6yNqfFVvlqGIWLY87
+         m52ecoEqmBrH7c/kuS6s0JKVoJxX1KSg56dAjOqqWIswgLiESvoaKyYnrVgdDPo/kRoJ
+         FXsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=6Oub29HtHKw27XgXl6QzKZzINw/d1ukHGMRSg8LMs0o=;
+        b=Rp7w6cSg2xM4VZ7E+BPX0wzUtqulzOO1MmCXJQYlO1mr961ArfD3bDCh+HPk6+5Uxn
+         Sw6nkzbHV+8q2paZ3Um+kgQ3eQ7on3sxeg66j/Hky78tf81Gq89Uo/3/oo6ZI2vha5xM
+         DkEeZYWSEKv+yFKf2NQw4+CksHzPiMhQz0viKmRyIMJlR67YeBcjIKEmTE5jxQFgNvVn
+         cUjdqY86bS/omXdggyc4QA9aqQb5LVDJOqFQ51kxTOj90YQN+e4nTJbbx4pxIzubKztP
+         NDMU04VwaSVO3+xp5DpjihK1mo0iwhTWhHj0pwbTuNI7FlMd7bBXWcK8zxcGqtLybAL3
+         rYLQ==
+X-Gm-Message-State: AOAM533JqpTtnjJsfQMSvwKBhxM2OqpJzdrIQMX+WZdtUGbVCfjU5Ta7
+        Zyi1MHtm8VUUfzhhtU8eKqsk+GaXAwA=
+X-Google-Smtp-Source: ABdhPJzJPPxUu/m57ZtZtU0JGrVnclYeyBasuhukFwImcOcbpt9B6dYsqtFaPmKUdCfkSmSMdujghg==
+X-Received: by 2002:a17:903:4043:b0:142:4f21:6976 with SMTP id n3-20020a170903404300b001424f216976mr78307355pla.62.1637337001580;
+        Fri, 19 Nov 2021 07:50:01 -0800 (PST)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id t4sm91734pfq.163.2021.11.19.07.50.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Nov 2021 07:50:01 -0800 (PST)
+Subject: Re: [PATCH] net: sched: sch_netem: Fix a divide error in
+ netem_enqueue during randomized corruption.
+To:     Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Cc:     vijayendra.suman@oracle.com, ramanan.govindarajan@oracle.com,
+        george.kennedy@oracle.com, syzkaller <syzkaller@googlegroups.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20211119084241.14984-1-harshit.m.mogalapalli@oracle.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <629fe4fc-8fbf-4dec-8192-32e1126fa185@gmail.com>
+Date:   Fri, 19 Nov 2021 07:49:59 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB4791.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ca711157-4b16-47a0-0a6a-08d9ab73febb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Nov 2021 15:48:13.1790
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Ri5jxAqYMbX7JwZwM76xGxj+2JGm4ZpyT3RLlOl6qfIP5hCychoE+6ahNtV7nwHnoPm2d1FAJdEuCt70GUj65A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5112
-X-OriginatorOrg: intel.com
+In-Reply-To: <20211119084241.14984-1-harshit.m.mogalapalli@oracle.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> "Loftus, Ciara" <ciara.loftus@intel.com> writes:
->=20
-> >> I'm fine with adding a new helper, but I don't like introducing a new
-> >> XDP_REDIRECT_XSK action, which requires updating ALL the drivers.
-> >>
-> >> With XDP_REDIRECT infra we beleived we didn't need to add more
-> >> XDP-action code to drivers, as we multiplex/add new features by
-> >> extending the bpf_redirect_info.
-> >> In this extreme performance case, it seems the this_cpu_ptr "lookup" o=
-f
-> >> bpf_redirect_info is the performance issue itself.
-> >>
-> >> Could you experiement with different approaches that modify
-> >> xdp_do_redirect() to handle if new helper bpf_redirect_xsk was called,
-> >> prior to this_cpu_ptr() call.
-> >> (Thus, avoiding to introduce a new XDP-action).
-> >
-> > Thanks for your feedback Jesper.
-> > I understand the hesitation of adding a new action. If we can achieve t=
-he
-> same improvement without
-> > introducing a new action I would be very happy!
-> > Without new the action we'll need a new way to indicate that the
-> bpf_redirect_xsk helper was
-> > called. Maybe another new field in the netdev alongside the xsk_refcnt.=
- Or
-> else extend
-> > bpf_redirect_info - if we find a new home for it that it's too costly t=
-o
-> access.
-> > Thanks for your suggestions. I'll experiment as you suggested and
-> > report back.
->=20
-> I'll add a +1 to the "let's try to solve this without a new return code" =
-:)
->=20
-> Also, I don't think we need a new helper either; the bpf_redirect()
-> helper takes a flags argument, so we could just use ifindex=3D0,
-> flags=3DDEV_XSK or something like that.
 
-The advantage of a new helper is that we can access the netdev=20
-struct from it and check if there's a valid xsk stored in it, before
-returning XDP_REDIRECT without the xskmap lookup. However,
-I think your suggestion could work too. We would just
-have to delay the check until xdp_do_redirect. At this point
-though, if there isn't a valid xsk we might have to drop the packet
-instead of falling back to the xskmap.
 
->=20
-> Also, I think the batching in the driver idea can be generalised: we
-> just need to generalise the idea of "are all these packets going to the
-> same place" and have a batched version of xdp_do_redirect(), no? The
-> other map types do batching internally already, though, so I'm wondering
-> why batching in the driver helps XSK?
->=20
+On 11/19/21 12:42 AM, Harshit Mogalapalli wrote:
+> In netem_enqueue function the value of skb_headlen(skb) can be zero
+> which leads to a division error during randomized corruption of the packet.
+> This fix  adds a check to skb_headlen(skb) to prevent the division error.
+> 
+> Crash report:
+> [  343.170349] netdevsim netdevsim0 netdevsim3: set [1, 0] type 2 family
+> 0 port 6081 - 0
+> [  343.216110] netem: version 1.3
+> [  343.235841] divide error: 0000 [#1] PREEMPT SMP KASAN NOPTI
+> [  343.236680] CPU: 3 PID: 4288 Comm: reproducer Not tainted 5.16.0-rc1+
+> [  343.237569] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+> BIOS 1.11.0-2.el7 04/01/2014
+> [  343.238707] RIP: 0010:netem_enqueue+0x1590/0x33c0 [sch_netem]
+> [  343.239499] Code: 89 85 58 ff ff ff e8 5f 5d e9 d3 48 8b b5 48 ff ff
+> ff 8b 8d 50 ff ff ff 8b 85 58 ff ff ff 48 8b bd 70 ff ff ff 31 d2 2b 4f
+> 74 <f7> f1 48 b8 00 00 00 00 00 fc ff df 49 01 d5 4c 89 e9 48 c1 e9 03
+> [  343.241883] RSP: 0018:ffff88800bcd7368 EFLAGS: 00010246
+> [  343.242589] RAX: 00000000ba7c0a9c RBX: 0000000000000001 RCX:
+> 0000000000000000
+> [  343.243542] RDX: 0000000000000000 RSI: ffff88800f8edb10 RDI:
+> ffff88800f8eda40
+> [  343.244474] RBP: ffff88800bcd7458 R08: 0000000000000000 R09:
+> ffffffff94fb8445
+> [  343.245403] R10: ffffffff94fb8336 R11: ffffffff94fb8445 R12:
+> 0000000000000000
+> [  343.246355] R13: ffff88800a5a7000 R14: ffff88800a5b5800 R15:
+> 0000000000000020
+> [  343.247291] FS:  00007fdde2bd7700(0000) GS:ffff888109780000(0000)
+> knlGS:0000000000000000
+> [  343.248350] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  343.249120] CR2: 00000000200000c0 CR3: 000000000ef4c000 CR4:
+> 00000000000006e0
+> [  343.250076] Call Trace:
+> [  343.250423]  <TASK>
+> [  343.250713]  ? memcpy+0x4d/0x60
+> [  343.251162]  ? netem_init+0xa0/0xa0 [sch_netem]
+> [  343.251795]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> [  343.252443]  netem_enqueue+0xe28/0x33c0 [sch_netem]
+> [  343.253102]  ? stack_trace_save+0x87/0xb0
+> [  343.253655]  ? filter_irq_stacks+0xb0/0xb0
+> [  343.254220]  ? netem_init+0xa0/0xa0 [sch_netem]
+> [  343.254837]  ? __kasan_check_write+0x14/0x20
+> [  343.255418]  ? _raw_spin_lock+0x88/0xd6
+> [  343.255953]  dev_qdisc_enqueue+0x50/0x180
+> [  343.256508]  __dev_queue_xmit+0x1a7e/0x3090
+> [  343.257083]  ? netdev_core_pick_tx+0x300/0x300
+> [  343.257690]  ? check_kcov_mode+0x10/0x40
+> [  343.258219]  ? _raw_spin_unlock_irqrestore+0x29/0x40
+> [  343.258899]  ? __kasan_init_slab_obj+0x24/0x30
+> [  343.259529]  ? setup_object.isra.71+0x23/0x90
+> [  343.260121]  ? new_slab+0x26e/0x4b0
+> [  343.260609]  ? kasan_poison+0x3a/0x50
+> [  343.261118]  ? kasan_unpoison+0x28/0x50
+> [  343.261637]  ? __kasan_slab_alloc+0x71/0x90
+> [  343.262214]  ? memcpy+0x4d/0x60
+> [  343.262674]  ? write_comp_data+0x2f/0x90
+> [  343.263209]  ? __kasan_check_write+0x14/0x20
+> [  343.263802]  ? __skb_clone+0x5d6/0x840
+> [  343.264329]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> [  343.264958]  dev_queue_xmit+0x1c/0x20
+> [  343.265470]  netlink_deliver_tap+0x652/0x9c0
+> [  343.266067]  netlink_unicast+0x5a0/0x7f0
+> [  343.266608]  ? netlink_attachskb+0x860/0x860
+> [  343.267183]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> [  343.267820]  ? write_comp_data+0x2f/0x90
+> [  343.268367]  netlink_sendmsg+0x922/0xe80
+> [  343.268899]  ? netlink_unicast+0x7f0/0x7f0
+> [  343.269472]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> [  343.270099]  ? write_comp_data+0x2f/0x90
+> [  343.270644]  ? netlink_unicast+0x7f0/0x7f0
+> [  343.271210]  sock_sendmsg+0x155/0x190
+> [  343.271721]  ____sys_sendmsg+0x75f/0x8f0
+> [  343.272262]  ? kernel_sendmsg+0x60/0x60
+> [  343.272788]  ? write_comp_data+0x2f/0x90
+> [  343.273332]  ? write_comp_data+0x2f/0x90
+> [  343.273869]  ___sys_sendmsg+0x10f/0x190
+> [  343.274405]  ? sendmsg_copy_msghdr+0x80/0x80
+> [  343.274984]  ? slab_post_alloc_hook+0x70/0x230
+> [  343.275597]  ? futex_wait_setup+0x240/0x240
+> [  343.276175]  ? security_file_alloc+0x3e/0x170
+> [  343.276779]  ? write_comp_data+0x2f/0x90
+> [  343.277313]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> [  343.277969]  ? write_comp_data+0x2f/0x90
+> [  343.278515]  ? __fget_files+0x1ad/0x260
+> [  343.279048]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> [  343.279685]  ? write_comp_data+0x2f/0x90
+> [  343.280234]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> [  343.280874]  ? sockfd_lookup_light+0xd1/0x190
+> [  343.281481]  __sys_sendmsg+0x118/0x200
+> [  343.281998]  ? __sys_sendmsg_sock+0x40/0x40
+> [  343.282578]  ? alloc_fd+0x229/0x5e0
+> [  343.283070]  ? write_comp_data+0x2f/0x90
+> [  343.283610]  ? write_comp_data+0x2f/0x90
+> [  343.284135]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> [  343.284776]  ? ktime_get_coarse_real_ts64+0xb8/0xf0
+> [  343.285450]  __x64_sys_sendmsg+0x7d/0xc0
+> [  343.285981]  ? syscall_enter_from_user_mode+0x4d/0x70
+> [  343.286664]  do_syscall_64+0x3a/0x80
+> [  343.287158]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> [  343.287850] RIP: 0033:0x7fdde24cf289
+> [  343.288344] Code: 01 00 48 81 c4 80 00 00 00 e9 f1 fe ff ff 0f 1f 00
+> 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f
+> 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 db 2c 00 f7 d8 64 89 01 48
+> [  343.290729] RSP: 002b:00007fdde2bd6d98 EFLAGS: 00000246 ORIG_RAX:
+> 000000000000002e
+> [  343.291730] RAX: ffffffffffffffda RBX: 0000000000000000 RCX:
+> 00007fdde24cf289
+> [  343.292673] RDX: 0000000000000000 RSI: 00000000200000c0 RDI:
+> 0000000000000004
+> [  343.293618] RBP: 00007fdde2bd6e20 R08: 0000000100000001 R09:
+> 0000000000000000
+> [  343.294557] R10: 0000000100000001 R11: 0000000000000246 R12:
+> 0000000000000000
+> [  343.295493] R13: 0000000000021000 R14: 0000000000000000 R15:
+> 00007fdde2bd7700
+> [  343.296432]  </TASK>
+> [  343.296735] Modules linked in: sch_netem ip6_vti ip_vti ip_gre ipip
+> sit ip_tunnel geneve macsec macvtap tap ipvlan macvlan 8021q garp mrp
+> hsr wireguard libchacha20poly1305 chacha_x86_64 poly1305_x86_64
+> ip6_udp_tunnel udp_tunnel libblake2s blake2s_x86_64 libblake2s_generic
+> curve25519_x86_64 libcurve25519_generic libchacha xfrm_interface
+> xfrm6_tunnel tunnel4 veth netdevsim psample batman_adv nlmon dummy team
+> bonding tls vcan ip6_gre ip6_tunnel tunnel6 gre tun ip6t_rpfilter
+> ipt_REJECT nf_reject_ipv4 ip6t_REJECT nf_reject_ipv6 xt_conntrack ip_set
+> ebtable_nat ebtable_broute ip6table_nat ip6table_mangle
+> ip6table_security ip6table_raw iptable_nat nf_nat nf_conntrack
+> nf_defrag_ipv6 nf_defrag_ipv4 iptable_mangle iptable_security
+> iptable_raw ebtable_filter ebtables rfkill ip6table_filter ip6_tables
+> iptable_filter ppdev bochs drm_vram_helper drm_ttm_helper ttm
+> drm_kms_helper cec parport_pc drm joydev floppy parport sg syscopyarea
+> sysfillrect sysimgblt i2c_piix4 qemu_fw_cfg fb_sys_fops pcspkr
+> [  343.297459]  ip_tables xfs virtio_net net_failover failover sd_mod
+> sr_mod cdrom t10_pi ata_generic pata_acpi ata_piix libata virtio_pci
+> virtio_pci_legacy_dev serio_raw virtio_pci_modern_dev dm_mirror
+> dm_region_hash dm_log dm_mod
+> [  343.311074] Dumping ftrace buffer:
+> [  343.311532]    (ftrace buffer empty)
+> [  343.312040] ---[ end trace a2e3db5a6ae05099 ]---
+> [  343.312691] RIP: 0010:netem_enqueue+0x1590/0x33c0 [sch_netem]
+> [  343.313481] Code: 89 85 58 ff ff ff e8 5f 5d e9 d3 48 8b b5 48 ff ff
+> ff 8b 8d 50 ff ff ff 8b 85 58 ff ff ff 48 8b bd 70 ff ff ff 31 d2 2b 4f
+> 74 <f7> f1 48 b8 00 00 00 00 00 fc ff df 49 01 d5 4c 89 e9 48 c1 e9 03
+> [  343.315893] RSP: 0018:ffff88800bcd7368 EFLAGS: 00010246
+> [  343.316622] RAX: 00000000ba7c0a9c RBX: 0000000000000001 RCX:
+> 0000000000000000
+> [  343.317585] RDX: 0000000000000000 RSI: ffff88800f8edb10 RDI:
+> ffff88800f8eda40
+> [  343.318549] RBP: ffff88800bcd7458 R08: 0000000000000000 R09:
+> ffffffff94fb8445
+> [  343.319503] R10: ffffffff94fb8336 R11: ffffffff94fb8445 R12:
+> 0000000000000000
+> [  343.320455] R13: ffff88800a5a7000 R14: ffff88800a5b5800 R15:
+> 0000000000000020
+> [  343.321414] FS:  00007fdde2bd7700(0000) GS:ffff888109780000(0000)
+> knlGS:0000000000000000
+> [  343.322489] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  343.323283] CR2: 00000000200000c0 CR3: 000000000ef4c000 CR4:
+> 00000000000006e0
+> [  343.324264] Kernel panic - not syncing: Fatal exception in interrupt
+> [  343.333717] Dumping ftrace buffer:
+> [  343.334175]    (ftrace buffer empty)
+> [  343.334653] Kernel Offset: 0x13600000 from 0xffffffff81000000
+> (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+> [  343.336027] Rebooting in 86400 seconds..
+> 
+> Reported-by: syzkaller <syzkaller@googlegroups.com>
+> Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+> ---
+>  net/sched/sch_netem.c | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
+> index ecbb10db1111..e1e1a00fedda 100644
+> --- a/net/sched/sch_netem.c
+> +++ b/net/sched/sch_netem.c
+> @@ -513,8 +513,14 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+>  			goto finish_segs;
+>  		}
+>  
+> -		skb->data[prandom_u32() % skb_headlen(skb)] ^=
+> -			1<<(prandom_u32() % 8);
+> +		if (unlikely(!skb_headlen(skb))) {
+> +			qdisc_drop(skb, sch, to_free);
+> +			skb = NULL;
+> +			goto finish_segs;
+> +		} else {
+> +			skb->data[prandom_u32() % skb_headlen(skb)] ^=
+> +				1<<(prandom_u32() % 8);
+> +		}
+>  	}
+>  
+>  	if (unlikely(sch->q.qlen >= sch->limit)) {
+> 
 
-With the current infrastructure figuring out if "all the packets are going
-to the same place" looks like an expensive operation which could undo
-the benefits of the batching that would come after it. We would need
-to run the program N=3Dbatch_size times, store the actions and
-bpf_redirect_info for each run and perform a series of compares. The new
-action really helped here because it could easily indicate if all the
-packets in a batch were going to the same place. But I understand it's
-not an option. Maybe if we can mitigate the cost of accessing the
-bpf_redirect_info as Jesper suggested, we can use a flag in it to signal
-what the new action was signalling.
-I'm not familiar with how the other map types and how they handle
-batching so I will look into that.
 
-Appreciate your feedback. I have a few avenues to explore.
+If we accept the fact that a packet can reach qdisc with nothing in skb->head,
+then we have other serious issues.
 
-Ciara
+Why dropping the packet ?
 
-> -Toke
+I would rather pull headers here.
 
