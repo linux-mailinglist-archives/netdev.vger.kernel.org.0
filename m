@@ -2,282 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B6044574FB
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 18:01:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FFC6457506
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 18:07:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236183AbhKSREQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 12:04:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38352 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236012AbhKSREQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 12:04:16 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FC18C06173E
-        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 09:01:14 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id x7so8431616pjn.0
-        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 09:01:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=VPWqgftTickrFvrexyF8BcHESCqZpL9MnOlpgEvMP3A=;
-        b=8QNIG7yIiGF3Rcjbc+djL5c1OdipK94U4ovE9uHL1PjgM7aiwZEl9TD1hwwRPAaK3k
-         pIsU+LY5Ndk5E303F00OrWJVQ2F3+wrYoUqMJY2oiqwAbW2eVMBs6oEO948+mXC7FBVJ
-         3NztVvyGo6pe/x1KBX45xdOOXMIda+M+tBZWwOSEL7FcK5Bryn2GyGz4nZupvkMdWSfS
-         NE8+r17V2JtvufXsU6OeEwhGkIhvw/Q1kaFj3X4Da1qXwMIaiDcD/kwIJ8W5JAIskMci
-         6DUVn1/cn7nbxBYgbfnHY2/mGbWflJ0jjfD9ny2WKoyi4G4SC9KR6hvKJ+BcniJHhste
-         8FUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=VPWqgftTickrFvrexyF8BcHESCqZpL9MnOlpgEvMP3A=;
-        b=hXFr1oWocvnk0EfQMBPrVxg4op2iSo7Qi4UvEsSFB9fPAT+lwMHQKpYiMSLOYKfVFJ
-         JjAsHlHusr8Nc2jMXiMsfRkUij0y7dYro1qOYVk228DIwkIHagr8CCTKcYHYXXJ0RH5P
-         gc8HfzooydMCcOYf0eykGFcF/Sys0KqZDl/D0Q9GAHablKm7KLQV6IbCT350KSK0F3mV
-         YOx6GBP4BG0APWl8TEhcHOz6IXpbYgGAdy/XnkHCpxJ9syuZH7aQa16YbjKzeE4IJdGG
-         6A4JZPGul0X6UumDlmENumJ8ga71q01Q/cOWUk7edkA2IXPCOsf8H3TmUCSFKR8wMIMR
-         heKA==
-X-Gm-Message-State: AOAM530r46kONDfhb9/zJa1KgcZ71rQGGbk4hTvLIDhpB/Hb44DyKXXA
-        F5lELsUV94E8FW2XwU5t8GlR6A==
-X-Google-Smtp-Source: ABdhPJywP71ekWuPYIacj4odxV2uZhgeoyR2lGK7E4ymUDuzSHxhDDTt0i2WYFFLKVI3p0NbKV9kNg==
-X-Received: by 2002:a17:90a:312:: with SMTP id 18mr1394680pje.178.1637341273775;
-        Fri, 19 Nov 2021 09:01:13 -0800 (PST)
-Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
-        by smtp.gmail.com with ESMTPSA id q9sm247206pfj.88.2021.11.19.09.01.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Nov 2021 09:01:13 -0800 (PST)
-Date:   Fri, 19 Nov 2021 09:01:10 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
-        vijayendra.suman@oracle.com, ramanan.govindarajan@oracle.com,
-        george.kennedy@oracle.com, syzkaller <syzkaller@googlegroups.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: sched: sch_netem: Fix a divide error in
- netem_enqueue during randomized corruption.
-Message-ID: <20211119090110.75d8351b@hermes.local>
-In-Reply-To: <629fe4fc-8fbf-4dec-8192-32e1126fa185@gmail.com>
-References: <20211119084241.14984-1-harshit.m.mogalapalli@oracle.com>
-        <629fe4fc-8fbf-4dec-8192-32e1126fa185@gmail.com>
+        id S236217AbhKSRKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 12:10:11 -0500
+Received: from host.78.145.23.62.rev.coltfrance.com ([62.23.145.78]:58722 "EHLO
+        smtpservice.6wind.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S230296AbhKSRKK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 12:10:10 -0500
+Received: from bretzel (bretzel.dev.6wind.com [10.17.1.57])
+        by smtpservice.6wind.com (Postfix) with ESMTPS id 7233460511;
+        Fri, 19 Nov 2021 18:07:07 +0100 (CET)
+Received: from dichtel by bretzel with local (Exim 4.92)
+        (envelope-from <dichtel@6wind.com>)
+        id 1mo7Lv-0002v9-A4; Fri, 19 Nov 2021 18:07:07 +0100
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Ghalem Boudour <ghalem.boudour@6wind.com>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Subject: [PATCH net] xfrm: fix policy lookup for ipv6 gre packets
+Date:   Fri, 19 Nov 2021 18:04:02 +0100
+Message-Id: <20211119170402.11213-1-nicolas.dichtel@6wind.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 19 Nov 2021 07:49:59 -0800
-Eric Dumazet <eric.dumazet@gmail.com> wrote:
+From: Ghalem Boudour <ghalem.boudour@6wind.com>
 
-> On 11/19/21 12:42 AM, Harshit Mogalapalli wrote:
-> > In netem_enqueue function the value of skb_headlen(skb) can be zero
-> > which leads to a division error during randomized corruption of the packet.
-> > This fix  adds a check to skb_headlen(skb) to prevent the division error.
-> > 
-> > Crash report:
-> > [  343.170349] netdevsim netdevsim0 netdevsim3: set [1, 0] type 2 family
-> > 0 port 6081 - 0
-> > [  343.216110] netem: version 1.3
-> > [  343.235841] divide error: 0000 [#1] PREEMPT SMP KASAN NOPTI
-> > [  343.236680] CPU: 3 PID: 4288 Comm: reproducer Not tainted 5.16.0-rc1+
-> > [  343.237569] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-> > BIOS 1.11.0-2.el7 04/01/2014
-> > [  343.238707] RIP: 0010:netem_enqueue+0x1590/0x33c0 [sch_netem]
-> > [  343.239499] Code: 89 85 58 ff ff ff e8 5f 5d e9 d3 48 8b b5 48 ff ff
-> > ff 8b 8d 50 ff ff ff 8b 85 58 ff ff ff 48 8b bd 70 ff ff ff 31 d2 2b 4f
-> > 74 <f7> f1 48 b8 00 00 00 00 00 fc ff df 49 01 d5 4c 89 e9 48 c1 e9 03
-> > [  343.241883] RSP: 0018:ffff88800bcd7368 EFLAGS: 00010246
-> > [  343.242589] RAX: 00000000ba7c0a9c RBX: 0000000000000001 RCX:
-> > 0000000000000000
-> > [  343.243542] RDX: 0000000000000000 RSI: ffff88800f8edb10 RDI:
-> > ffff88800f8eda40
-> > [  343.244474] RBP: ffff88800bcd7458 R08: 0000000000000000 R09:
-> > ffffffff94fb8445
-> > [  343.245403] R10: ffffffff94fb8336 R11: ffffffff94fb8445 R12:
-> > 0000000000000000
-> > [  343.246355] R13: ffff88800a5a7000 R14: ffff88800a5b5800 R15:
-> > 0000000000000020
-> > [  343.247291] FS:  00007fdde2bd7700(0000) GS:ffff888109780000(0000)
-> > knlGS:0000000000000000
-> > [  343.248350] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > [  343.249120] CR2: 00000000200000c0 CR3: 000000000ef4c000 CR4:
-> > 00000000000006e0
-> > [  343.250076] Call Trace:
-> > [  343.250423]  <TASK>
-> > [  343.250713]  ? memcpy+0x4d/0x60
-> > [  343.251162]  ? netem_init+0xa0/0xa0 [sch_netem]
-> > [  343.251795]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> > [  343.252443]  netem_enqueue+0xe28/0x33c0 [sch_netem]
-> > [  343.253102]  ? stack_trace_save+0x87/0xb0
-> > [  343.253655]  ? filter_irq_stacks+0xb0/0xb0
-> > [  343.254220]  ? netem_init+0xa0/0xa0 [sch_netem]
-> > [  343.254837]  ? __kasan_check_write+0x14/0x20
-> > [  343.255418]  ? _raw_spin_lock+0x88/0xd6
-> > [  343.255953]  dev_qdisc_enqueue+0x50/0x180
-> > [  343.256508]  __dev_queue_xmit+0x1a7e/0x3090
-> > [  343.257083]  ? netdev_core_pick_tx+0x300/0x300
-> > [  343.257690]  ? check_kcov_mode+0x10/0x40
-> > [  343.258219]  ? _raw_spin_unlock_irqrestore+0x29/0x40
-> > [  343.258899]  ? __kasan_init_slab_obj+0x24/0x30
-> > [  343.259529]  ? setup_object.isra.71+0x23/0x90
-> > [  343.260121]  ? new_slab+0x26e/0x4b0
-> > [  343.260609]  ? kasan_poison+0x3a/0x50
-> > [  343.261118]  ? kasan_unpoison+0x28/0x50
-> > [  343.261637]  ? __kasan_slab_alloc+0x71/0x90
-> > [  343.262214]  ? memcpy+0x4d/0x60
-> > [  343.262674]  ? write_comp_data+0x2f/0x90
-> > [  343.263209]  ? __kasan_check_write+0x14/0x20
-> > [  343.263802]  ? __skb_clone+0x5d6/0x840
-> > [  343.264329]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> > [  343.264958]  dev_queue_xmit+0x1c/0x20
-> > [  343.265470]  netlink_deliver_tap+0x652/0x9c0
-> > [  343.266067]  netlink_unicast+0x5a0/0x7f0
-> > [  343.266608]  ? netlink_attachskb+0x860/0x860
-> > [  343.267183]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> > [  343.267820]  ? write_comp_data+0x2f/0x90
-> > [  343.268367]  netlink_sendmsg+0x922/0xe80
-> > [  343.268899]  ? netlink_unicast+0x7f0/0x7f0
-> > [  343.269472]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> > [  343.270099]  ? write_comp_data+0x2f/0x90
-> > [  343.270644]  ? netlink_unicast+0x7f0/0x7f0
-> > [  343.271210]  sock_sendmsg+0x155/0x190
-> > [  343.271721]  ____sys_sendmsg+0x75f/0x8f0
-> > [  343.272262]  ? kernel_sendmsg+0x60/0x60
-> > [  343.272788]  ? write_comp_data+0x2f/0x90
-> > [  343.273332]  ? write_comp_data+0x2f/0x90
-> > [  343.273869]  ___sys_sendmsg+0x10f/0x190
-> > [  343.274405]  ? sendmsg_copy_msghdr+0x80/0x80
-> > [  343.274984]  ? slab_post_alloc_hook+0x70/0x230
-> > [  343.275597]  ? futex_wait_setup+0x240/0x240
-> > [  343.276175]  ? security_file_alloc+0x3e/0x170
-> > [  343.276779]  ? write_comp_data+0x2f/0x90
-> > [  343.277313]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> > [  343.277969]  ? write_comp_data+0x2f/0x90
-> > [  343.278515]  ? __fget_files+0x1ad/0x260
-> > [  343.279048]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> > [  343.279685]  ? write_comp_data+0x2f/0x90
-> > [  343.280234]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> > [  343.280874]  ? sockfd_lookup_light+0xd1/0x190
-> > [  343.281481]  __sys_sendmsg+0x118/0x200
-> > [  343.281998]  ? __sys_sendmsg_sock+0x40/0x40
-> > [  343.282578]  ? alloc_fd+0x229/0x5e0
-> > [  343.283070]  ? write_comp_data+0x2f/0x90
-> > [  343.283610]  ? write_comp_data+0x2f/0x90
-> > [  343.284135]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> > [  343.284776]  ? ktime_get_coarse_real_ts64+0xb8/0xf0
-> > [  343.285450]  __x64_sys_sendmsg+0x7d/0xc0
-> > [  343.285981]  ? syscall_enter_from_user_mode+0x4d/0x70
-> > [  343.286664]  do_syscall_64+0x3a/0x80
-> > [  343.287158]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> > [  343.287850] RIP: 0033:0x7fdde24cf289
-> > [  343.288344] Code: 01 00 48 81 c4 80 00 00 00 e9 f1 fe ff ff 0f 1f 00
-> > 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f
-> > 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 db 2c 00 f7 d8 64 89 01 48
-> > [  343.290729] RSP: 002b:00007fdde2bd6d98 EFLAGS: 00000246 ORIG_RAX:
-> > 000000000000002e
-> > [  343.291730] RAX: ffffffffffffffda RBX: 0000000000000000 RCX:
-> > 00007fdde24cf289
-> > [  343.292673] RDX: 0000000000000000 RSI: 00000000200000c0 RDI:
-> > 0000000000000004
-> > [  343.293618] RBP: 00007fdde2bd6e20 R08: 0000000100000001 R09:
-> > 0000000000000000
-> > [  343.294557] R10: 0000000100000001 R11: 0000000000000246 R12:
-> > 0000000000000000
-> > [  343.295493] R13: 0000000000021000 R14: 0000000000000000 R15:
-> > 00007fdde2bd7700
-> > [  343.296432]  </TASK>
-> > [  343.296735] Modules linked in: sch_netem ip6_vti ip_vti ip_gre ipip
-> > sit ip_tunnel geneve macsec macvtap tap ipvlan macvlan 8021q garp mrp
-> > hsr wireguard libchacha20poly1305 chacha_x86_64 poly1305_x86_64
-> > ip6_udp_tunnel udp_tunnel libblake2s blake2s_x86_64 libblake2s_generic
-> > curve25519_x86_64 libcurve25519_generic libchacha xfrm_interface
-> > xfrm6_tunnel tunnel4 veth netdevsim psample batman_adv nlmon dummy team
-> > bonding tls vcan ip6_gre ip6_tunnel tunnel6 gre tun ip6t_rpfilter
-> > ipt_REJECT nf_reject_ipv4 ip6t_REJECT nf_reject_ipv6 xt_conntrack ip_set
-> > ebtable_nat ebtable_broute ip6table_nat ip6table_mangle
-> > ip6table_security ip6table_raw iptable_nat nf_nat nf_conntrack
-> > nf_defrag_ipv6 nf_defrag_ipv4 iptable_mangle iptable_security
-> > iptable_raw ebtable_filter ebtables rfkill ip6table_filter ip6_tables
-> > iptable_filter ppdev bochs drm_vram_helper drm_ttm_helper ttm
-> > drm_kms_helper cec parport_pc drm joydev floppy parport sg syscopyarea
-> > sysfillrect sysimgblt i2c_piix4 qemu_fw_cfg fb_sys_fops pcspkr
-> > [  343.297459]  ip_tables xfs virtio_net net_failover failover sd_mod
-> > sr_mod cdrom t10_pi ata_generic pata_acpi ata_piix libata virtio_pci
-> > virtio_pci_legacy_dev serio_raw virtio_pci_modern_dev dm_mirror
-> > dm_region_hash dm_log dm_mod
-> > [  343.311074] Dumping ftrace buffer:
-> > [  343.311532]    (ftrace buffer empty)
-> > [  343.312040] ---[ end trace a2e3db5a6ae05099 ]---
-> > [  343.312691] RIP: 0010:netem_enqueue+0x1590/0x33c0 [sch_netem]
-> > [  343.313481] Code: 89 85 58 ff ff ff e8 5f 5d e9 d3 48 8b b5 48 ff ff
-> > ff 8b 8d 50 ff ff ff 8b 85 58 ff ff ff 48 8b bd 70 ff ff ff 31 d2 2b 4f
-> > 74 <f7> f1 48 b8 00 00 00 00 00 fc ff df 49 01 d5 4c 89 e9 48 c1 e9 03
-> > [  343.315893] RSP: 0018:ffff88800bcd7368 EFLAGS: 00010246
-> > [  343.316622] RAX: 00000000ba7c0a9c RBX: 0000000000000001 RCX:
-> > 0000000000000000
-> > [  343.317585] RDX: 0000000000000000 RSI: ffff88800f8edb10 RDI:
-> > ffff88800f8eda40
-> > [  343.318549] RBP: ffff88800bcd7458 R08: 0000000000000000 R09:
-> > ffffffff94fb8445
-> > [  343.319503] R10: ffffffff94fb8336 R11: ffffffff94fb8445 R12:
-> > 0000000000000000
-> > [  343.320455] R13: ffff88800a5a7000 R14: ffff88800a5b5800 R15:
-> > 0000000000000020
-> > [  343.321414] FS:  00007fdde2bd7700(0000) GS:ffff888109780000(0000)
-> > knlGS:0000000000000000
-> > [  343.322489] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > [  343.323283] CR2: 00000000200000c0 CR3: 000000000ef4c000 CR4:
-> > 00000000000006e0
-> > [  343.324264] Kernel panic - not syncing: Fatal exception in interrupt
-> > [  343.333717] Dumping ftrace buffer:
-> > [  343.334175]    (ftrace buffer empty)
-> > [  343.334653] Kernel Offset: 0x13600000 from 0xffffffff81000000
-> > (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
-> > [  343.336027] Rebooting in 86400 seconds..
-> > 
-> > Reported-by: syzkaller <syzkaller@googlegroups.com>
-> > Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-> > ---
-> >  net/sched/sch_netem.c | 10 ++++++++--
-> >  1 file changed, 8 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
-> > index ecbb10db1111..e1e1a00fedda 100644
-> > --- a/net/sched/sch_netem.c
-> > +++ b/net/sched/sch_netem.c
-> > @@ -513,8 +513,14 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
-> >  			goto finish_segs;
-> >  		}
-> >  
-> > -		skb->data[prandom_u32() % skb_headlen(skb)] ^=
-> > -			1<<(prandom_u32() % 8);
-> > +		if (unlikely(!skb_headlen(skb))) {
-> > +			qdisc_drop(skb, sch, to_free);
-> > +			skb = NULL;
-> > +			goto finish_segs;
-> > +		} else {
-> > +			skb->data[prandom_u32() % skb_headlen(skb)] ^=
-> > +				1<<(prandom_u32() % 8);
-> > +		}
-> >  	}
-> >  
-> >  	if (unlikely(sch->q.qlen >= sch->limit)) {
-> >   
-> 
-> 
-> If we accept the fact that a packet can reach qdisc with nothing in skb->head,
-> then we have other serious issues.
-> 
-> Why dropping the packet ?
-> 
-> I would rather pull headers here.
-> 
+On egress side, xfrm lookup is called from __gre6_xmit() with the
+fl6_gre_key field not initialized leading to policies selectors check
+failure. Consequently, gre packets are sent without encryption.
 
-Agree with Eric, would be to just linearize befor the corruption step.
-There is also the issue of checksum offload here.
+On ingress side, INET6_PROTO_NOPOLICY was set, thus packets were not
+checked against xfrm policies. Like for egress side, fl6_gre_key should be
+correctly set, this is now done in decode_session6().
+
+Fixes: c12b395a4664 ("gre: Support GRE over IPv6")
+Signed-off-by: Ghalem Boudour <ghalem.boudour@6wind.com>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+---
+
+This patch targets ipsec tree, but because this tree has not been yet
+rebased on top of the net tree, I based the patch on top of net.
+
+ net/ipv6/ip6_gre.c     |  5 ++++-
+ net/xfrm/xfrm_policy.c | 21 +++++++++++++++++++++
+ 2 files changed, 25 insertions(+), 1 deletion(-)
+
+diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
+index d831d2439693..f5a511c57aa2 100644
+--- a/net/ipv6/ip6_gre.c
++++ b/net/ipv6/ip6_gre.c
+@@ -755,6 +755,7 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 		fl6->daddr = key->u.ipv6.dst;
+ 		fl6->flowlabel = key->label;
+ 		fl6->flowi6_uid = sock_net_uid(dev_net(dev), NULL);
++		fl6->fl6_gre_key = tunnel_id_to_key32(key->tun_id);
+ 
+ 		dsfield = key->tos;
+ 		flags = key->tun_flags &
+@@ -990,6 +991,7 @@ static netdev_tx_t ip6erspan_tunnel_xmit(struct sk_buff *skb,
+ 		fl6.daddr = key->u.ipv6.dst;
+ 		fl6.flowlabel = key->label;
+ 		fl6.flowi6_uid = sock_net_uid(dev_net(dev), NULL);
++		fl6.fl6_gre_key = tunnel_id_to_key32(key->tun_id);
+ 
+ 		dsfield = key->tos;
+ 		if (!(tun_info->key.tun_flags & TUNNEL_ERSPAN_OPT))
+@@ -1098,6 +1100,7 @@ static void ip6gre_tnl_link_config_common(struct ip6_tnl *t)
+ 	fl6->flowi6_oif = p->link;
+ 	fl6->flowlabel = 0;
+ 	fl6->flowi6_proto = IPPROTO_GRE;
++	fl6->fl6_gre_key = t->parms.o_key;
+ 
+ 	if (!(p->flags&IP6_TNL_F_USE_ORIG_TCLASS))
+ 		fl6->flowlabel |= IPV6_TCLASS_MASK & p->flowinfo;
+@@ -1544,7 +1547,7 @@ static void ip6gre_fb_tunnel_init(struct net_device *dev)
+ static struct inet6_protocol ip6gre_protocol __read_mostly = {
+ 	.handler     = gre_rcv,
+ 	.err_handler = ip6gre_err,
+-	.flags       = INET6_PROTO_NOPOLICY|INET6_PROTO_FINAL,
++	.flags       = INET6_PROTO_FINAL,
+ };
+ 
+ static void ip6gre_destroy_tunnels(struct net *net, struct list_head *head)
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 1a06585022ab..84d2361da015 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -33,6 +33,7 @@
+ #include <net/flow.h>
+ #include <net/xfrm.h>
+ #include <net/ip.h>
++#include <net/gre.h>
+ #if IS_ENABLED(CONFIG_IPV6_MIP6)
+ #include <net/mip6.h>
+ #endif
+@@ -3422,6 +3423,26 @@ decode_session6(struct sk_buff *skb, struct flowi *fl, bool reverse)
+ 			}
+ 			fl6->flowi6_proto = nexthdr;
+ 			return;
++		case IPPROTO_GRE:
++			if (!onlyproto &&
++			    (nh + offset + 12 < skb->data ||
++			     pskb_may_pull(skb, nh + offset + 12 - skb->data))) {
++				struct gre_base_hdr *gre_hdr;
++				__be32 *gre_key;
++
++				nh = skb_network_header(skb);
++				gre_hdr = (struct gre_base_hdr *)(nh + offset);
++				gre_key = (__be32 *)(gre_hdr + 1);
++
++				if (gre_hdr->flags & GRE_KEY) {
++					if (gre_hdr->flags & GRE_CSUM)
++						gre_key++;
++					fl6->fl6_gre_key = *gre_key;
++				}
++			}
++			fl6->flowi6_proto = nexthdr;
++			return;
++
+ #if IS_ENABLED(CONFIG_IPV6_MIP6)
+ 		case IPPROTO_MH:
+ 			offset += ipv6_optlen(exthdr);
+-- 
+2.33.0
+
