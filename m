@@ -2,131 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 603EA4571C6
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 16:39:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D441A4571D5
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 16:41:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235398AbhKSPmE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 10:42:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47192 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235434AbhKSPmE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 10:42:04 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB9A5C061574
-        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 07:39:01 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id b40so45243441lfv.10
-        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 07:39:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=APqJtg3f8yGxkPCZQJ2BGKyNcy78gv7d+5nwLgrMSYU=;
-        b=FFBfbx69g/v+rHsyJqu9iUe/C5/dVkBKQH9e20Cr/S2G+fTHCJ4hJ3jqFFRuXvZvaS
-         NuOU1IudG5AfcUDH0f2gQQeUdAoYb6BPgB578Xksu60YEGb4ug/iH2UPBm48d+fw0Qie
-         dkElgIZQ0xoclY94sQwiZW1rrpYfOb3Rt6rTpgmn7CU1cZbg51txEgzdtISey8N2nUNR
-         u5jJS/FP1rcKnbCEeHtUZ6t/zm0NPlVlSeAABlLReqGJQ12yZ27f/pqQtPSU74Orq77J
-         6sypKlUNho6+RPp5qbCxwSLlnC1TMoLbPoNq96ImjgXXWk+2o0KeZ5oJZBr0nbED71CU
-         c0rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=APqJtg3f8yGxkPCZQJ2BGKyNcy78gv7d+5nwLgrMSYU=;
-        b=q3kmajc/rXpy+M7mxTK39pTvRtteVf4IudnShMrHK9GK7VlVo1bSodkVItNtOGnNti
-         dcbnhg4yuTeM5I3lhRlE9PFP86HEWYNAwbKPrl43nP/GfPgV1CPyyhJSSDvFcCB/jiY1
-         T7LbOsS19LMHqwm4C6bQ2wnCQBZ5LuudvU99u9tHiirVdxDOYnJcvweZrKbUg6ARk4kO
-         iHcTyk8e3cB3w2KqzjRR5v6vlH4M0MOsmTHTTsXQv2ecpoqw7SZaK1s6VfqMiQTjWGwS
-         jFmde/0qpzIVSOI7EHkTdFqgNGu6tsjB4EQ0S5akIBPmY2uGegAQSFGGwr1j0VVWMvCT
-         3CxQ==
-X-Gm-Message-State: AOAM531tNfLQaB/cLGTuZGohKGUx/mRSMMiZpegdpe4lX3TfSFDMlxVW
-        MlDdfBc3/Bmb9sUnwYbI5j3b4g==
-X-Google-Smtp-Source: ABdhPJxNWhzUW/WI8aovzFhAYgVW7dBWR35JQeoiTKjgyTsRindliXQXe34sHxNl5rVAUg31Ln6F+Q==
-X-Received: by 2002:a05:6512:11cf:: with SMTP id h15mr34370609lfr.138.1637336340156;
-        Fri, 19 Nov 2021 07:39:00 -0800 (PST)
-Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id br24sm16645lfb.104.2021.11.19.07.38.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Nov 2021 07:38:59 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>
-Subject: Re: [RFC PATCH net-next 6/6] net: dsa: eliminate dsa_switch_ops ::
- port_bridge_tx_fwd_{,un}offload
-In-Reply-To: <20211026162625.1385035-7-vladimir.oltean@nxp.com>
-References: <20211026162625.1385035-1-vladimir.oltean@nxp.com>
- <20211026162625.1385035-7-vladimir.oltean@nxp.com>
-Date:   Fri, 19 Nov 2021 16:38:58 +0100
-Message-ID: <878rxkjgtp.fsf@waldekranz.com>
+        id S235307AbhKSPoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 10:44:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47026 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235061AbhKSPoX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Nov 2021 10:44:23 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DF9B461051;
+        Fri, 19 Nov 2021 15:41:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637336481;
+        bh=7jCp09OZFsyHpxgyTMfHgzG11MQA/s7GOB1RPk5axQQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OsmyiXdPc0iJG5KfbJ4xEglmDogxrUDHt0YfQhNWC1yiN+0Zt6rk16rAYIZ/zHp3Y
+         25cvxEc3Dfusrxu0v78+7FBZnTZr9ckCTjU4XOL/IOLUi+IO85WDcSML1kjzRyLYYD
+         z8PnWmPFH/f7rfvwfyVdhxLZe1cJYSZ/jcdaPONconitlU2uRLyXVI9TV6j7SmEePq
+         FED2BpaYozPcp1Z31BOkraUp3tP3nQfxY2x0KBsgYcXE/U4iiesRwnuzzmCjvQ9fZh
+         f66YLxd1RBycqhCYLFtHBrD+mjAjF3/GHBwXLY9WM7zm2mvONjbvWw8ZKEMm+Y5vyV
+         p9o/jwjYMOqmw==
+Date:   Fri, 19 Nov 2021 17:41:17 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        antony.antony@secunet.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] xfrm: rework default policy structure
+Message-ID: <YZfFnZIUsZnX1bu+@unreal>
+References: <20211118142937.5425-1-nicolas.dichtel@6wind.com>
+ <YZak297hPRh3Etun@unreal>
+ <e724c80c-8b4f-4399-e716-1866d992a4f2@6wind.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <e724c80c-8b4f-4399-e716-1866d992a4f2@6wind.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 26, 2021 at 19:26, Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
-> We don't really need new switch API for these, and with new switches
-> which intend to add support for this feature, it will become cumbersome
-> to maintain.
->
-> Simply pass a boolean argument to ->port_bridge_join which the driver
-> must set to true if it implements the TX forwarding offload feature.
->
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  drivers/net/dsa/b53/b53_common.c       |  3 +-
->  drivers/net/dsa/b53/b53_priv.h         |  3 +-
->  drivers/net/dsa/dsa_loop.c             |  3 +-
->  drivers/net/dsa/hirschmann/hellcreek.c |  3 +-
->  drivers/net/dsa/lan9303-core.c         |  3 +-
->  drivers/net/dsa/lantiq_gswip.c         |  3 +-
->  drivers/net/dsa/microchip/ksz_common.c |  3 +-
->  drivers/net/dsa/microchip/ksz_common.h |  2 +-
->  drivers/net/dsa/mt7530.c               |  2 +-
->  drivers/net/dsa/mv88e6xxx/chip.c       | 71 ++++++++++++--------------
->  drivers/net/dsa/ocelot/felix.c         |  2 +-
->  drivers/net/dsa/qca8k.c                |  3 +-
->  drivers/net/dsa/rtl8366rb.c            |  3 +-
->  drivers/net/dsa/sja1105/sja1105_main.c | 22 ++++++--
->  drivers/net/dsa/xrs700x/xrs700x.c      |  2 +-
->  include/net/dsa.h                      | 10 ++--
->  net/dsa/dsa_priv.h                     |  1 +
->  net/dsa/port.c                         | 39 ++------------
->  net/dsa/switch.c                       |  3 +-
->  19 files changed, 81 insertions(+), 100 deletions(-)
->
-...
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> index 73613a667f6c..0aac71dece29 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> @@ -2448,8 +2448,27 @@ static int mv88e6xxx_bridge_map(struct mv88e6xxx_chip *chip,
->  	return 0;
->  }
->  
-> +/* Treat the software bridge as a virtual single-port switch behind the
-> + * CPU and map in the PVT. First dst->last_switch elements are taken by
-> + * physical switches, so start from beyond that range.
-> + */
-> +static int mv88e6xxx_map_virtual_bridge_to_pvt(struct dsa_switch *ds,
-> +					       unsigned int bridge_num)
-> +{
-> +	u8 dev = bridge_num + ds->dst->last_switch;
-> +	struct mv88e6xxx_chip *chip = ds->priv;
-> +	int err;
-> +
-> +	mv88e6xxx_reg_lock(chip);
+On Fri, Nov 19, 2021 at 09:06:01AM +0100, Nicolas Dichtel wrote:
+> Le 18/11/2021 à 20:09, Leon Romanovsky a écrit :
+> > On Thu, Nov 18, 2021 at 03:29:37PM +0100, Nicolas Dichtel wrote:
+> >> This is a follow up of commit f8d858e607b2 ("xfrm: make user policy API
+> >> complete"). The goal is to align userland API to the internal structures.
+> >>
+> >> Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+> >> ---
+> >>
+> >> This patch targets ipsec-next, but because ipsec-next has not yet been
+> >> rebased on top of net-next, I based the patch on top of net-next.
+> >>
+> >>  include/net/netns/xfrm.h |  6 +-----
+> >>  include/net/xfrm.h       | 38 ++++++++---------------------------
+> >>  net/xfrm/xfrm_policy.c   | 10 +++++++---
+> >>  net/xfrm/xfrm_user.c     | 43 +++++++++++++++++-----------------------
+> >>  4 files changed, 34 insertions(+), 63 deletions(-)
+> >>
+> >> diff --git a/include/net/netns/xfrm.h b/include/net/netns/xfrm.h
+> >> index 947733a639a6..bd7c3be4af5d 100644
+> >> --- a/include/net/netns/xfrm.h
+> >> +++ b/include/net/netns/xfrm.h
+> >> @@ -66,11 +66,7 @@ struct netns_xfrm {
+> >>  	int			sysctl_larval_drop;
+> >>  	u32			sysctl_acq_expires;
+> >>  
+> >> -	u8			policy_default;
+> >> -#define XFRM_POL_DEFAULT_IN	1
+> >> -#define XFRM_POL_DEFAULT_OUT	2
+> >> -#define XFRM_POL_DEFAULT_FWD	4
+> >> -#define XFRM_POL_DEFAULT_MASK	7
+> >> +	u8			policy_default[XFRM_POLICY_MAX];
+> >>  
+> >>  #ifdef CONFIG_SYSCTL
+> >>  	struct ctl_table_header	*sysctl_hdr;
+> >> diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+> >> index 2308210793a0..3fd1e052927e 100644
+> >> --- a/include/net/xfrm.h
+> >> +++ b/include/net/xfrm.h
+> >> @@ -1075,22 +1075,6 @@ xfrm_state_addr_cmp(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x, un
+> >>  }
+> >>  
+> >>  #ifdef CONFIG_XFRM
+> >> -static inline bool
+> >> -xfrm_default_allow(struct net *net, int dir)
+> >> -{
+> >> -	u8 def = net->xfrm.policy_default;
+> >> -
+> >> -	switch (dir) {
+> >> -	case XFRM_POLICY_IN:
+> >> -		return def & XFRM_POL_DEFAULT_IN ? false : true;
+> >> -	case XFRM_POLICY_OUT:
+> >> -		return def & XFRM_POL_DEFAULT_OUT ? false : true;
+> >> -	case XFRM_POLICY_FWD:
+> >> -		return def & XFRM_POL_DEFAULT_FWD ? false : true;
+> >> -	}
+> >> -	return false;
+> >> -}
+> >> -
+> >>  int __xfrm_policy_check(struct sock *, int dir, struct sk_buff *skb,
+> >>  			unsigned short family);
+> >>  
+> >> @@ -1104,13 +1088,10 @@ static inline int __xfrm_policy_check2(struct sock *sk, int dir,
+> >>  	if (sk && sk->sk_policy[XFRM_POLICY_IN])
+> >>  		return __xfrm_policy_check(sk, ndir, skb, family);
+> >>  
+> >> -	if (xfrm_default_allow(net, dir))
+> >> -		return (!net->xfrm.policy_count[dir] && !secpath_exists(skb)) ||
+> >> -		       (skb_dst(skb) && (skb_dst(skb)->flags & DST_NOPOLICY)) ||
+> >> -		       __xfrm_policy_check(sk, ndir, skb, family);
+> >> -	else
+> >> -		return (skb_dst(skb) && (skb_dst(skb)->flags & DST_NOPOLICY)) ||
+> >> -		       __xfrm_policy_check(sk, ndir, skb, family);
+> >> +	return (net->xfrm.policy_default[dir] == XFRM_USERPOLICY_ACCEPT &&
+> >> +		(!net->xfrm.policy_count[dir] && !secpath_exists(skb))) ||
+> >> +	       (skb_dst(skb) && (skb_dst(skb)->flags & DST_NOPOLICY)) ||
+> >> +	       __xfrm_policy_check(sk, ndir, skb, family);
+> >>  }
+> > 
+> > This is completely unreadable. What is the advantage of writing like this?
+> Yeah, I was hesitating. I was hoping that indentation could help.
+> At the opposite, I could also arg that having two times the "nearly" same test
+> is also unreadable.
+> I choose to drop xfrm_default_allow() to remove the negation in
+> xfrm_lookup_with_ifid():
+> 
+> -           !xfrm_default_allow(net, dir)) {
+> +           net->xfrm.policy_default[dir] == XFRM_USERPOLICY_BLOCK) {
+> 
+> 
+> What about:
+> 
+> static inline bool __xfrm_check_nopolicy(struct net *net, struct sk_buff *skb,
+>                                          int dir)
+> {
+>         if (!net->xfrm.policy_count[dir] && !secpath_exists(skb))
+>                 return net->xfrm.policy_default[dir] == XFRM_USERPOLICY_ACCEPT;
+> 
+>         return false;
+> }
 
-This deadlocks every time. The caller already holds this lock from both
-call sites.
+It is much better, just extra "!" is not in place.
+if (!net->xfrm.policy_count[dir] ... -> if (net->xfrm.policy_count[dir] ...
 
-> +	err = mv88e6xxx_pvt_map(chip, dev, 0);
-> +	mv88e6xxx_reg_unlock(chip);
-> +
-> +	return err;
-> +}
-> +
-...
+Thanks
