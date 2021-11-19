@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9D6C45756B
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 18:25:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDE9A45756F
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 18:25:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236280AbhKSR2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 12:28:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43892 "EHLO
+        id S236582AbhKSR2a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 12:28:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229811AbhKSR2Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 12:28:25 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E755C061574;
-        Fri, 19 Nov 2021 09:25:23 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id y68so30339328ybe.1;
-        Fri, 19 Nov 2021 09:25:23 -0800 (PST)
+        with ESMTP id S229811AbhKSR2a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 12:28:30 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51DD5C061574;
+        Fri, 19 Nov 2021 09:25:28 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id v7so30436517ybq.0;
+        Fri, 19 Nov 2021 09:25:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=vsivSR1lJ20GN+/7nsHP6yydKJa6W3R0YLdb9SIpPic=;
-        b=NJ/DFDG9JbRqCx39SX1265V+VMlYRyHStIwzcgH4nC4VDmh5fbvGMy+ihE0s19v5T6
-         +JM+mrCzFectuDDmHhDT9+Ne2LphFXD02W+90TySDVevshdvNTudXAsfnM2zms9/K19d
-         ej9IjfKy/fxiqbFF8pnDvznmfteCeU1/k1Z0VoEesRJ/7lkWr9wKkIjiwT50bxWiTlm2
-         2qBOLfSYAC3ZkUzMeycRtfzzOUa6ES6ktl8i/L10QidkCGrYmEVxIzv2OfcEuXzAvzS4
-         87s/Ba0huzEmmmJp9kTj69q0KQ0Jult04zr50LinnoQNFmCEQZ+x9tRO/+rLN+4bEg8f
-         LgZA==
+        bh=uQDd2jJP4FhgbEt2hnJnBcOv7NF/WnkFpQelaMEiK5w=;
+        b=ZHtD8NkEzunPDpV3rgqQDBNgecJ6T3psKFjH/R98PvhW4xskQhz60BxKlStiNUjpjp
+         UjNIeK96GKtvTx9kWrUKBegQek8k9eMKhRCb9WgOHj31cDQoBY5RckTcqBsv0fF3+UXI
+         m7Ms/9zY9iLNzC8gPuGA/rf6Qtn7jrwIg/07yuCfDXtl9j76C3BzKbvO8j2rR/hzCcHn
+         WjKGruwCTEwE/Vsq0VqKZFQUxZOKJDCQoNH+PAXQL/tbFDppiXuqAZHR7BfeJtxoh2Y5
+         GV3wWGRdgQ0Usbrjli+u6jnlBm3QxaWAWMgrlbGKPIjvnQLengEWMea9+L5jMM8vX46v
+         GdEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=vsivSR1lJ20GN+/7nsHP6yydKJa6W3R0YLdb9SIpPic=;
-        b=TpYwPtm76/fZSkHfxdoHfImBJVMbc4rUd2KYCKaz/9qayHfRgnxx5ZuQUbFh2mX9Nm
-         crF/acGellef4eohWE4DkaSaJ64VTjxVXZ79W1QXCcCongpHMWCq2ScVVOYNnnV1mki4
-         vLpsL5SdWDiA6XQLiZ6/rNLRvv6UH96TjZySoSTtjphre7Mdu3Myvxu4JAJYErI8WRSQ
-         oSAs2l539ZBVarjY47TOct0in4aZ/rJvkp5lb5Vn/r8N8ivZ7RHbD9M5E8YPkeNROprq
-         byPM2bhwicbC+qZO+641DNx+jCs/25S36M3XdJQtk1G9p31rmhDzQNYMzIGV+wlfOxF5
-         5bSw==
-X-Gm-Message-State: AOAM531Zehi99pBtM7IIS/2l4VCYN6aWnlZ3QS4jcPkci4af2AZ8pKqX
-        qJDjM5bGeKuBrIQmOEcoP3dH4p0AuFRYigdY5iE=
-X-Google-Smtp-Source: ABdhPJwiK/FiipM/uV4ERVm4LXo3j3ZoCPBvBAFJx4H7ZClNRRwQ97pIUZagxUJ6Xn7+kbZ3Wn15XY/R1dqzcAdul4M=
-X-Received: by 2002:a25:ccd4:: with SMTP id l203mr16727955ybf.225.1637342722568;
- Fri, 19 Nov 2021 09:25:22 -0800 (PST)
+        bh=uQDd2jJP4FhgbEt2hnJnBcOv7NF/WnkFpQelaMEiK5w=;
+        b=8Kh6QHtGAEbLHgqL37RMB9skZ3vuiEaDOFTzC+UtQiAz8qXgkbsrZlm/sNS1dmNGVo
+         WGjRU0qYwqmfjxO7Yaq1RaJzy26MHd6g147Ouvnb6RjmB/kuUzGEXWr6M+oPFWBCbvkO
+         CiBhn5FiZEu9NBNfdwM3o9pSUzh5SCtTlgEcGYwYLitrvsZljonMnF9ZLQNbRivDX5oN
+         REEsvUgnHNFuuw5iUsneczxYpxg15bYEl1BzDWPTyKC/F1ZM+rWLm19PQA5pWiBtLzdg
+         J69m5PuNLakHIEQnHmhPcskyIbaZ37SU1MhEE5uW16pA4H9pqo5g1nVPMVRgTCcXTgoU
+         k/qg==
+X-Gm-Message-State: AOAM532uJbysQ2XLvtnQJOji1/ZxatSCImbTg6foiNiVewvKzCrnvHXx
+        JIOm55Mq8ZIwSerRM9H6rbfcKIuwMthy/a4p4tTKsLZK
+X-Google-Smtp-Source: ABdhPJx1DbcrI40j0F1F9/UWs3ERAhVI1/oOPkuhr5UIbJIavR4RlA7Rp5UIyfthrv5dQAeCiZF/HmSajWy/hCY73pY=
+X-Received: by 2002:a25:d187:: with SMTP id i129mr38422646ybg.2.1637342727537;
+ Fri, 19 Nov 2021 09:25:27 -0800 (PST)
 MIME-Version: 1.0
-References: <20211116164208.164245-1-mauricio@kinvolk.io> <20211116164208.164245-2-mauricio@kinvolk.io>
- <CAEf4BzZOu4frtBqzqYO0dkmw+bXuhr91qQ7o5Lyrv_44eniN9g@mail.gmail.com>
-In-Reply-To: <CAEf4BzZOu4frtBqzqYO0dkmw+bXuhr91qQ7o5Lyrv_44eniN9g@mail.gmail.com>
+References: <20211116164208.164245-1-mauricio@kinvolk.io> <20211116164208.164245-3-mauricio@kinvolk.io>
+In-Reply-To: <20211116164208.164245-3-mauricio@kinvolk.io>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 19 Nov 2021 09:25:11 -0800
-Message-ID: <CAEf4BzaZF1sM49UhRQrxBjCOHF1RtxT8hJumtcgZaZ1Np5hinA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/4] libbpf: Implement btf__save_raw()
+Date:   Fri, 19 Nov 2021 09:25:16 -0800
+Message-ID: <CAEf4BzZL_7dGmuzt-weids8FMJc5Tph+-om2d9zgQGvd+yC82Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 2/4] libbpf: Introduce 'btf_custom' to 'bpf_obj_open_opts'
 To:     =?UTF-8?Q?Mauricio_V=C3=A1squez?= <mauricio@kinvolk.io>
 Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -65,106 +64,143 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 16, 2021 at 9:25 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
+On Tue, Nov 16, 2021 at 8:42 AM Mauricio V=C3=A1squez <mauricio@kinvolk.io>=
+ wrote:
 >
-> On Tue, Nov 16, 2021 at 8:42 AM Mauricio V=C3=A1squez <mauricio@kinvolk.i=
-o> wrote:
-> >
-> > Implement helper function to save the contents of a BTF object to a
-> > file.
-> >
-> > Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
-> > Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
-> > Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
-> > Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
-> > ---
-> >  tools/lib/bpf/btf.c      | 30 ++++++++++++++++++++++++++++++
-> >  tools/lib/bpf/btf.h      |  2 ++
-> >  tools/lib/bpf/libbpf.map |  1 +
-> >  3 files changed, 33 insertions(+)
-> >
-> > diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-> > index fadf089ae8fe..96a242f91832 100644
-> > --- a/tools/lib/bpf/btf.c
-> > +++ b/tools/lib/bpf/btf.c
-> > @@ -1121,6 +1121,36 @@ struct btf *btf__parse_split(const char *path, s=
-truct btf *base_btf)
-> >         return libbpf_ptr(btf_parse(path, base_btf, NULL));
-> >  }
-> >
-> > +int btf__save_raw(const struct btf *btf, const char *path)
-> > +{
-> > +       const void *data;
-> > +       FILE *f =3D NULL;
-> > +       __u32 data_sz;
-> > +       int err =3D 0;
-> > +
-> > +       data =3D btf__raw_data(btf, &data_sz);
-> > +       if (!data) {
-> > +               err =3D -ENOMEM;
-> > +               goto out;
-> > +       }
-> > +
-> > +       f =3D fopen(path, "wb");
-> > +       if (!f) {
-> > +               err =3D -errno;
-> > +               goto out;
-> > +       }
-> > +
-> > +       if (fwrite(data, 1, data_sz, f) !=3D data_sz) {
-> > +               err =3D -errno;
-> > +               goto out;
-> > +       }
-> > +
-> > +out:
-> > +       if (f)
-> > +               fclose(f);
-> > +       return libbpf_err(err);
-> > +}
-> > +
-> >  static void *btf_get_raw_data(const struct btf *btf, __u32 *size, bool=
- swap_endian);
-> >
-> >  int btf__load_into_kernel(struct btf *btf)
-> > diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
-> > index 5c73a5b0a044..4f8d3f303aa6 100644
-> > --- a/tools/lib/bpf/btf.h
-> > +++ b/tools/lib/bpf/btf.h
-> > @@ -114,6 +114,8 @@ LIBBPF_API struct btf *btf__parse_elf_split(const c=
-har *path, struct btf *base_b
-> >  LIBBPF_API struct btf *btf__parse_raw(const char *path);
-> >  LIBBPF_API struct btf *btf__parse_raw_split(const char *path, struct b=
-tf *base_btf);
-> >
-> > +LIBBPF_API int btf__save_raw(const struct btf *btf, const char *path);
+> Commit 1373ff599556 ("libbpf: Introduce 'btf_custom_path' to
+> 'bpf_obj_open_opts'") introduced btf_custom_path which allows developers
+> to specify a BTF file path to be used for CO-RE relocations. This
+> implementation parses and releases the BTF file for each bpf object.
+>
+> This commit introduces a new 'btf_custom' option to allow users to
+> specify directly the btf object instead of the path. This avoids
+> parsing/releasing the same BTF file multiple times when the application
+> loads multiple bpf objects.
+>
+> Our specific use case is BTFGen[0], where we want to reuse the same BTF
+> file with multiple bpf objects. In this case passing btf_custom_path is
+> not only inefficient but it also complicates the implementation as we
+> want to save pointers of BTF types but they are invalidated after the
+> bpf object is closed with bpf_object__close().
 
-Thinking about this some more, I don't feel it's necessary to have
-this kind of API in libbpf. Libbpf provides raw bytes and it's not
-hard to write dumping byte array to file. We don't have
-btf__save_elf() and we probably shouldn't, so I don't see the need for
-btf__save_raw() either. It's neither complicated nor frequently used
-code to write.
+How much slower and harder is it in practice, though? Can you please
+provide some numbers? How many objects are going to reuse the same
+struct btf? Parsing raw BTF file is quite efficient, I'm curious
+what's the scale where this becomes unacceptable.
 
 
-> > +
-> >  LIBBPF_API struct btf *btf__load_vmlinux_btf(void);
-> >  LIBBPF_API struct btf *btf__load_module_btf(const char *module_name, s=
-truct btf *vmlinux_btf);
-> >  LIBBPF_API struct btf *libbpf_find_kernel_btf(void);
-> > diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> > index 6a59514a48cf..c9555f8655af 100644
-> > --- a/tools/lib/bpf/libbpf.map
-> > +++ b/tools/lib/bpf/libbpf.map
-> > @@ -414,4 +414,5 @@ LIBBPF_0.6.0 {
-> >                 perf_buffer__new_deprecated;
-> >                 perf_buffer__new_raw;
-> >                 perf_buffer__new_raw_deprecated;
-> > +               btf__save_raw;
 >
-> this is a sorted list, please keep it so
+> [0]: https://github.com/kinvolk/btfgen/
 >
-> >  } LIBBPF_0.5.0;
-> > --
-> > 2.25.1
-> >
+> Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
+> Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
+> Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
+> Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
+> ---
+>  tools/lib/bpf/libbpf.c | 20 ++++++++++++++++----
+>  tools/lib/bpf/libbpf.h |  9 ++++++++-
+>  2 files changed, 24 insertions(+), 5 deletions(-)
+>
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index de7e09a6b5ec..6ca76365c6da 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -542,6 +542,8 @@ struct bpf_object {
+>         char *btf_custom_path;
+>         /* vmlinux BTF override for CO-RE relocations */
+>         struct btf *btf_vmlinux_override;
+> +       /* true when the user provided the btf structure with the btf_cus=
+tom opt */
+> +       bool user_provided_btf_vmlinux;
+>         /* Lazily initialized kernel module BTFs */
+>         struct module_btf *btf_modules;
+>         bool btf_modules_loaded;
+> @@ -2886,7 +2888,7 @@ static int bpf_object__load_vmlinux_btf(struct bpf_=
+object *obj, bool force)
+>         int err;
+>
+>         /* btf_vmlinux could be loaded earlier */
+> -       if (obj->btf_vmlinux || obj->gen_loader)
+> +       if (obj->btf_vmlinux || obj->btf_vmlinux_override || obj->gen_loa=
+der)
+>                 return 0;
+>
+>         if (!force && !obj_needs_vmlinux_btf(obj))
+> @@ -5474,7 +5476,7 @@ bpf_object__relocate_core(struct bpf_object *obj, c=
+onst char *targ_btf_path)
+>         if (obj->btf_ext->core_relo_info.len =3D=3D 0)
+>                 return 0;
+>
+> -       if (targ_btf_path) {
+> +       if (!obj->user_provided_btf_vmlinux && targ_btf_path) {
+>                 obj->btf_vmlinux_override =3D btf__parse(targ_btf_path, N=
+ULL);
+>                 err =3D libbpf_get_error(obj->btf_vmlinux_override);
+>                 if (err) {
+> @@ -5543,8 +5545,10 @@ bpf_object__relocate_core(struct bpf_object *obj, =
+const char *targ_btf_path)
+>
+>  out:
+>         /* obj->btf_vmlinux and module BTFs are freed after object load *=
+/
+> -       btf__free(obj->btf_vmlinux_override);
+> -       obj->btf_vmlinux_override =3D NULL;
+> +       if (!obj->user_provided_btf_vmlinux) {
+> +               btf__free(obj->btf_vmlinux_override);
+> +               obj->btf_vmlinux_override =3D NULL;
+> +       }
+>
+>         if (!IS_ERR_OR_NULL(cand_cache)) {
+>                 hashmap__for_each_entry(cand_cache, entry, i) {
+> @@ -6767,6 +6771,10 @@ __bpf_object__open(const char *path, const void *o=
+bj_buf, size_t obj_buf_sz,
+>         if (!OPTS_VALID(opts, bpf_object_open_opts))
+>                 return ERR_PTR(-EINVAL);
+>
+> +       /* btf_custom_path and btf_custom can't be used together */
+> +       if (OPTS_GET(opts, btf_custom_path, NULL) && OPTS_GET(opts, btf_c=
+ustom, NULL))
+> +               return ERR_PTR(-EINVAL);
+> +
+>         obj_name =3D OPTS_GET(opts, object_name, NULL);
+>         if (obj_buf) {
+>                 if (!obj_name) {
+> @@ -6796,6 +6804,10 @@ __bpf_object__open(const char *path, const void *o=
+bj_buf, size_t obj_buf_sz,
+>                 }
+>         }
+>
+> +       obj->btf_vmlinux_override =3D OPTS_GET(opts, btf_custom, NULL);
+> +       if (obj->btf_vmlinux_override)
+> +               obj->user_provided_btf_vmlinux =3D true;
+> +
+>         kconfig =3D OPTS_GET(opts, kconfig, NULL);
+>         if (kconfig) {
+>                 obj->kconfig =3D strdup(kconfig);
+> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+> index 4ec69f224342..908ab04dc9bd 100644
+> --- a/tools/lib/bpf/libbpf.h
+> +++ b/tools/lib/bpf/libbpf.h
+> @@ -104,8 +104,15 @@ struct bpf_object_open_opts {
+>          * struct_ops, etc) will need actual kernel BTF at /sys/kernel/bt=
+f/vmlinux.
+>          */
+>         const char *btf_custom_path;
+> +       /* Pointer to the custom BTF object to be used for BPF CO-RE relo=
+cations.
+> +        * This custom BTF completely replaces the use of vmlinux BTF
+> +        * for the purpose of CO-RE relocations.
+> +        * NOTE: any other BPF feature (e.g., fentry/fexit programs,
+> +        * struct_ops, etc) will need actual kernel BTF at /sys/kernel/bt=
+f/vmlinux.
+> +        */
+> +       struct btf *btf_custom;
+>  };
+> -#define bpf_object_open_opts__last_field btf_custom_path
+> +#define bpf_object_open_opts__last_field btf_custom
+>
+>  LIBBPF_API struct bpf_object *bpf_object__open(const char *path);
+>  LIBBPF_API struct bpf_object *
+> --
+> 2.25.1
+>
