@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D507456AB2
+	by mail.lfdr.de (Postfix) with ESMTP id B9A34456AB3
 	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 08:10:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233501AbhKSHNt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 02:13:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60104 "EHLO mail.kernel.org"
+        id S233507AbhKSHNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 02:13:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60112 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233393AbhKSHNo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233161AbhKSHNo (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 19 Nov 2021 02:13:44 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DB9D261B3E;
-        Fri, 19 Nov 2021 07:10:42 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2AE5761B6F;
+        Fri, 19 Nov 2021 07:10:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1637305843;
-        bh=laSwWRMmlBcBKM4pOM68Ipcnt0tEGw4dJJKzl31Sg3Y=;
+        bh=RHGoinQWEq/yoEe0JQkSZCW9Hat60Rmg5zLkUgwVRqc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HTjqbd9yukTZmN2T34ggUOCE/MiRf8IX+8DddGCCLW52T/9qESJ85oQdNIfIOZLue
-         aXn1DkXyQ3uiL76KTysz0eIvwQfGwDRk7F/ogatkciJg1UECYQiQtO5ZuprfLsMXxl
-         da02HRQnXllwWzLt5aUL+BF3FK/9jVhbDDasJ4uqtv/9vzfkSLrEDYONFNqeCgWEj8
-         Rzx2vZg9+Jh1Vqhp1UIhQBqk1MrMQPKhTRKtZ4cBXr8I8gAWfoAYp994ksgxUq0BFB
-         7hqdWAqLjWg8RjCvuAHSzsL4TMwTDdC9zPASTnenQebla6GzPQDBAe4eifmgBE1/g/
-         hpUCGrpDrjtuw==
+        b=I8ONZ98jvFmqKGSSLUyZUH5K2uf6E5hVYMQT1NsKW5rCbvYWdMERwtCB1yu78M/gE
+         tT6biGJTHyQci6w849lzrBbjoOlNOLJfTvIN3s4L2J3ajeYVNxsTBKzvcgAQNwszLx
+         mZwZ/wPD/2bfFtRKLMenn+SEJKhuog3sQpjg0PB9N526vstesMuSA+4tQ4VyDOHFl0
+         O+VKQDJg0BCqkyO/RaB8BNurDdcyiOr2dkKXYVoKYTq5XvrZKTc9DrI2j9c+VxCw8d
+         rpFZXPJVsQ2lvreFCjWAfdC530ZnHx/SIjVJXysW8SfT74e1jet0PD5HLvOXHljIEd
+         vES1ALqHcZFhQ==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 08/15] 8390: hydra: use eth_hw_addr_set()
-Date:   Thu, 18 Nov 2021 23:10:26 -0800
-Message-Id: <20211119071033.3756560-9-kuba@kernel.org>
+Subject: [PATCH net-next 09/15] 8390: mac8390: use eth_hw_addr_set()
+Date:   Thu, 18 Nov 2021 23:10:27 -0800
+Message-Id: <20211119071033.3756560-10-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211119071033.3756560-1-kuba@kernel.org>
 References: <20211119071033.3756560-1-kuba@kernel.org>
@@ -38,37 +38,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Loop with offsetting to every second byte, so use a temp buffer.
+Use temp to pass to the reading function, the function is generic
+so can't fix there.
 
 Fixes m68k build.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/8390/hydra.c | 4 +++-
+ drivers/net/ethernet/8390/mac8390.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/8390/hydra.c b/drivers/net/ethernet/8390/hydra.c
-index 941754ea78ec..1df7601af86a 100644
---- a/drivers/net/ethernet/8390/hydra.c
-+++ b/drivers/net/ethernet/8390/hydra.c
-@@ -116,6 +116,7 @@ static int hydra_init(struct zorro_dev *z)
-     unsigned long ioaddr = board+HYDRA_NIC_BASE;
-     const char name[] = "NE2000";
-     int start_page, stop_page;
-+    u8 macaddr[ETH_ALEN];
-     int j;
-     int err;
+diff --git a/drivers/net/ethernet/8390/mac8390.c b/drivers/net/ethernet/8390/mac8390.c
+index 91b04abfd687..7fb819b9b89a 100644
+--- a/drivers/net/ethernet/8390/mac8390.c
++++ b/drivers/net/ethernet/8390/mac8390.c
+@@ -292,6 +292,7 @@ static bool mac8390_rsrc_init(struct net_device *dev,
+ 	struct nubus_dirent ent;
+ 	int offset;
+ 	volatile unsigned short *i;
++	u8 addr[ETH_ALEN];
  
-@@ -129,7 +130,8 @@ static int hydra_init(struct zorro_dev *z)
- 	return -ENOMEM;
+ 	dev->irq = SLOT2IRQ(board->slot);
+ 	/* This is getting to be a habit */
+@@ -314,7 +315,8 @@ static bool mac8390_rsrc_init(struct net_device *dev,
+ 		return false;
+ 	}
  
-     for (j = 0; j < ETH_ALEN; j++)
--	dev->dev_addr[j] = *((u8 *)(board + HYDRA_ADDRPROM + 2*j));
-+	macaddr[j] = *((u8 *)(board + HYDRA_ADDRPROM + 2*j));
-+    eth_hw_addr_set(dev, macaddr);
+-	nubus_get_rsrc_mem(dev->dev_addr, &ent, 6);
++	nubus_get_rsrc_mem(addr, &ent, 6);
++	eth_hw_addr_set(dev, addr);
  
-     /* We must set the 8390 for word mode. */
-     z_writeb(0x4b, ioaddr + NE_EN0_DCFG);
+ 	if (useresources[cardtype] == 1) {
+ 		nubus_rewinddir(&dir);
 -- 
 2.31.1
 
