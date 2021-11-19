@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04B05456AB1
+	by mail.lfdr.de (Postfix) with ESMTP id 4D507456AB2
 	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 08:10:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233476AbhKSHNs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 02:13:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60096 "EHLO mail.kernel.org"
+        id S233501AbhKSHNt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 02:13:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60104 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233348AbhKSHNo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233393AbhKSHNo (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 19 Nov 2021 02:13:44 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8B68461B62;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DB9D261B3E;
         Fri, 19 Nov 2021 07:10:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637305842;
-        bh=UHJGqe9P77z3d0Q5fJ5hc2zZFIN2uam0tHaRtDuM85w=;
+        s=k20201202; t=1637305843;
+        bh=laSwWRMmlBcBKM4pOM68Ipcnt0tEGw4dJJKzl31Sg3Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T8zkNa8erZWuO4Ir654O6c2+X+n0oJQHWjT/8z6y9vyds4UaJSslPAhhzmHTH+AX7
-         fLZAFiGyXWpDwVfeIM/7ek0xy/xY5B+auGi7nVtmn4MNpyZRfUAOADDEloAEJRDq1I
-         v1DxWy0YHxKBtOcKIfN+2C5IaiVJDUi984QpFkczqcgAiED15lsbys9Fp5t9a0okkp
-         N4tTtzLbbPduTjRYEPQa+JmuSAkf8yAKUuOn3FzOH5y99/EIj53HuQXPLU5nrDDddN
-         uFmdDZ0H/p/ETMX/JUp8KNiLklde/TJS3WJ+yTMJ78g7szp7FszFKUOoH8otkXH7o4
-         1sMo5ZIPzrUNg==
+        b=HTjqbd9yukTZmN2T34ggUOCE/MiRf8IX+8DddGCCLW52T/9qESJ85oQdNIfIOZLue
+         aXn1DkXyQ3uiL76KTysz0eIvwQfGwDRk7F/ogatkciJg1UECYQiQtO5ZuprfLsMXxl
+         da02HRQnXllwWzLt5aUL+BF3FK/9jVhbDDasJ4uqtv/9vzfkSLrEDYONFNqeCgWEj8
+         Rzx2vZg9+Jh1Vqhp1UIhQBqk1MrMQPKhTRKtZ4cBXr8I8gAWfoAYp994ksgxUq0BFB
+         7hqdWAqLjWg8RjCvuAHSzsL4TMwTDdC9zPASTnenQebla6GzPQDBAe4eifmgBE1/g/
+         hpUCGrpDrjtuw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 07/15] 8390: smc-ultra: use eth_hw_addr_set()
-Date:   Thu, 18 Nov 2021 23:10:25 -0800
-Message-Id: <20211119071033.3756560-8-kuba@kernel.org>
+Subject: [PATCH net-next 08/15] 8390: hydra: use eth_hw_addr_set()
+Date:   Thu, 18 Nov 2021 23:10:26 -0800
+Message-Id: <20211119071033.3756560-9-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211119071033.3756560-1-kuba@kernel.org>
 References: <20211119071033.3756560-1-kuba@kernel.org>
@@ -38,37 +38,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IO reads, so save to an array then eth_hw_addr_set().
+Loop with offsetting to every second byte, so use a temp buffer.
 
-Fixes build on Alpha.
+Fixes m68k build.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/8390/smc-ultra.c | 4 +++-
+ drivers/net/ethernet/8390/hydra.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/8390/smc-ultra.c b/drivers/net/ethernet/8390/smc-ultra.c
-index 0890fa493f70..6e62c37c9400 100644
---- a/drivers/net/ethernet/8390/smc-ultra.c
-+++ b/drivers/net/ethernet/8390/smc-ultra.c
-@@ -204,6 +204,7 @@ static int __init ultra_probe1(struct net_device *dev, int ioaddr)
- {
- 	int i, retval;
- 	int checksum = 0;
-+	u8 macaddr[ETH_ALEN];
- 	const char *model_name;
- 	unsigned char eeprom_irq = 0;
- 	static unsigned version_printed;
-@@ -239,7 +240,8 @@ static int __init ultra_probe1(struct net_device *dev, int ioaddr)
- 	model_name = (idreg & 0xF0) == 0x20 ? "SMC Ultra" : "SMC EtherEZ";
+diff --git a/drivers/net/ethernet/8390/hydra.c b/drivers/net/ethernet/8390/hydra.c
+index 941754ea78ec..1df7601af86a 100644
+--- a/drivers/net/ethernet/8390/hydra.c
++++ b/drivers/net/ethernet/8390/hydra.c
+@@ -116,6 +116,7 @@ static int hydra_init(struct zorro_dev *z)
+     unsigned long ioaddr = board+HYDRA_NIC_BASE;
+     const char name[] = "NE2000";
+     int start_page, stop_page;
++    u8 macaddr[ETH_ALEN];
+     int j;
+     int err;
  
- 	for (i = 0; i < 6; i++)
--		dev->dev_addr[i] = inb(ioaddr + 8 + i);
-+		macaddr[i] = inb(ioaddr + 8 + i);
-+	eth_hw_addr_set(dev, macaddr);
+@@ -129,7 +130,8 @@ static int hydra_init(struct zorro_dev *z)
+ 	return -ENOMEM;
  
- 	netdev_info(dev, "%s at %#3x, %pM", model_name,
- 		    ioaddr, dev->dev_addr);
+     for (j = 0; j < ETH_ALEN; j++)
+-	dev->dev_addr[j] = *((u8 *)(board + HYDRA_ADDRPROM + 2*j));
++	macaddr[j] = *((u8 *)(board + HYDRA_ADDRPROM + 2*j));
++    eth_hw_addr_set(dev, macaddr);
+ 
+     /* We must set the 8390 for word mode. */
+     z_writeb(0x4b, ioaddr + NE_EN0_DCFG);
 -- 
 2.31.1
 
