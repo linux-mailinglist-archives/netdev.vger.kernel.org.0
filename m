@@ -2,93 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58E75456F4A
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 14:03:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E8AC456F66
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 14:14:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235255AbhKSNGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 08:06:45 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:49141 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235264AbhKSNGp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 08:06:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637327023;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hKfzGk0Wpd8IGC/prDVcUoPiImNh9tLcC0HmBj731Mc=;
-        b=Et00upzkQXNMker+kjWY0O0Mj9076EBNzuiu8jqr8FTtYGa2Trfaz/n1gix5MRypsZyg7X
-        3g+Z+YZMUQeGbwFMyYTW1ciNIfQSbHRq0SZn/m3LCsimHQrI1O6PqG9n/8eTVA8kRN1piA
-        1RGpO06lZCNFzPYHR/NXu9XkfceiaoA=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-286-lEg5xjHzNYuhXxhQQhIt7Q-1; Fri, 19 Nov 2021 08:03:42 -0500
-X-MC-Unique: lEg5xjHzNYuhXxhQQhIt7Q-1
-Received: by mail-ed1-f71.google.com with SMTP id c1-20020aa7c741000000b003e7bf1da4bcso8292892eds.21
-        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 05:03:41 -0800 (PST)
+        id S235401AbhKSNRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 08:17:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42076 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234720AbhKSNRv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 08:17:51 -0500
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB52C061748
+        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 05:14:49 -0800 (PST)
+Received: by mail-qk1-x732.google.com with SMTP id o63so10100754qkb.4
+        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 05:14:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ieee.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=HR5QiUUsJAbHQWB9m5yaWF0hUgIrMOiOR5Z9Xwz9lnE=;
+        b=f2eOBTz6OPpcwmli2fs3JisF4biM86jGkiAejvgSXx9aQHdP76TKbunhALJKkVzcVv
+         0cmq9Fx5UU01xiVsjvCvH5rit5pIkrfK9+e+/L3kq1NCCG/8Rgd0TYCMVgSXBf9vgDz7
+         D2T/zelssMgju8bcMIb5O1PB6FVGhrKhlT/xI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=hKfzGk0Wpd8IGC/prDVcUoPiImNh9tLcC0HmBj731Mc=;
-        b=Wf6tiWvQPI/txyqoMiu0oL03TlRZmgRztTYiHTeFtB2gmq92INak4rss5XwVCcvJtb
-         x7Kg5ahysGd1ceIvtoaKdNv5PFX2+B6blzbzseNttD0PmhSR9aMxZ9ruNQKuqtX63i4C
-         Dx/QDP/AYXKpmQLY6ao8l43VM50HccsXF2XVLl1d9A+RNpHiszMVjnkPFIo6lclh0iNj
-         GVNlYEq9QnLUFQ+z+WOez7zOTH0z145lHoGM2+orP4o2pkrzL5xgvQ2mMP6japxKnaL+
-         EMMVaTwo49qu9BkCoA3f+0weobJHz8k8IpcHBD/Lv42/7NeFlhoU0uIs0IVodHRbzIKu
-         8N7A==
-X-Gm-Message-State: AOAM5332uPWKpaEMis+H/ZC0+8nDUP4C0WAQdjs1V4Ycmut2vradz8xh
-        KN23ECecioDCfrBkqwxqpus5KOOZWGglfFkSCq6DrmAzdyJa8wHqaRge8YCsYTs2df0+1JissfP
-        8lzSm1Yfbedds7ynM
-X-Received: by 2002:a05:6402:34d6:: with SMTP id w22mr24389964edc.35.1637327019607;
-        Fri, 19 Nov 2021 05:03:39 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx0iYtHfCnciVMnXitwgUqkXXZdqqWWg/E2uIeEkNqY5pWCuyejuk1lAeev+8CNOUCiai6nhA==
-X-Received: by 2002:a05:6402:34d6:: with SMTP id w22mr24389826edc.35.1637327018826;
-        Fri, 19 Nov 2021 05:03:38 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id dz18sm238310edb.74.2021.11.19.05.03.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Nov 2021 05:03:38 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 87A81180270; Fri, 19 Nov 2021 14:03:37 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Christoph Hellwig <hch@lst.de>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Christoph Hellwig <hch@lst.de>, Jonathan Corbet <corbet@lwn.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-doc@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH 2/2] bpf, doc: split general purpose eBPF documentation
- out of filter.rst
-In-Reply-To: <20211119061642.GB15129@lst.de>
-References: <20211115130715.121395-1-hch@lst.de>
- <20211115130715.121395-3-hch@lst.de>
- <20211118005613.g4sqaq2ucgykqk2m@ast-mbp> <20211119061642.GB15129@lst.de>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 19 Nov 2021 14:03:37 +0100
-Message-ID: <877dd4e1qu.fsf@toke.dk>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=HR5QiUUsJAbHQWB9m5yaWF0hUgIrMOiOR5Z9Xwz9lnE=;
+        b=1fhD97IgLKIR35ppawFtmEb/mCdhT0mCazHdBr6N0hEX2NojXVS4GGKqFCQv9+K6LD
+         qlrKH8TEJFE7BNLH1qQW6tpXMryFjZlT2JI2zEQZ3FyiC3nUuMVAe/2UzD5F+piAsj8b
+         LG/f1eyeSj7AX/1B5Pj8J7PvKP0UPvz0+IU195dGUynYNSAEzda+bCNp90wiGWTx+G8k
+         LZN1+P169uh1Usz0lSJKRYaGAOg0xB7Lhhs62E0DcgW0Ef78bJuEWYkuimHmfXWs/IbN
+         +tCE+UHBxPfuNT1CnTxYweA7qLZhS+1ne1MekU7UBNyj9d11C5JsRryahQcXDEYz1TRJ
+         0tyA==
+X-Gm-Message-State: AOAM533Ye3OSuCWlMnrxxYndVkdbF/Tc3D6DIqXQqdYL7JPKljNFAL34
+        y0tOxTYuHNlPSdFWK43b1/ylNA==
+X-Google-Smtp-Source: ABdhPJwadsU8VaU3ROuC9an1iL0IlzAyf4YliYBtHhaAxXHmJCEKFp94Srij+FxPpAzpi/nTn7Ai7w==
+X-Received: by 2002:a37:8607:: with SMTP id i7mr28302102qkd.159.1637327689057;
+        Fri, 19 Nov 2021 05:14:49 -0800 (PST)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id t15sm1542305qta.45.2021.11.19.05.14.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Nov 2021 05:14:48 -0800 (PST)
+Message-ID: <77cff7ec-0787-5a19-0db6-c7d9e34f7258@ieee.org>
+Date:   Fri, 19 Nov 2021 07:14:47 -0600
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.1
+Subject: Re: [PATCH] net: ipa: Use 'for_each_clear_bit' when possible
+Content-Language: en-US
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        elder@kernel.org, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+References: <07566ce40d155d88b60c643fee2d030989037405.1637264172.git.christophe.jaillet@wanadoo.fr>
+From:   Alex Elder <elder@ieee.org>
+In-Reply-To: <07566ce40d155d88b60c643fee2d030989037405.1637264172.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christoph Hellwig <hch@lst.de> writes:
+On 11/18/21 1:37 PM, Christophe JAILLET wrote:
+> Use 'for_each_clear_bit()' instead of hand writing it. It is much less
+> version.
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
->> In terms of followups and cleanup... please share what you have in mind.
->
-> The prime issue I'd like to look in is to replace all the references
-> to classic BPF and instead make the document standadlone.
+I know this just got committed, but thanks, this
+is a good improvement.
 
-Yes, please, this would be awesome! :)
+					-Alex
 
--Toke
+> ---
+>   drivers/net/ipa/ipa_mem.c | 4 +---
+>   1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ipa/ipa_mem.c b/drivers/net/ipa/ipa_mem.c
+> index 4337b0920d3d..1e9eae208e44 100644
+> --- a/drivers/net/ipa/ipa_mem.c
+> +++ b/drivers/net/ipa/ipa_mem.c
+> @@ -266,9 +266,7 @@ static bool ipa_mem_valid(struct ipa *ipa, const struct ipa_mem_data *mem_data)
+>   	}
+>   
+>   	/* Now see if any required regions are not defined */
+> -	for (mem_id = find_first_zero_bit(regions, IPA_MEM_COUNT);
+> -	     mem_id < IPA_MEM_COUNT;
+> -	     mem_id = find_next_zero_bit(regions, IPA_MEM_COUNT, mem_id + 1)) {
+> +	for_each_clear_bit(mem_id, regions, IPA_MEM_COUNT) {
+>   		if (ipa_mem_id_required(ipa, mem_id))
+>   			dev_err(dev, "required memory region %u missing\n",
+>   				mem_id);
+> 
 
