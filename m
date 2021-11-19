@@ -2,321 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82956457087
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 15:22:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E887545708F
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 15:23:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235835AbhKSOZG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 09:25:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59220 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234817AbhKSOZC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Nov 2021 09:25:02 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DF35A61B5E;
-        Fri, 19 Nov 2021 14:22:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637331721;
-        bh=5ONvkVmSFKJtBQt9G1/SiPgXQyQSzXDp66/5sGiCz4M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P1Snd4ekpAmOJTwsj62oztb/SGtzHtg0U28lIkpGDyEVbDiBV+vCzMM2fbigM94fj
-         3vksbhPrPZhwD6ptzXWR9PgataRowlJXmuymueH9u9lIIJdOGccKIuCRE3LTRwAM+s
-         7N0XOlpdqs4Cm+7iDzuf2nyEVF2e04nBC9KyU4tw7k7hrjL3+ZSeZwh/4a7V09Fi5v
-         Cr6El3mr5aoadTLOR5sdfiuBpfrrphYh0+j4BxHgR2My3tujF6TlslAkUw7Uq3FQB5
-         vDkzsnyLQMbqfBjPwdyTDRFbmmcDyflFRC93gLDW+jKVA2x2X3g1WbWymCP8O8DjKS
-         I7RufbHV1UkjA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 7/7] net: kunit: add a test for dev_addr_lists
-Date:   Fri, 19 Nov 2021 06:21:55 -0800
-Message-Id: <20211119142155.3779933-8-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211119142155.3779933-1-kuba@kernel.org>
-References: <20211119142155.3779933-1-kuba@kernel.org>
+        id S235285AbhKSO06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 09:26:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58186 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232080AbhKSO06 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 09:26:58 -0500
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9396C061574;
+        Fri, 19 Nov 2021 06:23:56 -0800 (PST)
+Received: by mail-pg1-x531.google.com with SMTP id 200so8796593pga.1;
+        Fri, 19 Nov 2021 06:23:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=dvjMlZBI3ldb1jXqYwhDV7AWs1lj5LCSS81ZY56RgHg=;
+        b=lD29CjzOk03sgDLP+GNvSpxJtgVkW5rJkK+91U6AQudAzMZxrwkaky9OEq6jf27Gw7
+         +El3go4e6gBFGCWthIzBWcaH6MtynoVd2Asx0s8lF4AHh9KTCrYFWAivyI8ee0X1Vv36
+         V2FQuAVabQQBAbOL0fIquaORLXE6V2pQuWoxP4p8Bdmk66ffMTRypmvZJws3ZQPoiG7R
+         xBnlvWtgNAT1CZU5CVKw8D3+cafHZ/lwicgnA/RP75ZpQaa+0T4cnXOpdWgAZYBmS+Ds
+         D+JWFTqNXrZl80kk+n0WgCyZhptSAvKOJXiZ1wT44+Ikfkw7mB3QMLEop9ypqPjQJy3c
+         M8pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=dvjMlZBI3ldb1jXqYwhDV7AWs1lj5LCSS81ZY56RgHg=;
+        b=ymOoSNPXb9r3m4Ip0eXlmv0Q4P1UZsmxUwGL5lKG/9B7dE2h+J3/mZSlEGyKl66/v1
+         0GwcmDvEOK1uQdQxDkgT6oCc7DuGNytaHFfzTNJALqupO2HMuNf/RK5bnZM6PDLLwq7f
+         kK6EGX1448Q21QUEGs5Vfz41APQwtGtzHbKJwzpriOPEAWjQRfFRzDYcKyphbCKaMuvX
+         RymMoxcyEXGdlUWR8iuZYzqd3l8X8ap8TosIWVJBK0sK1N9gyVjqVTEb3uLrI3kJ+9aG
+         iHytVLT8pWOJbrFv80RMGta6mzqTWS4j9ZNkV3DU3LjimptmgCDs90a9+iNzZzzmQIUC
+         cFUA==
+X-Gm-Message-State: AOAM533D70nN4qd2+pQf94pHCLx7NMxOCx+wlfL/XlIBDxI4keQOYY/X
+        y5ekXgyMeYgJxNEInVywDT7KYgjaLReP6g==
+X-Google-Smtp-Source: ABdhPJzKRBXlcGt3waRWzaH9R47/6SD0/IgoWcAgajHv/fxOJufbEPJI6hNEQ9SuwB+/pum/5oX3UA==
+X-Received: by 2002:a63:b54a:: with SMTP id u10mr17506905pgo.69.1637331836308;
+        Fri, 19 Nov 2021 06:23:56 -0800 (PST)
+Received: from ?IPV6:2404:f801:0:5:8000::50b? ([2404:f801:9000:1a:efea::50b])
+        by smtp.gmail.com with ESMTPSA id l12sm3181520pfu.100.2021.11.19.06.23.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Nov 2021 06:23:55 -0800 (PST)
+Message-ID: <f7fcb4d5-fcdd-0d24-60ed-62c27ed8e2d9@gmail.com>
+Date:   Fri, 19 Nov 2021 22:23:45 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH 3/5] hyperv/IOMMU: Enable swiotlb bounce buffer for
+ Isolation VM
+Content-Language: en-US
+From:   Tianyu Lan <ltykernel@gmail.com>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, x86@kernel.org,
+        hpa@zytor.com, jgross@suse.com, sstabellini@kernel.org,
+        boris.ostrovsky@oracle.com, kys@microsoft.com,
+        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
+        decui@microsoft.com, joro@8bytes.org, will@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, m.szyprowski@samsung.com,
+        robin.murphy@arm.com, xen-devel@lists.xenproject.org,
+        michael.h.kelley@microsoft.com,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        iommu@lists.linux-foundation.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        netdev@vger.kernel.org, vkuznets@redhat.com, brijesh.singh@amd.com,
+        konrad.wilk@oracle.com, parri.andrea@gmail.com,
+        thomas.lendacky@amd.com, dave.hansen@intel.com
+References: <20211116153923.196763-1-ltykernel@gmail.com>
+ <20211116153923.196763-4-ltykernel@gmail.com> <20211117100142.GB10330@lst.de>
+ <c93bf3d4-75c1-bc3d-2789-1d65e7c19158@gmail.com>
+In-Reply-To: <c93bf3d4-75c1-bc3d-2789-1d65e7c19158@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a KUnit test for the dev_addr API.
+On 11/17/2021 10:00 PM, Tianyu Lan wrote:
+> On 11/17/2021 6:01 PM, Christoph Hellwig wrote:
+>> This doesn't really have much to do with normal DMA mapping,
+>> so why does this direct through the dma ops?
+>>
+> 
+> According to the previous discussion, dma_alloc_noncontigous()
+> and dma_vmap_noncontiguous() may be used to handle the noncontigous
+> memory alloc/map in the netvsc driver. So add alloc/free and vmap/vunmap
+> callbacks here to handle the case. The previous patch v4 & v5 handles
+> the allocation and map in the netvsc driver. If this should not go 
+> though dma ops, We also may make it as vmbus specific function and keep
+> the function in the vmbus driver.
+> 
+> https://lkml.org/lkml/2021/9/28/51
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- net/Kconfig                    |   5 +
- net/core/Makefile              |   2 +
- net/core/dev_addr_lists_test.c | 236 +++++++++++++++++++++++++++++++++
- 3 files changed, 243 insertions(+)
- create mode 100644 net/core/dev_addr_lists_test.c
 
-diff --git a/net/Kconfig b/net/Kconfig
-index 074472dfa94a..8a1f9d0287de 100644
---- a/net/Kconfig
-+++ b/net/Kconfig
-@@ -455,4 +455,9 @@ config ETHTOOL_NETLINK
- 	  netlink. It provides better extensibility and some new features,
- 	  e.g. notification messages.
- 
-+config NETDEV_ADDR_LIST_TEST
-+	tristate "Unit tests for device address list"
-+	default KUNIT_ALL_TESTS
-+	depends on KUNIT
-+
- endif   # if NET
-diff --git a/net/core/Makefile b/net/core/Makefile
-index 6bdcb2cafed8..a8e4f737692b 100644
---- a/net/core/Makefile
-+++ b/net/core/Makefile
-@@ -13,6 +13,8 @@ obj-y		     += dev.o dev_addr_lists.o dst.o netevent.o \
- 			sock_diag.o dev_ioctl.o tso.o sock_reuseport.o \
- 			fib_notifier.o xdp.o flow_offload.o gro.o
- 
-+obj-$(CONFIG_NETDEV_ADDR_LIST_TEST) += dev_addr_lists_test.o
-+
- obj-y += net-sysfs.o
- obj-$(CONFIG_PAGE_POOL) += page_pool.o
- obj-$(CONFIG_PROC_FS) += net-procfs.o
-diff --git a/net/core/dev_addr_lists_test.c b/net/core/dev_addr_lists_test.c
-new file mode 100644
-index 000000000000..049cfbc58aa9
---- /dev/null
-+++ b/net/core/dev_addr_lists_test.c
-@@ -0,0 +1,236 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+
-+#include <kunit/test.h>
-+#include <linux/etherdevice.h>
-+#include <linux/netdevice.h>
-+#include <linux/rtnetlink.h>
-+
-+static const struct net_device_ops dummy_netdev_ops = {
-+};
-+
-+struct dev_addr_test_priv {
-+	u32 addr_seen;
-+};
-+
-+static int dev_addr_test_sync(struct net_device *netdev, const unsigned char *a)
-+{
-+	struct dev_addr_test_priv *datp = netdev_priv(netdev);
-+
-+	if (a[0] < 31 && !memchr_inv(a, a[0], ETH_ALEN))
-+		datp->addr_seen |= 1 << a[0];
-+	return 0;
-+}
-+
-+static int dev_addr_test_unsync(struct net_device *netdev,
-+				const unsigned char *a)
-+{
-+	struct dev_addr_test_priv *datp = netdev_priv(netdev);
-+
-+	if (a[0] < 31 && !memchr_inv(a, a[0], ETH_ALEN))
-+		datp->addr_seen &= ~(1 << a[0]);
-+	return 0;
-+}
-+
-+static int dev_addr_test_init(struct kunit *test)
-+{
-+	struct dev_addr_test_priv *datp;
-+	struct net_device *netdev;
-+	int err;
-+
-+	netdev = alloc_etherdev(sizeof(*datp));
-+	KUNIT_ASSERT_TRUE(test, !!netdev);
-+
-+	test->priv = netdev;
-+	netdev->netdev_ops = &dummy_netdev_ops;
-+
-+	err = register_netdev(netdev);
-+	if (err) {
-+		free_netdev(netdev);
-+		KUNIT_FAIL(test, "Can't register netdev %d", err);
-+	}
-+
-+	rtnl_lock();
-+	return 0;
-+}
-+
-+static void dev_addr_test_exit(struct kunit *test)
-+{
-+	struct net_device *netdev = test->priv;
-+
-+	rtnl_unlock();
-+	unregister_netdev(netdev);
-+	free_netdev(netdev);
-+}
-+
-+static void dev_addr_test_basic(struct kunit *test)
-+{
-+	struct net_device *netdev = test->priv;
-+	u8 addr[ETH_ALEN];
-+
-+	KUNIT_EXPECT_TRUE(test, !!netdev->dev_addr);
-+
-+	memset(addr, 2, sizeof(addr));
-+	eth_hw_addr_set(netdev, addr);
-+	KUNIT_EXPECT_EQ(test, 0, memcmp(netdev->dev_addr, addr, sizeof(addr)));
-+
-+	memset(addr, 3, sizeof(addr));
-+	dev_addr_set(netdev, addr);
-+	KUNIT_EXPECT_EQ(test, 0, memcmp(netdev->dev_addr, addr, sizeof(addr)));
-+}
-+
-+static void dev_addr_test_sync_one(struct kunit *test)
-+{
-+	struct net_device *netdev = test->priv;
-+	struct dev_addr_test_priv *datp;
-+	u8 addr[ETH_ALEN];
-+
-+	datp = netdev_priv(netdev);
-+
-+	memset(addr, 1, sizeof(addr));
-+	eth_hw_addr_set(netdev, addr);
-+
-+	__hw_addr_sync_dev(&netdev->dev_addrs, netdev, dev_addr_test_sync,
-+			   dev_addr_test_unsync);
-+	KUNIT_EXPECT_EQ(test, 2, datp->addr_seen);
-+
-+	memset(addr, 2, sizeof(addr));
-+	eth_hw_addr_set(netdev, addr);
-+
-+	datp->addr_seen = 0;
-+	__hw_addr_sync_dev(&netdev->dev_addrs, netdev, dev_addr_test_sync,
-+			   dev_addr_test_unsync);
-+	/* It's not going to sync anything because the main address is
-+	 * considered synced and we overwrite in place.
-+	 */
-+	KUNIT_EXPECT_EQ(test, 0, datp->addr_seen);
-+}
-+
-+static void dev_addr_test_add_del(struct kunit *test)
-+{
-+	struct net_device *netdev = test->priv;
-+	struct dev_addr_test_priv *datp;
-+	u8 addr[ETH_ALEN];
-+	int i;
-+
-+	datp = netdev_priv(netdev);
-+
-+	for (i = 1; i < 4; i++) {
-+		memset(addr, i, sizeof(addr));
-+		KUNIT_EXPECT_EQ(test, 0, dev_addr_add(netdev, addr,
-+						      NETDEV_HW_ADDR_T_LAN));
-+	}
-+	/* Add 3 again */
-+	KUNIT_EXPECT_EQ(test, 0, dev_addr_add(netdev, addr,
-+					      NETDEV_HW_ADDR_T_LAN));
-+
-+	__hw_addr_sync_dev(&netdev->dev_addrs, netdev, dev_addr_test_sync,
-+			   dev_addr_test_unsync);
-+	KUNIT_EXPECT_EQ(test, 0xf, datp->addr_seen);
-+
-+	KUNIT_EXPECT_EQ(test, 0, dev_addr_del(netdev, addr,
-+					      NETDEV_HW_ADDR_T_LAN));
-+
-+	__hw_addr_sync_dev(&netdev->dev_addrs, netdev, dev_addr_test_sync,
-+			   dev_addr_test_unsync);
-+	KUNIT_EXPECT_EQ(test, 0xf, datp->addr_seen);
-+
-+	for (i = 1; i < 4; i++) {
-+		memset(addr, i, sizeof(addr));
-+		KUNIT_EXPECT_EQ(test, 0, dev_addr_del(netdev, addr,
-+						      NETDEV_HW_ADDR_T_LAN));
-+	}
-+
-+	__hw_addr_sync_dev(&netdev->dev_addrs, netdev, dev_addr_test_sync,
-+			   dev_addr_test_unsync);
-+	KUNIT_EXPECT_EQ(test, 1, datp->addr_seen);
-+}
-+
-+static void dev_addr_test_del_main(struct kunit *test)
-+{
-+	struct net_device *netdev = test->priv;
-+	u8 addr[ETH_ALEN];
-+
-+	memset(addr, 1, sizeof(addr));
-+	eth_hw_addr_set(netdev, addr);
-+
-+	KUNIT_EXPECT_EQ(test, -ENOENT, dev_addr_del(netdev, addr,
-+						    NETDEV_HW_ADDR_T_LAN));
-+	KUNIT_EXPECT_EQ(test, 0, dev_addr_add(netdev, addr,
-+					      NETDEV_HW_ADDR_T_LAN));
-+	KUNIT_EXPECT_EQ(test, 0, dev_addr_del(netdev, addr,
-+					      NETDEV_HW_ADDR_T_LAN));
-+	KUNIT_EXPECT_EQ(test, -ENOENT, dev_addr_del(netdev, addr,
-+						    NETDEV_HW_ADDR_T_LAN));
-+}
-+
-+static void dev_addr_test_add_set(struct kunit *test)
-+{
-+	struct net_device *netdev = test->priv;
-+	struct dev_addr_test_priv *datp;
-+	u8 addr[ETH_ALEN];
-+	int i;
-+
-+	datp = netdev_priv(netdev);
-+
-+	/* There is no external API like dev_addr_add_excl(),
-+	 * so shuffle the tree a little bit and exploit aliasing.
-+	 */
-+	for (i = 1; i < 16; i++) {
-+		memset(addr, i, sizeof(addr));
-+		KUNIT_EXPECT_EQ(test, 0, dev_addr_add(netdev, addr,
-+						      NETDEV_HW_ADDR_T_LAN));
-+	}
-+
-+	memset(addr, i, sizeof(addr));
-+	eth_hw_addr_set(netdev, addr);
-+	KUNIT_EXPECT_EQ(test, 0, dev_addr_add(netdev, addr,
-+					      NETDEV_HW_ADDR_T_LAN));
-+	memset(addr, 0, sizeof(addr));
-+	eth_hw_addr_set(netdev, addr);
-+
-+	__hw_addr_sync_dev(&netdev->dev_addrs, netdev, dev_addr_test_sync,
-+			   dev_addr_test_unsync);
-+	KUNIT_EXPECT_EQ(test, 0xffff, datp->addr_seen);
-+}
-+
-+static void dev_addr_test_add_excl(struct kunit *test)
-+{
-+	struct net_device *netdev = test->priv;
-+	u8 addr[ETH_ALEN];
-+	int i;
-+
-+	for (i = 0; i < 10; i++) {
-+		memset(addr, i, sizeof(addr));
-+		KUNIT_EXPECT_EQ(test, 0, dev_uc_add_excl(netdev, addr));
-+	}
-+	KUNIT_EXPECT_EQ(test, -EEXIST, dev_uc_add_excl(netdev, addr));
-+
-+	for (i = 0; i < 10; i += 2) {
-+		memset(addr, i, sizeof(addr));
-+		KUNIT_EXPECT_EQ(test, 0, dev_uc_del(netdev, addr));
-+	}
-+	for (i = 1; i < 10; i += 2) {
-+		memset(addr, i, sizeof(addr));
-+		KUNIT_EXPECT_EQ(test, -EEXIST, dev_uc_add_excl(netdev, addr));
-+	}
-+}
-+
-+static struct kunit_case dev_addr_test_cases[] = {
-+	KUNIT_CASE(dev_addr_test_basic),
-+	KUNIT_CASE(dev_addr_test_sync_one),
-+	KUNIT_CASE(dev_addr_test_add_del),
-+	KUNIT_CASE(dev_addr_test_del_main),
-+	KUNIT_CASE(dev_addr_test_add_set),
-+	KUNIT_CASE(dev_addr_test_add_excl),
-+	{}
-+};
-+
-+static struct kunit_suite dev_addr_test_suite = {
-+	.name = "dev-addr-list-test",
-+	.test_cases = dev_addr_test_cases,
-+	.init = dev_addr_test_init,
-+	.exit = dev_addr_test_exit,
-+};
-+kunit_test_suite(dev_addr_test_suite);
-+
-+MODULE_LICENSE("GPL");
--- 
-2.31.1
+Hi Christoph:
+       Sorry to bother you. Could you have a look? Which solution do you
+prefer? If we need to call dma_alloc/map_noncontigous() function in the
+netvsc driver what patch 4 does. The Hyper-V specific implementation
+needs to be hided in some callbacks and call these callback in the
+dma_alloc/map_noncontigous(). I used dma ops here. If the allocation and
+map operation should be Hyper-V specific function, we may put these
+functions in the vmbus driver and other vmbus device drivers also may
+reuse these functions if necessary.
 
+Thanks.
