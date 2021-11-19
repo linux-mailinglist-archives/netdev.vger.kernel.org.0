@@ -2,145 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 880234567D6
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 03:07:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFEAD4567D8
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 03:07:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232864AbhKSCKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 21:10:00 -0500
-Received: from mail-eopbgr1300104.outbound.protection.outlook.com ([40.107.130.104]:43840
-        "EHLO APC01-HK2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231802AbhKSCJ7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Nov 2021 21:09:59 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Zm1BRstWm2u2reChpWOdmTocYx085bRiY2TnqBYr5ExE7eWgkD+NlCVr0GuZHBeE2gBekFKR2VIaF4hvKhWbEp1R9AVt9r213rH1XddJJR6OIg0SErFleJxUtIyjris6a2Pi+7bCqYPRhiotEGHEEtDW/0Dl989srY0gVAecPBlciuVNX68JwenPyO8nh/pCHGhsrRZKBV0Gk2Y6ds5gp9lz+d9tNC/tYhXpx/zoJ+QkwwFe6c3FAobQenD5v7ViudOl+MYRm649mybZwnF74jvsua5zIkWhRKZ5Qt9r+F0Irwkxq0vlpzog5fWjd9Jx0f0tgFxbkXXzvJ99P3T8UA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TuyhKQDliC8I4qFoPNAaE88O5kX8kCM/Ysiv4nmtNu0=;
- b=AJ104sN3Csc12XDTwIQrlx6e8vtNZwuc9D54nXOe9194gdKcB0xXf3om69uD11fIUc2M7oRL5zyDFSV2jWuDIhZeXJMtnBFbmrrjngiE4hVAQv76oGMD2V06FF5xq/wzw0BvajuwlpEonYl6OX/O3smQ+B6H2SuUtDBXgOSUjU33qHzSPpr1qfJqEwgA0MbsBWKLI+Md8nF8ZO9SC92CFqVVc661tsQg5x4sqX4rQwA4l9d6PXJ6jYaj0RP9hHLHVrI0U90jcSqoJKrDeAHrAM/Y81TRRTz95xz7+nRZ9K+0O1kE6rjGLwRmEtV6TajRtgMtG8ByZV/n66rTnN1Gsw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TuyhKQDliC8I4qFoPNAaE88O5kX8kCM/Ysiv4nmtNu0=;
- b=nwC1Mw8GU8Lg11GigkUPCb5kEwJSqdcdzU6iKTACTsSNmikTgJjF5jMxooL7LTkoCW65k8ANE2EOFTJnGVGT7ZCsMji53ChHeN24NUUGwC4lvhfZeY3ij2d7EIk3BLS9yEbCija9guVQF/nrNufc+4N6Vp+GF44dVxZBvGoYz9U=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from PSAPR06MB4021.apcprd06.prod.outlook.com (2603:1096:301:37::11)
- by PS2PR06MB3446.apcprd06.prod.outlook.com (2603:1096:300:6e::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.22; Fri, 19 Nov
- 2021 02:06:55 +0000
-Received: from PSAPR06MB4021.apcprd06.prod.outlook.com
- ([fe80::395a:f2d7:d67f:b385]) by PSAPR06MB4021.apcprd06.prod.outlook.com
- ([fe80::395a:f2d7:d67f:b385%4]) with mapi id 15.20.4713.022; Fri, 19 Nov 2021
- 02:06:55 +0000
-From:   Bernard Zhao <bernard@vivo.com>
-To:     Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        id S233106AbhKSCKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 21:10:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33636 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231802AbhKSCKB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 21:10:01 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC679C061574;
+        Thu, 18 Nov 2021 18:06:59 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id g14so35823610edb.8;
+        Thu, 18 Nov 2021 18:06:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Sy5gTTFulPpJ8wmOoZB3V7rj1SaJOS29bzWAZosYg9s=;
+        b=oTTvKeFJysJeNDkq6JhvFlpjnCZNme94N4CIUYGzREVhw/75rT5afwjMrK7HLthvsn
+         PYZ/OEQvBTs6rVFIIib3r+AR/uakslyoyQNcOh0+7taU2yuBEE3wV19Aqy+fyRlZMLFk
+         oj/70NDp31DC+dnZowzIspgAIKOHOKZVFYX2gnuN8omH18P46dWKZ3boPYAPsmPXPQ22
+         4rNUQGok7lmVJTjMThyV24EkIcRbY5fp90iZqq/QCOv6KqpBnFHSbvXVx2Sj6mdEJHej
+         mC5jbFxMRdqpGtzBSQLths2r5C1s+9iKPWhXmkT8iFpLSbemnl4+E7eD6K+NIntGZo9k
+         dJbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Sy5gTTFulPpJ8wmOoZB3V7rj1SaJOS29bzWAZosYg9s=;
+        b=NSng64FpWjJ3Yxe/VXquZNahClXxW3bvkF8O4EOGFta09ef+1uNV8TdMtUO+M5DyTj
+         JzkXk2u9xsn12Qqa3jqrqA9MdaSF/BQUEhO/hiidW0hABcucsc5GHMP1Est5Qkviwcub
+         AMgIQjOzTfU1j4gAi74PHJXRGZ9EyaupHareklq27RQwBJ89qpRl7zXHDCQJ93FOV5LH
+         DnF7ZfGCUF2Pc4Z0DwJtJJCqmahKeqGPlGSFa4Xp2KeWWYYw4wPgIEVeu+sV+7AcU7CK
+         1YThHEMqx1ocnexMqBDU0MF0p9lusm0A8fJFbnreNvyrFjrgR5Gh7ArKqSZ01aijQFtd
+         U+5w==
+X-Gm-Message-State: AOAM531EbcmWQ0BcLTzDtg3zwOOqPFASNFqSbY1+z+u/u4expjANb04s
+        uxY2REN9jomNeZtcgKIVU08=
+X-Google-Smtp-Source: ABdhPJznGI2HWYR0tspouX3S6CwWUUrWUtM7PDNvoVdAsKOD2xr+IULL6OlvwHCLDgnjTucoCZ9EhQ==
+X-Received: by 2002:a05:6402:5146:: with SMTP id n6mr18428106edd.126.1637287618437;
+        Thu, 18 Nov 2021 18:06:58 -0800 (PST)
+Received: from skbuf ([188.25.163.189])
+        by smtp.gmail.com with ESMTPSA id e1sm528345ejy.82.2021.11.18.18.06.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Nov 2021 18:06:58 -0800 (PST)
+Date:   Fri, 19 Nov 2021 04:06:57 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Bernard Zhao <bernard@vivo.com>
-Subject: [PATCH] net/bridge: replace simple_strtoul to kstrtol
-Date:   Thu, 18 Nov 2021 18:06:42 -0800
-Message-Id: <20211119020642.108397-1-bernard@vivo.com>
-X-Mailer: git-send-email 2.33.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR02CA0081.apcprd02.prod.outlook.com
- (2603:1096:4:90::21) To PSAPR06MB4021.apcprd06.prod.outlook.com
- (2603:1096:301:37::11)
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [net-next PATCH 14/19] net: dsa: qca8k: add support for
+ mdb_add/del
+Message-ID: <20211119020657.77os25yh4vhiukvi@skbuf>
+References: <20211117210451.26415-1-ansuelsmth@gmail.com>
+ <20211117210451.26415-15-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Received: from ubuntu.localdomain (203.90.234.87) by SG2PR02CA0081.apcprd02.prod.outlook.com (2603:1096:4:90::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.21 via Frontend Transport; Fri, 19 Nov 2021 02:06:52 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a88e5ef1-61b5-4958-7abd-08d9ab01424e
-X-MS-TrafficTypeDiagnostic: PS2PR06MB3446:
-X-Microsoft-Antispam-PRVS: <PS2PR06MB34462ABBE06A06E05A41DFCDDF9C9@PS2PR06MB3446.apcprd06.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:431;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tLWNjzyDPUTP3joml89VUCfGvg1tYFtD4p0mpFcV0QTlku6LduVeZMH+U+xt9uAmjxD4iVEFk1mkfty5iRGuibqhiE5fnk9Go3pF+l3S3MlKFc48S7wcd9mQVlHaJCs8/heXkxVfsjJBQ7AN90iV17Znhwnuh2kHngKwTNBYPJ5SqmdpBd4cDVZDn7a0gtB+3n2GdL8i+Rnuh0JC1tmrR6Ik/XhNyjYq50q29T3EK5uuZ8s3G6eF7+YVHebqxe9Ae+lMhcLi2sHvq3ueH1iTA7PdODctKjcvbWCUFOodoM/C1rHS76/iv1UKcKlkDHx5PHO2tV+6mrbiXkLY5Q+Hyj8rZOQV07zmR/YqwuPiSdD7ViCra7F/yxfU8zFIhGzzze4YTovCIQRSeg2EgfC4edXMta7wv1/uZWC1wdS/01ewRwznffSmm0rDuE2vtAJXRR/oLBEHnCLX/MXJ6D7uHbT80QSBVnC99fgTq66eaZ948GQWMAf0ZfVa4j8nqV7YwXfErJ/xa+4TlJDcbqJE3uz6EoENGqfZ/77HpzR3SSx+BcVYjFq3PkG2hxo7Njp2Eaayu633RTMOf72hpDxVaPwskm0FwbWPhx2w5n8VmKWhOzo8ICa4fEtustdAv5zkesUXIUNF14G/0fEVH7qUQTsjTVaxyRalT5eoDZEHLZT+Fm/+E1n+yyK+BJ8rMbNk5bR7Kr05HF/uA5+2X1IB6A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PSAPR06MB4021.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6666004)(5660300002)(110136005)(38100700002)(2616005)(38350700002)(6486002)(107886003)(956004)(4744005)(26005)(508600001)(6512007)(4326008)(86362001)(36756003)(8936002)(8676002)(66556008)(83380400001)(66946007)(2906002)(6506007)(66476007)(1076003)(316002)(186003)(52116002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YQSGUCLrq7D8ExDcwwu36tjsyA7kuFZEdjJDUtNOE4uXFVxBC85P2mWTvsLG?=
- =?us-ascii?Q?X94Y7StVSVtMtz1klRDkZLLihUzl2gha9VPJtZ0+pO0VhbZNfQE9XglbV38+?=
- =?us-ascii?Q?nb7CD3PpbupUhfm/bORUJyMKqSs4+jG5OAE75okACD2me05hJj/U/OZVn/+L?=
- =?us-ascii?Q?Y73fe0rYYBiMW1PR3CnxViRi2Z8XjkD7Jd1YhETBsoyDHRT60gofstl0/1Es?=
- =?us-ascii?Q?lKZ3N1PhJvSbq6MhyQRRz2/rpyqXGzh780VUxSn+C36NO0Rx10zv5jZuv2QZ?=
- =?us-ascii?Q?jZiQfszxBKqrgYvESOgDGreeB7FBuuwPajbeuKI06ihAWQwwWIEcWq75lj//?=
- =?us-ascii?Q?xRZE0qKnOnGV1NXfSOQFKn37LjJmg6sGuvdaV5O/k5RergmMpOi85x8jBNqN?=
- =?us-ascii?Q?bW9DIoKhJv1iNu5qNZTizAbhRyWFUWg8CnHkxA+MXVQ0+IPQUTvYbT22zOsX?=
- =?us-ascii?Q?3A+/DBVF/Ys0R8knCG8Flt0a4QpXSSi3dniQQhEd9fnko/YXE5PCwaBPm4Gq?=
- =?us-ascii?Q?1jLo+tz3vRosy5NwFejaeKVIJ+3/luKQT//ptkRAeK6g+Tk7LqY4Q8UTrBxr?=
- =?us-ascii?Q?UbPvZ+CxCO9vQoyrFE8NzfQOjzkgYvLBRf8Nfgrbjjq36DVEofebyKfDncR+?=
- =?us-ascii?Q?rRDoSsgry17BI8f/huSOtOIhBKTSmI2mSRBUHmU+EIFE2X5tqGfWF4jsshKk?=
- =?us-ascii?Q?7Al82LkHAuNnN7cPKmi5ieZdlEx8m671YQrAIY6UMyQBUK7qGDzFcWWApKlq?=
- =?us-ascii?Q?motqGyti6FuiipCji8GkePYM8LMETue9ETtm4bQ8tjdOAhDuHjknKX5OHsJA?=
- =?us-ascii?Q?6oXRcmryGKAG8tsyRcPxKNf+BJm4tVpdzzPr5xVjY07SuQH+/9KHC7+9GO7T?=
- =?us-ascii?Q?8Q630PKnk5uxnvuf5viLiCV6U5+uz69lX4UL4vbT1NAM9Sj5iOspurs5dNai?=
- =?us-ascii?Q?lNqH9sTFA0DW1S6gyVH3PDnqoU9DjMOgudhe9oo4vZ1Gfp0GsqCyp2QqmFSO?=
- =?us-ascii?Q?6Ii/qIw0bGCQYCPBpdpmTiQ8Bqlf26YN1kSDM8KkdtUtVVz5cmlI5nLtTotn?=
- =?us-ascii?Q?b+GLvFuzFKSv2aiFmrYyjz9AfaONcF9Fbd85lZqZflDN8wU8Y39EpciRtXB0?=
- =?us-ascii?Q?rCkOYGpjQ/3S8ZhWD2/TvDH3/0RUYG7nfMe4hjS9tgalwnobSSCymDB9VH3h?=
- =?us-ascii?Q?oWDy9EjyVNiTiImGjxQj/IgNO/jno37yLRgw3PvPwohpXOhi1htv2Nrhc4Ep?=
- =?us-ascii?Q?/4ndO+FKDxqoJfaPBWRWD5BkKfvNXlC0HcFupgnYObpHAL6fvGV+bW6zLrnG?=
- =?us-ascii?Q?hoWfjaOLphmJ8k90p4GfCUVNUU3gABCrk70a19iwBy0BlD3JBQ+3MMY2HBlH?=
- =?us-ascii?Q?r4iG+D9vSr+TJD29eZFD6DVj9G8Sa72ILebaURSn3Ff3ylHE7JtdclHbBwdX?=
- =?us-ascii?Q?9BVecnMfIudRtbV5BmH5oHsfgVFWKfvR9jaF0tCDuwScpiWUldD7e04Dtp0D?=
- =?us-ascii?Q?lv558CQWLtQSLg7Y8brsZe4GlSnMngXJ/JZmCJDbJ6rmaqToBcygjeG27rkw?=
- =?us-ascii?Q?YAq7nKZZx6vOYops3XjGeqYK0qTYYRrVy3ZFpBsZWue03MNihZ2OsdGqDtFz?=
- =?us-ascii?Q?/XXJC4ADbmX/4680PlqwVUY=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a88e5ef1-61b5-4958-7abd-08d9ab01424e
-X-MS-Exchange-CrossTenant-AuthSource: PSAPR06MB4021.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Nov 2021 02:06:54.9872
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zPLMm6aw3dR4oCFrr+DC8VyaU4fxxe8xWaLkHf6paS1TkdURqinQzTZpbThMOrsQ0GnCacGWdiU5FyEanvohog==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PS2PR06MB3446
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211117210451.26415-15-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-simple_strtoull is obsolete, use kstrtol instead.
+On Wed, Nov 17, 2021 at 10:04:46PM +0100, Ansuel Smith wrote:
+> Add support for mdb add/del function. The ARL table is used to insert
+> the rule. A new search function is introduced to search the rule and add
+> additional port to it. If every port is removed from the rule, it's
+> removed. It's set STATIC in the ARL table (aka it doesn't age) to not be
+> flushed by fast age function.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
+>  drivers/net/dsa/qca8k.c | 82 +++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 82 insertions(+)
+> 
+> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> index dda99263fe8c..a217c842ab45 100644
+> --- a/drivers/net/dsa/qca8k.c
+> +++ b/drivers/net/dsa/qca8k.c
+> @@ -417,6 +417,23 @@ qca8k_fdb_flush(struct qca8k_priv *priv)
+>  	mutex_unlock(&priv->reg_mutex);
+>  }
+>  
+> +static int
+> +qca8k_fdb_search(struct qca8k_priv *priv, struct qca8k_fdb *fdb, const u8 *mac, u16 vid)
+> +{
+> +	int ret;
+> +
+> +	mutex_lock(&priv->reg_mutex);
 
-Signed-off-by: Bernard Zhao <bernard@vivo.com>
----
- net/bridge/br_sysfs_br.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+If I were you, I'd create a locking scheme where the entire FDB entry is
+updated under the same critical section. Right now you're relying on the
+rtnl_mutex serializing calls to ->port_mdb_add()/->port_mdb_del(). But
+that might change. Don't leave that task to someone that has non-expert
+knowledge of the driver.
 
-diff --git a/net/bridge/br_sysfs_br.c b/net/bridge/br_sysfs_br.c
-index d9a89ddd0331..11c490694296 100644
---- a/net/bridge/br_sysfs_br.c
-+++ b/net/bridge/br_sysfs_br.c
-@@ -36,15 +36,14 @@ static ssize_t store_bridge_parm(struct device *d,
- 	struct net_bridge *br = to_bridge(d);
- 	struct netlink_ext_ack extack = {0};
- 	unsigned long val;
--	char *endp;
- 	int err;
- 
- 	if (!ns_capable(dev_net(br->dev)->user_ns, CAP_NET_ADMIN))
- 		return -EPERM;
- 
--	val = simple_strtoul(buf, &endp, 0);
--	if (endp == buf)
--		return -EINVAL;
-+	err = kstrtoul(buf, 10, &val);
-+	if (err != 0)
-+		return err;
- 
- 	if (!rtnl_trylock())
- 		return restart_syscall();
--- 
-2.33.1
+> +	qca8k_fdb_write(priv, vid, 0, mac, 0);
+> +	ret = qca8k_fdb_access(priv, QCA8K_FDB_SEARCH, -1);
+> +	if (ret < 0)
+> +		goto exit;
+> +
+> +	ret = qca8k_fdb_read(priv, fdb);
+> +exit:
+> +	mutex_unlock(&priv->reg_mutex);
+> +	return ret;
+> +}
+> +
+>  static int
+>  qca8k_vlan_access(struct qca8k_priv *priv, enum qca8k_vlan_cmd cmd, u16 vid)
+>  {
+> @@ -1959,6 +1976,69 @@ qca8k_port_fdb_dump(struct dsa_switch *ds, int port,
+>  	return 0;
+>  }
+>  
+> +static int
+> +qca8k_port_mdb_add(struct dsa_switch *ds, int port,
+> +		   const struct switchdev_obj_port_mdb *mdb)
+> +{
+> +	struct qca8k_priv *priv = ds->priv;
+> +	struct qca8k_fdb fdb = { 0 };
+> +	const u8 *addr = mdb->addr;
+> +	u8 port_mask = BIT(port);
+
+This doesn't really need to be kept in a temporary variable as it is
+only used once.
+
+> +	u16 vid = mdb->vid;
+> +	int ret;
+> +
+> +	/* Check if entry already exist */
+> +	ret = qca8k_fdb_search(priv, &fdb, addr, vid);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/* Rule exist. Delete first */
+> +	if (!fdb.aging) {
+> +		ret = qca8k_fdb_del(priv, addr, fdb.port_mask, vid);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	/* Add port to fdb portmask */
+> +	fdb.port_mask |= port_mask;
+> +
+> +	return qca8k_port_fdb_insert(priv, addr, fdb.port_mask, vid);
+> +}
+> +
+> +static int
+> +qca8k_port_mdb_del(struct dsa_switch *ds, int port,
+> +		   const struct switchdev_obj_port_mdb *mdb)
+> +{
+> +	struct qca8k_priv *priv = ds->priv;
+> +	struct qca8k_fdb fdb = { 0 };
+> +	const u8 *addr = mdb->addr;
+> +	u8 port_mask = BIT(port);
+> +	u16 vid = mdb->vid;
+> +	int ret;
+> +
+> +	/* Check if entry already exist */
+> +	ret = qca8k_fdb_search(priv, &fdb, addr, vid);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/* Rule doesn't exist. Why delete? */
+
+Because refcounting is hard. In fact with VLANs it is quite possible to
+delete an absent entry. For MDBs and FDBs, the bridge should now error
+out before it even reaches to you.
+
+> +	if (!fdb.aging)
+> +		return -EINVAL;
+> +
+> +	ret = qca8k_fdb_del(priv, addr, port_mask, vid);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Only port in the rule is this port. Don't re insert */
+> +	if (fdb.port_mask == port_mask)
+> +		return 0;
+> +
+> +	/* Remove port from port mask */
+> +	fdb.port_mask &= ~port_mask;
+> +
+> +	return qca8k_port_fdb_insert(priv, addr, fdb.port_mask, vid);
+> +}
+> +
+>  static int
+>  qca8k_port_mirror_add(struct dsa_switch *ds, int port,
+>  		      struct dsa_mall_mirror_tc_entry *mirror,
+> @@ -2160,6 +2240,8 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
+>  	.port_fdb_add		= qca8k_port_fdb_add,
+>  	.port_fdb_del		= qca8k_port_fdb_del,
+>  	.port_fdb_dump		= qca8k_port_fdb_dump,
+> +	.port_mdb_add		= qca8k_port_mdb_add,
+> +	.port_mdb_del		= qca8k_port_mdb_del,
+>  	.port_mirror_add	= qca8k_port_mirror_add,
+>  	.port_mirror_del	= qca8k_port_mirror_del,
+>  	.port_vlan_filtering	= qca8k_port_vlan_filtering,
+> -- 
+> 2.32.0
+> 
 
