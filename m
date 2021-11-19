@@ -2,51 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39B2645765E
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 19:26:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05B72457690
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 19:41:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234569AbhKSS31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 13:29:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57678 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234482AbhKSS3Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 13:29:24 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A4C4C061748
-        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 10:26:22 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id gt5so8565847pjb.1
-        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 10:26:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=9DlGTN7Qf7Ih3sgz22eokhwuPXp2v1jWtJCK8cZnkjw=;
-        b=a/NGcBNkciMHrO1NIuWo4GADEyiNdWAldzXFAihYFgTQrxCfIyMR1wLZDX+9jTIsEh
-         J3p0Fzgr0kMN7+TNMAbZIyoKFNksnJs1M0LjMp/vB423igsRP3uDUi8MJG4n3cNDj+jL
-         Hj8kwJHSLjjEGWB/uzGO/Nimqb6n7KOQ1lsO4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9DlGTN7Qf7Ih3sgz22eokhwuPXp2v1jWtJCK8cZnkjw=;
-        b=EC+89xFJh0vYJ+y3g75QPGvrgDrRi6r1Vus9H9OrbOfnfJwBCWsWsToLO6DWcLj+v6
-         0rRejO0g48y6i756+s0UE2yC+L3Bwj6jxM8/w//0JIZJww0F18l+1RjM7PrOF564znNC
-         wTGS1BB0F4961jFIGk6/p6mAcr9Is2yEc40xB2UOMF0eHiQDqqEn1emh5AhDi0RDfaIq
-         oT/Kp5lgzQi2z8PFYlNbgXg0AZRcYHxo742Ci2V3Cbaj2Bv4SLPHl+0ZiCSrvbVZhzR6
-         XRBkSovx/cqig3i6bWtyDDoiTqW2JQhCiIPL69MCmCr9c1uJRoWccqcBFgO3cxLH4y3U
-         hCKQ==
-X-Gm-Message-State: AOAM533ae/I2tEgoYI0xnsCyIJHI1hZb1kX6Dwklnmh/0S92jFG1bX1v
-        LeU6xGyqLYy/z8loTgiIuGjQDw==
-X-Google-Smtp-Source: ABdhPJyOqQz8idH7cSV5BVRoiuqwbUEIYSGwMWy267I6HNSSKZ43xmLMBY94sDQSjeEi7DfAgmWbiw==
-X-Received: by 2002:a17:90a:ac0b:: with SMTP id o11mr2032931pjq.143.1637346381329;
-        Fri, 19 Nov 2021 10:26:21 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id p19sm375250pfo.92.2021.11.19.10.26.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Nov 2021 10:26:21 -0800 (PST)
-Date:   Fri, 19 Nov 2021 10:26:19 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Jakub Kicinski <kuba@kernel.org>
+        id S235417AbhKSSot (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 13:44:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57240 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234697AbhKSSos (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Nov 2021 13:44:48 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D943C6138D;
+        Fri, 19 Nov 2021 18:41:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637347306;
+        bh=VDecXgh+gqvqzCSucgweelQi68hZPxtxs57AziUhTGY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XGKJLsInYofTjadHspqU2HMfhVAxZ0KFwOgGw3bOS+PJxQb+ntU4Jsq1bKfRCn64c
+         jKMUrAvj/VPf+4a09Sbbk2AIlSG6+vJ1yF8CnG45d00dtnM3SWJnLqx4UaImWZh59E
+         CddibKZFfXfs0Zq0T517uzJiFW44XZvct8zA/awaC3bPcipPhpecHeCwo6Zr9zfwKS
+         tx+uW5t+z+fwteKFx/qOeKGsVjcwrb6uyfwCn0k6w7FMfDBjJKJCtQ29LQoqOC0pp4
+         Ua3mRa7JwTDQ1ERiy8D0WCG+BEOjsg2BSDfk++IVcUV+TeNgEaYpmlD49gicMuI24I
+         e3T0V+QclMpgg==
+Date:   Fri, 19 Nov 2021 10:41:44 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
 Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
         "Gustavo A . R . Silva" <gustavoars@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -66,42 +45,46 @@ Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
         linux-kernel@vger.kernel.org, wireguard@lists.zx2c4.com,
         netdev@vger.kernel.org, linux-hardening@vger.kernel.org
 Subject: Re: [PATCH] skbuff: Switch structure bounds to struct_group()
-Message-ID: <202111191015.509A0BD@keescook>
+Message-ID: <20211119104144.7cb1eac6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <202111191015.509A0BD@keescook>
 References: <20211118183615.1281978-1-keescook@chromium.org>
- <20211118231355.7a39d22f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20211118231355.7a39d22f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <202111191015.509A0BD@keescook>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211118231355.7a39d22f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 18, 2021 at 11:13:55PM -0800, Jakub Kicinski wrote:
-> On Thu, 18 Nov 2021 10:36:15 -0800 Kees Cook wrote:
-> > In preparation for FORTIFY_SOURCE performing compile-time and run-time
-> > field bounds checking for memcpy(), memmove(), and memset(), avoid
-> > intentionally writing across neighboring fields.
+On Fri, 19 Nov 2021 10:26:19 -0800 Kees Cook wrote:
+> On Thu, Nov 18, 2021 at 11:13:55PM -0800, Jakub Kicinski wrote:
+> > On Thu, 18 Nov 2021 10:36:15 -0800 Kees Cook wrote:  
+> > > In preparation for FORTIFY_SOURCE performing compile-time and run-time
+> > > field bounds checking for memcpy(), memmove(), and memset(), avoid
+> > > intentionally writing across neighboring fields.
+> > > 
+> > > Replace the existing empty member position markers "headers_start" and
+> > > "headers_end" with a struct_group(). This will allow memcpy() and sizeof()
+> > > to more easily reason about sizes, and improve readability.
+> > > 
+> > > "pahole" shows no size nor member offset changes to struct sk_buff.
+> > > "objdump -d" shows no object code changes (outside of WARNs affected by
+> > > source line number changes).  
 > > 
-> > Replace the existing empty member position markers "headers_start" and
-> > "headers_end" with a struct_group(). This will allow memcpy() and sizeof()
-> > to more easily reason about sizes, and improve readability.
+> > This adds ~27k of these warnings to W=1 gcc builds:
 > > 
-> > "pahole" shows no size nor member offset changes to struct sk_buff.
-> > "objdump -d" shows no object code changes (outside of WARNs affected by
-> > source line number changes).
+> > include/linux/skbuff.h:851:1: warning: directive in macro's argument list  
 > 
-> This adds ~27k of these warnings to W=1 gcc builds:
-> 
-> include/linux/skbuff.h:851:1: warning: directive in macro's argument list
+> Hrm, I can't reproduce this, using several GCC versions and net-next. What
+> compiler version[1] and base commit[2] were used here?
 
-Hrm, I can't reproduce this, using several GCC versions and net-next. What
-compiler version[1] and base commit[2] were used here?
+gcc version 11.2.1 20210728 (Red Hat 11.2.1-1) (GCC) 
 
--Kees
+HEAD was at: 3b1abcf12894 Merge tag 'regmap-no-bus-update-bits' of git://...
 
-[1] https://github.com/kuba-moo/nipa/pull/10
-[2] https://github.com/kuba-moo/nipa/pull/11
+> [1] https://github.com/kuba-moo/nipa/pull/10
+> [2] https://github.com/kuba-moo/nipa/pull/11
 
--- 
-Kees Cook
+Thanks for these! Will pull in as soon as the bot finishes with what
+it's chewing on right now.
