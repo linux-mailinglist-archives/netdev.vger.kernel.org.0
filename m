@@ -2,86 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBBF04579A6
-	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 00:38:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBBDC4579BB
+	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 00:51:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234890AbhKSXlr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 18:41:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42956 "EHLO
+        id S230361AbhKSXy0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 18:54:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234456AbhKSXlq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 18:41:46 -0500
-Received: from mail-oo1-xc29.google.com (mail-oo1-xc29.google.com [IPv6:2607:f8b0:4864:20::c29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21AADC061574
-        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 15:38:44 -0800 (PST)
-Received: by mail-oo1-xc29.google.com with SMTP id v19-20020a4a2453000000b002bb88bfb594so4257734oov.4
-        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 15:38:44 -0800 (PST)
+        with ESMTP id S229553AbhKSXy0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 18:54:26 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 060ACC061574;
+        Fri, 19 Nov 2021 15:51:24 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id nh10-20020a17090b364a00b001a69adad5ebso10076534pjb.2;
+        Fri, 19 Nov 2021 15:51:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=GD0aySu3SnLtPfPurGLGTrA4SK5u/VwrAiKx2VQvjf0=;
-        b=oP8ZDiE7WAvb+fjgQCBi/g2FHS0ePoP6N24Uq1cCzOj6BRARyT53oT1plOJhFKssst
-         o3LSbGcmU4fKwM7vrShEBIqjja9zpfErD6cr2FBslpENhgS1/sllZH8JFDlPJz00YTFa
-         s0s0VfhikJXFTVc1tWPB1hHzpCMsO/dWPioeGOdatoYHbyTZEtW1nnv9tGewCNAjYb8y
-         VwSxMApMlmjtKYeP8/PU2ylV+VbYc0009//vhpPRARNWhOkeI6slXXxCMspA2Ox2timO
-         nn3+W85tMyLp1x5aN9gu5U/A6kQGneaxx2MEZVvpFpuut6NujmsVge5x86Gf6HSGnH/4
-         zb2w==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=ffhLH0NwpgWw7E9Yn9HnKis1gEoPIxlbU3f/JfNHwEA=;
+        b=VF0uTo9HspY6wdi0StIQLi0ZaTQ10ngLqMLkt2VvlRyTErcxXzM3rv9LoPoo/aieAq
+         /UNrtpWqZs6NGz4v7eFFpDve8RHu9C1kpzkWKg+pX4qFT78feMe4pKSwlNwcqv7OzIDj
+         3smgNNoSo/tSHNzA7EeTTFTnuzANSh5BdL701jBMk7zS2+hclSd6va4ZBE9D3F7ijmoz
+         KjH1gx5ueuuUO3swBIN0CJ+pZJIq2XZ7j5ffnYlxJ87jzNV4VaNTmYBv9Y43nzLju/4k
+         nHrROMkWAk/P6WOqVQUufiiovROJwHkpktsfrY4Z+NE3hqg0cjzoYMfCNg1OuiArkB3K
+         3h0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=GD0aySu3SnLtPfPurGLGTrA4SK5u/VwrAiKx2VQvjf0=;
-        b=uNhMQ00tG5Mjd7kIzr/VeWMQS22I7Jg19JfjrK4NZU9CeyZk9I3Bh+I9+3xYVGF47q
-         5KZHSZ2yz9r3Stn8klbEnEe/DGS2jGqHFIjjvGlhmfwN9srLMXtWHmwJY4C5ljp5gQGJ
-         euzAFkDdcnozaWQhe0rCTEawoHIkG6VHdmM1sIcJxdUZb/ATGgcyiThphd4g6yCj5dt2
-         b1Pndnaw7yhbOau4F1wkhw5LGp/AvNumOv+Gpy1xj6ymmfssRzYdQk0/9h5Zzf3KypkD
-         7FgcRTX7sEehPb0qTGfEiFxzkswSSlu0/2sonSuh4l61Ub2rfpEDpOil0dc470jHRwYV
-         xGBw==
-X-Gm-Message-State: AOAM532dWkyqmcfM21fkAg8ajDlrCaSLUaSz1c8WhtB1cqC5gUd3vrG6
-        KTIzxwuQpUdUZNfwpjehFUx0EgBtHLbduV4IGkg=
-X-Google-Smtp-Source: ABdhPJwUK8QBvXR1PDK9IdVa5aoH3H6VH6q+QAAvw4zjKJnVDR9rVrfQvVvsKmXl2rPPxkkCnsrlTtb+k9oyTIAJ2xM=
-X-Received: by 2002:a4a:d68f:: with SMTP id i15mr20659460oot.77.1637365123355;
- Fri, 19 Nov 2021 15:38:43 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=ffhLH0NwpgWw7E9Yn9HnKis1gEoPIxlbU3f/JfNHwEA=;
+        b=HYv9EcvCNlnVv2IHiqX8NCigbUhFwuJ/jjxfyo6nYdkRzZ9GTIrrooaqFdEP/FHLrW
+         27d34a7EIokJz5aVr5NQ+L3oLErV4iadxv9xXcvnSQz5CqeNPEORGlPIbtEAjeKaHOr6
+         GnkX8W9Bqpa8SYBDdwJJT03bQwtW2IrWMmoUlgWSpexu4KgpQ9SCB1Jti0gd+PK9Ftbh
+         DQ4U0alFmsWEj8oDxDoD7AGIEqpsEWEwQfCa0pwrzbFJv/zjLtxzgKbuzQwaxOvq3nvZ
+         neL9hUfliaFWIycDGCI3ySnQK0M3qhThWSxHouKeDkk6gtnfTlvkyWmQrg0wlz6PfcYa
+         KdUA==
+X-Gm-Message-State: AOAM5318FGwDmT6z3bd82r3oAVZtc/Jln39OW20M1nBmvmSpJd7+VS5K
+        nxHYO6tF9oRSV2kV5eXegnmytz9yVX8=
+X-Google-Smtp-Source: ABdhPJzmm344D4RXCrLDJWc7Hy15wORJAA7VjQgFFKeNGHHEeSEsc2OnBzszg/+3SwXKjhoulZ43SA==
+X-Received: by 2002:a17:90a:db81:: with SMTP id h1mr4789560pjv.46.1637365883457;
+        Fri, 19 Nov 2021 15:51:23 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:a858])
+        by smtp.gmail.com with ESMTPSA id qe12sm12708622pjb.29.2021.11.19.15.51.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Nov 2021 15:51:23 -0800 (PST)
+Date:   Fri, 19 Nov 2021 15:51:21 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Mauricio =?utf-8?Q?V=C3=A1squez?= <mauricio@kinvolk.io>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
+        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
+        Leonardo Di Donato <leonardo.didonato@elastic.co>
+Subject: Re: [PATCH bpf-next v2 4/4] libbpf: Expose CO-RE relocation results
+Message-ID: <20211119235121.kze7xiguhlcbzftc@ast-mbp.dhcp.thefacebook.com>
+References: <20211116164208.164245-1-mauricio@kinvolk.io>
+ <20211116164208.164245-5-mauricio@kinvolk.io>
+ <CAEf4BzZ0pEXzEvArpzL=0qbVC65z=hmeVuP7cbLKk-0_Gv5Y+A@mail.gmail.com>
 MIME-Version: 1.0
-Sender: gaddafiayesha532@gmail.com
-Received: by 2002:a05:6820:1693:0:0:0:0 with HTTP; Fri, 19 Nov 2021 15:38:42
- -0800 (PST)
-From:   Anderson Theresa <ndersontheresa.24@gmail.com>
-Date:   Fri, 19 Nov 2021 15:38:42 -0800
-X-Google-Sender-Auth: uKZ4qmjw6QRvSKBxoXzxKEDnk08
-Message-ID: <CALeZTrd8vM=bHAh0pYeSLVUUL1sJMKuN1C7BXb9VaYcttzLowQ@mail.gmail.com>
-Subject: Re: Greetings My Dear,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAEf4BzZ0pEXzEvArpzL=0qbVC65z=hmeVuP7cbLKk-0_Gv5Y+A@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings,
+On Fri, Nov 19, 2021 at 09:25:03AM -0800, Andrii Nakryiko wrote:
+> On Tue, Nov 16, 2021 at 8:42 AM Mauricio Vásquez <mauricio@kinvolk.io> wrote:
+> >
+> > The result of the CO-RE relocations can be useful for some use cases
+> > like BTFGen[0]. This commit adds a new ‘record_core_relos’ option to
+> > save the result of such relocations and a couple of functions to access
+> > them.
+> >
+> > [0]: https://github.com/kinvolk/btfgen/
+> >
+> > Signed-off-by: Mauricio Vásquez <mauricio@kinvolk.io>
+> > Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
+> > Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
+> > Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
+> > ---
+> >  tools/lib/bpf/libbpf.c    | 63 ++++++++++++++++++++++++++++++++++++++-
+> >  tools/lib/bpf/libbpf.h    | 49 +++++++++++++++++++++++++++++-
+> >  tools/lib/bpf/libbpf.map  |  2 ++
+> >  tools/lib/bpf/relo_core.c | 28 +++++++++++++++--
+> >  tools/lib/bpf/relo_core.h | 21 ++-----------
+> >  5 files changed, 140 insertions(+), 23 deletions(-)
+> >
+> 
+> Ok, I've meditated on this patch set long enough. I still don't like
+> that libbpf will be doing all this just for the sake of BTFGen's use
+> case.
+> 
+> In the end, I think giving bpftool access to internal APIs of libbpf
+> is more appropriate, and it seems like it's pretty easy to achieve. It
+> might actually clean up gen_loader parts a bit as well. So we'll need
+> to coordinate all this with Alexei's current work on CO-RE for kernel
+> as well.
+> 
+> But here's what I think could be done to keep libbpf internals simple.
+> We split bpf_core_apply_relo() into two parts: 1) calculating the
+> struct bpf_core_relo_res and 2) patching the instruction. If you look
+> at bpf_core_apply_relo, it needs prog just for prog_name (which we can
+> just pass everywhere for logging purposes) and to extract one specific
+> instruction to be patched. This instruction is passed at the very end
+> to bpf_core_patch_insn() after bpf_core_relo_res is calculated. So I
+> propose to make those two explicitly separate steps done by libbpf. So
+> bpf_core_apply_relo() (which we should rename to bpf_core_calc_relo()
+> or something like that) won't do any modification to the program
+> instructions. bpf_object__relocate_core() will do bpf_core_calc_relo()
+> first, if that's successful, it will pass the result into
+> bpf_core_patch_insn(). Simple and clean, unless I missed some
+> complication (happens all the time, but..)
 
-I sent this mail praying it will find you in a good condition, since I
-myself am in a very critical health condition in which I sleep every
-night without knowing if I may be alive to see the next day. I am
-Mrs.theresa anderson, a widow suffering from a long time illness. I
-have some funds I inherited from my late husband, the sum of
-($11,000,000.00, Eleven Million Dollars) my Doctor told me recently
-that I have serious sickness which is a cancer problem. What disturbs
-me most is my stroke sickness. Having known my condition, I decided to
-donate this fund to a good person that will utilize it the way I am
-going to instruct herein. I need a very honest God.
+I was thinking about such split as well, but for a different reason :)
+Since we've discussed future kernel flag 'check what libbpf had done'
+the idea is to use bpf_core_relo_res after first step and let kernel
+look at insn to see whether libbpf relocated the insn the same way
+as kernel is going to do.
 
-fearing a person who can claim this money and use it for Charity
-works, for orphanages, widows and also build schools for less
-privileges that will be named after my late husband if possible and to
-promote the word of God and the effort that the house of God is
-maintained. I do not want a situation where this money will be used in
-an ungodly manner. That's why I' making this decision. I'm not afraid
-of death so I know where I'm going. I accept this decision because I
-do not have any child who will inherit this money after I die. Please
-I want your sincere and urgent answer to know if you will be able to
-execute this project, and I will give you more information on how the
-fund will be transferred to your bank account. I am waiting for your
-reply.
+Also I was thinking to pass struct bpf_core_spec [3] and
+struct bpf_core_relo_res [2] as two arrays into bpf_core_calc_relo() to
+reduce stack size, since reduction of BPF_CORE_SPEC_MAX_LEN to 32
+is not enough when all kconfig debugs are on on some architectures.
 
-May God Bless you,
-Mrs.theresa anderson.
+I was planning to work on that as a follow up to my set.
+
+In the light of BTFgen I was thinking whether bpf_core_relo_res should
+be part of uapi returned by the kernel, but that is probably overkill.
