@@ -2,69 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 649C0456E9C
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 13:00:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9EF4456EAE
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 13:05:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234990AbhKSMDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 07:03:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53990 "EHLO mail.kernel.org"
+        id S234568AbhKSMI2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 07:08:28 -0500
+Received: from smtp1.axis.com ([195.60.68.17]:15691 "EHLO smtp1.axis.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234673AbhKSMDO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Nov 2021 07:03:14 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 1BFDA61B39;
-        Fri, 19 Nov 2021 12:00:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637323213;
-        bh=lqpchPmBXslRMIKYieGaGSpYCK20b7OSc4a8O58jBnE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=NtyBMrkJcOzPxmdjVu4nSvHKDG8aFfh04dr+G1N4skGjqUiBnLBuNJj9SmWAm/wZB
-         Z/S76G4rwwPwGH2wdr5uhsHtmOZEors0f9nhnhyL4rUKniVcc4avHSD10BXKuSFbIa
-         xn+RAGy7LUvqHZszLT7O0khHHjd+m7APF62jYbhqfvBdwaG9bbD1JlJAQVbu5Y2nBU
-         BHJ7CzFBkkqxI/brzjwTtq1S6lgPXHQCekeQD5+MiGjdJg43WxyNCVN9uurZokkIcb
-         iXGDqdfjG/vsoSsrWPZaXs0na9jxUR77LydGEMuLNxcaVi/4XFPnlnpbtTZ1M8iMzW
-         FB2Djn86B/IYw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1649060A39;
-        Fri, 19 Nov 2021 12:00:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S230520AbhKSMI2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Nov 2021 07:08:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1637323527;
+  x=1668859527;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=57/QJ6in35nvPvU4ig8kvOqeNLXlQjO2HkYYKefPH8A=;
+  b=V5HnyaO7fWb+WPv8Upjj+2s7EMr0DowlAdcyp0uRsC7VXfhKhhXpngGV
+   GvneCUueSqCRRW44bN72sgXYbZIBrt7okQyP4D/aybGpqvn1crFFGNKsD
+   enQqJ5+qMYWXt9zitWVgVbfYUKpq7nwVUuiss/ECgVepHcyd7ZX9z10i9
+   UyN5m35FXL3PqOlgLYIPBg5i5HVLwgFqcA64C77+prYoYtMCM2dNYhcch
+   uZuzCPj2A8o2LZETIg+lcOOUW7M3fEwDyPhOpTrR542lz7C+PH7VmUhKR
+   8QTZuOuAd1l8x5qmFdOMbyoH3muFk7DtX2iUN3bKJHja8VeGDfLUhmrNS
+   A==;
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+CC:     <kernel@axis.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+Subject: [PATCH] af_unix: fix regression in read after shutdown
+Date:   Fri, 19 Nov 2021 13:05:21 +0100
+Message-ID: <20211119120521.18813-1-vincent.whitchurch@axis.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] ethtool: stats: Use struct_group() to clear all stats at once
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163732321308.14736.7365949386575823100.git-patchwork-notify@kernel.org>
-Date:   Fri, 19 Nov 2021 12:00:13 +0000
-References: <20211118203456.1288056-1-keescook@chromium.org>
-In-Reply-To: <20211118203456.1288056-1-keescook@chromium.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, idosch@nvidia.com,
-        yuehaibing@huawei.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-hardening@vger.kernel.org
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On kernels before v5.15, calling read() on a unix socket after
+shutdown(SHUT_RD) or shutdown(SHUT_RDWR) would return the data
+previously written or EOF.  But now, while read() after
+shutdown(SHUT_RD) still behaves the same way, read() after
+shutdown(SHUT_RDWR) always fails with -EINVAL.
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+This behaviour change was apparently inadvertently introduced as part of
+a bug fix for a different regression caused by the commit adding sockmap
+support to af_unix, commit 94531cfcbe79c359 ("af_unix: Add
+unix_stream_proto for sockmap").  Those commits, for unclear reasons,
+started setting the socket state to TCP_CLOSE on shutdown(SHUT_RDWR),
+while this state change had previously only been done in
+unix_release_sock().
 
-On Thu, 18 Nov 2021 12:34:56 -0800 you wrote:
-> In preparation for FORTIFY_SOURCE performing compile-time and run-time
-> field bounds checking for memset(), avoid intentionally writing across
-> neighboring fields.
-> 
-> Add struct_group() to mark region of struct stats_reply_data that should
-> be initialized, which can now be done in a single memset() call.
-> 
-> [...]
+Restore the original behaviour.  The sockmap tests in
+tests/selftests/bpf continue to pass after this patch.
 
-Here is the summary with links:
-  - ethtool: stats: Use struct_group() to clear all stats at once
-    https://git.kernel.org/netdev/net-next/c/812ad3d270cb
+Fixes: d0c6416bd7091647f60 ("unix: Fix an issue in unix_shutdown causing the other end read/write failures")
+Link: https://lore.kernel.org/lkml/20211111140000.GA10779@axis.com/
+Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+---
+ net/unix/af_unix.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-You are awesome, thank you!
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 78e08e82c08c..b0bfc78e421c 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -2882,9 +2882,6 @@ static int unix_shutdown(struct socket *sock, int mode)
+ 
+ 	unix_state_lock(sk);
+ 	sk->sk_shutdown |= mode;
+-	if ((sk->sk_type == SOCK_STREAM || sk->sk_type == SOCK_SEQPACKET) &&
+-	    mode == SHUTDOWN_MASK)
+-		sk->sk_state = TCP_CLOSE;
+ 	other = unix_peer(sk);
+ 	if (other)
+ 		sock_hold(other);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.33.1
 
