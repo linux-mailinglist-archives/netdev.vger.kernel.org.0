@@ -2,41 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F5B34572D8
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 17:25:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 415CE4572DF
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 17:27:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236422AbhKSQ2c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 11:28:32 -0500
-Received: from mout.kundenserver.de ([217.72.192.75]:37721 "EHLO
+        id S236418AbhKSQaj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 11:30:39 -0500
+Received: from mout.kundenserver.de ([212.227.17.10]:46661 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229944AbhKSQ2b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 11:28:31 -0500
-Received: from mail-wm1-f42.google.com ([209.85.128.42]) by
- mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1N6t3Z-1mb0kh08vH-018LPc; Fri, 19 Nov 2021 17:25:28 +0100
-Received: by mail-wm1-f42.google.com with SMTP id 137so5498842wma.1;
-        Fri, 19 Nov 2021 08:25:27 -0800 (PST)
-X-Gm-Message-State: AOAM531EvBgRjSO/rPL+MikyqJUJgJ7hDn/0QXW+BJ8CSpO+fK8zq3nE
-        Pna/xromGdR+sNS6jilUSP6+6dowlIt+bfZo2D8=
-X-Google-Smtp-Source: ABdhPJxceAOgZg4K9oWzLDHPv4QMPRjgvN2Y7oQmQdzE+p3Y265dv2VJvOf0muRFSn+nfOr9pX8E0TuGzsEYEIm5yn0=
-X-Received: by 2002:a1c:770e:: with SMTP id t14mr963230wmi.173.1637339127628;
- Fri, 19 Nov 2021 08:25:27 -0800 (PST)
+        with ESMTP id S229944AbhKSQai (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 11:30:38 -0500
+Received: from mail-wm1-f43.google.com ([209.85.128.43]) by
+ mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MOAmt-1n39g730tV-00OXVm; Fri, 19 Nov 2021 17:27:34 +0100
+Received: by mail-wm1-f43.google.com with SMTP id c71-20020a1c9a4a000000b0032cdcc8cbafso7922477wme.3;
+        Fri, 19 Nov 2021 08:27:34 -0800 (PST)
+X-Gm-Message-State: AOAM533P80MPamrpRG5ICwckOx5oi49rNDBjA3YDxc3fGHoEwrTgJNyc
+        P0GZ8xQ7hihRqJydWxdBP6upGaoDkrDb7E1jIeg=
+X-Google-Smtp-Source: ABdhPJw9pjl15kxNckhoztOwSEHm2BAFAg53rxD/nLG+Vq3q5u2bghokZvEuTw1FbjRLUctINZWvpCeY9JlD3tiwY20=
+X-Received: by 2002:a1c:2382:: with SMTP id j124mr1036531wmj.35.1637339254218;
+ Fri, 19 Nov 2021 08:27:34 -0800 (PST)
 MIME-Version: 1.0
 References: <20211119113644.1600-1-alx.manpages@gmail.com> <CAK8P3a0qT9tAxFkLN_vJYRcocDW2TcBq79WcYKZFyAG0udZx5Q@mail.gmail.com>
  <434296d3-8fe1-f1d2-ee9d-ea25d6c4e43e@gmail.com> <CAK8P3a2yVXw9gf8-BNvX_rzectNoiy0MqGKvBcXydiUSrc_fCA@mail.gmail.com>
- <f751fb48-d19c-88af-452e-680994a586b4@gmail.com>
-In-Reply-To: <f751fb48-d19c-88af-452e-680994a586b4@gmail.com>
+ <YZfMXlqvG52ls2TE@smile.fi.intel.com> <CAK8P3a06CMzWVj2C3P5v0u8ZVPumXJKrq=TdjSq1NugmeT7-RQ@mail.gmail.com>
+ <2d790206-124b-f850-895f-a57a74c55f79@gmail.com>
+In-Reply-To: <2d790206-124b-f850-895f-a57a74c55f79@gmail.com>
 From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 19 Nov 2021 17:25:11 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a0DD+odXthvGq2UWwrvhDDavukUB=bW-m+=HohjoiTE6w@mail.gmail.com>
-Message-ID: <CAK8P3a0DD+odXthvGq2UWwrvhDDavukUB=bW-m+=HohjoiTE6w@mail.gmail.com>
+Date:   Fri, 19 Nov 2021 17:27:17 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a3O1KLzxSTn1xqi2HjUVw2Utf6m5PZWd1ns7xsExxbJOA@mail.gmail.com>
+Message-ID: <CAK8P3a3O1KLzxSTn1xqi2HjUVw2Utf6m5PZWd1ns7xsExxbJOA@mail.gmail.com>
 Subject: Re: [PATCH 00/17] Add memberof(), split some headers, and slightly
  simplify code
 To:     "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, LKML <linux-kernel@vger.kernel.org>,
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
         Ajit Khaparde <ajit.khaparde@broadcom.com>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Borislav Petkov <bp@suse.de>,
         Corey Minyard <cminyard@mvista.com>, Chris Mason <clm@fb.com>,
@@ -73,80 +75,59 @@ Cc:     Arnd Bergmann <arnd@arndb.de>, LKML <linux-kernel@vger.kernel.org>,
         "open list:DRM DRIVER FOR QEMU'S CIRRUS DEVICE" 
         <virtualization@lists.linux-foundation.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:S5GuW/FhJbZCJ3G6FZbqnEKQXlwtqEiKjIB0f1n46pQpxbhqhXc
- 6TveCz4iJxy1ngbMqrcjwLihHZOf0blM/QEruKdvtftaFuxkNRcf6rYUG+eT/YN7nwx+D+S
- t7g9hk3ovohE0MTVRink/GFOcrma6dR6CuY261CBtUgYQp3oBJpclcC7D8RFsh76yDL6GOZ
- etrrOS799x4OeEF7qxydQ==
+X-Provags-ID: V03:K1:WnwNnQls7mfdin+Yp4JuTfdBk9FL8BMP42ZEZdFoDyMySz32xsc
+ s+UnEAeP/43vAmvHlAAgpYkVx8608SzoPK+4TAkus8YolAMhWxzN2Z7r6UvgT3CrJ2guZeL
+ IGYQC1COwgRgAxqBJFM1O3mlltJDxttlN4Z3DufHVIlIOtVJctGNYpZIJkou8YxTB32Zw+2
+ fg9AIJ80yUX3AEssiybyg==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:5kg0MnOF4wE=:yE4PMYyOqjRnLg466CChJC
- /QantnQnajSM6eB8pwa1ByYIZqmcwFEjlJonk11kwoI+WvZdMf/7Zaefr8yzPJtFg/uN23Bzi
- ECC7V178fPJTABXCS70/BoC29ReieLA/crQKVj65sR36AZp8/cTJd6kcAoCi5QSiUINd5gHQy
- CTB7TxA6lWkdYEudiuf8F9jZvA22oE8ybLsHsMHcpFVTxdgy3spEJN/FP6NUn9qJJqxi9fVOz
- 02hZ2Dbr3MX0So2JTUJLLOO3SXAKNqZ2+w/x+i0qqKthBGsD2fo5k9Ckas7iNvZCuLFkxsqn0
- p2bw9vaxdZj9mo5XZcMAUN/N9a/obC/uRNUkzL5v6Sl0qAm09rN7QRvXTFWYNehafwHbVHLex
- 6n6vCIASlYWqftr+pdcyaMimnn0sTREdp9DqDGIRntEVNjfa8958LgJAzNjmPVPbZOJYHiEl6
- +QHNyZE9Nw6pFbf0oc0pfprTLqlwhCoAY98hEZelcK+GrTL1EoCtm3mzv/tCGwmWxsHFLs0T4
- DyifwFBNF7vsiS0Ch59QxU4jpd0xoMDoL5lYO1ci8+2WxD9Fdz2mfW2gJnCApO+4GuvSiG0Ca
- yCoEsopQQHEckmGtTjpQhBFYZq5kqoeUMW1/UkQ1eo8F/Aik0ThzabCXsHcZmjKzn6u4lhDCH
- awCMZRHOaaaG3/VbAocDT3/QUQjq9uLw1nJZaxIEeV595lcqAjEkPFsyYiBEn6ma5Jb84TEQH
- ELedWRrO7KIV+q+wJG3UqC5PfE55neE0LfAkkz8UhyYFvXSl+lm8o5w28GFFOTJjsTOlGy1h7
- Y+hx9jXNgQPXkDnLwmnfm5qLXdZi6BWJBnCsjEjFuqF9dQhj6U=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:5H6za9UVbdo=:RnBcymBwS3Z0v259rLRDiL
+ uZaP3KG9mJQ5elYe/xWaPVVh+qX3k8inTUc7mji5iKcSPPyLRFu9d9DZtwuDF9NUft0G4ytWb
+ 9zrolj+Co/ceB1IS8giEQPZuLKPKR8s7vfCnkpXS9Gd2pm4ZlyNo4Me7E6ub28hXqSH2kCk+Q
+ TmVolFeTk+TI/rCV3Vm0mMl8/bN8fxvqglW7HZi/M3iGoBmL7nGpn7ffsAoY74alRUfXZnCJQ
+ MWR/Eat/EXRVWwpwO8zmIBLpoxXGkN1qGuYk4SEVJmlOl0qUvYSlzLwFzHyoXQ3/IsZG4Mtuh
+ 3CtM6LVHiP2d+Z8ynGo0KC46YGIBPZDQRLQmij4Wgvh+4mRxq8m4vYfbxfdbnVAXa9B1pn/aI
+ 9pJ/3KIKOw0UdncGzKoGgCTLZXcXn7DPCxEZLgPoyuPF3ww7eQerEjiY/JmBatboJecdV1JKH
+ R9S45hh0rrI6EzTC1oZaUP70mrgc/UNVwXJjE60niOB1eRzgRRGa7OoP+MdptuANJ4BdqUKAM
+ RgMvyH1bXIJdGMKqqeRD72dssa79Nbh4JewnScIsCKLUN++ObuPCOAk3odr3q3l4EFz4UDTPc
+ PfM7ivBVCqj09TFeNOCOnq03/6CDzt4qnyK1r4a1Rz1uCIarP7h1oxTL3PAnJKTosonpNp3ez
+ 8B+/9YAJMjqqiX7beWp3FgmKt3axNnd+xvIiJB2zq4LJJhUretz3I2DZiQayu0hAjpw2wBERO
+ tx9Zns+UyjZWPmWmQ/uMJFShTxp0oNdgGi4mcmNfH3z1D3RrnYTRHhEr7IKox0iIpzpvkcE+Q
+ 8onXCEmOuAApBUdoDJKEeOvbEkpuyWp/x2UQoeT3yfKnu4ZTX0=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 19, 2021 at 5:12 PM Alejandro Colomar (man-pages)
+On Fri, Nov 19, 2021 at 5:22 PM Alejandro Colomar (man-pages)
 <alx.manpages@gmail.com> wrote:
->
-> On 11/19/21 16:57, Arnd Bergmann wrote:
+> On 11/19/21 17:18, Arnd Bergmann wrote:
+> > On Fri, Nov 19, 2021 at 5:10 PM Andy Shevchenko
+> > <andriy.shevchenko@linux.intel.com> wrote:
+> >> On Fri, Nov 19, 2021 at 04:57:46PM +0100, Arnd Bergmann wrote:
 > >
-> > From what I can tell, linux/stddef.h is tiny, I don't think it's really
-> > worth optimizing this part. I have spent some time last year
-> > trying to untangle some of the more interesting headers, but ended
-> > up not completing this as there are some really hard problems
-> > once you start getting to the interesting bits.
+> >>> The main problem with this approach is that as soon as you start
+> >>> actually reducing the unneeded indirect includes, you end up with
+> >>> countless .c files that no longer build because they are missing a
+> >>> direct include for something that was always included somewhere
+> >>> deep underneath, so I needed a second set of scripts to add
+> >>> direct includes to every .c file.
+> >>
+> >> Can't it be done with cocci support?
+> >
+> > There are many ways of doing it, but they all tend to suffer from the
+> > problem of identifying which headers are actually needed based on
+> > the contents of a file, and also figuring out where to put the extra
+> > #include if there are complex #ifdefs.
+> >
+> > For reference, see below for the naive pattern matching I tried.
+> > This is obviously incomplete and partially wrong.
 >
-> In this case it was not about being worth it or not,
-> but that the fact that adding memberof() would break,
-> unless I use 0 instead of NULL for the implementation of memberof(),
-> which I'm against, or I split stddef.
->
-> If I don't do either of those,
-> I'm creating a circular dependency,
-> and it doesn't compile.
+> FYI, if you may not know the tool,
+> theres include-what-you-use(1) (a.k.a. iwyu(1))[1],
+> although it is still not mature,
+> and I'm helping improve it a bit.
 
-Sorry for missing the background here, but I don't see what that
-dependency is. If memberof() is a macro, then including the definition
-should not require having the NULL definition first, you just need to
-have both at the time you use it.
+Yes, I know that one, I tried using it as well, but it did not really
+scale to the size of the kernel as it requires having all files to use
+the correct set of #include, and to know about all the definitions.
 
-> > The main issue here is that user space code should not
-> > include anything outside of include/uapi/ and arch/*/include/uapi/
->
-> Okay.  That's good to know.
->
-> So everything can use uapi code,
-> and uapi code can only use uapi code,
-> right?
-
-Correct.
-
-> > offsetof() is defined in include/linux/stddef.h, so this is by
-> > definition not accessible here. It appears that there is also
-> > an include/uapi/linux/stddef.h that is really strange because
-> > it includes linux/compiler_types.h, which in turn is outside
-> > of uapi/. This should probably be fixed.
->
-> I see.
-> Then,
-> perhaps it would be better to define offsetof() _only_ inside uapi/,
-> and use that definition from everywhere else,
-> and therefore remove the non-uapi version,
-> right?
-
-No, because the user-space <stddef.h> provided by the compiler
-also includes an offsetof() definition. In the uapi/ namespace, the
-kernel must only provide definitions that do not clash with anything
-in user space.
-
-        Arnd
+       Arnd
