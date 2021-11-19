@@ -2,66 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71628456E99
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 13:00:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BE58456E9F
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 13:00:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234831AbhKSMDc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 07:03:32 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53910 "EHLO mail.kernel.org"
+        id S235185AbhKSMDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 07:03:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53974 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234589AbhKSMDN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Nov 2021 07:03:13 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8CD8461A56;
-        Fri, 19 Nov 2021 12:00:11 +0000 (UTC)
+        id S234665AbhKSMDO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Nov 2021 07:03:14 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0CAC861AA3;
+        Fri, 19 Nov 2021 12:00:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637323211;
-        bh=xUEr/+Q218WuJIA1paZay+pHPkm4uvPc5+JlRW6/Z/s=;
+        s=k20201202; t=1637323213;
+        bh=OUAe1Pb1sQuHDgq/6kYeATO52RwFgt62DiQhofN0138=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=PVTOy6m40J6InIr7tWch6v+Ul6sQhVFGTSuD7vu1Acqw0EWt5wsOjEHO1j8oRCvZW
-         84GDwCf2si+kiAeiy63uSkXmJ5sgZwqZ4ZdUDy9buMK4hhv7ynTNjvpER/V19bwaSo
-         dhpur4UG+Ac8dMlOWOihAtRVKdLzkZCboHKy5B1LnQLVPWZlBCeKOb/k7WuJ0sjKyL
-         46mLiafev8YccHBLAlLyJcM855++3fYcgWPfiwupyEBIB8x6O3zzYEF+w3R3wDnfxS
-         oxS8Y75vzoHQ2crDZhFMb4xK1hOs1zupTqFqfgEsUGcNslZICVcBNglT6Q8smHVYXO
-         HvpiPKQhLSxhg==
+        b=ARVf4ZN5eSTqR38OFBpHblS1qZ/Sv87cqA1Cxr59cgIpcv1cY0oylkuNXsuaQQlSL
+         xjDy2Oe2BbJb4ujQzIh3Bve6mU4xkPby+KHA0gM54QzSwV2adYdAzegO6Ao+X4yWy9
+         vdMFGJpMKG2ifAWFvAeiawkIgwFRE3GPsJCw2YuA5I+P/IX6XOTMrKSsKJNOhGHFMr
+         ULvw6+85JJEzHD7k2ixebRu5z8njxy6yoLO3oYeVqOdcBqpInlYlH9j0uORMQm9qWL
+         gZHyGPW2hyScAKwTsCu/JopmKirewZ+Robv3y9majg4WWaZy55vRDHrOjMMTIa/zsE
+         baImecm3092qA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 816C56096E;
-        Fri, 19 Nov 2021 12:00:11 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F159660A0F;
+        Fri, 19 Nov 2021 12:00:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] atlantic: fix double-free in aq_ring_tx_clean
+Subject: Re: [PATCH] ipv6: Use memset_after() to zero rt6_info
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163732321152.14736.8904248120705237232.git-patchwork-notify@kernel.org>
-Date:   Fri, 19 Nov 2021 12:00:11 +0000
-References: <YZbAsgT17yxu4Otk@a-10-27-17-117.dynapool.vpn.nyu.edu>
-In-Reply-To: <YZbAsgT17yxu4Otk@a-10-27-17-117.dynapool.vpn.nyu.edu>
-To:     Zekun Shen <bruceshenzk@gmail.com>
-Cc:     irusskikh@marvell.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        brendandg@nyu.edu
+Message-Id: <163732321298.14736.16066190721054866054.git-patchwork-notify@kernel.org>
+Date:   Fri, 19 Nov 2021 12:00:12 +0000
+References: <20211118203241.1287533-1-keescook@chromium.org>
+In-Reply-To: <20211118203241.1287533-1-keescook@chromium.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-hardening@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Thu, 18 Nov 2021 16:08:02 -0500 you wrote:
-> We found this bug while fuzzing the device driver. Using and freeing
-> the dangling pointer buff->skb would cause use-after-free and
-> double-free.
+On Thu, 18 Nov 2021 12:32:41 -0800 you wrote:
+> In preparation for FORTIFY_SOURCE performing compile-time and run-time
+> field bounds checking for memset(), avoid intentionally writing across
+> neighboring fields.
 > 
-> This bug is triggerable with compromised/malfunctioning devices. We
-> found the bug with QEMU emulation and tested the patch by emulation.
-> We did NOT test on a real device.
+> Use memset_after() to clear everything after the dst_entry member of
+> struct rt6_info.
 > 
 > [...]
 
 Here is the summary with links:
-  - atlantic: fix double-free in aq_ring_tx_clean
-    https://git.kernel.org/netdev/net/c/6a405f6c372d
+  - ipv6: Use memset_after() to zero rt6_info
+    https://git.kernel.org/netdev/net-next/c/8f2a83b454c9
 
 You are awesome, thank you!
 -- 
