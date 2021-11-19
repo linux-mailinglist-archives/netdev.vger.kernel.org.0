@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 181574567CB
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 03:04:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71E194567CD
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 03:04:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232768AbhKSCHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 21:07:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32976 "EHLO
+        id S232771AbhKSCHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 21:07:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232504AbhKSCHK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 21:07:10 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A398FC061574;
-        Thu, 18 Nov 2021 18:04:08 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id w1so35781354edc.6;
-        Thu, 18 Nov 2021 18:04:08 -0800 (PST)
+        with ESMTP id S230151AbhKSCHM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 21:07:12 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13F6C061574;
+        Thu, 18 Nov 2021 18:04:10 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id g14so35797969edb.8;
+        Thu, 18 Nov 2021 18:04:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RMQJgyBENKzkTTSFzaG+/raTWPhTk69l4y3R2ofHhNo=;
-        b=CGNLhoLIaKdmFWNvmOWMcPMFQOP19GqKn0W52XJcJKZIaNQkvMZ5O1xhuCIVWAhQX2
-         8qVyZy9tKJIhi+UZktFkzEqX40OwQSuJ9RUU7MxdoHR/YsLq5ZhXhYsAaO3kDO12AY63
-         nHSSvSGJTHk6/SyPbGxHppYD8Sac9ohb3Ns4yOb5IY/dfv/sD2CCSxSOQ6QmtYzgmJhh
-         f5Nn+rh1YbNGgJ69Qj8er6B+XQt16WxGNDiBqr981LDlBXfHMLlKBW3wYQnKDkzq5I05
-         o0Nbgb5la4WWgn/vlU22nPayhP8wmYS95xIB2SlO/6KIQavvEw4zFANYmUsz4lKPeSbg
-         yQ0A==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=5U+fmJZ5z4ee9LAYq89MnpSRpGij+LFUJBmX6S7mdDA=;
+        b=EMBhsz7kTfVLqNRNNuECt3JvSen5Khg7xcbsKn8n6OlqgAGB+VF+IS7BAlzaVn+k/P
+         e85lueG7xaVjTzUV1tg9oIbxthDnix6ZGoWteSDoth1DPBW54wihjKvaSfjqt8xsCYUn
+         Voodk2TG+HiXawX4hd3P/qpKYahWEUAJxSqtPBd+wvMdwrtroJ8NSR2Ief/pnAKvYNSZ
+         Qwf49ORF8tYBl0l/yl8RRdePWuSs0I30XM9VowJZFBguetPzeCUyz8/xuIWJZoiP0KjF
+         XlxPazs+YKcJzSAN4mgNMZVeYSFmCyJ0DGtxXjX3RscyBDnvmOq11X0TI7LdLvdGB/ZX
+         CnEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RMQJgyBENKzkTTSFzaG+/raTWPhTk69l4y3R2ofHhNo=;
-        b=tkIN2ROmMcfQ6C41TRgVFoZCsYXDYlihbch2gutiNhncoLo/mM2EaRMipNvpsa5kkR
-         OXMJBCdK3MbRifaaPlTNhGRlK5Bx7vhNc2xuv86Xh1CTkYIZAYPpyyqfpqTkk96Jy4VG
-         /UgENd26tQ3BIz8iuH9AqjsOlyYwYYbYlHMA0+jRwE8/+a4OSRXUwpru23qn7PhHMI7C
-         VDyxk0CYd9hELK14BqgkG+fhyL7iVq0iW0v+cdud7yNL2Yly40Qi+SHkFKclKCaiu29x
-         xYqcUEdafoXso3QbpZpi9AH1W4Qj8r6R3eEgzldGP1U+sErGMtBWwpMLkF+bX1ComV/b
-         O4fQ==
-X-Gm-Message-State: AOAM533fIPoP1F4SBl9EFWdHDiAlh07Mk25PRGcVLPHf3OPA7ZepJEGM
-        LB+CPv1grPdSJWGJEbc7wzQ=
-X-Google-Smtp-Source: ABdhPJzr/kCvEu/DZ6rUJ02zUh24zsx3XxlOv1A9p0W9FZ9mJF0cyKJzdjHLpNa1voFYhWsOBG02Dg==
-X-Received: by 2002:a17:907:6da4:: with SMTP id sb36mr2905393ejc.40.1637287447124;
-        Thu, 18 Nov 2021 18:04:07 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=5U+fmJZ5z4ee9LAYq89MnpSRpGij+LFUJBmX6S7mdDA=;
+        b=IN7UNe4ZZG08dzXEKLzkdGiXOSPI3/DqKrro1oxzBglQ5I648MgFB6l5SzTLcCtyEv
+         2jhOen/ssm5rKVuX2a7SrtUfQzV091ZuvZdxTT5lzAJmTcSsA9hdgWM+bsxgcWF9F1lZ
+         4RVlkWwwzvqyzchHwEOr+FI8HTSfGMh+51OtVqeiFGpTnPAe3FPznZAIgWLzTiRi5i5x
+         ep7so/BbMM/RqHUtgeIQ/GrHsP0Zjl4F6xpGPGBQjZGTrPJSR3hhxktBQaDDbKvZPc/l
+         hYhPWy+Oq6kbgnf+idSDIICqs5J/1A6ZsWT8f4T6EQUvBWLvSH3adtzVFiBIpdJzKxKb
+         qPUA==
+X-Gm-Message-State: AOAM530Q+cisYg9EjjFJvqB6mT8N4Q2/+VKpDBK/HIBEIYdbATvnBbXy
+        xBRCCRcfGbji2kDE6/q4yTI=
+X-Google-Smtp-Source: ABdhPJzf5mz+1hgIDMHKvDOG9HsfeLaSKsD0PNHZKvb1XzC3zDDPwDa4SKqQ6TRJA7r2H5+RJV3lIA==
+X-Received: by 2002:a17:906:9459:: with SMTP id z25mr2844815ejx.331.1637287449268;
+        Thu, 18 Nov 2021 18:04:09 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id gz26sm539610ejc.100.2021.11.18.18.04.05
+        by smtp.googlemail.com with ESMTPSA id gz26sm539610ejc.100.2021.11.18.18.04.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Nov 2021 18:04:06 -0800 (PST)
+        Thu, 18 Nov 2021 18:04:09 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -57,58 +57,62 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         Jonathan McDowell <noodles@earth.li>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [net PATCH 1/2] net: dsa: qca8k: fix internal delay applied to the wrong PAD config
-Date:   Fri, 19 Nov 2021 03:03:49 +0100
-Message-Id: <20211119020350.32324-1-ansuelsmth@gmail.com>
+Cc:     Robert Marko <robert.marko@sartura.hr>
+Subject: [net PATCH 2/2] net: dsa: qca8k: fix MTU calculation
+Date:   Fri, 19 Nov 2021 03:03:50 +0100
+Message-Id: <20211119020350.32324-2-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20211119020350.32324-1-ansuelsmth@gmail.com>
+References: <20211119020350.32324-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With SGMII phy the internal delay is always applied to the PAD0 config.
-This is caused by the falling edge configuration that hardcode the reg
-to PAD0 (as the falling edge bits are present only in PAD0 reg)
-Move the delay configuration before the reg overwrite to correctly apply
-the delay.
+From: Robert Marko <robert.marko@sartura.hr>
 
-Fixes: cef08115846e ("net: dsa: qca8k: set internal delay also for sgmii")
+qca8k has a global MTU, so its tracking the MTU per port to make sure
+that the largest MTU gets applied.
+Since it uses the frame size instead of MTU the driver MTU change function
+will then add the size of Ethernet header and checksum on top of MTU.
+
+The driver currently populates the per port MTU size as Ethernet frame
+length + checksum which equals 1518.
+
+The issue is that then MTU change function will go through all of the
+ports, find the largest MTU and apply the Ethernet header + checksum on
+top of it again, so for a desired MTU of 1500 you will end up with 1536.
+
+This is obviously incorrect, so to correct it populate the per port struct
+MTU with just the MTU and not include the Ethernet header + checksum size
+as those will be added by the MTU change function.
+
+Fixes: f58d2598cf70 ("net: dsa: qca8k: implement the port MTU callbacks")
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/net/dsa/qca8k.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index a429c9750add..d7bcecbc1c53 100644
+index d7bcecbc1c53..147ca39531a3 100644
 --- a/drivers/net/dsa/qca8k.c
 +++ b/drivers/net/dsa/qca8k.c
-@@ -1433,6 +1433,12 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
- 
- 		qca8k_write(priv, QCA8K_REG_SGMII_CTRL, val);
- 
-+		/* From original code is reported port instability as SGMII also
-+		 * require delay set. Apply advised values here or take them from DT.
-+		 */
-+		if (state->interface == PHY_INTERFACE_MODE_SGMII)
-+			qca8k_mac_config_setup_internal_delay(priv, cpu_port_index, reg);
-+
- 		/* For qca8327/qca8328/qca8334/qca8338 sgmii is unique and
- 		 * falling edge is set writing in the PORT0 PAD reg
+@@ -1256,8 +1256,12 @@ qca8k_setup(struct dsa_switch *ds)
+ 		/* Set initial MTU for every port.
+ 		 * We have only have a general MTU setting. So track
+ 		 * every port and set the max across all port.
++		 * Set per port MTU to 1500 as the MTU change function
++		 * will add the overhead and if its set to 1518 then it
++		 * will apply the overhead again and we will end up with
++		 * MTU of 1536 instead of 1518
  		 */
-@@ -1455,12 +1461,6 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
- 					QCA8K_PORT0_PAD_SGMII_TXCLK_FALLING_EDGE,
- 					val);
+-		priv->port_mtu[i] = ETH_FRAME_LEN + ETH_FCS_LEN;
++		priv->port_mtu[i] = ETH_DATA_LEN;
+ 	}
  
--		/* From original code is reported port instability as SGMII also
--		 * require delay set. Apply advised values here or take them from DT.
--		 */
--		if (state->interface == PHY_INTERFACE_MODE_SGMII)
--			qca8k_mac_config_setup_internal_delay(priv, cpu_port_index, reg);
--
- 		break;
- 	default:
- 		dev_err(ds->dev, "xMII mode %s not supported for port %d\n",
+ 	/* Special GLOBAL_FC_THRESH value are needed for ar8327 switch */
 -- 
 2.32.0
 
