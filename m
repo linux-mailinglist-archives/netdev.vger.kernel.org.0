@@ -2,114 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54CE64568C8
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 04:48:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C1C84568D2
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 04:54:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234283AbhKSDvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 22:51:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56212 "EHLO
+        id S234358AbhKSD5a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 22:57:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233770AbhKSDvU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 22:51:20 -0500
-Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759C2C061574
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 19:48:19 -0800 (PST)
-Received: by mail-ot1-x330.google.com with SMTP id g91-20020a9d12e4000000b0055ae68cfc3dso14727038otg.9
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 19:48:19 -0800 (PST)
+        with ESMTP id S229734AbhKSD53 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 22:57:29 -0500
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A595EC061574;
+        Thu, 18 Nov 2021 19:54:28 -0800 (PST)
+Received: by mail-oi1-x232.google.com with SMTP id o4so19155675oia.10;
+        Thu, 18 Nov 2021 19:54:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=JTIaBNra4n2MVDVc6MKqFMZXd+UFtw3ja9qNrU4Ky+U=;
-        b=EELw0JXjHVTtuFI6B9g52GlKB8X2/vgYQ39/XiGVZY0pDXgbQc2gFyR4g4kA6qbrrZ
-         XPZPNN0Jrt4dNYTq/Qnypb4NUQ4thqZ37KZBQMaOyjL++NlGq+FKmOXbelvIgJJSE5mK
-         yv/KWSbLVSxHKtNrrQO5B1Fw3F9M+kzKlUXibWsdUpHzwhLcQX5Nzr2eJ9mWswjS8ONN
-         d2NkjqP3ADnUNWL0e4lUK9oB6de3JFuZ20Eo+QNjQiO1PqLQPclOny7fBNY7sI+T3Ug+
-         lJVUsD93xPJJ91CSaOBUDxZLgAPR7rz+eUrbE/AknPBDLamgj/zi8yX6ECIeB9j/bvlk
-         b0tw==
+        bh=vZDyNQlzKH5HpcJ35gDcDsZxrO1Q+mmnr2YDzJLZPoU=;
+        b=BmNZN7DV+OPRRxeE3w0eOlHDSAd9HefcDXFNpzLxrXT762hIcFFa9a4kbQqo5yL4hU
+         kQld98IZ1ky1fKGC7cZCtvEX6ftjvg0sS0X5p4LHKPzl4hvMLINszDBFGxJYrwMAZ10e
+         9e/Rux0ggdUSF8+N9ZlCeEJCnFARWiB/YNrdRDyaTITMSRWhPLL4zbWUEKOdKLjQMLHz
+         sU7LcHdoF4ZdlbMxm9YpwWYbTvdlWQthiWq1+pPWMA1XtTZP6druV0psu/yO113awV38
+         nfTTv0GmhYnEIK0vqccciMhPMRaxBHrIAdYA6i5XzkiaRvHl/O1/hbH6cCOwhdP++nX2
+         LTEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=JTIaBNra4n2MVDVc6MKqFMZXd+UFtw3ja9qNrU4Ky+U=;
-        b=PMjq4POQtNk8uwmnJaFa62GOgBICiCQLx576fD6DD/m/krbW4cEb3m670Wn6kKijQF
-         RP5Gep9pu97Y43FFq/D8Kd7xD9G4h+mpVzDgLrQm5ii6kT9FGAlVHsth9wAdga5g8kUQ
-         U13+o86kDp+5qGVP3BN7zTvwpS4Kak8YVq6diUfCP/OfFFaC5z8CDtn/wJPM95CebmmQ
-         mXimZIkgN5kBF4MUBINNFOWrB4LbSk3KJcN7Cl709xrZOrkphTvdyE37zz296csXhx01
-         lZsXXMPcLpp8AhX+Czjr+MY3bP4Hz+EP3OtwOQABLx9X4ZTHR3YI3bqtafGhCOAl2Rzr
-         lsTA==
-X-Gm-Message-State: AOAM530A/gcflGJMlOox16zU+WSkPAEatNUSn91xRwZNuAX3gUnY7S+Q
-        nKkcYDbdj50Hk7TPuzGMD7c=
-X-Google-Smtp-Source: ABdhPJx699FD3hv26TclNqonmmu8ArOrfZ1PVeTLUhD3dECi3I4BkjVDSqXrsx/f9EvpitS71cA7MQ==
-X-Received: by 2002:a05:6830:22d8:: with SMTP id q24mr1960678otc.170.1637293698905;
-        Thu, 18 Nov 2021 19:48:18 -0800 (PST)
+        bh=vZDyNQlzKH5HpcJ35gDcDsZxrO1Q+mmnr2YDzJLZPoU=;
+        b=tpPAgAUD3F7nLWcK4ucKvz5AgId6GRQIJSydsfl59KSA1Mw4mn1DYLZ9Qbavz/eo4l
+         IIYxfpFXgE7YozsqCtA3O4IS2HDdicdnDU0xQRr3byta1iPIPYWSvbfTiIFSV4jPhF3H
+         EjpBZ67tYpUirG0ohaSOjdqfU637ff6jSZ73ZRy4ARDU+tJdAwS71zEroOJVuPkHZ5pE
+         MbRl6kA/2kD3RmsW/2cQr1cprcpwfZsvd14PcUcojKoE7yvU5EbQci4RcC6aRzgEGWWI
+         GaKgTEijov3d+eB244ZkzQFzp/8c4SCXoGLhzA3Uymt1oO7uXMFAAjP4SdMHfZoqOfnY
+         U+Kg==
+X-Gm-Message-State: AOAM530zeergZVdF0THMVxKNqCgtZGouihsfcGQA7z7DIPp6jPXYy9zf
+        1YCg4JeUEidqX+mioWJWlzM=
+X-Google-Smtp-Source: ABdhPJx6jnEkMJXgJPRSn+Q4Y0t/XcSnlVq8Ox0aVOUiDkG2AaHU/P2OsNUNW5DzYYrjVPpeCmwd2g==
+X-Received: by 2002:a05:6808:2cc:: with SMTP id a12mr2235234oid.126.1637294068110;
+        Thu, 18 Nov 2021 19:54:28 -0800 (PST)
 Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id r10sm385217ool.1.2021.11.18.19.48.18
+        by smtp.googlemail.com with ESMTPSA id n22sm343941oop.29.2021.11.18.19.54.26
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Nov 2021 19:48:18 -0800 (PST)
-Message-ID: <e48ceee7-b101-44f3-1bbc-6fbcdf9194db@gmail.com>
-Date:   Thu, 18 Nov 2021 20:48:17 -0700
+        Thu, 18 Nov 2021 19:54:27 -0800 (PST)
+Message-ID: <9ad07da4-8523-b861-6111-729b8d1d6d57@gmail.com>
+Date:   Thu, 18 Nov 2021 20:54:26 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
  Gecko/20100101 Thunderbird/91.3.1
-Subject: Re: [PATCH net] ipv6: fix typos in __ip6_finish_output()
+Subject: Re: [PATCH v2 net-next 0/2] net: snmp: tracepoint support for snmp
 Content-Language: en-US
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Tobias Brunner <tobias@strongswan.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        David Ahern <dsahern@kernel.org>
-References: <20211119013758.2740195-1-eric.dumazet@gmail.com>
+To:     Menglong Dong <menglong8.dong@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        David Miller <davem@davemloft.net>, mingo@redhat.com,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        dsahern@kernel.org, Menglong Dong <imagedong@tencent.com>,
+        Yuchung Cheng <ycheng@google.com>, kuniyu@amazon.co.jp,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+References: <20211118124812.106538-1-imagedong@tencent.com>
+ <67b36bd8-2477-88ac-83a0-35a1eeaf40c9@gmail.com>
+ <CADxym3ZfBVAecK-oFdMVV2gkOV6iUrq5XGkRZx3yXCuXDOS=2A@mail.gmail.com>
 From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20211119013758.2740195-1-eric.dumazet@gmail.com>
+In-Reply-To: <CADxym3ZfBVAecK-oFdMVV2gkOV6iUrq5XGkRZx3yXCuXDOS=2A@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/18/21 6:37 PM, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On 11/18/21 8:45 PM, Menglong Dong wrote:
+> Hello~
 > 
-> We deal with IPv6 packets, so we need to use IP6CB(skb)->flags and
-> IP6SKB_REROUTED, instead of IPCB(skb)->flags and IPSKB_REROUTED
+> On Thu, Nov 18, 2021 at 11:36 PM David Ahern <dsahern@gmail.com> wrote:
+>>
+> [...]
+>>
+>> there is already good infrastructure around kfree_skb - e.g., drop watch
+>> monitor. Why not extend that in a way that other drop points can benefit
+>> over time?
+>>
 > 
-> Found by code inspection, please double check that fixing this bug
-> does not surface other bugs.
+> Thanks for your advice.
 > 
-> Fixes: 09ee9dba9611 ("ipv6: Reinject IPv6 packets if IPsec policy matches after SNAT")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Tobias Brunner <tobias@strongswan.org>
-> Cc: Steffen Klassert <steffen.klassert@secunet.com>
-> Cc: David Ahern <dsahern@kernel.org>
-> ---
->  net/ipv6/ip6_output.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> In fact, I don't think that this is a perfect idea. This way may have benefit
+> of reuse the existing kfree_skb event, but this will do plentiful modification
+> to the current code. For example, in tcp_v4_rcv(), you need to introduce the
+> new variate 'int free_reason' and record the drop reason in it, and pass
+> it to 'kfree_skb_with_reason()' in 'discard_it:'. Many places need this kind
+> modification. What's more, some statistics don't use 'kfree_skb()'.
 > 
-> diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-> index 2f044a49afa8cf3586c36607c34073edecafc69c..ff4e83e2a5068322bb93391c7c5e2a8cb932730b 100644
-> --- a/net/ipv6/ip6_output.c
-> +++ b/net/ipv6/ip6_output.c
-> @@ -174,7 +174,7 @@ static int __ip6_finish_output(struct net *net, struct sock *sk, struct sk_buff
->  #if defined(CONFIG_NETFILTER) && defined(CONFIG_XFRM)
->  	/* Policy lookup after SNAT yielded a new policy */
->  	if (skb_dst(skb)->xfrm) {
-> -		IPCB(skb)->flags |= IPSKB_REROUTED;
-> +		IP6CB(skb)->flags |= IP6SKB_REROUTED;
->  		return dst_output(net, sk, skb);
->  	}
->  #endif
+> However, with the tracepoint for snmp, we just need to pass 'skb' to
+> 'UDP_INC_STATS()/TCP_INC_STATS()', the reason is already included.
+> This way, the modification is more simple and easier to maintain.
 > 
 
-How did that even work - the flags are at different offsets.
+But it integrates into existing tooling which is a big win.
 
-VRF driver has the same mistake in vrf_output6_direct (I followed ipv6
-code back when and did not pick up on the mistake). prepare_ipv6_hdr in
-rxe_net.c has a similar style mistake.
+Ido gave the references for his work:
+https://github.com/nhorman/dropwatch/pull/11
+https://github.com/nhorman/dropwatch/commit/199440959a288dd97e3b7ae701d4e78968cddab7
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+And the Wireshark dissector is also upstream:
+https://github.com/wireshark/wireshark/commit/a94a860c0644ec3b8a129fd243674a2e376ce1c8
 
+i.e., the skb is already pushed to userspace for packet analysis. You
+would just be augmenting more metadata along with it and not reinventing
+all of this for just snmp counter based drops.
