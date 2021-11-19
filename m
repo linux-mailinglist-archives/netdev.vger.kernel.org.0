@@ -2,621 +2,282 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C93C6457343
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 17:40:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B6044574FB
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 18:01:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236569AbhKSQnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 11:43:55 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:30153 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235220AbhKSQnx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 11:43:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637340051;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EWdg7pWkFqtkLrfpXENrF+/TQo8iE+ecPfYst5AxgWQ=;
-        b=KGChaj+nN6Urs2zolE5rYusyadToXgsKZsgZQ/YpBDNvLxvjQPoaGvABBDnu/6Q7SY/ML4
-        dHFqRkynKctJdyiN0ZAwURKYwyTVSUCeCyOjCNJ0hxzT3ls95IHdr8SldHdLyv3EF5u3EG
-        Rz1sAdM13GAsoDl4Eo/j0f4H/vw1ndw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-160-bhO5LY5CMHu3WEfvwfRgBA-1; Fri, 19 Nov 2021 11:40:47 -0500
-X-MC-Unique: bhO5LY5CMHu3WEfvwfRgBA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D25C9425EC;
-        Fri, 19 Nov 2021 16:40:46 +0000 (UTC)
-Received: from gerbillo.redhat.com (unknown [10.39.193.42])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4CACC60BF1;
-        Fri, 19 Nov 2021 16:40:45 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCH net-next 2/2] bpf: let bpf_warn_invalid_xdp_action() report more info
-Date:   Fri, 19 Nov 2021 17:39:16 +0100
-Message-Id: <2d7cdef73ce22021ee8ce40feeb9f084af066cea.1637339774.git.pabeni@redhat.com>
-In-Reply-To: <cover.1637339774.git.pabeni@redhat.com>
-References: <cover.1637339774.git.pabeni@redhat.com>
+        id S236183AbhKSREQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 12:04:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38352 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236012AbhKSREQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 12:04:16 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FC18C06173E
+        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 09:01:14 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id x7so8431616pjn.0
+        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 09:01:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=VPWqgftTickrFvrexyF8BcHESCqZpL9MnOlpgEvMP3A=;
+        b=8QNIG7yIiGF3Rcjbc+djL5c1OdipK94U4ovE9uHL1PjgM7aiwZEl9TD1hwwRPAaK3k
+         pIsU+LY5Ndk5E303F00OrWJVQ2F3+wrYoUqMJY2oiqwAbW2eVMBs6oEO948+mXC7FBVJ
+         3NztVvyGo6pe/x1KBX45xdOOXMIda+M+tBZWwOSEL7FcK5Bryn2GyGz4nZupvkMdWSfS
+         NE8+r17V2JtvufXsU6OeEwhGkIhvw/Q1kaFj3X4Da1qXwMIaiDcD/kwIJ8W5JAIskMci
+         6DUVn1/cn7nbxBYgbfnHY2/mGbWflJ0jjfD9ny2WKoyi4G4SC9KR6hvKJ+BcniJHhste
+         8FUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=VPWqgftTickrFvrexyF8BcHESCqZpL9MnOlpgEvMP3A=;
+        b=hXFr1oWocvnk0EfQMBPrVxg4op2iSo7Qi4UvEsSFB9fPAT+lwMHQKpYiMSLOYKfVFJ
+         JjAsHlHusr8Nc2jMXiMsfRkUij0y7dYro1qOYVk228DIwkIHagr8CCTKcYHYXXJ0RH5P
+         gc8HfzooydMCcOYf0eykGFcF/Sys0KqZDl/D0Q9GAHablKm7KLQV6IbCT350KSK0F3mV
+         YOx6GBP4BG0APWl8TEhcHOz6IXpbYgGAdy/XnkHCpxJ9syuZH7aQa16YbjKzeE4IJdGG
+         6A4JZPGul0X6UumDlmENumJ8ga71q01Q/cOWUk7edkA2IXPCOsf8H3TmUCSFKR8wMIMR
+         heKA==
+X-Gm-Message-State: AOAM530r46kONDfhb9/zJa1KgcZ71rQGGbk4hTvLIDhpB/Hb44DyKXXA
+        F5lELsUV94E8FW2XwU5t8GlR6A==
+X-Google-Smtp-Source: ABdhPJywP71ekWuPYIacj4odxV2uZhgeoyR2lGK7E4ymUDuzSHxhDDTt0i2WYFFLKVI3p0NbKV9kNg==
+X-Received: by 2002:a17:90a:312:: with SMTP id 18mr1394680pje.178.1637341273775;
+        Fri, 19 Nov 2021 09:01:13 -0800 (PST)
+Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
+        by smtp.gmail.com with ESMTPSA id q9sm247206pfj.88.2021.11.19.09.01.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Nov 2021 09:01:13 -0800 (PST)
+Date:   Fri, 19 Nov 2021 09:01:10 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        vijayendra.suman@oracle.com, ramanan.govindarajan@oracle.com,
+        george.kennedy@oracle.com, syzkaller <syzkaller@googlegroups.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: sched: sch_netem: Fix a divide error in
+ netem_enqueue during randomized corruption.
+Message-ID: <20211119090110.75d8351b@hermes.local>
+In-Reply-To: <629fe4fc-8fbf-4dec-8192-32e1126fa185@gmail.com>
+References: <20211119084241.14984-1-harshit.m.mogalapalli@oracle.com>
+        <629fe4fc-8fbf-4dec-8192-32e1126fa185@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In non trivial scenarios, the action id alone is not sufficient
-to identify the program causing the warning. Before the previous
-patch, the generated stack-trace pointed out at least the
-involved device driver.
+On Fri, 19 Nov 2021 07:49:59 -0800
+Eric Dumazet <eric.dumazet@gmail.com> wrote:
 
-Let's additionally include the program name and id, and the
-relevant device name.
+> On 11/19/21 12:42 AM, Harshit Mogalapalli wrote:
+> > In netem_enqueue function the value of skb_headlen(skb) can be zero
+> > which leads to a division error during randomized corruption of the packet.
+> > This fix  adds a check to skb_headlen(skb) to prevent the division error.
+> > 
+> > Crash report:
+> > [  343.170349] netdevsim netdevsim0 netdevsim3: set [1, 0] type 2 family
+> > 0 port 6081 - 0
+> > [  343.216110] netem: version 1.3
+> > [  343.235841] divide error: 0000 [#1] PREEMPT SMP KASAN NOPTI
+> > [  343.236680] CPU: 3 PID: 4288 Comm: reproducer Not tainted 5.16.0-rc1+
+> > [  343.237569] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+> > BIOS 1.11.0-2.el7 04/01/2014
+> > [  343.238707] RIP: 0010:netem_enqueue+0x1590/0x33c0 [sch_netem]
+> > [  343.239499] Code: 89 85 58 ff ff ff e8 5f 5d e9 d3 48 8b b5 48 ff ff
+> > ff 8b 8d 50 ff ff ff 8b 85 58 ff ff ff 48 8b bd 70 ff ff ff 31 d2 2b 4f
+> > 74 <f7> f1 48 b8 00 00 00 00 00 fc ff df 49 01 d5 4c 89 e9 48 c1 e9 03
+> > [  343.241883] RSP: 0018:ffff88800bcd7368 EFLAGS: 00010246
+> > [  343.242589] RAX: 00000000ba7c0a9c RBX: 0000000000000001 RCX:
+> > 0000000000000000
+> > [  343.243542] RDX: 0000000000000000 RSI: ffff88800f8edb10 RDI:
+> > ffff88800f8eda40
+> > [  343.244474] RBP: ffff88800bcd7458 R08: 0000000000000000 R09:
+> > ffffffff94fb8445
+> > [  343.245403] R10: ffffffff94fb8336 R11: ffffffff94fb8445 R12:
+> > 0000000000000000
+> > [  343.246355] R13: ffff88800a5a7000 R14: ffff88800a5b5800 R15:
+> > 0000000000000020
+> > [  343.247291] FS:  00007fdde2bd7700(0000) GS:ffff888109780000(0000)
+> > knlGS:0000000000000000
+> > [  343.248350] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > [  343.249120] CR2: 00000000200000c0 CR3: 000000000ef4c000 CR4:
+> > 00000000000006e0
+> > [  343.250076] Call Trace:
+> > [  343.250423]  <TASK>
+> > [  343.250713]  ? memcpy+0x4d/0x60
+> > [  343.251162]  ? netem_init+0xa0/0xa0 [sch_netem]
+> > [  343.251795]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> > [  343.252443]  netem_enqueue+0xe28/0x33c0 [sch_netem]
+> > [  343.253102]  ? stack_trace_save+0x87/0xb0
+> > [  343.253655]  ? filter_irq_stacks+0xb0/0xb0
+> > [  343.254220]  ? netem_init+0xa0/0xa0 [sch_netem]
+> > [  343.254837]  ? __kasan_check_write+0x14/0x20
+> > [  343.255418]  ? _raw_spin_lock+0x88/0xd6
+> > [  343.255953]  dev_qdisc_enqueue+0x50/0x180
+> > [  343.256508]  __dev_queue_xmit+0x1a7e/0x3090
+> > [  343.257083]  ? netdev_core_pick_tx+0x300/0x300
+> > [  343.257690]  ? check_kcov_mode+0x10/0x40
+> > [  343.258219]  ? _raw_spin_unlock_irqrestore+0x29/0x40
+> > [  343.258899]  ? __kasan_init_slab_obj+0x24/0x30
+> > [  343.259529]  ? setup_object.isra.71+0x23/0x90
+> > [  343.260121]  ? new_slab+0x26e/0x4b0
+> > [  343.260609]  ? kasan_poison+0x3a/0x50
+> > [  343.261118]  ? kasan_unpoison+0x28/0x50
+> > [  343.261637]  ? __kasan_slab_alloc+0x71/0x90
+> > [  343.262214]  ? memcpy+0x4d/0x60
+> > [  343.262674]  ? write_comp_data+0x2f/0x90
+> > [  343.263209]  ? __kasan_check_write+0x14/0x20
+> > [  343.263802]  ? __skb_clone+0x5d6/0x840
+> > [  343.264329]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> > [  343.264958]  dev_queue_xmit+0x1c/0x20
+> > [  343.265470]  netlink_deliver_tap+0x652/0x9c0
+> > [  343.266067]  netlink_unicast+0x5a0/0x7f0
+> > [  343.266608]  ? netlink_attachskb+0x860/0x860
+> > [  343.267183]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> > [  343.267820]  ? write_comp_data+0x2f/0x90
+> > [  343.268367]  netlink_sendmsg+0x922/0xe80
+> > [  343.268899]  ? netlink_unicast+0x7f0/0x7f0
+> > [  343.269472]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> > [  343.270099]  ? write_comp_data+0x2f/0x90
+> > [  343.270644]  ? netlink_unicast+0x7f0/0x7f0
+> > [  343.271210]  sock_sendmsg+0x155/0x190
+> > [  343.271721]  ____sys_sendmsg+0x75f/0x8f0
+> > [  343.272262]  ? kernel_sendmsg+0x60/0x60
+> > [  343.272788]  ? write_comp_data+0x2f/0x90
+> > [  343.273332]  ? write_comp_data+0x2f/0x90
+> > [  343.273869]  ___sys_sendmsg+0x10f/0x190
+> > [  343.274405]  ? sendmsg_copy_msghdr+0x80/0x80
+> > [  343.274984]  ? slab_post_alloc_hook+0x70/0x230
+> > [  343.275597]  ? futex_wait_setup+0x240/0x240
+> > [  343.276175]  ? security_file_alloc+0x3e/0x170
+> > [  343.276779]  ? write_comp_data+0x2f/0x90
+> > [  343.277313]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> > [  343.277969]  ? write_comp_data+0x2f/0x90
+> > [  343.278515]  ? __fget_files+0x1ad/0x260
+> > [  343.279048]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> > [  343.279685]  ? write_comp_data+0x2f/0x90
+> > [  343.280234]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> > [  343.280874]  ? sockfd_lookup_light+0xd1/0x190
+> > [  343.281481]  __sys_sendmsg+0x118/0x200
+> > [  343.281998]  ? __sys_sendmsg_sock+0x40/0x40
+> > [  343.282578]  ? alloc_fd+0x229/0x5e0
+> > [  343.283070]  ? write_comp_data+0x2f/0x90
+> > [  343.283610]  ? write_comp_data+0x2f/0x90
+> > [  343.284135]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> > [  343.284776]  ? ktime_get_coarse_real_ts64+0xb8/0xf0
+> > [  343.285450]  __x64_sys_sendmsg+0x7d/0xc0
+> > [  343.285981]  ? syscall_enter_from_user_mode+0x4d/0x70
+> > [  343.286664]  do_syscall_64+0x3a/0x80
+> > [  343.287158]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> > [  343.287850] RIP: 0033:0x7fdde24cf289
+> > [  343.288344] Code: 01 00 48 81 c4 80 00 00 00 e9 f1 fe ff ff 0f 1f 00
+> > 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f
+> > 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 db 2c 00 f7 d8 64 89 01 48
+> > [  343.290729] RSP: 002b:00007fdde2bd6d98 EFLAGS: 00000246 ORIG_RAX:
+> > 000000000000002e
+> > [  343.291730] RAX: ffffffffffffffda RBX: 0000000000000000 RCX:
+> > 00007fdde24cf289
+> > [  343.292673] RDX: 0000000000000000 RSI: 00000000200000c0 RDI:
+> > 0000000000000004
+> > [  343.293618] RBP: 00007fdde2bd6e20 R08: 0000000100000001 R09:
+> > 0000000000000000
+> > [  343.294557] R10: 0000000100000001 R11: 0000000000000246 R12:
+> > 0000000000000000
+> > [  343.295493] R13: 0000000000021000 R14: 0000000000000000 R15:
+> > 00007fdde2bd7700
+> > [  343.296432]  </TASK>
+> > [  343.296735] Modules linked in: sch_netem ip6_vti ip_vti ip_gre ipip
+> > sit ip_tunnel geneve macsec macvtap tap ipvlan macvlan 8021q garp mrp
+> > hsr wireguard libchacha20poly1305 chacha_x86_64 poly1305_x86_64
+> > ip6_udp_tunnel udp_tunnel libblake2s blake2s_x86_64 libblake2s_generic
+> > curve25519_x86_64 libcurve25519_generic libchacha xfrm_interface
+> > xfrm6_tunnel tunnel4 veth netdevsim psample batman_adv nlmon dummy team
+> > bonding tls vcan ip6_gre ip6_tunnel tunnel6 gre tun ip6t_rpfilter
+> > ipt_REJECT nf_reject_ipv4 ip6t_REJECT nf_reject_ipv6 xt_conntrack ip_set
+> > ebtable_nat ebtable_broute ip6table_nat ip6table_mangle
+> > ip6table_security ip6table_raw iptable_nat nf_nat nf_conntrack
+> > nf_defrag_ipv6 nf_defrag_ipv4 iptable_mangle iptable_security
+> > iptable_raw ebtable_filter ebtables rfkill ip6table_filter ip6_tables
+> > iptable_filter ppdev bochs drm_vram_helper drm_ttm_helper ttm
+> > drm_kms_helper cec parport_pc drm joydev floppy parport sg syscopyarea
+> > sysfillrect sysimgblt i2c_piix4 qemu_fw_cfg fb_sys_fops pcspkr
+> > [  343.297459]  ip_tables xfs virtio_net net_failover failover sd_mod
+> > sr_mod cdrom t10_pi ata_generic pata_acpi ata_piix libata virtio_pci
+> > virtio_pci_legacy_dev serio_raw virtio_pci_modern_dev dm_mirror
+> > dm_region_hash dm_log dm_mod
+> > [  343.311074] Dumping ftrace buffer:
+> > [  343.311532]    (ftrace buffer empty)
+> > [  343.312040] ---[ end trace a2e3db5a6ae05099 ]---
+> > [  343.312691] RIP: 0010:netem_enqueue+0x1590/0x33c0 [sch_netem]
+> > [  343.313481] Code: 89 85 58 ff ff ff e8 5f 5d e9 d3 48 8b b5 48 ff ff
+> > ff 8b 8d 50 ff ff ff 8b 85 58 ff ff ff 48 8b bd 70 ff ff ff 31 d2 2b 4f
+> > 74 <f7> f1 48 b8 00 00 00 00 00 fc ff df 49 01 d5 4c 89 e9 48 c1 e9 03
+> > [  343.315893] RSP: 0018:ffff88800bcd7368 EFLAGS: 00010246
+> > [  343.316622] RAX: 00000000ba7c0a9c RBX: 0000000000000001 RCX:
+> > 0000000000000000
+> > [  343.317585] RDX: 0000000000000000 RSI: ffff88800f8edb10 RDI:
+> > ffff88800f8eda40
+> > [  343.318549] RBP: ffff88800bcd7458 R08: 0000000000000000 R09:
+> > ffffffff94fb8445
+> > [  343.319503] R10: ffffffff94fb8336 R11: ffffffff94fb8445 R12:
+> > 0000000000000000
+> > [  343.320455] R13: ffff88800a5a7000 R14: ffff88800a5b5800 R15:
+> > 0000000000000020
+> > [  343.321414] FS:  00007fdde2bd7700(0000) GS:ffff888109780000(0000)
+> > knlGS:0000000000000000
+> > [  343.322489] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > [  343.323283] CR2: 00000000200000c0 CR3: 000000000ef4c000 CR4:
+> > 00000000000006e0
+> > [  343.324264] Kernel panic - not syncing: Fatal exception in interrupt
+> > [  343.333717] Dumping ftrace buffer:
+> > [  343.334175]    (ftrace buffer empty)
+> > [  343.334653] Kernel Offset: 0x13600000 from 0xffffffff81000000
+> > (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+> > [  343.336027] Rebooting in 86400 seconds..
+> > 
+> > Reported-by: syzkaller <syzkaller@googlegroups.com>
+> > Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+> > ---
+> >  net/sched/sch_netem.c | 10 ++++++++--
+> >  1 file changed, 8 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
+> > index ecbb10db1111..e1e1a00fedda 100644
+> > --- a/net/sched/sch_netem.c
+> > +++ b/net/sched/sch_netem.c
+> > @@ -513,8 +513,14 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+> >  			goto finish_segs;
+> >  		}
+> >  
+> > -		skb->data[prandom_u32() % skb_headlen(skb)] ^=
+> > -			1<<(prandom_u32() % 8);
+> > +		if (unlikely(!skb_headlen(skb))) {
+> > +			qdisc_drop(skb, sch, to_free);
+> > +			skb = NULL;
+> > +			goto finish_segs;
+> > +		} else {
+> > +			skb->data[prandom_u32() % skb_headlen(skb)] ^=
+> > +				1<<(prandom_u32() % 8);
+> > +		}
+> >  	}
+> >  
+> >  	if (unlikely(sch->q.qlen >= sch->limit)) {
+> >   
+> 
+> 
+> If we accept the fact that a packet can reach qdisc with nothing in skb->head,
+> then we have other serious issues.
+> 
+> Why dropping the packet ?
+> 
+> I would rather pull headers here.
+> 
 
-If the user needs additional infos, he can fetch them via a
-kernel probe, leveraging the arguments added here.
-
-rfc -> v1:
- - do not print the attach type, print the program name
-
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- drivers/net/ethernet/amazon/ena/ena_netdev.c           | 2 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c          | 2 +-
- drivers/net/ethernet/cavium/thunder/nicvf_main.c       | 2 +-
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c         | 2 +-
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c       | 2 +-
- drivers/net/ethernet/freescale/enetc/enetc.c           | 2 +-
- drivers/net/ethernet/intel/i40e/i40e_txrx.c            | 2 +-
- drivers/net/ethernet/intel/i40e/i40e_xsk.c             | 2 +-
- drivers/net/ethernet/intel/ice/ice_txrx.c              | 2 +-
- drivers/net/ethernet/intel/ice/ice_xsk.c               | 2 +-
- drivers/net/ethernet/intel/igb/igb_main.c              | 2 +-
- drivers/net/ethernet/intel/igc/igc_main.c              | 2 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c          | 2 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c           | 2 +-
- drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c      | 2 +-
- drivers/net/ethernet/marvell/mvneta.c                  | 2 +-
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c        | 2 +-
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c | 2 +-
- drivers/net/ethernet/mellanox/mlx4/en_rx.c             | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c       | 2 +-
- drivers/net/ethernet/netronome/nfp/nfp_net_common.c    | 2 +-
- drivers/net/ethernet/qlogic/qede/qede_fp.c             | 2 +-
- drivers/net/ethernet/sfc/rx.c                          | 2 +-
- drivers/net/ethernet/socionext/netsec.c                | 2 +-
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c      | 2 +-
- drivers/net/ethernet/ti/cpsw_priv.c                    | 2 +-
- drivers/net/hyperv/netvsc_bpf.c                        | 2 +-
- drivers/net/tun.c                                      | 2 +-
- drivers/net/veth.c                                     | 4 ++--
- drivers/net/virtio_net.c                               | 4 ++--
- drivers/net/xen-netfront.c                             | 2 +-
- include/linux/filter.h                                 | 2 +-
- kernel/bpf/cpumap.c                                    | 4 ++--
- kernel/bpf/devmap.c                                    | 4 ++--
- net/core/dev.c                                         | 2 +-
- net/core/filter.c                                      | 6 +++---
- 36 files changed, 42 insertions(+), 42 deletions(-)
-
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 7d5d885d85d5..3b46f1df5609 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -434,7 +434,7 @@ static int ena_xdp_execute(struct ena_ring *rx_ring, struct xdp_buff *xdp)
- 		xdp_stat = &rx_ring->rx_stats.xdp_pass;
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(verdict);
-+		bpf_warn_invalid_xdp_action(rx_ring->netdev, xdp_prog, verdict);
- 		xdp_stat = &rx_ring->rx_stats.xdp_invalid;
- 	}
- 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-index c8083df5e0ab..52fad0fdeacf 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-@@ -195,7 +195,7 @@ bool bnxt_rx_xdp(struct bnxt *bp, struct bnxt_rx_ring_info *rxr, u16 cons,
- 		*event |= BNXT_REDIRECT_EVENT;
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(bp->dev, xdp_prog, act);
- 		fallthrough;
- 	case XDP_ABORTED:
- 		trace_xdp_exception(bp->dev, xdp_prog, act);
-diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_main.c b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-index bb45d5df2856..30450efccad7 100644
---- a/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-+++ b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-@@ -590,7 +590,7 @@ static inline bool nicvf_xdp_rx(struct nicvf *nic, struct bpf_prog *prog,
- 		nicvf_xdp_sq_append_pkt(nic, sq, (u64)xdp.data, dma_addr, len);
- 		return true;
- 	default:
--		bpf_warn_invalid_xdp_action(action);
-+		bpf_warn_invalid_xdp_action(nic->netdev, prog, action);
- 		fallthrough;
- 	case XDP_ABORTED:
- 		trace_xdp_exception(nic->netdev, prog, action);
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index 6b2927d863e2..39fafb7d43b2 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -2623,7 +2623,7 @@ static u32 dpaa_run_xdp(struct dpaa_priv *priv, struct qm_fd *fd, void *vaddr,
- 		}
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(xdp_act);
-+		bpf_warn_invalid_xdp_action(priv->net_dev, xdp_prog, xdp_act);
- 		fallthrough;
- 	case XDP_ABORTED:
- 		trace_xdp_exception(priv->net_dev, xdp_prog, xdp_act);
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index 714e961e7a77..f113469bd479 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -374,7 +374,7 @@ static u32 dpaa2_eth_run_xdp(struct dpaa2_eth_priv *priv,
- 		dpaa2_eth_xdp_enqueue(priv, ch, fd, vaddr, rx_fq->flowid);
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(xdp_act);
-+		bpf_warn_invalid_xdp_action(priv->net_dev, xdp_prog, xdp_act);
- 		fallthrough;
- 	case XDP_ABORTED:
- 		trace_xdp_exception(priv->net_dev, xdp_prog, xdp_act);
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index 504e12554079..eacb41f86bdb 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -1547,7 +1547,7 @@ static int enetc_clean_rx_ring_xdp(struct enetc_bdr *rx_ring,
- 
- 		switch (xdp_act) {
- 		default:
--			bpf_warn_invalid_xdp_action(xdp_act);
-+			bpf_warn_invalid_xdp_action(rx_ring->ndev, prog, xdp_act);
- 			fallthrough;
- 		case XDP_ABORTED:
- 			trace_xdp_exception(rx_ring->ndev, prog, xdp_act);
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-index 10a83e5385c7..b399ca649f09 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-@@ -2322,7 +2322,7 @@ static int i40e_run_xdp(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
- 		result = I40E_XDP_REDIR;
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(rx_ring->netdev, xdp_prog, act);
- 		fallthrough;
- 	case XDP_ABORTED:
- out_failure:
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-index ea06e957393e..945b1bb9c6f4 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-@@ -176,7 +176,7 @@ static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
- 			goto out_failure;
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(rx_ring->netdev, xdp_prog, act);
- 		fallthrough;
- 	case XDP_ABORTED:
- out_failure:
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
-index bc3ba19dc88f..56940bb908bc 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
-@@ -561,7 +561,7 @@ ice_run_xdp(struct ice_rx_ring *rx_ring, struct xdp_buff *xdp,
- 			goto out_failure;
- 		return ICE_XDP_REDIR;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(rx_ring->netdev, xdp_prog, act);
- 		fallthrough;
- 	case XDP_ABORTED:
- out_failure:
-diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-index ff55cb415b11..eb68a5824e9a 100644
---- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -482,7 +482,7 @@ ice_run_xdp_zc(struct ice_rx_ring *rx_ring, struct xdp_buff *xdp,
- 			goto out_failure;
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(rx_ring->netdev, xdp_prog, act);
- 		fallthrough;
- 	case XDP_ABORTED:
- out_failure:
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 836be0d3b291..bdce483d4c0e 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -8422,7 +8422,7 @@ static struct sk_buff *igb_run_xdp(struct igb_adapter *adapter,
- 		result = IGB_XDP_REDIR;
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(adapter->netdev, xdp_prog, act);
- 		fallthrough;
- 	case XDP_ABORTED:
- out_failure:
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 8e448288ee26..4ea212ddcc9b 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -2231,7 +2231,7 @@ static int __igc_xdp_run_prog(struct igc_adapter *adapter,
- 		return IGC_XDP_REDIRECT;
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(adapter->netdev, prog, act);
- 		fallthrough;
- 	case XDP_ABORTED:
- out_failure:
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 0f9f022260d7..265bc52aacf8 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -2235,7 +2235,7 @@ static struct sk_buff *ixgbe_run_xdp(struct ixgbe_adapter *adapter,
- 		result = IXGBE_XDP_REDIR;
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(rx_ring->netdev, xdp_prog, act);
- 		fallthrough;
- 	case XDP_ABORTED:
- out_failure:
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-index db2bc58dfcfd..b3fd8e5cd85b 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-@@ -131,7 +131,7 @@ static int ixgbe_run_xdp_zc(struct ixgbe_adapter *adapter,
- 			goto out_failure;
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(rx_ring->netdev, xdp_prog, act);
- 		fallthrough;
- 	case XDP_ABORTED:
- out_failure:
-diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-index d81811ab4ec4..757fe0dace88 100644
---- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-+++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-@@ -1070,7 +1070,7 @@ static struct sk_buff *ixgbevf_run_xdp(struct ixgbevf_adapter *adapter,
- 			goto out_failure;
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(rx_ring->netdev, xdp_prog, act);
- 		fallthrough;
- 	case XDP_ABORTED:
- out_failure:
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 5a7bdca22a63..c457a765a828 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -2212,7 +2212,7 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 			mvneta_xdp_put_buff(pp, rxq, xdp, sinfo, sync);
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(pp->dev, prog, act);
- 		fallthrough;
- 	case XDP_ABORTED:
- 		trace_xdp_exception(pp->dev, prog, act);
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 2b18d89d9756..e7b7200af5c3 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -3820,7 +3820,7 @@ mvpp2_run_xdp(struct mvpp2_port *port, struct bpf_prog *prog,
- 		}
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(port->dev, prog, act);
- 		fallthrough;
- 	case XDP_ABORTED:
- 		trace_xdp_exception(port->dev, prog, act);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-index 0cc6353254bf..7c4068c5d1ac 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-@@ -1198,7 +1198,7 @@ static bool otx2_xdp_rcv_pkt_handler(struct otx2_nic *pfvf,
- 		put_page(page);
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(pfvf->netdev, prog, act);
- 		break;
- 	case XDP_ABORTED:
- 		trace_xdp_exception(pfvf->netdev, prog, act);
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-index 650e6a1844ae..8cfc649f226b 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-@@ -812,7 +812,7 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
- 				trace_xdp_exception(dev, xdp_prog, act);
- 				goto xdp_drop_no_cnt; /* Drop on xmit failure */
- 			default:
--				bpf_warn_invalid_xdp_action(act);
-+				bpf_warn_invalid_xdp_action(dev, xdp_prog, act);
- 				fallthrough;
- 			case XDP_ABORTED:
- 				trace_xdp_exception(dev, xdp_prog, act);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-index 2f0df5cc1a2d..338d65e2c9ce 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-@@ -151,7 +151,7 @@ bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct mlx5e_dma_info *di,
- 		rq->stats->xdp_redirect++;
- 		return true;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(rq->netdev, prog, act);
- 		fallthrough;
- 	case XDP_ABORTED:
- xdp_abort:
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-index 850bfdf83d0a..56ef3d64e30d 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-@@ -1944,7 +1944,7 @@ static int nfp_net_rx(struct nfp_net_rx_ring *rx_ring, int budget)
- 							    xdp_prog, act);
- 				continue;
- 			default:
--				bpf_warn_invalid_xdp_action(act);
-+				bpf_warn_invalid_xdp_action(dp->netdev, xdp_prog, act);
- 				fallthrough;
- 			case XDP_ABORTED:
- 				trace_xdp_exception(dp->netdev, xdp_prog, act);
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_fp.c b/drivers/net/ethernet/qlogic/qede/qede_fp.c
-index 065e9004598e..32c6e14814bb 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_fp.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_fp.c
-@@ -1152,7 +1152,7 @@ static bool qede_rx_xdp(struct qede_dev *edev,
- 		qede_rx_bd_ring_consume(rxq);
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(edev->ndev, prog, act);
- 		fallthrough;
- 	case XDP_ABORTED:
- 		trace_xdp_exception(edev->ndev, prog, act);
-diff --git a/drivers/net/ethernet/sfc/rx.c b/drivers/net/ethernet/sfc/rx.c
-index 606750938b89..2375cef577e4 100644
---- a/drivers/net/ethernet/sfc/rx.c
-+++ b/drivers/net/ethernet/sfc/rx.c
-@@ -338,7 +338,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
- 		break;
- 
- 	default:
--		bpf_warn_invalid_xdp_action(xdp_act);
-+		bpf_warn_invalid_xdp_action(efx->net_dev, xdp_prog, xdp_act);
- 		efx_free_rx_buffers(rx_queue, rx_buf, 1);
- 		channel->n_rx_xdp_bad_drops++;
- 		trace_xdp_exception(efx->net_dev, xdp_prog, xdp_act);
-diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
-index de7d8bf2c226..25dcd8eda5fc 100644
---- a/drivers/net/ethernet/socionext/netsec.c
-+++ b/drivers/net/ethernet/socionext/netsec.c
-@@ -933,7 +933,7 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
- 		}
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(priv->ndev, prog, act);
- 		fallthrough;
- 	case XDP_ABORTED:
- 		trace_xdp_exception(priv->ndev, prog, act);
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index d3f350c25b9b..4cb34001c9ac 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -4690,7 +4690,7 @@ static int __stmmac_xdp_run_prog(struct stmmac_priv *priv,
- 			res = STMMAC_XDP_REDIRECT;
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(priv->dev, prog, act);
- 		fallthrough;
- 	case XDP_ABORTED:
- 		trace_xdp_exception(priv->dev, prog, act);
-diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
-index ecc2a6b7e28f..e9fdf60ba1a8 100644
---- a/drivers/net/ethernet/ti/cpsw_priv.c
-+++ b/drivers/net/ethernet/ti/cpsw_priv.c
-@@ -1360,7 +1360,7 @@ int cpsw_run_xdp(struct cpsw_priv *priv, int ch, struct xdp_buff *xdp,
- 		xdp_do_flush_map();
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(ndev, prog, act);
- 		fallthrough;
- 	case XDP_ABORTED:
- 		trace_xdp_exception(ndev, prog, act);
-diff --git a/drivers/net/hyperv/netvsc_bpf.c b/drivers/net/hyperv/netvsc_bpf.c
-index aa877da113f8..7856905414eb 100644
---- a/drivers/net/hyperv/netvsc_bpf.c
-+++ b/drivers/net/hyperv/netvsc_bpf.c
-@@ -68,7 +68,7 @@ u32 netvsc_run_xdp(struct net_device *ndev, struct netvsc_channel *nvchan,
- 		break;
- 
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(ndev, prog, act);
- 	}
- 
- out:
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index fecc9a1d293a..0d47d34ba4e7 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -1546,7 +1546,7 @@ static int tun_xdp_act(struct tun_struct *tun, struct bpf_prog *xdp_prog,
- 	case XDP_PASS:
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(tun->dev, xdp_prog, act);
- 		fallthrough;
- 	case XDP_ABORTED:
- 		trace_xdp_exception(tun->dev, xdp_prog, act);
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index 50eb43e5bf45..f64dbd8b6403 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -651,7 +651,7 @@ static struct xdp_frame *veth_xdp_rcv_one(struct veth_rq *rq,
- 			rcu_read_unlock();
- 			goto xdp_xmit;
- 		default:
--			bpf_warn_invalid_xdp_action(act);
-+			bpf_warn_invalid_xdp_action(rq->dev, xdp_prog, act);
- 			fallthrough;
- 		case XDP_ABORTED:
- 			trace_xdp_exception(rq->dev, xdp_prog, act);
-@@ -801,7 +801,7 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
- 		rcu_read_unlock();
- 		goto xdp_xmit;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(rq->dev, xdp_prog, act);
- 		fallthrough;
- 	case XDP_ABORTED:
- 		trace_xdp_exception(rq->dev, xdp_prog, act);
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 1771d6e5224f..105cd413df52 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -812,7 +812,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
- 			rcu_read_unlock();
- 			goto xdp_xmit;
- 		default:
--			bpf_warn_invalid_xdp_action(act);
-+			bpf_warn_invalid_xdp_action(vi->dev, xdp_prog, act);
- 			fallthrough;
- 		case XDP_ABORTED:
- 			trace_xdp_exception(vi->dev, xdp_prog, act);
-@@ -1025,7 +1025,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 			rcu_read_unlock();
- 			goto xdp_xmit;
- 		default:
--			bpf_warn_invalid_xdp_action(act);
-+			bpf_warn_invalid_xdp_action(vi->dev, xdp_prog, act);
- 			fallthrough;
- 		case XDP_ABORTED:
- 			trace_xdp_exception(vi->dev, xdp_prog, act);
-diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-index 911f43986a8c..7b7eb617051a 100644
---- a/drivers/net/xen-netfront.c
-+++ b/drivers/net/xen-netfront.c
-@@ -930,7 +930,7 @@ static u32 xennet_run_xdp(struct netfront_queue *queue, struct page *pdata,
- 		break;
- 
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(queue->info->netdev, prog, act);
- 	}
- 
- 	return act;
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index 24b7ed2677af..c21d14fe0156 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -1030,7 +1030,7 @@ void xdp_do_flush(void);
-  */
- #define xdp_do_flush_map xdp_do_flush
- 
--void bpf_warn_invalid_xdp_action(u32 act);
-+void bpf_warn_invalid_xdp_action(struct net_device *dev, struct bpf_prog *prog, u32 act);
- 
- #ifdef CONFIG_INET
- struct sock *bpf_run_sk_reuseport(struct sock_reuseport *reuse, struct sock *sk,
-diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-index 585b2b77ccc4..f7359bcb8fa3 100644
---- a/kernel/bpf/cpumap.c
-+++ b/kernel/bpf/cpumap.c
-@@ -195,7 +195,7 @@ static void cpu_map_bpf_prog_run_skb(struct bpf_cpu_map_entry *rcpu,
- 			}
- 			return;
- 		default:
--			bpf_warn_invalid_xdp_action(act);
-+			bpf_warn_invalid_xdp_action(skb->dev, rcpu->prog, act);
- 			fallthrough;
- 		case XDP_ABORTED:
- 			trace_xdp_exception(skb->dev, rcpu->prog, act);
-@@ -254,7 +254,7 @@ static int cpu_map_bpf_prog_run_xdp(struct bpf_cpu_map_entry *rcpu,
- 			}
- 			break;
- 		default:
--			bpf_warn_invalid_xdp_action(act);
-+			bpf_warn_invalid_xdp_action(xdpf->dev_rx, rcpu->prog, act);
- 			fallthrough;
- 		case XDP_DROP:
- 			xdp_return_frame(xdpf);
-diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-index f02d04540c0c..79bcf2169881 100644
---- a/kernel/bpf/devmap.c
-+++ b/kernel/bpf/devmap.c
-@@ -348,7 +348,7 @@ static int dev_map_bpf_prog_run(struct bpf_prog *xdp_prog,
- 				frames[nframes++] = xdpf;
- 			break;
- 		default:
--			bpf_warn_invalid_xdp_action(act);
-+			bpf_warn_invalid_xdp_action(dev, xdp_prog, act);
- 			fallthrough;
- 		case XDP_ABORTED:
- 			trace_xdp_exception(dev, xdp_prog, act);
-@@ -507,7 +507,7 @@ static u32 dev_map_bpf_prog_run_skb(struct sk_buff *skb, struct bpf_dtab_netdev
- 		__skb_push(skb, skb->mac_len);
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(dst->dev, dst->xdp_prog, act);
- 		fallthrough;
- 	case XDP_ABORTED:
- 		trace_xdp_exception(dst->dev, dst->xdp_prog, act);
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 15ac064b5562..cf2691d17dd2 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4824,7 +4824,7 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
- 	case XDP_PASS:
- 		break;
- 	default:
--		bpf_warn_invalid_xdp_action(act);
-+		bpf_warn_invalid_xdp_action(skb->dev, xdp_prog, act);
- 		fallthrough;
- 	case XDP_ABORTED:
- 		trace_xdp_exception(skb->dev, xdp_prog, act);
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 3ba584bb23f8..658f7a84d9bc 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -8179,13 +8179,13 @@ static bool xdp_is_valid_access(int off, int size,
- 	return __is_valid_xdp_access(off, size);
- }
- 
--void bpf_warn_invalid_xdp_action(u32 act)
-+void bpf_warn_invalid_xdp_action(struct net_device *dev, struct bpf_prog *prog, u32 act)
- {
- 	const u32 act_max = XDP_REDIRECT;
- 
--	pr_warn_once("%s XDP return value %u, expect packet loss!\n",
-+	pr_warn_once("%s XDP return value %u on prog %s (id %d) dev %s, expect packet loss!\n",
- 		     act > act_max ? "Illegal" : "Driver unsupported",
--		     act);
-+		     act, prog->aux->name, prog->aux->id, dev->name);
- }
- EXPORT_SYMBOL_GPL(bpf_warn_invalid_xdp_action);
- 
--- 
-2.33.1
-
+Agree with Eric, would be to just linearize befor the corruption step.
+There is also the issue of checksum offload here.
