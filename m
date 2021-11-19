@@ -2,210 +2,266 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFEAD4567D8
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 03:07:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CCAA4567E0
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 03:10:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233106AbhKSCKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 21:10:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33636 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231802AbhKSCKB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 21:10:01 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC679C061574;
-        Thu, 18 Nov 2021 18:06:59 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id g14so35823610edb.8;
-        Thu, 18 Nov 2021 18:06:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Sy5gTTFulPpJ8wmOoZB3V7rj1SaJOS29bzWAZosYg9s=;
-        b=oTTvKeFJysJeNDkq6JhvFlpjnCZNme94N4CIUYGzREVhw/75rT5afwjMrK7HLthvsn
-         PYZ/OEQvBTs6rVFIIib3r+AR/uakslyoyQNcOh0+7taU2yuBEE3wV19Aqy+fyRlZMLFk
-         oj/70NDp31DC+dnZowzIspgAIKOHOKZVFYX2gnuN8omH18P46dWKZ3boPYAPsmPXPQ22
-         4rNUQGok7lmVJTjMThyV24EkIcRbY5fp90iZqq/QCOv6KqpBnFHSbvXVx2Sj6mdEJHej
-         mC5jbFxMRdqpGtzBSQLths2r5C1s+9iKPWhXmkT8iFpLSbemnl4+E7eD6K+NIntGZo9k
-         dJbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Sy5gTTFulPpJ8wmOoZB3V7rj1SaJOS29bzWAZosYg9s=;
-        b=NSng64FpWjJ3Yxe/VXquZNahClXxW3bvkF8O4EOGFta09ef+1uNV8TdMtUO+M5DyTj
-         JzkXk2u9xsn12Qqa3jqrqA9MdaSF/BQUEhO/hiidW0hABcucsc5GHMP1Est5Qkviwcub
-         AMgIQjOzTfU1j4gAi74PHJXRGZ9EyaupHareklq27RQwBJ89qpRl7zXHDCQJ93FOV5LH
-         DnF7ZfGCUF2Pc4Z0DwJtJJCqmahKeqGPlGSFa4Xp2KeWWYYw4wPgIEVeu+sV+7AcU7CK
-         1YThHEMqx1ocnexMqBDU0MF0p9lusm0A8fJFbnreNvyrFjrgR5Gh7ArKqSZ01aijQFtd
-         U+5w==
-X-Gm-Message-State: AOAM531EbcmWQ0BcLTzDtg3zwOOqPFASNFqSbY1+z+u/u4expjANb04s
-        uxY2REN9jomNeZtcgKIVU08=
-X-Google-Smtp-Source: ABdhPJznGI2HWYR0tspouX3S6CwWUUrWUtM7PDNvoVdAsKOD2xr+IULL6OlvwHCLDgnjTucoCZ9EhQ==
-X-Received: by 2002:a05:6402:5146:: with SMTP id n6mr18428106edd.126.1637287618437;
-        Thu, 18 Nov 2021 18:06:58 -0800 (PST)
-Received: from skbuf ([188.25.163.189])
-        by smtp.gmail.com with ESMTPSA id e1sm528345ejy.82.2021.11.18.18.06.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Nov 2021 18:06:58 -0800 (PST)
-Date:   Fri, 19 Nov 2021 04:06:57 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [net-next PATCH 14/19] net: dsa: qca8k: add support for
- mdb_add/del
-Message-ID: <20211119020657.77os25yh4vhiukvi@skbuf>
-References: <20211117210451.26415-1-ansuelsmth@gmail.com>
- <20211117210451.26415-15-ansuelsmth@gmail.com>
+        id S233890AbhKSCNB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 21:13:01 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:26329 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233873AbhKSCNA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 21:13:00 -0500
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HwKk46rXQzbhjk;
+        Fri, 19 Nov 2021 10:05:00 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Fri, 19 Nov 2021 10:09:57 +0800
+Received: from [10.174.179.234] (10.174.179.234) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Fri, 19 Nov 2021 10:09:55 +0800
+Subject: Re: [PATCH 03/12] riscv: switch to relative exception tables
+To:     Jisheng Zhang <jszhang3@mail.ustc.edu.cn>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        "Song Liu" <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        "Nick Desaulniers" <ndesaulniers@google.com>
+References: <20211118192130.48b8f04c@xhacker>
+ <20211118192251.749c04f7@xhacker>
+CC:     Kefeng Wang <wangkefeng.wang@huawei.com>,
+        <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kbuild@vger.kernel.org>
+From:   tongtiangen <tongtiangen@huawei.com>
+Message-ID: <bc466684-b02e-c6b0-13cf-a071eeebff8c@huawei.com>
+Date:   Fri, 19 Nov 2021 10:09:54 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211117210451.26415-15-ansuelsmth@gmail.com>
+In-Reply-To: <20211118192251.749c04f7@xhacker>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.179.234]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 17, 2021 at 10:04:46PM +0100, Ansuel Smith wrote:
-> Add support for mdb add/del function. The ARL table is used to insert
-> the rule. A new search function is introduced to search the rule and add
-> additional port to it. If every port is removed from the rule, it's
-> removed. It's set STATIC in the ARL table (aka it doesn't age) to not be
-> flushed by fast age function.
-> 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+Hi jisheng:
+eBPF's exception tables needs to be modified to relative synchronously.
+
+I modified and verified the code as follows:
+
+===================
+--- a/arch/riscv/net/bpf_jit_comp64.c
++++ b/arch/riscv/net/bpf_jit_comp64.c
+@@ -499,7 +499,7 @@ static int add_exception_handler(const struct bpf_insn *insn,
+         offset = pc - (long)&ex->insn;
+         if (WARN_ON_ONCE(offset >= 0 || offset < INT_MIN))
+                 return -ERANGE;
+-       ex->insn = pc;
++       ex->insn = offset;
+===================
+
+Thanks.
+
+Reviewed-by:Tong Tiangen <tongtiangen@huawei.com>
+
+On 2021/11/18 19:22, Jisheng Zhang wrote:
+> From: Jisheng Zhang <jszhang@kernel.org>
+>
+> Similar as other architectures such as arm64, x86 and so on, use
+> offsets relative to the exception table entry values rather than
+> absolute addresses for both the exception locationand the fixup.
+>
+> However, RISCV label difference will actually produce two relocations,
+> a pair of R_RISCV_ADD32 and R_RISCV_SUB32. Take below simple code for
+> example:
+>
+> $ cat test.S
+> .section .text
+> 1:
+>         nop
+> .section __ex_table,"a"
+>         .balign 4
+>         .long (1b - .)
+> .previous
+>
+> $ riscv64-linux-gnu-gcc -c test.S
+> $ riscv64-linux-gnu-readelf -r test.o
+> Relocation section '.rela__ex_table' at offset 0x100 contains 2 entries:
+>   Offset          Info           Type           Sym. Value    Sym. Name + Addend
+> 000000000000  000600000023 R_RISCV_ADD32     0000000000000000 .L1^B1 + 0
+> 000000000000  000500000027 R_RISCV_SUB32     0000000000000000 .L0  + 0
+>
+> The modpost will complain the R_RISCV_SUB32 relocation, so we need to
+> patch modpost.c to skip this relocation for .rela__ex_table section.
+>
+> After this patch, the __ex_table section size of defconfig vmlinux is
+> reduced from 7072 Bytes to 3536 Bytes.
+>
+> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> Reviewed-by: Kefeng Wang <wangkefeng.wang@huawei.com>
 > ---
->  drivers/net/dsa/qca8k.c | 82 +++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 82 insertions(+)
-> 
-> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-> index dda99263fe8c..a217c842ab45 100644
-> --- a/drivers/net/dsa/qca8k.c
-> +++ b/drivers/net/dsa/qca8k.c
-> @@ -417,6 +417,23 @@ qca8k_fdb_flush(struct qca8k_priv *priv)
->  	mutex_unlock(&priv->reg_mutex);
+>  arch/riscv/include/asm/Kbuild    |  1 -
+>  arch/riscv/include/asm/extable.h | 25 +++++++++++++++++++++++++
+>  arch/riscv/include/asm/uaccess.h |  4 ++--
+>  arch/riscv/lib/uaccess.S         |  4 ++--
+>  arch/riscv/mm/extable.c          |  2 +-
+>  scripts/mod/modpost.c            | 15 +++++++++++++++
+>  scripts/sorttable.c              |  2 +-
+>  7 files changed, 46 insertions(+), 7 deletions(-)
+>  create mode 100644 arch/riscv/include/asm/extable.h
+>
+> diff --git a/arch/riscv/include/asm/Kbuild b/arch/riscv/include/asm/Kbuild
+> index 445ccc97305a..57b86fd9916c 100644
+> --- a/arch/riscv/include/asm/Kbuild
+> +++ b/arch/riscv/include/asm/Kbuild
+> @@ -1,6 +1,5 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  generic-y += early_ioremap.h
+> -generic-y += extable.h
+>  generic-y += flat.h
+>  generic-y += kvm_para.h
+>  generic-y += user.h
+> diff --git a/arch/riscv/include/asm/extable.h b/arch/riscv/include/asm/extable.h
+> new file mode 100644
+> index 000000000000..84760392fc69
+> --- /dev/null
+> +++ b/arch/riscv/include/asm/extable.h
+> @@ -0,0 +1,25 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _ASM_RISCV_EXTABLE_H
+> +#define _ASM_RISCV_EXTABLE_H
+> +
+> +/*
+> + * The exception table consists of pairs of relative offsets: the first
+> + * is the relative offset to an instruction that is allowed to fault,
+> + * and the second is the relative offset at which the program should
+> + * continue. No registers are modified, so it is entirely up to the
+> + * continuation code to figure out what to do.
+> + *
+> + * All the routines below use bits of fixup code that are out of line
+> + * with the main instruction path.  This means when everything is well,
+> + * we don't even have to jump over them.  Further, they do not intrude
+> + * on our cache or tlb entries.
+> + */
+> +
+> +struct exception_table_entry {
+> +	int insn, fixup;
+> +};
+> +
+> +#define ARCH_HAS_RELATIVE_EXTABLE
+> +
+> +int fixup_exception(struct pt_regs *regs);
+> +#endif
+> diff --git a/arch/riscv/include/asm/uaccess.h b/arch/riscv/include/asm/uaccess.h
+> index 714cd311d9f1..0f2c5b9d2e8f 100644
+> --- a/arch/riscv/include/asm/uaccess.h
+> +++ b/arch/riscv/include/asm/uaccess.h
+> @@ -12,8 +12,8 @@
+>
+>  #define _ASM_EXTABLE(from, to)						\
+>  	"	.pushsection	__ex_table, \"a\"\n"			\
+> -	"	.balign "	RISCV_SZPTR "	 \n"			\
+> -	"	" RISCV_PTR	"(" #from "), (" #to ")\n"		\
+> +	"	.balign		4\n"					\
+> +	"	.long		(" #from " - .), (" #to " - .)\n"	\
+>  	"	.popsection\n"
+>
+>  /*
+> diff --git a/arch/riscv/lib/uaccess.S b/arch/riscv/lib/uaccess.S
+> index 63bc691cff91..55f80f84e23f 100644
+> --- a/arch/riscv/lib/uaccess.S
+> +++ b/arch/riscv/lib/uaccess.S
+> @@ -7,8 +7,8 @@
+>  100:
+>  	\op \reg, \addr
+>  	.section __ex_table,"a"
+> -	.balign RISCV_SZPTR
+> -	RISCV_PTR 100b, \lbl
+> +	.balign 4
+> +	.long (100b - .), (\lbl - .)
+>  	.previous
+>  	.endm
+>
+> diff --git a/arch/riscv/mm/extable.c b/arch/riscv/mm/extable.c
+> index ddb7d3b99e89..d8d239c2c1bd 100644
+> --- a/arch/riscv/mm/extable.c
+> +++ b/arch/riscv/mm/extable.c
+> @@ -28,6 +28,6 @@ int fixup_exception(struct pt_regs *regs)
+>  		return rv_bpf_fixup_exception(fixup, regs);
+>  #endif
+>
+> -	regs->epc = fixup->fixup;
+> +	regs->epc = (unsigned long)&fixup->fixup + fixup->fixup;
+>  	return 1;
 >  }
->  
-> +static int
-> +qca8k_fdb_search(struct qca8k_priv *priv, struct qca8k_fdb *fdb, const u8 *mac, u16 vid)
-> +{
-> +	int ret;
-> +
-> +	mutex_lock(&priv->reg_mutex);
-
-If I were you, I'd create a locking scheme where the entire FDB entry is
-updated under the same critical section. Right now you're relying on the
-rtnl_mutex serializing calls to ->port_mdb_add()/->port_mdb_del(). But
-that might change. Don't leave that task to someone that has non-expert
-knowledge of the driver.
-
-> +	qca8k_fdb_write(priv, vid, 0, mac, 0);
-> +	ret = qca8k_fdb_access(priv, QCA8K_FDB_SEARCH, -1);
-> +	if (ret < 0)
-> +		goto exit;
-> +
-> +	ret = qca8k_fdb_read(priv, fdb);
-> +exit:
-> +	mutex_unlock(&priv->reg_mutex);
-> +	return ret;
-> +}
-> +
->  static int
->  qca8k_vlan_access(struct qca8k_priv *priv, enum qca8k_vlan_cmd cmd, u16 vid)
->  {
-> @@ -1959,6 +1976,69 @@ qca8k_port_fdb_dump(struct dsa_switch *ds, int port,
+> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+> index cb8ab7d91d30..6bfa33217914 100644
+> --- a/scripts/mod/modpost.c
+> +++ b/scripts/mod/modpost.c
+> @@ -1830,6 +1830,14 @@ static int addend_mips_rel(struct elf_info *elf, Elf_Shdr *sechdr, Elf_Rela *r)
 >  	return 0;
 >  }
->  
-> +static int
-> +qca8k_port_mdb_add(struct dsa_switch *ds, int port,
-> +		   const struct switchdev_obj_port_mdb *mdb)
-> +{
-> +	struct qca8k_priv *priv = ds->priv;
-> +	struct qca8k_fdb fdb = { 0 };
-> +	const u8 *addr = mdb->addr;
-> +	u8 port_mask = BIT(port);
-
-This doesn't really need to be kept in a temporary variable as it is
-only used once.
-
-> +	u16 vid = mdb->vid;
-> +	int ret;
+>
+> +#ifndef EM_RISCV
+> +#define EM_RISCV		243
+> +#endif
 > +
-> +	/* Check if entry already exist */
-> +	ret = qca8k_fdb_search(priv, &fdb, addr, vid);
-> +	if (ret < 0)
-> +		return ret;
+> +#ifndef R_RISCV_SUB32
+> +#define R_RISCV_SUB32		39
+> +#endif
 > +
-> +	/* Rule exist. Delete first */
-> +	if (!fdb.aging) {
-> +		ret = qca8k_fdb_del(priv, addr, fdb.port_mask, vid);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	/* Add port to fdb portmask */
-> +	fdb.port_mask |= port_mask;
-> +
-> +	return qca8k_port_fdb_insert(priv, addr, fdb.port_mask, vid);
-> +}
-> +
-> +static int
-> +qca8k_port_mdb_del(struct dsa_switch *ds, int port,
-> +		   const struct switchdev_obj_port_mdb *mdb)
-> +{
-> +	struct qca8k_priv *priv = ds->priv;
-> +	struct qca8k_fdb fdb = { 0 };
-> +	const u8 *addr = mdb->addr;
-> +	u8 port_mask = BIT(port);
-> +	u16 vid = mdb->vid;
-> +	int ret;
-> +
-> +	/* Check if entry already exist */
-> +	ret = qca8k_fdb_search(priv, &fdb, addr, vid);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* Rule doesn't exist. Why delete? */
-
-Because refcounting is hard. In fact with VLANs it is quite possible to
-delete an absent entry. For MDBs and FDBs, the bridge should now error
-out before it even reaches to you.
-
-> +	if (!fdb.aging)
-> +		return -EINVAL;
-> +
-> +	ret = qca8k_fdb_del(priv, addr, port_mask, vid);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Only port in the rule is this port. Don't re insert */
-> +	if (fdb.port_mask == port_mask)
-> +		return 0;
-> +
-> +	/* Remove port from port mask */
-> +	fdb.port_mask &= ~port_mask;
-> +
-> +	return qca8k_port_fdb_insert(priv, addr, fdb.port_mask, vid);
-> +}
-> +
->  static int
->  qca8k_port_mirror_add(struct dsa_switch *ds, int port,
->  		      struct dsa_mall_mirror_tc_entry *mirror,
-> @@ -2160,6 +2240,8 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
->  	.port_fdb_add		= qca8k_port_fdb_add,
->  	.port_fdb_del		= qca8k_port_fdb_del,
->  	.port_fdb_dump		= qca8k_port_fdb_dump,
-> +	.port_mdb_add		= qca8k_port_mdb_add,
-> +	.port_mdb_del		= qca8k_port_mdb_del,
->  	.port_mirror_add	= qca8k_port_mirror_add,
->  	.port_mirror_del	= qca8k_port_mirror_del,
->  	.port_vlan_filtering	= qca8k_port_vlan_filtering,
-> -- 
-> 2.32.0
-> 
-
+>  static void section_rela(const char *modname, struct elf_info *elf,
+>  			 Elf_Shdr *sechdr)
+>  {
+> @@ -1866,6 +1874,13 @@ static void section_rela(const char *modname, struct elf_info *elf,
+>  		r_sym = ELF_R_SYM(r.r_info);
+>  #endif
+>  		r.r_addend = TO_NATIVE(rela->r_addend);
+> +		switch (elf->hdr->e_machine) {
+> +		case EM_RISCV:
+> +			if (!strcmp("__ex_table", fromsec) &&
+> +			    ELF_R_TYPE(r.r_info) == R_RISCV_SUB32)
+> +				continue;
+> +			break;
+> +		}
+>  		sym = elf->symtab_start + r_sym;
+>  		/* Skip special sections */
+>  		if (is_shndx_special(sym->st_shndx))
+> diff --git a/scripts/sorttable.c b/scripts/sorttable.c
+> index b7c2ad71f9cf..0c031e47a419 100644
+> --- a/scripts/sorttable.c
+> +++ b/scripts/sorttable.c
+> @@ -376,6 +376,7 @@ static int do_file(char const *const fname, void *addr)
+>  	case EM_PARISC:
+>  	case EM_PPC:
+>  	case EM_PPC64:
+> +	case EM_RISCV:
+>  		custom_sort = sort_relative_table;
+>  		break;
+>  	case EM_ARCOMPACT:
+> @@ -383,7 +384,6 @@ static int do_file(char const *const fname, void *addr)
+>  	case EM_ARM:
+>  	case EM_MICROBLAZE:
+>  	case EM_MIPS:
+> -	case EM_RISCV:
+>  	case EM_XTENSA:
+>  		break;
+>  	default:
+>
