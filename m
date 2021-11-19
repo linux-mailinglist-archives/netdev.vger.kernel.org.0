@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 642B7456AAF
+	by mail.lfdr.de (Postfix) with ESMTP id ACC79456AB0
 	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 08:10:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233498AbhKSHNr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 02:13:47 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59758 "EHLO mail.kernel.org"
+        id S233473AbhKSHNs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 02:13:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59778 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233337AbhKSHNn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233322AbhKSHNn (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 19 Nov 2021 02:13:43 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EAEDE61B54;
-        Fri, 19 Nov 2021 07:10:41 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3AFEF61B5F;
+        Fri, 19 Nov 2021 07:10:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1637305842;
-        bh=6nxIfaGLof83WMub9SHq2uOOtSJ2hYOc8YaEnCl/+I0=;
+        bh=DChFBGcSSk5zCEztXsXF6Wc0kz44CVAWmUR83Jhu06A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hg1fd33jkdRWyesAh14YLDhWIjZyN9eNaFnkWl3bnx6Z1xATAR9Hs4ivvFe2qenAg
-         wTEnSeF3H+DjiT8OpDcF8SlMONBoHGkBPZDAsky+s0tphdkBEHIAVea0Ou31sW8/iz
-         +8NYWDONGkqqCggJjTKxAsTshTs5s1189t4XD8BC+CVpmwby/oTFH/GBwmyGtoPLb1
-         TAJyCsNEe1qeBH+kguG2EWN9XU5Vei6/AjOJHjX0lKkTq1lMaBwMrSLtqN8sXpzuRu
-         J4IxCs7QVuMZ1SqqudK5WeRQcMnVXMS5Bzl3ZyFGoBPwX3flGRfwN/7twTetiB9onZ
-         gzmjVPTtRAbhw==
+        b=NEmC+tm3PLoY/NJg05Ij6vJ08gu/ZN21BcfRhxgTYyTIHdQ3qtM2hZMNUmRsCB3e8
+         C8qag1l19kwYj2NLAO9AMIijD4uZA6fp9MVFkr7PLrRwPCET5QhUjQU7DUzy2y6Hmu
+         TOpmDB97kKRq7CYK0zlReymTDXmOWIQ+EfQ+VbQP1YC/fHzr5sWuEGVZEKTfxda17e
+         PFXMyHHC5X9K6bQuCiJuN4UUwzT7XUtLQfTg/Gwk2xGzmhLIlpJGgvB0o23ZsQI0To
+         rzb+avfc9mWAdRiql0RNBPw/NrP83XiqXe5OokPdVngy7L3OjRKytAVf1JG8c6ipca
+         DurQmk8fR6H4w==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 05/15] amd: atarilance: use eth_hw_addr_set()
-Date:   Thu, 18 Nov 2021 23:10:23 -0800
-Message-Id: <20211119071033.3756560-6-kuba@kernel.org>
+Subject: [PATCH net-next 06/15] amd: mvme147: use eth_hw_addr_set()
+Date:   Thu, 18 Nov 2021 23:10:24 -0800
+Message-Id: <20211119071033.3756560-7-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211119071033.3756560-1-kuba@kernel.org>
 References: <20211119071033.3756560-1-kuba@kernel.org>
@@ -44,40 +44,44 @@ Fixes build on m68k.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/amd/atarilance.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/amd/mvme147.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/amd/atarilance.c b/drivers/net/ethernet/amd/atarilance.c
-index 9c7d9690d00c..27869164c6e6 100644
---- a/drivers/net/ethernet/amd/atarilance.c
-+++ b/drivers/net/ethernet/amd/atarilance.c
-@@ -471,6 +471,7 @@ static unsigned long __init lance_probe1( struct net_device *dev,
- 	int 					i;
- 	static int 				did_version;
- 	unsigned short			save1, save2;
-+	u8 addr[ETH_ALEN];
+diff --git a/drivers/net/ethernet/amd/mvme147.c b/drivers/net/ethernet/amd/mvme147.c
+index da97fccea9ea..410c7b67eba4 100644
+--- a/drivers/net/ethernet/amd/mvme147.c
++++ b/drivers/net/ethernet/amd/mvme147.c
+@@ -74,6 +74,7 @@ static struct net_device * __init mvme147lance_probe(void)
+ 	static int called;
+ 	static const char name[] = "MVME147 LANCE";
+ 	struct m147lance_private *lp;
++	u8 macaddr[ETH_ALEN];
+ 	u_long *addr;
+ 	u_long address;
+ 	int err;
+@@ -93,15 +94,16 @@ static struct net_device * __init mvme147lance_probe(void)
  
- 	PROBE_PRINT(( "Probing for Lance card at mem %#lx io %#lx\n",
- 				  (long)memaddr, (long)ioaddr ));
-@@ -585,14 +586,16 @@ static unsigned long __init lance_probe1( struct net_device *dev,
- 		eth_hw_addr_set(dev, OldRieblDefHwaddr);
- 		break;
- 	  case NEW_RIEBL:
--		lp->memcpy_f(dev->dev_addr, RIEBL_HWADDR_ADDR, ETH_ALEN);
-+		lp->memcpy_f(addr, RIEBL_HWADDR_ADDR, ETH_ALEN);
-+		eth_hw_addr_set(dev, addr);
- 		break;
- 	  case PAM_CARD:
- 		i = IO->eeprom;
- 		for( i = 0; i < 6; ++i )
--			dev->dev_addr[i] =
-+			addr[i] =
- 				((((unsigned short *)MEM)[i*2] & 0x0f) << 4) |
- 				((((unsigned short *)MEM)[i*2+1] & 0x0f));
-+		eth_hw_addr_set(dev, addr);
- 		i = IO->mem;
- 		break;
- 	}
+ 	addr = (u_long *)ETHERNET_ADDRESS;
+ 	address = *addr;
+-	dev->dev_addr[0] = 0x08;
+-	dev->dev_addr[1] = 0x00;
+-	dev->dev_addr[2] = 0x3e;
++	macaddr[0] = 0x08;
++	macaddr[1] = 0x00;
++	macaddr[2] = 0x3e;
+ 	address = address >> 8;
+-	dev->dev_addr[5] = address&0xff;
++	macaddr[5] = address&0xff;
+ 	address = address >> 8;
+-	dev->dev_addr[4] = address&0xff;
++	macaddr[4] = address&0xff;
+ 	address = address >> 8;
+-	dev->dev_addr[3] = address&0xff;
++	macaddr[3] = address&0xff;
++	eth_hw_addr_set(dev, macaddr);
+ 
+ 	printk("%s: MVME147 at 0x%08lx, irq %d, Hardware Address %pM\n",
+ 	       dev->name, dev->base_addr, MVME147_LANCE_IRQ,
 -- 
 2.31.1
 
