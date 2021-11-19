@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16E09456E9B
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 13:00:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A758456E96
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 13:00:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234970AbhKSMDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 07:03:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53908 "EHLO mail.kernel.org"
+        id S234692AbhKSMD3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 07:03:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53896 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234587AbhKSMDN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234610AbhKSMDN (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 19 Nov 2021 07:03:13 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8540461AA7;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7403B61A7D;
         Fri, 19 Nov 2021 12:00:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1637323211;
-        bh=Z7x8s5exMtoDdNvkBU90U5VejQ/Tirwb8NffZY2VRhQ=;
+        bh=kA2KK8YuXrw1PKsVWIH0KuhpSQ3a+ufOU+5LfFmrzow=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=nXS92AC/ZjkWmU07wHofvCD9jqSaVIiIpodybcOJih+HDXhN2Bvy/+wiTl+aHhejj
-         3PjVfZooIlJ+akUNvrVrU2SHp/tWJ8YfCZfZCv1Jsnzlw+5yzmupoZsrDxnXurBxGj
-         6vMYtpRLkwVGs9FA3RvvrSW1PbThZ+eCFQKkNahDtSieBMgP0GQBjFjSXgPDC6yCma
-         pIxSb+1NNr2JKKTvD5lTzlxRLjZOIOhqJG3Szb1Hx3yzmV4uO2BaCvFsuOpLV3xxL3
-         jklxyGOmwWDFYYEYQxICuq2eyGgpXGXtSF0O4CskeBOrfHzTSLUdOzPl1Wd1WGHVfD
-         QRXDXLEovxS2w==
+        b=tjfDbQztzqGYUHWhFOZRQbi+eq69XsyvJ3R5WQ0lakEDGnwHyNbTW+tJADKsSCG8U
+         GeGV1oPn2O2yksUkUZk5DX/0RUJd7YpR8CF61X1UzBlDbvcngy7bAKoolhrG61eOmA
+         rWejxorlcLMasZVFK/7xl3t0IvC+SiecbSN5yaVZhUpg6J7eJGRSZxQh8BB+/jzj9o
+         Pq0gWnvRyXB7aZNz0oLnMMO5wF0QrH14pyIDUt2xzuEj0obfYEbqRXjdx8LlkmkDAF
+         GF5NhLCKU7VmlPWmVYy/RYBXJkEQJZzKg68UjIMEiVovEy8O0QP02/EDeCzCqejLBE
+         QrZYOSU3zzc+w==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 72A98600E8;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 677E060A0F;
         Fri, 19 Nov 2021 12:00:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] net: marvell: prestera: fix brige port operation
+Subject: Re: [PATCH] stmmac_pci: Fix underflow size in stmmac_rx
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163732321146.14736.13401179872116438988.git-patchwork-notify@kernel.org>
+Message-Id: <163732321141.14736.10382429911164710117.git-patchwork-notify@kernel.org>
 Date:   Fri, 19 Nov 2021 12:00:11 +0000
-References: <1637264883-24561-1-git-send-email-volodymyr.mytnyk@plvision.eu>
-In-Reply-To: <1637264883-24561-1-git-send-email-volodymyr.mytnyk@plvision.eu>
-To:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
-Cc:     netdev@vger.kernel.org, vladimir.oltean@nxp.com,
-        ioana.ciornei@nxp.com, mickeyr@marvell.com,
-        serhiy.pshyk@plvision.eu, taras.chornyi@plvision.eu,
-        vmytnyk@marvell.com, tchornyi@marvell.com, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org
+References: <YZbI12/g04GlzdIU@a-10-27-17-117.dynapool.vpn.nyu.edu>
+In-Reply-To: <YZbI12/g04GlzdIU@a-10-27-17-117.dynapool.vpn.nyu.edu>
+To:     Zekun Shen <bruceshenzk@gmail.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        brendandg@nyu.edu
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -50,25 +51,20 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Thu, 18 Nov 2021 21:48:03 +0200 you wrote:
-> From: Volodymyr Mytnyk <vmytnyk@marvell.com>
+On Thu, 18 Nov 2021 16:42:47 -0500 you wrote:
+> This bug report came up when we were testing the device driver
+> by fuzzing. It shows that buf1_len can get underflowed and be
+> 0xfffffffc (4294967292).
 > 
-> Return NOTIFY_DONE (dont't care) for switchdev notifications
-> that prestera driver don't know how to handle them.
-> 
-> With introduction of SWITCHDEV_BRPORT_[UN]OFFLOADED switchdev
-> events, the driver rejects adding swport to bridge operation
-> which is handled by prestera_bridge_port_join() func. The root
-> cause of this is that prestera driver returns error (EOPNOTSUPP)
-> in prestera_switchdev_blk_event() handler for unknown swdev
-> events. This causes switchdev_bridge_port_offload() to fail
-> when adding port to bridge in prestera_bridge_port_join().
+> This bug is triggerable with a compromised/malfunctioning device.
+> We found the bug through QEMU emulation tested the patch with
+> emulation. We did NOT test it on real hardware.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v2] net: marvell: prestera: fix brige port operation
-    https://git.kernel.org/netdev/net/c/253e9b4d11e5
+  - stmmac_pci: Fix underflow size in stmmac_rx
+    https://git.kernel.org/netdev/net/c/0f296e782f21
 
 You are awesome, thank you!
 -- 
