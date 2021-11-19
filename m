@@ -2,113 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 617B7456F22
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 13:54:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58E75456F4A
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 14:03:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234718AbhKSM50 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 07:57:26 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:36085 "EHLO
+        id S235255AbhKSNGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 08:06:45 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:49141 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234692AbhKSM5Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 07:57:25 -0500
+        by vger.kernel.org with ESMTP id S235264AbhKSNGp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 08:06:45 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637326463;
+        s=mimecast20190719; t=1637327023;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=tr40Sr+qZMyNTjT5CMNyysFz2h1enHkACWZJul0D2y4=;
-        b=Al9a8rtmlpb8DdUY9ngeVxWqR2wEqmcfUDFC3hcLFjSIsDx4ZWfRp+NEBnRx+rO5hsgA2N
-        oN/cyIktOO7zyfRnZsJ+i9sPJYVKUMDrnva7trmJWvicS4sjPuc4Z0uIzGQohVouwJstx6
-        4BRGM2R0Ux0khgitxqTr35056+lNWvw=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=hKfzGk0Wpd8IGC/prDVcUoPiImNh9tLcC0HmBj731Mc=;
+        b=Et00upzkQXNMker+kjWY0O0Mj9076EBNzuiu8jqr8FTtYGa2Trfaz/n1gix5MRypsZyg7X
+        3g+Z+YZMUQeGbwFMyYTW1ciNIfQSbHRq0SZn/m3LCsimHQrI1O6PqG9n/8eTVA8kRN1piA
+        1RGpO06lZCNFzPYHR/NXu9XkfceiaoA=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-368-6dsare06M6yZ80tozG6b5A-1; Fri, 19 Nov 2021 07:54:22 -0500
-X-MC-Unique: 6dsare06M6yZ80tozG6b5A-1
-Received: by mail-ed1-f70.google.com with SMTP id a3-20020a05640213c300b003e7d12bb925so8344309edx.9
-        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 04:54:22 -0800 (PST)
+ us-mta-286-lEg5xjHzNYuhXxhQQhIt7Q-1; Fri, 19 Nov 2021 08:03:42 -0500
+X-MC-Unique: lEg5xjHzNYuhXxhQQhIt7Q-1
+Received: by mail-ed1-f71.google.com with SMTP id c1-20020aa7c741000000b003e7bf1da4bcso8292892eds.21
+        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 05:03:41 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
          :message-id:mime-version;
-        bh=tr40Sr+qZMyNTjT5CMNyysFz2h1enHkACWZJul0D2y4=;
-        b=mA4L8//HSarjDYvIkiQHNNoK2FasYp/4+7KKwe6EI3A5dXXB9sShE+NRocy15lKQwg
-         pEqordsHLQLUTwGjnoWRhrjVF2O/J5aQzfULzn7srbvDTwa6Vv8vcFAmYghQYSnUw92o
-         iQ/FNEiTTdwb+Bfryu4dzj0sKQCD4sTmPl9l0vD29yP0y1J1JFdQUBPOTBif7Ev4vssC
-         QV2XX4GqUuPbmmbUO99CryBm7LDlCBemaGeBv3Zq/17iBFCrzZToMJNkS8CovUju+nJy
-         qDHj4SF945G21Ynyg+Lv0XBAs7xL/hvY/nxTEv8oVAlYRSXhUe/QyZcBLs0VgAkbQECI
-         wp+g==
-X-Gm-Message-State: AOAM530PpUVawdwJa5Id4FbhcKUsIU6drqeaCq6dpNUj8NhspoI7gPt9
-        54+5RsF7dpctmUCwPxkV1CLVdzIqDTV2Jr81q3X6eSx+WP41aNcdNV4ImthrgHDSEhqeY43BbSO
-        ca9qv7kIK7j7I8ajr
-X-Received: by 2002:a17:906:b2c7:: with SMTP id cf7mr7757632ejb.303.1637326460983;
-        Fri, 19 Nov 2021 04:54:20 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxRa4V8Cz9ajPEpKUcCnt29QFHSSmpW1Fonv8oiuB/Xs2yX8wV4k5ehd92RSsxp/4Vz5E7YNQ==
-X-Received: by 2002:a17:906:b2c7:: with SMTP id cf7mr7757572ejb.303.1637326460596;
-        Fri, 19 Nov 2021 04:54:20 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id g11sm1518295edz.53.2021.11.19.04.54.19
+        bh=hKfzGk0Wpd8IGC/prDVcUoPiImNh9tLcC0HmBj731Mc=;
+        b=Wf6tiWvQPI/txyqoMiu0oL03TlRZmgRztTYiHTeFtB2gmq92INak4rss5XwVCcvJtb
+         x7Kg5ahysGd1ceIvtoaKdNv5PFX2+B6blzbzseNttD0PmhSR9aMxZ9ruNQKuqtX63i4C
+         Dx/QDP/AYXKpmQLY6ao8l43VM50HccsXF2XVLl1d9A+RNpHiszMVjnkPFIo6lclh0iNj
+         GVNlYEq9QnLUFQ+z+WOez7zOTH0z145lHoGM2+orP4o2pkrzL5xgvQ2mMP6japxKnaL+
+         EMMVaTwo49qu9BkCoA3f+0weobJHz8k8IpcHBD/Lv42/7NeFlhoU0uIs0IVodHRbzIKu
+         8N7A==
+X-Gm-Message-State: AOAM5332uPWKpaEMis+H/ZC0+8nDUP4C0WAQdjs1V4Ycmut2vradz8xh
+        KN23ECecioDCfrBkqwxqpus5KOOZWGglfFkSCq6DrmAzdyJa8wHqaRge8YCsYTs2df0+1JissfP
+        8lzSm1Yfbedds7ynM
+X-Received: by 2002:a05:6402:34d6:: with SMTP id w22mr24389964edc.35.1637327019607;
+        Fri, 19 Nov 2021 05:03:39 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx0iYtHfCnciVMnXitwgUqkXXZdqqWWg/E2uIeEkNqY5pWCuyejuk1lAeev+8CNOUCiai6nhA==
+X-Received: by 2002:a05:6402:34d6:: with SMTP id w22mr24389826edc.35.1637327018826;
+        Fri, 19 Nov 2021 05:03:38 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id dz18sm238310edb.74.2021.11.19.05.03.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Nov 2021 04:54:19 -0800 (PST)
+        Fri, 19 Nov 2021 05:03:38 -0800 (PST)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 3D747180270; Fri, 19 Nov 2021 13:54:19 +0100 (CET)
+        id 87A81180270; Fri, 19 Nov 2021 14:03:37 +0100 (CET)
 From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Martin Kelly <martin.kelly@crowdstrike.com>,
-        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>
-Cc:     "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kernel-team@fb.com" <kernel-team@fb.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "andrii@kernel.org" <andrii@kernel.org>
-Subject: RE: Re: Re: Clarification on bpftool dual licensing
-In-Reply-To: <cb8074f8c8554ca480d6bb57f79535fc@crowdstrike.com>
-References: <cb8074f8c8554ca480d6bb57f79535fc@crowdstrike.com>
+To:     Christoph Hellwig <hch@lst.de>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Christoph Hellwig <hch@lst.de>, Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-doc@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH 2/2] bpf, doc: split general purpose eBPF documentation
+ out of filter.rst
+In-Reply-To: <20211119061642.GB15129@lst.de>
+References: <20211115130715.121395-1-hch@lst.de>
+ <20211115130715.121395-3-hch@lst.de>
+ <20211118005613.g4sqaq2ucgykqk2m@ast-mbp> <20211119061642.GB15129@lst.de>
 X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 19 Nov 2021 13:54:19 +0100
-Message-ID: <87czmwe26c.fsf@toke.dk>
+Date:   Fri, 19 Nov 2021 14:03:37 +0100
+Message-ID: <877dd4e1qu.fsf@toke.dk>
 MIME-Version: 1.0
 Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Martin Kelly <martin.kelly@crowdstrike.com> writes:
+Christoph Hellwig <hch@lst.de> writes:
 
->> > One other, related question: vmlinux.h (generated by "bpftool btf dump file
->> /sys/kernel/btf/vmlinux format c"), does not currently contain a license
->> declaration. I assume this would have to be a GPL header, since vmlinux.h
->> references many GPL'd Linux kernel structs and similar, though again I'm not a
->> lawyer and therefore am not certain. Would you all agree with this? If so, any
->> objection to a patch adding an SPDX line to the generated vmlinux.h?
->>
->> Is vmlinux DWARF data GPL'ed? I certainly hope not. So vmlinux.h
->> shouldn't be licensed under GPL.
+>> In terms of followups and cleanup... please share what you have in mind.
 >
-> I have no idea; I had assumed that a struct definition coming from a
-> GPL-licensed header would have to be GPL, but again, not a lawyer, and
-> I could totally be wrong. If not GPL though, what would the license
-> be? Is it just "output of a program" and therefore license-less, even
-> though the output happens to be code?
+> The prime issue I'd like to look in is to replace all the references
+> to classic BPF and instead make the document standadlone.
 
-Totally not a lawyer either, but:
-
-There's (generally, in many jurisdictions, etc), a minimum bar for when
-something is considered a "creative work" and thus copyrightable. Debug
-output *could* fall short of this (and thus not be copyrightable at
-all). It could also fall under the same "API" umbrella as that famous
-Google v Oracle case. Or it could fall under the "syscall exception" of
-the kernel source.
-
-I guess it would take a court decision to know either way. IMO it would
-make sense if vmlinux.h is not copyrightable for whatever reason, but,
-again, IANAL :)
-
-Anyway, while we obviously can't resolve legal matters on the mailing,
-we can express the *intention* of the community, which is what the
-licensing document is trying to do. So it totally makes sense to mention
-vmlinux.h here; the question is what should such a text say?
+Yes, please, this would be awesome! :)
 
 -Toke
 
