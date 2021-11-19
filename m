@@ -2,186 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 740794568C6
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 04:47:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54CE64568C8
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 04:48:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234254AbhKSDuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 22:50:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55928 "EHLO
+        id S234283AbhKSDvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 22:51:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233770AbhKSDuE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 22:50:04 -0500
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AD7BC061574;
-        Thu, 18 Nov 2021 19:47:03 -0800 (PST)
-Received: by mail-ed1-x543.google.com with SMTP id y13so36569480edd.13;
-        Thu, 18 Nov 2021 19:47:03 -0800 (PST)
+        with ESMTP id S233770AbhKSDvU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 22:51:20 -0500
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759C2C061574
+        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 19:48:19 -0800 (PST)
+Received: by mail-ot1-x330.google.com with SMTP id g91-20020a9d12e4000000b0055ae68cfc3dso14727038otg.9
+        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 19:48:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=b+ih2j3KcLgWgyGJnTIxRJ/bMFMhbztmPc6a0cULIMQ=;
-        b=bnsiieI1ChlXuh+YF42fe0kYvJPNDHG+R0IVCARurF7pEoVhTl1d4fXPFjCryYya4U
-         2FXL4vP/Xb6eXsejZ7kweIwQTPOne0rP3HdCcH8uFzuKGTNtwC1KO4okG0b4Wk1H9ZZ+
-         wyqL1wRz9zEMbPFPRLW9JHbEVGva1Oqe5Zx/+8s5P3ZF4Lyox8o5bIK7MKfxlWf4Cfnl
-         1kIrv+z/Vol0P6rU4X3NdlI4uEb01AEmzwNjomwFBA1JZH3Ja5FpjIFG7JwX+nM9UvPY
-         SI1s7iKrHj2i/psYvHB9luLwkAL68SS/H1JlY/UM61M8M8vsINKKV9ukv+rfIusvn5BH
-         3npw==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=JTIaBNra4n2MVDVc6MKqFMZXd+UFtw3ja9qNrU4Ky+U=;
+        b=EELw0JXjHVTtuFI6B9g52GlKB8X2/vgYQ39/XiGVZY0pDXgbQc2gFyR4g4kA6qbrrZ
+         XPZPNN0Jrt4dNYTq/Qnypb4NUQ4thqZ37KZBQMaOyjL++NlGq+FKmOXbelvIgJJSE5mK
+         yv/KWSbLVSxHKtNrrQO5B1Fw3F9M+kzKlUXibWsdUpHzwhLcQX5Nzr2eJ9mWswjS8ONN
+         d2NkjqP3ADnUNWL0e4lUK9oB6de3JFuZ20Eo+QNjQiO1PqLQPclOny7fBNY7sI+T3Ug+
+         lJVUsD93xPJJ91CSaOBUDxZLgAPR7rz+eUrbE/AknPBDLamgj/zi8yX6ECIeB9j/bvlk
+         b0tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=b+ih2j3KcLgWgyGJnTIxRJ/bMFMhbztmPc6a0cULIMQ=;
-        b=cCQMoRict9bs8GPFBOB3v3vMozXhvYXK9GZZgUw+FykxlZLzk7owYPQZqRVn1adu1+
-         FI4Fjho/CIEEa4gx4cRwTcUtPFcJfSoBgOcPCkJ/sfApKQOs9ushjqLMdhKXG6NPJJYc
-         egGSJ7UhXtxopj8p8JjO7GpGuPObHF3rGNrJE41X7e2vnah8dN5xP1fgjsSvnkh6GwkP
-         2tHUC7Prq6EzoWMV7Kp/rkk1CT+XDhl5ZSgMuCEK3JG6tIPWJk8catfvDXCvittyc9YV
-         7O4zMKnUHOv/4Cm613yiB6Ipe9T2P766Co5UF6u+Y6e47U2fHApDZYSYj4a/+aTSeaLH
-         u4kw==
-X-Gm-Message-State: AOAM530BpWAwMm+A8r/kdqMWjxqgLMXuRrWdWBM+N3Trch5FLi0y40K+
-        k4eekmN/PiDdGJn5MaxYR05VV5wVLawXrYmij24=
-X-Google-Smtp-Source: ABdhPJzfpJlSlbvE0ljBsMRT13+GhE2cemlZcWWeqdFsety5UM1451jeoH4OuOgO5AEo8kmFEUXiGpNUSZwbhvhUqIE=
-X-Received: by 2002:a17:906:58c9:: with SMTP id e9mr3371383ejs.181.1637293621664;
- Thu, 18 Nov 2021 19:47:01 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=JTIaBNra4n2MVDVc6MKqFMZXd+UFtw3ja9qNrU4Ky+U=;
+        b=PMjq4POQtNk8uwmnJaFa62GOgBICiCQLx576fD6DD/m/krbW4cEb3m670Wn6kKijQF
+         RP5Gep9pu97Y43FFq/D8Kd7xD9G4h+mpVzDgLrQm5ii6kT9FGAlVHsth9wAdga5g8kUQ
+         U13+o86kDp+5qGVP3BN7zTvwpS4Kak8YVq6diUfCP/OfFFaC5z8CDtn/wJPM95CebmmQ
+         mXimZIkgN5kBF4MUBINNFOWrB4LbSk3KJcN7Cl709xrZOrkphTvdyE37zz296csXhx01
+         lZsXXMPcLpp8AhX+Czjr+MY3bP4Hz+EP3OtwOQABLx9X4ZTHR3YI3bqtafGhCOAl2Rzr
+         lsTA==
+X-Gm-Message-State: AOAM530A/gcflGJMlOox16zU+WSkPAEatNUSn91xRwZNuAX3gUnY7S+Q
+        nKkcYDbdj50Hk7TPuzGMD7c=
+X-Google-Smtp-Source: ABdhPJx699FD3hv26TclNqonmmu8ArOrfZ1PVeTLUhD3dECi3I4BkjVDSqXrsx/f9EvpitS71cA7MQ==
+X-Received: by 2002:a05:6830:22d8:: with SMTP id q24mr1960678otc.170.1637293698905;
+        Thu, 18 Nov 2021 19:48:18 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id r10sm385217ool.1.2021.11.18.19.48.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Nov 2021 19:48:18 -0800 (PST)
+Message-ID: <e48ceee7-b101-44f3-1bbc-6fbcdf9194db@gmail.com>
+Date:   Thu, 18 Nov 2021 20:48:17 -0700
 MIME-Version: 1.0
-References: <20211118124812.106538-1-imagedong@tencent.com> <67b36bd8-2477-88ac-83a0-35a1eeaf40c9@gmail.com>
-In-Reply-To: <67b36bd8-2477-88ac-83a0-35a1eeaf40c9@gmail.com>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Fri, 19 Nov 2021 11:45:40 +0800
-Message-ID: <CADxym3ZfBVAecK-oFdMVV2gkOV6iUrq5XGkRZx3yXCuXDOS=2A@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 0/2] net: snmp: tracepoint support for snmp
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        David Miller <davem@davemloft.net>, mingo@redhat.com,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        dsahern@kernel.org, Menglong Dong <imagedong@tencent.com>,
-        Yuchung Cheng <ycheng@google.com>, kuniyu@amazon.co.jp,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.3.1
+Subject: Re: [PATCH net] ipv6: fix typos in __ip6_finish_output()
+Content-Language: en-US
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Tobias Brunner <tobias@strongswan.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        David Ahern <dsahern@kernel.org>
+References: <20211119013758.2740195-1-eric.dumazet@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20211119013758.2740195-1-eric.dumazet@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello~
+On 11/18/21 6:37 PM, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> We deal with IPv6 packets, so we need to use IP6CB(skb)->flags and
+> IP6SKB_REROUTED, instead of IPCB(skb)->flags and IPSKB_REROUTED
+> 
+> Found by code inspection, please double check that fixing this bug
+> does not surface other bugs.
+> 
+> Fixes: 09ee9dba9611 ("ipv6: Reinject IPv6 packets if IPsec policy matches after SNAT")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Tobias Brunner <tobias@strongswan.org>
+> Cc: Steffen Klassert <steffen.klassert@secunet.com>
+> Cc: David Ahern <dsahern@kernel.org>
+> ---
+>  net/ipv6/ip6_output.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+> index 2f044a49afa8cf3586c36607c34073edecafc69c..ff4e83e2a5068322bb93391c7c5e2a8cb932730b 100644
+> --- a/net/ipv6/ip6_output.c
+> +++ b/net/ipv6/ip6_output.c
+> @@ -174,7 +174,7 @@ static int __ip6_finish_output(struct net *net, struct sock *sk, struct sk_buff
+>  #if defined(CONFIG_NETFILTER) && defined(CONFIG_XFRM)
+>  	/* Policy lookup after SNAT yielded a new policy */
+>  	if (skb_dst(skb)->xfrm) {
+> -		IPCB(skb)->flags |= IPSKB_REROUTED;
+> +		IP6CB(skb)->flags |= IP6SKB_REROUTED;
+>  		return dst_output(net, sk, skb);
+>  	}
+>  #endif
+> 
 
-On Thu, Nov 18, 2021 at 11:36 PM David Ahern <dsahern@gmail.com> wrote:
->
-[...]
->
-> there is already good infrastructure around kfree_skb - e.g., drop watch
-> monitor. Why not extend that in a way that other drop points can benefit
-> over time?
->
+How did that even work - the flags are at different offsets.
 
-Thanks for your advice.
+VRF driver has the same mistake in vrf_output6_direct (I followed ipv6
+code back when and did not pick up on the mistake). prepare_ipv6_hdr in
+rxe_net.c has a similar style mistake.
 
-In fact, I don't think that this is a perfect idea. This way may have benefit
-of reuse the existing kfree_skb event, but this will do plentiful modification
-to the current code. For example, in tcp_v4_rcv(), you need to introduce the
-new variate 'int free_reason' and record the drop reason in it, and pass
-it to 'kfree_skb_with_reason()' in 'discard_it:'. Many places need this kind
-modification. What's more, some statistics don't use 'kfree_skb()'.
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
-However, with the tracepoint for snmp, we just need to pass 'skb' to
-'UDP_INC_STATS()/TCP_INC_STATS()', the reason is already included.
-This way, the modification is more simple and easier to maintain.
-
-Thanks!
-Menglong Dong
-
-> e.g., something like this (uncompiled and not tested; and to which
-> Steven is going to suggest strings for the reason):
->
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index 0bd6520329f6..e66e634acad0 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -1075,8 +1075,13 @@ static inline bool skb_unref(struct sk_buff *skb)
->         return true;
->  }
->
-> +enum skb_drop_reason {
-> +       SKB_DROP_REASON_NOT_SPECIFIED,
-> +       SKB_DROP_REASON_CSUM,
-> +}
->  void skb_release_head_state(struct sk_buff *skb);
->  void kfree_skb(struct sk_buff *skb);
-> +void kfree_skb_with_reason(struct sk_buff *skb, enum skb_drop_reason);
->  void kfree_skb_list(struct sk_buff *segs);
->  void skb_dump(const char *level, const struct sk_buff *skb, bool full_pkt);
->  void skb_tx_error(struct sk_buff *skb);
-> diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
-> index 9e92f22eb086..2a2d263f9d46 100644
-> --- a/include/trace/events/skb.h
-> +++ b/include/trace/events/skb.h
-> @@ -14,7 +14,7 @@
->   */
->  TRACE_EVENT(kfree_skb,
->
-> -       TP_PROTO(struct sk_buff *skb, void *location),
-> +       TP_PROTO(struct sk_buff *skb, void *location, enum
-> skb_drop_reason reason),
->
->         TP_ARGS(skb, location),
->
-> @@ -22,16 +22,18 @@ TRACE_EVENT(kfree_skb,
->                 __field(        void *,         skbaddr         )
->                 __field(        void *,         location        )
->                 __field(        unsigned short, protocol        )
-> +               __field(        unsigned int,   reason          )
->         ),
->
->         TP_fast_assign(
->                 __entry->skbaddr = skb;
->                 __entry->location = location;
->                 __entry->protocol = ntohs(skb->protocol);
-> +               __entry->reason = reason;
->         ),
->
-> -       TP_printk("skbaddr=%p protocol=%u location=%p",
-> -               __entry->skbaddr, __entry->protocol, __entry->location)
-> +       TP_printk("skbaddr=%p protocol=%u location=%p reason %u",
-> +               __entry->skbaddr, __entry->protocol, __entry->location,
-> __entry->reason)
->  );
->
->  TRACE_EVENT(consume_skb,
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index 67a9188d8a49..388059bda3d1 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -770,11 +770,29 @@ void kfree_skb(struct sk_buff *skb)
->         if (!skb_unref(skb))
->                 return;
->
-> -       trace_kfree_skb(skb, __builtin_return_address(0));
-> +       trace_kfree_skb(skb, __builtin_return_address(0),
-> SKB_DROP_REASON_NOT_SPECIFIED);
->         __kfree_skb(skb);
->  }
->  EXPORT_SYMBOL(kfree_skb);
->
-> +/**
-> + *     kfree_skb_with_reason - free an sk_buff
-> + *     @skb: buffer to free
-> + *     @reason: enum describing why the skb is dropped
-> + *
-> + *     Drop a reference to the buffer and free it if the usage count has
-> + *     hit zero.
-> + */
-> +void kfree_skb_with_reason(struct sk_buff *skb, enum skb_drop_reason
-> reason);
-> +{
-> +       if (!skb_unref(skb))
-> +               return;
-> +
-> +       trace_kfree_skb(skb, __builtin_return_address(0), reason);
-> +       __kfree_skb(skb);
-> +}
-> +EXPORT_SYMBOL(kfree_skb_with_reason);
-> +
->  void kfree_skb_list(struct sk_buff *segs)
->  {
->         while (segs) {
