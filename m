@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64D8A457772
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 20:58:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F899457775
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 20:58:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235074AbhKSUBl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 15:01:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49816 "EHLO mail.kernel.org"
+        id S234188AbhKSUBo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 15:01:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49828 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234371AbhKSUBV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234569AbhKSUBV (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 19 Nov 2021 15:01:21 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C2FE561B39;
-        Fri, 19 Nov 2021 19:58:18 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4D7EB61B42;
+        Fri, 19 Nov 2021 19:58:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1637351899;
-        bh=LeN4n+LgVwGlxSKYNOW2g9G7+oZ2PGVzLc/S7GtItF8=;
+        bh=QScL5s5MHzMYLU1RGAFqbk+FxQW56obRkIJlB9ZKcog=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bsJZ4SI9WUtPc1/tr43I+KETO7AM2Gt/n0vZAqDxS27TKk2gVi5cKyH3S/vnmWg74
-         DY7Kyyte2UffAZ9Qh3jC1W5WYPXPWocD1U5iGW8etIufrPXR8U3hZPJLZwIkWHaOqh
-         oY0hW0qYmNqkzXKjdjsELWsUUzcKfwpgAJ4LWIuxLMJk5Yyjv78NIFOWiyFAurHaNP
-         0cOYPDhQu5Lg0Ya9f/gJw8e95RsLI9rYbkGHWCSkNbLT6Tu7tU73uhNROLpZEOIu5v
-         ZuuKZlw9ZiQimdKXSrA1EtvOprUOPG+dOYETWpIHAVSds8Poe+GSBAQc7rABiDzPYt
-         Q+LYe0y6UWyDQ==
+        b=BQV7nwIlajqvaH47W7fjMfohSpfUYXwInpuy6hH1ul0ITqhs9pEDJFB9aqxQeHWVk
+         ZDN9vE7HijF6JhHOvtiRhj9kbOZInzk8BvjA6rh4eoxBn6eBk+ZhgCR986HOBNEuAP
+         +ChPmZBE1rkfRyDbrLWIIZa97Nu8BtziDsaiK5HujTXdF+Yu3Q3sRJ+ok+BNjLI3KQ
+         tJIKz/c/ukHJqrA3bNr87DVq2mRwGBcpVL3HS7EjT1OaF8+u84DPjT0CIJzt0pGySY
+         vzf37hdVOpfsHSkhcFjSRPJhAcAMo7ObaUJDr9ci/GXKUWw+8dkle/NYk8cLspk+xh
+         2rGtK9Whq8ANg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Dmytro Linkin <dlinkin@nvidia.com>,
-        Mark Bloch <mbloch@nvidia.com>,
-        Parav Pandit <parav@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Raed Salem <raeds@nvidia.com>,
+        Maor Dickman <maord@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 01/10] net/mlx5: E-switch, Respect BW share of the new group
-Date:   Fri, 19 Nov 2021 11:58:04 -0800
-Message-Id: <20211119195813.739586-2-saeed@kernel.org>
+Subject: [net 02/10] net/mlx5e: IPsec: Fix Software parser inner l3 type setting in case of encapsulation
+Date:   Fri, 19 Nov 2021 11:58:05 -0800
+Message-Id: <20211119195813.739586-3-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211119195813.739586-1-saeed@kernel.org>
 References: <20211119195813.739586-1-saeed@kernel.org>
@@ -42,38 +41,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dmytro Linkin <dlinkin@nvidia.com>
+From: Raed Salem <raeds@nvidia.com>
 
-To enable transmit schduler on vport FW require non-zero configuration
-for vport's TSAR. If vport added to the group which has configured BW
-share value and TX rate values of the vport are zero, then scheduler
-wouldn't be enabled on this vport.
-Fix that by calling BW normalization if BW share of the new group is
-configured.
+Current code wrongly uses the skb->protocol field which reflects the
+outer l3 protocol to set the inner l3 type in Software Parser (SWP)
+fields settings in the ethernet segment (eseg) in flows where inner
+l3 exists like in Vxlan over ESP flow, the above method wrongly use
+the outer protocol type instead of the inner one. thus breaking cases
+where inner and outer headers have different protocols.
 
-Fixes: 0fe132eac38c ("net/mlx5: E-switch, Allow to add vports to rate groups")
-Signed-off-by: Dmytro Linkin <dlinkin@nvidia.com>
-Reviewed-by: Mark Bloch <mbloch@nvidia.com>
-Reviewed-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
+Fix by setting the inner l3 type in SWP according to the inner l3 ip
+header version.
+
+Fixes: 2ac9cfe78223 ("net/mlx5e: IPSec, Add Innova IPSec offload TX data path")
+Signed-off-by: Raed Salem <raeds@nvidia.com>
+Reviewed-by: Maor Dickman <maord@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
-index c6cc67cb4f6a..4501e3d737f8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
-@@ -423,7 +423,7 @@ static int esw_qos_vport_update_group(struct mlx5_eswitch *esw,
- 		return err;
- 
- 	/* Recalculate bw share weights of old and new groups */
--	if (vport->qos.bw_share) {
-+	if (vport->qos.bw_share || new_group->bw_share) {
- 		esw_qos_normalize_vports_min_rate(esw, curr_group, extack);
- 		esw_qos_normalize_vports_min_rate(esw, new_group, extack);
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
+index fb5397324aa4..2db9573a3fe6 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
+@@ -191,7 +191,7 @@ static void mlx5e_ipsec_set_swp(struct sk_buff *skb,
+ 			eseg->swp_inner_l3_offset = skb_inner_network_offset(skb) / 2;
+ 			eseg->swp_inner_l4_offset =
+ 				(skb->csum_start + skb->head - skb->data) / 2;
+-			if (skb->protocol == htons(ETH_P_IPV6))
++			if (inner_ip_hdr(skb)->version == 6)
+ 				eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L3_IPV6;
+ 			break;
+ 		default:
 -- 
 2.31.1
 
