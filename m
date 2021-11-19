@@ -2,70 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19FBA4577D4
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 21:42:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1DE14577D6
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 21:42:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235415AbhKSUoy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 15:44:54 -0500
-Received: from mga11.intel.com ([192.55.52.93]:43529 "EHLO mga11.intel.com"
+        id S235513AbhKSUpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 15:45:08 -0500
+Received: from mga11.intel.com ([192.55.52.93]:43531 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235226AbhKSUos (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Nov 2021 15:44:48 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10173"; a="231971903"
+        id S233284AbhKSUow (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Nov 2021 15:44:52 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10173"; a="231971904"
 X-IronPort-AV: E=Sophos;i="5.87,248,1631602800"; 
-   d="scan'208";a="231971903"
+   d="scan'208";a="231971904"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
   by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2021 12:41:46 -0800
 X-IronPort-AV: E=Sophos;i="5.87,248,1631602800"; 
-   d="scan'208";a="506889210"
+   d="scan'208";a="506889214"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.14.166])
   by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2021 12:41:44 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev
-Subject: [PATCH net-next 0/4] mptcp: More socket option support
-Date:   Fri, 19 Nov 2021 12:41:33 -0800
-Message-Id: <20211119204137.415733-1-mathew.j.martineau@linux.intel.com>
+Cc:     Poorva Sonparote <psonparo@redhat.com>, davem@davemloft.net,
+        kuba@kernel.org, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 1/4] ipv4: Exposing __ip_sock_set_tos() in ip.h
+Date:   Fri, 19 Nov 2021 12:41:34 -0800
+Message-Id: <20211119204137.415733-2-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.34.0
+In-Reply-To: <20211119204137.415733-1-mathew.j.martineau@linux.intel.com>
+References: <20211119204137.415733-1-mathew.j.martineau@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These patches add MPTCP socket support for a few additional socket
-options: IP_TOS, IP_FREEBIND, IP_TRANSPARENT, IPV6_FREEBIND, and
-IPV6_TRANSPARENT.
+From: Poorva Sonparote <psonparo@redhat.com>
 
-Patch 1 exposes __ip_sock_set_tos() for use in patch 2.
+Making the static function __ip_sock_set_tos() from net/ipv4/ip_sockglue.c
+accessible by declaring it in include/net/ip.h
+The reason for doing this is to use this function to set IP_TOS value in
+mptcp_setsockopt() without the lock.
 
-Patch 2 adds IP_TOS support.
+Signed-off-by: Poorva Sonparote <psonparo@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+---
+ include/net/ip.h       | 1 +
+ net/ipv4/ip_sockglue.c | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-Patches 3 and 4 add the freebind and transparent support, with a
-selftest for the latter.
-
-
-Florian Westphal (2):
-  mptcp: sockopt: add SOL_IP freebind & transparent options
-  selftests: mptcp: add tproxy test case
-
-Poorva Sonparote (2):
-  ipv4: Exposing __ip_sock_set_tos() in ip.h
-  mptcp: Support for IP_TOS for MPTCP setsockopt()
-
- include/net/ip.h                              |   1 +
- net/ipv4/ip_sockglue.c                        |   2 +-
- net/mptcp/sockopt.c                           | 106 +++++++++++++++++-
- net/mptcp/subflow.c                           |   3 +-
- tools/testing/selftests/net/mptcp/config      |   8 +-
- .../selftests/net/mptcp/mptcp_connect.c       |  51 ++++++++-
- .../selftests/net/mptcp/mptcp_connect.sh      |  80 +++++++++++++
- 7 files changed, 245 insertions(+), 6 deletions(-)
-
-
-base-commit: 520fbdf7fb19b7744e370d36d9244a446299ceb7
+diff --git a/include/net/ip.h b/include/net/ip.h
+index 7d1088888c10..81e23a102a0d 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -783,5 +783,6 @@ int ip_sock_set_mtu_discover(struct sock *sk, int val);
+ void ip_sock_set_pktinfo(struct sock *sk);
+ void ip_sock_set_recverr(struct sock *sk);
+ void ip_sock_set_tos(struct sock *sk, int val);
++void  __ip_sock_set_tos(struct sock *sk, int val);
+ 
+ #endif	/* _IP_H */
+diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
+index 38d29b175ca6..445a9ecaefa1 100644
+--- a/net/ipv4/ip_sockglue.c
++++ b/net/ipv4/ip_sockglue.c
+@@ -576,7 +576,7 @@ int ip_recv_error(struct sock *sk, struct msghdr *msg, int len, int *addr_len)
+ 	return err;
+ }
+ 
+-static void __ip_sock_set_tos(struct sock *sk, int val)
++void __ip_sock_set_tos(struct sock *sk, int val)
+ {
+ 	if (sk->sk_type == SOCK_STREAM) {
+ 		val &= ~INET_ECN_MASK;
 -- 
 2.34.0
 
