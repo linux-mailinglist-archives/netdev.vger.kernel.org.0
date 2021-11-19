@@ -2,80 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAE50457961
-	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 00:13:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBBF04579A6
+	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 00:38:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234847AbhKSXQF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 18:16:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37232 "EHLO
+        id S234890AbhKSXlr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 18:41:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231166AbhKSXQF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 18:16:05 -0500
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F7B4C061574
-        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 15:13:03 -0800 (PST)
-Received: by mail-il1-x135.google.com with SMTP id k1so11733978ilo.7
-        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 15:13:03 -0800 (PST)
+        with ESMTP id S234456AbhKSXlq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 18:41:46 -0500
+Received: from mail-oo1-xc29.google.com (mail-oo1-xc29.google.com [IPv6:2607:f8b0:4864:20::c29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21AADC061574
+        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 15:38:44 -0800 (PST)
+Received: by mail-oo1-xc29.google.com with SMTP id v19-20020a4a2453000000b002bb88bfb594so4257734oov.4
+        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 15:38:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=dcw+Rz/hUeKmQgOK5oiXMwiGgX0oy7PQUINQwMOxCY8=;
-        b=ihn/C+ylF5IVVLLJgrd/MBtakrBIusVwWb8kb9AT6921dMVALk6445y7E8T6YI3Ht3
-         adSy92hGL42XUwhYIYYaEJqAoQ3grp1itRWXZoRMebx4j1Mjw88HaPVXkcg/+aljNesO
-         PJ7iplEMcbqO2cPylnG3AUiuQBVlS+giO7Sag14qNlDs5GHdWahn4qiPRt6XZGDgqsQo
-         yEjFAAJO3/cLISZ2ca/51CeX+dOI0RtRCHB1LH0JXD+WQFgrp/mabH8rtR2ONTrGVSW1
-         UMOgs8CRkmklVLg6lLxPksjeS1LzXv3FOHSbtnrV4K0138GNobRFOj8Ds4LwBPXUr7Es
-         BJeg==
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=GD0aySu3SnLtPfPurGLGTrA4SK5u/VwrAiKx2VQvjf0=;
+        b=oP8ZDiE7WAvb+fjgQCBi/g2FHS0ePoP6N24Uq1cCzOj6BRARyT53oT1plOJhFKssst
+         o3LSbGcmU4fKwM7vrShEBIqjja9zpfErD6cr2FBslpENhgS1/sllZH8JFDlPJz00YTFa
+         s0s0VfhikJXFTVc1tWPB1hHzpCMsO/dWPioeGOdatoYHbyTZEtW1nnv9tGewCNAjYb8y
+         VwSxMApMlmjtKYeP8/PU2ylV+VbYc0009//vhpPRARNWhOkeI6slXXxCMspA2Ox2timO
+         nn3+W85tMyLp1x5aN9gu5U/A6kQGneaxx2MEZVvpFpuut6NujmsVge5x86Gf6HSGnH/4
+         zb2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=dcw+Rz/hUeKmQgOK5oiXMwiGgX0oy7PQUINQwMOxCY8=;
-        b=qYnfndY/3dj2wH/BygNpPY5xje4dOBF25gxqUmLr9V74H2hbLRsd7wQ1e0GAEHDE00
-         62y8CjVmp2X5RNh1Ucrils7p4s7p8mnSnSfYSsb2usk0BXRLw8P8DZAJv+w2UyvOys80
-         q+K8nbUQkMoD0o52mNrA7t3DIyUfv+6VAbCZgE0hcvF0WG/9P+rsTsd8Crb0ElS2lNMQ
-         XoolG4WuGvovUarhOwWvIywnGYR063uO91ZkPpwIKgRrsOTP5/Ed9zA3NNJQMYLKCkFJ
-         Rn08GfN7FImZIR2wvbe3NKp/CFgDVVDhwNgGibAEI2SdI3/DAAB9LeuT8gow4C2y13bk
-         zt4w==
-X-Gm-Message-State: AOAM530J75Lb34hI+DV1mE9OBJWoGWMCThBQFmzbLKBlaYyhL2hD11d3
-        aN1MINELHPqkR2LPTO1cNXXNfAyJgecu1oOmx00=
-X-Google-Smtp-Source: ABdhPJyEwbJbYF+25Z6I4X8gXihYYF+VVHnmtHfTyWGhA/P4dS3whzta0UkEm9Z7GUYPe8oJ0paat5bGt/GfbMFPY8I=
-X-Received: by 2002:a92:b107:: with SMTP id t7mr7243597ilh.1.1637363582509;
- Fri, 19 Nov 2021 15:13:02 -0800 (PST)
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=GD0aySu3SnLtPfPurGLGTrA4SK5u/VwrAiKx2VQvjf0=;
+        b=uNhMQ00tG5Mjd7kIzr/VeWMQS22I7Jg19JfjrK4NZU9CeyZk9I3Bh+I9+3xYVGF47q
+         5KZHSZ2yz9r3Stn8klbEnEe/DGS2jGqHFIjjvGlhmfwN9srLMXtWHmwJY4C5ljp5gQGJ
+         euzAFkDdcnozaWQhe0rCTEawoHIkG6VHdmM1sIcJxdUZb/ATGgcyiThphd4g6yCj5dt2
+         b1Pndnaw7yhbOau4F1wkhw5LGp/AvNumOv+Gpy1xj6ymmfssRzYdQk0/9h5Zzf3KypkD
+         7FgcRTX7sEehPb0qTGfEiFxzkswSSlu0/2sonSuh4l61Ub2rfpEDpOil0dc470jHRwYV
+         xGBw==
+X-Gm-Message-State: AOAM532dWkyqmcfM21fkAg8ajDlrCaSLUaSz1c8WhtB1cqC5gUd3vrG6
+        KTIzxwuQpUdUZNfwpjehFUx0EgBtHLbduV4IGkg=
+X-Google-Smtp-Source: ABdhPJwUK8QBvXR1PDK9IdVa5aoH3H6VH6q+QAAvw4zjKJnVDR9rVrfQvVvsKmXl2rPPxkkCnsrlTtb+k9oyTIAJ2xM=
+X-Received: by 2002:a4a:d68f:: with SMTP id i15mr20659460oot.77.1637365123355;
+ Fri, 19 Nov 2021 15:38:43 -0800 (PST)
 MIME-Version: 1.0
-Received: by 2002:a05:6638:12:0:0:0:0 with HTTP; Fri, 19 Nov 2021 15:13:02
+Sender: gaddafiayesha532@gmail.com
+Received: by 2002:a05:6820:1693:0:0:0:0 with HTTP; Fri, 19 Nov 2021 15:38:42
  -0800 (PST)
-Reply-To: lisshuuu1@gmail.com
-From:   LISA HUGH <mrssafi.kabore2@gmail.com>
-Date:   Sat, 20 Nov 2021 00:13:02 +0100
-Message-ID: <CACP6L_j-PWBcthyokgbqUEtgYxLYrfs121CAC77NzL4Xhw-tRQ@mail.gmail.com>
-Subject: HOPE YOU UNDERSTAND MY EMAIL?( Ms Lisa)
+From:   Anderson Theresa <ndersontheresa.24@gmail.com>
+Date:   Fri, 19 Nov 2021 15:38:42 -0800
+X-Google-Sender-Auth: uKZ4qmjw6QRvSKBxoXzxKEDnk08
+Message-ID: <CALeZTrd8vM=bHAh0pYeSLVUUL1sJMKuN1C7BXb9VaYcttzLowQ@mail.gmail.com>
+Subject: Re: Greetings My Dear,
 To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+Greetings,
 
-I am Ms Lisa Hugh, work in the department of Audit and accounting
-manager here in the Bank.
+I sent this mail praying it will find you in a good condition, since I
+myself am in a very critical health condition in which I sleep every
+night without knowing if I may be alive to see the next day. I am
+Mrs.theresa anderson, a widow suffering from a long time illness. I
+have some funds I inherited from my late husband, the sum of
+($11,000,000.00, Eleven Million Dollars) my Doctor told me recently
+that I have serious sickness which is a cancer problem. What disturbs
+me most is my stroke sickness. Having known my condition, I decided to
+donate this fund to a good person that will utilize it the way I am
+going to instruct herein. I need a very honest God.
 
-Please i need your assistance for the transferring of this fund to
-your bank account for both  of us benefit for life time investment,
+fearing a person who can claim this money and use it for Charity
+works, for orphanages, widows and also build schools for less
+privileges that will be named after my late husband if possible and to
+promote the word of God and the effort that the house of God is
+maintained. I do not want a situation where this money will be used in
+an ungodly manner. That's why I' making this decision. I'm not afraid
+of death so I know where I'm going. I accept this decision because I
+do not have any child who will inherit this money after I die. Please
+I want your sincere and urgent answer to know if you will be able to
+execute this project, and I will give you more information on how the
+fund will be transferred to your bank account. I am waiting for your
+reply.
 
-I have every inquiry details to make the bank believe you and release
-the fund in within 5
-
-banking working days with your full co-operation with me for success.
-
-Below information is what i need from you so will can be reaching each other
-
-1)Private telephone number for communication............
-2)Age.............
-3)Country..........
-4)Occupation........
-
-Thanks.
-
-Ms Lisa Hugh,
+May God Bless you,
+Mrs.theresa anderson.
