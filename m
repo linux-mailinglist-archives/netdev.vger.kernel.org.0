@@ -2,120 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88D124568B4
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 04:37:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 740794568C6
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 04:47:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233817AbhKSDkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 22:40:10 -0500
-Received: from szxga03-in.huawei.com ([45.249.212.189]:28155 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232201AbhKSDkK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 22:40:10 -0500
-Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4HwMkK6dvwz8vFq;
-        Fri, 19 Nov 2021 11:35:21 +0800 (CST)
-Received: from [10.67.102.221] (10.67.102.221) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.20; Fri, 19 Nov 2021 11:37:07 +0800
-Message-ID: <cc8714ba-f840-6856-3385-1bffaf6631e7@huawei.com>
-Date:   Fri, 19 Nov 2021 11:37:07 +0800
+        id S234254AbhKSDuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 22:50:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55928 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233770AbhKSDuE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 22:50:04 -0500
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AD7BC061574;
+        Thu, 18 Nov 2021 19:47:03 -0800 (PST)
+Received: by mail-ed1-x543.google.com with SMTP id y13so36569480edd.13;
+        Thu, 18 Nov 2021 19:47:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b+ih2j3KcLgWgyGJnTIxRJ/bMFMhbztmPc6a0cULIMQ=;
+        b=bnsiieI1ChlXuh+YF42fe0kYvJPNDHG+R0IVCARurF7pEoVhTl1d4fXPFjCryYya4U
+         2FXL4vP/Xb6eXsejZ7kweIwQTPOne0rP3HdCcH8uFzuKGTNtwC1KO4okG0b4Wk1H9ZZ+
+         wyqL1wRz9zEMbPFPRLW9JHbEVGva1Oqe5Zx/+8s5P3ZF4Lyox8o5bIK7MKfxlWf4Cfnl
+         1kIrv+z/Vol0P6rU4X3NdlI4uEb01AEmzwNjomwFBA1JZH3Ja5FpjIFG7JwX+nM9UvPY
+         SI1s7iKrHj2i/psYvHB9luLwkAL68SS/H1JlY/UM61M8M8vsINKKV9ukv+rfIusvn5BH
+         3npw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b+ih2j3KcLgWgyGJnTIxRJ/bMFMhbztmPc6a0cULIMQ=;
+        b=cCQMoRict9bs8GPFBOB3v3vMozXhvYXK9GZZgUw+FykxlZLzk7owYPQZqRVn1adu1+
+         FI4Fjho/CIEEa4gx4cRwTcUtPFcJfSoBgOcPCkJ/sfApKQOs9ushjqLMdhKXG6NPJJYc
+         egGSJ7UhXtxopj8p8JjO7GpGuPObHF3rGNrJE41X7e2vnah8dN5xP1fgjsSvnkh6GwkP
+         2tHUC7Prq6EzoWMV7Kp/rkk1CT+XDhl5ZSgMuCEK3JG6tIPWJk8catfvDXCvittyc9YV
+         7O4zMKnUHOv/4Cm613yiB6Ipe9T2P766Co5UF6u+Y6e47U2fHApDZYSYj4a/+aTSeaLH
+         u4kw==
+X-Gm-Message-State: AOAM530BpWAwMm+A8r/kdqMWjxqgLMXuRrWdWBM+N3Trch5FLi0y40K+
+        k4eekmN/PiDdGJn5MaxYR05VV5wVLawXrYmij24=
+X-Google-Smtp-Source: ABdhPJzfpJlSlbvE0ljBsMRT13+GhE2cemlZcWWeqdFsety5UM1451jeoH4OuOgO5AEo8kmFEUXiGpNUSZwbhvhUqIE=
+X-Received: by 2002:a17:906:58c9:: with SMTP id e9mr3371383ejs.181.1637293621664;
+ Thu, 18 Nov 2021 19:47:01 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.1
-Subject: Re: [PATCH] ethernet: hisilicon: hns: hns_dsaf_misc: fix a possible
- array overflow in hns_dsaf_ge_srst_by_port()
-To:     Teng Qi <starmiku1207184332@gmail.com>, <yisen.zhuang@huawei.com>,
-        <salil.mehta@huawei.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <huangguangbin2@huawei.com>, <zhengyongjun3@huawei.com>,
-        <liuyonglong@huawei.com>, <shenyang39@huawei.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <baijiaju1990@gmail.com>, <islituo@gmail.com>,
-        TOTE Robot <oslab@tsinghua.edu.cn>
-References: <20211117034453.28963-1-starmiku1207184332@gmail.com>
-From:   "lipeng (Y)" <lipeng321@huawei.com>
-In-Reply-To: <20211117034453.28963-1-starmiku1207184332@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.102.221]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
-X-CFilter-Loop: Reflected
+References: <20211118124812.106538-1-imagedong@tencent.com> <67b36bd8-2477-88ac-83a0-35a1eeaf40c9@gmail.com>
+In-Reply-To: <67b36bd8-2477-88ac-83a0-35a1eeaf40c9@gmail.com>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Fri, 19 Nov 2021 11:45:40 +0800
+Message-ID: <CADxym3ZfBVAecK-oFdMVV2gkOV6iUrq5XGkRZx3yXCuXDOS=2A@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 0/2] net: snmp: tracepoint support for snmp
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        David Miller <davem@davemloft.net>, mingo@redhat.com,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        dsahern@kernel.org, Menglong Dong <imagedong@tencent.com>,
+        Yuchung Cheng <ycheng@google.com>, kuniyu@amazon.co.jp,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry for the late reply.
+Hello~
 
-Seeing this functions:
+On Thu, Nov 18, 2021 at 11:36 PM David Ahern <dsahern@gmail.com> wrote:
+>
+[...]
+>
+> there is already good infrastructure around kfree_skb - e.g., drop watch
+> monitor. Why not extend that in a way that other drop points can benefit
+> over time?
+>
 
-static int hns_mac_get_max_port_num(struct dsaf_device *dsaf_dev)
-{
-     if (HNS_DSAF_IS_DEBUG(dsaf_dev))
-         return 1;
-     else
-         return  DSAF_MAX_PORT_NUM;
-}
+Thanks for your advice.
 
-int hns_mac_init(struct dsaf_device *dsaf_dev)
-{
-     bool found = false;
-     int ret;
-     u32 port_id;
-     int max_port_num = hns_mac_get_max_port_num(dsaf_dev);
-     struct hns_mac_cb *mac_cb;
-     struct fwnode_handle *child;
+In fact, I don't think that this is a perfect idea. This way may have benefit
+of reuse the existing kfree_skb event, but this will do plentiful modification
+to the current code. For example, in tcp_v4_rcv(), you need to introduce the
+new variate 'int free_reason' and record the drop reason in it, and pass
+it to 'kfree_skb_with_reason()' in 'discard_it:'. Many places need this kind
+modification. What's more, some statistics don't use 'kfree_skb()'.
 
-     device_for_each_child_node(dsaf_dev->dev, child) {
-         ret = fwnode_property_read_u32(child, "reg", &port_id);
-         if (ret) {
-             dev_err(dsaf_dev->dev,
-                 "get reg fail, ret=%d!\n", ret);
-             return ret;
-         }
-         if (port_id >= max_port_num) {
-             dev_err(dsaf_dev->dev,
-                 "reg(%u) out of range!\n", port_id);
-             return -EINVAL;
-         }
+However, with the tracepoint for snmp, we just need to pass 'skb' to
+'UDP_INC_STATS()/TCP_INC_STATS()', the reason is already included.
+This way, the modification is more simple and easier to maintain.
 
-The port_id had limit to DSAF_MAX_PORT_NUM, so this patch is 
-unnecessary, thanks!
+Thanks!
+Menglong Dong
 
-
-On 2021/11/17 11:44, Teng Qi wrote:
-> The if statement:
->    if (port >= DSAF_GE_NUM)
->          return;
-> 
-> limits the value of port less than DSAF_GE_NUM (i.e., 8).
-> However, if the value of port is 6 or 7, an array overflow could occur:
->    port_rst_off = dsaf_dev->mac_cb[port]->port_rst_off;
-> 
-> because the length of dsaf_dev->mac_cb is DSAF_MAX_PORT_NUM (i.e., 6).
-> 
-> To fix this possible array overflow, we first check port and if it is
-> greater than or equal to DSAF_MAX_PORT_NUM, the function returns.
-> 
-> Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-> Signed-off-by: Teng Qi <starmiku1207184332@gmail.com>
-> ---
->   drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c | 4 ++++
->   1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c
-> index 23d9cbf262c3..740850b64aff 100644
-> --- a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c
-> +++ b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c
-> @@ -400,6 +400,10 @@ static void hns_dsaf_ge_srst_by_port(struct dsaf_device *dsaf_dev, u32 port,
->   		return;
->   
->   	if (!HNS_DSAF_IS_DEBUG(dsaf_dev)) {
-> +		/* DSAF_MAX_PORT_NUM is 6, but DSAF_GE_NUM is 8.
-> +		   We need check to prevent array overflow */
-> +		if (port >= DSAF_MAX_PORT_NUM)
-> +			return;
->   		reg_val_1  = 0x1 << port;
->   		port_rst_off = dsaf_dev->mac_cb[port]->port_rst_off;
->   		/* there is difference between V1 and V2 in register.*/
-> 
+> e.g., something like this (uncompiled and not tested; and to which
+> Steven is going to suggest strings for the reason):
+>
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index 0bd6520329f6..e66e634acad0 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -1075,8 +1075,13 @@ static inline bool skb_unref(struct sk_buff *skb)
+>         return true;
+>  }
+>
+> +enum skb_drop_reason {
+> +       SKB_DROP_REASON_NOT_SPECIFIED,
+> +       SKB_DROP_REASON_CSUM,
+> +}
+>  void skb_release_head_state(struct sk_buff *skb);
+>  void kfree_skb(struct sk_buff *skb);
+> +void kfree_skb_with_reason(struct sk_buff *skb, enum skb_drop_reason);
+>  void kfree_skb_list(struct sk_buff *segs);
+>  void skb_dump(const char *level, const struct sk_buff *skb, bool full_pkt);
+>  void skb_tx_error(struct sk_buff *skb);
+> diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
+> index 9e92f22eb086..2a2d263f9d46 100644
+> --- a/include/trace/events/skb.h
+> +++ b/include/trace/events/skb.h
+> @@ -14,7 +14,7 @@
+>   */
+>  TRACE_EVENT(kfree_skb,
+>
+> -       TP_PROTO(struct sk_buff *skb, void *location),
+> +       TP_PROTO(struct sk_buff *skb, void *location, enum
+> skb_drop_reason reason),
+>
+>         TP_ARGS(skb, location),
+>
+> @@ -22,16 +22,18 @@ TRACE_EVENT(kfree_skb,
+>                 __field(        void *,         skbaddr         )
+>                 __field(        void *,         location        )
+>                 __field(        unsigned short, protocol        )
+> +               __field(        unsigned int,   reason          )
+>         ),
+>
+>         TP_fast_assign(
+>                 __entry->skbaddr = skb;
+>                 __entry->location = location;
+>                 __entry->protocol = ntohs(skb->protocol);
+> +               __entry->reason = reason;
+>         ),
+>
+> -       TP_printk("skbaddr=%p protocol=%u location=%p",
+> -               __entry->skbaddr, __entry->protocol, __entry->location)
+> +       TP_printk("skbaddr=%p protocol=%u location=%p reason %u",
+> +               __entry->skbaddr, __entry->protocol, __entry->location,
+> __entry->reason)
+>  );
+>
+>  TRACE_EVENT(consume_skb,
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index 67a9188d8a49..388059bda3d1 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -770,11 +770,29 @@ void kfree_skb(struct sk_buff *skb)
+>         if (!skb_unref(skb))
+>                 return;
+>
+> -       trace_kfree_skb(skb, __builtin_return_address(0));
+> +       trace_kfree_skb(skb, __builtin_return_address(0),
+> SKB_DROP_REASON_NOT_SPECIFIED);
+>         __kfree_skb(skb);
+>  }
+>  EXPORT_SYMBOL(kfree_skb);
+>
+> +/**
+> + *     kfree_skb_with_reason - free an sk_buff
+> + *     @skb: buffer to free
+> + *     @reason: enum describing why the skb is dropped
+> + *
+> + *     Drop a reference to the buffer and free it if the usage count has
+> + *     hit zero.
+> + */
+> +void kfree_skb_with_reason(struct sk_buff *skb, enum skb_drop_reason
+> reason);
+> +{
+> +       if (!skb_unref(skb))
+> +               return;
+> +
+> +       trace_kfree_skb(skb, __builtin_return_address(0), reason);
+> +       __kfree_skb(skb);
+> +}
+> +EXPORT_SYMBOL(kfree_skb_with_reason);
+> +
+>  void kfree_skb_list(struct sk_buff *segs)
+>  {
+>         while (segs) {
