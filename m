@@ -2,122 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B900456700
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 01:49:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52346456724
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 01:58:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233743AbhKSAwL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 19:52:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44306 "EHLO
+        id S232101AbhKSBBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 20:01:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233583AbhKSAwK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 19:52:10 -0500
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EDCAC061574
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 16:49:10 -0800 (PST)
-Received: by mail-pg1-x534.google.com with SMTP id m15so7048744pgu.11
-        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 16:49:10 -0800 (PST)
+        with ESMTP id S229472AbhKSBB3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 20:01:29 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF3BCC061574;
+        Thu, 18 Nov 2021 16:58:28 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id w1so35176618edc.6;
+        Thu, 18 Nov 2021 16:58:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YkjqUce/1zqYHDkxw9V7Si4C/wiUvY/ejgdoaWtU7F8=;
-        b=jL6F9Zche60wZHnQlER4i/xqZ3DP8G7Gq9xGPcG9eBsxJWTOy5lFFOkwIk3mtjfcQL
-         U41MpmKVn6zEsh62rGkJrvtAYFcwOGBgO/FlRk6VFu32M8F5facBkEEAmiuLPY/kKQJy
-         ooehKrAvJHP3zPIIZVa08byehi4/l4Mdd1M9o=
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=mSqcJbaYAFA7vrNk0Axws3hCvBSWHqi0Rr0Z9Q1FoSQ=;
+        b=AkD67amu9zWoOCfcgczw33j+DQa8AVKgHnjpzHLxp/6f92NnlBkYAlmWp+83m2BuIN
+         Mvx25ChncjeMOlKFdCfBcOuRv4avzd17th1f+3Jvj5upNwUqicUOo+s7O+2f2wB/Bq11
+         QDx+McZ7tBbMM4sn296XP6UC2h1Jlf8UYQuWkzpumwcxGl+Lccj6PEXCwfdfLkwNlGRq
+         JSodH+t/ecFzf4gHs2aYUVjxVDQ1Tz9iMUNhwNGyX0Jbj9EZw2YAkgYHEVT7lC7LWCaL
+         6BUR3bBQkh8JMqB5lz1ZmO1JjQCOz9B2STrE5w/6pDo3RnjqnJzDpDqlbI3SeTMDKqIy
+         ibcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YkjqUce/1zqYHDkxw9V7Si4C/wiUvY/ejgdoaWtU7F8=;
-        b=l3CwnvJ3cV3H3OhtRjyoyEVO5gjdlJWaa2HXCgu+xY0i4Oc2pYdL1h5RxYTOHsTWu6
-         Qh7tK3eeFM5PHhxuvkAwSLTSlAnfnkX5DcyKqAkL2wQhCN8S6KI0vZ7u1jjQ3XU+lRJ4
-         YuCrsjT3SLFrfX3s9GUn6ns6Q07f5vauDQYrTTprHE1HJ7f+Hh9wPMUMQ9ewQftVuGST
-         63x+4kQYvVbd7XilRfpx/ARZ8weJkMi6zpuVu/eh8ziO4NIpyT+aCbKBcuLdWpbIDm/9
-         ilmcDUUpxbrbLz2hYoGWn+OPRIbPTnwdE6tOPCWTsFWMAHkN0ONnW/WlgRPdr6/CnXu+
-         Fq2Q==
-X-Gm-Message-State: AOAM532sgV9avIkpTKJaTWcumF+LbpVSV6CdiRLdMkrhRKVIz5PNTDcl
-        HbeUjzm3gQMKc2sN7Q7GgHlBeA==
-X-Google-Smtp-Source: ABdhPJxTD6mxab3V0M9TiW8Iu48GasUWYhWvJ+1aDKuxh2PgLilRu1tiucEhi6AW+c2986+esm2T1Q==
-X-Received: by 2002:a63:8f02:: with SMTP id n2mr14171803pgd.270.1637282949612;
-        Thu, 18 Nov 2021 16:49:09 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id v7sm600065pgv.86.2021.11.18.16.49.09
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mSqcJbaYAFA7vrNk0Axws3hCvBSWHqi0Rr0Z9Q1FoSQ=;
+        b=UeqRCxY9XSst6n3ilHSUAiFXanNqavUOIdCVrcslw7vfhy2N2rHlArU9t+BHWG1+38
+         1xm448AXYX7P/L9rjVN4fii1oLRjantdiR6aP3b3owqtjWJcNFkjZ4XFVSGZoJv2r7H+
+         TMf7ByO5wcbqu6HkN7L5w/UJslDFvgRK794mRpxrOH8kDeula9zSE+1INuoBCEbY40kn
+         Bthli+35zz7QbjQFJ5X4XJidSAya83os7v7oi525UPrwOwt4w7D+xsQYFrsWM2/oPz0i
+         quQUq9fr0HDznaDj7+sIqkVHdQHUyxfYT0g97hdOGACDFx2DiSvLIdcyj8zjtlYgbI6L
+         Fwcw==
+X-Gm-Message-State: AOAM533Qs7OEp87mZaUb99+QvIa0xOVzKwCbt86jJ/sB5PD0+GDplQtb
+        s8su37iPCD5sV6BpIrIP4NQ=
+X-Google-Smtp-Source: ABdhPJxo67+OzNAj8qpz572vVVACkgeo+Qe5Alw39BLCobKOdzQDqZbgadRqHvqOqZYhTOSMIjSxXw==
+X-Received: by 2002:a17:906:2e97:: with SMTP id o23mr2157010eji.541.1637283507499;
+        Thu, 18 Nov 2021 16:58:27 -0800 (PST)
+Received: from skbuf ([188.25.163.189])
+        by smtp.gmail.com with ESMTPSA id u23sm699437edi.88.2021.11.18.16.58.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Nov 2021 16:49:09 -0800 (PST)
-From:   Kees Cook <keescook@chromium.org>
-To:     Lennert Buytenhek <buytenh@wantstofly.org>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        Thu, 18 Nov 2021 16:58:27 -0800 (PST)
+Date:   Fri, 19 Nov 2021 02:58:26 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        wengjianfeng <wengjianfeng@yulong.com>,
-        Lv Yunlong <lyl2019@mail.ustc.edu.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Allen Pais <allen.lkml@gmail.com>,
-        Zheyu Ma <zheyuma97@gmail.com>, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH v2] mwl8k: Use named struct for memcpy() region
-Date:   Thu, 18 Nov 2021 16:49:05 -0800
-Message-Id: <20211119004905.2348143-1-keescook@chromium.org>
-X-Mailer: git-send-email 2.30.2
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [net-next PATCH 03/19] net: dsa: qca8k: skip sgmii delay on
+ double cpu conf
+Message-ID: <20211119005826.omgn7pj3cx3lwwr7@skbuf>
+References: <20211117210451.26415-1-ansuelsmth@gmail.com>
+ <20211117210451.26415-4-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1855; h=from:subject; bh=wjitypM7IZy7p429Ylbn1QQyHwpCfiE22AwHT6cE62I=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhlvSAYieAM1UQZUMb9M+xQqwVE1xR69PM80ynJIvX SkYa5KCJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYZb0gAAKCRCJcvTf3G3AJk1nD/ 9UFKaIfW/bPmnHzqdwTZBLyiLd9/zO1j7AQI449efBugIp6lvSSbD39hmsdd5WeOCQXbMtYbga4AZO oTkXOD0NbrZyIS4snpGf6Ge5t09H4PsuKPyq6nA+CjyrWqeyu8CCPq6ccwr29MkiOMEMAAo44gGQtj PsDyMGhJQcLJU1Btl2wnwby+KTeYev9gCtJL3Q80AzfdjvS4QcyWDFjBxXp7favmeJfs/DLf5m93vc GmS0M7Ot8lnTxuPvQa7UKiaHCOLiqg9nl8peFln9XEVFuz1jqxj9RxXxX8o5wSMsecdCxMXQ1MralQ UlpJpnI6OwBu8fGmVVBXwmi8qiwbWXmaIkXlQ1WVTD7oWJHmGuyeZ17I2nGHh4C27mribAqFJDY9y/ hCZvDgSh9GKn6Kf6iP3VMJMLAjh9SpjCiaaFTDQEwNf6SjHR49kAVnluoFnR/uHMuKm/x4yMq7PbMO 8Hz/5zkyllqJTW1srqtpu51EJ9qhXCbP5WOuKRld4ptCHOozVLSWqM30TbdatdZqH7UyNj8ajWDBgH WsOp8T3oYochanHmNM95kXAqe4WOeCEuQHVzJNcJVizR2sVGZwHt9IY3TxW64igc8WYuGuqFSkX9Ra 1qvGwG8ydxlkRpeDzJYfeRpYAN6I7588hnQSsZ9pe4viTRXxiDwTWOK3A5tw==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211117210451.26415-4-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In preparation for FORTIFY_SOURCE performing compile-time and run-time
-field bounds checking for memcpy(), memmove(), and memset(), avoid
-intentionally writing across neighboring fields.
+On Wed, Nov 17, 2021 at 10:04:35PM +0100, Ansuel Smith wrote:
+> With a dual cpu configuration rgmii+sgmii, skip configuring sgmii delay
+> as it does cause no traffic. Configure only rgmii delay in this
+> specific configuration.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
 
-Use named struct in struct mwl8k_cmd_set_key around members key_material,
-tkip_tx_mic_key, and tkip_rx_mic_key so they can be referenced
-together. This will allow memcpy() and sizeof() to more easily reason
-about sizes, improve readability, and avoid future warnings about writing
-beyond the end of key_material.
+I feel that you owe a serious explanation about this SGMII delay
+business, it's getting stranger and stranger. I chalked it up to the
+fact that maybe QCA8334 has a strange SGMII implementation, where the
+clock it is source-synchronous, as opposed to the data lanes themselves
+being self-clocking. But the fact is, I don't really know, I never was
+sure, never got an explanation, and now I am even less sure. And now
+that I look in the datasheet for the pinout, I see a regular pair of
+pins (SOP, SON) for the TX differential pair, and a regular pair of pins
+(SIP, SIN) for the RX differential pair. No pin for any source
+synchronous clock. So where is this SGMII_CLK125M clock localized, and
+if it's inside the switch, and why do you need to configure its sampling
+edge and delay, what is different between one board and another?
 
-"pahole" shows no size nor member offset changes to struct
-mwl8k_cmd_set_key. "objdump -d" shows no object code changes.
+The RGMII and the SGMII CPU ports are different physical ports, are they not?
+Why would the configuration of one affect the other? Do they share any
+physical resource?
 
-Signed-off-by: Kees Cook <keescook@chromium.org>
----
-v1->v2: fixed wide indent, also not actually using struct_group
----
- drivers/net/wireless/marvell/mwl8k.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+>  drivers/net/dsa/qca8k.c | 12 ++++++++++--
+>  drivers/net/dsa/qca8k.h |  1 +
+>  2 files changed, 11 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> index bfffc1fb7016..ace465c878f8 100644
+> --- a/drivers/net/dsa/qca8k.c
+> +++ b/drivers/net/dsa/qca8k.c
+> @@ -1041,8 +1041,13 @@ qca8k_parse_port_config(struct qca8k_priv *priv)
+>  			if (mode == PHY_INTERFACE_MODE_RGMII ||
+>  			    mode == PHY_INTERFACE_MODE_RGMII_ID ||
+>  			    mode == PHY_INTERFACE_MODE_RGMII_TXID ||
+> -			    mode == PHY_INTERFACE_MODE_RGMII_RXID)
+> +			    mode == PHY_INTERFACE_MODE_RGMII_RXID) {
+> +				if (priv->ports_config.rgmii_tx_delay[cpu_port_index] ||
+> +				    priv->ports_config.rgmii_rx_delay[cpu_port_index])
+> +					priv->ports_config.skip_sgmii_delay = true;
+> +
+>  				break;
+> +			}
+>  
+>  			if (of_property_read_bool(port_dn, "qca,sgmii-txclk-falling-edge"))
+>  				priv->ports_config.sgmii_tx_clk_falling_edge = true;
+> @@ -1457,8 +1462,11 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+>  
+>  		/* From original code is reported port instability as SGMII also
+>  		 * require delay set. Apply advised values here or take them from DT.
+> +		 * In dual CPU configuration, apply only delay to rgmii as applying
+> +		 * it also to the SGMII line cause no traffic to the entire switch.
+>  		 */
+> -		if (state->interface == PHY_INTERFACE_MODE_SGMII)
+> +		if (state->interface == PHY_INTERFACE_MODE_SGMII &&
+> +		    !priv->ports_config.skip_sgmii_delay)
 
-diff --git a/drivers/net/wireless/marvell/mwl8k.c b/drivers/net/wireless/marvell/mwl8k.c
-index 529e325498cd..864a2ba9efee 100644
---- a/drivers/net/wireless/marvell/mwl8k.c
-+++ b/drivers/net/wireless/marvell/mwl8k.c
-@@ -4225,9 +4225,11 @@ struct mwl8k_cmd_set_key {
- 	__le32 key_info;
- 	__le32 key_id;
- 	__le16 key_len;
--	__u8 key_material[MAX_ENCR_KEY_LENGTH];
--	__u8 tkip_tx_mic_key[MIC_KEY_LENGTH];
--	__u8 tkip_rx_mic_key[MIC_KEY_LENGTH];
-+	struct {
-+		__u8 key_material[MAX_ENCR_KEY_LENGTH];
-+		__u8 tkip_tx_mic_key[MIC_KEY_LENGTH];
-+		__u8 tkip_rx_mic_key[MIC_KEY_LENGTH];
-+	} tkip;
- 	__le16 tkip_rsc_low;
- 	__le32 tkip_rsc_high;
- 	__le16 tkip_tsc_low;
-@@ -4375,7 +4377,7 @@ static int mwl8k_cmd_encryption_set_key(struct ieee80211_hw *hw,
- 		goto done;
- 	}
- 
--	memcpy(cmd->key_material, key->key, keymlen);
-+	memcpy(&cmd->tkip, key->key, keymlen);
- 	cmd->action = cpu_to_le32(action);
- 
- 	rc = mwl8k_post_pervif_cmd(hw, vif, &cmd->header);
--- 
-2.30.2
+I thought that the deal was that with the new "tx-internal-delay-ps" and
+"rx-internal-delay-ps" properties, you would not enable any delays by
+default in their absence. So if system is broken by the fact that delays
+are applied on the SGMII port when they shouldn't have, the issue is in
+the device tree and the fix is also there. This "skip_sgmii_delay" logic
+on the other hand is fixing up the default delays that get applied in
+lack of device tree properties.
+
+>  			qca8k_mac_config_setup_internal_delay(priv, cpu_port_index, reg);
+>  
+>  		break;
+> diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+> index 128b8cf85e08..57c4c0d93558 100644
+> --- a/drivers/net/dsa/qca8k.h
+> +++ b/drivers/net/dsa/qca8k.h
+> @@ -275,6 +275,7 @@ struct qca8k_ports_config {
+>  	bool sgmii_rx_clk_falling_edge;
+>  	bool sgmii_tx_clk_falling_edge;
+>  	bool sgmii_enable_pll;
+> +	bool skip_sgmii_delay;
+>  	u8 rgmii_rx_delay[QCA8K_NUM_CPU_PORTS]; /* 0: CPU port0, 1: CPU port6 */
+>  	u8 rgmii_tx_delay[QCA8K_NUM_CPU_PORTS]; /* 0: CPU port0, 1: CPU port6 */
+>  };
+> -- 
+> 2.32.0
+> 
 
