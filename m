@@ -2,284 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A254F45762B
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 19:14:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1D7745762E
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 19:14:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233761AbhKSSRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 13:17:07 -0500
-Received: from mga02.intel.com ([134.134.136.20]:52700 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232509AbhKSSRE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Nov 2021 13:17:04 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10173"; a="221683614"
-X-IronPort-AV: E=Sophos;i="5.87,248,1631602800"; 
-   d="scan'208";a="221683614"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2021 10:14:02 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,248,1631602800"; 
-   d="scan'208";a="508004020"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga008.jf.intel.com with ESMTP; 19 Nov 2021 10:14:01 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, sassmann@redhat.com,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net 4/4] iavf: Fix VLAN feature flags after VFR
-Date:   Fri, 19 Nov 2021 10:12:43 -0800
-Message-Id: <20211119181243.1839441-5-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211119181243.1839441-1-anthony.l.nguyen@intel.com>
-References: <20211119181243.1839441-1-anthony.l.nguyen@intel.com>
+        id S234324AbhKSSRg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 13:17:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55050 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232509AbhKSSRf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 13:17:35 -0500
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3786C061574;
+        Fri, 19 Nov 2021 10:14:33 -0800 (PST)
+Received: by mail-il1-x133.google.com with SMTP id l8so11084572ilv.3;
+        Fri, 19 Nov 2021 10:14:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OK3QGipzsz8RDdhQvlPyrhT7IAJzli5HzLGRrKoL5Vg=;
+        b=qTOqAO/pyZp63zOi9SFWwHNcoFqmjJbp/LafzEIXISFb+9AqhNZH8lzOyLV9chE8TE
+         kwQXRqhMggIv00ZWnqKnSLoNtKDR04tD17+ewT1kEx19hOUogTo+/OTCDR8CrK6SjUAM
+         pGNSuyq49TubS/iYT8/JU/i9WeVjfFLuOiZ9dNEWjeBwHXiU9UpiTVWIoqSP4IolWUvw
+         XGlIP9Mj7jS75GQwFPiEiAF0VS/Y90J3u3Ki3sKIww6oYz82gb0zf/Vzpyg/j8hgSaBq
+         f6e2oOHfo9iBN2bbyDT7WrWHDiNKZH1kpaIOPxRc396RTO4NUh7NfVESZW0YRJCbBSy0
+         iL5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OK3QGipzsz8RDdhQvlPyrhT7IAJzli5HzLGRrKoL5Vg=;
+        b=iy/8zt32Tmy1JvyZnCIjXXqvDQ8G84UzAYqPCzgCbKo1IHXchMzJ5G5cmFgWv8SO7j
+         Ceh5pS1sCb9ZDbLswGadj6soPWxjAX0kHL1GWObzJTNg1Ug9rqXTheoyYQMSu9YM5xsu
+         k7XvXEzLx4W6b3aADVKjkzAya+tx+bQVLX+4MESv4wP5GrRowsnKvfSH1IN0LZAzl0iE
+         C78MHDY1Yq0sY1N48N/5c7oyyZj93IJOkTcq2flZJb+UYCxcdKEEADcEYHS9da2kTxpH
+         bvk0rEpn6VngV1E9dCWOnAVgWyH5wmkPEE5qKcAsnOSqwf7pIyTmabdqEAZDQaH5OX0e
+         a0vA==
+X-Gm-Message-State: AOAM531lM+sRhefHsOsGlSh4nL0kkQ/SsfOQFWlxOadz5pWjjPZ4vIXu
+        ma1Q5Fd4znKuNNuh6ghDcv8=
+X-Google-Smtp-Source: ABdhPJxCemD9+w8GakbzPg5tckRj9cBzodPK5gV9wmiWIdtSjueBW9Sffjg6CVnEoZaZE45kCzURuQ==
+X-Received: by 2002:a05:6e02:190f:: with SMTP id w15mr6249809ilu.56.1637345673435;
+        Fri, 19 Nov 2021 10:14:33 -0800 (PST)
+Received: from john.lan ([172.243.151.11])
+        by smtp.gmail.com with ESMTPSA id d2sm374505ilg.77.2021.11.19.10.14.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Nov 2021 10:14:32 -0800 (PST)
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     alexei.starovoitov@gmail.com, daniel@iogearbox.net,
+        andrii@kernel.org
+Cc:     john.fastabend@gmail.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH bpf 0/2] sockmap fix for test_map failure 
+Date:   Fri, 19 Nov 2021 10:14:16 -0800
+Message-Id: <20211119181418.353932-1-john.fastabend@gmail.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Brett Creeley <brett.creeley@intel.com>
+CI test_map runs started failing because of a regression in the
+sockmap tests. The case, caught by test_maps is that progs attached
+to sockets are not detatched currently when sockets are removed
+from a map. We resolve this in two patches. The first patch
+fixes a subtle issue found from code review and the second
+patch addresses the reported CI issue. This was recently introduced
+by a race fix, see patches for details.
 
-When a VF goes through a reset, it's possible for the VF's feature set
-to change. For example it may lose the VIRTCHNL_VF_OFFLOAD_VLAN
-capability after VF reset. Unfortunately, the driver doesn't correctly
-deal with this situation and errors are seen from downing/upping the
-interface and/or moving the interface in/out of a network namespace.
+Sorry for the hassle here, seems we missed ./test_maps run before
+pushing the offending patch or maybe we just got lucky on the
+run we did locally. Either way should be resolved now.
 
-When setting the interface down/up we see the following errors after the
-VIRTCHNL_VF_OFFLOAD_VLAN capability was taken away from the VF:
+Thanks,
+John
 
-ice 0000:51:00.1: VF 1 failed opcode 12, retval: -64 iavf 0000:51:09.1:
-Failed to add VLAN filter, error IAVF_NOT_SUPPORTED ice 0000:51:00.1: VF
-1 failed opcode 13, retval: -64 iavf 0000:51:09.1: Failed to delete VLAN
-filter, error IAVF_NOT_SUPPORTED
+John Fastabend (2):
+  bpf, sockmap: Attach map progs to psock early for feature probes
+  bpf, sockmap: Re-evaluate proto ops when psock is removed from sockmap
 
-These add/delete errors are happening because the VLAN filters are
-tracked internally to the driver and regardless of the VLAN_ALLOWED()
-setting the driver tries to delete/re-add them over virtchnl.
+ net/core/skmsg.c    |  5 +++++
+ net/core/sock_map.c | 15 ++++++++++-----
+ 2 files changed, 15 insertions(+), 5 deletions(-)
 
-Fix the delete failure by making sure to delete any VLAN filter tracking
-in the driver when a removal request is made, while preventing the
-virtchnl request.  This makes it so the driver's VLAN list is up to date
-and the errors are
-
-Fix the add failure by making sure the check for VLAN_ALLOWED() during
-reset is done after the VF receives its capability list from the PF via
-VIRTCHNL_OP_GET_VF_RESOURCES. If VLAN functionality is not allowed, then
-prevent requesting re-adding the filters over virtchnl.
-
-When moving the interface into a network namespace we see the following
-errors after the VIRTCHNL_VF_OFFLOAD_VLAN capability was taken away from
-the VF:
-
-iavf 0000:51:09.1 enp81s0f1v1: NIC Link is Up Speed is 25 Gbps Full Duplex
-iavf 0000:51:09.1 temp_27: renamed from enp81s0f1v1
-iavf 0000:51:09.1 mgmt: renamed from temp_27
-iavf 0000:51:09.1 dev27: set_features() failed (-22); wanted 0x020190001fd54833, left 0x020190001fd54bb3
-
-These errors are happening because we aren't correctly updating the
-netdev capabilities and dealing with ndo_fix_features() and
-ndo_set_features() correctly.
-
-Fix this by only reporting errors in the driver's ndo_set_features()
-callback when VIRTCHNL_VF_OFFLOAD_VLAN is not allowed and any attempt to
-enable the VLAN features is made. Also, make sure to disable VLAN
-insertion, filtering, and stripping since the VIRTCHNL_VF_OFFLOAD_VLAN
-flag applies to all of them and not just VLAN stripping.
-
-Also, after we process the capabilities in the VF reset path, make sure
-to call netdev_update_features() in case the capabilities have changed
-in order to update the netdev's feature set to match the VF's actual
-capabilities.
-
-Lastly, make sure to always report success on VLAN filter delete when
-VIRTCHNL_VF_OFFLOAD_VLAN is not supported. The changed flow in
-iavf_del_vlans() allows the stack to delete previosly existing VLAN
-filters even if VLAN filtering is not allowed. This makes it so the VLAN
-filter list is up to date.
-
-Fixes: 8774370d268f ("i40e/i40evf: support for VF VLAN tag stripping control")
-Signed-off-by: Brett Creeley <brett.creeley@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/iavf/iavf.h        |  1 +
- drivers/net/ethernet/intel/iavf/iavf_main.c   | 33 ++++++--------
- .../net/ethernet/intel/iavf/iavf_virtchnl.c   | 45 +++++++++++++++++--
- 3 files changed, 56 insertions(+), 23 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
-index bb9cc227d1e1..3789269ce741 100644
---- a/drivers/net/ethernet/intel/iavf/iavf.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf.h
-@@ -503,4 +503,5 @@ void iavf_add_adv_rss_cfg(struct iavf_adapter *adapter);
- void iavf_del_adv_rss_cfg(struct iavf_adapter *adapter);
- struct iavf_mac_filter *iavf_add_filter(struct iavf_adapter *adapter,
- 					const u8 *macaddr);
-+int iavf_lock_timeout(struct mutex *lock, unsigned int msecs);
- #endif /* _IAVF_H_ */
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 8e96ae746c3d..14934a7a13ef 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -147,7 +147,7 @@ enum iavf_status iavf_free_virt_mem_d(struct iavf_hw *hw,
-  *
-  * Returns 0 on success, negative on failure
-  **/
--static int iavf_lock_timeout(struct mutex *lock, unsigned int msecs)
-+int iavf_lock_timeout(struct mutex *lock, unsigned int msecs)
- {
- 	unsigned int wait, delay = 10;
- 
-@@ -717,13 +717,11 @@ static void iavf_del_vlan(struct iavf_adapter *adapter, u16 vlan)
-  **/
- static void iavf_restore_filters(struct iavf_adapter *adapter)
- {
--	/* re-add all VLAN filters */
--	if (VLAN_ALLOWED(adapter)) {
--		u16 vid;
-+	u16 vid;
- 
--		for_each_set_bit(vid, adapter->vsi.active_vlans, VLAN_N_VID)
--			iavf_add_vlan(adapter, vid);
--	}
-+	/* re-add all VLAN filters */
-+	for_each_set_bit(vid, adapter->vsi.active_vlans, VLAN_N_VID)
-+		iavf_add_vlan(adapter, vid);
- }
- 
- /**
-@@ -758,9 +756,6 @@ static int iavf_vlan_rx_kill_vid(struct net_device *netdev,
- {
- 	struct iavf_adapter *adapter = netdev_priv(netdev);
- 
--	if (!VLAN_ALLOWED(adapter))
--		return -EIO;
--
- 	iavf_del_vlan(adapter, vid);
- 	clear_bit(vid, adapter->vsi.active_vlans);
- 
-@@ -2191,7 +2186,6 @@ static void iavf_reset_task(struct work_struct *work)
- 	struct net_device *netdev = adapter->netdev;
- 	struct iavf_hw *hw = &adapter->hw;
- 	struct iavf_mac_filter *f, *ftmp;
--	struct iavf_vlan_filter *vlf;
- 	struct iavf_cloud_filter *cf;
- 	u32 reg_val;
- 	int i = 0, err;
-@@ -2332,11 +2326,6 @@ static void iavf_reset_task(struct work_struct *work)
- 	list_for_each_entry(f, &adapter->mac_filter_list, list) {
- 		f->add = true;
- 	}
--	/* re-add all VLAN filters */
--	list_for_each_entry(vlf, &adapter->vlan_filter_list, list) {
--		vlf->add = true;
--	}
--
- 	spin_unlock_bh(&adapter->mac_vlan_list_lock);
- 
- 	/* check if TCs are running and re-add all cloud filters */
-@@ -2350,7 +2339,6 @@ static void iavf_reset_task(struct work_struct *work)
- 	spin_unlock_bh(&adapter->cloud_filter_list_lock);
- 
- 	adapter->aq_required |= IAVF_FLAG_AQ_ADD_MAC_FILTER;
--	adapter->aq_required |= IAVF_FLAG_AQ_ADD_VLAN_FILTER;
- 	adapter->aq_required |= IAVF_FLAG_AQ_ADD_CLOUD_FILTER;
- 	iavf_misc_irq_enable(adapter);
- 
-@@ -3462,11 +3450,16 @@ static int iavf_set_features(struct net_device *netdev,
- {
- 	struct iavf_adapter *adapter = netdev_priv(netdev);
- 
--	/* Don't allow changing VLAN_RX flag when adapter is not capable
--	 * of VLAN offload
-+	/* Don't allow enabling VLAN features when adapter is not capable
-+	 * of VLAN offload/filtering
- 	 */
- 	if (!VLAN_ALLOWED(adapter)) {
--		if ((netdev->features ^ features) & NETIF_F_HW_VLAN_CTAG_RX)
-+		netdev->hw_features &= ~(NETIF_F_HW_VLAN_CTAG_RX |
-+					 NETIF_F_HW_VLAN_CTAG_TX |
-+					 NETIF_F_HW_VLAN_CTAG_FILTER);
-+		if (features & (NETIF_F_HW_VLAN_CTAG_RX |
-+				NETIF_F_HW_VLAN_CTAG_TX |
-+				NETIF_F_HW_VLAN_CTAG_FILTER))
- 			return -EINVAL;
- 	} else if ((netdev->features ^ features) & NETIF_F_HW_VLAN_CTAG_RX) {
- 		if (features & NETIF_F_HW_VLAN_CTAG_RX)
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-index 8421cbe6a197..d60bf7c21200 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-@@ -607,7 +607,7 @@ void iavf_add_vlans(struct iavf_adapter *adapter)
- 		if (f->add)
- 			count++;
- 	}
--	if (!count) {
-+	if (!count || !VLAN_ALLOWED(adapter)) {
- 		adapter->aq_required &= ~IAVF_FLAG_AQ_ADD_VLAN_FILTER;
- 		spin_unlock_bh(&adapter->mac_vlan_list_lock);
- 		return;
-@@ -673,9 +673,19 @@ void iavf_del_vlans(struct iavf_adapter *adapter)
- 
- 	spin_lock_bh(&adapter->mac_vlan_list_lock);
- 
--	list_for_each_entry(f, &adapter->vlan_filter_list, list) {
--		if (f->remove)
-+	list_for_each_entry_safe(f, ftmp, &adapter->vlan_filter_list, list) {
-+		/* since VLAN capabilities are not allowed, we dont want to send
-+		 * a VLAN delete request because it will most likely fail and
-+		 * create unnecessary errors/noise, so just free the VLAN
-+		 * filters marked for removal to enable bailing out before
-+		 * sending a virtchnl message
-+		 */
-+		if (f->remove && !VLAN_ALLOWED(adapter)) {
-+			list_del(&f->list);
-+			kfree(f);
-+		} else if (f->remove) {
- 			count++;
-+		}
- 	}
- 	if (!count) {
- 		adapter->aq_required &= ~IAVF_FLAG_AQ_DEL_VLAN_FILTER;
-@@ -1724,8 +1734,37 @@ void iavf_virtchnl_completion(struct iavf_adapter *adapter,
- 		}
- 		spin_lock_bh(&adapter->mac_vlan_list_lock);
- 		iavf_add_filter(adapter, adapter->hw.mac.addr);
-+
-+		if (VLAN_ALLOWED(adapter)) {
-+			if (!list_empty(&adapter->vlan_filter_list)) {
-+				struct iavf_vlan_filter *vlf;
-+
-+				/* re-add all VLAN filters over virtchnl */
-+				list_for_each_entry(vlf,
-+						    &adapter->vlan_filter_list,
-+						    list)
-+					vlf->add = true;
-+
-+				adapter->aq_required |=
-+					IAVF_FLAG_AQ_ADD_VLAN_FILTER;
-+			}
-+		}
-+
- 		spin_unlock_bh(&adapter->mac_vlan_list_lock);
- 		iavf_process_config(adapter);
-+
-+		/* unlock crit_lock before acquiring rtnl_lock as other
-+		 * processes holding rtnl_lock could be waiting for the same
-+		 * crit_lock
-+		 */
-+		mutex_unlock(&adapter->crit_lock);
-+		rtnl_lock();
-+		netdev_update_features(adapter->netdev);
-+		rtnl_unlock();
-+		if (iavf_lock_timeout(&adapter->crit_lock, 10000))
-+			dev_warn(&adapter->pdev->dev, "failed to acquire crit_lock in %s\n",
-+				 __FUNCTION__);
-+
- 		}
- 		break;
- 	case VIRTCHNL_OP_ENABLE_QUEUES:
 -- 
-2.31.1
+2.33.0
 
