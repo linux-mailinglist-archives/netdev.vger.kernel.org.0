@@ -2,266 +2,280 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CCAA4567E0
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 03:10:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9356F4567E3
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 03:13:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233890AbhKSCNB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 21:13:01 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:26329 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233873AbhKSCNA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 21:13:00 -0500
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HwKk46rXQzbhjk;
-        Fri, 19 Nov 2021 10:05:00 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Fri, 19 Nov 2021 10:09:57 +0800
-Received: from [10.174.179.234] (10.174.179.234) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Fri, 19 Nov 2021 10:09:55 +0800
-Subject: Re: [PATCH 03/12] riscv: switch to relative exception tables
-To:     Jisheng Zhang <jszhang3@mail.ustc.edu.cn>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        "Song Liu" <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        "Nick Desaulniers" <ndesaulniers@google.com>
-References: <20211118192130.48b8f04c@xhacker>
- <20211118192251.749c04f7@xhacker>
-CC:     Kefeng Wang <wangkefeng.wang@huawei.com>,
-        <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <linux-kbuild@vger.kernel.org>
-From:   tongtiangen <tongtiangen@huawei.com>
-Message-ID: <bc466684-b02e-c6b0-13cf-a071eeebff8c@huawei.com>
-Date:   Fri, 19 Nov 2021 10:09:54 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        id S231739AbhKSCQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 21:16:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35114 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229830AbhKSCQ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 21:16:27 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B47F4C061574;
+        Thu, 18 Nov 2021 18:13:26 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id x15so35948575edv.1;
+        Thu, 18 Nov 2021 18:13:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=H2cyb+c38LT4Pcdjf4ornce2n8zGkJkEM84hWSAeB1E=;
+        b=JFfdyDSoCQX3aQdiwnHL6v2YL/Ox8EXwNuz/QVsKycDqNgFbT1fliW2RbyIs4ooX5g
+         fv7bT7hTUI/DbIrdh28cdClPIS98laCr3PFnH6ALTfVpsT3X+prvFnWibVlQfpZFMtM7
+         gZmQk4205QW2iu83TUoZMaByJZRCgNWC1V8w5oN6rc6Q4SpEx+0eYOJ22Qv+EHQ2xpCK
+         jIzZP3r20QarMUDk+7iKhP3VAVA1Tk7DCe9+jfkyqJVBCdzUlsMdPhAegD+kqlnjTCjm
+         r3KcC9AvXZQoBm9qP3e4Zr1U4iCwpLk2A9QRHYJTnKoqq4kkrYddDNk3SszINiMKiij0
+         J2Rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=H2cyb+c38LT4Pcdjf4ornce2n8zGkJkEM84hWSAeB1E=;
+        b=b1jFVcVU7IF5/V5YdV4madpT1ZiX3jWtbDkpAsaFqakCXHB47/h4VVcPAc0IIjT+3+
+         tL+9UABgq4ecmkU5UtKLV5wYRxyKMe0Olw4s+M76fT16+55ONssorQ/3wHZzSfPPE+33
+         rmBXEwpStfnr6K1H/VVbNvb7YZ5iTt7Ghw5pG9yKodXJZ3ZJes5Z+8ywrRhhJKsr5P3z
+         vQLYoD6IapVj/rp04qFv/rB5dEMcnq5esSrqToh/3Rdj6xjalvhoLJ0ysJ/IH5DosfC4
+         r6iA8eGoutP2u0+eoK2ck1IJP8yOa8MP+qla2Qm2jJ5Ycw8QQSzKkqvJOwuuivQqOCXV
+         Nhlg==
+X-Gm-Message-State: AOAM530YeIQtr9q1IFSxDRu8Cd4VNsww4xYhbt39QtZE1YlpiLnyMLHP
+        Gkzt231aUhJ4CDa1bq7QDsc=
+X-Google-Smtp-Source: ABdhPJwI4ub0tt1MHJ5rvjz3UMayKaYN5QItgyAqYGzvXMIfag6XiU3aw5qWpKsUfqs1KA79HSpscw==
+X-Received: by 2002:a17:907:6287:: with SMTP id nd7mr2930462ejc.152.1637288005080;
+        Thu, 18 Nov 2021 18:13:25 -0800 (PST)
+Received: from skbuf ([188.25.163.189])
+        by smtp.gmail.com with ESMTPSA id ho30sm568257ejc.30.2021.11.18.18.13.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Nov 2021 18:13:24 -0800 (PST)
+Date:   Fri, 19 Nov 2021 04:13:23 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [net-next PATCH 15/19] net: dsa: qca8k: add LAG support
+Message-ID: <20211119021323.jdrgxqq27cqvkwn6@skbuf>
+References: <20211117210451.26415-1-ansuelsmth@gmail.com>
+ <20211117210451.26415-16-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20211118192251.749c04f7@xhacker>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.234]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211117210451.26415-16-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi jisheng:
-eBPF's exception tables needs to be modified to relative synchronously.
-
-I modified and verified the code as follows:
-
-===================
---- a/arch/riscv/net/bpf_jit_comp64.c
-+++ b/arch/riscv/net/bpf_jit_comp64.c
-@@ -499,7 +499,7 @@ static int add_exception_handler(const struct bpf_insn *insn,
-         offset = pc - (long)&ex->insn;
-         if (WARN_ON_ONCE(offset >= 0 || offset < INT_MIN))
-                 return -ERANGE;
--       ex->insn = pc;
-+       ex->insn = offset;
-===================
-
-Thanks.
-
-Reviewed-by:Tong Tiangen <tongtiangen@huawei.com>
-
-On 2021/11/18 19:22, Jisheng Zhang wrote:
-> From: Jisheng Zhang <jszhang@kernel.org>
->
-> Similar as other architectures such as arm64, x86 and so on, use
-> offsets relative to the exception table entry values rather than
-> absolute addresses for both the exception locationand the fixup.
->
-> However, RISCV label difference will actually produce two relocations,
-> a pair of R_RISCV_ADD32 and R_RISCV_SUB32. Take below simple code for
-> example:
->
-> $ cat test.S
-> .section .text
-> 1:
->         nop
-> .section __ex_table,"a"
->         .balign 4
->         .long (1b - .)
-> .previous
->
-> $ riscv64-linux-gnu-gcc -c test.S
-> $ riscv64-linux-gnu-readelf -r test.o
-> Relocation section '.rela__ex_table' at offset 0x100 contains 2 entries:
->   Offset          Info           Type           Sym. Value    Sym. Name + Addend
-> 000000000000  000600000023 R_RISCV_ADD32     0000000000000000 .L1^B1 + 0
-> 000000000000  000500000027 R_RISCV_SUB32     0000000000000000 .L0  + 0
->
-> The modpost will complain the R_RISCV_SUB32 relocation, so we need to
-> patch modpost.c to skip this relocation for .rela__ex_table section.
->
-> After this patch, the __ex_table section size of defconfig vmlinux is
-> reduced from 7072 Bytes to 3536 Bytes.
->
-> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-> Reviewed-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+On Wed, Nov 17, 2021 at 10:04:47PM +0100, Ansuel Smith wrote:
+> Add LAG support to this switch. In Documentation this is described as
+> trunk mode. A max of 4 LAGs are supported and each can support up to 4
+> port. The only tx mode supported is Hash mode and no reference is
+> present for active backup or any other mode in Documentation.
+> When no port are present in the trunk, the trunk is disabled in the
+> switch.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 > ---
->  arch/riscv/include/asm/Kbuild    |  1 -
->  arch/riscv/include/asm/extable.h | 25 +++++++++++++++++++++++++
->  arch/riscv/include/asm/uaccess.h |  4 ++--
->  arch/riscv/lib/uaccess.S         |  4 ++--
->  arch/riscv/mm/extable.c          |  2 +-
->  scripts/mod/modpost.c            | 15 +++++++++++++++
->  scripts/sorttable.c              |  2 +-
->  7 files changed, 46 insertions(+), 7 deletions(-)
->  create mode 100644 arch/riscv/include/asm/extable.h
->
-> diff --git a/arch/riscv/include/asm/Kbuild b/arch/riscv/include/asm/Kbuild
-> index 445ccc97305a..57b86fd9916c 100644
-> --- a/arch/riscv/include/asm/Kbuild
-> +++ b/arch/riscv/include/asm/Kbuild
-> @@ -1,6 +1,5 @@
->  # SPDX-License-Identifier: GPL-2.0
->  generic-y += early_ioremap.h
-> -generic-y += extable.h
->  generic-y += flat.h
->  generic-y += kvm_para.h
->  generic-y += user.h
-> diff --git a/arch/riscv/include/asm/extable.h b/arch/riscv/include/asm/extable.h
-> new file mode 100644
-> index 000000000000..84760392fc69
-> --- /dev/null
-> +++ b/arch/riscv/include/asm/extable.h
-> @@ -0,0 +1,25 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _ASM_RISCV_EXTABLE_H
-> +#define _ASM_RISCV_EXTABLE_H
+>  drivers/net/dsa/qca8k.c | 117 ++++++++++++++++++++++++++++++++++++++++
+>  drivers/net/dsa/qca8k.h |  24 +++++++++
+>  2 files changed, 141 insertions(+)
+> 
+> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> index a217c842ab45..c3234988aabf 100644
+> --- a/drivers/net/dsa/qca8k.c
+> +++ b/drivers/net/dsa/qca8k.c
+> @@ -1312,6 +1312,9 @@ qca8k_setup(struct dsa_switch *ds)
+>  	ds->ageing_time_min = 7000;
+>  	ds->ageing_time_max = 458745000;
+>  
+> +	/* Set max number of LAGs supported */
+> +	ds->num_lag_ids = QCA8K_NUM_LAGS;
 > +
-> +/*
-> + * The exception table consists of pairs of relative offsets: the first
-> + * is the relative offset to an instruction that is allowed to fault,
-> + * and the second is the relative offset at which the program should
-> + * continue. No registers are modified, so it is entirely up to the
-> + * continuation code to figure out what to do.
-> + *
-> + * All the routines below use bits of fixup code that are out of line
-> + * with the main instruction path.  This means when everything is well,
-> + * we don't even have to jump over them.  Further, they do not intrude
-> + * on our cache or tlb entries.
-> + */
-> +
-> +struct exception_table_entry {
-> +	int insn, fixup;
-> +};
-> +
-> +#define ARCH_HAS_RELATIVE_EXTABLE
-> +
-> +int fixup_exception(struct pt_regs *regs);
-> +#endif
-> diff --git a/arch/riscv/include/asm/uaccess.h b/arch/riscv/include/asm/uaccess.h
-> index 714cd311d9f1..0f2c5b9d2e8f 100644
-> --- a/arch/riscv/include/asm/uaccess.h
-> +++ b/arch/riscv/include/asm/uaccess.h
-> @@ -12,8 +12,8 @@
->
->  #define _ASM_EXTABLE(from, to)						\
->  	"	.pushsection	__ex_table, \"a\"\n"			\
-> -	"	.balign "	RISCV_SZPTR "	 \n"			\
-> -	"	" RISCV_PTR	"(" #from "), (" #to ")\n"		\
-> +	"	.balign		4\n"					\
-> +	"	.long		(" #from " - .), (" #to " - .)\n"	\
->  	"	.popsection\n"
->
->  /*
-> diff --git a/arch/riscv/lib/uaccess.S b/arch/riscv/lib/uaccess.S
-> index 63bc691cff91..55f80f84e23f 100644
-> --- a/arch/riscv/lib/uaccess.S
-> +++ b/arch/riscv/lib/uaccess.S
-> @@ -7,8 +7,8 @@
->  100:
->  	\op \reg, \addr
->  	.section __ex_table,"a"
-> -	.balign RISCV_SZPTR
-> -	RISCV_PTR 100b, \lbl
-> +	.balign 4
-> +	.long (100b - .), (\lbl - .)
->  	.previous
->  	.endm
->
-> diff --git a/arch/riscv/mm/extable.c b/arch/riscv/mm/extable.c
-> index ddb7d3b99e89..d8d239c2c1bd 100644
-> --- a/arch/riscv/mm/extable.c
-> +++ b/arch/riscv/mm/extable.c
-> @@ -28,6 +28,6 @@ int fixup_exception(struct pt_regs *regs)
->  		return rv_bpf_fixup_exception(fixup, regs);
->  #endif
->
-> -	regs->epc = fixup->fixup;
-> +	regs->epc = (unsigned long)&fixup->fixup + fixup->fixup;
->  	return 1;
->  }
-> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-> index cb8ab7d91d30..6bfa33217914 100644
-> --- a/scripts/mod/modpost.c
-> +++ b/scripts/mod/modpost.c
-> @@ -1830,6 +1830,14 @@ static int addend_mips_rel(struct elf_info *elf, Elf_Shdr *sechdr, Elf_Rela *r)
 >  	return 0;
 >  }
->
-> +#ifndef EM_RISCV
-> +#define EM_RISCV		243
-> +#endif
+>  
+> @@ -2220,6 +2223,118 @@ qca8k_get_tag_protocol(struct dsa_switch *ds, int port,
+>  	return DSA_TAG_PROTO_QCA;
+>  }
+>  
+> +static bool
+> +qca8k_lag_can_offload(struct dsa_switch *ds,
+> +		      struct net_device *lag,
+> +		      struct netdev_lag_upper_info *info)
+> +{
+> +	struct dsa_port *dp;
+> +	int id, members = 0;
 > +
-> +#ifndef R_RISCV_SUB32
-> +#define R_RISCV_SUB32		39
-> +#endif
+> +	id = dsa_lag_id(ds->dst, lag);
+> +	if (id < 0 || id >= ds->num_lag_ids)
+> +		return false;
 > +
->  static void section_rela(const char *modname, struct elf_info *elf,
->  			 Elf_Shdr *sechdr)
->  {
-> @@ -1866,6 +1874,13 @@ static void section_rela(const char *modname, struct elf_info *elf,
->  		r_sym = ELF_R_SYM(r.r_info);
->  #endif
->  		r.r_addend = TO_NATIVE(rela->r_addend);
-> +		switch (elf->hdr->e_machine) {
-> +		case EM_RISCV:
-> +			if (!strcmp("__ex_table", fromsec) &&
-> +			    ELF_R_TYPE(r.r_info) == R_RISCV_SUB32)
+> +	dsa_lag_foreach_port(dp, ds->dst, lag)
+> +		/* Includes the port joining the LAG */
+> +		members++;
+> +
+> +	if (members > QCA8K_NUM_PORTS_FOR_LAG)
+> +		return false;
+> +
+> +	if (info->tx_type != NETDEV_LAG_TX_TYPE_HASH)
+> +		return false;
+
+You'll get bonus points if you also validate info->hash_type.
+
+> +
+> +	return true;
+> +}
+> +
+> +static int
+> +qca8k_lag_refresh_portmap(struct dsa_switch *ds, int port,
+> +			  struct net_device *lag, bool delete)
+> +{
+> +	struct qca8k_priv *priv = ds->priv;
+> +	int ret, id, i;
+> +	u32 val;
+> +
+> +	id = dsa_lag_id(ds->dst, lag);
+> +
+> +	/* Read current port member */
+> +	ret = regmap_read(priv->regmap, QCA8K_REG_GOL_TRUNK_CTRL0, &val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Shift val to the correct trunk */
+> +	val >>= QCA8K_REG_GOL_TRUNK_SHIFT(id);
+> +	val &= QCA8K_REG_GOL_TRUNK_MEMBER_MASK;
+> +	if (delete)
+> +		val &= ~BIT(port);
+> +	else
+> +		val |= BIT(port);
+> +
+> +	/* Update port member. With empty portmap disable trunk */
+> +	ret = regmap_update_bits(priv->regmap, QCA8K_REG_GOL_TRUNK_CTRL0,
+> +				 QCA8K_REG_GOL_TRUNK_MEMBER(id) |
+> +				 QCA8K_REG_GOL_TRUNK_EN(id),
+> +				 !val << QCA8K_REG_GOL_TRUNK_SHIFT(id) |
+> +				 val << QCA8K_REG_GOL_TRUNK_SHIFT(id));
+> +
+> +	/* Search empty member if adding or port on deleting */
+> +	for (i = 0; i < 4; i++) {
+> +		ret = regmap_read(priv->regmap, QCA8K_REG_GOL_TRUNK_CTRL(id), &val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		val >>= QCA8K_REG_GOL_TRUNK_ID_MEM_ID_SHIFT(id, i);
+> +		val &= QCA8K_REG_GOL_TRUNK_ID_MEM_ID_MASK;
+> +
+> +		if (delete) {
+> +			/* If port flagged to be disabled assume this member is
+> +			 * empty
+> +			 */
+> +			if (val != QCA8K_REG_GOL_TRUNK_ID_MEM_ID_EN_MASK)
 > +				continue;
-> +			break;
+> +
+> +			val &= QCA8K_REG_GOL_TRUNK_ID_MEM_ID_PORT_MASK;
+> +			if (val != port)
+> +				continue;
+> +		} else {
+> +			/* If port flagged to be enabled assume this member is
+> +			 * already set
+> +			 */
+> +			if (val == QCA8K_REG_GOL_TRUNK_ID_MEM_ID_EN_MASK)
+> +				continue;
 > +		}
->  		sym = elf->symtab_start + r_sym;
->  		/* Skip special sections */
->  		if (is_shndx_special(sym->st_shndx))
-> diff --git a/scripts/sorttable.c b/scripts/sorttable.c
-> index b7c2ad71f9cf..0c031e47a419 100644
-> --- a/scripts/sorttable.c
-> +++ b/scripts/sorttable.c
-> @@ -376,6 +376,7 @@ static int do_file(char const *const fname, void *addr)
->  	case EM_PARISC:
->  	case EM_PPC:
->  	case EM_PPC64:
-> +	case EM_RISCV:
->  		custom_sort = sort_relative_table;
->  		break;
->  	case EM_ARCOMPACT:
-> @@ -383,7 +384,6 @@ static int do_file(char const *const fname, void *addr)
->  	case EM_ARM:
->  	case EM_MICROBLAZE:
->  	case EM_MIPS:
-> -	case EM_RISCV:
->  	case EM_XTENSA:
->  		break;
->  	default:
->
+> +
+> +		/* We find the member to remove */
+> +		break;
+> +	}
+> +
+> +	/* Set port in the correct port mask or disable port if in delate mode */
+> +	return regmap_update_bits(priv->regmap, QCA8K_REG_GOL_TRUNK_CTRL(id),
+> +				  QCA8K_REG_GOL_TRUNK_ID_MEM_ID_EN(id, i) |
+> +				  QCA8K_REG_GOL_TRUNK_ID_MEM_ID_PORT(id, i),
+> +				  !delete << QCA8K_REG_GOL_TRUNK_ID_MEM_ID_SHIFT(id, i) |
+> +				  port << QCA8K_REG_GOL_TRUNK_ID_MEM_ID_SHIFT(id, i));
+> +}
+> +
+> +static int
+> +qca8k_port_lag_join(struct dsa_switch *ds, int port,
+> +		    struct net_device *lag,
+> +		    struct netdev_lag_upper_info *info)
+> +{
+> +	if (!qca8k_lag_can_offload(ds, lag, info))
+> +		return -EOPNOTSUPP;
+> +
+> +	return qca8k_lag_refresh_portmap(ds, port, lag, false);
+> +}
+> +
+> +static int
+> +qca8k_port_lag_leave(struct dsa_switch *ds, int port,
+> +		     struct net_device *lag)
+> +{
+> +	return qca8k_lag_refresh_portmap(ds, port, lag, true);
+> +}
+> +
+>  static const struct dsa_switch_ops qca8k_switch_ops = {
+>  	.get_tag_protocol	= qca8k_get_tag_protocol,
+>  	.setup			= qca8k_setup,
+> @@ -2253,6 +2368,8 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
+>  	.phylink_mac_link_down	= qca8k_phylink_mac_link_down,
+>  	.phylink_mac_link_up	= qca8k_phylink_mac_link_up,
+>  	.get_phy_flags		= qca8k_get_phy_flags,
+> +	.port_lag_join		= qca8k_port_lag_join,
+> +	.port_lag_leave		= qca8k_port_lag_leave,
+
+If you unplug a cable from the LAG, does the traffic that was going
+through that port automatically get rebalanced towards the other ports
+that are left? If not, shouldn't you also implement ->port_lag_change?
+
+>  };
+>  
+>  static int
+> diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+> index e1298179d7cb..5310022569f3 100644
+> --- a/drivers/net/dsa/qca8k.h
+> +++ b/drivers/net/dsa/qca8k.h
+> @@ -15,6 +15,8 @@
+>  #define QCA8K_NUM_PORTS					7
+>  #define QCA8K_NUM_CPU_PORTS				2
+>  #define QCA8K_MAX_MTU					9000
+> +#define QCA8K_NUM_LAGS					4
+> +#define QCA8K_NUM_PORTS_FOR_LAG				4
+>  
+>  #define PHY_ID_QCA8327					0x004dd034
+>  #define QCA8K_ID_QCA8327				0x12
+> @@ -204,6 +206,28 @@
+>  #define   QCA8K_PORT_LOOKUP_LEARN			BIT(20)
+>  #define   QCA8K_PORT_LOOKUP_ING_MIRROR_EN		BIT(25)
+>  
+> +#define QCA8K_REG_GOL_TRUNK_CTRL0			0x700
+> +/* 4 max trunk first
+> + * first 6 bit for member bitmap
+> + * 7th bit is to enable trunk port
+> + */
+> +#define QCA8K_REG_GOL_TRUNK_SHIFT(_i)			((_i) * 8)
+> +#define QCA8K_REG_GOL_TRUNK_EN_MASK			BIT(7)
+> +#define QCA8K_REG_GOL_TRUNK_EN(_i)			(QCA8K_REG_GOL_TRUNK_EN_MASK << QCA8K_REG_GOL_TRUNK_SHIFT(_i))
+> +#define QCA8K_REG_GOL_TRUNK_MEMBER_MASK			GENMASK(6, 0)
+> +#define QCA8K_REG_GOL_TRUNK_MEMBER(_i)			(QCA8K_REG_GOL_TRUNK_MEMBER_MASK << QCA8K_REG_GOL_TRUNK_SHIFT(_i))
+> +/* 0x704 for TRUNK 0-1 --- 0x708 for TRUNK 2-3 */
+> +#define QCA8K_REG_GOL_TRUNK_CTRL(_i)			(0x704 + (((_i) / 2) * 4))
+> +#define QCA8K_REG_GOL_TRUNK_ID_MEM_ID_MASK		GENMASK(3, 0)
+> +#define QCA8K_REG_GOL_TRUNK_ID_MEM_ID_EN_MASK		BIT(3)
+> +#define QCA8K_REG_GOL_TRUNK_ID_MEM_ID_PORT_MASK		GENMASK(2, 0)
+> +#define QCA8K_REG_GOL_TRUNK_ID_SHIFT(_i)		(((_i) / 2) * 16)
+> +#define QCA8K_REG_GOL_MEM_ID_SHIFT(_i)			((_i) * 4)
+> +/* Complex shift: FIRST shift for port THEN shift for trunk */
+> +#define QCA8K_REG_GOL_TRUNK_ID_MEM_ID_SHIFT(_i, _j)	(QCA8K_REG_GOL_MEM_ID_SHIFT(_j) + QCA8K_REG_GOL_TRUNK_ID_SHIFT(_i))
+> +#define QCA8K_REG_GOL_TRUNK_ID_MEM_ID_EN(_i, _j)	(QCA8K_REG_GOL_TRUNK_ID_MEM_ID_EN_MASK << QCA8K_REG_GOL_TRUNK_ID_MEM_ID_SHIFT(_i, _j))
+> +#define QCA8K_REG_GOL_TRUNK_ID_MEM_ID_PORT(_i, _j)	(QCA8K_REG_GOL_TRUNK_ID_MEM_ID_PORT_MASK << QCA8K_REG_GOL_TRUNK_ID_MEM_ID_SHIFT(_i, _j))
+> +
+>  #define QCA8K_REG_GLOBAL_FC_THRESH			0x800
+>  #define   QCA8K_GLOBAL_FC_GOL_XON_THRES_MASK		GENMASK(24, 16)
+>  #define   QCA8K_GLOBAL_FC_GOL_XON_THRES(x)		FIELD_PREP(QCA8K_GLOBAL_FC_GOL_XON_THRES_MASK, x)
+> -- 
+> 2.32.0
+> 
+
