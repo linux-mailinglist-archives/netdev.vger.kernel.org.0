@@ -2,76 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1847745704D
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 15:07:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA43845705A
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 15:10:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235675AbhKSOKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 09:10:32 -0500
-Received: from sitav-80046.hsr.ch ([152.96.80.46]:36730 "EHLO
-        mail.strongswan.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229879AbhKSOKc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 09:10:32 -0500
-X-Greylist: delayed 465 seconds by postgrey-1.27 at vger.kernel.org; Fri, 19 Nov 2021 09:10:32 EST
-Received: from [IPv6:2a01:8b81:5407:c100:b5ce:a52d:54a9:bd1c] (unknown [IPv6:2a01:8b81:5407:c100:b5ce:a52d:54a9:bd1c])
-        by mail.strongswan.org (Postfix) with ESMTPSA id 9241C40867;
-        Fri, 19 Nov 2021 14:59:44 +0100 (CET)
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        David Ahern <dsahern@kernel.org>
-References: <20211119013758.2740195-1-eric.dumazet@gmail.com>
-From:   Tobias Brunner <tobias@strongswan.org>
-Subject: Re: [PATCH net] ipv6: fix typos in __ip6_finish_output()
-Message-ID: <d107273f-f538-cdad-d8ff-294fdce5d8e2@strongswan.org>
-Date:   Fri, 19 Nov 2021 14:59:44 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S235733AbhKSONB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 09:13:01 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56016 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235201AbhKSONB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Nov 2021 09:13:01 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 264D461057;
+        Fri, 19 Nov 2021 14:09:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637330999;
+        bh=P+GR5hntqExn/4peKXBXLFMPWKyem5jd+n0GaTb2na8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=c66Qc8QwRH6rEdSe1iAqfh76x/X2n25Gsona4WT5l+6ehwOlrskHPyrBxmCg1iTjD
+         DeUYDMMaPWK16j9h8aX83iafAZsbESWMjJSGW3v3spQETAlIwuhRExeczsDmNUVRRp
+         BIbENqrSKe1UN/u5mQ4BcTCxrJYm/yWI5XGkjx3LPrty88KOhQc0VXRKQ9j+JCOjFQ
+         Euc+c7bVNG/j/MkiSOO3UbtJRhWUsix0qCb6tbZdVVgvztghfUfgbAFs6A3lQd7Y6g
+         ys4NeWi12OYQcr3LQuTXjBgKFCOP3bnw3GsfglBVbw/W+91cyEOMpO6DQkaZ+tJt4U
+         jWlEcE09ICB5Q==
+Date:   Fri, 19 Nov 2021 06:09:58 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     sundeep subbaraya <sundeep.lkml@gmail.com>
+Cc:     Roopa Prabhu <roopa@nvidia.com>, Ido Schimmel <idosch@idosch.org>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Hariprasad Kelam <hkelam@marvell.com>,
+        Geethasowjanya Akula <gakula@marvell.com>,
+        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
+        Rakesh Babu Saladi <rsaladi2@marvell.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Andrew Lunn <andrew@lunn.ch>, argeorge@cisco.com
+Subject: Re: [EXT] Re: [net-next PATCH 1/2] octeontx2-pf: Add devlink param
+ to init and de-init serdes
+Message-ID: <20211119060958.31782ca9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CALHRZura-Vav599FTVkMb33uY0xtpNkotxU-q8FUiBxoHqXh7Q@mail.gmail.com>
+References: <YXmWb2PZJQhpMfrR@shredder>
+        <BY3PR18MB473794E01049EC94156E2858C6859@BY3PR18MB4737.namprd18.prod.outlook.com>
+        <YXnRup1EJaF5Gwua@shredder>
+        <CALHRZuqpaqvunTga+8OK4GSa3oRao-CBxit6UzRvN3a1-T0dhA@mail.gmail.com>
+        <YXqq19HxleZd6V9W@shredder>
+        <CALHRZuoOWu0sEWjuanrYxyAVEUaO4-wea5+mET9UjPyoOrX5NQ@mail.gmail.com>
+        <YYeajTs6d4j39rJ2@shredder>
+        <20211108075450.1dbdedc3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YY0uB7OyTRCoNBJQ@shredder>
+        <20211111084719.600f072d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YZDK6JxwcoPvk/Zx@shredder>
+        <952e8bb0-bc1e-5600-92f2-de4d6744fcb0@nvidia.com>
+        <20211115071109.1bf4875b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CALHRZura-Vav599FTVkMb33uY0xtpNkotxU-q8FUiBxoHqXh7Q@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20211119013758.2740195-1-eric.dumazet@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19.11.21 02:37, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> We deal with IPv6 packets, so we need to use IP6CB(skb)->flags and
-> IP6SKB_REROUTED, instead of IPCB(skb)->flags and IPSKB_REROUTED
-> 
-> Found by code inspection, please double check that fixing this bug
-> does not surface other bugs.
-> 
-> Fixes: 09ee9dba9611 ("ipv6: Reinject IPv6 packets if IPsec policy matches after SNAT")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Tobias Brunner <tobias@strongswan.org>
-> Cc: Steffen Klassert <steffen.klassert@secunet.com>
-> Cc: David Ahern <dsahern@kernel.org>
-> ---
->   net/ipv6/ip6_output.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-> index 2f044a49afa8cf3586c36607c34073edecafc69c..ff4e83e2a5068322bb93391c7c5e2a8cb932730b 100644
-> --- a/net/ipv6/ip6_output.c
-> +++ b/net/ipv6/ip6_output.c
-> @@ -174,7 +174,7 @@ static int __ip6_finish_output(struct net *net, struct sock *sk, struct sk_buff
->   #if defined(CONFIG_NETFILTER) && defined(CONFIG_XFRM)
->   	/* Policy lookup after SNAT yielded a new policy */
->   	if (skb_dst(skb)->xfrm) {
-> -		IPCB(skb)->flags |= IPSKB_REROUTED;
-> +		IP6CB(skb)->flags |= IP6SKB_REROUTED;
->   		return dst_output(net, sk, skb);
->   	}
->   #endif
-> 
+On Fri, 19 Nov 2021 16:17:53 +0530 sundeep subbaraya wrote:
+> As said by Ido, ndo_change_proto_down with proto_down as
+> on and off is sufficient for our requirement right now. We will use
+> ndo_change_proto_down instead of devlink. Thanks everyone for
+> pitching in.
 
-Thanks for catching this.
-
-Tested-by: Tobias Brunner <tobias@strongswan.org>
-Acked-by: Tobias Brunner <tobias@strongswan.org>
+ndo_change_proto_down is for software devices. Make sure you explain
+your use case well, otherwise it's going to be a nack.
