@@ -2,79 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D81AD45680A
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 03:21:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BB9145680D
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 03:24:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233816AbhKSCYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 21:24:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36966 "EHLO
+        id S231288AbhKSC1A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 21:27:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229851AbhKSCYk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 21:24:40 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B39EC061574;
-        Thu, 18 Nov 2021 18:21:39 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id x6so24259941edr.5;
-        Thu, 18 Nov 2021 18:21:39 -0800 (PST)
+        with ESMTP id S229851AbhKSC1A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 21:27:00 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49AD5C061574
+        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 18:23:59 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id n15-20020a17090a160f00b001a75089daa3so9890400pja.1
+        for <netdev@vger.kernel.org>; Thu, 18 Nov 2021 18:23:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=bLv4z1YgRSxxNj2meoBJG3nBTaq7Cb6Ni8OvuFAyxQw=;
-        b=lQuyqFwokAnl8QhTi0Ia3yGbeg5+dDQxVyo7iqFhHymQucVc91AE06wm5ChMcqZx+V
-         zb3vS00Cq/GDAyuOHhUhm++LcDzCcUwgv8ZMuJ9J0mqN8CuYElJ/nrWj0VP92LNXWhXp
-         VKXSx04/SeFzowyuD06y5TbYsLyGu9dXWdY70W3BKGUujaMyd+6aH0Cpn7XXl7gQXNDw
-         S0/I6zmdfPy4V/TqzFUewsgpq1mndyU+tkxwKPS60WPOGLCVRKtioeVqW8WRHURQtC/L
-         FW85QDrqn5JAvZE7q76WfuUma+ODlvmlYQkaJiPSLk8+l64AluG8MOLXZggEQUEhAF/F
-         NpCQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=usKakFSJS8zH/zMn8Uu2TXXgwbLwTCNeSWtLo9jQAhc=;
+        b=caIfTRLDr8qFD8PiZ5OypVdbdi99+ugYnIDer8V3BRZnxlQWlZNn16VZLz2LiY1V4w
+         w78jDPnkJlevNcovsepMfmQo+isDR5aJe85M83ZlBVtqgAf0/eyLRW27Ru641c16BpVh
+         pxmrLrifEJkg9Xxy7JqGh4HGktc6/+MZKy7s0Hye8br/XNCyAoRt+hWTbuZtpAqY8dJv
+         mNA7Pod6tLZjj7v+qHkr0LUzfMWIUPjr1D0fQvtDaLR7b/Bjv7qwIB5gsLtrSq6BpnnL
+         ELJaaCNjCZAPklpEKonmgq/DKvhiTuVbNVO1Up5+HhQ/l/r1SFaDdmuQv98p8lFee6bI
+         cgOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=bLv4z1YgRSxxNj2meoBJG3nBTaq7Cb6Ni8OvuFAyxQw=;
-        b=Vj2M8wPXruG/SaqGS4sJlfBgySL4NdgDkYE9dKGrA1LlmWSux3aYpkbptC+pVj9dU6
-         VUYlyor5F14hUB1zZq5eTMnPkeKdPaDIs/WV4EIs+MmAJ02WZwS/X+dDBh5zFcXuNoGY
-         Qq3wTQ5y/trKpFoAE7TFYyHT7h3gHXN6qdRMuChZUpYIlB4QyjiGyRRW8ADjdCveeGnl
-         +jN+sPm+0W3LzEzjj08vKaN32PsWd1pmNcTp710OZoe6GOHTndW7VR2z2Pipu76GZdN7
-         jPnxlSRPwIQr+bB7ilJ8+qSxokpTL2pWRhOZtbxFinPE7r4eEj8dVSqTOZdWPoV73b9w
-         FVKA==
-X-Gm-Message-State: AOAM532cDR7cN/V0x9xBmJqCdqc+inaYXidz0b2KuQ5Gz9MKwFrm+5RJ
-        QFbuIpbAvm6VXsqDTKteNLg=
-X-Google-Smtp-Source: ABdhPJxdP30XKax9MS1JBUc5k9znb9gzgnnuaSOJzA9iP75YvEkI2iyAsfFGhqUd83cExnddPH2wDA==
-X-Received: by 2002:a17:907:9608:: with SMTP id gb8mr2912403ejc.301.1637288497750;
-        Thu, 18 Nov 2021 18:21:37 -0800 (PST)
-Received: from skbuf ([188.25.163.189])
-        by smtp.gmail.com with ESMTPSA id ji14sm558560ejc.89.2021.11.18.18.21.36
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=usKakFSJS8zH/zMn8Uu2TXXgwbLwTCNeSWtLo9jQAhc=;
+        b=6uERJbVI/o32Ql6JrWrt57KIYkIlkiwyiDU0hcmrgB7VdWQaEoGwzE2VK6L4HxWcwn
+         r/3QMuchYRHIbY8UL9P7dBwdRuG8bF3JOn65GTkKykDjEG0l+4pldq4B8dFmz+styrXG
+         dJFxbHZ53WKpJC5SKtYAf5KkJtkRony/ubCs414H9MH4EJopM6En/FMiHxszu4pviJOM
+         j6WtdefNKtzmznMrcQl2as7e65Bu/y5dMOMBHhxptrAWXBSZ+BMtrtGlj6lsXm/25Ur7
+         i8DQnVr3AeGv8n/XBcxZnI+thkTaKV8KkiOml44stDExtY4suZGKfPoFYpnpdYVjCMM+
+         iATg==
+X-Gm-Message-State: AOAM533hMklu5VjCX290VBCVppKNmsEWAav56SMsHtlw7Tse703a7U/p
+        eNUtFJ6DlFcx6a7/M8/WT6g=
+X-Google-Smtp-Source: ABdhPJxksTCHa4whD+icGEbZP0JxmA1teF4CUIL4MaKP7OzCQvaUkw4RlUM51rKTyLVwN3RLOnDZgg==
+X-Received: by 2002:a17:902:7b82:b0:143:a6d6:34ab with SMTP id w2-20020a1709027b8200b00143a6d634abmr68111260pll.30.1637288638690;
+        Thu, 18 Nov 2021 18:23:58 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:fc03:ed5a:3e05:8b5e])
+        by smtp.gmail.com with ESMTPSA id j1sm896133pfu.47.2021.11.18.18.23.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Nov 2021 18:21:37 -0800 (PST)
-Date:   Fri, 19 Nov 2021 04:21:36 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [net-next PATCH 18/19] net: dsa: qca8k: use
- device_get_match_data instead of the OF variant
-Message-ID: <20211119022136.p5adloeuertpyh4n@skbuf>
-References: <20211117210451.26415-1-ansuelsmth@gmail.com>
- <20211117210451.26415-19-ansuelsmth@gmail.com>
+        Thu, 18 Nov 2021 18:23:58 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH net-next] ipv6: ip6_skb_dst_mtu() cleanups
+Date:   Thu, 18 Nov 2021 18:23:55 -0800
+Message-Id: <20211119022355.2985984-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.34.0.rc2.393.gf8c9666880-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211117210451.26415-19-ansuelsmth@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 17, 2021 at 10:04:50PM +0100, Ansuel Smith wrote:
-> Drop of_platform include and device_get_match_data instead of the OF
-> variant.
-> 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> ---
+From: Eric Dumazet <edumazet@google.com>
 
-Why? Any ACPI device coming?
+Use const attribute where we can, and cache skb_dst()
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ include/net/ip6_route.h | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/include/net/ip6_route.h b/include/net/ip6_route.h
+index 5efd0b71dc6732d97257fae0637b67516a5b9261..ca2d6b60e1eceeb3839f413726fb4f93e1835a0e 100644
+--- a/include/net/ip6_route.h
++++ b/include/net/ip6_route.h
+@@ -263,19 +263,19 @@ static inline bool ipv6_anycast_destination(const struct dst_entry *dst,
+ int ip6_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
+ 		 int (*output)(struct net *, struct sock *, struct sk_buff *));
+ 
+-static inline unsigned int ip6_skb_dst_mtu(struct sk_buff *skb)
++static inline unsigned int ip6_skb_dst_mtu(const struct sk_buff *skb)
+ {
+-	unsigned int mtu;
+-
+-	struct ipv6_pinfo *np = skb->sk && !dev_recursion_level() ?
++	const struct ipv6_pinfo *np = skb->sk && !dev_recursion_level() ?
+ 				inet6_sk(skb->sk) : NULL;
++	const struct dst_entry *dst = skb_dst(skb);
++	unsigned int mtu;
+ 
+ 	if (np && np->pmtudisc >= IPV6_PMTUDISC_PROBE) {
+-		mtu = READ_ONCE(skb_dst(skb)->dev->mtu);
+-		mtu -= lwtunnel_headroom(skb_dst(skb)->lwtstate, mtu);
+-	} else
+-		mtu = dst_mtu(skb_dst(skb));
+-
++		mtu = READ_ONCE(dst->dev->mtu);
++		mtu -= lwtunnel_headroom(dst->lwtstate, mtu);
++	} else {
++		mtu = dst_mtu(dst);
++	}
+ 	return mtu;
+ }
+ 
+-- 
+2.34.0.rc2.393.gf8c9666880-goog
+
