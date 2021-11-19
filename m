@@ -2,129 +2,275 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3927456826
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 03:33:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C69B456834
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 03:35:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234175AbhKSCgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 21:36:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39632 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229752AbhKSCgn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 21:36:43 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A63C061574;
-        Thu, 18 Nov 2021 18:33:42 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id z5so36163319edd.3;
-        Thu, 18 Nov 2021 18:33:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=D4E/VvbjTImjT6hdknQHPiigP2+uulrrrS27pwScwLk=;
-        b=W1IMXWrzaWv41ks2x86Ctim6RDqiJm22oJDyJyqjeBhwiiYehMvGFGZ4K3eE+d7tzk
-         onkLreHhARQZf7PXQWYG1LEM+aaw0nm25ETCBw2MMrM4xbJen7EVyHY5GiTmeIao9gI3
-         x+LfeU6SxwYPft9KHPnmeCtpBfvW/RpEx3+7MW/xL1UDlxFswLzHKuShW/Baag9QYuXc
-         2j9uFowj8GCfvywcZffEQ4xXkIcswxnY74VK+RAmM/1sqESWqtNclmq2rAEL9fnizG+9
-         uVAk6OXztIdsdNl2gezfHOSFIPlf8oG3gvgTfQlgz758yo3YX3/OsMDEB7FVuOQCSddk
-         9jXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=D4E/VvbjTImjT6hdknQHPiigP2+uulrrrS27pwScwLk=;
-        b=MqD0ZhmNXqluvxpGUs9S6UJub+pg80+JwnRqJUjx4d9yV0RIf7MnadkPX2O7LXbk0S
-         0f5djkRNhPCXrT5/7SkWOnlJMiKRf7Epn6InRNBFzCMrW2xV2DoUIuD5vB55MUixTVHf
-         bpSjcSRPHUxlqfA7g2VESUJ4JVSVoGaAOTPlSWW9qr+0LtOz4B7Cbi+OjMTnzCelvyJZ
-         MDMe8gY1AWnFzJrzmoK9IXijZrqvPsIkKZni3S7WSAee0U5z8Rudwd4g9g/fUnzbVngg
-         X2xFADn2VHZ7Wz86w1/B3hxFgGchGux0V1dN5QSIuQfk9Nwt/CK90IK8D3bsORxhxiQ4
-         1dgQ==
-X-Gm-Message-State: AOAM5303K8w4WToQwChfvRI0MUcJ3UJZqHquvJ2uHrGfIVpG/BJ+Kn9b
-        n/2k4gBoy9jO/iyLDRMx1FlUqph4Hgs=
-X-Google-Smtp-Source: ABdhPJyScpM9dTcacSYSDkxY251rRLBbdckDGnHFyDBXakqNMMpAotPkeHkjSMcbhTaSlbZrlavZXQ==
-X-Received: by 2002:a50:9eca:: with SMTP id a68mr18357883edf.127.1637289221012;
-        Thu, 18 Nov 2021 18:33:41 -0800 (PST)
-Received: from skbuf ([188.25.163.189])
-        by smtp.gmail.com with ESMTPSA id hv17sm604422ejc.66.2021.11.18.18.33.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Nov 2021 18:33:40 -0800 (PST)
-Date:   Fri, 19 Nov 2021 04:33:39 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [net-next PATCH 14/19] net: dsa: qca8k: add support for
- mdb_add/del
-Message-ID: <20211119023339.i6xifnhhe5eli3ck@skbuf>
-References: <20211117210451.26415-1-ansuelsmth@gmail.com>
- <20211117210451.26415-15-ansuelsmth@gmail.com>
- <20211119020657.77os25yh4vhiukvi@skbuf>
- <619709b5.1c69fb81.83cb5.4150@mx.google.com>
+        id S232048AbhKSCis (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 21:38:48 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:14954 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231217AbhKSCir (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 21:38:47 -0500
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HwLLl0VkpzZd7H;
+        Fri, 19 Nov 2021 10:33:19 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Fri, 19 Nov 2021 10:35:44 +0800
+Received: from [10.174.179.234] (10.174.179.234) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Fri, 19 Nov 2021 10:35:42 +0800
+Subject: Re: [PATCH 09/12] riscv: extable: add `type` and `data` fields
+To:     Jisheng Zhang <jszhang3@mail.ustc.edu.cn>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        "Song Liu" <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        "Nick Desaulniers" <ndesaulniers@google.com>
+References: <20211118192130.48b8f04c@xhacker>
+ <20211118192605.57e06d6b@xhacker>
+CC:     Kefeng Wang <wangkefeng.wang@huawei.com>,
+        <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kbuild@vger.kernel.org>
+From:   tongtiangen <tongtiangen@huawei.com>
+Message-ID: <7c1b31cf-eb0b-02ad-f672-95d69055928a@huawei.com>
+Date:   Fri, 19 Nov 2021 10:35:41 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <619709b5.1c69fb81.83cb5.4150@mx.google.com>
+In-Reply-To: <20211118192605.57e06d6b@xhacker>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.179.234]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 19, 2021 at 03:19:30AM +0100, Ansuel Smith wrote:
-> > > +static int
-> > > +qca8k_port_mdb_del(struct dsa_switch *ds, int port,
-> > > +		   const struct switchdev_obj_port_mdb *mdb)
-> > > +{
-> > > +	struct qca8k_priv *priv = ds->priv;
-> > > +	struct qca8k_fdb fdb = { 0 };
-> > > +	const u8 *addr = mdb->addr;
-> > > +	u8 port_mask = BIT(port);
-> > > +	u16 vid = mdb->vid;
-> > > +	int ret;
-> > > +
-> > > +	/* Check if entry already exist */
-> > > +	ret = qca8k_fdb_search(priv, &fdb, addr, vid);
-> > > +	if (ret < 0)
-> > > +		return ret;
-> > > +
-> > > +	/* Rule doesn't exist. Why delete? */
-> >
-> > Because refcounting is hard. In fact with VLANs it is quite possible to
-> > delete an absent entry. For MDBs and FDBs, the bridge should now error
-> > out before it even reaches to you.
-> >
+
+
+On 2021/11/18 19:26, Jisheng Zhang wrote:
+> From: Jisheng Zhang <jszhang@kernel.org>
 >
-> So in this specific case I should simply return 0 to correctly decrement
-> the ref, correct?
+> This is a riscv port of commit d6e2cc564775("arm64: extable: add `type`
+> and `data` fields").
+>
+> We will add specialized handlers for fixups, the `type` field is for
+> fixup handler type, the `data` field is used to pass specific data to
+> each handler, for example register numbers.
+>
+> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> ---
+>  arch/riscv/include/asm/asm-extable.h | 25 +++++++++++++++++--------
+>  arch/riscv/include/asm/extable.h     | 17 ++++++++++++++---
+>  arch/riscv/kernel/vmlinux.lds.S      |  2 +-
+>  arch/riscv/mm/extable.c              | 25 +++++++++++++++++++++----
+>  arch/riscv/net/bpf_jit_comp64.c      |  5 +++--
+>  scripts/sorttable.c                  |  4 +++-
+>  6 files changed, 59 insertions(+), 19 deletions(-)
+>
+> diff --git a/arch/riscv/include/asm/asm-extable.h b/arch/riscv/include/asm/asm-extable.h
+> index b790c02dbdda..1b1f4ffd8d37 100644
+> --- a/arch/riscv/include/asm/asm-extable.h
+> +++ b/arch/riscv/include/asm/asm-extable.h
+> @@ -2,31 +2,40 @@
+>  #ifndef __ASM_ASM_EXTABLE_H
+>  #define __ASM_ASM_EXTABLE_H
+>
+> +#define EX_TYPE_NONE			0
+> +#define EX_TYPE_FIXUP			1
+> +#define EX_TYPE_BPF			2
+> +
+>  #ifdef __ASSEMBLY__
+>
+> -#define __ASM_EXTABLE_RAW(insn, fixup)		\
+> -	.pushsection	__ex_table, "a";	\
+> -	.balign		4;			\
+> -	.long		((insn) - .);		\
+> -	.long		((fixup) - .);		\
+> +#define __ASM_EXTABLE_RAW(insn, fixup, type, data)	\
+> +	.pushsection	__ex_table, "a";		\
+> +	.balign		4;				\
+> +	.long		((insn) - .);			\
+> +	.long		((fixup) - .);			\
+> +	.short		(type);				\
+> +	.short		(data);				\
+>  	.popsection;
+>
+>  	.macro		_asm_extable, insn, fixup
+> -	__ASM_EXTABLE_RAW(\insn, \fixup)
+> +	__ASM_EXTABLE_RAW(\insn, \fixup, EX_TYPE_FIXUP, 0)
+>  	.endm
+>
+>  #else /* __ASSEMBLY__ */
+>
+>  #include <linux/stringify.h>
+>
+> -#define __ASM_EXTABLE_RAW(insn, fixup)			\
+> +#define __ASM_EXTABLE_RAW(insn, fixup, type, data)	\
+>  	".pushsection	__ex_table, \"a\"\n"		\
+>  	".balign	4\n"				\
+>  	".long		((" insn ") - .)\n"		\
+>  	".long		((" fixup ") - .)\n"		\
+> +	".short		(" type ")\n"			\
+> +	".short		(" data ")\n"			\
+>  	".popsection\n"
+>
+> -#define _ASM_EXTABLE(insn, fixup) __ASM_EXTABLE_RAW(#insn, #fixup)
+> +#define _ASM_EXTABLE(insn, fixup)	\
+> +	__ASM_EXTABLE_RAW(#insn, #fixup, __stringify(EX_TYPE_FIXUP), "0")
+>
+>  #endif /* __ASSEMBLY__ */
+>
+> diff --git a/arch/riscv/include/asm/extable.h b/arch/riscv/include/asm/extable.h
+> index e4374dde02b4..512012d193dc 100644
+> --- a/arch/riscv/include/asm/extable.h
+> +++ b/arch/riscv/include/asm/extable.h
+> @@ -17,18 +17,29 @@
+>
+>  struct exception_table_entry {
+>  	int insn, fixup;
+> +	short type, data;
+>  };
+>
+>  #define ARCH_HAS_RELATIVE_EXTABLE
+>
+> +#define swap_ex_entry_fixup(a, b, tmp, delta)		\
+> +do {							\
+> +	(a)->fixup = (b)->fixup + (delta);		\
+> +	(b)->fixup = (tmp).fixup - (delta);		\
+> +	(a)->type = (b)->type;				\
+> +	(b)->type = (tmp).type;				\
+> +	(a)->data = (b)->data;				\
+> +	(b)->data = (tmp).data;				\
+> +} while (0)
+> +
+>  bool fixup_exception(struct pt_regs *regs);
+>
+>  #if defined(CONFIG_BPF_JIT) && defined(CONFIG_ARCH_RV64I)
+> -bool rv_bpf_fixup_exception(const struct exception_table_entry *ex, struct pt_regs *regs);
+> +bool ex_handler_bpf(const struct exception_table_entry *ex, struct pt_regs *regs);
+>  #else
+>  static inline bool
+> -rv_bpf_fixup_exception(const struct exception_table_entry *ex,
+> -		       struct pt_regs *regs)
+> +ex_handler_bpf(const struct exception_table_entry *ex,
+> +	       struct pt_regs *regs)
+>  {
+>  	return false;
+>  }
+> diff --git a/arch/riscv/kernel/vmlinux.lds.S b/arch/riscv/kernel/vmlinux.lds.S
+> index 5104f3a871e3..0e5ae851929e 100644
+> --- a/arch/riscv/kernel/vmlinux.lds.S
+> +++ b/arch/riscv/kernel/vmlinux.lds.S
+> @@ -4,7 +4,7 @@
+>   * Copyright (C) 2017 SiFive
+>   */
+>
+> -#define RO_EXCEPTION_TABLE_ALIGN	16
+> +#define RO_EXCEPTION_TABLE_ALIGN	4
+>
+>  #ifdef CONFIG_XIP_KERNEL
+>  #include "vmlinux-xip.lds.S"
+> diff --git a/arch/riscv/mm/extable.c b/arch/riscv/mm/extable.c
+> index 3c561f1d0115..91e52c4bb33a 100644
+> --- a/arch/riscv/mm/extable.c
+> +++ b/arch/riscv/mm/extable.c
+> @@ -10,6 +10,20 @@
+>  #include <linux/extable.h>
+>  #include <linux/module.h>
+>  #include <linux/uaccess.h>
+> +#include <asm/asm-extable.h>
+> +
+> +static inline unsigned long
+> +get_ex_fixup(const struct exception_table_entry *ex)
+> +{
+> +	return ((unsigned long)&ex->fixup + ex->fixup);
+> +}
+> +
+> +static bool ex_handler_fixup(const struct exception_table_entry *ex,
+> +			     struct pt_regs *regs)
+> +{
+> +	regs->epc = get_ex_fixup(ex);
+> +	return true;
+> +}
+>
+>  bool fixup_exception(struct pt_regs *regs)
+>  {
+> @@ -19,9 +33,12 @@ bool fixup_exception(struct pt_regs *regs)
+>  	if (!ex)
+>  		return false;
+>
+> -	if (regs->epc >= BPF_JIT_REGION_START && regs->epc < BPF_JIT_REGION_END)
+> -		return rv_bpf_fixup_exception(ex, regs);
+> +	switch (ex->type) {
+> +	case EX_TYPE_FIXUP:
+> +		return ex_handler_fixup(ex, regs);
+> +	case EX_TYPE_BPF:
+> +		return ex_handler_bpf(ex, regs);
+> +	}
+>
+> -	regs->epc = (unsigned long)&ex->fixup + ex->fixup;
+> -	return true;
+> +	BUG();
+>  }
+> diff --git a/arch/riscv/net/bpf_jit_comp64.c b/arch/riscv/net/bpf_jit_comp64.c
+> index 7714081cbb64..69bab7e28f91 100644
+> --- a/arch/riscv/net/bpf_jit_comp64.c
+> +++ b/arch/riscv/net/bpf_jit_comp64.c
+> @@ -459,8 +459,8 @@ static int emit_call(bool fixed, u64 addr, struct rv_jit_context *ctx)
+>  #define BPF_FIXUP_OFFSET_MASK   GENMASK(26, 0)
+>  #define BPF_FIXUP_REG_MASK      GENMASK(31, 27)
+>
+> -bool rv_bpf_fixup_exception(const struct exception_table_entry *ex,
+> -			    struct pt_regs *regs)
+> +bool ex_handler_bpf(const struct exception_table_entry *ex,
+> +		    struct pt_regs *regs)
+>  {
+>  	off_t offset = FIELD_GET(BPF_FIXUP_OFFSET_MASK, ex->fixup);
+>  	int regs_offset = FIELD_GET(BPF_FIXUP_REG_MASK, ex->fixup);
+> @@ -514,6 +514,7 @@ static int add_exception_handler(const struct bpf_insn *insn,
+>
+>  	ex->fixup = FIELD_PREP(BPF_FIXUP_OFFSET_MASK, offset) |
+>  		FIELD_PREP(BPF_FIXUP_REG_MASK, dst_reg);
+> +	ex->type = EX_TYPE_BPF;
 
-No, it's fine, don't change anything.
+looks good to me.
 
-See these?
+Reviewed-by:Tong Tiangen <tongtiangen@huawei.com>
 
-[  365.648039] mscc_felix 0000:00:00.5 swp0: failed (err=-2) to del object (id=3)
-[  365.648071] mscc_felix 0000:00:00.5 swp1: failed (err=-2) to del object (id=3)
-[  365.648091] mscc_felix 0000:00:00.5 swp2: failed (err=-2) to del object (id=3)
-[  365.648111] mscc_felix 0000:00:00.5 swp3: failed (err=-2) to del object (id=3)
-[  365.648130] mscc_felix 0000:00:00.5 swp4: failed (err=-2) to del object (id=3)
-[68736.079878] mscc_felix 0000:00:00.5 swp0: failed (err=-2) to del object (id=3)
-[68736.079912] mscc_felix 0000:00:00.5 swp1: failed (err=-2) to del object (id=3)
-[68736.079934] mscc_felix 0000:00:00.5 swp2: failed (err=-2) to del object (id=3)
-[68736.079954] mscc_felix 0000:00:00.5 swp3: failed (err=-2) to del object (id=3)
-[68736.079974] mscc_felix 0000:00:00.5 swp4: failed (err=-2) to del object (id=3)
-
-err=-2 is -ENOENT, this driver is complaining about the fact that
-->port_mdb_del() is called on MDB entries that are no longer in
-hardware. And the system isn't doing anything, mind you, just idling.
-
-Long story short, this used to be an issue until commit 3f6e32f92a02
-("net: dsa: reference count the FDB addresses at the cross-chip notifier
-level") - if you backport anything to v5.10 you'll notice that it'll
-complain there, the refcounting is something that appeared in v5.14.
-
-My comment was just to explain "why delete if there's no entry in
-hardware" - because there isn't (wasn't) any logic to avoid doing so.
-
-> > > +	if (!fdb.aging)
-> > > +		return -EINVAL;
+>
+>  	ctx->nexentries++;
+>  	return 0;
+> diff --git a/scripts/sorttable.c b/scripts/sorttable.c
+> index 0c031e47a419..5b5472b543f5 100644
+> --- a/scripts/sorttable.c
+> +++ b/scripts/sorttable.c
+> @@ -376,9 +376,11 @@ static int do_file(char const *const fname, void *addr)
+>  	case EM_PARISC:
+>  	case EM_PPC:
+>  	case EM_PPC64:
+> -	case EM_RISCV:
+>  		custom_sort = sort_relative_table;
+>  		break;
+> +	case EM_RISCV:
+> +		custom_sort = arm64_sort_relative_table;
+> +		break;
+>  	case EM_ARCOMPACT:
+>  	case EM_ARCV2:
+>  	case EM_ARM:
+>
