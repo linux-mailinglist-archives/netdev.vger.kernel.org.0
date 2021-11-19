@@ -2,162 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A76224576F9
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 20:22:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3983745770B
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 20:32:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234861AbhKSTZh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 14:25:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42000 "EHLO
+        id S234872AbhKSTfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 14:35:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230494AbhKSTZh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 14:25:37 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72F85C06173E
-        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 11:22:35 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id u11so8871002plf.3
-        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 11:22:35 -0800 (PST)
+        with ESMTP id S230474AbhKSTfD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 14:35:03 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53EDAC061574;
+        Fri, 19 Nov 2021 11:32:01 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id v23so8657202pjr.5;
+        Fri, 19 Nov 2021 11:32:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GejJnaPkSdrFBUEbq1HDLo/AXrHzrj+OVR/ih9nOsZI=;
-        b=PSHqGmKsG+m7qQBnw3EW0+1KOv87ZgTDhqln7oOivL6UFHMBY7l4TfW2O2fsVfXGcI
-         s7bR4NUYnR2fH5y/GrcRhm7fRAbJS2tMpPr4AyyxrJy7CAQ4n3Ytx9lbX+HuCeZE8Acn
-         9uvPNWdAWVvsaoF+zv5Jcq8iiMx7tgsOVECII=
+        d=gmail.com; s=20210112;
+        h=subject:to:references:cc:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=d2kG+pQKvV8B6KaEnbM3pHRHAcgUV9dL/1UG79E2ndQ=;
+        b=qIpTMe+gppYvN4oNtTdQcI4yUXCU2W4dPlSOdbEvY8ka4ch9MBodeJTyemK1wR1O7B
+         AtcfG1gsHnZwu+JpXjqDYhlgT+jt0h8ZFh45JGBV2eMsmxphP/xRybq4vSmGlsYTn/OJ
+         OINGcxfxaHNa6mlOQLEgBtN3pay0sb4jYjL9frdSbZRAj3q4/LMfyf5n1va2/p0+XFQA
+         sNgVRD83kqnxZ2a5V/FvuxUWMqjvD9zroVSde/umuvNCTjiADSxUtq1zFUBNz5cnCh3U
+         7ONoPH0I//ieTFc0awjqjyxLM40m8v+uhQxM0GEYqIm0RnNKnKsa2tlqHIQdhmjF+x7a
+         wvvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GejJnaPkSdrFBUEbq1HDLo/AXrHzrj+OVR/ih9nOsZI=;
-        b=y2VyxZhOXzMCk3Zb4PI6lm0kDYWKFWNIvRDRfv/Bbh/URCVsPaJTGiq4M0jv64lFPy
-         DQyCU6y3yvxM3gCaQ87RZKaffq2LWn01alhGutHVZ1JBDO2WGE/nob1Y/mbyr4Mlos9M
-         ioj++oHfgK1quT2S60cg6VbAloj2rhf8SniorAW+i3DdZ4TJxYeKaQ1ZH4WjBOkBcBrY
-         lCREs5QUvz7AV+vASqhwn9vUiXXYbJLO1HDpEluVNocOilhc6syskuc2kVxUUsidj7LZ
-         zUMrpbwnENztOOt0A6nyHFTuyi+c9PQVN1IWVdKfxsb2JCRtAUYUtFWuRT8vfCVZnISN
-         cE+A==
-X-Gm-Message-State: AOAM531Muu/yyfNWqe5ickbaTuM8xtCaRwoG9x2sQVKW6HP7sctqp8sK
-        s2FLzaP6uBjEf/2oztOJEI1GqA==
-X-Google-Smtp-Source: ABdhPJyKHIxH8p0bpnGSbVWFIXipL9g/p5kYWTvl/90i/NpfNdV1nleVUk34JWHLVyovxNwrMJzVNQ==
-X-Received: by 2002:a17:90a:d995:: with SMTP id d21mr2595804pjv.154.1637349754891;
-        Fri, 19 Nov 2021 11:22:34 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id q30sm350921pgl.46.2021.11.19.11.22.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Nov 2021 11:22:34 -0800 (PST)
-From:   Kees Cook <keescook@chromium.org>
-To:     Ping-Ke Shih <pkshih@realtek.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Colin Ian King <colin.king@canonical.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Kaixu Xia <kaixuxia@tencent.com>, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH v3] rtlwifi: rtl8192de: Style clean-ups
-Date:   Fri, 19 Nov 2021 11:22:33 -0800
-Message-Id: <20211119192233.1021063-1-keescook@chromium.org>
-X-Mailer: git-send-email 2.30.2
+        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
+        bh=d2kG+pQKvV8B6KaEnbM3pHRHAcgUV9dL/1UG79E2ndQ=;
+        b=d/XUYLsUaJxeBFk0fRWFkh6NHzwgeQ75r0jhbI18BvQmRy6/S+pC1QuoqO5DE10+uS
+         Zeu06b0r00MPl9geiBQLsKxVEbMs8gcA3RNkeG/GtZcYl+dk4xA77AiBZE3RYhXLLtqb
+         iofFqdZBzimX/p2u63scbV3WZLzUMMVP5sFnH8ehlim4B+sSr1lhD4u4SElz97KLvD2n
+         hA6EI8YnCXiTEB+08nXkUa+9WQkdDok+QDE8fPvFLs/jt3JK+H+8yjlxwZCM6meIxN58
+         RnKQLg83e69hsQ4tAphI/ExLirwHordSakCn6p41zn7qpd2/kpl0gceBBSzjcxNSPWgK
+         dWAQ==
+X-Gm-Message-State: AOAM531WPpEhOq/arTeRtiixIavMzmMuZXGN2vu3XDf8OFt8KaWKAh8T
+        uSx7os8gNLZA8xxWX8FQA6QikrTMJFI=
+X-Google-Smtp-Source: ABdhPJz8r42RAtPyzQ9EWEgeAxcSh4SMFaASNzh5AxFd+pKrViXEmgck5txL2gsNx2h8G0rZbpXrfw==
+X-Received: by 2002:a17:902:ea09:b0:141:ec88:4410 with SMTP id s9-20020a170902ea0900b00141ec884410mr81293556plg.51.1637350320569;
+        Fri, 19 Nov 2021 11:32:00 -0800 (PST)
+Received: from [10.1.1.26] (222-155-101-117-fibre.sparkbb.co.nz. [222.155.101.117])
+        by smtp.gmail.com with ESMTPSA id i67sm407798pfg.189.2021.11.19.11.31.40
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 19 Nov 2021 11:31:57 -0800 (PST)
+Subject: Re: [PATCH net v12 3/3] net/8390: apne.c - add 100 Mbit support to
+ apne.c driver
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+References: <20211119060632.8583-1-schmitzmic@gmail.com>
+ <20211119060632.8583-4-schmitzmic@gmail.com>
+ <CAMuHMdU2fOe9E=H7k=Wt32Sg+0B1f7+2nU+dgv2eaW26aLqo=g@mail.gmail.com>
+Cc:     Linux/m68k <linux-m68k@vger.kernel.org>,
+        ALeX Kazik <alex@kazik.de>, netdev <netdev@vger.kernel.org>
+From:   Michael Schmitz <schmitzmic@gmail.com>
+Message-ID: <555cb10e-4613-f839-7fc8-7c23c2257f17@gmail.com>
+Date:   Sat, 20 Nov 2021 08:31:26 +1300
+User-Agent: Mozilla/5.0 (X11; Linux ppc64; rv:45.0) Gecko/20100101
+ Thunderbird/45.8.0
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3433; h=from:subject; bh=eEEiVQZ8A0ttuPc+NS1yMiJkzEQSZvVCMArXF7UacbE=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhl/l45aCKMNhG3EDjrpaJL8xAaPqrQt/Q38fyqPMr 0+roXumJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYZf5eAAKCRCJcvTf3G3AJoTHEA CXQ5lFUssY2ECMJpO/wfh4002jlaJUm83BkQxBB1fHFsOfHoekMLh+iHH+dASVqHPWevbroCK8EUKP DC5iIonTvUkWKz8KTkMgFSCbptvpzDtjB4rtBswsrDPaIUJS9efI4f5Rgkmk03jRY0RoKq+LFKrN9y xTpX1Dip9B6CrFHZkkNKOf8nuA01t0tpn4yYArxP+alkdDgJQS6Nr4u3TKSEjH62fmqLnvZPgokztf WzvcEHABcQylkSIWw5uZ5+5ayBJo3OE2xW5hOissCM6mXvBh2cghrYTjlan0QNSWrHxo8BTsObm4Jv A6xmrsGwlzodq73Ardg5k91FpGfAOMo3PbxY8gH7JU+Y8DihuMxU1ruj7+6RefBHLEhXTZbCH90kZq C/cN1hNWt1wYtLDGRSxdHtrvLl6vPaFfJtX+HotWq4e1r2OTl9ikOgYcKKM1kh5wwWkwM8JeOdOdPM Xe/JD+rBsXhx0ERcs+yhqsAyWgBlfR3j4j76DzqW380ECf5ENK38FG40dWf7/Q92pgEReF/pz/p81e Ig9BQCb38qvxxufBc7Ke2gBpSXjyhUqatsi05pxRSsXHn5/PrPfooeO6/GKzGwI0dw5qxfoDtMoxw5 5lXGoo1iT3TSAZ9/c0P/HQSO+DpwmNJBh0eB0rTUgifemH2AsulWo5NA5SZQ==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAMuHMdU2fOe9E=H7k=Wt32Sg+0B1f7+2nU+dgv2eaW26aLqo=g@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clean up some style issues:
-- Use ARRAY_SIZE() even though it's a u8 array.
-- Remove redundant CHANNEL_MAX_NUMBER_2G define.
-Additionally fix some dead code WARNs.
+Hi Geert,
 
-Acked-by: Ping-Ke Shih <pkshih@realtek.com>
-Link: https://lore.kernel.org/lkml/57d0d1b6064342309f680f692192556c@realtek.com/
-Signed-off-by: Kees Cook <keescook@chromium.org>
----
-v2->v3: rebase, add ack
----
- .../wireless/realtek/rtlwifi/rtl8192de/phy.c    | 17 +++++++----------
- drivers/net/wireless/realtek/rtlwifi/wifi.h     |  1 -
- 2 files changed, 7 insertions(+), 11 deletions(-)
+thanks for your review!
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c
-index 9b83c710c9b8..51fe51bb0504 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c
-@@ -899,7 +899,7 @@ static u8 _rtl92c_phy_get_rightchnlplace(u8 chnl)
- 	u8 place = chnl;
- 
- 	if (chnl > 14) {
--		for (place = 14; place < sizeof(channel5g); place++) {
-+		for (place = 14; place < ARRAY_SIZE(channel5g); place++) {
- 			if (channel5g[place] == chnl) {
- 				place++;
- 				break;
-@@ -1366,7 +1366,7 @@ u8 rtl92d_get_rightchnlplace_for_iqk(u8 chnl)
- 	u8 place;
- 
- 	if (chnl > 14) {
--		for (place = 14; place < sizeof(channel_all); place++) {
-+		for (place = 14; place < ARRAY_SIZE(channel_all); place++) {
- 			if (channel_all[place] == chnl)
- 				return place - 13;
- 		}
-@@ -2428,7 +2428,7 @@ static bool _rtl92d_is_legal_5g_channel(struct ieee80211_hw *hw, u8 channel)
- 
- 	int i;
- 
--	for (i = 0; i < sizeof(channel5g); i++)
-+	for (i = 0; i < ARRAY_SIZE(channel5g); i++)
- 		if (channel == channel5g[i])
- 			return true;
- 	return false;
-@@ -2692,9 +2692,8 @@ void rtl92d_phy_reset_iqk_result(struct ieee80211_hw *hw)
- 	u8 i;
- 
- 	rtl_dbg(rtlpriv, COMP_INIT, DBG_LOUD,
--		"settings regs %d default regs %d\n",
--		(int)(sizeof(rtlphy->iqk_matrix) /
--		      sizeof(struct iqk_matrix_regs)),
-+		"settings regs %zu default regs %d\n",
-+		ARRAY_SIZE(rtlphy->iqk_matrix),
- 		IQK_MATRIX_REG_NUM);
- 	/* 0xe94, 0xe9c, 0xea4, 0xeac, 0xeb4, 0xebc, 0xec4, 0xecc */
- 	for (i = 0; i < IQK_MATRIX_SETTINGS_NUM; i++) {
-@@ -2861,16 +2860,14 @@ u8 rtl92d_phy_sw_chnl(struct ieee80211_hw *hw)
- 	case BAND_ON_5G:
- 		/* Get first channel error when change between
- 		 * 5G and 2.4G band. */
--		if (channel <= 14)
-+		if (WARN_ONCE(channel <= 14, "rtl8192de: 5G but channel<=14\n"))
- 			return 0;
--		WARN_ONCE((channel <= 14), "rtl8192de: 5G but channel<=14\n");
- 		break;
- 	case BAND_ON_2_4G:
- 		/* Get first channel error when change between
- 		 * 5G and 2.4G band. */
--		if (channel > 14)
-+		if (WARN_ONCE(channel > 14, "rtl8192de: 2G but channel>14\n"))
- 			return 0;
--		WARN_ONCE((channel > 14), "rtl8192de: 2G but channel>14\n");
- 		break;
- 	default:
- 		WARN_ONCE(true, "rtl8192de: Invalid WirelessMode(%#x)!!\n",
-diff --git a/drivers/net/wireless/realtek/rtlwifi/wifi.h b/drivers/net/wireless/realtek/rtlwifi/wifi.h
-index aa07856411b1..31f9e9e5c680 100644
---- a/drivers/net/wireless/realtek/rtlwifi/wifi.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/wifi.h
-@@ -108,7 +108,6 @@
- #define	CHANNEL_GROUP_IDX_5GM		6
- #define	CHANNEL_GROUP_IDX_5GH		9
- #define	CHANNEL_GROUP_MAX_5G		9
--#define CHANNEL_MAX_NUMBER_2G		14
- #define AVG_THERMAL_NUM			8
- #define AVG_THERMAL_NUM_88E		4
- #define AVG_THERMAL_NUM_8723BE		4
--- 
-2.30.2
+On 19/11/21 20:59, Geert Uytterhoeven wrote:
+> Hi Michael,
+>
+> On Fri, Nov 19, 2021 at 7:06 AM Michael Schmitz <schmitzmic@gmail.com> wrote:
+>> Add module parameter, IO mode autoprobe and PCMCIA reset code
+>> required to support 100 Mbit PCMCIA ethernet cards on Amiga.
+>>
+>> 10 Mbit and 100 Mbit mode are supported by the same module.
+>> Use the core PCMCIA cftable parser to detect 16 bit cards,
+>> and automatically enable 16 bit ISA IO access for those cards
+>> by changing isa_type at runtime. The user must select PCCARD
+>> and PCMCIA in the kernel config to make the necessary support
+>> modules available.
+>>
+>> Code to reset the PCMCIA hardware required for 16 bit cards is
+>> also added to the driver probe.
+>>
+>> An optional module parameter switches Amiga ISA IO accessors
+>> to 8 or 16 bit access in case autoprobe fails.
+>>
+>> Patch modified after patch "[PATCH RFC net-next] Amiga PCMCIA
+>> 100 MBit card support" submitted to netdev 2018/09/16 by Alex
+>> Kazik <alex@kazik.de>.
+>>
+>> CC: netdev@vger.kernel.org
+>> Link: https://lore.kernel.org/r/1622958877-2026-1-git-send-email-schmitzmic@gmail.com
+>> Tested-by: Alex Kazik <alex@kazik.de>
+>> Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
+>>
+>> --
+>>
+>> Changes from v11:
+>>
+>> Geert Uytterhoeven:
+>> - use IS_REACHABLE() for PCMCIA dependent code
+>> - use container_of() instead of cast in pcmcia_parse_tuple()
+>>   call
+>> - set isa_type and apne_100_mbit correctly if autoprobe fails
+>> - reset isa_type and apne_100_mbit on module exit
+>>
+>> Joe Perches:
+>> - use pr_debug and co. to avoid #ifdef DEBUG
+>
+> Thanks for the update!
+>
+>> --- a/drivers/net/ethernet/8390/Kconfig
+>> +++ b/drivers/net/ethernet/8390/Kconfig
+>> @@ -144,6 +144,14 @@ config APNE
+>>           To compile this driver as a module, choose M here: the module
+>>           will be called apne.
+>>
+>> +         The driver also supports 10/100Mbit cards (e.g. Netgear FA411,
+>> +         CNet Singlepoint). To activate 100 Mbit support, use the kernel
+>> +         option apne.100mbit=1 (builtin) at boot time, or the apne.100mbit
+>> +         module parameter. The driver will attempt to autoprobe 100 Mbit
+>> +         mode if the PCCARD and PCMCIA kernel configuration options are
+>> +         selected, so this option may not be necessary. Use apne.100mbit=0
+>> +         should autoprobe mis-detect a 100 Mbit card.
+>
+> 10 Mbit?
 
+Mis-detect a 10 Mbit card as 100 Mbit would be more accurate. I'll add 
+that.
+
+>
+> Sorry for reporting it only now. I had noticed in v11, but forgot to
+> mention it during my review.
+
+No matter - I'll resend with your reviewed-by added directly.
+
+Cheers,
+
+	Michael
+
+> For the code:
+> Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+>
+> Gr{oetje,eeting}s,
+>
+>                         Geert
+>
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+>
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
+>
