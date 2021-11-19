@@ -2,161 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3983745770B
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 20:32:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6766457774
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 20:58:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234872AbhKSTfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 14:35:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44134 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230474AbhKSTfD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 14:35:03 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53EDAC061574;
-        Fri, 19 Nov 2021 11:32:01 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id v23so8657202pjr.5;
-        Fri, 19 Nov 2021 11:32:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:references:cc:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=d2kG+pQKvV8B6KaEnbM3pHRHAcgUV9dL/1UG79E2ndQ=;
-        b=qIpTMe+gppYvN4oNtTdQcI4yUXCU2W4dPlSOdbEvY8ka4ch9MBodeJTyemK1wR1O7B
-         AtcfG1gsHnZwu+JpXjqDYhlgT+jt0h8ZFh45JGBV2eMsmxphP/xRybq4vSmGlsYTn/OJ
-         OINGcxfxaHNa6mlOQLEgBtN3pay0sb4jYjL9frdSbZRAj3q4/LMfyf5n1va2/p0+XFQA
-         sNgVRD83kqnxZ2a5V/FvuxUWMqjvD9zroVSde/umuvNCTjiADSxUtq1zFUBNz5cnCh3U
-         7ONoPH0I//ieTFc0awjqjyxLM40m8v+uhQxM0GEYqIm0RnNKnKsa2tlqHIQdhmjF+x7a
-         wvvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=d2kG+pQKvV8B6KaEnbM3pHRHAcgUV9dL/1UG79E2ndQ=;
-        b=d/XUYLsUaJxeBFk0fRWFkh6NHzwgeQ75r0jhbI18BvQmRy6/S+pC1QuoqO5DE10+uS
-         Zeu06b0r00MPl9geiBQLsKxVEbMs8gcA3RNkeG/GtZcYl+dk4xA77AiBZE3RYhXLLtqb
-         iofFqdZBzimX/p2u63scbV3WZLzUMMVP5sFnH8ehlim4B+sSr1lhD4u4SElz97KLvD2n
-         hA6EI8YnCXiTEB+08nXkUa+9WQkdDok+QDE8fPvFLs/jt3JK+H+8yjlxwZCM6meIxN58
-         RnKQLg83e69hsQ4tAphI/ExLirwHordSakCn6p41zn7qpd2/kpl0gceBBSzjcxNSPWgK
-         dWAQ==
-X-Gm-Message-State: AOAM531WPpEhOq/arTeRtiixIavMzmMuZXGN2vu3XDf8OFt8KaWKAh8T
-        uSx7os8gNLZA8xxWX8FQA6QikrTMJFI=
-X-Google-Smtp-Source: ABdhPJz8r42RAtPyzQ9EWEgeAxcSh4SMFaASNzh5AxFd+pKrViXEmgck5txL2gsNx2h8G0rZbpXrfw==
-X-Received: by 2002:a17:902:ea09:b0:141:ec88:4410 with SMTP id s9-20020a170902ea0900b00141ec884410mr81293556plg.51.1637350320569;
-        Fri, 19 Nov 2021 11:32:00 -0800 (PST)
-Received: from [10.1.1.26] (222-155-101-117-fibre.sparkbb.co.nz. [222.155.101.117])
-        by smtp.gmail.com with ESMTPSA id i67sm407798pfg.189.2021.11.19.11.31.40
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 19 Nov 2021 11:31:57 -0800 (PST)
-Subject: Re: [PATCH net v12 3/3] net/8390: apne.c - add 100 Mbit support to
- apne.c driver
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-References: <20211119060632.8583-1-schmitzmic@gmail.com>
- <20211119060632.8583-4-schmitzmic@gmail.com>
- <CAMuHMdU2fOe9E=H7k=Wt32Sg+0B1f7+2nU+dgv2eaW26aLqo=g@mail.gmail.com>
-Cc:     Linux/m68k <linux-m68k@vger.kernel.org>,
-        ALeX Kazik <alex@kazik.de>, netdev <netdev@vger.kernel.org>
-From:   Michael Schmitz <schmitzmic@gmail.com>
-Message-ID: <555cb10e-4613-f839-7fc8-7c23c2257f17@gmail.com>
-Date:   Sat, 20 Nov 2021 08:31:26 +1300
-User-Agent: Mozilla/5.0 (X11; Linux ppc64; rv:45.0) Gecko/20100101
- Thunderbird/45.8.0
+        id S235275AbhKSUBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 15:01:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49804 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234500AbhKSUBV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Nov 2021 15:01:21 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6958661B27;
+        Fri, 19 Nov 2021 19:58:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637351898;
+        bh=d/OrXAwCT0sXA/KObxFeEo8HVTg14heB83sLx5/GHuE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=hUYsscSIzUCDaFNZJe1iNUMl05rQGZp0VVDfBiBZmRXIgg8TjC5mGTcx69bPmVtOz
+         BdLc3XT3ALRNHKTUuZ0/xAY0fY7u2F8jTDzoJHkM19FyBKH4qyh9Ck7U3xLK7qmJCN
+         e5RYgV9h4JYnPJ0dWY2yvGRkl1zyee1c19ci9txXNo7e5cbvyd2zU0zwZTELK3aypK
+         zoBhXpEl7EkAg6GnngG0qXIqUScj947GCdlGc9mOCdKmrRkbGOSypKRG/RtT12TVR0
+         qs8fGDuSfNGYnTy9m4U6im8+w5GPlEe5YAJZd3oNZvUCSp3kIGZ0t2mpI4akKy7DRE
+         UU4fV8zVGspSQ==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net 00/10] mlx5 fixes 2021-11-19
+Date:   Fri, 19 Nov 2021 11:58:03 -0800
+Message-Id: <20211119195813.739586-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <CAMuHMdU2fOe9E=H7k=Wt32Sg+0B1f7+2nU+dgv2eaW26aLqo=g@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Geert,
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-thanks for your review!
+Hi Dave, Hi Jakub,
 
-On 19/11/21 20:59, Geert Uytterhoeven wrote:
-> Hi Michael,
->
-> On Fri, Nov 19, 2021 at 7:06 AM Michael Schmitz <schmitzmic@gmail.com> wrote:
->> Add module parameter, IO mode autoprobe and PCMCIA reset code
->> required to support 100 Mbit PCMCIA ethernet cards on Amiga.
->>
->> 10 Mbit and 100 Mbit mode are supported by the same module.
->> Use the core PCMCIA cftable parser to detect 16 bit cards,
->> and automatically enable 16 bit ISA IO access for those cards
->> by changing isa_type at runtime. The user must select PCCARD
->> and PCMCIA in the kernel config to make the necessary support
->> modules available.
->>
->> Code to reset the PCMCIA hardware required for 16 bit cards is
->> also added to the driver probe.
->>
->> An optional module parameter switches Amiga ISA IO accessors
->> to 8 or 16 bit access in case autoprobe fails.
->>
->> Patch modified after patch "[PATCH RFC net-next] Amiga PCMCIA
->> 100 MBit card support" submitted to netdev 2018/09/16 by Alex
->> Kazik <alex@kazik.de>.
->>
->> CC: netdev@vger.kernel.org
->> Link: https://lore.kernel.org/r/1622958877-2026-1-git-send-email-schmitzmic@gmail.com
->> Tested-by: Alex Kazik <alex@kazik.de>
->> Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
->>
->> --
->>
->> Changes from v11:
->>
->> Geert Uytterhoeven:
->> - use IS_REACHABLE() for PCMCIA dependent code
->> - use container_of() instead of cast in pcmcia_parse_tuple()
->>   call
->> - set isa_type and apne_100_mbit correctly if autoprobe fails
->> - reset isa_type and apne_100_mbit on module exit
->>
->> Joe Perches:
->> - use pr_debug and co. to avoid #ifdef DEBUG
->
-> Thanks for the update!
->
->> --- a/drivers/net/ethernet/8390/Kconfig
->> +++ b/drivers/net/ethernet/8390/Kconfig
->> @@ -144,6 +144,14 @@ config APNE
->>           To compile this driver as a module, choose M here: the module
->>           will be called apne.
->>
->> +         The driver also supports 10/100Mbit cards (e.g. Netgear FA411,
->> +         CNet Singlepoint). To activate 100 Mbit support, use the kernel
->> +         option apne.100mbit=1 (builtin) at boot time, or the apne.100mbit
->> +         module parameter. The driver will attempt to autoprobe 100 Mbit
->> +         mode if the PCCARD and PCMCIA kernel configuration options are
->> +         selected, so this option may not be necessary. Use apne.100mbit=0
->> +         should autoprobe mis-detect a 100 Mbit card.
->
-> 10 Mbit?
+This series provides fixes to mlx5 driver.
+Please pull and let me know if there is any problem.
 
-Mis-detect a 10 Mbit card as 100 Mbit would be more accurate. I'll add 
-that.
+Thanks,
+Saeed.
 
->
-> Sorry for reporting it only now. I had noticed in v11, but forgot to
-> mention it during my review.
+---
+The following changes since commit 0f296e782f21dc1c55475a3c107ac68ab09cc1cf:
 
-No matter - I'll resend with your reviewed-by added directly.
+  stmmac_pci: Fix underflow size in stmmac_rx (2021-11-19 11:54:34 +0000)
 
-Cheers,
+are available in the Git repository at:
 
-	Michael
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2021-11-19
 
-> For the code:
-> Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
->
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
->
+for you to fetch changes up to 1534b2c9592a0858eaa20f351560b4764f630204:
+
+  net/mlx5e: Do synchronize_net only once when deactivating channels (2021-11-19 11:57:07 -0800)
+
+----------------------------------------------------------------
+mlx5-fixes-2021-11-19
+
+----------------------------------------------------------------
+Aya Levin (1):
+      net/mlx5: Fix access to a non-supported register
+
+Ben Ben-Ishay (1):
+      net/mlx5e: SHAMPO, Fix constant expression result
+
+Dmytro Linkin (1):
+      net/mlx5: E-switch, Respect BW share of the new group
+
+Gal Pressman (1):
+      net/mlx5: Fix too early queueing of log timestamp work
+
+Lama Kayal (1):
+      net/mlx5e: Do synchronize_net only once when deactivating channels
+
+Mark Bloch (1):
+      net/mlx5: E-Switch, fix single FDB creation on BlueField
+
+Maxim Mikityanskiy (1):
+      net/mlx5e: Add activate/deactivate stage to XDPSQ
+
+Raed Salem (2):
+      net/mlx5e: IPsec: Fix Software parser inner l3 type setting in case of encapsulation
+      net/mlx5e: Fix missing IPsec statistics on uplink representor
+
+Saeed Mahameed (1):
+      net/mlx5e: Call synchronize_net outside of deactivating a queue
+
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |  8 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c   | 30 +++++--
+ drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h   |  6 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/qos.c   | 30 ++++---
+ drivers/net/ethernet/mellanox/mlx5/core/en/qos.h   |  2 +-
+ .../ethernet/mellanox/mlx5/core/en/reporter_rx.c   |  3 +
+ .../ethernet/mellanox/mlx5/core/en/reporter_tx.c   |  3 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/pool.c  |  2 +
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.c |  4 +-
+ .../mellanox/mlx5/core/en_accel/ipsec_rxtx.c       |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 98 ++++++++++++++++------
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  4 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |  8 +-
+ drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c  |  2 +-
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |  1 +
+ drivers/net/ethernet/mellanox/mlx5/core/health.c   |  5 +-
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |  8 +-
+ include/linux/mlx5/mlx5_ifc.h                      |  5 +-
+ 18 files changed, 151 insertions(+), 70 deletions(-)
