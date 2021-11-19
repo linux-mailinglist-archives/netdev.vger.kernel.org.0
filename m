@@ -2,30 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FFC6457506
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 18:07:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 080C7457555
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 18:20:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236217AbhKSRKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 12:10:11 -0500
-Received: from host.78.145.23.62.rev.coltfrance.com ([62.23.145.78]:58722 "EHLO
+        id S236700AbhKSRXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 12:23:25 -0500
+Received: from host.78.145.23.62.rev.coltfrance.com ([62.23.145.78]:33040 "EHLO
         smtpservice.6wind.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S230296AbhKSRKK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 12:10:10 -0500
+        with ESMTP id S236641AbhKSRXY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 12:23:24 -0500
 Received: from bretzel (bretzel.dev.6wind.com [10.17.1.57])
-        by smtpservice.6wind.com (Postfix) with ESMTPS id 7233460511;
-        Fri, 19 Nov 2021 18:07:07 +0100 (CET)
+        by smtpservice.6wind.com (Postfix) with ESMTPS id A49CE60511;
+        Fri, 19 Nov 2021 18:20:21 +0100 (CET)
 Received: from dichtel by bretzel with local (Exim 4.92)
         (envelope-from <dichtel@6wind.com>)
-        id 1mo7Lv-0002v9-A4; Fri, 19 Nov 2021 18:07:07 +0100
+        id 1mo7Yj-00031X-Go; Fri, 19 Nov 2021 18:20:21 +0100
 From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
 To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au
 Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         Ghalem Boudour <ghalem.boudour@6wind.com>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Subject: [PATCH net] xfrm: fix policy lookup for ipv6 gre packets
-Date:   Fri, 19 Nov 2021 18:04:02 +0100
-Message-Id: <20211119170402.11213-1-nicolas.dichtel@6wind.com>
+        stable@vger.kernel.org, Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Subject: [PATCH net v2] xfrm: fix policy lookup for ipv6 gre packets
+Date:   Fri, 19 Nov 2021 18:20:16 +0100
+Message-Id: <20211119172016.11610-1-nicolas.dichtel@6wind.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20211119170402.11213-1-nicolas.dichtel@6wind.com>
+References: <20211119170402.11213-1-nicolas.dichtel@6wind.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -43,12 +45,16 @@ checked against xfrm policies. Like for egress side, fl6_gre_key should be
 correctly set, this is now done in decode_session6().
 
 Fixes: c12b395a4664 ("gre: Support GRE over IPv6")
+Cc: stable@vger.kernel.org
 Signed-off-by: Ghalem Boudour <ghalem.boudour@6wind.com>
 Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 ---
 
 This patch targets ipsec tree, but because this tree has not been yet
 rebased on top of the net tree, I based the patch on top of net.
+
+v1 -> v2
+ Add 'Cc: stable@vger.kernel.org'
 
  net/ipv6/ip6_gre.c     |  5 ++++-
  net/xfrm/xfrm_policy.c | 21 +++++++++++++++++++++
