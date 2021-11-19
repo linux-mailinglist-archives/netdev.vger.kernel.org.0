@@ -2,113 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E887545708F
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 15:23:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62C584570A0
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 15:27:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235285AbhKSO06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 09:26:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58186 "EHLO
+        id S235843AbhKSOaH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 09:30:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232080AbhKSO06 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 09:26:58 -0500
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9396C061574;
-        Fri, 19 Nov 2021 06:23:56 -0800 (PST)
-Received: by mail-pg1-x531.google.com with SMTP id 200so8796593pga.1;
-        Fri, 19 Nov 2021 06:23:56 -0800 (PST)
+        with ESMTP id S232080AbhKSOaH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 09:30:07 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DE79C061574
+        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 06:27:05 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id k37so44387830lfv.3
+        for <netdev@vger.kernel.org>; Fri, 19 Nov 2021 06:27:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=dvjMlZBI3ldb1jXqYwhDV7AWs1lj5LCSS81ZY56RgHg=;
-        b=lD29CjzOk03sgDLP+GNvSpxJtgVkW5rJkK+91U6AQudAzMZxrwkaky9OEq6jf27Gw7
-         +El3go4e6gBFGCWthIzBWcaH6MtynoVd2Asx0s8lF4AHh9KTCrYFWAivyI8ee0X1Vv36
-         V2FQuAVabQQBAbOL0fIquaORLXE6V2pQuWoxP4p8Bdmk66ffMTRypmvZJws3ZQPoiG7R
-         xBnlvWtgNAT1CZU5CVKw8D3+cafHZ/lwicgnA/RP75ZpQaa+0T4cnXOpdWgAZYBmS+Ds
-         D+JWFTqNXrZl80kk+n0WgCyZhptSAvKOJXiZ1wT44+Ikfkw7mB3QMLEop9ypqPjQJy3c
-         M8pw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ND96AlsQtCqYsJmY1XQJo3liKiI7PNKn41YBFvWCC7Q=;
+        b=BOnNw6x8EcLweDttAbS4rheyGZBt8JiV/Ay5LtvKx2NuUU6ca8naDXw9lIbkG1jvU6
+         jXzkhWms9huBi/mFC0KdapLtIbdr5ZLd6oaRgzZngzY+oNhDzNpGKTKqwfGixhqbd7ik
+         5QptzzSAMXXxayPAqi79ilS8ue1g9fQap32TwR6YaNQ1NPo0PgNuXEfLlIYe/uRWJQmq
+         NJuYtUUaH2xL9/AEAgNE3PGFqLek/rVCwC4tMcWiucboTQwbZGDKbti01p6NQQItahFs
+         NRngyOqVjfJx8qgL9w4n/qsH80Uxeq82W1TtwJrUjRd9p411fgdm/pbzejMngnVi43J4
+         9Srw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=dvjMlZBI3ldb1jXqYwhDV7AWs1lj5LCSS81ZY56RgHg=;
-        b=ymOoSNPXb9r3m4Ip0eXlmv0Q4P1UZsmxUwGL5lKG/9B7dE2h+J3/mZSlEGyKl66/v1
-         0GwcmDvEOK1uQdQxDkgT6oCc7DuGNytaHFfzTNJALqupO2HMuNf/RK5bnZM6PDLLwq7f
-         kK6EGX1448Q21QUEGs5Vfz41APQwtGtzHbKJwzpriOPEAWjQRfFRzDYcKyphbCKaMuvX
-         RymMoxcyEXGdlUWR8iuZYzqd3l8X8ap8TosIWVJBK0sK1N9gyVjqVTEb3uLrI3kJ+9aG
-         iHytVLT8pWOJbrFv80RMGta6mzqTWS4j9ZNkV3DU3LjimptmgCDs90a9+iNzZzzmQIUC
-         cFUA==
-X-Gm-Message-State: AOAM533D70nN4qd2+pQf94pHCLx7NMxOCx+wlfL/XlIBDxI4keQOYY/X
-        y5ekXgyMeYgJxNEInVywDT7KYgjaLReP6g==
-X-Google-Smtp-Source: ABdhPJzKRBXlcGt3waRWzaH9R47/6SD0/IgoWcAgajHv/fxOJufbEPJI6hNEQ9SuwB+/pum/5oX3UA==
-X-Received: by 2002:a63:b54a:: with SMTP id u10mr17506905pgo.69.1637331836308;
-        Fri, 19 Nov 2021 06:23:56 -0800 (PST)
-Received: from ?IPV6:2404:f801:0:5:8000::50b? ([2404:f801:9000:1a:efea::50b])
-        by smtp.gmail.com with ESMTPSA id l12sm3181520pfu.100.2021.11.19.06.23.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Nov 2021 06:23:55 -0800 (PST)
-Message-ID: <f7fcb4d5-fcdd-0d24-60ed-62c27ed8e2d9@gmail.com>
-Date:   Fri, 19 Nov 2021 22:23:45 +0800
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ND96AlsQtCqYsJmY1XQJo3liKiI7PNKn41YBFvWCC7Q=;
+        b=EtzRtNfbBgTXd7UztE4WmMkOA/cX8L0naKMjhkZ4z7csz5/v5gU3z1CuBLTMfaY0YQ
+         QY/rla6+laqxZbngZsHdDbYuAAAj6THYbeEBu0PtiCqo1claw0LqTDZvTOgwSHu+mCeA
+         LNuwr9heZvI332PSnchlEg8TB3ZtwgHX/So6XQ55vNBCVGl6CxZkypqjIKHROzKzOrgR
+         w7s4ZnqSRIKWM3ObaSTTFIe1jHebV4IZt0T/ChFIhBHPpe3MUtqTw15EbqzXev/QYwUs
+         LdbHvxaZlsOfvcBfjc7qP0Sm3iTX4vHSYnN+hc6PVjRNX5kVJvHxNyr5ldOzNLc307jC
+         /9SQ==
+X-Gm-Message-State: AOAM530iMHfTnkwUkrp6iYQcyLYCCl570AreYYyPOd4DfUrIuyG9CD0u
+        NcmK08k+OQVXOGEhM/tk5gAcv8vTAwQmsrC/v0fNV2SYXik=
+X-Google-Smtp-Source: ABdhPJy5Xp64Y5Ix8IT5eTjXbjJSYa9+yS8hele9Zg5PRdV9bXbnGMEssxRmGMlwmBLGkM4gO0PkX7dJqAMwg7jU5dI=
+X-Received: by 2002:a2e:b01a:: with SMTP id y26mr12693062ljk.317.1637332023076;
+ Fri, 19 Nov 2021 06:27:03 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH 3/5] hyperv/IOMMU: Enable swiotlb bounce buffer for
- Isolation VM
-Content-Language: en-US
-From:   Tianyu Lan <ltykernel@gmail.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, x86@kernel.org,
-        hpa@zytor.com, jgross@suse.com, sstabellini@kernel.org,
-        boris.ostrovsky@oracle.com, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, joro@8bytes.org, will@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, m.szyprowski@samsung.com,
-        robin.murphy@arm.com, xen-devel@lists.xenproject.org,
-        michael.h.kelley@microsoft.com,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        iommu@lists.linux-foundation.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        netdev@vger.kernel.org, vkuznets@redhat.com, brijesh.singh@amd.com,
-        konrad.wilk@oracle.com, parri.andrea@gmail.com,
-        thomas.lendacky@amd.com, dave.hansen@intel.com
-References: <20211116153923.196763-1-ltykernel@gmail.com>
- <20211116153923.196763-4-ltykernel@gmail.com> <20211117100142.GB10330@lst.de>
- <c93bf3d4-75c1-bc3d-2789-1d65e7c19158@gmail.com>
-In-Reply-To: <c93bf3d4-75c1-bc3d-2789-1d65e7c19158@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <YXmWb2PZJQhpMfrR@shredder> <BY3PR18MB473794E01049EC94156E2858C6859@BY3PR18MB4737.namprd18.prod.outlook.com>
+ <YXnRup1EJaF5Gwua@shredder> <CALHRZuqpaqvunTga+8OK4GSa3oRao-CBxit6UzRvN3a1-T0dhA@mail.gmail.com>
+ <YXqq19HxleZd6V9W@shredder> <CALHRZuoOWu0sEWjuanrYxyAVEUaO4-wea5+mET9UjPyoOrX5NQ@mail.gmail.com>
+ <YYeajTs6d4j39rJ2@shredder> <20211108075450.1dbdedc3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YY0uB7OyTRCoNBJQ@shredder> <20211111084719.600f072d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YZDK6JxwcoPvk/Zx@shredder> <952e8bb0-bc1e-5600-92f2-de4d6744fcb0@nvidia.com>
+ <20211115071109.1bf4875b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CALHRZura-Vav599FTVkMb33uY0xtpNkotxU-q8FUiBxoHqXh7Q@mail.gmail.com> <20211119060958.31782ca9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211119060958.31782ca9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   sundeep subbaraya <sundeep.lkml@gmail.com>
+Date:   Fri, 19 Nov 2021 19:56:51 +0530
+Message-ID: <CALHRZuqkGNRqigj1D5CBaCGvT8xcwzkparmUwUPMMDcp=UmuUQ@mail.gmail.com>
+Subject: Re: [EXT] Re: [net-next PATCH 1/2] octeontx2-pf: Add devlink param to
+ init and de-init serdes
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Roopa Prabhu <roopa@nvidia.com>, Ido Schimmel <idosch@idosch.org>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Hariprasad Kelam <hkelam@marvell.com>,
+        Geethasowjanya Akula <gakula@marvell.com>,
+        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
+        Rakesh Babu Saladi <rsaladi2@marvell.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Andrew Lunn <andrew@lunn.ch>, argeorge@cisco.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/17/2021 10:00 PM, Tianyu Lan wrote:
-> On 11/17/2021 6:01 PM, Christoph Hellwig wrote:
->> This doesn't really have much to do with normal DMA mapping,
->> so why does this direct through the dma ops?
->>
-> 
-> According to the previous discussion, dma_alloc_noncontigous()
-> and dma_vmap_noncontiguous() may be used to handle the noncontigous
-> memory alloc/map in the netvsc driver. So add alloc/free and vmap/vunmap
-> callbacks here to handle the case. The previous patch v4 & v5 handles
-> the allocation and map in the netvsc driver. If this should not go 
-> though dma ops, We also may make it as vmbus specific function and keep
-> the function in the vmbus driver.
-> 
-> https://lkml.org/lkml/2021/9/28/51
+On Fri, Nov 19, 2021 at 7:40 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Fri, 19 Nov 2021 16:17:53 +0530 sundeep subbaraya wrote:
+> > As said by Ido, ndo_change_proto_down with proto_down as
+> > on and off is sufficient for our requirement right now. We will use
+> > ndo_change_proto_down instead of devlink. Thanks everyone for
+> > pitching in.
+>
+> ndo_change_proto_down is for software devices. Make sure you explain
+> your use case well, otherwise it's going to be a nack.
 
+Sorry new to networking stuff here. Where does the below imply it is
+for software devices?
+* void (*ndo_change_proto_down)(struct net_device *dev,
+ *                               bool proto_down);
+ *      This function is used to pass protocol port error state information
+ *      to the switch driver. The switch driver can react to the proto_down
+ *      by doing a phys down on the associated switch port.
+I will find out the use case (pinged customer again)
 
-Hi Christoph:
-       Sorry to bother you. Could you have a look? Which solution do you
-prefer? If we need to call dma_alloc/map_noncontigous() function in the
-netvsc driver what patch 4 does. The Hyper-V specific implementation
-needs to be hided in some callbacks and call these callback in the
-dma_alloc/map_noncontigous(). I used dma ops here. If the allocation and
-map operation should be Hyper-V specific function, we may put these
-functions in the vmbus driver and other vmbus device drivers also may
-reuse these functions if necessary.
-
-Thanks.
+Thanks,
+Sundeep
