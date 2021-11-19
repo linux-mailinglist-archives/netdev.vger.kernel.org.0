@@ -2,492 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F960456CE9
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 11:01:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB3AB456D47
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 11:29:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231610AbhKSKC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 05:02:59 -0500
-Received: from mga01.intel.com ([192.55.52.88]:24868 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234013AbhKSKCx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Nov 2021 05:02:53 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10172"; a="258181652"
-X-IronPort-AV: E=Sophos;i="5.87,247,1631602800"; 
-   d="scan'208";a="258181652"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2021 01:59:52 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,247,1631602800"; 
-   d="scan'208";a="737335312"
-Received: from ccgwwan-desktop15.iind.intel.com ([10.224.174.19])
-  by fmsmga005.fm.intel.com with ESMTP; 19 Nov 2021 01:59:49 -0800
-From:   M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        krishna.c.sudi@intel.com, m.chetan.kumar@intel.com,
-        linuxwwan@intel.com
-Subject: [PATCH V2 net-next 2/2] net: wwan: iosm: device trace collection using relayfs
-Date:   Fri, 19 Nov 2021 15:37:20 +0530
-Message-Id: <20211119100720.1112978-3-m.chetan.kumar@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211119100720.1112978-1-m.chetan.kumar@linux.intel.com>
-References: <20211119100720.1112978-1-m.chetan.kumar@linux.intel.com>
+        id S234482AbhKSKbm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 05:31:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60774 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229521AbhKSKbl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Nov 2021 05:31:41 -0500
+Received: from forwardcorp1o.mail.yandex.net (forwardcorp1o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F75C061574;
+        Fri, 19 Nov 2021 02:28:38 -0800 (PST)
+Received: from iva8-d2cd82b7433e.qloud-c.yandex.net (iva8-d2cd82b7433e.qloud-c.yandex.net [IPv6:2a02:6b8:c0c:a88e:0:640:d2cd:82b7])
+        by forwardcorp1o.mail.yandex.net (Yandex) with ESMTP id 6613D2E0EB6;
+        Fri, 19 Nov 2021 13:28:36 +0300 (MSK)
+Received: from myt6-10e59078d438.qloud-c.yandex.net (myt6-10e59078d438.qloud-c.yandex.net [2a02:6b8:c12:5209:0:640:10e5:9078])
+        by iva8-d2cd82b7433e.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id h0SLQKlaHl-SZsmtVuA;
+        Fri, 19 Nov 2021 13:28:36 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.com; s=default;
+        t=1637317716; bh=0S0aDUeUy14R8avbT19YlFnvfDh9CegCSsSnm81HkKk=;
+        h=In-Reply-To:References:Date:From:To:Subject:Message-ID:Cc;
+        b=4LfxMCgTJBgMtcj/KSPBQHo9ceJv+E2UB75ltX57bloMNqQmwnlQQuuRvL7Zt+0rr
+         n4gwslYK/2Tu0H8pagKGWAhzvQJtMjOVWCvAY5TiHFPOpkHMMHlAvrhZQzxU2w4P9A
+         eoyN1+CKRK0ezRXjH583/Db0MvjjTC+rlGuZPPWA=
+Authentication-Results: iva8-d2cd82b7433e.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.com
+Received: from [IPv6:2a02:6b8:0:107:3e85:844d:5b1d:60a] (dynamic-red3.dhcp.yndx.net [2a02:6b8:0:107:3e85:844d:5b1d:60a])
+        by myt6-10e59078d438.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPS id xIDPXLIdDn-SZw4QS1L;
+        Fri, 19 Nov 2021 13:28:35 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+X-Yandex-Fwd: 2
+Subject: Re: [PATCH 1/6] vhost: get rid of vhost_poll_flush() wrapper
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20211115153003.9140-1-arbn@yandex-team.com>
+ <20211116144119.56ph52twuyc4jtdr@steredhat>
+From:   Andrey Ryabinin <arbn@yandex-team.com>
+Message-ID: <aff42feb-6ca5-1d9a-6ecf-74c213abfaa6@yandex-team.com>
+Date:   Fri, 19 Nov 2021 13:30:10 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <20211116144119.56ph52twuyc4jtdr@steredhat>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch brings in support for device trace collection.
-It implements relayfs interface for pushing device trace
-from kernel space to user space.
 
-Driver gets the debugfs base directory associated to WWAN
-Device and creates trace_control and trace debugfs for
-device tracing. Both trace_control & trace debugfs are
-created under /sys/kernel/debug/wwan/wwan0/.
 
-In order to collect device trace on trace0 interface, user
-need to write 1 to trace_ctl interface.
+On 11/16/21 5:41 PM, Stefano Garzarella wrote:
+> On Mon, Nov 15, 2021 at 06:29:58PM +0300, Andrey Ryabinin wrote:
 
-Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
----
-v2:
-* IOSM Driver adaption to get WWAN device dentry.
-* Removed unnecessary checks.
----
- drivers/net/wwan/iosm/Makefile            |   3 +-
- drivers/net/wwan/iosm/iosm_ipc_imem.c     |  13 ++
- drivers/net/wwan/iosm/iosm_ipc_imem.h     |   2 +
- drivers/net/wwan/iosm/iosm_ipc_imem_ops.c |  31 +++-
- drivers/net/wwan/iosm/iosm_ipc_imem_ops.h |   9 +-
- drivers/net/wwan/iosm/iosm_ipc_port.c     |   2 +-
- drivers/net/wwan/iosm/iosm_ipc_trace.c    | 174 ++++++++++++++++++++++
- drivers/net/wwan/iosm/iosm_ipc_trace.h    |  51 +++++++
- 8 files changed, 272 insertions(+), 13 deletions(-)
- create mode 100644 drivers/net/wwan/iosm/iosm_ipc_trace.c
- create mode 100644 drivers/net/wwan/iosm/iosm_ipc_trace.h
+>> void vhost_work_queue(struct vhost_dev *dev, struct vhost_work *work)
+>> {
+>>     if (!dev->worker)
+>> @@ -663,7 +655,7 @@ void vhost_dev_stop(struct vhost_dev *dev)
+>>     for (i = 0; i < dev->nvqs; ++i) {
+>>         if (dev->vqs[i]->kick && dev->vqs[i]->handle_kick) {
+>>             vhost_poll_stop(&dev->vqs[i]->poll);
+>> -            vhost_poll_flush(&dev->vqs[i]->poll);
+>> +            vhost_work_dev_flush(dev->vqs[i]->poll.dev);
+> 
+> Not related to this patch, but while looking at vhost-vsock I'm wondering if we can do the same here in vhost_dev_stop(), I mean move vhost_work_dev_flush() outside the loop and and call it once. (In another patch eventually)
+> 
 
-diff --git a/drivers/net/wwan/iosm/Makefile b/drivers/net/wwan/iosm/Makefile
-index b838034bb120..5c2528beca2a 100644
---- a/drivers/net/wwan/iosm/Makefile
-+++ b/drivers/net/wwan/iosm/Makefile
-@@ -21,6 +21,7 @@ iosm-y = \
- 	iosm_ipc_mux_codec.o		\
- 	iosm_ipc_devlink.o		\
- 	iosm_ipc_flash.o		\
--	iosm_ipc_coredump.o
-+	iosm_ipc_coredump.o		\
-+	iosm_ipc_trace.o
-
- obj-$(CONFIG_IOSM) := iosm.o
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_imem.c b/drivers/net/wwan/iosm/iosm_ipc_imem.c
-index cff3b43ca4d7..1be07114c85d 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_imem.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_imem.c
-@@ -10,6 +10,7 @@
- #include "iosm_ipc_flash.h"
- #include "iosm_ipc_imem.h"
- #include "iosm_ipc_port.h"
-+#include "iosm_ipc_trace.h"
-
- /* Check the wwan ips if it is valid with Channel as input. */
- static int ipc_imem_check_wwan_ips(struct ipc_mem_channel *chnl)
-@@ -265,9 +266,14 @@ static void ipc_imem_dl_skb_process(struct iosm_imem *ipc_imem,
- 	switch (pipe->channel->ctype) {
- 	case IPC_CTYPE_CTRL:
- 		port_id = pipe->channel->channel_id;
-+		ipc_pcie_addr_unmap(ipc_imem->pcie, IPC_CB(skb)->len,
-+				    IPC_CB(skb)->mapping,
-+				    IPC_CB(skb)->direction);
- 		if (port_id == IPC_MEM_CTRL_CHL_ID_7)
- 			ipc_imem_sys_devlink_notify_rx(ipc_imem->ipc_devlink,
- 						       skb);
-+		else if (port_id == ipc_imem->trace->chl_id)
-+			ipc_trace_port_rx(ipc_imem->trace, skb);
- 		else
- 			wwan_port_rx(ipc_imem->ipc_port[port_id]->iosm_port,
- 				     skb);
-@@ -548,6 +554,12 @@ static void ipc_imem_run_state_worker(struct work_struct *instance)
- 		ctrl_chl_idx++;
- 	}
-
-+	ipc_imem->trace = ipc_imem_trace_channel_init(ipc_imem);
-+	if (!ipc_imem->trace) {
-+		dev_err(ipc_imem->dev, "trace channel init failed");
-+		return;
-+	}
-+
- 	ipc_task_queue_send_task(ipc_imem, ipc_imem_send_mdm_rdy_cb, 0, NULL, 0,
- 				 false);
-
-@@ -1163,6 +1175,7 @@ void ipc_imem_cleanup(struct iosm_imem *ipc_imem)
-
- 	if (test_and_clear_bit(FULLY_FUNCTIONAL, &ipc_imem->flag)) {
- 		ipc_mux_deinit(ipc_imem->mux);
-+		ipc_trace_deinit(ipc_imem->trace);
- 		ipc_wwan_deinit(ipc_imem->wwan);
- 		ipc_port_deinit(ipc_imem->ipc_port);
- 	}
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_imem.h b/drivers/net/wwan/iosm/iosm_ipc_imem.h
-index 6be6708b4eec..cec38009c44a 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_imem.h
-+++ b/drivers/net/wwan/iosm/iosm_ipc_imem.h
-@@ -304,6 +304,7 @@ enum ipc_phase {
-  * @sio:			IPC SIO data structure pointer
-  * @ipc_port:			IPC PORT data structure pointer
-  * @pcie:			IPC PCIe
-+ * @trace:			IPC trace data structure pointer
-  * @dev:			Pointer to device structure
-  * @ipc_requested_state:	Expected IPC state on CP.
-  * @channels:			Channel list with UL/DL pipe pairs.
-@@ -349,6 +350,7 @@ struct iosm_imem {
- 	struct iosm_mux *mux;
- 	struct iosm_cdev *ipc_port[IPC_MEM_MAX_CHANNELS];
- 	struct iosm_pcie *pcie;
-+	struct iosm_trace *trace;
- 	struct device *dev;
- 	enum ipc_mem_device_ipc_state ipc_requested_state;
- 	struct ipc_mem_channel channels[IPC_MEM_MAX_CHANNELS];
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_imem_ops.c b/drivers/net/wwan/iosm/iosm_ipc_imem_ops.c
-index 825e8e5ffb2a..43f1796a8984 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_imem_ops.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_imem_ops.c
-@@ -11,6 +11,7 @@
- #include "iosm_ipc_imem_ops.h"
- #include "iosm_ipc_port.h"
- #include "iosm_ipc_task_queue.h"
-+#include "iosm_ipc_trace.h"
-
- /* Open a packet data online channel between the network layer and CP. */
- int ipc_imem_sys_wwan_open(struct iosm_imem *ipc_imem, int if_id)
-@@ -107,6 +108,23 @@ void ipc_imem_wwan_channel_init(struct iosm_imem *ipc_imem,
- 			"failed to register the ipc_wwan interfaces");
- }
-
-+/**
-+ * ipc_imem_trace_channel_init - Initializes trace channel.
-+ * @ipc_imem:          Pointer to iosm_imem struct.
-+ *
-+ * Returns: Pointer to trace instance on success else NULL
-+ */
-+struct iosm_trace *ipc_imem_trace_channel_init(struct iosm_imem *ipc_imem)
-+{
-+	struct ipc_chnl_cfg chnl_cfg = { 0 };
-+
-+	ipc_chnl_cfg_get(&chnl_cfg, IPC_MEM_CTRL_CHL_ID_3);
-+	ipc_imem_channel_init(ipc_imem, IPC_CTYPE_CTRL, chnl_cfg,
-+			      IRQ_MOD_OFF);
-+
-+	return ipc_trace_init(ipc_imem);
-+}
-+
- /* Map SKB to DMA for transfer */
- static int ipc_imem_map_skb_to_dma(struct iosm_imem *ipc_imem,
- 				   struct sk_buff *skb)
-@@ -182,11 +200,14 @@ static bool ipc_imem_is_channel_active(struct iosm_imem *ipc_imem,
- 	return false;
- }
-
--/* Release a sio link to CP. */
--void ipc_imem_sys_cdev_close(struct iosm_cdev *ipc_cdev)
-+/**
-+ * ipc_imem_sys_port_close - Release a sio link to CP.
-+ * @ipc_imem:          Imem instance.
-+ * @channel:           Channel instance.
-+ */
-+void ipc_imem_sys_port_close(struct iosm_imem *ipc_imem,
-+			     struct ipc_mem_channel *channel)
- {
--	struct iosm_imem *ipc_imem = ipc_cdev->ipc_imem;
--	struct ipc_mem_channel *channel = ipc_cdev->channel;
- 	enum ipc_phase curr_phase;
- 	int status = 0;
- 	u32 tail = 0;
-@@ -643,6 +664,6 @@ int ipc_imem_sys_devlink_read(struct iosm_devlink *devlink, u8 *data,
- 	memcpy(data, skb->data, skb->len);
-
- devlink_read_fail:
--	ipc_pcie_kfree_skb(devlink->pcie, skb);
-+	dev_kfree_skb(skb);
- 	return rc;
- }
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_imem_ops.h b/drivers/net/wwan/iosm/iosm_ipc_imem_ops.h
-index f0c88ac5643c..e36ee2782629 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_imem_ops.h
-+++ b/drivers/net/wwan/iosm/iosm_ipc_imem_ops.h
-@@ -43,12 +43,8 @@
-  */
- struct ipc_mem_channel *ipc_imem_sys_port_open(struct iosm_imem *ipc_imem,
- 					       int chl_id, int hp_id);
--
--/**
-- * ipc_imem_sys_cdev_close - Release a sio link to CP.
-- * @ipc_cdev:		iosm sio instance.
-- */
--void ipc_imem_sys_cdev_close(struct iosm_cdev *ipc_cdev);
-+void ipc_imem_sys_port_close(struct iosm_imem *ipc_imem,
-+			     struct ipc_mem_channel *channel);
-
- /**
-  * ipc_imem_sys_cdev_write - Route the uplink buffer to CP.
-@@ -145,4 +141,5 @@ int ipc_imem_sys_devlink_read(struct iosm_devlink *ipc_devlink, u8 *data,
-  */
- int ipc_imem_sys_devlink_write(struct iosm_devlink *ipc_devlink,
- 			       unsigned char *buf, int count);
-+struct iosm_trace *ipc_imem_trace_channel_init(struct iosm_imem *ipc_imem);
- #endif
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_port.c b/drivers/net/wwan/iosm/iosm_ipc_port.c
-index beb944847398..b6d81c627277 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_port.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_port.c
-@@ -27,7 +27,7 @@ static void ipc_port_ctrl_stop(struct wwan_port *port)
- {
- 	struct iosm_cdev *ipc_port = wwan_port_get_drvdata(port);
-
--	ipc_imem_sys_cdev_close(ipc_port);
-+	ipc_imem_sys_port_close(ipc_port->ipc_imem, ipc_port->channel);
- }
-
- /* transfer control data to modem */
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_trace.c b/drivers/net/wwan/iosm/iosm_ipc_trace.c
-new file mode 100644
-index 000000000000..d7c37f9caab5
---- /dev/null
-+++ b/drivers/net/wwan/iosm/iosm_ipc_trace.c
-@@ -0,0 +1,174 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (C) 2020-2021 Intel Corporation.
-+ */
-+
-+#include <linux/wwan.h>
-+#include "iosm_ipc_trace.h"
-+
-+/* sub buffer size and number of sub buffer */
-+#define IOSM_TRC_SUB_BUFF_SIZE 131072
-+#define IOSM_TRC_N_SUB_BUFF 32
-+
-+#define IOSM_TRC_FILE_PERM 0600
-+
-+#define IOSM_TRC_DEBUGFS_TRACE "trace"
-+#define IOSM_TRC_DEBUGFS_TRACE_CTRL "trace_ctrl"
-+
-+/**
-+ * ipc_trace_port_rx - Receive trace packet from cp and write to relay buffer
-+ * @ipc_trace:  Pointer to the ipc trace data-struct
-+ * @skb:        Pointer to struct sk_buff
-+ */
-+void ipc_trace_port_rx(struct iosm_trace *ipc_trace, struct sk_buff *skb)
-+{
-+	if (ipc_trace->ipc_rchan)
-+		relay_write(ipc_trace->ipc_rchan, skb->data, skb->len);
-+
-+	dev_kfree_skb(skb);
-+}
-+
-+/* Creates relay file in debugfs. */
-+static struct dentry *
-+ipc_trace_create_buf_file_handler(const char *filename,
-+				  struct dentry *parent,
-+				  umode_t mode,
-+				  struct rchan_buf *buf,
-+				  int *is_global)
-+{
-+	*is_global = 1;
-+	return debugfs_create_file(filename, mode, parent, buf,
-+				   &relay_file_operations);
-+}
-+
-+/* Removes relay file from debugfs. */
-+static int ipc_trace_remove_buf_file_handler(struct dentry *dentry)
-+{
-+	debugfs_remove(dentry);
-+	return 0;
-+}
-+
-+static int ipc_trace_subbuf_start_handler(struct rchan_buf *buf, void *subbuf,
-+					  void *prev_subbuf,
-+					  size_t prev_padding)
-+{
-+	if (relay_buf_full(buf)) {
-+		pr_err_ratelimited("Relay_buf full dropping traces");
-+		return 0;
-+	}
-+
-+	return 1;
-+}
-+
-+/* Relay interface callbacks */
-+static struct rchan_callbacks relay_callbacks = {
-+	.subbuf_start = ipc_trace_subbuf_start_handler,
-+	.create_buf_file = ipc_trace_create_buf_file_handler,
-+	.remove_buf_file = ipc_trace_remove_buf_file_handler,
-+};
-+
-+/* Copy the trace control mode to user buffer */
-+static ssize_t ipc_trace_ctrl_file_read(struct file *filp, char __user *buffer,
-+					size_t count, loff_t *ppos)
-+{
-+	struct iosm_trace *ipc_trace = filp->private_data;
-+	char buf[16];
-+	int len;
-+
-+	mutex_lock(&ipc_trace->trc_mutex);
-+	len = snprintf(buf, sizeof(buf), "%d\n", ipc_trace->mode);
-+	mutex_unlock(&ipc_trace->trc_mutex);
-+
-+	return simple_read_from_buffer(buffer, count, ppos, buf, len);
-+}
-+
-+/* Open and close the trace channel depending on user input */
-+static ssize_t ipc_trace_ctrl_file_write(struct file *filp,
-+					 const char __user *buffer,
-+					 size_t count, loff_t *ppos)
-+{
-+	struct iosm_trace *ipc_trace = filp->private_data;
-+	unsigned long val;
-+	int ret;
-+
-+	ret = kstrtoul_from_user(buffer, count, 10, &val);
-+
-+	if (ret)
-+		return ret;
-+
-+	mutex_lock(&ipc_trace->trc_mutex);
-+	if (val == TRACE_ENABLE && ipc_trace->mode != TRACE_ENABLE) {
-+		ipc_trace->channel = ipc_imem_sys_port_open(ipc_trace->ipc_imem,
-+							    ipc_trace->chl_id,
-+							    IPC_HP_CDEV_OPEN);
-+		if (!ipc_trace->channel) {
-+			ret = -EIO;
-+			goto unlock;
-+		}
-+		ipc_trace->mode = TRACE_ENABLE;
-+	} else if (val == TRACE_DISABLE && ipc_trace->mode != TRACE_DISABLE) {
-+		ipc_trace->mode = TRACE_DISABLE;
-+		/* close trace channel */
-+		ipc_imem_sys_port_close(ipc_trace->ipc_imem,
-+					ipc_trace->channel);
-+		relay_flush(ipc_trace->ipc_rchan);
-+	}
-+	ret = count;
-+unlock:
-+	mutex_unlock(&ipc_trace->trc_mutex);
-+	return ret;
-+}
-+
-+static const struct file_operations ipc_trace_fops = {
-+	.open = simple_open,
-+	.write = ipc_trace_ctrl_file_write,
-+	.read  = ipc_trace_ctrl_file_read,
-+};
-+
-+/**
-+ * ipc_trace_init - Create trace interface & debugfs entries
-+ * @ipc_imem:   Pointer to iosm_imem structure
-+ *
-+ * Returns: Pointer to trace instance on success else NULL
-+ */
-+struct iosm_trace *ipc_trace_init(struct iosm_imem *ipc_imem)
-+{
-+	struct iosm_trace *ipc_trace = kzalloc(sizeof(*ipc_trace), GFP_KERNEL);
-+	struct dentry *debugfs_pdev;
-+
-+	if (!ipc_trace)
-+		return NULL;
-+
-+	ipc_trace->mode = TRACE_DISABLE;
-+	ipc_trace->dev = ipc_imem->dev;
-+	ipc_trace->ipc_imem = ipc_imem;
-+	ipc_trace->chl_id = IPC_MEM_CTRL_CHL_ID_3;
-+
-+	mutex_init(&ipc_trace->trc_mutex);
-+	debugfs_pdev = wwan_get_debugfs_dir(ipc_imem->dev);
-+
-+	ipc_trace->ctrl_file = debugfs_create_file(IOSM_TRC_DEBUGFS_TRACE_CTRL,
-+						   IOSM_TRC_FILE_PERM,
-+						   debugfs_pdev,
-+						   ipc_trace, &ipc_trace_fops);
-+
-+	ipc_trace->ipc_rchan = relay_open(IOSM_TRC_DEBUGFS_TRACE,
-+					  debugfs_pdev,
-+					  IOSM_TRC_SUB_BUFF_SIZE,
-+					  IOSM_TRC_N_SUB_BUFF,
-+					  &relay_callbacks, NULL);
-+
-+	return ipc_trace;
-+}
-+
-+/**
-+ * ipc_trace_deinit - Closing relayfs, removing debugfs entries
-+ * @ipc_trace: Pointer to the iosm_trace data struct
-+ */
-+void ipc_trace_deinit(struct iosm_trace *ipc_trace)
-+{
-+	debugfs_remove(ipc_trace->ctrl_file);
-+	relay_close(ipc_trace->ipc_rchan);
-+	mutex_destroy(&ipc_trace->trc_mutex);
-+	kfree(ipc_trace);
-+}
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_trace.h b/drivers/net/wwan/iosm/iosm_ipc_trace.h
-new file mode 100644
-index 000000000000..53346183af9c
---- /dev/null
-+++ b/drivers/net/wwan/iosm/iosm_ipc_trace.h
-@@ -0,0 +1,51 @@
-+/* SPDX-License-Identifier: GPL-2.0-only
-+ *
-+ * Copyright (C) 2020-2021 Intel Corporation.
-+ */
-+
-+#ifndef IOSM_IPC_TRACE_H
-+#define IOSM_IPC_TRACE_H
-+
-+#include <linux/debugfs.h>
-+#include <linux/relay.h>
-+
-+#include "iosm_ipc_chnl_cfg.h"
-+#include "iosm_ipc_imem_ops.h"
-+
-+/**
-+ * enum trace_ctrl_mode - State of trace channel
-+ * @TRACE_DISABLE:	mode for disable trace
-+ * @TRACE_ENABLE:	mode for enable trace
-+ */
-+enum trace_ctrl_mode {
-+	TRACE_DISABLE = 0,
-+	TRACE_ENABLE,
-+};
-+
-+/**
-+ * struct iosm_trace - Struct for trace interface
-+ * @ipc_rchan:		Pointer to relay channel
-+ * @ctrl_file:		Pointer to trace control file
-+ * @ipc_imem:		Imem instance
-+ * @dev:		Pointer to device struct
-+ * @channel:		Channel instance
-+ * @chl_id:		Channel Indentifier
-+ * @trc_mutex:		Mutex used for read and write mode
-+ * @mode:		Mode for enable and disable trace
-+ */
-+
-+struct iosm_trace {
-+	struct rchan *ipc_rchan;
-+	struct dentry *ctrl_file;
-+	struct iosm_imem *ipc_imem;
-+	struct device *dev;
-+	struct ipc_mem_channel *channel;
-+	enum ipc_channel_id chl_id;
-+	struct mutex trc_mutex;	/* Mutex used for read and write mode */
-+	enum trace_ctrl_mode mode;
-+};
-+
-+struct iosm_trace *ipc_trace_init(struct iosm_imem *ipc_imem);
-+void ipc_trace_deinit(struct iosm_trace *ipc_trace);
-+void ipc_trace_port_rx(struct iosm_trace *ipc_trace, struct sk_buff *skb);
-+#endif
---
-2.25.1
-
+Yeah, seems reasonable. I can't see any reason why would subsequent vhost_poll_stop() require the vhost_work_dev_flush() in between.
