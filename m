@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 798A74568F3
-	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 05:12:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B0134568F6
+	for <lists+netdev@lfdr.de>; Fri, 19 Nov 2021 05:14:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233029AbhKSEPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Nov 2021 23:15:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33244 "EHLO
+        id S233319AbhKSERP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Nov 2021 23:17:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232098AbhKSEPC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 23:15:02 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8CF4C061574;
-        Thu, 18 Nov 2021 20:12:01 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id p18so7097925plf.13;
-        Thu, 18 Nov 2021 20:12:01 -0800 (PST)
+        with ESMTP id S233060AbhKSERN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Nov 2021 23:17:13 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E419C061574;
+        Thu, 18 Nov 2021 20:14:12 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id x5so8294267pfr.0;
+        Thu, 18 Nov 2021 20:14:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=eEqSzygGSjhx2aXkg9j1/S8ZDkmYqyyREKYjNrWoQRQ=;
-        b=AZ6HHEJKc2X08STGDE0jNV96OVQKQb/JxZl+3vIp3dUqEnOIuOZcwYpiPjtNYcOc3J
-         H3wmOmBROOY3o7dhy7bdnq8FR/9GyJxQ5VbE/DoEGQv9oaagVhRpAV2iQj9BE6cPV0HQ
-         vLC14rWbWYFsN1u9g8HL6YYGMw5PQ69cgeHERaTv/PW2yprnzm11z0x07y4qkgTnYe2x
-         hrq/adLfsWfN2F0BdTcZYd6W3sVlYwGlKFUZHNck6DmbSbadq+Cm0HpG9rUhGaB6ECHw
-         X0oM5egr7eI4veYVGrviePMpam4MmbRxXR99iFn5DbT0xIxk5uTmMd8yeX76tos+zkDX
-         avyw==
+        bh=k+gIdsYJUjvK45A0v4seSNPfEuc4BsYKoVtwqDX/ZFw=;
+        b=Zwy9Us4QMRnr2c2+DmK+5FZoNEkwxmTmaWpsWU1HQYKhO64yHJ7qnqD/N1MrZeDVh2
+         tdBTPejQpTD5PxD/Zia3JvUKqJ/uVcA1Ns32RAFVyPdDZSaGXHWckkDlGyb1BO7HuS05
+         9jHd4q3W9hfLc90un77Eo801ZM7aJVDj3tZJV+IJsUmGfNut1pOd2eYdPw3orlVPO1vV
+         Ob+nI7TO9nf2JrjsR6OhcTEdBymBj8tNtYYp67tuVFAoHS5eB6gAn+vVeY5TR7tpKnsc
+         U187NrGLenAff91/Q3TYIJlkettmSXsw3UwP9oA8kqV7Ky1RItTNAdbJNLTPG9PlHirr
+         KnCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=eEqSzygGSjhx2aXkg9j1/S8ZDkmYqyyREKYjNrWoQRQ=;
-        b=Yh9fJbZLAHnYYuGROWTwA8TlRwpN8g6QMwphpFpHMLUq3n9BfmD/V/u3PbcWw3ALGx
-         BLGR51rs4qLFDj9glEEpiblG7xUpM/rLz7PExpZ8jYqPILE2GxzHNb8cXPClH1U+7923
-         orJIzjxZDzDAWJdxEEvFXZdrLIyELOEHvASJFEwBO29B7BZfa7iXdITJmqRKRO1f3Ys6
-         x//QDqest5c4ZwuAavTVLi1xywdxujgrzF5LjoP+dBvRuQqwRHHyhNv4JJS8xmi+djqM
-         2fcs4NMzaErOZW/BqZAHZ+4BqX38/bpeZDgJglQC9OD/Z74/cKM2yzkaQFseIlRRu3AT
-         MaKQ==
-X-Gm-Message-State: AOAM530mCd4kDSEdjSOD9T30ib999+lGorIjyqSAX6mGWtMzLXK9MEe9
-        ADLaGhx6KZmCM80g8Z9pxeY=
-X-Google-Smtp-Source: ABdhPJyVlTazncf0DoICoxC0P2NqXV4h9fo1k/eqZqaeA5JMYYtV7eGK+v/2KuKVx71d75TxcRu+Dg==
-X-Received: by 2002:a17:903:249:b0:143:c077:59d3 with SMTP id j9-20020a170903024900b00143c07759d3mr51798503plh.26.1637295121130;
-        Thu, 18 Nov 2021 20:12:01 -0800 (PST)
+        bh=k+gIdsYJUjvK45A0v4seSNPfEuc4BsYKoVtwqDX/ZFw=;
+        b=GAno16GByE5Pugx7RK8uHYRmXGYyLphI1/CtQjZydXeIVol4JiEUe00tWoYgOpgIWH
+         FdEBy455XjIfXEcsDKnDSVshPXfcfT8d0M1oLHuXWmuj5cG/VikAmZe0wcRY7O8Fve57
+         b+G7R/mHgkW5H1w+uP6jD5bg2y+HNUan1KJqKTqA0nq71ofGo/PVTLuYRUOQv7N6c0Qk
+         k8q7TqjVtYH/2AjnMopNASIgjjojzEglcyQPk9A8LHVB1wrwbIrtE8Us4bRAa6ah+n+4
+         7/CKakVUGX+GCZzkD6CHd4Anm3RxTt0NXWmvIz024ljlCfd57FQclZ3kYVoFKN0TORq/
+         f15Q==
+X-Gm-Message-State: AOAM532ssxHD648HPeRN+g+yXpHiI9mS3ceOHWZH7VKITDUMV9mxbYnl
+        u7HCrRX94/B6UG0w7m9mvKw=
+X-Google-Smtp-Source: ABdhPJzbvO/bSAjgVtv7OWCWhP6/NP/dc4+yfPI96GMSHPL8LmizuKKtWCwMSUk8P9ZZANy3wdbKQw==
+X-Received: by 2002:a62:8441:0:b0:4a2:e934:56b8 with SMTP id k62-20020a628441000000b004a2e93456b8mr26422107pfd.20.1637295251588;
+        Thu, 18 Nov 2021 20:14:11 -0800 (PST)
 Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:4e33])
-        by smtp.gmail.com with ESMTPSA id oa17sm896935pjb.37.2021.11.18.20.11.59
+        by smtp.gmail.com with ESMTPSA id w5sm1085784pfu.219.2021.11.18.20.14.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Nov 2021 20:12:00 -0800 (PST)
-Date:   Thu, 18 Nov 2021 20:11:59 -0800
+        Thu, 18 Nov 2021 20:14:11 -0800 (PST)
+Date:   Thu, 18 Nov 2021 20:14:09 -0800
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     Jiri Olsa <jolsa@redhat.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -57,34 +57,58 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>
-Subject: Re: [PATCH bpf-next 09/29] bpf: Add support to load multi func
- tracing program
-Message-ID: <20211119041159.7rebb5lz2ybnygqr@ast-mbp.dhcp.thefacebook.com>
+Subject: Re: [PATCH bpf-next 07/29] bpf, x64: Allow to use caller address
+ from stack
+Message-ID: <20211119041409.rb7b4i7nukowfcwb@ast-mbp.dhcp.thefacebook.com>
 References: <20211118112455.475349-1-jolsa@kernel.org>
- <20211118112455.475349-10-jolsa@kernel.org>
+ <20211118112455.475349-8-jolsa@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211118112455.475349-10-jolsa@kernel.org>
+In-Reply-To: <20211118112455.475349-8-jolsa@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 18, 2021 at 12:24:35PM +0100, Jiri Olsa wrote:
-> +
-> +DEFINE_BPF_MULTI_FUNC(unsigned long a1, unsigned long a2,
-> +		      unsigned long a3, unsigned long a4,
-> +		      unsigned long a5, unsigned long a6)
+On Thu, Nov 18, 2021 at 12:24:33PM +0100, Jiri Olsa wrote:
+> Currently we call the original function by using the absolute address
+> given at the JIT generation. That's not usable when having trampoline
+> attached to multiple functions. In this case we need to take the
+> return address from the stack.
+> 
+> Adding support to retrieve the original function address from the stack
+> by adding new BPF_TRAMP_F_ORIG_STACK flag for arch_prepare_bpf_trampoline
+> function.
+> 
+> Basically we take the return address of the 'fentry' call:
+> 
+>    function + 0: call fentry    # stores 'function + 5' address on stack
+>    function + 5: ...
+> 
+> The 'function + 5' address will be used as the address for the
+> original function to call.
+> 
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  arch/x86/net/bpf_jit_comp.c | 13 +++++++++----
+>  include/linux/bpf.h         |  5 +++++
+>  2 files changed, 14 insertions(+), 4 deletions(-)
+> 
+> diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+> index 67e8ac9aaf0d..d87001073033 100644
+> --- a/arch/x86/net/bpf_jit_comp.c
+> +++ b/arch/x86/net/bpf_jit_comp.c
+> @@ -2035,10 +2035,15 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+>  	if (flags & BPF_TRAMP_F_CALL_ORIG) {
+>  		restore_regs(m, &prog, nr_args, stack_size);
+>  
+> -		/* call original function */
+> -		if (emit_call(&prog, orig_call, prog)) {
+> -			ret = -EINVAL;
+> -			goto cleanup;
+> +		if (flags & BPF_TRAMP_F_ORIG_STACK) {
+> +			emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, 8);
+> +			EMIT2(0xff, 0xd0); /* call *rax */
 
-This is probably a bit too x86 specific. May be make add all 12 args?
-Or other places would need to be tweaked?
-
-> +BTF_ID_LIST_SINGLE(bpf_multi_func_btf_id, func, bpf_multi_func)
-...
-> -	prog->aux->attach_btf_id = attr->attach_btf_id;
-> +	prog->aux->attach_btf_id = multi_func ? bpf_multi_func_btf_id[0] : attr->attach_btf_id;
-
-Just ignoring that was passed in uattr?
-Maybe instead of ignoring dopr BPF_F_MULTI_FUNC and make libbpf
-point to that btf_id instead?
-Then multi or not can be checked with if (attr->attach_btf_id == bpf_multi_func_btf_id[0]).
+Either return an eror if repoline is on
+or use emit_indirect_jump().
