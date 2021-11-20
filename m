@@ -2,176 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C97DF457ED3
-	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 16:06:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 694D8457ECC
+	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 16:02:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237572AbhKTPJt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Nov 2021 10:09:49 -0500
-Received: from kylie.crudebyte.com ([5.189.157.229]:43977 "EHLO
-        kylie.crudebyte.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229794AbhKTPJt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Nov 2021 10:09:49 -0500
-X-Greylist: delayed 1221 seconds by postgrey-1.27 at vger.kernel.org; Sat, 20 Nov 2021 10:09:49 EST
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=J1uXot19sq40KhBVoO/2frmljl7T+O0vbEX5x0lP4h4=; b=YVuXK/eiLgE/DbdrLn+gyIqkLv
-        BJro/IcVdCE3eOjCdRHMO5QNO/Xbv2KgWEQK1wj1LqRA+lbj4sL77b3lAqsmCbBEL4AA479iYBRFK
-        fgl6PHd/woQm31FLpMUnAUuSJjURKwRG5r8UoZvSE9Dz/R5VDuDh0+B289nYCcWOgAy4Swu5Wh64N
-        V3bXh5jCyiTEs5RYTqd5nyiwNvm0YCtHdjN0f48etnpUZWQh8HSJXo7Bso7x23wD55wPConaTiUtb
-        u2UIuxv1+59ZmsYSIYWrwzyU/jHDnLS09mmT2XSkKIDtVAwc8Rz3I542ByLPfNWw8A0f5deGNhVui
-        XfuN6pXNqyxgPPDkVysX7yI8x9zz2TUXCgwbXpbXQN+YOwiF9mtFCrIRi2PGLCMUxIA3jvNJX3VG8
-        mkZS5XoZP6dJ3B/V0ArMGyAQa719O379DIwlWtMogvPIsLjMc980zOEg5dBVyA2lQ8B7HJq39wIfR
-        0AewHHgqSt6BUaA/mvwl0ue5bFn8ZmNF21KCCeqoPWr2vJdt1ppBHmgNp9e6SxqnqlzDmFPriVTef
-        llgWNdN4s1iN5tME2z8gCivpFaLC/nnq0jyzNLkJqIkM5NM5XMV0qWB/sE0U5l0QbrYIdgbX3yUne
-        DK2WJZ4kMYnmkntZ1ZPlD0a/efPR8lGXN3qpr0bIo=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     Dominique Martinet <asmadeus@codewreck.org>
-Cc:     Nikolay Kichukov <nikolay@oldum.net>,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>
-Subject: Re: [PATCH v3 6/7] 9p/trans_virtio: support larger msize values
-Date:   Sat, 20 Nov 2021 15:46:19 +0100
-Message-ID: <2717208.9V0g2NVZY4@silver>
-In-Reply-To: <YZjfxT24by0Cse6q@codewreck.org>
-References: <cover.1632327421.git.linux_oss@crudebyte.com> <cef6a6c6f8313a609ef104cc64ee6cf9d0ed6adb.camel@oldum.net> <YZjfxT24by0Cse6q@codewreck.org>
+        id S237465AbhKTPFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Nov 2021 10:05:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46390 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236770AbhKTPFK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Nov 2021 10:05:10 -0500
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C901C061574;
+        Sat, 20 Nov 2021 07:02:06 -0800 (PST)
+Received: by mail-lf1-x12f.google.com with SMTP id b1so57302882lfs.13;
+        Sat, 20 Nov 2021 07:02:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=iYwC9YQ4kJHdzsywvL9y8mfy/c47skD/0CgkzcadpUE=;
+        b=PWwdYAz1dZdhqKdzYlShs41QlpbzofaOd/PMagiiDMmTPx0B8hQFkiRHhPNhl4yV1q
+         dO/thHTSSIlcF4SogwHVtIX/bI2Dnl2sn43xjz68xZV4ZutPak5M1vRaXMcW5cFT68VP
+         AuLSRsD15z6timRB3b9rg1SiF+/raA4CL7MWuq2gSe8/9XkQEXE2xjt2EJ67tR+jTgQl
+         nkkt6eICNi7+TAHwFblTvadLMVcR779Sga7Ps0mJanWXphsjW1/AF66v1BVmebvHBuAg
+         FxfAGv0tA54vnpDzJwoCVrd77kh83hmGF/UpPRJ52lOVurSNpUdl+k7aKz1bJWxB7dH/
+         X3fg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=iYwC9YQ4kJHdzsywvL9y8mfy/c47skD/0CgkzcadpUE=;
+        b=xgaGedIYu7ZyuuuYvT924vyx1Wb1xnY5BisRMYVA9ZXZ8ynbaoL7GxsVtOXk6LIq3x
+         BLtGf9/0NhgZUzEmgEqSaoGoUHNLRzOFTuCvLCALWFEWQYGbRSh+ZYGNECo/SYXYHjvO
+         laD25ebT1nCCXF2neiZP2QogU27XG5fU1pdoikNI0WA+L/gTqo+ss0QXzDFZTXh0YNWQ
+         zvV/wA1eyNJXjDe5Im1xamImHVAUkZT7iY9qH9K63nclmE5NP1TxVLZoRYnemvi06mLU
+         M8Sa1JJSheTWzEfQBO7y4mSoLktZeYXO+VWdF0RwDE7Geiwgxmpf99f9DuIkVwFG9SvB
+         VvAg==
+X-Gm-Message-State: AOAM5315c59fsenIi9Aw7HoRHdozNLirLiKkfLQaK+jDU9kJvN31yknx
+        VGtwQwIsdGPK/uoveBfcN5U=
+X-Google-Smtp-Source: ABdhPJxdPk1D6EHw/Gg8Q2AW6S1zf/knnHu5BteszreKeqbuXTzT0DIP9Tvzck243nKiXholm8dvcA==
+X-Received: by 2002:a19:f242:: with SMTP id d2mr42343402lfk.516.1637420524198;
+        Sat, 20 Nov 2021 07:02:04 -0800 (PST)
+Received: from [192.168.1.11] ([217.117.245.63])
+        by smtp.gmail.com with ESMTPSA id k14sm242347ljk.57.2021.11.20.07.02.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 20 Nov 2021 07:02:03 -0800 (PST)
+Message-ID: <91426976-b784-e480-6e3a-52da5d1268cc@gmail.com>
+Date:   Sat, 20 Nov 2021 18:02:02 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [syzbot] KASAN: use-after-free Read in rxe_queue_cleanup
+Content-Language: en-US
+To:     syzbot <syzbot+aab53008a5adf26abe91@syzkaller.appspotmail.com>,
+        dledford@redhat.com, jgg@ziepe.ca, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, zyjzyj2000@gmail.com
+References: <000000000000c4e52d05d120e1b0@google.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <000000000000c4e52d05d120e1b0@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Samstag, 20. November 2021 12:45:09 CET Dominique Martinet wrote:
-> (Thanks for restarting this thread, this had totally slipped out of my
-> mind...)
-
-Hi guys,
-
-I have (more or less) silently been working on these patches on all ends in 
-the meantime. If desired I try to find some time next week to summarize 
-current status of this overall effort and what still needs to be done.
-
-> Nikolay Kichukov wrote on Sat, Nov 20, 2021 at 12:20:35PM +0100:
-> > When the client mounts the share via virtio, requested msize is:
-> > 10485760 or 104857600
-> > 
-> > however the mount succeeds with:
-> > msize=507904 in the end as per the /proc filesystem. This is less than
-> > the previous maximum value.
+On 11/19/21 12:27, syzbot wrote:
+> Hello,
 > 
-> (Not sure about this, I'll test these patches tomorrow, but since
-> something failed I'm not surprised you have less than what you could
-> have here: what do you get with a more reasonable value like 1M first?)
-
-The highest 'msize' value possible for me with this particular version of the 
-kernel patches is 4186212 (so slightly below 4MB).
-
-Some benchmarks, linear reading a 12 GB file:
-
-msize    average      notes
-
-8 kB     52.0 MB/s    default msize of Linux kernel <v5.15
-128 kB   624.8 MB/s   default msize of Linux kernel >=v5.15
-512 kB   1961 MB/s    current max. msize with any Linux kernel <=v5.15
-1 MB     2551 MB/s    this msize would violate current virtio specs
-2 MB     2521 MB/s    this msize would violate current virtio specs
-4 MB     2628 MB/s    planned milestone
-
-That does not mean it already makes sense to use these patches in this version 
-as is to increase overall performance yet, but the numbers already suggest 
-that increasing msize can improve performance on large sequential I/O. There 
-are still some things to do though to fix other use patterns from slowing down 
-with rising msize, which I will describe in a separate email.
-
-I also have an experimental version of kernel patches and QEMU that goes as 
-high as msize=128MB. But that's a highly hacked version that copies buffers 
-between 9p client level and virtio level back and forth and with intentional 
-large buffer sizes on every 9p message type. This was solely meant as a stress 
-test, i.e. whether it was possible to go as high as virtio's theoretical 
-protocol limit in the first place, and whether it was stable. This stress test 
-was not about performance at all. And yes, I had it running with 128MB for 
-weeks without issues (except of being very slow of course due to hacks used).
-
-> > In addition to the above, when the kernel on the guest boots and loads
-> > 9pfs support, the attached memory allocation failure trace is generated.
-> > 
-> > Is anyone else seeing similar and was anybody able to get msize set to
-> > 10MB via virtio protocol with these patches?
+> syzbot found the following issue on:
 > 
-> I don't think the kernel would ever allow this with the given code, as
-> the "common" part of 9p is not smart enough to use scatter-gather and
-> tries to do a big allocation (almost) the size of the msize:
+> HEAD commit:    8d0112ac6fd0 Merge tag 'net-5.16-rc2' of git://git.kernel...
+> git tree:       net
+> console output: https://syzkaller.appspot.com/x/log.txt?x=14e3eeaab00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=6d3b8fd1977c1e73
+> dashboard link: https://syzkaller.appspot.com/bug?extid=aab53008a5adf26abe91
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 > 
-> ---
->         clnt->fcall_cache =
->                 kmem_cache_create_usercopy("9p-fcall-cache", clnt->msize,
->                                            0, 0, P9_HDRSZ + 4,
->                                            clnt->msize - (P9_HDRSZ + 4),
->                                            NULL);
+> Unfortunately, I don't have any reproducer for this issue yet.
 > 
-> ...
-> 		fc->sdata = kmem_cache_alloc(c->fcall_cache, GFP_NOFS);
-> ---
-> So in practice, you will be capped at 2MB as that is the biggest the
-> slab will be able to hand over in a single chunk.
-
-I did not encounter a 2MB limit here. But kmalloc() clearly has a 4MB limit, 
-so when trying an msize larger than 4MB it inevitably causes a memory 
-allocation error. In my tests this allocation error would always happen 
-immediately at mount time causing an instant kernel oops.
-
-> It'll also make allocation failures quite likely as soon as the system
-> has had some uptime (depending on your workload, look at /proc/buddyinfo
-> if your machines normally have 2MB chunks available), so I would really
-> not recommend running with buffers bigger than e.g. 512k on real
-> workloads -- it looks great on benchmarks, especially as it's on its own
-> slab so as long as you're doing a lot of requests it will dish out
-> buffers fast, but it'll likely be unreliable over time.
-> (oh, and we allocate two of these per request...)
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+aab53008a5adf26abe91@syzkaller.appspotmail.com
 > 
+> Free swap  = 0kB
+> Total swap = 0kB
+> 2097051 pages RAM
+> 0 pages HighMem/MovableOnly
+> 384517 pages reserved
+> 0 pages cma reserved
+> ==================================================================
+> BUG: KASAN: use-after-free in rxe_queue_cleanup+0xf4/0x100 drivers/infiniband/sw/rxe/rxe_queue.c:193
+> Read of size 8 at addr ffff88814a6b6e90 by task syz-executor.3/9534
 > 
-> The next step to support large buffers really would be splitting htat
-> buffer to:
->  1/ not allocate huge buffers for small metadata ops, e.g. an open call
-> certainly doesn't need to allocate 10MB of memory
->  2/ support splitting the buffer in some scattergather array
-> 
-> Ideally we'd only allocate on an as-need basis, most of the protocol
-> calls bound how much data is supposed to come back and we know how much
-> we want to send (it's a format string actually, but we can majorate it
-> quite easily), so one would need to adjust all protocol calls to pass
-> this info to p9_client_rpc/p9_client_zc_rpc so it only allocates buffers
-> as required, if necessary in multiple reasonably-sized segments (I'd
-> love 2MB hugepages-backed folios...), and have all transports use these
-> buffers.
 
-It is not that bad in sense of pending work. One major thing that needs to be 
-done is to cap the majority of 9p message types to allocate only as much as 
-they need, which is for most message types <8k. Right now they always simply 
-kmalloc(msize), which hurts with increasing msize values. That task does not 
-need many changes though.
+On error handling path in rxe_qp_from_init() qp->sq.queue is freed and 
+then rxe_create_qp() will drop last reference to this object. qp clean 
+up function will try to free this queue one time and it causes UAF bug.
 
-> I have a rough idea on how to do all this but honestly less than 0 time
-> for that, so happy to give advices or review any patch, but it's going
-> to be a lot of work that stand in the way of really big IOs.
-
-Reviews of the patches would actually help a lot to bring this overall effort 
-forward, but probably rather starting with the upcoming next version of the 
-kernel patches, not this old v3.
-
-> > [    1.527981] 9p: Installing v9fs 9p2000 file system support
-> > [    1.528173] ------------[ cut here ]------------
-> > [    1.528174] WARNING: CPU: 1 PID: 791 at mm/page_alloc.c:5356
-> > __alloc_pages+0x1ed/0x290
-> This warning is exactly what I was saying about the allocation cap:
-> you've requested an allocation that was bigger than the max __alloc_page
-> is willing to provide (MAX_ORDER, 11, so 2MB as I was saying)
-
-Best regards,
-Christian Schoenebeck
+Just for thoughts.
 
 
+diff --git a/drivers/infiniband/sw/rxe/rxe_qp.c 
+b/drivers/infiniband/sw/rxe/rxe_qp.c
+index 975321812c87..54b8711321c1 100644
+--- a/drivers/infiniband/sw/rxe/rxe_qp.c
++++ b/drivers/infiniband/sw/rxe/rxe_qp.c
+@@ -359,6 +359,7 @@ int rxe_qp_from_init(struct rxe_dev *rxe, struct 
+rxe_qp *qp, struct rxe_pd *pd,
+
+  err2:
+  	rxe_queue_cleanup(qp->sq.queue);
++	qp->sq.queue = NULL;
+  err1:
+  	qp->pd = NULL;
+  	qp->rcq = NULL;
+
+
+
+
+
+With regards,
+Pavel Skripkin
