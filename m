@@ -2,125 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 694D8457ECC
-	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 16:02:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EF45457ED7
+	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 16:09:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237465AbhKTPFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Nov 2021 10:05:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46390 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236770AbhKTPFK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Nov 2021 10:05:10 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C901C061574;
-        Sat, 20 Nov 2021 07:02:06 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id b1so57302882lfs.13;
-        Sat, 20 Nov 2021 07:02:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=iYwC9YQ4kJHdzsywvL9y8mfy/c47skD/0CgkzcadpUE=;
-        b=PWwdYAz1dZdhqKdzYlShs41QlpbzofaOd/PMagiiDMmTPx0B8hQFkiRHhPNhl4yV1q
-         dO/thHTSSIlcF4SogwHVtIX/bI2Dnl2sn43xjz68xZV4ZutPak5M1vRaXMcW5cFT68VP
-         AuLSRsD15z6timRB3b9rg1SiF+/raA4CL7MWuq2gSe8/9XkQEXE2xjt2EJ67tR+jTgQl
-         nkkt6eICNi7+TAHwFblTvadLMVcR779Sga7Ps0mJanWXphsjW1/AF66v1BVmebvHBuAg
-         FxfAGv0tA54vnpDzJwoCVrd77kh83hmGF/UpPRJ52lOVurSNpUdl+k7aKz1bJWxB7dH/
-         X3fg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=iYwC9YQ4kJHdzsywvL9y8mfy/c47skD/0CgkzcadpUE=;
-        b=xgaGedIYu7ZyuuuYvT924vyx1Wb1xnY5BisRMYVA9ZXZ8ynbaoL7GxsVtOXk6LIq3x
-         BLtGf9/0NhgZUzEmgEqSaoGoUHNLRzOFTuCvLCALWFEWQYGbRSh+ZYGNECo/SYXYHjvO
-         laD25ebT1nCCXF2neiZP2QogU27XG5fU1pdoikNI0WA+L/gTqo+ss0QXzDFZTXh0YNWQ
-         zvV/wA1eyNJXjDe5Im1xamImHVAUkZT7iY9qH9K63nclmE5NP1TxVLZoRYnemvi06mLU
-         M8Sa1JJSheTWzEfQBO7y4mSoLktZeYXO+VWdF0RwDE7Geiwgxmpf99f9DuIkVwFG9SvB
-         VvAg==
-X-Gm-Message-State: AOAM5315c59fsenIi9Aw7HoRHdozNLirLiKkfLQaK+jDU9kJvN31yknx
-        VGtwQwIsdGPK/uoveBfcN5U=
-X-Google-Smtp-Source: ABdhPJxdPk1D6EHw/Gg8Q2AW6S1zf/knnHu5BteszreKeqbuXTzT0DIP9Tvzck243nKiXholm8dvcA==
-X-Received: by 2002:a19:f242:: with SMTP id d2mr42343402lfk.516.1637420524198;
-        Sat, 20 Nov 2021 07:02:04 -0800 (PST)
-Received: from [192.168.1.11] ([217.117.245.63])
-        by smtp.gmail.com with ESMTPSA id k14sm242347ljk.57.2021.11.20.07.02.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 20 Nov 2021 07:02:03 -0800 (PST)
-Message-ID: <91426976-b784-e480-6e3a-52da5d1268cc@gmail.com>
-Date:   Sat, 20 Nov 2021 18:02:02 +0300
+        id S237219AbhKTPMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Nov 2021 10:12:25 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:43648 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229794AbhKTPMZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 20 Nov 2021 10:12:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=I7zCtQxD9zY1wsKBA0OZDazSLBiFkiHXbA3F2PRRZ4o=; b=2RbfFTChsZNnMXCQtQRyYrgkew
+        tqXKuN0W7sjEDKya+MCzoats25BCUjOQRlRNWlwUdjMC2Bx/vauoTJWYCXSVnj2izCOZkO1AfW3MP
+        ZKeEhKd4g84enA8fdaDhaiQIPQ8XKa3NERgCXiLhUg1g1AFy4rj/1IyQleEH6F8ZJRew=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1moRzS-00E9Vw-H5; Sat, 20 Nov 2021 16:09:18 +0100
+Date:   Sat, 20 Nov 2021 16:09:18 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH v1 net-next 1/3] net: mdio: mscc-miim: convert to a
+ regmap implementation
+Message-ID: <YZkPnida0Kd0sG8x@lunn.ch>
+References: <20211119213918.2707530-1-colin.foster@in-advantage.com>
+ <20211119213918.2707530-2-colin.foster@in-advantage.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [syzbot] KASAN: use-after-free Read in rxe_queue_cleanup
-Content-Language: en-US
-To:     syzbot <syzbot+aab53008a5adf26abe91@syzkaller.appspotmail.com>,
-        dledford@redhat.com, jgg@ziepe.ca, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, zyjzyj2000@gmail.com
-References: <000000000000c4e52d05d120e1b0@google.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <000000000000c4e52d05d120e1b0@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211119213918.2707530-2-colin.foster@in-advantage.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/19/21 12:27, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    8d0112ac6fd0 Merge tag 'net-5.16-rc2' of git://git.kernel...
-> git tree:       net
-> console output: https://syzkaller.appspot.com/x/log.txt?x=14e3eeaab00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=6d3b8fd1977c1e73
-> dashboard link: https://syzkaller.appspot.com/bug?extid=aab53008a5adf26abe91
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> 
-> Unfortunately, I don't have any reproducer for this issue yet.
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+aab53008a5adf26abe91@syzkaller.appspotmail.com
-> 
-> Free swap  = 0kB
-> Total swap = 0kB
-> 2097051 pages RAM
-> 0 pages HighMem/MovableOnly
-> 384517 pages reserved
-> 0 pages cma reserved
-> ==================================================================
-> BUG: KASAN: use-after-free in rxe_queue_cleanup+0xf4/0x100 drivers/infiniband/sw/rxe/rxe_queue.c:193
-> Read of size 8 at addr ffff88814a6b6e90 by task syz-executor.3/9534
-> 
+> @@ -73,22 +84,30 @@ static int mscc_miim_wait_pending(struct mii_bus *bus)
+>  static int mscc_miim_read(struct mii_bus *bus, int mii_id, int regnum)
+>  {
+>  	struct mscc_miim_dev *miim = bus->priv;
+> +	int ret, err;
+>  	u32 val;
+> -	int ret;
+>  
+>  	ret = mscc_miim_wait_pending(bus);
+>  	if (ret)
+>  		goto out;
+>  
+> -	writel(MSCC_MIIM_CMD_VLD | (mii_id << MSCC_MIIM_CMD_PHYAD_SHIFT) |
+> -	       (regnum << MSCC_MIIM_CMD_REGAD_SHIFT) | MSCC_MIIM_CMD_OPR_READ,
+> -	       miim->regs + MSCC_MIIM_REG_CMD);
+> +	err = regmap_write(miim->regs, MSCC_MIIM_REG_CMD, MSCC_MIIM_CMD_VLD |
+> +			   (mii_id << MSCC_MIIM_CMD_PHYAD_SHIFT) |
+> +			   (regnum << MSCC_MIIM_CMD_REGAD_SHIFT) |
+> +			   MSCC_MIIM_CMD_OPR_READ);
+> +
+> +	if (err < 0)
+> +		WARN_ONCE(1, "mscc miim write cmd reg error %d\n", err);
 
-On error handling path in rxe_qp_from_init() qp->sq.queue is freed and 
-then rxe_create_qp() will drop last reference to this object. qp clean 
-up function will try to free this queue one time and it causes UAF bug.
+You should probably return ret here. If the setup fails, i doubt you
+will get anything useful from the hardware.
 
-Just for thoughts.
+>  
+>  	ret = mscc_miim_wait_ready(bus);
+>  	if (ret)
+>  		goto out;
+>  
+> -	val = readl(miim->regs + MSCC_MIIM_REG_DATA);
+> +	err = regmap_read(miim->regs, MSCC_MIIM_REG_DATA, &val);
+> +
+> +	if (err < 0)
+> +		WARN_ONCE(1, "mscc miim read data reg error %d\n", err);
 
+Same here.
 
-diff --git a/drivers/infiniband/sw/rxe/rxe_qp.c 
-b/drivers/infiniband/sw/rxe/rxe_qp.c
-index 975321812c87..54b8711321c1 100644
---- a/drivers/infiniband/sw/rxe/rxe_qp.c
-+++ b/drivers/infiniband/sw/rxe/rxe_qp.c
-@@ -359,6 +359,7 @@ int rxe_qp_from_init(struct rxe_dev *rxe, struct 
-rxe_qp *qp, struct rxe_pd *pd,
+> +
+>  	if (val & MSCC_MIIM_DATA_ERROR) {
+>  		ret = -EIO;
+>  		goto out;
+> @@ -103,18 +122,20 @@ static int mscc_miim_write(struct mii_bus *bus, int mii_id,
+>  			   int regnum, u16 value)
+>  {
+>  	struct mscc_miim_dev *miim = bus->priv;
+> -	int ret;
+> +	int err, ret;
+>  
+>  	ret = mscc_miim_wait_pending(bus);
+>  	if (ret < 0)
+>  		goto out;
+>  
+> -	writel(MSCC_MIIM_CMD_VLD | (mii_id << MSCC_MIIM_CMD_PHYAD_SHIFT) |
+> -	       (regnum << MSCC_MIIM_CMD_REGAD_SHIFT) |
+> -	       (value << MSCC_MIIM_CMD_WRDATA_SHIFT) |
+> -	       MSCC_MIIM_CMD_OPR_WRITE,
+> -	       miim->regs + MSCC_MIIM_REG_CMD);
+> +	err = regmap_write(miim->regs, MSCC_MIIM_REG_CMD, MSCC_MIIM_CMD_VLD |
+> +			   (mii_id << MSCC_MIIM_CMD_PHYAD_SHIFT) |
+> +			   (regnum << MSCC_MIIM_CMD_REGAD_SHIFT) |
+> +			   (value << MSCC_MIIM_CMD_WRDATA_SHIFT) |
+> +			   MSCC_MIIM_CMD_OPR_WRITE);
+>  
+> +	if (err < 0)
+> +		WARN_ONCE(1, "mscc miim write error %d\n", err);
 
-  err2:
-  	rxe_queue_cleanup(qp->sq.queue);
-+	qp->sq.queue = NULL;
-  err1:
-  	qp->pd = NULL;
-  	qp->rcq = NULL;
+And here, etc.
 
-
-
-
-
-With regards,
-Pavel Skripkin
+    Andrew
