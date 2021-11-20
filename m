@@ -2,80 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 326C3457EE0
-	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 16:20:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AE49457EF0
+	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 16:26:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237574AbhKTPXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Nov 2021 10:23:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40120 "EHLO mail.kernel.org"
+        id S237655AbhKTP3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Nov 2021 10:29:20 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:43684 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230038AbhKTPXM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 20 Nov 2021 10:23:12 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id C775160EB6;
-        Sat, 20 Nov 2021 15:20:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637421608;
-        bh=xiYPXNCbIW7opw9+/odGLhCI2GrHIioW7Qi0gbuFvvA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=LprZtN204IKe4MyxdJvFDpqKerZzsKqJD5GEuu5x9n4qoKTUwmGdg9HFYdxegT69R
-         LT7KDgPJXZN8yhMU0MJAqKKmKf7qANaZ8coZ4q0lcGEu/gnJKFwSNZKalJHh6d+AQm
-         i2dVwD8wnsYygLGjCbTiA2dSQTW5dMCd+iz32+RBaG3IvN0JPcOjpYtGySuqafVfc0
-         eqpyGKQ5Js2s9bZJurdh9N4V3xzpRR1ExWS0HBBhN3ejzI+lUB8+V7JGMPaReMqIzG
-         DX+NBvZGchzUfVKZwYWXUTB4nJzw1aCjFH7/jMkEc3E3kO9h+O/VzSClYoZxTa6ibj
-         CGS7pUeul81zg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B78A46096E;
-        Sat, 20 Nov 2021 15:20:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S230038AbhKTP3U (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 20 Nov 2021 10:29:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=HTvgLzOoOehOykOOZoN1M1R/6gNgBUMtdPME5ZKHJhI=; b=Po37m8bITJ9E+j5M7j04ddReFk
+        HL9oqmnO/lQRpSq8rmGYs47hTw7RKhxwyQM4+MNjpd0MjRiKINKpzzShyg6Dz2NzA1qEUTrbVpcnt
+        teDlRuM0hp+gVrlKeSy/+DhJCak1eOTcGFi6MJbDrhpW+BoL86bFilUVFmLer7dqT8Tw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1moSFl-00E9aB-TB; Sat, 20 Nov 2021 16:26:09 +0100
+Date:   Sat, 20 Nov 2021 16:26:09 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+Cc:     robh+dt@kernel.org, aisheng.dong@nxp.com, qiangqing.zhang@nxp.com,
+        davem@davemloft.net, kuba@kernel.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, Peng Fan <peng.fan@nxp.com>
+Subject: Re: [PATCH 4/4] arm64: dts: imx8ulp-evk: enable fec
+Message-ID: <YZkTkagrQ/zafYEQ@lunn.ch>
+References: <20211120115825.851798-1-peng.fan@oss.nxp.com>
+ <20211120115825.851798-5-peng.fan@oss.nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] af_unix: fix regression in read after shutdown
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163742160874.26850.6419902452041932137.git-patchwork-notify@kernel.org>
-Date:   Sat, 20 Nov 2021 15:20:08 +0000
-References: <20211119120521.18813-1-vincent.whitchurch@axis.com>
-In-Reply-To: <20211119120521.18813-1-vincent.whitchurch@axis.com>
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kernel@axis.com,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        jiang.wang@bytedance.com, casey@schaufler-ca.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211120115825.851798-5-peng.fan@oss.nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+> +&fec {
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&pinctrl_enet>;
+> +	phy-mode = "rmii";
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+Is this really a Fast Ethernet? Not 1G?
 
-On Fri, 19 Nov 2021 13:05:21 +0100 you wrote:
-> On kernels before v5.15, calling read() on a unix socket after
-> shutdown(SHUT_RD) or shutdown(SHUT_RDWR) would return the data
-> previously written or EOF.  But now, while read() after
-> shutdown(SHUT_RD) still behaves the same way, read() after
-> shutdown(SHUT_RDWR) always fails with -EINVAL.
-> 
-> This behaviour change was apparently inadvertently introduced as part of
-> a bug fix for a different regression caused by the commit adding sockmap
-> support to af_unix, commit 94531cfcbe79c359 ("af_unix: Add
-> unix_stream_proto for sockmap").  Those commits, for unclear reasons,
-> started setting the socket state to TCP_CLOSE on shutdown(SHUT_RDWR),
-> while this state change had previously only been done in
-> unix_release_sock().
-> 
-> [...]
+> +	phy-handle = <&ethphy>;
+> +	status = "okay";
+> +
+> +	mdio {
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +
+> +		ethphy: ethernet-phy {
+> +			reg = <1>;
 
-Here is the summary with links:
-  - af_unix: fix regression in read after shutdown
-    https://git.kernel.org/netdev/net/c/f9390b249c90
+I'm surprised this does not give warnings from the DTS tools. There is
+a reg value, so it should be ethernet-phy@1
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+  Andrew
