@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82FF4457D5C
-	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 12:29:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15723457D61
+	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 12:29:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237556AbhKTLbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Nov 2021 06:31:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56078 "EHLO
+        id S237599AbhKTLb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Nov 2021 06:31:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237364AbhKTLbL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Nov 2021 06:31:11 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 251F1C061574;
-        Sat, 20 Nov 2021 03:28:08 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id p18-20020a17090ad31200b001a78bb52876so12921264pju.3;
-        Sat, 20 Nov 2021 03:28:08 -0800 (PST)
+        with ESMTP id S237434AbhKTLbM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Nov 2021 06:31:12 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94AA6C061574;
+        Sat, 20 Nov 2021 03:28:09 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id np6-20020a17090b4c4600b001a90b011e06so10956077pjb.5;
+        Sat, 20 Nov 2021 03:28:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=tEaEqo0LatYc7Bqp4nP+g3PsyWq0ANknSNVk7gGI5oU=;
-        b=dwMQaTe6H58dGLThH9f5dNiTLQTR7wxrd97n6+FoRq4EPM3JuDVu84xxEFhUl6W3y+
-         1Mu/DW1NsWZAwXTLhJQrlZCFhhB29VS7mZCbJPR0kdIXQ9WPpF1LBjJt3uDQJLTzWCc0
-         oiliUIs4wTII45cxT7PG19NzN2+2Xi85fPMefEU5mEs3OXsJbmmORGKc5uOxsSx3p0/b
-         0fy655YcaSZGhbpcOuFD6x7ceHW5Kr1Lc9y/qkXLMhYUcI1vRme0dXmdQ5ZgtZbbXFyA
-         JrPiQz8xA1WqDLKfoRgz8scX02M4e1okXtvGmYoBEDzjrezOTO8HKwDXPh162cGB24bm
-         FWtg==
+        bh=uISwC7S3YtMXd9NwSu3k9zzcmpaBl9Ur9ZibZHHGTvY=;
+        b=AbHPprtqO+jSPttTiHNuKsHBAQ+5yGpG8KFNyWwFOAPmScilI9Nc5E58eQu0FXa2K+
+         5lRhY5ZgJ/vUp675NFNJYIEUw21fsKlMkpXITpZwNjOVdhxzhKch266wLSXcQnaFpgpu
+         GWruZuhH9zcwumOj/DxIy16mTHkDzEnW9G76RGOLPkrLqCIYn425lljS3usJ+8gVvgvc
+         jv/8+tslX2Xzwv5R+Jyp7YjJ6oTDladlQmsX+Cu1H+J1v4/GelbcYJ6DnrMlEE6Czl/M
+         fI+0J+gj4XUP+qtuAPcrCgASybOrejTephGU8+uh9YDTx7fr+70bshEGIvYMDm3Xn4Xk
+         ftHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=tEaEqo0LatYc7Bqp4nP+g3PsyWq0ANknSNVk7gGI5oU=;
-        b=bkwoA9l1ebe58nJOYXREv8+mWBhg3VqARuemwJNy9mjdVrBwCbqTcqKO12yQl28n9J
-         oept00aO+VjovjQXj6gI9tBTp1pyBW5fgKEOT02rjuqjXsqUyI+wSQh5DbiORMcwzope
-         FAiQEy1da438C20k5aq5Q8oxc2mkeTgXmvWt2Y/Rwkqb0vx8CfTHz0xL7mwRjKzMeHDS
-         TMVIsUx8YX9niFdhqHtx+WFpOdlziCTktFy7KzdYLn4fQzzrfebGzsgCbDmNUukklE5b
-         K6OVyUboxNKBbl8CWRiTaq+vw2Mq+eXdSOOmzCbFfclffB2wIJJHkPKNsYs0ZPIuXI5c
-         dqpw==
-X-Gm-Message-State: AOAM5331jwzUpvdRhi9gAMdkedVn6MN+CrJVhmwapEW5+W1t+gNCIEuo
-        dpFdPE1L2tzePdN9ap/qHVaU93AyweW5X1o1wX4=
-X-Google-Smtp-Source: ABdhPJxx6IXfHMZUvhVc7t2hNtDO+hU3JjOX4iXLcBdBeDlaYH5wP6HAWIyvMxWolg+i2afGvs9kdw==
-X-Received: by 2002:a17:902:9a09:b0:142:82e1:6cff with SMTP id v9-20020a1709029a0900b0014282e16cffmr88343798plp.47.1637407687765;
-        Sat, 20 Nov 2021 03:28:07 -0800 (PST)
+        bh=uISwC7S3YtMXd9NwSu3k9zzcmpaBl9Ur9ZibZHHGTvY=;
+        b=NBLWFgnNuaACi0hi39s0rNvXwfZBTIzbDiPj91rY/etmTc/szabVcwIo0KQM5MWpJx
+         2OrlC6qWa1sTo6wkswduttMReViM3Dv/RPtXkVpPs9MlUlseN+/P1sDevv1M0vriEDbS
+         bIP1bOv4tM4I/dBV3rs0jlrEmKWcnBeVgDvsmNXVjuxY7xIcRRWcWsIgMVd2HJs6+UEr
+         Ckzvw3tnzYradY35ibI0ck23YseQKrC2Bl56jtTKPTca/DqMlj8MvgRJcBiYaTJ7gjAw
+         7+IXjsBm2v/c8048N9EfhDmz/rIhMrZdUPTI5z8LrQRJMPFLvPLH/jV4UjKTny2rznDv
+         aUDg==
+X-Gm-Message-State: AOAM531qI27jPc4ho5PUZcVDem1iU4nht9cGSk+jTRCt7iYQPCtflymm
+        gmmtP2R32as9LONwLsVq2oA=
+X-Google-Smtp-Source: ABdhPJzCvM4ZOu5jxNVjS5MOuJ+QxxoCh4xHa9VDf6Kty/9IeqDFb9wJ+DFAaNClvGB5ZbqhdnJSPQ==
+X-Received: by 2002:a17:903:2004:b0:142:6344:2c08 with SMTP id s4-20020a170903200400b0014263442c08mr86481406pla.51.1637407689212;
+        Sat, 20 Nov 2021 03:28:09 -0800 (PST)
 Received: from vultr.guest ([66.42.104.82])
-        by smtp.gmail.com with ESMTPSA id q17sm2835490pfu.117.2021.11.20.03.28.06
+        by smtp.gmail.com with ESMTPSA id q17sm2835490pfu.117.2021.11.20.03.28.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Nov 2021 03:28:07 -0800 (PST)
+        Sat, 20 Nov 2021 03:28:08 -0800 (PST)
 From:   Yafang Shao <laoar.shao@gmail.com>
 To:     akpm@linux-foundation.org
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
@@ -58,7 +58,6 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         David Hildenbrand <david@redhat.com>,
         Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
         Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
         Andrii Nakryiko <andrii.nakryiko@gmail.com>,
         Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
         Peter Zijlstra <peterz@infradead.org>,
@@ -67,9 +66,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Al Viro <viro@zeniv.linux.org.uk>,
         Kees Cook <keescook@chromium.org>,
         Petr Mladek <pmladek@suse.com>
-Subject: [PATCH v2 6/7] tools/bpf/bpftool/skeleton: replace bpf_probe_read_kernel with bpf_probe_read_kernel_str to get task comm
-Date:   Sat, 20 Nov 2021 11:27:37 +0000
-Message-Id: <20211120112738.45980-7-laoar.shao@gmail.com>
+Subject: [PATCH v2 7/7] tools/testing/selftests/bpf: replace open-coded 16 with TASK_COMM_LEN
+Date:   Sat, 20 Nov 2021 11:27:38 +0000
+Message-Id: <20211120112738.45980-8-laoar.shao@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20211120112738.45980-1-laoar.shao@gmail.com>
 References: <20211120112738.45980-1-laoar.shao@gmail.com>
@@ -79,15 +78,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bpf_probe_read_kernel_str() will add a nul terminator to the dst, then
-we don't care about if the dst size is big enough.
+As the sched:sched_switch tracepoint args are derived from the kernel,
+we'd better make it same with the kernel. So the macro TASK_COMM_LEN is
+converted to type enum, then all the BPF programs can get it through BTF.
+
+The BPF program which wants to use TASK_COMM_LEN should include the header
+vmlinux.h. Regarding the test_stacktrace_map and test_tracepoint, as the
+type defined in linux/bpf.h are also defined in vmlinux.h, so we don't
+need to include linux/bpf.h again.
 
 Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
 Acked-by: Andrii Nakryiko <andrii@kernel.org>
-Reviewed-by: David Hildenbrand <david@redhat.com>
+Acked-by: David Hildenbrand <david@redhat.com>
 Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-Cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc: Michal Miroslaw <mirq-linux@rere.qmqm.pl>
 Cc: Peter Zijlstra <peterz@infradead.org>
@@ -98,24 +102,83 @@ Cc: Al Viro <viro@zeniv.linux.org.uk>
 Cc: Kees Cook <keescook@chromium.org>
 Cc: Petr Mladek <pmladek@suse.com>
 ---
- tools/bpf/bpftool/skeleton/pid_iter.bpf.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/linux/sched.h                                   | 9 +++++++--
+ tools/testing/selftests/bpf/progs/test_stacktrace_map.c | 6 +++---
+ tools/testing/selftests/bpf/progs/test_tracepoint.c     | 6 +++---
+ 3 files changed, 13 insertions(+), 8 deletions(-)
 
-diff --git a/tools/bpf/bpftool/skeleton/pid_iter.bpf.c b/tools/bpf/bpftool/skeleton/pid_iter.bpf.c
-index d9b420972934..f70702fcb224 100644
---- a/tools/bpf/bpftool/skeleton/pid_iter.bpf.c
-+++ b/tools/bpf/bpftool/skeleton/pid_iter.bpf.c
-@@ -71,8 +71,8 @@ int iter(struct bpf_iter__task_file *ctx)
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 78c351e35fec..cecd4806edc6 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -274,8 +274,13 @@ struct task_group;
  
- 	e.pid = task->tgid;
- 	e.id = get_obj_id(file->private_data, obj_type);
--	bpf_probe_read_kernel(&e.comm, sizeof(e.comm),
--			      task->group_leader->comm);
-+	bpf_probe_read_kernel_str(&e.comm, sizeof(e.comm),
-+				  task->group_leader->comm);
- 	bpf_seq_write(ctx->meta->seq, &e, sizeof(e));
+ #define get_current_state()	READ_ONCE(current->__state)
  
- 	return 0;
+-/* Task command name length: */
+-#define TASK_COMM_LEN			16
++/*
++ * Define the task command name length as enum, then it can be visible to
++ * BPF programs.
++ */
++enum {
++	TASK_COMM_LEN = 16,
++};
+ 
+ extern void scheduler_tick(void);
+ 
+diff --git a/tools/testing/selftests/bpf/progs/test_stacktrace_map.c b/tools/testing/selftests/bpf/progs/test_stacktrace_map.c
+index a8233e7f173b..728dbd39eff0 100644
+--- a/tools/testing/selftests/bpf/progs/test_stacktrace_map.c
++++ b/tools/testing/selftests/bpf/progs/test_stacktrace_map.c
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
+ // Copyright (c) 2018 Facebook
+ 
+-#include <linux/bpf.h>
++#include <vmlinux.h>
+ #include <bpf/bpf_helpers.h>
+ 
+ #ifndef PERF_MAX_STACK_DEPTH
+@@ -41,11 +41,11 @@ struct {
+ /* taken from /sys/kernel/debug/tracing/events/sched/sched_switch/format */
+ struct sched_switch_args {
+ 	unsigned long long pad;
+-	char prev_comm[16];
++	char prev_comm[TASK_COMM_LEN];
+ 	int prev_pid;
+ 	int prev_prio;
+ 	long long prev_state;
+-	char next_comm[16];
++	char next_comm[TASK_COMM_LEN];
+ 	int next_pid;
+ 	int next_prio;
+ };
+diff --git a/tools/testing/selftests/bpf/progs/test_tracepoint.c b/tools/testing/selftests/bpf/progs/test_tracepoint.c
+index ce6974016f53..43bd7a20cc50 100644
+--- a/tools/testing/selftests/bpf/progs/test_tracepoint.c
++++ b/tools/testing/selftests/bpf/progs/test_tracepoint.c
+@@ -1,17 +1,17 @@
+ // SPDX-License-Identifier: GPL-2.0
+ // Copyright (c) 2017 Facebook
+ 
+-#include <linux/bpf.h>
++#include <vmlinux.h>
+ #include <bpf/bpf_helpers.h>
+ 
+ /* taken from /sys/kernel/debug/tracing/events/sched/sched_switch/format */
+ struct sched_switch_args {
+ 	unsigned long long pad;
+-	char prev_comm[16];
++	char prev_comm[TASK_COMM_LEN];
+ 	int prev_pid;
+ 	int prev_prio;
+ 	long long prev_state;
+-	char next_comm[16];
++	char next_comm[TASK_COMM_LEN];
+ 	int next_pid;
+ 	int next_prio;
+ };
 -- 
 2.17.1
 
