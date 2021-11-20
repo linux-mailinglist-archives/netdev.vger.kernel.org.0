@@ -2,102 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03B27458048
-	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 21:15:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D3DF45804D
+	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 21:25:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231374AbhKTUSi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Nov 2021 15:18:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58016 "EHLO
+        id S231627AbhKTU1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Nov 2021 15:27:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbhKTUSi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Nov 2021 15:18:38 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CFE3C061574
-        for <netdev@vger.kernel.org>; Sat, 20 Nov 2021 12:15:34 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id n29so24499338wra.11
-        for <netdev@vger.kernel.org>; Sat, 20 Nov 2021 12:15:34 -0800 (PST)
+        with ESMTP id S229488AbhKTU1j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Nov 2021 15:27:39 -0500
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E29C061574
+        for <netdev@vger.kernel.org>; Sat, 20 Nov 2021 12:24:35 -0800 (PST)
+Received: by mail-lf1-x136.google.com with SMTP id bi37so60188943lfb.5
+        for <netdev@vger.kernel.org>; Sat, 20 Nov 2021 12:24:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DKCMcrulrmSmG/YLPpNGcHqPmytE36hqQowsiKmVizw=;
-        b=Ei7scbN8UvkGigXQEueLY48sngv3w6ilwjKYukC4oL2GigTc866SJjryAYxIKwW4m7
-         kcewumq19KhruA++DAKShYLO4vSLYwv8VmwAoUtgNTuh86irZGhR/sTzjZfY2a7dQnW1
-         dHbmIDQNELS7LD5qybXbwiqPyZNCLQERiTXvuuS5/cxEISoQP/+DAsAU8RZjyJF8pa+o
-         RUhvIcIekcIpN5eQ1zpoQ7u7VOGAPmAfQ3Vk92Jgu5d9fjmASUNXEwRNaId1VSUM9Ps+
-         hAKCIxKjlQSq2CeQUIPTTt4VYcL9Dnw+/shwaXejV7UB31gvjnaMddpY5S6KD0rdZ8Ud
-         svnA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Df3LOuh6MHrKPYh3o8WBZaAZwF8NVwbkkuqGYj/XP3o=;
+        b=dijW72jwWHrz+IdSgHorq8NUX3a/nzZVP0XgEQpFUvCi2sRrcLX3/pd4PJqr/lax/c
+         Zt451jGzF5lSukNK8Z6se+bNdOqLMbfMNd8oyjSPq7CJ655HaiAXY0FkyVWULqTArc47
+         19jNTtTqmpcuzscHQACrtXmSgslTID6b0SKbEgTf/iVa9+NBn3JoEro88I2myhWHJpgY
+         Ic37/OhV8QiMhNTPasaG5FSA6rwRxZXh8EJT1HLwGjkjLZqbX/NFhslINt7Il4deYTUP
+         aBb7QFgOMVnm4JPFNteKgqCtN5G9/ks3RGKYZACwIKzKrhHdtbXboMESYHukSoY6LBKN
+         qfpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=DKCMcrulrmSmG/YLPpNGcHqPmytE36hqQowsiKmVizw=;
-        b=tda+NLfLSJW4MHi4KdCafEZ7OyQ8C2oe+XjNLW3cPEfcCbmeB7WI6p/4ccOcgAy4C6
-         1HW5pTsMdby2HOaJyOBzLbiH/maPQP7PXzeQoK0+nAwuE4M1Xd0e7Dj2qKDW8IEl2wAJ
-         SC8KiMAfwL0PLnTPAooh0FsrE5GIY/avQ65LGMV8wVwywpW5Ya7pFfbPAXjLdEBy3rdV
-         U5yJr1wVrMvT7rK+vaG1yUL+Bo7qtFAMA6aD7SUnCsD0jVS/8Li1GXZDadLEWuU2rU8f
-         H3UqFDNU5w4QZDd8Ry4G6dYAMcnL0a6DcuLU3UFvxJyoI92QmhGHjhEMKmFCoez+ZZyB
-         jKJQ==
-X-Gm-Message-State: AOAM531U8LTIbvgUgbhBMRsyAOkRVca+PzvL84hHB57QBPM6WIOVPfwf
-        RSFA1WUvYpYRbIqyMi5OuWoumf46qjyDlA==
-X-Google-Smtp-Source: ABdhPJx2G7JzEGw3+MRPp65+lG9geyDplKwQ6usit8n//F6VwT83pYeviuj+8Nhw71crNOHlnr5CjA==
-X-Received: by 2002:a5d:4a0a:: with SMTP id m10mr22339789wrq.221.1637439333015;
-        Sat, 20 Nov 2021 12:15:33 -0800 (PST)
-Received: from ady1.alejandro-colomar.es ([170.253.36.171])
-        by smtp.googlemail.com with ESMTPSA id t189sm3798172wma.8.2021.11.20.12.15.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Nov 2021 12:15:32 -0800 (PST)
-From:   Alejandro Colomar <alx.manpages@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Alejandro Colomar <alx.manpages@gmail.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>
-Subject: [PATCH] drivers/net/ethernet/sfc/: Simplify code
-Date:   Sat, 20 Nov 2021 21:14:26 +0100
-Message-Id: <20211120201425.799946-1-alx.manpages@gmail.com>
-X-Mailer: git-send-email 2.33.1
+        bh=Df3LOuh6MHrKPYh3o8WBZaAZwF8NVwbkkuqGYj/XP3o=;
+        b=SwDo8DZSjK6vkbG0Ea9FXuf4YnapyKlbZa9g1Kk92ko8bLlvJbNQeMOSR1A3uRsHDl
+         vc4WRtdD0o1bwQP5mNhEEkczEBO3CrpLEAx3aYAK/rVj2eSiDM8fmidZjatNGE4jhO6K
+         7D4oDo+Fvoca2QMDmmArZYVkCz7raNQPVH3+DocQF1HN8bvH6lj9GrX268Y/vDPa/WTK
+         ORiBvBDLUBzzKAoB++TsVEnM+VrB3BZGMXFkMvxrnoiqUvQT1i+k2ehh0ggihI2fdZ74
+         MBf4s+KtZR1qZzthv16tNIz2SvVdWqe9rbkywkPv4UHNFtB1Ty0PoQ4gnpEvmaTiE806
+         mtZg==
+X-Gm-Message-State: AOAM5320OVUSx9vcFEXJt1MbfBJeNzifFHCUNP4uyspfcck69WhJgKRa
+        EX8+3bl5dFMg45PNHsOI8A4yjagjt/4=
+X-Google-Smtp-Source: ABdhPJxcLwAylnvNITyWBPRXbM2iNol/+34VmNov+xPbnZCNDfJ0HrEkwO844KXusWE+2sG3h5uCJQ==
+X-Received: by 2002:a05:6512:21cb:: with SMTP id d11mr42184355lft.579.1637439873817;
+        Sat, 20 Nov 2021 12:24:33 -0800 (PST)
+Received: from [192.168.42.14] ([176.59.10.41])
+        by smtp.gmail.com with ESMTPSA id p3sm431289lfg.273.2021.11.20.12.24.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 20 Nov 2021 12:24:33 -0800 (PST)
+Subject: Re: [PATCH iproute2] Add missing headers to the project
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
+References: <a8892441-c0a7-68b2-169e-ae76af0027ad@gmail.com>
+ <20211120092637.1e21418a@hermes.local>
+From:   Maxim Petrov <mmrmaximuzz@gmail.com>
+Message-ID: <aae5da96-556f-a333-87b1-d6a90a827665@gmail.com>
+Date:   Sat, 20 Nov 2021 23:24:32 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211120092637.1e21418a@hermes.local>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-That ternary operator has
-the same exact code in both of the branches.
+Hello Stephen!
 
-Unless there's some hidden magic in the condition,
-there's no reason for it to be,
-and it can be replaced
-by the code in one of the branches.
+On 11/20/21 8:26 PM, Stephen Hemminger wrote:
+> Would be better to do this with an existing tool like IncludeWhatYouUse
+> Is this what you did?
 
-That code has been untouched since it was added,
-so there's no information in git about
-why it was written that way.
+This is my fault, I didn't even think about searching for any existing tools for
+this task. :)
 
-Signed-off-by: Alejandro Colomar <alx.manpages@gmail.com>
-Cc: Edward Cree <ecree.xilinx@gmail.com>
-Cc: Martin Habets <habetsm.xilinx@gmail.com>
-Cc: netdev@vger.kernel.org
----
- drivers/net/ethernet/sfc/ethtool_common.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+I just wrote a stupid loop over the header files like this:
 
-diff --git a/drivers/net/ethernet/sfc/ethtool_common.c b/drivers/net/ethernet/sfc/ethtool_common.c
-index bd552c7dffcb..1b9e8b0afb3c 100644
---- a/drivers/net/ethernet/sfc/ethtool_common.c
-+++ b/drivers/net/ethernet/sfc/ethtool_common.c
-@@ -33,10 +33,7 @@ struct efx_sw_stat_desc {
- 				get_stat_function) {			\
- 	.name = #stat_name,						\
- 	.source = EFX_ETHTOOL_STAT_SOURCE_##source_name,		\
--	.offset = ((((field_type *) 0) ==				\
--		      &((struct efx_##source_name *)0)->field) ?	\
--		    offsetof(struct efx_##source_name, field) :		\
--		    offsetof(struct efx_##source_name, field)),		\
-+	.offset = offsetof(struct efx_##source_name, field),		\
- 	.get_stat = get_stat_function,					\
- }
- 
--- 
-2.33.1
+```bash
+for hdr in $(find . -name *.h)
+do
+	printf '#include "%s"' $hdr > headertest.c
+	gcc headertest.c -c -I ./include -I ./include/uapi
+done
+```
 
+and then manually patched the files until there are no compilation errors.
+
+It seems like I reinvented the wheel and did it not so good. I targeted only
+header files and fixed only compilation errors, possibly keeping some transitive
+includes. IWYU looks much better as it targets usage, not just compilation
+errors. If you can run this tool and fix the whole project automagically, then
+it is better to ignore my patch. Anyway, thank you for the information, I will
+definitely try IWYU soon.
+
+Max
