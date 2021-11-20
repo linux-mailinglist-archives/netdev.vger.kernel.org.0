@@ -2,199 +2,263 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 122C2458071
-	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 22:25:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19174458073
+	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 22:28:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236210AbhKTV2W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Nov 2021 16:28:22 -0500
-Received: from mail-bn7nam10on2098.outbound.protection.outlook.com ([40.107.92.98]:8897
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235830AbhKTV2W (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 20 Nov 2021 16:28:22 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZN2vNJXIfMF+vh2itjoZHrb6JN3AMy94Yws6CRb9fFu9pacAU24tka2kVfNgEigmPvzTWMJibixqkbXNSJ41x0nmage2sFbQ8pn+eaAc9bQbEwId5IKpHB98YhZ1Otku/6b3v3eQ7DVCBc0ii/xZZnfrjUITnD73phE9Y+/CK4SU7gIM/z1PCXWC6HI2WUU6L9vgsLaLFShIJS6s5X0AGUA/KYqYRIZHzxafpX/hGU2HC6kzP93pi6Fn/1k5ZmuSghhmZ+QPMX3rDbgWZK/B6lxY4Yi1+dGkkP556KF5WCOvvAMVRg49lCLDebzW1A+uQ+2buAryPEfOEjcnKCUZAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OO/z2m1EzP0/8QPhhfH4G/Lx6ZmJ2BsMS+iApd0u+hU=;
- b=m6idxlSQnIeJ2zkvuQ2BgdYO5asPW7swT1xlcQYqmA1tp56oBa7aJ8kG2z2Y1ztVsLgUpMbuPq0KV0PAZmGRlX2/psdQmthT23i/IoSQ2G8GQCr27h/WmP+V3BLzrqQj2h4cdoLsWAEkfIlrggszHIafHPy+j018NskcWDT0OU+ucoET/iOCtQpnEj9mTnLO0q1y23TjaBpTLSe2y6I1l92cIpoh4Pd51Ejyb5ojdbmZ4bgFUAzlJv5T+HWrCfC4syU3ktld3u1WiRw2/97a5qkYLolPbpu+gqwsjHZlqvr3almNRUNyx4PoscXP4PGcc/ZH3/FXiRBkSRGbHmEILA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=in-advantage.com; dmarc=pass action=none
- header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
+        id S236317AbhKTVbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Nov 2021 16:31:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45458 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231142AbhKTVbm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Nov 2021 16:31:42 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04351C061574
+        for <netdev@vger.kernel.org>; Sat, 20 Nov 2021 13:28:37 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id v1so24953181edx.2
+        for <netdev@vger.kernel.org>; Sat, 20 Nov 2021 13:28:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OO/z2m1EzP0/8QPhhfH4G/Lx6ZmJ2BsMS+iApd0u+hU=;
- b=yVUBJoQpYA0phwUzFTnJpaT6p+bDzzdHWHpVAHVddDUvN4bwq21ik0yWeckCYRkAJ4vvAmhRODfi8hEkobGycDko4pMPFRTBxJWnamI4LUUDT2AC7fLbhyVjNS+frrbLkZsOBq5XyJd1deYMkaN/UaYiluh9ZnsXGslC4eTBeow=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by CO6PR10MB5540.namprd10.prod.outlook.com
- (2603:10b6:303:137::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.19; Sat, 20 Nov
- 2021 21:25:16 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::6430:b20:8805:cd9f]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::6430:b20:8805:cd9f%5]) with mapi id 15.20.4713.019; Sat, 20 Nov 2021
- 21:25:16 +0000
-Date:   Sat, 20 Nov 2021 13:25:13 -0800
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [PATCH v1 net-next 1/3] net: mdio: mscc-miim: convert to a
- regmap implementation
-Message-ID: <20211120212513.GB2497840@euler>
-References: <20211119213918.2707530-1-colin.foster@in-advantage.com>
- <20211119213918.2707530-2-colin.foster@in-advantage.com>
- <YZkPnida0Kd0sG8x@lunn.ch>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YZkPnida0Kd0sG8x@lunn.ch>
-X-ClientProxiedBy: MW3PR05CA0005.namprd05.prod.outlook.com
- (2603:10b6:303:2b::10) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
+        d=oldum-net.20210112.gappssmtp.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=DBAy+PDPEAV3BA9s3sfwEPfn+NmLvEn1r8upoAU9QIA=;
+        b=CggvuFKZlZYe9QeLITiq5POizBgnFP/HWdTIfenV9TpbmGqYGGORPa8NqVfQNoOO6B
+         pJFNgALEMU7cY4mS9Efw0V6VabfHmA3dE3fx14W6sl/7oElUGOTO6r0pn55O9gY+E0hJ
+         d7STO9Z3YhIyrwuKrmUXwvMxw0m8vD/eydbR7TqkHJnkCtDXozP9tO4+/2C9iwojSr59
+         Lp3uBBaku4tYc48ZQ0IYK62LHwR7ABgacdTQy/9s3r7K02IcWRRGyvMScQceLW5bsaVA
+         OSTmhw/6o7vo2DzU0KM9Vp0gO2HNPypemDrjgHbX0qp8cTa0SxRQo/gVsAtZpL/LP7LF
+         6/PA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=DBAy+PDPEAV3BA9s3sfwEPfn+NmLvEn1r8upoAU9QIA=;
+        b=LJOpxyJMvhHL0ViW1cFz6E9br/m/cwjeOpcn1V24M3wjzgmt+wEcUtprBo7vJ0y+MJ
+         z+5JCZDF3+Zn5F9Fmp6jqduwq01987qdE0RdphRyWVisnBg1z5XzET25hZ1X4Vd6xg3P
+         2S/M86Sqim9LLNAHuR8DyqsKvSn75MuwU6WL+l6zBTmp73anaqrTg4CIL9a7P4ZmBCxL
+         AByUaHbQLvGp+PAo6AKZbQ4kIbFZP08f4DRjfsA58sc1GCYiG5Q11o9DR4tIfWzZ9bF9
+         XIZaMkKZilN73KB6S30H6ITTlZI4GHM0lb3CNjpfx9OQuMyW7tYQib3Ra0+WUt9ZP1tD
+         B7wg==
+X-Gm-Message-State: AOAM532rQMlqZqlb8ikgm6QUf54tgt4WEmTn4kK4Pitqaj8SSoP2Tmr0
+        uV5jKcaNmWCvzxjNOW3iu9rpaR8Thv4GpgOu/n4=
+X-Google-Smtp-Source: ABdhPJyRNXKYN8IXkl5QyQhOkyLhMvM3JCK4IGDNjDmo2mZdMK8Xxuf5JDQr5mQMZAWrUL79IVaVUg==
+X-Received: by 2002:a50:e707:: with SMTP id a7mr43964686edn.352.1637443715885;
+        Sat, 20 Nov 2021 13:28:35 -0800 (PST)
+Received: from [10.1.0.200] (external.oldum.net. [82.161.240.76])
+        by smtp.googlemail.com with ESMTPSA id j14sm1724917edw.96.2021.11.20.13.28.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 20 Nov 2021 13:28:35 -0800 (PST)
+Message-ID: <8d781f45b6a6fb434aa386dccb7f8f424ec1ffbe.camel@oldum.net>
+Subject: Re: [PATCH v3 6/7] 9p/trans_virtio: support larger msize values
+From:   Nikolay Kichukov <nikolay@oldum.net>
+To:     Christian Schoenebeck <linux_oss@crudebyte.com>,
+        Dominique Martinet <asmadeus@codewreck.org>
+Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>
+Date:   Sat, 20 Nov 2021 22:28:35 +0100
+In-Reply-To: <2717208.9V0g2NVZY4@silver>
+References: <cover.1632327421.git.linux_oss@crudebyte.com>
+         <cef6a6c6f8313a609ef104cc64ee6cf9d0ed6adb.camel@oldum.net>
+         <YZjfxT24by0Cse6q@codewreck.org> <2717208.9V0g2NVZY4@silver>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.1 
 MIME-Version: 1.0
-Received: from euler (67.185.175.147) by MW3PR05CA0005.namprd05.prod.outlook.com (2603:10b6:303:2b::10) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.13 via Frontend Transport; Sat, 20 Nov 2021 21:25:16 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 94f99f74-db2d-4692-0b7a-08d9ac6c3f0a
-X-MS-TrafficTypeDiagnostic: CO6PR10MB5540:
-X-Microsoft-Antispam-PRVS: <CO6PR10MB554016EDB743410B2838D5AFA49D9@CO6PR10MB5540.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MQyfesU/r0WSR55OAF0OMZ4l8N/pHWqBkNWILp0brQ7Xqh01KYdhsxIb4Jt3J6Mf0bEXtHkjsWStFT6Yl3WeYBNtGYfIyBiEhQX3F3zUgZFvz+P2p6juNXQBr1CzkvubwwY9gEIhav7ntnIQLL8HTQIQC441hh8jN6hxsJUBfGY18Jo2tCYmw6FT99MP99Bbspb28UVjGpACWHFdJ9/DWN4MU1jTi7z9qWdLe5omqfiX/QparP5x3edzNrIwmpVjLv8PSftds0bqWr/Tc0GuaWdteNr1Wxb4ckjGuMg/2hc3eFN+4lABI0WFzWlEkIWR9Xmgd5YTnPiiB3gJxcMVPMSKozO1ZGJK2ZeBklTLd5YXtKFPQ4AlbrODqYUwQFjVxmK+Vm2Oo4JVvhh24SXwf0395ZyFW01BF/l+op0Rr3sHNCTLO1o7gIJ4sAPe9re9uoory35c4HCblADgq8oeHS+1xWlVUCvfLC8U5qsvwJ4JSGigQR61dbpoJev1C/VNIzNkUE6skglMikG3cc/7IJStfjUy70cWu6xi3+elHiu3EJQBsriWlnWoiPuvJMMjQ++9BL2ISewkPNHHHqfW9N2XC4JW/DSmel5cx7C6qY1w5ggY9t8H9UafWsrLLLMuUJV15tne1Ds3aEGbbZaX6WjN6X1x0gR+LLM95zz9q5s4QKCjlcFaSFTZN2PmoRsrFjePz0+U/OMalDYZQAEqYA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(39830400003)(366004)(396003)(346002)(376002)(136003)(4326008)(6496006)(8936002)(54906003)(2906002)(33656002)(956004)(52116002)(6916009)(55016002)(6666004)(9576002)(9686003)(1076003)(26005)(316002)(186003)(86362001)(508600001)(38350700002)(44832011)(7416002)(66946007)(38100700002)(5660300002)(33716001)(66476007)(8676002)(66556008);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?dGmCi7DobuwDcKVLFSsYA4REG8XfQf/cp2mzYh0wuWFXXW67Y1NM4Fo+WzNO?=
- =?us-ascii?Q?HXICoswyvO34uQYxErkJ8uVOnNYNkB4LzTzMJZlToXdmcJ8jMgUh8KuLwBur?=
- =?us-ascii?Q?kGJ67uODjIwjrcahg9vbG1e+S7rLWxfNEUOJIOJwerLFR4MMjO+rEcUnePUT?=
- =?us-ascii?Q?gNY0ShRKfBQ51rC1qhnA9HY77V7JRFSYQ/QWoFuOhwp+raGo0qZMIAt6m1CW?=
- =?us-ascii?Q?r99Sc2Rhk7MoKxCbxPPVL1uCfcoU3fgaXqXDbCX1JDeOS1EmU9P6xSOkHFWt?=
- =?us-ascii?Q?uX44l6VmUnxt3i6E4zOBwNheAPR8ElEWAwgYzDgXziwbiVZf6vgqsPCpo2Bp?=
- =?us-ascii?Q?RvF7l0BKRRaSxcOrzU+TdJj1/zZ64b3LekL7Drl+FXfuJTMrJeP7KIhZDkeu?=
- =?us-ascii?Q?dVNynFpaU6vM3KkLCJMf04OSZV0bAwT7X61I/x3870SbiPBxY95oS5ExWH6c?=
- =?us-ascii?Q?Txqs+y8xrEHwG3ISdgp870YNudAqjvElMBpmIp+SE3lOYAwJgPuHUxdsMZ+r?=
- =?us-ascii?Q?GVtBIOXo28Pt3AbKI0k+ATRobRZFGawDLV/vzznGsTBYZL/00CvYPnMSACA7?=
- =?us-ascii?Q?bTqWAybsLSGibwroxIoW5nsZqA0J/Z5btEmdHZS6ChDMA3MzbFbq9NDlfltv?=
- =?us-ascii?Q?C2igGa0+SRmbyToF6u+esunBOZl/PdODfaSxl/kpdZ77hGBGxyP32wz7Ye7w?=
- =?us-ascii?Q?35A3fCWaYtqXZiF2NIHnCnWBif1VJo6WVduUk8kb75WeoOBXe46XAj8DgSo+?=
- =?us-ascii?Q?0KG0isgrozOYHsa8QBe1Y6XSdcqeYyGKm1Tzn4FbxRf1XA45zIxcmIoJaWK/?=
- =?us-ascii?Q?OYcWnNp7oQljdEsCu0h2X9b4mI/cu2izzoTj68WUPAPXuzSqFow6sENAUi1n?=
- =?us-ascii?Q?fPt8xGR9rVCvjmrGv5jHklReLR3qFsTaB09Tjw9EDR4yXUPUgX7QWiwfZyz+?=
- =?us-ascii?Q?c6YWcWzRjtJc5L64SoDfDdY8Uw88BmvhUzz1l21g7XeIFw54LPy6x7jpzQDh?=
- =?us-ascii?Q?RKvFqH8qT/anGK2pHIkR9ucEfuV//EeaC8407LbRyCEDvE8x5ERtVoldHM6J?=
- =?us-ascii?Q?ugYegjcElmnvM+Gj3OoMktRerQtWzlIoAH2woGRJ3dm8Wj+2OsxqU+eRyxEM?=
- =?us-ascii?Q?u8FvKy10vyE/ZFoKu9KAgV7f3F+9ICqaASm+yCSrBNBqD28tH7ZSFBzzECu3?=
- =?us-ascii?Q?ct1kGSsHMi1gKyZnU4lQ30NKqW0M/Jr3+09vJ+BWNCAe4SIqEzSGKgaLjDq1?=
- =?us-ascii?Q?p2dKKXOqbSA3Rwv+Cz79VCvA88hI7ANeup3aeTTD7tLz3H4CNjXbxndvZlSM?=
- =?us-ascii?Q?wFAstOvZo++y90DSbvl9pgTmERboINCdJUEUe9y8h78s/Zky1wiYow8SvEdR?=
- =?us-ascii?Q?h+h6UkMtbCfdcgSON38eW4D59VPTBz2TQMSqZQaHrlDgS+JgDq2ykxoAngc1?=
- =?us-ascii?Q?i7wd7R7k5cNTnUsj6LrbA8XxkeYvk2lkWuXLawowH0fIytan4GIP3Nr/TYo0?=
- =?us-ascii?Q?qbn79zdbXsL/pHxjsVwJhZLSvs2AMwkj24usqQonoB1dWp4hX+4ZtCmx6egZ?=
- =?us-ascii?Q?1mRidhpgh7vXDTIoAHBgw7Z80CNenjv1x8vUMjTLXc9MH87xXgr402tqaSrC?=
- =?us-ascii?Q?lj8wJmF2cbrLb6qBXhH+dEyzUS/hjZ86zIrClVxIPv+D7C8062rU4ftJraYg?=
- =?us-ascii?Q?psrQtGLHAbklRGWqnYkM/nEKNWY=3D?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 94f99f74-db2d-4692-0b7a-08d9ac6c3f0a
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Nov 2021 21:25:16.5043
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /fH/ew6c5SFHHdcl0daJPCA2DxMRmP07P8yQTX209AOmyOjeXp72AAtDJOuFSkMbVr+fS9E+VB26tXGK9J5Y1qQCefpgDaOwlU+nujsC8eQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR10MB5540
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+On Sat, 2021-11-20 at 15:46 +0100, Christian Schoenebeck wrote:
+> On Samstag, 20. November 2021 12:45:09 CET Dominique Martinet wrote:
+> > (Thanks for restarting this thread, this had totally slipped out of
+> > my
+> > mind...)
+> 
+> Hi guys,
+> 
+> I have (more or less) silently been working on these patches on all
+> ends in 
+> the meantime. If desired I try to find some time next week to
+> summarize 
+> current status of this overall effort and what still needs to be done.
 
-Thank you for your feedback! I'll do a sweep for these return cases
-before I submit v2.
+Great, I would be more than happy to test next version of these patches.
 
-On Sat, Nov 20, 2021 at 04:09:18PM +0100, Andrew Lunn wrote:
-> > @@ -73,22 +84,30 @@ static int mscc_miim_wait_pending(struct mii_bus *bus)
-> >  static int mscc_miim_read(struct mii_bus *bus, int mii_id, int regnum)
-> >  {
-> >  	struct mscc_miim_dev *miim = bus->priv;
-> > +	int ret, err;
-> >  	u32 val;
-> > -	int ret;
-> >  
-> >  	ret = mscc_miim_wait_pending(bus);
-> >  	if (ret)
-> >  		goto out;
-> >  
-> > -	writel(MSCC_MIIM_CMD_VLD | (mii_id << MSCC_MIIM_CMD_PHYAD_SHIFT) |
-> > -	       (regnum << MSCC_MIIM_CMD_REGAD_SHIFT) | MSCC_MIIM_CMD_OPR_READ,
-> > -	       miim->regs + MSCC_MIIM_REG_CMD);
-> > +	err = regmap_write(miim->regs, MSCC_MIIM_REG_CMD, MSCC_MIIM_CMD_VLD |
-> > +			   (mii_id << MSCC_MIIM_CMD_PHYAD_SHIFT) |
-> > +			   (regnum << MSCC_MIIM_CMD_REGAD_SHIFT) |
-> > +			   MSCC_MIIM_CMD_OPR_READ);
-> > +
-> > +	if (err < 0)
-> > +		WARN_ONCE(1, "mscc miim write cmd reg error %d\n", err);
 > 
-> You should probably return ret here. If the setup fails, i doubt you
-> will get anything useful from the hardware.
+> > Nikolay Kichukov wrote on Sat, Nov 20, 2021 at 12:20:35PM +0100:
+> > > When the client mounts the share via virtio, requested msize is:
+> > > 10485760 or 104857600
+> > > 
+> > > however the mount succeeds with:
+> > > msize=507904 in the end as per the /proc filesystem. This is less
+> > > than
+> > > the previous maximum value.
+> > 
+> > (Not sure about this, I'll test these patches tomorrow, but since
+> > something failed I'm not surprised you have less than what you could
+> > have here: what do you get with a more reasonable value like 1M
+> > first?)
+
+It worked with 1MB, I can stick to this for the time being.
+
+Are the kernel patches supposed to be included in the KVM host kernel or
+would the guest kernel suffice?
+
 > 
-> >  
-> >  	ret = mscc_miim_wait_ready(bus);
-> >  	if (ret)
-> >  		goto out;
-> >  
-> > -	val = readl(miim->regs + MSCC_MIIM_REG_DATA);
-> > +	err = regmap_read(miim->regs, MSCC_MIIM_REG_DATA, &val);
-> > +
-> > +	if (err < 0)
-> > +		WARN_ONCE(1, "mscc miim read data reg error %d\n", err);
+> The highest 'msize' value possible for me with this particular version
+> of the 
+> kernel patches is 4186212 (so slightly below 4MB).
 > 
-> Same here.
+> Some benchmarks, linear reading a 12 GB file:
 > 
-> > +
-> >  	if (val & MSCC_MIIM_DATA_ERROR) {
-> >  		ret = -EIO;
-> >  		goto out;
-> > @@ -103,18 +122,20 @@ static int mscc_miim_write(struct mii_bus *bus, int mii_id,
-> >  			   int regnum, u16 value)
-> >  {
-> >  	struct mscc_miim_dev *miim = bus->priv;
-> > -	int ret;
-> > +	int err, ret;
-> >  
-> >  	ret = mscc_miim_wait_pending(bus);
-> >  	if (ret < 0)
-> >  		goto out;
-> >  
-> > -	writel(MSCC_MIIM_CMD_VLD | (mii_id << MSCC_MIIM_CMD_PHYAD_SHIFT) |
-> > -	       (regnum << MSCC_MIIM_CMD_REGAD_SHIFT) |
-> > -	       (value << MSCC_MIIM_CMD_WRDATA_SHIFT) |
-> > -	       MSCC_MIIM_CMD_OPR_WRITE,
-> > -	       miim->regs + MSCC_MIIM_REG_CMD);
-> > +	err = regmap_write(miim->regs, MSCC_MIIM_REG_CMD, MSCC_MIIM_CMD_VLD |
-> > +			   (mii_id << MSCC_MIIM_CMD_PHYAD_SHIFT) |
-> > +			   (regnum << MSCC_MIIM_CMD_REGAD_SHIFT) |
-> > +			   (value << MSCC_MIIM_CMD_WRDATA_SHIFT) |
-> > +			   MSCC_MIIM_CMD_OPR_WRITE);
-> >  
-> > +	if (err < 0)
-> > +		WARN_ONCE(1, "mscc miim write error %d\n", err);
+> msize    average      notes
 > 
-> And here, etc.
+> 8 kB     52.0 MB/s    default msize of Linux kernel <v5.15
+> 128 kB   624.8 MB/s   default msize of Linux kernel >=v5.15
+> 512 kB   1961 MB/s    current max. msize with any Linux kernel <=v5.15
+> 1 MB     2551 MB/s    this msize would violate current virtio specs
+> 2 MB     2521 MB/s    this msize would violate current virtio specs
+> 4 MB     2628 MB/s    planned milestone
 > 
->     Andrew
+> That does not mean it already makes sense to use these patches in this
+> version 
+> as is to increase overall performance yet, but the numbers already
+> suggest 
+> that increasing msize can improve performance on large sequential I/O.
+> There 
+> are still some things to do though to fix other use patterns from
+> slowing down 
+> with rising msize, which I will describe in a separate email.
+> 
+> I also have an experimental version of kernel patches and QEMU that
+> goes as 
+> high as msize=128MB. But that's a highly hacked version that copies
+> buffers 
+> between 9p client level and virtio level back and forth and with
+> intentional 
+> large buffer sizes on every 9p message type. This was solely meant as
+> a stress 
+> test, i.e. whether it was possible to go as high as virtio's
+> theoretical 
+> protocol limit in the first place, and whether it was stable. This
+> stress test 
+> was not about performance at all. And yes, I had it running with 128MB
+> for 
+> weeks without issues (except of being very slow of course due to hacks
+> used).
+> 
+> > > In addition to the above, when the kernel on the guest boots and
+> > > loads
+> > > 9pfs support, the attached memory allocation failure trace is
+> > > generated.
+> > > 
+> > > Is anyone else seeing similar and was anybody able to get msize
+> > > set to
+> > > 10MB via virtio protocol with these patches?
+> > 
+> > I don't think the kernel would ever allow this with the given code,
+> > as
+> > the "common" part of 9p is not smart enough to use scatter-gather
+> > and
+> > tries to do a big allocation (almost) the size of the msize:
+> > 
+> > ---
+> >         clnt->fcall_cache =
+> >                 kmem_cache_create_usercopy("9p-fcall-cache", clnt-
+> > >msize,
+> >                                            0, 0, P9_HDRSZ + 4,
+> >                                            clnt->msize - (P9_HDRSZ +
+> > 4),
+> >                                            NULL);
+> > 
+> > ...
+> >                 fc->sdata = kmem_cache_alloc(c->fcall_cache,
+> > GFP_NOFS);
+> > ---
+> > So in practice, you will be capped at 2MB as that is the biggest the
+> > slab will be able to hand over in a single chunk.
+> 
+> I did not encounter a 2MB limit here. But kmalloc() clearly has a 4MB
+> limit, 
+> so when trying an msize larger than 4MB it inevitably causes a memory 
+> allocation error. In my tests this allocation error would always
+> happen 
+> immediately at mount time causing an instant kernel oops.
+> 
+> > It'll also make allocation failures quite likely as soon as the
+> > system
+> > has had some uptime (depending on your workload, look at
+> > /proc/buddyinfo
+> > if your machines normally have 2MB chunks available), so I would
+> > really
+> > not recommend running with buffers bigger than e.g. 512k on real
+> > workloads -- it looks great on benchmarks, especially as it's on its
+> > own
+> > slab so as long as you're doing a lot of requests it will dish out
+> > buffers fast, but it'll likely be unreliable over time.
+> > (oh, and we allocate two of these per request...)
+> > 
+> > 
+> > The next step to support large buffers really would be splitting
+> > htat
+> > buffer to:
+> >  1/ not allocate huge buffers for small metadata ops, e.g. an open
+> > call
+> > certainly doesn't need to allocate 10MB of memory
+> >  2/ support splitting the buffer in some scattergather array
+> > 
+> > Ideally we'd only allocate on an as-need basis, most of the protocol
+> > calls bound how much data is supposed to come back and we know how
+> > much
+> > we want to send (it's a format string actually, but we can majorate
+> > it
+> > quite easily), so one would need to adjust all protocol calls to
+> > pass
+> > this info to p9_client_rpc/p9_client_zc_rpc so it only allocates
+> > buffers
+> > as required, if necessary in multiple reasonably-sized segments (I'd
+> > love 2MB hugepages-backed folios...), and have all transports use
+> > these
+> > buffers.
+> 
+> It is not that bad in sense of pending work. One major thing that
+> needs to be 
+> done is to cap the majority of 9p message types to allocate only as
+> much as 
+> they need, which is for most message types <8k. Right now they always
+> simply 
+> kmalloc(msize), which hurts with increasing msize values. That task
+> does not 
+> need many changes though.
+> 
+> > I have a rough idea on how to do all this but honestly less than 0
+> > time
+> > for that, so happy to give advices or review any patch, but it's
+> > going
+> > to be a lot of work that stand in the way of really big IOs.
+> 
+> Reviews of the patches would actually help a lot to bring this overall
+> effort 
+> forward, but probably rather starting with the upcoming next version
+> of the 
+> kernel patches, not this old v3.
+> 
+> > > [    1.527981] 9p: Installing v9fs 9p2000 file system support
+> > > [    1.528173] ------------[ cut here ]------------
+> > > [    1.528174] WARNING: CPU: 1 PID: 791 at mm/page_alloc.c:5356
+> > > __alloc_pages+0x1ed/0x290
+> > This warning is exactly what I was saying about the allocation cap:
+> > you've requested an allocation that was bigger than the max
+> > __alloc_page
+> > is willing to provide (MAX_ORDER, 11, so 2MB as I was saying)
+
+Yes, this is no longer happening when I lowered the value of the msize
+parameter.
+
+> 
+> Best regards,
+> Christian Schoenebeck
+> 
+> 
+
