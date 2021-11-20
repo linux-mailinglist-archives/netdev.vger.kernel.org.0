@@ -2,263 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19174458073
-	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 22:28:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AD7D4580BF
+	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 22:57:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236317AbhKTVbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Nov 2021 16:31:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45458 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231142AbhKTVbm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Nov 2021 16:31:42 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04351C061574
-        for <netdev@vger.kernel.org>; Sat, 20 Nov 2021 13:28:37 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id v1so24953181edx.2
-        for <netdev@vger.kernel.org>; Sat, 20 Nov 2021 13:28:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oldum-net.20210112.gappssmtp.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=DBAy+PDPEAV3BA9s3sfwEPfn+NmLvEn1r8upoAU9QIA=;
-        b=CggvuFKZlZYe9QeLITiq5POizBgnFP/HWdTIfenV9TpbmGqYGGORPa8NqVfQNoOO6B
-         pJFNgALEMU7cY4mS9Efw0V6VabfHmA3dE3fx14W6sl/7oElUGOTO6r0pn55O9gY+E0hJ
-         d7STO9Z3YhIyrwuKrmUXwvMxw0m8vD/eydbR7TqkHJnkCtDXozP9tO4+/2C9iwojSr59
-         Lp3uBBaku4tYc48ZQ0IYK62LHwR7ABgacdTQy/9s3r7K02IcWRRGyvMScQceLW5bsaVA
-         OSTmhw/6o7vo2DzU0KM9Vp0gO2HNPypemDrjgHbX0qp8cTa0SxRQo/gVsAtZpL/LP7LF
-         6/PA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=DBAy+PDPEAV3BA9s3sfwEPfn+NmLvEn1r8upoAU9QIA=;
-        b=LJOpxyJMvhHL0ViW1cFz6E9br/m/cwjeOpcn1V24M3wjzgmt+wEcUtprBo7vJ0y+MJ
-         z+5JCZDF3+Zn5F9Fmp6jqduwq01987qdE0RdphRyWVisnBg1z5XzET25hZ1X4Vd6xg3P
-         2S/M86Sqim9LLNAHuR8DyqsKvSn75MuwU6WL+l6zBTmp73anaqrTg4CIL9a7P4ZmBCxL
-         AByUaHbQLvGp+PAo6AKZbQ4kIbFZP08f4DRjfsA58sc1GCYiG5Q11o9DR4tIfWzZ9bF9
-         XIZaMkKZilN73KB6S30H6ITTlZI4GHM0lb3CNjpfx9OQuMyW7tYQib3Ra0+WUt9ZP1tD
-         B7wg==
-X-Gm-Message-State: AOAM532rQMlqZqlb8ikgm6QUf54tgt4WEmTn4kK4Pitqaj8SSoP2Tmr0
-        uV5jKcaNmWCvzxjNOW3iu9rpaR8Thv4GpgOu/n4=
-X-Google-Smtp-Source: ABdhPJyRNXKYN8IXkl5QyQhOkyLhMvM3JCK4IGDNjDmo2mZdMK8Xxuf5JDQr5mQMZAWrUL79IVaVUg==
-X-Received: by 2002:a50:e707:: with SMTP id a7mr43964686edn.352.1637443715885;
-        Sat, 20 Nov 2021 13:28:35 -0800 (PST)
-Received: from [10.1.0.200] (external.oldum.net. [82.161.240.76])
-        by smtp.googlemail.com with ESMTPSA id j14sm1724917edw.96.2021.11.20.13.28.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Nov 2021 13:28:35 -0800 (PST)
-Message-ID: <8d781f45b6a6fb434aa386dccb7f8f424ec1ffbe.camel@oldum.net>
-Subject: Re: [PATCH v3 6/7] 9p/trans_virtio: support larger msize values
-From:   Nikolay Kichukov <nikolay@oldum.net>
-To:     Christian Schoenebeck <linux_oss@crudebyte.com>,
-        Dominique Martinet <asmadeus@codewreck.org>
-Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>
-Date:   Sat, 20 Nov 2021 22:28:35 +0100
-In-Reply-To: <2717208.9V0g2NVZY4@silver>
-References: <cover.1632327421.git.linux_oss@crudebyte.com>
-         <cef6a6c6f8313a609ef104cc64ee6cf9d0ed6adb.camel@oldum.net>
-         <YZjfxT24by0Cse6q@codewreck.org> <2717208.9V0g2NVZY4@silver>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.1 
+        id S233813AbhKTWAu convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 20 Nov 2021 17:00:50 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:42744 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229590AbhKTWAt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Nov 2021 17:00:49 -0500
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-281-Al8z84NMNTav-OCe2iuMew-1; Sat, 20 Nov 2021 21:57:43 +0000
+X-MC-Unique: Al8z84NMNTav-OCe2iuMew-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.26; Sat, 20 Nov 2021 21:57:42 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.026; Sat, 20 Nov 2021 21:57:42 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Bernard Zhao' <bernard@vivo.com>, Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "bridge@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] net/bridge: replace simple_strtoul to kstrtol
+Thread-Topic: [PATCH] net/bridge: replace simple_strtoul to kstrtol
+Thread-Index: AQHX3Ool6Pave9KWG0WLE/Hz4Kqz0KwM94oQ
+Date:   Sat, 20 Nov 2021 21:57:42 +0000
+Message-ID: <a98476cd4414476980a227c0f053bea7@AcuMS.aculab.com>
+References: <20211119020642.108397-1-bernard@vivo.com>
+In-Reply-To: <20211119020642.108397-1-bernard@vivo.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2021-11-20 at 15:46 +0100, Christian Schoenebeck wrote:
-> On Samstag, 20. November 2021 12:45:09 CET Dominique Martinet wrote:
-> > (Thanks for restarting this thread, this had totally slipped out of
-> > my
-> > mind...)
+From: Bernard Zhao
+> Sent: 19 November 2021 02:07
 > 
-> Hi guys,
-> 
-> I have (more or less) silently been working on these patches on all
-> ends in 
-> the meantime. If desired I try to find some time next week to
-> summarize 
-> current status of this overall effort and what still needs to be done.
+> simple_strtoull is obsolete, use kstrtol instead.
 
-Great, I would be more than happy to test next version of these patches.
+I think the death announcement of simple_strtoull() has already
+been deemed premature.
+kstrtol() isn't a replacment in many cases.
 
+> Signed-off-by: Bernard Zhao <bernard@vivo.com>
+> ---
+>  net/bridge/br_sysfs_br.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
 > 
-> > Nikolay Kichukov wrote on Sat, Nov 20, 2021 at 12:20:35PM +0100:
-> > > When the client mounts the share via virtio, requested msize is:
-> > > 10485760 or 104857600
-> > > 
-> > > however the mount succeeds with:
-> > > msize=507904 in the end as per the /proc filesystem. This is less
-> > > than
-> > > the previous maximum value.
-> > 
-> > (Not sure about this, I'll test these patches tomorrow, but since
-> > something failed I'm not surprised you have less than what you could
-> > have here: what do you get with a more reasonable value like 1M
-> > first?)
+> diff --git a/net/bridge/br_sysfs_br.c b/net/bridge/br_sysfs_br.c
+> index d9a89ddd0331..11c490694296 100644
+> --- a/net/bridge/br_sysfs_br.c
+> +++ b/net/bridge/br_sysfs_br.c
+> @@ -36,15 +36,14 @@ static ssize_t store_bridge_parm(struct device *d,
+>  	struct net_bridge *br = to_bridge(d);
+>  	struct netlink_ext_ack extack = {0};
+>  	unsigned long val;
+> -	char *endp;
+>  	int err;
+> 
+>  	if (!ns_capable(dev_net(br->dev)->user_ns, CAP_NET_ADMIN))
+>  		return -EPERM;
+> 
+> -	val = simple_strtoul(buf, &endp, 0);
+> -	if (endp == buf)
+> -		return -EINVAL;
+> +	err = kstrtoul(buf, 10, &val);
+> +	if (err != 0)
+> +		return err;
 
-It worked with 1MB, I can stick to this for the time being.
+That changes the valid input strings.
+So is a UAPI change.
+Now it might be that no one passes in strings that now fail,
+but you can't tell.
 
-Are the kernel patches supposed to be included in the KVM host kernel or
-would the guest kernel suffice?
+Rightfully or not it used to ignore any trailing characters.
+So "10flobbs" would be treated as "10".
 
-> 
-> The highest 'msize' value possible for me with this particular version
-> of the 
-> kernel patches is 4186212 (so slightly below 4MB).
-> 
-> Some benchmarks, linear reading a 12 GB file:
-> 
-> msize    average      notes
-> 
-> 8 kB     52.0 MB/s    default msize of Linux kernel <v5.15
-> 128 kB   624.8 MB/s   default msize of Linux kernel >=v5.15
-> 512 kB   1961 MB/s    current max. msize with any Linux kernel <=v5.15
-> 1 MB     2551 MB/s    this msize would violate current virtio specs
-> 2 MB     2521 MB/s    this msize would violate current virtio specs
-> 4 MB     2628 MB/s    planned milestone
-> 
-> That does not mean it already makes sense to use these patches in this
-> version 
-> as is to increase overall performance yet, but the numbers already
-> suggest 
-> that increasing msize can improve performance on large sequential I/O.
-> There 
-> are still some things to do though to fix other use patterns from
-> slowing down 
-> with rising msize, which I will describe in a separate email.
-> 
-> I also have an experimental version of kernel patches and QEMU that
-> goes as 
-> high as msize=128MB. But that's a highly hacked version that copies
-> buffers 
-> between 9p client level and virtio level back and forth and with
-> intentional 
-> large buffer sizes on every 9p message type. This was solely meant as
-> a stress 
-> test, i.e. whether it was possible to go as high as virtio's
-> theoretical 
-> protocol limit in the first place, and whether it was stable. This
-> stress test 
-> was not about performance at all. And yes, I had it running with 128MB
-> for 
-> weeks without issues (except of being very slow of course due to hacks
-> used).
-> 
-> > > In addition to the above, when the kernel on the guest boots and
-> > > loads
-> > > 9pfs support, the attached memory allocation failure trace is
-> > > generated.
-> > > 
-> > > Is anyone else seeing similar and was anybody able to get msize
-> > > set to
-> > > 10MB via virtio protocol with these patches?
-> > 
-> > I don't think the kernel would ever allow this with the given code,
-> > as
-> > the "common" part of 9p is not smart enough to use scatter-gather
-> > and
-> > tries to do a big allocation (almost) the size of the msize:
-> > 
-> > ---
-> >         clnt->fcall_cache =
-> >                 kmem_cache_create_usercopy("9p-fcall-cache", clnt-
-> > >msize,
-> >                                            0, 0, P9_HDRSZ + 4,
-> >                                            clnt->msize - (P9_HDRSZ +
-> > 4),
-> >                                            NULL);
-> > 
-> > ...
-> >                 fc->sdata = kmem_cache_alloc(c->fcall_cache,
-> > GFP_NOFS);
-> > ---
-> > So in practice, you will be capped at 2MB as that is the biggest the
-> > slab will be able to hand over in a single chunk.
-> 
-> I did not encounter a 2MB limit here. But kmalloc() clearly has a 4MB
-> limit, 
-> so when trying an msize larger than 4MB it inevitably causes a memory 
-> allocation error. In my tests this allocation error would always
-> happen 
-> immediately at mount time causing an instant kernel oops.
-> 
-> > It'll also make allocation failures quite likely as soon as the
-> > system
-> > has had some uptime (depending on your workload, look at
-> > /proc/buddyinfo
-> > if your machines normally have 2MB chunks available), so I would
-> > really
-> > not recommend running with buffers bigger than e.g. 512k on real
-> > workloads -- it looks great on benchmarks, especially as it's on its
-> > own
-> > slab so as long as you're doing a lot of requests it will dish out
-> > buffers fast, but it'll likely be unreliable over time.
-> > (oh, and we allocate two of these per request...)
-> > 
-> > 
-> > The next step to support large buffers really would be splitting
-> > htat
-> > buffer to:
-> >  1/ not allocate huge buffers for small metadata ops, e.g. an open
-> > call
-> > certainly doesn't need to allocate 10MB of memory
-> >  2/ support splitting the buffer in some scattergather array
-> > 
-> > Ideally we'd only allocate on an as-need basis, most of the protocol
-> > calls bound how much data is supposed to come back and we know how
-> > much
-> > we want to send (it's a format string actually, but we can majorate
-> > it
-> > quite easily), so one would need to adjust all protocol calls to
-> > pass
-> > this info to p9_client_rpc/p9_client_zc_rpc so it only allocates
-> > buffers
-> > as required, if necessary in multiple reasonably-sized segments (I'd
-> > love 2MB hugepages-backed folios...), and have all transports use
-> > these
-> > buffers.
-> 
-> It is not that bad in sense of pending work. One major thing that
-> needs to be 
-> done is to cap the majority of 9p message types to allocate only as
-> much as 
-> they need, which is for most message types <8k. Right now they always
-> simply 
-> kmalloc(msize), which hurts with increasing msize values. That task
-> does not 
-> need many changes though.
-> 
-> > I have a rough idea on how to do all this but honestly less than 0
-> > time
-> > for that, so happy to give advices or review any patch, but it's
-> > going
-> > to be a lot of work that stand in the way of really big IOs.
-> 
-> Reviews of the patches would actually help a lot to bring this overall
-> effort 
-> forward, but probably rather starting with the upcoming next version
-> of the 
-> kernel patches, not this old v3.
-> 
-> > > [    1.527981] 9p: Installing v9fs 9p2000 file system support
-> > > [    1.528173] ------------[ cut here ]------------
-> > > [    1.528174] WARNING: CPU: 1 PID: 791 at mm/page_alloc.c:5356
-> > > __alloc_pages+0x1ed/0x290
-> > This warning is exactly what I was saying about the allocation cap:
-> > you've requested an allocation that was bigger than the max
-> > __alloc_page
-> > is willing to provide (MAX_ORDER, 11, so 2MB as I was saying)
+Did you also check what happens to 0x1234 and 012 ?
 
-Yes, this is no longer happening when I lowered the value of the msize
-parameter.
+	David
 
-> 
-> Best regards,
-> Christian Schoenebeck
-> 
-> 
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
