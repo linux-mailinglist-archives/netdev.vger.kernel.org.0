@@ -2,107 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AD7D4580BF
-	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 22:57:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 255784580DE
+	for <lists+netdev@lfdr.de>; Sun, 21 Nov 2021 00:17:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233813AbhKTWAu convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 20 Nov 2021 17:00:50 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:42744 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229590AbhKTWAt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Nov 2021 17:00:49 -0500
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-281-Al8z84NMNTav-OCe2iuMew-1; Sat, 20 Nov 2021 21:57:43 +0000
-X-MC-Unique: Al8z84NMNTav-OCe2iuMew-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.26; Sat, 20 Nov 2021 21:57:42 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.026; Sat, 20 Nov 2021 21:57:42 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Bernard Zhao' <bernard@vivo.com>, Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] net/bridge: replace simple_strtoul to kstrtol
-Thread-Topic: [PATCH] net/bridge: replace simple_strtoul to kstrtol
-Thread-Index: AQHX3Ool6Pave9KWG0WLE/Hz4Kqz0KwM94oQ
-Date:   Sat, 20 Nov 2021 21:57:42 +0000
-Message-ID: <a98476cd4414476980a227c0f053bea7@AcuMS.aculab.com>
-References: <20211119020642.108397-1-bernard@vivo.com>
-In-Reply-To: <20211119020642.108397-1-bernard@vivo.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S236830AbhKTXFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Nov 2021 18:05:45 -0500
+Received: from nautica.notk.org ([91.121.71.147]:49294 "EHLO nautica.notk.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236806AbhKTXFo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 20 Nov 2021 18:05:44 -0500
+X-Greylist: delayed 40626 seconds by postgrey-1.27 at vger.kernel.org; Sat, 20 Nov 2021 18:05:44 EST
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id D6004C009; Sun, 21 Nov 2021 00:02:39 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1637449359; bh=+h+v5WoHCnvJZTz4S+KWLOEg0q3JUAhaF9Le2Ttzzdw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=zi+Di05NvmQb0FPe4t7GaxTYczlDIYk4ZowTzQPAjbzNil6tJPiz3uevJkaan44Wf
+         rDNyb/NApmS8Nxb69yC/hQykjdZpp3QJtNtDgIJzhsrV94ReJD0bEJmcEpbdLm6Xwi
+         wyinjKPWaMsvzZV2BJ83LCwBjLzIGWHh1cW2/K6JmvzrTMQ08ajf8Ze5NnHhYPahE7
+         CaWMaaZFXdKBwLNwPoVEsid2e5I2u+ZX4MBMlecX+GNXOQLLLjEJnWIhAbbhdN0nDm
+         0tZEBQHhYdfzitkrMH6fcCWo30aPTiiRCM8m714baAUjTG05w817qauiChkQ/zBbZE
+         tFmw8HweKD5aA==
+X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on nautica.notk.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
+        autolearn=unavailable version=3.3.2
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 7B309C009;
+        Sun, 21 Nov 2021 00:02:36 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1637449358; bh=+h+v5WoHCnvJZTz4S+KWLOEg0q3JUAhaF9Le2Ttzzdw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=AGAPj+62nUhZHRXe7M2yvA9YTANCxcXJq9zYxBItl/82mx/7IFaunqqJ8xiS8N4S3
+         zyPznc3G1Ndf42MtAch3jq0UGJhcbyzkbbrJQzJMULWnOnmqzueNUwx9mkbZhysP7V
+         1PUoA+gJNjY3ONLwxqqP5Ls3/JsDLgBOMPljGxn1Ks+wXqZogvWMSEC804Z34cwPHz
+         GLLbRv46IqHwg5gvgZYOW2FfRW9YjjvfO6mcfOqXbJatt/Dru0JMBZON45tbWwfrWG
+         xb/TjxiPb8/D2KEEAuyroj0yJcjjvy5fYEdSVjZPCd7ZEFOaPPRzbfH06TPDu4i/8T
+         JPHkh+GmmQWgQ==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id b53fd81b;
+        Sat, 20 Nov 2021 23:02:32 +0000 (UTC)
+Date:   Sun, 21 Nov 2021 08:02:16 +0900
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Christian Schoenebeck <linux_oss@crudebyte.com>,
+        Nikolay Kichukov <nikolay@oldum.net>
+Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>
+Subject: Re: [PATCH v3 6/7] 9p/trans_virtio: support larger msize values
+Message-ID: <YZl+eD6r0iIGzS43@codewreck.org>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <8d781f45b6a6fb434aa386dccb7f8f424ec1ffbe.camel@oldum.net>
+ <2717208.9V0g2NVZY4@silver>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bernard Zhao
-> Sent: 19 November 2021 02:07
+
+Christian,
+
+Christian Schoenebeck wrote on Sat, Nov 20, 2021 at 03:46:19PM +0100:
+> > So in practice, you will be capped at 2MB as that is the biggest the
+> > slab will be able to hand over in a single chunk.
 > 
-> simple_strtoull is obsolete, use kstrtol instead.
+> I did not encounter a 2MB limit here. But kmalloc() clearly has a 4MB limit, 
+> so when trying an msize larger than 4MB it inevitably causes a memory 
+> allocation error. In my tests this allocation error would always happen 
+> immediately at mount time causing an instant kernel oops.
 
-I think the death announcement of simple_strtoull() has already
-been deemed premature.
-kstrtol() isn't a replacment in many cases.
+Interesting, I was assuming it'd have the same limit.
+There must be some fallback path I didn't know about... I wonder if it
+handles non-contiguous memory ranges too then, in which case it's not as
+bad as I'd have expected depending on how finely it's willing to sew
+things back together: I'll check
 
-> Signed-off-by: Bernard Zhao <bernard@vivo.com>
-> ---
->  net/bridge/br_sysfs_br.c | 7 +++----
->  1 file changed, 3 insertions(+), 4 deletions(-)
+> > Ideally we'd only allocate on an as-need basis, most of the protocol
+> > calls bound how much data is supposed to come back and we know how much
+> > we want to send (it's a format string actually, but we can majorate it
+> > quite easily), so one would need to adjust all protocol calls to pass
+> > this info to p9_client_rpc/p9_client_zc_rpc so it only allocates buffers
+> > as required, if necessary in multiple reasonably-sized segments (I'd
+> > love 2MB hugepages-backed folios...), and have all transports use these
+> > buffers.
 > 
-> diff --git a/net/bridge/br_sysfs_br.c b/net/bridge/br_sysfs_br.c
-> index d9a89ddd0331..11c490694296 100644
-> --- a/net/bridge/br_sysfs_br.c
-> +++ b/net/bridge/br_sysfs_br.c
-> @@ -36,15 +36,14 @@ static ssize_t store_bridge_parm(struct device *d,
->  	struct net_bridge *br = to_bridge(d);
->  	struct netlink_ext_ack extack = {0};
->  	unsigned long val;
-> -	char *endp;
->  	int err;
+> It is not that bad in sense of pending work. One major thing that needs to be 
+> done is to cap the majority of 9p message types to allocate only as much as 
+> they need, which is for most message types <8k. Right now they always simply 
+> kmalloc(msize), which hurts with increasing msize values. That task does not 
+> need many changes though.
+
+Yes, that could be a first step.
+Although frankly as I said if we're going to do this, we actual can
+majorate the actual max for all operations pretty easily thanks to the
+count parameter -- I guess it's a bit more work but we can put arbitrary
+values (e.g. 8k for all the small stuff) instead of trying to figure it
+out more precisely; I'd just like the code path to be able to do it so
+we only do that rechurn once.
+
+Note I've been rather aggressive with checkpatch warning fixes in my
+last update for 5.16, hopefully it won't conflict too much with your
+work... Let me deal with conflicts if it's a problem.
+
+> > I have a rough idea on how to do all this but honestly less than 0 time
+> > for that, so happy to give advices or review any patch, but it's going
+> > to be a lot of work that stand in the way of really big IOs.
 > 
->  	if (!ns_capable(dev_net(br->dev)->user_ns, CAP_NET_ADMIN))
->  		return -EPERM;
+> Reviews of the patches would actually help a lot to bring this overall effort 
+> forward, but probably rather starting with the upcoming next version of the 
+> kernel patches, not this old v3.
+
+Happy to review anything you send over, yes :)
+
+
+
+Nikolay,
+
+> > > (Not sure about this, I'll test these patches tomorrow, but since
+> > > something failed I'm not surprised you have less than what you could
+> > > have here: what do you get with a more reasonable value like 1M
+> > > first?)
 > 
-> -	val = simple_strtoul(buf, &endp, 0);
-> -	if (endp == buf)
-> -		return -EINVAL;
-> +	err = kstrtoul(buf, 10, &val);
-> +	if (err != 0)
-> +		return err;
+> It worked with 1MB, I can stick to this for the time being.
+> 
+> Are the kernel patches supposed to be included in the KVM host kernel or
+> would the guest kernel suffice?
 
-That changes the valid input strings.
-So is a UAPI change.
-Now it might be that no one passes in strings that now fail,
-but you can't tell.
+The patches are only required in the guest.
 
-Rightfully or not it used to ignore any trailing characters.
-So "10flobbs" would be treated as "10".
-
-Did you also check what happens to 0x1234 and 012 ?
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+-- 
+Dominique
