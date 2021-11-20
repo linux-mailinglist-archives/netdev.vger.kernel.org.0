@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80264457D56
+	by mail.lfdr.de (Postfix) with ESMTP id C93E8457D57
 	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 12:29:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237424AbhKTLbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Nov 2021 06:31:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56046 "EHLO
+        id S237451AbhKTLbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Nov 2021 06:31:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230324AbhKTLbF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Nov 2021 06:31:05 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665FFC061574;
-        Sat, 20 Nov 2021 03:28:02 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id nh10-20020a17090b364a00b001a69adad5ebso10995375pjb.2;
-        Sat, 20 Nov 2021 03:28:02 -0800 (PST)
+        with ESMTP id S237389AbhKTLbG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Nov 2021 06:31:06 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D45F7C061574;
+        Sat, 20 Nov 2021 03:28:03 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id u17so10132458plg.9;
+        Sat, 20 Nov 2021 03:28:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=1bhmfU5jdQeu9SB00q/vtwct43J0/YFTE1w/oQ1md1g=;
-        b=afkFqnCvcjnyD8nxdVXqFTSVEVUwnC2uqZPLEPV2jtxoh8iP7hESwhZR+iKFi624AK
-         RH++PL7SD5LtzMS97jz58+9YWhK/11GWAslrKTZF2qL5kLy7PaHEpL0Z8ha5A3QSeH7d
-         K055K9W/KzVS0TtrsOKVTaZqxYlMy1Jl88y16mrB9ZqHqazzpRNk92K38Uh6vWoD9jJ0
-         a4+AHmUUC8DBfR5dlnfj/Jr7bobaOJKTh+6ziBZvfWiOeDH5vERkp1qgicWS+SxHSieO
-         YIlL4/qQrJYUJyKRMtSomhCiIa4ajT1ZKTWNa3ISbd10qhd3fbKLriJ/fn5M2go77Qlc
-         B+2Q==
+        bh=NXvWr7/n/dn/qU7871k4jVbZ4yqRH7KsA6t+jNRxS5w=;
+        b=bFQfNI4zaX/cX3ouONrppFc9YKLptBjPxzlAa57/2aqNreSUW7BufmQOVwKb8XlWx9
+         MPi+O1PqfJ7sDMHSCZ+uGA/BeAy3Vm7WUNtLXqpgmK1RZH4znPl3WNx6PArY/fqfqi5z
+         /7goWOQq36fVMpT4QPfQORv8H2cFJQ6bjnwqc7oDhaBhrPjQYRuG1zR18Dv4Suf7k+vy
+         7SUtVnBYXMAW0rCY4p/HVSF01tnp0cDf9IDn4ZHiL2f3rChJWYRTU5YjMJfGvhOPGmUU
+         fiaG8RIVrMWrz0TNV5tdYsxQTSY7dgxV+srOM8LSeDpzr4sYQi9aUff9ThJDz87hCR/k
+         /gOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1bhmfU5jdQeu9SB00q/vtwct43J0/YFTE1w/oQ1md1g=;
-        b=csUooddDX+RFboK+F9ii4WIhRtPyaYwceNfojTJE15K74nTMf4j5SiFiXfLl5fwkX5
-         BtVs4IY5hUArpzxjZ1CFaEthPvmKOj6q1EwwRCpmoogRFLliT38Euc/p+VyFyqH1eV0r
-         k+M0iWdGSC0WxoSzsYB5FQYZRrUB0RIfWIdZiTm9F94H8g0BFCdHmYDHyHpEd2/qLUXU
-         1CJQ+DtbVruTVaAnr93chJHZxGkKCQu5/4cuEUn1qyH3mETduBvcXTAQ9qKJEzxRI65E
-         P9m/bVNl3GMmYYupuKaZBy1IpP6PDSr/f5xwTa0L6QWYWf0T4M0c4aiZmKT7r5Gfc0Rb
-         VVRg==
-X-Gm-Message-State: AOAM530FSlr2blo2s7NgoxJlLYHz0scrle7tQiIwBxJ8yz0ASfuz8yPk
-        DNGJ5tWGR9FE7IfePq6eQ/g=
-X-Google-Smtp-Source: ABdhPJxliuUDz1XN5kYH2h4oCti40BWvEgRwwTYsKQppVM5CgiOYDrqQRp0zNR3XM7eeyPTuLR4MPg==
-X-Received: by 2002:a17:90a:c091:: with SMTP id o17mr9315675pjs.35.1637407682005;
-        Sat, 20 Nov 2021 03:28:02 -0800 (PST)
+        bh=NXvWr7/n/dn/qU7871k4jVbZ4yqRH7KsA6t+jNRxS5w=;
+        b=kqOCHakA4BHg4KPNFfonbzpe4/6sXkBFjcW/kQLL2Xe3ry7Xn49GKZNzQFEEfM7mZl
+         66P148omv/IiuaMBMJmtZxp16xVKiqpkJzdOSbEEwgb21M23YAy73uJYSVfDieJzQa/Q
+         Szx5fL/L0YQviHFTAHoT+uuGR+rg0fna+Jug2Sdm9CZYKt/h7U56thfleQ/UPMGCELyi
+         XONitXmp1deTAft7iapkNgNQzfX+0puPY8GgGex8JvgT89q93NbTlggwwxDKhFByQPz4
+         82D7+2pns1GqWtptj6hd4EMn+Byw/NjoC05mC434OSJNCdf4hM7D2PC08ns+361x6PEq
+         FwVg==
+X-Gm-Message-State: AOAM531Uzx1mykl/YeRvhuZ8p4eNFnAZOdZFG34fs8PufZwnoT7HLtkE
+        tfSvNGhj/dUiY2ihgMjdpY4=
+X-Google-Smtp-Source: ABdhPJwckAaKVrEN2V1fZZmajViBaj+hK5R4HtJRF86XY4oxgC2JPhuSPO4Kwsq5pBFTZqBgcv/o9g==
+X-Received: by 2002:a17:90b:512:: with SMTP id r18mr9057016pjz.64.1637407683486;
+        Sat, 20 Nov 2021 03:28:03 -0800 (PST)
 Received: from vultr.guest ([66.42.104.82])
-        by smtp.gmail.com with ESMTPSA id q17sm2835490pfu.117.2021.11.20.03.28.00
+        by smtp.gmail.com with ESMTPSA id q17sm2835490pfu.117.2021.11.20.03.28.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Nov 2021 03:28:01 -0800 (PST)
+        Sat, 20 Nov 2021 03:28:03 -0800 (PST)
 From:   Yafang Shao <laoar.shao@gmail.com>
 To:     akpm@linux-foundation.org
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
@@ -54,8 +54,7 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-mm@kvack.org, linux-kernel@vger.kernel.org,
         oliver.sang@intel.com, lkp@intel.com,
         Yafang Shao <laoar.shao@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
         David Hildenbrand <david@redhat.com>,
         Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
         Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
@@ -63,12 +62,14 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Andrii Nakryiko <andrii.nakryiko@gmail.com>,
         Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
         Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
         Matthew Wilcox <willy@infradead.org>,
         Al Viro <viro@zeniv.linux.org.uk>,
+        Kees Cook <keescook@chromium.org>,
         Petr Mladek <pmladek@suse.com>
-Subject: [PATCH v2 2/7] fs/exec: replace strncpy with strscpy_pad in __get_task_comm
-Date:   Sat, 20 Nov 2021 11:27:33 +0000
-Message-Id: <20211120112738.45980-3-laoar.shao@gmail.com>
+Subject: [PATCH v2 3/7] drivers/infiniband: replace open-coded string copy with get_task_comm
+Date:   Sat, 20 Nov 2021 11:27:34 +0000
+Message-Id: <20211120112738.45980-4-laoar.shao@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20211120112738.45980-1-laoar.shao@gmail.com>
 References: <20211120112738.45980-1-laoar.shao@gmail.com>
@@ -78,15 +79,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the dest buffer size is smaller than sizeof(tsk->comm), the buffer
-will be without null ternimator, that may cause problem. Using
-strscpy_pad() instead of strncpy() in __get_task_comm() can make the string
-always nul ternimated and zero padded.
+We'd better use the helper get_task_comm() rather than the open-coded
+strlcpy() to get task comm. As the comment above the hard-coded 16, we
+can replace it with TASK_COMM_LEN.
 
-Suggested-by: Kees Cook <keescook@chromium.org>
-Suggested-by: Steven Rostedt <rostedt@goodmis.org>
 Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
+Acked-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
 Reviewed-by: David Hildenbrand <david@redhat.com>
 Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
@@ -101,23 +99,36 @@ Cc: Al Viro <viro@zeniv.linux.org.uk>
 Cc: Kees Cook <keescook@chromium.org>
 Cc: Petr Mladek <pmladek@suse.com>
 ---
- fs/exec.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/infiniband/hw/qib/qib.h          | 2 +-
+ drivers/infiniband/hw/qib/qib_file_ops.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/exec.c b/fs/exec.c
-index 51d3cb4e3cdf..fa142638b191 100644
---- a/fs/exec.c
-+++ b/fs/exec.c
-@@ -1207,7 +1207,8 @@ static int unshare_sighand(struct task_struct *me)
- char *__get_task_comm(char *buf, size_t buf_size, struct task_struct *tsk)
- {
- 	task_lock(tsk);
--	strncpy(buf, tsk->comm, buf_size);
-+	/* Always NUL terminated and zero-padded */
-+	strscpy_pad(buf, tsk->comm, buf_size);
- 	task_unlock(tsk);
- 	return buf;
- }
+diff --git a/drivers/infiniband/hw/qib/qib.h b/drivers/infiniband/hw/qib/qib.h
+index 9363bccfc6e7..a8e1c30c370f 100644
+--- a/drivers/infiniband/hw/qib/qib.h
++++ b/drivers/infiniband/hw/qib/qib.h
+@@ -196,7 +196,7 @@ struct qib_ctxtdata {
+ 	pid_t pid;
+ 	pid_t subpid[QLOGIC_IB_MAX_SUBCTXT];
+ 	/* same size as task_struct .comm[], command that opened context */
+-	char comm[16];
++	char comm[TASK_COMM_LEN];
+ 	/* pkeys set by this use of this ctxt */
+ 	u16 pkeys[4];
+ 	/* so file ops can get at unit */
+diff --git a/drivers/infiniband/hw/qib/qib_file_ops.c b/drivers/infiniband/hw/qib/qib_file_ops.c
+index 63854f4b6524..aa290928cf96 100644
+--- a/drivers/infiniband/hw/qib/qib_file_ops.c
++++ b/drivers/infiniband/hw/qib/qib_file_ops.c
+@@ -1321,7 +1321,7 @@ static int setup_ctxt(struct qib_pportdata *ppd, int ctxt,
+ 	rcd->tid_pg_list = ptmp;
+ 	rcd->pid = current->pid;
+ 	init_waitqueue_head(&dd->rcd[ctxt]->wait);
+-	strlcpy(rcd->comm, current->comm, sizeof(rcd->comm));
++	get_task_comm(rcd->comm, current);
+ 	ctxt_fp(fp) = rcd;
+ 	qib_stats.sps_ctxts++;
+ 	dd->freectxts--;
 -- 
 2.17.1
 
