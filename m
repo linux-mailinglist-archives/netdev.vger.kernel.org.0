@@ -2,51 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63748457F8E
-	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 17:41:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E13AC457F8C
+	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 17:41:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231390AbhKTQn7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Nov 2021 11:43:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39852 "EHLO
+        id S237526AbhKTQoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Nov 2021 11:44:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232297AbhKTQn7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Nov 2021 11:43:59 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85DBBC061748
-        for <netdev@vger.kernel.org>; Sat, 20 Nov 2021 08:40:55 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id y17-20020a25bb91000000b005f6b36b28b9so2207498ybg.22
-        for <netdev@vger.kernel.org>; Sat, 20 Nov 2021 08:40:55 -0800 (PST)
+        with ESMTP id S237353AbhKTQoA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Nov 2021 11:44:00 -0500
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222DEC061574
+        for <netdev@vger.kernel.org>; Sat, 20 Nov 2021 08:40:57 -0800 (PST)
+Received: by mail-pj1-x1049.google.com with SMTP id p8-20020a17090a748800b001a6cceee8afso4229001pjk.4
+        for <netdev@vger.kernel.org>; Sat, 20 Nov 2021 08:40:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=PPawjMAOHijO6UJMPwJ2QsxpAhTEE6AQSFe4/jOgZjM=;
-        b=tdrqsOFHJthXHVddtenObjXdWqP0NfN1VgCp8fwyIV6AnHeC1yWqTWwSRsULzcIBad
-         ZXK2JdFSzoJGiyb2L+0z+Fdvaau3YpHc8VX1JEh3/FVCcKdO4vrkOjZshcBsiC8RpOiT
-         5P25JotU8izblxcZnuktieAAriVwB9FBze9OIYWtkUXOgGlA2ha9PqMyZ/b8Amq3Nhl2
-         N98enLW1xRbDR2O+4uGOi6a+MDhqgYrIlNJHr9ytze3wVZKgXu1pGVefpOjsSSUPTieE
-         3uI31Pr3q4C7mRb8ADpAXyvRtcWFLYpVCOuLR9/paXYDtClDf965IXoI1QrPHDtPkZkd
-         nfHQ==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=7sFsQRi+bID8yIMimrdz6AOd5jcGs6Evz5cfV1KJdck=;
+        b=RlLHYGE6bW8e0veAvhIl1ddNWHdzqRLtxNLPqJ1DXph8vHq/Ekb/+hCo9ZVaod8kJD
+         uL+9Ww3sxcwIzRiuxMr0QZZ9GvlYuBysVaLbgrpdIO1bjaPYM+1NqtsCcSGE1axTwKl1
+         dyiQdpjdf62meBUv8z7h5dvCdvHu3T1NQX9SGsG9F2RRgHlSyqLcOtKMO4CU8JbEupqU
+         R5x3NRqFO+cmpAYXF2KR0k0tUW8d4g83oU/0RpmlxYaV23y43Uf/5L2ZZ6lbp51Ba1Um
+         AyajqCr6Yi7k2LMgI+wrlT2GuKwLfQE9ZqKTY8bSRoFcrqG8m33RQWrGfwQz2QkAv2gl
+         3qwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=PPawjMAOHijO6UJMPwJ2QsxpAhTEE6AQSFe4/jOgZjM=;
-        b=jFhtBV9m003tRUp2ifMCBZ8EosYZQpWLlFkMja6BNBAdL/DhZQZ1WnANhLGg4qCxoy
-         hbFkV+maNOAH6sKNdXahN1HRvcSWXoqfaA6ZJdB8MaidaYnjGWI7Ri617TpU04zBYk8p
-         btkjYT3+lDk0HAaDOLcnA/hrKXk+MDQtAyPZ40S4zLZamQWncwin2/F0OetleBLg+1Qh
-         IOV7q23tcMosQVpqiY34V0il5o79uOlbeJ+bUZMoyl0d+1G5TVwqyQcw+dyQjxjTF5wk
-         m/isLKyluJvnwrTXiujRQUL7gWz0Bc1nfNEPl0vpQ08RqxiiWzRajs7WWRDismoW476/
-         X2ag==
-X-Gm-Message-State: AOAM532CDKCxoxDA25Ay7Cpw7zuGVfhr8QlwkXvYzNTyVSX1y04vCHUx
-        kLe0DldWlYUXHlUfdPKXV0ZQlxrKurlXqQ==
-X-Google-Smtp-Source: ABdhPJzROoINgwRdQhHt9fNUGKnV0Py6WRY0DGSQHmCcAIgYz8GaDZOzw1spnTAF3WUezLfm/A52UOBHc3cG8g==
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=7sFsQRi+bID8yIMimrdz6AOd5jcGs6Evz5cfV1KJdck=;
+        b=ky/7K+TTVJP6k0Bc90QLikMBWqPVfRYlJJwDQ/fX0XSgYgWSTokfsJ/Z07K7U1aAS0
+         62o1+C1NltpwoX1ET+nMsIKcoduHiMqK40eJISpOm1wBHiWeKJ4vSSsjcCYAOyv/riFJ
+         kOxhA0ZRY0saoIyvGCrKI8K97zd6E3qH4bX4yXYcvfDW6zGWIoOKpYDtUnarGhaeEpQ2
+         b8jytPF5YTDQacy0Fya3e12hTY+g4NLSrtSZQ73J/o2ni0CVn7+rnRI5/fdLQVdr1sJL
+         8UpHuC1yjJ22f0BTFVaTLMNOuri9MPNQeL21pHREvQUNdimC6tMbGybK/nPaQvmcLOdM
+         sp4w==
+X-Gm-Message-State: AOAM533d87NXGfX1jfyHC00SBu262xl1/gr557bHB8HNH6vToTBdA8Fg
+        xp0AveQZfV0vrr2yyarTs1ix/t3hAtpr1A==
+X-Google-Smtp-Source: ABdhPJwyJygrhJy+Tyh8HV1bS9GQGi3B1Ygs/42cvnrWvW4IVCh2SW6AupFSzuH01xftOB4DLqnRfvd07tRBQQ==
 X-Received: from mmandlik.mtv.corp.google.com ([2620:15c:202:201:8437:70f3:c03b:1c71])
- (user=mmandlik job=sendgmr) by 2002:a5b:552:: with SMTP id
- r18mr4947393ybp.30.1637426454515; Sat, 20 Nov 2021 08:40:54 -0800 (PST)
-Date:   Sat, 20 Nov 2021 08:40:46 -0800
-Message-Id: <20211120084022.v5.1.Ic0a40b84dee3825302890aaea690e73165c71820@changeid>
+ (user=mmandlik job=sendgmr) by 2002:a63:854a:: with SMTP id
+ u71mr23577557pgd.428.1637426456677; Sat, 20 Nov 2021 08:40:56 -0800 (PST)
+Date:   Sat, 20 Nov 2021 08:40:47 -0800
+In-Reply-To: <20211120084022.v5.1.Ic0a40b84dee3825302890aaea690e73165c71820@changeid>
+Message-Id: <20211120084022.v5.2.I9eda306e4c542010535dc49b5488946af592795e@changeid>
 Mime-Version: 1.0
+References: <20211120084022.v5.1.Ic0a40b84dee3825302890aaea690e73165c71820@changeid>
 X-Mailer: git-send-email 2.34.0.rc2.393.gf8c9666880-goog
-Subject: [PATCH v5 1/2] bluetooth: Handle MSFT Monitor Device Event
+Subject: [PATCH v5 2/2] bluetooth: Add MGMT Adv Monitor Device Found/Lost events
 From:   Manish Mandlik <mmandlik@google.com>
 To:     marcel@holtmann.org, luiz.dentz@gmail.com
 Cc:     chromeos-bluetooth-upstreaming@chromium.org,
@@ -62,288 +66,241 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Whenever the controller starts/stops monitoring a bt device, it sends
-MSFT Monitor Device event. Add handler to read this vendor event.
+This patch introduces two new MGMT events for notifying the bluetoothd
+whenever the controller starts/stops monitoring a device.
 
 Test performed:
-- Verified by logs that the MSFT Monitor Device event is received from
-  the controller whenever it starts/stops monitoring a device.
+- Verified by logs that the MSFT Monitor Device is received from the
+  controller and the bluetoothd is notified whenever the controller
+  starts/stops monitoring a device.
 
 Signed-off-by: Manish Mandlik <mmandlik@google.com>
 Reviewed-by: Miao-chen Chou <mcchou@google.com>
+
 ---
-Hello Bt-Maintainers,
-
-As mentioned in the bluez patch series [1], we need to capture the 'MSFT
-Monitor Device' event from the controller and pass on the necessary
-information to the bluetoothd.
-
-This is required to further optimize the power consumption by avoiding
-handling of RSSI thresholds and timeouts in the user space and let the
-controller do the RSSI tracking.
-
-This patch series adds support to read the MSFT vendor event
-HCI_VS_MSFT_LE_Monitor_Device_Event and introduces new MGMT events
-MGMT_EV_ADV_MONITOR_DEVICE_FOUND and MGMT_EV_ADV_MONITOR_DEVICE_LOST to
-indicate that the controller has started/stopped tracking a particular
-device.
-
-Please let me know what you think about this or if you have any further
-questions.
-
-[1] https://patchwork.kernel.org/project/bluetooth/list/?series=583423
-
-Thanks,
-Manish.
 
 Changes in v5:
-- Split v4 into two patches.
-- Buffer controller Device Found event and maintain the device tracking
-  state in the kernel.
+- New patch in the series. Split previous patch into two.
+- Update the Device Found logic to send existing Device Found event or
+  Adv Monitor Device Found event depending on the active scanning state.
 
-Changes in v4:
-- Add Advertisement Monitor Device Found event and update addr type.
-
-Changes in v3:
-- Discard changes to the Device Found event and notify bluetoothd only
-  when the controller stops monitoring the device via new Device Lost
-  event.
-
-Changes in v2:
-- Instead of creating a new 'Device Tracking' event, add a flag 'Device
-  Tracked' in the existing 'Device Found' event and add a new 'Device
-  Lost' event to indicate that the controller has stopped tracking that
-  device.
-
- include/net/bluetooth/hci_core.h |  11 +++
- net/bluetooth/hci_core.c         |   1 +
- net/bluetooth/msft.c             | 127 ++++++++++++++++++++++++++++++-
- 3 files changed, 138 insertions(+), 1 deletion(-)
+ include/net/bluetooth/hci_core.h |   3 +
+ include/net/bluetooth/mgmt.h     |  16 +++++
+ net/bluetooth/mgmt.c             | 100 ++++++++++++++++++++++++++++++-
+ net/bluetooth/msft.c             |  15 ++++-
+ 4 files changed, 132 insertions(+), 2 deletions(-)
 
 diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 2560cfe80db8..6734b394c6e7 100644
+index 6734b394c6e7..2aabd6f62f51 100644
 --- a/include/net/bluetooth/hci_core.h
 +++ b/include/net/bluetooth/hci_core.h
-@@ -257,6 +257,15 @@ struct adv_info {
- 
- #define HCI_ADV_TX_POWER_NO_PREFERENCE 0x7F
- 
-+struct monitored_device {
-+	struct list_head list;
-+
-+	bdaddr_t bdaddr;
-+	__u8     addr_type;
-+	__u16    handle;
-+	bool     notified;
-+};
-+
- struct adv_pattern {
- 	struct list_head list;
- 	__u8 ad_type;
-@@ -588,6 +597,8 @@ struct hci_dev {
- 
+@@ -598,6 +598,7 @@ struct hci_dev {
  	struct delayed_work	interleave_scan;
  
-+	struct list_head	monitored_devices;
-+
+ 	struct list_head	monitored_devices;
++	bool			advmon_pend_notify;
+ 
  #if IS_ENABLED(CONFIG_BT_LEDS)
  	struct led_trigger	*power_led;
- #endif
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index fdc0dcf8ee36..d4bcd511530a 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -2503,6 +2503,7 @@ struct hci_dev *hci_alloc_dev_priv(int sizeof_priv)
- 	INIT_LIST_HEAD(&hdev->conn_hash.list);
- 	INIT_LIST_HEAD(&hdev->adv_instances);
- 	INIT_LIST_HEAD(&hdev->blocked_keys);
-+	INIT_LIST_HEAD(&hdev->monitored_devices);
+@@ -1844,6 +1845,8 @@ void mgmt_adv_monitor_removed(struct hci_dev *hdev, u16 handle);
+ int mgmt_phy_configuration_changed(struct hci_dev *hdev, struct sock *skip);
+ int mgmt_add_adv_patterns_monitor_complete(struct hci_dev *hdev, u8 status);
+ int mgmt_remove_adv_monitor_complete(struct hci_dev *hdev, u8 status);
++void mgmt_adv_monitor_device_lost(struct hci_dev *hdev, u16 handle,
++				  bdaddr_t *bdaddr, u8 addr_type);
  
- 	INIT_LIST_HEAD(&hdev->local_codecs);
- 	INIT_WORK(&hdev->rx_work, hci_rx_work);
-diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
-index 1122097e1e49..06b3b006deb8 100644
---- a/net/bluetooth/msft.c
-+++ b/net/bluetooth/msft.c
-@@ -80,6 +80,14 @@ struct msft_rp_le_set_advertisement_filter_enable {
- 	__u8 sub_opcode;
- } __packed;
- 
-+#define MSFT_EV_LE_MONITOR_DEVICE	0x02
-+struct msft_ev_le_monitor_device {
-+	__u8     addr_type;
-+	bdaddr_t bdaddr;
-+	__u8     monitor_handle;
-+	__u8     monitor_state;
+ u8 hci_le_conn_update(struct hci_conn *conn, u16 min, u16 max, u16 latency,
+ 		      u16 to_multiplier);
+diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
+index 23a0524061b7..4b85f93b8a77 100644
+--- a/include/net/bluetooth/mgmt.h
++++ b/include/net/bluetooth/mgmt.h
+@@ -1103,3 +1103,19 @@ struct mgmt_ev_controller_resume {
+ #define MGMT_WAKE_REASON_NON_BT_WAKE		0x0
+ #define MGMT_WAKE_REASON_UNEXPECTED		0x1
+ #define MGMT_WAKE_REASON_REMOTE_WAKE		0x2
++
++#define MGMT_EV_ADV_MONITOR_DEVICE_FOUND	0x002f
++struct mgmt_ev_adv_monitor_device_found {
++	__le16 monitor_handle;
++	struct mgmt_addr_info addr;
++	__s8   rssi;
++	__le32 flags;
++	__le16 eir_len;
++	__u8   eir[0];
 +} __packed;
 +
- struct msft_monitor_advertisement_handle_data {
- 	__u8  msft_handle;
- 	__u16 mgmt_handle;
-@@ -266,6 +274,7 @@ static void msft_le_cancel_monitor_advertisement_cb(struct hci_dev *hdev,
- 	struct msft_data *msft = hdev->msft_data;
- 	int err;
- 	bool pending;
-+	struct monitored_device *dev, *tmp;
++#define MGMT_EV_ADV_MONITOR_DEVICE_LOST		0x0030
++struct mgmt_ev_adv_monitor_device_lost {
++	__le16 monitor_handle;
++	struct mgmt_addr_info addr;
++} __packed;
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index f8f74d344297..89b9b62752b5 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -174,6 +174,8 @@ static const u16 mgmt_events[] = {
+ 	MGMT_EV_ADV_MONITOR_REMOVED,
+ 	MGMT_EV_CONTROLLER_SUSPEND,
+ 	MGMT_EV_CONTROLLER_RESUME,
++	MGMT_EV_ADV_MONITOR_DEVICE_FOUND,
++	MGMT_EV_ADV_MONITOR_DEVICE_LOST,
+ };
  
- 	if (status)
- 		goto done;
-@@ -296,6 +305,15 @@ static void msft_le_cancel_monitor_advertisement_cb(struct hci_dev *hdev,
- 
- 		list_del(&handle_data->list);
- 		kfree(handle_data);
-+
-+		/* Clear any monitored devices by this Adv Monitor */
-+		list_for_each_entry_safe(dev, tmp, &hdev->monitored_devices,
-+					 list) {
-+			if (dev->handle == handle_data->mgmt_handle) {
-+				list_del(&dev->list);
-+				kfree(dev);
-+			}
-+		}
- 	}
- 
- 	/* If remove all monitors is required, we need to continue the process
-@@ -538,6 +556,7 @@ void msft_do_close(struct hci_dev *hdev)
- 	struct msft_data *msft = hdev->msft_data;
- 	struct msft_monitor_advertisement_handle_data *handle_data, *tmp;
- 	struct adv_monitor *monitor;
-+	struct monitored_device *dev, *tmp_dev;
- 
- 	if (!msft)
- 		return;
-@@ -557,6 +576,16 @@ void msft_do_close(struct hci_dev *hdev)
- 		list_del(&handle_data->list);
- 		kfree(handle_data);
- 	}
-+
-+	hci_dev_lock(hdev);
-+
-+	/* Clear any devices that are being monitored */
-+	list_for_each_entry_safe(dev, tmp_dev, &hdev->monitored_devices, list) {
-+		list_del(&dev->list);
-+		kfree(dev);
-+	}
-+
-+	hci_dev_unlock(hdev);
+ static const u16 mgmt_untrusted_commands[] = {
+@@ -9524,6 +9526,78 @@ static bool is_filter_match(struct hci_dev *hdev, s8 rssi, u8 *eir,
+ 	return true;
  }
  
- void msft_register(struct hci_dev *hdev)
-@@ -590,6 +619,90 @@ void msft_unregister(struct hci_dev *hdev)
- 	kfree(msft);
- }
- 
-+/* This function requires the caller holds hdev->lock */
-+static void msft_device_found(struct hci_dev *hdev, bdaddr_t *bdaddr,
-+			      __u8 addr_type, __u16 mgmt_handle)
++void mgmt_adv_monitor_device_lost(struct hci_dev *hdev, u16 handle,
++				  bdaddr_t *bdaddr, u8 addr_type)
 +{
-+	struct monitored_device *dev;
++	struct mgmt_ev_adv_monitor_device_lost ev;
 +
-+	dev = kmalloc(sizeof(*dev), GFP_KERNEL);
-+	if (!dev) {
-+		bt_dev_err(hdev, "MSFT vendor event %u: no memory",
-+			   MSFT_EV_LE_MONITOR_DEVICE);
-+		return;
-+	}
++	ev.monitor_handle = cpu_to_le16(handle);
++	bacpy(&ev.addr.bdaddr, bdaddr);
++	ev.addr.type = addr_type;
 +
-+	bacpy(&dev->bdaddr, bdaddr);
-+	dev->addr_type = addr_type;
-+	dev->handle = mgmt_handle;
-+	dev->notified = false;
-+
-+	INIT_LIST_HEAD(&dev->list);
-+	list_add(&dev->list, &hdev->monitored_devices);
++	mgmt_event(MGMT_EV_ADV_MONITOR_DEVICE_LOST, hdev, &ev, sizeof(ev),
++		   NULL);
 +}
 +
-+/* This function requires the caller holds hdev->lock */
-+static void msft_device_lost(struct hci_dev *hdev, bdaddr_t *bdaddr,
-+			     __u8 addr_type, __u16 mgmt_handle)
++void mgmt_adv_monitor_device_found(struct hci_dev *hdev,
++				   struct mgmt_ev_device_found *ev,
++				   size_t ev_size, bool discovering)
 +{
++	char buf[518];
++	struct mgmt_ev_adv_monitor_device_found *advmon_ev = (void *)buf;
++	size_t advmon_ev_size;
 +	struct monitored_device *dev, *tmp;
++	bool matched = false;
++	bool notified = false;
++
++	/* Make sure that the buffer is big enough */
++	advmon_ev_size = ev_size + (sizeof(*advmon_ev) - sizeof(*ev));
++	if (advmon_ev_size > sizeof(buf))
++		return;
++
++	/* ADV_MONITOR_DEVICE_FOUND is similar to DEVICE_FOUND event except
++	 * that it also has 'monitor_handle'. Make a copy of DEVICE_FOUND and
++	 * store monitor_handle of the matched monitor.
++	 */
++	memcpy(&advmon_ev->addr, ev, ev_size);
++
++	hdev->advmon_pend_notify = false;
 +
 +	list_for_each_entry_safe(dev, tmp, &hdev->monitored_devices, list) {
-+		if (dev->handle == mgmt_handle) {
-+			list_del(&dev->list);
-+			kfree(dev);
++		if (!bacmp(&dev->bdaddr, &advmon_ev->addr.bdaddr)) {
++			matched = true;
 +
-+			break;
++			if (!dev->notified) {
++				advmon_ev->monitor_handle =
++						cpu_to_le16(dev->handle);
++
++				mgmt_event(MGMT_EV_ADV_MONITOR_DEVICE_FOUND,
++					   hdev, advmon_ev, advmon_ev_size,
++					   NULL);
++
++				notified = true;
++				dev->notified = true;
++			}
 +		}
++
++		if (!dev->notified)
++			hdev->advmon_pend_notify = true;
++	}
++
++	if (!discovering &&
++	    ((matched && !notified) || !msft_monitor_supported(hdev))) {
++		/* Handle 0 indicates that we are not active scanning and this
++		 * is a subsequent advertisement report for an already matched
++		 * Advertisement Monitor or the controller offloading support
++		 * is not available.
++		 */
++		advmon_ev->monitor_handle = 0;
++
++		mgmt_event(MGMT_EV_ADV_MONITOR_DEVICE_FOUND, hdev, advmon_ev,
++			   advmon_ev_size, NULL);
 +	}
 +}
 +
-+/* This function requires the caller holds hdev->lock */
-+static void msft_monitor_device_evt(struct hci_dev *hdev, struct sk_buff *skb)
-+{
-+	struct msft_ev_le_monitor_device *ev = (void *)skb->data;
-+	struct msft_monitor_advertisement_handle_data *handle_data;
-+	u8 addr_type;
-+
-+	if (skb->len < sizeof(*ev)) {
-+		bt_dev_err(hdev,
-+			   "MSFT vendor event %u: insufficient data (len: %u)",
-+			   MSFT_EV_LE_MONITOR_DEVICE, skb->len);
-+		return;
-+	}
-+	skb_pull(skb, sizeof(*ev));
-+
-+	bt_dev_dbg(hdev,
-+		   "MSFT vendor event %u: handle 0x%04x state %d addr %pMR",
-+		   MSFT_EV_LE_MONITOR_DEVICE, ev->monitor_handle,
-+		   ev->monitor_state, &ev->bdaddr);
-+
-+	handle_data = msft_find_handle_data(hdev, ev->monitor_handle, false);
-+
-+	switch (ev->addr_type) {
-+	case ADDR_LE_DEV_PUBLIC:
-+		addr_type = BDADDR_LE_PUBLIC;
-+		break;
-+
-+	case ADDR_LE_DEV_RANDOM:
-+		addr_type = BDADDR_LE_RANDOM;
-+		break;
-+
-+	default:
-+		bt_dev_err(hdev,
-+			   "MSFT vendor event %u: unknown addr type 0x%02x",
-+			   ev->addr_type);
-+		return;
-+	}
-+
-+	if (ev->monitor_state)
-+		msft_device_found(hdev, &ev->bdaddr, addr_type,
-+				  handle_data->mgmt_handle);
-+	else
-+		msft_device_lost(hdev, &ev->bdaddr, addr_type,
-+				 handle_data->mgmt_handle);
-+}
-+
- void msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
- {
- 	struct msft_data *msft = hdev->msft_data;
-@@ -617,10 +730,22 @@ void msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 	if (skb->len < 1)
- 		return;
+ void mgmt_device_found(struct hci_dev *hdev, bdaddr_t *bdaddr, u8 link_type,
+ 		       u8 addr_type, u8 *dev_class, s8 rssi, u32 flags,
+ 		       u8 *eir, u16 eir_len, u8 *scan_rsp, u8 scan_rsp_len)
+@@ -9606,7 +9680,31 @@ void mgmt_device_found(struct hci_dev *hdev, bdaddr_t *bdaddr, u8 link_type,
+ 	ev->eir_len = cpu_to_le16(eir_len + scan_rsp_len);
+ 	ev_size = sizeof(*ev) + eir_len + scan_rsp_len;
  
-+	hci_dev_lock(hdev);
+-	mgmt_event(MGMT_EV_DEVICE_FOUND, hdev, ev, ev_size, NULL);
++	/* We have received the Advertisement Report because:
++	 * 1. the kernel has initiated active discovery
++	 * 2. if not, we have pend_le_reports > 0 in which case we are doing
++	 *    passive scanning
++	 * 3. if none of the above is true, we have one or more active
++	 *    Advertisement Monitor
++	 *
++	 * For case 1 and 2, report all advertisements via MGMT_EV_DEVICE_FOUND
++	 * and report ONLY one advertisement per device for the matched Monitor
++	 * via MGMT_EV_ADV_MONITOR_DEVICE_FOUND event.
++	 *
++	 * For case 3, since we are not active scanning and all advertisements
++	 * received are due to a matched Advertisement Monitor, report all
++	 * advertisements ONLY via MGMT_EV_ADV_MONITOR_DEVICE_FOUND event.
++	 */
 +
- 	event = *skb->data;
- 	skb_pull(skb, 1);
- 
--	bt_dev_dbg(hdev, "MSFT vendor event %u", event);
-+	switch (event) {
-+	case MSFT_EV_LE_MONITOR_DEVICE:
-+		msft_monitor_device_evt(hdev, skb);
-+		break;
++	if (hci_discovery_active(hdev) ||
++	    (link_type == LE_LINK && !list_empty(&hdev->pend_le_reports))) {
++		mgmt_event(MGMT_EV_DEVICE_FOUND, hdev, ev, ev_size, NULL);
 +
-+	default:
-+		bt_dev_dbg(hdev, "MSFT vendor event %u", event);
-+		break;
++		if (hdev->advmon_pend_notify)
++			mgmt_adv_monitor_device_found(hdev, ev, ev_size, true);
++	} else {
++		mgmt_adv_monitor_device_found(hdev, ev, ev_size, false);
 +	}
-+
-+	hci_dev_unlock(hdev);
  }
  
- __u64 msft_get_features(struct hci_dev *hdev)
+ void mgmt_remote_name(struct hci_dev *hdev, bdaddr_t *bdaddr, u8 link_type,
+diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
+index 06b3b006deb8..b4f56dddd79c 100644
+--- a/net/bluetooth/msft.c
++++ b/net/bluetooth/msft.c
+@@ -579,8 +579,16 @@ void msft_do_close(struct hci_dev *hdev)
+ 
+ 	hci_dev_lock(hdev);
+ 
+-	/* Clear any devices that are being monitored */
++	/* Clear any devices that are being monitored and notify device lost */
++
++	hdev->advmon_pend_notify = false;
++
+ 	list_for_each_entry_safe(dev, tmp_dev, &hdev->monitored_devices, list) {
++		if (dev->notified)
++			mgmt_adv_monitor_device_lost(hdev, dev->handle,
++						     &dev->bdaddr,
++						     dev->addr_type);
++
+ 		list_del(&dev->list);
+ 		kfree(dev);
+ 	}
+@@ -639,6 +647,7 @@ static void msft_device_found(struct hci_dev *hdev, bdaddr_t *bdaddr,
+ 
+ 	INIT_LIST_HEAD(&dev->list);
+ 	list_add(&dev->list, &hdev->monitored_devices);
++	hdev->advmon_pend_notify = true;
+ }
+ 
+ /* This function requires the caller holds hdev->lock */
+@@ -649,6 +658,10 @@ static void msft_device_lost(struct hci_dev *hdev, bdaddr_t *bdaddr,
+ 
+ 	list_for_each_entry_safe(dev, tmp, &hdev->monitored_devices, list) {
+ 		if (dev->handle == mgmt_handle) {
++			if (dev->notified)
++				mgmt_adv_monitor_device_lost(hdev, mgmt_handle,
++							     bdaddr, addr_type);
++
+ 			list_del(&dev->list);
+ 			kfree(dev);
+ 
 -- 
 2.34.0.rc2.393.gf8c9666880-goog
 
