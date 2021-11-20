@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A429457D47
-	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 12:28:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80264457D56
+	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 12:29:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237391AbhKTLbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Nov 2021 06:31:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56042 "EHLO
+        id S237424AbhKTLbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Nov 2021 06:31:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237364AbhKTLbD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Nov 2021 06:31:03 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E80EBC061574;
-        Sat, 20 Nov 2021 03:28:00 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id g19so11581952pfb.8;
-        Sat, 20 Nov 2021 03:28:00 -0800 (PST)
+        with ESMTP id S230324AbhKTLbF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Nov 2021 06:31:05 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665FFC061574;
+        Sat, 20 Nov 2021 03:28:02 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id nh10-20020a17090b364a00b001a69adad5ebso10995375pjb.2;
+        Sat, 20 Nov 2021 03:28:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=z7z8Lk8HQyp7Owzrc1xbHZJuDcW2wrqL7RcrZw36R8w=;
-        b=nQPN6mdVaURVKIXfc1WLRgCv3LcDfgP+BvR5M8bS7uDh9hb7+0CR/cbwG+1w5WOEQ6
-         Vvjd5bswZ+eUyJf6IEEUJ3X4nw4wp6LYK+qEl+LNZUKwEFNjW+vYQwwd4HwWkThtN0YH
-         ABITWvIYzC1j4vzBdyDj1GadxflpStTg597iJ1sjW6FKKAL2A+fMWGFXVkoP8BJ91FK6
-         LihypxMER6hOyMDVdKR9ILrkdyvXJgXHUISem4H0h8IzU/5gdbolUTA7vEaLFbVutke5
-         jGLHaUXCSmHu7IwiQ9TDKfxjeJZp6KdJY/RkGrqg+I9aO0S7/yFjx4eO2ZmmkGhOdER/
-         uicg==
+        bh=1bhmfU5jdQeu9SB00q/vtwct43J0/YFTE1w/oQ1md1g=;
+        b=afkFqnCvcjnyD8nxdVXqFTSVEVUwnC2uqZPLEPV2jtxoh8iP7hESwhZR+iKFi624AK
+         RH++PL7SD5LtzMS97jz58+9YWhK/11GWAslrKTZF2qL5kLy7PaHEpL0Z8ha5A3QSeH7d
+         K055K9W/KzVS0TtrsOKVTaZqxYlMy1Jl88y16mrB9ZqHqazzpRNk92K38Uh6vWoD9jJ0
+         a4+AHmUUC8DBfR5dlnfj/Jr7bobaOJKTh+6ziBZvfWiOeDH5vERkp1qgicWS+SxHSieO
+         YIlL4/qQrJYUJyKRMtSomhCiIa4ajT1ZKTWNa3ISbd10qhd3fbKLriJ/fn5M2go77Qlc
+         B+2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=z7z8Lk8HQyp7Owzrc1xbHZJuDcW2wrqL7RcrZw36R8w=;
-        b=OKiuja5otnSkz480FXPzJutrn9JzOHvPYvg1+mPSsSkrN8GDplRxs98p4eLaDlZV9Q
-         EsfJI9SeR+R5zapPDBFiuRJZl51hmJ8Y2hVKSZlcq5frIEYIgbC8zjgV3W8mZXFgJA8o
-         46OFyzjTALCvHBvTwaZGtqVvgDlzRBK75P2vj3IWU4fvLN0W7o7UVepEnO/mSoKytjjm
-         LUFXFsw25TMvXF8vAQ8TuoLXQ20Aczvc/9fwXudSz7SuZFgxi5NLn5LdZZBf4bWmQTNE
-         YgI/G9WjptaWeMU/Cb7K/kvYIVyCXbblU68h/mdCjDkzTQhQ1kMZI+G0euNzdqB9mqtC
-         S5Ew==
-X-Gm-Message-State: AOAM5331SLSDkJcNISvrwdE0VEDtANFxSbkms5S5vcUbkZYEC2fTYIbX
-        xj77j3Q3dHt7du8TAbYW8ho=
-X-Google-Smtp-Source: ABdhPJyRIisol+5siMpWb0J3Nc8SIlVbonIjAvGoaujIU+KdXppeIb88o7SguvA8H1tXupl8NMAHhw==
-X-Received: by 2002:aa7:888d:0:b0:46b:72b2:5d61 with SMTP id z13-20020aa7888d000000b0046b72b25d61mr69933734pfe.73.1637407680517;
-        Sat, 20 Nov 2021 03:28:00 -0800 (PST)
+        bh=1bhmfU5jdQeu9SB00q/vtwct43J0/YFTE1w/oQ1md1g=;
+        b=csUooddDX+RFboK+F9ii4WIhRtPyaYwceNfojTJE15K74nTMf4j5SiFiXfLl5fwkX5
+         BtVs4IY5hUArpzxjZ1CFaEthPvmKOj6q1EwwRCpmoogRFLliT38Euc/p+VyFyqH1eV0r
+         k+M0iWdGSC0WxoSzsYB5FQYZRrUB0RIfWIdZiTm9F94H8g0BFCdHmYDHyHpEd2/qLUXU
+         1CJQ+DtbVruTVaAnr93chJHZxGkKCQu5/4cuEUn1qyH3mETduBvcXTAQ9qKJEzxRI65E
+         P9m/bVNl3GMmYYupuKaZBy1IpP6PDSr/f5xwTa0L6QWYWf0T4M0c4aiZmKT7r5Gfc0Rb
+         VVRg==
+X-Gm-Message-State: AOAM530FSlr2blo2s7NgoxJlLYHz0scrle7tQiIwBxJ8yz0ASfuz8yPk
+        DNGJ5tWGR9FE7IfePq6eQ/g=
+X-Google-Smtp-Source: ABdhPJxliuUDz1XN5kYH2h4oCti40BWvEgRwwTYsKQppVM5CgiOYDrqQRp0zNR3XM7eeyPTuLR4MPg==
+X-Received: by 2002:a17:90a:c091:: with SMTP id o17mr9315675pjs.35.1637407682005;
+        Sat, 20 Nov 2021 03:28:02 -0800 (PST)
 Received: from vultr.guest ([66.42.104.82])
-        by smtp.gmail.com with ESMTPSA id q17sm2835490pfu.117.2021.11.20.03.27.59
+        by smtp.gmail.com with ESMTPSA id q17sm2835490pfu.117.2021.11.20.03.28.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Nov 2021 03:28:00 -0800 (PST)
+        Sat, 20 Nov 2021 03:28:01 -0800 (PST)
 From:   Yafang Shao <laoar.shao@gmail.com>
 To:     akpm@linux-foundation.org
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
@@ -55,6 +55,7 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         oliver.sang@intel.com, lkp@intel.com,
         Yafang Shao <laoar.shao@gmail.com>,
         Kees Cook <keescook@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
         David Hildenbrand <david@redhat.com>,
         Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
         Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
@@ -62,13 +63,12 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Andrii Nakryiko <andrii.nakryiko@gmail.com>,
         Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
         Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
         Matthew Wilcox <willy@infradead.org>,
         Al Viro <viro@zeniv.linux.org.uk>,
         Petr Mladek <pmladek@suse.com>
-Subject: [PATCH v2 1/7] fs/exec: replace strlcpy with strscpy_pad in __set_task_comm
-Date:   Sat, 20 Nov 2021 11:27:32 +0000
-Message-Id: <20211120112738.45980-2-laoar.shao@gmail.com>
+Subject: [PATCH v2 2/7] fs/exec: replace strncpy with strscpy_pad in __get_task_comm
+Date:   Sat, 20 Nov 2021 11:27:33 +0000
+Message-Id: <20211120112738.45980-3-laoar.shao@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20211120112738.45980-1-laoar.shao@gmail.com>
 References: <20211120112738.45980-1-laoar.shao@gmail.com>
@@ -78,13 +78,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-strlcpy() can trigger out-of-bound reads on the source string[1], we'd
-better use strscpy() instead. To make it be robust against full
-tsk->comm copies that got noticed in other places, we should make sure
-it's zero padded.
+If the dest buffer size is smaller than sizeof(tsk->comm), the buffer
+will be without null ternimator, that may cause problem. Using
+strscpy_pad() instead of strncpy() in __get_task_comm() can make the string
+always nul ternimated and zero padded.
 
-[1] https://github.com/KSPP/linux/issues/89
-
+Suggested-by: Kees Cook <keescook@chromium.org>
+Suggested-by: Steven Rostedt <rostedt@goodmis.org>
 Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
 Reviewed-by: Kees Cook <keescook@chromium.org>
 Reviewed-by: David Hildenbrand <david@redhat.com>
@@ -101,21 +101,22 @@ Cc: Al Viro <viro@zeniv.linux.org.uk>
 Cc: Kees Cook <keescook@chromium.org>
 Cc: Petr Mladek <pmladek@suse.com>
 ---
- fs/exec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/exec.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/fs/exec.c b/fs/exec.c
-index 537d92c41105..51d3cb4e3cdf 100644
+index 51d3cb4e3cdf..fa142638b191 100644
 --- a/fs/exec.c
 +++ b/fs/exec.c
-@@ -1222,7 +1222,7 @@ void __set_task_comm(struct task_struct *tsk, const char *buf, bool exec)
+@@ -1207,7 +1207,8 @@ static int unshare_sighand(struct task_struct *me)
+ char *__get_task_comm(char *buf, size_t buf_size, struct task_struct *tsk)
  {
  	task_lock(tsk);
- 	trace_task_rename(tsk, buf);
--	strlcpy(tsk->comm, buf, sizeof(tsk->comm));
-+	strscpy_pad(tsk->comm, buf, sizeof(tsk->comm));
+-	strncpy(buf, tsk->comm, buf_size);
++	/* Always NUL terminated and zero-padded */
++	strscpy_pad(buf, tsk->comm, buf_size);
  	task_unlock(tsk);
- 	perf_event_comm(tsk, exec);
+ 	return buf;
  }
 -- 
 2.17.1
