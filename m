@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15723457D61
-	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 12:29:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00C46457D64
+	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 12:30:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237599AbhKTLb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Nov 2021 06:31:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56084 "EHLO
+        id S237413AbhKTLcc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Nov 2021 06:32:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237434AbhKTLbM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Nov 2021 06:31:12 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94AA6C061574;
-        Sat, 20 Nov 2021 03:28:09 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id np6-20020a17090b4c4600b001a90b011e06so10956077pjb.5;
-        Sat, 20 Nov 2021 03:28:09 -0800 (PST)
+        with ESMTP id S237639AbhKTLcJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Nov 2021 06:32:09 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E73C06175B;
+        Sat, 20 Nov 2021 03:29:06 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id np3so9883604pjb.4;
+        Sat, 20 Nov 2021 03:29:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=uISwC7S3YtMXd9NwSu3k9zzcmpaBl9Ur9ZibZHHGTvY=;
-        b=AbHPprtqO+jSPttTiHNuKsHBAQ+5yGpG8KFNyWwFOAPmScilI9Nc5E58eQu0FXa2K+
-         5lRhY5ZgJ/vUp675NFNJYIEUw21fsKlMkpXITpZwNjOVdhxzhKch266wLSXcQnaFpgpu
-         GWruZuhH9zcwumOj/DxIy16mTHkDzEnW9G76RGOLPkrLqCIYn425lljS3usJ+8gVvgvc
-         jv/8+tslX2Xzwv5R+Jyp7YjJ6oTDladlQmsX+Cu1H+J1v4/GelbcYJ6DnrMlEE6Czl/M
-         fI+0J+gj4XUP+qtuAPcrCgASybOrejTephGU8+uh9YDTx7fr+70bshEGIvYMDm3Xn4Xk
-         ftHg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uNX5FE2tZkxpuuqDEFiMRnO2iBatJ2sCTSVf95PnGcE=;
+        b=c8gue+ynpuXN2yi3q0IDO2Y0JAfwSXqOX2jol0f2ra5ky3xAAhMluLSC5QUOwOkfN3
+         BfB2rLij2g0IAv9NWAhXCEcf0qO/IdSBiv9ikhP43imiqp/ooKm9FcoqgM9oW9zXUyFU
+         00v9F1uJuTUT+05/cy5XIYNn/RiSoLzkc3cREnwRtWgGZ6+R/N0kYEllnUsCPVm3yYCu
+         FVwB4o0Mr96okvlTxxszIycaxnz5ti8XfkGiTtSSJePuj0SzfgQTnmb/WY7EtIiMaH4H
+         /ei6d73j1KfhcT42VuFTqFoQMgcuByIvoE2bIvfzewbsW7/W3yHx/ahxCWfGSEnXnEf/
+         7+6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=uISwC7S3YtMXd9NwSu3k9zzcmpaBl9Ur9ZibZHHGTvY=;
-        b=NBLWFgnNuaACi0hi39s0rNvXwfZBTIzbDiPj91rY/etmTc/szabVcwIo0KQM5MWpJx
-         2OrlC6qWa1sTo6wkswduttMReViM3Dv/RPtXkVpPs9MlUlseN+/P1sDevv1M0vriEDbS
-         bIP1bOv4tM4I/dBV3rs0jlrEmKWcnBeVgDvsmNXVjuxY7xIcRRWcWsIgMVd2HJs6+UEr
-         Ckzvw3tnzYradY35ibI0ck23YseQKrC2Bl56jtTKPTca/DqMlj8MvgRJcBiYaTJ7gjAw
-         7+IXjsBm2v/c8048N9EfhDmz/rIhMrZdUPTI5z8LrQRJMPFLvPLH/jV4UjKTny2rznDv
-         aUDg==
-X-Gm-Message-State: AOAM531qI27jPc4ho5PUZcVDem1iU4nht9cGSk+jTRCt7iYQPCtflymm
-        gmmtP2R32as9LONwLsVq2oA=
-X-Google-Smtp-Source: ABdhPJzCvM4ZOu5jxNVjS5MOuJ+QxxoCh4xHa9VDf6Kty/9IeqDFb9wJ+DFAaNClvGB5ZbqhdnJSPQ==
-X-Received: by 2002:a17:903:2004:b0:142:6344:2c08 with SMTP id s4-20020a170903200400b0014263442c08mr86481406pla.51.1637407689212;
-        Sat, 20 Nov 2021 03:28:09 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uNX5FE2tZkxpuuqDEFiMRnO2iBatJ2sCTSVf95PnGcE=;
+        b=TeSTArxjXLFPuOjyy8SlTQuZ4VEliCLXSQM8xyotx1EhOqu5lBBpE1LEBNIjAzK/jQ
+         PIk9LZe3KN6CE/wiAvhxWjWBLcARvkULLtxkPmJ2NT0YbLA0c4GaG7VPPmH3zFvpYfan
+         xwbavNVn3k7Cjx+ev3+djFbD8NH9voO+TMNGsZq7L5vmMqgnxjT/XubZgURrDWJPuyiX
+         f6YpY3Zv+lFoTPIxIWHrjmjQ9WT/Df98kVJzQ1JefZ5IObzM6S+uCYniAQrI74LZB3bx
+         r2XOPgPmM8W6R4SZC+5TRjXOiX6QYju3RaGtvpnZnRMROxeCe6KiNQqjupdWfeOBr6/c
+         EGcg==
+X-Gm-Message-State: AOAM5312H81Qf4v2XN56ltodZT79GKNtVLS8ATPhMqq89FXWFldV1MuU
+        n9L9Zk9tdc8KputsighvtoI=
+X-Google-Smtp-Source: ABdhPJzCRsH8UL7H3bVFjOBc9LDXDnX2Dy3UE5TX9gb0bv/UzEO6CZxyldqc+7CjJu3BgBtksGH2zw==
+X-Received: by 2002:a17:90a:ab17:: with SMTP id m23mr9412621pjq.194.1637407745940;
+        Sat, 20 Nov 2021 03:29:05 -0800 (PST)
 Received: from vultr.guest ([66.42.104.82])
-        by smtp.gmail.com with ESMTPSA id q17sm2835490pfu.117.2021.11.20.03.28.07
+        by smtp.gmail.com with ESMTPSA id g21sm2851745pfc.95.2021.11.20.03.29.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Nov 2021 03:28:08 -0800 (PST)
+        Sat, 20 Nov 2021 03:29:05 -0800 (PST)
 From:   Yafang Shao <laoar.shao@gmail.com>
 To:     akpm@linux-foundation.org
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
@@ -54,44 +54,91 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-mm@kvack.org, linux-kernel@vger.kernel.org,
         oliver.sang@intel.com, lkp@intel.com,
         Yafang Shao <laoar.shao@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
         Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
         Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
         Andrii Nakryiko <andrii.nakryiko@gmail.com>,
         Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
         Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
         Matthew Wilcox <willy@infradead.org>,
+        David Hildenbrand <david@redhat.com>,
         Al Viro <viro@zeniv.linux.org.uk>,
-        Kees Cook <keescook@chromium.org>,
-        Petr Mladek <pmladek@suse.com>
-Subject: [PATCH v2 7/7] tools/testing/selftests/bpf: replace open-coded 16 with TASK_COMM_LEN
-Date:   Sat, 20 Nov 2021 11:27:38 +0000
-Message-Id: <20211120112738.45980-8-laoar.shao@gmail.com>
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH v2] kthread: dynamically allocate memory to store kthread's full name
+Date:   Sat, 20 Nov 2021 11:28:50 +0000
+Message-Id: <20211120112850.46047-1-laoar.shao@gmail.com>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20211120112738.45980-1-laoar.shao@gmail.com>
-References: <20211120112738.45980-1-laoar.shao@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As the sched:sched_switch tracepoint args are derived from the kernel,
-we'd better make it same with the kernel. So the macro TASK_COMM_LEN is
-converted to type enum, then all the BPF programs can get it through BTF.
+When I was implementing a new per-cpu kthread cfs_migration, I found the
+comm of it "cfs_migration/%u" is truncated due to the limitation of
+TASK_COMM_LEN. For example, the comm of the percpu thread on CPU10~19 are
+all with the same name "cfs_migration/1", which will confuse the user. This
+issue is not critical, because we can get the corresponding CPU from the
+task's Cpus_allowed. But for kthreads correspoinding to other hardware
+devices, it is not easy to get the detailed device info from task comm,
+for example,
 
-The BPF program which wants to use TASK_COMM_LEN should include the header
-vmlinux.h. Regarding the test_stacktrace_map and test_tracepoint, as the
-type defined in linux/bpf.h are also defined in vmlinux.h, so we don't
-need to include linux/bpf.h again.
+    jbd2/nvme0n1p2-
+    xfs-reclaim/sdf
 
+Currently there are so many truncated kthreads:
+
+    rcu_tasks_kthre
+    rcu_tasks_rude_
+    rcu_tasks_trace
+    poll_mpt3sas0_s
+    ext4-rsv-conver
+    xfs-reclaim/sd{a, b, c, ...}
+    xfs-blockgc/sd{a, b, c, ...}
+    xfs-inodegc/sd{a, b, c, ...}
+    audit_send_repl
+    ecryptfs-kthrea
+    vfio-irqfd-clea
+    jbd2/nvme0n1p2-
+    ...
+
+We can shorten these names to work around this problem, but it may be
+not applied to all of the truncated kthreads. Take 'jbd2/nvme0n1p2-' for
+example, it is a nice name, and it is not a good idea to shorten it.
+
+One possible way to fix this issue is extending the task comm size, but
+as task->comm is used in lots of places, that may cause some potential
+buffer overflows. Another more conservative approach is introducing a new
+pointer to store kthread's full name if it is truncated, which won't
+introduce too much overhead as it is in the non-critical path. Finally we
+make a dicision to use the second approach. See also the discussions in
+this thread:
+https://lore.kernel.org/lkml/20211101060419.4682-1-laoar.shao@gmail.com/
+
+After this change, the full name of these truncated kthreads will be
+displayed via /proc/[pid]/comm:
+
+    rcu_tasks_kthread
+    rcu_tasks_rude_kthread
+    rcu_tasks_trace_kthread
+    poll_mpt3sas0_statu
+    ext4-rsv-conversion
+    xfs-reclaim/sdf1
+    xfs-blockgc/sdf1
+    xfs-inodegc/sdf1
+    audit_send_reply
+    ecryptfs-kthread
+    vfio-irqfd-cleanup
+    jbd2/nvme0n1p2-8
+
+Suggested-by: Petr Mladek <pmladek@suse.com>
+Suggested-by: Steven Rostedt <rostedt@goodmis.org>
 Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
-Acked-by: David Hildenbrand <david@redhat.com>
 Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+Cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc: Michal Miroslaw <mirq-linux@rere.qmqm.pl>
 Cc: Peter Zijlstra <peterz@infradead.org>
@@ -101,84 +148,122 @@ Cc: David Hildenbrand <david@redhat.com>
 Cc: Al Viro <viro@zeniv.linux.org.uk>
 Cc: Kees Cook <keescook@chromium.org>
 Cc: Petr Mladek <pmladek@suse.com>
----
- include/linux/sched.h                                   | 9 +++++++--
- tools/testing/selftests/bpf/progs/test_stacktrace_map.c | 6 +++---
- tools/testing/selftests/bpf/progs/test_tracepoint.c     | 6 +++---
- 3 files changed, 13 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 78c351e35fec..cecd4806edc6 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -274,8 +274,13 @@ struct task_group;
+---
+
+Changes since v1:
+1. leave it turncated when out of memory (Kees & Petr)
+2. do null check in free_kthread_struct (Petr)
+---
+ fs/proc/array.c         |  3 +++
+ include/linux/kthread.h |  1 +
+ kernel/kthread.c        | 32 ++++++++++++++++++++++++++++++--
+ 3 files changed, 34 insertions(+), 2 deletions(-)
+
+diff --git a/fs/proc/array.c b/fs/proc/array.c
+index ff869a66b34e..4321aa63835d 100644
+--- a/fs/proc/array.c
++++ b/fs/proc/array.c
+@@ -92,6 +92,7 @@
+ #include <linux/string_helpers.h>
+ #include <linux/user_namespace.h>
+ #include <linux/fs_struct.h>
++#include <linux/kthread.h>
  
- #define get_current_state()	READ_ONCE(current->__state)
+ #include <asm/processor.h>
+ #include "internal.h"
+@@ -102,6 +103,8 @@ void proc_task_name(struct seq_file *m, struct task_struct *p, bool escape)
  
--/* Task command name length: */
--#define TASK_COMM_LEN			16
-+/*
-+ * Define the task command name length as enum, then it can be visible to
-+ * BPF programs.
-+ */
-+enum {
-+	TASK_COMM_LEN = 16,
-+};
+ 	if (p->flags & PF_WQ_WORKER)
+ 		wq_worker_comm(tcomm, sizeof(tcomm), p);
++	else if (p->flags & PF_KTHREAD)
++		get_kthread_comm(tcomm, sizeof(tcomm), p);
+ 	else
+ 		__get_task_comm(tcomm, sizeof(tcomm), p);
  
- extern void scheduler_tick(void);
+diff --git a/include/linux/kthread.h b/include/linux/kthread.h
+index 346b0f269161..2a5c04494663 100644
+--- a/include/linux/kthread.h
++++ b/include/linux/kthread.h
+@@ -33,6 +33,7 @@ struct task_struct *kthread_create_on_cpu(int (*threadfn)(void *data),
+ 					  unsigned int cpu,
+ 					  const char *namefmt);
  
-diff --git a/tools/testing/selftests/bpf/progs/test_stacktrace_map.c b/tools/testing/selftests/bpf/progs/test_stacktrace_map.c
-index a8233e7f173b..728dbd39eff0 100644
---- a/tools/testing/selftests/bpf/progs/test_stacktrace_map.c
-+++ b/tools/testing/selftests/bpf/progs/test_stacktrace_map.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- // Copyright (c) 2018 Facebook
++void get_kthread_comm(char *buf, size_t buf_size, struct task_struct *tsk);
+ void set_kthread_struct(struct task_struct *p);
  
--#include <linux/bpf.h>
-+#include <vmlinux.h>
- #include <bpf/bpf_helpers.h>
- 
- #ifndef PERF_MAX_STACK_DEPTH
-@@ -41,11 +41,11 @@ struct {
- /* taken from /sys/kernel/debug/tracing/events/sched/sched_switch/format */
- struct sched_switch_args {
- 	unsigned long long pad;
--	char prev_comm[16];
-+	char prev_comm[TASK_COMM_LEN];
- 	int prev_pid;
- 	int prev_prio;
- 	long long prev_state;
--	char next_comm[16];
-+	char next_comm[TASK_COMM_LEN];
- 	int next_pid;
- 	int next_prio;
+ void kthread_set_per_cpu(struct task_struct *k, int cpu);
+diff --git a/kernel/kthread.c b/kernel/kthread.c
+index 7113003fab63..a70cd5dc94e3 100644
+--- a/kernel/kthread.c
++++ b/kernel/kthread.c
+@@ -60,6 +60,8 @@ struct kthread {
+ #ifdef CONFIG_BLK_CGROUP
+ 	struct cgroup_subsys_state *blkcg_css;
+ #endif
++	/* To store the full name if task comm is truncated. */
++	char *full_name;
  };
-diff --git a/tools/testing/selftests/bpf/progs/test_tracepoint.c b/tools/testing/selftests/bpf/progs/test_tracepoint.c
-index ce6974016f53..43bd7a20cc50 100644
---- a/tools/testing/selftests/bpf/progs/test_tracepoint.c
-+++ b/tools/testing/selftests/bpf/progs/test_tracepoint.c
-@@ -1,17 +1,17 @@
- // SPDX-License-Identifier: GPL-2.0
- // Copyright (c) 2017 Facebook
  
--#include <linux/bpf.h>
-+#include <vmlinux.h>
- #include <bpf/bpf_helpers.h>
+ enum KTHREAD_BITS {
+@@ -93,6 +95,18 @@ static inline struct kthread *__to_kthread(struct task_struct *p)
+ 	return kthread;
+ }
  
- /* taken from /sys/kernel/debug/tracing/events/sched/sched_switch/format */
- struct sched_switch_args {
- 	unsigned long long pad;
--	char prev_comm[16];
-+	char prev_comm[TASK_COMM_LEN];
- 	int prev_pid;
- 	int prev_prio;
- 	long long prev_state;
--	char next_comm[16];
-+	char next_comm[TASK_COMM_LEN];
- 	int next_pid;
- 	int next_prio;
- };
++void get_kthread_comm(char *buf, size_t buf_size, struct task_struct *tsk)
++{
++	struct kthread *kthread = to_kthread(tsk);
++
++	if (!kthread || !kthread->full_name) {
++		__get_task_comm(buf, buf_size, tsk);
++		return;
++	}
++
++	strscpy_pad(buf, kthread->full_name, buf_size);
++}
++
+ void set_kthread_struct(struct task_struct *p)
+ {
+ 	struct kthread *kthread;
+@@ -118,9 +132,13 @@ void free_kthread_struct(struct task_struct *k)
+ 	 * or if kmalloc() in kthread() failed.
+ 	 */
+ 	kthread = to_kthread(k);
++	if (!kthread)
++		return;
++
+ #ifdef CONFIG_BLK_CGROUP
+-	WARN_ON_ONCE(kthread && kthread->blkcg_css);
++	WARN_ON_ONCE(kthread->blkcg_css);
+ #endif
++	kfree(kthread->full_name);
+ 	kfree(kthread);
+ }
+ 
+@@ -406,12 +424,22 @@ struct task_struct *__kthread_create_on_node(int (*threadfn)(void *data),
+ 	task = create->result;
+ 	if (!IS_ERR(task)) {
+ 		char name[TASK_COMM_LEN];
++		va_list aq;
++		int len;
+ 
+ 		/*
+ 		 * task is already visible to other tasks, so updating
+ 		 * COMM must be protected.
+ 		 */
+-		vsnprintf(name, sizeof(name), namefmt, args);
++		va_copy(aq, args);
++		len = vsnprintf(name, sizeof(name), namefmt, aq);
++		va_end(aq);
++		if (len >= TASK_COMM_LEN) {
++			struct kthread *kthread = to_kthread(task);
++
++			/* leave it truncated when out of memory. */
++			kthread->full_name = kvasprintf(GFP_KERNEL, namefmt, args);
++		}
+ 		set_task_comm(task, name);
+ 	}
+ 	kfree(create);
 -- 
 2.17.1
 
