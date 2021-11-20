@@ -2,65 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AE49457EF0
-	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 16:26:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AB76457EFC
+	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 16:31:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237655AbhKTP3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Nov 2021 10:29:20 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:43684 "EHLO vps0.lunn.ch"
+        id S231461AbhKTPe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Nov 2021 10:34:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42846 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230038AbhKTP3U (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 20 Nov 2021 10:29:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=HTvgLzOoOehOykOOZoN1M1R/6gNgBUMtdPME5ZKHJhI=; b=Po37m8bITJ9E+j5M7j04ddReFk
-        HL9oqmnO/lQRpSq8rmGYs47hTw7RKhxwyQM4+MNjpd0MjRiKINKpzzShyg6Dz2NzA1qEUTrbVpcnt
-        teDlRuM0hp+gVrlKeSy/+DhJCak1eOTcGFi6MJbDrhpW+BoL86bFilUVFmLer7dqT8Tw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1moSFl-00E9aB-TB; Sat, 20 Nov 2021 16:26:09 +0100
-Date:   Sat, 20 Nov 2021 16:26:09 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc:     robh+dt@kernel.org, aisheng.dong@nxp.com, qiangqing.zhang@nxp.com,
-        davem@davemloft.net, kuba@kernel.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH 4/4] arm64: dts: imx8ulp-evk: enable fec
-Message-ID: <YZkTkagrQ/zafYEQ@lunn.ch>
-References: <20211120115825.851798-1-peng.fan@oss.nxp.com>
- <20211120115825.851798-5-peng.fan@oss.nxp.com>
+        id S229710AbhKTPe2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 20 Nov 2021 10:34:28 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B504860698;
+        Sat, 20 Nov 2021 15:31:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637422284;
+        bh=hoT4T5mFJxLzwh+WTOpr6loHgAXDtX6TSfeJdsoY0MU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=O/B50LJcDY+cQ2FK3SRfMw2A0n8DqFnX6mjd4Vwwkw2TuvIM5o9M/gj4N54BgW9he
+         mwjz0glZQbOvH4uGjaaDSpq3urdeMpIv5OTQZ0zPpZRyHb3Zp8+zohXV3APMYg4ned
+         ruCYqgP863VLcdjj+TOY0phzmtDpTkgWM0kATdbPbKPe8aGbHgUprPSAH7qdn5AY4K
+         xo8Vc2mxv7qvmFG1+aXys3w4arbkciJcNh50WOXjatEmTQFYsO+WIM41tFvL5Wqz7Z
+         KkQhwMZlryONyZXaQgOoUHraPikHmjGQ4Zm1ZO+cbmnxRA/Wc6hIGkTPSCHvXMP9lb
+         RklUN4N7Emqvg==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, dingsenjie@yulong.com, michael@walle.cc,
+        Jakub Kicinski <kuba@kernel.org>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH net-next] octeon: constify netdev->dev_addr
+Date:   Sat, 20 Nov 2021 07:31:19 -0800
+Message-Id: <20211120153119.132468-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211120115825.851798-5-peng.fan@oss.nxp.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +&fec {
-> +	pinctrl-names = "default";
-> +	pinctrl-0 = <&pinctrl_enet>;
-> +	phy-mode = "rmii";
+Argument of a helper is missing a const.
 
-Is this really a Fast Ethernet? Not 1G?
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: adeef3e32146 ("net: constify netdev->dev_addr")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ drivers/net/ethernet/cavium/octeon/octeon_mgmt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> +	phy-handle = <&ethphy>;
-> +	status = "okay";
-> +
-> +	mdio {
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		ethphy: ethernet-phy {
-> +			reg = <1>;
+diff --git a/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c b/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c
+index 4e39d712e121..4b4ffdd1044d 100644
+--- a/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c
++++ b/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c
+@@ -548,7 +548,7 @@ struct octeon_mgmt_cam_state {
+ };
+ 
+ static void octeon_mgmt_cam_state_add(struct octeon_mgmt_cam_state *cs,
+-				      unsigned char *addr)
++				      const unsigned char *addr)
+ {
+ 	int i;
+ 
+-- 
+2.31.1
 
-I'm surprised this does not give warnings from the DTS tools. There is
-a reg value, so it should be ethernet-phy@1
-
-  Andrew
