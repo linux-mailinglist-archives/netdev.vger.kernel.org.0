@@ -2,46 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A33E457AF4
-	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 04:56:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CD4D457AFB
+	for <lists+netdev@lfdr.de>; Sat, 20 Nov 2021 04:58:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235961AbhKTD7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Nov 2021 22:59:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37248 "EHLO mail.kernel.org"
+        id S236209AbhKTEB5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Nov 2021 23:01:57 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38962 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229523AbhKTD7O (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Nov 2021 22:59:14 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D337C60232;
-        Sat, 20 Nov 2021 03:56:10 +0000 (UTC)
+        id S230055AbhKTEB4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Nov 2021 23:01:56 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B95466069B;
+        Sat, 20 Nov 2021 03:58:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637380571;
-        bh=86FBIWCf6Lk8AWeTyqH+1Q1RzlmtrhnJcVce4iLfil0=;
+        s=k20201202; t=1637380733;
+        bh=mXqChChKsjSCPnEkiDTHU/cG+Or7VNbeDM9auKDL9R8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FY7rSawkMDH8RFKwIewiTEFVjtWG9HzT0acaESuughIfcaAZ/uhv1LOdCs+w2piM+
-         NRk0TfOkzdpawLt7D1p27wJ51jg0+Mxnd6EeDvDUkJt9vL3vypOZnUp+PSPx1pVcrL
-         dofSKuGwokco63u4CFO/5Tplek1fZCDgomjJOZAx86fdYbrhPro0LRiAeJvROzxHX4
-         luHchBb4t0ggupHAAgbxcyLHWpP+oQHnWLbxwwh80qmjfj+pR93+GYYt/3Kt7Zfzdq
-         Smsfdawg5vrBPUC+kkuR7D6yEtOkBFk93ZKI/4sW2iFpMt4BZmkutMFGwts372nPIG
-         L4iLSgG7Eu2lg==
-Date:   Fri, 19 Nov 2021 19:56:10 -0800
+        b=bk0m+13ZxNA5mwpJx1vevh3NucZD8hzAA8UxE41a69GYzcZxMfmnA86yDSNuvjgeF
+         SR1cQANiO5Bt7TPZT13ji+8ykVN48YR0Ml5MqyjSNb3TleCLeYKrhnIIFekjsNrz1G
+         +cn/xcOUCVLcM9Unwi+evNHFI/Jj3M3Bi0bB8ydQF0dqabC36kkMSCl4cKPYCHCF2v
+         PFO+33eibpW6iY8UhYRtcQ4bTe96Xs4NORTbf3cX1fXGyXLV6lpl2lU6PlOakL/Zwy
+         Bgf7N0dIYTGOTCSoditSvdhd9aUQc2uJTY8t3fTZm6rCFnl0qYEt8HopwsypM7sAfq
+         pnprrOwaN905Q==
+Date:   Fri, 19 Nov 2021 19:58:51 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [PATCH v1 net-next 1/3] net: mdio: mscc-miim: convert to a
- regmap implementation
-Message-ID: <20211119195610.72da54d1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211119213918.2707530-2-colin.foster@in-advantage.com>
-References: <20211119213918.2707530-1-colin.foster@in-advantage.com>
-        <20211119213918.2707530-2-colin.foster@in-advantage.com>
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Yannick Vignon <yannick.vignon@nxp.com>,
+        Michael Olbrich <m.olbrich@pengutronix.de>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        Holger Assmann <h.assmann@pengutronix.de>,
+        kernel@pengutronix.de, Kurt Kanzenbach <kurt@linutronix.de>
+Subject: Re: [PATCH net] net: stmmac: retain PTP clock time during
+ SIOCSHWTSTAMP ioctls
+Message-ID: <20211119195851.2181aab3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211119230542.3402726-1-vladimir.oltean@nxp.com>
+References: <20211119230542.3402726-1-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -49,18 +52,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 19 Nov 2021 13:39:16 -0800 Colin Foster wrote:
-> Utilize regmap instead of __iomem to perform indirect mdio access. This
-> will allow for custom regmaps to be used by way of the mscc_miim_setup
-> function.
+On Sat, 20 Nov 2021 01:05:42 +0200 Vladimir Oltean wrote:
+> Currently, when user space emits SIOCSHWTSTAMP ioctl calls such as
+> enabling/disabling timestamping or changing filter settings, the driver
+> reads the current CLOCK_REALTIME value and programming this into the
+> NIC's hardware clock. This might be necessary during system
+> initialization, but at runtime, when the PTP clock has already been
+> synchronized to a grandmaster, a reset of the timestamp settings might
+> result in a clock jump. Furthermore, if the clock is also controlled by
+> phc2sys in automatic mode (where the UTC offset is queried from ptp4l),
+> that UTC-to-TAI offset (currently 37 seconds in 2021) would be
+> temporarily reset to 0, and it would take a long time for phc2sys to
+> readjust so that CLOCK_REALTIME and the PHC are apart by 37 seconds
+> again.
 > 
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> To address the issue, we introduce a new function called
+> stmmac_init_tstamp_counter(), which gets called during ndo_open().
+> It contains the code snippet moved from stmmac_hwtstamp_set() that
+> manages the time synchronization. Besides, the sub second increment
+> configuration is also moved here since the related values are hardware
+> dependent and runtime invariant.
+> 
+> Furthermore, the hardware clock must be kept running even when no time
+> stamping mode is selected in order to retain the synchronized time base.
+> That way, timestamping can be enabled again at any time only with the
+> need to compensate the clock's natural drifting.
+> 
+> As a side effect, this patch fixes the issue that ptp_clock_info::enable
+> can be called before SIOCSHWTSTAMP and the driver (which looks at
+> priv->systime_flags) was not prepared to handle that ordering.
 
-clang says:
+Makes build fail:
 
-drivers/net/mdio/mdio-mscc-miim.c:228:30: warning: variable 'bus' is uninitialized when used here [-Wuninitialized]
-        mscc_miim_setup(&pdev->dev, bus, mii_regmap, phy_regmap);
-
-drivers/net/mdio/mdio-mscc-miim.c:216:13: warning: variable 'dev' is uninitialized when used here [-Wuninitialized]
-        if (IS_ERR(dev->phy_regs)) {
-                   ^~~
+ERROR: modpost: "stmmac_init_tstamp_counter" [drivers/net/ethernet/stmicro/stmmac/stmmac-platform.ko] undefined!
