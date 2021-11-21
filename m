@@ -2,255 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4C08458545
-	for <lists+netdev@lfdr.de>; Sun, 21 Nov 2021 18:13:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7035B458554
+	for <lists+netdev@lfdr.de>; Sun, 21 Nov 2021 18:17:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238378AbhKURQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Nov 2021 12:16:36 -0500
-Received: from mail-eopbgr40061.outbound.protection.outlook.com ([40.107.4.61]:48965
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230330AbhKURQe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 21 Nov 2021 12:16:34 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LJDSvvpq4fp3DDPDdrGDIZgkTfN8faAB16YduNTBcoaPV+4dNCO6qSkeDmdX5X0kRbQhX/8nFM97ka06wQPV51s868zc9P9rL7t3wL5lT85zJ1msVDvHFKIM7CzBM1MMjNwOK60qoRseB06Ret9Z/Vp/DZr6jTSXyjP5T2yeURViPx+LXj0MBujbbFTazNz/mRGXK9KdCmFdr7H8rhCdp5YK3DEAm8scxSxslSmzsxgLYBS2/4T+kaSmxf7ho7m/byjRMDLjhxIGjexmWdBe3MZqmcgV2IqQ6tIUqLHFtA+5w/bwDxAEoHkwW8/76BnpICor9VK/omd1F8D5G3adPw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aDg5cArKypF6thDiEyJkdhnYlY9jqGLorjx5wv1g5JE=;
- b=HFaAR0s+RWu/RJkb49qv1OCqzUlvpu8O0qKtlr9pncjX7y5R+Jv+s43UNskAZnUJlBtrRH4sdzByXZLLATk3/qP3i3WsQlAOa0YiqyZ/CLJkv9YGCkRHSXHO1HpIRuuWjx2OVCnev+Alqvxj16GOsXGvzl1/i0FbCA8S6ul1KodU6ZpEPl7S7RcVuU/4V2+5vrIFsMD5U+v8VsUN5ql68lJYoz/Hn940QXy1ljYjl6NPePNMMdbXhn7l1R33khBzzwOqNSBarNnEpyh+LmNTZgEWw9zBkh41s3lqB3sSLap5Ll5VCs9baLjfIRY7G1NO7/sB94g4EoS59La5D1JrFA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aDg5cArKypF6thDiEyJkdhnYlY9jqGLorjx5wv1g5JE=;
- b=R8v8R3Tw2+m8eAjqkK926VPHytP8cckt0SCPWNGVynnwmEILKeE8ya/2qYtH2/r/9JludfsKnkuFF0nDet3DdY7ARwoFme9TBoipRnKOv32W/ue/DEjNmrmRU//35/akGZsOC1VpdXYK/WbXGJ1C5NYIOlxciQgQCaCXW0rWeu0=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB5343.eurprd04.prod.outlook.com (2603:10a6:803:48::26) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.22; Sun, 21 Nov
- 2021 17:13:25 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::e4ed:b009:ae4:83c5]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::e4ed:b009:ae4:83c5%7]) with mapi id 15.20.4713.024; Sun, 21 Nov 2021
- 17:13:25 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Colin Foster <colin.foster@in-advantage.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [PATCH v1 net-next 4/6] net: dsa: ocelot: felix: add
- per-device-per-port quirks
-Thread-Topic: [PATCH v1 net-next 4/6] net: dsa: ocelot: felix: add
- per-device-per-port quirks
-Thread-Index: AQHX3ZbybzsFc4blWU6OwKIocdCQW6wOOwAA
-Date:   Sun, 21 Nov 2021 17:13:25 +0000
-Message-ID: <20211121171324.j6kxclyhaheihpja@skbuf>
-References: <20211119224313.2803941-1-colin.foster@in-advantage.com>
- <20211119224313.2803941-5-colin.foster@in-advantage.com>
-In-Reply-To: <20211119224313.2803941-5-colin.foster@in-advantage.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c6d1d9e2-1b99-4537-a3d8-08d9ad123ac6
-x-ms-traffictypediagnostic: VI1PR04MB5343:
-x-microsoft-antispam-prvs: <VI1PR04MB534381F8CA6596CA18C36632E09E9@VI1PR04MB5343.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 60GCCcyIUkcStqZFcL47IlXcizw2zZ22tAixUWkDUCYdqcErlQKEwH5TcrZKRsDMuu788Od9eokN6rEI2qDKAtFoLS1+JedCqKlTjR6a+xHX4/KrXtbJzH8PTCagHSU69P8aCAJPHL+fZtcAAubGyYQsjxGTZIFdiT6aS4snjEs+bEbWAXW5PS6cwv5AYWWjJm8aPaB0aYylCzwVX72ewHpY/WE7b8OV+MIM+PLGW5lwuMCzEUYxGK5ufIv6urnadj9BixsoILTlHYZEPl/48mIIC6okplKTeajkqIZI8oXb+e7WTHZnersAJ6uOuTSS8hxS7GgzYWtIDgMR+sxLuBNHp5Bl7+3gL2O2aiZWNunHFQtulqTsyl3DZ4BGJGEDvkKwQHE1EyY210fqV5P+BKDXvEg3pQXMIoAzvNsWA1/JJUpZInmHVscpOcdegZoneZPnBrf+d0wJwkhtXXPZuZ+plnpYFBys+/Z1ujsm7xbkpT8+Pc5SwCVPYPEUKJofaE3/nO1lPLLUTlI0X/5qeYqovGkOrXQZQCz+VMkfLp6RKfZzJgkfXL5guo7UPZLAcXRM/dH6joaBPUAYhg4hU30qZoXn5/SjTD6y0ta4gj1+A4J2fzZ8MBqI12h8bJsiW936GSHkCLibHxdBqX+K3vggw95DYv+SRbEgBBinzVx3UgYQc7ptJhgm9xx1VCTA40872lvfhCgvUKOlGQLW+g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(7416002)(33716001)(5660300002)(6916009)(26005)(9686003)(83380400001)(4326008)(64756008)(66446008)(44832011)(38100700002)(54906003)(71200400001)(2906002)(122000001)(66476007)(66556008)(38070700005)(1076003)(66946007)(6506007)(6486002)(508600001)(8936002)(316002)(8676002)(91956017)(76116006)(86362001)(6512007)(186003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?jRvnZFZm51F79NE0INJN14+V+BpBTvAGsQkuvkFJFTyOuFP+40/ZVJ60cfO+?=
- =?us-ascii?Q?p3xgpeWkcZ7a4qcEoQxx84C4jixZgiQ7gLM22sO1EgquOkQXvhMmcSv4EOvi?=
- =?us-ascii?Q?DMsGAH+3ITDfR8vQYTBwpHx3RDX1TSjKS8dHJoUhovdbBSC6JOQ4h+QS9e2H?=
- =?us-ascii?Q?DoLyHDUB5iEuzcUwiJVqSRrYqz+ANFHqUIGO69cHVAz0zBaa94mxUzs9HUac?=
- =?us-ascii?Q?r3OnCsHMChn2AjCwdBuYxFlSQH5GUfXUGAjIlGwSXJc5Kx5coXqAdZE6rl5V?=
- =?us-ascii?Q?7boOgV9cxw65mXzpARQU7Gqi0IcsWW8qD+hDhw9bgC+fot6+cC1zsY2J42P9?=
- =?us-ascii?Q?3C6nSW2eHV67Nz+aGKjgroQjty7clNELq4zO/m1SUXHdn3lyXE3Z1GSjSu6p?=
- =?us-ascii?Q?ma0N40P7CBJEC4uBBdABOoT8GzcqVf91iI3Z3ODQUJWz5entTu4uzGlnqcEU?=
- =?us-ascii?Q?F+L0f8YX67T0ONxdwOVM6gUe+mlqBGFimxVq34aGq5C20uU4PsBJ+0bl7TMV?=
- =?us-ascii?Q?uQ5EXtosVcdKcyTSN5E5Sv1aRI52XAuWd6SOUgFk9Z69XxuaBpOokBN6WPxB?=
- =?us-ascii?Q?ZrDtx01/51b5TMAyBTuCYH2ZRy2o+y6JiM7/WYk3wJKS8VS+HH6hF/a1pOme?=
- =?us-ascii?Q?t8hvWzVjQryEZQ4QUBKMwnLhNtYxEfjjvPyQK8Q0JgEck2sR6ppvt7bxiUCk?=
- =?us-ascii?Q?Oza0fWSk2cses4UlDfEUEygd8hOYukQumClmOADNSvqB1y6xe+iuQzITIxiU?=
- =?us-ascii?Q?T3IEA+vhk8Og915Z+9fPF2aj/IiWBbx1FTnBlpfZWekrTTHP7ULdPmGEKP6c?=
- =?us-ascii?Q?IjfKJFX2A0VXUES8rohCtAzdaDKkyfSywutmfuhNlgRwXS+b6YD8s67rzdWf?=
- =?us-ascii?Q?YvrAN0ONmYFX0LN2nsyfVRRSDSCkYN8OZj2CATw7kDEh+dLl1DpvE2G96Mm5?=
- =?us-ascii?Q?LOe+ELlrxvnoBpKvV5Tf5zBu0HhFeQkxes1eAhIdl3+ppp2ITutDPepVYnRK?=
- =?us-ascii?Q?htuEVvM7nhApKiPaqrRY3AlPIBYvi5HEjLh1wLN13Beusfp31IjJkfh+G1Df?=
- =?us-ascii?Q?FzB1jA1nAUU7LqvO1vLkfZVkUwzPpEM+JI7cbICSxR4hhkc35k74nNB8aCQv?=
- =?us-ascii?Q?JwQcIkbWMd5jKhVwvDo93p0QjgOBOqJT0hqI/NcECi246vT8CWMHRVoHS/t2?=
- =?us-ascii?Q?WgT/ifrVY0p5mS1lL+MDbrm5YYwCx/oU20na5QJrvgo8J0MVKWpMBZoh6K3u?=
- =?us-ascii?Q?81lBUtYhYe8gTte0/jPps+I3IO6wtm/m4BJPpNe62VYjjqszEfrch9h/fChc?=
- =?us-ascii?Q?DnJtIwTmoG5abFSHV2eTMaJeKt7Mpm6gH3ZLMK2zBfBwojLWa8NT1TEvYem2?=
- =?us-ascii?Q?w6VTbnlbTqZKsXnZ1fmC17jlg+fDe95X2KFxP/49vE/jWe4vhd/RhC95n1OG?=
- =?us-ascii?Q?ORNGhyE+lxGg/RZnHmS9GurKFz5qdzqF8ot7WaBr3ZzTrwgBbD7Z+Le8PkdU?=
- =?us-ascii?Q?raWriR1bw9IUeQGy8i/4X3qWzH1dtiaJBXSeeGVeTZH1VaNDdS7ADjja+w5a?=
- =?us-ascii?Q?FOxLnQE8jYzIbc3BzCgXz3DGSV+0iNl+7j/0cwNsVR59tO2jkK0BMDIdmsYe?=
- =?us-ascii?Q?AiGNlsKzubeqC7I6EjIEnd0=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <18A326311691EE498E92B40B9B5A02C5@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S235958AbhKURUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Nov 2021 12:20:47 -0500
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:36065 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230330AbhKURUq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Nov 2021 12:20:46 -0500
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id 759EC5C0156;
+        Sun, 21 Nov 2021 12:17:41 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Sun, 21 Nov 2021 12:17:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=+5n8RT
+        SM/0ibOoiOP0YJBycHVWk7QTaN9IDFMpJhtx8=; b=i0poCsjl34A+UmZKXPXChZ
+        hssSVgVREmHxoD0sXvSn9Inmcm2gR0DD1yg00e7poYpX9pEo+ltMIv6KPA1eSY0k
+        C/I7+kjNw83fjbxJS6916noi+ifb5qGDzsASbGEO3psPnsBzkOWY8nmgOLLekJ79
+        O3DVwLD4fEGd/jiM7nUwaq737sIZQNlHjpw3jJ36KfjVP7Ww53Lp9zNAMcZ9CLgx
+        ksqBhirAGDBmYcTffS9Z33mH2/t41yMDN9B0DmH4kE6aZcENTV6/YCjznlBirRrL
+        zQQQ4C+nhq9i/NNlj8ZGtwK8D6zC5QsI4iA3Ylohks3lIBQBdeIzHAD7Y1BECByg
+        ==
+X-ME-Sender: <xms:NX-aYTP6G2f5CG-K3AoNNU9pTji0jyz2SFy99CjUsWuxdjNNd2LTkw>
+    <xme:NX-aYd91rTI5Hust-x6b26W13oFn5tSiLSYC2voBxE3oQJ-NbFCl7Fjnu9zOosAcc
+    cEJqgc4JQ57Ua4>
+X-ME-Received: <xmr:NX-aYSTitW6-9qtwJkXkt9_s5UsE4mZDDWMqMx5jnuXpcbknQ4nve8GFS1Ao>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrgedvgddutdduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpefgvefgveeuudeuffeiffehieffgfejleevtdetueetueffkeevgffgtddugfek
+    veenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:NX-aYXsNsYJP8ZGmL8TCV0lIUwukdcyW0gs6AIy9MUaolyikPcVrew>
+    <xmx:NX-aYbcDJwtqD8fTKp2R6ZtanyQSADpZYAou3UylEq21DB2JRZkwAg>
+    <xmx:NX-aYT2bjWy17cjgLOUbBz9pRCqk8kou1fy9TT0bR-2AyR2rUT8ahQ>
+    <xmx:NX-aYX5LJSoYZnL1MnBbf9zFfSIMdNy-64MUlcdKtqMCJj5nkcUv3Q>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 21 Nov 2021 12:17:40 -0500 (EST)
+Date:   Sun, 21 Nov 2021 19:17:38 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        dsahern@gmail.com, Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: Re: [PATCH net 2/3] net: nexthop: release IPv6 per-cpu dsts when
+ replacing a nexthop group
+Message-ID: <YZp/MvIX/YCHJY9K@shredder>
+References: <20211121152453.2580051-1-razor@blackwall.org>
+ <20211121152453.2580051-3-razor@blackwall.org>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c6d1d9e2-1b99-4537-a3d8-08d9ad123ac6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Nov 2021 17:13:25.4850
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: eK0G2+rMBiIoRKmsNZc6g2Vjz72B/UaS7lNEgH2LsTh4cBtBZYJTWUl2uKzqRMSivZOSD6OFe9lX4Og6eFHaYw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5343
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211121152453.2580051-3-razor@blackwall.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 19, 2021 at 02:43:11PM -0800, Colin Foster wrote:
-> Initial Felix-driver products (VSC9959 and VSC9953) both had quirks
-> where the PCS was in charge of rate adaptation. In the case of the
-> VSC7512 there is a differnce in that some ports (ports 0-3) don't have
-> a PCS and others might have different quirks based on how they are
-> configured.
->=20
-> This adds a generic method by which any port can have any quirks that
-> are handled by each device's driver.
->=20
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+On Sun, Nov 21, 2021 at 05:24:52PM +0200, Nikolay Aleksandrov wrote:
+> From: Nikolay Aleksandrov <nikolay@nvidia.com>
+> 
+> When replacing a nexthop group, we must release the IPv6 per-cpu dsts of
+> the removed nexthop entries after an RCU grace period because they
+> contain references to the nexthop's net device and to the fib6 info.
+> With specific series of events[1] we can reach net device refcount
+> imbalance which is unrecoverable.
+> 
+> [1]
+>  $ ip nexthop list
+>   id 200 via 2002:db8::2 dev bridge.10 scope link onlink
+>   id 201 via 2002:db8::3 dev bridge scope link onlink
+>   id 203 group 201/200
+>  $ ip -6 route
+>   2001:db8::10 nhid 203 metric 1024 pref medium
+>      nexthop via 2002:db8::3 dev bridge weight 1 onlink
+>      nexthop via 2002:db8::2 dev bridge.10 weight 1 onlink
+> 
+> Create rt6_info through one of the multipath legs, e.g.:
+>  $ taskset -a -c 1  ./pkt_inj 24 bridge.10 2001:db8::10
+>  (pkt_inj is just a custom packet generator, nothing special)
+> 
+> Then remove that leg from the group by replace (let's assume it is id
+> 200 in this case):
+>  $ ip nexthop replace id 203 group 201
+> 
+> Now remove the IPv6 route:
+>  $ ip -6 route del 2001:db8::10/128
+> 
+> The route won't be really deleted due to the stale rt6_info holding 1
+> refcnt in nexthop id 200.
+> At this point we have the following reference count dependency:
+>  (deleted) IPv6 route holds 1 reference over nhid 203
+>  nh 203 holds 1 ref over id 201
+>  nh 200 holds 1 ref over the net device and the route due to the stale
+>  rt6_info
+> 
+> Now to create circular dependency between nh 200 and the IPv6 route, and
+> also to get a reference over nh 200, restore nhid 200 in the group:
+>  $ ip nexthop replace id 203 group 201/200
+> 
+> And now we have a permanent circular dependncy because nhid 203 holds a
+> reference over nh 200 and 201, but the route holds a ref over nh 203 and
+> is deleted.
+> 
+> To trigger the bug just delete the group (nhid 203):
+>  $ ip nexthop del id 203
+> 
+> It won't really be deleted due to the IPv6 route dependency, and now we
+> have 2 unlinked and deleted objects that reference each other: the group
+> and the IPv6 route. Since the group drops the reference it holds over its
+> entries at free time (i.e. its own refcount needs to drop to 0) that will
+> never happen and we get a permanent ref on them, since one of the entries
+> holds a reference over the IPv6 route it will also never be released.
+> 
+> At this point the dependencies are:
+>  (deleted, only unlinked) IPv6 route holds reference over group nh 203
+>  (deleted, only unlinked) group nh 203 holds reference over nh 201 and 200
+>  nh 200 holds 1 ref over the net device and the route due to the stale
+>  rt6_info
+> 
+> This is the last point where it can be fixed by running traffic through
+> nh 200, and specifically through the same CPU so the rt6_info (dst) will
+> get released due to the IPv6 genid, that in turn will free the IPv6
+> route, which in turn will free the ref count over the group nh 203.
+> 
+> If nh 200 is deleted at this point, it will never be released due to the
+> ref from the unlinked group 203, it will only be unlinked:
+>  $ ip nexthop del id 200
+>  $ ip nexthop
+>  $
+> 
+> Now we can never release that stale rt6_info, we have IPv6 route with ref
+> over group nh 203, group nh 203 with ref over nh 200 and 201, nh 200 with
+> rt6_info (dst) with ref over the net device and the IPv6 route. All of
+> these objects are only unlinked, and cannot be released, thus they can't
+> release their ref counts.
+> 
+>  Message from syslogd@dev at Nov 19 14:04:10 ...
+>   kernel:[73501.828730] unregister_netdevice: waiting for bridge.10 to become free. Usage count = 3
+>  Message from syslogd@dev at Nov 19 14:04:20 ...
+>   kernel:[73512.068811] unregister_netdevice: waiting for bridge.10 to become free. Usage count = 3
+> 
+> Fixes: 7bf4796dd099 ("nexthops: add support for replace")
+> Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 > ---
->  drivers/net/dsa/ocelot/felix.c           | 20 +++++++++++++++++---
->  drivers/net/dsa/ocelot/felix.h           |  4 ++++
->  drivers/net/dsa/ocelot/felix_vsc9959.c   |  1 +
->  drivers/net/dsa/ocelot/seville_vsc9953.c |  1 +
->  4 files changed, 23 insertions(+), 3 deletions(-)
->=20
-> diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/feli=
-x.c
-> index 2a90a703162d..5be2baa83bd8 100644
-> --- a/drivers/net/dsa/ocelot/felix.c
-> +++ b/drivers/net/dsa/ocelot/felix.c
-> @@ -824,14 +824,25 @@ static void felix_phylink_mac_config(struct dsa_swi=
-tch *ds, int port,
->  		phylink_set_pcs(dp->pl, &felix->pcs[port]->pcs);
->  }
-> =20
-> +unsigned long felix_quirks_have_rate_adaptation(struct ocelot *ocelot,
-> +						int port)
-> +{
-> +	return FELIX_MAC_QUIRKS;
-> +}
-> +EXPORT_SYMBOL(felix_quirks_have_rate_adaptation);
-> +
-
-I would prefer if you don't introduce an actual virtual function for
-this. An unsigned long bitmask constant per device family should be
-enough. Even if we end up in a situation where internal PHY ports have
-one set of quirks and SERDES ports another, I would rather keep all
-quirks in a global namespace from 0 to 31, or whatever. So the quirks
-can be per device, instead or per port, and they can still say "this
-device's internal PHY ports need this", or "this device's SERDES ports
-need that". Does that make sense?
-
->  static void felix_phylink_mac_link_down(struct dsa_switch *ds, int port,
->  					unsigned int link_an_mode,
->  					phy_interface_t interface)
+>  net/ipv4/nexthop.c | 25 +++++++++++++++++++++++--
+>  1 file changed, 23 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+> index 9e8100728d46..a69a9e76f99f 100644
+> --- a/net/ipv4/nexthop.c
+> +++ b/net/ipv4/nexthop.c
+> @@ -1899,15 +1899,36 @@ static void remove_nexthop(struct net *net, struct nexthop *nh,
+>  /* if any FIB entries reference this nexthop, any dst entries
+>   * need to be regenerated
+>   */
+> -static void nh_rt_cache_flush(struct net *net, struct nexthop *nh)
+> +static void nh_rt_cache_flush(struct net *net, struct nexthop *nh,
+> +			      struct nexthop *replaced_nh)
 >  {
->  	struct ocelot *ocelot =3D ds->priv;
-> +	unsigned long quirks;
-> +	struct felix *felix;
-> =20
-> +	felix =3D ocelot_to_felix(ocelot);
-> +	quirks =3D felix->info->get_quirks_for_port(ocelot, port);
->  	ocelot_phylink_mac_link_down(ocelot, port, link_an_mode, interface,
-> -				     FELIX_MAC_QUIRKS);
-> +				     quirks);
->  }
-> =20
->  static void felix_phylink_mac_link_up(struct dsa_switch *ds, int port,
-> @@ -842,11 +853,14 @@ static void felix_phylink_mac_link_up(struct dsa_sw=
-itch *ds, int port,
->  				      bool tx_pause, bool rx_pause)
->  {
->  	struct ocelot *ocelot =3D ds->priv;
-> -	struct felix *felix =3D ocelot_to_felix(ocelot);
-> +	unsigned long quirks;
-> +	struct felix *felix;
-> =20
-> +	felix =3D ocelot_to_felix(ocelot);
-> +	quirks =3D felix->info->get_quirks_for_port(ocelot, port);
->  	ocelot_phylink_mac_link_up(ocelot, port, phydev, link_an_mode,
->  				   interface, speed, duplex, tx_pause, rx_pause,
-> -				   FELIX_MAC_QUIRKS);
-> +				   quirks);
-> =20
->  	if (felix->info->port_sched_speed_set)
->  		felix->info->port_sched_speed_set(ocelot, port, speed);
-> diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/feli=
-x.h
-> index 515bddc012c0..251463f7e882 100644
-> --- a/drivers/net/dsa/ocelot/felix.h
-> +++ b/drivers/net/dsa/ocelot/felix.h
-> @@ -52,6 +52,7 @@ struct felix_info {
->  					u32 speed);
->  	struct regmap *(*init_regmap)(struct ocelot *ocelot,
->  				      struct resource *res);
-> +	unsigned long (*get_quirks_for_port)(struct ocelot *ocelot, int port);
->  };
-> =20
->  extern const struct dsa_switch_ops felix_switch_ops;
-> @@ -72,4 +73,7 @@ struct felix {
->  struct net_device *felix_port_to_netdev(struct ocelot *ocelot, int port)=
-;
->  int felix_netdev_to_port(struct net_device *dev);
-> =20
-> +unsigned long felix_quirks_have_rate_adaptation(struct ocelot *ocelot,
-> +						int port);
+>  	struct fib6_info *f6i;
+> +	struct nh_group *nhg;
+> +	int i;
+>  
+>  	if (!list_empty(&nh->fi_list))
+>  		rt_cache_flush(net);
+>  
+>  	list_for_each_entry(f6i, &nh->f6i_list, nh_list)
+>  		ipv6_stub->fib6_update_sernum(net, f6i);
 > +
->  #endif
-> diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/oce=
-lot/felix_vsc9959.c
-> index 4ddec3325f61..7fc5cf28b7d9 100644
-> --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-> +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-> @@ -2166,6 +2166,7 @@ static const struct felix_info felix_info_vsc9959 =
-=3D {
->  	.port_setup_tc		=3D vsc9959_port_setup_tc,
->  	.port_sched_speed_set	=3D vsc9959_sched_speed_set,
->  	.init_regmap		=3D ocelot_regmap_init,
-> +	.get_quirks_for_port	=3D felix_quirks_have_rate_adaptation,
->  };
-> =20
->  static irqreturn_t felix_irq_handler(int irq, void *data)
-> diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/o=
-celot/seville_vsc9953.c
-> index ce30464371e2..c996fc45dc5e 100644
-> --- a/drivers/net/dsa/ocelot/seville_vsc9953.c
-> +++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-> @@ -1188,6 +1188,7 @@ static const struct felix_info seville_info_vsc9953=
- =3D {
->  	.phylink_validate	=3D vsc9953_phylink_validate,
->  	.prevalidate_phy_mode	=3D vsc9953_prevalidate_phy_mode,
->  	.init_regmap		=3D ocelot_regmap_init,
-> +	.get_quirks_for_port	=3D felix_quirks_have_rate_adaptation,
->  };
-> =20
->  static int seville_probe(struct platform_device *pdev)
-> --=20
-> 2.25.1
->=
+> +	/* if an IPv6 group was replaced, we have to release all old
+> +	 * dsts to make sure all refcounts are released
+> +	 */
+
+This problem is specific to IPv6 because IPv4 dst entries do not hold
+references on routes / FIB info thereby avoiding the circular dependency
+described in the commit message?
+
+> +	if (!replaced_nh->is_group)
+> +		return;
+
+Does it also make sense to skip the part below if we don't have any IPv6
+routes using the nexthop?
+
+> +
+> +	/* new dsts must use only the new nexthop group */
+> +	synchronize_net();
+> +
+> +	nhg = rtnl_dereference(replaced_nh->nh_grp);
+
+In replace_nexthop_grp() that precedes this function we assign the new
+nh_group to the nexthop shell used by the routes:
+
+rcu_assign_pointer(old->nh_grp, newg);
+
+And the old one that you want to purge is stored in
+'replaced_nh->nh_grp':
+
+rcu_assign_pointer(new->nh_grp, oldg);
+
+The need for synchronize_net() above stems from the fact that some CPUs
+might still be using 'oldg' via 'old->nh_grp'?
+
+If so, we already have one synchronize_net() in replace_nexthop_grp()
+for resilient groups. See:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=563f23b002534176f49524b5ca0e1d94d8906c40
+
+Can we avoid two synchronize_net() per resilient group by removing the
+one added here and instead do:
+
+diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+index a69a9e76f99f..a47ce43ab1ff 100644
+--- a/net/ipv4/nexthop.c
++++ b/net/ipv4/nexthop.c
+@@ -2002,9 +2002,10 @@ static int replace_nexthop_grp(struct net *net, struct nexthop *old,
+ 
+        rcu_assign_pointer(old->nh_grp, newg);
+ 
++       /* Make sure concurrent readers are not using 'oldg' anymore. */
++       synchronize_net();
++
+        if (newg->resilient) {
+-               /* Make sure concurrent readers are not using 'oldg' anymore. */
+-               synchronize_net();
+                rcu_assign_pointer(oldg->res_table, tmp_table);
+                rcu_assign_pointer(oldg->spare->res_table, tmp_table);
+        }
+
+> +	for (i = 0; i < nhg->num_nh; i++) {
+> +		struct nh_grp_entry *nhge = &nhg->nh_entries[i];
+> +		struct nh_info *nhi = rtnl_dereference(nhge->nh->nh_info);
+> +
+> +		if (nhi->family == AF_INET6)
+> +			ipv6_stub->fib6_nh_release_dsts(&nhi->fib6_nh);
+> +	}
+>  }
+>  
+>  static int replace_nexthop_grp(struct net *net, struct nexthop *old,
+> @@ -2247,7 +2268,7 @@ static int replace_nexthop(struct net *net, struct nexthop *old,
+>  		err = replace_nexthop_single(net, old, new, extack);
+>  
+>  	if (!err) {
+> -		nh_rt_cache_flush(net, old);
+> +		nh_rt_cache_flush(net, old, new);
+>  
+>  		__remove_nexthop(net, new, NULL);
+>  		nexthop_put(new);
+> -- 
+> 2.31.1
+> 
