@@ -2,135 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 255784580DE
-	for <lists+netdev@lfdr.de>; Sun, 21 Nov 2021 00:17:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1549D45815A
+	for <lists+netdev@lfdr.de>; Sun, 21 Nov 2021 01:32:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236830AbhKTXFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Nov 2021 18:05:45 -0500
-Received: from nautica.notk.org ([91.121.71.147]:49294 "EHLO nautica.notk.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236806AbhKTXFo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 20 Nov 2021 18:05:44 -0500
-X-Greylist: delayed 40626 seconds by postgrey-1.27 at vger.kernel.org; Sat, 20 Nov 2021 18:05:44 EST
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id D6004C009; Sun, 21 Nov 2021 00:02:39 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1637449359; bh=+h+v5WoHCnvJZTz4S+KWLOEg0q3JUAhaF9Le2Ttzzdw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=zi+Di05NvmQb0FPe4t7GaxTYczlDIYk4ZowTzQPAjbzNil6tJPiz3uevJkaan44Wf
-         rDNyb/NApmS8Nxb69yC/hQykjdZpp3QJtNtDgIJzhsrV94ReJD0bEJmcEpbdLm6Xwi
-         wyinjKPWaMsvzZV2BJ83LCwBjLzIGWHh1cW2/K6JmvzrTMQ08ajf8Ze5NnHhYPahE7
-         CaWMaaZFXdKBwLNwPoVEsid2e5I2u+ZX4MBMlecX+GNXOQLLLjEJnWIhAbbhdN0nDm
-         0tZEBQHhYdfzitkrMH6fcCWo30aPTiiRCM8m714baAUjTG05w817qauiChkQ/zBbZE
-         tFmw8HweKD5aA==
-X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on nautica.notk.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
-        autolearn=unavailable version=3.3.2
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 7B309C009;
-        Sun, 21 Nov 2021 00:02:36 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1637449358; bh=+h+v5WoHCnvJZTz4S+KWLOEg0q3JUAhaF9Le2Ttzzdw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=AGAPj+62nUhZHRXe7M2yvA9YTANCxcXJq9zYxBItl/82mx/7IFaunqqJ8xiS8N4S3
-         zyPznc3G1Ndf42MtAch3jq0UGJhcbyzkbbrJQzJMULWnOnmqzueNUwx9mkbZhysP7V
-         1PUoA+gJNjY3ONLwxqqP5Ls3/JsDLgBOMPljGxn1Ks+wXqZogvWMSEC804Z34cwPHz
-         GLLbRv46IqHwg5gvgZYOW2FfRW9YjjvfO6mcfOqXbJatt/Dru0JMBZON45tbWwfrWG
-         xb/TjxiPb8/D2KEEAuyroj0yJcjjvy5fYEdSVjZPCd7ZEFOaPPRzbfH06TPDu4i/8T
-         JPHkh+GmmQWgQ==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id b53fd81b;
-        Sat, 20 Nov 2021 23:02:32 +0000 (UTC)
-Date:   Sun, 21 Nov 2021 08:02:16 +0900
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     Christian Schoenebeck <linux_oss@crudebyte.com>,
-        Nikolay Kichukov <nikolay@oldum.net>
-Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>
-Subject: Re: [PATCH v3 6/7] 9p/trans_virtio: support larger msize values
-Message-ID: <YZl+eD6r0iIGzS43@codewreck.org>
+        id S233946AbhKUAe6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Nov 2021 19:34:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57010 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232742AbhKUAe5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Nov 2021 19:34:57 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6201FC06173E
+        for <netdev@vger.kernel.org>; Sat, 20 Nov 2021 16:31:53 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id g18so12534463pfk.5
+        for <netdev@vger.kernel.org>; Sat, 20 Nov 2021 16:31:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XxGWmTZwHsm0RN01kjRmL3HzDw86SFLpP/0ZpXpaZRc=;
+        b=mqLPe+mzN9Dl/E2s2wRLW9ghNZxzkxV9cQ7rzDcRi9/vEWM/1M/T9ZtHoNE4KsrZ5j
+         0dUrpsPnoEXXwUde09T2wZxbStgM88DZvGgmc0978ncxOd0TJDgINT5vSKtNkNjbTJUo
+         9aK6twgJ7kHLOHU+XH7Ad1bYAiBkodz9okdE0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XxGWmTZwHsm0RN01kjRmL3HzDw86SFLpP/0ZpXpaZRc=;
+        b=EA4FMcxQa1pW86AxmhO2Dq47cltwUwEZ+UHBe8L9L8F+CQONN2c5SvX+FRmhxS/B5m
+         mW2isCQk/4HsKbJ9pK3TUl8w8pjYRRnKu024SJLbV8nPShx6VzCg7qXHZrbmMQVcRXr6
+         k3XngmwYRAoQqjJ+nROlWb+gZZFBJz7OKq7nMPg9OPz/SPPI/Hq0dgvJSL57TauenleJ
+         HPpWHR2mZjIa2bMbuaTnnXrmj9qXKfg7t+WLyLB0Pn5ROGrnSvgP/DiiBE0aqclYEGfu
+         cofpa8rSavN5B02LdcDrdZolmwXzuY5lZDtIM3JT+FgxvWjkdBMn0hMSA7kpTC8bqhr8
+         2IpQ==
+X-Gm-Message-State: AOAM533I3NMouQl2ksFwqxmvEX5PMf8+YorUlNkxct/62oOiodEllL2S
+        3Fn3beFh9v0Pc4wyAP3s173QvA==
+X-Google-Smtp-Source: ABdhPJx48K+tBtBfbJQf3sSRXIucI8Y6zCrUy5h3//aCrSN9nw8UbzVlU9gBgDoTvSGJtDP7M2mUdg==
+X-Received: by 2002:a05:6a00:2351:b0:47b:d092:d2e4 with SMTP id j17-20020a056a00235100b0047bd092d2e4mr73088775pfj.76.1637454712802;
+        Sat, 20 Nov 2021 16:31:52 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id j127sm3932775pfg.14.2021.11.20.16.31.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 20 Nov 2021 16:31:52 -0800 (PST)
+From:   Kees Cook <keescook@chromium.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Kees Cook <keescook@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Vasily Averin <vvs@virtuozzo.com>,
+        linux-kernel@vger.kernel.org, wireguard@lists.zx2c4.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, llvm@lists.linux.dev,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH v2 net-next 0/2] skbuff: Switch structure bounds to struct_group()
+Date:   Sat, 20 Nov 2021 16:31:47 -0800
+Message-Id: <20211121003149.28397-1-keescook@chromium.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <8d781f45b6a6fb434aa386dccb7f8f424ec1ffbe.camel@oldum.net>
- <2717208.9V0g2NVZY4@silver>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=654; h=from:subject; bh=JyIoux+3mSqRrP5c5yAm1k2PCuE3ujZ9X+hh+TTSdkw=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhmZN06M3ei451eaMBJ4tlO/hieAlz+BhYFDkIdlX1 eX61FpWJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYZmTdAAKCRCJcvTf3G3AJtbrD/ 9eR2KNvgCn/YPwypnUGU/RNNqA4O4bYEFLj4ElzB1qqQlG2RgJdcz+rq2yQisqqs16klI6tC11SBhN W7udXMhGJ+Py7w1vVEBAjVNZmGKGlJXE5U8WAHjfZcQac0sOe4DaoyxEKDhZ4dVEtfM9n+INWySh7M uDr1c3vaP+cgXlX5lMFiVoFtjG416sLde9ZZ8i/AAoEtj13SqOYM69cCvB3ZV5sD6z171ju8LuL8V0 0/gPsQggl4r2PI9mSi0ATgA4nL9uxPXZ+WimwvtpoW3euJOXl3R5qx7YEJpMVEhQb+h7bsHU8+554G Mr/5XtAumV32/xkgbaaZzuXsqDpE7wlAaVucANa3AQEj21s9tjkelAJu7HA0AlFNxD1vdytn7CWZlk pZMaqvAW5drzcrEzYLOo+fXRjVbz/qGY1eHIl8O1AdM1Yl5bxOyoHeJ6+Bh5Bgajfi3DtMZFSy3y9b OpoS11g+KF4T5o4t9R3wBjQCyP+hGBmGNCpm6N3kBHTnOLW1hoF9P7WSGHblOL5gn/lWS1rXatOn5H Vacu7NXyluL8MFDh6ynTM7+DGECqimJOIry6vmwHNkpv8jjqqF+jTWDoJGkFAn2/aA49Zpg/XonIcy 94jGLJObRNcJnXtDPIWtQUQA7/UNnVofu/gJMtbIHUh4j4L/74FL/AmwVMfg==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
-Christian,
+This is a pair of patches to add struct_group() to struct sk_buff. The
+first is needed to work around sparse-specific complaints, and is new
+for v2. The second patch is the same as originally sent as v1.
 
-Christian Schoenebeck wrote on Sat, Nov 20, 2021 at 03:46:19PM +0100:
-> > So in practice, you will be capped at 2MB as that is the biggest the
-> > slab will be able to hand over in a single chunk.
-> 
-> I did not encounter a 2MB limit here. But kmalloc() clearly has a 4MB limit, 
-> so when trying an msize larger than 4MB it inevitably causes a memory 
-> allocation error. In my tests this allocation error would always happen 
-> immediately at mount time causing an instant kernel oops.
+-Kees
 
-Interesting, I was assuming it'd have the same limit.
-There must be some fallback path I didn't know about... I wonder if it
-handles non-contiguous memory ranges too then, in which case it's not as
-bad as I'd have expected depending on how finely it's willing to sew
-things back together: I'll check
+Kees Cook (2):
+  skbuff: Move conditional preprocessor directives out of struct sk_buff
+  skbuff: Switch structure bounds to struct_group()
 
-> > Ideally we'd only allocate on an as-need basis, most of the protocol
-> > calls bound how much data is supposed to come back and we know how much
-> > we want to send (it's a format string actually, but we can majorate it
-> > quite easily), so one would need to adjust all protocol calls to pass
-> > this info to p9_client_rpc/p9_client_zc_rpc so it only allocates buffers
-> > as required, if necessary in multiple reasonably-sized segments (I'd
-> > love 2MB hugepages-backed folios...), and have all transports use these
-> > buffers.
-> 
-> It is not that bad in sense of pending work. One major thing that needs to be 
-> done is to cap the majority of 9p message types to allocate only as much as 
-> they need, which is for most message types <8k. Right now they always simply 
-> kmalloc(msize), which hurts with increasing msize values. That task does not 
-> need many changes though.
-
-Yes, that could be a first step.
-Although frankly as I said if we're going to do this, we actual can
-majorate the actual max for all operations pretty easily thanks to the
-count parameter -- I guess it's a bit more work but we can put arbitrary
-values (e.g. 8k for all the small stuff) instead of trying to figure it
-out more precisely; I'd just like the code path to be able to do it so
-we only do that rechurn once.
-
-Note I've been rather aggressive with checkpatch warning fixes in my
-last update for 5.16, hopefully it won't conflict too much with your
-work... Let me deal with conflicts if it's a problem.
-
-> > I have a rough idea on how to do all this but honestly less than 0 time
-> > for that, so happy to give advices or review any patch, but it's going
-> > to be a lot of work that stand in the way of really big IOs.
-> 
-> Reviews of the patches would actually help a lot to bring this overall effort 
-> forward, but probably rather starting with the upcoming next version of the 
-> kernel patches, not this old v3.
-
-Happy to review anything you send over, yes :)
-
-
-
-Nikolay,
-
-> > > (Not sure about this, I'll test these patches tomorrow, but since
-> > > something failed I'm not surprised you have less than what you could
-> > > have here: what do you get with a more reasonable value like 1M
-> > > first?)
-> 
-> It worked with 1MB, I can stick to this for the time being.
-> 
-> Are the kernel patches supposed to be included in the KVM host kernel or
-> would the guest kernel suffice?
-
-The patches are only required in the guest.
+ drivers/net/wireguard/queueing.h |  4 +--
+ include/linux/skbuff.h           | 46 +++++++++++++++-----------------
+ net/core/filter.c                | 10 +++----
+ net/core/skbuff.c                | 14 ++++------
+ 4 files changed, 33 insertions(+), 41 deletions(-)
 
 -- 
-Dominique
+2.30.2
+
