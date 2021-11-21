@@ -2,203 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ACBA45852D
-	for <lists+netdev@lfdr.de>; Sun, 21 Nov 2021 17:58:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5BE1458540
+	for <lists+netdev@lfdr.de>; Sun, 21 Nov 2021 18:07:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238413AbhKURBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Nov 2021 12:01:22 -0500
-Received: from kylie.crudebyte.com ([5.189.157.229]:38861 "EHLO
-        kylie.crudebyte.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238592AbhKURAm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Nov 2021 12:00:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=GCTm8a1TeKdZq6+0dzPV/WSF9+hB7rLfwgR447PHKYE=; b=aTj7gOYEYY1/jbtpj526j+qNhM
-        CIetpiBbmejU1a1N+/ttjtVR37dbE6s/LJywe3yhOvDjlbWy3+lk6watq0rLscOGpVH7jQ9mNxHtd
-        2xvZfT/BZaoaQZyuNGsS1y3SQzqtiK9F3Z0NckRBPrDJlPmLRvqGDmIQ1GMpfpIKPmKEiEQM/jMQX
-        tMs+QZpIIh3WY5prfcSAmwKOA2sTpClbe7jg17UoT56kP9Ati8vNAyDbPBeUOr2qGPOUMzo9NW5mB
-        vN/X/Sz5/NPK0TRVSB3Vwdy9aJlmje9AisM9f6mkhwdTNm8OJ/B38bRZ3z95rBs6HaE2r0+HY1YMF
-        f1r4A8Lm3H3SyADIzHGptv+/YP89kevWBy8w9qv7HINpZxVvH0NE3J9kyYwggwTEasWgqYPCmjUbj
-        B2ojxfTzwKWx2CU8ecLG6hOi21I+Gi386e8meTZhLjeJpr6mEXw1dP+unnh64oB+9SNiR4tn9iBMO
-        RskzG3s6RECg1mokt0ndXPzD4KsYYa1NT9uoP7VtAnkQ71ghmqbI5lTK8NdTCZ2Qzpp436Wjl1owS
-        fibjS/C+qaWlVrOMCHV3LC4/LIiv0KYxDWnoZhUZkGNHMmYvS4OL+S9haZwHgBqzfiLm/OTnPcJtv
-        +64PZ/fJ/3R3kaunN/2+NySXeoknY4TEodjHO36A4=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     Dominique Martinet <asmadeus@codewreck.org>
-Cc:     Nikolay Kichukov <nikolay@oldum.net>,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>
-Subject: Re: [PATCH v3 6/7] 9p/trans_virtio: support larger msize values
-Date:   Sun, 21 Nov 2021 17:57:30 +0100
-Message-ID: <4244024.q9Xco3kuGk@silver>
-In-Reply-To: <YZl+eD6r0iIGzS43@codewreck.org>
-References: <YZl+eD6r0iIGzS43@codewreck.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
+        id S238304AbhKURKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Nov 2021 12:10:25 -0500
+Received: from mail-eopbgr50042.outbound.protection.outlook.com ([40.107.5.42]:50502
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230330AbhKURKY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 21 Nov 2021 12:10:24 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Xh/snVoCpsfa4skNWrzB2tbhF/V6O41n4fNN4AiG/e2ipPZg64m1J9wnLDx+EDzbGHnf9tzh434QouOjfuBsrgQc1nqO+cCTcZchZ2UodDCOzWHf1BKwbiRDzprU2UHhZZsglE4FodDObQ7SxdD4CQrWXHTT0MXIC0XpQV0TJSUyMyB9UiXfQz23QE9SzYhEdTryVwRGK/sTMi49LVd+RjgoNfm8cxEbeHeM++QCmSBT78Ho5IHBxvi6fUhjoz2Uk/v+Gy+QiSilrVO7MXvDNcouRiAZTIKoeRVLFfKuGS9W/YXOdA6dhGLv6VG77lQjthaWz0xbQEdiJqbM0eyBWw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZZbe0pjdECpUMmPJjesic/SbEEB+8477TAxfpuTQdk0=;
+ b=NW61IbxQqCZwM9moipCRsa1Cf/siyyzTTjTbO7pLa/DM1ai4LxzhsuC+YnVCn3nEpS4UMI7SDZDVF3Nl/2QtRrOviP2qlZIC8eTwUZwkZM4s1XgHwdLPkb0dgpQNowwHjX5xmeN5NC1KH0NsSKWYvjup4p4cJPAJv2rb0IOgEVZ694MhCEMC8HtCFuowSjK9NdnJCbCsvSXUSSR8QRrxzX5OOoDdlSXZggsuCGv1oqYcrnETZAlUgHrU9gwp4hOa3bdXpe5B4wzH+PRSkLIuNjrFo0Q6J2tm/ZCu27OkKS99VnSGCMXFFwlh8V893sKTZRUXWcJfiMWrsAa6Ug0VcQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZZbe0pjdECpUMmPJjesic/SbEEB+8477TAxfpuTQdk0=;
+ b=Jogh+9a8KgSfxuq+M4b05Uv9XVe6XlCCZ8Z0P1rQdnISFjRx40HDAJP9Kpv46R4k/jJUbbnHhpMzWJ/4zKOAP7/7mhVQHRO21BoPCLt0XhuCb+57xKH2Kd4uTBGu7472IjjKnoFxJ2nb0bGOWxQujFnfH2WzcHP1q+nvzrjP1mQ=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB6943.eurprd04.prod.outlook.com (2603:10a6:803:13a::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.19; Sun, 21 Nov
+ 2021 17:07:16 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::e4ed:b009:ae4:83c5]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::e4ed:b009:ae4:83c5%7]) with mapi id 15.20.4713.024; Sun, 21 Nov 2021
+ 17:07:16 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH v1 net-next 6/6] net: mscc: ocelot: expose ocelot wm
+ functions
+Thread-Topic: [PATCH v1 net-next 6/6] net: mscc: ocelot: expose ocelot wm
+ functions
+Thread-Index: AQHX3ZbijsqTM5sy70WhaK65YkMIuqwOOUiA
+Date:   Sun, 21 Nov 2021 17:07:16 +0000
+Message-ID: <20211121170715.mv5434lsdguq3jmw@skbuf>
+References: <20211119224313.2803941-1-colin.foster@in-advantage.com>
+ <20211119224313.2803941-7-colin.foster@in-advantage.com>
+In-Reply-To: <20211119224313.2803941-7-colin.foster@in-advantage.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b02ad639-6a07-4143-8a49-08d9ad115eb5
+x-ms-traffictypediagnostic: VI1PR04MB6943:
+x-microsoft-antispam-prvs: <VI1PR04MB6943014BBE4B6E7823DC962EE09E9@VI1PR04MB6943.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3173;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: prZ3aHPtgG4lvVevhYvDTeCPrQ7IObOpzxmR5FT9mC3umrz0TdZO6J3e9+m3XxxSQfBxwh+BDaUrbamCEblRCtpJhHkTPG2C2IfUbecEQzm6tcsvyWSrqoXs+nfCoWTwCw8zZ22EVBKKrMANyyvkDs7KOnxGYWz5bGT+TZ+iEDcBNSGpSRhnEMlYKekM2w8fkoebjFwZdc62Ag2zfMosQqAbBwHaimtRbMR0loMeYlfuzs6yfP7SB638rka/8Uciutdewzg6TyTN41sRmSATB2yqwDwE+FYQAd0IsHiI3snpRUu44dhbrpCR2Wu4mGsE6s6XHiWdD/Oog/dFOKc4VKZs27S+tKopd3QLysQWdfD7M+FOIvJyvb1U1vfGqq3OUlerHH87BmnI1iZiHvv6AONK+UUswHExn70a8+dfKn7W8c5vg1XuaN5d2Vxd76NtQDEMRKCH3Cmo6nDlr0A8xp/nzaPWV6zYe6MdfKx/1nrYeF/5Ar9EAQVKY5LAuy+kwBox1I/BdZc56ECp3RsDFfbBBrtkTZ/uF9T6pdtbQC3LtdeTp+3v8uaA/jj3C27MjTOzx7ArW4RGozZhReeC8DjySmRKqkan2exTbZNL1PbCEBgaSWakr400PHY8mcKPcuP9J+qxES379YZz1D+ZaRVMXlVwUBJv+tWV47d8F1meZlPPsZMqgRRAspk1PsLQkvE5bzHFw3TX1v0z1UAyEA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(91956017)(76116006)(508600001)(44832011)(4326008)(26005)(6916009)(8936002)(6506007)(54906003)(38070700005)(86362001)(8676002)(2906002)(1076003)(66446008)(66476007)(38100700002)(66556008)(33716001)(558084003)(6486002)(6512007)(9686003)(7416002)(66946007)(186003)(71200400001)(316002)(122000001)(64756008)(5660300002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?z24IQaSwTW0Br8Y1sPXeDmr13HIl/d69woWyE1SkoZJAJBBE+eEfMdUNhjUg?=
+ =?us-ascii?Q?xJYnm7DGmseWrV/IrveMrot7DRicHvYFtaTeq6plb+QWxLiUulNQkF+a09aF?=
+ =?us-ascii?Q?tTPlpEys/YXedQNvH1G3oytZs7RwJA2WP40VysnsQvrmresDRpzf5YdQ1nsG?=
+ =?us-ascii?Q?+JLj5wrjz9j3Sn8Q0ZYB44Zni8qzwcKlOiO75Ns/PTjsGyonWiNC9PlMRcKB?=
+ =?us-ascii?Q?QVedOGuDH6ADPwd3Y0t2LMekSKHoivmP7XwEYwMbXnBLvlS3cpaLOP950iSI?=
+ =?us-ascii?Q?kwEu1v7O0KHAkS01QJuTUKSEb6X+0Kf/BUhIAvkKDrYR7HMXselFa9mv+7qp?=
+ =?us-ascii?Q?uFYQ9uqRDpcESePJ8H73isd07gW47ruMVwbj7PW4cVgiU0l/+uCoLHQB2LTV?=
+ =?us-ascii?Q?hIXNnyDXx8xlrxVMYoA2z6Mj985q3XKg24jFgW195BDRonicYzkklBRZzQRm?=
+ =?us-ascii?Q?YKt8SjC0ehlty77NOpaMtflS0Y2ZTMKL1SgdtErJYerWx7ebrntq5z9xAS73?=
+ =?us-ascii?Q?EQ9lvJsSBzuEO2L3wkNvxzVbYgHQu+t2iKNujvR39bCG4ySbM3/x8nVYD95A?=
+ =?us-ascii?Q?J/OoS8DiYYU0sPCAODYXeL6y/WPO16uRs6DUMgPk4gXxRGMfyMaV947mwJLX?=
+ =?us-ascii?Q?k5exGP2oU1Ss9uFFYKMquY1ShuEuEFL3r7fzKnjUcRcyUDD3c68j1xpZ5bSo?=
+ =?us-ascii?Q?vJWhDO/5u0CfEkxM5cFGpHWs/QkiIMOrKkmRktIOztjxOw2+LRr2figOjzxW?=
+ =?us-ascii?Q?G44OIhfA9Iz5UFEPoCwPkgqlrc+AVj0zqyJlnTqmxqXhE7gTMYmEdKNkB2iL?=
+ =?us-ascii?Q?wsaBuHZj+bib2agBwd2w1MY+ibzIbtRxjVX6YWy8OC4N2NLuW+LjWDgxTJGJ?=
+ =?us-ascii?Q?UUXlUTb3R1WJZ/HPfbGV7sax+IHWB8fuZYnOZ6etPLyJ2EEnLN6/uRbyz+KO?=
+ =?us-ascii?Q?6JGbtg5VkET3rp8MZ1wVr+I0XjkqntNDpXG1JYVuLvCAPBmaeOlVW3awfR/9?=
+ =?us-ascii?Q?Vpqw0oHQOZ52A1z3rH20YrRDl7wIP2uamzo0vhubpll6CPvun9z7gioM+zj2?=
+ =?us-ascii?Q?JFcNs3POC8O4SG1nimapf7Kqjl/IWfPAAVJziwV1LvX/ANqq7WA2sQF6PxIY?=
+ =?us-ascii?Q?pPxzFwUhHd9/TAQaDTHh3qqApOU1VcJrffT9XGq1UYTdl6qVdfTUnwOOj3ZJ?=
+ =?us-ascii?Q?ALq5gPCLJU3KPzDdkMrJNGjrKps527Bj50ZGw6CM0X4dtIAIeMMmBWQkrzhV?=
+ =?us-ascii?Q?gUuDQetM4WvilNy3KkskNpru788gw/1r/kTKCBv7zcHRGgXFGQAo1kDYFSrN?=
+ =?us-ascii?Q?bHtXl92zp19l42bWz8BNQtGfS0JFlB4GerCAm2vTzcKa/lQJ2KmoD0hpJ8pw?=
+ =?us-ascii?Q?kdaHrP492HKqeCnlYuBQ8oe5z4cqYXJ22JGevetNfHdkYI63+U5n9A5pnFYu?=
+ =?us-ascii?Q?62aXReBc7TDMdBt5GKakaMRT3htsqfTQOlOTKX5Uoh8wHD1TXbK5qBnPdLfe?=
+ =?us-ascii?Q?51doT9HFtk0wYWKaRb++q2khoaA2zKz9rJQDFypaNYQ4vWoRReLUw1D0jZOe?=
+ =?us-ascii?Q?2MYEacS6c6/AGMz/oPB07ztOxTl2N3apJH93HLlF9ogLTHiMnathATxC7jit?=
+ =?us-ascii?Q?K4a/OfhVbLqZQ5I60tnWi/Q=3D?=
 Content-Type: text/plain; charset="us-ascii"
+Content-ID: <80DF656778F5FF4D9D60CC53C1D7EE2D@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b02ad639-6a07-4143-8a49-08d9ad115eb5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Nov 2021 17:07:16.2372
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Cu6AmS2/bzLRyWwdR/ZLHFfJVMo/b5K04Ud71MzasJEDVGmlhXKu+V1Qg1Z++Ty+2Kf2W9zcXQVj2SdX7tVGmQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6943
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sonntag, 21. November 2021 00:02:16 CET Dominique Martinet wrote:
-> Christian,
-> 
-> Christian Schoenebeck wrote on Sat, Nov 20, 2021 at 03:46:19PM +0100:
-> > > So in practice, you will be capped at 2MB as that is the biggest the
-> > > slab will be able to hand over in a single chunk.
-> > 
-> > I did not encounter a 2MB limit here. But kmalloc() clearly has a 4MB
-> > limit, so when trying an msize larger than 4MB it inevitably causes a
-> > memory allocation error. In my tests this allocation error would always
-> > happen immediately at mount time causing an instant kernel oops.
-> 
-> Interesting, I was assuming it'd have the same limit.
+On Fri, Nov 19, 2021 at 02:43:13PM -0800, Colin Foster wrote:
+> Expose ocelot_wm functions so they can be shared with other drivers.
+>=20
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> ---
 
-That's one of the things in the Linux kernel's memory allocation APIs that 
-could be improved. IMO it should be clear to developers what the max. size for 
-kmalloc() is, by either a dedicated function or a macro *and* that being 
-officially and clearly documented. Right now it is more a "I think it is ..." 
-and eventually trying out. You might use the value of MAX_ORDER, but does not 
-feel like an official way to me.
-
-> There must be some fallback path I didn't know about... I wonder if it
-> handles non-contiguous memory ranges too then, in which case it's not as
-> bad as I'd have expected depending on how finely it's willing to sew
-> things back together: I'll check
-
-AFAICS that was a misconception in the past in 9p code (I see 
-is_vmalloc_addr() being used); there are basically two types of kernel buffers 
-that you can allocate today:
-
-1. Buffer with guaranteed contiguous physical pages, e.g. kmalloc():
-
-   These are limited to exactly 4 MB.
-
-or
-
-2. Buffer with potential non-contiguous physical pages, e.g. vmalloc().
-
-   For 32-bit systems the limit here is either 120 MB or 128 MB. On higher 
-   systems it is usually only limited by the physical memory being available.
-
-In both cases you get exactly one memory address that can very simply be 
-treated by driver code as if that address was pointing to a single linear 
-buffer, just like you would in regular user space apps.
-
-However (2.) is not an option for 9p driver, because that memory type yields 
-in non-logical addresses which cannot be accessed by a device through DMA. I 
-actually tried replacing kmalloc() call by kvmalloc() as a quick hack for 
-attempting to bypass the 4 MB limit without significant code changes, however 
-it fails on QEMU side with the following QEMU error, as host cannot access 
-such kind of memory address in general:
-
-  virtio: bogus descriptor or out of resources
-
-So in my very slow msize=128MB virtio stress test I ended up using kvmalloc() 
-for 9p client side, plus alloc_pages() for virtio/DMA side and copying between 
-the two sides back and forth as a hack. But copying should not be an option 
-for production code, as it is very slow.
-
-> > > Ideally we'd only allocate on an as-need basis, most of the protocol
-> > > calls bound how much data is supposed to come back and we know how much
-> > > we want to send (it's a format string actually, but we can majorate it
-> > > quite easily), so one would need to adjust all protocol calls to pass
-> > > this info to p9_client_rpc/p9_client_zc_rpc so it only allocates buffers
-> > > as required, if necessary in multiple reasonably-sized segments (I'd
-> > > love 2MB hugepages-backed folios...), and have all transports use these
-> > > buffers.
-> > 
-> > It is not that bad in sense of pending work. One major thing that needs to
-> > be done is to cap the majority of 9p message types to allocate only as
-> > much as they need, which is for most message types <8k. Right now they
-> > always simply kmalloc(msize), which hurts with increasing msize values.
-> > That task does not need many changes though.
-> 
-> Yes, that could be a first step.
-> Although frankly as I said if we're going to do this, we actual can
-> majorate the actual max for all operations pretty easily thanks to the
-> count parameter -- I guess it's a bit more work but we can put arbitrary
-> values (e.g. 8k for all the small stuff) instead of trying to figure it
-> out more precisely; I'd just like the code path to be able to do it so
-> we only do that rechurn once.
-
-Looks like we had a similar idea on this. My plan was something like this:
-
-static int max_msg_size(enum msg_type) {
-    switch (msg_type) {
-        /* large zero copy messages */
-        case Twrite:
-        case Tread:
-        case Treaddir:
-            BUG_ON(true);
-
-        /* small messages */
-        case Tversion:
-        ....
-            return 8k; /* to be replaced with appropriate max value */
-    }
-}
-
-That would be a quick start and allow to fine grade in future. It would also 
-provide a safety net, e.g. the compiler would bark if a new message type is 
-added in future.
-
-> Note I've been rather aggressive with checkpatch warning fixes in my
-> last update for 5.16, hopefully it won't conflict too much with your
-> work... Let me deal with conflicts if it's a problem.
-
-Good to know! I just tried a quick rebase, no conflicts fortunately.
-
-> > > I have a rough idea on how to do all this but honestly less than 0 time
-> > > for that, so happy to give advices or review any patch, but it's going
-> > > to be a lot of work that stand in the way of really big IOs.
-> > 
-> > Reviews of the patches would actually help a lot to bring this overall
-> > effort forward, but probably rather starting with the upcoming next
-> > version of the kernel patches, not this old v3.
-> 
-> Happy to review anything you send over, yes :)
-
-Perfect!
-
-> Nikolay,
-> 
-> > > > (Not sure about this, I'll test these patches tomorrow, but since
-> > > > something failed I'm not surprised you have less than what you could
-> > > > have here: what do you get with a more reasonable value like 1M
-> > > > first?)
-> > 
-> > It worked with 1MB, I can stick to this for the time being.
-> > 
-> > Are the kernel patches supposed to be included in the KVM host kernel or
-> > would the guest kernel suffice?
-> 
-> The patches are only required in the guest.
-
-Correct, plus preferably latest git version of QEMU, a.k.a upcoming QEMU 6.2 
-release (already in hard freeze).
-
-https://wiki.qemu.org/Planning/6.2
-https://wiki.qemu.org/ChangeLog/6.2#9pfs
-
-That QEMU 6.2 version is still limited to 4 MB virtio transfer size though.
-
-I proposed patches for QEMU that allow up to 128 MB virtio transfer size. That 
-ended in a very long discussion on qemu-devel and the conclusion that a 
-refinement of the virtio specs should be done:
-https://lore.kernel.org/all/cover.1633376313.git.qemu_oss@crudebyte.com/
-
-Virtio spec changes proposed (v1):
-https://github.com/oasis-tcs/virtio-spec/issues/122
-
-You can probably subscribe on that virtio-spec issue if you want to receive 
-updates on its progress.
-
-Best regards,
-Christian Schoenebeck
-
-
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>=
