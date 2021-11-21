@@ -2,372 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C6A54585B7
-	for <lists+netdev@lfdr.de>; Sun, 21 Nov 2021 18:57:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AE564585B9
+	for <lists+netdev@lfdr.de>; Sun, 21 Nov 2021 18:59:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238433AbhKUSAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Nov 2021 13:00:38 -0500
-Received: from mail-eopbgr150073.outbound.protection.outlook.com ([40.107.15.73]:41152
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        id S238554AbhKUSCb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Nov 2021 13:02:31 -0500
+Received: from mail-bn1nam07on2045.outbound.protection.outlook.com ([40.107.212.45]:23630
+        "EHLO NAM02-BN1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238020AbhKUSAi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 21 Nov 2021 13:00:38 -0500
+        id S238020AbhKUSCa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 21 Nov 2021 13:02:30 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OUXMJaJHy+JSReBbguQOx6/Hl0HRbzLQwksCBKgrrddanrfzFJd9iNSMHZdetOXb994/g9zENO02UfDYTYD06TcU3PoAMq5ZzEqvjL2BqxMCZn0cUAcO/qjEvfABqZFbN5pNDLIDN50HNuPA87rJ3VsOX+w+jaoBIK9W5cbfnwjuZSAqGK6uNCId9HNlaNB7/Wp5Gnu7mfAJ3lum/MAZSj5UR1mbQ/q5s1r2H3cctats2wFXRDdBmrcTaIpI7MzGOYQ9F+ZWBSRim8nWWIyUtrMAXxBFfiHaVXBlrIFTdH2nAJzY8CWzTS0zRZ5C7fDyClVBE/Z8FObmBZUwxeXD4Q==
+ b=GuIqfy1GYY+Tt3AsLE5xUSuejmHDc0oue8eZyyKRSWTvJCDD6jqXeH18MFjtCtPMz8oUxIk5lQhABGkLRr/Z5spRXHmWcPOCcdDdgAdWF2LMTLXk3FoE4BtCpHOFRneXz/FO7xqMIafkHEdQkGeYAlwVxGPUkZ6SAFS28BXTT8DUZ9TMjoiMzUdG9e6UImKtdW2Y6dGxKInaucxDi8JMphC08F+FVsR5w32pLhWEw0h46lVhvzRRBP0AjzpWdWe1zAeprVbugZyg6tYKjOLPsYHIEQTxfPZ6lhpsEYXKoYUak6h7M5/Bykl98GkrRKgMuw8uC1+niGV8iXggTXvYyQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+kYAqNHqPIasxe/bLEtdMBt1O1iwW+sCVmi7gXqxLrk=;
- b=GncmWqnmH14A2Ua6RhJRWeLzGUbLpHw997TcdtzXjv0zciaLLzU3ZylOo9VZHDIiOQMsUuNwb6pHwIlCQeoFohvzhVKyqGDfE/R+4A5OATviVaDHhKNao2CD9NRCMIlgAZ8RcDg9cmOBJEr4cftw5ZPDVaZxly39k9NlTy+IYLBJla1SjCxrX5Nc48h5ekw3cLbQgLHw01cT5RQ2qKyDgU3y+5kxvm5fdTpo1S6Xdr6nMhBfyzEXqY6XfWWPWoNLkkOe7mj028zkvfyBT6z4j/cwSGzjPH8fODxjPdlXIzX4kITPcCrrX3sH16/aNRZ012kTdjGnJbhLyjLjofowiQ==
+ bh=keUePLoDxs0fQyJYJWBKljY6pQWqCNcHrQwG5b121qs=;
+ b=Nb8jMcVsc8hHKRbTfr4lGc7yBgnx5b4d6WxnyKiA8uu5MMpddL0SSBfzl7TqluFFsntz7Fr0VkDG0iJdjvf31vFalI/NeZBU6X3fi0A0Y7HMEpredUUNKISyQjS9ljap/3lNJ1GR0zehLMnT5JtccRTtLMvV0H71+eB/tuuoXEY6YBpGBjciGDkTz2liDWHPWRp2Y7rcImjxOI6WB5LPHdSab5dqvRCv2k0/4vyKByujwFoqJYLIl2dPIS7Qhq9PBxjMk3XUuJL8dA9Cs9PIWA8LYYhAvWz7Ny6NeyqH40jpGOqpWcer6lmzOnRoeDVA7ufbm8Pu3EW95ieoxiP7Cw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+kYAqNHqPIasxe/bLEtdMBt1O1iwW+sCVmi7gXqxLrk=;
- b=VZyLBI7VExBj1zID00j3x8olZFnRtBFcK1evJtQa0IknCURjPZE1zytvM6Zpb/tQ3K51QyHolL60Mc76CQ3VewbP/Vn6kw7EsV8mBGzYcI0VNB78uxpSdMBQXqJJkxhE6Ocv57jWtsDX8FTA1nmHeCfjs5lQtyWK8i32Eec5ykQ=
+ bh=keUePLoDxs0fQyJYJWBKljY6pQWqCNcHrQwG5b121qs=;
+ b=KPe40UlD5k68FWiPCcXx85OQIFz5pqxB5m4PTAjTZDZj6KO8LrccRKn2wWrqbj3DkaPO/jEUEs+I7P9Foha/DjPMcOofLkf2y2CevisPWl+1jMDCSJ5uiu6anJ1vl8cJPWm0kaswxzartnMNYjxhRPdVAY80JFGioajwNxgaR8JoeNDenL1jziN0Jp55fVPCezDf8Kz/UHj/t8gM6zgpw3g6nAAMJZip3hf1OSEy8R2pnVKWpjD4Q5uUR4i7mXIp3umR8WOtVdhDAa3edDv/UCGbHHAjwpZT5ezXbaw60/ob5AhIqyIn6cEedT/lS2Znny77nYPZ18HOUV1FBcbjcw==
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB5693.eurprd04.prod.outlook.com (2603:10a6:803:e2::14) with
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM4PR12MB5278.namprd12.prod.outlook.com (2603:10b6:5:39e::17)
+ by DM4PR12MB5104.namprd12.prod.outlook.com (2603:10b6:5:393::24) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.24; Sun, 21 Nov
- 2021 17:57:30 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::e4ed:b009:ae4:83c5]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::e4ed:b009:ae4:83c5%7]) with mapi id 15.20.4713.024; Sun, 21 Nov 2021
- 17:57:30 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Yannick Vignon <yannick.vignon@nxp.com>,
-        Michael Olbrich <m.olbrich@pengutronix.de>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Holger Assmann <h.assmann@pengutronix.de>,
-        kernel@pengutronix.de, Kurt Kanzenbach <kurt@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: [PATCH v2 net] net: stmmac: retain PTP clock time during SIOCSHWTSTAMP ioctls
-Date:   Sun, 21 Nov 2021 19:57:04 +0200
-Message-Id: <20211121175704.6813-1-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM6P193CA0062.EURP193.PROD.OUTLOOK.COM
- (2603:10a6:209:8e::39) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.20; Sun, 21 Nov
+ 2021 17:59:23 +0000
+Received: from DM4PR12MB5278.namprd12.prod.outlook.com
+ ([fe80::513c:d3d8:9c43:2cea]) by DM4PR12MB5278.namprd12.prod.outlook.com
+ ([fe80::513c:d3d8:9c43:2cea%9]) with mapi id 15.20.4690.027; Sun, 21 Nov 2021
+ 17:59:23 +0000
+Message-ID: <5694713b-0d18-27a9-417c-9c500ce19c14@nvidia.com>
+Date:   Sun, 21 Nov 2021 19:59:16 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
+Subject: Re: [PATCH net 3/3] selftests: net: fib_nexthops: add test for group
+ refcount imbalance bug
+Content-Language: en-US
+To:     Ido Schimmel <idosch@idosch.org>,
+        Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        dsahern@gmail.com
+References: <20211121152453.2580051-1-razor@blackwall.org>
+ <20211121152453.2580051-4-razor@blackwall.org> <YZqHj5GFUdp7MEZU@shredder>
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+In-Reply-To: <YZqHj5GFUdp7MEZU@shredder>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AS9PR04CA0043.eurprd04.prod.outlook.com
+ (2603:10a6:20b:46a::13) To DM4PR12MB5278.namprd12.prod.outlook.com
+ (2603:10b6:5:39e::17)
 MIME-Version: 1.0
-Received: from localhost.localdomain (188.25.163.189) by AM6P193CA0062.EURP193.PROD.OUTLOOK.COM (2603:10a6:209:8e::39) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.20 via Frontend Transport; Sun, 21 Nov 2021 17:57:28 +0000
+Received: from [10.21.241.23] (213.179.129.39) by AS9PR04CA0043.eurprd04.prod.outlook.com (2603:10a6:20b:46a::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.22 via Frontend Transport; Sun, 21 Nov 2021 17:59:21 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 470123c9-61e8-458e-4c5f-08d9ad1862e3
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5693:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB5693FD3EE30CCADCF1F7D8F3E09E9@VI1PR04MB5693.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Office365-Filtering-Correlation-Id: b061ebfa-7eef-4694-668e-08d9ad18a67b
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5104:
+X-Microsoft-Antispam-PRVS: <DM4PR12MB5104696826A2FA1C1EB7EC96DF9E9@DM4PR12MB5104.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YYKfZpZIoJ3qmuS6bn1O5Mgg47dy3glfjbsiVpDL1k+jsz4ExLbaKKjB+Pc/HuHbhURJshmLAlGyz9TjRQWstOM/3nsMwHkWSpmy2Lzb/lw+2WNNfFqbhpTRGmXhghXBWp0baS0C9XwjxT9C1RuveM3+hfQH//QYbdlHsobWsa4nELSpfMZkEO9YY93WxUfyDOIMmAuqbsz8lnSWCN2uHCgq+KaDyfA1x47gnGnTWSMiS5xwdW+OL9U6F5AnCOc3eRkyFXHLmok5SmDwFH9CyA+u37R8vLgV/NXssP+ZANl2OUcjVLAl65nPYOaczXBkhPwhaU+BQyXw26t5ymT9fAafG5khjZ7OYZTcTD3ZND7yXeIYyS+Ly+nL5iOFVdrpU2bAaManUF0RWj6kZqXX9jJ00tQz74T8osWHW+4rtBlB7X53nqbb6rI7oUD75te2cDdUlGLo1VkAl9agnn4E50KG9GAIOyrzY4rxCePCskFVayPlhtsXPSajyBnCBm2gsnYnhHjOAotVl3tBGA2fB+Qn8Qbajky9PKG+X/MFBLxifssvdjSnP5T8B+J8V/16YHO/AfiO97CyhMY19bxZQhdXI8cPXXdO+RGOo9L4c9fKRvoFSv47C5TiKcotPVahH50TFgcJcR36se3ZBilioA/E2DeEO3hZLkGvMxlUN3TnW8cKzHZUL+FwSKFvQHmSFCkRAjFPQ70DioMjtALq1A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6486002)(36756003)(2616005)(38100700002)(38350700002)(8936002)(6916009)(956004)(4326008)(6512007)(2906002)(6506007)(86362001)(66476007)(66556008)(8676002)(7416002)(52116002)(54906003)(5660300002)(26005)(508600001)(83380400001)(6666004)(186003)(44832011)(66946007)(316002)(1076003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: I01mIianoFOoj9z2uiAzC0BNOgRcCJ6qR7ZNXeymz/tb6511+nfr/wsVtVwuf+N9ywvl1d5hYGxSn2f9UL7uBrkliG9OyC237NUijjAETU2YyRqxVUQp1tl7SRXQ6w9c7IVVIliS1xOPh2FjMbBNfzRq02z/Vg5ZbXEcZ27G5Z2Q4gTCJX5qxwqTi4b0nXwvt6jJnfAVkkmSanJmgL9jp9RfoxkF3u7uBbjmSAwTFluQMczV/GqOtSaMb72VRVJs2kxNGrYecPFha7ezTEOPbgcBSH0qwWznBbP78s+6cKH8cwkNZ+ZFyoGvm9YlvKpB7TgVitf9FN8v+jducOIE3aqRLtQxRXT3mgLQP5qRYCwqI9CSMjVHMLYG7dkWy3IqJ4GVDGaoyFsCW1+MI9uozNnUR2NOJxOYf87pP02Vn1F4J/SFwovyWhisLNR3+13bTPuzWoCiEJBCviuIQHp4q7Od2Jf/WpcX6ApjiufnQ30Jxu+M0lkriNl5wghGcg1ff6E29zSSf5x0qPKnKiAvk8zc4hKljjq1ipQh5s203927WMwHOwEJzeWMFY7aY4tdjbt/jAC/Xj4KqtBchAsuQaPiPMynsj787eIZlMeggqq0yimv3OIDrxwliA20zXPBjf+TemfnR692vypy2CSXFkcF2jOQOTbeGh7dg4cU70q3BI91wJMbmt7UCoGahtJoIj/pNv5Q5cA4PYranmR8EwOaQgYtCS8xTuOoB38/Zj4=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5278.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(16576012)(38100700002)(6666004)(8676002)(8936002)(316002)(53546011)(31696002)(66946007)(5660300002)(31686004)(186003)(66556008)(66476007)(6486002)(956004)(86362001)(110136005)(26005)(4326008)(508600001)(83380400001)(2616005)(36756003)(2906002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?y8jyx5n6kQso/NwC0dnOK+HoUJ4HnzvpOZ5mQVZJ1hGSQUf5UJc0F5kVqbO1?=
- =?us-ascii?Q?9x0aujImP5nlxw1myTbSdroviKtQ7recEuxr8ZT2eS+3E6TX5GbBMQxUkp9X?=
- =?us-ascii?Q?oXPTeNp5iGXyDlOIkM6DExkh/4xdND/tZnGht35qtNFv5dKh2hKvXsAlVrl4?=
- =?us-ascii?Q?WkOhYdie7eYIJdmfoZRblwvObkglkSFsHMo6n3YBJryObGu9hoP5jssvPK+B?=
- =?us-ascii?Q?CAlQl2bEalIplJs4Ijp4OQfRhPLHP/FHAmdF/YAZUJj+e8xCiNjWPSEpMWD3?=
- =?us-ascii?Q?3yovy+tCRgLvOqdaMiTnbI0UIRRM8rMtiIFbim+2C9yiRGU4EVkei81RIRNd?=
- =?us-ascii?Q?dGHvLlj7Y8XUIpO3XcSVTNyHupNtqOpv4UQDkWJ+Mw0DY5gFN3Gz5/dx0l9L?=
- =?us-ascii?Q?PWlv/GWfbBcgqRE0DbyQfct4Tn7IXRDq0LCK1mrCUtIfOf3ptyca//I+3hUk?=
- =?us-ascii?Q?nmoRF8//uo3XlopmRkYvOG8i9aXWom2l4TSIBQkeeWxjMF4CWTL360HD/4VE?=
- =?us-ascii?Q?qwVb85llUC3aYPZPXjeRUGZpnkWs58vWrU6Ixb0OxHzZRfag4x8njC9f36My?=
- =?us-ascii?Q?Q5CjG13yjx4LlFqAoIcTWI4Lu68aDq8OrhdElcTCnekjk2s/fQtrGGKtSaoU?=
- =?us-ascii?Q?gwXkulpWTs9KfclUEz1f5CRB2oBfV8ukqMuU/JH8d/wHkpg5eJYwzYBTMzUc?=
- =?us-ascii?Q?SzZed2LaKl0u46Zy8qCpjDsqHFFr/ZBMB8l4TBwRLBkNcWnJ4eZTXNjbYpao?=
- =?us-ascii?Q?OK4LGAmD4RQT4J8fxWdnT9avKkK/cXfGiyIrbVF+wJtS6iTqDWip2seKyBVP?=
- =?us-ascii?Q?Anwt6QWWvBwTbTfFs5eH4OvOxNWHsugXHMGWC7hTMKpSgYcCuE4+gH9xpWcH?=
- =?us-ascii?Q?N67bYna70EYw88wzr3kqut6XsWKhUJl/IZh+1oRhbWSPMdcLOy6MwXZXTzHK?=
- =?us-ascii?Q?YUl99CQCj14fKB2ibGRtt5xuxL2xcEoO6bQHJpI6HvS0M2rzSS3vDlDX5nqb?=
- =?us-ascii?Q?gle33IxyS16WrWdR37W3ytyz4WtgliPaI1CKCZ958eDaErBUdHyFknv1AHeq?=
- =?us-ascii?Q?4yzHXDTLBrAwF3Fhj/0Ti37BesRAc8vFL5f9OBvQenvR7cKwpHk9S/wyF/4f?=
- =?us-ascii?Q?A5r1uEcCQi/L/ybEVkrCEVyaXUa8kfKtGcnWkHQEaJBp0azPanS6iW85TGkr?=
- =?us-ascii?Q?o2gqhXi+va5u5k3y2KrpWCH3bVGLkHhpLj/eYeuRIoG5lgcphNPKm7LCuxxp?=
- =?us-ascii?Q?3tV4NCC13Rhfq7QIm9zvzR7Ty+4acJXItwzq6TN/tEQ60MqHfNcIKo9TGNt1?=
- =?us-ascii?Q?5LLT1BfZlFd/irn4C3WJVusI3lLej7+VXdS3PTYwr0XDLE3erFDjgw6WsjX5?=
- =?us-ascii?Q?SnzdDOfmRTDlQr4lShfy83G3/OGXy+xlV/r4tdy6ZWGaLpVL/88nTyhCoQLr?=
- =?us-ascii?Q?IE5qmYFI+AATDXayyrrU5kWZKLwaBPR/9p7YVthVxwMuGY6Ue0yGchbrOUg3?=
- =?us-ascii?Q?edYeJJ4mCbvMIFI+wicAWpn11oFJdRwP8LouMmK3Oah2pt9MvM6s85LCiP0k?=
- =?us-ascii?Q?a1IyztcWs00aCJmlnFvyvbhDdDZN+QVX+rvIqA2kLBuTfujP4Y2oSMVIMFfK?=
- =?us-ascii?Q?M9iLzVG6dni59v+ofNQbuqc=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 470123c9-61e8-458e-4c5f-08d9ad1862e3
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OXVDTHN1MmowRkgzWEVnUk5hZldLNlVnSlErRm9BT256eTJpTkhydURiZGRa?=
+ =?utf-8?B?V2Q5QTYwai9JZ2F0UlZsUFFBOUlLMmEyc0VyODhmUitMMW9aejZYcUFEdmVh?=
+ =?utf-8?B?b3dCVmdHaW1HQnBSRUxpQThVa1RCakk3QmhzZ2Q2c0QxSW8zdFM5cEM1NW1Q?=
+ =?utf-8?B?eEVmZk45UkEwVWRZU1VVOHFtd2Z0d3g5MGpHUFF3TDY3MzR0TUREVS8xeFkz?=
+ =?utf-8?B?UHpPYjBQaDlRTmFmQmF1YzFVRndvTUc2eWUwU1ZDNjkwQ2JuZDE2enN6UFlB?=
+ =?utf-8?B?cW5pTGt0WXZqSWU5dFhCOGFQQWxLQ2IyVG1nbWxiK2JlKzJURGFlRVlpaDlT?=
+ =?utf-8?B?TWFoU1NEV3RmMldTOTg5ejhEcFplUkkycks5aHQ4WlFMVCt1M0QyZUc5L2N6?=
+ =?utf-8?B?VHJhSkhZcWlvYjVPQWZRK0NjVzBPMW1JTmt4Q0dxNFRSSG1kTkhnNU52Y2ZE?=
+ =?utf-8?B?dkhJREpSc3lCaHVBdzBrbmduNjF3WDQxSEJ1SUpFUjJmMGFVSU5OaE0vM09C?=
+ =?utf-8?B?cmhGNkdteWUwbWY5RW1qVG4vVkJpOE9hVXp4a0NUZ1NhajZOWFFiU2hvRTQr?=
+ =?utf-8?B?RFpaNnZvQ09GUkNyZU82emxSemdsSkprTHBYSXhrU2xoZGpzb1E0eFIwTjl0?=
+ =?utf-8?B?bjgxSHBxOSsybm12TU1HMlo2eHdObUw2c2FVeW13eTU0SkdQalZCWHZ4R0pB?=
+ =?utf-8?B?TmZuM0tEZWtoWm1pZThtV1RqdXNUNlYvZFpQSERubzZTK3QwWFBydG9VTkE1?=
+ =?utf-8?B?ZmxaK3dSQ3lvaXMrVkE5TSs5b3JPaWthWHhEUE1qS1cxSk9BYjZqYUJ6N0pD?=
+ =?utf-8?B?UkJpcFp1alBaMFQrcFo1MkJrTnF1cnRSbGRENkJqSUNNdU1Ub3JHbnRQYTNN?=
+ =?utf-8?B?RkZLazBiQW5KL0NKTUFoUDN6czgxcjYzWThXcUVhMFYvZDhJRWgzb2xuaHJh?=
+ =?utf-8?B?NzN4YitRNkcxSzJCWmFOWHY1RFAvVnkyWWRkRlpITkppampIZFNtYWNJZmxq?=
+ =?utf-8?B?ajdPZDlvTGZYdmp5cUZiN1lkVEJOcVgweDZkL2gxNHd3elZKKy94aEtVT2c4?=
+ =?utf-8?B?RUFJakEzdUhXSlhEcGZtbHF4QmhwT2J1QlJadUR6Vk9TdEdmS1p5Yk1oTy9z?=
+ =?utf-8?B?TjBXRVNWY0tDVTVwY21VM2tQalJDNlBDZmxRMmU5L3I0dkNESjJlRW1CcTdC?=
+ =?utf-8?B?bjhmUlJZblpXZTJydWRoTThGN1UxaXYvem5VSFFsdVhtTUwxdGJnOEtuUmMv?=
+ =?utf-8?B?cmJNMGNhNjFCdkpOV05zSWhnaFpzWFBuUGU1Vmx6cnVBcWtDaTE3TGVub0p4?=
+ =?utf-8?B?Nm9LZ1ovV3puZk13MnZnMkJyWmt1N0JrTEYxT1kxOUF3Z3BVUnU5TEZFQzN1?=
+ =?utf-8?B?NTN1Q0lxWjR1MGkrVk0vN050T2pXVUFBbE10V3dMeWQwMkxUWldJOXVtcXow?=
+ =?utf-8?B?YUZVNGltRmVqVTBjd01rYnYzOFdrdlRCR2N6QzZJcXBMamVNdUhYRm44NmRU?=
+ =?utf-8?B?NlVPL1JmNW02ZGdzVEpMVnNJOVd2Z3o1bUNpc2VjWXRTLzliZnZuaWs1Qk1U?=
+ =?utf-8?B?ek5Uc0hEWWROZEFXcUpyb3ZHMG9EWXNzczQ0MjF1OVBkOXRVWm9JV2tJdUth?=
+ =?utf-8?B?cWhOVEpEc1BDOERJeGRzM2JEVGFiaThZZFYyTFBvaUp1eWl4S01UNmN3endF?=
+ =?utf-8?B?VFFHUjA4dlZvd3d3RStuVWd6R3M0Rk9QaUI1bG8zSEtySC9jaXU4WTJibHQ2?=
+ =?utf-8?B?eERaNy9GdEgyS2dCSC9oN3JmdFdKZEJveCsrNERzN3JkQTdITVBoVXdSSFNO?=
+ =?utf-8?B?M0hKeEkzN2dZOHNPQWtjdUZvQVB3cEo3bGM2ODdJbDZBeFpicysvTDQzQkVr?=
+ =?utf-8?B?TE5ub3loSnU5V0hEaEtlam9mam1mTU5HUGF5U2tQYjVPNlA3enZzQkc4MzZB?=
+ =?utf-8?B?cStDTzU1a1lIZ1FOSWE1NXlTb25LbzlnNldOalV3aXU5cGJMcS93Skt1dytl?=
+ =?utf-8?B?SVlnS3phU2pMYlcwMzBpWWVrMjVPTThmTHhZUlFmdThrWEh4Y2ZaOHJzaHNk?=
+ =?utf-8?B?TUpHdUFpMHhXRUt2SWQ0TUkwSldZc2ZZNWpUYXlCS3hXNWpVRE03dUw0WXJS?=
+ =?utf-8?B?NXkyRDN2MVJBNDlJMXNWK2g1UjBCL25QNjA1aGtCVUFmY09DRUlkaWhxWUhy?=
+ =?utf-8?Q?oGXga/CHNJvHOT+Zz35pJ2M=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b061ebfa-7eef-4694-668e-08d9ad18a67b
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5278.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Nov 2021 17:57:30.1898
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Nov 2021 17:59:23.5821
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8jL7+K80VXzBzZB1vDLBBnIu0pOfhdBBTiy3TcEHnEMNJHZQWeKPHqEZTDXoubkULbvLdSiZLRT0vcranxNmNg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5693
+X-MS-Exchange-CrossTenant-UserPrincipalName: qEvRMecEjJr5zlDhb2Fcu3pd8+3XkMpk9DLj+RlKz8C1hNcjY7+zSwX3aSbk/ygoVztxsIljBAssLG2N+nyjUQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5104
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Holger Assmann <h.assmann@pengutronix.de>
+On 21/11/2021 19:53, Ido Schimmel wrote:
+> On Sun, Nov 21, 2021 at 05:24:53PM +0200, Nikolay Aleksandrov wrote:
+>> From: Nikolay Aleksandrov <nikolay@nvidia.com>
+>>
+>> The new selftest runs a sequence which causes circular refcount
+>> dependency between deleted objects which cannot be released and results
+>> in a netdevice refcount imbalance.
+>>
+>> Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+>> ---
+>>  tools/testing/selftests/net/fib_nexthops.sh | 56 +++++++++++++++++++++
+>>  1 file changed, 56 insertions(+)
+>>
+>> diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
+>> index b5a69ad191b0..48d88a36ae27 100755
+>> --- a/tools/testing/selftests/net/fib_nexthops.sh
+>> +++ b/tools/testing/selftests/net/fib_nexthops.sh
+>> @@ -629,6 +629,59 @@ ipv6_fcnal()
+>>  	log_test $? 0 "Nexthops removed on admin down"
+>>  }
+>>  
+>> +ipv6_grp_refs()
+>> +{
+>> +	run_cmd "$IP link set dev veth1 up"
+>> +	run_cmd "$IP link add veth1.10 link veth1 up type vlan id 10"
+>> +	run_cmd "$IP link add veth1.20 link veth1 up type vlan id 20"
+>> +	run_cmd "$IP -6 addr add 2001:db8:91::1/64 dev veth1.10"
+>> +	run_cmd "$IP -6 addr add 2001:db8:92::1/64 dev veth1.20"
+>> +	run_cmd "$IP -6 neigh add 2001:db8:91::2 lladdr 00:11:22:33:44:55 dev veth1.10"
+>> +	run_cmd "$IP -6 neigh add 2001:db8:92::2 lladdr 00:11:22:33:44:55 dev veth1.20"
+>> +	run_cmd "$IP nexthop add id 100 via 2001:db8:91::2 dev veth1.10"
+>> +	run_cmd "$IP nexthop add id 101 via 2001:db8:92::2 dev veth1.20"
+>> +	run_cmd "$IP nexthop add id 102 group 100"
+>> +	run_cmd "$IP route add 2001:db8:101::1/128 nhid 102"
+>> +
+>> +	# create per-cpu dsts through nh 100
+>> +	run_cmd "ip netns exec me mausezahn -6 veth1.10 -B 2001:db8:101::1 -A 2001:db8:91::1 -c 5 -t tcp "dp=1-1023, flags=syn" >/dev/null 2>&1"
+> 
+> I see that other test cases in this file that are using mausezahn check
+> that it exists. See ipv4_torture() for example
+> 
 
-Currently, when user space emits SIOCSHWTSTAMP ioctl calls such as
-enabling/disabling timestamping or changing filter settings, the driver
-reads the current CLOCK_REALTIME value and programming this into the
-NIC's hardware clock. This might be necessary during system
-initialization, but at runtime, when the PTP clock has already been
-synchronized to a grandmaster, a reset of the timestamp settings might
-result in a clock jump. Furthermore, if the clock is also controlled by
-phc2sys in automatic mode (where the UTC offset is queried from ptp4l),
-that UTC-to-TAI offset (currently 37 seconds in 2021) would be
-temporarily reset to 0, and it would take a long time for phc2sys to
-readjust so that CLOCK_REALTIME and the PHC are apart by 37 seconds
-again.
+Indeed, I'll adjust the test
 
-To address the issue, we introduce a new function called
-stmmac_init_tstamp_counter(), which gets called during ndo_open().
-It contains the code snippet moved from stmmac_hwtstamp_set() that
-manages the time synchronization. Besides, the sub second increment
-configuration is also moved here since the related values are hardware
-dependent and runtime invariant.
+>> +
+>> +	# remove nh 100 from the group to delete the route potentially leaving
+>> +	# a stale per-cpu dst
+> 
+> Not sure I understand the comment. Maybe:
+> 
+> "Remove nh 100 from the group. If the bug described in the previous
+> commit is not fixed, the nexthop continues to cache a per-CPU dst entry
+> that holds a reference on the IPv6 route."
+> 
+> ?
+> 
 
-Furthermore, the hardware clock must be kept running even when no time
-stamping mode is selected in order to retain the synchronized time base.
-That way, timestamping can be enabled again at any time only with the
-need to compensate the clock's natural drifting.
+Yes, that is the stale per-cpu dst.
 
-As a side effect, this patch fixes the issue that ptp_clock_info::enable
-can be called before SIOCSHWTSTAMP and the driver (which looks at
-priv->systime_flags) was not prepared to handle that ordering.
+>> +	run_cmd "$IP nexthop replace id 102 group 101"
+>> +	run_cmd "$IP route del 2001:db8:101::1/128"
+>> +
+>> +	# add both nexthops to the group so a reference is taken on them
+>> +	run_cmd "$IP nexthop replace id 102 group 100/101"
+>> +
+>> +	# if the bug exists at this point we have an unlinked IPv6 route
+> 
+> I would mention that by "the bug" you are referring to the bug described
+> in previous commit
+> 
 
-Fixes: 92ba6888510c ("stmmac: add the support for PTP hw clock driver")
-Reported-by: Michael Olbrich <m.olbrich@pengutronix.de>
-Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
-Signed-off-by: Holger Assmann <h.assmann@pengutronix.de>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac.h  |   1 +
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 125 +++++++++++-------
- .../ethernet/stmicro/stmmac/stmmac_platform.c |   2 +-
- 3 files changed, 81 insertions(+), 47 deletions(-)
+since there is no commit id yet, I can give a brief description only
+I'll may refer to it by subject though
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index 43eead726886..5f129733aabd 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -314,6 +314,7 @@ int stmmac_mdio_reset(struct mii_bus *mii);
- int stmmac_xpcs_setup(struct mii_bus *mii);
- void stmmac_set_ethtool_ops(struct net_device *netdev);
- 
-+int stmmac_init_tstamp_counter(struct stmmac_priv *priv, u32 systime_flags);
- void stmmac_ptp_register(struct stmmac_priv *priv);
- void stmmac_ptp_unregister(struct stmmac_priv *priv);
- int stmmac_open(struct net_device *dev);
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 4caf66898c51..3727619ae925 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -50,6 +50,13 @@
- #include "dwxgmac2.h"
- #include "hwif.h"
- 
-+/* As long as the interface is active, we keep the timestamping counter enabled
-+ * with fine resolution and binary rollover. This avoid non-monotonic behavior
-+ * (clock jumps) when changing timestamping settings at runtime.
-+ */
-+#define STMMAC_HWTS_ACTIVE	(PTP_TCR_TSENA | PTP_TCR_TSCFUPDT | \
-+				 PTP_TCR_TSCTRLSSR)
-+
- #define	STMMAC_ALIGN(x)		ALIGN(ALIGN(x, SMP_CACHE_BYTES), 16)
- #define	TSO_MAX_BUFF_SIZE	(SZ_16K - 1)
- 
-@@ -617,8 +624,6 @@ static int stmmac_hwtstamp_set(struct net_device *dev, struct ifreq *ifr)
- {
- 	struct stmmac_priv *priv = netdev_priv(dev);
- 	struct hwtstamp_config config;
--	struct timespec64 now;
--	u64 temp = 0;
- 	u32 ptp_v2 = 0;
- 	u32 tstamp_all = 0;
- 	u32 ptp_over_ipv4_udp = 0;
-@@ -627,11 +632,6 @@ static int stmmac_hwtstamp_set(struct net_device *dev, struct ifreq *ifr)
- 	u32 snap_type_sel = 0;
- 	u32 ts_master_en = 0;
- 	u32 ts_event_en = 0;
--	u32 sec_inc = 0;
--	u32 value = 0;
--	bool xmac;
--
--	xmac = priv->plat->has_gmac4 || priv->plat->has_xgmac;
- 
- 	if (!(priv->dma_cap.time_stamp || priv->adv_ts)) {
- 		netdev_alert(priv->dev, "No support for HW time stamping\n");
-@@ -793,42 +793,17 @@ static int stmmac_hwtstamp_set(struct net_device *dev, struct ifreq *ifr)
- 	priv->hwts_rx_en = ((config.rx_filter == HWTSTAMP_FILTER_NONE) ? 0 : 1);
- 	priv->hwts_tx_en = config.tx_type == HWTSTAMP_TX_ON;
- 
--	if (!priv->hwts_tx_en && !priv->hwts_rx_en)
--		stmmac_config_hw_tstamping(priv, priv->ptpaddr, 0);
--	else {
--		value = (PTP_TCR_TSENA | PTP_TCR_TSCFUPDT | PTP_TCR_TSCTRLSSR |
--			 tstamp_all | ptp_v2 | ptp_over_ethernet |
--			 ptp_over_ipv6_udp | ptp_over_ipv4_udp | ts_event_en |
--			 ts_master_en | snap_type_sel);
--		stmmac_config_hw_tstamping(priv, priv->ptpaddr, value);
--
--		/* program Sub Second Increment reg */
--		stmmac_config_sub_second_increment(priv,
--				priv->ptpaddr, priv->plat->clk_ptp_rate,
--				xmac, &sec_inc);
--		temp = div_u64(1000000000ULL, sec_inc);
--
--		/* Store sub second increment and flags for later use */
--		priv->sub_second_inc = sec_inc;
--		priv->systime_flags = value;
--
--		/* calculate default added value:
--		 * formula is :
--		 * addend = (2^32)/freq_div_ratio;
--		 * where, freq_div_ratio = 1e9ns/sec_inc
--		 */
--		temp = (u64)(temp << 32);
--		priv->default_addend = div_u64(temp, priv->plat->clk_ptp_rate);
--		stmmac_config_addend(priv, priv->ptpaddr, priv->default_addend);
--
--		/* initialize system time */
--		ktime_get_real_ts64(&now);
-+	priv->systime_flags = STMMAC_HWTS_ACTIVE;
- 
--		/* lower 32 bits of tv_sec are safe until y2106 */
--		stmmac_init_systime(priv, priv->ptpaddr,
--				(u32)now.tv_sec, now.tv_nsec);
-+	if (priv->hwts_tx_en || priv->hwts_rx_en) {
-+		priv->systime_flags |= tstamp_all | ptp_v2 |
-+				       ptp_over_ethernet | ptp_over_ipv6_udp |
-+				       ptp_over_ipv4_udp | ts_event_en |
-+				       ts_master_en | snap_type_sel;
- 	}
- 
-+	stmmac_config_hw_tstamping(priv, priv->ptpaddr, priv->systime_flags);
-+
- 	memcpy(&priv->tstamp_config, &config, sizeof(config));
- 
- 	return copy_to_user(ifr->ifr_data, &config,
-@@ -856,6 +831,66 @@ static int stmmac_hwtstamp_get(struct net_device *dev, struct ifreq *ifr)
- 			    sizeof(*config)) ? -EFAULT : 0;
- }
- 
-+/**
-+ * stmmac_init_tstamp_counter - init hardware timestamping counter
-+ * @priv: driver private structure
-+ * @systime_flags: timestamping flags
-+ * Description:
-+ * Initialize hardware counter for packet timestamping.
-+ * This is valid as long as the interface is open and not suspended.
-+ * Will be rerun after resuming from suspend, case in which the timestamping
-+ * flags updated by stmmac_hwtstamp_set() also need to be restored.
-+ */
-+int stmmac_init_tstamp_counter(struct stmmac_priv *priv, u32 systime_flags)
-+{
-+	bool xmac = priv->plat->has_gmac4 || priv->plat->has_xgmac;
-+	struct timespec64 now;
-+	u32 sec_inc = 0;
-+	u64 temp = 0;
-+	int ret;
-+
-+	if (!(priv->dma_cap.time_stamp || priv->dma_cap.atime_stamp))
-+		return -EOPNOTSUPP;
-+
-+	ret = clk_prepare_enable(priv->plat->clk_ptp_ref);
-+	if (ret < 0) {
-+		netdev_warn(priv->dev,
-+			    "failed to enable PTP reference clock: %pe\n",
-+			    ERR_PTR(ret));
-+		return ret;
-+	}
-+
-+	stmmac_config_hw_tstamping(priv, priv->ptpaddr, systime_flags);
-+	priv->systime_flags = systime_flags;
-+
-+	/* program Sub Second Increment reg */
-+	stmmac_config_sub_second_increment(priv, priv->ptpaddr,
-+					   priv->plat->clk_ptp_rate,
-+					   xmac, &sec_inc);
-+	temp = div_u64(1000000000ULL, sec_inc);
-+
-+	/* Store sub second increment for later use */
-+	priv->sub_second_inc = sec_inc;
-+
-+	/* calculate default added value:
-+	 * formula is :
-+	 * addend = (2^32)/freq_div_ratio;
-+	 * where, freq_div_ratio = 1e9ns/sec_inc
-+	 */
-+	temp = (u64)(temp << 32);
-+	priv->default_addend = div_u64(temp, priv->plat->clk_ptp_rate);
-+	stmmac_config_addend(priv, priv->ptpaddr, priv->default_addend);
-+
-+	/* initialize system time */
-+	ktime_get_real_ts64(&now);
-+
-+	/* lower 32 bits of tv_sec are safe until y2106 */
-+	stmmac_init_systime(priv, priv->ptpaddr, (u32)now.tv_sec, now.tv_nsec);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(stmmac_init_tstamp_counter);
-+
- /**
-  * stmmac_init_ptp - init PTP
-  * @priv: driver private structure
-@@ -866,9 +901,11 @@ static int stmmac_hwtstamp_get(struct net_device *dev, struct ifreq *ifr)
- static int stmmac_init_ptp(struct stmmac_priv *priv)
- {
- 	bool xmac = priv->plat->has_gmac4 || priv->plat->has_xgmac;
-+	int ret;
- 
--	if (!(priv->dma_cap.time_stamp || priv->dma_cap.atime_stamp))
--		return -EOPNOTSUPP;
-+	ret = stmmac_init_tstamp_counter(priv, STMMAC_HWTS_ACTIVE);
-+	if (ret)
-+		return ret;
- 
- 	priv->adv_ts = 0;
- 	/* Check if adv_ts can be enabled for dwmac 4.x / xgmac core */
-@@ -3276,10 +3313,6 @@ static int stmmac_hw_setup(struct net_device *dev, bool init_ptp)
- 	stmmac_mmc_setup(priv);
- 
- 	if (init_ptp) {
--		ret = clk_prepare_enable(priv->plat->clk_ptp_ref);
--		if (ret < 0)
--			netdev_warn(priv->dev, "failed to enable PTP reference clock: %d\n", ret);
--
- 		ret = stmmac_init_ptp(priv);
- 		if (ret == -EOPNOTSUPP)
- 			netdev_warn(priv->dev, "PTP not supported by HW\n");
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-index 232ac98943cd..5d29f336315b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-@@ -816,7 +816,7 @@ static int __maybe_unused stmmac_pltfr_noirq_resume(struct device *dev)
- 		if (ret)
- 			return ret;
- 
--		clk_prepare_enable(priv->plat->clk_ptp_ref);
-+		stmmac_init_tstamp_counter(priv, priv->systime_flags);
- 	}
- 
- 	return 0;
--- 
-2.25.1
+>> +	# (but not freed due to stale dst) with a reference over the group
+>> +	# so we delete the group which will again only unlink it due to the
+>> +	# route reference
+>> +	run_cmd "$IP nexthop del id 102"
+>> +
+>> +	# delete the nexthop with stale dst, since we have an unlinked
+>> +	# group with a ref to it and an unlinked IPv6 route with ref to the
+>> +	# group, the nh will only be unlinked and not freed so the stale dst
+>> +	# remains forever and we get a net device refcount imbalance
+>> +	run_cmd "$IP nexthop del id 100"
+>> +
+>> +	# if the bug exists this command will hang because the net device
+>> +	# cannot be removed
+>> +	timeout -s KILL 5 ip netns exec me ip link del veth1.10 >/dev/null 2>&1
+>> +
+>> +	# we can't cleanup if the command is hung trying to delete the netdev
+>> +	if [ $? -eq 137 ]; then
+>> +		return 1
+>> +	fi
+>> +
+>> +	# cleanup
+>> +	run_cmd "$IP link del veth1.20"
+>> +	run_cmd "$IP nexthop flush"
+>> +
+>> +	return 0
+>> +}
+>> +
+>>  ipv6_grp_fcnal()
+>>  {
+>>  	local rc
+>> @@ -734,6 +787,9 @@ ipv6_grp_fcnal()
+>>  
+>>  	run_cmd "$IP nexthop add id 108 group 31/24"
+>>  	log_test $? 2 "Nexthop group can not have a blackhole and another nexthop"
+>> +
+>> +	ipv6_grp_refs
+>> +	log_test $? 0 "Nexthop group replace refcounts"
+>>  }
+>>  
+>>  ipv6_res_grp_fcnal()
+>> -- 
+>> 2.31.1
+>>
 
