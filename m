@@ -2,123 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2513A45861B
-	for <lists+netdev@lfdr.de>; Sun, 21 Nov 2021 20:13:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A390458628
+	for <lists+netdev@lfdr.de>; Sun, 21 Nov 2021 20:38:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238812AbhKUTQI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Nov 2021 14:16:08 -0500
-Received: from smtp08.smtpout.orange.fr ([80.12.242.130]:61782 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238807AbhKUTQE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Nov 2021 14:16:04 -0500
-Received: from pop-os.home ([86.243.171.122])
-        by smtp.orange.fr with ESMTPA
-        id osGlmoFqxPnAJosGlmBzhH; Sun, 21 Nov 2021 20:12:56 +0100
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sun, 21 Nov 2021 20:12:56 +0100
-X-ME-IP: 86.243.171.122
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     davem@davemloft.net, kuba@kernel.org, aelior@marvell.com,
-        GR-everest-linux-l2@marvell.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] qed: Use the bitmap API to simplify some functions
-Date:   Sun, 21 Nov 2021 20:12:54 +0100
-Message-Id: <5f585ae692e1045b9f12c483cdaf87ee5db9a716.1637521924.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.30.2
+        id S230462AbhKUTlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Nov 2021 14:41:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50228 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229640AbhKUTlK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Nov 2021 14:41:10 -0500
+Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEBFDC061574;
+        Sun, 21 Nov 2021 11:38:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=X4ZdQLsHRGdzyKd89uTk5n2iF2RS6Cx5daUk9p5dFhU=; b=ZUdyI7Gp2CHH++7KcHrMBoQi7E
+        k3tHGmyvut+DI6fM3O7a71dCjKh/stiVfCfTVmSsfmOgmfCSAvPajyUXml/tInCjP+jhQtzjmJyzj
+        WkObs9kC4QT7bQig/f7j1V5dI4s1/AE8nkimoKJbcpSDqBdBXxIVDFWHf0XgyZjq8K3s=;
+Received: from p54ae9f3f.dip0.t-ipconnect.de ([84.174.159.63] helo=nf.local)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1mosex-0007Z5-Ld; Sun, 21 Nov 2021 20:37:55 +0100
+Message-ID: <31021122-d1c1-181b-0b95-2ef1c1592452@nbd.name>
+Date:   Sun, 21 Nov 2021 20:37:54 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.3.2
+Subject: Re: [BISECTED REGRESSION] Wireless networking kernel crashes
+Content-Language: en-US
+To:     Aaro Koskinen <aaro.koskinen@iki.fi>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org
+References: <20211118132556.GD334428@darkstar.musicnaut.iki.fi>
+From:   Felix Fietkau <nbd@nbd.name>
+In-Reply-To: <20211118132556.GD334428@darkstar.musicnaut.iki.fi>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-'cid_map' is a bitmap. So use 'bitmap_zalloc()' to simplify code,
-improve the semantic and avoid some open-coded arithmetic in allocator
-arguments.
+On 2021-11-18 14:25, Aaro Koskinen wrote:
+> Hello,
+> 
+> I have tried to upgrade my wireless AP (Raspberry Pi with rt2x00usb)
+> from v5.9 to the current mainline, but now it keeps crashing every hour
+> or so, basically making my wireless network unusable.
+> 
+> I have bisected this to:
+> 
+> commit 03c3911d2d67a43ad4ffd15b534a5905d6ce5c59
+> Author: Ryder Lee <ryder.lee@mediatek.com>
+> Date:   Thu Jun 17 18:31:12 2021 +0200
+> 
+>      mac80211: call ieee80211_tx_h_rate_ctrl() when dequeue
+> 
+> With the previous commit the system stays up for weeks...
+> 
+> I just tried today's mainline, and it crashed after 10 minutes:
+Please test if this patch fixes the issue:
 
-Also change the corresponding 'kfree()' into 'bitmap_free()' to keep
-consistency.
-
-Also change some 'memset()' into 'bitmap_zero()' to keep consistency. This
-is also much less verbose.
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
- drivers/net/ethernet/qlogic/qed/qed_cxt.c | 24 +++++------------------
- 1 file changed, 5 insertions(+), 19 deletions(-)
-
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_cxt.c b/drivers/net/ethernet/qlogic/qed/qed_cxt.c
-index 452494f8c298..65e20693c549 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_cxt.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_cxt.c
-@@ -1036,12 +1036,12 @@ static void qed_cid_map_free(struct qed_hwfn *p_hwfn)
- 	u32 type, vf;
- 
- 	for (type = 0; type < MAX_CONN_TYPES; type++) {
--		kfree(p_mngr->acquired[type].cid_map);
-+		bitmap_free(p_mngr->acquired[type].cid_map);
- 		p_mngr->acquired[type].max_count = 0;
- 		p_mngr->acquired[type].start_cid = 0;
- 
- 		for (vf = 0; vf < MAX_NUM_VFS; vf++) {
--			kfree(p_mngr->acquired_vf[type][vf].cid_map);
-+			bitmap_free(p_mngr->acquired_vf[type][vf].cid_map);
- 			p_mngr->acquired_vf[type][vf].max_count = 0;
- 			p_mngr->acquired_vf[type][vf].start_cid = 0;
- 		}
-@@ -1054,15 +1054,10 @@ qed_cid_map_alloc_single(struct qed_hwfn *p_hwfn,
- 			 u32 cid_start,
- 			 u32 cid_count, struct qed_cid_acquired_map *p_map)
- {
--	u32 size;
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -1822,15 +1822,15 @@ static int invoke_tx_handlers_late(struct ieee80211_tx_data *tx)
+  	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(tx->skb);
+  	ieee80211_tx_result res = TX_CONTINUE;
+  
++	if (!ieee80211_hw_check(&tx->local->hw, HAS_RATE_CONTROL))
++		CALL_TXH(ieee80211_tx_h_rate_ctrl);
++
+  	if (unlikely(info->flags & IEEE80211_TX_INTFL_RETRANSMISSION)) {
+  		__skb_queue_tail(&tx->skbs, tx->skb);
+  		tx->skb = NULL;
+  		goto txh_done;
+  	}
+  
+-	if (!ieee80211_hw_check(&tx->local->hw, HAS_RATE_CONTROL))
+-		CALL_TXH(ieee80211_tx_h_rate_ctrl);
 -
- 	if (!cid_count)
- 		return 0;
- 
--	size = DIV_ROUND_UP(cid_count,
--			    sizeof(unsigned long) * BITS_PER_BYTE) *
--	       sizeof(unsigned long);
--	p_map->cid_map = kzalloc(size, GFP_KERNEL);
-+	p_map->cid_map = bitmap_zalloc(cid_count, GFP_KERNEL);
- 	if (!p_map->cid_map)
- 		return -ENOMEM;
- 
-@@ -1216,7 +1211,6 @@ void qed_cxt_mngr_setup(struct qed_hwfn *p_hwfn)
- 	struct qed_cid_acquired_map *p_map;
- 	struct qed_conn_type_cfg *p_cfg;
- 	int type;
--	u32 len;
- 
- 	/* Reset acquired cids */
- 	for (type = 0; type < MAX_CONN_TYPES; type++) {
-@@ -1225,11 +1219,7 @@ void qed_cxt_mngr_setup(struct qed_hwfn *p_hwfn)
- 		p_cfg = &p_mngr->conn_cfg[type];
- 		if (p_cfg->cid_count) {
- 			p_map = &p_mngr->acquired[type];
--			len = DIV_ROUND_UP(p_map->max_count,
--					   sizeof(unsigned long) *
--					   BITS_PER_BYTE) *
--			      sizeof(unsigned long);
--			memset(p_map->cid_map, 0, len);
-+			bitmap_zero(p_map->cid_map, p_map->max_count);
- 		}
- 
- 		if (!p_cfg->cids_per_vf)
-@@ -1237,11 +1227,7 @@ void qed_cxt_mngr_setup(struct qed_hwfn *p_hwfn)
- 
- 		for (vf = 0; vf < MAX_NUM_VFS; vf++) {
- 			p_map = &p_mngr->acquired_vf[type][vf];
--			len = DIV_ROUND_UP(p_map->max_count,
--					   sizeof(unsigned long) *
--					   BITS_PER_BYTE) *
--			      sizeof(unsigned long);
--			memset(p_map->cid_map, 0, len);
-+			bitmap_zero(p_map->cid_map, p_map->max_count);
- 		}
- 	}
- }
--- 
-2.30.2
-
+  	CALL_TXH(ieee80211_tx_h_michael_mic_add);
+  	CALL_TXH(ieee80211_tx_h_sequence);
+  	CALL_TXH(ieee80211_tx_h_fragment);
