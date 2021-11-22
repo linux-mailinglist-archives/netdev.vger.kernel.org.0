@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BD83459271
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 16:57:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1586B459221
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 16:57:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240380AbhKVQAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 11:00:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37834 "EHLO
+        id S240251AbhKVP7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 10:59:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240207AbhKVQAL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 11:00:11 -0500
-Received: from andre.telenet-ops.be (andre.telenet-ops.be [IPv6:2a02:1800:120:4::f00:15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21539C0613FA
-        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 07:56:59 -0800 (PST)
-Received: from ramsan.of.borg ([84.195.186.194])
-        by andre.telenet-ops.be with bizsmtp
-        id MTwG2600C4C55Sk01TwGyn; Mon, 22 Nov 2021 16:56:58 +0100
+        with ESMTP id S239885AbhKVP6M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 10:58:12 -0500
+Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF79C061574
+        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 07:55:05 -0800 (PST)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:e4da:38c:79e9:48bf])
+        by albert.telenet-ops.be with bizsmtp
+        id MTuJ2600p4yPVd606TuKqy; Mon, 22 Nov 2021 16:55:02 +0100
 Received: from rox.of.borg ([192.168.97.57])
         by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1mpBe5-00EL3M-Q1; Mon, 22 Nov 2021 16:54:17 +0100
+        id 1mpBe6-00EL3N-Dk; Mon, 22 Nov 2021 16:54:18 +0100
 Received: from geert by rox.of.borg with local (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1mpBe5-00HGyE-C8; Mon, 22 Nov 2021 16:54:17 +0100
+        id 1mpBe5-00HGyL-DD; Mon, 22 Nov 2021 16:54:17 +0100
 From:   Geert Uytterhoeven <geert+renesas@glider.be>
 To:     Tony Lindgren <tony@atomide.com>,
         Russell King <linux@armlinux.org.uk>,
@@ -69,9 +69,9 @@ Cc:     linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
         linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
         alsa-devel@alsa-project.org,
         Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 02/17] clk: renesas: Use bitfield helpers
-Date:   Mon, 22 Nov 2021 16:53:55 +0100
-Message-Id: <c6e4bfbf798a8fcb4d8c02861a0c1b029f2f5cb1.1637592133.git.geert+renesas@glider.be>
+Subject: [PATCH/RFC 03/17] soc: renesas: Use bitfield helpers
+Date:   Mon, 22 Nov 2021 16:53:56 +0100
+Message-Id: <c5025ab8336469110c6d3ef7ccb049e60c34ef42.1637592133.git.geert+renesas@glider.be>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1637592133.git.geert+renesas@glider.be>
 References: <cover.1637592133.git.geert+renesas@glider.be>
@@ -81,123 +81,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the FIELD_{GET,PREP}() and field_{get,prep}() helpers for const
-respective non-const bitfields, instead of open-coding the same
-operations.
+Use the field_get() helper, instead of open-coding the same operation.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/clk/renesas/clk-div6.c          |  6 +++---
- drivers/clk/renesas/r8a779a0-cpg-mssr.c |  9 +++------
- drivers/clk/renesas/rcar-gen3-cpg.c     | 15 +++++----------
- 3 files changed, 11 insertions(+), 19 deletions(-)
+This depends on "[PATCH] soc: renesas: Consolidate product register
+handling"
+(https://lore.kernel.org/linux-renesas-soc/057721f46c7499de4133135488f0f3da7fb39265.1636570669.git.geert+renesas@glider.be)
 
-diff --git a/drivers/clk/renesas/clk-div6.c b/drivers/clk/renesas/clk-div6.c
-index 3abd6e5400aded6a..f7b827b5e9b2dd32 100644
---- a/drivers/clk/renesas/clk-div6.c
-+++ b/drivers/clk/renesas/clk-div6.c
-@@ -7,6 +7,7 @@
-  * Contact: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Marked RFC, as this depends on [PATCH 01/17], but follows a different
+path to upstream.
+---
+ drivers/soc/renesas/renesas-soc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/soc/renesas/renesas-soc.c b/drivers/soc/renesas/renesas-soc.c
+index 97957d5d7dafbe2a..33940258f37eef03 100644
+--- a/drivers/soc/renesas/renesas-soc.c
++++ b/drivers/soc/renesas/renesas-soc.c
+@@ -5,6 +5,7 @@
+  * Copyright (C) 2014-2016 Glider bvba
   */
  
 +#include <linux/bitfield.h>
- #include <linux/clk-provider.h>
- #include <linux/init.h>
  #include <linux/io.h>
-@@ -171,8 +172,7 @@ static u8 cpg_div6_clock_get_parent(struct clk_hw *hw)
- 	if (clock->src_mask == 0)
- 		return 0;
+ #include <linux/of.h>
+ #include <linux/of_address.h>
+@@ -434,8 +435,7 @@ static int __init renesas_soc_init(void)
+ 			eslo = product & 0xf;
+ 		}
  
--	hw_index = (readl(clock->reg) & clock->src_mask) >>
--		   __ffs(clock->src_mask);
-+	hw_index = field_get(clock->src_mask, readl(clock->reg));
- 	for (i = 0; i < clk_hw_get_num_parents(hw); i++) {
- 		if (clock->parents[i] == hw_index)
- 			return i;
-@@ -191,7 +191,7 @@ static int cpg_div6_clock_set_parent(struct clk_hw *hw, u8 index)
- 	if (index >= clk_hw_get_num_parents(hw))
- 		return -EINVAL;
- 
--	src = clock->parents[index] << __ffs(clock->src_mask);
-+	src = field_prep(clock->src_mask, clock->parents[index]);
- 	writel((readl(clock->reg) & ~clock->src_mask) | src, clock->reg);
- 	return 0;
- }
-diff --git a/drivers/clk/renesas/r8a779a0-cpg-mssr.c b/drivers/clk/renesas/r8a779a0-cpg-mssr.c
-index 7df86743c5491292..f716e739d138b722 100644
---- a/drivers/clk/renesas/r8a779a0-cpg-mssr.c
-+++ b/drivers/clk/renesas/r8a779a0-cpg-mssr.c
-@@ -302,11 +302,7 @@ static unsigned long cpg_z_clk_recalc_rate(struct clk_hw *hw,
- 					   unsigned long parent_rate)
- {
- 	struct cpg_z_clk *zclk = to_z_clk(hw);
--	unsigned int mult;
--	u32 val;
--
--	val = readl(zclk->reg) & zclk->mask;
--	mult = 32 - (val >> __ffs(zclk->mask));
-+	unsigned int mult = 32 - field_get(zclk->mask, readl(zclk->reg));
- 
- 	return DIV_ROUND_CLOSEST_ULL((u64)parent_rate * mult,
- 				     32 * zclk->fixed_div);
-@@ -357,7 +353,8 @@ static int cpg_z_clk_set_rate(struct clk_hw *hw, unsigned long rate,
- 	if (readl(zclk->kick_reg) & CPG_FRQCRB_KICK)
- 		return -EBUSY;
- 
--	cpg_reg_modify(zclk->reg, zclk->mask, (32 - mult) << __ffs(zclk->mask));
-+	cpg_reg_modify(zclk->reg, zclk->mask,
-+		       field_prep(zclk->mask, 32 - mult));
- 
- 	/*
- 	 * Set KICK bit in FRQCRB to update hardware setting and wait for
-diff --git a/drivers/clk/renesas/rcar-gen3-cpg.c b/drivers/clk/renesas/rcar-gen3-cpg.c
-index a9816b1beabb2582..30bbe8418e018153 100644
---- a/drivers/clk/renesas/rcar-gen3-cpg.c
-+++ b/drivers/clk/renesas/rcar-gen3-cpg.c
-@@ -54,10 +54,8 @@ static unsigned long cpg_pll_clk_recalc_rate(struct clk_hw *hw,
- {
- 	struct cpg_pll_clk *pll_clk = to_pll_clk(hw);
- 	unsigned int mult;
--	u32 val;
- 
--	val = readl(pll_clk->pllcr_reg) & CPG_PLLnCR_STC_MASK;
--	mult = (val >> __ffs(CPG_PLLnCR_STC_MASK)) + 1;
-+	mult = FIELD_GET(CPG_PLLnCR_STC_MASK, readl(pll_clk->pllcr_reg)) + 1;
- 
- 	return parent_rate * mult * pll_clk->fixed_mult;
- }
-@@ -94,7 +92,7 @@ static int cpg_pll_clk_set_rate(struct clk_hw *hw, unsigned long rate,
- 
- 	val = readl(pll_clk->pllcr_reg);
- 	val &= ~CPG_PLLnCR_STC_MASK;
--	val |= (mult - 1) << __ffs(CPG_PLLnCR_STC_MASK);
-+	val |= FIELD_PREP(CPG_PLLnCR_STC_MASK, mult - 1);
- 	writel(val, pll_clk->pllcr_reg);
- 
- 	for (i = 1000; i; i--) {
-@@ -176,11 +174,7 @@ static unsigned long cpg_z_clk_recalc_rate(struct clk_hw *hw,
- 					   unsigned long parent_rate)
- {
- 	struct cpg_z_clk *zclk = to_z_clk(hw);
--	unsigned int mult;
--	u32 val;
--
--	val = readl(zclk->reg) & zclk->mask;
--	mult = 32 - (val >> __ffs(zclk->mask));
-+	unsigned int mult = 32 - field_get(zclk->mask, readl(zclk->reg));
- 
- 	return DIV_ROUND_CLOSEST_ULL((u64)parent_rate * mult,
- 				     32 * zclk->fixed_div);
-@@ -231,7 +225,8 @@ static int cpg_z_clk_set_rate(struct clk_hw *hw, unsigned long rate,
- 	if (readl(zclk->kick_reg) & CPG_FRQCRB_KICK)
- 		return -EBUSY;
- 
--	cpg_reg_modify(zclk->reg, zclk->mask, (32 - mult) << __ffs(zclk->mask));
-+	cpg_reg_modify(zclk->reg, zclk->mask,
-+		       field_prep(zclk->mask, 32 - mult));
- 
- 	/*
- 	 * Set KICK bit in FRQCRB to update hardware setting and wait for
+-		if (soc->id &&
+-		    ((product & id->mask) >> __ffs(id->mask)) != soc->id) {
++		if (soc->id && field_get(id->mask, product) != soc->id) {
+ 			pr_warn("SoC mismatch (product = 0x%x)\n", product);
+ 			return -ENODEV;
+ 		}
 -- 
 2.25.1
 
