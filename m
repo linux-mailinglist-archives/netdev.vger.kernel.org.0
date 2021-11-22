@@ -2,192 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC596459456
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 18:52:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EEEB64594B6
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 19:30:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239233AbhKVRzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 12:55:55 -0500
-Received: from relay2-d.mail.gandi.net ([217.70.183.194]:41975 "EHLO
-        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230099AbhKVRzu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 12:55:50 -0500
-Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id 2884840004;
-        Mon, 22 Nov 2021 17:52:36 +0000 (UTC)
-Date:   Mon, 22 Nov 2021 18:52:35 +0100
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Rajendra Nayak <rnayak@codeaurora.org>,
-        Paul Walmsley <paul@pwsan.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Benoit Parrot <bparrot@ti.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Eduardo Valentin <edubezval@gmail.com>,
-        Keerthy <j-keerthy@ti.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-aspeed@lists.ozlabs.org, openbmc@lists.ozlabs.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
-        alsa-devel@alsa-project.org
-Subject: Re: [PATCH/RFC 13/17] pinctl: ti: iodelay: Use bitfield helpers
-Message-ID: <YZvY4/FCgYMBMeDJ@piout.net>
-References: <cover.1637592133.git.geert+renesas@glider.be>
- <60257a3c5b567fb5b14d6f9adb770899bce88f7a.1637592133.git.geert+renesas@glider.be>
+        id S240330AbhKVSdY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 13:33:24 -0500
+Received: from so254-9.mailgun.net ([198.61.254.9]:32220 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236207AbhKVSdW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 13:33:22 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1637605815; h=Date: Message-ID: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=hS+cNZNvsc18vNvR+2V+IqRLIQR1if5Mbok+6txtYhw=;
+ b=S0tsdtys/x9Euidznm4XUqIoahFfz4TURcA4PpVCu18uKAaeXQ4ByK7bFPsviLXcnPFs3087
+ rPVsRwbLmb0ECmpPHHEaSZGRyublPmDCFauCSGuMBBZLZ0Mdnna1DzFeQfukKtCEA4EuImss
+ o5kbA+XRYW1JRncuolSlQovZ940=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
+ 619be1b386d0e4d888b796bf (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 22 Nov 2021 18:30:11
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 2723EC4360C; Mon, 22 Nov 2021 18:30:10 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.5 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,SPF_FAIL autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id D6910C4360C;
+        Mon, 22 Nov 2021 18:30:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org D6910C4360C
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <60257a3c5b567fb5b14d6f9adb770899bce88f7a.1637592133.git.geert+renesas@glider.be>
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] [v2] iwlwifi: pcie: fix constant-conversion warning
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20211111073145.2504032-1-arnd@kernel.org>
+References: <20211111073145.2504032-1-arnd@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Luca Coelho <luciano.coelho@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        kernel test robot <lkp@intel.com>,
+        Yaara Baruch <yaara.baruch@intel.com>,
+        Matti Gottlieb <matti.gottlieb@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <163760580216.5904.8642934154284226912.kvalo@codeaurora.org>
+Date:   Mon, 22 Nov 2021 18:30:10 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Geert,
+Arnd Bergmann <arnd@kernel.org> wrote:
 
-There is a typo in pinctrl in the subject
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> clang points out a potential issue with integer overflow when
+> the iwl_dev_info_table[] array is empty:
+> 
+> drivers/net/wireless/intel/iwlwifi/pcie/drv.c:1344:42: error: implicit conversion from 'unsigned long' to 'int' changes value from 18446744073709551615 to -1 [-Werror,-Wconstant-conversion]
+>         for (i = ARRAY_SIZE(iwl_dev_info_table) - 1; i >= 0; i--) {
+>                ~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+> 
+> This is still harmless, as the loop correctly terminates, but adding
+> an extra range check makes that obvious to both readers and to the
+> compiler.
+> 
+> Fixes: 3f7320428fa4 ("iwlwifi: pcie: simplify iwl_pci_find_dev_info()")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Cc: Nick Desaulniers <ndesaulniers@google.com>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Acked-by: Luca Coelho <luciano.coelho@intel.com>
 
-On 22/11/2021 16:54:06+0100, Geert Uytterhoeven wrote:
-> Use the field_{get,prep}() helpers, instead of defining a custom
-> function, or open-coding the same operations.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
-> Compile-tested only.
-> Marked RFC, as this depends on [PATCH 01/17], but follows a different
-> path to upstream.
-> ---
->  drivers/pinctrl/ti/pinctrl-ti-iodelay.c | 35 +++++++------------------
->  1 file changed, 10 insertions(+), 25 deletions(-)
-> 
-> diff --git a/drivers/pinctrl/ti/pinctrl-ti-iodelay.c b/drivers/pinctrl/ti/pinctrl-ti-iodelay.c
-> index 4e2382778d38f557..b220dcd9215520db 100644
-> --- a/drivers/pinctrl/ti/pinctrl-ti-iodelay.c
-> +++ b/drivers/pinctrl/ti/pinctrl-ti-iodelay.c
-> @@ -9,6 +9,7 @@
->   * warranty of any kind, whether express or implied.
->   */
->  
-> +#include <linux/bitfield.h>
->  #include <linux/err.h>
->  #include <linux/init.h>
->  #include <linux/io.h>
-> @@ -155,18 +156,6 @@ struct ti_iodelay_device {
->  	struct ti_iodelay_reg_values reg_init_conf_values;
->  };
->  
-> -/**
-> - * ti_iodelay_extract() - extract bits for a field
-> - * @val: Register value
-> - * @mask: Mask
-> - *
-> - * Return: extracted value which is appropriately shifted
-> - */
-> -static inline u32 ti_iodelay_extract(u32 val, u32 mask)
-> -{
-> -	return (val & mask) >> __ffs(mask);
-> -}
-> -
->  /**
->   * ti_iodelay_compute_dpe() - Compute equation for delay parameter
->   * @period: Period to use
-> @@ -233,10 +222,10 @@ static int ti_iodelay_pinconf_set(struct ti_iodelay_device *iod,
->  	}
->  
->  	reg_mask = reg->signature_mask;
-> -	reg_val = reg->signature_value << __ffs(reg->signature_mask);
-> +	reg_val = field_prep(reg->signature_mask, reg->signature_value);
->  
->  	reg_mask |= reg->binary_data_coarse_mask;
-> -	tmp_val = c_elements << __ffs(reg->binary_data_coarse_mask);
-> +	tmp_val = field_prep(reg->binary_data_coarse_mask, c_elements);
->  	if (tmp_val & ~reg->binary_data_coarse_mask) {
->  		dev_err(dev, "Masking overflow of coarse elements %08x\n",
->  			tmp_val);
-> @@ -245,7 +234,7 @@ static int ti_iodelay_pinconf_set(struct ti_iodelay_device *iod,
->  	reg_val |= tmp_val;
->  
->  	reg_mask |= reg->binary_data_fine_mask;
-> -	tmp_val = f_elements << __ffs(reg->binary_data_fine_mask);
-> +	tmp_val = field_prep(reg->binary_data_fine_mask, f_elements);
->  	if (tmp_val & ~reg->binary_data_fine_mask) {
->  		dev_err(dev, "Masking overflow of fine elements %08x\n",
->  			tmp_val);
-> @@ -260,7 +249,7 @@ static int ti_iodelay_pinconf_set(struct ti_iodelay_device *iod,
->  	 * impacting iodelay configuration. Use with care!
->  	 */
->  	reg_mask |= reg->lock_mask;
-> -	reg_val |= reg->unlock_val << __ffs(reg->lock_mask);
-> +	reg_val |= field_prep(reg->lock_mask, reg->unlock_val);
->  	r = regmap_update_bits(iod->regmap, cfg->offset, reg_mask, reg_val);
->  
->  	dev_dbg(dev, "Set reg 0x%x Delay(a: %d g: %d), Elements(C=%d F=%d)0x%x\n",
-> @@ -296,16 +285,14 @@ static int ti_iodelay_pinconf_init_dev(struct ti_iodelay_device *iod)
->  	r = regmap_read(iod->regmap, reg->reg_refclk_offset, &val);
->  	if (r)
->  		return r;
-> -	ival->ref_clk_period = ti_iodelay_extract(val, reg->refclk_period_mask);
-> +	ival->ref_clk_period = field_get(reg->refclk_period_mask, val);
->  	dev_dbg(dev, "refclk_period=0x%04x\n", ival->ref_clk_period);
->  
->  	r = regmap_read(iod->regmap, reg->reg_coarse_offset, &val);
->  	if (r)
->  		return r;
-> -	ival->coarse_ref_count =
-> -	    ti_iodelay_extract(val, reg->coarse_ref_count_mask);
-> -	ival->coarse_delay_count =
-> -	    ti_iodelay_extract(val, reg->coarse_delay_count_mask);
-> +	ival->coarse_ref_count = field_get(reg->coarse_ref_count_mask, val);
-> +	ival->coarse_delay_count = field_get(reg->coarse_delay_count_mask, val);
->  	if (!ival->coarse_delay_count) {
->  		dev_err(dev, "Invalid Coarse delay count (0) (reg=0x%08x)\n",
->  			val);
-> @@ -326,10 +313,8 @@ static int ti_iodelay_pinconf_init_dev(struct ti_iodelay_device *iod)
->  	r = regmap_read(iod->regmap, reg->reg_fine_offset, &val);
->  	if (r)
->  		return r;
-> -	ival->fine_ref_count =
-> -	    ti_iodelay_extract(val, reg->fine_ref_count_mask);
-> -	ival->fine_delay_count =
-> -	    ti_iodelay_extract(val, reg->fine_delay_count_mask);
-> +	ival->fine_ref_count = field_get(reg->fine_ref_count_mask, val);
-> +	ival->fine_delay_count = field_get(reg->fine_delay_count_mask, val);
->  	if (!ival->fine_delay_count) {
->  		dev_err(dev, "Invalid Fine delay count (0) (reg=0x%08x)\n",
->  			val);
-> -- 
-> 2.25.1
-> 
+Dropping v2 and taking v3 instead.
+
+Patch set to Changes Requested.
 
 -- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+https://patchwork.kernel.org/project/linux-wireless/patch/20211111073145.2504032-1-arnd@kernel.org/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
