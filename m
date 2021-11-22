@@ -2,136 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBF4B45964D
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 21:51:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B041E459659
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 22:01:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239379AbhKVUy1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 15:54:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54886 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229899AbhKVUy0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Nov 2021 15:54:26 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E771E60F26;
-        Mon, 22 Nov 2021 20:51:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637614279;
-        bh=94SMh8yCYVEbldfJs5fMSx82Vtd4ZwBhuyX+pNeSeaQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lEm8rCCcza+v36jQvZSuvQzsEq2Fz6LLxHlnLvpDBjYyG5ids2a2jaXDxmj3TrmR7
-         ecmir6kpVtaUSWm1/LUOsjSsSo77LxTpGgt9TOmuGAAS7nHLQNjVwxGUyvi9HXYYAg
-         +RPKHkgtEw61bFEge+grnhE6dypDNyDWRJ7/IT/3BfAM3Gil+ACzV5IF2+G570U4Fx
-         C9FJV9igInlBU8Coe0IJEV6BVRzc0BOKjBgZ66F0W7bV2sphEUYUhSbTIXPTzflnMA
-         YIYEY5OWL0AnuOGQCInQgTgY19FGFFGNMpswwrN7reINWXE31/AX/rQ9SGNQ16WRfe
-         wsSH9nOQv7tTw==
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        davem@davemloft.net,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net-next 2/2] net: marvell: mvpp2: Add support for 5gbase-r
-Date:   Mon, 22 Nov 2021 21:51:11 +0100
-Message-Id: <20211122205111.10156-3-kabel@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211122205111.10156-1-kabel@kernel.org>
-References: <20211122205111.10156-1-kabel@kernel.org>
+        id S239798AbhKVVEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 16:04:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50964 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234216AbhKVVED (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 16:04:03 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5B9DC061574;
+        Mon, 22 Nov 2021 13:00:56 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4HyfnG5pMnz4xZ5;
+        Tue, 23 Nov 2021 08:00:50 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1637614851;
+        bh=xZKJu3ktLCt1VSx+EbM+nSgdcGPvWa4Cc1d27ttwLnc=;
+        h=Date:From:To:Cc:Subject:From;
+        b=bP4ppg6CfF/jyHCERlPZ+rRep99CQfFyEhUGoDF4JPhN+dnI8QJ3SfuAiFP+dZuqG
+         DqTsBxx+JSmhDsmB+lBlQ63X6EFEDfA8zhQtRLUl8fohR8X3na045qPoU5r9grO2dK
+         KreS64TQ5bWpya9WUWV5CWSH0AypRKIFO3b0hpiyUNlr3wSwdUqSHpzqXhW141HNQA
+         ZBYNqHe09eEtrdothZL788MrrldnxcnXDA5yNLIvL5ythyYkWmb5w82u9LNGp0KMI6
+         Oy8I21jl+zH6nkNigV+vZtVnA9JChrvYCoBRWggvrFBnJy0N9kQ+4hBvdyeoZuEkkj
+         9UhneM7Z8TWgg==
+Date:   Tue, 23 Nov 2021 08:00:46 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Wen Gu <guwen@linux.alibaba.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Fixes tag needs some work in the net tree
+Message-ID: <20211123080046.5ed4795e@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/RT9UBgFGi/.caKc4mbwoTBp";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for PHY_INTERFACE_MODE_5GBASER.
+--Sig_/RT9UBgFGi/.caKc4mbwoTBp
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Marek Behún <kabel@kernel.org>
----
- .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 44 ++++++++++++++++---
- 1 file changed, 37 insertions(+), 7 deletions(-)
+Hi all,
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index a3aefdf0784e..a48e804c46f2 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -1488,6 +1488,7 @@ static bool mvpp2_port_supports_rgmii(struct mvpp2_port *port)
- static bool mvpp2_is_xlg(phy_interface_t interface)
- {
- 	return interface == PHY_INTERFACE_MODE_10GBASER ||
-+	       interface == PHY_INTERFACE_MODE_5GBASER ||
- 	       interface == PHY_INTERFACE_MODE_XAUI;
- }
- 
-@@ -1627,6 +1628,7 @@ static int mvpp22_gop_init(struct mvpp2_port *port, phy_interface_t interface)
- 	case PHY_INTERFACE_MODE_2500BASEX:
- 		mvpp22_gop_init_sgmii(port);
- 		break;
-+	case PHY_INTERFACE_MODE_5GBASER:
- 	case PHY_INTERFACE_MODE_10GBASER:
- 		if (!mvpp2_port_supports_xlg(port))
- 			goto invalid_conf;
-@@ -2186,6 +2188,7 @@ static void mvpp22_pcs_reset_deassert(struct mvpp2_port *port,
- 	xpcs = priv->iface_base + MVPP22_XPCS_BASE(port->gop_id);
- 
- 	switch (interface) {
-+	case PHY_INTERFACE_MODE_5GBASER:
- 	case PHY_INTERFACE_MODE_10GBASER:
- 		val = readl(mpcs + MVPP22_MPCS_CLK_RESET);
- 		val |= MAC_CLK_RESET_MAC | MAC_CLK_RESET_SD_RX |
-@@ -6126,7 +6129,10 @@ static void mvpp2_xlg_pcs_get_state(struct phylink_pcs *pcs,
- 	struct mvpp2_port *port = mvpp2_pcs_to_port(pcs);
- 	u32 val;
- 
--	state->speed = SPEED_10000;
-+	if (port->phy_interface == PHY_INTERFACE_MODE_5GBASER)
-+		state->speed = SPEED_5000;
-+	else
-+		state->speed = SPEED_10000;
- 	state->duplex = 1;
- 	state->an_complete = 1;
- 
-@@ -6879,12 +6885,36 @@ static int mvpp2_port_probe(struct platform_device *pdev,
- 				MAC_SYM_PAUSE | MAC_ASYM_PAUSE;
- 
- 		if (mvpp2_port_supports_xlg(port)) {
--			__set_bit(PHY_INTERFACE_MODE_10GBASER,
--				  port->phylink_config.supported_interfaces);
--			__set_bit(PHY_INTERFACE_MODE_XAUI,
--				  port->phylink_config.supported_interfaces);
--			port->phylink_config.mac_capabilities |=
--				MAC_10000FD;
-+			/* If a COMPHY is present, we can support any of
-+			 * the serdes modes and switch between them.
-+			 */
-+			if (comphy) {
-+				__set_bit(PHY_INTERFACE_MODE_5GBASER,
-+					  port->phylink_config.supported_interfaces);
-+				__set_bit(PHY_INTERFACE_MODE_10GBASER,
-+					  port->phylink_config.supported_interfaces);
-+				__set_bit(PHY_INTERFACE_MODE_XAUI,
-+					  port->phylink_config.supported_interfaces);
-+			} else if (phy_mode == PHY_INTERFACE_MODE_5GBASER) {
-+				__set_bit(PHY_INTERFACE_MODE_5GBASER,
-+					  port->phylink_config.supported_interfaces);
-+			} else if (phy_mode == PHY_INTERFACE_MODE_10GBASER) {
-+				__set_bit(PHY_INTERFACE_MODE_10GBASER,
-+					  port->phylink_config.supported_interfaces);
-+			} else if (phy_mode == PHY_INTERFACE_MODE_XAUI) {
-+				__set_bit(PHY_INTERFACE_MODE_XAUI,
-+					  port->phylink_config.supported_interfaces);
-+			}
-+
-+			if (comphy)
-+				port->phylink_config.mac_capabilities |=
-+					MAC_10000FD | MAC_5000FD;
-+			else if (phy_mode == PHY_INTERFACE_MODE_5GBASER)
-+				port->phylink_config.mac_capabilities |=
-+					MAC_5000FD;
-+			else
-+				port->phylink_config.mac_capabilities |=
-+					MAC_10000FD;
- 		}
- 
- 		if (mvpp2_port_supports_rgmii(port))
--- 
-2.32.0
+In commit
 
+  7a61432dc813 ("net/smc: Avoid warning of possible recursive locking")
+
+Fixes tag
+
+  Fixes: 2153bd1e3d3d ("Transfer remaining wait queue entries during fallba=
+ck")
+
+has these problem(s):
+
+  - Subject does not match target commit subject
+    Just use
+	git log -1 --format=3D'Fixes: %h ("%s")'
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/RT9UBgFGi/.caKc4mbwoTBp
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmGcBP4ACgkQAVBC80lX
+0Gw4igf7BdrFdgc4b/b5u9PDLDkL/TCQFQVZe8KrWgEPt+DJg5rZ/VzWwLZZsKnx
+96hTQ1ukykVn2uyAZbOEWL1qKXsETGFHkiwWH+KfiHIMLIjZR+gGa8UdVWJMcQh0
+qix0/zjEJFUzuyK9mUTwacBz7ZQ8AG4/omoR6gl6n3SnyjwPmkndGFXc3ruTWXp7
+7hll/+phHUrKULYwiQMAeVeQ1XEgXgXWzjQS4awRXXGpPnGoC2V+x6L+fm61jHRj
+MFPApjOs37gGitKf3dso0D3IWtsxeVTta4yMqvY4ERQf7MugG3rZUFA/ULQC/GDJ
+YOs8+Y+XLpNKYACPGf9SgyMBbVoC4A==
+=pZ5N
+-----END PGP SIGNATURE-----
+
+--Sig_/RT9UBgFGi/.caKc4mbwoTBp--
