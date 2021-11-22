@@ -2,122 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20670458E8B
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 13:40:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFAB6458EAD
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 13:50:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239292AbhKVMnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 07:43:07 -0500
-Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:60569 "EHLO
-        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231258AbhKVMnG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 07:43:06 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0UxjgkRE_1637584796;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0UxjgkRE_1637584796)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 22 Nov 2021 20:39:57 +0800
-Date:   Mon, 22 Nov 2021 20:39:56 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     Wen Gu <guwen@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dust.li@linux.alibaba.com,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: [PATCH net] net/smc: Avoid warning of possible recursive locking
-Message-ID: <YZuPnJvTuq5GN5e3@TonyMac-Alibaba>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <1637584373-49664-1-git-send-email-guwen@linux.alibaba.com>
+        id S239433AbhKVMxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 07:53:16 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48678 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239406AbhKVMxQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Nov 2021 07:53:16 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id E3A0960F9F;
+        Mon, 22 Nov 2021 12:50:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637585409;
+        bh=I0SXDP5o1qsKKixdojKiKcjkAMeJKXwpKOmOs8gxwkw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=H7tbLLV53ybdKMs1B7hHKKZExmvGcb0FfCTBStb2Y8aMD2G/O3jlRLvzMhIg+B3OL
+         Id8CvMVnCdsFySmPMUC2xkZPrp92o7f55x2fB5Mfzwhi7huHyCM2pnWF9C1GKfWnUI
+         FQZZQSBFhg6pWCA6V33nQeJHDk7DAThWhXyXE1453qYyZzR0oJCeR8xeEGepjA7eNe
+         aUZnVTFLc/Kt6f2eWL9JUT0SylU7NBCv95TJm+GMuYujLtqDiVyIKSj9Ql7I+VJTfB
+         9CbksckvK98tOtP06XOhUPdRbhpFv1nKaT8RoAuerF+2sU0qwD+3Jtvl5tY7K/DNAJ
+         OZq0tmICZqELw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D7A2C609B9;
+        Mon, 22 Nov 2021 12:50:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1637584373-49664-1-git-send-email-guwen@linux.alibaba.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] nfp: checking parameter process for rx-usecs/tx-usecs is
+ invalid
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163758540987.16054.8750901617918116634.git-patchwork-notify@kernel.org>
+Date:   Mon, 22 Nov 2021 12:50:09 +0000
+References: <20211119133803.28749-1-simon.horman@corigine.com>
+In-Reply-To: <20211119133803.28749-1-simon.horman@corigine.com>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        oss-drivers@corigine.com, na.wang@corigine.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 22, 2021 at 08:32:53PM +0800, Wen Gu wrote:
-> Possible recursive locking is detected by lockdep when SMC
-> falls back to TCP. The corresponding warnings are as follows:
-> 
->  ============================================
->  WARNING: possible recursive locking detected
->  5.16.0-rc1+ #18 Tainted: G            E
->  --------------------------------------------
->  wrk/1391 is trying to acquire lock:
->  ffff975246c8e7d8 (&ei->socket.wq.wait){..-.}-{3:3}, at: smc_switch_to_fallback+0x109/0x250 [smc]
-> 
->  but task is already holding lock:
->  ffff975246c8f918 (&ei->socket.wq.wait){..-.}-{3:3}, at: smc_switch_to_fallback+0xfe/0x250 [smc]
-> 
->  other info that might help us debug this:
->   Possible unsafe locking scenario:
-> 
->         CPU0
->         ----
->    lock(&ei->socket.wq.wait);
->    lock(&ei->socket.wq.wait);
-> 
->   *** DEADLOCK ***
-> 
->   May be due to missing lock nesting notation
-> 
->  2 locks held by wrk/1391:
->   #0: ffff975246040130 (sk_lock-AF_SMC){+.+.}-{0:0}, at: smc_connect+0x43/0x150 [smc]
->   #1: ffff975246c8f918 (&ei->socket.wq.wait){..-.}-{3:3}, at: smc_switch_to_fallback+0xfe/0x250 [smc]
-> 
->  stack backtrace:
->  Call Trace:
->   <TASK>
->   dump_stack_lvl+0x56/0x7b
->   __lock_acquire+0x951/0x11f0
->   lock_acquire+0x27a/0x320
->   ? smc_switch_to_fallback+0x109/0x250 [smc]
->   ? smc_switch_to_fallback+0xfe/0x250 [smc]
->   _raw_spin_lock_irq+0x3b/0x80
->   ? smc_switch_to_fallback+0x109/0x250 [smc]
->   smc_switch_to_fallback+0x109/0x250 [smc]
->   smc_connect_fallback+0xe/0x30 [smc]
->   __smc_connect+0xcf/0x1090 [smc]
->   ? mark_held_locks+0x61/0x80
->   ? __local_bh_enable_ip+0x77/0xe0
->   ? lockdep_hardirqs_on+0xbf/0x130
->   ? smc_connect+0x12a/0x150 [smc]
->   smc_connect+0x12a/0x150 [smc]
->   __sys_connect+0x8a/0xc0
->   ? syscall_enter_from_user_mode+0x20/0x70
->   __x64_sys_connect+0x16/0x20
->   do_syscall_64+0x34/0x90
->   entry_SYSCALL_64_after_hwframe+0x44/0xae
-> 
-> The nested locking in smc_switch_to_fallback() is considered to
-> possibly cause a deadlock because smc_wait->lock and clc_wait->lock
-> are the same type of lock. But actually it is safe so far since
-> there is no other place trying to obtain smc_wait->lock when
-> clc_wait->lock is held. So the patch replaces spin_lock() with
-> spin_lock_nested() to avoid false report by lockdep.
-> 
-> Link: https://lkml.org/lkml/2021/11/19/962
-> Fixes: 2153bd1e3d3d ("Transfer remaining wait queue entries during fallback")
-> Reported-by: syzbot+e979d3597f48262cb4ee@syzkaller.appspotmail.com
-> Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
+Hello:
 
-Acked-by: Tony Lu <tonylu@linux.alibaba.com>
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-> ---
->  net/smc/af_smc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+On Fri, 19 Nov 2021 14:38:03 +0100 you wrote:
+> From: Diana Wang <na.wang@corigine.com>
 > 
-> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-> index b61c802..2692cba 100644
-> --- a/net/smc/af_smc.c
-> +++ b/net/smc/af_smc.c
-> @@ -585,7 +585,7 @@ static void smc_switch_to_fallback(struct smc_sock *smc, int reason_code)
->  		 * to clcsocket->wq during the fallback.
->  		 */
->  		spin_lock_irqsave(&smc_wait->lock, flags);
-> -		spin_lock(&clc_wait->lock);
-> +		spin_lock_nested(&clc_wait->lock, SINGLE_DEPTH_NESTING);
->  		list_splice_init(&smc_wait->head, &clc_wait->head);
->  		spin_unlock(&clc_wait->lock);
->  		spin_unlock_irqrestore(&smc_wait->lock, flags);
-> -- 
-> 1.8.3.1
+> Use nn->tlv_caps.me_freq_mhz instead of nn->me_freq_mhz to check whether
+> rx-usecs/tx-usecs is valid.
+> 
+> This is because nn->tlv_caps.me_freq_mhz represents the clock_freq (MHz) of
+> the flow processing cores (FPC) on the NIC. While nn->me_freq_mhz is not
+> be set.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net] nfp: checking parameter process for rx-usecs/tx-usecs is invalid
+    https://git.kernel.org/netdev/net/c/3bd6b2a838ba
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
