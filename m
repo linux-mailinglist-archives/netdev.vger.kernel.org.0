@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23CB945923C
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 16:57:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2362B459261
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 16:57:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240271AbhKVP7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 10:59:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37746 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240233AbhKVP7b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 10:59:31 -0500
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE44AC061763
-        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 07:56:16 -0800 (PST)
+        id S240405AbhKVQAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 11:00:12 -0500
+Received: from leibniz.telenet-ops.be ([195.130.137.77]:52538 "EHLO
+        leibniz.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240407AbhKVQAF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 11:00:05 -0500
+Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [IPv6:2a02:1800:120:4::f00:13])
+        by leibniz.telenet-ops.be (Postfix) with ESMTPS id 4HyX2d5TxXzMqgCM
+        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 16:56:57 +0100 (CET)
 Received: from ramsan.of.borg ([84.195.186.194])
-        by albert.telenet-ops.be with bizsmtp
-        id MTvb260044C55Sk06Tvb5d; Mon, 22 Nov 2021 16:56:16 +0100
+        by baptiste.telenet-ops.be with bizsmtp
+        id MTwG2600F4C55Sk01TwGVb; Mon, 22 Nov 2021 16:56:57 +0100
 Received: from rox.of.borg ([192.168.97.57])
         by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1mpBe6-00EL3k-Le; Mon, 22 Nov 2021 16:54:18 +0100
+        id 1mpBe6-00EL3m-Lm; Mon, 22 Nov 2021 16:54:18 +0100
 Received: from geert by rox.of.borg with local (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1mpBe5-00HH0g-SI; Mon, 22 Nov 2021 16:54:17 +0100
+        id 1mpBe5-00HH1L-TK; Mon, 22 Nov 2021 16:54:17 +0100
 From:   Geert Uytterhoeven <geert+renesas@glider.be>
 To:     Tony Lindgren <tony@atomide.com>,
         Russell King <linux@armlinux.org.uk>,
@@ -69,9 +69,9 @@ Cc:     linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
         linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
         alsa-devel@alsa-project.org,
         Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH/RFC 14/17] regulator: ti-abb: Use bitfield helpers
-Date:   Mon, 22 Nov 2021 16:54:07 +0100
-Message-Id: <c8508cae36c52c750dbb12493dd44d92fcf51ad4.1637592133.git.geert+renesas@glider.be>
+Subject: [PATCH/RFC 15/17] thermal/ti-soc-thermal: Use bitfield helpers
+Date:   Mon, 22 Nov 2021 16:54:08 +0100
+Message-Id: <37efc6013a24653e316215424b160d613f42dcd5.1637592133.git.geert+renesas@glider.be>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1637592133.git.geert+renesas@glider.be>
 References: <cover.1637592133.git.geert+renesas@glider.be>
@@ -90,48 +90,54 @@ Compile-tested only.
 Marked RFC, as this depends on [PATCH 01/17], but follows a different
 path to upstream.
 ---
- drivers/regulator/ti-abb-regulator.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/thermal/ti-soc-thermal/ti-bandgap.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/regulator/ti-abb-regulator.c b/drivers/regulator/ti-abb-regulator.c
-index 2931a0b89bffbf7a..3bc6ca5c382a4273 100644
---- a/drivers/regulator/ti-abb-regulator.c
-+++ b/drivers/regulator/ti-abb-regulator.c
-@@ -17,6 +17,7 @@
-  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU General Public License for more details.
+diff --git a/drivers/thermal/ti-soc-thermal/ti-bandgap.c b/drivers/thermal/ti-soc-thermal/ti-bandgap.c
+index ea0603b59309f5f0..83a34d698414b177 100644
+--- a/drivers/thermal/ti-soc-thermal/ti-bandgap.c
++++ b/drivers/thermal/ti-soc-thermal/ti-bandgap.c
+@@ -9,6 +9,7 @@
+  *   Eduardo Valentin <eduardo.valentin@ti.com>
   */
+ 
 +#include <linux/bitfield.h>
  #include <linux/clk.h>
- #include <linux/delay.h>
- #include <linux/err.h>
-@@ -132,7 +133,7 @@ static inline u32 ti_abb_rmw(u32 mask, u32 value, void __iomem *reg)
+ #include <linux/cpu_pm.h>
+ #include <linux/device.h>
+@@ -80,10 +81,10 @@ do {								\
+ 	struct temp_sensor_registers *t;			\
+ 	u32 r;							\
+ 								\
+-	t = bgp->conf->sensors[(id)].registers;		\
++	t = bgp->conf->sensors[(id)].registers;			\
+ 	r = ti_bandgap_readl(bgp, t->reg);			\
+ 	r &= ~t->mask;						\
+-	r |= (val) << __ffs(t->mask);				\
++	r |= field_prep(t->mask, val);				\
+ 	ti_bandgap_writel(bgp, r, t->reg);			\
+ } while (0)
  
- 	val = readl(reg);
- 	val &= ~mask;
--	val |= (value << __ffs(mask)) & mask;
-+	val |= field_prep(mask, value);
- 	writel(val, reg);
+@@ -342,8 +343,7 @@ static void ti_bandgap_read_counter(struct ti_bandgap *bgp, int id,
  
- 	return val;
-@@ -229,7 +230,7 @@ static void ti_abb_program_ldovbb(struct device *dev, const struct ti_abb *abb,
- 	case TI_ABB_SLOW_OPP:
- 	case TI_ABB_FAST_OPP:
- 		val |= abb->ldovbb_override_mask;
--		val |= info->vset << __ffs(abb->ldovbb_vset_mask);
-+		val |= field_prep(abb->ldovbb_vset_mask, info->vset);
- 		break;
- 	}
+ 	tsr = bgp->conf->sensors[id].registers;
+ 	time = ti_bandgap_readl(bgp, tsr->bgap_counter);
+-	time = (time & tsr->counter_mask) >>
+-					__ffs(tsr->counter_mask);
++	time = field_get(tsr->counter_mask, time);
+ 	time = time * 1000 / bgp->clk_rate;
+ 	*interval = time;
+ }
+@@ -363,8 +363,7 @@ static void ti_bandgap_read_counter_delay(struct ti_bandgap *bgp, int id,
+ 	tsr = bgp->conf->sensors[id].registers;
  
-@@ -606,7 +607,7 @@ static int ti_abb_init_table(struct device *dev, struct ti_abb *abb,
- 					pname, *volt_table, vset_mask);
- 			continue;
- 		}
--		info->vset = (efuse_val & vset_mask) >> __ffs(vset_mask);
-+		info->vset = field_get(vset_mask, efuse_val);
- 		dev_dbg(dev, "[%d]v=%d vset=%x\n", i, *volt_table, info->vset);
- check_abb:
- 		switch (info->opp_sel) {
+ 	reg_val = ti_bandgap_readl(bgp, tsr->bgap_mask_ctrl);
+-	reg_val = (reg_val & tsr->mask_counter_delay_mask) >>
+-				__ffs(tsr->mask_counter_delay_mask);
++	reg_val = field_get(tsr->mask_counter_delay_mask, reg_val);
+ 	switch (reg_val) {
+ 	case 0:
+ 		*interval = 0;
 -- 
 2.25.1
 
