@@ -2,88 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 636C8458F2F
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 14:12:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9C61458F45
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 14:20:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232340AbhKVNPG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 08:15:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56706 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231444AbhKVNPD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 08:15:03 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E287C061574
-        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 05:11:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=pd3ku2EsZwytjxQy3CTDRoL9cusJNqDhOaOS8v5owp0=; b=fC40NZOL4tpudq27IHkrsRtVZH
-        thiQi0g5m+73lVjxChggtp1J3EJmLOHORNYihGa0+oNesNXXa6C+7x2kR4bcYKXvysTYDLH5SQwek
-        ++ItgdapyP+qydtLTJDSEWVsEmkJBzC70tb9MqsX48880k7pJZ+7hdSGZV5jw6E5wfodHr6Az0bvv
-        YppyexYKZWGtVX4p5jaME/LKKhywv+FAzaU6vU3S4fkG+/BSupMBK/O3euxHq9TUqYPohHgt4wFMG
-        gAAXY+fvEyiz310GK/VGxQNjC+XN09E64BY1gH7IMQ2fD34p8w4Mn8M8bPs+udilXhYJDmF6OJZQk
-        METXFsVA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mp96u-00Cs5v-BS; Mon, 22 Nov 2021 13:11:52 +0000
-Date:   Mon, 22 Nov 2021 13:11:52 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Jeremy Kerr <jk@codeconstruct.com.au>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, Matt Johnston <matt@codeconstruct.com.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH net-next] mctp: Add MCTP-over-serial transport binding
-Message-ID: <YZuXGBdRpAXTfONP@casper.infradead.org>
-References: <20211122042817.2988517-1-jk@codeconstruct.com.au>
- <YZs1p+lkKO+194zN@kroah.com>
- <123a5491b8485f42c9279d397cdeb6358c610f6c.camel@codeconstruct.com.au>
- <YZtHOfdn4HQdF3LD@kroah.com>
- <9652c9dd6b6238922f45ee71cf341cac88449b98.camel@codeconstruct.com.au>
+        id S235215AbhKVNXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 08:23:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33888 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237055AbhKVNXP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Nov 2021 08:23:15 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 14BCD603E9;
+        Mon, 22 Nov 2021 13:20:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637587209;
+        bh=Mct6dKpv2DFJDUB4do+Q+GXIK+C/FsNl2KIGy5bfMD0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=m1TCFYIkldWxKTMLur89rKi5gOkdRt6OQeJNB26/BdxNAdRNoSzy2wL+r8pwfQUie
+         Th/eND9pKi0+/qsdgPbTGEM4DR91rIuHbck/RgEV80sJu/fGioY18SrxkPWFsEPuFK
+         re/83cCI2gbDzQjqv17JgPO6Py2QcK9dV53l+SF5pSjVmZNoWG/aGZ3DzniAktMwii
+         FiXeIk8g0YqIGpS71zYK5QY/B1q5AR67Kkd+0Y2cNZnSue4cw2yGjLy2w7+caiBdZX
+         D0PD/vChAbL3n9e/LFzKX4Lj70yN2sejLvZDzROPRHNOQSH+M7u19o4RohPFCgxxC8
+         zzzz1gxdpzviw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0A10B60972;
+        Mon, 22 Nov 2021 13:20:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <9652c9dd6b6238922f45ee71cf341cac88449b98.camel@codeconstruct.com.au>
+Subject: Re: [PATCH net-next] net: phylink: handle NA interface mode in
+ phylink_fwnode_phy_connect()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163758720903.30653.16278585854605589627.git-patchwork-notify@kernel.org>
+Date:   Mon, 22 Nov 2021 13:20:09 +0000
+References: <E1mo6kA-008ZGa-Ut@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1mo6kA-008ZGa-Ut@rmk-PC.armlinux.org.uk>
+To:     Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 22, 2021 at 04:23:10PM +0800, Jeremy Kerr wrote:
-> Hi Greg,
-> 
-> > ida_destroy() will not be a no-op if you have allocated some things
-> > in the past.  It should always be called when your module is removed.
-> > 
-> > Or at least that is how it used to be, if this has changed in the
-> > past year, then I am mistaken here.
+Hello:
 
-I think Greg is remembering how the IDA behaved before it was converted
-to use the radix tree back in 2016 (0a835c4f090a).  About two-thirds
-of the users of the IDA and IDR forgot to call ida_destroy/idr_destroy,
-so rather than fix those places, I decided to make those data structures
-no longer require a destructor.
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-> I was going by this bit of the comment on ida_destroy:
+On Fri, 19 Nov 2021 16:28:06 +0000 you wrote:
+> Commit 4904b6ea1f9db ("net: phy: phylink: Use PHY device interface if
+> N/A") introduced handling for the phy interface mode where this is not
+> known at phylink creation time. This was never added to the OF/fwnode
+> paths, but is necessary when the phy is present in DT, but the phy-mode
+> is not specified.
 > 
->    * Calling this function frees all IDs and releases all resources used
->    * by an IDA.  When this call returns, the IDA is empty and can be reused
->    * or freed.  If the IDA is already empty, there is no need to call this
->    * function.
+> Add this handling.
 > 
-> [From a documentation improvement in 50d97d50715]
-> 
-> Looking at ida_destroy, it's iterating the xarray and freeing all !value
-> entries. ida_free will free a (allocated) value entry once all bits are
-> clear, so the comment looks correct to me - there's nothing left to free
-> if the ida is empty.
-> 
-> However, I'm definitely no ida/idr/xarray expert! Happy to be corrected
-> here - and I'll send a patch to clarify that comment too, if so.
-> 
-> Cheers,
-> 
-> 
-> Jeremy
-> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] net: phylink: handle NA interface mode in phylink_fwnode_phy_connect()
+    https://git.kernel.org/netdev/net-next/c/a18e6521a7d9
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
