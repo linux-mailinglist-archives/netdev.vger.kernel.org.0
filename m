@@ -2,189 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EC5D45910D
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 16:11:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5042F459118
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 16:15:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239766AbhKVPOo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 10:14:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55616 "EHLO
+        id S239037AbhKVPS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 10:18:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239534AbhKVPOl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 10:14:41 -0500
-Received: from forwardcorp1j.mail.yandex.net (forwardcorp1j.mail.yandex.net [IPv6:2a02:6b8:0:1619::183])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64049C061574;
-        Mon, 22 Nov 2021 07:11:34 -0800 (PST)
-Received: from sas1-4cbebe29391b.qloud-c.yandex.net (sas1-4cbebe29391b.qloud-c.yandex.net [IPv6:2a02:6b8:c08:789:0:640:4cbe:be29])
-        by forwardcorp1j.mail.yandex.net (Yandex) with ESMTP id CFFCD2E19B0;
-        Mon, 22 Nov 2021 18:11:27 +0300 (MSK)
-Received: from sas2-d40aa8807eff.qloud-c.yandex.net (sas2-d40aa8807eff.qloud-c.yandex.net [2a02:6b8:c08:b921:0:640:d40a:a880])
-        by sas1-4cbebe29391b.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id YiPih2xZ0h-BQsOL2aO;
-        Mon, 22 Nov 2021 18:11:27 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.com; s=default;
-        t=1637593887; bh=5SoeLo1xTGbCZidoCkfBDOnFEuE/R0Qz7W+q8Uyq6I4=;
-        h=In-Reply-To:References:Date:From:To:Subject:Message-ID:Cc;
-        b=2vRHIv1S2bOBt4EJL7FB9EKnVMkVu9oyf8rr4twhznsXRqq5168NXXdVTmcwf/eNL
-         UL1VclENnC3L8CvkHPhRAddD7J3UvfONOCX5W+STzaLH1tc7ZSY5CHVU7HgWQa3QPo
-         TZ3NZJgTcGM+1KFGzxgUW2rSTxR5i18rmAEju04M=
-Authentication-Results: sas1-4cbebe29391b.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.com
-Received: from [IPv6:2a02:6b8:0:107:3e85:844d:5b1d:60a] (dynamic-red3.dhcp.yndx.net [2a02:6b8:0:107:3e85:844d:5b1d:60a])
-        by sas2-d40aa8807eff.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPS id adw8Ie3kCo-BQw4PPnO;
-        Mon, 22 Nov 2021 18:11:26 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-X-Yandex-Fwd: 2
-Subject: Re: [PATCH 6/6] vhost_net: use RCU callbacks instead of
- synchronize_rcu()
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        kvm <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>, bpf@vger.kernel.org
-References: <20211115153003.9140-1-arbn@yandex-team.com>
- <20211115153003.9140-6-arbn@yandex-team.com>
- <CACGkMEumax9RFVNgWLv5GyoeQAmwo-UgAq=DrUd4yLxPAUUqBw@mail.gmail.com>
- <b163233f-090f-baaf-4460-37978cab4d55@yandex-team.com>
- <20211122043620-mutt-send-email-mst@kernel.org>
-From:   Andrey Ryabinin <arbn@yandex-team.com>
-Message-ID: <ba4dbc25-f912-fb34-a0e2-c6c85b34b918@yandex-team.com>
-Date:   Mon, 22 Nov 2021 18:12:59 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        with ESMTP id S233449AbhKVPS2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 10:18:28 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B1C8C061574
+        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 07:15:21 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id z5so78622509edd.3
+        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 07:15:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=88LHCR+PjO2INkYg6VrTl9B0cxBHATNNu+7/7SBwxmU=;
+        b=RSuRuywV+As+UE3lo8JZJy4WWj3ChHRMIumrjQmFH90j36Uvbq+LRio16xsxrKtXzR
+         bZo+wa32t3Vgy8ugjdYpYdY+3q9gzXoFT6j0bIIPEO6RYWFrUtH6LhxeUMjphQhn7fex
+         9RQ8fgS2Uer1vpP+G9Gy3M4+iLd5ZCWXubHJQIyDMGcG4IOkuWZ0fIbLbsrxr56dKYto
+         f3fS7DB1KFeqLcuGzC77d6xHZ7SyzQW1zRfaVy5P7NQD/zUY33ArEvz70Op1Dccz/9Ir
+         +jDYxgZxWCQ2NhMwEwNkOrTE1/fcyxqxZ/6qbZAsNRvnh/LoSFGYD6hWMJy1zZH+WEpn
+         DIFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=88LHCR+PjO2INkYg6VrTl9B0cxBHATNNu+7/7SBwxmU=;
+        b=n2NUzVhtsmyIWOArAn1gp3xPAQfVwR5CH4JpqOSxI0gHTJzd6qgYOUdWmf6dSKWB2O
+         giS6jDfblNBn9tLZ4aAodf7HQSv5REal1ubqp6i+J+InZxqawMeP03os6bP+j4X0NrG4
+         LDsfVry3EMf1/3aJ78tuHorzMOVDvcWKTgkR4x62YhxZkrwR5iBGWEOBu6yKVOYHu5dv
+         UG9K3aazspMjm2N9QIlByxzXmRldxHNLuA0YwSNPqTOK+qg5o1zl5J/5hHyAJhPKgBtw
+         cXm9mmrhQ3nw+Xcrl5TxObVL08zFJJmHDiGx047qQzMP6/eGy643dxyS74lScNfqmG/N
+         K20Q==
+X-Gm-Message-State: AOAM532JjPQ8Ve/LOXhTk3SbtVXIJ7FuhbH7xfLXXO4XAXlxpyfETWBp
+        UQWLG9TlX1n93Moai3h8505YwvpD/xX2tTgE
+X-Google-Smtp-Source: ABdhPJxVy0l/H9KCuRumnHQmTDDxRoW0yN1H8KkOD9xTnXa8eck1nVkY4QY9TDxcDQ1jJek/jtA4Xg==
+X-Received: by 2002:a17:907:d0b:: with SMTP id gn11mr41560504ejc.355.1637594119594;
+        Mon, 22 Nov 2021 07:15:19 -0800 (PST)
+Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id qb21sm3906904ejc.78.2021.11.22.07.15.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Nov 2021 07:15:19 -0800 (PST)
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+To:     netdev@vger.kernel.org
+Cc:     idosch@idosch.org, davem@davemloft.net, kuba@kernel.org,
+        dsahern@gmail.com, Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: [PATCH net v2 0/3] net: nexthop: fix refcount issues when replacing groups
+Date:   Mon, 22 Nov 2021 17:15:11 +0200
+Message-Id: <20211122151514.2813935-1-razor@blackwall.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <20211122043620-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Nikolay Aleksandrov <nikolay@nvidia.com>
+
+Hi,
+This set fixes a refcount bug when replacing nexthop groups and
+modifying routes. It is complex because the objects look valid when
+debugging memory dumps, but we end up having refcount dependency between
+unlinked objects which can never be released, so in turn they cannot
+free their resources and refcounts. The problem happens because we can
+have stale IPv6 per-cpu dsts in nexthops which were removed from a
+group. Even though the IPv6 gen is bumped, the dsts won't be released
+until traffic passes through them or the nexthop is freed, that can take
+arbitrarily long time, and even worse we can create a scenario[1] where it
+can never be released. The fix is to release the IPv6 per-cpu dsts of
+replaced nexthops after an RCU grace period so no new ones can be
+created. To do that we add a new IPv6 stub - fib6_nh_release_dsts, which
+is used by the nexthop code only when necessary. We can further optimize
+group replacement, but that is more suited for net-next as these patches
+would have to be backported to stable releases.
+
+v2: patch 02: update commit msg
+    patch 03: check for mausezahn before testing and make a few comments
+              more verbose
+
+Thanks,
+ Nik
+
+[1]
+This info is also present in patch 02's commit message.
+Initial state:
+ $ ip nexthop list
+  id 200 via 2002:db8::2 dev bridge.10 scope link onlink
+  id 201 via 2002:db8::3 dev bridge scope link onlink
+  id 203 group 201/200
+ $ ip -6 route
+  2001:db8::10 nhid 203 metric 1024 pref medium
+     nexthop via 2002:db8::3 dev bridge weight 1 onlink
+     nexthop via 2002:db8::2 dev bridge.10 weight 1 onlink
+
+Create rt6_info through one of the multipath legs, e.g.:
+ $ taskset -a -c 1  ./pkt_inj 24 bridge.10 2001:db8::10
+ (pkt_inj is just a custom packet generator, nothing special)
+
+Then remove that leg from the group by replace (let's assume it is id
+200 in this case):
+ $ ip nexthop replace id 203 group 201
+
+Now remove the IPv6 route:
+ $ ip -6 route del 2001:db8::10/128
+
+The route won't be really deleted due to the stale rt6_info holding 1
+refcnt in nexthop id 200.
+At this point we have the following reference count dependency:
+ (deleted) IPv6 route holds 1 reference over nhid 203
+ nh 203 holds 1 ref over id 201
+ nh 200 holds 1 ref over the net device and the route due to the stale
+ rt6_info
+
+Now to create circular dependency between nh 200 and the IPv6 route, and
+also to get a reference over nh 200, restore nhid 200 in the group:
+ $ ip nexthop replace id 203 group 201/200
+
+And now we have a permanent circular dependncy because nhid 203 holds a
+reference over nh 200 and 201, but the route holds a ref over nh 203 and
+is deleted.
+
+To trigger the bug just delete the group (nhid 203):
+ $ ip nexthop del id 203
+
+It won't really be deleted due to the IPv6 route dependency, and now we
+have 2 unlinked and deleted objects that reference each other: the group
+and the IPv6 route. Since the group drops the reference it holds over its
+entries at free time (i.e. its own refcount needs to drop to 0) that will
+never happen and we get a permanent ref on them, since one of the entries
+holds a reference over the IPv6 route it will also never be released.
+
+At this point the dependencies are:
+ (deleted, only unlinked) IPv6 route holds reference over group nh 203
+ (deleted, only unlinked) group nh 203 holds reference over nh 201 and 200
+ nh 200 holds 1 ref over the net device and the route due to the stale
+ rt6_info
+
+This is the last point where it can be fixed by running traffic through
+nh 200, and specifically through the same CPU so the rt6_info (dst) will
+get released due to the IPv6 genid, that in turn will free the IPv6
+route, which in turn will free the ref count over the group nh 203.
+
+If nh 200 is deleted at this point, it will never be released due to the
+ref from the unlinked group 203, it will only be unlinked:
+ $ ip nexthop del id 200
+ $ ip nexthop
+ $
+
+Now we can never release that stale rt6_info, we have IPv6 route with ref
+over group nh 203, group nh 203 with ref over nh 200 and 201, nh 200 with
+rt6_info (dst) with ref over the net device and the IPv6 route. All of
+these objects are only unlinked, and cannot be released, thus they can't
+release their ref counts.
+
+ Message from syslogd@dev at Nov 19 14:04:10 ...
+  kernel:[73501.828730] unregister_netdevice: waiting for bridge.10 to become free. Usage count = 3
+ Message from syslogd@dev at Nov 19 14:04:20 ...
+  kernel:[73512.068811] unregister_netdevice: waiting for bridge.10 to become free. Usage count = 3
 
 
-On 11/22/21 12:37 PM, Michael S. Tsirkin wrote:
-> On Fri, Nov 19, 2021 at 02:32:05PM +0300, Andrey Ryabinin wrote:
->>
->>
->> On 11/16/21 8:00 AM, Jason Wang wrote:
->>> On Mon, Nov 15, 2021 at 11:32 PM Andrey Ryabinin <arbn@yandex-team.com> wrote:
->>>>
->>>> Currently vhost_net_release() uses synchronize_rcu() to synchronize
->>>> freeing with vhost_zerocopy_callback(). However synchronize_rcu()
->>>> is quite costly operation. It take more than 10 seconds
->>>> to shutdown qemu launched with couple net devices like this:
->>>>         -netdev tap,id=tap0,..,vhost=on,queues=80
->>>> because we end up calling synchronize_rcu() netdev_count*queues times.
->>>>
->>>> Free vhost net structures in rcu callback instead of using
->>>> synchronize_rcu() to fix the problem.
->>>
->>> I admit the release code is somehow hard to understand. But I wonder
->>> if the following case can still happen with this:
->>>
->>> CPU 0 (vhost_dev_cleanup)   CPU1
->>> (vhost_net_zerocopy_callback()->vhost_work_queue())
->>>                                                 if (!dev->worker)
->>> dev->worker = NULL
->>>
->>> wake_up_process(dev->worker)
->>>
->>> If this is true. It seems the fix is to move RCU synchronization stuff
->>> in vhost_net_ubuf_put_and_wait()?
->>>
->>
->> It all depends whether vhost_zerocopy_callback() can be called outside of vhost
->> thread context or not. If it can run after vhost thread stopped, than the race you
->> describe seems possible and the fix in commit b0c057ca7e83 ("vhost: fix a theoretical race in device cleanup")
->> wasn't complete. I would fix it by calling synchronize_rcu() after vhost_net_flush()
->> and before vhost_dev_cleanup().
->>
->> As for the performance problem, it can be solved by replacing synchronize_rcu() with synchronize_rcu_expedited().
-> 
-> expedited causes a stop of IPIs though, so it's problematic to
-> do it upon a userspace syscall.
-> 
+Nikolay Aleksandrov (3):
+  net: ipv6: add fib6_nh_release_dsts stub
+  net: nexthop: release IPv6 per-cpu dsts when replacing a nexthop group
+  selftests: net: fib_nexthops: add test for group refcount imbalance
+    bug
 
-How about something like this?
+ include/net/ip6_fib.h                       |  1 +
+ include/net/ipv6_stubs.h                    |  1 +
+ net/ipv4/nexthop.c                          | 25 +++++++-
+ net/ipv6/af_inet6.c                         |  1 +
+ net/ipv6/route.c                            | 19 +++++++
+ tools/testing/selftests/net/fib_nexthops.sh | 63 +++++++++++++++++++++
+ 6 files changed, 108 insertions(+), 2 deletions(-)
 
-
----
- drivers/vhost/net.c | 40 ++++++++++++++++++++++++++--------------
- 1 file changed, 26 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
-index 97a209d6a527..556df26c584d 100644
---- a/drivers/vhost/net.c
-+++ b/drivers/vhost/net.c
-@@ -144,6 +144,10 @@ struct vhost_net {
- 	struct page_frag page_frag;
- 	/* Refcount bias of page frag */
- 	int refcnt_bias;
-+
-+	struct socket *tx_sock;
-+	struct socket *rx_sock;
-+	struct rcu_work rwork;
- };
- 
- static unsigned vhost_net_zcopy_mask __read_mostly;
-@@ -1389,6 +1393,24 @@ static void vhost_net_flush(struct vhost_net *n)
- 	}
- }
- 
-+static void vhost_net_cleanup(struct work_struct *work)
-+{
-+	struct vhost_net *n =
-+		container_of(to_rcu_work(work), struct vhost_net, rwork);
-+	vhost_dev_cleanup(&n->dev);
-+	vhost_net_vq_reset(n);
-+	if (n->tx_sock)
-+		sockfd_put(n->tx_sock);
-+	if (n->rx_sock)
-+		sockfd_put(n->rx_sock);
-+	kfree(n->vqs[VHOST_NET_VQ_RX].rxq.queue);
-+	kfree(n->vqs[VHOST_NET_VQ_TX].xdp);
-+	kfree(n->dev.vqs);
-+	if (n->page_frag.page)
-+		__page_frag_cache_drain(n->page_frag.page, n->refcnt_bias);
-+	kvfree(n);
-+}
-+
- static int vhost_net_release(struct inode *inode, struct file *f)
- {
- 	struct vhost_net *n = f->private_data;
-@@ -1398,21 +1420,11 @@ static int vhost_net_release(struct inode *inode, struct file *f)
- 	vhost_net_stop(n, &tx_sock, &rx_sock);
- 	vhost_net_flush(n);
- 	vhost_dev_stop(&n->dev);
--	vhost_dev_cleanup(&n->dev);
--	vhost_net_vq_reset(n);
--	if (tx_sock)
--		sockfd_put(tx_sock);
--	if (rx_sock)
--		sockfd_put(rx_sock);
--	/* Make sure no callbacks are outstanding */
--	synchronize_rcu();
-+	n->tx_sock = tx_sock;
-+	n->rx_sock = rx_sock;
- 
--	kfree(n->vqs[VHOST_NET_VQ_RX].rxq.queue);
--	kfree(n->vqs[VHOST_NET_VQ_TX].xdp);
--	kfree(n->dev.vqs);
--	if (n->page_frag.page)
--		__page_frag_cache_drain(n->page_frag.page, n->refcnt_bias);
--	kvfree(n);
-+	INIT_RCU_WORK(&n->rwork, vhost_net_cleanup);
-+	queue_rcu_work(system_wq, &n->rwork);
- 	return 0;
- }
- 
 -- 
+2.31.1
 
