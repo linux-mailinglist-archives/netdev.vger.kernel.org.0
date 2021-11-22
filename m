@@ -2,161 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B118545881C
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 03:48:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 312A3458828
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 03:52:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230434AbhKVCv5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Nov 2021 21:51:57 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52605 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232064AbhKVCvz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Nov 2021 21:51:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637549329;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=bCpHgtK0TLoUoBYAl3rKsWf4v1EviHMP7QNyo8Nuefw=;
-        b=eO+1y7hhModGV9J3rCIiD4km7JibIdbZZuGNesyTUYp9O2diAMjY9NNPWCPSJ9zjAtt/zq
-        m69MjJaXNRamcy/qs+jqxc7OKpN2L4HvzGIQ3luNRJaURioCf1wjdcBwqNLj1/0+rUhVpa
-        0LvMbtdTPZf/y4b17XXwn/Q6Po+AktQ=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-458-DY1j5APpN_WEYomKdlEF4Q-1; Sun, 21 Nov 2021 21:48:48 -0500
-X-MC-Unique: DY1j5APpN_WEYomKdlEF4Q-1
-Received: by mail-lf1-f70.google.com with SMTP id b23-20020a0565120b9700b00403a044bfcdso10971758lfv.13
-        for <netdev@vger.kernel.org>; Sun, 21 Nov 2021 18:48:48 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bCpHgtK0TLoUoBYAl3rKsWf4v1EviHMP7QNyo8Nuefw=;
-        b=TFYoDitbRTjI9bFLxoMmTMoIN+43vEZCHo10GyeHq0zX1l1CiAeTl0/ZgA4As62adV
-         et9WCqHYrp5YrHgfQnTH2UXDsh0G6FGuFXubbtms+wbVmKPKx9Q8+9icX8UbKWMP9da4
-         6/NHI/nYV8q0pn3nBcDZpd7+71CNZMBBaB+OusBYh9waf6zQOuWvo3ozMIIVqfRmwMKO
-         bqbvlTE9ltYyWnUZwO98Gc3QUu/xJV/FRAjqceD+10WfK3jW629RzKfb2L48NeHaQ/da
-         S6p4xLw2qlSsZes8YSblhbQuDsqn3OCPjhzMwh3ZPZ273Su5NFhDwC2q6yaF6WwF8UWo
-         NVVA==
-X-Gm-Message-State: AOAM533qriJodGvCH2yWRFiRm1lfB4nX6J67V2aqFA2kQX5FYnqCAHMQ
-        prqxjOXrguaAiZCZZlrBlQeiIytBruHmMvTyIdWf3zZGuTnW7Gnw2Qf6cNpbcNiencmn+aTAVCT
-        ejzUsyHPPIb/yfzTTodgwxOx1Tzp4Syqe
-X-Received: by 2002:a2e:3012:: with SMTP id w18mr47494881ljw.217.1637549326835;
-        Sun, 21 Nov 2021 18:48:46 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzhMUoYJy/fa5HNf3Y1dZw9n8WaAFEGalW9iZHLhJvk00Yldk6U6avgseBmGbi5f8k7IKQdMCJIgKYGrl1mobY=
-X-Received: by 2002:a2e:3012:: with SMTP id w18mr47494851ljw.217.1637549326643;
- Sun, 21 Nov 2021 18:48:46 -0800 (PST)
+        id S234187AbhKVCzh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Nov 2021 21:55:37 -0500
+Received: from mail-mw2nam08on2054.outbound.protection.outlook.com ([40.107.101.54]:6656
+        "EHLO NAM04-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230434AbhKVCzg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 21 Nov 2021 21:55:36 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HCZG/M1SxZv0ctmmoCZqFxbMiwycpG2g4xZ/rotbbgvYJGF6zVVWoRTnmgJ6G9tmtZSy1dFkjYRQ86nwnGutmk5xvlNHnCgtva5VFo2s1egXRgSPRc8FLObXZM11nrXAOWu3a9pPTfpAZf+cvd8LLkDaHm703X2TO7tLq26uw3DEsaKOfdo27VdP+ZwTT4D4TiqRn4VmVjM6H1eIIZ08Ak6bjirsdtns/0pNsIpSLHQhnEw7hA6MZbz07X9TFjrcQ97rTgbLIagLKcbia3aZsyeYOjKLKUvQf20RgzaHgD3QTChpRYPH++uR70oo31wdqaKIK0lUTpceqay1nRhKwg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mCcWtzfnPWWQwm6XL/ux/F6pU/25jFji7xRI4092YK8=;
+ b=SPnYzL4Gv8wykZs2YGCggNmYNNUYdWmvG9KEEaUBynb+vVIo4luh56kWfTarsNCOAryOAKAxCfeUY1/0qqU2Y8mk4C4emBmrAxJVSR8xjKVlIub9x0iekIKurjTw8POaPTPDcO0urH3JV4xW/UAKd2Jq7O/IXw/ovcsckiwLjSa+VFL92oDE9d6EEdlRS5yQ5Gyh1nxUvbTBd748jKvAE72pPhCpRkv7U8E4Bbjsp6v1He5OhBxpPZk9IXL3LoBLyfnpwHHskgpwBcaMLzKffIxlsAj9r1iOblsLrV3+goD7JihzKIs9J/ro767m8DgJbgMV3utmCYHjW5r/85AJSg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mCcWtzfnPWWQwm6XL/ux/F6pU/25jFji7xRI4092YK8=;
+ b=udcQILF+ydOneHTwpsbDMGFk6iWuHn7fqJ9pYdrIcCzP2djqvOi6Dec1Ahs8m2D4hNuLAEMuoRk6WuE0IW7BpSikbZlCAXzbEC7uhzHtNUq7gjk7Vjxp3DVwGM7ZZvjGVSczwSX2jwTUvwqs2tLKeB69r37+dbcM8WC/jz5rDtAQAmHdagnbrwyQrRfr88+FjIpdC6uYor2b7utcgrY++pnCuWjVo64PzgUgWTFSzk+ArALooyoAXGP7L3fIwG2l0yLcMA3aWSRekuQafl7qAASxfSSFwssgvnpjuGzAUW44JDEfYuCLf7/nYA+7DF2P38eBoSB0JzL2Ii1xBVLWow==
+Received: from PH0PR12MB5481.namprd12.prod.outlook.com (2603:10b6:510:d4::15)
+ by PH0PR12MB5498.namprd12.prod.outlook.com (2603:10b6:510:d6::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.20; Mon, 22 Nov
+ 2021 02:52:30 +0000
+Received: from PH0PR12MB5481.namprd12.prod.outlook.com
+ ([fe80::5515:f45e:56f5:b35a]) by PH0PR12MB5481.namprd12.prod.outlook.com
+ ([fe80::5515:f45e:56f5:b35a%3]) with mapi id 15.20.4713.022; Mon, 22 Nov 2021
+ 02:52:30 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     "patchwork-bot+netdevbpf@kernel.org" 
+        <patchwork-bot+netdevbpf@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH iproute2] vdpa: align uapi headers
+Thread-Topic: [PATCH iproute2] vdpa: align uapi headers
+Thread-Index: AQHX3KYeo+q44itHa0+iVFz0BpQheKwJlb0AgAVIghA=
+Date:   Mon, 22 Nov 2021 02:52:29 +0000
+Message-ID: <PH0PR12MB54816468137C264E45CCE9C6DC9F9@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20211118180000.30627-1-stephen@networkplumber.org>
+ <163725900883.587.15945763914190641822.git-patchwork-notify@kernel.org>
+In-Reply-To: <163725900883.587.15945763914190641822.git-patchwork-notify@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: df174229-0505-4318-876d-08d9ad63200c
+x-ms-traffictypediagnostic: PH0PR12MB5498:
+x-microsoft-antispam-prvs: <PH0PR12MB5498BFE354E264351DAD7159DC9F9@PH0PR12MB5498.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:163;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 9ACyDFzeHve9orm80OBLVzdEYE32Aoa4ycGHVGisZp00GyUe9Tdgl47vmfTvX4icrU4ElYdYsVc7tis4BOFjbT3QZ0DpVLGVBe+mS27s1+XCqzwyUBvkE0Aek6FDETdoJLw3drZWcBu8qiroULT4f+GQJmfrYdFwGtKDQuSuFmtJwTsUAd3fQZRBWTvv1FL3iVzGllhmP/0D1tqSKbXAo/uEdK88Zboa06lKYiToHyZx+fUv/v6TQka4TL9gJxiG8k/99rD5abuZyPrs6k2vc906sUjRbxBPMtlh2i+b45Oy7yHZHsV05bVo5tOOx4AQNh82K7vc2yR4NO+tRUitM2S8sNaVzIb8NB+/k7THNm3Uh3syCLFhxCHz2X91WG3vxMf43VrEvFl9Wr0diEWP6LEVhSuDgTIw9o9j0rmza5pUH8J9MBzp9aCjzAfZFIySRgdRk0XvKvAkHscD9eowkNyQE3TIdLKqpE48bqr50Lou/fIUpdEHejDrsFmFv2DarbfEfkpp1JpiVUn65T8y9PMGEQ9MvlOPaEi8hmJpbS+cxMCaxjZFiEgxFW1zhtEhVNuAnbPIzo0MBVcblPRp2bdp8kx7x9OI8k9ReNXlCdK96NBkFuIbvNjkLBr8aGismyvt6dw/dqKOlBxOrQ3uwgvEm7SbKDvfArQszcg9Tm+HEDkvxDG/IjOONmi1xFk3hnYpk8isoYlBeyZhYVvwfYs0WcUHF4lOTKsXSnDtv6L1wGW0ApVEr/xaTKRjSu5gpZwNO9SiohYGxF4PL3X/VPFl4IQ315Qx7Li1O//NMFM=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(76116006)(33656002)(966005)(110136005)(8676002)(316002)(38070700005)(52536014)(9686003)(508600001)(55016002)(66946007)(5660300002)(66476007)(71200400001)(83380400001)(7696005)(6506007)(4326008)(122000001)(66556008)(2906002)(26005)(186003)(4744005)(86362001)(8936002)(64756008)(55236004)(38100700002)(66446008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?V3FhYlVTcnByVlZISm1YbHE4V2FDWlE0QU5VWUtaV2libjh4dUxYNUhrcnZ3?=
+ =?utf-8?B?OE1zZDFOK3lWTlRkMVBqL2g5alhWS05iTzhuazJtMkh3T0F0T1ZtSGVzTE1p?=
+ =?utf-8?B?dzhiOE4zWWo3N2FnVnM1aXYycGZucmFZaFdRK3ZPRWZoSFlXSXZKYjMvcjJR?=
+ =?utf-8?B?VElNbHFmbHBuc3ZLRzB6NEo4dzIzWnk3MnAzaWtqc2x0L0RwL0VIdTRWeVU1?=
+ =?utf-8?B?a1pXaUFJRlRHTEJOZTdyUGM4UGh4bmdRRnZoMXdsTmJEZHByN2VOaStLZHhl?=
+ =?utf-8?B?L0hVK1BoVXNTM2lDTjdGY3laR0tBcitHamFkVy96SmxIamVkcXFVTi81UEdN?=
+ =?utf-8?B?dG94aUZnRTAzM0VPWjVMUnRDNWNMN1d6eEFZSkdWcDRKbHpFOWpnUGl2Zk1Q?=
+ =?utf-8?B?b2tTK0x2ZUl3TzRFdkpYeGIveGszSG5QU0xjR3F2QXA1OEgxdzB1TVhxUVZQ?=
+ =?utf-8?B?dlhjSjNSb3NJUEV2WnJYNkQwN29LQW9CZ0M1VXhveFNRa09wbXNPYUJsNkVa?=
+ =?utf-8?B?RGpRN3lsZ3FiNW5mVkdWNGlCTEZqcjA3c2N0dnlIampndThwUmQvcUdHeVBQ?=
+ =?utf-8?B?VWdVTUtLR3JURVNPVkswcm1ubGVjMUNjOVhqSXhFa0hrMTM2eTRFZXZpbERp?=
+ =?utf-8?B?ZktkV2cvTGs2MGN4NHFNRDhKdmZCVFZqeERuTDRFWE52N2xLaENkM2NCOVNV?=
+ =?utf-8?B?YzJzUFN4TWY1K0MxUzR2Q1dOOW5OWkh4RTVYNmJwcThOWUtrdG83cldtTjU4?=
+ =?utf-8?B?dHJwaGMvTnVGZ3lkeGhrQ3FQNlNsWUtvNVFTOVMwNEZCMGtFb1VsQmFXbk1C?=
+ =?utf-8?B?SnpQa0RPMjdTQzVpdDRvN2Q1dVhXT0NRSDBscjJnQ1FrQkNTUC85YW52cHQz?=
+ =?utf-8?B?WmhkMGpFeWRJdHZCek1YdTFjRndBNE45SGYwNyt4cW9SWWJPckxIYmxxZkNk?=
+ =?utf-8?B?RjJaV1RoZEp6YytKNHBVeXBzSSszVXpBU2lsS3VxeVR3SUZsd2w0em5PYjRD?=
+ =?utf-8?B?UjVtSVRHYkZ5ZGpDNUIrejFnTmtDMmo3bWszRDJaMG5tSzc4enRNL0xvK05k?=
+ =?utf-8?B?UnJ0a3BkMDhCOFpsMVZOUmp6WHFlRzJhcmRHc2hjU2VZdjFhcEkyL1poZVV4?=
+ =?utf-8?B?dmJXWkRwb2pxbjB5VTM5cmZvVVU4RUZ4bHNsN2FnR3lHY3o1Y285SnRxRDZO?=
+ =?utf-8?B?VGs5djNxdlNwV3V5cHN6MjV1S1RXOGJodG04bENJS3pxc01CeUNBSHFuY1gz?=
+ =?utf-8?B?QnNZREdBdUF1OUx6NW5RTnRoVllpR1BFblFXZ1F1NXU4eVJaOU5mMUpjY3RT?=
+ =?utf-8?B?MGZOMTI0ZVVmRmFDV2ZzZHVzemh2eHZkMjZqVVVncy9KVDFQcEIxZ0hqdTNn?=
+ =?utf-8?B?a1plNy9zMElLUnhpVGJUUnI3K2htdE9PSlI4TmRwR2RubFNwWGxJWUJUTGNY?=
+ =?utf-8?B?YTlVSGhMKytpb0lZN2c1UmhhNTZBVGhRV3dWV1JMeUdaTmdVZWdXZ3pSUGNj?=
+ =?utf-8?B?UnVVUXRMMlZtbm51UDQ4c2pWS2F2UG4xcHZqRUlZRzA4SGZOU29IM1JWQlNN?=
+ =?utf-8?B?RDd0Z0J1VzRMOUdVNFEwTVBPWkpPNk4xRWliTkNtMjdvbFJXcEkyRHYwekY2?=
+ =?utf-8?B?T1VuSVZxeUtsMUZrcTRxQWM4T0FFeXd0S0V5aFkrYkc4TTdyZVN1WWZBaE55?=
+ =?utf-8?B?TlF3NFNIaGFIYWlKbHl5VDBTcWtPejJMbUVUUFpqMlV6SHRORGR0djdwVTNo?=
+ =?utf-8?B?R2NldW1UTm11UnRGaFRqOUxMTkE4WlFJSXFwL3B6Rkl2ZWErME9XREpPV0wz?=
+ =?utf-8?B?N2lZRGN3YlgrREhoWmFxM1dXd1ZnK0E2ME9wcUIrOFM0VHJsSk53VWFza2ov?=
+ =?utf-8?B?cVFVMUhZb244VzZ1enl0UUNxQWFISnR5RzE5NXlhNlVNaTE5bndSekYrOWlS?=
+ =?utf-8?B?THpFRXExTTUxNDBuT01Dd0tPZlltU2R1UGNtWWFLUDNCL2Y5ekxVRDc0R3pW?=
+ =?utf-8?B?UVFHSmdBejEwcm5aUlMvZWxYUHBPcFFualE4aHh1RVZrK1dWMWpTTjNxUEJp?=
+ =?utf-8?B?dHYydjVmcmM1RWl5dnpKblhLcUZtSUkwVkg5eUhUQ1liek1hcEtvWU0yRzJX?=
+ =?utf-8?B?Mm9iZ3RUMk5ZNFA3aDFId21RZnZSUk9qY0F2MDJNRngxNk1tSGhxcHJ2cHhy?=
+ =?utf-8?Q?iF7A0+mJakhNRKVSQ57qX6I=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20211115153003.9140-1-arbn@yandex-team.com> <20211115153003.9140-6-arbn@yandex-team.com>
- <CACGkMEumax9RFVNgWLv5GyoeQAmwo-UgAq=DrUd4yLxPAUUqBw@mail.gmail.com> <b163233f-090f-baaf-4460-37978cab4d55@yandex-team.com>
-In-Reply-To: <b163233f-090f-baaf-4460-37978cab4d55@yandex-team.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Mon, 22 Nov 2021 10:48:35 +0800
-Message-ID: <CACGkMEuNhRf8_nhAsJ68J4HFxGJcnjNyA8ZyktNcBhNGfSafmA@mail.gmail.com>
-Subject: Re: [PATCH 6/6] vhost_net: use RCU callbacks instead of synchronize_rcu()
-To:     Andrey Ryabinin <arbn@yandex-team.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        kvm <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>, bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: df174229-0505-4318-876d-08d9ad63200c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Nov 2021 02:52:29.9192
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 2M382c76i7QroKE2atSgE0g+i72K8iYu4nY3SDCQIYU+8xa/3+GBUDD3RK9PYyMXAnFJznUV0k7ixCVtsP0vjQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5498
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 19, 2021 at 7:31 PM Andrey Ryabinin <arbn@yandex-team.com> wrote:
->
->
->
-> On 11/16/21 8:00 AM, Jason Wang wrote:
-> > On Mon, Nov 15, 2021 at 11:32 PM Andrey Ryabinin <arbn@yandex-team.com> wrote:
-> >>
-> >> Currently vhost_net_release() uses synchronize_rcu() to synchronize
-> >> freeing with vhost_zerocopy_callback(). However synchronize_rcu()
-> >> is quite costly operation. It take more than 10 seconds
-> >> to shutdown qemu launched with couple net devices like this:
-> >>         -netdev tap,id=tap0,..,vhost=on,queues=80
-> >> because we end up calling synchronize_rcu() netdev_count*queues times.
-> >>
-> >> Free vhost net structures in rcu callback instead of using
-> >> synchronize_rcu() to fix the problem.
-> >
-> > I admit the release code is somehow hard to understand. But I wonder
-> > if the following case can still happen with this:
-> >
-> > CPU 0 (vhost_dev_cleanup)   CPU1
-> > (vhost_net_zerocopy_callback()->vhost_work_queue())
-> >                                                 if (!dev->worker)
-> > dev->worker = NULL
-> >
-> > wake_up_process(dev->worker)
-> >
-> > If this is true. It seems the fix is to move RCU synchronization stuff
-> > in vhost_net_ubuf_put_and_wait()?
-> >
->
-> It all depends whether vhost_zerocopy_callback() can be called outside of vhost
-> thread context or not.
-
-I think the answer is yes, the callback will be mainly used in the
-zerocopy path when the underlayer NIC finishes the DMA of a packet.
-
-> If it can run after vhost thread stopped, than the race you
-> describe seems possible and the fix in commit b0c057ca7e83 ("vhost: fix a theoretical race in device cleanup")
-> wasn't complete. I would fix it by calling synchronize_rcu() after vhost_net_flush()
-> and before vhost_dev_cleanup().
->
-> As for the performance problem, it can be solved by replacing synchronize_rcu() with synchronize_rcu_expedited().
-
-Yes, that's another way, but see below.
-
->
-> But now I'm not sure that this race is actually exists and that synchronize_rcu() needed at all.
-> I did a bit of testing and I only see callback being called from vhost thread:
->
-> vhost-3724  3733 [002]  2701.768731: probe:vhost_zerocopy_callback: (ffffffff81af8c10)
->         ffffffff81af8c11 vhost_zerocopy_callback+0x1 ([kernel.kallsyms])
->         ffffffff81bb34f6 skb_copy_ubufs+0x256 ([kernel.kallsyms])
->         ffffffff81bce621 __netif_receive_skb_core.constprop.0+0xac1 ([kernel.kallsyms])
->         ffffffff81bd062d __netif_receive_skb_one_core+0x3d ([kernel.kallsyms])
->         ffffffff81bd0748 netif_receive_skb+0x38 ([kernel.kallsyms])
->         ffffffff819a2a1e tun_get_user+0xdce ([kernel.kallsyms])
->         ffffffff819a2cf4 tun_sendmsg+0xa4 ([kernel.kallsyms])
->         ffffffff81af9229 handle_tx_zerocopy+0x149 ([kernel.kallsyms])
->         ffffffff81afaf05 handle_tx+0xc5 ([kernel.kallsyms])
->         ffffffff81afce86 vhost_worker+0x76 ([kernel.kallsyms])
->         ffffffff811581e9 kthread+0x169 ([kernel.kallsyms])
->         ffffffff810018cf ret_from_fork+0x1f ([kernel.kallsyms])
->                        0 [unknown] ([unknown])
->
-
-From the call trace you can send packets between two TAP. Since the TX
-of TAP is synchronous so we can't see callback to be called out of
-vhost thread.
-
-In order to test it, we need 1) enable zerocopy
-(experimental_zcopytx=1) and 2) sending the packet to the real NIC
-with bridge or macvlan
-
-Zerocopy was disalbed due to a lot of isuses (098eadce3c62 "vhost_net:
-disable zerocopy by default"). So if we fix by moving it to
-vhost_net_ubuf_put_and_wait(), there won't be a synchronize_rcu() in
-the non-zerocopy path which seems to be sufficient. And we can use
-synchronize_rcu_expedited() on top if it is really needed.
-
-Thanks
-
-> This means that the callback can't run after kthread_stop() in vhost_dev_cleanup() and no synchronize_rcu() needed.
->
-> I'm not confident that my quite limited testing cover all possible vhost_zerocopy_callback() callstacks.
->
-
+DQoNCj4gRnJvbTogcGF0Y2h3b3JrLWJvdCtuZXRkZXZicGZAa2VybmVsLm9yZyA8cGF0Y2h3b3Jr
+LQ0KPiBib3QrbmV0ZGV2YnBmQGtlcm5lbC5vcmc+DQo+IA0KPiBIZWxsbzoNCj4gDQo+IFRoaXMg
+cGF0Y2ggd2FzIGFwcGxpZWQgdG8gaXByb3V0ZTIvaXByb3V0ZTIuZ2l0IChtYWluKSBieSBTdGVw
+aGVuIEhlbW1pbmdlcg0KPiA8c3RlcGhlbkBuZXR3b3JrcGx1bWJlci5vcmc+Og0KPiANCj4gT24g
+VGh1LCAxOCBOb3YgMjAyMSAxMDowMDowMCAtMDgwMCB5b3Ugd3JvdGU6DQo+ID4gVXBkYXRlIHZk
+cGEgaGVhZGVycyBiYXNlZCBvbiA1LjE2LjAtcmMxIGFuZCByZW1vdmUgcmVkdW5kYW50IGNvcHku
+DQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBTdGVwaGVuIEhlbW1pbmdlciA8c3RlcGhlbkBuZXR3
+b3JrcGx1bWJlci5vcmc+DQo+ID4gLS0tDQo+ID4gIGluY2x1ZGUvdWFwaS9saW51eC92ZHBhLmgg
+ICAgICAgICAgICB8IDQ3IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCg0KVGhpcyB3aWxs
+IGNvbmZsaWN0IHdpdGggY29tbWl0IFsxXSBpbiBpcHJvdXRlMi1uZXh0IGJyYW5jaC4NClsxXSBo
+dHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbmV0d29yay9pcHJvdXRlMi9pcHJvdXRlMi1u
+ZXh0LmdpdC9jb21taXQvP2g9bWFzdGVyJmlkPWEyMTQ1OGZjMzUzMzYxMDhhY2Q0Yjc1YjRkOGUx
+ZWY3ZjdlN2Q5YTENCg==
