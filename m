@@ -2,71 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C69D458EB1
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 13:50:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A326458EAE
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 13:50:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239476AbhKVMxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 07:53:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48656 "EHLO mail.kernel.org"
+        id S239444AbhKVMxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 07:53:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48662 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229797AbhKVMxQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S235989AbhKVMxQ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 22 Nov 2021 07:53:16 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id C22FA60F6F;
+Received: by mail.kernel.org (Postfix) with ESMTPS id CB9F060F70;
         Mon, 22 Nov 2021 12:50:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1637585409;
-        bh=jkV15e+h13fqBlCOC03XHtk5plPiB5OzGsYSyYaXLEo=;
+        bh=O71uzdhfpiBU3QjDvPK18gmGWBt1NByjvHz62xswjR0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fyiqRK5g+KsmKmjO1IYdnncMAeo3L8OIEIDFNchMwdgFEK/vBfaE0Poje03bSMyMi
-         3OAisRoTJkmA8u9xCYNVOPeA/ybViUEKiGfSZpFjsiFaZBbf+eljt2eqEjEkTEDsnC
-         I3t1w0sq/fJaBDIE9qOAnYG8CksPLZ1kIRcGXFGJU6JKlQB8dle2ntDF8YXmxeduqS
-         pPRrdD23uKjwZGSSHC+bq3wRmaFDF14eiZmIHsj4JJKe3HEvRBN9aon9J2OJdXQqYT
-         xBMGHvsjcjr85kzT3NCF+ow3fqvIcCNmhpdMXz3nV5ymDlDlBCZEnOGYV9JaClG7UP
-         WDJehxaXuhwyg==
+        b=FeCKKpPTWUYUpWuQO4WnkCZDczX8yv3tE/aa5xpOM5Z4o1nZyofUnZLbh4TbNA9c4
+         8axMA7rGIuwUVkGXswY3fB/h5XjZXUbHNC/h2//uFZHrYfpJQzUSKNQA5zx1GVGD7f
+         1ATU2+gsMhV69OluKOjicga21PQMRNt9snCz4VSTzRbYAzvLXdynv9+rQE7yipkV8J
+         udoRZ5R+NPfeuiJeuMbXYWJ9Z564A53C8bcF7b5TM64EJTLpt6896y1rf+ovdiUyhD
+         /AMPyIEszLsxly4+8cBzcLEMXJknzDP6J6JekJ4QIZ3wyzSXkB+HW5TqOxY7X/8Q4y
+         OyS12uxWdHtrQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B399960A50;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C099E60972;
         Mon, 22 Nov 2021 12:50:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net PATCH 1/2] net: dsa: qca8k: fix internal delay applied to the
- wrong PAD config
+Subject: Re: [PATCH net] ipv6: fix typos in __ip6_finish_output()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163758540972.16054.17356014346069605466.git-patchwork-notify@kernel.org>
+Message-Id: <163758540978.16054.8173399425482310139.git-patchwork-notify@kernel.org>
 Date:   Mon, 22 Nov 2021 12:50:09 +0000
-References: <20211119020350.32324-1-ansuelsmth@gmail.com>
-In-Reply-To: <20211119020350.32324-1-ansuelsmth@gmail.com>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        noodles@earth.li, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20211119013758.2740195-1-eric.dumazet@gmail.com>
+In-Reply-To: <20211119013758.2740195-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        edumazet@google.com, tobias@strongswan.org,
+        steffen.klassert@secunet.com, dsahern@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
+This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 19 Nov 2021 03:03:49 +0100 you wrote:
-> With SGMII phy the internal delay is always applied to the PAD0 config.
-> This is caused by the falling edge configuration that hardcode the reg
-> to PAD0 (as the falling edge bits are present only in PAD0 reg)
-> Move the delay configuration before the reg overwrite to correctly apply
-> the delay.
+On Thu, 18 Nov 2021 17:37:58 -0800 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
 > 
-> Fixes: cef08115846e ("net: dsa: qca8k: set internal delay also for sgmii")
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> We deal with IPv6 packets, so we need to use IP6CB(skb)->flags and
+> IP6SKB_REROUTED, instead of IPCB(skb)->flags and IPSKB_REROUTED
+> 
+> Found by code inspection, please double check that fixing this bug
+> does not surface other bugs.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/2] net: dsa: qca8k: fix internal delay applied to the wrong PAD config
-    https://git.kernel.org/netdev/net/c/3b00a07c2443
-  - [net,2/2] net: dsa: qca8k: fix MTU calculation
-    https://git.kernel.org/netdev/net/c/65258b9d8cde
+  - [net] ipv6: fix typos in __ip6_finish_output()
+    https://git.kernel.org/netdev/net/c/19d36c5f2948
 
 You are awesome, thank you!
 -- 
