@@ -2,88 +2,593 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C07A045888D
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 05:11:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 194B245889F
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 05:28:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230033AbhKVEOW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Nov 2021 23:14:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48582 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229983AbhKVEOU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Nov 2021 23:14:20 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F35BC061574
-        for <netdev@vger.kernel.org>; Sun, 21 Nov 2021 20:11:15 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id nh10-20020a17090b364a00b001a69adad5ebso14125235pjb.2
-        for <netdev@vger.kernel.org>; Sun, 21 Nov 2021 20:11:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=doOlBozltHIgVrhnH/EDMERan++AjUdJfibC8ED5qds=;
-        b=kvJB2GWbZnyj1V0FedAmCYFs/9x0nN7AZFBMOEGbZGRg2+SHumcqiAPedrzVrTMsbS
-         Up0HS4K0TDnbHS5n3xnUieAo5NpZjIlXFFSUZIVQXvbqILEuRfAJ0IZr41ymA00PopFe
-         +uykUB/g3szpSA6xuF/YtxPzo7XLy9X7gRtylx/PI2ylDbnS9Ibp1okQQ9K0WnIbRtsL
-         E4rlGE3b9oGWXYYP9pFds8Qjg2FQOCyKYt5dS7zBJaYYSQontOMol5LfFYr4CkqdO4nm
-         IAksDXZgF0qC/5BRoBLQiLPKehbhdaWv84M66b3wbtQR4v7xwv3VV0OHLQT4D3VCwflt
-         Smkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=doOlBozltHIgVrhnH/EDMERan++AjUdJfibC8ED5qds=;
-        b=EkitHMCj/UFNa8To/7hqdEUYnht1fCwmPwty4ktlfkxE0hbS2nw7F0xQxeAk6hWQ0t
-         j1bJNewa6eIFX3pPF+FZW3O1BfRIVH/amiTXfNG71V6b10CRT4/LVwfuL1Z0RFbxUUmv
-         6F1Oa03nRx/noFCWNmubc3DrQkuyY1mgYSGdtIjmAk+hO8LcSn6XnI2IHSLyhm/HoD1i
-         dqoOXv0nHYyj96sBrptOd0OuvNZjFXiuwW0M2L+vhSCW9I6YmZGJ8rsLHqSH6KTctP7x
-         M5QZ9eCR4mHCt9EKbDIJYDF8XLe9SNfbotSkuwN9KROIeLdUnYmHkJ7gRvw1264EmBc2
-         ktuw==
-X-Gm-Message-State: AOAM531gIEzxL14J+y21w8P1pACy/5wTDGGnLNWuyKyqnjNZdPJHlrbk
-        LWvMk6nEiFfAxWeZhRJZOk00DA==
-X-Google-Smtp-Source: ABdhPJzKOQgZnikkPV+HZzCyd49ADcPN6Ci17WPy6iPD6aKQot2NoX/BehogRav3ZbU/rvzJuznjeQ==
-X-Received: by 2002:a17:90a:6886:: with SMTP id a6mr27735235pjd.78.1637554274562;
-        Sun, 21 Nov 2021 20:11:14 -0800 (PST)
-Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
-        by smtp.gmail.com with ESMTPSA id c3sm6750804pfm.177.2021.11.21.20.11.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 Nov 2021 20:11:14 -0800 (PST)
-Date:   Sun, 21 Nov 2021 20:11:11 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     David Ahern <dsahern@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH iproute2] vdpa: align uapi headers
-Message-ID: <20211121201111.043f8be9@hermes.local>
-In-Reply-To: <PH0PR12MB54816468137C264E45CCE9C6DC9F9@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20211118180000.30627-1-stephen@networkplumber.org>
-        <163725900883.587.15945763914190641822.git-patchwork-notify@kernel.org>
-        <PH0PR12MB54816468137C264E45CCE9C6DC9F9@PH0PR12MB5481.namprd12.prod.outlook.com>
+        id S231684AbhKVEbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Nov 2021 23:31:32 -0500
+Received: from pi.codeconstruct.com.au ([203.29.241.158]:54950 "EHLO
+        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229870AbhKVEbb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Nov 2021 23:31:31 -0500
+Received: by codeconstruct.com.au (Postfix, from userid 10000)
+        id 479292022C; Mon, 22 Nov 2021 12:28:24 +0800 (AWST)
+From:   Jeremy Kerr <jk@codeconstruct.com.au>
+To:     netdev@vger.kernel.org
+Cc:     Matt Johnston <matt@codeconstruct.com.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH net-next] mctp: Add MCTP-over-serial transport binding
+Date:   Mon, 22 Nov 2021 12:28:17 +0800
+Message-Id: <20211122042817.2988517-1-jk@codeconstruct.com.au>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 22 Nov 2021 02:52:29 +0000
-Parav Pandit <parav@nvidia.com> wrote:
+This change adds a MCTP Serial transport binding, as per DMTF DSP0253.
+This is implemented as a new serial line discipline, and can be attached
+to arbitrary serial devices.
 
-> > From: patchwork-bot+netdevbpf@kernel.org <patchwork-  
-> > bot+netdevbpf@kernel.org>  
-> > 
-> > Hello:
-> > 
-> > This patch was applied to iproute2/iproute2.git (main) by Stephen Hemminger
-> > <stephen@networkplumber.org>:
-> > 
-> > On Thu, 18 Nov 2021 10:00:00 -0800 you wrote:  
-> > > Update vdpa headers based on 5.16.0-rc1 and remove redundant copy.
-> > >
-> > > Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
-> > > ---
-> > >  include/uapi/linux/vdpa.h            | 47 ----------------------------  
-> 
-> This will conflict with commit [1] in iproute2-next branch.
-> [1] https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?h=master&id=a21458fc35336108acd4b75b4d8e1ef7f7e7d9a1
+The 'mctp' utility provides the ldisc magic to set up the serial link:
 
-No worries, Dave will do a header merge.
+  # mctp link serial /dev/ttyS0 &
+  # mctp link
+  dev lo index 1 address 0x00:00:00:00:00:00 net 1 mtu 65536 up
+  dev mctpserial0 index 5 address 0x(no-addr) net 1 mtu 68 down
+
+Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
+---
+ drivers/net/mctp/Kconfig       |  11 +
+ drivers/net/mctp/Makefile      |   1 +
+ drivers/net/mctp/mctp-serial.c | 494 +++++++++++++++++++++++++++++++++
+ include/uapi/linux/tty.h       |   1 +
+ 4 files changed, 507 insertions(+)
+ create mode 100644 drivers/net/mctp/mctp-serial.c
+
+diff --git a/drivers/net/mctp/Kconfig b/drivers/net/mctp/Kconfig
+index d8f966cedc89..02f3c2d600fd 100644
+--- a/drivers/net/mctp/Kconfig
++++ b/drivers/net/mctp/Kconfig
+@@ -3,6 +3,17 @@ if MCTP
+ 
+ menu "MCTP Device Drivers"
+ 
++config MCTP_SERIAL
++	tristate "MCTP serial transport"
++	depends on TTY
++	select CRC_CCITT
++	help
++	  This driver provides an MCTP-over-serial interface, through a
++	  serial line-discipline. By attaching the ldisc to a serial device,
++	  we get a new net device to transport MCTP packets.
++
++	  Say y here if you need to connect to MCTP devices over serial.
++
+ endmenu
+ 
+ endif
+diff --git a/drivers/net/mctp/Makefile b/drivers/net/mctp/Makefile
+index e69de29bb2d1..d32622613ce4 100644
+--- a/drivers/net/mctp/Makefile
++++ b/drivers/net/mctp/Makefile
+@@ -0,0 +1 @@
++obj-$(CONFIG_MCTP_SERIAL) += mctp-serial.o
+diff --git a/drivers/net/mctp/mctp-serial.c b/drivers/net/mctp/mctp-serial.c
+new file mode 100644
+index 000000000000..30950f1ea6f4
+--- /dev/null
++++ b/drivers/net/mctp/mctp-serial.c
+@@ -0,0 +1,494 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Management Component Transport Protocol (MCTP) - serial transport
++ * binding.
++ *
++ * Copyright (c) 2021 Code Construct
++ */
++
++#include <linux/idr.h>
++#include <linux/if_arp.h>
++#include <linux/module.h>
++#include <linux/skbuff.h>
++#include <linux/tty.h>
++#include <linux/workqueue.h>
++#include <linux/crc-ccitt.h>
++
++#include <linux/mctp.h>
++#include <net/mctp.h>
++#include <net/pkt_sched.h>
++
++#define MCTP_SERIAL_MTU		68 /* base mtu (64) + mctp header */
++#define MCTP_SERIAL_FRAME_MTU	(MCTP_SERIAL_MTU + 6) /* + serial framing */
++
++#define MCTP_SERIAL_VERSION	0x1
++
++#define BUFSIZE			MCTP_SERIAL_FRAME_MTU
++
++#define BYTE_FRAME		0x7e
++#define BYTE_ESC		0x7d
++
++static DEFINE_IDA(mctp_serial_ida);
++
++enum mctp_serial_state {
++	STATE_IDLE,
++	STATE_START,
++	STATE_HEADER,
++	STATE_DATA,
++	STATE_ESCAPE,
++	STATE_TRAILER,
++	STATE_DONE,
++	STATE_ERR,
++};
++
++struct mctp_serial {
++	struct net_device	*netdev;
++	struct tty_struct	*tty;
++
++	int			idx;
++
++	/* protects our rx & tx state machines; held during both paths */
++	spinlock_t		lock;
++
++	struct work_struct	tx_work;
++	enum mctp_serial_state	txstate, rxstate;
++	u16			txfcs, rxfcs, rxfcs_rcvd;
++	unsigned int		txlen, rxlen;
++	unsigned int		txpos, rxpos;
++	unsigned char		txbuf[BUFSIZE],
++				rxbuf[BUFSIZE];
++};
++
++static bool needs_escape(unsigned char c)
++{
++	return c == BYTE_ESC || c == BYTE_FRAME;
++}
++
++static int next_chunk_len(struct mctp_serial *dev)
++{
++	int i;
++
++	/* either we have no bytes to send ... */
++	if (dev->txpos == dev->txlen)
++		return 0;
++
++	/* ... or the next byte to send is an escaped byte; requiring a
++	 * single-byte chunk...
++	 */
++	if (needs_escape(dev->txbuf[dev->txpos]))
++		return 1;
++
++	/* ... or we have one or more bytes up to the next escape - this chunk
++	 * will be those non-escaped bytes, and does not include the escaped
++	 * byte.
++	 */
++	for (i = 1; i + dev->txpos + 1 < dev->txlen; i++) {
++		if (needs_escape(dev->txbuf[dev->txpos + i + 1]))
++			break;
++	}
++
++	return i;
++}
++
++static int write_chunk(struct mctp_serial *dev, unsigned char *buf, int len)
++{
++	return dev->tty->ops->write(dev->tty, buf, len);
++}
++
++static void mctp_serial_tx_work(struct work_struct *work)
++{
++	struct mctp_serial *dev = container_of(work, struct mctp_serial,
++					       tx_work);
++	unsigned char c, buf[3];
++	unsigned long flags;
++	int len, txlen;
++
++	spin_lock_irqsave(&dev->lock, flags);
++
++	/* txstate represents the next thing to send */
++	switch (dev->txstate) {
++	case STATE_START:
++		dev->txpos = 0;
++		fallthrough;
++	case STATE_HEADER:
++		buf[0] = BYTE_FRAME;
++		buf[1] = MCTP_SERIAL_VERSION;
++		buf[2] = dev->txlen;
++
++		if (!dev->txpos)
++			dev->txfcs = crc_ccitt(0, buf + 1, 2);
++
++		txlen = write_chunk(dev, buf + dev->txpos, 3 - dev->txpos);
++		if (txlen <= 0) {
++			dev->txstate = STATE_ERR;
++		} else {
++			dev->txpos += txlen;
++			if (dev->txpos == 3) {
++				dev->txstate = STATE_DATA;
++				dev->txpos = 0;
++			}
++		}
++		break;
++
++	case STATE_ESCAPE:
++		buf[0] = dev->txbuf[dev->txpos] & ~0x20;
++		txlen = write_chunk(dev, buf, 1);
++		dev->txpos += txlen;
++		if (dev->txpos == dev->txlen) {
++			dev->txstate = STATE_TRAILER;
++			dev->txpos = 0;
++		}
++
++		break;
++
++	case STATE_DATA:
++		len = next_chunk_len(dev);
++		if (len) {
++			c = dev->txbuf[dev->txpos];
++			if (len == 1 && needs_escape(c)) {
++				buf[0] = BYTE_ESC;
++				buf[1] = c & ~0x20;
++				dev->txfcs = crc_ccitt_byte(dev->txfcs, c);
++				txlen = write_chunk(dev, buf, 2);
++				if (txlen == 2)
++					dev->txpos++;
++				else if (txlen == 1)
++					dev->txstate = STATE_ESCAPE;
++			} else {
++				txlen = write_chunk(dev,
++						    dev->txbuf + dev->txpos,
++						    len);
++				dev->txfcs = crc_ccitt(dev->txfcs,
++						       dev->txbuf + dev->txpos,
++						       txlen);
++				dev->txpos += txlen;
++			}
++			if (dev->txstate == STATE_DATA &&
++			    dev->txpos == dev->txlen) {
++				dev->txstate = STATE_TRAILER;
++				dev->txpos = 0;
++			}
++			break;
++		}
++		dev->txstate = STATE_TRAILER;
++		fallthrough;
++
++	case STATE_TRAILER:
++		buf[0] = dev->txfcs >> 8;
++		buf[1] = dev->txfcs & 0xff;
++		buf[2] = BYTE_FRAME;
++		txlen = write_chunk(dev, buf + dev->txpos, 3 - dev->txpos);
++		if (txlen <= 0) {
++			dev->txstate = STATE_ERR;
++		} else {
++			dev->txpos += txlen;
++			if (dev->txpos == 3) {
++				dev->txstate = STATE_DONE;
++				dev->txpos = 0;
++			}
++		}
++		break;
++	default:
++		netdev_err_once(dev->netdev, "invalid tx state %d\n",
++				dev->txstate);
++	}
++
++	if (dev->txstate == STATE_DONE) {
++		dev->netdev->stats.tx_packets++;
++		dev->netdev->stats.tx_bytes += dev->txlen;
++		dev->txlen = 0;
++		dev->txpos = 0;
++		clear_bit(TTY_DO_WRITE_WAKEUP, &dev->tty->flags);
++		dev->txstate = STATE_IDLE;
++		spin_unlock_irqrestore(&dev->lock, flags);
++
++		netif_wake_queue(dev->netdev);
++	} else {
++		spin_unlock_irqrestore(&dev->lock, flags);
++	}
++}
++
++static netdev_tx_t mctp_serial_tx(struct sk_buff *skb, struct net_device *ndev)
++{
++	struct mctp_serial *dev = netdev_priv(ndev);
++	unsigned long flags;
++
++	WARN_ON(dev->txstate != STATE_IDLE);
++
++	if (skb->len > MCTP_SERIAL_MTU) {
++		dev->netdev->stats.tx_dropped++;
++		goto out;
++	}
++
++	spin_lock_irqsave(&dev->lock, flags);
++	netif_stop_queue(dev->netdev);
++	skb_copy_bits(skb, 0, dev->txbuf, skb->len);
++	dev->txpos = 0;
++	dev->txlen = skb->len;
++	dev->txstate = STATE_START;
++	spin_unlock_irqrestore(&dev->lock, flags);
++
++	set_bit(TTY_DO_WRITE_WAKEUP, &dev->tty->flags);
++	schedule_work(&dev->tx_work);
++
++out:
++	kfree_skb(skb);
++	return NETDEV_TX_OK;
++}
++
++static void mctp_serial_tty_write_wakeup(struct tty_struct *tty)
++{
++	struct mctp_serial *dev;
++
++	rcu_read_lock();
++	dev = rcu_dereference(tty->disc_data);
++	schedule_work(&dev->tx_work);
++	rcu_read_unlock();
++}
++
++static void mctp_serial_rx(struct mctp_serial *dev)
++{
++	struct mctp_skb_cb *cb;
++	struct sk_buff *skb;
++
++	if (dev->rxfcs != dev->rxfcs_rcvd) {
++		dev->netdev->stats.rx_dropped++;
++		dev->netdev->stats.rx_crc_errors++;
++		return;
++	}
++
++	skb = netdev_alloc_skb(dev->netdev, dev->rxlen);
++	if (!skb) {
++		dev->netdev->stats.rx_dropped++;
++		return;
++	}
++
++	skb->protocol = htons(ETH_P_MCTP);
++	skb_put_data(skb, dev->rxbuf, dev->rxlen);
++	skb_reset_network_header(skb);
++
++	cb = __mctp_cb(skb);
++	cb->halen = 0;
++
++	netif_rx_ni(skb);
++	dev->netdev->stats.rx_packets++;
++	dev->netdev->stats.rx_bytes += dev->rxlen;
++}
++
++static void mctp_serial_push_header(struct mctp_serial *dev, unsigned char c)
++{
++	switch (dev->rxpos) {
++	case 0:
++		if (c == BYTE_FRAME)
++			dev->rxpos++;
++		else
++			dev->rxstate = STATE_ERR;
++		break;
++	case 1:
++		if (c == MCTP_SERIAL_VERSION) {
++			dev->rxpos++;
++			dev->rxfcs = crc_ccitt_byte(0, c);
++		} else {
++			dev->rxstate = STATE_ERR;
++		}
++		break;
++	case 2:
++		if (c > MCTP_SERIAL_FRAME_MTU) {
++			dev->rxstate = STATE_ERR;
++		} else {
++			dev->rxlen = c;
++			dev->rxpos = 0;
++			dev->rxstate = STATE_DATA;
++			dev->rxfcs = crc_ccitt_byte(dev->rxfcs, c);
++		}
++		break;
++	}
++}
++
++static void mctp_serial_push_trailer(struct mctp_serial *dev, unsigned char c)
++{
++	switch (dev->rxpos) {
++	case 0:
++		dev->rxfcs_rcvd = c << 8;
++		dev->rxpos++;
++		break;
++	case 1:
++		dev->rxfcs_rcvd |= c;
++		dev->rxpos++;
++		break;
++	case 2:
++		if (c != BYTE_FRAME) {
++			dev->rxstate = STATE_ERR;
++		} else {
++			mctp_serial_rx(dev);
++			dev->rxlen = 0;
++			dev->rxpos = 0;
++			dev->rxstate = STATE_IDLE;
++		}
++		break;
++	}
++}
++
++static void mctp_serial_push(struct mctp_serial *dev, unsigned char c)
++{
++	switch (dev->rxstate) {
++	case STATE_IDLE:
++		dev->rxstate = STATE_HEADER;
++		fallthrough;
++	case STATE_HEADER:
++		mctp_serial_push_header(dev, c);
++		break;
++
++	case STATE_ESCAPE:
++		c |= 0x20;
++		fallthrough;
++	case STATE_DATA:
++		if (dev->rxstate != STATE_ESCAPE && c == BYTE_ESC) {
++			dev->rxstate = STATE_ESCAPE;
++		} else {
++			dev->rxfcs = crc_ccitt_byte(dev->rxfcs, c);
++			dev->rxbuf[dev->rxpos] = c;
++			dev->rxpos++;
++			dev->rxstate = STATE_DATA;
++			if (dev->rxpos == dev->rxlen) {
++				dev->rxpos = 0;
++				dev->rxstate = STATE_TRAILER;
++			}
++		}
++		break;
++
++	case STATE_TRAILER:
++		mctp_serial_push_trailer(dev, c);
++		break;
++
++	case STATE_ERR:
++		if (c == BYTE_FRAME)
++			dev->rxstate = STATE_IDLE;
++		break;
++
++	default:
++		netdev_err_once(dev->netdev, "invalid rx state %d\n",
++				dev->rxstate);
++	}
++}
++
++static void mctp_serial_tty_receive_buf(struct tty_struct *tty,
++					const unsigned char *c,
++					const char *f, int len)
++{
++	struct mctp_serial *dev = tty->disc_data;
++	int i;
++
++	if (!netif_running(dev->netdev))
++		return;
++
++	/* we don't (currently) use the flag bytes, just data. */
++	for (i = 0; i < len; i++)
++		mctp_serial_push(dev, c[i]);
++}
++
++static const struct net_device_ops mctp_serial_netdev_ops = {
++	.ndo_start_xmit = mctp_serial_tx,
++};
++
++static void mctp_serial_setup(struct net_device *ndev)
++{
++	ndev->type = ARPHRD_MCTP;
++	ndev->mtu = MCTP_SERIAL_MTU;
++	ndev->hard_header_len = 0;
++	ndev->addr_len = 0;
++	ndev->tx_queue_len = DEFAULT_TX_QUEUE_LEN;
++	ndev->flags = IFF_NOARP;
++	ndev->netdev_ops = &mctp_serial_netdev_ops;
++	ndev->needs_free_netdev = true;
++}
++
++static int mctp_serial_open(struct tty_struct *tty)
++{
++	struct mctp_serial *dev;
++	struct net_device *ndev;
++	char name[32];
++	int idx, rc;
++
++	if (!capable(CAP_NET_ADMIN))
++		return -EPERM;
++
++	if (!tty->ops->write)
++		return -EOPNOTSUPP;
++
++	if (tty->disc_data)
++		return -EEXIST;
++
++	idx = ida_alloc(&mctp_serial_ida, GFP_KERNEL);
++	if (idx < 0)
++		return idx;
++
++	snprintf(name, sizeof(name), "mctpserial%d", idx);
++	ndev = alloc_netdev(sizeof(*dev), name, NET_NAME_ENUM,
++			    mctp_serial_setup);
++	if (!ndev) {
++		rc = -ENOMEM;
++		goto free_ida;
++	}
++
++	dev = netdev_priv(ndev);
++	dev->idx = idx;
++	dev->tty = tty;
++	dev->netdev = ndev;
++	dev->txstate = STATE_IDLE;
++	dev->rxstate = STATE_IDLE;
++	spin_lock_init(&dev->lock);
++	INIT_WORK(&dev->tx_work, mctp_serial_tx_work);
++
++	rc = register_netdev(ndev);
++	if (rc)
++		goto free_netdev;
++
++	tty->receive_room = 64 * 1024;
++	tty->disc_data = dev;
++
++	return 0;
++
++free_netdev:
++	free_netdev(ndev);
++
++free_ida:
++	ida_free(&mctp_serial_ida, idx);
++	return rc;
++}
++
++static void mctp_serial_close(struct tty_struct *tty)
++{
++	struct mctp_serial *dev = tty->disc_data;
++	int idx = dev->idx;
++
++	unregister_netdev(dev->netdev);
++	ida_free(&mctp_serial_ida, idx);
++}
++
++static struct tty_ldisc_ops mctp_ldisc = {
++	.owner		= THIS_MODULE,
++	.num		= N_MCTP,
++	.name		= "mctp",
++	.open		= mctp_serial_open,
++	.close		= mctp_serial_close,
++	.receive_buf	= mctp_serial_tty_receive_buf,
++	.write_wakeup	= mctp_serial_tty_write_wakeup,
++};
++
++static int __init mctp_serial_init(void)
++{
++	return tty_register_ldisc(&mctp_ldisc);
++}
++
++static void __exit mctp_serial_exit(void)
++{
++	tty_unregister_ldisc(&mctp_ldisc);
++}
++
++module_init(mctp_serial_init);
++module_exit(mctp_serial_exit);
++
++MODULE_LICENSE("GPL v2");
++MODULE_AUTHOR("Jeremy Kerr <jk@codeconstruct.com.au>");
++MODULE_DESCRIPTION("MCTP Serial transport");
+diff --git a/include/uapi/linux/tty.h b/include/uapi/linux/tty.h
+index 376cccf397be..a58deb3061eb 100644
+--- a/include/uapi/linux/tty.h
++++ b/include/uapi/linux/tty.h
+@@ -38,5 +38,6 @@
+ #define N_NCI		25	/* NFC NCI UART */
+ #define N_SPEAKUP	26	/* Speakup communication with synths */
+ #define N_NULL		27	/* Null ldisc used for error handling */
++#define N_MCTP		28	/* MCTP-over-serial */
+ 
+ #endif /* _UAPI_LINUX_TTY_H */
+-- 
+2.30.2
+
