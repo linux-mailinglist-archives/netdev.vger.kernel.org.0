@@ -2,90 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD8D8458AA3
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 09:45:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D28B458AB8
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 09:49:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238871AbhKVIs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 03:48:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52042 "EHLO
+        id S238952AbhKVIwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 03:52:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238841AbhKVIs1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 03:48:27 -0500
-Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCA65C061574
-        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 00:45:21 -0800 (PST)
-Received: by mail-ot1-x330.google.com with SMTP id n104-20020a9d2071000000b005799790cf0bso7201917ota.5
-        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 00:45:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=KAbhMQt4nCgWni6Pt6IcGkUBR1XzjBlAXekRoPKEnOo=;
-        b=mrMWBR+U7TBoSZP62rluad5TrSG1lvq2lxQXzEQS1QDAviR6cFK6dyj3QhdDQ5jC5c
-         KvPKCdG7sleCynKKoIjoWe3S1TT4RHU2ecwAexclzJmeA4vvLabxBmAoPRLgSgJZwkms
-         ZKf6qiijIWSsf9dQ/qPWQdjm/zm6o7QOo8fLlLCRy/pbXf7tQPOCMaqWILYWRiV2uIm1
-         pS22Av4EhHXmgqfwqLToK6XOISuC4F4SMvZiJyY3rtTjJwz5frTK5dmlplQ2OmOmcxcq
-         AqUGGZfJNWrvs7vw3ABu5Qh8pnBGQE/M7ZCHAbXUN13x0BIo2k+UL4Gs2xDv0/nfoJQT
-         F7Fw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=KAbhMQt4nCgWni6Pt6IcGkUBR1XzjBlAXekRoPKEnOo=;
-        b=ULfrBOISmk8tccaJyXPsQ1JxZLZI3EqqKZpVT5wpqaxhld/+rJHR0jr+z/Ojq+Q9Cr
-         jIjPRUfAZwmfiE8aEFCfHL7oyyQOSgD5sEAHKsppaAuEWuGiZv03cHyjaIU/VA3e32UU
-         1FieMRIGaGixomO4FddYCX7gQKvjeNZX8URM1OkxKFXbPgaEmxr/zCCPJJJo6rFupMNQ
-         jffSuyfCnGgr1z/nDZXHsOsHkNZX/zDy0zs27c52wrm/Hr6panJk5g6OtHJyIghyPsVm
-         iTH3gvcxZYTNj3Y7K6hr+rDiQuHmx5mCS1f2TubRrG06hrFis6Y/0s+qUy/sNtfDzpPc
-         jnlA==
-X-Gm-Message-State: AOAM530HfkU4K+4esccUoPPjU+E7l+NUiB/1Fp1d5Tg25mnmPZbSa12o
-        qbuvK6XKjqf40uSEPDf5yNcnhUszsgOefLzcx8s=
-X-Google-Smtp-Source: ABdhPJyjjrD+3CHwgE5/sFG+lqIV4E9FYEYsvG15phOWSffzW9zH1no5XVJt+GgSILY2u3plSq2c9ir4diyH8heAtfs=
-X-Received: by 2002:a05:6830:90f:: with SMTP id v15mr22085356ott.62.1637570720979;
- Mon, 22 Nov 2021 00:45:20 -0800 (PST)
+        with ESMTP id S239038AbhKVIws (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 03:52:48 -0500
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AAD3C061748;
+        Mon, 22 Nov 2021 00:49:40 -0800 (PST)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1637570978;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=wLy8KC+AAJA86hkKGngN4HL1h4W8gXZ6cLhix4WtbhM=;
+        b=IMGtcTmrQ22dZBUmyfWqek+kaVaywxeRf8nzqMKQ8vo+t7k+y02TO37zKgla8oFqeNw30c
+        gB4DoHWzNwdfmqlUX69RCVOxyr8YTJhyEuJrvfxzBX4eh1W4cF4dUtE6T63x7Wlj1aPSSC
+        RFdbA2Rc1FWGBwnOmfeR53A5ZKNN/cw=
+From:   Yajun Deng <yajun.deng@linux.dev>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yajun Deng <yajun.deng@linux.dev>
+Subject: [PATCH net-next] neighbor: Remove redundant if statement
+Date:   Mon, 22 Nov 2021 16:49:09 +0800
+Message-Id: <20211122084909.18093-1-yajun.deng@linux.dev>
 MIME-Version: 1.0
-Received: by 2002:a4a:7a49:0:0:0:0:0 with HTTP; Mon, 22 Nov 2021 00:45:20
- -0800 (PST)
-Reply-To: justinseydou@gmail.com
-From:   Justin Seydou <hamidfaith031@gmail.com>
-Date:   Mon, 22 Nov 2021 09:45:20 +0100
-Message-ID: <CAFepVPrfpv-GEp9FiMd6uOPKFnvDBNRGWVupBzJhvV0CVnfH4A@mail.gmail.com>
-Subject: Proposal
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Estimado amigo,
+The if statement already exists in the __neigh_event_send() function,
+remove redundant if statement.
 
-Con mucha sinceridad de coraz=C3=B3n les escribo para informarles sobre un =
-negocio
-propuesta que tengo que me gustar=C3=ADa manejar con ustedes.
+Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+---
+ include/net/neighbour.h | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-Indique amablemente su inter=C3=A9s para habilitar
-Yo les doy m=C3=A1s detalles de la propuesta.
+diff --git a/include/net/neighbour.h b/include/net/neighbour.h
+index 38a0c1d24570..667129827816 100644
+--- a/include/net/neighbour.h
++++ b/include/net/neighbour.h
+@@ -452,9 +452,7 @@ static inline int neigh_event_send(struct neighbour *neigh, struct sk_buff *skb)
+ 	
+ 	if (READ_ONCE(neigh->used) != now)
+ 		WRITE_ONCE(neigh->used, now);
+-	if (!(neigh->nud_state&(NUD_CONNECTED|NUD_DELAY|NUD_PROBE)))
+-		return __neigh_event_send(neigh, skb);
+-	return 0;
++	return __neigh_event_send(neigh, skb);
+ }
+ 
+ #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+-- 
+2.32.0
 
-Esperando por tu respuesta.
-
-Atentamente,
-
-Se=C3=B1or Justin Seydou.
-
-
-
-
-Dear friend,
-
-With much sincerity of heart I write to inform you about a business
-proposal I have which I would like to handle with you.
-
-Kindly indicate your interest so as to enable
-me give you more details of the proposal.
-
-Waiting for your response.
-
-Yours faithfully,
-
-Mr.Justin Seydou.
