@@ -2,169 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 960C44587AC
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 02:04:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 964E14587C1
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 02:29:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238743AbhKVBH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Nov 2021 20:07:58 -0500
-Received: from mail-eopbgr10067.outbound.protection.outlook.com ([40.107.1.67]:54525
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238774AbhKVBHc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 21 Nov 2021 20:07:32 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R73kVdSG1zocuTABpXKWvs9tEufJVziA/2I8D95pZE2rkJgItpJTLa83SM2P8WYXnFhRg1DBn1pigkUQeFLwLXiPHk/x8dSX+du/WKbW/XFAUT5fSjGZ/6sNoC26pHDYsaMIlj95dqe7aGkA8G1j8hzs9qKeCRcn4tHafUZd1/tmuDMbsFRuTrSWv1gJRPny6zcyC6+r1UvnRfG/ICAE2VrV0fChuw9cSN8tO28dv6Bp3BxvT8FtQM2Oj6TWBQ10vVMn98XqZH505S1M3m9ADHKK3YxnvO7W9s1TdTPqOkGNMo7JqhG+wf5XkmkkYX6wg2+0AwZaJkL3318ZHlA+AQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=j0OZHNqPFdCuaVHP5lWao4K8DPErne5MzjIUKlPshkE=;
- b=iyU9+S+GRx2r04BEA3rjOsqOrDTYcv89LKrswjzrTJyiiawSC18le5BxQqEELfzRCdIq6dwhCDBmuiwtVIkuR9rqhcGMN/h9f0PrA+DQoTJ/77HnEN3fsNvIosb3v7KAtLZRTNEGVIHB8gDRs3HZCKu3ddQ1V8ay2QIKcr0hpvryXCZQj/Cr9SM6sivQeEOKZGB+VxWiz1XYZBnjcTGFhwZZ179HoM9DTpl1f91QYNQ5StmR4bFUc359w8RCLgaY3KP5effEJYXLlRQ0Nzqjwbd9dzdssYjLbAjdcoGkq3VpVW4m8d76fpwNVzzWG+pQxPe/3GNQhyi+QTZRrpKXxA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=j0OZHNqPFdCuaVHP5lWao4K8DPErne5MzjIUKlPshkE=;
- b=P5c69YzZI04nxPoojKMU+Wh2KkDopUexea0Y9gHLH/a7lzaFc+cUX/Y2VVHc0F4C+uClKVCQOwQ/pJi2GrIE3WrvhcVcRDqHGFYJVZfnjhH57LfzRvtm1wagLhOKgtYgGwsC03qT8DSFjgCHSNiP69xkJerXf0YWa6EDLLUS4HM=
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by DU2PR04MB9129.eurprd04.prod.outlook.com (2603:10a6:10:2f4::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.15; Mon, 22 Nov
- 2021 01:04:23 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::82e:6ad2:dd1d:df43]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::82e:6ad2:dd1d:df43%9]) with mapi id 15.20.4713.024; Mon, 22 Nov 2021
- 01:04:23 +0000
-From:   Peng Fan <peng.fan@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        Aisheng Dong <aisheng.dong@nxp.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: RE: [PATCH 4/4] arm64: dts: imx8ulp-evk: enable fec
-Thread-Topic: [PATCH 4/4] arm64: dts: imx8ulp-evk: enable fec
-Thread-Index: AQHX3gYWa6hR5mqzLUWfsAuyvlR+A6wMidaAgAIziwA=
-Date:   Mon, 22 Nov 2021 01:04:23 +0000
-Message-ID: <DU0PR04MB941710123952E0D448A1B38E889F9@DU0PR04MB9417.eurprd04.prod.outlook.com>
-References: <20211120115825.851798-1-peng.fan@oss.nxp.com>
- <20211120115825.851798-5-peng.fan@oss.nxp.com> <YZkTkagrQ/zafYEQ@lunn.ch>
-In-Reply-To: <YZkTkagrQ/zafYEQ@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2a225cdf-a71b-4bb1-b6e2-08d9ad5405f4
-x-ms-traffictypediagnostic: DU2PR04MB9129:
-x-microsoft-antispam-prvs: <DU2PR04MB9129AD7BD48AAC06C66A4357889F9@DU2PR04MB9129.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: u296s2L0/d3BH0d3mfUKd4YJehJ2IQiKPm20QN0XHWXd9ZFZp2a8ICMD/bF0IsJHizIb7hmqFQYUG2cHdfP3Txx/M3rzOW2VnouOD8krMc+RcwAJOE/xnfY2PInsagZmPJGOpKNUxBtMOP3u/luyNX3+H5CgEEAR0BrqDPop7R8F8DCr1QQSsGz4djnZmLYEoIiB2hAR792iy9J+R82Y8V5SYj+rt9aHLtNdUSLGTeq9QKoMa/+gwSlUpd+8e5lSUN+RtwxWyPmW0/OFsQy6kdCWv04RzfGdLqozkVnLmS3sc9MMdFWj3hr1bgdTCR3p+AC9f/gIoIlMg16KXkvGUP+xgLeY9MuIYYN7jd9+ERrUslcb+ejpZZHKRwi99Qsx9I67/jtst+99EAkoeukqZNVrdgqny+cS/8m+DlPlq3/Z56QrOv72CEYTWgpkrRDAqLdifRilTTHDHGcobp5/4wWC46uR/OvyJ61sfKqveFnrI5c3V+eypZI9yUidp3994XOr7DvQ9heoSgopE55yl3u/msyjLznpu+/0q/QTBq4oKe5Tm4ti4lDAE7Ol77kOwOqQu6JHpCadYw7Hzuc4NPKBssxAqq9XS0j1hz9HndwqyIf6lFWmn0InAbKSVY/o3btxjhGV5VIVaR/El7oz2jPJZ5UjzEzsk2PQ50417wv2HqrV7SYa1Tn78nZCvdvBrZ9cyOv+PG4dGos9lmhzK3KMno1khEQdy/XhhowAQFA=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(33656002)(44832011)(4744005)(4326008)(52536014)(7696005)(5660300002)(9686003)(316002)(7416002)(8676002)(86362001)(66476007)(54906003)(38100700002)(2906002)(55016002)(71200400001)(66446008)(64756008)(76116006)(38070700005)(8936002)(66556008)(66946007)(186003)(6506007)(110136005)(122000001)(508600001)(83380400001)(26005)(32563001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?yELqUUYIaf/zi20gSmmjw9SNGWuZERlvFPJIPXdI6JDhbU+X2WIv2TMrvhVE?=
- =?us-ascii?Q?G1M+rWsncGyxOKUZMkKfqG409Xn2z1bvXfpLeEB/9+csgiyCDdl+r6kaPhax?=
- =?us-ascii?Q?njp81F7nM6/+/HJlDbuaJmG62AeLxIqkeZs1JSPKJdfiQ8eXgrQuCPc+jSKK?=
- =?us-ascii?Q?dccJMXZVX1VqUKwwqCC+sR+E/rQL55kZGNqMBJu9KsIsiFa9hTs4AKFdf7K3?=
- =?us-ascii?Q?S6raig/H/w+GPC5v+GfxC4L+O9yAl09fQ2FOChrSQdqimb5sjM2bq1K6dXIa?=
- =?us-ascii?Q?K1GQksKHLG5TuLbriX51QVpaHuzwefjfolyGRz6RFeIaRa58z3QM0iKk0v84?=
- =?us-ascii?Q?fnHW7NbS4Utd1Ciu6i6vJojfRqF4IbFgmzeomz+PIFD399GdowIQIX26VS4H?=
- =?us-ascii?Q?x7ilXPPhphvklahDFUwh5DLEx/jUBts2g6yTcI0sxHnCA/B977ytJ4l1HvWq?=
- =?us-ascii?Q?Tnh9Kdym2GGv3+SvJWR3ofmt2Hj0NQvcj8IHNnoOEGvtGttndygzB0MBZ/eh?=
- =?us-ascii?Q?0m6tNLZF3LodYapcUNZZzKxo6caQqsehZ4pexVGU3As8JsLr5rESIWMR1n6F?=
- =?us-ascii?Q?TbfaEEbbQR7XJLrcBYzibvKDeNfscMGx4TcmwMXzxf1V+jeOQXAN9SPI2pak?=
- =?us-ascii?Q?R5l8FzK0U1R6nfq2DmL1gx6nw5wA7acPJd21tGrqme3s/ZpuMPgSlCGQMEdo?=
- =?us-ascii?Q?4vyGaujOM/osGNxkaSxpuwo3nONjFMuKs7+CVA+CjS/m/RuR8KNDSOM2QHeG?=
- =?us-ascii?Q?iWVteT4azbRp5FLr2Qp+koRTtmyJweHPGggtGA5KecbsOwyv0QY2r5PBLz8l?=
- =?us-ascii?Q?VS4De18Z28AjqtblScwcLADyCQqXrfuQDxkYGufyfll0cTfKqy2UA0b6vfaE?=
- =?us-ascii?Q?eYdrZPuI1iDv2ZV53+b17VWeRskG1VgTa7lQktDdebNgqWLzWJjvK8R7WSV8?=
- =?us-ascii?Q?PT1ZcbOdru7O1lsXtu4MIu5QeVqXaUO8OhNkpMeZ8zVtArbiI0l0uyxQdr5v?=
- =?us-ascii?Q?zOLSzHhMn+7DcbUTaa1sWbGRGyqalx4brUCINeziqW6RCbDNVpJiQS3aTyF4?=
- =?us-ascii?Q?Zuej/rjLMuqCru0Fi8t3sVHXxkKbPMCFv7fZ1acEDuABGNsKUG1jUvli/5PL?=
- =?us-ascii?Q?6Fe2Ld8FFkQBDdkR/Y+qBsUepWlI5GoQmEJG+cIlMiEt57DfGmPPU17+LI0t?=
- =?us-ascii?Q?sA0w40J7lma+/dcM2onqpZb1QmVwYP/qwOxxyHAP/IDO8CweRgwd4qoJRLNR?=
- =?us-ascii?Q?jos0wDo4AEZCHuLKo5cmTy+P9insHnOmEEIYofGoIE/IG0BIkkOg4+KqZHXy?=
- =?us-ascii?Q?hJhIoiFK0SrOwMbZjjgMGwPj7H3kwNeCGzNpX8KeCZG6pJMYy/3cK5l74Xa5?=
- =?us-ascii?Q?ahHcLzvQ6Z1C0xnk4FWc4H25hlcpfPPnDBhlsCZe/EkkyflWEYW61Vz4+e8n?=
- =?us-ascii?Q?i2cJYR9TGAh3t+wBVjjXQ3EC0C5e7LISRC69h6NNyONBz/zbYN9CRUOXsBw3?=
- =?us-ascii?Q?oxIkThZ9IKEDAXZe4DJtHRfzufr47oE5JskC/JMz8XuiHF4xAx1sFVvy0igJ?=
- =?us-ascii?Q?SbGVcu+UALp9LlNEbr2lXHl0ygvZAK4gaeZf4wwvk6lIcH2yGZ54zfz78tjn?=
- =?us-ascii?Q?tg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S232327AbhKVBcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Nov 2021 20:32:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41470 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229594AbhKVBcS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Nov 2021 20:32:18 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C25AC061574;
+        Sun, 21 Nov 2021 17:29:12 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id r25so32720865edq.7;
+        Sun, 21 Nov 2021 17:29:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=asGCbWxr5zps7PC2en/ApjsCXF7zNreTSXNeUso+FNs=;
+        b=iR3vP+wdATxRmpi5k9WbOiJn/YT1KuWQzgds8vW4Dc1nX8nO7M9qzy18A9vzf+0cUt
+         r1BzfWL0wXglAMrXluFxPVkSwFZzPFUyd3zbaWsMCle3wJPZbtMBYUXRxJ1AGQrKW4ds
+         h8pDfxH7f7RgNMCNnJMt2CQjrLbE6v0wWG/FPOYM29ZJtIdfJcFOHxaOKuuv01Srojdu
+         Cp//AAWb1a+yCynyk9RICbTYzfWeGNrG6j/oxTobyQDk8vJ6YO2q0dhH6flgornML4IH
+         WGBAiz3OyCvogpnFFjHUWwHwUFd2r9ecJMtWQtcvVc21uVYeH53QDfalkdsya4y8USgH
+         Y5fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=asGCbWxr5zps7PC2en/ApjsCXF7zNreTSXNeUso+FNs=;
+        b=rl7qV5HHHPUBIOpuGwOmP0Uz4i/67yDn9waOJFGnAy6a52a2sGW7kTlpW426IGpz6g
+         wG1F5lJQDjI7Ab3/gp8n9Xe8xuzQzPyUmYi1hO1yE1kvqzQYhZQAgH+nX2uVTF0e6Gcu
+         28k83wizsvO1wt/sNfvABh9m85Cgdk4IjbVt1YeYSib0ro61q8gbYA7brxwCbjuKfgDP
+         YQMnJcS2E2JZCmlWS+n3jSfJovrTM90QHLmrKTAsKYNTstK5Ur0fORhQ5iD5q2oe7lHx
+         A5txXSVHcF3IbK9i2Onjevx2BsLnPOKzxEgGqnnh0yvAXry3jn9Cr+9+zRuxW7+2nO2X
+         iFyQ==
+X-Gm-Message-State: AOAM531ImPdg/oJRsoS2+vqm9d3D5RpvLpw7l6hz57WPlzpGheEg31E2
+        3zIPDWxXFw/AOTuHW49okpQ=
+X-Google-Smtp-Source: ABdhPJzINzBtdMTHieXbozzGg3w411GdiqzDeU3gkcsPsXRZHGvsI0h+UIPmsR9GprhMVeldA6vaQQ==
+X-Received: by 2002:a17:906:c302:: with SMTP id s2mr35794124ejz.499.1637544551474;
+        Sun, 21 Nov 2021 17:29:11 -0800 (PST)
+Received: from skbuf ([188.25.163.189])
+        by smtp.gmail.com with ESMTPSA id mc3sm2994915ejb.24.2021.11.21.17.29.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 21 Nov 2021 17:29:11 -0800 (PST)
+Date:   Mon, 22 Nov 2021 03:29:10 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [net-next PATCH v2 0/9] Multiple cleanup and feature for qca8k
+Message-ID: <20211122012910.bd33slbrfk4h6xbw@skbuf>
+References: <20211122010313.24944-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2a225cdf-a71b-4bb1-b6e2-08d9ad5405f4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Nov 2021 01:04:23.7461
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: iUbUeEbvKuIcxRwl1JPYiaNtWgPvzq24X0ngv98h1mhXf13cbiJGsJ4hLrO9C2+7xIeH7fAxrgyABPsE4MTz+A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB9129
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211122010313.24944-1-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [PATCH 4/4] arm64: dts: imx8ulp-evk: enable fec
->=20
-> > +&fec {
-> > +	pinctrl-names =3D "default";
-> > +	pinctrl-0 =3D <&pinctrl_enet>;
-> > +	phy-mode =3D "rmii";
->=20
-> Is this really a Fast Ethernet? Not 1G?
+On Mon, Nov 22, 2021 at 02:03:04AM +0100, Ansuel Smith wrote:
+> This is a reduced version of the old massive series.
+> Refer to the changelog to know what is removed from this.
+> 
+> THIS IS BASED ON net-next WITH THE 2 FIXES FROM net ALREADY REVIEWED
+> net: dsa: qca8k: fix MTU calculation
+> net: dsa: qca8k: fix internal delay applied to the wrong PAD config
 
-Not 1G. it only support 10M/100M ethernet.
-
->=20
-> > +	phy-handle =3D <&ethphy>;
-> > +	status =3D "okay";
-> > +
-> > +	mdio {
-> > +		#address-cells =3D <1>;
-> > +		#size-cells =3D <0>;
-> > +
-> > +		ethphy: ethernet-phy {
-> > +			reg =3D <1>;
->=20
-> I'm surprised this does not give warnings from the DTS tools. There is a =
-reg
-> value, so it should be ethernet-phy@1
-
-I not see warning per my build:
-"
-*** Default configuration is based on 'defconfig'
-#
-# No change to .config
-#
-  CALL    scripts/atomic/check-atomics.sh
-  CALL    scripts/checksyscalls.sh
-  CHK     include/generated/compile.h
-  DTC     arch/arm64/boot/dts/freescale/imx8ulp-evk.dtb
-"
-Anyway I will check and fix if the node needs a fix.
-
-Thanks,
-Peng
-
->=20
->   Andrew
+Since patchwork has auto build hooks now, it doesn't detect dependencies
+to other trees like "net" in this case, and your patches will fail to
+apply without the other ones you've mentioned, which in turn will make
+the builds fail. Patches without clean build reports aren't accepted, so
+you'll have to resend either way. Your options are:
+(a) wait until the bugfix patches get applied to "net", and Jakub and/or
+    David send the networking pull request for v5.16-rc3 to Linus, then
+    they'll merge the "net" tree into "net-next" quickly afterwards and
+    your patches apply cleanly. Last two "net" pull requests were
+    submitted on Nov 18th and 12th, if that is any indication as to when
+    the next one is going to be.
+(b) base your patches on "net-next" without the bug fixes, and let
+    Jakub/David handle the merge conflict when the'll merge "net" into
+    "net-next" next time. Please note that if you do this, there is a
+    small chance that mistakes can be made, and you can't easily
+    backport patches to a stable tree such as OpenWRT if that's what
+    you're into, since part of the delta will be in a merge commit, and
+    there isn't any simple way in which you can linearize that during
+    cherry-pick time, if you're picking from divergent branches.
