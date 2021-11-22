@@ -2,120 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A800A4590F2
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 16:08:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B71D54590FF
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 16:10:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238381AbhKVPLy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 10:11:54 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:46148 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232194AbhKVPLy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 10:11:54 -0500
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1AMF2WHC010448;
-        Mon, 22 Nov 2021 15:08:43 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=hkEt6EUnpd2QOQcb5OoImYzeD54WeZPwxSc6rCVkF/s=;
- b=F+elT9zE57+C4s65cexX6Zx3kSLaIQYAhVttwB0j8KqVgx8dqkhg4YEOVml8t0IY76HS
- 4A+/qIXhOgxZv8UuIN8kmvT0PXPpiYqzfZ7CFUkEYMxuc9RdJaUNwHvMDrkw0L+EhbXf
- p533JP0gHTgqBvNWPoXpahN5hkgu6EBDV++XB4eHuCkROj/PecVfUw1M/Ml5S/U+v9Bn
- gzrIfgs0M46hI5uVbSWD4ck8JZTmv07YhnySRGLyhLNjqG/A/RQKStdh0nqpzkMnOhbi
- 4NH9Sqg+XNyxo4RugOFWgY1tAJk61hDluX1fjfpWNrvxzl/g2zJb0eLYbqcovjdD0Aj0 lA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3cgdgh057y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 22 Nov 2021 15:08:42 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1AMF5YOw024194;
-        Mon, 22 Nov 2021 15:08:42 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3cgdgh057e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 22 Nov 2021 15:08:42 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1AMF7CM2029910;
-        Mon, 22 Nov 2021 15:08:40 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma04ams.nl.ibm.com with ESMTP id 3cernafmdd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 22 Nov 2021 15:08:40 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1AMF8cDa61735354
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 22 Nov 2021 15:08:38 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 222BF42042;
-        Mon, 22 Nov 2021 15:08:38 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id ACE9D4204D;
-        Mon, 22 Nov 2021 15:08:37 +0000 (GMT)
-Received: from [9.145.56.120] (unknown [9.145.56.120])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 22 Nov 2021 15:08:37 +0000 (GMT)
-Message-ID: <f08e1793-630f-32a6-6662-19edc362b386@linux.ibm.com>
-Date:   Mon, 22 Nov 2021 16:08:37 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH RFC net-next] net/smc: Unbind buffer size from clcsock and
- make it tunable
-Content-Language: en-US
-To:     Tony Lu <tonylu@linux.alibaba.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, guwen@linux.alibaba.com,
-        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-References: <20211122134255.63347-1-tonylu@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <20211122134255.63347-1-tonylu@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Hx3ZXLxC7y6VD0aMKNj4KHUCuMqFUDpg
-X-Proofpoint-ORIG-GUID: dXt_ONC907U6klxHxIzRw2HbB6t27PzV
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        id S239740AbhKVPNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 10:13:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47750 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233449AbhKVPNP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Nov 2021 10:13:15 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id A7BB460E73;
+        Mon, 22 Nov 2021 15:10:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637593808;
+        bh=cGEy36TjM7Lam+HqAZeg0XYPBk8u058WrdkP3d6FmB4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=VEXvX8ySX2Wf5NC1C2gz6CtyHFKCOAC4OvWJ+GD8uRKOyX1VYmJQfUXyHRbwGeS6n
+         E76TZ6qTdLUptDqhOozKwxEf1qFgdoso5Cb4HP7h5JVi4TgNJiIFd3eWuXBjzWNElx
+         1LqZX5c3bC6UfRVogN9cqyBzrnnzIo9w+LPQms7IXypLGPNBsqalB0w44Bbc7b5l60
+         9/hA4KIdV/MN5oXuFykbv+ZDXv12Y3dx1FQwuPnj7XpEhsJuGTDs+AJchEb5+IuFWf
+         2EuRJO75g+LCJqDONfYg0UGEXSJREJdTIvsj4NHhxT8C/tYQ05a6MuhcRAAOd/dsPG
+         vT4zEhcdznpBw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8D11F609D9;
+        Mon, 22 Nov 2021 15:10:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-11-22_07,2021-11-22_02,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
- bulkscore=0 impostorscore=0 adultscore=0 spamscore=0 phishscore=0
- mlxlogscore=999 suspectscore=0 lowpriorityscore=0 malwarescore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2111220077
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] nixge: fix mac address error handling again
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163759380857.16406.12654623998882821582.git-patchwork-notify@kernel.org>
+Date:   Mon, 22 Nov 2021 15:10:08 +0000
+References: <20211122150322.4043037-1-arnd@kernel.org>
+In-Reply-To: <20211122150322.4043037-1-arnd@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, mdf@kernel.org,
+        arnd@arndb.de, yangyingliang@huawei.com, moyufeng@huawei.com,
+        tanhuazhong@huawei.com, caihuoqing@baidu.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/11/2021 14:42, Tony Lu wrote:
-> SMC uses smc->sk.sk_{rcv|snd}buf to create buffer for send buffer or
-> RMB. And the values of buffer size inherits from clcsock. The clcsock is
-> a TCP sock which is initiated during SMC connection startup.
-> 
-> The inherited buffer size doesn't fit SMC well. TCP provides two sysctl
-> knobs to tune r/w buffers, net.ipv4.tcp_{r|w}mem, and SMC use the default
-> value from TCP. The buffer size is tuned for TCP, but not fit SMC well
-> in some scenarios. For example, we need larger buffer of SMC for high
-> throughput applications, and smaller buffer of SMC for saving contiguous
-> memory. We need to adjust the buffer size apart from TCP and not to
-> disturb TCP.
-> 
-> This unbinds buffer size which inherits from clcsock, and provides
-> sysctl knobs to adjust buffer size independently. These knobs can be
-> tuned with different values for different net namespaces for performance
-> and flexibility.
-> 
-> Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
-> Reviewed-by: Wen Gu <guwen@linux.alibaba.com>
-> ---
+Hello:
 
-To activate SMC for existing programs usually the smc_run command or the
-preload library (both from the smc-tools package) are used.
-This commit introduced support to set the send and recv window sizes
-using command line parameters or environment variables:
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-https://github.com/ibm-s390-linux/smc-tools/commit/59bfb99c588746f7dca1b3c97fd88f3f7cbc975f
+On Mon, 22 Nov 2021 16:02:49 +0100 you wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> The change to eth_hw_addr_set() caused gcc to correctly spot a
+> bug that was introduced in an earlier incorrect fix:
+> 
+> In file included from include/linux/etherdevice.h:21,
+>                  from drivers/net/ethernet/ni/nixge.c:7:
+> In function '__dev_addr_set',
+>     inlined from 'eth_hw_addr_set' at include/linux/etherdevice.h:319:2,
+>     inlined from 'nixge_probe' at drivers/net/ethernet/ni/nixge.c:1286:3:
+> include/linux/netdevice.h:4648:9: error: 'memcpy' reading 6 bytes from a region of size 0 [-Werror=stringop-overread]
+>  4648 |         memcpy(dev->dev_addr, addr, len);
+>       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> 
+> [...]
 
-Why another way to manipulate these sizes?
-Your solution would stop applications to set these values.
+Here is the summary with links:
+  - nixge: fix mac address error handling again
+    https://git.kernel.org/netdev/net/c/a68229ca6340
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
