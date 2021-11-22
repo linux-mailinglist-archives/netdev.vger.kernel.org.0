@@ -2,89 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 995354591A3
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 16:50:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2254459288
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 16:58:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239999AbhKVPxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 10:53:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43574 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239850AbhKVPxR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Nov 2021 10:53:17 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 63AF360232;
-        Mon, 22 Nov 2021 15:50:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637596210;
-        bh=E0ZIcTgQTF4uA66kD7n2bNvUJTP6AnjWQnN8APTWepw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TEHK8PUXox5PGANewt9N1ApCdwfZeY7GJ/YhcxuoqCDx3tgbcyqLsSTSL/RcdL+fw
-         YmkDKGojdzf+EWWDYyNqvvsttqhbCuuSIH41GJUda6Zmu7A9i2vWUb3l52l5Ch8dWq
-         dfA/NaxsimVrRWTBLy3DDJzcZ75hqkoWTtcjfQEztAn/gnF6stw1w3Gp722t5lsLKw
-         5ruSJntWiUonY16/SW4qrigd0hyCOaqJ/+KTNahWaEUoJEaJJVoGxrf3+aIzrLnEHS
-         Lp8v0E7b9VSwIl/1VMEjInR8ZJhOCZ0J0UahgtZeR8VR6ww0x5oGjz+mlAVAlfsl5p
-         VUzaywF2AYnDQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 57A4760A94;
-        Mon, 22 Nov 2021 15:50:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S239890AbhKVQAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 11:00:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37906 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240488AbhKVQAM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 11:00:12 -0500
+Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C24CC061792
+        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 07:57:00 -0800 (PST)
+Received: from ramsan.of.borg ([84.195.186.194])
+        by xavier.telenet-ops.be with bizsmtp
+        id MTwH260044C55Sk01TwHfq; Mon, 22 Nov 2021 16:56:58 +0100
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1mpBe5-00EL3K-Py; Mon, 22 Nov 2021 16:54:17 +0100
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1mpBe5-00HGy1-9n; Mon, 22 Nov 2021 16:54:17 +0100
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        Paul Walmsley <paul@pwsan.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Benoit Parrot <bparrot@ti.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Eduardo Valentin <edubezval@gmail.com>,
+        Keerthy <j-keerthy@ti.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-aspeed@lists.ozlabs.org, openbmc@lists.ozlabs.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
+        alsa-devel@alsa-project.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH 00/17] Non-const bitfield helper conversions
+Date:   Mon, 22 Nov 2021 16:53:53 +0100
+Message-Id: <cover.1637592133.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next PATCH v3 0/9] Multiple cleanup and feature for qca8k
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163759621035.3677.10769025675490049511.git-patchwork-notify@kernel.org>
-Date:   Mon, 22 Nov 2021 15:50:10 +0000
-References: <20211122152348.6634-1-ansuelsmth@gmail.com>
-In-Reply-To: <20211122152348.6634-1-ansuelsmth@gmail.com>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+	Hi all,
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+<linux/bitfield.h> contains various helpers for accessing bitfields, as
+typically used in hardware registers for memory-mapped I/O blocks. These
+helpers ensure type safety, and deduce automatically shift values from
+mask values, avoiding mistakes due to inconsistent shifts and masks, and
+leading to a reduction in source code size.
 
-On Mon, 22 Nov 2021 16:23:39 +0100 you wrote:
-> This is a reduced version of the old massive series.
-> Refer to the changelog to know what is removed from this.
-> 
-> We clean and convert the driver to GENMASK FIELD_PREP to clean multiple
-> use of various naming scheme. (example we have a mix of _MASK, _S _M,
-> and various name) The idea is to ""simplify"" and remove some shift and
-> data handling by using FIELD API.
-> The patch contains various checkpatch warning and are ignored to not
-> create more mess in the header file. (fixing the too long line warning
-> would results in regs definition less readable)
-> 
-> [...]
+I have already submitted a few conversions to the FIELD_{GET,PREP}()
+helpers that were fixes for real bugs:
+  - [PATCH] mips: cm: Convert to bitfield API to fix out-of-bounds
+    access
+    https://lore.kernel.org/r/0471c545117c5fa05bd9c73005cda9b74608a61e.1635501373.git.geert+renesas@glider.be
+  - [PATCH] drm/armada: Fix off-by-one error in
+    armada_overlay_get_property()
+    https://lore.kernel.org/r/5818c8b04834e6a9525441bc181580a230354b69.1635501237.git.geert+renesas@glider.be
 
-Here is the summary with links:
-  - [net-next,v3,1/9] net: dsa: qca8k: remove redundant check in parse_port_config
-    https://git.kernel.org/netdev/net-next/c/b9133f3ef5a2
-  - [net-next,v3,2/9] net: dsa: qca8k: convert to GENMASK/FIELD_PREP/FIELD_GET
-    https://git.kernel.org/netdev/net-next/c/90ae68bfc2ff
-  - [net-next,v3,3/9] net: dsa: qca8k: remove extra mutex_init in qca8k_setup
-    https://git.kernel.org/netdev/net-next/c/994c28b6f971
-  - [net-next,v3,4/9] net: dsa: qca8k: move regmap init in probe and set it mandatory
-    https://git.kernel.org/netdev/net-next/c/36b8af12f424
-  - [net-next,v3,5/9] net: dsa: qca8k: initial conversion to regmap helper
-    https://git.kernel.org/netdev/net-next/c/8b5f3f29a81a
-  - [net-next,v3,6/9] net: dsa: qca8k: add additional MIB counter and make it dynamic
-    https://git.kernel.org/netdev/net-next/c/c126f118b330
-  - [net-next,v3,7/9] net: dsa: qca8k: add support for port fast aging
-    https://git.kernel.org/netdev/net-next/c/4592538bfb0d
-  - [net-next,v3,8/9] net: dsa: qca8k: add set_ageing_time support
-    https://git.kernel.org/netdev/net-next/c/6a3bdc5209f4
-  - [net-next,v3,9/9] net: dsa: qca8k: add support for mdb_add/del
-    https://git.kernel.org/netdev/net-next/c/ba8f870dfa63
+Plus several patches for normal conversions:
+  - [PATCH] ARM: ptrace: Use bitfield helpers
+    https://lore.kernel.org/r/a1445d3abb45cfc95cb1b03180fd53caf122035b.1637593297.git.geert+renesas@glider.be
+  - [PATCH] MIPS: CPC: Use bitfield helpers
+    https://lore.kernel.org/r/35f0f17e3d987afaa9cd09cdcb8131d42a53c3e1.1637593297.git.geert+renesas@glider.be
+  - [PATCH] MIPS: CPS: Use bitfield helpers
+    https://lore.kernel.org/r/8bd8b1b9a3787e594285addcf2057754540d0a5f.1637593297.git.geert+renesas@glider.be
+  - [PATCH] crypto: sa2ul - Use bitfield helpers
+    https://lore.kernel.org/r/ca89d204ef2e40193479db2742eadf0d9cf3c0ff.1637593297.git.geert+renesas@glider.be
+  - [PATCH] dmaengine: stm32-mdma: Use bitfield helpers
+    https://lore.kernel.org/r/36ceab242a594233dc7dc6f1dddb4ac32d1e846f.1637593297.git.geert+renesas@glider.be
+  - [PATCH] intel_th: Use bitfield helpers
+    https://lore.kernel.org/r/b1e4f027aa88acfbdfaa771b0920bd1d977828ba.1637593297.git.geert+renesas@glider.be
+  - [PATCH] Input: palmas-pwrbutton - use bitfield helpers
+    https://lore.kernel.org/r/f8831b88346b36fc6e01e0910d0db6c94287d2b4.1637593297.git.geert+renesas@glider.be
+  - [PATCH] irqchip/mips-gic: Use bitfield helpers
+    https://lore.kernel.org/r/74f9d126961a90d3e311b92a54870eaac5b3ae57.1637593297.git.geert+renesas@glider.be
+  - [PATCH] mfd: mc13xxx: Use bitfield helpers
+    https://lore.kernel.org/r/afa46868cf8c1666e9cbbbec42767ca2294b024d.1637593297.git.geert+renesas@glider.be
+  - [PATCH] regulator: lp873x: Use bitfield helpers
+    https://lore.kernel.org/r/44d60384b640c8586b4ca7edbc9287a34ce21c5b.1637593297.git.geert+renesas@glider.be
+  - [PATCH] regulator: lp87565: Use bitfield helpers
+    https://lore.kernel.org/r/941c2dfd5b5b124b8950bcce42db4c343dfe9821.1637593297.git.geert+renesas@glider.be
 
-You are awesome, thank you!
+The existing FIELD_{GET,PREP}() macros are limited to compile-time
+constants.  However, it is very common to prepare or extract bitfield
+elements where the bitfield mask is not a compile-time constant.
+To avoid this limitation, the AT91 clock driver already has its own
+field_{prep,get}() macros.
+
+This patch series makes them available for general use, and converts
+several drivers to the existing FIELD_{GET,PREP}() and the new
+field_{get,prep}() helpers.
+
+I can take the first two patches through the reneas-clk tree for v5.17,
+but probably it is best for the remaining patches to be postponed to
+v5.18.
+
+Thanks for your comments!
+
+Geert Uytterhoeven (17):
+  bitfield: Add non-constant field_{prep,get}() helpers
+  clk: renesas: Use bitfield helpers
+  [RFC] soc: renesas: Use bitfield helpers
+  [RFC] ARM: OMAP2+: Use bitfield helpers
+  [RFC] bus: omap_l3_noc: Use bitfield helpers
+  [RFC] clk: ti: Use bitfield helpers
+  [RFC] iio: st_sensors: Use bitfield helpers
+  [RFC] iio: humidity: hts221: Use bitfield helpers
+  [RFC] iio: imu: st_lsm6dsx: Use bitfield helpers
+  [RFC] media: ti-vpe: cal: Use bitfield helpers
+  [RFC] mmc: sdhci-of-aspeed: Use bitfield helpers
+  [RFC] pinctrl: aspeed: Use bitfield helpers
+  [RFC] pinctl: ti: iodelay: Use bitfield helpers
+  [RFC] regulator: ti-abb: Use bitfield helpers
+  [RFC] thermal/ti-soc-thermal: Use bitfield helpers
+  [RFC] ALSA: ice1724: Use bitfield helpers
+  [RFC] rtw89: Use bitfield helpers
+
+ arch/arm/mach-omap2/clkt2xxx_dpllcore.c       |  5 +-
+ arch/arm/mach-omap2/cm2xxx.c                  | 11 ++-
+ arch/arm/mach-omap2/cm2xxx_3xxx.h             |  9 +--
+ arch/arm/mach-omap2/cm33xx.c                  |  9 +--
+ arch/arm/mach-omap2/cm3xxx.c                  |  7 +-
+ arch/arm/mach-omap2/cminst44xx.c              |  9 +--
+ arch/arm/mach-omap2/powerdomains3xxx_data.c   |  3 +-
+ arch/arm/mach-omap2/prm.h                     |  2 -
+ arch/arm/mach-omap2/prm2xxx.c                 |  4 +-
+ arch/arm/mach-omap2/prm2xxx_3xxx.c            |  7 +-
+ arch/arm/mach-omap2/prm2xxx_3xxx.h            |  9 +--
+ arch/arm/mach-omap2/prm33xx.c                 | 53 +++++-------
+ arch/arm/mach-omap2/prm3xxx.c                 |  3 +-
+ arch/arm/mach-omap2/prm44xx.c                 | 53 ++++--------
+ arch/arm/mach-omap2/vc.c                      | 12 +--
+ arch/arm/mach-omap2/vp.c                      | 11 +--
+ drivers/bus/omap_l3_noc.c                     |  4 +-
+ drivers/clk/at91/clk-peripheral.c             |  1 +
+ drivers/clk/at91/pmc.h                        |  3 -
+ drivers/clk/renesas/clk-div6.c                |  6 +-
+ drivers/clk/renesas/r8a779a0-cpg-mssr.c       |  9 +--
+ drivers/clk/renesas/rcar-gen3-cpg.c           | 15 ++--
+ drivers/clk/ti/apll.c                         | 25 +++---
+ drivers/clk/ti/dpll3xxx.c                     | 81 ++++++++-----------
+ .../iio/common/st_sensors/st_sensors_core.c   |  5 +-
+ drivers/iio/humidity/hts221_core.c            |  8 +-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h       |  1 -
+ .../iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c    |  7 +-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c  | 45 +++++------
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c  | 11 +--
+ drivers/media/platform/ti-vpe/cal.h           |  4 +-
+ drivers/mmc/host/sdhci-of-aspeed.c            |  5 +-
+ drivers/net/wireless/realtek/rtw89/core.h     | 38 ++-------
+ drivers/pinctrl/aspeed/pinctrl-aspeed-g4.c    |  3 +-
+ drivers/pinctrl/aspeed/pinctrl-aspeed-g5.c    |  3 +-
+ drivers/pinctrl/aspeed/pinctrl-aspeed-g6.c    |  3 +-
+ drivers/pinctrl/aspeed/pinctrl-aspeed.c       |  5 +-
+ drivers/pinctrl/aspeed/pinmux-aspeed.c        |  6 +-
+ drivers/pinctrl/ti/pinctrl-ti-iodelay.c       | 35 +++-----
+ drivers/regulator/ti-abb-regulator.c          |  7 +-
+ drivers/soc/renesas/renesas-soc.c             |  4 +-
+ drivers/thermal/ti-soc-thermal/ti-bandgap.c   | 11 ++-
+ include/linux/bitfield.h                      | 30 +++++++
+ sound/pci/ice1712/wm8766.c                    | 14 ++--
+ sound/pci/ice1712/wm8776.c                    | 14 ++--
+ 45 files changed, 263 insertions(+), 347 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+2.25.1
 
+Gr{oetje,eeting}s,
 
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
