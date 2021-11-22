@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0FB2459148
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 16:24:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C36245914F
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 16:24:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239956AbhKVP1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 10:27:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58578 "EHLO
+        id S240047AbhKVP1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 10:27:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239925AbhKVP1b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 10:27:31 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2AB7C06174A;
-        Mon, 22 Nov 2021 07:24:24 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id t5so78951685edd.0;
-        Mon, 22 Nov 2021 07:24:24 -0800 (PST)
+        with ESMTP id S239969AbhKVP1i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 10:27:38 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8E63C06174A;
+        Mon, 22 Nov 2021 07:24:31 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id o20so34155252eds.10;
+        Mon, 22 Nov 2021 07:24:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=i7asl7LlsOD6C6dosOKTocUVyT73eN0SSoYJM1bMlSw=;
-        b=QRYUYxp05azLODHTPPid5gLDFAB7kYAjqCzjfVava8t2B+2tQdy5VYf+7usQJc0fcs
-         HNicyU0kTZ2Hxf/HUAr4G4Wdm8jaDJCjX1wJNEy69n+GG+v5Hrm8YWVTxSK99hj/BD/n
-         kpzAD9EzOyAsVlkfdXAT4eaXV8gkEsrd6CW1LTBe0RY6vfJSt8HiWXWCqUTpdV8Rvc9f
-         10xmq5a+2KAJVPgU2+Rvvs5JPXipdxb6ulyD/XBvR5/3oAElZzZlpJTtYqgGWitnWszD
-         PAJGc+rVwG+QrKTiBJecte9PmsdUro86rgQNap8WChEVGVPzMjIjWe+WMVN7ZFE6V11t
-         iBBw==
+        bh=Acy+CCG8Qx+rTmEcW5HZrHb4eU8LXBMN6cdY1u2MLbs=;
+        b=TRYNLdNDvi2oFFwkWxxiibHu5jDrN0wPBP+9IVjz72KoTRwj1kEc6Ltloyu6VY/27n
+         p6MBM4fajYPEURRUwdVT1fOWWHRzEYcZhmW9kfmp4tVaEIq4PxGFZ62oex6VZ+3nJw+4
+         YsIpfbqAGXFx7I8L7HH/6fh/8nQH+6ufO9uAzC+jNX9oh8OQXSUKEXRyIsVZGGUTpp3M
+         Fq1QkJ5iT++8y6lBmV1xK1uXQmfXiLmPI9kWEONPeOWC7T5Jc9R/jzVOKk/FqJf1BkWF
+         i7WP9iVCLrppyX5tI92A12RZPp6/G31nYX2K36apD6id9pbBwGX/GKZYcycPpcMFhj2E
+         BQhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=i7asl7LlsOD6C6dosOKTocUVyT73eN0SSoYJM1bMlSw=;
-        b=VeDpmVDPfoL/4kUHbiYYwhMsrcfq5IZLVu/3gK/Az/QlNWxVRIOTxDSqtlnakrZGiQ
-         wTCzkfH1jBt6e7VwTdPHcxqllMQV011rRHv9rKR8b1usk9E667pUZ9o+bVON30ZXo1Mb
-         kxIIc/vPyqOGwWROdssygBkrWzNQT0YKkmTAMj6HOMaIjpjlWRftQ5x/WcenEL91nMuI
-         ovAA7/FtOVS4Kxs0Zg4j++Dez9Ho8/b8cu50K8qNynHd4v3Mll2MiuP2GXz0TOUyS63j
-         Lix1HnqZv7b8I/aU/miyzWEuGPTXATs1hyclNdOwy8rvR6harjoLlqZoGKGeray076z+
-         cNsw==
-X-Gm-Message-State: AOAM533xCct/NXmyVmWMOswrkiIHH3vLV10gPS+zh+TRJSIIlaOaia1G
-        KUqxfFa9j2S+dHYJaClxCB8=
-X-Google-Smtp-Source: ABdhPJzmO1o7TuuTvY1oJOfvfZXLZnxroO8oYo83MiiTKGQ6uVzFIbs98tHinb/5FLBqAEhjhGs0RQ==
-X-Received: by 2002:a05:6402:2d9:: with SMTP id b25mr66652974edx.383.1637594659093;
-        Mon, 22 Nov 2021 07:24:19 -0800 (PST)
+        bh=Acy+CCG8Qx+rTmEcW5HZrHb4eU8LXBMN6cdY1u2MLbs=;
+        b=2bwOA+W7WtDwXpDrJf7NH4Kj1mALcFIsB4wxHf2AFMYRAw6PRc/S/530i6htmxvJlV
+         DrBDVDRiDz5+JYnN11+cl7x5xiKdd6F0UTnbmaB5siWkN+ZKwVFKQtaVcb7ZQ8gI6MYE
+         GS8+BMPfoCH9S6AXJX2/KbG/J8C7Gek9WrWgQYHXcZiDEROHEE17M0ygDIeaLTbxVYtw
+         2XJSu5vKmZfThBVDiUTYYrRg0D+3BOqA8RzTuNWcZ8tUgDShhMpuZjm5l+CycuhlxHQB
+         6gMKfaH1vzKABzwX/wTUpgMK3TQqZRTF9dgUlN9AtQpeh8gt1TW0T0iRMqLOe5wQHVU4
+         MfhA==
+X-Gm-Message-State: AOAM530YlL4nPotWfhMsZHax75+0wYmYVGeSJ64dtDvi8KiRm04gd3ww
+        VWmdm1zxvc5JCJAoQ6Ws7Gs=
+X-Google-Smtp-Source: ABdhPJye4fi8jlx2vogU8pYTSsDYSlfzsVh6xtNbNogRMtrnBGFP8cr7ORAQCsfW3yvdUY22N9hjLA==
+X-Received: by 2002:a17:907:c0c:: with SMTP id ga12mr44157578ejc.417.1637594661939;
+        Mon, 22 Nov 2021 07:24:21 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id sb19sm3995307ejc.120.2021.11.22.07.24.18
+        by smtp.googlemail.com with ESMTPSA id sb19sm3995307ejc.120.2021.11.22.07.24.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Nov 2021 07:24:18 -0800 (PST)
+        Mon, 22 Nov 2021 07:24:21 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -56,9 +56,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next PATCH v3 5/9] net: dsa: qca8k: initial conversion to regmap helper
-Date:   Mon, 22 Nov 2021 16:23:44 +0100
-Message-Id: <20211122152348.6634-6-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v3 6/9] net: dsa: qca8k: add additional MIB counter and make it dynamic
+Date:   Mon, 22 Nov 2021 16:23:45 +0100
+Message-Id: <20211122152348.6634-7-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211122152348.6634-1-ansuelsmth@gmail.com>
 References: <20211122152348.6634-1-ansuelsmth@gmail.com>
@@ -68,251 +68,124 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert any qca8k set/clear/pool to regmap helper and add
-missing config to regmap_config struct.
-Read/write/rmw operation are reworked to use the regmap helper
-internally to keep the delta of this patch low. These additional
-function will then be dropped when the code split will be proposed.
-
-Ipq40xx SoC have the internal switch based on the qca8k regmap but use
-mmio for read/write/rmw operation instead of mdio.
-In preparation for the support of this internal switch, convert the
-driver to regmap API to later split the driver to common and specific
-code. The overhead introduced by the use of regamp API is marginal as the
-internal mdio will bypass it by using its direct access and regmap will be
-used only by configuration functions or fdb access.
+We are currently missing 2 additionals MIB counter present in QCA833x
+switch.
+QC832x switch have 39 MIB counter and QCA833X have 41 MIB counter.
+Add the additional MIB counter and rework the MIB function to print the
+correct supported counter from the match_data struct.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 107 ++++++++++++++++++----------------------
- 1 file changed, 47 insertions(+), 60 deletions(-)
+ drivers/net/dsa/qca8k.c | 23 ++++++++++++++++++++---
+ drivers/net/dsa/qca8k.h |  4 ++++
+ 2 files changed, 24 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index f63a43291636..d64a9af186be 100644
+index d64a9af186be..bedaaa6b9a1d 100644
 --- a/drivers/net/dsa/qca8k.c
 +++ b/drivers/net/dsa/qca8k.c
-@@ -10,6 +10,7 @@
- #include <linux/phy.h>
- #include <linux/netdevice.h>
- #include <linux/bitfield.h>
-+#include <linux/regmap.h>
- #include <net/dsa.h>
- #include <linux/of_net.h>
- #include <linux/of_mdio.h>
-@@ -152,6 +153,25 @@ qca8k_set_page(struct mii_bus *bus, u16 page)
- static int
- qca8k_read(struct qca8k_priv *priv, u32 reg, u32 *val)
- {
-+	return regmap_read(priv->regmap, reg, val);
-+}
-+
-+static int
-+qca8k_write(struct qca8k_priv *priv, u32 reg, u32 val)
-+{
-+	return regmap_write(priv->regmap, reg, val);
-+}
-+
-+static int
-+qca8k_rmw(struct qca8k_priv *priv, u32 reg, u32 mask, u32 write_val)
-+{
-+	return regmap_update_bits(priv->regmap, reg, mask, write_val);
-+}
-+
-+static int
-+qca8k_regmap_read(void *ctx, uint32_t reg, uint32_t *val)
-+{
-+	struct qca8k_priv *priv = (struct qca8k_priv *)ctx;
- 	struct mii_bus *bus = priv->bus;
- 	u16 r1, r2, page;
- 	int ret;
-@@ -172,8 +192,9 @@ qca8k_read(struct qca8k_priv *priv, u32 reg, u32 *val)
- }
- 
- static int
--qca8k_write(struct qca8k_priv *priv, u32 reg, u32 val)
-+qca8k_regmap_write(void *ctx, uint32_t reg, uint32_t val)
- {
-+	struct qca8k_priv *priv = (struct qca8k_priv *)ctx;
- 	struct mii_bus *bus = priv->bus;
- 	u16 r1, r2, page;
- 	int ret;
-@@ -194,8 +215,9 @@ qca8k_write(struct qca8k_priv *priv, u32 reg, u32 val)
- }
- 
- static int
--qca8k_rmw(struct qca8k_priv *priv, u32 reg, u32 mask, u32 write_val)
-+qca8k_regmap_update_bits(void *ctx, uint32_t reg, uint32_t mask, uint32_t write_val)
- {
-+	struct qca8k_priv *priv = (struct qca8k_priv *)ctx;
- 	struct mii_bus *bus = priv->bus;
- 	u16 r1, r2, page;
- 	u32 val;
-@@ -223,34 +245,6 @@ qca8k_rmw(struct qca8k_priv *priv, u32 reg, u32 mask, u32 write_val)
- 	return ret;
- }
- 
--static int
--qca8k_reg_set(struct qca8k_priv *priv, u32 reg, u32 val)
--{
--	return qca8k_rmw(priv, reg, 0, val);
--}
--
--static int
--qca8k_reg_clear(struct qca8k_priv *priv, u32 reg, u32 val)
--{
--	return qca8k_rmw(priv, reg, val, 0);
--}
--
--static int
--qca8k_regmap_read(void *ctx, uint32_t reg, uint32_t *val)
--{
--	struct qca8k_priv *priv = (struct qca8k_priv *)ctx;
--
--	return qca8k_read(priv, reg, val);
--}
--
--static int
--qca8k_regmap_write(void *ctx, uint32_t reg, uint32_t val)
--{
--	struct qca8k_priv *priv = (struct qca8k_priv *)ctx;
--
--	return qca8k_write(priv, reg, val);
--}
--
- static const struct regmap_range qca8k_readable_ranges[] = {
- 	regmap_reg_range(0x0000, 0x00e4), /* Global control */
- 	regmap_reg_range(0x0100, 0x0168), /* EEE control */
-@@ -282,26 +276,19 @@ static struct regmap_config qca8k_regmap_config = {
- 	.max_register = 0x16ac, /* end MIB - Port6 range */
- 	.reg_read = qca8k_regmap_read,
- 	.reg_write = qca8k_regmap_write,
-+	.reg_update_bits = qca8k_regmap_update_bits,
- 	.rd_table = &qca8k_readable_table,
-+	.disable_locking = true, /* Locking is handled by qca8k read/write */
-+	.cache_type = REGCACHE_NONE, /* Explicitly disable CACHE */
+@@ -70,6 +70,8 @@ static const struct qca8k_mib_desc ar8327_mib[] = {
+ 	MIB_DESC(1, 0x9c, "TxExcDefer"),
+ 	MIB_DESC(1, 0xa0, "TxDefer"),
+ 	MIB_DESC(1, 0xa4, "TxLateCol"),
++	MIB_DESC(1, 0xa8, "RXUnicast"),
++	MIB_DESC(1, 0xac, "TXUnicast"),
  };
  
- static int
- qca8k_busy_wait(struct qca8k_priv *priv, u32 reg, u32 mask)
+ /* The 32bit switch registers are accessed indirectly. To achieve this we need
+@@ -1601,12 +1603,16 @@ qca8k_phylink_mac_link_up(struct dsa_switch *ds, int port, unsigned int mode,
+ static void
+ qca8k_get_strings(struct dsa_switch *ds, int port, u32 stringset, uint8_t *data)
  {
--	int ret, ret1;
- 	u32 val;
++	const struct qca8k_match_data *match_data;
++	struct qca8k_priv *priv = ds->priv;
+ 	int i;
  
--	ret = read_poll_timeout(qca8k_read, ret1, !(val & mask),
--				0, QCA8K_BUSY_WAIT_TIMEOUT * USEC_PER_MSEC, false,
--				priv, reg, &val);
--
--	/* Check if qca8k_read has failed for a different reason
--	 * before returning -ETIMEDOUT
--	 */
--	if (ret < 0 && ret1 < 0)
--		return ret1;
--
--	return ret;
-+	return regmap_read_poll_timeout(priv->regmap, reg, val, !(val & mask), 0,
-+				       QCA8K_BUSY_WAIT_TIMEOUT * USEC_PER_MSEC);
+ 	if (stringset != ETH_SS_STATS)
+ 		return;
+ 
+-	for (i = 0; i < ARRAY_SIZE(ar8327_mib); i++)
++	match_data = of_device_get_match_data(priv->dev);
++
++	for (i = 0; i < match_data->mib_count; i++)
+ 		strncpy(data + i * ETH_GSTRING_LEN, ar8327_mib[i].name,
+ 			ETH_GSTRING_LEN);
  }
- 
- static int
-@@ -568,7 +555,7 @@ qca8k_mib_init(struct qca8k_priv *priv)
+@@ -1616,12 +1622,15 @@ qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
+ 			uint64_t *data)
+ {
+ 	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
++	const struct qca8k_match_data *match_data;
+ 	const struct qca8k_mib_desc *mib;
+ 	u32 reg, i, val;
+ 	u32 hi = 0;
  	int ret;
  
- 	mutex_lock(&priv->reg_mutex);
--	ret = qca8k_reg_set(priv, QCA8K_REG_MIB, QCA8K_MIB_FLUSH | QCA8K_MIB_BUSY);
-+	ret = regmap_set_bits(priv->regmap, QCA8K_REG_MIB, QCA8K_MIB_FLUSH | QCA8K_MIB_BUSY);
- 	if (ret)
- 		goto exit;
+-	for (i = 0; i < ARRAY_SIZE(ar8327_mib); i++) {
++	match_data = of_device_get_match_data(priv->dev);
++
++	for (i = 0; i < match_data->mib_count; i++) {
+ 		mib = &ar8327_mib[i];
+ 		reg = QCA8K_PORT_MIB_COUNTER(port) + mib->offset;
  
-@@ -576,7 +563,7 @@ qca8k_mib_init(struct qca8k_priv *priv)
- 	if (ret)
- 		goto exit;
+@@ -1644,10 +1653,15 @@ qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
+ static int
+ qca8k_get_sset_count(struct dsa_switch *ds, int port, int sset)
+ {
++	const struct qca8k_match_data *match_data;
++	struct qca8k_priv *priv = ds->priv;
++
+ 	if (sset != ETH_SS_STATS)
+ 		return 0;
  
--	ret = qca8k_reg_set(priv, QCA8K_REG_MIB, QCA8K_MIB_CPU_KEEP);
-+	ret = regmap_set_bits(priv->regmap, QCA8K_REG_MIB, QCA8K_MIB_CPU_KEEP);
- 	if (ret)
- 		goto exit;
- 
-@@ -597,9 +584,9 @@ qca8k_port_set_status(struct qca8k_priv *priv, int port, int enable)
- 		mask |= QCA8K_PORT_STATUS_LINK_AUTO;
- 
- 	if (enable)
--		qca8k_reg_set(priv, QCA8K_REG_PORT_STATUS(port), mask);
-+		regmap_set_bits(priv->regmap, QCA8K_REG_PORT_STATUS(port), mask);
- 	else
--		qca8k_reg_clear(priv, QCA8K_REG_PORT_STATUS(port), mask);
-+		regmap_clear_bits(priv->regmap, QCA8K_REG_PORT_STATUS(port), mask);
+-	return ARRAY_SIZE(ar8327_mib);
++	match_data = of_device_get_match_data(priv->dev);
++
++	return match_data->mib_count;
  }
  
- static u32
-@@ -861,8 +848,8 @@ qca8k_setup_mdio_bus(struct qca8k_priv *priv)
- 		 * a dt-overlay and driver reload changed the configuration
- 		 */
+ static int
+@@ -2150,14 +2164,17 @@ static SIMPLE_DEV_PM_OPS(qca8k_pm_ops,
+ static const struct qca8k_match_data qca8327 = {
+ 	.id = QCA8K_ID_QCA8327,
+ 	.reduced_package = true,
++	.mib_count = QCA8K_QCA832X_MIB_COUNT,
+ };
  
--		return qca8k_reg_clear(priv, QCA8K_MDIO_MASTER_CTRL,
--				       QCA8K_MDIO_MASTER_EN);
-+		return regmap_clear_bits(priv->regmap, QCA8K_MDIO_MASTER_CTRL,
-+					 QCA8K_MDIO_MASTER_EN);
- 	}
+ static const struct qca8k_match_data qca8328 = {
+ 	.id = QCA8K_ID_QCA8327,
++	.mib_count = QCA8K_QCA832X_MIB_COUNT,
+ };
  
- 	/* Check if the devicetree declare the port:phy mapping */
-@@ -1099,16 +1086,16 @@ qca8k_setup(struct dsa_switch *ds)
- 		return ret;
+ static const struct qca8k_match_data qca833x = {
+ 	.id = QCA8K_ID_QCA8337,
++	.mib_count = QCA8K_QCA833X_MIB_COUNT,
+ };
  
- 	/* Make sure MAC06 is disabled */
--	ret = qca8k_reg_clear(priv, QCA8K_REG_PORT0_PAD_CTRL,
--			      QCA8K_PORT0_PAD_MAC06_EXCHANGE_EN);
-+	ret = regmap_clear_bits(priv->regmap, QCA8K_REG_PORT0_PAD_CTRL,
-+				QCA8K_PORT0_PAD_MAC06_EXCHANGE_EN);
- 	if (ret) {
- 		dev_err(priv->dev, "failed disabling MAC06 exchange");
- 		return ret;
- 	}
+ static const struct of_device_id qca8k_of_match[] = {
+diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+index 085885275398..91c94dfc9789 100644
+--- a/drivers/net/dsa/qca8k.h
++++ b/drivers/net/dsa/qca8k.h
+@@ -21,6 +21,9 @@
+ #define PHY_ID_QCA8337					0x004dd036
+ #define QCA8K_ID_QCA8337				0x13
  
- 	/* Enable CPU Port */
--	ret = qca8k_reg_set(priv, QCA8K_REG_GLOBAL_FW_CTRL0,
--			    QCA8K_GLOBAL_FW_CTRL0_CPU_PORT_EN);
-+	ret = regmap_set_bits(priv->regmap, QCA8K_REG_GLOBAL_FW_CTRL0,
-+			      QCA8K_GLOBAL_FW_CTRL0_CPU_PORT_EN);
- 	if (ret) {
- 		dev_err(priv->dev, "failed enabling CPU port");
- 		return ret;
-@@ -1176,8 +1163,8 @@ qca8k_setup(struct dsa_switch *ds)
- 				return ret;
++#define QCA8K_QCA832X_MIB_COUNT				39
++#define QCA8K_QCA833X_MIB_COUNT				41
++
+ #define QCA8K_BUSY_WAIT_TIMEOUT				2000
  
- 			/* Enable ARP Auto-learning by default */
--			ret = qca8k_reg_set(priv, QCA8K_PORT_LOOKUP_CTRL(i),
--					    QCA8K_PORT_LOOKUP_LEARN);
-+			ret = regmap_set_bits(priv->regmap, QCA8K_PORT_LOOKUP_CTRL(i),
-+					      QCA8K_PORT_LOOKUP_LEARN);
- 			if (ret)
- 				return ret;
+ #define QCA8K_NUM_FDB_RECORDS				2048
+@@ -279,6 +282,7 @@ struct ar8xxx_port_status {
+ struct qca8k_match_data {
+ 	u8 id;
+ 	bool reduced_package;
++	u8 mib_count;
+ };
  
-@@ -1741,9 +1728,9 @@ qca8k_port_bridge_join(struct dsa_switch *ds, int port, struct net_device *br)
- 		/* Add this port to the portvlan mask of the other ports
- 		 * in the bridge
- 		 */
--		ret = qca8k_reg_set(priv,
--				    QCA8K_PORT_LOOKUP_CTRL(i),
--				    BIT(port));
-+		ret = regmap_set_bits(priv->regmap,
-+				      QCA8K_PORT_LOOKUP_CTRL(i),
-+				      BIT(port));
- 		if (ret)
- 			return ret;
- 		if (i != port)
-@@ -1773,9 +1760,9 @@ qca8k_port_bridge_leave(struct dsa_switch *ds, int port, struct net_device *br)
- 		/* Remove this port to the portvlan mask of the other ports
- 		 * in the bridge
- 		 */
--		qca8k_reg_clear(priv,
--				QCA8K_PORT_LOOKUP_CTRL(i),
--				BIT(port));
-+		regmap_clear_bits(priv->regmap,
-+				  QCA8K_PORT_LOOKUP_CTRL(i),
-+				  BIT(port));
- 	}
- 
- 	/* Set the cpu port to be the only one in the portvlan mask of
+ enum {
 -- 
 2.32.0
 
