@@ -2,189 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C84045942C
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 18:44:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3119745944A
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 18:50:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240293AbhKVRr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 12:47:59 -0500
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:28654 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240323AbhKVRrz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 12:47:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1637603088; x=1669139088;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=WqiNR1gioDzDqu1H/yLLc+s97iXxCJSAM2beWiVFdaQ=;
-  b=bfvgXA5k0DPvyDnD5ctnWAlelpMgJC7vQLK20PcDoWmVCbxIZuWGnX3o
-   3dhomOoLgViDbkszA+8/556RUxOhg79bRO+wBVvTj/0iW2Zxm0IrlH/cD
-   YQ5Qu6diWyywZzqRmVBICODXVZFjc0TehXO+MMips1tkCBbwFoYxogNkn
-   w=;
-X-IronPort-AV: E=Sophos;i="5.87,255,1631577600"; 
-   d="scan'208";a="153894375"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-1ac2810f.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP; 22 Nov 2021 17:44:47 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1a-1ac2810f.us-east-1.amazon.com (Postfix) with ESMTPS id C36C98133E;
-        Mon, 22 Nov 2021 17:44:46 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.26; Mon, 22 Nov 2021 17:44:45 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.57) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.26; Mon, 22 Nov 2021 17:44:43 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        "Benjamin Herrenschmidt" <benh@amazon.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH RESEND v2 net-next 13/13] af_unix: Relax race in unix_autobind().
-Date:   Tue, 23 Nov 2021 02:41:14 +0900
-Message-ID: <20211122174114.84594-14-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211122174114.84594-1-kuniyu@amazon.co.jp>
-References: <20211122174114.84594-1-kuniyu@amazon.co.jp>
+        id S239182AbhKVRxk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 12:53:40 -0500
+Received: from relay3-d.mail.gandi.net ([217.70.183.195]:37405 "EHLO
+        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235040AbhKVRxh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 12:53:37 -0500
+Received: (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id CBED060006;
+        Mon, 22 Nov 2021 17:50:19 +0000 (UTC)
+Date:   Mon, 22 Nov 2021 18:50:19 +0100
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        Paul Walmsley <paul@pwsan.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Benoit Parrot <bparrot@ti.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Eduardo Valentin <edubezval@gmail.com>,
+        Keerthy <j-keerthy@ti.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-aspeed@lists.ozlabs.org, openbmc@lists.ozlabs.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH 00/17] Non-const bitfield helper conversions
+Message-ID: <YZvYW1ElW7ZYZNTC@piout.net>
+References: <cover.1637592133.git.geert+renesas@glider.be>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.57]
-X-ClientProxiedBy: EX13D23UWA004.ant.amazon.com (10.43.160.72) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1637592133.git.geert+renesas@glider.be>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we bind an AF_UNIX socket without a name specified, the kernel selects
-an available one from 0x00000 to 0xFFFFF.  unix_autobind() starts searching
-from a number in the 'static' variable and increments it after acquiring
-two locks.
+On 22/11/2021 16:53:53+0100, Geert Uytterhoeven wrote:
+> 	Hi all,
+> 
+> <linux/bitfield.h> contains various helpers for accessing bitfields, as
+> typically used in hardware registers for memory-mapped I/O blocks. These
+> helpers ensure type safety, and deduce automatically shift values from
+> mask values, avoiding mistakes due to inconsistent shifts and masks, and
+> leading to a reduction in source code size.
+> 
+> I have already submitted a few conversions to the FIELD_{GET,PREP}()
+> helpers that were fixes for real bugs:
+>   - [PATCH] mips: cm: Convert to bitfield API to fix out-of-bounds
+>     access
+>     https://lore.kernel.org/r/0471c545117c5fa05bd9c73005cda9b74608a61e.1635501373.git.geert+renesas@glider.be
+>   - [PATCH] drm/armada: Fix off-by-one error in
+>     armada_overlay_get_property()
+>     https://lore.kernel.org/r/5818c8b04834e6a9525441bc181580a230354b69.1635501237.git.geert+renesas@glider.be
+> 
+> Plus several patches for normal conversions:
+>   - [PATCH] ARM: ptrace: Use bitfield helpers
+>     https://lore.kernel.org/r/a1445d3abb45cfc95cb1b03180fd53caf122035b.1637593297.git.geert+renesas@glider.be
+>   - [PATCH] MIPS: CPC: Use bitfield helpers
+>     https://lore.kernel.org/r/35f0f17e3d987afaa9cd09cdcb8131d42a53c3e1.1637593297.git.geert+renesas@glider.be
+>   - [PATCH] MIPS: CPS: Use bitfield helpers
+>     https://lore.kernel.org/r/8bd8b1b9a3787e594285addcf2057754540d0a5f.1637593297.git.geert+renesas@glider.be
+>   - [PATCH] crypto: sa2ul - Use bitfield helpers
+>     https://lore.kernel.org/r/ca89d204ef2e40193479db2742eadf0d9cf3c0ff.1637593297.git.geert+renesas@glider.be
+>   - [PATCH] dmaengine: stm32-mdma: Use bitfield helpers
+>     https://lore.kernel.org/r/36ceab242a594233dc7dc6f1dddb4ac32d1e846f.1637593297.git.geert+renesas@glider.be
+>   - [PATCH] intel_th: Use bitfield helpers
+>     https://lore.kernel.org/r/b1e4f027aa88acfbdfaa771b0920bd1d977828ba.1637593297.git.geert+renesas@glider.be
+>   - [PATCH] Input: palmas-pwrbutton - use bitfield helpers
+>     https://lore.kernel.org/r/f8831b88346b36fc6e01e0910d0db6c94287d2b4.1637593297.git.geert+renesas@glider.be
+>   - [PATCH] irqchip/mips-gic: Use bitfield helpers
+>     https://lore.kernel.org/r/74f9d126961a90d3e311b92a54870eaac5b3ae57.1637593297.git.geert+renesas@glider.be
+>   - [PATCH] mfd: mc13xxx: Use bitfield helpers
+>     https://lore.kernel.org/r/afa46868cf8c1666e9cbbbec42767ca2294b024d.1637593297.git.geert+renesas@glider.be
+>   - [PATCH] regulator: lp873x: Use bitfield helpers
+>     https://lore.kernel.org/r/44d60384b640c8586b4ca7edbc9287a34ce21c5b.1637593297.git.geert+renesas@glider.be
+>   - [PATCH] regulator: lp87565: Use bitfield helpers
+>     https://lore.kernel.org/r/941c2dfd5b5b124b8950bcce42db4c343dfe9821.1637593297.git.geert+renesas@glider.be
+> 
+> The existing FIELD_{GET,PREP}() macros are limited to compile-time
+> constants.  However, it is very common to prepare or extract bitfield
+> elements where the bitfield mask is not a compile-time constant.
+> To avoid this limitation, the AT91 clock driver already has its own
+> field_{prep,get}() macros.
+> 
 
-If multiple processes try autobind, they obtain the same lock and check if
-a socket in the hash list has the same name.  If not, one process uses it,
-and all except one end up retrying the _next_ number (actually not, it may
-be incremented by the other processes).  The more we autobind sockets in
-parallel, the longer the latency gets.  We can avoid such a race by
-searching for a name from a random number.
+My understanding was that this (being compile time only) was actually
+done on purpose. Did I misunderstand?
 
-These show latency in unix_autobind() while 64 CPUs are simultaneously
-autobind-ing 1024 sockets for each.
+> This patch series makes them available for general use, and converts
+> several drivers to the existing FIELD_{GET,PREP}() and the new
+> field_{get,prep}() helpers.
+> 
+> I can take the first two patches through the reneas-clk tree for v5.17,
+> but probably it is best for the remaining patches to be postponed to
+> v5.18.
+> 
+> Thanks for your comments!
+> 
+> Geert Uytterhoeven (17):
+>   bitfield: Add non-constant field_{prep,get}() helpers
+>   clk: renesas: Use bitfield helpers
+>   [RFC] soc: renesas: Use bitfield helpers
+>   [RFC] ARM: OMAP2+: Use bitfield helpers
+>   [RFC] bus: omap_l3_noc: Use bitfield helpers
+>   [RFC] clk: ti: Use bitfield helpers
+>   [RFC] iio: st_sensors: Use bitfield helpers
+>   [RFC] iio: humidity: hts221: Use bitfield helpers
+>   [RFC] iio: imu: st_lsm6dsx: Use bitfield helpers
+>   [RFC] media: ti-vpe: cal: Use bitfield helpers
+>   [RFC] mmc: sdhci-of-aspeed: Use bitfield helpers
+>   [RFC] pinctrl: aspeed: Use bitfield helpers
+>   [RFC] pinctl: ti: iodelay: Use bitfield helpers
+>   [RFC] regulator: ti-abb: Use bitfield helpers
+>   [RFC] thermal/ti-soc-thermal: Use bitfield helpers
+>   [RFC] ALSA: ice1724: Use bitfield helpers
+>   [RFC] rtw89: Use bitfield helpers
+> 
+>  arch/arm/mach-omap2/clkt2xxx_dpllcore.c       |  5 +-
+>  arch/arm/mach-omap2/cm2xxx.c                  | 11 ++-
+>  arch/arm/mach-omap2/cm2xxx_3xxx.h             |  9 +--
+>  arch/arm/mach-omap2/cm33xx.c                  |  9 +--
+>  arch/arm/mach-omap2/cm3xxx.c                  |  7 +-
+>  arch/arm/mach-omap2/cminst44xx.c              |  9 +--
+>  arch/arm/mach-omap2/powerdomains3xxx_data.c   |  3 +-
+>  arch/arm/mach-omap2/prm.h                     |  2 -
+>  arch/arm/mach-omap2/prm2xxx.c                 |  4 +-
+>  arch/arm/mach-omap2/prm2xxx_3xxx.c            |  7 +-
+>  arch/arm/mach-omap2/prm2xxx_3xxx.h            |  9 +--
+>  arch/arm/mach-omap2/prm33xx.c                 | 53 +++++-------
+>  arch/arm/mach-omap2/prm3xxx.c                 |  3 +-
+>  arch/arm/mach-omap2/prm44xx.c                 | 53 ++++--------
+>  arch/arm/mach-omap2/vc.c                      | 12 +--
+>  arch/arm/mach-omap2/vp.c                      | 11 +--
+>  drivers/bus/omap_l3_noc.c                     |  4 +-
+>  drivers/clk/at91/clk-peripheral.c             |  1 +
+>  drivers/clk/at91/pmc.h                        |  3 -
+>  drivers/clk/renesas/clk-div6.c                |  6 +-
+>  drivers/clk/renesas/r8a779a0-cpg-mssr.c       |  9 +--
+>  drivers/clk/renesas/rcar-gen3-cpg.c           | 15 ++--
+>  drivers/clk/ti/apll.c                         | 25 +++---
+>  drivers/clk/ti/dpll3xxx.c                     | 81 ++++++++-----------
+>  .../iio/common/st_sensors/st_sensors_core.c   |  5 +-
+>  drivers/iio/humidity/hts221_core.c            |  8 +-
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h       |  1 -
+>  .../iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c    |  7 +-
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c  | 45 +++++------
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c  | 11 +--
+>  drivers/media/platform/ti-vpe/cal.h           |  4 +-
+>  drivers/mmc/host/sdhci-of-aspeed.c            |  5 +-
+>  drivers/net/wireless/realtek/rtw89/core.h     | 38 ++-------
+>  drivers/pinctrl/aspeed/pinctrl-aspeed-g4.c    |  3 +-
+>  drivers/pinctrl/aspeed/pinctrl-aspeed-g5.c    |  3 +-
+>  drivers/pinctrl/aspeed/pinctrl-aspeed-g6.c    |  3 +-
+>  drivers/pinctrl/aspeed/pinctrl-aspeed.c       |  5 +-
+>  drivers/pinctrl/aspeed/pinmux-aspeed.c        |  6 +-
+>  drivers/pinctrl/ti/pinctrl-ti-iodelay.c       | 35 +++-----
+>  drivers/regulator/ti-abb-regulator.c          |  7 +-
+>  drivers/soc/renesas/renesas-soc.c             |  4 +-
+>  drivers/thermal/ti-soc-thermal/ti-bandgap.c   | 11 ++-
+>  include/linux/bitfield.h                      | 30 +++++++
+>  sound/pci/ice1712/wm8766.c                    | 14 ++--
+>  sound/pci/ice1712/wm8776.c                    | 14 ++--
+>  45 files changed, 263 insertions(+), 347 deletions(-)
+> 
+> -- 
+> 2.25.1
+> 
+> Gr{oetje,eeting}s,
+> 
+> 						Geert
+> 
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+> 							    -- Linus Torvalds
 
-  Without this patch:
-
-     usec          : count     distribution
-        0          : 1176     |***                                     |
-        2          : 3655     |***********                             |
-        4          : 4094     |*************                           |
-        6          : 3831     |************                            |
-        8          : 3829     |************                            |
-        10         : 3844     |************                            |
-        12         : 3638     |***********                             |
-        14         : 2992     |*********                               |
-        16         : 2485     |*******                                 |
-        18         : 2230     |*******                                 |
-        20         : 2095     |******                                  |
-        22         : 1853     |*****                                   |
-        24         : 1827     |*****                                   |
-        26         : 1677     |*****                                   |
-        28         : 1473     |****                                    |
-        30         : 1573     |*****                                   |
-        32         : 1417     |****                                    |
-        34         : 1385     |****                                    |
-        36         : 1345     |****                                    |
-        38         : 1344     |****                                    |
-        40         : 1200     |***                                     |
-
-  With this patch:
-
-     usec          : count     distribution
-        0          : 1855     |******                                  |
-        2          : 6464     |*********************                   |
-        4          : 9936     |********************************        |
-        6          : 12107    |****************************************|
-        8          : 10441    |**********************************      |
-        10         : 7264     |***********************                 |
-        12         : 4254     |**************                          |
-        14         : 2538     |********                                |
-        16         : 1596     |*****                                   |
-        18         : 1088     |***                                     |
-        20         : 800      |**                                      |
-        22         : 670      |**                                      |
-        24         : 601      |*                                       |
-        26         : 562      |*                                       |
-        28         : 525      |*                                       |
-        30         : 446      |*                                       |
-        32         : 378      |*                                       |
-        34         : 337      |*                                       |
-        36         : 317      |*                                       |
-        38         : 314      |*                                       |
-        40         : 298      |                                        |
-
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
----
- net/unix/af_unix.c | 22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
-
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index 77334815bc3d..8b1e74d0f734 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -1069,8 +1069,7 @@ static int unix_autobind(struct sock *sk)
- 	unsigned int new_hash, old_hash = sk->sk_hash;
- 	struct unix_sock *u = unix_sk(sk);
- 	struct unix_address *addr;
--	unsigned int retries = 0;
--	static u32 ordernum = 1;
-+	u32 lastnum, ordernum;
- 	int err;
- 
- 	err = mutex_lock_interruptible(&u->bindlock);
-@@ -1085,31 +1084,34 @@ static int unix_autobind(struct sock *sk)
- 	if (!addr)
- 		goto out;
- 
-+	addr->len = offsetof(struct sockaddr_un, sun_path) + 6;
- 	addr->name->sun_family = AF_UNIX;
- 	refcount_set(&addr->refcnt, 1);
- 
-+	lastnum = ordernum = prandom_u32();
-+	lastnum &= 0xFFFFF;
- retry:
--	addr->len = sprintf(addr->name->sun_path + 1, "%05x", ordernum) +
--		offsetof(struct sockaddr_un, sun_path) + 1;
-+	ordernum = (ordernum + 1) & 0xFFFFF;
-+	sprintf(addr->name->sun_path + 1, "%05x", ordernum);
- 
- 	new_hash = unix_abstract_hash(addr->name, addr->len, sk->sk_type);
- 	unix_table_double_lock(old_hash, new_hash);
--	ordernum = (ordernum+1)&0xFFFFF;
- 
- 	if (__unix_find_socket_byname(sock_net(sk), addr->name, addr->len, new_hash)) {
- 		unix_table_double_unlock(old_hash, new_hash);
- 
--		/*
--		 * __unix_find_socket_byname() may take long time if many names
-+		/* __unix_find_socket_byname() may take long time if many names
- 		 * are already in use.
- 		 */
- 		cond_resched();
--		/* Give up if all names seems to be in use. */
--		if (retries++ == 0xFFFFF) {
-+
-+		if (ordernum == lastnum) {
-+			/* Give up if all names seems to be in use. */
- 			err = -ENOSPC;
--			kfree(addr);
-+			unix_release_addr(addr);
- 			goto out;
- 		}
-+
- 		goto retry;
- 	}
- 
 -- 
-2.30.2
-
+Alexandre Belloni, co-owner and COO, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
