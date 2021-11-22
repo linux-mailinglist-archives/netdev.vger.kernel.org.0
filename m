@@ -2,113 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E192458D3D
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 12:19:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEE25458D41
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 12:19:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238045AbhKVLVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 06:21:55 -0500
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:33133 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231383AbhKVLVs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 06:21:48 -0500
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id B64BB58089D;
-        Mon, 22 Nov 2021 06:18:40 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute6.internal (MEProxy); Mon, 22 Nov 2021 06:18:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:content-transfer-encoding:in-reply-to; s=fm2; bh=j
-        Zx7ZHV5Y1G0jViLyedWy2bbOuG/smcqOJ6s3fTz2vc=; b=ZjazofhpvywEsbJCc
-        coX/xg6nT8JDmBjJv2xoEzqD7QG3cotcsLWOozcJ+Vq8/gt2LgDY9+3P8Tc//GM0
-        JVrUedEd64PhRkSxboLTfi9WPDw6i/0A/HZqGfsuB8E5D5G2maCq8H98TiKOXhfO
-        ExV9cxkzrf1xuCvZi+YJRLk/VlxOElRrRhpXqDVgwkNlfNEuifxlkGk4mWqy44UN
-        Ppr/r4V+JaCjwkH9t/pvDirrQJWRLv/StOoJNzWWqgA196F7Mxo5b87CXpXuhoxF
-        FMff1QD8c0MdF8n7s5SXf7DIMDayTkW17TPa78OmRogXAy9KFqhTwj/WaDuJGXsB
-        +rf1A==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; bh=jZx7ZHV5Y1G0jViLyedWy2bbOuG/smcqOJ6s3fTz2
-        vc=; b=nnJvUS170LGlrr/hdPDKBGSkmkHzaiALTiL3O76BGEcRCLZzQqN27ZwKj
-        W2lpbMAS07UtEC9x1sldN+xm+2zvaxWWa09ErAiaPVDtFmNKt1LwliJsCcuIUqBE
-        nwBuIUPFzk4NVvjcR3zA3a7xLrGoZqUmwV+sxixje0N2dZDQX+WfZOcUXg7RUM0z
-        RyVCEXu8JYJMxWsrRuROkSizXnDTX3UKGwpC2daauQAw7nKm9l8I3HerXkGVw8V0
-        LXqtq+CurexyN0A1mCKkViLi0HfYGnnNbIA2wLntsQ7mV2bvW/Q0Rg/j4xViVCF0
-        DvIe9Dck8Qpcdo/tnLoXX8S4Apj7Q==
-X-ME-Sender: <xms:kHybYV-Ok_k4Ju5WVdKsNNrJ4lFa8WQJpLj-Q8_QI9rdw5suS5jQMg>
-    <xme:kHybYZsUR7_QZAfatl9XWTHocjY78dhpQy3WWnn6wo7fMbkO5liUCsxZLDKi-xIdI
-    m5T0mWubnOJyw>
-X-ME-Received: <xmr:kHybYTBgC65veiqdP8YB9EEn42V4VNwd7rXL6yEI9jhVNYIvA2yu7Fogyhd5tvnz6ByICnpQX-yQfBCsW8pZtLyShilLOvPw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrgeeggddviecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggugfgjsehtkeertddttddunecuhfhrohhmpefirhgvghcu
-    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpedvfffgue
-    eiuefhheevheetgfehvdefgeekfeevueejfeeftdetudetiefhheffvdenucffohhmrghi
-    nhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
-    hmrghilhhfrhhomhepghhrvghgsehkrhhorghhrdgtohhm
-X-ME-Proxy: <xmx:kHybYZeAZuQR33Q7ofKKpMIeURsox4QwkgH9aCzm5JOTHZEd-rynfQ>
-    <xmx:kHybYaMupBAHN7CFssDDlyUXTg_X2QNFq-ekUJemXRPH1allNLPYtw>
-    <xmx:kHybYbnp-HBFmBKsCfKV0wsD_OL7_3x2OTd1_iZdS3J197Ln9uvOwg>
-    <xmx:kHybYWm0sgJJ25AJGVesGoOwgneg0uwB7BzokoTqTtWlkUmdcRyotQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 22 Nov 2021 06:18:40 -0500 (EST)
-Date:   Mon, 22 Nov 2021 12:18:37 +0100
-From:   Greg KH <greg@kroah.com>
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc:     patchwork-bot+netdevbpf@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        stable <stable@vger.kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: Re: [PATCH net] tun: fix bonding active backup with arp monitoring
-Message-ID: <YZt8jXTBI+1bt/zq@kroah.com>
-References: <20211112075603.6450-1-nicolas.dichtel@6wind.com>
- <163698180894.15087.10819422346391173910.git-patchwork-notify@kernel.org>
- <37db0bc8-d3e0-7155-5f08-fe8b5abd21ed@6wind.com>
+        id S232302AbhKVLWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 06:22:43 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:59100 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231383AbhKVLWm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 06:22:42 -0500
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1637579975;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=18h7AWE82V/ymcyoQ30Rf8aLfEhY3Kk3Mvu3zde2ltM=;
+        b=Hqb4lRVUCFHVpi9hFPpHek6pfnQNd1MEEDmaNVOTbVVGxWwz+1MYBzQ8eXSCet5b7+T+z/
+        M74V7QpbOAJTqglw0A5GYe9hKvbb5aBTsvOnJwhMrvA8u8rRMklUnJbUeXYI6atWD6pvpo
+        gUD7b5snw60u4TlBWr19PiDW7758Z85ZXhep6Av9OFFKcMEror0Q6OPwPfW5eE0C23xNIp
+        k4oWxUYXijUbCS4uzzqtuHnwrMjqPnnRJKRkkQMeZgGsC02kIu4iR1UZMTkobUvNwhWmeE
+        ACZ59z0ZKCTbaAfHiVsiEVeTeRriAvEjVhGHK02s/ES2ov/JQXvdCQEZo0HnSg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1637579975;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=18h7AWE82V/ymcyoQ30Rf8aLfEhY3Kk3Mvu3zde2ltM=;
+        b=z4vbqy1CcgeV9jwPmSdgX8TTZmfK7f4+ewud9RA5Kcl00rhxKCwFw2GGNGSL/8Wvc7h+pP
+        552T4/+n0Ts2DjBw==
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Wong Vee Khee <vee.khee.wong@linux.intel.com>,
+        Tan Tee Min <tee.min.tan@intel.com>,
+        "Wong, Vee Khee" <vee.khee.wong@intel.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        Benedikt Spranger <b.spranger@linutronix.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH net-next v2] net: stmmac: Caclucate CDC error only once
+Date:   Mon, 22 Nov 2021 12:19:31 +0100
+Message-Id: <20211122111931.135135-1-kurt@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <37db0bc8-d3e0-7155-5f08-fe8b5abd21ed@6wind.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 19, 2021 at 06:26:17PM +0100, Nicolas Dichtel wrote:
-> Le 15/11/2021 à 14:10, patchwork-bot+netdevbpf@kernel.org a écrit :
-> > Hello:
-> > 
-> > This patch was applied to netdev/net.git (master)
-> > by David S. Miller <davem@davemloft.net>:
-> > 
-> > On Fri, 12 Nov 2021 08:56:03 +0100 you wrote:
-> >> As stated in the bonding doc, trans_start must be set manually for drivers
-> >> using NETIF_F_LLTX:
-> >>  Drivers that use NETIF_F_LLTX flag must also update
-> >>  netdev_queue->trans_start. If they do not, then the ARP monitor will
-> >>  immediately fail any slaves using that driver, and those slaves will stay
-> >>  down.
-> >>
-> >> [...]
-> > 
-> > Here is the summary with links:
-> >   - [net] tun: fix bonding active backup with arp monitoring
-> >     https://git.kernel.org/netdev/net/c/a31d27fbed5d
-> > 
-> > You are awesome, thank you!
-> > 
-> May I ask for a backport to stable of this patch?
-> 
-> It's now in Linus tree: a31d27fbed5d ("tun: fix bonding active backup with arp
-> monitoring"):
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a31d27fbed5d
-> 
-> I didn't put a Fixes tag in the original submission because the bug is there
-> before git ages.
-> Maybe "Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")" would have been a better choice.
+The clock domain crossing error (CDC) is calculated at every fetch of Tx or Rx
+timestamps. It includes a division. Especially on arm32 based systems it is
+expensive. It also requires two conditionals in the hotpath.
 
-Now queued up, thanks.
+Add a compensation value cache to struct plat_stmmacenet_data and subtract it
+unconditionally in the RX/TX functions which spares the conditionals.
 
-greg k-h
+The value is initialized to 0 and if supported calculated in the PTP
+initialization code.
+
+Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+---
+
+Changes since v1:
+
+ * Coding style
+ * Changelog
+
+Previous version:
+
+ * https://lore.kernel.org/netdev/20211119081010.27084-1-kurt@linutronix.de/
+
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 12 ++----------
+ drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c  |  5 +++++
+ include/linux/stmmac.h                            |  1 +
+ 3 files changed, 8 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 21111df73719..340076b5bb38 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -511,14 +511,6 @@ bool stmmac_eee_init(struct stmmac_priv *priv)
+ 	return true;
+ }
+ 
+-static inline u32 stmmac_cdc_adjust(struct stmmac_priv *priv)
+-{
+-	/* Correct the clk domain crossing(CDC) error */
+-	if (priv->plat->has_gmac4 && priv->plat->clk_ptp_rate)
+-		return (2 * NSEC_PER_SEC) / priv->plat->clk_ptp_rate;
+-	return 0;
+-}
+-
+ /* stmmac_get_tx_hwtstamp - get HW TX timestamps
+  * @priv: driver private structure
+  * @p : descriptor pointer
+@@ -550,7 +542,7 @@ static void stmmac_get_tx_hwtstamp(struct stmmac_priv *priv,
+ 	}
+ 
+ 	if (found) {
+-		ns -= stmmac_cdc_adjust(priv);
++		ns -= priv->plat->cdc_error_adj;
+ 
+ 		memset(&shhwtstamp, 0, sizeof(struct skb_shared_hwtstamps));
+ 		shhwtstamp.hwtstamp = ns_to_ktime(ns);
+@@ -587,7 +579,7 @@ static void stmmac_get_rx_hwtstamp(struct stmmac_priv *priv, struct dma_desc *p,
+ 	if (stmmac_get_rx_timestamp_status(priv, p, np, priv->adv_ts)) {
+ 		stmmac_get_timestamp(priv, desc, priv->adv_ts, &ns);
+ 
+-		ns -= stmmac_cdc_adjust(priv);
++		ns -= priv->plat->cdc_error_adj;
+ 
+ 		netdev_dbg(priv->dev, "get valid RX hw timestamp %llu\n", ns);
+ 		shhwtstamp = skb_hwtstamps(skb);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
+index 580cc035536b..e14c97c04317 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
+@@ -309,6 +309,11 @@ void stmmac_ptp_register(struct stmmac_priv *priv)
+ 	if (priv->plat->ptp_max_adj)
+ 		stmmac_ptp_clock_ops.max_adj = priv->plat->ptp_max_adj;
+ 
++	/* Calculate the clock domain crossing (CDC) error if necessary */
++	priv->plat->cdc_error_adj = 0;
++	if (priv->plat->has_gmac4 && priv->plat->clk_ptp_rate)
++		priv->plat->cdc_error_adj = (2 * NSEC_PER_SEC) / priv->plat->clk_ptp_rate;
++
+ 	stmmac_ptp_clock_ops.n_per_out = priv->dma_cap.pps_out_num;
+ 	stmmac_ptp_clock_ops.n_ext_ts = priv->dma_cap.aux_snapshot_n;
+ 
+diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
+index a6f03b36fc4f..89b8e208cd7b 100644
+--- a/include/linux/stmmac.h
++++ b/include/linux/stmmac.h
+@@ -241,6 +241,7 @@ struct plat_stmmacenet_data {
+ 	unsigned int clk_ref_rate;
+ 	unsigned int mult_fact_100ns;
+ 	s32 ptp_max_adj;
++	u32 cdc_error_adj;
+ 	struct reset_control *stmmac_rst;
+ 	struct reset_control *stmmac_ahb_rst;
+ 	struct stmmac_axi *axi;
+-- 
+2.30.2
+
