@@ -2,68 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0EB4458B33
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 10:17:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15764458B96
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 10:32:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238743AbhKVJUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 04:20:03 -0500
-Received: from smtprelay0061.hostedemail.com ([216.40.44.61]:33716 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229906AbhKVJUD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 04:20:03 -0500
-Received: from omf09.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 6649C101F57E3;
-        Mon, 22 Nov 2021 09:16:55 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf09.hostedemail.com (Postfix) with ESMTPA id 277BDE000377;
-        Mon, 22 Nov 2021 09:16:43 +0000 (UTC)
-Message-ID: <8e739443edb76961dfe949f82f52db9be9210adc.camel@perches.com>
-Subject: Re: [PATCH net-next] neighbor: Remove redundant if statement
-From:   Joe Perches <joe@perches.com>
-To:     Yajun Deng <yajun.deng@linux.dev>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Mon, 22 Nov 2021 01:16:53 -0800
-In-Reply-To: <20211122084909.18093-1-yajun.deng@linux.dev>
-References: <20211122084909.18093-1-yajun.deng@linux.dev>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1 
+        id S239104AbhKVJfO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 04:35:14 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44989 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238973AbhKVJfO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 04:35:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1637573528;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=belxqpIEPM8b5ddVw8XKTj7NYwBuhVnMMeNM/xGD1js=;
+        b=EmHpjYzrwpEm0HtcjiRdqU6j3iaHxYY6ckHVZwVP40wAxBdsJNO0uuZHKT9irqEt/GW69t
+        WQbMmxyjzFRCPIxpsgRzyF1WD5P/i/F46n+dtiA7M2ZF6IaZbG9ybU8TMWKIMg6cogR8um
+        YI687xxpOqXyjs+VkqrQo2XaPBfdx2c=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-444-ozrFILdJOOWn-L2dXpOrZQ-1; Mon, 22 Nov 2021 04:32:06 -0500
+X-MC-Unique: ozrFILdJOOWn-L2dXpOrZQ-1
+Received: by mail-ed1-f72.google.com with SMTP id p4-20020aa7d304000000b003e7ef120a37so14233557edq.16
+        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 01:32:06 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=belxqpIEPM8b5ddVw8XKTj7NYwBuhVnMMeNM/xGD1js=;
+        b=ZRFvM756G4htAdIrGHjlCT9Xwr9qyr5iKk1S7diSJAwU6k3k6czXlKQ+XMtY9vGbnN
+         d+e4sPgvRX6OaImfDU+lt3py/qwh4r7hHuqfD4ZSc1OY9I6PYpNeY7gPmcYPMJAoDWvD
+         y+Pigp3M8NePvnfu41ygxvwu7nDO3dQVNnVB8vy4JURjsI7pfBd4HRKaGA8vyA/V9Rxk
+         8KUa4taX5eRbWuQAi65KwiOPFEubp9d+L2WNZ7klZJmooloFpCPke6BVK4R6ipAi6G6s
+         nNltNnurrgPqtGfoeZbGkcahVcqAJ60tLTEr760f28kbcicLhL+IVfKGXfBcrUNevTjD
+         Szrg==
+X-Gm-Message-State: AOAM533rmMM+3o9IxliMiRbtrQw9zFGd1WEb9/HFKVL4JptsIKcBPzQ+
+        jNoCmnwucTsOUHGJJvSX25YW7efTV2/d0LpB71BtIIVJWmW0ulxfYUADF2QZliMNG3tK2zOTYGR
+        CDoSZqMWtjK4A9ojJ
+X-Received: by 2002:a17:906:b2d0:: with SMTP id cf16mr38631561ejb.52.1637573525285;
+        Mon, 22 Nov 2021 01:32:05 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwaDt8hngfWzHfFUTs49+2toJfr7BA5IoCX89wF8FGrB5kAMe2yz7xlpf9wWvnAeYerGQlgwg==
+X-Received: by 2002:a17:906:b2d0:: with SMTP id cf16mr38631543ejb.52.1637573525115;
+        Mon, 22 Nov 2021 01:32:05 -0800 (PST)
+Received: from redhat.com ([2.55.128.84])
+        by smtp.gmail.com with ESMTPSA id jg32sm3539120ejc.43.2021.11.22.01.32.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Nov 2021 01:32:04 -0800 (PST)
+Date:   Mon, 22 Nov 2021 04:32:01 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Halil Pasic <pasic@linux.ibm.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        f.hetzelt@tu-berlin.de, david.kaplan@amd.com,
+        konrad.wilk@oracle.com
+Subject: [PATCH] vsock/virtio: suppress used length validation
+Message-ID: <20211122093036.285952-1-mst@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Stat-Signature: 5u3dos19bc6fu7yy91sc6osj8xgtxj1k
-X-Rspamd-Server: rspamout01
-X-Rspamd-Queue-Id: 277BDE000377
-X-Spam-Status: No, score=-0.61
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX19frJoCgBWDCW7X0Sjr/8MnIj7vwb0W/24=
-X-HE-Tag: 1637572603-758670
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
+X-Mutt-Fcc: =sent
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2021-11-22 at 16:49 +0800, Yajun Deng wrote:
-> The if statement already exists in the __neigh_event_send() function,
-> remove redundant if statement.
-[]
-> diff --git a/include/net/neighbour.h b/include/net/neighbour.h
-[]
-> @@ -452,9 +452,7 @@ static inline int neigh_event_send(struct neighbour *neigh, struct sk_buff *skb)
->  	
->  	if (READ_ONCE(neigh->used) != now)
->  		WRITE_ONCE(neigh->used, now);
-> -	if (!(neigh->nud_state&(NUD_CONNECTED|NUD_DELAY|NUD_PROBE)))
-> -		return __neigh_event_send(neigh, skb);
-> -	return 0;
-> +	return __neigh_event_send(neigh, skb);
->  }
+It turns out that vhost vsock violates the virtio spec
+by supplying the out buffer length in the used length
+(should just be the in length).
+As a result, attempts to validate the used length fail with:
+vmw_vsock_virtio_transport virtio1: tx: used len 44 is larger than in buflen 0
 
-Perhaps this is an optimization to avoid the lock/unlock in __neigh_event_send?
-If so a comment could be useful.
+Since vsock driver does not use the length fox tx and
+validates the length before use for rx, it is safe to
+suppress the validation in virtio core for this driver.
 
-And also perhaps this code would be clearer with the test reversed:
+Reported-by: Halil Pasic <pasic@linux.ibm.com>
+Fixes: 939779f5152d ("virtio_ring: validate used buffer length")
+Cc: "Jason Wang" <jasowang@redhat.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ net/vmw_vsock/virtio_transport.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-	if (neigh->nud_state & (NUD_CONNECTED | NUD_DELAY | NUD_PROBE))
-		return 0;
-
-	return __neigh_event_send(neigh, skb);
-
+diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+index 4f7c99dfd16c..3f82b2f1e6dd 100644
+--- a/net/vmw_vsock/virtio_transport.c
++++ b/net/vmw_vsock/virtio_transport.c
+@@ -731,6 +731,7 @@ static unsigned int features[] = {
+ static struct virtio_driver virtio_vsock_driver = {
+ 	.feature_table = features,
+ 	.feature_table_size = ARRAY_SIZE(features),
++	.suppress_used_validation = true,
+ 	.driver.name = KBUILD_MODNAME,
+ 	.driver.owner = THIS_MODULE,
+ 	.id_table = id_table,
+-- 
+MST
 
