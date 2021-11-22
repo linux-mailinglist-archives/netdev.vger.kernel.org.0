@@ -2,72 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEEAA458F65
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 14:30:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A1EC458F70
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 14:32:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232910AbhKVNdR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 08:33:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44454 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232194AbhKVNdQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Nov 2021 08:33:16 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 143C8604DA;
-        Mon, 22 Nov 2021 13:30:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637587810;
-        bh=1Ud4ei4JYPWOsKbjw1UeAYMo9UsrsPCvIPRUaUg8Cc0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=W0GQ1931yQ/5ZI3cKJXaVva3dp7q//9lfTQpc5oX2kJecwWNIjg7e2GnUlFQfSYVh
-         cT3lheSzBxSr2oHsys2aGwGqq43TZoHX71Da3Eyr8TZ0jb9xtkmQAV7SIsIDLxsFXD
-         tUABR9bbQzAbPjyEljgFZ+046ghjfammBDuczZGXItAja+j3x4KFNpsHJAEN1MI331
-         GfmtsW4vlsJ7oEgaQvXrTgFiWo3T32frVWzSN9pdHrJekrShDbprBO5hixV+9E2E3K
-         uts1guIuHKQWPFLuiRFUykFOeiuTmowyEAFOKQHaoIguy7fm5MGypVIMMMHeRfySkO
-         44999zca6rQHQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 09E4A609D9;
-        Mon, 22 Nov 2021 13:30:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S236718AbhKVNfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 08:35:38 -0500
+Received: from kylie.crudebyte.com ([5.189.157.229]:47929 "EHLO
+        kylie.crudebyte.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234198AbhKVNff (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 08:35:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=fhLYsN37BNK91WHy0l5pcGO68F+xD/Qi0X1ctJLUJPA=; b=afvdlbHrksI8nqCRxeFljPpIwr
+        qsutE3PqllxGcYq4gEDoERF/5i/YaPzdatZMp1reCLJAvrvmhTjsLV6cuiFq5NkBp/WHGloF2QH4B
+        stTwzQkUsPd7kowGNCMtTaqu+qboaNGhQUnJIqAib+sXomTGZ7l3z9/P5gbhra6br5BiEF6l2CtEa
+        5AcKQZ0Z1Xc+V+MTOx49FKfh96AfghmTu8rgdHhTf2hEB2/ldE7sBazcuafRijCU0m5/pgS4Aj0Wa
+        vavoeIMinNwYHuzfQ+bkZtqVphvE0TZZBSHJnCcdvkN1RzlM8196woI5cflKV8ZSO84Qw2wyBhS0R
+        bFqwWNAZkVfdpY6sgKgxO7TJI5Dn36dovbd1jW9ZXxrX3JKyAdYpNoHoZ0ODcCmx646pvNQBnPWXZ
+        NqnyhkfLMhP4XBz3CEUFtn8VtcHBmE0JHrhNvERamqiz+da2W077pjOXbB/8xntPF+QeOqzzlGlXs
+        0HcAYH+avM2V8BFMHGBmwV0YTxCuCU4p+7XL6MJUcVaM5NSgnmDn3owzC9aiW8PwXmnhtkoL1vsEu
+        70kcyvGF2sbEypaxu0lN09c0HhZn7hJLG/EDSdWlX9w1IKPkFUT0LelV3tIKIFs8zMyMr4iCJ7xdT
+        BwTZuANNvgXFRxMVMdpXFAxwwwJEJj3lbm3G8tSpI=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     Nikolay Kichukov <nikolay@oldum.net>,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>
+Subject: Re: [PATCH v3 6/7] 9p/trans_virtio: support larger msize values
+Date:   Mon, 22 Nov 2021 14:32:23 +0100
+Message-ID: <1797352.eH9cFvQebf@silver>
+In-Reply-To: <YZrEPj9WLx36Pm3k@codewreck.org>
+References: <YZl+eD6r0iIGzS43@codewreck.org> <4244024.q9Xco3kuGk@silver> <YZrEPj9WLx36Pm3k@codewreck.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v6 0/3] TSN endpoint Ethernet MAC driver
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163758781003.2556.6411296816480904986.git-patchwork-notify@kernel.org>
-Date:   Mon, 22 Nov 2021 13:30:10 +0000
-References: <20211119225826.19617-1-gerhard@engleder-embedded.com>
-In-Reply-To: <20211119225826.19617-1-gerhard@engleder-embedded.com>
-To:     Gerhard Engleder <gerhard@engleder-embedded.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        richardcochran@gmail.com, netdev@vger.kernel.org
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Fri, 19 Nov 2021 23:58:23 +0100 you wrote:
-> This series adds a driver for my FPGA based TSN endpoint Ethernet MAC.
-> It also includes the device tree binding.
+On Sonntag, 21. November 2021 23:12:14 CET Dominique Martinet wrote:
+> Christian Schoenebeck wrote on Sun, Nov 21, 2021 at 05:57:30PM +0100:
+> > > Although frankly as I said if we're going to do this, we actual can
+> > > majorate the actual max for all operations pretty easily thanks to the
+> > > count parameter -- I guess it's a bit more work but we can put arbitrary
+> > > values (e.g. 8k for all the small stuff) instead of trying to figure it
+> > > out more precisely; I'd just like the code path to be able to do it so
+> > > we only do that rechurn once.
+> > 
+> > Looks like we had a similar idea on this. My plan was something like this:
+> > 
+> > static int max_msg_size(enum msg_type) {
+> > 
+> >     switch (msg_type) {
+> >     
+> >         /* large zero copy messages */
+> >         case Twrite:
+> >         case Tread:
+> >         
+> >         case Treaddir:
+> >             BUG_ON(true);
+> >         
+> >         /* small messages */
+> >         case Tversion:
+> >         ....
+> >         
+> >             return 8k; /* to be replaced with appropriate max value */
+> >     
+> >     }
+> > 
+> > }
+> > 
+> > That would be a quick start and allow to fine grade in future. It would
+> > also provide a safety net, e.g. the compiler would bark if a new message
+> > type is added in future.
 > 
-> The device is designed as Ethernet MAC for TSN networks. It will be used
-> in PLCs with real-time requirements up to isochronous communication with
-> protocols like OPC UA Pub/Sub.
-> 
-> [...]
+> I assume that'd only be used if the caller does not set an explicit
+> limit, at which point we're basically using a constant and the function
+> coud be replaced by a P9_SMALL_MSG_SIZE constant... But yes, I agree
+> with the idea, it's these three calls that deal with big buffers in
+> either emission or reception (might as well not allocate a 128MB send
+> buffer for Tread ;))
 
-Here is the summary with links:
-  - [net-next,v6,1/3] dt-bindings: Add vendor prefix for Engleder
-    https://git.kernel.org/netdev/net-next/c/2b34a288d200
-  - [net-next,v6,2/3] dt-bindings: net: Add tsnep Ethernet controller
-    https://git.kernel.org/netdev/net-next/c/603094b2cdb7
-  - [net-next,v6,3/3] tsnep: Add TSN endpoint Ethernet MAC driver
-    https://git.kernel.org/netdev/net-next/c/403f69bbdbad
+I "think" this could be used for all 9p message types except for the listed 
+former three, but I'll review the 9p specs more carefully before v4. For Tread 
+and Twrite we already received the requested size, which just leaves Treaddir, 
+which is however indeed tricky, because I don't think we have any info how 
+many directory entries we could expect.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+A simple compile time constant (e.g. one macro) could be used instead of this 
+function. If you prefer a constant instead, I could go for it in v4 of course. 
+For this 9p client I would recommend a function though, simply because this 
+code has already seen some authors come and go over the years, so it might be 
+worth the redundant code for future safety. But I'll adapt to what others 
+think.
+
+Greg, opinion?
+
+Best regards,
+Christian Schoenebeck
 
 
