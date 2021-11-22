@@ -2,593 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 194B245889F
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 05:28:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F5F54588C7
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 06:18:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231684AbhKVEbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Nov 2021 23:31:32 -0500
-Received: from pi.codeconstruct.com.au ([203.29.241.158]:54950 "EHLO
-        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229870AbhKVEbb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Nov 2021 23:31:31 -0500
-Received: by codeconstruct.com.au (Postfix, from userid 10000)
-        id 479292022C; Mon, 22 Nov 2021 12:28:24 +0800 (AWST)
-From:   Jeremy Kerr <jk@codeconstruct.com.au>
-To:     netdev@vger.kernel.org
-Cc:     Matt Johnston <matt@codeconstruct.com.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH net-next] mctp: Add MCTP-over-serial transport binding
-Date:   Mon, 22 Nov 2021 12:28:17 +0800
-Message-Id: <20211122042817.2988517-1-jk@codeconstruct.com.au>
-X-Mailer: git-send-email 2.30.2
+        id S229528AbhKVFVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 00:21:38 -0500
+Received: from mail-dm3nam07on2065.outbound.protection.outlook.com ([40.107.95.65]:13153
+        "EHLO NAM02-DM3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229505AbhKVFVh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Nov 2021 00:21:37 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=f1auRPx39nQWvCCPJFvK9RuffnVkXa4Wc/yrtRzf8ehEgbKdGvHvAAG7FIsPtqV4kY4E04lLZgTRdv7l+o39YdmuDBzEB9PH974ioco0IMidd7siC8nZzgvtHRDoHcKrXVDSvx3TMcVYcI3JFc3dAOwOyDI3k61oCgBkHHwvS6Yx3OIUHzqO/z83kkYekgRH4qPl6piTPmRDwLfG51+nGcDVYBbnZORZF95gEmxhU7XlHFRB8NuQnD6iYZZyovoR1utWMZds4Tt2jlGniNbs9UFwSbrqyoOGUY8N9GQ0J/0Q1xaHE9sfqW0ZmfPiIrDJwq6wIDLdSzQN+WmimgX51Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1DhbUxa490+hheY1C2F5eDrECSFC1c0PIgC//vpdgLI=;
+ b=NxEFpQ8K4SLEvOOclPrO5s1veajksYi9MyCDUbP/JiWfE5roNQf1KMkBf50bvuVm//FDeAdwns9fxh4zE2WrrZ6ZtXKQa6HM/k7Q1ULypQxGgl/gMKn9xseMsiouKA+SISZgKjvRQaAjL1cHbrFSmbHlMEWJYQLBAOvXScOjbKrYhvGyKeCc1aJsrkQ+XhdjwuQUx0miv5LXZ0+4wq0Lrb7yOTRtJnbYBwlu+U9vcmjZU8uzs8/tOk5g1ajXErAT0Se0CMWTHAMmd1e+ZyRszGX6QS3PlUPohhBbQ/atbosH4V04fGxdArFqRBLhRxxDx95IjV3y7rVhpqlRul2cIA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1DhbUxa490+hheY1C2F5eDrECSFC1c0PIgC//vpdgLI=;
+ b=Uc8asu0zuBmQa1uHzLQg0CMB+opHwrcjDGPW3Q6OodaatAOPKE+kRdwOBjRmwfcbGxnU6GAu3Gy+II0T5dBbcdqxYwIfzY1fL3Ojcl3l3u/c6TBLzaPJbDoNGX+cCT95fsHfZKFJTUTn5f72vRHTRnP/liXH5dSIvTVCzZ2hvyQpRhyGVGpDL0AHvVYftgwZNmHuGjplYD3+9vo0Kv6mlABZpWMEb0mzbFchxzCCLr2nHCmGDYVzLXskEbJz7WTPsEkFp0TyRWstmSYzDZKn17AU2fdlLwoFiAQOa/XkfctzxPLIx1V+cBA4eCLVBD5m/zJxWTuhDQY7vWRDA5Ph0w==
+Received: from PH0PR12MB5481.namprd12.prod.outlook.com (2603:10b6:510:d4::15)
+ by PH0PR12MB5401.namprd12.prod.outlook.com (2603:10b6:510:d4::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.19; Mon, 22 Nov
+ 2021 05:18:30 +0000
+Received: from PH0PR12MB5481.namprd12.prod.outlook.com
+ ([fe80::5515:f45e:56f5:b35a]) by PH0PR12MB5481.namprd12.prod.outlook.com
+ ([fe80::5515:f45e:56f5:b35a%3]) with mapi id 15.20.4713.022; Mon, 22 Nov 2021
+ 05:18:30 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+CC:     David Ahern <dsahern@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH iproute2] vdpa: align uapi headers
+Thread-Topic: [PATCH iproute2] vdpa: align uapi headers
+Thread-Index: AQHX3KYeo+q44itHa0+iVFz0BpQheKwJlb0AgAVIghCAABZrgIAAEsHQ
+Date:   Mon, 22 Nov 2021 05:18:29 +0000
+Message-ID: <PH0PR12MB5481DFA1C8135CA639150F4DDC9F9@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20211118180000.30627-1-stephen@networkplumber.org>
+        <163725900883.587.15945763914190641822.git-patchwork-notify@kernel.org>
+        <PH0PR12MB54816468137C264E45CCE9C6DC9F9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20211121201111.043f8be9@hermes.local>
+In-Reply-To: <20211121201111.043f8be9@hermes.local>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: eec3d48c-b3f9-4e38-4a4c-08d9ad778573
+x-ms-traffictypediagnostic: PH0PR12MB5401:
+x-microsoft-antispam-prvs: <PH0PR12MB5401AA9F71A4910D37E68D87DC9F9@PH0PR12MB5401.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:78;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: l6lK2M7ArGM9Z54jE3Oho8py7tGAejKLBbJCP4q6raTjDVApWvpnDIMni7JTdhpWWKxcCh9nr5KUwnyTEIP/AqZClmtm8UIOw/EIghJnOXGU3xwsHVtTMwljZa/Oz21PiA8oWS/q+ZVsciUD2UTIgMDdzDJ/pHYyfmkSY7pYf5YngH7dy0fQH5WBwdRrvm1oeASJ4VueiOKe9CHFOo3GMzE3FUjsfsdyJyTpWOAYWeCDNWKrSdQfdbyLQtmTxpUt0GAv2aUzkvyjeY05c2aaIFMTX9TYQcHWR6OPwX+Nmdf5icthM9vBFTOW8v3Y6s6uwKU1QnUdiUpbsEUxze9o/rP8Ti1Vo2Je1TVTk2D6uup3kRaHUwg5Ph967VHvSF3eBXFiBNxasmf8JMrAbb+BF060JTe/t+Lp2SafW4aKXlPARBCOSADXTql8Vtwjb9oWOgcLQofDxygMEJbXGeAx3f8Jdv2K3H11Y7do8EF1WWSIjTxmbPuk3smYIQ9WE8Ft0Wed9mbDC8/jxcaqNDiU6OWRB1fx9efqrbsjG8ynqZtMVVbWjewtkjZJ1DJmhkeM2+gx5CxRW5x6ioJnxaDGIUtj81WVGNCf35VZapT18wW53v+Io/E/eRwinOSxzisrdua8DZ1qhsEBgwSWtJ13JhqgWAtNqu6OnySLDtMbVbwDVMtnvpkH6QC8HXqzQN20rFjrx4AH8MpoG+3K7eJmFCwZH9ZS1S2sxC4Qjey03Ccys0X1qD2zOK6QkLI4bnT3pnRSYHYhCpkafL/fkQcdOTIl42Q+ebR8fJ/5pF8Gti4=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(71200400001)(186003)(55016002)(76116006)(38070700005)(8676002)(66946007)(6916009)(8936002)(84970400001)(83380400001)(5660300002)(6506007)(55236004)(4326008)(26005)(38100700002)(7696005)(316002)(122000001)(52536014)(4744005)(33656002)(54906003)(2906002)(9686003)(66446008)(66476007)(64756008)(966005)(508600001)(66556008)(86362001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?hnmkM7O8REQkXDObfRn28hv+z1eN5ssTev9Sh8N38Ce5YAimo+oWlssTchms?=
+ =?us-ascii?Q?0/1qZANQospJkI0A6RfpliIzq101rrK/MH+LSlRL+EsAt1MZ2kitj88OELrA?=
+ =?us-ascii?Q?IutwTZPkxk0AdcrKxN+0RuD+KFldrwOOx+NZJFWwLMGFBpCKKVMkZiz2Ub6u?=
+ =?us-ascii?Q?Nm4rTE/zTxIHz9yTrSrh4XBBQdjjP8HNE61/70IWmpsfsCboUjKtocUkyhUE?=
+ =?us-ascii?Q?N9JgGl3Bni4GLMCTXjWwEkNBt45RekaMg6/BYbAnssHyp5ZJH5JqXJhxJqb5?=
+ =?us-ascii?Q?YqxwCBkF2HxZHzUKHSPbDvnLgHDTW3onivHkwNPmlUZE0tbVKUHOLoadTFBk?=
+ =?us-ascii?Q?nK1qpTGfOCF4o25kzTdwPePyQIk7i9+sfRf13YLAhNsoOiksSr6xfqBD9iPk?=
+ =?us-ascii?Q?Lp1VSLkGPKnHe1qappq0kiEODcCMmkgJol3cuxKS/4IA1o5R0q5Tmnl64VVV?=
+ =?us-ascii?Q?y34pOMMOGRHcH/f2CdPtI0N1ou2eIVzy/nD8bD6NFznO73+mXwasbx/gVWE1?=
+ =?us-ascii?Q?XlamVfaia3zzjgVcJIj6sLG6xmugZ4+NG7ki0RFHbXbAtdjri1dmvx4T2oy5?=
+ =?us-ascii?Q?LzcgTE6t4cn1D0tpXe+bSiyO5Yx9OxPDikADo840mOk72juG7nty+jh4uwYP?=
+ =?us-ascii?Q?xUk2YkVcjQgzxMRhFjtQNIo9mDMLnmmLtAQ+CfIIzb1xfXMuv2SLLQfDW0eQ?=
+ =?us-ascii?Q?zOSri8uPzix40Sm0gfz5LAwSlR+hM368VNlEdBljPxCWMKCDvGU5tI316qXc?=
+ =?us-ascii?Q?1lSLxAV8ysqv2Rmum9Lg/e3s/dUrt5AKNHU9g/rB0TZ3zzpJQSyF8yFCeNUd?=
+ =?us-ascii?Q?1LkemB7UWhI0BMohslO61L9j0BdWn/u+zSVxqFDfW53ayyUQGZeyaWjn49wC?=
+ =?us-ascii?Q?i01NQWTx40IKPIDgbs+aGIbCia0LDVlGBV3nlyT07uJPa2+B3IjvcsQR+KtB?=
+ =?us-ascii?Q?x0q66wp+RuTSUhss0UYzvU1QT739T13W0QT+BwWimfuBSEUYGn8EBjVNSZHX?=
+ =?us-ascii?Q?Cw8V3dd9Hps2WaE+YjuMJ8TpWs6CdqW4wUugoJR/kIGIjUc59MDRFFzA09j7?=
+ =?us-ascii?Q?nT8qmNfDgQMH8dGBUy11mmr0oAIBDSEZ1cq7RQiptcyUECrl3qI021PG692E?=
+ =?us-ascii?Q?VA4PCF3U8bDS9JZrcWG9v9lGAjoBtCQqd+HeBPdvfQiU3UdrdjaTzGBchWSx?=
+ =?us-ascii?Q?0nHTUPdE6H5KYQD4301QgQHwyw4oIAvwzqbDt9Z2V3YLA8vxIE2rrtJUvfqk?=
+ =?us-ascii?Q?C03OaNnLjGi0J4L5R+89RAk6gRbTmYdCBDY83TOfYRMtUix3MQdKWJULBgqN?=
+ =?us-ascii?Q?wmCTDcsut8jZ/FYaJw5zeTMldlRu49rGcj9JwSqfgZ6j0nmtpuZTbyynHNtx?=
+ =?us-ascii?Q?Kfm6BrXZ5UVI4fPMBqsUIRO87zf5gNYC2BkosA0JHtt1hDuVOHDwchrteuCP?=
+ =?us-ascii?Q?YKvMaksFjmdOPu97WLB0mqKJlqHoKoJx5Ly7iSnph1xHRYW2xpuopjP6egn/?=
+ =?us-ascii?Q?oQTDeBGOV9NR2zad5rvQBmGhwswK1cBzLivNdADfOSx2HW4JVn4NhxJBli9P?=
+ =?us-ascii?Q?WY5NSx2xFN4XtpIBo9fe9Ds+lMZW/L7lVOPNWWtZ2jfwrvU6ROturAXvIAvo?=
+ =?us-ascii?Q?Dbuu1LEb2xR/R4V3KYh43TQ=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: eec3d48c-b3f9-4e38-4a4c-08d9ad778573
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Nov 2021 05:18:30.0518
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: pZnpjuQ+kdXuSvXoI/taq9rcU5OneXFmphHXM2dGp14N9gL3kDxwRcmqxDjc/jSSx3gvI/rwVB4t16ZghSQppw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5401
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This change adds a MCTP Serial transport binding, as per DMTF DSP0253.
-This is implemented as a new serial line discipline, and can be attached
-to arbitrary serial devices.
 
-The 'mctp' utility provides the ldisc magic to set up the serial link:
 
-  # mctp link serial /dev/ttyS0 &
-  # mctp link
-  dev lo index 1 address 0x00:00:00:00:00:00 net 1 mtu 65536 up
-  dev mctpserial0 index 5 address 0x(no-addr) net 1 mtu 68 down
-
-Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
----
- drivers/net/mctp/Kconfig       |  11 +
- drivers/net/mctp/Makefile      |   1 +
- drivers/net/mctp/mctp-serial.c | 494 +++++++++++++++++++++++++++++++++
- include/uapi/linux/tty.h       |   1 +
- 4 files changed, 507 insertions(+)
- create mode 100644 drivers/net/mctp/mctp-serial.c
-
-diff --git a/drivers/net/mctp/Kconfig b/drivers/net/mctp/Kconfig
-index d8f966cedc89..02f3c2d600fd 100644
---- a/drivers/net/mctp/Kconfig
-+++ b/drivers/net/mctp/Kconfig
-@@ -3,6 +3,17 @@ if MCTP
- 
- menu "MCTP Device Drivers"
- 
-+config MCTP_SERIAL
-+	tristate "MCTP serial transport"
-+	depends on TTY
-+	select CRC_CCITT
-+	help
-+	  This driver provides an MCTP-over-serial interface, through a
-+	  serial line-discipline. By attaching the ldisc to a serial device,
-+	  we get a new net device to transport MCTP packets.
-+
-+	  Say y here if you need to connect to MCTP devices over serial.
-+
- endmenu
- 
- endif
-diff --git a/drivers/net/mctp/Makefile b/drivers/net/mctp/Makefile
-index e69de29bb2d1..d32622613ce4 100644
---- a/drivers/net/mctp/Makefile
-+++ b/drivers/net/mctp/Makefile
-@@ -0,0 +1 @@
-+obj-$(CONFIG_MCTP_SERIAL) += mctp-serial.o
-diff --git a/drivers/net/mctp/mctp-serial.c b/drivers/net/mctp/mctp-serial.c
-new file mode 100644
-index 000000000000..30950f1ea6f4
---- /dev/null
-+++ b/drivers/net/mctp/mctp-serial.c
-@@ -0,0 +1,494 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Management Component Transport Protocol (MCTP) - serial transport
-+ * binding.
-+ *
-+ * Copyright (c) 2021 Code Construct
-+ */
-+
-+#include <linux/idr.h>
-+#include <linux/if_arp.h>
-+#include <linux/module.h>
-+#include <linux/skbuff.h>
-+#include <linux/tty.h>
-+#include <linux/workqueue.h>
-+#include <linux/crc-ccitt.h>
-+
-+#include <linux/mctp.h>
-+#include <net/mctp.h>
-+#include <net/pkt_sched.h>
-+
-+#define MCTP_SERIAL_MTU		68 /* base mtu (64) + mctp header */
-+#define MCTP_SERIAL_FRAME_MTU	(MCTP_SERIAL_MTU + 6) /* + serial framing */
-+
-+#define MCTP_SERIAL_VERSION	0x1
-+
-+#define BUFSIZE			MCTP_SERIAL_FRAME_MTU
-+
-+#define BYTE_FRAME		0x7e
-+#define BYTE_ESC		0x7d
-+
-+static DEFINE_IDA(mctp_serial_ida);
-+
-+enum mctp_serial_state {
-+	STATE_IDLE,
-+	STATE_START,
-+	STATE_HEADER,
-+	STATE_DATA,
-+	STATE_ESCAPE,
-+	STATE_TRAILER,
-+	STATE_DONE,
-+	STATE_ERR,
-+};
-+
-+struct mctp_serial {
-+	struct net_device	*netdev;
-+	struct tty_struct	*tty;
-+
-+	int			idx;
-+
-+	/* protects our rx & tx state machines; held during both paths */
-+	spinlock_t		lock;
-+
-+	struct work_struct	tx_work;
-+	enum mctp_serial_state	txstate, rxstate;
-+	u16			txfcs, rxfcs, rxfcs_rcvd;
-+	unsigned int		txlen, rxlen;
-+	unsigned int		txpos, rxpos;
-+	unsigned char		txbuf[BUFSIZE],
-+				rxbuf[BUFSIZE];
-+};
-+
-+static bool needs_escape(unsigned char c)
-+{
-+	return c == BYTE_ESC || c == BYTE_FRAME;
-+}
-+
-+static int next_chunk_len(struct mctp_serial *dev)
-+{
-+	int i;
-+
-+	/* either we have no bytes to send ... */
-+	if (dev->txpos == dev->txlen)
-+		return 0;
-+
-+	/* ... or the next byte to send is an escaped byte; requiring a
-+	 * single-byte chunk...
-+	 */
-+	if (needs_escape(dev->txbuf[dev->txpos]))
-+		return 1;
-+
-+	/* ... or we have one or more bytes up to the next escape - this chunk
-+	 * will be those non-escaped bytes, and does not include the escaped
-+	 * byte.
-+	 */
-+	for (i = 1; i + dev->txpos + 1 < dev->txlen; i++) {
-+		if (needs_escape(dev->txbuf[dev->txpos + i + 1]))
-+			break;
-+	}
-+
-+	return i;
-+}
-+
-+static int write_chunk(struct mctp_serial *dev, unsigned char *buf, int len)
-+{
-+	return dev->tty->ops->write(dev->tty, buf, len);
-+}
-+
-+static void mctp_serial_tx_work(struct work_struct *work)
-+{
-+	struct mctp_serial *dev = container_of(work, struct mctp_serial,
-+					       tx_work);
-+	unsigned char c, buf[3];
-+	unsigned long flags;
-+	int len, txlen;
-+
-+	spin_lock_irqsave(&dev->lock, flags);
-+
-+	/* txstate represents the next thing to send */
-+	switch (dev->txstate) {
-+	case STATE_START:
-+		dev->txpos = 0;
-+		fallthrough;
-+	case STATE_HEADER:
-+		buf[0] = BYTE_FRAME;
-+		buf[1] = MCTP_SERIAL_VERSION;
-+		buf[2] = dev->txlen;
-+
-+		if (!dev->txpos)
-+			dev->txfcs = crc_ccitt(0, buf + 1, 2);
-+
-+		txlen = write_chunk(dev, buf + dev->txpos, 3 - dev->txpos);
-+		if (txlen <= 0) {
-+			dev->txstate = STATE_ERR;
-+		} else {
-+			dev->txpos += txlen;
-+			if (dev->txpos == 3) {
-+				dev->txstate = STATE_DATA;
-+				dev->txpos = 0;
-+			}
-+		}
-+		break;
-+
-+	case STATE_ESCAPE:
-+		buf[0] = dev->txbuf[dev->txpos] & ~0x20;
-+		txlen = write_chunk(dev, buf, 1);
-+		dev->txpos += txlen;
-+		if (dev->txpos == dev->txlen) {
-+			dev->txstate = STATE_TRAILER;
-+			dev->txpos = 0;
-+		}
-+
-+		break;
-+
-+	case STATE_DATA:
-+		len = next_chunk_len(dev);
-+		if (len) {
-+			c = dev->txbuf[dev->txpos];
-+			if (len == 1 && needs_escape(c)) {
-+				buf[0] = BYTE_ESC;
-+				buf[1] = c & ~0x20;
-+				dev->txfcs = crc_ccitt_byte(dev->txfcs, c);
-+				txlen = write_chunk(dev, buf, 2);
-+				if (txlen == 2)
-+					dev->txpos++;
-+				else if (txlen == 1)
-+					dev->txstate = STATE_ESCAPE;
-+			} else {
-+				txlen = write_chunk(dev,
-+						    dev->txbuf + dev->txpos,
-+						    len);
-+				dev->txfcs = crc_ccitt(dev->txfcs,
-+						       dev->txbuf + dev->txpos,
-+						       txlen);
-+				dev->txpos += txlen;
-+			}
-+			if (dev->txstate == STATE_DATA &&
-+			    dev->txpos == dev->txlen) {
-+				dev->txstate = STATE_TRAILER;
-+				dev->txpos = 0;
-+			}
-+			break;
-+		}
-+		dev->txstate = STATE_TRAILER;
-+		fallthrough;
-+
-+	case STATE_TRAILER:
-+		buf[0] = dev->txfcs >> 8;
-+		buf[1] = dev->txfcs & 0xff;
-+		buf[2] = BYTE_FRAME;
-+		txlen = write_chunk(dev, buf + dev->txpos, 3 - dev->txpos);
-+		if (txlen <= 0) {
-+			dev->txstate = STATE_ERR;
-+		} else {
-+			dev->txpos += txlen;
-+			if (dev->txpos == 3) {
-+				dev->txstate = STATE_DONE;
-+				dev->txpos = 0;
-+			}
-+		}
-+		break;
-+	default:
-+		netdev_err_once(dev->netdev, "invalid tx state %d\n",
-+				dev->txstate);
-+	}
-+
-+	if (dev->txstate == STATE_DONE) {
-+		dev->netdev->stats.tx_packets++;
-+		dev->netdev->stats.tx_bytes += dev->txlen;
-+		dev->txlen = 0;
-+		dev->txpos = 0;
-+		clear_bit(TTY_DO_WRITE_WAKEUP, &dev->tty->flags);
-+		dev->txstate = STATE_IDLE;
-+		spin_unlock_irqrestore(&dev->lock, flags);
-+
-+		netif_wake_queue(dev->netdev);
-+	} else {
-+		spin_unlock_irqrestore(&dev->lock, flags);
-+	}
-+}
-+
-+static netdev_tx_t mctp_serial_tx(struct sk_buff *skb, struct net_device *ndev)
-+{
-+	struct mctp_serial *dev = netdev_priv(ndev);
-+	unsigned long flags;
-+
-+	WARN_ON(dev->txstate != STATE_IDLE);
-+
-+	if (skb->len > MCTP_SERIAL_MTU) {
-+		dev->netdev->stats.tx_dropped++;
-+		goto out;
-+	}
-+
-+	spin_lock_irqsave(&dev->lock, flags);
-+	netif_stop_queue(dev->netdev);
-+	skb_copy_bits(skb, 0, dev->txbuf, skb->len);
-+	dev->txpos = 0;
-+	dev->txlen = skb->len;
-+	dev->txstate = STATE_START;
-+	spin_unlock_irqrestore(&dev->lock, flags);
-+
-+	set_bit(TTY_DO_WRITE_WAKEUP, &dev->tty->flags);
-+	schedule_work(&dev->tx_work);
-+
-+out:
-+	kfree_skb(skb);
-+	return NETDEV_TX_OK;
-+}
-+
-+static void mctp_serial_tty_write_wakeup(struct tty_struct *tty)
-+{
-+	struct mctp_serial *dev;
-+
-+	rcu_read_lock();
-+	dev = rcu_dereference(tty->disc_data);
-+	schedule_work(&dev->tx_work);
-+	rcu_read_unlock();
-+}
-+
-+static void mctp_serial_rx(struct mctp_serial *dev)
-+{
-+	struct mctp_skb_cb *cb;
-+	struct sk_buff *skb;
-+
-+	if (dev->rxfcs != dev->rxfcs_rcvd) {
-+		dev->netdev->stats.rx_dropped++;
-+		dev->netdev->stats.rx_crc_errors++;
-+		return;
-+	}
-+
-+	skb = netdev_alloc_skb(dev->netdev, dev->rxlen);
-+	if (!skb) {
-+		dev->netdev->stats.rx_dropped++;
-+		return;
-+	}
-+
-+	skb->protocol = htons(ETH_P_MCTP);
-+	skb_put_data(skb, dev->rxbuf, dev->rxlen);
-+	skb_reset_network_header(skb);
-+
-+	cb = __mctp_cb(skb);
-+	cb->halen = 0;
-+
-+	netif_rx_ni(skb);
-+	dev->netdev->stats.rx_packets++;
-+	dev->netdev->stats.rx_bytes += dev->rxlen;
-+}
-+
-+static void mctp_serial_push_header(struct mctp_serial *dev, unsigned char c)
-+{
-+	switch (dev->rxpos) {
-+	case 0:
-+		if (c == BYTE_FRAME)
-+			dev->rxpos++;
-+		else
-+			dev->rxstate = STATE_ERR;
-+		break;
-+	case 1:
-+		if (c == MCTP_SERIAL_VERSION) {
-+			dev->rxpos++;
-+			dev->rxfcs = crc_ccitt_byte(0, c);
-+		} else {
-+			dev->rxstate = STATE_ERR;
-+		}
-+		break;
-+	case 2:
-+		if (c > MCTP_SERIAL_FRAME_MTU) {
-+			dev->rxstate = STATE_ERR;
-+		} else {
-+			dev->rxlen = c;
-+			dev->rxpos = 0;
-+			dev->rxstate = STATE_DATA;
-+			dev->rxfcs = crc_ccitt_byte(dev->rxfcs, c);
-+		}
-+		break;
-+	}
-+}
-+
-+static void mctp_serial_push_trailer(struct mctp_serial *dev, unsigned char c)
-+{
-+	switch (dev->rxpos) {
-+	case 0:
-+		dev->rxfcs_rcvd = c << 8;
-+		dev->rxpos++;
-+		break;
-+	case 1:
-+		dev->rxfcs_rcvd |= c;
-+		dev->rxpos++;
-+		break;
-+	case 2:
-+		if (c != BYTE_FRAME) {
-+			dev->rxstate = STATE_ERR;
-+		} else {
-+			mctp_serial_rx(dev);
-+			dev->rxlen = 0;
-+			dev->rxpos = 0;
-+			dev->rxstate = STATE_IDLE;
-+		}
-+		break;
-+	}
-+}
-+
-+static void mctp_serial_push(struct mctp_serial *dev, unsigned char c)
-+{
-+	switch (dev->rxstate) {
-+	case STATE_IDLE:
-+		dev->rxstate = STATE_HEADER;
-+		fallthrough;
-+	case STATE_HEADER:
-+		mctp_serial_push_header(dev, c);
-+		break;
-+
-+	case STATE_ESCAPE:
-+		c |= 0x20;
-+		fallthrough;
-+	case STATE_DATA:
-+		if (dev->rxstate != STATE_ESCAPE && c == BYTE_ESC) {
-+			dev->rxstate = STATE_ESCAPE;
-+		} else {
-+			dev->rxfcs = crc_ccitt_byte(dev->rxfcs, c);
-+			dev->rxbuf[dev->rxpos] = c;
-+			dev->rxpos++;
-+			dev->rxstate = STATE_DATA;
-+			if (dev->rxpos == dev->rxlen) {
-+				dev->rxpos = 0;
-+				dev->rxstate = STATE_TRAILER;
-+			}
-+		}
-+		break;
-+
-+	case STATE_TRAILER:
-+		mctp_serial_push_trailer(dev, c);
-+		break;
-+
-+	case STATE_ERR:
-+		if (c == BYTE_FRAME)
-+			dev->rxstate = STATE_IDLE;
-+		break;
-+
-+	default:
-+		netdev_err_once(dev->netdev, "invalid rx state %d\n",
-+				dev->rxstate);
-+	}
-+}
-+
-+static void mctp_serial_tty_receive_buf(struct tty_struct *tty,
-+					const unsigned char *c,
-+					const char *f, int len)
-+{
-+	struct mctp_serial *dev = tty->disc_data;
-+	int i;
-+
-+	if (!netif_running(dev->netdev))
-+		return;
-+
-+	/* we don't (currently) use the flag bytes, just data. */
-+	for (i = 0; i < len; i++)
-+		mctp_serial_push(dev, c[i]);
-+}
-+
-+static const struct net_device_ops mctp_serial_netdev_ops = {
-+	.ndo_start_xmit = mctp_serial_tx,
-+};
-+
-+static void mctp_serial_setup(struct net_device *ndev)
-+{
-+	ndev->type = ARPHRD_MCTP;
-+	ndev->mtu = MCTP_SERIAL_MTU;
-+	ndev->hard_header_len = 0;
-+	ndev->addr_len = 0;
-+	ndev->tx_queue_len = DEFAULT_TX_QUEUE_LEN;
-+	ndev->flags = IFF_NOARP;
-+	ndev->netdev_ops = &mctp_serial_netdev_ops;
-+	ndev->needs_free_netdev = true;
-+}
-+
-+static int mctp_serial_open(struct tty_struct *tty)
-+{
-+	struct mctp_serial *dev;
-+	struct net_device *ndev;
-+	char name[32];
-+	int idx, rc;
-+
-+	if (!capable(CAP_NET_ADMIN))
-+		return -EPERM;
-+
-+	if (!tty->ops->write)
-+		return -EOPNOTSUPP;
-+
-+	if (tty->disc_data)
-+		return -EEXIST;
-+
-+	idx = ida_alloc(&mctp_serial_ida, GFP_KERNEL);
-+	if (idx < 0)
-+		return idx;
-+
-+	snprintf(name, sizeof(name), "mctpserial%d", idx);
-+	ndev = alloc_netdev(sizeof(*dev), name, NET_NAME_ENUM,
-+			    mctp_serial_setup);
-+	if (!ndev) {
-+		rc = -ENOMEM;
-+		goto free_ida;
-+	}
-+
-+	dev = netdev_priv(ndev);
-+	dev->idx = idx;
-+	dev->tty = tty;
-+	dev->netdev = ndev;
-+	dev->txstate = STATE_IDLE;
-+	dev->rxstate = STATE_IDLE;
-+	spin_lock_init(&dev->lock);
-+	INIT_WORK(&dev->tx_work, mctp_serial_tx_work);
-+
-+	rc = register_netdev(ndev);
-+	if (rc)
-+		goto free_netdev;
-+
-+	tty->receive_room = 64 * 1024;
-+	tty->disc_data = dev;
-+
-+	return 0;
-+
-+free_netdev:
-+	free_netdev(ndev);
-+
-+free_ida:
-+	ida_free(&mctp_serial_ida, idx);
-+	return rc;
-+}
-+
-+static void mctp_serial_close(struct tty_struct *tty)
-+{
-+	struct mctp_serial *dev = tty->disc_data;
-+	int idx = dev->idx;
-+
-+	unregister_netdev(dev->netdev);
-+	ida_free(&mctp_serial_ida, idx);
-+}
-+
-+static struct tty_ldisc_ops mctp_ldisc = {
-+	.owner		= THIS_MODULE,
-+	.num		= N_MCTP,
-+	.name		= "mctp",
-+	.open		= mctp_serial_open,
-+	.close		= mctp_serial_close,
-+	.receive_buf	= mctp_serial_tty_receive_buf,
-+	.write_wakeup	= mctp_serial_tty_write_wakeup,
-+};
-+
-+static int __init mctp_serial_init(void)
-+{
-+	return tty_register_ldisc(&mctp_ldisc);
-+}
-+
-+static void __exit mctp_serial_exit(void)
-+{
-+	tty_unregister_ldisc(&mctp_ldisc);
-+}
-+
-+module_init(mctp_serial_init);
-+module_exit(mctp_serial_exit);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_AUTHOR("Jeremy Kerr <jk@codeconstruct.com.au>");
-+MODULE_DESCRIPTION("MCTP Serial transport");
-diff --git a/include/uapi/linux/tty.h b/include/uapi/linux/tty.h
-index 376cccf397be..a58deb3061eb 100644
---- a/include/uapi/linux/tty.h
-+++ b/include/uapi/linux/tty.h
-@@ -38,5 +38,6 @@
- #define N_NCI		25	/* NFC NCI UART */
- #define N_SPEAKUP	26	/* Speakup communication with synths */
- #define N_NULL		27	/* Null ldisc used for error handling */
-+#define N_MCTP		28	/* MCTP-over-serial */
- 
- #endif /* _UAPI_LINUX_TTY_H */
--- 
-2.30.2
-
+> From: Stephen Hemminger <stephen@networkplumber.org>
+> Sent: Monday, November 22, 2021 9:41 AM
+>=20
+> On Mon, 22 Nov 2021 02:52:29 +0000
+> Parav Pandit <parav@nvidia.com> wrote:
+>=20
+> > > From: patchwork-bot+netdevbpf@kernel.org <patchwork-
+> > > bot+netdevbpf@kernel.org>
+> > >
+> > > Hello:
+> > >
+> > > This patch was applied to iproute2/iproute2.git (main) by Stephen
+> Hemminger
+> > > <stephen@networkplumber.org>:
+> > >
+> > > On Thu, 18 Nov 2021 10:00:00 -0800 you wrote:
+> > > > Update vdpa headers based on 5.16.0-rc1 and remove redundant copy.
+> > > >
+> > > > Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+> > > > ---
+> > > >  include/uapi/linux/vdpa.h            | 47 ------------------------=
+----
+> >
+> > This will conflict with commit [1] in iproute2-next branch.
+> > [1] https://git.kernel.org/pub/scm/network/iproute2/iproute2-
+> next.git/commit/?h=3Dmaster&id=3Da21458fc35336108acd4b75b4d8e1ef7f7e7d9a
+> 1
+>=20
+> No worries, Dave will do a header merge.
+Ok. thanks.
