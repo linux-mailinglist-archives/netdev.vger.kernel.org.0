@@ -2,98 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AA7A458990
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 08:03:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C9AE45899C
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 08:06:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238710AbhKVHGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 02:06:21 -0500
-Received: from out0.migadu.com ([94.23.1.103]:57962 "EHLO out0.migadu.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238645AbhKVHGQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Nov 2021 02:06:16 -0500
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1637564587;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Gm4Rs72PHuHNHcW6ViEPu/5zqhq+qlChz2IJ0J5+d8Y=;
-        b=Lyjal9bHyGqpDrZYacX4/1DfIM/TqJVVH0kFjn166qIA0Bj+hzeYehYUsRaC4fg14onryr
-        Bmz50kfDjviIHXS5K8d71Z+o0OAaX2JY+hzyMacwgCyOco3fk22cWyiG6pvqsuCfPlyU0N
-        YHk6FLjuCsLvppwjXc2xzAHVMFRBYuA=
-From:   Yajun Deng <yajun.deng@linux.dev>
-To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yajun Deng <yajun.deng@linux.dev>
-Subject: [PATCH net-next] arp: Remove #ifdef CONFIG_PROC_FS
-Date:   Mon, 22 Nov 2021 15:02:36 +0800
-Message-Id: <20211122070236.14218-1-yajun.deng@linux.dev>
+        id S232507AbhKVHJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 02:09:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58458 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229806AbhKVHJd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 02:09:33 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31685C061574
+        for <netdev@vger.kernel.org>; Sun, 21 Nov 2021 23:06:27 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id y14-20020a17090a2b4e00b001a5824f4918so16067110pjc.4
+        for <netdev@vger.kernel.org>; Sun, 21 Nov 2021 23:06:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rhg9TzsQGoRy8u1OLujkUnb4ClXkAMqCNEBp1eYj7W4=;
+        b=WKXNZRlrfWoEvbd3Mt43sBZcp9wgXb3skAh5izBElWBnr0tpnYwGDQC+yAADHI2lDp
+         guE2Q2gc52+yEiuMw1pHyyFssT+vqM8WQpQ1NipliQseEEXYaAPQ01jYM4WAzUkOM0Fy
+         uPH0xcHFEHECpzFVJUX5i8n7bSrSOiL8lQVRlWutemDwWH5VeL4Qvsxux45xeaPtw0Pz
+         /Dgi9MKBk5NBcCloWvcxKqtDvQExoEq4tsvTryTf6bUOzwEQAfkBGhoBtFN3i/mUTzgZ
+         difrDbraEYN5ybP1wVX4W+049BvzleSGzETJWQPx86KyvMwQZM73EYtZ47AJn8pT+L30
+         Oc9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rhg9TzsQGoRy8u1OLujkUnb4ClXkAMqCNEBp1eYj7W4=;
+        b=4v5CorA41pgW3/D7OZtabeIUf7S32I3ZoYS1Z0DNfdivobyUtDJ8rk9Zje90265xg7
+         0DvlfCH7XGg2eHTOkBKp+hTGOU5Ltsm6pRTfERn23oAgE8cwfcyWcecISXwWvRhkQflp
+         6VQywDVmb3oQ7QGPG20Q0dphiqn9HyEcBrVJIoQGawMwW57Quo7osvqKkDEnaXVAYin2
+         FsFwR32EEtZZi0nULUAqbpWHA3HXkm7benZQ7RXM2S0BDtp+3bbpJ9m4CtoxRcXS4Z2n
+         DZvbZu0lwxyQl9sBrNp04IMyDfpZgZjvNGvhZTajgDBz/S7Odtm309poVpoyK2yVGnwI
+         wz/g==
+X-Gm-Message-State: AOAM5322Ln1+qQE9dWTstXL4kxx7n7zuRjJPoSbd8o5Bvq4cTXAW4ZwS
+        MbEN5BYp+ECCuX9JfPk/01agjCAIkgzBfER42A8=
+X-Google-Smtp-Source: ABdhPJwAGuNBy2ut5ulgnJSYyO0MNQHn/zLEJfG36fGPimpq7gsDYUwwU4YvFRXGfyX0qYRyqpqKnQ==
+X-Received: by 2002:a17:90a:3009:: with SMTP id g9mr28516847pjb.205.1637564786708;
+        Sun, 21 Nov 2021 23:06:26 -0800 (PST)
+Received: from localhost.localdomain ([156.146.34.70])
+        by smtp.gmail.com with ESMTPSA id d9sm14281305pjs.2.2021.11.21.23.06.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 21 Nov 2021 23:06:26 -0800 (PST)
+From:   Drew Fustini <dfustini@baylibre.com>
+To:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jiri Kosina <trivial@kernel.org>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Drew Fustini <dfustini@baylibre.com>,
+        Hengqi Chen <hengqi.chen@gmail.com>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "Gustavo A . R . Silva" <gustavoars@kernel.org>
+Subject: [PATCH] selftests/bpf: Fix trivial typo
+Date:   Sun, 21 Nov 2021 23:05:30 -0800
+Message-Id: <20211122070528.837806-1-dfustini@baylibre.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-proc_create_net() and remove_proc_entry() already contain the case
-whether to define CONFIG_PROC_FS, so remove #ifdef CONFIG_PROC_FS.
+Fix trivial typo in comment from 'oveflow' to 'overflow'.
 
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+Reported-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Signed-off-by: Drew Fustini <dfustini@baylibre.com>
 ---
- net/ipv4/arp.c | 33 ++++++++-------------------------
- 1 file changed, 8 insertions(+), 25 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/btf_dump.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
-index 857a144b1ea9..4db0325f6e1a 100644
---- a/net/ipv4/arp.c
-+++ b/net/ipv4/arp.c
-@@ -1299,21 +1299,6 @@ static struct packet_type arp_packet_type __read_mostly = {
- 	.func =	arp_rcv,
- };
- 
--static int arp_proc_init(void);
--
--void __init arp_init(void)
--{
--	neigh_table_init(NEIGH_ARP_TABLE, &arp_tbl);
--
--	dev_add_pack(&arp_packet_type);
--	arp_proc_init();
--#ifdef CONFIG_SYSCTL
--	neigh_sysctl_register(NULL, &arp_tbl.parms, NULL);
--#endif
--	register_netdevice_notifier(&arp_netdev_notifier);
--}
--
--#ifdef CONFIG_PROC_FS
- #if IS_ENABLED(CONFIG_AX25)
- 
- /* ------------------------------------------------------------------------ */
-@@ -1451,16 +1436,14 @@ static struct pernet_operations arp_net_ops = {
- 	.exit = arp_net_exit,
- };
- 
--static int __init arp_proc_init(void)
-+void __init arp_init(void)
- {
--	return register_pernet_subsys(&arp_net_ops);
--}
--
--#else /* CONFIG_PROC_FS */
-+	neigh_table_init(NEIGH_ARP_TABLE, &arp_tbl);
- 
--static int __init arp_proc_init(void)
--{
--	return 0;
-+	dev_add_pack(&arp_packet_type);
-+	register_pernet_subsys(&arp_net_ops);
-+#ifdef CONFIG_SYSCTL
-+	neigh_sysctl_register(NULL, &arp_tbl.parms, NULL);
-+#endif
-+	register_netdevice_notifier(&arp_netdev_notifier);
- }
--
--#endif /* CONFIG_PROC_FS */
+diff --git a/tools/testing/selftests/bpf/prog_tests/btf_dump.c b/tools/testing/selftests/bpf/prog_tests/btf_dump.c
+index aa76360d8f49..87e907add701 100644
+--- a/tools/testing/selftests/bpf/prog_tests/btf_dump.c
++++ b/tools/testing/selftests/bpf/prog_tests/btf_dump.c
+@@ -761,7 +761,7 @@ static void test_btf_dump_struct_data(struct btf *btf, struct btf_dump *d,
+ 	/* overflow bpf_sock_ops struct with final element nonzero/zero.
+ 	 * Regardless of the value of the final field, we don't have all the
+ 	 * data we need to display it, so we should trigger an overflow.
+-	 * In other words oveflow checking should trump "is field zero?"
++	 * In other words overflow checking should trump "is field zero?"
+ 	 * checks because if we've overflowed, it shouldn't matter what the
+ 	 * field is - we can't trust its value so shouldn't display it.
+ 	 */
 -- 
-2.32.0
+2.27.0
 
