@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4D964587D6
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 02:48:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 235B14587DB
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 02:56:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233769AbhKVBvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Nov 2021 20:51:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45690 "EHLO
+        id S238524AbhKVB7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Nov 2021 20:59:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229920AbhKVBva (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Nov 2021 20:51:30 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77F1CC061574;
-        Sun, 21 Nov 2021 17:48:24 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id z5so69873967edd.3;
-        Sun, 21 Nov 2021 17:48:24 -0800 (PST)
+        with ESMTP id S238482AbhKVB7E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Nov 2021 20:59:04 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C58CC061574;
+        Sun, 21 Nov 2021 17:55:58 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id r25so32926961edq.7;
+        Sun, 21 Nov 2021 17:55:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=i1J0Xb2sfQHrmsobBbTZtxUiY6+9/kLkq8Mq2CDUntQ=;
-        b=PR3MPsCr6h037YzD86rArigSgb4AenakNnTh8X+OxJVl1Il+XYdl5x9fp6SPA+ZjWt
-         Dv9O2gtBNeWtGD2TymMzlQEmEmMmsAa/8hv1xykOAARGARaHLExx6D+mtUp0Oxx2jkrX
-         JCQu2PNy4M1l7JYVhAjY6ZwHBT+BmKahlZrdhCyraiQZ76PsQhd4eD1mrUqf5NimDFl3
-         1sM0jKTRKs64jgPTvQ0JlOMybKr9drN6Q65TqGkPP6Xh0mpFdPIT7vAEKINtyPOTYDQ7
-         BuRnnUV3un78y//tputIt9tDw99HihC0d2S8JkcM+ayz6TaxfI9aruQwmH88NgTWxyok
-         bIWA==
+        bh=yAMBLIWcgPcTELLwg6eU2Wm/MMJdqWWpdYWxaZx0w7I=;
+        b=f9TKYg2LnQUvlKW4M4mZ36DxqkM/0x5Bhl98TqCgy3kf/Q3SrDlnDvJiQNkwzAzJp4
+         23TEWeGofLHyC/5OL7Ty3mXx+B5QJUDL9bCZ1s7pcwCsWq/LxKR3oBdX8HI3skASaZOv
+         fLRye1ADTG8fXuV4FuYrDohQJOlQT1l7WpQJmElCVby2RSu2XWF8+2GMFnT/1AeR05tP
+         uMKYRnbthX+OC0MMrr36IcY0XNksf5mYW67DMnTwJGwP2bLv4gxW+HOuQAF+LK7efuQ6
+         gHJBOADCd0jHq0rkeprXwkBNpVU3M3th2mt0dmSEQVYfHk+uR7plGWmQwqlLN11vlEKQ
+         yOoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=i1J0Xb2sfQHrmsobBbTZtxUiY6+9/kLkq8Mq2CDUntQ=;
-        b=6SXPHrCi6gE6MqIH5wHdwmm8dSDbTYf1iGhgqj+eYLuA5BDEUIq+CYDCu1Bo760KeL
-         jXJUPlZnSGi54dqyIv5LwTTU/Wr1BsUfqKcFreia1UtMNgGNZy0dAhxd6IxGJahtN0X8
-         OH/RHawfLPu9i0AHJo+F1jG/+d/joY3o/deXehqqP+eDjzOfuVTH+2VPH6uPx61LClWG
-         c+OAquHXY0Lc+wmG818J0O36roNkbPu013dbGfwkdO2naNKsqtBHnAEkQKavHMCvG7Oi
-         xpFn6/I0UPdfrkkrUgWDszPTbl8pLTa3laBpX/8puIrp54L86q3/xBgT57mx/QnbKNbl
-         WWzQ==
-X-Gm-Message-State: AOAM5323rMv5SLbp0Ririv7xj3a/kCwKtP15CmFLKjwjM4AEL9mY+nLh
-        f89SIOjKsUf6GL77YOvfBmU=
-X-Google-Smtp-Source: ABdhPJwSbzrFapuOgEJps4E94InvBYzusW40ToT/ETszC0Ee+/UDoKKO64HIvAOzs4VSdvbnQjmhww==
-X-Received: by 2002:aa7:d412:: with SMTP id z18mr27181312edq.315.1637545702893;
-        Sun, 21 Nov 2021 17:48:22 -0800 (PST)
+        bh=yAMBLIWcgPcTELLwg6eU2Wm/MMJdqWWpdYWxaZx0w7I=;
+        b=QPH9Z5fFUqexk8m2NnA8SNqzlsW0HUd85OWWLuySCdRxwFaBV5cZ9H+TGyCuP+Wyo6
+         GIGZCYNNO+SbGdiO/alkcO9oIgq2k83G4eCTkZwyBxwrhi1AGXmbI5JG4/qR56lN5Xfj
+         lr21XAG/G+JGKRxWIFT1NZyIB+jTuxrJV9HSmmQTWsuIiAo0KVjm7Q5//2TbOpBakUhw
+         P0Uqbw0I/YCOfxEx9K6cGKDUdH4OEPDMvgcNcqYmrSDr4FpJRgmrICUKPoj7xB26izZX
+         jJ0cykNoiQ7i4mz8zhYrhiGKDs4rIhkhqBRM1adXkm2HTsKPK50GMTWr9UpCq8qzUbyj
+         kA6g==
+X-Gm-Message-State: AOAM5324D7ewfYSK2camkO2i4YUw6C9p6/IOZtKnSNSqLVHJIUFiNbiJ
+        9Qgm3Yg6IHnhqpg6rLKQPHY=
+X-Google-Smtp-Source: ABdhPJxh9wtPbj/9SAkLHPD5rnxsYEkDvC05lZHgF3s41jG7S7NRGUWSefW0Tp7MFqUjXF6m8nWpng==
+X-Received: by 2002:aa7:d052:: with SMTP id n18mr57814252edo.104.1637546157208;
+        Sun, 21 Nov 2021 17:55:57 -0800 (PST)
 Received: from skbuf ([188.25.163.189])
-        by smtp.gmail.com with ESMTPSA id gn26sm3005025ejc.14.2021.11.21.17.48.22
+        by smtp.gmail.com with ESMTPSA id n16sm3262786edt.67.2021.11.21.17.55.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 Nov 2021 17:48:22 -0800 (PST)
-Date:   Mon, 22 Nov 2021 03:48:21 +0200
+        Sun, 21 Nov 2021 17:55:56 -0800 (PST)
+Date:   Mon, 22 Nov 2021 03:55:55 +0200
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Ansuel Smith <ansuelsmth@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -57,176 +57,74 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH v2 9/9] net: dsa: qca8k: add support for
- mdb_add/del
-Message-ID: <20211122014821.syd7qrlthenwak4b@skbuf>
+Subject: Re: [net-next PATCH v2 0/9] Multiple cleanup and feature for qca8k
+Message-ID: <20211122015555.ucbi77ytiokgbovu@skbuf>
 References: <20211122010313.24944-1-ansuelsmth@gmail.com>
- <20211122010313.24944-10-ansuelsmth@gmail.com>
+ <20211122012910.bd33slbrfk4h6xbw@skbuf>
+ <619af5d3.1c69fb81.36176.ca79@mx.google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211122010313.24944-10-ansuelsmth@gmail.com>
+In-Reply-To: <619af5d3.1c69fb81.36176.ca79@mx.google.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 22, 2021 at 02:03:13AM +0100, Ansuel Smith wrote:
-> Add support for mdb add/del function. The ARL table is used to insert
-> the rule. The rule will be searched, deleted and reinserted with the
-> port mask updated. The function will check if the rule has to be updated
-> or insert directly with no deletion of the old rule.
-> If every port is removed from the port mask, the rule is removed.
-> The rule is set STATIC in the ARL table (aka it doesn't age) to not be
-> flushed by fast age function.
+On Mon, Nov 22, 2021 at 02:43:46AM +0100, Ansuel Smith wrote:
+> On Mon, Nov 22, 2021 at 03:29:10AM +0200, Vladimir Oltean wrote:
+> > On Mon, Nov 22, 2021 at 02:03:04AM +0100, Ansuel Smith wrote:
+> > > This is a reduced version of the old massive series.
+> > > Refer to the changelog to know what is removed from this.
+> > > 
+> > > THIS IS BASED ON net-next WITH THE 2 FIXES FROM net ALREADY REVIEWED
+> > > net: dsa: qca8k: fix MTU calculation
+> > > net: dsa: qca8k: fix internal delay applied to the wrong PAD config
+> > 
+> > Since patchwork has auto build hooks now, it doesn't detect dependencies
+> > to other trees like "net" in this case, and your patches will fail to
+> > apply without the other ones you've mentioned, which in turn will make
+> > the builds fail. Patches without clean build reports aren't accepted, so
+> > you'll have to resend either way. Your options are:
+> > (a) wait until the bugfix patches get applied to "net", and Jakub and/or
+> >     David send the networking pull request for v5.16-rc3 to Linus, then
+> >     they'll merge the "net" tree into "net-next" quickly afterwards and
+> >     your patches apply cleanly. Last two "net" pull requests were
+> >     submitted on Nov 18th and 12th, if that is any indication as to when
+> >     the next one is going to be.
+> > (b) base your patches on "net-next" without the bug fixes, and let
+> >     Jakub/David handle the merge conflict when the'll merge "net" into
+> >     "net-next" next time. Please note that if you do this, there is a
+> >     small chance that mistakes can be made, and you can't easily
+> >     backport patches to a stable tree such as OpenWRT if that's what
+> >     you're into, since part of the delta will be in a merge commit, and
+> >     there isn't any simple way in which you can linearize that during
+> >     cherry-pick time, if you're picking from divergent branches.
 > 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> ---
->  drivers/net/dsa/qca8k.c | 97 +++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 97 insertions(+)
-> 
-> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-> index 21a7f1ed7a5c..e37528c8dbf2 100644
-> --- a/drivers/net/dsa/qca8k.c
-> +++ b/drivers/net/dsa/qca8k.c
-> @@ -417,6 +417,79 @@ qca8k_fdb_flush(struct qca8k_priv *priv)
->  	mutex_unlock(&priv->reg_mutex);
->  }
->  
-> +static int
-> +qca8k_fdb_search_and_insert(struct qca8k_priv *priv, u8 port_mask, const u8 *mac, u16 vid)
+> Mhhh I honestly think b option can be accepted here (due to the fact
+> that fixes patch are very small) but the backport part can be
+> problematic.
+> Think it's better to just wait and get the reviewed by tag.
 
-FYI the networking tree is still sticking to its guns w.r.t. the 80
-character per line limit. You can ignore the rule if you want to and it
-makes sense, for example if you're printing a long string on nearby
-lines (which shouldn't be split into multiple lines, because people grep
-for error messages) and therefore it wouldn't look so out of place to
-also have lines that are a bit longer. But in this case, the function
-prototypes are sticking out like a sore thumb IMO, the nearby lines are
-short otherwise.
+There is an option (c), which sometimes can be done and sometimes can't,
+which is to write the patches in such a way that they don't conflict
+with each other. I haven't checked what the exact conflicts are here,
+but that regmap conversion thing is pretty noisy, you're renaming every
+register read and write. Being more moderate about it can work to your
+advantage.
 
-And to be honest I don't understand your choice of where to split the
-line either, this consumes two lines too, but doesn't exceed 80 characters:
+> Is it problematic to add stuff to this series while the fixes are
+> merged? (for example the LAGs or mirror part / the code split)
+> Or having big series is still problematic even if half of the patch are
+> already reviewed?
+> Just asking if there is a way to continue the review process while we
+> wait for the merge process.
 
-static int qca8k_fdb_search_and_insert(struct qca8k_priv *priv, u8 port_mask,
-				       const u8 *mac, u16 vid)
+You can always send RFC patches because for those, the build part isn't
+so important, and there you can specifically ask for review tags and/or
+point reviewers to other patch sets that they should apply first, were
+they to review your submission by actually applying to a git tree and
+not just from reading the patches in the email client.
 
-Otherwise:
-
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-
-> +{
-> +	struct qca8k_fdb fdb = { 0 };
-> +	int ret;
-> +
-> +	mutex_lock(&priv->reg_mutex);
-> +
-> +	qca8k_fdb_write(priv, vid, 0, mac, 0);
-> +	ret = qca8k_fdb_access(priv, QCA8K_FDB_SEARCH, -1);
-> +	if (ret < 0)
-> +		goto exit;
-> +
-> +	ret = qca8k_fdb_read(priv, &fdb);
-> +	if (ret < 0)
-> +		goto exit;
-> +
-> +	/* Rule exist. Delete first */
-> +	if (!fdb.aging) {
-> +		ret = qca8k_fdb_access(priv, QCA8K_FDB_PURGE, -1);
-> +		if (ret)
-> +			goto exit;
-> +	}
-> +
-> +	/* Add port to fdb portmask */
-> +	fdb.port_mask |= port_mask;
-> +
-> +	qca8k_fdb_write(priv, vid, fdb.port_mask, mac, fdb.aging);
-> +	ret = qca8k_fdb_access(priv, QCA8K_FDB_LOAD, -1);
-> +
-> +exit:
-> +	mutex_unlock(&priv->reg_mutex);
-> +	return ret;
-> +}
-> +
-> +static int
-> +qca8k_fdb_search_and_del(struct qca8k_priv *priv, u8 port_mask, const u8 *mac, u16 vid)
-> +{
-> +	struct qca8k_fdb fdb = { 0 };
-> +	int ret;
-> +
-> +	mutex_lock(&priv->reg_mutex);
-> +
-> +	qca8k_fdb_write(priv, vid, 0, mac, 0);
-> +	ret = qca8k_fdb_access(priv, QCA8K_FDB_SEARCH, -1);
-> +	if (ret < 0)
-> +		goto exit;
-> +
-> +	/* Rule doesn't exist. Why delete? */
-> +	if (!fdb.aging) {
-> +		ret = -EINVAL;
-> +		goto exit;
-> +	}
-> +
-> +	ret = qca8k_fdb_access(priv, QCA8K_FDB_PURGE, -1);
-> +	if (ret)
-> +		goto exit;
-> +
-> +	/* Only port in the rule is this port. Don't re insert */
-> +	if (fdb.port_mask == port_mask)
-> +		goto exit;
-> +
-> +	/* Remove port from port mask */
-> +	fdb.port_mask &= ~port_mask;
-> +
-> +	qca8k_fdb_write(priv, vid, fdb.port_mask, mac, fdb.aging);
-> +	ret = qca8k_fdb_access(priv, QCA8K_FDB_LOAD, -1);
-> +
-> +exit:
-> +	mutex_unlock(&priv->reg_mutex);
-> +	return ret;
-> +}
-> +
->  static int
->  qca8k_vlan_access(struct qca8k_priv *priv, enum qca8k_vlan_cmd cmd, u16 vid)
->  {
-> @@ -1915,6 +1988,28 @@ qca8k_port_fdb_dump(struct dsa_switch *ds, int port,
->  	return 0;
->  }
->  
-> +static int
-> +qca8k_port_mdb_add(struct dsa_switch *ds, int port,
-> +		   const struct switchdev_obj_port_mdb *mdb)
-> +{
-> +	struct qca8k_priv *priv = ds->priv;
-> +	const u8 *addr = mdb->addr;
-> +	u16 vid = mdb->vid;
-> +
-> +	return qca8k_fdb_search_and_insert(priv, BIT(port), addr, vid);
-> +}
-> +
-> +static int
-> +qca8k_port_mdb_del(struct dsa_switch *ds, int port,
-> +		   const struct switchdev_obj_port_mdb *mdb)
-> +{
-> +	struct qca8k_priv *priv = ds->priv;
-> +	const u8 *addr = mdb->addr;
-> +	u16 vid = mdb->vid;
-> +
-> +	return qca8k_fdb_search_and_del(priv, BIT(port), addr, vid);
-> +}
-> +
->  static int
->  qca8k_port_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
->  			  struct netlink_ext_ack *extack)
-> @@ -2023,6 +2118,8 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
->  	.port_fdb_add		= qca8k_port_fdb_add,
->  	.port_fdb_del		= qca8k_port_fdb_del,
->  	.port_fdb_dump		= qca8k_port_fdb_dump,
-> +	.port_mdb_add		= qca8k_port_mdb_add,
-> +	.port_mdb_del		= qca8k_port_mdb_del,
->  	.port_vlan_filtering	= qca8k_port_vlan_filtering,
->  	.port_vlan_add		= qca8k_port_vlan_add,
->  	.port_vlan_del		= qca8k_port_vlan_del,
-> -- 
-> 2.32.0
-> 
-
+I would still have multiple series of manageable sizes instead of a
+monolithic one, just because it is conceptually easier to refer to them
+("add qca8k support for X/Y/Z features" rather than "qca8k-misc-2021-11-22").
