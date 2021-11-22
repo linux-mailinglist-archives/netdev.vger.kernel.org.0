@@ -2,73 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37910458EDD
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 14:00:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 636C8458F2F
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 14:12:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236206AbhKVNDU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 08:03:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33748 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234566AbhKVNDU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Nov 2021 08:03:20 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id BFF9860FBF;
-        Mon, 22 Nov 2021 13:00:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637586013;
-        bh=7u5N0ONYWOlih0kieWXeu+p3acs3g509FMd5uvyC7qQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=AhQABZASYV+n9IpEC7GgF0PIzRkltbW5uG/ud38NmRNcBmdhB7G/Vgrf1rTGHDzNl
-         HTQCqAYvr6yfdlUHVqnEkU7LsPNVUY9Apg1wlWbTwFC47S+uPnvb3QfK4GCHuw0wcs
-         e0AgytikB6ZGcCKz2aujUj3vnBsCDH1arIH4d72Wu83Hgx/C/pwPtZvn2rKinjuF7K
-         vjNc1FY4Xv49YgkmMGq3WUUJEj0M1vAFVr8nJCzl16xzDrh97bjkD0i3ZQccSKqEPo
-         56UWBW4y7EjsW6MsIvacEnQ37jx0c/rHI/im+Sih2WMZwGrJDaYoZe40XKKYNSrLCT
-         R947ALlTjDeXg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B457D60972;
-        Mon, 22 Nov 2021 13:00:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232340AbhKVNPG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 08:15:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56706 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231444AbhKVNPD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 08:15:03 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E287C061574
+        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 05:11:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=pd3ku2EsZwytjxQy3CTDRoL9cusJNqDhOaOS8v5owp0=; b=fC40NZOL4tpudq27IHkrsRtVZH
+        thiQi0g5m+73lVjxChggtp1J3EJmLOHORNYihGa0+oNesNXXa6C+7x2kR4bcYKXvysTYDLH5SQwek
+        ++ItgdapyP+qydtLTJDSEWVsEmkJBzC70tb9MqsX48880k7pJZ+7hdSGZV5jw6E5wfodHr6Az0bvv
+        YppyexYKZWGtVX4p5jaME/LKKhywv+FAzaU6vU3S4fkG+/BSupMBK/O3euxHq9TUqYPohHgt4wFMG
+        gAAXY+fvEyiz310GK/VGxQNjC+XN09E64BY1gH7IMQ2fD34p8w4Mn8M8bPs+udilXhYJDmF6OJZQk
+        METXFsVA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mp96u-00Cs5v-BS; Mon, 22 Nov 2021 13:11:52 +0000
+Date:   Mon, 22 Nov 2021 13:11:52 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Jeremy Kerr <jk@codeconstruct.com.au>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, Matt Johnston <matt@codeconstruct.com.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH net-next] mctp: Add MCTP-over-serial transport binding
+Message-ID: <YZuXGBdRpAXTfONP@casper.infradead.org>
+References: <20211122042817.2988517-1-jk@codeconstruct.com.au>
+ <YZs1p+lkKO+194zN@kroah.com>
+ <123a5491b8485f42c9279d397cdeb6358c610f6c.camel@codeconstruct.com.au>
+ <YZtHOfdn4HQdF3LD@kroah.com>
+ <9652c9dd6b6238922f45ee71cf341cac88449b98.camel@codeconstruct.com.au>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/2] net: annotate accesses to
- dev->gso_max_{size|segs}
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163758601373.20556.2061738034689274771.git-patchwork-notify@kernel.org>
-Date:   Mon, 22 Nov 2021 13:00:13 +0000
-References: <20211119154332.4110795-1-eric.dumazet@gmail.com>
-In-Reply-To: <20211119154332.4110795-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com
+In-Reply-To: <9652c9dd6b6238922f45ee71cf341cac88449b98.camel@codeconstruct.com.au>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Fri, 19 Nov 2021 07:43:30 -0800 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Mon, Nov 22, 2021 at 04:23:10PM +0800, Jeremy Kerr wrote:
+> Hi Greg,
 > 
-> Generalize use of netif_set_gso_max_{size|segs} helpers and document
-> lockless reads from sk_setup_caps()
+> > ida_destroy() will not be a no-op if you have allocated some things
+> > in the past.  It should always be called when your module is removed.
+> > 
+> > Or at least that is how it used to be, if this has changed in the
+> > past year, then I am mistaken here.
+
+I think Greg is remembering how the IDA behaved before it was converted
+to use the radix tree back in 2016 (0a835c4f090a).  About two-thirds
+of the users of the IDA and IDR forgot to call ida_destroy/idr_destroy,
+so rather than fix those places, I decided to make those data structures
+no longer require a destructor.
+
+> I was going by this bit of the comment on ida_destroy:
 > 
-> Eric Dumazet (2):
->   net: annotate accesses to dev->gso_max_size
->   net: annotate accesses to dev->gso_max_segs
+>    * Calling this function frees all IDs and releases all resources used
+>    * by an IDA.  When this call returns, the IDA is empty and can be reused
+>    * or freed.  If the IDA is already empty, there is no need to call this
+>    * function.
 > 
-> [...]
-
-Here is the summary with links:
-  - [net-next,1/2] net: annotate accesses to dev->gso_max_size
-    https://git.kernel.org/netdev/net-next/c/4b66d2161b81
-  - [net-next,2/2] net: annotate accesses to dev->gso_max_segs
-    https://git.kernel.org/netdev/net-next/c/6d872df3e3b9
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+> [From a documentation improvement in 50d97d50715]
+> 
+> Looking at ida_destroy, it's iterating the xarray and freeing all !value
+> entries. ida_free will free a (allocated) value entry once all bits are
+> clear, so the comment looks correct to me - there's nothing left to free
+> if the ida is empty.
+> 
+> However, I'm definitely no ida/idr/xarray expert! Happy to be corrected
+> here - and I'll send a patch to clarify that comment too, if so.
+> 
+> Cheers,
+> 
+> 
+> Jeremy
+> 
