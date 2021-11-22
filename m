@@ -2,221 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A210E458CAA
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 11:48:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2062D458CD7
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 11:58:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239370AbhKVKvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 05:51:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51876 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239253AbhKVKvV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 05:51:21 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D1A1C061714
-        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 02:48:15 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id l22so78372402lfg.7
-        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 02:48:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=veznNCWfyEZatqAmzPb848b91WavKwcPqROvRUIiq/E=;
-        b=VyUy2BcC7S7ke5VLz2u9hpx5jVU8FimXWlUrEJhIGE/jmMMTEpGuWbzoQojp4N8Ta+
-         Fj6VOXKPcQ/X7YhQPKGzpNgVstlSe+815DyGc7YmaXIJWChdSpwbIwukbGWHEGRzTLyz
-         gtyE9Qik/Q2N7ur/IaGk/I2Da7R/I6kMqfZhRGePtXgAGESpKln8zudjdsAiG57OEINT
-         HZz6xWhpiEV3RndkA5OMmjnMXULTcTESdPEaSBsvM0+aMdIY+jZA/jSlFdCbQXrX6pmv
-         oWm7oOXzezHW1WMnGnsZ1rVkQWEgH8sNJvvXNOoI0n0OXs4FqerD2Si24hBBrHgFsMrj
-         xIVQ==
+        id S232866AbhKVLBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 06:01:37 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:47961 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231258AbhKVLBe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 06:01:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1637578707;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=psTM8ISrjkyMgJwD8v5I4omETk3J8QMXgeddK2v/9Oo=;
+        b=UlJGpV3w/eVYuHQRYce153GfsXzatRBfIDpgaCm93RNnPvSSjzGYn7La+m16hquE3o7Sc6
+        2ZK1wXLhYEMcMCj5tHCCM5dIIVo51fu3Ek1zIGAk6DpVaaVudtXcdeY5gS84w+3y7vqOTi
+        xAvSIX/rxgSnhsTPvnrJYYv/RrVuIqE=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-193-uTlOifOWO823KJFOWfJu7g-1; Mon, 22 Nov 2021 05:58:25 -0500
+X-MC-Unique: uTlOifOWO823KJFOWfJu7g-1
+Received: by mail-ed1-f72.google.com with SMTP id v9-20020a50d849000000b003dcb31eabaaso14527276edj.13
+        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 02:58:25 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=veznNCWfyEZatqAmzPb848b91WavKwcPqROvRUIiq/E=;
-        b=qbkavePEhtM3r/3EvwwhMk2L72pjP9hgsjFOO0pOFJ4lgXji02pvMET1ZlePG8520B
-         SrAx/ymxC1h09hOQP2L7eMrc9YJjgUZyCnPxnUfrbFjo48Eb46i0OwCf2ln87x+LExfO
-         y+B09KZahXnYFT/iB3Lhu3Trcn3w3TEL1TogKE+NQYZRkldQwAGFxBjwkhbcm/RWriz1
-         9yHL3ooq6lIcvvwY13dQaMV8HiGVqZLkFAypQTnhmbzWx3/i/xZrIF0Wi76I2lXKCvDZ
-         1WEQFQYf1Pp5CyRzGUEIMtuNiTFTshy5BiBT/F9Huv54GfV/QbncA6CY7rWjRXXuPrdR
-         f3Lg==
-X-Gm-Message-State: AOAM532WCF4IveGqgB3PClgEkjndnY5B93QZAwIIBIBVNVqhFa4H6Ias
-        XgVmkEKv/uLImUjXqErGwBnjn8FIRPSiPg==
-X-Google-Smtp-Source: ABdhPJzBG9VJN0ecW1c7aafMOaF08g++9o5g53U+9cDb7MEYbLkTp1wkBetnN2ix3DyRO8wF9+n8uw==
-X-Received: by 2002:a2e:7801:: with SMTP id t1mr52527022ljc.253.1637578093130;
-        Mon, 22 Nov 2021 02:48:13 -0800 (PST)
-Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id o11sm882648ljc.100.2021.11.22.02.48.11
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=psTM8ISrjkyMgJwD8v5I4omETk3J8QMXgeddK2v/9Oo=;
+        b=mP1g2MIyf+R4vdP0czcjKw9EWZkScjk4FcxKnROuRUixvnpE2TEQ+hOnHBrZUzaDnb
+         kEWCB9rudxJ41k7z9t2wV2mODtlTPINMb7KV35biu26Fxi01ceYrDpm+GCIV+7AYiMkj
+         pVUeKPnQo/J+S0itwn0ZdLAXXF83arLHbaSZgMyoyjuoihzGBtoq+CVjPaHB4W+DXzFZ
+         3UlHHsPaCH4xww67X7/DdJkuP7sUDPu5FhBql9+AOAJuTIZeSm1viYk57qyGOcfJ0dAR
+         31qhfCEgQyGIlckG5H6Jh0e7H9fTe571qqI2l8034UCnkjAzrbaTrfVrovAc+KVWKIPP
+         etSA==
+X-Gm-Message-State: AOAM533DUXuiBs7YlI7yA+bsLjLeKcV7lKoiRgbGwl4PVw5Rpe4dskSL
+        +Pll+Wy/IiY9z25Lxrfzf5FtLo6r4GvzEBVEEuf1QIXSnfORBcRUZFO4OjCtB5kvx29XL3tovkZ
+        gNlcsYXWm63/5hhmn
+X-Received: by 2002:a17:906:bcce:: with SMTP id lw14mr39444154ejb.411.1637578704539;
+        Mon, 22 Nov 2021 02:58:24 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy5euxEOhXA4OuQ9nCYhyy7FrC86z4Kyu9dkiD0+vafLsMdUW/fn+csxa5thD15nAAx3gGTww==
+X-Received: by 2002:a17:906:bcce:: with SMTP id lw14mr39444132ejb.411.1637578704379;
+        Mon, 22 Nov 2021 02:58:24 -0800 (PST)
+Received: from steredhat (host-87-10-72-39.retail.telecomitalia.it. [87.10.72.39])
+        by smtp.gmail.com with ESMTPSA id w24sm3527362ejk.0.2021.11.22.02.58.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Nov 2021 02:48:12 -0800 (PST)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        devicetree@vger.kernel.org
-Subject: [PATCH net-next v2] dt-bindings: net: Add bindings for IXP4xx V.35 WAN HSS
-Date:   Mon, 22 Nov 2021 11:46:07 +0100
-Message-Id: <20211122104607.3145732-1-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.31.1
+        Mon, 22 Nov 2021 02:58:24 -0800 (PST)
+Date:   Mon, 22 Nov 2021 11:58:22 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Halil Pasic <pasic@linux.ibm.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        f.hetzelt@tu-berlin.de, david.kaplan@amd.com,
+        konrad.wilk@oracle.com
+Subject: Re: [PATCH] vsock/virtio: suppress used length validation
+Message-ID: <20211122105822.onarsa4sydzxqynu@steredhat>
+References: <20211122093036.285952-1-mst@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20211122093036.285952-1-mst@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds device tree bindings for the IXP4xx V.35 WAN high
-speed serial (HSS) link.
+On Mon, Nov 22, 2021 at 04:32:01AM -0500, Michael S. Tsirkin wrote:
+>It turns out that vhost vsock violates the virtio spec
+>by supplying the out buffer length in the used length
+>(should just be the in length).
+>As a result, attempts to validate the used length fail with:
+>vmw_vsock_virtio_transport virtio1: tx: used len 44 is larger than in buflen 0
+>
+>Since vsock driver does not use the length fox tx and
+>validates the length before use for rx, it is safe to
+>suppress the validation in virtio core for this driver.
+>
+>Reported-by: Halil Pasic <pasic@linux.ibm.com>
+>Fixes: 939779f5152d ("virtio_ring: validate used buffer length")
+>Cc: "Jason Wang" <jasowang@redhat.com>
+>Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+>---
+> net/vmw_vsock/virtio_transport.c | 1 +
+> 1 file changed, 1 insertion(+)
 
-An example is added to the NPE example where the HSS appears
-as a child.
+Thanks for this fix
 
-Cc: devicetree@vger.kernel.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-ChangeLog v1->v2:
-- Add intel vendor prefix on custom queue handle bindings.
-- Make the pkt-tx and pkt-rxfree into arrays of handles.
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
-Currently only adding these bindings so we can describe the
-hardware in device trees.
----
- ...ntel,ixp4xx-network-processing-engine.yaml | 20 ++++
- .../bindings/net/intel,ixp4xx-hss.yaml        | 94 +++++++++++++++++++
- 2 files changed, 114 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/intel,ixp4xx-hss.yaml
 
-diff --git a/Documentation/devicetree/bindings/firmware/intel,ixp4xx-network-processing-engine.yaml b/Documentation/devicetree/bindings/firmware/intel,ixp4xx-network-processing-engine.yaml
-index c435c9f369a4..14de9e3d5fab 100644
---- a/Documentation/devicetree/bindings/firmware/intel,ixp4xx-network-processing-engine.yaml
-+++ b/Documentation/devicetree/bindings/firmware/intel,ixp4xx-network-processing-engine.yaml
-@@ -45,9 +45,29 @@ additionalProperties: false
- 
- examples:
-   - |
-+    #include <dt-bindings/gpio/gpio.h>
-+
-     npe: npe@c8006000 {
-          compatible = "intel,ixp4xx-network-processing-engine";
-          reg = <0xc8006000 0x1000>, <0xc8007000 0x1000>, <0xc8008000 0x1000>;
-+         #address-cells = <1>;
-+         #size-cells = <0>;
-+
-+         hss@0 {
-+             compatible = "intel,ixp4xx-hss";
-+             reg = <0>;
-+             intel,npe-handle = <&npe 0>;
-+             intel,queue-chl-rxtrig = <&qmgr 12>;
-+             intel,queue-pkt-rx = <&qmgr 13>;
-+             intel,queue-pkt-tx = <&qmgr 14>, <&qmgr 15>, <&qmgr 16>, <&qmgr 17>;
-+             intel,queue-pkt-rxfree = <&qmgr 18>, <&qmgr 19>, <&qmgr 20>, <&qmgr 21>;
-+             intel,queue-pkt-txdone = <&qmgr 22>;
-+             cts-gpios = <&gpio0 10 GPIO_ACTIVE_LOW>;
-+             rts-gpios = <&gpio0 14 GPIO_ACTIVE_LOW>;
-+             dcd-gpios = <&gpio0 6 GPIO_ACTIVE_LOW>;
-+             dtr-gpios = <&gpio_74 2 GPIO_ACTIVE_LOW>;
-+             clk-internal-gpios = <&gpio_74 0 GPIO_ACTIVE_HIGH>;
-+         };
- 
-          crypto {
-              compatible = "intel,ixp4xx-crypto";
-diff --git a/Documentation/devicetree/bindings/net/intel,ixp4xx-hss.yaml b/Documentation/devicetree/bindings/net/intel,ixp4xx-hss.yaml
-new file mode 100644
-index 000000000000..93d88dbb2073
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/intel,ixp4xx-hss.yaml
-@@ -0,0 +1,94 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+# Copyright 2021 Linaro Ltd.
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/net/intel,ixp4xx-hss.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: Intel IXP4xx V.35 WAN High Speed Serial Link (HSS)
-+
-+maintainers:
-+  - Linus Walleij <linus.walleij@linaro.org>
-+
-+description: |
-+  The Intel IXP4xx HSS makes use of the IXP4xx NPE (Network
-+  Processing Engine) and the IXP4xx Queue Manager to process
-+  V.35 Wideband Modem (WAN) links.
-+
-+properties:
-+  compatible:
-+    const: intel,ixp4xx-hss
-+
-+  reg:
-+    maxItems: 1
-+    description: The HSS instance
-+
-+  intel,npe-handle:
-+    $ref: '/schemas/types.yaml#/definitions/phandle-array'
-+    maxItems: 1
-+    description: phandle to the NPE this HSS instance is using
-+      and the instance to use in the second cell
-+
-+  intel,queue-chl-rxtrig:
-+    $ref: '/schemas/types.yaml#/definitions/phandle-array'
-+    maxItems: 1
-+    description: phandle to the RX trigger queue on the NPE
-+
-+  intel,queue-pkt-rx:
-+    $ref: '/schemas/types.yaml#/definitions/phandle-array'
-+    maxItems: 1
-+    description: phandle to the packet RX queue on the NPE
-+
-+  intel,queue-pkt-tx:
-+    $ref: '/schemas/types.yaml#/definitions/phandle-array'
-+    maxItems: 4
-+    description: phandle to the packet TX0, TX1, TX2 and TX3 queues on the NPE
-+
-+  intel,queue-pkt-rxfree:
-+    $ref: '/schemas/types.yaml#/definitions/phandle-array'
-+    maxItems: 4
-+    description: phandle to the packet RXFREE0, RXFREE1, RXFREE2 and
-+      RXFREE3 queues on the NPE
-+
-+  intel,queue-pkt-txdone:
-+    $ref: '/schemas/types.yaml#/definitions/phandle-array'
-+    maxItems: 1
-+    description: phandle to the packet TXDONE queue on the NPE
-+
-+  cts-gpios:
-+    maxItems: 1
-+    description: Clear To Send (CTS) GPIO line
-+
-+  rts-gpios:
-+    maxItems: 1
-+    description: Ready To Send (RTS) GPIO line
-+
-+  dcd-gpios:
-+    maxItems: 1
-+    description: Data Carrier Detect (DCD) GPIO line
-+
-+  dtr-gpios:
-+    maxItems: 1
-+    description: Data Terminal Ready (DTR) GPIO line
-+
-+  clk-internal-gpios:
-+    maxItems: 1
-+    description: Clock internal GPIO line, driving this high will make the HSS
-+      use internal clocking as opposed to external clocking
-+
-+required:
-+  - compatible
-+  - reg
-+  - intel,npe-handle
-+  - intel,queue-chl-rxtrig
-+  - intel,queue-pkt-rx
-+  - intel,queue-pkt-tx
-+  - intel,queue-pkt-rxfree
-+  - intel,queue-pkt-txdone
-+  - cts-gpios
-+  - rts-gpios
-+  - dcd-gpios
-+  - dtr-gpios
-+  - clk-internal-gpios
-+
-+additionalProperties: false
--- 
-2.31.1
+I think we should also fix vhost-vsock violation (in stable branches 
+too).
+@Halil do you plan to send a fix? Otherwise I can do it ;-)
+
+Thanks,
+Stefano
 
