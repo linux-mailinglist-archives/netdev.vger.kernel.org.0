@@ -2,327 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCED4459110
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 16:12:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EC5D45910D
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 16:11:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239798AbhKVPPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 10:15:32 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:42757 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239776AbhKVPPb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 10:15:31 -0500
-Received: by mail-il1-f199.google.com with SMTP id r5-20020a92cd85000000b0029e6b5a7a2fso2443645ilb.9
-        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 07:12:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=9zfPbTH6EhmbuWX63gHOJAyXkrLkLRUhWK2123YhmQU=;
-        b=P4Qxz0XZp9DG3iLtVKw+7h51rZTOCS45FK1gWGrWjvM57HpCRq88fc0/eSq77QAerb
-         v2NINdIDdJ6oiHnvxBvG6u3uNx9a0/ApK8rbmx7iKx17TZgZhF7Inu+bQGWIs2chgmsP
-         SkK0xAFiqjSBO4zRuHj+s3COcU3NFVvifdmIyc12FTmO0VlWGqV4qKRqFsQ0z6s790Ru
-         Npsxr0uzuPi1qstifkZqE2ranC0oc7Z5N0x8bGEs6s9IPK/MQW1o9eT1fJFrIlDoxSgH
-         AKxrwtBY7IqdkDt2oqwd8FScH3q8uzSKY6lsZfdaP9FKLmTwc55SKO6lmLDHUcwS9EIu
-         lSSQ==
-X-Gm-Message-State: AOAM5309gtCc4Zc3cbH1bb0RJbDcDNvm46v7QzpJrxjuQz7LIFqfy+/H
-        COBxP4Lkl7dNFBCn4WrTvxHqFz9eh18LTys6FPPy5cLm4xTE
-X-Google-Smtp-Source: ABdhPJxpb8fXburtZmWEWzHRgC3xOXswoUcS3J5LPKIv8I1k+S+xlrEillNqV5iwDtaSGP4BvLpQ619CtH7LIplCbVIx0mT+zy1h
+        id S239766AbhKVPOo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 10:14:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55616 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239534AbhKVPOl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 10:14:41 -0500
+Received: from forwardcorp1j.mail.yandex.net (forwardcorp1j.mail.yandex.net [IPv6:2a02:6b8:0:1619::183])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64049C061574;
+        Mon, 22 Nov 2021 07:11:34 -0800 (PST)
+Received: from sas1-4cbebe29391b.qloud-c.yandex.net (sas1-4cbebe29391b.qloud-c.yandex.net [IPv6:2a02:6b8:c08:789:0:640:4cbe:be29])
+        by forwardcorp1j.mail.yandex.net (Yandex) with ESMTP id CFFCD2E19B0;
+        Mon, 22 Nov 2021 18:11:27 +0300 (MSK)
+Received: from sas2-d40aa8807eff.qloud-c.yandex.net (sas2-d40aa8807eff.qloud-c.yandex.net [2a02:6b8:c08:b921:0:640:d40a:a880])
+        by sas1-4cbebe29391b.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id YiPih2xZ0h-BQsOL2aO;
+        Mon, 22 Nov 2021 18:11:27 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.com; s=default;
+        t=1637593887; bh=5SoeLo1xTGbCZidoCkfBDOnFEuE/R0Qz7W+q8Uyq6I4=;
+        h=In-Reply-To:References:Date:From:To:Subject:Message-ID:Cc;
+        b=2vRHIv1S2bOBt4EJL7FB9EKnVMkVu9oyf8rr4twhznsXRqq5168NXXdVTmcwf/eNL
+         UL1VclENnC3L8CvkHPhRAddD7J3UvfONOCX5W+STzaLH1tc7ZSY5CHVU7HgWQa3QPo
+         TZ3NZJgTcGM+1KFGzxgUW2rSTxR5i18rmAEju04M=
+Authentication-Results: sas1-4cbebe29391b.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.com
+Received: from [IPv6:2a02:6b8:0:107:3e85:844d:5b1d:60a] (dynamic-red3.dhcp.yndx.net [2a02:6b8:0:107:3e85:844d:5b1d:60a])
+        by sas2-d40aa8807eff.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPS id adw8Ie3kCo-BQw4PPnO;
+        Mon, 22 Nov 2021 18:11:26 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+X-Yandex-Fwd: 2
+Subject: Re: [PATCH 6/6] vhost_net: use RCU callbacks instead of
+ synchronize_rcu()
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        kvm <kvm@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>, bpf@vger.kernel.org
+References: <20211115153003.9140-1-arbn@yandex-team.com>
+ <20211115153003.9140-6-arbn@yandex-team.com>
+ <CACGkMEumax9RFVNgWLv5GyoeQAmwo-UgAq=DrUd4yLxPAUUqBw@mail.gmail.com>
+ <b163233f-090f-baaf-4460-37978cab4d55@yandex-team.com>
+ <20211122043620-mutt-send-email-mst@kernel.org>
+From:   Andrey Ryabinin <arbn@yandex-team.com>
+Message-ID: <ba4dbc25-f912-fb34-a0e2-c6c85b34b918@yandex-team.com>
+Date:   Mon, 22 Nov 2021 18:12:59 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1aa2:: with SMTP id l2mr19554392ilv.114.1637593944927;
- Mon, 22 Nov 2021 07:12:24 -0800 (PST)
-Date:   Mon, 22 Nov 2021 07:12:24 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005fb57e05d1620da1@google.com>
-Subject: [syzbot] KMSAN: uninit-value in ax88772a_hw_reset
-From:   syzbot <syzbot+8d179821571093c5f928@syzkaller.appspotmail.com>
-To:     andrew@lunn.ch, davem@davemloft.net, glider@google.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux@rempel-privat.de,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20211122043620-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-syzbot found the following issue on:
 
-HEAD commit:    412af9cd936d ioremap.c: move an #include around
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=136fb126b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2d142cdf4204061
-dashboard link: https://syzkaller.appspot.com/bug?extid=8d179821571093c5f928
-compiler:       clang version 14.0.0 (git@github.com:llvm/llvm-project.git 0996585c8e3b3d409494eb5f1cad714b9e1f7fb5), GNU ld (GNU Binutils for Debian) 2.35.2
+On 11/22/21 12:37 PM, Michael S. Tsirkin wrote:
+> On Fri, Nov 19, 2021 at 02:32:05PM +0300, Andrey Ryabinin wrote:
+>>
+>>
+>> On 11/16/21 8:00 AM, Jason Wang wrote:
+>>> On Mon, Nov 15, 2021 at 11:32 PM Andrey Ryabinin <arbn@yandex-team.com> wrote:
+>>>>
+>>>> Currently vhost_net_release() uses synchronize_rcu() to synchronize
+>>>> freeing with vhost_zerocopy_callback(). However synchronize_rcu()
+>>>> is quite costly operation. It take more than 10 seconds
+>>>> to shutdown qemu launched with couple net devices like this:
+>>>>         -netdev tap,id=tap0,..,vhost=on,queues=80
+>>>> because we end up calling synchronize_rcu() netdev_count*queues times.
+>>>>
+>>>> Free vhost net structures in rcu callback instead of using
+>>>> synchronize_rcu() to fix the problem.
+>>>
+>>> I admit the release code is somehow hard to understand. But I wonder
+>>> if the following case can still happen with this:
+>>>
+>>> CPU 0 (vhost_dev_cleanup)   CPU1
+>>> (vhost_net_zerocopy_callback()->vhost_work_queue())
+>>>                                                 if (!dev->worker)
+>>> dev->worker = NULL
+>>>
+>>> wake_up_process(dev->worker)
+>>>
+>>> If this is true. It seems the fix is to move RCU synchronization stuff
+>>> in vhost_net_ubuf_put_and_wait()?
+>>>
+>>
+>> It all depends whether vhost_zerocopy_callback() can be called outside of vhost
+>> thread context or not. If it can run after vhost thread stopped, than the race you
+>> describe seems possible and the fix in commit b0c057ca7e83 ("vhost: fix a theoretical race in device cleanup")
+>> wasn't complete. I would fix it by calling synchronize_rcu() after vhost_net_flush()
+>> and before vhost_dev_cleanup().
+>>
+>> As for the performance problem, it can be solved by replacing synchronize_rcu() with synchronize_rcu_expedited().
+> 
+> expedited causes a stop of IPIs though, so it's problematic to
+> do it upon a userspace syscall.
+> 
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+8d179821571093c5f928@syzkaller.appspotmail.com
-
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0016: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable hardware MII access
-=====================================================
-BUG: KMSAN: uninit-value in ax88772a_hw_reset+0xc2a/0x12c0 drivers/net/usb/asix_devices.c:523
- ax88772a_hw_reset+0xc2a/0x12c0 drivers/net/usb/asix_devices.c:523
- ax88772_bind+0x838/0x19b0 drivers/net/usb/asix_devices.c:762
- usbnet_probe+0x1285/0x40c0 drivers/net/usb/usbnet.c:1745
- usb_probe_interface+0xf15/0x1530 drivers/usb/core/driver.c:396
- really_probe+0x66e/0x1510 drivers/base/dd.c:596
- __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:751
- driver_probe_device drivers/base/dd.c:781 [inline]
- __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:898
- bus_for_each_drv+0x2f0/0x410 drivers/base/bus.c:427
- __device_attach+0x593/0x8e0 drivers/base/dd.c:969
- device_initial_probe+0x4a/0x60 drivers/base/dd.c:1016
- bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
- device_add+0x1d46/0x2400 drivers/base/core.c:3396
- usb_set_configuration+0x389f/0x3ee0 drivers/usb/core/message.c:2170
- usb_generic_driver_probe+0x13c/0x300 drivers/usb/core/generic.c:238
- usb_probe_device+0x309/0x570 drivers/usb/core/driver.c:293
- really_probe+0x66e/0x1510 drivers/base/dd.c:596
- __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:751
- driver_probe_device drivers/base/dd.c:781 [inline]
- __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:898
- bus_for_each_drv+0x2f0/0x410 drivers/base/bus.c:427
- __device_attach+0x593/0x8e0 drivers/base/dd.c:969
- device_initial_probe+0x4a/0x60 drivers/base/dd.c:1016
- bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
- device_add+0x1d46/0x2400 drivers/base/core.c:3396
- usb_new_device+0x1b9a/0x2960 drivers/usb/core/hub.c:2563
- hub_port_connect drivers/usb/core/hub.c:5348 [inline]
- hub_port_connect_change drivers/usb/core/hub.c:5488 [inline]
- port_event drivers/usb/core/hub.c:5634 [inline]
- hub_event+0x57cf/0x8690 drivers/usb/core/hub.c:5716
- process_one_work+0xdc7/0x1760 kernel/workqueue.c:2297
- worker_thread+0x1101/0x22b0 kernel/workqueue.c:2444
- kthread+0x66b/0x780 kernel/kthread.c:319
- ret_from_fork+0x1f/0x30
-
-Local variable smsr.i created at:
- asix_mdio_read_nopm+0xb7/0xab0 drivers/net/usb/asix_common.c:574
- ax88772a_hw_reset+0x822/0x12c0 drivers/net/usb/asix_devices.c:511
-=====================================================
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0014: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable hardware MII access
-=====================================================
-BUG: KMSAN: uninit-value in ax88772a_hw_reset+0xc37/0x12c0 drivers/net/usb/asix_devices.c:527
- ax88772a_hw_reset+0xc37/0x12c0 drivers/net/usb/asix_devices.c:527
- ax88772_bind+0x838/0x19b0 drivers/net/usb/asix_devices.c:762
- usbnet_probe+0x1285/0x40c0 drivers/net/usb/usbnet.c:1745
- usb_probe_interface+0xf15/0x1530 drivers/usb/core/driver.c:396
- really_probe+0x66e/0x1510 drivers/base/dd.c:596
- __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:751
- driver_probe_device drivers/base/dd.c:781 [inline]
- __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:898
- bus_for_each_drv+0x2f0/0x410 drivers/base/bus.c:427
- __device_attach+0x593/0x8e0 drivers/base/dd.c:969
- device_initial_probe+0x4a/0x60 drivers/base/dd.c:1016
- bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
- device_add+0x1d46/0x2400 drivers/base/core.c:3396
- usb_set_configuration+0x389f/0x3ee0 drivers/usb/core/message.c:2170
- usb_generic_driver_probe+0x13c/0x300 drivers/usb/core/generic.c:238
- usb_probe_device+0x309/0x570 drivers/usb/core/driver.c:293
- really_probe+0x66e/0x1510 drivers/base/dd.c:596
- __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:751
- driver_probe_device drivers/base/dd.c:781 [inline]
- __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:898
- bus_for_each_drv+0x2f0/0x410 drivers/base/bus.c:427
- __device_attach+0x593/0x8e0 drivers/base/dd.c:969
- device_initial_probe+0x4a/0x60 drivers/base/dd.c:1016
- bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
- device_add+0x1d46/0x2400 drivers/base/core.c:3396
- usb_new_device+0x1b9a/0x2960 drivers/usb/core/hub.c:2563
- hub_port_connect drivers/usb/core/hub.c:5348 [inline]
- hub_port_connect_change drivers/usb/core/hub.c:5488 [inline]
- port_event drivers/usb/core/hub.c:5634 [inline]
- hub_event+0x57cf/0x8690 drivers/usb/core/hub.c:5716
- process_one_work+0xdc7/0x1760 kernel/workqueue.c:2297
- worker_thread+0x1101/0x22b0 kernel/workqueue.c:2444
- kthread+0x66b/0x780 kernel/kthread.c:319
- ret_from_fork+0x1f/0x30
-
-Local variable smsr.i created at:
- asix_mdio_read_nopm+0xb7/0xab0 drivers/net/usb/asix_common.c:574
- ax88772a_hw_reset+0x8af/0x12c0 drivers/net/usb/asix_devices.c:513
-=====================================================
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
+How about something like this?
 
 
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/vhost/net.c | 40 ++++++++++++++++++++++++++--------------
+ 1 file changed, 26 insertions(+), 14 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+index 97a209d6a527..556df26c584d 100644
+--- a/drivers/vhost/net.c
++++ b/drivers/vhost/net.c
+@@ -144,6 +144,10 @@ struct vhost_net {
+ 	struct page_frag page_frag;
+ 	/* Refcount bias of page frag */
+ 	int refcnt_bias;
++
++	struct socket *tx_sock;
++	struct socket *rx_sock;
++	struct rcu_work rwork;
+ };
+ 
+ static unsigned vhost_net_zcopy_mask __read_mostly;
+@@ -1389,6 +1393,24 @@ static void vhost_net_flush(struct vhost_net *n)
+ 	}
+ }
+ 
++static void vhost_net_cleanup(struct work_struct *work)
++{
++	struct vhost_net *n =
++		container_of(to_rcu_work(work), struct vhost_net, rwork);
++	vhost_dev_cleanup(&n->dev);
++	vhost_net_vq_reset(n);
++	if (n->tx_sock)
++		sockfd_put(n->tx_sock);
++	if (n->rx_sock)
++		sockfd_put(n->rx_sock);
++	kfree(n->vqs[VHOST_NET_VQ_RX].rxq.queue);
++	kfree(n->vqs[VHOST_NET_VQ_TX].xdp);
++	kfree(n->dev.vqs);
++	if (n->page_frag.page)
++		__page_frag_cache_drain(n->page_frag.page, n->refcnt_bias);
++	kvfree(n);
++}
++
+ static int vhost_net_release(struct inode *inode, struct file *f)
+ {
+ 	struct vhost_net *n = f->private_data;
+@@ -1398,21 +1420,11 @@ static int vhost_net_release(struct inode *inode, struct file *f)
+ 	vhost_net_stop(n, &tx_sock, &rx_sock);
+ 	vhost_net_flush(n);
+ 	vhost_dev_stop(&n->dev);
+-	vhost_dev_cleanup(&n->dev);
+-	vhost_net_vq_reset(n);
+-	if (tx_sock)
+-		sockfd_put(tx_sock);
+-	if (rx_sock)
+-		sockfd_put(rx_sock);
+-	/* Make sure no callbacks are outstanding */
+-	synchronize_rcu();
++	n->tx_sock = tx_sock;
++	n->rx_sock = rx_sock;
+ 
+-	kfree(n->vqs[VHOST_NET_VQ_RX].rxq.queue);
+-	kfree(n->vqs[VHOST_NET_VQ_TX].xdp);
+-	kfree(n->dev.vqs);
+-	if (n->page_frag.page)
+-		__page_frag_cache_drain(n->page_frag.page, n->refcnt_bias);
+-	kvfree(n);
++	INIT_RCU_WORK(&n->rwork, vhost_net_cleanup);
++	queue_rcu_work(system_wq, &n->rwork);
+ 	return 0;
+ }
+ 
+-- 
+
