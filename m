@@ -2,148 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C113C45893E
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 07:16:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AA7A458990
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 08:03:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232395AbhKVGT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 01:19:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58952 "EHLO mail.kernel.org"
+        id S238710AbhKVHGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 02:06:21 -0500
+Received: from out0.migadu.com ([94.23.1.103]:57962 "EHLO out0.migadu.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230218AbhKVGTZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Nov 2021 01:19:25 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 184E46069B;
-        Mon, 22 Nov 2021 06:16:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1637561779;
-        bh=A8OkKYkNsVqzS1Kdck6fFI3BJ/xcsMVMb1R9tMssKOk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JezSZTth+rMgwesKBQf0QIDrlbhPTI6nQXooyW0pK810y2kT6Is264imF2VCgCnIJ
-         TWQHnSdQeFtrzERekm/mlFXIXa4lcq6xq6qrcLswBBWjQI5+v0S8T7yvdmpoAkPf8r
-         nzGFcwUAUWh/BLEhG3yIX/8yIHRHE3TBnWpu7TQY=
-Date:   Mon, 22 Nov 2021 07:16:07 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jeremy Kerr <jk@codeconstruct.com.au>
-Cc:     netdev@vger.kernel.org, Matt Johnston <matt@codeconstruct.com.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH net-next] mctp: Add MCTP-over-serial transport binding
-Message-ID: <YZs1p+lkKO+194zN@kroah.com>
-References: <20211122042817.2988517-1-jk@codeconstruct.com.au>
+        id S238645AbhKVHGQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Nov 2021 02:06:16 -0500
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1637564587;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Gm4Rs72PHuHNHcW6ViEPu/5zqhq+qlChz2IJ0J5+d8Y=;
+        b=Lyjal9bHyGqpDrZYacX4/1DfIM/TqJVVH0kFjn166qIA0Bj+hzeYehYUsRaC4fg14onryr
+        Bmz50kfDjviIHXS5K8d71Z+o0OAaX2JY+hzyMacwgCyOco3fk22cWyiG6pvqsuCfPlyU0N
+        YHk6FLjuCsLvppwjXc2xzAHVMFRBYuA=
+From:   Yajun Deng <yajun.deng@linux.dev>
+To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yajun Deng <yajun.deng@linux.dev>
+Subject: [PATCH net-next] arp: Remove #ifdef CONFIG_PROC_FS
+Date:   Mon, 22 Nov 2021 15:02:36 +0800
+Message-Id: <20211122070236.14218-1-yajun.deng@linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211122042817.2988517-1-jk@codeconstruct.com.au>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 22, 2021 at 12:28:17PM +0800, Jeremy Kerr wrote:
-> This change adds a MCTP Serial transport binding, as per DMTF DSP0253.
+proc_create_net() and remove_proc_entry() already contain the case
+whether to define CONFIG_PROC_FS, so remove #ifdef CONFIG_PROC_FS.
 
-What is "DMTF DSP0253"?  Can you provide a link to this or more
-information that explains why this has to be a serial thing?
+Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+---
+ net/ipv4/arp.c | 33 ++++++++-------------------------
+ 1 file changed, 8 insertions(+), 25 deletions(-)
 
-> This is implemented as a new serial line discipline, and can be attached
-> to arbitrary serial devices.
+diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
+index 857a144b1ea9..4db0325f6e1a 100644
+--- a/net/ipv4/arp.c
++++ b/net/ipv4/arp.c
+@@ -1299,21 +1299,6 @@ static struct packet_type arp_packet_type __read_mostly = {
+ 	.func =	arp_rcv,
+ };
+ 
+-static int arp_proc_init(void);
+-
+-void __init arp_init(void)
+-{
+-	neigh_table_init(NEIGH_ARP_TABLE, &arp_tbl);
+-
+-	dev_add_pack(&arp_packet_type);
+-	arp_proc_init();
+-#ifdef CONFIG_SYSCTL
+-	neigh_sysctl_register(NULL, &arp_tbl.parms, NULL);
+-#endif
+-	register_netdevice_notifier(&arp_netdev_notifier);
+-}
+-
+-#ifdef CONFIG_PROC_FS
+ #if IS_ENABLED(CONFIG_AX25)
+ 
+ /* ------------------------------------------------------------------------ */
+@@ -1451,16 +1436,14 @@ static struct pernet_operations arp_net_ops = {
+ 	.exit = arp_net_exit,
+ };
+ 
+-static int __init arp_proc_init(void)
++void __init arp_init(void)
+ {
+-	return register_pernet_subsys(&arp_net_ops);
+-}
+-
+-#else /* CONFIG_PROC_FS */
++	neigh_table_init(NEIGH_ARP_TABLE, &arp_tbl);
+ 
+-static int __init arp_proc_init(void)
+-{
+-	return 0;
++	dev_add_pack(&arp_packet_type);
++	register_pernet_subsys(&arp_net_ops);
++#ifdef CONFIG_SYSCTL
++	neigh_sysctl_register(NULL, &arp_tbl.parms, NULL);
++#endif
++	register_netdevice_notifier(&arp_netdev_notifier);
+ }
+-
+-#endif /* CONFIG_PROC_FS */
+-- 
+2.32.0
 
-Why?  Who is going to use this?
-
-> The 'mctp' utility provides the ldisc magic to set up the serial link:
-> 
->   # mctp link serial /dev/ttyS0 &
->   # mctp link
->   dev lo index 1 address 0x00:00:00:00:00:00 net 1 mtu 65536 up
->   dev mctpserial0 index 5 address 0x(no-addr) net 1 mtu 68 down
-
-Where is this magic mctp application?  I can't find it in my distro
-packages anywhere.
-
-
-> 
-> Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
-> ---
->  drivers/net/mctp/Kconfig       |  11 +
->  drivers/net/mctp/Makefile      |   1 +
->  drivers/net/mctp/mctp-serial.c | 494 +++++++++++++++++++++++++++++++++
->  include/uapi/linux/tty.h       |   1 +
->  4 files changed, 507 insertions(+)
->  create mode 100644 drivers/net/mctp/mctp-serial.c
-> 
-> diff --git a/drivers/net/mctp/Kconfig b/drivers/net/mctp/Kconfig
-> index d8f966cedc89..02f3c2d600fd 100644
-> --- a/drivers/net/mctp/Kconfig
-> +++ b/drivers/net/mctp/Kconfig
-> @@ -3,6 +3,17 @@ if MCTP
->  
->  menu "MCTP Device Drivers"
->  
-> +config MCTP_SERIAL
-> +	tristate "MCTP serial transport"
-> +	depends on TTY
-> +	select CRC_CCITT
-> +	help
-> +	  This driver provides an MCTP-over-serial interface, through a
-> +	  serial line-discipline. By attaching the ldisc to a serial device,
-> +	  we get a new net device to transport MCTP packets.
-> +
-> +	  Say y here if you need to connect to MCTP devices over serial.
-
-Module name?
-
-> +
->  endmenu
->  
->  endif
-> diff --git a/drivers/net/mctp/Makefile b/drivers/net/mctp/Makefile
-> index e69de29bb2d1..d32622613ce4 100644
-> --- a/drivers/net/mctp/Makefile
-> +++ b/drivers/net/mctp/Makefile
-> @@ -0,0 +1 @@
-> +obj-$(CONFIG_MCTP_SERIAL) += mctp-serial.o
-> diff --git a/drivers/net/mctp/mctp-serial.c b/drivers/net/mctp/mctp-serial.c
-> new file mode 100644
-> index 000000000000..30950f1ea6f4
-> --- /dev/null
-> +++ b/drivers/net/mctp/mctp-serial.c
-> @@ -0,0 +1,494 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Management Component Transport Protocol (MCTP) - serial transport
-> + * binding.
-> + *
-> + * Copyright (c) 2021 Code Construct
-> + */
-> +
-> +#include <linux/idr.h>
-> +#include <linux/if_arp.h>
-> +#include <linux/module.h>
-> +#include <linux/skbuff.h>
-> +#include <linux/tty.h>
-> +#include <linux/workqueue.h>
-> +#include <linux/crc-ccitt.h>
-> +
-> +#include <linux/mctp.h>
-> +#include <net/mctp.h>
-> +#include <net/pkt_sched.h>
-> +
-> +#define MCTP_SERIAL_MTU		68 /* base mtu (64) + mctp header */
-> +#define MCTP_SERIAL_FRAME_MTU	(MCTP_SERIAL_MTU + 6) /* + serial framing */
-> +
-> +#define MCTP_SERIAL_VERSION	0x1
-
-Where does this number come from?
-
-> +
-> +#define BUFSIZE			MCTP_SERIAL_FRAME_MTU
-> +
-> +#define BYTE_FRAME		0x7e
-> +#define BYTE_ESC		0x7d
-> +
-> +static DEFINE_IDA(mctp_serial_ida);
-
-I think you forgot to clean this up when the module is removed.
-
-thanks,
-
-greg k-h
