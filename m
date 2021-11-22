@@ -2,59 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5042F459118
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 16:15:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D496459119
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 16:15:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239037AbhKVPS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 10:18:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56496 "EHLO
+        id S239678AbhKVPSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 10:18:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233449AbhKVPS2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 10:18:28 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B1C8C061574
-        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 07:15:21 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id z5so78622509edd.3
-        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 07:15:21 -0800 (PST)
+        with ESMTP id S233449AbhKVPS3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 10:18:29 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6862C061574
+        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 07:15:22 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id g14so78529489edb.8
+        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 07:15:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=88LHCR+PjO2INkYg6VrTl9B0cxBHATNNu+7/7SBwxmU=;
-        b=RSuRuywV+As+UE3lo8JZJy4WWj3ChHRMIumrjQmFH90j36Uvbq+LRio16xsxrKtXzR
-         bZo+wa32t3Vgy8ugjdYpYdY+3q9gzXoFT6j0bIIPEO6RYWFrUtH6LhxeUMjphQhn7fex
-         9RQ8fgS2Uer1vpP+G9Gy3M4+iLd5ZCWXubHJQIyDMGcG4IOkuWZ0fIbLbsrxr56dKYto
-         f3fS7DB1KFeqLcuGzC77d6xHZ7SyzQW1zRfaVy5P7NQD/zUY33ArEvz70Op1Dccz/9Ir
-         +jDYxgZxWCQ2NhMwEwNkOrTE1/fcyxqxZ/6qbZAsNRvnh/LoSFGYD6hWMJy1zZH+WEpn
-         DIFA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=oaQjB7lbCNvQ6j5Qj1cZs1R1magKCcFGqEhPiwQHJDo=;
+        b=RC1H6Emw3LrcCjWT+2H4BhZ4TptQRZljzPFGZwJKYP8sl2ymEbqZybw+u16tBvvRWs
+         sGE+iay9bi0szFCuD2CpJrPi0TvrIXVs0SEzHTIglfnnKZ3Pd6nEzw3N3YzvZmIySuYi
+         F6lntabrAztHGklGlswBjumnpKLsHRULA2r99VenuPvq8cknbtVL2QKUaTJ4DxM8ohD9
+         mOP6ZZUbp7l3tpex7srmYne06WDZ8kB3v+MhlpdUjDsFA/ROmH4EaT89wl92m32v5ZvN
+         xl36xT8b3YSO/oE5lsvgYnH2NsludeNj3dkTNApQiwOcvxu0cXgJJvjB6Z88elKwjUxo
+         5J3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=88LHCR+PjO2INkYg6VrTl9B0cxBHATNNu+7/7SBwxmU=;
-        b=n2NUzVhtsmyIWOArAn1gp3xPAQfVwR5CH4JpqOSxI0gHTJzd6qgYOUdWmf6dSKWB2O
-         giS6jDfblNBn9tLZ4aAodf7HQSv5REal1ubqp6i+J+InZxqawMeP03os6bP+j4X0NrG4
-         LDsfVry3EMf1/3aJ78tuHorzMOVDvcWKTgkR4x62YhxZkrwR5iBGWEOBu6yKVOYHu5dv
-         UG9K3aazspMjm2N9QIlByxzXmRldxHNLuA0YwSNPqTOK+qg5o1zl5J/5hHyAJhPKgBtw
-         cXm9mmrhQ3nw+Xcrl5TxObVL08zFJJmHDiGx047qQzMP6/eGy643dxyS74lScNfqmG/N
-         K20Q==
-X-Gm-Message-State: AOAM532JjPQ8Ve/LOXhTk3SbtVXIJ7FuhbH7xfLXXO4XAXlxpyfETWBp
-        UQWLG9TlX1n93Moai3h8505YwvpD/xX2tTgE
-X-Google-Smtp-Source: ABdhPJxVy0l/H9KCuRumnHQmTDDxRoW0yN1H8KkOD9xTnXa8eck1nVkY4QY9TDxcDQ1jJek/jtA4Xg==
-X-Received: by 2002:a17:907:d0b:: with SMTP id gn11mr41560504ejc.355.1637594119594;
-        Mon, 22 Nov 2021 07:15:19 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=oaQjB7lbCNvQ6j5Qj1cZs1R1magKCcFGqEhPiwQHJDo=;
+        b=ni8qRRvylVUxIm0vxCDk4TnniBI70hfl5OC8DOfHUufHuV0ZbZvm79oAmiS/nTPA+3
+         PRNLHV/Xx3SJg8lhBvldmygA2ClWBMuvqERAb7nfmOpCR1HoFkn9BoGdcGI3BO0f8zo/
+         K4LoA6jC8l83qlBGiHn/ULZxACBA3YkpYv0QuwHKW5mruRQTrfc8OPvMzKOXrM7buoUL
+         OmNWDF9L+AMJ9yZZVykrUd2o3iJDce763AaClsrZmk3cXQwQUfOQTEy1sp7S9VO42Rqw
+         kJXuLTjrCQdQOr+nryQNHKLJR4xVY0cLVPRaW0gVn1GY3M5ftlgXkBchYxVrBhpvfZry
+         Xn9g==
+X-Gm-Message-State: AOAM533ryrKJy5NazyyAi7pTLzj9w+ApqICuEupAJsmPe2TdWakTVnT8
+        gh70zzd6EjU74F/4WZM2m+N9bMjmWuQbFe80
+X-Google-Smtp-Source: ABdhPJzARBZokcWqNi0vW8TA77fO5p/k3+FUhHAkR6nrLGCs+B0Gs6FV5aqVgOBCAfz0DT0Be+WXCA==
+X-Received: by 2002:a17:907:948c:: with SMTP id dm12mr13870217ejc.551.1637594120573;
+        Mon, 22 Nov 2021 07:15:20 -0800 (PST)
 Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id qb21sm3906904ejc.78.2021.11.22.07.15.18
+        by smtp.gmail.com with ESMTPSA id qb21sm3906904ejc.78.2021.11.22.07.15.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Nov 2021 07:15:19 -0800 (PST)
+        Mon, 22 Nov 2021 07:15:20 -0800 (PST)
 From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
 Cc:     idosch@idosch.org, davem@davemloft.net, kuba@kernel.org,
         dsahern@gmail.com, Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH net v2 0/3] net: nexthop: fix refcount issues when replacing groups
-Date:   Mon, 22 Nov 2021 17:15:11 +0200
-Message-Id: <20211122151514.2813935-1-razor@blackwall.org>
+Subject: [PATCH net v2 1/3] net: ipv6: add fib6_nh_release_dsts stub
+Date:   Mon, 22 Nov 2021 17:15:12 +0200
+Message-Id: <20211122151514.2813935-2-razor@blackwall.org>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20211122151514.2813935-1-razor@blackwall.org>
+References: <20211122151514.2813935-1-razor@blackwall.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -63,122 +65,91 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-Hi,
-This set fixes a refcount bug when replacing nexthop groups and
-modifying routes. It is complex because the objects look valid when
-debugging memory dumps, but we end up having refcount dependency between
-unlinked objects which can never be released, so in turn they cannot
-free their resources and refcounts. The problem happens because we can
-have stale IPv6 per-cpu dsts in nexthops which were removed from a
-group. Even though the IPv6 gen is bumped, the dsts won't be released
-until traffic passes through them or the nexthop is freed, that can take
-arbitrarily long time, and even worse we can create a scenario[1] where it
-can never be released. The fix is to release the IPv6 per-cpu dsts of
-replaced nexthops after an RCU grace period so no new ones can be
-created. To do that we add a new IPv6 stub - fib6_nh_release_dsts, which
-is used by the nexthop code only when necessary. We can further optimize
-group replacement, but that is more suited for net-next as these patches
-would have to be backported to stable releases.
+We need a way to release a fib6_nh's per-cpu dsts when replacing
+nexthops otherwise we can end up with stale per-cpu dsts which hold net
+device references, so add a new IPv6 stub called fib6_nh_release_dsts.
+It must be used after an RCU grace period, so no new dsts can be created
+through a group's nexthop entry.
+Similar to fib6_nh_release it shouldn't be used if fib6_nh_init has failed
+so it doesn't need a dummy stub when IPv6 is not enabled.
 
-v2: patch 02: update commit msg
-    patch 03: check for mausezahn before testing and make a few comments
-              more verbose
+Fixes: 7bf4796dd099 ("nexthops: add support for replace")
+Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+---
+v2: no changes
 
-Thanks,
- Nik
+ include/net/ip6_fib.h    |  1 +
+ include/net/ipv6_stubs.h |  1 +
+ net/ipv6/af_inet6.c      |  1 +
+ net/ipv6/route.c         | 19 +++++++++++++++++++
+ 4 files changed, 22 insertions(+)
 
-[1]
-This info is also present in patch 02's commit message.
-Initial state:
- $ ip nexthop list
-  id 200 via 2002:db8::2 dev bridge.10 scope link onlink
-  id 201 via 2002:db8::3 dev bridge scope link onlink
-  id 203 group 201/200
- $ ip -6 route
-  2001:db8::10 nhid 203 metric 1024 pref medium
-     nexthop via 2002:db8::3 dev bridge weight 1 onlink
-     nexthop via 2002:db8::2 dev bridge.10 weight 1 onlink
-
-Create rt6_info through one of the multipath legs, e.g.:
- $ taskset -a -c 1  ./pkt_inj 24 bridge.10 2001:db8::10
- (pkt_inj is just a custom packet generator, nothing special)
-
-Then remove that leg from the group by replace (let's assume it is id
-200 in this case):
- $ ip nexthop replace id 203 group 201
-
-Now remove the IPv6 route:
- $ ip -6 route del 2001:db8::10/128
-
-The route won't be really deleted due to the stale rt6_info holding 1
-refcnt in nexthop id 200.
-At this point we have the following reference count dependency:
- (deleted) IPv6 route holds 1 reference over nhid 203
- nh 203 holds 1 ref over id 201
- nh 200 holds 1 ref over the net device and the route due to the stale
- rt6_info
-
-Now to create circular dependency between nh 200 and the IPv6 route, and
-also to get a reference over nh 200, restore nhid 200 in the group:
- $ ip nexthop replace id 203 group 201/200
-
-And now we have a permanent circular dependncy because nhid 203 holds a
-reference over nh 200 and 201, but the route holds a ref over nh 203 and
-is deleted.
-
-To trigger the bug just delete the group (nhid 203):
- $ ip nexthop del id 203
-
-It won't really be deleted due to the IPv6 route dependency, and now we
-have 2 unlinked and deleted objects that reference each other: the group
-and the IPv6 route. Since the group drops the reference it holds over its
-entries at free time (i.e. its own refcount needs to drop to 0) that will
-never happen and we get a permanent ref on them, since one of the entries
-holds a reference over the IPv6 route it will also never be released.
-
-At this point the dependencies are:
- (deleted, only unlinked) IPv6 route holds reference over group nh 203
- (deleted, only unlinked) group nh 203 holds reference over nh 201 and 200
- nh 200 holds 1 ref over the net device and the route due to the stale
- rt6_info
-
-This is the last point where it can be fixed by running traffic through
-nh 200, and specifically through the same CPU so the rt6_info (dst) will
-get released due to the IPv6 genid, that in turn will free the IPv6
-route, which in turn will free the ref count over the group nh 203.
-
-If nh 200 is deleted at this point, it will never be released due to the
-ref from the unlinked group 203, it will only be unlinked:
- $ ip nexthop del id 200
- $ ip nexthop
- $
-
-Now we can never release that stale rt6_info, we have IPv6 route with ref
-over group nh 203, group nh 203 with ref over nh 200 and 201, nh 200 with
-rt6_info (dst) with ref over the net device and the IPv6 route. All of
-these objects are only unlinked, and cannot be released, thus they can't
-release their ref counts.
-
- Message from syslogd@dev at Nov 19 14:04:10 ...
-  kernel:[73501.828730] unregister_netdevice: waiting for bridge.10 to become free. Usage count = 3
- Message from syslogd@dev at Nov 19 14:04:20 ...
-  kernel:[73512.068811] unregister_netdevice: waiting for bridge.10 to become free. Usage count = 3
-
-
-Nikolay Aleksandrov (3):
-  net: ipv6: add fib6_nh_release_dsts stub
-  net: nexthop: release IPv6 per-cpu dsts when replacing a nexthop group
-  selftests: net: fib_nexthops: add test for group refcount imbalance
-    bug
-
- include/net/ip6_fib.h                       |  1 +
- include/net/ipv6_stubs.h                    |  1 +
- net/ipv4/nexthop.c                          | 25 +++++++-
- net/ipv6/af_inet6.c                         |  1 +
- net/ipv6/route.c                            | 19 +++++++
- tools/testing/selftests/net/fib_nexthops.sh | 63 +++++++++++++++++++++
- 6 files changed, 108 insertions(+), 2 deletions(-)
-
+diff --git a/include/net/ip6_fib.h b/include/net/ip6_fib.h
+index c412dde4d67d..83b8070d1cc9 100644
+--- a/include/net/ip6_fib.h
++++ b/include/net/ip6_fib.h
+@@ -485,6 +485,7 @@ int fib6_nh_init(struct net *net, struct fib6_nh *fib6_nh,
+ 		 struct fib6_config *cfg, gfp_t gfp_flags,
+ 		 struct netlink_ext_ack *extack);
+ void fib6_nh_release(struct fib6_nh *fib6_nh);
++void fib6_nh_release_dsts(struct fib6_nh *fib6_nh);
+ 
+ int call_fib6_entry_notifiers(struct net *net,
+ 			      enum fib_event_type event_type,
+diff --git a/include/net/ipv6_stubs.h b/include/net/ipv6_stubs.h
+index afbce90c4480..45e0339be6fa 100644
+--- a/include/net/ipv6_stubs.h
++++ b/include/net/ipv6_stubs.h
+@@ -47,6 +47,7 @@ struct ipv6_stub {
+ 			    struct fib6_config *cfg, gfp_t gfp_flags,
+ 			    struct netlink_ext_ack *extack);
+ 	void (*fib6_nh_release)(struct fib6_nh *fib6_nh);
++	void (*fib6_nh_release_dsts)(struct fib6_nh *fib6_nh);
+ 	void (*fib6_update_sernum)(struct net *net, struct fib6_info *rt);
+ 	int (*ip6_del_rt)(struct net *net, struct fib6_info *rt, bool skip_notify);
+ 	void (*fib6_rt_update)(struct net *net, struct fib6_info *rt,
+diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+index 0c4da163535a..dab4a047590b 100644
+--- a/net/ipv6/af_inet6.c
++++ b/net/ipv6/af_inet6.c
+@@ -1026,6 +1026,7 @@ static const struct ipv6_stub ipv6_stub_impl = {
+ 	.ip6_mtu_from_fib6 = ip6_mtu_from_fib6,
+ 	.fib6_nh_init	   = fib6_nh_init,
+ 	.fib6_nh_release   = fib6_nh_release,
++	.fib6_nh_release_dsts = fib6_nh_release_dsts,
+ 	.fib6_update_sernum = fib6_update_sernum_stub,
+ 	.fib6_rt_update	   = fib6_rt_update,
+ 	.ip6_del_rt	   = ip6_del_rt,
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 3ae25b8ffbd6..42d60c76d30a 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -3680,6 +3680,25 @@ void fib6_nh_release(struct fib6_nh *fib6_nh)
+ 	fib_nh_common_release(&fib6_nh->nh_common);
+ }
+ 
++void fib6_nh_release_dsts(struct fib6_nh *fib6_nh)
++{
++	int cpu;
++
++	if (!fib6_nh->rt6i_pcpu)
++		return;
++
++	for_each_possible_cpu(cpu) {
++		struct rt6_info *pcpu_rt, **ppcpu_rt;
++
++		ppcpu_rt = per_cpu_ptr(fib6_nh->rt6i_pcpu, cpu);
++		pcpu_rt = xchg(ppcpu_rt, NULL);
++		if (pcpu_rt) {
++			dst_dev_put(&pcpu_rt->dst);
++			dst_release(&pcpu_rt->dst);
++		}
++	}
++}
++
+ static struct fib6_info *ip6_route_info_create(struct fib6_config *cfg,
+ 					      gfp_t gfp_flags,
+ 					      struct netlink_ext_ack *extack)
 -- 
 2.31.1
 
