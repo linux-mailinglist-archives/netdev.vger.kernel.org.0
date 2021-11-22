@@ -2,84 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5AB4459060
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 15:40:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B66945906E
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 15:43:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239763AbhKVOnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 09:43:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38716 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239770AbhKVOnV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Nov 2021 09:43:21 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 3864A604D1;
-        Mon, 22 Nov 2021 14:40:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637592009;
-        bh=3iFuKliPS+OS4p3jtvyWWwr3LNFHl6PYi7GnohJOviY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=uG/ykPIBpaO2fxZsG4wB2HdsnRCrS+tc0X5Kx8mi/wsan0HF0fAvjDZj7dKTPEmV8
-         hMFcAiRoJkdxXg2rqRelE9YpNtbqv9RLSFNR0JkOtTOizlAfqwtAZ1rKPRnzznoFJz
-         fHDRApQqOTNvOYuFN3TYYLPXL9Fjseb3kROga5jSj1TYnsdsb4z5G5lu93a4Pwd74n
-         soDDE3vA5Lar7J5vH7HjoH+Sb3KRM4rb73RF4TnMSWwSm0kasJTUeKxgrkQR/Jo20R
-         6AIT9GarrmTTEj48LDo+eFBqez84hvruj4t1obXSv/9w/jHCRKHNEHz9DeUa2Gfa+7
-         kal2iX7+nQKJA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 28815609D9;
-        Mon, 22 Nov 2021 14:40:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S234432AbhKVOqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 09:46:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49102 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230152AbhKVOqM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 09:46:12 -0500
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79649C061574
+        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 06:43:05 -0800 (PST)
+Received: by mail-io1-xd2d.google.com with SMTP id w22so23691801ioa.1
+        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 06:43:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=d48kqNcTOfiI+YDLbhbuO0gCz2NOryaBkmV/pfQZf4I=;
+        b=ewSzYrlMOjghFCBkX8QEcfZDzxMZtkH8VHVUVIf7srAOVXR9w+1rdfwas/kZlm/VdM
+         8jocU2DunkYRrTbu//B/GpZ+rNINGXT8aZPqe24Ot3dSMtVD6pxkADJq+Hje8EU93LVZ
+         JvdTUU4QMpK+77pSTGIozeyVkO1eZhq27Gch4AwJABzfRZitkR1Aha2/0VnMyj1tznwL
+         FGDRNUwlaeBTqG6nAxmmiQeITc7LkVDX7D+uKRBbUVGkzV444ymwZU5UH/wPamCHzIWe
+         i2lhdgbT6NeaWL7Kplv8kj2V+e6zoDGnkXa9EPfzVgaZ18pXIXt4QiKUUbiUu8wX3t8i
+         5CTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=d48kqNcTOfiI+YDLbhbuO0gCz2NOryaBkmV/pfQZf4I=;
+        b=jjpZF7sFekmAN2YmvtYEOtsdg7oLJODptwREf/9uarAXaqDf64XvYOHozVWVqkHFfW
+         5bimaJlyCxgCETgysWUCeM+Fhjdplp+QiabPxOdCfWwnHAzIeJwMLJFOfVt4D9AYUl/S
+         IGUDi9vzT7Z7U1FXbW2uOoMPbcskFork39DjvevcbhD8DGkFyrSHv0uPrTAHthY3QQRp
+         MTSHTtEZ/2cWFARrpKkPy6RIgjw6rqHbTcOQXtxZ2EQ6hsoHESvq/+rfwAetgQ7b0QzK
+         RuZAcdPl9av8hdzA0VBpNw2z5GLPCng5bUQ7WJoCX1SdbePNLsphw0d22O5s4byD/Hxu
+         Hq6Q==
+X-Gm-Message-State: AOAM530uYgbsixrCrbf2+YtnrcP/tqk5aMtvWnp0JIpBDvS3B6+g6omz
+        NuDA7cpPfdbFvSj2DA2a/TU5xw==
+X-Google-Smtp-Source: ABdhPJwyBum6+m7QArvXzTGgg69aOwdxayYkVKXUb/QGSYxz/sqxlEQeu1KmVao5ygIKyRyTYn9thQ==
+X-Received: by 2002:a05:6638:2585:: with SMTP id s5mr49352391jat.68.1637592185010;
+        Mon, 22 Nov 2021 06:43:05 -0800 (PST)
+Received: from mojaone.waya (bras-base-kntaon1617w-grc-33-142-112-185-132.dsl.bell.ca. [142.112.185.132])
+        by smtp.gmail.com with ESMTPSA id j21sm6051938ila.6.2021.11.22.06.43.03
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 22 Nov 2021 06:43:04 -0800 (PST)
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+X-Google-Original-From: Jamal Hadi Salim <jhs@emojatatu.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, jiri@resnulli.us, xiyou.wangcong@gmail.com,
+        dcaratti@redhat.com, marcelo.leitner@gmail.com, vladbu@nvidia.com,
+        Jamal Hadi Salim <jhs@mojatatu.com>
+Subject: [PATCH net-next  1/1] tc-testing: Add link for reviews with TC MAINTAINERS
+Date:   Mon, 22 Nov 2021 09:42:52 -0500
+Message-Id: <20211122144252.25156-1-jhs@emojatatu.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net] net: stmmac: retain PTP clock time during
- SIOCSHWTSTAMP ioctls
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163759200916.2046.16368068009111419388.git-patchwork-notify@kernel.org>
-Date:   Mon, 22 Nov 2021 14:40:09 +0000
-References: <20211121175704.6813-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20211121175704.6813-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        davem@davemloft.net, kuba@kernel.org, mcoquelin.stm32@gmail.com,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        xiaoliang.yang_1@nxp.com, yannick.vignon@nxp.com,
-        m.olbrich@pengutronix.de, a.fatoum@pengutronix.de,
-        h.assmann@pengutronix.de, kernel@pengutronix.de,
-        kurt@linutronix.de, richardcochran@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Jamal Hadi Salim <jhs@mojatatu.com>
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
+---
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-On Sun, 21 Nov 2021 19:57:04 +0200 you wrote:
-> From: Holger Assmann <h.assmann@pengutronix.de>
-> 
-> Currently, when user space emits SIOCSHWTSTAMP ioctl calls such as
-> enabling/disabling timestamping or changing filter settings, the driver
-> reads the current CLOCK_REALTIME value and programming this into the
-> NIC's hardware clock. This might be necessary during system
-> initialization, but at runtime, when the PTP clock has already been
-> synchronized to a grandmaster, a reset of the timestamp settings might
-> result in a clock jump. Furthermore, if the clock is also controlled by
-> phc2sys in automatic mode (where the UTC offset is queried from ptp4l),
-> that UTC-to-TAI offset (currently 37 seconds in 2021) would be
-> temporarily reset to 0, and it would take a long time for phc2sys to
-> readjust so that CLOCK_REALTIME and the PHC are apart by 37 seconds
-> again.
-> 
-> [...]
-
-Here is the summary with links:
-  - [v2,net] net: stmmac: retain PTP clock time during SIOCSHWTSTAMP ioctls
-    https://git.kernel.org/netdev/net/c/a6da2bbb0005
-
-You are awesome, thank you!
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 10c8ae3a8c73..2f1e78333883 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -18483,6 +18483,7 @@ F:	include/uapi/linux/pkt_sched.h
+ F:	include/uapi/linux/tc_act/
+ F:	include/uapi/linux/tc_ematch/
+ F:	net/sched/
++F:	tools/testing/selftests/tc-testing
+ 
+ TC90522 MEDIA DRIVER
+ M:	Akihiro Tsukada <tskd08@gmail.com>
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.20.1
 
