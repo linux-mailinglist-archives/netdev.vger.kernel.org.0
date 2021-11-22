@@ -2,43 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADD0F4590BB
-	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 16:00:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F34D14590C1
+	for <lists+netdev@lfdr.de>; Mon, 22 Nov 2021 16:00:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239862AbhKVPDW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 10:03:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43178 "EHLO mail.kernel.org"
+        id S239853AbhKVPDU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 10:03:20 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43166 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239832AbhKVPDQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S239829AbhKVPDQ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 22 Nov 2021 10:03:16 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id EB95D60F94;
+Received: by mail.kernel.org (Postfix) with ESMTPS id CF92860F6B;
         Mon, 22 Nov 2021 15:00:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637593210;
-        bh=biH42iAtiMWPihyI1AHFoYnYBLNFW9sOi+G4pIBNQto=;
+        s=k20201202; t=1637593209;
+        bh=X+TP5xx7Y15WYAhEcSvBGmOZNrrXPznupKqHmh3DwV0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=luQF4YhdcPmJQzZIlOBuo5PiyGYCYnwDpzz2z/u9e8j3ZK3ZjxwIKIBHF2ACGLQ93
-         MVPSBgEs99l34J/14V53oITp1ZfpM2REP43dFq+xxmFi3neHejS9nylQmanavhFviA
-         SBonI58k+v9P3Mg9kEh2TvnygJENSDJ6s5KKoUXte17yzdlqi87Knporir7sVviGKs
-         BKNMLdrnXKzG7giXsefwGeX1qg/WQrxoAPc+06EypeJn9KPBmINLjcQHY+UQtNjZKk
-         CWuxAX0Byxp4ScBotd7lIgoTyr0Whsd0qA+FlfAwpcWI4L94z8JYzTyw+VQdKLawCg
-         PJKWVJ16yGg9w==
+        b=cDA4iGK+jX2Ip8UE11Njtl1jWWfVlyc7J/y4+VeCKf/N5g9HUUn8K0yfoDzXUvCm7
+         wxNwHtcCGLqn4Je/Lm2xb+9rsRBPo+/DEw8y6qJU+KN0mVQ1d5qW4ELxYWz7NnepnV
+         X6KStjMIREBmmZ0tJ3X/81NTIkNEYcLiYieqwC9/IdeN3oaVd61EvpAJnke1sbJDsb
+         17Zfl9yVZYYwk/K65HhHpMUARNiiHkBH0nDIGkuPQqF84v+IhGDRlYoa0CdiV0nrNL
+         JzL74rJC7q9hz6B5whE9WZcvXj5i/6EXOpEGq5Mv3kSzKxHzTkffXJ6Wak4tjsVAwr
+         oAhoVH8NGo4mg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DCF1360A94;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C5B8D609D9;
         Mon, 22 Nov 2021 15:00:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] qed: Use the bitmap API to simplify some functions
+Subject: Re: [PATCH net-next v2] sections: global data can be in .bss
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163759320990.11926.9744757405183008773.git-patchwork-notify@kernel.org>
+Message-Id: <163759320980.11926.9911878483911251876.git-patchwork-notify@kernel.org>
 Date:   Mon, 22 Nov 2021 15:00:09 +0000
-References: <5f585ae692e1045b9f12c483cdaf87ee5db9a716.1637521924.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <5f585ae692e1045b9f12c483cdaf87ee5db9a716.1637521924.git.christophe.jaillet@wanadoo.fr>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     davem@davemloft.net, kuba@kernel.org, aelior@marvell.com,
-        GR-everest-linux-l2@marvell.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <20211122142456.181724-1-atenart@kernel.org>
+In-Reply-To: <20211122142456.181724-1-atenart@kernel.org>
+To:     Antoine Tenart <atenart@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, arnd@arndb.de,
+        netdev@vger.kernel.org, linux-arch@vger.kernel.org,
+        jonathon.reinhart@gmail.com, tglx@linutronix.de,
+        peterz@infradead.org, rostedt@goodmis.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,19 +49,20 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Sun, 21 Nov 2021 20:12:54 +0100 you wrote:
-> 'cid_map' is a bitmap. So use 'bitmap_zalloc()' to simplify code,
-> improve the semantic and avoid some open-coded arithmetic in allocator
-> arguments.
+On Mon, 22 Nov 2021 15:24:56 +0100 you wrote:
+> When checking an address is located in a global data section also check
+> for the .bss section as global variables initialized to 0 can be in
+> there (-fzero-initialized-in-bss).
 > 
-> Also change the corresponding 'kfree()' into 'bitmap_free()' to keep
-> consistency.
+> This was found when looking at ensure_safe_net_sysctl which was failing
+> to detect non-init sysctl pointing to a global data section when the
+> data was in the .bss section.
 > 
 > [...]
 
 Here is the summary with links:
-  - qed: Use the bitmap API to simplify some functions
-    https://git.kernel.org/netdev/net-next/c/5e6c7ccd3ea4
+  - [net-next,v2] sections: global data can be in .bss
+    https://git.kernel.org/netdev/net-next/c/cb902b332f95
 
 You are awesome, thank you!
 -- 
