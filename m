@@ -2,73 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C916C45A0EC
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 12:08:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4CC945A107
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 12:10:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234885AbhKWLLM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 06:11:12 -0500
-Received: from mail.loongson.cn ([114.242.206.163]:40338 "EHLO loongson.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234813AbhKWLLK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 06:11:10 -0500
-Received: from localhost.localdomain (unknown [111.9.175.10])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxltOJy5xh+ZgAAA--.1064S3;
-        Tue, 23 Nov 2021 19:08:00 +0800 (CST)
-From:   Huang Pei <huangpei@loongson.cn>
-To:     netdev@vger.kernel.org, ambrosehua@gmail.com
-Cc:     linux-arch@vger.kernel.org, lkp@intel.com
-Subject: [PATCH 2/2] slip: fix macro redefine warning
-Date:   Tue, 23 Nov 2021 19:07:49 +0800
-Message-Id: <20211123110749.15310-2-huangpei@loongson.cn>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20211123110749.15310-1-huangpei@loongson.cn>
-References: <20211123110749.15310-1-huangpei@loongson.cn>
+        id S235860AbhKWLNH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 06:13:07 -0500
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:43533 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234250AbhKWLNG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 06:13:06 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 4E5FF5C023C;
+        Tue, 23 Nov 2021 06:09:58 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Tue, 23 Nov 2021 06:09:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=RZZmGZ
+        o6hxlB3LWIz7vJN/EDb9BFZamP+Fs++n5u3wo=; b=R4274JmJimsfUCpRNugRxH
+        SB07C0o7JuFUF2FKD9j0zb5h3xO9as89+XE+smahMufgwRYP4XK8Nds4/gD0mFIl
+        2R2b2RBB1OC6gaRXi0Ah7Cfg3L+ySv0NCEyIhHEXgcfvICFg4hexA1U79MCeECTb
+        IaXNbwov9BU1A+Vuza2E99R2hv7bpta99lCV/bv3V0agxwcAzWKGwuuUhacqVWCI
+        4aO6fDFjEJTHt9UC44OHK9E9jNUUwXyclemMyFN/8cIqK11pLLex6Rajf1EJ/IrR
+        FtaJIJV3CKQKmara3jTeYKbclaosMORmNuXP+avtX9jN0ENwC09okgEpvnexq8xg
+        ==
+X-ME-Sender: <xms:BsycYSrHtBm1sm4gnAVql8YU4j3HLsCS-xyNKEUkdzHDaEvW080t-g>
+    <xme:BsycYQqllqsENG1AleoVBrA0kS9nQmhN1DtWgEZravyEQO_w9l0H35lHE2mDuzwtr
+    naw2E0UkKGQQX4>
+X-ME-Received: <xmr:BsycYXOZAzB4tKzA79lXme_tPCbryE7kc1IPaQWev72lBNlMu8iDmvu886qweZz99rMOAj9i31Lwd62e0Ng3k0WuJdn6iA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrgeeigddvhecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:BsycYR4UTSI4VBl_tAlHg1pf1DYarPRCO3m0uBW52pUVSsmDia6l2A>
+    <xmx:BsycYR5J0KYNgYosvzl0a7Kgywpci_9Jk-iH5u_XCLNVBtqTZNb5rg>
+    <xmx:BsycYRiy7hQYQ2JByhx7V447LgNItW5aC2G6x8RRagnLat0fffoAtw>
+    <xmx:BsycYU0-iK7e6xVp9qjiV9XMXAGOPEqJWCxt913s5NHZDRmXtA-6Mg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 23 Nov 2021 06:09:57 -0500 (EST)
+Date:   Tue, 23 Nov 2021 13:09:54 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        dsahern@gmail.com, Nikolay Aleksandrov <nikolay@nvidia.com>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH net] net: nexthop: fix null pointer dereference when IPv6
+ is not enabled
+Message-ID: <YZzMAgIKFsCRjgc/@shredder>
+References: <20211123102719.3085670-1-razor@blackwall.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf9DxltOJy5xh+ZgAAA--.1064S3
-X-Coremail-Antispam: 1UD129KBjvdXoWrKryDAr15tF43tw4rWw1Dtrb_yoW3WFg_Kw
-        13Zr93XF1YkFnYqrW3Kr4rAFWYkw1UXwn7Wwnag343Xw1j9w48AFWkCa18Jr9xCr4vvFnx
-        C3yYkry0y343KjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbaxYjsxI4VWkKwAYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l82xGYIkIc2x26280x7
-        IE14v26r18M28IrcIa0xkI8VCY1x0267AKxVWUXVWUCwA2ocxC64kIII0Yj41l84x0c7CE
-        w4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6x
-        kF7I0E14v26r4j6F4UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY
-        1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4
-        xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCa
-        FVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JMxAIw28IcxkI7VAKI48JMxC20s026xCaFV
-        Cjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWl
-        x4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r
-        1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_
-        JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8Jr0_Cr1UYx
-        BIdaVFxhVjvjDU0xZFpf9x07b589NUUUUU=
-X-CM-SenderInfo: xkxd0whshlqz5rrqw2lrqou0/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211123102719.3085670-1-razor@blackwall.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-MIPS/IA64 define END as assembly function ending, which conflict
-with END definition in slip.h, just undef it at first
+On Tue, Nov 23, 2021 at 12:27:19PM +0200, Nikolay Aleksandrov wrote:
+> From: Nikolay Aleksandrov <nikolay@nvidia.com>
+> 
+> When we try to add an IPv6 nexthop and IPv6 is not enabled
+> (!CONFIG_IPV6) we'll hit a NULL pointer dereference[1] in the error path
+> of nh_create_ipv6() due to calling ipv6_stub->fib6_nh_release. The bug
+> has been present since the beginning of IPv6 nexthop gateway support.
+> Commit 1aefd3de7bc6 ("ipv6: Add fib6_nh_init and release to stubs") tells
+> us that only fib6_nh_init has a dummy stub because fib6_nh_release should
+> not be called if fib6_nh_init returns an error, but the commit below added
+> a call to ipv6_stub->fib6_nh_release in its error path. To fix it return
+> the dummy stub's -EAFNOSUPPORT error directly without calling
+> ipv6_stub->fib6_nh_release in nh_create_ipv6()'s error path.
 
-Reported-by: lkp@intel.com
-Signed-off-by: Huang Pei <huangpei@loongson.cn>
----
- drivers/net/slip/slip.h | 2 ++
- 1 file changed, 2 insertions(+)
+[...]
 
-diff --git a/drivers/net/slip/slip.h b/drivers/net/slip/slip.h
-index c420e5948522..3d7f88b330c1 100644
---- a/drivers/net/slip/slip.h
-+++ b/drivers/net/slip/slip.h
-@@ -40,6 +40,8 @@
- 					   insmod -oslip_maxdev=nnn	*/
- #define SL_MTU		296		/* 296; I am used to 600- FvK	*/
- 
-+/* some arch define END as assembly function ending, just undef it */
-+#undef	END
- /* SLIP protocol characters. */
- #define END             0300		/* indicates end of frame	*/
- #define ESC             0333		/* indicates byte stuffing	*/
--- 
-2.20.1
+> diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+> index a69a9e76f99f..5dbd4b5505eb 100644
+> --- a/net/ipv4/nexthop.c
+> +++ b/net/ipv4/nexthop.c
+> @@ -2565,11 +2565,15 @@ static int nh_create_ipv6(struct net *net,  struct nexthop *nh,
+>  	/* sets nh_dev if successful */
+>  	err = ipv6_stub->fib6_nh_init(net, fib6_nh, &fib6_cfg, GFP_KERNEL,
+>  				      extack);
+> -	if (err)
+> +	if (err) {
+> +		/* IPv6 is not enabled, don't call fib6_nh_release */
+> +		if (err == -EAFNOSUPPORT)
+> +			goto out;
+>  		ipv6_stub->fib6_nh_release(fib6_nh);
 
+Is the call actually necessary? If fib6_nh_init() failed, then I believe
+it should clean up after itself and not rely on fib6_nh_release().
+
+> -	else
+> +	} else {
+>  		nh->nh_flags = fib6_nh->fib_nh_flags;
+> -
+> +	}
+> +out:
+>  	return err;
+>  }
+>  
+> -- 
+> 2.31.1
+> 
