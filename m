@@ -2,56 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E79345B053
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 00:35:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1BB145B063
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 00:39:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240568AbhKWXis (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 18:38:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48412 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240420AbhKWXiq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 18:38:46 -0500
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1D6C06175A
-        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 15:35:36 -0800 (PST)
-Received: by mail-ot1-x332.google.com with SMTP id x43-20020a056830246b00b00570d09d34ebso1349073otr.2
-        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 15:35:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Fmou/wuLUJUD4zJclGcPIdJu1KVjJ7yuzM0jDRLa/jU=;
-        b=M1kOjxYtgXgq09yG/Tpxoql00WqAEf+/obBrTLesDBofwRUa7GWFazzYfDKZsB30ME
-         LP42xJGdAe5cnwer5SKD8Etmug0Nt6ulXzhr/sIoE9xx2sYU5ALDWZXfWHpEvjhc83X4
-         /EddGPPSnA96tKQr0ixoO9Iif78PSZQtfyiC4pLlvI90GT05IGmxb/4bv7ckDscOFVa0
-         j8mh7s4sgr6HP2CGrSy/5EINAIynCtUbqRAKwELOEpj3OmmDipt7FyRZkcV3y0yyaOqi
-         RMMwVrDE6PwHAX73yXnvFMVjk1xx32TWcnMG5ytYScelO405R1gRZUvoyiVzX+mFaqbl
-         +gIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Fmou/wuLUJUD4zJclGcPIdJu1KVjJ7yuzM0jDRLa/jU=;
-        b=7hPzGBs3ZjD5LO6LBGTw9R5HRhguCRO/s7sB8A/l2HfKeuQu8YX2tO0WkBwk+gVgWo
-         F/2xcngy7Nxjg2agjWyOT6Va1Pi2bOUFWsw84oDmKJuGw/7y6uEBbbTokBZ3IjQgAzWi
-         3Z0RHVDyw2FwIlyOulgZ62vGmj7Dzm7Fzz+BML7Z5h0lWSZr+aHZnzVkD5N6XHu7TYQF
-         AsF9igSi/2qwrsEU9I4/sVnl58kUppFFc1DelCudB3IIGCt1E4i6W25hAjb7LWZLh/Lr
-         qrv+2G5qm0zI/IxisXi+7prV4Yot/T8VGoZyZ1waRCjsSUFYHl+x4j21qt2xaNRuZLds
-         V6Zw==
-X-Gm-Message-State: AOAM531rVcoPM6vTGjB/NVlxJ0K4hSu6dyPbr5CveOQ/CvmKmpZBrX8A
-        EbqWO3wRtHNgCzK7iIhoh3didtmfx0a6lY+1zpDGUg==
-X-Google-Smtp-Source: ABdhPJzM/xqGhHncEHhl2AIgExbTLI27yZdnho4Z+I5VLuYNi5uSlNeNxRyIKiu1OCuHPC8HqiuPUo4+VogT8mYjGlE=
-X-Received: by 2002:a9d:74d0:: with SMTP id a16mr8027979otl.237.1637710535722;
- Tue, 23 Nov 2021 15:35:35 -0800 (PST)
-MIME-Version: 1.0
-References: <cover.1637592133.git.geert+renesas@glider.be> <afb895b597037a635acc4a1dc44b88598268a19b.1637592133.git.geert+renesas@glider.be>
-In-Reply-To: <afb895b597037a635acc4a1dc44b88598268a19b.1637592133.git.geert+renesas@glider.be>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Wed, 24 Nov 2021 00:35:23 +0100
-Message-ID: <CACRpkdZAA_XZQ7KXOsod8r5EZ0F9f1qaz3+FLsuyPfeD_mO5Dw@mail.gmail.com>
-Subject: Re: [PATCH/RFC 07/17] iio: st_sensors: Use bitfield helpers
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Tony Lindgren <tony@atomide.com>,
+        id S234257AbhKWXmu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 18:42:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40920 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229674AbhKWXmq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Nov 2021 18:42:46 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 84B6760E73;
+        Tue, 23 Nov 2021 23:39:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637710776;
+        bh=3fGS3fJVzIqWTvzYXNuJF3rN5i5Y0f3ysPLe2vPfhDI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WXVdiIxPBgUOypvzOaF0fBxWKSEXocAxCezwcicOtDwk6Pl/fTaXOGMFHCv42qdgk
+         06PQeQEcbXng65bGDATF0+nVmsTSMp8BBCz7A4wYgaytXG8ZHo0+iS0f7S69OsoeiT
+         CVRnwU5b+gsiMMuCAoV/aJWp3H0X7Q+OEyW5V7OUfvjT4gFRHHk/0rx+Xw5MYP55kO
+         wyExxdl4kXS5c/b+SJEjSmNNUVpkE8gJvF6MazigKp2hDmdacWiySDISmLItkvjDR0
+         FRuVxD3h5Kk8WmmbDcNI0FAvOAtmm4e2xtxxdhiZX+UDhKAmiOT3wbvmk/YCskjguj
+         L+N8zubU/ANCg==
+Date:   Tue, 23 Nov 2021 15:39:33 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        Tony Lindgren <tony@atomide.com>,
         Russell King <linux@armlinux.org.uk>,
         Rajendra Nayak <rnayak@codeaurora.org>,
         Paul Walmsley <paul@pwsan.com>,
@@ -73,7 +49,7 @@ Cc:     Tony Lindgren <tony@atomide.com>,
         Ping-Ke Shih <pkshih@realtek.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>,
         Magnus Damm <magnus.damm@gmail.com>,
@@ -93,20 +69,39 @@ Cc:     Tony Lindgren <tony@atomide.com>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
         alsa-devel@alsa-project.org
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH 01/17] bitfield: Add non-constant field_{prep,get}()
+ helpers
+Message-ID: <20211123153933.49ff8b72@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAMuHMdWAAGrQUZN18cnDTDUUhuPNTZTFkRMe2Sbf+s7CedPSxA@mail.gmail.com>
+References: <cover.1637592133.git.geert+renesas@glider.be>
+        <3a54a6703879d10f08cf0275a2a69297ebd2b1d4.1637592133.git.geert+renesas@glider.be>
+        <01b44b38c087c151171f8d45a2090474c2559306.camel@sipsolutions.net>
+        <20211122171739.03848154@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAMuHMdWAAGrQUZN18cnDTDUUhuPNTZTFkRMe2Sbf+s7CedPSxA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 22, 2021 at 4:55 PM Geert Uytterhoeven
-<geert+renesas@glider.be> wrote:
+On Tue, 23 Nov 2021 09:36:22 +0100 Geert Uytterhoeven wrote:
+> > > Also, you're using __ffs(), which doesn't work for 64-bit on 32-bit
+> > > architectures (afaict), so that seems a bit awkward.
+> > >
+> > > Maybe we can make {u32,...}_get_bits() be doing compile-time only checks
+> > > if it is indeed a constant? The __field_overflow() usage is already only
+> > > done if __builtin_constant_p(v), so I guess we can do the same with
+> > > __bad_mask()?  
+> >
+> > Either that or add decomposition macros. Are compilers still really bad
+> > at passing small structs by value?  
+> 
+> Sorry, I don't get what you mean by adding decomposition macros.
+> Can you please elaborate?
 
-> Use the field_prep() helper, instead of open-coding the same operation.
->
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+#define DECOMPOSE(_mask) \
+  (struct bf){ .mask = _mask, .shf = __bf_shf(_mask), }
 
-Clever!
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-
-Yours,
-Linus Walleij
+Then drivers can save or pass around the mask and shift params 
+broken apart as a small struct.
