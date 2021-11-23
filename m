@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E342245A5C8
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 15:36:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA3D345A5D6
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 15:37:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238246AbhKWOkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 09:40:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36732 "EHLO
+        id S238269AbhKWOkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 09:40:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238223AbhKWOkD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 09:40:03 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6534C061574;
-        Tue, 23 Nov 2021 06:36:55 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id y14-20020a17090a2b4e00b001a5824f4918so2242106pjc.4;
-        Tue, 23 Nov 2021 06:36:55 -0800 (PST)
+        with ESMTP id S238252AbhKWOkF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 09:40:05 -0500
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A479C061714;
+        Tue, 23 Nov 2021 06:36:57 -0800 (PST)
+Received: by mail-pl1-x62b.google.com with SMTP id o14so17235037plg.5;
+        Tue, 23 Nov 2021 06:36:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ZLZVOIJvkNfO78QMd8KmGxzLi6165uI7/yB2dxT/Ykk=;
-        b=gqnaX3y9BYxnolIAz6ohPiMx1+uWA+HB/7pfL/hta47mhZY1SESuVh6AyO6OrBvHl4
-         /npGN7awBKNSRQFcgIEBAnGQLe1TLQvX5fWEjykeGyOCPelkp+IbfbQTIgCNlY5OeAD+
-         eVdYJFoj6/DSB36poZtkhDU8kI/BioBEeklOVgEjpy6HVmrGKC3iurU9Am5/L4pKcVQo
-         9HwmXweKaCVV+o0dnMKeqaMyEJBq/18jyvil0UQJaUHJwzq84trc9n7cG5YlBsDNaByO
-         nmFEsY5HrfMbnqBJoHTKUUSzYWMoT5zH1nz7N3YVt/hbwdgqDBDxMpSC2gh1veDdQaDJ
-         hKnA==
+        bh=QpP/dVmOy5UI+0bbwin5PnSriAWO01VAYDyEmLKe5Fk=;
+        b=Tns3ImBlGwbXQEnuXBDpy3hfX/I57KzAQqzM3rfc/vmFboVTSl/I6VWtckE0lrNt9f
+         9o0hG/IsvIqRXsVDJbm9KcQ491JrNXQNp5gLdD/ePiEHl32ytjY9MFvU/nXa0CKrfIL9
+         NhvqWfjcpDbShn56ZLrJVZd0maDUipkSoZtT8lZpz0DsD5IlZB4rsMuH6DkT7kLsWa2T
+         qnZHRJS1wKCoPc+cxZhcwYsqCV4QcXrRxBLsG67ibI0aEf+xl101z94jp0ZDHru7b+mC
+         LjCXAjCKBarnhztxXaod+KRBPc77VtIyPBL3hDRuKpWjn9GSug0LMVfy7qo5aZN7XV/W
+         bC3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ZLZVOIJvkNfO78QMd8KmGxzLi6165uI7/yB2dxT/Ykk=;
-        b=Ei1D0SuIzVrejV7J2f0r6h0Me42gQtNuXnFEczi0w0aPivhPWWjbfJmOsZn2nZhB13
-         HLzegQxC11zttW8kv8lsfBfp89nwssBF4R0XUeTm3LZR/vlLkn8MrCUyGvWNf4gyzTgx
-         Pmm0vAeX/f89l1eN+h8pBwAIWygzezynI22dILcq4X2RJOTpj1qSy2IC1lu6maOF7WFo
-         SleLVne6Zo8madbT3V5eGP7ys3SEVmGClbe+Alg7QPgXJIChM4VGd2c9zGTK8YFdft+4
-         ARad5UotE5XcoUfRR3VQ3vwQ2dVSI5vRKLSGFj8dqcPX/bEZFGaRQXmCFbrESf9tZWgh
-         EpJg==
-X-Gm-Message-State: AOAM532Ig1GRk6UchO2TEusClO53zwAEHpirylsaRf6gQDxI8bpvStWa
-        bAntZdMER4VEaclJ7AJXxNk=
-X-Google-Smtp-Source: ABdhPJw6FmBtePaEKtdoENI4y3Ha3Tjj5xx6DbA0cDTOhxNZa7Gb4JErBed6/HhU6blkX6qlJforYg==
-X-Received: by 2002:a17:90b:4d92:: with SMTP id oj18mr3481484pjb.188.1637678215409;
-        Tue, 23 Nov 2021 06:36:55 -0800 (PST)
+        bh=QpP/dVmOy5UI+0bbwin5PnSriAWO01VAYDyEmLKe5Fk=;
+        b=Ysa5oRXHLTnHGhwRiLibmGvzOjkFceaH9TahBeCOxhdtEQBTQXKYVxzm88N6+rQHvA
+         j3hN7YeuMT+qpe0FhQr1RHmUHvpg16PIKdS09AK8j8lroL702WVkU4nQHvVGDvz17B9t
+         4FUTOsImgBWf0aUkwvjo1nVrNUR54+Q4DZ1Ei3KeDWS8b1H7x2CRvxpaXL1KE9elhNT2
+         phKqz38uGED5gWO2/WX0bADtk1sbjOPKUk+Awm2x45SqE1OIxdxqHQdGGr4r+useuh+M
+         Ej2X8ezK3NayDMHFHC9uFdpKB/cQJ/oV1t4yTld79hx/Pm3cUG9Zt4qTDuER/jdviPgw
+         4yGw==
+X-Gm-Message-State: AOAM530c7a/eIznUqdydwS/xnXU+GbGnejhJbD310qYF475AVNlP3/sE
+        7m5nOnh3vQjLc2Ir7LvogKU=
+X-Google-Smtp-Source: ABdhPJwD/E686Op6vkRlhXfD+ipZl5W4QS/7JsYfB5j69XU4jttPeJXYmrrgxGuPk3lE+qDj7Iz0QA==
+X-Received: by 2002:a17:90a:7086:: with SMTP id g6mr3595594pjk.34.1637678217055;
+        Tue, 23 Nov 2021 06:36:57 -0800 (PST)
 Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:1:af65:c3d4:6df:5a8b])
-        by smtp.gmail.com with ESMTPSA id j13sm11926127pfc.151.2021.11.23.06.36.54
+        by smtp.gmail.com with ESMTPSA id j13sm11926127pfc.151.2021.11.23.06.36.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Nov 2021 06:36:54 -0800 (PST)
+        Tue, 23 Nov 2021 06:36:56 -0800 (PST)
 From:   Tianyu Lan <ltykernel@gmail.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
@@ -64,9 +64,9 @@ Cc:     iommu@lists.linux-foundation.org, linux-hyperv@vger.kernel.org,
         netdev@vger.kernel.org, vkuznets@redhat.com, brijesh.singh@amd.com,
         konrad.wilk@oracle.com, parri.andrea@gmail.com,
         dave.hansen@intel.com
-Subject: [PATCH V2 1/6] Swiotlb: Add Swiotlb bounce buffer remap function for HV IVM
-Date:   Tue, 23 Nov 2021 09:30:32 -0500
-Message-Id: <20211123143039.331929-2-ltykernel@gmail.com>
+Subject: [PATCH V2 2/6] dma-mapping: Add vmap/vunmap_noncontiguous() callback in dma ops
+Date:   Tue, 23 Nov 2021 09:30:33 -0500
+Message-Id: <20211123143039.331929-3-ltykernel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211123143039.331929-1-ltykernel@gmail.com>
 References: <20211123143039.331929-1-ltykernel@gmail.com>
@@ -78,174 +78,67 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-In Isolation VM with AMD SEV, bounce buffer needs to be accessed via
-extra address space which is above shared_gpa_boundary (E.G 39 bit
-address line) reported by Hyper-V CPUID ISOLATION_CONFIG. The access
-physical address will be original physical address + shared_gpa_boundary.
-The shared_gpa_boundary in the AMD SEV SNP spec is called virtual top of
-memory(vTOM). Memory addresses below vTOM are automatically treated as
-private while memory above vTOM is treated as shared.
-
-Expose swiotlb_unencrypted_base for platforms to set unencrypted
-memory base offset and platform calls swiotlb_update_mem_attributes()
-to remap swiotlb mem to unencrypted address space. memremap() can
-not be called in the early stage and so put remapping code into
-swiotlb_update_mem_attributes(). Store remap address and use it to copy
-data from/to swiotlb bounce buffer.
+Hyper-V netvsc driver needs to allocate noncontiguous DMA memory and
+remap it into unencrypted address space before sharing with host. Add
+vmap/vunmap_noncontiguous() callback and handle the remap in the Hyper-V
+dma ops callback.
 
 Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 ---
-Change since v1:
-	* Rework comment in the swiotlb_init_io_tlb_mem()
-	* Make swiotlb_init_io_tlb_mem() back to return void.
----
- include/linux/swiotlb.h |  6 +++++
- kernel/dma/swiotlb.c    | 53 +++++++++++++++++++++++++++++++++++++----
- 2 files changed, 54 insertions(+), 5 deletions(-)
+ include/linux/dma-map-ops.h |  3 +++
+ kernel/dma/mapping.c        | 18 ++++++++++++++----
+ 2 files changed, 17 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 569272871375..f6c3638255d5 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -73,6 +73,9 @@ extern enum swiotlb_force swiotlb_force;
-  * @end:	The end address of the swiotlb memory pool. Used to do a quick
-  *		range check to see if the memory was in fact allocated by this
-  *		API.
-+ * @vaddr:	The vaddr of the swiotlb memory pool. The swiotlb memory pool
-+ *		may be remapped in the memory encrypted case and store virtual
-+ *		address for bounce buffer operation.
-  * @nslabs:	The number of IO TLB blocks (in groups of 64) between @start and
-  *		@end. For default swiotlb, this is command line adjustable via
-  *		setup_io_tlb_npages.
-@@ -92,6 +95,7 @@ extern enum swiotlb_force swiotlb_force;
- struct io_tlb_mem {
- 	phys_addr_t start;
- 	phys_addr_t end;
-+	void *vaddr;
- 	unsigned long nslabs;
- 	unsigned long used;
- 	unsigned int index;
-@@ -186,4 +190,6 @@ static inline bool is_swiotlb_for_alloc(struct device *dev)
- }
- #endif /* CONFIG_DMA_RESTRICTED_POOL */
+diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+index 0d5b06b3a4a6..f7b9958ca20a 100644
+--- a/include/linux/dma-map-ops.h
++++ b/include/linux/dma-map-ops.h
+@@ -27,6 +27,9 @@ struct dma_map_ops {
+ 			unsigned long attrs);
+ 	void (*free_noncontiguous)(struct device *dev, size_t size,
+ 			struct sg_table *sgt, enum dma_data_direction dir);
++	void *(*vmap_noncontiguous)(struct device *dev, size_t size,
++			struct sg_table *sgt);
++	void (*vunmap_noncontiguous)(struct device *dev, void *addr);
+ 	int (*mmap)(struct device *, struct vm_area_struct *,
+ 			void *, dma_addr_t, size_t, unsigned long attrs);
  
-+extern phys_addr_t swiotlb_unencrypted_base;
-+
- #endif /* __LINUX_SWIOTLB_H */
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 8e840fbbed7c..c303fdeba82f 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -50,6 +50,7 @@
- #include <asm/io.h>
- #include <asm/dma.h>
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index 9478eccd1c8e..7fd751d866cc 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -674,8 +674,14 @@ void *dma_vmap_noncontiguous(struct device *dev, size_t size,
+ 	const struct dma_map_ops *ops = get_dma_ops(dev);
+ 	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
  
-+#include <linux/io.h>
- #include <linux/init.h>
- #include <linux/memblock.h>
- #include <linux/iommu-helper.h>
-@@ -72,6 +73,8 @@ enum swiotlb_force swiotlb_force;
- 
- struct io_tlb_mem io_tlb_default_mem;
- 
-+phys_addr_t swiotlb_unencrypted_base;
-+
- /*
-  * Max segment that we can provide which (if pages are contingous) will
-  * not be bounced (unless SWIOTLB_FORCE is set).
-@@ -155,6 +158,31 @@ static inline unsigned long nr_slots(u64 val)
- 	return DIV_ROUND_UP(val, IO_TLB_SIZE);
- }
- 
-+/*
-+ * Remap swioltb memory in the unencrypted physical address space
-+ * when swiotlb_unencrypted_base is set. (e.g. for Hyper-V AMD SEV-SNP
-+ * Isolation VMs).
-+ */
-+void *swiotlb_mem_remap(struct io_tlb_mem *mem, unsigned long bytes)
-+{
-+	void *vaddr;
-+
-+	if (swiotlb_unencrypted_base) {
-+		phys_addr_t paddr = mem->start + swiotlb_unencrypted_base;
-+
-+		vaddr = memremap(paddr, bytes, MEMREMAP_WB);
-+		if (!vaddr) {
-+			pr_err("Failed to map the unencrypted memory %llx size %lx.\n",
-+			       paddr, bytes);
-+			return NULL;
-+		}
-+
-+		return vaddr;
+-	if (ops && ops->alloc_noncontiguous)
+-		return vmap(sgt_handle(sgt)->pages, count, VM_MAP, PAGE_KERNEL);
++	if (ops) {
++		if (ops->vmap_noncontiguous)
++			return ops->vmap_noncontiguous(dev, size, sgt);
++		else if (ops->alloc_noncontiguous)
++			return vmap(sgt_handle(sgt)->pages, count, VM_MAP,
++				    PAGE_KERNEL);
 +	}
 +
-+	return phys_to_virt(mem->start);
-+}
-+
- /*
-  * Early SWIOTLB allocation may be too early to allow an architecture to
-  * perform the desired operations.  This function allows the architecture to
-@@ -172,7 +200,14 @@ void __init swiotlb_update_mem_attributes(void)
- 	vaddr = phys_to_virt(mem->start);
- 	bytes = PAGE_ALIGN(mem->nslabs << IO_TLB_SHIFT);
- 	set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT);
--	memset(vaddr, 0, bytes);
-+
-+	mem->vaddr = swiotlb_mem_remap(mem, bytes);
-+	if (!mem->vaddr) {
-+		pr_err("Fail to remap swiotlb mem.\n");
-+		return;
+ 	return page_address(sg_page(sgt->sgl));
+ }
+ EXPORT_SYMBOL_GPL(dma_vmap_noncontiguous);
+@@ -684,8 +690,12 @@ void dma_vunmap_noncontiguous(struct device *dev, void *vaddr)
+ {
+ 	const struct dma_map_ops *ops = get_dma_ops(dev);
+ 
+-	if (ops && ops->alloc_noncontiguous)
+-		vunmap(vaddr);
++	if (ops) {
++		if (ops->vunmap_noncontiguous)
++			ops->vunmap_noncontiguous(dev, vaddr);
++		else if (ops->alloc_noncontiguous)
++			vunmap(vaddr);
 +	}
-+
-+	memset(mem->vaddr, 0, bytes);
  }
+ EXPORT_SYMBOL_GPL(dma_vunmap_noncontiguous);
  
- static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
-@@ -196,7 +231,18 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
- 		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
- 		mem->slots[i].alloc_size = 0;
- 	}
-+
-+	/*
-+	 * If swiotlb_unencrypted_base is set, the bounce buffer memory will
-+	 * be remapped and cleared in swiotlb_update_mem_attributes.
-+	 */
-+	if (swiotlb_unencrypted_base)
-+		return;
-+
-+	set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT);
- 	memset(vaddr, 0, bytes);
-+	mem->vaddr = vaddr;
-+	return;
- }
- 
- int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
-@@ -318,7 +364,6 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
- 	if (!mem->slots)
- 		return -ENOMEM;
- 
--	set_memory_decrypted((unsigned long)tlb, bytes >> PAGE_SHIFT);
- 	swiotlb_init_io_tlb_mem(mem, virt_to_phys(tlb), nslabs, true);
- 
- 	swiotlb_print_info();
-@@ -371,7 +416,7 @@ static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size
- 	phys_addr_t orig_addr = mem->slots[index].orig_addr;
- 	size_t alloc_size = mem->slots[index].alloc_size;
- 	unsigned long pfn = PFN_DOWN(orig_addr);
--	unsigned char *vaddr = phys_to_virt(tlb_addr);
-+	unsigned char *vaddr = mem->vaddr + tlb_addr - mem->start;
- 	unsigned int tlb_offset, orig_addr_offset;
- 
- 	if (orig_addr == INVALID_PHYS_ADDR)
-@@ -806,8 +851,6 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
- 			return -ENOMEM;
- 		}
- 
--		set_memory_decrypted((unsigned long)phys_to_virt(rmem->base),
--				     rmem->size >> PAGE_SHIFT);
- 		swiotlb_init_io_tlb_mem(mem, rmem->base, nslabs, false);
- 		mem->force_bounce = true;
- 		mem->for_alloc = true;
 -- 
 2.25.1
 
