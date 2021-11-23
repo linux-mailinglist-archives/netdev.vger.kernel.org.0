@@ -2,140 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E58B9459E5C
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 09:39:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 441B0459E88
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 09:47:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234924AbhKWIm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 03:42:26 -0500
-Received: from mail-qv1-f54.google.com ([209.85.219.54]:36844 "EHLO
-        mail-qv1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233911AbhKWImX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 03:42:23 -0500
-Received: by mail-qv1-f54.google.com with SMTP id kl8so14459173qvb.3;
-        Tue, 23 Nov 2021 00:39:14 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YD9+CLUS5Xv902/pEfqOtiLcZyXas3B/t1a2ZRr+mI0=;
-        b=LXrwxGGnxkX/NVnYsoGww5CRIG6ielkxAfwhqDd0GSTVJi7ckk7pa3rKM7PsENPkVA
-         k4+iq7HYlG9sdCCaR04ghEfkWPlmkN5H9HySFaYFsxBEW4eL38N/cfMD6kwc55ItO4ko
-         9XCw3J5iQjw21mqVrRUaNFeGg9IP+YJFSfSUbldlFnWO8t+34o1ALrrmMKhAOrEqQLst
-         2dut2eYLwS72gN2yTeH/YjkCEeue0s2VC/rJL3DURZnAXItZvvbzAG4bTm1jUgC5leaG
-         xUpUpRyTSX9gbyutV9lYuvEhF1XWI++odrR6CIr3ZIm+J7YxbwtMuZ06L5WB+HK/B76Z
-         dISQ==
-X-Gm-Message-State: AOAM530rTVPAKtpxl0Biidy8BxnFVsxfY/0kqiHOm8RFWV9cOaY9Z+m0
-        pREjiWhsxGSNRSA19w3q7qlJeiNsOjNP6w==
-X-Google-Smtp-Source: ABdhPJwl7IFfqBvyxvzsIGDvXIqCpOyDF+gdOezzZQWSahoV7nupzS7YLtInPshC/NmOzg9BnWp5fA==
-X-Received: by 2002:a05:6214:cac:: with SMTP id s12mr4269630qvs.60.1637656754206;
-        Tue, 23 Nov 2021 00:39:14 -0800 (PST)
-Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com. [209.85.219.172])
-        by smtp.gmail.com with ESMTPSA id w10sm5807946qtj.37.2021.11.23.00.39.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Nov 2021 00:39:14 -0800 (PST)
-Received: by mail-yb1-f172.google.com with SMTP id f9so23788959ybq.10;
-        Tue, 23 Nov 2021 00:39:13 -0800 (PST)
-X-Received: by 2002:a9f:2431:: with SMTP id 46mr6012282uaq.114.1637656742896;
- Tue, 23 Nov 2021 00:39:02 -0800 (PST)
+        id S231150AbhKWIuu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 03:50:50 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:42998 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229617AbhKWIuo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 03:50:44 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 4125F218E0;
+        Tue, 23 Nov 2021 08:47:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1637657256; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HebmXy0b6j5mJpu4iOq+Ee55pjbGM9GIcm2Ag/b4t7Y=;
+        b=CXOiiJq0sw1HvF0XQ2WC4sodahGvJJrEsuyMjIEI0s8ypjK/6KB3mmyVChaH07yIG5hVz4
+        8w0rEf5hxf+XtJ6xGl753JwJYDY5Iwd1sNvzoBQ8Dv/NqQgLn0FyDPPbuRrB2XYNI3N9Mn
+        0bH7o9mOjsn4ngJlmZuFDTr588ErbYA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1637657256;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HebmXy0b6j5mJpu4iOq+Ee55pjbGM9GIcm2Ag/b4t7Y=;
+        b=voB04jql/YBQcoHZJBBAAfq/3k4UT2u8tsaLmvKQ93LtThAUi5x6HjbSm8nsNapcwNNfZi
+        rb1+IjfaN/qK9ZCQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9EFFF13B58;
+        Tue, 23 Nov 2021 08:47:35 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id LgrpIqeqnGG6AgAAMHmgww
+        (envelope-from <dkirjanov@suse.de>); Tue, 23 Nov 2021 08:47:35 +0000
+Subject: Re: [PATCH net-next 2/2] mlxsw: pci: Add shutdown method in PCI
+ driver
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
+        mlxsw@nvidia.com, Danielle Ratson <danieller@nvidia.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Ido Schimmel <idosch@nvidia.com>
+References: <20211123075447.3083579-1-idosch@idosch.org>
+ <20211123075447.3083579-3-idosch@idosch.org>
+From:   Denis Kirjanov <dkirjanov@suse.de>
+Message-ID: <34c443a5-c36b-2a16-adda-222da6dc5238@suse.de>
+Date:   Tue, 23 Nov 2021 11:47:34 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <cover.1637592133.git.geert+renesas@glider.be> <3a54a6703879d10f08cf0275a2a69297ebd2b1d4.1637592133.git.geert+renesas@glider.be>
- <01b44b38c087c151171f8d45a2090474c2559306.camel@sipsolutions.net> <5936f811-fa48-33e9-2a1a-66c68f74aa5e@ieee.org>
-In-Reply-To: <5936f811-fa48-33e9-2a1a-66c68f74aa5e@ieee.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 23 Nov 2021 09:38:51 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdX4C0EgkGXR=MwSuBOFoj7O9xx8xwH5dP8rWzN1ckejQA@mail.gmail.com>
-Message-ID: <CAMuHMdX4C0EgkGXR=MwSuBOFoj7O9xx8xwH5dP8rWzN1ckejQA@mail.gmail.com>
-Subject: Re: [PATCH 01/17] bitfield: Add non-constant field_{prep,get}() helpers
-To:     Alex Elder <elder@ieee.org>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Rajendra Nayak <rnayak@codeaurora.org>,
-        Paul Walmsley <paul@pwsan.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Benoit Parrot <bparrot@ti.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Eduardo Valentin <edubezval@gmail.com>,
-        Keerthy <j-keerthy@ti.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-aspeed@lists.ozlabs.org, openbmc@lists.ozlabs.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
-        alsa-devel@alsa-project.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20211123075447.3083579-3-idosch@idosch.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: ru
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alex,
 
-On Tue, Nov 23, 2021 at 2:52 AM Alex Elder <elder@ieee.org> wrote:
-> On 11/22/21 10:32 AM, Johannes Berg wrote:
-> > On Mon, 2021-11-22 at 16:53 +0100, Geert Uytterhoeven wrote:
-> >> The existing FIELD_{GET,PREP}() macros are limited to compile-time
-> >> constants.  However, it is very common to prepare or extract bitfield
-> >> elements where the bitfield mask is not a compile-time constant.
-> >
-> > I'm not sure it's really a good idea to add a third API here?
-> >
-> > We have the upper-case (constant) versions, and already
-> > {u32,...}_get_bits()/etc.
->
-> I've used these a lot (and personally prefer the lower-case ones).
->
-> Your new macros don't do anything to ensure the field mask is
-> of the right form, which is basically:  (2 ^ width - 1) << shift
 
-> I really like the property that the field mask must be constant.
+11/23/21 10:54 AM, Ido Schimmel пишет:
+> From: Danielle Ratson <danieller@nvidia.com>
+> 
+> On an arm64 platform with the Spectrum ASIC, after loading and executing
+> a new kernel via kexec, the following trace [1] is observed. This seems
+> to be caused by the fact that the device is not properly shutdown before
+> executing the new kernel.
 
-That's correct. How to enforce that in the non-const case?
-BUG()/WARN() is not an option ;-)
+This should be sent to net tree instead of net-next with Fixes tag added.
 
-> That being said, I've had to use some strange coding patterns
-> in order to adhere to the "const only" rule in a few cases.
-> So if you can come up with a satisfactory naming scheme I'm
-> all for it.
-
-There are plenty of drivers that handle masks stored in a data
-structure, so it would be good if they can use a suitable helper,
-as open-coding is prone to errors.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> Fix this by implementing a shutdown method which mirrors the remove
+> method, as recommended by the kexec maintainer [2][3].
+> 
+> [1]
+> BUG: Bad page state in process devlink pfn:22f73d
+> page:fffffe00089dcf40 refcount:-1 mapcount:0 mapping:0000000000000000 index:0x0
+> flags: 0x2ffff00000000000()
+> raw: 2ffff00000000000 0000000000000000 ffffffff089d0201 0000000000000000
+> raw: 0000000000000000 0000000000000000 ffffffffffffffff 0000000000000000
+> page dumped because: nonzero _refcount
+> Modules linked in:
+> CPU: 1 PID: 16346 Comm: devlink Tainted: G B 5.8.0-rc6-custom-273020-gac6b365b1bf5 #44
+> Hardware name: Marvell Armada 7040 TX4810M (DT)
+> Call trace:
+>   dump_backtrace+0x0/0x1d0
+>   show_stack+0x1c/0x28
+>   dump_stack+0xbc/0x118
+>   bad_page+0xcc/0xf8
+>   check_free_page_bad+0x80/0x88
+>   __free_pages_ok+0x3f8/0x418
+>   __free_pages+0x38/0x60
+>   kmem_freepages+0x200/0x2a8
+>   slab_destroy+0x28/0x68
+>   slabs_destroy+0x60/0x90
+>   ___cache_free+0x1b4/0x358
+>   kfree+0xc0/0x1d0
+>   skb_free_head+0x2c/0x38
+>   skb_release_data+0x110/0x1a0
+>   skb_release_all+0x2c/0x38
+>   consume_skb+0x38/0x130
+>   __dev_kfree_skb_any+0x44/0x50
+>   mlxsw_pci_rdq_fini+0x8c/0xb0
+>   mlxsw_pci_queue_fini.isra.0+0x28/0x58
+>   mlxsw_pci_queue_group_fini+0x58/0x88
+>   mlxsw_pci_aqs_fini+0x2c/0x60
+>   mlxsw_pci_fini+0x34/0x50
+>   mlxsw_core_bus_device_unregister+0x104/0x1d0
+>   mlxsw_devlink_core_bus_device_reload_down+0x2c/0x48
+>   devlink_reload+0x44/0x158
+>   devlink_nl_cmd_reload+0x270/0x290
+>   genl_rcv_msg+0x188/0x2f0
+>   netlink_rcv_skb+0x5c/0x118
+>   genl_rcv+0x3c/0x50
+>   netlink_unicast+0x1bc/0x278
+>   netlink_sendmsg+0x194/0x390
+>   __sys_sendto+0xe0/0x158
+>   __arm64_sys_sendto+0x2c/0x38
+>   el0_svc_common.constprop.0+0x70/0x168
+>   do_el0_svc+0x28/0x88
+>   el0_sync_handler+0x88/0x190
+>   el0_sync+0x140/0x180
+> 
+> [2]
+> https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1195432.html
+> 
+> [3]
+> https://patchwork.kernel.org/project/linux-scsi/patch/20170212214920.28866-1-anton@ozlabs.org/#20116693
+> 
+> Cc: Eric Biederman <ebiederm@xmission.com>
+> Signed-off-by: Danielle Ratson <danieller@nvidia.com>
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> ---
+>   drivers/net/ethernet/mellanox/mlxsw/pci.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+> index a15c95a10bae..cd3331a077bb 100644
+> --- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
+> +++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+> @@ -1973,6 +1973,7 @@ int mlxsw_pci_driver_register(struct pci_driver *pci_driver)
+>   {
+>   	pci_driver->probe = mlxsw_pci_probe;
+>   	pci_driver->remove = mlxsw_pci_remove;
+> +	pci_driver->shutdown = mlxsw_pci_remove;
+>   	return pci_register_driver(pci_driver);
+>   }
+>   EXPORT_SYMBOL(mlxsw_pci_driver_register);
+> 
