@@ -2,70 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C376445A1E7
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 12:50:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0601645A1FD
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 12:53:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236610AbhKWLxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 06:53:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40966 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236553AbhKWLxS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 06:53:18 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2C21361058;
-        Tue, 23 Nov 2021 11:50:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637668210;
-        bh=TXlKzkYqWBJk01fe6LTS5vQkhPwHOi1yrmeFUZhsc5Y=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JjeTXm4WVDUJwpy5RJWeH2k1lyD/IQwrTxUj6IW+nevjrtpnQzVKPqb/a+uVxdJlb
-         q8F5/neHaG85eGbfAMVVU5MIxQU+ZfxL5V8Fgh26Lh/EmT2bpGJdADxqgvGpPQv6OE
-         LnLl6S25j/1OV6j4dc86rYRq6TvKpSKcWsMNUUZPBCI485xgCU+PhIv0+RTaA/FzuV
-         GV24FzfEQdx2dmXJVBjEbG4iLUGdyoZ5AMyFb0oJCN7JmbXUpEzfYnILxxW4vePVnb
-         GMlG3J9dOLvy1zqzE00jG7mEpdFtUo+sRsye++grjIPL6zWXTWWVMsbxQ3TYggJNff
-         Q6tykSp0RwAqA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 26ADA60A4E;
-        Tue, 23 Nov 2021 11:50:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S235777AbhKWL4x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 06:56:53 -0500
+Received: from smtp07.smtpout.orange.fr ([80.12.242.129]:53527 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234172AbhKWL4x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 06:56:53 -0500
+Received: from tomoyo.flets-east.jp ([114.149.34.46])
+        by smtp.orange.fr with ESMTPA
+        id pUMhmyepO2lVYpUMnmei4h; Tue, 23 Nov 2021 12:53:44 +0100
+X-ME-Helo: tomoyo.flets-east.jp
+X-ME-Auth: MDU0YmViZGZmMDIzYiBlMiM2NTczNTRjNWZkZTMwOGRiOGQ4ODf3NWI1ZTMyMzdiODlhOQ==
+X-ME-Date: Tue, 23 Nov 2021 12:53:44 +0100
+X-ME-IP: 114.149.34.46
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v1 0/2] fix statistics for CAN RTR and Error frames
+Date:   Tue, 23 Nov 2021 20:53:31 +0900
+Message-Id: <20211123115333.624335-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/2] mlxsw: Various updates
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163766821015.27860.2103851959936439606.git-patchwork-notify@kernel.org>
-Date:   Tue, 23 Nov 2021 11:50:10 +0000
-References: <20211123075447.3083579-1-idosch@idosch.org>
-In-Reply-To: <20211123075447.3083579-1-idosch@idosch.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jiri@nvidia.com, mlxsw@nvidia.com, idosch@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+There are two common errors which are made when reporting the CAN RX
+statistics:
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+  1. Incrementing the "normal" RX stats when receiving an Error
+  frame. Error frames is an abstraction of Socket CAN and does not
+  exist on the wire.
 
-On Tue, 23 Nov 2021 09:54:45 +0200 you wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
-> 
-> Patch #1 removes deadcode reported by Coverity.
-> 
-> Patch #2 adds a shutdown method in the PCI driver to ensure the kexeced
-> kernel starts working with a device that is in a sane state.
-> 
-> [...]
+  2. Counting the length of the Remote Transmission Frames (RTR). The
+  length of an RTR frame is the length of the requested frame not the
+  actual payload. In reality the payload of an RTR frame is always 0
+  bytes long.
 
-Here is the summary with links:
-  - [net-next,1/2] mlxsw: spectrum_router: Remove deadcode in mlxsw_sp_rif_mac_profile_find
-    https://git.kernel.org/netdev/net-next/c/ed1607e2ddf4
-  - [net-next,2/2] mlxsw: pci: Add shutdown method in PCI driver
-    https://git.kernel.org/netdev/net-next/c/c1020d3cf475
+This patch series fix those two issues for all CAN drivers.
 
-You are awesome, thank you!
+Vincent Mailhol (2):
+  can: do not increase rx statistics when receiving CAN error frames
+  can: do not increase rx_bytes statistics for RTR frames
+
+ drivers/net/can/at91_can.c                      |  9 ++-------
+ drivers/net/can/c_can/c_can_main.c              |  8 ++------
+ drivers/net/can/cc770/cc770.c                   |  6 ++----
+ drivers/net/can/dev/dev.c                       |  4 ----
+ drivers/net/can/dev/rx-offload.c                |  7 +++++--
+ drivers/net/can/grcan.c                         |  3 ++-
+ drivers/net/can/ifi_canfd/ifi_canfd.c           |  8 ++------
+ drivers/net/can/janz-ican3.c                    |  3 ++-
+ drivers/net/can/kvaser_pciefd.c                 |  8 ++------
+ drivers/net/can/m_can/m_can.c                   | 10 ++--------
+ drivers/net/can/mscan/mscan.c                   | 10 ++++++----
+ drivers/net/can/pch_can.c                       |  6 ++----
+ drivers/net/can/peak_canfd/peak_canfd.c         |  7 ++-----
+ drivers/net/can/rcar/rcar_can.c                 |  9 +++------
+ drivers/net/can/rcar/rcar_canfd.c               |  7 ++-----
+ drivers/net/can/sja1000/sja1000.c               |  5 ++---
+ drivers/net/can/slcan.c                         |  3 ++-
+ drivers/net/can/spi/hi311x.c                    |  3 ++-
+ drivers/net/can/spi/mcp251x.c                   |  3 ++-
+ drivers/net/can/sun4i_can.c                     | 10 ++++------
+ drivers/net/can/usb/ems_usb.c                   |  5 ++---
+ drivers/net/can/usb/esd_usb2.c                  |  5 ++---
+ drivers/net/can/usb/etas_es58x/es58x_core.c     |  7 -------
+ .../net/can/usb/kvaser_usb/kvaser_usb_core.c    |  2 --
+ .../net/can/usb/kvaser_usb/kvaser_usb_hydra.c   | 14 ++++----------
+ .../net/can/usb/kvaser_usb/kvaser_usb_leaf.c    |  7 ++-----
+ drivers/net/can/usb/mcba_usb.c                  |  3 ++-
+ drivers/net/can/usb/peak_usb/pcan_usb.c         |  5 ++---
+ drivers/net/can/usb/peak_usb/pcan_usb_fd.c      | 11 ++++-------
+ drivers/net/can/usb/peak_usb/pcan_usb_pro.c     | 11 +++++------
+ drivers/net/can/usb/ucan.c                      |  7 +++++--
+ drivers/net/can/usb/usb_8dev.c                  | 10 ++++------
+ drivers/net/can/xilinx_can.c                    | 17 ++++++-----------
+ 33 files changed, 86 insertions(+), 147 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.32.0
 
