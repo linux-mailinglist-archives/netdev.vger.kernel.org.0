@@ -2,87 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8B1E45A426
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 14:54:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A346A45A42B
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 14:55:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237003AbhKWN5m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 08:57:42 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:47928 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230026AbhKWN5l (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 08:57:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=ylnmSm77t+ov3pgDOwOBhL1yIxfl6alYfbSXEakC9lc=; b=AX
-        GL/kI9xHo3D7y3w6QjLZ2pjSK1al8adOnbafDDaUw+NKGwMowXMy3H6J7E2/J4/CCygA1l1eBFiMB
-        j1HRwfF/Jj8bXoX06TSrxd3aSv9Fm9FHVeZpftOINr9reekzTKjCUFbzyNY6xu+tHo12Ffxx+tuB4
-        371C9sNaaRVSjk8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mpWFd-00EPqc-MF; Tue, 23 Nov 2021 14:54:25 +0100
-Date:   Tue, 23 Nov 2021 14:54:25 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     zhuyinbo <zhuyinbo@loongson.cn>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        masahiroy@kernel.org, michal.lkml@markovi.net,
-        ndesaulniers@google.com
-Subject: Re: [PATCH v1 1/2] modpost: file2alias: fixup mdio alias garbled
- code in modules.alias
-Message-ID: <YZzykR2rcXnu/Hzx@lunn.ch>
-References: <1637583298-20321-1-git-send-email-zhuyinbo@loongson.cn>
- <YZukJBsf3qMOOK+Y@lunn.ch>
- <5b561d5f-d7ac-4d90-e69e-5a80a73929e0@loongson.cn>
- <YZxqLi7/JDN9mQoK@lunn.ch>
- <0a9e959a-bcd1-f649-b4cd-bd0f65fc71aa@loongson.cn>
+        id S232147AbhKWN6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 08:58:48 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:61026 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229751AbhKWN6s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 08:58:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1637675739; x=1669211739;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=SDj1J2644xrzfk6WUAevIlbr/Wz8DgYG54FJrFRTNDg=;
+  b=k/qIVmWW8Jo5Xmm42jzULpPdmANQz/owfYYzsoADuVhpDXw7o7ogb0ZH
+   XVqNlSC4yDfFV0dwE9ajU57PxqD4y5bUm91aN7n0T5Gobz7W1BzVpHaDI
+   r835B89V+kl775E1rgwNJi2ptXZUyN/+o1H3GEc0ANaode9/aW28Dvsny
+   eBcYCJ+ND4FsxQrN7OnGJekdDZWFQ/3CKBXs6ZybLoMP1J2cJ312l/Fic
+   dFaPJgd125XvbTZy4O+RpCORLgOtE8ZdQ82qpagXEpP/cW3ok0EJcunQn
+   3hZSbum2UYymrcVNgOcBmE+hk4u+ylv61R1wiG1pO8QCsTA4ga3YvOyMr
+   w==;
+IronPort-SDR: 6arYVt1PNEHhxMBd5GDSFygHpyUnGa3249iNXLsZtfsP8uWuisr4es607mJdjMkBQ2X6shSKfA
+ 9byUThhYaF13X+GAm/YhqDjnJE/IUruzCDcUgPWn1Y+5NtRhUL9g8Uzf8t30Ewnb3VzQ0Ipzgk
+ NC2M1OoPQjCWIqWZ0Yn9ky2/4TeC7nTfPXCtDZ7bAvCSn8tetOq0pC8O+8oAxqC37Q2/lRALo3
+ eO6FP2AUZjzLPDhu3nh0Llb9ZKqaOc4Pxy13CshaAucmPU05BZlKg9Ye5orh40tGrPfklYLMXF
+ FGJvm081MvqJO7U2Rrg6JmoI
+X-IronPort-AV: E=Sophos;i="5.87,257,1631602800"; 
+   d="scan'208";a="137464836"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Nov 2021 06:55:39 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Tue, 23 Nov 2021 06:55:39 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Tue, 23 Nov 2021 06:55:35 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <p.zabel@pengutronix.de>,
+        <linux@armlinux.org.uk>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v2 0/6] net: lan966x: Add lan966x switch driver
+Date:   Tue, 23 Nov 2021 14:55:11 +0100
+Message-ID: <20211123135517.4037557-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <0a9e959a-bcd1-f649-b4cd-bd0f65fc71aa@loongson.cn>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > Hi Andrew,
-> > > 
-> > >      Use default mdio configure, After module compilation, mdio alias configure
-> > > is following and it doesn't match
-> > > 
-> > >      the match phy dev(mdio dev)  uevent, because the mdio alias configure
-> > > "0000000101000001000011111001????"  include "?" and
-> > A PHY ID generally break up into 3 parts.
-> > 
-> > The OUI of the manufacture.
-> > The device.
-> > The revision
-> > 
-> > The ? means these bits don't matter. Those correspond to the
-> > revision. Generally, a driver can driver any revision of the PHY,
-> > which is why those bits don't matter.
-> > 
-> > So when a driver probes with the id 00000001010000010000111110010110
-> > we expect user space to find the best match, performing wildcard
-> > expansion. So the ? will match anything.
-> > 
-> > Since this is worked for a long time, do you have an example where it
-> > is broken? If so, which PHY driver? If it is broken, no driver is
-> > loaded, or the wrong driver is loaded, i expect it is a bug in a
-> > specific driver. And we should fix that bug in the specific driver.
-> > 
-> >       Andrew
-> 
-> Hi Andrew,
-> 
-> The string like "0000000101000001000011111001????" dont't match any mdio driver, and i said it include "? that "?" doesn't match any driver, in addition that include Binary digit
-> like "0000000101000001000011111001", that binary digit doesn't match any driver, that should use Hexadecimal for phy id, and I test on some platform, not only a platform, it isn't some
-> specifi driver issue, it is gerneral issue. please you note.  that phy driver match phy device must use whole string "MODALIAS=xxxyyzz", not partial match.
+This patch series add support for Microchip lan966x driver
 
-Please give a concrete example. Show us udev logs of it not working,
-it failing to find a match.
+The lan966x switch is a multi-port Gigabit AVB/TSN Ethernet Switch with
+two integrated 10/100/1000Base-T PHYs. In addition to the integrated PHYs,
+it supports up to 2RGMII/RMII, up to 3BASE-X/SERDES/2.5GBASE-X and up to
+2 Quad-SGMII/Quad-USGMII interfaces.
 
-	Andrew
+Intially it adds support only for the ports to behave as simple
+NIC cards. In the future patches it would be extended with other
+functionality like Switchdev, PTP, Frame DMA, VCAP, etc.
+
+v1->v2:
+- add new patch for MAINTAINERS
+- add functions lan966x_mac_cpu_learn/forget
+- fix build issues with second patch
+- fix the reset of the switch, return error if there is no reset controller
+- start to use phylink_mii_c22_pcs_decode_state and
+  phylink_mii_c22_pcs_encode_advertisement do remove duplicate code
+
+Horatiu Vultur (6):
+  dt-bindings: net: lan966x: Add lan966x-switch bindings
+  net: lan966x: add the basic lan966x driver
+  net: lan966x: add port module support
+  net: lan966x: add mactable support
+  net: lan966x: add ethtool configuration and statistics
+  net: lan966x: Update MAINTAINERS to include lan966x driver
+
+ .../net/microchip,lan966x-switch.yaml         | 149 +++
+ MAINTAINERS                                   |   7 +
+ drivers/net/ethernet/microchip/Kconfig        |   1 +
+ drivers/net/ethernet/microchip/Makefile       |   1 +
+ .../net/ethernet/microchip/lan966x/Kconfig    |   7 +
+ .../net/ethernet/microchip/lan966x/Makefile   |   9 +
+ .../microchip/lan966x/lan966x_ethtool.c       | 664 ++++++++++++
+ .../ethernet/microchip/lan966x/lan966x_ifh.h  | 173 ++++
+ .../ethernet/microchip/lan966x/lan966x_mac.c  | 101 ++
+ .../ethernet/microchip/lan966x/lan966x_main.c | 944 ++++++++++++++++++
+ .../ethernet/microchip/lan966x/lan966x_main.h | 201 ++++
+ .../microchip/lan966x/lan966x_phylink.c       |  96 ++
+ .../ethernet/microchip/lan966x/lan966x_port.c | 422 ++++++++
+ .../ethernet/microchip/lan966x/lan966x_regs.h | 730 ++++++++++++++
+ 14 files changed, 3505 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/microchip,lan966x-switch.yaml
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/Kconfig
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/Makefile
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_ethtool.c
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_ifh.h
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_port.c
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
+
+-- 
+2.33.0
+
