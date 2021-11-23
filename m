@@ -2,249 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B741945A97C
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 18:00:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CBEE45A9AD
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 18:09:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237926AbhKWRDU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 12:03:20 -0500
-Received: from mail-eopbgr60121.outbound.protection.outlook.com ([40.107.6.121]:58175
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        id S238738AbhKWRMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 12:12:33 -0500
+Received: from mail-eopbgr00057.outbound.protection.outlook.com ([40.107.0.57]:53984
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238466AbhKWRDO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 12:03:14 -0500
+        id S232689AbhKWRMc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Nov 2021 12:12:32 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UvVuJ6fTDswpLZF2ztgM0Ot8UTiLd1+Gu17r3WT+Hxs06aOAlCMcjZVV6Foe8k8KgFWq9SuzUBnIzZY8WeKDVjhfEsPul0yF/W80TwOOvE4wXRvEGmXFGtFteh3Ef8Bf9YLIfSw5sjsCiXQkdQ/Lnof3D/JcINKEVgwg0aXoHOuVYaw+imcCtXAqMFJUeUlQWQaFYNaZPql9h04Yx3oQ+X2JMsgz8wtesnC4OBvFE7qWwZAslK6A7MAhLPaviYvx5hyBguO7JIR4Jden1eteFgaaUMHlK4ONKRYi7jssFNzmnwkPOCmKRVgR9ObK25DoH5qDeDupLFWclSRNJbX4Hg==
+ b=aJwBiA8ziYMby5WKwr/gBxIyrjH93ijZ/m6ieIVNaUdm0P0RhFnWWwvfjfii1baf2jTN1RM8MttbxNDOemAPiAfRPihWU3QtsIc9EdIakS/fvUD3Da9EBmF8dgHJY6tfhwV75g/IXm9gG0r8o5SLAaLMxNQvGuOFdDFgQqDxVOOJaaIsHl0iDfxWWCFqZrGYGfEQ4jMAHs8ZKWI09/bnA6q/YRi1vbQJKFEcznTuhXiPIqehH4uS8azU0aDBsan5jpep6AZoH+HwPRe71vyoC3k621R0G5CEh1JTlci4Q1m6NihrHyskAV+17mlqN/fb4d4FHCG6xy1uhF+gaerZvQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nwQxo2Ki0/eqNgOWTaMngYYfpIjwMtXj5cF08J3rvQg=;
- b=YbTeaUPWCyvH0CNKj021dM87sou5wca+nYvhgoVX4FKKDiZFW8y2WuE0ccYORhEDOT/cPbNxcLXAouhAdqX3V9m6nZX35mpcdmv6QnAq5baay90ppP9c8zfzNFXVCJCAAlD/IrgzPqaZMA5QbeZ8YtwLo4yvZ3ZLgPc1CFR6dKvW6h0bAKcL8j4KIqgFH7KfUlB4De77XQej+Z/JDBOoynN6JPIJayjO2lInf7S7nim/yqhFIXWTYKpMMfToxE8LuwUQ2ctymGQ9xX2qrxOURijBNUf9IJou8P6gSGO/wtWx8Px/4+ISFuZuyhFjyAotzw39kJ2hqLQC4wtF0Cx6WQ==
+ bh=sFz8A3wXe6ul8zGLV68nnO5cVIPwkGj77v3JaDaAJVE=;
+ b=lF9nLvakRCkNKcaKVDySEB71J+3JBDcpNpPRdenBwhFJCtyrM6W0Sz9zQnaD1wTWlIR4v/ThQ9byyQSqtVxZr5u0NP1f41ZCzLwJDXeWFtXc2CZjbNtF0PypHnYn2nFBNYDgenltsH7odcvDVF/I4YhfB7HjEO4vSsUNWwOKpbY7J2iHJEaZqGb4kC2qxw/uaNRzaedLwlzDLIy/hgMN337dELeNHr8dnFmqbCfNR/kgH2P23VCyNAyYv2iSI+N0yZ/AcZ5I4VA2/qpvaD8V4lC/RyealKkyF0cryxeXLpMqikUdpk/j5cN6kGRMQGkazxBD02zbWWeiP5I91BOIJw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nwQxo2Ki0/eqNgOWTaMngYYfpIjwMtXj5cF08J3rvQg=;
- b=uCSsUdQk7ZtyyXGLwlt/bPtFwXLwnfCdhOr9tSsAMcw00UsRhp6fXXtQX15kEI942jGJ7/q+B8CAorERxo1G44k1NWOQ24fIrwH1TiNcoN1gwMzBrqhsd9nOQ9QZCnDtkWMnW8lxbYN8MpMJ5e6qyq7o523hEhvSyeMwemI1UPw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=plvision.eu;
-Received: from VI1P190MB0734.EURP190.PROD.OUTLOOK.COM (2603:10a6:800:123::23)
- by VE1P190MB0830.EURP190.PROD.OUTLOOK.COM (2603:10a6:800:1a9::5) with
+ bh=sFz8A3wXe6ul8zGLV68nnO5cVIPwkGj77v3JaDaAJVE=;
+ b=GcHU34rBadAUTzje8qtWsYAZAK0gSnkshj/iWGAuycN/yNyLE6AK3K2o49F/2rVSztwK6MrSDS43PeUM6v1yKpnZyA0xPq/aG8TvM9b/MJBX4TGT7iDOm+m+M7V9ZLqWy2o6X4hKR+erZSx+NjpEsFXcdMm/PYGf/TJQstPX9/U=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB3071.eurprd04.prod.outlook.com (2603:10a6:802:3::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.24; Tue, 23 Nov
- 2021 17:00:04 +0000
-Received: from VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
- ([fe80::e15a:32ff:b93c:d136]) by VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
- ([fe80::e15a:32ff:b93c:d136%4]) with mapi id 15.20.4713.026; Tue, 23 Nov 2021
- 17:00:04 +0000
-From:   Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
-To:     netdev@vger.kernel.org
-Cc:     Taras Chornyi <taras.chornyi@plvision.eu>,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <vmytnyk@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        Serhiy Boiko <serhiy.boiko@marvell.com>
-Subject: [PATCH net-next 3/3] net: prestera: acl: add rule stats support
-Date:   Tue, 23 Nov 2021 18:58:02 +0200
-Message-Id: <1637686684-2492-4-git-send-email-volodymyr.mytnyk@plvision.eu>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1637686684-2492-1-git-send-email-volodymyr.mytnyk@plvision.eu>
-References: <1637686684-2492-1-git-send-email-volodymyr.mytnyk@plvision.eu>
-Content-Type: text/plain
-X-ClientProxiedBy: AS8PR04CA0203.eurprd04.prod.outlook.com
- (2603:10a6:20b:2f3::28) To VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:800:123::23)
+ 2021 17:09:21 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::e4ed:b009:ae4:83c5]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::e4ed:b009:ae4:83c5%7]) with mapi id 15.20.4713.026; Tue, 23 Nov 2021
+ 17:09:21 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Shay Agroskin <shayagr@amazon.com>,
+        Arthur Kiyanovski <akiyano@amazon.com>,
+        David Arinzon <darinzon@amazon.com>,
+        Noam Dagan <ndagan@amazon.com>,
+        Saeed Bishara <saeedb@amazon.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        =?iso-8859-1?Q?Toke_H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Andrei Vagin <avagin@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>
+Subject: Re: [PATCH v2 net-next 05/26] enetc: implement generic XDP stats
+ callbacks
+Thread-Topic: [PATCH v2 net-next 05/26] enetc: implement generic XDP stats
+ callbacks
+Thread-Index: AQHX4Ij/XaaTEUdaCEG47cK497YtaqwRWKMA
+Date:   Tue, 23 Nov 2021 17:09:20 +0000
+Message-ID: <20211123170920.wgactazyupm32yqu@skbuf>
+References: <20211123163955.154512-1-alexandr.lobakin@intel.com>
+ <20211123163955.154512-6-alexandr.lobakin@intel.com>
+In-Reply-To: <20211123163955.154512-6-alexandr.lobakin@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e74f17ea-6e6f-4040-5d43-08d9aea3fdf3
+x-ms-traffictypediagnostic: VI1PR04MB3071:
+x-microsoft-antispam-prvs: <VI1PR04MB30719CF0A26B35757B8CBD79E0609@VI1PR04MB3071.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: RlWa2d6GjAouN0DWrAYJ2wE9bZKDQBOINPHM1T4CvfJHSGQWhJVpezsgOuMMiBW3TBGlGM1JtxMwT5d3+7zxq2HSeoepN71Kzll4xxRC67afDjofU5O49Iql5o65C39MrTyadJtQHey4o56ddamFIvlB35RT2D21MhUKTXwIvSp7Z/XKfxLZYE2dC9rw9sAszI5o/yik2BSBrBLzLyh8hSYzvLQJ1ZLkh/ZQeWmmuf4Z4bQCtFCF/uUQs8plQ9q7ZwvLtwjNnUT2Gn9wLFETa739dIg2KZMdlGJPAWiFbqi+4LX7vJdo2moCkkXVEQXEtw84uyXyJuIjpHNIAsUggN2iLqN1Khvh59fzZ4c49pTMk+gJdNyeo+L4N5AHg1IlZ+D4IdbC1hzx+bREutqm0fUuvnO+lOdAKuqGtHabZY9EDjSn5JFI9TdozjkPrKxnb+erWLEqOCVzxfH/A5PaRPX9pBLVEagGNybgQd6CGrDVb041TWX8qFUlZtUZH1kodL2ppgSGX78m1izcMIDrNJFhhJQbnMpePpORNuGXKjRG//PVtyzK5alvxYgz5SOfdYUVIYTYoFMjPVNG8OC8gbLeanVhM4v5nYdXFTwKW7euVo6pO32Y99nKxuqoajbkOp2lCaAmRlkewLpGY6IRXTC5ojV6jRc6FlUm36btBfCUtOoueygaukIN84We+3KMPCbrKd6uzp0tHN7xglouHQsEdoIx7ss03WRNS5hlc2E=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(5660300002)(316002)(6506007)(26005)(86362001)(54906003)(122000001)(38100700002)(38070700005)(76116006)(33716001)(4744005)(4326008)(7416002)(6916009)(44832011)(2906002)(186003)(91956017)(66946007)(66446008)(64756008)(66556008)(66476007)(71200400001)(7406005)(83380400001)(1076003)(508600001)(6486002)(8676002)(8936002)(6512007)(9686003)(41533002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?JW8yOrmhlIJ9W7FBJS5OwQSrzUXEchdRLunt3XzgWBHSRd+tJnGMS7+IiM?=
+ =?iso-8859-1?Q?5HGB+RE7KlZQGU/inOKrCMlBtw/JxpiIWF2KQgeVDpoxF8PfC4X/tJhgjU?=
+ =?iso-8859-1?Q?+DDMx9TXwm97u2nDFphW/BY03PwcSM+UA8of3Mw7ZLvUhLbA4TVyWcdSnH?=
+ =?iso-8859-1?Q?SZDYcbvvq2uXCY5ea1Nuc/Udh7ISolPYGQU+eKD2HDbFz9cYF2WV974d7j?=
+ =?iso-8859-1?Q?x97KNMsvowD2TX2NQpINjIEG11hzLi+lxaUQddpnZj0DyS1CtW5CY2iWRQ?=
+ =?iso-8859-1?Q?IEcUXtDS3f9GsXkNCcgJkRlmEYPlo3qj3f7uuDn+88sxfqJuRfYYzZfIZl?=
+ =?iso-8859-1?Q?eFoMlHzhek4wCOe6CR5bzTmp5RcEeCza/4CCEHMZqT/BZ3PySW2TaLGwxm?=
+ =?iso-8859-1?Q?0NiIQZyaz/Eg36TQYjzRtInhFVkqrNYwlMJZn11sJ3xqjWc5AnOAxueG4+?=
+ =?iso-8859-1?Q?AgE1ZXzYjCsZ1Ed3ZTOlJiqkP8qkTuS1dSBvUNgsCy5TXB+0GFEca0YZm/?=
+ =?iso-8859-1?Q?z0D8bnoN4eFEYpKWNdHpQbRBn2X+91QH9Ul8i5Ym3O82bJtP0YfbYraKEU?=
+ =?iso-8859-1?Q?40nBLfK8FYdzlOVyeB2hIJTUX7r3rgutBFy/Tm1KqB3m+hNf36vzXstBbe?=
+ =?iso-8859-1?Q?8eB/3bNG2mvhVAbTbXCD/fTTbWMxuFRloThL8ByXtzTkZiwA0hMrcAI41N?=
+ =?iso-8859-1?Q?EEN1Sc1EjaxTKab8Bdrc4VLsdqNkFWPp8TF1yFwKRNR3jIEp27RrN/0wCd?=
+ =?iso-8859-1?Q?J8FV/bP2b+K3+4fA0eH1NKQpxcT8uH/Y8/1R00eajGR0nYyPRxZCfGbZNC?=
+ =?iso-8859-1?Q?WmxVxfeaX3/koStWP4zvZnj2Qb7Hy6YwlC1agevDaNd67UO7l8nuvvHcvd?=
+ =?iso-8859-1?Q?xYrrVhYG46CjP8D7KGRXyc/7udCAPYFLsHv8vVWjyKg784f2QiFrFOUeiK?=
+ =?iso-8859-1?Q?pgBtduUAiUX3XkchgfoDAIDi8btuLzh5CJn40++iyWPZr04w77/4j+fUn2?=
+ =?iso-8859-1?Q?2K/OI15nlESHcSOKtSA+x+x4Rqk8iSRP+hsAo0yWJVs+6GqMr4b+jpE3UH?=
+ =?iso-8859-1?Q?H0l4/r7sixxKxWa5P9LVxiGU6varfrJlegWSz1m2a7Hy1890cIBoQ3pSMT?=
+ =?iso-8859-1?Q?IweZaLOoZsLNCSGFxA29sD5UQDo8Aof5O9m7feJXwUIzmUPnWaFJGeNnT8?=
+ =?iso-8859-1?Q?YizqAmUVQysaH0KN4zOYwWuK+kSzNEMQoilb21lMsAZQNuxQkwwqvoXYnA?=
+ =?iso-8859-1?Q?fcI/cXZ3smkT2ThfOouSlKq2voFfr03rZGwH+3k0EmmNsJ9AxMk7DTtXPO?=
+ =?iso-8859-1?Q?NxflatyjrzlxPqQ8yYTpbYVsnEFt+/950jEJ7lNNOnQm6P5mV3xZhyxiWD?=
+ =?iso-8859-1?Q?UnBtfKBMB78G3ip900BO7DaQGvEaaprrjrpe2iQ16HSSqrNFlteclrWANy?=
+ =?iso-8859-1?Q?Js9XvNNHCZ4SLBsAr3YW5b8VhKD2EMC6aQ0xV0kpBSZwqq1+07PF83BVWy?=
+ =?iso-8859-1?Q?vX14UrTRQNFybOodT887Ib+P4htGioShitSREhWu8PFFMlyTqH1GOi3PXM?=
+ =?iso-8859-1?Q?sGDZe++s01TTpPYFp/nr1f5MCOTRZSepUnowI3RXnnzxxDA85H2gLP//B4?=
+ =?iso-8859-1?Q?gcsxwfOrBvL5zUGUL72BooskgRqSUo6R3ekA5oEZ1U8WwS8VoIWyzsaYJP?=
+ =?iso-8859-1?Q?mxhFSNWr+3ZYSG39zLE=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-ID: <2AA94709EC439448AF69418ED7F16FA2@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Received: from vmytnykub.x.ow.s (217.20.186.93) by AS8PR04CA0203.eurprd04.prod.outlook.com (2603:10a6:20b:2f3::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.4713.19 via Frontend Transport; Tue, 23 Nov 2021 17:00:03 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d50097d5-66a2-4539-3f36-08d9aea2b1ef
-X-MS-TrafficTypeDiagnostic: VE1P190MB0830:
-X-Microsoft-Antispam-PRVS: <VE1P190MB08303C7EEBD3A963831340978F609@VE1P190MB0830.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:374;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mDS8ovu5Tr6qU5LRPtU0qxMCmG+Sp7JNYyzgiuI26vpnV/mfBEEOgqqxVN+aXTCTgehdqpwaA6MugyanmibhmCAD//2wOyHkr4ih+UGRDw3eqr1sn6NBVhfg4h9+XZ86OtecUSe+RyTzdLSYtUGZxuzEoHQyMW57R8aViopp5CY6Tv6MkjqG8mEjwZUFilJdvweMqTftwzplRqd8s41KrQ5o7XyO+hnlnPFx6LWKv8Qpz117RBtSXKGhMCLjEIvjMPhxRotjvD3oCpBKz5x5pLyzRFhdINbur5U6BLBG62hkVCAMrEeR3ohTj5Bvqqg7DA+MF36iKbNfuHBt0cuOSsUrTkPJMYnowciE0Tp3w0Mwm9eB9JKT3taIy1EdgZFdmY/rIMDIpiqMtBwqTKsWCA5gzX0jC2IymoHdWAezeyXPoZ+R+OLg0teYwdTm8+Bqix8Vb2bpzjeHTgfYcHgVKQ3RrlJqpbQygwkCRJhAwo12267EoQFchgQA1Y7aoOSXA2oGJqphucvB10OJJ59+fLqZ4+u76Q6j61J6n5qSL/N4qH75AXTIOBqoQTL4jBPHA3JSYKlAyCiqcgYyfCQv9kE9QrgFpsK9RvIOTq21mwa0dX6+YKTvIs/E8hua6BheZq5Rb3JSc4laM1OQV70eniz5grFUTN/X7kiYs81pAUbi/GgliPztUvJrKUgojMIsfRzyiRVxrjoWK2Z8UwubHA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P190MB0734.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(136003)(376002)(39840400004)(366004)(396003)(346002)(36756003)(26005)(956004)(2616005)(83380400001)(66946007)(8936002)(8676002)(6512007)(38350700002)(66556008)(66476007)(52116002)(316002)(186003)(2906002)(6916009)(38100700002)(44832011)(86362001)(54906003)(4326008)(5660300002)(508600001)(6486002)(6506007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?A5ICtpKamxyZSkDE/MeqmVdSrfdPfkQmPdcQ2OWrf6oJ8IgmrGMuqq14IUZS?=
- =?us-ascii?Q?rZKYXQNWaGJSKoI8NGu8Fl6vqZRKPldCj00mZwj72rAx+MUkQfrQlM7S0SM1?=
- =?us-ascii?Q?6GMdFy2enmuw2659HsZ+qHufXKAg08BBMNMnqPagYmtD4n0p/PYyyMzLMEFo?=
- =?us-ascii?Q?pOd7gexz0bWm/BDD5rhwqssAgQFzm7DOlQ1obMf2XdiU79FSKgOnFJhVl5N6?=
- =?us-ascii?Q?AdXPCGqLEZU+Xlji7ljSll9w3/zHe8Wjg5v7goFp7NWH/rumilsSZcDa5xxp?=
- =?us-ascii?Q?NIBu1vFXCS7VSDR7SY7cigjFeTK/UW37gTFwpYOhzf9DfRaoXj5FnpLt03oT?=
- =?us-ascii?Q?XTCYqstsUQ4XqXP3Uw8Zy1EOIGYfMbn2waI1mJCU/zblqJGbxTq5JLcjdUto?=
- =?us-ascii?Q?wwmOm0R2vMExMxCkWGigtfZhVE1oSZ/HlgNYVoa/aqfyWScEpLSdJ6IRaZ8+?=
- =?us-ascii?Q?+Ej+3LkdKE4HhvQKczLE/TP1nfAuE/fcSwkCTnYJdqVBsG1r8dJEs48/qGDn?=
- =?us-ascii?Q?8ujjzT8nFTTTZxjnevn/2lBqy7LVb6J2CR8arpt5kwjooogXXgth8vvSver0?=
- =?us-ascii?Q?FNCzsEgw2KYzoNURhybRiXFTFQ2SthAHALkjC7RD6HHhjdjcfJbDK/7WOVDX?=
- =?us-ascii?Q?KkJzR3BF0YneNs+BxdTfNRdNoEasfbUZvMBZ9HARZexHxGemYFlQ9gJuQaEB?=
- =?us-ascii?Q?OFsj2G+ewsG5ZEEBXhtN0A7qrbNRGi6tgPuZ/DyrpjqdxLRcnSO1kslycAZF?=
- =?us-ascii?Q?I+6/bzN4AXZvI/h98YoSMChZL82MUZUKW4iY3rm6qrLudiDTbRjvkbr3BxVu?=
- =?us-ascii?Q?ialhrm3J3McE8P1a0lyq2vF2nvBXO2A5+zovuXa/XX/v7hucuXeLxGV2bkHs?=
- =?us-ascii?Q?Or9GaVKGycm3BAILL9TRPlYmtgV6tl9M0NpiQ/2ogtznYHvqYlNjLGyYGGuZ?=
- =?us-ascii?Q?c53GTSHW7/qajKBcSvUqQR8hHnFVGoM8dsDrapoT3+/iDFLm8+DbdtshfpJR?=
- =?us-ascii?Q?XcFTpSyoc1tZ9oGh3EGmWPg8Ps2QeGZP2kM2wrshNpUIqwCLLLRoH+6iCsNJ?=
- =?us-ascii?Q?nj10OhMFfe3Mhj2XtiEAwjWuuhBFjfwCXtqEYcTFZW6oG/8zKb+OPqdkAr2h?=
- =?us-ascii?Q?ryZbCDvs5nuw9MG9aLtbg9AU8OSQLeQ98neWsIzyHZWe5VHV5ycbDqJRw3Nb?=
- =?us-ascii?Q?vBa+Vo/Rbw8l9USjTG3LfMyO7gNn8uxeu79YC6kODSS3W+FVm4ZBQHVzH/s8?=
- =?us-ascii?Q?yWXrY489GAmzvCvVcO5sIzE6MbQ6ziKHBi+u9aJu3OZ5g01FfIqC/QSfOmeh?=
- =?us-ascii?Q?GyAkNG9YSjIwE5uyfldTlfG5gyEoZ2D59w88KQQdPDFXIZ33dQpdAPYXQcg3?=
- =?us-ascii?Q?RU2HXVgnJCyD5uAXKOMt+FkBgZVEz4ZLE0Mx5x7cqK7DOHFxuW5wGzd+iWHT?=
- =?us-ascii?Q?pdC/AURB3AgzRT0UP0w3vcgH/wdhZa2U0yrJ5nYLkmD+CZYzCzthfX8NTJLF?=
- =?us-ascii?Q?pY8OdCny+M4J5zOtMNEp5+8AVj5dsNzmftE0ogNOEezuqcvWVORIo2ykhmmK?=
- =?us-ascii?Q?niK/vSnTI5EOBD1pOY4Cm77Dgt6eevMQcStbNKY4sklDWRCd78QqCmxrIFh3?=
- =?us-ascii?Q?8j+6ea3nK1/QUxb5o+jpeOsY52npQl6Bzpo9gzgxzL36CmeV4yLNeqZOvsaT?=
- =?us-ascii?Q?ClAiOA=3D=3D?=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: d50097d5-66a2-4539-3f36-08d9aea2b1ef
-X-MS-Exchange-CrossTenant-AuthSource: VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Nov 2021 17:00:04.4131
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e74f17ea-6e6f-4040-5d43-08d9aea3fdf3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Nov 2021 17:09:21.0244
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ojEVNKeNy+ASMUhd4JUdwsgFXQEin9be8wM/Eez61WpVGMQ6xcHS24kxiTB4y+yux7IjIyX9cR+CUAZ1459T5uAjFu03uqcq5RvfoV/FfQ4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1P190MB0830
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 3QRrG693W66XYh+Xso8p+euLwEA0GaS06tX919y8ci0c/vCVmUmntDvACx4stx7kXc8M4O6Ba7tt7xIHMDa2xA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB3071
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Volodymyr Mytnyk <vmytnyk@marvell.com>
+On Tue, Nov 23, 2021 at 05:39:34PM +0100, Alexander Lobakin wrote:
+> Similarly to dpaa2, enetc stores 5 per-channel counters for XDP.
+> Add necessary callbacks to be able to access them using new generic
+> XDP stats infra.
+>=20
+> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> ---
 
-Make flower to use counter API to get rule HW statistics.
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Co-developed-by: Serhiy Boiko <serhiy.boiko@marvell.com>
-Signed-off-by: Serhiy Boiko <serhiy.boiko@marvell.com>
-Signed-off-by: Volodymyr Mytnyk <vmytnyk@marvell.com>
----
- .../net/ethernet/marvell/prestera/prestera_acl.c   | 46 ++++++++++++++++++++--
- .../net/ethernet/marvell/prestera/prestera_acl.h   |  5 +++
- 2 files changed, 48 insertions(+), 3 deletions(-)
+These counters can be dropped from ethtool, nobody depends on having
+them there.
 
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_acl.c b/drivers/net/ethernet/marvell/prestera/prestera_acl.c
-index f0119d72427f..f8eb99967bbb 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_acl.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_acl.c
-@@ -33,6 +33,10 @@ struct prestera_acl_rule_entry {
- 		struct {
- 			u8 valid:1;
- 		} accept, drop, trap;
-+		struct {
-+			u32 id;
-+			struct prestera_counter_block *block;
-+		} counter;
- 	};
- };
- 
-@@ -358,6 +362,10 @@ int prestera_acl_rule_add(struct prestera_switch *sw,
- 	rule->re_arg.vtcam_id = ruleset->vtcam_id;
- 	rule->re_key.prio = rule->priority;
- 
-+	/* setup counter */
-+	rule->re_arg.count.valid = true;
-+	rule->re_arg.count.client = PRESTERA_HW_COUNTER_CLIENT_LOOKUP_0;
-+
- 	rule->re = prestera_acl_rule_entry_find(sw->acl, &rule->re_key);
- 	err = WARN_ON(rule->re) ? -EEXIST : 0;
- 	if (err)
-@@ -412,9 +420,20 @@ int prestera_acl_rule_get_stats(struct prestera_acl *acl,
- 				struct prestera_acl_rule *rule,
- 				u64 *packets, u64 *bytes, u64 *last_use)
- {
-+	u64 current_packets;
-+	u64 current_bytes;
-+	int err;
-+
-+	err = prestera_counter_stats_get(acl->sw->counter,
-+					 rule->re->counter.block,
-+					 rule->re->counter.id,
-+					 &current_packets, &current_bytes);
-+	if (err)
-+		return err;
-+
-+	*packets = current_packets;
-+	*bytes = current_bytes;
- 	*last_use = jiffies;
--	*packets = 0;
--	*bytes = 0;
- 
- 	return 0;
- }
-@@ -460,6 +479,12 @@ static int __prestera_acl_rule_entry2hw_add(struct prestera_switch *sw,
- 		act_hw[act_num].id = PRESTERA_ACL_RULE_ACTION_TRAP;
- 		act_num++;
- 	}
-+	/* counter */
-+	if (e->counter.block) {
-+		act_hw[act_num].id = PRESTERA_ACL_RULE_ACTION_COUNT;
-+		act_hw[act_num].count.id = e->counter.id;
-+		act_num++;
-+	}
- 
- 	return prestera_hw_vtcam_rule_add(sw, e->vtcam_id, e->key.prio,
- 					  e->key.match.key, e->key.match.mask,
-@@ -470,7 +495,8 @@ static void
- __prestera_acl_rule_entry_act_destruct(struct prestera_switch *sw,
- 				       struct prestera_acl_rule_entry *e)
- {
--	/* destroy action entry */
-+	/* counter */
-+	prestera_counter_put(sw->counter, e->counter.block, e->counter.id);
- }
- 
- void prestera_acl_rule_entry_destroy(struct prestera_acl *acl,
-@@ -499,8 +525,22 @@ __prestera_acl_rule_entry_act_construct(struct prestera_switch *sw,
- 	e->drop.valid = arg->drop.valid;
- 	/* trap */
- 	e->trap.valid = arg->trap.valid;
-+	/* counter */
-+	if (arg->count.valid) {
-+		int err;
-+
-+		err = prestera_counter_get(sw->counter, arg->count.client,
-+					   &e->counter.block,
-+					   &e->counter.id);
-+		if (err)
-+			goto err_out;
-+	}
- 
- 	return 0;
-+
-+err_out:
-+	__prestera_acl_rule_entry_act_destruct(sw, e);
-+	return -EINVAL;
- }
- 
- struct prestera_acl_rule_entry *
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_acl.h b/drivers/net/ethernet/marvell/prestera/prestera_acl.h
-index a1a99f026b87..f2a46816c003 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_acl.h
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_acl.h
-@@ -5,6 +5,7 @@
- #define _PRESTERA_ACL_H_
- 
- #include <linux/types.h>
-+#include "prestera_counter.h"
- 
- #define PRESTERA_ACL_KEYMASK_PCL_ID		0x3FF
- #define PRESTERA_ACL_KEYMASK_PCL_ID_USER			\
-@@ -86,6 +87,10 @@ struct prestera_acl_rule_entry_arg {
- 		struct {
- 			u8 valid:1;
- 		} accept, drop, trap;
-+		struct {
-+			u8 valid:1;
-+			u32 client;
-+		} count;
- 	};
- };
- 
--- 
-2.7.4
-
+Side question: what does "nch" stand for?=
