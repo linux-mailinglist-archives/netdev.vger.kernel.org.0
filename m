@@ -2,206 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E889345A5E6
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 15:37:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76C8745A604
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 15:47:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238382AbhKWOkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 09:40:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36774 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238276AbhKWOkK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 09:40:10 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE7DC061714;
-        Tue, 23 Nov 2021 06:37:02 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id m24so17219075pls.10;
-        Tue, 23 Nov 2021 06:37:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Ak926pCUpNKs+47FmVVMlYhwNY9vAunl0LxYrKNKSNw=;
-        b=QxxMavfWDAJAz7jNhCS3lNTNa0flyv5hNihdQPccb5eNCjHF55hQpWrnsEQkCVJghc
-         7GPdcT9HSD5QViryH0UX4Aun2WA+mGBa3Amr3ad9iSXIuSGQC24/bMpDjGgiFb4k/a9a
-         ZAYNXQoeZmxJm3HiW7hj+JkREkiGe8NUYb/+S8lBQGh4bi3TU+N+GfremM9Ba5JS8SPD
-         8wNuTIzD34QP1Pzt5TU42nLmCmWJm3r5yxYzZS/tIc11jyeaKntaaRsqcB2DjiSxqBe2
-         zqVd2p6oiNp4mOxg/CZiswjoXfCt/DOMgeHrMN9AL4KvPtBfL8X+QWcwzsFyPSdJLLkC
-         5TOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Ak926pCUpNKs+47FmVVMlYhwNY9vAunl0LxYrKNKSNw=;
-        b=sFGAdlQagtppb99w3GQ3jVDZn4EV/42BsWKCrOTDl4OwcSj0fJnyHhxmoV8kkr1V1f
-         ZxYasktru//6wTMRQVxSJOWysEz+HaPS2hkrYDzyIVwTkGxZrG4pb4Ul8kc8ZN9FON5k
-         9kAx3bqQF3aO46XBeyPq1friz0WGtf0cji/hVsDpn4vJcxVP1yepgDAWTEkBbzlxPoA5
-         BU63d44I+wSBjh+/cwMJ4YGpc7BW6B+z9kQegYvhQo8XKa+rhn1gF80vfY161Bo/StBp
-         9WqtfXNzESqUE/RtDECfTopFzWMGDMWGEehaZD6sr09VEt/hsIotc1VmVsjIEACFDMZk
-         Kv+Q==
-X-Gm-Message-State: AOAM531wCnDjFbpOU/QH3qkNgfiAYDTfNqr/tx7KZHj79hNsW0UUdDJ+
-        mTDyayJjY4gRJBbTSDbUh54=
-X-Google-Smtp-Source: ABdhPJxTU1w0vUGn7mvy7jQu/10DsjPZwfyCqNOGRf+62qAFrRBW+AJvObLD7wd2mtZecQ+9K9O66g==
-X-Received: by 2002:a17:90b:1e4e:: with SMTP id pi14mr3462656pjb.161.1637678221896;
-        Tue, 23 Nov 2021 06:37:01 -0800 (PST)
-Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:1:af65:c3d4:6df:5a8b])
-        by smtp.gmail.com with ESMTPSA id j13sm11926127pfc.151.2021.11.23.06.37.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Nov 2021 06:37:01 -0800 (PST)
-From:   Tianyu Lan <ltykernel@gmail.com>
-To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        luto@kernel.org, peterz@infradead.org, jgross@suse.com,
-        sstabellini@kernel.org, boris.ostrovsky@oracle.com,
-        kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, joro@8bytes.org,
-        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jejb@linux.ibm.com, martin.petersen@oracle.com, hch@lst.de,
-        m.szyprowski@samsung.com, robin.murphy@arm.com,
-        Tianyu.Lan@microsoft.com, thomas.lendacky@amd.com,
-        xen-devel@lists.xenproject.org, michael.h.kelley@microsoft.com
-Cc:     iommu@lists.linux-foundation.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        netdev@vger.kernel.org, vkuznets@redhat.com, brijesh.singh@amd.com,
-        konrad.wilk@oracle.com, parri.andrea@gmail.com,
-        dave.hansen@intel.com
-Subject: [PATCH V2 6/6] scsi: storvsc: Add Isolation VM support for storvsc driver
-Date:   Tue, 23 Nov 2021 09:30:37 -0500
-Message-Id: <20211123143039.331929-7-ltykernel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211123143039.331929-1-ltykernel@gmail.com>
-References: <20211123143039.331929-1-ltykernel@gmail.com>
+        id S233112AbhKWOvD convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 23 Nov 2021 09:51:03 -0500
+Received: from mga14.intel.com ([192.55.52.115]:50357 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229719AbhKWOvD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Nov 2021 09:51:03 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10176"; a="235269905"
+X-IronPort-AV: E=Sophos;i="5.87,258,1631602800"; 
+   d="scan'208";a="235269905"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2021 06:47:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,258,1631602800"; 
+   d="scan'208";a="597103234"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga002.fm.intel.com with ESMTP; 23 Nov 2021 06:47:55 -0800
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Tue, 23 Nov 2021 06:47:54 -0800
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Tue, 23 Nov 2021 06:47:54 -0800
+Received: from fmsmsx612.amr.corp.intel.com ([10.18.126.92]) by
+ fmsmsx612.amr.corp.intel.com ([10.18.126.92]) with mapi id 15.01.2242.012;
+ Tue, 23 Nov 2021 06:47:54 -0800
+From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
+To:     Parav Pandit <parav@nvidia.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "Kaliszczuk, Leszek" <leszek.kaliszczuk@intel.com>
+Subject: RE: [PATCH net-next 2/3] net/ice: Add support for enable_iwarp and
+ enable_roce devlink param
+Thread-Topic: [PATCH net-next 2/3] net/ice: Add support for enable_iwarp and
+ enable_roce devlink param
+Thread-Index: AQHX3+Wwj2jkwMJw30a7BIv/n9/JUKwRGIqAgAAPGSA=
+Date:   Tue, 23 Nov 2021 14:47:54 +0000
+Message-ID: <b7cc7b5aeb7d4c7e98641195822e2019@intel.com>
+References: <20211122211119.279885-1-anthony.l.nguyen@intel.com>
+ <20211122211119.279885-3-anthony.l.nguyen@intel.com>
+ <PH0PR12MB5481DD2B7212720BB387C3DEDC609@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To: <PH0PR12MB5481DD2B7212720BB387C3DEDC609@PH0PR12MB5481.namprd12.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.6.200.16
+x-originating-ip: [10.1.200.100]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> Subject: RE: [PATCH net-next 2/3] net/ice: Add support for enable_iwarp and
+> enable_roce devlink param
+> 
+> Hi Tony,
+> 
+> > From: Tony Nguyen <anthony.l.nguyen@intel.com>
+> > Sent: Tuesday, November 23, 2021 2:41 AM
+> >
+> > From: Shiraz Saleem <shiraz.saleem@intel.com>
+> >
+> > Allow support for 'enable_iwarp' and 'enable_roce' devlink params to
+> > turn on/off iWARP or RoCE protocol support for E800 devices.
+> >
+> > For example, a user can turn on iWARP functionality with,
+> >
+> > devlink dev param set pci/0000:07:00.0 name enable_iwarp value true
+> > cmode runtime
+> >
+> > This add an iWARP auxiliary rdma device, ice.iwarp.<>, under this PF.
+> >
+> > A user request to enable both iWARP and RoCE under the same PF is
+> > rejected since this device does not support both protocols
+> > simultaneously on the same port.
+> >
+> > Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+> > Tested-by: Leszek Kaliszczuk <leszek.kaliszczuk@intel.com>
+> > Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> > ---
+> >  drivers/net/ethernet/intel/ice/ice.h         |   1 +
+> >  drivers/net/ethernet/intel/ice/ice_devlink.c | 144 +++++++++++++++++++
+> >  drivers/net/ethernet/intel/ice/ice_devlink.h |   6 +
+> >  drivers/net/ethernet/intel/ice/ice_idc.c     |   4 +-
+> >  drivers/net/ethernet/intel/ice/ice_main.c    |   9 +-
+> >  include/linux/net/intel/iidc.h               |   7 +-
+> >  6 files changed, 166 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/intel/ice/ice.h
+> > b/drivers/net/ethernet/intel/ice/ice.h
+> > index b2db39ee5f85..b67ad51cbcc9 100644
+> > --- a/drivers/net/ethernet/intel/ice/ice.h
+> > +++ b/drivers/net/ethernet/intel/ice/ice.h
+> > @@ -576,6 +576,7 @@ struct ice_pf {
+> >  	struct ice_hw_port_stats stats_prev;
+> >  	struct ice_hw hw;
+> >  	u8 stat_prev_loaded:1; /* has previous stats been loaded */
+> > +	u8 rdma_mode;
+> This can be u8 rdma_mode: 1;
+> See below.
+> 
+> >  	u16 dcbx_cap;
+> >  	u32 tx_timeout_count;
+> >  	unsigned long tx_timeout_last_recovery; diff --git
+> > a/drivers/net/ethernet/intel/ice/ice_devlink.c
+> > b/drivers/net/ethernet/intel/ice/ice_devlink.c
+> > index b9bd9f9472f6..478412b28a76 100644
+> > --- a/drivers/net/ethernet/intel/ice/ice_devlink.c
+> > +++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
+> > @@ -430,6 +430,120 @@ static const struct devlink_ops ice_devlink_ops = {
+> >  	.flash_update = ice_devlink_flash_update,  };
+> >
+> > +static int
+> > +ice_devlink_enable_roce_get(struct devlink *devlink, u32 id,
+> > +			    struct devlink_param_gset_ctx *ctx) {
+> > +	struct ice_pf *pf = devlink_priv(devlink);
+> > +
+> > +	ctx->val.vbool = pf->rdma_mode & IIDC_RDMA_PROTOCOL_ROCEV2;
+> > +
+> This is logical operation, and vbool will be still zero when rdma mode is rocev2,
+> because it is not bit 0.
+> Please see below. This error can be avoided by having rdma mode as Boolean.
 
-In Isolation VM, all shared memory with host needs to mark visible
-to host via hvcall. vmbus_establish_gpadl() has already done it for
-storvsc rx/tx ring buffer. The page buffer used by vmbus_sendpacket_
-mpb_desc() still needs to be handled. Use DMA API(scsi_dma_map/unmap)
-to map these memory during sending/receiving packet and return swiotlb
-bounce buffer dma address. In Isolation VM, swiotlb  bounce buffer is
-marked to be visible to host and the swiotlb force mode is enabled.
+Hi Parav -
 
-Set device's dma min align mask to HV_HYP_PAGE_SIZE - 1 in order to
-keep the original data offset in the bounce buffer.
+rdma_mode is used as a bit-mask.
+0 = disabled, i.e. enable_iwarp and enable_roce set to false by user.
+1 = IIDC_RDMA_PROTOCOL_IWARP
+2 = IIDC_RDMA_PROTOCOL_ROCEV2
 
-Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
----
- drivers/scsi/storvsc_drv.c | 37 +++++++++++++++++++++----------------
- include/linux/hyperv.h     |  1 +
- 2 files changed, 22 insertions(+), 16 deletions(-)
+Setting rocev2 involves,
+pf->rdma_mode |= IIDC_RDMA_PROTOCOL_ROCEV2;
 
-diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
-index 20595c0ba0ae..ae293600d799 100644
---- a/drivers/scsi/storvsc_drv.c
-+++ b/drivers/scsi/storvsc_drv.c
-@@ -21,6 +21,8 @@
- #include <linux/device.h>
- #include <linux/hyperv.h>
- #include <linux/blkdev.h>
-+#include <linux/dma-mapping.h>
-+
- #include <scsi/scsi.h>
- #include <scsi/scsi_cmnd.h>
- #include <scsi/scsi_host.h>
-@@ -1336,6 +1338,7 @@ static void storvsc_on_channel_callback(void *context)
- 					continue;
- 				}
- 				request = (struct storvsc_cmd_request *)scsi_cmd_priv(scmnd);
-+				scsi_dma_unmap(scmnd);
- 			}
- 
- 			storvsc_on_receive(stor_device, packet, request);
-@@ -1749,7 +1752,6 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 	struct hv_host_device *host_dev = shost_priv(host);
- 	struct hv_device *dev = host_dev->dev;
- 	struct storvsc_cmd_request *cmd_request = scsi_cmd_priv(scmnd);
--	int i;
- 	struct scatterlist *sgl;
- 	unsigned int sg_count;
- 	struct vmscsi_request *vm_srb;
-@@ -1831,10 +1833,11 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 	payload_sz = sizeof(cmd_request->mpb);
- 
- 	if (sg_count) {
--		unsigned int hvpgoff, hvpfns_to_add;
- 		unsigned long offset_in_hvpg = offset_in_hvpage(sgl->offset);
- 		unsigned int hvpg_count = HVPFN_UP(offset_in_hvpg + length);
--		u64 hvpfn;
-+		struct scatterlist *sg;
-+		unsigned long hvpfn, hvpfns_to_add;
-+		int j, i = 0;
- 
- 		if (hvpg_count > MAX_PAGE_BUFFER_COUNT) {
- 
-@@ -1848,21 +1851,22 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 		payload->range.len = length;
- 		payload->range.offset = offset_in_hvpg;
- 
-+		sg_count = scsi_dma_map(scmnd);
-+		if (sg_count < 0)
-+			return SCSI_MLQUEUE_DEVICE_BUSY;
- 
--		for (i = 0; sgl != NULL; sgl = sg_next(sgl)) {
-+		for_each_sg(sgl, sg, sg_count, j) {
- 			/*
--			 * Init values for the current sgl entry. hvpgoff
--			 * and hvpfns_to_add are in units of Hyper-V size
--			 * pages. Handling the PAGE_SIZE != HV_HYP_PAGE_SIZE
--			 * case also handles values of sgl->offset that are
--			 * larger than PAGE_SIZE. Such offsets are handled
--			 * even on other than the first sgl entry, provided
--			 * they are a multiple of PAGE_SIZE.
-+			 * Init values for the current sgl entry. hvpfns_to_add
-+			 * is in units of Hyper-V size pages. Handling the
-+			 * PAGE_SIZE != HV_HYP_PAGE_SIZE case also handles
-+			 * values of sgl->offset that are larger than PAGE_SIZE.
-+			 * Such offsets are handled even on other than the first
-+			 * sgl entry, provided they are a multiple of PAGE_SIZE.
- 			 */
--			hvpgoff = HVPFN_DOWN(sgl->offset);
--			hvpfn = page_to_hvpfn(sg_page(sgl)) + hvpgoff;
--			hvpfns_to_add =	HVPFN_UP(sgl->offset + sgl->length) -
--						hvpgoff;
-+			hvpfn = HVPFN_DOWN(sg_dma_address(sg));
-+			hvpfns_to_add = HVPFN_UP(sg_dma_address(sg) +
-+						 sg_dma_len(sg)) - hvpfn;
- 
- 			/*
- 			 * Fill the next portion of the PFN array with
-@@ -1872,7 +1876,7 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 			 * the PFN array is filled.
- 			 */
- 			while (hvpfns_to_add--)
--				payload->range.pfn_array[i++] =	hvpfn++;
-+				payload->range.pfn_array[i++] = hvpfn++;
- 		}
- 	}
- 
-@@ -2016,6 +2020,7 @@ static int storvsc_probe(struct hv_device *device,
- 	stor_device->vmscsi_size_delta = sizeof(struct vmscsi_win8_extension);
- 	spin_lock_init(&stor_device->lock);
- 	hv_set_drvdata(device, stor_device);
-+	dma_set_min_align_mask(&device->device, HV_HYP_PAGE_SIZE - 1);
- 
- 	stor_device->port_number = host->host_no;
- 	ret = storvsc_connect_to_vsp(device, storvsc_ringbuffer_size, is_fc);
-diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
-index 8882e46d1070..2840e51ee5c5 100644
---- a/include/linux/hyperv.h
-+++ b/include/linux/hyperv.h
-@@ -1262,6 +1262,7 @@ struct hv_device {
- 
- 	struct vmbus_channel *channel;
- 	struct kset	     *channels_kset;
-+	struct device_dma_parameters dma_parms;
- 
- 	/* place holder to keep track of the dir for hv device in debugfs */
- 	struct dentry *debug_dir;
--- 
-2.25.1
+So this operation here should reflect correct value in vbool. I don't think this is a bug.
+
+> > +static int
+> > +ice_devlink_enable_iw_get(struct devlink *devlink, u32 id,
+> > +			  struct devlink_param_gset_ctx *ctx) {
+> > +	struct ice_pf *pf = devlink_priv(devlink);
+> > +
+> > +	ctx->val.vbool = pf->rdma_mode & IIDC_RDMA_PROTOCOL_IWARP;
+> > +
+> This works fine as this is bit 0, but not for roce. So lets just do boolean
+> rdma_mode.
+
+Boolean doesn't cut it as it doesn't reflect the disabled state mentioned above.
+
+> > --- a/drivers/net/ethernet/intel/ice/ice_devlink.h
+> > +++ b/drivers/net/ethernet/intel/ice/ice_devlink.h
+> > @@ -4,10 +4,16 @@
+> >  #ifndef _ICE_DEVLINK_H_
+> >  #define _ICE_DEVLINK_H_
+> >
+> > +enum ice_devlink_param_id {
+> > +	ICE_DEVLINK_PARAM_ID_BASE =
+> DEVLINK_PARAM_GENERIC_ID_MAX,
+> > };
+> > +
+> This is unused in the patch. Please remove.
+
+Sure.
+
+Between, Thanks for the review!
+
+Shiraz
+
+
 
