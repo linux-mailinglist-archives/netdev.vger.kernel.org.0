@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E86745A899
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 17:41:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4525E45A89F
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 17:41:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233715AbhKWQo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 11:44:26 -0500
-Received: from mga14.intel.com ([192.55.52.115]:62210 "EHLO mga14.intel.com"
+        id S234807AbhKWQod (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 11:44:33 -0500
+Received: from mga12.intel.com ([192.55.52.136]:26556 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229992AbhKWQoZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 11:44:25 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10177"; a="235294599"
+        id S233787AbhKWQo2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Nov 2021 11:44:28 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10177"; a="215086256"
 X-IronPort-AV: E=Sophos;i="5.87,258,1631602800"; 
-   d="scan'208";a="235294599"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2021 08:41:17 -0800
+   d="scan'208";a="215086256"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2021 08:41:20 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,258,1631602800"; 
-   d="scan'208";a="591251752"
+   d="scan'208";a="509475650"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by FMSMGA003.fm.intel.com with ESMTP; 23 Nov 2021 08:41:07 -0800
+  by orsmga008.jf.intel.com with ESMTP; 23 Nov 2021 08:41:10 -0800
 Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1ANGf4Wc016784;
-        Tue, 23 Nov 2021 16:41:04 GMT
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1ANGf4Wd016784;
+        Tue, 23 Nov 2021 16:41:07 GMT
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -69,198 +69,509 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
         virtualization@lists.linux-foundation.org
-Subject: [PATCH v2 net-next 00/26] net: introduce and use generic XDP stats
-Date:   Tue, 23 Nov 2021 17:39:29 +0100
-Message-Id: <20211123163955.154512-1-alexandr.lobakin@intel.com>
+Subject: [PATCH v2 net-next 01/26] rtnetlink: introduce generic XDP statistics
+Date:   Tue, 23 Nov 2021 17:39:30 +0100
+Message-Id: <20211123163955.154512-2-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20211123163955.154512-1-alexandr.lobakin@intel.com>
+References: <20211123163955.154512-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an almost complete rework of [0].
+Lots of the driver-side XDP enabled drivers provide some statistics
+on XDP programs runs and different actions taken (number of passes,
+drops, redirects etc.). Regarding that it's quite similar across all
+the drivers (which is obvious), we can implement some sort of
+generic statistics using rtnetlink xstats infra to provide a way for
+exposing XDP/XSK statistics without code and stringsets duplication
+inside drivers' Ethtool callbacks.
+These 15 fields provided by the standard XDP stats should cover most
+stats that might be interesting for collecting and tracking.
+Note that most NIC drivers keep XDP statistics on a per-channel
+basis, so this also introduces a new callback for getting a number
+of channels which a driver will provide stats for. If it's not
+implemented, we assume the driver stats are shared across channels.
+If it's here, it should return either the number of channels, or 0
+if stats for this type (XDP or XSK) is shared, or -EOPNOTSUPP if it
+doesn't store such type of statistics, or -ENODATA if it does, but
+can't provide them right now for any reason (purely for better code
+readability, acts the same as -EOPNOTSUPP).
+Stats are provided as nested attrs to be able to expand them later
+on.
 
-This series introduces generic XDP statistics infra based on rtnl
-xstats (Ethtool standard stats previously), and wires up the drivers
-which collect appropriate statistics to this new interface. Finally,
-it introduces XDP/XSK statistics to all XDP-capable Intel drivers.
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+---
+ include/linux/if_link.h      |  39 +++++-
+ include/linux/netdevice.h    |  12 ++
+ include/uapi/linux/if_link.h |  67 +++++++++
+ net/core/rtnetlink.c         | 264 +++++++++++++++++++++++++++++++++++
+ 4 files changed, 381 insertions(+), 1 deletion(-)
 
-Those counters are:
-* packets: number of frames passed to bpf_prog_run_xdp().
-* bytes: number of bytes went through bpf_prog_run_xdp().
-* errors: number of general XDP errors, if driver has one unified
-  counter.
-* aborted: number of XDP_ABORTED returns.
-* drop: number of XDP_DROP returns.
-* invalid: number of returns of unallowed values (i.e. not XDP_*).
-* pass: number of XDP_PASS returns.
-* redirect: number of successfully performed XDP_REDIRECT requests.
-* redirect_errors: number of failed XDP_REDIRECT requests.
-* tx: number of successfully performed XDP_TX requests.
-* tx_errors: number of failed XDP_TX requests.
-* xmit_packets: number of successfully transmitted XDP/XSK frames.
-* xmit_bytes: number of successfully transmitted XDP/XSK frames.
-* xmit_errors: of XDP/XSK frames failed to transmit.
-* xmit_full: number of XDP/XSK queue being full at the moment of
-  transmission.
+diff --git a/include/linux/if_link.h b/include/linux/if_link.h
+index 622658dfbf0a..a0dac6cb3e6a 100644
+--- a/include/linux/if_link.h
++++ b/include/linux/if_link.h
+@@ -4,8 +4,8 @@
 
-To provide them, developers need to implement .ndo_get_xdp_stats()
-and, if they want to expose stats on a per-channel basis,
-.ndo_get_xdp_stats_nch(). include/net/xdp.h contains some helper
-structs and functions which might be useful for doing this.
-It is up to developers to decide whether to implement XDP stats in
-their drivers or not, depending on the needs and so on, but if so,
-it is implied that they will be implemented using this new infra
-rather than custom Ethtool entries. XDP stats {,type} list can be
-expanded if needed as counters are being provided as nested NL attrs.
-There's an option to provide XDP and XSK counters separately, and I
-used it in mlx5 (has separate RQs and SQs) and Intel (have separate
-NAPI poll routines) drivers.
+ #include <uapi/linux/if_link.h>
 
-Example output of iproute2's new command:
++/* We don't want these structures exposed to user space */
 
-$ ip link xdpstats dev enp178s0
-16: enp178s0:
-xdp-channel0-rx_xdp_packets: 0
-xdp-channel0-rx_xdp_bytes: 1
-xdp-channel0-rx_xdp_errors: 2
-xdp-channel0-rx_xdp_aborted: 3
-xdp-channel0-rx_xdp_drop: 4
-xdp-channel0-rx_xdp_invalid: 5
-xdp-channel0-rx_xdp_pass: 6
-xdp-channel0-rx_xdp_redirect: 7
-xdp-channel0-rx_xdp_redirect_errors: 8
-xdp-channel0-rx_xdp_tx: 9
-xdp-channel0-rx_xdp_tx_errors: 10
-xdp-channel0-tx_xdp_xmit_packets: 11
-xdp-channel0-tx_xdp_xmit_bytes: 12
-xdp-channel0-tx_xdp_xmit_errors: 13
-xdp-channel0-tx_xdp_xmit_full: 14
-[ ... ]
+-/* We don't want this structure exposed to user space */
+ struct ifla_vf_stats {
+ 	__u64 rx_packets;
+ 	__u64 tx_packets;
+@@ -30,4 +30,41 @@ struct ifla_vf_info {
+ 	__u32 trusted;
+ 	__be16 vlan_proto;
+ };
++
++/**
++ * struct ifla_xdp_stats - driver-side XDP statistics
++ * @packets: number of frames passed to bpf_prog_run_xdp().
++ * @bytes: number of bytes went through bpf_prog_run_xdp().
++ * @errors: number of general XDP errors, if driver has one unified counter.
++ * @aborted: number of %XDP_ABORTED returns.
++ * @drop: number of %XDP_DROP returns.
++ * @invalid: number of returns of unallowed values (i.e. not XDP_*).
++ * @pass: number of %XDP_PASS returns.
++ * @redirect: number of successfully performed %XDP_REDIRECT requests.
++ * @redirect_errors: number of failed %XDP_REDIRECT requests.
++ * @tx: number of successfully performed %XDP_TX requests.
++ * @tx_errors: number of failed %XDP_TX requests.
++ * @xmit_packets: number of successfully transmitted XDP/XSK frames.
++ * @xmit_bytes: number of successfully transmitted XDP/XSK frames.
++ * @xmit_errors: of XDP/XSK frames failed to transmit.
++ * @xmit_full: number of XDP/XSK queue being full at the moment of transmission.
++ */
++struct ifla_xdp_stats {
++	__u64	packets;
++	__u64	bytes;
++	__u64	errors;
++	__u64	aborted;
++	__u64	drop;
++	__u64	invalid;
++	__u64	pass;
++	__u64	redirect;
++	__u64	redirect_errors;
++	__u64	tx;
++	__u64	tx_errors;
++	__u64	xmit_packets;
++	__u64	xmit_bytes;
++	__u64	xmit_errors;
++	__u64	xmit_full;
++};
++
+ #endif /* _LINUX_IF_LINK_H */
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index db3bff1ae7fd..058a00c2d19a 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -1327,6 +1327,13 @@ struct netdev_net_notifier {
+  *	queue id bound to an AF_XDP socket. The flags field specifies if
+  *	only RX, only Tx, or both should be woken up using the flags
+  *	XDP_WAKEUP_RX and XDP_WAKEUP_TX.
++ * int (*ndo_get_xdp_stats_nch)(const struct net_device *dev, u32 attr_id);
++ *	Get the number of channels which ndo_get_xdp_stats will return
++ *	statistics for.
++ *
++ * int (*ndo_get_xdp_stats)(const struct net_device *dev, u32 attr_id,
++ *			    void *attr_data);
++ *	Get attr_id XDP statistics into the attr_data pointer.
+  * struct devlink_port *(*ndo_get_devlink_port)(struct net_device *dev);
+  *	Get devlink port instance associated with a given netdev.
+  *	Called with a reference on the netdevice and devlink locks only,
+@@ -1550,6 +1557,11 @@ struct net_device_ops {
+ 							  struct xdp_buff *xdp);
+ 	int			(*ndo_xsk_wakeup)(struct net_device *dev,
+ 						  u32 queue_id, u32 flags);
++	int			(*ndo_get_xdp_stats_nch)(const struct net_device *dev,
++							 u32 attr_id);
++	int			(*ndo_get_xdp_stats)(const struct net_device *dev,
++						     u32 attr_id,
++						     void *attr_data);
+ 	struct devlink_port *	(*ndo_get_devlink_port)(struct net_device *dev);
+ 	int			(*ndo_tunnel_ctl)(struct net_device *dev,
+ 						  struct ip_tunnel_parm *p, int cmd);
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index eebd3894fe89..dc1dd31e8274 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -1147,6 +1147,7 @@ enum {
+ 	IFLA_STATS_LINK_XSTATS_SLAVE,
+ 	IFLA_STATS_LINK_OFFLOAD_XSTATS,
+ 	IFLA_STATS_AF_SPEC,
++	IFLA_STATS_LINK_XDP_XSTATS,
+ 	__IFLA_STATS_MAX,
+ };
 
-This series doesn't touch existing Ethtool-exposed XDP stats due
-to the potential breakage of custom{,er} scripts and other stuff
-that might be hardwired on their presence. Developers are free to
-drop them on their own if possible. In ideal case we would see
-Ethtool stats free from anything related to XDP, but it's unlikely
-to happen (:
+@@ -1175,6 +1176,72 @@ enum {
+ };
+ #define IFLA_OFFLOAD_XSTATS_MAX (__IFLA_OFFLOAD_XSTATS_MAX - 1)
 
-XDP_PASS kpps on an ice NIC with ~50 Gbps line rate:
++/* These are embedded into IFLA_STATS_LINK_XDP_XSTATS */
++enum {
++	IFLA_XDP_XSTATS_TYPE_UNSPEC,
++	/* Stats collected on a "regular" channel(s) */
++	IFLA_XDP_XSTATS_TYPE_XDP,
++	/* Stats collected on an XSK channel(s) */
++	IFLA_XDP_XSTATS_TYPE_XSK,
++
++	__IFLA_XDP_XSTATS_TYPE_CNT,
++};
++
++#define IFLA_XDP_XSTATS_TYPE_START	(IFLA_XDP_XSTATS_TYPE_UNSPEC + 1)
++#define IFLA_XDP_XSTATS_TYPE_MAX	(__IFLA_XDP_XSTATS_TYPE_CNT - 1)
++
++/* Embedded into IFLA_XDP_XSTATS_TYPE_XDP or IFLA_XDP_XSTATS_TYPE_XSK */
++enum {
++	IFLA_XDP_XSTATS_SCOPE_UNSPEC,
++	/* netdev-wide stats */
++	IFLA_XDP_XSTATS_SCOPE_SHARED,
++	/* Per-channel stats */
++	IFLA_XDP_XSTATS_SCOPE_CHANNEL,
++
++	__IFLA_XDP_XSTATS_SCOPE_CNT,
++};
++
++/* Embedded into IFLA_XDP_XSTATS_SCOPE_SHARED/IFLA_XDP_XSTATS_SCOPE_CHANNEL */
++enum {
++	/* Padding for 64-bit alignment */
++	IFLA_XDP_XSTATS_UNSPEC,
++	/* Number of frames passed to bpf_prog_run_xdp() */
++	IFLA_XDP_XSTATS_PACKETS,
++	/* Number of bytes went through bpf_prog_run_xdp() */
++	IFLA_XDP_XSTATS_BYTES,
++	/* Number of general XDP errors if driver counts them together */
++	IFLA_XDP_XSTATS_ERRORS,
++	/* Number of %XDP_ABORTED returns */
++	IFLA_XDP_XSTATS_ABORTED,
++	/* Number of %XDP_DROP returns */
++	IFLA_XDP_XSTATS_DROP,
++	/* Number of returns of unallowed values (i.e. not XDP_*) */
++	IFLA_XDP_XSTATS_INVALID,
++	/* Number of %XDP_PASS returns */
++	IFLA_XDP_XSTATS_PASS,
++	/* Number of successfully performed %XDP_REDIRECT requests */
++	IFLA_XDP_XSTATS_REDIRECT,
++	/* Number of failed %XDP_REDIRECT requests */
++	IFLA_XDP_XSTATS_REDIRECT_ERRORS,
++	/* Number of successfully performed %XDP_TX requests */
++	IFLA_XDP_XSTATS_TX,
++	/* Number of failed %XDP_TX requests */
++	IFLA_XDP_XSTATS_TX_ERRORS,
++	/* Number of successfully transmitted XDP/XSK frames */
++	IFLA_XDP_XSTATS_XMIT_PACKETS,
++	/* Number of successfully transmitted XDP/XSK bytes */
++	IFLA_XDP_XSTATS_XMIT_BYTES,
++	/* Number of XDP/XSK frames failed to transmit */
++	IFLA_XDP_XSTATS_XMIT_ERRORS,
++	/* Number of XDP/XSK queue being full at the moment of transmission */
++	IFLA_XDP_XSTATS_XMIT_FULL,
++
++	__IFLA_XDP_XSTATS_CNT,
++};
++
++#define IFLA_XDP_XSTATS_START		(IFLA_XDP_XSTATS_UNSPEC + 1)
++#define IFLA_XDP_XSTATS_MAX		(__IFLA_XDP_XSTATS_CNT - 1)
++
+ /* XDP section */
 
-Frame size     64    | 128   | 256   | 512   | 1024 | 1532
-----------------------------------------------------------
-net-next       23557 | 23750 | 20731 | 11723 | 6270 | 4377
-This series    23484 | 23812 | 20679 | 11720 | 6270 | 4377
+ #define XDP_FLAGS_UPDATE_IF_NOEXIST	(1U << 0)
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 6f25c0a8aebe..b7db68fb0879 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -5107,6 +5107,262 @@ static int rtnl_get_offload_stats_size(const struct net_device *dev)
+ 	return nla_size;
+ }
 
-The same situation with XDP_DROP and several more common cases:
-nothing past stddev (which is a bit surprising, but not complaining
-at all).
++#define IFLA_XDP_XSTATS_NUM		(__IFLA_XDP_XSTATS_CNT - \
++					 IFLA_XDP_XSTATS_START)
++
++static_assert(sizeof(struct ifla_xdp_stats) / sizeof(__u64) ==
++	      IFLA_XDP_XSTATS_NUM);
++
++static u32 rtnl_get_xdp_stats_num(u32 attr_id)
++{
++	switch (attr_id) {
++	case IFLA_XDP_XSTATS_TYPE_XDP:
++	case IFLA_XDP_XSTATS_TYPE_XSK:
++		return IFLA_XDP_XSTATS_NUM;
++	default:
++		return 0;
++	}
++}
++
++static bool rtnl_get_xdp_stats_xdpxsk(struct sk_buff *skb, u32 ch,
++				      const void *attr_data)
++{
++	const struct ifla_xdp_stats *xstats = attr_data;
++
++	xstats += ch;
++
++	if (nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_PACKETS, xstats->packets,
++			      IFLA_XDP_XSTATS_UNSPEC) ||
++	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_BYTES, xstats->bytes,
++			      IFLA_XDP_XSTATS_UNSPEC) ||
++	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_ERRORS, xstats->errors,
++			      IFLA_XDP_XSTATS_UNSPEC) ||
++	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_ABORTED, xstats->aborted,
++			      IFLA_XDP_XSTATS_UNSPEC) ||
++	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_DROP, xstats->drop,
++			      IFLA_XDP_XSTATS_UNSPEC) ||
++	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_INVALID, xstats->invalid,
++			      IFLA_XDP_XSTATS_UNSPEC) ||
++	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_PASS, xstats->pass,
++			      IFLA_XDP_XSTATS_UNSPEC) ||
++	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_REDIRECT, xstats->redirect,
++			      IFLA_XDP_XSTATS_UNSPEC) ||
++	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_REDIRECT_ERRORS,
++			      xstats->redirect_errors,
++			      IFLA_XDP_XSTATS_UNSPEC) ||
++	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_TX, xstats->tx,
++			      IFLA_XDP_XSTATS_UNSPEC) ||
++	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_TX_ERRORS,
++			      xstats->tx_errors, IFLA_XDP_XSTATS_UNSPEC) ||
++	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_XMIT_PACKETS,
++			      xstats->xmit_packets, IFLA_XDP_XSTATS_UNSPEC) ||
++	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_XMIT_BYTES,
++			      xstats->xmit_bytes, IFLA_XDP_XSTATS_UNSPEC) ||
++	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_XMIT_ERRORS,
++			      xstats->xmit_errors, IFLA_XDP_XSTATS_UNSPEC) ||
++	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_XMIT_FULL,
++			      xstats->xmit_full, IFLA_XDP_XSTATS_UNSPEC))
++		return false;
++
++	return true;
++}
++
++static bool rtnl_get_xdp_stats_one(struct sk_buff *skb, u32 attr_id,
++				   u32 scope_id, u32 ch, const void *attr_data)
++{
++	struct nlattr *scope;
++
++	scope = nla_nest_start_noflag(skb, scope_id);
++	if (!scope)
++		return false;
++
++	switch (attr_id) {
++	case IFLA_XDP_XSTATS_TYPE_XDP:
++	case IFLA_XDP_XSTATS_TYPE_XSK:
++		if (!rtnl_get_xdp_stats_xdpxsk(skb, ch, attr_data))
++			goto fail;
++
++		break;
++	default:
++fail:
++		nla_nest_cancel(skb, scope);
++
++		return false;
++	}
++
++	nla_nest_end(skb, scope);
++
++	return true;
++}
++
++static bool rtnl_get_xdp_stats(struct sk_buff *skb,
++			       const struct net_device *dev,
++			       int *idxattr, int *prividx)
++{
++	const struct net_device_ops *ops = dev->netdev_ops;
++	struct nlattr *xstats, *type = NULL;
++	u32 saved_ch = *prividx & U16_MAX;
++	u32 saved_attr = *prividx >> 16;
++	bool nuke_xstats = true;
++	u32 attr_id, ch = 0;
++	int ret;
++
++	if (!ops || !ops->ndo_get_xdp_stats)
++		goto nodata;
++
++	*idxattr = IFLA_STATS_LINK_XDP_XSTATS;
++
++	xstats = nla_nest_start_noflag(skb, IFLA_STATS_LINK_XDP_XSTATS);
++	if (!xstats)
++		return false;
++
++	for (attr_id = IFLA_XDP_XSTATS_TYPE_START;
++	     attr_id < __IFLA_XDP_XSTATS_TYPE_CNT;
++	     attr_id++) {
++		u32 nstat, scope_id, nch;
++		bool nuke_type = true;
++		void *attr_data;
++		size_t size;
++
++		if (attr_id > saved_attr)
++			saved_ch = 0;
++		if (attr_id < saved_attr)
++			continue;
++
++		nstat = rtnl_get_xdp_stats_num(attr_id);
++		if (!nstat)
++			continue;
++
++		scope_id = IFLA_XDP_XSTATS_SCOPE_SHARED;
++		nch = 1;
++
++		if (!ops->ndo_get_xdp_stats_nch)
++			goto shared;
++
++		ret = ops->ndo_get_xdp_stats_nch(dev, attr_id);
++		if (ret == -EOPNOTSUPP || ret == -ENODATA)
++			continue;
++		if (ret < 0)
++			goto out;
++		if (!ret)
++			goto shared;
++
++		scope_id = IFLA_XDP_XSTATS_SCOPE_CHANNEL;
++		nch = ret;
++
++shared:
++		size = array3_size(nch, nstat, sizeof(__u64));
++		if (unlikely(size == SIZE_MAX)) {
++			ret = -EOVERFLOW;
++			goto out;
++		}
++
++		attr_data = kzalloc(size, GFP_KERNEL);
++		if (!attr_data) {
++			ret = -ENOMEM;
++			goto out;
++		}
++
++		ret = ops->ndo_get_xdp_stats(dev, attr_id, attr_data);
++		if (ret == -EOPNOTSUPP || ret == -ENODATA)
++			goto kfree_cont;
++		if (ret) {
++kfree_out:
++			kfree(attr_data);
++			goto out;
++		}
++
++		ret = -EMSGSIZE;
++
++		type = nla_nest_start_noflag(skb, attr_id);
++		if (!type)
++			goto kfree_out;
++
++		for (ch = saved_ch; ch < nch; ch++)
++			if (!rtnl_get_xdp_stats_one(skb, attr_id, scope_id,
++						    ch, attr_data)) {
++				if (nuke_type)
++					nla_nest_cancel(skb, type);
++				else
++					nla_nest_end(skb, type);
++
++				goto kfree_out;
++			} else {
++				nuke_xstats = false;
++				nuke_type = false;
++			}
++
++		nla_nest_end(skb, type);
++kfree_cont:
++		kfree(attr_data);
++	}
++
++	ret = 0;
++
++out:
++	if (nuke_xstats)
++		nla_nest_cancel(skb, xstats);
++	else
++		nla_nest_end(skb, xstats);
++
++	if (ret && ret != -EOPNOTSUPP && ret != -ENODATA) {
++		/* If the driver has 60+ queues, we can run out of skb
++		 * tailroom even when putting stats for one type. Save
++		 * channel number in prividx to resume from it next time
++		 * rather than restaring the whole type and running into
++		 * the same problem again.
++		 */
++		*prividx = (attr_id << 16) | ch;
++		return false;
++	}
++
++	*prividx = 0;
++nodata:
++	*idxattr = 0;
++
++	return true;
++}
++
++static size_t rtnl_get_xdp_stats_size(const struct net_device *dev)
++{
++	const struct net_device_ops *ops = dev->netdev_ops;
++	size_t size = 0;
++	u32 attr_id;
++
++	if (!ops || !ops->ndo_get_xdp_stats)
++		return 0;
++
++	for (attr_id = IFLA_XDP_XSTATS_TYPE_START;
++	     attr_id < __IFLA_XDP_XSTATS_TYPE_CNT;
++	     attr_id++) {
++		u32 nstat = rtnl_get_xdp_stats_num(attr_id);
++		u32 nch = 1;
++		int ret;
++
++		if (!nstat)
++			continue;
++
++		if (!ops->ndo_get_xdp_stats_nch)
++			goto shared;
++
++		ret = ops->ndo_get_xdp_stats_nch(dev, attr_id);
++		if (ret < 0)
++			continue;
++		if (ret > 0)
++			nch = ret;
++
++shared:
++		size += nla_total_size(0) +	/* IFLA_XDP_XSTATS_TYPE_* */
++			(nla_total_size(0) +	/* IFLA_XDP_XSTATS_SCOPE_* */
++			 nla_total_size_64bit(sizeof(__u64)) * nstat) * nch;
++	}
++
++	if (size)
++		size += nla_total_size(0);	/* IFLA_STATS_LINK_XDP_XSTATS */
++
++	return size;
++}
++
+ static int rtnl_fill_statsinfo(struct sk_buff *skb, struct net_device *dev,
+ 			       int type, u32 pid, u32 seq, u32 change,
+ 			       unsigned int flags, unsigned int filter_mask,
+@@ -5243,6 +5499,11 @@ static int rtnl_fill_statsinfo(struct sk_buff *skb, struct net_device *dev,
+ 		*idxattr = 0;
+ 	}
 
-A brief series breakdown:
- * 1-2: introduce new infra and APIs, for rtnetlink and drivers
-   respectively;
- * 3-19: add needed callback to the existing drivers to export
-   their stats using new infra. Some of the patches are cosmetic
-   prereqs;
- * 20-25: add XDP/XSK stats to all Intel drivers;
- * 26: mention generic XDP stats in Documentation.
++	if (stats_attr_valid(filter_mask, IFLA_STATS_LINK_XDP_XSTATS,
++			     *idxattr) &&
++	    !rtnl_get_xdp_stats(skb, dev, idxattr, prividx))
++		goto nla_put_failure;
++
+ 	nlmsg_end(skb, nlh);
 
-This set is also available here: [1]
-A separate iproute2-next patch will be published in parallel,
-for now you can find it here: [2]
+ 	return 0;
+@@ -5318,6 +5579,9 @@ static size_t if_nlmsg_stats_size(const struct net_device *dev,
+ 		rcu_read_unlock();
+ 	}
 
-From v1 [0]:
- - use rtnl xstats instead of Ethtool standard -- XDP stats are
-   purely software while Ethtool infra was designed for HW stats
-   (Jakub);
- - split xmit into xmit_packets and xmit_bytes, add xmit_full;
- - don't touch existing drivers custom XDP stats exposed via
-   Ethtool (Jakub);
- - add a bunch of helper structs and functions to reduce boilerplates
-   and code duplication in new drivers;
- - merge with the series which adds XDP stats to Intel drivers;
- - add some perf numbers per Jakub's request.
-
-[0] https://lore.kernel.org/all/20210803163641.3743-1-alexandr.lobakin@intel.com
-[1] https://github.com/alobakin/linux/pull/11
-[2] https://github.com/alobakin/iproute2/pull/1
-
-Alexander Lobakin (26):
-  rtnetlink: introduce generic XDP statistics
-  xdp: provide common driver helpers for implementing XDP stats
-  ena: implement generic XDP statistics callbacks
-  dpaa2: implement generic XDP stats callbacks
-  enetc: implement generic XDP stats callbacks
-  mvneta: reformat mvneta_netdev_ops
-  mvneta: add .ndo_get_xdp_stats() callback
-  mvpp2: provide .ndo_get_xdp_stats() callback
-  mlx5: don't mix XDP_DROP and Rx XDP error cases
-  mlx5: provide generic XDP stats callbacks
-  sf100, sfx: implement generic XDP stats callbacks
-  veth: don't mix XDP_DROP counter with Rx XDP errors
-  veth: drop 'xdp_' suffix from packets and bytes stats
-  veth: reformat veth_netdev_ops
-  veth: add generic XDP stats callbacks
-  virtio_net: don't mix XDP_DROP counter with Rx XDP errors
-  virtio_net: rename xdp_tx{,_drops} SQ stats to xdp_xmit{,_errors}
-  virtio_net: reformat virtnet_netdev
-  virtio_net: add callbacks for generic XDP stats
-  i40e: add XDP and XSK generic per-channel statistics
-  ice: add XDP and XSK generic per-channel statistics
-  igb: add XDP generic per-channel statistics
-  igc: bail out early on XSK xmit if no descs are available
-  igc: add XDP and XSK generic per-channel statistics
-  ixgbe: add XDP and XSK generic per-channel statistics
-  Documentation: reflect generic XDP statistics
-
- Documentation/networking/statistics.rst       |  33 +++
- drivers/net/ethernet/amazon/ena/ena_netdev.c  |  53 ++++
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |  45 +++
- drivers/net/ethernet/freescale/enetc/enetc.c  |  48 ++++
- drivers/net/ethernet/freescale/enetc/enetc.h  |   3 +
- .../net/ethernet/freescale/enetc/enetc_pf.c   |   2 +
- drivers/net/ethernet/intel/i40e/i40e.h        |   1 +
- drivers/net/ethernet/intel/i40e/i40e_main.c   |  38 ++-
- drivers/net/ethernet/intel/i40e/i40e_txrx.c   |  40 ++-
- drivers/net/ethernet/intel/i40e/i40e_txrx.h   |   1 +
- drivers/net/ethernet/intel/i40e/i40e_xsk.c    |  33 ++-
- drivers/net/ethernet/intel/ice/ice.h          |   2 +
- drivers/net/ethernet/intel/ice/ice_lib.c      |  21 ++
- drivers/net/ethernet/intel/ice/ice_main.c     |  17 ++
- drivers/net/ethernet/intel/ice/ice_txrx.c     |  33 ++-
- drivers/net/ethernet/intel/ice/ice_txrx.h     |  12 +-
- drivers/net/ethernet/intel/ice/ice_txrx_lib.c |   3 +
- drivers/net/ethernet/intel/ice/ice_xsk.c      |  51 +++-
- drivers/net/ethernet/intel/igb/igb.h          |  14 +-
- drivers/net/ethernet/intel/igb/igb_main.c     | 102 ++++++-
- drivers/net/ethernet/intel/igc/igc.h          |   3 +
- drivers/net/ethernet/intel/igc/igc_main.c     |  89 +++++-
- drivers/net/ethernet/intel/ixgbe/ixgbe.h      |   1 +
- drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c  |   3 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  69 ++++-
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  |  56 +++-
- drivers/net/ethernet/marvell/mvneta.c         |  78 +++++-
- .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  51 ++++
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |   5 +
- .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |   3 +-
- .../net/ethernet/mellanox/mlx5/core/en_main.c |   2 +
- .../ethernet/mellanox/mlx5/core/en_stats.c    |  76 +++++
- .../ethernet/mellanox/mlx5/core/en_stats.h    |   3 +
- drivers/net/ethernet/sfc/ef100_netdev.c       |   2 +
- drivers/net/ethernet/sfc/efx.c                |   2 +
- drivers/net/ethernet/sfc/efx_common.c         |  42 +++
- drivers/net/ethernet/sfc/efx_common.h         |   3 +
- drivers/net/veth.c                            | 128 +++++++--
- drivers/net/virtio_net.c                      | 104 +++++--
- include/linux/if_link.h                       |  39 ++-
- include/linux/netdevice.h                     |  13 +
- include/net/xdp.h                             | 162 +++++++++++
- include/uapi/linux/if_link.h                  |  67 +++++
- net/core/rtnetlink.c                          | 264 ++++++++++++++++++
- net/core/xdp.c                                | 124 ++++++++
- 45 files changed, 1798 insertions(+), 143 deletions(-)
++	if (stats_attr_valid(filter_mask, IFLA_STATS_LINK_XDP_XSTATS, 0))
++		size += rtnl_get_xdp_stats_size(dev);
++
+ 	return size;
+ }
 
 --
 2.33.1
