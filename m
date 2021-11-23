@@ -2,97 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 003C745A6BF
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 16:44:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D59C45A6C3
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 16:45:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236345AbhKWPrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 10:47:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34892 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236330AbhKWPrT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 10:47:19 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 56A9460F9D;
-        Tue, 23 Nov 2021 15:44:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637682251;
-        bh=OLhgtLiZ098SPvaox7Xvh4plbAgGDAJ9PdtCzmjKwEY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m8pD31JblxsYNDLVUpVWoXlFMGsRTaDOf82cCtnuAN3ktoAN82lWGeLE7ftbJ3kOo
-         2XEGShyIfvzWnlwNKVOY9vJl6C5sf5RVFQ1YJkPtN9Lc3HmHhCldHOneM6+5uxcPIh
-         2cy7c8/2CSqfmJFOFt8lq1YyBCmp29/ktIrn2GeNY84vNgoglqcpvydNGLwwG+bXnH
-         SBdYzVovv6lnQI/+GjI40OwD67/YW8PZSmTkMCi4lnljUV8f7gWBR+zeiy5gC4IJEI
-         5+nXFesvWJKsxkfeA/djxxWtdUYTCBhWMxZh1JOwQblzBYHWhPxerp9CIWWF/EFsik
-         1N+KN3O5NkmEw==
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        davem@davemloft.net,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net v2 2/2] net: phylink: Force retrigger in case of latched link-fail indicator
-Date:   Tue, 23 Nov 2021 16:44:03 +0100
-Message-Id: <20211123154403.32051-3-kabel@kernel.org>
+        id S236744AbhKWPs0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 10:48:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52504 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236257AbhKWPs0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 10:48:26 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8035C061574;
+        Tue, 23 Nov 2021 07:45:17 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id y13so93826947edd.13;
+        Tue, 23 Nov 2021 07:45:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ij04fNOkXgioJw97U+iulLRX+rqwFDSnPQZPSWJRbPc=;
+        b=nTY3sn6sQcSOZnVnMySRStBq+xZIx9+RGPnjX/mcu46Ix3cpdB6c08K3xlBrHsrSJ7
+         DYe1KR2N0XMQLGnElDOEOUobmS8Dye5IRN46ItKDkHB3AAd4Z/TltDv/oEeQVsOzhtN3
+         ewdLfF2hlC6mtjhGptu8qLPq/kYq8mi58J7UUzP7bGIF/SoAtmqKHupQX/Xc57xhZCvw
+         93oLvuj9RZTC+fS0YolRE3Sy4uCKz0t6oFCCdhheLYs0xZGdKexyZu8Tqt3pYNO/e1bQ
+         Ctxwcb/6pBTdcRKZpM7bTsVHeTibs1JxIBKwsMAtLoLonumnvkhGaHu81knfiQ+HoBig
+         EShA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ij04fNOkXgioJw97U+iulLRX+rqwFDSnPQZPSWJRbPc=;
+        b=2GoE4EOsj8rzF+/4cNxW6ujoTYjE/T9YAW+KBRPtmhOi0K/J0hDMbusY7h434swEhO
+         Vc53gL+eoK70e+/upCp8qYIsVuFTSiiDUPkwK+0iILJVi7jnj/93P9zJ92N9FwbKuQq+
+         aJ36PgStCBXpIkoitiVk8q2kGdOABSgwi0cHYqJ9/QFzBqDqXS/oLxRGfozH4gJAetx8
+         XJye8FqY7PBqTC/I++w3X1bdm6k9AchnLmmw/xz5smQyZimSPzRGjLU/AUT0vtdUGSVl
+         yaz/wgXpZZT1JuOxURZpbZLZ6035mXCdKdyhPHr1gnJAwZnRbQvjRJKJZlYajn3o/rfG
+         ORyA==
+X-Gm-Message-State: AOAM530YVXSpknXZsyIsRvskoY2FhoKLc6lwNBLgkT+9TzD0GnaN9Eks
+        mWKRa7XwNPyduNWZybQdTmQ=
+X-Google-Smtp-Source: ABdhPJy26UECaALCGkv0TFvScMeWIZT0+XZ/+vMqzTb5n1UOX5LE0v26nV7aDVe+n1RWUN/DU6qQHA==
+X-Received: by 2002:a05:6402:124e:: with SMTP id l14mr10736119edw.74.1637682316188;
+        Tue, 23 Nov 2021 07:45:16 -0800 (PST)
+Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.googlemail.com with ESMTPSA id hr11sm5633254ejc.108.2021.11.23.07.45.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Nov 2021 07:45:15 -0800 (PST)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [net-next PATCH] net: dsa: qca8k: fix warning in LAG feature
+Date:   Tue, 23 Nov 2021 16:44:46 +0100
+Message-Id: <20211123154446.31019-1-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211123154403.32051-1-kabel@kernel.org>
-References: <20211123154403.32051-1-kabel@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Fix warning reported by bot.
+Make sure hash is init to 0 and fix wrong logic for hash_type in
+qca8k_lag_can_offload.
 
-On mv88e6xxx 1G/2.5G PCS, the SerDes register 4.2001.2 has the following
-description:
-  This register bit indicates when link was lost since the last
-  read. For the current link status, read this register
-  back-to-back.
-
-Thus to get current link state, we need to read the register twice.
-
-But doing that in the link change interrupt handler would lead to
-potentially ignoring link down events, which we really want to avoid.
-
-Thus this needs to be solved in phylink's resolve, by retriggering
-another resolve in the event when PCS reports link down and previous
-link was up, and by re-reading PCS state if the previous link was down.
-
-The wrong value is read when phylink requests change from sgmii to
-2500base-x mode, and link won't come up. This fixes the bug.
-
-Fixes: 9525ae83959b ("phylink: add phylink infrastructure")
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Marek Behún <kabel@kernel.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/net/phy/phylink.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/net/dsa/qca8k.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 5b8b61daeb98..eacbb0e6a24b 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -994,6 +994,19 @@ static void phylink_resolve(struct work_struct *w)
- 		case MLO_AN_INBAND:
- 			phylink_mac_pcs_get_state(pl, &link_state);
+diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+index 6516df08a5d5..d04b25eca250 100644
+--- a/drivers/net/dsa/qca8k.c
++++ b/drivers/net/dsa/qca8k.c
+@@ -2228,7 +2228,7 @@ qca8k_lag_can_offload(struct dsa_switch *ds,
+ 	if (info->tx_type != NETDEV_LAG_TX_TYPE_HASH)
+ 		return false;
  
-+			/* The PCS may have a latching link-fail indicator.
-+			 * If the link was up, bring the link down and
-+			 * re-trigger the resolve. Otherwise, re-read the
-+			 * PCS state to get the current status of the link.
-+			 */
-+			if (!link_state.link) {
-+				if (cur_link_state)
-+					retrigger = true;
-+				else
-+					phylink_mac_pcs_get_state(pl,
-+								  &link_state);
-+			}
-+
- 			/* If we have a phy, the "up" state is the union of
- 			 * both the PHY and the MAC
- 			 */
+-	if (info->hash_type != NETDEV_LAG_HASH_L2 ||
++	if (info->hash_type != NETDEV_LAG_HASH_L2 &&
+ 	    info->hash_type != NETDEV_LAG_HASH_L23)
+ 		return false;
+ 
+@@ -2242,8 +2242,8 @@ qca8k_lag_setup_hash(struct dsa_switch *ds,
+ {
+ 	struct qca8k_priv *priv = ds->priv;
+ 	bool unique_lag = true;
++	u32 hash = 0;
+ 	int i, id;
+-	u32 hash;
+ 
+ 	id = dsa_lag_id(ds->dst, lag);
+ 
 -- 
 2.32.0
 
