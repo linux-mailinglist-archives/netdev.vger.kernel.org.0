@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FD9A45AA38
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 18:41:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AB1745AA39
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 18:41:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239365AbhKWRor (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 12:44:47 -0500
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:50589 "EHLO
+        id S239376AbhKWRou (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 12:44:50 -0500
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:34377 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239289AbhKWRoq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 12:44:46 -0500
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id 180BC5C00ED;
-        Tue, 23 Nov 2021 12:41:38 -0500 (EST)
+        by vger.kernel.org with ESMTP id S239375AbhKWRot (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 12:44:49 -0500
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 602955C00F3;
+        Tue, 23 Nov 2021 12:41:40 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Tue, 23 Nov 2021 12:41:38 -0500
+  by compute6.internal (MEProxy); Tue, 23 Nov 2021 12:41:40 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=Q2R8lfjqyv1c6gbw6oqzJoGb3nlGMW5dkDzrXCCb3+I=; b=UNoL1XqK
-        ONGVkJYAiLTEGczGNNl6QDNlZ3lWGlgZNpvZ7kEHdjzi+BpuhXfcTdAWbLIzuPLT
-        W9QlBWEehABYWY1gudrYFYmkbIepN0sg1Fvvl6mxxeZpxfWpNRhAU/cTh7VUJePJ
-        KQq7ASWn0vF5nyRavcW5DhjfssrwgF/DtNMuTDKVmQMIIs68RTsvj8pPKJJLt6H9
-        ZCj09GPvSmfTOOM9QI6oFwiNm4BHj/P90xTClxnLZUOWqimhhmxiLvk4MZ5WibAT
-        GNMFMLLKj3NI3FbtQ+xacrdSc8sbkzvXRJuAbGA/iuOgKYceAAJ84kWMsAux6PRe
-        5979hjlhk/oFog==
-X-ME-Sender: <xms:0iedYUoq0tcJOgrM3O-2Qd1BPN8H_b3DueAcYUTNsvZpvzbntUIcjQ>
-    <xme:0iedYaqZqCY89IIAzR0P5LZYkQpexGz2gfOCfhk7vuqbabHWXRKMgMcL6-X4JvY-7
-    SlOZk24-EYDRQw>
-X-ME-Received: <xmr:0iedYZOB8PsTsJUTaQafPUFWGxvReQCL9kO8OjsrHGFWIsgdwNJjsag-pSUug2ng-xIeQGBeyfa3Gz5dpt9yPwyW5b6ifFDVPSA1J9lZcOF9-g>
+        fm1; bh=CwFfsmJrlSpA/jGeMXK/nr7qnI2bWKt+/CIqGoP5O2Q=; b=MoF8qgy0
+        R7Jru+droGxoFg27DNLiiVX0MynOcJTIp5bHogWkIXmxG9KIUmtvKVbwL1giSDy1
+        wVTA0axnaS73wgCDi3+BCeFM4pdnCEFeHGPQoIjQAsExBox7AMBJf1IStHDiuPNo
+        S7pEagmZHmQ8QDzP4+zphfULdq7nAQLMc/Vub1cwdbkVpXKX1BiYL9xs7mEWGZpm
+        M5zJWYIRsf/vHRDj9+89nNXwGbWyNAOxg1IqXKp8MCbMqD86ruHpcYdLwTUiA3tt
+        qZDRN4okCBDOqEYH3LE1gZEjn3wVAqFRpTHCx7T60iIgfsjfztzrjCAFD0tBd9eb
+        kj15BafrxgmhCQ==
+X-ME-Sender: <xms:1CedYdmnR2Rh0reOuvq3Uyoqooq00GZyg88cGk985QRfdpNBuGL2wQ>
+    <xme:1CedYY2JUUX1jYz_KIO5HU2JjIAk89hMUgMsl4JHz5kw7Hx7MKsO6Agt5UrkG76Ew
+    DIADQ3568iqAXg>
+X-ME-Received: <xmr:1CedYTqXqNCKPo3xhGh5rO4fDgk8aP5O_tgyl_dXu2TjdXxSGun9BOoRWZBuBV5HJ9RLiEBd7FF6-vL_8oTR4AeAD_5PbswQ2YWxg1FLB_GnOA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrgeeigddutdegucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgeptdenucfr
+    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgepfeenucfr
     rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:0iedYb6pOIwD0k7bjVckYhdV4Or0BmRZln2lpHbPyaM8FLtFT5LlkA>
-    <xmx:0iedYT6-DBjko7mQzdQw3NBTyDb2Y84nTPqj61QB2EwIvmGbVbpzqQ>
-    <xmx:0iedYbhQZ1Y7AL01lgNxa7wYx8p6VuQIItTwQdhU2Q988tc2wRpvTw>
-    <xmx:0iedYW2sevofmT3OxWbHEYcRTMNyTAV85NK0TcpNN6y3i4frBLOxTQ>
+X-ME-Proxy: <xmx:1CedYdnrAUrSU3w0qcyJ59Zx0miKqb3ynBI-AzZfOqslO2rqEFNC6Q>
+    <xmx:1CedYb0lBhMtd78oZTM9Wp0rR3QBM_ctB-2e07Zn0ms0RQl-TRbMLA>
+    <xmx:1CedYct7qNCaQ6ykOnCd14tUkQJK-o8p_CKZYtUvDzBapW5pb80p1g>
+    <xmx:1CedYWSB1odhCwCSS3PXgGNG97ozPPmTWEp6jaBnGkUTpbwC7Od6iA>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 23 Nov 2021 12:41:36 -0500 (EST)
+ 23 Nov 2021 12:41:38 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     mkubecek@suse.cz, popadrian1996@gmail.com, andrew@lunn.ch,
         mlxsw@nvidia.com, moshe@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH ethtool-next 7/8] cmis: Print Module-Level Controls
-Date:   Tue, 23 Nov 2021 19:41:01 +0200
-Message-Id: <20211123174102.3242294-8-idosch@idosch.org>
+Subject: [PATCH ethtool-next 8/8] sff-8636: Print Power set and Power override bits
+Date:   Tue, 23 Nov 2021 19:41:02 +0200
+Message-Id: <20211123174102.3242294-9-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211123174102.3242294-1-idosch@idosch.org>
 References: <20211123174102.3242294-1-idosch@idosch.org>
@@ -63,194 +63,106 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-Print the CMIS Module-Level Controls when dumping EEPROM contents via
-the '-m' option. It can be used to understand low power mode enforcement
-by the host.
+Print the SFF-8636 Power set and Power override bits when dumping EEPROM
+contents via the '-m' option. They can be used to understand low power
+mode enforcement by the host.
+
+The 'SFF8636_LOW_PWR_MODE' define is renamed to 'SFF8636_LOW_PWR_SET' to
+reflect its naming in the standard for QSFP+/QSFP28.
 
 Example output:
 
- # ethtool -m swp11
- Identifier                                : 0x18 (QSFP-DD Double Density 8X Pluggable Transceiver (INF-8628))
+ # ethtool -m swp13
+ Identifier                                : 0x11 (QSFP28)
  ...
- Module State                              : 0x03 (ModuleReady)
- LowPwrAllowRequestHW                      : Off
- LowPwrRequestSW                           : Off
+ Extended identifier description           : 5.0W max. Power consumption,  High Power Class (> 3.5 W) enabled
+ Power set                                 : Off
+ Power override                            : On
  ...
- Transmit avg optical power (Channel 1)    : 1.3222 mW / 1.21 dBm
- Transmit avg optical power (Channel 2)    : 1.2666 mW / 1.03 dBm
- Transmit avg optical power (Channel 3)    : 1.2860 mW / 1.09 dBm
- Transmit avg optical power (Channel 4)    : 1.2988 mW / 1.14 dBm
- Transmit avg optical power (Channel 5)    : 1.2828 mW / 1.08 dBm
- Transmit avg optical power (Channel 6)    : 1.2913 mW / 1.11 dBm
- Transmit avg optical power (Channel 7)    : 1.2636 mW / 1.02 dBm
- Transmit avg optical power (Channel 8)    : 1.3408 mW / 1.27 dBm
- Transmit avg optical power (Channel 9)    : 1.3222 mW / 1.21 dBm
- Transmit avg optical power (Channel 10)   : 1.2666 mW / 1.03 dBm
- Transmit avg optical power (Channel 11)   : 1.2860 mW / 1.09 dBm
- Transmit avg optical power (Channel 12)   : 1.2988 mW / 1.14 dBm
- Transmit avg optical power (Channel 13)   : 1.2828 mW / 1.08 dBm
- Transmit avg optical power (Channel 14)   : 1.2913 mW / 1.11 dBm
- Transmit avg optical power (Channel 15)   : 1.2636 mW / 1.02 dBm
- Transmit avg optical power (Channel 16)   : 1.3408 mW / 1.27 dBm
- Rcvr signal avg optical power (Channel 1) : 1.1351 mW / 0.55 dBm
- Rcvr signal avg optical power (Channel 2) : 1.1603 mW / 0.65 dBm
- Rcvr signal avg optical power (Channel 3) : 1.1529 mW / 0.62 dBm
- Rcvr signal avg optical power (Channel 4) : 1.1670 mW / 0.67 dBm
- Rcvr signal avg optical power (Channel 5) : 1.1759 mW / 0.70 dBm
- Rcvr signal avg optical power (Channel 6) : 1.1744 mW / 0.70 dBm
- Rcvr signal avg optical power (Channel 7) : 1.1188 mW / 0.49 dBm
- Rcvr signal avg optical power (Channel 8) : 1.1640 mW / 0.66 dBm
- Rcvr signal avg optical power (Channel 9) : 1.1351 mW / 0.55 dBm
- Rcvr signal avg optical power (Channel 10) : 1.1603 mW / 0.65 dBm
- Rcvr signal avg optical power (Channel 11) : 1.1529 mW / 0.62 dBm
- Rcvr signal avg optical power (Channel 12) : 1.1670 mW / 0.67 dBm
- Rcvr signal avg optical power (Channel 13) : 1.1759 mW / 0.70 dBm
- Rcvr signal avg optical power (Channel 14) : 1.1744 mW / 0.70 dBm
- Rcvr signal avg optical power (Channel 15) : 1.1188 mW / 0.49 dBm
- Rcvr signal avg optical power (Channel 16) : 1.1640 mW / 0.66 dBm
+ Transmit avg optical power (Channel 1)    : 0.7633 mW / -1.17 dBm
+ Transmit avg optical power (Channel 2)    : 0.7649 mW / -1.16 dBm
+ Transmit avg optical power (Channel 3)    : 0.7696 mW / -1.14 dBm
+ Transmit avg optical power (Channel 4)    : 0.7739 mW / -1.11 dBm
+ Rcvr signal avg optical power(Channel 1)  : 0.9240 mW / -0.34 dBm
+ Rcvr signal avg optical power(Channel 2)  : 0.9129 mW / -0.40 dBm
+ Rcvr signal avg optical power(Channel 3)  : 0.9194 mW / -0.36 dBm
+ Rcvr signal avg optical power(Channel 4)  : 0.8708 mW / -0.60 dBm
 
- # ethtool --set-module swp11 power-mode-policy auto
+ # ethtool --set-module swp13 power-mode-policy auto
 
- # ethtool -m swp11
- Identifier                                : 0x18 (QSFP-DD Double Density 8X Pluggable Transceiver (INF-8628))
+ # ethtool -m swp13
+ Identifier                                : 0x11 (QSFP28)
  ...
- Module State                              : 0x01 (ModuleLowPwr)
- LowPwrAllowRequestHW                      : Off
- LowPwrRequestSW                           : On
+ Extended identifier description           : 5.0W max. Power consumption,  High Power Class (> 3.5 W) not enabled
+ Power set                                 : On
+ Power override                            : On
  ...
- Transmit avg optical power (Channel 1)    : 0.0001 mW / -40.00 dBm
- Transmit avg optical power (Channel 2)    : 0.0001 mW / -40.00 dBm
- Transmit avg optical power (Channel 3)    : 0.0001 mW / -40.00 dBm
- Transmit avg optical power (Channel 4)    : 0.0001 mW / -40.00 dBm
- Transmit avg optical power (Channel 5)    : 0.0001 mW / -40.00 dBm
- Transmit avg optical power (Channel 6)    : 0.0001 mW / -40.00 dBm
- Transmit avg optical power (Channel 7)    : 0.0001 mW / -40.00 dBm
- Transmit avg optical power (Channel 8)    : 0.0001 mW / -40.00 dBm
- Transmit avg optical power (Channel 9)    : 0.0001 mW / -40.00 dBm
- Transmit avg optical power (Channel 10)   : 0.0001 mW / -40.00 dBm
- Transmit avg optical power (Channel 11)   : 0.0001 mW / -40.00 dBm
- Transmit avg optical power (Channel 12)   : 0.0001 mW / -40.00 dBm
- Transmit avg optical power (Channel 13)   : 0.0001 mW / -40.00 dBm
- Transmit avg optical power (Channel 14)   : 0.0001 mW / -40.00 dBm
- Transmit avg optical power (Channel 15)   : 0.0001 mW / -40.00 dBm
- Transmit avg optical power (Channel 16)   : 0.0001 mW / -40.00 dBm
- Rcvr signal avg optical power (Channel 1) : 0.0001 mW / -40.00 dBm
- Rcvr signal avg optical power (Channel 2) : 0.0001 mW / -40.00 dBm
- Rcvr signal avg optical power (Channel 3) : 0.0001 mW / -40.00 dBm
- Rcvr signal avg optical power (Channel 4) : 0.0001 mW / -40.00 dBm
- Rcvr signal avg optical power (Channel 5) : 0.0001 mW / -40.00 dBm
- Rcvr signal avg optical power (Channel 6) : 0.0001 mW / -40.00 dBm
- Rcvr signal avg optical power (Channel 7) : 0.0001 mW / -40.00 dBm
- Rcvr signal avg optical power (Channel 8) : 0.0001 mW / -40.00 dBm
- Rcvr signal avg optical power (Channel 9) : 0.0001 mW / -40.00 dBm
- Rcvr signal avg optical power (Channel 10) : 0.0001 mW / -40.00 dBm
- Rcvr signal avg optical power (Channel 11) : 0.0001 mW / -40.00 dBm
- Rcvr signal avg optical power (Channel 12) : 0.0001 mW / -40.00 dBm
- Rcvr signal avg optical power (Channel 13) : 0.0001 mW / -40.00 dBm
- Rcvr signal avg optical power (Channel 14) : 0.0001 mW / -40.00 dBm
- Rcvr signal avg optical power (Channel 15) : 0.0001 mW / -40.00 dBm
- Rcvr signal avg optical power (Channel 16) : 0.0001 mW / -40.00 dBm
+ Transmit avg optical power (Channel 1)    : 0.0000 mW / -inf dBm
+ Transmit avg optical power (Channel 2)    : 0.0000 mW / -inf dBm
+ Transmit avg optical power (Channel 3)    : 0.0000 mW / -inf dBm
+ Transmit avg optical power (Channel 4)    : 0.0000 mW / -inf dBm
+ Rcvr signal avg optical power(Channel 1)  : 0.0000 mW / -inf dBm
+ Rcvr signal avg optical power(Channel 2)  : 0.0000 mW / -inf dBm
+ Rcvr signal avg optical power(Channel 3)  : 0.0000 mW / -inf dBm
+ Rcvr signal avg optical power(Channel 4)  : 0.0000 mW / -inf dBm
 
- # ethtool --set-module swp11 power-mode-policy high
+ # ethtool --set-module swp13 power-mode-policy high
 
- # ethtool -m swp11
- Identifier                                : 0x18 (QSFP-DD Double Density 8X Pluggable Transceiver (INF-8628))
+ # ethtool -m swp13
+ Identifier                                : 0x11 (QSFP28)
  ...
- Module State                              : 0x03 (ModuleReady)
- LowPwrAllowRequestHW                      : Off
- LowPwrRequestSW                           : Off
+ Extended identifier description           : 5.0W max. Power consumption,  High Power Class (> 3.5 W) enabled
+ Power set                                 : Off
+ Power override                            : On
  ...
- Transmit avg optical power (Channel 1)    : 1.3690 mW / 1.36 dBm
- Transmit avg optical power (Channel 2)    : 1.3036 mW / 1.15 dBm
- Transmit avg optical power (Channel 3)    : 1.3358 mW / 1.26 dBm
- Transmit avg optical power (Channel 4)    : 1.3509 mW / 1.31 dBm
- Transmit avg optical power (Channel 5)    : 1.3193 mW / 1.20 dBm
- Transmit avg optical power (Channel 6)    : 1.3314 mW / 1.24 dBm
- Transmit avg optical power (Channel 7)    : 1.3042 mW / 1.15 dBm
- Transmit avg optical power (Channel 8)    : 1.3919 mW / 1.44 dBm
- Transmit avg optical power (Channel 9)    : 1.3690 mW / 1.36 dBm
- Transmit avg optical power (Channel 10)   : 1.3036 mW / 1.15 dBm
- Transmit avg optical power (Channel 11)   : 1.3358 mW / 1.26 dBm
- Transmit avg optical power (Channel 12)   : 1.3509 mW / 1.31 dBm
- Transmit avg optical power (Channel 13)   : 1.3193 mW / 1.20 dBm
- Transmit avg optical power (Channel 14)   : 1.3314 mW / 1.24 dBm
- Transmit avg optical power (Channel 15)   : 1.3042 mW / 1.15 dBm
- Transmit avg optical power (Channel 16)   : 1.3919 mW / 1.44 dBm
- Rcvr signal avg optical power (Channel 1) : 1.1299 mW / 0.53 dBm
- Rcvr signal avg optical power (Channel 2) : 1.1566 mW / 0.63 dBm
- Rcvr signal avg optical power (Channel 3) : 1.1484 mW / 0.60 dBm
- Rcvr signal avg optical power (Channel 4) : 1.1655 mW / 0.67 dBm
- Rcvr signal avg optical power (Channel 5) : 1.1751 mW / 0.70 dBm
- Rcvr signal avg optical power (Channel 6) : 1.1595 mW / 0.64 dBm
- Rcvr signal avg optical power (Channel 7) : 1.1158 mW / 0.48 dBm
- Rcvr signal avg optical power (Channel 8) : 1.1595 mW / 0.64 dBm
- Rcvr signal avg optical power (Channel 9) : 1.1299 mW / 0.53 dBm
- Rcvr signal avg optical power (Channel 10) : 1.1566 mW / 0.63 dBm
- Rcvr signal avg optical power (Channel 11) : 1.1484 mW / 0.60 dBm
- Rcvr signal avg optical power (Channel 12) : 1.1655 mW / 0.67 dBm
- Rcvr signal avg optical power (Channel 13) : 1.1751 mW / 0.70 dBm
- Rcvr signal avg optical power (Channel 14) : 1.1595 mW / 0.64 dBm
- Rcvr signal avg optical power (Channel 15) : 1.1158 mW / 0.48 dBm
- Rcvr signal avg optical power (Channel 16) : 1.1595 mW / 0.64 dBm
+ Transmit avg optical power (Channel 1)    : 0.7733 mW / -1.12 dBm
+ Transmit avg optical power (Channel 2)    : 0.7754 mW / -1.10 dBm
+ Transmit avg optical power (Channel 3)    : 0.7885 mW / -1.03 dBm
+ Transmit avg optical power (Channel 4)    : 0.7886 mW / -1.03 dBm
+ Rcvr signal avg optical power(Channel 1)  : 0.9248 mW / -0.34 dBm
+ Rcvr signal avg optical power(Channel 2)  : 0.9129 mW / -0.40 dBm
+ Rcvr signal avg optical power(Channel 3)  : 0.9187 mW / -0.37 dBm
+ Rcvr signal avg optical power(Channel 4)  : 0.8785 mW / -0.56 dBm
 
-In the above example, the LowPwrRequestHW signal is ignored and low
-power mode is controlled via software only.
+In the above example, the LPMode signal is ignored (Power override is
+always on) and low power mode is controlled via software only.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- cmis.c | 15 +++++++++++++++
- cmis.h |  5 +++++
- 2 files changed, 20 insertions(+)
+ qsfp.c | 6 ++++++
+ qsfp.h | 2 +-
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/cmis.c b/cmis.c
-index a32cc9f8b1f6..d0b62728e998 100644
---- a/cmis.c
-+++ b/cmis.c
-@@ -470,6 +470,20 @@ static void cmis_show_mod_fault_cause(const struct cmis_memory_map *map)
- 	}
+diff --git a/qsfp.c b/qsfp.c
+index b3c9e1516af9..57aac86bd5f6 100644
+--- a/qsfp.c
++++ b/qsfp.c
+@@ -268,6 +268,12 @@ static void sff8636_show_ext_identifier(const struct sff8636_memory_map *map)
+ 		printf(" High Power Class (> 3.5 W) enabled\n");
+ 	else
+ 		printf(" High Power Class (> 3.5 W) not enabled\n");
++	printf("\t%-41s : ", "Power set");
++	printf("%s\n", ONOFF(map->lower_memory[SFF8636_PWR_MODE_OFFSET] &
++			     SFF8636_LOW_PWR_SET));
++	printf("\t%-41s : ", "Power override");
++	printf("%s\n", ONOFF(map->lower_memory[SFF8636_PWR_MODE_OFFSET] &
++			     SFF8636_PWR_OVERRIDE));
  }
  
-+/* Print the current Module-Level Controls. Relevant documents:
-+ * [1] CMIS Rev. 5, pag. 58, section 6.3.2.2, Table 6-12
-+ * [2] CMIS Rev. 5, pag. 111, section 8.2.6, Table 8-10
-+ */
-+static void cmis_show_mod_lvl_controls(const struct cmis_memory_map *map)
-+{
-+	printf("\t%-41s : ", "LowPwrAllowRequestHW");
-+	printf("%s\n", ONOFF(map->lower_memory[CMIS_MODULE_CONTROL_OFFSET] &
-+			     CMIS_LOW_PWR_ALLOW_REQUEST_HW_MASK));
-+	printf("\t%-41s : ", "LowPwrRequestSW");
-+	printf("%s\n", ONOFF(map->lower_memory[CMIS_MODULE_CONTROL_OFFSET] &
-+			     CMIS_LOW_PWR_REQUEST_SW_MASK));
-+}
-+
- static void cmis_parse_dom_power_type(const struct cmis_memory_map *map,
- 				      struct sff_diags *sd)
- {
-@@ -845,6 +859,7 @@ static void cmis_show_all_common(const struct cmis_memory_map *map)
- 	cmis_show_rev_compliance(map);
- 	cmis_show_mod_state(map);
- 	cmis_show_mod_fault_cause(map);
-+	cmis_show_mod_lvl_controls(map);
- 	cmis_show_dom(map);
- }
+ static void sff8636_show_connector(const struct sff8636_memory_map *map)
+diff --git a/qsfp.h b/qsfp.h
+index 1d8f24b5cbc2..aabf09fdc623 100644
+--- a/qsfp.h
++++ b/qsfp.h
+@@ -180,7 +180,7 @@
  
-diff --git a/cmis.h b/cmis.h
-index 2c67ad5640ab..46797081f13c 100644
---- a/cmis.h
-+++ b/cmis.h
-@@ -36,6 +36,11 @@
- #define CMIS_CURR_TEMP_OFFSET			0x0E
- #define CMIS_CURR_VCC_OFFSET			0x10
+ #define	SFF8636_PWR_MODE_OFFSET		0x5D
+ #define	 SFF8636_HIGH_PWR_ENABLE		(1 << 2)
+-#define	 SFF8636_LOW_PWR_MODE			(1 << 1)
++#define	 SFF8636_LOW_PWR_SET			(1 << 1)
+ #define	 SFF8636_PWR_OVERRIDE			(1 << 0)
  
-+/* Module Global Controls (Page 0) */
-+#define CMIS_MODULE_CONTROL_OFFSET		0x1A
-+#define CMIS_LOW_PWR_ALLOW_REQUEST_HW_MASK	0x40
-+#define CMIS_LOW_PWR_REQUEST_SW_MASK		0x10
-+
- /* Module Fault Information (Page 0) */
- #define CMIS_MODULE_FAULT_OFFSET		0x29
- #define CMIS_MODULE_FAULT_NO_FAULT		0x00
+ #define	SFF8636_TX_APP_SELECT_4_OFFSET	0x5E
 -- 
 2.31.1
 
