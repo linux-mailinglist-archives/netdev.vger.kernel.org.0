@@ -2,299 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13F524599AC
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 02:24:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 467524599DD
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 02:52:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231906AbhKWB15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 20:27:57 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55382 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230017AbhKWB14 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Nov 2021 20:27:56 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A7D4760524;
-        Tue, 23 Nov 2021 01:24:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637630689;
-        bh=vJbg2b1b9plBOA2RXhQF3s1OSjl8P/NEmazDu3IkdCY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=AR8NyLNu6p3h1DMU2eXO8bP4BmJOQENnau57+MiILp2ZS+l8/svOWI6Ra7zuwS/n3
-         UZU1RjstMoHtMaCLcgcC7XgBxBeC2ZwXmhfXzXQwOZF2r2UE34yQk2RVq5VancKaYX
-         Ed7M6fQUAmmIiCAgyhdrPbNtSn6oaNWd1Z5dPpC/zkNwHZ8nU8gPWqvtvNNG4BJGO7
-         G9h1sok4CQ8PDfv7AMPVP+cUeRyyH/v2sA0TOu20NlFphsNLqNIWlAqcqtSvJm3o6C
-         JMzyPOEY6Fyydk74XXAl+dBIP16NOXXqVLYal+hTNQsCGLL7ddHemU8kvThpxhN5jk
-         0i64RW4oe69rQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, jiri@resnulli.us, atenart@kernel.org,
-        aroulin@cumulusnetworks.com, roopa@nvidia.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2] net: remove .ndo_change_proto_down
-Date:   Mon, 22 Nov 2021 17:24:47 -0800
-Message-Id: <20211123012447.841500-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
+        id S232010AbhKWBz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 20:55:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60714 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232087AbhKWBzz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 20:55:55 -0500
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A3EC061748
+        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 17:52:48 -0800 (PST)
+Received: by mail-io1-xd2b.google.com with SMTP id w22so25961464ioa.1
+        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 17:52:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ieee.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=7Oi7YYe6mXZ9qFhiItC3cT+zBCj+1FGQIOXFSu9z5Og=;
+        b=EMJHfp61byAPVM0d+YSPglX9cQhq+7ayPyr9zRTzuSPcvvgnxyLMG1ltK8vjfaD0FU
+         tlPYxbO7NtBZeDgMPNcJJoHVx+Je8+bWQnN+DVWW1NrLrqmC5gQjAph9/LWH4uiuxcYY
+         wd41pmLNfefVdVvVpoPO9twaon39sVO4IspOU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=7Oi7YYe6mXZ9qFhiItC3cT+zBCj+1FGQIOXFSu9z5Og=;
+        b=QHGoB7k8golXq7b3n86SYheEx4nEq7x8NT9wUuC+HYEIhWUTMZcBkc91K0pyW9X1tA
+         Snwu0+G5l9SPf6oGlRCnr2gWjFG6uN3q+0i7+/CzV8t05qn3PkNlP33myD1kjdm0JYaV
+         /A8Bp8HtrReRlTmU0fvE3iQbWvQh0SVqNGmB1pG2BqChtBYWoKJlBjgqtsuofXXbcM5+
+         ezoa4NTOPfITSFK4B0ntOegKpc9NA4tpz6DeuyuVPXYUDanL/fWnzT+5JHqosVYeW1/k
+         VXnNfmRWl7h/925eU3vndwBnA5knaIeQKWo7Q4fdIess+r81b6IoH9lSiFo7Qzrx5LVv
+         QIoQ==
+X-Gm-Message-State: AOAM531OBDbwhWEzsjYt+EI81GwSVdJS4jQucc/a+J/NluuG3HL24n4O
+        PfiRc8b4Z+lSX/0u8S549mT2Jg==
+X-Google-Smtp-Source: ABdhPJwFYEXqq9O3YpMuHp49czIlbhiXDJHljcLoM+vErOaDm/O2cJ+JlOI+DmxoJkJ4K5f7Ve5+nA==
+X-Received: by 2002:a05:6638:14ca:: with SMTP id l10mr1120728jak.107.1637632367373;
+        Mon, 22 Nov 2021 17:52:47 -0800 (PST)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id d137sm6102931iof.16.2021.11.22.17.52.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Nov 2021 17:52:47 -0800 (PST)
+Message-ID: <5936f811-fa48-33e9-2a1a-66c68f74aa5e@ieee.org>
+Date:   Mon, 22 Nov 2021 19:52:43 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH 01/17] bitfield: Add non-constant field_{prep,get}()
+ helpers
+Content-Language: en-US
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        Paul Walmsley <paul@pwsan.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Benoit Parrot <bparrot@ti.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Eduardo Valentin <edubezval@gmail.com>,
+        Keerthy <j-keerthy@ti.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-aspeed@lists.ozlabs.org, openbmc@lists.ozlabs.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
+        alsa-devel@alsa-project.org
+References: <cover.1637592133.git.geert+renesas@glider.be>
+ <3a54a6703879d10f08cf0275a2a69297ebd2b1d4.1637592133.git.geert+renesas@glider.be>
+ <01b44b38c087c151171f8d45a2090474c2559306.camel@sipsolutions.net>
+From:   Alex Elder <elder@ieee.org>
+In-Reply-To: <01b44b38c087c151171f8d45a2090474c2559306.camel@sipsolutions.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-.ndo_change_proto_down was added seemingly to enable out-of-tree
-implementations. Over 2.5yrs later we still have no real users
-upstream. Hardwire the generic implementation for now, we can
-revert once real users materialize. (rocker is a test vehicle,
-not a user.)
+On 11/22/21 10:32 AM, Johannes Berg wrote:
+> On Mon, 2021-11-22 at 16:53 +0100, Geert Uytterhoeven wrote:
+>> The existing FIELD_{GET,PREP}() macros are limited to compile-time
+>> constants.  However, it is very common to prepare or extract bitfield
+>> elements where the bitfield mask is not a compile-time constant.
+>>
+> 
+> I'm not sure it's really a good idea to add a third API here?
+> 
+> We have the upper-case (constant) versions, and already
+> {u32,...}_get_bits()/etc.
 
-We need to drop the optimization on the sysfs side, because
-unlike ndos priv_flags will be changed at runtime, so we'd
-need READ_ONCE/WRITE_ONCE everywhere..
+I've used these a lot (and personally prefer the lower-case ones).
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-v2: kdoc fix
----
- drivers/net/ethernet/rocker/rocker_main.c | 12 -----------
- drivers/net/macvlan.c                     |  3 +--
- drivers/net/vxlan.c                       |  3 +--
- include/linux/netdevice.h                 | 12 +++--------
- net/8021q/vlanproc.c                      |  2 +-
- net/core/dev.c                            | 26 ++++-------------------
- net/core/net-sysfs.c                      |  8 -------
- net/core/rtnetlink.c                      |  3 +--
- 8 files changed, 11 insertions(+), 58 deletions(-)
+Your new macros don't do anything to ensure the field mask is
+of the right form, which is basically:  (2 ^ width - 1) << shift
 
-diff --git a/drivers/net/ethernet/rocker/rocker_main.c b/drivers/net/ethernet/rocker/rocker_main.c
-index ba4062881eed..b620470c7905 100644
---- a/drivers/net/ethernet/rocker/rocker_main.c
-+++ b/drivers/net/ethernet/rocker/rocker_main.c
-@@ -1995,17 +1995,6 @@ static int rocker_port_get_phys_port_name(struct net_device *dev,
- 	return err ? -EOPNOTSUPP : 0;
- }
- 
--static int rocker_port_change_proto_down(struct net_device *dev,
--					 bool proto_down)
--{
--	struct rocker_port *rocker_port = netdev_priv(dev);
--
--	if (rocker_port->dev->flags & IFF_UP)
--		rocker_port_set_enable(rocker_port, !proto_down);
--	rocker_port->dev->proto_down = proto_down;
--	return 0;
--}
--
- static void rocker_port_neigh_destroy(struct net_device *dev,
- 				      struct neighbour *n)
- {
-@@ -2037,7 +2026,6 @@ static const struct net_device_ops rocker_port_netdev_ops = {
- 	.ndo_set_mac_address		= rocker_port_set_mac_address,
- 	.ndo_change_mtu			= rocker_port_change_mtu,
- 	.ndo_get_phys_port_name		= rocker_port_get_phys_port_name,
--	.ndo_change_proto_down		= rocker_port_change_proto_down,
- 	.ndo_neigh_destroy		= rocker_port_neigh_destroy,
- 	.ndo_get_port_parent_id		= rocker_port_get_port_parent_id,
- };
-diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
-index 75b453acd778..6ef5f77be4d0 100644
---- a/drivers/net/macvlan.c
-+++ b/drivers/net/macvlan.c
-@@ -1171,7 +1171,6 @@ static const struct net_device_ops macvlan_netdev_ops = {
- #endif
- 	.ndo_get_iflink		= macvlan_dev_get_iflink,
- 	.ndo_features_check	= passthru_features_check,
--	.ndo_change_proto_down  = dev_change_proto_down_generic,
- };
- 
- void macvlan_common_setup(struct net_device *dev)
-@@ -1182,7 +1181,7 @@ void macvlan_common_setup(struct net_device *dev)
- 	dev->max_mtu		= ETH_MAX_MTU;
- 	dev->priv_flags	       &= ~IFF_TX_SKB_SHARING;
- 	netif_keep_dst(dev);
--	dev->priv_flags	       |= IFF_UNICAST_FLT;
-+	dev->priv_flags	       |= IFF_UNICAST_FLT | IFF_CHANGE_PROTO_DOWN;
- 	dev->netdev_ops		= &macvlan_netdev_ops;
- 	dev->needs_free_netdev	= true;
- 	dev->header_ops		= &macvlan_hard_header_ops;
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index 82bd794fceb3..fecff0a46612 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -3234,7 +3234,6 @@ static const struct net_device_ops vxlan_netdev_ether_ops = {
- 	.ndo_fdb_dump		= vxlan_fdb_dump,
- 	.ndo_fdb_get		= vxlan_fdb_get,
- 	.ndo_fill_metadata_dst	= vxlan_fill_metadata_dst,
--	.ndo_change_proto_down  = dev_change_proto_down_generic,
- };
- 
- static const struct net_device_ops vxlan_netdev_raw_ops = {
-@@ -3305,7 +3304,7 @@ static void vxlan_setup(struct net_device *dev)
- 	dev->hw_features |= NETIF_F_RXCSUM;
- 	dev->hw_features |= NETIF_F_GSO_SOFTWARE;
- 	netif_keep_dst(dev);
--	dev->priv_flags |= IFF_NO_QUEUE;
-+	dev->priv_flags |= IFF_NO_QUEUE | IFF_CHANGE_PROTO_DOWN;
- 
- 	/* MTU range: 68 - 65535 */
- 	dev->min_mtu = ETH_MIN_MTU;
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index df049864661d..db3bff1ae7fd 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -1297,11 +1297,6 @@ struct netdev_net_notifier {
-  *	TX queue.
-  * int (*ndo_get_iflink)(const struct net_device *dev);
-  *	Called to get the iflink value of this device.
-- * void (*ndo_change_proto_down)(struct net_device *dev,
-- *				 bool proto_down);
-- *	This function is used to pass protocol port error state information
-- *	to the switch driver. The switch driver can react to the proto_down
-- *      by doing a phys down on the associated switch port.
-  * int (*ndo_fill_metadata_dst)(struct net_device *dev, struct sk_buff *skb);
-  *	This function is used to get egress tunnel information for given skb.
-  *	This is useful for retrieving outer tunnel header parameters while
-@@ -1542,8 +1537,6 @@ struct net_device_ops {
- 						      int queue_index,
- 						      u32 maxrate);
- 	int			(*ndo_get_iflink)(const struct net_device *dev);
--	int			(*ndo_change_proto_down)(struct net_device *dev,
--							 bool proto_down);
- 	int			(*ndo_fill_metadata_dst)(struct net_device *dev,
- 						       struct sk_buff *skb);
- 	void			(*ndo_set_rx_headroom)(struct net_device *dev,
-@@ -1612,6 +1605,7 @@ struct net_device_ops {
-  * @IFF_LIVE_RENAME_OK: rename is allowed while device is up and running
-  * @IFF_TX_SKB_NO_LINEAR: device/driver is capable of xmitting frames with
-  *	skb_headlen(skb) == 0 (data starts from frag0)
-+ * @IFF_CHANGE_PROTO_DOWN: device supports setting carrier via IFLA_PROTO_DOWN
-  */
- enum netdev_priv_flags {
- 	IFF_802_1Q_VLAN			= 1<<0,
-@@ -1646,6 +1640,7 @@ enum netdev_priv_flags {
- 	IFF_L3MDEV_RX_HANDLER		= 1<<29,
- 	IFF_LIVE_RENAME_OK		= 1<<30,
- 	IFF_TX_SKB_NO_LINEAR		= 1<<31,
-+	IFF_CHANGE_PROTO_DOWN		= BIT_ULL(32),
- };
- 
- #define IFF_802_1Q_VLAN			IFF_802_1Q_VLAN
-@@ -1982,7 +1977,7 @@ struct net_device {
- 
- 	/* Read-mostly cache-line for fast-path access */
- 	unsigned int		flags;
--	unsigned int		priv_flags;
-+	unsigned long long	priv_flags;
- 	const struct net_device_ops *netdev_ops;
- 	int			ifindex;
- 	unsigned short		gflags;
-@@ -3735,7 +3730,6 @@ int dev_get_port_parent_id(struct net_device *dev,
- 			   struct netdev_phys_item_id *ppid, bool recurse);
- bool netdev_port_same_parent_id(struct net_device *a, struct net_device *b);
- int dev_change_proto_down(struct net_device *dev, bool proto_down);
--int dev_change_proto_down_generic(struct net_device *dev, bool proto_down);
- void dev_change_proto_down_reason(struct net_device *dev, unsigned long mask,
- 				  u32 value);
- struct sk_buff *validate_xmit_skb_list(struct sk_buff *skb, struct net_device *dev, bool *again);
-diff --git a/net/8021q/vlanproc.c b/net/8021q/vlanproc.c
-index ec87dea23719..08bf6c839e25 100644
---- a/net/8021q/vlanproc.c
-+++ b/net/8021q/vlanproc.c
-@@ -252,7 +252,7 @@ static int vlandev_seq_show(struct seq_file *seq, void *offset)
- 
- 	stats = dev_get_stats(vlandev, &temp);
- 	seq_printf(seq,
--		   "%s  VID: %d	 REORDER_HDR: %i  dev->priv_flags: %hx\n",
-+		   "%s  VID: %d	 REORDER_HDR: %i  dev->priv_flags: %llx\n",
- 		   vlandev->name, vlan->vlan_id,
- 		   (int)(vlan->flags & 1), vlandev->priv_flags);
- 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 9c4fc8c3f981..823917de0d2b 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -8558,35 +8558,17 @@ bool netdev_port_same_parent_id(struct net_device *a, struct net_device *b)
- EXPORT_SYMBOL(netdev_port_same_parent_id);
- 
- /**
-- *	dev_change_proto_down - update protocol port state information
-+ *	dev_change_proto_down - set carrier according to proto_down.
-+ *
-  *	@dev: device
-  *	@proto_down: new value
-- *
-- *	This info can be used by switch drivers to set the phys state of the
-- *	port.
-  */
- int dev_change_proto_down(struct net_device *dev, bool proto_down)
- {
--	const struct net_device_ops *ops = dev->netdev_ops;
--
--	if (!ops->ndo_change_proto_down)
-+	if (!(dev->priv_flags & IFF_CHANGE_PROTO_DOWN))
- 		return -EOPNOTSUPP;
- 	if (!netif_device_present(dev))
- 		return -ENODEV;
--	return ops->ndo_change_proto_down(dev, proto_down);
--}
--EXPORT_SYMBOL(dev_change_proto_down);
--
--/**
-- *	dev_change_proto_down_generic - generic implementation for
-- * 	ndo_change_proto_down that sets carrier according to
-- * 	proto_down.
-- *
-- *	@dev: device
-- *	@proto_down: new value
-- */
--int dev_change_proto_down_generic(struct net_device *dev, bool proto_down)
--{
- 	if (proto_down)
- 		netif_carrier_off(dev);
- 	else
-@@ -8594,7 +8576,7 @@ int dev_change_proto_down_generic(struct net_device *dev, bool proto_down)
- 	dev->proto_down = proto_down;
- 	return 0;
- }
--EXPORT_SYMBOL(dev_change_proto_down_generic);
-+EXPORT_SYMBOL(dev_change_proto_down);
- 
- /**
-  *	dev_change_proto_down_reason - proto down reason
-diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index 4edd58d34f16..affe34d71d31 100644
---- a/net/core/net-sysfs.c
-+++ b/net/core/net-sysfs.c
-@@ -488,14 +488,6 @@ static ssize_t proto_down_store(struct device *dev,
- 				struct device_attribute *attr,
- 				const char *buf, size_t len)
- {
--	struct net_device *netdev = to_net_dev(dev);
--
--	/* The check is also done in change_proto_down; this helps returning
--	 * early without hitting the trylock/restart in netdev_store.
--	 */
--	if (!netdev->netdev_ops->ndo_change_proto_down)
--		return -EOPNOTSUPP;
--
- 	return netdev_store(dev, attr, buf, len, change_proto_down);
- }
- NETDEVICE_SHOW_RW(proto_down, fmt_dec);
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index fd030e02f16d..6f25c0a8aebe 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -2539,13 +2539,12 @@ static int do_set_proto_down(struct net_device *dev,
- 			     struct netlink_ext_ack *extack)
- {
- 	struct nlattr *pdreason[IFLA_PROTO_DOWN_REASON_MAX + 1];
--	const struct net_device_ops *ops = dev->netdev_ops;
- 	unsigned long mask = 0;
- 	u32 value;
- 	bool proto_down;
- 	int err;
- 
--	if (!ops->ndo_change_proto_down) {
-+	if (!(dev->priv_flags & IFF_CHANGE_PROTO_DOWN)) {
- 		NL_SET_ERR_MSG(extack,  "Protodown not supported by device");
- 		return -EOPNOTSUPP;
- 	}
--- 
-2.31.1
+I really like the property that the field mask must be constant.
+
+That being said, I've had to use some strange coding patterns
+in order to adhere to the "const only" rule in a few cases.
+So if you can come up with a satisfactory naming scheme I'm
+all for it.
+
+					-Alex
+
+
+
+> Also, you're using __ffs(), which doesn't work for 64-bit on 32-bit
+> architectures (afaict), so that seems a bit awkward.
+> 
+> Maybe we can make {u32,...}_get_bits() be doing compile-time only checks
+> if it is indeed a constant? The __field_overflow() usage is already only
+> done if __builtin_constant_p(v), so I guess we can do the same with
+> __bad_mask()?
+> 
+> johannes
+> 
 
