@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF51745A8E1
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 17:42:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C6B945A8EB
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 17:42:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239068AbhKWQp2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 11:45:28 -0500
-Received: from mga06.intel.com ([134.134.136.31]:10145 "EHLO mga06.intel.com"
+        id S239196AbhKWQpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 11:45:34 -0500
+Received: from mga01.intel.com ([192.55.52.88]:20221 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237455AbhKWQpH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 11:45:07 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10177"; a="295864762"
+        id S236778AbhKWQpI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Nov 2021 11:45:08 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10177"; a="258931157"
 X-IronPort-AV: E=Sophos;i="5.87,258,1631602800"; 
-   d="scan'208";a="295864762"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2021 08:41:58 -0800
+   d="scan'208";a="258931157"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2021 08:42:00 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,258,1631602800"; 
-   d="scan'208";a="674540050"
+   d="scan'208";a="650112037"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga005.jf.intel.com with ESMTP; 23 Nov 2021 08:41:48 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 23 Nov 2021 08:41:51 -0800
 Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1ANGf4Wt016784;
-        Tue, 23 Nov 2021 16:41:45 GMT
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1ANGf4Wu016784;
+        Tue, 23 Nov 2021 16:41:48 GMT
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -69,9 +69,9 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
         virtualization@lists.linux-foundation.org
-Subject: [PATCH v2 net-next 17/26] virtio_net: rename xdp_tx{,_drops} SQ stats to xdp_xmit{,_errors}
-Date:   Tue, 23 Nov 2021 17:39:46 +0100
-Message-Id: <20211123163955.154512-18-alexandr.lobakin@intel.com>
+Subject: [PATCH v2 net-next 18/26] virtio_net: reformat virtnet_netdev
+Date:   Tue, 23 Nov 2021 17:39:47 +0100
+Message-Id: <20211123163955.154512-19-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211123163955.154512-1-alexandr.lobakin@intel.com>
 References: <20211123163955.154512-1-alexandr.lobakin@intel.com>
@@ -81,53 +81,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To align better with other drivers and generic XDP stats, rename
-xdp_tx{,_drops} to xdp_xmit{,_errors} as they're used on
-.ndo_xdp_xmit() path.
+Some of the initializers are aligned with spaces, others with tabs.
+Reindent it using tabs only.
 
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 ---
- drivers/net/virtio_net.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/net/virtio_net.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 112ceda3dcf7..bf407423c929 100644
+index bf407423c929..f7c5511e510c 100644
 --- a/drivers/net/virtio_net.c
 +++ b/drivers/net/virtio_net.c
-@@ -77,8 +77,8 @@ struct virtnet_sq_stats {
- 	struct u64_stats_sync syncp;
- 	u64 packets;
- 	u64 bytes;
--	u64 xdp_tx;
--	u64 xdp_tx_drops;
-+	u64 xdp_xmit;
-+	u64 xdp_xmit_errors;
- 	u64 kicks;
- 	u64 tx_timeouts;
- };
-@@ -102,8 +102,8 @@ struct virtnet_rq_stats {
- static const struct virtnet_stat_desc virtnet_sq_stats_desc[] = {
- 	{ "packets",		VIRTNET_SQ_STAT(packets) },
- 	{ "bytes",		VIRTNET_SQ_STAT(bytes) },
--	{ "xdp_tx",		VIRTNET_SQ_STAT(xdp_tx) },
--	{ "xdp_tx_drops",	VIRTNET_SQ_STAT(xdp_tx_drops) },
-+	{ "xdp_xmit",		VIRTNET_SQ_STAT(xdp_xmit) },
-+	{ "xdp_xmit_errors",	VIRTNET_SQ_STAT(xdp_xmit_errors) },
- 	{ "kicks",		VIRTNET_SQ_STAT(kicks) },
- 	{ "tx_timeouts",	VIRTNET_SQ_STAT(tx_timeouts) },
- };
-@@ -629,8 +629,8 @@ static int virtnet_xdp_xmit(struct net_device *dev,
- 	u64_stats_update_begin(&sq->stats.syncp);
- 	sq->stats.bytes += bytes;
- 	sq->stats.packets += packets;
--	sq->stats.xdp_tx += n;
--	sq->stats.xdp_tx_drops += n - nxmit;
-+	sq->stats.xdp_xmit += n;
-+	sq->stats.xdp_xmit_errors += n - nxmit;
- 	sq->stats.kicks += kicks;
- 	u64_stats_update_end(&sq->stats.syncp);
+@@ -2710,15 +2710,15 @@ static void virtnet_tx_timeout(struct net_device *dev, unsigned int txqueue)
+ }
 
+ static const struct net_device_ops virtnet_netdev = {
+-	.ndo_open            = virtnet_open,
+-	.ndo_stop   	     = virtnet_close,
+-	.ndo_start_xmit      = start_xmit,
+-	.ndo_validate_addr   = eth_validate_addr,
+-	.ndo_set_mac_address = virtnet_set_mac_address,
+-	.ndo_set_rx_mode     = virtnet_set_rx_mode,
+-	.ndo_get_stats64     = virtnet_stats,
+-	.ndo_vlan_rx_add_vid = virtnet_vlan_rx_add_vid,
+-	.ndo_vlan_rx_kill_vid = virtnet_vlan_rx_kill_vid,
++	.ndo_open		= virtnet_open,
++	.ndo_stop		= virtnet_close,
++	.ndo_start_xmit		= start_xmit,
++	.ndo_validate_addr	= eth_validate_addr,
++	.ndo_set_mac_address	= virtnet_set_mac_address,
++	.ndo_set_rx_mode	= virtnet_set_rx_mode,
++	.ndo_get_stats64	= virtnet_stats,
++	.ndo_vlan_rx_add_vid	= virtnet_vlan_rx_add_vid,
++	.ndo_vlan_rx_kill_vid	= virtnet_vlan_rx_kill_vid,
+ 	.ndo_bpf		= virtnet_xdp,
+ 	.ndo_xdp_xmit		= virtnet_xdp_xmit,
+ 	.ndo_features_check	= passthru_features_check,
 --
 2.33.1
 
