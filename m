@@ -2,91 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B92045AAC6
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 19:06:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2954F45AADF
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 19:07:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239498AbhKWSJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 13:09:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57722 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229674AbhKWSJ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 13:09:26 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB874C061574
-        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 10:06:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=KYSi2DF32RnDnLuMXUFwS6/JUsWTjaNgU1Zqsf1R994=; b=Q5EHUvbmG2iGLExtA+9E0hXBPX
-        3bEBtvn8q4WfYp21EJUV/yI1Q+zUeF/FKkATbjqhc+mmPCW0q7wP7/Tz2q6LilCaAfKCTT4a+PIKO
-        y5u2Eucfj2z2x1wB28DccX9Pn/GR5XlY74Q+WZYeLIyY0rOIq+b/1UGWLhZhu4PXPSP4VZzG92unn
-        57e3TEhIDGq6q5trzwZiYmLAnITJEyMpN3v6KpVNTgSQpfCvn8U+y9/HdT+lES8igOQL1+4oM3L+u
-        MM6FwEKr5LD06Q7Vuna0+wDsWJC5xn4cV2/rj34zAL98P/lsXQglR5ma3czDKrLRJFus07/0oOMmm
-        Zd+ncwwA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55822)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mpaBB-0008F7-60; Tue, 23 Nov 2021 18:06:05 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mpaB5-0000QM-B9; Tue, 23 Nov 2021 18:05:59 +0000
-Date:   Tue, 23 Nov 2021 18:05:59 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Chris Snook <chris.snook@gmail.com>, Felix Fietkau <nbd@nbd.name>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 5/8] net: ag71xx: mark as a
- legacy_pre_march2020 phylink driver
-Message-ID: <YZ0th75Vr9M0u6So@shell.armlinux.org.uk>
-References: <YZy59OTNCpKoPZT/@shell.armlinux.org.uk>
- <E1mpSbK-00BXoo-UE@rmk-PC.armlinux.org.uk>
+        id S239742AbhKWSKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 13:10:39 -0500
+Received: from mail-ot1-f53.google.com ([209.85.210.53]:46028 "EHLO
+        mail-ot1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239586AbhKWSK1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 13:10:27 -0500
+Received: by mail-ot1-f53.google.com with SMTP id a23-20020a9d4717000000b0056c15d6d0caso89088otf.12;
+        Tue, 23 Nov 2021 10:07:19 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zISZonE+jfcuqih+VqZkba/z0VBN8Lm0GEq4vywk61c=;
+        b=vHMCPzGfzwcCgAHfRHw5HW54Wbuc/3zyOLTpw7yn2rh4aVJG4jUmJA4ajguSKHMQoG
+         cykj/JzNLOI0AvVvH/bJQe9iujg3MZsSXL0M2N16ga/8uT/Dt8447iJH7cEXVFq+1D9A
+         Vy833nVuON+mY+KURdtgYjjmWSwo/IGgYlb/6f8LYDPIkFf1oHgIfHPHCmesmlM+JS26
+         Xm81MJlNCDFsbbbVgdV/Hw4IOzHWuM5oZl94tUSlfjaxoE6LeD+MWYuWb5SWg1rRkdrv
+         LroaCq6vL1C8O48dyhqJUp0gtvHPd1JZoOy8ZkoMByVi3zY3rin9P4eEHl8DHC3O15j5
+         qzJQ==
+X-Gm-Message-State: AOAM532ue9hS1FUHyR8VykxCESrMxaT2rvtRrhM5Q8wBdEMsvZklJdyL
+        9EJDM0ec+Y3gQMWNSlHNo3Wnx6sf6U0T1vO0XUw=
+X-Google-Smtp-Source: ABdhPJwF2ep52rxDLG6UpRp3xdWO1LK2aeGUp8ki3Y6ep8Od1B4KnhnGqvqMfV3sQKXaxIByEQB9U2fm2A3fPfoMQds=
+X-Received: by 2002:a05:6830:1e57:: with SMTP id e23mr6327907otj.16.1637690838752;
+ Tue, 23 Nov 2021 10:07:18 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1mpSbK-00BXoo-UE@rmk-PC.armlinux.org.uk>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+References: <20211119113644.1600-1-alx.manpages@gmail.com> <20211119113644.1600-3-alx.manpages@gmail.com>
+In-Reply-To: <20211119113644.1600-3-alx.manpages@gmail.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 23 Nov 2021 19:07:07 +0100
+Message-ID: <CAJZ5v0jGgxgTWQ-DLehRE_GPoRMz2TnT469uNE8k6TX7NxQdEA@mail.gmail.com>
+Subject: Re: [PATCH 02/17] Use memberof(T, m) instead of explicit NULL dereference
+To:     Alejandro Colomar <alx.manpages@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Ajit Khaparde <ajit.khaparde@broadcom.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Borislav Petkov <bp@suse.de>,
+        Corey Minyard <cminyard@mvista.com>, Chris Mason <clm@fb.com>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        David Sterba <dsterba@suse.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Jitendra Bhivare <jitendra.bhivare@broadcom.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        "John S . Gruber" <JohnSGruber@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Kees Cook <keescook@chromium.org>,
+        Ketan Mukadam <ketan.mukadam@broadcom.com>,
+        Len Brown <lenb@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Somnath Kotur <somnath.kotur@broadcom.com>,
+        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
+        Subbu Seetharaman <subbu.seetharaman@broadcom.com>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-btrfs@vger.kernel.org,
+        "open list:TARGET SUBSYSTEM" <linux-scsi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 23, 2021 at 10:00:34AM +0000, Russell King (Oracle) wrote:
-> ag71xx has a PCS, but does not make use of the phylink PCS support.
-> Mark it was a pre-March 2020 driver.
-> 
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+On Fri, Nov 19, 2021 at 12:37 PM Alejandro Colomar
+<alx.manpages@gmail.com> wrote:
+>
+> Signed-off-by: Alejandro Colomar <alx.manpages@gmail.com>
+> Cc: Ajit Khaparde <ajit.khaparde@broadcom.com>
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Borislav Petkov <bp@suse.de>
+> Cc: Corey Minyard <cminyard@mvista.com>
+> Cc: Chris Mason <clm@fb.com>
+> Cc: Christian Brauner <christian.brauner@ubuntu.com>
+> Cc: David Sterba <dsterba@suse.com>
+> Cc: Jani Nikula <jani.nikula@linux.intel.com>
+> Cc: Jason Wang <jasowang@redhat.com>
+> Cc: Jitendra Bhivare <jitendra.bhivare@broadcom.com>
+> Cc: John Hubbard <jhubbard@nvidia.com>
+> Cc: John S. Gruber <JohnSGruber@gmail.com>
+> Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+> Cc: Josef Bacik <josef@toxicpanda.com>
+> Cc: Kees Cook <keescook@chromium.org>
+> Cc: Ketan Mukadam <ketan.mukadam@broadcom.com>
+> Cc: Len Brown <lenb@kernel.org>
+> Cc: "Michael S. Tsirkin" <mst@redhat.com>
+> Cc: Miguel Ojeda <ojeda@kernel.org>
+> Cc: Mike Rapoport <rppt@linux.ibm.com>
+> Cc: Nick Desaulniers <ndesaulniers@google.com>
+> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+> Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+> Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
+> Cc: Russell King <linux@armlinux.org.uk>
+> Cc: Somnath Kotur <somnath.kotur@broadcom.com>
+> Cc: Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
+> Cc: Subbu Seetharaman <subbu.seetharaman@broadcom.com>
+> Cc: <intel-gfx@lists.freedesktop.org>
+> Cc: <linux-acpi@vger.kernel.org>
+> Cc: <linux-arm-kernel@lists.infradead.org>
+> Cc: <linux-btrfs@vger.kernel.org>
+> Cc: <linux-scsi@vger.kernel.org>
+> Cc: <netdev@vger.kernel.org>
+> Cc: <virtualization@lists.linux-foundation.org>
+> ---
+>  arch/x86/include/asm/bootparam_utils.h  |  3 ++-
+>  arch/x86/kernel/signal_compat.c         |  5 +++--
+>  drivers/gpu/drm/i915/i915_utils.h       |  5 ++---
+>  drivers/gpu/drm/i915/intel_runtime_pm.h |  2 +-
+>  drivers/net/ethernet/emulex/benet/be.h  |  7 ++++---
+>  drivers/net/ethernet/i825xx/ether1.c    |  7 +++++--
+>  drivers/scsi/be2iscsi/be.h              |  7 ++++---
+>  drivers/scsi/be2iscsi/be_cmds.h         |  5 ++++-
+>  fs/btrfs/ctree.h                        |  5 +++--
+>  include/acpi/actypes.h                  |  4 +++-
 
-Hi,
-
-I've just been looking closer at this driver, and it seems that we can
-drop the "legacy_pre_march2020" flag, and in doing so, delete the
-ag71xx_mac_pcs_get_state and ag71xx_mac_an_restart functions entirely,
-removing them from ag71xx_phylink_mac_ops.
-
-Should this driver need to deal with the PCS - in other words, to
-modify the advertisement, then it will need to make use of the
-phylink_pcs support.
-
-I'll send a v2 in a day or two.
+The change in actypes.h would need to be submitted to the upstream
+ACPICA project via https://github.com/acpica/acpica/
 
 Thanks!
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+>  include/linux/container_of.h            |  6 +++---
+>  include/linux/virtio_config.h           | 14 +++++++-------
+>  12 files changed, 41 insertions(+), 29 deletions(-)
