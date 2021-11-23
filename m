@@ -2,118 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 237B9459A48
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 03:56:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D4D6459A51
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 03:59:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231351AbhKWC7D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 21:59:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46384 "EHLO
+        id S233027AbhKWDCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 22:02:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229628AbhKWC7C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 21:59:02 -0500
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA4FCC061574
-        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 18:55:54 -0800 (PST)
-Received: by mail-qk1-x72a.google.com with SMTP id 193so20375567qkh.10
-        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 18:55:54 -0800 (PST)
+        with ESMTP id S229628AbhKWDCi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 22:02:38 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC1DC061574;
+        Mon, 22 Nov 2021 18:59:29 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id y13so85459274edd.13;
+        Mon, 22 Nov 2021 18:59:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=IBJ/+Y3fdcJBRdWIQTRhHgn8ZXe3SfIu5a9GKSWivyY=;
-        b=NTvl0yOgz+/VYqj1rK5vImho+EV87kgdeY4f+l7JIuOUpTtD20PTShR7dUTby+lFyc
-         0bYn1XY1o3Ugd2h3BSkkQvMaCRRdp9zmop+S3aHINCc4d+HIJ/kkakklQRVGL2TwIa8P
-         GbE6y1M9T9cTkg+bFqxP5vBEuZTboa1zQOgvwscApz3VNbQn4KL/nLOFRLhdxf1gxP1p
-         i4bVwdLB/+ijqoj13ZsHfZHL+Vs0UvWtgsF05D9GzsPE5J38oBs1PtsPiYMuSPyaPkx/
-         d3XwNN3MyGlJdvE26hRQKJviUxFmq+E5GhxCKe7Cu3W5fs1QoMhafyzrmxHfOusd4D3k
-         F7ow==
+        bh=3UcVmjOkaeq0kNvjI1cDnssGFTNyiUyhvOYLRToYdaE=;
+        b=owdpgktlSNW8nnzNdfLwurN3pQogxXisHj8TMBvuu2+kSSSpw1KzsxG4DuHlyCLbSp
+         rsGDbgCZA0Jxa0I0KauSV+1pTJ2eVnjIsasoBHw/Q9ZJ7DOP0cQPuD8pht7b0dFYRtNw
+         ofaD5YTNAjG/E1h/VjNZxU7Hz4GHOntdfjSZA7b2xwC1gWw/kf37SYuY7mCzYQasx394
+         JpIrh/JqKnsEYFyww2zldGKwdB1EiBxmDiBID/7GvXMfcv2ERHw5IQ1Ga87Zgg4oq6Y+
+         CY/imCPSXVBx1UjzwfE3PlPD1TDlP36zmzl1MyqNl2f08GZgB/hMEFsQEulajX2X1SkS
+         LXjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=IBJ/+Y3fdcJBRdWIQTRhHgn8ZXe3SfIu5a9GKSWivyY=;
-        b=fOjXS3OzZqysqMoEZD9KktM51edY/MKbbTpTQMAHwNDdLuJLjDbqGNTTikpNbFlH/b
-         nCTDQ4AP37NynRLclWGqGEKnvHolRmO8jlIsikZsj567H94Oljn/x9p1hbxAUJGNZxIy
-         iuBRPb/IJ/kzyBIsrTkALhPxW5thblsA6MjytU8QZa0CpcJn1nm4SXbMT98JZp94e84b
-         aQK+QIqNBAaKaoQ3Pn+sibdx2gM8SIp/8WDV9AcCf4BK+fq3T3C5I7e4OhW6KzfDGHBz
-         +uvH4MErtU3yY47skOvoLKpp7yloLq7Anm8uwclTesmtfGF26AdEcNPiCYs7DVQxKKVb
-         SvzQ==
-X-Gm-Message-State: AOAM533AhxqA4wLwRQANNN/avJ4uZs6P0zQ0nhidTO33SKBAXqEVhIfk
-        8glIRvVcEgw/tor6bXWn/i2g/vBzVjCFRQ==
-X-Google-Smtp-Source: ABdhPJzwoH7u5VBQAYQHh2dx2a0Xh1lIGd9FU+wzMVNv7xDGg9P7AgPy+b5RCkkOstS/vdlDLYz6bA==
-X-Received: by 2002:a05:620a:2486:: with SMTP id i6mr1580895qkn.331.1637636153962;
-        Mon, 22 Nov 2021 18:55:53 -0800 (PST)
-Received: from work ([187.105.166.74])
-        by smtp.gmail.com with ESMTPSA id o20sm6002377qkp.114.2021.11.22.18.55.52
+        bh=3UcVmjOkaeq0kNvjI1cDnssGFTNyiUyhvOYLRToYdaE=;
+        b=YXkrB1QrbnXAvRDB28A7dDTjZhQgzbrwH+HL2QYH6E9EzrbS6EWprC1q5OCLQe0Ya1
+         bs860SoUY2u/WvsZwUkT4GOg52XKuuDJk3Ad8CZ9+k1WTjMI2gUKCH2zE4iMFegPm3Jm
+         ijxurCvgXRY/5XlRz5GBrbc0hqPe8BzWSwoewcex/s3Jq04496Z6pPMt+Ydrj14uTE+M
+         RpSRZBck/gPH410YGkmktxpxASOjri5kyInGTFnbu5tayNDyDWPKV+NdKEx7zBJk/AH9
+         BAbE/L97Bg/9jABEuU4fFHcaTKJ7pG+XdqGDISw5e0nNLneYww9NHMq18Mkl0LeY4ifF
+         GbQA==
+X-Gm-Message-State: AOAM533Ywy0c/CKs6CTFziUIJlbCHDYhFKsHX4Lrky6b/wkCOXwd0dwa
+        SqMpDbRESJCfmcrm8erB1/M=
+X-Google-Smtp-Source: ABdhPJzJ4jdNGVsSRdBtQpJUfMqUvmt2jjvwFC+VL4EaHrnWwjc2nRQwvq+ygrmxZ8oBY2Sxz8RM6w==
+X-Received: by 2002:a17:907:7f0f:: with SMTP id qf15mr3189014ejc.560.1637636368048;
+        Mon, 22 Nov 2021 18:59:28 -0800 (PST)
+Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.googlemail.com with ESMTPSA id dy4sm4870718edb.92.2021.11.22.18.59.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Nov 2021 18:55:53 -0800 (PST)
-Date:   Mon, 22 Nov 2021 23:55:48 -0300
-From:   Alessandro B Maurici <abmaurici@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        Mon, 22 Nov 2021 18:59:27 -0800 (PST)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Alessandro B Maurici <abmaurici@gmail.com>
-Subject: [PATCH] phy: fix possible double lock calling link changed handler
-Message-ID: <20211122235548.38b3fc7c@work>
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [net-next PATCH 0/2] Add mirror and LAG support to qca8k
+Date:   Tue, 23 Nov 2021 03:59:09 +0100
+Message-Id: <20211123025911.20987-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alessandro B Maurici <abmaurici@gmail.com>
+With the continue of adding 'Multiple feature to qca8k'
 
-Releases the phy lock before calling phy_link_change to avoid any worker
-thread lockup. Some network drivers(eg Microchip's LAN743x), make a call to
-phy_ethtool_get_link_ksettings inside the link change handler, and, due to
-the commit c10a485c3de5 ("phy: phy_ethtool_ksettings_get: Lock the phy for
-consistency"), this will cause a lockup.
-As that mutex call is needed for consistency, we need to release the lock,
-if previously locked, before calling the handler to prevent issues.
+The switch supports mirror mode and LAG.
+In mirror mode a port is set as mirror and other port are configured
+to both igress or egress mode. With no port configured for mirror,
+the mirror port is disabled and reverted to normal port.
 
-Signed-off-by: Alessandro B Maurici <abmaurici@gmail.com>
----
- drivers/net/phy/phy.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+The switch supports max 4 LAG with 4 different member max.
+Current supported mode is Hash mode in both L2 or L2+3 mode.
+There is a problematic implementation for the hash mode where
+with multiple LAG configured, someone has to remove them to
+change the hash mode as it's global.
+When a member of the LAG is disconnected, the traffic is redirected
+to the other port.
 
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index beb2b66da132..0914e339e623 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -58,13 +58,31 @@ static const char *phy_state_to_str(enum phy_state st)
- 
- static void phy_link_up(struct phy_device *phydev)
- {
-+	bool must_relock = false;
-+
-+	if (mutex_is_locked(&phydev->lock)) {
-+		must_relock = true;
-+		mutex_unlock(&phydev->lock);
-+	}
- 	phydev->phy_link_change(phydev, true);
-+	if (must_relock)
-+		mutex_lock(&phydev->lock);
-+
- 	phy_led_trigger_change_speed(phydev);
- }
- 
- static void phy_link_down(struct phy_device *phydev)
- {
-+	bool must_relock = false;
-+
-+	if (mutex_is_locked(&phydev->lock)) {
-+		must_relock = true;
-+		mutex_unlock(&phydev->lock);
-+	}
- 	phydev->phy_link_change(phydev, false);
-+	if (must_relock)
-+		mutex_lock(&phydev->lock);
-+
- 	phy_led_trigger_change_speed(phydev);
- }
- 
+Some warning are present from checkpatch but can't really be fixed
+as it would result in making the regs less readable.
+(They really did their best with the LAG reg logic and complexity)
+
+Ansuel Smith (2):
+  net: dsa: qca8k: add support for mirror mode
+  net: dsa: qca8k: add LAG support
+
+ drivers/net/dsa/qca8k.c | 272 ++++++++++++++++++++++++++++++++++++++++
+ drivers/net/dsa/qca8k.h |  37 ++++++
+ 2 files changed, 309 insertions(+)
+
+-- 
+2.32.0
 
