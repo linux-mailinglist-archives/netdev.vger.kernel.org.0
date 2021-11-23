@@ -2,236 +2,647 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD38F459CFC
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 08:44:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CD00459D27
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 08:51:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234319AbhKWHrq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 02:47:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53614 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234170AbhKWHrn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 02:47:43 -0500
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CAF5C06173E
-        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 23:44:35 -0800 (PST)
-Received: by mail-lj1-x241.google.com with SMTP id v15so9421879ljc.0
-        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 23:44:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kvaser.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=OFni7OMG0YDoHf8+SVSQQtBeUkvcBzsEi+4TKKd7G1I=;
-        b=OcZR1d2SpMTDbJaWfkBN1hJ40OYDUx2AaZKYuwiAyFTSaRbV8MbCtjAnXo7Rm2DTYP
-         /z1B2Ahc+dRZVgCwpngyw3Hh/QkFn1DgzUNMqLXBd6C7hukq1/+6NPc+ixXw3o2sL7ao
-         iUiut6q0OSiqNCG1mKb4AmQdw/8a0sVWsycs8BCthTPIHGef6Iukdl3OzF49Ln/ljoT0
-         xxwhn+5VTMEBLLkilBV/AO8RcwkONyjFX4NNPvvYuVp/Tap85jXMC27W36rpJ/CiMudA
-         OqrubRHDUHonEf/sCY+FS29pkbmciuNAY1VkcPgBssr5/EsTSAUwZvO/aTvbL+i7KVQP
-         2Fpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=OFni7OMG0YDoHf8+SVSQQtBeUkvcBzsEi+4TKKd7G1I=;
-        b=BK0mTzeyX/oZ4LmAZyW0vmqDt6C/DxyAojBsNePknNjotd22ZSLRxdJozJms2cEPKi
-         mJ37J5g4rqEpaXVL8tJSG8Y7YmspAAk0zJgQGMzuPH1o3S0qs7uDr+CO3dPwO3c6m3wB
-         6UBPKPz1B+qkbDDgNCEvaFwN0UlGBhiTc/3DFDRqjwalg7F3RjUvZeSqyCFn6JN+Hziq
-         t9abbAzsXNZzWx4oghE5O7vi4b+Z8gq/+iVN+XF1Mf7JDDA9yjOGTbxvjU6lktakaGRu
-         q4WqGI7s3s0JKp9gsR79LcuG3hXSwC/x/VxAAEkT8Va8Wu741hc5G/axzLLoBvndDy5u
-         69Qw==
-X-Gm-Message-State: AOAM533R4rDeTRGNz0K8ZXLzZj/lXaAxriwOrXXbgj6sxkNlhXENUYW1
-        xweuzIhikKg5rv6FSnfFbav+rWrOlzbms4xZ
-X-Google-Smtp-Source: ABdhPJwd3aQlA4lgavu0f7MvLhBPfptaaXJOH6mA3nCT2ykbcFdj7Ilc01WLJCJIn8W7F1T0Et1F7w==
-X-Received: by 2002:a2e:890d:: with SMTP id d13mr2881763lji.396.1637653473587;
-        Mon, 22 Nov 2021 23:44:33 -0800 (PST)
-Received: from [10.0.6.3] (rota.kvaser.com. [195.22.86.90])
-        by smtp.gmail.com with ESMTPSA id u3sm1201270lfs.256.2021.11.22.23.44.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Nov 2021 23:44:33 -0800 (PST)
-Subject: Re: [PATCH] can: bittiming: replace CAN units with the SI metric
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
-        Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20211119161850.202094-1-mailhol.vincent@wanadoo.fr>
- <38544770-9e5f-1b1b-1f0a-a7ff1719327d@hartkopp.net>
- <CAMZ6RqJobmUnAMUjnaqYh0jsOPw7-PwiF+bF79hy6h+8SCuuDg@mail.gmail.com>
-From:   Jimmy Assarsson <extja@kvaser.com>
-Message-ID: <9fabde2b-b0ec-bc7c-30fa-d7556ed3c89d@kvaser.com>
-Date:   Tue, 23 Nov 2021 08:44:32 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S234515AbhKWHyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 02:54:12 -0500
+Received: from pi.codeconstruct.com.au ([203.29.241.158]:55492 "EHLO
+        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234489AbhKWHyG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 02:54:06 -0500
+Received: by codeconstruct.com.au (Postfix, from userid 10000)
+        id 9E88E2022C; Tue, 23 Nov 2021 15:50:56 +0800 (AWST)
+From:   Jeremy Kerr <jk@codeconstruct.com.au>
+To:     netdev@vger.kernel.org
+Cc:     Matt Johnston <matt@codeconstruct.com.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH net-next v3] mctp: Add MCTP-over-serial transport binding
+Date:   Tue, 23 Nov 2021 15:50:46 +0800
+Message-Id: <20211123075046.3007559-1-jk@codeconstruct.com.au>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <CAMZ6RqJobmUnAMUjnaqYh0jsOPw7-PwiF+bF79hy6h+8SCuuDg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-11-22 03:22, Vincent MAILHOL wrote:
-> Le lun. 22 nov. 2021 à 03:27, Oliver Hartkopp <socketcan@hartkopp.net> a écrit :
->> On 19.11.21 17:18, Vincent Mailhol wrote:
->>> In [1], we introduced a set of units in linux/can/bittiming.h. Since
->>> then, generic SI prefix were added to linux/units.h in [2]. Those new
->>> prefix can perfectly replace the CAN specific units.
->>>
->>> This patch replaces all occurrences of the CAN units with their
->>> corresponding prefix according to below table.
->>>
->>>    CAN units   SI metric prefix
->>>    -------------------------------
->>>    CAN_KBPS    KILO
->>>    CAN_MBPS    MEGA
->>>    CAM_MHZ     MEGA
->>>
->>> The macro declarations are then removed from linux/can/bittiming.h
->>>
->>> [1] commit 1d7750760b70 ("can: bittiming: add CAN_KBPS, CAN_MBPS and
->>> CAN_MHZ macros")
->>>
->>> [2] commit 26471d4a6cf8 ("units: Add SI metric prefix definitions")
->>>
->>> Suggested-by: Jimmy Assarsson <extja@kvaser.com>
->>> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
->>> ---
->>>    drivers/net/can/dev/bittiming.c           | 5 +++--
->>>    drivers/net/can/usb/etas_es58x/es581_4.c  | 5 +++--
->>>    drivers/net/can/usb/etas_es58x/es58x_fd.c | 5 +++--
->>>    include/linux/can/bittiming.h             | 7 -------
->>>    4 files changed, 9 insertions(+), 13 deletions(-)
->>>
->>> diff --git a/drivers/net/can/dev/bittiming.c b/drivers/net/can/dev/bittiming.c
->>> index 0509625c3082..a5c9f973802a 100644
->>> --- a/drivers/net/can/dev/bittiming.c
->>> +++ b/drivers/net/can/dev/bittiming.c
->>> @@ -4,6 +4,7 @@
->>>     * Copyright (C) 2008-2009 Wolfgang Grandegger <wg@grandegger.com>
->>>     */
->>>
->>> +#include <linux/units.h>
->>>    #include <linux/can/dev.h>
->>>
->>>    #ifdef CONFIG_CAN_CALC_BITTIMING
->>> @@ -81,9 +82,9 @@ int can_calc_bittiming(struct net_device *dev, struct can_bittiming *bt,
->>>        if (bt->sample_point) {
->>>                sample_point_nominal = bt->sample_point;
->>>        } else {
->>> -             if (bt->bitrate > 800 * CAN_KBPS)
->>> +             if (bt->bitrate > 800 * KILO)
->>>                        sample_point_nominal = 750;
->>> -             else if (bt->bitrate > 500 * CAN_KBPS)
->>> +             else if (bt->bitrate > 500 * KILO)
->>>                        sample_point_nominal = 800;
->>>                else
->>>                        sample_point_nominal = 875;
->>> diff --git a/drivers/net/can/usb/etas_es58x/es581_4.c b/drivers/net/can/usb/etas_es58x/es581_4.c
->>> index 14e360c9f2c9..ed340141c712 100644
->>> --- a/drivers/net/can/usb/etas_es58x/es581_4.c
->>> +++ b/drivers/net/can/usb/etas_es58x/es581_4.c
->>> @@ -10,6 +10,7 @@
->>>     */
->>>
->>>    #include <linux/kernel.h>
->>> +#include <linux/units.h>
->>>    #include <asm/unaligned.h>
->>>
->>>    #include "es58x_core.h"
->>> @@ -469,8 +470,8 @@ const struct es58x_parameters es581_4_param = {
->>>        .bittiming_const = &es581_4_bittiming_const,
->>>        .data_bittiming_const = NULL,
->>>        .tdc_const = NULL,
->>> -     .bitrate_max = 1 * CAN_MBPS,
->>> -     .clock = {.freq = 50 * CAN_MHZ},
->>> +     .bitrate_max = 1 * MEGA,
->>> +     .clock = {.freq = 50 * MEGA},
->>
->> IMO we are losing information here.
->>
->> It feels you suggest to replace MHz with M.
-> 
-> When I introduced the CAN_{K,M}BPS and CAN_MHZ macros, my primary
-> intent was to avoid having to write more than five zeros in a
-> row (because the human brain is bad at counting those). And the
-> KILO/MEGA prefixes perfectly cover that intent.
-> 
-> You are correct to say that the information of the unit is
-> lost. But I assume this information to be implicit (frequencies
-> are in Hz, baudrate are in bits/second). So yes, I suggest
-> replacing MHz with M.
-> 
-> Do you really think that people will be confused by this change?
-> 
-> I am not strongly opposed to keeping it either (hey, I was the
-> one who introduced it in the first place). I just think that
-> using linux/units.h is sufficient.
+This change adds a MCTP Serial transport binding, as defined by DMTF
+specificiation DSP0253 - "MCTP Serial Transport Binding". This is
+implemented as a new serial line discipline, and can be attached to
+arbitrary tty devices.
 
-Came across linux/units.h when looking at a different driver, and thought
-that it was also possible to utilize them in the CAN drivers.
+From the Kconfig description:
 
-I've no strong opinion about any of the suggested solutions.
-I'm fine with keeping it as it is, just wanted to raise the question :)
+  This driver provides an MCTP-over-serial interface, through a
+  serial line-discipline, as defined by DMTF specification "DSP0253 -
+  MCTP Serial Transport Binding". By attaching the ldisc to a serial
+  device, we get a new net device to transport MCTP packets.
 
-Best regards,
-jimmy
+  This allows communication with external MCTP endpoints which use
+  serial as their transport. It can also be used as an easy way to
+  provide MCTP connectivity between virtual machines, by forwarding
+  data between simple virtual serial devices.
 
->> So where is the Hz information then?
-> 
-> It is in the comment of can_clock:freq :)
-> 
-> https://elixir.bootlin.com/linux/v5.15/source/include/uapi/linux/can/netlink.h#L63
-> 
->>>        .ctrlmode_supported = CAN_CTRLMODE_CC_LEN8_DLC,
->>>        .tx_start_of_frame = 0xAFAF,
->>>        .rx_start_of_frame = 0xFAFA,
->>> diff --git a/drivers/net/can/usb/etas_es58x/es58x_fd.c b/drivers/net/can/usb/etas_es58x/es58x_fd.c
->>> index 4f0cae29f4d8..aec299bed6dc 100644
->>> --- a/drivers/net/can/usb/etas_es58x/es58x_fd.c
->>> +++ b/drivers/net/can/usb/etas_es58x/es58x_fd.c
->>> @@ -12,6 +12,7 @@
->>>     */
->>>
->>>    #include <linux/kernel.h>
->>> +#include <linux/units.h>
->>>    #include <asm/unaligned.h>
->>>
->>>    #include "es58x_core.h"
->>> @@ -522,8 +523,8 @@ const struct es58x_parameters es58x_fd_param = {
->>>         * Mbps work in an optimal environment but are not recommended
->>>         * for production environment.
->>>         */
->>> -     .bitrate_max = 8 * CAN_MBPS,
->>> -     .clock = {.freq = 80 * CAN_MHZ},
->>> +     .bitrate_max = 8 * MEGA,
->>> +     .clock = {.freq = 80 * MEGA},
->>>        .ctrlmode_supported = CAN_CTRLMODE_LOOPBACK | CAN_CTRLMODE_LISTENONLY |
->>>            CAN_CTRLMODE_3_SAMPLES | CAN_CTRLMODE_FD | CAN_CTRLMODE_FD_NON_ISO |
->>>            CAN_CTRLMODE_CC_LEN8_DLC | CAN_CTRLMODE_TDC_AUTO,
->>> diff --git a/include/linux/can/bittiming.h b/include/linux/can/bittiming.h
->>> index 20b50baf3a02..a81652d1c6f3 100644
->>> --- a/include/linux/can/bittiming.h
->>> +++ b/include/linux/can/bittiming.h
->>> @@ -12,13 +12,6 @@
->>>    #define CAN_SYNC_SEG 1
->>>
->>>
->>> -/* Kilobits and Megabits per second */
->>> -#define CAN_KBPS 1000UL
->>> -#define CAN_MBPS 1000000UL
->>> -
->>> -/* Megahertz */
->>> -#define CAN_MHZ 1000000UL
->>
->> So what about
->>
->> #define CAN_KBPS KILO /* kilo bits per second */
->> #define CAN_MBPS MEGA /* mega bits per second */
->>
->> #define CAN_MHZ MEGA /* mega hertz */
->>
->>
->> ??
->>
->> Regards,
->> Oliver
+  Say y here if you need to connect to MCTP endpoints over serial. To
+  compile as a module, use m; the module will be called mctp-serial.
+
+Once the N_MCTP line discipline is set [using ioctl(TCIOSETD)], we get a
+new netdev suitable for MCTP communication.
+
+The 'mctp' utility[1] provides a simple wrapper for this ioctl, using
+'link serial <device>':
+
+  # mctp link serial /dev/ttyS0 &
+  # mctp link
+  dev lo index 1 address 0x00:00:00:00:00:00 net 1 mtu 65536 up
+  dev mctpserial0 index 5 address 0x(no-addr) net 1 mtu 68 down
+
+[1]: https://github.com/CodeConstruct/mctp
+
+Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
+
+---
+v3:
+ - fix state/txstate typo
+v2:
+ - improve tx tty write() error handling
+ - remove unnecessary RCU deref of disc_data
+ - expand Kconfig help: elaborate on MCTP serial spec, list module name
+ - add references to mctp util
+---
+ drivers/net/mctp/Kconfig       |  18 ++
+ drivers/net/mctp/Makefile      |   1 +
+ drivers/net/mctp/mctp-serial.c | 510 +++++++++++++++++++++++++++++++++
+ include/uapi/linux/tty.h       |   1 +
+ 4 files changed, 530 insertions(+)
+ create mode 100644 drivers/net/mctp/mctp-serial.c
+
+diff --git a/drivers/net/mctp/Kconfig b/drivers/net/mctp/Kconfig
+index d8f966cedc89..2929471395ae 100644
+--- a/drivers/net/mctp/Kconfig
++++ b/drivers/net/mctp/Kconfig
+@@ -3,6 +3,24 @@ if MCTP
+ 
+ menu "MCTP Device Drivers"
+ 
++config MCTP_SERIAL
++	tristate "MCTP serial transport"
++	depends on TTY
++	select CRC_CCITT
++	help
++	  This driver provides an MCTP-over-serial interface, through a
++	  serial line-discipline, as defined by DMTF specification "DSP0253 -
++	  MCTP Serial Transport Binding". By attaching the ldisc to a serial
++	  device, we get a new net device to transport MCTP packets.
++
++	  This allows communication with external MCTP endpoints which use
++	  serial as their transport. It can also be used as an easy way to
++	  provide MCTP connectivity between virtual machines, by forwarding
++	  data between simple virtual serial devices.
++
++	  Say y here if you need to connect to MCTP endpoints over serial. To
++	  compile as a module, use m; the module will be called mctp-serial.
++
+ endmenu
+ 
+ endif
+diff --git a/drivers/net/mctp/Makefile b/drivers/net/mctp/Makefile
+index e69de29bb2d1..d32622613ce4 100644
+--- a/drivers/net/mctp/Makefile
++++ b/drivers/net/mctp/Makefile
+@@ -0,0 +1 @@
++obj-$(CONFIG_MCTP_SERIAL) += mctp-serial.o
+diff --git a/drivers/net/mctp/mctp-serial.c b/drivers/net/mctp/mctp-serial.c
+new file mode 100644
+index 000000000000..9ac0e187f36e
+--- /dev/null
++++ b/drivers/net/mctp/mctp-serial.c
+@@ -0,0 +1,510 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Management Component Transport Protocol (MCTP) - serial transport
++ * binding. This driver is an implementation of the DMTF specificiation
++ * "DSP0253 - Management Component Transport Protocol (MCTP) Serial Transport
++ * Binding", available at:
++ *
++ *  https://www.dmtf.org/sites/default/files/standards/documents/DSP0253_1.0.0.pdf
++ *
++ * This driver provides DSP0253-type MCTP-over-serial transport using a Linux
++ * tty device, by setting the N_MCTP line discipline on the tty.
++ *
++ * Copyright (c) 2021 Code Construct
++ */
++
++#include <linux/idr.h>
++#include <linux/if_arp.h>
++#include <linux/module.h>
++#include <linux/skbuff.h>
++#include <linux/tty.h>
++#include <linux/workqueue.h>
++#include <linux/crc-ccitt.h>
++
++#include <linux/mctp.h>
++#include <net/mctp.h>
++#include <net/pkt_sched.h>
++
++#define MCTP_SERIAL_MTU		68 /* base mtu (64) + mctp header */
++#define MCTP_SERIAL_FRAME_MTU	(MCTP_SERIAL_MTU + 6) /* + serial framing */
++
++#define MCTP_SERIAL_VERSION	0x1 /* DSP0253 defines a single version: 1 */
++
++#define BUFSIZE			MCTP_SERIAL_FRAME_MTU
++
++#define BYTE_FRAME		0x7e
++#define BYTE_ESC		0x7d
++
++static DEFINE_IDA(mctp_serial_ida);
++
++enum mctp_serial_state {
++	STATE_IDLE,
++	STATE_START,
++	STATE_HEADER,
++	STATE_DATA,
++	STATE_ESCAPE,
++	STATE_TRAILER,
++	STATE_DONE,
++	STATE_ERR,
++};
++
++struct mctp_serial {
++	struct net_device	*netdev;
++	struct tty_struct	*tty;
++
++	int			idx;
++
++	/* protects our rx & tx state machines; held during both paths */
++	spinlock_t		lock;
++
++	struct work_struct	tx_work;
++	enum mctp_serial_state	txstate, rxstate;
++	u16			txfcs, rxfcs, rxfcs_rcvd;
++	unsigned int		txlen, rxlen;
++	unsigned int		txpos, rxpos;
++	unsigned char		txbuf[BUFSIZE],
++				rxbuf[BUFSIZE];
++};
++
++static bool needs_escape(unsigned char c)
++{
++	return c == BYTE_ESC || c == BYTE_FRAME;
++}
++
++static int next_chunk_len(struct mctp_serial *dev)
++{
++	int i;
++
++	/* either we have no bytes to send ... */
++	if (dev->txpos == dev->txlen)
++		return 0;
++
++	/* ... or the next byte to send is an escaped byte; requiring a
++	 * single-byte chunk...
++	 */
++	if (needs_escape(dev->txbuf[dev->txpos]))
++		return 1;
++
++	/* ... or we have one or more bytes up to the next escape - this chunk
++	 * will be those non-escaped bytes, and does not include the escaped
++	 * byte.
++	 */
++	for (i = 1; i + dev->txpos + 1 < dev->txlen; i++) {
++		if (needs_escape(dev->txbuf[dev->txpos + i + 1]))
++			break;
++	}
++
++	return i;
++}
++
++static int write_chunk(struct mctp_serial *dev, unsigned char *buf, int len)
++{
++	return dev->tty->ops->write(dev->tty, buf, len);
++}
++
++static void mctp_serial_tx_work(struct work_struct *work)
++{
++	struct mctp_serial *dev = container_of(work, struct mctp_serial,
++					       tx_work);
++	unsigned char c, buf[3];
++	unsigned long flags;
++	int len, txlen;
++
++	spin_lock_irqsave(&dev->lock, flags);
++
++	/* txstate represents the next thing to send */
++	switch (dev->txstate) {
++	case STATE_START:
++		dev->txpos = 0;
++		fallthrough;
++	case STATE_HEADER:
++		buf[0] = BYTE_FRAME;
++		buf[1] = MCTP_SERIAL_VERSION;
++		buf[2] = dev->txlen;
++
++		if (!dev->txpos)
++			dev->txfcs = crc_ccitt(0, buf + 1, 2);
++
++		txlen = write_chunk(dev, buf + dev->txpos, 3 - dev->txpos);
++		if (txlen <= 0) {
++			dev->txstate = STATE_ERR;
++		} else {
++			dev->txpos += txlen;
++			if (dev->txpos == 3) {
++				dev->txstate = STATE_DATA;
++				dev->txpos = 0;
++			}
++		}
++		break;
++
++	case STATE_ESCAPE:
++		buf[0] = dev->txbuf[dev->txpos] & ~0x20;
++		txlen = write_chunk(dev, buf, 1);
++		if (txlen <= 0) {
++			dev->txstate = STATE_ERR;
++		} else {
++			dev->txpos += txlen;
++			if (dev->txpos == dev->txlen) {
++				dev->txstate = STATE_TRAILER;
++				dev->txpos = 0;
++			}
++		}
++
++		break;
++
++	case STATE_DATA:
++		len = next_chunk_len(dev);
++		if (len) {
++			c = dev->txbuf[dev->txpos];
++			if (len == 1 && needs_escape(c)) {
++				buf[0] = BYTE_ESC;
++				buf[1] = c & ~0x20;
++				dev->txfcs = crc_ccitt_byte(dev->txfcs, c);
++				txlen = write_chunk(dev, buf, 2);
++				if (txlen == 2)
++					dev->txpos++;
++				else if (txlen == 1)
++					dev->txstate = STATE_ESCAPE;
++				else
++					dev->txstate = STATE_ERR;
++			} else {
++				txlen = write_chunk(dev,
++						    dev->txbuf + dev->txpos,
++						    len);
++				if (txlen <= 0) {
++					dev->txstate = STATE_ERR;
++				} else {
++					dev->txfcs = crc_ccitt(dev->txfcs,
++							       dev->txbuf +
++							       dev->txpos,
++							       txlen);
++					dev->txpos += txlen;
++				}
++			}
++			if (dev->txstate == STATE_DATA &&
++			    dev->txpos == dev->txlen) {
++				dev->txstate = STATE_TRAILER;
++				dev->txpos = 0;
++			}
++			break;
++		}
++		dev->txstate = STATE_TRAILER;
++		dev->txpos = 0;
++		fallthrough;
++
++	case STATE_TRAILER:
++		buf[0] = dev->txfcs >> 8;
++		buf[1] = dev->txfcs & 0xff;
++		buf[2] = BYTE_FRAME;
++		txlen = write_chunk(dev, buf + dev->txpos, 3 - dev->txpos);
++		if (txlen <= 0) {
++			dev->txstate = STATE_ERR;
++		} else {
++			dev->txpos += txlen;
++			if (dev->txpos == 3) {
++				dev->txstate = STATE_DONE;
++				dev->txpos = 0;
++			}
++		}
++		break;
++	default:
++		netdev_err_once(dev->netdev, "invalid tx state %d\n",
++				dev->txstate);
++	}
++
++	if (dev->txstate == STATE_DONE) {
++		dev->netdev->stats.tx_packets++;
++		dev->netdev->stats.tx_bytes += dev->txlen;
++		dev->txlen = 0;
++		dev->txpos = 0;
++		clear_bit(TTY_DO_WRITE_WAKEUP, &dev->tty->flags);
++		dev->txstate = STATE_IDLE;
++		spin_unlock_irqrestore(&dev->lock, flags);
++
++		netif_wake_queue(dev->netdev);
++	} else {
++		spin_unlock_irqrestore(&dev->lock, flags);
++	}
++}
++
++static netdev_tx_t mctp_serial_tx(struct sk_buff *skb, struct net_device *ndev)
++{
++	struct mctp_serial *dev = netdev_priv(ndev);
++	unsigned long flags;
++
++	WARN_ON(dev->txstate != STATE_IDLE);
++
++	if (skb->len > MCTP_SERIAL_MTU) {
++		dev->netdev->stats.tx_dropped++;
++		goto out;
++	}
++
++	spin_lock_irqsave(&dev->lock, flags);
++	netif_stop_queue(dev->netdev);
++	skb_copy_bits(skb, 0, dev->txbuf, skb->len);
++	dev->txpos = 0;
++	dev->txlen = skb->len;
++	dev->txstate = STATE_START;
++	spin_unlock_irqrestore(&dev->lock, flags);
++
++	set_bit(TTY_DO_WRITE_WAKEUP, &dev->tty->flags);
++	schedule_work(&dev->tx_work);
++
++out:
++	kfree_skb(skb);
++	return NETDEV_TX_OK;
++}
++
++static void mctp_serial_tty_write_wakeup(struct tty_struct *tty)
++{
++	struct mctp_serial *dev = tty->disc_data;
++
++	schedule_work(&dev->tx_work);
++}
++
++static void mctp_serial_rx(struct mctp_serial *dev)
++{
++	struct mctp_skb_cb *cb;
++	struct sk_buff *skb;
++
++	if (dev->rxfcs != dev->rxfcs_rcvd) {
++		dev->netdev->stats.rx_dropped++;
++		dev->netdev->stats.rx_crc_errors++;
++		return;
++	}
++
++	skb = netdev_alloc_skb(dev->netdev, dev->rxlen);
++	if (!skb) {
++		dev->netdev->stats.rx_dropped++;
++		return;
++	}
++
++	skb->protocol = htons(ETH_P_MCTP);
++	skb_put_data(skb, dev->rxbuf, dev->rxlen);
++	skb_reset_network_header(skb);
++
++	cb = __mctp_cb(skb);
++	cb->halen = 0;
++
++	netif_rx_ni(skb);
++	dev->netdev->stats.rx_packets++;
++	dev->netdev->stats.rx_bytes += dev->rxlen;
++}
++
++static void mctp_serial_push_header(struct mctp_serial *dev, unsigned char c)
++{
++	switch (dev->rxpos) {
++	case 0:
++		if (c == BYTE_FRAME)
++			dev->rxpos++;
++		else
++			dev->rxstate = STATE_ERR;
++		break;
++	case 1:
++		if (c == MCTP_SERIAL_VERSION) {
++			dev->rxpos++;
++			dev->rxfcs = crc_ccitt_byte(0, c);
++		} else {
++			dev->rxstate = STATE_ERR;
++		}
++		break;
++	case 2:
++		if (c > MCTP_SERIAL_FRAME_MTU) {
++			dev->rxstate = STATE_ERR;
++		} else {
++			dev->rxlen = c;
++			dev->rxpos = 0;
++			dev->rxstate = STATE_DATA;
++			dev->rxfcs = crc_ccitt_byte(dev->rxfcs, c);
++		}
++		break;
++	}
++}
++
++static void mctp_serial_push_trailer(struct mctp_serial *dev, unsigned char c)
++{
++	switch (dev->rxpos) {
++	case 0:
++		dev->rxfcs_rcvd = c << 8;
++		dev->rxpos++;
++		break;
++	case 1:
++		dev->rxfcs_rcvd |= c;
++		dev->rxpos++;
++		break;
++	case 2:
++		if (c != BYTE_FRAME) {
++			dev->rxstate = STATE_ERR;
++		} else {
++			mctp_serial_rx(dev);
++			dev->rxlen = 0;
++			dev->rxpos = 0;
++			dev->rxstate = STATE_IDLE;
++		}
++		break;
++	}
++}
++
++static void mctp_serial_push(struct mctp_serial *dev, unsigned char c)
++{
++	switch (dev->rxstate) {
++	case STATE_IDLE:
++		dev->rxstate = STATE_HEADER;
++		fallthrough;
++	case STATE_HEADER:
++		mctp_serial_push_header(dev, c);
++		break;
++
++	case STATE_ESCAPE:
++		c |= 0x20;
++		fallthrough;
++	case STATE_DATA:
++		if (dev->rxstate != STATE_ESCAPE && c == BYTE_ESC) {
++			dev->rxstate = STATE_ESCAPE;
++		} else {
++			dev->rxfcs = crc_ccitt_byte(dev->rxfcs, c);
++			dev->rxbuf[dev->rxpos] = c;
++			dev->rxpos++;
++			dev->rxstate = STATE_DATA;
++			if (dev->rxpos == dev->rxlen) {
++				dev->rxpos = 0;
++				dev->rxstate = STATE_TRAILER;
++			}
++		}
++		break;
++
++	case STATE_TRAILER:
++		mctp_serial_push_trailer(dev, c);
++		break;
++
++	case STATE_ERR:
++		if (c == BYTE_FRAME)
++			dev->rxstate = STATE_IDLE;
++		break;
++
++	default:
++		netdev_err_once(dev->netdev, "invalid rx state %d\n",
++				dev->rxstate);
++	}
++}
++
++static void mctp_serial_tty_receive_buf(struct tty_struct *tty,
++					const unsigned char *c,
++					const char *f, int len)
++{
++	struct mctp_serial *dev = tty->disc_data;
++	int i;
++
++	if (!netif_running(dev->netdev))
++		return;
++
++	/* we don't (currently) use the flag bytes, just data. */
++	for (i = 0; i < len; i++)
++		mctp_serial_push(dev, c[i]);
++}
++
++static const struct net_device_ops mctp_serial_netdev_ops = {
++	.ndo_start_xmit = mctp_serial_tx,
++};
++
++static void mctp_serial_setup(struct net_device *ndev)
++{
++	ndev->type = ARPHRD_MCTP;
++	ndev->mtu = MCTP_SERIAL_MTU;
++	ndev->hard_header_len = 0;
++	ndev->addr_len = 0;
++	ndev->tx_queue_len = DEFAULT_TX_QUEUE_LEN;
++	ndev->flags = IFF_NOARP;
++	ndev->netdev_ops = &mctp_serial_netdev_ops;
++	ndev->needs_free_netdev = true;
++}
++
++static int mctp_serial_open(struct tty_struct *tty)
++{
++	struct mctp_serial *dev;
++	struct net_device *ndev;
++	char name[32];
++	int idx, rc;
++
++	if (!capable(CAP_NET_ADMIN))
++		return -EPERM;
++
++	if (!tty->ops->write)
++		return -EOPNOTSUPP;
++
++	if (tty->disc_data)
++		return -EEXIST;
++
++	idx = ida_alloc(&mctp_serial_ida, GFP_KERNEL);
++	if (idx < 0)
++		return idx;
++
++	snprintf(name, sizeof(name), "mctpserial%d", idx);
++	ndev = alloc_netdev(sizeof(*dev), name, NET_NAME_ENUM,
++			    mctp_serial_setup);
++	if (!ndev) {
++		rc = -ENOMEM;
++		goto free_ida;
++	}
++
++	dev = netdev_priv(ndev);
++	dev->idx = idx;
++	dev->tty = tty;
++	dev->netdev = ndev;
++	dev->txstate = STATE_IDLE;
++	dev->rxstate = STATE_IDLE;
++	spin_lock_init(&dev->lock);
++	INIT_WORK(&dev->tx_work, mctp_serial_tx_work);
++
++	rc = register_netdev(ndev);
++	if (rc)
++		goto free_netdev;
++
++	tty->receive_room = 64 * 1024;
++	tty->disc_data = dev;
++
++	return 0;
++
++free_netdev:
++	free_netdev(ndev);
++
++free_ida:
++	ida_free(&mctp_serial_ida, idx);
++	return rc;
++}
++
++static void mctp_serial_close(struct tty_struct *tty)
++{
++	struct mctp_serial *dev = tty->disc_data;
++	int idx = dev->idx;
++
++	unregister_netdev(dev->netdev);
++	ida_free(&mctp_serial_ida, idx);
++}
++
++static struct tty_ldisc_ops mctp_ldisc = {
++	.owner		= THIS_MODULE,
++	.num		= N_MCTP,
++	.name		= "mctp",
++	.open		= mctp_serial_open,
++	.close		= mctp_serial_close,
++	.receive_buf	= mctp_serial_tty_receive_buf,
++	.write_wakeup	= mctp_serial_tty_write_wakeup,
++};
++
++static int __init mctp_serial_init(void)
++{
++	return tty_register_ldisc(&mctp_ldisc);
++}
++
++static void __exit mctp_serial_exit(void)
++{
++	tty_unregister_ldisc(&mctp_ldisc);
++}
++
++module_init(mctp_serial_init);
++module_exit(mctp_serial_exit);
++
++MODULE_LICENSE("GPL v2");
++MODULE_AUTHOR("Jeremy Kerr <jk@codeconstruct.com.au>");
++MODULE_DESCRIPTION("MCTP Serial transport");
+diff --git a/include/uapi/linux/tty.h b/include/uapi/linux/tty.h
+index 376cccf397be..a58deb3061eb 100644
+--- a/include/uapi/linux/tty.h
++++ b/include/uapi/linux/tty.h
+@@ -38,5 +38,6 @@
+ #define N_NCI		25	/* NFC NCI UART */
+ #define N_SPEAKUP	26	/* Speakup communication with synths */
+ #define N_NULL		27	/* Null ldisc used for error handling */
++#define N_MCTP		28	/* MCTP-over-serial */
+ 
+ #endif /* _UAPI_LINUX_TTY_H */
+-- 
+2.30.2
+
