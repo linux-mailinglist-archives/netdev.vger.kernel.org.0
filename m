@@ -2,172 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E716845A392
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 14:19:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE7B145A3A1
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 14:21:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235856AbhKWNWy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 08:22:54 -0500
-Received: from mail-oo1-f46.google.com ([209.85.161.46]:43647 "EHLO
-        mail-oo1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233234AbhKWNWw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 08:22:52 -0500
-Received: by mail-oo1-f46.google.com with SMTP id w5-20020a4a2745000000b002c2649b8d5fso6966387oow.10;
-        Tue, 23 Nov 2021 05:19:44 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sxbm5nZuxDktECFOUcgXGTkmQEJlkXm+UQAvKfd0Kcw=;
-        b=mvIZSRRstoDDJUR3+mmLSzn8fqBURUL2JlI4/Frf4C5a1N1wjF+v56uIhWx1YQ6hIU
-         2dRlJni8qcx7RNXE/GL3pu+VAv4UTqUgv0o0BPxl1qPIMETntN/kFAcnpoZUrd76KegU
-         EKQW2pSud38zRmUCW7u3aRvEpqa57hx5kLNxJpFfSThGzmmlFeGfKmPN1gM2ntWdyv6r
-         2K2zy/YtYJXicIGjMq8lQO4aP9dlCmJCRrZ18lWH4dxrRs0a7kbT707/Ermt9GwlRTOZ
-         iHZj2FfFaNhu+t2/hEMpJXlTJejai2RmZvQ9M4xDAe0JogPrmv2xKN1LX2XKwKVhUUIN
-         EpOg==
-X-Gm-Message-State: AOAM531CX/cyV9bldIBySkzO0zA6rfPkTAyy3w7GuJYD/LNAvoOh+1Pk
-        WbbJ3XOnhaH2aQ5OION/ViKK3GF1OW9tVoWM0vM=
-X-Google-Smtp-Source: ABdhPJx4LJPjPNqz/sXcVDWL5tamzih4SOz6Sq7UGTbN97hIVt3zgoG90+osvpCrjRpDoZ3z/WaeE3Jdprr6Jm1J/tY=
-X-Received: by 2002:a4a:1d82:: with SMTP id 124mr2868847oog.91.1637673583839;
- Tue, 23 Nov 2021 05:19:43 -0800 (PST)
-MIME-Version: 1.0
-References: <20210818060533.3569517-1-keescook@chromium.org> <20210818060533.3569517-13-keescook@chromium.org>
-In-Reply-To: <20210818060533.3569517-13-keescook@chromium.org>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 23 Nov 2021 14:19:25 +0100
-Message-ID: <CAJZ5v0iS3qMgdab1S-NzGfeLLXV=S6p5Qx8AaqJ50rsUngS=LA@mail.gmail.com>
-Subject: Re: [PATCH v2 12/63] thermal: intel: int340x_thermal: Use
- struct_group() for memcpy() region
-To:     Kees Cook <keescook@chromium.org>, Zhang Rui <rui.zhang@intel.com>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "open list:NETWORKING DRIVERS (WIRELESS)" 
-        <linux-wireless@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-hardening@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        id S237272AbhKWNYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 08:24:08 -0500
+Received: from forwardcorp1j.mail.yandex.net ([5.45.199.163]:36012 "EHLO
+        forwardcorp1j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237182AbhKWNYG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 08:24:06 -0500
+Received: from iva8-c5ee4261001e.qloud-c.yandex.net (iva8-c5ee4261001e.qloud-c.yandex.net [IPv6:2a02:6b8:c0c:a8a6:0:640:c5ee:4261])
+        by forwardcorp1j.mail.yandex.net (Yandex) with ESMTP id 8E6F32E19B4;
+        Tue, 23 Nov 2021 16:20:56 +0300 (MSK)
+Received: from iva8-3a65cceff156.qloud-c.yandex.net (iva8-3a65cceff156.qloud-c.yandex.net [2a02:6b8:c0c:2d80:0:640:3a65:ccef])
+        by iva8-c5ee4261001e.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id vqeZiVPVdM-KtseIXkl;
+        Tue, 23 Nov 2021 16:20:56 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
+        t=1637673656; bh=TOBx1mlYGVVEyFVqSHk4jsRmsMYOT9mUnwOOhPHsBKg=;
+        h=Message-Id:References:Date:Subject:Cc:To:In-Reply-To:From;
+        b=HwroR4VcRzcY3Jbu/m7zTouql0v/1UlXX+MT1R9W1//4Fe+ZktC0v3jahuVaYwk81
+         r424HzUt7Db/dBBrsgctGa8hRkH/N58ck5pPnWD/TDadfMcRpQ4X6QrYeKCWORy1jA
+         OPl/hJUx7LIcMt4kWUKiVDln3CGVdD/iqVWzpQ0g=
+Authentication-Results: iva8-c5ee4261001e.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
+Received: from smtpclient.apple (dynamic-red.dhcp.yndx.net [2a02:6b8:0:40c:2951:487a:d6c2:a04c])
+        by iva8-3a65cceff156.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id 905hmHJAz2-KtwSQjCD;
+        Tue, 23 Nov 2021 16:20:55 +0300
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client certificate not present)
+X-Yandex-Fwd: 2
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.100.0.2.22\))
+Subject: Re: [RFC PATCH v2 net-next 0/4] txhash: Make hash rethink
+ configurable
+From:   Akhmat Karakotov <hmukos@yandex-team.ru>
+In-Reply-To: <20211112181939.11329-1-hmukos@yandex-team.ru>
+Date:   Tue, 23 Nov 2021 16:20:55 +0300
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Alexander Azimov <mitradir@yandex-team.ru>,
+        netdev@vger.kernel.org, tom@herbertland.com, zeil@yandex-team.ru
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <69C55C6B-02FC-429D-BD25-AA0D78EADCFF@yandex-team.ru>
+References: <20211025203521.13507-1-hmukos@yandex-team.ru>
+ <20211112181939.11329-1-hmukos@yandex-team.ru>
+To:     hmukos@yandex-team.ru
+X-Mailer: Apple Mail (2.3654.100.0.2.22)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 18, 2021 at 8:08 AM Kees Cook <keescook@chromium.org> wrote:
->
-> In preparation for FORTIFY_SOURCE performing compile-time and run-time
-> field bounds checking for memcpy(), avoid intentionally writing across
-> neighboring fields.
->
-> Use struct_group() in struct art around members weight, and ac[0-9]_max,
-> so they can be referenced together. This will allow memcpy() and sizeof()
-> to more easily reason about sizes, improve readability, and avoid future
-> warnings about writing beyond the end of weight.
->
-> "pahole" shows no size nor member offset changes to struct art.
-> "objdump -d" shows no meaningful object code changes (i.e. only source
-> line number induced differences).
->
-> Cc: Zhang Rui <rui.zhang@intel.com>
-> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-> Cc: Amit Kucheria <amitk@kernel.org>
-> Cc: linux-pm@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+Hi Eric,
 
-Rui, Srinivas, any comments here?
+I've sent v2 of the patch. I've removed confusing part with sysctl =
+default values
+and made other changes according to your comments. I look forward for =
+your
+review.
 
-> ---
->  .../intel/int340x_thermal/acpi_thermal_rel.c  |  5 +-
->  .../intel/int340x_thermal/acpi_thermal_rel.h  | 48 ++++++++++---------
->  2 files changed, 29 insertions(+), 24 deletions(-)
->
-> diff --git a/drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.c b/drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.c
-> index a478cff8162a..e90690a234c4 100644
-> --- a/drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.c
-> +++ b/drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.c
-> @@ -250,8 +250,9 @@ static int fill_art(char __user *ubuf)
->                 get_single_name(arts[i].source, art_user[i].source_device);
->                 get_single_name(arts[i].target, art_user[i].target_device);
->                 /* copy the rest int data in addition to source and target */
-> -               memcpy(&art_user[i].weight, &arts[i].weight,
-> -                       sizeof(u64) * (ACPI_NR_ART_ELEMENTS - 2));
-> +               BUILD_BUG_ON(sizeof(art_user[i].data) !=
-> +                            sizeof(u64) * (ACPI_NR_ART_ELEMENTS - 2));
-> +               memcpy(&art_user[i].data, &arts[i].data, sizeof(art_user[i].data));
->         }
->
->         if (copy_to_user(ubuf, art_user, art_len))
-> diff --git a/drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.h b/drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.h
-> index 58822575fd54..78d942477035 100644
-> --- a/drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.h
-> +++ b/drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.h
-> @@ -17,17 +17,19 @@
->  struct art {
->         acpi_handle source;
->         acpi_handle target;
-> -       u64 weight;
-> -       u64 ac0_max;
-> -       u64 ac1_max;
-> -       u64 ac2_max;
-> -       u64 ac3_max;
-> -       u64 ac4_max;
-> -       u64 ac5_max;
-> -       u64 ac6_max;
-> -       u64 ac7_max;
-> -       u64 ac8_max;
-> -       u64 ac9_max;
-> +       struct_group(data,
-> +               u64 weight;
-> +               u64 ac0_max;
-> +               u64 ac1_max;
-> +               u64 ac2_max;
-> +               u64 ac3_max;
-> +               u64 ac4_max;
-> +               u64 ac5_max;
-> +               u64 ac6_max;
-> +               u64 ac7_max;
-> +               u64 ac8_max;
-> +               u64 ac9_max;
-> +       );
->  } __packed;
->
->  struct trt {
-> @@ -47,17 +49,19 @@ union art_object {
->         struct {
->                 char source_device[8]; /* ACPI single name */
->                 char target_device[8]; /* ACPI single name */
-> -               u64 weight;
-> -               u64 ac0_max_level;
-> -               u64 ac1_max_level;
-> -               u64 ac2_max_level;
-> -               u64 ac3_max_level;
-> -               u64 ac4_max_level;
-> -               u64 ac5_max_level;
-> -               u64 ac6_max_level;
-> -               u64 ac7_max_level;
-> -               u64 ac8_max_level;
-> -               u64 ac9_max_level;
-> +               struct_group(data,
-> +                       u64 weight;
-> +                       u64 ac0_max_level;
-> +                       u64 ac1_max_level;
-> +                       u64 ac2_max_level;
-> +                       u64 ac3_max_level;
-> +                       u64 ac4_max_level;
-> +                       u64 ac5_max_level;
-> +                       u64 ac6_max_level;
-> +                       u64 ac7_max_level;
-> +                       u64 ac8_max_level;
-> +                       u64 ac9_max_level;
-> +               );
->         };
->         u64 __data[ACPI_NR_ART_ELEMENTS];
->  };
-> --
-> 2.30.2
->
+> On Nov 12, 2021, at 21:19, Akhmat Karakotov <hmukos@yandex-team.ru> =
+wrote:
+>=20
+> As it was shown in the report by Alexander Azimov, hash rethink at the
+> client-side may lead to connection timeout toward stateful anycast
+> services. Tom Herbert created a patchset to address this issue by =
+applying
+> hash rethink only after a negative routing event (3RTOs) [1]. This =
+change
+> also affects server-side behavior, which we found undesirable. This
+> patchset changes defaults in a way to make them safe: hash rethink at =
+the
+> client-side is disabled and enabled at the server-side upon each RTO
+> event or in case of duplicate acknowledgments.
+>=20
+> This patchset provides two options to change default behaviour. The =
+hash
+> rethink may be disabled at the server-side by the new sysctl option.
+> Changes in the sysctl option don't affect default behavior at the
+> client-side.
+>=20
+> Hash rethink can also be enabled/disabled with socket option or bpf
+> syscalls which ovewrite both default and sysctl settings. This socket
+> option is available on both client and server-side. This should =
+provide
+> mechanics to enable hash rethink inside administrative domain, such as =
+DC,
+> where hash rethink at the client-side can be desirable.
+>=20
+> [1] =
+https://lore.kernel.org/netdev/20210809185314.38187-1-tom@herbertland.com/=
+
+>=20
+> v2:
+> 	- Changed sysctl default to ENABLED in all patches. Reduced =
+sysctl
+> 	  and socket option size to u8. Fixed netns bug reported by =
+kernel
+> 	  test robot.
+>=20
+> Akhmat Karakotov (4):
+>  txhash: Make rethinking txhash behavior configurable via sysctl
+>  txhash: Add socket option to control TX hash rethink behavior
+>  bpf: Add SO_TXREHASH setsockopt
+>  tcp: change SYN ACK retransmit behaviour to account for rehash
+>=20
+> arch/alpha/include/uapi/asm/socket.h  |  2 ++
+> arch/mips/include/uapi/asm/socket.h   |  2 ++
+> arch/parisc/include/uapi/asm/socket.h |  2 ++
+> arch/sparc/include/uapi/asm/socket.h  |  2 ++
+> include/net/netns/core.h              |  1 +
+> include/net/sock.h                    | 28 ++++++++++++++-------------
+> include/uapi/asm-generic/socket.h     |  2 ++
+> include/uapi/linux/socket.h           |  4 ++++
+> net/core/filter.c                     | 10 ++++++++++
+> net/core/net_namespace.c              |  2 ++
+> net/core/sock.c                       | 13 +++++++++++++
+> net/core/sysctl_net_core.c            | 15 ++++++++++++--
+> net/ipv4/inet_connection_sock.c       |  3 +++
+> net/ipv4/tcp_output.c                 |  3 ++-
+> 14 files changed, 73 insertions(+), 16 deletions(-)
+>=20
+> --=20
+> 2.17.1
+>=20
+
