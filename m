@@ -2,92 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6630D45A134
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 12:18:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0D5E45A13F
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 12:21:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234586AbhKWLVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 06:21:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56666 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232545AbhKWLVl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 06:21:41 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id F13E361075;
-        Tue, 23 Nov 2021 11:18:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637666313;
-        bh=Jre+m9DknEcDiZag3wJIbAUDpt6awJaqSn1ZSGJ3BaA=;
-        h=In-Reply-To:References:To:Subject:From:Cc:Date:From;
-        b=J6X5vK3dErlSqczlsdnTBu9pSCS6XmOwQaWlWuDbbVOdqrmmx4vXBlw/mcgGk+uS9
-         WYRDPo1VTvPNBlGpuxBlRsybFbZV82Slvig/57jfmmJFdu4d3FCBoviaj9nMUk2G+q
-         h8ncCymMi1DsUO2xe5d2njnMFgyq3RT/qT0M4hYkCf5RTcBb0T072gcCdiZqQGg5Qx
-         Pu7YsDSlbbvIbK3+aFTRHGxpcI+MMPhXjy3mJoyXPv+QYVT3IgDpGRaFDp1IV2vJJd
-         FnxEptGsPeAaAIgF5fc4V/t9Fq0zlJtbagDnZYwT1lHI/YrurbVRFfrGu5ks1j7TQc
-         2IVOpNTKp2Nrw==
-Content-Type: text/plain; charset="utf-8"
+        id S234990AbhKWLYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 06:24:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47152 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233888AbhKWLYL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 06:24:11 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19883C061574
+        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 03:21:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=6B5ZreRL8spps0W2mRTxQmhAMNecRAY1Usm8mczHjsI=; b=MfkqOJ2Yr5gxb2yPt03USdxRAj
+        M0LYnXkmmSkY+KSEmumH0KYcCMqYOY8/4aEGD5FRDvqzW6Zj0NJDqX8L+TY3je1AdGC6HJP6p9tsS
+        fz50ITTjXUO4tqCtCDER+G10KEEOip+d17iz7kI23Ch+8jMbtl8QdMlvAqIocUeGYMZ0g70pSi2k6
+        PfU2+sgV1PxaumpjZFl/GPK5n1Yxp5O1GIhw1Ag88rXp5RL7wyqhYRX3egQC49bG7BuP3tFGjum8P
+        KvM1sfq94U98shwxspcDyS3+KJdT2RdZtODn7UpasYaSry8cmMYB869RSQpsz598uHGT6wVr9FE4K
+        CWIyPucw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55810)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mpTrA-0007oF-NV; Tue, 23 Nov 2021 11:21:00 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mpTr9-0000Aa-J3; Tue, 23 Nov 2021 11:20:59 +0000
+Date:   Tue, 23 Nov 2021 11:20:59 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net
+Subject: Re: [PATCH net 1/2] net: phylink: Force link down and retrigger
+ resolve on interface change
+Message-ID: <YZzOmzAAQcLnpuPl@shell.armlinux.org.uk>
+References: <20211122235154.6392-1-kabel@kernel.org>
+ <20211122235154.6392-2-kabel@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20211122113742.16705a54@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20211122162007.303623-1-atenart@kernel.org> <20211122083144.7d15a6ed@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <163760016601.3195.14673180551504824633@kwain> <20211122113742.16705a54@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net v2] net: avoid registering new queue objects after device unregistration
-From:   Antoine Tenart <atenart@kernel.org>
-Cc:     davem@davemloft.net, alexander.duyck@gmail.com,
-        netdev@vger.kernel.org, Michal Kubecek <mkubecek@suse.cz>
-Message-ID: <163766631025.3372.17600281769888147460@kwain>
-Date:   Tue, 23 Nov 2021 12:18:30 +0100
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211122235154.6392-2-kabel@kernel.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting Jakub Kicinski (2021-11-22 20:37:42)
-> On Mon, 22 Nov 2021 17:56:06 +0100 Antoine Tenart wrote:
-> > Quoting Jakub Kicinski (2021-11-22 17:31:44)
-> > > On Mon, 22 Nov 2021 17:20:07 +0100 Antoine Tenart wrote: =20
-> > > >    veth_set_channels+0x1c3/0x550
-> > > >    ethnl_set_channels+0x524/0x610 =20
-> > >=20
-> > > The patch looks fine, but ethtool calls should not happen after
-> > > unregister IMHO. Too many drivers would be surprised.=20
-> > >=20
-> > > Maybe we should catch unregistered devices in ethnl_ops_begin()? =20
-> >=20
-> > That might be good to have indeed, I'll have a look. I'm not sure about
-> > other paths that could do the same: if there are, we might want to keep
-> > the check in this patch as well. Or WARN to catch future misuses?
->=20
-> My knee jerk reaction was to add a WARN() just because I can't think
-> why changing queue count after unregister would be needed. But it's not
-> really illegal and we do support it before register, so why not after
-> unregister..
+On Tue, Nov 23, 2021 at 12:51:53AM +0100, Marek Behún wrote:
+> On PHY state change the phylink_resolve() function can read stale
+> information from the MAC and report incorrect link speed and duplex to
+> the kernel message log.
+> 
+> Example with a Marvell 88X3310 PHY connected to a SerDes port on Marvell
+> 88E6393X switch:
+> - PHY driver triggers state change due to PHY interface mode being
+>   changed from 10gbase-r to 2500base-x due to copper change in speed
+>   from 10Gbps to 2.5Gbps, but the PHY itself either hasn't yet changed
+>   its interface to the host, or the interrupt about loss of SerDes link
+>   hadn't arrived yet (there can be a delay of several milliseconds for
+>   this), so we still think that the 10gbase-r mode is up
+> - phylink_resolve()
+>   - phylink_mac_pcs_get_state()
+>     - this fills in speed=10g link=up
+>   - interface mode is updated to 2500base-x but speed is left at 10Gbps
+>   - phylink_major_config()
+>     - interface is changed to 2500base-x
+>   - phylink_link_up()
+>     - mv88e6xxx_mac_link_up()
+>       - .port_set_speed_duplex()
+>         - speed is set to 10Gbps
+>     - reports "Link is Up - 10Gbps/Full" to dmesg
+> 
+> Afterwards when the interrupt finally arrives for mv88e6xxx, another
+> resolve is forced in which we get the correct speed from
+> phylink_mac_pcs_get_state(), but since the interface is not being
+> changed anymore, we don't call phylink_major_config() but only
+> phylink_mac_config(), which does not set speed/duplex anymore.
+> 
+> To fix this, we need to force the link down and trigger another resolve
+> on PHY interface change event.
+> 
+> Fixes: 9525ae83959b ("phylink: add phylink infrastructure")
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> Signed-off-by: Marek Behún <kabel@kernel.org>
 
-It's a little tricky. The queue count can be changed before
-registration (updating dev->real_num_rx/tx_queues only) but the queue
-objects can't[1]. The symmetry would be to only allowing to update
-dev->real_num_tx_queues after unregister (which seems useless).
+I'm pretty sure someone will highlight that the author of the patch
+should be the first sign-off - which doesn't match given the way
+you've sent this patch. That probably needs fixing before it's
+applied.
 
-This is what's actually done for Rx queues[2]. For Tx the issue we have
-is a quirk that was added to allow qdiscs to remove their extra Tx
-queues after unregister[3] as in unregister_netdevice_many the net
-devices are unlisted and moved to NETREG_UNREGISTERING before the call
-to dev_shutdown().
-
-[1] https://elixir.bootlin.com/linux/v5.16-rc2/source/net/core/dev.c#L2918
-[2] https://elixir.bootlin.com/linux/v5.16-rc2/source/net/core/dev.c#L2967
-[3] 5c56580b74e5 ("net: Adjust TX queue kobjects if number of queues
-    changes during unregister")
-
-> We can venture a warning with a comment saying that this is just for
-> catching bad uses and see if any driver hits it on a normal path?
-
-With that a better fix seems to be what you suggested, in
-ethnl_ops_begin. A WARN in netdev_queue_update_kobjects[4] detecting
-misuses might be good as well as the logic is not that straightforward
-here.
-
-[4] Or in netif_set_real_num_tx_queues as it is already detecting when
-    queues are being disabled. !disabling && NETREG_UNREGISTERING should
-    be illegal or at least not update the kobjects.
-    https://elixir.bootlin.com/linux/v5.16-rc2/source/net/core/dev.c#L2913
-
-Thanks!
-Antoine
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
