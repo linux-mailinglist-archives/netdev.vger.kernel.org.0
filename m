@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4525E45A89F
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 17:41:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10C8445A8A7
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 17:41:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234807AbhKWQod (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 11:44:33 -0500
-Received: from mga12.intel.com ([192.55.52.136]:26556 "EHLO mga12.intel.com"
+        id S233787AbhKWQoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 11:44:38 -0500
+Received: from mga17.intel.com ([192.55.52.151]:39357 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233787AbhKWQo2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 11:44:28 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10177"; a="215086256"
+        id S233864AbhKWQoc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Nov 2021 11:44:32 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10177"; a="215767227"
 X-IronPort-AV: E=Sophos;i="5.87,258,1631602800"; 
-   d="scan'208";a="215086256"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2021 08:41:20 -0800
+   d="scan'208";a="215767227"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2021 08:41:23 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,258,1631602800"; 
-   d="scan'208";a="509475650"
+   d="scan'208";a="474813269"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga008.jf.intel.com with ESMTP; 23 Nov 2021 08:41:10 -0800
+  by orsmga002.jf.intel.com with ESMTP; 23 Nov 2021 08:41:12 -0800
 Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1ANGf4Wd016784;
-        Tue, 23 Nov 2021 16:41:07 GMT
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1ANGf4We016784;
+        Tue, 23 Nov 2021 16:41:09 GMT
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -69,9 +69,9 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
         virtualization@lists.linux-foundation.org
-Subject: [PATCH v2 net-next 01/26] rtnetlink: introduce generic XDP statistics
-Date:   Tue, 23 Nov 2021 17:39:30 +0100
-Message-Id: <20211123163955.154512-2-alexandr.lobakin@intel.com>
+Subject: [PATCH v2 net-next 02/26] xdp: provide common driver helpers for implementing XDP stats
+Date:   Tue, 23 Nov 2021 17:39:31 +0100
+Message-Id: <20211123163955.154512-3-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211123163955.154512-1-alexandr.lobakin@intel.com>
 References: <20211123163955.154512-1-alexandr.lobakin@intel.com>
@@ -81,498 +81,354 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lots of the driver-side XDP enabled drivers provide some statistics
-on XDP programs runs and different actions taken (number of passes,
-drops, redirects etc.). Regarding that it's quite similar across all
-the drivers (which is obvious), we can implement some sort of
-generic statistics using rtnetlink xstats infra to provide a way for
-exposing XDP/XSK statistics without code and stringsets duplication
-inside drivers' Ethtool callbacks.
-These 15 fields provided by the standard XDP stats should cover most
-stats that might be interesting for collecting and tracking.
-Note that most NIC drivers keep XDP statistics on a per-channel
-basis, so this also introduces a new callback for getting a number
-of channels which a driver will provide stats for. If it's not
-implemented, we assume the driver stats are shared across channels.
-If it's here, it should return either the number of channels, or 0
-if stats for this type (XDP or XSK) is shared, or -EOPNOTSUPP if it
-doesn't store such type of statistics, or -ENODATA if it does, but
-can't provide them right now for any reason (purely for better code
-readability, acts the same as -EOPNOTSUPP).
-Stats are provided as nested attrs to be able to expand them later
-on.
+Add several shorthands to reduce driver boilerplates and unify
+storing and accessing generic XDP statistics in the drivers.
+If the driver has one of xdp_{rx,tx}_drv_stats embedded into
+a ring structure, it can reuse pretty much everything, but needs
+to implement its own .ndo_xdp_stats() and .ndo_xdp_stats_nch()
+if needed. If the driver stores a separate array of xdp_drv_stats,
+it can then export it as net_device::xstats, implement only
+.ndo_xdp_stats_nch() and wire up xdp_get_drv_stats_generic()
+as .ndo_xdp_stats().
+Both XDP and XSK blocks of xdp_drv_stats are cacheline-aligned
+to avoid false-sharing, only extremely unlikely 'aborted' and
+'invalid' falls out of a 64-byte CL. xdp_rx_drv_stats_local is
+provided to put it on stack and collect the stats on hotpath,
+with accessing a real container and its atomic/seqcount sync
+points just once when exiting Rx NAPI polling.
 
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 ---
- include/linux/if_link.h      |  39 +++++-
- include/linux/netdevice.h    |  12 ++
- include/uapi/linux/if_link.h |  67 +++++++++
- net/core/rtnetlink.c         | 264 +++++++++++++++++++++++++++++++++++
- 4 files changed, 381 insertions(+), 1 deletion(-)
+ include/linux/netdevice.h |   1 +
+ include/net/xdp.h         | 162 ++++++++++++++++++++++++++++++++++++++
+ net/core/xdp.c            | 124 +++++++++++++++++++++++++++++
+ 3 files changed, 287 insertions(+)
 
-diff --git a/include/linux/if_link.h b/include/linux/if_link.h
-index 622658dfbf0a..a0dac6cb3e6a 100644
---- a/include/linux/if_link.h
-+++ b/include/linux/if_link.h
-@@ -4,8 +4,8 @@
-
- #include <uapi/linux/if_link.h>
-
-+/* We don't want these structures exposed to user space */
-
--/* We don't want this structure exposed to user space */
- struct ifla_vf_stats {
- 	__u64 rx_packets;
- 	__u64 tx_packets;
-@@ -30,4 +30,41 @@ struct ifla_vf_info {
- 	__u32 trusted;
- 	__be16 vlan_proto;
- };
-+
-+/**
-+ * struct ifla_xdp_stats - driver-side XDP statistics
-+ * @packets: number of frames passed to bpf_prog_run_xdp().
-+ * @bytes: number of bytes went through bpf_prog_run_xdp().
-+ * @errors: number of general XDP errors, if driver has one unified counter.
-+ * @aborted: number of %XDP_ABORTED returns.
-+ * @drop: number of %XDP_DROP returns.
-+ * @invalid: number of returns of unallowed values (i.e. not XDP_*).
-+ * @pass: number of %XDP_PASS returns.
-+ * @redirect: number of successfully performed %XDP_REDIRECT requests.
-+ * @redirect_errors: number of failed %XDP_REDIRECT requests.
-+ * @tx: number of successfully performed %XDP_TX requests.
-+ * @tx_errors: number of failed %XDP_TX requests.
-+ * @xmit_packets: number of successfully transmitted XDP/XSK frames.
-+ * @xmit_bytes: number of successfully transmitted XDP/XSK frames.
-+ * @xmit_errors: of XDP/XSK frames failed to transmit.
-+ * @xmit_full: number of XDP/XSK queue being full at the moment of transmission.
-+ */
-+struct ifla_xdp_stats {
-+	__u64	packets;
-+	__u64	bytes;
-+	__u64	errors;
-+	__u64	aborted;
-+	__u64	drop;
-+	__u64	invalid;
-+	__u64	pass;
-+	__u64	redirect;
-+	__u64	redirect_errors;
-+	__u64	tx;
-+	__u64	tx_errors;
-+	__u64	xmit_packets;
-+	__u64	xmit_bytes;
-+	__u64	xmit_errors;
-+	__u64	xmit_full;
-+};
-+
- #endif /* _LINUX_IF_LINK_H */
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index db3bff1ae7fd..058a00c2d19a 100644
+index 058a00c2d19a..728c650d290e 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -1327,6 +1327,13 @@ struct netdev_net_notifier {
-  *	queue id bound to an AF_XDP socket. The flags field specifies if
-  *	only RX, only Tx, or both should be woken up using the flags
-  *	XDP_WAKEUP_RX and XDP_WAKEUP_TX.
-+ * int (*ndo_get_xdp_stats_nch)(const struct net_device *dev, u32 attr_id);
-+ *	Get the number of channels which ndo_get_xdp_stats will return
-+ *	statistics for.
+@@ -2225,6 +2225,7 @@ struct net_device {
+ 		struct pcpu_lstats __percpu		*lstats;
+ 		struct pcpu_sw_netstats __percpu	*tstats;
+ 		struct pcpu_dstats __percpu		*dstats;
++		struct xdp_drv_stats /* per-channel */	*xstats;
+ 	};
+
+ #if IS_ENABLED(CONFIG_GARP)
+diff --git a/include/net/xdp.h b/include/net/xdp.h
+index 447f9b1578f3..e4f06a34d462 100644
+--- a/include/net/xdp.h
++++ b/include/net/xdp.h
+@@ -7,6 +7,7 @@
+ #define __LINUX_NET_XDP_H__
+
+ #include <linux/skbuff.h> /* skb_shared_info */
++#include <linux/u64_stats_sync.h> /* u64_stats_* */
+
+ /**
+  * DOC: XDP RX-queue information
+@@ -292,4 +293,165 @@ void xdp_attachment_setup(struct xdp_attachment_info *info,
+
+ #define DEV_MAP_BULK_SIZE XDP_BULK_QUEUE_SIZE
+
++/* Suggested XDP/XSK driver stats, mirror &ifla_xdp_stats except
++ * for generic errors, refer to its documentation for the details.
++ * The intended usage is to either have them as a standalone array
++ * of xdp_drv_stats, or embed &xdp_{rx,tx}_drv_stats into a ring
++ * structure. Having separate XDP and XSK counters is recommended.
++ */
++
++struct ifla_xdp_stats;
++
++struct xdp_rx_drv_stats {
++	struct u64_stats_sync syncp;
++	u64_stats_t packets;
++	u64_stats_t bytes;
++	u64_stats_t pass;
++	u64_stats_t drop;
++	u64_stats_t redirect;
++	u64_stats_t tx;
++	u64_stats_t redirect_errors;
++	u64_stats_t tx_errors;
++	u64_stats_t aborted;
++	u64_stats_t invalid;
++};
++
++struct xdp_tx_drv_stats {
++	struct u64_stats_sync syncp;
++	u64_stats_t packets;
++	u64_stats_t bytes;
++	u64_stats_t errors;
++	u64_stats_t full;
++};
++
++struct xdp_drv_stats {
++	struct xdp_rx_drv_stats xdp_rx;
++	struct xdp_tx_drv_stats xdp_tx;
++	struct xdp_rx_drv_stats xsk_rx ____cacheline_aligned;
++	struct xdp_tx_drv_stats xsk_tx;
++} ____cacheline_aligned;
++
++/* Shortened copy of Rx stats to put on stack */
++struct xdp_rx_drv_stats_local {
++	u32 bytes;
++	u32 packets;
++	u32 pass;
++	u32 drop;
++	u32 tx;
++	u32 tx_errors;
++	u32 redirect;
++	u32 redirect_errors;
++	u32 aborted;
++	u32 invalid;
++};
++
++#define xdp_init_rx_drv_stats(rstats) u64_stats_init(&(rstats)->syncp)
++#define xdp_init_tx_drv_stats(tstats) u64_stats_init(&(tstats)->syncp)
++
++/**
++ * xdp_init_drv_stats - initialize driver XDP stats
++ * @xdp_stats: driver container if it uses generic xdp_drv_stats
 + *
-+ * int (*ndo_get_xdp_stats)(const struct net_device *dev, u32 attr_id,
-+ *			    void *attr_data);
-+ *	Get attr_id XDP statistics into the attr_data pointer.
-  * struct devlink_port *(*ndo_get_devlink_port)(struct net_device *dev);
-  *	Get devlink port instance associated with a given netdev.
-  *	Called with a reference on the netdevice and devlink locks only,
-@@ -1550,6 +1557,11 @@ struct net_device_ops {
- 							  struct xdp_buff *xdp);
- 	int			(*ndo_xsk_wakeup)(struct net_device *dev,
- 						  u32 queue_id, u32 flags);
-+	int			(*ndo_get_xdp_stats_nch)(const struct net_device *dev,
-+							 u32 attr_id);
-+	int			(*ndo_get_xdp_stats)(const struct net_device *dev,
-+						     u32 attr_id,
-+						     void *attr_data);
- 	struct devlink_port *	(*ndo_get_devlink_port)(struct net_device *dev);
- 	int			(*ndo_tunnel_ctl)(struct net_device *dev,
- 						  struct ip_tunnel_parm *p, int cmd);
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index eebd3894fe89..dc1dd31e8274 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -1147,6 +1147,7 @@ enum {
- 	IFLA_STATS_LINK_XSTATS_SLAVE,
- 	IFLA_STATS_LINK_OFFLOAD_XSTATS,
- 	IFLA_STATS_AF_SPEC,
-+	IFLA_STATS_LINK_XDP_XSTATS,
- 	__IFLA_STATS_MAX,
- };
++ * Initializes atomic/seqcount sync points inside the containers.
++ */
++static inline void xdp_init_drv_stats(struct xdp_drv_stats *xdp_stats)
++{
++	xdp_init_rx_drv_stats(&xdp_stats->xdp_rx);
++	xdp_init_tx_drv_stats(&xdp_stats->xdp_tx);
++	xdp_init_rx_drv_stats(&xdp_stats->xsk_rx);
++	xdp_init_tx_drv_stats(&xdp_stats->xsk_tx);
++}
++
++/**
++ * xdp_update_rx_drv_stats - update driver XDP stats
++ * @rstats: target driver container
++ * @lrstats: filled onstack structure
++ *
++ * Fetches Rx path XDP statistics from the onstack structure to the
++ * driver container, respecting atomic/seqcount synchronization.
++ * Typical usage is to call it at the end of Rx NAPI polling.
++ */
++static inline void
++xdp_update_rx_drv_stats(struct xdp_rx_drv_stats *rstats,
++			const struct xdp_rx_drv_stats_local *lrstats)
++{
++	if (!lrstats->packets)
++		return;
++
++	u64_stats_update_begin(&rstats->syncp);
++	u64_stats_add(&rstats->packets, lrstats->packets);
++	u64_stats_add(&rstats->bytes, lrstats->bytes);
++	u64_stats_add(&rstats->pass, lrstats->pass);
++	u64_stats_add(&rstats->drop, lrstats->drop);
++	u64_stats_add(&rstats->redirect, lrstats->redirect);
++	u64_stats_add(&rstats->tx, lrstats->tx);
++	u64_stats_add(&rstats->redirect_errors, lrstats->redirect_errors);
++	u64_stats_add(&rstats->tx_errors, lrstats->tx_errors);
++	u64_stats_add(&rstats->aborted, lrstats->aborted);
++	u64_stats_add(&rstats->invalid, lrstats->invalid);
++	u64_stats_update_end(&rstats->syncp);
++}
++
++/**
++ * xdp_update_tx_drv_stats - update driver XDP stats
++ * @tstats: target driver container
++ * @packets: onstack packet counter
++ * @bytes: onstack octete counter
++ *
++ * Adds onstack packet/byte Tx XDP counter values from the current session
++ * to the driver container. Typical usage is to call it on completion path /
++ * Tx NAPI polling.
++ */
++static inline void xdp_update_tx_drv_stats(struct xdp_tx_drv_stats *tstats,
++					   u32 packets, u32 bytes)
++{
++	if (!packets)
++		return;
++
++	u64_stats_update_begin(&tstats->syncp);
++	u64_stats_add(&tstats->packets, packets);
++	u64_stats_add(&tstats->bytes, bytes);
++	u64_stats_update_end(&tstats->syncp);
++}
++
++/**
++ * xdp_update_tx_drv_err - update driver Tx XDP errors counter
++ * @tstats: target driver container
++ * @num: onstack error counter / number of non-xmitted frames
++ *
++ * Adds onstack error Tx XDP counter value from the current session
++ * to the driver container. Typical usage is to call it at on error
++ * path of .ndo_xdp_xmit() / XSK zerocopy xmit.
++ */
++static inline void xdp_update_tx_drv_err(struct xdp_tx_drv_stats *tstats,
++					 u32 num)
++{
++	u64_stats_update_begin(&tstats->syncp);
++	u64_stats_add(&tstats->errors, num);
++	u64_stats_update_end(&tstats->syncp);
++}
++
++/**
++ * xdp_update_tx_drv_full - update driver Tx XDP ring full counter
++ * @tstats: target driver container
++ *
++ * Adds onstack error Tx XDP counter value from the current session
++ * to the driver container. Typical usage is to call it at in case
++ * of no free descs available on a ring in .ndo_xdp_xmit() / XSK
++ * zerocopy xmit.
++ */
++static inline void xdp_update_tx_drv_full(struct xdp_tx_drv_stats *tstats)
++{
++	u64_stats_update_begin(&tstats->syncp);
++	u64_stats_inc(&tstats->full);
++	u64_stats_update_end(&tstats->syncp);
++}
++
++void xdp_fetch_rx_drv_stats(struct ifla_xdp_stats *if_stats,
++			    const struct xdp_rx_drv_stats *rstats);
++void xdp_fetch_tx_drv_stats(struct ifla_xdp_stats *if_stats,
++			    const struct xdp_tx_drv_stats *tstats);
++int xdp_get_drv_stats_generic(const struct net_device *dev, u32 attr_id,
++			      void *attr_data);
++
+ #endif /* __LINUX_NET_XDP_H__ */
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index 5ddc29f29bad..24980207303c 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -611,3 +611,127 @@ struct xdp_frame *xdpf_clone(struct xdp_frame *xdpf)
 
-@@ -1175,6 +1176,72 @@ enum {
- };
- #define IFLA_OFFLOAD_XSTATS_MAX (__IFLA_OFFLOAD_XSTATS_MAX - 1)
-
-+/* These are embedded into IFLA_STATS_LINK_XDP_XSTATS */
-+enum {
-+	IFLA_XDP_XSTATS_TYPE_UNSPEC,
-+	/* Stats collected on a "regular" channel(s) */
-+	IFLA_XDP_XSTATS_TYPE_XDP,
-+	/* Stats collected on an XSK channel(s) */
-+	IFLA_XDP_XSTATS_TYPE_XSK,
-+
-+	__IFLA_XDP_XSTATS_TYPE_CNT,
-+};
-+
-+#define IFLA_XDP_XSTATS_TYPE_START	(IFLA_XDP_XSTATS_TYPE_UNSPEC + 1)
-+#define IFLA_XDP_XSTATS_TYPE_MAX	(__IFLA_XDP_XSTATS_TYPE_CNT - 1)
-+
-+/* Embedded into IFLA_XDP_XSTATS_TYPE_XDP or IFLA_XDP_XSTATS_TYPE_XSK */
-+enum {
-+	IFLA_XDP_XSTATS_SCOPE_UNSPEC,
-+	/* netdev-wide stats */
-+	IFLA_XDP_XSTATS_SCOPE_SHARED,
-+	/* Per-channel stats */
-+	IFLA_XDP_XSTATS_SCOPE_CHANNEL,
-+
-+	__IFLA_XDP_XSTATS_SCOPE_CNT,
-+};
-+
-+/* Embedded into IFLA_XDP_XSTATS_SCOPE_SHARED/IFLA_XDP_XSTATS_SCOPE_CHANNEL */
-+enum {
-+	/* Padding for 64-bit alignment */
-+	IFLA_XDP_XSTATS_UNSPEC,
-+	/* Number of frames passed to bpf_prog_run_xdp() */
-+	IFLA_XDP_XSTATS_PACKETS,
-+	/* Number of bytes went through bpf_prog_run_xdp() */
-+	IFLA_XDP_XSTATS_BYTES,
-+	/* Number of general XDP errors if driver counts them together */
-+	IFLA_XDP_XSTATS_ERRORS,
-+	/* Number of %XDP_ABORTED returns */
-+	IFLA_XDP_XSTATS_ABORTED,
-+	/* Number of %XDP_DROP returns */
-+	IFLA_XDP_XSTATS_DROP,
-+	/* Number of returns of unallowed values (i.e. not XDP_*) */
-+	IFLA_XDP_XSTATS_INVALID,
-+	/* Number of %XDP_PASS returns */
-+	IFLA_XDP_XSTATS_PASS,
-+	/* Number of successfully performed %XDP_REDIRECT requests */
-+	IFLA_XDP_XSTATS_REDIRECT,
-+	/* Number of failed %XDP_REDIRECT requests */
-+	IFLA_XDP_XSTATS_REDIRECT_ERRORS,
-+	/* Number of successfully performed %XDP_TX requests */
-+	IFLA_XDP_XSTATS_TX,
-+	/* Number of failed %XDP_TX requests */
-+	IFLA_XDP_XSTATS_TX_ERRORS,
-+	/* Number of successfully transmitted XDP/XSK frames */
-+	IFLA_XDP_XSTATS_XMIT_PACKETS,
-+	/* Number of successfully transmitted XDP/XSK bytes */
-+	IFLA_XDP_XSTATS_XMIT_BYTES,
-+	/* Number of XDP/XSK frames failed to transmit */
-+	IFLA_XDP_XSTATS_XMIT_ERRORS,
-+	/* Number of XDP/XSK queue being full at the moment of transmission */
-+	IFLA_XDP_XSTATS_XMIT_FULL,
-+
-+	__IFLA_XDP_XSTATS_CNT,
-+};
-+
-+#define IFLA_XDP_XSTATS_START		(IFLA_XDP_XSTATS_UNSPEC + 1)
-+#define IFLA_XDP_XSTATS_MAX		(__IFLA_XDP_XSTATS_CNT - 1)
-+
- /* XDP section */
-
- #define XDP_FLAGS_UPDATE_IF_NOEXIST	(1U << 0)
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 6f25c0a8aebe..b7db68fb0879 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -5107,6 +5107,262 @@ static int rtnl_get_offload_stats_size(const struct net_device *dev)
- 	return nla_size;
+ 	return nxdpf;
  }
-
-+#define IFLA_XDP_XSTATS_NUM		(__IFLA_XDP_XSTATS_CNT - \
-+					 IFLA_XDP_XSTATS_START)
 +
-+static_assert(sizeof(struct ifla_xdp_stats) / sizeof(__u64) ==
-+	      IFLA_XDP_XSTATS_NUM);
-+
-+static u32 rtnl_get_xdp_stats_num(u32 attr_id)
++/**
++ * xdp_fetch_rx_drv_stats - helper for implementing .ndo_get_xdp_stats()
++ * @if_stats: target container passed from rtnetlink core
++ * @rstats: driver container if it uses generic xdp_rx_drv_stats
++ *
++ * Fetches Rx path XDP statistics from a suggested driver structure to
++ * the one used by rtnetlink, respecting atomic/seqcount synchronization.
++ */
++void xdp_fetch_rx_drv_stats(struct ifla_xdp_stats *if_stats,
++			    const struct xdp_rx_drv_stats *rstats)
 +{
++	u32 start;
++
++	do {
++		start = u64_stats_fetch_begin_irq(&rstats->syncp);
++
++		if_stats->packets = u64_stats_read(&rstats->packets);
++		if_stats->bytes = u64_stats_read(&rstats->bytes);
++		if_stats->pass = u64_stats_read(&rstats->pass);
++		if_stats->drop = u64_stats_read(&rstats->drop);
++		if_stats->tx = u64_stats_read(&rstats->tx);
++		if_stats->tx_errors = u64_stats_read(&rstats->tx_errors);
++		if_stats->redirect = u64_stats_read(&rstats->redirect);
++		if_stats->redirect_errors =
++			u64_stats_read(&rstats->redirect_errors);
++		if_stats->aborted = u64_stats_read(&rstats->aborted);
++		if_stats->invalid = u64_stats_read(&rstats->invalid);
++	} while (u64_stats_fetch_retry_irq(&rstats->syncp, start));
++}
++EXPORT_SYMBOL_GPL(xdp_fetch_rx_drv_stats);
++
++/**
++ * xdp_fetch_tx_drv_stats - helper for implementing .ndo_get_xdp_stats()
++ * @if_stats: target container passed from rtnetlink core
++ * @tstats: driver container if it uses generic xdp_tx_drv_stats
++ *
++ * Fetches Tx path XDP statistics from a suggested driver structure to
++ * the one used by rtnetlink, respecting atomic/seqcount synchronization.
++ */
++void xdp_fetch_tx_drv_stats(struct ifla_xdp_stats *if_stats,
++			    const struct xdp_tx_drv_stats *tstats)
++{
++	u32 start;
++
++	do {
++		start = u64_stats_fetch_begin_irq(&tstats->syncp);
++
++		if_stats->xmit_packets = u64_stats_read(&tstats->packets);
++		if_stats->xmit_bytes = u64_stats_read(&tstats->bytes);
++		if_stats->xmit_errors = u64_stats_read(&tstats->errors);
++		if_stats->xmit_full = u64_stats_read(&tstats->full);
++	} while (u64_stats_fetch_retry_irq(&tstats->syncp, start));
++}
++EXPORT_SYMBOL_GPL(xdp_fetch_tx_drv_stats);
++
++/**
++ * xdp_get_drv_stats_generic - generic implementation of .ndo_get_xdp_stats()
++ * @dev: network interface device structure
++ * @attr_id: type of statistics (XDP, XSK, ...)
++ * @attr_data: target stats container
++ *
++ * Returns 0 on success, -%EOPNOTSUPP if either driver or this function doesn't
++ * support this attr_id, -%ENODATA if the driver supports attr_id, but can't
++ * provide anything right now, and -%EINVAL if driver configuration is invalid.
++ */
++int xdp_get_drv_stats_generic(const struct net_device *dev, u32 attr_id,
++			      void *attr_data)
++{
++	const bool xsk = attr_id == IFLA_XDP_XSTATS_TYPE_XSK;
++	const struct xdp_drv_stats *drv_iter = dev->xstats;
++	const struct net_device_ops *ops = dev->netdev_ops;
++	struct ifla_xdp_stats *iter = attr_data;
++	int nch;
++	u32 i;
++
 +	switch (attr_id) {
 +	case IFLA_XDP_XSTATS_TYPE_XDP:
++		if (unlikely(!ops->ndo_bpf))
++			return -EINVAL;
++
++		break;
 +	case IFLA_XDP_XSTATS_TYPE_XSK:
-+		return IFLA_XDP_XSTATS_NUM;
-+	default:
-+		return 0;
-+	}
-+}
-+
-+static bool rtnl_get_xdp_stats_xdpxsk(struct sk_buff *skb, u32 ch,
-+				      const void *attr_data)
-+{
-+	const struct ifla_xdp_stats *xstats = attr_data;
-+
-+	xstats += ch;
-+
-+	if (nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_PACKETS, xstats->packets,
-+			      IFLA_XDP_XSTATS_UNSPEC) ||
-+	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_BYTES, xstats->bytes,
-+			      IFLA_XDP_XSTATS_UNSPEC) ||
-+	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_ERRORS, xstats->errors,
-+			      IFLA_XDP_XSTATS_UNSPEC) ||
-+	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_ABORTED, xstats->aborted,
-+			      IFLA_XDP_XSTATS_UNSPEC) ||
-+	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_DROP, xstats->drop,
-+			      IFLA_XDP_XSTATS_UNSPEC) ||
-+	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_INVALID, xstats->invalid,
-+			      IFLA_XDP_XSTATS_UNSPEC) ||
-+	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_PASS, xstats->pass,
-+			      IFLA_XDP_XSTATS_UNSPEC) ||
-+	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_REDIRECT, xstats->redirect,
-+			      IFLA_XDP_XSTATS_UNSPEC) ||
-+	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_REDIRECT_ERRORS,
-+			      xstats->redirect_errors,
-+			      IFLA_XDP_XSTATS_UNSPEC) ||
-+	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_TX, xstats->tx,
-+			      IFLA_XDP_XSTATS_UNSPEC) ||
-+	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_TX_ERRORS,
-+			      xstats->tx_errors, IFLA_XDP_XSTATS_UNSPEC) ||
-+	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_XMIT_PACKETS,
-+			      xstats->xmit_packets, IFLA_XDP_XSTATS_UNSPEC) ||
-+	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_XMIT_BYTES,
-+			      xstats->xmit_bytes, IFLA_XDP_XSTATS_UNSPEC) ||
-+	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_XMIT_ERRORS,
-+			      xstats->xmit_errors, IFLA_XDP_XSTATS_UNSPEC) ||
-+	    nla_put_u64_64bit(skb, IFLA_XDP_XSTATS_XMIT_FULL,
-+			      xstats->xmit_full, IFLA_XDP_XSTATS_UNSPEC))
-+		return false;
-+
-+	return true;
-+}
-+
-+static bool rtnl_get_xdp_stats_one(struct sk_buff *skb, u32 attr_id,
-+				   u32 scope_id, u32 ch, const void *attr_data)
-+{
-+	struct nlattr *scope;
-+
-+	scope = nla_nest_start_noflag(skb, scope_id);
-+	if (!scope)
-+		return false;
-+
-+	switch (attr_id) {
-+	case IFLA_XDP_XSTATS_TYPE_XDP:
-+	case IFLA_XDP_XSTATS_TYPE_XSK:
-+		if (!rtnl_get_xdp_stats_xdpxsk(skb, ch, attr_data))
-+			goto fail;
++		if (!ops->ndo_xsk_wakeup)
++			return -EOPNOTSUPP;
 +
 +		break;
 +	default:
-+fail:
-+		nla_nest_cancel(skb, scope);
-+
-+		return false;
++		return -EOPNOTSUPP;
 +	}
 +
-+	nla_nest_end(skb, scope);
++	if (unlikely(!drv_iter || !ops->ndo_get_xdp_stats_nch))
++		return -EINVAL;
 +
-+	return true;
-+}
-+
-+static bool rtnl_get_xdp_stats(struct sk_buff *skb,
-+			       const struct net_device *dev,
-+			       int *idxattr, int *prividx)
-+{
-+	const struct net_device_ops *ops = dev->netdev_ops;
-+	struct nlattr *xstats, *type = NULL;
-+	u32 saved_ch = *prividx & U16_MAX;
-+	u32 saved_attr = *prividx >> 16;
-+	bool nuke_xstats = true;
-+	u32 attr_id, ch = 0;
-+	int ret;
-+
-+	if (!ops || !ops->ndo_get_xdp_stats)
-+		goto nodata;
-+
-+	*idxattr = IFLA_STATS_LINK_XDP_XSTATS;
-+
-+	xstats = nla_nest_start_noflag(skb, IFLA_STATS_LINK_XDP_XSTATS);
-+	if (!xstats)
-+		return false;
-+
-+	for (attr_id = IFLA_XDP_XSTATS_TYPE_START;
-+	     attr_id < __IFLA_XDP_XSTATS_TYPE_CNT;
-+	     attr_id++) {
-+		u32 nstat, scope_id, nch;
-+		bool nuke_type = true;
-+		void *attr_data;
-+		size_t size;
-+
-+		if (attr_id > saved_attr)
-+			saved_ch = 0;
-+		if (attr_id < saved_attr)
-+			continue;
-+
-+		nstat = rtnl_get_xdp_stats_num(attr_id);
-+		if (!nstat)
-+			continue;
-+
-+		scope_id = IFLA_XDP_XSTATS_SCOPE_SHARED;
++	nch = ops->ndo_get_xdp_stats_nch(dev, attr_id);
++	switch (nch) {
++	case 0:
++		/* Stats are shared across the netdev */
 +		nch = 1;
-+
-+		if (!ops->ndo_get_xdp_stats_nch)
-+			goto shared;
-+
-+		ret = ops->ndo_get_xdp_stats_nch(dev, attr_id);
-+		if (ret == -EOPNOTSUPP || ret == -ENODATA)
-+			continue;
-+		if (ret < 0)
-+			goto out;
-+		if (!ret)
-+			goto shared;
-+
-+		scope_id = IFLA_XDP_XSTATS_SCOPE_CHANNEL;
-+		nch = ret;
-+
-+shared:
-+		size = array3_size(nch, nstat, sizeof(__u64));
-+		if (unlikely(size == SIZE_MAX)) {
-+			ret = -EOVERFLOW;
-+			goto out;
-+		}
-+
-+		attr_data = kzalloc(size, GFP_KERNEL);
-+		if (!attr_data) {
-+			ret = -ENOMEM;
-+			goto out;
-+		}
-+
-+		ret = ops->ndo_get_xdp_stats(dev, attr_id, attr_data);
-+		if (ret == -EOPNOTSUPP || ret == -ENODATA)
-+			goto kfree_cont;
-+		if (ret) {
-+kfree_out:
-+			kfree(attr_data);
-+			goto out;
-+		}
-+
-+		ret = -EMSGSIZE;
-+
-+		type = nla_nest_start_noflag(skb, attr_id);
-+		if (!type)
-+			goto kfree_out;
-+
-+		for (ch = saved_ch; ch < nch; ch++)
-+			if (!rtnl_get_xdp_stats_one(skb, attr_id, scope_id,
-+						    ch, attr_data)) {
-+				if (nuke_type)
-+					nla_nest_cancel(skb, type);
-+				else
-+					nla_nest_end(skb, type);
-+
-+				goto kfree_out;
-+			} else {
-+				nuke_xstats = false;
-+				nuke_type = false;
-+			}
-+
-+		nla_nest_end(skb, type);
-+kfree_cont:
-+		kfree(attr_data);
++		break;
++	case 1 ... INT_MAX:
++		/* Stats are per-channel */
++		break;
++	default:
++		return nch;
 +	}
 +
-+	ret = 0;
++	for (i = 0; i < nch; i++) {
++		const struct xdp_rx_drv_stats *rstats;
++		const struct xdp_tx_drv_stats *tstats;
 +
-+out:
-+	if (nuke_xstats)
-+		nla_nest_cancel(skb, xstats);
-+	else
-+		nla_nest_end(skb, xstats);
++		rstats = xsk ? &drv_iter->xsk_rx : &drv_iter->xdp_rx;
++		xdp_fetch_rx_drv_stats(iter, rstats);
 +
-+	if (ret && ret != -EOPNOTSUPP && ret != -ENODATA) {
-+		/* If the driver has 60+ queues, we can run out of skb
-+		 * tailroom even when putting stats for one type. Save
-+		 * channel number in prividx to resume from it next time
-+		 * rather than restaring the whole type and running into
-+		 * the same problem again.
-+		 */
-+		*prividx = (attr_id << 16) | ch;
-+		return false;
++		tstats = xsk ? &drv_iter->xsk_tx : &drv_iter->xdp_tx;
++		xdp_fetch_tx_drv_stats(iter, tstats);
++
++		drv_iter++;
++		iter++;
 +	}
 +
-+	*prividx = 0;
-+nodata:
-+	*idxattr = 0;
-+
-+	return true;
++	return 0;
 +}
-+
-+static size_t rtnl_get_xdp_stats_size(const struct net_device *dev)
-+{
-+	const struct net_device_ops *ops = dev->netdev_ops;
-+	size_t size = 0;
-+	u32 attr_id;
-+
-+	if (!ops || !ops->ndo_get_xdp_stats)
-+		return 0;
-+
-+	for (attr_id = IFLA_XDP_XSTATS_TYPE_START;
-+	     attr_id < __IFLA_XDP_XSTATS_TYPE_CNT;
-+	     attr_id++) {
-+		u32 nstat = rtnl_get_xdp_stats_num(attr_id);
-+		u32 nch = 1;
-+		int ret;
-+
-+		if (!nstat)
-+			continue;
-+
-+		if (!ops->ndo_get_xdp_stats_nch)
-+			goto shared;
-+
-+		ret = ops->ndo_get_xdp_stats_nch(dev, attr_id);
-+		if (ret < 0)
-+			continue;
-+		if (ret > 0)
-+			nch = ret;
-+
-+shared:
-+		size += nla_total_size(0) +	/* IFLA_XDP_XSTATS_TYPE_* */
-+			(nla_total_size(0) +	/* IFLA_XDP_XSTATS_SCOPE_* */
-+			 nla_total_size_64bit(sizeof(__u64)) * nstat) * nch;
-+	}
-+
-+	if (size)
-+		size += nla_total_size(0);	/* IFLA_STATS_LINK_XDP_XSTATS */
-+
-+	return size;
-+}
-+
- static int rtnl_fill_statsinfo(struct sk_buff *skb, struct net_device *dev,
- 			       int type, u32 pid, u32 seq, u32 change,
- 			       unsigned int flags, unsigned int filter_mask,
-@@ -5243,6 +5499,11 @@ static int rtnl_fill_statsinfo(struct sk_buff *skb, struct net_device *dev,
- 		*idxattr = 0;
- 	}
-
-+	if (stats_attr_valid(filter_mask, IFLA_STATS_LINK_XDP_XSTATS,
-+			     *idxattr) &&
-+	    !rtnl_get_xdp_stats(skb, dev, idxattr, prividx))
-+		goto nla_put_failure;
-+
- 	nlmsg_end(skb, nlh);
-
- 	return 0;
-@@ -5318,6 +5579,9 @@ static size_t if_nlmsg_stats_size(const struct net_device *dev,
- 		rcu_read_unlock();
- 	}
-
-+	if (stats_attr_valid(filter_mask, IFLA_STATS_LINK_XDP_XSTATS, 0))
-+		size += rtnl_get_xdp_stats_size(dev);
-+
- 	return size;
- }
-
++EXPORT_SYMBOL_GPL(xdp_get_drv_stats_generic);
 --
 2.33.1
 
