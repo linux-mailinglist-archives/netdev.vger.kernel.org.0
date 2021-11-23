@@ -2,138 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43361459E23
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 09:33:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E7D0459E20
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 09:33:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234816AbhKWIg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S234775AbhKWIg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 23 Nov 2021 03:36:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36734 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234773AbhKWIg0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 03:36:26 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB976C06173E
-        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 00:33:18 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id l25so71803244eda.11
-        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 00:33:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=8xSm0htY7uzvXc6ZHPstXw3E/MOWP40sTEpcuQsBwNE=;
-        b=iP9GNaCGIVRENAj0YlyaIOOHrzmIWv8j74Xx5bHbPV1eG9ZTIfOXYsqPjR1Q86mAlg
-         zQivsH4+pLS7oaWE5XiReLSoCgwGOJI+bUxeKw2VJP8cAakS1QgoLa2sUHt9e3ycgTQO
-         PihVWevLqciK1u0PHBdmApfOGbJziQtmvySEQhsfNn1FZhDIPV1kADm1GUGZWYmrKjf7
-         n7Narq8phV6XrPBDSfCDeIiLJYaE/M9xu3CIaQUJJ7hjOYXA3JJFuV9oakw2kk4rjyeL
-         ihwzPm/Pl8tTJ8S+fElW06jWtKELROIl610I+Tz5b/8Se0/J6LD0kFJ9+XdB1qtZrre3
-         njEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=8xSm0htY7uzvXc6ZHPstXw3E/MOWP40sTEpcuQsBwNE=;
-        b=hdP7lkpJbNZIEGAJG6o+NQTS21rPkZTX9ZeXsotvuByNSbr1eGdqhgaEV1otI6g1KF
-         E+VdXkva6awnjeb0bLxj1MEZjHb8MYpTCO8yIUFOAt1IQM30bWPUxt8weltCPnMSIgqF
-         mhsZBpd6+/S3KKJxTjw7jlJLZeN8CxYljNXgyM0yB3AF0QgW9dagLY/AT3LNVrX2QAQS
-         AQ/Phc3p9asibX1irxVCE1kxqicQ6vyi2kAGtXGM2UTLtfWrCOZRvGmB4r/uXv8SxUqn
-         EBU666vWGa/q7BecE/y6yuiq0u1xbStqCIOG+BqFvIlK2Wx0kJpvCFEjNs0zXOi5QAlq
-         wv6A==
-X-Gm-Message-State: AOAM532AQI4xzb3DQxQOs54mlC8z5lQ2ISON6su9/pNtA7XrL4sJJ+sr
-        TU28RKhJrUqyvMwursbwnMSjrKdDUgYjBObNa/YflKCapbIzZg==
-X-Google-Smtp-Source: ABdhPJz4Ge/YJURetAUcaVRMXKsZ4VAQ5tJ64Viz8V3KNHbWiWXlwTZMvoKbKzl+4t7kXzzjfgOlM1Kud1SL1asAqXQ=
-X-Received: by 2002:a17:906:c302:: with SMTP id s2mr5290537ejz.499.1637656396448;
- Tue, 23 Nov 2021 00:33:16 -0800 (PST)
+Received: from mail.kernel.org ([198.145.29.99]:49034 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234757AbhKWIgY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Nov 2021 03:36:24 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DB6C1608FB;
+        Tue, 23 Nov 2021 08:33:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637656396;
+        bh=DShymrwjT8suOFERzKZ8RSxp06h7hl6MKSGRjFp0dLg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=q59DBGYSmDaBwa7sPPUjvRJjpQG1eJKGUt7sLDriH3yrdEXyDpjqkA9IvTlTlVTZ/
+         ewrz2G8bQlhYVwM5HL2QbJJ4gxwb3ODIgoiNDo1A5pLJFUms4+zvWQPjFpntswlZfS
+         CBbmEV6/a7YS+Azy6/Is/4wFsOXRd97C0Cpwx/PLjyTB6F5+mIwTFPrs8ERdU8Oif2
+         5yesb4yX7yYi/Fm/QVlSeqd0V1C+PrbZ6IuVl2tDCJgJz5VznKLWizENLhrfQVeS2O
+         /H6yIXtDXIeDsA3Wg2dCeXt46nJfjTE6FZXeZT8gtGJj64ySaj6m0KfyNhDT/X/K09
+         sPIVP0r6tdEjA==
+Date:   Tue, 23 Nov 2021 10:33:13 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>, Aya Levin <ayal@mellanox.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>, drivers@pensando.io,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        intel-wired-lan@lists.osuosl.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org,
+        Michael Chan <michael.chan@broadcom.com>,
+        netdev@vger.kernel.org, oss-drivers@corigine.com,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Simon Horman <simon.horman@corigine.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next 5/6] devlink: Reshuffle resource registration
+ logic
+Message-ID: <YZynSa6s8kBKtSYB@unreal>
+References: <cover.1637173517.git.leonro@nvidia.com>
+ <6176a137a4ded48501e8a06fda0e305f9cfc787c.1637173517.git.leonro@nvidia.com>
+ <20211117204956.6a36963b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YZYFvIK9mkP107tD@unreal>
+ <20211118174813.54c3731f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YZfFDSnnjOG+wSyK@unreal>
+ <20211119081017.6676843b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YZoHGKqLz6UBk2Sx@unreal>
+ <20211122182728.370889f2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 23 Nov 2021 14:03:05 +0530
-Message-ID: <CA+G9fYuNibUwficRoq-SS=6s2p+-rXUUR03nHfFbPUC8HoyLpA@mail.gmail.com>
-Subject: drivers/net/ethernet/apple/mace.c:170:34: error: assignment of
- read-only location '*(dev->dev_addr + (sizetype)j)'
-To:     Netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Hui Tang <tanghui20@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211122182728.370889f2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While building Linux next 20211123 tag for powerpc with gcc-11
-following warnings / errors noticed.
+On Mon, Nov 22, 2021 at 06:27:28PM -0800, Jakub Kicinski wrote:
+> On Sun, 21 Nov 2021 10:45:12 +0200 Leon Romanovsky wrote:
+> > On Fri, Nov 19, 2021 at 08:10:17AM -0800, Jakub Kicinski wrote:
+> > > On Fri, 19 Nov 2021 17:38:53 +0200 Leon Romanovsky wrote:  
+> > > > My approach works, exactly like it works in other subsystems.
+> > > > https://lore.kernel.org/netdev/cover.1636390483.git.leonro@nvidia.com/  
+> > > 
+> > > What "other subsystems"? I'm aware of the RFC version of these patches.  
+> > 
+> > Approach to have fine-grained locking scheme, instead of having one big lock.
+> > This was done in MM for mmap_sem, we did it for RDMA too.
+> 
+> You're breaking things up to avoid lock ordering issues. The user can
+> still only run a single write command at a time.
+> 
+> > > Breaking up the locks to to protect sub-objects only is fine for
+> > > protecting internal lists but now you can't guarantee that the object
+> > > exists when driver is called.  
+> > 
+> > I can only guess about which objects you are talking.
+> 
+> It obviously refers to the port splitting I mentioned below.
+> 
+> > If you are talking about various devlink sub-objects (ports, traps,
+> > e.t.c), they created by the drivers and as such should be managed by them.
+> > Also they are connected to devlink which is guaranteed to exist. At the end,
+> > they called to devlink_XXX->devlink pointer without any existence check.
+> > 
+> > If you are talking about devlink instance itself, we guarantee that it
+> > exists between devlink_alloc() and devlink_free(). It seems to me pretty
+> > reasonable request from drivers do not access devlink before devlink_alloc()
+> > or after devlink_free(),
+> > 
+> > > I'm sure you'll utter your unprovable "in real drivers.." but the fact
+> > > is my approach does not suffer from any such issues. Or depends on
+> > > drivers registering devlink last.  
+> > 
+> > Registration of devlink doesn't do anything except opening it to the world.
+> > The lifetime is controlled with alloc and free. My beloved sentence "in
+> > real drivers ..." belongs to use of devlink_put and devlink_locks outside
+> > of devlink.c and nothing more.
+> 
+> As soon as there is a inter-dependency between two subsystems "must 
+> be last" breaks down.
 
-make --silent --keep-going --jobs=8
-O=/home/tuxbuild/.cache/tuxmake/builds/current ARCH=powerpc
-CROSS_COMPILE=powerpc64le-linux-gnu- 'CC=sccache
-powerpc64le-linux-gnu-gcc' 'HOSTCC=sccache gcc'
-<stdin>:1559:2: warning: #warning syscall futex_waitv not implemented [-Wcpp]
-drivers/net/ethernet/apple/mace.c: In function 'mace_probe':
-drivers/net/ethernet/apple/mace.c:170:34: error: assignment of
-read-only location '*(dev->dev_addr + (sizetype)j)'
-  170 |                 dev->dev_addr[j] = rev ? bitrev8(addr[j]): addr[j];
-      |                                  ^
-drivers/net/ethernet/apple/mace.c: In function 'mace_reset':
-drivers/net/ethernet/apple/mace.c:349:32: warning: passing argument 2
-of '__mace_set_address' discards 'const' qualifier from pointer target
-type [-Wdiscarded-qualifiers]
-  349 |     __mace_set_address(dev, dev->dev_addr);
-      |                             ~~~^~~~~~~~~~
-drivers/net/ethernet/apple/mace.c:93:62: note: expected 'void *' but
-argument is of type 'const unsigned char *'
-   93 | static void __mace_set_address(struct net_device *dev, void *addr);
-      |                                                        ~~~~~~^~~~
-drivers/net/ethernet/apple/mace.c: In function '__mace_set_address':
-drivers/net/ethernet/apple/mace.c:388:43: error: assignment of
-read-only location '*(dev->dev_addr + (sizetype)i)'
-  388 |         out_8(&mb->padr, dev->dev_addr[i] = p[i]);
-      |                                           ^
-make[5]: *** [scripts/Makefile.build:288:
-drivers/net/ethernet/apple/mace.o] Error 1
-drivers/net/ethernet/apple/bmac.c: In function 'bmac_probe':
-drivers/net/ethernet/apple/bmac.c:1287:34: error: assignment of
-read-only location '*(dev->dev_addr + (sizetype)j)'
- 1287 |                 dev->dev_addr[j] = rev ? bitrev8(addr[j]): addr[j];
-      |                                  ^
-make[5]: *** [scripts/Makefile.build:288:
-drivers/net/ethernet/apple/bmac.o] Error 1
-make[5]: Target '__build' not remade because of errors.
-make[4]: *** [scripts/Makefile.build:571: drivers/net/ethernet/apple] Error 2
-drivers/net/ethernet/freescale/fec_mpc52xx.c: In function 'mpc52xx_fec_start':
-drivers/net/ethernet/freescale/fec_mpc52xx.c:659:39: warning: passing
-argument 2 of 'mpc52xx_fec_set_paddr' discards 'const' qualifier from
-pointer target type [-Wdiscarded-qualifiers]
-  659 |         mpc52xx_fec_set_paddr(dev, dev->dev_addr);
-      |                                    ~~~^~~~~~~~~~
-drivers/net/ethernet/freescale/fec_mpc52xx.c:102:63: note: expected
-'u8 *' {aka 'unsigned char *'} but argument is of type 'const unsigned
-char *'
-  102 | static void mpc52xx_fec_set_paddr(struct net_device *dev, u8 *mac)
-      |                                                           ~~~~^~~
-make[4]: Target '__build' not remade because of errors.
-make[3]: *** [scripts/Makefile.build:571: drivers/net/ethernet] Error 2
+"Must be last" is better to be changed "when the device is ready".
+
+-----------------------------------------------------------------
+> The real question is whether you now require devlink_register()
+> to go last in general? 
+
+No, it is not requirement, but my suggestion. You need to be aware that
+after call to devlink_register(), the device will be fully open for devlink
+netlink access. So it is strongly advised to put devlink_register to be the
+last command in PCI initialization sequence.
+
+https://lore.kernel.org/netdev/YXhVd16heaHCegL1@unreal/
+--------------------------------------------------------------------
+
+> 
+> > > I can start passing a pointer to a devlink_port to split/unsplit
+> > > functions, which is a great improvement to the devlink driver API.  
+> > 
+> > You can do it with my approach too. We incremented reference counter
+> > of devlink instance when devlink_nl_cmd_port_split_doit() was called,
+> > and we can safely take devlink->port_list_lock lock before returning
+> > from pre_doit.
+> 
+> Wait, I thought you'd hold devlink->lock around split/unsplit.
+
+I'm holding.
+
+    519 static int devlink_nl_pre_doit(const struct genl_ops *ops,
+    520                                struct sk_buff *skb, struct genl_info *info)
+    521 {
+    ...
+    529
+    530         mutex_lock(&devlink->lock);
 
 
-Build config:
-https://builds.tuxbuild.com/21J9lNXArf0rGC2zEytrVxfwmQP/config
+> 
+> Please look at the port splitting case, mlx5 doesn't implement it
+> but it's an important feature.
 
+I'll, but please don't forget that it was RFC, just to present that
+devlink can be changed internally without exposing internals.
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> 
+> Either way, IDK how ref count on devlink helps with lifetime of a
+> subobject. You must assume the sub-objects can only be created outside
+> of the time devlink instance is visible or under devlink->lock?
 
-meta data:
------------
-    git describe: next-20211123
-    git_repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
-    git_sha: aacdecce8147c20b01f865b4e214bb8dbe8c4af1
-    git_short_log: aacdecce8147 (\"Add linux-next specific files for 20211123\")
-    target_arch: powerpc
-    toolchain: gcc-11
+The devlink lifetime is:
+stages:        I                   II                   III   
+ devlink_alloc -> devlink_register -> devlink_unregister -> devlink_free.
 
-steps to reproduce:
-tuxmake --runtime podman --target-arch powerpc --toolchain gcc-11
---kconfig ppc6xx_defconfig
+All sub-objects should be created between devlink_alloc and devlink_free.
+It will ensure that ->devlink pointer is always valid.
 
-https://builds.tuxbuild.com/21J9lNXArf0rGC2zEytrVxfwmQP/tuxmake_reproducer.sh
+Stage I:
+ * There is no need to hold any devlink locks or increase reference counter.
+   If driver doesn't do anything crazy during its init, nothing in devlink
+   land will run in parallel. 
+Stage II:
+ * There is a need to hold devlink->lock and/or play with reference counter
+   and/or use fine-grained locks. Users can issue "devlink ..." commands.
+Stage III:
 
---
-Linaro LKFT
-https://lkft.linaro.org
+Thanks
