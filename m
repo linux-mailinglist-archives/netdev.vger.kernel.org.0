@@ -2,77 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59B9245AEE4
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 23:14:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F112A45AEFC
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 23:24:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231240AbhKWWR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 17:17:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58318 "EHLO
+        id S236072AbhKWW1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 17:27:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229549AbhKWWR0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 17:17:26 -0500
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1316DC061574
-        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 14:14:18 -0800 (PST)
-Received: by mail-qk1-x72f.google.com with SMTP id 132so685261qkj.11
-        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 14:14:17 -0800 (PST)
+        with ESMTP id S233344AbhKWW1f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 17:27:35 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6AB3C061574
+        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 14:24:26 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id j5-20020a17090a318500b001a6c749e697so2946954pjb.1
+        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 14:24:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=FgGRqcIPGs3JAdsEaJJyTc5+ZAroi5iRzDKNMF92h1Y=;
-        b=jbB6BR1MLX4EZffXsp56Io8ajko+dAr86YAbBOokzdcr6nc2Xg/wdMMjf3dM23O7tO
-         N3mDwDz30RhKYDsQXR1D0abfRDlWzEHZp0F8JYR6SqN+TZrQzmIWGJ5YQ8JiW0BHodHV
-         QcoPkKUGkB8dw/ZTBRM9nQclMDxTdnlSvzkfpk337sSw3LaQdxB6MfHbPzvx2HCqeTRB
-         TRZlE+NzRP3VdLBFRWFd7NykYor0aA5R+fts4souZOnZ9eUSGSApKGSANEY77DfXxqC2
-         ej6BiVBYVLMCw/9fHExeuLPobt6rC4fkKmmdVqHlQ5x2lwlZ681NbnR9hkokTXgiBijt
-         PohA==
+        bh=QL85HYqgA6GF4uhQ8ZyFWJFwb8eqGfhc4B+itvTUuGA=;
+        b=A3RNJUDpL2H/03nkPkWgzYfulNxd6QFiJba7/iE00X0VOPl79+jNW9IBDex/zHl+V4
+         nnzMcnfiNJeSHZWbi5ovkicJFp5WDL89otFRu0/4Qv6BFWWDb0eindLQ0wBanktf3zp9
+         oGUKLWjTekhq25oboiLVQ29oqL9HshYkZJQY3HdUClxwCahipGhsoRH0qtGBSzsnhteS
+         m+g5Ln1Wjj6/MMjLt62U6bPCM3XQST2yP2DpxDE2ewN7ekgHREqejxKXu8agwO7Gu5HM
+         RWNxwG65ll0bRKT9CuMmiG+Z6ovf5oTY1hI/6nYd5/Hmgclu/pnaiBl7JQjYj3oHoLqs
+         kQpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=FgGRqcIPGs3JAdsEaJJyTc5+ZAroi5iRzDKNMF92h1Y=;
-        b=KeSZyqkPaIG3WeOa6yOxxB7A+qPNjaiJy1JEiCN5B3YVZ3gkcEkEZGgTc6y3OolqFK
-         LBafQBk2JyTIRct7pWBY3z4NIfiFhI9QZFSKDVkrvCd1W+80panTuz/eBNzNWC2mHAGo
-         k24LKDxk24yFG+45aCwh0iUlpdQB7rcXjfzBmE2QOUBRY+UCLTWH/fugaEkyqsOtTte7
-         17kt8qfNA3L/DD0oTTV4Otiy5iUy3rsbVrGSR9y5ad1ggxftnjMicMl2OtclKQ36h4UR
-         0XRh/TXq798rBSQLs22TxaKGJAmlOaJVp9xYY3sDQrOeC+Ha6+IEM1Y0JUWF0zYa3NDz
-         ve4A==
-X-Gm-Message-State: AOAM531JObaFY4mF+22k+LqDw/4C8oPHPA6MBT1AO4rK8hI/BcxvE2db
-        uB9wGdXr+Z1Rko9MUQKwcqag674DcFhVyKuo9uk=
-X-Google-Smtp-Source: ABdhPJx1kZWj5rhCtU8kANvtG59mnhrgZcUJ/ACcGqUinpntgttZ8OLdoFlwJo3YlDzcC/Wqxvqs1GqWVDO3+vkLU+0=
-X-Received: by 2002:a05:620a:74d:: with SMTP id i13mr845323qki.148.1637705656957;
- Tue, 23 Nov 2021 14:14:16 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QL85HYqgA6GF4uhQ8ZyFWJFwb8eqGfhc4B+itvTUuGA=;
+        b=KfbVyRg9uZnB23bkPEIKTDjHPb4YiPxDcGMNEE1SipFuOLXda/rg1mjB2mfDEtt+8p
+         S9a+AiRWmlwtaOyZZtxBH8bDPX1KWxDvisK7oi8ePhZA5MPN6kXt7cUpZbVmUJoPkY1e
+         lfxYlf2VHthEt09e0DWIL8CxQ4dxNgikTwCh6EeBODnnbQbf5il9b//k/JpHOGKGJ5X8
+         hCCfpAXc5dBx4OKugswIdMrbjz5SELxaEqmtU5oAeMHEHWbn3R9LtUOpQMTAs8iOj18b
+         iflfFNf4E7OMz6TcjNo7FmQ93l3uoKgCIemKQPG9jr3wjrBsFfxAY4StUAcrGntvRugg
+         PRgQ==
+X-Gm-Message-State: AOAM531msnB5KSeKfvu9Rsx4W1MSKD+WqvHhq3Ouwl43gttAJh6klPKs
+        0Hv9Ku0FuMtrE53lxH10tsABpiSjrho=
+X-Google-Smtp-Source: ABdhPJxk9pPSYgt5Ezz19h6wohxHimlCx8ZSn1fCUced6+F22UZLdPdkdN2amDpRAE6qyDiNOcJFyA==
+X-Received: by 2002:a17:90b:4d0f:: with SMTP id mw15mr7890320pjb.0.1637706265884;
+        Tue, 23 Nov 2021 14:24:25 -0800 (PST)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id n71sm13124643pfd.50.2021.11.23.14.24.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Nov 2021 14:24:25 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, olteanv@gmail.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Subject: [PATCH net-next] MAINTAINERS: Update B53 section to cover SF2 switch driver
+Date:   Tue, 23 Nov 2021 14:24:22 -0800
+Message-Id: <20211123222422.3745485-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Received: by 2002:ad4:5b8f:0:0:0:0:0 with HTTP; Tue, 23 Nov 2021 14:14:16
- -0800 (PST)
-Reply-To: yousefzongo5722@gmail.com
-From:   Mr yousef zongo <farmfritesbv@gmail.com>
-Date:   Tue, 23 Nov 2021 14:14:16 -0800
-Message-ID: <CAEGAj4wTXraWTjRPLvdNwoS-5KUobQsvQCn-RFWih_UZFXr_tQ@mail.gmail.com>
-Subject: THE AMOUNT IS 27.5 MILLIOMS USD
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RGVhcsKgRnJpZW5kLA0KDQpHcmVldGluZ3MuDQoNCkhvd8KgYXJlwqB5b3XCoGRvaW5nwqB0b2Rh
-ecKgacKgaG9wZcKgZmluZT8NCg0KScKgY2FtZcKgYWNyb3NzwqB5b3VywqBlLW1haWzCoGNvbnRh
-Y3TCoHByaW9ywqBhwqBwcml2YXRlwqBzZWFyY2jCoHdoaWxlwqBpbsKgbmVlZA0Kb2bCoHlvdXLC
-oGFzc2lzdGFuY2UuwqBNecKgbmFtZcKgTXIuwqB5b3VzZWYgIHpvbmdvICDigJnCoEnCoHdvcmvC
-oHdpdGjCoHRoZQ0KZGVwYXJ0bWVudMKgb2bCoEF1ZGl0wqBhbmTCoGFjY291bnRpbmfCoG1hbmFn
-ZXLCoGhlcmXCoGluwqBVQkHCoEJhbmvCoG9mwqBBZnJpY2EsDQpUaGVyZcKgaXPCoHRoaXPCoGZ1
-bmTCoHRoYXTCoHdhc8Kga2VlcMKgaW7CoG15wqBjdXN0b2R5wqB5ZWFyc8KgYWdvwqBhbmTCoEnC
-oG5lZWQNCnlvdXLCoGFzc2lzdGFuY2XCoGZvcsKgdGhlwqB0cmFuc2ZlcnJpbmfCoG9mwqB0aGlz
-wqBmdW5kwqB0b8KgeW91csKgYmFua8KgYWNjb3VudA0KZm9ywqBib3RowqBvZsKgdXPCoGJlbmVm
-aXTCoGZvcsKgbGlmZcKgdGltZcKgaW52ZXN0bWVudMKgYW5kwqB0aGXCoGFtb3VudMKgaXPCoChV
-Uw0KJDI3LDUwMC7CoE1pbGxpb27CoERvbGxhcnMpLg0KDQpJwqBoYXZlwqBldmVyecKgaW5xdWly
-ecKgZGV0YWlsc8KgdG/CoG1ha2XCoHRoZcKgYmFua8KgYmVsaWV2ZcKgeW91wqBhbmTCoHJlbGVh
-c2UNCnRoZcKgZnVuZMKgdG/CoHlvdXLCoGJhbmvCoGFjY291bnTCoGluwqB3aXRoaW7CoDfCoGJh
-bmtpbmfCoHdvcmtpbmfCoGRheXPCoHdpdGgNCnlvdXLCoGZ1bGzCoGNvLW9wZXJhdGlvbsKgd2l0
-aMKgbWXCoGFmdGVywqBzdWNjZXNzwqBOb3RlwqA1MCXCoGZvcsKgeW91wqB3aGlsZQ0KNTAlwqBm
-b3LCoG1lwqBhZnRlcsKgc3VjY2Vzc8Kgb2bCoHRoZcKgdHJhbnNmZXLCoG9mwqB0aGXCoGZ1bmRz
-wqB0b8KgeW91csKgYmFuaw0KYWNjb3VudMKgb2theS4NCg0KV0FJVElOR8KgVE/CoEhFQVLCoEZS
-T03CoFlPVS4NClRIQU5LUy4NCg0KTXIuwqB5b3VzZWYgIHpvbmdvICwNCg==
+Update the B53 Ethernet switch section to contain
+drivers/net/dsa/bcm_sf2*.
+
+Reported-by: Russell King (Oracle) <linux@armlinux.org.uk>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ MAINTAINERS | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 10c8ae3a8c73..dbe05daf17fa 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3570,13 +3570,14 @@ L:	netdev@vger.kernel.org
+ S:	Supported
+ F:	drivers/net/ethernet/broadcom/b44.*
+ 
+-BROADCOM B53 ETHERNET SWITCH DRIVER
++BROADCOM B53/SF2 ETHERNET SWITCH DRIVER
+ M:	Florian Fainelli <f.fainelli@gmail.com>
+ L:	netdev@vger.kernel.org
+ L:	openwrt-devel@lists.openwrt.org (subscribers-only)
+ S:	Supported
+ F:	Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
+ F:	drivers/net/dsa/b53/*
++F:	drivers/net/dsa/bcm_sf2*
+ F:	include/linux/dsa/brcm.h
+ F:	include/linux/platform_data/b53.h
+ 
+-- 
+2.25.1
+
