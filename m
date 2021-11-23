@@ -2,152 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63D6845A910
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 17:43:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE2F345A885
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 17:40:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239635AbhKWQqH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 11:46:07 -0500
-Received: from mga18.intel.com ([134.134.136.126]:26963 "EHLO mga18.intel.com"
+        id S231694AbhKWQnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 11:43:41 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47562 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239064AbhKWQp2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 11:45:28 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10177"; a="221937576"
-X-IronPort-AV: E=Sophos;i="5.87,258,1631602800"; 
-   d="scan'208";a="221937576"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2021 08:42:20 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,258,1631602800"; 
-   d="scan'208";a="538313128"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga001.jf.intel.com with ESMTP; 23 Nov 2021 08:42:10 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1ANGf4X4016784;
-        Tue, 23 Nov 2021 16:42:07 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shay Agroskin <shayagr@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        David Arinzon <darinzon@amazon.com>,
-        Noam Dagan <ndagan@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Andrei Vagin <avagin@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Cong Wang <cong.wang@bytedance.com>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH v2 net-next 26/26] Documentation: reflect generic XDP statistics
-Date:   Tue, 23 Nov 2021 17:39:55 +0100
-Message-Id: <20211123163955.154512-27-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20211123163955.154512-1-alexandr.lobakin@intel.com>
-References: <20211123163955.154512-1-alexandr.lobakin@intel.com>
+        id S229719AbhKWQnk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Nov 2021 11:43:40 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5695B60295;
+        Tue, 23 Nov 2021 16:40:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637685632;
+        bh=CVpIWPG36vNkTFZZJMBQeFeOSgxKeePq0d630rHkcDY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=gZVw9WhaPxSgcF3CaiCpql576BZ7Vtu9IESCGML2taqmuYyfiw1m5doBw38/G48/5
+         S/JR22vLlfdRcmDi2tPNLDfxl6DaMmIdMDA/BlrmpOTXfaq1hadenaT8YtgY3326P4
+         TnAZSWOWEjofiF8w7hEXK0ZVdZXzw62xRuuALMHC5vnW0jOt36IAJ/keMmQjICKdV8
+         anYh9k4yucYB1F+ljejVjLN2uuCWJIZ/7DJT1W97hz8vUC7jtzJQzhv5MOR9zlCHz1
+         c+1Tc+snDxDH1smpS8AwJf2HIbzuWeIhGFc8jSqGJ0ULYXssekgHLBGLKSp2/eqzHj
+         uwisB8LPdOmNw==
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
+Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Sean Anderson <sean.anderson@seco.com>, davem@davemloft.net,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [PATCH net-next v2 0/8] Extend `phy-mode` to string array
+Date:   Tue, 23 Nov 2021 17:40:19 +0100
+Message-Id: <20211123164027.15618-1-kabel@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a couple of hints on how to retrieve and implement generic XDP
-statistics for drivers/interfaces. Mention that it's unwanted to
-include related XDP counters in driver-defined Ethtool stats.
+Hello,
 
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
----
- Documentation/networking/statistics.rst | 33 +++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+this is v2 of series that extends the `phy-connection-type` /
+`phy-mode` property to be an array of strings, instead of just one
+string, and makes the corresponding changes to code. It then uses
+this changes to make marvell10g PHY driver choose the best MACTYPE
+according to which phy-modes are supported by the MAC, the PHY and
+the board.
 
-diff --git a/Documentation/networking/statistics.rst b/Documentation/networking/statistics.rst
-index c9aeb70dafa2..ec5d14f279e1 100644
---- a/Documentation/networking/statistics.rst
-+++ b/Documentation/networking/statistics.rst
-@@ -41,6 +41,29 @@ If `-s` is specified once the detailed errors won't be shown.
- 
- `ip` supports JSON formatting via the `-j` option.
- 
-+For some interfaces, standard XDP statistics are available.
-+It can be accessed the same ways, e.g. `ip`::
-+
-+  $ ip link xdpstats dev enp178s0
-+  16: enp178s0:
-+  xdp-channel0-rx_xdp_packets: 0
-+  xdp-channel0-rx_xdp_bytes: 1
-+  xdp-channel0-rx_xdp_errors: 2
-+  xdp-channel0-rx_xdp_aborted: 3
-+  xdp-channel0-rx_xdp_drop: 4
-+  xdp-channel0-rx_xdp_invalid: 5
-+  xdp-channel0-rx_xdp_pass: 6
-+  xdp-channel0-rx_xdp_redirect: 7
-+  xdp-channel0-rx_xdp_redirect_errors: 8
-+  xdp-channel0-rx_xdp_tx: 9
-+  xdp-channel0-rx_xdp_tx_errors: 10
-+  xdp-channel0-tx_xdp_xmit_packets: 11
-+  xdp-channel0-tx_xdp_xmit_bytes: 12
-+  xdp-channel0-tx_xdp_xmit_errors: 13
-+  xdp-channel0-tx_xdp_xmit_full: 14
-+
-+Those are usually per-channel. JSON is also supported via the `-j` opt.
-+
- Protocol-specific statistics
- ----------------------------
- 
-@@ -147,6 +170,8 @@ Statistics are reported both in the responses to link information
- requests (`RTM_GETLINK`) and statistic requests (`RTM_GETSTATS`,
- when `IFLA_STATS_LINK_64` bit is set in the `.filter_mask` of the request).
- 
-+`IFLA_STATS_LINK_XDP_XSTATS` bit is used to retrieve standard XDP statstics.
-+
- ethtool
- -------
- 
-@@ -206,6 +231,14 @@ Retrieving ethtool statistics is a multi-syscall process, drivers are advised
- to keep the number of statistics constant to avoid race conditions with
- user space trying to read them.
- 
-+It is up to the developers whether to implement XDP statistics or not due to
-+possible performance hits. If so, it is encouraged to export it using generic
-+XDP statistics infrastructure, not driver-defined Ethtool stats.
-+It can be achieve by implementing `.ndo_get_xdp_stats` and, optionally but
-+preferred, `.ndo_get_xdp_stats_nch`. There are several common helper structures
-+and functions in `include/net/xdp.h` to make this simpler and keep the code
-+compact.
-+
- Statistics must persist across routine operations like bringing the interface
- down and up.
- 
+Conventionaly the `phy-mode` means "this is the mode I want the PHY to
+operate in". But we now have some PHYs that may need to change the PHY
+mode during operation (marvell10g PHY driver), and so we need to know
+all the supported modes. Russell King is working on MAC and PHY drivers
+to inform phylink on which PHY interface modes they support, but it is
+not enough, because even if a MAC/PHY driver fills all the modes
+supported by the driver, still each individual board may have only some
+of these modes actually wired.
+
+This series
+- changes the type of the `phy-mode` property to be an array of PHY
+  interface strings,
+- updated documentation of of_get_phy_mode() and related to inform that
+  only first mode is returned by these functions (since this function
+  is needed to still support conventional usage of the `phy-mode`
+  property),
+- adds fwnode_get_phy_modes() function which reads the `phy-mode` array
+  and fills bitmap with mentioned modes,
+- adds code to phylink to intersect the supported interfaces bitmap
+  supplied by MAC driver, with interface modes defined in device-tree
+  (and keeps backwards compatibility with conventional usage of the
+   phy-mode property, for more information read the commit message of
+   patch 4/8),
+- passes supported interfaces to PHY driver so that it may configure
+  a PHY to a specific mode given these interfaces,
+- uses this information in marvell10g driver.
+
+Changes since v1:
+- added Reviewed-by tags
+- added 10gbase-r example scenario to commit message of patch 4
+- changed phylink_update_phy_modes() so that if supported_interfaces is
+  empty (an unconverted driver that doesn't fill up this member), we
+  leave it empty
+- rewritten phylink_update_phy_modes() according to Sean Anderson's
+  comment: use phy_interface_and/or() instead of several
+  if (test_bit) set_bit
+- added more explanation to commit message of patch 8, as per Vladimir
+  Oltean's suggestion
+
+Changes since RFC:
+- update also description of the `phy-connection-type` property
+
+Marek Behún (7):
+  dt-bindings: ethernet-controller: support multiple PHY connection
+    types
+  net: Update documentation for *_get_phy_mode() functions
+  device property: add helper function for getting phy mode bitmap
+  net: phylink: update supported_interfaces with modes from fwnode
+  net: phylink: pass supported PHY interface modes to phylib
+  net: phy: marvell10g: Use generic macro for supported interfaces
+  net: phy: marvell10g: Use tabs instead of spaces for indentation
+
+Russell King (1):
+  net: phy: marvell10g: select host interface configuration
+
+ .../bindings/net/ethernet-controller.yaml     |  94 ++++++------
+ drivers/base/property.c                       |  48 +++++-
+ drivers/net/phy/marvell10g.c                  | 140 ++++++++++++++++--
+ drivers/net/phy/phylink.c                     |  98 ++++++++++++
+ include/linux/phy.h                           |  10 ++
+ include/linux/property.h                      |   3 +
+ net/core/of_net.c                             |   9 +-
+ 7 files changed, 332 insertions(+), 70 deletions(-)
+
 -- 
-2.33.1
+2.32.0
 
