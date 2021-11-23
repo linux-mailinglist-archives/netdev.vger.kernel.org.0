@@ -2,67 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 858D7459F1C
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 10:18:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2B23459F28
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 10:26:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234906AbhKWJVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 04:21:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47268 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230217AbhKWJVI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 04:21:08 -0500
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDF8DC061574
-        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 01:18:00 -0800 (PST)
-Received: by mail-yb1-xb44.google.com with SMTP id d10so57779164ybe.3
-        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 01:18:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=oDVdWICwavrWQ8UAVYhe8ynFXsBBW1vVQ7W08zgiq24=;
-        b=nEEiMUGF0Ht8Y1FzsLqJff8wB3s8apfmB/mOK/mcLuoYIUIAd68WJu7pKIt1lm5M6U
-         gVfR1bL/2ciSZYYWb6hvR8s2srJGtFjIx6KrGCSxj5TdaSuQOpwuPZMAfPjToTiC7CPh
-         aAKB3arZ4YKsY+RNjmvnfY8r6bSC9/qW+od3v2QkOgpQwfnT6WwYLM+KGQg53R4THmJU
-         r/mGj52EyBnY7iA4H7xgvDNvu+imhOD9t9BmDOvaWUuIDbCOVT8FU59Ys/YGHgziqRvw
-         +XbdkiGm3d2KJAiwMpbmllIYkCfkxwDaB4iF0kWOFyflqIr57v3w2YS1RI3rKrQ7+ujE
-         3xnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=oDVdWICwavrWQ8UAVYhe8ynFXsBBW1vVQ7W08zgiq24=;
-        b=cR9VFa2ooqNysggEt9sZnsbYuRsVduEzRt21J9G6/hRV9tIctMkpSSj/TW1xo37Eea
-         7XRgVVVBlJom1g3suuAnPGf6SYKNdtlS8kh47UGvVcb2tDY2U3sXKEdt0w3hmwtRC54Y
-         FkMK9iClJpaiDXdrsWZXM7wGlI5lcdFywvFuzRC9bE7cjPdG8Vw/09/lyosPhMtAc3/G
-         InpbL1pCOAji787tRJxsuy9uQ6l9Cc4t57nYpHlnUyyI2B6Is67bizh3VYkKGAzEhFfO
-         +p2JwooApCh9MXyL2itWEUNzJ83TaEHpxHBdrOOrMQqFzS1cRJauxul7onkwMfq+XCPk
-         54PQ==
-X-Gm-Message-State: AOAM532RwVaIocM8AURLlD/Z4BnFjWgSlcf7okLH3Z+sZOBuGqIA0Lex
-        BhEKoOBW03fYGzzXY3tM4bNpwxDGVExzv8IAaUg=
-X-Google-Smtp-Source: ABdhPJzKupd4xAZe9mmPko5vSgpuAJdfPUI2uGt7qTM5loFYOIBsVCj2Y39P3kI2t3W0jFzAMBHlk3jExUdAhWrVvNY=
-X-Received: by 2002:a25:ba83:: with SMTP id s3mr4210627ybg.450.1637659079988;
- Tue, 23 Nov 2021 01:17:59 -0800 (PST)
+        id S235261AbhKWJ3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 04:29:35 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:15754 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235244AbhKWJ3f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 04:29:35 -0500
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1AN7lIHe007548;
+        Tue, 23 Nov 2021 09:26:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=tpSjHmSJe+tSuNBZQQQq17WheCJO8kTDOKvEy2gXslE=;
+ b=fk8ZMGMS7gPdl7Gd9wPKltDruwz4HWAhB8T8lOrZ+nTzXkQNJS3pgduHIUauVUaJd+XG
+ YSa944oZuwm8by7s8ksvmUOPCc1bTSxlZsxjsXXNjICmu2U/t8aOPKHW+GssjLRZ1gFo
+ IfTp8VOTUnybcyiY6dQDiRaAkdCba1b4cp30j7fP14Oh6adHVpDBa9A1Mk0GxMfRpaXN
+ R9HNt9VgF/+PuJvr/MlcX24vaSFfvm+yQQN0nuvdabHzEmLR3xSZBDeufvF4n2hYxhsb
+ haNZxcdRjXHLaIbiVF81eV0AimkFZVXFsg7Cui4vY8qpUxyfbOjanYbN3nHhVaQ+ugii IA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3cgv7fhr6f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Nov 2021 09:26:26 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1AN9EnhD022498;
+        Tue, 23 Nov 2021 09:26:25 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3cgv7fhr5m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Nov 2021 09:26:25 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1AN9H0Q9025776;
+        Tue, 23 Nov 2021 09:26:23 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma06ams.nl.ibm.com with ESMTP id 3cer9jp00u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Nov 2021 09:26:23 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1AN9QKkL47776066
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 23 Nov 2021 09:26:21 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C8A11A4054;
+        Tue, 23 Nov 2021 09:26:20 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 62C68A4066;
+        Tue, 23 Nov 2021 09:26:20 +0000 (GMT)
+Received: from [9.145.60.43] (unknown [9.145.60.43])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 23 Nov 2021 09:26:20 +0000 (GMT)
+Message-ID: <d83109fe-ae25-def0-b28e-f8695d4535c7@linux.ibm.com>
+Date:   Tue, 23 Nov 2021 10:26:21 +0100
 MIME-Version: 1.0
-Received: by 2002:a25:260f:0:0:0:0:0 with HTTP; Tue, 23 Nov 2021 01:17:59
- -0800 (PST)
-Reply-To: ninacoulibaly02@myself.com
-From:   nina coulibaly <ninacoulibaly330@gmail.com>
-Date:   Tue, 23 Nov 2021 10:17:59 +0100
-Message-ID: <CAJiCSoA_vByTZ38uhGB0DMqBiwb8C0og=UpC38Kz-L3wC9Zf8Q@mail.gmail.com>
-Subject: from nina coulibaly
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH RFC net] net/smc: Ensure the active closing peer first
+ closes clcsock
+Content-Language: en-US
+To:     Tony Lu <tonylu@linux.alibaba.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, guwen@linux.alibaba.com,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+References: <20211116033011.16658-1-tonylu@linux.alibaba.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <20211116033011.16658-1-tonylu@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: B4ScFv03nlg1NzwlWZXmMu4SQJnwWhNi
+X-Proofpoint-ORIG-GUID: rcZqsL_69nfgyarezTjennvioNhyNxqU
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-11-23_03,2021-11-22_02,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ priorityscore=1501 spamscore=0 bulkscore=0 mlxlogscore=999 malwarescore=0
+ impostorscore=0 clxscore=1015 lowpriorityscore=0 mlxscore=0 adultscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2111230048
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear,
+On 16/11/2021 04:30, Tony Lu wrote:
+> diff --git a/net/smc/smc_close.c b/net/smc/smc_close.c
+> index 0f9ffba07d26..04620b53b74a 100644
+> --- a/net/smc/smc_close.c
+> +++ b/net/smc/smc_close.c
+> @@ -228,6 +228,12 @@ int smc_close_active(struct smc_sock *smc)
+>  			/* send close request */
+>  			rc = smc_close_final(conn);
+>  			sk->sk_state = SMC_PEERCLOSEWAIT1;
+> +
+> +			/* actively shutdown clcsock before peer close it,
+> +			 * prevent peer from entering TIME_WAIT state.
+> +			 */
+> +			if (smc->clcsock && smc->clcsock->sk)
+> +				rc = kernel_sock_shutdown(smc->clcsock, SHUT_RDWR);
+>  		} else {
 
-I am interested to invest with you in your country with total trust
-and i hope you will give me total support, sincerity and commitment.
-Please get back to me as soon as possible so that i can give you my
-proposed details of funding and others.
-
-Best Regards.
-
-Mrs Nina Coulibaly
+While integrating this patch I stumbled over the overwritten rc, which was
+already set with the return value from smc_close_final().
+Is the rc from kernel_sock_shutdown() even important for the result of this 
+function? How to handle this in your opinion?
