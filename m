@@ -2,137 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F715459E10
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 09:30:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43361459E23
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 09:33:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234767AbhKWIds (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 03:33:48 -0500
-Received: from mail-pl1-f171.google.com ([209.85.214.171]:33687 "EHLO
-        mail-pl1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230516AbhKWIdp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 03:33:45 -0500
-Received: by mail-pl1-f171.google.com with SMTP id y7so16488285plp.0;
-        Tue, 23 Nov 2021 00:30:37 -0800 (PST)
+        id S234816AbhKWIg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 03:36:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36734 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234773AbhKWIg0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 03:36:26 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB976C06173E
+        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 00:33:18 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id l25so71803244eda.11
+        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 00:33:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=8xSm0htY7uzvXc6ZHPstXw3E/MOWP40sTEpcuQsBwNE=;
+        b=iP9GNaCGIVRENAj0YlyaIOOHrzmIWv8j74Xx5bHbPV1eG9ZTIfOXYsqPjR1Q86mAlg
+         zQivsH4+pLS7oaWE5XiReLSoCgwGOJI+bUxeKw2VJP8cAakS1QgoLa2sUHt9e3ycgTQO
+         PihVWevLqciK1u0PHBdmApfOGbJziQtmvySEQhsfNn1FZhDIPV1kADm1GUGZWYmrKjf7
+         n7Narq8phV6XrPBDSfCDeIiLJYaE/M9xu3CIaQUJJ7hjOYXA3JJFuV9oakw2kk4rjyeL
+         ihwzPm/Pl8tTJ8S+fElW06jWtKELROIl610I+Tz5b/8Se0/J6LD0kFJ9+XdB1qtZrre3
+         njEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tcMJT0SWmBGQBJ3SmOjoPLUb8FZNAvYeGhtoSVPIc5Y=;
-        b=VCwEKliL7vGRQmqGa4OMEbd1m3tRXMH4G3hTaAeVkGf6vCk+BkEwKON0qO4ojpIBu7
-         5S/RdfdBKMbTAP3mGoN+251WSN4Pwm8xoHQLwgCvGzqml9ewO+dTyZWiQV2YnuXx/Yhg
-         N7TZfP4FV0JTMOz0dfTOUmW8cZWl14TaywEiAwKhZfpsoXIpBKK3RGeNQbuwteft0deb
-         uGrSX4Ndb2OLiDQP3tKchxdSy4MxELRQmZz1QMt5WNHZY7m17ACOogdFlHjlR+G4H4aS
-         Sv0kDBU1DYI45fA1iO5iwjKbsy1aOvJLcVmgYavbHAFXvm6yuw/fsnK7EsoY6DqmYJdy
-         mo/Q==
-X-Gm-Message-State: AOAM533kPT0CAVTEBMKnvnV3a52WBPvXZ8G2ah3BroubBL9caLh/IMTz
-        Upra7T4xA08w3LqQso2MzT5FLDVYgcZlCg==
-X-Google-Smtp-Source: ABdhPJxqlamro1/ExJyGPSHWiNDEHJ4qDus6lyQwI/LLtsri6heukspgET3j/WYt8l2kuwABiNAxXw==
-X-Received: by 2002:a17:90b:4c4d:: with SMTP id np13mr724754pjb.233.1637656236892;
-        Tue, 23 Nov 2021 00:30:36 -0800 (PST)
-Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com. [209.85.215.171])
-        by smtp.gmail.com with ESMTPSA id ne7sm401026pjb.36.2021.11.23.00.30.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Nov 2021 00:30:36 -0800 (PST)
-Received: by mail-pg1-f171.google.com with SMTP id q12so17660815pgh.5;
-        Tue, 23 Nov 2021 00:30:36 -0800 (PST)
-X-Received: by 2002:a67:af0a:: with SMTP id v10mr5521182vsl.35.1637656225413;
- Tue, 23 Nov 2021 00:30:25 -0800 (PST)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=8xSm0htY7uzvXc6ZHPstXw3E/MOWP40sTEpcuQsBwNE=;
+        b=hdP7lkpJbNZIEGAJG6o+NQTS21rPkZTX9ZeXsotvuByNSbr1eGdqhgaEV1otI6g1KF
+         E+VdXkva6awnjeb0bLxj1MEZjHb8MYpTCO8yIUFOAt1IQM30bWPUxt8weltCPnMSIgqF
+         mhsZBpd6+/S3KKJxTjw7jlJLZeN8CxYljNXgyM0yB3AF0QgW9dagLY/AT3LNVrX2QAQS
+         AQ/Phc3p9asibX1irxVCE1kxqicQ6vyi2kAGtXGM2UTLtfWrCOZRvGmB4r/uXv8SxUqn
+         EBU666vWGa/q7BecE/y6yuiq0u1xbStqCIOG+BqFvIlK2Wx0kJpvCFEjNs0zXOi5QAlq
+         wv6A==
+X-Gm-Message-State: AOAM532AQI4xzb3DQxQOs54mlC8z5lQ2ISON6su9/pNtA7XrL4sJJ+sr
+        TU28RKhJrUqyvMwursbwnMSjrKdDUgYjBObNa/YflKCapbIzZg==
+X-Google-Smtp-Source: ABdhPJz4Ge/YJURetAUcaVRMXKsZ4VAQ5tJ64Viz8V3KNHbWiWXlwTZMvoKbKzl+4t7kXzzjfgOlM1Kud1SL1asAqXQ=
+X-Received: by 2002:a17:906:c302:: with SMTP id s2mr5290537ejz.499.1637656396448;
+ Tue, 23 Nov 2021 00:33:16 -0800 (PST)
 MIME-Version: 1.0
-References: <cover.1637592133.git.geert+renesas@glider.be> <3a54a6703879d10f08cf0275a2a69297ebd2b1d4.1637592133.git.geert+renesas@glider.be>
- <01b44b38c087c151171f8d45a2090474c2559306.camel@sipsolutions.net>
-In-Reply-To: <01b44b38c087c151171f8d45a2090474c2559306.camel@sipsolutions.net>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 23 Nov 2021 09:30:14 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUnBgFpqhgjf5AA0LH9MZOFALeC=YinZ4Tv_V+Y9hkRSg@mail.gmail.com>
-Message-ID: <CAMuHMdUnBgFpqhgjf5AA0LH9MZOFALeC=YinZ4Tv_V+Y9hkRSg@mail.gmail.com>
-Subject: Re: [PATCH 01/17] bitfield: Add non-constant field_{prep,get}() helpers
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Rajendra Nayak <rnayak@codeaurora.org>,
-        Paul Walmsley <paul@pwsan.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Benoit Parrot <bparrot@ti.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 23 Nov 2021 14:03:05 +0530
+Message-ID: <CA+G9fYuNibUwficRoq-SS=6s2p+-rXUUR03nHfFbPUC8HoyLpA@mail.gmail.com>
+Subject: drivers/net/ethernet/apple/mace.c:170:34: error: assignment of
+ read-only location '*(dev->dev_addr + (sizetype)j)'
+To:     Netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Hui Tang <tanghui20@huawei.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Eduardo Valentin <edubezval@gmail.com>,
-        Keerthy <j-keerthy@ti.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-aspeed@lists.ozlabs.org, openbmc@lists.ozlabs.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
-        alsa-devel@alsa-project.org
+        "David S. Miller" <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Johannes,
+While building Linux next 20211123 tag for powerpc with gcc-11
+following warnings / errors noticed.
 
-On Mon, Nov 22, 2021 at 5:33 PM Johannes Berg <johannes@sipsolutions.net> wrote:
-> On Mon, 2021-11-22 at 16:53 +0100, Geert Uytterhoeven wrote:
-> > The existing FIELD_{GET,PREP}() macros are limited to compile-time
-> > constants.  However, it is very common to prepare or extract bitfield
-> > elements where the bitfield mask is not a compile-time constant.
-> >
->
-> I'm not sure it's really a good idea to add a third API here?
->
-> We have the upper-case (constant) versions, and already
-> {u32,...}_get_bits()/etc.
+make --silent --keep-going --jobs=8
+O=/home/tuxbuild/.cache/tuxmake/builds/current ARCH=powerpc
+CROSS_COMPILE=powerpc64le-linux-gnu- 'CC=sccache
+powerpc64le-linux-gnu-gcc' 'HOSTCC=sccache gcc'
+<stdin>:1559:2: warning: #warning syscall futex_waitv not implemented [-Wcpp]
+drivers/net/ethernet/apple/mace.c: In function 'mace_probe':
+drivers/net/ethernet/apple/mace.c:170:34: error: assignment of
+read-only location '*(dev->dev_addr + (sizetype)j)'
+  170 |                 dev->dev_addr[j] = rev ? bitrev8(addr[j]): addr[j];
+      |                                  ^
+drivers/net/ethernet/apple/mace.c: In function 'mace_reset':
+drivers/net/ethernet/apple/mace.c:349:32: warning: passing argument 2
+of '__mace_set_address' discards 'const' qualifier from pointer target
+type [-Wdiscarded-qualifiers]
+  349 |     __mace_set_address(dev, dev->dev_addr);
+      |                             ~~~^~~~~~~~~~
+drivers/net/ethernet/apple/mace.c:93:62: note: expected 'void *' but
+argument is of type 'const unsigned char *'
+   93 | static void __mace_set_address(struct net_device *dev, void *addr);
+      |                                                        ~~~~~~^~~~
+drivers/net/ethernet/apple/mace.c: In function '__mace_set_address':
+drivers/net/ethernet/apple/mace.c:388:43: error: assignment of
+read-only location '*(dev->dev_addr + (sizetype)i)'
+  388 |         out_8(&mb->padr, dev->dev_addr[i] = p[i]);
+      |                                           ^
+make[5]: *** [scripts/Makefile.build:288:
+drivers/net/ethernet/apple/mace.o] Error 1
+drivers/net/ethernet/apple/bmac.c: In function 'bmac_probe':
+drivers/net/ethernet/apple/bmac.c:1287:34: error: assignment of
+read-only location '*(dev->dev_addr + (sizetype)j)'
+ 1287 |                 dev->dev_addr[j] = rev ? bitrev8(addr[j]): addr[j];
+      |                                  ^
+make[5]: *** [scripts/Makefile.build:288:
+drivers/net/ethernet/apple/bmac.o] Error 1
+make[5]: Target '__build' not remade because of errors.
+make[4]: *** [scripts/Makefile.build:571: drivers/net/ethernet/apple] Error 2
+drivers/net/ethernet/freescale/fec_mpc52xx.c: In function 'mpc52xx_fec_start':
+drivers/net/ethernet/freescale/fec_mpc52xx.c:659:39: warning: passing
+argument 2 of 'mpc52xx_fec_set_paddr' discards 'const' qualifier from
+pointer target type [-Wdiscarded-qualifiers]
+  659 |         mpc52xx_fec_set_paddr(dev, dev->dev_addr);
+      |                                    ~~~^~~~~~~~~~
+drivers/net/ethernet/freescale/fec_mpc52xx.c:102:63: note: expected
+'u8 *' {aka 'unsigned char *'} but argument is of type 'const unsigned
+char *'
+  102 | static void mpc52xx_fec_set_paddr(struct net_device *dev, u8 *mac)
+      |                                                           ~~~~^~~
+make[4]: Target '__build' not remade because of errors.
+make[3]: *** [scripts/Makefile.build:571: drivers/net/ethernet] Error 2
 
-These don't work for non-const masks.
 
-> Also, you're using __ffs(), which doesn't work for 64-bit on 32-bit
-> architectures (afaict), so that seems a bit awkward.
+Build config:
+https://builds.tuxbuild.com/21J9lNXArf0rGC2zEytrVxfwmQP/config
 
-That's a valid comment. Can be fixed by using a wrapper macro
-that checks if typeof(mask) == u64, and uses an __ffs64() version when
-needed.
 
-> Maybe we can make {u32,...}_get_bits() be doing compile-time only checks
-> if it is indeed a constant? The __field_overflow() usage is already only
-> done if __builtin_constant_p(v), so I guess we can do the same with
-> __bad_mask()?
+Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-Are all compilers smart enough to replace the division by
-field_multiplier(field) by a shift?
+meta data:
+-----------
+    git describe: next-20211123
+    git_repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
+    git_sha: aacdecce8147c20b01f865b4e214bb8dbe8c4af1
+    git_short_log: aacdecce8147 (\"Add linux-next specific files for 20211123\")
+    target_arch: powerpc
+    toolchain: gcc-11
 
-Gr{oetje,eeting}s,
+steps to reproduce:
+tuxmake --runtime podman --target-arch powerpc --toolchain gcc-11
+--kconfig ppc6xx_defconfig
 
-                        Geert
+https://builds.tuxbuild.com/21J9lNXArf0rGC2zEytrVxfwmQP/tuxmake_reproducer.sh
 
 --
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Linaro LKFT
+https://lkft.linaro.org
