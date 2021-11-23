@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AACE459B7F
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 06:17:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30F30459B84
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 06:19:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233089AbhKWFVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 00:21:03 -0500
-Received: from mail-sn1anam02on2084.outbound.protection.outlook.com ([40.107.96.84]:2240
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
+        id S231386AbhKWFWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 00:22:38 -0500
+Received: from mail-co1nam11on2042.outbound.protection.outlook.com ([40.107.220.42]:11425
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233040AbhKWFUi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 00:20:38 -0500
+        id S229726AbhKWFWh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Nov 2021 00:22:37 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TnSuIEQN2hMm9TxyGHJFwshQX2/1dIP4wcjKsW4vagc43inEIm0iSUHOZdtUrukByyqRs2rWI7AZHKv0dG8mNZHrhLpFCUEJUcHTnSwD+ODRKAwYpRIiJbGFe3yjmHxppU59RorWwv7doJSpl0pld7+SvfNcy3lOv7CPIGpj/XBC/COcCbHI5SAIBOtVA49bnbhDgQiaX7kel456Na2myL2fYIafWVxXhDKxKAsCOlx+seqmT9G3c64Cgynja2fu1u+6rX1KQYB7SgcAQgT9DuDu3PCUgwB+BlbItJB7TyGu4PtoDWYMX5vB4RAVFAdTF9Mx0jJvgDw7TySAFoyTdw==
+ b=hEg0jQ55YY8BhVv02t6ghYEP7jFktRbpesOMKQekRAXhh80lYAUkELFQ1HFGvBTeU/eSybtNAXhSyMfwXrxzvgSB5003hzDz7Q1VRzzwz1n+qI/PlwoVsbFNisIeLsbDrveg/jzMe1aXHSFxrLocYx2IjsGgj3wKdUXUMGb+mLw5IHRn5JU3hhGU49C/JCFo9RZraK34CXxO4VyP8k8SQLLhUgBxREx0afhKcxio78hD0Pv1ZIz/OnbyADMHzhmXGByCDXFKXf+XXzHlZGfujNSiJXmAec2HURruoolhBj+9bo69oHYhMY1IHmjEJTnKv3HOuSS0PtO7Sorkf+l7yA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zxL/rKf66QFB797PZdr/emzHotG+FFGA+7OGMFxHR9E=;
- b=M5dsv+viHYfvMudH8+PbM2vNq1WITKqc8mcHX8LcZAhdwgq3fxuB3d7euJDNTYn+61BiIqqVUiJ2pVApQm8Wi1j0yD9qfoeKu8b6ivTFq+3ORyM6OTvmpjAEvIGwrN8289gwKgCUPwWrlgmFSbuF/Xzi+TleWXvqQw/oceI1eq6RNTfABTyRapCpvqwtE7xO7eqzQQDEI/g7ug5WG9inRWBAb4dQCY3ZJWuDJq6qrHQPm8EkrYoNwolgdZqj/VS2RN6g6BMxCPmH8ibYzKUGQxGnaM2DLMkvH7SLLXUN9vh1vDIvsErtg0YFYIt5LnApxXBW5ky1eG6h5Mhjbr/lDQ==
+ bh=uTwsBu5o9gVfkBBK0E2UdL2wuQijWZnmS0x2HK5lCpM=;
+ b=d6eDEHPaFXisxpESOhMHScoScJlgnSPEGi96kj2C5w7X93QBgHbk7TcY7YfcCYOGxrWljk/cBhJX33Q2DzgQcPm3YqONJ8G9pemxgxk2rsSL/aW+PIHJKVzA3TeXDpb+ITU9cClMeuzH2JlFrRLNsZNGOc0PXIiiyFGQ6a3Q+Iq/u0/Svd+gwMMP27Yy6+c23aTM9qIZW6AIR3ZLSxaG4oHoQR1uTU9MgygrOOZMt+ARszbAuHxZN/yTaHEuPpUFt8F2lB5P8dL07Hm2M6c3J9HhpFNyemN0rA+sAKFF3l+QArLeBSKIjbFv5lu7Liyk66vizXuKwqLPYiuuL439NQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zxL/rKf66QFB797PZdr/emzHotG+FFGA+7OGMFxHR9E=;
- b=WBEei1sQ22l3sdTg73RIYNsegpzZvp7arlyZ2zUZQ382mcPrT4R8vbddkJXsD0YceyN95abFMq65sFQTkieko8MYRsC2YqNMLLFE0J0XtQpLHhXtCFj8x88+/UnfX8HXnRBSNqyitEmgL6F0TwaAlpgjX93fxP7rRC+NBguSgp5mzWLNOAIuGKMPZAvfJAIUxa1ddiyPQEmXyjv0RGDGBjkr5Q6Atyx+cJba0x1PiHcb6zLi1wDosLkd7AsVTdzrOCUf5ix79CmFU9tXIoHoO8uQw3nDRcVo4nrdoqnd5m2Dwh3z9DmZAjTko4azyfne9AZXesBLM55DEr11hxSvcw==
+ bh=uTwsBu5o9gVfkBBK0E2UdL2wuQijWZnmS0x2HK5lCpM=;
+ b=rVf2siPUTviua2rv00sTgvXlyGeJxtlnxozfQbuGoQn/buao++xPzwxxdk2edZP4DtRJsH3A9BmhHwvHlQeagNXIAuIHMclZgFmY8+tnl3TBDiINXGqThklO4mnR73rREaG/VWswdVAgA9eo8cnqmvh/8V0rynmjGd0z2uP0oZxobIZjDkPZG4GVAimX5szkdXw+O+WCv6irFZ8hFKP8VJusjRNhTBWYBh7peBUKbhVy3//SbwCaAAx3c9dDCB3jXnuxtdEnGYhI1fiIyrskA7S+SO0W3yh5CtLlRoTqcLLqfVtPrWiV77MKHRY1SAF8ucf/YC8eciS4Kv9w5Dizkw==
 Received: from PH0PR12MB5481.namprd12.prod.outlook.com (2603:10b6:510:d4::15)
- by PH0PR12MB5500.namprd12.prod.outlook.com (2603:10b6:510:ef::8) with
+ by PH0PR12MB5450.namprd12.prod.outlook.com (2603:10b6:510:e8::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.22; Tue, 23 Nov
- 2021 05:17:26 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.19; Tue, 23 Nov
+ 2021 05:19:28 +0000
 Received: from PH0PR12MB5481.namprd12.prod.outlook.com
  ([fe80::5515:f45e:56f5:b35a]) by PH0PR12MB5481.namprd12.prod.outlook.com
  ([fe80::5515:f45e:56f5:b35a%3]) with mapi id 15.20.4713.022; Tue, 23 Nov 2021
- 05:17:26 +0000
+ 05:19:28 +0000
 From:   Parav Pandit <parav@nvidia.com>
 To:     Tony Nguyen <anthony.l.nguyen@intel.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
@@ -47,16 +47,16 @@ CC:     Shiraz Saleem <shiraz.saleem@intel.com>,
         "jacob.e.keller@intel.com" <jacob.e.keller@intel.com>,
         Jiri Pirko <jiri@nvidia.com>,
         Leszek Kaliszczuk <leszek.kaliszczuk@intel.com>
-Subject: RE: [PATCH net-next 1/3] devlink: Add 'enable_iwarp' generic device
- param
-Thread-Topic: [PATCH net-next 1/3] devlink: Add 'enable_iwarp' generic device
- param
-Thread-Index: AQHX3+Ww/FVXD0M7hU60SMgaGXxgMKwQkujw
-Date:   Tue, 23 Nov 2021 05:17:26 +0000
-Message-ID: <PH0PR12MB5481668180201E8ED641C779DC609@PH0PR12MB5481.namprd12.prod.outlook.com>
+Subject: RE: [PATCH net-next 2/3] net/ice: Add support for enable_iwarp and
+ enable_roce devlink param
+Thread-Topic: [PATCH net-next 2/3] net/ice: Add support for enable_iwarp and
+ enable_roce devlink param
+Thread-Index: AQHX3+WwpM2cBkHpH0m4XULVQ1XC+6wQkxDg
+Date:   Tue, 23 Nov 2021 05:19:28 +0000
+Message-ID: <PH0PR12MB5481F93DA9B6AA3C573E64C1DC609@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20211122211119.279885-1-anthony.l.nguyen@intel.com>
- <20211122211119.279885-2-anthony.l.nguyen@intel.com>
-In-Reply-To: <20211122211119.279885-2-anthony.l.nguyen@intel.com>
+ <20211122211119.279885-3-anthony.l.nguyen@intel.com>
+In-Reply-To: <20211122211119.279885-3-anthony.l.nguyen@intel.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -64,62 +64,61 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b32d2762-d760-4223-de1d-08d9ae4089fb
-x-ms-traffictypediagnostic: PH0PR12MB5500:
-x-microsoft-antispam-prvs: <PH0PR12MB5500A13CED56D7D0640CF0D0DC609@PH0PR12MB5500.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1751;
+x-ms-office365-filtering-correlation-id: d7dc5e44-716c-4ced-c551-08d9ae40d2e9
+x-ms-traffictypediagnostic: PH0PR12MB5450:
+x-microsoft-antispam-prvs: <PH0PR12MB5450DCC65AC08882BDA839B6DC609@PH0PR12MB5450.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2201;
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: rr5iewVYxfS8Kxz1JYXYYnLs2f9GLnXSrxXKWmUjq6btbWBTAt0UR1JOM9g239ZnnYcqh75t/ntGY0rBEfl1Kb3Y1PPWf8DU0msvOeGfwbVsGfNVk1rDgC0ypnQQJNb9ozKwaMLxbAEITLKMQHP21rWYCjA4xQZ6lNyaYJWsjlw/UqzU5qPOyX6XCewB+1ZHitkR/xxnslxGaULTAFEeq2ZgaeTNgu6Xz+oNWJEoy1B/5f1UR7XTo63ejdyDiJnc+lJ58fspIVqD6BKaDSsjMOJClPUM7P65dZv4MQdpRyT0n5nvnxbeCZXR2QTab0UDZYdzNjoNJocceXL7FrkRXTD9unjKAEde3lNBTOfRDAhR2m9+VSBlb8VfK/MDIHpO/F8ZMRtuP8J1Wd+Zm5Ge959F36MipmvJeaapAHNRbpUqLaNHSEdMZaMucp2J7B+0fTDyc8yL6kiNNtvSJtr24wTtNOT2noZ2LsMIrja7uz69Eydkwq96JlM44sDWo4TZCEkW+Ayxmh524lxcCRayE2sZAujAQfTJXyFHMjKg9190eqrIEeMeXo1pkDt2L/KlE9RLeYyDpGM6T6krxjQ5OZ6H2R3tfy/cCAWP7FwHV2YCkEBmWin3QIFOG73F8s+A3lML4Y2S6lxFXy2ieWM8FljYG3be+FIx+Iv536dP2+jrEWbhAY9N5B16mOsRsHRhxyMami6nma3KKkqt8o/8UUUuVu7ZIsx0+qFgrNrgPl0=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(86362001)(66446008)(64756008)(2906002)(38070700005)(66556008)(508600001)(7696005)(66476007)(52536014)(76116006)(33656002)(9686003)(4326008)(55016003)(8936002)(55236004)(83380400001)(5660300002)(54906003)(26005)(71200400001)(110136005)(6506007)(8676002)(186003)(66946007)(122000001)(38100700002)(316002)(41533002);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: 4qQ9vsDIK9a4yWjGdp3SUZzbSmRu5t8PiQLnL1NBdG5AXdhB7Q2GOTP5h1A6dgs94TdMBs14yGiebyi3QfdRSKgHRfHG4xd/rAgETzTF9wJGA0GO9VSCW9wnuWivgaoGXRRp8m6T8maQoYQ2l0ljbXzzQ1a/wJE694oRFIXhKh7vBPwV6saVqQv3Du9brK6gNGBPFLu+3oUQmG3m5EGNgAvF6SxyySza2VlzpUwdo4M2PMTJC6R9hnLTlKTwbTTiQiJ2QoLv+sGrQQKVE0IcAb14S6jN07Fv4kOqghYi2HDY5IRKrxRiDaNBkwulUZ4OuTAZizMtxYCndaKdYabDUO8xwWnI8Y7gg35NqiaL/6dXkP/VTdIAsRcesfnbhrM93ePtkOvtc7Rk10fkw31N+n7RqDW+UPqT33rKsHAKbEqByDNXWlAXDLyyy8t9ACnA6T/hW+8i54z3PCsN7faG5NKb5m2qorEQh7n/8mbOxAgpH1FPPJLKxPuotBQtmbK2BUxUr2Z84UDZs/uppXpcId45t0/iH1vYinFZPjMqFOVQUh28yLPV4+1thfsa/A/R+cRCOYB4yxASEwWNFu3Xi0YixoAR/sSkkq27sl8PSC3xgHfVAkOi38Ue+3bJzrYr+SbM+He/73cF54oZrdcDhJ4vnNGrOB6d9RiEgiPbM3ZO32wqwH7kd0rk2KeVJoDTtf60/q1bfCmLQORgeOAC1A==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6506007)(8676002)(7696005)(110136005)(54906003)(5660300002)(55016003)(8936002)(33656002)(38070700005)(9686003)(316002)(2906002)(4326008)(508600001)(71200400001)(76116006)(186003)(38100700002)(52536014)(66476007)(66946007)(122000001)(4744005)(55236004)(64756008)(66556008)(26005)(86362001)(66446008);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?x1qOiuA2JkHHbf5wTYRDP1aNgdOSP+6bjHT99GGJPbEZZlkCU6CbSrRfwbTC?=
- =?us-ascii?Q?23VNuaCSPgMJAixbh0M1AVhRUHFhsUSlesx4qVhIaIwWY5jGhmwkXQek8llU?=
- =?us-ascii?Q?i2J6dCBnmGWC2Ljy+4lOKCSd8mFotNfvrx4JX8lLRh82E2y8zQO0Fyxcmqej?=
- =?us-ascii?Q?rVPkUy7+jMgF01mk7jxiBgh4FVMDM0lXpZl8knPCiKPGuWwq4QfQwKzAAv4X?=
- =?us-ascii?Q?h9xWCfQ+7/1RPJ7RAd6K29nrghNuvldv9q/V8aRKf1mM8ML0puffT86iDYUN?=
- =?us-ascii?Q?zCxkrk6C0CI2VPKomg5Vq7vMFPR9624l9g0B7sJ/0QgzrUweBcKd79y8ENW+?=
- =?us-ascii?Q?vBt0jHr53YYyaF9RpSvamqpUb+NQrCRQot8Gx1oXoON6SgeCCUzFU3NKmLWr?=
- =?us-ascii?Q?0OlhVmpN/oPRAfDJnINf3qX1KQfXjgvas+OghpwUT5Dm7DFPgOOkw9m4CZQ7?=
- =?us-ascii?Q?xzcU/5lPlO8wUBgN1lBrTLobUq6VHJ4ePdQlKrCIHSCkaeofQY9/pD3ELwjI?=
- =?us-ascii?Q?KgE9Plz3WM45tSThZLHpVLDuyTrHnQxwTTPHzzCXzJunIuMSkCkQdttRdAYt?=
- =?us-ascii?Q?aMIZtxPLofBPhttE3uyfw0ZgwWdTtNNgeYTIcclW7eP/LGTf2VA8kTV+L1pg?=
- =?us-ascii?Q?3MsA5OigES6rF18KBsu1YaOA90cCJVITrfwfMCB5+7IAPz5ROqHqFKgMBtm6?=
- =?us-ascii?Q?mOJcIRC1G4h7/oSwjFqzfA/K4puPR4TIycB/gfzJ4KksDdX4TXrFHwL3TTie?=
- =?us-ascii?Q?7k1zoigH4+obBhR7BH3xFp8OWRca6VGAREouz3bMdOLcRHnsz6ptOlemS+0z?=
- =?us-ascii?Q?lAqkqdgmecrVtMsJUvRX0Nnawwe7XRLint6FZpTHrRFyexk5SFgkAYxTceDo?=
- =?us-ascii?Q?HIMVa3BcvbQvvEDfUcQ0ePGvrx3N3mpbrqDVlbuyVHsWGiBPeSKrVhYrRL7s?=
- =?us-ascii?Q?2CgL1WTqHzBCyRSWDH9X3wo5iRajXa/xWO3jDxQ/rv3UVSNzmzlU+WsdBRVh?=
- =?us-ascii?Q?OiEanelgY5iSAGZ60GapMzD7UIo6UHXnSaRRNdxosvi/JCqP+Hk/pg88PunE?=
- =?us-ascii?Q?TTr4DkiXwMkaX8PlU8BNFZGYu9xp9CkHWReXQP2pGfpoMZGD71DIkJJNMYvZ?=
- =?us-ascii?Q?6fnbGITaJJmUQk8HwdptUF/r/rfmyXI91NU+/V25kpYuSopOKG4nTJwCOv4X?=
- =?us-ascii?Q?e+8+lbrUkyh5MuCC4H4IkscFrHeHhgtTxBvU8g6MfxzJzQ44JLZGuYgyArzg?=
- =?us-ascii?Q?9z0o9E7/cJCKOanqHjZCHG3tKTrcfxdJCFufTmv9CPTPuzRiVV5sKwM65sln?=
- =?us-ascii?Q?3ahGTTpXZqR06bbdwLi8LTh9pesQtxQI/5KEistI+oKt22TYX88ksOTkfHv5?=
- =?us-ascii?Q?sT0ThMz+Pj4g4tKst7CdqWsl0RXi+XHQzRqq8ORdUuJfmp+nqnzq7AwrRFQa?=
- =?us-ascii?Q?NULgZkUGneZFmldmnQMFrQ6El15kvYUJZ2JTs4NbEaf3fhmSTjnDtvbphBrA?=
- =?us-ascii?Q?8y/roJUxb8bvTUGmYIt5aszMlIR0J7YJiwHsfFRCDeRYGNgkX/pymFt8EXl3?=
- =?us-ascii?Q?byloH+sRUQcw1ptEeZKaF2cJ4N0l1a3+jgiiTzUtCicbgf/knurUZopRnxj6?=
- =?us-ascii?Q?FPP2K1uVAZOerZciJLiwGkc=3D?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?yKg6QK/wqlKylod4I49JiruOlkPOmi7nb5HGFD/+6i0X5ezzL7rsj6t9r6Iy?=
+ =?us-ascii?Q?ydNxpQ03vNthn7WqIaudxYDrf+FmPO+WREydOaVjrmA1cz6dCIRnIiPR8+9M?=
+ =?us-ascii?Q?lP3f9BtTPtntGeQE4ZOWrw3ONQfxTp6udxpl+7zJ5GHFs4RwUlI7ZzMoeoFx?=
+ =?us-ascii?Q?BYRWtK5tLPRuJ3vm9OtUEe6gdkTuWhhBFNBU3vyN2S107nn7ShCat7E/yBwu?=
+ =?us-ascii?Q?hIXQIKV0SM2XTgeSL2YsL0KnUm5Mm5eCMTAUzwYlo0VEFnHBWh5vo5dAoiz4?=
+ =?us-ascii?Q?Fg7mUDArVUmXtCr+DmcVealVSKsJQ+lZ1/YxLGX1EDgg3MY4NMwkGR5QCo4i?=
+ =?us-ascii?Q?oq0aVf0S6yETXOqGzo4jP4abbq0nESiaHi4GQslV1mpZDlCEUJnMJzUdMzys?=
+ =?us-ascii?Q?b03sd5tkgYYfCXbwO4v6bwKmaldyP+rG65EZu3onDLCkT9nAi8awI1RB92CH?=
+ =?us-ascii?Q?uOkII99Dsb4Tptjj7VSdPmTDvme+/Dj0erce34JQyK3yz4Qxk/iEZnGInuRU?=
+ =?us-ascii?Q?J1qvxLAoP+jn2UtblarA5CBKwLvIaUWjpO+mSHQwlJ41P7shJA2WZQuwC+tp?=
+ =?us-ascii?Q?/RYuRLSjpg+KJoQDurpqWHS1iJGXWzqGDIuBPyuZ1qndVC9qrVaR7Q18ko5A?=
+ =?us-ascii?Q?sbBahtVXpBqsNzZ8QFE94OQ9GLXLXjYr6V8NFLFhwUzm3xQYn00JR2oD8Zov?=
+ =?us-ascii?Q?ywzMtvz33Vk/fa7rpbhY91JuD3bdnLxNKMGvzOM96pG9BgAcNK52JLE67OwQ?=
+ =?us-ascii?Q?sByjlblQflLFJFJsh6yK1XvPmLdPenIfmkKXLY+er4CTizr34nAIkLF0IB8x?=
+ =?us-ascii?Q?kqQFfpnxgQNJ35Tt0NmnPv3PEEz9M7Da7cTJ/DHklO/A79YxW89eAXRGQayI?=
+ =?us-ascii?Q?aXm9n2VSRwNCBHatNFVbS1nXfvoVPn+uuKi5PG+mnudmPi3cYg4JpBHp9C0x?=
+ =?us-ascii?Q?IcZyuNMbA5SCtMVm9Y2ymPXvMEhT8TsfaD+sXr7//zNkYeInyX26Dgwc2AZL?=
+ =?us-ascii?Q?xhvqhOjet/0xWc4SW6psLBFaC8c3z3D0ANyUEk9b2OroZN1qME44DSWiEOy1?=
+ =?us-ascii?Q?kCLSbMLR3uglFu1ZorPgCp/2zpS8FeicJpMjLe8NGbKPL9C1rlbollGljLF9?=
+ =?us-ascii?Q?tdlJ0G609R6POoWWLbX751zmGP6dx0rYQqPb0V38Z9b1dzQQgRlDMSIy8Er9?=
+ =?us-ascii?Q?/srI/LmcS3r6PXKGQXCfmPyDJQFYnHi3KzRPfKqKtgQ91f7y3AmOFvqfrlbp?=
+ =?us-ascii?Q?4bygoYLrii6kR+SkLtRc3SWedFtxuqNfXziYbk9pvWdAfs3tYgvJsFk4QZuX?=
+ =?us-ascii?Q?SPpjWlUsBUjAbGobSJSHenW7xpUTZz+KSCt0FEDQpo0LJk/c3gxW/dYwypk3?=
+ =?us-ascii?Q?7ii63gLI05hRrvtRakjHA84XpXjw+C/nz4TRMkDwQ/lkMOjloMp7OWkoSJdd?=
+ =?us-ascii?Q?j0WTYpoJnWo68RFdaEMx85Bwz3mj19cLKMQhtAW7FV5jFsyXz80aanl9E+Ef?=
+ =?us-ascii?Q?dU4K5K/ax6HPfKxCBG+JwjDtEE7q5pg3w9+Gsooa7LgUyR5raZuquqQhBi+2?=
+ =?us-ascii?Q?i5IuBZOrWY2KNYvOU5t1VLp1vlPZ/ST67aToyn+Ptpo7qrUubrp5wHoigVOb?=
+ =?us-ascii?Q?tm5DPd1I6uGYtm9t1RV/JcA=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Nvidia.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b32d2762-d760-4223-de1d-08d9ae4089fb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Nov 2021 05:17:26.4337
+X-MS-Exchange-CrossTenant-Network-Message-Id: d7dc5e44-716c-4ced-c551-08d9ae40d2e9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Nov 2021 05:19:28.8465
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: UbSiE3ml8D2jJTl0DgnJZP/qCyYbZVFEwJsNSwxKHoZ8SvcVSRXFKj6DtiGRuLtgxUyC/2tMLNPgUdMDLQ28VA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5500
+X-MS-Exchange-CrossTenant-userprincipalname: yLe6+2eWVH789g21sOtWExlUkjJcsW4CMBhePh3teALLy3eVGXTrVDp39VSFR45sPnIzXXjo7JO5rD2BAbu77A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5450
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
-
 
 
 > From: Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -127,79 +126,13 @@ X-Mailing-List: netdev@vger.kernel.org
 >=20
 > From: Shiraz Saleem <shiraz.saleem@intel.com>
 >=20
-> Add a new device generic parameter to enable and disable iWARP functional=
-ity
-> on a multi-protocol RDMA device.
->=20
-> Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-> Tested-by: Leszek Kaliszczuk <leszek.kaliszczuk@intel.com>
-> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-> ---
->  Documentation/networking/devlink/devlink-params.rst | 3 +++
->  include/net/devlink.h                               | 4 ++++
->  net/core/devlink.c                                  | 5 +++++
->  3 files changed, 12 insertions(+)
->=20
-> diff --git a/Documentation/networking/devlink/devlink-params.rst
-> b/Documentation/networking/devlink/devlink-params.rst
-> index 4878907e9232..b7dfe693a332 100644
-> --- a/Documentation/networking/devlink/devlink-params.rst
-> +++ b/Documentation/networking/devlink/devlink-params.rst
-> @@ -109,6 +109,9 @@ own name.
->       - Boolean
->       - When enabled, the device driver will instantiate VDPA networking
->         specific auxiliary device of the devlink device.
-> +   * - ``enable_iwarp``
-> +     - Boolean
-> +     - Enable handling of iWARP traffic in the device.
->     * - ``internal_err_reset``
->       - Boolean
->       - When enabled, the device driver will reset the device on internal=
- diff --git
-> a/include/net/devlink.h b/include/net/devlink.h index
-> aab3d007c577..e3c88fabd700 100644
-> --- a/include/net/devlink.h
-> +++ b/include/net/devlink.h
-> @@ -485,6 +485,7 @@ enum devlink_param_generic_id {
->  	DEVLINK_PARAM_GENERIC_ID_ENABLE_ETH,
->  	DEVLINK_PARAM_GENERIC_ID_ENABLE_RDMA,
->  	DEVLINK_PARAM_GENERIC_ID_ENABLE_VNET,
-> +	DEVLINK_PARAM_GENERIC_ID_ENABLE_IWARP,
->=20
->  	/* add new param generic ids above here*/
->  	__DEVLINK_PARAM_GENERIC_ID_MAX,
-> @@ -534,6 +535,9 @@ enum devlink_param_generic_id {  #define
-> DEVLINK_PARAM_GENERIC_ENABLE_VNET_NAME "enable_vnet"
->  #define DEVLINK_PARAM_GENERIC_ENABLE_VNET_TYPE
-> DEVLINK_PARAM_TYPE_BOOL
->=20
-> +#define DEVLINK_PARAM_GENERIC_ENABLE_IWARP_NAME "enable_iwarp"
-> +#define DEVLINK_PARAM_GENERIC_ENABLE_IWARP_TYPE
-> DEVLINK_PARAM_TYPE_BOOL
-> +
->  #define DEVLINK_PARAM_GENERIC(_id, _cmodes, _get, _set, _validate)	\
->  {									\
->  	.id =3D DEVLINK_PARAM_GENERIC_ID_##_id,
-> 	\
-> diff --git a/net/core/devlink.c b/net/core/devlink.c index
-> 5ad72dbfcd07..d144a62cbf73 100644
-> --- a/net/core/devlink.c
-> +++ b/net/core/devlink.c
-> @@ -4432,6 +4432,11 @@ static const struct devlink_param
-> devlink_param_generic[] =3D {
->  		.name =3D DEVLINK_PARAM_GENERIC_ENABLE_VNET_NAME,
->  		.type =3D DEVLINK_PARAM_GENERIC_ENABLE_VNET_TYPE,
->  	},
-> +	{
-> +		.id =3D DEVLINK_PARAM_GENERIC_ID_ENABLE_IWARP,
-> +		.name =3D DEVLINK_PARAM_GENERIC_ENABLE_IWARP_NAME,
-> +		.type =3D DEVLINK_PARAM_GENERIC_ENABLE_IWARP_TYPE,
-> +	},
->  };
->=20
->  static int devlink_param_generic_verify(const struct devlink_param *para=
-m)
-> --
-> 2.31.1
-Reviewed-by: Parav Pandit <parav@nvidia.com>
+> Allow support for 'enable_iwarp' and 'enable_roce' devlink params to turn
+> on/off iWARP or RoCE protocol support for E800 devices.
+It is better to split this patch to two as there are two functionalities do=
+ne here.
+1. enable/disable roce as first patch
+2. enable/disable iwarp as 2nd patch
 
+But I don't feel strong about it, as both has some inter dependency on chec=
+king other capabilities, so either way is fine.
+If you can split, it will be good.
