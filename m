@@ -2,113 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95A3D459A0F
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 03:22:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55814459A16
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 03:27:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232666AbhKWCZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 21:25:23 -0500
-Received: from mail.loongson.cn ([114.242.206.163]:38164 "EHLO loongson.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232613AbhKWCZW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Nov 2021 21:25:22 -0500
-Received: from [10.180.13.93] (unknown [10.180.13.93])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Axp+hCUJxhcHQAAA--.2721S2;
-        Tue, 23 Nov 2021 10:21:55 +0800 (CST)
-Subject: Re: [PATCH v1 1/2] modpost: file2alias: fixup mdio alias garbled code
- in modules.alias
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        zhuyinbo@loongson.cn, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kbuild@vger.kernel.org
-References: <1637583298-20321-1-git-send-email-zhuyinbo@loongson.cn>
- <YZukJBsf3qMOOK+Y@lunn.ch>
-From:   zhuyinbo <zhuyinbo@loongson.cn>
-Message-ID: <d91dae2f-54db-5f8d-9ecb-56a0c556c694@loongson.cn>
-Date:   Tue, 23 Nov 2021 10:21:54 +0800
-User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S231390AbhKWCai (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 21:30:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34850 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229678AbhKWCah (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Nov 2021 21:30:37 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A9AEA60FD7;
+        Tue, 23 Nov 2021 02:27:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637634450;
+        bh=pVAUlBxMspmGig7ibnf9L4M8onsP9ZIoqi1m/vBIerI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Pbo+njgtbDj4dogQt5o1N0PAsSo37zFuxzUuIifRSrVeUGFkJTMeO9/9GiMCaZL0/
+         QYKC2jOjQAZPcSen6/iDuWNf/iw+OAdGlARBHcVb54Hi1EEbJNRaVfNaAy+QLSz8Bc
+         jVKTLQsi2vXpr/rYYFUbPqfhZqzlcJ9ZMuiw18wAF3GdJ0ivhzgmqb3IfoUA6LLfwf
+         utUtccTCVpTkaa0H7Ftj8xBubLvR9pYMoBF7DedPXF0BnT2fNF7VWNOOj0aaCsw98W
+         917cKGW7zx+XoW9fQA2nZL2C3sOdV459ykU1Qt+BdBDwCa46m5mWlT44ZxWQf/tnG3
+         j8FtI3IDPrzlQ==
+Date:   Mon, 22 Nov 2021 18:27:28 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>, Aya Levin <ayal@mellanox.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>, drivers@pensando.io,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        intel-wired-lan@lists.osuosl.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org,
+        Michael Chan <michael.chan@broadcom.com>,
+        netdev@vger.kernel.org, oss-drivers@corigine.com,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Simon Horman <simon.horman@corigine.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next 5/6] devlink: Reshuffle resource registration
+ logic
+Message-ID: <20211122182728.370889f2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YZoHGKqLz6UBk2Sx@unreal>
+References: <cover.1637173517.git.leonro@nvidia.com>
+        <6176a137a4ded48501e8a06fda0e305f9cfc787c.1637173517.git.leonro@nvidia.com>
+        <20211117204956.6a36963b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YZYFvIK9mkP107tD@unreal>
+        <20211118174813.54c3731f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YZfFDSnnjOG+wSyK@unreal>
+        <20211119081017.6676843b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YZoHGKqLz6UBk2Sx@unreal>
 MIME-Version: 1.0
-In-Reply-To: <YZukJBsf3qMOOK+Y@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-CM-TRANSID: AQAAf9Axp+hCUJxhcHQAAA--.2721S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Aw17AFy3Ww48JFW7CrW8tFb_yoW8Cr17pF
-        WxtryrGrWkXrn3CFs3JryUCFWUA392kw45t34DtFZa93y7ury2vay2grWI93yxZrs2y34j
-        gryUWF109FyDZ3DanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUPF14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
-        6r4UJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r
-        4UJVWxJr1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2Wl
-        Yx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbV
-        WUJVW8JwACjcxG0xvEwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
-        Y2ka0xkIwI1lc7I2V7IY0VAS07AlzVAYIcxG8wCY1x0262kKe7AKxVW8ZVWrXwCY02Avz4
-        vE-syl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AK
-        xVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrx
-        kI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v2
-        6r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJV
-        W8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjTRMXdj
-        DUUUU
-X-CM-SenderInfo: 52kx5xhqerqz5rrqw2lrqou0/
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, 21 Nov 2021 10:45:12 +0200 Leon Romanovsky wrote:
+> On Fri, Nov 19, 2021 at 08:10:17AM -0800, Jakub Kicinski wrote:
+> > On Fri, 19 Nov 2021 17:38:53 +0200 Leon Romanovsky wrote:  
+> > > My approach works, exactly like it works in other subsystems.
+> > > https://lore.kernel.org/netdev/cover.1636390483.git.leonro@nvidia.com/  
+> > 
+> > What "other subsystems"? I'm aware of the RFC version of these patches.  
+> 
+> Approach to have fine-grained locking scheme, instead of having one big lock.
+> This was done in MM for mmap_sem, we did it for RDMA too.
 
-在 2021/11/22 下午10:07, Andrew Lunn 写道:
-> On Mon, Nov 22, 2021 at 08:14:57PM +0800, Yinbo Zhu wrote:
->> After module compilation, module alias mechanism will generate a ugly
->> mdio modules alias configure if ethernet phy was selected, this patch
->> is to fixup mdio alias garbled code.
->>
->> In addition, that ugly alias configure will cause ethernet phy module
->> doens't match udev, phy module auto-load is fail, but add this patch
->> that it is well mdio driver alias configure match phy device uevent.
-> What PHY do you have problems with? What is the PHY id and which
-> driver should be loaded.
+You're breaking things up to avoid lock ordering issues. The user can
+still only run a single write command at a time.
 
-     about that phy id,  phy dev read it from  PHY Identifier 1 and 
-Identifier 2 register, phy driver will call MODULE_DEVICE_TABLE to 
-configure
+> > Breaking up the locks to to protect sub-objects only is fine for
+> > protecting internal lists but now you can't guarantee that the object
+> > exists when driver is called.  
+> 
+> I can only guess about which objects you are talking.
 
-     phy id to mdio_device_id, phy id was used to do a match phy driver 
-with phy device.  that phy problems is phy driver was select 'M' then it
+It obviously refers to the port splitting I mentioned below.
 
-     doesn't be auto load.
-> This code has existed a long time, so suddenly saying it is wrong and
-> changing it needs a good explanation why it is wrong. Being ugly is
-> not a good reason.
->
->      Andrew
+> If you are talking about various devlink sub-objects (ports, traps,
+> e.t.c), they created by the drivers and as such should be managed by them.
+> Also they are connected to devlink which is guaranteed to exist. At the end,
+> they called to devlink_XXX->devlink pointer without any existence check.
+> 
+> If you are talking about devlink instance itself, we guarantee that it
+> exists between devlink_alloc() and devlink_free(). It seems to me pretty
+> reasonable request from drivers do not access devlink before devlink_alloc()
+> or after devlink_free(),
+> 
+> > I'm sure you'll utter your unprovable "in real drivers.." but the fact
+> > is my approach does not suffer from any such issues. Or depends on
+> > drivers registering devlink last.  
+> 
+> Registration of devlink doesn't do anything except opening it to the world.
+> The lifetime is controlled with alloc and free. My beloved sentence "in
+> real drivers ..." belongs to use of devlink_put and devlink_locks outside
+> of devlink.c and nothing more.
 
-Hi Andrew,
+As soon as there is a inter-dependency between two subsystems "must 
+be last" breaks down.
 
-     Use default mdio configure, After module compilation, mdio alias 
-configure is "alias mdio:0000000101000001000011111001???? marvell"
+> > I can start passing a pointer to a devlink_port to split/unsplit
+> > functions, which is a great improvement to the devlink driver API.  
+> 
+> You can do it with my approach too. We incremented reference counter
+> of devlink instance when devlink_nl_cmd_port_split_doit() was called,
+> and we can safely take devlink->port_list_lock lock before returning
+> from pre_doit.
 
-     and it doesn't match  the match phy dev(mdio dev)  uevent, because 
-the mdio alias configure "0000000101000001000011111001????"
+Wait, I thought you'd hold devlink->lock around split/unsplit.
 
-    include "?" and  "binary number",   as general, uevent it include 
-one string or some string that string consist of one character and one 
-hexadecimal digit ,
+Please look at the port splitting case, mlx5 doesn't implement it
+but it's an important feature.
 
-     which uevent is reported by mdio when mdio register a device for 
-ethernet phy device, only uevent from phy dev match alias configure from
-
-     phy driver that phy driver will can be auto-load when phy driver 
-was selected  'M'.
-
-
-BRs
-
-Yinbo Zhu.
-
+Either way, IDK how ref count on devlink helps with lifetime of a
+subobject. You must assume the sub-objects can only be created outside
+of the time devlink instance is visible or under devlink->lock?
