@@ -2,47 +2,299 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB1B24599AB
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 02:23:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13F524599AC
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 02:24:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232010AbhKWB0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 20:26:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54364 "EHLO mail.kernel.org"
+        id S231906AbhKWB15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 20:27:57 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55382 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231601AbhKWB0F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Nov 2021 20:26:05 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5DCA860FED;
-        Tue, 23 Nov 2021 01:22:58 +0000 (UTC)
+        id S230017AbhKWB14 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Nov 2021 20:27:56 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A7D4760524;
+        Tue, 23 Nov 2021 01:24:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637630578;
-        bh=iYsDybsy5v30IxKH/zxDg+JRKzcQF/Euu9hrDYlzsW8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=In1mJ4cpBGRVZfwyi00O4PNFyYgE/UUuyDt+yo0IKgXJTu3wf+YRXcbBnzyPgUP8y
-         neQwTITgQbydMGvpRiKq/jtFAOBY9J4NWp/HtlP2XiscqewK1vc8plIcGZDoGUoAeQ
-         YGrv7vSEi1rNX2lNcIcSrg6kQ0qc3wYN8MDRueNM/o5Sj6dWlbHPWHygbi29VLUoGI
-         PULSXO2h4zYlO1p7lOeowdrur7UZpNYzl0h5Wi8Ll2ZIZkwBjPfJ4G2jzI2WK9j4Cy
-         7wWBtGAVuHYCG4Nd/Buv+h8wxeKob6F+QZm/hvhNeweXzQ5Vg46NVX7R/q7sYbo66V
-         NuqSCz+CUaSOg==
-Date:   Mon, 22 Nov 2021 17:22:57 -0800
+        s=k20201202; t=1637630689;
+        bh=vJbg2b1b9plBOA2RXhQF3s1OSjl8P/NEmazDu3IkdCY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=AR8NyLNu6p3h1DMU2eXO8bP4BmJOQENnau57+MiILp2ZS+l8/svOWI6Ra7zuwS/n3
+         UZU1RjstMoHtMaCLcgcC7XgBxBeC2ZwXmhfXzXQwOZF2r2UE34yQk2RVq5VancKaYX
+         Ed7M6fQUAmmIiCAgyhdrPbNtSn6oaNWd1Z5dPpC/zkNwHZ8nU8gPWqvtvNNG4BJGO7
+         G9h1sok4CQ8PDfv7AMPVP+cUeRyyH/v2sA0TOu20NlFphsNLqNIWlAqcqtSvJm3o6C
+         JMzyPOEY6Fyydk74XXAl+dBIP16NOXXqVLYal+hTNQsCGLL7ddHemU8kvThpxhN5jk
+         0i64RW4oe69rQ==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sunil Rani <sunrani@nvidia.com>
-Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <parav@nvidia.com>, <jiri@nvidia.com>, <saeedm@nvidia.com>,
-        Bodong Wang <bodong@nvidia.com>
-Subject: Re: [PATCH net-next 1/2] devlink: Add support to set port function
- as trusted
-Message-ID: <20211122172257.1227ce08@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211122144307.218021-2-sunrani@nvidia.com>
-References: <20211122144307.218021-1-sunrani@nvidia.com>
-        <20211122144307.218021-2-sunrani@nvidia.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, jiri@resnulli.us, atenart@kernel.org,
+        aroulin@cumulusnetworks.com, roopa@nvidia.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v2] net: remove .ndo_change_proto_down
+Date:   Mon, 22 Nov 2021 17:24:47 -0800
+Message-Id: <20211123012447.841500-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 22 Nov 2021 16:43:06 +0200 Sunil Rani wrote:
-> The device/firmware decides how to define privileges and access to resources.
+.ndo_change_proto_down was added seemingly to enable out-of-tree
+implementations. Over 2.5yrs later we still have no real users
+upstream. Hardwire the generic implementation for now, we can
+revert once real users materialize. (rocker is a test vehicle,
+not a user.)
 
-Great API definition. nack
+We need to drop the optimization on the sysfs side, because
+unlike ndos priv_flags will be changed at runtime, so we'd
+need READ_ONCE/WRITE_ONCE everywhere..
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+v2: kdoc fix
+---
+ drivers/net/ethernet/rocker/rocker_main.c | 12 -----------
+ drivers/net/macvlan.c                     |  3 +--
+ drivers/net/vxlan.c                       |  3 +--
+ include/linux/netdevice.h                 | 12 +++--------
+ net/8021q/vlanproc.c                      |  2 +-
+ net/core/dev.c                            | 26 ++++-------------------
+ net/core/net-sysfs.c                      |  8 -------
+ net/core/rtnetlink.c                      |  3 +--
+ 8 files changed, 11 insertions(+), 58 deletions(-)
+
+diff --git a/drivers/net/ethernet/rocker/rocker_main.c b/drivers/net/ethernet/rocker/rocker_main.c
+index ba4062881eed..b620470c7905 100644
+--- a/drivers/net/ethernet/rocker/rocker_main.c
++++ b/drivers/net/ethernet/rocker/rocker_main.c
+@@ -1995,17 +1995,6 @@ static int rocker_port_get_phys_port_name(struct net_device *dev,
+ 	return err ? -EOPNOTSUPP : 0;
+ }
+ 
+-static int rocker_port_change_proto_down(struct net_device *dev,
+-					 bool proto_down)
+-{
+-	struct rocker_port *rocker_port = netdev_priv(dev);
+-
+-	if (rocker_port->dev->flags & IFF_UP)
+-		rocker_port_set_enable(rocker_port, !proto_down);
+-	rocker_port->dev->proto_down = proto_down;
+-	return 0;
+-}
+-
+ static void rocker_port_neigh_destroy(struct net_device *dev,
+ 				      struct neighbour *n)
+ {
+@@ -2037,7 +2026,6 @@ static const struct net_device_ops rocker_port_netdev_ops = {
+ 	.ndo_set_mac_address		= rocker_port_set_mac_address,
+ 	.ndo_change_mtu			= rocker_port_change_mtu,
+ 	.ndo_get_phys_port_name		= rocker_port_get_phys_port_name,
+-	.ndo_change_proto_down		= rocker_port_change_proto_down,
+ 	.ndo_neigh_destroy		= rocker_port_neigh_destroy,
+ 	.ndo_get_port_parent_id		= rocker_port_get_port_parent_id,
+ };
+diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+index 75b453acd778..6ef5f77be4d0 100644
+--- a/drivers/net/macvlan.c
++++ b/drivers/net/macvlan.c
+@@ -1171,7 +1171,6 @@ static const struct net_device_ops macvlan_netdev_ops = {
+ #endif
+ 	.ndo_get_iflink		= macvlan_dev_get_iflink,
+ 	.ndo_features_check	= passthru_features_check,
+-	.ndo_change_proto_down  = dev_change_proto_down_generic,
+ };
+ 
+ void macvlan_common_setup(struct net_device *dev)
+@@ -1182,7 +1181,7 @@ void macvlan_common_setup(struct net_device *dev)
+ 	dev->max_mtu		= ETH_MAX_MTU;
+ 	dev->priv_flags	       &= ~IFF_TX_SKB_SHARING;
+ 	netif_keep_dst(dev);
+-	dev->priv_flags	       |= IFF_UNICAST_FLT;
++	dev->priv_flags	       |= IFF_UNICAST_FLT | IFF_CHANGE_PROTO_DOWN;
+ 	dev->netdev_ops		= &macvlan_netdev_ops;
+ 	dev->needs_free_netdev	= true;
+ 	dev->header_ops		= &macvlan_hard_header_ops;
+diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+index 82bd794fceb3..fecff0a46612 100644
+--- a/drivers/net/vxlan.c
++++ b/drivers/net/vxlan.c
+@@ -3234,7 +3234,6 @@ static const struct net_device_ops vxlan_netdev_ether_ops = {
+ 	.ndo_fdb_dump		= vxlan_fdb_dump,
+ 	.ndo_fdb_get		= vxlan_fdb_get,
+ 	.ndo_fill_metadata_dst	= vxlan_fill_metadata_dst,
+-	.ndo_change_proto_down  = dev_change_proto_down_generic,
+ };
+ 
+ static const struct net_device_ops vxlan_netdev_raw_ops = {
+@@ -3305,7 +3304,7 @@ static void vxlan_setup(struct net_device *dev)
+ 	dev->hw_features |= NETIF_F_RXCSUM;
+ 	dev->hw_features |= NETIF_F_GSO_SOFTWARE;
+ 	netif_keep_dst(dev);
+-	dev->priv_flags |= IFF_NO_QUEUE;
++	dev->priv_flags |= IFF_NO_QUEUE | IFF_CHANGE_PROTO_DOWN;
+ 
+ 	/* MTU range: 68 - 65535 */
+ 	dev->min_mtu = ETH_MIN_MTU;
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index df049864661d..db3bff1ae7fd 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -1297,11 +1297,6 @@ struct netdev_net_notifier {
+  *	TX queue.
+  * int (*ndo_get_iflink)(const struct net_device *dev);
+  *	Called to get the iflink value of this device.
+- * void (*ndo_change_proto_down)(struct net_device *dev,
+- *				 bool proto_down);
+- *	This function is used to pass protocol port error state information
+- *	to the switch driver. The switch driver can react to the proto_down
+- *      by doing a phys down on the associated switch port.
+  * int (*ndo_fill_metadata_dst)(struct net_device *dev, struct sk_buff *skb);
+  *	This function is used to get egress tunnel information for given skb.
+  *	This is useful for retrieving outer tunnel header parameters while
+@@ -1542,8 +1537,6 @@ struct net_device_ops {
+ 						      int queue_index,
+ 						      u32 maxrate);
+ 	int			(*ndo_get_iflink)(const struct net_device *dev);
+-	int			(*ndo_change_proto_down)(struct net_device *dev,
+-							 bool proto_down);
+ 	int			(*ndo_fill_metadata_dst)(struct net_device *dev,
+ 						       struct sk_buff *skb);
+ 	void			(*ndo_set_rx_headroom)(struct net_device *dev,
+@@ -1612,6 +1605,7 @@ struct net_device_ops {
+  * @IFF_LIVE_RENAME_OK: rename is allowed while device is up and running
+  * @IFF_TX_SKB_NO_LINEAR: device/driver is capable of xmitting frames with
+  *	skb_headlen(skb) == 0 (data starts from frag0)
++ * @IFF_CHANGE_PROTO_DOWN: device supports setting carrier via IFLA_PROTO_DOWN
+  */
+ enum netdev_priv_flags {
+ 	IFF_802_1Q_VLAN			= 1<<0,
+@@ -1646,6 +1640,7 @@ enum netdev_priv_flags {
+ 	IFF_L3MDEV_RX_HANDLER		= 1<<29,
+ 	IFF_LIVE_RENAME_OK		= 1<<30,
+ 	IFF_TX_SKB_NO_LINEAR		= 1<<31,
++	IFF_CHANGE_PROTO_DOWN		= BIT_ULL(32),
+ };
+ 
+ #define IFF_802_1Q_VLAN			IFF_802_1Q_VLAN
+@@ -1982,7 +1977,7 @@ struct net_device {
+ 
+ 	/* Read-mostly cache-line for fast-path access */
+ 	unsigned int		flags;
+-	unsigned int		priv_flags;
++	unsigned long long	priv_flags;
+ 	const struct net_device_ops *netdev_ops;
+ 	int			ifindex;
+ 	unsigned short		gflags;
+@@ -3735,7 +3730,6 @@ int dev_get_port_parent_id(struct net_device *dev,
+ 			   struct netdev_phys_item_id *ppid, bool recurse);
+ bool netdev_port_same_parent_id(struct net_device *a, struct net_device *b);
+ int dev_change_proto_down(struct net_device *dev, bool proto_down);
+-int dev_change_proto_down_generic(struct net_device *dev, bool proto_down);
+ void dev_change_proto_down_reason(struct net_device *dev, unsigned long mask,
+ 				  u32 value);
+ struct sk_buff *validate_xmit_skb_list(struct sk_buff *skb, struct net_device *dev, bool *again);
+diff --git a/net/8021q/vlanproc.c b/net/8021q/vlanproc.c
+index ec87dea23719..08bf6c839e25 100644
+--- a/net/8021q/vlanproc.c
++++ b/net/8021q/vlanproc.c
+@@ -252,7 +252,7 @@ static int vlandev_seq_show(struct seq_file *seq, void *offset)
+ 
+ 	stats = dev_get_stats(vlandev, &temp);
+ 	seq_printf(seq,
+-		   "%s  VID: %d	 REORDER_HDR: %i  dev->priv_flags: %hx\n",
++		   "%s  VID: %d	 REORDER_HDR: %i  dev->priv_flags: %llx\n",
+ 		   vlandev->name, vlan->vlan_id,
+ 		   (int)(vlan->flags & 1), vlandev->priv_flags);
+ 
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 9c4fc8c3f981..823917de0d2b 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -8558,35 +8558,17 @@ bool netdev_port_same_parent_id(struct net_device *a, struct net_device *b)
+ EXPORT_SYMBOL(netdev_port_same_parent_id);
+ 
+ /**
+- *	dev_change_proto_down - update protocol port state information
++ *	dev_change_proto_down - set carrier according to proto_down.
++ *
+  *	@dev: device
+  *	@proto_down: new value
+- *
+- *	This info can be used by switch drivers to set the phys state of the
+- *	port.
+  */
+ int dev_change_proto_down(struct net_device *dev, bool proto_down)
+ {
+-	const struct net_device_ops *ops = dev->netdev_ops;
+-
+-	if (!ops->ndo_change_proto_down)
++	if (!(dev->priv_flags & IFF_CHANGE_PROTO_DOWN))
+ 		return -EOPNOTSUPP;
+ 	if (!netif_device_present(dev))
+ 		return -ENODEV;
+-	return ops->ndo_change_proto_down(dev, proto_down);
+-}
+-EXPORT_SYMBOL(dev_change_proto_down);
+-
+-/**
+- *	dev_change_proto_down_generic - generic implementation for
+- * 	ndo_change_proto_down that sets carrier according to
+- * 	proto_down.
+- *
+- *	@dev: device
+- *	@proto_down: new value
+- */
+-int dev_change_proto_down_generic(struct net_device *dev, bool proto_down)
+-{
+ 	if (proto_down)
+ 		netif_carrier_off(dev);
+ 	else
+@@ -8594,7 +8576,7 @@ int dev_change_proto_down_generic(struct net_device *dev, bool proto_down)
+ 	dev->proto_down = proto_down;
+ 	return 0;
+ }
+-EXPORT_SYMBOL(dev_change_proto_down_generic);
++EXPORT_SYMBOL(dev_change_proto_down);
+ 
+ /**
+  *	dev_change_proto_down_reason - proto down reason
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 4edd58d34f16..affe34d71d31 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -488,14 +488,6 @@ static ssize_t proto_down_store(struct device *dev,
+ 				struct device_attribute *attr,
+ 				const char *buf, size_t len)
+ {
+-	struct net_device *netdev = to_net_dev(dev);
+-
+-	/* The check is also done in change_proto_down; this helps returning
+-	 * early without hitting the trylock/restart in netdev_store.
+-	 */
+-	if (!netdev->netdev_ops->ndo_change_proto_down)
+-		return -EOPNOTSUPP;
+-
+ 	return netdev_store(dev, attr, buf, len, change_proto_down);
+ }
+ NETDEVICE_SHOW_RW(proto_down, fmt_dec);
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index fd030e02f16d..6f25c0a8aebe 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -2539,13 +2539,12 @@ static int do_set_proto_down(struct net_device *dev,
+ 			     struct netlink_ext_ack *extack)
+ {
+ 	struct nlattr *pdreason[IFLA_PROTO_DOWN_REASON_MAX + 1];
+-	const struct net_device_ops *ops = dev->netdev_ops;
+ 	unsigned long mask = 0;
+ 	u32 value;
+ 	bool proto_down;
+ 	int err;
+ 
+-	if (!ops->ndo_change_proto_down) {
++	if (!(dev->priv_flags & IFF_CHANGE_PROTO_DOWN)) {
+ 		NL_SET_ERR_MSG(extack,  "Protodown not supported by device");
+ 		return -EOPNOTSUPP;
+ 	}
+-- 
+2.31.1
+
