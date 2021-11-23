@@ -2,81 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C446145996E
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 01:52:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 203F1459991
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 02:16:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229963AbhKWAzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 19:55:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47302 "EHLO
+        id S232107AbhKWBTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 20:19:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229672AbhKWAzm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 19:55:42 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 268B7C061574
-        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 16:52:35 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id n26so17678192pff.3
-        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 16:52:35 -0800 (PST)
+        with ESMTP id S232042AbhKWBTw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 20:19:52 -0500
+Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3382C061714
+        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 17:16:45 -0800 (PST)
+Received: by mail-il1-x131.google.com with SMTP id i9so14506001ilu.1
+        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 17:16:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=zejIlZjGjvzTKDlE9IDzfKlgpBmC2NhrN3/klGVK4ZA=;
-        b=hc/tTYk3fZz/IJPEIiqvOu2E21wEYohFLn+lGmGkDQAUgUz2FYNlreLrFCD5Zoo0Qt
-         KHgjE7401SSvadQTKRcLSVDuYOLaIn97gmzLRZUWwbbT7C47f4TGueOEzJdmiXROpfzJ
-         Hjfgjy3hHflvPuaI2LCjJNbMJHFU+Fwsi6tfzce+M7FhxlRUDpg+p2HbvS6aMxq2AeW0
-         CPoROckPaxgnPH84VDUnwPG0agL2D/vjhZNK9v7qt8vEqmZ9Fsv1sM0kNTRoyy7/xOR6
-         T31NSkTiNrvmWc8rZI/mH7XABgE3gbEg6QeRByyohUgAikxh79pOmqYA6kXlbX7bL5XS
-         /4yA==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OWGNEvMSJrz9gx0ocpfCOrjY/4kPGHl937GrD3qaOEs=;
+        b=wuvsvAY2e4NToRbegyHp2Im6GDEau+HqX/NTdgt1a7V5K+QXKas/WpHZVb3dzlzdtC
+         UCcw028tlC/kZZGF7PBVRyvR7RLHCVmglfeH7x7SWa2qkx6tk5bF4aeZcOCCQryS/R8B
+         o3oeEYT+5eYnHapjYkiTx/wWJN1/28WVcT0H4rZZcbIEu3sr8vw8pCZyZE65SNuN8JOg
+         Xr8+xL2pqsUdbI15BrjmUOn5wJIyDoZLBW4edb8OcJEFmp43HR1vF5zcldwhCAboVk0C
+         KWahQ57zn7Ux0nYK4CIobqdgj8fvnPFN0+Wcp3mTnveMRuJTe/QsZZVVWGsyMOMKAM7s
+         84/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=zejIlZjGjvzTKDlE9IDzfKlgpBmC2NhrN3/klGVK4ZA=;
-        b=R5rFw32l1K/+Mk+ST9O5WTV5iWZk+zHUnd9ZRPSyazhZSfef7+MgRjS2kJRzM6wxqr
-         ckIe7eMGNv/zSdQpJ7DkzJ9pmGs2ssnXaJ4hpPCHDYOYfPU840sxqHSGd3towC2m9ac1
-         bBz9dDNqKNbLhbYICXzpnJDURKMKbyyHgKoKe05N+fWxzpTyEyNQySU59BUQT9ejXor0
-         PjHjAcgm7BS5jCLFgo2IasHy3yWUtJp1Lt1jGtEGBL5n0eLaF9DDfEOcIvUaMDg3TTow
-         fJTS8xpeKkcAlTangniLvD1XDW1epACnkbuRAFsH7pkfC2erU7ZN1YS59wWJWQKkA96+
-         F83w==
-X-Gm-Message-State: AOAM532TmAsLWgvn0p7VV1Gwy6IAE7t+DWDaTviWjHU/t0OUvgCax9i2
-        7wzXNOwX97Aw7aTXWflFHR3v/ope0MU/TouSw6w=
-X-Google-Smtp-Source: ABdhPJyYJo/UnZbIGsFKKWTDR2sRWmfDwlKIzG8Ra7RatSglANcHREszCR9X+ysCA19/RdsjeY1c1icIaBIbVCL/S/8=
-X-Received: by 2002:a05:6a00:b49:b0:49f:c8e0:51ff with SMTP id
- p9-20020a056a000b4900b0049fc8e051ffmr1142110pfo.36.1637628754381; Mon, 22 Nov
- 2021 16:52:34 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OWGNEvMSJrz9gx0ocpfCOrjY/4kPGHl937GrD3qaOEs=;
+        b=TKxndE0f/HIXD0jNDpY4QqGqvYTOxcowEALDouN4ON+K9QlQhmrztFK3MbCn7JecfI
+         iydS0QtGIb/foRwcOlY8lB6QU+OTnhpt/+BrTiI2fA5QUk/JPVfEps0G5/SKXhZj8axP
+         BJ+7UNjawoMB01F8giSe2lgLZvKORzLVb7jhxS6PuamzCUL3Wgi4QUQL+P/xEnj2/61d
+         D6HB4x/+9O8/JM6qao29yH5mTgD6L408dxKoG975KsGsf7Ph1UHfoAHCzuRDDbDHss4T
+         DGQRQdSABk2UZPf7qQZLlUa7uLqw005dk+enitDIz1hp8kl2nq205OEcyA+Xxptp+TSO
+         nFew==
+X-Gm-Message-State: AOAM532ZFRUHI8coG+NiS/JyrYlp15ouif4fUwwu1p/5urgyEyGzQBF2
+        YOU69jf83dBQCwZub9AGKv72Cw==
+X-Google-Smtp-Source: ABdhPJzLCPeVZOxvyv8iSjcbhzruCpCgY1B7HMkL+iV82dFYamoEBB+pzoa8sWqq0Jr4YY7mvlzQOA==
+X-Received: by 2002:a05:6e02:1a2c:: with SMTP id g12mr1728279ile.22.1637630205150;
+        Mon, 22 Nov 2021 17:16:45 -0800 (PST)
+Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id k7sm3909788iov.40.2021.11.22.17.16.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Nov 2021 17:16:44 -0800 (PST)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     pkurapat@codeaurora.org, avuyyuru@codeaurora.org,
+        bjorn.andersson@linaro.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, evgreen@chromium.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net] net: ipa: kill ipa_cmd_pipeline_clear()
+Date:   Mon, 22 Nov 2021 19:16:40 -0600
+Message-Id: <20211123011640.528936-1-elder@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Received: by 2002:a05:7300:7654:b0:42:730:ccab with HTTP; Mon, 22 Nov 2021
- 16:52:33 -0800 (PST)
-Reply-To: rubenherbert789@gmail.com
-From:   Ruben Herbert <rubenherbert789@gmail.com>
-Date:   Tue, 23 Nov 2021 01:52:33 +0100
-Message-ID: <CAOTeY0=SkmMtwpzPiBnNBn77juOTnj3wUVZTm3EN23bfzZ+yXw@mail.gmail.com>
-Subject: ABANDONED FUND
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Beneficiary,
+Calling ipa_cmd_pipeline_clear() after stopping the channel
+underlying the AP<-modem RX endpoint can lead to a deadlock.
 
-How are you today? I need the following answers from you immediately:
+This occurs in the ->runtime_suspend device power operation for the
+IPA driver.  While this callback is in progress, any other requests
+for power will block until the callback returns.
 
-Did you abandon your funds of US$35,000,000.00?
+Stopping the AP<-modem RX channel does not prevent the modem from
+sending another packet to this endpoint.  If a packet arrives for an
+RX channel when the channel is stopped, an SUSPEND IPA interrupt
+condition will be pending.  Handling an IPA interrupt requires
+power, so ipa_isr_thread() calls pm_runtime_get_sync() first thing.
 
-Did you authorize a lawyer to claim the fund on your behalf and that
-the funds should be sent to the below account details?;
+The problem occurs because a "pipeline clear" command will not
+complete while such a SUSPEND interrupt condition exists.  So the
+SUSPEND IPA interrupt handler won't proceed until it gets power;
+that won't happen until the ->runtime_suspend callback (and its
+"pipeline clear" command) completes; and that can't happen while
+the SUSPEND interrupt condition exists.
 
-Canadian Imperial Bank of Commerce
-1120 Grant Ave Wpg Mb Canada R3M 2A6
-Usd Acct No: 01007-93-17899
-Swift Code: cibccatt
-Beneficiary Name: Fitzroy Joseph
+It turns out that in this case there is no need to use the "pipeline
+clear" command.  There are scenarios in which clearing the pipeline
+is required while suspending, but those are not (yet) supported
+upstream.  So a simple fix, avoiding the potential deadlock, is to
+stop calling ipa_cmd_pipeline_clear() in ipa_endpoint_suspend().
+This removes the only user of ipa_cmd_pipeline_clear(), so get rid
+of that function.  It can be restored again whenever it's needed.
 
-Kindly get back to me immediately to avoid paying the wrong person.
+This is basically a manual revert along with an explanation for
+commit 6cb63ea6a39ea ("net: ipa: introduce ipa_cmd_tag_process()").
 
-I await your urgent response.
+Fixes: 6cb63ea6a39ea ("net: ipa: introduce ipa_cmd_tag_process()")
+Signed-off-by: Alex Elder <elder@linaro.org>
+---
+ drivers/net/ipa/ipa_cmd.c      | 16 ----------------
+ drivers/net/ipa/ipa_cmd.h      |  6 ------
+ drivers/net/ipa/ipa_endpoint.c |  2 --
+ 3 files changed, 24 deletions(-)
 
-Yours sincerely,,
-Dr. Ruben Herbert
-Head, Financial System Stability,
-Central Bank of Nigeria (CBN)
+diff --git a/drivers/net/ipa/ipa_cmd.c b/drivers/net/ipa/ipa_cmd.c
+index cff51731195aa..d57472ea077f2 100644
+--- a/drivers/net/ipa/ipa_cmd.c
++++ b/drivers/net/ipa/ipa_cmd.c
+@@ -661,22 +661,6 @@ void ipa_cmd_pipeline_clear_wait(struct ipa *ipa)
+ 	wait_for_completion(&ipa->completion);
+ }
+ 
+-void ipa_cmd_pipeline_clear(struct ipa *ipa)
+-{
+-	u32 count = ipa_cmd_pipeline_clear_count();
+-	struct gsi_trans *trans;
+-
+-	trans = ipa_cmd_trans_alloc(ipa, count);
+-	if (trans) {
+-		ipa_cmd_pipeline_clear_add(trans);
+-		gsi_trans_commit_wait(trans);
+-		ipa_cmd_pipeline_clear_wait(ipa);
+-	} else {
+-		dev_err(&ipa->pdev->dev,
+-			"error allocating %u entry tag transaction\n", count);
+-	}
+-}
+-
+ static struct ipa_cmd_info *
+ ipa_cmd_info_alloc(struct ipa_endpoint *endpoint, u32 tre_count)
+ {
+diff --git a/drivers/net/ipa/ipa_cmd.h b/drivers/net/ipa/ipa_cmd.h
+index 69cd085d427db..05ed7e42e1842 100644
+--- a/drivers/net/ipa/ipa_cmd.h
++++ b/drivers/net/ipa/ipa_cmd.h
+@@ -163,12 +163,6 @@ u32 ipa_cmd_pipeline_clear_count(void);
+  */
+ void ipa_cmd_pipeline_clear_wait(struct ipa *ipa);
+ 
+-/**
+- * ipa_cmd_pipeline_clear() - Clear the hardware pipeline
+- * @ipa:	- IPA pointer
+- */
+-void ipa_cmd_pipeline_clear(struct ipa *ipa);
+-
+ /**
+  * ipa_cmd_trans_alloc() - Allocate a transaction for the command TX endpoint
+  * @ipa:	IPA pointer
+diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
+index ef790fd0ab56a..03a1709934208 100644
+--- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -1636,8 +1636,6 @@ void ipa_endpoint_suspend(struct ipa *ipa)
+ 	if (ipa->modem_netdev)
+ 		ipa_modem_suspend(ipa->modem_netdev);
+ 
+-	ipa_cmd_pipeline_clear(ipa);
+-
+ 	ipa_endpoint_suspend_one(ipa->name_map[IPA_ENDPOINT_AP_LAN_RX]);
+ 	ipa_endpoint_suspend_one(ipa->name_map[IPA_ENDPOINT_AP_COMMAND_TX]);
+ }
+-- 
+2.32.0
+
