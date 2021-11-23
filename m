@@ -2,192 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDCDC459911
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 01:16:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C446145996E
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 01:52:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231676AbhKWATN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 19:19:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39044 "EHLO
+        id S229963AbhKWAzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 19:55:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231537AbhKWATK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 19:19:10 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2EAC061714
-        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 16:16:02 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id f9so25483461ioo.11
-        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 16:16:02 -0800 (PST)
+        with ESMTP id S229672AbhKWAzm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 19:55:42 -0500
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 268B7C061574
+        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 16:52:35 -0800 (PST)
+Received: by mail-pf1-x42b.google.com with SMTP id n26so17678192pff.3
+        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 16:52:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=9JVWY8yzmiqkBLTZjcNhBamJOTABdufJw37vUHv4h5U=;
-        b=Qa6zmSYsbGal3jJYf4MQ/2OZDTrNt0woF1yUot91QrIXnQ29i8S+libhyQF98zL9g/
-         QDdga4Ct244Ni571saW/SKBMRU6ipaH9i7PjhuI7f7yQjfJtg8LA1o6p32kFKlWAltDX
-         aAFzmX9la45XuLap2fVhDJ2HM4G0Kai5zHg16FAZQuBv8pm2loNPUiw3u8bpZqlUXacR
-         1tlslKXXkADWg54+ZkJY+a54HHFUeASnZFE9EGN0Rw1+6U8brXsZ2dJmZu30YU9I3rIJ
-         bDPISUepdrzrmCzu69FY9NxLQ/AdDDQFVgq/zyQvE3T0fyyARqolTVaSoUz+O1gfhc6x
-         MUvA==
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=zejIlZjGjvzTKDlE9IDzfKlgpBmC2NhrN3/klGVK4ZA=;
+        b=hc/tTYk3fZz/IJPEIiqvOu2E21wEYohFLn+lGmGkDQAUgUz2FYNlreLrFCD5Zoo0Qt
+         KHgjE7401SSvadQTKRcLSVDuYOLaIn97gmzLRZUWwbbT7C47f4TGueOEzJdmiXROpfzJ
+         Hjfgjy3hHflvPuaI2LCjJNbMJHFU+Fwsi6tfzce+M7FhxlRUDpg+p2HbvS6aMxq2AeW0
+         CPoROckPaxgnPH84VDUnwPG0agL2D/vjhZNK9v7qt8vEqmZ9Fsv1sM0kNTRoyy7/xOR6
+         T31NSkTiNrvmWc8rZI/mH7XABgE3gbEg6QeRByyohUgAikxh79pOmqYA6kXlbX7bL5XS
+         /4yA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=9JVWY8yzmiqkBLTZjcNhBamJOTABdufJw37vUHv4h5U=;
-        b=o3R+w1zH6BLpFdjgkmfHdPFr9GrJ/bBlyfSC9SNP2vz+400LMJuOqH/rv+gPBanpC2
-         6suYO6+NnKv1vWGlvBcOro02UM5WujBR/Eu5wt/wHmPsVuZXL2xEcV7RTs2IoXvpyYhw
-         lJvaOiR40PfwmeTVBnc5f4AW/1cc0fqVxge+F3hIsd2USjrLO7KVepBqM6842C1Ey2cm
-         xFZjnY4j8KwAKImZntkQnySONcd+xRvfCnKGLG7cut2R/H/CdPQ982Er+54PIT0oqBMM
-         FdplwvXhihptuZ8NQnGRiErHgGJf+rU/H+sJ0Xs8Ir20J0vTVDeyxIKUjALtO+MzN1+t
-         OcDg==
-X-Gm-Message-State: AOAM533ekUGFRVZtyt7dbblPNvcULx92MIoxW70A6IrMzzBXbuMjAyJ1
-        Xz6mDhJXX7P/pMGxZsU9ux1neA==
-X-Google-Smtp-Source: ABdhPJyowziwsrYTNOPpw8QYCA84ADW6AroUKr6Emgq23VChEoplQt9v1VLY9U+rh5jEPQECMomtxg==
-X-Received: by 2002:a05:6602:2e03:: with SMTP id o3mr1207862iow.14.1637626562356;
-        Mon, 22 Nov 2021 16:16:02 -0800 (PST)
-Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id u4sm7040094ilv.81.2021.11.22.16.16.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Nov 2021 16:16:01 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     pkurapat@codeaurora.org, avuyyuru@codeaurora.org,
-        bjorn.andersson@linaro.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, evgreen@chromium.org, elder@kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net 2/2] net: ipa: separate disabling setup from modem stop
-Date:   Mon, 22 Nov 2021 18:15:55 -0600
-Message-Id: <20211123001555.505546-3-elder@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211123001555.505546-1-elder@linaro.org>
-References: <20211123001555.505546-1-elder@linaro.org>
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=zejIlZjGjvzTKDlE9IDzfKlgpBmC2NhrN3/klGVK4ZA=;
+        b=R5rFw32l1K/+Mk+ST9O5WTV5iWZk+zHUnd9ZRPSyazhZSfef7+MgRjS2kJRzM6wxqr
+         ckIe7eMGNv/zSdQpJ7DkzJ9pmGs2ssnXaJ4hpPCHDYOYfPU840sxqHSGd3towC2m9ac1
+         bBz9dDNqKNbLhbYICXzpnJDURKMKbyyHgKoKe05N+fWxzpTyEyNQySU59BUQT9ejXor0
+         PjHjAcgm7BS5jCLFgo2IasHy3yWUtJp1Lt1jGtEGBL5n0eLaF9DDfEOcIvUaMDg3TTow
+         fJTS8xpeKkcAlTangniLvD1XDW1epACnkbuRAFsH7pkfC2erU7ZN1YS59wWJWQKkA96+
+         F83w==
+X-Gm-Message-State: AOAM532TmAsLWgvn0p7VV1Gwy6IAE7t+DWDaTviWjHU/t0OUvgCax9i2
+        7wzXNOwX97Aw7aTXWflFHR3v/ope0MU/TouSw6w=
+X-Google-Smtp-Source: ABdhPJyYJo/UnZbIGsFKKWTDR2sRWmfDwlKIzG8Ra7RatSglANcHREszCR9X+ysCA19/RdsjeY1c1icIaBIbVCL/S/8=
+X-Received: by 2002:a05:6a00:b49:b0:49f:c8e0:51ff with SMTP id
+ p9-20020a056a000b4900b0049fc8e051ffmr1142110pfo.36.1637628754381; Mon, 22 Nov
+ 2021 16:52:34 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:a05:7300:7654:b0:42:730:ccab with HTTP; Mon, 22 Nov 2021
+ 16:52:33 -0800 (PST)
+Reply-To: rubenherbert789@gmail.com
+From:   Ruben Herbert <rubenherbert789@gmail.com>
+Date:   Tue, 23 Nov 2021 01:52:33 +0100
+Message-ID: <CAOTeY0=SkmMtwpzPiBnNBn77juOTnj3wUVZTm3EN23bfzZ+yXw@mail.gmail.com>
+Subject: ABANDONED FUND
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The IPA setup_complete flag is set at the end of ipa_setup(), when
-the setup phase of initialization has completed successfully.  This
-occurs as part of driver probe processing, or (if "modem-init" is
-specified in the DTS file) it is triggered by the "ipa-setup-ready"
-SMP2P interrupt generated by the modem.
+Dear Beneficiary,
 
-In the latter case, it's possible for driver shutdown (or remove) to
-begin while setup processing is underway, and this can't be allowed.
-The problem is that the setup_complete flag is not adequate to signal
-that setup is underway.
+How are you today? I need the following answers from you immediately:
 
-If setup_complete is set, it will never be un-set, so that case is
-not a problem.  But if setup_complete is false, there's a chance
-setup is underway.
+Did you abandon your funds of US$35,000,000.00?
 
-Because setup is triggered by an interrupt on a "modem-init" system,
-there is a simple way to ensure the value of setup_complete is safe
-to read.  The threaded handler--if it is executing--will complete as
-part of a request to disable the "ipa-modem-ready" interrupt.  This
-means that ipa_setup() (which is called from the handler) will run
-to completion if it was underway, or will never be called otherwise.
+Did you authorize a lawyer to claim the fund on your behalf and that
+the funds should be sent to the below account details?;
 
-The request to disable the "ipa-setup-ready" interrupt is currently
-made within ipa_modem_stop().  Instead, disable the interrupt
-outside that function in the two places it's called.  In the case of
-ipa_remove(), this ensures the setup_complete flag is safe to read
-before we read it.
+Canadian Imperial Bank of Commerce
+1120 Grant Ave Wpg Mb Canada R3M 2A6
+Usd Acct No: 01007-93-17899
+Swift Code: cibccatt
+Beneficiary Name: Fitzroy Joseph
 
-Rename ipa_smp2p_disable() to be ipa_smp2p_irq_disable_setup(), to be
-more specific about its effect.
+Kindly get back to me immediately to avoid paying the wrong person.
 
-Fixes: 530f9216a953 ("soc: qcom: ipa: AP/modem communications")
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa_main.c  | 6 ++++++
- drivers/net/ipa/ipa_modem.c | 6 +++---
- drivers/net/ipa/ipa_smp2p.c | 2 +-
- drivers/net/ipa/ipa_smp2p.h | 7 +++----
- 4 files changed, 13 insertions(+), 8 deletions(-)
+I await your urgent response.
 
-diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
-index cdfa98a76e1f4..a448ec198bee1 100644
---- a/drivers/net/ipa/ipa_main.c
-+++ b/drivers/net/ipa/ipa_main.c
-@@ -28,6 +28,7 @@
- #include "ipa_reg.h"
- #include "ipa_mem.h"
- #include "ipa_table.h"
-+#include "ipa_smp2p.h"
- #include "ipa_modem.h"
- #include "ipa_uc.h"
- #include "ipa_interrupt.h"
-@@ -801,6 +802,11 @@ static int ipa_remove(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	int ret;
- 
-+	/* Prevent the modem from triggering a call to ipa_setup().  This
-+	 * also ensures a modem-initiated setup that's underway completes.
-+	 */
-+	ipa_smp2p_irq_disable_setup(ipa);
-+
- 	ret = pm_runtime_get_sync(dev);
- 	if (WARN_ON(ret < 0))
- 		goto out_power_put;
-diff --git a/drivers/net/ipa/ipa_modem.c b/drivers/net/ipa/ipa_modem.c
-index ad116bcc0580e..d0ab4d70c303b 100644
---- a/drivers/net/ipa/ipa_modem.c
-+++ b/drivers/net/ipa/ipa_modem.c
-@@ -339,9 +339,6 @@ int ipa_modem_stop(struct ipa *ipa)
- 	if (state != IPA_MODEM_STATE_RUNNING)
- 		return -EBUSY;
- 
--	/* Prevent the modem from triggering a call to ipa_setup() */
--	ipa_smp2p_disable(ipa);
--
- 	/* Clean up the netdev and endpoints if it was started */
- 	if (netdev) {
- 		struct ipa_priv *priv = netdev_priv(netdev);
-@@ -369,6 +366,9 @@ static void ipa_modem_crashed(struct ipa *ipa)
- 	struct device *dev = &ipa->pdev->dev;
- 	int ret;
- 
-+	/* Prevent the modem from triggering a call to ipa_setup() */
-+	ipa_smp2p_irq_disable_setup(ipa);
-+
- 	ret = pm_runtime_get_sync(dev);
- 	if (ret < 0) {
- 		dev_err(dev, "error %d getting power to handle crash\n", ret);
-diff --git a/drivers/net/ipa/ipa_smp2p.c b/drivers/net/ipa/ipa_smp2p.c
-index 24bc112a072c6..2112336120391 100644
---- a/drivers/net/ipa/ipa_smp2p.c
-+++ b/drivers/net/ipa/ipa_smp2p.c
-@@ -309,7 +309,7 @@ void ipa_smp2p_exit(struct ipa *ipa)
- 	kfree(smp2p);
- }
- 
--void ipa_smp2p_disable(struct ipa *ipa)
-+void ipa_smp2p_irq_disable_setup(struct ipa *ipa)
- {
- 	struct ipa_smp2p *smp2p = ipa->smp2p;
- 
-diff --git a/drivers/net/ipa/ipa_smp2p.h b/drivers/net/ipa/ipa_smp2p.h
-index 99a9567896388..59cee31a73836 100644
---- a/drivers/net/ipa/ipa_smp2p.h
-+++ b/drivers/net/ipa/ipa_smp2p.h
-@@ -27,13 +27,12 @@ int ipa_smp2p_init(struct ipa *ipa, bool modem_init);
- void ipa_smp2p_exit(struct ipa *ipa);
- 
- /**
-- * ipa_smp2p_disable() - Prevent "ipa-setup-ready" interrupt handling
-+ * ipa_smp2p_irq_disable_setup() - Disable the "setup ready" interrupt
-  * @ipa:	IPA pointer
-  *
-- * Prevent handling of the "setup ready" interrupt from the modem.
-- * This is used before initiating shutdown of the driver.
-+ * Disable the "ipa-setup-ready" interrupt from the modem.
-  */
--void ipa_smp2p_disable(struct ipa *ipa);
-+void ipa_smp2p_irq_disable_setup(struct ipa *ipa);
- 
- /**
-  * ipa_smp2p_notify_reset() - Reset modem notification state
--- 
-2.32.0
-
+Yours sincerely,,
+Dr. Ruben Herbert
+Head, Financial System Stability,
+Central Bank of Nigeria (CBN)
