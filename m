@@ -2,128 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8243645AF18
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 23:31:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36BB445AF1F
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 23:32:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232132AbhKWWeb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 17:34:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33874 "EHLO
+        id S234838AbhKWWfN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 17:35:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229835AbhKWWea (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 17:34:30 -0500
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B042EC061574
-        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 14:31:21 -0800 (PST)
-Received: by mail-qt1-x833.google.com with SMTP id p19so749117qtw.12
-        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 14:31:21 -0800 (PST)
+        with ESMTP id S229835AbhKWWfM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 17:35:12 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B711C061574
+        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 14:32:03 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id s137so356456pgs.5
+        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 14:32:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=e1MHoVIQ7VWLpMYL3DiSa1iMpQLfgouyOY2dzL1fhzQ=;
-        b=oWpwGu/W6E3wTwqCM1OVTquUAAMbxFxnE47D3De51Q0G45xvGtwoo33IF7DqbiSaFZ
-         jOn2y2rxv8yB8APkK4dIe4bpd6NgrJjrO7/k+74G8JeGQY7yFplm1jerHw8AaYzMc6bw
-         Fm3jcci+aO3l+QH8LP4MHRjvyBCQloy7NyR3WwoJf0bxwJ25hkYjBHmJeMR2uhvLiXxB
-         CE4i/Iv17EgcRvzshj4LcfuvfjMZ9EvrIRXvhr7uZKsjSgx5aZ+H+3JxuQbRJSIBdfCr
-         /Y1/OEGE+t8ZrSWa/r96HIbyxejIB+5um1T6AdS8at8wAjTKcrUFIjKTESyPYXLnUZ9q
-         x0fQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XcBOjpj5WIC/erbsuKGbK6VTsc2A8dTqk6SNtxw9Bk8=;
+        b=VZ9TKchp1OO2GazlBKUfNUoF+2j/qKYlearoF3uNrs9Lkl1/vO2TbJuzdoUxY8bbV2
+         gRJj/LOaO/fGms1BHymieOlamwV2bKSCoyMuqCk7BlN+ZA5L8hLillSku02XPD/7x/Ip
+         i4P86IyBLF1fxADhLLu93oWq+9HxT7DC5zDNLJJa0LQ6kANihl0q3uOV3HEs2ZmdCDSl
+         k8663lCNP0ccSRQXi73+NjqtuQV2dCEwzOa1TIsqzziH4D8iZO7OPmCZRi9oS650jiHE
+         Rj/PhPLNj725JryU4uL4ixyb8yoniuEedKrZXplQvpM47HaV/YPbCccZV1HctFdea7J7
+         1Lwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=e1MHoVIQ7VWLpMYL3DiSa1iMpQLfgouyOY2dzL1fhzQ=;
-        b=T6HEp8EOCsh3h6knqvZgsJUiXEq/2WRZ7/Rg2xqkPAc4JsGhOPb77BEqoIh4/+f9/k
-         4sPAbMiMHXbmH9vQ11yxsXAwUletSk11QWAmJ0ayYNELOBzbG+R/kYXNUTDjSFX3jSuS
-         EddwYQaLqHw0Fn/I4YgViN0IoCfOYr8PrYN50b5JgJXMLkTW0Xv+KuxgjYws8ebyB25j
-         ri1j53P5QrDQCJxLp3XOmfNmFpsdBJrTwvk4Rto4Aay+7XgNva4FIRA2//tp2CpY0mXR
-         Ouy0EIQc6va0FOSA9SvpePkCgTNvG76WeUSd5nCKiDDvdKo41s5E++BbdemG5aM+9zBy
-         4dfA==
-X-Gm-Message-State: AOAM5321V7uZnvkzu7fnhR2UIaS+BB6759WxOdI17LfICcvrVN3seWZJ
-        1KU26mf+oqTgDPEA/ibi1Ys=
-X-Google-Smtp-Source: ABdhPJx2HkJZDBhjroPBQtNTeoKbRKc+swGP5f+F167xccQ42/dmt7ZxV1xHbxcSRLeW2SjTy2nZVA==
-X-Received: by 2002:ac8:5f4b:: with SMTP id y11mr1055823qta.285.1637706680874;
-        Tue, 23 Nov 2021 14:31:20 -0800 (PST)
-Received: from work ([187.105.166.74])
-        by smtp.gmail.com with ESMTPSA id g19sm6982418qtg.82.2021.11.23.14.31.19
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XcBOjpj5WIC/erbsuKGbK6VTsc2A8dTqk6SNtxw9Bk8=;
+        b=MoXNHNG72tnisNe4BRQiop0ljrRwiLyTM0H/LbN7DSFNdiDVG2FGIuv6BCB7QhM29o
+         mPUkqoILcR21NVNnqkGjn20Z4FJ712F+u6NPfK++tmuxQZOiIRoer3vWkSwkloOxU1mn
+         vAdqTslE0sphZYi6kvePIjIlZUIYGHXUgZZXTxCJK5GXbuKR5bva3LUeKcr04qzlZdrx
+         /m+Bq4i0wU7KXpq6onGI36b7p/XNsax5MDTbDoYEA+0yREwdpStcDdI0BhnbezXHUGeM
+         yT5elFbcsqNnOI38WOoqjgvqXoOZaKU4awZydCthPnmm4mBG35X7Fx1sF86439O8wTzi
+         v25g==
+X-Gm-Message-State: AOAM531hluzXPLYwiC6qDq4J7I3mjTJlx6emZYZPO4hbjjukCUBf51Ar
+        S4yei2PAQ0e3qfsEcAos66Mc3BikQj4FFA==
+X-Google-Smtp-Source: ABdhPJynExqkxKfXCViuViOx58L/sEnqFHceOAEHv4w3h/6+SzLzPlq+y0BEDnikL0vqYizGjXZS9Q==
+X-Received: by 2002:a63:374c:: with SMTP id g12mr6425723pgn.35.1637706723097;
+        Tue, 23 Nov 2021 14:32:03 -0800 (PST)
+Received: from athina.mtv.corp.google.com ([2620:15c:211:200:cd70:5ac2:9066:1bb8])
+        by smtp.gmail.com with ESMTPSA id oa2sm2281338pjb.53.2021.11.23.14.32.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Nov 2021 14:31:20 -0800 (PST)
-Date:   Tue, 23 Nov 2021 19:31:14 -0300
-From:   Alessandro B Maurici <abmaurici@gmail.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     netdev@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH] phy: fix possible double lock calling link changed
- handler
-Message-ID: <20211123193114.346852d6@work>
-In-Reply-To: <06d158a7-4b1f-d635-2de8-7b34b9c2b0c2@gmail.com>
-References: <20211122235548.38b3fc7c@work>
-        <YZxrhhm0YdfoJcAu@lunn.ch>
-        <20211123014946.1ec2d7ee@work>
-        <017ea94f-7caf-3d4e-5900-aa23a212aa26@gmail.com>
-        <YZz2irnGkrVQPjTb@lunn.ch>
-        <20211123130634.14fa4972@work>
-        <06d158a7-4b1f-d635-2de8-7b34b9c2b0c2@gmail.com>
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Tue, 23 Nov 2021 14:32:02 -0800 (PST)
+From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
+To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Neal Cardwell <ncardwell@google.com>
+Subject: [PATCH] net-ipv6: do not allow IPV6_TCLASS to muck with tcp's ECN
+Date:   Tue, 23 Nov 2021 14:31:54 -0800
+Message-Id: <20211123223154.1117794-1-zenczykowski@gmail.com>
+X-Mailer: git-send-email 2.34.0.rc2.393.gf8c9666880-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Nov 2021 21:32:56 +0100
-Heiner Kallweit <hkallweit1@gmail.com> wrote:
+From: Maciej Żenczykowski <maze@google.com>
 
-> Great that you have test hw, could you please test the following patch?
-> The duplex argument of lan743x_phy_update_flowcontrol() seems to be some
-> leftover, it isn't used and can be removed.
-> 
-> 
-> diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-> index 4fc97823b..7d7647481 100644
-> --- a/drivers/net/ethernet/microchip/lan743x_main.c
-> +++ b/drivers/net/ethernet/microchip/lan743x_main.c
-> @@ -914,8 +914,7 @@ static int lan743x_phy_reset(struct lan743x_adapter *adapter)
->  }
->  
->  static void lan743x_phy_update_flowcontrol(struct lan743x_adapter *adapter,
-> -					   u8 duplex, u16 local_adv,
-> -					   u16 remote_adv)
-> +					   u16 local_adv, u16 remote_adv)
->  {
->  	struct lan743x_phy *phy = &adapter->phy;
->  	u8 cap;
-> @@ -943,7 +942,6 @@ static void lan743x_phy_link_status_change(struct net_device *netdev)
->  
->  	phy_print_status(phydev);
->  	if (phydev->state == PHY_RUNNING) {
-> -		struct ethtool_link_ksettings ksettings;
->  		int remote_advertisement = 0;
->  		int local_advertisement = 0;
->  
-> @@ -980,18 +978,14 @@ static void lan743x_phy_link_status_change(struct net_device *netdev)
->  		}
->  		lan743x_csr_write(adapter, MAC_CR, data);
->  
-> -		memset(&ksettings, 0, sizeof(ksettings));
-> -		phy_ethtool_get_link_ksettings(netdev, &ksettings);
->  		local_advertisement =
->  			linkmode_adv_to_mii_adv_t(phydev->advertising);
->  		remote_advertisement =
->  			linkmode_adv_to_mii_adv_t(phydev->lp_advertising);
->  
-> -		lan743x_phy_update_flowcontrol(adapter,
-> -					       ksettings.base.duplex,
-> -					       local_advertisement,
-> +		lan743x_phy_update_flowcontrol(adapter, local_advertisement,
->  					       remote_advertisement);
-> -		lan743x_ptp_update_latency(adapter, ksettings.base.speed);
-> +		lan743x_ptp_update_latency(adapter, phydev->speed);
->  	}
->  }
->  
+This is to match ipv4 behaviour, see __ip_sock_set_tos()
+implementation at ipv4/ip_sockglue.c:579
 
-Patch tested and working as expected.
+void __ip_sock_set_tos(struct sock *sk, int val)
+{
+  if (sk->sk_type == SOCK_STREAM) {
+    val &= ~INET_ECN_MASK;
+    val |= inet_sk(sk)->tos & INET_ECN_MASK;
+  }
+  if (inet_sk(sk)->tos != val) {
+    inet_sk(sk)->tos = val;
+    sk->sk_priority = rt_tos2priority(val);
+    sk_dst_reset(sk);
+  }
+}
 
-Alessandro
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Neal Cardwell <ncardwell@google.com>
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
+---
+ net/ipv6/ipv6_sockglue.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
+index 41efca817db4..204b0b4d10c8 100644
+--- a/net/ipv6/ipv6_sockglue.c
++++ b/net/ipv6/ipv6_sockglue.c
+@@ -599,6 +599,10 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
+ 		/* RFC 3542, 6.5: default traffic class of 0x0 */
+ 		if (val == -1)
+ 			val = 0;
++		if (sk->sk_type == SOCK_STREAM) {
++			val &= ~INET_ECN_MASK;
++			val |= np->tclass & INET_ECN_MASK;
++		}
+ 		np->tclass = val;
+ 		retv = 0;
+ 		break;
+-- 
+2.34.0.rc2.393.gf8c9666880-goog
+
