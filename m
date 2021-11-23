@@ -2,107 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87DC945A50B
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 15:14:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE9C645A5AD
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 15:30:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237929AbhKWORb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 09:17:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59440 "EHLO
+        id S237847AbhKWOdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 09:33:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237691AbhKWOR2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 09:17:28 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 850D8C061574
-        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 06:14:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=kIC57tIQMC2RpVaL43xrefZcm7pKvNmxBibV1FxsXp8=; b=hOG/fqZuMFEztqDPQDHE8Df/6G
-        WIoGHQnj7XoEKQ3+W8Imyi4KUhUUfgx3MSFRS/MmnOu9I42ENye9uphaIaSWq07y7iehmfSckJN4o
-        EsP2mT2H98atr9gcad8lEH6Rke0SLOYPIHpHGTdnvvrcqxDtvktszqqZRRbO8XrrGQ9xWMIAvz5xw
-        Nl3glakaOmFTEUXksv9ho/xRLzFkb+dd+ypnlb7zlkD4ltMSNHI/+ZI3JGRs5AWyOMC7gwCgTaQ3z
-        qqsA3pSGPrcaNfKDenJOEE51vAzO7Q7MJyXKyzm4OX73qfv21zYmUjwSQnw0d2JjzInMVoti70XJt
-        QBiFyotA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55818)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mpWYr-0007zk-TU; Tue, 23 Nov 2021 14:14:17 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mpWYq-0000Hh-Bv; Tue, 23 Nov 2021 14:14:16 +0000
-Date:   Tue, 23 Nov 2021 14:14:16 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Alessandro B Maurici <abmaurici@gmail.com>, netdev@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH] phy: fix possible double lock calling link changed
- handler
-Message-ID: <YZz3OLKFvsMgqdGD@shell.armlinux.org.uk>
-References: <20211122235548.38b3fc7c@work>
- <YZxrhhm0YdfoJcAu@lunn.ch>
- <20211123014946.1ec2d7ee@work>
- <YZz2AJ+wqasknw2p@lunn.ch>
+        with ESMTP id S236151AbhKWOdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 09:33:50 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC13C061714;
+        Tue, 23 Nov 2021 06:30:42 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id iq11so16743311pjb.3;
+        Tue, 23 Nov 2021 06:30:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6bsx4hw5NbHCVF2W/NeRmzNghpOYrhv8l8EVf1kn67w=;
+        b=cvvJrI1QX3F1CXlrV/8eUkgWUDHfoWCFWFkSOpXBjzB6SsWy2BUpETC33HUCl3JzTF
+         kIURt3zkpyvrRd5BJrEeSEm/UeNRI0jzQJP0m2xbAh8qArEft0zYP0V+cQBtcAs7BgXe
+         hubXmlepTZ1/aixT1F0M57MbeLtKiw9eZqaaKWVLz4jMeIT5j4lV5bD107ayuaXbeECP
+         rtuzlbe5kcIN2LU3rSq94rECq16TEjPrQ9ly9dNq7guAar0qlH4KasIVmcb4DLprmlVi
+         Ps4+1+L6gpTnOxtdD/M0ImoIgHwuJ6I7ONj72SCZBB3ifD4OS0vdnWkEqF1QPkouSXf+
+         SJFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6bsx4hw5NbHCVF2W/NeRmzNghpOYrhv8l8EVf1kn67w=;
+        b=lt08ogWPaIitCbbBBHLokMSfYqAdE/TGvoM6jFVZyiF57syxcVLx8jMITydRrK9GPx
+         6TpB2mo/3xsZXx8Ayk6nrcC5gkqfJzuNFFsTSPCIKyyqtS7RfUlyB3p/tpEuJDznODki
+         rg7cFrtAdwfr5IMS10gbR24Fepo4gk6h833nxxAW/IiHNJNHr7w4AcMQayWnrEkuggI7
+         tf8lDz/j2A8I6IZJPc6jLJ6j6gNkHErx63+vohypX2WOXgONsLTmMDxWRkkJS1ZfiQYI
+         0a1s+2CJPrATJK0EuSpv0PbCoKl1XyH+uR/Ird/BILpDV0AEqRR+lnn4CI/B5ZRvYHew
+         ME6g==
+X-Gm-Message-State: AOAM532G1kw2JgKE5vL1cllWslxD5gMgS4SLMwZKAJj3bDHcESPxdjMP
+        LIqwZ8jma+9cWAylsqc6deY=
+X-Google-Smtp-Source: ABdhPJynwRwiHm1UVLqQsERKisSlFY0WvQFTxlH3IfWaqqHV5AmDuFLcHWKC+Om+8FB9dQD/WFJFWg==
+X-Received: by 2002:a17:902:a60b:b0:142:7621:be0b with SMTP id u11-20020a170902a60b00b001427621be0bmr7298513plq.58.1637677841802;
+        Tue, 23 Nov 2021 06:30:41 -0800 (PST)
+Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:1:af65:c3d4:6df:5a8b])
+        by smtp.gmail.com with ESMTPSA id j13sm11926127pfc.151.2021.11.23.06.30.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Nov 2021 06:30:41 -0800 (PST)
+From:   Tianyu Lan <ltykernel@gmail.com>
+To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        luto@kernel.org, peterz@infradead.org, jgross@suse.com,
+        sstabellini@kernel.org, boris.ostrovsky@oracle.com,
+        kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, joro@8bytes.org,
+        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jejb@linux.ibm.com, martin.petersen@oracle.com, hch@lst.de,
+        m.szyprowski@samsung.com, robin.murphy@arm.com,
+        Tianyu.Lan@microsoft.com, thomas.lendacky@amd.com,
+        xen-devel@lists.xenproject.org, michael.h.kelley@microsoft.com
+Cc:     iommu@lists.linux-foundation.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        netdev@vger.kernel.org, vkuznets@redhat.com, brijesh.singh@amd.com,
+        konrad.wilk@oracle.com, parri.andrea@gmail.com,
+        dave.hansen@intel.com
+Subject: [PATCH V2 0/6] x86/Hyper-V: Add Hyper-V Isolation VM support(Second part)
+Date:   Tue, 23 Nov 2021 09:30:31 -0500
+Message-Id: <20211123143039.331929-1-ltykernel@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YZz2AJ+wqasknw2p@lunn.ch>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 23, 2021 at 03:09:04PM +0100, Andrew Lunn wrote:
-> On Tue, Nov 23, 2021 at 01:49:46AM -0300, Alessandro B Maurici wrote:
-> > On Tue, 23 Nov 2021 05:18:14 +0100
-> > Andrew Lunn <andrew@lunn.ch> wrote:
-> > 
-> > > On Mon, Nov 22, 2021 at 11:55:48PM -0300, Alessandro B Maurici wrote:
-> > > > From: Alessandro B Maurici <abmaurici@gmail.com>
-> > > > 
-> > > > Releases the phy lock before calling phy_link_change to avoid any worker
-> > > > thread lockup. Some network drivers(eg Microchip's LAN743x), make a call to
-> > > > phy_ethtool_get_link_ksettings inside the link change handler  
-> > > 
-> > > I think we need to take a step back here and answer the question, why
-> > > does it call phy_ethtool_get_link_ksettings in the link change
-> > > handler. I'm not aware of any other MAC driver which does this.
-> > > 
-> > > 	 Andrew
-> > 
-> > I agree, the use in the lan743x seems related to the PTP, that driver seems
-> > to be the only one using it, at least in the Linus tree. 
-> > I think that driver could be patched as there are other ways to do it,
-> > but my take on the problem itself is that the PHY device interface opens
-> > a way to break the flow and this behavior does not seem to be documented,
-> > so, instead of documenting a possible harmful interface while in the callback,
-> > we should just get rid of the problem itself, and calling a callback without
-> > any locks held seems to be a good alternative.
-> 
-> That is a really bad alternative. It is only because the lock is held
-> can the MAC driver actually trust anything passed to it. The callback
-> needs phydev->speed, phydev->duplex, etc, and they can change at any
-> time when the lock is not held. The values can be inconsistent with
-> each other, etc, unless the lock is held.
-> 
-> The callback has always had the lock held, so is safe. However,
-> recently a few bugs have been reported and fixed for functions like
-> phy_ethtool_get_link_ksettings() and phy_ethtool_set_link_ksettings()
-> where they have accessed phydev members without the lock and got
-> inconsistent values in race condition. These are hard race conditions
-> to reproduce, but a deadlock like this is very obvious, easy to fix. I
-> would also say that _ethtool_ in the function name is also a good hit
-> this is intended to be used for an ethtool callback.
-> 
-> Lets remove the inappropriate use of phy_ethtool_get_link_ksettings()
-> here.
+From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-100% agreed.
+Hyper-V provides two kinds of Isolation VMs. VBS(Virtualization-based
+security) and AMD SEV-SNP unenlightened Isolation VMs. This patchset
+is to add support for these Isolation VM support in Linux.
+
+The memory of these vms are encrypted and host can't access guest
+memory directly. Hyper-V provides new host visibility hvcall and
+the guest needs to call new hvcall to mark memory visible to host
+before sharing memory with host. For security, all network/storage
+stack memory should not be shared with host and so there is bounce
+buffer requests.
+
+Vmbus channel ring buffer already plays bounce buffer role because
+all data from/to host needs to copy from/to between the ring buffer
+and IO stack memory. So mark vmbus channel ring buffer visible.
+
+For SNP isolation VM, guest needs to access the shared memory via
+extra address space which is specified by Hyper-V CPUID HYPERV_CPUID_
+ISOLATION_CONFIG. The access physical address of the shared memory
+should be bounce buffer memory GPA plus with shared_gpa_boundary
+reported by CPUID.
+
+This patchset is to enable swiotlb bounce buffer for netvsc/storvsc
+in Isolation VM. Add Hyper-V dma ops and provide dma_alloc/free_
+noncontiguous and vmap/vunmap_noncontiguous callback. Allocate
+rx/tx ring via dma_alloc_noncontiguous() and map them into extra
+address space via dma_vmap_noncontiguous().
+
+Change since v1:
+     * Add Hyper-V Isolation support check in the cc_platform_has()
+       and return true for guest memory encrypt attr.
+     * Remove hv isolation check in the sev_setup_arch()
+
+Tianyu Lan (6):
+  Swiotlb: Add Swiotlb bounce buffer remap function for HV IVM
+  dma-mapping: Add vmap/vunmap_noncontiguous() callback in dma ops
+  x86/hyper-v: Add hyperv Isolation VM check in the cc_platform_has()
+  hyperv/IOMMU: Enable swiotlb bounce buffer for Isolation VM
+  net: netvsc: Add Isolation VM support for netvsc driver
+  scsi: storvsc: Add Isolation VM support for storvsc driver
+
+ arch/x86/kernel/cc_platform.c     |  15 +++
+ arch/x86/mm/mem_encrypt.c         |   1 +
+ arch/x86/xen/pci-swiotlb-xen.c    |   3 +-
+ drivers/hv/Kconfig                |   1 +
+ drivers/hv/vmbus_drv.c            |   6 +
+ drivers/iommu/hyperv-iommu.c      | 164 +++++++++++++++++++++++++
+ drivers/net/hyperv/hyperv_net.h   |   5 +
+ drivers/net/hyperv/netvsc.c       | 192 +++++++++++++++++++++++++++---
+ drivers/net/hyperv/rndis_filter.c |   2 +
+ drivers/scsi/storvsc_drv.c        |  37 +++---
+ include/linux/dma-map-ops.h       |   3 +
+ include/linux/hyperv.h            |  17 +++
+ include/linux/swiotlb.h           |   6 +
+ kernel/dma/mapping.c              |  18 ++-
+ kernel/dma/swiotlb.c              |  53 ++++++++-
+ 15 files changed, 482 insertions(+), 41 deletions(-)
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.25.1
+
