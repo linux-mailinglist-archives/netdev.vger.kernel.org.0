@@ -2,39 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E90345A7A0
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 17:24:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C766945A7BE
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 17:32:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232435AbhKWQ2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 11:28:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33480 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231216AbhKWQ2A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 11:28:00 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4713AC061574;
-        Tue, 23 Nov 2021 08:24:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=YDWHeWKgv4r/9Wehkw2ZJglZ0nE6CAjALsQ8jZXrdcM=;
-        t=1637684692; x=1638894292; b=QuKynbq9kdH8NbuNaJiTsHXovNX8mUYubfwZlvWWk/x1mUE
-        ZRX9xyo0wdm9lnd6xshW0lGP+hFW8Iey28NjmNJv9IOAtLYLt0S1V7U2nKBaDNI8jbEznDDDsMd4h
-        qitZNKMu/Jx92KYNQNqwVeXigGzf/hexUOwEIVA4PifclIHOnvR8MEzQA0H29KNgA5EYPnkzBT2I3
-        b4r9RgmbiWoG8qOgAywUd5eqLUQ9TcpEe0xBkw57fyIidqhlV79WBSPPUrCl4LPAsbyyVVIjcswtk
-        CekrQQ7tsD8bfRxIfBRUEZ+4/Gl5VPxU43t0ba0JsWoh2yACk+ETopzUqeRPTHtw==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1mpYaf-001olr-5U;
-        Tue, 23 Nov 2021 17:24:17 +0100
-Message-ID: <637a4183861a1f2cdab52b7652bfa7ed33fbcdd2.camel@sipsolutions.net>
-Subject: Re: [PATCH 01/17] bitfield: Add non-constant field_{prep,get}()
- helpers
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Jakub Kicinski <kuba@kernel.org>
+        id S235043AbhKWQfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 11:35:30 -0500
+Received: from mail-ua1-f42.google.com ([209.85.222.42]:42617 "EHLO
+        mail-ua1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234281AbhKWQf0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 11:35:26 -0500
+Received: by mail-ua1-f42.google.com with SMTP id t13so44868621uad.9;
+        Tue, 23 Nov 2021 08:32:17 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=V9TIRszl8dgvuwgR6nhL0A0nOi/JDggQAeXQjF3xH3Y=;
+        b=VKa3hFWLqY+/OtL0PTiZF4DLCLK07pPe0KVvYhyaCA70YwmGx2rlsI70rE5kr2wyQ+
+         oIbnrtTqEn3FBcUYgddEGjtdeRfS//0v7fCaRwrQvT2ActbSi2gcXq/hd/LL+0YQFnlv
+         cVq2oMvcUEb2tzi6V8NgsoxiSc4aclMTECIV+gDdZYzNvR/7k0FHiX3aS2EUQjphSsru
+         rdlfwgpkaz9mzI+RNi1uORSHomLA4qn7ShemKnoi8eTbRQjZl+9+psihshJIKXEQq84N
+         bzv+Z8xL+bVZUAMjha+7vlUTt7P/d+POvoiu2VsmPEHqE3sqm+FvGcTojwSuj0BFz0hf
+         Xjsw==
+X-Gm-Message-State: AOAM5313FUF1F/RX6je30Rlo79WJCEgrxKZ0MwyBJMBNwRLok/0rTEuM
+        1TBqjYm04K+RU5Wg9G+IlXgFi0/2YwvTYwBM
+X-Google-Smtp-Source: ABdhPJyszXvo4yp8uEtdldHH020MjHk7hIZxcaJ+iT/idyXQC9pfreWyP51D4YgUbH6wWFmlQL4rfA==
+X-Received: by 2002:ab0:2508:: with SMTP id j8mr10526408uan.16.1637685137194;
+        Tue, 23 Nov 2021 08:32:17 -0800 (PST)
+Received: from mail-ua1-f43.google.com (mail-ua1-f43.google.com. [209.85.222.43])
+        by smtp.gmail.com with ESMTPSA id s2sm6600879uap.7.2021.11.23.08.32.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Nov 2021 08:32:16 -0800 (PST)
+Received: by mail-ua1-f43.google.com with SMTP id t13so44868505uad.9;
+        Tue, 23 Nov 2021 08:32:16 -0800 (PST)
+X-Received: by 2002:a9f:3e01:: with SMTP id o1mr10338972uai.89.1637685125903;
+ Tue, 23 Nov 2021 08:32:05 -0800 (PST)
+MIME-Version: 1.0
+References: <cover.1637592133.git.geert+renesas@glider.be> <3a54a6703879d10f08cf0275a2a69297ebd2b1d4.1637592133.git.geert+renesas@glider.be>
+ <01b44b38c087c151171f8d45a2090474c2559306.camel@sipsolutions.net>
+ <CAMuHMdUnBgFpqhgjf5AA0LH9MZOFALeC=YinZ4Tv_V+Y9hkRSg@mail.gmail.com> <12825803045d1cec0df968f72a9ef2724a2548fb.camel@sipsolutions.net>
+In-Reply-To: <12825803045d1cec0df968f72a9ef2724a2548fb.camel@sipsolutions.net>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 23 Nov 2021 17:31:54 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXwhO30gy42tfGSsEgJAjDOAkQ_cUXMMiSBjMsUj0nqaA@mail.gmail.com>
+Message-ID: <CAMuHMdXwhO30gy42tfGSsEgJAjDOAkQ_cUXMMiSBjMsUj0nqaA@mail.gmail.com>
+Subject: Re: [PATCH 01/17] bitfield: Add non-constant field_{prep,get}() helpers
+To:     Johannes Berg <johannes@sipsolutions.net>
 Cc:     Tony Lindgren <tony@atomide.com>,
         Russell King <linux@armlinux.org.uk>,
         Rajendra Nayak <rnayak@codeaurora.org>,
@@ -57,6 +70,7 @@ Cc:     Tony Lindgren <tony@atomide.com>,
         Ping-Ke Shih <pkshih@realtek.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Linus Walleij <linus.walleij@linaro.org>,
         Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>,
@@ -69,54 +83,66 @@ Cc:     Tony Lindgren <tony@atomide.com>,
         Zhang Rui <rui.zhang@intel.com>,
         Jaroslav Kysela <perex@perex.cz>,
         Takashi Iwai <tiwai@suse.com>,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:TI ETHERNET SWITCH DRIVER (CPSW)" 
+        <linux-omap@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        linux-iio@vger.kernel.org,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
         linux-aspeed@lists.ozlabs.org, openbmc@lists.ozlabs.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
-        alsa-devel@alsa-project.org
-Date:   Tue, 23 Nov 2021 17:24:15 +0100
-In-Reply-To: <CAMuHMdWAAGrQUZN18cnDTDUUhuPNTZTFkRMe2Sbf+s7CedPSxA@mail.gmail.com>
-References: <cover.1637592133.git.geert+renesas@glider.be>
-         <3a54a6703879d10f08cf0275a2a69297ebd2b1d4.1637592133.git.geert+renesas@glider.be>
-         <01b44b38c087c151171f8d45a2090474c2559306.camel@sipsolutions.net>
-         <20211122171739.03848154@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <CAMuHMdWAAGrQUZN18cnDTDUUhuPNTZTFkRMe2Sbf+s7CedPSxA@mail.gmail.com>
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>
 Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.1 (3.42.1-1.fc35) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-11-23 at 09:36 +0100, Geert Uytterhoeven wrote:
+Hi Johannes,
 
-
-Ah, here's your comment wrt. which one is nicer :)
-
+On Tue, Nov 23, 2021 at 5:21 PM Johannes Berg <johannes@sipsolutions.net> wrote:
+> On Tue, 2021-11-23 at 09:30 +0100, Geert Uytterhoeven wrote:
 > > > We have the upper-case (constant) versions, and already
 > > > {u32,...}_get_bits()/etc.
-> 
-> TBH, I don't like the *_get_bits() API: in general, u32_get_bits() does
-> the same as FIELD_GET(), but the order of the parameters is different?
+> >
+> > These don't work for non-const masks.
+>
+> Obviously, I know that. Still, just saying.
+>
+> I'm actually in the opposite camp to you I guess - I much prefer the
+> typed versions (u32_get_bits() and friends) over the FIELD_GET() macros
+> that are more magic.
+>
+> Mostly though that's because the typed ones also have le32_/be32_/...
+> variants, which are tremendously useful, and so I prefer to use them all
+> across. In fact, I have considered in the past to just remove the upper-
+> case macros entirely but ... no time I guess.
 
-I don't really see how "the order of parameters is different" is a
-downside? Yeah it means if you're used to FIELD_GET() then you'll
-retrain, but ...?
+OK, I have to think a bit about this.
+FTR, initially I didn't like the FIELD_{GET,PREP}() macros neither ;-)
 
-> (*_replace_bits() seems to be useful, though)
+> In fact, you have e.g. code in drivers/usb/chipidea/udc.c that does
+> things like cpu_to_le32(mul << __ffs(...)) - though in those cases it's
+> actually constant today, so you could already write it as
+> le32_encode_bits(...).
 
-Indeed.
+Yeah, there are lots of opportunities for improvement for
+drivers/usb/chipidea/.  I didn't include a conversion patch for that
+driver, as it led me too deep into the rabbit hole, and I wanted to
+get something posted rather sooner than later...
 
-Also as I said in my other mail, the le32/be32/... variants are
-tremendously useful, and they fundamentally cannot be expressed with the
-FIELD_GET() or field_get() macros. IMHO this is a clear advantage to the
-typed versions, and if you ask me we should get rid of the FIELD_GETand
-FIELD_PREP entirely - difficult now, but at least let's not propagate
-that?
+Gr{oetje,eeting}s,
 
-johannes
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
