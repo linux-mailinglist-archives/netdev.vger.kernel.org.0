@@ -2,125 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8153245ADB9
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 22:01:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD3D045ADEB
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 22:06:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232745AbhKWVEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 16:04:22 -0500
-Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.83]:32440 "EHLO
-        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229681AbhKWVEW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 16:04:22 -0500
-X-Greylist: delayed 461 seconds by postgrey-1.27 at vger.kernel.org; Tue, 23 Nov 2021 16:04:21 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1637701266;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=mg4VWecMO36Enlno6yIYtnHI//ggzrvLe9u3FrxrYmg=;
-    b=nX9hY+fbYWczN0YtaeWpolPbXSvoNcvtrHEapO3PR+95xLVH1Ugb9M6ljGobYozU2t
-    YJm1jl5JK9YN+jv96BfMiDTOZzKVyqb76oRbA0JzfQCWlpBt70lNiNA5GOrK6mMfVWw2
-    eElOI70yselad6aMhMS+3QvNwAwUWe9pZW57BuufAPpUV5UE0Qu4DDvpKjg1xINY7Slr
-    +oPxM0yGnTBgqAUCSfgIYyP9RPnye2HL3ekaDJPLqak9vlNARgDMfMtlo+anPb+IdkcM
-    vORpzXeW/0KBf6WyNdSyw+WE6ssUABSINlt7prGVgMhq1Uhh1FJb+6CJSwdZK6xODYWq
-    gOjg==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPv6:2a00:6020:1cfa:f900::b82]
-    by smtp.strato.de (RZmta 47.34.6 AUTH)
-    with ESMTPSA id a04d59xANL146aE
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Tue, 23 Nov 2021 22:01:04 +0100 (CET)
-Subject: Re: [PATCH v1 1/2] can: do not increase rx statistics when receiving
- CAN error frames
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        Jimmy Assarsson <extja@kvaser.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
-        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Stephane Grosjean <s.grosjean@peak-system.com>
-References: <20211123115333.624335-1-mailhol.vincent@wanadoo.fr>
- <20211123115333.624335-2-mailhol.vincent@wanadoo.fr>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <aafec053-1054-4797-e1f1-e89586fe326f@hartkopp.net>
-Date:   Tue, 23 Nov 2021 22:01:04 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S239179AbhKWVJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 16:09:33 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40038 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237964AbhKWVJb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Nov 2021 16:09:31 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 496CD60FE3;
+        Tue, 23 Nov 2021 21:06:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637701582;
+        bh=7jZROn7Nix/tThWDWGeAy5sGG5c8f/fU1mDa95OkIv0=;
+        h=Date:From:To:cc:Subject:From;
+        b=DA+MeLbcYNOu3gJxidoueM6XU+7ZfC58fK4GQEDKijN1TgHI4XaStmC3jBTpcROkd
+         egL/Y0rFSXqDQGbHfe+r2E1HoyPxFAYUlUt07CQpQjdKEdSeUddGjtY//2r+IU6Bo6
+         lwXr1HWFWlwdkP0c0zQC7FdSxX3DKiNxSx/PTHfiD9IMGsiFgkWUQYb3in2kau+cVb
+         2U++shY6M+o8rHvdckOml+ImTSJ/Hy3z7f3+4bx37SC4AYSa4K5bsco1e/JhkhDOee
+         jG6KnfJLZ/tp1hpuEcXXSqRgledjyWc4rFpKhmLQ8kNHfXYoFHLqQbhfmR4dhrQqKC
+         p00923KB6cs/Q==
+Date:   Tue, 23 Nov 2021 22:06:19 +0100 (CET)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] iwlwifi: mvm: protect regulatory_set_wiphy_regd_sync() with
+ wiphy lock
+Message-ID: <nycvar.YFH.7.76.2111232204150.16505@cbobk.fhfr.pm>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-In-Reply-To: <20211123115333.624335-2-mailhol.vincent@wanadoo.fr>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Jiri Kosina <jkosina@suse.cz>
 
+Since the switch away from rtnl to wiphy lock, 
+regulatory_set_wiphy_regd_sync() has to be called with wiphy lock held; 
+this is currently not the case on the module load codepath.
 
-On 23.11.21 12:53, Vincent Mailhol wrote:
-> CAN error skb is an interface specific to socket CAN. The CAN error
-> skb does not correspond to any actual CAN frame sent on the wire. Only
-> an error flag and a delimiter are transmitted when an error occurs
-> (c.f. ISO 11898-1 section 10.4.4.2 "Error flag").
-> 
-> For this reason, it makes no sense to increment the rx_packets and
-> rx_bytes fields of struct net_device_stats because no actual payload
-> were transmitted on the wire.
-> 
+Fix that by properly acquiring it in iwl_mvm_start_get_nvm() to maintain 
+also lock ordering against mvm->mutex and RTNL.
 
-(..)
+This fixes the splat below.
 
-> diff --git a/drivers/net/can/dev/rx-offload.c b/drivers/net/can/dev/rx-offload.c
-> index 37b0cc65237b..bb47e9a49240 100644
-> --- a/drivers/net/can/dev/rx-offload.c
-> +++ b/drivers/net/can/dev/rx-offload.c
-> @@ -54,8 +54,10 @@ static int can_rx_offload_napi_poll(struct napi_struct *napi, int quota)
->   		struct can_frame *cf = (struct can_frame *)skb->data;
->   
->   		work_done++;
-> -		stats->rx_packets++;
-> -		stats->rx_bytes += cf->len;
-> +		if (!(cf->can_id & CAN_ERR_MASK)) {
+ =============================
+ WARNING: suspicious RCU usage
+ 5.16.0-rc2 #1 Not tainted
+ -----------------------------
+ drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c:264 suspicious rcu_dereference_protected() usage!
 
-This looks wrong.
+ other info that might help us debug this:
 
-Did you think of CAN_ERR_FLAG ??
+ rcu_scheduler_active = 2, debug_locks = 1
+ 3 locks held by modprobe/578:
+  #0: ffffffffc0b6f0e8 (iwlwifi_opmode_table_mtx){+.+.}-{3:3}, at: iwl_opmode_register+0x2e/0xe0 [iwlwifi]
+  #1: ffffffff9a856b08 (rtnl_mutex){+.+.}-{3:3}, at: iwl_op_mode_mvm_start+0xa0b/0xcb0 [iwlmvm]
+  #2: ffff8e5242f53380 (&mvm->mutex){+.+.}-{3:3}, at: iwl_op_mode_mvm_start+0xa16/0xcb0 [iwlmvm]
 
+ stack backtrace:
+ CPU: 1 PID: 578 Comm: modprobe Not tainted 5.16.0-rc2 #1
+ Hardware name: LENOVO 20K5S22R00/20K5S22R00, BIOS R0IET38W (1.16 ) 05/31/2017
+ Call Trace:
+  <TASK>
+  dump_stack_lvl+0x58/0x71
+  iwl_mvm_init_fw_regd+0x13d/0x180 [iwlmvm]
+  iwl_mvm_init_mcc+0x66/0x1d0 [iwlmvm]
+  iwl_op_mode_mvm_start+0xc6d/0xcb0 [iwlmvm]
+  _iwl_op_mode_start.isra.4+0x42/0x80 [iwlwifi]
+  iwl_opmode_register+0x71/0xe0 [iwlwifi]
+  ? 0xffffffffc1062000
+  iwl_mvm_init+0x34/0x1000 [iwlmvm]
+  do_one_initcall+0x5b/0x300
+  do_init_module+0x5b/0x21c
+  load_module+0x1b2f/0x2320
+  ? __do_sys_finit_module+0xaa/0x110
+  __do_sys_finit_module+0xaa/0x110
+  do_syscall_64+0x3a/0xb0
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+ RIP: 0033:0x7f7cdd7c8ded
+ Code: 5b 41 5c c3 66 0f 1f 84 00 00 00 00 00 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d fb ef 0e 00 f7 d8 64 89 01 48
+ RSP: 002b:00007fffb90bf458 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
+ RAX: ffffffffffffffda RBX: 0000559c501caf00 RCX: 00007f7cdd7c8ded
+ RDX: 0000000000000000 RSI: 0000559c4eb366ee RDI: 0000000000000002
+ RBP: 0000000000040000 R08: 0000000000000000 R09: 0000559c501ca9f8
+ R10: 0000000000000002 R11: 0000000000000246 R12: 0000559c4eb366ee
+ R13: 0000559c501cadb0 R14: 0000000000000000 R15: 0000559c501cbad0
+  </TASK>
+ ------------[ cut here ]------------
+ WARNING: CPU: 1 PID: 578 at net/wireless/reg.c:3107 reg_process_self_managed_hint+0x183/0x1d0 [cfg80211]
+ Modules linked in:
+ CPU: 1 PID: 578 Comm: modprobe Not tainted 5.16.0-rc2 #1
+ Hardware name: LENOVO 20K5S22R00/20K5S22R00, BIOS R0IET38W (1.16 ) 05/31/2017
+ RIP: 0010:reg_process_self_managed_hint+0x183/0x1d0 [cfg80211]
+ Code: 83 c4 60 5b 41 5a 41 5c 41 5d 41 5e 41 5f 5d 49 8d 62 f8 c3 48 8d 7b 68 be ff ff ff ff e8 75 4a 13 d9 85 c0 0f 85 e6 fe ff ff <0f> 0b e9 df fe ff ff 0f 0b 80 3d bc 2c 0b 00 00 0f 85 c2 fe ff ff
+ RSP: 0018:ffff9994809cfaf0 EFLAGS: 00010246
+ RAX: 0000000000000000 RBX: ffff8e5242f505c0 RCX: 0000000000000000
+ RDX: 0000000000000000 RSI: ffff8e5242f50628 RDI: ffff8e524a2b5cd0
+ RBP: ffff9994809cfb80 R08: 0000000000000001 R09: ffffffff9b2e2f50
+ R10: ffff9994809cfb98 R11: ffffffffffffffff R12: 0000000000000000
+ R13: ffff8e5242f532e8 R14: ffff8e5248914010 R15: ffff8e5242f532e0
+ FS:  00007f7cdd6af740(0000) GS:ffff8e5367480000(0000) knlGS:0000000000000000
+ CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ CR2: 00007f19430687ac CR3: 00000001088fa003 CR4: 00000000003706e0
+ Call Trace:
+  <TASK>
+  ? lock_is_held_type+0xb4/0x120
+  ? regulatory_set_wiphy_regd_sync+0x2f/0x80 [cfg80211]
+  regulatory_set_wiphy_regd_sync+0x2f/0x80 [cfg80211]
+  iwl_mvm_init_mcc+0xcd/0x1d0 [iwlmvm]
+  iwl_op_mode_mvm_start+0xc6d/0xcb0 [iwlmvm]
+  _iwl_op_mode_start.isra.4+0x42/0x80 [iwlwifi]
+  iwl_opmode_register+0x71/0xe0 [iwlwifi]
+  ? 0xffffffffc1062000
+  iwl_mvm_init+0x34/0x1000 [iwlmvm]
+  do_one_initcall+0x5b/0x300
+  do_init_module+0x5b/0x21c
+  load_module+0x1b2f/0x2320
+  ? __do_sys_finit_module+0xaa/0x110
+  __do_sys_finit_module+0xaa/0x110
+  do_syscall_64+0x3a/0xb0
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+ RIP: 0033:0x7f7cdd7c8ded
+ Code: 5b 41 5c c3 66 0f 1f 84 00 00 00 00 00 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d fb ef 0e 00 f7 d8 64 89 01 48
+ RSP: 002b:00007fffb90bf458 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
+ RAX: ffffffffffffffda RBX: 0000559c501caf00 RCX: 00007f7cdd7c8ded
+ RDX: 0000000000000000 RSI: 0000559c4eb366ee RDI: 0000000000000002
+ RBP: 0000000000040000 R08: 0000000000000000 R09: 0000559c501ca9f8
+ R10: 0000000000000002 R11: 0000000000000246 R12: 0000559c4eb366ee
+ R13: 0000559c501cadb0 R14: 0000000000000000 R15: 0000559c501cbad0
 
-> +			stats->rx_packets++;
-> +			stats->rx_bytes += cf->len;
-> +		}
->   		netif_receive_skb(skb);
+Fixes: a05829a7222e9d1 ("cfg80211: avoid holding the RTNL when calling the driver")
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+---
+ drivers/net/wireless/intel/iwlwifi/mvm/ops.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-(..)
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
+index 232ad531d612..53df7680fdd2 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
+@@ -686,6 +686,7 @@ static int iwl_mvm_start_get_nvm(struct iwl_mvm *mvm)
+ 	int ret;
+ 
+ 	rtnl_lock();
++	wiphy_lock(mvm->hw->wiphy);
+ 	mutex_lock(&mvm->mutex);
+ 
+ 	ret = iwl_run_init_mvm_ucode(mvm);
+@@ -701,6 +702,7 @@ static int iwl_mvm_start_get_nvm(struct iwl_mvm *mvm)
+ 		iwl_mvm_stop_device(mvm);
+ 
+ 	mutex_unlock(&mvm->mutex);
++	wiphy_unlock(mvm->hw->wiphy);
+ 	rtnl_unlock();
+ 
+ 	if (ret < 0)
 
-> diff --git a/drivers/net/can/usb/ucan.c b/drivers/net/can/usb/ucan.c
-> index 1679cbe45ded..d582c39fc8d0 100644
-> --- a/drivers/net/can/usb/ucan.c
-> +++ b/drivers/net/can/usb/ucan.c
-> @@ -621,8 +621,10 @@ static void ucan_rx_can_msg(struct ucan_priv *up, struct ucan_message_in *m)
->   		memcpy(cf->data, m->msg.can_msg.data, cf->len);
->   
->   	/* don't count error frames as real packets */
-> -	stats->rx_packets++;
-> -	stats->rx_bytes += cf->len;
-> +	if (!(cf->can_id & CAN_ERR_FLAG)) {
+-- 
+Jiri Kosina
+SUSE Labs
 
-Ah, here we are :-)
-
-> +		stats->rx_packets++;
-> +		stats->rx_bytes += cf->len;
-> +	}
