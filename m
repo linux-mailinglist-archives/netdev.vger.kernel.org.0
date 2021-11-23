@@ -2,164 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 203F1459991
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 02:16:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95F0745999A
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 02:17:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232107AbhKWBTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Nov 2021 20:19:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52756 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232042AbhKWBTw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Nov 2021 20:19:52 -0500
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3382C061714
-        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 17:16:45 -0800 (PST)
-Received: by mail-il1-x131.google.com with SMTP id i9so14506001ilu.1
-        for <netdev@vger.kernel.org>; Mon, 22 Nov 2021 17:16:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OWGNEvMSJrz9gx0ocpfCOrjY/4kPGHl937GrD3qaOEs=;
-        b=wuvsvAY2e4NToRbegyHp2Im6GDEau+HqX/NTdgt1a7V5K+QXKas/WpHZVb3dzlzdtC
-         UCcw028tlC/kZZGF7PBVRyvR7RLHCVmglfeH7x7SWa2qkx6tk5bF4aeZcOCCQryS/R8B
-         o3oeEYT+5eYnHapjYkiTx/wWJN1/28WVcT0H4rZZcbIEu3sr8vw8pCZyZE65SNuN8JOg
-         Xr8+xL2pqsUdbI15BrjmUOn5wJIyDoZLBW4edb8OcJEFmp43HR1vF5zcldwhCAboVk0C
-         KWahQ57zn7Ux0nYK4CIobqdgj8fvnPFN0+Wcp3mTnveMRuJTe/QsZZVVWGsyMOMKAM7s
-         84/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OWGNEvMSJrz9gx0ocpfCOrjY/4kPGHl937GrD3qaOEs=;
-        b=TKxndE0f/HIXD0jNDpY4QqGqvYTOxcowEALDouN4ON+K9QlQhmrztFK3MbCn7JecfI
-         iydS0QtGIb/foRwcOlY8lB6QU+OTnhpt/+BrTiI2fA5QUk/JPVfEps0G5/SKXhZj8axP
-         BJ+7UNjawoMB01F8giSe2lgLZvKORzLVb7jhxS6PuamzCUL3Wgi4QUQL+P/xEnj2/61d
-         D6HB4x/+9O8/JM6qao29yH5mTgD6L408dxKoG975KsGsf7Ph1UHfoAHCzuRDDbDHss4T
-         DGQRQdSABk2UZPf7qQZLlUa7uLqw005dk+enitDIz1hp8kl2nq205OEcyA+Xxptp+TSO
-         nFew==
-X-Gm-Message-State: AOAM532ZFRUHI8coG+NiS/JyrYlp15ouif4fUwwu1p/5urgyEyGzQBF2
-        YOU69jf83dBQCwZub9AGKv72Cw==
-X-Google-Smtp-Source: ABdhPJzLCPeVZOxvyv8iSjcbhzruCpCgY1B7HMkL+iV82dFYamoEBB+pzoa8sWqq0Jr4YY7mvlzQOA==
-X-Received: by 2002:a05:6e02:1a2c:: with SMTP id g12mr1728279ile.22.1637630205150;
-        Mon, 22 Nov 2021 17:16:45 -0800 (PST)
-Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id k7sm3909788iov.40.2021.11.22.17.16.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Nov 2021 17:16:44 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     pkurapat@codeaurora.org, avuyyuru@codeaurora.org,
-        bjorn.andersson@linaro.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, evgreen@chromium.org, elder@kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net] net: ipa: kill ipa_cmd_pipeline_clear()
-Date:   Mon, 22 Nov 2021 19:16:40 -0600
-Message-Id: <20211123011640.528936-1-elder@linaro.org>
-X-Mailer: git-send-email 2.32.0
+        id S232289AbhKWBUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Nov 2021 20:20:51 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53542 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229776AbhKWBUt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Nov 2021 20:20:49 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7D9BC60FE7;
+        Tue, 23 Nov 2021 01:17:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637630262;
+        bh=aoZBtBydzk0bAevU49rnDfe9zlt/fW7CJBCoU7dRxYA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DP4A1u9wNAGb4TisYL/xclxXLCsu2eYg5z5kmYiYSKFhn68ml1u5EecsH0UtRKHqf
+         6WSeXmftsKJnT0cJoC45C1J/DRKEkyY8ZtRnMG5HUdipvmpB5FFIlmEIJvncTHRUsl
+         ZJL0QNbzVlJaWzKiVHfmtZTk38Yn3TlLB2z6CLXnGmgwi//WUT0SYP6cVTF8nOAJxN
+         15rOBhxuQkabwtldmp65OfJNj5TeFJmkuLPCAwUI0Dna0FEvAJIm2JVOaykJdOmzdN
+         ItdPFw828/65BBT1WXG3h6a2jxgAjBQ+Bbe/D392jq/wYgwXj4sze1/1CQib/FK9DM
+         tH9oaaLRu5SxA==
+Date:   Mon, 22 Nov 2021 17:17:39 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        Paul Walmsley <paul@pwsan.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Benoit Parrot <bparrot@ti.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Eduardo Valentin <edubezval@gmail.com>,
+        Keerthy <j-keerthy@ti.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-aspeed@lists.ozlabs.org, openbmc@lists.ozlabs.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH 01/17] bitfield: Add non-constant field_{prep,get}()
+ helpers
+Message-ID: <20211122171739.03848154@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <01b44b38c087c151171f8d45a2090474c2559306.camel@sipsolutions.net>
+References: <cover.1637592133.git.geert+renesas@glider.be>
+        <3a54a6703879d10f08cf0275a2a69297ebd2b1d4.1637592133.git.geert+renesas@glider.be>
+        <01b44b38c087c151171f8d45a2090474c2559306.camel@sipsolutions.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Calling ipa_cmd_pipeline_clear() after stopping the channel
-underlying the AP<-modem RX endpoint can lead to a deadlock.
+On Mon, 22 Nov 2021 17:32:43 +0100 Johannes Berg wrote:
+> On Mon, 2021-11-22 at 16:53 +0100, Geert Uytterhoeven wrote:
+> > The existing FIELD_{GET,PREP}() macros are limited to compile-time
+> > constants.  However, it is very common to prepare or extract bitfield
+> > elements where the bitfield mask is not a compile-time constant.
+> 
+> I'm not sure it's really a good idea to add a third API here?
 
-This occurs in the ->runtime_suspend device power operation for the
-IPA driver.  While this callback is in progress, any other requests
-for power will block until the callback returns.
++1
 
-Stopping the AP<-modem RX channel does not prevent the modem from
-sending another packet to this endpoint.  If a packet arrives for an
-RX channel when the channel is stopped, an SUSPEND IPA interrupt
-condition will be pending.  Handling an IPA interrupt requires
-power, so ipa_isr_thread() calls pm_runtime_get_sync() first thing.
+> We have the upper-case (constant) versions, and already
+> {u32,...}_get_bits()/etc.
+> 
+> Also, you're using __ffs(), which doesn't work for 64-bit on 32-bit
+> architectures (afaict), so that seems a bit awkward.
+> 
+> Maybe we can make {u32,...}_get_bits() be doing compile-time only checks
+> if it is indeed a constant? The __field_overflow() usage is already only
+> done if __builtin_constant_p(v), so I guess we can do the same with
+> __bad_mask()?
 
-The problem occurs because a "pipeline clear" command will not
-complete while such a SUSPEND interrupt condition exists.  So the
-SUSPEND IPA interrupt handler won't proceed until it gets power;
-that won't happen until the ->runtime_suspend callback (and its
-"pipeline clear" command) completes; and that can't happen while
-the SUSPEND interrupt condition exists.
-
-It turns out that in this case there is no need to use the "pipeline
-clear" command.  There are scenarios in which clearing the pipeline
-is required while suspending, but those are not (yet) supported
-upstream.  So a simple fix, avoiding the potential deadlock, is to
-stop calling ipa_cmd_pipeline_clear() in ipa_endpoint_suspend().
-This removes the only user of ipa_cmd_pipeline_clear(), so get rid
-of that function.  It can be restored again whenever it's needed.
-
-This is basically a manual revert along with an explanation for
-commit 6cb63ea6a39ea ("net: ipa: introduce ipa_cmd_tag_process()").
-
-Fixes: 6cb63ea6a39ea ("net: ipa: introduce ipa_cmd_tag_process()")
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa_cmd.c      | 16 ----------------
- drivers/net/ipa/ipa_cmd.h      |  6 ------
- drivers/net/ipa/ipa_endpoint.c |  2 --
- 3 files changed, 24 deletions(-)
-
-diff --git a/drivers/net/ipa/ipa_cmd.c b/drivers/net/ipa/ipa_cmd.c
-index cff51731195aa..d57472ea077f2 100644
---- a/drivers/net/ipa/ipa_cmd.c
-+++ b/drivers/net/ipa/ipa_cmd.c
-@@ -661,22 +661,6 @@ void ipa_cmd_pipeline_clear_wait(struct ipa *ipa)
- 	wait_for_completion(&ipa->completion);
- }
- 
--void ipa_cmd_pipeline_clear(struct ipa *ipa)
--{
--	u32 count = ipa_cmd_pipeline_clear_count();
--	struct gsi_trans *trans;
--
--	trans = ipa_cmd_trans_alloc(ipa, count);
--	if (trans) {
--		ipa_cmd_pipeline_clear_add(trans);
--		gsi_trans_commit_wait(trans);
--		ipa_cmd_pipeline_clear_wait(ipa);
--	} else {
--		dev_err(&ipa->pdev->dev,
--			"error allocating %u entry tag transaction\n", count);
--	}
--}
--
- static struct ipa_cmd_info *
- ipa_cmd_info_alloc(struct ipa_endpoint *endpoint, u32 tre_count)
- {
-diff --git a/drivers/net/ipa/ipa_cmd.h b/drivers/net/ipa/ipa_cmd.h
-index 69cd085d427db..05ed7e42e1842 100644
---- a/drivers/net/ipa/ipa_cmd.h
-+++ b/drivers/net/ipa/ipa_cmd.h
-@@ -163,12 +163,6 @@ u32 ipa_cmd_pipeline_clear_count(void);
-  */
- void ipa_cmd_pipeline_clear_wait(struct ipa *ipa);
- 
--/**
-- * ipa_cmd_pipeline_clear() - Clear the hardware pipeline
-- * @ipa:	- IPA pointer
-- */
--void ipa_cmd_pipeline_clear(struct ipa *ipa);
--
- /**
-  * ipa_cmd_trans_alloc() - Allocate a transaction for the command TX endpoint
-  * @ipa:	IPA pointer
-diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index ef790fd0ab56a..03a1709934208 100644
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1636,8 +1636,6 @@ void ipa_endpoint_suspend(struct ipa *ipa)
- 	if (ipa->modem_netdev)
- 		ipa_modem_suspend(ipa->modem_netdev);
- 
--	ipa_cmd_pipeline_clear(ipa);
--
- 	ipa_endpoint_suspend_one(ipa->name_map[IPA_ENDPOINT_AP_LAN_RX]);
- 	ipa_endpoint_suspend_one(ipa->name_map[IPA_ENDPOINT_AP_COMMAND_TX]);
- }
--- 
-2.32.0
-
+Either that or add decomposition macros. Are compilers still really bad
+at passing small structs by value?
