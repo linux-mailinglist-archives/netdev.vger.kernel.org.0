@@ -2,84 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AEC8F45B043
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 00:35:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E79345B053
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 00:35:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236330AbhKWXi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 18:38:29 -0500
-Received: from mail-yb1-f173.google.com ([209.85.219.173]:33445 "EHLO
-        mail-yb1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240585AbhKWXiY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 18:38:24 -0500
-Received: by mail-yb1-f173.google.com with SMTP id v7so2027930ybq.0;
-        Tue, 23 Nov 2021 15:35:16 -0800 (PST)
+        id S240568AbhKWXis (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 18:38:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48412 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240420AbhKWXiq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 18:38:46 -0500
+Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1D6C06175A
+        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 15:35:36 -0800 (PST)
+Received: by mail-ot1-x332.google.com with SMTP id x43-20020a056830246b00b00570d09d34ebso1349073otr.2
+        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 15:35:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Fmou/wuLUJUD4zJclGcPIdJu1KVjJ7yuzM0jDRLa/jU=;
+        b=M1kOjxYtgXgq09yG/Tpxoql00WqAEf+/obBrTLesDBofwRUa7GWFazzYfDKZsB30ME
+         LP42xJGdAe5cnwer5SKD8Etmug0Nt6ulXzhr/sIoE9xx2sYU5ALDWZXfWHpEvjhc83X4
+         /EddGPPSnA96tKQr0ixoO9Iif78PSZQtfyiC4pLlvI90GT05IGmxb/4bv7ckDscOFVa0
+         j8mh7s4sgr6HP2CGrSy/5EINAIynCtUbqRAKwELOEpj3OmmDipt7FyRZkcV3y0yyaOqi
+         RMMwVrDE6PwHAX73yXnvFMVjk1xx32TWcnMG5ytYScelO405R1gRZUvoyiVzX+mFaqbl
+         +gIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=5HVBVN9+sTrLodgeig4D1EWIc9RQ5SNWBFmWu98vXL0=;
-        b=f6kvHWRyM1JdQRC8Kmh9zPO+ZORff5Td+7YonaI/Q7uHsGt8z7iJ6w6S/DTMTPv2bh
-         Mc5eidWUAlcvPoZcsH/W0pURMeBgWh9uZ8tO/CRsiP3UZX1QQRhMdlFeXSLpEhiD+FlI
-         9Jenj1j00ZMv4CI6Id3dr3129EwDWugT0XU1Sp+g+9kUAZqQ27vZboRYWd/+PZiLtCpM
-         iQ80AL+T0MRuvyK8DY/jW5g7DHn7yRypjWKeOM/1GZNDYjUrjl6kiaSD9zNzMfKwpKxz
-         a+Iu1fUX2nd5dD8/y4dPbYqRA0mSEajH1eiQKyKuYbd/LuItiPLDVfd4lHjd1RCqPwRF
-         h4dQ==
-X-Gm-Message-State: AOAM530N9fkHw9Qn+aHZkaELGCY/MICwcYWp+Arg6TeotNYyhkC8cdu+
-        bCn3j/CRho2BvkYw09bygcxHdN5xefV3Kch+CSU=
-X-Google-Smtp-Source: ABdhPJw/S8b+4DBi3I9No3zeqKoBNlDBHhzozk6T4jzYhC+n6oU4VdXxRo1GxJXjZxWTLDQlmooFebwqfimrYkzrznk=
-X-Received: by 2002:a25:d214:: with SMTP id j20mr10478211ybg.536.1637710515640;
- Tue, 23 Nov 2021 15:35:15 -0800 (PST)
+        bh=Fmou/wuLUJUD4zJclGcPIdJu1KVjJ7yuzM0jDRLa/jU=;
+        b=7hPzGBs3ZjD5LO6LBGTw9R5HRhguCRO/s7sB8A/l2HfKeuQu8YX2tO0WkBwk+gVgWo
+         F/2xcngy7Nxjg2agjWyOT6Va1Pi2bOUFWsw84oDmKJuGw/7y6uEBbbTokBZ3IjQgAzWi
+         3Z0RHVDyw2FwIlyOulgZ62vGmj7Dzm7Fzz+BML7Z5h0lWSZr+aHZnzVkD5N6XHu7TYQF
+         AsF9igSi/2qwrsEU9I4/sVnl58kUppFFc1DelCudB3IIGCt1E4i6W25hAjb7LWZLh/Lr
+         qrv+2G5qm0zI/IxisXi+7prV4Yot/T8VGoZyZ1waRCjsSUFYHl+x4j21qt2xaNRuZLds
+         V6Zw==
+X-Gm-Message-State: AOAM531rVcoPM6vTGjB/NVlxJ0K4hSu6dyPbr5CveOQ/CvmKmpZBrX8A
+        EbqWO3wRtHNgCzK7iIhoh3didtmfx0a6lY+1zpDGUg==
+X-Google-Smtp-Source: ABdhPJzM/xqGhHncEHhl2AIgExbTLI27yZdnho4Z+I5VLuYNi5uSlNeNxRyIKiu1OCuHPC8HqiuPUo4+VogT8mYjGlE=
+X-Received: by 2002:a9d:74d0:: with SMTP id a16mr8027979otl.237.1637710535722;
+ Tue, 23 Nov 2021 15:35:35 -0800 (PST)
 MIME-Version: 1.0
-References: <20211123115333.624335-1-mailhol.vincent@wanadoo.fr> <bc682dbe-c74e-cd8a-ab05-78a6b4079ebf@hartkopp.net>
-In-Reply-To: <bc682dbe-c74e-cd8a-ab05-78a6b4079ebf@hartkopp.net>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Wed, 24 Nov 2021 08:35:04 +0900
-Message-ID: <CAMZ6RqJ_Kj48Zuv=zzPawcQw4qkgxa=u9aHgH8Ggq9MQZosS_Q@mail.gmail.com>
-Subject: Re: [PATCH v1 0/2] fix statistics for CAN RTR and Error frames
-To:     Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
+References: <cover.1637592133.git.geert+renesas@glider.be> <afb895b597037a635acc4a1dc44b88598268a19b.1637592133.git.geert+renesas@glider.be>
+In-Reply-To: <afb895b597037a635acc4a1dc44b88598268a19b.1637592133.git.geert+renesas@glider.be>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 24 Nov 2021 00:35:23 +0100
+Message-ID: <CACRpkdZAA_XZQ7KXOsod8r5EZ0F9f1qaz3+FLsuyPfeD_mO5Dw@mail.gmail.com>
+Subject: Re: [PATCH/RFC 07/17] iio: st_sensors: Use bitfield helpers
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        Paul Walmsley <paul@pwsan.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Benoit Parrot <bparrot@ti.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Eduardo Valentin <edubezval@gmail.com>,
+        Keerthy <j-keerthy@ti.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-aspeed@lists.ozlabs.org, openbmc@lists.ozlabs.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
+        alsa-devel@alsa-project.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed. 24 Nov. 2021 at 06:10, Oliver Hartkopp <socketcan@hartkopp.net> wrote:
-> On 23.11.21 12:53, Vincent Mailhol wrote:
-> > There are two common errors which are made when reporting the CAN RX
-> > statistics:
-> >
-> >    1. Incrementing the "normal" RX stats when receiving an Error
-> >    frame. Error frames is an abstraction of Socket CAN and does not
-> >    exist on the wire.
-> >
-> >    2. Counting the length of the Remote Transmission Frames (RTR). The
-> >    length of an RTR frame is the length of the requested frame not the
-> >    actual payload. In reality the payload of an RTR frame is always 0
-> >    bytes long.
-> >
-> > This patch series fix those two issues for all CAN drivers.
-> >
-> > Vincent Mailhol (2):
-> >    can: do not increase rx statistics when receiving CAN error frames
-> >    can: do not increase rx_bytes statistics for RTR frames
+On Mon, Nov 22, 2021 at 4:55 PM Geert Uytterhoeven
+<geert+renesas@glider.be> wrote:
+
+> Use the field_prep() helper, instead of open-coding the same operation.
 >
-> I would suggest to upstream this change without bringing it to older
-> (stable) trees.
->
-> It doesn't fix any substantial flaw which needs to be backported IMHO.
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-I fully agree. Bringing it to the stable trees would be a
-considerable effort and was not my intent either (thus the
-absence of "Fixes" tags).
+Clever!
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-> Btw. can you please change 'error frames' to 'error message frames'?
->
-> We had a discussion some years ago that the 'error frames' are used as
-> term inside the CAN protocol.
-
-ACK. Thanks for the clarification on the vocabulary.
-
-Yours sincerely,
-Vincent Mailhol
+Yours,
+Linus Walleij
