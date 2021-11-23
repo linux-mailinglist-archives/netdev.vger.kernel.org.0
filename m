@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D53D45A8C9
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 17:42:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 869D345A8DA
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 17:42:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238273AbhKWQpL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 11:45:11 -0500
+        id S238934AbhKWQpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 11:45:20 -0500
 Received: from mga04.intel.com ([192.55.52.120]:49123 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236471AbhKWQo6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 11:44:58 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10176"; a="233778645"
+        id S236152AbhKWQpE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Nov 2021 11:45:04 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10176"; a="233778651"
 X-IronPort-AV: E=Sophos;i="5.87,258,1631602800"; 
-   d="scan'208";a="233778645"
+   d="scan'208";a="233778651"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2021 08:41:40 -0800
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2021 08:41:42 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,258,1631602800"; 
-   d="scan'208";a="553484649"
+   d="scan'208";a="553484662"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga008.fm.intel.com with ESMTP; 23 Nov 2021 08:41:31 -0800
+  by fmsmga008.fm.intel.com with ESMTP; 23 Nov 2021 08:41:33 -0800
 Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1ANGf4Wm016784;
-        Tue, 23 Nov 2021 16:41:28 GMT
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1ANGf4Wn016784;
+        Tue, 23 Nov 2021 16:41:31 GMT
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -69,9 +69,9 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
         virtualization@lists.linux-foundation.org
-Subject: [PATCH v2 net-next 10/26] mlx5: provide generic XDP stats callbacks
-Date:   Tue, 23 Nov 2021 17:39:39 +0100
-Message-Id: <20211123163955.154512-11-alexandr.lobakin@intel.com>
+Subject: [PATCH v2 net-next 11/26] sf100, sfx: implement generic XDP stats callbacks
+Date:   Tue, 23 Nov 2021 17:39:40 +0100
+Message-Id: <20211123163955.154512-12-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211123163955.154512-1-alexandr.lobakin@intel.com>
 References: <20211123163955.154512-1-alexandr.lobakin@intel.com>
@@ -81,124 +81,111 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-mlx5 driver has a bunch of per-channel stats for XDP. 7 and 5 of
-them can be exported through generic XDP stats infra for XDP and XSK
-correspondingly.
-Add necessary calbacks for that. Note that the driver doesn't expose
-XSK stats if XSK setup has never been requested.
+Export 4 per-channel XDP counters for both sf100 and sfx drivers
+using generic XDP stats infra.
 
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |  5 ++
- .../net/ethernet/mellanox/mlx5/core/en_main.c |  2 +
- .../ethernet/mellanox/mlx5/core/en_stats.c    | 69 +++++++++++++++++++
- 3 files changed, 76 insertions(+)
+ drivers/net/ethernet/sfc/ef100_netdev.c |  2 ++
+ drivers/net/ethernet/sfc/efx.c          |  2 ++
+ drivers/net/ethernet/sfc/efx_common.c   | 42 +++++++++++++++++++++++++
+ drivers/net/ethernet/sfc/efx_common.h   |  3 ++
+ 4 files changed, 49 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index 48b12ee44b8d..cc8cf3ff7d49 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -1212,4 +1212,9 @@ int mlx5e_set_vf_rate(struct net_device *dev, int vf, int min_tx_rate, int max_t
- int mlx5e_get_vf_config(struct net_device *dev, int vf, struct ifla_vf_info *ivi);
- int mlx5e_get_vf_stats(struct net_device *dev, int vf, struct ifla_vf_stats *vf_stats);
- #endif
-+
-+int mlx5e_get_xdp_stats_nch(const struct net_device *dev, u32 attr_id);
-+int mlx5e_get_xdp_stats(const struct net_device *dev, u32 attr_id,
-+			void *attr_data);
-+
- #endif /* __MLX5_EN_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 65571593ec5c..d5b3abf09c82 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -4532,6 +4532,8 @@ const struct net_device_ops mlx5e_netdev_ops = {
- 	.ndo_setup_tc            = mlx5e_setup_tc,
- 	.ndo_select_queue        = mlx5e_select_queue,
- 	.ndo_get_stats64         = mlx5e_get_stats,
-+	.ndo_get_xdp_stats_nch   = mlx5e_get_xdp_stats_nch,
-+	.ndo_get_xdp_stats       = mlx5e_get_xdp_stats,
- 	.ndo_set_rx_mode         = mlx5e_set_rx_mode,
- 	.ndo_set_mac_address     = mlx5e_set_mac,
- 	.ndo_vlan_rx_add_vid     = mlx5e_vlan_rx_add_vid,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-index 3631dafb4ea2..834457e3f19a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-@@ -2292,3 +2292,72 @@ unsigned int mlx5e_nic_stats_grps_num(struct mlx5e_priv *priv)
- {
- 	return ARRAY_SIZE(mlx5e_nic_stats_grps);
+diff --git a/drivers/net/ethernet/sfc/ef100_netdev.c b/drivers/net/ethernet/sfc/ef100_netdev.c
+index 67fe44db6b61..0367f7e043d8 100644
+--- a/drivers/net/ethernet/sfc/ef100_netdev.c
++++ b/drivers/net/ethernet/sfc/ef100_netdev.c
+@@ -219,6 +219,8 @@ static const struct net_device_ops ef100_netdev_ops = {
+ 	.ndo_start_xmit         = ef100_hard_start_xmit,
+ 	.ndo_tx_timeout         = efx_watchdog,
+ 	.ndo_get_stats64        = efx_net_stats,
++	.ndo_get_xdp_stats_nch  = efx_get_xdp_stats_nch,
++	.ndo_get_xdp_stats      = efx_get_xdp_stats,
+ 	.ndo_change_mtu         = efx_change_mtu,
+ 	.ndo_validate_addr      = eth_validate_addr,
+ 	.ndo_set_mac_address    = efx_set_mac_address,
+diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
+index a8c252e2b252..a6a015c4d3b4 100644
+--- a/drivers/net/ethernet/sfc/efx.c
++++ b/drivers/net/ethernet/sfc/efx.c
+@@ -588,6 +588,8 @@ static const struct net_device_ops efx_netdev_ops = {
+ 	.ndo_open		= efx_net_open,
+ 	.ndo_stop		= efx_net_stop,
+ 	.ndo_get_stats64	= efx_net_stats,
++	.ndo_get_xdp_stats_nch	= efx_get_xdp_stats_nch,
++	.ndo_get_xdp_stats	= efx_get_xdp_stats,
+ 	.ndo_tx_timeout		= efx_watchdog,
+ 	.ndo_start_xmit		= efx_hard_start_xmit,
+ 	.ndo_validate_addr	= eth_validate_addr,
+diff --git a/drivers/net/ethernet/sfc/efx_common.c b/drivers/net/ethernet/sfc/efx_common.c
+index f187631b2c5c..c2bf79fd66b4 100644
+--- a/drivers/net/ethernet/sfc/efx_common.c
++++ b/drivers/net/ethernet/sfc/efx_common.c
+@@ -606,6 +606,48 @@ void efx_net_stats(struct net_device *net_dev, struct rtnl_link_stats64 *stats)
+ 	spin_unlock_bh(&efx->stats_lock);
  }
-+
-+int mlx5e_get_xdp_stats_nch(const struct net_device *dev, u32 attr_id)
+
++int efx_get_xdp_stats_nch(const struct net_device *net_dev, u32 attr_id)
 +{
-+	const struct mlx5e_priv *priv = netdev_priv(dev);
++	const struct efx_nic *efx = netdev_priv(net_dev);
 +
 +	switch (attr_id) {
 +	case IFLA_XDP_XSTATS_TYPE_XDP:
-+		return priv->max_nch;
-+	case IFLA_XDP_XSTATS_TYPE_XSK:
-+		return priv->xsk.ever_used ? priv->max_nch : -ENODATA;
++		return efx->n_channels;
 +	default:
 +		return -EOPNOTSUPP;
 +	}
 +}
 +
-+int mlx5e_get_xdp_stats(const struct net_device *dev, u32 attr_id,
-+			void *attr_data)
++int efx_get_xdp_stats(const struct net_device *net_dev, u32 attr_id,
++		      void *attr_data)
 +{
-+	const struct mlx5e_priv *priv = netdev_priv(dev);
 +	struct ifla_xdp_stats *xdp_stats = attr_data;
-+	u32 i;
++	struct efx_nic *efx = netdev_priv(net_dev);
++	const struct efx_channel *channel;
 +
 +	switch (attr_id) {
 +	case IFLA_XDP_XSTATS_TYPE_XDP:
-+		break;
-+	case IFLA_XDP_XSTATS_TYPE_XSK:
-+		if (!priv->xsk.ever_used)
-+			return -ENODATA;
-+
 +		break;
 +	default:
 +		return -EOPNOTSUPP;
 +	}
 +
-+	for (i = 0; i < priv->max_nch; i++) {
-+		const struct mlx5e_channel_stats *cs = priv->channel_stats + i;
++	spin_lock_bh(&efx->stats_lock);
 +
-+		switch (attr_id) {
-+		case IFLA_XDP_XSTATS_TYPE_XDP:
-+			/* mlx5e_rq_stats rq */
-+			xdp_stats->errors = cs->rq.xdp_errors;
-+			xdp_stats->drop = cs->rq.xdp_drop;
-+			xdp_stats->redirect = cs->rq.xdp_redirect;
-+			/* mlx5e_xdpsq_stats rq_xdpsq */
-+			xdp_stats->tx = cs->rq_xdpsq.xmit;
-+			xdp_stats->tx_errors = cs->rq_xdpsq.err +
-+					       cs->rq_xdpsq.full;
-+			/* mlx5e_xdpsq_stats xdpsq */
-+			xdp_stats->xmit_packets = cs->xdpsq.xmit;
-+			xdp_stats->xmit_errors = cs->xdpsq.err;
-+			xdp_stats->xmit_full = cs->xdpsq.full;
-+			break;
-+		case IFLA_XDP_XSTATS_TYPE_XSK:
-+			/* mlx5e_rq_stats xskrq */
-+			xdp_stats->errors = cs->xskrq.xdp_errors;
-+			xdp_stats->drop = cs->xskrq.xdp_drop;
-+			xdp_stats->redirect = cs->xskrq.xdp_redirect;
-+			/* mlx5e_xdpsq_stats xsksq */
-+			xdp_stats->xmit_packets = cs->xsksq.xmit;
-+			xdp_stats->xmit_errors = cs->xsksq.err;
-+			xdp_stats->xmit_full = cs->xsksq.full;
-+			break;
-+		}
++	efx_for_each_channel(channel, efx) {
++		xdp_stats->drop = channel->n_rx_xdp_drops;
++		xdp_stats->errors = channel->n_rx_xdp_bad_drops;
++		xdp_stats->redirect = channel->n_rx_xdp_redirect;
++		xdp_stats->tx = channel->n_rx_xdp_tx;
 +
 +		xdp_stats++;
 +	}
 +
++	spin_unlock_bh(&efx->stats_lock);
++
 +	return 0;
 +}
++
+ /* Push loopback/power/transmit disable settings to the PHY, and reconfigure
+  * the MAC appropriately. All other PHY configuration changes are pushed
+  * through phy_op->set_settings(), and pushed asynchronously to the MAC
+diff --git a/drivers/net/ethernet/sfc/efx_common.h b/drivers/net/ethernet/sfc/efx_common.h
+index 65513fd0cf6c..987d7c6608a2 100644
+--- a/drivers/net/ethernet/sfc/efx_common.h
++++ b/drivers/net/ethernet/sfc/efx_common.h
+@@ -32,6 +32,9 @@ void efx_start_all(struct efx_nic *efx);
+ void efx_stop_all(struct efx_nic *efx);
+
+ void efx_net_stats(struct net_device *net_dev, struct rtnl_link_stats64 *stats);
++int efx_get_xdp_stats_nch(const struct net_device *net_dev, u32 attr_id);
++int efx_get_xdp_stats(const struct net_device *net_dev, u32 attr_id,
++		      void *attr_data);
+
+ int efx_create_reset_workqueue(void);
+ void efx_queue_reset_work(struct efx_nic *efx);
 --
 2.33.1
 
