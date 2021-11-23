@@ -2,105 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 700C0459F56
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 10:33:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51F89459F8F
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 10:53:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232619AbhKWJgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 04:36:24 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:37912 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230236AbhKWJgW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 04:36:22 -0500
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1AN7TeRr027824;
-        Tue, 23 Nov 2021 09:33:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=6aV245QdxwI33KAHp1SVACH3oe3e1BqJbVIhHlCufEA=;
- b=lIsYxPaxveROR9STsdDrjkyMAWM4iGrV7FxrAhhGg81OljTA5qA+r8jK5vvjM7tTE76J
- 4aD+/hE7zgVr+sq/2QY6Gh3VSEDcCLOrv8m4wlUkLGV4rzBmiQOp0dQp1Ihl4l9WEhw/
- lIez38uDf7+oWKCwls0MoQaEBcEyAvclfk3FHENeYvTC9h8zOqf9MosRjZpmDdZR92Yw
- VSY104XY7XewnbEtzpx8LkW7zCZG9UNk+iI+485IDqFGmPKEQHtaJTFxsM5NX4j288n0
- tGcQHUkFhaF9mzNL1yHFi7Td1TRjOxXhfeZNMPDiFDCPNgcYKCzE3ocIOcAgrP4QUL6W cQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3cgsn2mpsj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 23 Nov 2021 09:33:13 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1AN98m6h025971;
-        Tue, 23 Nov 2021 09:33:12 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3cgsn2mpry-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 23 Nov 2021 09:33:12 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1AN9WHaR029818;
-        Tue, 23 Nov 2021 09:33:10 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma02fra.de.ibm.com with ESMTP id 3cern9myg1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 23 Nov 2021 09:33:09 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1AN9X7W160490032
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 23 Nov 2021 09:33:07 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 52EB6A405C;
-        Tue, 23 Nov 2021 09:33:07 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E69B0A4054;
-        Tue, 23 Nov 2021 09:33:06 +0000 (GMT)
-Received: from [9.145.60.43] (unknown [9.145.60.43])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 23 Nov 2021 09:33:06 +0000 (GMT)
-Message-ID: <9aaa03b2-4478-6dff-0bfc-06eba7ef2bf7@linux.ibm.com>
-Date:   Tue, 23 Nov 2021 10:33:07 +0100
+        id S234586AbhKWJ4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 04:56:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55120 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229678AbhKWJ4U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 04:56:20 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09BC2C061574
+        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 01:53:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=JYTFw20Aliur826yDh9Z24rOItlz7fSKajI2iQUIiX8=; b=Yo5f0SjEg9Wh3UxlfGJuxZ+WQV
+        dAHwd5WaUxJlf9Iu6bL3REtmMg/0/Lwm5nWdWsPOBFcp/ioL9trUi/wmizlnt5GVAfNZb5IsAiKJm
+        W6neUohco6UibmMiF/FCeAcghv0kUvxPwttW3LIA/KkEjsX9CQtZUaGA8ZTHYKoXnsBH2MIzJBoao
+        JIbTKcO578taMyUhLNto/S8QOgJL/XsXIEoOKvH5cBTr8PeJ82WIEcnWLxbUvdilfncLbZjI19f56
+        fLIYOb58vPS8xtMxnR6cSKXBce3h8xVa71GXCRK5Mqpw8Jt2//pIWYu+qKWnM2MMZ0XRY7sOTvprB
+        Q3n5/NAA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55808)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mpSTy-0007gp-Ut; Tue, 23 Nov 2021 09:52:58 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mpSTs-00007E-Pi; Tue, 23 Nov 2021 09:52:52 +0000
+Date:   Tue, 23 Nov 2021 09:52:52 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Chris Snook <chris.snook@gmail.com>, Felix Fietkau <nbd@nbd.name>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org
+Subject: [PATCH RFC net-next 0/8] net: phylink: introduce legacy mode flag
+Message-ID: <YZy59OTNCpKoPZT/@shell.armlinux.org.uk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH RFC net-next] net/smc: Unbind buffer size from clcsock and
- make it tunable
-Content-Language: en-US
-To:     Tony Lu <tonylu@linux.alibaba.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, guwen@linux.alibaba.com,
-        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-References: <20211122134255.63347-1-tonylu@linux.alibaba.com>
- <f08e1793-630f-32a6-6662-19edc362b386@linux.ibm.com>
- <YZyQg23Vqes4Ls5t@TonyMac-Alibaba>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <YZyQg23Vqes4Ls5t@TonyMac-Alibaba>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: BfPe0sFyMSKE48vSzIXlygvEvlet0FZo
-X-Proofpoint-ORIG-GUID: A-ScYIA7gJ316wnyHHo2UJNUFtWXRho1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-11-23_03,2021-11-22_02,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- suspectscore=0 impostorscore=0 malwarescore=0 spamscore=0 mlxscore=0
- lowpriorityscore=0 mlxlogscore=999 adultscore=0 phishscore=0 bulkscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2111230051
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23/11/2021 07:56, Tony Lu wrote:
-> To solve this issue, we developed a set of patches to replace the
-> AF_INET / SOCK_STREAM with AF_SMC / SMCPROTO_SMC{6} by configuration.
-> So that we can control acceleration in kernel without any other changes
-> in user-space, and won't break our application containers and publish
-> workflow. These patches are still improving for upstream.
+Hi all,
 
-This sounds interesting. Will this also be namespace-based like the sysctls
-in the current patch? Will this future change integrate nicely with the current
-new sysctls? This might allow to activate smc for containers, selectively. 
+In March 2020, phylink gained support to split the PCS support out of
+the MAC callbacks. By doing so, a slight behavioural difference was
+introduced when a PCS is present, specifically:
 
-Please send these changes in a patch series together when they are finished.
-We would like to review them as a whole to see how things play together.
+1) the call to mac_config() when the link comes up or advertisement
+   changes were eliminated
+2) mac_an_restart() will never be called
+3) mac_pcs_get_state() will never be called
 
-Thank you!
+The intention was to eventually remove this support once all phylink
+users were converted. Unfortunately, this still hasn't happened - and
+in some cases, it looks like it may never happen.
+
+Through discussion with Sean Anderson, we now need to allow the PCS to
+be optional for modern drivers, so we need a different way to identify
+these legacy drivers.
+
+In order to do that, this series of patches introduce a
+"legacy_pre_march2020" which is used to allow the old behaviour - in
+other words, we get the old behaviour only when there is no PCS and
+this flag is true. Otherwise, we get the new behaviour.
+
+I decided to use the date of the change in the flag as just using
+"legacy" or "legacy_driver" is too non-descript. An alternative could
+be to use the git sha1 hash of the set of changes.
+
+As part of this series, I have consolidated DSA's phylink creation, so
+only one place needs maintenance. This reduces the size of subsequent
+changes, including further changes I have lined up.
+
+I believe I have added the legacy flag to all the drivers which use
+legacy mode - that being the ag71xx, mtk_eth_soc and axienet ethernet
+drivers, and many DSA drivers - the ones which need the old behaviour
+are identified by having non-NULL phylink_mac_link_state or
+phylink_mac_an_restart methods in their dsa_switch_ops structure.
+
+ drivers/net/ethernet/atheros/ag71xx.c             |  1 +
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c       |  4 ++
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c |  1 +
+ drivers/net/phy/phylink.c                         | 32 +++++++++-----
+ include/linux/phylink.h                           | 20 +++++++++
+ net/dsa/dsa_priv.h                                |  2 +-
+ net/dsa/port.c                                    | 51 ++++++++++++++++-------
+ net/dsa/slave.c                                   | 19 ++-------
+ 8 files changed, 86 insertions(+), 44 deletions(-)
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
