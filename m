@@ -2,87 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E23645AD79
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 21:40:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10D7F45AD8A
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 21:45:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232900AbhKWUnW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 15:43:22 -0500
-Received: from mga05.intel.com ([192.55.52.43]:36325 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232084AbhKWUnV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 15:43:21 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10177"; a="321360498"
-X-IronPort-AV: E=Sophos;i="5.87,258,1631602800"; 
-   d="scan'208";a="321360498"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2021 12:40:11 -0800
-X-IronPort-AV: E=Sophos;i="5.87,258,1631602800"; 
-   d="scan'208";a="497420122"
-Received: from jbrandeb-saw1.jf.intel.com ([10.166.28.56])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2021 12:40:11 -0800
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        netdev@vger.kernel.org,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Danielle Ratson <danieller@nvidia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Subject: [PATCH net v2] igb: fix netpoll exit with traffic
-Date:   Tue, 23 Nov 2021 12:40:00 -0800
-Message-Id: <20211123204000.1597971-1-jesse.brandeburg@intel.com>
-X-Mailer: git-send-email 2.33.1
+        id S236471AbhKWUse (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 15:48:34 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.52]:32262 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230429AbhKWUse (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 15:48:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1637700138;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=vJxhfLbcral0UOweOEsyvR1QrhSyAJnoXf+Ogyf1Vao=;
+    b=bbxTuVrs5A11wSnNA10BNer2c0q2Xpr1Dw9f3V7+Glpi9HBbbZOZZLCRCoE26huja0
+    W5Xir2T/b4Hab/75B6VAdS9vWYjjbzHKvObrTaTptL4pDoD8JG8v61efpdtLWnKj9FQz
+    0OwtV+oDUs2bHPikgY4Feb60IeY83BuWItaQs7DENmKgo3Ar71+VNXrazX0nOXTge75r
+    ddKKIT+W5L2VwtgRWsO1pFkfdwt/cCjUzzr43TKVlWuJmso7I9nEDvuZdrnFfZ8Mkwop
+    6wwQGKiGv8xPyaUD+gLZrMYjKMBWiTiqS+2TtPiW9ZEMz5ueLLEGjZuSKyWMv1hoZ3jV
+    pqDw==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPv6:2a00:6020:1cfa:f900::b82]
+    by smtp.strato.de (RZmta 47.34.6 AUTH)
+    with ESMTPSA id a04d59xANKgI6YC
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Tue, 23 Nov 2021 21:42:18 +0100 (CET)
+Subject: Re: [PATCH net-next] can: sja1000: fix use after free in
+ ems_pcmcia_add_card()
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Wolfgang Grandegger <wg@grandegger.com>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <20211122075614.GB6581@kili>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <72ed48e9-0659-78f9-1b31-be54b118ab76@hartkopp.net>
+Date:   Tue, 23 Nov 2021 21:42:12 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211122075614.GB6581@kili>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Oleksandr brought a bug report where netpoll causes trace
-messages in the log on igb.
+Hello Dan,
 
-Danielle brought this back up as still occuring, so we'll try
-again.
+On 22.11.21 08:56, Dan Carpenter wrote:
+> In the original code if ems_pcmcia_check_chan() returned false then
+> it called free_sja1000dev(dev) but did not set the error code or jump
+> to the clean up code.  This frees "dev" and leads to a use after free.
+> 
+> I flipped the ems_pcmcia_check_chan() check around to make the error
+> handling more consistent and readable.  That lets us pull the rest of
+> the code in one tab.
+> 
+> Fixes: fd734c6f25ae ("can/sja1000: add driver for EMS PCMCIA card")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-[22038.710800] ------------[ cut here ]------------
-[22038.710801] igb_poll+0x0/0x1440 [igb] exceeded budget in poll
-[22038.710802] WARNING: CPU: 12 PID: 40362 at net/core/netpoll.c:155 netpoll_poll_dev+0x18a/0x1a0
+I do not think, that you are fixing something here.
 
-As Alex suggested, change the driver to return work_done at the
-exit of napi_poll, which should be safe to do in this driver
-because it is not polling multiple queues in this single napi
-context (multiple queues attached to one MSI-X vector). Several
-other drivers contain the same simple sequence, so I hope
-this will not create new problems.
+The loop
 
-Fixes: 16eb8815c235 ("igb: Refactor clean_rx_irq to reduce overhead and improve performance")
-Reported-by: Oleksandr Natalenko <oleksandr@natalenko.name>
-Reported-by: Danielle Ratson <danieller@nvidia.com>
-Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
-Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
----
-COMPILE TESTED ONLY! I have no way to reproduce this even on a machine I
-have with igb. It works fine to load the igb driver and netconsole with
-no errors.
----
-v2: simplified patch with an attempt to make it work
-v1: original patch that apparently didn't work
----
- drivers/net/ethernet/intel/igb/igb_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+for (i = 0; i < EMS_PCMCIA_MAX_CHAN; i++) { ...
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index e647cc89c239..5e24b7ce5a92 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -8104,7 +8104,7 @@ static int igb_poll(struct napi_struct *napi, int budget)
- 	if (likely(napi_complete_done(napi, work_done)))
- 		igb_ring_irq_enable(q_vector);
- 
--	return min(work_done, budget - 1);
-+	return work_done;
- }
- 
- /**
--- 
-2.33.1
+checks with
 
+if (ems_pcmcia_check_chan(priv))
+
+whether this channel is 'available' or not.
+
+As this hardware could come with only ONE channel it is just wrong to 
+tag a missing channel as error and finally kill the entire setup process 
+(including the potentially working channel we already initialized).
+
+So thanks for the patch but NACK ;-)
+
+Best regards,
+Oliver
+
+
+> ---
+>   drivers/net/can/sja1000/ems_pcmcia.c | 44 +++++++++++++++-------------
+>   1 file changed, 23 insertions(+), 21 deletions(-)
+> 
+> diff --git a/drivers/net/can/sja1000/ems_pcmcia.c b/drivers/net/can/sja1000/ems_pcmcia.c
+> index e21b169c14c0..271fe9444827 100644
+> --- a/drivers/net/can/sja1000/ems_pcmcia.c
+> +++ b/drivers/net/can/sja1000/ems_pcmcia.c
+> @@ -210,28 +210,30 @@ static int ems_pcmcia_add_card(struct pcmcia_device *pdev, unsigned long base)
+>   			(i * EMS_PCMCIA_CAN_CTRL_SIZE);
+>   
+>   		/* Check if channel is present */
+> -		if (ems_pcmcia_check_chan(priv)) {
+> -			priv->read_reg  = ems_pcmcia_read_reg;
+> -			priv->write_reg = ems_pcmcia_write_reg;
+> -			priv->can.clock.freq = EMS_PCMCIA_CAN_CLOCK;
+> -			priv->ocr = EMS_PCMCIA_OCR;
+> -			priv->cdr = EMS_PCMCIA_CDR;
+> -			priv->flags |= SJA1000_CUSTOM_IRQ_HANDLER;
+> -
+> -			/* Register SJA1000 device */
+> -			err = register_sja1000dev(dev);
+> -			if (err) {
+> -				free_sja1000dev(dev);
+> -				goto failure_cleanup;
+> -			}
+> -
+> -			card->channels++;
+> -
+> -			printk(KERN_INFO "%s: registered %s on channel "
+> -			       "#%d at 0x%p, irq %d\n", DRV_NAME, dev->name,
+> -			       i, priv->reg_base, dev->irq);
+> -		} else
+> +		if (!ems_pcmcia_check_chan(priv)) {
+> +			err = -EINVAL;
+>   			free_sja1000dev(dev);
+> +			goto failure_cleanup;
+> +		}
+> +		priv->read_reg  = ems_pcmcia_read_reg;
+> +		priv->write_reg = ems_pcmcia_write_reg;
+> +		priv->can.clock.freq = EMS_PCMCIA_CAN_CLOCK;
+> +		priv->ocr = EMS_PCMCIA_OCR;
+> +		priv->cdr = EMS_PCMCIA_CDR;
+> +		priv->flags |= SJA1000_CUSTOM_IRQ_HANDLER;
+> +
+> +		/* Register SJA1000 device */
+> +		err = register_sja1000dev(dev);
+> +		if (err) {
+> +			free_sja1000dev(dev);
+> +			goto failure_cleanup;
+> +		}
+> +
+> +		card->channels++;
+> +
+> +		printk(KERN_INFO "%s: registered %s on channel "
+> +		       "#%d at 0x%p, irq %d\n", DRV_NAME, dev->name,
+> +		       i, priv->reg_base, dev->irq);
+>   	}
+>   
+>   	err = request_irq(dev->irq, &ems_pcmcia_interrupt, IRQF_SHARED,
+> 
