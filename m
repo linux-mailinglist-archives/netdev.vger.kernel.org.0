@@ -2,106 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1DE8459E39
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 09:36:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E58B9459E5C
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 09:39:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232342AbhKWIji (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 03:39:38 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:47710 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230176AbhKWIjh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 03:39:37 -0500
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1AN5xL4i013984;
-        Tue, 23 Nov 2021 08:36:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=shRKH7UBv5R2UJfmy9nEN9ZlK7i4FnqT3gDYSUL/730=;
- b=CJAuv7xU2grgVlWqCVQ6kaFHpjfxIPisouLcOUMlGP0yHFdGAh7kcoOtwvE/rwejf5OD
- ZX8W0TeiPsGY7Zcr4vgeDFF4IeFoCVsTSIk7o5tAUMZ90WU4blwr2ysnPdkvXi/BibVV
- D0N/5bYUUS8p/o3lU2p+eYZeaClkUtEcof4gU1sjykMxrMLFYykMkT4GzTsjtLKQD4ff
- zTIW2O7a8CgZwHtDtn4UgrJEpFpTfAgZQmWhCYZjbNfsPFKsYEr/sOethsJAzlNJliph
- xj9m7voH533U4GpiSxWpEKwglAJPejGutBzyao67wQp4RZl5/bkbMpNSOUugPiyMbJNE Mg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3cgqccwghk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 23 Nov 2021 08:36:27 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1AN8XPO5033856;
-        Tue, 23 Nov 2021 08:36:26 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3cgqccwgh9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 23 Nov 2021 08:36:26 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1AN8SHpT028861;
-        Tue, 23 Nov 2021 08:36:25 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma02fra.de.ibm.com with ESMTP id 3cern9mfrg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 23 Nov 2021 08:36:24 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1AN8TDCn52494764
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 23 Nov 2021 08:29:13 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id AF6D0A4064;
-        Tue, 23 Nov 2021 08:36:21 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5E6FEA4067;
-        Tue, 23 Nov 2021 08:36:21 +0000 (GMT)
-Received: from [9.145.60.43] (unknown [9.145.60.43])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 23 Nov 2021 08:36:21 +0000 (GMT)
-Message-ID: <dfab4238-3d76-822c-feee-8463054232aa@linux.ibm.com>
-Date:   Tue, 23 Nov 2021 09:36:22 +0100
+        id S234924AbhKWIm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 03:42:26 -0500
+Received: from mail-qv1-f54.google.com ([209.85.219.54]:36844 "EHLO
+        mail-qv1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233911AbhKWImX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 03:42:23 -0500
+Received: by mail-qv1-f54.google.com with SMTP id kl8so14459173qvb.3;
+        Tue, 23 Nov 2021 00:39:14 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YD9+CLUS5Xv902/pEfqOtiLcZyXas3B/t1a2ZRr+mI0=;
+        b=LXrwxGGnxkX/NVnYsoGww5CRIG6ielkxAfwhqDd0GSTVJi7ckk7pa3rKM7PsENPkVA
+         k4+iq7HYlG9sdCCaR04ghEfkWPlmkN5H9HySFaYFsxBEW4eL38N/cfMD6kwc55ItO4ko
+         9XCw3J5iQjw21mqVrRUaNFeGg9IP+YJFSfSUbldlFnWO8t+34o1ALrrmMKhAOrEqQLst
+         2dut2eYLwS72gN2yTeH/YjkCEeue0s2VC/rJL3DURZnAXItZvvbzAG4bTm1jUgC5leaG
+         xUpUpRyTSX9gbyutV9lYuvEhF1XWI++odrR6CIr3ZIm+J7YxbwtMuZ06L5WB+HK/B76Z
+         dISQ==
+X-Gm-Message-State: AOAM530rTVPAKtpxl0Biidy8BxnFVsxfY/0kqiHOm8RFWV9cOaY9Z+m0
+        pREjiWhsxGSNRSA19w3q7qlJeiNsOjNP6w==
+X-Google-Smtp-Source: ABdhPJwl7IFfqBvyxvzsIGDvXIqCpOyDF+gdOezzZQWSahoV7nupzS7YLtInPshC/NmOzg9BnWp5fA==
+X-Received: by 2002:a05:6214:cac:: with SMTP id s12mr4269630qvs.60.1637656754206;
+        Tue, 23 Nov 2021 00:39:14 -0800 (PST)
+Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com. [209.85.219.172])
+        by smtp.gmail.com with ESMTPSA id w10sm5807946qtj.37.2021.11.23.00.39.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Nov 2021 00:39:14 -0800 (PST)
+Received: by mail-yb1-f172.google.com with SMTP id f9so23788959ybq.10;
+        Tue, 23 Nov 2021 00:39:13 -0800 (PST)
+X-Received: by 2002:a9f:2431:: with SMTP id 46mr6012282uaq.114.1637656742896;
+ Tue, 23 Nov 2021 00:39:02 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH net 2/2] net/smc: Ensure the active closing peer first
- closes clcsock
-Content-Language: en-US
-To:     Tony Lu <tonylu@linux.alibaba.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, guwen@linux.alibaba.com,
-        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-References: <20211123082515.65956-1-tonylu@linux.alibaba.com>
- <20211123082515.65956-3-tonylu@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <20211123082515.65956-3-tonylu@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: XZUAuHg0DfJ1OQEzSQJJ9rysnmvPhLka
-X-Proofpoint-ORIG-GUID: b3Whlt_VSDlqV95wo0t4uUFXPcvQxNyZ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-11-23_02,2021-11-22_02,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- lowpriorityscore=0 bulkscore=0 spamscore=0 impostorscore=0 clxscore=1015
- mlxscore=0 priorityscore=1501 mlxlogscore=999 adultscore=0 suspectscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2111230044
+References: <cover.1637592133.git.geert+renesas@glider.be> <3a54a6703879d10f08cf0275a2a69297ebd2b1d4.1637592133.git.geert+renesas@glider.be>
+ <01b44b38c087c151171f8d45a2090474c2559306.camel@sipsolutions.net> <5936f811-fa48-33e9-2a1a-66c68f74aa5e@ieee.org>
+In-Reply-To: <5936f811-fa48-33e9-2a1a-66c68f74aa5e@ieee.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 23 Nov 2021 09:38:51 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdX4C0EgkGXR=MwSuBOFoj7O9xx8xwH5dP8rWzN1ckejQA@mail.gmail.com>
+Message-ID: <CAMuHMdX4C0EgkGXR=MwSuBOFoj7O9xx8xwH5dP8rWzN1ckejQA@mail.gmail.com>
+Subject: Re: [PATCH 01/17] bitfield: Add non-constant field_{prep,get}() helpers
+To:     Alex Elder <elder@ieee.org>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        Paul Walmsley <paul@pwsan.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Benoit Parrot <bparrot@ti.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Eduardo Valentin <edubezval@gmail.com>,
+        Keerthy <j-keerthy@ti.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-aspeed@lists.ozlabs.org, openbmc@lists.ozlabs.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23/11/2021 09:25, Tony Lu wrote:
-> The side that actively closed socket, it's clcsock doesn't enter
-> TIME_WAIT state, but the passive side does it. It should show the same
-> behavior as TCP sockets.
-> 
-> Consider this, when client actively closes the socket, the clcsock in
-> server enters TIME_WAIT state, which means the address is occupied and
-> won't be reused before TIME_WAIT dismissing. If we restarted server, the
-> service would be unavailable for a long time.
-> 
-> To solve this issue, shutdown the clcsock in [A], perform the TCP active
-> close progress first, before the passive closed side closing it. So that
-> the actively closed side enters TIME_WAIT, not the passive one.
-> 
+Hi Alex,
 
-Thank you, I will pick this up for our next submission to the net tree.
+On Tue, Nov 23, 2021 at 2:52 AM Alex Elder <elder@ieee.org> wrote:
+> On 11/22/21 10:32 AM, Johannes Berg wrote:
+> > On Mon, 2021-11-22 at 16:53 +0100, Geert Uytterhoeven wrote:
+> >> The existing FIELD_{GET,PREP}() macros are limited to compile-time
+> >> constants.  However, it is very common to prepare or extract bitfield
+> >> elements where the bitfield mask is not a compile-time constant.
+> >
+> > I'm not sure it's really a good idea to add a third API here?
+> >
+> > We have the upper-case (constant) versions, and already
+> > {u32,...}_get_bits()/etc.
+>
+> I've used these a lot (and personally prefer the lower-case ones).
+>
+> Your new macros don't do anything to ensure the field mask is
+> of the right form, which is basically:  (2 ^ width - 1) << shift
 
+> I really like the property that the field mask must be constant.
+
+That's correct. How to enforce that in the non-const case?
+BUG()/WARN() is not an option ;-)
+
+> That being said, I've had to use some strange coding patterns
+> in order to adhere to the "const only" rule in a few cases.
+> So if you can come up with a satisfactory naming scheme I'm
+> all for it.
+
+There are plenty of drivers that handle masks stored in a data
+structure, so it would be good if they can use a suitable helper,
+as open-coding is prone to errors.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
