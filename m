@@ -2,174 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CBEE45A9AD
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 18:09:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8605145A9C5
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 18:13:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238738AbhKWRMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 12:12:33 -0500
-Received: from mail-eopbgr00057.outbound.protection.outlook.com ([40.107.0.57]:53984
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232689AbhKWRMc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 12:12:32 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aJwBiA8ziYMby5WKwr/gBxIyrjH93ijZ/m6ieIVNaUdm0P0RhFnWWwvfjfii1baf2jTN1RM8MttbxNDOemAPiAfRPihWU3QtsIc9EdIakS/fvUD3Da9EBmF8dgHJY6tfhwV75g/IXm9gG0r8o5SLAaLMxNQvGuOFdDFgQqDxVOOJaaIsHl0iDfxWWCFqZrGYGfEQ4jMAHs8ZKWI09/bnA6q/YRi1vbQJKFEcznTuhXiPIqehH4uS8azU0aDBsan5jpep6AZoH+HwPRe71vyoC3k621R0G5CEh1JTlci4Q1m6NihrHyskAV+17mlqN/fb4d4FHCG6xy1uhF+gaerZvQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sFz8A3wXe6ul8zGLV68nnO5cVIPwkGj77v3JaDaAJVE=;
- b=lF9nLvakRCkNKcaKVDySEB71J+3JBDcpNpPRdenBwhFJCtyrM6W0Sz9zQnaD1wTWlIR4v/ThQ9byyQSqtVxZr5u0NP1f41ZCzLwJDXeWFtXc2CZjbNtF0PypHnYn2nFBNYDgenltsH7odcvDVF/I4YhfB7HjEO4vSsUNWwOKpbY7J2iHJEaZqGb4kC2qxw/uaNRzaedLwlzDLIy/hgMN337dELeNHr8dnFmqbCfNR/kgH2P23VCyNAyYv2iSI+N0yZ/AcZ5I4VA2/qpvaD8V4lC/RyealKkyF0cryxeXLpMqikUdpk/j5cN6kGRMQGkazxBD02zbWWeiP5I91BOIJw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sFz8A3wXe6ul8zGLV68nnO5cVIPwkGj77v3JaDaAJVE=;
- b=GcHU34rBadAUTzje8qtWsYAZAK0gSnkshj/iWGAuycN/yNyLE6AK3K2o49F/2rVSztwK6MrSDS43PeUM6v1yKpnZyA0xPq/aG8TvM9b/MJBX4TGT7iDOm+m+M7V9ZLqWy2o6X4hKR+erZSx+NjpEsFXcdMm/PYGf/TJQstPX9/U=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB3071.eurprd04.prod.outlook.com (2603:10a6:802:3::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.24; Tue, 23 Nov
- 2021 17:09:21 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::e4ed:b009:ae4:83c5]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::e4ed:b009:ae4:83c5%7]) with mapi id 15.20.4713.026; Tue, 23 Nov 2021
- 17:09:21 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shay Agroskin <shayagr@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        David Arinzon <darinzon@amazon.com>,
-        Noam Dagan <ndagan@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        =?iso-8859-1?Q?Toke_H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Andrei Vagin <avagin@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>
-Subject: Re: [PATCH v2 net-next 05/26] enetc: implement generic XDP stats
- callbacks
-Thread-Topic: [PATCH v2 net-next 05/26] enetc: implement generic XDP stats
- callbacks
-Thread-Index: AQHX4Ij/XaaTEUdaCEG47cK497YtaqwRWKMA
-Date:   Tue, 23 Nov 2021 17:09:20 +0000
-Message-ID: <20211123170920.wgactazyupm32yqu@skbuf>
-References: <20211123163955.154512-1-alexandr.lobakin@intel.com>
- <20211123163955.154512-6-alexandr.lobakin@intel.com>
-In-Reply-To: <20211123163955.154512-6-alexandr.lobakin@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e74f17ea-6e6f-4040-5d43-08d9aea3fdf3
-x-ms-traffictypediagnostic: VI1PR04MB3071:
-x-microsoft-antispam-prvs: <VI1PR04MB30719CF0A26B35757B8CBD79E0609@VI1PR04MB3071.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: RlWa2d6GjAouN0DWrAYJ2wE9bZKDQBOINPHM1T4CvfJHSGQWhJVpezsgOuMMiBW3TBGlGM1JtxMwT5d3+7zxq2HSeoepN71Kzll4xxRC67afDjofU5O49Iql5o65C39MrTyadJtQHey4o56ddamFIvlB35RT2D21MhUKTXwIvSp7Z/XKfxLZYE2dC9rw9sAszI5o/yik2BSBrBLzLyh8hSYzvLQJ1ZLkh/ZQeWmmuf4Z4bQCtFCF/uUQs8plQ9q7ZwvLtwjNnUT2Gn9wLFETa739dIg2KZMdlGJPAWiFbqi+4LX7vJdo2moCkkXVEQXEtw84uyXyJuIjpHNIAsUggN2iLqN1Khvh59fzZ4c49pTMk+gJdNyeo+L4N5AHg1IlZ+D4IdbC1hzx+bREutqm0fUuvnO+lOdAKuqGtHabZY9EDjSn5JFI9TdozjkPrKxnb+erWLEqOCVzxfH/A5PaRPX9pBLVEagGNybgQd6CGrDVb041TWX8qFUlZtUZH1kodL2ppgSGX78m1izcMIDrNJFhhJQbnMpePpORNuGXKjRG//PVtyzK5alvxYgz5SOfdYUVIYTYoFMjPVNG8OC8gbLeanVhM4v5nYdXFTwKW7euVo6pO32Y99nKxuqoajbkOp2lCaAmRlkewLpGY6IRXTC5ojV6jRc6FlUm36btBfCUtOoueygaukIN84We+3KMPCbrKd6uzp0tHN7xglouHQsEdoIx7ss03WRNS5hlc2E=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(5660300002)(316002)(6506007)(26005)(86362001)(54906003)(122000001)(38100700002)(38070700005)(76116006)(33716001)(4744005)(4326008)(7416002)(6916009)(44832011)(2906002)(186003)(91956017)(66946007)(66446008)(64756008)(66556008)(66476007)(71200400001)(7406005)(83380400001)(1076003)(508600001)(6486002)(8676002)(8936002)(6512007)(9686003)(41533002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?JW8yOrmhlIJ9W7FBJS5OwQSrzUXEchdRLunt3XzgWBHSRd+tJnGMS7+IiM?=
- =?iso-8859-1?Q?5HGB+RE7KlZQGU/inOKrCMlBtw/JxpiIWF2KQgeVDpoxF8PfC4X/tJhgjU?=
- =?iso-8859-1?Q?+DDMx9TXwm97u2nDFphW/BY03PwcSM+UA8of3Mw7ZLvUhLbA4TVyWcdSnH?=
- =?iso-8859-1?Q?SZDYcbvvq2uXCY5ea1Nuc/Udh7ISolPYGQU+eKD2HDbFz9cYF2WV974d7j?=
- =?iso-8859-1?Q?x97KNMsvowD2TX2NQpINjIEG11hzLi+lxaUQddpnZj0DyS1CtW5CY2iWRQ?=
- =?iso-8859-1?Q?IEcUXtDS3f9GsXkNCcgJkRlmEYPlo3qj3f7uuDn+88sxfqJuRfYYzZfIZl?=
- =?iso-8859-1?Q?eFoMlHzhek4wCOe6CR5bzTmp5RcEeCza/4CCEHMZqT/BZ3PySW2TaLGwxm?=
- =?iso-8859-1?Q?0NiIQZyaz/Eg36TQYjzRtInhFVkqrNYwlMJZn11sJ3xqjWc5AnOAxueG4+?=
- =?iso-8859-1?Q?AgE1ZXzYjCsZ1Ed3ZTOlJiqkP8qkTuS1dSBvUNgsCy5TXB+0GFEca0YZm/?=
- =?iso-8859-1?Q?z0D8bnoN4eFEYpKWNdHpQbRBn2X+91QH9Ul8i5Ym3O82bJtP0YfbYraKEU?=
- =?iso-8859-1?Q?40nBLfK8FYdzlOVyeB2hIJTUX7r3rgutBFy/Tm1KqB3m+hNf36vzXstBbe?=
- =?iso-8859-1?Q?8eB/3bNG2mvhVAbTbXCD/fTTbWMxuFRloThL8ByXtzTkZiwA0hMrcAI41N?=
- =?iso-8859-1?Q?EEN1Sc1EjaxTKab8Bdrc4VLsdqNkFWPp8TF1yFwKRNR3jIEp27RrN/0wCd?=
- =?iso-8859-1?Q?J8FV/bP2b+K3+4fA0eH1NKQpxcT8uH/Y8/1R00eajGR0nYyPRxZCfGbZNC?=
- =?iso-8859-1?Q?WmxVxfeaX3/koStWP4zvZnj2Qb7Hy6YwlC1agevDaNd67UO7l8nuvvHcvd?=
- =?iso-8859-1?Q?xYrrVhYG46CjP8D7KGRXyc/7udCAPYFLsHv8vVWjyKg784f2QiFrFOUeiK?=
- =?iso-8859-1?Q?pgBtduUAiUX3XkchgfoDAIDi8btuLzh5CJn40++iyWPZr04w77/4j+fUn2?=
- =?iso-8859-1?Q?2K/OI15nlESHcSOKtSA+x+x4Rqk8iSRP+hsAo0yWJVs+6GqMr4b+jpE3UH?=
- =?iso-8859-1?Q?H0l4/r7sixxKxWa5P9LVxiGU6varfrJlegWSz1m2a7Hy1890cIBoQ3pSMT?=
- =?iso-8859-1?Q?IweZaLOoZsLNCSGFxA29sD5UQDo8Aof5O9m7feJXwUIzmUPnWaFJGeNnT8?=
- =?iso-8859-1?Q?YizqAmUVQysaH0KN4zOYwWuK+kSzNEMQoilb21lMsAZQNuxQkwwqvoXYnA?=
- =?iso-8859-1?Q?fcI/cXZ3smkT2ThfOouSlKq2voFfr03rZGwH+3k0EmmNsJ9AxMk7DTtXPO?=
- =?iso-8859-1?Q?NxflatyjrzlxPqQ8yYTpbYVsnEFt+/950jEJ7lNNOnQm6P5mV3xZhyxiWD?=
- =?iso-8859-1?Q?UnBtfKBMB78G3ip900BO7DaQGvEaaprrjrpe2iQ16HSSqrNFlteclrWANy?=
- =?iso-8859-1?Q?Js9XvNNHCZ4SLBsAr3YW5b8VhKD2EMC6aQ0xV0kpBSZwqq1+07PF83BVWy?=
- =?iso-8859-1?Q?vX14UrTRQNFybOodT887Ib+P4htGioShitSREhWu8PFFMlyTqH1GOi3PXM?=
- =?iso-8859-1?Q?sGDZe++s01TTpPYFp/nr1f5MCOTRZSepUnowI3RXnnzxxDA85H2gLP//B4?=
- =?iso-8859-1?Q?gcsxwfOrBvL5zUGUL72BooskgRqSUo6R3ekA5oEZ1U8WwS8VoIWyzsaYJP?=
- =?iso-8859-1?Q?mxhFSNWr+3ZYSG39zLE=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-ID: <2AA94709EC439448AF69418ED7F16FA2@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S238991AbhKWRQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 12:16:38 -0500
+Received: from mailsec210.isp.belgacom.be ([195.238.22.106]:59510 "EHLO
+        mailsec210.isp.belgacom.be" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237703AbhKWRQi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 12:16:38 -0500
+X-IPAS-Result: =?us-ascii?q?A2DxBQCbIJ1h/y4FIwpaHgENLwwOCwmFUHeEPJBunl8LA?=
+ =?us-ascii?q?QEBAQEBAQEBRwECBAEBhHoKUwWCHQElOBMBAgQBAQEBAwIDAQEBAQEBAwEBB?=
+ =?us-ascii?q?gEBAQEBAQUEAYEbhS9GgjUig24nFUEYHQImAmCFZSqvSYExgQGIUoEmgRAqi?=
+ =?us-ascii?q?iqES4FJRIFIAYF1gT+BBQGGV4JlBJAqCII5fUKgX54lg0SfAwUtg2ySEpEvL?=
+ =?us-ascii?q?ZVoH4Iio3UBgXRPgS5tGIMlUBcRjjeOOkNoAgYLAQEDCYI6gygIjDIBgQ8BA?=
+ =?us-ascii?q?Q?=
+IronPort-PHdr: A9a23:rh/2chat6dnzvyTSTVJwl9j/LTEg14qcDmcuAnoPtbtCf+yZ8oj4O
+ wSHvLMx1gaPAduQuq0MotGVmpioYXYH75eFvSJKW713fDhBt/8rmRc9CtWOE0zxIa2iRSU7G
+ MNfSA0tpCnjYgBaF8nkelLdvGC54yIMFRXjLwp1Ifn+FpLPg8it2O2+5YDfbx9HiTe8br9/K
+ Be7phjNu8cLhodvNrw/wQbTrHtSfORWy2JoJVaNkBv5+8y94p1t/TlOtvw478JPXrn0cKo+T
+ bxDETQpKHs169HxtRnCVgSA+H0RWXgLnxVSAgjF6Bb6Xortsib/q+Fw1jWWMdHwQLspXzmp8
+ qVlRwLyiCofKTA383zZhcNsg6xUrh2hphxxzYDPbYGJNvdzZL/Rcc8ASGdDWMtaSixPApm7b
+ 4sKF+cPPfxXoJL8p1QUqxuxHQmiBPn1zTBVnHj2x6w63PgiEQrb2wEgEcgBv2/arNjuL6cSU
+ uC0zK/WwjXfdf9Zwiny5ZHOfxs8rv6CQah+ftDNyUkzCQzFlFOQpJTlMj2V0ukAr2iV4ut9W
+ e+ylWMqtgV8rzqry8oxjoTFmp8ZxkzE+Chl3oo4O9m1Rk5/bNCqEJVdsyWXOYRqT84sRWxjp
+ SU0yqUetJKmYCQG0poqyh7FZ/GHaYSF7RPuWP6VLDtlnn5pZbCyihWo/US+1uHxWdO43VJKo
+ ydDj9LCrGoC1wbJ5ciCUvZ9+0Ch1iuR2A3L8eFEJFw0lbLcK5483r48jpoTvlrHHi/xgEj2i
+ bWZdkQg+umm9evoeanqqoOSOoNtkQH+LLghltS+AeQ+LAcOQ3CW9fmg2LH580D0QK9Gg/0sn
+ qTWsZ3WPcEbqbS4Aw9R3IYj8RG/DzK+3dQWh3YIN1xFdQmcj4jqO1DOJu73Deulj1u3jjhn3
+ +rGMaH5ApXRMnjDl6/scqtn5E5C1gUzyMtS6I9OBbEfPv3zX0vxtNvWDh8lKQC0xfjoCMll3
+ IMERW2PGrOZML/VsVKQ5eIvPvKDa5UOtTb+Nfcl/fjugmE9mVMHeqmpx5QXYmiiHvt6O0WZf
+ WbsgtAZHGcRpQU+Vu3qiEODUT5UfHuyRbwz6Sw7CI28EYfPXJyigLuE3C2jBJ1ZenhGCkyQE
+ Xfvb4iEWewDZzyUIsB9iTEET6auRJIh1R60qA/20aZoLu3R+icAr5LsyMB15/HPlRE17TF0C
+ dqS032QQG5qgGMFXCE23K9hrkxn0FuD0rZ3g+ZeFdNN4/NFSAA6NYTTz+ZiEdD9RhrBfsuVS
+ FahWtimBTAxTtQsw94Bekp9GMutjgrF3yW0B78YjKKLBJMq/aLGxXTxJNhyy2zA1KY/i1kqW
+ MxPNXephv03yw+GC4fXnkCxm6+0eKEY2yDRsmGO0S7Gv1xSWSZzXL/DUHRZYVHZ6Zzi7FnDU
+ b6pIa4qPgtI1YiJLa4OIt/jgFNNbO3uNNTXfyS6nGLjKwyPw+aiZYDrcmMq8j9cBMkekgsQt
+ SKIPAIwLjyismTTEHpkGAS8MAvX7eBipSbjHQcPxAaQYhg5v4c=
+IronPort-Data: A9a23:nKLKhqulZrlIxv5DU2JtEn0KeefnVDhfMUV32f8akzHdYApBsoF/q
+ tZmKWyBPvmNYmD8KdhyPIS19k8B7MWBzdIwQQM/qC9jECIXgMeUXt7xwmUcn8+xwmwvaGo9s
+ q3yv/GZdJhcokf0/0vrav64xZVF/fngqoDUUYYoAQgsA187IMsdoUg7wbdg29Qz2YPR7z6l4
+ LseneWOYDdJ5BYpagr424rbwP+4lK2v0N+wlgVWicFj5DcypVFMZH4sDf3Zw0/Df2VhNrXSq
+ 9AvY12O1jixEx8FUrtJm1tgG6EAaua60QOm0hK6V0U+6/RPjnRa70o1CBYTQVxLgQmoocpQ8
+ c9ivsScZAgYIfD2outIBnG0EwkmVUFH0LrOIHygvMbLlxaDaGXnqxlsJBhue9ZFvLsxXT8mG
+ f8wcVjhajiNjui46Km4W+9hmoIpIaEHOatG4Sw+nW+BXZ7KR7ifT4zG+/1I3w413J9sDPGEd
+ /ojTDNGOUGojxpnfw1/5IgFtOuhmHT6WzFRtl+Qoa05/y7VwRAZ+LvwOtP9edGQQ8hR2EGCq
+ Qru5G7jAw8bM/SFxDaF+27qjejK9Qv5Uo8UH5Wi+/JqiUHVzWsWYDUQWEe3rOeRlEGzQZRcJ
+ lYS9y5oqrI9nGSvT9/gT1i7rWSCsxo0RdVdCas55RuLx66S5ByWblXoVRZEYd0iq8I8HWRxk
+ EOC2djuHyQHXKCpdE9xP4y89VuaURX550dYDcPYZWPpKOUPbG3+Ytwjgzqj/GOIYgXJJAzN
+IronPort-HdrOrdr: A9a23:r2xIbq4cOK6/8IiaKgPXwODXdLJyesId70hD6qkRc202TiX8ra
+ uTdZsguCMc5Ax8ZJhYo6H6BEDYewKlyXcX2/hzAV7BZmjbUQKTRekJ0WKF+VLd8kbFltK1u5
+ 0PT0EwMqyVMbE/t7ed3OGEe+xQpeVuz8iT9J7jJ1UEd3AMV51d
+X-IronPort-Anti-Spam-Filtered: true
+Received: from mailweb003.tc.corp (HELO mailweb003-svc) ([10.35.5.46])
+  by privrelay.glb.bgc.bc with ESMTP; 23 Nov 2021 18:13:26 +0100
+Received: from [91.178.204.95]
+        by webmail.ux.proximus.be with HTTP; Tue, 23 Nov 2021 18:13:26 +0100
+To:     davem@davemloft.net, kuba@kernel.org, sbrivio@redhat.com,
+        jbenc@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-ID: <1ad77777.15fd.17d4dc9bd96.Webtop.157@skynet.be>
+Subject: vxlan: Possible regression in vxlan_rcv()
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e74f17ea-6e6f-4040-5d43-08d9aea3fdf3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Nov 2021 17:09:21.0244
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 3QRrG693W66XYh+Xso8p+euLwEA0GaS06tX919y8ci0c/vCVmUmntDvACx4stx7kXc8M4O6Ba7tt7xIHMDa2xA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB3071
+Content-Type: text/plain; charset=UTF-8; format=flowed; delsp=no
+Content-Transfer-Encoding: 7bit
+User-Agent: OWM Mail 3
+X-SID:  157
+X-Originating-IP: [91.178.204.95]
+From:   =?UTF-8?Q?Fabian_Fr=C3=A9d=C3=A9rick?= <fabf@skynet.be>
+Date:   Tue, 23 Nov 2021 18:13:26 +0100 (CET)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 23, 2021 at 05:39:34PM +0100, Alexander Lobakin wrote:
-> Similarly to dpaa2, enetc stores 5 per-channel counters for XDP.
-> Add necessary callbacks to be able to access them using new generic
-> XDP stats infra.
->=20
-> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> ---
+Hi,
 
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+    Last year I sent the following
 
-These counters can be dropped from ethtool, nobody depends on having
-them there.
+2ae2904b5bac
+("vxlan: don't collect metadata if remote checksum is wrong")
 
-Side question: what does "nch" stand for?=
+
+thinking it was an optimization and noticed it was managed in that order 
+before patch
+
+f14ecebb3a4e
+("vxlan: clean up extension handling on rx")
+
+
+    I was not able to create some script to test that code and had no 
+feedback on it but lately, looking at it again I noticed that metadata 
+sequence (if (vxlan_collect_metadata(vs))) was updating skb in 
+skb_dst_set(skb, (struct dst_entry *)tun_dst); which was not the case 
+during the clean up above.
+
+   Can someone tell me if the update is really ok or how I could check 
+that code ?
+if VXLAN_F_REMCSUM_RX involves metadata checking I can ask to remove the 
+patch.
+
+Best regards,
+Fabian
