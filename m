@@ -2,169 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE47445A02F
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 11:27:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A46645A04A
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 11:33:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235352AbhKWKau (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 05:30:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34676 "EHLO
+        id S235385AbhKWKgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 05:36:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235208AbhKWKat (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 05:30:49 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA954C061714
-        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 02:27:41 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id x15so89549284edv.1
-        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 02:27:41 -0800 (PST)
+        with ESMTP id S235342AbhKWKgT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 05:36:19 -0500
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D048FC061574
+        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 02:33:11 -0800 (PST)
+Received: by mail-ed1-x541.google.com with SMTP id e3so90000055edu.4
+        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 02:33:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to
          :content-transfer-encoding;
-        bh=qlMWALK/MdlntNRPXPOBXX8+k0slz9MlWLCqALsY7yo=;
-        b=GmTklnmE+vKS5ULB1hlSa7DUSXEqWpnxcsvAFkdJo9LssELUpfQAUR/lwvkem5uAYG
-         Lfhj8EBad1k1QwR2Xxqe1kmwijVzRmhrp32ihM11b2QiQKoWKfqE6yaIWU44S/eo4qDZ
-         EuI9KzTdJPZxdLgghL/jGrvgR4xBviANxeAujfw24MvI6mSw4tEQkACnr7XO3m/yVSVi
-         bwEPzx3hbTVIvbajG8KehnMk41Akgy72TAdR3OlIrUVZRaDUVglexQ43x54qGqo3LHY5
-         ult/HfLURnFJHWwdTCbSjlJC5ej3B9a7LIst6/VsgRlAWsOuKkrTIWueHt2R9v9iNQ4C
-         tuKA==
+        bh=eibhgHyEnDty6prD7kw2qZTGk1uH223Sz/QXKL+fHLw=;
+        b=oXMyEYfSy0DO8QrJbP8fa1w2KCXZigpeJEmQJUw6UyhcJ5xmn/WnqcbJS9TYJNWiBd
+         bdxdxeDAZRgTrspwNZImtk8vepPXzoEcFB1DK06HCFrMh8gALwIReNdYsjlOw1dSI/hY
+         /kP1D0YYOVUu/TSFpiyc+gCywMX0MxirF91QQXUK09pZ3YaThS7ghUfqgM6CLL0Kp3UE
+         8O60nlN0WOVj0pb3knAj7rB7p9boaRkhbo0gpP7ypDaQy3gK9RHA4AiEim01WuqZqXjV
+         A+rp1Ju4gLrVtuya+elSpUqG0lj2fHRQSJEVO7iCUz7oaHb184VOSQjAj+QmcZhYP/FH
+         +d5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qlMWALK/MdlntNRPXPOBXX8+k0slz9MlWLCqALsY7yo=;
-        b=Ow7sc85/m/wVyiwYc0xnyI6YKuEUq1hKdNM8idRPOx7YjCTiNS1iiw/dDEHOhjGFHu
-         dz/pMRogkrIGQI+wIr+hmeE22OeZa3uqgLgvJmgPPjksUPSKHFuqmz3eGDKTkvfWxmZd
-         jXcnE18doNM/ya5OcEr3RaezL9vWaw87mpm1vjrxnIu9iWCHstDjpqTwIM40T7iNd2af
-         Gal6erFMquKD4jDpTmJDuPA6U1u8KXld7wv+EUvfNi3ZSMALX+qYaHTQ3pSqTw/p4SbX
-         Z71NeJVAntlhe1nyFeWQwg3QpaBSg+9XZrNV5QftOBl1fF6ELN26G2zOAcXGD2ElOB05
-         AYvQ==
-X-Gm-Message-State: AOAM530XJZtKmzQ1jFe53nt7ycE7cwU4hgPLB8OaCK1FVqmcbR3mrzEJ
-        VyxNTbyQmYeYXfFzfRcbAhVmw7e02KFggU43
-X-Google-Smtp-Source: ABdhPJzGadwPCnUmF9JAh8axAngqDkkZCsm84mLRcYQXx8SbUppd0vRWt39pGo0s6CTCwfNGckD/oA==
-X-Received: by 2002:a50:f68c:: with SMTP id d12mr7227366edn.307.1637663259834;
-        Tue, 23 Nov 2021 02:27:39 -0800 (PST)
-Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id w5sm5934450edc.58.2021.11.23.02.27.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Nov 2021 02:27:39 -0800 (PST)
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-Cc:     idosch@idosch.org, davem@davemloft.net, kuba@kernel.org,
-        dsahern@gmail.com, Nikolay Aleksandrov <nikolay@nvidia.com>,
-        stable@vger.kernel.org
-Subject: [PATCH net] net: nexthop: fix null pointer dereference when IPv6 is not enabled
-Date:   Tue, 23 Nov 2021 12:27:19 +0200
-Message-Id: <20211123102719.3085670-1-razor@blackwall.org>
-X-Mailer: git-send-email 2.31.1
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=eibhgHyEnDty6prD7kw2qZTGk1uH223Sz/QXKL+fHLw=;
+        b=F3z6pdGU/yY5qj3jT/wmUhTGqDmybTOrXTpJJn6IxCB7t7ojAZQ4S+EqlDwer0fkR6
+         3JNWgANDzic+I41SQ2LEi+JCxEdlRqJ0EnrlxZqiOBHwhAXuk14XsdYx+1Lih9IBqSGk
+         DeDR1wk6aeZqwrxsxzoGgKGt7anXJXHlU/0mYpqs+TPbCi68eXqxL8LmM/gFkUWRWnx4
+         oz3CMGSPzrt9aR6zh+ipO/+Z2N7koyworoKn4rmDq4IQa7upZaqqbOLo9i76xo6M05sG
+         osmmpBL/s+3Ug+M0NVW3gqskYa/sqn6xQN3aYsqHAhelNNNvpcIwU+4pq8GJTMMgi3be
+         xwVA==
+X-Gm-Message-State: AOAM531cMF7bsvegilMUWNyp6aU97KQ+N8FBkeQ99anHyLSLD3F0nkoN
+        wBPyFfvXxRIc7b8q8sZXTPNEsbtgQ34GQ9Vw0ns=
+X-Google-Smtp-Source: ABdhPJzJtgKSP7ywpFCkCCExg1tbt9i5U5pG973r5Ka8WN6KAak3Pbl6pb6RcRTzkY31USoMeVJNNOkbzKNWKOs8Ovs=
+X-Received: by 2002:a17:906:fcba:: with SMTP id qw26mr6285087ejb.448.1637663590372;
+ Tue, 23 Nov 2021 02:33:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:a17:907:60c9:0:0:0:0 with HTTP; Tue, 23 Nov 2021 02:33:09
+ -0800 (PST)
+Reply-To: msbelinaya892@gmail.com
+From:   msbelinaya <ali15zeidan1955@gmail.com>
+Date:   Tue, 23 Nov 2021 10:33:09 +0000
+Message-ID: <CAM9_WzCEDnrmrZT90aiDpQENVeL9DpSxfGEM3rPNx=VAMKMQ6w@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@nvidia.com>
+Ich biete meine Freundschaft an und glaube, dass Sie mich mit gutem
+Herzen akzeptieren werden. Ich wurde gedr=C3=A4ngt, Sie zu kontaktieren und
+zu sehen, wie wir einander am besten unterst=C3=BCtzen k=C3=B6nnen. Ich bin=
+ Frau
+Kodjovi Hegbor aus der T=C3=BCrkei und arbeite als Divisionsleiterin f=C3=
+=BCr
+Operationen bei der StandardBNP bank limited Turkey . Ich glaube, es
+ist der Wille Gottes, dass ich Ihnen jetzt begegnen werde. Ich habe
+ein wichtiges gesch=C3=A4ftliches Gespr=C3=A4ch, das ich mit Ihnen teilen
+m=C3=B6chte, von dem ich glaube, dass es Sie interessiert, da es mit Ihrem
+Nachnamen in Verbindung steht und Sie davon profitieren werden.
 
-When we try to add an IPv6 nexthop and IPv6 is not enabled
-(!CONFIG_IPV6) we'll hit a NULL pointer dereference[1] in the error path
-of nh_create_ipv6() due to calling ipv6_stub->fib6_nh_release. The bug
-has been present since the beginning of IPv6 nexthop gateway support.
-Commit 1aefd3de7bc6 ("ipv6: Add fib6_nh_init and release to stubs") tells
-us that only fib6_nh_init has a dummy stub because fib6_nh_release should
-not be called if fib6_nh_init returns an error, but the commit below added
-a call to ipv6_stub->fib6_nh_release in its error path. To fix it return
-the dummy stub's -EAFNOSUPPORT error directly without calling
-ipv6_stub->fib6_nh_release in nh_create_ipv6()'s error path.
+ Im Jahr 2006 hat ein B=C3=BCrger Ihres Landes ein Nicht-Residentenkonto
+f=C3=BCr 36 Monate des Kalenders im Wert von =C2=A38.400.000,00 bei meiner =
+Bank
+eingerichtet. Das Ablaufdatum f=C3=BCr diesen Einlagenvertrag war der 16.
+Januar 2009. Leider starb er w=C3=A4hrend einer Gesch=C3=A4ftsreise bei ein=
+em
+t=C3=B6dlichen Erdbeben am 12. Mai 2008 in Sichuan, China, bei dem
+mindestens 68.000 Menschen ums Leben kamen.
 
-[1]
- Output is a bit truncated, but it clearly shows the error.
- BUG: kernel NULL pointer dereference, address: 000000000000000000
- #PF: supervisor instruction fetch in kernel modede
- #PF: error_code(0x0010) - not-present pagege
- PGD 0 P4D 0
- Oops: 0010 [#1] PREEMPT SMP NOPTI
- CPU: 4 PID: 638 Comm: ip Kdump: loaded Not tainted 5.16.0-rc1+ #446
- Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-4.fc34 04/01/2014
- RIP: 0010:0x0
- Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
- RSP: 0018:ffff888109f5b8f0 EFLAGS: 00010286^Ac
- RAX: 0000000000000000 RBX: ffff888109f5ba28 RCX: 0000000000000000
- RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff8881008a2860
- RBP: ffff888109f5b9d8 R08: 0000000000000000 R09: 0000000000000000
- R10: ffff888109f5b978 R11: ffff888109f5b948 R12: 00000000ffffff9f
- R13: ffff8881008a2a80 R14: ffff8881008a2860 R15: ffff8881008a2840
- FS:  00007f98de70f100(0000) GS:ffff88822bf00000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: ffffffffffffffd6 CR3: 0000000100efc000 CR4: 00000000000006e0
- Call Trace:
-  <TASK>
-  nh_create_ipv6+0xed/0x10c
-  rtm_new_nexthop+0x6d7/0x13f3
-  ? check_preemption_disabled+0x3d/0xf2
-  ? lock_is_held_type+0xbe/0xfd
-  rtnetlink_rcv_msg+0x23f/0x26a
-  ? check_preemption_disabled+0x3d/0xf2
-  ? rtnl_calcit.isra.0+0x147/0x147
-  netlink_rcv_skb+0x61/0xb2
-  netlink_unicast+0x100/0x187
-  netlink_sendmsg+0x37f/0x3a0
-  ? netlink_unicast+0x187/0x187
-  sock_sendmsg_nosec+0x67/0x9b
-  ____sys_sendmsg+0x19d/0x1f9
-  ? copy_msghdr_from_user+0x4c/0x5e
-  ? rcu_read_lock_any_held+0x2a/0x78
-  ___sys_sendmsg+0x6c/0x8c
-  ? asm_sysvec_apic_timer_interrupt+0x12/0x20
-  ? lockdep_hardirqs_on+0xd9/0x102
-  ? sockfd_lookup_light+0x69/0x99
-  __sys_sendmsg+0x50/0x6e
-  do_syscall_64+0xcb/0xf2
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
- RIP: 0033:0x7f98dea28914
- Code: 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b5 0f 1f 80 00 00 00 00 48 8d 05 e9 5d 0c 00 8b 00 85 c0 75 13 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 54 c3 0f 1f 00 41 54 41 89 d4 55 48 89 f5 53
- RSP: 002b:00007fff859f5e68 EFLAGS: 00000246 ORIG_RAX: 000000000000002e2e
- RAX: ffffffffffffffda RBX: 00000000619cb810 RCX: 00007f98dea28914
- RDX: 0000000000000000 RSI: 00007fff859f5ed0 RDI: 0000000000000003
- RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000008
- R10: fffffffffffffce6 R11: 0000000000000246 R12: 0000000000000001
- R13: 000055c0097ae520 R14: 000055c0097957fd R15: 00007fff859f63a0
- </TASK>
- Modules linked in: bridge stp llc bonding virtio_net
+Das Management meiner Bank hat noch nichts von seinem Tod erfahren,
+ich wusste davon, weil er mein Freund war und ich sein Kontof=C3=BChrer
+war, als das Konto vor meiner Bef=C3=B6rderung er=C3=B6ffnet wurde. Jedoch =
+Herr
+ erw=C3=A4hnte bei der Kontoer=C3=B6ffnung keine n=C3=A4chsten Verwandten/E=
+rben, und
+er war nicht verheiratet und hatte keine Kinder. Letzte Woche hat
+meine Bankdirektion mich gebeten, Anweisungen zu geben, was mit seinen
+Geldern zu tun ist, wenn der Vertrag verl=C3=A4ngert werden soll.
 
-Cc: stable@vger.kernel.org
-Fixes: 53010f991a9f ("nexthop: Add support for IPv6 gateways")
-Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
----
-I found this while testing my recent nexthop fixes, alternatively we can
-add a fib6_nh_release dummy stub. I don't have strong preference so if
-anyone prefers it just let me know. This fix is smaller for backports,
-that's why I went with it.
+Ich wei=C3=9F, dass dies passieren wird, und deshalb habe ich nach einem
+Mittel gesucht, um mit der Situation umzugehen, denn wenn meine
+Bankdirektoren wissen, dass sie tot sind und keinen Erben haben,
+werden sie das Geld f=C3=BCr ihren pers=C3=B6nlichen Gebrauch nehmen, also =
+Ich
+m=C3=B6chte nicht, dass so etwas passiert. Das war, als ich Ihren Nachnamen
+sah, ich war gl=C3=BCcklich und suche jetzt Ihre Mitarbeit, um Sie als Next
+of Kin/Erbe des Kontos zu pr=C3=A4sentieren, da Sie den gleichen Nachnamen
+wie er haben und meine Bankzentrale das Konto freigeben wird f=C3=BCr dich.
+Es besteht kein Risiko; die Transaktion wird im Rahmen einer legitimen
+Vereinbarung ausgef=C3=BChrt, die Sie vor Rechtsverletzungen sch=C3=BCtzt.
 
- net/ipv4/nexthop.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+Es ist besser, dass wir das Geld beanspruchen, als es den
+Bankdirektoren zu erlauben, es zu nehmen, sie sind bereits reich. Ich
+bin kein gieriger Mensch, daher schlage ich vor, dass wir das Geld zu
+gleichen Teilen teilen, 50/50% auf beide Parteien. Mein Anteil wird
+mir helfen, mein eigenes Unternehmen zu gr=C3=BCnden und den Erl=C3=B6s f=
+=C3=BCr
+wohlt=C3=A4tige Zwecke zu verwenden, was mein Traum war.
 
-diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index a69a9e76f99f..5dbd4b5505eb 100644
---- a/net/ipv4/nexthop.c
-+++ b/net/ipv4/nexthop.c
-@@ -2565,11 +2565,15 @@ static int nh_create_ipv6(struct net *net,  struct nexthop *nh,
- 	/* sets nh_dev if successful */
- 	err = ipv6_stub->fib6_nh_init(net, fib6_nh, &fib6_cfg, GFP_KERNEL,
- 				      extack);
--	if (err)
-+	if (err) {
-+		/* IPv6 is not enabled, don't call fib6_nh_release */
-+		if (err == -EAFNOSUPPORT)
-+			goto out;
- 		ipv6_stub->fib6_nh_release(fib6_nh);
--	else
-+	} else {
- 		nh->nh_flags = fib6_nh->fib_nh_flags;
--
-+	}
-+out:
- 	return err;
- }
- 
--- 
-2.31.1
-
+Teilen Sie mir Ihre Meinung zu meinem Vorschlag mit, bitte ich brauche
+wirklich Ihre Hilfe bei dieser Transaktion. Ich habe Sie ausgew=C3=A4hlt,
+um mir zu helfen, nicht durch mein eigenes Tun, meine Liebe, sondern
+durch Gott wollte ich, dass Sie wissen, dass ich mir Zeit zum Beten
+genommen habe =C3=BCber diese Mitteilung, bevor ich Sie jemals kontaktiert
+habe, teilen Sie mir Ihre Meinung dazu mit und behandeln Sie diese
+Informationen bitte als STRENG GEHEIM. Nach Erhalt Ihrer Antwort,
+ausschlie=C3=9Flich =C3=BCber meine pers=C3=B6nliche E-Mail-Adresse,
+msbelinaya892@gmail.com
+gibt Ihnen Details zur Transaktion. Und eine Kopie der
+Einlagenbescheinigung des Fonds sowie die Gr=C3=BCndungsurkunde der
+Gesellschaft, die den Fonds erstellt hat.
+Gott segne, in Erwartung Ihrer dringenden Antwort
+Mit freundlichen Gr=C3=BC=C3=9Fen
+Frau Kodjovi Hegbor
+msbelinaya892@gmail.com
