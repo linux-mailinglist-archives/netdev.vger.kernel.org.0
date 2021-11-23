@@ -2,99 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1803459D31
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 08:54:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADD6F459D35
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 08:55:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234092AbhKWH5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 02:57:11 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:47351 "EHLO
+        id S234221AbhKWH6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 02:58:15 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:48985 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233578AbhKWH5K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 02:57:10 -0500
+        by vger.kernel.org with ESMTP id S234274AbhKWH6N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 02:58:13 -0500
 Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id BAC8D5C0233;
-        Tue, 23 Nov 2021 02:54:02 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Tue, 23 Nov 2021 02:54:02 -0500
+        by mailout.nyi.internal (Postfix) with ESMTP id 061485C026F;
+        Tue, 23 Nov 2021 02:55:06 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Tue, 23 Nov 2021 02:55:06 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=TSDfV47StcLdlh8P0hrbsxQMLUvyREVtEqhhWJlOcq0=; b=SD0rV4Et
-        x+Nwhsr8ev/RBXKe0qZ+UQxDnWJjrhisEYfzxGdCJeOIjx12pXf2Y2V3FDSR2MXP
-        kGkFY0QkhupEoHP6t2FIFi5HLf+t0jDVaROeRkSfGJeNcUFEujb5qocIUzPGu1+y
-        9qAri5saoAKXFv4DeU67qJYZqHhalSH4Z3tkSGF38uVfgWNQbJY/D9vxrvPZW+jO
-        5wqife6O3hV+0g/SI5/xgGjGZvqp3o1kJj922kK56LfdpJjqt5oEwnJErqy7WmqQ
-        p082G4dxvOUKb6HaXc9OULEoU+e8Iwe4df6Yy4e2bGHXQjFZzK0kSqrehaWQosgO
-        EtDJv0rOkSZHyg==
-X-ME-Sender: <xms:Gp6cYSiqdkpFLRiiftunlg7A8PnkdzCc7j1AxvdPHeSKAgX5C0xAUw>
-    <xme:Gp6cYTB_PCbfggMX0jWXQEu9oEPsSGDgzMVymXzNsWJ3JgnyxD-OYebwtl37BBGKA
-    rzWj9DS04MDbY4>
-X-ME-Received: <xmr:Gp6cYaGfp3mviTsblabVoWaCP3IE8Db0hs5srT-jHJhySFlN90Qa-2LjnBc-kaCYtwy4LKVyklcD4cMYB8xX11-qY4_UI6_9vLvjS9hJV6FbYA>
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=gk5v/nVRKWhkRhH5D
+        ayxznddQ+GdKdiRRpFlhBih6yQ=; b=QZEDkiuDZTKZV05HLmwppiFF88TNaXVab
+        bTZrnM3SA7amlxtUAakCkjhip7E26xFS8isryHOHMfnGip5WgfEU0r0d1kchmqW1
+        q7m2LgX7h9+j7Ifl/5J9r534i98b+dvVFVcAPRFuU3ajl2jQD1S9jTJpS9LtZqfr
+        t3qLZ6lNO926uu6Rv0hU73bAncpYG3ON/VtXVYibesxjpKPoKl2ZPC1fHTY15ui1
+        mNWr98sKosknKq8fF9M4Zm5fhMZ5bZfErQULdzwnrYbiXOEJ9FQ/3UPlzwsehsDn
+        6Cox7NYwCjliixf+1np32T2tlceHzoF1SU1XajEfwMGMefIP4dsyQ==
+X-ME-Sender: <xms:WZ6cYS9X5C_gLUkzVWvKSSSc8NJgMa8V-kQSc92JxGEaGM9joM3GaQ>
+    <xme:WZ6cYSt11_MnZuIDezp1ftB8JQZ23AfNNAGU8N2lPP_Pkp3B9v0uMO1C4mwbDikPe
+    UEU98Y4g0-l5oE>
+X-ME-Received: <xmr:WZ6cYYDdBaudul-WISI80K6nkmnl4Hs3XfUGofiBauCmLjNEbYU1E_0v-JkN4qgRidK5KhikN9K40noo4UydvepWngBKJQ0LNFaUmeaDhY7mYw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrgeehgddutdekucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpeduteeiveffffevleekleejffekhfekhefgtdfftefhledvjefggfehgfevjeek
-    hfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:Gp6cYbQJGXFw0fUELfBK7NJjUPa74pOq2XpgodxuUwwhayG9EPSpJQ>
-    <xmx:Gp6cYfydlOwI3xVrCdlkDapJ5DfydZY6zWNEg2wEqpqBZJ41gESMrw>
-    <xmx:Gp6cYZ5Ibu6oJJHgvdFDd0AKfLgRZkvPB25jU2tXf1K6l0s31m_uTg>
-    <xmx:Gp6cYRvNAnZWtnJ1EfMbE4rHNco2-FRLEOm5FVpBf4LLJYNiMCFnCQ>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
+    etffeikeegheevfedvgeelvdffudfhnecuvehluhhsthgvrhfuihiivgepudenucfrrghr
+    rghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:WZ6cYae7Y42rAb0pN3R4UbW6eS4IcQbq-_d4em3-Gq7QcdsBNQidDQ>
+    <xmx:WZ6cYXO0RtqkT-lFjlugpCY1eklTfd7JzMvM6Wc86fFr_Lusl8RKPQ>
+    <xmx:WZ6cYUnDJAvMNP2tNMKjxCqRnoHwB5HUiug7ltLNE68Kvk7bDswTjw>
+    <xmx:Wp6cYQrpPLuBBEAb3VgzmQ-aVLxviSogFFmf6Z-aTayvrTbAa2Yq7Q>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 23 Nov 2021 02:54:00 -0500 (EST)
+ 23 Nov 2021 02:55:04 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
-        mlxsw@nvidia.com, Amit Cohen <amcohen@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net 2/2] mlxsw: spectrum: Protect driver from buggy firmware
-Date:   Tue, 23 Nov 2021 09:52:56 +0200
-Message-Id: <20211123075256.3083281-3-idosch@idosch.org>
+        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net-next 0/2] mlxsw: Various updates
+Date:   Tue, 23 Nov 2021 09:54:45 +0200
+Message-Id: <20211123075447.3083579-1-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211123075256.3083281-1-idosch@idosch.org>
-References: <20211123075256.3083281-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Amit Cohen <amcohen@nvidia.com>
+From: Ido Schimmel <idosch@nvidia.com>
 
-When processing port up/down events generated by the device's firmware,
-the driver protects itself from events reported for non-existent local
-ports, but not the CPU port (local port 0), which exists, but lacks a
-netdev.
+Patch #1 removes deadcode reported by Coverity.
 
-This can result in a NULL pointer dereference when calling
-netif_carrier_{on,off}().
+Patch #2 adds a shutdown method in the PCI driver to ensure the kexeced
+kernel starts working with a device that is in a sane state.
 
-Fix this by bailing early when processing an event reported for the CPU
-port. Problem was only observed when running on top of a buggy emulator.
+Danielle Ratson (2):
+  mlxsw: spectrum_router: Remove deadcode in
+    mlxsw_sp_rif_mac_profile_find
+  mlxsw: pci: Add shutdown method in PCI driver
 
-Fixes: 28b1987ef506 ("mlxsw: spectrum: Register CPU port with devlink")
-Signed-off-by: Amit Cohen <amcohen@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlxsw/pci.c             | 1 +
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 3 ---
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 41da3895d97f..24157bb59881 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -2153,7 +2153,7 @@ static void mlxsw_sp_pude_event_func(const struct mlxsw_reg_info *reg,
- 	max_ports = mlxsw_core_max_ports(mlxsw_sp->core);
- 	local_port = mlxsw_reg_pude_local_port_get(pude_pl);
- 
--	if (WARN_ON_ONCE(local_port >= max_ports))
-+	if (WARN_ON_ONCE(!local_port || local_port >= max_ports))
- 		return;
- 	mlxsw_sp_port = mlxsw_sp->ports[local_port];
- 	if (!mlxsw_sp_port)
 -- 
 2.31.1
 
