@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57855459FAC
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 11:00:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5F4C459FAE
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 11:00:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235159AbhKWKDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 05:03:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56760 "EHLO
+        id S235196AbhKWKDr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 05:03:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235146AbhKWKDl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 05:03:41 -0500
+        with ESMTP id S235146AbhKWKDq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 05:03:46 -0500
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE6EC061574
-        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 02:00:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E62E8C061574
+        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 02:00:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
         In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=bPIJgLfiVHs9dWh/I88pAMSJy+rMDL+vIYEYo3gmZ14=; b=0J2qxzsH7fGBBtlRugWWBIYhnk
-        P0fwJie7lLGJyIb6LgwFkOnpK+DGNb4Gjv2BxjMtWR2wmL4XMRGrZzA2bbpXq0BgfwmbA+aNpYZWx
-        9H9RkZSWl3od6wTSWftgZPciNiratuPQDwNQ65VQvb/gTTouXd3NcUt4ZWw9KgJLtA3fHDYcgkdVb
-        CfLRjKOGqsTmocCssXjYnlkusAgSfWSdMC8/MCriVwZgqOUpcNzF/xKgsVKsblCWSkfA6w8TlV8M2
-        dyQEX8cCgom8JixGqX/GZR4QbiAZkUakpyNUbpQZluTSMhes8TByPg9MBML3opBNizZYpBmvbS8qC
-        lk9YGM7Q==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:36040 helo=rmk-PC.armlinux.org.uk)
+        bh=zGyMLwmozIGa5HKsKLxD/S/r9K2lopGCdgR2w8ENWEg=; b=Znx4acxXz0is16s2+/4xzxhLCN
+        zoU22FidEK2K5oR9YW6ayPtd14p+wWQB4mHjq86r6sjM6FjMF+4AW0c2JfUWmZdYh7Sr8/V1s/cu2
+        VvxYd3JudKmYfdmCcbYUFB8m12qImxEJQXZZ0mejJWnCku+/KYFKi/PMVJvRiXDp6W79I+A0vi0j+
+        rgkG5+rv534rYDMBQTNpYJUPORWYk4DegC2BSztLNcABw6wgJY06tsgeHb0/cFhzUiQ8BNDdWFbq6
+        HCW3DJo4e+uRJ8yEgMrVrts33zRyzRvl1QBbtgbAUWVYjeThjodIWFVPQMf0sUjZPwKOtPjY+4lN+
+        ABfjaY6A==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:36046 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1mpSbG-0007iN-9X; Tue, 23 Nov 2021 10:00:30 +0000
+        id 1mpSbL-0007if-Cg; Tue, 23 Nov 2021 10:00:35 +0000
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1mpSbF-00BXoh-Qb; Tue, 23 Nov 2021 10:00:29 +0000
+        id 1mpSbK-00BXoo-UE; Tue, 23 Nov 2021 10:00:34 +0000
 In-Reply-To: <YZy59OTNCpKoPZT/@shell.armlinux.org.uk>
 References: <YZy59OTNCpKoPZT/@shell.armlinux.org.uk>
 From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
@@ -53,41 +53,38 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, netdev@vger.kernel.org
-Subject: [PATCH RFC net-next 4/8] net: mtk_eth_soc: mark as a
- legacy_pre_march2020 driver
+Subject: [PATCH RFC net-next 5/8] net: ag71xx: mark as a legacy_pre_march2020
+ phylink driver
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1mpSbF-00BXoh-Qb@rmk-PC.armlinux.org.uk>
+Message-Id: <E1mpSbK-00BXoo-UE@rmk-PC.armlinux.org.uk>
 Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Tue, 23 Nov 2021 10:00:29 +0000
+Date:   Tue, 23 Nov 2021 10:00:34 +0000
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-mtk_eth_soc has not been updated for commit 7cceb599d15d ("net: phylink:
-avoid mac_config calls"), so mark it as a legacy driver.
+ag71xx has a PCS, but does not make use of the phylink PCS support.
+Mark it was a pre-March 2020 driver.
 
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/atheros/ag71xx.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index de4152e2e3e4..a068cf5c970f 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -2923,6 +2923,10 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
+diff --git a/drivers/net/ethernet/atheros/ag71xx.c b/drivers/net/ethernet/atheros/ag71xx.c
+index ff924f06581e..89b6a8bfee43 100644
+--- a/drivers/net/ethernet/atheros/ag71xx.c
++++ b/drivers/net/ethernet/atheros/ag71xx.c
+@@ -1111,6 +1111,7 @@ static int ag71xx_phylink_setup(struct ag71xx *ag)
  
- 	mac->phylink_config.dev = &eth->netdev[id]->dev;
- 	mac->phylink_config.type = PHYLINK_NETDEV;
-+	/* This driver makes use of state->speed/state->duplex in
-+	 * mac_config
-+	 */
-+	mac->phylink_config.legacy_pre_march2020 = true;
- 	mac->phylink_config.mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
- 		MAC_10 | MAC_100 | MAC_1000 | MAC_2500FD;
+ 	ag->phylink_config.dev = &ag->ndev->dev;
+ 	ag->phylink_config.type = PHYLINK_NETDEV;
++	ag->phylink_config.legacy_pre_march2020 = true;
+ 	ag->phylink_config.mac_capabilities = MAC_SYM_PAUSE | MAC_ASYM_PAUSE |
+ 		MAC_10 | MAC_100 | MAC_1000FD;
  
 -- 
 2.30.2
