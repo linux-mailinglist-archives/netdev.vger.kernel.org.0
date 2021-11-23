@@ -2,176 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A500545AD26
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 21:14:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B561445AD60
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 21:26:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240259AbhKWURl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 15:17:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:45474 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239466AbhKWURk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 15:17:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637698471;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=+zh0Aqq3sqwl6izl6X4VNrnfbw5s+66sYTta5y0ASmM=;
-        b=AtMbWCjdNIGqptXkCGF0OGm6+lEyuWwNjwzan4xxvkLc4oJPQWj7Efl7fYT4j2rUoVHIj7
-        0k9fS3AouBZ3XBsWwzdtTvT29YroD1dlOIwJuYkqaXQ8bDdV0lz/R1NdjhZedXGkhoEpji
-        PDSDSD2vdQX6kSCJAYxX70NKQjFaO40=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-415-16Th40i7NHOmsPy89vReUw-1; Tue, 23 Nov 2021 15:14:30 -0500
-X-MC-Unique: 16Th40i7NHOmsPy89vReUw-1
-Received: by mail-ed1-f70.google.com with SMTP id r16-20020a056402019000b003e6cbb77ed2so8025edv.10
-        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 12:14:29 -0800 (PST)
+        id S233846AbhKWU3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 15:29:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33938 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240362AbhKWU3C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 15:29:02 -0500
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB940C0613F7
+        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 12:25:40 -0800 (PST)
+Received: by mail-pg1-x52d.google.com with SMTP id p17so143705pgj.2
+        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 12:25:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wfofEtvqW3xTk34fqti34HhJKeVtJLbfMhejzypz+ek=;
+        b=nScr7TZ0CeQdWRzgXkh08wUsgfIZ6PnUTP7dIitT/JuFr3uWByRzU16dXfbvDrzZxa
+         B261trhEJqv42oFjrOWaDUlSTQEH9uUI9SswGnKXvAtyL7+VmktOBTq2nQyXRXGBklmL
+         SXqLl3CykSQsrWe9NTOxh6fzmPWINcrdTdmjPzOpnv9e/f4bguekwj2VG5DuQrYY0j0j
+         HROzSf8vISSSZubOVS+UsSPffTWEoAgNi8d2I1jMlszLD/JMTeZV3PgfTtccacdGDD/A
+         1UDC7uoWJobKzh2XZYmQT7issv3reEahxWyb5Gq6hvBhetla/AqmuA976dtAd6lmKZO/
+         QZfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=+zh0Aqq3sqwl6izl6X4VNrnfbw5s+66sYTta5y0ASmM=;
-        b=Hhxp2TS1h+5+D7e86KVWOfDwdCQ7yRqdq1LHYBykeCoZXta8qYsQAUtNVUm3MIKsup
-         68sgenJZ5Gws6srsCqFpJLgupJqKLPIKkQilPlUkqPIR55N7wxcao62haUkzrFnj2aWz
-         GETtxu+eL/E6GyCzy4VHP6+rzpg2t17+XQTgEki+T8XeTIJb+YmHvXaqU/H/Gj+e0+X6
-         LHtNDGTgCBiwfEQHUy/bl40q+GY680RXCLJ33RqQ4b0f1Dl8Vay+oSLisAnlF3UFCFp9
-         d4t8tuEpYFT+l97Mqdnacw1o1uOXVlHrOHWyyPeu4dta9ZUpwtHqSWGC+NEL9bbI9GLo
-         qgdg==
-X-Gm-Message-State: AOAM531phtAxhPYhhreH53tDZGgZmhZ5kVQsGXMMD5gBzXVmsfzL2huX
-        1G2DIeVwFxyupDKegv5Zthtm43lU0DKX/F3j3Viyqn73qVhFQj/Hl3ydk4BuemMW8XZpGAjmCeV
-        GUJYbDW4oC4HSLsf2
-X-Received: by 2002:a05:6402:350b:: with SMTP id b11mr13743918edd.212.1637698468555;
-        Tue, 23 Nov 2021 12:14:28 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx4eE8T+jNhs9zPO2Qxn3W1NWlg8/Hi0IvTAd56u1eRwzt0KYDmqxVPu7BiaAyRC70KY6V7WQ==
-X-Received: by 2002:a05:6402:350b:: with SMTP id b11mr13743847edd.212.1637698468164;
-        Tue, 23 Nov 2021 12:14:28 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id jg32sm6198604ejc.43.2021.11.23.12.14.27
+        bh=wfofEtvqW3xTk34fqti34HhJKeVtJLbfMhejzypz+ek=;
+        b=xWFHuocKSDnA+a/F42ClXPtr9a3BmXjFrtgBg4SrTITovHVZmKGn/0YVEhg0t2KZTp
+         Ihm/yE7tRTPep1g0qkpJWlRVwssCzGKGpdpjQ3Cz/hbp3II2P+hO1mvcOXg5KhMfNLvw
+         gYpJMbpvoaLM5drDMCLXkY15VEjf6JUh1gDArVgg8vT2L4epx1fPYVgyHstX7pf/sC3p
+         b06Bt7ADLNKY7XxudubcoHg309zK/pZ84Kop1YLtDhKlFNF2jw8vpgaoKc6Zu5ApVxa+
+         wonk6mxtlbgaZYqMR1Ww0R7wnl/ODSiHNW1aZPtjXns9oHY+7i3z1dYehL+QAxBPO3Tp
+         nPig==
+X-Gm-Message-State: AOAM532uaxE05LjSqCEBNSPhR0cgLhBMqCTLe6tN6RuPlHHssSBwpMJc
+        JgKRPH5IB3q0wezZTUcXL+0Ar3uFo28=
+X-Google-Smtp-Source: ABdhPJyYrT5FicSYA6xvTuEQMzNnW7DDnGgzGs1pACWQN6L3tEiA2HM8nCUK4NJ1VFoJr7JzvAr5Gw==
+X-Received: by 2002:a05:6a00:848:b0:49f:b215:e002 with SMTP id q8-20020a056a00084800b0049fb215e002mr8242886pfk.47.1637699140432;
+        Tue, 23 Nov 2021 12:25:40 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:8b31:9924:47bf:5e47])
+        by smtp.gmail.com with ESMTPSA id g10sm14610419pfc.180.2021.11.23.12.25.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Nov 2021 12:14:27 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id BA99018029C; Tue, 23 Nov 2021 21:14:26 +0100 (CET)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCH iproute2-next] tc: Add support for ce_threshold_value/mask in fq_codel
-Date:   Tue, 23 Nov 2021 21:13:27 +0100
-Message-Id: <20211123201327.86219-1-toke@redhat.com>
-X-Mailer: git-send-email 2.34.0
+        Tue, 23 Nov 2021 12:25:39 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Subject: [PATCH net] tcp_cubic: fix spurious Hystart ACK train detections for not-cwnd-limited flows
+Date:   Tue, 23 Nov 2021 12:25:35 -0800
+Message-Id: <20211123202535.1843771-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.34.0.rc2.393.gf8c9666880-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit dfcb63ce1de6 ("fq_codel: generalise ce_threshold marking for subset
-of traffic") added support in fq_codel for setting a value and mask that
-will be applied to the diffserv/ECN byte to turn on the ce_threshold
-feature for a subset of traffic.
+From: Eric Dumazet <edumazet@google.com>
 
-This adds support to tc for setting these values. The parameter is
-called ce_threshold_selector and takes a value followed by a
-slash-separated mask. Some examples:
+While testing BIG TCP patch series, I was expecting that TCP_RR workloads
+with 80KB requests/answers would send one 80KB TSO packet,
+then being received as a single GRO packet.
 
- # apply ce_threshold to ECT(1) traffic
- tc qdisc replace dev eth0 root fq_codel ce_threshold 1ms ce_threshold_selector 0x1/0x3
+It turns out this was not happening, and the root cause was that
+cubic Hystart ACK train was triggering after a few (2 or 3) rounds of RPC.
 
- # apply ce_threshold to ECN-capable traffic marked as diffserv AF22
- tc qdisc replace dev eth0 root fq_codel ce_threshold 1ms ce_threshold_selector 0x50/0xfc
+Hystart was wrongly setting CWND/SSTHRESH to 30, while my RPC
+needed a budget of ~20 segments.
 
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Ideally these TCP_RR flows should not exit slow start.
+
+Cubic Hystart should reset itself at each round, instead of assuming
+every TCP flow is a bulk one.
+
+Note that even after this patch, Hystart can still trigger, depending
+on scheduling artifacts, but at a higher CWND/SSTHRESH treshold,
+keeping optimal TSO packet sizes.
+
+Tested:
+
+ip link set dev eth0 gro_ipv6_max_size 131072 gso_ipv6_max_size 131072
+nstat -n; netperf -H ... -t TCP_RR  -l 5  -- -r 80000,80000 -K cubic; nstat|egrep "Ip6InReceives|Hystart|Ip6OutRequests"
+
+Before:
+
+   8605
+Ip6InReceives                   87541              0.0
+Ip6OutRequests                  129496             0.0
+TcpExtTCPHystartTrainDetect     1                  0.0
+TcpExtTCPHystartTrainCwnd       30                 0.0
+
+After:
+
+  8760
+Ip6InReceives                   88514              0.0
+Ip6OutRequests                  87975              0.0
+
+Fixes: ae27e98a5152 ("[TCP] CUBIC v2.3")
+Co-developed-by: Neal Cardwell <ncardwell@google.com>
+Signed-off-by: Neal Cardwell <ncardwell@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Stephen Hemminger <stephen@networkplumber.org>
+Cc: Yuchung Cheng <ycheng@google.com>
+Cc: Soheil Hassas Yeganeh <soheil@google.com>
 ---
- tc/q_fq_codel.c | 40 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 40 insertions(+)
+ net/ipv4/tcp_cubic.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/tc/q_fq_codel.c b/tc/q_fq_codel.c
-index 300980652243..b7552e294fd0 100644
---- a/tc/q_fq_codel.c
-+++ b/tc/q_fq_codel.c
-@@ -55,6 +55,7 @@ static void explain(void)
- 					"[ target TIME ] [ interval TIME ]\n"
- 					"[ quantum BYTES ] [ [no]ecn ]\n"
- 					"[ ce_threshold TIME ]\n"
-+					"[ ce_threshold_selector VALUE/MASK ]\n"
- 					"[ drop_batch SIZE ]\n");
- }
+diff --git a/net/ipv4/tcp_cubic.c b/net/ipv4/tcp_cubic.c
+index 5e9d9c51164c4d23a90ebd2be0d7bf85098b47dc..e07837e23b3fd2435c87320945528abdee9817cc 100644
+--- a/net/ipv4/tcp_cubic.c
++++ b/net/ipv4/tcp_cubic.c
+@@ -330,8 +330,6 @@ static void cubictcp_cong_avoid(struct sock *sk, u32 ack, u32 acked)
+ 		return;
  
-@@ -69,6 +70,8 @@ static int fq_codel_parse_opt(struct qdisc_util *qu, int argc, char **argv,
- 	unsigned int quantum = 0;
- 	unsigned int ce_threshold = ~0U;
- 	unsigned int memory = ~0U;
-+	__u8 ce_threshold_mask = 0;
-+	__u8 ce_threshold_selector = 0xFF;
- 	int ecn = -1;
- 	struct rtattr *tail;
+ 	if (tcp_in_slow_start(tp)) {
+-		if (hystart && after(ack, ca->end_seq))
+-			bictcp_hystart_reset(sk);
+ 		acked = tcp_slow_start(tp, acked);
+ 		if (!acked)
+ 			return;
+@@ -391,6 +389,9 @@ static void hystart_update(struct sock *sk, u32 delay)
+ 	struct bictcp *ca = inet_csk_ca(sk);
+ 	u32 threshold;
  
-@@ -109,6 +112,24 @@ static int fq_codel_parse_opt(struct qdisc_util *qu, int argc, char **argv,
- 				fprintf(stderr, "Illegal \"ce_threshold\"\n");
- 				return -1;
- 			}
-+		} else if (strcmp(*argv, "ce_threshold_selector") == 0) {
-+			char *sep;
++	if (after(tp->snd_una, ca->end_seq))
++		bictcp_hystart_reset(sk);
 +
-+			NEXT_ARG();
-+			sep = strchr(*argv, '/');
-+			if (!sep) {
-+				fprintf(stderr, "Missing mask for \"ce_threshold_selector\"\n");
-+				return -1;
-+			}
-+			*sep++ = '\0';
-+			if (get_u8(&ce_threshold_mask, sep, 0)) {
-+				fprintf(stderr, "Illegal mask for \"ce_threshold_selector\"\n");
-+				return -1;
-+			}
-+			if (get_u8(&ce_threshold_selector, *argv, 0)) {
-+				fprintf(stderr, "Illegal \"ce_threshold_selector\"\n");
-+				return -1;
-+			}
- 		} else if (strcmp(*argv, "memory_limit") == 0) {
- 			NEXT_ARG();
- 			if (get_size(&memory, *argv)) {
-@@ -152,6 +173,10 @@ static int fq_codel_parse_opt(struct qdisc_util *qu, int argc, char **argv,
- 	if (ce_threshold != ~0U)
- 		addattr_l(n, 1024, TCA_FQ_CODEL_CE_THRESHOLD,
- 			  &ce_threshold, sizeof(ce_threshold));
-+	if (ce_threshold_selector != 0xFF) {
-+		addattr8(n, 1024, TCA_FQ_CODEL_CE_THRESHOLD_MASK, ce_threshold_mask);
-+		addattr8(n, 1024, TCA_FQ_CODEL_CE_THRESHOLD_SELECTOR, ce_threshold_selector);
-+	}
- 	if (memory != ~0U)
- 		addattr_l(n, 1024, TCA_FQ_CODEL_MEMORY_LIMIT,
- 			  &memory, sizeof(memory));
-@@ -172,6 +197,8 @@ static int fq_codel_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt
- 	unsigned int ecn;
- 	unsigned int quantum;
- 	unsigned int ce_threshold;
-+	__u8 ce_threshold_selector = 0;
-+	__u8 ce_threshold_mask = 0;
- 	unsigned int memory_limit;
- 	unsigned int drop_batch;
+ 	if (hystart_detect & HYSTART_ACK_TRAIN) {
+ 		u32 now = bictcp_clock_us(sk);
  
-@@ -211,6 +238,19 @@ static int fq_codel_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt
- 		print_string(PRINT_FP, NULL, "ce_threshold %s ",
- 			     sprint_time(ce_threshold, b1));
- 	}
-+	if (tb[TCA_FQ_CODEL_CE_THRESHOLD_SELECTOR] &&
-+	    RTA_PAYLOAD(tb[TCA_FQ_CODEL_CE_THRESHOLD_SELECTOR]) >= sizeof(__u8))
-+		ce_threshold_selector = rta_getattr_u8(tb[TCA_FQ_CODEL_CE_THRESHOLD_SELECTOR]);
-+	if (tb[TCA_FQ_CODEL_CE_THRESHOLD_MASK] &&
-+	    RTA_PAYLOAD(tb[TCA_FQ_CODEL_CE_THRESHOLD_MASK]) >= sizeof(__u8))
-+		ce_threshold_mask = rta_getattr_u8(tb[TCA_FQ_CODEL_CE_THRESHOLD_MASK]);
-+	if (ce_threshold_mask || ce_threshold_selector) {
-+		print_hhu(PRINT_ANY, "ce_threshold_selector", "ce_threshold_selector %#x",
-+			  ce_threshold_selector);
-+		print_hhu(PRINT_ANY, "ce_threshold_mask", "/%#x ",
-+			  ce_threshold_mask);
-+	}
-+
- 	if (tb[TCA_FQ_CODEL_INTERVAL] &&
- 	    RTA_PAYLOAD(tb[TCA_FQ_CODEL_INTERVAL]) >= sizeof(__u32)) {
- 		interval = rta_getattr_u32(tb[TCA_FQ_CODEL_INTERVAL]);
 -- 
-2.34.0
+2.34.0.rc2.393.gf8c9666880-goog
 
