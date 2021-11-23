@@ -2,126 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AD2D45AE12
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 22:10:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0F2845AE39
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 22:17:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234139AbhKWVNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 16:13:21 -0500
-Received: from mo4-p02-ob.smtp.rzone.de ([81.169.146.168]:18995 "EHLO
-        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233389AbhKWVNU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 16:13:20 -0500
-X-Greylist: delayed 1658 seconds by postgrey-1.27 at vger.kernel.org; Tue, 23 Nov 2021 16:13:20 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1637701809;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=3oNYpWlA+i2uiKkkfogiuDtNFkcFf0oANh+xeOwrb4Q=;
-    b=qpPptg68PmQcJGTTHkFIHzJ68m5ujWrGdwfHP2Te4J9IseNiAcuLvGm2SPLfnKnWaz
-    0pBoIaXS6aOE9yfa9litHXm5r+uWv7MJBL9oM/DGAnNI0lrT9w4NieY+bNyI4AQF8Qc2
-    DuOVjed5SZz3tgnT8Eup9nIEEitfRFSOp9JLV9KxtSQ72Co0JwCPtEuQdOX7gFtRmZqu
-    m9BpDDfzEhIXFZKtMDiRVeUbdas+zYbo0yVImQ9k5qSQs0Nqdhc/6U4c+DBt6EfvKPp5
-    w01tyAA2MR3bU17UGYcKrn8G+lIAa459tlQE6/v18sPNS5/UhRjWXRqd07oa049At1/Q
-    +E8w==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPv6:2a00:6020:1cfa:f900::b82]
-    by smtp.strato.de (RZmta 47.34.6 AUTH)
-    with ESMTPSA id a04d59xANLA86ap
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Tue, 23 Nov 2021 22:10:08 +0100 (CET)
-Subject: Re: [PATCH v1 0/2] fix statistics for CAN RTR and Error frames
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-References: <20211123115333.624335-1-mailhol.vincent@wanadoo.fr>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <bc682dbe-c74e-cd8a-ab05-78a6b4079ebf@hartkopp.net>
-Date:   Tue, 23 Nov 2021 22:10:08 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S239701AbhKWVUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 16:20:52 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:48784 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237545AbhKWVUh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Nov 2021 16:20:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=RSXZemgAgA8s7Q1KPoiQuPuxn56lemT0SfST8M7pCss=; b=PKWrDzd1WlzcpS9MGBTPrJm7Ar
+        DbX6Tradu72YHB8U1ioL+dXwA2JcONEAvWXd6a2Nz1Pa0Z46Uzj7AqNTYwGbvYZLdP/AjynYgHvHf
+        KEq+itLWi2qcKJDQESh/xHKv1nRJj0M4HzOB7CTjAQF4CGbvJbmDdcmOkkpxBZl/AIN4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mpdAH-00ERwC-Nm; Tue, 23 Nov 2021 22:17:21 +0100
+Date:   Tue, 23 Nov 2021 22:17:21 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Michal Kubecek <mkubecek@suse.cz>, netdev <netdev@vger.kernel.org>,
+        Chris Healy <cphealy@gmail.com>
+Subject: Re: [ethtool v5 2/6] Add cable test TDR support
+Message-ID: <YZ1aYZgQ58e1bfLq@lunn.ch>
+References: <20200705175452.886377-1-andrew@lunn.ch>
+ <20200705175452.886377-3-andrew@lunn.ch>
+ <YZvmzIVHP8nReWJC@shredder>
 MIME-Version: 1.0
-In-Reply-To: <20211123115333.624335-1-mailhol.vincent@wanadoo.fr>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YZvmzIVHP8nReWJC@shredder>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 23.11.21 12:53, Vincent Mailhol wrote:
-> There are two common errors which are made when reporting the CAN RX
-> statistics:
+> Andrew, is this missing the following patch?
 > 
->    1. Incrementing the "normal" RX stats when receiving an Error
->    frame. Error frames is an abstraction of Socket CAN and does not
->    exist on the wire.
+> diff --git a/netlink/cable_test.c b/netlink/cable_test.c
+> index 17139f7d297d..9305a4763c5b 100644
+> --- a/netlink/cable_test.c
+> +++ b/netlink/cable_test.c
+> @@ -225,6 +225,7 @@ static int nl_cable_test_process_results(struct cmd_context *ctx)
+>         nlctx->is_monitor = true;
+>         nlsk->port = 0;
+>         nlsk->seq = 0;
+> +       nlctx->filter_devname = ctx->devname;
+>  
+>         ctctx.breakout = false;
+>         nlctx->cmd_private = &ctctx;
+> @@ -496,6 +497,7 @@ static int nl_cable_test_tdr_process_results(struct cmd_context *ctx)
+>         nlctx->is_monitor = true;
+>         nlsk->port = 0;
+>         nlsk->seq = 0;
+> +       nlctx->filter_devname = ctx->devname;
+>  
+>         ctctx.breakout = false;
+>         nlctx->cmd_private = &ctctx;
 > 
->    2. Counting the length of the Remote Transmission Frames (RTR). The
->    length of an RTR frame is the length of the requested frame not the
->    actual payload. In reality the payload of an RTR frame is always 0
->    bytes long.
-> 
-> This patch series fix those two issues for all CAN drivers.
-> 
-> Vincent Mailhol (2):
->    can: do not increase rx statistics when receiving CAN error frames
->    can: do not increase rx_bytes statistics for RTR frames
+> I don't have hardware with cable test support so wondered if you could
+> test it.
 
-I would suggest to upstream this change without bringing it to older 
-(stable) trees.
+Hi Ido
 
-It doesn't fix any substantial flaw which needs to be backported IMHO.
+I've tested this. No obvious regressions. My broken cable is still
+broken.
 
-Btw. can you please change 'error frames' to 'error message frames'?
+> I think that without this patch you would see problems with two
+> simultaneous cable tests. The first one to finish will terminate both
+> ethtool processes because the code is processing all cable tests
+> notifications regardless of the device for which the test was issued.
 
-We had a discussion some years ago that the 'error frames' are used as 
-term inside the CAN protocol.
+I did not test such a setup. But you are correct, the message from the
+kernel is broadcast, and any waiting process will consume it, even if
+it is for a different device.
 
-Thanks,
-Oliver
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-
-> 
->   drivers/net/can/at91_can.c                      |  9 ++-------
->   drivers/net/can/c_can/c_can_main.c              |  8 ++------
->   drivers/net/can/cc770/cc770.c                   |  6 ++----
->   drivers/net/can/dev/dev.c                       |  4 ----
->   drivers/net/can/dev/rx-offload.c                |  7 +++++--
->   drivers/net/can/grcan.c                         |  3 ++-
->   drivers/net/can/ifi_canfd/ifi_canfd.c           |  8 ++------
->   drivers/net/can/janz-ican3.c                    |  3 ++-
->   drivers/net/can/kvaser_pciefd.c                 |  8 ++------
->   drivers/net/can/m_can/m_can.c                   | 10 ++--------
->   drivers/net/can/mscan/mscan.c                   | 10 ++++++----
->   drivers/net/can/pch_can.c                       |  6 ++----
->   drivers/net/can/peak_canfd/peak_canfd.c         |  7 ++-----
->   drivers/net/can/rcar/rcar_can.c                 |  9 +++------
->   drivers/net/can/rcar/rcar_canfd.c               |  7 ++-----
->   drivers/net/can/sja1000/sja1000.c               |  5 ++---
->   drivers/net/can/slcan.c                         |  3 ++-
->   drivers/net/can/spi/hi311x.c                    |  3 ++-
->   drivers/net/can/spi/mcp251x.c                   |  3 ++-
->   drivers/net/can/sun4i_can.c                     | 10 ++++------
->   drivers/net/can/usb/ems_usb.c                   |  5 ++---
->   drivers/net/can/usb/esd_usb2.c                  |  5 ++---
->   drivers/net/can/usb/etas_es58x/es58x_core.c     |  7 -------
->   .../net/can/usb/kvaser_usb/kvaser_usb_core.c    |  2 --
->   .../net/can/usb/kvaser_usb/kvaser_usb_hydra.c   | 14 ++++----------
->   .../net/can/usb/kvaser_usb/kvaser_usb_leaf.c    |  7 ++-----
->   drivers/net/can/usb/mcba_usb.c                  |  3 ++-
->   drivers/net/can/usb/peak_usb/pcan_usb.c         |  5 ++---
->   drivers/net/can/usb/peak_usb/pcan_usb_fd.c      | 11 ++++-------
->   drivers/net/can/usb/peak_usb/pcan_usb_pro.c     | 11 +++++------
->   drivers/net/can/usb/ucan.c                      |  7 +++++--
->   drivers/net/can/usb/usb_8dev.c                  | 10 ++++------
->   drivers/net/can/xilinx_can.c                    | 17 ++++++-----------
->   33 files changed, 86 insertions(+), 147 deletions(-)
-> 
+    Andrew
