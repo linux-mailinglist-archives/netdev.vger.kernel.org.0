@@ -2,68 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A80145A1E6
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 12:50:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ACAC45A1DD
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 12:50:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236532AbhKWLxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 06:53:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40910 "EHLO mail.kernel.org"
+        id S234172AbhKWLxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 06:53:20 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40930 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236516AbhKWLxR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S236552AbhKWLxR (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 23 Nov 2021 06:53:17 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8DB6E61039;
+Received: by mail.kernel.org (Postfix) with ESMTPS id A934461075;
         Tue, 23 Nov 2021 11:50:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1637668209;
-        bh=76UfINGQNngK+PA9np839WQjDD9b+FXI4mhGHs1EGKE=;
+        bh=9vJoKo72Dp3sUQzV8BID0RMAzD+DE/VYSkH4JpPEtD4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ZRWOk1c5P+k/CORhbfaaeqRmG+tqmgontCvY25pgOvOFLlVZOS8Z6GcYpiz4Honyc
-         EgM2+1M4hd843v+/3ZCtHFacLS9hPGKzwmuj4fmeQITmankv52ZKzrv/lxtQN7w9xr
-         pbcnHrZ/n7aM3Q1ahgbqtKUVmJFPl+jVV/Rn6xwjDqqhOwM6s0XDPiZ+PtSdXA93Jr
-         +bV3M4oL7oy3Zkhw75mS/xuc02vE3bT17bslcsvyCkqGYdq7nc/6WscVnrE1mvdTVV
-         15DB6x8u7JQMNikNB4In+CMwQG82EIggSjAHGow1hOX6dbPublMI3CuU7Nc97puhPJ
-         rnNTPPTLK9WsA==
+        b=e8UAjwk/OlYlWAV4AwWkjiQ9aipFFouOibGii5vFc4ABnHm8hlwpnxmD+Bf4XaTAw
+         4AKBQFtbh6f8dlMa2MvztDSCUHMkRap/bSCPb63r7X7PQXYXX5i45wz+66+vnPtK2a
+         iovgyEPYS26dQphMfSnYZ2LI67AikFkJZM6wdMXsrwJpSPZhHKIU4OYeW4RWvE8x6T
+         6CwlkuEoU1Qm80q7NaUHi2Kk665WFk4SdlGUBOb8UluVWod2qgVV506/Faw7LScL87
+         qKwoecKkFnAJ6oaBH3D4neNV9/2X2sFgjET2JDDYiIOTbA/KZaXpJ4bcy4ChGHyYWS
+         1/fQkHNtUrQ/Q==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 81E2060A45;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9E7DF60A9C;
         Tue, 23 Nov 2021 11:50:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2] mlxsw: Two small fixes
+Subject: Re: [PATCH net] net: nexthop: fix null pointer dereference when IPv6 is
+ not enabled
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163766820952.27860.13808393439028301821.git-patchwork-notify@kernel.org>
+Message-Id: <163766820964.27860.470476268434416916.git-patchwork-notify@kernel.org>
 Date:   Tue, 23 Nov 2021 11:50:09 +0000
-References: <20211123075256.3083281-1-idosch@idosch.org>
-In-Reply-To: <20211123075256.3083281-1-idosch@idosch.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jiri@nvidia.com, mlxsw@nvidia.com, idosch@nvidia.com
+References: <20211123102719.3085670-1-razor@blackwall.org>
+In-Reply-To: <20211123102719.3085670-1-razor@blackwall.org>
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     netdev@vger.kernel.org, idosch@idosch.org, davem@davemloft.net,
+        kuba@kernel.org, dsahern@gmail.com, nikolay@nvidia.com,
+        stable@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
+This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Tue, 23 Nov 2021 09:52:54 +0200 you wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
+On Tue, 23 Nov 2021 12:27:19 +0200 you wrote:
+> From: Nikolay Aleksandrov <nikolay@nvidia.com>
 > 
-> Patch #1 fixes a recent regression that prevents the driver from loading
-> with old firmware versions.
-> 
-> Patch #2 protects the driver from a NULL pointer dereference when
-> working on top of a buggy firmware. This was never observed in an actual
-> system, only on top of an emulator during development.
+> When we try to add an IPv6 nexthop and IPv6 is not enabled
+> (!CONFIG_IPV6) we'll hit a NULL pointer dereference[1] in the error path
+> of nh_create_ipv6() due to calling ipv6_stub->fib6_nh_release. The bug
+> has been present since the beginning of IPv6 nexthop gateway support.
+> Commit 1aefd3de7bc6 ("ipv6: Add fib6_nh_init and release to stubs") tells
+> us that only fib6_nh_init has a dummy stub because fib6_nh_release should
+> not be called if fib6_nh_init returns an error, but the commit below added
+> a call to ipv6_stub->fib6_nh_release in its error path. To fix it return
+> the dummy stub's -EAFNOSUPPORT error directly without calling
+> ipv6_stub->fib6_nh_release in nh_create_ipv6()'s error path.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/2] mlxsw: spectrum: Allow driver to load with old firmware versions
-    https://git.kernel.org/netdev/net/c/ce4995bc6c8e
-  - [net,2/2] mlxsw: spectrum: Protect driver from buggy firmware
-    https://git.kernel.org/netdev/net/c/63b08b1f6834
+  - [net] net: nexthop: fix null pointer dereference when IPv6 is not enabled
+    https://git.kernel.org/netdev/net/c/1c743127cc54
 
 You are awesome, thank you!
 -- 
