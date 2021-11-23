@@ -2,102 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A015459EC7
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 10:01:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B8AD459ED0
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 10:04:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234464AbhKWJEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 04:04:32 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:27282 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236384AbhKWJEN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 04:04:13 -0500
-Received: from dggeml757-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HyyfW5hs6zcfV6;
-        Tue, 23 Nov 2021 16:56:03 +0800 (CST)
-Received: from [10.174.179.200] (10.174.179.200) by
- dggeml757-chm.china.huawei.com (10.1.199.137) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.20; Tue, 23 Nov 2021 17:01:03 +0800
-Subject: Re: [PATCH net v2] net: vlan: fix a UAF in vlan_dev_real_dev()
-To:     Petr Machata <petrm@nvidia.com>
-CC:     Jakub Kicinski <kuba@kernel.org>, <davem@davemloft.net>,
-        <jgg@nvidia.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20211102021218.955277-1-william.xuanziyang@huawei.com>
- <87k0h9bb9x.fsf@nvidia.com>
- <20211115094940.138d86dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <87a6i3t2zg.fsf@nvidia.com> <7f7cbbec-8c4e-a2dc-787b-570d1049a6b4@huawei.com>
- <20211118061735.5357f739@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <c240e0e0-256c-698b-4a98-47490869faa3@huawei.com> <8735nstq62.fsf@nvidia.com>
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Message-ID: <daae2fe3-997c-a390-afae-15ff33ba3d1c@huawei.com>
-Date:   Tue, 23 Nov 2021 17:01:02 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S232901AbhKWJHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 04:07:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44082 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232331AbhKWJHm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 04:07:42 -0500
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD423C061574;
+        Tue, 23 Nov 2021 01:04:34 -0800 (PST)
+Received: by mail-wm1-x32b.google.com with SMTP id i12so18018782wmq.4;
+        Tue, 23 Nov 2021 01:04:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ppn9KYLUktOj/QHnYjHMY0C4/1wB69v7mQXRVYA/g4Y=;
+        b=o3yiz6KS56n1KvcbD4V90lY6AM4keEqI3UDlSmzQaVjXaoLrNS+emTSeQrwYZjIRqU
+         Zv9QRPk6/0GrzsdELd6pup67/1OV/OacG95FwvFcVVRwr4SMAGHr1yHoDyIgGwy4B/9d
+         YP0HVqeAmGfH7z9/iZ85Q/9fqBBcRzbw7Lo2m1DMV8hOQsz55KKV1rHivN4DbadDBgsu
+         iaKI3K0M4iW9HK4vHigm2KFRgkhdSZrkI9/jbYBVWGWMw63dSDQHMr7o+8RhgSyjDZDG
+         WP9/qiZBMcpVutKsp079TQMn664M4KjrQdagy0F2+cCLpHW/wdH7v9Rc5P3tNNSruzhM
+         WN4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ppn9KYLUktOj/QHnYjHMY0C4/1wB69v7mQXRVYA/g4Y=;
+        b=Im5QY2qnZPfPDSF9HY+6Z26PoKTaWdAV46xXUakDk7Bc6Tak8X2lrpdkso1xwLL70t
+         WjPndDRJm/0W3mFqYa+7wOF1T6KYgQCoerfaCxmbcDTZ8q3sOcAQmvq4uLEsgs3nHRTZ
+         gqEE7x8NN8I6ifU4Ab71O4IxJLLWkN35/tDrf+SpIsfjIv3rdXlzmEERLYrSjAGQOdCG
+         W9Bpr7gektJnm8lSRPKlqUM3AQdz+AnYQZpdkVspqA0d4LfxEO0hljhRUEmYvAcmGeNg
+         W7PKqvpdLAaQNn8HY7co5TNpGYueVmziydayFW6a9VyP5XwmVsj1Tkm/fqJ3scbAEKqJ
+         E1FA==
+X-Gm-Message-State: AOAM530YJ0g0XNoLdxr4ErjZeTOp8bPc9TMWGAHA7EDVFmV5eSIi0m8H
+        UXNHV6NBhWBVTA==
+X-Google-Smtp-Source: ABdhPJzScrp7Z8emr48dP+PHr9nk5Cky63LWRFXInhaHtMM5KV1lgpMtaaQwqIpZ58OCN6mnNdyPKA==
+X-Received: by 2002:a05:600c:2242:: with SMTP id a2mr1025016wmm.141.1637658273393;
+        Tue, 23 Nov 2021 01:04:33 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id t8sm532590wmq.32.2021.11.23.01.04.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Nov 2021 01:04:32 -0800 (PST)
+From:   Colin Ian King <colin.i.king@googlemail.com>
+X-Google-Original-From: Colin Ian King <colin.i.king@gmail.com>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ath11k: Fix spelling mistake "detetction" -> "detection"
+Date:   Tue, 23 Nov 2021 09:04:31 +0000
+Message-Id: <20211123090431.165103-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-In-Reply-To: <8735nstq62.fsf@nvidia.com>
-Content-Type: text/plain; charset="gbk"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.200]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggeml757-chm.china.huawei.com (10.1.199.137)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> 
-> Ziyang Xuan (William) <william.xuanziyang@huawei.com> writes:
-> 
->> I need some time to test my some ideas. And anyone has good ideas, please
->> do not be stingy.
-> 
-> Jakub Kicinski <kuba@kernel.org> writes:
-> 
->> I think we should move the dev_hold() to ndo_init(), otherwise it's
->> hard to reason if destructor was invoked or not if
->> register_netdevice() errors out.
-> 
-> That makes sense to me. We always put real_dev in the destructor, so we
-> should always hold it in the constructor...
+There is a spelling mistake in an ath11k_warn message. Fix it.
 
-Inject error before dev_hold(real_dev) in register_vlan_dev(), and execute
-the following testcase:
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/net/wireless/ath/ath11k/wmi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-ip link add dev dummy1 type dummy
-ip link add name dummy1.100 link dummy1 type vlan id 100 // failed for error injection
-ip link del dev dummy1
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index 614b2f6bcc8e..24b74a373df8 100644
+--- a/drivers/net/wireless/ath/ath11k/wmi.c
++++ b/drivers/net/wireless/ath/ath11k/wmi.c
+@@ -3506,7 +3506,7 @@ ath11k_wmi_obss_color_collision_event(struct ath11k_base *ab, struct sk_buff *sk
+ 	case WMI_BSS_COLOR_FREE_SLOT_AVAILABLE:
+ 		break;
+ 	default:
+-		ath11k_warn(ab, "received unknown obss color collision detetction event\n");
++		ath11k_warn(ab, "received unknown obss color collision detection event\n");
+ 	}
+ 
+ exit:
+-- 
+2.32.0
 
-Make the problem repro. The problem is solved using the following fix
-according to the Jakub's suggestion:
-
-diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
-index a3a0a5e994f5..abaa5d96ded2 100644
---- a/net/8021q/vlan.c
-+++ b/net/8021q/vlan.c
-@@ -184,9 +184,6 @@ int register_vlan_dev(struct net_device *dev, struct netlink_ext_ack *extack)
-        if (err)
-                goto out_unregister_netdev;
-
--       /* Account for reference in struct vlan_dev_priv */
--       dev_hold(real_dev);
--
-        vlan_stacked_transfer_operstate(real_dev, dev, vlan);
-        linkwatch_fire_event(dev); /* _MUST_ call rfc2863_policy() */
-
-diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
-index ab6dee28536d..a54535cbcf4c 100644
---- a/net/8021q/vlan_dev.c
-+++ b/net/8021q/vlan_dev.c
-@@ -615,6 +615,9 @@ static int vlan_dev_init(struct net_device *dev)
-        if (!vlan->vlan_pcpu_stats)
-                return -ENOMEM;
-
-+       /* Get vlan's reference to real_dev */
-+       dev_hold(real_dev);
-
-
-If there is not any other idea and objection, I will send the fix patch later.
-
-Thank you!
