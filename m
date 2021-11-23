@@ -2,69 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ED3045A2DB
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 13:40:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CF6545A315
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 13:48:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237116AbhKWMnS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 07:43:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41638 "EHLO mail.kernel.org"
+        id S236715AbhKWMwF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 07:52:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43052 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232746AbhKWMnR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 07:43:17 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 87BFA61053;
-        Tue, 23 Nov 2021 12:40:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637671209;
-        bh=jj67PJmdQhCocA8rvNSmFWcdiGJtjGRbQXIwZQIxHl8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=YFQj+XgSUkHqBtc15bf4LgZ6BXeqtNWjDeYq37ADOC8tYgD1OZLE5BNJHit4PElCA
-         95eNWthtFiOOtYZY/T7MoK0tcg0MaYWyZxNPKe04wATix4UQ0QbRgDJk36i3KvSCri
-         qTzwe3jnaauPqe24J3uCcXB1F2IPhRqMeCmaZjHRbz4FDVCMWwgGIwqtyJw+iZBs4e
-         0HUSTA1pPQSgW5gHGqgI/t0aGaGW5w7DTqa4VjEVkpGjaxPY5PafPKKdwOKg/4ptJm
-         nvA1p7BNqscB6/rt0qh6s2iHtxPPQEnnYGr4/0S8XfIFVtH5n0NkjxjLenZ28FGCpX
-         HC7XFWKIpGv8w==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7BB2260A4E;
-        Tue, 23 Nov 2021 12:40:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S235777AbhKWMwE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Nov 2021 07:52:04 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A61F360F9F;
+        Tue, 23 Nov 2021 12:48:55 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="itlkojzZ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1637671734;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=HpolBjuHC+PB3ZPuhFxusO2odaaYRNz1iowAIqcUuMs=;
+        b=itlkojzZ60mmkItAtv/Qmjl4Yu07KVJIWGwO/AsPzqBB2dJ6mVnl5BMbOpyVL1PhzMcbHM
+        fzk8NN0NLGXRyEndzZ9Fz6J9BR62y/KJzQiZGLzZnZzNvRx8tcSY2OXlpmA6MlmTuwn7MW
+        drN9LchZHzE6MQEXKe9bfVt/uP1Dc6Y=
+Received: by mail.zx2c4.com (OpenSMTPD) with ESMTPSA id a9bde089 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 23 Nov 2021 12:48:53 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
+        Wei Wang <weiwan@google.com>,
+        David Miller <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     msizanoen1 <msizanoen@qtmlabs.xyz>, stable@vger.kernel.org,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH net] ipv6: fix memory leak in fib6_rule_suppress
+Date:   Tue, 23 Nov 2021 13:48:32 +0100
+Message-Id: <20211123124832.15419-1-Jason@zx2c4.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: marvell: mvpp2: increase MTU limit when XDP enabled
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163767120950.19545.7638320761973850657.git-patchwork-notify@kernel.org>
-Date:   Tue, 23 Nov 2021 12:40:09 +0000
-References: <20211122200834.29219-1-kabel@kernel.org>
-In-Reply-To: <20211122200834.29219-1-kabel@kernel.org>
-To:     =?utf-8?q?Marek_Beh=C3=BAn_=3Ckabel=40kernel=2Eorg=3E?=@ci.codeaurora.org
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, andrew@lunn.ch,
-        sven.auhagen@voleatech.de, brouer@redhat.com, davem@davemloft.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: msizanoen1 <msizanoen@qtmlabs.xyz>
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+The kernel leaks memory when a `fib` rule is present in IPv6 nftables
+firewall rules and a suppress_prefix rule is present in the IPv6 routing
+rules (used by certain tools such as wg-quick). In such scenarios, every
+incoming packet will leak an allocation in `ip6_dst_cache` slab cache.
 
-On Mon, 22 Nov 2021 21:08:34 +0100 you wrote:
-> Currently mvpp2_xdp_setup won't allow attaching XDP program if
->   mtu > ETH_DATA_LEN (1500).
-> 
-> The mvpp2_change_mtu on the other hand checks whether
->   MVPP2_RX_PKT_SIZE(mtu) > MVPP2_BM_LONG_PKT_SIZE.
-> 
-> These two checks are semantically different.
-> 
-> [...]
+After some hours of `bpftrace`-ing and source code reading, I tracked
+down the issue to ca7a03c41753 ("ipv6: do not free rt if
+FIB_LOOKUP_NOREF is set on suppress rule").
 
-Here is the summary with links:
-  - [net] net: marvell: mvpp2: increase MTU limit when XDP enabled
-    https://git.kernel.org/netdev/net/c/7b1b62bc1e6a
+The problem with that change is that the generic `args->flags` always have
+`FIB_LOOKUP_NOREF` set[1][2] but the IPv6-specific flag
+`RT6_LOOKUP_F_DST_NOREF` might not be, leading to `fib6_rule_suppress` not
+decreasing the refcount when needed.
 
-You are awesome, thank you!
+How to reproduce:
+ - Add the following nftables rule to a prerouting chain:
+     meta nfproto ipv6 fib saddr . mark . iif oif missing drop
+   This can be done with:
+     sudo nft create table inet test
+     sudo nft create chain inet test test_chain '{ type filter hook prerouting priority filter + 10; policy accept; }'
+     sudo nft add rule inet test test_chain meta nfproto ipv6 fib saddr . mark . iif oif missing drop
+ - Run:
+     sudo ip -6 rule add table main suppress_prefixlength 0
+ - Watch `sudo slabtop -o | grep ip6_dst_cache` to see memory usage increase
+   with every incoming ipv6 packet.
+
+This patch exposes the protocol-specific flags to the protocol
+specific `suppress` function, and check the protocol-specific `flags`
+argument for RT6_LOOKUP_F_DST_NOREF instead of the generic
+FIB_LOOKUP_NOREF when decreasing the refcount, like this.
+
+[1]: https://github.com/torvalds/linux/blob/ca7a03c4175366a92cee0ccc4fec0038c3266e26/net/ipv6/fib6_rules.c#L71
+[2]: https://github.com/torvalds/linux/blob/ca7a03c4175366a92cee0ccc4fec0038c3266e26/net/ipv6/fib6_rules.c#L99
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215105
+Fixes: ca7a03c41753 ("ipv6: do not free rt if FIB_LOOKUP_NOREF is set on suppress rule")
+Cc: stable@vger.kernel.org
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+The original author of this commit and commit message is anonymous and
+is therefore unable to sign off on it. Greg suggested that I do the sign
+off, extracting it from the bugzilla entry above, and post it properly.
+The patch "seems to work" on first glance, but I haven't looked deeply
+at it yet and therefore it doesn't have my Reviewed-by, even though I'm
+submitting this patch on the author's behalf. And it should probably get
+a good look from the v6 fib folks. The original author should be on this
+thread to address issues that come off, and I'll shephard additional
+versions that he has.
+
+ include/net/fib_rules.h | 4 +++-
+ net/core/fib_rules.c    | 2 +-
+ net/ipv4/fib_rules.c    | 1 +
+ net/ipv6/fib6_rules.c   | 4 ++--
+ 4 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/include/net/fib_rules.h b/include/net/fib_rules.h
+index 4b10676c69d1..bd07484ab9dd 100644
+--- a/include/net/fib_rules.h
++++ b/include/net/fib_rules.h
+@@ -69,7 +69,7 @@ struct fib_rules_ops {
+ 	int			(*action)(struct fib_rule *,
+ 					  struct flowi *, int,
+ 					  struct fib_lookup_arg *);
+-	bool			(*suppress)(struct fib_rule *,
++	bool			(*suppress)(struct fib_rule *, int,
+ 					    struct fib_lookup_arg *);
+ 	int			(*match)(struct fib_rule *,
+ 					 struct flowi *, int);
+@@ -218,7 +218,9 @@ INDIRECT_CALLABLE_DECLARE(int fib4_rule_action(struct fib_rule *rule,
+ 			    struct fib_lookup_arg *arg));
+ 
+ INDIRECT_CALLABLE_DECLARE(bool fib6_rule_suppress(struct fib_rule *rule,
++						int flags,
+ 						struct fib_lookup_arg *arg));
+ INDIRECT_CALLABLE_DECLARE(bool fib4_rule_suppress(struct fib_rule *rule,
++						int flags,
+ 						struct fib_lookup_arg *arg));
+ #endif
+diff --git a/net/core/fib_rules.c b/net/core/fib_rules.c
+index 79df7cd9dbc1..1bb567a3b329 100644
+--- a/net/core/fib_rules.c
++++ b/net/core/fib_rules.c
+@@ -323,7 +323,7 @@ int fib_rules_lookup(struct fib_rules_ops *ops, struct flowi *fl,
+ 		if (!err && ops->suppress && INDIRECT_CALL_MT(ops->suppress,
+ 							      fib6_rule_suppress,
+ 							      fib4_rule_suppress,
+-							      rule, arg))
++							      rule, flags, arg))
+ 			continue;
+ 
+ 		if (err != -EAGAIN) {
+diff --git a/net/ipv4/fib_rules.c b/net/ipv4/fib_rules.c
+index ce54a30c2ef1..364ad3446b2f 100644
+--- a/net/ipv4/fib_rules.c
++++ b/net/ipv4/fib_rules.c
+@@ -141,6 +141,7 @@ INDIRECT_CALLABLE_SCOPE int fib4_rule_action(struct fib_rule *rule,
+ }
+ 
+ INDIRECT_CALLABLE_SCOPE bool fib4_rule_suppress(struct fib_rule *rule,
++						int flags,
+ 						struct fib_lookup_arg *arg)
+ {
+ 	struct fib_result *result = (struct fib_result *) arg->result;
+diff --git a/net/ipv6/fib6_rules.c b/net/ipv6/fib6_rules.c
+index 40f3e4f9f33a..dcedfe29d9d9 100644
+--- a/net/ipv6/fib6_rules.c
++++ b/net/ipv6/fib6_rules.c
+@@ -267,6 +267,7 @@ INDIRECT_CALLABLE_SCOPE int fib6_rule_action(struct fib_rule *rule,
+ }
+ 
+ INDIRECT_CALLABLE_SCOPE bool fib6_rule_suppress(struct fib_rule *rule,
++						int flags,
+ 						struct fib_lookup_arg *arg)
+ {
+ 	struct fib6_result *res = arg->result;
+@@ -294,8 +295,7 @@ INDIRECT_CALLABLE_SCOPE bool fib6_rule_suppress(struct fib_rule *rule,
+ 	return false;
+ 
+ suppress_route:
+-	if (!(arg->flags & FIB_LOOKUP_NOREF))
+-		ip6_rt_put(rt);
++	ip6_rt_put_flags(rt, flags);
+ 	return true;
+ }
+ 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.34.0
 
