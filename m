@@ -2,117 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AAF545B03D
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 00:33:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D535B45B040
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 00:34:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233785AbhKWXgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 18:36:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39040 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231322AbhKWXgX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 18:36:23 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9D28A60FE6;
-        Tue, 23 Nov 2021 23:33:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637710394;
-        bh=kG8n/02UM0CjGGDvJB4iPJ9K02MPrvmSl94Egqf9ZVw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=skemYkfAQOvf20rppso/nQxkkV8H9HKEwDnPlnSg7RXovNYceEX070AP68QuXeQXh
-         TroMsQx4Yy0W6E70/bLP+A9lTLUV6B4P0dOXaGPm4YHd6mVEG4uU224vrSVRt69cAv
-         T4LFsKq3gVS+q5y/9Dyx4Rl5Ld9UQ5OKWd3dv3ykbiRsHL0t/cxivq0y2F+Pve7j3c
-         /AHQ6h5bAKduQdEc86h0mfsWjnJ2MS5FVFeO41QelqcU5KPcju8TObPSX4b5SIxJjD
-         3CpXbRF3C4AAs+iGZW5PnfzSEtWu/lfgQgI7Tik01HbUbS+1/1ZbF9Kltnhiy59VEW
-         PR1hVF3CO9Ngg==
-Date:   Tue, 23 Nov 2021 15:33:12 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>, Aya Levin <ayal@mellanox.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>, drivers@pensando.io,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        intel-wired-lan@lists.osuosl.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org,
-        Michael Chan <michael.chan@broadcom.com>,
-        netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Simon Horman <simon.horman@corigine.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next 5/6] devlink: Reshuffle resource registration
- logic
-Message-ID: <20211123153312.4eecb490@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YZynSa6s8kBKtSYB@unreal>
-References: <cover.1637173517.git.leonro@nvidia.com>
-        <6176a137a4ded48501e8a06fda0e305f9cfc787c.1637173517.git.leonro@nvidia.com>
-        <20211117204956.6a36963b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YZYFvIK9mkP107tD@unreal>
-        <20211118174813.54c3731f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YZfFDSnnjOG+wSyK@unreal>
-        <20211119081017.6676843b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YZoHGKqLz6UBk2Sx@unreal>
-        <20211122182728.370889f2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YZynSa6s8kBKtSYB@unreal>
+        id S233922AbhKWXhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 18:37:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48136 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230442AbhKWXhl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 18:37:41 -0500
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF776C061574
+        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 15:34:32 -0800 (PST)
+Received: by mail-ot1-x330.google.com with SMTP id 47-20020a9d0332000000b005798ac20d72so1293915otv.9
+        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 15:34:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ZALux30ukNf/FhcJ+79TogdOyRf2h5T5OprayLBEQHY=;
+        b=O1FUakhvf22Yu9U3LbS+qd8akMYeMYyefKF1DljHabWxsg5yi1fIZ9zEnOqrTpOiu9
+         GOowC8+0TyEBoOGkIOGvRWWzy8YdMu8itt4T0W+q/0ILS876gjxq9i+NOEqdl6HmqiR8
+         QCDpuWKXw4+xmagI9smDLgskJmfuMaV2Nnlr+0OWPjV8h8P0JOlDUf7naYJPiqUGEMbq
+         c7MDewBN42Amj7eVlozlMNhRPKycI+7Frwp8GCdkHmtORrY8OpZmFe2Xdar97D/FTq9s
+         XBky+s9o7cPtxBFwLOJZ73AxN1s5HmI2/M4omeAU9Oivj7lDGrhTeO1zUe2swW+IL1Pm
+         mcdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZALux30ukNf/FhcJ+79TogdOyRf2h5T5OprayLBEQHY=;
+        b=RuQVihYnE0sEJbUqaTGZyZPzenveY4ihKwKkmPRYO3V1ZRi4UEb1R51y6kqZzoJVYi
+         8uhkFwzus+3vVymswM3PgSER0XIKldKKUQu9MCbd5enI8RoEiEo8dv+5UZEYxsX5uVSg
+         F1PX/PF1oFTXKPaZly4yEy6edcQO9bQeEFWFk2j7skS6Lvf4xJCmFpWqT8zoa8Ko8Uri
+         Ww0mCKZKxlanH9IBWHrVJ5O/Ioamx9eVyd0LX01Qe5LbyJXfgjwG5+7XBMMZhZS8Z4VX
+         e72C6tn0LU3mutB/twE4XZNeb/GFEAknJAYF5O9akW2vNTRYh6yrlxOYb8Vn/fUsUeFV
+         rpAw==
+X-Gm-Message-State: AOAM532kvPXvS4yyXwbYagFj7ASICxN46kwPa9/96bnTyp4u8KeHb/x1
+        2MgxAzXSZwABz5shOkNmxQE=
+X-Google-Smtp-Source: ABdhPJyZYEmy8rpn+9Niu/OdL6fOrIINfei8hOqAod7/ABcmByRNO9n+BCsbuR0SWWGZp8aTccarEQ==
+X-Received: by 2002:a9d:12f3:: with SMTP id g106mr8342463otg.175.1637710472317;
+        Tue, 23 Nov 2021 15:34:32 -0800 (PST)
+Received: from localhost ([2600:1700:65a0:ab60:ed62:84b1:6aa6:3403])
+        by smtp.gmail.com with ESMTPSA id a3sm2415085oti.29.2021.11.23.15.34.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Nov 2021 15:34:31 -0800 (PST)
+Date:   Tue, 23 Nov 2021 15:34:30 -0800
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        jiri@resnulli.us, dcaratti@redhat.com, marcelo.leitner@gmail.com,
+        vladbu@nvidia.com
+Subject: Re: [PATCH net-next  1/1] tc-testing: Add link for reviews with TC
+ MAINTAINERS
+Message-ID: <YZ16hnd71IMjJE4z@unknown>
+References: <20211122144252.25156-1-jhs@emojatatu.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211122144252.25156-1-jhs@emojatatu.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Nov 2021 10:33:13 +0200 Leon Romanovsky wrote:
-> > > You can do it with my approach too. We incremented reference counter
-> > > of devlink instance when devlink_nl_cmd_port_split_doit() was called,
-> > > and we can safely take devlink->port_list_lock lock before returning
-> > > from pre_doit.  
-> > 
-> > Wait, I thought you'd hold devlink->lock around split/unsplit.  
+On Mon, Nov 22, 2021 at 09:42:52AM -0500, Jamal Hadi Salim wrote:
+> From: Jamal Hadi Salim <jhs@mojatatu.com>
 > 
-> I'm holding.
-> 
->     519 static int devlink_nl_pre_doit(const struct genl_ops *ops,
->     520                                struct sk_buff *skb, struct genl_info *info)
->     521 {
->     ...
->     529
->     530         mutex_lock(&devlink->lock);
+> Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
 
-Then I'm confused why you said you need to hold a ref count on devlink.
-Is it devlink_unregister() that's not taking devlink->lock?
+Acked-by: Cong Wang <cong.wang@bytedance.com>
 
-> > Please look at the port splitting case, mlx5 doesn't implement it
-> > but it's an important feature.  
-> 
-> I'll, but please don't forget that it was RFC, just to present that
-> devlink can be changed internally without exposing internals.
-> 
-> > Either way, IDK how ref count on devlink helps with lifetime of a
-> > subobject. You must assume the sub-objects can only be created outside
-> > of the time devlink instance is visible or under devlink->lock?  
-> 
-> The devlink lifetime is:
-> stages:        I                   II                   III   
->  devlink_alloc -> devlink_register -> devlink_unregister -> devlink_free.
-> 
-> All sub-objects should be created between devlink_alloc and devlink_free.
-> It will ensure that ->devlink pointer is always valid.
-> 
-> Stage I:
->  * There is no need to hold any devlink locks or increase reference counter.
->    If driver doesn't do anything crazy during its init, nothing in devlink
->    land will run in parallel. 
-> Stage II:
->  * There is a need to hold devlink->lock and/or play with reference counter
->    and/or use fine-grained locks. Users can issue "devlink ..." commands.
-
-So sub-objects can (dis)appear only in I/III or under devlink->lock.
-Why did you add the per-sub object list locks, then?
+Thanks.
