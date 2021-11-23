@@ -2,151 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C9F8459BCD
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 06:38:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20747459C75
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 07:56:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229942AbhKWFlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 00:41:49 -0500
-Received: from mga01.intel.com ([192.55.52.88]:29561 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229569AbhKWFls (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 00:41:48 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10176"; a="258801543"
-X-IronPort-AV: E=Sophos;i="5.87,256,1631602800"; 
-   d="scan'208";a="258801543"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2021 21:38:40 -0800
-X-IronPort-AV: E=Sophos;i="5.87,256,1631602800"; 
-   d="scan'208";a="606690391"
-Received: from rmarti10-mobl2.amr.corp.intel.com (HELO [10.212.139.118]) ([10.212.139.118])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2021 21:38:39 -0800
-Message-ID: <6007aad3-d831-297b-54f5-d0ed0c9c115e@linux.intel.com>
-Date:   Mon, 22 Nov 2021 21:38:39 -0800
+        id S233178AbhKWG7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 01:59:15 -0500
+Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:43545 "EHLO
+        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233096AbhKWG7N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 01:59:13 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0UxtN0kx_1637650563;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0UxtN0kx_1637650563)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 23 Nov 2021 14:56:04 +0800
+Date:   Tue, 23 Nov 2021 14:56:03 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     Karsten Graul <kgraul@linux.ibm.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, guwen@linux.alibaba.com,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: Re: [PATCH RFC net-next] net/smc: Unbind buffer size from clcsock
+ and make it tunable
+Message-ID: <YZyQg23Vqes4Ls5t@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <20211122134255.63347-1-tonylu@linux.alibaba.com>
+ <f08e1793-630f-32a6-6662-19edc362b386@linux.ibm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH v2 03/14] net: wwan: t7xx: Add core components
-Content-Language: en-US
-References: <629b982a-874d-b75f-2800-81b84d569af7@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, amir.hanania@intel.com,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        mika.westerberg@linux.intel.com, moises.veleta@intel.com,
-        pierre-louis.bossart@intel.com, muralidharan.sethuraman@intel.com,
-        Soumya.Prakash.Mishra@intel.com, sreehari.kancharla@intel.com,
-        suresh.nagaraj@intel.com
-From:   "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
-In-Reply-To: <629b982a-874d-b75f-2800-81b84d569af7@linux.intel.com>
-X-Forwarded-Message-Id: <629b982a-874d-b75f-2800-81b84d569af7@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f08e1793-630f-32a6-6662-19edc362b386@linux.ibm.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Nov 22, 2021 at 04:08:37PM +0100, Karsten Graul wrote:
+> On 22/11/2021 14:42, Tony Lu wrote:
+> > SMC uses smc->sk.sk_{rcv|snd}buf to create buffer for send buffer or
+> > RMB. And the values of buffer size inherits from clcsock. The clcsock is
+> > a TCP sock which is initiated during SMC connection startup.
+> > 
+> > The inherited buffer size doesn't fit SMC well. TCP provides two sysctl
+> > knobs to tune r/w buffers, net.ipv4.tcp_{r|w}mem, and SMC use the default
+> > value from TCP. The buffer size is tuned for TCP, but not fit SMC well
+> > in some scenarios. For example, we need larger buffer of SMC for high
+> > throughput applications, and smaller buffer of SMC for saving contiguous
+> > memory. We need to adjust the buffer size apart from TCP and not to
+> > disturb TCP.
+> > 
+> > This unbinds buffer size which inherits from clcsock, and provides
+> > sysctl knobs to adjust buffer size independently. These knobs can be
+> > tuned with different values for different net namespaces for performance
+> > and flexibility.
+> > 
+> > Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
+> > Reviewed-by: Wen Gu <guwen@linux.alibaba.com>
+> > ---
+> 
+> To activate SMC for existing programs usually the smc_run command or the
+> preload library (both from the smc-tools package) are used.
+> This commit introduced support to set the send and recv window sizes
+> using command line parameters or environment variables:
+> 
+> https://github.com/ibm-s390-linux/smc-tools/commit/59bfb99c588746f7dca1b3c97fd88f3f7cbc975f
 
-Sorry for the spam. Re-sending as plain text.
+Hi Graul,
+
+Thanks for your advice. We are using smc-tools, it is a very useful
+tool, and we also use smc_run or LD_PRELOAD to help our applications to
+replace with SMC from TCP.
+
+There are some differences to use SMC in our environment. The followings
+are our scenarios to use SMC:
+
+1. Transparent acceleration
+
+This approach is widely used in our environment. The main idea of
+transparent acceleration is not to touch the applications. The
+applications are usually pre-compiled and pre-packaged containers or
+ECS, which means the binary and the binary needed environments, like
+glibc and other libraries are bundled as bootstrap containers. So it is
+hard to inject the smc_run or LD_PRELOAD into application's containers
+runtime. 
+
+To solve this issue, we developed a set of patches to replace the
+AF_INET / SOCK_STREAM with AF_SMC / SMCPROTO_SMC{6} by configuration.
+So that we can control acceleration in kernel without any other changes
+in user-space, and won't break our application containers and publish
+workflow. These patches are still improving for upstream.
+
+2. Use SMC explicitly
+
+This approach is very straightforward. Applications just create sockets
+using AF_SMC and SMCPROTO_SMC{6}, and SMC works fine. 
+
+However, most of applications don't want to bind tightly to single SMC
+protocol. Most of them take into account compatibility, stability and
+flexibility.
+
+> Why another way to manipulate these sizes?
+> Your solution would stop applications to set these values.
+
+I didn't understand it clearly about stopping applications to set there
+values.
+
+IMHO, this RFC introduces two knobs for snd/rcvbuf. During the following
+stages, applications can set these values as expected.
+
+1. SMC module or per-net-namespace initialized:
+
+sysctl_{w|r}mem_default initialized in smc_net_init() when current
+net namespace initialized. The default values of SMC inherit from TCP,
+and clcsock use TCP's configures.
+
+2. create SMC socket:
+
+smc_create() is called, and smc->sk.sk_{snd|rcv}buf are initialized from
+per-netns earlier. There are no different from before. Except for
+changing the values of TCP after SMC initialized, users can change them
+with newly added two knobs.
+
+3. applications call setsockopt() to modify SO_SNDBUF or SO_RCVBUF:
+
+After smc_create() creates socket, applications can use setsockopt() to
+change the snd/rcvbuf, which called sock_setsockopt() directly. If
+fallback happened, setsockopt() would change clcsock's values.
 
 
-On 11/2/2021 8:46 AM, Andy Shevchenko wrote:
-> On Sun, Oct 31, 2021 at 08:56:24PM -0700, Ricardo Martinez wrote:
->> From: Haijun Lio<haijun.liu@mediatek.com>
->>
->> Registers the t7xx device driver with the kernel. Setup all the core
->> components: PCIe layer, Modem Host Cross Core Interface (MHCCIF),
->> modem control operations, modem state machine, and build
->> infrastructure.
->>
->> * PCIe layer code implements driver probe and removal.
->> * MHCCIF provides interrupt channels to communicate events
->> such as handshake, PM and port enumeration.
->> * Modem control implements the entry point for modem init,
->> reset and exit.
->> * The modem status monitor is a state machine used by modem control
->> to complete initialization and stop. It is used also to propagate
->> exception events reported by other components.
->> +#define CCCI_HEADER_NO_DATA 0xffffffff
-> Is this internal value to Linux or something which is given by hardware?
+In the end, we hope to provide a flexibility approach to change
+SMC's buffer size only and don't disturb others. Sysctl are considered
+as a better way to maintain and easy to use for users.
 
-It is hardware defined
+Thanks,
+Tony Lu
 
-...
-
->> + spin_lock_irqsave(&md_info->exp_spinlock, flags);
-> Can it be called outside of IRQ context?
-
-Actually, it is not in IRQ context, this function is called by the 
-thread_fn passed to request_threaded_irq(),
-
-Maybe spin_lock_bh makes more sense.
-
->> + int_sta = get_interrupt_status(mtk_dev);
->> + md_info->exp_id |= int_sta;
->> +
->> + if (md_info->exp_id & D2H_INT_PORT_ENUM) {
->> + md_info->exp_id &= ~D2H_INT_PORT_ENUM;
->> + if (ctl->curr_state == CCCI_FSM_INIT ||
->> + ctl->curr_state == CCCI_FSM_PRE_START ||
->> + ctl->curr_state == CCCI_FSM_STOPPED)
->> + ccci_fsm_recv_md_interrupt(MD_IRQ_PORT_ENUM);
->> + }
->> +
->> + if (md_info->exp_id & D2H_INT_EXCEPTION_INIT) {
->> + if (ctl->md_state == MD_STATE_INVALID ||
->> + ctl->md_state == MD_STATE_WAITING_FOR_HS1 ||
->> + ctl->md_state == MD_STATE_WAITING_FOR_HS2 ||
->> + ctl->md_state == MD_STATE_READY) {
->> + md_info->exp_id &= ~D2H_INT_EXCEPTION_INIT;
->> + ccci_fsm_recv_md_interrupt(MD_IRQ_CCIF_EX);
->> + }
->> + } else if (ctl->md_state == MD_STATE_WAITING_FOR_HS1) {
->> + /* start handshake if MD not assert */
->> + mask = mhccif_mask_get(mtk_dev);
->> + if ((md_info->exp_id & D2H_INT_ASYNC_MD_HK) && !(mask & 
->> D2H_INT_ASYNC_MD_HK)) {
->> + md_info->exp_id &= ~D2H_INT_ASYNC_MD_HK;
->> + queue_work(md->handshake_wq, &md->handshake_work);
->> + }
->> + }
->> +
->> + spin_unlock_irqrestore(&md_info->exp_spinlock, flags);
->> +
->> + return 0;
->> +}
-...
->> + cmd = kmalloc(sizeof(*cmd),
->> + (in_irq() || in_softirq() || irqs_disabled()) ? GFP_ATOMIC : 
->> GFP_KERNEL);
-> Hmm...
-Looks like we can just use in_interrupt(), was that the concern?
-
->> + if (!cmd)
->> + return -ENOMEM;
->> + if (in_irq() || irqs_disabled())
->> + flag &= ~FSM_CMD_FLAG_WAITING_TO_COMPLETE;
-> Even more hmm...
->
->> + if (flag & FSM_CMD_FLAG_WAITING_TO_COMPLETE) {
->> + wait_event(cmd->complete_wq, cmd->result != FSM_CMD_RESULT_PENDING);
-> Is it okay in IRQ context?
-
-We know that the caller that sets FSM_CMD_FLAG_WAITING_TO_COMPLETE flag 
-it is not in IRQ context.
-
-If that's good enough then we could also remove the check that clears 
-that flag few lines above.
-
-The only calls using FSM_CMD_FLAG_WAITING_TO_COMPLETE are coming from 
-dev_pm_ops callbacks, and
-
-we are not setting pm_runtime_irq_safe().
-
-Otherwise we can use in_interrupt() to check here as well.
-
->> + if (cmd->result != FSM_CMD_RESULT_OK)
->> + result = -EINVAL;
