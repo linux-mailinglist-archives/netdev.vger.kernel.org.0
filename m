@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FFED45A789
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 17:23:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E90345A7A0
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 17:24:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238857AbhKWQZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 11:25:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32964 "EHLO
+        id S232435AbhKWQ2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 11:28:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230197AbhKWQZs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 11:25:48 -0500
+        with ESMTP id S231216AbhKWQ2A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 11:28:00 -0500
 Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF565C061574;
-        Tue, 23 Nov 2021 08:22:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4713AC061574;
+        Tue, 23 Nov 2021 08:24:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
         Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
         :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=T+McMKyDOKDOU+PBL1nHadWch3B4nQMaS2x2M/9vBbU=;
-        t=1637684559; x=1638894159; b=FZEKOi6ePb4qAW001XGN4ny0EAoQKUvK8czoKry60NRVFzj
-        GV9whpuel/QM1aCcfKZHf0A+Qnd2klugIEob4O0iWYkeUez0tj7rv2BGMitJ9SLYmaUOeOerRPq2i
-        y3OfSeSD+T1VyLS+k7/oNlrZAyccxgdW3InWGzLn6OoEKkmkb09Mnh4iEBR0k5Cj00ivPbiOWqQ/r
-        HFQne/h8c/BMzABbNFIJgbGZZ1nTbcG/DieqFxLMJ2AhwFiflqenOx4vLewVH9IPtS9Li056PYE6R
-        dTlYnezaO43hV8/3veGAgX2ehkv5fUZSFFWRRMPnnb9FQb5h58WdHgHdnyiz097g==;
+        Resent-Cc:Resent-Message-ID; bh=YDWHeWKgv4r/9Wehkw2ZJglZ0nE6CAjALsQ8jZXrdcM=;
+        t=1637684692; x=1638894292; b=QuKynbq9kdH8NbuNaJiTsHXovNX8mUYubfwZlvWWk/x1mUE
+        ZRX9xyo0wdm9lnd6xshW0lGP+hFW8Iey28NjmNJv9IOAtLYLt0S1V7U2nKBaDNI8jbEznDDDsMd4h
+        qitZNKMu/Jx92KYNQNqwVeXigGzf/hexUOwEIVA4PifclIHOnvR8MEzQA0H29KNgA5EYPnkzBT2I3
+        b4r9RgmbiWoG8qOgAywUd5eqLUQ9TcpEe0xBkw57fyIidqhlV79WBSPPUrCl4LPAsbyyVVIjcswtk
+        CekrQQ7tsD8bfRxIfBRUEZ+4/Gl5VPxU43t0ba0JsWoh2yACk+ETopzUqeRPTHtw==;
 Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
         (Exim 4.95)
         (envelope-from <johannes@sipsolutions.net>)
-        id 1mpYYB-001ofh-UH;
-        Tue, 23 Nov 2021 17:21:44 +0100
-Message-ID: <12825803045d1cec0df968f72a9ef2724a2548fb.camel@sipsolutions.net>
+        id 1mpYaf-001olr-5U;
+        Tue, 23 Nov 2021 17:24:17 +0100
+Message-ID: <637a4183861a1f2cdab52b7652bfa7ed33fbcdd2.camel@sipsolutions.net>
 Subject: Re: [PATCH 01/17] bitfield: Add non-constant field_{prep,get}()
  helpers
 From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Jakub Kicinski <kuba@kernel.org>
 Cc:     Tony Lindgren <tony@atomide.com>,
         Russell King <linux@armlinux.org.uk>,
         Rajendra Nayak <rnayak@codeaurora.org>,
@@ -56,7 +57,6 @@ Cc:     Tony Lindgren <tony@atomide.com>,
         Ping-Ke Shih <pkshih@realtek.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
         Linus Walleij <linus.walleij@linaro.org>,
         Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>,
@@ -77,12 +77,13 @@ Cc:     Tony Lindgren <tony@atomide.com>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
         alsa-devel@alsa-project.org
-Date:   Tue, 23 Nov 2021 17:21:41 +0100
-In-Reply-To: <CAMuHMdUnBgFpqhgjf5AA0LH9MZOFALeC=YinZ4Tv_V+Y9hkRSg@mail.gmail.com>
+Date:   Tue, 23 Nov 2021 17:24:15 +0100
+In-Reply-To: <CAMuHMdWAAGrQUZN18cnDTDUUhuPNTZTFkRMe2Sbf+s7CedPSxA@mail.gmail.com>
 References: <cover.1637592133.git.geert+renesas@glider.be>
          <3a54a6703879d10f08cf0275a2a69297ebd2b1d4.1637592133.git.geert+renesas@glider.be>
          <01b44b38c087c151171f8d45a2090474c2559306.camel@sipsolutions.net>
-         <CAMuHMdUnBgFpqhgjf5AA0LH9MZOFALeC=YinZ4Tv_V+Y9hkRSg@mail.gmail.com>
+         <20211122171739.03848154@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         <CAMuHMdWAAGrQUZN18cnDTDUUhuPNTZTFkRMe2Sbf+s7CedPSxA@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.42.1 (3.42.1-1.fc35) 
 MIME-Version: 1.0
@@ -92,54 +93,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-11-23 at 09:30 +0100, Geert Uytterhoeven wrote:
-> > We have the upper-case (constant) versions, and already
-> > {u32,...}_get_bits()/etc.
+On Tue, 2021-11-23 at 09:36 +0100, Geert Uytterhoeven wrote:
+
+
+Ah, here's your comment wrt. which one is nicer :)
+
+> > > We have the upper-case (constant) versions, and already
+> > > {u32,...}_get_bits()/etc.
 > 
-> These don't work for non-const masks.
+> TBH, I don't like the *_get_bits() API: in general, u32_get_bits() does
+> the same as FIELD_GET(), but the order of the parameters is different?
 
-Obviously, I know that. Still, just saying.
+I don't really see how "the order of parameters is different" is a
+downside? Yeah it means if you're used to FIELD_GET() then you'll
+retrain, but ...?
 
-I'm actually in the opposite camp to you I guess - I much prefer the
-typed versions (u32_get_bits() and friends) over the FIELD_GET() macros
-that are more magic.
+> (*_replace_bits() seems to be useful, though)
 
-Mostly though that's because the typed ones also have le32_/be32_/...
-variants, which are tremendously useful, and so I prefer to use them all
-across. In fact, I have considered in the past to just remove the upper-
-case macros entirely but ... no time I guess.
+Indeed.
 
-> > Also, you're using __ffs(), which doesn't work for 64-bit on 32-bit
-> > architectures (afaict), so that seems a bit awkward.
-> 
-> That's a valid comment. Can be fixed by using a wrapper macro
-> that checks if typeof(mask) == u64, and uses an __ffs64() version when
-> needed.
-
-You can't really do a typeof()==something, but you can check the size,
-so yeah, that could be done.
-
-> > Maybe we can make {u32,...}_get_bits() be doing compile-time only checks
-> > if it is indeed a constant? The __field_overflow() usage is already only
-> > done if __builtin_constant_p(v), so I guess we can do the same with
-> > __bad_mask()?
-> 
-> Are all compilers smart enough to replace the division by
-> field_multiplier(field) by a shift?
-
-In the constant case they are, but you'd have to replace
-field_multiplier() with the __ffs(), including the size check discussed
-above. Then it's no longer a constant, and then I'm not so sure it would
-actually be able to translate it, even if it's "1<<__ffs64(...)". I
-guess you can check, or just change it to not use the division and
-multiplication, but shifts/masks instead manually?
-
-IOW - I would much prefer to make the type_get_bits() and friends work
-for non-constant masks.
-
-In fact, you have e.g. code in drivers/usb/chipidea/udc.c that does
-things like cpu_to_le32(mul << __ffs(...)) - though in those cases it's
-actually constant today, so you could already write it as
-le32_encode_bits(...).
+Also as I said in my other mail, the le32/be32/... variants are
+tremendously useful, and they fundamentally cannot be expressed with the
+FIELD_GET() or field_get() macros. IMHO this is a clear advantage to the
+typed versions, and if you ask me we should get rid of the FIELD_GETand
+FIELD_PREP entirely - difficult now, but at least let's not propagate
+that?
 
 johannes
