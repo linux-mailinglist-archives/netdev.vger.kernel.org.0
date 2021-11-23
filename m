@@ -2,89 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B8AD459ED0
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 10:04:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5269C459F0F
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 10:15:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232901AbhKWJHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 04:07:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44082 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232331AbhKWJHm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 04:07:42 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD423C061574;
-        Tue, 23 Nov 2021 01:04:34 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id i12so18018782wmq.4;
-        Tue, 23 Nov 2021 01:04:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ppn9KYLUktOj/QHnYjHMY0C4/1wB69v7mQXRVYA/g4Y=;
-        b=o3yiz6KS56n1KvcbD4V90lY6AM4keEqI3UDlSmzQaVjXaoLrNS+emTSeQrwYZjIRqU
-         Zv9QRPk6/0GrzsdELd6pup67/1OV/OacG95FwvFcVVRwr4SMAGHr1yHoDyIgGwy4B/9d
-         YP0HVqeAmGfH7z9/iZ85Q/9fqBBcRzbw7Lo2m1DMV8hOQsz55KKV1rHivN4DbadDBgsu
-         iaKI3K0M4iW9HK4vHigm2KFRgkhdSZrkI9/jbYBVWGWMw63dSDQHMr7o+8RhgSyjDZDG
-         WP9/qiZBMcpVutKsp079TQMn664M4KjrQdagy0F2+cCLpHW/wdH7v9Rc5P3tNNSruzhM
-         WN4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ppn9KYLUktOj/QHnYjHMY0C4/1wB69v7mQXRVYA/g4Y=;
-        b=Im5QY2qnZPfPDSF9HY+6Z26PoKTaWdAV46xXUakDk7Bc6Tak8X2lrpdkso1xwLL70t
-         WjPndDRJm/0W3mFqYa+7wOF1T6KYgQCoerfaCxmbcDTZ8q3sOcAQmvq4uLEsgs3nHRTZ
-         gqEE7x8NN8I6ifU4Ab71O4IxJLLWkN35/tDrf+SpIsfjIv3rdXlzmEERLYrSjAGQOdCG
-         W9Bpr7gektJnm8lSRPKlqUM3AQdz+AnYQZpdkVspqA0d4LfxEO0hljhRUEmYvAcmGeNg
-         W7PKqvpdLAaQNn8HY7co5TNpGYueVmziydayFW6a9VyP5XwmVsj1Tkm/fqJ3scbAEKqJ
-         E1FA==
-X-Gm-Message-State: AOAM530YJ0g0XNoLdxr4ErjZeTOp8bPc9TMWGAHA7EDVFmV5eSIi0m8H
-        UXNHV6NBhWBVTA==
-X-Google-Smtp-Source: ABdhPJzScrp7Z8emr48dP+PHr9nk5Cky63LWRFXInhaHtMM5KV1lgpMtaaQwqIpZ58OCN6mnNdyPKA==
-X-Received: by 2002:a05:600c:2242:: with SMTP id a2mr1025016wmm.141.1637658273393;
-        Tue, 23 Nov 2021 01:04:33 -0800 (PST)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id t8sm532590wmq.32.2021.11.23.01.04.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Nov 2021 01:04:32 -0800 (PST)
-From:   Colin Ian King <colin.i.king@googlemail.com>
-X-Google-Original-From: Colin Ian King <colin.i.king@gmail.com>
-To:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ath11k: Fix spelling mistake "detetction" -> "detection"
-Date:   Tue, 23 Nov 2021 09:04:31 +0000
-Message-Id: <20211123090431.165103-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        id S232178AbhKWJS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 04:18:28 -0500
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:58941 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230306AbhKWJS1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 04:18:27 -0500
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 3395F5C00E8;
+        Tue, 23 Nov 2021 04:15:12 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Tue, 23 Nov 2021 04:15:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; bh=F3vX88aVOVx8OXXCHIjAEyKki6Zq3T71802Dd6SOn
+        BM=; b=OgPiZnOwlWxgYuJvUAVKk5VFMEzi0BFk2xRpcSTOJmEgsG22UWTybpzT1
+        B7oNKiyNfLo0N0YofaWo+0a6zdyHi9kCvXNkpShrT1r94Mus0bOGQqD48RG5oGvY
+        03gHs2uW5ZGWzN0nKytAJONG1YEKZ3HBUAc1M0tbf/cqNGBNWxhw0qpJ4L7ZH3J8
+        xZn7bwJGktc1NJEyQOgsQInwOHbe/CAVyEQ2SuxTFMwWWw5a+uU13oV2hkgMRhOL
+        EcHgIc58gUMskEtqfHV2KRmLWnrz3LWd9DRv4z1kTfm7mG2aqT+5Ylkk7v9RYrWq
+        fzyO/VgdAGGxpwSuTdHYx8LkIlYvA==
+X-ME-Sender: <xms:H7GcYSTDOzkQ6TeJaeu9GXhRK2zpcEtTj1QBDEyhn4yHp_svhet8OA>
+    <xme:H7GcYXyK6nTaXx0R4k3MwXhOvwjkQFQoUn4_sCXoGdxQ_Sqv1XT8qghUn4cAmMDnQ
+    s0oT9KaWVFpe0E>
+X-ME-Received: <xmr:H7GcYf22-Klx0qFuYGxWPyNYL2usybZ5_fDFtfFu1MLgKhB8p5BMTTa0_KpkZe_FgmTdliTlAGYoOVXlSqixhqhA120cYw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrgeeigddtudcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggugfgjsehtkeertddttdejnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpeeugfejfeeviedvkedtgfeghfegvedugeevgfetudfgteevveeutdfghfekgfeg
+    gfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    hoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:H7GcYeCjbC9bGkxYQxIqi7hsjYHyQIqAFHgXb7TxsjaIKIvYulVwiA>
+    <xmx:H7GcYbjKQFuxWEqI1LjEumNsutCM48ULlZ91pbOVSMJVBZw4PxnB2g>
+    <xmx:H7GcYao8PgMHQegC29dDz8F5_ybddZeUpcm8OI6XaqoOVdFk4LAnuw>
+    <xmx:ILGcYWU5cJdksToKhMh5rszWcEu3xn3eIMTrnX9nUMvW0ka5WCy9Sg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 23 Nov 2021 04:15:11 -0500 (EST)
+Date:   Tue, 23 Nov 2021 11:15:08 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Denis Kirjanov <dkirjanov@suse.de>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jiri@nvidia.com, mlxsw@nvidia.com,
+        Danielle Ratson <danieller@nvidia.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next 2/2] mlxsw: pci: Add shutdown method in PCI
+ driver
+Message-ID: <YZyxHPsiWMYdAkb2@shredder>
+References: <20211123075447.3083579-1-idosch@idosch.org>
+ <20211123075447.3083579-3-idosch@idosch.org>
+ <34c443a5-c36b-2a16-adda-222da6dc5238@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <34c443a5-c36b-2a16-adda-222da6dc5238@suse.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a spelling mistake in an ath11k_warn message. Fix it.
+On Tue, Nov 23, 2021 at 11:47:34AM +0300, Denis Kirjanov wrote:
+> 
+> 
+> 11/23/21 10:54 AM, Ido Schimmel пишет:
+> > From: Danielle Ratson <danieller@nvidia.com>
+> > 
+> > On an arm64 platform with the Spectrum ASIC, after loading and executing
+> > a new kernel via kexec, the following trace [1] is observed. This seems
+> > to be caused by the fact that the device is not properly shutdown before
+> > executing the new kernel.
+> 
+> This should be sent to net tree instead of net-next with Fixes tag added.
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/net/wireless/ath/ath11k/wmi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This is not a regression (never worked) and the system does not crash.
+The trace is only observed on a specific platform and only with kexec
+which I assume nobody is using but our team (for development purposes).
 
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index 614b2f6bcc8e..24b74a373df8 100644
---- a/drivers/net/wireless/ath/ath11k/wmi.c
-+++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -3506,7 +3506,7 @@ ath11k_wmi_obss_color_collision_event(struct ath11k_base *ab, struct sk_buff *sk
- 	case WMI_BSS_COLOR_FREE_SLOT_AVAILABLE:
- 		break;
- 	default:
--		ath11k_warn(ab, "received unknown obss color collision detetction event\n");
-+		ath11k_warn(ab, "received unknown obss color collision detection event\n");
- 	}
- 
- exit:
--- 
-2.32.0
-
+Therefore, I prefer to route it via net-next. If users complain
+(unlikely), I will send backports to stable kernels.
