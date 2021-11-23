@@ -2,173 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 492E645A68F
-	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 16:33:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2BE445A6B5
+	for <lists+netdev@lfdr.de>; Tue, 23 Nov 2021 16:40:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234837AbhKWPgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 10:36:54 -0500
-Received: from mga03.intel.com ([134.134.136.65]:47983 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231209AbhKWPgy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 10:36:54 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10176"; a="234989855"
-X-IronPort-AV: E=Sophos;i="5.87,258,1631602800"; 
-   d="scan'208";a="234989855"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2021 07:33:45 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,258,1631602800"; 
-   d="scan'208";a="553339142"
-Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
-  by fmsmga008.fm.intel.com with ESMTP; 23 Nov 2021 07:33:42 -0800
-Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1mpXnh-00021O-Hw; Tue, 23 Nov 2021 15:33:41 +0000
-Date:   Tue, 23 Nov 2021 23:33:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        id S234921AbhKWPnS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 10:43:18 -0500
+Received: from mail-tycjpn01on2093.outbound.protection.outlook.com ([40.107.114.93]:37696
+        "EHLO JPN01-TYC-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233462AbhKWPnS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Nov 2021 10:43:18 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fmIHKTEeujLMVLzHbNxUUZX/SgKQtsOVEEqW+UWVNCLUEZdYngEEWnigvcrF29K+2gyhp2xt2Sbpz0Q7zuQutTrOf205hzxNG/hKJ8MUod5ZgsBouSQAhz9cHgEsEVbkSNE8nA10JB4wdveFAcUq5FOtktdWTFoDmdFVhY0IjaSMMhqKa/0g6MkOVTfKkMYg7wLNjmwGzCQxzGqO2+kc4grstc3fQtihMpUJ4ttz6dlxzOeMC/Rc/fLZx4MSCPjk+zesxlJQ0msmwuV1o7MVxq4/rwvnUGQRj+Yp1ZwpeiaJVOJ04Zb6QoIZLVdtFeTsOLL5o52o61VJaZ6htlgPfw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=g402sIT9/Zk227DSsYxF/NzIo0aJ6oCm8JGRLQo6Mac=;
+ b=Rbz4KDo4SWhYHnb/xvvkgbE0SYOkiqIHGq5od9KGWpQp550RThNyUDT7sViddMIY1gKDzUNpcAfhvJ5/eSVkdrw70UrSYxCvTK64S9+XfWOaMIPmpise1ykL+oI6FydDEshNmAbkFf24QN8l8BCB9986e7rUTuP4jFKj9XsUf8CEypo24FPZG1s0jHTWDaNOSB8Hlb8iL6aB4AgD/0zktwWVhb7TTpzfwfykBh5pB+tPh523gImxaXJ8eInxdeGx0uugcerZBLsMpQWhsM9HgcoEcr6Q0EfMfyH15H2frC6JwGnUBikX2eAVwgGbAEUoiJFWowHNV3FlZCBcBMeO7w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
+ header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=g402sIT9/Zk227DSsYxF/NzIo0aJ6oCm8JGRLQo6Mac=;
+ b=haUJzhgspCRdOPVPzQZMt0x2dJ5Mt0YWzpAr8o0TKtq+vS84IIE+CuPw5APwe+aZ+xvKgf9frJ1lwBFnh4/1aHjjMdvzeT64vW7AYKMnym9x3uaoQU8c2gZQcUHS668PhonA/7MX0g+Sqv6Hlv6wwRfkkGagccu9Lm9y1RghEcA=
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
+ by OS0PR01MB5956.jpnprd01.prod.outlook.com (2603:1096:604:b7::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.19; Tue, 23 Nov
+ 2021 15:40:07 +0000
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::c0bd:405a:cdd3:f153]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::c0bd:405a:cdd3:f153%9]) with mapi id 15.20.4713.025; Tue, 23 Nov 2021
+ 15:40:06 +0000
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Sergey Shtylyov <s.shtylyov@omp.ru>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        netdev@vger.kernel.org, Ansuel Smith <ansuelsmth@gmail.com>
-Subject: Re: [net-next PATCH 2/2] net: dsa: qca8k: add LAG support
-Message-ID: <202111232352.6wBDdqCJ-lkp@intel.com>
-References: <20211123025911.20987-3-ansuelsmth@gmail.com>
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>
+Subject: RE: [RFC 0/2] Add Rx checksum offload support
+Thread-Topic: [RFC 0/2] Add Rx checksum offload support
+Thread-Index: AQHX4G6BPnL1RhDFrUy043gm2E9zIawRN2YAgAAGeFA=
+Date:   Tue, 23 Nov 2021 15:40:06 +0000
+Message-ID: <OS0PR01MB5922BE719B872BAC734A1A7E86609@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+References: <20211123133157.21829-1-biju.das.jz@bp.renesas.com>
+ <b43b2323-e83f-209b-bdff-33c6800d27e3@omp.ru>
+In-Reply-To: <b43b2323-e83f-209b-bdff-33c6800d27e3@omp.ru>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bp.renesas.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 58603b72-3259-4911-154d-08d9ae978684
+x-ms-traffictypediagnostic: OS0PR01MB5956:
+x-microsoft-antispam-prvs: <OS0PR01MB595666DCB649DC1A8C976E0D86609@OS0PR01MB5956.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ZUzo4d/K5fVZWI7Vhf1ZzU+7MXQweEJRb1DlytXKJU7wqlnatyiPI7fsooH0eelQPXgqnmsJ/D3iLZCjpIGacEMS1lqfGyAz1oxMBDTQ2y3i2oX6MqNgtOioOQwS3Ibv3RjXGMnaoccor1sEpOL8Q+y9eAmdJux6EjanlAYlytdKjgakBxdAejll0hirRmbsECllxB12LHedkIacn2tGzWNLBhavaSbQXy7IAFAHP+K/384AJeMPEwqEifT3JVvZv2X6prprk44jkwTT3Y2zKd3/LfCLnuPrbZNAe1gasojpLNR7Vx8ai+noGV3HQj/umrvEYJ2pjAqdNe8wKvhyA1glNgIg8jz3dnVzUpMICKe+YabD2f+31doOVNSAP2xVJYNndHI/OKUcloXaAxpDrBsEK+6c649CaVjiOzbhZwLByjkLDIapQhQcd0+0CVsTFje/nv7m8nG1384WKemriGFlSFXYU2+IuL26v05RK5ZmuJXMXLj37UytMpnlhMNGxYadatssqrEJfw+axEYjIwnP0E+xpBFCK60HRnOu1U/Ar0giReb4FKRuvJwRj08VByimjyx/YrKmkdO7VnHZSROWOeNQ4tzjGiMt7p8RUhBnfNQKKpNMnJ2G5BV4ARhXKtHtCIL7bJkiJt+lUPiRqPqYqnRx8O34XvbTCInvCML3h8fsoqK3RBrrUep8gnPe70uFn0o/WZPJ3E/UaSvh7A==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(76116006)(8676002)(66946007)(2906002)(33656002)(122000001)(86362001)(110136005)(54906003)(66476007)(83380400001)(9686003)(107886003)(316002)(66556008)(64756008)(66446008)(186003)(4326008)(38100700002)(5660300002)(26005)(7696005)(53546011)(6506007)(38070700005)(71200400001)(52536014)(55016003)(508600001)(8936002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?YmUvdC9YSnR3Wkhoc1VUc21xYngxMDVpZzdTNjIyTFlRQzViV1hYKzRUMVJY?=
+ =?utf-8?B?YnluUnVTR0NoQmhqc20vcU1wSkNYL2NaOC90ak9pdTBaQ3hUZTJ1ZzE2Tmtw?=
+ =?utf-8?B?cnliK2UyNllZbnhSYUl0QVpESWQ0ZnY5aHRUTmZUZzZUSUthTjc5QXJYd095?=
+ =?utf-8?B?ZmQ4SmxTL3liMGl1NTNnVXdjaVBBVVpuS0NreGpRbE5DU3AxNTR2emxOOVFs?=
+ =?utf-8?B?UWIrUzhLZDdMNVNoMzVxVHROQTBpUW5lVFl5MjZGYVdSUVllQ1NxTmhEMUlF?=
+ =?utf-8?B?Z2xRcElDNzVWZi9FTkF0SzBCSWJtREpXK0VkZ1dPZll3bmE4WlJTV2c5T0dD?=
+ =?utf-8?B?VUliZXRqTUJXNXJidHVlcElUcEFXNHNNciswWVRDQXA5OEVJMHdsdXg0WTNH?=
+ =?utf-8?B?YkEzOTZmdU9hMWc5cmhNLzFXcmdkYi9zalFLQlFlZWFNN2Z4T25FTEJzTjdm?=
+ =?utf-8?B?Z2xCZXJZYjhQS0R0OUExRWlhWHFsWDFWcDVCL28vUEFyMG01Q3diWktpbTNE?=
+ =?utf-8?B?R2Erak5zUnNmU2hWdXNBOG11YmV2S3FhaHZ4SXVhRE8waW5WMVhtRnlVQTla?=
+ =?utf-8?B?UVlrQjY4YUxaNnc2SUU1NHpaNWNYWDdZQXMxbFhRRTgrQVZwY1d1QjROOFpQ?=
+ =?utf-8?B?OU8xdUgvWlU1WlBaM01VYzRzZFVsZm9XRlREMjF5eHlKNFJKSlNBWFNWM0gx?=
+ =?utf-8?B?ZTcxbXl4cUpUc0FtSmc2ZENORWlaVm5GdEE5bnQzaXdMcHZmTS85cFJJcW5q?=
+ =?utf-8?B?ejJoRlhpaXorTFRJUWRROGpSYTlPTVFGekxUU2FXdTA2VXgzZmp5eXJ0OUR2?=
+ =?utf-8?B?M0J3Y0llNGZFWVdPUTNjZHhyeDlpT0xubCtlZW9WS2c3K281amUvWlBJWW5I?=
+ =?utf-8?B?cElSS295YkhlT0tpSGRzZ3FFS3FFUktxSnFMMGY0UnRpd2pPTlZTMVNhNTYw?=
+ =?utf-8?B?THVEcEp4bk5JTDMzWWM2WHdLMXF3S0NuSCtqSWRNMWRVOVFmTjV6MEVKcFZR?=
+ =?utf-8?B?ZzY3YzluandTemJWbWs1M1pJeXRYNXpOUjdDaHFoWG9ndXc1bUJvQ1ZIRGdG?=
+ =?utf-8?B?Zm1waTZTS0dLNW9ldDNXTEl5MDNOMFoyREFXWlJqUnFPTmx0M2F4UEt1dzVq?=
+ =?utf-8?B?WlVMRUNyazIySEQ3QTJ2MVdtVk5sMWFLeHI3QVpKdlE4NVJTSnc5dzVFVEsv?=
+ =?utf-8?B?SkNMczNqMTFNOG13VHdLb3lRNWo4N1UzQkpGS21tVmtKQ2x1dHNHZXBlTmdH?=
+ =?utf-8?B?dFdFUkw5bklwSXhuRUludHQrWVltRnpRN0pFWVdJbFdpRStWZzlaZTFSbkVn?=
+ =?utf-8?B?WDgySHYxZ3grdjhITldOT0xWSWo2WThaK3NZRkpyK1JhWExrbU00QnpRdWtT?=
+ =?utf-8?B?QVVYYi8wRnFyZDRPU05PRDFwMUM1V2lYRmZDMmFQdERzaFhrdHhhZERaa1FY?=
+ =?utf-8?B?eVptSEhNRy9ZTlQrdHZROTdVN3hVOWRQd21xV2h6NFhkWjQwWUdvamFIVE1p?=
+ =?utf-8?B?ZnczdUFvNmpEc3BtWTZ3OHpqNDdpRFFpcHU4ajZ6T3lHQWN6WW1mdTBGRDBK?=
+ =?utf-8?B?Sk1odkZaZW9Ed2d6T0RjSDg0SkNjVy9XZVZTektSeU45czZreHlLcnBWK0NH?=
+ =?utf-8?B?TFBrUGJUck14Sk5FZGxITWhXOUFub2xnSVBiR2N0VUo5UWtvaGc3WS83S2pn?=
+ =?utf-8?B?M1VKYS9DdW50N3IvMVhqbjM3bmk5ZGg3ZjI5VnRNaFVhSE5YSHdyc05OZHpM?=
+ =?utf-8?B?blhlZVJYbkZlWTRoZVljMDY3M3M2RFVNNkhRZnpUQStEbXFKdDc4K3Q5Y0VJ?=
+ =?utf-8?B?Q3Jha0lGUTZYbEdPWDZXbUoxcHFscXhQeE45bnViMUF1em5KZzNORk1LS3Vl?=
+ =?utf-8?B?Z3J2Y0tuQTIyWWEwVi9xQ1hBQWVoN1pWMHdxV2tyNGVVREQ3VGZkMkNSck5s?=
+ =?utf-8?B?bkV0TVNrOGN4SzRqaFNEQkV6dVhMMFJUQURsRW1HdVIxdnN2Zm5zQXcwMGNW?=
+ =?utf-8?B?bzBTREk5dmw0Kzhzc00rZlQ1MlhpNlo5ZTIzdVBiUjNzWEovQ056MkZVNyts?=
+ =?utf-8?B?citKaURVQmJsd3VTSlROTFVzNGJsT2NWSUJDbjVkbUxXNldscE9EaldaZktM?=
+ =?utf-8?B?NUdiTWx5YlFKUlFvVitzWUpVdmZvS3Q2WEpNdjNHTFZZSFhIMjhSZ2llTitM?=
+ =?utf-8?B?UXhKcnZyOWVqbkRDYXl6UFdCRWJJRVVrRVpobFJtYjlHTnk0dnY4ZjhZRHdK?=
+ =?utf-8?B?aVMySHJaRHFHZnJhZVNQeDdpdHFRPT0=?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211123025911.20987-3-ansuelsmth@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-OriginatorOrg: bp.renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 58603b72-3259-4911-154d-08d9ae978684
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Nov 2021 15:40:06.7075
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: TQh6M1uAaBVpTZ+RvmSZ4HAwzi/1XpaIF/G35igIlnmZ5aTHCilGGhOZObNXPRv5fethw5o/vKihRZZDKeE/rdL4+iX4VLR4nBS6ixc8hWc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS0PR01MB5956
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ansuel,
-
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on net-next/master]
-
-url:    https://github.com/0day-ci/linux/commits/Ansuel-Smith/Add-mirror-and-LAG-support-to-qca8k/20211123-110018
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 3b0e04140bc30f9f5c254a68013a901e5390b0a8
-config: i386-randconfig-a012-20211123 (https://download.01.org/0day-ci/archive/20211123/202111232352.6wBDdqCJ-lkp@intel.com/config.gz)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 49e3838145dff1ec91c2e67a2cb562775c8d2a08)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/8fe5def54ec185d13c952a5f4da988ee7757ad78
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Ansuel-Smith/Add-mirror-and-LAG-support-to-qca8k/20211123-110018
-        git checkout 8fe5def54ec185d13c952a5f4da988ee7757ad78
-        # save the config file to linux build tree
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 ARCH=i386 
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/net/dsa/qca8k.c:2231:44: warning: overlapping comparisons always evaluate to true [-Wtautological-overlap-compare]
-           if (info->hash_type != NETDEV_LAG_HASH_L2 ||
-               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
->> drivers/net/dsa/qca8k.c:2252:3: warning: variable 'hash' is uninitialized when used here [-Wuninitialized]
-                   hash |= QCA8K_TRUNK_HASH_SIP_EN;
-                   ^~~~
-   drivers/net/dsa/qca8k.c:2246:10: note: initialize the variable 'hash' to silence this warning
-           u32 hash;
-                   ^
-                    = 0
-   2 warnings generated.
-
-
-vim +2231 drivers/net/dsa/qca8k.c
-
-  2208	
-  2209	static bool
-  2210	qca8k_lag_can_offload(struct dsa_switch *ds,
-  2211			      struct net_device *lag,
-  2212			      struct netdev_lag_upper_info *info)
-  2213	{
-  2214		struct dsa_port *dp;
-  2215		int id, members = 0;
-  2216	
-  2217		id = dsa_lag_id(ds->dst, lag);
-  2218		if (id < 0 || id >= ds->num_lag_ids)
-  2219			return false;
-  2220	
-  2221		dsa_lag_foreach_port(dp, ds->dst, lag)
-  2222			/* Includes the port joining the LAG */
-  2223			members++;
-  2224	
-  2225		if (members > QCA8K_NUM_PORTS_FOR_LAG)
-  2226			return false;
-  2227	
-  2228		if (info->tx_type != NETDEV_LAG_TX_TYPE_HASH)
-  2229			return false;
-  2230	
-> 2231		if (info->hash_type != NETDEV_LAG_HASH_L2 ||
-  2232		    info->hash_type != NETDEV_LAG_HASH_L23)
-  2233			return false;
-  2234	
-  2235		return true;
-  2236	}
-  2237	
-  2238	static int
-  2239	qca8k_lag_setup_hash(struct dsa_switch *ds,
-  2240			     struct net_device *lag,
-  2241			     struct netdev_lag_upper_info *info)
-  2242	{
-  2243		struct qca8k_priv *priv = ds->priv;
-  2244		bool unique_lag = true;
-  2245		int i, id;
-  2246		u32 hash;
-  2247	
-  2248		id = dsa_lag_id(ds->dst, lag);
-  2249	
-  2250		switch (info->hash_type) {
-  2251		case NETDEV_LAG_HASH_L23:
-> 2252			hash |= QCA8K_TRUNK_HASH_SIP_EN;
-  2253			hash |= QCA8K_TRUNK_HASH_DIP_EN;
-  2254			fallthrough;
-  2255		case NETDEV_LAG_HASH_L2:
-  2256			hash |= QCA8K_TRUNK_HASH_SA_EN;
-  2257			hash |= QCA8K_TRUNK_HASH_DA_EN;
-  2258			break;
-  2259		default: /* We should NEVER reach this */
-  2260			return -EOPNOTSUPP;
-  2261		}
-  2262	
-  2263		/* Check if we are the unique configured LAG */
-  2264		dsa_lags_foreach_id(i, ds->dst)
-  2265			if (i != id && dsa_lag_dev(ds->dst, i)) {
-  2266				unique_lag = false;
-  2267				break;
-  2268			}
-  2269	
-  2270		/* Hash Mode is global. Make sure the same Hash Mode
-  2271		 * is set to all the 4 possible lag.
-  2272		 * If we are the unique LAG we can set whatever hash
-  2273		 * mode we want.
-  2274		 * To change hash mode it's needed to remove all LAG
-  2275		 * and change the mode with the latest.
-  2276		 */
-  2277		if (unique_lag) {
-  2278			priv->lag_hash_mode = hash;
-  2279		} else if (priv->lag_hash_mode != hash) {
-  2280			netdev_err(lag, "Error: Mismateched Hash Mode across different lag is not supported\n");
-  2281			return -EOPNOTSUPP;
-  2282		}
-  2283	
-  2284		return regmap_update_bits(priv->regmap, QCA8K_TRUNK_HASH_EN_CTRL,
-  2285					  QCA8K_TRUNK_HASH_MASK, hash);
-  2286	}
-  2287	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+SGkgU2VyZ2V5IFNodHlseW92LA0KDQo+IFN1YmplY3Q6IFJlOiBbUkZDIDAvMl0gQWRkIFJ4IGNo
+ZWNrc3VtIG9mZmxvYWQgc3VwcG9ydA0KPiANCj4gSGVsbG8hDQo+IA0KPiBPbiAyMy4xMS4yMDIx
+IDE2OjMxLCBCaWp1IERhcyB3cm90ZToNCj4gDQo+ID4gVE9FIGhhcyBodyBzdXBwb3J0IGZvciBj
+YWxjdWxhdGluZyBJUCBoZWFkZXIgY2hlY2t1bSBmb3IgSVBWNCBhbmQNCj4gDQo+ICAgICBodyA9
+PSBoYXJkd2FyZT8gQW5kIGNoZWNrc3VtLiA6LSkNCg0KT29wcyB0eXBvLiBNeSBtaXN0YWtlLg0K
+DQo+IA0KPiA+IFRDUC9VRFAvSUNNUCBjaGVja3N1bSBmb3IgYm90aCBJUFY0IGFuZCBJUFY2Lg0K
+PiA+DQo+ID4gVGhpcyBwYXRjaCBzZXJpZXMgYWltcyB0byBhZGRzIFJ4IGNoZWNrc3VtIG9mZmxv
+YWQgc3VwcG9ydGVkIGJ5IFRPRS4NCj4gPg0KPiA+IEZvciBSWCwgVGhlIHJlc3VsdCBvZiBjaGVj
+a3N1bSBjYWxjdWxhdGlvbiBpcyBhdHRhY2hlZCB0byBsYXN0IDRieXRlDQo+ID4gb2YgZXRoZXJu
+ZXQgZnJhbWVzLiBGaXJzdCAyYnl0ZXMgaXMgcmVzdWx0IG9mIElQVjQgaGVhZGVyIGNoZWNrc3Vt
+IGFuZA0KPiA+IG5leHQgMiBieXRlcyBpcyBUQ1AvVURQL0lDTVAuDQo+ID4NCj4gPiBpZiBmcmFt
+ZSBkb2VzIG5vdCBoYXZlIGVycm9yICIwMDAwIiBhdHRhY2hlZCB0byBjaGVja3N1bSBjYWxjdWxh
+dGlvbg0KPiA+IHJlc3VsdC4gRm9yIHVuc3VwcG9ydGVkIGZyYW1lcyAiZmZmZiIgaXMgYXR0YWNo
+ZWQgdG8gY2hlY2tzdW0NCj4gPiBjYWxjdWxhdGlvbiByZXN1bHQuIENhc2VzIGxpa2UgSVBWNiwg
+SVBWNCBoZWFkZXIgaXMgYWx3YXlzIHNldCB0bw0KPiAiRkZGRiIuDQo+IA0KPiAgICAgWW91IGp1
+c3Qgc2FpZCBJUHY0IGhlYWRlciBjaGVja3N1bSBpcyBzdXBwb3J0ZWQ/DQoNClllcyB5b3UgYXJl
+IGNvcnJlY3QuIA0KDQpmb3IgSVBWNCwgSVB2NCBoZWFkZXIgY2hlY2tzdW0gaXMgc3VwcG9ydGVk
+LiBJZiBpdCBpcyBzdXBwb3J0ZWQgY2FzZSBhbmQgbm8gZXJyb3INCiAgICAgICAgICB0aGUgcmVz
+dWx0IGlzIHNldCB0byAiMDAwMCIgYnkgdGhlIGhhcmR3YXJlLg0KDQpXaGVyZSBhcyBmb3IgSVB2
+NiwgSVBWNCBoZWFkZXIgaXMgdW5zdXBwb3J0ZWQgY2FzZSwNCiAgICAgICAgc28gdGhlIHJlc3Vs
+dCBpcyBhbHdheXMgc2V0IHRvICJmZmZmIiBieSB0aGUgaGFyZHdhcmUNCg0KQ2hlZXJzLA0KQmlq
+dQ0KPiANCj4gPiB3ZSBjYW4gdGVzdCB0aGlzIGZ1bmN0aW9uYWxpdHkgYnkgdGhlIGJlbG93IGNv
+bW1hbmRzDQo+ID4NCj4gPiBldGh0b29sIC1LIGV0aDAgcnggb24gLS0+IHRvIHR1cm4gb24gUngg
+Y2hlY2tzdW0gb2ZmbG9hZCBldGh0b29sIC1LDQo+ID4gZXRoMCByeCBvZmYgLS0+IHRvIHR1cm4g
+b2ZmIFJ4IGNoZWNrc3VtIG9mZmxvYWQNCj4gPg0KPiA+IEJpanUgRGFzICgyKToNCj4gPiAgICBy
+YXZiOiBGaWxsdXAgcmF2Yl9zZXRfZmVhdHVyZXNfZ2JldGgoKSBzdHViDQo+ID4gICAgcmF2Yjog
+QWRkIFJ4IGNoZWNrc3VtIG9mZmxvYWQgc3VwcG9ydA0KPiA+DQo+ID4gICBkcml2ZXJzL25ldC9l
+dGhlcm5ldC9yZW5lc2FzL3JhdmIuaCAgICAgIHwgMjAgKysrKysrKysrDQo+ID4gICBkcml2ZXJz
+L25ldC9ldGhlcm5ldC9yZW5lc2FzL3JhdmJfbWFpbi5jIHwgNTUgKysrKysrKysrKysrKysrKysr
+KysrKystDQo+ID4gICAyIGZpbGVzIGNoYW5nZWQsIDc0IGluc2VydGlvbnMoKyksIDEgZGVsZXRp
+b24oLSkNCj4gDQo+ICAgICBEYXZlLCBKYWt1YiwgSSdsbCB0cnkgcmV2aWV3aW5nIHRoZXNlIGxh
+dGVyIHRvZGF5Lg0KPiANCj4gTUJSLCBTZXJnZXkNCg==
