@@ -2,74 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FC8445B910
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 12:26:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 566AB45B914
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 12:30:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241272AbhKXLaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 06:30:01 -0500
-Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:52498 "EHLO
-        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240520AbhKXLaB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 06:30:01 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0Uy7WWG6_1637753209;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0Uy7WWG6_1637753209)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 24 Nov 2021 19:26:49 +0800
-Date:   Wed, 24 Nov 2021 19:26:48 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, guwen@linux.alibaba.com,
-        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: Re: [PATCH RFC net] net/smc: Ensure the active closing peer first
- closes clcsock
-Message-ID: <YZ4heNX49qcOUnFS@TonyMac-Alibaba>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <20211116033011.16658-1-tonylu@linux.alibaba.com>
- <d83109fe-ae25-def0-b28e-f8695d4535c7@linux.ibm.com>
- <YZ3+ihxIU5l8mvWY@TonyMac-Alibaba>
- <1f67548e-cbf6-0dce-82b5-10288a4583bd@linux.ibm.com>
+        id S241237AbhKXLdy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 06:33:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37190 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238267AbhKXLdx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 06:33:53 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41CBDC061574
+        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 03:30:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=0EP66XXeGuD6B2iYTqZNaKQGgV9wDCZUiKKfjPAGnRo=; b=khUO/C8yWNoHNpIZDOXeOC3dmh
+        3kM5UefVKbpUL44vnz/qbN1TnGmq6rhUDSH7FT0/iFNI9T8DJE1TDiHWONf1eFvA3OWuX1gigXTcU
+        dM/9wayZYKlXSIL9YIiyOOGt3txOf6UEOhm5wPJHJkXAnysFIm7sCTfOwep/URj5QnLj9sUbI4Nzv
+        he5809d2iVFwFHp04j1a6qyM37vnmfnjuC8ym7Az9PnjYj1sFSdpgy9ILpIgb2LxAyJ6W2pnj4jIR
+        uaWBn/10j9YvZD0NyIXCJixunJPzbesrZGuNBKKMmnbhkWS15sxnTQ64Q65IevoK6SeDF7I/F4kaG
+        DHkzgEtQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55840)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mpqU6-0000WV-9Y; Wed, 24 Nov 2021 11:30:42 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mpqU5-00019X-Gj; Wed, 24 Nov 2021 11:30:41 +0000
+Date:   Wed, 24 Nov 2021 11:30:41 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        olteanv@gmail.com
+Subject: Re: [PATCH net-next] MAINTAINERS: Update B53 section to cover SF2
+ switch driver
+Message-ID: <YZ4iYeg+47Q69oRG@shell.armlinux.org.uk>
+References: <20211123222422.3745485-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1f67548e-cbf6-0dce-82b5-10288a4583bd@linux.ibm.com>
+In-Reply-To: <20211123222422.3745485-1-f.fainelli@gmail.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 24, 2021 at 11:08:23AM +0100, Karsten Graul wrote:
-> On 24/11/2021 09:57, Tony Lu wrote:
-> > IMHO, given that, it is better to not ignore smc_close_final(), and move 
-> > kernel_sock_shutdown() to __smc_release(), because smc_shutdown() also
-> > calls kernel_sock_shutdown() after smc_close_active() and
-> > smc_close_shutdown_write(), then enters SMC_PEERCLOSEWAIT1. It's no need
-> > to call it twice with SHUT_WR and SHUT_RDWR. 
+On Tue, Nov 23, 2021 at 02:24:22PM -0800, Florian Fainelli wrote:
+> Update the B53 Ethernet switch section to contain
+> drivers/net/dsa/bcm_sf2*.
 > 
-> Since the idea is to shutdown the socket before the remote peer shutdowns it
-> first, are you sure that this shutdown in smc_release() is not too late?
+> Reported-by: Russell King (Oracle) <linux@armlinux.org.uk>
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 
-Hi Graul,
+Thanks!
 
-Yes, I have tested this idea, it will be too late sometime. I won't fix
-this issue.
+Acked-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-> Is it sure that smc_release() is called in time for this processing?
-> 
-> Maybe its better to keep the shutdown in smc_close_active() and to use an rc1
-> just like shown in your proposal, and return either the rc of smc_close_final() 
-> or the rc of kernel_sock_shutdown().
-
-Yep, I am testing this approach in my environment. I am going to keep
-these return codes and return the available one.
-
-> I see the possibility of calling shutdown twice for the clcsocket, but does it
-> harm enough to give a reason to check it before in smc_shutdown()? I expect TCP
-> to handle this already.
-
-TCP could handle this already, but it doesn't make much sense to call it twice. When
-call smc_shutdown(), we can check sk_shutdown before call kernel_sock_shutdown(),
-so that it can slightly speed up the release process.
-
-I will send this soon, thanks for your advice.
-
-Tony Lu
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
