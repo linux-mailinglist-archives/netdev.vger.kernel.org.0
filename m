@@ -2,176 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D681C45C70C
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 15:17:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1969B45C055
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 14:04:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351176AbhKXOVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 09:21:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44736 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353562AbhKXOS7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 09:18:59 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E706C09ECD0;
-        Wed, 24 Nov 2021 04:31:38 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id x15so9733533edv.1;
-        Wed, 24 Nov 2021 04:31:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=X5je2/JyWbZDgEix/0iijJu6E649kdB2MShuic6l19c=;
-        b=glqvVH0ZWNXWeAacsTHEVBLyekrLB3AQ8NtAzGScFKx8xTYwAo335/g7fbQ9cKGP3O
-         165XqgkEwC8PHyswGFuzQwe2QrPCwzQMv+a+nK5BQTsrEG2YdNh1WpiIWO6rErEguu5S
-         iBE9cm+akpQxpc0m0ov/QwMYQ2ODVdrGq5szOAed99bgpBL1UgCwhncyW9ezLG1u4K4y
-         vrC4fY8rpxXk6L+4iqDnqptv4TKHUWfk3uZVngQrFtfrBVYHdxz2OEHEReDcDl6f1/Ly
-         00sMDAn6WIZ6RQu1WSTCmqi5zuzsd3cA79B2U5iK+iDxJSwEnJBnRy9iF9ud3i4R648k
-         5FgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=X5je2/JyWbZDgEix/0iijJu6E649kdB2MShuic6l19c=;
-        b=Bwn0fIFb4JI3pjUvs0ipd7IqtoTkKVc4ycvgJLBqwlLfvXFOu0VLJF0PpFKb9+CsEF
-         cxKwXtiXjlZk3ZhZgqY/Qr1nBV5yUsV900bJfrEjerhuHksehTFUDe0DTYnHEXHZ9TYF
-         GgPKXI6vxuwKZk+Cn5NguPHFkPKQ3ZTmtfSkN4graQbNvHN54Ew8zF0Qky6+SBiOGMCG
-         EL68Wdz2csuGcRtNT2X3zDhY7FR+SNBJzbDMCHFn95meXH5AhNLHe5J/3JE8swP0zee4
-         uPLikFZ4mymm0K6YaXzZS03UQQhsuj5OnJJIhKvu6eKj6BNnUS5QSudkBAwR2O34k+11
-         aQmA==
-X-Gm-Message-State: AOAM5325ZTegiUP/Hl1UR0WxkBKiYsepHY/PQLZcR0aAEqf95X51zYJI
-        ACXx9ZxlNltjFrqCIOZ8h8FeDCafaQQ=
-X-Google-Smtp-Source: ABdhPJzQZ14vlyXVA1zbOxCmypxqMjsz6ZV1ngM71Eyx9n3mBvO6PSm4xUpKr6qvFeyKaxz/lgJkrA==
-X-Received: by 2002:a05:6402:3550:: with SMTP id f16mr24332132edd.377.1637757097011;
-        Wed, 24 Nov 2021 04:31:37 -0800 (PST)
-Received: from skbuf ([188.25.163.189])
-        by smtp.gmail.com with ESMTPSA id t5sm8170493edd.68.2021.11.24.04.31.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Nov 2021 04:31:36 -0800 (PST)
-Date:   Wed, 24 Nov 2021 14:31:35 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sean Anderson <sean.anderson@seco.com>, davem@davemloft.net
-Subject: Re: [PATCH net-next v2 4/8] net: phylink: update
- supported_interfaces with modes from fwnode
-Message-ID: <20211124123135.wn4lef5iv2k26txb@skbuf>
-References: <20211123164027.15618-1-kabel@kernel.org>
- <20211123164027.15618-5-kabel@kernel.org>
- <20211123212441.qwgqaad74zciw6wj@skbuf>
- <20211123232713.460e3241@thinkpad>
- <20211123225418.skpnnhnrsdqrwv5f@skbuf>
- <YZ4cRWkEO+l1W08u@shell.armlinux.org.uk>
- <20211124120441.i7735czjm5k3mkwh@skbuf>
- <20211124131703.30176315@thinkpad>
+        id S1347246AbhKXNHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 08:07:14 -0500
+Received: from mga06.intel.com ([134.134.136.31]:34087 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1346829AbhKXNFO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Nov 2021 08:05:14 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10177"; a="296077017"
+X-IronPort-AV: E=Sophos;i="5.87,260,1631602800"; 
+   d="scan'208";a="296077017"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2021 05:02:02 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,260,1631602800"; 
+   d="scan'208";a="607182025"
+Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
+  by orsmga004.jf.intel.com with ESMTP; 24 Nov 2021 05:02:02 -0800
+Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
+ ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Wed, 24 Nov 2021 05:02:02 -0800
+Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
+ ORSMSX608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Wed, 24 Nov 2021 05:02:01 -0800
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12 via Frontend Transport; Wed, 24 Nov 2021 05:02:01 -0800
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.176)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.12; Wed, 24 Nov 2021 05:02:00 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HxLPmUFRo6awI/ArLypnMroFlbSEYYlimi9dPSmV28NfIRgBNUymD7ZrIpUrlQpnGGFQqQvmT45xQjzPvT1Uu67WRzspVsVmuimZFqfyuVYOARm+vXgKzMZ8OswD3ioIVQfPj/1RdcrRmUImCMjuTkzJsT6Y71B/hoT1k0ChdZ+3n4XtUNgfEQBqISGZCrMvCkKsh6J/xIRjXr+qCXhRBzaRAO5G00xR9ZyEdCoxsjExmhpzpAAtO+KwaINDTHYlkEKNCA7YdQ97Qbh8t1EMS3WXozTCf8GbFeKad0FFn1H4u3A5BWsQmUdKVfsE7worbWQp+thRjrdopVq7Fh224g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZOeOHgeRVlkujS6y81GOGfk4iXQeVdSsgGZcd9Kv0+U=;
+ b=VFbkjI/X/hNonc1nMP86K4ZmvOHfqwpge7emike+A/K2r5rjTC1YZ3sEemVKniNh2Bng8aJe2qfjAR8yRRfa9/C2UfCq2Tr1IntbfA2jb3CUF0L/oK66jJlkNr/Co6zRBruXJr3zbp9QKKzeIU10j8Gp3XD+PyJJDEiHkr6hE83BDoWB9x4YM6cyXNIP3T30j0IKW6APLPV9/WYbX1KmvaZkHIXPuGsL1JBXxPlJUYr8Bh4/ztLqYBNlsRgSt+VdManld/eWS5BdyQb0JfQh/GBF7DBSwX4EGgJXkluX0DeatbV49VDLBMXkh4+GgTl8YFtHwHdon1PSA0tA0nsSbQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZOeOHgeRVlkujS6y81GOGfk4iXQeVdSsgGZcd9Kv0+U=;
+ b=R9p0eON9UwrRd8OR3Y5u4zLpF9504CwUIuIPdK50n9lnr4XE01sq/IcgMxIHHyjtkXSxyNBY0Zeg/iiTHwlo3gWGc1WmbvYUtWVXc4ensXc4JBDVSeT1YdBonCAMxTsD1gP58I31znssASzHB/8B7hGBGT3FURKxmGfdyv5fhIU=
+Received: from BYAPR11MB3367.namprd11.prod.outlook.com (2603:10b6:a03:79::29)
+ by BYAPR11MB3205.namprd11.prod.outlook.com (2603:10b6:a03:1e::32) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.26; Wed, 24 Nov
+ 2021 13:01:59 +0000
+Received: from BYAPR11MB3367.namprd11.prod.outlook.com
+ ([fe80::d9a0:60c3:b2b2:14ce]) by BYAPR11MB3367.namprd11.prod.outlook.com
+ ([fe80::d9a0:60c3:b2b2:14ce%7]) with mapi id 15.20.4690.027; Wed, 24 Nov 2021
+ 13:01:59 +0000
+From:   "G, GurucharanX" <gurucharanx.g@intel.com>
+To:     Jason Wang <wangborong@cdjrlc.com>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: RE: [Intel-wired-lan] [PATCH] igb: remove never changed variable
+ `ret_val'
+Thread-Topic: [Intel-wired-lan] [PATCH] igb: remove never changed variable
+ `ret_val'
+Thread-Index: AQHX2aMTDm3JzCi0XEunlaYyJbVHMqwSs4YA
+Date:   Wed, 24 Nov 2021 13:01:59 +0000
+Message-ID: <BYAPR11MB33678E55E77438B1B16B990EFC619@BYAPR11MB3367.namprd11.prod.outlook.com>
+References: <20211114060222.231075-1-wangborong@cdjrlc.com>
+In-Reply-To: <20211114060222.231075-1-wangborong@cdjrlc.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8dbe4a5c-522e-4205-a111-08d9af4a9a13
+x-ms-traffictypediagnostic: BYAPR11MB3205:
+x-microsoft-antispam-prvs: <BYAPR11MB3205E0CBB6927316808A9B91FC619@BYAPR11MB3205.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3513;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: OKrkUhkIMk+p7ea5iB37gWEGaMfmvMIvQD/dzR8qW9j+LEKXADLqeUFOPmjefZqLVJG3tFgEvqjTnT/2P8peGjlujOOlpRVuIsRBF4j7PKhck8g55Xen5m9tJQEDiqjyCT04iE/DtzvWkwbjgEeVcEBvhf5dT+Ykyg7rciXBxCQro/FWbwMTdYiLwnBjurlSH7nGehWrLPFP8lCRamj6dU7BwRSnoo/FfEQtKvtzM+MCgjj+65Zeg2YVxp/7pW2xqeWc7w/qNOxawshXXz5/oRDbFytu661jXqw4cOFGchONU9Bu0fmppgS9jGpyD4jwvCfPELCDCopHw7mAZvkSrmBJQ8R2+bi3QbjoORJGqNoUmFaBQ2JOyOAJ1EZshr+JfOkta8CBFDfj7I/7bYJJWoboJYPoPKKjaB8tcG7OFpoDHTla8lXxSxJ1TEDJtO3nQEnQ2h1pAe6tXOzM269w3oIs1LLckKZji4Pe25VgO3ahpsEyvzQp+SV9LcwxwXdtUFtpxYzi/24tPksL82bXUHFc7/2lLkSRsPjEhLNs2Mk7KrA9NQSNIUcMv4qgR0fDmL3pqTSCc5BFvytFb1M11HafyqS4FUrxLDOobcJilaE+k3cMduTsG9CpbAhc606ycDwg6S8/AgbQcKGk8ahCEnlQQGtaYzwpKtr5W8YTGpnTf6Zki31X/H0/wwHYK74DZjBF195Nn7SfcA5FR31Pdho8KMqmnlgaax+4C8BC/ns=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3367.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(82960400001)(66446008)(76116006)(7696005)(26005)(2906002)(122000001)(66476007)(64756008)(38070700005)(4744005)(186003)(66946007)(53546011)(71200400001)(52536014)(6506007)(316002)(83380400001)(5660300002)(110136005)(8676002)(66556008)(55016003)(33656002)(8936002)(9686003)(508600001)(86362001)(4326008)(38100700002)(54906003)(81973001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?LjEYgCi5RO04MjshfgPz96vcnoFDxnNlyFVhVpjQdEhm6arDga/hoFyzAHe4?=
+ =?us-ascii?Q?dB1INL8sOSGkUo385KoTGe6Wt9F4/mG6WInTNb0y7OxBUdUSzPoAjWwB4/cS?=
+ =?us-ascii?Q?DzJlnnyAA7KJvRxXhWiGj7QtMczvEiL9vtv8/47M1ZkAIZ5I4T27iRpNKc5b?=
+ =?us-ascii?Q?WFs+NMcrc3SJpeubKfzKqaVjIQddOJlZF2O3ZlIj3u/cc1lwp3gGeEMhKkFt?=
+ =?us-ascii?Q?K/eubONJjFW6vrymsDX8CDYqW69LgHvIlvaNJYfr0ZjaRYV5+uM8iICXGVG7?=
+ =?us-ascii?Q?w/9CKWWe0TgJNTVBO1JxiPXxt/npBhV8mrKowAkDlpW9kqza2w8T1Gc3viaM?=
+ =?us-ascii?Q?CRHbRqEueJ4DZYzBgXbXc5Z9B4bj1c3hXVpU4NVwSAoUAWeSOjrE3fWxIr9P?=
+ =?us-ascii?Q?YTcH/PplmFWkJv1IgrPAja7nYsLDqdaQjyD1sLidtzQnGFZ/8s50Am6zr3RY?=
+ =?us-ascii?Q?w/chAP9CKvEbJSz9lE+j+mcd8E/RizX0r3VkoqleobTsfL6MqrJHNpx6HFih?=
+ =?us-ascii?Q?5qiJarB6C0aoHj7L4fD/9dTnzAPduHbetnVt16X4GE1SUFKzx0+R+te/nWxP?=
+ =?us-ascii?Q?vInzr/OEnUTQqOHsLK/rcgfJJ94vZT3Ef8GtJycngsTpQpyxPl2xkcFx35pV?=
+ =?us-ascii?Q?OqRONpmmSpDKg/eBzuOGPZ/fKx9plv1WcdSrVhN6FzU0nXLcDAUzEuPss5Lw?=
+ =?us-ascii?Q?NuujjfU567JGshKkWV7uB2xZMLn3l+zXhr0QR3fybHBVjMsq5zW9mgess+Ox?=
+ =?us-ascii?Q?DY3iQxr4CIoJt0g7hOs/od73ygtXXuHROWpWeFREmE5aKyVl/8G4N88y566q?=
+ =?us-ascii?Q?iVOkjsKXhxma5SBbcyUVfGDhFEip9NccU/YJWAvABJySQIjAqfuEv5C/i3e/?=
+ =?us-ascii?Q?rX3XLHW33lerF2mJxv0w80hNji8abIRV6g+nXsEc4fu4RqVfzGeVAJTMXkmp?=
+ =?us-ascii?Q?LwfVZMWp3zPHTCZFxKI0pblcOzkGowuV4J/OpnTnZ2jgnuq2f8x1q1c5AxlF?=
+ =?us-ascii?Q?JiAj0Gm9BtSTz/BSpSsncnqvER7L851ZuXBJfD3Wu9vTcJV74hH88VtmAbmF?=
+ =?us-ascii?Q?eDPQIm9iGP7QqFYgsMPn/3aAzCuoQhVFL+VvefMt/qhqCorF86taoI6WTZ8U?=
+ =?us-ascii?Q?Y/ovhIOBVKWfZZTfKzxgFQXgSxMV6XTu/f3J/BFHcM4MmrNg+Axr3PaxIOyD?=
+ =?us-ascii?Q?sARx3ot1BU7WdpExDQJ/vup7ivz6eCcwNh7td4pjZn9q8+AP4jXpsagoi7eU?=
+ =?us-ascii?Q?AmxlRnHvIwxrVdL3WYhJGjJ1HhfDETLdvqDhEGfoWlOwHI52gzz+r/dhXosA?=
+ =?us-ascii?Q?/4ApSGZ5+Vkv8xwF7ltbpqqTwWrzE1jMrrxMy4OSVn8wyN8yMzMbngcTn0iN?=
+ =?us-ascii?Q?kRERIwrSNXASnJUdSAKorOlZeNOFvDqw6G8JtCIQxVgkPvPmjvMjvwgTIXvX?=
+ =?us-ascii?Q?q7TJeNipVsdXn14XzRvL0lBa7z5ki9dPyNY/BHamcYSAyQCIJ6461hNtPd4Q?=
+ =?us-ascii?Q?mN+luFXehCRtbaMxVH/Fgsl6iEMcuf62iuWHL/duWXtwDIKe5oDbuGpXJUMD?=
+ =?us-ascii?Q?uapdj8RiqRXampraKiQhkzNay4/aJ9fH5aixEyvdB0yHF7lvjyToe3Kr4by5?=
+ =?us-ascii?Q?CmyC9e18FjLUFWF2ISRaXA4=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211124131703.30176315@thinkpad>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3367.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8dbe4a5c-522e-4205-a111-08d9af4a9a13
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Nov 2021 13:01:59.5605
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: nHP11bF/2/xj9N2aY4qMf7M6XO7w8z7kHBtakKvHC7A9rrobfzFv8EGAl0GIDJJXuLrvvTiO9gzfMbZuP+DH9w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB3205
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 24, 2021 at 01:17:03PM +0100, Marek Behún wrote:
-> On Wed, 24 Nov 2021 14:04:41 +0200
-> Vladimir Oltean <olteanv@gmail.com> wrote:
-> 
-> > On Wed, Nov 24, 2021 at 11:04:37AM +0000, Russell King (Oracle) wrote:
-> > > On Wed, Nov 24, 2021 at 12:54:18AM +0200, Vladimir Oltean wrote:  
-> > > > This implies that when you bring up a board and write the device tree
-> > > > for it, you know that PHY mode X works without ever testing it. What if
-> > > > it doesn't work when you finally add support for it? Now you already
-> > > > have one DT blob in circulation. That's why I'm saying that maybe it
-> > > > could be better if we could think in terms that are a bit more physical
-> > > > and easy to characterize.  
-> > > 
-> > > However, it doesn't solve the problem. Let's take an example.
-> > > 
-> > > The 3310 supports a mode where it runs in XAUI/5GBASE-R/2500BASE-X/SGMII
-> > > depending on the negotiated media parameters.
-> > > 
-> > > XAUI is four lanes of 3.125Gbaud.
-> > > 5GBASE-R is one lane of 5.15625Gbaud.
-> > > 
-> > > Let's say you're using this, and test the 10G speed using XAUI,
-> > > intending the other speeds to work. So you put in DT that you support
-> > > four lanes and up to 5.15625Gbaud.  
-> > 
-> > Yes, see, the blame's on you if you do that.You effectively declared
-> > that the lane is able of sustaining a data rate higher than you've
-> > actually had proof it does (5.156 vs 3.125).
-> 
-> But the blame is on the DT writer in the same way if they declare
-> support for a PHY mode that wasn't tested. (Or at least self-tests with
-> PRBS patterns at given frequency.)
 
-I think we're running around in circles on this one. I think there's an
-overlap between the supported_interfaces and the phy-mode array in
-device tree. Going back to your example with the SMC calls unsupported
-by ATF, you may run into the surprise that you have a phy-mode in the
-device tree which you need to mask out in Linux, via supported_interfaces.
-You would have needed to mask it out anyway, even with my proposal, so
-you don't gain anything except the extra burden of spelling out 5 lines
-of a phy-mode array in the device tree. It's going to be a nightmare for
-review, it isn't obvious to say that "this phy-mode shouldn't be here"
-or "you're missing this phy-mode".
 
-> > The reason why I'm making this suggestion is because I think it lends
-> > itself better to the way in which hardware manufacturers work.
-> > A hobbyist like me has no choice than to test the highest data rate when
-> > determining what frequency to declare in the DT (it's the same thing for
-> > spi-max-frequency and other limilar DT properties, really), but hardware
-> > people have simulations based on IBIS-AMI models, they can do SERDES
-> > self-tests using PRBS patterns, lots of stuff to characterize what
-> > frequency a lane is rated for, without actually speaking any Ethernet
-> > protocol on it. In fact there are lots of people who can do this stuff
-> > (which I know mostly nothing about) with precision without even knowing
-> > how to even type a simple "ls" inside a Linux shell.
-> >
-> > > Later, you discover that 5GBASE-R doesn't work because there's an
-> > > electrical issue with the board. You now have DT in circulation
-> > > which doesn't match the capabilities of the hardware.
-> > > 
-> > > How is this any different from the situation you describe above?
-> > > To me, it seems to be exactly the same problem.  
-> > 
-> > To err is human, of course. But one thing I think we learned from the
-> > old implementation of phylink_validate is that it gets very tiring to
-> > keep adding PHY modes, and we always seem to miss some. When that array
-> > will be described in DT, it could be just a tad more painful to maintain.
-> 
-> The thing is that we will still need the `phy-mode` property, it can't
-> be deprecated IMO.
+> -----Original Message-----
+> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
+> Jason Wang
+> Sent: Sunday, November 14, 2021 11:32 AM
+> To: kuba@kernel.org
+> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Jason Wang
+> <wangborong@cdjrlc.com>; intel-wired-lan@lists.osuosl.org;
+> davem@davemloft.net
+> Subject: [Intel-wired-lan] [PATCH] igb: remove never changed variable `re=
+t_val'
+>=20
+> The variable used for return status in `igb_write_xmdio_reg' function is =
+never
+> changed  and this function is just need return 0. Thus, the `ret_val' can=
+ be
+> removed and return 0 at the end of the `igb_write_xmdio_reg' function.
+>=20
+> Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+> ---
+>  drivers/net/ethernet/intel/igb/e1000_i210.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+>=20
 
-Wait a minute, who said anything about deprecating it? I just said
-"let's not make it an array, in the actual device tree". The phy-mode
-was, and will remain, the initial MII-side protocol, which can or cannot
-be changed at runtime.
-
-> There are non-SerDes modes, like rgmii, which may use different pins
-> than SerDes modes.
-
-And, as discussed, there is no use case for dynamic switchover between
-RGMII and a SERDES lane.
-
-> There may theoretically also be a SoC or PHY where the lanes for XAUI
-> do not share pins with the lane of 2500base-x, and this lane may not be
-> wired. Tis true that I don't know of any such hardware and it probably
-> does not and will not exist, but we don't know that for sure and this is
-> a case where your proposal will fail and the phy-mode extension would
-> work nicely.
-
-We haven't gotten to discussing any of the details yet, but my proposal
-of course would have been to describe the number of SERDES lanes and max
-frequency in the COMPHY nodes, and have the COMPHY tell you what is
-supported. At least with Layerscape, that would be the model. So when
-you have pinmuxing, you just get the capabilities from the lane in use.
-
-> 
-> Maybe we need opinions from other people here.
-
-Other opinions are welcome of course.
+Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at I=
+ntel)
