@@ -2,173 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D62E545B53B
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 08:19:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B74245B5A8
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 08:37:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240982AbhKXHWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 02:22:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37374 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236615AbhKXHWS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 02:22:18 -0500
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D692C061714
-        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 23:19:09 -0800 (PST)
-Received: by mail-pg1-x52b.google.com with SMTP id s137so1341240pgs.5
-        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 23:19:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hCuyQ7Pphun0p006yhJKjeekaISZ40snzS/vQNR7Bqg=;
-        b=J2yWQbd0+NlKjgNLKgnSOfzVAPDi10rh1Xfr0J+LSdI5ky4skKkmgQ269TF307MN1X
-         wdwffDtop3AZSr1BghdqDaPrZ3q/daUWYwqSQ6JAOOK+OhViKisGT5N1PDfFruVgp+cP
-         OniqwTEOKfDEB4Cvo3LSo99Ob9solTbrk8JnWeppPHHCROW7sUdhTcQSOm10AYgAnbfK
-         LyT7fUwwWFIh9Zg2uETaOpWeEvKfPuxWLi8pxwaoNCqO57ZBlxHlCi3ehAqHy5cuKiPv
-         WSzIB50yhAixyoowqXJdns2w+jE+pDTJaM2wO06wNKZT9kXgUNtv0kYtdZ5B+MvkU5T5
-         1usw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hCuyQ7Pphun0p006yhJKjeekaISZ40snzS/vQNR7Bqg=;
-        b=EyeXeFYlDYR5EdHyj9Dyr5SkKAHEGZuqbDoDWb0dvHGfgIyxWtMBKwY/P8xV3sPpdk
-         +01dgRO5/45dKnHSTlKdXKS+ILpwQ28rRNhpvcj/1rfNgLyBjTfEhRG7nCF6E7PB3BIi
-         mT/ehHS/hzJu/WxihnaeZN0/J1bvPNR80vXFSbk8iFq2fvv/3/cp53i5ksHV6Y070vi/
-         Td1l9YkOUQ+WVxiaTfcXhp2+gYacGMqNYA3GQDKfsugYVqG7yrthCu24gimwIDK+0Vyg
-         5xXDHY5SNhPq9kmtfB7gt46XkdcmM1PfWLyWG/jzryVHedq3K+7QaHkYnDDxfRU38WZD
-         DwZg==
-X-Gm-Message-State: AOAM530D0Cm9vYCitS+BU5gKv+0OAkATmlBso9FLVB4L2FHmK9nJfhyQ
-        TTTCBlJZg11PrbVaZI9K5xJjNrasExo=
-X-Google-Smtp-Source: ABdhPJyIDzktQMU+6h3i9qHTtcFFddDyTH7y+dXYY1p5MBiRCOOrt9tgdKyt08jy8kBVXLJMKDbZ1w==
-X-Received: by 2002:a05:6a00:1946:b0:492:64f1:61b5 with SMTP id s6-20020a056a00194600b0049264f161b5mr3991482pfk.52.1637738348431;
-        Tue, 23 Nov 2021 23:19:08 -0800 (PST)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id p16sm3579736pfh.97.2021.11.23.23.19.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Nov 2021 23:19:08 -0800 (PST)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Jarod Wilson <jarod@redhat.com>,
+        id S232822AbhKXHk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 02:40:59 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.167]:21307 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230429AbhKXHk6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 02:40:58 -0500
+X-Greylist: delayed 39316 seconds by postgrey-1.27 at vger.kernel.org; Wed, 24 Nov 2021 02:40:57 EST
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1637739455;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=1+iJsG/OZ6lKeRsw7alYS7uTLjD9Sx+z2LOa8a+A83U=;
+    b=qknR8RBGc7rQDJ1/nHXSvJ9HLHogFOsBNEb7/PKW2f4KlZ2GxdNj5ySwKl55r2qOXn
+    8SLb1ymo0GoQJBSNlydxvF5xBpZr4zBJ48kuBlmYUTu+GAmLbQzK82FBumzIi3BEtM2W
+    krbobvGTKh4haTRv8ZsHPJM6RphwlpkVwK/Hlwlaxb4MmsCFnycSDgogGg4eAhcopecj
+    xLXMmy5ffFiwFbNEFD8GlS1oZ7G49yW8D8GYYSNQ7qim+nU1WleWh1Q8XZXRNx6QmpD/
+    yUOK19MClZly8O2nhCV40YuBzezgxHWSkMCvpsmlTe37dEXWLyqnIbRFV2RD7phVjNoC
+    Zp6Q==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPv6:2a00:6020:1cfa:f900::b82]
+    by smtp.strato.de (RZmta 47.34.6 AUTH)
+    with ESMTPSA id a04d59xAO7bY7KW
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Wed, 24 Nov 2021 08:37:34 +0100 (CET)
+Subject: Re: [PATCH v2 net] can: sja1000: fix use after free in
+ ems_pcmcia_add_card()
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Wolfgang Grandegger <wg@grandegger.com>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>, davem@davemloft.net,
-        Denis Kirjanov <dkirjanov@suse.de>,
-        David Ahern <dsahern@gmail.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH draft] bond: add ns_ip6_target option
-Date:   Wed, 24 Nov 2021 15:18:54 +0800
-Message-Id: <20211124071854.1400032-2-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211124071854.1400032-1-liuhangbin@gmail.com>
-References: <20211124071854.1400032-1-liuhangbin@gmail.com>
+        Leon Romanovsky <leon@kernel.org>,
+        Markus Plessing <plessing@ems-wuensche.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+References: <20211124065618.GA3970@kili>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <bccacc1b-4c04-98f5-7b97-85664c238ec4@hartkopp.net>
+Date:   Wed, 24 Nov 2021 08:37:27 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211124065618.GA3970@kili>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar with arp_ip_target, this option add bond IPv6 NS/NA monitor
-support. When IPv6 target was set, the ARP target will be disabled.
+Hello Dan,
 
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- ip/iplink_bond.c | 52 +++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 51 insertions(+), 1 deletion(-)
+On 24.11.21 07:56, Dan Carpenter wrote:
+> If the last channel is not available then "dev" is freed.  Fortunately,
+> we can just use "pdev->irq" instead.
 
-diff --git a/ip/iplink_bond.c b/ip/iplink_bond.c
-index 2bfdf82f..c795c6d7 100644
---- a/ip/iplink_bond.c
-+++ b/ip/iplink_bond.c
-@@ -136,6 +136,7 @@ static void print_explain(FILE *f)
- 		"                [ arp_validate ARP_VALIDATE ]\n"
- 		"                [ arp_all_targets ARP_ALL_TARGETS ]\n"
- 		"                [ arp_ip_target [ ARP_IP_TARGET, ... ] ]\n"
-+		"                [ ns_ip6_target [ NS_IP6_TARGET, ... ] ]\n"
- 		"                [ primary SLAVE_DEV ]\n"
- 		"                [ primary_reselect PRIMARY_RESELECT ]\n"
- 		"                [ fail_over_mac FAIL_OVER_MAC ]\n"
-@@ -248,6 +249,25 @@ static int bond_parse_opt(struct link_util *lu, int argc, char **argv,
- 				addattr_nest_end(n, nest);
- 			}
- 			addattr_nest_end(n, nest);
-+		} else if (matches(*argv, "ns_ip6_target") == 0) {
-+			struct rtattr *nest = addattr_nest(n, 1024,
-+				IFLA_BOND_NS_IP6_TARGET);
-+			if (NEXT_ARG_OK()) {
-+				NEXT_ARG();
-+				char *targets = strdupa(*argv);
-+				char *target = strtok(targets, ",");
-+				int i;
-+
-+				for (i = 0; target && i < BOND_MAX_ARP_TARGETS; i++) {
-+					inet_prefix ip6_addr;
-+
-+					get_addr(&ip6_addr, target, AF_INET6);
-+					addattr_l(n, 1024, i, ip6_addr.data, sizeof(struct in6_addr));
-+					target = strtok(NULL, ",");
-+				}
-+				addattr_nest_end(n, nest);
-+			}
-+			addattr_nest_end(n, nest);
- 		} else if (matches(*argv, "arp_validate") == 0) {
- 			NEXT_ARG();
- 			if (get_index(arp_validate_tbl, *argv) < 0)
-@@ -404,6 +424,8 @@ static int bond_parse_opt(struct link_util *lu, int argc, char **argv,
- 
- static void bond_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
- {
-+	int i;
-+
- 	if (!tb)
- 		return;
- 
-@@ -469,7 +491,6 @@ static void bond_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
- 
- 	if (tb[IFLA_BOND_ARP_IP_TARGET]) {
- 		struct rtattr *iptb[BOND_MAX_ARP_TARGETS + 1];
--		int i;
- 
- 		parse_rtattr_nested(iptb, BOND_MAX_ARP_TARGETS,
- 				    tb[IFLA_BOND_ARP_IP_TARGET]);
-@@ -497,6 +518,35 @@ static void bond_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
- 		}
- 	}
- 
-+	if (tb[IFLA_BOND_NS_IP6_TARGET]) {
-+		struct rtattr *ip6tb[BOND_MAX_ARP_TARGETS + 1];
-+
-+		parse_rtattr_nested(ip6tb, BOND_MAX_ARP_TARGETS,
-+				    tb[IFLA_BOND_NS_IP6_TARGET]);
-+
-+		if (ip6tb[0]) {
-+			open_json_array(PRINT_JSON, "ns_ip6_target");
-+			print_string(PRINT_FP, NULL, "ns_ip6_target ", NULL);
-+		}
-+
-+		for (i = 0; i < BOND_MAX_ARP_TARGETS; i++) {
-+			if (ip6tb[i])
-+				print_string(PRINT_ANY,
-+					     NULL,
-+					     "%s",
-+					     rt_addr_n2a_rta(AF_INET6, ip6tb[i]));
-+			if (!is_json_context()
-+			    && i < BOND_MAX_ARP_TARGETS-1
-+			    && ip6tb[i+1])
-+				fprintf(f, ",");
-+		}
-+
-+		if (ip6tb[0]) {
-+			print_string(PRINT_FP, NULL, " ", NULL);
-+			close_json_array(PRINT_JSON, NULL);
-+		}
-+	}
-+
- 	if (tb[IFLA_BOND_ARP_VALIDATE]) {
- 		__u32 arp_v = rta_getattr_u32(tb[IFLA_BOND_ARP_VALIDATE]);
- 		const char *arp_validate = get_name(arp_validate_tbl, arp_v);
--- 
-2.31.1
+But in the case that we do not find any channel the irq for the card is 
+still requested (via pdev->irq).
+
+> 
+> Fixes: fd734c6f25ae ("can/sja1000: add driver for EMS PCMCIA card")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> ---
+> v2: In the first version, I just failed the probe.  Sorry about that.
+> 
+>   drivers/net/can/sja1000/ems_pcmcia.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/can/sja1000/ems_pcmcia.c b/drivers/net/can/sja1000/ems_pcmcia.c
+> index e21b169c14c0..391a8253ed6f 100644
+> --- a/drivers/net/can/sja1000/ems_pcmcia.c
+> +++ b/drivers/net/can/sja1000/ems_pcmcia.c
+> @@ -234,7 +234,7 @@ static int ems_pcmcia_add_card(struct pcmcia_device *pdev, unsigned long base)
+>   			free_sja1000dev(dev);
+>   	}
+>   
+> -	err = request_irq(dev->irq, &ems_pcmcia_interrupt, IRQF_SHARED,
+
+When adding this check, we should be fine:
+
++	if (card->channels)
+
+> +	err = request_irq(pdev->irq, &ems_pcmcia_interrupt, IRQF_SHARED,
+>   			  DRV_NAME, card);
+>   	if (!err)
+>   		return 0;
+> 
+
+Thanks for checking this code after so many years!
+
+I saved that 17 year old EMS PCMCIA Card from my former CAN hardware box 
+two weeks ago and made a 5.16-rc2 run on a 2006 Samsung X20 with Pentium 
+M 1.7GHz yesterday. My only machine here at home with a PCMCIA slot :-D
+
+https://www.amazon.de/Samsung-Centrino-1-73GHz-Graphic-Accelerator/dp/B000AXSIRE
+
+And it still works with the CAN card!
+
+Best regards,
+Oliver
+
 
