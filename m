@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32BBD45D11D
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 00:21:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79BE045D11E
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 00:25:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245419AbhKXXZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 18:25:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58018 "EHLO
+        id S1344691AbhKXX2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 18:28:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244955AbhKXXZB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 18:25:01 -0500
+        with ESMTP id S1344629AbhKXX2g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 18:28:36 -0500
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBCE3C061574
-        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 15:21:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B4D2C061574
+        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 15:25:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
         MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=L47GZxuR/UZFWeY9giJejKUfPAJXc59R+oHK6bquUw4=; b=dBvLiJfcK5SyQk/nynbyM2CiTA
-        oTMuDWBVZ4/6boI6Pf8JgPuBkPG2MtkOMVfj43JXBEp0QN4bMV6tWV9K7KKMV0GuEG0lTKlnMPATj
-        w2Qrg72uA4E3MBUDgW3+pNsCFdMNsgt1XEH8ZeR6GVE11mBgLbj6istiqxJ8hlPKNHDH73eTKvLXR
-        yYrFq36m+5RnUYn0q/p4/79a14j2zyqnv0osckS2JZE4JEHB9VFnwBL3aXXXuuuCPEMgEMAHFvBfI
-        fJuAoWZvU251tlfd5Hkhuq1Zwhar/kecbxbkiiK8p/XDBWp98cnrjdhSbtGCt7wDU302WXUe+NiWv
-        5x2aEvSw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55878)
+        bh=wnx7xxSfdnh0nHwsubd6pLSvp5hoagJ5YNKSsCpqbVs=; b=cwZYc2N0Lre91chA5cFBQHWbg3
+        TKPXPzoZxOWuaSeL7uI5JzFKVKab+qCMWnNmOHbxFns4m1htd30PkHidEHstJfrpgxo2X7CSMddYd
+        APz0QqXRPr1ZQEds0tAp/80pEzIBDqeSKLYqkdDyMLr/wJMY2ax/liAhoIqevlTXoQPACg1pZ7Wjt
+        vq2p0XTT6Een5pgI8+HBR9XDEZVd22cdQHMRe0+64ND66r7GT/iLtazD9T7bpvy2yn3H+4Dob7afy
+        3ic2xetvXtHrA4SdRopQMd12Jcl4+4U5O1yFawrbdG4aGRjV1s28tf6JijHKTH7d4MzYS6oNH2WKs
+        cJm0Nq6Q==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55880)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <linux@armlinux.org.uk>)
-        id 1mq1a7-0001JV-4R; Wed, 24 Nov 2021 23:21:39 +0000
+        id 1mq1de-0001Jo-L9; Wed, 24 Nov 2021 23:25:18 +0000
 Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
         (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mq1a3-0001bd-Ap; Wed, 24 Nov 2021 23:21:35 +0000
-Date:   Wed, 24 Nov 2021 23:21:35 +0000
+        id 1mq1dd-0001bp-Su; Wed, 24 Nov 2021 23:25:17 +0000
+Date:   Wed, 24 Nov 2021 23:25:17 +0000
 From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -51,92 +51,92 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH RFC net-next 11/12] net: dsa: sja1105: convert to
- phylink_generic_validate()
-Message-ID: <YZ7I/6i42LMtr2hS@shell.armlinux.org.uk>
+Subject: Re: [PATCH RFC net-next 01/12] net: dsa: consolidate phylink creation
+Message-ID: <YZ7J3fGZmGMX8lYg@shell.armlinux.org.uk>
 References: <YZ56WapOaVpUbRuT@shell.armlinux.org.uk>
- <E1mpwSN-00D8Lz-GB@rmk-PC.armlinux.org.uk>
- <20211124195339.oa7u4zyintrwr4tx@skbuf>
- <YZ6p0V0ZOEJLhgEH@shell.armlinux.org.uk>
- <20211124223432.w3flpx55hyjxmkwn@skbuf>
+ <E1mpwRY-00D8Kw-6S@rmk-PC.armlinux.org.uk>
+ <20211124181156.5g3z2inlaai5lcvd@skbuf>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211124223432.w3flpx55hyjxmkwn@skbuf>
+In-Reply-To: <20211124181156.5g3z2inlaai5lcvd@skbuf>
 Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 24, 2021 at 10:34:33PM +0000, Vladimir Oltean wrote:
-> On Wed, Nov 24, 2021 at 09:08:33PM +0000, Russell King (Oracle) wrote:
-> > On Wed, Nov 24, 2021 at 07:53:40PM +0000, Vladimir Oltean wrote:
-> > > On Wed, Nov 24, 2021 at 05:53:19PM +0000, Russell King (Oracle) wrote:
-> > > > Populate the supported interfaces and MAC capabilities for the SJA1105
-> > > > DSA switch and remove the old validate implementation to allow DSA to
-> > > > use phylink_generic_validate() for this switch driver.
-> > > > 
-> > > > This switch only supports a static model of configuration, so we
-> > > > restrict the interface modes to the configured setting, and pass the
-> > > > MAC capabilities. As it is unclear which interface modes support 1G
-> > > > speeds, we keep the setting of MAC_1000FD conditional on the configured
-> > > > interface mode.
-> > > > 
-> > > > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> > > > ---
-> > > 
-> > > Please use this patch for sja1105. Thanks.
+On Wed, Nov 24, 2021 at 06:11:57PM +0000, Vladimir Oltean wrote:
+> On Wed, Nov 24, 2021 at 05:52:28PM +0000, Russell King (Oracle) wrote:
+> > The code in port.c and slave.c creating the phylink instance is very
+> > similar - let's consolidate this into a single function.
 > > 
-> > Your patch is combining two changes into one patch. Specifically, the
-> > there are two logical changes in your patch:
+> > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> > ---
+> >  net/dsa/dsa_priv.h |  2 +-
+> >  net/dsa/port.c     | 44 ++++++++++++++++++++++++++++----------------
+> >  net/dsa/slave.c    | 19 +++----------------
+> >  3 files changed, 32 insertions(+), 33 deletions(-)
 > > 
-> > 1) changing the existing behaviour of the validate() function by
-> > allowing switching between PHY_INTERFACE_MODE_SGMII and
-> > PHY_INTERFACE_MODE_2500BASEX, which was not permitted before with the
-> > sja1105_phy_mode_mismatch() check.
-> > 
-> > 2) converting to supported_interfaces / mac_capabilities way of defining
-> > what is supported.
-> > 
-> > Combining the two changes makes the patch harder to review, and it
-> > becomes less obvious that it is actually correct. I would recommend
-> > changing the existing behaviour prior to the conversion, but ultimately
-> > that is your decision.
-> > 
-> > For more information please see the "Separate your changes" section in
-> > Documentation/process/submitting-patches.rst
-> > 
-> > Thanks.
+> > diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+> > index a5c9bc7b66c6..3fb2c37c9b88 100644
+> > --- a/net/dsa/dsa_priv.h
+> > +++ b/net/dsa/dsa_priv.h
+> > @@ -258,13 +258,13 @@ int dsa_port_mrp_add_ring_role(const struct dsa_port *dp,
+> >  			       const struct switchdev_obj_ring_role_mrp *mrp);
+> >  int dsa_port_mrp_del_ring_role(const struct dsa_port *dp,
+> >  			       const struct switchdev_obj_ring_role_mrp *mrp);
+> > +int dsa_port_phylink_create(struct dsa_port *dp);
+> >  int dsa_port_link_register_of(struct dsa_port *dp);
+> >  void dsa_port_link_unregister_of(struct dsa_port *dp);
+> >  int dsa_port_hsr_join(struct dsa_port *dp, struct net_device *hsr);
+> >  void dsa_port_hsr_leave(struct dsa_port *dp, struct net_device *hsr);
+> >  int dsa_port_tag_8021q_vlan_add(struct dsa_port *dp, u16 vid, bool broadcast);
+> >  void dsa_port_tag_8021q_vlan_del(struct dsa_port *dp, u16 vid, bool broadcast);
+> > -extern const struct phylink_mac_ops dsa_port_phylink_mac_ops;
+> >  
+> >  static inline bool dsa_port_offloads_bridge_port(struct dsa_port *dp,
+> >  						 const struct net_device *dev)
+> > diff --git a/net/dsa/port.c b/net/dsa/port.c
+> > index f6f12ad2b525..eaa66114924b 100644
+> > --- a/net/dsa/port.c
+> > +++ b/net/dsa/port.c
+> > @@ -1072,7 +1072,7 @@ static void dsa_port_phylink_mac_link_up(struct phylink_config *config,
+> >  				     speed, duplex, tx_pause, rx_pause);
+> >  }
+> >  
+> > -const struct phylink_mac_ops dsa_port_phylink_mac_ops = {
+> > +static const struct phylink_mac_ops dsa_port_phylink_mac_ops = {
+> >  	.validate = dsa_port_phylink_validate,
+> >  	.mac_pcs_get_state = dsa_port_phylink_mac_pcs_get_state,
+> >  	.mac_config = dsa_port_phylink_mac_config,
+> > @@ -1081,6 +1081,30 @@ const struct phylink_mac_ops dsa_port_phylink_mac_ops = {
+> >  	.mac_link_up = dsa_port_phylink_mac_link_up,
+> >  };
+> >  
+> > +int dsa_port_phylink_create(struct dsa_port *dp)
+> > +{
+> > +	struct dsa_switch *ds = dp->ds;
+> > +	phy_interface_t mode;
+> > +	int err;
+> > +
+> > +	err = of_get_phy_mode(dp->dn, &mode);
+> > +	if (err)
+> > +		mode = PHY_INTERFACE_MODE_NA;
+> > +
+> > +	if (ds->ops->phylink_get_interfaces)
+> > +		ds->ops->phylink_get_interfaces(ds, dp->index,
+> > +					dp->pl_config.supported_interfaces);
 > 
-> -- >8 --
-> From febedc56cf0e269556e7483a70a3e6cb8d0d5cc3 Mon Sep 17 00:00:00 2001
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Date: Wed, 24 Nov 2021 21:02:43 +0200
-> Subject: [PATCH] net: dsa: sja1105: convert to phylink_generic_validate()
-> 
-> Provide a ->phylink_get_caps() implementation in order to tell phylink
-> what are the PHY modes between which each port can change (none for
-> now), and the MAC capabilities so it can limit the advertisement and
-> supported masks of the PHY.
-> 
-> Now that we populate phylink_config->supported_interfaces, it is
-> phylink's responsibility to not attempt a PHY mode change towards
-> something which we do not support, so we can delete the logic from
-> sja1105_phy_mode_mismatch() and move the essence of it into
-> sja1105_phylink_get_caps(), which happens much earlier.
-> 
-> This patch also fixes an inconsequential bug, which was that for ports
-> which support 2500base-X, we used to keep advertising the gigabit and
-> lower speeds. We should not have done this, because 2500base-X operates
-> only at 2500Mbps (and we do not support PAUSE frames in order for the
-> lower media speeds to work via rate adaptation). Nonetheless, the only
-> SJA1110 boards which use 2500base-X use it in a SERDES-to-SERDES fixed
-> link, so there isn't any PHY whose advertisement matters there.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Can you please save dp->pl_config to a struct phylink_config *config
+> temporary variable, and pass that here and to phylink_create() while
+> preserving the alignment of that argument to the open brace? Thanks.
 
-Clearly, you have stopped listening to me. This can no longer be
-productive.
+There is no point; first, this is how the original code was formatted
+that is moved here, and second, this code is deleted in patch 3.
+Making it a local variable, and then deleting it in patch 3 is pointless
+churn.
+
+Thanks.
 
 -- 
 RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
