@@ -2,185 +2,317 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A2FB45B5F0
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 08:51:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 249BE45B615
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 09:00:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240520AbhKXHyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 02:54:54 -0500
-Received: from mail-mw2nam12on2066.outbound.protection.outlook.com ([40.107.244.66]:54751
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230121AbhKXHyx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Nov 2021 02:54:53 -0500
+        id S240929AbhKXID4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 03:03:56 -0500
+Received: from dispatch1-eu1.ppe-hosted.com ([185.132.181.6]:51854 "EHLO
+        dispatch1-eu1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232944AbhKXIDz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 03:03:55 -0500
+X-Greylist: delayed 457 seconds by postgrey-1.27 at vger.kernel.org; Wed, 24 Nov 2021 03:03:54 EST
+Received: from dispatch1-eu1.ppe-hosted.com (localhost.localdomain [127.0.0.1])
+        by dispatch1-eu1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id A23732244A0
+        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 07:53:08 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04lp2051.outbound.protection.outlook.com [104.47.14.51])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-eu1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 7598040088;
+        Wed, 24 Nov 2021 07:53:06 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hhilQRvH97a9CnwcgyrOC35k67190ifwX2Y4IcbuHOSTbzzLTBUS0m4q2WNPALLCX2rWX2uOJGVV8EAclOqHnxb9VHVsdpjfZv/Fle2NrU/ekFzRE+hZVptxebagWxLf8HPl4iB1TZkBPDul7mPdS3kYPxmJMy5TpyolocqulN6eyShnn43wYzLJlCyurqhs39rdw/N1q8uCYmJt1HpDZv0KHCdCqeTV0l5LNeffvawl3GaZZEty5gtxOF7WUlsRySafantkWZGped2APIHMV+aPv/hjNdygXuuYnWIB8sIv8e+OhFy87MzXvAmrbkimvdzQ9JVs/AcLoYvh/nE0Mg==
+ b=lSmizu0z9X/NIpMk+3i68rol3sj3CzGJoxzTAUVZKDOjnGBKS0i/JUsAsI/SF3askzQ4nXi6jp9LB1u6oI/NsxDcfCRxg+yZZ7kXwTu333WHnqbk1TxsvCrrEbjDcGpWnpcVBzt87qnNZaJ9Zxcy+0/vQzTGb/TorRl236LldIFzdzkGTbXdCtRmhIgLxt3vP8jwS/iuex4pMcW0eYvfLvCwSobx3aUPnfczsrlsBJs/h9vieCFBG7sb4M1JTIM6Me8ObFKxzTRUY5WE4rOvhKqt2EH0jbX3t9mpR/225JDnwDF4qOs4n2eH6IG6189sfGf4J7bSA+sdgwx8SOP8tw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xHAUFiUT/LfwItQH2eZPVCpNSUbsp4RqTDBBzMv4/Bo=;
- b=njTplbdJChRttMPJ+BCqk+y+BSBQ0gwZJV4gJm3nRaZmwl+m62IQ3FEqtLUONb2f7Keh4b1LBHB7wJQ/j3OH62ponnsGCx+evbRsxvU8al8zyNpJoey4/POuYZmfGBiDSgGTwkvSLMm2fRMsVWjiFuvX2m/6tUWmi2yHhvpARA+5e0BKqBfgB3slzj/JOt+uNO+D5IfM5kaDfoaIw8fp34DOOF3g9ZcYMvyyHo+iN57Ojku9JbF0ZNba3GcceDv6enlnN7pQaw0n2etJzHst4MVV1Mo29p3vhBFO5q4BNxVlsUQ3tdSqyhdW/muQDCEOFaO/mrCNgz6GvzsxLetnNg==
+ bh=F15Dtexwf96nKQkHY6tBlPBrc+/TNXTwvIWUDzoqUus=;
+ b=mBdDeMCPQeTJsWqozQu5e3yZVgnI/J0XLuwwT+Go1eKG1jsimQjrJtNXsYrBcTuCh9VqexEEgv6Pxf/Saij65WwD6VAmjVZeVghGJ1vOHcnmbk06itpotOQSfKrkBE2I3dKNzDX0Hj8AGtNIkvpNMFYbZBwETAKcIQhCoUYW6d0FznbDweE+ojjP+RBF3BKgG0qj5p1XFzGAFol48iYcdrraW/KEWMP4anOsALnK1++6KaJB96eOb8+A3hEriZTrofZHsEA2bp8JWSIkrlS6INAlztR8Ed2IPprECEjqz9LiJKqrF2I6E7sxqeRI7dhlZq8Nf7ddTjz0d1J1iIlrHg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ smtp.mailfrom=drivenets.com; dmarc=pass action=none
+ header.from=drivenets.com; dkim=pass header.d=drivenets.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=drivenets.onmicrosoft.com; s=selector2-drivenets-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xHAUFiUT/LfwItQH2eZPVCpNSUbsp4RqTDBBzMv4/Bo=;
- b=lNNadeHJ/+mcsPi4w92RhZfu49Rh3fWGdzFgMvW3BL5S6LSX2GGiltFPo6q0gxmiwz80oi0z3x5AFI1HdnqJ4jmY5p+3iSdpkUknMGgpRX2TSDkX9KuC/69bMCZcIdzWXU/uOfoJ0VPuze37xEzjC7ghVEmh+9vfn8UQ/VxVWA8KolgpUyUP5w3OTvph9tjf6lD7duWzWR//WilkSX2DRehVgS4+KRbN67AoPuOct1ypl/YYSYWIb6vqzOUicxTLLl+eDFdXVUESVWTYueO9C/Yi6Dojd++XSvZG/tv2k1IqCecanVxFj68LZJZGBSHoc8jFGjYjGpmJs0YaDZw6ww==
-Received: from DM6PR12MB4516.namprd12.prod.outlook.com (2603:10b6:5:2ac::20)
- by DM6PR12MB4699.namprd12.prod.outlook.com (2603:10b6:5:36::24) with
+ bh=F15Dtexwf96nKQkHY6tBlPBrc+/TNXTwvIWUDzoqUus=;
+ b=Q22VcsclnyPg0PYUw5nPT1viPih6W23NhA6vZz/mCRMdALArDxBkLaICnB/kTMRDGpJHcO6T3e7ELbeIzgGMcOjrCAF3l8OtqhmPkRyYaXjUKiL1o21jry0hgEP8FjfBzOPkhagC3ZGvSR6OeONXnaQg0pM3R7aRpmkMixd4ko4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=drivenets.com;
+Received: from VI1PR08MB3518.eurprd08.prod.outlook.com (2603:10a6:803:7a::23)
+ by VI1PR0801MB1661.eurprd08.prod.outlook.com (2603:10a6:800:56::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.22; Wed, 24 Nov
- 2021 07:51:42 +0000
-Received: from DM6PR12MB4516.namprd12.prod.outlook.com
- ([fe80::a5c1:7bee:503f:e0d0]) by DM6PR12MB4516.namprd12.prod.outlook.com
- ([fe80::a5c1:7bee:503f:e0d0%8]) with mapi id 15.20.4734.021; Wed, 24 Nov 2021
- 07:51:42 +0000
-From:   Danielle Ratson <danieller@nvidia.com>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Subject: RE: [PATCH net v2] igb: fix netpoll exit with traffic
-Thread-Topic: [PATCH net v2] igb: fix netpoll exit with traffic
-Thread-Index: AQHX4KpS8IRO8CTaPUObrYaieVzqnKwSTnvQ
-Date:   Wed, 24 Nov 2021 07:51:41 +0000
-Message-ID: <DM6PR12MB451635351CFBBD86059A0078D8619@DM6PR12MB4516.namprd12.prod.outlook.com>
-References: <20211123204000.1597971-1-jesse.brandeburg@intel.com>
-In-Reply-To: <20211123204000.1597971-1-jesse.brandeburg@intel.com>
-Accept-Language: he-IL, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 28f1205e-8314-426f-1dbd-08d9af1f4120
-x-ms-traffictypediagnostic: DM6PR12MB4699:
-x-microsoft-antispam-prvs: <DM6PR12MB469961C982CA7974752E10CAD8619@DM6PR12MB4699.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: f6Y1mcpG5t5B8bolZZ2VpKgZ+KVE6F89GPxPsBjecm53QzyZoupK+ETBmlBqOjcbn+OIN728G4P2hH5VzVKFhjvLuFIYnr4pdl+HHl9ERn0AQMnk76xF65oFKcKDRFgyyGD5nq4AbT3yLtX3QksVEF9PScywyN9TBUa1fq0xNlwB9s7pkh796wsr6WATGdfIODSQzNxsX1GP1OSezNsBQycMru4hBnBfOqmOeBFnXCuEUKFV/oDGOFgF1PwyZGiYFXuvQT/7ZPGBh1/aDczi/HuJ9t3cOqQC8UPj0qEilvw+xFqdGEnTUTcJaqxwFZv62lUYuXIykFHDtHC+ZzE8D09ztDOyfD6jHEaZoEvwAf44wLuEDkgJI/0ZlzrqM2fMciM5yN3JpRZ+L1QEeYWlSqeQuyqGM8ip45hKOGXDyGqW033fYcj7ysQPiriizhy62zqJTyfe4dz+y5bXlMDSBLLTfQYp0kTvONrKbI4O5TU740ienfSfGg5G/Ku3sPoPVTP4NZKRieKsZt7wd1d+Oh0RENb0zYfXg0wYZ/2bRcFIw5W3DESvupZ7LAA7Bv3PPmIyM5zxn3+Wcn9/Ygi5Y/ZJxx8iNVhfAtFLAgzuAZMpkQ+S53VlZTBsKxqElnsjc6IGlCXM5WbJNJuhuwIiEDy+2PNZHAk9tFPbQXP5lxNNfE4SZJBL5+SkIljjlLwSiF+xtwolIPYnfBOs+wycRg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4516.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(2906002)(9686003)(66556008)(186003)(8676002)(53546011)(66476007)(5660300002)(71200400001)(6506007)(54906003)(66946007)(4326008)(8936002)(26005)(38070700005)(64756008)(33656002)(76116006)(66446008)(110136005)(83380400001)(122000001)(38100700002)(55016003)(86362001)(52536014)(508600001)(316002)(7696005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?wFlco+qKQ9fJl4BVil4H0gIqdPuytx1z/eByDBqCD5S5F8YXa7k9POo5wb4t?=
- =?us-ascii?Q?UMoXttZPF0zzKBoM/p0f3pZw/oYqU4ulU39/ajLPgk+aHCYXBcgve8HGKW8j?=
- =?us-ascii?Q?sXbY5RcP/698JotPSxWqUT9u+TrRhZwyyQKkOy+TfWqCKSsQQulOIzXrMBHg?=
- =?us-ascii?Q?VD6zzK2FNHE6IrqV1pT5Dbh0xoe6D8GRa7naoa9zBKQuDiyqdVfT4F7f0Ynh?=
- =?us-ascii?Q?9IxuLI5Zec8VgEia30mGq6h6c97uko/CJTfrF4Q/5D5KNJ/BL/Z7KJydihUU?=
- =?us-ascii?Q?Bb7nt+D21YZqZMEryuDCK3h9vn5epkjGr+hqz1iTyzbfujilx0XN+avIWH01?=
- =?us-ascii?Q?IN2Achsojq46HYbZIyTJsyiGv0bhxrH4v1/aY1UkOrIQXfBSUVuEd5mubYSs?=
- =?us-ascii?Q?ErOw+cirEHJtGwGbBCNqPodOi6NlDyVCqNgshCpyjqCaXSZwRkfWtnAFsPo2?=
- =?us-ascii?Q?FASq2D0+JG8QlYQcBvrB7BbG3ZB6lFB4UZ9k+O8GNFr4+hvb8QbRacCw+3YW?=
- =?us-ascii?Q?e4GMDZGZjiRjyvgY26rRGjOu0pHGtaByjtPaFul5f/aT8pfFtEceWoQATMs4?=
- =?us-ascii?Q?TvRA8Txwu5CCKa+nGtIwPLkyU5TvTJ8KqFj6TCxIk3gnRyvsMhuEmLjRHbwU?=
- =?us-ascii?Q?FzpD+Rm6BH5noBGBZmOcBQKiFNplKUj+cEVrbWPcrNFP1uz2Gc3Mjva7/ntq?=
- =?us-ascii?Q?H1YpsrI13F560KaQXQ4bPLUJYYNvrsKxFhJDgx2bVajktUXQg2BXDWYhIXhW?=
- =?us-ascii?Q?LAu3AdOzk2agEDbSy5bEbl9IefdIrhnVxtFq8SyA9fv12+s30sT6CI7z/Gfh?=
- =?us-ascii?Q?w0/ihr3JaFP2iaCUN34/U9CeuSufZcOky5SGOrlSx+Mo2kok80NJmG1PtXhu?=
- =?us-ascii?Q?XvDbYOJZLKotLA5KIUsG/2TCRcm7gAGy0EnOJFALX3OQ5iV6YXXKei2WYDt7?=
- =?us-ascii?Q?tS0JKTWrRLxvdTLEnUQwa7w7tURLAe73lv138i2sgoI+8CSHPw5lgHAS82II?=
- =?us-ascii?Q?/pN6FAhSN5M/R39qakaFYOxFjcne2GWrqSnmj4kMXsuXt5v0BSN6qHgoFvje?=
- =?us-ascii?Q?kMdlSOg6qrV3YddXiuAfJF0SuID/I1VgUCaPzB9YNPYUB4fUs+F5CNXj1/eA?=
- =?us-ascii?Q?80apiu17yVn2OejcISoVJFhiTAUpMNyrjFVIv1CLfV+O+xWpCvUFRWPGv17y?=
- =?us-ascii?Q?IkoEhbYYNxQ6pShOdDCumu2EdyPJMWtzzkAaCdYKGmxsavWacXThWcUy6M2n?=
- =?us-ascii?Q?bdFTDav2rbvkEWEunOUFaq218CRvdEZTvX/Gx4Fsgk2KgOyRQ7g6g8cZT9A7?=
- =?us-ascii?Q?GGgSnl08ahPifofqoJGzahVmzpxVO4AS+zEr6I254CS3NrXjwye+SQ5pya4S?=
- =?us-ascii?Q?uY/ybn7zoeGA+Sm1LekjRvwk3yBRBa+UQ5rcEpzF3IjkCwgwRi3iHqve6Xxo?=
- =?us-ascii?Q?m2Vvg38F4AOf2gGEjUveTOfjwQE+tWHSK6As2U0Xr2ZfXABxgnhaWwfM330c?=
- =?us-ascii?Q?/n6jlkRS+mkCsBf9h+P+d6JZONnsTNNVQyb8b+pxRHqlQp5NuLWC1IqPue1O?=
- =?us-ascii?Q?U1nIhRZULi89xnwp8onPPbd4ecayO+7SS6IVO1JLYILZZbzWP9l2bWxEqGv7?=
- =?us-ascii?Q?JtUqnshkiB+bkDE4cUZMebU=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.24; Wed, 24 Nov
+ 2021 07:53:04 +0000
+Received: from VI1PR08MB3518.eurprd08.prod.outlook.com
+ ([fe80::7484:9ec:6c6e:752d]) by VI1PR08MB3518.eurprd08.prod.outlook.com
+ ([fe80::7484:9ec:6c6e:752d%6]) with mapi id 15.20.4713.025; Wed, 24 Nov 2021
+ 07:53:04 +0000
+Date:   Wed, 24 Nov 2021 09:52:55 +0200
+From:   Lahav Schlesinger <lschlesinger@drivenets.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com
+Subject: Re: [PATCH net-next] rtnetlink: Support fine-grained netdevice bulk
+ deletion
+Message-ID: <20211124075255.iloqmw4hrf6lv7nn@kgollan-pc>
+References: <20211123123900.27425-1-lschlesinger@drivenets.com>
+ <20211123200117.1c944493@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211123200117.1c944493@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: NeoMutt/20171215
+X-ClientProxiedBy: AM3PR07CA0098.eurprd07.prod.outlook.com
+ (2603:10a6:207:6::32) To VI1PR08MB3518.eurprd08.prod.outlook.com
+ (2603:10a6:803:7a::23)
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
+Received: from kgollan-pc (82.166.105.36) by AM3PR07CA0098.eurprd07.prod.outlook.com (2603:10a6:207:6::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.19 via Frontend Transport; Wed, 24 Nov 2021 07:53:03 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3fd5a160-43f8-4b0b-9eaa-08d9af1f71f6
+X-MS-TrafficTypeDiagnostic: VI1PR0801MB1661:
+X-Microsoft-Antispam-PRVS: <VI1PR0801MB16614FB3D348DF7B5A02BDBBCC619@VI1PR0801MB1661.eurprd08.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3826;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: lUpNhVxYfFstw65ZXRMfxVECRJEs2b/U/CST+odBbcS/RZJyfo5bMmJm/2KVXKluvkI/yGKRxuxpr56qJYAb/ZLHWoqedSD0z7d8QVtEH4u2zssDU2Pcy9c4+l5lLn3MJ19w+yK77PIVtVG4nkRTB/16SqKKnzGd+Zmk7guNyhrbEP868lw913hh2DdzT4PJfu503zm4jyIRiUFtsWNEFveqBvf/Xa0me2RjzJAqhywVPBja7C6DPqEb7WAgXQpHFBaJA417C60ZJNPPrRecyA+DHCCspopC4CTFSS7YlNF2t3bAWqZdpM7Ue7nl9gQeAv9UmO7XsNl3HSTJvrJpurORI/mggN8pFpVrzCUNv2Nb7EnxTilp6OotKxtT5UVSI0JYjLtsxeAWXDGd7NVftIO5n+O0TzMZa/nBBpOB/MbyewmoRgtprd2qv+T21ZdFdoggvF2/FvJjeeqHzs4aP/ExfdVg5WRG2Gf/Y7Y2DSbdktEDoC6/s74DE/gdH+Zzvznj++3Xxan2sx90XOLIllMCGCEuOZuPE4EmAXxma46tlKeQ6EvgdwjEoc5dYk8h/0qbGtRQ25+52+6xH0di3QhHKBi0qwVmkcImhAhGBnfrJNyAmpnICHK4lADShhDlX9FoMFYfFDzEz86+US0cXB0YA3b9H497H4PdrIcetc9rBI7Wi3MZTPeDoYd3vbxJcaVfOeZwvl2DUn8O/QafnZbIflv/1q/ls2AIRET8uaY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR08MB3518.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(508600001)(66476007)(66946007)(66556008)(4326008)(956004)(8676002)(9686003)(316002)(26005)(6666004)(8936002)(38350700002)(2906002)(1076003)(6916009)(5660300002)(6496006)(83380400001)(52116002)(38100700002)(186003)(86362001)(33716001)(55016003)(16060500005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?zhcdCOUyfZGm5ydZkpeORRGkvXWHiH7CXc3YpgT9O6jJOB9ua0u9Ph5TBPXX?=
+ =?us-ascii?Q?Dj4gEfFTe/hv/yC6psAnrKRrmYnV8uWAFmbmQw7inviG2Z+QjEdh9BJPMlxL?=
+ =?us-ascii?Q?ylTe+0JBgdnCLE4Vpp14Yln9zoGMpOpqFTKVcFs2xe8z4ohd49V/cX856n4G?=
+ =?us-ascii?Q?YQxI3c6+MCkfTJz2JoCAUH3llSw7g7+jnYLRt4gE7u9WTYWH+7Yuj396GhNO?=
+ =?us-ascii?Q?2axLSm4BsNdUEP4T3RsmWJxvbmixqJCmGDd7dnCC+kuGqi+fES0Dt7udVNPh?=
+ =?us-ascii?Q?yJ51XVlVgVJAGthEdbElL2dcLZXZmUGVl51GkZuChdZTlxcaPedfHs9F5c6N?=
+ =?us-ascii?Q?ua3MM7n7RPvjdfHpiSxd6CNSDls5w+oWqWKyRnbeypI78eAXcr99QnR90auR?=
+ =?us-ascii?Q?x3G37ObmHMVt5TQLDAtgoWmchnYhZYt7sqja5V0kMhc8u158ChYK41PAeFPR?=
+ =?us-ascii?Q?k7GtC6irqcLDN26aCJqjq3TQlLgBeX+gk81p/i4zgCZOlTpgb9x8V4zaGcMY?=
+ =?us-ascii?Q?hmz1N1D7VumRLlYpY/CIz7KE0NW8wBT1zRxuZfvSNv0hrZLjeOue/pklA8jx?=
+ =?us-ascii?Q?H9od25hEFR4wWxFKc3jjyvdWIY3DGHxsNach9XQJB4iyvi2JraauL+4eySW7?=
+ =?us-ascii?Q?vk8hrDrRkkXiiWknlemSfTEBqe1QQg7YrWF/Fca4F5B38TEevQgyoW/+GWAh?=
+ =?us-ascii?Q?wHnPK1z+PUbDe6eVNjTX9E/hG2Q0n41A9lOgGXi3xQpOg46b4y+qdc6D4N73?=
+ =?us-ascii?Q?VI1VQeNDQ66z4VPnolyltMT3uWHjsXVfbBnOKO8oHRG/ey5LBOmuyciIWvU/?=
+ =?us-ascii?Q?w/2nwtCuv8p/t09rzzX9I9Frhd0g59yo3mIIjkOlXKJnkr2XZbIELbgzjuGL?=
+ =?us-ascii?Q?8VYLbSfUs9KXLUSo+Ig61C+I9XjQ48Yx4mdiNsH/Mx0RUtN52tIyNQMdLqb4?=
+ =?us-ascii?Q?vGPyZgbzKcHF7IRceh8IgBIcMza9zkm+jPDo2yL16ffzNWtwsI/V54xB50Le?=
+ =?us-ascii?Q?sQWyX4MDPWWK1bHb3k3+HXk5iEryUKVdEYPL23Fj4fcNqmcCZdSM8iYm5N+m?=
+ =?us-ascii?Q?fVBFUXZ6hRKP15bzwiJnGE0/6uvLR8WPGvUWGf5wwe3wLcG4Dd0FCZeAQ1Vl?=
+ =?us-ascii?Q?x6P1O2lic37OiuQ8oMHhSeV4JpKhsllF1BZImIA9YXweVBJCNSSf1hPRCq1i?=
+ =?us-ascii?Q?Ma3hb6UpphUzhDJG6f3b7+KDnQMiY5X0olim2M9dNoAZZV0cOnQx0W9mWyd4?=
+ =?us-ascii?Q?HhXlw7zJCCekn8C7+Z13ya8s2yJaXfKL0pa4YLmbieNg+seen51lXJIcJss8?=
+ =?us-ascii?Q?stpc06dwqAwlSToQ8ODb2lzLLfzyOeZstKt5MpxvZDZFO7Kxa0UesZan5g9s?=
+ =?us-ascii?Q?BWl0kt03XwHhwAp0R3uBVx1KMfLEW3fM7Nk4+rBX8YzxKyPOQ7+liFF7bixQ?=
+ =?us-ascii?Q?fPPHGoNatwZ3SRWXS3WncvPNOTuni7D7aI7xs71EwPoXmSmXgvNCd5CpqMAc?=
+ =?us-ascii?Q?M+AA0EBhz20jZdjKEMvYaK1TTqcAbsGNlzho/yNF2tcC/2DKSRuvsSEXrebn?=
+ =?us-ascii?Q?RIETU5hl7yi93e64hIj9wYEi7psuJEXWSxsFBdg7aS8jS7jlDAh8odkytBZb?=
+ =?us-ascii?Q?uYLiJWsNalRWyCSGdQfi0PwEpds8cpVw18HyrA6bCA+EfGdCF3LOPCG/hd3M?=
+ =?us-ascii?Q?9HFkgQ=3D=3D?=
+X-OriginatorOrg: drivenets.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3fd5a160-43f8-4b0b-9eaa-08d9af1f71f6
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR08MB3518.eurprd08.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4516.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 28f1205e-8314-426f-1dbd-08d9af1f4120
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Nov 2021 07:51:42.0140
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Nov 2021 07:53:04.2629
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 3DQgx60npcuIyWI2dhlDmzLaN9S0SDqPw6bWAmLaUEjujgYZz8Awh+tj6OB1x6uvkj70fuB0NoCgHiBpXaR39w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4699
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 662f82da-cf45-4bdf-b295-33b083f5d229
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: S+R18O5DZxUN88pVUZDmRAdcha+rqRbXFi5mcKJYOtRH+ocPSySvis+MfBsNrxU9yEz5j6pi+HZZp5XHpGiUlwL8lkrZvgqNJm/bxLJcxKw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0801MB1661
+X-MDID: 1637740387-m_FzK72pY-XD
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Nov 23, 2021 at 08:01:17PM -0800, Jakub Kicinski wrote:
+> CAUTION: External E-Mail - Use caution with links and attachments
+>
+>
+> On Tue, 23 Nov 2021 14:39:00 +0200 Lahav Schlesinger wrote:
+> > Currently there are 2 means of deleting a netdevice using Netlink:
+> > 1. Deleting a single netdevice (either by ifindex using
+> > ifinfomsg::ifi_index, or by name using IFLA_IFNAME)
+> > 2. Delete all netdevice that belong to a group (using IFLA_GROUP)
+> >
+> > After all netdevice are handled, netdev_run_todo() is called, which
+> > calls rcu_barrier() to finish any outstanding RCU callbacks that were
+> > registered during the deletion of the netdevice, then wait until the
+> > refcount of all the devices is 0 and perform final cleanups.
+> >
+> > However, calling rcu_barrier() is a very costly operation, which takes
+> > in the order of ~10ms.
+> >
+> > When deleting a large number of netdevice one-by-one, rcu_barrier()
+> > will be called for each netdevice being deleted, causing the whole
+> > operation taking a long time.
+> >
+> > Following results are from benchmarking deleting 10K loopback devices,
+> > all of which are UP and with only IPv6 LLA being configured:
+>
+> What's the use case for this?
 
-> -----Original Message-----
-> From: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> Sent: Tuesday, November 23, 2021 10:40 PM
-> To: intel-wired-lan@lists.osuosl.org
-> Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>;
-> netdev@vger.kernel.org; Oleksandr Natalenko
-> <oleksandr@natalenko.name>; Danielle Ratson <danieller@nvidia.com>;
-> Alexander Duyck <alexander.duyck@gmail.com>
-> Subject: [PATCH net v2] igb: fix netpoll exit with traffic
->=20
-> Oleksandr brought a bug report where netpoll causes trace messages in the
-> log on igb.
->=20
-> Danielle brought this back up as still occuring, so we'll try again.
+Deletion of 10K loopbacks was just as an example that uses the simplest
+interface type, to show the improvments that can be made in the
+rtnetlink framework, which in turn will have an effect on all interface
+types.
+Though I can see uses of deleting 10k loopbacks by means of doing a
+"factory default" on a large server, such servers can request deleting a
+large bulk of devices at once.
 
-Hi Jessi,
+>
+> > 1. Deleting one-by-one using 1 thread : 243 seconds
+> > 2. Deleting one-by-one using 10 thread: 70 seconds
+> > 3. Deleting one-by-one using 50 thread: 54 seconds
+> > 4. Deleting all using "group deletion": 30 seconds
+> >
+> > Note that even though the deletion logic takes place under the rtnl
+> > lock, since the call to rcu_barrier() is outside the lock we gain
+> > improvements.
+> >
+> > Since "group deletion" calls rcu_barrier() only once, it is indeed the
+> > fastest.
+> > However, "group deletion" is too crude as means of deleting large number
+> > of devices
+> >
+> > This patch adds support for passing an arbitrary list of ifindex of
+> > netdevices to delete. This gives a more fine-grained control over
+> > which devices to delete, while still resulting in only one rcu_barrier()
+> > being called.
+> > Indeed, the timings of using this new API to delete 10K netdevices is
+> > the same as using the existing "group" deletion.
+> >
+> > The size constraints on the list means the API can delete at most 16382
+> > netdevices in a single request.
+> >
+> > Signed-off-by: Lahav Schlesinger <lschlesinger@drivenets.com>
+> > ---
+> >  include/uapi/linux/if_link.h |  1 +
+> >  net/core/rtnetlink.c         | 46 ++++++++++++++++++++++++++++++++++++
+> >  2 files changed, 47 insertions(+)
+> >
+> > diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+> > index eebd3894fe89..f950bf6ed025 100644
+> > --- a/include/uapi/linux/if_link.h
+> > +++ b/include/uapi/linux/if_link.h
+> > @@ -348,6 +348,7 @@ enum {
+> >       IFLA_PARENT_DEV_NAME,
+> >       IFLA_PARENT_DEV_BUS_NAME,
+> >
+> > +     IFLA_IFINDEX_LIST,
+> >       __IFLA_MAX
+> >  };
+> >
+> > diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+> > index fd030e02f16d..150587b4b1a4 100644
+> > --- a/net/core/rtnetlink.c
+> > +++ b/net/core/rtnetlink.c
+> > @@ -1880,6 +1880,7 @@ static const struct nla_policy ifla_policy[IFLA_MAX+1] = {
+> >       [IFLA_PROTO_DOWN_REASON] = { .type = NLA_NESTED },
+> >       [IFLA_NEW_IFINDEX]      = NLA_POLICY_MIN(NLA_S32, 1),
+> >       [IFLA_PARENT_DEV_NAME]  = { .type = NLA_NUL_STRING },
+> > +     [IFLA_IFINDEX_LIST]     = { .type = NLA_BINARY, .len = 65535 },
+>
+> Can't we leave len unset if we don't have an upper bound?
 
-Ill run tests with you patch and give you results for if it is ok.
-Thanks!
+I thought it will be nicer to have an explicit upper bound instead on
+counting on the implicit one from the field type.
+I'll remove it in the v2.
 
->=20
-> [22038.710800] ------------[ cut here ]------------ [22038.710801]
-> igb_poll+0x0/0x1440 [igb] exceeded budget in poll [22038.710802]
-> WARNING: CPU: 12 PID: 40362 at net/core/netpoll.c:155
-> netpoll_poll_dev+0x18a/0x1a0
->=20
-> As Alex suggested, change the driver to return work_done at the exit of
-> napi_poll, which should be safe to do in this driver because it is not po=
-lling
-> multiple queues in this single napi context (multiple queues attached to =
-one
-> MSI-X vector). Several other drivers contain the same simple sequence, so=
- I
-> hope this will not create new problems.
->=20
-> Fixes: 16eb8815c235 ("igb: Refactor clean_rx_irq to reduce overhead and
-> improve performance")
-> Reported-by: Oleksandr Natalenko <oleksandr@natalenko.name>
-> Reported-by: Danielle Ratson <danieller@nvidia.com>
-> Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
-> Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> ---
-> COMPILE TESTED ONLY! I have no way to reproduce this even on a machine I
-> have with igb. It works fine to load the igb driver and netconsole with n=
-o
-> errors.
-> ---
-> v2: simplified patch with an attempt to make it work
-> v1: original patch that apparently didn't work
-> ---
->  drivers/net/ethernet/intel/igb/igb_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c
-> b/drivers/net/ethernet/intel/igb/igb_main.c
-> index e647cc89c239..5e24b7ce5a92 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> @@ -8104,7 +8104,7 @@ static int igb_poll(struct napi_struct *napi, int
-> budget)
->  	if (likely(napi_complete_done(napi, work_done)))
->  		igb_ring_irq_enable(q_vector);
->=20
-> -	return min(work_done, budget - 1);
-> +	return work_done;
->  }
->=20
->  /**
-> --
-> 2.33.1
+>
+> >  };
+> >
+> >  static const struct nla_policy ifla_info_policy[IFLA_INFO_MAX+1] = {
+> > @@ -3050,6 +3051,49 @@ static int rtnl_group_dellink(const struct net *net, int group)
+> >       return 0;
+> >  }
+> >
+> > +static int rtnl_list_dellink(struct net *net, void *dev_list, int size)
+> > +{
+> > +     int i;
+> > +     struct net_device *dev, *aux;
+> > +     LIST_HEAD(list_kill);
+> > +     bool found = false;
+> > +
+> > +     if (size < 0 || size % sizeof(int))
+> > +             return -EINVAL;
+> > +
+> > +     for_each_netdev(net, dev) {
+> > +             for (i = 0; i < size/sizeof(int); ++i) {
+>
+> __dev_get_by_index() should be much faster than this n^2 loop.
 
+Right, will change in the v2.
+
+>
+> > +                     if (dev->ifindex == ((int*)dev_list)[i]) {
+>
+> please run checkpatch --strict on the submission
+
+Oops, my bad
+
+>
+> > +                             const struct rtnl_link_ops *ops;
+> > +
+> > +                             found = true;
+> > +                             ops = dev->rtnl_link_ops;
+> > +                             if (!ops || !ops->dellink)
+> > +                                     return -EOPNOTSUPP;
+> > +                             break;
+> > +                     }
+> > +             }
+> > +     }
+> > +
+> > +     if (!found)
+> > +             return -ENODEV;
+>
+> Why is it okay to miss some of the ifindexes?
+
+Yeah you're right, will fix it.
+
+>
+> > +     for_each_netdev_safe(net, dev, aux) {
+> > +             for (i = 0; i < size/sizeof(int); ++i) {
+>
+> Can you not save the references while doing the previous loop?
+
+I didn't see any improvements on the timings by saving them (even
+compared to the n^2 loop on this patch), so I didn't want to introduce a
+new list to struct netdevice (using unreg_list seems unfitting here as it
+will collide with ops->dellink() below).
+
+>
+> > +                     if (dev->ifindex == ((int*)dev_list)[i]) {
+> > +                             const struct rtnl_link_ops *ops;
+> > +
+> > +                             ops = dev->rtnl_link_ops;
+> > +                             ops->dellink(dev, &list_kill);
+> > +                             break;
+> > +                     }
+> > +             }
+> > +     }
+> > +     unregister_netdevice_many(&list_kill);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> >  int rtnl_delete_link(struct net_device *dev)
+> >  {
+> >       const struct rtnl_link_ops *ops;
+> > @@ -3102,6 +3146,8 @@ static int rtnl_dellink(struct sk_buff *skb, struct nlmsghdr *nlh,
+> >                                  tb[IFLA_ALT_IFNAME], NULL);
+> >       else if (tb[IFLA_GROUP])
+> >               err = rtnl_group_dellink(tgt_net, nla_get_u32(tb[IFLA_GROUP]));
+> > +     else if (tb[IFLA_IFINDEX_LIST])
+> > +             err = rtnl_list_dellink(tgt_net, nla_data(tb[IFLA_IFINDEX_LIST]), nla_len(tb[IFLA_IFINDEX_LIST]));
+>
+> Maybe we can allow multiple IFLA_IFINDEX instead?
+
+One problem is that it will cut down the number of ifindex that can be
+passed in a single message by half, given that each ifindex will require
+its own struct nlattr.
+Also, I didn't see any quick way of making __nla_validate_parse()
+support saving multiple instances of the same attribute in 'tb' instead
+of overwriting the last one each time, without adding extra overhead.
+
+>
+> >       else
+> >               goto out;
+> >
+>
