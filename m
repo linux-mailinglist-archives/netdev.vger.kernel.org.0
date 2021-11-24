@@ -2,73 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBCEF45CDDC
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 21:16:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8296B45CDE4
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 21:21:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242701AbhKXUTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 15:19:41 -0500
-Received: from mxout03.lancloud.ru ([45.84.86.113]:43884 "EHLO
-        mxout03.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241088AbhKXUTk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 15:19:40 -0500
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru E56CC20A4737
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [RFC 0/2] Add Rx checksum offload support
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        "Biju Das" <biju.das@bp.renesas.com>
-References: <20211123133157.21829-1-biju.das.jz@bp.renesas.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <50544d12-01f1-2ec0-a9e1-992a307cc781@omp.ru>
-Date:   Wed, 24 Nov 2021 23:16:27 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S238066AbhKXUYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 15:24:08 -0500
+Received: from ixit.cz ([94.230.151.217]:38654 "EHLO ixit.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237467AbhKXUYG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Nov 2021 15:24:06 -0500
+Received: from localhost.localdomain (ip-89-176-96-70.net.upcbroadband.cz [89.176.96.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ixit.cz (Postfix) with ESMTPSA id B5B0220064;
+        Wed, 24 Nov 2021 21:20:53 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
+        t=1637785254;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=JOY3hYg/Zi65wbuf+lW3mLve82V3ibAcjofnA7CL8QQ=;
+        b=L3GNPhK6AqeXR4Bpkrf10oJtJMujxolATVkMbzZsnAnA5GKZXIQ31SqbzxQsKUjoH/aXsz
+        AZ/VAz//hVKTIniFu/BqrEsQSnhjuthVvx1LMM3I3oK62qXXxcHvaCfdqTu1Fd2jHyZ7PG
+        BbMc4uX4C0Ahw/GZFBtQ4DRzgymyFCs=
+From:   David Heidelberg <david@ixit.cz>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     ~okias/devicetree@lists.sr.ht, David Heidelberg <david@ixit.cz>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: net: ethernet-controller: add 2.5G and 10G speeds
+Date:   Wed, 24 Nov 2021 21:20:46 +0100
+Message-Id: <20211124202046.81136-1-david@ixit.cz>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-In-Reply-To: <20211123133157.21829-1-biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/23/21 4:31 PM, Biju Das wrote:
+Both are already used by HW and drivers inside Linux.
 
-> TOE has hw support for calculating IP header checkum for IPV4 and
-> TCP/UDP/ICMP checksum for both IPV4 and IPV6.
-> 
-> This patch series aims to adds Rx checksum offload supported by TOE.
-> 
-> For RX, The result of checksum calculation is attached to last 4byte
-> of ethernet frames. First 2bytes is result of IPV4 header checksum 
-> and next 2 bytes is TCP/UDP/ICMP.
-> 
-> if frame does not have error "0000" attached to checksum calculation
-> result. For unsupported frames "ffff" is attached to checksum calculation
-> result. Cases like IPV6, IPV4 header is always set to "FFFF".
-> 
-> we can test this functionality by the below commands
-> 
-> ethtool -K eth0 rx on --> to turn on Rx checksum offload
-> ethtool -K eth0 rx off --> to turn off Rx checksum offload
-> 
-> Biju Das (2):
->   ravb: Fillup ravb_set_features_gbeth() stub
->   ravb: Add Rx checksum offload support
+Fix warnings as:
+arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var2.dt.yaml: ethernet@0,2: fixed-link:speed:0:0: 2500 is not one of [10, 100, 1000]
+        From schema: Documentation/devicetree/bindings/net/ethernet-controller.yaml
 
-   That's all fine but why in the world did you separate these patches?
+Signed-off-by: David Heidelberg <david@ixit.cz>
+---
+ .../devicetree/bindings/net/ethernet-controller.yaml          | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-MBR, Sergey
+diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+index b0933a8c295a..95b5a3d77421 100644
+--- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
++++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+@@ -178,7 +178,7 @@ properties:
+                   Duplex configuration. 0 for half duplex or 1 for
+                   full duplex
+ 
+-              - enum: [10, 100, 1000]
++              - enum: [10, 100, 1000, 2500, 10000]
+                 description:
+                   Link speed in Mbits/sec.
+ 
+@@ -200,7 +200,7 @@ properties:
+               description:
+                 Link speed.
+               $ref: /schemas/types.yaml#/definitions/uint32
+-              enum: [10, 100, 1000]
++              enum: [10, 100, 1000, 2500, 10000]
+ 
+             full-duplex:
+               $ref: /schemas/types.yaml#/definitions/flag
+-- 
+2.33.0
+
