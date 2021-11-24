@@ -2,259 +2,489 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2A4445B255
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 03:59:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B7B045B281
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 04:15:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238586AbhKXDCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 22:02:19 -0500
-Received: from mail-sn1anam02on2092.outbound.protection.outlook.com ([40.107.96.92]:48498
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S237422AbhKXDCS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 22:02:18 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IZ0MRx1U0AiqBfyFnnKv+TQ+eNPh7hOue5rhlgG3Y8M9HqGhlYHv4d9Z8GkX3+bsVlMeO+aYK6AlZZkS8tjP3Qu7MEbafC/c+9PQkchoCEatNxEkt8t7X3mQvqNnTRU/mROqzPUIP1Z88RzPAMwFGyojjokdGoSQeytFcDnQJd6FCUub3o2hJBrj753GyOBQOC8gN196Js8MgEYhJ4kJ3BN0o8Ejksur0b0AqvgEWPM5uqwq6g87AFNUefRGy7/4DRP53ft2EiHIkSSGJUSdd5FVlTxUUm+NNBX40p/P1EzYCXrKWJX8VhnH3oS/KJH3Txya9jsxcNL2bDN7lj+eHQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0VUo/Gs3LUN/08ZOJly7PPF0I5bDlk3hqK/6/f3gK/I=;
- b=Ts96HpJ1zlewOMVeNjIvwyfpj6g4oTWz56gv+3lmAMzwOwizQXucJ1q8E8P3vdlt0Dwu2L2q3Pi5Ln5Q/D3mb2GEq6nfnXLwvQQE6UM0mIPUCSKzrHygWYqts6Di1ZflBv7QOdm75zJhMU5Z6cOukS/lnq7fP2D8FjX6K8rz6GTaLpaONRWD4sNR7TH24MYaQu1XTMNZwaOvjfoNYIvFZHwXefQoxQO/COCkxZ9CpvyWPdsmQ86f1sppH4N+JyGosVhYY458W2m11gL/q76cHfKT/T8yFZ3K9Zp42aFDvnZRKy/vhwBDLdSFq7Ki2qPDMbwyJOYx47ddSDNfme2HkA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0VUo/Gs3LUN/08ZOJly7PPF0I5bDlk3hqK/6/f3gK/I=;
- b=Xl+B1AhLRwcYS0CLR9h4HIPC36HpWmvqozovzSwoCooOSRdo5TEycdQTDZOdJIVQ/aG7LRadbA17PeRw3iPA5e8OvjpRcASXogeOVAzzObNrRDqAfkcvZQrJXQUzd44sK/YzI1jf4VCWEi7zQpY4zEzz7fZtSB1G62EN/OEZnk0=
-Received: from DM5PR1301MB2172.namprd13.prod.outlook.com (2603:10b6:4:2d::21)
- by DM5PR13MB0970.namprd13.prod.outlook.com (2603:10b6:3:73::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.14; Wed, 24 Nov
- 2021 02:59:08 +0000
-Received: from DM5PR1301MB2172.namprd13.prod.outlook.com
- ([fe80::44c:707:8db:4e15]) by DM5PR1301MB2172.namprd13.prod.outlook.com
- ([fe80::44c:707:8db:4e15%4]) with mapi id 15.20.4734.020; Wed, 24 Nov 2021
- 02:59:08 +0000
-From:   Baowen Zheng <baowen.zheng@corigine.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>, Oz Shlomo <ozsh@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
-        Louis Peens <louis.peens@corigine.com>,
-        oss-drivers <oss-drivers@corigine.com>
-Subject: RE: [PATCH v4 04/10] flow_offload: allow user to offload tc action to
- net device
-Thread-Topic: [PATCH v4 04/10] flow_offload: allow user to offload tc action
- to net device
-Thread-Index: AQHX3H1ga5WIPFCaM0W10xbzQpwKhKwPftuAgAFJvqCAALgaAIAAbhwwgAAU+6A=
-Date:   Wed, 24 Nov 2021 02:59:08 +0000
-Message-ID: <DM5PR1301MB2172ED85399FCC4B89F70792E7619@DM5PR1301MB2172.namprd13.prod.outlook.com>
-References: <20211118130805.23897-1-simon.horman@corigine.com>
- <20211118130805.23897-5-simon.horman@corigine.com>
- <cf194dc4-a7c9-5221-628b-ab26ceca9583@mojatatu.com>
- <DM5PR1301MB2172EFE3AC44E84D89D3D081E7609@DM5PR1301MB2172.namprd13.prod.outlook.com>
- <404a4871-0e12-3cdc-e8c7-b0c85e068c53@mojatatu.com>
- <DM5PR1301MB21725BE79994CD548CEA0CC4E7619@DM5PR1301MB2172.namprd13.prod.outlook.com>
-In-Reply-To: <DM5PR1301MB21725BE79994CD548CEA0CC4E7619@DM5PR1301MB2172.namprd13.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: fa8725a0-db36-4313-40a5-08d9aef66249
-x-ms-traffictypediagnostic: DM5PR13MB0970:
-x-microsoft-antispam-prvs: <DM5PR13MB09705EDE8884A2CAEA26477DE7619@DM5PR13MB0970.namprd13.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: EzcIm+04CjQ3Nk06F6CEy9hYUz2BOdK8m5HQrk9oqLwCkrEFkhESbDVYX3uC0NH07D3t0kys2rXfpRdsSUCw421RRZnejCNRim/jtQ73oz0W9YDUNEhQKNJqoIkS6xvFQu6s98gwCLgY3mswm0vhRt5sxqVOXy+kWGxebOYRZQncdmqeydFJJ9Oefab0tRmiwNj5i1Ef3Pqq6d9p7HM3mQf6onHwb9lGrviqHB1u93ukPAERkxbW8uHnSg22T2UVP9OiqpnjjHZxisAfmGk56AB8PIgsYpinckn2jaWLHSGbkgF+3CXv1/OL5X6NghJGvJ9GIfNZMvQKumLaEWjuB85c9dtUecqFi8cIgLIzDKrXA2zKSqXcpoGe62DZIiatHfS8Jtae07KBBrGQty3L0mCq8DTf+LEM8rYVrgZa3DaCld66Tq2TjQHhUb47FUeNgCXMbm85upUYqKP3jmS6FpblahFcHsVuoX4yNa1THkLKCpqjr8s+QZuYCJ3vb+Kth8pfSm+ZUqdcFB4P0uGxybYCI82WzHai8Fi55Nk2QQjhdi/4Pqqd+S8i9UDtYy9nkJ4rEhpiPCMoBbm+61ep+sshCurRBdyo5h83iuAuZTY1FGB9wwKuaoLyMRVCPIzzgG3UxDoSWSzKXl1Q8B9HGrNRNXc/SWYzGI6KK3oCZfnjuK7/NklJtgoXUb4vOQLhau4mo4m7WDJfx606/2dXnQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR1301MB2172.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(39830400003)(136003)(396003)(346002)(376002)(26005)(107886003)(4001150100001)(44832011)(76116006)(186003)(66946007)(71200400001)(33656002)(2906002)(66446008)(64756008)(66476007)(66556008)(110136005)(7696005)(2940100002)(86362001)(9686003)(122000001)(5660300002)(38100700002)(4326008)(83380400001)(55016003)(38070700005)(52536014)(508600001)(8936002)(6506007)(53546011)(8676002)(316002)(54906003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?bGprTXJUWThRVmw3UlF0QkNKVHVZeVFEVXBOMWd2eU5OMnRCLzE4UEJmSkpQ?=
- =?utf-8?B?U3l2RUNHbUVlcnFXeEcxM1dManNyTElkZ2JVc0tZK2FlTHl4NkNRY2RyNEl3?=
- =?utf-8?B?Zm81eGV4VE5WVmR5eUFjNWN1WFZJZG1sMGRjQ2hQRDliMFphaHpCVW9iRnph?=
- =?utf-8?B?SWc0ZUpTbEllanlxLzFWdWxmS3lvaVFGTzQvcjhhaVJMU0tzbmNFcFE3ZnRX?=
- =?utf-8?B?RkcvQi92ckdoa2lrekF1bGkrc0ZvRmxnRUNqdXJjM1lFUHQ5RXphS1JLQjFu?=
- =?utf-8?B?SGFlTXZGak5JTjRTL2lLYXc1TGNMb00rTk1WUURBWlMrNlVHb0lrM253V0tv?=
- =?utf-8?B?Kzdkb3lxVzNhc1U0Vzc1dTkrQkMxOU4rSGl0aFZzeU9yQ2dCVUMxd1BGNW1G?=
- =?utf-8?B?ak5pRVJIdHlvSG8xaHAyOHJWUVlXaE03bmU0L09jV1JnYWV2dDBhS3JOV0ll?=
- =?utf-8?B?SmtPRVNuZG5PVk84U2NKS1h4a081T3BYWXBRaUVPaGRBVHkvdFJBbGg2RU52?=
- =?utf-8?B?R3BEZXNJRDM3eno5OWtlMTlWWjdXVk5kbU9lanIyZk9oVURBT3F0YmxIbVpx?=
- =?utf-8?B?T1lYTmlNOGdZREpnQi9DdlRHYVk0WXhVVTNIOGl6QWpTTWpwTXBoRi9xSXd5?=
- =?utf-8?B?OEduU2dWOENNdlVpM0lHYnlnVjZMWURMSFpQOHh6OXlMb05zcm9YczB2eTlQ?=
- =?utf-8?B?bW1zNWNhaS9XcTNpK1htc3VuL1ZjOGZsLytYbWJNRUxOOHNpYUk4WUpadFZM?=
- =?utf-8?B?TW9qbGRDaGFTNDl0SnF4Zkd1bEJqcnBnSXBtckRUb1dwbzVvR3R1SmQvZS9I?=
- =?utf-8?B?LzI2QVNUamk5amhuSXg1UTFieFZtNHczRFJqQU5JWHFMTnM1VDVIemN3bjAv?=
- =?utf-8?B?TDBHaEZvekpVT29tQ3ZuVlg1NHFSNFJJdzhiNU9jVUg1bW9DVHRPSEdLQks3?=
- =?utf-8?B?NEk2c1FBZFJ3TzhRTzJOQWx3WitmWU14aE5adFRtSTZGVE1mUjI1Rk5DVmJC?=
- =?utf-8?B?bWFCeXcydFpxS3g5VUhmS3hWRXQ0UUphekZ0TXViRE04d1phd2xHd2NUck9N?=
- =?utf-8?B?a0JnenVCbDF6T3lkdllma09PeFJKRTlXTjlJUU5HeUwwN0x5MWhYckNmMGxV?=
- =?utf-8?B?cC9kZG1ta1ZmcHpZMjByQmJVdVJoSWQ3TW5GSGUrNFBTTVhqektpV240OW9U?=
- =?utf-8?B?QTVaekpXbm1sZ25PdFV6cnNTRmVaVUZzV2RSdVZYOXVhRTZyYW51SzAvZCtF?=
- =?utf-8?B?bHBGSUZvZzRBb3pQcjZjRnBDbUI2U1h0dVNXcjBZRE5ud2Jua3BldEZ6WXZW?=
- =?utf-8?B?U3dYVkFVSHRSUkRqLzBEOFVxRERJR2lFcWh1Y0VBMUpvYll2cVd1VXkxU2Qz?=
- =?utf-8?B?VmN2bmE3UVhTbGxUd2xWQXYxRm1kWFkrb1J3dEliVVJYOWRRcFE4MHM2b2dB?=
- =?utf-8?B?Zk9kZkVaaU43QVlxcTNWMHlYWktSYzJLQUFJSzBMRDNGTjRmV0x5THZSaTNh?=
- =?utf-8?B?MlFKT3IvSGdkR2RBMVlKclFMTlhPWGNVT0hWS3hZcWs5M01TYWpzdWFhWE9s?=
- =?utf-8?B?bWxTVWl1VXcwV2IyUnVFWjkyeUo2bzNUTjE0WCtVVE1wM2J6Y1NTelJhcjZz?=
- =?utf-8?B?eGltdGNPbnJ2SWh3Yjh1bDNSVVBVcTFsQUtqOCtRRDhtT1RGbUZ6L0xXWi91?=
- =?utf-8?B?ZXpIcjdad1FpVHRZNExGRVgyRFlKcUcwSEpwaXV0RWU4cWN3UjMrRXc1OVJ4?=
- =?utf-8?B?OTRxSy9FYVhkRjh4UWFPdCtuRGJtRFk0UysrYXJpSjRtZW5UZGdmTXR3RkdT?=
- =?utf-8?B?ODE3YlBzVm9sUE5ib01MYnRaS3JEOHZZemYrRHl1RjFuWTJCU2t2K1JlUExX?=
- =?utf-8?B?UzVLdW1TRmZtNjQvcVdtREZmZXF6QVY0UEZLb2FQSWVvbkRWODVna0xIaDRi?=
- =?utf-8?B?Sk42VHpzei9NQXUvSXE4Z0F2WGQ1RllTbGhhZXJra2V5R0ZjZnduN3hEd2dp?=
- =?utf-8?B?M0phUXkrWTZVU2Q4bmJhQ2s2TGVtRFFOZ1dzekdJaUd5QkJzdTdOTlNTYXNM?=
- =?utf-8?B?SFFSQUxkbUk4MjJuSFpXeUw4b0xHd0FlM0k2TEN4QlN5M2JJZXRKUjIwS0Ir?=
- =?utf-8?B?U1RsZng2SHFqazIxd0hUZVVhTTY2NVY0dndHNkFzWEl1MW1DVzFwZzNFR0Y2?=
- =?utf-8?B?M25SRERwV2w5dmRWL1k5K0cvWUxiNlNrRk5GR2lZRVJGTTJvRlpRTDkvelZl?=
- =?utf-8?B?VjhIQkxsNmk3LzkyVHd4QUNNWW5RPT0=?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S237303AbhKXDSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 22:18:43 -0500
+Received: from pi.codeconstruct.com.au ([203.29.241.158]:56166 "EHLO
+        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230517AbhKXDSl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 22:18:41 -0500
+Received: by codeconstruct.com.au (Postfix, from userid 10001)
+        id DE9D9202CF; Wed, 24 Nov 2021 11:15:22 +0800 (AWST)
+Date:   Wed, 24 Nov 2021 11:15:22 +0800
+From:   Matt Johnston <matt@codeconstruct.com.au>
+To:     Wolfram Sang <wsa@kernel.org>, zev@bewilderbeest.net,
+        robh+dt@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        brendanhiggins@google.com, benh@kernel.crashing.org,
+        joel@jms.id.au, andrew@aj.id.au, avifishman70@gmail.com,
+        tmaimon77@gmail.com, tali.perry1@gmail.com, venture@google.com,
+        yuenn@google.com, benjaminfair@google.com, jk@codeconstruct.com.au,
+        linux-i2c@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v3 0/6] MCTP I2C driver
+Message-ID: <20211124031522.GB18900@codeconstruct.com.au>
+References: <20211115024926.205385-1-matt@codeconstruct.com.au>
+ <163698601142.19991.3686735228078461111.git-patchwork-notify@kernel.org>
+ <YZJ9H4eM/M7OXVN0@shikoro>
 MIME-Version: 1.0
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR1301MB2172.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fa8725a0-db36-4313-40a5-08d9aef66249
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Nov 2021 02:59:08.2572
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ZW/hKHM2cagYmmO2Jda7/qJIZIyPBrQZibE7Fvweu/WeAyYWE4WKSfjvEpDSYmFP9YiSbImTKU2a95PPFmCmhdhjgmW+sl+DxZMB271gi88=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR13MB0970
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YZJ9H4eM/M7OXVN0@shikoro>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-U29ycnkgZm9yIHJlcGx5IHRoaXMgbWVzc2FnZSBhZ2Fpbi4NCk9uIE5vdmVtYmVyIDI0LCAyMDIx
-IDEwOjExIEFNLCBCYW93ZW4gWmhlbmcgd3JvdGU6DQo+T24gTm92ZW1iZXIgMjQsIDIwMjEgMzow
-NCBBTSwgSmFtYWwgSGFkaSBTYWxpbSB3cm90ZToNCj4+T24gMjAyMS0xMS0yMyAwMzoyMywgQmFv
-d2VuIFpoZW5nIHdyb3RlOg0KPj4+IE9uIE5vdmVtYmVyIDIyLCAyMDIxIDg6MjUgUE0sIEphbWFs
-IEhhZGkgU2FsaW0gd3JvdGU6DQo+Pj4+IE9uIDIwMjEtMTEtMTggMDg6MDcsIFNpbW9uIEhvcm1h
-biB3cm90ZToNCj4+Pj4NCj4+Pj4gWy4uXQ0KPj4+Pg0KPj4+Pj4gLS0tIGEvbmV0L3NjaGVkL2Fj
-dF9hcGkuYw0KPj4+Pj4gKysrIGIvbmV0L3NjaGVkL2FjdF9hcGkuYw0KPj4+Pj4gQEAgLTIxLDYg
-KzIxLDE5IEBADQo+Pj4+PiArI2luY2x1ZGUgPG5ldC90Y19hY3QvdGNfcGVkaXQuaD4NCj4+Pj4+
-ICsjaW5jbHVkZSA8bmV0L3RjX2FjdC90Y19taXJyZWQuaD4NCj4+Pj4+ICsjaW5jbHVkZSA8bmV0
-L3RjX2FjdC90Y192bGFuLmg+DQo+Pj4+PiArI2luY2x1ZGUgPG5ldC90Y19hY3QvdGNfdHVubmVs
-X2tleS5oPiAjaW5jbHVkZQ0KPj4+Pj4gKzxuZXQvdGNfYWN0L3RjX2NzdW0uaD4gI2luY2x1ZGUg
-PG5ldC90Y19hY3QvdGNfZ2FjdC5oPiAjaW5jbHVkZQ0KPj4+Pj4gKzxuZXQvdGNfYWN0L3RjX3Bv
-bGljZS5oPiAjaW5jbHVkZSA8bmV0L3RjX2FjdC90Y19zYW1wbGUuaD4NCj4+Pj4+ICsjaW5jbHVk
-ZSA8bmV0L3RjX2FjdC90Y19za2JlZGl0Lmg+ICNpbmNsdWRlIDxuZXQvdGNfYWN0L3RjX2N0Lmg+
-DQo+Pj4+PiArI2luY2x1ZGUgPG5ldC90Y19hY3QvdGNfbXBscy5oPiAjaW5jbHVkZSA8bmV0L3Rj
-X2FjdC90Y19nYXRlLmg+DQo+Pj4+PiArI2luY2x1ZGUgPG5ldC9mbG93X29mZmxvYWQuaD4NCj4+
-Pj4+DQo+Pj4+PiAgICAjaWZkZWYgQ09ORklHX0lORVQNCj4+Pj4+ICAgIERFRklORV9TVEFUSUNf
-S0VZX0ZBTFNFKHRjZl9mcmFnX3htaXRfY291bnQpOw0KPj4+Pj4gQEAgLTEyOSw4ICsxNDIsMTU3
-IEBAIHN0YXRpYyB2b2lkIGZyZWVfdGNmKHN0cnVjdCB0Y19hY3Rpb24gKnApDQo+Pj4+PiAgICAJ
-a2ZyZWUocCk7DQo+Pj4+PiAgICB9DQo+Pj4+Pg0KPj4+Pj4gK3N0YXRpYyBpbnQgZmxvd19hY3Rp
-b25faW5pdChzdHJ1Y3QgZmxvd19vZmZsb2FkX2FjdGlvbiAqZmxfYWN0aW9uLA0KPj4+Pj4gKwkJ
-CSAgICBzdHJ1Y3QgdGNfYWN0aW9uICphY3QsDQo+Pj4+PiArCQkJICAgIGVudW0gZmxvd19hY3Rf
-Y29tbWFuZCBjbWQsDQo+Pj4+PiArCQkJICAgIHN0cnVjdCBuZXRsaW5rX2V4dF9hY2sgKmV4dGFj
-aykgew0KPj4+Pj4gKwlpZiAoIWZsX2FjdGlvbikNCj4+Pj4+ICsJCXJldHVybiAtRUlOVkFMOw0K
-Pj4+Pj4gKw0KPj4+Pj4gKwlmbF9hY3Rpb24tPmV4dGFjayA9IGV4dGFjazsNCj4+Pj4+ICsJZmxf
-YWN0aW9uLT5jb21tYW5kID0gY21kOw0KPj4+Pj4gKwlmbF9hY3Rpb24tPmluZGV4ID0gYWN0LT50
-Y2ZhX2luZGV4Ow0KPj4+Pj4gKw0KPj4+Pj4gKwlpZiAoaXNfdGNmX2dhY3Rfb2soYWN0KSkgew0K
-Pj4+Pj4gKwkJZmxfYWN0aW9uLT5pZCA9IEZMT1dfQUNUSU9OX0FDQ0VQVDsNCj4+Pj4+ICsJfSBl
-bHNlIGlmIChpc190Y2ZfZ2FjdF9zaG90KGFjdCkpIHsNCj4+Pj4+ICsJCWZsX2FjdGlvbi0+aWQg
-PSBGTE9XX0FDVElPTl9EUk9QOw0KPj4+Pj4gKwl9IGVsc2UgaWYgKGlzX3RjZl9nYWN0X3RyYXAo
-YWN0KSkgew0KPj4+Pj4gKwkJZmxfYWN0aW9uLT5pZCA9IEZMT1dfQUNUSU9OX1RSQVA7DQo+Pj4+
-PiArCX0gZWxzZSBpZiAoaXNfdGNmX2dhY3RfZ290b19jaGFpbihhY3QpKSB7DQo+Pj4+PiArCQlm
-bF9hY3Rpb24tPmlkID0gRkxPV19BQ1RJT05fR09UTzsNCj4+Pj4+ICsJfSBlbHNlIGlmIChpc190
-Y2ZfbWlycmVkX2VncmVzc19yZWRpcmVjdChhY3QpKSB7DQo+Pj4+PiArCQlmbF9hY3Rpb24tPmlk
-ID0gRkxPV19BQ1RJT05fUkVESVJFQ1Q7DQo+Pj4+PiArCX0gZWxzZSBpZiAoaXNfdGNmX21pcnJl
-ZF9lZ3Jlc3NfbWlycm9yKGFjdCkpIHsNCj4+Pj4+ICsJCWZsX2FjdGlvbi0+aWQgPSBGTE9XX0FD
-VElPTl9NSVJSRUQ7DQo+Pj4+PiArCX0gZWxzZSBpZiAoaXNfdGNmX21pcnJlZF9pbmdyZXNzX3Jl
-ZGlyZWN0KGFjdCkpIHsNCj4+Pj4+ICsJCWZsX2FjdGlvbi0+aWQgPSBGTE9XX0FDVElPTl9SRURJ
-UkVDVF9JTkdSRVNTOw0KPj4+Pj4gKwl9IGVsc2UgaWYgKGlzX3RjZl9taXJyZWRfaW5ncmVzc19t
-aXJyb3IoYWN0KSkgew0KPj4+Pj4gKwkJZmxfYWN0aW9uLT5pZCA9IEZMT1dfQUNUSU9OX01JUlJF
-RF9JTkdSRVNTOw0KPj4+Pj4gKwl9IGVsc2UgaWYgKGlzX3RjZl92bGFuKGFjdCkpIHsNCj4+Pj4+
-ICsJCXN3aXRjaCAodGNmX3ZsYW5fYWN0aW9uKGFjdCkpIHsNCj4+Pj4+ICsJCWNhc2UgVENBX1ZM
-QU5fQUNUX1BVU0g6DQo+Pj4+PiArCQkJZmxfYWN0aW9uLT5pZCA9IEZMT1dfQUNUSU9OX1ZMQU5f
-UFVTSDsNCj4+Pj4+ICsJCQlicmVhazsNCj4+Pj4+ICsJCWNhc2UgVENBX1ZMQU5fQUNUX1BPUDoN
-Cj4+Pj4+ICsJCQlmbF9hY3Rpb24tPmlkID0gRkxPV19BQ1RJT05fVkxBTl9QT1A7DQo+Pj4+PiAr
-CQkJYnJlYWs7DQo+Pj4+PiArCQljYXNlIFRDQV9WTEFOX0FDVF9NT0RJRlk6DQo+Pj4+PiArCQkJ
-ZmxfYWN0aW9uLT5pZCA9IEZMT1dfQUNUSU9OX1ZMQU5fTUFOR0xFOw0KPj4+Pj4gKwkJCWJyZWFr
-Ow0KPj4+Pj4gKwkJZGVmYXVsdDoNCj4+Pj4+ICsJCQlyZXR1cm4gLUVPUE5PVFNVUFA7DQo+Pj4+
-PiArCQl9DQo+Pj4+PiArCX0gZWxzZSBpZiAoaXNfdGNmX3R1bm5lbF9zZXQoYWN0KSkgew0KPj4+
-Pj4gKwkJZmxfYWN0aW9uLT5pZCA9IEZMT1dfQUNUSU9OX1RVTk5FTF9FTkNBUDsNCj4+Pj4+ICsJ
-fSBlbHNlIGlmIChpc190Y2ZfdHVubmVsX3JlbGVhc2UoYWN0KSkgew0KPj4+Pj4gKwkJZmxfYWN0
-aW9uLT5pZCA9IEZMT1dfQUNUSU9OX1RVTk5FTF9ERUNBUDsNCj4+Pj4+ICsJfSBlbHNlIGlmIChp
-c190Y2ZfY3N1bShhY3QpKSB7DQo+Pj4+PiArCQlmbF9hY3Rpb24tPmlkID0gRkxPV19BQ1RJT05f
-Q1NVTTsNCj4+Pj4+ICsJfSBlbHNlIGlmIChpc190Y2Zfc2tiZWRpdF9tYXJrKGFjdCkpIHsNCj4+
-Pj4+ICsJCWZsX2FjdGlvbi0+aWQgPSBGTE9XX0FDVElPTl9NQVJLOw0KPj4+Pj4gKwl9IGVsc2Ug
-aWYgKGlzX3RjZl9zYW1wbGUoYWN0KSkgew0KPj4+Pj4gKwkJZmxfYWN0aW9uLT5pZCA9IEZMT1df
-QUNUSU9OX1NBTVBMRTsNCj4+Pj4+ICsJfSBlbHNlIGlmIChpc190Y2ZfcG9saWNlKGFjdCkpIHsN
-Cj4+Pj4+ICsJCWZsX2FjdGlvbi0+aWQgPSBGTE9XX0FDVElPTl9QT0xJQ0U7DQo+Pj4+PiArCX0g
-ZWxzZSBpZiAoaXNfdGNmX2N0KGFjdCkpIHsNCj4+Pj4+ICsJCWZsX2FjdGlvbi0+aWQgPSBGTE9X
-X0FDVElPTl9DVDsNCj4+Pj4+ICsJfSBlbHNlIGlmIChpc190Y2ZfbXBscyhhY3QpKSB7DQo+Pj4+
-PiArCQlzd2l0Y2ggKHRjZl9tcGxzX2FjdGlvbihhY3QpKSB7DQo+Pj4+PiArCQljYXNlIFRDQV9N
-UExTX0FDVF9QVVNIOg0KPj4+Pj4gKwkJCWZsX2FjdGlvbi0+aWQgPSBGTE9XX0FDVElPTl9NUExT
-X1BVU0g7DQo+Pj4+PiArCQkJYnJlYWs7DQo+Pj4+PiArCQljYXNlIFRDQV9NUExTX0FDVF9QT1A6
-DQo+Pj4+PiArCQkJZmxfYWN0aW9uLT5pZCA9IEZMT1dfQUNUSU9OX01QTFNfUE9QOw0KPj4+Pj4g
-KwkJCWJyZWFrOw0KPj4+Pj4gKwkJY2FzZSBUQ0FfTVBMU19BQ1RfTU9ESUZZOg0KPj4+Pj4gKwkJ
-CWZsX2FjdGlvbi0+aWQgPSBGTE9XX0FDVElPTl9NUExTX01BTkdMRTsNCj4+Pj4+ICsJCQlicmVh
-azsNCj4+Pj4+ICsJCWRlZmF1bHQ6DQo+Pj4+PiArCQkJcmV0dXJuIC1FT1BOT1RTVVBQOw0KPj4+
-Pj4gKwkJfQ0KPj4+Pj4gKwl9IGVsc2UgaWYgKGlzX3RjZl9za2JlZGl0X3B0eXBlKGFjdCkpIHsN
-Cj4+Pj4+ICsJCWZsX2FjdGlvbi0+aWQgPSBGTE9XX0FDVElPTl9QVFlQRTsNCj4+Pj4+ICsJfSBl
-bHNlIGlmIChpc190Y2Zfc2tiZWRpdF9wcmlvcml0eShhY3QpKSB7DQo+Pj4+PiArCQlmbF9hY3Rp
-b24tPmlkID0gRkxPV19BQ1RJT05fUFJJT1JJVFk7DQo+Pj4+PiArCX0gZWxzZSBpZiAoaXNfdGNm
-X2dhdGUoYWN0KSkgew0KPj4+Pj4gKwkJZmxfYWN0aW9uLT5pZCA9IEZMT1dfQUNUSU9OX0dBVEU7
-DQo+Pj4+PiArCX0gZWxzZSB7DQo+Pj4+PiArCQlyZXR1cm4gLUVPUE5PVFNVUFA7DQo+Pj4+PiAr
-CX0NCj4+Pj4+ICsNCj4+Pj4+ICsJcmV0dXJuIDA7DQo+Pj4+PiArfQ0KPj4+Pj4gKw0KPj4+Pg0K
-Pj4+PiBUaGUgY2hhbGxlbmdlIHdpdGggdGhpcyBpcyBub3cgaXQgaXMgaW1wb3NzaWJsZSB0byB3
-cml0ZSBhbiBhY3Rpb24NCj4+Pj4gYXMgYSBzdGFuZGFsb25lIG1vZHVsZSAod2hpY2ggd29ya3Mg
-dG9kYXkpLg0KPj4+PiBPbmUgcmVzb2x1dGlvbiB0byB0aGlzIGlzIHRvIGVpdGhlciByZXVzZSBv
-ciBpbnRyb2R1Y2UgYSBuZXcgb3BzIGluDQo+Pj4+IHN0cnVjdCB0Y19hY3Rpb25fb3BzLg0KPj4+
-PiBUaGVuIGZsb3dfYWN0aW9uX2luaXQoKSB3b3VsZCBqdXN0IGludm9rZSB0aGlzIGFjdC0+b3Bz
-KCkgd2hpY2ggd2lsbA0KPj4+PiBkbyBhY3Rpb24gc3BlY2lmaWMgc2V0dXAuDQo+Pj4+DQo+Pj4g
-VGhhbmtzIGZvciBicmluZ2luZyB0aGlzIHRvIHVzLg0KPj4+IEFzIG15IHVuZGVyc3RhbmRpbmcs
-IGZvciB0aGlzIGlzc3VlLCB3ZSBhcmUgZmFjaW5nIHRoZSBzYW1lIGZhY3Qgd2l0aA0KPj4+IFdo
-YXQNCj4+d2UgZG8gaW4gZnVuY3Rpb24gdGNfc2V0dXBfZmxvd19hY3Rpb24uDQo+Pj4gSWYgd2Ug
-YWRkIGEgZmlsdGVyIHdpdGggYSBuZXcgYWRkZWQgYWN0aW9uLCB3ZSB3aWxsIGFsc28gZmFpbCB0
-bw0KPj4+IG9mZmxvYWQgdGhlDQo+PmZpbHRlci4NCj4+PiBGb3IgYSBuZXcgYWRkZWQgYWN0aW9u
-LCBpZiB3ZSBhaW0gdG8gb2ZmbG9hZCB0aGUgYWN0aW9uIHRvIGhhcmR3YXJlLA0KPj4+IHRoZW4g
-d2UgZGVmaW5pdGVseSBuZWVkIGEgaW5pdCBmY3Rpb24gYW5kIHNldHVwIGZ1bmN0aW9uIGZvcg0K
-Pj4+IGFjdGlvbi9maWx0ZXINCj4+b2ZmbG9hZC4gV2UgY2FuIGFkZCBhIG9wcyBmb3IgdGhlIG5l
-dyBhZGRlZCBhY3Rpb24gdG8gaW5pdCBvciBzZXR1cCB0aGUNCj5hY3Rpb24uDQo+Pj4NCj4+DQo+
-PlRoZSBzaW1wbGVzdCBhcHByb2FjaCBzZWVtcyB0byBiZSBhZGRpbmcgYSBmaWVsZCBpbiBvcHMg
-c3RydWN0IGFuZCBjYWxsDQo+Pml0IGh3X2lkICh3ZSBhbHJlYWR5IGhhdmUgaWQgd2hpY2ggcmVw
-cmVzZW50cyB0aGUgcy93IHNpZGUpLg0KPj5BbGwgeW91ciBjb2RlIGluIGZsb3dfYWN0aW9uX2lu
-aXQoKSB0aGVuIGJlY29tZXMgc29tZXRoaW5nIGxpa2U6DQo+Pg0KPj4gICAgICAgICBpZiAoIWZs
-X2FjdGlvbikNCj4+ICAgICAgICAgICAgICAgICByZXR1cm4gLUVJTlZBTDsNCj4+DQo+PiAgICAg
-ICAgIGZsX2FjdGlvbi0+ZXh0YWNrID0gZXh0YWNrOw0KPj4gICAgICAgICBmbF9hY3Rpb24tPmNv
-bW1hbmQgPSBjbWQ7DQo+PiAgICAgICAgIGZsX2FjdGlvbi0+aW5kZXggPSBhY3QtPnRjZmFfaW5k
-ZXg7DQo+Pg0KPj4NCj4+ICAgICAgICAgZmxfYWN0aW9uLT5pZCA9IGFjdC0+aHdpZDsNCj4+DQo+
-PkFuZCBtb2R1bGVzIGNvbnRpbnVlIHRvIHdvcmsuIERpZCBpIG1pc3Mgc29tZXRoaW5nPw0KPj4N
-Cj5IaSBKYW1hbCwgZm9yIHlvdXIgc3VnZ2VzdGlvbiwgSSB0aGluayBpdCB3aWxsIHdvcmsgZm9y
-IG1vc3Qgb2YgdGhlIGNhc2UuIEJ1dA0KPnRoZXJlIG1heWJlIHNvbWUga2luZCBvZiBhY3Rpb25z
-IHRoYXQgd2lsbCBiZSBhc3NpZ25lZCBkaWZmZXJlbnQgaHdfaWQgaW4NCj5kaWZmZXJlbnQgY2Fz
-ZSwgc3VjaCBhcyB0aGUgZ2FjdCwgd2UgbmVlZCB0byB0aGluayBhYm91dCB0aGlzIGNhc2UuDQo+
-U28gSSB3aWxsIHByZWZlciB0byBhZGQgYSBjYWxsYmFjayBpbiBhY3Rpb24gb3BzIHN0cnVjdCB0
-byBpbXBsZW1lbnQgdGhlDQo+Zmxvd19hY3Rpb25faW5pdCBmdW5jdGlvbiBmb3IgdGhlIG5ldyBh
-ZGRlZCBTdGFuZGFsb25lIGFjdGlvbi4NCj5XRFlUPw0KPg0KPj4+IERvIHlvdSB0aGluayBpdCBp
-cyBwcm9wZXIgdG8gaW5jbHVkZSB0aGlzIGltcGxlbWVudCBpbiBvdXIgcGF0Y2gNCj4+PiBzZXJp
-ZXMgb3Igd2UNCj4+Y2FuIGRlbGl2ZXJ5IGEgbmV3IHBhdGNoIGZvciB0aGlzPw0KPj4NCj4+VW5s
-ZXNzIEkgYW0gbWlzc2luZyBzb21ldGhpbmcgYmFzaWMsIEkgZG9udCBzZWUgdGhpcyBhcyBoYXJk
-IHRvIGRvIGFzDQo+PmV4cGxhaW5lZCBhYm92ZSBpbiB0aGlzIHBhdGNoIHNlcmllcy4NCj5JIGRp
-ZCBub3QgbWVhbiBpdCBpcyBkaWZmaWN1bHQuDQo+U2luY2UgYXMgbXkgdW5kZXJzdGFuZGluZywg
-d2Ugd2lsbCBoYXZlIHRoZSBzYW1lIHByb2JsZW0gaW4gZnVuY3Rpb24gb2YNCj50Y19zZXR1cF9m
-bG93X2FjdGlvbiB0byBTZXR1cCB0aGUgYWN0aW9ucyBmb3IgYSB0byBiZSBvZmZsb2FkZWQgZmxv
-d2VyLiBTbyBteQ0KPnByb3Bvc2FsIGlzIHRvIGFkZCBhIGNhbGxiYWNrIGluIGFjdGlvbiBvcHMg
-dG8gaW1wbGVtZW50IEJvdGggdGhlIGZ1bmN0aW9uIG9mDQo+Zmxvd19hY3RfaW5pdCBhbmQgdGNf
-c2V0dXBfZmxvd19hY3Rpb24gd2l0aCBhIGZsYWcobWF5YmUgYmluZD8pIGFzIGENCj5kaXN0aW5n
-dWlzaC4NCj5XaGF0IGlzIHlvdXIgb3Bpbmlvbj8NCj4+DQo+PkJUVzogc2hvdWxkbnQgZXh0YWNr
-IGJlIHVzZWQgaGVyZSBpbnN0ZWFkIG9mIHJldHVybmluZyBqdXN0IC1FSU5WQUw/DQo+PkkgZGlk
-bnQgc3RhcmUgbG9uZyBlbm91Z2ggYnV0IGl0IHNlZW1zIGV4dGFjayBpcyBub3QgcGFzc2VkIHdo
-ZW4NCj4+ZGVsZXRpbmcgZnJvbSBoYXJkd2FyZT8gSSBzYXcgYSBOVUxMIGJlaW5nIHBhc3NlZCBp
-biBvbmUgb2YgdGhlIHBhdGNoZXMuDQpNYXliZSBJIG1pc3VuZGVyc3RhbmQgd2hhdCB5b3UgbWVh
-biBwcmV2aW91c2x5LCB3aGVuIEkgbG9vayB0aHJvdWdoIHRoZSBpbXBsZW1lbnQgaW4NCmZsb3df
-YWN0aW9uX2luaXQsIEkgZGlkIG5vdCBmb3VuZCB3ZSB1c2UgdGhlIGV4dGFjayB0byBtYWtlIGEg
-bG9nIGJlZm9yZSByZXR1cm4gLUVJTlZBTC4gDQpTbyBjb3VsZCB5b3UgcGxlYXNlIGZpZ3VyZSBp
-dCBvdXQ/IE1heWJlIEkgbWlzcyBzb21ldGhpbmcgb3IgbWlzdW5kZXJzdGFuZCBhZ2Fpbi4gDQo+
-PmNoZWVycywNCj4+amFtYWwNCg==
+Hi Wolfram,
+
+> (extending SMBus calls to 255 byte) is complicated because we need ABI
+> backwards compatibility.
+
+Is it only the i2c-dev ABI that you are concerned about?
+
+I've tested various edge cases of the I2C dev interface, the only ABI
+change seen is that I2C_RDWR ioctl will now read larger messages with
+I2C_M_RECV_LEN if userspace provides a larger buffer. I think that is a
+reasonable change. The i2ctransfer tool provides a 256 byte buffer
+already.
+
+The attached driver patch creates an artifical I2C bus for testing, with
+fixed I2C endpoints 0x30 (for block reads) and 0x40 (for block writes).
+This was written just to test this case, though could be committed if
+you think it's more useful generally.
+
+The script below runs through the edge cases around 32 bytes, with
+either 32 or 255 blockmax on two separate i2c-testbus adapters. The
+patch applies on top of the 255 byte patch series. The script behaviour
+is the same applied on a clean tree (after fixing up 'V3' code), apart
+from the final test as expected.
+
+Cheers,
+Matt
+
+
+#!/bin/sh
+
+# Tests for edge cases around 32 byte block size handling in i2c dev
+# Matt Johnston <matt@codeconstruct.com.au> 2021
+
+# Two i2c-testbus adapter numbers.
+# Bus 15 has v2-only set on i2c-testbus devicetree node, 32 block max
+V2_BUS=15
+# Bus 14 accepts 255 block max
+V3_BUS=14
+
+EXPECT_FAIL="exit 3"
+FAIL="exit 2"
+
+# Behaviour of 32 byte (V2) and 255 byte (V3) busses is the same for most operations
+for b in $V2_BUS $V3_BUS; do
+
+echo "Testing bus $b"
+
+############
+
+echo "Testing 31 byte read"
+i2cget -y $b 0x30 31 s || $FAIL
+echo "Testing 32 byte read"
+i2cget -y $b 0x30 32 s || $FAIL
+
+echo "Testing 33 byte read, should fail"
+i2cget -y $b 0x30 33 s && $EXPECT_FAIL
+
+echo "Testing 35 byte i2c read, should succeed"
+i2cget -y $b 0x30 35 i || $FAIL
+
+echo "Testing 32 byte i2c set length"
+i2cset -y $b 0x30 32 || $FAIL
+echo "Testing 32 byte i2c read, should succeed"
+i2ctransfer -y $b 'r?@0x30' || $FAIL
+
+############
+
+echo "Testing 31 byte smbus write"
+i2cset -y $b 0x40 0x0f 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 s || $FAIL
+wl=$(i2cget -y $b 0x40)
+echo "check length ($wl) is 33==0x21"
+[ $wl = 0x21 ] || $FAIL
+
+echo "Testing 32 byte smbus write"
+i2cset -y $b 0x40 0x0f 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 s || $FAIL
+wl=$(i2cget -y $b 0x40)
+echo "Check length ($wl) is 34==0x22"
+[ $wl = 0x22 ] || $FAIL
+
+echo "Testing 33 byte smbus write (fails)"
+i2cset -y $b 0x40 0x0f 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 0x77 s && $EXPECT_FAIL
+
+echo "Testing 70 byte i2c write"
+i2ctransfer -y $b w70@0x40 123- || $FAIL
+wl=$(i2cget -y $b 0x40)
+echo "Check length ($wl) is 70==0x46"
+[ $wl = 0x46 ] || $FAIL
+
+echo "Done testing bus $b"
+
+done
+
+########## Behaviour V2 vs V3 differs with tests below
+
+echo "Testing difference of V2 bus $V2_BUS"
+b=$V2_BUS
+
+echo "Testing 44 byte read set-length (succeeds with a warning of further failure)"
+i2cset -y $b 0x30 44 || $FAIL
+# i2c-testbus checks size against I2C_SMBUS_BLOCK_MAX in the v2-only case.
+# This is similar to the I2C_SMBUS_BLOCK_MAX vs I2C_SMBUS_V3_BLOCK_MAX
+# checks changed in i2c-npcm7xx and i2c-aspeed
+echo "Testing 44 byte i2c read, fails"
+i2ctransfer -y $b 'r?@0x30' && $EXPECT_FAIL
+
+echo "Done with difference of V2 bus $V2_BUS"
+
+############
+
+echo "Testing difference of V3 bus $V3_BUS"
+b=$V3_BUS
+
+echo "Testing 44 byte read set-length"
+i2cset -y $b 0x30 44 || $FAIL
+echo "Testing 44 byte i2c read, succeeds. (failed prior to 255 byte patch)"
+i2ctransfer -y $b 'r?@0x30' || $FAIL
+
+echo "Done with difference of V3 bus $V3_BUS"
+
+############
+
+echo
+echo "All tests completed as expected"
+
+--
+Subject: [PATCH] i2c testbus: Add an I2C bus for testing
+
+The bus provides fixed endpoints to be used for testing i2c-dev or
+drivers, without needing real hardware. In particular these can test
+block size limitations.
+
+Devicetree property "v2-only" will limit the bus to 32 byte
+SMBus messages, otherwise it supports 255 byte SMBus v3 message.
+
+Examples have i2c-testbus attached as bus number 14:
+
+Address 0x30 provides an endpoint to test block reads
+
+    i2cget -y 14 0x30 31 s
+
+will read 31 bytes as an smbus read. >32 bytes will fail.
+
+    i2cset -y 14 0x30 200
+    i2ctransfer -y 14 r?@0x30
+
+will read 200 bytes as an I2C read.
+
+Address 0x40 is an endpoint to test block writes. The number of bytes
+written can be read back from the endpoint.
+
+i2cset -y 14 0x40 0x32 0x12 0x13 s
+
+i2ctransfer -y 14 w30@0x40 0xff 0x19-
+
+Signed-off-by: Matt Johnston <matt@codeconstruct.com.au>
+---
+ drivers/i2c/busses/Kconfig       |   9 ++
+ drivers/i2c/busses/Makefile      |   1 +
+ drivers/i2c/busses/i2c-testbus.c | 252 +++++++++++++++++++++++++++++++
+ 3 files changed, 262 insertions(+)
+ create mode 100644 drivers/i2c/busses/i2c-testbus.c
+
+diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
+index dce392839017..238d48b42d93 100644
+--- a/drivers/i2c/busses/Kconfig
++++ b/drivers/i2c/busses/Kconfig
+@@ -1418,4 +1418,13 @@ config I2C_VIRTIO
+           This driver can also be built as a module. If so, the module
+           will be called i2c-virtio.
+ 
++config I2C_TESTBUS
++        tristate "Testing I2C Bus Adapter"
++        help
++          Build a driver for testing I2C functionality. The bus provides
++          various clients at fixed addresses with different functionality.
++
++          This driver can also be built as a module. If so, the module
++          will be called i2c-testbus.
++
+ endmenu
+diff --git a/drivers/i2c/busses/Makefile b/drivers/i2c/busses/Makefile
+index d85899fef8c7..e67773637f01 100644
+--- a/drivers/i2c/busses/Makefile
++++ b/drivers/i2c/busses/Makefile
+@@ -149,5 +149,6 @@ obj-$(CONFIG_I2C_XGENE_SLIMPRO) += i2c-xgene-slimpro.o
+ obj-$(CONFIG_SCx200_ACB)	+= scx200_acb.o
+ obj-$(CONFIG_I2C_FSI)		+= i2c-fsi.o
+ obj-$(CONFIG_I2C_VIRTIO)	+= i2c-virtio.o
++obj-$(CONFIG_I2C_TESTBUS)	+= i2c-testbus.o
+ 
+ ccflags-$(CONFIG_I2C_DEBUG_BUS) := -DDEBUG
+diff --git a/drivers/i2c/busses/i2c-testbus.c b/drivers/i2c/busses/i2c-testbus.c
+new file mode 100644
+index 000000000000..e04c9e96c9bc
+--- /dev/null
++++ b/drivers/i2c/busses/i2c-testbus.c
+@@ -0,0 +1,252 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Testing I2C adapter.
++ * Copyright (c) 2021 Code Construct
++ *
++ * Presents artificial I2C client endpoints for testing I2C core/dev
++ * functionality, in particular block transfer sizes.
++ *
++ *
++ * Should be instantiated in devicetree, with an optional v2-only
++ * property to limit to 32 byte block transfers.
++
++	testi2c1 {
++		compatible = "testing-i2c-bus";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		// optional limit to 32 byte blocks
++		v2-only;
++	};
++ *
++ */
++
++#include <linux/clk.h>
++#include <linux/completion.h>
++#include <linux/err.h>
++#include <linux/errno.h>
++#include <linux/i2c.h>
++#include <linux/init.h>
++#include <linux/interrupt.h>
++#include <linux/io.h>
++#include <linux/irq.h>
++#include <linux/irqchip/chained_irq.h>
++#include <linux/irqdomain.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of_address.h>
++#include <linux/of_irq.h>
++#include <linux/of_platform.h>
++#include <linux/platform_device.h>
++#include <linux/reset.h>
++#include <linux/slab.h>
++
++struct testing_i2c_bus {
++	struct i2c_adapter		adap;
++	struct device			*dev;
++	spinlock_t			lock;
++
++	// Don't advertise I2C_FUNC_SMBUS_V3_BLOCK functionality
++	bool v2_only;
++
++	int client_30_len;
++	u8 client_30_val;
++
++	int client_40_len;
++};
++
++static int bus_block_max(struct testing_i2c_bus *bus)
++{
++	return bus->v2_only ? I2C_SMBUS_BLOCK_MAX : I2C_SMBUS_V3_BLOCK_MAX;
++}
++
++/*
++ * 0x30 is a 'read block' i2c endpoint.
++ * A single byte can be written to the "client", indicating the length
++ * of subsequent block reads.
++ */
++int handle_xfer_30(struct testing_i2c_bus *bus, struct i2c_msg *msg)
++{
++	int len, index, i;
++	int block_max = bus_block_max(bus);
++
++	if (msg->flags & I2C_M_RD) {
++		// Read
++		if (msg->flags & I2C_M_RECV_LEN) {
++			// sanity check, should already be limited by Write path below
++			if (bus->client_30_len > block_max) {
++				dev_warn(bus->dev,
++					"%s: addr 0x30 read length %d too large, -EPROTO",
++					__func__, bus->client_30_len);
++				return -EPROTO;
++			}
++			len = bus->client_30_len;
++			msg->buf[0] = len;
++			index = 1;
++			msg->len = len+1;
++		} else {
++			len = msg->len;
++			index = 0;
++		}
++		dev_dbg(bus->dev, "%s read len %d\n", __func__, len);
++		// Fill the buffer with something arbitrary
++		for (i = 0; i < len; i++) {
++			msg->buf[index + i] = bus->client_30_val;
++			(bus->client_30_val)++;
++		}
++	} else {
++		// Write
++		if (msg->len != 1) {
++			dev_warn(bus->dev, "%s: Bad write length to 0x30, must be 1\n",
++				__func__);
++			return -EIO;
++		}
++		len = msg->buf[0];
++		if (len > block_max) {
++			dev_warn(bus->dev,
++				"%s: addr 0x30 read length was set to %d which is > %d (BLOCK_MAX). smbus reads will fail.",
++				__func__, len, block_max);
++		}
++		dev_dbg(bus->dev, "%s write set len %d\n", __func__, len);
++		bus->client_30_len = len;
++	}
++	return 0;
++}
++
++/*
++ * 0x40 is a 'write block' i2c endpoint.
++ * After a block write, the block length can be read back.
++ */
++int handle_xfer_40(struct testing_i2c_bus *bus, struct i2c_msg *msg)
++{
++	int index;
++
++	if (msg->flags & I2C_M_RD) {
++		// Read
++		index = 0;
++		if (msg->flags & I2C_M_RECV_LEN) {
++			// limit to valid API buffer lengths
++			msg->buf[0] = 1;
++			index = 1;
++			msg->len = 2;
++		} else if (msg->len != 1) {
++			dev_warn(bus->dev, "%s bad read len to 0x40, must be 1\n",
++				__func__);
++			return -EIO;
++		}
++		// return the byte count previously written
++		msg->buf[index] = bus->client_40_len;
++	} else {
++		// Write
++		bus->client_40_len = msg->len;
++		dev_dbg(bus->dev, "%s wrote %d bytes: %*ph\n",
++			__func__, bus->client_40_len,
++			msg->len, msg->buf);
++	}
++	return 0;
++}
++static int testing_i2c_master_xfer(struct i2c_adapter *adap,
++				  struct i2c_msg *msgs, int num)
++{
++	struct testing_i2c_bus *bus = i2c_get_adapdata(adap);
++	int i, rc = 0;
++
++	for (i = 0; i < num; i++) {
++		struct i2c_msg *msg = &msgs[i];
++
++		switch (msg->addr) {
++		case 0x30:
++			rc = handle_xfer_30(bus, msg);
++			break;
++		case 0x40:
++			rc = handle_xfer_40(bus, msg);
++			break;
++		default:
++			// unused address
++			rc = -ENXIO;
++		}
++
++		if (rc) {
++			dev_warn(bus->dev, "%s return err %d\n", __func__, rc);
++			return rc;
++		}
++	}
++
++	return num;
++}
++
++static u32 testing_i2c_functionality(struct i2c_adapter *adap)
++{
++	struct testing_i2c_bus *bus = i2c_get_adapdata(adap);
++	int func = I2C_FUNC_I2C | I2C_FUNC_SMBUS_EMUL |
++		I2C_FUNC_SMBUS_BLOCK_DATA;
++
++	if (!bus->v2_only)
++		func |= I2C_FUNC_SMBUS_V3_BLOCK;
++	return func;
++}
++
++static const struct i2c_algorithm testing_i2c_algo = {
++	.master_xfer	= testing_i2c_master_xfer,
++	.functionality	= testing_i2c_functionality,
++};
++
++static const struct of_device_id testing_i2c_bus_of_table[] = {
++	{
++		.compatible = "testing-i2c-bus",
++	},
++	{ },
++};
++MODULE_DEVICE_TABLE(of, testing_i2c_bus_of_table);
++
++static int testing_i2c_probe_bus(struct platform_device *pdev)
++{
++	struct testing_i2c_bus *bus;
++	int ret;
++
++	bus = devm_kzalloc(&pdev->dev, sizeof(*bus), GFP_KERNEL);
++	if (!bus)
++		return -ENOMEM;
++
++	/* Initialize the I2C adapter */
++	spin_lock_init(&bus->lock);
++	bus->adap.owner = THIS_MODULE;
++	bus->adap.retries = 0;
++	bus->adap.algo = &testing_i2c_algo;
++	bus->adap.dev.parent = &pdev->dev;
++	bus->adap.dev.of_node = pdev->dev.of_node;
++	strscpy(bus->adap.name, pdev->name, sizeof(bus->adap.name));
++	i2c_set_adapdata(&bus->adap, bus);
++	bus->dev = &pdev->dev;
++	bus->v2_only = of_property_read_bool(pdev->dev.of_node, "v2-only");
++
++	ret = i2c_add_adapter(&bus->adap);
++	if (ret < 0)
++		return ret;
++
++	platform_set_drvdata(pdev, bus);
++
++	dev_info(bus->dev, "testing i2c bus %d registered. max block %d bytes.\n",
++		 bus->adap.nr, bus_block_max(bus));
++
++	return 0;
++}
++
++static int testing_i2c_remove_bus(struct platform_device *pdev)
++{
++	struct testing_i2c_bus *bus = platform_get_drvdata(pdev);
++
++	i2c_del_adapter(&bus->adap);
++
++	return 0;
++}
++
++static struct platform_driver testing_i2c_bus_driver = {
++	.probe		= testing_i2c_probe_bus,
++	.remove		= testing_i2c_remove_bus,
++	.driver		= {
++		.name		= "testing-i2c-bus",
++		.of_match_table	= testing_i2c_bus_of_table,
++	},
++};
++module_platform_driver(testing_i2c_bus_driver);
++
+-- 
+2.32.0
+
