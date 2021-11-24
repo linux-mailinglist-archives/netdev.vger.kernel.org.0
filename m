@@ -2,106 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC04445BB62
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 13:17:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4148245BC82
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 13:29:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242370AbhKXMTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 07:19:22 -0500
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:37767 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243066AbhKXMRc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 07:17:32 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 2EA1C5C009F;
-        Wed, 24 Nov 2021 07:14:22 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 24 Nov 2021 07:14:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=Vk1NIusawVeGtXkYl
-        1sbngtRrfsptzyA6ZVWDvbEnqo=; b=CkBGLrbx9VdOGNqnjJmTMTg/EWT07Re9O
-        k6XZEcyFyrB6v5lFrYXCtH8pNiB8622FK+GAME5fVNtm6eKi5/EOmxxg86kCSQbs
-        ikQhHp9G2Nv/wyfKxJtuFsX/oegPERq0iDAWuc/6V/S3R96TTv9y3YS9x5mUL58k
-        xIajUNgue6XpYJ45qoCbtZNLwD2gJTxg6/ICBZMAuJ/OaPcCgWgLqmY3uJqegDm8
-        f+ZpLh+xz0bz/0XlPHFAfbgU6yq3aA6Y0ZcBmtUQWti/3j1wZJv30B5E9tYLhm0L
-        9PVmMmod93Yh+/WXu/SAQiJFFrmxDLzVJku5sX7rN05OYhw/lbQjw==
-X-ME-Sender: <xms:nSyeYdYxTi1OBZPXInS3qeuoJRW2mrLTaAj0ufrtuvLlJkHz9RC1VQ>
-    <xme:nSyeYUaYT1hBhbJiWsZ0eavz20zUV8ncMaSrBxcphsJVNCG3lcyR3mwQH1Wo9hfY0
-    R3kmOkbY9EudcM>
-X-ME-Received: <xmr:nSyeYf8RmygaktJQIgZSZyZNcmUSgIy7xL_WB3LvlFN0b0JBlTU-Y-WOtngijnOIfiAWORAqh37Y005fJ7rUFsbdBoVSm00ngBKS1gFSv3V5Xg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrgeekgdeflecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
-    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
-    rdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuheehte
-    ffieekgeehveefvdegledvffduhfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgr
-    mhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:nSyeYbovKZq4E78Ew_8_Va8Jvw1ZqIyBFFowSuVnXy-wKHhwMa0tlg>
-    <xmx:nSyeYYoyJiwNhCD1OWgA2nnCkP7eS1aU2ZBvvgome6itmQquudOK9A>
-    <xmx:nSyeYRQdyuESwEUz7P0cOdxrhLJr7FZrd0bYZpRs2grQy3vRuLpXXA>
-    <xmx:niyeYf1GDStcyKIkeG75jUiwG4nSBb7XQwj4Tp8tz1Jv3m-6Xd_a4A>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 24 Nov 2021 07:14:20 -0500 (EST)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     mkubecek@suse.cz, andrew@lunn.ch, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH ethtool] cable-test: Fix premature process termination
-Date:   Wed, 24 Nov 2021 14:14:06 +0200
-Message-Id: <20211124121406.3330950-1-idosch@idosch.org>
-X-Mailer: git-send-email 2.31.1
+        id S243641AbhKXMbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 07:31:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42106 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S245506AbhKXM2T (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Nov 2021 07:28:19 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3DA6061269;
+        Wed, 24 Nov 2021 12:17:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637756227;
+        bh=4Bwn5rvzFaQX6/M2Ep7RPrdvX/Thgii4YOdsQ3DDAGs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GmhRSa6/MuM56Kz+5NAzjuJN+IAHQHehfqMjrwDF6Nmi3aepqRMFsZJnLxjkCaLZ0
+         875Lh6WjSpmBYpFf9DT1DC4T3KoGBuObUdboOFslbdOtor6+DHCd3AML5pk8c/mFGg
+         pesH0n4e1Z4P8irpmmi+IE5oTUb5iwuXE3VYBY8xEyYZiC/gW7//srJ+WfKARRCQbs
+         MFY10CLu6hSm+n62EeVtgdRLu/AGg6RejjppL2tD7zcElpzHUoYfDgdMrqDi36aU34
+         Nots5+nhir9dunFyzmBOIeqZuUpviycPfbFQZnORxXCoo3rjnzJLSPO0dg8i/N3N7n
+         tTCCAslARt4iQ==
+Date:   Wed, 24 Nov 2021 13:17:03 +0100
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sean Anderson <sean.anderson@seco.com>, davem@davemloft.net
+Subject: Re: [PATCH net-next v2 4/8] net: phylink: update
+ supported_interfaces with modes from fwnode
+Message-ID: <20211124131703.30176315@thinkpad>
+In-Reply-To: <20211124120441.i7735czjm5k3mkwh@skbuf>
+References: <20211123164027.15618-1-kabel@kernel.org>
+        <20211123164027.15618-5-kabel@kernel.org>
+        <20211123212441.qwgqaad74zciw6wj@skbuf>
+        <20211123232713.460e3241@thinkpad>
+        <20211123225418.skpnnhnrsdqrwv5f@skbuf>
+        <YZ4cRWkEO+l1W08u@shell.armlinux.org.uk>
+        <20211124120441.i7735czjm5k3mkwh@skbuf>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+On Wed, 24 Nov 2021 14:04:41 +0200
+Vladimir Oltean <olteanv@gmail.com> wrote:
 
-Unlike other ethtool operations, cable testing is asynchronous which
-allows several cables to be tested simultaneously. This is done by
-ethtool instructing the kernel to start the cable testing and listening
-to multicast notifications regarding its progress. The ethtool process
-terminates after receiving a notification about the completion of the
-test.
+> On Wed, Nov 24, 2021 at 11:04:37AM +0000, Russell King (Oracle) wrote:
+> > On Wed, Nov 24, 2021 at 12:54:18AM +0200, Vladimir Oltean wrote:  
+> > > This implies that when you bring up a board and write the device tree
+> > > for it, you know that PHY mode X works without ever testing it. What if
+> > > it doesn't work when you finally add support for it? Now you already
+> > > have one DT blob in circulation. That's why I'm saying that maybe it
+> > > could be better if we could think in terms that are a bit more physical
+> > > and easy to characterize.  
+> > 
+> > However, it doesn't solve the problem. Let's take an example.
+> > 
+> > The 3310 supports a mode where it runs in XAUI/5GBASE-R/2500BASE-X/SGMII
+> > depending on the negotiated media parameters.
+> > 
+> > XAUI is four lanes of 3.125Gbaud.
+> > 5GBASE-R is one lane of 5.15625Gbaud.
+> > 
+> > Let's say you're using this, and test the 10G speed using XAUI,
+> > intending the other speeds to work. So you put in DT that you support
+> > four lanes and up to 5.15625Gbaud.  
+> 
+> Yes, see, the blame's on you if you do that.You effectively declared
+> that the lane is able of sustaining a data rate higher than you've
+> actually had proof it does (5.156 vs 3.125).
 
-Currently, ethtool processes all the cable test notifications,
-regardless of the reported device. This means that an ethtool process
-started for one device can terminate prematurely if completion was
-reported for a different device.
+But the blame is on the DT writer in the same way if they declare
+support for a PHY mode that wasn't tested. (Or at least self-tests with
+PRBS patterns at given frequency.)
 
-Fix by ignoring notifications for devices other than the device for
-which the test was started.
+> The reason why I'm making this suggestion is because I think it lends
+> itself better to the way in which hardware manufacturers work.
+> A hobbyist like me has no choice than to test the highest data rate when
+> determining what frequency to declare in the DT (it's the same thing for
+> spi-max-frequency and other limilar DT properties, really), but hardware
+> people have simulations based on IBIS-AMI models, they can do SERDES
+> self-tests using PRBS patterns, lots of stuff to characterize what
+> frequency a lane is rated for, without actually speaking any Ethernet
+> protocol on it. In fact there are lots of people who can do this stuff
+> (which I know mostly nothing about) with precision without even knowing
+> how to even type a simple "ls" inside a Linux shell.
+>
+> > Later, you discover that 5GBASE-R doesn't work because there's an
+> > electrical issue with the board. You now have DT in circulation
+> > which doesn't match the capabilities of the hardware.
+> > 
+> > How is this any different from the situation you describe above?
+> > To me, it seems to be exactly the same problem.  
+> 
+> To err is human, of course. But one thing I think we learned from the
+> old implementation of phylink_validate is that it gets very tiring to
+> keep adding PHY modes, and we always seem to miss some. When that array
+> will be described in DT, it could be just a tad more painful to maintain.
 
-Fixes: 55f5e9aa3281 ("Add cable test support")
-Fixes: 9561db9b76f4 ("Add cable test TDR support")
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- netlink/cable_test.c | 2 ++
- 1 file changed, 2 insertions(+)
+The thing is that we will still need the `phy-mode` property, it can't
+be deprecated IMO. There are non-SerDes modes, like rgmii, which may
+use different pins than SerDes modes.
+There may theoretically also be a SoC or PHY where the lanes for XAUI
+do not share pins with the lane of 2500base-x, and this lane may not be
+wired. Tis true that I don't know of any such hardware and it probably
+does not and will not exist, but we don't know that for sure and this is
+a case where your proposal will fail and the phy-mode extension would
+work nicely.
 
-diff --git a/netlink/cable_test.c b/netlink/cable_test.c
-index 17139f7d297d..9305a4763c5b 100644
---- a/netlink/cable_test.c
-+++ b/netlink/cable_test.c
-@@ -225,6 +225,7 @@ static int nl_cable_test_process_results(struct cmd_context *ctx)
- 	nlctx->is_monitor = true;
- 	nlsk->port = 0;
- 	nlsk->seq = 0;
-+	nlctx->filter_devname = ctx->devname;
- 
- 	ctctx.breakout = false;
- 	nlctx->cmd_private = &ctctx;
-@@ -496,6 +497,7 @@ static int nl_cable_test_tdr_process_results(struct cmd_context *ctx)
- 	nlctx->is_monitor = true;
- 	nlsk->port = 0;
- 	nlsk->seq = 0;
-+	nlctx->filter_devname = ctx->devname;
- 
- 	ctctx.breakout = false;
- 	nlctx->cmd_private = &ctctx;
--- 
-2.31.1
+Maybe we need opinions from other people here.
 
+Marek
