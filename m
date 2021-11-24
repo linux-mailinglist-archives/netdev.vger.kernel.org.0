@@ -2,79 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B44B845B307
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 05:15:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30DCC45B30E
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 05:20:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240927AbhKXESr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 23:18:47 -0500
-Received: from out30-130.freemail.mail.aliyun.com ([115.124.30.130]:54627 "EHLO
-        out30-130.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230429AbhKXESr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 23:18:47 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=yunbo.xufeng@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0Uy3QONJ_1637727334;
-Received: from IT-C02XP11YJHD2.local(mailfrom:yunbo.xufeng@linux.alibaba.com fp:SMTPD_---0Uy3QONJ_1637727334)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 24 Nov 2021 12:15:35 +0800
-Subject: Re: [RFC] [PATCH bpf-next 1/1] bpf: Clear the noisy tail buffer for
- bpf_d_path() helper
-To:     jolsa@kernel.org, kpsingh@google.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        andriin@fb.com
-References: <20211120051839.28212-1-yunbo.xufeng@linux.alibaba.com>
- <20211120051839.28212-2-yunbo.xufeng@linux.alibaba.com>
-From:   xufeng zhang <yunbo.xufeng@linux.alibaba.com>
-Message-ID: <9c83d1c1-f8da-8c5b-74dc-d763ab444774@linux.alibaba.com>
-Date:   Wed, 24 Nov 2021 12:15:34 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        id S233767AbhKXEXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 23:23:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34118 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232004AbhKXEXW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Nov 2021 23:23:22 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 8B72D60FD9;
+        Wed, 24 Nov 2021 04:20:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637727609;
+        bh=u0y6rb8426CSFuBKCFKA+iDsvdD9sinWWJume8DbMVo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=mXB76L9vU3cYz4I/HkK/PUr16Z9OA0PgdpW8NKFrg6PiBREJFGySE3Dgg3D1oaCfH
+         +J9LQ1+y6R71wIB/yNJjfrFvERHiFWXzu8FX5uSko10ZkYZfRL43tv65DLIRybS+ou
+         n5twgWuiujXo8OSdF2o5xmW6p7en+tx209p5mSuEd7YJlWWVdGtKnVbWvA1qF1nZON
+         W3xPgYKabir8fOyBny1PZQxnoLmhK9cV9t2Oubu/wnVZmJyaQGcOWGF2pUpXl1AEIN
+         HFv9EDQAb94z6bzv//mpkHsOWjFgQZD1Nd6sAJZlYoJuM7iCTFv+LjT5XZ6ncJZLT6
+         ordQU0hZgcmmw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7B63D60BC9;
+        Wed, 24 Nov 2021 04:20:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20211120051839.28212-2-yunbo.xufeng@linux.alibaba.com>
-Content-Type: text/plain; charset=gbk; format=flowed
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] selftests: add arp_ndisc_evict_nocarrier to Makefile
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163772760950.14808.1734972164408990351.git-patchwork-notify@kernel.org>
+Date:   Wed, 24 Nov 2021 04:20:09 +0000
+References: <20211122171806.3529401-1-prestwoj@gmail.com>
+In-Reply-To: <20211122171806.3529401-1-prestwoj@gmail.com>
+To:     James Prestwood <prestwoj@gmail.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, shuah@kernel.org,
+        liuhangbin@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jiri and KP,
+Hello:
 
-Any suggestion?
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-
-Thanks in advance!
-
-Xufeng
-
-ÔÚ 2021/11/20 ÏÂÎç1:18, Xufeng Zhang Ð´µÀ:
-> From: "Xufeng Zhang" <yunbo.xufeng@linux.alibaba.com>
->
-> The motivation behind this change is to use the returned full path
-> for lookup keys in BPF_MAP_TYPE_HASH map.
-> bpf_d_path() prepend the path string from the end of the input
-> buffer, and call memmove() to copy the full path from the tail
-> buffer to the head of buffer before return. So although the
-> returned buffer string is NULL terminated, there is still
-> noise data at the tail of buffer.
-> If using the returned full path buffer as the key of hash map,
-> the noise data is also calculated and makes map lookup failed.
-> To resolve this problem, we could memset the noisy tail buffer
-> before return.
->
-> Signed-off-by: Xufeng Zhang <yunbo.xufeng@linux.alibaba.com>
+On Mon, 22 Nov 2021 09:18:06 -0800 you wrote:
+> This was previously added in selftests but never added
+> to the Makefile
+> 
+> Signed-off-by: James Prestwood <prestwoj@gmail.com>
 > ---
->   kernel/trace/bpf_trace.c | 2 ++
->   1 file changed, 2 insertions(+)
->
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index 25ea521fb8f1..ec4a6823c024 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -903,6 +903,8 @@ BPF_CALL_3(bpf_d_path, struct path *, path, char *, buf, u32, sz)
->   	} else {
->   		len = buf + sz - p;
->   		memmove(buf, p, len);
-> +		/* Clear the noisy tail buffer before return */
-> +		memset(buf + len, 0, sz - len);
->   	}
->   
->   	return len;
+>  tools/testing/selftests/net/Makefile | 1 +
+>  1 file changed, 1 insertion(+)
+
+Here is the summary with links:
+  - selftests: add arp_ndisc_evict_nocarrier to Makefile
+    https://git.kernel.org/netdev/net/c/619ca0d0108a
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
