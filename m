@@ -2,144 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 112A045B837
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 11:18:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D39145B846
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 11:21:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241143AbhKXKV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 05:21:58 -0500
-Received: from mail-mw2nam12on2071.outbound.protection.outlook.com ([40.107.244.71]:29824
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S240105AbhKXKV6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Nov 2021 05:21:58 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=da+fHjAr0qRwarlpaS9sNGntfahjfDiBvOIxSpQGpJ/rUzuIYMTL8nVspQ5e6m41ZrrbqPS7p11A1k2MNrUywwfG53lJSp08mfjjtF6QKEtoz4dODH+WUOe4fh1QwNKwS1Edsr2tVj7fgyt9uKr32PMolfvRN802t4ThoO3S0wEkwW8CfjVIavG8oszYpmrzoVdZ4B9vwWYWZ/ePAWkDBWmdZ+5oQgFwGx4IdLmV11+RBao+gPYyo7pIfbHfPfcKwsKDrXcVvFd+yAYL7bGJ/dvPAmLRmVzzo7/alZ49aqs5ZAds5yNGzlOOUPQRKIt5/yKUgeGs3ZixnbXYUyjaNg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hMkGBr0bXbLoc0r4al3bxzXWiBdclmaz3s2+8RyY/3M=;
- b=MUaCtT0VtnZZRGTfJ1OBJJZP2CoI748l4JrCUpB+474m3egAx/ZDvn57OxKcFV1mh2hFCFimfedylQY9gyGEA3xWCvXJZUxU+SYbzFCv04XUI8xtQr3Mm5UDSsI1ab727yvPywhzxwxpT9AiTamiGG4sB2XR9wwEUUzywH0S6/pHSfTgtChdaK4NxNrmql+ZxxPLokEbbf191o8Rcx0vRr45j36hPPI4m8n6MhfDVeXUYxXj4G7OmWqgX/2NY3OgsjAZhJbtrb7Z2GrVN+kHYtkHJY0i7IqIQ5fOc+i0mR1nAw1Kv0f6htR2+NLCVKx6LXEqGy3cT6xgZxB5mtWuwQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hMkGBr0bXbLoc0r4al3bxzXWiBdclmaz3s2+8RyY/3M=;
- b=JbZsE4d9qhPR12OAkq4xoB+MCP4YAPy2Yq6rzoftX5OaMfDGwvHeDJAnUL1u/T+SlDQqhhxnxScYnhaSLmHZfQp4YQXxgyfwKI3gGpalmL2ktflE+zOOakS/W+fRNOUW61Q162H4WTl0bM7FdZHGDEfo6J483APyhVSbVhWV8GNN/eTRi92dHqNayxxaceXRe7CKoIlP3f1AcXU7gkdcDQ5qDWgzO4xt6LVQlMyo2JZqr1FjH6c5kmjLXCUkpEZYKgw3cddXcavVfhwxf6YI5xRGhgCU2fnvdVzZcM2Su8oy1qetLEXzsXZZUOt3WQibYXZ+Jm6Q5w6Tyjf8UlnCSQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM4PR12MB5278.namprd12.prod.outlook.com (2603:10b6:5:39e::17)
- by DM4PR12MB5311.namprd12.prod.outlook.com (2603:10b6:5:39f::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.22; Wed, 24 Nov
- 2021 10:18:46 +0000
-Received: from DM4PR12MB5278.namprd12.prod.outlook.com
- ([fe80::513c:d3d8:9c43:2cea]) by DM4PR12MB5278.namprd12.prod.outlook.com
- ([fe80::513c:d3d8:9c43:2cea%9]) with mapi id 15.20.4713.025; Wed, 24 Nov 2021
- 10:18:46 +0000
-Message-ID: <1db3aae2-2b68-a18e-2ea7-3b193612125f@nvidia.com>
-Date:   Wed, 24 Nov 2021 12:18:39 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Subject: Re: [PATCH] net/bridge: replace simple_strtoul to kstrtol
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Ido Schimmel <idosch@idosch.org>, Bernard Zhao <bernard@vivo.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
+        id S240276AbhKXKYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 05:24:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49836 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229866AbhKXKYN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 05:24:13 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53644C061714;
+        Wed, 24 Nov 2021 02:21:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=pCdjSOsXdGlJ8+cnfMdWcEIa7d9zwXe6ePu8SPJAXxE=; b=tpIyUYXQ878LgsAQPafzOhlRlO
+        A4BNgBGfLV6gzbhDXUzCjj7NUPYH/Kh/agDOWSCe1/JeayXJin91Yd5i5X2Y5icdQf42iB5jynOUs
+        jdi1x9HfEOeEPsLMVU0BuGoyTVZAm7E+fU4jM2T3k5fpKW5Ucrbwj6KE3HH/ONNsDodmnIvTNkVaO
+        sTL6GbupSmM8L9XL7deMYKa+FVs32wEhXILU62F7jG6nKWnSrGTcRDN2eLSOFbh2L3MLdNkTaFeXc
+        +chdy1lEXQY13EZKLsFFfV3KNL7BeKtJvypEL9isGWtjnZ4/vCtctBNbM/md33ux2BhauzNcWAj2W
+        JDSJpISg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55832)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mppOb-0000Sc-12; Wed, 24 Nov 2021 10:20:57 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mppOZ-00017G-AK; Wed, 24 Nov 2021 10:20:55 +0000
+Date:   Wed, 24 Nov 2021 10:20:55 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        UNGLinuxDriver@microchip.com, p.zabel@pengutronix.de,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20211119020642.108397-1-bernard@vivo.com>
- <YZtrM3Ukz7rKfNLN@shredder> <f98615d9-a129-d0b0-e444-cb649c14d7ce@nvidia.com>
- <20211123201327.3689203b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Nikolay Aleksandrov <nikolay@nvidia.com>
-In-Reply-To: <20211123201327.3689203b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: ZR0P278CA0066.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:21::17) To DM4PR12MB5278.namprd12.prod.outlook.com
- (2603:10b6:5:39e::17)
+Subject: Re: [PATCH net-next v3 3/6] net: lan966x: add port module support
+Message-ID: <YZ4SB/wX6UT3zrEV@shell.armlinux.org.uk>
+References: <20211124083915.2223065-1-horatiu.vultur@microchip.com>
+ <20211124083915.2223065-4-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-Received: from [10.21.241.23] (213.179.129.39) by ZR0P278CA0066.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:21::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.21 via Frontend Transport; Wed, 24 Nov 2021 10:18:44 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 34b4eaef-2522-4b36-b131-08d9af33cc92
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5311:
-X-Microsoft-Antispam-PRVS: <DM4PR12MB5311E1C5D857029E6AFCAA15DF619@DM4PR12MB5311.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GGhCqx26/eKtx7CJWc3iLfhKAvQJUm0TE2TXkEEg4ZUL1jD0eLVvteEQeUDSKk4y4xBcYn4hghihQoZA+tfun/z9Mz+Gg/J2k6om/G4Y1Six5wvI7rnqIS3Zn9HvF9QKAaoa04khBm1qCRVwJixVWew4qp+bGCqksrzB/lQmOG6t57o+bONBESLcbq1dkePcVrSNuyLaJDKEKb0EhUDczSF8qkiCfMo3qP7x+G9LR94jodePBy925+8NJGtbWtPmFX7rx+Rr/FeOjYIpU1oXXVt/aPTeUNP2vvRp+QwJoGFtXmHZf34M+Pv0FVaPRkHmA4jbC/oG6yVAjbuelssKfx1rRfnucKoQH9NcqxgTUNWXlvdtDoPdiFfsmaSqK9V6rmmpURDadWtpbbRr6Rtd/eveOZJHmqAM7IfDT0HPga3GWM0kQaVN/y+2GEjLoJCruY4DmMgGWwfzZUNBFZ0QhrHFVz79MaTEeH/CcBP8Hc6OzJ8T1RBS+pMHyNc/WmbiAghGwsvyU/yeuY1mb0962CdkfUmErBxHK+xPisQ5L056lgV7ASGoVJcHacHBdC3bd8egfcaW11N1JJr3E+aBmYVQYh6B7IoNQ7RMYUOLSKX9ERUgK+aRL4mWoGfGDZdyIfjuy3s7L4tyCrIGtVpbOtwg/0qa7uGnyNtVLcZVpbwR0hDI6kVvft1v9sc8mmQvwrf9mcX7vbrgpsDLirnBfVeoewBK9dCoxvHZ9ZHsT2YQ2sfQOec24yAoOuywKzmIBtSqDgT7HE/q3H1mr2BWW0ApTc4dXPJyrfqCdI5lVpDEIepaZ1RgJFQxjSGkPoO6
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5278.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(4326008)(6916009)(8676002)(2906002)(4744005)(508600001)(54906003)(86362001)(16576012)(316002)(66946007)(956004)(2616005)(26005)(36756003)(31696002)(6666004)(5660300002)(38100700002)(31686004)(66476007)(66556008)(6486002)(53546011)(186003)(8936002)(966005)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VWpUTWRiUUI2N1JDbDlCMjIwbHdaUDIrK2hJNWJPWjlUODZBaXhuUXpwMGky?=
- =?utf-8?B?emhXVlF5Zzk0SUJ5RHNiWGlaU1Y1V1JKWGlrOFAxbG54c3N4T1VsTGJsVEwr?=
- =?utf-8?B?NmdqR05zdXVWblJTSmtWYm5yRDJuZ21KL3dxS2UvRVpxVTJnYld5TFJmcFZ4?=
- =?utf-8?B?Qm9EL2F3aEFUbWZwU3lpZUpSMGpmdy9Hd3ZuY2E5S1VMN0hUQ0hJZC9zK0tl?=
- =?utf-8?B?bzhKb1ZnREJNb3NTMW5LT1cyREgyQjhDR3VUZm5FY3JlMFdyRVFNeHJlbFlr?=
- =?utf-8?B?RHExY3VkaUdPVzUwU0s5NzBuMUtVWndMbTZZaFFSSzF5a09OblJud2tCTGRF?=
- =?utf-8?B?QXhFc1puRG9xQnlFZnJzdVRNQ25UVU1rMGtOWGR3SXc4WE5ZQVk4MjdBalRN?=
- =?utf-8?B?Z1UvdjRtUmN0WldBMFRvM1luMXR5WEVLQVNWblJYYzZDbDJEUi9zUjU4UnQ4?=
- =?utf-8?B?MjhkRU52M0Yxd1dCL1NwY2EzQmNsbUR1aWYvMEl1SWpGdlpCK2o2SFdiMlhM?=
- =?utf-8?B?dzlIdzRxRS9kS1JCK1NXSTJ6V2NGTVpXY3hJSUQxdnNrWW9vdmZvR2JLdSsx?=
- =?utf-8?B?VW1tVXR4RDhSMnhDcWExSURYbllzaFM1TTVyTWhBRTlZbUNLTy9iWWovSjBt?=
- =?utf-8?B?ZFNDK0pBeXU2MWpNUGF4QzltczlJaW5JU3Q5SW9pN2VyQ0FxeDgvc2RGM1Bw?=
- =?utf-8?B?Qm9QMlo2bEFjWGtyZ05kd242UmwrWTQrS0R5MmkwOTdqS3NNNG1tNG1zNlJk?=
- =?utf-8?B?TGpaT0xVK2ZCZDdMc05FR1VTdml0M3VMZGRYbTFaeFdtUVpDMHRQdmcwajRy?=
- =?utf-8?B?SzNpOFBuaU02d0Y4WGpFQUZXYTJ6OGw1QWdHb2I4UXJ2aXBveThlSmhyM1NQ?=
- =?utf-8?B?WENCZ3pwNU53Wm44aE5Iek1yZUFERFViVWl5YkZiVWRBTHZrL1RwVldmMXdl?=
- =?utf-8?B?a2N4Qk1SeVJ2aFdDbm92cTN0dGRqL1ozY3c5U1paQ1BjajFEb0xrWjlGdHF1?=
- =?utf-8?B?L2FFd05ydjRoVnFRUWFUTE1yNTU3Z2ZTdnVEYkZoazd5N0RTbEJHSjRZMTJK?=
- =?utf-8?B?eUsxRmozZWpwV0g2UW9lS1VXNkFtbjhUTXdlZStJM1p6UGJxU25Hb0VjQ1Z2?=
- =?utf-8?B?MXI5c1lwaGkvSGh3RVdSNFpoK3VtUXl3bVM3bG5KMmxPT0hlMmtkRUo0TTFR?=
- =?utf-8?B?VHRzK2VvQTMybXNyYkEwVFNvQzhSdHdWSi9GdFJabjVOdE5DcjB6bER2Nkhn?=
- =?utf-8?B?bTZuSkVLSEQrN25xY1FnUkF0bUhCbDRNMGZWS2VMd1VXK1hqQ0Z2NVVJdkFv?=
- =?utf-8?B?YXN4QllpKzRQMlNjeCt4NUdKWlhqMlQwbjNMQnFHczgraExzaTgvcW9HN29M?=
- =?utf-8?B?VzBQTExrYmRPZXpaVDYyRkhWLzg2L1hONDhpQnJjUm5mNm96SUlnbE1KRExq?=
- =?utf-8?B?ekdrNEtnWitLbnVHYTFldzU4RklLM0VpWnZ0WHdscmtYZy9KRTl6UUlpeVNi?=
- =?utf-8?B?dU53dGxvaC9COWh1MDhjVGloYkEvcVovc2VicnRXNFFxenVRMWJzSTFkbFI2?=
- =?utf-8?B?UjB4S3FtSlA3a1ZnNW9hRFhZQmt5Q2RQUEowVTNLQ2Fwc01JK2g2QU1hSGJk?=
- =?utf-8?B?K3NOMEZVUlFIemRwWlNJMzFkMmlaTmpYQXdsUFlWVDBLRFhhSkg4dThrS29j?=
- =?utf-8?B?Tm83OC9EMVlNeEllV01pRktIbVVMaVBGNVZmRzFBajRRSlduYmZ2UnRGSnZo?=
- =?utf-8?B?NzFYSGNRM3Zub3IvdERIVG10T2hmUmZPQkV5a1AxODN0NGJYSjFQK3hKNWtH?=
- =?utf-8?B?a2JXWFZXK3hFRDVtdE9jZ3ZZbEhIZU9ZRGRtS1ZPdTdWZFF0dmhyeUFzYmFY?=
- =?utf-8?B?SUkwNVNKSlJhZ0JhMWxzVUpZUVhaeWduWklkMWxqd3I4ZlMrdGY3WUNvcnlv?=
- =?utf-8?B?L1BxRzR5dlk0czJnMmRpaUVKWTUwcVAyL2FHWVBrd29kUFI1NHZ6Q0thdHpn?=
- =?utf-8?B?OTgyMkl2TGFRZk9ydTY4a0NzK0o3ODNkYXRhYlRIZis2OW5mWlREZi9MZG5F?=
- =?utf-8?B?eGs4YzdTbWtWTzl6L3ZSblFicFJKN3N2dG04WldyQ2hMaG9ndGdHcHVFdnl2?=
- =?utf-8?B?NjFHMXVDeGNZMk1Tb1VBR1BMQkNrZ0lMQndNcVVLaGVIbk1pLzNxSmZBb0xm?=
- =?utf-8?Q?KBQoRlnFa4b1keecKFQAlLw=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 34b4eaef-2522-4b36-b131-08d9af33cc92
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5278.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Nov 2021 10:18:46.3976
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CHzAFpAqVzYnWgekpVmr4HVlyobdvgFN9ICry14QkthX1g7kEE3+VRaptTob4fvhim0itb8bWgkw87ZdhO0Wyg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5311
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211124083915.2223065-4-horatiu.vultur@microchip.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24/11/2021 06:13, Jakub Kicinski wrote:
-> On Mon, 22 Nov 2021 12:17:39 +0200 Nikolay Aleksandrov wrote:
->>> # ip link add name br0 type bridge vlan_filtering 1
->>> # echo "0x88a8" > /sys/class/net/br0/bridge/vlan_protocol 
->>> bash: echo: write error: Invalid argument
->>
->> Good catch, Bernard please send a revert. Thanks.
-> 
-> Doesn't look like he did, would you mind taking over?
-> 
+Hi,
 
-Ido sent a patch to take care of it:
-https://patchwork.kernel.org/project/netdevbpf/patch/20211124101122.3321496-1-idosch@idosch.org/
+On Wed, Nov 24, 2021 at 09:39:12AM +0100, Horatiu Vultur wrote:
+> +static int lan966x_port_open(struct net_device *dev)
+> +{
+> +	struct lan966x_port *port = netdev_priv(dev);
+> +	struct lan966x *lan966x = port->lan966x;
+> +	int err;
+> +
+> +	if (port->serdes) {
+> +		err = phy_set_mode_ext(port->serdes, PHY_MODE_ETHERNET,
+> +				       port->config.phy_mode);
+> +		if (err) {
+> +			netdev_err(dev, "Could not set mode of SerDes\n");
+> +			return err;
+> +		}
+> +	}
 
-Cheers,
- Nik
+This could be done in the mac_prepare() method.
 
+> +static void lan966x_cleanup_ports(struct lan966x *lan966x)
+> +{
+> +	struct lan966x_port *port;
+> +	int portno;
+> +
+> +	for (portno = 0; portno < lan966x->num_phys_ports; portno++) {
+> +		port = lan966x->ports[portno];
+> +		if (!port)
+> +			continue;
+> +
+> +		if (port->phylink) {
+> +			rtnl_lock();
+> +			lan966x_port_stop(port->dev);
+> +			rtnl_unlock();
+> +			phylink_destroy(port->phylink);
+> +			port->phylink = NULL;
+> +		}
+> +
+> +		if (port->fwnode)
+> +			fwnode_handle_put(port->fwnode);
+> +
+> +		if (port->dev)
+> +			unregister_netdev(port->dev);
 
+This doesn't look like the correct sequence to me. Shouldn't the net
+device be unregistered first, which will take the port down by doing
+so and make it unavailable to userspace to further manipulate. Then
+we should start tearing other stuff down such as destroying phylink
+and disabling interrupts (in the caller of this.)
+
+Don't you need to free the netdev as well at some point?
+
+>  static int lan966x_probe_port(struct lan966x *lan966x, u32 p,
+> -			      phy_interface_t phy_mode)
+> +			      phy_interface_t phy_mode,
+> +			      struct fwnode_handle *portnp)
+>  {
+...
+> +	port->phylink_config.dev = &port->dev->dev;
+> +	port->phylink_config.type = PHYLINK_NETDEV;
+> +	port->phylink_config.pcs_poll = true;
+> +	port->phylink_pcs.poll = true;
+
+You don't need to set both of these - please omit
+port->phylink_config.pcs_poll.
+
+> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+> index 7a1ff9d19fbf..ce2798db0449 100644
+> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+...
+> @@ -44,15 +58,48 @@ struct lan966x {
+>  	void __iomem *regs[NUM_TARGETS];
+>  
+>  	int shared_queue_sz;
+> +
+> +	/* interrupts */
+> +	int xtr_irq;
+> +};
+> +
+> +struct lan966x_port_config {
+> +	phy_interface_t portmode;
+> +	phy_interface_t phy_mode;
+
+What is the difference between "portmode" and "phy_mode"? Does it matter
+if port->config.phy_mode get zeroed when lan966x_port_pcs_set() is
+called from lan966x_pcs_config()? It looks to me like the first call
+will clear phy_mode, setting it to PHY_INTERFACE_MODE_NA from that point
+on.
+
+> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_port.c b/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
+> new file mode 100644
+> index 000000000000..ca1b0c8d1bf5
+> --- /dev/null
+> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
+> @@ -0,0 +1,422 @@
+...
+> +void lan966x_port_status_get(struct lan966x_port *port,
+> +			     struct phylink_link_state *state)
+> +{
+> +	struct lan966x *lan966x = port->lan966x;
+> +	u16 lp_adv, ld_adv;
+> +	bool link_down;
+> +	u16 bmsr = 0;
+> +	u32 val;
+> +
+> +	val = lan_rd(lan966x, DEV_PCS1G_STICKY(port->chip_port));
+> +	link_down = DEV_PCS1G_STICKY_LINK_DOWN_STICKY_GET(val);
+> +	if (link_down)
+> +		lan_wr(val, lan966x, DEV_PCS1G_STICKY(port->chip_port));
+> +
+> +	/* Get both current Link and Sync status */
+> +	val = lan_rd(lan966x, DEV_PCS1G_LINK_STATUS(port->chip_port));
+> +	state->link = DEV_PCS1G_LINK_STATUS_LINK_STATUS_GET(val) &&
+> +		      DEV_PCS1G_LINK_STATUS_SYNC_STATUS_GET(val);
+> +	state->link &= !link_down;
+> +
+> +	if (port->config.portmode == PHY_INTERFACE_MODE_1000BASEX)
+> +		state->speed = SPEED_1000;
+> +	else if (port->config.portmode == PHY_INTERFACE_MODE_2500BASEX)
+> +		state->speed = SPEED_2500;
+
+Why not use state->interface? state->interface will be the currently
+configured interface mode (which should be the same as your
+port->config.portmode.)
+
+> +
+> +	state->duplex = DUPLEX_FULL;
+
+Also, what is the purpose of initialising state->speed and state->duplex
+here? phylink_mii_c22_pcs_decode_state() will do that for you when
+decoding the advertisements.
+
+If it's to deal with autoneg disabled, then it ought to be conditional on
+autoneg being disabled and the link being up.
+
+> +
+> +	/* Get PCS ANEG status register */
+> +	val = lan_rd(lan966x, DEV_PCS1G_ANEG_STATUS(port->chip_port));
+> +
+> +	/* Aneg complete provides more information  */
+> +	if (DEV_PCS1G_ANEG_STATUS_ANEG_COMPLETE_GET(val)) {
+> +		lp_adv = DEV_PCS1G_ANEG_STATUS_LP_ADV_GET(val);
+> +		state->an_complete = true;
+> +
+> +		bmsr |= state->link ? BMSR_LSTATUS : 0;
+> +		bmsr |= state->an_complete;
+
+Shouldn't this be setting BMSR_ANEGCOMPLETE?
+
+> +
+> +		if (port->config.portmode == PHY_INTERFACE_MODE_SGMII) {
+> +			phylink_mii_c22_pcs_decode_state(state, bmsr, lp_adv);
+> +		} else {
+> +			val = lan_rd(lan966x, DEV_PCS1G_ANEG_CFG(port->chip_port));
+> +			ld_adv = DEV_PCS1G_ANEG_CFG_ADV_ABILITY_GET(val);
+> +			phylink_mii_c22_pcs_decode_state(state, bmsr, ld_adv);
+> +		}
+
+This looks like it can be improved:
+
+	if (DEV_PCS1G_ANEG_STATUS_ANEG_COMPLETE_GET(val)) {
+		state->an_complete = true;
+
+		bmsr |= state->link ? BMSR_LSTATUS : 0;
+		bmsr |= BMSR_ANEGCOMPLETE;
+
+		if (state->interface == PHY_INTERFACE_MODE_SGMII) {
+			lp_adv = DEV_PCS1G_ANEG_STATUS_LP_ADV_GET(val);
+		} else {
+			val = lan_rd(lan966x, DEV_PCS1G_ANEG_CFG(port->chip_port));
+			lp_adv = DEV_PCS1G_ANEG_CFG_ADV_ABILITY_GET(val);
+		}
+
+		phylink_mii_c22_pcs_decode_state(state, bmsr, lp_adv);
+	}
+
+I'm not sure that the non-SGMII code is actually correct though. Which
+advertisement are you extracting by reading the DEV_PCS1G_ANEG_CFG
+register and extracting DEV_PCS1G_ANEG_CFG_ADV_ABILITY_GET ? From the
+code in lan966x_port_pcs_set(), it suggests this is our advertisement,
+but it's supposed to always be the link partner's advertisement being
+passed to phylink_mii_c22_pcs_decode_state().
+
+> +int lan966x_port_pcs_set(struct lan966x_port *port,
+> +			 struct lan966x_port_config *config)
+> +{
+...
+> +	port->config = *config;
+
+As mentioned elsewhere, "config" won't have phy_mode set, so this clears
+port->config.phymode to PHY_INTERFACE_MODE_NA, which I think will cause
+e.g. lan966x_port_link_up() not to behave as intended.
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
