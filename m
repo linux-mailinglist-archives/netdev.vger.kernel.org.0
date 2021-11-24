@@ -2,99 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50FC245CD67
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 20:39:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94DE345CD73
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 20:44:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243314AbhKXTmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 14:42:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35520 "EHLO
+        id S235076AbhKXTrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 14:47:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238116AbhKXTms (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 14:42:48 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77106C061574
-        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 11:39:38 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id o29so3504011wms.2
-        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 11:39:38 -0800 (PST)
+        with ESMTP id S234860AbhKXTrb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 14:47:31 -0500
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542DCC061746
+        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 11:44:21 -0800 (PST)
+Received: by mail-io1-xd2c.google.com with SMTP id f9so4629819ioo.11
+        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 11:44:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=B3QGPgxprh2tb4Gl3h4Uv0GQ0Zm/aQZNDdCKiWQFxV4=;
-        b=Vs6GqXTRoEgfIrL4ioHj2vTbxNFzHHhRKV/cH+MwljLJjuMYhd4Xg6apa5T1kLs1KR
-         G74Y7f3UgHj+a0ZYPksnCWcMIP4vCu6IE7HjdLPJ0WSvXSxNDp3I3+kq3pql1I3a7zKv
-         0AP8yCngVgBc3ZR/JOMgLRSmnD250nsTeYmVn6gqVoKRX+wXHOFWmLXMKYZSdHvcoEOX
-         rdt+Ouw76gm2cz/AWYpPiQ+dhBgAK1kCpQjm3Pn9JaNPf6iLlgw+bS+TymajlQNdPhmt
-         /aOuZabhtvYAHgU5X6nQdM4/IeSSFNCb3+UYS0WGh+tVLP4Q+I9NreR/Wj3RrY7pD6xD
-         vS9g==
+        bh=TVY0xbbNHGxOoTnm29wKJKABb+CBuNHDgBMwoMorQ2g=;
+        b=IDGj76q2VEC2WdGF9jr62e6uYamT9DHKLSk8HUTszRtO/fvegN5T6t6alvqlzZGJLv
+         k3eGKKCfDj9MuJiowcN0nzQlexrBpkv3mnYfkn8V2jnXpFduH1yAk2yw1DpF2XPOVRyC
+         YVqa3ZgzhcdsnD80Lec3EX2uFl/RlaS/d8IAYT0+EXaCmCaBkmsGVTbkmqLP5RbpGhgI
+         7jZjizXNHUh5Pz0nr/U2mz5oc9JJwhi5PJKCs/Gmzh7fgqfKUTahpZAiw6Zhf0pbyBy5
+         g1lD3l5cTvfAwQH2a0xMhPZBQNIbftQCc6hxWho0K5WYUNdfwnxi5UqhLra0Incfibt5
+         rhgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=B3QGPgxprh2tb4Gl3h4Uv0GQ0Zm/aQZNDdCKiWQFxV4=;
-        b=PmAt7GOfSUdAlTMLm4F8UCYydWFTVtR4ZiAPJ6nD3IT4cQS4ee16Duiavn2pET6RgX
-         krMRlfOP7jqp8TpiR4VJBdONqUutO5qmUQB9vOz1SAiAwvkmjD1+KwVmDR+v7H3fjLSh
-         NTrzQyJNn72qilKyJ2/S8Vhlu0RjPak6TKBtM1Q+tl6blkOdj2m6AR24esShv2TRX5/z
-         aY9kjUKRxvjOdSOtrl6ynBE1yQjIwb1I/6/MBmGyJdb9jl/JwnKO4AqIy5zLzS8tcyA8
-         ge4Y626ZwI2r/Up9bKv234VYK4rxPeSgHq8+ijEh2SnV3HWdPE3jv1an1uJsbVdwpL6G
-         TLnA==
-X-Gm-Message-State: AOAM532WWJE0Rr4Zer+U2cHivU8t4Y3Hi5JMd9iDixcBOz/fL3KLq8MP
-        eKmWmFJsqo7AoF9P1+1MIJa17EnMFh7sGg==
-X-Google-Smtp-Source: ABdhPJy0si6hptmjDHmROfJQ4xQvWKTZK8N2ZN8vFvfIHHDQuVYZnn1NUmIQw9iOlg1ijds6JxFEuA==
-X-Received: by 2002:a05:600c:35d4:: with SMTP id r20mr18928112wmq.76.1637782776819;
-        Wed, 24 Nov 2021 11:39:36 -0800 (PST)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id z8sm710011wrh.54.2021.11.24.11.39.35
+        bh=TVY0xbbNHGxOoTnm29wKJKABb+CBuNHDgBMwoMorQ2g=;
+        b=CYavlrTHEzDmkThIxd3Aslhw9dLwEDSpizM5skD61/QzoIyCHmQKtY5KRMDs9VLIQD
+         8yVPmlWzoMieW0BDy8Pa5ErpvAC9xAHRpXjv7ukTSq9sbxr47nUO7BUEpNu7z3Hk0nle
+         D8UariUFEjHX/+10DwwnuhO7zA52yxJe1855nIT7gY4R2whuc3uone2XHtPRwVxfGZcT
+         M+Ji2xxmPrfPCipp+KafsrYdnbHgd3N9Pe84kQ+GyG/urP5gCCTE8BMbFdYlanJPXqtW
+         lPHnJM/QX9dvvwCZFU+xNtJEvZuVyqCgqOAgGGG3sm3OCo2F2EcbhEQS27Zum2cs14QN
+         UZxA==
+X-Gm-Message-State: AOAM533Fvi5qhGqxkWoN9cKxODRg+daORwmC8dPHGINwL3Ccjh6Ngomp
+        dbvgOs7rHsioN74LjVXYvDcscg==
+X-Google-Smtp-Source: ABdhPJzSvYeWShlZpzbONR090fnXMSi5s3F8BjV1BxpHOETC4EcWCjEhxVc0xZ1ZcHQs4HImdxpapQ==
+X-Received: by 2002:a05:6638:12d6:: with SMTP id v22mr20175309jas.6.1637783060762;
+        Wed, 24 Nov 2021 11:44:20 -0800 (PST)
+Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id r14sm490145iov.14.2021.11.24.11.44.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Nov 2021 11:39:36 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>,
-        bridge@lists.linux-foundation.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        christophe.jaillet@wanadoo.fr
-Subject: [PATCH net-next] bridge: use __set_bit in __br_vlan_set_default_pvid
-Date:   Wed, 24 Nov 2021 14:39:33 -0500
-Message-Id: <4e35f415226765e79c2a11d2c96fbf3061c486e2.1637782773.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        Wed, 24 Nov 2021 11:44:20 -0800 (PST)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     pkurapat@codeaurora.org, avuyyuru@codeaurora.org,
+        bjorn.andersson@linaro.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, evgreen@chromium.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/2] net: ipa: GSI channel flow control
+Date:   Wed, 24 Nov 2021 13:44:14 -0600
+Message-Id: <20211124194416.707007-1-elder@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The same optimization as the one in commit cc0be1ad686f ("net:
-bridge: Slightly optimize 'find_portno()'") is needed for the
-'changed' bitmap in __br_vlan_set_default_pvid().
+Starting with IPA v4.2, endpoint DELAY mode (which prevents data
+transfer on TX endpoints) does not work properly.  To address this,
+changes were made to allow underlying GSI channels to be put into
+a "flow controlled" state, which achieves a similar objective.
+The first patch in this series implements the flow controlled
+channel state and the commands used to control it.  It arranges
+to use the new mechanism--instead of DELAY mode--for IPA v4.2+.
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/bridge/br_vlan.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+In IPA v4.11, the notion of GSI channel flow control was enhanced,
+and implemented in a slightly different way.  For the most part this
+doesn't affect the way the IPA driver uses flow control, but the
+second patch adds support for the newer mechanism.
 
-diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
-index 49e105e0a447..84ba456a78cc 100644
---- a/net/bridge/br_vlan.c
-+++ b/net/bridge/br_vlan.c
-@@ -1063,7 +1063,7 @@ int __br_vlan_set_default_pvid(struct net_bridge *br, u16 pvid,
- 		if (br_vlan_delete(br, old_pvid))
- 			br_vlan_notify(br, NULL, old_pvid, 0, RTM_DELVLAN);
- 		br_vlan_notify(br, NULL, pvid, 0, RTM_NEWVLAN);
--		set_bit(0, changed);
-+		__set_bit(0, changed);
- 	}
- 
- 	list_for_each_entry(p, &br->port_list, list) {
-@@ -1085,7 +1085,7 @@ int __br_vlan_set_default_pvid(struct net_bridge *br, u16 pvid,
- 		if (nbp_vlan_delete(p, old_pvid))
- 			br_vlan_notify(br, p, old_pvid, 0, RTM_DELVLAN);
- 		br_vlan_notify(p->br, p, pvid, 0, RTM_NEWVLAN);
--		set_bit(p->port_no, changed);
-+		__set_bit(p->port_no, changed);
- 	}
- 
- 	br->default_pvid = pvid;
+					-Alex
+
+Alex Elder (2):
+  net: ipa: introduce channel flow control
+  net: ipa: support enhanced channel flow control
+
+ drivers/net/ipa/gsi.c          | 70 ++++++++++++++++++++++++++--------
+ drivers/net/ipa/gsi.h          | 10 +++++
+ drivers/net/ipa/gsi_reg.h      |  4 ++
+ drivers/net/ipa/ipa_endpoint.c | 50 ++++++++++++++----------
+ 4 files changed, 99 insertions(+), 35 deletions(-)
+
 -- 
-2.27.0
+2.32.0
 
