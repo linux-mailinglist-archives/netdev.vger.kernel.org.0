@@ -2,73 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C46245B32C
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 05:30:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B31645B399
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 05:46:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239225AbhKXEdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 23:33:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35292 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233767AbhKXEdR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 23:33:17 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id C95FD60FC1;
-        Wed, 24 Nov 2021 04:30:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637728208;
-        bh=rzAyqTEUj+cqKC8foQFbMePXfZUOXQ+8nwzqDxEAwaM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ifWem9QE0Ly9Q2hqh49su/ItBHL4HpLaMVvkJvtQD1UJW076d1x1LPfTUte9VxW55
-         B+2pQ6VGS8YaAgVEflssOcNt8QDGFvg8f3Zi9klcQla0LTHMvEvx1ztC9lF2lH46oE
-         nmX197VKaCR+UC2TJ6x94d/o1YpANss9RKZ+ideFU0Cjmgr2e4k+uRkDqoODg8rI3Z
-         df2UOsyfq8zzwaMtnsfFsf+MuEW1R8xZ6ij39VNMmvJiy52ggN3XG12B796yMaOOSI
-         6o5KAwd1PiOepGU5IO1+S+Xyoik5vjEyA0urQowetN5P2BLSOKFiByNqak61yjfBiK
-         0kpdMt6O0tteg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BCCF060A94;
-        Wed, 24 Nov 2021 04:30:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229681AbhKXEtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 23:49:33 -0500
+Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:41652 "EHLO
+        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229588AbhKXEtd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 23:49:33 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0Uy3pXuY_1637729181;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0Uy3pXuY_1637729181)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 24 Nov 2021 12:46:21 +0800
+Date:   Wed, 24 Nov 2021 12:46:20 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     Karsten Graul <kgraul@linux.ibm.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, guwen@linux.alibaba.com,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: Re: [PATCH RFC net-next] net/smc: Unbind buffer size from clcsock
+ and make it tunable
+Message-ID: <YZ22dvQYB0oWN4Mk@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <20211122134255.63347-1-tonylu@linux.alibaba.com>
+ <f08e1793-630f-32a6-6662-19edc362b386@linux.ibm.com>
+ <YZyQg23Vqes4Ls5t@TonyMac-Alibaba>
+ <9aaa03b2-4478-6dff-0bfc-06eba7ef2bf7@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/2] dccp/tcp: Minor fixes for
- inet_csk_listen_start().
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163772820876.18836.15309450997633192155.git-patchwork-notify@kernel.org>
-Date:   Wed, 24 Nov 2021 04:30:08 +0000
-References: <20211122101622.50572-1-kuniyu@amazon.co.jp>
-In-Reply-To: <20211122101622.50572-1-kuniyu@amazon.co.jp>
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        laoar.shao@gmail.com, benh@amazon.com, kuni1840@gmail.com,
-        netdev@vger.kernel.org, dccp@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9aaa03b2-4478-6dff-0bfc-06eba7ef2bf7@linux.ibm.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Mon, 22 Nov 2021 19:16:20 +0900 you wrote:
-> The first patch removes an unused argument, and the second removes a stale
-> comment.
+On Tue, Nov 23, 2021 at 10:33:07AM +0100, Karsten Graul wrote:
+> On 23/11/2021 07:56, Tony Lu wrote:
+> > To solve this issue, we developed a set of patches to replace the
+> > AF_INET / SOCK_STREAM with AF_SMC / SMCPROTO_SMC{6} by configuration.
+> > So that we can control acceleration in kernel without any other changes
+> > in user-space, and won't break our application containers and publish
+> > workflow. These patches are still improving for upstream.
 > 
+> This sounds interesting. Will this also be namespace-based like the sysctls
+> in the current patch? Will this future change integrate nicely with the current
+> new sysctls? This might allow to activate smc for containers, selectively. 
 > 
-> Kuniyuki Iwashima (2):
->   dccp/tcp: Remove an unused argument in inet_csk_listen_start().
->   dccp: Inline dccp_listen_start().
+> Please send these changes in a patch series together when they are finished.
+> We would like to review them as a whole to see how things play together.
 > 
-> [...]
+> Thank you!
 
-Here is the summary with links:
-  - [net-next,1/2] dccp/tcp: Remove an unused argument in inet_csk_listen_start().
-    https://git.kernel.org/netdev/net-next/c/e7049395b1c3
-  - [net-next,2/2] dccp: Inline dccp_listen_start().
-    https://git.kernel.org/netdev/net-next/c/b4a8e7493d74
+Hi Graul,
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+I am glad to hear that. The container, which is isolated by
+net-namespace, is the minimal deployment unit in our environment. The
+transparent replacement facility is namespace-based, so that we can
+control the applications behaviors according to the dimensions of
+containers.
 
+The per-netns sysctl is the first step, control the applications'
+buffer, and not to disturb TCP connections in the same container. The
+container's memory is not as large as that of a physical machine, and
+containers might run different workload applications, so we use
+per-netns sysctl to adjust buffer. And it can be sent out separately.
 
+Then, we can allow to activate SMC for some containers with transparent
+replacement. These patches are improving, make sure the flexible enough
+for containers and applications scopes, and cohesion enough for
+upstream.
+
+I will send them out as the containers solutions. Thank for you advice.
+
+Thanks,
+Tony Lu
