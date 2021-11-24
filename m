@@ -2,99 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D89545CE53
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 21:44:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF0E045CE6E
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 21:51:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237844AbhKXUsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 15:48:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50330 "EHLO
+        id S243576AbhKXUyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 15:54:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235709AbhKXUsD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 15:48:03 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE48C061574
-        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 12:44:53 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id c4so6615686wrd.9
-        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 12:44:53 -0800 (PST)
+        with ESMTP id S243407AbhKXUyL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 15:54:11 -0500
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6BFC061574;
+        Wed, 24 Nov 2021 12:51:01 -0800 (PST)
+Received: by mail-qk1-x732.google.com with SMTP id t83so4804281qke.8;
+        Wed, 24 Nov 2021 12:51:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=jt+UnhoQIByLvmOOZvlG96D7Lxcd7N48I38ceCTYkPI=;
-        b=cN36UP6b3k3yIYoFeCXCfN1obaPTmLlRDZeB22sugDTzMzfdVjZICsLD+hiJSLZdne
-         oWwIXCJR7JLP4A65Ni4HN4menk1A3RQ+lN7FaXUBzm3vhhP7YZv046/BkgSrMxYMjzBE
-         F5sgi3wVPHDe4WcYZGE3DZxtylwSpMgIE9s8HRLOY6o3e85Do2TzSVIj993Lo0NDVSBN
-         s7lzzJKX7HG+3Xs6OIB3QEXwu2AzrBFHdn5zfQiP/7tdIhz8YMdN09b8FehN8PbuwuIZ
-         XoArQ00f0BeXVstbkkVA5ROlp8oQkUH5vjFYgr/JouBBgmUWfC2s7hiVpPg7B6dzPQCH
-         TPIQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=iau6DKRydcsNK1GN6sDDCSnahnogg9ZqD2JSacu9WZ4=;
+        b=nPlKl7EQVZKmz+/NgJntktxWSIcIQlj8SXVWiVCQtqHzP6KB8Q3bbJAFFdKgqCAYGs
+         s0kikxhBgqbhtA1r4R1KxlbOH7wxIn0ghGwLgvk+gP3nicU4rpmI5BpEBUNf8/DJk1G+
+         yEV6pVwbu9CJCq9vgh1Q8yFCV3/bj3sUjzZn7SPqWr95/egMfMghKWm/yy21MPxbYK05
+         LZEcdLoZU0hJfw0cLD1v+Np4XQlbapdM4ZGByB3lSupPx01GFwOUGfXfm/pT6KZktKpF
+         ++k8qDtBoYBWhYh4w/KupafMBr31J4Nb4RFRFhI40lozAdITEdx7hB3f2m58AU910+jG
+         fN0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
-         :content-transfer-encoding;
-        bh=jt+UnhoQIByLvmOOZvlG96D7Lxcd7N48I38ceCTYkPI=;
-        b=DgNGBibF+zL7BG9BH/dBDugurWnuImlDCsEnqGpjBWjaRd1Mh0mH6Ymd81cLyS+88N
-         GYEjq9Efa47NefRmwkQdk6HzWq9lUS4E9bCpBKh5LuAQQHNqg297H7PJoAeASkYB73yW
-         yjDE4fpIqHRmyN1mGMZsK9eo1C9VFpH+To2Ag1M2iW3IDh2OPWteWyYtlvL5VYrGQ09C
-         n36kem3BJhCDLoJIOWLUhZ+QGlhhHYHHsui3e5TKiqxhIrlsH1bEnQ24wb7z9tVbddAN
-         zvPaM2K2p9Op/OtzrgditAsvcOXMIpsgVy9c7fwRwTJRLbvAt4OLAd2bqejF+v9ZNx5t
-         KTQw==
-X-Gm-Message-State: AOAM5306jhl70DnjF/7iT98VNtZZWIPByBs88SX5ra/SZDaCDZEMUKWx
-        ZBJwpStgyXO8TTsq1siT5Ajh/3kQi84=
-X-Google-Smtp-Source: ABdhPJxqcSxRwVCpWy0Rzo4pWpw7imB3vawwtsk1vy2UyN+QX6HRHQunr1E5EijN+RV1iecYaZ7mOQ==
-X-Received: by 2002:adf:8296:: with SMTP id 22mr1491446wrc.581.1637786691960;
-        Wed, 24 Nov 2021 12:44:51 -0800 (PST)
-Received: from ?IPV6:2003:ea:8f1a:f00:9c1d:b348:90aa:36a5? (p200300ea8f1a0f009c1db34890aa36a5.dip0.t-ipconnect.de. [2003:ea:8f1a:f00:9c1d:b348:90aa:36a5])
-        by smtp.googlemail.com with ESMTPSA id p5sm862255wrd.13.2021.11.24.12.44.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Nov 2021 12:44:51 -0800 (PST)
-Message-ID: <2cd3df01-5f8b-08dd-6def-3f31a3014bde@gmail.com>
-Date:   Wed, 24 Nov 2021 21:44:40 +0100
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=iau6DKRydcsNK1GN6sDDCSnahnogg9ZqD2JSacu9WZ4=;
+        b=nAyTmt1pIWiq4ukSXjYxmo31ilbhurjQGgT9vPIf5922yq+DA48mb3VEEOvi9Cuh8Z
+         lGY7cYfidnFM9H/8fXsnekWPp2Wf0aribugyQwa1XEydMWYXTxeJzwnF9Y7y2BVJAI5L
+         2eDNUVx+s9HzDEp2AcQ17owVdO5szL1sP9qhCJ6E8jBizndRJY5Nzaja6QxJf7pPt9kN
+         1g8NaJqlL2HpfRvu2BmBGe3xMgbyKuO8nPmBzsnIKgTZ53t4Bz6u/wyPUjiPg6EsnTy/
+         zcqaEnhYg5E5OuEE2u2M2beBkWAiEvowH2yIu50hA/SFdfefP99BMUQ3YzqLWMqejrBe
+         E6Xw==
+X-Gm-Message-State: AOAM530vJ6xqb6wm0XD/Bd4bqcJfWdGbnFDTYU4tK8du9RFyi9loRZdV
+        wrcDvGC+60Ij8MdhPFHHacUqo3+mZjXo0cmQP/6661qK4V0=
+X-Google-Smtp-Source: ABdhPJxKYOfLQLPnsedikbDHOVU4wS+qfwCaPPo84K641EUnQq9HT1XO3bJZ3ph2d83tFh73xMJ8ujkD7agzP5AxQC8=
+X-Received: by 2002:a25:cc4c:: with SMTP id l73mr20011466ybf.114.1637787060318;
+ Wed, 24 Nov 2021 12:51:00 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: disable detection of chip version 60
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <7708d13a-4a2b-090d-fadf-ecdd0fff5d2e@gmail.com>
-Content-Language: en-US
-In-Reply-To: <7708d13a-4a2b-090d-fadf-ecdd0fff5d2e@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <1637744426-22044-1-git-send-email-yangtiezhu@loongson.cn>
+In-Reply-To: <1637744426-22044-1-git-send-email-yangtiezhu@loongson.cn>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 24 Nov 2021 12:50:49 -0800
+Message-ID: <CAEf4BzYGHczJ6xejqGnf8LrbCdF1P9dnD6uC5tmJTm+KDRbGGA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf, mips: Fix build errors about __NR_bpf undeclared
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It seems only XID 609 made it to the mass market. Therefore let's
-disable detection of the other RTL8125a XID's. If nobody complains
-we can remove support for RTL_GIGA_MAC_VER_60 later.
+On Wed, Nov 24, 2021 at 1:00 AM Tiezhu Yang <yangtiezhu@loongson.cn> wrote:
+>
+> Add the __NR_bpf definitions to fix the following build errors for mips.
+>
+>  $ cd tools/bpf/bpftool
+>  $ make
+>  [...]
+>  bpf.c:54:4: error: #error __NR_bpf not defined. libbpf does not support =
+your arch.
+>   #  error __NR_bpf not defined. libbpf does not support your arch.
+>      ^~~~~
+>  bpf.c: In function =E2=80=98sys_bpf=E2=80=99:
+>  bpf.c:66:17: error: =E2=80=98__NR_bpf=E2=80=99 undeclared (first use in =
+this function); did you mean =E2=80=98__NR_brk=E2=80=99?
+>    return syscall(__NR_bpf, cmd, attr, size);
+>                   ^~~~~~~~
+>                   __NR_brk
+>  [...]
+>  In file included from gen_loader.c:15:0:
+>  skel_internal.h: In function =E2=80=98skel_sys_bpf=E2=80=99:
+>  skel_internal.h:53:17: error: =E2=80=98__NR_bpf=E2=80=99 undeclared (fir=
+st use in this function); did you mean =E2=80=98__NR_brk=E2=80=99?
+>    return syscall(__NR_bpf, cmd, attr, size);
+>                   ^~~~~~~~
+>                   __NR_brk
+>
+> We can see the following generated definitions:
+>
+>  $ grep -r "#define __NR_bpf" arch/mips
+>  arch/mips/include/generated/uapi/asm/unistd_o32.h:#define __NR_bpf (__NR=
+_Linux + 355)
+>  arch/mips/include/generated/uapi/asm/unistd_n64.h:#define __NR_bpf (__NR=
+_Linux + 315)
+>  arch/mips/include/generated/uapi/asm/unistd_n32.h:#define __NR_bpf (__NR=
+_Linux + 319)
+>
+> So use the GCC pre-defined macro _ABIO32, _ABIN32 and _ABI64 [1] to defin=
+e
+> the corresponding __NR_bpf.
+>
+> This patch is similar with commit bad1926dd2f6 ("bpf, s390: fix build for
+> libbpf and selftest suite").
+>
+> [1] https://gcc.gnu.org/git/?p=3Dgcc.git;a=3Dblob;f=3Dgcc/config/mips/mip=
+s.h#l549
+>
+> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+> ---
+>  tools/build/feature/test-bpf.c |  6 ++++++
+>  tools/lib/bpf/bpf.c            |  6 ++++++
+>  tools/lib/bpf/skel_internal.h  | 10 ++++++++++
+>  3 files changed, 22 insertions(+)
+>
+> diff --git a/tools/build/feature/test-bpf.c b/tools/build/feature/test-bp=
+f.c
+> index 82070ea..ebc7a2a 100644
+> --- a/tools/build/feature/test-bpf.c
+> +++ b/tools/build/feature/test-bpf.c
+> @@ -14,6 +14,12 @@
+>  #  define __NR_bpf 349
+>  # elif defined(__s390__)
+>  #  define __NR_bpf 351
+> +# elif defined(__mips__) && defined(_ABIO32)
+> +#  define __NR_bpf (__NR_Linux + 355)
+> +# elif defined(__mips__) && defined(_ABIN32)
+> +#  define __NR_bpf (__NR_Linux + 319)
+> +# elif defined(__mips__) && defined(_ABI64)
+> +#  define __NR_bpf (__NR_Linux + 315)
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+Is it possible to use a final number without __NR_Linux? All the other
+cases have final numbers, no relative numbers
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index e9b560051..76a029860 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -1969,8 +1969,11 @@ static enum mac_version rtl8169_get_mac_version(u16 xid, bool gmii)
- 		{ 0x7cf, 0x641,	RTL_GIGA_MAC_VER_63 },
- 
- 		/* 8125A family. */
--		{ 0x7cf, 0x608,	RTL_GIGA_MAC_VER_60 },
--		{ 0x7c8, 0x608,	RTL_GIGA_MAC_VER_61 },
-+		{ 0x7cf, 0x609,	RTL_GIGA_MAC_VER_61 },
-+		/* It seems only XID 609 made it to the mass market.
-+		 * { 0x7cf, 0x608,	RTL_GIGA_MAC_VER_60 },
-+		 * { 0x7c8, 0x608,	RTL_GIGA_MAC_VER_61 },
-+		 */
- 
- 		/* RTL8117 */
- 		{ 0x7cf, 0x54b,	RTL_GIGA_MAC_VER_53 },
--- 
-2.34.0
-
+>  # else
+>  #  error __NR_bpf not defined. libbpf does not support your arch.
+>  # endif
+> diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+> index 94560ba..60422404 100644
+> --- a/tools/lib/bpf/bpf.c
+> +++ b/tools/lib/bpf/bpf.c
+> @@ -50,6 +50,12 @@
+>  #  define __NR_bpf 351
+>  # elif defined(__arc__)
+>  #  define __NR_bpf 280
+> +# elif defined(__mips__) && defined(_ABIO32)
+> +#  define __NR_bpf (__NR_Linux + 355)
+> +# elif defined(__mips__) && defined(_ABIN32)
+> +#  define __NR_bpf (__NR_Linux + 319)
+> +# elif defined(__mips__) && defined(_ABI64)
+> +#  define __NR_bpf (__NR_Linux + 315)
+>  # else
+>  #  error __NR_bpf not defined. libbpf does not support your arch.
+>  # endif
+> diff --git a/tools/lib/bpf/skel_internal.h b/tools/lib/bpf/skel_internal.=
+h
+> index 9cf6670..6ff4939 100644
+> --- a/tools/lib/bpf/skel_internal.h
+> +++ b/tools/lib/bpf/skel_internal.h
+> @@ -7,6 +7,16 @@
+>  #include <sys/syscall.h>
+>  #include <sys/mman.h>
+>
+> +#ifndef __NR_bpf
+> +# if defined(__mips__) && defined(_ABIO32)
+> +#  define __NR_bpf (__NR_Linux + 355)
+> +# elif defined(__mips__) && defined(_ABIN32)
+> +#  define __NR_bpf (__NR_Linux + 319)
+> +# elif defined(__mips__) && defined(_ABI64)
+> +#  define __NR_bpf (__NR_Linux + 315)
+> +# endif
+> +#endif
+> +
+>  /* This file is a base header for auto-generated *.lskel.h files.
+>   * Its contents will change and may become part of auto-generation in th=
+e future.
+>   *
+> --
+> 2.1.0
+>
