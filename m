@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCEED45CB76
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 18:53:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E92F45CB78
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 18:53:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349990AbhKXR4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 12:56:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39240 "EHLO
+        id S1349984AbhKXR4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 12:56:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349995AbhKXR41 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 12:56:27 -0500
+        with ESMTP id S1350037AbhKXR4e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 12:56:34 -0500
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8AB5C061574
-        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 09:53:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 585C5C061748
+        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 09:53:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
         In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=RKYM0B3Z++w58EXIz+k2wVLgBF05n2MNrZBRg4Nr7u0=; b=ua249Ejz9PQZ8hlrurDcjh6YS5
-        sT9lZWqsZUefUoRZ22Ewpp3aDdoDvxWWJyGSrp8GYeB8pWDDGUk9b1oR0XL0g6jppZgYGaNaFKutA
-        YdUxqTrXR7oEpBDtxCjnqvdvqNX6m0CIzKv9qGO9hicWAky3vq4gXdv5GB/lSsp1WeAwA13tzqK9G
-        w88OKqtkZZV2DCp2hU1WcyRasE/FsygoU8iMr/Big2mgeiXTD6YRbkL6F9t/txax9YAQNfby9RqTH
-        ychMs2l9/P/Zxd3VLWNTVcTGE1gyhQyM1Ztx1D+11DJZiapMywQOshFc7RnGieZnXSmq/fe0h8eMn
-        SJiaAjqA==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:49536 helo=rmk-PC.armlinux.org.uk)
+        bh=M0E0m37ajR+YRLSBnZstU8Ms3/K8KbrZU4qMneYQtRI=; b=f1mN9TvZgev0woAMOexu9ANzO0
+        NGuv8cZlyy1DDtgA85xch/sg/RqdqDskPOg03Jg5TY+JoqIdLKoTTu1QijqB5FrKSNOUtnmI7TBkh
+        NYDt6rF8ec423U9aK6JXu83GkD+FSyQEGw2zcarRSDP99cCnTQV7kGLaY0j8ZdQAt+YWmmxl7LOEK
+        sFHngtpGMnUQYkbsBZlMZ5QeERhuneiIJF8AtzM/DlJnzwqZw9DelPMeKoJ1zYLE0lXez0ys6Cwjq
+        zGwhZR2rDuL6289SL7LwHJbJpHST7GKXIq7XSD1tnGiwTNIMFWricSPLnqmZozZOoGMcGfZWLVxnq
+        RlVDWrnw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:49538 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1mpwSI-0000yZ-R6; Wed, 24 Nov 2021 17:53:14 +0000
+        id 1mpwSN-0000yq-Uz; Wed, 24 Nov 2021 17:53:19 +0000
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1mpwSI-00D8Lt-CB; Wed, 24 Nov 2021 17:53:14 +0000
+        id 1mpwSN-00D8Lz-GB; Wed, 24 Nov 2021 17:53:19 +0000
 In-Reply-To: <YZ56WapOaVpUbRuT@shell.armlinux.org.uk>
 References: <YZ56WapOaVpUbRuT@shell.armlinux.org.uk>
 From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
@@ -51,134 +51,108 @@ To:     Andrew Lunn <andrew@lunn.ch>,
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH RFC net-next 10/12] net: dsa: qca8k: convert to
+Subject: [PATCH RFC net-next 11/12] net: dsa: sja1105: convert to
  phylink_generic_validate()
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1mpwSI-00D8Lt-CB@rmk-PC.armlinux.org.uk>
+Message-Id: <E1mpwSN-00D8Lz-GB@rmk-PC.armlinux.org.uk>
 Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Wed, 24 Nov 2021 17:53:14 +0000
+Date:   Wed, 24 Nov 2021 17:53:19 +0000
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Populate the supported interfaces and MAC capabilities for the QCA8K
+Populate the supported interfaces and MAC capabilities for the SJA1105
 DSA switch and remove the old validate implementation to allow DSA to
 use phylink_generic_validate() for this switch driver.
 
-In making this change, we bring consistency to the ethtool linkmodes
-that phylink's validate step produces, thereby following the expected
-behaviour as the phylink documentation has explained. Specifically, the
-ethtool 1000baseX_Full capability is now permitted for all interface
-modes, as it is a property of the PHY driver whether 1000baseX fiber
-connections can be supported.
+This switch only supports a static model of configuration, so we
+restrict the interface modes to the configured setting, and pass the
+MAC capabilities. As it is unclear which interface modes support 1G
+speeds, we keep the setting of MAC_1000FD conditional on the configured
+interface mode.
 
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/dsa/qca8k.c | 66 ++++++++++++-----------------------------
- 1 file changed, 19 insertions(+), 47 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_main.c | 45 ++++++++------------------
+ 1 file changed, 13 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 6516df08a5d5..a0bdc14997e8 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -1527,67 +1527,39 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
- 	}
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index c343effe2e96..6d763f2f63b7 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -1411,48 +1411,29 @@ static void sja1105_mac_link_up(struct dsa_switch *ds, int port,
+ 	sja1105_inhibit_tx(priv, BIT(port), false);
  }
  
--static void
--qca8k_phylink_validate(struct dsa_switch *ds, int port,
--		       unsigned long *supported,
--		       struct phylink_link_state *state)
-+static void qca8k_phylink_get_caps(struct dsa_switch *ds, int port,
-+				   struct phylink_config *config)
+-static void sja1105_phylink_validate(struct dsa_switch *ds, int port,
+-				     unsigned long *supported,
+-				     struct phylink_link_state *state)
++static void sja1105_phylink_get_caps(struct dsa_switch *ds, int port,
++				     struct phylink_config *config)
  {
+-	/* Construct a new mask which exhaustively contains all link features
+-	 * supported by the MAC, and then apply that (logical AND) to what will
+-	 * be sent to the PHY for "marketing".
+-	 */
 -	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
--
- 	switch (port) {
- 	case 0: /* 1st CPU port */
--		if (state->interface != PHY_INTERFACE_MODE_NA &&
--		    state->interface != PHY_INTERFACE_MODE_RGMII &&
--		    state->interface != PHY_INTERFACE_MODE_RGMII_ID &&
--		    state->interface != PHY_INTERFACE_MODE_RGMII_TXID &&
--		    state->interface != PHY_INTERFACE_MODE_RGMII_RXID &&
--		    state->interface != PHY_INTERFACE_MODE_SGMII)
--			goto unsupported;
-+		phy_interface_set_rgmii(config->supported_interfaces);
-+		__set_bit(PHY_INTERFACE_MODE_SGMII,
-+			  config->supported_interfaces);
- 		break;
-+
- 	case 1:
- 	case 2:
- 	case 3:
- 	case 4:
- 	case 5:
- 		/* Internal PHY */
--		if (state->interface != PHY_INTERFACE_MODE_NA &&
--		    state->interface != PHY_INTERFACE_MODE_GMII &&
--		    state->interface != PHY_INTERFACE_MODE_INTERNAL)
--			goto unsupported;
-+		__set_bit(PHY_INTERFACE_MODE_GMII,
-+			  config->supported_interfaces);
-+		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
-+			  config->supported_interfaces);
- 		break;
-+
- 	case 6: /* 2nd CPU port / external PHY */
--		if (state->interface != PHY_INTERFACE_MODE_NA &&
--		    state->interface != PHY_INTERFACE_MODE_RGMII &&
--		    state->interface != PHY_INTERFACE_MODE_RGMII_ID &&
--		    state->interface != PHY_INTERFACE_MODE_RGMII_TXID &&
--		    state->interface != PHY_INTERFACE_MODE_RGMII_RXID &&
--		    state->interface != PHY_INTERFACE_MODE_SGMII &&
--		    state->interface != PHY_INTERFACE_MODE_1000BASEX)
--			goto unsupported;
-+		phy_interface_set_rgmii(config->supported_interfaces);
-+		__set_bit(PHY_INTERFACE_MODE_SGMII,
-+			  config->supported_interfaces);
-+		__set_bit(PHY_INTERFACE_MODE_1000BASEX,
-+			  config->supported_interfaces);
- 		break;
--	default:
--unsupported:
+ 	struct sja1105_private *priv = ds->priv;
+ 	struct sja1105_xmii_params_entry *mii;
+ 
+ 	mii = priv->static_config.tables[BLK_IDX_XMII_PARAMS].entries;
+ 
+-	/* include/linux/phylink.h says:
+-	 *     When @state->interface is %PHY_INTERFACE_MODE_NA, phylink
+-	 *     expects the MAC driver to return all supported link modes.
++	/* The SJA1105 MAC programming model is through the static config
++	 * (the xMII Mode table cannot be dynamically reconfigured), and
++	 * we have to program that early.
+ 	 */
+-	if (state->interface != PHY_INTERFACE_MODE_NA &&
+-	    sja1105_phy_mode_mismatch(priv, port, state->interface)) {
 -		linkmode_zero(supported);
 -		return;
- 	}
+-	}
++	__set_bit(priv->phy_mode[port], config->supported_interfaces);
++
++	config->mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
++		MAC_10FD | MAC_100FD;
  
--	phylink_set_port_modes(mask);
+-	/* The MAC does not support pause frames, and also doesn't
+-	 * support half-duplex traffic modes.
+-	 */
 -	phylink_set(mask, Autoneg);
--
--	phylink_set(mask, 1000baseT_Full);
--	phylink_set(mask, 10baseT_Half);
+-	phylink_set(mask, MII);
 -	phylink_set(mask, 10baseT_Full);
--	phylink_set(mask, 100baseT_Half);
 -	phylink_set(mask, 100baseT_Full);
--
--	if (state->interface == PHY_INTERFACE_MODE_1000BASEX)
--		phylink_set(mask, 1000baseX_Full);
--
--	phylink_set(mask, Pause);
--	phylink_set(mask, Asym_Pause);
--
+-	phylink_set(mask, 100baseT1_Full);
+ 	if (mii->xmii_mode[port] == XMII_MODE_RGMII ||
+ 	    mii->xmii_mode[port] == XMII_MODE_SGMII)
+-		phylink_set(mask, 1000baseT_Full);
+-	if (priv->info->supports_2500basex[port]) {
+-		phylink_set(mask, 2500baseT_Full);
+-		phylink_set(mask, 2500baseX_Full);
+-	}
++		config->mac_capabilities |= MAC_1000FD;
+ 
 -	linkmode_and(supported, supported, mask);
 -	linkmode_and(state->advertising, state->advertising, mask);
-+	config->mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
-+		MAC_10 | MAC_100 | MAC_1000FD;
++	if (priv->info->supports_2500basex[port])
++		config->mac_capabilities |= MAC_2500FD;
  }
  
  static int
-@@ -2405,7 +2377,7 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
- 	.port_vlan_filtering	= qca8k_port_vlan_filtering,
- 	.port_vlan_add		= qca8k_port_vlan_add,
- 	.port_vlan_del		= qca8k_port_vlan_del,
--	.phylink_validate	= qca8k_phylink_validate,
-+	.phylink_get_caps	= qca8k_phylink_get_caps,
- 	.phylink_mac_link_state	= qca8k_phylink_mac_link_state,
- 	.phylink_mac_config	= qca8k_phylink_mac_config,
- 	.phylink_mac_link_down	= qca8k_phylink_mac_link_down,
+@@ -3189,7 +3170,7 @@ static const struct dsa_switch_ops sja1105_switch_ops = {
+ 	.set_ageing_time	= sja1105_set_ageing_time,
+ 	.port_change_mtu	= sja1105_change_mtu,
+ 	.port_max_mtu		= sja1105_get_max_mtu,
+-	.phylink_validate	= sja1105_phylink_validate,
++	.phylink_get_caps	= sja1105_phylink_get_caps,
+ 	.phylink_mac_config	= sja1105_mac_config,
+ 	.phylink_mac_link_up	= sja1105_mac_link_up,
+ 	.phylink_mac_link_down	= sja1105_mac_link_down,
 -- 
 2.30.2
 
