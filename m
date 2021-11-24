@@ -2,92 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2272745BCB6
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 13:29:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C877D45BDAB
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 13:36:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244075AbhKXMb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 07:31:56 -0500
-Received: from kylie.crudebyte.com ([5.189.157.229]:45239 "EHLO
-        kylie.crudebyte.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243237AbhKXMZf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 07:25:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=rnnh51cxcefUFgbd3NlMnfTWFCiiqqU0gNz9ZYEeKqQ=; b=k9QxUcqK8au7iZnh/L72mYkvW3
-        Umrk4sMzWXXqElSYQp0PP8qp73Lo/NDHFRZkjUZbhjROBv05c4lEuDUYXnzDZRZGobJ1olY7Wrd55
-        YDCYGiZTP3kHbgk8wa5VMHrhDGkGWNsnlMlaHcfBItEJW6cw4+VeQJ0fnz+QxO+hrsIb1hKm/6T82
-        3a0unJy5zwzBxYspiwxrmVXSIYTSG0yGB4yEkjOrDkgdWGRVhUiguoXCB8P5S6xiBx5hkOdRydva5
-        1npxH+9f4v5KTkGpG8KsayEK60NlBX7whaN6NPepLEjFK99kimaHkaH4ZoeXPEJh2eppR42NW8mSV
-        ofjiN3zt8eoPAz+EAB3fpmU6w6D9DONDtwQ2sPDxpDZm6ER4dPevwrcjFk61Ew3taVmkN3gRjsFZV
-        m3BmriXMBRTLzY0Y91AV+0U6wMBmm+6SK/Db6cBxfemEJk4ZjW4kb67NoAq1MPdwymTSG8NGgzJYM
-        zpH5U6Ifs1SxXCOXqGAw/kES1D6POfYS+7rByII2hNsN3dPSMijVqkTo5hORKLa/UqJ4v7q60IJGZ
-        jQCnXjjBWS7G/rjmvgyNvP0YkgtFE0VwTW5JbOKwYDO+IM1dmej20ZI3TG+tO7YS9RicPkTACebBI
-        4AzDxFn2zIMJhvL1V/OaJ4d0jeaNBdo6aLThRwv4w=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     Dominique Martinet <asmadeus@codewreck.org>
-Cc:     Nikolay Kichukov <nikolay@oldum.net>,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>
-Subject: Re: [PATCH v3 6/7] 9p/trans_virtio: support larger msize values
-Date:   Wed, 24 Nov 2021 13:22:20 +0100
-Message-ID: <2311686.9pNgMZ9BYA@silver>
-In-Reply-To: <YZwbJiFcLgwITsUe@codewreck.org>
-References: <YZl+eD6r0iIGzS43@codewreck.org> <1797352.eH9cFvQebf@silver> <YZwbJiFcLgwITsUe@codewreck.org>
+        id S243511AbhKXMj5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 07:39:57 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:27600 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1344150AbhKXMg2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 07:36:28 -0500
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1AOBeZHe026797;
+        Wed, 24 Nov 2021 12:33:12 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=b7ko0yJdBI/F7xcJBCQ5FRhZjKIiCTaZ8AJ1sNLRJ4A=;
+ b=KuJXaJ6Um79bWYh59rfBaTEzfoomqlnrxGUrzEfMC3VXHJu/FTNSh7QyNA63fzTC7zQ5
+ p9A6FqEiR0TbEF7jV3IesRXCDSLodcLyd+bVoTzDwjU/sZSUzgGQdgq/SJ2jD9NWJNUu
+ KecS5IHSjK9J/H3EzBTXqApPsyS55CCaoH2LyZytjKEXVlOFyRx+1R3bk17vrVQ0ofqA
+ UYhWxG4GsIDw2sky1Ojm4dY7eKcZv/4QeHZuxbHIFNbjcorEL3h5iPQVcOIRjZV8DrWj
+ 0VQPyLyFm/Jh1I9G4T2twSD5V9t2onGngzkxZdMfFwcjCyK9CmwvpuezagddxUVbU/Qv og== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3chgvfxh6d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 24 Nov 2021 12:33:12 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1AOBp17k007746;
+        Wed, 24 Nov 2021 12:33:11 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3chgvfxh5r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 24 Nov 2021 12:33:11 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1AOCWdEf024989;
+        Wed, 24 Nov 2021 12:33:09 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma01fra.de.ibm.com with ESMTP id 3cern9r238-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 24 Nov 2021 12:33:09 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1AOCX6OP20250926
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 24 Nov 2021 12:33:06 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4AD5311C064;
+        Wed, 24 Nov 2021 12:33:06 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0056F11C058;
+        Wed, 24 Nov 2021 12:33:06 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 24 Nov 2021 12:33:05 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>,
+        Guo DaXing <guodaxing@huawei.com>,
+        Tony Lu <tonylu@linux.alibaba.com>
+Subject: [PATCH net 0/2] net/smc: fixes 2021-11-24
+Date:   Wed, 24 Nov 2021 13:32:36 +0100
+Message-Id: <20211124123238.471429-1-kgraul@linux.ibm.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: ctwsrnTbdQS1-ydz51Uc4c-uPlTdQ_0U
+X-Proofpoint-ORIG-GUID: rVjc1qtbcYWtUOAfI4LI0qaxQKoXuKT1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-11-24_04,2021-11-24_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ malwarescore=0 phishscore=0 spamscore=0 impostorscore=0 adultscore=0
+ clxscore=1015 suspectscore=0 bulkscore=0 priorityscore=1501
+ mlxlogscore=667 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2111240070
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Montag, 22. November 2021 23:35:18 CET Dominique Martinet wrote:
-> Christian Schoenebeck wrote on Mon, Nov 22, 2021 at 02:32:23PM +0100:
-> > I "think" this could be used for all 9p message types except for the
-> > listed
-> > former three, but I'll review the 9p specs more carefully before v4. For
-> > Tread and Twrite we already received the requested size, which just
-> > leaves Treaddir, which is however indeed tricky, because I don't think we
-> > have any info how many directory entries we could expect.
-> 
-> count in Treaddir is a number of bytes, not a number of entries -- so
-> it's perfect for this as well :)
+Patch 1 from DaXing fixes a possible loop in smc_listen().
+Patch 2 prevents a NULL pointer dereferencing while iterating
+over the lower network devices.
 
-Yes it is in bytes, but it's currently always simply msize - P9_READDIRHDRSZ:
-https://github.com/torvalds/linux/blob/5d9f4cf36721aba199975a9be7863a3ff5cd4b59/fs/9p/vfs_dir.c#L159
+Guo DaXing (1):
+  net/smc: Fix loop in smc_listen
 
-As my planned milestone for this series is max. 4 MB msize, it might be okay
-for now, but it is something to keep in mind and should be checked whether it
-will slow down things.
+Karsten Graul (1):
+  net/smc: Fix NULL pointer dereferencing in smc_vlan_by_tcpsk()
 
-On the long term, when msize >4MB is supported, this definitely must be
-addressed.
+ net/smc/af_smc.c   |  4 +++-
+ net/smc/smc_core.c | 35 ++++++++++++++++++-----------------
+ 2 files changed, 21 insertions(+), 18 deletions(-)
 
-> > A simple compile time constant (e.g. one macro) could be used instead of
-> > this function. If you prefer a constant instead, I could go for it in v4
-> > of course. For this 9p client I would recommend a function though, simply
-> > because this code has already seen some authors come and go over the
-> > years, so it might be worth the redundant code for future safety. But
-> > I'll adapt to what others think.
-> 
-> In this case a fallback constant seems simpler than a big switch like
-> you've done, but honestly I'm not fussy at this point -- if you work on
-> this you have the right to decide this kind of things in my opinion.
-> 
-> My worry with the snippet you listed is that you need to enumerate all
-> calls again, so if someday the protocol is extended it'll be a place to
-> forget adding new calls (although compiler warnings help with that),
-> whereas a fallback constant will always work as long as it's small
-> messages.
-> 
-> But really, as long as it's not horrible I'll take it :)
-
-Maybe I can find a compromise. :)
-
-Best regards,
-Christian Schoenebeck
-
+-- 
+2.32.0
 
