@@ -2,128 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93E3A45B705
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 09:57:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E60645B70E
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 10:00:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240805AbhKXJBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 04:01:03 -0500
-Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:56642 "EHLO
-        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241004AbhKXJA7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 04:00:59 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0Uy5uIRo_1637744267;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0Uy5uIRo_1637744267)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 24 Nov 2021 16:57:47 +0800
-Date:   Wed, 24 Nov 2021 16:57:46 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, guwen@linux.alibaba.com,
-        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: Re: [PATCH RFC net] net/smc: Ensure the active closing peer first
- closes clcsock
-Message-ID: <YZ3+ihxIU5l8mvWY@TonyMac-Alibaba>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <20211116033011.16658-1-tonylu@linux.alibaba.com>
- <d83109fe-ae25-def0-b28e-f8695d4535c7@linux.ibm.com>
+        id S241004AbhKXJDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 04:03:44 -0500
+Received: from mail.loongson.cn ([114.242.206.163]:37608 "EHLO loongson.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S240975AbhKXJDl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Nov 2021 04:03:41 -0500
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Axl+gq_51hSfAAAA--.4428S2;
+        Wed, 24 Nov 2021 17:00:27 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH bpf-next] bpf, mips: Fix build errors about __NR_bpf undeclared
+Date:   Wed, 24 Nov 2021 17:00:26 +0800
+Message-Id: <1637744426-22044-1-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d83109fe-ae25-def0-b28e-f8695d4535c7@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf9Axl+gq_51hSfAAAA--.4428S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxWryruFWxWryrXrW8Jw48Xrb_yoW5Kw4Dpr
+        42kFy8tw1UGa17K34fZFWFqw43Jwn2yrWjvFWUCws7CFW5Ja1xGr4jvFZ5CF4aqr4vva47
+        ur15G345ury8Aw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkIb7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I2
+        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xII
+        jxv20xvEc7CjxVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4
+        vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xv
+        F2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r1j6r
+        4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCY02Avz4vE14v_GFWl42xK
+        82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGw
+        C20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48J
+        MIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMI
+        IF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvE
+        x4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7IU5dGYtUUUUU==
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 23, 2021 at 10:26:21AM +0100, Karsten Graul wrote:
-> On 16/11/2021 04:30, Tony Lu wrote:
-> > diff --git a/net/smc/smc_close.c b/net/smc/smc_close.c
-> > index 0f9ffba07d26..04620b53b74a 100644
-> > --- a/net/smc/smc_close.c
-> > +++ b/net/smc/smc_close.c
-> > @@ -228,6 +228,12 @@ int smc_close_active(struct smc_sock *smc)
-> >  			/* send close request */
-> >  			rc = smc_close_final(conn);
-> >  			sk->sk_state = SMC_PEERCLOSEWAIT1;
-> > +
-> > +			/* actively shutdown clcsock before peer close it,
-> > +			 * prevent peer from entering TIME_WAIT state.
-> > +			 */
-> > +			if (smc->clcsock && smc->clcsock->sk)
-> > +				rc = kernel_sock_shutdown(smc->clcsock, SHUT_RDWR);
-> >  		} else {
-> 
-> While integrating this patch I stumbled over the overwritten rc, which was
-> already set with the return value from smc_close_final().
-> Is the rc from kernel_sock_shutdown() even important for the result of this 
-> function? How to handle this in your opinion?
+Add the __NR_bpf definitions to fix the following build errors for mips.
 
-Hi Graul,
+ $ cd tools/bpf/bpftool
+ $ make
+ [...]
+ bpf.c:54:4: error: #error __NR_bpf not defined. libbpf does not support your arch.
+  #  error __NR_bpf not defined. libbpf does not support your arch.
+     ^~~~~
+ bpf.c: In function ‘sys_bpf’:
+ bpf.c:66:17: error: ‘__NR_bpf’ undeclared (first use in this function); did you mean ‘__NR_brk’?
+   return syscall(__NR_bpf, cmd, attr, size);
+                  ^~~~~~~~
+                  __NR_brk
+ [...]
+ In file included from gen_loader.c:15:0:
+ skel_internal.h: In function ‘skel_sys_bpf’:
+ skel_internal.h:53:17: error: ‘__NR_bpf’ undeclared (first use in this function); did you mean ‘__NR_brk’?
+   return syscall(__NR_bpf, cmd, attr, size);
+                  ^~~~~~~~
+                  __NR_brk
 
-I have investigated the function smc_close_final() when return error:
+We can see the following generated definitions:
 
-1. return -EPIPE
-  * conn->killed
-  * !conn->lgr || (conn->lgr->is_smcd && conn->lgr->peer_shutdown)
+ $ grep -r "#define __NR_bpf" arch/mips
+ arch/mips/include/generated/uapi/asm/unistd_o32.h:#define __NR_bpf (__NR_Linux + 355)
+ arch/mips/include/generated/uapi/asm/unistd_n64.h:#define __NR_bpf (__NR_Linux + 315)
+ arch/mips/include/generated/uapi/asm/unistd_n32.h:#define __NR_bpf (__NR_Linux + 319)
 
-2. return -ENOLINK
-  * !smc_link_usable(link)
-  * conn's link have changed during wr get free slot
+So use the GCC pre-defined macro _ABIO32, _ABIN32 and _ABI64 [1] to define
+the corresponding __NR_bpf.
 
-3. return -EBUSY
-  * smc_wr_tx_get_free_slot_index has no available slot
+This patch is similar with commit bad1926dd2f6 ("bpf, s390: fix build for
+libbpf and selftest suite").
 
-The return code -EBUSY is important for user-space to recall close()
-again.
+[1] https://gcc.gnu.org/git/?p=gcc.git;a=blob;f=gcc/config/mips/mips.h#l549
 
--ENOLINK and -EPIPE means there is no chance to tell peer to perform
-close progress. The applications should known this. And the clcsock will
-be released in the end.
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+---
+ tools/build/feature/test-bpf.c |  6 ++++++
+ tools/lib/bpf/bpf.c            |  6 ++++++
+ tools/lib/bpf/skel_internal.h  | 10 ++++++++++
+ 3 files changed, 22 insertions(+)
 
+diff --git a/tools/build/feature/test-bpf.c b/tools/build/feature/test-bpf.c
+index 82070ea..ebc7a2a 100644
+--- a/tools/build/feature/test-bpf.c
++++ b/tools/build/feature/test-bpf.c
+@@ -14,6 +14,12 @@
+ #  define __NR_bpf 349
+ # elif defined(__s390__)
+ #  define __NR_bpf 351
++# elif defined(__mips__) && defined(_ABIO32)
++#  define __NR_bpf (__NR_Linux + 355)
++# elif defined(__mips__) && defined(_ABIN32)
++#  define __NR_bpf (__NR_Linux + 319)
++# elif defined(__mips__) && defined(_ABI64)
++#  define __NR_bpf (__NR_Linux + 315)
+ # else
+ #  error __NR_bpf not defined. libbpf does not support your arch.
+ # endif
+diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+index 94560ba..60422404 100644
+--- a/tools/lib/bpf/bpf.c
++++ b/tools/lib/bpf/bpf.c
+@@ -50,6 +50,12 @@
+ #  define __NR_bpf 351
+ # elif defined(__arc__)
+ #  define __NR_bpf 280
++# elif defined(__mips__) && defined(_ABIO32)
++#  define __NR_bpf (__NR_Linux + 355)
++# elif defined(__mips__) && defined(_ABIN32)
++#  define __NR_bpf (__NR_Linux + 319)
++# elif defined(__mips__) && defined(_ABI64)
++#  define __NR_bpf (__NR_Linux + 315)
+ # else
+ #  error __NR_bpf not defined. libbpf does not support your arch.
+ # endif
+diff --git a/tools/lib/bpf/skel_internal.h b/tools/lib/bpf/skel_internal.h
+index 9cf6670..6ff4939 100644
+--- a/tools/lib/bpf/skel_internal.h
++++ b/tools/lib/bpf/skel_internal.h
+@@ -7,6 +7,16 @@
+ #include <sys/syscall.h>
+ #include <sys/mman.h>
+ 
++#ifndef __NR_bpf
++# if defined(__mips__) && defined(_ABIO32)
++#  define __NR_bpf (__NR_Linux + 355)
++# elif defined(__mips__) && defined(_ABIN32)
++#  define __NR_bpf (__NR_Linux + 319)
++# elif defined(__mips__) && defined(_ABI64)
++#  define __NR_bpf (__NR_Linux + 315)
++# endif
++#endif
++
+ /* This file is a base header for auto-generated *.lskel.h files.
+  * Its contents will change and may become part of auto-generation in the future.
+  *
+-- 
+2.1.0
 
-And the caller of upper function smc_close_active():
-
-1. __smc_release(), it doesn't handle rc and return it to user-space who
-called close() directly.
-
-2. smc_shutdown(), it return rc to caller, also with function
-kernel_sock_shutdown().
-
-IMHO, given that, it is better to not ignore smc_close_final(), and move 
-kernel_sock_shutdown() to __smc_release(), because smc_shutdown() also
-calls kernel_sock_shutdown() after smc_close_active() and
-smc_close_shutdown_write(), then enters SMC_PEERCLOSEWAIT1. It's no need
-to call it twice with SHUT_WR and SHUT_RDWR. 
-
-Here is the complete code of __smc_release in af_smc.c
-
-
-static int __smc_release(struct smc_sock *smc)
-{
-		struct sock *sk = &smc->sk;
-		int rc = 0, rc1 = 0;
-
-		if (!smc->use_fallback) {
-				rc = smc_close_active(smc);
-
-			    /* make sure don't call kernel_sock_shutdown() twice
-				 * after called smc_shutdown with SHUT_WR or SHUT_RDWR,
-				 * which will perform TCP closing progress.
-				 */
-				if (smc->clcsock && (!sk->sk_shutdown || 
-				    (sk->sk_shutdown & RCV_SHUTDOWN)) &&
-				    sk->sk_state == SMC_PEERCLOSEWAIT1) {
-					rc1 = kernel_sock_shutdown(smc->clcsock, SHUT_RDWR);
-					rc = rc ? rc : rc1;
-				}
-
-				sock_set_flag(sk, SOCK_DEAD);
-				sk->sk_shutdown |= SHUTDOWN_MASK;
-		} else {
-
-// code ignored
-
-
-Thanks for pointing it out, it would be more complete of this patch.
-
-Tony Lu
