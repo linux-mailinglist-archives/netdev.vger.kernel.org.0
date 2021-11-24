@@ -2,102 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20E6C45CB37
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 18:38:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01B9B45CB46
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 18:40:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237134AbhKXRlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 12:41:51 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:32210 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229538AbhKXRlu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 12:41:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637775520;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=OLUqX+NA205CZ8AVMNzH9C20UeQx+kT4jJesdTak08s=;
-        b=FDyZIRi46ZoSYZEZlS3cZISz6sYTjWxaN7exBip7nYkF+E88nhhB61kNF9q7NmdS7ySz6f
-        hArBwGmTR5Vq+sYAj/fosoyalmohMTAimxW67EJJwWr1W78WzB1Ilc1uWZui4PaqV+7W9Q
-        OMDBpYlkvX7hIgqplrk2lyDNyVkyAdU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-216-laaDgCz8PUGc712QxTOFbw-1; Wed, 24 Nov 2021 12:38:35 -0500
-X-MC-Unique: laaDgCz8PUGc712QxTOFbw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 812EF81CCBE;
-        Wed, 24 Nov 2021 17:38:34 +0000 (UTC)
-Received: from maya.cloud.tilaa.com (unknown [10.40.208.30])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2087460854;
-        Wed, 24 Nov 2021 17:38:34 +0000 (UTC)
-Date:   Wed, 24 Nov 2021 18:38:13 +0100
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     Nikita Yushchenko <nikita.yushchenko@virtuozzo.com>
-Cc:     Florian Westphal <fw@strlen.de>, Netdev <netdev@vger.kernel.org>,
-        netfilter-devel@vger.kernel.org, kernel@openvz.org
-Subject: Re: "AVX2-based lookup implementation" has broken ebtables
- --among-src
-Message-ID: <20211124183813.674dcf6a@elisabeth>
-In-Reply-To: <20211122142933.15e6bffc@elisabeth>
-References: <d35db9d6-0727-1296-fa78-4efeadf3319c@virtuozzo.com>
-        <20211116173352.1a5ff66a@elisabeth>
-        <20211117120609.GI6326@breakpoint.cc>
-        <6d484385-5bf6-5cc5-4d26-fd90c367a2dc@virtuozzo.com>
-        <20211122142933.15e6bffc@elisabeth>
-Organization: Red Hat
+        id S242889AbhKXRnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 12:43:37 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40296 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229538AbhKXRne (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Nov 2021 12:43:34 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B10FE60F5B;
+        Wed, 24 Nov 2021 17:40:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637775624;
+        bh=WZtS6uQGGOpls69YmtBTvF+56sSGaTSy72AQqaFgVQw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=e7yXwupyYw2AWI+k+eJ4K13m9nTNzbf2L8BA4cy8/ud1nJvfrcc0wsGVZ59OVpHOZ
+         hzqmI6AXlYY7fVtbfxWxUNb1wXYMauNKL2BZcJjAXxzSNI+N1LKQnEZ4BfRgU0VSei
+         LPLE7iQIS+IjccyF0+PCwdK8toKL2F4/X7RP90qstb6NH+o4toKLxyn6Uvn4YR29dX
+         mfXdYUOmaKvMshOnByEM4iEhWiKrlIfSB0E52b5ALZVJLZrPPGVqNJcVKsmvljSHZc
+         8Q/vBIF1lw6Qw1JUJw7ntksa9FjJKoIL3K1l+GpyRsJnZTakkS3dubJePRgvL5TIlf
+         kCWG0MjFpN8FQ==
+Date:   Wed, 24 Nov 2021 09:40:23 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Frode Nordahl <frode.nordahl@canonical.com>
+Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net] netdevsim: Fix physical port index
+Message-ID: <20211124094023.68010e87@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAKpbOATgFseXtkWoTcs6bNsvP_4WXChv5ffvtd2+8uqTHmr26w@mail.gmail.com>
+References: <20211124081106.1768660-1-frode.nordahl@canonical.com>
+        <20211124062048.48652ea4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAKpbOATgFseXtkWoTcs6bNsvP_4WXChv5ffvtd2+8uqTHmr26w@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 22 Nov 2021 14:29:33 +0100
-Stefano Brivio <sbrivio@redhat.com> wrote:
-
-> On Wed, 17 Nov 2021 15:08:54 +0300
-> Nikita Yushchenko <nikita.yushchenko@virtuozzo.com> wrote:
+On Wed, 24 Nov 2021 17:24:16 +0100 Frode Nordahl wrote:
+> I don't care too much about the ID itself starting at 0 per se, but I
+> would expect the ID's provided through devlink-port to match between
+> the value specified for DEVLINK_ATTR_PORT_PCI_PF_NUMBER on the
+> simulated PCI_VF flavoured ports, the value specified for
+> DEVLINK_ATTR_PORT_NUMBER on the simulated physical ports and the value
+> specified for DEVLINK_ATTR_PORT_PCI_PF_NUMBER  on the simulated PCI_PF
+> flavoured ports.
 > 
-> > >>> Looks like the AVX2-based lookup does not process this correctly.  
-> > >>
-> > >> Thanks for bisecting and reporting this! I'm looking into it now, I
-> > >> might be a bit slow as I'm currently traveling.    
-> > > 
-> > > Might be a bug in ebtables....    
-> > 
-> > Exactly same ebtables binary (and exactly same rule) works with
-> > kernel 4.18 and all kernels up to the mentioned patch applied.  
+> For a user space application running on a host with a regular
+> devlink-enabled NIC (let's say a ConnectX-5), it can figure out the
+> relationship between the ports with the regular sysfs API.
 > 
-> Sorry for the delay, I've been offline the past days, I'll restart
-> looking into this now.
+> However, for a user space application running on the Arm cores of a
+> devlink-enabled SmartNIC with control plane CPUs (let's say a
+> BlueField2), the relationship between the representor ports is not
+> exposed in the regular sysfs API. So this is where the devlink-port
+> interface becomes important. From a PHYSICAL representor I need to
+> find which PF representors are associated, from there I need to find
+> VF representors associated, and the other way round.
 
-I'm still debugging this but, if it helps, I found another workaround
-while checking: swapping the order of IP address and MAC address
-"fixes" it -- unfortunately I didn't think of this while writing the
-selftests, so that's what nft_concat_range.sh checks, a set with type
-"net, mac", and not "mac, net". E.g.:
+I see, thanks for this explanation.
 
-table ip t {
-	set s {
-		type ipv4_addr . ether_addr
-		flags interval
-		elements = { 192.168.122.1 . 52:54:00:04:9e:00 }
-	}
+There is no fundamental association between physical port and PF in
+NICs in switchdev mode. Neither does the bare metal host have any
+business knowing anything about physical ports (including the number 
+of them).
 
-	chain c {
-		type filter hook input priority filter; policy accept;
-		ip saddr . ether saddr @s counter packets 19 bytes 1284
-	}
-}
-
-...of course this is due to an implementation detail (and the bug I'm
-chasing), functionally it's expected to be the same.
-
--- 
-Stefano
-
+Obviously that's the theory, vendors like to abuse the APIs and cause
+all sort of.. fun.
