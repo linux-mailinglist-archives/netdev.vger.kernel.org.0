@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF1DE45CBE4
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 19:12:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED0C645CBE7
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 19:13:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243629AbhKXSPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 13:15:11 -0500
-Received: from mail-eopbgr10073.outbound.protection.outlook.com ([40.107.1.73]:38022
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        id S243850AbhKXSQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 13:16:58 -0500
+Received: from mail-am6eur05on2050.outbound.protection.outlook.com ([40.107.22.50]:12873
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S243151AbhKXSPK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Nov 2021 13:15:10 -0500
+        id S241825AbhKXSQ5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Nov 2021 13:16:57 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Sas7AIFplko922PqAokCRySu3tYXoreQbqRCH5/EKEGkm2cVGlngwtoEV4JcaS83S1SWVhfwlbh8OQIJyryL75ix5RjGiV9EgzfANGCaQpSIzREQE8vEUEjo5MQ8KBzvXPPYyxNBkZ6K7rYxdsWSFFQP72seqCM6yjFLswQNV20OQlcNoD5LwrLgCIU+rVmR42IYErVH3otA8ddCzQUMfu34otQp/nDDgk7BMI/oLJ1q9o8Tr62w8XmDb0JP2dpMCUDCDu/gcvJO/NnckfVjZKx7Xx1ZEoZTffbUF4H62Z3U8lctNa3aqFYViM8AA3tGiMHA61MHoNGwF+pLhS50fQ==
+ b=gi6PizAIDaIsZ8I/nsHJ20O15o9osHrmsR/bw15Km7mt/Z+XZzpyStJtTKodq/iu0R57aq7skhKYPxPWN4Y2whj0jugWHAF7IJdewvuFKiL205+9Y17Tb7w04jO60OXJ+h4wA1gnmDiM2e52o3nyJbqEAloitoarVHQvJDdahv+BY7utRrP+j4DMt8vZ0Vqn+0aJmX7Kj0YZubU0sNb4dRLv8g+Vqbs6c3t3lDtWGBErD8u9Iz6Dbax27DfwaTpyCbU3BKfw/7hr31TKiKiqurpe9nhRt6HtTqI1o6elvDEPFcHGCgzWOwXeTtslSwe82Ztnq9ZiYOdUW0GO1hAkLQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JfRl3btnDULSNzswoTgJRW6YRQhZcUU0XMJyI0+isZM=;
- b=ND9Gii/PEOWPUF4RPKyuntAlD4XKugFR9SU24mTCg+6a2UqhpTOQjZ7xxpNwVnJ27urmHUjbF9xz6mwzO8CPFOf43kDbHaJ4ih+H/SpGCx165kpiujjRylk9kyNGmuJ5iCA1r4vl2Ctl/fJFytwmqelnxNUadIzcRo4Soz51D1GUrGw3Zwq/HNRCgEuXZkqbiiL6vUiLPiVEjuZxEXfSFRAhb1tf+ceY6BWmH6FP0zpBIu/aASUKrN3B+wcVEaxSkwdDKfaX5pFqykoICvZTx3NKLEh5Am429Way5/ulnOpCl5529VH4J0MQtR5p4kk7Fo1POjS1ogrh2BAyM9hYKg==
+ bh=5ha5TqXLcT9mnss5LqNVjACCChkPJLHo5vqULgXZd/4=;
+ b=lPg0SyLyNvBG6XlqZ6OyZ6RJxKbQuVPioVq4P9lLy7Z05F0t2Td/Qkfme0Ml5NIPskKmP7TuIWXGDFo162NCG5let6iosxEIf7gXDLUDvbvpr4RgmaBNoqqDFQzxkxSZoVjouvAipriQOvu58HSiNsprr+A5MdaF8VU+zVGkPW4USsVyr8qyhPWp5rsoYQUUOj6EbJh7PjpCZCxN+cMvX0nW5T96neSHOTphJN+Qb/vsgJheI71aXkSATGbxyrpdFkLtKShKl2pDfEWXdoPc/cD+vdrliUNzBuCr9LH5KaHxg8IMCXY9vnfFiaYrveHQvK+GQWuFqQu4bo3zd+9OrQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JfRl3btnDULSNzswoTgJRW6YRQhZcUU0XMJyI0+isZM=;
- b=e5cnJ6cjHjknBAkCTJdMsHP96cVV1BRWtZUPfxJ4bAf8a/7BfZsmHzlTgjAs9FcjSSeCnPZxr3cX57VbPO1N0oU3eF2vYB3v5NDrimkLeWe65DE/tfQCCRLzZN1ncY4/MTgRyMKbi+ebrxd3UxlrmWZFngK2/LvDcNSKlM3QwJc=
+ bh=5ha5TqXLcT9mnss5LqNVjACCChkPJLHo5vqULgXZd/4=;
+ b=eGcWmpDUzLSFG5upb/MQbe9IddgAULD7aCgzK/XBpDLWL3TYvmpR0fk6Jh/cO2UNt5KNr7hADpHa2UH3fLw+HzK8vxhVE8Z5FllyQaP1VOnAElOQLQkA/vq5id2K92BWUFyBMVqGMOBh0CYx0DeWeMiywmXEIzUop/zf9tSk9X8=
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR0402MB3551.eurprd04.prod.outlook.com (2603:10a6:803:a::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.24; Wed, 24 Nov
- 2021 18:11:57 +0000
+ 2021 18:13:46 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e4ed:b009:ae4:83c5]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e4ed:b009:ae4:83c5%7]) with mapi id 15.20.4734.021; Wed, 24 Nov 2021
- 18:11:57 +0000
+ 18:13:45 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 CC:     Andrew Lunn <andrew@lunn.ch>,
@@ -51,15 +51,16 @@ CC:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH RFC net-next 01/12] net: dsa: consolidate phylink creation
-Thread-Topic: [PATCH RFC net-next 01/12] net: dsa: consolidate phylink
- creation
-Thread-Index: AQHX4VwQBurk2I2xyEmbFSWzUlWHCKwS+s8A
-Date:   Wed, 24 Nov 2021 18:11:57 +0000
-Message-ID: <20211124181156.5g3z2inlaai5lcvd@skbuf>
+Subject: Re: [PATCH RFC net-next 02/12] net: dsa: support use of
+ phylink_generic_validate()
+Thread-Topic: [PATCH RFC net-next 02/12] net: dsa: support use of
+ phylink_generic_validate()
+Thread-Index: AQHX4VwUcgCdRIZ8ekOfZ8DOUsEJBawS+1GA
+Date:   Wed, 24 Nov 2021 18:13:45 +0000
+Message-ID: <20211124181345.yqhvlvqskhvvwnu6@skbuf>
 References: <YZ56WapOaVpUbRuT@shell.armlinux.org.uk>
- <E1mpwRY-00D8Kw-6S@rmk-PC.armlinux.org.uk>
-In-Reply-To: <E1mpwRY-00D8Kw-6S@rmk-PC.armlinux.org.uk>
+ <E1mpwRd-00D8L2-Aq@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1mpwRd-00D8L2-Aq@rmk-PC.armlinux.org.uk>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -67,222 +68,100 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b7887b6d-cd46-40fb-97c9-08d9af75e764
+x-ms-office365-filtering-correlation-id: 888be4fa-ecf8-4dd2-2fc2-08d9af7627e3
 x-ms-traffictypediagnostic: VI1PR0402MB3551:
-x-microsoft-antispam-prvs: <VI1PR0402MB3551074789B9410D4A3240A3E0619@VI1PR0402MB3551.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-microsoft-antispam-prvs: <VI1PR0402MB3551D0A2878213323206645FE0619@VI1PR0402MB3551.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 4EliiSOPTMYU/VK0Ux/QNv5Z/n/y3y1sFZX3NCk6vODXTX++VXseLCV3SVi1bZkfyvPPVzzx2gfUd0XwbFVtgM3Ldezjp+CQ/Lw/HAOa/jjFoa+Qvpi+zDolmZl7BeM1YAQnl8/naZWX6P4vpl8IkygWnrPLCRBE2fE5MbUgwDHa9PmQhLiNNFGmTo7+GgoOnw0Mry1VwKburf03HKpM1JG9bZKdLAK7kB28KNY7r1ywsF5S8xEdNWr0ONtYDdv8lAmM8fPJM4DXm2pdiRGRreDYlpPGAenOVkMGlDdkJPeaMAin/2F5QpRvmiD00i40c098vjdkxSzi6FAVRJcZpYy73cVjSGLsrssbWoqg1R/7GiSeIo9Md7uHumVkjrmOXw9zv/HCFZyRPlqsM2xcewvnu6HV9PFyKgioDAGQ0748nO+y8tfRmGM7wHCEHjt3oeHY7zkFL8qiND/bvyZA5AWTTKS37vMWrTMg5HkX4SnUd/v3JneBwYVtbPPfRGP4QIziNLRH+AbtGuApphY38jjL//Y+5byfyxcTdgtbJJ2rvXIe+WW8ZJZqqSod8NORlGgwCl3GzcpPJjDL1VvbkeFWMA2PBM6ZH9gft3MYVuM1LU8UNRXJio+a9c2wxLPm6MdNTNO8wEN7anb8NhoLBvG1FpVWYRDCzaiU8fcGSLc11A+xR0hdbLL73iafqFytz4G0t2IOLuKq71jw5kfXOw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(9686003)(44832011)(6512007)(8676002)(2906002)(4326008)(66946007)(66556008)(64756008)(6506007)(8936002)(54906003)(38100700002)(33716001)(66476007)(66446008)(7416002)(316002)(86362001)(71200400001)(122000001)(186003)(83380400001)(91956017)(26005)(5660300002)(76116006)(6486002)(38070700005)(508600001)(1076003);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: nKQrECMmOL4z98aBGlL+ZhQv7T/WfEGLpdVQPDgFs2y2cGwucm+4f/G2qAYqri0LVR4uyVltvWTMCiPFzYhlzFGjnXsp5VCAUNjWzwS2gpYaQBK1yEf5giI9VAKMxeQ51JxL72l7z2xZsU/KsjbBHXTnr3ASfF2VAjF1xj1sl65H5r2uazO6kRcOQWcyRuCqGHbM2v2UG3BTVuBIw4vDovIv6RQ5xOFprpS3Q+ue/ETyrDXl/n/YQJ74tAy66c6pSGDyFWiYTgIPtwSxEO7JsHtv5jea5cgxlDj3hQtw/swPiGvxqdAvQl3wajlDxcA+6YerYRtOXVnh//0CyzJx5kG2WT5hU8nbaZH4xbptSVEpNy3wF5cU2TQOIRk/g5xXHomNKhB7OD+uKD0XHnQuFoMnMG7DFnMGTSpV4P4Zkl2tEX6BY6JNBFCV9q1Nibv91lW/zuyL5Usq6+LvI/ujVA2HlIFNoG1wMXEKbZnL+zoEC+PwnZ9FTKRQW0dWRzeLsmRYSCh7Nu2Hon7C6pYZr/8P8QM4+sV4aTv6d+brkwYxU5plaJio8xQyz3Qu6zuj+cIFdNj/Vb7HxCgiJZEyG7NzlrvgE2KtQLCTJLTlEGY1azxEHmgbvN5KQOUqodws87AhSnBvCb16UTKDajaAi3+rVoOqT7NsULhlI4tW/YdNsKn23Ykp2uGcpRCDKAbL5AXWmauXFhQHdAlmOyg0TCqPT107n8NIqFAzNg8Nho8=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(316002)(86362001)(7416002)(122000001)(71200400001)(66476007)(186003)(66446008)(76116006)(6486002)(38070700005)(1076003)(508600001)(83380400001)(5660300002)(91956017)(26005)(66946007)(66556008)(64756008)(8676002)(9686003)(44832011)(6512007)(2906002)(4326008)(33716001)(38100700002)(54906003)(6506007)(8936002)(41533002);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?m+/ww7j1otJgUfc7ADnd6CxN7F2t89z45+sAuMKxD1bUT3BtOnjMHk5l1ltf?=
- =?us-ascii?Q?r78wkWgqfaQU4jObykTifaYctheVQBxRSJK7gWOK8vVqIffq6usbQvce07Bh?=
- =?us-ascii?Q?ea9n0ms7EJbpEro/Yv9USFZ2NXs1cUbxVWbU8piqSCyO1dm0ly8VymeXH6Vi?=
- =?us-ascii?Q?M0X5N0RatmiNvCXOMYt1sL2sxtzARjH5bxkqDEpXDJqboHEdYXSQdRXpf1Zu?=
- =?us-ascii?Q?IDXeWEyuzCAWHpEqhAde7gU863MEfyjwGEwaZKVHLIBYTAY4LgxLGlK+5TvX?=
- =?us-ascii?Q?Y+ZFVDoVxfaR9KCzlambWLLHeDzfaV0HKGB/4NE/BuxsB0YXc7Y6noEprRnP?=
- =?us-ascii?Q?1FDKocXijYylL+YzA1YLQdvSdqj4su3qcM/YJXMlrzWVkQKIsOoXD+GO0z7J?=
- =?us-ascii?Q?OPEDWZa6nsRMTFXcTZ/PRcrlCNC3QlKi7Mh5EZUAKLyeRLUylDT9hi/BQzEo?=
- =?us-ascii?Q?8Mhy+NOIVqn08qWmQ3Qu8gyKuZ7OxnOgrMNwBCYZgyNtcCfzybXMPQVeZRvX?=
- =?us-ascii?Q?RtkY282/2Pf6tREooJXHI+hC4xOiAFDFUWDiClaih/bQaY6TWdtPCp1Tw0t/?=
- =?us-ascii?Q?NEclFGlsgXK7pNu/dBaGO9J89ruDN/6HLq3/vZzgsQO19Ls6rLOniH+Myv6P?=
- =?us-ascii?Q?pIDq4TGgb6y0MZn/G2ngMKQAxJeKxvX/qOSmdTb6MJ21Iptfy8XGSA/z/ZN2?=
- =?us-ascii?Q?85IURGY5XfdNJr5QqpN9coqFaftWr+05CAtpHxdraES/ViXwkCCVby2xplml?=
- =?us-ascii?Q?8aB5O5zIUfGzmgdqHuAKbUZuj/dh4L2Vnm6uxeFFypfj246DuahRAueVrSBh?=
- =?us-ascii?Q?AEO47zIckuxtKm5m5FCqvKuGrNva2eGNRgVuFgsnOd6OdbsAaJF7Z/IrvAvb?=
- =?us-ascii?Q?EoN4dtEUfXr3zfCquCkRKZMCBdQd5U0sOJuq3DVLyTu1arK+WOXxa/JhGHmA?=
- =?us-ascii?Q?evpp3CvA9l0MxNjeIHnUJ7VpB3CiKwHSgUevKp1Gs9b+pRVLE6Hv0nm20pkJ?=
- =?us-ascii?Q?IezbE8C2NgDWTeZEJ1CeUy2+f3mDNng8WQIg4x3e1yNxRFYRFNY5Z0BkAyI5?=
- =?us-ascii?Q?ybP9OZ4jk5nQexjKent5IP29/oMKtiyq2tox1MpEs94gwA4g/rvfcM43KVzz?=
- =?us-ascii?Q?JViT+8IElBWmIKuWo5BmwjmymkGY/z2+2JR96t5ASYxeP8W2bkrb01XRuMLR?=
- =?us-ascii?Q?/d+XY2eOJ9HF81LjsPBtPSwIim75ifHvZJ35YOII4AaSdjJpic3xG8bhBZn5?=
- =?us-ascii?Q?F21RD3QxelXVULzUCqFTYM8OckyDdeX/Z8qNunwUWDcIUR/Ijk6Q8z30Jm+3?=
- =?us-ascii?Q?NN6JcIbi3Q+SP/5644gYu+Kzt81qzbkoTYuhLtu0nVp4p2gsZQVBEPas55yJ?=
- =?us-ascii?Q?dITXrKIv9xatmoa7pyCAKxvthJbsz9krEpRBLK3qlkDrkzlb8jwXatZbAHcM?=
- =?us-ascii?Q?z/gJJD2ZPvlWwZqLr5Ze/FfmJVZ2yahnS8hi5hhbEF/maKA39t3I8XMGWfxf?=
- =?us-ascii?Q?oXuUAgdFFjE9w+SIvkYyFG6mDFzU1G53gOoQnEA9LxYuB00wev1aZo7HCimz?=
- =?us-ascii?Q?GSbWqIC6VmpgtIDz+eoiIkeivJ+9rWprfnAXxqsymFWn/dTRmqmPemuCdOim?=
- =?us-ascii?Q?SZBMgE6o5hEfD589El6g8QY=3D?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Xi75ezvSyF63nR8DyB7ie41Vula3iqMr0wzRGFXS8cbokJHXZ1wP1KpHVomL?=
+ =?us-ascii?Q?A41/mEkbnMg4/I75A0bz24DD5tkWUKBX7qTkYoKZKiNMTD1GLZsjZAyd49Ai?=
+ =?us-ascii?Q?IwWYMRqJzTCk+o0Dg1kdLoFgtEjxZjcgqxoVVxJgHHZ331g3ZztAgYamv47b?=
+ =?us-ascii?Q?nfFIaAy5/gYzkUqT4GGIDkDsZbS6+AEjqpmHCLE3IoQgqrHCbE1y1kniOAAJ?=
+ =?us-ascii?Q?wZAjz2C31YrZIO0qIJGLtwhb5dpWyvYovG+rTxBPRR+iK6k5uFEo3wtKcu3a?=
+ =?us-ascii?Q?goTU2gPU1yxJ+4G/LI0ByvOVxyco3XYMjtGWzn/f6iH2edlyrU7ShbSHZPna?=
+ =?us-ascii?Q?rzCNax5dvSlPeYlpiltwmSy7yHpmTc40Ai76prKs6NAQyngnYhLSSzfpXaDW?=
+ =?us-ascii?Q?ncfLFq1fLSnp5gF9vqi7HPaZfYuSPuBj+W5WPou9vqOhdTbsVA4NAfUxgSk4?=
+ =?us-ascii?Q?iMZEisSEuhMH36K+pCL98Rge9ReDn1A8JZ6NnMNTDJmXgYA2HXZ5gLiZaci/?=
+ =?us-ascii?Q?lYfcU5FBpqHqoH7Fd4T2JiunGC7Ij0sNfErrPUIptfY43pB7tIdKHZ110DKM?=
+ =?us-ascii?Q?7yk8zjtiAGEJd0mgDCX3HIZcP/JLiP7hip4A+ZZZAFla+qsJG0XmlroWuZCy?=
+ =?us-ascii?Q?Fs5RmBwfEXzHY4cOD1Uib/jv8aBuMK5azxXv8U96HwBr5W+C21LKZ3Y0Vn8a?=
+ =?us-ascii?Q?KXddbikY8nXo4AKmrwInGzxgjLY2MsFkAAUo+xiH0bhCbN7ybKQqOgqTJutp?=
+ =?us-ascii?Q?9umA74KI7ufQNNFAq79SwPxX/5/rNLPgtgi1H1n2yZMM0IqajRybUYgKrtEZ?=
+ =?us-ascii?Q?l6KQk+RN1R+E4Amcr4UR5HSvEcaplQLd6v2zPsSEh88Pq2azCsTrh//WbTOY?=
+ =?us-ascii?Q?QB+lq45XI5onCGcrPV3tACRZixtlIWce2SGoU4OTma/fE86jfXv5VX3wubV5?=
+ =?us-ascii?Q?IwCRQ578Qx3qHJRgs0sS41G9vmboLP28eff0ClwVDNxboesEdYpc+TqreBdw?=
+ =?us-ascii?Q?bPlI0K3gwuWJN5eEUYfa9ELMVsbm86Z3AUz1ZXm5I0iPP0dEeA+Mp9cMP0F5?=
+ =?us-ascii?Q?/+G35FbqzxDlpjL+Hx7cQPmQLo1mLi4OTv0OuVjMSW4K7DrjWmTx3NXdRHff?=
+ =?us-ascii?Q?DzjO6r4EDK5eRj/8A097+hkgxV6j7lcMLUY6a61CHUR0r7Vr2DMNu+55lz1e?=
+ =?us-ascii?Q?dyISQWxi1HtQt4nVo3Vzfj1N7xMFHTrT/5Zg4OXwJHAwjZ96EhUlRfJ86Mlc?=
+ =?us-ascii?Q?KS6RXtsp/QsPBQpepQeOgLO+ihvHc6gFGMy5GFrcIe7j953FSdo2xZ6/CpX/?=
+ =?us-ascii?Q?j8TxPulzi+L+ROmJP/6hjzKYDY0q9J+UlTpSFvq/OyM60KyImTn5ohItcibp?=
+ =?us-ascii?Q?O3W81qcPbmFBPYcCE2dacueV5DDP71LxUw2xt45FuFvs4lCklXeP26P2TbfP?=
+ =?us-ascii?Q?HcuHRtPyQpOCaOsfF8QuvvbddH6IUHHXjjDG3KzYyiTQTh+7i1Y3aHRdtC3u?=
+ =?us-ascii?Q?9PNtbQa+LB9ykJO2iyOS0z1gRUpv5m8TMKGEHbSoe35r+1uodHxhMD8uglop?=
+ =?us-ascii?Q?GrHo7bC1rEs65Llr6UWv0X/SGwmCLaqpPyz4RkJCbv3RJDNpNAwJO/YpWqwk?=
+ =?us-ascii?Q?flQJKT5nN5jXyvu7l1rlR63292/1PPHXh3bBI0EKUtcy?=
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <AE01AA3BC9E23C48895B35BF35190210@eurprd04.prod.outlook.com>
+Content-ID: <3A386003848B7F4C993EEE02890067B3@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b7887b6d-cd46-40fb-97c9-08d9af75e764
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Nov 2021 18:11:57.6260
+X-MS-Exchange-CrossTenant-Network-Message-Id: 888be4fa-ecf8-4dd2-2fc2-08d9af7627e3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Nov 2021 18:13:45.8628
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: z28WzN1ZReK7MMJlEBxywTAiyROoSHR5BgfB+O8rXVkMMGtaVMjC0NFqbS46fkjMYGu4nV3IwwX5ugiEtjBzUw==
+X-MS-Exchange-CrossTenant-userprincipalname: O8c0Co50m8S8tJ9W50+sKTFS1Znn9RfST/Vy2FVd6urPFDPvWs/Nufv4yuhJIwXRQ6CP1N8+biUB3T4f8HUQ3w==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3551
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 24, 2021 at 05:52:28PM +0000, Russell King (Oracle) wrote:
-> The code in port.c and slave.c creating the phylink instance is very
-> similar - let's consolidate this into a single function.
+On Wed, Nov 24, 2021 at 05:52:33PM +0000, Russell King (Oracle) wrote:
+> Support the use of phylink_generic_validate() when there is no
+> phylink_validate method given in the DSA switch operations and
+> mac_capabilities have been set in the phylink_config structure by the
+> DSA switch driver.
+>=20
+> This gives DSA switch drivers the option to use this if they provide
+> the supported_interfaces and mac_capabilities, while still giving them
+> an option to override the default implementation if necessary.
 >=20
 > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 > ---
->  net/dsa/dsa_priv.h |  2 +-
->  net/dsa/port.c     | 44 ++++++++++++++++++++++++++++----------------
->  net/dsa/slave.c    | 19 +++----------------
->  3 files changed, 32 insertions(+), 33 deletions(-)
+
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+>  net/dsa/port.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
 >=20
-> diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-> index a5c9bc7b66c6..3fb2c37c9b88 100644
-> --- a/net/dsa/dsa_priv.h
-> +++ b/net/dsa/dsa_priv.h
-> @@ -258,13 +258,13 @@ int dsa_port_mrp_add_ring_role(const struct dsa_por=
-t *dp,
->  			       const struct switchdev_obj_ring_role_mrp *mrp);
->  int dsa_port_mrp_del_ring_role(const struct dsa_port *dp,
->  			       const struct switchdev_obj_ring_role_mrp *mrp);
-> +int dsa_port_phylink_create(struct dsa_port *dp);
->  int dsa_port_link_register_of(struct dsa_port *dp);
->  void dsa_port_link_unregister_of(struct dsa_port *dp);
->  int dsa_port_hsr_join(struct dsa_port *dp, struct net_device *hsr);
->  void dsa_port_hsr_leave(struct dsa_port *dp, struct net_device *hsr);
->  int dsa_port_tag_8021q_vlan_add(struct dsa_port *dp, u16 vid, bool broad=
-cast);
->  void dsa_port_tag_8021q_vlan_del(struct dsa_port *dp, u16 vid, bool broa=
-dcast);
-> -extern const struct phylink_mac_ops dsa_port_phylink_mac_ops;
-> =20
->  static inline bool dsa_port_offloads_bridge_port(struct dsa_port *dp,
->  						 const struct net_device *dev)
 > diff --git a/net/dsa/port.c b/net/dsa/port.c
-> index f6f12ad2b525..eaa66114924b 100644
+> index eaa66114924b..d928be884f01 100644
 > --- a/net/dsa/port.c
 > +++ b/net/dsa/port.c
-> @@ -1072,7 +1072,7 @@ static void dsa_port_phylink_mac_link_up(struct phy=
-link_config *config,
->  				     speed, duplex, tx_pause, rx_pause);
->  }
+> @@ -981,8 +981,11 @@ static void dsa_port_phylink_validate(struct phylink=
+_config *config,
+>  	struct dsa_port *dp =3D container_of(config, struct dsa_port, pl_config=
+);
+>  	struct dsa_switch *ds =3D dp->ds;
 > =20
-> -const struct phylink_mac_ops dsa_port_phylink_mac_ops =3D {
-> +static const struct phylink_mac_ops dsa_port_phylink_mac_ops =3D {
->  	.validate =3D dsa_port_phylink_validate,
->  	.mac_pcs_get_state =3D dsa_port_phylink_mac_pcs_get_state,
->  	.mac_config =3D dsa_port_phylink_mac_config,
-> @@ -1081,6 +1081,30 @@ const struct phylink_mac_ops dsa_port_phylink_mac_=
-ops =3D {
->  	.mac_link_up =3D dsa_port_phylink_mac_link_up,
->  };
-> =20
-> +int dsa_port_phylink_create(struct dsa_port *dp)
-> +{
-> +	struct dsa_switch *ds =3D dp->ds;
-> +	phy_interface_t mode;
-> +	int err;
-> +
-> +	err =3D of_get_phy_mode(dp->dn, &mode);
-> +	if (err)
-> +		mode =3D PHY_INTERFACE_MODE_NA;
-> +
-> +	if (ds->ops->phylink_get_interfaces)
-> +		ds->ops->phylink_get_interfaces(ds, dp->index,
-> +					dp->pl_config.supported_interfaces);
-
-Can you please save dp->pl_config to a struct phylink_config *config
-temporary variable, and pass that here and to phylink_create() while
-preserving the alignment of that argument to the open brace? Thanks.
-
-> +
-> +	dp->pl =3D phylink_create(&dp->pl_config, of_fwnode_handle(dp->dn),
-> +				mode, &dsa_port_phylink_mac_ops);
-> +	if (IS_ERR(dp->pl)) {
-> +		pr_err("error creating PHYLINK: %ld\n", PTR_ERR(dp->pl));
-> +		return PTR_ERR(dp->pl);
+> -	if (!ds->ops->phylink_validate)
+> +	if (!ds->ops->phylink_validate) {
+> +		if (config->mac_capabilities)
+> +			phylink_generic_validate(config, supported, state);
+>  		return;
 > +	}
-> +
-> +	return 0;
-> +}
-> +
->  static int dsa_port_setup_phy_of(struct dsa_port *dp, bool enable)
->  {
->  	struct dsa_switch *ds =3D dp->ds;
-> @@ -1157,27 +1181,15 @@ static int dsa_port_phylink_register(struct dsa_p=
-ort *dp)
->  {
->  	struct dsa_switch *ds =3D dp->ds;
->  	struct device_node *port_dn =3D dp->dn;
-> -	phy_interface_t mode;
->  	int err;
 > =20
-> -	err =3D of_get_phy_mode(port_dn, &mode);
-> -	if (err)
-> -		mode =3D PHY_INTERFACE_MODE_NA;
-> -
->  	dp->pl_config.dev =3D ds->dev;
->  	dp->pl_config.type =3D PHYLINK_DEV;
->  	dp->pl_config.pcs_poll =3D ds->pcs_poll;
-> =20
-> -	if (ds->ops->phylink_get_interfaces)
-> -		ds->ops->phylink_get_interfaces(ds, dp->index,
-> -					dp->pl_config.supported_interfaces);
-> -
-> -	dp->pl =3D phylink_create(&dp->pl_config, of_fwnode_handle(port_dn),
-> -				mode, &dsa_port_phylink_mac_ops);
-> -	if (IS_ERR(dp->pl)) {
-> -		pr_err("error creating PHYLINK: %ld\n", PTR_ERR(dp->pl));
-> -		return PTR_ERR(dp->pl);
-> -	}
-> +	err =3D dsa_port_phylink_create(dp);
-> +	if (err)
-> +		return err;
-> =20
->  	err =3D phylink_of_phy_connect(dp->pl, port_dn, 0);
->  	if (err && err !=3D -ENODEV) {
-> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-> index ad61f6bc8886..33b54eadc641 100644
-> --- a/net/dsa/slave.c
-> +++ b/net/dsa/slave.c
-> @@ -1851,14 +1851,9 @@ static int dsa_slave_phy_setup(struct net_device *=
-slave_dev)
->  	struct dsa_port *dp =3D dsa_slave_to_port(slave_dev);
->  	struct device_node *port_dn =3D dp->dn;
->  	struct dsa_switch *ds =3D dp->ds;
-> -	phy_interface_t mode;
->  	u32 phy_flags =3D 0;
->  	int ret;
-> =20
-> -	ret =3D of_get_phy_mode(port_dn, &mode);
-> -	if (ret)
-> -		mode =3D PHY_INTERFACE_MODE_NA;
-> -
->  	dp->pl_config.dev =3D &slave_dev->dev;
->  	dp->pl_config.type =3D PHYLINK_NETDEV;
-> =20
-> @@ -1871,17 +1866,9 @@ static int dsa_slave_phy_setup(struct net_device *=
-slave_dev)
->  		dp->pl_config.poll_fixed_state =3D true;
->  	}
-> =20
-> -	if (ds->ops->phylink_get_interfaces)
-> -		ds->ops->phylink_get_interfaces(ds, dp->index,
-> -					dp->pl_config.supported_interfaces);
-> -
-> -	dp->pl =3D phylink_create(&dp->pl_config, of_fwnode_handle(port_dn), mo=
-de,
-> -				&dsa_port_phylink_mac_ops);
-> -	if (IS_ERR(dp->pl)) {
-> -		netdev_err(slave_dev,
-> -			   "error creating PHYLINK: %ld\n", PTR_ERR(dp->pl));
-> -		return PTR_ERR(dp->pl);
-> -	}
-> +	ret =3D dsa_port_phylink_create(dp);
-> +	if (ret)
-> +		return ret;
-> =20
->  	if (ds->ops->get_phy_flags)
->  		phy_flags =3D ds->ops->get_phy_flags(ds, dp->index);
+>  	ds->ops->phylink_validate(ds, dp->index, supported, state);
+>  }
 > --=20
 > 2.30.2
 >=
