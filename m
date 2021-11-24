@@ -2,79 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 959D745CAB8
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 18:14:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFBEE45CAF1
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 18:25:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231309AbhKXRRn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 12:17:43 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:52711 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234401AbhKXRRm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 12:17:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637774071;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NpePfdKSV4Sq+uVphqHqV1Aq+JS4cEiF8UpbgtgpCEw=;
-        b=T6va1KdDBQjZaXuJGPfsN9lYmE6/jZc9R7KlJ/H8PigcafCJ9Bg9CvSYN7h6VqPBOzpuNn
-        gWwsQU/WRrz/ytwMks/wUBSVUYG58Y4Us4Iw1iWc/piEABCny+h5qNr8KQY+sP9+HZY7IR
-        xNL5BJqfxYlUG+N68UMe/cUyEJmLMcY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-515-nc1zyWZdPG2NP3uFd6yeoA-1; Wed, 24 Nov 2021 12:14:26 -0500
-X-MC-Unique: nc1zyWZdPG2NP3uFd6yeoA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 366C4A0CAD;
-        Wed, 24 Nov 2021 17:14:25 +0000 (UTC)
-Received: from localhost (unknown [10.40.194.62])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id AD5A72B1A3;
-        Wed, 24 Nov 2021 17:14:23 +0000 (UTC)
-Date:   Wed, 24 Nov 2021 18:14:21 +0100
-From:   Jiri Benc <jbenc@redhat.com>
-To:     Fabian =?UTF-8?B?RnLDqWTDqXJpY2s=?= <fabf@skynet.be>
-Cc:     davem@davemloft.net, kuba@kernel.org, sbrivio@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: vxlan: Possible regression in vxlan_rcv()
-Message-ID: <20211124181421.154b4470@redhat.com>
-In-Reply-To: <1ad77777.15fd.17d4dc9bd96.Webtop.157@skynet.be>
-References: <1ad77777.15fd.17d4dc9bd96.Webtop.157@skynet.be>
+        id S242752AbhKXR2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 12:28:37 -0500
+Received: from mga07.intel.com ([134.134.136.100]:35647 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234770AbhKXR2g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Nov 2021 12:28:36 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10178"; a="298734815"
+X-IronPort-AV: E=Sophos;i="5.87,260,1631602800"; 
+   d="scan'208";a="298734815"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2021 09:18:09 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,260,1631602800"; 
+   d="scan'208";a="597738870"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga002.fm.intel.com with ESMTP; 24 Nov 2021 09:18:09 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com
+Subject: [PATCH net-next 00/12][pull request] 40GbE Intel Wired LAN Driver Updates 2021-11-24
+Date:   Wed, 24 Nov 2021 09:16:40 -0800
+Message-Id: <20211124171652.831184-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Nov 2021 18:13:26 +0100 (CET), Fabian Fr=C3=A9d=C3=A9rick wrote:
->    Can someone tell me if the update is really ok or how I could check=20
-> that code ?
-> if VXLAN_F_REMCSUM_RX involves metadata checking I can ask to remove the=
-=20
-> patch.
+This series contains updates to iavf driver only.
 
-I don't think it matters.
+Mitch adds restoration of MSI state during reset and reduces the log
+level on a couple messages.
 
-I doubt anyone is using remote checksum offloading (RCO). It was based
-on a half thought-through idea. Local checksum offloading is superior,
-it gives you the same performance for free, with full compatibility with
-the base VXLAN standard. And even trying hard, I can't imagine anyone
-could be using RCO with metadata dst.
+Patryk adds an info message when MTU is changed.
 
-I wouldn't object against removing RCO completely from VXLAN (and
-moving the "generic" RCO pieces to net/ipv4/fou.c, which would become
-its only user). It would simplify the code and I doubt anyone would
-notice. I'm serious. Try googling for remcsumtx or remcsumrx and see
-for yourself.
+Grzegorz adds messaging when transitioning in and out of multicast
+promiscuous mode.
 
-And, in case you still wonder, your patch seems fine to me. It's somehow
-pointless, since it optimizes drops for an extension that nobody uses,
-but it should not affect the code correctness. Probably. Whatever.
+Jake returns correct error codes for iavf_parse_cls_flower().
 
- Jiri
+Jedrzej adds messaging for when the driver is removed and refactors
+struct usage to take less memory. He also adjusts ethtool statistics to
+only display information on active queues.
+
+Tony allows for user to specify the RSS hash.
+
+Karen resolves some static analysis warnings, corrects format specifiers,
+and rewords a message to come across as informational.
+
+The following are changes since commit d156250018ab5adbcfcc9ea90455d5fba5df6769:
+  Merge branch 'hns3-next'
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 40GbE
+
+Grzegorz Szczurek (1):
+  iavf: Log info when VF is entering and leaving Allmulti mode
+
+Jacob Keller (1):
+  iavf: return errno code instead of status code
+
+Jedrzej Jagielski (3):
+  iavf: Add trace while removing device
+  iavf: Refactor iavf_mac_filter struct memory usage
+  iavf: Fix displaying queue statistics shown by ethtool
+
+Karen Sornek (3):
+  iavf: Fix static code analysis warning
+  iavf: Refactor text of informational message
+  iavf: Refactor string format to avoid static analysis warnings
+
+Mitch Williams (2):
+  iavf: restore MSI state on reset
+  iavf: don't be so alarming
+
+Patryk Małek (1):
+  iavf: Add change MTU message
+
+Tony Nguyen (1):
+  iavf: Enable setting RSS hash key
+
+ drivers/net/ethernet/intel/iavf/iavf.h        | 10 ++--
+ .../net/ethernet/intel/iavf/iavf_ethtool.c    | 48 +++++++++++--------
+ drivers/net/ethernet/intel/iavf/iavf_main.c   | 32 +++++++------
+ drivers/net/ethernet/intel/iavf/iavf_txrx.c   |  2 +-
+ .../net/ethernet/intel/iavf/iavf_virtchnl.c   | 28 +++++++----
+ 5 files changed, 73 insertions(+), 47 deletions(-)
+
+-- 
+2.31.1
 
