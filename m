@@ -2,79 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 608B745C75C
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 15:30:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1056B45C799
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 15:37:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355045AbhKXOd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 09:33:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45906 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1355022AbhKXOdT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Nov 2021 09:33:19 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0854960273;
-        Wed, 24 Nov 2021 14:30:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637764210;
-        bh=hzij1PTVKwykaHlENjrWj0gL3uLeAp7fu3hxPDAcIIo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=nGYYCEk7nQWadWlli4bvqJjk3EeLuM7SwM+Rk0kwSrGN9clc4rJj+u7ZhycUmjoyF
-         +NnQWRdt8sJTkBeFevkqJZ3Lc9elq7UXkthVqu6yQEj9/TvZ3N1qGlZrmz4U63gdoq
-         xoXh0Oym8tDiJuPVyP/qr1B0cHlEK9w/Dq4UCOJlyJtv1Q5cPlOBFsfOWexBoIaKKT
-         5AOgzJWtMns1tIGCeXf6/T+xO8mEwbI3Z7GS9w8FVQdzqh4OCCPpK9FrgrUBrPPQX5
-         njsuVe8MZ46POLWICGXoXntwqBmoHPwwyTdw77F4ZeFUe8rSnW1mA3kHNO79dCkr37
-         KWsvmzQuOU+fw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F0A2D609D5;
-        Wed, 24 Nov 2021 14:30:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1357060AbhKXOk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 09:40:56 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:34443 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1349684AbhKXOku (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 09:40:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1637764660;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=2eFPwkBPSqPY67/O1/+YH8rSc4RzYs89OEyta9CYqvE=;
+        b=CJs59DBFeZb1NsowCuQaB7cz3Jhbo5j3JTkkIN5uoTXyWbXe5DXhWF+7qTY7GIBI1fZCFN
+        XnfAapjfvvfqyM1O7ervAZuG4bZ+/TkGoGegvjTGMC2npNaCOu7Dg50kvzr6zCe7Qtqfyj
+        ICeqMUCPEAlN/ILrc2+Kp0Fizro+n2Q=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-467--1Rux0--PfKVUJd_vv2mEg-1; Wed, 24 Nov 2021 09:37:36 -0500
+X-MC-Unique: -1Rux0--PfKVUJd_vv2mEg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 63EA983DD21;
+        Wed, 24 Nov 2021 14:37:35 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.25])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1888226FA3;
+        Wed, 24 Nov 2021 14:37:33 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH 1/2] rxrpc: Fix rxrpc_peer leak in rxrpc_look_up_bundle()
+From:   David Howells <dhowells@redhat.com>
+To:     Eiichi Tsukata <eiichi.tsukata@nutanix.com>
+Cc:     Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org, dhowells@redhat.com,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Wed, 24 Nov 2021 14:37:33 +0000
+Message-ID: <163776465314.1844202.9057900281265187616.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/4] net: hns3: updates for -next
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163776420998.4552.2505811247513302335.git-patchwork-notify@kernel.org>
-Date:   Wed, 24 Nov 2021 14:30:09 +0000
-References: <20211124010654.6753-1-huangguangbin2@huawei.com>
-In-Reply-To: <20211124010654.6753-1-huangguangbin2@huawei.com>
-To:     Guangbin Huang <huangguangbin2@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, wangjie125@huawei.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lipeng321@huawei.com, chenhao288@hisilicon.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Eiichi Tsukata <eiichi.tsukata@nutanix.com>
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Need to call rxrpc_put_peer() for bundle candidate before kfree() as it
+holds a ref to rxrpc_peer.
 
-On Wed, 24 Nov 2021 09:06:50 +0800 you wrote:
-> This series includes some updates for the HNS3 ethernet driver.
-> 
-> Jie Wang (1):
->   net: hns3: debugfs add drop packet statistics of multicast and
->     broadcast for igu
-> 
-> Yufeng Mo (3):
->   net: hns3: add log for workqueue scheduled late
->   net: hns3: format the output of the MAC address
->   net: hns3: add dql info when tx timeout
-> 
-> [...]
+[DH: v2: Changed to abstract out the bundle freeing code into a function]
 
-Here is the summary with links:
-  - [net-next,1/4] net: hns3: add log for workqueue scheduled late
-    https://git.kernel.org/netdev/net-next/c/d9069dab2075
-  - [net-next,2/4] net: hns3: format the output of the MAC address
-    https://git.kernel.org/netdev/net-next/c/4f331fda35f1
-  - [net-next,3/4] net: hns3: debugfs add drop packet statistics of multicast and broadcast for igu
-    https://git.kernel.org/netdev/net-next/c/8488e3c68214
-  - [net-next,4/4] net: hns3: add dql info when tx timeout
-    https://git.kernel.org/netdev/net-next/c/db596298edbf
+Fixes: 245500d853e9 ("rxrpc: Rewrite the client connection manager")
+Signed-off-by: Eiichi Tsukata <eiichi.tsukata@nutanix.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Link: https://lore.kernel.org/r/20211121041608.133740-1-eiichi.tsukata@nutanix.com/ # v1
+---
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+ net/rxrpc/conn_client.c |   14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/net/rxrpc/conn_client.c b/net/rxrpc/conn_client.c
+index dbea0bfee48e..8120138dac01 100644
+--- a/net/rxrpc/conn_client.c
++++ b/net/rxrpc/conn_client.c
+@@ -135,16 +135,20 @@ struct rxrpc_bundle *rxrpc_get_bundle(struct rxrpc_bundle *bundle)
+ 	return bundle;
+ }
+ 
++static void rxrpc_free_bundle(struct rxrpc_bundle *bundle)
++{
++	rxrpc_put_peer(bundle->params.peer);
++	kfree(bundle);
++}
++
+ void rxrpc_put_bundle(struct rxrpc_bundle *bundle)
+ {
+ 	unsigned int d = bundle->debug_id;
+ 	unsigned int u = atomic_dec_return(&bundle->usage);
+ 
+ 	_debug("PUT B=%x %u", d, u);
+-	if (u == 0) {
+-		rxrpc_put_peer(bundle->params.peer);
+-		kfree(bundle);
+-	}
++	if (u == 0)
++		rxrpc_free_bundle(bundle);
+ }
+ 
+ /*
+@@ -328,7 +332,7 @@ static struct rxrpc_bundle *rxrpc_look_up_bundle(struct rxrpc_conn_parameters *c
+ 	return candidate;
+ 
+ found_bundle_free:
+-	kfree(candidate);
++	rxrpc_free_bundle(candidate);
+ found_bundle:
+ 	rxrpc_get_bundle(bundle);
+ 	spin_unlock(&local->client_bundles_lock);
 
 
