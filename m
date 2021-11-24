@@ -2,82 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B3E145C726
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 15:21:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 744F645C72D
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 15:22:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356402AbhKXOY2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 09:24:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43994 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1356224AbhKXOX7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Nov 2021 09:23:59 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 952E760C4A;
-        Wed, 24 Nov 2021 14:20:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637763649;
-        bh=ZK5hLPbqayxa6gRPA6zcdPGEVURCBGw6eQFZC/zUNpg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Kixh/WXYCD9r1R+/rTLxxZvBEUIF8v6gVCIcPC8no3H/2PX9AsM5DF0HPTuN0iP/2
-         tQ0X7Nr72eQ68JbGH6huojfOLzqIkBTHyzwVbEzw2Dkh8tsyjNBMgVTVF+a4NgeqP+
-         0nJSftz5RGAuLqbe0vUZxADqD0SV+eVkmSpEWJuT1MyUt6J7urcx5xHSFHD1xmAwHo
-         a4ZxbTN3B28LUpGG9aEBE1up60Ihn0VDNcdrE7qbXvZQqMmjIG8L1Int87Vem6Rp7V
-         Ksyuk2rL8+K2CGzCltz4c/KfwFYPgHPcgjZWac1FIXHmY1ZkmOjWqw/9ssHt614M/a
-         Mmx03/AQzWSXQ==
-Date:   Wed, 24 Nov 2021 06:20:48 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Frode Nordahl <frode.nordahl@canonical.com>
-Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@nvidia.com>
-Subject: Re: [PATCH net] netdevsim: Fix physical port index
-Message-ID: <20211124062048.48652ea4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211124081106.1768660-1-frode.nordahl@canonical.com>
-References: <20211124081106.1768660-1-frode.nordahl@canonical.com>
+        id S1351673AbhKXO0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 09:26:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:29257 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1353576AbhKXOZN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 09:25:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1637763723;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TLRi7BlITjjM/i+4EHGp/lwGEMw5CmrBYwLEApBpecM=;
+        b=T+ykU8t46fV+xrf3SMGoh/DAA861ozWF2WywBgWnFKJUMbAXaDVzHWhSnBQxXaYMb2A90W
+        kQk5kjI5fJ/xf0vwnjqOs8T/xUz5s6Ml/vYTQNKmBMpF8ZVeYI55Rk9vL3y+/RW5NTbnQG
+        kqP9+55gqZbsiXFhYfnLEThPyKsZthI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-509-fs400FZ6MvKXrNnBYcUuyw-1; Wed, 24 Nov 2021 09:21:59 -0500
+X-MC-Unique: fs400FZ6MvKXrNnBYcUuyw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 31BB61800D41;
+        Wed, 24 Nov 2021 14:21:58 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.25])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A602119C46;
+        Wed, 24 Nov 2021 14:21:56 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20211121041608.133740-1-eiichi.tsukata@nutanix.com>
+References: <20211121041608.133740-1-eiichi.tsukata@nutanix.com>
+To:     Eiichi Tsukata <eiichi.tsukata@nutanix.com>
+Cc:     dhowells@redhat.com, marc.dionne@auristor.com, davem@davemloft.net,
+        kuba@kernel.org, linux-afs@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 1/2] rxrpc: Fix rxrpc_peer leak in rxrpc_look_up_bundle()
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1819849.1637763715.1@warthog.procyon.org.uk>
+Date:   Wed, 24 Nov 2021 14:21:55 +0000
+Message-ID: <1819850.1637763715@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 24 Nov 2021 09:11:06 +0100 Frode Nordahl wrote:
-> At present when a netdevsim device is added, the first physical
-> port will have an index of 1.  This behavior differ from what any
-> real hardware driver would do, which would start the index at 0.
-> 
-> When using netdevsim to test the devlink-port interface this
-> behavior becomes a problem because the provided data is incorrect.
-> 
-> Example:
-> $ sudo modprobe netdevsim
-> $ sudo sh -c 'echo "10 1" > /sys/bus/netdevsim/new_device'
-> $ sudo sh -c 'echo 4 > /sys/class/net/eni10np1/device/sriov_numvfs'
-> $ sudo devlink dev eswitch set netdevsim/netdevsim10 mode switchdev
-> $ devlink port show
-> netdevsim/netdevsim10/0: type eth netdev eni10np1 flavour physical port 1
-> netdevsim/netdevsim10/128: type eth netdev eni10npf0vf0 flavour pcivf pfnum 0 vfnum 0
-> netdevsim/netdevsim10/129: type eth netdev eni10npf0vf1 flavour pcivf pfnum 0 vfnum 1
-> netdevsim/netdevsim10/130: type eth netdev eni10npf0vf2 flavour pcivf pfnum 0 vfnum 2
-> netdevsim/netdevsim10/131: type eth netdev eni10npf0vf3 flavour pcivf pfnum 0 vfnum 3
-> 
-> With this patch applied you would instead get:
-> $ sudo modprobe netdevsim
-> $ sudo sh -c 'echo "10 1" > /sys/bus/netdevsim/new_device'
-> $ sudo sh -c 'echo 4 > /sys/class/net/eni10np0/device/sriov_numvfs'
-> $ sudo devlink dev eswitch set netdevsim/netdevsim10 mode switchdev
-> $ devlink port show
-> netdevsim/netdevsim10/0: type eth netdev eni10np0 flavour physical port 0
-> netdevsim/netdevsim10/128: type eth netdev eni10npf0vf0 flavour pcivf pfnum 0 vfnum 0
-> netdevsim/netdevsim10/129: type eth netdev eni10npf0vf1 flavour pcivf pfnum 0 vfnum 1
-> netdevsim/netdevsim10/130: type eth netdev eni10npf0vf2 flavour pcivf pfnum 0 vfnum 2
-> netdevsim/netdevsim10/131: type eth netdev eni10npf0vf3 flavour pcivf pfnum 0 vfnum 3
-> 
-> The above more accurately resembles what a real system would look
-> like.
-> 
-> Fixes: 8320d1459127 ("netdevsim: implement dev probe/remove skeleton with port initialization")
-> Signed-off-by: Frode Nordahl <frode.nordahl@canonical.com>
+Looks good, though I think a better way to do both of these cases is to
+abstract out the freeing sequence into its own function.
 
-Why do you care about the port ID starting at 0? It's not guaranteed.
-The device can use any encoding scheme to assign IDs, user space should
-make no assumptions here.
+David
 
-Please use get_maintainers to CC all the relevant people.
