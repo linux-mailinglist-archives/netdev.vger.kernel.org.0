@@ -2,141 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C37145C9AF
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 17:16:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C55E545C9EC
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 17:24:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240276AbhKXQTL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 11:19:11 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:54647 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230368AbhKXQTL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 11:19:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637770560;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=X5ksqien8a7ofPcytuzTiSoKs1Sm22uD5MJeZMVkrko=;
-        b=bELI10HmV8pzJFE89ub0KAU1qWPPDwdV8X5tto3SXjQ8LFwhRONSY2vc8lUlPVIU/UW+QR
-        47xGbaGsuzVc+mTzzKGZZ0X5sDe4/hJdbSw08qZj4+//fUTX/zViyacYem6iX95bxpl5fd
-        KsDWWr6bvK8Z/D5iRVSxYuUFjyARhlE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-86-jAercIbpPlCiT22a4FNv6w-1; Wed, 24 Nov 2021 11:15:55 -0500
-X-MC-Unique: jAercIbpPlCiT22a4FNv6w-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1348622AbhKXQ1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 11:27:40 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:57020
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1348560AbhKXQ1j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 11:27:39 -0500
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 06DE31DDED;
-        Wed, 24 Nov 2021 16:15:54 +0000 (UTC)
-Received: from dcaratti.station (unknown [10.40.194.151])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 46EFE5D9C0;
-        Wed, 24 Nov 2021 16:15:51 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Petr Machata <petrm@mellanox.com>
-Cc:     netdev@vger.kernel.org, Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net v3] net/sched: sch_ets: don't peek at classes beyond 'nbands'
-Date:   Wed, 24 Nov 2021 17:14:40 +0100
-Message-Id: <7a5c496eed2d62241620bdbb83eb03fb9d571c99.1637762721.git.dcaratti@redhat.com>
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id E5BB73F1AC
+        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 16:24:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1637771068;
+        bh=y0GxaekRxlT1GH7W0x5dhv1FzocYU7kMd3WVl7XoIT0=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=cmemvAWudQ8FX1gWWL7HLlr00K56TFsx2Wm6x5J/OSph4LmmL4W1U1t3h4ULyvriG
+         amO38ojcidDSxNjqS7JK97nnw3/ZxeLr89kme3DVug6Yg/DpV6/wKM1iCa1OzIu7Wj
+         4m6i+hu2ZcHR8uB2S0yvrbJESj7hNkFCo2LTunyCrDwyC6oP2eWmyowC5tOoYObWA/
+         LCxquN4Bg9l6I/y418gKqx9fYGWuRW/sYhmWU9gcwRr11rDpz282DbpBXcmS8iH3NP
+         yY7ClaDLdVFhuzwaRvV1Pck0Ad41YzCl7ypV1PuDFoqPJVTP6V4glnbi2iU5bTksfx
+         bv6zGUL+777Xw==
+Received: by mail-io1-f70.google.com with SMTP id x11-20020a0566022c4b00b005e702603028so2286269iov.2
+        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 08:24:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=y0GxaekRxlT1GH7W0x5dhv1FzocYU7kMd3WVl7XoIT0=;
+        b=wCmOv1NzsQeRRhUK98EsW7W0Uym4yFGQ+ynz9HT26vtp8Ea4FwUCl/6Lrdi1XKMEPj
+         lgn01kC/UFiRslWUNL3jHYhHC30wNiB0M2r8c7WlNToWefdFo59a952gP/rEZI51FBiV
+         tM+R7yoppNzGK8s/RPoLSR0iJ6cLa3tUJy4DQSZUzOEMcT9IXIje8DT6aaeETzZc/9BB
+         CaOQlIZu0CAKeS7HHU42WYBNXKJcPCcUjCWtWj0XW2N47EzodSFi5U3DAHQcU+JbW6Qv
+         MZdOhXaD7P+9UY71/nOGJyBb6OYX9TloRkajck6k1I5m1TZo+1xJKspXMqcxR7Alm11W
+         YjBA==
+X-Gm-Message-State: AOAM531ePfREdV5BlD74Wd2UxgasUPVdLh+93fAQAF7uN4sFLu+vWqLG
+        MoIjO5s3Nkv9CxwP+jMVXMLYaR9qO4dxL5cQ5KVzvYff2xKCbZDZeg/THFJwaF0yced57rhtl8O
+        rxU40fQjJkTgRht6eM8YQZs2OARaeh3gYVGTbKr5jo8MZ0Hjb5w==
+X-Received: by 2002:a92:c268:: with SMTP id h8mr6279682ild.298.1637771067743;
+        Wed, 24 Nov 2021 08:24:27 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJycYT2GK6632IDlDgkcfV5KjIXe528Ko8euO6xeqOq0rBRJ9RH5L1fbgSwLdQ5ggJfkv3ribt3HgBOj1bJ3mwQ=
+X-Received: by 2002:a92:c268:: with SMTP id h8mr6279657ild.298.1637771067521;
+ Wed, 24 Nov 2021 08:24:27 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+References: <20211124081106.1768660-1-frode.nordahl@canonical.com> <20211124062048.48652ea4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211124062048.48652ea4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Frode Nordahl <frode.nordahl@canonical.com>
+Date:   Wed, 24 Nov 2021 17:24:16 +0100
+Message-ID: <CAKpbOATgFseXtkWoTcs6bNsvP_4WXChv5ffvtd2+8uqTHmr26w@mail.gmail.com>
+Subject: Re: [PATCH net] netdevsim: Fix physical port index
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-when the number of DRR classes decreases, the round-robin active list can
-contain elements that have already been freed in ets_qdisc_change(). As a
-consequence, it's possible to see a NULL dereference crash, caused by the
-attempt to call cl->qdisc->ops->peek(cl->qdisc) when cl->qdisc is NULL:
+On Wed, Nov 24, 2021 at 3:20 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Wed, 24 Nov 2021 09:11:06 +0100 Frode Nordahl wrote:
+> > At present when a netdevsim device is added, the first physical
+> > port will have an index of 1.  This behavior differ from what any
+> > real hardware driver would do, which would start the index at 0.
+> >
+> > When using netdevsim to test the devlink-port interface this
+> > behavior becomes a problem because the provided data is incorrect.
+> >
+> > Example:
+> > $ sudo modprobe netdevsim
+> > $ sudo sh -c 'echo "10 1" > /sys/bus/netdevsim/new_device'
+> > $ sudo sh -c 'echo 4 > /sys/class/net/eni10np1/device/sriov_numvfs'
+> > $ sudo devlink dev eswitch set netdevsim/netdevsim10 mode switchdev
+> > $ devlink port show
+> > netdevsim/netdevsim10/0: type eth netdev eni10np1 flavour physical port 1
+> > netdevsim/netdevsim10/128: type eth netdev eni10npf0vf0 flavour pcivf pfnum 0 vfnum 0
+> > netdevsim/netdevsim10/129: type eth netdev eni10npf0vf1 flavour pcivf pfnum 0 vfnum 1
+> > netdevsim/netdevsim10/130: type eth netdev eni10npf0vf2 flavour pcivf pfnum 0 vfnum 2
+> > netdevsim/netdevsim10/131: type eth netdev eni10npf0vf3 flavour pcivf pfnum 0 vfnum 3
+> >
+> > With this patch applied you would instead get:
+> > $ sudo modprobe netdevsim
+> > $ sudo sh -c 'echo "10 1" > /sys/bus/netdevsim/new_device'
+> > $ sudo sh -c 'echo 4 > /sys/class/net/eni10np0/device/sriov_numvfs'
+> > $ sudo devlink dev eswitch set netdevsim/netdevsim10 mode switchdev
+> > $ devlink port show
+> > netdevsim/netdevsim10/0: type eth netdev eni10np0 flavour physical port 0
+> > netdevsim/netdevsim10/128: type eth netdev eni10npf0vf0 flavour pcivf pfnum 0 vfnum 0
+> > netdevsim/netdevsim10/129: type eth netdev eni10npf0vf1 flavour pcivf pfnum 0 vfnum 1
+> > netdevsim/netdevsim10/130: type eth netdev eni10npf0vf2 flavour pcivf pfnum 0 vfnum 2
+> > netdevsim/netdevsim10/131: type eth netdev eni10npf0vf3 flavour pcivf pfnum 0 vfnum 3
+> >
+> > The above more accurately resembles what a real system would look
+> > like.
+> >
+> > Fixes: 8320d1459127 ("netdevsim: implement dev probe/remove skeleton with port initialization")
+> > Signed-off-by: Frode Nordahl <frode.nordahl@canonical.com>
+>
+> Why do you care about the port ID starting at 0? It's not guaranteed.
+> The device can use any encoding scheme to assign IDs, user space should
+> make no assumptions here.
 
- BUG: kernel NULL pointer dereference, address: 0000000000000018
- #PF: supervisor read access in kernel mode
- #PF: error_code(0x0000) - not-present page
- PGD 0 P4D 0
- Oops: 0000 [#1] PREEMPT SMP NOPTI
- CPU: 1 PID: 910 Comm: mausezahn Not tainted 5.16.0-rc1+ #475
- Hardware name: Red Hat KVM, BIOS 1.11.1-4.module+el8.1.0+4066+0f1aadab 04/01/2014
- RIP: 0010:ets_qdisc_dequeue+0x129/0x2c0 [sch_ets]
- Code: c5 01 41 39 ad e4 02 00 00 0f 87 18 ff ff ff 49 8b 85 c0 02 00 00 49 39 c4 0f 84 ba 00 00 00 49 8b ad c0 02 00 00 48 8b 7d 10 <48> 8b 47 18 48 8b 40 38 0f ae e8 ff d0 48 89 c3 48 85 c0 0f 84 9d
- RSP: 0000:ffffbb36c0b5fdd8 EFLAGS: 00010287
- RAX: ffff956678efed30 RBX: 0000000000000000 RCX: 0000000000000000
- RDX: 0000000000000002 RSI: ffffffff9b938dc9 RDI: 0000000000000000
- RBP: ffff956678efed30 R08: e2f3207fe360129c R09: 0000000000000000
- R10: 0000000000000001 R11: 0000000000000001 R12: ffff956678efeac0
- R13: ffff956678efe800 R14: ffff956611545000 R15: ffff95667ac8f100
- FS:  00007f2aa9120740(0000) GS:ffff95667b800000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: 0000000000000018 CR3: 000000011070c000 CR4: 0000000000350ee0
- Call Trace:
-  <TASK>
-  qdisc_peek_dequeued+0x29/0x70 [sch_ets]
-  tbf_dequeue+0x22/0x260 [sch_tbf]
-  __qdisc_run+0x7f/0x630
-  net_tx_action+0x290/0x4c0
-  __do_softirq+0xee/0x4f8
-  irq_exit_rcu+0xf4/0x130
-  sysvec_apic_timer_interrupt+0x52/0xc0
-  asm_sysvec_apic_timer_interrupt+0x12/0x20
- RIP: 0033:0x7f2aa7fc9ad4
- Code: b9 ff ff 48 8b 54 24 18 48 83 c4 08 48 89 ee 48 89 df 5b 5d e9 ed fc ff ff 0f 1f 00 66 2e 0f 1f 84 00 00 00 00 00 f3 0f 1e fa <53> 48 83 ec 10 48 8b 05 10 64 33 00 48 8b 00 48 85 c0 0f 85 84 00
- RSP: 002b:00007ffe5d33fab8 EFLAGS: 00000202
- RAX: 0000000000000002 RBX: 0000561f72c31460 RCX: 0000561f72c31720
- RDX: 0000000000000002 RSI: 0000561f72c31722 RDI: 0000561f72c31720
- RBP: 000000000000002a R08: 00007ffe5d33fa40 R09: 0000000000000014
- R10: 0000000000000000 R11: 0000000000000246 R12: 0000561f7187e380
- R13: 0000000000000000 R14: 0000000000000000 R15: 0000561f72c31460
-  </TASK>
- Modules linked in: sch_ets sch_tbf dummy rfkill iTCO_wdt intel_rapl_msr iTCO_vendor_support intel_rapl_common joydev virtio_balloon lpc_ich i2c_i801 i2c_smbus pcspkr ip_tables xfs libcrc32c crct10dif_pclmul crc32_pclmul crc32c_intel ahci libahci ghash_clmulni_intel serio_raw libata virtio_blk virtio_console virtio_net net_failover failover sunrpc dm_mirror dm_region_hash dm_log dm_mod
- CR2: 0000000000000018
+I don't care too much about the ID itself starting at 0 per se, but I
+would expect the ID's provided through devlink-port to match between
+the value specified for DEVLINK_ATTR_PORT_PCI_PF_NUMBER on the
+simulated PCI_VF flavoured ports, the value specified for
+DEVLINK_ATTR_PORT_NUMBER on the simulated physical ports and the value
+specified for DEVLINK_ATTR_PORT_PCI_PF_NUMBER  on the simulated PCI_PF
+flavoured ports.
 
-Ensuring that 'alist' was never zeroed [1] was not sufficient, we need to
-remove from the active list those elements that are no more SP nor DRR.
+For a user space application running on a host with a regular
+devlink-enabled NIC (let's say a ConnectX-5), it can figure out the
+relationship between the ports with the regular sysfs API.
 
-[1] https://lore.kernel.org/netdev/60d274838bf09777f0371253416e8af71360bc08.1633609148.git.dcaratti@redhat.com/
+However, for a user space application running on the Arm cores of a
+devlink-enabled SmartNIC with control plane CPUs (let's say a
+BlueField2), the relationship between the representor ports is not
+exposed in the regular sysfs API. So this is where the devlink-port
+interface becomes important. From a PHYSICAL representor I need to
+find which PF representors are associated, from there I need to find
+VF representors associated, and the other way round.
 
-v3: fix race between ets_qdisc_change() and ets_qdisc_dequeue() delisting
-    DRR classes beyond 'nbands' in ets_qdisc_change() with the qdisc lock
-    acquired, thanks to Cong Wang.
+> Please use get_maintainers to CC all the relevant people.
 
-v2: when a NULL qdisc is found in the DRR active list, try to dequeue skb
-    from the next list item.
+Thank you for pointing that out. Apologies for skipping that step,
+added the missing ones now.
 
-Reported-by: Hangbin Liu <liuhangbin@gmail.com>
-Fixes: dcc68b4d8084 ("net: sch_ets: Add a new Qdisc")
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
----
- net/sched/sch_ets.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
-
-diff --git a/net/sched/sch_ets.c b/net/sched/sch_ets.c
-index 0eae9ff5edf6..e007fc75ef2f 100644
---- a/net/sched/sch_ets.c
-+++ b/net/sched/sch_ets.c
-@@ -665,12 +665,14 @@ static int ets_qdisc_change(struct Qdisc *sch, struct nlattr *opt,
- 			q->classes[i].deficit = quanta[i];
- 		}
- 	}
-+	for (i = q->nbands; i < oldbands; i++) {
-+		qdisc_tree_flush_backlog(q->classes[i].qdisc);
-+		if (i >= q->nstrict)
-+			list_del(&q->classes[i].alist);
-+	}
- 	q->nstrict = nstrict;
- 	memcpy(q->prio2band, priomap, sizeof(priomap));
- 
--	for (i = q->nbands; i < oldbands; i++)
--		qdisc_tree_flush_backlog(q->classes[i].qdisc);
--
- 	for (i = 0; i < q->nbands; i++)
- 		q->classes[i].quantum = quanta[i];
- 
 -- 
-2.31.1
-
+Frode Nordahl
