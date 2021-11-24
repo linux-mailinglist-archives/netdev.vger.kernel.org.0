@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EF5D45B6C9
+	by mail.lfdr.de (Postfix) with ESMTP id F109145B6CB
 	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 09:43:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241595AbhKXIqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 03:46:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44948 "EHLO
+        id S231881AbhKXIq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 03:46:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:42687 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241435AbhKXIpH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 03:45:07 -0500
+        by vger.kernel.org with ESMTP id S241546AbhKXIpK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 03:45:10 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637743317;
+        s=mimecast20190719; t=1637743320;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=miD27XMNAQX20tQlwxUdiFwuYzd6DEbiAXCQZyLHmF0=;
-        b=YNU0bO0eo8wLFvUiHuoA902StIYQe72UGaI39BIOLiwpYmEZss3b81ElrcnAl5x2y4CkD9
-        52rhn1VGWj9FYs2UfbXq6knpNXQi0kOCasebmlzyRjSij1OtCcnhGmVYLGntrZKNeQRozv
-        0JW/+CybzwsH3XiKf10+D0HvKKYVfmY=
+        bh=shseh34EZ8lSWaWuyg5bZ/fi6QGZqSZDZrwtCV/PRmY=;
+        b=Qrb4A4AJaE1RX60AeKZfSbcqmatHDgYE9smOrw0aQtASSAt/SmymQxQ6tj3+lT8cYmyzW4
+        H+e+LEGXU6jk4mHX2zJsly0TXgDwabvE5hRCYNMIkijyTfqByocPUcLjoLLEzxqrvBmT19
+        ZaujiDnsplZlk5d9nzthyQITdVMAMMI=
 Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
  [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-286-B21hozlANPORcVfzQAkenA-1; Wed, 24 Nov 2021 03:41:53 -0500
-X-MC-Unique: B21hozlANPORcVfzQAkenA-1
-Received: by mail-wr1-f70.google.com with SMTP id h7-20020adfaa87000000b001885269a937so290002wrc.17
-        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 00:41:53 -0800 (PST)
+ us-mta-241-jaNwOYi7N2ulyJMDEHcE2g-1; Wed, 24 Nov 2021 03:41:59 -0500
+X-MC-Unique: jaNwOYi7N2ulyJMDEHcE2g-1
+Received: by mail-wr1-f70.google.com with SMTP id q17-20020adff791000000b00183e734ba48so290957wrp.8
+        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 00:41:59 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=miD27XMNAQX20tQlwxUdiFwuYzd6DEbiAXCQZyLHmF0=;
-        b=jCn9gws2czm/zFWoiL/TihedmY1v2bQN4qbMh1VZzEcN7DVeNQcFAtzXbTd/Eysthn
-         ufIylTZU+LpimIVdFoN64CAU4TR1sKk4+VN4SuXNeVnSk+qjBIlMXvCxHsueqMhDYAa2
-         SnbeTxSt9IJWSvua+QvikTWJr0SwXH4Vuls9loIV+CCcRaGcwCu9xO0eAp72qF/W/oxJ
-         231/9s40FHQl8q7K9LA7ErAKWPyx9rUBgzPH6nP3DEItpVAkppIyLS53BZOc5B7ZwYsB
-         pbqKpDkZfcfaFptWSfLUcuMPPG9FXZ755V70H2dFpnCYm0pBwYserj80xExRcAc51dNm
-         tHHQ==
-X-Gm-Message-State: AOAM533VHodFy+HEx7f9nRsUIq1pcRy6CcsNv4gfAEfFLXekoQ2xujQC
-        J1bXTNANKRzsxErmBsKDpYMotJYWMmwUqLo3V+GOokBH+RjO8+FvgPCn4q6eNazFvOvgcvrM30l
-        vuyQ0jPpEcLWXlBHt
-X-Received: by 2002:a7b:c119:: with SMTP id w25mr12662426wmi.70.1637743311870;
-        Wed, 24 Nov 2021 00:41:51 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJys9b9shmlC+yWyQlkAXSnONwW8ns8tn4LbW4PScL3CEQ4SJ7TleKl0TMJaBFZl8dBf5EvPjA==
-X-Received: by 2002:a7b:c119:: with SMTP id w25mr12662393wmi.70.1637743311648;
-        Wed, 24 Nov 2021 00:41:51 -0800 (PST)
+        bh=shseh34EZ8lSWaWuyg5bZ/fi6QGZqSZDZrwtCV/PRmY=;
+        b=Q0EofmJNxkJ9sLs5RqVCplVY0VpFtHW9pR5E5IMzl2FCwC8WQUgCNmfvu3FZA2HEj9
+         w4h2lLUAdwfCgRUwrTHPjNgAgaHOZIMNEVfcI8V3eOskafRsL41b4gcK+8FNc3+KHNez
+         DWTOeGb3G9u4H1ov1LpBbPcJL8SG5K1iIxNYqWWEss29ghILvNC52SV9NgC04NgOV8t7
+         BqTZgHY2CKX9WBjrwkOVI0limN6BXofE9DR+NdVfjZXvi+fOrJPCqLPNS8xplrMStMzE
+         DQvdXQrlCJYYr77Cfc0tg9EM/uagy7zrvvTMXt/HjNngBwU1zGaYxmkDdBHBA9eBMxOQ
+         fhNQ==
+X-Gm-Message-State: AOAM530nCrV6btSo6mk3R/JCjE4Hu1Me5H3RxqCOXcA70BZCEa6L2nwJ
+        KG6xxp/5vOGCrcrPDBmROitbPjkgZR3BOzSya3F3RjUfOt1ILFy+t0MrxIHkWJHgWLRW1/tkdQF
+        kR0+V4P49mt+jIama
+X-Received: by 2002:a5d:6691:: with SMTP id l17mr16604539wru.227.1637743318107;
+        Wed, 24 Nov 2021 00:41:58 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwOpcUZpBeEIVgbyAADajoY2+vGJmyxlVWkqXGkoDZ+BH/JclGr6tlUHTrebAx650ScyDsOnQ==
+X-Received: by 2002:a5d:6691:: with SMTP id l17mr16604499wru.227.1637743317902;
+        Wed, 24 Nov 2021 00:41:57 -0800 (PST)
 Received: from krava.redhat.com (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id b6sm3955860wmq.45.2021.11.24.00.41.50
+        by smtp.gmail.com with ESMTPSA id f7sm4771235wmg.6.2021.11.24.00.41.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Nov 2021 00:41:51 -0800 (PST)
+        Wed, 24 Nov 2021 00:41:57 -0800 (PST)
 From:   Jiri Olsa <jolsa@redhat.com>
 X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
@@ -70,9 +70,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
         Ravi Bangoria <ravi.bangoria@amd.com>
-Subject: [PATCH 5/8] libbpf: Add support to attach multiple [ku]probes
-Date:   Wed, 24 Nov 2021 09:41:16 +0100
-Message-Id: <20211124084119.260239-6-jolsa@kernel.org>
+Subject: [PATCH 6/8] libbpf: Add support for k[ret]probe.multi program section
+Date:   Wed, 24 Nov 2021 09:41:17 +0100
+Message-Id: <20211124084119.260239-7-jolsa@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211124084119.260239-1-jolsa@kernel.org>
 References: <20211124084119.260239-1-jolsa@kernel.org>
@@ -82,173 +82,151 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding support to attach multiple [ku]probes.
+Adding new sections kprobe.multi/kretprobe.multi for multi
+kprobe programs.
 
-Extending both bpf_kprobe_opts and bpf_uprobe_opts structs
-with config values to define multiple probes within single
-bpf_program__attach_[ku]probe_opts call.
+It's now possible to define kprobe/kretprobe program like:
 
-For mutiple probes in bpf_program__attach_kprobe_opts function
-the 'func_name' argument is ignored and probes are defined in
-bpf_kprobe_opts struct with:
+  SEC("kprobe.multi/bpf_fentry_test*")
 
-  struct {
-          /* probes count */
-          __u32 cnt;
-          /* function names array */
-          char **funcs;
-          /* address/offset values array */
-          union {
-                  __u64 *addrs;
-                  __u64 *offs;
-          };
-  } multi;
-
-For mutiple probes in bpf_program__attach_uprobe_opts function
-both 'binary_path' and 'func_offset' arguments are ignored and
-probes are defined in bpf_kprobe_opts struct with:
-
-  /* multi uprobe values */
-  struct {
-          /* probes count */
-          __u32 cnt;
-          /* paths names array */
-          const char **paths;
-          /* offsets values array */
-          __u64 *offs;
-  } multi;
-
-The multiple probes attachment is enabled when multi.cnt != 0.
+and it will be automatically attached to bpf_fentry_test*
+functions.
 
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- tools/include/uapi/linux/perf_event.h |  1 +
- tools/lib/bpf/libbpf.c                | 30 +++++++++++++++++++++++++--
- tools/lib/bpf/libbpf.h                | 25 ++++++++++++++++++++--
- 3 files changed, 52 insertions(+), 4 deletions(-)
+ tools/lib/bpf/libbpf.c | 105 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 105 insertions(+)
 
-diff --git a/tools/include/uapi/linux/perf_event.h b/tools/include/uapi/linux/perf_event.h
-index bd8860eeb291..eea80709d1ed 100644
---- a/tools/include/uapi/linux/perf_event.h
-+++ b/tools/include/uapi/linux/perf_event.h
-@@ -414,6 +414,7 @@ struct perf_event_attr {
- 	union {
- 		__u32		wakeup_events;	  /* wakeup every n events */
- 		__u32		wakeup_watermark; /* bytes before wakeup   */
-+		__u32		probe_cnt;	  /* number of [k,u] probes */
- 	};
- 
- 	__u32			bp_type;
 diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 34219a0c39a7..b570e93de735 100644
+index b570e93de735..c1feb5f389a0 100644
 --- a/tools/lib/bpf/libbpf.c
 +++ b/tools/lib/bpf/libbpf.c
-@@ -9631,6 +9631,11 @@ struct perf_event_open_args {
- 	uint64_t offset;
- 	int pid;
- 	size_t ref_ctr_off;
-+	struct {
-+		__u32 probe_cnt;
-+		__u64 config1;
-+		__u64 config2;
-+	} multi;
- };
+@@ -8348,6 +8348,7 @@ int bpf_program__set_flags(struct bpf_program *prog, __u32 flags)
+ }
  
- static int perf_event_open_probe(bool uprobe, struct perf_event_open_args *args)
-@@ -9667,8 +9672,15 @@ static int perf_event_open_probe(bool uprobe, struct perf_event_open_args *args)
- 	attr.size = sizeof(attr);
- 	attr.type = type;
- 	attr.config |= (__u64)ref_ctr_off << PERF_UPROBE_REF_CTR_OFFSET_SHIFT;
--	attr.config1 = ptr_to_u64(args->name); /* kprobe_func or uprobe_path */
--	attr.config2 = args->offset;		 /* kprobe_addr or probe_offset */
+ static struct bpf_link *attach_kprobe(const struct bpf_program *prog, long cookie);
++static struct bpf_link *attach_kprobe_multi(const struct bpf_program *prog, long cookie);
+ static struct bpf_link *attach_tp(const struct bpf_program *prog, long cookie);
+ static struct bpf_link *attach_raw_tp(const struct bpf_program *prog, long cookie);
+ static struct bpf_link *attach_trace(const struct bpf_program *prog, long cookie);
+@@ -8362,6 +8363,8 @@ static const struct bpf_sec_def section_defs[] = {
+ 	SEC_DEF("uprobe/",		KPROBE,	0, SEC_NONE),
+ 	SEC_DEF("kretprobe/",		KPROBE, 0, SEC_NONE, attach_kprobe),
+ 	SEC_DEF("uretprobe/",		KPROBE, 0, SEC_NONE),
++	SEC_DEF("kprobe.multi/",	KPROBE,	0, SEC_NONE, attach_kprobe_multi),
++	SEC_DEF("kretprobe.multi/",	KPROBE, 0, SEC_NONE, attach_kprobe_multi),
+ 	SEC_DEF("tc",			SCHED_CLS, 0, SEC_NONE),
+ 	SEC_DEF("classifier",		SCHED_CLS, 0, SEC_NONE | SEC_SLOPPY_PFX),
+ 	SEC_DEF("action",		SCHED_ACT, 0, SEC_NONE | SEC_SLOPPY_PFX),
+@@ -9918,6 +9921,108 @@ static struct bpf_link *attach_kprobe(const struct bpf_program *prog, long cooki
+ 	return link;
+ }
+ 
++struct kprobe_resolve_multi {
++	const char *name;
++	char **funcs;
++	__u32 alloc;
++	__u32 cnt;
++};
 +
-+	if (args->multi.probe_cnt) {
-+		attr.probe_cnt = args->multi.probe_cnt;
-+		attr.config1 = args->multi.config1;
-+		attr.config2 = args->multi.config2;
++static bool glob_matches(const char *glob, const char *s)
++{
++	int n = strlen(glob);
++
++	if (n == 1 && glob[0] == '*')
++		return true;
++
++	if (glob[0] == '*' && glob[n - 1] == '*') {
++		const char *subs;
++		/* substring match */
++
++		/* this is hacky, but we don't want to allocate
++		 * for no good reason
++		 */
++		((char *)glob)[n - 1] = '\0';
++		subs = strstr(s, glob + 1);
++		((char *)glob)[n - 1] = '*';
++
++		return subs != NULL;
++	} else if (glob[0] == '*') {
++		size_t nn = strlen(s);
++		/* suffix match */
++
++		/* too short for a given suffix */
++		if (nn < n - 1)
++			return false;
++		return strcmp(s + nn - (n - 1), glob + 1) == 0;
++	} else if (glob[n - 1] == '*') {
++		/* prefix match */
++		return strncmp(s, glob, n - 1) == 0;
 +	} else {
-+		attr.config1 = ptr_to_u64(args->name); /* kprobe_func or uprobe_path */
-+		attr.config2 = args->offset;	       /* kprobe_addr or probe_offset */
++		/* exact match */
++		return strcmp(glob, s) == 0;
 +	}
- 
- 	/* pid filter is meaningful only for uprobes */
- 	pfd = syscall(__NR_perf_event_open, &attr,
-@@ -9807,7 +9819,14 @@ bpf_program__attach_kprobe_opts(const struct bpf_program *prog,
- 			.pid = -1,
- 			.ref_ctr_off = 0,
- 		};
-+		__u32 probe_cnt = OPTS_GET(opts, multi.cnt, false);
- 
-+		if (probe_cnt) {
-+			args.multi.probe_cnt = probe_cnt;
-+			args.multi.config1 = ptr_to_u64(OPTS_GET(opts, multi.funcs, false));
-+			/* multi.addrs and multi.offs share the same array */
-+			args.multi.config2 = ptr_to_u64(OPTS_GET(opts, multi.addrs, false));
-+		}
- 		pfd = perf_event_open_probe(false /* uprobe */, &args);
- 	} else {
- 		char probe_name[256];
-@@ -10006,6 +10025,13 @@ bpf_program__attach_uprobe_opts(const struct bpf_program *prog, pid_t pid,
- 			.pid = pid,
- 			.ref_ctr_off = ref_ctr_off,
- 		};
-+		__u32 probe_cnt = OPTS_GET(opts, multi.cnt, false);
++}
 +
-+		if (probe_cnt) {
-+			args.multi.probe_cnt = probe_cnt;
-+			args.multi.config1 = ptr_to_u64(OPTS_GET(opts, multi.paths, false));
-+			args.multi.config2 = ptr_to_u64(OPTS_GET(opts, multi.offs, false));
-+		}
- 
- 		pfd = perf_event_open_probe(true /* uprobe */, &args);
- 	} else {
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index d02139fec4ac..ae072882b5dd 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -321,9 +321,21 @@ struct bpf_kprobe_opts {
- 	size_t offset;
- 	/* kprobe is return probe */
- 	bool retprobe;
-+	/* multi kprobe values */
-+	struct {
-+		/* probes count */
-+		__u32 cnt;
-+		/* function names array */
-+		char **funcs;
-+		/* address/offset values array */
-+		union {
-+			__u64 *addrs;
-+			__u64 *offs;
-+		};
-+	} multi;
- 	size_t :0;
- };
--#define bpf_kprobe_opts__last_field retprobe
-+#define bpf_kprobe_opts__last_field multi.addrs
- 
- LIBBPF_API struct bpf_link *
- bpf_program__attach_kprobe(const struct bpf_program *prog, bool retprobe,
-@@ -344,9 +356,18 @@ struct bpf_uprobe_opts {
- 	__u64 bpf_cookie;
- 	/* uprobe is return probe, invoked at function return time */
- 	bool retprobe;
-+	/* multi uprobe values */
-+	struct {
-+		/* probes count */
-+		__u32 cnt;
-+		/* paths names array */
-+		const char **paths;
-+		/* offsets values array */
-+		__u64 *offs;
-+	} multi;
- 	size_t :0;
- };
--#define bpf_uprobe_opts__last_field retprobe
-+#define bpf_uprobe_opts__last_field multi.offs
- 
- LIBBPF_API struct bpf_link *
- bpf_program__attach_uprobe(const struct bpf_program *prog, bool retprobe,
++static int kprobe_resolve_multi_cb(void *arg, unsigned long long sym_addr,
++				   char sym_type, const char *sym_name)
++{
++	struct kprobe_resolve_multi *res = arg;
++	char **p, *sym;
++
++	if (!glob_matches(res->name, sym_name))
++		return 0;
++
++	if (res->cnt == res->alloc) {
++		res->alloc = max((__u32) 16, res->alloc * 3 / 2);
++		p = libbpf_reallocarray(res->funcs, res->alloc, sizeof(__u32));
++		if (!p)
++			return -ENOMEM;
++		res->funcs = p;
++	}
++	sym = strdup(sym_name);
++	if (!sym)
++		return -ENOMEM;
++	res->funcs[res->cnt++] = sym;
++	return 0;
++}
++
++static void free_str_array(char **func, __u32 cnt)
++{
++	__u32 i;
++
++	for (i = 0; i < cnt; i++)
++		free(func[i]);
++	free(func);
++}
++
++static struct bpf_link *attach_kprobe_multi(const struct bpf_program *prog, long cookie)
++{
++	DECLARE_LIBBPF_OPTS(bpf_kprobe_opts, opts);
++	struct kprobe_resolve_multi res = { };
++	struct bpf_link *link;
++	int err;
++
++	opts.retprobe = str_has_pfx(prog->sec_name, "kretprobe.multi/");
++	if (opts.retprobe)
++		res.name = prog->sec_name + sizeof("kretprobe.multi/") - 1;
++	else
++		res.name = prog->sec_name + sizeof("kprobe.multi/") - 1;
++
++	err = libbpf__kallsyms_parse(&res, kprobe_resolve_multi_cb);
++	if (err) {
++		free_str_array(res.funcs, res.cnt);
++		return libbpf_err_ptr(err);
++	}
++	if (!res.cnt)
++		return libbpf_err_ptr(-ENOENT);
++	opts.multi.cnt = res.cnt;
++	opts.multi.funcs = res.funcs;
++	link = bpf_program__attach_kprobe_opts(prog, NULL, &opts);
++	free_str_array(res.funcs, res.cnt);
++	return link;
++}
++
+ static void gen_uprobe_legacy_event_name(char *buf, size_t buf_sz,
+ 					 const char *binary_path, uint64_t offset)
+ {
 -- 
 2.33.1
 
