@@ -2,84 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 699BE45B2F8
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 05:07:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC56445B2F9
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 05:10:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232891AbhKXELC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 23:11:02 -0500
-Received: from mail.kernel.org ([198.145.29.99]:32784 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232238AbhKXELB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 23:11:01 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ECCB6604DC;
-        Wed, 24 Nov 2021 04:07:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637726872;
-        bh=gimb9YELOGsigTc06I0EWXYMHyUnxqGxrQ5Y/uQLVjM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FZe8lz5M2O+cbKKUUM4VZh3vcZB37wQjkmGcfOpd/Xq0LjAf+zjh9+ljWfEC92E9a
-         Li0aNNXzHTS0WGZc3brzgCVrP0TT62MADR0NH4Ii4H81AUM73zP8ufvNLS44oWNT7l
-         YdQ1rhDTbLYmhHdbr+HVtMV+nZwN2plzepckJ3WGmjZ1A0NWttDypYYiwDfSTgqS8v
-         pPFHVcbFsigS69CjFif0gvA+pUkS28F0LiWLxoVmIb4fL1cZrJNW3HNuog1+3ZFblM
-         SV8r5GB6GZLdI7rDEGqxYnIl9+svotOr5qpe7cr/YJgHhqv4gtYJKUXL6j9jAAPxd8
-         yQXbN2lc7Kx6g==
-Date:   Tue, 23 Nov 2021 20:07:51 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yannick Vignon <yannick.vignon@oss.nxp.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        sebastien.laveze@oss.nxp.com,
-        Yannick Vignon <yannick.vignon@nxp.com>
-Subject: Re: [PATCH net] net: stmmac: Disable Tx queues when reconfiguring
- the interface
-Message-ID: <20211123200751.3de326e6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211123185448.335924-1-yannick.vignon@oss.nxp.com>
-References: <20211123185448.335924-1-yannick.vignon@oss.nxp.com>
+        id S240896AbhKXENQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 23:13:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52574 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232891AbhKXENP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 23:13:15 -0500
+Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F55C061574
+        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 20:10:06 -0800 (PST)
+Received: by mail-ua1-x933.google.com with SMTP id r15so2367145uao.3
+        for <netdev@vger.kernel.org>; Tue, 23 Nov 2021 20:10:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=/59Exr5rNQe9F3ElQ4md+8pgsSoJFlElV+FNfnnUduA=;
+        b=B7IHW/T2hu3CrZ1lEoUtik9qjUywlkr0deuk0Lpp2mL4AF6/rXu0OGDaW8Tq2/ruZ1
+         OP+x8esqYr/vib0iJ0yqjIsAbUXjz7h17TFQ5QyRc5U6vt7RRpXonQOZhaSiEXdVFeuZ
+         cFAEqMzyA+wUiP+C30Cba5I3UmqCk021GMecar2e2AK+8Lx1ZBi4DiCQZtxrCotmadYk
+         68xee4zIGfBVSYH+zKZIrRGlxGl5cAB0cj9CuDAcwYUVHchsZ/vI4zHpbXzD4WuRg+AF
+         6gCZLUc3P0PgkFkxIjK55zZV+kQrV/Mv4oOw6Zq8GVUbIdULLwMOBKx+N8xR59O90y5m
+         Tk5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=/59Exr5rNQe9F3ElQ4md+8pgsSoJFlElV+FNfnnUduA=;
+        b=ojMa+eB1C4BEs1MtqUBd7kmIEP7bBymIKEXt92MrNAzxbr2PqqhEjrZ1GeeynYN1Db
+         hBVq8G9KfGxyNjKCQKX84PQdEY0Da51piudGw4XLOZQzoey4foUYPoiulms63lHvbQf9
+         kE7q51/1TeMru1smgWvvyBcPyC5xLCRNDVO4c5Uy0HqJ01rkZBwBjE2nqpm3gT0CsD6K
+         3A9T6s4baVTL2+3Zt352V15KpEM8GtUPlDQEssBVEy7yLGm5ULcBdppjfZO6S8oJG+5L
+         hNgtPXBO9IdFA4cE1ktGyHbDlNZ4MMBttkwEkQD3cZVXQheiYXjQNU/Y3aJneJC/QOK1
+         aoaQ==
+X-Gm-Message-State: AOAM531vjpzMXHdy0Pz2OBSUW3utfwEw4yEpqZkFTCEF2rqn04a2icGT
+        fFjwl2A+NqK/vDHGT/McDEyXJm6iWRqcfQyXDeH3v3ZaYxSuZQ==
+X-Google-Smtp-Source: ABdhPJy8BZVvD3KW+MhQ7twN1K9UmqeLGeSI3U8c4ONzXYxqT7sm6ncrOBfwEmrTnEONBVcmIkV6I8Ih1iEb+9hHMg8=
+X-Received: by 2002:a05:6902:120a:: with SMTP id s10mr12938416ybu.265.1637726994950;
+ Tue, 23 Nov 2021 20:09:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Sender: gtfyfuf6@gmail.com
+Received: by 2002:a05:7010:9798:b0:1e1:7513:f0ab with HTTP; Tue, 23 Nov 2021
+ 20:09:54 -0800 (PST)
+From:   Abbas Hale <aabsshale@gmail.com>
+Date:   Wed, 24 Nov 2021 04:09:54 +0000
+X-Google-Sender-Auth: L2QLfeXgRyr42A-CJU2dCLRC-JQ
+Message-ID: <CAHEMKa0Cd9+VTvZM_ZJHNz6vhRAxTNuN_YDY9MrU9Xv4hBi73g@mail.gmail.com>
+Subject: Hello Friend
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Nov 2021 19:54:48 +0100 Yannick Vignon wrote:
-> From: Yannick Vignon <yannick.vignon@nxp.com>
-> 
-> The Tx queues were not disabled in cases where the driver needed to stop
-> the interface to apply a new configuration. This could result in a kernel
-> panic when doing any of the 3 following actions:
-> * reconfiguring the number of queues (ethtool -L)
-> * reconfiguring the size of the ring buffers (ethtool -G)
-> * installing/removing an XDP program (ip l set dev ethX xdp)
-> 
-> Prevent the panic by making sure netif_tx_disable is called when stopping
-> an interface.
-> 
-> Without this patch, the following kernel panic can be observed when loading
-> an XDP program:
-> 
-> Unable to handle kernel paging request at virtual address ffff80001238d040
-> [....]
->  Call trace:
->   dwmac4_set_addr+0x8/0x10
->   dev_hard_start_xmit+0xe4/0x1ac
->   sch_direct_xmit+0xe8/0x39c
->   __dev_queue_xmit+0x3ec/0xaf0
->   dev_queue_xmit+0x14/0x20
-> [...]
-> [ end trace 0000000000000002 ]---
-> 
-> Fixes: 78cb988d36b6 ("net: stmmac: Add initial XDP support")
-> Signed-off-by: Yannick Vignon <yannick.vignon@nxp.com>
-
-Fixes tag: Fixes: 78cb988d36b6 ("net: stmmac: Add initial XDP support")
-Has these problem(s):
-	- Target SHA1 does not exist
+Hello Friend
+Please reply to this message with your personal email address for
+urgent business collaboration.
+Best Regards
+Abbas Hale
++228 - 90776709 (WhatsApp)
