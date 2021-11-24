@@ -2,91 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DC6B45C85D
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 16:15:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 956D645C8A7
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 16:30:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232876AbhKXPSm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 10:18:42 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:57104 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230158AbhKXPSl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 10:18:41 -0500
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1AO8rHXf003816;
-        Wed, 24 Nov 2021 10:14:58 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3chj9csr87-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 24 Nov 2021 10:14:58 -0500
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 1AOFEvV9004733
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 24 Nov 2021 10:14:57 -0500
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.858.5;
- Wed, 24 Nov 2021 10:14:56 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.858.5;
- Wed, 24 Nov 2021 10:14:56 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.858.5 via Frontend Transport;
- Wed, 24 Nov 2021 10:14:56 -0500
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 1AOFEqcE000856;
-        Wed, 24 Nov 2021 10:14:53 -0500
-From:   <alexandru.tachici@analog.com>
-To:     <o.rempel@pengutronix.de>
-CC:     <alexandru.tachici@analog.com>, <andrew@lunn.ch>,
-        <davem@davemloft.net>, <devicetree@vger.kernel.org>,
-        <hkallweit1@gmail.com>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux@armlinux.org.uk>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH v3 3/8] net: phy: Add BaseT1 auto-negotiation registers
-Date:   Wed, 24 Nov 2021 17:24:53 +0200
-Message-ID: <20211124152453.21123-1-alexandru.tachici@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20211012071438.GB938@pengutronix.de>
-References: <20211012071438.GB938@pengutronix.de>
+        id S235877AbhKXPdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 10:33:16 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:50248 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236235AbhKXPdQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Nov 2021 10:33:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=0zu8tn9ID6lGE9Wj4S3+hQxg37uXJ+G7Hgh7Z/fOwio=; b=Uxsr5etidZqxHt8nHq80cd6Snu
+        Z74UakM3yLNj+6bfq0dJJlTr5bbsU+71jryH/6R7fVnFufcLXqAvHhgOBxXdJXZq8DT1rgMjDBJ0N
+        Lc6l+ENvyNzzKe2U9g0Zz/CxEB15ubVX/E1Al8rIPDPhYjKGNlBFQELT4ZSmWjlS9Xc4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mpuDc-00EWEE-3v; Wed, 24 Nov 2021 16:29:56 +0100
+Date:   Wed, 24 Nov 2021 16:29:56 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Joel Stanley <joel@jms.id.au>
+Cc:     Dylan Hung <dylan_hung@aspeedtech.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Networking <netdev@vger.kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>, hkallweit1@gmail.com,
+        BMC-SW <BMC-SW@aspeedtech.com>
+Subject: Re: [PATCH] net:phy: Fix "Link is Down" issue
+Message-ID: <YZ5adFBpaJzPwfvc@lunn.ch>
+References: <20211124061057.12555-1-dylan_hung@aspeedtech.com>
+ <CACPK8Xc8aD8nY0M442=BdvrpRhYNS1HW7BNQgAQ+ExTfQMsMyQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: F7nQfJ2zPz8HfNaeNym8A094BGhRZ1mf
-X-Proofpoint-GUID: F7nQfJ2zPz8HfNaeNym8A094BGhRZ1mf
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-11-24_04,2021-11-24_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 malwarescore=0
- spamscore=0 priorityscore=1501 bulkscore=0 lowpriorityscore=0 phishscore=0
- mlxlogscore=276 adultscore=0 mlxscore=0 impostorscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
- definitions=main-2111240085
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACPK8Xc8aD8nY0M442=BdvrpRhYNS1HW7BNQgAQ+ExTfQMsMyQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Hm.. MDIO_AN_T1_ADV_M_MST is T4 of Link codeword Base Page. The spec says:
-> "Transmitted Nonce Field (T[4:0]) is a 5-bit wide field whose lower 4
-> bits contains a random or pseudorandom number. A new value shall be
-> generated for each entry to the Ability Detect state"
->
-> Should we actually do it?
+> We should cc stable too.
 
-Managed to get some answears from the HW team:
+https://www.kernel.org/doc/html/v5.12/networking/netdev-FAQ.html#how-do-i-indicate-which-tree-net-vs-net-next-my-patch-should-be-in
 
-Bits 7.515.3:0 correspond to the lower 4 bits of the Transmitted Nonce Field. We do not allow users to write these bits as they need to be controlled by the auto-negotiation (AN) sequencers in order to ensure that AN remains robust and reliable. However, the Transmitted Nonce value is readable via register 7.515. So we could call these bits out in the documentation and indicate that they are readonly.
-
-Bottom line is that the driver cannot and should not do anything with the lower 4 Transmitted Nonce bits. The PHY controls them.
-
-Also from 802.3 98.2.1.2.3 Transmitted Nonce Field:
-If the device has received a DME page with good CRC16 and the link partner has a Transmitted Nonce Field
-(T[4:0]) that matches the devices generated T[4:0], the device shall invert its T[0] bit and regenerate a new
-random value for T[3:1] and use that as its new T[4:0] value. Since the DME pages are exchanged in a halfduplex manner, it is possible to swap to a new T[4:0] value prior to transmitting the DME page. One device
-will always see a DME page with good CRC16 before the other device hence this swapping will guarantee
-that nonce_match will never be true.
-
-Seems that there must be hardware to deal with nonce collisions.
-
-Regards,
-Alexandru
+	Andrew
