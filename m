@@ -2,142 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73CAA45CF78
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 22:51:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FCB445CF7C
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 22:51:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245727AbhKXVyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 16:54:17 -0500
-Received: from mga03.intel.com ([134.134.136.65]:32688 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245638AbhKXVyQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Nov 2021 16:54:16 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10178"; a="235325513"
-X-IronPort-AV: E=Sophos;i="5.87,261,1631602800"; 
-   d="scan'208";a="235325513"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2021 13:51:06 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,261,1631602800"; 
-   d="scan'208";a="457178197"
-Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 24 Nov 2021 13:51:03 -0800
-Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1mq0AQ-0005MW-6h; Wed, 24 Nov 2021 21:51:02 +0000
-Date:   Thu, 25 Nov 2021 05:50:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v5 5/8] leds: trigger: netdev: add hardware control
- support
-Message-ID: <202111250506.dija25Sg-lkp@intel.com>
-References: <20211112153557.26941-6-ansuelsmth@gmail.com>
+        id S231315AbhKXVzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 16:55:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37604 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229809AbhKXVy6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 16:54:58 -0500
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30987C061574;
+        Wed, 24 Nov 2021 13:51:48 -0800 (PST)
+Received: by mail-qk1-x729.google.com with SMTP id d2so5324183qki.12;
+        Wed, 24 Nov 2021 13:51:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+hTyLBi56R6LO1PZjfv+m89OWgmpG35Zc0D6Wb/Dnmo=;
+        b=OzHGoEslAh71QlfociKY3/uxT3xv5mxWvVzGnNGZo/QZCCt+ubAMeVfaQ91xHZcMYo
+         DwaFoTCAMoXBVyViPwNHyCCiS7yNRI5Lzr//RNVXz0Z/UVyAg0zYdckzoSJzlzC2oyp1
+         G6EAmnBbto73db3gxyyqxm0anIk6t0Vez9wNET5DI6hHiGtBLhbNYU+b+pQToxVyYlen
+         r4kqPaTPYFHz6Jj3gIq8pN4e/D7GgTsvrdbNQKaLhvyYSI1IOLxlz8ZFHqQI7MRXEPRD
+         EHBjV2sBSnnOyEaDanb/Q/RcShgO3EcNlWb8yRV7no1g+5bMz5QhyYrrorXLEl0qNbfK
+         FZoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+hTyLBi56R6LO1PZjfv+m89OWgmpG35Zc0D6Wb/Dnmo=;
+        b=M59232Q8bSiM+3wSA9aSj4SydTtXPlhe5m1ZEeCGvkVe1TAdcfR6Thutf4yU1CusB5
+         6fQy75i+2YgxQf/miQlOOlqywrtBQ8++Ky3pRBgdFPAPVU8bQbj92A8rixw03u/4FNzt
+         j7eXqiEXK5JW9fjc7ckpc4gPH34pTX2uBtOQxW++NVMesN3cF/+7R+8z/BB0kQv1vOOA
+         mSbZEy7eVVIlLfGNwviyIBUdluOMBbz7goCk3RNwsX9nX3Wh1Vripkul/DP6c3f8j/DA
+         4A3oFW626viFE0hjJ939lyY51BdbqccOwnLNRfgtZBQWlPUTggQHXhmeyUxuWt/6UI62
+         dvEQ==
+X-Gm-Message-State: AOAM532rSWN2MEpxiOkpJUCv1chvqvpYVeKJX3Lt/T/prEW2WTdtER3e
+        JWQH75sMHri4YeKLb06QmEKZTiOYUoYoyyimUNM=
+X-Google-Smtp-Source: ABdhPJy+T/mWPQew0hkrOXKMMUtZ+jwO1Cx2rUgnXgubTbq3fpckCL4w3eAz/fVDewOYy8J40mXsbf2Hdd9hWxc72PU=
+X-Received: by 2002:a25:d16:: with SMTP id 22mr357053ybn.51.1637790707342;
+ Wed, 24 Nov 2021 13:51:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211112153557.26941-6-ansuelsmth@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20211118112455.475349-1-jolsa@kernel.org> <20211118112455.475349-10-jolsa@kernel.org>
+ <20211119041159.7rebb5lz2ybnygqr@ast-mbp.dhcp.thefacebook.com> <YZv6VLAuv+4gPy/4@krava>
+In-Reply-To: <YZv6VLAuv+4gPy/4@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 24 Nov 2021 13:51:36 -0800
+Message-ID: <CAEf4Bzad=O3PgZ9Z55HpuiobQTkhA57GHFEV2M6JveG_nzP40A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 09/29] bpf: Add support to load multi func
+ tracing program
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ansuel,
+On Mon, Nov 22, 2021 at 12:15 PM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Thu, Nov 18, 2021 at 08:11:59PM -0800, Alexei Starovoitov wrote:
+> > On Thu, Nov 18, 2021 at 12:24:35PM +0100, Jiri Olsa wrote:
+> > > +
+> > > +DEFINE_BPF_MULTI_FUNC(unsigned long a1, unsigned long a2,
+> > > +                 unsigned long a3, unsigned long a4,
+> > > +                 unsigned long a5, unsigned long a6)
+> >
+> > This is probably a bit too x86 specific. May be make add all 12 args?
+> > Or other places would need to be tweaked?
+>
+> I think si, I'll check
+>
+> >
+> > > +BTF_ID_LIST_SINGLE(bpf_multi_func_btf_id, func, bpf_multi_func)
+> > ...
+> > > -   prog->aux->attach_btf_id = attr->attach_btf_id;
+> > > +   prog->aux->attach_btf_id = multi_func ? bpf_multi_func_btf_id[0] : attr->attach_btf_id;
+> >
+> > Just ignoring that was passed in uattr?
+> > Maybe instead of ignoring dopr BPF_F_MULTI_FUNC and make libbpf
+> > point to that btf_id instead?
+> > Then multi or not can be checked with if (attr->attach_btf_id == bpf_multi_func_btf_id[0]).
+> >
+>
+> nice idea, it might fit better than the flag
 
-Thank you for the patch! Perhaps something to improve:
+Instead of a flag we can also use a different expected_attach_type
+(FENTRY vs FENTRY_MULTI, etc). As for attach_btf_id, why can't we just
+enforce it as 0?
 
-[auto build test WARNING on net/master]
-[also build test WARNING on linus/master v5.16-rc2 next-20211124]
-[cannot apply to pavel-leds/for-next robh/for-next net-next/master]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Ansuel-Smith/Adds-support-for-PHY-LEDs-with-offload-triggers/20211112-233807
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 5833291ab6de9c3e2374336b51c814e515e8f3a5
-config: h8300-randconfig-s031-20211115 (https://download.01.org/0day-ci/archive/20211125/202111250506.dija25Sg-lkp@intel.com/config)
-compiler: h8300-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/0day-ci/linux/commit/d5fdf1b98c9c9e1e89f59a3db1d863683be8e401
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Ansuel-Smith/Adds-support-for-PHY-LEDs-with-offload-triggers/20211112-233807
-        git checkout d5fdf1b98c9c9e1e89f59a3db1d863683be8e401
-        # save the config file to linux build tree
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=h8300 SHELL=/bin/bash drivers/leds/trigger/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-
-sparse warnings: (new ones prefixed by >>)
->> drivers/leds/trigger/ledtrig-netdev.c:55:61: sparse: sparse: Using plain integer as NULL pointer
-   drivers/leds/trigger/ledtrig-netdev.c:55:64: sparse: sparse: Using plain integer as NULL pointer
-
-vim +55 drivers/leds/trigger/ledtrig-netdev.c
-
-    44	
-    45	static void set_baseline_state(struct led_netdev_data *trigger_data)
-    46	{
-    47		int current_brightness, can_offload;
-    48		struct led_classdev *led_cdev = trigger_data->led_cdev;
-    49	
-    50		if (LED_HARDWARE_CONTROLLED & led_cdev->flags) {
-    51			/* Check if blink mode can he set in hardware mode.
-    52			 * The LED driver will chose a interval based on the trigger_data
-    53			 * and its implementation.
-    54			 */
-  > 55			can_offload = led_cdev->blink_set(led_cdev, 0, 0);
-    56	
-    57			/* If blink_set doesn't return error we can run in hardware mode
-    58			 * So actually activate it.
-    59			 */
-    60			if (!can_offload) {
-    61				led_cdev->hw_control_start(led_cdev);
-    62				return;
-    63			}
-    64		}
-    65	
-    66		/* If LED supports only hardware mode and we reach this point,
-    67		 * then skip any software handling.
-    68		 */
-    69		if (!(LED_SOFTWARE_CONTROLLED & led_cdev->flags))
-    70			return;
-    71	
-    72		current_brightness = led_cdev->brightness;
-    73		if (current_brightness)
-    74			led_cdev->blink_brightness = current_brightness;
-    75		if (!led_cdev->blink_brightness)
-    76			led_cdev->blink_brightness = led_cdev->max_brightness;
-    77	
-    78		if (!trigger_data->carrier_link_up) {
-    79			led_set_brightness(led_cdev, LED_OFF);
-    80		} else {
-    81			if (test_bit(TRIGGER_NETDEV_LINK, &trigger_data->mode))
-    82				led_set_brightness(led_cdev,
-    83						   led_cdev->blink_brightness);
-    84			else
-    85				led_set_brightness(led_cdev, LED_OFF);
-    86	
-    87			/* If we are looking for RX/TX start periodically
-    88			 * checking stats
-    89			 */
-    90			if (test_bit(TRIGGER_NETDEV_TX, &trigger_data->mode) ||
-    91			    test_bit(TRIGGER_NETDEV_RX, &trigger_data->mode))
-    92				schedule_delayed_work(&trigger_data->work, 0);
-    93		}
-    94	}
-    95	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+>
+> thanks,
+> jirka
+>
