@@ -2,89 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF4DC45CC30
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 19:37:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1210145CCC7
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 20:11:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350627AbhKXSkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 13:40:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49372 "EHLO
+        id S1350923AbhKXTOQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 14:14:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239774AbhKXSkN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 13:40:13 -0500
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DE6FC061746
-        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 10:37:03 -0800 (PST)
-Received: by mail-pf1-x435.google.com with SMTP id n26so3515132pff.3
-        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 10:37:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pez5w3jV97XcX3c3fey0y+X2jYtUTi++2V8HLPAeStQ=;
-        b=ZSKJezyCV1AVGPeZm+I5cj3e7kHTG9HyQs/VSAfKDm9TpsAq2ztpPYcixreZj6SMm5
-         u1uYTA1Vn1gC1re/DrHrohEweUgbbJiuBACGsonp+WNWEj4XunokDGReZQ76ta5oFhET
-         niCRZukV1aacEMNGrO+SkY8p+W65a3YCCS7Q4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pez5w3jV97XcX3c3fey0y+X2jYtUTi++2V8HLPAeStQ=;
-        b=R41lp1RfzBa4jcO9r2SBE0zICmMFMDPdk14Inxo11sHIz6akEWsQ6+RH2gNVbAOvZX
-         aUrH0ZbnJbrBy0yVnl3oLiKSIkYceQ0io052VbUt86zoCGyoX9HPKy4WnaEeDMZFqx4r
-         F0cNuoFhsSVlSoto29zhfJnXlOxr2yCWJ+sgYR8NSCXTyQMMao10ki4hY3EMW+oYeoxM
-         MbXFDW/0qN9J+sFI7ZtbQGhR3eGPKe7/Tg01PZS7atMaBxUSpDB+ADAEpyHuUPOU1g97
-         HCyOVygnJLcqAzFYTFrxPBgma0PmWAKmvhzEB13VN4rn3rMYVQrZzU9Wxj2+FiovyuxZ
-         Lv5g==
-X-Gm-Message-State: AOAM533w2L+Q7MCtsW0P82Xs/fWr/hL91jTVLF7fykofRF3Sfe9QwaP8
-        iX1f9KuZASd6ck3cykGS8+1YWg==
-X-Google-Smtp-Source: ABdhPJzMe45WLcaDbwKn3N28h2l6ZhjUT6rpImb434IcKhq4zqrVMt9koscUttYWITmtTD9bXgdCXQ==
-X-Received: by 2002:a05:6a00:124a:b0:4a0:b9d7:66bb with SMTP id u10-20020a056a00124a00b004a0b9d766bbmr8381181pfi.15.1637779022751;
-        Wed, 24 Nov 2021 10:37:02 -0800 (PST)
-Received: from localhost ([2620:15c:202:201:d8d8:79a:9375:eb49])
-        by smtp.gmail.com with UTF8SMTPSA id rm10sm397124pjb.29.2021.11.24.10.37.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Nov 2021 10:37:02 -0800 (PST)
-Date:   Wed, 24 Nov 2021 10:37:01 -0800
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, pkurapat@codeaurora.org,
-        avuyyuru@codeaurora.org, bjorn.andersson@linaro.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org,
-        evgreen@chromium.org, elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net 1/2] net: ipa: directly disable ipa-setup-ready
- interrupt
-Message-ID: <YZ6GTe3wUU7PbI/W@google.com>
-References: <20211123001555.505546-1-elder@linaro.org>
- <20211123001555.505546-2-elder@linaro.org>
+        with ESMTP id S1350928AbhKXTOP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 14:14:15 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70FA7C061574
+        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 11:11:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=YBdcBMoPyI5M6VQwriB8oHmUKy9En6O+snP6kPMrcrU=; b=m+NKApVZ1XyxEPyIHW8SiH74nL
+        6rzVNlSeoFdkmULcAN3Dwjqojx3sAqGjwVeL4TkpGIEuyyii++ds3S9t8/PCuEqtNplUkWtsH27b7
+        BO+3vcFVA/XzN1vWo9R6zmfdSPeDlqFbYXCaOFKi5DFpJBHCQKh3LzoWYGI6GoAxoPgdW3+tbT3xh
+        gbzRTw/RBHgm0eqAXyH6cviqQ+hCtiIyKs07bOrsRuCZjctE+axEs/8vaF3dE1Se95/bXldzYsvb+
+        T5XpVR12dybm/1UjpKi6qaDoiprenhf6o5w5M0/ruFoa93YaUzPb+0582OmTr4WVENVIOAFeuQPhU
+        TA//FmOA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55866)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mpxfR-00016Z-1P; Wed, 24 Nov 2021 19:10:53 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mpxfN-0001Rc-LJ; Wed, 24 Nov 2021 19:10:49 +0000
+Date:   Wed, 24 Nov 2021 19:10:49 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH RFC net-next 03/12] net: dsa: replace
+ phylink_get_interfaces() with phylink_get_caps()
+Message-ID: <YZ6OORjbKuz8eXD5@shell.armlinux.org.uk>
+References: <YZ56WapOaVpUbRuT@shell.armlinux.org.uk>
+ <E1mpwRi-00D8L8-F1@rmk-PC.armlinux.org.uk>
+ <20211124181507.cqlvv3bp46grpunz@skbuf>
+ <YZ6D6GESyqbduFgz@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211123001555.505546-2-elder@linaro.org>
+In-Reply-To: <YZ6D6GESyqbduFgz@shell.armlinux.org.uk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 22, 2021 at 06:15:54PM -0600, Alex Elder wrote:
-> We currently maintain a "disabled" Boolean flag to determine whether
-> the "ipa-setup-ready" SMP2P IRQ handler does anything.  That flag
-> must be accessed under protection of a mutex.
+On Wed, Nov 24, 2021 at 06:26:48PM +0000, Russell King (Oracle) wrote:
+> On Wed, Nov 24, 2021 at 06:15:08PM +0000, Vladimir Oltean wrote:
+> > On Wed, Nov 24, 2021 at 05:52:38PM +0000, Russell King (Oracle) wrote:
+> > > Phylink needs slightly more information than phylink_get_interfaces()
+> > > allows us to get from the DSA drivers - we need the MAC capabilities.
+> > > Replace the phylink_get_interfaces() method with phylink_get_caps() to
+> > > allow DSA drivers to fill in the phylink_config MAC capabilities field
+> > > as well.
+> > > 
+> > > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> > > ---
+> > 
+> > The effects of submitting new API without any user :)
 > 
-> Instead, disable the SMP2P interrupt when requested, which prevents
-> the interrupt handler from ever being called.  More importantly, it
-> synchronizes a thread disabling the interrupt with the completion of
-> the interrupt handler in case they run concurrently.
-> 
-> Use the IPA setup_complete flag rather than the disabled flag in the
-> handler to determine whether to ignore any interrupts arriving after
-> the first.
-> 
-> Rename the "disabled" flag to be "setup_disabled", to be specific
-> about its purpose.
-> 
-> Fixes: 530f9216a953 ("soc: qcom: ipa: AP/modem communications")
-> Signed-off-by: Alex Elder <elder@linaro.org>
+> It had users at the time, but they were not submitted, and the addition
+> of MAC capabilities was a future development. Had they been submitted at
+> the time, then they would have required updating too.
 
-I don't claim to know much about IPA, but this looks reasonable to me.
+That was a bit rushed... to explain more fully.
 
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+Prior to the merge window, the development work was centered around
+only eliminating the PHY_INTERFACE_MODE_xxx checks and the complexity
+that the PHY_INTERFACE_MODE_NA technique brought into the many
+validation functions. Users of this had already been merged, and
+included mvneta and mvpp2. See these commits, which are all in
+v5.16-rc1:
+
+b63f1117aefc net: mvpp2: clean up mvpp2_phylink_validate()
+76947a635874 net: mvpp2: drop use of phylink_helper_basex_speed()
+6c0c4b7ac06f net: mvpp2: remove interface checks in mvpp2_phylink_validate()
+8498e17ed4c5 net: mvpp2: populate supported_interfaces member
+
+099cbfa286ab net: mvneta: drop use of phylink_helper_basex_speed()
+d9ca72807ecb net: mvneta: remove interface checks in mvneta_validate()
+fdedb695e6a8 net: mvneta: populate supported_interfaces member
+
+The original commit adding phylink_get_interfaces() extended this
+into DSA, and the intention was to submit at least mv88e6xxx, but
+it was too close to the merge window to do so.
+
+Through making that change and eventually eliminating the basex helper
+from all drivers that were using it, thereby making the validate()
+behaviour much cleaner, it then became clear that it was possible to
+push this cleanup further by also introducing a MAC capabilities field
+to phylink_config.
+
+The addition of the supported_interfaces member and the addition of the
+mac_capabilities member are two entirely separate developments, but I
+have now chosen to combine the two after the merge window in order to
+reduce the number of patches. They were separate patches in my tree up
+until relatively recently, and still are for the mt7530 and b53 drivers
+currently.
+
+So no, this is not "The effects of submitting new API without any user".
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
