@@ -2,116 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D830B45B8D1
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 12:04:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A265E45B8DB
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 12:07:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240482AbhKXLHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 06:07:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59554 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240458AbhKXLHv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 06:07:51 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2813DC061574;
-        Wed, 24 Nov 2021 03:04:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=pyj1fWtFgdY2SPx+2ToK/2MB/f+/m0IgCdEcwNFLm0U=; b=z3t1ZwUeqNM7SClWfoktPlLOPS
-        fgkGGgRhvhRw7dN77leLW7zhcbQ0sB2+DsSypT1x1Gm2sC2EUjXjJUumw4DkUEI4fkYd2wi7N4JgN
-        4PUyXk+KmC+rIsT2prudxd4HkHyoGl2NzJsFHlc8GhHhJGwBfngW77n/iq2uaZfSpF1QpcM5C37cQ
-        g40LRt1fzk33MmkS7AdEpYXfiEZzizmalLd+zu4EjiC5z0LqIKwHRJGHdr3pQhVYScsmrfS7/3fQ9
-        7v26FsbqnlTc7Uh4GJRKVAARop0U+BDLZODB4lXDU2QTibw3Brkorvaw9AvW0NZXjGLI5hV/RlaJH
-        4ySFI4AA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55836)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mpq4s-0000Uk-Ui; Wed, 24 Nov 2021 11:04:38 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mpq4r-00018T-CF; Wed, 24 Nov 2021 11:04:37 +0000
-Date:   Wed, 24 Nov 2021 11:04:37 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        id S233425AbhKXLKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 06:10:25 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:25412 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229691AbhKXLKZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 06:10:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1637752034;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZRGXHd96vqtDFzNUW34SlRfGeDLSxKeu/DIokJA+gB0=;
+        b=AIQch9NixE1QF/kevCFwI+918/JfltwbrpgdrM0+YmZqhtMqIcNpd0Wr8f7zhv6Ww8b6vp
+        w4gqeYefiQivIPLYbrXWbfz5vc/0bcTZBCNKfDUB6ZyeGaNP2AE5ioE3pfE5ypMxCeKKyc
+        eqTY+9toPzOUC5HsWRBEl8AMAjFLPuM=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-399-faYI2bp5M7qfXzYGhpKlCA-1; Wed, 24 Nov 2021 06:07:13 -0500
+X-MC-Unique: faYI2bp5M7qfXzYGhpKlCA-1
+Received: by mail-ed1-f72.google.com with SMTP id v22-20020a50a456000000b003e7cbfe3dfeso1970719edb.11
+        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 03:07:13 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZRGXHd96vqtDFzNUW34SlRfGeDLSxKeu/DIokJA+gB0=;
+        b=k/7s6PCH7bXeR6X6vsNIQJaHv4NowofWeJ3r/UY5sSIaC2o9hmuXDvvGXt4rmKgEf/
+         i4Uzoh+2elfaVcITG9S23JoZI53Xhe42konPEE7V84gcRnQ4B6U3QFy5M9m2J4axpTJt
+         JSfk+OVex3bwCFqBESDxsFz2MG9GhL63gdJyqGlJPS9EnakhbhIGA6ToylwD87j/jblk
+         llY2L85TmrjDCPEqbJNALsOn5v/BJEujGf1tNgz/kqT4Qdx09RYtI4A6twM7qsypjE6C
+         e+YQIDOasRZIsWyFeObLPo9PM8QV6Y8jgdWbXvRVQWJFgiI/6Hz22D2qfL2I9zvtjBci
+         ir3g==
+X-Gm-Message-State: AOAM532D7MJMplnf43WLv0G92SfRr7a/txTQjS25bl8G11bB6PeORchU
+        rwbgbho8F5LfimSez1dRIVHJiObkb+GdYb00ViladGQAGYk+lQpfbvg0/uzeAiu9BpolxrFWYvj
+        Z3HoT+sFZr1rR8tYj
+X-Received: by 2002:a17:906:eb8a:: with SMTP id mh10mr18403403ejb.198.1637752032236;
+        Wed, 24 Nov 2021 03:07:12 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw6Xw/kMLfGUKqgpcf/h8wxF5zPbG5UkU5p9H96fH+Ordo+nPX7k+VOZH48HaVE7abxOsN5ww==
+X-Received: by 2002:a17:906:eb8a:: with SMTP id mh10mr18403359ejb.198.1637752031981;
+        Wed, 24 Nov 2021 03:07:11 -0800 (PST)
+Received: from localhost (net-188-218-25-126.cust.vodafonedsl.it. [188.218.25.126])
+        by smtp.gmail.com with ESMTPSA id hd15sm6932086ejc.69.2021.11.24.03.07.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Nov 2021 03:07:11 -0800 (PST)
+Date:   Wed, 24 Nov 2021 12:07:10 +0100
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sean Anderson <sean.anderson@seco.com>, davem@davemloft.net
-Subject: Re: [PATCH net-next v2 4/8] net: phylink: update
- supported_interfaces with modes from fwnode
-Message-ID: <YZ4cRWkEO+l1W08u@shell.armlinux.org.uk>
-References: <20211123164027.15618-1-kabel@kernel.org>
- <20211123164027.15618-5-kabel@kernel.org>
- <20211123212441.qwgqaad74zciw6wj@skbuf>
- <20211123232713.460e3241@thinkpad>
- <20211123225418.skpnnhnrsdqrwv5f@skbuf>
+        Petr Machata <petrm@mellanox.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: Re: [PATCH net v2] net/sched: sch_ets: don't peek at classes beyond
+ 'nbands'
+Message-ID: <YZ4c3kKc1gmRHam9@dcaratti.users.ipa.redhat.com>
+References: <ed47959b3abc0d03cb98d65581ac2541fa27b16e.1637674769.git.dcaratti@redhat.com>
+ <CAM_iQpWFx_LXCE7YSY4NZdjkyhuhCmngXRqrn1Rze82o5Ffb9g@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211123225418.skpnnhnrsdqrwv5f@skbuf>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <CAM_iQpWFx_LXCE7YSY4NZdjkyhuhCmngXRqrn1Rze82o5Ffb9g@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 24, 2021 at 12:54:18AM +0200, Vladimir Oltean wrote:
-> This implies that when you bring up a board and write the device tree
-> for it, you know that PHY mode X works without ever testing it. What if
-> it doesn't work when you finally add support for it? Now you already
-> have one DT blob in circulation. That's why I'm saying that maybe it
-> could be better if we could think in terms that are a bit more physical
-> and easy to characterize.
+hello Cong, thanks for reviewing!
 
-However, it doesn't solve the problem. Let's take an example.
+On Tue, Nov 23, 2021 at 04:44:46PM -0800, Cong Wang wrote:
+> On Tue, Nov 23, 2021 at 5:54 AM Davide Caratti <dcaratti@redhat.com> wrote:
+> >
+> > when the number of DRR classes decreases, the round-robin active list can
+> > contain elements that have already been freed in ets_qdisc_change(). As a
+> > consequence, it's possible to see a NULL dereference crash, caused by the
+> > attempt to call cl->qdisc->ops->peek(cl->qdisc) when cl->qdisc is NULL:
+> 
+> Where exactly is it set to NULL? In line 688?
 
-The 3310 supports a mode where it runs in XAUI/5GBASE-R/2500BASE-X/SGMII
-depending on the negotiated media parameters.
+yes. At least, yes with the test I'm running to reproduce the crash:
 
-XAUI is four lanes of 3.125Gbaud.
-5GBASE-R is one lane of 5.15625Gbaud.
+ # tc qdisc add dev ddd0 handle 10: parent 1: ets bands 8 strict 4 priomap 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+ # mausezahn ddd0  -A 10.10.10.1 -B 10.10.10.2 -c 0 -a own -b 00:c1:a0:c1:a0:00 -t udp &
+ # tc qdisc change dev ddd0 handle 10: ets bands 4 strict 2 quanta 2500 2500 priomap 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
 
-Let's say you're using this, and test the 10G speed using XAUI,
-intending the other speeds to work. So you put in DT that you support
-four lanes and up to 5.15625Gbaud.
+> 
+> 686         for (i = q->nbands; i < oldbands; i++) {
+> 687                 qdisc_put(q->classes[i].qdisc);
+> 688                 q->classes[i].qdisc = NULL;
+> 689                 q->classes[i].quantum = 0;
+> 690                 q->classes[i].deficit = 0;
+> 691                 gnet_stats_basic_sync_init(&q->classes[i].bstats);
+> 692                 memset(&q->classes[i].qstats, 0,
+> sizeof(q->classes[i].qstats));
+> 693         }
+> 
+> If so, your patch is not sufficient as the NULL assignment can happen
+> after the check you add here?
 
-Later, you discover that 5GBASE-R doesn't work because there's an
-electrical issue with the board. You now have DT in circulation
-which doesn't match the capabilities of the hardware.
+I think you are right, thanks for noticing. Probably we can keep this
+NULL assignment outside the sch_tree_lock() / sch_tree_unlock(), it's
+here since the beginning and it's not harmful.
+We can "heal" the active list in ets_qdisc_change() so that it does not
+contain elements beyond 'nbands': this is probably better as it doesn't
+need to add code to the traffic path.
 
-How is this any different from the situation you describe above?
-To me, it seems to be exactly the same problem.
-
-So, I don't think one can get away from these kinds of issues - where
-you create a board, do insufficient testing, publish a DT description,
-and then through further testing discover you have to restrict the
-hardware capabilities in DT. In fact, this is sadly an entirely normal
-process - problems always get found after boards have been sent out
-and initial DT has been created.
-
-A good example is the 6th switch port on the original Clearfog boards.
-This was connected to an external PHY at address 0 on the MDIO bus
-behind the switch. However, the 88E6176 switch already has an internal
-PHY at address 0, so the external PHY can't be accessed. Consequently,
-port 6 is unreliable. That only came to light some time later, and
-resulted in the DT needing to be modified.
-
-There are always problems that need DT to be fixed - I don't think it's
-possible to get away from that by changing what or how something is
-described. In fact, I think trying to make that argument actually shows
-a misunderstanding of the process of hardware bringup.
-
-Just like software, hardware is buggy and takes time to be debugged,
-and that process continues after the first version of DT for a board
-has been produced, and there will always be changes required to DT.
-
-I'm not saying that describing the maximum frequency and lanes doesn't
-have merit, I'm merely taking issue with the basis of your argument.
-
+I will send a v3 soon.
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+davide
+
