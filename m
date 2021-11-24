@@ -2,144 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E56045C88B
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 16:21:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DC6B45C85D
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 16:15:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234707AbhKXPYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 10:24:32 -0500
-Received: from frasgout.his.huawei.com ([185.176.79.56]:4159 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229866AbhKXPY3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 10:24:29 -0500
-Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Hzl7x66WJz67x9G;
-        Wed, 24 Nov 2021 23:20:45 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 24 Nov 2021 16:21:16 +0100
-Received: from localhost (10.52.122.252) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Wed, 24 Nov
- 2021 15:21:14 +0000
-Date:   Wed, 24 Nov 2021 15:21:12 +0000
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-CC:     Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Rajendra Nayak <rnayak@codeaurora.org>,
-        Paul Walmsley <paul@pwsan.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Tero Kristo <kristo@kernel.org>,
-        "Jonathan Cameron" <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        "Lorenzo Bianconi" <lorenzo.bianconi83@gmail.com>,
-        Benoit Parrot <bparrot@ti.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Eduardo Valentin <edubezval@gmail.com>,
-        Keerthy <j-keerthy@ti.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "Amit Kucheria" <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-omap@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-clk@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-media@vger.kernel.org>,
-        <linux-mmc@vger.kernel.org>, <linux-aspeed@lists.ozlabs.org>,
-        <openbmc@lists.ozlabs.org>, <linux-wireless@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>, <alsa-devel@alsa-project.org>
-Subject: Re: [PATCH/RFC 08/17] iio: humidity: hts221: Use bitfield helpers
-Message-ID: <20211124152112.000078bf@Huawei.com>
-In-Reply-To: <c906f7449c0210cefba53eab2c2d87105d5c8599.1637592133.git.geert+renesas@glider.be>
-References: <cover.1637592133.git.geert+renesas@glider.be>
-        <c906f7449c0210cefba53eab2c2d87105d5c8599.1637592133.git.geert+renesas@glider.be>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        id S232876AbhKXPSm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 10:18:42 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:57104 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230158AbhKXPSl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 10:18:41 -0500
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1AO8rHXf003816;
+        Wed, 24 Nov 2021 10:14:58 -0500
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3chj9csr87-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 24 Nov 2021 10:14:58 -0500
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 1AOFEvV9004733
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 24 Nov 2021 10:14:57 -0500
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.858.5;
+ Wed, 24 Nov 2021 10:14:56 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.858.5;
+ Wed, 24 Nov 2021 10:14:56 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.858.5 via Frontend Transport;
+ Wed, 24 Nov 2021 10:14:56 -0500
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 1AOFEqcE000856;
+        Wed, 24 Nov 2021 10:14:53 -0500
+From:   <alexandru.tachici@analog.com>
+To:     <o.rempel@pengutronix.de>
+CC:     <alexandru.tachici@analog.com>, <andrew@lunn.ch>,
+        <davem@davemloft.net>, <devicetree@vger.kernel.org>,
+        <hkallweit1@gmail.com>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux@armlinux.org.uk>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH v3 3/8] net: phy: Add BaseT1 auto-negotiation registers
+Date:   Wed, 24 Nov 2021 17:24:53 +0200
+Message-ID: <20211124152453.21123-1-alexandru.tachici@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20211012071438.GB938@pengutronix.de>
+References: <20211012071438.GB938@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.52.122.252]
-X-ClientProxiedBy: lhreml733-chm.china.huawei.com (10.201.108.84) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: F7nQfJ2zPz8HfNaeNym8A094BGhRZ1mf
+X-Proofpoint-GUID: F7nQfJ2zPz8HfNaeNym8A094BGhRZ1mf
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-11-24_04,2021-11-24_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 malwarescore=0
+ spamscore=0 priorityscore=1501 bulkscore=0 lowpriorityscore=0 phishscore=0
+ mlxlogscore=276 adultscore=0 mlxscore=0 impostorscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
+ definitions=main-2111240085
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 22 Nov 2021 16:54:01 +0100
-Geert Uytterhoeven <geert+renesas@glider.be> wrote:
+> Hm.. MDIO_AN_T1_ADV_M_MST is T4 of Link codeword Base Page. The spec says:
+> "Transmitted Nonce Field (T[4:0]) is a 5-bit wide field whose lower 4
+> bits contains a random or pseudorandom number. A new value shall be
+> generated for each entry to the Ability Detect state"
+>
+> Should we actually do it?
 
-> Use the field_prep() helper, instead of open-coding the same operation.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Hi Geert,
+Managed to get some answears from the HW team:
 
-If this should got forwards, looks like a nice cleanup for the two IIO
-ones, so I'll be happy to pick them up once infrastructure in place
-(ideally have the infrastructure an immutable branch to save having
-to revisit in 3+ months time!)
+Bits 7.515.3:0 correspond to the lower 4 bits of the Transmitted Nonce Field. We do not allow users to write these bits as they need to be controlled by the auto-negotiation (AN) sequencers in order to ensure that AN remains robust and reliable. However, the Transmitted Nonce value is readable via register 7.515. So we could call these bits out in the documentation and indicate that they are readonly.
 
-Jonathan
+Bottom line is that the driver cannot and should not do anything with the lower 4 Transmitted Nonce bits. The PHY controls them.
 
-> ---
-> Compile-tested only.
-> Marked RFC, as this depends on [PATCH 01/17], but follows a different
-> path to upstream.
-> ---
->  drivers/iio/humidity/hts221_core.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iio/humidity/hts221_core.c b/drivers/iio/humidity/hts221_core.c
-> index 6a39615b696114cd..749aedc469ede5c1 100644
-> --- a/drivers/iio/humidity/hts221_core.c
-> +++ b/drivers/iio/humidity/hts221_core.c
-> @@ -7,6 +7,7 @@
->   * Lorenzo Bianconi <lorenzo.bianconi@st.com>
->   */
->  
-> +#include <linux/bitfield.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
->  #include <linux/device.h>
-> @@ -171,7 +172,7 @@ static int hts221_update_avg(struct hts221_hw *hw,
->  			     u16 val)
->  {
->  	const struct hts221_avg *avg = &hts221_avg_list[type];
-> -	int i, err, data;
-> +	int i, err;
->  
->  	for (i = 0; i < HTS221_AVG_DEPTH; i++)
->  		if (avg->avg_avl[i] == val)
-> @@ -180,9 +181,8 @@ static int hts221_update_avg(struct hts221_hw *hw,
->  	if (i == HTS221_AVG_DEPTH)
->  		return -EINVAL;
->  
-> -	data = ((i << __ffs(avg->mask)) & avg->mask);
-> -	err = regmap_update_bits(hw->regmap, avg->addr,
-> -				 avg->mask, data);
-> +	err = regmap_update_bits(hw->regmap, avg->addr, avg->mask,
-> +				 field_prep(avg->mask, i));
->  	if (err < 0)
->  		return err;
->  
+Also from 802.3 98.2.1.2.3 Transmitted Nonce Field:
+If the device has received a DME page with good CRC16 and the link partner has a Transmitted Nonce Field
+(T[4:0]) that matches the devices generated T[4:0], the device shall invert its T[0] bit and regenerate a new
+random value for T[3:1] and use that as its new T[4:0] value. Since the DME pages are exchanged in a halfduplex manner, it is possible to swap to a new T[4:0] value prior to transmitting the DME page. One device
+will always see a DME page with good CRC16 before the other device hence this swapping will guarantee
+that nonce_match will never be true.
 
+Seems that there must be hardware to deal with nonce collisions.
+
+Regards,
+Alexandru
