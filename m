@@ -2,120 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2182A45B7E7
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 11:00:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1B3C45B7FD
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 11:06:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238446AbhKXKDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 05:03:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45154 "EHLO
+        id S240626AbhKXKJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 05:09:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237447AbhKXKDL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 05:03:11 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32894C061574;
-        Wed, 24 Nov 2021 02:00:02 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id az34-20020a05600c602200b0033bf8662572so1596721wmb.0;
-        Wed, 24 Nov 2021 02:00:02 -0800 (PST)
+        with ESMTP id S235762AbhKXKJH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 05:09:07 -0500
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C117C061574;
+        Wed, 24 Nov 2021 02:05:58 -0800 (PST)
+Received: by mail-qk1-x72e.google.com with SMTP id p4so2214768qkm.7;
+        Wed, 24 Nov 2021 02:05:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=fDGLhfDjPWff/jphpjh1PfEIbNyQ4NbvKbsbx5VhX88=;
-        b=PKN9ml0gWOiIaXGyeiOp+axDTXn416NLwErJ724mtIXPheMMggpeBGduxFgTYHU0Ov
-         ONnF3amnm6fNLVnp8A2npngkVIuuyj6LvR+aFsorG9J9clu7YnFwb4lJsFYWye94K1jU
-         zg2legOMMJEb+VWY3rRWKirmoInhddtRho9pMvcoJP99xjk9RGWzzULk9jWDsdvoxrQ3
-         wJIyw6WwfavcBkvJJXyRGE4qliNmAO45fMM0nlH+iTVevFAZbSzcyp9ueCdzbU7i44Q6
-         Wf3/RqR8O3+1JAaJ0qocfc48CChk0CE18EmKLZswQKjTZEG2aKa5/C/Jltv9+StwXXCi
-         nxQQ==
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OjRtNyQ6raL8RvlGNtWJ01DJpJ/kv1Yhqrl5JLjQHYQ=;
+        b=bGMI67JWqh5edskOztk07XMljM3mU8bZWP0spIe4BmPuNUGVzE5WkRRwdEZ9A0/wUS
+         2sOveFUxgck7Vu40CTdO+Ys9OMIz9Mmh8Y5j+T2C3KYJIObL+W+aN4Hr9syX/aZU4pTl
+         6MU0gxy37t+OGdOMXEStV717WdO2tmR0p2K0c=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=fDGLhfDjPWff/jphpjh1PfEIbNyQ4NbvKbsbx5VhX88=;
-        b=eevskUXdAu8SYDOCpZro+/jhSP3o5k/IUN9mOANOZBqwWR49mf0/89rD5+jN5g+O8g
-         oub5HJJw0bpfHTdQi+2oer+PZnKq+Iuecij/TNjChDlvzvyKNZKSbvwwiHkHfCurGh/W
-         +gQW2zeqSvO3N90pj61VmtPeMCnF+znz0vwDfhN2O7r2w+7lkFPQQ+g0VHsYgii6KLvs
-         qkOLs7FFJgEHTlCGB8EvPFxPD9gu3C8qrao9YKH/VaJZQhm/pw+elGuNHGvfPkZjfNt4
-         SWyliY1ZUYPnM1/Jl1vocIvD8I6ci4/zYuXcLSysbwtchUE3NMUm7Dt4j4Swut6WOkTe
-         32Lw==
-X-Gm-Message-State: AOAM530j+Ndbo5+A121Hy29FrxrfeKlLrDe7AFfLJKAeRHz2UZWSaRa3
-        hB7n0HzQwqo3k/FotUuc6qA=
-X-Google-Smtp-Source: ABdhPJwShWfZ+RfN+bWeHfHazhCO4KTtkR/Dkk4iDYcfF0Pd4Pbhsgu9oCwZRwoCIGwJwitNMguipw==
-X-Received: by 2002:a1c:f30d:: with SMTP id q13mr13130994wmq.55.1637748000734;
-        Wed, 24 Nov 2021 02:00:00 -0800 (PST)
-Received: from [80.5.213.92] (cpc108963-cmbg20-2-0-cust347.5-4.cable.virginm.net. [80.5.213.92])
-        by smtp.gmail.com with ESMTPSA id y12sm14655857wrn.73.2021.11.24.02.00.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Nov 2021 02:00:00 -0800 (PST)
-Subject: Re: [PATCH v2 net-next 11/26] sf100, sfx: implement generic XDP stats
- callbacks
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     Martin Habets <habetsm.xilinx@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20211123163955.154512-1-alexandr.lobakin@intel.com>
- <20211123163955.154512-12-alexandr.lobakin@intel.com>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <e6e31c0e-c3a0-aecf-54f0-d7ee3bf3c7c2@gmail.com>
-Date:   Wed, 24 Nov 2021 09:59:59 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OjRtNyQ6raL8RvlGNtWJ01DJpJ/kv1Yhqrl5JLjQHYQ=;
+        b=vhd/3TEw39uPRdIjxQZeh4Q8KxUEiA5cyOgAqmHXHnelYp3fuJPt/0unJNNcvf1JO9
+         GdHXTAzRIedARRUeIHN779nGHkq8ZeVcbTRX98QrfpMvNdTv6KyUONHEMPJ/AFxvPdKh
+         l2gLPrRIBsBNLMJewL/qLywXY96KwAiGDWnPJ1rguS4+vofyjBEA7CGq420VRW3TS2AT
+         clwzmYofqxPiIkZrlrZFt3pE0BO9UXqhVZVTx3x7hgmWib7prqXEyK6KSbTbqcTSSiw2
+         jKsz3pRgj2YiQR5GCjsJOj6gVp7iA4MWCrQSkLHiqxrFUxxeq/NT6DigW/aYVMNH3G89
+         j2/A==
+X-Gm-Message-State: AOAM5325Lovi36smKv7VqiULXMgCdspGxS8gFOB9OeHYieeLXHa4oWaa
+        /1Qx0abGADa2RdcpAHVTVzOr7klxhryFisu1fqE=
+X-Google-Smtp-Source: ABdhPJy5dM73ZzwuO7N5M6V2CcGuSCoYtcmQT3DfxOPj0vj8YZRetiDRfVGgCVBDrDAqWgAeUDge6MnvSSPtl5haYC0=
+X-Received: by 2002:a37:a8e:: with SMTP id 136mr4514246qkk.395.1637748357381;
+ Wed, 24 Nov 2021 02:05:57 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20211123163955.154512-12-alexandr.lobakin@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+References: <20211124061057.12555-1-dylan_hung@aspeedtech.com>
+In-Reply-To: <20211124061057.12555-1-dylan_hung@aspeedtech.com>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Wed, 24 Nov 2021 10:05:45 +0000
+Message-ID: <CACPK8Xc8aD8nY0M442=BdvrpRhYNS1HW7BNQgAQ+ExTfQMsMyQ@mail.gmail.com>
+Subject: Re: [PATCH] net:phy: Fix "Link is Down" issue
+To:     Dylan Hung <dylan_hung@aspeedtech.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Networking <netdev@vger.kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>, hkallweit1@gmail.com,
+        Andrew Lunn <andrew@lunn.ch>, BMC-SW <BMC-SW@aspeedtech.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23/11/2021 16:39, Alexander Lobakin wrote:
-> Export 4 per-channel XDP counters for both sf100 and sfx drivers
-> using generic XDP stats infra.
-> 
-> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-The usual Subject: prefix for these drivers is sfc:
- (or occasionally sfc_ef100: for ef100-specific stuff).
+On Wed, 24 Nov 2021 at 06:11, Dylan Hung <dylan_hung@aspeedtech.com> wrote:
+>
+> The issue happened randomly in runtime.  The message "Link is Down" is
+> popped but soon it recovered to "Link is Up".
+>
+> The "Link is Down" results from the incorrect read data for reading the
+> PHY register via MDIO bus.  The correct sequence for reading the data
+> shall be:
+> 1. fire the command
+> 2. wait for command done (this step was missing)
+> 3. wait for data idle
+> 4. read data from data register
 
-> +int efx_get_xdp_stats_nch(const struct net_device *net_dev, u32 attr_id)
-> +{
-> +	const struct efx_nic *efx = netdev_priv(net_dev);
-> +
-> +	switch (attr_id) {
-> +	case IFLA_XDP_XSTATS_TYPE_XDP:
-> +		return efx->n_channels;
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +}
-> +
-> +int efx_get_xdp_stats(const struct net_device *net_dev, u32 attr_id,
-> +		      void *attr_data)
-> +{
-> +	struct ifla_xdp_stats *xdp_stats = attr_data;
-> +	struct efx_nic *efx = netdev_priv(net_dev);
-> +	const struct efx_channel *channel;
-> +
-> +	switch (attr_id) {
-> +	case IFLA_XDP_XSTATS_TYPE_XDP:
-> +		break;
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	spin_lock_bh(&efx->stats_lock);
-> +
-> +	efx_for_each_channel(channel, efx) {
-> +		xdp_stats->drop = channel->n_rx_xdp_drops;
-> +		xdp_stats->errors = channel->n_rx_xdp_bad_drops;
-> +		xdp_stats->redirect = channel->n_rx_xdp_redirect;
-> +		xdp_stats->tx = channel->n_rx_xdp_tx;
-> +
-> +		xdp_stats++;
-> +	}What guarantees that efx->n_channels won't change between these two
- calls, potentially overrunning the buffer?
+I consulted the datasheet and it doesn't mention this. Perhaps
+something to be added?
 
--ed
+Reviewed-by: Joel Stanley <joel@jms.id.au>
+
+>
+> Fixes: a9770eac511a ("net: mdio: Move MDIO drivers into a new subdirectory")
+
+I think this should be:
+
+Fixes: f160e99462c6 ("net: phy: Add mdio-aspeed")
+
+We should cc stable too.
+
+> Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
+> ---
+>  drivers/net/mdio/mdio-aspeed.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
+>
+> diff --git a/drivers/net/mdio/mdio-aspeed.c b/drivers/net/mdio/mdio-aspeed.c
+> index cad820568f75..966c3b4ad59d 100644
+> --- a/drivers/net/mdio/mdio-aspeed.c
+> +++ b/drivers/net/mdio/mdio-aspeed.c
+> @@ -61,6 +61,13 @@ static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
+>
+>         iowrite32(ctrl, ctx->base + ASPEED_MDIO_CTRL);
+>
+> +       rc = readl_poll_timeout(ctx->base + ASPEED_MDIO_CTRL, ctrl,
+> +                               !(ctrl & ASPEED_MDIO_CTRL_FIRE),
+> +                               ASPEED_MDIO_INTERVAL_US,
+> +                               ASPEED_MDIO_TIMEOUT_US);
+> +       if (rc < 0)
+> +               return rc;
+> +
+>         rc = readl_poll_timeout(ctx->base + ASPEED_MDIO_DATA, data,
+>                                 data & ASPEED_MDIO_DATA_IDLE,
+>                                 ASPEED_MDIO_INTERVAL_US,
+> --
+> 2.25.1
+>
