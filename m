@@ -2,81 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF41945B955
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 12:42:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2207B45B982
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 12:50:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241529AbhKXLps (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 06:45:48 -0500
-Received: from mga09.intel.com ([134.134.136.24]:10469 "EHLO mga09.intel.com"
+        id S241822AbhKXLx7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 06:53:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55460 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229923AbhKXLpr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Nov 2021 06:45:47 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10177"; a="235079884"
-X-IronPort-AV: E=Sophos;i="5.87,260,1631602800"; 
-   d="scan'208";a="235079884"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2021 03:42:36 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,260,1631602800"; 
-   d="scan'208";a="554153649"
-Received: from sashimi-thinkstation-p920.png.intel.com ([10.158.65.178])
-  by fmsmga008.fm.intel.com with ESMTP; 24 Nov 2021 03:42:33 -0800
-From:   Ong Boon Leong <boon.leong.ong@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S231772AbhKXLx7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Nov 2021 06:53:59 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0D2F460F45;
+        Wed, 24 Nov 2021 11:50:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637754649;
+        bh=yMN5+UoMt17EBxafVtXi9LE0djhuS8RhjHGePUWBSCY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Xdiqrg4L0Mb/yP0yGPFPn03rcGMu2gZqutMEbEPEH2ltDKgkQNSM1dL41AhtroX93
+         fQTuUS6fFlWwn9UtTXMYcsfe6ipq0zRaDBsY6DW2vDi8Nhg/yty567hzZUx9kbHsko
+         dGgQvOmnylDV4D++pDQqnJ+u0SMye1QxMIeQgOspH35UDXkeLM/Y3Snz/cs3Mm/+E3
+         Iaw/81+B2z1oTlc8ujQ/dpBl/6MxGCsJJMDLfLQ0VU0kMHXLncPI6R1fCETp/9LvD1
+         bXbx+L0WZKAqU3s1SctyIq9hWpMnm4O6sFDXHRvTh7u3TTH3g6cTTK9TtIJAPjjjjw
+         J2kGb96aAbz5w==
+Date:   Wed, 24 Nov 2021 12:50:44 +0100
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Russell King <rmk+kernel@armlinux.org.uk>,
         Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        alexandre.torgue@foss.st.com, Kurt Kanzenbach <kurt@linutronix.de>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: [PATCH net-next 1/1] net: stmmac: perserve TX and RX coalesce value during XDP setup
-Date:   Wed, 24 Nov 2021 19:40:19 +0800
-Message-Id: <20211124114019.3949125-1-boon.leong.ong@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Sean Anderson <sean.anderson@seco.com>, davem@davemloft.net
+Subject: Re: [PATCH net-next v2 4/8] net: phylink: update
+ supported_interfaces with modes from fwnode
+Message-ID: <20211124125044.10c08485@thinkpad>
+In-Reply-To: <20211123225418.skpnnhnrsdqrwv5f@skbuf>
+References: <20211123164027.15618-1-kabel@kernel.org>
+        <20211123164027.15618-5-kabel@kernel.org>
+        <20211123212441.qwgqaad74zciw6wj@skbuf>
+        <20211123232713.460e3241@thinkpad>
+        <20211123225418.skpnnhnrsdqrwv5f@skbuf>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When XDP program is loaded, it is desirable that the previous TX and RX
-coalesce values are not re-inited to its default value. This prevents
-unnecessary re-configurig the coalesce values that were working fine
-before.
+On Wed, 24 Nov 2021 00:54:18 +0200
+Vladimir Oltean <olteanv@gmail.com> wrote:
 
-Fixes: ac746c8520d9 ("net: stmmac: enhance XDP ZC driver level switching performance")
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+> > As I said above, the best example is with SerDeses which use multiple
+> > lanes where not all may be wired. But this backward compatibility code
+> > concerns only one-lane SerDeses: usxgmii, 10gbaser-r, 5gbase-r,
+> > 2500base-x, 1000base-x, sgmii.  
+> 
+> Right, why so? From phy-mode = "xaui", you could also infer support for
+> single-lane SERDES protocols up to 3.125 GHz, aren't you interested in
+> doing that too?
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 21111df7371..a122a161872 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -6527,6 +6527,9 @@ int stmmac_xdp_open(struct net_device *dev)
- 		tx_q->tx_tail_addr = tx_q->dma_tx_phy;
- 		stmmac_set_tx_tail_ptr(priv, priv->ioaddr,
- 				       tx_q->tx_tail_addr, chan);
-+
-+		hrtimer_init(&tx_q->txtimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-+		tx_q->txtimer.function = stmmac_tx_timer;
- 	}
- 
- 	/* Enable the MAC Rx/Tx */
-@@ -6535,8 +6538,6 @@ int stmmac_xdp_open(struct net_device *dev)
- 	/* Start Rx & Tx DMA Channels */
- 	stmmac_start_all_dma(priv);
- 
--	stmmac_init_coalesce(priv);
--
- 	ret = stmmac_request_irq(dev);
- 	if (ret)
- 		goto irq_error;
--- 
-2.25.1
+OK, this would seem to make sense if I dropped the DT binding change
+for now, and just updated the code to change the supported_interfaces
+member so that marvell10g driver could select appropriate mode.
 
+I will think about it. Thanks.
+
+> > 2) the mode is not supported by the board because the generic PHY
+> >    driver uses SMC calls to the firmware to change the SerDes mode, but
+> >    the board may have old version of firmware which does not support
+> >    SMC call correctly (or at all). This was a real issue with TF-A
+> >    firmware on Macchiatobin, where the 5gbase-r mode was not supported
+> >    in older versions  
+> 
+> Ok, so in your proposal, U-Boot would have to fix up the device tree
+> based on a certain version of ATF, and remove "5gbase-r" from the
+> phy-mode array. Whereas in my proposal, the mvpp2 driver would need to
+> find out about the ATF version in use, and remove "5gbase-r" from the
+> supported interfaces.
+> 
+> As a user, I'd certainly prefer if Linux could figure this one out.
+
+You are right here, it would really be better for the mvpp2 driver to
+do this discovering.
+
+> This implies that when you bring up a board and write the device tree
+> for it, you know that PHY mode X works without ever testing it. What if
+> it doesn't work when you finally add support for it? Now you already
+> have one DT blob in circulation. That's why I'm saying that maybe it
+> could be better if we could think in terms that are a bit more physical
+> and easy to characterize.
+
+The thing is that this same could happen with your proposal of
+max-data-rate + number-of-lanes, as Russell explained in his reply.
+
+> > The whole idea of this code is to guarantee backward compatibility with
+> > older device-trees. In my opinion (and I think Russell agrees with me),
+> > this should be at one place, instead of putting various weird
+> > exceptions into various MAC drivers.  
+> 
+> Yes, but they're more flexible in the driver... What if the check is not
+> as simple as a machine compatible (think about the ATF firmware example
+> you gave).
+
+You persuaded me, it makes more sense in the driver.
+
+Marek
