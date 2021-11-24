@@ -2,193 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09D9A45B622
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 09:03:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CE4145B634
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 09:04:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240981AbhKXIGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 03:06:21 -0500
-Received: from mail-mw2nam10on2066.outbound.protection.outlook.com ([40.107.94.66]:28321
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S240972AbhKXIGU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Nov 2021 03:06:20 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VUroBwUnN9jTbYykmnDWhrkKy78u6HF58/qk5UBohQnXAkP4/69h+uMOpf31vWzaLPrJGuQr5iAKjLvgfpWtYtgC+jkpxrMAhj+kyPc/DfxFG2H1s8Re1F3HCcf4iNO5xm4x+4R92hxqiENSQJc6aepxpbjPnMTM1c6DPEWZB5aBTX8gfBI8q1988meA508UgM7/d7escNuoqs4HNPLxlYExfnbMyX2XKvdyEEcW6tRyvJDNMF9v2gpXjls0hoLNyrMY/++wKyIigxQIvgFptkksfy+Fl7mEq8q6cjnxbNP/gMfokuwn41LG7vfJq/5HyaWa0UDwuzO8D+K1EwCsvg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PBF6N8GqmT9dIVIVlAjei1j6Pg4mC+c7xP7FHi+ZIdw=;
- b=hdNuXPZdrUyeeYDM4GMSi2o2G5eTXpKX61w1bkWgHCihhEl7uhVO4TtUaiSvAZs8jzLCjfZ1H1F04b3uZ3c9uTmeBZrCHbqBN1f3lAv0ZX3SZwLkCFKSEW7QMffbhjzcHiAr3ig+8JxUU4o/jsUt30spjA5h8M6IfbPJi0uoypAQ3Z5EWk9sq2D1ousmQY3qc+C/L0VgvRyhxNW8hOYJfCcnugO+SHXR5hAiy6LXSUDj1ECz8q+6EUYktO1ZfOokIkEBNMx/roIp8NOOtqdNVdvrcGTULRkZE1hKqkuLRnC5g81dXHqdS5Q39+8C/Xw85yEpKy4PYA78fVh17dVITA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PBF6N8GqmT9dIVIVlAjei1j6Pg4mC+c7xP7FHi+ZIdw=;
- b=jtat7jVxutgfPHjFxkogy5ffnPz/QwUNV5qFOVU45gGi4w8/+WuMQ7lURh5qAgkcVIdxu41RjTGxO/DQ9FlV10HduwLHexG8TCnbP5KXt8Yo74oOpDmsqOD5M06Pp2/7MxUpF0TX8ywT0T09rn+nTlVZq27aMPAG1P2DOg2lUpqUPRd+Swe4eNCrdSdz2Iq7NOtD31i1QplEAaUmVAWEL2jNKmPvQalmEdfOnmUhytQFFQ6JkgNSL91D8DAfLnuIbsVPLzmkBN3ltWoNu77Fvy9sjFdQcyQVoHSvuKhMMhGwLvZyno5cM0jB/2SWvptN2seJ1X9shlcDTYcXe+oVmw==
-Received: from DM6PR12MB4516.namprd12.prod.outlook.com (2603:10b6:5:2ac::20)
- by DM6PR12MB3372.namprd12.prod.outlook.com (2603:10b6:5:11b::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.20; Wed, 24 Nov
- 2021 08:03:10 +0000
-Received: from DM6PR12MB4516.namprd12.prod.outlook.com
- ([fe80::a5c1:7bee:503f:e0d0]) by DM6PR12MB4516.namprd12.prod.outlook.com
- ([fe80::a5c1:7bee:503f:e0d0%8]) with mapi id 15.20.4734.021; Wed, 24 Nov 2021
- 08:03:10 +0000
-From:   Danielle Ratson <danieller@nvidia.com>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Subject: RE: [PATCH net v2] igb: fix netpoll exit with traffic
-Thread-Topic: [PATCH net v2] igb: fix netpoll exit with traffic
-Thread-Index: AQHX4KpS8IRO8CTaPUObrYaieVzqnKwSTnvQgAACpQA=
-Date:   Wed, 24 Nov 2021 08:03:10 +0000
-Message-ID: <DM6PR12MB451625B7328FD36E7B30F325D8619@DM6PR12MB4516.namprd12.prod.outlook.com>
-References: <20211123204000.1597971-1-jesse.brandeburg@intel.com>
- <DM6PR12MB451635351CFBBD86059A0078D8619@DM6PR12MB4516.namprd12.prod.outlook.com>
-In-Reply-To: <DM6PR12MB451635351CFBBD86059A0078D8619@DM6PR12MB4516.namprd12.prod.outlook.com>
-Accept-Language: he-IL, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 536995e3-7333-4bd0-d5e4-08d9af20db70
-x-ms-traffictypediagnostic: DM6PR12MB3372:
-x-microsoft-antispam-prvs: <DM6PR12MB3372DA46DD4A56CA51AC0B88D8619@DM6PR12MB3372.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: fgGUZLkS4d+upBUiNu6oNkOQEwrmODaMwJ0YJwhh0wIMgIKqtbfVLOjylxUwASkH1TxfJ9JvavRmMJ24PXdf4zQTzysJaaq1ultjYYlXkMFnf2DgVTrkLmTnzU096C7vED73OIuvcesX1wwDrj0TJnN2y8a6buVfU1D1m5cfALxoas8AV7jD05iV0TmDuL6WPWQQO9Vnk7eP7mLX1vXvniqF4llJfx2BVk40Rfsp9fHtCRqn5U2acsplGEWEd3KJgEcGH25tO1aBBetzN9Pu3Sghda/wLR8hKJFPXshSuSNPp2uREmJz/RMYY2QWOARXo4/aEWIqN0kHwMEdxojJSuSpL2O8VtmMbFanCHqSXMcAtUMCpfr3VO1gog/xFpUz7AZ/lsLz/0LEYE7a2eIMI+yIi05uiXHpNItOvGn0TS2dVmUb4pJjI8Eoq/u3lB/VIC3F+LzSHnyHHvuOYRcCJTfBXzfIH790fzC4bHVTVFZau6iajKGtxhexstBsW+o0+57sqzuODoIyojrzHim3ANehCnnapkSA11Xr51DCwWY1Yr3rHaeUmigteAPRH8nIOfHjTIQ7Ip+NmNo1l3wzaomLIg2pO2pvtO7W6CwLiZWF3aWhiAPGs+Q0D5G6KnKFxzGftD0Ty/jZmOcDD7CrUP7ziHRlAUfiY/U6YjblAJ9MIaYH4gV7BGR+LzTNx5D/41p2tzm21I7okd1Dust79Q==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4516.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(508600001)(53546011)(86362001)(5660300002)(316002)(6506007)(54906003)(52536014)(71200400001)(110136005)(7696005)(9686003)(83380400001)(26005)(55016003)(33656002)(2906002)(2940100002)(76116006)(8676002)(4326008)(186003)(66946007)(122000001)(8936002)(66476007)(66446008)(64756008)(66556008)(38070700005)(38100700002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?uzWX25oNdgD86W6ehdBai9lHPzDmYJ2ruRutJ+AAQgPNzLk+kxQ0ENvDVBry?=
- =?us-ascii?Q?6hia8se0kNMHt7i5+7hcU89IGIqY0RDWvESeRII2uwbfLG8Qw7Gumm1v4wjC?=
- =?us-ascii?Q?KW7r6CekUSGGUk8L7yipdldX4q/AtdcRHz5UkylaI5B+mNA+sv4DVHLnYO8N?=
- =?us-ascii?Q?mw914IzzREzamTU7xGt6zjil8KtD2N7GDrWF4zlJdxoiyCNiYM+NGjUCCGz0?=
- =?us-ascii?Q?YxnauhSPlKf3BUM6ZT3xbSDKa+ktOjiy0IQEQYACiu2RDE15TOxUWSWrTp1R?=
- =?us-ascii?Q?MXj46wwbQTZgZ0w0GuE77y/xANnTgW70L9gMjWSb3p3e1bJ93hJ6CsUPdFmI?=
- =?us-ascii?Q?KubkKHTzpEuDHU6QgWx36W6Dcv6+cVDGLbtRlzby8cyaTdjm0Qi2bTqNIlRH?=
- =?us-ascii?Q?pqTIV9fAa/AoBQIiDalEIHR9BgT04AkaY2cXB+y7MUqC30Rkw6WJd3iseelg?=
- =?us-ascii?Q?ypUNvQy/g70kdjgDTi9ANVW/hw7ShHUD/Zdaae16B0fCg0AY4kGC7ryOoV68?=
- =?us-ascii?Q?fj9jmjy9gKX/t1mpyldbgipXbsy2uu8dXDHtjbzJY40Wmdja76JcfIPsrGLz?=
- =?us-ascii?Q?hyXNSwcZETzu2GcnL/i4rdkMu/ieTMZ6DdffsK5mp0Dqz8e5Mzjg0om5NnTK?=
- =?us-ascii?Q?K2gpXj9xmtTcAStHgUQ+T6nht4nIyUtqjbogtpCgZsDOnHzWrf4YP7iVHzmj?=
- =?us-ascii?Q?/3bV31uzA+7GMEm6kTvo7pWHgC70QBOzLift2/krPGeYYPyIRjV+6m28czNV?=
- =?us-ascii?Q?a2jkDM/laASg+0z1MHUI7Rmq/jFmxjNXVbq5FOg+xozU5qn/Z/w9Xfdu8FL5?=
- =?us-ascii?Q?0Qv4b+NAG8sn7R42pCjRRh7JTZ5RUdfQhjMPMOb9LnzIEmi+Opxwxl1n9nxr?=
- =?us-ascii?Q?giT5WPtga2JF3tw1R6GSJ04FV+r4oqCWGgSkB35b1VHxt7H2dzdCMNBKIc7+?=
- =?us-ascii?Q?160/bXYAejckXmXKzdMAweg7QAmnsImpWJ9B0pJJJOjylXUwqGTAacAWpwD5?=
- =?us-ascii?Q?W9l9Orpv8XHnMNd8QjNa8vNTnD/BvQQ0IWB/cu6WCzwZZPdKyEl7uE7naa/T?=
- =?us-ascii?Q?TfSFMZPf1oyEvDgGTE7knBeJPSPSOp0ytwOmVkbzTcKjP4EUfIq5d3Jy+mWM?=
- =?us-ascii?Q?9cMrk+eDvLvD0TBrUnwip6ojeNTTGjlhmS6hh/SNfkL5M/uaWPsz2vs01GoD?=
- =?us-ascii?Q?3xCrevhn8Hv3OxqE51ReQK/P1o6EBDtF0ezSrWNfWHhNoI8Yiq7Miy4BcFwj?=
- =?us-ascii?Q?PUN/b1Y7yKvnUTrwKg/vZDY2W9vPEFGK9tDOpyTcpqmaYhNwE89fdqFy+DKB?=
- =?us-ascii?Q?yRKI1StodgJVu5NTPtEQcYB7bSkQgHRpeUDe4Qv7+HkhKURInOlVHw8V3fE0?=
- =?us-ascii?Q?fokVDATZWMZncWWf3wAx+c6AHmJ0OzyZONhSmfEIeiTA7QFjHKhtOdB+9DlL?=
- =?us-ascii?Q?zzlccjRpmvb9Uiul8BfogHnmk5nJcp1iz+TddZf6i9Rl4T0gp0ovClbs8xN/?=
- =?us-ascii?Q?nhnWVDjl4FsS0SN45TnhtO/3esnmPT59ZeUUvMDLSCViJaT//6l3F0MhyE29?=
- =?us-ascii?Q?KdB7yde16d2ZNzr478sYe3uWuMfhOOxtqk/KYOjr4JUO/CtABW23YJLfEsJC?=
- =?us-ascii?Q?lmBOQA0OjjLO+ihPLxtg6YA=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S241076AbhKXIHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 03:07:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47698 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233552AbhKXIHo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 03:07:44 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D5ACC061574;
+        Wed, 24 Nov 2021 00:04:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=A8apBARRFPbiSEW1ceN6aynN1mbMSw2kt4pRYV7bzUs=;
+        t=1637741075; x=1638950675; b=fOIugJ371/M3ZN3Jkyqas0ZROi7Mwh9OUvsSiN0uekx+Lw+
+        hrnOMtvjWKlMDr4UfmJSTwTkJQvgZQyijM3/YUstkBGgYIRqYx9qbJdenr/q9j4wL6SvNdu4k1gR6
+        mfdfeC7suQHGLHzOQE+mQHdaEABHb3cNkvYat3xVwnn/PNlJ/DLV+t1NGdIGZt9n88u4BnowfU97I
+        Z0hgJ6vpeuLSHtHp2DVhEDVGSzt4J/4fmEiY9LQNggHWOU60PKGn+6UAMV4kBFDMK86WBcezP/hFX
+        2r0Gi9h5YE7pNDQDrCeDqjaVyfnrzdjQ5KQLVwP1KgwPTxDaEYjiEGb0saU6Jl+Q==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.95)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1mpnFW-0027Gb-B2;
+        Wed, 24 Nov 2021 09:03:26 +0100
+Message-ID: <05d4673a0343bfd83824d307e9cf8bf92e3814a6.camel@sipsolutions.net>
+Subject: Re: [PATCH 01/17] bitfield: Add non-constant field_{prep,get}()
+ helpers
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        Paul Walmsley <paul@pwsan.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Benoit Parrot <bparrot@ti.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Eduardo Valentin <edubezval@gmail.com>,
+        Keerthy <j-keerthy@ti.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-aspeed@lists.ozlabs.org, openbmc@lists.ozlabs.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Date:   Wed, 24 Nov 2021 09:03:24 +0100
+In-Reply-To: <20211123154922.600fd3b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <cover.1637592133.git.geert+renesas@glider.be>
+         <3a54a6703879d10f08cf0275a2a69297ebd2b1d4.1637592133.git.geert+renesas@glider.be>
+         <01b44b38c087c151171f8d45a2090474c2559306.camel@sipsolutions.net>
+         <20211122171739.03848154@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         <CAMuHMdWAAGrQUZN18cnDTDUUhuPNTZTFkRMe2Sbf+s7CedPSxA@mail.gmail.com>
+         <637a4183861a1f2cdab52b7652bfa7ed33fbcdd2.camel@sipsolutions.net>
+         <20211123154922.600fd3b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.1 (3.42.1-1.fc35) 
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4516.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 536995e3-7333-4bd0-d5e4-08d9af20db70
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Nov 2021 08:03:10.4268
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: YbGkhyWaeleJz56GBWJaN6HJ/6mL78ot2+m24sdDt3ijIlEDg8KVcww8LLHOcPYGkJIc2HHY+QuTlvlCOwjkPQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3372
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 2021-11-23 at 15:49 -0800, Jakub Kicinski wrote:
+> On Tue, 23 Nov 2021 17:24:15 +0100 Johannes Berg wrote:
+> > > (*_replace_bits() seems to be useful, though)  
+> > 
+> > Indeed.
+> > 
+> > Also as I said in my other mail, the le32/be32/... variants are
+> > tremendously useful, and they fundamentally cannot be expressed with the
+> > FIELD_GET() or field_get() macros. IMHO this is a clear advantage to the
+> 
+> Can you elaborate?
 
-> > From: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> > Sent: Tuesday, November 23, 2021 10:40 PM
-> > To: intel-wired-lan@lists.osuosl.org
-> > Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>;
-> > netdev@vger.kernel.org; Oleksandr Natalenko
-> > <oleksandr@natalenko.name>; Danielle Ratson <danieller@nvidia.com>;
-> > Alexander Duyck <alexander.duyck@gmail.com>
-> > Subject: [PATCH net v2] igb: fix netpoll exit with traffic
-> >
-> > Oleksandr brought a bug report where netpoll causes trace messages in
-> > the log on igb.
-> >
-> > Danielle brought this back up as still occuring, so we'll try again.
+Well, the way I see it, the only advantage of FIELD_GET() is that it
+will auto-determine the type (based on the mask type.) This cannot work
+if you need be/le conversions, because the be/le type annotations are
+invisible to the compiler.
 
-And also:
+So obviously you could write a BE32_FIELD_GET(), but then really that's
+equivalent to be32_get_bits() - note you you have to actually specify
+the type in the macro name. I guess in theory you could make macros
+where the type is an argument (like FIELD_GET_TYPE(be32, ...)), but I
+don't see how that gains anything.
 
-WARNING: 'occuring' may be misspelled - perhaps 'occurring'?
-#9:
-Danielle brought this back up as still occuring, so we'll try
-                                       ^^^^^^^^
-total: 0 errors, 1 warnings, 0 checks, 8 lines checked
+> > typed versions, and if you ask me we should get rid of the FIELD_GETand
+> > FIELD_PREP entirely - difficult now, but at least let's not propagate
+> > that?
+> 
+> I don't see why.
 
-Please Reword.
+Just for being more regular, in the spirit of "there's exactly one
+correct way of doing it" :)
 
->=20
-> Hi Jessi,
->=20
-> Ill run tests with you patch and give you results for if it is ok.
-> Thanks!
->=20
-> >
-> > [22038.710800] ------------[ cut here ]------------ [22038.710801]
-> > igb_poll+0x0/0x1440 [igb] exceeded budget in poll [22038.710802]
-> > WARNING: CPU: 12 PID: 40362 at net/core/netpoll.c:155
-> > netpoll_poll_dev+0x18a/0x1a0
-> >
-> > As Alex suggested, change the driver to return work_done at the exit
-> > of napi_poll, which should be safe to do in this driver because it is
-> > not polling multiple queues in this single napi context (multiple
-> > queues attached to one MSI-X vector). Several other drivers contain
-> > the same simple sequence, so I hope this will not create new problems.
-> >
-> > Fixes: 16eb8815c235 ("igb: Refactor clean_rx_irq to reduce overhead
-> > and improve performance")
-> > Reported-by: Oleksandr Natalenko <oleksandr@natalenko.name>
-> > Reported-by: Danielle Ratson <danieller@nvidia.com>
-> > Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
-> > Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> > ---
-> > COMPILE TESTED ONLY! I have no way to reproduce this even on a machine
-> > I have with igb. It works fine to load the igb driver and netconsole
-> > with no errors.
-> > ---
-> > v2: simplified patch with an attempt to make it work
-> > v1: original patch that apparently didn't work
-> > ---
-> >  drivers/net/ethernet/intel/igb/igb_main.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/net/ethernet/intel/igb/igb_main.c
-> > b/drivers/net/ethernet/intel/igb/igb_main.c
-> > index e647cc89c239..5e24b7ce5a92 100644
-> > --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> > +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> > @@ -8104,7 +8104,7 @@ static int igb_poll(struct napi_struct *napi,
-> > int
-> > budget)
-> >  	if (likely(napi_complete_done(napi, work_done)))
-> >  		igb_ring_irq_enable(q_vector);
-> >
-> > -	return min(work_done, budget - 1);
-> > +	return work_done;
-> >  }
-> >
-> >  /**
-> > --
-> > 2.33.1
-
+johannes
