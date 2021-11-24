@@ -2,83 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64FDC45B2D3
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 04:50:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90F2B45B2F1
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 05:00:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240905AbhKXDxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 22:53:37 -0500
-Received: from mail.loongson.cn ([114.242.206.163]:58092 "EHLO loongson.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S240893AbhKXDxf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 22:53:35 -0500
-Received: from localhost.localdomain (unknown [111.9.175.10])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxeNJ3tp1hx9oAAA--.1299S6;
-        Wed, 24 Nov 2021 11:50:24 +0800 (CST)
-From:   Huang Pei <huangpei@loongson.cn>
-To:     netdev@vger.kernel.org, ambrosehua@gmail.com
-Cc:     linux-arch@vger.kernel.org
-Subject: [PATCH 4/4] MIPS: loongson64: fix FTLB configuration
-Date:   Wed, 24 Nov 2021 11:50:04 +0800
-Message-Id: <20211124035004.7871-5-huangpei@loongson.cn>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20211124035004.7871-1-huangpei@loongson.cn>
-References: <20211124035004.7871-1-huangpei@loongson.cn>
+        id S240903AbhKXEDT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 23:03:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60632 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240896AbhKXEDS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Nov 2021 23:03:18 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 5327360FD9;
+        Wed, 24 Nov 2021 04:00:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637726409;
+        bh=cqj+GZucNbMAj5bFJ6npvwirdWGOMi1+TJsKiEqKdvw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=o/rnEo7kUYm5HuAhLOAHyFVgJtUZNHuAUvW+npz01sX11H959Fip0x902bUjXXcZF
+         B1MM6FFfXGWZpa2avOEv8LW8AKBVv/sD5AxWObSFJZx2JxzwUw5L7L0KG/0ThntzNa
+         y0+cMEGQQQTcE3/2eqq18wKzxh9PEeC28K1Ykf7QKS7YwgM0Sf1MiLRc5c02arNkpY
+         KXXtoYebTcwtjzPTNUuBmLXsoRI0P+KV7QzMTtnXju5BFxD7BrPyVUR0RnMl5mJQ6E
+         lADjqGeP3e7P8BFGIGYA4hny/Ko+aMzBQuGV26kfmQmpVBEHIa+kqUrSOEfI4FMHaC
+         xa+QM2jJI8ehQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 37DFC609B3;
+        Wed, 24 Nov 2021 04:00:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf9DxeNJ3tp1hx9oAAA--.1299S6
-X-Coremail-Antispam: 1UD129KBjvJXoW7Gry8WFyDJF1UCrW8Kw4Durg_yoW8Jr17pr
-        1qya17Kr4UAFy2yayDJFZ5Wry3ZFyDWFZxWFW29rWYv3ZxZr1UXF97Xa13JrsrZryI93Wr
-        Wa9agFW5KFs7Cr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUBab7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26ryj6rWUM7CY07I2
-        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI
-        8067AKxVWUAVCq3wA2048vs2IY020Ec7CjxVAFwI0_Gr0_Xr1l8cAvFVAK0II2c7xJM28C
-        jxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW8JVW5JwA2z4x0Y4vE2Ix0cI
-        8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E
-        87Iv6xkF7I0E14v26F4UJVW0owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0V
-        AKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1l
-        Ox8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JMxkIecxEwVAFwVW8GwCF04k20x
-        vY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I
-        3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jrv_JF1lIxkGc2Ij64vIr41lIx
-        AIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAI
-        cVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2js
-        IEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07b43ktUUUUU=
-X-CM-SenderInfo: xkxd0whshlqz5rrqw2lrqou0/
+Subject: Re: [PATCH net-next  1/1] tc-testing: Add link for reviews with TC
+ MAINTAINERS
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163772640922.5735.5608611906202875889.git-patchwork-notify@kernel.org>
+Date:   Wed, 24 Nov 2021 04:00:09 +0000
+References: <20211122144252.25156-1-jhs@emojatatu.com>
+In-Reply-To: <20211122144252.25156-1-jhs@emojatatu.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        jiri@resnulli.us, xiyou.wangcong@gmail.com, dcaratti@redhat.com,
+        marcelo.leitner@gmail.com, vladbu@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit "da1bd29742b1" ("MIPS: Loongson64: Probe CPU features via
-CPUCFG") makes 'set_ftlb_enable' called under c->cputype unset,
-which leaves FTLB disabled on BOTH 3A2000 and 3A3000
+Hello:
 
-Fixes: da1bd29742b1 ("MIPS: Loongson64: Probe CPU features via CPUCFG")
-Signed-off-by: Huang Pei <huangpei@loongson.cn>
----
- arch/mips/kernel/cpu-probe.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-diff --git a/arch/mips/kernel/cpu-probe.c b/arch/mips/kernel/cpu-probe.c
-index ac0e2cfc6d57..24a529c6c4be 100644
---- a/arch/mips/kernel/cpu-probe.c
-+++ b/arch/mips/kernel/cpu-probe.c
-@@ -1734,8 +1734,6 @@ static inline void decode_cpucfg(struct cpuinfo_mips *c)
- 
- static inline void cpu_probe_loongson(struct cpuinfo_mips *c, unsigned int cpu)
- {
--	decode_configs(c);
--
- 	/* All Loongson processors covered here define ExcCode 16 as GSExc. */
- 	c->options |= MIPS_CPU_GSEXCEX;
- 
-@@ -1796,6 +1794,8 @@ static inline void cpu_probe_loongson(struct cpuinfo_mips *c, unsigned int cpu)
- 		panic("Unknown Loongson Processor ID!");
- 		break;
- 	}
-+
-+	decode_configs(c);
- }
- #else
- static inline void cpu_probe_loongson(struct cpuinfo_mips *c, unsigned int cpu) { }
+On Mon, 22 Nov 2021 09:42:52 -0500 you wrote:
+> From: Jamal Hadi Salim <jhs@mojatatu.com>
+> 
+> Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
+> ---
+>  MAINTAINERS | 1 +
+>  1 file changed, 1 insertion(+)
+
+Here is the summary with links:
+  - [net-next,1/1] tc-testing: Add link for reviews with TC MAINTAINERS
+    https://git.kernel.org/netdev/net/c/0afefdced47d
+
+You are awesome, thank you!
 -- 
-2.20.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
