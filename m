@@ -2,52 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D77845B2AA
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 04:30:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6741D45B2CB
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 04:50:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240844AbhKXDdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 22:33:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54872 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239950AbhKXDdW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 22:33:22 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AEA4B60E8E;
-        Wed, 24 Nov 2021 03:30:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637724613;
-        bh=OPcDILzyn0XeIQ+YP3FJZKRJqafIC+6w8ZnqrHLOJuw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YcGkJVnDxBzqWd7Zt1GKw9L6P5FHJQAbZBs89zRPmIPSqm6BuOAmgEtj5Os4u9uvF
-         bbFPUVdOdE8dBQ906Q6hHwAYi0su/saHt1s5fWIepG28+gM53yOZv0sAWWCkBV5A1c
-         F4/28CmwddklZUxUwGee4LKSrr8+MmVKRMyliXEUYySO7c2P1n86E19+IPFYz5bu3k
-         SJiV0V6dg++KDAdCAO7DI6VALUyD81x+E5ukUJUtNEpngyKMdGWpo3wt7mHIxlHOmp
-         /alonhnVNj//2cPZv+J1L7en8+Ym519yuMSPIcWF4tAfPTlum9XJ5GLX0YHuatKvMH
-         +opqzinemoS4Q==
-Date:   Tue, 23 Nov 2021 19:30:11 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     <davem@davemloft.net>, <robh+dt@kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <p.zabel@pengutronix.de>,
-        <linux@armlinux.org.uk>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v2 2/6] net: lan966x: add the basic lan966x
- driver
-Message-ID: <20211123193011.12cde5da@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211123135517.4037557-3-horatiu.vultur@microchip.com>
-References: <20211123135517.4037557-1-horatiu.vultur@microchip.com>
-        <20211123135517.4037557-3-horatiu.vultur@microchip.com>
+        id S240890AbhKXDxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 22:53:32 -0500
+Received: from mail.loongson.cn ([114.242.206.163]:58044 "EHLO loongson.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S240875AbhKXDxc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Nov 2021 22:53:32 -0500
+Received: from localhost.localdomain (unknown [111.9.175.10])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxeNJ3tp1hx9oAAA--.1299S2;
+        Wed, 24 Nov 2021 11:50:21 +0800 (CST)
+From:   Huang Pei <huangpei@loongson.cn>
+To:     netdev@vger.kernel.org, ambrosehua@gmail.com
+Cc:     linux-arch@vger.kernel.org
+Subject: [PATCH V3]: bugfix
+Date:   Wed, 24 Nov 2021 11:50:00 +0800
+Message-Id: <20211124035004.7871-1-huangpei@loongson.cn>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf9DxeNJ3tp1hx9oAAA--.1299S2
+X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYe7k0a2IF6w4kM7kC6x804xWl14x267AK
+        xVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AKwVWUJVWUGw
+        A2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26r4j
+        6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j6F4UM28EF7xvwVC2z280aVAFwI0_Gr
+        1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Cr1j6rxdM2AIxVAIcxkEcVAq07x20xvE
+        ncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I
+        8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lc2xS
+        Y4AK67AK6r48MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I
+        8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUXVWU
+        AwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x
+        0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAF
+        wI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa
+        7IU5NJ57UUUUU==
+X-CM-SenderInfo: xkxd0whshlqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Nov 2021 14:55:13 +0100 Horatiu Vultur wrote:
-> #include <asm/memory.h>
+V3:
 
-drivers/net/ethernet/microchip/lan966x/lan966x_main.c:3:10: fatal error: 'asm/memory.h' file not found
-#include <asm/memory.h>
-         ^~~~~~~~~~~~~~
++. submit two driver fix for warning message separately, and
+it has already been accepted by netdev upstream
 
-Is this arch-specific? What do you need it for?
++. improve commit message
+
+PS:
+
+Does anyone has tx39 hardware? From tx39 kconfig, I can see it 
+does NOT support High Memory, which is natural for old 32bit MIPS,
+but I can not tell if it has dcache alias. My next patchset
+depends on it
+
+In-Reply-To: 
+
+
