@@ -2,139 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D936445B94D
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 12:39:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7496945B951
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 12:39:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241674AbhKXLmq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 06:42:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39184 "EHLO
+        id S241716AbhKXLmz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 06:42:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232946AbhKXLmo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 06:42:44 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87B00C061574;
-        Wed, 24 Nov 2021 03:39:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=vQDl3mdmA1En5CvP0uWx5PMM4Duf3hQWi+uoJkI1zBo=; b=gDBlttai/MvnO2Jnc8JXk3q8LQ
-        rMO0EWrsuGJEhyWFh5BXTWwmCWoOddFvvXm/uA/gQq9hSsOZ1o9D+VPqSXvEAV9jEOeeK6xOQoAfx
-        tjfKXRUCykdrVvQQOebb36UhhDBYbcR8GTzFWcOIwXnv56/7hCrLbe4ahkw03/fU/vp1NS94IDB8L
-        9xTMR6VRrUC76UcPFITy0RureR/fRfYGDWGiSXDL3f/b0al0+xtoCK+Kslp3o0A1xc55vkSBV2TTs
-        7tYaSdyUq+Qtf3tCvsLcPvb7bHQ/QleMz8BihlcLg5ntxmbTrf8H+huZ+XlO1zgQsHJGqfEvu71Rw
-        a6VGqrLw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55846)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mpqcF-0000YR-B8; Wed, 24 Nov 2021 11:39:07 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mpqcD-00019y-KO; Wed, 24 Nov 2021 11:39:05 +0000
-Date:   Wed, 24 Nov 2021 11:39:05 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shay Agroskin <shayagr@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        David Arinzon <darinzon@amazon.com>,
-        Noam Dagan <ndagan@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Andrei Vagin <avagin@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Cong Wang <cong.wang@bytedance.com>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH v2 net-next 07/26] mvneta: add .ndo_get_xdp_stats()
- callback
-Message-ID: <YZ4kWXnqZQhSu+mw@shell.armlinux.org.uk>
-References: <20211123163955.154512-1-alexandr.lobakin@intel.com>
- <20211123163955.154512-8-alexandr.lobakin@intel.com>
+        with ESMTP id S241385AbhKXLmy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 06:42:54 -0500
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E708C061574
+        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 03:39:45 -0800 (PST)
+Received: by mail-qv1-xf2b.google.com with SMTP id bu11so1559855qvb.0
+        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 03:39:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=W/yd4ZOY6HbEIY7UuAweiX85Z+lJfJ7BwSdkDyzkQnA=;
+        b=qcfepXIavtSG0i4zNuMQaLdreCEOJW3bVBc6XLRMOqGm/2aoDRoiPYI7p57lfzsQok
+         Hkh3nfgBBZ2BTt8mV6nVfXQIyYRYDu3H1ciDCRskonqycb9115FXILGi3ajsDLZMX92p
+         lkZBgBpykWwcYksxnH3mG0jC+y4MJaIrVV6B0JFDoPk7ncfy4IHOy80sk63w+aoGDkeM
+         mh9TdV/BXl+OsAxunUPFR9aSVCcHqXH2YGdTcyYACbYOY6Pvu/5i6yGZPJox+fTpniO6
+         fdo39JLCrldAiF/easV3Bn7I2b8+gcPV75q5g2AT5RLbgBh8NnUH8rZ+HnlG/O8LCGNm
+         CW9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=W/yd4ZOY6HbEIY7UuAweiX85Z+lJfJ7BwSdkDyzkQnA=;
+        b=j18H8ta5Ff6f8/Z/Abkl0tcwVrv2TEPVJdLoXEzLCbjjsIJ9+JXuuB8kAHPIoyx787
+         qTcJ9WYQZl31uFZul2xLu4H1SM8xjW/K025RARh4SCYyfUPishmz82D1J4TMN8SUhmz0
+         mN/vEmy4o6yUVNvF0iD7wxWUcrBiNZw/BHzpAK3/DJ2hMkUJKaakf9Cq4wE7ARRXxDQ6
+         gOzL4CPnhqzDFbSguq1+IYyzXzSEi1PKmHKOzggrWYOSd9ddUmuFAU+1/KS/Tgc6j3bY
+         okDOoiLZElOqZZ7eo2f/28J+dZNJEecfkWcoEBgkdh5RN5vWFLVfAkoN7JrqrIyawg/8
+         5B8Q==
+X-Gm-Message-State: AOAM530lmqiGgtXIDNGJtEBzyW6DW5oOPhNSgCHPD1yFoTEtIFL5u3Ei
+        +Dgmdp+455DFGGumR86mGENs1Q==
+X-Google-Smtp-Source: ABdhPJxZd8952aJI5MtfaLaOiQZZLUvEVbb9W8hNOMRKcgsmI722JbE0TnJ5CU0ieZHbuEpEn27EPQ==
+X-Received: by 2002:a05:6214:f6c:: with SMTP id iy12mr6433750qvb.29.1637753984459;
+        Wed, 24 Nov 2021 03:39:44 -0800 (PST)
+Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-33-142-112-185-132.dsl.bell.ca. [142.112.185.132])
+        by smtp.googlemail.com with ESMTPSA id s20sm7808134qtc.75.2021.11.24.03.39.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Nov 2021 03:39:44 -0800 (PST)
+Message-ID: <a899b3b5-c30b-2b91-be6a-24ec596bc786@mojatatu.com>
+Date:   Wed, 24 Nov 2021 06:39:41 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211123163955.154512-8-alexandr.lobakin@intel.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH v4 04/10] flow_offload: allow user to offload tc action to
+ net device
+Content-Language: en-US
+To:     Baowen Zheng <baowen.zheng@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jiri Pirko <jiri@resnulli.us>, Oz Shlomo <ozsh@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        oss-drivers <oss-drivers@corigine.com>
+References: <20211118130805.23897-1-simon.horman@corigine.com>
+ <20211118130805.23897-5-simon.horman@corigine.com>
+ <cf194dc4-a7c9-5221-628b-ab26ceca9583@mojatatu.com>
+ <DM5PR1301MB2172EFE3AC44E84D89D3D081E7609@DM5PR1301MB2172.namprd13.prod.outlook.com>
+ <404a4871-0e12-3cdc-e8c7-b0c85e068c53@mojatatu.com>
+ <DM5PR1301MB21725BE79994CD548CEA0CC4E7619@DM5PR1301MB2172.namprd13.prod.outlook.com>
+ <DM5PR1301MB2172ED85399FCC4B89F70792E7619@DM5PR1301MB2172.namprd13.prod.outlook.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+In-Reply-To: <DM5PR1301MB2172ED85399FCC4B89F70792E7619@DM5PR1301MB2172.namprd13.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 23, 2021 at 05:39:36PM +0100, Alexander Lobakin wrote:
-> +	for_each_possible_cpu(cpu) {
-> +		const struct mvneta_pcpu_stats *stats;
-> +		const struct mvneta_stats *ps;
-> +		u64 xdp_xmit_err;
-> +		u64 xdp_redirect;
-> +		u64 xdp_tx_err;
-> +		u64 xdp_pass;
-> +		u64 xdp_drop;
-> +		u64 xdp_xmit;
-> +		u64 xdp_tx;
-> +		u32 start;
-> +
-> +		stats = per_cpu_ptr(pp->stats, cpu);
-> +		ps = &stats->es.ps;
-> +
-> +		do {
-> +			start = u64_stats_fetch_begin_irq(&stats->syncp);
-> +
-> +			xdp_drop = ps->xdp_drop;
-> +			xdp_pass = ps->xdp_pass;
-> +			xdp_redirect = ps->xdp_redirect;
-> +			xdp_tx = ps->xdp_tx;
-> +			xdp_tx_err = ps->xdp_tx_err;
-> +			xdp_xmit = ps->xdp_xmit;
-> +			xdp_xmit_err = ps->xdp_xmit_err;
-> +		} while (u64_stats_fetch_retry_irq(&stats->syncp, start));
-> +
-> +		xdp_stats->drop += xdp_drop;
-> +		xdp_stats->pass += xdp_pass;
-> +		xdp_stats->redirect += xdp_redirect;
-> +		xdp_stats->tx += xdp_tx;
-> +		xdp_stats->tx_errors += xdp_tx_err;
-> +		xdp_stats->xmit_packets += xdp_xmit;
-> +		xdp_stats->xmit_errors += xdp_xmit_err;
+On 2021-11-23 21:59, Baowen Zheng wrote:
+> Sorry for reply this message again.
+> On November 24, 2021 10:11 AM, Baowen Zheng wrote:
+>> On November 24, 2021 3:04 AM, Jamal Hadi Salim wrote:
 
-Same comment as for mvpp2 - this could share a lot of code from
-mvneta_ethtool_update_pcpu_stats() (although it means we end up
-calculating a little more for the alloc error and refill error
-that this API doesn't need) but I think sharing that code would be
-a good idea.
+[..]
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+>>>
+>>> BTW: shouldnt extack be used here instead of returning just -EINVAL?
+>>> I didnt stare long enough but it seems extack is not passed when
+>>> deleting from hardware? I saw a NULL being passed in one of the patches.
+> Maybe I misunderstand what you mean previously, when I look through the implement in
+> flow_action_init, I did not found we use the extack to make a log before return -EINVAL.
+> So could you please figure it out? Maybe I miss something or misunderstand again.
+
+I mean there are maybe 1-2 places where you called that function
+flow_action_init() with extack being NULL but the others with
+legitimate extack.
+I pointed to offload delete as an example. This may have existed
+before your changes (but it is hard to tell from just eyeballing
+patches); regardless it is a problem for debugging incase some
+delete offload fails, no?
+
+BTW:
+now that i am looking at the patches again - small details:
+struct flow_offload_action is sometimes initialized and sometimes
+not (and sometimes allocated and sometimes off the stack). Maybe
+to be consistent pick one style and stick with it.
+
+cheers,
+jamal
