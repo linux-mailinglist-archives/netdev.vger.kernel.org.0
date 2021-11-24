@@ -2,76 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61E5345B2CD
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 04:50:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64FDC45B2D3
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 04:50:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240899AbhKXDxf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 22:53:35 -0500
-Received: from mail.loongson.cn ([114.242.206.163]:58070 "EHLO loongson.cn"
+        id S240905AbhKXDxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 22:53:37 -0500
+Received: from mail.loongson.cn ([114.242.206.163]:58092 "EHLO loongson.cn"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S240892AbhKXDxe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Nov 2021 22:53:34 -0500
+        id S240893AbhKXDxf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Nov 2021 22:53:35 -0500
 Received: from localhost.localdomain (unknown [111.9.175.10])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxeNJ3tp1hx9oAAA--.1299S5;
-        Wed, 24 Nov 2021 11:50:23 +0800 (CST)
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxeNJ3tp1hx9oAAA--.1299S6;
+        Wed, 24 Nov 2021 11:50:24 +0800 (CST)
 From:   Huang Pei <huangpei@loongson.cn>
 To:     netdev@vger.kernel.org, ambrosehua@gmail.com
 Cc:     linux-arch@vger.kernel.org
-Subject: [PATCH 3/4] MIPS: use 3-level pgtable for 64KB page size on MIPS_VA_BITS_48
-Date:   Wed, 24 Nov 2021 11:50:03 +0800
-Message-Id: <20211124035004.7871-4-huangpei@loongson.cn>
+Subject: [PATCH 4/4] MIPS: loongson64: fix FTLB configuration
+Date:   Wed, 24 Nov 2021 11:50:04 +0800
+Message-Id: <20211124035004.7871-5-huangpei@loongson.cn>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20211124035004.7871-1-huangpei@loongson.cn>
 References: <20211124035004.7871-1-huangpei@loongson.cn>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf9DxeNJ3tp1hx9oAAA--.1299S5
-X-Coremail-Antispam: 1UD129KBjvdXoWrZFy7JF4DWryrGF15Ar45trb_yoWfCFb_JF
-        1UtrWfGr1rGrW8u34aqrWrtF1a93WUWryfCr12gr15u3yS9F13ta1UXa1DZr13Cayq9rWf
-        XrWrAry3Cr4ayjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbfAYjsxI4VWkKwAYFVCjjxCrM7AC8VAFwI0_Xr0_Wr1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l82xGYIkIc2x26280x7
-        IE14v26r1rM28IrcIa0xkI8VCY1x0267AKxVWUCVW8JwA2ocxC64kIII0Yj41l84x0c7CE
-        w4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6x
-        kF7I0E14v26r4j6F4UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE
-        c7CjxVAFwI0_Cr1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c
-        02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE
-        4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lc2xSY4AK67AK6r48MxAIw28IcxkI7V
-        AKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCj
-        r7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUXVWUAwCIc40Y0x0EwIxGrwCI42IY6x
-        IIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAI
-        w20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x
-        0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7IU5_8n5UUUUU==
+X-CM-TRANSID: AQAAf9DxeNJ3tp1hx9oAAA--.1299S6
+X-Coremail-Antispam: 1UD129KBjvJXoW7Gry8WFyDJF1UCrW8Kw4Durg_yoW8Jr17pr
+        1qya17Kr4UAFy2yayDJFZ5Wry3ZFyDWFZxWFW29rWYv3ZxZr1UXF97Xa13JrsrZryI93Wr
+        Wa9agFW5KFs7Cr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUBab7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26ryj6rWUM7CY07I2
+        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI
+        8067AKxVWUAVCq3wA2048vs2IY020Ec7CjxVAFwI0_Gr0_Xr1l8cAvFVAK0II2c7xJM28C
+        jxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW8JVW5JwA2z4x0Y4vE2Ix0cI
+        8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E
+        87Iv6xkF7I0E14v26F4UJVW0owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0V
+        AKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1l
+        Ox8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JMxkIecxEwVAFwVW8GwCF04k20x
+        vY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I
+        3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jrv_JF1lIxkGc2Ij64vIr41lIx
+        AIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAI
+        cVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2js
+        IEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07b43ktUUUUU=
 X-CM-SenderInfo: xkxd0whshlqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It hangup when booting Loongson 3A1000 with BOTH
-CONFIG_PAGE_SIZE_64KB and CONFIG_MIPS_VA_BITS_48, that it turn
-out to use 2-level pgtable instead of 3-level. 64KB page size
-with 2-level pgtable only cover 42 bits VA, use 3-level pgtable
-to cover all 48 bits VA(55 bits)
+Commit "da1bd29742b1" ("MIPS: Loongson64: Probe CPU features via
+CPUCFG") makes 'set_ftlb_enable' called under c->cputype unset,
+which leaves FTLB disabled on BOTH 3A2000 and 3A3000
 
-Fixes: 1e321fa917fb ("MIPS64: Support of at least 48 bits of SEGBITS)
+Fixes: da1bd29742b1 ("MIPS: Loongson64: Probe CPU features via CPUCFG")
 Signed-off-by: Huang Pei <huangpei@loongson.cn>
 ---
- arch/mips/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/mips/kernel/cpu-probe.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-index de60ad190057..0215dc1529e9 100644
---- a/arch/mips/Kconfig
-+++ b/arch/mips/Kconfig
-@@ -3097,7 +3097,7 @@ config STACKTRACE_SUPPORT
- config PGTABLE_LEVELS
- 	int
- 	default 4 if PAGE_SIZE_4KB && MIPS_VA_BITS_48
--	default 3 if 64BIT && !PAGE_SIZE_64KB
-+	default 3 if 64BIT && (!PAGE_SIZE_64KB || MIPS_VA_BITS_48)
- 	default 2
+diff --git a/arch/mips/kernel/cpu-probe.c b/arch/mips/kernel/cpu-probe.c
+index ac0e2cfc6d57..24a529c6c4be 100644
+--- a/arch/mips/kernel/cpu-probe.c
++++ b/arch/mips/kernel/cpu-probe.c
+@@ -1734,8 +1734,6 @@ static inline void decode_cpucfg(struct cpuinfo_mips *c)
  
- config MIPS_AUTO_PFN_OFFSET
+ static inline void cpu_probe_loongson(struct cpuinfo_mips *c, unsigned int cpu)
+ {
+-	decode_configs(c);
+-
+ 	/* All Loongson processors covered here define ExcCode 16 as GSExc. */
+ 	c->options |= MIPS_CPU_GSEXCEX;
+ 
+@@ -1796,6 +1794,8 @@ static inline void cpu_probe_loongson(struct cpuinfo_mips *c, unsigned int cpu)
+ 		panic("Unknown Loongson Processor ID!");
+ 		break;
+ 	}
++
++	decode_configs(c);
+ }
+ #else
+ static inline void cpu_probe_loongson(struct cpuinfo_mips *c, unsigned int cpu) { }
 -- 
 2.20.1
 
