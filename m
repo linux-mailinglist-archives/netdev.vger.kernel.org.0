@@ -2,112 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B8A445CAB0
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 18:11:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 959D745CAB8
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 18:14:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242709AbhKXRO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 12:14:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57988 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349541AbhKXROY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 12:14:24 -0500
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F42C061574
-        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 09:11:14 -0800 (PST)
-Received: by mail-qv1-xf31.google.com with SMTP id bu11so2289504qvb.0
-        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 09:11:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5Vfrj2SnVlWvnBYwm3pYtP3SbPZdfXlnI21Bodg7/Hg=;
-        b=pQKgnLOdRzBHEeesEgNar5zDI1mac8ln/4u03dFSBwfyDphTacfZtOEiVUPrOsg/Sy
-         1ak99Sgh61Z6kwRkReSHyrmeguOq9fAoOa1Txas9W34pwmCY2dUkXvSya0X1oxwtvH48
-         zHWAUWRaxkZfBlX3BmGNYJotSRYsAy7rR0N8VAVKSR4KBNiN5UQX2Y9CPTJ6pq0lY4Ld
-         ldCMTeqiF/wy9q9Dq627MwFCAozLRBak0CkLgglEyOrdr51bFS6SvCGuDgA7VumUu7SI
-         SsL2YjLtqkU1CB1iF4ANR/v/2kbO3GQ91l/ip07vIzje0DOTu1sZBGzwVE3ff5NmHqrK
-         oN2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5Vfrj2SnVlWvnBYwm3pYtP3SbPZdfXlnI21Bodg7/Hg=;
-        b=8NkPHt32fkNNFX6NYaGWWexcn2/BOMHjet0Lc/5BVCof9IES+haeBk2T7+vl9zi7ji
-         mheqUB3WEOsbxhxRI1niVhpDYjq70wtLZeijucR+LgShq9fIGLRG/9wIBuw3NepaiWO4
-         GAJUpGchDaWrQ83+KyYCsfhARH6lFnvZCMX/fvF7V7xgZZZaWPpxWW1Q6g9lTARtpjsi
-         beEcpgb3WGbl9kz6KsmgZ2iwakRFWfl1tCu6o++ABhGtJs/ZxcZzdwGl6vh/VM763n+v
-         jXbc4VYjU8fvjVn/5YhBzcLpCZLLF7jQymPc8ZPwhxyjXd9tp+amuiJ4UDVfEZ8yhDq8
-         5PVQ==
-X-Gm-Message-State: AOAM532ioeYmlQkR2TLMnlWtQDhHfymT+3iUAAtT1awN538Y2I8LJCb5
-        H2vek96sV5bB33AZ/RrstzW8OGak4ePSrA==
-X-Google-Smtp-Source: ABdhPJxBo0YjmcGf08qEPVXStLCMocLsWPFf8YJ2fI9L+4nW1+dcgpqPL5ajWG27eeLqxWNOU06nig==
-X-Received: by 2002:a05:6214:411d:: with SMTP id kc29mr9204931qvb.22.1637773873673;
-        Wed, 24 Nov 2021 09:11:13 -0800 (PST)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id bi6sm146182qkb.29.2021.11.24.09.11.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Nov 2021 09:11:13 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>,
-        tipc-discussion@lists.sourceforge.net
-Cc:     Jon Maloy <jmaloy@redhat.com>, Ying Xue <ying.xue@windriver.com>,
-        Tuong Lien <tuong.t.lien@dektech.com.au>, davem@davemloft.net,
-        kuba@kernel.org
-Subject: [PATCH net-next] tipc: delete the unlikely branch in tipc_aead_encrypt
-Date:   Wed, 24 Nov 2021 12:11:12 -0500
-Message-Id: <47a478da0b6095b76e3cbe7a75cbd25d9da1df9a.1637773872.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        id S231309AbhKXRRn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 12:17:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:52711 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234401AbhKXRRm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 12:17:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1637774071;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NpePfdKSV4Sq+uVphqHqV1Aq+JS4cEiF8UpbgtgpCEw=;
+        b=T6va1KdDBQjZaXuJGPfsN9lYmE6/jZc9R7KlJ/H8PigcafCJ9Bg9CvSYN7h6VqPBOzpuNn
+        gWwsQU/WRrz/ytwMks/wUBSVUYG58Y4Us4Iw1iWc/piEABCny+h5qNr8KQY+sP9+HZY7IR
+        xNL5BJqfxYlUG+N68UMe/cUyEJmLMcY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-515-nc1zyWZdPG2NP3uFd6yeoA-1; Wed, 24 Nov 2021 12:14:26 -0500
+X-MC-Unique: nc1zyWZdPG2NP3uFd6yeoA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 366C4A0CAD;
+        Wed, 24 Nov 2021 17:14:25 +0000 (UTC)
+Received: from localhost (unknown [10.40.194.62])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id AD5A72B1A3;
+        Wed, 24 Nov 2021 17:14:23 +0000 (UTC)
+Date:   Wed, 24 Nov 2021 18:14:21 +0100
+From:   Jiri Benc <jbenc@redhat.com>
+To:     Fabian =?UTF-8?B?RnLDqWTDqXJpY2s=?= <fabf@skynet.be>
+Cc:     davem@davemloft.net, kuba@kernel.org, sbrivio@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: vxlan: Possible regression in vxlan_rcv()
+Message-ID: <20211124181421.154b4470@redhat.com>
+In-Reply-To: <1ad77777.15fd.17d4dc9bd96.Webtop.157@skynet.be>
+References: <1ad77777.15fd.17d4dc9bd96.Webtop.157@skynet.be>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a skb comes to tipc_aead_encrypt(), it's always linear. The
-unlikely check 'skb_cloned(skb) && tailen <= skb_tailroom(skb)'
-can completely be taken care of in skb_cow_data() by the code
-in branch "if (!skb_has_frag_list())".
+On Tue, 23 Nov 2021 18:13:26 +0100 (CET), Fabian Fr=C3=A9d=C3=A9rick wrote:
+>    Can someone tell me if the update is really ok or how I could check=20
+> that code ?
+> if VXLAN_F_REMCSUM_RX involves metadata checking I can ask to remove the=
+=20
+> patch.
 
-Also, remove the 'TODO:' annotation, as the pages in skbs are not
-writable, see more on commit 3cf4375a0904 ("tipc: do not write
-skb_shinfo frags when doing decrytion").
+I don't think it matters.
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Acked-by: Jon Maloy <jmaloy@redhat.com>
----
- net/tipc/crypto.c | 19 ++++---------------
- 1 file changed, 4 insertions(+), 15 deletions(-)
+I doubt anyone is using remote checksum offloading (RCO). It was based
+on a half thought-through idea. Local checksum offloading is superior,
+it gives you the same performance for free, with full compatibility with
+the base VXLAN standard. And even trying hard, I can't imagine anyone
+could be using RCO with metadata dst.
 
-diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
-index b4d9419a015b..81116312b753 100644
---- a/net/tipc/crypto.c
-+++ b/net/tipc/crypto.c
-@@ -761,21 +761,10 @@ static int tipc_aead_encrypt(struct tipc_aead *aead, struct sk_buff *skb,
- 			 skb_tailroom(skb), tailen);
- 	}
- 
--	if (unlikely(!skb_cloned(skb) && tailen <= skb_tailroom(skb))) {
--		nsg = 1;
--		trailer = skb;
--	} else {
--		/* TODO: We could avoid skb_cow_data() if skb has no frag_list
--		 * e.g. by skb_fill_page_desc() to add another page to the skb
--		 * with the wanted tailen... However, page skbs look not often,
--		 * so take it easy now!
--		 * Cloned skbs e.g. from link_xmit() seems no choice though :(
--		 */
--		nsg = skb_cow_data(skb, tailen, &trailer);
--		if (unlikely(nsg < 0)) {
--			pr_err("TX: skb_cow_data() returned %d\n", nsg);
--			return nsg;
--		}
-+	nsg = skb_cow_data(skb, tailen, &trailer);
-+	if (unlikely(nsg < 0)) {
-+		pr_err("TX: skb_cow_data() returned %d\n", nsg);
-+		return nsg;
- 	}
- 
- 	pskb_put(skb, trailer, tailen);
--- 
-2.27.0
+I wouldn't object against removing RCO completely from VXLAN (and
+moving the "generic" RCO pieces to net/ipv4/fou.c, which would become
+its only user). It would simplify the code and I doubt anyone would
+notice. I'm serious. Try googling for remcsumtx or remcsumrx and see
+for yourself.
+
+And, in case you still wonder, your patch seems fine to me. It's somehow
+pointless, since it optimizes drops for an extension that nobody uses,
+but it should not affect the code correctness. Probably. Whatever.
+
+ Jiri
 
