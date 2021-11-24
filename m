@@ -2,269 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FDA745B67F
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 09:25:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E84B45B68B
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 09:29:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233244AbhKXI2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 03:28:47 -0500
-Received: from mga06.intel.com ([134.134.136.31]:14465 "EHLO mga06.intel.com"
+        id S233393AbhKXIca (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 03:32:30 -0500
+Received: from m43-7.mailgun.net ([69.72.43.7]:43382 "EHLO m43-7.mailgun.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230517AbhKXI2q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Nov 2021 03:28:46 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10177"; a="296035606"
-X-IronPort-AV: E=Sophos;i="5.87,260,1631602800"; 
-   d="scan'208";a="296035606"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2021 00:25:35 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,260,1631602800"; 
-   d="scan'208";a="509786154"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by orsmga008.jf.intel.com with ESMTP; 24 Nov 2021 00:25:35 -0800
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Wed, 24 Nov 2021 00:25:35 -0800
-Received: from orsmsx606.amr.corp.intel.com (10.22.229.19) by
- ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Wed, 24 Nov 2021 00:25:34 -0800
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12 via Frontend Transport; Wed, 24 Nov 2021 00:25:34 -0800
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.107)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.12; Wed, 24 Nov 2021 00:25:34 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=M3UPp0u13c/dGfrrwz4pOpu3hyzW9RO8MqGQT4JIk8YbCWmB/naADe+6Zsi5fyYKH2JbcRYbMwS1nticu0zCjpatErbX63yo3fVaYx+Gy8eR6UXuJWbfudEXF73thxcTXR5s1RqBMAVuOW536WTKG12/IkGE1sIzjYSadQ4oLVkYaaHG7geiX+MU5khsWp86a6CliAaT2Fh/f7xf3Ha1S95Eh9C0gY/kXlYJz9CrwcFFKNCCTvbJfY868+u0ACFl3Z2/eq7YgEBNoT+iUf1oIJ0qbI5dopKQshmwd7w8k3T1mAovEpP+7UiEFXcxus9VZYa9tkrca3Ez5Aey9P4uEQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ErxsZNoSKIXr8BDFitImwAVL0A2cgMHXN5zOszkte+c=;
- b=nYuxorKAd/N9H94c5faaT/uhljXkx2h1xTsf9MTM/fsM8kNx7yF+RBI4dbIER0KKSpyCiBccLxH5J+C8fuKmfS/tDfq5kflo7RAcogZ8EYtjuly7pGJw1DsrGhioiK37E7ORGpTMlp/zNQ+mBfNUEoTWf+8mi/zCA0ULUFFIH9xnjSTm76Bt6mKr0XquypWGULWBbXc5GmnW/Ugitct/X1vh2L5bmCA8GRaldr3U/zdymI830C9l2GjqzBi46gZFqOqZcUN6sIyQHmhE3yD/aCEtzsyLE8GZx4vanDNgD9gvVW0ppnjZ+XN705902qx+352lFB3zexEVSWFAxqmlJA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ErxsZNoSKIXr8BDFitImwAVL0A2cgMHXN5zOszkte+c=;
- b=A/zKDYfO+AOuXrTYRYJnDYvXs8RPiIsNufP86nykt3mdY9fcoxybGfjW6x8cB2IFDBplZS+2KI5GcF8+vhzyreD/Q98rJIbtNV4XtlaorrVNSb06RcdY5iWRenmPU8UAktiv+YCcPKuh/4bi4OSg/YY5IsrNgwSAAf1tt3dpA8U=
-Received: from BYAPR11MB3207.namprd11.prod.outlook.com (2603:10b6:a03:7c::14)
- by SJ0PR11MB5791.namprd11.prod.outlook.com (2603:10b6:a03:423::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.22; Wed, 24 Nov
- 2021 08:25:32 +0000
-Received: from BYAPR11MB3207.namprd11.prod.outlook.com
- ([fe80::e559:d4e6:163c:b1ae]) by BYAPR11MB3207.namprd11.prod.outlook.com
- ([fe80::e559:d4e6:163c:b1ae%6]) with mapi id 15.20.4690.029; Wed, 24 Nov 2021
- 08:25:32 +0000
-From:   "Coelho, Luciano" <luciano.coelho@intel.com>
-To:     "jikos@kernel.org" <jikos@kernel.org>
-CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "Berg, Johannes" <johannes.berg@intel.com>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Grumbach, Emmanuel" <emmanuel.grumbach@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iwlwifi: mvm: protect regulatory_set_wiphy_regd_sync()
- with wiphy lock
-Thread-Topic: [PATCH] iwlwifi: mvm: protect regulatory_set_wiphy_regd_sync()
- with wiphy lock
-Thread-Index: AQHX4K387olC32REA0aEpjzQqwFaXKwSVDV4gAABcQCAAAGbgIAAAREA
-Date:   Wed, 24 Nov 2021 08:25:31 +0000
-Message-ID: <665cf18f14d28afa9d8b60bb3020e97b52a08a1a.camel@intel.com>
+        id S234479AbhKXIc2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Nov 2021 03:32:28 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1637742557; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=OmSbuwl7iL1WdSEQMMnIIrutT3ecoeD7PxVBtYSrxeU=; b=VuEyHbizu9Cck9J7/9txdYkjSuop6ZCSk3hekvpmFRLa7rr7GKq9ohLndsqDVvAYL0uu5qxF
+ 0wxww8DpY4jQDXn+/pU9YM5gPcYKnrrD25n4GLDkoCQC58DpwDIcYQnuz4H7xdXN19yDAyil
+ kzy+IBheJXP3CU1y5Bs+sPnNx4s=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 619df7dc4fca5da46d91f435 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 24 Nov 2021 08:29:16
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id A426FC4360D; Wed, 24 Nov 2021 08:29:16 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id C9359C4338F;
+        Wed, 24 Nov 2021 08:29:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org C9359C4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Jiri Kosina <jikos@kernel.org>
+Cc:     "Coelho\, Luciano" <luciano.coelho@intel.com>,
+        "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "Berg\, Johannes" <johannes.berg@intel.com>,
+        "Grumbach\, Emmanuel" <emmanuel.grumbach@intel.com>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iwlwifi: mvm: protect regulatory_set_wiphy_regd_sync() with wiphy lock
 References: <nycvar.YFH.7.76.2111232204150.16505@cbobk.fhfr.pm>
-         <871r366kjy.fsf@codeaurora.org>
-         <74c53e65a8f3db89d60718dc1dfb807cd80857ca.camel@intel.com>
-         <nycvar.YFH.7.76.2111240921230.16505@cbobk.fhfr.pm>
-In-Reply-To: <nycvar.YFH.7.76.2111240921230.16505@cbobk.fhfr.pm>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.42.1-1 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9f408f37-24df-494e-493e-08d9af23fb09
-x-ms-traffictypediagnostic: SJ0PR11MB5791:
-x-microsoft-antispam-prvs: <SJ0PR11MB57913906B1F915B34C71AAD090619@SJ0PR11MB5791.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: SErL4rRXHunULIipHA6UfGkx9cLLgBUTHdit7Qq45q4foUH/Ym5RPbzADcr2XFoFY2VzL/uU7lZlYgw037nTU9svyDYiJcKX9r2Av8vP27gAhwFQJ2mrqz2gyIOjrRif7TwKbwqe/v3UT8d+rOLIPzZgDypCyppe/JM+2OKV/OOJbtOlPiD37xGhsPoPtjVwaU1ZBuK0UpvYxrYP2aXxycChds1m66efEknJ5RSBQwjssI2tqC0Uv2QnaskjKnDGuTAE91e5hLLAVN4QBkw7H9yoomkEHGkpQiZVXe+OXYP4uezzjpynMTCv6+CxWebx7Q1xuo7L7a47ARx8kXNw3KF90HwxU/XNtMl1muuoy9X6PGgUaKBZxV0jlhNxXF52LCPZhn3pOjHRe8ZqB2jEUdqt8tnmXeGhEzRINNrQIF1DNmR9RHcb7pBZN+HImrgOFoqpkJckQDjlbqYKwyjHLS7VUqWgK/rHfkUI3J9G2mp9q0jLarHHWuKwR5dGp/MTPOn3qCLqXI44wzU9w0CuGV+fFx7yTNMUb+jlv89U7LNd4wfNef+IM+LjvdTDZxSvJX8GAdXXSkEt8M3tdaUsYrR2jZBmJV6avJkEsLWf9OhX/Ntmye40XDjo/jGT7xX4Nj795JlT0E5qjEXPNMUE+/ORJLKTLlVPg8Gv/+WBEyioc354+fZXkEKL5ZBfG+bc8nqp+5aRQcefjYxVp+G4eA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3207.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(316002)(4001150100001)(6916009)(38100700002)(186003)(122000001)(66446008)(5660300002)(508600001)(54906003)(76116006)(86362001)(6512007)(91956017)(66476007)(45080400002)(64756008)(8676002)(38070700005)(4326008)(66946007)(71200400001)(2616005)(6506007)(26005)(15650500001)(83380400001)(6486002)(82960400001)(66556008)(8936002)(36756003)(2906002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?U0dMejM1UUM2QmpGU2Y4c1hTMUl5dkdJZ2N2U1VVdFFUbzM4WW9veS9PWGo5?=
- =?utf-8?B?YlhJelVYZnVlU2o5QnRXUTJRZmxMNWQvRTdGRlQzTElwN3FPV0FUMlVpbStl?=
- =?utf-8?B?SGY4THhrc1cwNWNsRlNIT2ZsMXFrSFhLak0wQTBCNEM5QVUrUGNocS9lZlFY?=
- =?utf-8?B?a0ovOVlGMUJma2xLbWNXK0RtL1RaL3JOeVRpa0prY29lZHJvdU5jRG80d2p3?=
- =?utf-8?B?eEhkaHFkeU1IMS9oZnRoRGVyODQ4QTZjb3N0YzJBSWNoT2FiVkUyczRWSUdq?=
- =?utf-8?B?Qy9ObURyT0pmSnI0ditKemgzaW80TU56aHpvRVVjbjZoWDFpSkxnbmhaYndQ?=
- =?utf-8?B?WlMzZ2V0U1ZJTTZ5eXVrV1NFZEUxSURPclBHaHBzRWtpNFpTOEJvU0MrT0x2?=
- =?utf-8?B?R0oyZjNuUDFWeUFEKzZyZXkyZVZzRTRlcUh3TllsM1BSeVRFY1dmWStZd2F4?=
- =?utf-8?B?VzVIbUZwNWltNnFuQWU5MHNNRFhyNEUvY2ovV1I1RHc5Y0M1OVlocVl4S1J3?=
- =?utf-8?B?dWxBOGVNdlJOdHprekJabVVIdEJneXN0T3hWZExJdUlES0dCZFA5dU9wd1lJ?=
- =?utf-8?B?WTZEWTF2ZWN1N3B2RU92TmFOcDhZejNPVUFqSEpLemNhWXpLWWtqK05ReEhT?=
- =?utf-8?B?UEVudXd5V25IYWI1cGJLRlFsb2M4YkZNY05TZi9rRVNvdnd3ckorVndQOWdj?=
- =?utf-8?B?RjNjUzR0cWlVeEZCNzVCRHRMeTk3TjFZSWJZdGk2TlNJck1hT0VpYnR4V0gr?=
- =?utf-8?B?dXk3ZFdiNnpQTUxhSzF2bldBcjNsTS95c1VUQTNKWUlVNzZHNEs1MWt1WXpY?=
- =?utf-8?B?dG50Y2lxZFllbjZHdVdNK3k1b2swSDlxQXpyb2UxZFFGV1pGWnJGUHFreGpV?=
- =?utf-8?B?K1kzOEVvRzdXKy8yZXRnTnVLQThxVDA4S2crT2lQR1B0clJveUZwY2d1T1pV?=
- =?utf-8?B?cy9CV3cxNmhGSzhyYWF2K3l0eEd6aUd6UGs5SEtEeWNOMjllRVhDSE9VbUlp?=
- =?utf-8?B?UldWS3NMRXFVeXlWZk80L2ZTbVZYSDBOTEJXNVdsdjhhSHVhWDNuYTVmL0RM?=
- =?utf-8?B?VHMzSEwxUEpobVJkRHp0NXYveTVaOFQ0RDNjTG9oYXNYL0lLeWZjTmdNY2xk?=
- =?utf-8?B?WEY1K0dWWFQ3QVJVQUNabEJhSjlVT3FJL1hLNVFGU2p5T0dYN0huTnlXU3BZ?=
- =?utf-8?B?NWRpYmY4YUhmS2RRNTY4STYwQVA3bG55WXFRVitLV2dIcGt2cFdYSkNMbE56?=
- =?utf-8?B?YjZ1L1Y0bStCMnV0a1dCV0JLNFF5YmRUTU1rQkd3ZDJzb1ZFeEFzRC9rcnNE?=
- =?utf-8?B?UlA1ZGNCUUkyeHRNRVdVUSthbmV2R2hhZC96K2pRVFNxU0JsSzVNUEM3cjdH?=
- =?utf-8?B?eWhzcm8yS3Z3bXdqN2hMWWlVTmF6ZTJRQmRoeGM0SkwyR3J0NTdTYm40UXlH?=
- =?utf-8?B?YmVhdlIyMUxVQTRteTRVVldUejBob1NKNlRsQ2J6L0JNMUF5S1Y4elN3M1hV?=
- =?utf-8?B?Yk5VYlRKamE4Lys2bi8xWS9xYlhWa1hBdmNjSThUc0ZMb0QyQjRvZWNTZFJG?=
- =?utf-8?B?MHNmdU9OTGM3M01hZllZVzczMHNMdjQxNEVXTXltSFF6Y2xObE9GVDdVK1l6?=
- =?utf-8?B?cndsYVBYVXcvYjJuYXFmYWpqSWZZVHlKU2swdU5sYVVvam9hcnVwRU0yN09m?=
- =?utf-8?B?U3Jtd0E0ems0SENLVmcxVUhmNmYveTJ6N0w4T0szaWRxUkNtS1BUNHk3d21V?=
- =?utf-8?B?dWtKeDdac01xRWQ4N2ZGdEtwdXl6VUVOeHZlYjhFRitVbnhyanVOT1ZodkVD?=
- =?utf-8?B?VXAxdW0zRUc5eUMyNkd5VGx2aVA5QkxWR1UvdjlnalpMM3U5YnM2UFNRL3R0?=
- =?utf-8?B?NGN0c0ZLOGU4TUdmakZxSUpJV3ZVeHFmQzJSNGZhelNZMWJXZC90bWZ2OUlD?=
- =?utf-8?B?QVVOeXI2ekozY2Y0Z2Z0VDJsYWJDMlIvVmZuZGw5N3AvUndidlNOL1AvelRs?=
- =?utf-8?B?TFRDVm5BYTV5UmtIMlR6Qjg1TFJEeHlUMUZrYjgxTTFqblpaQnBUL3JpUzFC?=
- =?utf-8?B?S2psUWtac2FSZURtYnNrV2tTeHliYjNhVjN3Zm9neEZ3T0RUb1JWc1NjVWdO?=
- =?utf-8?B?RlRBMHNmWDFrS2t6OUpVclZZbzE2enFWbGY3QmJUR3ZXdWpjay9nWkM2Z1ho?=
- =?utf-8?B?OFJ1QW9XdDNiWE53ZURWbXFPQzVQSFptRXJMMnBHaHpMWmxTRE1PeEhlU2RE?=
- =?utf-8?Q?6EAUeOU9mzXLvQpuDlBeMS/z7rd+WnVDnN2Y21YRXU=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <5A0976FD371DFE4985D1A54D14DDC338@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        <871r366kjy.fsf@codeaurora.org>
+        <74c53e65a8f3db89d60718dc1dfb807cd80857ca.camel@intel.com>
+        <nycvar.YFH.7.76.2111240921230.16505@cbobk.fhfr.pm>
+Date:   Wed, 24 Nov 2021 10:29:10 +0200
+In-Reply-To: <nycvar.YFH.7.76.2111240921230.16505@cbobk.fhfr.pm> (Jiri
+        Kosina's message of "Wed, 24 Nov 2021 09:21:41 +0100 (CET)")
+Message-ID: <87o86a5549.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3207.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9f408f37-24df-494e-493e-08d9af23fb09
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Nov 2021 08:25:31.8582
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: FJJMR4pfcl5OYLQxzZ1zDCsHYk9N76uUY4KBcMrEIPvHb2QBkPLFA78oUFsdJXXGKTfxl4UQRNTiW851fIa7J+BkaEkrLiT19i8hF7Ge3sU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5791
-X-OriginatorOrg: intel.com
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCAyMDIxLTExLTI0IGF0IDA5OjIxICswMTAwLCBKaXJpIEtvc2luYSB3cm90ZToNCj4g
-T24gV2VkLCAyNCBOb3YgMjAyMSwgQ29lbGhvLCBMdWNpYW5vIHdyb3RlOg0KPiANCj4gPiA+ID4g
-U2luY2UgdGhlIHN3aXRjaCBhd2F5IGZyb20gcnRubCB0byB3aXBoeSBsb2NrLCANCj4gPiA+ID4g
-cmVndWxhdG9yeV9zZXRfd2lwaHlfcmVnZF9zeW5jKCkgaGFzIHRvIGJlIGNhbGxlZCB3aXRoIHdp
-cGh5IGxvY2sgaGVsZDsgDQo+ID4gPiA+IHRoaXMgaXMgY3VycmVudGx5IG5vdCB0aGUgY2FzZSBv
-biB0aGUgbW9kdWxlIGxvYWQgY29kZXBhdGguDQo+ID4gPiA+IA0KPiA+ID4gPiBGaXggdGhhdCBi
-eSBwcm9wZXJseSBhY3F1aXJpbmcgaXQgaW4gaXdsX212bV9zdGFydF9nZXRfbnZtKCkgdG8gbWFp
-bnRhaW4gDQo+ID4gPiA+IGFsc28gbG9jayBvcmRlcmluZyBhZ2FpbnN0IG12bS0+bXV0ZXggYW5k
-IFJUTkwuDQo+ID4gPiA+IA0KPiA+ID4gPiBUaGlzIGZpeGVzIHRoZSBzcGxhdCBiZWxvdy4NCj4g
-PiA+ID4gDQo+ID4gPiA+ICA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PQ0KPiA+ID4gPiAg
-V0FSTklORzogc3VzcGljaW91cyBSQ1UgdXNhZ2UNCj4gPiA+ID4gIDUuMTYuMC1yYzIgIzEgTm90
-IHRhaW50ZWQNCj4gPiA+ID4gIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+ID4gPiA+
-ICBkcml2ZXJzL25ldC93aXJlbGVzcy9pbnRlbC9pd2x3aWZpL212bS9tYWM4MDIxMS5jOjI2NCBz
-dXNwaWNpb3VzIHJjdV9kZXJlZmVyZW5jZV9wcm90ZWN0ZWQoKSB1c2FnZSENCj4gPiA+ID4gDQo+
-ID4gPiA+ICBvdGhlciBpbmZvIHRoYXQgbWlnaHQgaGVscCB1cyBkZWJ1ZyB0aGlzOg0KPiA+ID4g
-PiANCj4gPiA+ID4gIHJjdV9zY2hlZHVsZXJfYWN0aXZlID0gMiwgZGVidWdfbG9ja3MgPSAxDQo+
-ID4gPiA+ICAzIGxvY2tzIGhlbGQgYnkgbW9kcHJvYmUvNTc4Og0KPiA+ID4gPiAgICMwOiBmZmZm
-ZmZmZmMwYjZmMGU4IChpd2x3aWZpX29wbW9kZV90YWJsZV9tdHgpeysuKy59LXszOjN9LCBhdDog
-aXdsX29wbW9kZV9yZWdpc3RlcisweDJlLzB4ZTAgW2l3bHdpZmldDQo+ID4gPiA+ICAgIzE6IGZm
-ZmZmZmZmOWE4NTZiMDggKHJ0bmxfbXV0ZXgpeysuKy59LXszOjN9LCBhdDogaXdsX29wX21vZGVf
-bXZtX3N0YXJ0KzB4YTBiLzB4Y2IwIFtpd2xtdm1dDQo+ID4gPiA+ICAgIzI6IGZmZmY4ZTUyNDJm
-NTMzODAgKCZtdm0tPm11dGV4KXsrLisufS17MzozfSwgYXQ6IGl3bF9vcF9tb2RlX212bV9zdGFy
-dCsweGExNi8weGNiMCBbaXdsbXZtXQ0KPiA+ID4gPiANCj4gPiA+ID4gIHN0YWNrIGJhY2t0cmFj
-ZToNCj4gPiA+ID4gIENQVTogMSBQSUQ6IDU3OCBDb21tOiBtb2Rwcm9iZSBOb3QgdGFpbnRlZCA1
-LjE2LjAtcmMyICMxDQo+ID4gPiA+ICBIYXJkd2FyZSBuYW1lOiBMRU5PVk8gMjBLNVMyMlIwMC8y
-MEs1UzIyUjAwLCBCSU9TIFIwSUVUMzhXICgxLjE2ICkgMDUvMzEvMjAxNw0KPiA+ID4gPiAgQ2Fs
-bCBUcmFjZToNCj4gPiA+ID4gICA8VEFTSz4NCj4gPiA+ID4gICBkdW1wX3N0YWNrX2x2bCsweDU4
-LzB4NzENCj4gPiA+ID4gICBpd2xfbXZtX2luaXRfZndfcmVnZCsweDEzZC8weDE4MCBbaXdsbXZt
-XQ0KPiA+ID4gPiAgIGl3bF9tdm1faW5pdF9tY2MrMHg2Ni8weDFkMCBbaXdsbXZtXQ0KPiA+ID4g
-PiAgIGl3bF9vcF9tb2RlX212bV9zdGFydCsweGM2ZC8weGNiMCBbaXdsbXZtXQ0KPiA+ID4gPiAg
-IF9pd2xfb3BfbW9kZV9zdGFydC5pc3JhLjQrMHg0Mi8weDgwIFtpd2x3aWZpXQ0KPiA+ID4gPiAg
-IGl3bF9vcG1vZGVfcmVnaXN0ZXIrMHg3MS8weGUwIFtpd2x3aWZpXQ0KPiA+ID4gPiAgID8gMHhm
-ZmZmZmZmZmMxMDYyMDAwDQo+ID4gPiA+ICAgaXdsX212bV9pbml0KzB4MzQvMHgxMDAwIFtpd2xt
-dm1dDQo+ID4gPiA+ICAgZG9fb25lX2luaXRjYWxsKzB4NWIvMHgzMDANCj4gPiA+ID4gICBkb19p
-bml0X21vZHVsZSsweDViLzB4MjFjDQo+ID4gPiA+ICAgbG9hZF9tb2R1bGUrMHgxYjJmLzB4MjMy
-MA0KPiA+ID4gPiAgID8gX19kb19zeXNfZmluaXRfbW9kdWxlKzB4YWEvMHgxMTANCj4gPiA+ID4g
-ICBfX2RvX3N5c19maW5pdF9tb2R1bGUrMHhhYS8weDExMA0KPiA+ID4gPiAgIGRvX3N5c2NhbGxf
-NjQrMHgzYS8weGIwDQo+ID4gPiA+ICAgZW50cnlfU1lTQ0FMTF82NF9hZnRlcl9od2ZyYW1lKzB4
-NDQvMHhhZQ0KPiA+ID4gPiAgUklQOiAwMDMzOjB4N2Y3Y2RkN2M4ZGVkDQo+ID4gPiA+ICBDb2Rl
-OiA1YiA0MSA1YyBjMyA2NiAwZiAxZiA4NCAwMCAwMCAwMCAwMCAwMCBmMyAwZiAxZSBmYSA0OCA4
-OSBmOCA0OCA4OSBmNyA0OCA4OSBkNiA0OCA4OSBjYSA0ZCA4OSBjMiA0ZCA4OSBjOCA0YyA4YiA0
-YyAyNCAwOCAwZiAwNSA8NDg+IDNkIDAxIGYwIGZmIGZmIDczIDAxIGMzIDQ4IDhiIDBkIGZiIGVm
-IDBlIDAwIGY3IGQ4IDY0IDg5IDAxIDQ4DQo+ID4gPiA+ICBSU1A6IDAwMmI6MDAwMDdmZmZiOTBi
-ZjQ1OCBFRkxBR1M6IDAwMDAwMjQ2IE9SSUdfUkFYOiAwMDAwMDAwMDAwMDAwMTM5DQo+ID4gPiA+
-ICBSQVg6IGZmZmZmZmZmZmZmZmZmZGEgUkJYOiAwMDAwNTU5YzUwMWNhZjAwIFJDWDogMDAwMDdm
-N2NkZDdjOGRlZA0KPiA+ID4gPiAgUkRYOiAwMDAwMDAwMDAwMDAwMDAwIFJTSTogMDAwMDU1OWM0
-ZWIzNjZlZSBSREk6IDAwMDAwMDAwMDAwMDAwMDINCj4gPiA+ID4gIFJCUDogMDAwMDAwMDAwMDA0
-MDAwMCBSMDg6IDAwMDAwMDAwMDAwMDAwMDAgUjA5OiAwMDAwNTU5YzUwMWNhOWY4DQo+ID4gPiA+
-ICBSMTA6IDAwMDAwMDAwMDAwMDAwMDIgUjExOiAwMDAwMDAwMDAwMDAwMjQ2IFIxMjogMDAwMDU1
-OWM0ZWIzNjZlZQ0KPiA+ID4gPiAgUjEzOiAwMDAwNTU5YzUwMWNhZGIwIFIxNDogMDAwMDAwMDAw
-MDAwMDAwMCBSMTU6IDAwMDA1NTljNTAxY2JhZDANCj4gPiA+ID4gICA8L1RBU0s+DQo+ID4gPiA+
-ICAtLS0tLS0tLS0tLS1bIGN1dCBoZXJlIF0tLS0tLS0tLS0tLS0NCj4gPiA+ID4gIFdBUk5JTkc6
-IENQVTogMSBQSUQ6IDU3OCBhdCBuZXQvd2lyZWxlc3MvcmVnLmM6MzEwNyByZWdfcHJvY2Vzc19z
-ZWxmX21hbmFnZWRfaGludCsweDE4My8weDFkMCBbY2ZnODAyMTFdDQo+ID4gPiA+ICBNb2R1bGVz
-IGxpbmtlZCBpbjoNCj4gPiA+ID4gIENQVTogMSBQSUQ6IDU3OCBDb21tOiBtb2Rwcm9iZSBOb3Qg
-dGFpbnRlZCA1LjE2LjAtcmMyICMxDQo+ID4gPiA+ICBIYXJkd2FyZSBuYW1lOiBMRU5PVk8gMjBL
-NVMyMlIwMC8yMEs1UzIyUjAwLCBCSU9TIFIwSUVUMzhXICgxLjE2ICkgMDUvMzEvMjAxNw0KPiA+
-ID4gPiAgUklQOiAwMDEwOnJlZ19wcm9jZXNzX3NlbGZfbWFuYWdlZF9oaW50KzB4MTgzLzB4MWQw
-IFtjZmc4MDIxMV0NCj4gPiA+ID4gIENvZGU6IDgzIGM0IDYwIDViIDQxIDVhIDQxIDVjIDQxIDVk
-IDQxIDVlIDQxIDVmIDVkIDQ5IDhkIDYyIGY4IGMzIDQ4IDhkIDdiIDY4IGJlIGZmIGZmIGZmIGZm
-IGU4IDc1IDRhIDEzIGQ5IDg1IGMwIDBmIDg1IGU2IGZlIGZmIGZmIDwwZj4gMGIgZTkgZGYgZmUg
-ZmYgZmYgMGYgMGIgODAgM2QgYmMgMmMgMGIgMDAgMDAgMGYgODUgYzIgZmUgZmYgZmYNCj4gPiA+
-ID4gIFJTUDogMDAxODpmZmZmOTk5NDgwOWNmYWYwIEVGTEFHUzogMDAwMTAyNDYNCj4gPiA+ID4g
-IFJBWDogMDAwMDAwMDAwMDAwMDAwMCBSQlg6IGZmZmY4ZTUyNDJmNTA1YzAgUkNYOiAwMDAwMDAw
-MDAwMDAwMDAwDQo+ID4gPiA+ICBSRFg6IDAwMDAwMDAwMDAwMDAwMDAgUlNJOiBmZmZmOGU1MjQy
-ZjUwNjI4IFJESTogZmZmZjhlNTI0YTJiNWNkMA0KPiA+ID4gPiAgUkJQOiBmZmZmOTk5NDgwOWNm
-YjgwIFIwODogMDAwMDAwMDAwMDAwMDAwMSBSMDk6IGZmZmZmZmZmOWIyZTJmNTANCj4gPiA+ID4g
-IFIxMDogZmZmZjk5OTQ4MDljZmI5OCBSMTE6IGZmZmZmZmZmZmZmZmZmZmYgUjEyOiAwMDAwMDAw
-MDAwMDAwMDAwDQo+ID4gPiA+ICBSMTM6IGZmZmY4ZTUyNDJmNTMyZTggUjE0OiBmZmZmOGU1MjQ4
-OTE0MDEwIFIxNTogZmZmZjhlNTI0MmY1MzJlMA0KPiA+ID4gPiAgRlM6ICAwMDAwN2Y3Y2RkNmFm
-NzQwKDAwMDApIEdTOmZmZmY4ZTUzNjc0ODAwMDAoMDAwMCkga25sR1M6MDAwMDAwMDAwMDAwMDAw
-MA0KPiA+ID4gPiAgQ1M6ICAwMDEwIERTOiAwMDAwIEVTOiAwMDAwIENSMDogMDAwMDAwMDA4MDA1
-MDAzMw0KPiA+ID4gPiAgQ1IyOiAwMDAwN2YxOTQzMDY4N2FjIENSMzogMDAwMDAwMDEwODhmYTAw
-MyBDUjQ6IDAwMDAwMDAwMDAzNzA2ZTANCj4gPiA+ID4gIENhbGwgVHJhY2U6DQo+ID4gPiA+ICAg
-PFRBU0s+DQo+ID4gPiA+ICAgPyBsb2NrX2lzX2hlbGRfdHlwZSsweGI0LzB4MTIwDQo+ID4gPiA+
-ICAgPyByZWd1bGF0b3J5X3NldF93aXBoeV9yZWdkX3N5bmMrMHgyZi8weDgwIFtjZmc4MDIxMV0N
-Cj4gPiA+ID4gICByZWd1bGF0b3J5X3NldF93aXBoeV9yZWdkX3N5bmMrMHgyZi8weDgwIFtjZmc4
-MDIxMV0NCj4gPiA+ID4gICBpd2xfbXZtX2luaXRfbWNjKzB4Y2QvMHgxZDAgW2l3bG12bV0NCj4g
-PiA+ID4gICBpd2xfb3BfbW9kZV9tdm1fc3RhcnQrMHhjNmQvMHhjYjAgW2l3bG12bV0NCj4gPiA+
-ID4gICBfaXdsX29wX21vZGVfc3RhcnQuaXNyYS40KzB4NDIvMHg4MCBbaXdsd2lmaV0NCj4gPiA+
-ID4gICBpd2xfb3Btb2RlX3JlZ2lzdGVyKzB4NzEvMHhlMCBbaXdsd2lmaV0NCj4gPiA+ID4gICA/
-IDB4ZmZmZmZmZmZjMTA2MjAwMA0KPiA+ID4gPiAgIGl3bF9tdm1faW5pdCsweDM0LzB4MTAwMCBb
-aXdsbXZtXQ0KPiA+ID4gPiAgIGRvX29uZV9pbml0Y2FsbCsweDViLzB4MzAwDQo+ID4gPiA+ICAg
-ZG9faW5pdF9tb2R1bGUrMHg1Yi8weDIxYw0KPiA+ID4gPiAgIGxvYWRfbW9kdWxlKzB4MWIyZi8w
-eDIzMjANCj4gPiA+ID4gICA/IF9fZG9fc3lzX2Zpbml0X21vZHVsZSsweGFhLzB4MTEwDQo+ID4g
-PiA+ICAgX19kb19zeXNfZmluaXRfbW9kdWxlKzB4YWEvMHgxMTANCj4gPiA+ID4gICBkb19zeXNj
-YWxsXzY0KzB4M2EvMHhiMA0KPiA+ID4gPiAgIGVudHJ5X1NZU0NBTExfNjRfYWZ0ZXJfaHdmcmFt
-ZSsweDQ0LzB4YWUNCj4gPiA+ID4gIFJJUDogMDAzMzoweDdmN2NkZDdjOGRlZA0KPiA+ID4gPiAg
-Q29kZTogNWIgNDEgNWMgYzMgNjYgMGYgMWYgODQgMDAgMDAgMDAgMDAgMDAgZjMgMGYgMWUgZmEg
-NDggODkgZjggNDggODkgZjcgNDggODkgZDYgNDggODkgY2EgNGQgODkgYzIgNGQgODkgYzggNGMg
-OGIgNGMgMjQgMDggMGYgMDUgPDQ4PiAzZCAwMSBmMCBmZiBmZiA3MyAwMSBjMyA0OCA4YiAwZCBm
-YiBlZiAwZSAwMCBmNyBkOCA2NCA4OSAwMSA0OA0KPiA+ID4gPiAgUlNQOiAwMDJiOjAwMDA3ZmZm
-YjkwYmY0NTggRUZMQUdTOiAwMDAwMDI0NiBPUklHX1JBWDogMDAwMDAwMDAwMDAwMDEzOQ0KPiA+
-ID4gPiAgUkFYOiBmZmZmZmZmZmZmZmZmZmRhIFJCWDogMDAwMDU1OWM1MDFjYWYwMCBSQ1g6IDAw
-MDA3ZjdjZGQ3YzhkZWQNCj4gPiA+ID4gIFJEWDogMDAwMDAwMDAwMDAwMDAwMCBSU0k6IDAwMDA1
-NTljNGViMzY2ZWUgUkRJOiAwMDAwMDAwMDAwMDAwMDAyDQo+ID4gPiA+ICBSQlA6IDAwMDAwMDAw
-MDAwNDAwMDAgUjA4OiAwMDAwMDAwMDAwMDAwMDAwIFIwOTogMDAwMDU1OWM1MDFjYTlmOA0KPiA+
-ID4gPiAgUjEwOiAwMDAwMDAwMDAwMDAwMDAyIFIxMTogMDAwMDAwMDAwMDAwMDI0NiBSMTI6IDAw
-MDA1NTljNGViMzY2ZWUNCj4gPiA+ID4gIFIxMzogMDAwMDU1OWM1MDFjYWRiMCBSMTQ6IDAwMDAw
-MDAwMDAwMDAwMDAgUjE1OiAwMDAwNTU5YzUwMWNiYWQwDQo+ID4gPiA+IA0KPiA+ID4gPiBGaXhl
-czogYTA1ODI5YTcyMjJlOWQxICgiY2ZnODAyMTE6IGF2b2lkIGhvbGRpbmcgdGhlIFJUTkwgd2hl
-biBjYWxsaW5nIHRoZSBkcml2ZXIiKQ0KPiA+ID4gPiBTaWduZWQtb2ZmLWJ5OiBKaXJpIEtvc2lu
-YSA8amtvc2luYUBzdXNlLmN6Pg0KPiA+ID4gDQo+ID4gPiBJIHRoaW5rIHRoaXMgc2hvdWxkIGdv
-IHRvIHdpcmVsZXNzLWRyaXZlcnMgc28gSSBhc3NpZ25lZCB0aGlzIHRvIG1lLg0KPiA+ID4gTHVj
-YSwgYWNrPw0KPiA+IA0KPiA+IEhtbW0sIEkgdGhvdWdodCB3ZSBhbHJlYWR5IGhhZCBhIGZpeCBm
-b3IgdGhpcyBhcyB3ZWxsPw0KPiANCj4gRldJVyBJIGRvbid0IHNlZSB0aGlzIGZpeGVkIGluIGxh
-dGVzdCBsaW51eC1uZXh0Lg0KDQpZb3UncmUgcmlnaHQsIGl0J3Mgbm90IHRoZXJlLiAgRm9yIHNv
-bWUgcmVhc29uIHRoYXQgaXMgaW4gb3VyIGludGVybmFsDQp0cmVlIGFuZCBjYW1lIGZyb20gYSBt
-ZXJnZSBmcm9tIHVwc3RyZWFtLCB3aGljaCBpcyBzdHJhbmdlLg0KDQpCdXQgcmVnYXJkbGVzcyBv
-ZiB0aGUgcmVhc29uIHdoeSBpdCdzIG5vdCB0aGVyZSwgaXQgc2hvdWxkIGJlIGFwcGxpZWQsDQpz
-byB0aGFua3MhIDopDQoNCkFja2VkLWJ5OiBMdWNhIENvZWxobyA8bHVjaWFuby5jb2VsaG9AaW50
-ZWwuY29tPg0KDQotLQ0KQ2hlZXJzLA0KTHVjYS4NCg==
+Jiri Kosina <jikos@kernel.org> writes:
+
+> On Wed, 24 Nov 2021, Coelho, Luciano wrote:
+>
+>> > > Since the switch away from rtnl to wiphy lock, 
+>> > > regulatory_set_wiphy_regd_sync() has to be called with wiphy lock held; 
+>> > > this is currently not the case on the module load codepath.
+>> > > 
+>> > > Fix that by properly acquiring it in iwl_mvm_start_get_nvm() to maintain 
+>> > > also lock ordering against mvm->mutex and RTNL.
+>> > > 
+>> > > This fixes the splat below.
+>> > > 
+>> > >  =============================
+>> > >  WARNING: suspicious RCU usage
+>> > >  5.16.0-rc2 #1 Not tainted
+>> > >  -----------------------------
+>> > >  drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c:264 suspicious rcu_dereference_protected() usage!
+>> > > 
+>> > >  other info that might help us debug this:
+>> > > 
+>> > >  rcu_scheduler_active = 2, debug_locks = 1
+>> > >  3 locks held by modprobe/578:
+>> > >   #0: ffffffffc0b6f0e8 (iwlwifi_opmode_table_mtx){+.+.}-{3:3}, at: iwl_opmode_register+0x2e/0xe0 [iwlwifi]
+>> > >   #1: ffffffff9a856b08 (rtnl_mutex){+.+.}-{3:3}, at: iwl_op_mode_mvm_start+0xa0b/0xcb0 [iwlmvm]
+>> > >   #2: ffff8e5242f53380 (&mvm->mutex){+.+.}-{3:3}, at: iwl_op_mode_mvm_start+0xa16/0xcb0 [iwlmvm]
+>> > > 
+>> > >  stack backtrace:
+>> > >  CPU: 1 PID: 578 Comm: modprobe Not tainted 5.16.0-rc2 #1
+>> > >  Hardware name: LENOVO 20K5S22R00/20K5S22R00, BIOS R0IET38W (1.16 ) 05/31/2017
+>> > >  Call Trace:
+>> > >   <TASK>
+>> > >   dump_stack_lvl+0x58/0x71
+>> > >   iwl_mvm_init_fw_regd+0x13d/0x180 [iwlmvm]
+>> > >   iwl_mvm_init_mcc+0x66/0x1d0 [iwlmvm]
+>> > >   iwl_op_mode_mvm_start+0xc6d/0xcb0 [iwlmvm]
+>> > >   _iwl_op_mode_start.isra.4+0x42/0x80 [iwlwifi]
+>> > >   iwl_opmode_register+0x71/0xe0 [iwlwifi]
+>> > >   ? 0xffffffffc1062000
+>> > >   iwl_mvm_init+0x34/0x1000 [iwlmvm]
+>> > >   do_one_initcall+0x5b/0x300
+>> > >   do_init_module+0x5b/0x21c
+>> > >   load_module+0x1b2f/0x2320
+>> > >   ? __do_sys_finit_module+0xaa/0x110
+>> > >   __do_sys_finit_module+0xaa/0x110
+>> > >   do_syscall_64+0x3a/0xb0
+>> > >   entry_SYSCALL_64_after_hwframe+0x44/0xae
+>> > >  RIP: 0033:0x7f7cdd7c8ded
+>> > >  Code: 5b 41 5c c3 66 0f 1f 84 00 00 00 00 00 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d fb ef 0e 00 f7 d8 64 89 01 48
+>> > >  RSP: 002b:00007fffb90bf458 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
+>> > >  RAX: ffffffffffffffda RBX: 0000559c501caf00 RCX: 00007f7cdd7c8ded
+>> > >  RDX: 0000000000000000 RSI: 0000559c4eb366ee RDI: 0000000000000002
+>> > >  RBP: 0000000000040000 R08: 0000000000000000 R09: 0000559c501ca9f8
+>> > >  R10: 0000000000000002 R11: 0000000000000246 R12: 0000559c4eb366ee
+>> > >  R13: 0000559c501cadb0 R14: 0000000000000000 R15: 0000559c501cbad0
+>> > >   </TASK>
+>> > >  ------------[ cut here ]------------
+>> > >  WARNING: CPU: 1 PID: 578 at net/wireless/reg.c:3107 reg_process_self_managed_hint+0x183/0x1d0 [cfg80211]
+>> > >  Modules linked in:
+>> > >  CPU: 1 PID: 578 Comm: modprobe Not tainted 5.16.0-rc2 #1
+>> > >  Hardware name: LENOVO 20K5S22R00/20K5S22R00, BIOS R0IET38W (1.16 ) 05/31/2017
+>> > >  RIP: 0010:reg_process_self_managed_hint+0x183/0x1d0 [cfg80211]
+>> > >  Code: 83 c4 60 5b 41 5a 41 5c 41 5d 41 5e 41 5f 5d 49 8d 62 f8 c3 48 8d 7b 68 be ff ff ff ff e8 75 4a 13 d9 85 c0 0f 85 e6 fe ff ff <0f> 0b e9 df fe ff ff 0f 0b 80 3d bc 2c 0b 00 00 0f 85 c2 fe ff ff
+>> > >  RSP: 0018:ffff9994809cfaf0 EFLAGS: 00010246
+>> > >  RAX: 0000000000000000 RBX: ffff8e5242f505c0 RCX: 0000000000000000
+>> > >  RDX: 0000000000000000 RSI: ffff8e5242f50628 RDI: ffff8e524a2b5cd0
+>> > >  RBP: ffff9994809cfb80 R08: 0000000000000001 R09: ffffffff9b2e2f50
+>> > >  R10: ffff9994809cfb98 R11: ffffffffffffffff R12: 0000000000000000
+>> > >  R13: ffff8e5242f532e8 R14: ffff8e5248914010 R15: ffff8e5242f532e0
+>> > >  FS:  00007f7cdd6af740(0000) GS:ffff8e5367480000(0000) knlGS:0000000000000000
+>> > >  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>> > >  CR2: 00007f19430687ac CR3: 00000001088fa003 CR4: 00000000003706e0
+>> > >  Call Trace:
+>> > >   <TASK>
+>> > >   ? lock_is_held_type+0xb4/0x120
+>> > >   ? regulatory_set_wiphy_regd_sync+0x2f/0x80 [cfg80211]
+>> > >   regulatory_set_wiphy_regd_sync+0x2f/0x80 [cfg80211]
+>> > >   iwl_mvm_init_mcc+0xcd/0x1d0 [iwlmvm]
+>> > >   iwl_op_mode_mvm_start+0xc6d/0xcb0 [iwlmvm]
+>> > >   _iwl_op_mode_start.isra.4+0x42/0x80 [iwlwifi]
+>> > >   iwl_opmode_register+0x71/0xe0 [iwlwifi]
+>> > >   ? 0xffffffffc1062000
+>> > >   iwl_mvm_init+0x34/0x1000 [iwlmvm]
+>> > >   do_one_initcall+0x5b/0x300
+>> > >   do_init_module+0x5b/0x21c
+>> > >   load_module+0x1b2f/0x2320
+>> > >   ? __do_sys_finit_module+0xaa/0x110
+>> > >   __do_sys_finit_module+0xaa/0x110
+>> > >   do_syscall_64+0x3a/0xb0
+>> > >   entry_SYSCALL_64_after_hwframe+0x44/0xae
+>> > >  RIP: 0033:0x7f7cdd7c8ded
+>> > >  Code: 5b 41 5c c3 66 0f 1f 84 00 00 00 00 00 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d fb ef 0e 00 f7 d8 64 89 01 48
+>> > >  RSP: 002b:00007fffb90bf458 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
+>> > >  RAX: ffffffffffffffda RBX: 0000559c501caf00 RCX: 00007f7cdd7c8ded
+>> > >  RDX: 0000000000000000 RSI: 0000559c4eb366ee RDI: 0000000000000002
+>> > >  RBP: 0000000000040000 R08: 0000000000000000 R09: 0000559c501ca9f8
+>> > >  R10: 0000000000000002 R11: 0000000000000246 R12: 0000559c4eb366ee
+>> > >  R13: 0000559c501cadb0 R14: 0000000000000000 R15: 0000559c501cbad0
+>> > > 
+>> > > Fixes: a05829a7222e9d1 ("cfg80211: avoid holding the RTNL when calling the driver")
+>> > > Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+>> > 
+>> > I think this should go to wireless-drivers so I assigned this to me.
+>> > Luca, ack?
+>> 
+>> Hmmm, I thought we already had a fix for this as well?
+
+Indeed, and it looks to be identical even:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers.git/commit/?id=f5cecf1d4c5ff76172928bc32e99ca56a5ca2f56
+
+Marking the bug as superseded.
+
+> FWIW I don't see this fixed in latest linux-next.
+
+This was applied on Monday, maybe there was no linux-next build on
+Tuesday?
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
