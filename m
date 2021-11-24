@@ -2,112 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F27145C21B
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 14:22:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D681C45C70C
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 15:17:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350327AbhKXNZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 08:25:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43570 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348612AbhKXNWB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Nov 2021 08:22:01 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DBE006128E;
-        Wed, 24 Nov 2021 12:47:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1637758056;
-        bh=4FWpbJjc67hKE2N6NsHxiJw01NesjLwtiUBhXamYQdo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NUSVUPFy7G+WyZEc00pZ/N/omg+7zit1UXqRZRh+8NIWWQx4FaycfQmL1LIx+hOr/
-         /vpWVOCTnTIt0G8Nf7Qmk7XwrOiT+wl8lvsk3rtfYbzDL/CkWFXcr9lOXye78dzx8i
-         o0CNI01DJmMyWtvX+IlH51SC8fyjnjPt9fhGAQsI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Sumanth Korikkar <sumanthk@linux.ibm.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 046/100] perf tests: Remove bash construct from record+zstd_comp_decomp.sh
-Date:   Wed, 24 Nov 2021 12:58:02 +0100
-Message-Id: <20211124115656.368537190@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.0
-In-Reply-To: <20211124115654.849735859@linuxfoundation.org>
-References: <20211124115654.849735859@linuxfoundation.org>
-User-Agent: quilt/0.66
+        id S1351176AbhKXOVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 09:21:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44736 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353562AbhKXOS7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 09:18:59 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E706C09ECD0;
+        Wed, 24 Nov 2021 04:31:38 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id x15so9733533edv.1;
+        Wed, 24 Nov 2021 04:31:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=X5je2/JyWbZDgEix/0iijJu6E649kdB2MShuic6l19c=;
+        b=glqvVH0ZWNXWeAacsTHEVBLyekrLB3AQ8NtAzGScFKx8xTYwAo335/g7fbQ9cKGP3O
+         165XqgkEwC8PHyswGFuzQwe2QrPCwzQMv+a+nK5BQTsrEG2YdNh1WpiIWO6rErEguu5S
+         iBE9cm+akpQxpc0m0ov/QwMYQ2ODVdrGq5szOAed99bgpBL1UgCwhncyW9ezLG1u4K4y
+         vrC4fY8rpxXk6L+4iqDnqptv4TKHUWfk3uZVngQrFtfrBVYHdxz2OEHEReDcDl6f1/Ly
+         00sMDAn6WIZ6RQu1WSTCmqi5zuzsd3cA79B2U5iK+iDxJSwEnJBnRy9iF9ud3i4R648k
+         5FgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=X5je2/JyWbZDgEix/0iijJu6E649kdB2MShuic6l19c=;
+        b=Bwn0fIFb4JI3pjUvs0ipd7IqtoTkKVc4ycvgJLBqwlLfvXFOu0VLJF0PpFKb9+CsEF
+         cxKwXtiXjlZk3ZhZgqY/Qr1nBV5yUsV900bJfrEjerhuHksehTFUDe0DTYnHEXHZ9TYF
+         GgPKXI6vxuwKZk+Cn5NguPHFkPKQ3ZTmtfSkN4graQbNvHN54Ew8zF0Qky6+SBiOGMCG
+         EL68Wdz2csuGcRtNT2X3zDhY7FR+SNBJzbDMCHFn95meXH5AhNLHe5J/3JE8swP0zee4
+         uPLikFZ4mymm0K6YaXzZS03UQQhsuj5OnJJIhKvu6eKj6BNnUS5QSudkBAwR2O34k+11
+         aQmA==
+X-Gm-Message-State: AOAM5325ZTegiUP/Hl1UR0WxkBKiYsepHY/PQLZcR0aAEqf95X51zYJI
+        ACXx9ZxlNltjFrqCIOZ8h8FeDCafaQQ=
+X-Google-Smtp-Source: ABdhPJzQZ14vlyXVA1zbOxCmypxqMjsz6ZV1ngM71Eyx9n3mBvO6PSm4xUpKr6qvFeyKaxz/lgJkrA==
+X-Received: by 2002:a05:6402:3550:: with SMTP id f16mr24332132edd.377.1637757097011;
+        Wed, 24 Nov 2021 04:31:37 -0800 (PST)
+Received: from skbuf ([188.25.163.189])
+        by smtp.gmail.com with ESMTPSA id t5sm8170493edd.68.2021.11.24.04.31.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Nov 2021 04:31:36 -0800 (PST)
+Date:   Wed, 24 Nov 2021 14:31:35 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sean Anderson <sean.anderson@seco.com>, davem@davemloft.net
+Subject: Re: [PATCH net-next v2 4/8] net: phylink: update
+ supported_interfaces with modes from fwnode
+Message-ID: <20211124123135.wn4lef5iv2k26txb@skbuf>
+References: <20211123164027.15618-1-kabel@kernel.org>
+ <20211123164027.15618-5-kabel@kernel.org>
+ <20211123212441.qwgqaad74zciw6wj@skbuf>
+ <20211123232713.460e3241@thinkpad>
+ <20211123225418.skpnnhnrsdqrwv5f@skbuf>
+ <YZ4cRWkEO+l1W08u@shell.armlinux.org.uk>
+ <20211124120441.i7735czjm5k3mkwh@skbuf>
+ <20211124131703.30176315@thinkpad>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211124131703.30176315@thinkpad>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: James Clark <james.clark@arm.com>
+On Wed, Nov 24, 2021 at 01:17:03PM +0100, Marek Behún wrote:
+> On Wed, 24 Nov 2021 14:04:41 +0200
+> Vladimir Oltean <olteanv@gmail.com> wrote:
+> 
+> > On Wed, Nov 24, 2021 at 11:04:37AM +0000, Russell King (Oracle) wrote:
+> > > On Wed, Nov 24, 2021 at 12:54:18AM +0200, Vladimir Oltean wrote:  
+> > > > This implies that when you bring up a board and write the device tree
+> > > > for it, you know that PHY mode X works without ever testing it. What if
+> > > > it doesn't work when you finally add support for it? Now you already
+> > > > have one DT blob in circulation. That's why I'm saying that maybe it
+> > > > could be better if we could think in terms that are a bit more physical
+> > > > and easy to characterize.  
+> > > 
+> > > However, it doesn't solve the problem. Let's take an example.
+> > > 
+> > > The 3310 supports a mode where it runs in XAUI/5GBASE-R/2500BASE-X/SGMII
+> > > depending on the negotiated media parameters.
+> > > 
+> > > XAUI is four lanes of 3.125Gbaud.
+> > > 5GBASE-R is one lane of 5.15625Gbaud.
+> > > 
+> > > Let's say you're using this, and test the 10G speed using XAUI,
+> > > intending the other speeds to work. So you put in DT that you support
+> > > four lanes and up to 5.15625Gbaud.  
+> > 
+> > Yes, see, the blame's on you if you do that.You effectively declared
+> > that the lane is able of sustaining a data rate higher than you've
+> > actually had proof it does (5.156 vs 3.125).
+> 
+> But the blame is on the DT writer in the same way if they declare
+> support for a PHY mode that wasn't tested. (Or at least self-tests with
+> PRBS patterns at given frequency.)
 
-[ Upstream commit a9cdc1c5e3700a5200e5ca1f90b6958b6483845b ]
+I think we're running around in circles on this one. I think there's an
+overlap between the supported_interfaces and the phy-mode array in
+device tree. Going back to your example with the SMC calls unsupported
+by ATF, you may run into the surprise that you have a phy-mode in the
+device tree which you need to mask out in Linux, via supported_interfaces.
+You would have needed to mask it out anyway, even with my proposal, so
+you don't gain anything except the extra burden of spelling out 5 lines
+of a phy-mode array in the device tree. It's going to be a nightmare for
+review, it isn't obvious to say that "this phy-mode shouldn't be here"
+or "you're missing this phy-mode".
 
-Commit 463538a383a2 ("perf tests: Fix test 68 zstd compression for
-s390") inadvertently removed the -g flag from all platforms rather than
-just s390, because the [[ ]] construct fails in sh. Changing to single
-brackets restores testing of call graphs and removes the following error
-from the output:
+> > The reason why I'm making this suggestion is because I think it lends
+> > itself better to the way in which hardware manufacturers work.
+> > A hobbyist like me has no choice than to test the highest data rate when
+> > determining what frequency to declare in the DT (it's the same thing for
+> > spi-max-frequency and other limilar DT properties, really), but hardware
+> > people have simulations based on IBIS-AMI models, they can do SERDES
+> > self-tests using PRBS patterns, lots of stuff to characterize what
+> > frequency a lane is rated for, without actually speaking any Ethernet
+> > protocol on it. In fact there are lots of people who can do this stuff
+> > (which I know mostly nothing about) with precision without even knowing
+> > how to even type a simple "ls" inside a Linux shell.
+> >
+> > > Later, you discover that 5GBASE-R doesn't work because there's an
+> > > electrical issue with the board. You now have DT in circulation
+> > > which doesn't match the capabilities of the hardware.
+> > > 
+> > > How is this any different from the situation you describe above?
+> > > To me, it seems to be exactly the same problem.  
+> > 
+> > To err is human, of course. But one thing I think we learned from the
+> > old implementation of phylink_validate is that it gets very tiring to
+> > keep adding PHY modes, and we always seem to miss some. When that array
+> > will be described in DT, it could be just a tad more painful to maintain.
+> 
+> The thing is that we will still need the `phy-mode` property, it can't
+> be deprecated IMO.
 
-  $ ./perf test -v 85
-  85: Zstd perf.data compression/decompression                        :
-  --- start ---
-  test child forked, pid 50643
-  Collecting compressed record file:
-  ./tests/shell/record+zstd_comp_decomp.sh: 15: [[: not found
+Wait a minute, who said anything about deprecating it? I just said
+"let's not make it an array, in the actual device tree". The phy-mode
+was, and will remain, the initial MII-side protocol, which can or cannot
+be changed at runtime.
 
-Fixes: 463538a383a2 ("perf tests: Fix test 68 zstd compression for s390")
-Signed-off-by: James Clark <james.clark@arm.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@redhat.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: KP Singh <kpsingh@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Sumanth Korikkar <sumanthk@linux.ibm.com>
-Cc: Thomas Richter <tmricht@linux.ibm.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: bpf@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Link: https://lore.kernel.org/r/20211028134828.65774-3-james.clark@arm.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- tools/perf/tests/shell/record+zstd_comp_decomp.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> There are non-SerDes modes, like rgmii, which may use different pins
+> than SerDes modes.
 
-diff --git a/tools/perf/tests/shell/record+zstd_comp_decomp.sh b/tools/perf/tests/shell/record+zstd_comp_decomp.sh
-index 045723b3d9928..c62af807198de 100755
---- a/tools/perf/tests/shell/record+zstd_comp_decomp.sh
-+++ b/tools/perf/tests/shell/record+zstd_comp_decomp.sh
-@@ -12,7 +12,7 @@ skip_if_no_z_record() {
- 
- collect_z_record() {
- 	echo "Collecting compressed record file:"
--	[[ "$(uname -m)" != s390x ]] && gflag='-g'
-+	[ "$(uname -m)" != s390x ] && gflag='-g'
- 	$perf_tool record -o $trace_file $gflag -z -F 5000 -- \
- 		dd count=500 if=/dev/urandom of=/dev/null
- }
--- 
-2.33.0
+And, as discussed, there is no use case for dynamic switchover between
+RGMII and a SERDES lane.
 
+> There may theoretically also be a SoC or PHY where the lanes for XAUI
+> do not share pins with the lane of 2500base-x, and this lane may not be
+> wired. Tis true that I don't know of any such hardware and it probably
+> does not and will not exist, but we don't know that for sure and this is
+> a case where your proposal will fail and the phy-mode extension would
+> work nicely.
 
+We haven't gotten to discussing any of the details yet, but my proposal
+of course would have been to describe the number of SERDES lanes and max
+frequency in the COMPHY nodes, and have the COMPHY tell you what is
+supported. At least with Layerscape, that would be the model. So when
+you have pinmuxing, you just get the capabilities from the lane in use.
 
+> 
+> Maybe we need opinions from other people here.
+
+Other opinions are welcome of course.
