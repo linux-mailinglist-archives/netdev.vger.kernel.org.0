@@ -2,94 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34D8B45B985
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 12:56:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CA1545B994
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 13:00:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241496AbhKXL7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 06:59:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43034 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231266AbhKXL7a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 06:59:30 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E745C061574
-        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 03:56:20 -0800 (PST)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1637754977;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dV0T9NFOfR7A0s7gpzqC4XY8Wgq7BahgzV+vSPDvUs0=;
-        b=ljco+TBNgl2lWIfB8P59MhxZzQjo6AdjmCTHHwH0pLkFaflsejo9oD1qPiDzpFhA/3U0zD
-        6ckFl6vRx7uhLUmwIYWdClhpPu9vSU7yoHcfGPrhkc7obXxGKyKtIcYO/BQsOtVbKp9022
-        gTTyQV86i/O1VVjL6Ng2J+JaAxWIk923aacYF6Jh1NHwa1g9BjP0loE2Nyv+UT9ItU2XBB
-        EHtsV6prU7lAR0AYRLppglIHscFmWDqWgLezK/nUT4SDbDzpGKPvbQKCp25ML3s8/Ge9mw
-        eop9waerl1/uVZ/uxqUUU13XQPnerov4WY6SItflXdvY1A3lHtLYIIpQHLTA1Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1637754977;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dV0T9NFOfR7A0s7gpzqC4XY8Wgq7BahgzV+vSPDvUs0=;
-        b=E5PFkpkeaKwwZY2bbeODDtZbDdXrMmKP0tI4hq/rwiV+NYuXGjzWA+IA34TDoJ1QkFrSQv
-        rZ8ALpYgzb8JIaDQ==
-To:     Ong Boon Leong <boon.leong.ong@intel.com>, netdev@vger.kernel.org
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        alexandre.torgue@foss.st.com,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: Re: [PATCH net-next 1/1] net: stmmac: perserve TX and RX coalesce
- value during XDP setup
-In-Reply-To: <20211124114019.3949125-1-boon.leong.ong@intel.com>
-References: <20211124114019.3949125-1-boon.leong.ong@intel.com>
-Date:   Wed, 24 Nov 2021 12:56:16 +0100
-Message-ID: <87k0gxhin3.fsf@kurt>
+        id S241907AbhKXMDW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 07:03:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58254 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241885AbhKXMDS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Nov 2021 07:03:18 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 038D561057;
+        Wed, 24 Nov 2021 12:00:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637755209;
+        bh=qJtITQ+iepr0zXYtPOFJt7+4WLuZqFPmprM3pI7EICU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=LGlWmdmJxJp5nrgp7QalLEj9nHqLsdHBJ9oquZF9B2EFHYwu77C+fnrSlA+DJC4MI
+         nVudVjyeKvZnWouzDj5hqD9U3v33mZ5ORT/WEM6dEeU7jl7m8cZSH2MoDr76kkIO1+
+         GpM4P3kDKXMtkLYI6MgD5BpwMhhC+YNtN1Me8Ro5Bsrr7Ekeolc3zeZaiqiWsx7FUR
+         9VbdmwM9U4ja90mtlb8wb2fg4AKkPc5mwb0xMA3ED6Z7570zQGMznm+44OY3t1s1xo
+         4xO6XqDBIXeJsQ0VY9XxB42UGGPDGRQbL3nMPcJ7YyyWJNc5W1WWpb1ZzUwmF0Wger
+         PMYF4smRaaRXw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EF874609B9;
+        Wed, 24 Nov 2021 12:00:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] lan78xx: Clean up some inconsistent indenting
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163775520897.1662.9302973528616298102.git-patchwork-notify@kernel.org>
+Date:   Wed, 24 Nov 2021 12:00:08 +0000
+References: <1637748596-19168-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+In-Reply-To: <1637748596-19168-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
+Hello:
 
-On Wed Nov 24 2021, Ong Boon Leong wrote:
-> When XDP program is loaded, it is desirable that the previous TX and RX
-> coalesce values are not re-inited to its default value. This prevents
-> unnecessary re-configurig the coalesce values that were working fine
-> before.
->
-> Fixes: ac746c8520d9 ("net: stmmac: enhance XDP ZC driver level switching performance")
-> Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Tested-by: Kurt Kanzenbach <kurt@linutronix.de>
+On Wed, 24 Nov 2021 18:09:56 +0800 you wrote:
+> Eliminate the follow smatch warning:
+> 
+> drivers/net/usb/lan78xx.c:4961 lan78xx_resume() warn: inconsistent
+> indenting.
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> 
+> [...]
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+Here is the summary with links:
+  - lan78xx: Clean up some inconsistent indenting
+    https://git.kernel.org/netdev/net-next/c/45932221bd94
 
------BEGIN PGP SIGNATURE-----
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-iQJHBAEBCgAxFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmGeKGATHGt1cnRAbGlu
-dXRyb25peC5kZQAKCRB5KluBy5jwpgFYEACC6wX+b3hh/rszdizC6oH6JsfQZjqX
-kEjwGOzIx1D3be4l7obEPaLVB9OUS0AxcsWuvLQl5L/ZVQOO4MXAseKFlju8iE1o
-+wKeALZD1eZ69xs9h/XooQzOqunZ5hFF3Bnl1Wh2fpz/uI3qJ4TafE8QF8rfIJWl
-ppywC8kxkknvFUa+rO6JTSTCmZx8p6dRzS6oBG0NDCy4SIqVo5AjD2eEBBpE70mM
-ulPbmjb2ABLT+qK9smmh5Hp/FdSLo9/Aop4l2xevyRfiWh02Njp0p8kOe+Z8j3QW
-T408UkEXm0tmFBSPy7ImEcqUbhqBU1pQdmxz98HpMhhrGnLKGzGZu8toyQn1BDnM
-F2PDAT1WqsXhWBVycQV1v2cJ2VdQcSRTJU7gr4tg8sYKkY9rSzLCKM6tlFLSdqRM
-egObj0X766EZ+kdlJKIoEepXlh3gUm8l5JE0V/7geYgdvcSlJGldR+nAjoX2TqlG
-S0ZORYkO6byNZQkpuz840hrdtyQ3irHSBI8ZB8heWNfnOBrqznze2ggsWEpMwrwk
-vz2FVM/+zzpPS3PmvQJvBIbHdQ/tUVkmpkDAczk9WPUiQGpnxGvlCd651UgGlgrL
-ffPPiEYvT/0VQgv/REDPceDblcloa8erQzZ7MWqOmdNiV9vWFui8pyEM4tV0Mgd/
-mqIpatJ6BfYUlQ==
-=Tozc
------END PGP SIGNATURE-----
---=-=-=--
+
