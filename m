@@ -2,120 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4148245BC82
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 13:29:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2272745BCB6
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 13:29:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243641AbhKXMbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 07:31:07 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42106 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245506AbhKXM2T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Nov 2021 07:28:19 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3DA6061269;
-        Wed, 24 Nov 2021 12:17:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637756227;
-        bh=4Bwn5rvzFaQX6/M2Ep7RPrdvX/Thgii4YOdsQ3DDAGs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GmhRSa6/MuM56Kz+5NAzjuJN+IAHQHehfqMjrwDF6Nmi3aepqRMFsZJnLxjkCaLZ0
-         875Lh6WjSpmBYpFf9DT1DC4T3KoGBuObUdboOFslbdOtor6+DHCd3AML5pk8c/mFGg
-         pesH0n4e1Z4P8irpmmi+IE5oTUb5iwuXE3VYBY8xEyYZiC/gW7//srJ+WfKARRCQbs
-         MFY10CLu6hSm+n62EeVtgdRLu/AGg6RejjppL2tD7zcElpzHUoYfDgdMrqDi36aU34
-         Nots5+nhir9dunFyzmBOIeqZuUpviycPfbFQZnORxXCoo3rjnzJLSPO0dg8i/N3N7n
-         tTCCAslARt4iQ==
-Date:   Wed, 24 Nov 2021 13:17:03 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sean Anderson <sean.anderson@seco.com>, davem@davemloft.net
-Subject: Re: [PATCH net-next v2 4/8] net: phylink: update
- supported_interfaces with modes from fwnode
-Message-ID: <20211124131703.30176315@thinkpad>
-In-Reply-To: <20211124120441.i7735czjm5k3mkwh@skbuf>
-References: <20211123164027.15618-1-kabel@kernel.org>
-        <20211123164027.15618-5-kabel@kernel.org>
-        <20211123212441.qwgqaad74zciw6wj@skbuf>
-        <20211123232713.460e3241@thinkpad>
-        <20211123225418.skpnnhnrsdqrwv5f@skbuf>
-        <YZ4cRWkEO+l1W08u@shell.armlinux.org.uk>
-        <20211124120441.i7735czjm5k3mkwh@skbuf>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S244075AbhKXMb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 07:31:56 -0500
+Received: from kylie.crudebyte.com ([5.189.157.229]:45239 "EHLO
+        kylie.crudebyte.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243237AbhKXMZf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 07:25:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=rnnh51cxcefUFgbd3NlMnfTWFCiiqqU0gNz9ZYEeKqQ=; b=k9QxUcqK8au7iZnh/L72mYkvW3
+        Umrk4sMzWXXqElSYQp0PP8qp73Lo/NDHFRZkjUZbhjROBv05c4lEuDUYXnzDZRZGobJ1olY7Wrd55
+        YDCYGiZTP3kHbgk8wa5VMHrhDGkGWNsnlMlaHcfBItEJW6cw4+VeQJ0fnz+QxO+hrsIb1hKm/6T82
+        3a0unJy5zwzBxYspiwxrmVXSIYTSG0yGB4yEkjOrDkgdWGRVhUiguoXCB8P5S6xiBx5hkOdRydva5
+        1npxH+9f4v5KTkGpG8KsayEK60NlBX7whaN6NPepLEjFK99kimaHkaH4ZoeXPEJh2eppR42NW8mSV
+        ofjiN3zt8eoPAz+EAB3fpmU6w6D9DONDtwQ2sPDxpDZm6ER4dPevwrcjFk61Ew3taVmkN3gRjsFZV
+        m3BmriXMBRTLzY0Y91AV+0U6wMBmm+6SK/Db6cBxfemEJk4ZjW4kb67NoAq1MPdwymTSG8NGgzJYM
+        zpH5U6Ifs1SxXCOXqGAw/kES1D6POfYS+7rByII2hNsN3dPSMijVqkTo5hORKLa/UqJ4v7q60IJGZ
+        jQCnXjjBWS7G/rjmvgyNvP0YkgtFE0VwTW5JbOKwYDO+IM1dmej20ZI3TG+tO7YS9RicPkTACebBI
+        4AzDxFn2zIMJhvL1V/OaJ4d0jeaNBdo6aLThRwv4w=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     Nikolay Kichukov <nikolay@oldum.net>,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>
+Subject: Re: [PATCH v3 6/7] 9p/trans_virtio: support larger msize values
+Date:   Wed, 24 Nov 2021 13:22:20 +0100
+Message-ID: <2311686.9pNgMZ9BYA@silver>
+In-Reply-To: <YZwbJiFcLgwITsUe@codewreck.org>
+References: <YZl+eD6r0iIGzS43@codewreck.org> <1797352.eH9cFvQebf@silver> <YZwbJiFcLgwITsUe@codewreck.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 24 Nov 2021 14:04:41 +0200
-Vladimir Oltean <olteanv@gmail.com> wrote:
-
-> On Wed, Nov 24, 2021 at 11:04:37AM +0000, Russell King (Oracle) wrote:
-> > On Wed, Nov 24, 2021 at 12:54:18AM +0200, Vladimir Oltean wrote:  
-> > > This implies that when you bring up a board and write the device tree
-> > > for it, you know that PHY mode X works without ever testing it. What if
-> > > it doesn't work when you finally add support for it? Now you already
-> > > have one DT blob in circulation. That's why I'm saying that maybe it
-> > > could be better if we could think in terms that are a bit more physical
-> > > and easy to characterize.  
-> > 
-> > However, it doesn't solve the problem. Let's take an example.
-> > 
-> > The 3310 supports a mode where it runs in XAUI/5GBASE-R/2500BASE-X/SGMII
-> > depending on the negotiated media parameters.
-> > 
-> > XAUI is four lanes of 3.125Gbaud.
-> > 5GBASE-R is one lane of 5.15625Gbaud.
-> > 
-> > Let's say you're using this, and test the 10G speed using XAUI,
-> > intending the other speeds to work. So you put in DT that you support
-> > four lanes and up to 5.15625Gbaud.  
+On Montag, 22. November 2021 23:35:18 CET Dominique Martinet wrote:
+> Christian Schoenebeck wrote on Mon, Nov 22, 2021 at 02:32:23PM +0100:
+> > I "think" this could be used for all 9p message types except for the
+> > listed
+> > former three, but I'll review the 9p specs more carefully before v4. For
+> > Tread and Twrite we already received the requested size, which just
+> > leaves Treaddir, which is however indeed tricky, because I don't think we
+> > have any info how many directory entries we could expect.
 > 
-> Yes, see, the blame's on you if you do that.You effectively declared
-> that the lane is able of sustaining a data rate higher than you've
-> actually had proof it does (5.156 vs 3.125).
+> count in Treaddir is a number of bytes, not a number of entries -- so
+> it's perfect for this as well :)
 
-But the blame is on the DT writer in the same way if they declare
-support for a PHY mode that wasn't tested. (Or at least self-tests with
-PRBS patterns at given frequency.)
+Yes it is in bytes, but it's currently always simply msize - P9_READDIRHDRSZ:
+https://github.com/torvalds/linux/blob/5d9f4cf36721aba199975a9be7863a3ff5cd4b59/fs/9p/vfs_dir.c#L159
 
-> The reason why I'm making this suggestion is because I think it lends
-> itself better to the way in which hardware manufacturers work.
-> A hobbyist like me has no choice than to test the highest data rate when
-> determining what frequency to declare in the DT (it's the same thing for
-> spi-max-frequency and other limilar DT properties, really), but hardware
-> people have simulations based on IBIS-AMI models, they can do SERDES
-> self-tests using PRBS patterns, lots of stuff to characterize what
-> frequency a lane is rated for, without actually speaking any Ethernet
-> protocol on it. In fact there are lots of people who can do this stuff
-> (which I know mostly nothing about) with precision without even knowing
-> how to even type a simple "ls" inside a Linux shell.
->
-> > Later, you discover that 5GBASE-R doesn't work because there's an
-> > electrical issue with the board. You now have DT in circulation
-> > which doesn't match the capabilities of the hardware.
-> > 
-> > How is this any different from the situation you describe above?
-> > To me, it seems to be exactly the same problem.  
+As my planned milestone for this series is max. 4 MB msize, it might be okay
+for now, but it is something to keep in mind and should be checked whether it
+will slow down things.
+
+On the long term, when msize >4MB is supported, this definitely must be
+addressed.
+
+> > A simple compile time constant (e.g. one macro) could be used instead of
+> > this function. If you prefer a constant instead, I could go for it in v4
+> > of course. For this 9p client I would recommend a function though, simply
+> > because this code has already seen some authors come and go over the
+> > years, so it might be worth the redundant code for future safety. But
+> > I'll adapt to what others think.
 > 
-> To err is human, of course. But one thing I think we learned from the
-> old implementation of phylink_validate is that it gets very tiring to
-> keep adding PHY modes, and we always seem to miss some. When that array
-> will be described in DT, it could be just a tad more painful to maintain.
+> In this case a fallback constant seems simpler than a big switch like
+> you've done, but honestly I'm not fussy at this point -- if you work on
+> this you have the right to decide this kind of things in my opinion.
+> 
+> My worry with the snippet you listed is that you need to enumerate all
+> calls again, so if someday the protocol is extended it'll be a place to
+> forget adding new calls (although compiler warnings help with that),
+> whereas a fallback constant will always work as long as it's small
+> messages.
+> 
+> But really, as long as it's not horrible I'll take it :)
 
-The thing is that we will still need the `phy-mode` property, it can't
-be deprecated IMO. There are non-SerDes modes, like rgmii, which may
-use different pins than SerDes modes.
-There may theoretically also be a SoC or PHY where the lanes for XAUI
-do not share pins with the lane of 2500base-x, and this lane may not be
-wired. Tis true that I don't know of any such hardware and it probably
-does not and will not exist, but we don't know that for sure and this is
-a case where your proposal will fail and the phy-mode extension would
-work nicely.
+Maybe I can find a compromise. :)
 
-Maybe we need opinions from other people here.
+Best regards,
+Christian Schoenebeck
 
-Marek
+
