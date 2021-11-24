@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3396745B1F6
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 03:17:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BFF4B45B1F7
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 03:17:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240701AbhKXCUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Nov 2021 21:20:17 -0500
-Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:47780 "EHLO
-        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240699AbhKXCUQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 21:20:16 -0500
+        id S240704AbhKXCUc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Nov 2021 21:20:32 -0500
+Received: from smtp-fw-80007.amazon.com ([99.78.197.218]:41343 "EHLO
+        smtp-fw-80007.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240699AbhKXCUb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Nov 2021 21:20:31 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1637720228; x=1669256228;
+  s=amazon201209; t=1637720243; x=1669256243;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=KyXfKM8qel7yK4y9upI91pjDKoeDoIsa+X9E7gPgVgk=;
-  b=nUdbbcT9PLZpRyI48ZcMCoU6gX5Xe7mP8ScdazG4w9TOm1Bsu51u4rp2
-   zeigLwW5tD7ymcfoguylUnz4z6LLYzGYvw2DqevxFgv6a2nwKBBiGfKag
-   4+/wa9F0f5qHw1dWBa9c09M2PwRZGVsqEczEjn4EaqcSAW3vANW6yvSDs
-   k=;
+  bh=SSnEkeIeynG1Z6d/O3xspf3GHevzfVScuHOsau6q8p8=;
+  b=i21va1k80DbeL4cPT768gcgFSBIgEGWWMx7wHn/kTFSTcFjy8mBsAe0U
+   7OnXZiSBP+CPNnMhrNu4gqrwJoqzTst3SIgev8DTCnNjnEYQtszSYJt79
+   VuQzEMpuOATpnOyqH+pzaczcbVEujESbW+9FTLFYU9zij4G+4i14Fn6Qm
+   Y=;
 X-IronPort-AV: E=Sophos;i="5.87,258,1631577600"; 
-   d="scan'208";a="158852430"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-05e8af15.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP; 24 Nov 2021 02:17:07 +0000
+   d="scan'208";a="43810314"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2a-2dbf0206.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 24 Nov 2021 02:17:22 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2b-05e8af15.us-west-2.amazon.com (Postfix) with ESMTPS id C27C4A2B82;
-        Wed, 24 Nov 2021 02:17:06 +0000 (UTC)
+        by email-inbound-relay-pdx-2a-2dbf0206.us-west-2.amazon.com (Postfix) with ESMTPS id 6D7B9A2B55;
+        Wed, 24 Nov 2021 02:17:21 +0000 (UTC)
 Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.26; Wed, 24 Nov 2021 02:17:06 +0000
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.26; Wed, 24 Nov 2021 02:17:20 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.161.102) by
  EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.26; Wed, 24 Nov 2021 02:17:02 +0000
+ id 15.0.1497.26; Wed, 24 Nov 2021 02:17:17 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -43,9 +43,9 @@ CC:     Al Viro <viro@zeniv.linux.org.uk>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
         Benjamin Herrenschmidt <benh@amazon.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH v3 net-next 09/13] af_unix: Remove UNIX_ABSTRACT() macro and test sun_path[0] instead.
-Date:   Wed, 24 Nov 2021 11:14:27 +0900
-Message-ID: <20211124021431.48956-10-kuniyu@amazon.co.jp>
+Subject: [PATCH v3 net-next 10/13] af_unix: Add helpers to calculate hashes.
+Date:   Wed, 24 Nov 2021 11:14:28 +0900
+Message-ID: <20211124021431.48956-11-kuniyu@amazon.co.jp>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211124021431.48956-1-kuniyu@amazon.co.jp>
 References: <20211124021431.48956-1-kuniyu@amazon.co.jp>
@@ -59,90 +59,149 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In BSD and abstract address cases, we store sockets in the hash table with
-keys between 0 and UNIX_HASH_SIZE - 1.  However, the hash saved in a socket
-varies depending on its address type; sockets with BSD addresses always
-have UNIX_HASH_SIZE in their unix_sk(sk)->addr->hash.
-
-This is just for the UNIX_ABSTRACT() macro used to check the address type.
-The difference of the saved hashes comes from the first byte of the address
-in the first place.  So, we can test it directly.
-
-Then we can keep a real hash in each socket and replace unix_table_lock
-with per-hash locks in the later patch.
+This patch adds three helper functions that calculate hashes for unbound
+sockets and bound sockets with BSD/abstract addresses.
 
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 ---
- net/unix/af_unix.c                                        | 6 ++----
- tools/testing/selftests/bpf/progs/bpf_iter_unix.c         | 2 +-
- tools/testing/selftests/bpf/progs/bpf_tracing_net.h       | 2 --
- tools/testing/selftests/bpf/progs/test_skc_to_unix_sock.c | 2 +-
- 4 files changed, 4 insertions(+), 8 deletions(-)
+ net/unix/af_unix.c | 64 +++++++++++++++++++++++++---------------------
+ 1 file changed, 35 insertions(+), 29 deletions(-)
 
 diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index 34d8f38d2cec..884d69219297 100644
+index 884d69219297..a6956c68d032 100644
 --- a/net/unix/af_unix.c
 +++ b/net/unix/af_unix.c
-@@ -134,8 +134,6 @@ static struct hlist_head *unix_sockets_unbound(void *addr)
- 	return &unix_socket_table[UNIX_HASH_SIZE + hash];
+@@ -123,15 +123,38 @@ DEFINE_SPINLOCK(unix_table_lock);
+ EXPORT_SYMBOL_GPL(unix_table_lock);
+ static atomic_long_t unix_nr_socks;
+ 
++/* SMP locking strategy:
++ *    hash table is protected with spinlock unix_table_lock
++ *    each socket state is protected by separate spin lock.
++ */
+ 
+-static struct hlist_head *unix_sockets_unbound(void *addr)
++static unsigned int unix_unbound_hash(struct sock *sk)
+ {
+-	unsigned long hash = (unsigned long)addr;
++	unsigned long hash = (unsigned long)sk;
+ 
+ 	hash ^= hash >> 16;
+ 	hash ^= hash >> 8;
+-	hash %= UNIX_HASH_SIZE;
+-	return &unix_socket_table[UNIX_HASH_SIZE + hash];
++	hash ^= sk->sk_type;
++
++	return UNIX_HASH_SIZE + (hash & (UNIX_HASH_SIZE - 1));
++}
++
++static unsigned int unix_bsd_hash(struct inode *i)
++{
++	return i->i_ino & (UNIX_HASH_SIZE - 1);
++}
++
++static unsigned int unix_abstract_hash(struct sockaddr_un *sunaddr,
++				       int addr_len, int type)
++{
++	__wsum csum = csum_partial(sunaddr, addr_len, 0);
++	unsigned int hash;
++
++	hash = (__force unsigned int)csum_fold(csum);
++	hash ^= hash >> 8;
++	hash ^= type;
++
++	return hash & (UNIX_HASH_SIZE - 1);
  }
  
--#define UNIX_ABSTRACT(sk)	(unix_sk(sk)->addr->hash < UNIX_HASH_SIZE)
--
  #ifdef CONFIG_SECURITY_NETWORK
- static void unix_get_secdata(struct scm_cookie *scm, struct sk_buff *skb)
+@@ -162,20 +185,6 @@ static inline bool unix_secdata_eq(struct scm_cookie *scm, struct sk_buff *skb)
+ }
+ #endif /* CONFIG_SECURITY_NETWORK */
+ 
+-/*
+- *  SMP locking strategy:
+- *    hash table is protected with spinlock unix_table_lock
+- *    each socket state is protected by separate spin lock.
+- */
+-
+-static inline unsigned int unix_hash_fold(__wsum n)
+-{
+-	unsigned int hash = (__force unsigned int)csum_fold(n);
+-
+-	hash ^= hash>>8;
+-	return hash&(UNIX_HASH_SIZE-1);
+-}
+-
+ #define unix_peer(sk) (unix_sk(sk)->peer)
+ 
+ static inline int unix_our_peer(struct sock *sk, struct sock *osk)
+@@ -334,11 +343,11 @@ static inline struct sock *unix_find_socket_byname(struct net *net,
+ 
+ static struct sock *unix_find_socket_byinode(struct inode *i)
  {
-@@ -3295,9 +3293,9 @@ static int unix_seq_show(struct seq_file *seq, void *v)
- 			i = 0;
- 			len = u->addr->len -
- 				offsetof(struct sockaddr_un, sun_path);
--			if (!UNIX_ABSTRACT(s))
-+			if (u->addr->name->sun_path[0]) {
- 				len--;
--			else {
-+			} else {
- 				seq_putc(seq, '@');
- 				i++;
- 			}
-diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_unix.c b/tools/testing/selftests/bpf/progs/bpf_iter_unix.c
-index 94423902685d..c21e3f545371 100644
---- a/tools/testing/selftests/bpf/progs/bpf_iter_unix.c
-+++ b/tools/testing/selftests/bpf/progs/bpf_iter_unix.c
-@@ -49,7 +49,7 @@ int dump_unix(struct bpf_iter__unix *ctx)
- 		       sock_i_ino(sk));
++	unsigned int hash = unix_bsd_hash(i);
+ 	struct sock *s;
  
- 	if (unix_sk->addr) {
--		if (!UNIX_ABSTRACT(unix_sk)) {
-+		if (unix_sk->addr->name->sun_path[0]) {
- 			BPF_SEQ_PRINTF(seq, " %s", unix_sk->addr->name->sun_path);
- 		} else {
- 			/* The name of the abstract UNIX domain socket starts
-diff --git a/tools/testing/selftests/bpf/progs/bpf_tracing_net.h b/tools/testing/selftests/bpf/progs/bpf_tracing_net.h
-index eef5646ddb19..e0f42601be9b 100644
---- a/tools/testing/selftests/bpf/progs/bpf_tracing_net.h
-+++ b/tools/testing/selftests/bpf/progs/bpf_tracing_net.h
-@@ -6,8 +6,6 @@
- #define AF_INET6		10
+ 	spin_lock(&unix_table_lock);
+-	sk_for_each(s,
+-		    &unix_socket_table[i->i_ino & (UNIX_HASH_SIZE - 1)]) {
++	sk_for_each(s, &unix_socket_table[hash]) {
+ 		struct dentry *dentry = unix_sk(s)->path.dentry;
  
- #define __SO_ACCEPTCON		(1 << 16)
--#define UNIX_HASH_SIZE		256
--#define UNIX_ABSTRACT(unix_sk)	(unix_sk->addr->hash < UNIX_HASH_SIZE)
+ 		if (dentry && d_backing_inode(dentry) == i) {
+@@ -899,7 +908,7 @@ static struct sock *unix_create1(struct net *net, struct socket *sock, int kern,
+ 	init_waitqueue_head(&u->peer_wait);
+ 	init_waitqueue_func_entry(&u->peer_wake, unix_dgram_peer_wake_relay);
+ 	memset(&u->scm_stat, 0, sizeof(struct scm_stat));
+-	unix_insert_socket(unix_sockets_unbound(sk), sk);
++	unix_insert_socket(&unix_socket_table[unix_unbound_hash(sk)], sk);
  
- #define SOL_TCP			6
- #define TCP_CONGESTION		13
-diff --git a/tools/testing/selftests/bpf/progs/test_skc_to_unix_sock.c b/tools/testing/selftests/bpf/progs/test_skc_to_unix_sock.c
-index a408ec95cba4..eacda9fe07eb 100644
---- a/tools/testing/selftests/bpf/progs/test_skc_to_unix_sock.c
-+++ b/tools/testing/selftests/bpf/progs/test_skc_to_unix_sock.c
-@@ -23,7 +23,7 @@ int BPF_PROG(unix_listen, struct socket *sock, int backlog)
- 	if (!unix_sk)
- 		return 0;
+ 	sock_prot_inuse_add(sock_net(sk), sk->sk_prot, 1);
  
--	if (!UNIX_ABSTRACT(unix_sk))
-+	if (unix_sk->addr->name->sun_path[0])
- 		return 0;
+@@ -1010,11 +1019,11 @@ static struct sock *unix_find_abstract(struct net *net,
+ 				       struct sockaddr_un *sunaddr,
+ 				       int addr_len, int type)
+ {
+-	unsigned int hash = unix_hash_fold(csum_partial(sunaddr, addr_len, 0));
++	unsigned int hash = unix_abstract_hash(sunaddr, addr_len, type);
+ 	struct dentry *dentry;
+ 	struct sock *sk;
  
- 	len = unix_sk->addr->len - sizeof(short);
+-	sk = unix_find_socket_byname(net, sunaddr, addr_len, type ^ hash);
++	sk = unix_find_socket_byname(net, sunaddr, addr_len, hash);
+ 	if (!sk)
+ 		return ERR_PTR(-ECONNREFUSED);
+ 
+@@ -1066,8 +1075,7 @@ static int unix_autobind(struct sock *sk)
+ retry:
+ 	addr->len = sprintf(addr->name->sun_path + 1, "%05x", ordernum) +
+ 		offsetof(struct sockaddr_un, sun_path) + 1;
+-	addr->hash = unix_hash_fold(csum_partial(addr->name, addr->len, 0));
+-	addr->hash ^= sk->sk_type;
++	addr->hash = unix_abstract_hash(addr->name, addr->len, sk->sk_type);
+ 
+ 	spin_lock(&unix_table_lock);
+ 	ordernum = (ordernum+1)&0xFFFFF;
+@@ -1144,7 +1152,7 @@ static int unix_bind_bsd(struct sock *sk, struct sockaddr_un *sunaddr,
+ 		goto out_unlock;
+ 
+ 	addr->hash = UNIX_HASH_SIZE;
+-	hash = d_backing_inode(dentry)->i_ino & (UNIX_HASH_SIZE - 1);
++	hash = unix_bsd_hash(d_backing_inode(dentry));
+ 	spin_lock(&unix_table_lock);
+ 	u->path.mnt = mntget(parent.mnt);
+ 	u->path.dentry = dget(dentry);
+@@ -1187,9 +1195,7 @@ static int unix_bind_abstract(struct sock *sk, struct sockaddr_un *sunaddr,
+ 		goto out_mutex;
+ 	}
+ 
+-	addr->hash = unix_hash_fold(csum_partial(addr->name, addr->len, 0));
+-	addr->hash ^= sk->sk_type;
+-
++	addr->hash = unix_abstract_hash(addr->name, addr->len, sk->sk_type);
+ 	spin_lock(&unix_table_lock);
+ 
+ 	if (__unix_find_socket_byname(sock_net(sk), addr->name, addr->len,
 -- 
 2.30.2
 
