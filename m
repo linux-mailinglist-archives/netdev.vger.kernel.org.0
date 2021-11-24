@@ -2,61 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 744F645C72D
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 15:22:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 608B745C75C
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 15:30:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351673AbhKXO0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 09:26:01 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:29257 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1353576AbhKXOZN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 09:25:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637763723;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TLRi7BlITjjM/i+4EHGp/lwGEMw5CmrBYwLEApBpecM=;
-        b=T+ykU8t46fV+xrf3SMGoh/DAA861ozWF2WywBgWnFKJUMbAXaDVzHWhSnBQxXaYMb2A90W
-        kQk5kjI5fJ/xf0vwnjqOs8T/xUz5s6Ml/vYTQNKmBMpF8ZVeYI55Rk9vL3y+/RW5NTbnQG
-        kqP9+55gqZbsiXFhYfnLEThPyKsZthI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-509-fs400FZ6MvKXrNnBYcUuyw-1; Wed, 24 Nov 2021 09:21:59 -0500
-X-MC-Unique: fs400FZ6MvKXrNnBYcUuyw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 31BB61800D41;
-        Wed, 24 Nov 2021 14:21:58 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.25])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A602119C46;
-        Wed, 24 Nov 2021 14:21:56 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20211121041608.133740-1-eiichi.tsukata@nutanix.com>
-References: <20211121041608.133740-1-eiichi.tsukata@nutanix.com>
-To:     Eiichi Tsukata <eiichi.tsukata@nutanix.com>
-Cc:     dhowells@redhat.com, marc.dionne@auristor.com, davem@davemloft.net,
-        kuba@kernel.org, linux-afs@lists.infradead.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net 1/2] rxrpc: Fix rxrpc_peer leak in rxrpc_look_up_bundle()
+        id S1355045AbhKXOd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 09:33:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45906 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1355022AbhKXOdT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Nov 2021 09:33:19 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0854960273;
+        Wed, 24 Nov 2021 14:30:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637764210;
+        bh=hzij1PTVKwykaHlENjrWj0gL3uLeAp7fu3hxPDAcIIo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=nGYYCEk7nQWadWlli4bvqJjk3EeLuM7SwM+Rk0kwSrGN9clc4rJj+u7ZhycUmjoyF
+         +NnQWRdt8sJTkBeFevkqJZ3Lc9elq7UXkthVqu6yQEj9/TvZ3N1qGlZrmz4U63gdoq
+         xoXh0Oym8tDiJuPVyP/qr1B0cHlEK9w/Dq4UCOJlyJtv1Q5cPlOBFsfOWexBoIaKKT
+         5AOgzJWtMns1tIGCeXf6/T+xO8mEwbI3Z7GS9w8FVQdzqh4OCCPpK9FrgrUBrPPQX5
+         njsuVe8MZ46POLWICGXoXntwqBmoHPwwyTdw77F4ZeFUe8rSnW1mA3kHNO79dCkr37
+         KWsvmzQuOU+fw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F0A2D609D5;
+        Wed, 24 Nov 2021 14:30:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1819849.1637763715.1@warthog.procyon.org.uk>
-Date:   Wed, 24 Nov 2021 14:21:55 +0000
-Message-ID: <1819850.1637763715@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/4] net: hns3: updates for -next
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163776420998.4552.2505811247513302335.git-patchwork-notify@kernel.org>
+Date:   Wed, 24 Nov 2021 14:30:09 +0000
+References: <20211124010654.6753-1-huangguangbin2@huawei.com>
+In-Reply-To: <20211124010654.6753-1-huangguangbin2@huawei.com>
+To:     Guangbin Huang <huangguangbin2@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, wangjie125@huawei.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lipeng321@huawei.com, chenhao288@hisilicon.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Looks good, though I think a better way to do both of these cases is to
-abstract out the freeing sequence into its own function.
+Hello:
 
-David
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Wed, 24 Nov 2021 09:06:50 +0800 you wrote:
+> This series includes some updates for the HNS3 ethernet driver.
+> 
+> Jie Wang (1):
+>   net: hns3: debugfs add drop packet statistics of multicast and
+>     broadcast for igu
+> 
+> Yufeng Mo (3):
+>   net: hns3: add log for workqueue scheduled late
+>   net: hns3: format the output of the MAC address
+>   net: hns3: add dql info when tx timeout
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,1/4] net: hns3: add log for workqueue scheduled late
+    https://git.kernel.org/netdev/net-next/c/d9069dab2075
+  - [net-next,2/4] net: hns3: format the output of the MAC address
+    https://git.kernel.org/netdev/net-next/c/4f331fda35f1
+  - [net-next,3/4] net: hns3: debugfs add drop packet statistics of multicast and broadcast for igu
+    https://git.kernel.org/netdev/net-next/c/8488e3c68214
+  - [net-next,4/4] net: hns3: add dql info when tx timeout
+    https://git.kernel.org/netdev/net-next/c/db596298edbf
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
