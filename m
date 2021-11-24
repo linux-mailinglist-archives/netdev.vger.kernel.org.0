@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7252F45B751
-	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 10:21:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6263A45B753
+	for <lists+netdev@lfdr.de>; Wed, 24 Nov 2021 10:22:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231673AbhKXJZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 04:25:02 -0500
-Received: from mga11.intel.com ([192.55.52.93]:54132 "EHLO mga11.intel.com"
+        id S232000AbhKXJZQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 04:25:16 -0500
+Received: from mga11.intel.com ([192.55.52.93]:54155 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229817AbhKXJZB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Nov 2021 04:25:01 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10177"; a="232735455"
+        id S229817AbhKXJZM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Nov 2021 04:25:12 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10177"; a="232735528"
 X-IronPort-AV: E=Sophos;i="5.87,260,1631602800"; 
-   d="scan'208";a="232735455"
+   d="scan'208";a="232735528"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2021 01:21:01 -0800
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2021 01:21:05 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,260,1631602800"; 
-   d="scan'208";a="674799205"
+   d="scan'208";a="674799226"
 Received: from sashimi-thinkstation-p920.png.intel.com ([10.158.65.178])
-  by orsmga005.jf.intel.com with ESMTP; 24 Nov 2021 01:20:56 -0800
+  by orsmga005.jf.intel.com with ESMTP; 24 Nov 2021 01:21:01 -0800
 From:   Ong Boon Leong <boon.leong.ong@intel.com>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     bjorn@kernel.org, Magnus Karlsson <magnus.karlsson@intel.com>,
@@ -36,9 +36,9 @@ Cc:     bjorn@kernel.org, Magnus Karlsson <magnus.karlsson@intel.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         KP Singh <kpsingh@kernel.org>,
         Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: [PATCH bpf-next 2/4] samples/bpf: xdpsock: add Dest and Src MAC setting for Tx-only operation
-Date:   Wed, 24 Nov 2021 17:18:19 +0800
-Message-Id: <20211124091821.3916046-3-boon.leong.ong@intel.com>
+Subject: [PATCH bpf-next 3/4] samples/bpf: xdpsock: add period cycle time to Tx operation
+Date:   Wed, 24 Nov 2021 17:18:20 +0800
+Message-Id: <20211124091821.3916046-4-boon.leong.ong@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211124091821.3916046-1-boon.leong.ong@intel.com>
 References: <20211124091821.3916046-1-boon.leong.ong@intel.com>
@@ -48,17 +48,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To set Dest MAC address (-G|--tx-dmac) only:
- $ xdpsock -i eth0 -t -N -z -G aa:bb:cc:dd:ee:ff
+Tx cycle time is in micro-seconds unit. By combining the batch size (-b M)
+and Tx cycle time (-T|--tx-cycle N), xdpsock now can transmit batch-size of
+packets every N-us periodically.
 
-To set Source MAC address (-H|--tx-smac) only:
- $ xdpsock -i eth0 -t -N -z -H 11:22:33:44:55:66
+For example to transmit 1 packet each 1ms cycle time for total of 2000000
+packets:
 
-To set both Dest and Source MAC address:
- $ xdpsock -i eth0 -t -N -z -G aa:bb:cc:dd:ee:ff \
-   -H 11:22:33:44:55:66
+ $ xdpsock -i eth0 -T -N -z -T 1000 -b 1 -C 2000000
 
-The default Dest and Source MAC address remain the same as before.
+ sock0@enp0s29f1:2 txonly xdp-drv
+                   pps            pkts           1.00
+rx                 0              0
+tx                 1000           1996872
+
+ sock0@enp0s29f1:2 txonly xdp-drv
+                   pps            pkts           1.00
+rx                 0              0
+tx                 1000           1997872
+
+ sock0@enp0s29f1:2 txonly xdp-drv
+                   pps            pkts           1.00
+rx                 0              0
+tx                 1000           1998872
+
+ sock0@enp0s29f1:2 txonly xdp-drv
+                   pps            pkts           1.00
+rx                 0              0
+tx                 1000           1999872
+
+ sock0@enp0s29f1:2 txonly xdp-drv
+                   pps            pkts           1.00
+rx                 0              0
+tx                 128            2000000
+
+ sock0@enp0s29f1:2 txonly xdp-drv
+                   pps            pkts           0.00
+rx                 0              0
+tx                 0              2000000
 
 Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
 ---
@@ -66,100 +93,134 @@ Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
  1 file changed, 31 insertions(+), 5 deletions(-)
 
 diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-index e09fabecd69..691f442bbb2 100644
+index 691f442bbb2..61d4063f11a 100644
 --- a/samples/bpf/xdpsock_user.c
 +++ b/samples/bpf/xdpsock_user.c
-@@ -14,6 +14,7 @@
- #include <arpa/inet.h>
- #include <locale.h>
- #include <net/ethernet.h>
-+#include <netinet/ether.h>
- #include <net/if.h>
- #include <poll.h>
- #include <pthread.h>
-@@ -87,6 +88,10 @@ static u32 opt_pkt_fill_pattern = 0x12345678;
- static bool opt_vlan_tag;
- static u16 opt_pkt_vlan_id = VLAN_VID__DEFAULT;
- static u16 opt_pkt_vlan_pri = VLAN_PRI__DEFAULT;
-+static struct ether_addr opt_txdmac = {{ 0x3c, 0xfd, 0xfe,
-+					 0x9e, 0x7f, 0x71 }};
-+static struct ether_addr opt_txsmac = {{ 0xec, 0xb1, 0xd7,
-+					 0x98, 0x3a, 0xc0 }};
- static bool opt_extra_stats;
- static bool opt_quiet;
- static bool opt_app_stats;
-@@ -782,8 +787,9 @@ static void gen_eth_hdr_data(void)
- 					  sizeof(struct vlan_ethhdr));
+@@ -111,6 +111,7 @@ static u32 opt_num_xsks = 1;
+ static u32 prog_id;
+ static bool opt_busy_poll;
+ static bool opt_reduced_cap;
++static unsigned long opt_cycle_time;
  
- 		/* ethernet & VLAN header */
--		memcpy(veth_hdr->h_dest, "\x3c\xfd\xfe\x9e\x7f\x71", ETH_ALEN);
--		memcpy(veth_hdr->h_source, "\xec\xb1\xd7\x98\x3a\xc0", ETH_ALEN);
-+
-+		memcpy(veth_hdr->h_dest, &opt_txdmac, ETH_ALEN);
-+		memcpy(veth_hdr->h_source, &opt_txsmac, ETH_ALEN);
- 		veth_hdr->h_vlan_proto = htons(ETH_P_8021Q);
- 		vlan_tci = opt_pkt_vlan_id & VLAN_VID_MASK;
- 		vlan_tci |= (opt_pkt_vlan_pri << VLAN_PRIO_SHIFT) & VLAN_PRIO_MASK;
-@@ -799,8 +805,8 @@ static void gen_eth_hdr_data(void)
- 					  sizeof(struct ethhdr));
+ struct vlan_ethhdr {
+ 	unsigned char h_dest[6];
+@@ -173,6 +174,8 @@ struct xsk_socket_info {
+ 	struct xsk_app_stats app_stats;
+ 	struct xsk_driver_stats drv_stats;
+ 	u32 outstanding_tx;
++	unsigned long prev_tx_time;
++	unsigned long tx_cycle_time;
+ };
  
- 		/* ethernet header */
--		memcpy(eth_hdr->h_dest, "\x3c\xfd\xfe\x9e\x7f\x71", ETH_ALEN);
--		memcpy(eth_hdr->h_source, "\xec\xb1\xd7\x98\x3a\xc0", ETH_ALEN);
-+		memcpy(eth_hdr->h_dest, &opt_txdmac, ETH_ALEN);
-+		memcpy(eth_hdr->h_source, &opt_txsmac, ETH_ALEN);
- 		eth_hdr->h_proto = htons(ETH_P_IP);
- 	}
- 
-@@ -964,6 +970,8 @@ static struct option long_options[] = {
- 	{"tx-vlan", no_argument, 0, 'V'},
- 	{"tx-vlan-id", required_argument, 0, 'J'},
+ static int num_socks;
+@@ -972,6 +975,7 @@ static struct option long_options[] = {
  	{"tx-vlan-pri", required_argument, 0, 'K'},
-+	{"tx-dmac", required_argument, 0, 'G'},
-+	{"tx-smac", required_argument, 0, 'H'},
+ 	{"tx-dmac", required_argument, 0, 'G'},
+ 	{"tx-smac", required_argument, 0, 'H'},
++	{"tx-cycle", required_argument, 0, 'T'},
  	{"extra-stats", no_argument, 0, 'x'},
  	{"quiet", no_argument, 0, 'Q'},
  	{"app-stats", no_argument, 0, 'a'},
-@@ -1007,6 +1015,8 @@ static void usage(const char *prog)
- 		"  -V, --tx-vlan        Send VLAN tagged  packets (For -t|--txonly)\n"
- 		"  -J, --tx-vlan-id=n   Tx VLAN ID [1-4095]. Default: %d (For -V|--tx-vlan)\n"
+@@ -1017,6 +1021,7 @@ static void usage(const char *prog)
  		"  -K, --tx-vlan-pri=n  Tx VLAN Priority [0-7]. Default: %d (For -V|--tx-vlan)\n"
-+		"  -G, --tx-dmac=<MAC>  Dest MAC addr of TX frame in aa:bb:cc:dd:ee:ff format (For -V|--tx-vlan)\n"
-+		"  -H, --tx-smac=<MAC>  Src MAC addr of TX frame in aa:bb:cc:dd:ee:ff format (For -V|--tx-vlan)\n"
+ 		"  -G, --tx-dmac=<MAC>  Dest MAC addr of TX frame in aa:bb:cc:dd:ee:ff format (For -V|--tx-vlan)\n"
+ 		"  -H, --tx-smac=<MAC>  Src MAC addr of TX frame in aa:bb:cc:dd:ee:ff format (For -V|--tx-vlan)\n"
++		"  -T, --tx-cycle=n     Tx cycle time in micro-seconds (For -t|--txonly).\n"
  		"  -x, --extra-stats	Display extra statistics.\n"
  		"  -Q, --quiet          Do not display any stats.\n"
  		"  -a, --app-stats	Display application (syscall) statistics.\n"
-@@ -1029,7 +1039,7 @@ static void parse_command_line(int argc, char **argv)
+@@ -1039,7 +1044,7 @@ static void parse_command_line(int argc, char **argv)
  	opterr = 0;
  
  	for (;;) {
--		c = getopt_long(argc, argv, "Frtli:q:pSNn:czf:muMd:b:C:s:P:VJ:K:xQaI:BR",
-+		c = getopt_long(argc, argv, "Frtli:q:pSNn:czf:muMd:b:C:s:P:VJ:K:G:H:xQaI:BR",
+-		c = getopt_long(argc, argv, "Frtli:q:pSNn:czf:muMd:b:C:s:P:VJ:K:G:H:xQaI:BR",
++		c = getopt_long(argc, argv, "Frtli:q:pSNn:czf:muMd:b:C:s:P:VJ:K:G:H:T:xQaI:BR",
  				long_options, &option_index);
  		if (c == -1)
  			break;
-@@ -1119,6 +1129,22 @@ static void parse_command_line(int argc, char **argv)
- 		case 'K':
- 			opt_pkt_vlan_pri = atoi(optarg);
+@@ -1145,6 +1150,10 @@ static void parse_command_line(int argc, char **argv)
+ 				usage(basename(argv[0]));
+ 			}
  			break;
-+		case 'G':
-+			if (!ether_aton_r(optarg,
-+					  (struct ether_addr *)&opt_txdmac)) {
-+				fprintf(stderr, "Invalid dmac address:%s\n",
-+					optarg);
-+				usage(basename(argv[0]));
-+			}
-+			break;
-+		case 'H':
-+			if (!ether_aton_r(optarg,
-+					  (struct ether_addr *)&opt_txsmac)) {
-+				fprintf(stderr, "Invalid smac address:%s\n",
-+					optarg);
-+				usage(basename(argv[0]));
-+			}
++		case 'T':
++			opt_cycle_time = atoi(optarg);
++			opt_cycle_time *= 1000;
 +			break;
  		case 'x':
  			opt_extra_stats = 1;
+ 			break;
+@@ -1350,16 +1359,25 @@ static void rx_drop_all(void)
+ 	}
+ }
+ 
+-static void tx_only(struct xsk_socket_info *xsk, u32 *frame_nb, int batch_size)
++static int tx_only(struct xsk_socket_info *xsk, u32 *frame_nb, int batch_size)
+ {
+ 	u32 idx;
+ 	unsigned int i;
+ 
++	if (xsk->tx_cycle_time) {
++		unsigned long now = get_nsecs();
++
++		if ((now - xsk->prev_tx_time) < xsk->tx_cycle_time)
++			return 0;
++
++		xsk->prev_tx_time = now;
++	}
++
+ 	while (xsk_ring_prod__reserve(&xsk->tx, batch_size, &idx) <
+ 				      batch_size) {
+ 		complete_tx_only(xsk, batch_size);
+ 		if (benchmark_done)
+-			return;
++			return 0;
+ 	}
+ 
+ 	for (i = 0; i < batch_size; i++) {
+@@ -1375,6 +1393,8 @@ static void tx_only(struct xsk_socket_info *xsk, u32 *frame_nb, int batch_size)
+ 	*frame_nb += batch_size;
+ 	*frame_nb %= NUM_FRAMES;
+ 	complete_tx_only(xsk, batch_size);
++
++	return batch_size;
+ }
+ 
+ static inline int get_batch_size(int pkt_cnt)
+@@ -1407,6 +1427,7 @@ static void complete_tx_only_all(void)
+ static void tx_only_all(void)
+ {
+ 	struct pollfd fds[MAX_SOCKS] = {};
++	unsigned long now = get_nsecs();
+ 	u32 frame_nb[MAX_SOCKS] = {};
+ 	int pkt_cnt = 0;
+ 	int i, ret;
+@@ -1414,10 +1435,15 @@ static void tx_only_all(void)
+ 	for (i = 0; i < num_socks; i++) {
+ 		fds[0].fd = xsk_socket__fd(xsks[i]->xsk);
+ 		fds[0].events = POLLOUT;
++		if (opt_cycle_time) {
++			xsks[i]->prev_tx_time = now;
++			xsks[i]->tx_cycle_time = opt_cycle_time;
++		}
+ 	}
+ 
+ 	while ((opt_pkt_count && pkt_cnt < opt_pkt_count) || !opt_pkt_count) {
+ 		int batch_size = get_batch_size(pkt_cnt);
++		int tx_cnt = 0;
+ 
+ 		if (opt_poll) {
+ 			for (i = 0; i < num_socks; i++)
+@@ -1431,9 +1457,9 @@ static void tx_only_all(void)
+ 		}
+ 
+ 		for (i = 0; i < num_socks; i++)
+-			tx_only(xsks[i], &frame_nb[i], batch_size);
++			tx_cnt += tx_only(xsks[i], &frame_nb[i], batch_size);
+ 
+-		pkt_cnt += batch_size;
++		pkt_cnt += tx_cnt;
+ 
+ 		if (benchmark_done)
  			break;
 -- 
 2.25.1
