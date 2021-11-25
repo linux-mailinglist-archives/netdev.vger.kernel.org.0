@@ -2,95 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC21B45D580
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 08:32:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE6ED45D584
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 08:33:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232798AbhKYHf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 02:35:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51020 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232476AbhKYHdW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 02:33:22 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57260C061746
-        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 23:30:10 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id y12so21401253eda.12
-        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 23:30:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zl4Mzlpe6F0HOpdj4Sl3skBw9ImGE6T+paPOveokNjk=;
-        b=YWXtv5fX1y4eCm294JLj0bq0F59e43k8xrfA+D8RZU86kDbaB5pfRYZbeSFyPZxzYR
-         LybsIJqdADJ41hgsh2eyDtwd3NLKvSHLGsoB7ABUDx3z/9GEeqp9Ej+GFUTKpg5ZF3SZ
-         NR7XfQ6dWdRNPh01Co5SAQWD7TBhErF1P+QO3p8RyefDkGbMgN38CKrWWQFiurIKGj1z
-         puCQoAuzzOoiO40mp9Znm5XyGq9NARog8azZ7G7NAr4RF/21OSCOzw0KNB4d5J4+614n
-         Gmn5iw1MdYemcO25BbR0WfPShhqdVMjxIst13NCch1XqPyQs/xMhOFiKoce+X6f5F1Bb
-         4tjQ==
+        id S234613AbhKYHg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 02:36:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:47285 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235395AbhKYHe0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 02:34:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1637825474;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Y5eJI0pmeXq/S80YZOfzijUCY3OPnAMCMR2eYYY351o=;
+        b=elA0UzDo3ONd257kGBCI565NMMqxv5J2n4N9ZSBR065QKDeOi3CHwgoiwL85e5uVhMbgmd
+        btLKIPzA8N1hmoS7lmeWszCHY5Sw0WAsH0Chaxwb91div5RvGAK1FgqNby8EcoxpyXHqeN
+        iyd6TVCzcQVBKv8OPq3UljOouYEB764=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-72-ha8Wj1HyMsa2ltuo07M5fA-1; Thu, 25 Nov 2021 02:31:13 -0500
+X-MC-Unique: ha8Wj1HyMsa2ltuo07M5fA-1
+Received: by mail-ed1-f72.google.com with SMTP id t9-20020aa7d709000000b003e83403a5cbso4665566edq.19
+        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 23:31:13 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zl4Mzlpe6F0HOpdj4Sl3skBw9ImGE6T+paPOveokNjk=;
-        b=JIHfd9PpHn0KFxKAF16P+YnwNxm5fY6s3agugg59G7e4mUMMRKcePCxWap3FQ+OMoG
-         ujimRP6+IiBubSsVxkZHEuA5yZIIX4Rn9F/0H70aBrZ96rikHZ0wK8LciKOSvH+Z+UbR
-         meo8mmHWfbtp1cveb8DXjKS7uXSW6QnmcHR1FTkFalAZTj4yOGMpA3niY6fLMlU2Q42X
-         eTMBSxpfqp+gExRS9VgLvFwvBaocz+et0/i+jscPmH9LyWdqjaZS3kTPrKHNCcB+Zf5n
-         TVIm5AaWRX+B/HNLGIZWdXCL7xayfDiVuRpyXcjNYL00Nunl0fBHF7KNPB2RGjX6KgNO
-         Zu6Q==
-X-Gm-Message-State: AOAM5337VPTOEitG+0rZ/J52Xzb4hTIJY9kCI/3KwacwngNcC9ibw+hN
-        X+CbliF8CErfAKsFIdunJlyVrFsU5eC/eBrJdkHYrK1P0KWmjw==
-X-Google-Smtp-Source: ABdhPJzBM8rNpdV9N+LD9aHK7YZ164O+1qYFeFpmEu7o44T2ClFYtJvvmwPQBqB64Z5ABHWWS2Y3MDvr60m+vyqqybA=
-X-Received: by 2002:a17:906:c301:: with SMTP id s1mr29810214ejz.409.1637825408950;
- Wed, 24 Nov 2021 23:30:08 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Y5eJI0pmeXq/S80YZOfzijUCY3OPnAMCMR2eYYY351o=;
+        b=gW72Ta/PizqFVp2ORftUYhoRs5YE8d8FWYQTCdMkkjdRtqDB/Bc+7hDp9KV4unViwa
+         D5h1R8xkaQQ2Jwi4Lyhzz/SxubDfEYAWIonzLQWCgOgZa+AB2h2hhxThK9SkEJQ0tLXX
+         xH5jv1fOl5u3v8ZhSPpKSYC+/83Zn48oI3ljppS+VMALe9juGdxs0N1/tj+L9ES4bX0z
+         FIfdNoN3eLy2oFDdASX3nkzDINKxWFxTvSOHc0ckUkTOq1y/fA99OYPltSIDSdakhQU2
+         +2PTbujd6G65fnlLWp+GLqvr2objrNEtBd3OdiKD6X2NXc+Er95sC/nQRHY6IcPOlOG9
+         T71w==
+X-Gm-Message-State: AOAM533mWV+W68DGs1JwlriRhfXYcrpeVFwwKas0XSDJBAdEXBl7Bs+T
+        k89EnToYsA/y51m+6aa/5tFH20vDPk/JjhKmbx/Tj9Lxi65mXXbASG+FZhuJrPhwDxVM0KlIj9j
+        HvuwzL3hgpKT0L3YZ
+X-Received: by 2002:a05:6402:1768:: with SMTP id da8mr25711403edb.252.1637825472115;
+        Wed, 24 Nov 2021 23:31:12 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyFdLw5OpKsVjX5SKIvWd83t+uIMlDFgJtQwFJcoac+GAXQ+szrPYXWa/3fjvXjeKAZDLCgeA==
+X-Received: by 2002:a05:6402:1768:: with SMTP id da8mr25711383edb.252.1637825471883;
+        Wed, 24 Nov 2021 23:31:11 -0800 (PST)
+Received: from redhat.com ([45.15.18.67])
+        by smtp.gmail.com with ESMTPSA id n16sm1263656edt.67.2021.11.24.23.31.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Nov 2021 23:31:11 -0800 (PST)
+Date:   Thu, 25 Nov 2021 02:31:05 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Eli Cohen <elic@nvidia.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] virtio-net: enable big mode correctly
+Message-ID: <20211125022736-mutt-send-email-mst@kernel.org>
+References: <20211125060547.11961-1-jasowang@redhat.com>
+ <20211125070939.GC211101@mtl-vdi-166.wap.labs.mlnx>
+ <CACGkMEsNsQ_XWTvdjaCEdo8sYaLew24zU1UUCJrokM-Koxj4fw@mail.gmail.com>
+ <20211125072040.GA213301@mtl-vdi-166.wap.labs.mlnx>
+ <CACGkMEuYWoL4x5o_OO2a27X4Ah8Y2ggBjy0XFHe3Onmj4RhFFg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20211125020155.6488-1-xiangxia.m.yue@gmail.com> <20211124181858.6c4668db@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211124181858.6c4668db@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Thu, 25 Nov 2021 15:29:33 +0800
-Message-ID: <CAMDZJNWWYhdCUvo1FJoAOJ-=43aK6PppNas6st4bGPXUbVuDAA@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] ifb: support ethtools driver info
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACGkMEuYWoL4x5o_OO2a27X4Ah8Y2ggBjy0XFHe3Onmj4RhFFg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 25, 2021 at 10:19 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 25 Nov 2021 10:01:54 +0800 xiangxia.m.yue@gmail.com wrote:
-> > +#define DRV_NAME     "ifb"
-> > +#define DRV_VERSION  "1.0"
->
-> Let's not invent meaningless driver versions.
-Ok
-> > +#define TX_Q_LIMIT   32
-> > +
-> >  struct ifb_q_private {
-> >       struct net_device       *dev;
-> >       struct tasklet_struct   ifb_tasklet;
-> > @@ -181,6 +185,12 @@ static int ifb_dev_init(struct net_device *dev)
-> >       return 0;
-> >  }
+On Thu, Nov 25, 2021 at 03:26:22PM +0800, Jason Wang wrote:
+> On Thu, Nov 25, 2021 at 3:20 PM Eli Cohen <elic@nvidia.com> wrote:
 > >
-> > +static void ifb_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
-> > +{
-> > +     strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
->
-> Can we make core fill in driver name from rtnl_link_ops so we don't
-> need to do it in each driver?
-Good idea! v2 is sent out, please review.
-https://patchwork.kernel.org/project/netdevbpf/patch/20211125072544.32578-1-xiangxia.m.yue@gmail.com/
-> > +     strlcpy(info->version, DRV_VERSION, sizeof(info->version));
->
-> Leave this field as is, core should fill it with the kernel release.
-Ok
-> > +}
+> > On Thu, Nov 25, 2021 at 03:15:33PM +0800, Jason Wang wrote:
+> > > On Thu, Nov 25, 2021 at 3:09 PM Eli Cohen <elic@nvidia.com> wrote:
+> > > >
+> > > > On Thu, Nov 25, 2021 at 02:05:47PM +0800, Jason Wang wrote:
+> > > > > When VIRTIO_NET_F_MTU feature is not negotiated, we assume a very
+> > > > > large max_mtu. In this case, using small packet mode is not correct
+> > > > > since it may breaks the networking when MTU is grater than
+> > > > > ETH_DATA_LEN.
+> > > > >
+> > > > > To have a quick fix, simply enable the big packet mode when
+> > > > > VIRTIO_NET_F_MTU is not negotiated. We can do optimization on top.
+> > > > >
+> > > > > Reported-by: Eli Cohen <elic@nvidia.com>
+> > > > > Cc: Eli Cohen <elic@nvidia.com>
+> > > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > > > > ---
+> > > > >  drivers/net/virtio_net.c | 7 ++++---
+> > > > >  1 file changed, 4 insertions(+), 3 deletions(-)
+> > > > >
+> > > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > > > index 7c43bfc1ce44..83ae3ef5eb11 100644
+> > > > > --- a/drivers/net/virtio_net.c
+> > > > > +++ b/drivers/net/virtio_net.c
+> > > > > @@ -3200,11 +3200,12 @@ static int virtnet_probe(struct virtio_device *vdev)
+> > > > >               dev->mtu = mtu;
+> > > > >               dev->max_mtu = mtu;
+> > > > >
+> > > > > -             /* TODO: size buffers correctly in this case. */
+> > > > > -             if (dev->mtu > ETH_DATA_LEN)
+> > > > > -                     vi->big_packets = true;
+> > > > >       }
+> > > > >
+> > > > > +     /* TODO: size buffers correctly in this case. */
+> > > > > +     if (dev->max_mtu > ETH_DATA_LEN)
+> > > > > +             vi->big_packets = true;
+> > > > > +
+> > > >
+> > > > If VIRTIO_NET_F_MTU is provided, then dev->max_mtu is going to equal
+> > > > ETH_DATA_LEN (will be set in ether_setup()) so I don't think it will set
+> > > > big_packets to true.
+> > >
+> > > I may miss something, the dev->max_mtu is just assigned to the mtu
+> > > value read from the config space in the code block above  (inside the
+> > > feature check of VIRTIO_NET_F_MTU).
+> >
+> > Sorry, I meant "If VIRTIO_NET_F_MTU is ***NOT*** provided". In that case
+> > dev->max_mtu eauals ETH_DATA_LEN so you won't set vi->big_packets to
+> > true.
+> 
+> I see but in this case, the above assignment:
+> 
+>         /* MTU range: 68 - 65535 */
+>         dev->min_mtu = MIN_MTU;
+>         dev->max_mtu = MAX_MTU;
+> 
+> happens after alloc_etherdev_mq() which calls ether_setup(), so we are
+> probably fine here.
+> 
+> Thanks
+
+Actually the issue with VIRTIO_NET_F_MTU is that devices might be
+tempted to expose 9k here simply because they support jumbo frames,
+if they also don't support mergeable buffers this will force big
+packet mode.
 
 
+> >
+> > >
+> > > Thanks
+> > >
+> > > >
+> > > >
+> > > > >       if (vi->any_header_sg)
+> > > > >               dev->needed_headroom = vi->hdr_len;
+> > > > >
+> > > > > --
+> > > > > 2.25.1
+> > > > >
+> > > >
+> > >
+> >
 
-
---
-Best regards, Tonghao
