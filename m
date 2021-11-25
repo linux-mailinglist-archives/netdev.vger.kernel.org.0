@@ -2,140 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E7BC45E1C7
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 21:44:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B20B45E1FD
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 22:13:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243233AbhKYUrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 15:47:41 -0500
-Received: from mga01.intel.com ([192.55.52.88]:61986 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237103AbhKYUpk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Nov 2021 15:45:40 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10179"; a="259465349"
-X-IronPort-AV: E=Sophos;i="5.87,263,1631602800"; 
-   d="scan'208";a="259465349"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2021 12:40:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,263,1631602800"; 
-   d="scan'208";a="554722254"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga008.fm.intel.com with ESMTP; 25 Nov 2021 12:40:31 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1APKeSEZ023254;
-        Thu, 25 Nov 2021 20:40:28 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shay Agroskin <shayagr@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        David Arinzon <darinzon@amazon.com>,
-        Noam Dagan <ndagan@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Andrei Vagin <avagin@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Cong Wang <cong.wang@bytedance.com>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH v2 net-next 21/26] ice: add XDP and XSK generic per-channel statistics
-Date:   Thu, 25 Nov 2021 21:40:07 +0100
-Message-Id: <20211125204007.133064-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20211125094440.6c402d63@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20211123163955.154512-1-alexandr.lobakin@intel.com> <20211123163955.154512-22-alexandr.lobakin@intel.com> <77407c26-4e32-232c-58e0-2d601d781f84@iogearbox.net> <87bl28bga6.fsf@toke.dk> <20211125170708.127323-1-alexandr.lobakin@intel.com> <20211125094440.6c402d63@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1357196AbhKYVQW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 16:16:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35554 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243150AbhKYVOj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 16:14:39 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F5FFC061574
+        for <netdev@vger.kernel.org>; Thu, 25 Nov 2021 13:11:27 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id c6-20020a05600c0ac600b0033c3aedd30aso5486556wmr.5
+        for <netdev@vger.kernel.org>; Thu, 25 Nov 2021 13:11:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:from:to:cc
+         :references:subject:in-reply-to:content-transfer-encoding;
+        bh=fejCLqfpxeszsjUhqKoV6J1c3n1EJ0BRSy7qk2+0l2M=;
+        b=epQ9prFjDGfpItBMS36QakCCJiCnL32/jVWQta4juxmZrAVkBhCsR0IvmulRLX4JSB
+         WhCG0eeVupFhM0D+lpm0jgmOPNwOpgiXxskUZBVZ1jnfXOUjNokfC8011dXH/92G2jIU
+         5Ey8H4p4CFeihnO2RJCA0xW5CubyzvgcWzNFDqn6nHiWXLviSmF9wkP1tf00kwVpVhq8
+         oB/fv3PhUQTeMjnsLdDp7drrcfeBlGoyz822n10iN9h/rvxhWZoNIEIlngaafu4tXWGj
+         F0kSblk0DPXwoaOqtyuWDB76MsZUjKEckeD3DbRE0OhCZvO7w7buwd56Q9ynIbLDh4AL
+         x/KA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:from:to:cc:references:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=fejCLqfpxeszsjUhqKoV6J1c3n1EJ0BRSy7qk2+0l2M=;
+        b=ZEUtrsw20hrt9VDXzirYA5M9SK95apwVdvkNbt9tylsWUOtRAe0xQspFbxmen5id/7
+         uAkJh9qlGoODk1CMAGyJMTtLA9n9bwG8YZ1f6/RyDznF/A6kGAjErhr1GLxH+FnJQGGm
+         3HgOpV8zdVvdSUmPlcKAu4cAojxOV/0v3u7sjsz/7zp7QarPblRTq+zhAI0wU0AmF7NG
+         I7Na49/1or44yHNPVZnpBKbKDTBC6+DnTdrW7KUeSFiv1d8DEvut0IfenscQVLMV/CTy
+         4SpZiFcruGANEhw75vbsr1sft+3/FTlPLxLdwbdqiY0nFZ0i/rL/dAFkdc690qAC4OMG
+         8JVQ==
+X-Gm-Message-State: AOAM533nxe8BskKsWyOHAz5tLJ3eol3p3e0eQGboW++x0GaFXHvP51MN
+        Cg8sIv+PvJrBRZ/dPEWLenuqFZnK8kg=
+X-Google-Smtp-Source: ABdhPJzqfwCY9i+K//SkPkGYS1wzRnRNUZb93hE4GO8nuDWqRBESFuF3uBoLH/KgpXr7uqKvJsordw==
+X-Received: by 2002:a1c:1d04:: with SMTP id d4mr10758701wmd.103.1637874685920;
+        Thu, 25 Nov 2021 13:11:25 -0800 (PST)
+Received: from ?IPV6:2003:ea:8f1a:f00:4553:54d4:5457:fb08? (p200300ea8f1a0f00455354d45457fb08.dip0.t-ipconnect.de. [2003:ea:8f1a:f00:4553:54d4:5457:fb08])
+        by smtp.googlemail.com with ESMTPSA id g5sm5508520wri.45.2021.11.25.13.11.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Nov 2021 13:11:25 -0800 (PST)
+Message-ID: <4a28ad86-1b1e-ab51-2351-efdd6caf8e1d@gmail.com>
+Date:   Thu, 25 Nov 2021 22:11:16 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Content-Language: en-US
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     netdev@vger.kernel.org, ath10k@lists.infradead.org,
+        Stephen Hemminger <stephen@networkplumber.org>
+References: <20211124144505.31e15716@hermes.local>
+ <20211124164648.43c354f4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <1849b7a3-cdfe-f9dc-e4d1-172e8b1667d2@gmail.com>
+Subject: Re: [Bug 215129] New: Linux kernel hangs during power down
+In-Reply-To: <1849b7a3-cdfe-f9dc-e4d1-172e8b1667d2@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
-Date: Thu, 25 Nov 2021 09:44:40 -0800
-
-> On Thu, 25 Nov 2021 18:07:08 +0100 Alexander Lobakin wrote:
-> > > This I agree with, and while I can see the layering argument for putting
-> > > them into 'ip' and rtnetlink instead of ethtool, I also worry that these
-> > > counters will simply be lost in obscurity, so I do wonder if it wouldn't
-> > > be better to accept the "layering violation" and keeping them all in the
-> > > 'ethtool -S' output?  
-> > 
-> > I don't think we should harm the code and the logics in favor of
-> > 'some of the users can face something'. We don't control anything
-> > related to XDP using Ethtool at all, but there is some XDP-related
-> > stuff inside iproute2 code, so for me it's even more intuitive to
-> > have them there.
-> > Jakub, may be you'd like to add something at this point?
+On 25.11.2021 08:32, Heiner Kallweit wrote:
+> On 25.11.2021 01:46, Jakub Kicinski wrote:
+>> Adding Kalle and Hainer.
+>>
+>> On Wed, 24 Nov 2021 14:45:05 -0800 Stephen Hemminger wrote:
+>>> Begin forwarded message:
+>>>
+>>> Date: Wed, 24 Nov 2021 21:14:53 +0000
+>>> From: bugzilla-daemon@bugzilla.kernel.org
+>>> To: stephen@networkplumber.org
+>>> Subject: [Bug 215129] New: Linux kernel hangs during power down
+>>>
+>>>
+>>> https://bugzilla.kernel.org/show_bug.cgi?id=215129
+>>>
+>>>             Bug ID: 215129
+>>>            Summary: Linux kernel hangs during power down
+>>>            Product: Networking
+>>>            Version: 2.5
+>>>     Kernel Version: 5.15
+>>>           Hardware: All
+>>>                 OS: Linux
+>>>               Tree: Mainline
+>>>             Status: NEW
+>>>           Severity: normal
+>>>           Priority: P1
+>>>          Component: Other
+>>>           Assignee: stephen@networkplumber.org
+>>>           Reporter: martin.stolpe@gmail.com
+>>>         Regression: No
+>>>
+>>> Created attachment 299703
+>>>   --> https://bugzilla.kernel.org/attachment.cgi?id=299703&action=edit    
+>>> Kernel log after timeout occured
+>>>
+>>> On my system the kernel is waiting for a task during shutdown which doesn't
+>>> complete.
+>>>
+>>> The commit which causes this behavior is:
+>>> [f32a213765739f2a1db319346799f130a3d08820] ethtool: runtime-resume netdev
+>>> parent before ethtool ioctl ops
+>>>
+>>> This bug causes also that the system gets unresponsive after starting Steam:
+>>> https://steamcommunity.com/app/221410/discussions/2/3194736442566303600/
+>>>
+>>
 > 
-> TBH I wasn't following this thread too closely since I saw Daniel
-> nacked it already. I do prefer rtnl xstats, I'd just report them 
-> in -s if they are non-zero. But doesn't sound like we have an agreement
-> whether they should exist or not.
-
-Right, just -s is fine, if we drop the per-channel approach.
-
-> Can we think of an approach which would make cloudflare and cilium
-> happy? Feels like we're trying to make the slightly hypothetical 
-> admin happy while ignoring objections of very real users.
-
-The initial idea was to only uniform the drivers. But in general
-you are right, 10 drivers having something doesn't mean it's
-something good.
-
-Maciej, I think you were talking about Cilium asking for those stats
-in Intel drivers? Could you maybe provide their exact usecases/needs
-so I'll orient myself? I certainly remember about XSK Tx packets and
-bytes.
-And speaking of XSK Tx, we have per-socket stats, isn't that enough?
-
-> > > > +  xdp-channel0-rx_xdp_redirect: 7
-> > > > +  xdp-channel0-rx_xdp_redirect_errors: 8
-> > > > +  xdp-channel0-rx_xdp_tx: 9
-> > > > +  xdp-channel0-rx_xdp_tx_errors: 10
-> > > > +  xdp-channel0-tx_xdp_xmit_packets: 11
-> > > > +  xdp-channel0-tx_xdp_xmit_bytes: 12
-> > > > +  xdp-channel0-tx_xdp_xmit_errors: 13
-> > > > +  xdp-channel0-tx_xdp_xmit_full: 14
+> I think the reference to ath10k_pci is misleading, Kalle isn't needed here.
+> The actual issue is a RTNL deadlock in igb_resume(). See log snippet:
 > 
-> Please leave the per-channel stats out. They make a precedent for
-> channel stats which should be an attribute of a channel. Working for 
-> a large XDP user for a couple of years now I can tell you from my own
-> experience I've not once found them useful. In fact per-queue stats are
-> a major PITA as they crowd the output.
+> Nov 24 18:56:19 MartinsPc kernel:  igb_resume+0xff/0x1e0 [igb 21bf6a00cb1f20e9b0e8434f7f8748a0504e93f8]
+> Nov 24 18:56:19 MartinsPc kernel:  pci_pm_runtime_resume+0xa7/0xd0
+> Nov 24 18:56:19 MartinsPc kernel:  ? pci_pm_freeze_noirq+0x110/0x110
+> Nov 24 18:56:19 MartinsPc kernel:  __rpm_callback+0x41/0x120
+> Nov 24 18:56:19 MartinsPc kernel:  ? pci_pm_freeze_noirq+0x110/0x110
+> Nov 24 18:56:19 MartinsPc kernel:  rpm_callback+0x35/0x70
+> Nov 24 18:56:19 MartinsPc kernel:  rpm_resume+0x567/0x810
+> Nov 24 18:56:19 MartinsPc kernel:  __pm_runtime_resume+0x4a/0x80
+> Nov 24 18:56:19 MartinsPc kernel:  dev_ethtool+0xd4/0x2d80
+> 
+> We have at least two places in net core where runtime_resume() is called
+> under RTNL. This conflicts with the current structure in few Intel drivers
+> that have something like the following in their resume path.
+> 
+> 	rtnl_lock();
+> 	if (!err && netif_running(netdev))
+> 		err = __igb_open(netdev, true);
+> 
+> 	if (!err)
+> 		netif_device_attach(netdev);
+> 	rtnl_unlock();
+> 
+> Other drivers don't do this, so it's the question whether it's actually
+> needed here to take RTNL. Some discussion was started [0], but it ended
+> w/o tangible result and since then it has been surprisingly quiet.
+> 
+> [0] https://www.spinics.net/lists/netdev/msg736880.html
+> 
 
-Oh okay. My very first iterations were without this, but then I
-found most of the drivers expose their XDP stats per-channel. Since
-I didn't plan to degrade the functionality, they went that way.
+I think the problem with runtime_resume() taking RTNL could also hit
+the driver internally. See following call chain: If this would ever
+be called when the device is runtime-suspended, then a similar
+deadlock would occur.
 
-Al
+__dev_open()    - called with RTNL held
+  igb_open()
+    __igb_open()   - arg resuming is false
+      if (!resuming)
+        pm_runtime_get_sync(&pdev->dev);
+          igb_resume()
+            rtnl_lock()
