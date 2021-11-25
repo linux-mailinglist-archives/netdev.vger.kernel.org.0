@@ -2,134 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBC9D45D8BD
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 12:04:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E69445D8E8
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 12:13:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233739AbhKYLHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 06:07:24 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:14434 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238625AbhKYLFY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 06:05:24 -0500
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1AP9GnH4031295;
-        Thu, 25 Nov 2021 11:02:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=ZDNHfmrIvKRHlBA/ZKTskcwekbGibMhbIs8GDRBBrFw=;
- b=aUuGGY8claDcn7YEcnfgeQ3zplCngMNRW7Uc3G5XinILSpd20696ST36y+k1xvSPBzT9
- QOXpGIHl8I0XQBCOvdfedORSfONuvm5X6rPQ7LsB1qxJeuSoXzvsdx7kSIEV6uH115nL
- ogB1N25/hgiZVCnoj2Ac/M1UGm3UiUBp8rb3kgR1Hy7plxx0jGia9Thf9qgLb/S1Wtmh
- UcJ/cJrCCHVDx3/6xFvvt9HEz4M6hEGdRWMF1nLOPUgUYyPVBGfOaqEVNx97UkYmuvMd
- sYUqwm0DTgXFuJRLMxCK1KsBVU0nLVEggylGMOTfpTmJxK4PY/Vzseq/cHoLHpudRPdi GQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3cj7qesygx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 25 Nov 2021 11:02:10 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1APAjR3I004732;
-        Thu, 25 Nov 2021 11:02:09 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3cj7qesyg8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 25 Nov 2021 11:02:09 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1APAwYAv011406;
-        Thu, 25 Nov 2021 11:02:07 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma02fra.de.ibm.com with ESMTP id 3cerna8c3s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 25 Nov 2021 11:02:07 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1APB25Bo56623614
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 25 Nov 2021 11:02:05 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F2C184C064;
-        Thu, 25 Nov 2021 11:02:04 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9DFD94C058;
-        Thu, 25 Nov 2021 11:02:04 +0000 (GMT)
-Received: from [9.145.172.86] (unknown [9.145.172.86])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 25 Nov 2021 11:02:04 +0000 (GMT)
-Message-ID: <77c1be59-5e55-80f1-4fc6-16fb65846b7e@linux.ibm.com>
-Date:   Thu, 25 Nov 2021 12:02:06 +0100
+        id S236479AbhKYLQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 06:16:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42968 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230143AbhKYLOf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 06:14:35 -0500
+Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03538C061399
+        for <netdev@vger.kernel.org>; Thu, 25 Nov 2021 03:08:31 -0800 (PST)
+Received: by mail-oi1-x244.google.com with SMTP id n66so11796901oia.9
+        for <netdev@vger.kernel.org>; Thu, 25 Nov 2021 03:08:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=ERnH3oKJ5P8uavaYgxOh115y+DdfBpYM27ddgq9zXhI=;
+        b=hcG1Yk26ZVkPHZaIsXywsbGA9+pt5LKTPtUuSQsUNpm7zGLflF4yImK8ZYYOlqmvP7
+         yUqmMap/iZiNgdQcRpzQ0dycPhhmWr+NmlkCjhLdkmizBnDdK1exR1PSTrIcqdQjlHRa
+         QTnGDbS9kKHKhAaiHgSjhbRr/wIqPh4kMbwrwW5cl6qHl/nsuYDbzpixOW4rTpNdxzWt
+         xIi+j5qGU6zaphTSqCHjBActSN1ArFWE9+LK7qLsfEI6ZzIvN8p1bcn1IuSzcZDoetom
+         ISceACF0CmpEkls7TBCf+nt+BiQ17ELlPCXlKVm3mcowd84DGfq55FU/vcDj/ezrNCyX
+         hytw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=ERnH3oKJ5P8uavaYgxOh115y+DdfBpYM27ddgq9zXhI=;
+        b=cs6d6RQ/sR5xbBe15sk/AphJ6oUyUk3/EGG0z5RPdyKozR/BMNzRIValPv4RsPCfqX
+         7hWsAqRcEOj4sEewZDm8Lmn3IClXnmZ5fjkn78f3I0bLMdKShMIM2Y0Nz42JJtrHSn5c
+         y1J5VJ+scXzsCzT6IWKyLmXPZstERJIEct+n7Km89Kc4aTfaaU5cxvPNsikfoqB8CWy6
+         8Ik8mNngX9nOEA0CEi74V5LzaHNDIP/Q+yJt7ai7KF408i2GkiAQ+LeJlt02C9XnixOp
+         Rekxt7zrYm/UlwA3FjzZOE0WU65M6w5dIEgCUHJ4Ie0PlaMF6kBQZ8v+GLl+FKZGU7IT
+         HeMA==
+X-Gm-Message-State: AOAM531qjFRXwAN7Tzz3+nEDnKUDFbQZd7SeyyVo0Wzpvopq0g8/HqUR
+        1Rqwkwqi5pnU0NQfAeNNrYcWzuaPa5q9zbOdoyEABopbsJ8souJW
+X-Google-Smtp-Source: ABdhPJzAmZlCz9Fez8+cXXeNJ15nEGEZiIIwPWL7DHgO2wJywPGCZ6vL7VaH9fgWna0LdUxY1eLVpBf2No5Ick9xS+g=
+X-Received: by 2002:a05:6808:199c:: with SMTP id bj28mr15050843oib.98.1637838499232;
+ Thu, 25 Nov 2021 03:08:19 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH net 2/2] net/smc: Don't call clcsock shutdown twice when
- smc shutdown
-Content-Language: en-US
-To:     Tony Lu <tonylu@linux.alibaba.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <20211125061932.74874-1-tonylu@linux.alibaba.com>
- <20211125061932.74874-3-tonylu@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <20211125061932.74874-3-tonylu@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: LanQC8F2OkSSDAiklfTs_icZ8c12_hDj
-X-Proofpoint-ORIG-GUID: iqfOJxtPAoE_D0n1nefovhUQpAnDZwEn
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-11-25_04,2021-11-25_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 adultscore=0
- lowpriorityscore=0 mlxlogscore=999 spamscore=0 suspectscore=0 bulkscore=0
- priorityscore=1501 impostorscore=0 clxscore=1015 phishscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
- definitions=main-2111250061
+Sender: courier.companybf2015@gmail.com
+Received: by 2002:a05:6838:9e82:0:0:0:0 with HTTP; Thu, 25 Nov 2021 03:08:18
+ -0800 (PST)
+From:   Anderson Thereza <anderson.thereza24@gmail.com>
+Date:   Thu, 25 Nov 2021 03:08:18 -0800
+X-Google-Sender-Auth: u2ZLueprrE23hydwCWtUZuWtH0I
+Message-ID: <CAGnXoaomua+J7bEbkLymcsRP6LAPvzoj+yJOf9juP-VhAy7vBw@mail.gmail.com>
+Subject: Re: Greetings My Dear,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25/11/2021 07:19, Tony Lu wrote:
-> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-> index 4b62c925a13e..7b04cb4d15f4 100644
-> --- a/net/smc/af_smc.c
-> +++ b/net/smc/af_smc.c
-> @@ -2373,6 +2373,7 @@ static int smc_shutdown(struct socket *sock, int how)
->  	struct smc_sock *smc;
->  	int rc = -EINVAL;
->  	int rc1 = 0;
-> +	int old_state;
+Greetings,
 
-Reverse Christmas tree formatting, please.
+I sent this mail praying it will find you in a good condition, since I
+myself am in a very critical health condition in which I sleep every
+night without knowing if I may be alive to see the next day. I am
+mrs.theresa anderson, a widow suffering from a long time illness. I
+have some funds I inherited from my late husband, the sum of
+($11,000,000.00, Eleven Million Dollars) my Doctor told me recently
+that I have serious sickness which is a cancer problem. What disturbs
+me most is my stroke sickness. Having known my condition, I decided to
+donate this fund to a good person that will utilize it the way I am
+going to instruct herein. I need a very honest God.
 
->  
->  	smc = smc_sk(sk);
->  
-> @@ -2398,7 +2399,12 @@ static int smc_shutdown(struct socket *sock, int how)
->  	}
->  	switch (how) {
->  	case SHUT_RDWR:		/* shutdown in both directions */
-> +		old_state = sk->sk_state;
->  		rc = smc_close_active(smc);
-> +		if (old_state == SMC_ACTIVE &&
-> +		    sk->sk_state == SMC_PEERCLOSEWAIT1)
-> +			goto out_no_shutdown;
-> +
+fearing a person who can claim this money and use it for Charity
+works, for orphanages, widows and also build schools for less
+privileges that will be named after my late husband if possible and to
+promote the word of God and the effort that the house of God is
+maintained. I do not want a situation where this money will be used in
+an ungodly manner. That's why I' making this decision. I'm not afraid
+of death so I know where I'm going. I accept this decision because I
+do not have any child who will inherit this money after I die. Please
+I want your sincere and urgent answer to know if you will be able to
+execute this project, and I will give you more information on how the
+fund will be transferred to your bank account. I am waiting for your
+reply.
 
-I would prefer a new "bool do_shutdown" instead of a goto for this skip
-of the shutdown. What do you think?
-
->  		break;
->  	case SHUT_WR:
->  		rc = smc_close_shutdown_write(smc);
-> @@ -2410,6 +2416,8 @@ static int smc_shutdown(struct socket *sock, int how)
->  	}
->  	if (smc->clcsock)
->  		rc1 = kernel_sock_shutdown(smc->clcsock, how);
-> +
-> +out_no_shutdown:
->  	/* map sock_shutdown_cmd constants to sk_shutdown value range */
->  	sk->sk_shutdown |= how + 1;
->  
-> 
-
--- 
-Karsten
+May God Bless you,
+Mrs.theresa anderson.
