@@ -2,116 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25AD845D50B
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 08:02:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CED6145D511
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 08:05:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348819AbhKYHFs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 02:05:48 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38583 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1348845AbhKYHDr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 02:03:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637823636;
+        id S1351305AbhKYHIf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 02:08:35 -0500
+Received: from vulcan.natalenko.name ([104.207.131.136]:42414 "EHLO
+        vulcan.natalenko.name" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243105AbhKYHGe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 02:06:34 -0500
+Received: from spock.localnet (unknown [83.148.33.151])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by vulcan.natalenko.name (Postfix) with ESMTPSA id 256F0CBCA7C;
+        Thu, 25 Nov 2021 08:03:20 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
+        s=dkim-20170712; t=1637823800;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=YvGutxBVxczmzzfrYB1SU+rxjor3OVuX04qAGxlXkWA=;
-        b=GCkUuSwp3pG/dFEnu2vtYGD1mjm/XdgIvbc8hZhFeqzSLcHzwsyFhom5agGBcrIYVjmNvm
-        P2q5iXPNemMjzB2qB1iEkoeafujxQzAc4HjxmV+RpDVeLtaoEkh0k2lSco591GtOFCZDJk
-        AlG9giB0oU4OoGgtCYknHZVk/11/pms=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-392-Zjvuia7aNt-2G0hQhIbSUQ-1; Thu, 25 Nov 2021 02:00:34 -0500
-X-MC-Unique: Zjvuia7aNt-2G0hQhIbSUQ-1
-Received: by mail-ed1-f71.google.com with SMTP id m12-20020a056402430c00b003e9f10bbb7dso4595601edc.18
-        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 23:00:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YvGutxBVxczmzzfrYB1SU+rxjor3OVuX04qAGxlXkWA=;
-        b=P+OMQ+P9mvU9vWVosTh1xSHf20MlLZWruibwJ/GNEYlbK2yqssq445DuVNMeRUQxRq
-         sk+4CweWHkJrX4WzqJC3WEhp5bjvb2Za9mv0h8yym4FWmHRn8UBgvaxSmiEYcFj1Wkds
-         gXe24S4csaOvtentGmWYSOb76kD8nNN/bG/hN6hr28iADjUa1gjQAYK+nTwxu0Z9mLEZ
-         zEC3LS3HLzLpocUU69CCwcC/Pijf7zMzgmGSwPo5BAIHA9jlmq8qnUe+VgyJPzYR3aKN
-         hKUBKw4giff0PqLEJ49jEN2TjikBczlkmKOxXbeeccTYDgeL1XD5TMg6fg4M6jllTFxn
-         svCA==
-X-Gm-Message-State: AOAM532O9yu9NwT3iBaFeM+rL0O0VnCP38tG3/kZiHFsZXzbPyOrpCaW
-        KEoq/YwKhO6Z6QZhSteN6UT+5U8kb8YUDpxn5KvF3ySR8HH7mqxbnpSdQXHy+CwL7a5hq5rnkQB
-        aIbU9yAp2tBTwgtYG
-X-Received: by 2002:a05:6402:514d:: with SMTP id n13mr37269609edd.380.1637823633726;
-        Wed, 24 Nov 2021 23:00:33 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwt9AzGmm67AiDU2VeyIbtxIKZbPDa65Cxd5iNtULGb5LEPNWYW+LlxsIXin1YtDVEPx7kHTQ==
-X-Received: by 2002:a05:6402:514d:: with SMTP id n13mr37269578edd.380.1637823633552;
-        Wed, 24 Nov 2021 23:00:33 -0800 (PST)
-Received: from redhat.com ([45.15.18.67])
-        by smtp.gmail.com with ESMTPSA id z8sm1418082edb.5.2021.11.24.23.00.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Nov 2021 23:00:32 -0800 (PST)
-Date:   Thu, 25 Nov 2021 02:00:26 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Eli Cohen <elic@nvidia.com>
-Subject: Re: [PATCH net] virtio-net: enable big mode correctly
-Message-ID: <20211125015532-mutt-send-email-mst@kernel.org>
-References: <20211125060547.11961-1-jasowang@redhat.com>
+        bh=IXUCekOknOdqWi3NoejcSY8b4+cDF5XXrBMYpnYJrZ0=;
+        b=NGr7TZuhUl05DV/Y5Pri92WOScPJOQSCppojgak7bjONvFsFB+N09CIXZksgoPa9ruC80d
+        UxF14o/10PawYTEdY6kUBFtzwqKhjLaC0sl5hEzuy+3gvQDqWd1x+2eDQUCln/SmoIIIgY
+        2hDAP6pizNarDFr8T0i2gSCM244d7mw=
+From:   Oleksandr Natalenko <oleksandr@natalenko.name>
+To:     intel-wired-lan@lists.osuosl.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        netdev@vger.kernel.org, Danielle Ratson <danieller@nvidia.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: Re: [PATCH net v2] igb: fix netpoll exit with traffic
+Date:   Thu, 25 Nov 2021 08:03:18 +0100
+Message-ID: <4695060.31r3eYUQgx@natalenko.name>
+In-Reply-To: <20211123204000.1597971-1-jesse.brandeburg@intel.com>
+References: <20211123204000.1597971-1-jesse.brandeburg@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211125060547.11961-1-jasowang@redhat.com>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 25, 2021 at 02:05:47PM +0800, Jason Wang wrote:
-> When VIRTIO_NET_F_MTU feature is not negotiated, we assume a very
-> large max_mtu. In this case, using small packet mode is not correct
-> since it may breaks the networking when MTU is grater than
-> ETH_DATA_LEN.
-> 
-> To have a quick fix, simply enable the big packet mode when
-> VIRTIO_NET_F_MTU is not negotiated.
+Hello.
 
-This will slow down dpdk hosts which disable mergeable buffers
-and send standard MTU sized packets.
-
-> We can do optimization on top.
-
-I don't think it works like this, increasing mtu
-from guest >4k never worked, we can't regress everyone's
-performance with a promise to maybe sometime bring it back.
-
-> Reported-by: Eli Cohen <elic@nvidia.com>
-> Cc: Eli Cohen <elic@nvidia.com>
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
->
+On =FAter=FD 23. listopadu 2021 21:40:00 CET Jesse Brandeburg wrote:
+> Oleksandr brought a bug report where netpoll causes trace
+> messages in the log on igb.
+>=20
+> Danielle brought this back up as still occuring, so we'll try
+> again.
+>=20
+> [22038.710800] ------------[ cut here ]------------
+> [22038.710801] igb_poll+0x0/0x1440 [igb] exceeded budget in poll
+> [22038.710802] WARNING: CPU: 12 PID: 40362 at net/core/netpoll.c:155
+> netpoll_poll_dev+0x18a/0x1a0
+>=20
+> As Alex suggested, change the driver to return work_done at the
+> exit of napi_poll, which should be safe to do in this driver
+> because it is not polling multiple queues in this single napi
+> context (multiple queues attached to one MSI-X vector). Several
+> other drivers contain the same simple sequence, so I hope
+> this will not create new problems.
+>=20
+> Fixes: 16eb8815c235 ("igb: Refactor clean_rx_irq to reduce overhead and
+> improve performance") Reported-by: Oleksandr Natalenko
+> <oleksandr@natalenko.name>
+> Reported-by: Danielle Ratson <danieller@nvidia.com>
+> Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
+> Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 > ---
->  drivers/net/virtio_net.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 7c43bfc1ce44..83ae3ef5eb11 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -3200,11 +3200,12 @@ static int virtnet_probe(struct virtio_device *vdev)
->  		dev->mtu = mtu;
->  		dev->max_mtu = mtu;
->  
-> -		/* TODO: size buffers correctly in this case. */
-> -		if (dev->mtu > ETH_DATA_LEN)
-> -			vi->big_packets = true;
->  	}
->  
-> +	/* TODO: size buffers correctly in this case. */
-> +	if (dev->max_mtu > ETH_DATA_LEN)
-> +		vi->big_packets = true;
-> +
->  	if (vi->any_header_sg)
->  		dev->needed_headroom = vi->hdr_len;
->  
-> -- 
-> 2.25.1
+> COMPILE TESTED ONLY! I have no way to reproduce this even on a machine I
+> have with igb. It works fine to load the igb driver and netconsole with
+> no errors.
+> ---
+> v2: simplified patch with an attempt to make it work
+> v1: original patch that apparently didn't work
+> ---
+>  drivers/net/ethernet/intel/igb/igb_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c
+> b/drivers/net/ethernet/intel/igb/igb_main.c index
+> e647cc89c239..5e24b7ce5a92 100644
+> --- a/drivers/net/ethernet/intel/igb/igb_main.c
+> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
+> @@ -8104,7 +8104,7 @@ static int igb_poll(struct napi_struct *napi, int
+> budget) if (likely(napi_complete_done(napi, work_done)))
+>  		igb_ring_irq_enable(q_vector);
+>=20
+> -	return min(work_done, budget - 1);
+> +	return work_done;
+>  }
+>=20
+>  /**
+
+This seems to address the issue for me. I do not see a warning after a coup=
+le=20
+of suspend/resume cycles any more, while previously it occurred after the f=
+irst=20
+cycle.
+
+Tested-by: Oleksandr Natalenko <oleksandr@natalenko.name>
+
+Thanks!
+
+=2D-=20
+Oleksandr Natalenko (post-factum)
+
 
