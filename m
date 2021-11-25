@@ -2,124 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A445645D8FB
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 12:16:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 869D445D933
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 12:27:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238288AbhKYLTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 06:19:34 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:23047 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239996AbhKYLRe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 06:17:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1637838863; x=1669374863;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Bc8QxHXVsePajHSex4lSnt3xrPHH5iD6DErJOtC05HI=;
-  b=QIHnNOElVnINN9EQuMrjPNr4+f5rg8UidybA4XpiGfA76e85ig1SoWgH
-   K6wEi4ih0fOh2m2VqKl0gQnXzlefF6ufBRNpN4tMY8Y/zDfxVq0kb0vbW
-   7Dlk6Pt2VhcZE9CUxdrR4Vf9M2xyG5IbDL2oegPGTEgeZbshhWKq66/ZC
-   bubCPzAb4zi5y8n0G7jh4mRWrYFnwQvc1ItHylmTf2BP5kz2gGljvwSiU
-   pjP0lLmmabJ0H2pVEzGAq0xURmE7ZwyPEWNtOtQPCxeIn8ML8JIkobCl1
-   ezliuzYx81BmPdc5dTIrtXIjR8pqq7n2zLNU2Tc3jn4ESpAk7KunQVH3M
-   A==;
-IronPort-SDR: 4Swfajmu4PANy8rilbtzs2ePky66Hcs6IV+15CBHARs9oLsNhxwOIJbJqU2ayeW4RhDhN6cFtL
- guwDJZTJ4bcsVGsrJFhc9IqELBu8kNJxnvQ7elQ64FWMFAtINzGmHEHmuzBIr2kOKgqwnDrahP
- n1MoVqXoiBaIN7jn7BwSCTqoDAkx6H7gaTOEQ2ORtPC57zf8fRejeeDT2D8SZiPmLlemW4ztPj
- we1aIetfb3//GF1ZUzJAsWHuIrEyzdIkc/gd7N3M5Mq6xhQzK2LD/AHUPNdqbI37iOqR9TdMLY
- UvTVeFoEDTPqhkpYEBgSw90x
-X-IronPort-AV: E=Sophos;i="5.87,263,1631602800"; 
-   d="scan'208";a="145134329"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Nov 2021 04:14:22 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Thu, 25 Nov 2021 04:14:22 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2176.14 via Frontend
- Transport; Thu, 25 Nov 2021 04:14:21 -0700
-Date:   Thu, 25 Nov 2021 12:16:15 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <p.zabel@pengutronix.de>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v3 3/6] net: lan966x: add port module support
-Message-ID: <20211125111615.4zobdjmyxtss6ngn@soft-dev3-1.localhost>
-References: <20211124083915.2223065-1-horatiu.vultur@microchip.com>
- <20211124083915.2223065-4-horatiu.vultur@microchip.com>
- <YZ4SB/wX6UT3zrEV@shell.armlinux.org.uk>
- <20211124145800.my4niep3sifqpg55@soft-dev3-1.localhost>
- <YZ5UXdiNNf011skU@shell.armlinux.org.uk>
- <20211124154323.44liimrwzthsh547@soft-dev3-1.localhost>
- <YZ5ikamCVeyGFw3x@shell.armlinux.org.uk>
+        id S231366AbhKYLal (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 06:30:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46468 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232138AbhKYL2l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 06:28:41 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD053C0619DF
+        for <netdev@vger.kernel.org>; Thu, 25 Nov 2021 03:18:03 -0800 (PST)
+Received: from ip4d173d4a.dynamic.kabel-deutschland.de ([77.23.61.74] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1mqClK-0001NM-Li; Thu, 25 Nov 2021 12:17:58 +0100
+Message-ID: <bca0a700-65ba-1b8d-c265-b1051423a7e2@leemhuis.info>
+Date:   Thu, 25 Nov 2021 12:17:58 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <YZ5ikamCVeyGFw3x@shell.armlinux.org.uk>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: Fw: [Bug 215129] New: Linux kernel hangs during power down
+Content-Language: en-BS
+To:     "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        netdev <netdev@vger.kernel.org>
+References: <20211124144505.31e15716@hermes.local>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <20211124144505.31e15716@hermes.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1637839084;7fb6ab0f;
+X-HE-SMSGID: 1mqClK-0001NM-Li
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 11/24/2021 16:04, Russell King (Oracle) wrote:
-> On Wed, Nov 24, 2021 at 04:43:23PM +0100, Horatiu Vultur wrote:
-> > > > Actually, port->config.phy_mode will not get zeroed. Because right after
-> > > > the memset it follows: 'config = port->config'.
-> > >
-> > > Ah, missed that, thanks. However, why should portmode and phy_mode be
-> > > different?
-> >
-> > Because the serdes knows only few modes(QSGMII, SGMII, GMII) and this
-> > information will come from DT. So I would like to have one variable that
-> > will configure the serdes ('phy_mode') and one will configure the MAC
-> > ('portmode').
-> 
-> I don't follow why you need this to be different.
-> 
-> Isn't the point of interfaces such as phy_set_mode_ext() such that we
-> can achieve independence of the details of what is behind that
-> interface - so, as it takes a PHY interface mode, if we're operating
-> in 1000BASE-X, we pass that to phy_set_mode_ext(). It is then the
-> responsibility of the Serdes PHY driver to decide that means "sgmii"
-> mode for the Serdes?
+Hi, this is your Linux kernel regression tracker speaking.
 
-I have kept the responsability in the network driver to decide which
-interface should for serdes, but I can change that as you suggested.
+On 24.11.21 23:45, Stephen Hemminger wrote:
+> 
+> 
+> Begin forwarded message:
+> 
+> Date: Wed, 24 Nov 2021 21:14:53 +0000
+> From: bugzilla-daemon@bugzilla.kernel.org
+> To: stephen@networkplumber.org
+> Subject: [Bug 215129] New: Linux kernel hangs during power down
+> 
+> 
+> https://bugzilla.kernel.org/show_bug.cgi?id=215129
+> 
+>             Bug ID: 215129
+>            Summary: Linux kernel hangs during power down
+>            Product: Networking
+>            Version: 2.5
+>     Kernel Version: 5.15
+>           Hardware: All
+>                 OS: Linux
+>               Tree: Mainline
+>             Status: NEW
+>           Severity: normal
+>           Priority: P1
+>          Component: Other
+>           Assignee: stephen@networkplumber.org
+>           Reporter: martin.stolpe@gmail.com
+>         Regression: No
+> 
+> Created attachment 299703
+>   --> https://bugzilla.kernel.org/attachment.cgi?id=299703&action=edit  
+> Kernel log after timeout occured
+> 
+> On my system the kernel is waiting for a task during shutdown which doesn't
+> complete.
+> 
+> The commit which causes this behavior is:
+> [f32a213765739f2a1db319346799f130a3d08820] ethtool: runtime-resume netdev
+> parent before ethtool ioctl ops
+> 
+> This bug causes also that the system gets unresponsive after starting Steam:
+> https://steamcommunity.com/app/221410/discussions/2/3194736442566303600/
 
-> 
-> For example, the Marvell CP110 comphy driver does this:
-> 
->         if (submode == PHY_INTERFACE_MODE_1000BASEX)
->                 submode = PHY_INTERFACE_MODE_SGMII;
-> 
-> because the serdes phy settings for PHY_INTERFACE_MODE_1000BASEX are
-> no different from PHY_INTERFACE_MODE_SGMII - and that detail is hidden
-> from the network driver.
+TWIMC: To be sure this issue doesn't fall through the cracks unnoticed,
+I'm adding it to regzbot, my Linux kernel regression tracking bot:
 
-Yes, I will add a similar check in the serdes driver.
+#regzbot ^introduced f32a213765739f2a1db319346799f130a3d08820
+#regzbot title net: kernel hangs during power down
+#regzbot ignore-activity
 
-> 
-> The next question this brings up is... you're setting all the different
-> interface modes in phylink_config.supported_interfaces, which basically
-> means you're giving permission for phylink to switch between any of
-> those modes. So, what if the serdes is in QSGMII mode but phylink
-> requests SGMII mode. Doesn't your driver architecture mean that if
-> you're in QSGMII mode you can't use SGMII or GMII mode?
-> 
-> Is there some kind of restriction that you need to split this, or is
-> this purely down to the way this driver has been written?
+Ciao, Thorsten, your Linux kernel regression tracker.
 
-It was just the way the driver has been written.
+P.S.: As a Linux kernel regression tracker I'm getting a lot of reports
+on my table. I can only look briefly into most of them. Unfortunately
+therefore I sometimes will get things wrong or miss something important.
+I hope that's not the case here; if you think it is, don't hesitate to
+tell me about it in a public reply. That's in everyone's interest, as
+what I wrote above might be misleading to everyone reading this; any
+suggestion I gave they thus might sent someone reading this down the
+wrong rabbit hole, which none of us wants.
 
-> 
-> I don't see any other driver in the kernel making this kind of split.
-> 
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+BTW, I have no personal interest in this issue, which is tracked using
+regzbot, my Linux kernel regression tracking bot
+(https://linux-regtracking.leemhuis.info/regzbot/). I'm only posting
+this mail to get things rolling again and hence don't need to be CC on
+all further activities wrt to this regression.
 
--- 
-/Horatiu
+P.S.: If you want to know more about regzbot, check out its
+web-interface, the getting start guide, and/or the references documentation:
+
+https://linux-regtracking.leemhuis.info/regzbot/
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
+
+The last two documents will explain how you can interact with regzbot
+yourself if your want to.
+
+Hint for the reporter: when reporting a regression it's in your interest
+to tell #regzbot about it in the report, as that will ensure the
+regression gets on the radar of regzbot and the regression tracker.
+That's in your interest, as they will make sure the report won't fall
+through the cracks unnoticed.
+
+Hint for developers: you normally don't need to care about regzbot, just
+fix the issue as you normally would. Just remember to include a 'Link:'
+tag to the report in the commit message, as explained in
+Documentation/process/submitting-patches.rst
+That aspect was recently was made more explicit in commit 1f57bd42b77c:
+https://git.kernel.org/linus/1f57bd42b77c
