@@ -2,80 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB39D45D481
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 07:03:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABEEB45D48F
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 07:08:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232169AbhKYGGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 01:06:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60254 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346357AbhKYGEl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 01:04:41 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 317CAC061746
-        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 22:01:02 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id n12so13525231lfe.1
-        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 22:01:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dPupwsrytkX4f6TjUKDkfvkvZARFfjXKHG9DzShvmaI=;
-        b=HLhsqbCh6JoKMt2JVsMeXUgfz7lhLEA/WgOU48kc9eNi7HwToRa7IviokA5oNXxRpz
-         BuqZIQwixQB8vFTBND5GjpE6ohBy7hL8q51mJVofHWHmWCcNvqn1JZKysGyD7w1B8qV0
-         x/XziNNk8fZcHWZuzHjWcxCdEnFSLrSVzoz3ND1dvE6vyhkgm2gLYxxcn17Txhg9Fy4E
-         Zghh96w6NpMcO0YCnyn7lZPrwffyIl7B2j1OAdVnTVfdK3TK4ZXXngSqxaKFQafXrSI6
-         XA8lUXeoAbGKtx/VjudVEnrjPfC4tGQ/wND33W4UpnNihdOVmTxpmFjJvMnEaTF/m4C4
-         moLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dPupwsrytkX4f6TjUKDkfvkvZARFfjXKHG9DzShvmaI=;
-        b=SII+Dp69GOh/QywUSL4oIw/am86UcotGOaOP7Saz/BT/FvD8G7dLX1vWAlspmRxBDA
-         fEPj7JX0uv7qKsfPZ0taGH+jj9x4xL9HS+Zl3KBNSlKZhunYpGkHeyfuenqMAolm8GGJ
-         ZP35JCK7RJe61mvGjmMx+1oqNC/bx/sR59eSrYVXAzrP8acV1XjiC2BESN7kncTB0i8f
-         Ew3b0P5ozMCWRbYtfYJR8Q5a0znLgMwIFUeHFSoxIZxA4v4PxDPdVO1pmXkrHgsDM3wM
-         B+lcTFJ3at4omtd0HENuy82B0JAI9+90ZAJmmHvqw+D1yHQ/Tq2uLXGms3z6ByodoR5i
-         irRg==
-X-Gm-Message-State: AOAM530GtDEVadbVgzUx8sfDai97Ur1m9RXs3tUsgGjdfJ9v0p+NAoRS
-        QRKf3H9rutwBJX/n7XLJbyB5cblGvTcRok1WvZWLGlKQ
-X-Google-Smtp-Source: ABdhPJwnZ8KTgDgxgpadGRvgYwacMJGG/3x+0nyWMpbKBLnzWVf2p25RbKHNyScv1altF0D23LSYMfYWPzCAnVKMW3Y=
-X-Received: by 2002:a05:6512:ac5:: with SMTP id n5mr20558835lfu.246.1637820060362;
- Wed, 24 Nov 2021 22:01:00 -0800 (PST)
+        id S1347154AbhKYGLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 01:11:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:40901 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1346397AbhKYGJQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 01:09:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1637820365;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=1irKUJW33SWAxC/Ee23IycmsJtDByo2UcVUyInCyu64=;
+        b=ZxB/8Erqy/7ViRShwWs901n0AH/Ro5ZFzk3YCrr/mnYAsMUIKibEPOy2vw6eD3Ey+/5Mru
+        yTqUHIDTpM9vU2OvjzrsN74BNgmYQdnwtnKzhZCiBFNoThknwFFYq8Lr8JpgOs/GCKqrwu
+        xq/HT4xL8mw+CouINxgb7OOAamA8oJk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-97-Yjjv7UETM-aFQhwCBHqOUA-1; Thu, 25 Nov 2021 01:06:04 -0500
+X-MC-Unique: Yjjv7UETM-aFQhwCBHqOUA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F3D778042E2;
+        Thu, 25 Nov 2021 06:06:02 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-12-162.pek2.redhat.com [10.72.12.162])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6EA545F4ED;
+        Thu, 25 Nov 2021 06:05:49 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     mst@redhat.com, jasowang@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Eli Cohen <elic@nvidia.com>
+Subject: [PATCH net] virtio-net: enable big mode correctly
+Date:   Thu, 25 Nov 2021 14:05:47 +0800
+Message-Id: <20211125060547.11961-1-jasowang@redhat.com>
 MIME-Version: 1.0
-References: <20211125021822.6236-1-radhac@marvell.com> <CAC8NTUX1-p24ZBGvwa7YcYQ_G+A_kn3f_GeTofKhO7ELB2bn8g@mail.gmail.com>
- <20211124192710.438657ca@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211124192710.438657ca@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Radha Mohan <mohun106@gmail.com>
-Date:   Wed, 24 Nov 2021 22:00:49 -0800
-Message-ID: <CAC8NTUUdZSuNtjczBvEZPaAbzaP4rWyR9fDOWC9mdMHEqiEVNw@mail.gmail.com>
-Subject: Re: [PATCH] octeontx2-nicvf: Add netdev interface support for SDP VF devices
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        sgoutham@marvell.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 24, 2021 at 7:27 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Wed, 24 Nov 2021 18:21:04 -0800 Radha Mohan wrote:
-> > This patch adds netdev interface for SDP VFs. This interface can be used
-> > to communicate with a host over PCIe when OcteonTx is in PCIe Endpoint
-> > mode.
->
-> All your SDP/SDK/management interfaces do not fit into our netdev
-> model of the world and should be removed upstream.
+When VIRTIO_NET_F_MTU feature is not negotiated, we assume a very
+large max_mtu. In this case, using small packet mode is not correct
+since it may breaks the networking when MTU is grater than
+ETH_DATA_LEN.
 
-SDP is our System DMA Packet Interface which sends/receives network
-packets to NIX block. It is similar to CGX, LBK blocks but only
-difference is the medium being PCIe. So if you have accepted that I
-believe you can accept this as well.
+To have a quick fix, simply enable the big packet mode when
+VIRTIO_NET_F_MTU is not negotiated. We can do optimization on top.
 
->
-> The pleasure I have from marking this as rejected is slightly
-> undermined by the fact that the patch isn't even correctly formatted :/
-Apologies for that. Something messed up the tabs to spaces. I can
-correct that in next version.
+Reported-by: Eli Cohen <elic@nvidia.com>
+Cc: Eli Cohen <elic@nvidia.com>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+---
+ drivers/net/virtio_net.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 7c43bfc1ce44..83ae3ef5eb11 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -3200,11 +3200,12 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 		dev->mtu = mtu;
+ 		dev->max_mtu = mtu;
+ 
+-		/* TODO: size buffers correctly in this case. */
+-		if (dev->mtu > ETH_DATA_LEN)
+-			vi->big_packets = true;
+ 	}
+ 
++	/* TODO: size buffers correctly in this case. */
++	if (dev->max_mtu > ETH_DATA_LEN)
++		vi->big_packets = true;
++
+ 	if (vi->any_header_sg)
+ 		dev->needed_headroom = vi->hdr_len;
+ 
+-- 
+2.25.1
+
