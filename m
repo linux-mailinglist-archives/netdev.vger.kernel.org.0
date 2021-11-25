@@ -2,100 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3648945E0BB
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 19:52:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5931B45E0F2
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 20:24:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238719AbhKYSzY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 13:55:24 -0500
-Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.81]:30255 "EHLO
-        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242526AbhKYSxX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 13:53:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1637866204;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=iBQ+vqxgwLF6dT3pSXOjf18nr9Ye1/Cz08Fes5fTY+o=;
-    b=JNXH103kFDPqjsb1RadqNnJTSrOTucDLvp82wwejQ16RBYqpEOITrRorX2dH2GqwFn
-    EZ3q5S0iIOtappCxaQANU7EN+L2/HlV35kAYjBk0R9YLXSZ1wHyJeHP9YOFmnNXONaNU
-    VNtIy8KczuxtUWwYIHbPD8OglsGICw7QYFEbhDzXXX3LxPeL6DwD5bszb+shcYkq75G1
-    S1JHxTgiTlbSosNhE/Fzvh125JR5LstQF+DSJSMIVS8VmX3mCwf399xoY7kV4kY8skSs
-    AVL8cdkSX491E5XyUJOnbzV4Frvb1pnl40p64DkFdTCLmEA/jxl7JQvAdpRgQegToYAb
-    9h2w==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPv6:2a00:6020:1cfa:f900::b82]
-    by smtp.strato.de (RZmta 47.34.10 AUTH)
-    with ESMTPSA id c09e88xAPIo14Pz
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Thu, 25 Nov 2021 19:50:01 +0100 (CET)
-Subject: Re: [PATCH v2 4/5] can: do not increase rx_bytes statistics for RTR
- frames
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        Jimmy Assarsson <extja@kvaser.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Yasushi SHOJI <yashi@spacecubics.com>,
-        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
-        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Stephane Grosjean <s.grosjean@peak-system.com>
-References: <20211125172021.976384-1-mailhol.vincent@wanadoo.fr>
- <20211125172021.976384-5-mailhol.vincent@wanadoo.fr>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <ed755990-4169-604e-d982-7e4370114512@hartkopp.net>
-Date:   Thu, 25 Nov 2021 19:50:01 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S1349997AbhKYT1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 14:27:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39902 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348027AbhKYTZp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 14:25:45 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 864F8C061759
+        for <netdev@vger.kernel.org>; Thu, 25 Nov 2021 11:22:02 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id x32so14209032ybi.12
+        for <netdev@vger.kernel.org>; Thu, 25 Nov 2021 11:22:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=hxpIxgszqLxUoL2VSzhFmmcZyWKf58JJNFT+Q7Zm/4E=;
+        b=FEXWrzJP/2LJxV+iZ5dhtd3g2j+1dTecooe+SMxMnAvR9iWmK/5MRnSYjTbZDHZNd2
+         11NhAILCgvp+z1VByYx59JQ/lrIxfD9AHrPOsWUzR5YqS5aInniCuofRXsAQ6u8uE6wI
+         AkgEJZyv0eoGenGXssPbra69V6I22OFbPfmHAJzX+p8HoRiCF8lLpNnGhUhoFUDXrUFL
+         04k6pSN4X6tB0IFDwdW+YrFQjPvYCtVSXeprDMNFxwhKLeH8/e3ndoQSNuwixzjRyC9s
+         sD+CT/6DviqC6eIyHqgtgzMzlrffvuUxtgpLI5ppB+INltIe+NbtPUm5ZarQp0K3/2iZ
+         OfFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=hxpIxgszqLxUoL2VSzhFmmcZyWKf58JJNFT+Q7Zm/4E=;
+        b=zQfu9gF65rZuZUv1ntvILox7mf/noZj3gvJqqp2CGPLe0CNOWNBLVp6LOwvpCgY7jR
+         +rPoF/VI06X13yTviDCQTf7a+tqludkPNZsxP7HzG9akevBRbm76PzMGqInOOOo3ry6O
+         5WeTCUaq9KxRzfnoVua5vxMNxhrBcnUx53muRJuRC843DQzXvsFQhZUtkMc7Wtt9vDjX
+         eJ1fLHqsY8JJQSALFOAasOaQczG5pyebHS5XWVp3E9ZaNj6dh5c/TdGaqooL3/xnrMrS
+         upc1JbMGJBWGLjezhOMyiDkMf341b/OWw5DVEjX7D/JyyS6ot6f9k1D9MjNyYu4ZfiiF
+         IewQ==
+X-Gm-Message-State: AOAM532iX9hAPJu81POGkkxJYsCwMiYajSe3w446zRw1CprpN7MOh9a9
+        NQshi0R1txBI1ECCZxuzST96WakS0u3GVWUKv0g=
+X-Google-Smtp-Source: ABdhPJwXdZJINN+bzOnxQEm3gwpSZt2n4abPlrY0YNq4L9X8wqHpC3lVRZpzekZGTR36XYt+ouowj4kM0aKESg57mJg=
+X-Received: by 2002:a25:bbc4:: with SMTP id c4mr9230314ybk.309.1637868121776;
+ Thu, 25 Nov 2021 11:22:01 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20211125172021.976384-5-mailhol.vincent@wanadoo.fr>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Sender: wishingh7@gmail.com
+Received: by 2002:a05:7010:51d3:b0:1df:83c2:fae5 with HTTP; Thu, 25 Nov 2021
+ 11:22:01 -0800 (PST)
+From:   Alicia Collins <aliciacollins634@gmail.com>
+Date:   Thu, 25 Nov 2021 11:22:01 -0800
+X-Google-Sender-Auth: WUpTH78KZViCmKXS6kqvdKaFKss
+Message-ID: <CAJdaM=Az=4+d=A9+e=HKNnRf0auSy9E3ygHtahACTx9o=kjK=g@mail.gmail.com>
+Subject: Hello
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vincent,
+Hello my Dear friend,
 
-On 25.11.21 18:20, Vincent Mailhol wrote:
+With due respect to your person and much sincerity of purpose I wish
+to write to you today, seeking for your urgent assistance in this
+humanitarian social investment project to be establish in your country
+for the mutual benefit of the orphans and the less privileged ones,
+haven't known each other or met before, I know that everything is
+controlled by God as there is nothing impossible to him. I believe
+that you and I can cooperate together in the service of the Lord,
+please open your heart to assist me in carrying out this benevolent
+project in your country/position. I am Mrs Alicia Collins, a dying
+widow hospitalized undergoing treatment for brain tumor disease, I
+believe that you will not expose or betray this trust and confidence
+that I am about to entrust to you for the mutual benefit of the
+orphans and the less privileged ones. My late husband made a
+substantial deposit with the Bank which I have decided to hand over
+and entrust the sum of ($ 12,500,000.00 Dollars) in the account under
+your custody for you to invest it into any social charitable project
+in your location or your country. Based on my present health status I
+am permanently indisposed to handle finances or any financial related
+project.
 
-> diff --git a/drivers/net/can/usb/ucan.c b/drivers/net/can/usb/ucan.c
-> index d582c39fc8d0..717d4925fdb0 100644
-> --- a/drivers/net/can/usb/ucan.c
-> +++ b/drivers/net/can/usb/ucan.c
-> @@ -619,12 +619,13 @@ static void ucan_rx_can_msg(struct ucan_priv *up, struct ucan_message_in *m)
->   	/* copy the payload of non RTR frames */
->   	if (!(cf->can_id & CAN_RTR_FLAG) || (cf->can_id & CAN_ERR_FLAG))
->   		memcpy(cf->data, m->msg.can_msg.data, cf->len);
-> +	/* only frames which are neither RTR nor ERR have a payload */
-> +	else
-> +		stats->rx_bytes += cf->len;
+ This is the reason why I decided to contact you for your support and
+help to stand as my rightful beneficiary and claim the money for
+humanitarian purposes for the mutual benefits of the less privileged
+ones. Because If the money remains unclaimed with the bank after my
+death, those greedy bank executives will place the money as an
+unclaimed Fund and share it for their selfish and worthless ventures.
+However I need your sincerity and ability to carry out this
+transaction and fulfill my final wish in implementing the charitable
+investment project in your country as it requires absolute trust and
+devotion without any failure. Meanwhile It will be my pleasure to
+compensate you with part of the total money as my Investment
+manager/partner for your effort in handling the transaction, while the
+remaining amount shall be invested into any charity project of your
+choice there in your country.
 
-This 'else' path looks wrong ...
+Your early response will be appreciated to enable me to send you
+further details and the bank contact details where the fund has been
+deposited for you to contact the Bank for immediate release and
+transfer of the fund into your bank account as my rightful
+beneficiary.
+Thank you very much for your kind consideration and I wish you well
+and God enlighten you in this social humanitarian project.
 
->   
->   	/* don't count error frames as real packets */
-> -	if (!(cf->can_id & CAN_ERR_FLAG)) {
-> +	if (!(cf->can_id & CAN_ERR_FLAG))
->   		stats->rx_packets++;
-> -		stats->rx_bytes += cf->len;
-> -	}
->   
->   	/* pass it to Linux */
->   	netif_rx(skb);
-
-Regards,
-Oliver
+Best regards and God bless you.
+Sincerely Mrs Alicia Collins.
