@@ -2,47 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34A0A45D393
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 04:20:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2076A45D3A0
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 04:29:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239315AbhKYDXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 22:23:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38702 "EHLO mail.kernel.org"
+        id S240150AbhKYDcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 22:32:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41334 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1345040AbhKYDWG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Nov 2021 22:22:06 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D68EC6108B;
-        Thu, 25 Nov 2021 03:18:55 +0000 (UTC)
+        id S231406AbhKYDaV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Nov 2021 22:30:21 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 25C236108F;
+        Thu, 25 Nov 2021 03:27:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637810336;
-        bh=jH3ib8LOjypJEX+zrK1zQDOwQlhz18MpvZQCJE0nlew=;
+        s=k20201202; t=1637810831;
+        bh=OPupC+1O0F4PZsJNle63preWsMRIOFG/+YnZTsj5dL4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hxwqzl3eq0XVdMj/kvDGs8UQPGygRVgK52dxKecb4jIDJWdnC5PoyFHePgCcLi3sr
-         c3zzW6uFbgO+xIb/duC1zZ4FgCioX2Nn6IJFvDnjy1g0tNYqrHH4Wh0MwdPrSwfQ7x
-         O+g0ZPCSncF/rCqoktCf4VZpR+WmcADahst1sOJZypraMx88dTzL1NTp+nmuX1USnR
-         Z1pHDPOf8v0pQ/zzIBr6d/vlGNKLbFxqzJin8Z9ZnRNp9WmGfuR5fK0pzz9OoI82OA
-         t6PXxy0XsKacvWfwasx/EYDwl5tb8A80FAaLxratFUYcxuW7YcHi3pymALSn5QpKBM
-         pL2Vj2w33ukCQ==
-Date:   Wed, 24 Nov 2021 19:18:54 -0800
+        b=hUOZIOMNTk2fwgDtJvakWEc+M0B9C7Q7pKYvIJLKgAjY1CAX/VjpF/xBgTR/gcR6t
+         mHkB8HiVvkGemRSY+d2SieuIJ6G5CuruRHGt1+NEpKMpKFXqStIQdO2dQ5s5T83Y+r
+         kZKNw9ciHs4CVTjSSkAyFQ2yRB47CK+DAJL84H7ZEs9udorjsJxqolv+qGsv5JuZiU
+         KZNN5wGKig9DG1qBpvNWKhW+HjibuPTXefD56JSTn+XhifZMsE35C2+sw9esdDhzrj
+         drWs9zmyvnPHTTZRlgpB9R61FT5ldK5mue7CoS14m6BdHzWfEx8+hK4K2iloNUjcqI
+         UwVvOwqRJGdLA==
+Date:   Wed, 24 Nov 2021 19:27:10 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Dylan Hung <dylan_hung@aspeedtech.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Joel Stanley <joel@jms.id.au>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Networking <netdev@vger.kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        BMC-SW <BMC-SW@aspeedtech.com>
-Subject: Re: [PATCH] net:phy: Fix "Link is Down" issue
-Message-ID: <20211124191854.4666a185@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <HK0PR06MB283498AF35B397F05CC627A99C629@HK0PR06MB2834.apcprd06.prod.outlook.com>
-References: <20211124061057.12555-1-dylan_hung@aspeedtech.com>
-        <CACPK8Xc8aD8nY0M442=BdvrpRhYNS1HW7BNQgAQ+ExTfQMsMyQ@mail.gmail.com>
-        <YZ5adFBpaJzPwfvc@lunn.ch>
-        <HK0PR06MB283498AF35B397F05CC627A99C629@HK0PR06MB2834.apcprd06.prod.outlook.com>
+To:     Radha Mohan <mohun106@gmail.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        sgoutham@marvell.com
+Subject: Re: [PATCH] octeontx2-nicvf: Add netdev interface support for SDP
+ VF devices
+Message-ID: <20211124192710.438657ca@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAC8NTUX1-p24ZBGvwa7YcYQ_G+A_kn3f_GeTofKhO7ELB2bn8g@mail.gmail.com>
+References: <20211125021822.6236-1-radhac@marvell.com>
+        <CAC8NTUX1-p24ZBGvwa7YcYQ_G+A_kn3f_GeTofKhO7ELB2bn8g@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -50,13 +41,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 25 Nov 2021 03:08:22 +0000 Dylan Hung wrote:
-> > > We should cc stable too.  
-> > 
-> > https://www.kernel.org/doc/html/v5.12/networking/netdev-FAQ.html#how-do-
-> > i-indicate-which-tree-net-vs-net-next-my-patch-should-be-in
->
-> Sorry, I got this mail after I sent v2 out.  Should I prepare patch
-> v3 with --subject-prefix='PATCH net'?
+On Wed, 24 Nov 2021 18:21:04 -0800 Radha Mohan wrote:
+> This patch adds netdev interface for SDP VFs. This interface can be used
+> to communicate with a host over PCIe when OcteonTx is in PCIe Endpoint
+> mode.
 
-That's leave it be now, but please keep this in mind in the future.
+All your SDP/SDK/management interfaces do not fit into our netdev 
+model of the world and should be removed upstream.
+
+The pleasure I have from marking this as rejected is slightly
+undermined by the fact that the patch isn't even correctly formatted :/
