@@ -2,79 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1B7145DDD5
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 16:45:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5DA745DD9F
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 16:39:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356201AbhKYPsx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 10:48:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48212 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356170AbhKYPqw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 10:46:52 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B99B1C0617A2;
-        Thu, 25 Nov 2021 07:35:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=4ZeojgPqWWrsMI5BHeJYX983PNTgh8dQN9F2ioLGkIs=; b=fBMUWHnUBpQs3qU9Nq4aPHReY7
-        19sN6LtcvO+1tO01gi432dy2Hr+LDGv9p/F5YxpbSsTLAZzUd+q6A6Ng5b1x4nTEyM9SWKJKHBKSh
-        poCFCNfK5RS40voK6YrugKO6S6MJkzOORq2mOMfXI/ZiFJd8BrE1185BQuV6caPzxIKAK9I5WwUow
-        ilQzkFMVKVpt+JcV0WJOlgBoi+5gzyLIlKwC0k7Sxpyn9/h+v57wOJYaKvSGxswIpI6/8OIncVi6K
-        H2JI9zCtBYIEqdR9uSEGdxW+UQRSfYnweSMLMqXFSUcLoXviemf8ml7FRMhxSu+UtU2Aae14IkhEM
-        MDvlN7oA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55896)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mqGmi-000240-E6; Thu, 25 Nov 2021 15:35:40 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mqGme-0002Oo-7d; Thu, 25 Nov 2021 15:35:36 +0000
-Date:   Thu, 25 Nov 2021 15:35:36 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Dylan Hung <dylan_hung@aspeedtech.com>
-Cc:     linux-kernel@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        andrew@aj.id.au, joel@jms.id.au, kuba@kernel.org,
-        davem@davemloft.net, hkallweit1@gmail.com, andrew@lunn.ch,
-        BMC-SW@aspeedtech.com, stable@vger.kernel.org
-Subject: Re: [PATCH v2] mdio: aspeed: Fix "Link is Down" issue
-Message-ID: <YZ+tSMT4Z6CpOgJ3@shell.armlinux.org.uk>
-References: <20211125024432.15809-1-dylan_hung@aspeedtech.com>
+        id S1356113AbhKYPmx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 10:42:53 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:52228 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241585AbhKYPkx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Nov 2021 10:40:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=rfKCUy4qXuilF9CuB+H/UhAr2rnyjJAJ6sI2EgS68N4=; b=Z5
+        7c9enMvFuZbqV+UbA9HfCPMXXvkOPDAOMyiL6PvZ8BvPAqJYaeGMF7iGiQqcXMiaTCl/QSH4cas1l
+        OQwq+HQ403W55LLtOcNuGag0RaA3wnLk4KuYXi+9S0i8I+gHN5UnL45mi5a9h2OR2enO17XFr7zlQ
+        vALptQYGNCAhH68=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mqGoe-00Echx-9C; Thu, 25 Nov 2021 16:37:40 +0100
+Date:   Thu, 25 Nov 2021 16:37:40 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     netdev@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Subject: Re: [PATCH net] net: dsa: mv88e6xxx: Disable AN on 2500base-x for
+ Amethyst
+Message-ID: <YZ+txKp0sAOjQUka@lunn.ch>
+References: <20211125144359.18478-1-kabel@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20211125024432.15809-1-dylan_hung@aspeedtech.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211125144359.18478-1-kabel@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 25, 2021 at 10:44:32AM +0800, Dylan Hung wrote:
-> The issue happened randomly in runtime.  The message "Link is Down" is
-> popped but soon it recovered to "Link is Up".
+On Thu, Nov 25, 2021 at 03:43:59PM +0100, Marek Behún wrote:
+> Amethyst does not support autonegotiation in 2500base-x mode.
+
+Hi Marek
+
+I tried to avoid using Marvells internal names for these devices. I
+don't think these names exist in the datasheet? They are visible in
+the SDK, but that is not so widely available. So if you do want to use
+these names, please also reference the name we use in the kernel,
+mv88e6393x.
+
+> It does not link with AN enabled with other devices.
+> Disable autonegotiation for Amethyst in 2500base-x mode.
 > 
-> The "Link is Down" results from the incorrect read data for reading the
-> PHY register via MDIO bus.  The correct sequence for reading the data
-> shall be:
-> 1. fire the command
-> 2. wait for command done (this step was missing)
-> 3. wait for data idle
-> 4. read data from data register
-> 
-> Fixes: f160e99462c6 ("net: phy: Add mdio-aspeed")
-> Cc: stable@vger.kernel.org
-> Reviewed-by: Joel Stanley <joel@jms.id.au>
-> Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
+> +int mv88e6393x_serdes_pcs_config(struct mv88e6xxx_chip *chip, int port,
+> +				 int lane, unsigned int mode,
+> +				 phy_interface_t interface,
+> +				 const unsigned long *advertise)
+> +{
+> +	if (interface == PHY_INTERFACE_MODE_2500BASEX)
+> +		return 0;
+> +
+> +	return mv88e6390_serdes_pcs_config(chip, port, lane, mode, interface,
+> +					   advertise);
+> +}
 
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+What happens when changing from say 1000BaseX to 2500BaseX? Do you
+need to disable the advertisement which 1000BaseX might of enabled?
 
-Thanks.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+     Andrew
