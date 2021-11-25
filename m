@@ -2,113 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92B8C45DA31
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 13:37:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 145D345DA44
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 13:43:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354877AbhKYMk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 07:40:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33236 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353292AbhKYMi5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 07:38:57 -0500
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0EB0C061574;
-        Thu, 25 Nov 2021 04:34:34 -0800 (PST)
-Received: by mail-pg1-x52d.google.com with SMTP id l190so5118046pge.7;
-        Thu, 25 Nov 2021 04:34:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0eAV0QCSYY59EfhYYGwBRd+u8b18m2Ztdaw86lrALGo=;
-        b=LbIS6sfQbR7fqoUkZOLPzKEM4vW/6AVOeUj6EtJCuvOGCkevZx04B0ZK5wHKeN5+EO
-         jNQ2xJsCyzfwE6iYGIeypC9+6edPYMpDvF1ty1u13S8lgV1HAmPRLWt62UTJyEMr2TPt
-         dRwMyHNQwkT6FiEADnEd3k2q13CS7l4MLg+17ZaoargK+4QB8DBvtBHR2j3th/INXGrC
-         zhuiWiRkFb6NgeaKCrHfleTOk4LEQuI1jFO4gdU5K3J38H3BM3xZVlQw2AuaDtL9dbjY
-         8bqWDCG0AkUDXu2UMsee5uKh1XwQuHZgFlXA5qgBofn7aNe4oHiglbVAzW5mqJSSxT69
-         Xq+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0eAV0QCSYY59EfhYYGwBRd+u8b18m2Ztdaw86lrALGo=;
-        b=WspoN9kmzOntqEPUsKkmQa5ImrytQYLVqR3FZIdhEcPCFfst6Ce1gLU+6IguZ9YT45
-         GqtuECXzNFCR0YtGYQ7lvEReelGZMzLFdVMsXG4aEHHeDwtST+AjPW+eSz4nJeQnjH3i
-         Xl2IEwqciPS43CMzThcmh0oza+Z/IYa68Wk70ycV3fHjYG20xlr8cy/WkmO/Ukkhm/7a
-         jgLkdxEQMfiMd42rsREpQcizL54GqvOX1Qf9TISj6lhUdqw7iC4pZXhKgU1h7vozbaYM
-         GunnPi6D5y7EtOCMmjKOsjotkXGrHgW0/PTjdmfTUe1FauIrPVkjyRppDhP4TD7Au3Nd
-         tNPQ==
-X-Gm-Message-State: AOAM530V9LqzRipSFxWssXCNs53txkLVALf6Uhjk4hJX0ezM3B6gvCXf
-        iwcuQI1BbAHoM4GZDhlRwTxs1ZISHH0=
-X-Google-Smtp-Source: ABdhPJwJjoRLjGJFIoyzqBMwPXueRu0hLtMHlkWRVw7D9yc9QIuLxqm8pMij0y6F3VMyns6g1SUmQQ==
-X-Received: by 2002:a05:6a00:8c6:b0:4a2:d762:8b42 with SMTP id s6-20020a056a0008c600b004a2d7628b42mr13732350pfu.28.1637843674170;
-        Thu, 25 Nov 2021 04:34:34 -0800 (PST)
-Received: from Laptop-X1 ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id h13sm2373135pgg.16.2021.11.25.04.34.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Nov 2021 04:34:33 -0800 (PST)
-Date:   Thu, 25 Nov 2021 20:34:28 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Shuah Khan <shuah@kernel.org>,
-        WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        Netdev <netdev@vger.kernel.org>, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH wireguard] wireguard: selftests: refactor the test
- structure
-Message-ID: <YZ+C1MWdWQvd66ic@Laptop-X1>
-References: <20211116081359.975655-1-liuhangbin@gmail.com>
- <CAHmME9pNFe7grqhW7=YQgRq10g4K5bqVuJrq0HonEVNbQSRuYg@mail.gmail.com>
+        id S1354866AbhKYMrF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 07:47:05 -0500
+Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:45889 "EHLO
+        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1352763AbhKYMpF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 07:45:05 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R231e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0UyGY-Iw_1637844112;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0UyGY-Iw_1637844112)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 25 Nov 2021 20:41:52 +0800
+Date:   Thu, 25 Nov 2021 20:41:51 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     Karsten Graul <kgraul@linux.ibm.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net 2/2] net/smc: Don't call clcsock shutdown twice when
+ smc shutdown
+Message-ID: <YZ+Ejxo0C9FeRgck@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <20211125061932.74874-1-tonylu@linux.alibaba.com>
+ <20211125061932.74874-3-tonylu@linux.alibaba.com>
+ <77c1be59-5e55-80f1-4fc6-16fb65846b7e@linux.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHmME9pNFe7grqhW7=YQgRq10g4K5bqVuJrq0HonEVNbQSRuYg@mail.gmail.com>
+In-Reply-To: <77c1be59-5e55-80f1-4fc6-16fb65846b7e@linux.ibm.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 16, 2021 at 03:35:40PM +0100, Jason A. Donenfeld wrote:
-> Hi Hangbin,
+On Thu, Nov 25, 2021 at 12:02:06PM +0100, Karsten Graul wrote:
+> On 25/11/2021 07:19, Tony Lu wrote:
+> > diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+> > index 4b62c925a13e..7b04cb4d15f4 100644
+> > --- a/net/smc/af_smc.c
+> > +++ b/net/smc/af_smc.c
+> > @@ -2373,6 +2373,7 @@ static int smc_shutdown(struct socket *sock, int how)
+> >  	struct smc_sock *smc;
+> >  	int rc = -EINVAL;
+> >  	int rc1 = 0;
+> > +	int old_state;
 > 
-> I don't know how interested in this I am. Splitting things into two
-> files means more confusing maintenance, and categorizing sections
-> strictly into functions means there's more overhead when adding tests
-> (e.g. "where do they fit?"), because the categories you've chosen are
-> fairly broad, rather than being functions for each specific test. I'd
-> be more amenable to something _entirely_ granular, because that'd be
-> consistent, or what we have now, which is just linear. Full
-> granularity, though, has its own downsides, of increased clutter.
-> Alternatively, if you'd like to add some comments around the different
-> areas to better document what's happening, perhaps that'd accomplish
-> the same thing as this patch.
+> Reverse Christmas tree formatting, please.
+
+Sorry for that, I will fix it in the next patch.
+
 > 
+> >  
+> >  	smc = smc_sk(sk);
+> >  
+> > @@ -2398,7 +2399,12 @@ static int smc_shutdown(struct socket *sock, int how)
+> >  	}
+> >  	switch (how) {
+> >  	case SHUT_RDWR:		/* shutdown in both directions */
+> > +		old_state = sk->sk_state;
+> >  		rc = smc_close_active(smc);
+> > +		if (old_state == SMC_ACTIVE &&
+> > +		    sk->sk_state == SMC_PEERCLOSEWAIT1)
+> > +			goto out_no_shutdown;
+> > +
+> 
+> I would prefer a new "bool do_shutdown" instead of a goto for this skip
+> of the shutdown. What do you think?
 
-Hi Jason,
+I agree with you, I'd like bool condition rather than goto, which will
+disturb the continuity of reading code.
 
-May be my timezone is not very fit for yours. So I will copy my IRC replies
-in the mail to moving on our kselftest topic.
+I will fix it soon. Thank you.
 
-The reason I did this patch is because I want to make the test more clear
-and able to run each test case separately. My though is to make the
-wireguard test looks like tools/testing/selftests/net/fib_tests.sh.(Of course
-this could be discussed).
+Tony Lu
 
-Because the linear structure makes reader hard to find out what test it does.
-The function name in my current patch is also a little broad to look, which
-could to be updated. After updating, I'd like to make the test has 2 parts,
-functional tests and regression test. Functional tests for big part of function
-tests and regression test for small specific issues.
-
-BTW, one downside about current linear structure I think is that when someone
-want to add a new test, he need to read through the whole test to know that
-kind of topology at last. But with function structure, when we want to add a
-new test. We can just do like:
-1. set up basic topology
-2. configure to specific topo for testing, or just skip the first step and
-   configure to specific topo directly.
-3. Do test
-4. Clean up environment or reset to basic topology
-
-I think this would make adding new test case easier. What do you think?
-
-Thanks
-Hangbin
+> 
+> >  		break;
+> >  	case SHUT_WR:
+> >  		rc = smc_close_shutdown_write(smc);
+> > @@ -2410,6 +2416,8 @@ static int smc_shutdown(struct socket *sock, int how)
+> >  	}
+> >  	if (smc->clcsock)
+> >  		rc1 = kernel_sock_shutdown(smc->clcsock, how);
+> > +
+> > +out_no_shutdown:
+> >  	/* map sock_shutdown_cmd constants to sk_shutdown value range */
+> >  	sk->sk_shutdown |= how + 1;
+> >  
+> > 
+> 
+> -- 
+> Karsten
