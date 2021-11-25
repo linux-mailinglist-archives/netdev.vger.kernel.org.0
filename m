@@ -2,126 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C218645E087
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 19:25:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3648945E0BB
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 19:52:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349698AbhKYS27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 13:28:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36078 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230225AbhKYS07 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Nov 2021 13:26:59 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 95AEC610A2;
-        Thu, 25 Nov 2021 18:23:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637864627;
-        bh=ZlwSPF9YaUYq+hdnBYTaMnkpHbVaRH7B4f4m2kzFXko=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WUBs1GyIO4vSXkzKQGAyDEsBrVoJx2qOHxbFEZCRyFxXxzTo6zdkfXQtOmJQ9Tjdv
-         ICQ+uVUbEn516shCq3N8xnTlEEIly1Z9rhPHxUNE7BIdvHAJc3JeIChFa5uH99Q1ds
-         LFyvxAUmMJEqTokZJktenRlUD8b4dTrDi+WduUzi0vUR6qNRy5nlri4PAs2JxyMq31
-         3D0b+8KVFg5SyqCmSJuLOBDaTz3KBP7vXJXVBrpnWXW2KAJXUCC7Z7e4cetWoL3xaj
-         dunbf5UC+RdDb6XVu5r1aKPvyYOcb7tUplrUOYySgbLJlLNdyzFv8KzcutwkCSMjSd
-         cFsj2PQSyGZVQ==
-Date:   Thu, 25 Nov 2021 19:23:43 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
-        Tobias Waldekranz <tobias@waldekranz.com>
-Subject: Re: [PATCH net] net: dsa: mv88e6xxx: Disable AN on 2500base-x for
- Amethyst
-Message-ID: <20211125192343.20e19849@thinkpad>
-In-Reply-To: <YZ/OV+ang2FW9phY@lunn.ch>
-References: <20211125144359.18478-1-kabel@kernel.org>
-        <YZ+txKp0sAOjQUka@lunn.ch>
-        <20211125184551.2530cc95@thinkpad>
-        <YZ/OV+ang2FW9phY@lunn.ch>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S238719AbhKYSzY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 13:55:24 -0500
+Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.81]:30255 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242526AbhKYSxX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 13:53:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1637866204;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=iBQ+vqxgwLF6dT3pSXOjf18nr9Ye1/Cz08Fes5fTY+o=;
+    b=JNXH103kFDPqjsb1RadqNnJTSrOTucDLvp82wwejQ16RBYqpEOITrRorX2dH2GqwFn
+    EZ3q5S0iIOtappCxaQANU7EN+L2/HlV35kAYjBk0R9YLXSZ1wHyJeHP9YOFmnNXONaNU
+    VNtIy8KczuxtUWwYIHbPD8OglsGICw7QYFEbhDzXXX3LxPeL6DwD5bszb+shcYkq75G1
+    S1JHxTgiTlbSosNhE/Fzvh125JR5LstQF+DSJSMIVS8VmX3mCwf399xoY7kV4kY8skSs
+    AVL8cdkSX491E5XyUJOnbzV4Frvb1pnl40p64DkFdTCLmEA/jxl7JQvAdpRgQegToYAb
+    9h2w==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPv6:2a00:6020:1cfa:f900::b82]
+    by smtp.strato.de (RZmta 47.34.10 AUTH)
+    with ESMTPSA id c09e88xAPIo14Pz
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Thu, 25 Nov 2021 19:50:01 +0100 (CET)
+Subject: Re: [PATCH v2 4/5] can: do not increase rx_bytes statistics for RTR
+ frames
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        Jimmy Assarsson <extja@kvaser.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Yasushi SHOJI <yashi@spacecubics.com>,
+        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
+        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Stephane Grosjean <s.grosjean@peak-system.com>
+References: <20211125172021.976384-1-mailhol.vincent@wanadoo.fr>
+ <20211125172021.976384-5-mailhol.vincent@wanadoo.fr>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <ed755990-4169-604e-d982-7e4370114512@hartkopp.net>
+Date:   Thu, 25 Nov 2021 19:50:01 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20211125172021.976384-5-mailhol.vincent@wanadoo.fr>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 25 Nov 2021 18:56:39 +0100
-Andrew Lunn <andrew@lunn.ch> wrote:
+Hi Vincent,
 
-> On Thu, Nov 25, 2021 at 06:45:51PM +0100, Marek Beh=C3=BAn wrote:
-> > On Thu, 25 Nov 2021 16:37:40 +0100
-> > Andrew Lunn <andrew@lunn.ch> wrote:
-> >  =20
-> > > On Thu, Nov 25, 2021 at 03:43:59PM +0100, Marek Beh=C3=BAn wrote: =20
-> > > > Amethyst does not support autonegotiation in 2500base-x mode.   =20
-> > >=20
-> > > Hi Marek
-> > >=20
-> > > I tried to avoid using Marvells internal names for these devices. I
-> > > don't think these names exist in the datasheet? They are visible in
-> > > the SDK, but that is not so widely available. So if you do want to use
-> > > these names, please also reference the name we use in the kernel,
-> > > mv88e6393x. =20
-> >=20
-> > I used these names in previous commit that are already merged (search
-> > for Amethyst, Topaz, Peridot). But if you want, I can send v2. Please
-> > let me know if I should send v2. =20
->=20
-> I'm not against these names, but i don't like them used on there own,
-> thats all.
->=20
-> > > What happens when changing from say 1000BaseX to 2500BaseX? Do you
-> > > need to disable the advertisement which 1000BaseX might of enabled? =
-=20
->=20
-> >=20
-> > I don't need to disable it, it is disabled on it's own by cmode change.=
- =20
->=20
-> O.K, that is important information to put into the commit message,
-> since it makes it clear you have thought about this, and a reviewer
-> does not need to ask the question.
->=20
-> > Moreover I did some experiments on 88E6393X vs 88E6190.
-> >=20
-> > It is a little weird for 6393x.
-> >=20
-> > On 6190
-> > - resetting the SerDes (BMCR_RESET) does not have impact on the
-> >   BMCR_ANENABLE bit, but changing cmode does
-> >=20
-> >   when cmode is changed to SGMII or 1000base-x, it is enabled, for
-> >   2500base-x it is disabled
-> >=20
-> > - resetting the SerDes (BMCR_RESET) when cmode is
-> >   - sgmii, changes value of the MV88E6390_SGMII_ADVERTISE to 0x0001
-> >     automatically
-> >   - 1000base-x or 2500base-x does not change the value of adv register
-> >=20
-> >   moreover it seems that changing cmode also resets the the SerDes
-> >=20
-> > On 6393x:
-> > - the BMCR behaves the same as in 6190: the switch defaults to AN
-> >   disabled for 2500base-x, and enabled for 1000base-x and SGMII
-> >=20
-> > - the difference is that there are weird values written to
-> >   MV88E6390_SGMII_ADVERTISE on SerDes reset (which is done by switch
-> >   when changing cmode)
-> >=20
-> >   for 1000base-x, the value is 0x9120
-> >   for 2500base-x, the value is 0x9f41
-> >=20
-> >   I don't understand why they changed it so for 6393x. =20
->=20
-> Tobias found something which might be relevant here. On the 6390
-> family, if you change cmode while the SERDES is powered off, bad
-> things happen. What you could be seeing is another symptom of
-> that. Tobias has a WIP patch which changes the order of operations
-> when changing the cmode. It would be interesting to see if that makes
-> a difference here as well.
+On 25.11.21 18:20, Vincent Mailhol wrote:
 
-Thanks. I will try this tomorrow, both on 6190 and 6393x.
+> diff --git a/drivers/net/can/usb/ucan.c b/drivers/net/can/usb/ucan.c
+> index d582c39fc8d0..717d4925fdb0 100644
+> --- a/drivers/net/can/usb/ucan.c
+> +++ b/drivers/net/can/usb/ucan.c
+> @@ -619,12 +619,13 @@ static void ucan_rx_can_msg(struct ucan_priv *up, struct ucan_message_in *m)
+>   	/* copy the payload of non RTR frames */
+>   	if (!(cf->can_id & CAN_RTR_FLAG) || (cf->can_id & CAN_ERR_FLAG))
+>   		memcpy(cf->data, m->msg.can_msg.data, cf->len);
+> +	/* only frames which are neither RTR nor ERR have a payload */
+> +	else
+> +		stats->rx_bytes += cf->len;
 
-For now, ignore this patch.
+This 'else' path looks wrong ...
 
-Marek
+>   
+>   	/* don't count error frames as real packets */
+> -	if (!(cf->can_id & CAN_ERR_FLAG)) {
+> +	if (!(cf->can_id & CAN_ERR_FLAG))
+>   		stats->rx_packets++;
+> -		stats->rx_bytes += cf->len;
+> -	}
+>   
+>   	/* pass it to Linux */
+>   	netif_rx(skb);
+
+Regards,
+Oliver
