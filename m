@@ -2,44 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EF8C45D38F
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 04:19:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34A0A45D393
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 04:20:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233018AbhKYDWy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 22:22:54 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38384 "EHLO mail.kernel.org"
+        id S239315AbhKYDXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 22:23:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38702 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346430AbhKYDUx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Nov 2021 22:20:53 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4249460234;
-        Thu, 25 Nov 2021 03:17:42 +0000 (UTC)
+        id S1345040AbhKYDWG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Nov 2021 22:22:06 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D68EC6108B;
+        Thu, 25 Nov 2021 03:18:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637810262;
-        bh=/eqF4lIxc2rV7wwWPFPONu8gGqSyQi3U1Rx7DHBuAfQ=;
+        s=k20201202; t=1637810336;
+        bh=jH3ib8LOjypJEX+zrK1zQDOwQlhz18MpvZQCJE0nlew=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=grU6xoucVGAPIwekmCvSsIl1tr6ZfmHZU2gX71QnZrMw7X3JBJitH/+oNBP3uuhY2
-         IYfYfKYVHyXJxp+hoBo8Z2jvojVHT87llSXfOLL3PAKsZq0w1VmYBKkUpqsKgf5Oxr
-         mHtwmqe5JAlhOrK6lHzsyjl8ssIzBWqnEU+/8hv2qZ7HQmhSUglOBgvsU14xNTo8Dz
-         53aCqadK3fPOmu5w/ySK2/UZhSsbtfUXWqkvJM5zrt5Qd9df3jFZDgCCz2IIhU0Col
-         igazJwlI+RnPupWMuFShmLFlVYW5stidkuUyNHmPmqKDa6zFkqY7PgcfSJggxhjwYA
-         zJgP6Wfhr+Q1w==
-Date:   Wed, 24 Nov 2021 19:17:41 -0800
+        b=hxwqzl3eq0XVdMj/kvDGs8UQPGygRVgK52dxKecb4jIDJWdnC5PoyFHePgCcLi3sr
+         c3zzW6uFbgO+xIb/duC1zZ4FgCioX2Nn6IJFvDnjy1g0tNYqrHH4Wh0MwdPrSwfQ7x
+         O+g0ZPCSncF/rCqoktCf4VZpR+WmcADahst1sOJZypraMx88dTzL1NTp+nmuX1USnR
+         Z1pHDPOf8v0pQ/zzIBr6d/vlGNKLbFxqzJin8Z9ZnRNp9WmGfuR5fK0pzz9OoI82OA
+         t6PXxy0XsKacvWfwasx/EYDwl5tb8A80FAaLxratFUYcxuW7YcHi3pymALSn5QpKBM
+         pL2Vj2w33ukCQ==
+Date:   Wed, 24 Nov 2021 19:18:54 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
-Cc:     netdev@vger.kernel.org, Taras Chornyi <taras.chornyi@plvision.eu>,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <vmytnyk@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org,
-        Yevhen Orlov <yevhen.orlov@plvision.eu>
-Subject: Re: [PATCH net-next 1/3] net: prestera: acl: migrate to new vTCAM
- api
-Message-ID: <20211124191741.3cc944b6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1637686684-2492-2-git-send-email-volodymyr.mytnyk@plvision.eu>
-References: <1637686684-2492-1-git-send-email-volodymyr.mytnyk@plvision.eu>
-        <1637686684-2492-2-git-send-email-volodymyr.mytnyk@plvision.eu>
+To:     Dylan Hung <dylan_hung@aspeedtech.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Joel Stanley <joel@jms.id.au>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Networking <netdev@vger.kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        BMC-SW <BMC-SW@aspeedtech.com>
+Subject: Re: [PATCH] net:phy: Fix "Link is Down" issue
+Message-ID: <20211124191854.4666a185@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <HK0PR06MB283498AF35B397F05CC627A99C629@HK0PR06MB2834.apcprd06.prod.outlook.com>
+References: <20211124061057.12555-1-dylan_hung@aspeedtech.com>
+        <CACPK8Xc8aD8nY0M442=BdvrpRhYNS1HW7BNQgAQ+ExTfQMsMyQ@mail.gmail.com>
+        <YZ5adFBpaJzPwfvc@lunn.ch>
+        <HK0PR06MB283498AF35B397F05CC627A99C629@HK0PR06MB2834.apcprd06.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -47,13 +50,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Nov 2021 18:58:00 +0200 Volodymyr Mytnyk wrote:
-> +static inline bool
-> +prestera_flow_block_is_bound(const struct prestera_flow_block *block)
-> +{
-> +	return block->ruleset_zero;
-> +}
+On Thu, 25 Nov 2021 03:08:22 +0000 Dylan Hung wrote:
+> > > We should cc stable too.  
+> > 
+> > https://www.kernel.org/doc/html/v5.12/networking/netdev-FAQ.html#how-do-
+> > i-indicate-which-tree-net-vs-net-next-my-patch-should-be-in
+>
+> Sorry, I got this mail after I sent v2 out.  Should I prepare patch
+> v3 with --subject-prefix='PATCH net'?
 
-No static inlines in C sources, let the compiler decide.
-
-Please fix all cases.
+That's leave it be now, but please keep this in mind in the future.
