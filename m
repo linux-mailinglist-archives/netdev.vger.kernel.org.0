@@ -2,81 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0851F45D253
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 02:09:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F96A45D25E
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 02:12:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347399AbhKYBM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 20:12:27 -0500
-Received: from mga11.intel.com ([192.55.52.93]:62925 "EHLO mga11.intel.com"
+        id S1348108AbhKYBPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 20:15:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56856 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244798AbhKYBK1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Nov 2021 20:10:27 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10178"; a="232907818"
-X-IronPort-AV: E=Sophos;i="5.87,261,1631602800"; 
-   d="scan'208";a="232907818"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2021 17:07:17 -0800
-X-IronPort-AV: E=Sophos;i="5.87,261,1631602800"; 
-   d="scan'208";a="510088158"
-Received: from askirtik-mobl1.amr.corp.intel.com (HELO vcostago-mobl3) ([10.212.223.232])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2021 17:07:16 -0800
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>, Stefan Dietrich <roots@gmx.de>
-Cc:     Greg KH <greg@kroah.com>, netdev@vger.kernel.org,
-        stable@vger.kernel.org, regressions@lists.linux.dev,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        intel-wired-lan@lists.osuosl.org
-Subject: Re: [REGRESSION] Kernel 5.15 reboots / freezes upon ifup/ifdown
-In-Reply-To: <20211124153449.72c9cfcd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <924175a188159f4e03bd69908a91e606b574139b.camel@gmx.de>
- <YZ3q4OKhU2EPPttE@kroah.com>
- <8119066974f099aa11f08a4dad3653ac0ba32cd6.camel@gmx.de>
- <20211124153449.72c9cfcd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Date:   Wed, 24 Nov 2021 17:07:16 -0800
-Message-ID: <87a6htm4aj.fsf@intel.com>
+        id S236229AbhKYBNT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Nov 2021 20:13:19 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id B4726610A8;
+        Thu, 25 Nov 2021 01:10:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637802608;
+        bh=3uQo6Cli/nv39dBU8DRP7NU45m396rvpbu/fElm2pvg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=NGFhEFDe5Gg+TgbCW2p7euqvCbq5FFcK88Kwx4hZJOkz/MCqvVNojvRq2YrkRUt7c
+         T4jOI52jEoXqeg90MFjT/FwdWJzpxTckmQFUijDiTwCLu6XGt1InAoIxtAd/fKaWg8
+         tCGu/niEuFlkWWRtGBKd/y0qECj3q7RgJDNoZHfSGTFKNsoLzBVl2UTjEEt8hv+vTm
+         Qlwtc4eUB4aVvKXXM2NiraembGfeE5k5+U0RNp+BVGbyqv2fNbwn1QOjK5LxT0/ANS
+         l4pTQWBCX+Gb6ASPGsHtfMZDEzQtrko+QG9nGXVImJW8HWnE6kZbA0BILvXIl+gH3X
+         3zRnKoAYlh2rA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A63AC60A0A;
+        Thu, 25 Nov 2021 01:10:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: ieee802154 for net 2021-11-24
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163780260867.28659.7876356954925087127.git-patchwork-notify@kernel.org>
+Date:   Thu, 25 Nov 2021 01:10:08 +0000
+References: <20211124150934.3670248-1-stefan@datenfreihafen.org>
+In-Reply-To: <20211124150934.3670248-1-stefan@datenfreihafen.org>
+To:     Stefan Schmidt <stefan@datenfreihafen.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-wpan@vger.kernel.org,
+        alex.aring@gmail.com, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stefan,
+Hello:
 
-Jakub Kicinski <kuba@kernel.org> writes:
+This pull request was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-> On Wed, 24 Nov 2021 18:20:40 +0100 Stefan Dietrich wrote:
->> Hi all,
->> 
->> six exciting hours and a lot of learning later, here it is.
->> Symptomatically, the critical commit appears for me between 5.14.21-
->> 051421-generic and 5.15.0-051500rc2-generic - I did not find an amd64
->> build for rc1.
->> 
->> Please see the git-bisect output below and let me know how I may
->> further assist in debugging!
->
-> Well, let's CC those involved, shall we? :)
->
-> Thanks for working thru the bisection!
->
->> a90ec84837325df4b9a6798c2cc0df202b5680bd is the first bad commit
->> commit a90ec84837325df4b9a6798c2cc0df202b5680bd
->> Author: Vinicius Costa Gomes <vinicius.gomes@intel.com>
->> Date:   Mon Jul 26 20:36:57 2021 -0700
->> 
->>     igc: Add support for PTP getcrosststamp()
+On Wed, 24 Nov 2021 16:09:34 +0100 you wrote:
+> Hello Dave, Jakub.
+> 
+> An update from ieee802154 for your *net* tree.
+> 
+> A fix from Alexander which has been brought up various times found by
+> automated checkers. Make sure values are in u32 range.
+> 
+> [...]
 
-Oh! That's interesting.
+Here is the summary with links:
+  - pull-request: ieee802154 for net 2021-11-24
+    https://git.kernel.org/netdev/net/c/48a78f501f45
 
-Can you try disabling CONFIG_PCIE_PTM in your kernel config? If it
-works, then it's a point in favor that this commit is indeed the
-problematic one.
-
-I am still trying to think of what could be causing the lockup you are
-seeing.
-
-
-Cheers,
+You are awesome, thank you!
 -- 
-Vinicius
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
