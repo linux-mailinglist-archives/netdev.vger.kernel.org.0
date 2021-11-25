@@ -2,141 +2,284 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBE6645DF81
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 18:19:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D7AC45DF66
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 18:11:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232137AbhKYRWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 12:22:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40810 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237777AbhKYRUM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 12:20:12 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD6FC06173E;
-        Thu, 25 Nov 2021 09:05:21 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id w1so28331322edc.6;
-        Thu, 25 Nov 2021 09:05:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rQkOTwt9uzrTb00l0feBsgvjTL/oGVpIgLhivljmnLw=;
-        b=azl1ETsDxeR2RX0SwiYVeQ0ZpBxmcpQNfOInmGiT9fnCIx3ZIF/afzm2+wk/yltBWt
-         OgJaxLJcsr0KbLVyTx5sc45/LPuYeFM5xM3lq3Eo4F5VNFvmuog3k3Th+mPqv1iVccpK
-         +EvamI/JunZC95Owjqtsuz8DKmcL+qe0GV3xVdDRibMFh7hHe3kbdgVhAN2RQEElMC4Z
-         DuuQRQsp52WtzEKjY1gockOP0U8OqVCOBgw8jWd+dXrXIEv+cUJbf38OQ5JnvyLyvM59
-         A1UUGpTrNVNprhCk5Uesfdd0Esn2tmqMRx0V53zv/KKUom6Y6dDLYNYdx8SPVAJh4fii
-         3Q7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rQkOTwt9uzrTb00l0feBsgvjTL/oGVpIgLhivljmnLw=;
-        b=RklfoJt2AGiwdWYn5I78WWzGsksr1r44TJuKGwQ2mM9FHnbMiyg7sZLO6oBs6fY4FL
-         oiDt/1WIsKjmcc2rr+/8p+OgHJJpsuXXCdkHGHGmNuwSPb6L6IjIdlPqowWWF5eQAwAI
-         AcOhRlr/rZTnaQSB5Hyx02pfMs6ixfXiTcDnTK11rzVgXlXF2kIHenK5xkg/OjVUTvdx
-         HK9MrBI33IkDmFmO1AilMAFmQGRqw1YdpPtEcHcmh3iwgrz0Kks1wJbEeUwKzG5kAZrW
-         3QRwPKuv83LPyyh76ewqoOPapO+SbGvq1o6FmxIZiMhNuxi1V+JIXSl3Gh+W1jol7HgA
-         LK3g==
-X-Gm-Message-State: AOAM5320pB+mfSpekEqelUg9nKnOD/Yu+L+MncWwIeLkwG0494IP18P4
-        tgJ2HuHd5LRjQBppP2zvNuU=
-X-Google-Smtp-Source: ABdhPJxFP5/Hyey48CWKFkG0y0NXMu9d4h95DtqVuB5LFifdV4+PS3+0HUOAy/gCADSAe28lxCWqHw==
-X-Received: by 2002:a50:e611:: with SMTP id y17mr39475594edm.270.1637859920003;
-        Thu, 25 Nov 2021 09:05:20 -0800 (PST)
-Received: from skbuf ([188.25.163.189])
-        by smtp.gmail.com with ESMTPSA id jg36sm2135299ejc.44.2021.11.25.09.05.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Nov 2021 09:05:19 -0800 (PST)
-Date:   Thu, 25 Nov 2021 19:05:18 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Martin Kaistra <martin.kaistra@linutronix.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
+        id S242163AbhKYROc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 12:14:32 -0500
+Received: from mga18.intel.com ([134.134.136.126]:54216 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241954AbhKYRMb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Nov 2021 12:12:31 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10179"; a="222415070"
+X-IronPort-AV: E=Sophos;i="5.87,263,1631602800"; 
+   d="scan'208";a="222415070"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2021 09:07:49 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,263,1631602800"; 
+   d="scan'208";a="554691064"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga008.fm.intel.com with ESMTP; 25 Nov 2021 09:07:39 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1APH7a6a001588;
+        Thu, 25 Nov 2021 17:07:36 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Shay Agroskin <shayagr@amazon.com>,
+        Arthur Kiyanovski <akiyano@amazon.com>,
+        David Arinzon <darinzon@amazon.com>,
+        Noam Dagan <ndagan@amazon.com>,
+        Saeed Bishara <saeedb@amazon.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
         Russell King <linux@armlinux.org.uk>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 7/7] net: dsa: b53: Expose PTP timestamping ioctls to
- userspace
-Message-ID: <20211125170518.socgptqrhrds2vl3@skbuf>
-References: <20211104133204.19757-8-martin.kaistra@linutronix.de>
- <20211104174251.GB32548@hoboy.vegasvil.org>
- <ba543ae4-3a71-13fe-fa82-600ac37eaf5a@linutronix.de>
- <20211105141319.GA16456@hoboy.vegasvil.org>
- <20211105142833.nv56zd5bqrkyjepd@skbuf>
- <20211106001804.GA24062@hoboy.vegasvil.org>
- <20211106003606.qvfkitgyzoutznlw@skbuf>
- <20211107140534.GB18693@hoboy.vegasvil.org>
- <20211107142703.tid4l4onr6y2gxic@skbuf>
- <20211108144824.GD7170@hoboy.vegasvil.org>
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Andrei Vagin <avagin@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Cong Wang <cong.wang@bytedance.com>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH v2 net-next 21/26] ice: add XDP and XSK generic per-channel statistics
+Date:   Thu, 25 Nov 2021 18:07:08 +0100
+Message-Id: <20211125170708.127323-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <87bl28bga6.fsf@toke.dk>
+References: <20211123163955.154512-1-alexandr.lobakin@intel.com> <20211123163955.154512-22-alexandr.lobakin@intel.com> <77407c26-4e32-232c-58e0-2d601d781f84@iogearbox.net> <87bl28bga6.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211108144824.GD7170@hoboy.vegasvil.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 08, 2021 at 06:48:24AM -0800, Richard Cochran wrote:
-> On Sun, Nov 07, 2021 at 04:27:03PM +0200, Vladimir Oltean wrote:
-> > On Sun, Nov 07, 2021 at 06:05:34AM -0800, Richard Cochran wrote:
-> > >         switch (cfg.rx_filter) {
-> > >         case HWTSTAMP_FILTER_NONE:
-> > >                 break;
-> > >         case HWTSTAMP_FILTER_ALL:
-> > >         case HWTSTAMP_FILTER_SOME:
-> > >         case HWTSTAMP_FILTER_PTP_V1_L4_EVENT:
-> > >         case HWTSTAMP_FILTER_PTP_V1_L4_SYNC:
-> > >         case HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ:
-> > >         case HWTSTAMP_FILTER_NTP_ALL:
-> > >         case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
-> > >         case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
-> > >         case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
-> > >         case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
-> > >         case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
-> > >         case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
-> > >         case HWTSTAMP_FILTER_PTP_V2_EVENT:
-> > >         case HWTSTAMP_FILTER_PTP_V2_SYNC:
-> > >         case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
-> > >                 cfg.rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
-> > >                 break;
-> > >         default:
-> > >                 mutex_unlock(&ocelot->ptp_lock);
-> > >                 return -ERANGE;
-> > >         }
-> > > 
-> > > That is essentially an upgrade to HWTSTAMP_FILTER_PTP_V2_EVENT.  The
-> > > change from ALL to HWTSTAMP_FILTER_PTP_V2_EVENT is probably a simple
-> > > oversight, and the driver can be easily fixed.
-> > > 
-> > > Thanks,
-> > > Richard
-> > 
-> > It's essentially the same pattern as what Martin is introducing for b53.
-> 
-> Uh, no it isn't.  The present patch has:
-> 
-> +       case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
-> +       case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
-> +       case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
-> +       case HWTSTAMP_FILTER_PTP_V2_EVENT:
-> +       case HWTSTAMP_FILTER_PTP_V2_SYNC:
-> +       case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
-> +       case HWTSTAMP_FILTER_ALL:
-> +               config->rx_filter = HWTSTAMP_FILTER_PTP_V2_L2_EVENT;
-> 
-> There is an important difference between
-> HWTSTAMP_FILTER_PTP_V2_L2_EVENT and HWTSTAMP_FILTER_PTP_V2_EVENT
-> 
-> Notice the "L2" in there.
+From: Toke Høiland-Jørgensen <toke@redhat.com>
+Date: Thu, 25 Nov 2021 12:56:01 +0100
 
-Richard, when the request is PTP_V2_EVENT and the response is
-PTP_V2_L2_EVENT, is that an upgrade or a downgrade? PTP_V2_EVENT also
-includes PTP_V2_L4_EVENT.
+> Daniel Borkmann <daniel@iogearbox.net> writes:
+> 
+> > Hi Alexander,
+> >
+> > On 11/23/21 5:39 PM, Alexander Lobakin wrote:
+> > [...]
+> >
+> > Just commenting on ice here as one example (similar applies to other drivers):
+> >
+> >> diff --git a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
+> >> index 1dd7e84f41f8..7dc287bc3a1a 100644
+> >> --- a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
+> >> +++ b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
+> >> @@ -258,6 +258,8 @@ static void ice_clean_xdp_irq(struct ice_tx_ring *xdp_ring)
+> >>   		xdp_ring->next_dd = ICE_TX_THRESH - 1;
+> >>   	xdp_ring->next_to_clean = ntc;
+> >>   	ice_update_tx_ring_stats(xdp_ring, total_pkts, total_bytes);
+> >> +	xdp_update_tx_drv_stats(&xdp_ring->xdp_stats->xdp_tx, total_pkts,
+> >> +				total_bytes);
+> >>   }
+> >> 
+> >>   /**
+> >> @@ -277,6 +279,7 @@ int ice_xmit_xdp_ring(void *data, u16 size, struct ice_tx_ring *xdp_ring)
+> >>   		ice_clean_xdp_irq(xdp_ring);
+> >> 
+> >>   	if (!unlikely(ICE_DESC_UNUSED(xdp_ring))) {
+> >> +		xdp_update_tx_drv_full(&xdp_ring->xdp_stats->xdp_tx);
+> >>   		xdp_ring->tx_stats.tx_busy++;
+> >>   		return ICE_XDP_CONSUMED;
+> >>   	}
+> >> diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
+> >> index ff55cb415b11..62ef47a38d93 100644
+> >> --- a/drivers/net/ethernet/intel/ice/ice_xsk.c
+> >> +++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
+> >> @@ -454,42 +454,58 @@ ice_construct_skb_zc(struct ice_rx_ring *rx_ring, struct xdp_buff **xdp_arr)
+> >>    * @xdp: xdp_buff used as input to the XDP program
+> >>    * @xdp_prog: XDP program to run
+> >>    * @xdp_ring: ring to be used for XDP_TX action
+> >> + * @lrstats: onstack Rx XDP stats
+> >>    *
+> >>    * Returns any of ICE_XDP_{PASS, CONSUMED, TX, REDIR}
+> >>    */
+> >>   static int
+> >>   ice_run_xdp_zc(struct ice_rx_ring *rx_ring, struct xdp_buff *xdp,
+> >> -	       struct bpf_prog *xdp_prog, struct ice_tx_ring *xdp_ring)
+> >> +	       struct bpf_prog *xdp_prog, struct ice_tx_ring *xdp_ring,
+> >> +	       struct xdp_rx_drv_stats_local *lrstats)
+> >>   {
+> >>   	int err, result = ICE_XDP_PASS;
+> >>   	u32 act;
+> >> 
+> >> +	lrstats->bytes += xdp->data_end - xdp->data;
+> >> +	lrstats->packets++;
+> >> +
+> >>   	act = bpf_prog_run_xdp(xdp_prog, xdp);
+> >> 
+> >>   	if (likely(act == XDP_REDIRECT)) {
+> >>   		err = xdp_do_redirect(rx_ring->netdev, xdp, xdp_prog);
+> >> -		if (err)
+> >> +		if (err) {
+> >> +			lrstats->redirect_errors++;
+> >>   			goto out_failure;
+> >> +		}
+> >> +		lrstats->redirect++;
+> >>   		return ICE_XDP_REDIR;
+> >>   	}
+> >> 
+> >>   	switch (act) {
+> >>   	case XDP_PASS:
+> >> +		lrstats->pass++;
+> >>   		break;
+> >>   	case XDP_TX:
+> >>   		result = ice_xmit_xdp_buff(xdp, xdp_ring);
+> >> -		if (result == ICE_XDP_CONSUMED)
+> >> +		if (result == ICE_XDP_CONSUMED) {
+> >> +			lrstats->tx_errors++;
+> >>   			goto out_failure;
+> >> +		}
+> >> +		lrstats->tx++;
+> >>   		break;
+> >>   	default:
+> >>   		bpf_warn_invalid_xdp_action(act);
+> >> -		fallthrough;
+> >> +		lrstats->invalid++;
+> >> +		goto out_failure;
+> >>   	case XDP_ABORTED:
+> >> +		lrstats->aborted++;
+> >>   out_failure:
+> >>   		trace_xdp_exception(rx_ring->netdev, xdp_prog, act);
+> >> -		fallthrough;
+> >> +		result = ICE_XDP_CONSUMED;
+> >> +		break;
+> >>   	case XDP_DROP:
+> >>   		result = ICE_XDP_CONSUMED;
+> >> +		lrstats->drop++;
+> >>   		break;
+> >>   	}
+> >
+> > Imho, the overall approach is way too bloated. I can see the
+> > packets/bytes but now we have 3 counter updates with return codes
+> > included and then the additional sync of the on-stack counters into
+> > the ring counters via xdp_update_rx_drv_stats(). So we now need
+> > ice_update_rx_ring_stats() as well as xdp_update_rx_drv_stats() which
+> > syncs 10 different stat counters via u64_stats_add() into the per ring
+> > ones. :/
+> >
+> > I'm just taking our XDP L4LB in Cilium as an example: there we already
+> > count errors and export them via per-cpu map that eventually lead to
+> > XDP_DROP cases including the /reason/ which caused the XDP_DROP (e.g.
+> > Prometheus can then scrape these insights from all the nodes in the
+> > cluster). Given the different action codes are very often application
+> > specific, there's not much debugging that you can do when /only/
+> > looking at `ip link xdpstats` to gather insight on *why* some of these
+> > actions were triggered (e.g. fib lookup failure, etc). If really of
+> > interest, then maybe libxdp could have such per-action counters as
+> > opt-in in its call chain..
+> 
+> To me, standardising these counters is less about helping people debug
+> their XDP programs (as you say, you can put your own telemetry into
+> those), and more about making XDP less "mystical" to the system
+> administrator (who may not be the same person who wrote the XDP
+> programs). So at the very least, they need to indicate "where are the
+> packets going", which means at least counters for DROP, REDIRECT and TX
+> (+ errors for tx/redirect) in addition to the "processed by XDP" initial
+> counter. Which in the above means 'pass', 'invalid' and 'aborted' could
+> be dropped, I guess; but I don't mind terribly keeping them either given
+> that there's no measurable performance impact.
+
+Right.
+
+The other reason is that I want to continue the effort of
+standardizing widely-implemented statistics. Ethtool private stats
+approach is neither scalable (you can't rely on any fields which may
+be not exposed in other drivers) nor good for code hygiene (code
+duplication, differences in naming and logics etc.).
+Let's say if only mlx5 driver has 'cache_waive' stats, then it's
+okay to export it using private stats, but if 10 drivers has
+'xdp_drop' field it's better to uniform it, isn't it?
+
+> > But then it also seems like above in ice_xmit_xdp_ring() we now need
+> > to bump counters twice just for sake of ethtool vs xdp counters which
+> > sucks a bit, would be nice to only having to do it once:
+
+We'll remove such duplication in the nearest future, as well as some
+of duplications between Ethtool private and this XDP stats. I wanted
+this series to be as harmless as possible.
+
+> This I agree with, and while I can see the layering argument for putting
+> them into 'ip' and rtnetlink instead of ethtool, I also worry that these
+> counters will simply be lost in obscurity, so I do wonder if it wouldn't
+> be better to accept the "layering violation" and keeping them all in the
+> 'ethtool -S' output?
+
+I don't think we should harm the code and the logics in favor of
+'some of the users can face something'. We don't control anything
+related to XDP using Ethtool at all, but there is some XDP-related
+stuff inside iproute2 code, so for me it's even more intuitive to
+have them there.
+Jakub, may be you'd like to add something at this point?
+
+> [...]
+> 
+> > +  xdp-channel0-rx_xdp_redirect: 7
+> > +  xdp-channel0-rx_xdp_redirect_errors: 8
+> > +  xdp-channel0-rx_xdp_tx: 9
+> > +  xdp-channel0-rx_xdp_tx_errors: 10
+> > +  xdp-channel0-tx_xdp_xmit_packets: 11
+> > +  xdp-channel0-tx_xdp_xmit_bytes: 12
+> > +  xdp-channel0-tx_xdp_xmit_errors: 13
+> > +  xdp-channel0-tx_xdp_xmit_full: 14
+> >
+> >  From a user PoV to avoid confusion, maybe should be made more clear that the latter refers
+> > to xsk.
+> 
+> +1, these should probably be xdp-channel0-tx_xsk_* or something like
+> that...
+
+I think I should expand this example in Docs a bit. For XSK, there's
+a separate set of the same counters, and they differ as follows:
+
+xdp-channel0-rx_xdp_packets: 0
+xdp-channel0-rx_xdp_bytes: 1
+xdp-channel0-rx_xdp_errors: 2
+[ ... ]
+xsk-channel0-rx_xdp_packets: 256
+xsk-channel0-rx_xdp_bytes: 257
+xsk-channel0-rx_xdp_errors: 258
+[ ... ]
+
+The only semantic difference is that 'tx_xdp_xmit' for XDP is a
+counter for the packets gone through .ndo_xdp_xmit(), and in
+case of XSK it's a counter for the packets gone through XSK
+ZC xmit.
+
+> -Toke
+
+Thanks,
+Al
