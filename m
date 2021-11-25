@@ -2,84 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC02F45D4BF
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 07:24:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ADE845D4ED
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 07:47:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348867AbhKYG1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 01:27:31 -0500
-Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:52526 "EHLO
-        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1347376AbhKYGZb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 01:25:31 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R761e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0UyDiZwl_1637821337;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0UyDiZwl_1637821337)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 25 Nov 2021 14:22:17 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     kgraul@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH net 2/2] net/smc: Don't call clcsock shutdown twice when smc shutdown
-Date:   Thu, 25 Nov 2021 14:19:35 +0800
-Message-Id: <20211125061932.74874-3-tonylu@linux.alibaba.com>
-X-Mailer: git-send-email 2.34.0
-In-Reply-To: <20211125061932.74874-1-tonylu@linux.alibaba.com>
-References: <20211125061932.74874-1-tonylu@linux.alibaba.com>
+        id S1347767AbhKYGue (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 01:50:34 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:42628 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S244527AbhKYGsd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 01:48:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1637822722;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=flewxf0Pr7GnmX3CHXnbD+nEgt9Czz5AO5oxj939gS8=;
+        b=BWktA4u7im62KTbGNQmRZ65zOQP/8S19xLPnWkYG5oFCuDmTik4tPPQxZzW4IUFDl6w6Wl
+        5umlGM4VFDp7EnocGlSrvYCTVatbAIXUWsgyPNDaEK8HHo2H5Oan70uwvDIp3kl33jrZlU
+        Xzs+9FuDx13gC7KdbU4Dggdqev2Lqk0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-237-ruQ1vCLwNTSqCwoH-QyI8w-1; Thu, 25 Nov 2021 01:45:20 -0500
+X-MC-Unique: ruQ1vCLwNTSqCwoH-QyI8w-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 72BCC81EE61;
+        Thu, 25 Nov 2021 06:45:19 +0000 (UTC)
+Received: from x230 (unknown [10.39.192.2])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id A235217C58;
+        Thu, 25 Nov 2021 06:45:17 +0000 (UTC)
+Date:   Thu, 25 Nov 2021 07:45:15 +0100
+From:   Stefan Assmann <sassmann@redhat.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Mitch Williams <mitch.a.williams@intel.com>,
+        netdev@vger.kernel.org,
+        George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
+Subject: Re: [PATCH net-next 05/12] iavf: don't be so alarming
+Message-ID: <20211125064515.wjoe4evnqdfy62c7@x230>
+References: <20211124171652.831184-1-anthony.l.nguyen@intel.com>
+ <20211124171652.831184-6-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211124171652.831184-6-anthony.l.nguyen@intel.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When applications call shutdown() with SHUT_RDWR in userspace,
-smc_close_active() calls kernel_sock_shutdown(), and it is called
-twice in smc_shutdown().
+On 2021-11-24 09:16, Tony Nguyen wrote:
+> From: Mitch Williams <mitch.a.williams@intel.com>
+> 
+> Reduce the log level of a couple of messages. These can appear during normal
+> reset and rmmod processing, and the driver recovers just fine. Debug
+> level is fine for these.
+> 
+> Signed-off-by: Mitch Williams <mitch.a.williams@intel.com>
+> Tested-by: George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
+> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> ---
+>  drivers/net/ethernet/intel/iavf/iavf_main.c     | 2 +-
+>  drivers/net/ethernet/intel/iavf/iavf_virtchnl.c | 4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+> index cc1b3caa5136..bb2e91cb9cd4 100644
+> --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
+> +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+> @@ -3405,7 +3405,7 @@ static int iavf_close(struct net_device *netdev)
+>  				    adapter->state == __IAVF_DOWN,
+>  				    msecs_to_jiffies(500));
+>  	if (!status)
+> -		netdev_warn(netdev, "Device resources not yet released\n");
+> +		netdev_dbg(netdev, "Device resources not yet released\n");
+>  	return 0;
 
-This fixes this by checking sk_state before do clcsock shutdown, and
-avoids missing the application's call of smc_shutdown().
+This message in particular has been a good indicator for some irregular
+behaviour in VF reset. I'd rather keep it the way it is or change it
+netdev_info().
 
-Link: https://lore.kernel.org/linux-s390/1f67548e-cbf6-0dce-82b5-10288a4583bd@linux.ibm.com/
-Fixes: 606a63c9783a ("net/smc: Ensure the active closing peer first closes clcsock")
-Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
-Reviewed-by: Wen Gu <guwen@linux.alibaba.com>
----
- net/smc/af_smc.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 4b62c925a13e..7b04cb4d15f4 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -2373,6 +2373,7 @@ static int smc_shutdown(struct socket *sock, int how)
- 	struct smc_sock *smc;
- 	int rc = -EINVAL;
- 	int rc1 = 0;
-+	int old_state;
- 
- 	smc = smc_sk(sk);
- 
-@@ -2398,7 +2399,12 @@ static int smc_shutdown(struct socket *sock, int how)
- 	}
- 	switch (how) {
- 	case SHUT_RDWR:		/* shutdown in both directions */
-+		old_state = sk->sk_state;
- 		rc = smc_close_active(smc);
-+		if (old_state == SMC_ACTIVE &&
-+		    sk->sk_state == SMC_PEERCLOSEWAIT1)
-+			goto out_no_shutdown;
-+
- 		break;
- 	case SHUT_WR:
- 		rc = smc_close_shutdown_write(smc);
-@@ -2410,6 +2416,8 @@ static int smc_shutdown(struct socket *sock, int how)
- 	}
- 	if (smc->clcsock)
- 		rc1 = kernel_sock_shutdown(smc->clcsock, how);
-+
-+out_no_shutdown:
- 	/* map sock_shutdown_cmd constants to sk_shutdown value range */
- 	sk->sk_shutdown |= how + 1;
- 
--- 
-2.32.0.3.g01195cf9f
+  Stefan
 
