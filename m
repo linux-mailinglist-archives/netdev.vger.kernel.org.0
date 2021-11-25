@@ -2,165 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58CE045D578
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 08:30:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC21B45D580
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 08:32:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234846AbhKYHd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 02:33:58 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:34543 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235330AbhKYHb5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 02:31:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637825326;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=KAYyix8FJ3fNIZWmvJGEU4BGlkJhgJqUuDlAboJ19Kw=;
-        b=cjGAQ7X3lJTjnQMAMPPC0uMAVZk9Oeh0Lw3QfRNXywxgyLksNtXIrNz+Y4NQ/Nvhp5zbMg
-        /yED+1ea/d8oS6aJE04vAHITpK/0iyFivmHd2RXRWJ5CP7jcmV1PH4RRlkAnAPHDv3BpH/
-        kVdEil/4JkG6ETnqCm6gRUPpakwtsds=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-120-8tDLQQI6N_OV_y7l8kTztg-1; Thu, 25 Nov 2021 02:28:44 -0500
-X-MC-Unique: 8tDLQQI6N_OV_y7l8kTztg-1
-Received: by mail-lf1-f72.google.com with SMTP id c40-20020a05651223a800b004018e2f2512so2782182lfv.11
-        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 23:28:44 -0800 (PST)
+        id S232798AbhKYHf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 02:35:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51020 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232476AbhKYHdW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 02:33:22 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57260C061746
+        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 23:30:10 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id y12so21401253eda.12
+        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 23:30:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zl4Mzlpe6F0HOpdj4Sl3skBw9ImGE6T+paPOveokNjk=;
+        b=YWXtv5fX1y4eCm294JLj0bq0F59e43k8xrfA+D8RZU86kDbaB5pfRYZbeSFyPZxzYR
+         LybsIJqdADJ41hgsh2eyDtwd3NLKvSHLGsoB7ABUDx3z/9GEeqp9Ej+GFUTKpg5ZF3SZ
+         NR7XfQ6dWdRNPh01Co5SAQWD7TBhErF1P+QO3p8RyefDkGbMgN38CKrWWQFiurIKGj1z
+         puCQoAuzzOoiO40mp9Znm5XyGq9NARog8azZ7G7NAr4RF/21OSCOzw0KNB4d5J4+614n
+         Gmn5iw1MdYemcO25BbR0WfPShhqdVMjxIst13NCch1XqPyQs/xMhOFiKoce+X6f5F1Bb
+         4tjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=KAYyix8FJ3fNIZWmvJGEU4BGlkJhgJqUuDlAboJ19Kw=;
-        b=aFhFjM2FOoBAY17TMFpsFIUv8F6BRJJpHQzqTvNkf5BQm6ugGfEusOezQqRaZ2DwmL
-         90vL8mgckpXtaLx9punQnOCgVepZKPqUpn7igzPdyoafn7k4ZqOqBOh/eck1JolqaGhd
-         rn3TdslZ3UEPE1ZerL2HCf3+QdzWcjixqVMDrFW1AcG9P0s+VlH0Mu/m2ACVJSGAeuS1
-         dxurQjSYXjI8idbZvLKD8Rt2NX2sGvB81M5j36+HNodDwPDsBZhx/opUeFP4AIzYbUhM
-         yjRlchqVgi2LFTyA9MuijkJg32J3yowGHQ4QwNAuf/cizyAChrIYzXYtSMUQqfyzdvIY
-         T5gA==
-X-Gm-Message-State: AOAM531bmbgg92KxCIjFq8LkhgjkummeECeTV/AnqmPvXnA8VP8N6+4z
-        D+E7OZTEywRjlwlc1PGA9vSBOGXm4C4aj2C+i/bG6ydFljlgaET6JM3PlhbhqEYoAH0uxD6BWHN
-        kMMWrQMkKz20q/0Z+t3yPT3FS8r9Y25un
-X-Received: by 2002:ac2:5310:: with SMTP id c16mr22375076lfh.580.1637825323077;
-        Wed, 24 Nov 2021 23:28:43 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwR0Oj+HYVWJiKnMqDcsVDTqq/srl4I6uPRZ9iNPuv2p0Bkt1dEPXaslgNkp/hh9kpZ3ybmiGxzpKXdjayduxU=
-X-Received: by 2002:ac2:5310:: with SMTP id c16mr22375068lfh.580.1637825322885;
- Wed, 24 Nov 2021 23:28:42 -0800 (PST)
+        bh=zl4Mzlpe6F0HOpdj4Sl3skBw9ImGE6T+paPOveokNjk=;
+        b=JIHfd9PpHn0KFxKAF16P+YnwNxm5fY6s3agugg59G7e4mUMMRKcePCxWap3FQ+OMoG
+         ujimRP6+IiBubSsVxkZHEuA5yZIIX4Rn9F/0H70aBrZ96rikHZ0wK8LciKOSvH+Z+UbR
+         meo8mmHWfbtp1cveb8DXjKS7uXSW6QnmcHR1FTkFalAZTj4yOGMpA3niY6fLMlU2Q42X
+         eTMBSxpfqp+gExRS9VgLvFwvBaocz+et0/i+jscPmH9LyWdqjaZS3kTPrKHNCcB+Zf5n
+         TVIm5AaWRX+B/HNLGIZWdXCL7xayfDiVuRpyXcjNYL00Nunl0fBHF7KNPB2RGjX6KgNO
+         Zu6Q==
+X-Gm-Message-State: AOAM5337VPTOEitG+0rZ/J52Xzb4hTIJY9kCI/3KwacwngNcC9ibw+hN
+        X+CbliF8CErfAKsFIdunJlyVrFsU5eC/eBrJdkHYrK1P0KWmjw==
+X-Google-Smtp-Source: ABdhPJzBM8rNpdV9N+LD9aHK7YZ164O+1qYFeFpmEu7o44T2ClFYtJvvmwPQBqB64Z5ABHWWS2Y3MDvr60m+vyqqybA=
+X-Received: by 2002:a17:906:c301:: with SMTP id s1mr29810214ejz.409.1637825408950;
+ Wed, 24 Nov 2021 23:30:08 -0800 (PST)
 MIME-Version: 1.0
-References: <20211125060547.11961-1-jasowang@redhat.com> <20211125015532-mutt-send-email-mst@kernel.org>
- <CACGkMEv+hehZazXRG9mavv=KZ76XfCrkeNqB8CPOnkwRF9cdHA@mail.gmail.com>
- <20211125021308-mutt-send-email-mst@kernel.org> <CACGkMEscBZw+PjX2fP5yN03SDVYc12tsQLXL=woAXdYWnC2q9w@mail.gmail.com>
- <20211125022442-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20211125022442-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Thu, 25 Nov 2021 15:28:31 +0800
-Message-ID: <CACGkMEuos9tVSvrwXxTmh1v5WDYy9mpCagr+mrubY3bSCTBS2A@mail.gmail.com>
-Subject: Re: [PATCH net] virtio-net: enable big mode correctly
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Eli Cohen <elic@nvidia.com>
+References: <20211125020155.6488-1-xiangxia.m.yue@gmail.com> <20211124181858.6c4668db@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211124181858.6c4668db@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Thu, 25 Nov 2021 15:29:33 +0800
+Message-ID: <CAMDZJNWWYhdCUvo1FJoAOJ-=43aK6PppNas6st4bGPXUbVuDAA@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/2] ifb: support ethtools driver info
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 25, 2021 at 3:26 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+On Thu, Nov 25, 2021 at 10:19 AM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> On Thu, Nov 25, 2021 at 03:20:07PM +0800, Jason Wang wrote:
-> > On Thu, Nov 25, 2021 at 3:15 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > >
-> > > On Thu, Nov 25, 2021 at 03:11:58PM +0800, Jason Wang wrote:
-> > > > On Thu, Nov 25, 2021 at 3:00 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > >
-> > > > > On Thu, Nov 25, 2021 at 02:05:47PM +0800, Jason Wang wrote:
-> > > > > > When VIRTIO_NET_F_MTU feature is not negotiated, we assume a very
-> > > > > > large max_mtu. In this case, using small packet mode is not correct
-> > > > > > since it may breaks the networking when MTU is grater than
-> > > > > > ETH_DATA_LEN.
-> > > > > >
-> > > > > > To have a quick fix, simply enable the big packet mode when
-> > > > > > VIRTIO_NET_F_MTU is not negotiated.
-> > > > >
-> > > > > This will slow down dpdk hosts which disable mergeable buffers
-> > > > > and send standard MTU sized packets.
-> > > > >
-> > > > > > We can do optimization on top.
-> > > > >
-> > > > > I don't think it works like this, increasing mtu
-> > > > > from guest >4k never worked,
-> > > >
-> > > > Looking at add_recvbuf_small() it's actually GOOD_PACKET_LEN if I was not wrong.
-> > >
-> > > OK, even more so then.
-> > >
-> > > > > we can't regress everyone's
-> > > > > performance with a promise to maybe sometime bring it back.
-> > > >
-> > > > So consider it never work before I wonder if we can assume a 1500 as
-> > > > max_mtu value instead of simply using MAX_MTU?
-> > > >
-> > > > Thanks
-> > >
-> > > You want to block guests from setting MTU to a value >GOOD_PACKET_LEN?
-> >
-> > Yes, or fix the issue to let large packets on RX work (e.g as the TODO
-> > said, size the buffer: for <=4K mtu continue to work as
-> > add_recvbuf_small(), for >= 4K switch to use big).
+> On Thu, 25 Nov 2021 10:01:54 +0800 xiangxia.m.yue@gmail.com wrote:
+> > +#define DRV_NAME     "ifb"
+> > +#define DRV_VERSION  "1.0"
 >
-> Right. The difficulty is with changing modes, current code isn't
-> designed for it.
-
-I think it might work if we reset the device during the mode change.
-
-Thanks
-
+> Let's not invent meaningless driver versions.
+Ok
+> > +#define TX_Q_LIMIT   32
+> > +
+> >  struct ifb_q_private {
+> >       struct net_device       *dev;
+> >       struct tasklet_struct   ifb_tasklet;
+> > @@ -181,6 +185,12 @@ static int ifb_dev_init(struct net_device *dev)
+> >       return 0;
+> >  }
+> >
+> > +static void ifb_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
+> > +{
+> > +     strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
 >
-> > > Maybe ... it will prevent sending large packets which did work ...
-> >
-> > Yes, but it's strange to allow TX but not RX
-> >
-> > > I'd tread carefully here, and I don't think this kind of thing is net
-> > > material.
-> >
-> > I agree consider it can't be fixed easily.
-> >
-> > Thanks
-> >
-> > >
-> > > > >
-> > > > > > Reported-by: Eli Cohen <elic@nvidia.com>
-> > > > > > Cc: Eli Cohen <elic@nvidia.com>
-> > > > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > > > > >
-> > > > > > ---
-> > > > > >  drivers/net/virtio_net.c | 7 ++++---
-> > > > > >  1 file changed, 4 insertions(+), 3 deletions(-)
-> > > > > >
-> > > > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > > > > index 7c43bfc1ce44..83ae3ef5eb11 100644
-> > > > > > --- a/drivers/net/virtio_net.c
-> > > > > > +++ b/drivers/net/virtio_net.c
-> > > > > > @@ -3200,11 +3200,12 @@ static int virtnet_probe(struct virtio_device *vdev)
-> > > > > >               dev->mtu = mtu;
-> > > > > >               dev->max_mtu = mtu;
-> > > > > >
-> > > > > > -             /* TODO: size buffers correctly in this case. */
-> > > > > > -             if (dev->mtu > ETH_DATA_LEN)
-> > > > > > -                     vi->big_packets = true;
-> > > > > >       }
-> > > > > >
-> > > > > > +     /* TODO: size buffers correctly in this case. */
-> > > > > > +     if (dev->max_mtu > ETH_DATA_LEN)
-> > > > > > +             vi->big_packets = true;
-> > > > > > +
-> > > > > >       if (vi->any_header_sg)
-> > > > > >               dev->needed_headroom = vi->hdr_len;
-> > > > > >
-> > > > > > --
-> > > > > > 2.25.1
-> > > > >
-> > >
+> Can we make core fill in driver name from rtnl_link_ops so we don't
+> need to do it in each driver?
+Good idea! v2 is sent out, please review.
+https://patchwork.kernel.org/project/netdevbpf/patch/20211125072544.32578-1-xiangxia.m.yue@gmail.com/
+> > +     strlcpy(info->version, DRV_VERSION, sizeof(info->version));
 >
+> Leave this field as is, core should fill it with the kernel release.
+Ok
+> > +}
 
+
+
+
+--
+Best regards, Tonghao
