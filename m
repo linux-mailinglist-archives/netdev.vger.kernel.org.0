@@ -2,141 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A0FE45D54C
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 08:17:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA49C45D551
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 08:18:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232395AbhKYHUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 02:20:23 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:35347 "EHLO
+        id S231869AbhKYHVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 02:21:09 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:25237 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1349230AbhKYHSW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 02:18:22 -0500
+        by vger.kernel.org with ESMTP id S1353405AbhKYHTB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 02:19:01 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637824511;
+        s=mimecast20190719; t=1637824550;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=DrdfoJuoyuNHgO43HGDwB7KWOWfQOVP7BNUczbuAPp8=;
-        b=Csn6QAYanCT42bmVAwdUJmnnmPcCqfb4/x+R8tiF+ct0GfPqtVLv0XtuDxoYxp8rUj21pU
-        poP3aW5oOuPnuuwye9Ozd9ng6z2IeeJQSx35kBfD2gCUf235rYuPzBsC1T0jr6nVdK9dfQ
-        qs2eRx6Wpl95dhyOJcLtQJpf8M98nlU=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=szt1FOtN/yKjgweBlM0Od5s5VcOUOXKDzr7rDCCMpLA=;
+        b=YB+GNjCQQpQmJSXOg1bgJ3x5Q6Y7s+GpDYgmkmMutbYFewepru8arW1KoPATeRz2IUOVox
+        MnTvxA/3trKNp979EQqKq/kHndAaH0jzBW8fvKIOf+bOQ1tB+ZR9FsYndN5OjaONUNmC8l
+        wt21phG/bPFoAgAUuh10dn8PVuwShkQ=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-310-lmxE98vjOm69MeGU60vicA-1; Thu, 25 Nov 2021 02:15:10 -0500
-X-MC-Unique: lmxE98vjOm69MeGU60vicA-1
-Received: by mail-ed1-f69.google.com with SMTP id l15-20020a056402124f00b003e57269ab87so4663070edw.6
-        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 23:15:09 -0800 (PST)
+ us-mta-602-E39HOidAP7qdEQv-0tRNDA-1; Thu, 25 Nov 2021 02:15:46 -0500
+X-MC-Unique: E39HOidAP7qdEQv-0tRNDA-1
+Received: by mail-lj1-f197.google.com with SMTP id p1-20020a2e7401000000b00218d0d11e91so1560797ljc.15
+        for <netdev@vger.kernel.org>; Wed, 24 Nov 2021 23:15:46 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DrdfoJuoyuNHgO43HGDwB7KWOWfQOVP7BNUczbuAPp8=;
-        b=fahx/uAjgitO0j41TBRqly+Vaikyb5YEUuN2EmAUCurPeZGD7ZK79YcqyOAeTQuD4k
-         pPUUQ+8jNiOZhqre/wk5w9cactqXiWsBYJBtxRA9OJCo76iNTWERA1Rx4eddeGI9nOT4
-         z5PzPiTgApaa64Sr0HwRzoKGZygRJBJ1xl4i1LZCH3H/vKpaFX18OkdZfGNDG3oNJCiH
-         PPIaTOoYCHvV1KmMRx66+bELxJ6MNr6tiV567d5ah/k7MWkYTHd0DCpDHOJj3oL5vMVv
-         0bwBj42q7BoEBytY2ja1plXaCinb0zzp5mHEEt5vY8w3PPc4D88Ow9LbpT9k85SfPSrO
-         qveg==
-X-Gm-Message-State: AOAM533FKwBmoGRFgZk4/bhuK9KI+KX5LxH84aY7aVeC1zblboymL0kx
-        KARAzjV2Bj2ORtZ3QfZzJQZN52Y0V59FmAPAR+WRNgZxC+74wzKC2y+6nbXLv36rWGGbVZzVqJN
-        5PSOUDKAk5aBfJbZH
-X-Received: by 2002:a05:6402:3496:: with SMTP id v22mr34843223edc.177.1637824508931;
-        Wed, 24 Nov 2021 23:15:08 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzT4Ux6nJrzHTTYycQkkUo3yCguo+1d6EF1/y5nPdIGUEaoov9qqpPkw+eeVpNdKNDvLUtBeA==
-X-Received: by 2002:a05:6402:3496:: with SMTP id v22mr34843190edc.177.1637824508772;
-        Wed, 24 Nov 2021 23:15:08 -0800 (PST)
-Received: from redhat.com ([45.15.18.67])
-        by smtp.gmail.com with ESMTPSA id m15sm1281606edl.22.2021.11.24.23.14.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Nov 2021 23:14:55 -0800 (PST)
-Date:   Thu, 25 Nov 2021 02:14:48 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Eli Cohen <elic@nvidia.com>
-Subject: Re: [PATCH net] virtio-net: enable big mode correctly
-Message-ID: <20211125021308-mutt-send-email-mst@kernel.org>
-References: <20211125060547.11961-1-jasowang@redhat.com>
- <20211125015532-mutt-send-email-mst@kernel.org>
- <CACGkMEv+hehZazXRG9mavv=KZ76XfCrkeNqB8CPOnkwRF9cdHA@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=szt1FOtN/yKjgweBlM0Od5s5VcOUOXKDzr7rDCCMpLA=;
+        b=Qw2dxvi1q32ZD3RcZKacXd4IENeLtHpHIGfmrIO99AbBXV30CJjOf3IJQL9ilKvD/+
+         CrivI76AxxGQxc14Pv+4FvThgPg5Y3UIOrn4gVFh+lWu8gRPvlgOznaIxwz6cu6LC+FW
+         LZrBXxoK4BwWjHRLLwu9uwSGgcgAmmpA3T96i9KngcCBnck8TFye/MIr7BqVD5f3d4PI
+         rZmWuM71R97/ToBHHNE20/T14KyBDuxlVsdpiSfyWDqANxk9sgvFMR7kJJ75JvzBU5ez
+         An+9fXXwJ4CnUEdNtTOmCy+pnc9NQWu9LGas2GCTkU9RQE7j1TpedRrZGrawQAa/oXLO
+         /VxQ==
+X-Gm-Message-State: AOAM530OgKeBcc/h9w+IBaRg5U/O79Gccc5Nlng74CAIW3P7nWelxwrc
+        kohSPxoY5OE2X9R9ynVYKiAz5tmjxcO6xdgfblLnPv+nRNqOZ2CqM0zrVo5LzFqR12VsWQJHFGv
+        Krp5N5xBhSZua/FS0hg8JmoWevMxxebW4
+X-Received: by 2002:a05:6512:3b2b:: with SMTP id f43mr22280536lfv.629.1637824544769;
+        Wed, 24 Nov 2021 23:15:44 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJydNnhWXm+uH7A9B5KzQZ/aiL2nu5QtNv1eSqbQCKNF0zM5qAS0rfIEcPJw8SEUOYhZe5llo1IdPIBthw2VxrE=
+X-Received: by 2002:a05:6512:3b2b:: with SMTP id f43mr22280511lfv.629.1637824544520;
+ Wed, 24 Nov 2021 23:15:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACGkMEv+hehZazXRG9mavv=KZ76XfCrkeNqB8CPOnkwRF9cdHA@mail.gmail.com>
+References: <20211125060547.11961-1-jasowang@redhat.com> <20211125070939.GC211101@mtl-vdi-166.wap.labs.mlnx>
+In-Reply-To: <20211125070939.GC211101@mtl-vdi-166.wap.labs.mlnx>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Thu, 25 Nov 2021 15:15:33 +0800
+Message-ID: <CACGkMEsNsQ_XWTvdjaCEdo8sYaLew24zU1UUCJrokM-Koxj4fw@mail.gmail.com>
+Subject: Re: [PATCH net] virtio-net: enable big mode correctly
+To:     Eli Cohen <elic@nvidia.com>
+Cc:     mst <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 25, 2021 at 03:11:58PM +0800, Jason Wang wrote:
-> On Thu, Nov 25, 2021 at 3:00 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+On Thu, Nov 25, 2021 at 3:09 PM Eli Cohen <elic@nvidia.com> wrote:
+>
+> On Thu, Nov 25, 2021 at 02:05:47PM +0800, Jason Wang wrote:
+> > When VIRTIO_NET_F_MTU feature is not negotiated, we assume a very
+> > large max_mtu. In this case, using small packet mode is not correct
+> > since it may breaks the networking when MTU is grater than
+> > ETH_DATA_LEN.
 > >
-> > On Thu, Nov 25, 2021 at 02:05:47PM +0800, Jason Wang wrote:
-> > > When VIRTIO_NET_F_MTU feature is not negotiated, we assume a very
-> > > large max_mtu. In this case, using small packet mode is not correct
-> > > since it may breaks the networking when MTU is grater than
-> > > ETH_DATA_LEN.
-> > >
-> > > To have a quick fix, simply enable the big packet mode when
-> > > VIRTIO_NET_F_MTU is not negotiated.
+> > To have a quick fix, simply enable the big packet mode when
+> > VIRTIO_NET_F_MTU is not negotiated. We can do optimization on top.
 > >
-> > This will slow down dpdk hosts which disable mergeable buffers
-> > and send standard MTU sized packets.
+> > Reported-by: Eli Cohen <elic@nvidia.com>
+> > Cc: Eli Cohen <elic@nvidia.com>
+> > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > ---
+> >  drivers/net/virtio_net.c | 7 ++++---
+> >  1 file changed, 4 insertions(+), 3 deletions(-)
 > >
-> > > We can do optimization on top.
+> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > index 7c43bfc1ce44..83ae3ef5eb11 100644
+> > --- a/drivers/net/virtio_net.c
+> > +++ b/drivers/net/virtio_net.c
+> > @@ -3200,11 +3200,12 @@ static int virtnet_probe(struct virtio_device *vdev)
+> >               dev->mtu = mtu;
+> >               dev->max_mtu = mtu;
 > >
-> > I don't think it works like this, increasing mtu
-> > from guest >4k never worked,
-> 
-> Looking at add_recvbuf_small() it's actually GOOD_PACKET_LEN if I was not wrong.
+> > -             /* TODO: size buffers correctly in this case. */
+> > -             if (dev->mtu > ETH_DATA_LEN)
+> > -                     vi->big_packets = true;
+> >       }
+> >
+> > +     /* TODO: size buffers correctly in this case. */
+> > +     if (dev->max_mtu > ETH_DATA_LEN)
+> > +             vi->big_packets = true;
+> > +
+>
+> If VIRTIO_NET_F_MTU is provided, then dev->max_mtu is going to equal
+> ETH_DATA_LEN (will be set in ether_setup()) so I don't think it will set
+> big_packets to true.
 
-OK, even more so then.
+I may miss something, the dev->max_mtu is just assigned to the mtu
+value read from the config space in the code block above  (inside the
+feature check of VIRTIO_NET_F_MTU).
 
-> > we can't regress everyone's
-> > performance with a promise to maybe sometime bring it back.
-> 
-> So consider it never work before I wonder if we can assume a 1500 as
-> max_mtu value instead of simply using MAX_MTU?
-> 
-> Thanks
+Thanks
 
-You want to block guests from setting MTU to a value >GOOD_PACKET_LEN?
-Maybe ... it will prevent sending large packets which did work ...
-I'd tread carefully here, and I don't think this kind of thing is net
-material.
-
+>
+>
+> >       if (vi->any_header_sg)
+> >               dev->needed_headroom = vi->hdr_len;
 > >
-> > > Reported-by: Eli Cohen <elic@nvidia.com>
-> > > Cc: Eli Cohen <elic@nvidia.com>
-> > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > >
-> > > ---
-> > >  drivers/net/virtio_net.c | 7 ++++---
-> > >  1 file changed, 4 insertions(+), 3 deletions(-)
-> > >
-> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > index 7c43bfc1ce44..83ae3ef5eb11 100644
-> > > --- a/drivers/net/virtio_net.c
-> > > +++ b/drivers/net/virtio_net.c
-> > > @@ -3200,11 +3200,12 @@ static int virtnet_probe(struct virtio_device *vdev)
-> > >               dev->mtu = mtu;
-> > >               dev->max_mtu = mtu;
-> > >
-> > > -             /* TODO: size buffers correctly in this case. */
-> > > -             if (dev->mtu > ETH_DATA_LEN)
-> > > -                     vi->big_packets = true;
-> > >       }
-> > >
-> > > +     /* TODO: size buffers correctly in this case. */
-> > > +     if (dev->max_mtu > ETH_DATA_LEN)
-> > > +             vi->big_packets = true;
-> > > +
-> > >       if (vi->any_header_sg)
-> > >               dev->needed_headroom = vi->hdr_len;
-> > >
-> > > --
-> > > 2.25.1
+> > --
+> > 2.25.1
 > >
+>
 
