@@ -2,145 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99D8445DFAF
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 18:27:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8752145DF8B
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 18:21:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347486AbhKYRah (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 12:30:37 -0500
-Received: from mga02.intel.com ([134.134.136.20]:37834 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242904AbhKYR2h (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Nov 2021 12:28:37 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10179"; a="222770518"
-X-IronPort-AV: E=Sophos;i="5.87,263,1631602800"; 
-   d="scan'208";a="222770518"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2021 09:17:21 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,263,1631602800"; 
-   d="scan'208";a="509828399"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga007.fm.intel.com with ESMTP; 25 Nov 2021 09:17:12 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1APHH9FD003210;
-        Thu, 25 Nov 2021 17:17:09 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shay Agroskin <shayagr@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        David Arinzon <darinzon@amazon.com>,
-        Noam Dagan <ndagan@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Andrei Vagin <avagin@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Cong Wang <cong.wang@bytedance.com>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH v2 net-next 07/26] mvneta: add .ndo_get_xdp_stats() callback
-Date:   Thu, 25 Nov 2021 18:16:49 +0100
-Message-Id: <20211125171649.127647-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <YZ4kWXnqZQhSu+mw@shell.armlinux.org.uk>
-References: <20211123163955.154512-1-alexandr.lobakin@intel.com> <20211123163955.154512-8-alexandr.lobakin@intel.com> <YZ4kWXnqZQhSu+mw@shell.armlinux.org.uk>
+        id S243132AbhKYRYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 12:24:39 -0500
+Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:63624 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345836AbhKYRX7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 12:23:59 -0500
+Received: from tomoyo.flets-east.jp ([114.149.34.46])
+        by smtp.orange.fr with ESMTPA
+        id qIQDm0ronE8xTqIQKm0kjf; Thu, 25 Nov 2021 18:20:45 +0100
+X-ME-Helo: tomoyo.flets-east.jp
+X-ME-Auth: MDU0YmViZGZmMDIzYiBlMiM2NTczNTRjNWZkZTMwOGRiOGQ4ODf3NWI1ZTMyMzdiODlhOQ==
+X-ME-Date: Thu, 25 Nov 2021 18:20:45 +0100
+X-ME-IP: 114.149.34.46
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
+Cc:     Oliver Hartkopp <socketcan@hartkopp.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v2 0/5] fix statistics and payload issues for error
+Date:   Fri, 26 Nov 2021 02:20:16 +0900
+Message-Id: <20211125172021.976384-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Russell King (Oracle) <linux@armlinux.org.uk>
-Date: Wed, 24 Nov 2021 11:39:05 +0000
+Important: this patch series depends on below patch:
+https://lore.kernel.org/linux-can/20211123111654.621610-1-mailhol.vincent@wanadoo.fr/T/#u
 
-> On Tue, Nov 23, 2021 at 05:39:36PM +0100, Alexander Lobakin wrote:
-> > +	for_each_possible_cpu(cpu) {
-> > +		const struct mvneta_pcpu_stats *stats;
-> > +		const struct mvneta_stats *ps;
-> > +		u64 xdp_xmit_err;
-> > +		u64 xdp_redirect;
-> > +		u64 xdp_tx_err;
-> > +		u64 xdp_pass;
-> > +		u64 xdp_drop;
-> > +		u64 xdp_xmit;
-> > +		u64 xdp_tx;
-> > +		u32 start;
-> > +
-> > +		stats = per_cpu_ptr(pp->stats, cpu);
-> > +		ps = &stats->es.ps;
-> > +
-> > +		do {
-> > +			start = u64_stats_fetch_begin_irq(&stats->syncp);
-> > +
-> > +			xdp_drop = ps->xdp_drop;
-> > +			xdp_pass = ps->xdp_pass;
-> > +			xdp_redirect = ps->xdp_redirect;
-> > +			xdp_tx = ps->xdp_tx;
-> > +			xdp_tx_err = ps->xdp_tx_err;
-> > +			xdp_xmit = ps->xdp_xmit;
-> > +			xdp_xmit_err = ps->xdp_xmit_err;
-> > +		} while (u64_stats_fetch_retry_irq(&stats->syncp, start));
-> > +
-> > +		xdp_stats->drop += xdp_drop;
-> > +		xdp_stats->pass += xdp_pass;
-> > +		xdp_stats->redirect += xdp_redirect;
-> > +		xdp_stats->tx += xdp_tx;
-> > +		xdp_stats->tx_errors += xdp_tx_err;
-> > +		xdp_stats->xmit_packets += xdp_xmit;
-> > +		xdp_stats->xmit_errors += xdp_xmit_err;
-> 
-> Same comment as for mvpp2 - this could share a lot of code from
-> mvneta_ethtool_update_pcpu_stats() (although it means we end up
-> calculating a little more for the alloc error and refill error
-> that this API doesn't need) but I think sharing that code would be
-> a good idea.
+There are some common errors which are made when updating the network
+statistics or processing the CAN payload:
 
-Ah, I didn't do that because in my first series I was removing
-Ethtool counters at all. In this one, I left them as-is due to
-some of folks hinted me that those counters (not specifically
-on mvpp2 or mvneta, let's say on virtio-net or so) could have
-already been used in some admin scripts somewhere in the world
-(but with a TODO to figure out which driver I could remove them
-in and do that).
-It would be great if you know and would hint me if I could remove
-those XDP-related Ethtool counters from Marvell drivers or not.
-If so, I'll wipe them, otherwise just factor out common parts to
-wipe out code duplication.
+  1. Incrementing the "normal" stats when generating or sending a CAN
+  error message frame. Error message frames are an abstraction of
+  Socket CAN and do not exist on the wire. The first patch of this
+  series fixes the RX stats for 22 different drivers, the second one
+  fixes the TX stasts for the kvaser driver (N.B. only this driver is
+  capable of sending error on the bus).
 
-> -- 
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+  2. Copying the payload of RTR frames: RTR frames have no payload and
+  the data buffer only contains garbage. The DLC/length should not be
+  used to do a memory copy. The third patch of this series address
+  this issue for 3 different drivers.
 
-Thanks,
-Al
+  3. Counting the length of the Remote Transmission Frames (RTR). The
+  length of an RTR frame is the length of the requested frame not the
+  actual payload. In reality the payload of an RTR frame is always 0
+  bytes long. The fourth patch of this series fixes the RX stats for
+  27 different drivers and the fifth one fixes the TX stats for 25
+  different ones.
+
+
+* Changelog *
+
+v1 -> v2:
+
+  * can_rx_offload_napi_poll: v1 used CAN_ERR_MASK instead of
+    CAN_ERR_FLAG. Fixed the issue.
+
+  * use correct vocabulary. The correct term to designate the Socket
+    CAN specific error skb is "error message frames" not "error
+    frames". "error frames" is used in the standard and has a
+    different meaning.
+
+  * better factorize code for the rx RTR frames. Most of the driver
+    already has a switch to check if the frame is a RTR. Moved the
+    instruction to increase net_device_stats:rx_bytes inside the else
+    branch of those switches whenever possible (for some drivers with
+    some complex logic, putting and additional RTR check was easier).
+
+  * add a patch which prevent drivers to copy the payload of RTR
+    frames.
+
+  * add a patch to cover the tx RTR frames (the fifth patch of
+    v2). The tx RTR frames issue was supposedly covered by the
+    can_get_echo_skb() function which returns the correct length for
+    drivers to increase their stats. However, the reality is that most
+    of the drivers do not check this value and instead use a local
+    copy of the length/dlc.
+
+Vincent Mailhol (5):
+  can: do not increase rx statistics when generating a CAN rx error
+    message frame
+  can: kvaser_usb: do not increase tx statistics when sending error
+    message frames
+  can: do not copy the payload of RTR frames
+  can: do not increase rx_bytes statistics for RTR frames
+  can: do not increase tx_bytes statistics for RTR frames
+
+ drivers/net/can/at91_can.c                    | 18 ++---
+ drivers/net/can/c_can/c_can.h                 |  1 -
+ drivers/net/can/c_can/c_can_main.c            | 16 +---
+ drivers/net/can/cc770/cc770.c                 | 16 ++--
+ drivers/net/can/dev/dev.c                     |  4 -
+ drivers/net/can/dev/rx-offload.c              |  7 +-
+ drivers/net/can/grcan.c                       |  6 +-
+ drivers/net/can/ifi_canfd/ifi_canfd.c         | 11 +--
+ drivers/net/can/janz-ican3.c                  |  6 +-
+ drivers/net/can/kvaser_pciefd.c               | 16 ++--
+ drivers/net/can/m_can/m_can.c                 | 13 +---
+ drivers/net/can/mscan/mscan.c                 | 14 ++--
+ drivers/net/can/pch_can.c                     | 33 ++++----
+ drivers/net/can/peak_canfd/peak_canfd.c       | 14 ++--
+ drivers/net/can/rcar/rcar_can.c               | 22 +++---
+ drivers/net/can/rcar/rcar_canfd.c             | 13 +---
+ drivers/net/can/sja1000/sja1000.c             | 11 +--
+ drivers/net/can/slcan.c                       |  7 +-
+ drivers/net/can/softing/softing_main.c        |  8 +-
+ drivers/net/can/spi/hi311x.c                  | 31 ++++----
+ drivers/net/can/spi/mcp251x.c                 | 31 ++++----
+ drivers/net/can/sun4i_can.c                   | 22 +++---
+ drivers/net/can/usb/ems_usb.c                 | 14 ++--
+ drivers/net/can/usb/esd_usb2.c                | 13 ++--
+ drivers/net/can/usb/etas_es58x/es58x_core.c   |  7 --
+ drivers/net/can/usb/gs_usb.c                  |  7 +-
+ drivers/net/can/usb/kvaser_usb/kvaser_usb.h   |  5 +-
+ .../net/can/usb/kvaser_usb/kvaser_usb_core.c  |  4 +-
+ .../net/can/usb/kvaser_usb/kvaser_usb_hydra.c | 78 +++++++++----------
+ .../net/can/usb/kvaser_usb/kvaser_usb_leaf.c  | 20 ++---
+ drivers/net/can/usb/mcba_usb.c                | 23 +++---
+ drivers/net/can/usb/peak_usb/pcan_usb.c       |  9 +--
+ drivers/net/can/usb/peak_usb/pcan_usb_core.c  | 20 +++--
+ drivers/net/can/usb/peak_usb/pcan_usb_core.h  |  1 -
+ drivers/net/can/usb/peak_usb/pcan_usb_fd.c    | 11 +--
+ drivers/net/can/usb/peak_usb/pcan_usb_pro.c   | 12 +--
+ drivers/net/can/usb/ucan.c                    | 17 ++--
+ drivers/net/can/usb/usb_8dev.c                | 17 ++--
+ drivers/net/can/vcan.c                        |  7 +-
+ drivers/net/can/vxcan.c                       |  2 +-
+ drivers/net/can/xilinx_can.c                  | 19 ++---
+ include/linux/can/skb.h                       |  5 +-
+ 42 files changed, 258 insertions(+), 353 deletions(-)
+
+
+base-commit: 4cc19cc269921210f3da65e4b038ad987835b342
+-- 
+2.32.0
+
