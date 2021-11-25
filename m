@@ -2,68 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC67C45D271
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 02:32:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E380745D273
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 02:32:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245036AbhKYBfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 20:35:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34586 "EHLO mail.kernel.org"
+        id S1346211AbhKYBfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 20:35:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34618 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346211AbhKYBdT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Nov 2021 20:33:19 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id D334B610F7;
-        Thu, 25 Nov 2021 01:30:08 +0000 (UTC)
+        id S1346768AbhKYBdU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Nov 2021 20:33:20 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id E49D5610E9;
+        Thu, 25 Nov 2021 01:30:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637803808;
-        bh=39A8wpadPnrKlioEnhKiZx69uVTBlmAKcuOyCdyroLg=;
+        s=k20201202; t=1637803809;
+        bh=jXKil1Gqi2sG9/iea9fWXH5XijpMGybqlBKr/TYTblc=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=FEOMP0vPzd3rggGTfsgb6r3W2AFJiWa0BH7tT0O/L69qQnWnt0ja/ev++mi+nvm68
-         jW7ayWIyaLVR4sLV8Io+vQ0cpNgfZqOClGftULo7O4QBnrzMci1JPMjhE6f4DUZiJ6
-         QWIlfnlsAycJs3L0eI+t3skRN3YKPJs/4p3q5plleEk8gwJSImW7Ta3i8C4NtgYuED
-         octPDGHQTNdfnCbZQIO05xeeqksL6XEdunJqrNv6mkGSyl+qI+FMNY26ISQbYo+BMm
-         2YclaLzk46r92V/KbG2o0MZESNOE+3Vqwt/+7qanck28UCGtpAVOLEDjHP50pxCHM4
-         jYnaGRR6zaYsA==
+        b=FQ+tgn6fTmc2xk15bOMyL/UNa2heZG8V9rKsGQz676HBymo9/UnChAs4mNW02Ynh4
+         DvB5IHyMCq2eCFksWARF9Z/sk6DnqxSnP/SY8EU2jcreylPU/cSlBByJfyXA/Sa2YR
+         0BiTPkCAkmcuGTxnt3RNwza1+kALpMY4277wwTIiF5Zlj1aHKyzqUAvrLVkgSaMwJ/
+         JqvfwySFDr1X54zPaY8XgIlc+CAMSb+yFEguefWq3UD9Jz4GeBndS5fGHBJ8hOhQc2
+         yw2GP6H7dWR+ZakLpCTk0gBHZ3glkg960aI+gUQdCSRDC2KhsO7aoxqMFKAg6g1zGv
+         0D7pAvsNJ4aug==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BE38160A0A;
-        Thu, 25 Nov 2021 01:30:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DDFDF609D5;
+        Thu, 25 Nov 2021 01:30:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] tcp_cubic: fix spurious Hystart ACK train detections for
- not-cwnd-limited flows
+Subject: Re: [PATCH net-next] net: bridge: Allow base 16 inputs in sysfs
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163780380877.5226.16376864840352024866.git-patchwork-notify@kernel.org>
-Date:   Thu, 25 Nov 2021 01:30:08 +0000
-References: <20211123202535.1843771-1-eric.dumazet@gmail.com>
-In-Reply-To: <20211123202535.1843771-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, ncardwell@google.com,
-        stephen@networkplumber.org, ycheng@google.com, soheil@google.com
+Message-Id: <163780380990.5226.6384863172926981067.git-patchwork-notify@kernel.org>
+Date:   Thu, 25 Nov 2021 01:30:09 +0000
+References: <20211124101122.3321496-1-idosch@idosch.org>
+In-Reply-To: <20211124101122.3321496-1-idosch@idosch.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        nikolay@nvidia.com, roopa@nvidia.com, bernard@vivo.com,
+        David.Laight@ACULAB.COM, mlxsw@nvidia.com, idosch@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue, 23 Nov 2021 12:25:35 -0800 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Wed, 24 Nov 2021 12:11:22 +0200 you wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
 > 
-> While testing BIG TCP patch series, I was expecting that TCP_RR workloads
-> with 80KB requests/answers would send one 80KB TSO packet,
-> then being received as a single GRO packet.
+> Cited commit converted simple_strtoul() to kstrtoul() as suggested by
+> the former's documentation. However, it also forced all the inputs to be
+> decimal resulting in user space breakage.
 > 
-> It turns out this was not happening, and the root cause was that
-> cubic Hystart ACK train was triggering after a few (2 or 3) rounds of RPC.
+> Fix by setting the base to '0' so that the base is automatically
+> detected.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] tcp_cubic: fix spurious Hystart ACK train detections for not-cwnd-limited flows
-    https://git.kernel.org/netdev/net/c/4e1fddc98d25
+  - [net-next] net: bridge: Allow base 16 inputs in sysfs
+    https://git.kernel.org/netdev/net-next/c/5a45ab3f248b
 
 You are awesome, thank you!
 -- 
