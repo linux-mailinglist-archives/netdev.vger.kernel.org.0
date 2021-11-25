@@ -2,106 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F379945DA22
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 13:35:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92B8C45DA31
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 13:37:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353084AbhKYMiv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 07:38:51 -0500
-Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:55596 "EHLO
-        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1345428AbhKYMgv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 07:36:51 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R701e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0UyGWqse_1637843617;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0UyGWqse_1637843617)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 25 Nov 2021 20:33:38 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     kgraul@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH net] net/smc: Clear memory when release and reuse buffer
-Date:   Thu, 25 Nov 2021 20:28:59 +0800
-Message-Id: <20211125122858.90726-1-tonylu@linux.alibaba.com>
-X-Mailer: git-send-email 2.34.0
+        id S1354877AbhKYMk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 07:40:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33236 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353292AbhKYMi5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 07:38:57 -0500
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0EB0C061574;
+        Thu, 25 Nov 2021 04:34:34 -0800 (PST)
+Received: by mail-pg1-x52d.google.com with SMTP id l190so5118046pge.7;
+        Thu, 25 Nov 2021 04:34:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0eAV0QCSYY59EfhYYGwBRd+u8b18m2Ztdaw86lrALGo=;
+        b=LbIS6sfQbR7fqoUkZOLPzKEM4vW/6AVOeUj6EtJCuvOGCkevZx04B0ZK5wHKeN5+EO
+         jNQ2xJsCyzfwE6iYGIeypC9+6edPYMpDvF1ty1u13S8lgV1HAmPRLWt62UTJyEMr2TPt
+         dRwMyHNQwkT6FiEADnEd3k2q13CS7l4MLg+17ZaoargK+4QB8DBvtBHR2j3th/INXGrC
+         zhuiWiRkFb6NgeaKCrHfleTOk4LEQuI1jFO4gdU5K3J38H3BM3xZVlQw2AuaDtL9dbjY
+         8bqWDCG0AkUDXu2UMsee5uKh1XwQuHZgFlXA5qgBofn7aNe4oHiglbVAzW5mqJSSxT69
+         Xq+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0eAV0QCSYY59EfhYYGwBRd+u8b18m2Ztdaw86lrALGo=;
+        b=WspoN9kmzOntqEPUsKkmQa5ImrytQYLVqR3FZIdhEcPCFfst6Ce1gLU+6IguZ9YT45
+         GqtuECXzNFCR0YtGYQ7lvEReelGZMzLFdVMsXG4aEHHeDwtST+AjPW+eSz4nJeQnjH3i
+         Xl2IEwqciPS43CMzThcmh0oza+Z/IYa68Wk70ycV3fHjYG20xlr8cy/WkmO/Ukkhm/7a
+         jgLkdxEQMfiMd42rsREpQcizL54GqvOX1Qf9TISj6lhUdqw7iC4pZXhKgU1h7vozbaYM
+         GunnPi6D5y7EtOCMmjKOsjotkXGrHgW0/PTjdmfTUe1FauIrPVkjyRppDhP4TD7Au3Nd
+         tNPQ==
+X-Gm-Message-State: AOAM530V9LqzRipSFxWssXCNs53txkLVALf6Uhjk4hJX0ezM3B6gvCXf
+        iwcuQI1BbAHoM4GZDhlRwTxs1ZISHH0=
+X-Google-Smtp-Source: ABdhPJwJjoRLjGJFIoyzqBMwPXueRu0hLtMHlkWRVw7D9yc9QIuLxqm8pMij0y6F3VMyns6g1SUmQQ==
+X-Received: by 2002:a05:6a00:8c6:b0:4a2:d762:8b42 with SMTP id s6-20020a056a0008c600b004a2d7628b42mr13732350pfu.28.1637843674170;
+        Thu, 25 Nov 2021 04:34:34 -0800 (PST)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id h13sm2373135pgg.16.2021.11.25.04.34.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Nov 2021 04:34:33 -0800 (PST)
+Date:   Thu, 25 Nov 2021 20:34:28 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Shuah Khan <shuah@kernel.org>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Netdev <netdev@vger.kernel.org>, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH wireguard] wireguard: selftests: refactor the test
+ structure
+Message-ID: <YZ+C1MWdWQvd66ic@Laptop-X1>
+References: <20211116081359.975655-1-liuhangbin@gmail.com>
+ <CAHmME9pNFe7grqhW7=YQgRq10g4K5bqVuJrq0HonEVNbQSRuYg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHmME9pNFe7grqhW7=YQgRq10g4K5bqVuJrq0HonEVNbQSRuYg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, buffers are clear when smc create connections and reuse
-buffer. It will slow down the speed of establishing new connection. In
-most cases, the applications hope to establish connections as quickly as
-possible.
+On Tue, Nov 16, 2021 at 03:35:40PM +0100, Jason A. Donenfeld wrote:
+> Hi Hangbin,
+> 
+> I don't know how interested in this I am. Splitting things into two
+> files means more confusing maintenance, and categorizing sections
+> strictly into functions means there's more overhead when adding tests
+> (e.g. "where do they fit?"), because the categories you've chosen are
+> fairly broad, rather than being functions for each specific test. I'd
+> be more amenable to something _entirely_ granular, because that'd be
+> consistent, or what we have now, which is just linear. Full
+> granularity, though, has its own downsides, of increased clutter.
+> Alternatively, if you'd like to add some comments around the different
+> areas to better document what's happening, perhaps that'd accomplish
+> the same thing as this patch.
+> 
 
-This patch moves memset() from connection creation path to release and
-buffer unuse path, this trades off between speed of establishing and
-release.
+Hi Jason,
 
-Test environments:
-- CPU Intel Xeon Platinum 8 core, mem 32 GiB, nic Mellanox CX4
-- socket sndbuf / rcvbuf: 16384 / 131072 bytes
-- w/o first round, 5 rounds, avg, 100 conns batch per round
-- smc_buf_create() use bpftrace kprobe, introduces extra latency
+May be my timezone is not very fit for yours. So I will copy my IRC replies
+in the mail to moving on our kselftest topic.
 
-Latency benchmarks for smc_buf_create():
-  w/o patch : 19040.0 ns
-  w/  patch :  1932.6 ns
-  ratio :        10.2% (-89.8%)
+The reason I did this patch is because I want to make the test more clear
+and able to run each test case separately. My though is to make the
+wireguard test looks like tools/testing/selftests/net/fib_tests.sh.(Of course
+this could be discussed).
 
-Latency benchmarks for socket create and connect:
-  w/o patch :   143.3 us
-  w/  patch :   102.2 us
-  ratio :        71.3% (-28.7%)
+Because the linear structure makes reader hard to find out what test it does.
+The function name in my current patch is also a little broad to look, which
+could to be updated. After updating, I'd like to make the test has 2 parts,
+functional tests and regression test. Functional tests for big part of function
+tests and regression test for small specific issues.
 
-The latency of establishing connections is reduced by 28.7%.
+BTW, one downside about current linear structure I think is that when someone
+want to add a new test, he need to read through the whole test to know that
+kind of topology at last. But with function structure, when we want to add a
+new test. We can just do like:
+1. set up basic topology
+2. configure to specific topo for testing, or just skip the first step and
+   configure to specific topo directly.
+3. Do test
+4. Clean up environment or reset to basic topology
 
-Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
-Reviewed-by: Wen Gu <guwen@linux.alibaba.com>
----
- net/smc/smc_core.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+I think this would make adding new test case easier. What do you think?
 
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index bb52c8b5f148..5f0bd547907d 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -1102,18 +1102,24 @@ static void smcr_buf_unuse(struct smc_buf_desc *rmb_desc,
- 		smc_buf_free(lgr, true, rmb_desc);
- 	} else {
- 		rmb_desc->used = 0;
-+		memset(rmb_desc->cpu_addr, 0, rmb_desc->len);
- 	}
- }
- 
- static void smc_buf_unuse(struct smc_connection *conn,
- 			  struct smc_link_group *lgr)
- {
--	if (conn->sndbuf_desc)
-+	if (conn->sndbuf_desc) {
- 		conn->sndbuf_desc->used = 0;
--	if (conn->rmb_desc && lgr->is_smcd)
-+		memset(conn->sndbuf_desc->cpu_addr, 0, conn->sndbuf_desc->len);
-+	}
-+	if (conn->rmb_desc && lgr->is_smcd) {
- 		conn->rmb_desc->used = 0;
--	else if (conn->rmb_desc)
-+		memset(conn->rmb_desc->cpu_addr, 0, conn->rmb_desc->len +
-+		       sizeof(struct smcd_cdc_msg));
-+	} else if (conn->rmb_desc) {
- 		smcr_buf_unuse(conn->rmb_desc, lgr);
-+	}
- }
- 
- /* remove a finished connection from its link group */
-@@ -2149,7 +2155,6 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
- 		if (buf_desc) {
- 			SMC_STAT_RMB_SIZE(smc, is_smcd, is_rmb, bufsize);
- 			SMC_STAT_BUF_REUSE(smc, is_smcd, is_rmb);
--			memset(buf_desc->cpu_addr, 0, bufsize);
- 			break; /* found reusable slot */
- 		}
- 
--- 
-2.32.0.3.g01195cf9f
-
+Thanks
+Hangbin
