@@ -2,179 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EA2245D605
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 09:15:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AE6545D61D
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 09:25:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347256AbhKYIS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 03:18:57 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:41135 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229894AbhKYIQ5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 03:16:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637828026;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WZ+thzQkg6Cdn1OMX5Cx+TOEBd23whOs+wYTt44V+WM=;
-        b=FPIQ7XD266GlnkYFlLmvcULEGTIFs9mcjGtYH9EL1JtStqh21afjjLdNy48oBoMCPolN1E
-        ronBxTKBDbZeYdl0KgBdT1AytaZ4DgCM3YMpcoLu6+TORWjXnfCXJn6g9a2voJZMiQj7oz
-        kmkQ7pkyQeeVstRCY/7WHrqPwEDGDsw=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-285-DQtZ4oYwMOuPnh33jsc8WQ-1; Thu, 25 Nov 2021 03:13:44 -0500
-X-MC-Unique: DQtZ4oYwMOuPnh33jsc8WQ-1
-Received: by mail-ed1-f72.google.com with SMTP id y9-20020aa7c249000000b003e7bf7a1579so4786357edo.5
-        for <netdev@vger.kernel.org>; Thu, 25 Nov 2021 00:13:44 -0800 (PST)
+        id S1352941AbhKYI2c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 03:28:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34810 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237430AbhKYI03 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 03:26:29 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38DDBC061748
+        for <netdev@vger.kernel.org>; Thu, 25 Nov 2021 00:23:18 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id r8so9774226wra.7
+        for <netdev@vger.kernel.org>; Thu, 25 Nov 2021 00:23:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=n6+8gB3EOqEKwhhKrLGqW+T8RKrwMDwlPKdzvWKFsyw=;
+        b=h09L8eYHrDHX/TDjymXBSdPtkLOISN3ZO5YwaAI5a4l+WQ+8KmYWGXteSdQWuAWN7Q
+         OrrvqXftM/Zh5cyxeci3ycTtiz+ofjmb91bCy5wmzh8g9LkzwmgSPOgU/S2FGf81zbno
+         ODF4F5+L6JFvMlTQFSDwTcAO1qBWocvCAbX+eCTeAQVuhSNMMToF8TTiG2ngB6ZgB0Q6
+         F441Fp3duVs+q8tjO3/Ow3uhY2t2TtrcF471+l30xR/Xptqd6TCDzwSBKvAOn1hWSbvq
+         jbIG6x4HeI3PxRt/3sM5LVAdr/DQJcl9LRBvbTUmS7hzJGhwEAO5p4YXsACsxuE2aQqi
+         Entg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WZ+thzQkg6Cdn1OMX5Cx+TOEBd23whOs+wYTt44V+WM=;
-        b=rOOY255eqA0faDV4as+rf7Rwzrw72ea71Ywdu+XBdtEZYE9MMQkhhb61/Y3pGjXYIb
-         Dfy2uRpPNwCMRzoyScP+5bfyIM5bauOnkSWjsfwmi8X608nJTpyKL5CcvoaNZbXu+Cdq
-         qytitmVmlsYrU9f1+q5aS0kc/lvmQgWBM8fZS1N9VDwonkf/ze6OxOaghOb2p5YE2lyQ
-         tb7dsXYd8HhJln16iKO6HtHf+xLs3sWeZULzbI/MnvLItew8hs9VQKRsaakGU0Ewq89b
-         ghRNQSORQhZTZq+urTf9pB+ZuN2/d2bfmpFeCYUvbw7j5Gu+AynNVM/9qrdOcYO/8AMx
-         a/Rw==
-X-Gm-Message-State: AOAM5316eqaY4V6gx1RpCQSIAtUY9H7zDFy3HHrmHuOetmUgqag6RO03
-        6WyATEXbgydvor7uFQuVW/hoPB+t3Wf2wg2iA4IWfK9wcYuTtVPHlj5oHBXrAfSkDADuYrwK4mX
-        1vhqEaoJLJZ7ZJCD+
-X-Received: by 2002:a17:906:168e:: with SMTP id s14mr28081283ejd.340.1637828022810;
-        Thu, 25 Nov 2021 00:13:42 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwYOQD+i+ueXJv8wQ2hIv3rDAUa4Ml4YdNJcnxE4uaDuCfWulSeHACHF8gzhftP0CtxspQTmg==
-X-Received: by 2002:a17:906:168e:: with SMTP id s14mr28081261ejd.340.1637828022601;
-        Thu, 25 Nov 2021 00:13:42 -0800 (PST)
-Received: from redhat.com ([45.15.18.67])
-        by smtp.gmail.com with ESMTPSA id d18sm1372141edj.23.2021.11.25.00.13.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Nov 2021 00:13:41 -0800 (PST)
-Date:   Thu, 25 Nov 2021 03:13:35 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Eli Cohen <elic@nvidia.com>
-Subject: Re: [PATCH net] virtio-net: enable big mode correctly
-Message-ID: <20211125031107-mutt-send-email-mst@kernel.org>
-References: <20211125060547.11961-1-jasowang@redhat.com>
- <20211125015532-mutt-send-email-mst@kernel.org>
- <CACGkMEv+hehZazXRG9mavv=KZ76XfCrkeNqB8CPOnkwRF9cdHA@mail.gmail.com>
- <20211125021308-mutt-send-email-mst@kernel.org>
- <CACGkMEscBZw+PjX2fP5yN03SDVYc12tsQLXL=woAXdYWnC2q9w@mail.gmail.com>
- <20211125022442-mutt-send-email-mst@kernel.org>
- <CACGkMEuos9tVSvrwXxTmh1v5WDYy9mpCagr+mrubY3bSCTBS2A@mail.gmail.com>
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=n6+8gB3EOqEKwhhKrLGqW+T8RKrwMDwlPKdzvWKFsyw=;
+        b=ZawMvGIC5d5my7h4p5g5K5OliAr66U3aF+tUdRydMjlyd1kP/DjbILZJbAUKHDLfPe
+         5H+74Z03/T+i9B/U8fmQESRC6Xg+4F2VQK/gX4S/7VAzlLieyA80ryf9SM4FYpxOrKOn
+         mCR5eQO2laHkOpt3x36LOE39JFOcfXtn5NgGFGJEWyvtwrlhRWI8Kxb49K0bSXm7eplc
+         CGBi6aYcKeOKoH2SiBFAi50id8v7BzgF8T3ZxfzCAmxBFE1tsI/nBoTGrlvzSkoyEY7C
+         KHouRMEtgkS03ozF6UcZoN/8C2hXznk+O/nC4wMk09Dst03S02ljPIPpyxQ5j5KfOHpW
+         9Iww==
+X-Gm-Message-State: AOAM532mrd+sFfjOL/exUs40oSyR9qn7dwxvaaTuXcmf05GCFHvd502V
+        A1va18kok7cFuJYS4pdj9VQIwVlD5NJpsA==
+X-Google-Smtp-Source: ABdhPJwUbGdoVVm4AlCw/c17brEy3dpQsAH5DqoxMJwBLXHz7dT1VJYn8woelneSPw5HcnsFs9FIzw==
+X-Received: by 2002:adf:fb0c:: with SMTP id c12mr4805484wrr.614.1637828596711;
+        Thu, 25 Nov 2021 00:23:16 -0800 (PST)
+Received: from ?IPv6:2a01:e0a:b41:c160:ad98:650:185f:cd0c? ([2a01:e0a:b41:c160:ad98:650:185f:cd0c])
+        by smtp.gmail.com with ESMTPSA id f15sm2780344wmg.30.2021.11.25.00.23.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Nov 2021 00:23:16 -0800 (PST)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH ipsec] xfrm: fix dflt policy check when there is no policy
+ configured
+To:     antony.antony@secunet.com
+Cc:     steffen.klassert@secunet.com, davem@davemloft.net,
+        herbert@gondor.apana.org.au, kuba@kernel.org,
+        netdev@vger.kernel.org, stable@vger.kernel.org
+References: <20211122103313.1331-1-nicolas.dichtel@6wind.com>
+ <YZ8z8KPXZyiPLahh@moon.secunet.de>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <5a22e114-f12e-38df-daf2-8ea39dc1f60d@6wind.com>
+Date:   Thu, 25 Nov 2021 09:23:15 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACGkMEuos9tVSvrwXxTmh1v5WDYy9mpCagr+mrubY3bSCTBS2A@mail.gmail.com>
+In-Reply-To: <YZ8z8KPXZyiPLahh@moon.secunet.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 25, 2021 at 03:28:31PM +0800, Jason Wang wrote:
-> On Thu, Nov 25, 2021 at 3:26 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Thu, Nov 25, 2021 at 03:20:07PM +0800, Jason Wang wrote:
-> > > On Thu, Nov 25, 2021 at 3:15 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > >
-> > > > On Thu, Nov 25, 2021 at 03:11:58PM +0800, Jason Wang wrote:
-> > > > > On Thu, Nov 25, 2021 at 3:00 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > > >
-> > > > > > On Thu, Nov 25, 2021 at 02:05:47PM +0800, Jason Wang wrote:
-> > > > > > > When VIRTIO_NET_F_MTU feature is not negotiated, we assume a very
-> > > > > > > large max_mtu. In this case, using small packet mode is not correct
-> > > > > > > since it may breaks the networking when MTU is grater than
-> > > > > > > ETH_DATA_LEN.
-> > > > > > >
-> > > > > > > To have a quick fix, simply enable the big packet mode when
-> > > > > > > VIRTIO_NET_F_MTU is not negotiated.
-> > > > > >
-> > > > > > This will slow down dpdk hosts which disable mergeable buffers
-> > > > > > and send standard MTU sized packets.
-> > > > > >
-> > > > > > > We can do optimization on top.
-> > > > > >
-> > > > > > I don't think it works like this, increasing mtu
-> > > > > > from guest >4k never worked,
-> > > > >
-> > > > > Looking at add_recvbuf_small() it's actually GOOD_PACKET_LEN if I was not wrong.
-> > > >
-> > > > OK, even more so then.
-> > > >
-> > > > > > we can't regress everyone's
-> > > > > > performance with a promise to maybe sometime bring it back.
-> > > > >
-> > > > > So consider it never work before I wonder if we can assume a 1500 as
-> > > > > max_mtu value instead of simply using MAX_MTU?
-> > > > >
-> > > > > Thanks
-> > > >
-> > > > You want to block guests from setting MTU to a value >GOOD_PACKET_LEN?
-> > >
-> > > Yes, or fix the issue to let large packets on RX work (e.g as the TODO
-> > > said, size the buffer: for <=4K mtu continue to work as
-> > > add_recvbuf_small(), for >= 4K switch to use big).
-> >
-> > Right. The difficulty is with changing modes, current code isn't
-> > designed for it.
+Le 25/11/2021 à 07:57, Antony Antony a écrit :
+> Hi Nicolas,
+Hi Antony,
+
 > 
-> I think it might work if we reset the device during the mode change.
+> On Mon, Nov 22, 2021 at 11:33:13 +0100, Nicolas Dichtel wrote:
+>> When there is no policy configured on the system, the default policy is
+>> checked in xfrm_route_forward. However, it was done with the wrong
+>> direction (XFRM_POLICY_FWD instead of XFRM_POLICY_OUT).
 > 
-> Thanks
+> How can I reproduce this? 
+> I tried adding fwd block and no policy and that blocked the forwarded traffic.
+> I ran into another issue with fwd block and and tunnel. I will double check. Next week.
+> 
+With the out default policy set to 'block' and no out policy configured, the
+packets are forwarded. After my patch, packets are blocked:
 
-For sure. It's hard to do without races though, and we need to
-carefully restore all the programming done so far.
-Maybe it will be easier if we do something like disable_irq
-to reliably suppress interrupts from hardware.
+$ ip xfrm policy getdefault
+Default policies:
+ in:  accept
+ fwd: accept
+ out: block
+$ ip xfrm policy
+$
 
-> >
-> > > > Maybe ... it will prevent sending large packets which did work ...
-> > >
-> > > Yes, but it's strange to allow TX but not RX
-> > >
-> > > > I'd tread carefully here, and I don't think this kind of thing is net
-> > > > material.
-> > >
-> > > I agree consider it can't be fixed easily.
-> > >
-> > > Thanks
-> > >
-> > > >
-> > > > > >
-> > > > > > > Reported-by: Eli Cohen <elic@nvidia.com>
-> > > > > > > Cc: Eli Cohen <elic@nvidia.com>
-> > > > > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > > > > > >
-> > > > > > > ---
-> > > > > > >  drivers/net/virtio_net.c | 7 ++++---
-> > > > > > >  1 file changed, 4 insertions(+), 3 deletions(-)
-> > > > > > >
-> > > > > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > > > > > index 7c43bfc1ce44..83ae3ef5eb11 100644
-> > > > > > > --- a/drivers/net/virtio_net.c
-> > > > > > > +++ b/drivers/net/virtio_net.c
-> > > > > > > @@ -3200,11 +3200,12 @@ static int virtnet_probe(struct virtio_device *vdev)
-> > > > > > >               dev->mtu = mtu;
-> > > > > > >               dev->max_mtu = mtu;
-> > > > > > >
-> > > > > > > -             /* TODO: size buffers correctly in this case. */
-> > > > > > > -             if (dev->mtu > ETH_DATA_LEN)
-> > > > > > > -                     vi->big_packets = true;
-> > > > > > >       }
-> > > > > > >
-> > > > > > > +     /* TODO: size buffers correctly in this case. */
-> > > > > > > +     if (dev->max_mtu > ETH_DATA_LEN)
-> > > > > > > +             vi->big_packets = true;
-> > > > > > > +
-> > > > > > >       if (vi->any_header_sg)
-> > > > > > >               dev->needed_headroom = vi->hdr_len;
-> > > > > > >
-> > > > > > > --
-> > > > > > > 2.25.1
-> > > > > >
-> > > >
-> >
 
+Regards,
+Nicolas
