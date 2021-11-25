@@ -2,76 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A159D45DBCF
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 15:00:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3BA645DBD8
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 15:03:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232801AbhKYOEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 09:04:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52974 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239090AbhKYOCD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 09:02:03 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB367C0613F1
-        for <netdev@vger.kernel.org>; Thu, 25 Nov 2021 05:57:17 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id f186so12040253ybg.2
-        for <netdev@vger.kernel.org>; Thu, 25 Nov 2021 05:57:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=9o0eoY5w65VXaJGrYE3/xQ0G62A3fzENbFIAxG2Q/q0=;
-        b=RiK1zDjIKZbVEz2WWctMgyuhkFUjsb9G65L9/PhTSXn3myU1Ic8Ldyg6PXCeZouJ0y
-         dBNFUdM5c0hNwHVW2gr3Uu1v/W2JnTHL1CIkugxOoMwCKrQxHNFIwvooWS6hmRpqGYCq
-         Wx7TG+OdBrBX9iRv/KTWZsCOqzo/27YvNmr11b98+2Wxcys/MMGlxMT9DXEmPgd7skwJ
-         e98T2Xn5g7iy+QK7UqLWArUWSPQH2Dj+XzAQrEmc/xLh3cb2DOSCXYnGtY2C/K9xSQLI
-         Kh4jYu1qb7uIP2N1PVrnn0XlCW8nLD1UFQ9yaVNczK/3DAcaTmWycKicSm5l1XYNTJc8
-         OFQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=9o0eoY5w65VXaJGrYE3/xQ0G62A3fzENbFIAxG2Q/q0=;
-        b=OCXLkx8li2lr9AjmFPti7my4bS1tpSTmjqf/40sa1m8YL9izpM296rkfFyXOygbKdp
-         KEORSssVc/hsbXJCWF3GqzhnSTXlGceNG1VQrpxLfRkMqRWwLg1wtvmEk8VTo3C0za2N
-         zbvRKstXlGmJ4psGDwqPZJgcMSeSbR4VQbGuGTsHyiqcSTP6+wE9r7Or/Qp4jxn+XeLp
-         /iUDIYCDou1NX+6PWGf5/Jxxb8lx78lYoKyJ2viCzRVq+0Jzg0m8GGsdsQH8X8d3PeIB
-         d8TYjEVgWsncHLhtLUbv+MJs+aTQCZC7eQwoHyD1KHl9QRHLHIIdbquGDIzVvo2xW2rF
-         oFjw==
-X-Gm-Message-State: AOAM532BGaSLFj4HA7UsEQdmwKmk2fd3U6EyHPXUrN5zNaGAaqOKMImd
-        7FayLkC7ZtztF69WSPloTSbNlU/dIigQCMte4WA=
-X-Google-Smtp-Source: ABdhPJx7BDA7gOTA21+rl+9RacujXOGCDmuJx7ltuZf+Df+BhWFiX7/ogcxugWklTB4fIuvdiH1psWXU5LN/JaDQA1c=
-X-Received: by 2002:a25:bdc5:: with SMTP id g5mr6574780ybk.403.1637848637062;
- Thu, 25 Nov 2021 05:57:17 -0800 (PST)
+        id S232053AbhKYOG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 09:06:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36558 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232240AbhKYOE3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Nov 2021 09:04:29 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3130D6108F;
+        Thu, 25 Nov 2021 14:01:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637848877;
+        bh=OW8SXgLeaFycymHewB1JWt75n32rZJK31X0fmu6z5Ys=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=EEpjapNxyk9ig82xMriYB3IysGHM6ibS7TD0YKfuG0vydo2BKY9Kl2zgeK0gSoZvk
+         4iwvQ2R3u+gtdUSi1wd/aZS+nCjr71sPzLX0KStwQ1usqLt81irRuMGgPsLUlrD0aJ
+         sKSJyupd6obwbBE2AQ4OxGQ2DUdRbRTV/ShNWDgjZXgXTakVROvK5zgmqkbw96F43g
+         hbQcLorlLgsfdPQg9D0V0aqc6ztOqRXatHdtytglI3OxqldrqQPHqZyuNQVHCyDViR
+         H9blW643oFj6GXlUnRJohniC0sgR5Un1DKmBIURy6RxAGEQ9pHEa3DkVLNywP6ygAZ
+         4y4N10WXWqN1A==
+Date:   Thu, 25 Nov 2021 16:01:11 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     xiangxia.m.yue@gmail.com
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Hao Chen <chenhao288@hisilicon.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Danielle Ratson <danieller@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [net-next v2] net: ethtool: set a default driver name
+Message-ID: <YZ+XJ0Z54qxcO4KO@unreal>
+References: <20211125072544.32578-1-xiangxia.m.yue@gmail.com>
 MIME-Version: 1.0
-Received: by 2002:a05:7110:900a:b0:103:889d:a596 with HTTP; Thu, 25 Nov 2021
- 05:57:16 -0800 (PST)
-From:   "Mrs.Samira Nikaein" <mrs.samiranikaein@gmail.com>
-Date:   Thu, 25 Nov 2021 14:57:16 +0100
-Message-ID: <CA+X4GLybK6crv3D1wNFZ9Q8f0VOuOMdCudwAThf7PT4=XMJcfA@mail.gmail.com>
-Subject: Hola buen dia querido amigo,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211125072544.32578-1-xiangxia.m.yue@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hola buen dia querido amigo,
-  Espero que se encuentre en buen estado de salud, s=C3=A9 que esta carta
-le llegar=C3=A1 tan de repente, por favor, no importa.
-Soy la se=C3=B1ora Samira Nikaein, una viuda que sufre de una enfermedad
-prolongada, le escrib=C3=AD hace mucho tiempo y me complace informarle
-sobre mi =C3=A9xito en la transferencia de esos fondos con la cooperaci=C3=
-=B3n
-de un nuevo socio de la India.
+On Thu, Nov 25, 2021 at 03:25:44PM +0800, xiangxia.m.yue@gmail.com wrote:
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> 
+> The netdev (e.g. ifb, bareudp), which not support ethtool ops
+> (e.g. .get_drvinfo), we can use the rtnl kind as a default name.
+> 
+> ifb netdev may be created by others prefix, not ifbX.
+> 
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Leon Romanovsky <leon@kernel.org>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: Hao Chen <chenhao288@hisilicon.com>
+> Cc: Heiner Kallweit <hkallweit1@gmail.com>
+> Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
+> Cc: Danielle Ratson <danieller@nvidia.com>
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> ---
+> v1: https://lore.kernel.org/all/20211124181858.6c4668db@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/ 
+> ---
+>  net/ethtool/ioctl.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
 
-Tenga en cuenta que deposit=C3=A9 una tarjeta de caridad de $ 750,000 para
-su Compersaction que guard=C3=A9 en la oficina de una iglesia como donaci=
-=C3=B3n
-para ayudar a los ni=C3=B1os hu=C3=A9rfanos en su pa=C3=ADs.
-  Y puede contactar al Reverendo Pastor Amos Deya
-Correo electr=C3=B3nico: rev.pastoramos.deya@outlook.fr para confirmar y
-pedirle al pastor Amos Deya que env=C3=ADe un fondo de tarjeta prepago a su
-direcci=C3=B3n.
-Espero sinceramente su respuesta, se=C3=B1ora Samira Nikaein.
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
