@@ -2,40 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D00445DCEF
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 16:09:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93FD745DD19
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 16:15:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236559AbhKYPMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 10:12:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52714 "EHLO mail.kernel.org"
+        id S1355687AbhKYPS3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 10:18:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53460 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237127AbhKYPLY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Nov 2021 10:11:24 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ECFC560462;
-        Thu, 25 Nov 2021 15:08:12 +0000 (UTC)
+        id S1355994AbhKYPQ3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Nov 2021 10:16:29 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 88BA760462;
+        Thu, 25 Nov 2021 15:13:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637852893;
-        bh=vsPAmw0CLfpTTLQZb0v80AqWZdpKrLQESsME3KfzgKg=;
+        s=k20201202; t=1637853197;
+        bh=Ouc9oBwXTUyyhfC4NywCB7OvF8HAkgyNnU+xh5PIjeA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SVcWSE8MRCPIfWXdc9z617CF8W5QqoBs0wh6QdivoMJbZuYVOdQlSvHBPANHXQVXP
-         skpFHRPezDw2twBoUr4pY7sTGFNTynd4hLlcOClBl6a8P229zSHKflsY0f632yVq6O
-         MPnlGK4mjMXIbMr/rxaCL6rPm9MA369dKO9GB92bh8+G0Dbn6erQb86LRQeD6XQ6mh
-         xbdWDf5IAJRoNT7IjGlf22n7/P/fuyw5gaQL/H0OmGxtvTR9Q1yirKi6J2roDK7uA8
-         NAf4ZCaGjy8indjGpKQFDC1Q6AwKpZQYwCJNbRA+pxAMqkmvKhJq6500V1EiTzd9qp
-         NNE73hQKCSWuA==
-Date:   Thu, 25 Nov 2021 07:08:12 -0800
+        b=jh98czJ2C3/lP94m4l5RqVaGcdPAv4YnTJ0o+wauUJM/e4nRIynlaYsRXL19tv40z
+         81m19lTm3yfBUEVD0Vsc89EVswtXtZP6ilCSZWKKaItfHWtp9dtsYBF25+AzKtWpRo
+         PXG9yoKc/jTjm/gI7UAAcksjoug2xe1ZI32d6gYb6EqgiyLLnzqBqzP2y1//lpMOlP
+         gTwgyuupSmjralidLWHnQxZU1X7SUWmn8sQbmLDD582BBjZGc4x4Gx79c4XylgxVzI
+         wr/IQvdsvJQpErqiTzOD/3FNgiZj1JGEKFlGvnlGUgP8pnhKIksaHRTd4Aso0l/1WI
+         l7YsOEWu5Sb6Q==
+Date:   Thu, 25 Nov 2021 07:13:16 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Radha Mohan <mohun106@gmail.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        sgoutham@marvell.com
-Subject: Re: [PATCH] octeontx2-nicvf: Add netdev interface support for SDP
- VF devices
-Message-ID: <20211125070812.1432d2ad@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAC8NTUUdZSuNtjczBvEZPaAbzaP4rWyR9fDOWC9mdMHEqiEVNw@mail.gmail.com>
-References: <20211125021822.6236-1-radhac@marvell.com>
-        <CAC8NTUX1-p24ZBGvwa7YcYQ_G+A_kn3f_GeTofKhO7ELB2bn8g@mail.gmail.com>
-        <20211124192710.438657ca@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAC8NTUUdZSuNtjczBvEZPaAbzaP4rWyR9fDOWC9mdMHEqiEVNw@mail.gmail.com>
+To:     Stefan Assmann <sassmann@redhat.com>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
+        netdev@vger.kernel.org,
+        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>
+Subject: Re: [PATCH net-next 06/12] iavf: Add trace while removing device
+Message-ID: <20211125071316.69c3319a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211125065049.hwubag5eherksrle@x230>
+References: <20211124171652.831184-1-anthony.l.nguyen@intel.com>
+        <20211124171652.831184-7-anthony.l.nguyen@intel.com>
+        <20211124154811.6d9c48cb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20211125065049.hwubag5eherksrle@x230>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -43,20 +45,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 24 Nov 2021 22:00:49 -0800 Radha Mohan wrote:
-> On Wed, Nov 24, 2021 at 7:27 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > On Wed, 24 Nov 2021 18:21:04 -0800 Radha Mohan wrote:  
-> > > This patch adds netdev interface for SDP VFs. This interface can be used
-> > > to communicate with a host over PCIe when OcteonTx is in PCIe Endpoint
-> > > mode.  
-> >
-> > All your SDP/SDK/management interfaces do not fit into our netdev
-> > model of the world and should be removed upstream.  
+On Thu, 25 Nov 2021 07:50:49 +0100 Stefan Assmann wrote:
+> On 2021-11-24 15:48, Jakub Kicinski wrote:
+> > On Wed, 24 Nov 2021 09:16:46 -0800 Tony Nguyen wrote:  
+> > > Add kernel trace that device was removed.
+> > > Currently there is no such information.
+> > > I.e. Host admin removes a PCI device from a VM,
+> > > than on VM shall be info about the event.
+> > > 
+> > > This patch adds info log to iavf_remove function.  
+> > 
+> > Why is this an important thing to print to logs about?
+> > If it is why is PCI core not doing the printing?
 > 
-> SDP is our System DMA Packet Interface which sends/receives network
-> packets to NIX block. It is similar to CGX, LBK blocks but only
-> difference is the medium being PCIe. So if you have accepted that I
-> believe you can accept this as well.
+> From personal experience I'd say this piece of information has value,
+> especially when debugging it can be interesting to know exactly when
+> the driver was removed.
 
-Nope, I have not accepted that. I was just too lazy to send a revert
-after it was merged.
+But there isn't anything specific to iavf here, right? If it really 
+is important then core should be doing the printing for all drivers.
+
+Actually, I can't come up with any uses for this print on the spot.
+What debugging scenarios do you have in mind?
