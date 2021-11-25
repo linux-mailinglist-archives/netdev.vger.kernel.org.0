@@ -2,55 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD2FD45D33B
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 03:44:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AFB145D341
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 03:48:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229821AbhKYCr4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Nov 2021 21:47:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52588 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230237AbhKYCp4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Nov 2021 21:45:56 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9D22A600EF;
-        Thu, 25 Nov 2021 02:42:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637808166;
-        bh=A5Xz253QFaIIllaRE28Z4YMU5BWOrYGANBnXWg6fmBk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Yp5tJ9H7V+1Vh9IiyFmYW7rNVqfpbNxYx+bVYQxpNu70dRLEUtEzOs0xt5ifSda1f
-         eBXLB7bCbdyaOyKLzmBkp2fGMnTdge2CJ1saSqi47gqxRqj4xSHYV5qA65NyfDNQFA
-         uvoxsAhlLCy9d2YWUeX9pgwHmH2OmxEDiUytwq33XHiJU8Y1ei14EmugCsZNKgRpcH
-         q0iDX3SdLBvaEGgVPPXvEP9mu+FmD2uOQcUmg2LgcMlJybuNrY4edD23XPGaAIxgTH
-         zPw+O0L6cnG/kVCI5azgv4hSBpkUn2UdaLOO0E/+D0PPTQ9x3k516tY3q75iwm2yv9
-         UsF/d7d9PQQJA==
-Date:   Wed, 24 Nov 2021 18:42:44 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH v2 net-next] net: dsa: felix: enable cut-through
- forwarding between ports by default
-Message-ID: <20211124184244.20614c66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211124183900.7fb192f4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20211123132116.913520-1-olteanv@gmail.com>
-        <20211124183900.7fb192f4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S237267AbhKYCwD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Nov 2021 21:52:03 -0500
+Received: from twspam01.aspeedtech.com ([211.20.114.71]:30296 "EHLO
+        twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229963AbhKYCuC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Nov 2021 21:50:02 -0500
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 1AP2JVcS073363;
+        Thu, 25 Nov 2021 10:19:31 +0800 (GMT-8)
+        (envelope-from dylan_hung@aspeedtech.com)
+Received: from DylanHung-PC.aspeed.com (192.168.2.216) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 25 Nov
+ 2021 10:43:41 +0800
+From:   Dylan Hung <dylan_hung@aspeedtech.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-aspeed@lists.ozlabs.org>,
+        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <andrew@aj.id.au>, <joel@jms.id.au>, <kuba@kernel.org>,
+        <davem@davemloft.net>, <linux@armlinux.org.uk>,
+        <hkallweit1@gmail.com>, <andrew@lunn.ch>
+CC:     <BMC-SW@aspeedtech.com>, <stable@vger.kernel.org>
+Subject: [PATCH v2] mdio: aspeed: Fix "Link is Down" issue
+Date:   Thu, 25 Nov 2021 10:44:32 +0800
+Message-ID: <20211125024432.15809-1-dylan_hung@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.2.216]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 1AP2JVcS073363
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 24 Nov 2021 18:39:00 -0800 Jakub Kicinski wrote:
-> > +		/* Enable cut-through forwarding for all traffic classes. */
-> > +		if (ocelot_port->speed == min_speed)  
-> 
-> Any particular reason this is not <= ?
+The issue happened randomly in runtime.  The message "Link is Down" is
+popped but soon it recovered to "Link is Up".
 
-Because it can't be...
+The "Link is Down" results from the incorrect read data for reading the
+PHY register via MDIO bus.  The correct sequence for reading the data
+shall be:
+1. fire the command
+2. wait for command done (this step was missing)
+3. wait for data idle
+4. read data from data register
+
+Fixes: f160e99462c6 ("net: phy: Add mdio-aspeed")
+Cc: stable@vger.kernel.org
+Reviewed-by: Joel Stanley <joel@jms.id.au>
+Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
+---
+v2: revise commit message
+
+ drivers/net/mdio/mdio-aspeed.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/net/mdio/mdio-aspeed.c b/drivers/net/mdio/mdio-aspeed.c
+index cad820568f75..966c3b4ad59d 100644
+--- a/drivers/net/mdio/mdio-aspeed.c
++++ b/drivers/net/mdio/mdio-aspeed.c
+@@ -61,6 +61,13 @@ static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
+ 
+ 	iowrite32(ctrl, ctx->base + ASPEED_MDIO_CTRL);
+ 
++	rc = readl_poll_timeout(ctx->base + ASPEED_MDIO_CTRL, ctrl,
++				!(ctrl & ASPEED_MDIO_CTRL_FIRE),
++				ASPEED_MDIO_INTERVAL_US,
++				ASPEED_MDIO_TIMEOUT_US);
++	if (rc < 0)
++		return rc;
++
+ 	rc = readl_poll_timeout(ctx->base + ASPEED_MDIO_DATA, data,
+ 				data & ASPEED_MDIO_DATA_IDLE,
+ 				ASPEED_MDIO_INTERVAL_US,
+-- 
+2.25.1
+
