@@ -2,77 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E982245DE2C
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 16:59:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AB0345DE37
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 17:02:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356317AbhKYQCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 11:02:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34230 "EHLO mail.kernel.org"
+        id S1356229AbhKYQFW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 11:05:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34830 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1356173AbhKYQAO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Nov 2021 11:00:14 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 72543610E8;
-        Thu, 25 Nov 2021 15:57:02 +0000 (UTC)
+        id S229517AbhKYQDV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Nov 2021 11:03:21 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 236B66108E;
+        Thu, 25 Nov 2021 16:00:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637855822;
-        bh=gEVDxltRAxYiIRklpQ8ImHcxU1Gs8TwGUu+BAQtDvMQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=J/nRGHvF24FNH0nyUZOxbytVZpXfkKCJwWqAfPhVr2nauQxymiX7Uc986iOngY7rd
-         9y/bHhRiRbVzBR418K/odVqYzZ+yeWkNlZOWeMwcoLzhP9TbTpzPcMjcSr+Zrz5NxX
-         lzCPEyXgI2H6RQafUkjedxFxgB+8STe2Eg9mV3cpq8J1QQpazLMExLpqMwpJ9l9QGF
-         anlnQYpDyz7QOLsusxNNMMsweNdxxtGjub7ne47NgftXVhYxxQ0O7idr82Pa31YCUc
-         VKLZqOa4Lrer8vKQWTIdiFUVtf8jc+CvelaGZSkRpc1pm+kj22Nv619XvtFwLXQ/Af
-         8g0WcJSaSRpHg==
-Date:   Thu, 25 Nov 2021 07:57:01 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Stefan Assmann <sassmann@redhat.com>
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        netdev@vger.kernel.org,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: Re: [PATCH net-next 06/12] iavf: Add trace while removing device
-Message-ID: <20211125075701.7b67ae7f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211125154349.ozf6jfq5kmzoou4j@x230>
-References: <20211124171652.831184-1-anthony.l.nguyen@intel.com>
-        <20211124171652.831184-7-anthony.l.nguyen@intel.com>
-        <20211124154811.6d9c48cb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20211125065049.hwubag5eherksrle@x230>
-        <20211125071316.69c3319a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20211125154349.ozf6jfq5kmzoou4j@x230>
+        s=k20201202; t=1637856010;
+        bh=ucYoul2wvLTG4PBO56hF4AxJWAGQbC8TJdZcAk422Ks=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ePD6MPCAjCTjr8QWwQYoks4TOCIjpPFBQQvPqPPsb/JcwATS6NHiA8K/5nqsaN5kV
+         rjvQy1StCKoCq0IdZG1BeRZ4oy+rQ0exEEwN+HNnEtfPEgeJ+Im7evrQNnx7pyWL1a
+         VJ3DmstgvES4ranJaEy9QbqZPozUIOW03yFGEdIbGsDcJ9e97j1r1QuoIxB+9YXXsT
+         NaZFWbejIvCREg2Sid3PXBgxHUCXED2DwXmCtWpry3iF5r/kJHxoWa3Jxw/9+E7yZr
+         +2dLbQ9dr374v8LDqL6ZKzV3mEhFZx1LEUWizLScI981xQ3dxNZfVY0txTdRneJJ9+
+         IcyHja+Gy5+fw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1624160A21;
+        Thu, 25 Nov 2021 16:00:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] mdio: aspeed: Fix "Link is Down" issue
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163785601008.7926.14064362154729889685.git-patchwork-notify@kernel.org>
+Date:   Thu, 25 Nov 2021 16:00:10 +0000
+References: <20211125024432.15809-1-dylan_hung@aspeedtech.com>
+In-Reply-To: <20211125024432.15809-1-dylan_hung@aspeedtech.com>
+To:     Dylan Hung <dylan_hung@aspeedtech.com>
+Cc:     linux-kernel@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        andrew@aj.id.au, joel@jms.id.au, kuba@kernel.org,
+        davem@davemloft.net, linux@armlinux.org.uk, hkallweit1@gmail.com,
+        andrew@lunn.ch, BMC-SW@aspeedtech.com, stable@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 25 Nov 2021 16:43:49 +0100 Stefan Assmann wrote:
-> On 2021-11-25 07:13, Jakub Kicinski wrote:
-> > On Thu, 25 Nov 2021 07:50:49 +0100 Stefan Assmann wrote:  
-> > > From personal experience I'd say this piece of information has value,
-> > > especially when debugging it can be interesting to know exactly when
-> > > the driver was removed.  
-> > 
-> > But there isn't anything specific to iavf here, right? If it really 
-> > is important then core should be doing the printing for all drivers.
-> > 
-> > Actually, I can't come up with any uses for this print on the spot.
-> > What debugging scenarios do you have in mind?  
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Thu, 25 Nov 2021 10:44:32 +0800 you wrote:
+> The issue happened randomly in runtime.  The message "Link is Down" is
+> popped but soon it recovered to "Link is Up".
 > 
-> There was a lot of trouble with iavf in terms of device reset, device
-> unbinding (DPDK), stress testing of driver load/unload issues. When
-> looking through the crash logs it was not always easy to determine if
-> the driver was still loaded.
-> Especially on problems that weren't easy to reproduce.
+> The "Link is Down" results from the incorrect read data for reading the
+> PHY register via MDIO bus.  The correct sequence for reading the data
+> shall be:
+> 1. fire the command
+> 2. wait for command done (this step was missing)
+> 3. wait for data idle
+> 4. read data from data register
+> 
+> [...]
 
-That's a slippery slope, historically we were always pushing for
-avoiding informational prints. Otherwise every driver reconfig would
-result in a line in the logs.
+Here is the summary with links:
+  - [v2] mdio: aspeed: Fix "Link is Down" issue
+    https://git.kernel.org/netdev/net/c/9dbe33cf371b
 
-> So for iavf having that information would have been valuable. Not sure
-> if that justifies a PCI core message or if others might find that too
-> verbose.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-So what you're saying is from your experience iavf is of significantly
-poorer quality than other vendors' drivers?
+
