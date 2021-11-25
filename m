@@ -2,59 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6CB445D496
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 07:11:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7434D45D4AB
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 07:22:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346868AbhKYGOE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 01:14:04 -0500
-Received: from pi.codeconstruct.com.au ([203.29.241.158]:57932 "EHLO
-        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347399AbhKYGMC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 01:12:02 -0500
-Received: by codeconstruct.com.au (Postfix, from userid 10000)
-        id 545B22029A; Thu, 25 Nov 2021 14:08:50 +0800 (AWST)
-From:   Jeremy Kerr <jk@codeconstruct.com.au>
-To:     netdev@vger.kernel.org
-Cc:     Matt Johnston <matt@codeconstruct.com.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH net-next v2 3/3] mctp: serial: remove unnecessary ldisc data check
-Date:   Thu, 25 Nov 2021 14:07:39 +0800
-Message-Id: <20211125060739.3023442-4-jk@codeconstruct.com.au>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211125060739.3023442-1-jk@codeconstruct.com.au>
-References: <20211125060739.3023442-1-jk@codeconstruct.com.au>
+        id S1347215AbhKYG0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 01:26:08 -0500
+Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:43015 "EHLO
+        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1347534AbhKYGYI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 01:24:08 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R541e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0UyESS1._1637821254;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0UyESS1._1637821254)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 25 Nov 2021 14:20:55 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     kgraul@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: [PATCH net 0/2] Fixes for clcsock shutdown behaviors
+Date:   Thu, 25 Nov 2021 14:19:31 +0800
+Message-Id: <20211125061932.74874-1-tonylu@linux.alibaba.com>
+X-Mailer: git-send-email 2.34.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jiri assures me that a ldisc->open with tty->disc_data set should never
-happen, so this check doesn't do anything.
+These patches fix issues when calling kernel_sock_shutdown(). To make
+the solution clear, I split it into two patches.
 
-Reported-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
----
- drivers/net/mctp/mctp-serial.c | 3 ---
- 1 file changed, 3 deletions(-)
+Patch 1 keeps the return code of smc_close_final() in
+smc_close_active(), which is more important than kernel_sock_shutdown().
 
-diff --git a/drivers/net/mctp/mctp-serial.c b/drivers/net/mctp/mctp-serial.c
-index b0e14a63b10d..eaa6fb3224bc 100644
---- a/drivers/net/mctp/mctp-serial.c
-+++ b/drivers/net/mctp/mctp-serial.c
-@@ -439,9 +439,6 @@ static int mctp_serial_open(struct tty_struct *tty)
- 	if (!tty->ops->write)
- 		return -EOPNOTSUPP;
- 
--	if (tty->disc_data)
--		return -EEXIST;
--
- 	idx = ida_alloc(&mctp_serial_ida, GFP_KERNEL);
- 	if (idx < 0)
- 		return idx;
+Patch 2 doesn't call clcsock shutdown twice when applications call
+smc_shutdown(). It should be okay to call kernel_sock_shutdown() twice,
+I decide to avoid it for slightly speed up releasing socket.
+
+Tony Lu (2):
+  net/smc: Keep smc_close_final rc during active close
+  net/smc: Don't call clcsock shutdown twice when smc shutdown
+
+ net/smc/af_smc.c    | 8 ++++++++
+ net/smc/smc_close.c | 8 ++++++--
+ 2 files changed, 14 insertions(+), 2 deletions(-)
+
 -- 
-2.30.2
+2.32.0.3.g01195cf9f
 
