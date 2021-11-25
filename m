@@ -2,93 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2CC645DB1B
-	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 14:28:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 866E445DB59
+	for <lists+netdev@lfdr.de>; Thu, 25 Nov 2021 14:40:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350034AbhKYNcB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 08:32:01 -0500
-Received: from out4436.biz.mail.alibaba.com ([47.88.44.36]:36362 "EHLO
-        out4436.biz.mail.alibaba.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1348505AbhKYNbA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 08:31:00 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0UyGZa-C_1637846866;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0UyGZa-C_1637846866)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 25 Nov 2021 21:27:47 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     kgraul@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH net v2] net/smc: Don't call clcsock shutdown twice when smc shutdown
-Date:   Thu, 25 Nov 2021 21:24:32 +0800
-Message-Id: <20211125132431.23264-1-tonylu@linux.alibaba.com>
-X-Mailer: git-send-email 2.34.0
+        id S235569AbhKYNn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 08:43:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48570 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354974AbhKYNlz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 08:41:55 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B84C0613B4
+        for <netdev@vger.kernel.org>; Thu, 25 Nov 2021 05:32:37 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id p18so5594882wmq.5
+        for <netdev@vger.kernel.org>; Thu, 25 Nov 2021 05:32:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=t2x0D0Ff9mt6dLGhRLtVJULLK0TAoIx8sbPE2KXrwyY=;
+        b=XSHPUgKy1jv6TCDhXKQenHkEaMxheW4aSMlJlBs50L4bsQ21W6RmKsUTKNr7tC46Mu
+         iQIK/5m/4NChFeQsEM7PMQLN13xO/Mbu6y4tHccp5R2fW9cda86LlqsgTGSk1e2SMCEU
+         eyjXRIKEEmR4DJto7nFUdWW4gQXBdmilVJLD7niYYZayDvYvdOyR2wfHZ3if6E7X5oLZ
+         ZHBhQXypxmmznsVU4YzaUGPhH6+86GsSak+N1j9n68sFkQ5Vu1IuPZMmCtTGtciElO0I
+         GwO3kKkbGEshPeHF+9np9xok9nzWDjbyicRMsq7XmZqpicXXo9ot8ebr7Ilz/eeY7x2q
+         z1xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=t2x0D0Ff9mt6dLGhRLtVJULLK0TAoIx8sbPE2KXrwyY=;
+        b=gfEWQnlBZq2Thf5ot8dkn+Wotr2W18vF1bRKHMT3L+Epr944UmdY+5gD7bn4lLQY2s
+         YEA4n3vyeSWfbBKoGVny0QFVqPluJEJyvRs9fo+o5TDbtibu/WAoOXV4xPhSdPyETNxk
+         mtL9HuG6DGqnEzS+fFJ1eVxPUwV4XEskfA7yBHRRcVJMYNY+f4mTqwuurjSbqnUoRO4l
+         CfcTpI97+Fp4DJ1zBjaprVqRxVvvJBNuEISASTxTKHTVLcv/Ni1GtpOZGoqz8DbpG4D8
+         Zz2UueDyL+rrEBd3UnOKnr1t3GUuqox2Dm6IlAYg8/fMjyMQ26am5Mmv9Wy/McEktrga
+         YRhw==
+X-Gm-Message-State: AOAM533JY+LQKaIFHxfiGe+ZiPXioM1Kv2NriEd0kqMGIJhgpdyM5cIk
+        hAtxXNBBWjnVdRAIq6vQWpvhjNYGJ0xaLVbHTXRd8w==
+X-Google-Smtp-Source: ABdhPJw82pmcE9PyxEnhgj2TlfIMDV8kLXHopp7r4fzo1K9CDIkn0KDLOWHaaJBLOCk9Y6gn7LPpx/Dh3oWL+SHEFQg=
+X-Received: by 2002:a05:600c:3ba3:: with SMTP id n35mr7457011wms.88.1637847155342;
+ Thu, 25 Nov 2021 05:32:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211124202446.2917972-1-eric.dumazet@gmail.com>
+ <20211124202446.2917972-3-eric.dumazet@gmail.com> <06864387ba644a58816ab3a82a8b5f82@AcuMS.aculab.com>
+In-Reply-To: <06864387ba644a58816ab3a82a8b5f82@AcuMS.aculab.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 25 Nov 2021 05:32:23 -0800
+Message-ID: <CANn89i+HmN3DbfAtH+Uq_pBWYHXp5ioH8LyhGRAiHZhRLbs1nw@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/2] net: optimize skb_postpull_rcsum()
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When applications call shutdown() with SHUT_RDWR in userspace,
-smc_close_active() calls kernel_sock_shutdown(), and it is called
-twice in smc_shutdown().
+On Thu, Nov 25, 2021 at 1:41 AM David Laight <David.Laight@aculab.com> wrote:
+>
+> From: Eric Dumazet
+> > Sent: 24 November 2021 20:25
+> >
+> > From: Eric Dumazet <edumazet@google.com>
+> >
+> > Remove one pair of add/adc instructions and their dependency
+> > against carry flag.
+> >
+> > We can leverage third argument to csum_partial():
+> >
+> >   X = csum_block_sub(X, csum_partial(start, len, 0), 0);
+> >
+> >   -->
+> >
+> >   X = csum_block_add(X, ~csum_partial(start, len, 0), 0);
+> >
+> >   -->
+> >
+> >   X = ~csum_partial(start, len, ~X);
+>
+> That doesn't seem to refer to the change in this file.
+>
 
-This fixes this by checking sk_state before do clcsock shutdown, and
-avoids missing the application's call of smc_shutdown().
+It is describing the change.
 
-Link: https://lore.kernel.org/linux-s390/1f67548e-cbf6-0dce-82b5-10288a4583bd@linux.ibm.com/
-Fixes: 606a63c9783a ("net/smc: Ensure the active closing peer first closes clcsock")
-Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
-Reviewed-by: Wen Gu <guwen@linux.alibaba.com>
----
+The first step, of copying first the __skb_postpull_rcsum(skb, start,
+len, 0) content
+into __skb_postpull_rcsum() was kind of obvious.
 
-changes:
 
-v1->v2:
-- code format
-- use bool do_shutdown
 
----
- net/smc/af_smc.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 4b62c925a13e..9fd350fa22ba 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -2370,8 +2370,10 @@ static __poll_t smc_poll(struct file *file, struct socket *sock,
- static int smc_shutdown(struct socket *sock, int how)
- {
- 	struct sock *sk = sock->sk;
-+	bool do_shutdown = true;
- 	struct smc_sock *smc;
- 	int rc = -EINVAL;
-+	int old_state;
- 	int rc1 = 0;
- 
- 	smc = smc_sk(sk);
-@@ -2398,7 +2400,12 @@ static int smc_shutdown(struct socket *sock, int how)
- 	}
- 	switch (how) {
- 	case SHUT_RDWR:		/* shutdown in both directions */
-+		old_state = sk->sk_state;
- 		rc = smc_close_active(smc);
-+		if (old_state == SMC_ACTIVE &&
-+		    sk->sk_state == SMC_PEERCLOSEWAIT1)
-+			do_shutdown = false;
-+
- 		break;
- 	case SHUT_WR:
- 		rc = smc_close_shutdown_write(smc);
-@@ -2408,7 +2415,7 @@ static int smc_shutdown(struct socket *sock, int how)
- 		/* nothing more to do because peer is not involved */
- 		break;
- 	}
--	if (smc->clcsock)
-+	if (do_shutdown && smc->clcsock)
- 		rc1 = kernel_sock_shutdown(smc->clcsock, how);
- 	/* map sock_shutdown_cmd constants to sk_shutdown value range */
- 	sk->sk_shutdown |= how + 1;
--- 
-2.32.0.3.g01195cf9f
-
+>         David
+>
+> >
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > ---
+> >  include/linux/skbuff.h | 6 +++++-
+> >  1 file changed, 5 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> > index eba256af64a577b458998845f2dc01a5ec80745a..eae4bd3237a41cc1b60b44c91fbfe21dfdd8f117 100644
+> > --- a/include/linux/skbuff.h
+> > +++ b/include/linux/skbuff.h
+> > @@ -3485,7 +3485,11 @@ __skb_postpull_rcsum(struct sk_buff *skb, const void *start, unsigned int len,
+> >  static inline void skb_postpull_rcsum(struct sk_buff *skb,
+> >                                     const void *start, unsigned int len)
+> >  {
+> > -     __skb_postpull_rcsum(skb, start, len, 0);
+> > +     if (skb->ip_summed == CHECKSUM_COMPLETE)
+> > +             skb->csum = ~csum_partial(start, len, ~skb->csum);
+> > +     else if (skb->ip_summed == CHECKSUM_PARTIAL &&
+> > +              skb_checksum_start_offset(skb) < 0)
+> > +             skb->ip_summed = CHECKSUM_NONE;
+> >  }
+> >
+> >  static __always_inline void
+> > --
+> > 2.34.0.rc2.393.gf8c9666880-goog
+>
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
+>
