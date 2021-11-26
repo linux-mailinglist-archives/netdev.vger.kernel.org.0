@@ -2,115 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A62645F11C
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 16:53:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 359F345F135
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 17:01:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378193AbhKZP45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Nov 2021 10:56:57 -0500
-Received: from smtp2.axis.com ([195.60.68.18]:33966 "EHLO smtp2.axis.com"
+        id S1354173AbhKZQE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 11:04:26 -0500
+Received: from mga14.intel.com ([192.55.52.115]:1580 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346110AbhKZPyz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Nov 2021 10:54:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1637941902;
-  x=1669477902;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ZKY0ZUn6hBuF4L45SUjR2Of2kdJCM0Bs6BEONxhZqMk=;
-  b=dGc/W9+A12sqq6jUQOUB7Jcuzy9U1Eoz68qWdJTnab6eCiKz6QofvB+S
-   sWIWN+k5DSvYvkbAap0QW90iqaaDhhJxVlGyCsNtnWGgDKPJ+UzpOwSCR
-   Ge46TULMcGLJhgbiByWJu/gcYXv+vV3TLVUBuOBp1y/eSMjPZUyVYeg8u
-   7LII1NLsJ4VTmBo+8LhQXuyq6xROFUHoOrc/Iwx2I/0cTto12UUf32iNL
-   RS0IcRIM3LUjrSSkAfAhqA13nYyiQvXlEXcd/2Ekvrpom7HlmOXc0xKN1
-   kcwiI6xDNayxKR7Roy/hBB1vljvHPr1Di5ygGstF59+e5pXc9HKz35Wn+
-   Q==;
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-CC:     <kernel@axis.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>, <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net] net: stmmac: Avoid DMA_CHAN_CONTROL write if no Split Header support
-Date:   Fri, 26 Nov 2021 16:51:15 +0100
-Message-ID: <20211126155115.12394-1-vincent.whitchurch@axis.com>
+        id S1354276AbhKZQC0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Nov 2021 11:02:26 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10180"; a="235920619"
+X-IronPort-AV: E=Sophos;i="5.87,266,1631602800"; 
+   d="scan'208";a="235920619"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2021 07:54:54 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,266,1631602800"; 
+   d="scan'208";a="539280176"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga001.jf.intel.com with ESMTP; 26 Nov 2021 07:54:51 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1AQFsn7W000916;
+        Fri, 26 Nov 2021 15:54:49 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        brouer@redhat.com, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, bjorn@kernel.org,
+        Jakub Kicinski <kuba@kernel.org>, bpf@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>, magnus.karlsson@intel.com
+Subject: Re: [Intel-wired-lan] [PATCH net-next 1/2] igc: AF_XDP zero-copy metadata adjust breaks SKBs on XDP_PASS
+Date:   Fri, 26 Nov 2021 16:54:08 +0100
+Message-Id: <20211126155408.147211-1-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.33.1
+In-Reply-To: <66f62ef7-f4c6-08df-a8e1-dbbe34b9b125@redhat.com>
+References: <163700856423.565980.10162564921347693758.stgit@firesoul> <163700858579.565980.15265721798644582439.stgit@firesoul> <YaD8UHOxHasBkqEW@boxer> <66f62ef7-f4c6-08df-a8e1-dbbe34b9b125@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver assumes that split headers can be enabled/disabled without
-stopping/starting the device, so it writes DMA_CHAN_CONTROL from
-stmmac_set_features().  However, on my system (IP v5.10a without Split
-Header support), simply writing DMA_CHAN_CONTROL when DMA is running
-(for example, with the commands below) leads to a TX watchdog timeout.
+From: Jesper Dangaard Brouer <jbrouer@redhat.com>
+Date: Fri, 26 Nov 2021 16:32:47 +0100
 
- host$ socat TCP-LISTEN:1024,fork,reuseaddr - &
- device$ ethtool -K eth0 tso off
- device$ ethtool -K eth0 tso on
- device$ dd if=/dev/zero bs=1M count=10 | socat - TCP4:host:1024
- <tx watchdog timeout>
+> On 26/11/2021 16.25, Maciej Fijalkowski wrote:
+> > On Mon, Nov 15, 2021 at 09:36:25PM +0100, Jesper Dangaard Brouer wrote:
+> >> Driver already implicitly supports XDP metadata access in AF_XDP
+> >> zero-copy mode, as xsk_buff_pool's xp_alloc() naturally set xdp_buff
+> >> data_meta equal data.
+> >>
+> >> This works fine for XDP and AF_XDP, but if a BPF-prog adjust via
+> >> bpf_xdp_adjust_meta() and choose to call XDP_PASS, then igc function
+> >> igc_construct_skb_zc() will construct an invalid SKB packet. The
+> >> function correctly include the xdp->data_meta area in the memcpy, but
+> >> forgot to pull header to take metasize into account.
+> >>
+> >> Fixes: fc9df2a0b520 ("igc: Enable RX via AF_XDP zero-copy")
+> >> Signed-off-by: Jesper Dangaard Brouer<brouer@redhat.com>
+> > Acked-by: Maciej Fijalkowski<maciej.fijalkowski@intel.com>
+> > 
+> > Great catch. Will take a look at other ZC enabled Intel drivers if they
+> > are affected as well.
 
-Note that since my IP is configured without Split Header support, the
-driver always just reads and writes the same value to the
-DMA_CHAN_CONTROL register.
+They are. We'll cover them in a separate series, much thanks for
+revealing that (:
 
-I don't have access to any platforms with Split Header support so I
-don't know if these writes to the DMA_CHAN_CONTROL while DMA is running
-actually work properly on such systems.  I could not find anything in
-the databook that says that DMA_CHAN_CONTROL should not be written when
-the DMA is running.
+> Thanks a lot for taking this task!!! :-)
+> --Jesper
 
-But on systems without Split Header support, there is in any case no
-need to call enable_sph() in stmmac_set_features() at all since SPH can
-never be toggled, so we can avoid the watchdog timeout there by skipping
-this call.
-
-Fixes: 8c6fc097a2f4acf ("net: stmmac: gmac4+: Add Split Header support")
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 2eb284576336..0ee513f67677 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -5504,8 +5504,6 @@ static int stmmac_set_features(struct net_device *netdev,
- 			       netdev_features_t features)
- {
- 	struct stmmac_priv *priv = netdev_priv(netdev);
--	bool sph_en;
--	u32 chan;
- 
- 	/* Keep the COE Type in case of csum is supporting */
- 	if (features & NETIF_F_RXCSUM)
-@@ -5517,10 +5515,13 @@ static int stmmac_set_features(struct net_device *netdev,
- 	 */
- 	stmmac_rx_ipc(priv, priv->hw);
- 
--	sph_en = (priv->hw->rx_csum > 0) && priv->sph;
-+	if (priv->sph_cap) {
-+		bool sph_en = (priv->hw->rx_csum > 0) && priv->sph;
-+		u32 chan;
- 
--	for (chan = 0; chan < priv->plat->rx_queues_to_use; chan++)
--		stmmac_enable_sph(priv, priv->ioaddr, sph_en, chan);
-+		for (chan = 0; chan < priv->plat->rx_queues_to_use; chan++)
-+			stmmac_enable_sph(priv, priv->ioaddr, sph_en, chan);
-+	}
- 
- 	return 0;
- }
--- 
-2.33.1
-
+Al
