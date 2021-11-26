@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F6B445E7FB
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 07:42:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 150E945E7FE
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 07:42:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358871AbhKZGpL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Nov 2021 01:45:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42890 "EHLO mail.kernel.org"
+        id S1359008AbhKZGpb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 01:45:31 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43076 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1359031AbhKZGnJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Nov 2021 01:43:09 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 80B566115C;
-        Fri, 26 Nov 2021 06:39:57 +0000 (UTC)
+        id S1358877AbhKZGnb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Nov 2021 01:43:31 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B12CD61175;
+        Fri, 26 Nov 2021 06:40:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637908797;
-        bh=O7ZYLDzQUdSPy3GFDs+ArBrvvvqtUoLlagY/ZqJed+0=;
+        s=k20201202; t=1637908818;
+        bh=R8BcdlnGOV17J+i8TfH9xl2GNIZT02bu+liL9a4FvGc=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=vD4DsrxZQ+6P9k3Q+pDzD76YeNunhQFSsCgkRkWHHW++/qszLA+RkURif4YJ61K5e
-         7bnIqvzCdqW/O5pTh4cjuUOMUAbMf0oNFTm7lUaJmmkFrfP6BMECO2A8AXBfSiYqaC
-         gWh73aRrlDD0YoPIJ/5mUmXIO6CRR9LztK3uTpHwhg0xb+ZI0kwYUuTcq7vYG2Vebx
-         xIvaJpP2BgxIUdMzZRZKiUeEYlJvu0xC5QkAlm9f7QHauPOo6BL79fmip34NVXYaab
-         meuIAJE1OlQfsuABqHa4ykJS2nm8jcZaPhwVzYvfvAiHY8vZiaj6NLNfWZ40s4H0Pu
-         dsdIeEDkdHNTg==
-Received: by mail-yb1-f172.google.com with SMTP id v203so17602725ybe.6;
-        Thu, 25 Nov 2021 22:39:57 -0800 (PST)
-X-Gm-Message-State: AOAM531gusUWnJV7UV6enudOIRWHal6fn2EybgyU2gpH9jFEb3wxEgT5
-        cc6J3bwH+BXrmV+4wY1WecLvUhgDk+CN9px3f4E=
-X-Google-Smtp-Source: ABdhPJx3nR+Fkjbjutp04yBa9+EekoW/kqncv3wQYigrCZRa+Q562se0k9mgQdF0nvEqOcr9l+W3nJarDejeQ5Tz7DA=
-X-Received: by 2002:a25:69cc:: with SMTP id e195mr13057388ybc.456.1637908796787;
- Thu, 25 Nov 2021 22:39:56 -0800 (PST)
+        b=hk5zLepPLv9dJ5mT6YHh4vBQtFwhIF7inPJbLZTymoC2J978TIwgZUJECJ4lQNCAK
+         YWBO9eRwcBqezSznhpBTF7M2IGQwvSMKdzhnmatvvd8Rc7hwgFPzDAiSJFReIIaC//
+         qtcpD3JIfSV/12Oo32R2Fv5KPtE8Zxefs4IpQ9ChA9mNvzBjvqNy1jXtdXAfo0bZif
+         og0G1glDEgKCuNXaXsu/XdZvmWoOEth7C8Ks8sVqgyPg1euU8PnVgqg8eFpyVE81Zg
+         F/5yDXMNTdhAFHZhXn2S9VS515HQUK7cnNJqUFGz5cTckWGxd7NnX7Iz/CuiO1Rbd2
+         5w/N113bZE0vg==
+Received: by mail-yb1-f174.google.com with SMTP id e136so17568615ybc.4;
+        Thu, 25 Nov 2021 22:40:18 -0800 (PST)
+X-Gm-Message-State: AOAM530H+PSSxNfvGOPd0dOs0sDiQ209AU/2UE27fGonfiKFJ+Pq/3S6
+        BXY58Tb6Rz4k7nRtpECPWNbwFyYw5mO5jpKP+0Q=
+X-Google-Smtp-Source: ABdhPJzr9MeakRUihP6iIzw98eiuQdgyWskgVa5nR1CkstcUUcVbutESlN6Er2jyaSiUqqDuGpMbn9BS6Fm9fyF6o5U=
+X-Received: by 2002:a25:344d:: with SMTP id b74mr13159430yba.317.1637908817916;
+ Thu, 25 Nov 2021 22:40:17 -0800 (PST)
 MIME-Version: 1.0
-References: <20211119163215.971383-1-hch@lst.de> <20211119163215.971383-3-hch@lst.de>
-In-Reply-To: <20211119163215.971383-3-hch@lst.de>
+References: <20211119163215.971383-1-hch@lst.de> <20211119163215.971383-4-hch@lst.de>
+In-Reply-To: <20211119163215.971383-4-hch@lst.de>
 From:   Song Liu <song@kernel.org>
-Date:   Thu, 25 Nov 2021 22:39:45 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW7-N3sW+erUzobP95qJ2p++=wmqZN_gSsqeK26GknFYUQ@mail.gmail.com>
-Message-ID: <CAPhsuW7-N3sW+erUzobP95qJ2p++=wmqZN_gSsqeK26GknFYUQ@mail.gmail.com>
-Subject: Re: [PATCH 2/5] bpf: remove a redundant comment on bpf_prog_free
+Date:   Thu, 25 Nov 2021 22:40:07 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW7U-yYZBhA3HfOMWT5LpX-gQBcOWvMsVXWEYxXk2EAOXg@mail.gmail.com>
+Message-ID: <CAPhsuW7U-yYZBhA3HfOMWT5LpX-gQBcOWvMsVXWEYxXk2EAOXg@mail.gmail.com>
+Subject: Re: [PATCH 3/5] bpf, docs: prune all references to "internal BPF"
 To:     Christoph Hellwig <hch@lst.de>
 Cc:     Jonathan Corbet <corbet@lwn.net>,
         "David S. Miller" <davem@davemloft.net>,
@@ -58,8 +58,10 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, Nov 19, 2021 at 8:32 AM Christoph Hellwig <hch@lst.de> wrote:
 >
-> The comment telling that the prog_free helper is freeing the program is
-> not exactly useful, so just remove it.
+> The eBPF name has completely taken over from eBPF in general usage for
+> the actual eBPF representation, or BPF for any general in-kernel use.
+> Prune all remaining references to "internal BPF".
 >
 > Signed-off-by: Christoph Hellwig <hch@lst.de>
+
 Acked-by: Song Liu <songliubraving@fb.com>
