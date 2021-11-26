@@ -2,156 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF27645F70D
-	for <lists+netdev@lfdr.de>; Sat, 27 Nov 2021 00:03:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2DA045F71C
+	for <lists+netdev@lfdr.de>; Sat, 27 Nov 2021 00:12:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241458AbhKZXGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Nov 2021 18:06:49 -0500
-Received: from www62.your-server.de ([213.133.104.62]:48638 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229866AbhKZXEs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 18:04:48 -0500
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mqkDP-000F4Y-20; Sat, 27 Nov 2021 00:01:11 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mqkDN-0007l0-Uv; Sat, 27 Nov 2021 00:01:09 +0100
-Subject: Re: [PATCH v2 net-next 21/26] ice: add XDP and XSK generic
- per-channel statistics
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vu?= =?UTF-8?Q?sen?= 
-        <toke@redhat.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shay Agroskin <shayagr@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        David Arinzon <darinzon@amazon.com>,
-        Noam Dagan <ndagan@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Andrei Vagin <avagin@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Cong Wang <cong.wang@bytedance.com>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>
-References: <20211123163955.154512-1-alexandr.lobakin@intel.com>
- <20211123163955.154512-22-alexandr.lobakin@intel.com>
- <77407c26-4e32-232c-58e0-2d601d781f84@iogearbox.net> <87bl28bga6.fsf@toke.dk>
- <20211125170708.127323-1-alexandr.lobakin@intel.com>
- <20211125094440.6c402d63@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20211125204007.133064-1-alexandr.lobakin@intel.com> <87sfvj9k13.fsf@toke.dk>
- <20211126100611.514df099@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <871ae82a-3d5b-2693-2f77-7c86d725a056@iogearbox.net>
-Message-ID: <3c2fd51e-96c4-d500-bb4c-1972bb0fa3d6@iogearbox.net>
-Date:   Sat, 27 Nov 2021 00:01:08 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S245697AbhKZXPU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 18:15:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36130 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343886AbhKZXNU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 18:13:20 -0500
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE507C06175B
+        for <netdev@vger.kernel.org>; Fri, 26 Nov 2021 15:09:40 -0800 (PST)
+Received: by mail-oi1-x230.google.com with SMTP id 7so21351805oip.12
+        for <netdev@vger.kernel.org>; Fri, 26 Nov 2021 15:09:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=szAbCvEVc+U0OOZvhHgeQny7/tz8gsDalBmRPbcJ/3E=;
+        b=mV0tiAY7f+lf5HK9nIVV9X/OvyN1pM8C2KJSKdd1lcEjADhYd5yL8qTkBU9Q52lB3E
+         YA+VlfF/nmsFJeXepADpwf23ZJhfokExBGnW/z5xbfeWa/Y78Cz6X5PSx2ODsTgkxF2W
+         tGn11zAzGQECYzhohbb+im891gNzbzQ2HN26s/A2ogLhpgb0sUS8dlMApsvJnxkssqxx
+         JLw7dpmBdURgM+liRnwziFU8qHE7+l8z20saRyQhqHKgTCtYZrBUXYVw8ARDMr1uw6Yj
+         /O2tIKO/k0ptH+0961uahxU8Kijcvimo1gMcW37LRFj1EvKbzKgLYKASrcESO8WHYTeG
+         wdNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=szAbCvEVc+U0OOZvhHgeQny7/tz8gsDalBmRPbcJ/3E=;
+        b=mwUPtz+HGCvO/AhGGm8qvGE3rxDXC0bFEK3FrfM1sk6HAQ6qW0AM9TguFH3VKJgDFD
+         u45oN4LHKhBt1LcO08gymLqYx9Yo58cbwVBhHuk6nDfyUrwbNbrowYCus2RSIgVvVESX
+         3Lk7RFu0xYdSwdVRwmVAXrCmxumWfmYga126rIczM4RkHOFOshLB2pBY5abVp20S1P/I
+         nUgpq1slxOi2JKOG1G7Y7ztS1lJd2/wdh9qyK9RHnRiwXgt7uCr48Ls3exXGNtQMtS47
+         xpAxnC/VOBJdY7B/QeXp1HilzDIXHgGjgx5oS7gB87wqscONfeoI5L6R0nWXjILjNeLU
+         D8kg==
+X-Gm-Message-State: AOAM532HT/EN+WKqp61jAtDV1zS6f3uiA2teU7MTt5CB4vGYPUUunC5e
+        iaP5wlZk4TZieXH7lwZX33e/bOmiGa7cAvUyOJIgeA==
+X-Google-Smtp-Source: ABdhPJyYKrBx78YhCu+G0cfxdu4WZA4XHAmFbZbp6Tkv+G+i9KKeB4qSzgNhqgmOIe5YoMABQPZ9LmfZFVvtRC4zdKg=
+X-Received: by 2002:a54:4791:: with SMTP id o17mr27032271oic.114.1637968180205;
+ Fri, 26 Nov 2021 15:09:40 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <871ae82a-3d5b-2693-2f77-7c86d725a056@iogearbox.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26365/Fri Nov 26 10:23:49 2021)
+References: <20211126011039.32-1-tangbin@cmss.chinamobile.com>
+ <CACRpkdayKYeizBt=dspQ2VdsQvpc8iq7XeaT7SnRiCyMVO2Bsw@mail.gmail.com> <53308403-a6b1-3af4-27ff-9e772e378bd2@cmss.chinamobile.com>
+In-Reply-To: <53308403-a6b1-3af4-27ff-9e772e378bd2@cmss.chinamobile.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Sat, 27 Nov 2021 00:09:27 +0100
+Message-ID: <CACRpkdZc-zqeWvk_YFfQq4bORgrtM4U6RmmH9n3QV0qO7-q6dA@mail.gmail.com>
+Subject: Re: [PATCH] ptp: ixp46x: Fix error handling in ptp_ixp_probe()
+To:     tangbin <tangbin@cmss.chinamobile.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, arnd@arndb.de,
+        wanjiabing@vivo.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/26/21 11:27 PM, Daniel Borkmann wrote:
-> On 11/26/21 7:06 PM, Jakub Kicinski wrote:
-[...]
->> The information required by the admin is higher level. As you say the
->> primary concern there is "how many packets did XDP eat".
-> 
-> Agree. Above said, for XDP_DROP I would see one use case where you compare
-> different drivers or bond vs no bond as we did in the past in [0] when
-> testing against a packet generator (although I don't see bond driver covered
-> in this series here yet where it aggregates the XDP stats from all bond slave
-> devs).
-> 
-> On a higher-level wrt "how many packets did XDP eat", it would make sense
-> to have the stats for successful XDP_{TX,REDIRECT} given these are out
-> of reach from a BPF prog PoV - we can only count there how many times we
-> returned with XDP_TX but not whether the pkt /successfully made it/.
-> 
-> In terms of error cases, could we just standardize all drivers on the behavior
-> of e.g. mlx5e_xdp_handle(), meaning, a failure from XDP_{TX,REDIRECT} will
-> hit the trace_xdp_exception() and then fallthrough to bump a drop counter
-> (same as we bump in XDP_DROP then). So the drop counter will account for
-> program drops but also driver-related drops.
-> 
-> At some later point the trace_xdp_exception() could be extended with an error
-> code that the driver would propagate (given some of them look quite similar
-> across drivers, fwiw), and then whoever wants to do further processing with
-> them can do so via bpftrace or other tooling.
+On Fri, Nov 26, 2021 at 2:40 AM tangbin <tangbin@cmss.chinamobile.com> wrote:
+> On 2021/11/26 9:26, Linus Walleij wrote:
+> > On Fri, Nov 26, 2021 at 2:10 AM Tang Bin <tangbin@cmss.chinamobile.com> wrote:
+> >
+> >> In the function ptp_ixp_probe(), when get irq failed
+> >> after executing platform_get_irq(), the negative value
+> >> returned will not be detected here. So fix error handling
+> >> in this place.
+> >>
+> >> Fixes: 9055a2f591629 ("ixp4xx_eth: make ptp support a platform driver")
+> >> Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
+> > OK the intention is right but:
+> >
+> >> -           !ixp_clock.master_irq || !ixp_clock.slave_irq)
+> >> +           (ixp_clock.master_irq < 0) || (ixp_clock.slave_irq < 0))
+> > Keep disallowing 0. Because that is not a valid IRQ.
+> >
+> > ... <= 0 ...
+>
+> Please look at the function platform_get_irq() in the file
+> drivers/base/platform.c,
+>
+> the example is :
+>
+>      * int irq = platform_get_irq(pdev, 0);
+>
+>      * if (irq < 0)
+>
+>      *        return irq;
 
-Just thinking out loud, one straight forward example we could start out with
-that is also related to Paolo's series [1] ...
+In this case, reading the code is a bad idea. IRQ 0 is not valid,
+and the fact that platform_get_irq() can return 0 does not make
+it valid.
 
-enum xdp_error {
-	XDP_UNKNOWN,
-	XDP_ACTION_INVALID,
-	XDP_ACTION_UNSUPPORTED,
-};
+See:
+https://lwn.net/Articles/470820/
 
-... and then bpf_warn_invalid_xdp_action() returns one of the latter two
-which we pass to trace_xdp_exception(). Later there could be XDP_DRIVER_*
-cases e.g. propagated from XDP_TX error exceptions.
-
-         [...]
-         default:
-                 err = bpf_warn_invalid_xdp_action(act);
-                 fallthrough;
-         case XDP_ABORTED:
-xdp_abort:
-                 trace_xdp_exception(rq->netdev, prog, act, err);
-                 fallthrough;
-         case XDP_DROP:
-                 lrstats->xdp_drop++;
-                 break;
-         }
-         [...]
-
-   [1] https://lore.kernel.org/netdev/cover.1637924200.git.pabeni@redhat.com/
-
-> So overall wrt this series: from the lrstats we'd be /dropping/ the pass,
-> tx_errors, redirect_errors, invalid, aborted counters. And we'd be /keeping/
-> bytes & packets counters that XDP sees, (driver-)successful tx & redirect
-> counters as well as drop counter. Also, XDP bytes & packets counters should
-> not be counted twice wrt ethtool stats.
-> 
->    [0] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=9e2ee5c7e7c35d195e2aa0692a7241d47a433d1e
+Yours,
+Linus Walleij
