@@ -2,65 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B0CC45E69D
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 04:42:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CCA845E6A7
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 04:52:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357943AbhKZDpX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 22:45:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58534 "EHLO mail.kernel.org"
+        id S1352117AbhKZDzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 22:55:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59536 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344500AbhKZDnW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Nov 2021 22:43:22 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 7439E61154;
-        Fri, 26 Nov 2021 03:40:10 +0000 (UTC)
+        id S1344964AbhKZDxX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Nov 2021 22:53:23 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 147D460231;
+        Fri, 26 Nov 2021 03:50:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637898010;
-        bh=vSn12lrKMoFsWF+FQ3qew4aX7Ao+WycoJE6FAUoxlYU=;
+        s=k20201202; t=1637898611;
+        bh=td7Ul/MLWd+0okRCxMK7e4Ao2DeEknqQrI7bM1vjCcg=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=H7vi5h+t34l8Jq1E//utdluzr1NlovYP1wnfe4/i5L04ANGxXJyU3XC4e3lV/6Jgx
-         KfjECt5bv8u28HmmvQ8BnDFCj/ugzBQL9mFpdnomqt5XgroMn78c7TY4CPhYWcfGE/
-         DL2nPYCxwXGaD7tlWYK5CQI+j+u9dE6h0rHz7YcqYGU0eIQAixhTm/nKKcZMf1UOr3
-         dJvIxNUSDSvsZK4C3Q/H0/QFck6RJCYfoWDR2h43FaV0BjGWgxMAuFJ5DbH9d/eTv2
-         9zMOGDOamA3c1xSkSqM+GSWfulLApQLCXcRrDvKgjgGkvnwTw8D3M6WkJ8xeLAWNPu
-         NBjONZzAbduDA==
+        b=DvzC0PW9VYAtNPTG96J0v04tnbrksI3Z1tIu1/t/0MerH0iUzKRMwDSY7yct/QPb5
+         S23S15l+iptrcb2BAhax/c+MQ5fpjGnPwZf4jgQzfHPYMBzOUcQxV6eElxm0g/78jG
+         Gc/0e6bokGL6SbVerLc9FRUyNejdPThEOOtyxrUim0my9VMjlIyfC4f7t6jKAOBiI7
+         1paZxR/mqSlBio5/6aGV7KTnWn3H/oXDMdoU3ALYkCcAp31jHhGs0m+CwVhO2GxYql
+         F63eVQfA8TrapkiDhSAPhIKnOq8O8/+TaBY6WtFDoFaLAAxr5x6OzV617qcB+8cAIo
+         leDEd1I1EFWFw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 60E93609B9;
-        Fri, 26 Nov 2021 03:40:10 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F423F60A6D;
+        Fri, 26 Nov 2021 03:50:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH][next] net: dsa: qca8k: Fix spelling mistake "Mismateched" ->
- "Mismatched"
+Subject: Re: [PATCH v3 net-next 1/2] net: ocelot: remove "bridge" argument from
+ ocelot_get_bridge_fwd_mask
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163789801039.11827.675546722857552340.git-patchwork-notify@kernel.org>
-Date:   Fri, 26 Nov 2021 03:40:10 +0000
-References: <20211125002932.49217-1-colin.i.king@gmail.com>
-In-Reply-To: <20211125002932.49217-1-colin.i.king@gmail.com>
-To:     Colin Ian King <colin.i.king@googlemail.com>
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Message-Id: <163789861099.16578.4992780057828274770.git-patchwork-notify@kernel.org>
+Date:   Fri, 26 Nov 2021 03:50:10 +0000
+References: <20211125125808.2383984-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20211125125808.2383984-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
+        UNGLinuxDriver@microchip.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        xiaoliang.yang_1@nxp.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This series was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu, 25 Nov 2021 00:29:32 +0000 you wrote:
-> There is a spelling mistake in a netdev_err error message. Fix it.
+On Thu, 25 Nov 2021 14:58:07 +0200 you wrote:
+> The only called takes ocelot_port->bridge and passes it as the "bridge"
+> argument to this function, which then compares it with
+> ocelot_port->bridge. This is not useful.
 > 
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-> ---
->  drivers/net/dsa/qca8k.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Instead, we would like this function to return 0 if ocelot_port->bridge
+> is not present, which is what this patch does.
+> 
+> [...]
 
 Here is the summary with links:
-  - [next] net: dsa: qca8k: Fix spelling mistake "Mismateched" -> "Mismatched"
-    https://git.kernel.org/netdev/net-next/c/4636440f913b
+  - [v3,net-next,1/2] net: ocelot: remove "bridge" argument from ocelot_get_bridge_fwd_mask
+    https://git.kernel.org/netdev/net-next/c/a8bd9fa5b527
+  - [v3,net-next,2/2] net: dsa: felix: enable cut-through forwarding between ports by default
+    https://git.kernel.org/netdev/net-next/c/8abe19703825
 
 You are awesome, thank you!
 -- 
