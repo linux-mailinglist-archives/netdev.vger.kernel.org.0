@@ -2,70 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33B9045E700
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 06:00:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07A9045E796
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 06:53:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229639AbhKZFDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Nov 2021 00:03:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35174 "EHLO mail.kernel.org"
+        id S1344432AbhKZF4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 00:56:11 -0500
+Received: from m12-13.163.com ([220.181.12.13]:40226 "EHLO m12-13.163.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231262AbhKZFBN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Nov 2021 00:01:13 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 118C861074;
-        Fri, 26 Nov 2021 04:58:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637902681;
-        bh=PnGWcu/XiLYTY1tgPOz0rl1I8W4zRGSltZPcpTS+LM8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RnIFvgvCIWbxRtSjtrZWhPsnnlSKsee1IGTey5VpkLvF9u8DMIJ/Es7k+syX7gk4I
-         FLNFtBs14sOy/izn8DUOGJPZF9xue3xq4JCkIOTOKq4kv2oJRrgGbK7Itae8tQmKFe
-         90F5/muMHXsk2bcTDDqiNmRRnIDGQo7RYIH6Y89S2ACoMEMmD0oqtBSGT/9Iun2CJa
-         i7me+Q/q9Car/3I9rM0RgCqGvxdsPzcTSZ9MuLYdfllvBzbXMX9k+yfF5/DFJ1rLvT
-         nWWFHRrVGRXyCMncU+aGzFfHWwQz+AtDPcV9kGsIQW5dqFJXiceL3lK1KBFrV1tGj2
-         qPB6eylW+cboA==
-Date:   Thu, 25 Nov 2021 20:58:00 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sunil Kovvuri <sunil.kovvuri@gmail.com>
-Cc:     Linux Netdev List <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sunil Goutham <sgoutham@marvell.com>
-Subject: Re: [PATCH] octeontx2-nicvf: Add netdev interface support for SDP
- VF devices
-Message-ID: <20211125205800.74e1b07b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CA+sq2CdrO-Zsf5zAj9UbAqVpKdbxeP+QoDAJ6dK2hwDmmuQQ8A@mail.gmail.com>
-References: <20211125021822.6236-1-radhac@marvell.com>
-        <CAC8NTUX1-p24ZBGvwa7YcYQ_G+A_kn3f_GeTofKhO7ELB2bn8g@mail.gmail.com>
-        <20211124192710.438657ca@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAC8NTUUdZSuNtjczBvEZPaAbzaP4rWyR9fDOWC9mdMHEqiEVNw@mail.gmail.com>
-        <20211125070812.1432d2ad@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BY3PR18MB47374C791CA6CA0E3CB4C528C6639@BY3PR18MB4737.namprd18.prod.outlook.com>
-        <CA+sq2CdrO-Zsf5zAj9UbAqVpKdbxeP+QoDAJ6dK2hwDmmuQQ8A@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1358583AbhKZFyK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Nov 2021 00:54:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=0oY/MG+Yhmc81YNGi4
+        zbRgDI258IH1wg0UuqAzQsMzk=; b=SgkO8x4SeneLZu99sSDrZrJb84MegQlg5A
+        KC6ZvB38NX2Ov0cw3ZGNswphWrlo0XAo/3+lAo/T6FwcBWa1qLmtlJP6yXxeuPyc
+        UuEsd0SjBdOms6OEBx1GfqEyF3n41uiwXnMVnKIAwsKvPX+y7zxxfmkU5+vAlUI/
+        xJeWR/BUg=
+Received: from wengjianfeng.ccdomain.com (unknown [218.17.89.92])
+        by smtp9 (Coremail) with SMTP id DcCowAC3bMl1OaBhnUCuPw--.68S2;
+        Fri, 26 Nov 2021 09:33:52 +0800 (CST)
+From:   samirweng1979 <samirweng1979@163.com>
+To:     krzysztof.kozlowski@canonical.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wengjianfeng <wengjianfeng@yulong.com>
+Subject: [PATCH] nfc: fdp: Merge the same judgment
+Date:   Fri, 26 Nov 2021 09:31:30 +0800
+Message-Id: <20211126013130.27112-1-samirweng1979@163.com>
+X-Mailer: git-send-email 2.15.0.windows.1
+X-CM-TRANSID: DcCowAC3bMl1OaBhnUCuPw--.68S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtrW7CFWfZF1fAw17Aw15CFg_yoW3JFg_CF
+        s3XrW7ZrWFgr1YyryfCr9IvFyFqF17Ww1fGay5KayYyrykCF47C34UCr93A3WfWa10vF9r
+        WFnxC34SyrWDujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUYyGQDUUUUU==
+X-Originating-IP: [218.17.89.92]
+X-CM-SenderInfo: pvdpx25zhqwiqzxzqiywtou0bp/xtbBHAZXsV3mCNEsxAAAs2
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 26 Nov 2021 09:44:10 +0530 Sunil Kovvuri wrote:
-> > Nope, I have not accepted that. I was just too lazy to send a revert
-> > after it was merged.
-> 
-> What is the objection here ?
-> Is kernel netdev not supposed to be used with-in end-point ?
+From: wengjianfeng <wengjianfeng@yulong.com>
 
-Yes.
+Combine two judgments that return the same value
 
-> If customers want to use upstream kernel with-in endpoint and not
-> proprietary SDK, why to impose restrictions.
+Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
+---
+ drivers/nfc/fdp/i2c.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-Because our APIs and interfaces have associated semantics. That's
-the primary thing we care about upstream. You need to use or create
-standard interfaces, not come up with your own thing and retrofit it
-into one of the APIs. Not jam PTP configuration thru devlink params,
-or use netdevs to talk to your FW because its convenient. Trust me,
-you're not the first one to come up with this idea.
+diff --git a/drivers/nfc/fdp/i2c.c b/drivers/nfc/fdp/i2c.c
+index f78670bf41e0..28a9e1eb9bcf 100644
+--- a/drivers/nfc/fdp/i2c.c
++++ b/drivers/nfc/fdp/i2c.c
+@@ -205,9 +205,7 @@ static irqreturn_t fdp_nci_i2c_irq_thread_fn(int irq, void *phy_id)
+ 
+ 	r = fdp_nci_i2c_read(phy, &skb);
+ 
+-	if (r == -EREMOTEIO)
+-		return IRQ_HANDLED;
+-	else if (r == -ENOMEM || r == -EBADMSG)
++	if (r == -EREMOTEIO || r == -ENOMEM || r == -EBADMSG)
+ 		return IRQ_HANDLED;
+ 
+ 	if (skb != NULL)
+-- 
+2.29.0
 
-Frankly if the octeontx2 team continues on its current path I think
-the driver should be removed. You bring no benefit to the community
-I don't see why we'd give you the time of day.
+
