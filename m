@@ -2,40 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 689AC45E5C5
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 04:00:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3AF445E5C9
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 04:00:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358495AbhKZCpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 21:45:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50238 "EHLO mail.kernel.org"
+        id S1358900AbhKZCpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 21:45:16 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50246 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1358624AbhKZCnM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Nov 2021 21:43:12 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 016FB6124F;
-        Fri, 26 Nov 2021 02:35:13 +0000 (UTC)
+        id S1358635AbhKZCnP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Nov 2021 21:43:15 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7FD8261263;
+        Fri, 26 Nov 2021 02:35:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637894115;
-        bh=jQPu9rhvGIraQsQ6jlWHUTdOCeN+CBV12qqiq1oMJNk=;
+        s=k20201202; t=1637894118;
+        bh=NAQYj6k14BTvbarLpERBFjTCDkSvdLI44DIIKOd4jKo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K0LRZgB3KlcoxtTT1911+5L/JJFpOEhfrJL6zlZY5+omuiWRHnsa/hz5XG7zA5nrU
-         Jk8YrjkgocOD/aC45C67gKgB+vHw5wZHKfY+k3mS1qv+p2yZwzLtZ1PfWvqKO7ZMV2
-         HgBCgVEfzJW9dSyzMFKzfKeG/ZyhnoUiwpFT5f86+L67K4ScpraJFB/OrTRIfLy3zN
-         k/6fFblPAjDnTRNYVSxvxfSvgbc3t8W2f72xLwxXTxGHST4ZyjM8TQxPS1F2pF8ekS
-         miKggwrgALNTIAIuSshFduvjFd/ENnGD+u103Hj8qo3BJqKF2MIHyaOJwBCQKwuaLo
-         jAwcOcNEmbypw==
+        b=SeW1eeY3WnSwHAx1RqqKsVF9Al7kxtgHM2nrkOOWNjPNvlMzOi40mR/hVUjQrePy9
+         P00SbsFi+XzxlnCDZw0coOwNL8EnFTOFhF3PGCyykwMOkFWU/L+U4w1l7Dsjwnxkds
+         e/KL1Y38RRL6ZEUGL1Arh5KA4eknYSyMt4GL1WcxPzh0zeZAAEZcpsV5fUzO/R6F0Z
+         L5el6x+aqzQjTTDJEVlv/Rgq0YRKgXuUhu60Rf4jmRaygoJHvBnWKFMdC6/QqdpQ9+
+         YDIFVs0S5eXNSNFoxibeMxEqjiV74uSScX1Y90I4r5ks+IHohZiBuBIqkPADXia67E
+         xwyt1ag7EC4QA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Teng Qi <starmiku1207184332@gmail.com>,
-        TOTE Robot <oslab@tsinghua.edu.cn>,
+Cc:     zhangyue <zhangyue1@kylinos.cn>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, yisen.zhuang@huawei.com,
-        salil.mehta@huawei.com, kuba@kernel.org, lipeng321@huawei.com,
-        huangguangbin2@huawei.com, liuyonglong@huawei.com,
-        zhengyongjun3@huawei.com, shenyang39@huawei.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 15/19] ethernet: hisilicon: hns: hns_dsaf_misc: fix a possible array overflow in hns_dsaf_ge_srst_by_port()
-Date:   Thu, 25 Nov 2021 21:34:44 -0500
-Message-Id: <20211126023448.442529-15-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        arnd@arndb.de, starmiku1207184332@gmail.com, tanghui20@huawei.com,
+        netdev@vger.kernel.org, linux-parisc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 16/19] net: tulip: de4x5: fix the problem that the array 'lp->phy[8]' may be out of bound
+Date:   Thu, 25 Nov 2021 21:34:45 -0500
+Message-Id: <20211126023448.442529-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211126023448.442529-1-sashal@kernel.org>
 References: <20211126023448.442529-1-sashal@kernel.org>
@@ -47,46 +44,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Teng Qi <starmiku1207184332@gmail.com>
+From: zhangyue <zhangyue1@kylinos.cn>
 
-[ Upstream commit a66998e0fbf213d47d02813b9679426129d0d114 ]
+[ Upstream commit 61217be886b5f7402843677e4be7e7e83de9cb41 ]
 
-The if statement:
-  if (port >= DSAF_GE_NUM)
-        return;
+In line 5001, if all id in the array 'lp->phy[8]' is not 0, when the
+'for' end, the 'k' is 8.
 
-limits the value of port less than DSAF_GE_NUM (i.e., 8).
-However, if the value of port is 6 or 7, an array overflow could occur:
-  port_rst_off = dsaf_dev->mac_cb[port]->port_rst_off;
+At this time, the array 'lp->phy[8]' may be out of bound.
 
-because the length of dsaf_dev->mac_cb is DSAF_MAX_PORT_NUM (i.e., 6).
-
-To fix this possible array overflow, we first check port and if it is
-greater than or equal to DSAF_MAX_PORT_NUM, the function returns.
-
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Teng Qi <starmiku1207184332@gmail.com>
+Signed-off-by: zhangyue <zhangyue1@kylinos.cn>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/dec/tulip/de4x5.c | 30 +++++++++++++++-----------
+ 1 file changed, 17 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c
-index ed3829ae4ef1b..580199fdd0c22 100644
---- a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c
-+++ b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c
-@@ -398,6 +398,10 @@ static void hns_dsaf_ge_srst_by_port(struct dsaf_device *dsaf_dev, u32 port,
- 		return;
- 
- 	if (!HNS_DSAF_IS_DEBUG(dsaf_dev)) {
-+		/* DSAF_MAX_PORT_NUM is 6, but DSAF_GE_NUM is 8.
-+		   We need check to prevent array overflow */
-+		if (port >= DSAF_MAX_PORT_NUM)
-+			return;
- 		reg_val_1  = 0x1 << port;
- 		port_rst_off = dsaf_dev->mac_cb[port]->port_rst_off;
- 		/* there is difference between V1 and V2 in register.*/
+diff --git a/drivers/net/ethernet/dec/tulip/de4x5.c b/drivers/net/ethernet/dec/tulip/de4x5.c
+index c813e6f2b371e..a80252973171f 100644
+--- a/drivers/net/ethernet/dec/tulip/de4x5.c
++++ b/drivers/net/ethernet/dec/tulip/de4x5.c
+@@ -4999,19 +4999,23 @@ mii_get_phy(struct net_device *dev)
+ 	}
+ 	if ((j == limit) && (i < DE4X5_MAX_MII)) {
+ 	    for (k=0; k < DE4X5_MAX_PHY && lp->phy[k].id; k++);
+-	    lp->phy[k].addr = i;
+-	    lp->phy[k].id = id;
+-	    lp->phy[k].spd.reg = GENERIC_REG;      /* ANLPA register         */
+-	    lp->phy[k].spd.mask = GENERIC_MASK;    /* 100Mb/s technologies   */
+-	    lp->phy[k].spd.value = GENERIC_VALUE;  /* TX & T4, H/F Duplex    */
+-	    lp->mii_cnt++;
+-	    lp->active++;
+-	    printk("%s: Using generic MII device control. If the board doesn't operate,\nplease mail the following dump to the author:\n", dev->name);
+-	    j = de4x5_debug;
+-	    de4x5_debug |= DEBUG_MII;
+-	    de4x5_dbg_mii(dev, k);
+-	    de4x5_debug = j;
+-	    printk("\n");
++	    if (k < DE4X5_MAX_PHY) {
++		lp->phy[k].addr = i;
++		lp->phy[k].id = id;
++		lp->phy[k].spd.reg = GENERIC_REG;      /* ANLPA register         */
++		lp->phy[k].spd.mask = GENERIC_MASK;    /* 100Mb/s technologies   */
++		lp->phy[k].spd.value = GENERIC_VALUE;  /* TX & T4, H/F Duplex    */
++		lp->mii_cnt++;
++		lp->active++;
++		printk("%s: Using generic MII device control. If the board doesn't operate,\nplease mail the following dump to the author:\n", dev->name);
++		j = de4x5_debug;
++		de4x5_debug |= DEBUG_MII;
++		de4x5_dbg_mii(dev, k);
++		de4x5_debug = j;
++		printk("\n");
++	    } else {
++		goto purgatory;
++	    }
+ 	}
+     }
+   purgatory:
 -- 
 2.33.0
 
