@@ -2,80 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D7B745F00D
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 15:41:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5585845F27A
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 17:51:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351127AbhKZOoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Nov 2021 09:44:05 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:53558 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239136AbhKZOmE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Nov 2021 09:42:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=XlFnGXJRxbZVEZqCmUzRQIQzW8wnQfRuzqfUvNPIFuY=; b=0r
-        k4f5DKGSK7K0pld8PqF44Jmuv4DpfKS1V1ikeBCCbxuXHR5bUwteJQV/nIJOVCLYdI+GdWhb0y0E1
-        fNRBtImuo7f12MCAFa6G0GtJZNPeS/fLEYz2h43EQUIfoHBpSSOh98Cm/OgeIjAkQfBrZI30ujCM2
-        yTWrhuQZTfeWF1k=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mqcN9-00Eha7-S0; Fri, 26 Nov 2021 15:38:43 +0100
-Date:   Fri, 26 Nov 2021 15:38:43 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Wells Lu =?utf-8?B?5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
-Cc:     Wells Lu <wellslutw@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        Vincent Shih =?utf-8?B?5pa96YyV6bS7?= 
-        <vincent.shih@sunplus.com>
-Subject: Re: [PATCH v2 2/2] net: ethernet: Add driver for Sunplus SP7021
-Message-ID: <YaDxc2+HKUYxsmX4@lunn.ch>
-References: <cover.1636620754.git.wells.lu@sunplus.com>
- <519b61af544f4c6920012d44afd35a0f8761b24f.1636620754.git.wells.lu@sunplus.com>
- <YY7/v1msiaqJF3Uy@lunn.ch>
- <7cccf9f79363416ca8115a7ed9b1b7fd@sphcmbx02.sunplus.com.tw>
- <YZ+pzFRCB0faDikb@lunn.ch>
- <6c1ce569d2dd46eba8d4b0be84d6159b@sphcmbx02.sunplus.com.tw>
-MIME-Version: 1.0
+        id S231928AbhKZQyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 11:54:03 -0500
+Received: from sender4-op-o13.zoho.com ([136.143.188.13]:17397 "EHLO
+        sender4-op-o13.zoho.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231787AbhKZQwC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 11:52:02 -0500
+ARC-Seal: i=1; a=rsa-sha256; t=1637931451; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=fgI3YSi5v83dF9kYhFY1vM1HjebT6UT5/xWxah1DHTvdouH0f6I5RwjmK7ZVmIx4EbmLK0kFK0xraDWbb6yXAgUgmRWHpHC7E+v8to30Ai8gi1rL95knexIrXaz+a1kHS7Aynj0yri6uyrXmaLl47V/tWwnWNxDWExXAUE5PnHw=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1637931451; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=uUoJmVabYiqmYCRYGKBn/s9kqyNDOLiX94fmlwy2OKg=; 
+        b=BFlGZczFmsBLNd8vfXL5ZQjb5K6si/THNIny4pVvZsOC5Sh2aN7qno0XhcaY9t87Pudu2ZYSiQFZ0lm4vg4Bhc2lKePoTmqULcWwY3F0Uj7UKfNUcfjVl5ufm8VgTcs6gK9DagUbrGkHoNJJVToPxuLLp6wTXHEAfoUQ5gLL/is=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1637931451;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Content-Type:Content-Transfer-Encoding:From:Mime-Version:Subject:Date:Message-Id:References:Cc:In-Reply-To:To;
+        bh=uUoJmVabYiqmYCRYGKBn/s9kqyNDOLiX94fmlwy2OKg=;
+        b=D7uwZ7AJnD/V/uhuNDN8ElIZ1RqIKE28AvTV76Ybdmff3aPNTFs8UmhOFlnYJ+PO
+        JebNo99iI64AgWG4Vc3T/aS4UPG31/1hSB+8cqndTFpNTdU8Sp7JnkF6TQKh1KTwE7i
+        rx8wP1icOh0l9IaurSOuXKqJXQm/OfoucA+tuu8o=
+Received: from [10.10.9.3] (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
+        with SMTPS id 1637931449553968.1568334094624; Fri, 26 Nov 2021 04:57:29 -0800 (PST)
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <6c1ce569d2dd46eba8d4b0be84d6159b@sphcmbx02.sunplus.com.tw>
+Content-Transfer-Encoding: quoted-printable
+From:   =?utf-8?Q?Ar=C4=B1n=C3=A7_=C3=9CNAL?= <arinc.unal@arinc9.com>
+Mime-Version: 1.0 (1.0)
+Subject: Re: [PATCH net 3/3] net: dsa: rtl8365mb: set RGMII RX delay in steps of 0.3 ns
+Date:   Fri, 26 Nov 2021 15:57:23 +0300
+Message-Id: <8F46AA41-9B98-4EFA-AB2E-03990632D75C@arinc9.com>
+References: <20211126125007.1319946-3-alvin@pqrs.dk>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        =?utf-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
+In-Reply-To: <20211126125007.1319946-3-alvin@pqrs.dk>
+To:     =?utf-8?Q?Alvin_=C5=A0ipraga?= <alvin@pqrs.dk>
+X-Mailer: iPhone Mail (17H35)
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 26, 2021 at 03:56:28AM +0000, Wells Lu 呂芳騰 wrote:
-> Hi Andrew,
-> 
-> I set phy-id registers to 30 and 31 and found the read-back
-> values of mdio read commands from CPU are all 0x0000.
-> 
-> I consulted with an ASIC engineer. She confirmed that if
-> phy-id of a mdio command from CPU does not match any 
-> phy-id registers, the mdio command will not be sent out.
-> 
-> She explained if phy-id of a mdio command does not match 
-> any phy-id registers (represent addresses of external PHYs),
-> why MAC needs to send a command to non-existing PHY?
+> On 26 Nov 2021, at 15:50, Alvin =C5=A0ipraga <alvin@pqrs.dk> wrote:
+>=20
+> =EF=BB=BFFrom: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
+>=20
+> A contact at Realtek has clarified what exactly the units of RGMII RX
+> delay are. The answer is that the unit of RX delay is "about 0.3 ns".
+> Take this into account when parsing rx-internal-delay-ps by
+> approximating the closest step value. Delays of more than 2.1 ns are
+> rejected.
+>=20
+> This obviously contradicts the previous assumption in the driver that a
+> step value of 4 was "about 2 ns", but Realtek also points out that it is
+> easy to find more than one RX delay step value which makes RGMII work.
+>=20
+> Fixes: 4af2950c50c8 ("net: dsa: realtek-smi: add rtl8365mb subdriver for R=
+TL8365MB-VC")
+> Cc: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
+> Signed-off-by: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
 
-Reads or writes on a real PHY which Linux is driving can have side
-effects. There is a link statue register which latches. Read it once,
-you get the last status, read it again, you get the current status. If
-the MAC hardware is reading this register as well a Linux, bad things
-will happen. A read on the interrupt status register often clears the
-interrupts. So Linux will not see the interrupts.
+Acked-by: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>=
 
-So you need to make sure you hardware is not touching a PHY which
-Linux uses. Which is why i suggested using MDIO bus address 31, which
-generally does not have a PHY at that address.
-
-	  Andrew
