@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57E3245E4EC
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 03:39:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5700D45E510
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 03:39:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358118AbhKZChp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 21:37:45 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47858 "EHLO mail.kernel.org"
+        id S1357973AbhKZCjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 21:39:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48184 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1357646AbhKZCfn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Nov 2021 21:35:43 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C3312611C4;
-        Fri, 26 Nov 2021 02:32:18 +0000 (UTC)
+        id S1343602AbhKZChO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Nov 2021 21:37:14 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A1886611C7;
+        Fri, 26 Nov 2021 02:32:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637893939;
-        bh=z/cuVoIyPLjSIH6NKC38LEmUUOHD3/wwUcHONsV+qhc=;
+        s=k20201202; t=1637893965;
+        bh=NVYc831lTubR1pDQoit5Z7uxb0b0HMjCDCYurmDIRHg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oo509E4eiQpfR0G+hF/KdlDgXNsd37GMu16ci2/4IWg4PIF0qwMfdH8BnwrAonHlK
-         0VrgsJ+cwLMJ7KwX2pNoxkAaIS/N08JbJW4RlJMqTadEEsVpzh6dB8f32TsDtIwxiX
-         S9RJSfpKYw2vb8m58I9Nqh6LJ9HsonsRrE3dHYO+w2twdMrLJ5PiaHAWMgSXbWzhlv
-         JcwjSK9DDHZKW6lbYNQQ8gqHUbLsAqkjF0QDN0RJQfO72NgEULa9rl4vo+e8bTMuhf
-         9UvZGlKQ9hBSJsHktTNHBJjfZHYFKjEgitOEvs6p54xjqCkObPlvXMxYH6sMiXuPIS
-         T2DWHni3E7CgA==
+        b=ecdgmmTu5zav/G6zdY5WCd+5YF/6Z+f6l0hH9NWF0JUFSZ7k53kE6+6zHEyRfqESv
+         UluCky84NMpZ1xLQSO2qdSUvdmNV1yB1rEj/A0W23zDF21MiQKF8MIh3jqAYwoCA8n
+         9geqDEPLFrHubmRvb9RG8cw/7nOUvWLOouJ002O6CsEjQ/ItDYXzn68hLrtlb7i+Dg
+         jHI6leXsJYMOEvtLU00s0GLU9Urmg4q3bPZyR2yP8nIJf0I5o1o9UdMP9m+OGrpQaK
+         WKc6Ttqt0v1x0yH5gC76l24VSjRwWMm2hwa5grvOVpoYo1LeHoFwa0GRkExe8NUtXF
+         DgDnkW+kvgJdg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     liuguoqiang <liuguoqiang@uniontech.com>,
+Cc:     Aaron Ma <aaron.ma@canonical.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 12/39] net: return correct error code
-Date:   Thu, 25 Nov 2021 21:31:29 -0500
-Message-Id: <20211126023156.441292-12-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        hayeswang@realtek.com, tiwai@suse.de, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 23/39] net: usb: r8152: Add MAC passthrough support for more Lenovo Docks
+Date:   Thu, 25 Nov 2021 21:31:40 -0500
+Message-Id: <20211126023156.441292-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211126023156.441292-1-sashal@kernel.org>
 References: <20211126023156.441292-1-sashal@kernel.org>
@@ -43,33 +44,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: liuguoqiang <liuguoqiang@uniontech.com>
+From: Aaron Ma <aaron.ma@canonical.com>
 
-[ Upstream commit 6def480181f15f6d9ec812bca8cbc62451ba314c ]
+[ Upstream commit f77b83b5bbab53d2be339184838b19ed2c62c0a5 ]
 
-When kmemdup called failed and register_net_sysctl return NULL, should
-return ENOMEM instead of ENOBUFS
+Like ThinkaPad Thunderbolt 4 Dock, more Lenovo docks start to use the original
+Realtek USB ethernet chip ID 0bda:8153.
 
-Signed-off-by: liuguoqiang <liuguoqiang@uniontech.com>
+Lenovo Docks always use their own IDs for usb hub, even for older Docks.
+If parent hub is from Lenovo, then r8152 should try MAC passthrough.
+Verified on Lenovo TBT3 dock too.
+
+Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/devinet.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/usb/r8152.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
-index f4468980b6757..4744c7839de53 100644
---- a/net/ipv4/devinet.c
-+++ b/net/ipv4/devinet.c
-@@ -2587,7 +2587,7 @@ static int __devinet_sysctl_register(struct net *net, char *dev_name,
- free:
- 	kfree(t);
- out:
--	return -ENOBUFS;
-+	return -ENOMEM;
- }
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index f329e39100a7d..d3da350777a4d 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -9603,12 +9603,9 @@ static int rtl8152_probe(struct usb_interface *intf,
+ 		netdev->hw_features &= ~NETIF_F_RXCSUM;
+ 	}
  
- static void __devinet_sysctl_unregister(struct net *net,
+-	if (le16_to_cpu(udev->descriptor.idVendor) == VENDOR_ID_LENOVO) {
+-		switch (le16_to_cpu(udev->descriptor.idProduct)) {
+-		case DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2:
+-		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2:
+-			tp->lenovo_macpassthru = 1;
+-		}
++	if (udev->parent &&
++			le16_to_cpu(udev->parent->descriptor.idVendor) == VENDOR_ID_LENOVO) {
++		tp->lenovo_macpassthru = 1;
+ 	}
+ 
+ 	if (le16_to_cpu(udev->descriptor.bcdDevice) == 0x3011 && udev->serial &&
 -- 
 2.33.0
 
