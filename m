@@ -2,79 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E33AF45EA30
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 10:18:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E82DA45EA76
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 10:35:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237279AbhKZJVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Nov 2021 04:21:24 -0500
-Received: from mga03.intel.com ([134.134.136.65]:21447 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231935AbhKZJTX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Nov 2021 04:19:23 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10179"; a="235576428"
-X-IronPort-AV: E=Sophos;i="5.87,265,1631602800"; 
-   d="scan'208";a="235576428"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2021 01:15:24 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,265,1631602800"; 
-   d="scan'208";a="607790551"
-Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 26 Nov 2021 01:15:22 -0800
-Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1mqXKD-0007t6-JZ; Fri, 26 Nov 2021 09:15:21 +0000
-Date:   Fri, 26 Nov 2021 17:14:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        davem@davemloft.net
-Cc:     kbuild-all@lists.01.org,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thomas.petazzoni@bootlin.com, gregory.clement@bootlin.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Subject: Re: [PATCH net-next 4/4] net: mvneta: Add TC traffic shaping offload
-Message-ID: <202111261722.xQYnccxe-lkp@intel.com>
-References: <20211125154813.579169-5-maxime.chevallier@bootlin.com>
+        id S1376382AbhKZJiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 04:38:03 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:44088
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233594AbhKZJgC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 04:36:02 -0500
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com [209.85.208.200])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 8FE4B40749
+        for <netdev@vger.kernel.org>; Fri, 26 Nov 2021 09:32:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1637919168;
+        bh=g8p9caKWVfezbBLp8CApTokNGzRIolp+56D1QwZhKNQ=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=ZWzpkbgF4xQG2cjiQ8BjGjALE30wUJLqexjr6Ymyl/CMADKztcZJo6v6M3ojDhUgK
+         kffoXRLVmmo0HGiIkHVqfZHMgEjEoUh4YaescuuuIMPbb/NK4p0Q/1zPClW7Ejpn0T
+         G0SlueM/8ER7mYdh87MY893cqYSlzZp/yXvawezSMOUOKnMdUEDRdPn9GjrvHIRe1Y
+         Cje+Mygbm6Nho08k9Z6oEU8zjN3/6n41LS4aWq03zGC6J64c+e0CiwnYIpUwj/KBjK
+         nRRGCilI9tGOq/CI0wyyfUflaV9ct3b4VfKzc0sNO7wzEvWVVMtjo7Vj8CwBCsf8zd
+         BL2O9xsZWaKNw==
+Received: by mail-lj1-f200.google.com with SMTP id o15-20020a2e90cf000000b00218dfebebdeso2969993ljg.13
+        for <netdev@vger.kernel.org>; Fri, 26 Nov 2021 01:32:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=g8p9caKWVfezbBLp8CApTokNGzRIolp+56D1QwZhKNQ=;
+        b=UKjQixhuby1Lwuafgl5ARQnBRaqaqF718jrUKRK1FeeUa+Q6ztPf+pBg4GDfQVcmAz
+         fXyZlyUE8EzL5zLAPGlzm3U/KyW18oj8cr+SVXk5iePdxIsVv9HNzhOd0H3fevSz6dJ8
+         3q2Fe+yGpP2ke6c4sy2hymyu/reEsXerUMKXrCv6il71PtdtS46NYYKcyoO+Ucok6+Nx
+         9TwZa7yqPgo6Jiookq28rVv9v+4hCWpgPpO2gIRTmLjiKdSoj6zWAkBR0CJsm0nDMRZX
+         I3UTr9/an1WQQsi4DHeyWjcb0TFeMnPJ1ItxRZaCH8tUzA8kfQyTTi8t1zl0RGFPla2W
+         GDFw==
+X-Gm-Message-State: AOAM530ftUjoTWYD+EjzAKJyBRza5kfklNaikfdkSe+AaMH95Rdp8wDl
+        lVWlniJHwfbszkOtmC3DRGRKE0GO8Dshn0yz4KaYTiPqtQcDVvPN9SsjNl/inZN17MVoifikYJR
+        6gjZlfUNQRSPs7TYWY/tmJ/lY19bbbfxdUQ==
+X-Received: by 2002:a2e:3009:: with SMTP id w9mr30309845ljw.71.1637919168067;
+        Fri, 26 Nov 2021 01:32:48 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy0YH7ltvScZXrG5ipSSXYBA/tyIwYumCJjNqwJFxZQQT/vSCsQJ+7cWHw0jjG4LYWatMPr/g==
+X-Received: by 2002:a2e:3009:: with SMTP id w9mr30309830ljw.71.1637919167849;
+        Fri, 26 Nov 2021 01:32:47 -0800 (PST)
+Received: from [192.168.3.67] (89-77-68-124.dynamic.chello.pl. [89.77.68.124])
+        by smtp.gmail.com with ESMTPSA id v2sm453208ljg.46.2021.11.26.01.32.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 Nov 2021 01:32:47 -0800 (PST)
+Message-ID: <05cd26eb-8510-d566-7503-c66ac9b54919@canonical.com>
+Date:   Fri, 26 Nov 2021 10:32:46 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211125154813.579169-5-maxime.chevallier@bootlin.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH] nfc: fdp: Merge the same judgment
+Content-Language: en-US
+To:     samirweng1979 <samirweng1979@163.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wengjianfeng <wengjianfeng@yulong.com>
+References: <20211126013130.27112-1-samirweng1979@163.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20211126013130.27112-1-samirweng1979@163.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Maxime,
+On 26/11/2021 02:31, samirweng1979 wrote:
+> From: wengjianfeng <wengjianfeng@yulong.com>
+> 
+> Combine two judgments that return the same value
+> 
+> Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
+> ---
+>  drivers/nfc/fdp/i2c.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+> 
 
-Thank you for the patch! Yet something to improve:
 
-[auto build test ERROR on net-next/master]
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-url:    https://github.com/0day-ci/linux/commits/Maxime-Chevallier/net-mvneta-mqprio-cleanups-and-shaping-support/20211125-235035
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 305e95bb893cc50f7c59edf2b47d95effe73498a
-config: arm-defconfig (https://download.01.org/0day-ci/archive/20211126/202111261722.xQYnccxe-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/789fe6c5e8c95ee076c1476c860591c00fa06555
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Maxime-Chevallier/net-mvneta-mqprio-cleanups-and-shaping-support/20211125-235035
-        git checkout 789fe6c5e8c95ee076c1476c860591c00fa06555
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   arm-linux-gnueabi-ld: drivers/net/ethernet/marvell/mvneta.o: in function `mvneta_setup_mqprio':
->> mvneta.c:(.text+0x2a3c): undefined reference to `__aeabi_uldivmod'
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Best regards,
+Krzysztof
