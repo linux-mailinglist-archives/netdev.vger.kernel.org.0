@@ -2,104 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A520245E420
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 02:44:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C84F945E4D7
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 03:39:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349802AbhKZBsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 20:48:00 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:15870 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351614AbhKZBqA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 20:46:00 -0500
-Received: from dggeml757-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4J0ctf4YQbz91NH;
-        Fri, 26 Nov 2021 09:42:18 +0800 (CST)
-Received: from ubuntu-82.huawei.com (10.175.104.82) by
- dggeml757-chm.china.huawei.com (10.1.199.137) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.20; Fri, 26 Nov 2021 09:42:46 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <petrm@nvidia.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net] net: vlan: fix underflow for the real_dev refcnt
-Date:   Fri, 26 Nov 2021 09:59:42 +0800
-Message-ID: <20211126015942.2918542-1-william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S1358017AbhKZChX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 21:37:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48248 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1351850AbhKZCfV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Nov 2021 21:35:21 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4863E61185;
+        Fri, 26 Nov 2021 02:32:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637893928;
+        bh=Ngs82xBj1LLbXSDmWF4eJlRbBj4Kc8mqIGfH7kS/xA0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=K4VPe/AxYLPuaLDpoCQRggx+OkU3EiOEYzfQ9bk08gmkMLeD+P0Q69IjZw077Aqbq
+         xdOhuICtVvayIci/usScI3RxgL0jLqrB6yUkvLiCfXd196XVZw0SRbj47/MnqpsXpl
+         IBuBHlTB8PYmXo35xr0yCyGkewYH/wjgFP7t4IgBtSUd+aCBWHX1vbHbiwNMczcvLT
+         Yyxr2XAY5XUp09J/lvwdTx14o5RJdvJi/C+HHg7Kilhn4BlC118k+bvcu/MUBQ/sXs
+         ebjVS0xjQP/EW6yo0yjsOGCJw3LbQxVi5QH9ltMUuzMkz7S+axZAa+94VsDcirrY9m
+         W4U+qOCMBrCYg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Xing Song <xing.song@mediatek.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        davem@davemloft.net, kuba@kernel.org, matthias.bgg@gmail.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 06/39] mac80211: do not access the IV when it was stripped
+Date:   Thu, 25 Nov 2021 21:31:23 -0500
+Message-Id: <20211126023156.441292-6-sashal@kernel.org>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20211126023156.441292-1-sashal@kernel.org>
+References: <20211126023156.441292-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggeml757-chm.china.huawei.com (10.1.199.137)
-X-CFilter-Loop: Reflected
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Inject error before dev_hold(real_dev) in register_vlan_dev(),
-and execute the following testcase:
+From: Xing Song <xing.song@mediatek.com>
 
-ip link add dev dummy1 type dummy
-ip link add name dummy1.100 link dummy1 type vlan id 100
-ip link del dev dummy1
+[ Upstream commit 77dfc2bc0bb4b8376ecd7a430f27a4a8fff6a5a0 ]
 
-When the dummy netdevice is removed, we will get a WARNING as following:
+ieee80211_get_keyid() will return false value if IV has been stripped,
+such as return 0 for IP/ARP frames due to LLC header, and return -EINVAL
+for disassociation frames due to its length... etc. Don't try to access
+it if it's not present.
 
-=======================================================================
-refcount_t: decrement hit 0; leaking memory.
-WARNING: CPU: 2 PID: 0 at lib/refcount.c:31 refcount_warn_saturate+0xbf/0x1e0
-
-and an endless loop of:
-
-=======================================================================
-unregister_netdevice: waiting for dummy1 to become free. Usage count = -1073741824
-
-That is because dev_put(real_dev) in vlan_dev_free() be called without
-dev_hold(real_dev) in register_vlan_dev(). It makes the refcnt of real_dev
-underflow.
-
-Move the dev_hold(real_dev) to vlan_dev_init() which is the call-back of
-ndo_init(). That makes dev_hold() and dev_put() for vlan's real_dev
-symmetrical.
-
-Fixes: 563bcbae3ba2 ("net: vlan: fix a UAF in vlan_dev_real_dev()")
-Reported-by: Petr Machata <petrm@nvidia.com>
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+Signed-off-by: Xing Song <xing.song@mediatek.com>
+Link: https://lore.kernel.org/r/20211101024657.143026-1-xing.song@mediatek.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/8021q/vlan.c     | 3 ---
- net/8021q/vlan_dev.c | 3 +++
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ net/mac80211/rx.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
-index a3a0a5e994f5..abaa5d96ded2 100644
---- a/net/8021q/vlan.c
-+++ b/net/8021q/vlan.c
-@@ -184,9 +184,6 @@ int register_vlan_dev(struct net_device *dev, struct netlink_ext_ack *extack)
- 	if (err)
- 		goto out_unregister_netdev;
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index c4071b015c188..ba3b82a72a604 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -1952,7 +1952,8 @@ ieee80211_rx_h_decrypt(struct ieee80211_rx_data *rx)
+ 		int keyid = rx->sta->ptk_idx;
+ 		sta_ptk = rcu_dereference(rx->sta->ptk[keyid]);
  
--	/* Account for reference in struct vlan_dev_priv */
--	dev_hold(real_dev);
--
- 	vlan_stacked_transfer_operstate(real_dev, dev, vlan);
- 	linkwatch_fire_event(dev); /* _MUST_ call rfc2863_policy() */
- 
-diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
-index ab6dee28536d..a54535cbcf4c 100644
---- a/net/8021q/vlan_dev.c
-+++ b/net/8021q/vlan_dev.c
-@@ -615,6 +615,9 @@ static int vlan_dev_init(struct net_device *dev)
- 	if (!vlan->vlan_pcpu_stats)
- 		return -ENOMEM;
- 
-+	/* Get vlan's reference to real_dev */
-+	dev_hold(real_dev);
-+
- 	return 0;
- }
+-		if (ieee80211_has_protected(fc)) {
++		if (ieee80211_has_protected(fc) &&
++		    !(status->flag & RX_FLAG_IV_STRIPPED)) {
+ 			cs = rx->sta->cipher_scheme;
+ 			keyid = ieee80211_get_keyid(rx->skb, cs);
  
 -- 
-2.25.1
+2.33.0
 
