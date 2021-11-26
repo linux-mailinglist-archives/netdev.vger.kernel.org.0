@@ -2,184 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 863F845EBD0
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 11:37:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F18A45EBD7
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 11:41:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232347AbhKZKlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Nov 2021 05:41:08 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:43747 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238038AbhKZKjI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 05:39:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637922955;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=vXBd28bcX264VU/S4G66DmxsLM80Ytxzh6lebwq/wHQ=;
-        b=Y1+7J1n1BKsYurR9GgQPLE0iyqmh+cNdD4120vrPRiNxEp7JhKihlmnVIOVR84DUkYECRN
-        MXQLrWxmjA1/79jC//9pjaB/iqstXVMDHE4ysVbXKi/5zTPNntF9x8OYhy8B8omz/ks8f3
-        Pyl3NLL84MSw5CDfFRgrFz8/ZpzBMbA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-130-tqsyYKIfOyyXxwuqk_2U4A-1; Fri, 26 Nov 2021 05:35:51 -0500
-X-MC-Unique: tqsyYKIfOyyXxwuqk_2U4A-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9164F801B17;
-        Fri, 26 Nov 2021 10:35:50 +0000 (UTC)
-Received: from gerbillo.fritz.box (unknown [10.39.194.163])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B04061972E;
-        Fri, 26 Nov 2021 10:35:49 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     mptcp@lists.linux.dev
-Subject: [PATCH iproute2-next] mptcp: add support for fullmesh flag
-Date:   Fri, 26 Nov 2021 11:35:44 +0100
-Message-Id: <247b8dfb7254d4a1fb435b5efa756cea989b62cb.1637922870.git.pabeni@redhat.com>
+        id S1376936AbhKZKou (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 05:44:50 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:11648 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236358AbhKZKmt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 05:42:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1637923177; x=1669459177;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=xpmhlSW7em7UtmFKOBx2CLVo53uxQhap/VGArGY8Pa4=;
+  b=vTKRROhUVRlJRF258OLkWea3ARqOFeP2/ru6J/dIvPzfmZQTWCeoJw5b
+   n92lbpHrd8tNjIi9/8UF5/eALX9UcZD/dvszGHccIPuVOAKlSidierXaY
+   GZKxxL00aqHfIxrKvdLYD3S9fSGn+n3m3BFD30Uso4CpQHN5idiuveiSN
+   +fgKbUn75jKCkxcNPt5c+4AUvOzpdMbkVXcoWc1P8O/QJArof7ZUZePt2
+   vRp8xBrBEBRuyqGD2UspivWhbdDszLohRVafzRxvLqFRAY7JtwjHY7fIR
+   qQ/b8uSlixG3xo8DVGzjPnaUXDETgMYCCK/97BT6Ywr8BfIgTvdjVud7A
+   A==;
+IronPort-SDR: bL+132sOLI9lgINdCORMFDLb6YAEVlBP+OMPuCHT7/JZMk4pG47jnl6W/hpbiK2qZglXWlTwzs
+ r1vjJui+crD3+5a0mMU5ushlFCRPkitJXCq8kZbfkjMeABVBpJmyBwRRyIqTtVQTp4wUl3v3YN
+ hmk4fPpgmYguJw06KxpGL+IgGF6r8E+jlJVIV8YZ/SLy3Ll7X2HyTjUyRQkuGcXD55X32+XS4U
+ j4fsRQNbGLwveG90hd5HMSxh2iPFyFVSrL8LU6pyet82/3+BjecAwaC1qi0bSC+AVRkZauzHHJ
+ 0e2gt6xXzR5o1Jm/CaP9exEs
+X-IronPort-AV: E=Sophos;i="5.87,265,1631602800"; 
+   d="scan'208";a="77667991"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Nov 2021 03:39:36 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Fri, 26 Nov 2021 03:39:36 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Fri, 26 Nov 2021 03:39:34 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next] net: phy: micrel: Add config_init for LAN8814
+Date:   Fri, 26 Nov 2021 11:38:33 +0100
+Message-ID: <20211126103833.3609945-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The link kernel supports this endpoint flag since v5.15, let's
-expose it to user-space. It allows creation on fullmesh topolgy
-via MPTCP subflow.
+Add config_init for LAN8814. This function is required for the following
+reasons:
+- we need to make sure that the PHY is reset,
+- disable ANEG with QSGMII PCS Host side
+- swap the MDI-X A,B transmit so that there will not be any link flip-flaps
+  when the PHY gets a link.
 
-Additionally update the related man-page, clarifying the behavior
-of related options.
-
-Acked-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- ip/ipmptcp.c        |  3 ++-
- man/man8/ip-mptcp.8 | 61 ++++++++++++++++++++++++++++++++++-----------
- 2 files changed, 49 insertions(+), 15 deletions(-)
+ drivers/net/phy/micrel.c | 32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
-diff --git a/ip/ipmptcp.c b/ip/ipmptcp.c
-index 0f5b6e2d..433fa68d 100644
---- a/ip/ipmptcp.c
-+++ b/ip/ipmptcp.c
-@@ -31,7 +31,7 @@ static void usage(void)
- 		"	ip mptcp limits show\n"
- 		"	ip mptcp monitor\n"
- 		"FLAG-LIST := [ FLAG-LIST ] FLAG\n"
--		"FLAG  := [ signal | subflow | backup ]\n");
-+		"FLAG  := [ signal | subflow | backup | fullmesh ]\n");
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 44a24b99c894..f080312032cf 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -1565,6 +1565,14 @@ static int ksz886x_cable_test_get_status(struct phy_device *phydev,
+ #define LAN_EXT_PAGE_ACCESS_ADDRESS_DATA		0x17
+ #define LAN_EXT_PAGE_ACCESS_CTRL_EP_FUNC		0x4000
  
- 	exit(-1);
- }
-@@ -53,6 +53,7 @@ static const struct {
- 	{ "signal",		MPTCP_PM_ADDR_FLAG_SIGNAL },
- 	{ "subflow",		MPTCP_PM_ADDR_FLAG_SUBFLOW },
- 	{ "backup",		MPTCP_PM_ADDR_FLAG_BACKUP },
-+	{ "fullmesh",		MPTCP_PM_ADDR_FLAG_FULLMESH },
- };
- 
- static void print_mptcp_addr_flags(unsigned int flags)
-diff --git a/man/man8/ip-mptcp.8 b/man/man8/ip-mptcp.8
-index 22335b61..019debe2 100644
---- a/man/man8/ip-mptcp.8
-+++ b/man/man8/ip-mptcp.8
-@@ -53,6 +53,8 @@ ip-mptcp \- MPTCP path manager configuration
- .B subflow
- .RB "|"
- .B backup
-+.RB "|"
-+.B fullmesh
- .RB  "]"
- 
- .ti -8
-@@ -103,22 +105,41 @@ is a unique numeric identifier for the given endpoint
- 
- .TP
- .BR signal
--the endpoint will be announced/signalled to each peer via an ADD_ADDR MPTCP
--sub-option
-+The endpoint will be announced/signaled to each peer via an MPTCP ADD_ADDR
-+sub-option. Upon reception of an ADD_ADDR sub-option, the peer can try to
-+create additional subflows, see
-+.BR ADD_ADDR_ACCEPTED_NR.
- 
- .TP
- .BR subflow
--if additional subflow creation is allowed by MPTCP limits, the endpoint will
--be used as the source address to create an additional subflow after that
--the MPTCP connection is established.
-+If additional subflow creation is allowed by the MPTCP limits, the MPTCP
-+path manager will try to create an additional subflow using this endpoint
-+as the source address after the MPTCP connection is established.
- 
- .TP
- .BR backup
--the endpoint will be announced as a backup address, if this is a
--.BR signal
--endpoint, or the subflow will be created as a backup one if this is a
-+If this is a
-+.BR subflow
-+endpoint, the subflows created using this endpoint will have the backup
-+flag set during the connection process. This flag instructs the peer to
-+only send data on a given subflow when all non-backup subflows are
-+unavailable. This does not affect outgoing data, where subflow priority
-+is determined by the backup/non-backup flag received from the peer
++#define LAN8814_QSGMII_SOFT_RESET			0x43
++#define LAN8814_QSGMII_SOFT_RESET_BIT			BIT(0)
++#define LAN8814_QSGMII_PCS1G_ANEG_CONFIG		0x13
++#define LAN8814_QSGMII_PCS1G_ANEG_CONFIG_ANEG_ENA	BIT(3)
++#define LAN8814_ALIGN_SWAP				0x4a
++#define LAN8814_ALIGN_TX_A_B_SWAP			0x1
++#define LAN8814_ALIGN_TX_A_B_SWAP_MASK			GENMASK(2, 0)
 +
-+.TP
-+.BR fullmesh
-+If this is a
-+.BR subflow
-+endpoint and additional subflow creation is allowed by the MPTCP limits,
-+the MPTCP path manager will try to create an additional subflow for each
-+known peer address, using this endpoint as the source address. This will
-+occur after the MPTCP connection is established. If the peer did not
-+announce any additional addresses using the MPTCP ADD_ADDR sub-option,
-+this will behave the same as a plain
- .BR subflow
--endpoint
-+endpoint. When the peer does announce addresses, each received ADD_ADDR
-+sub-option will trigger creation of an additional subflow to generate a
-+full mesh topology.
+ #define LAN8804_ALIGN_SWAP				0x4a
+ #define LAN8804_ALIGN_TX_A_B_SWAP			0x1
+ #define LAN8804_ALIGN_TX_A_B_SWAP_MASK			GENMASK(2, 0)
+@@ -1601,6 +1609,29 @@ static int lanphy_write_page_reg(struct phy_device *phydev, int page, u16 addr,
+ 	return 0;
+ }
  
- .sp
- .PP
-@@ -136,17 +157,29 @@ ip mptcp limits set	change the MPTCP subflow creation limits
- .IR SUBFLOW_NR
- specifies the maximum number of additional subflows allowed for each MPTCP
- connection. Additional subflows can be created due to: incoming accepted
--ADD_ADDR option, local
-+ADD_ADDR sub-option, local
- .BR subflow
- endpoints, additional subflows started by the peer.
- 
- .TP
- .IR ADD_ADDR_ACCEPTED_NR
--specifies the maximum number of ADD_ADDR suboptions accepted for each MPTCP
--connection. The MPTCP path manager will try to create a new subflow for
--each accepted ADD_ADDR option, respecting the
-+specifies the maximum number of incoming ADD_ADDR sub-options accepted for
-+each MPTCP connection. After receiving the specified number of ADD_ADDR
-+sub-options, any other incoming one will be ignored for the MPTCP connection
-+lifetime. When an ADD_ADDR sub-option is accepted and there are no local
-+.IR fullmesh
-+endpoints, the MPTCP path manager will try to create a new subflow using the
-+address in the ADD_ADDR sub-option as the destination address and a source
-+address determined using local routing resolution
-+When
-+.IR fullmesh
-+endpoints are available, the MPTCP path manager will try to create new subflows
-+using each
-+.IR fullmesh
-+endpoint as a source address and the peer's ADD_ADDR address as the destination.
-+In both cases the
- .IR SUBFLOW_NR
--limit.
-+limit is enforced.
- 
- .sp
- .PP
++static int lan8814_config_init(struct phy_device *phydev)
++{
++	int val;
++
++	/* Reset the PHY */
++	val = lanphy_read_page_reg(phydev, 4, LAN8814_QSGMII_SOFT_RESET);
++	val |= LAN8814_QSGMII_SOFT_RESET_BIT;
++	lanphy_write_page_reg(phydev, 4, LAN8814_QSGMII_SOFT_RESET, val);
++
++	/* Disable ANEG with QSGMII PCS Host side */
++	val = lanphy_read_page_reg(phydev, 5, LAN8814_QSGMII_PCS1G_ANEG_CONFIG);
++	val &= ~LAN8814_QSGMII_PCS1G_ANEG_CONFIG_ANEG_ENA;
++	lanphy_write_page_reg(phydev, 5, LAN8814_QSGMII_PCS1G_ANEG_CONFIG, val);
++
++	/* MDI-X setting for swap A,B transmit */
++	val = lanphy_read_page_reg(phydev, 2, LAN8814_ALIGN_SWAP);
++	val &= ~LAN8814_ALIGN_TX_A_B_SWAP_MASK;
++	val |= LAN8814_ALIGN_TX_A_B_SWAP;
++	lanphy_write_page_reg(phydev, 2, LAN8814_ALIGN_SWAP, val);
++
++	return 0;
++}
++
+ static int lan8804_config_init(struct phy_device *phydev)
+ {
+ 	int val;
+@@ -1793,6 +1824,7 @@ static struct phy_driver ksphy_driver[] = {
+ 	.phy_id		= PHY_ID_LAN8814,
+ 	.phy_id_mask	= MICREL_PHY_ID_MASK,
+ 	.name		= "Microchip INDY Gigabit Quad PHY",
++	.config_init	= lan8814_config_init,
+ 	.driver_data	= &ksz9021_type,
+ 	.probe		= kszphy_probe,
+ 	.soft_reset	= genphy_soft_reset,
 -- 
-2.33.1
+2.33.0
 
