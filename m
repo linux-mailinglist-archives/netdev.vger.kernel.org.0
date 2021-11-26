@@ -2,111 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94DE645ECD1
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 12:41:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AACD945EC73
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 12:21:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346034AbhKZLox (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Nov 2021 06:44:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54648 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231490AbhKZLmx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 06:42:53 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6E64C07E5E7;
-        Fri, 26 Nov 2021 03:04:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=LMb0rklF0FhVxidjDs0zJKE7sk6toKA4FBFMBdMwhPE=; b=ilVo3g6YYkO50ZXaIB1f0xNad1
-        AR0bmIzUIzw6LdFMI5erbTHy91hEn0cP3ZvhXiS8OaZ2YuIXphuZdk6Am15JOc3Eo7M3iLokEygnd
-        i8cQuAVsceiO0+K3tA2+hZCteRIsyL4IkqXI9W4vopo6zA+8KxBrbVHGlwv+eTXi72S3QZoB6eLxa
-        ZNfM0BtXzI3lSAM1GT7gWLtx3xBBeHr05rXP/zywk8HQ7QuWC3ZttqBkxAqLSiqx3XiYbchhGg8lO
-        MlJTjZrNXIrGWxANvOceOlUCLblw8NUVPKskyCXfNYZQAILlRtBvQ0gh21vd0l8Ha4P1JYerGuDt4
-        ArlB/89Q==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55912)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mqZ1m-0002yu-7J; Fri, 26 Nov 2021 11:04:26 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mqZ1l-0003Da-Do; Fri, 26 Nov 2021 11:04:25 +0000
-Date:   Fri, 26 Nov 2021 11:04:25 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        UNGLinuxDriver@microchip.com, p.zabel@pengutronix.de,
-        andrew@lunn.ch, netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v4 3/6] net: lan966x: add port module support
-Message-ID: <YaC/OT0f2JKBPMOb@shell.armlinux.org.uk>
-References: <20211126090540.3550913-1-horatiu.vultur@microchip.com>
- <20211126090540.3550913-4-horatiu.vultur@microchip.com>
+        id S237993AbhKZLYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 06:24:54 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52974 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237992AbhKZLWv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 06:22:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1637925578;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=qkz3t6yTtCyGGIa4smq1sgd2IxE223NuLT4wxqa7ekM=;
+        b=OitM6paGFrDHvquKvAiHhdr30O693FgspUkKg0d+giwPwj5lLgEaaJw6hrMD2wvEKDBFVq
+        anVFrXAL9Fp0rXBW3c5SBOuAEpfOiLPBeC8SATPZ1xmiswWDUF8z92EGSCxkHt255f+KXM
+        Qwd7UihIXwneexA/A9XOs/JeJ75O+LA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-432-HCoO5XZEMrWFZARas5sMyA-1; Fri, 26 Nov 2021 06:19:35 -0500
+X-MC-Unique: HCoO5XZEMrWFZARas5sMyA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 489F61853022;
+        Fri, 26 Nov 2021 11:19:34 +0000 (UTC)
+Received: from gerbillo.fritz.box (unknown [10.39.194.163])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 796E960BF4;
+        Fri, 26 Nov 2021 11:19:19 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Subject: [PATCH net-next v2 0/2] bpf: do not WARN in bpf_warn_invalid_xdp_action()
+Date:   Fri, 26 Nov 2021 12:19:09 +0100
+Message-Id: <cover.1637924200.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211126090540.3550913-4-horatiu.vultur@microchip.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 26, 2021 at 10:05:37AM +0100, Horatiu Vultur wrote:
-> This patch adds support for netdev and phylink in the switch. The
-> injection + extraction is register based. This will be replaced with DMA
-> accees.
-> 
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+The mentioned WARN is quite noisy, especially vs fuzzers and
+apparently used only to track the relevant BPF program and/or
+involved driver.
 
-This looks mostly good now, thanks. There's one remaining issue:
+The first patch replace it with a pr_warn_once(), and the 2nd
+patch allow dumps relevant info to track the reported issue.
 
-> +int lan966x_port_pcs_set(struct lan966x_port *port,
-> +			 struct lan966x_port_config *config)
-> +{
-> +	struct lan966x *lan966x = port->lan966x;
-> +	bool inband_aneg = false;
-> +	bool outband;
-> +	int err;
-> +
-> +	lan966x_port_link_down(port);
+This is quite invasive, but the mentioned WARN makes the hunt
+for some bugs reported by syzkaller quite difficult.
 
-This looks like something the MAC layer should be doing. Phylink won't
-change the interface mode by just calling the PCS - it will do this
-sequence, known as a major reconfiguration:
+v1 -> v2:
+ - do not include the device name for maps caller (Toke)
 
-mac_link_down() (if the link was previously up)
-mac_prepare()
-mac_config()
-if (pcs_config() > 0)
-  pcs_an_restart()
-mac_finish()
+Paolo Abeni (2):
+  bpf: do not WARN in bpf_warn_invalid_xdp_action()
+  bpf: let bpf_warn_invalid_xdp_action() report more info
 
-pcs_config() will also be called thusly:
-
-if (pcs_config() > 0)
-  pcs_an_restart()
-
-to change the ethtool advertising mask which changes the inband advert
-or the Autoneg bit, which has an effect only on your DEV_PCS1G_ANEG_CFG()
-register, and this may be called with the link up or down.
-
-Also, pcs_config() is supposed to return 0 if the inband advert has not
-changed, or positive if it has (so pcs_an_restart() is called to cause
-in-band negotiation to be restarted.)
-
-Note also that pcs_an_restart() may  also be called when ethtool
-requests negotiation restart when we're operating in 802.3z modes.
-
-So, my question is - do you need to be so heavy weight with the call to
-lan966x_port_link_down() to take everything down when pcs_config() is
-called, and is it really in the right place through the sequence for
-a major reconfiguration?
-
-Thanks.
+ drivers/net/ethernet/amazon/ena/ena_netdev.c           | 2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c          | 2 +-
+ drivers/net/ethernet/cavium/thunder/nicvf_main.c       | 2 +-
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.c         | 2 +-
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c       | 2 +-
+ drivers/net/ethernet/freescale/enetc/enetc.c           | 2 +-
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c            | 2 +-
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c             | 2 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.c              | 2 +-
+ drivers/net/ethernet/intel/ice/ice_xsk.c               | 2 +-
+ drivers/net/ethernet/intel/igb/igb_main.c              | 2 +-
+ drivers/net/ethernet/intel/igc/igc_main.c              | 2 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c          | 2 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c           | 2 +-
+ drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c      | 2 +-
+ drivers/net/ethernet/marvell/mvneta.c                  | 2 +-
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c        | 2 +-
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c | 2 +-
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c             | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c       | 2 +-
+ drivers/net/ethernet/microsoft/mana/mana_bpf.c         | 2 +-
+ drivers/net/ethernet/netronome/nfp/nfp_net_common.c    | 2 +-
+ drivers/net/ethernet/qlogic/qede/qede_fp.c             | 2 +-
+ drivers/net/ethernet/sfc/rx.c                          | 2 +-
+ drivers/net/ethernet/socionext/netsec.c                | 2 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c      | 2 +-
+ drivers/net/ethernet/ti/cpsw_priv.c                    | 2 +-
+ drivers/net/hyperv/netvsc_bpf.c                        | 2 +-
+ drivers/net/tun.c                                      | 2 +-
+ drivers/net/veth.c                                     | 4 ++--
+ drivers/net/virtio_net.c                               | 4 ++--
+ drivers/net/xen-netfront.c                             | 2 +-
+ include/linux/filter.h                                 | 2 +-
+ kernel/bpf/cpumap.c                                    | 4 ++--
+ kernel/bpf/devmap.c                                    | 4 ++--
+ net/core/dev.c                                         | 2 +-
+ net/core/filter.c                                      | 8 ++++----
+ 37 files changed, 44 insertions(+), 44 deletions(-)
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.33.1
+
