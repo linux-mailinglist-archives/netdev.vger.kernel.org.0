@@ -2,99 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9E0245E623
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 04:01:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0F9545E611
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 04:01:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358341AbhKZCuB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 21:50:01 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51546 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1358612AbhKZCrZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Nov 2021 21:47:25 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EC13361371;
-        Fri, 26 Nov 2021 02:37:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637894238;
-        bh=RBX6W4w3jScpLmp10EJSozwbbpPAsKTdowIUKbcjGiA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UgpebikjVKnC+nvgReVfdWgriluJ/BOQ2JRrE81e6LCvgWY+xUVLtnTCwErot5ClC
-         tZAKD1wLHggkI0/+gul5bAJiNAedVvCQc980VrS6ETUtjFtnrusslqxMrzN88ZeXME
-         oNAfTTc98gSQS2I7Q8jFm+bnMokvSb2RMJXM6w0Gkw4LXxMJT405rxZWcgg92V1MC9
-         4GG4ktG8nhEBSWzPUss1mDO+fMD2US07YVSIHSed914k0mrCX3NhCNEyRcmjTJ+5Qe
-         SNYJKQZVEhs27JFvWD4WNjPe+H4CyAMIrW0NBhXpsB5JQZlWVMf8NY38axzipiSlnn
-         8Hd+AAPYZIBCQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Teng Qi <starmiku1207184332@gmail.com>,
-        TOTE Robot <oslab@tsinghua.edu.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        tanghui20@huawei.com, zhangyue1@kylinos.cn, netdev@vger.kernel.org,
-        linux-parisc@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 6/6] net: ethernet: dec: tulip: de4x5: fix possible array overflows in type3_infoblock()
-Date:   Thu, 25 Nov 2021 21:37:01 -0500
-Message-Id: <20211126023701.443472-6-sashal@kernel.org>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211126023701.443472-1-sashal@kernel.org>
-References: <20211126023701.443472-1-sashal@kernel.org>
+        id S1358840AbhKZCty (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 21:49:54 -0500
+Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:52845 "EHLO
+        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1359112AbhKZCp5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 21:45:57 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0UyJiZM._1637894563;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0UyJiZM._1637894563)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 26 Nov 2021 10:42:43 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     kgraul@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: [PATCH net v3] net/smc: Don't call clcsock shutdown twice when smc shutdown
+Date:   Fri, 26 Nov 2021 10:41:35 +0800
+Message-Id: <20211126024134.45693-1-tonylu@linux.alibaba.com>
+X-Mailer: git-send-email 2.34.0
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Teng Qi <starmiku1207184332@gmail.com>
+When applications call shutdown() with SHUT_RDWR in userspace,
+smc_close_active() calls kernel_sock_shutdown(), and it is called
+twice in smc_shutdown().
 
-[ Upstream commit 0fa68da72c3be09e06dd833258ee89c33374195f ]
+This fixes this by checking sk_state before do clcsock shutdown, and
+avoids missing the application's call of smc_shutdown().
 
-The definition of macro MOTO_SROM_BUG is:
-  #define MOTO_SROM_BUG    (lp->active == 8 && (get_unaligned_le32(
-  dev->dev_addr) & 0x00ffffff) == 0x3e0008)
-
-and the if statement
-  if (MOTO_SROM_BUG) lp->active = 0;
-
-using this macro indicates lp->active could be 8. If lp->active is 8 and
-the second comparison of this macro is false. lp->active will remain 8 in:
-  lp->phy[lp->active].gep = (*p ? p : NULL); p += (2 * (*p) + 1);
-  lp->phy[lp->active].rst = (*p ? p : NULL); p += (2 * (*p) + 1);
-  lp->phy[lp->active].mc  = get_unaligned_le16(p); p += 2;
-  lp->phy[lp->active].ana = get_unaligned_le16(p); p += 2;
-  lp->phy[lp->active].fdx = get_unaligned_le16(p); p += 2;
-  lp->phy[lp->active].ttm = get_unaligned_le16(p); p += 2;
-  lp->phy[lp->active].mci = *p;
-
-However, the length of array lp->phy is 8, so array overflows can occur.
-To fix these possible array overflows, we first check lp->active and then
-return -EINVAL if it is greater or equal to ARRAY_SIZE(lp->phy) (i.e. 8).
-
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Teng Qi <starmiku1207184332@gmail.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/linux-s390/1f67548e-cbf6-0dce-82b5-10288a4583bd@linux.ibm.com/
+Fixes: 606a63c9783a ("net/smc: Ensure the active closing peer first closes clcsock")
+Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
+Reviewed-by: Wen Gu <guwen@linux.alibaba.com>
 ---
- drivers/net/ethernet/dec/tulip/de4x5.c | 4 ++++
- 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/dec/tulip/de4x5.c b/drivers/net/ethernet/dec/tulip/de4x5.c
-index 7c4150a83a082..ffc9c7947b93f 100644
---- a/drivers/net/ethernet/dec/tulip/de4x5.c
-+++ b/drivers/net/ethernet/dec/tulip/de4x5.c
-@@ -4701,6 +4701,10 @@ type3_infoblock(struct net_device *dev, u_char count, u_char *p)
-         lp->ibn = 3;
-         lp->active = *p++;
- 	if (MOTO_SROM_BUG) lp->active = 0;
-+	/* if (MOTO_SROM_BUG) statement indicates lp->active could
-+	 * be 8 (i.e. the size of array lp->phy) */
-+	if (WARN_ON(lp->active >= ARRAY_SIZE(lp->phy)))
-+		return -EINVAL;
- 	lp->phy[lp->active].gep = (*p ? p : NULL); p += (2 * (*p) + 1);
- 	lp->phy[lp->active].rst = (*p ? p : NULL); p += (2 * (*p) + 1);
- 	lp->phy[lp->active].mc  = get_unaligned_le16(p); p += 2;
+changes:
+
+v2->v3:
+- code format
+
+v1->v2:
+- code format
+- use bool do_shutdown
+
+---
+ net/smc/af_smc.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 4b62c925a13e..230072f9ec48 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -2370,8 +2370,10 @@ static __poll_t smc_poll(struct file *file, struct socket *sock,
+ static int smc_shutdown(struct socket *sock, int how)
+ {
+ 	struct sock *sk = sock->sk;
++	bool do_shutdown = true;
+ 	struct smc_sock *smc;
+ 	int rc = -EINVAL;
++	int old_state;
+ 	int rc1 = 0;
+ 
+ 	smc = smc_sk(sk);
+@@ -2398,7 +2400,11 @@ static int smc_shutdown(struct socket *sock, int how)
+ 	}
+ 	switch (how) {
+ 	case SHUT_RDWR:		/* shutdown in both directions */
++		old_state = sk->sk_state;
+ 		rc = smc_close_active(smc);
++		if (old_state == SMC_ACTIVE &&
++		    sk->sk_state == SMC_PEERCLOSEWAIT1)
++			do_shutdown = false;
+ 		break;
+ 	case SHUT_WR:
+ 		rc = smc_close_shutdown_write(smc);
+@@ -2408,7 +2414,7 @@ static int smc_shutdown(struct socket *sock, int how)
+ 		/* nothing more to do because peer is not involved */
+ 		break;
+ 	}
+-	if (smc->clcsock)
++	if (do_shutdown && smc->clcsock)
+ 		rc1 = kernel_sock_shutdown(smc->clcsock, how);
+ 	/* map sock_shutdown_cmd constants to sk_shutdown value range */
+ 	sk->sk_shutdown |= how + 1;
 -- 
-2.33.0
+2.32.0.3.g01195cf9f
 
