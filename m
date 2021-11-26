@@ -2,63 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8481F45F50C
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 20:15:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A75D45F52A
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 20:25:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231672AbhKZTSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Nov 2021 14:18:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41072 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230166AbhKZTQp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 14:16:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9945C0619F6
-        for <netdev@vger.kernel.org>; Fri, 26 Nov 2021 10:37:30 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E229CB82876
-        for <netdev@vger.kernel.org>; Fri, 26 Nov 2021 18:37:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B621C93056;
-        Fri, 26 Nov 2021 18:37:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637951847;
-        bh=NDVImURTM0EtfnxkSvjDQmpEOs3wTkpsqhkQfuYE/a0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JHRbKjB4hDh8MUNeQMtS16jZsUQ8d2RNOkerZerk+2fAiDjux2ZYJlbs3S9WlMdeZ
-         wpeCHCfBVCAG3bBYm6ovO3wV1D1MRJKD6sDHo7O95cbjIAZ9to1y0mWYEpGUsk94v5
-         lypc4Gj7+rnMpOI5PqdjbI8R1EwwWyj68NBJ+5bSlFy7qArxT/rBd2Xy/9BFsa7Szr
-         Q6+wxZogrRrfN1kEx3p8dQ0lbn47s/uJUx8SCM3ShkI7DxUCQUjtCsyer4OCLOKxSO
-         VNWghWLQS+kI6WIVVpADqqc/Khib46WwuFw4gjfhk8xTXioMeKUC3LPFN/IqCic387
-         mGFdvsBUOYjjw==
-Date:   Fri, 26 Nov 2021 10:37:26 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Holger Brunck <holger.brunck@hitachienergy.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH 1/2] Docs/devicetree: add serdes-output-amplitude to
- marvell.txt
-Message-ID: <20211126103726.6f3976a4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211126154249.2958-1-holger.brunck@hitachienergy.com>
-References: <20211126154249.2958-1-holger.brunck@hitachienergy.com>
+        id S236315AbhKZT26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 14:28:58 -0500
+Received: from 113.196.136.146.ll.static.sparqnet.net ([113.196.136.146]:56572
+        "EHLO mg.sunplus.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S233715AbhKZT05 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 14:26:57 -0500
+X-MailGates: (flag:3,DYNAMIC,RELAY,NOHOST:PASS)(compute_score:DELIVER,40
+        ,3)
+Received: from 172.17.9.112
+        by mg02.sunplus.com with MailGates ESMTP Server V5.0(47497:0:AUTH_RELAY)
+        (envelope-from <wells.lu@sunplus.com>); Sat, 27 Nov 2021 03:23:29 +0800 (CST)
+Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
+ sphcmbx02.sunplus.com.tw (172.17.9.112) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.23; Sat, 27 Nov 2021 03:13:24 +0800
+Received: from sphcmbx02.sunplus.com.tw ([::1]) by sphcmbx02.sunplus.com.tw
+ ([fe80::f8bb:bd77:a854:5b9e%14]) with mapi id 15.00.1497.023; Sat, 27 Nov
+ 2021 03:13:24 +0800
+From:   =?utf-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Wells Lu <wellslutw@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        =?utf-8?B?VmluY2VudCBTaGloIOaWvemMlem0uw==?= 
+        <vincent.shih@sunplus.com>
+Subject: RE: [PATCH v2 2/2] net: ethernet: Add driver for Sunplus SP7021
+Thread-Topic: [PATCH v2 2/2] net: ethernet: Add driver for Sunplus SP7021
+Thread-Index: AQHX1ttDZ0jKVsi7r0auZS2tEQF+d6wADq2AgAXn1uCADjVYcP//wFkAgAFNSvCAADlOgIAAnUMA//+c8QCAAI9HsA==
+Date:   Fri, 26 Nov 2021 19:13:23 +0000
+Message-ID: <b41b754050a14c598b723825ab277322@sphcmbx02.sunplus.com.tw>
+References: <cover.1636620754.git.wells.lu@sunplus.com>
+ <519b61af544f4c6920012d44afd35a0f8761b24f.1636620754.git.wells.lu@sunplus.com>
+ <YY7/v1msiaqJF3Uy@lunn.ch>
+ <7cccf9f79363416ca8115a7ed9b1b7fd@sphcmbx02.sunplus.com.tw>
+ <YZ+pzFRCB0faDikb@lunn.ch>
+ <6c1ce569d2dd46eba8d4b0be84d6159b@sphcmbx02.sunplus.com.tw>
+ <YaDxc2+HKUYxsmX4@lunn.ch>
+ <38e40bc4c0de409ca959bcb847c1fc96@sphcmbx02.sunplus.com.tw>
+ <YaEiRt+vqt1Ix8xb@lunn.ch>
+In-Reply-To: <YaEiRt+vqt1Ix8xb@lunn.ch>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [172.25.108.39]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 26 Nov 2021 16:42:48 +0100 Holger Brunck wrote:
-> This can be configured from the device tree. Add this property to the
-> documentation accordingly.
-> The eight different values added in the dt-bindings file correspond to
-> the values we can configure on 88E6352, 88E6240 and 88E6176 switches
-> according to the datasheet.
-> 
-> CC: Andrew Lunn <andrew@lunn.ch>
-> CC: Jakub Kicinski <kuba@kernel.org>
-> Signed-off-by: Holger Brunck <holger.brunck@hitachienergy.com>
-
-Not sure why but FWIW your patches did not show up in patchwork on in
-lore. We can see Andrew's review but not the patches themselves:
-
-https://lore.kernel.org/all/YaEIVQ6gKOSD1Vf%2F@lunn.ch/
+SGkgQW5kcmV3LA0KDQpJIHJlYWQgc3BlY2lmaWNhdGlvbiBvZiBJQ1BsdXMgSVAxMDFHICgxME0v
+MTAwTSBQSFkpLg0KQml0cyBvZiByZWdpc3RlciAwIChjb250cm9sKSBhbmQgcmVnaXN0ZXIgMSAo
+c3RhdHVzKSANCmFyZSBSL1cgb3IgUk8gdHlwZS4gVGhleSB3aWxsIG5vdCBiZSBjbGVhcmVkIGFm
+dGVyIA0KcmVhZC4gTm8gbWF0dGVyIGhvdyBtYW55IHRpbWVzIHRoZXkgYXJlIHJlYWQsIHRoZSAN
+CnJlYWQtYmFjayB2YWx1ZSBpcyB0aGUgc2FtZS4NCg0KRm9yIGV4YW1wbGUsDQpWYWx1ZSBvZiBy
+ZWdpc3RlciAwIChjb250cm9sKSBpcyAweDMxMDANClZhbHVlIG9mIHJlZ2lzdGVyIDEgKHN0YXR1
+cykgaXMgMHg3ODZkIA0KDQpUaGUgcmVhZC1iYWNrIHZhbHVlcyBhcmUgYWx3YXlzIHRoZSBzYW1l
+IHVubGVzcyB5b3UgDQp1bnBsdWcgdGhlIGNhYmxlLg0KDQpCZXNpZGVzLCB3ZSB1c2UgcG9sbGlu
+ZyBtb2RlIChwaHlkZXYtPmlycSA9IFBIWV9QT0xMKSANClBIWSBzdGF0ZS1tYWNoaW5lIGlzIHRy
+aWdnZXJlZCBieSB1c2luZyAxLUh6IHdvcmstDQpxdWV1ZSwgbm90IGludGVycnVwdC4NCg0KV2Ug
+ZGlkbid0IGZpbmQgYW55IHByb2JsZW0gYWZ0ZXIgbWFueSB0ZXN0cyBhZnRlciANCnVzaW5nICdm
+b3JjZScgbW9kZS4NCg0KQ2FuIHdlIGdvIHdpdGggdGhpcyBhcHByb2FjaD8NCg0KDQpCZXN0IHJl
+Z2FyZHMsDQpXZWxscw0KDQoNCj4gPiBIaSBBbmRyZXcsDQo+ID4NCj4gPg0KPiA+IEZyb20gZGF0
+YSBwcm92aWRlZCBieSBBU0lDIGVuZ2luZWVyLCBNQUMgb2YgU1A3MDIxIG9ubHkgcmVhZHMgdGhl
+IDQNCj4gPiByZWdpc3RlcnMgb2YgUEhZOg0KPiA+IDA6IENvbnRyb2wgcmVnaXN0ZXINCj4gPiAx
+OiBTdGF0dXMgcmVnaXN0ZXINCj4gDQo+IFRoaXMgaXMgdGhlIHJlZ2lzdGVyIHdoaWNoIGhhcyBs
+YXRjaGluZyBvZiB0aGUgbGluayBzdGF0dXMuIGdlbnBoeV91cGRhdGVfbGluaygpIGV4cGVjdHMN
+Cj4gdGhpcyBsYXRjaGluZyBiZWhhdmlvdXIsIGFuZCBpZiB0aGUgaGFyZHdhcmUgcmVhZHMgdGhl
+IHJlZ2lzdGVyLCB0aGF0IGJlaGF2aW91ciBpcyBub3QNCj4gZ29pbmcgdG8gaGFwcGVuLg0KPiAN
+Cj4gCUFuZHJldw0K
