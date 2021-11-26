@@ -2,132 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AFC345F60C
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 21:44:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C302145F60F
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 21:45:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240703AbhKZUsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Nov 2021 15:48:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32768 "EHLO
+        id S241124AbhKZUsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 15:48:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241098AbhKZUqI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 15:46:08 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174E5C061574;
-        Fri, 26 Nov 2021 12:41:03 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id l25so43156822eda.11;
-        Fri, 26 Nov 2021 12:41:03 -0800 (PST)
+        with ESMTP id S229840AbhKZUqy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 15:46:54 -0500
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6583FC0613FE;
+        Fri, 26 Nov 2021 12:41:13 -0800 (PST)
+Received: by mail-qk1-x736.google.com with SMTP id i9so15973595qki.3;
+        Fri, 26 Nov 2021 12:41:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=OKsS2VBzzc/tYXgXzO7xiKe6VTOcM/AUGTPgRtdxw1A=;
-        b=lEWSh+vpqx/cCMLU8/tKnXdgaFYpN3ZHHWpwPigLGQeu4k5aqPh9U7NZn0blvRvg+s
-         ID6FCPD4KVBT3Ywfn+O/8woU0n85OZEdd45fze8PPtW63nEO9Uo1t07C4bEcqnvVuNeK
-         5tvAnuNqUZhnBv8E0NnrTZaMIK3jtG20N8fftDqZDSG6JHQaTPe7gW5OjB9N/tKbfiW4
-         zq2hfJl8drJ5JetkEvYsHSTou0Nf8QPzY/RvBBhiPyZSS0c5Y0fh8pHILP3I+I6jCiIG
-         DTCgYOlp/7PPaI3g7drHhXpYj/zDM4XAW8Ies86RLzIGSg8O5PYbGVPVx27uZbRKe0KV
-         4kIA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HNz3Duqca+HlLoVbIohH9bsymmp0UBoU7O3wxp6FWTc=;
+        b=qLkPySkLuhaBpRl6cbqyMiEjOMcORxCs8lmYoVHL3zOktNz7uxXz5M0Ey01TvY8a/i
+         0Q+2Mx6NBMVRF4UqrmrhtQwyCQ9XU6Ed0WXVyu9tbo3ga5pE5U1lE4P1FHTF8lz7sJvS
+         5xz7+FvibkcBLdQ1QjKAP9Gi4S0sUxvWNgl/NWlYOujbVtJKKD3oTWHj+HC/QBvJnH9j
+         t9t9sLcD8czCHoVJzptoFfRrcIjbyDT9a/yF+/WpCUR17CwMDkL5WeTv/RZWxitQorPK
+         0ij7bECPo3Ur/c3CxsOCjyp5AGioMc+6U4fsV4mJ2wjFeJhhB3MypNWtg7bHYTrCcGAC
+         Bsyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OKsS2VBzzc/tYXgXzO7xiKe6VTOcM/AUGTPgRtdxw1A=;
-        b=JfMJhN4j/rUyMAgVJfBo2WPxWERsgCxtmbhDNe4rDTDQXyQHPuNzE4XcF5p9eqYaj1
-         Wuui9dALZDqnbDXToIAKmjbMlMgWCnWs0y8WKtrlBSlA1uXIO8lmG7F8JmvKOVW4AZkv
-         YJ21EyG7BYRZjEnblUaG6+dFqCv4ooAg0oYATuDGAt6XdFCSGLz7AmIwPA5F94qWBLOY
-         53bZH10kuyLVogpX7/sgoZ1dqFBje79uaWZVGmv5iafTWdjBcp8jXjqtsfbuTA0oreJi
-         9Qw7rirFFo75PqshL80yJ6sjS+X3ecMa0NeUnUUXW0+oe+IGp+RV6KeegX48/qnt+bYO
-         Lccw==
-X-Gm-Message-State: AOAM5304NbYM4IBp/ObeavYCZDksagEisMc89Se7wgrjildf3UHHUnz+
-        w8gDEMcYhbTHPc3vqJyqiIHOxJ7u5R8=
-X-Google-Smtp-Source: ABdhPJy40Uo0DkuaWW+a1xLkC0YdTjDA59fansEUFqjRW8eEiCHLfgNdW3cxHeWUuJnAYvv0X8KKsA==
-X-Received: by 2002:aa7:cc82:: with SMTP id p2mr49875327edt.201.1637959261507;
-        Fri, 26 Nov 2021 12:41:01 -0800 (PST)
-Received: from skbuf ([188.25.173.50])
-        by smtp.gmail.com with ESMTPSA id s16sm4273010edt.30.2021.11.26.12.41.00
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HNz3Duqca+HlLoVbIohH9bsymmp0UBoU7O3wxp6FWTc=;
+        b=n7qIGzlP7sFrR65BigmihES2YKm8+qZAz1InEYfQoWF1tbSJw5KJBhUQXe54BTQG6N
+         T3R+M903JapkUhJkvuRc/Ye6aO1u6ADfzJOZPsfAnpiT9ICRLBW2YcZS6GIauF0aCF1X
+         TxLJNsmQdUEIfPCO9TuP8aEWIxbopAjC81BDMLDNXtwOXCzoAr+gRGg88TdMaq0ght+c
+         Rd7rBnEEEj7We278zL4+g+zLANyz188LeiK1LNfQPq1FpY5p1OuyxwHWhJE/5yyvJgCu
+         8lAR7hXukb2BhDFZ+noueP3fldcvwVFJRkVmizV85tgxaFM6n8E004jc+btxFgn+pwke
+         Y0zA==
+X-Gm-Message-State: AOAM531xl5ANGljw2TOgjlbtFxNkTP/MmK3ltubI1QHg1QCVLQI+iCm7
+        N+KpEyhLjqWLwXV+YSp8KCnvYJI9c6M=
+X-Google-Smtp-Source: ABdhPJxAOm9aVpJZaK6e4MyIWbYMdoYb4tPmazjB76XigeV8UTYeqpx4Hsh87ZnnqviPA+i1Jr7ydg==
+X-Received: by 2002:a05:620a:2447:: with SMTP id h7mr23937005qkn.75.1637959272386;
+        Fri, 26 Nov 2021 12:41:12 -0800 (PST)
+Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:4fa:e845:6c9f:cd5b])
+        by smtp.gmail.com with ESMTPSA id u188sm3675024qkh.30.2021.11.26.12.41.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Nov 2021 12:41:01 -0800 (PST)
-Date:   Fri, 26 Nov 2021 22:40:59 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v3 1/1] net: dsa: microchip: implement multi-bridge
- support
-Message-ID: <20211126204059.l24m2n6tsjxaycvl@skbuf>
-References: <20211126123926.2981028-1-o.rempel@pengutronix.de>
- <20211126114336.05fd7ebd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        Fri, 26 Nov 2021 12:41:12 -0800 (PST)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Subject: [PATCH bpf] libbpf: fix missing section "sk_skb/skb_verdict"
+Date:   Fri, 26 Nov 2021 12:41:08 -0800
+Message-Id: <20211126204108.11530-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211126114336.05fd7ebd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 26, 2021 at 11:43:36AM -0800, Jakub Kicinski wrote:
-> On Fri, 26 Nov 2021 13:39:26 +0100 Oleksij Rempel wrote:
-> > Current driver version is able to handle only one bridge at time.
-> > Configuring two bridges on two different ports would end up shorting this
-> > bridges by HW. To reproduce it:
-> > 
-> > 	ip l a name br0 type bridge
-> > 	ip l a name br1 type bridge
-> > 	ip l s dev br0 up
-> > 	ip l s dev br1 up
-> > 	ip l s lan1 master br0
-> > 	ip l s dev lan1 up
-> > 	ip l s lan2 master br1
-> > 	ip l s dev lan2 up
-> > 
-> > 	Ping on lan1 and get response on lan2, which should not happen.
-> > 
-> > This happened, because current driver version is storing one global "Port VLAN
-> > Membership" and applying it to all ports which are members of any
-> > bridge.
-> > To solve this issue, we need to handle each port separately.
-> > 
-> > This patch is dropping the global port member storage and calculating
-> > membership dynamically depending on STP state and bridge participation.
-> > 
-> > Note: STP support was broken before this patch and should be fixed
-> > separately.
-> > 
-> > Fixes: c2e866911e25 ("net: dsa: microchip: break KSZ9477 DSA driver into two files")
-> 
-> Suspicious, this sounds like a code reshuffling commit.
+From: Cong Wang <cong.wang@bytedance.com>
 
-This intrigued me, so I looked it up. If you look at the git diff of
-that commit, you'll see that the "member" variable of struct ksz_port
-only appears in the green portion of the delta, not even once in the red
-portion. In fact, struct ksz_port was _introduced_ by that commit!
+When BPF_SK_SKB_VERDICT was introduced, I forgot to add
+a section mapping for it in libbpf.
 
-> Where was the bad code introduced? The fixes tag should point at the
-> earliest point in the git history where the problem exists.
+Fixes: a7ba4558e69a ("sock_map: Introduce BPF_SK_SKB_VERDICT")
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: Jakub Sitnicki <jakub@cloudflare.com>
+Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+---
+ tools/lib/bpf/libbpf.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-What bad code? As far as I can tell, prior to that commit, there was no
-restriction of forwarding domain applied to this switch. Heck,
-->port_bridge_join() was added in that commit! After that commit,
-restricting the forwarding domain was done poorly. No wonder, since
-reviewers probably did not notice what was going on.
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 7c74342bb668..92fbebb12591 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -8346,6 +8346,7 @@ static const struct bpf_sec_def section_defs[] = {
+ 	SEC_DEF("sockops",		SOCK_OPS, BPF_CGROUP_SOCK_OPS, SEC_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
+ 	SEC_DEF("sk_skb/stream_parser",	SK_SKB, BPF_SK_SKB_STREAM_PARSER, SEC_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
+ 	SEC_DEF("sk_skb/stream_verdict",SK_SKB, BPF_SK_SKB_STREAM_VERDICT, SEC_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
++	SEC_DEF("sk_skb/skb_verdict",	SK_SKB, BPF_SK_SKB_VERDICT, SEC_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
+ 	SEC_DEF("sk_skb",		SK_SKB, 0, SEC_NONE | SEC_SLOPPY_PFX),
+ 	SEC_DEF("sk_msg",		SK_MSG, BPF_SK_MSG_VERDICT, SEC_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
+ 	SEC_DEF("lirc_mode2",		LIRC_MODE2, BPF_LIRC_MODE2, SEC_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
+-- 
+2.30.2
 
-We are talking here about a very poorly written and subpar driver.
-I wouldn't be too mad at Oleksij for not doing a cleaner job for this
-commit, it's pretty much "delete the bogus stuff and rewrite it the way
-it should be", which I think is fine at this stage, this driver needs that.
-His code appears fine to my non-expert fine, I've added very similar
-logic to ocelot which has the same constraints of juggling with the
-forwarding domain based on STP states.
-
-Also, in case you're wondering why I'm responding in his defense, it is
-for very selfish reasons, of course :) I'd like to continue working on
-this patch series:
-https://patchwork.kernel.org/project/netdevbpf/cover/20211026162625.1385035-1-vladimir.oltean@nxp.com/
-which is invasive because it touches every driver's bridging callbacks.
-So the sooner that in-flight patches related to bridging can go in, the
-sooner I can resend a new version of my API rework.
