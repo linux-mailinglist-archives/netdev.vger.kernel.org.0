@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 091F345E5D7
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 04:00:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F68A45E5DE
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 04:01:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358979AbhKZCpa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 21:45:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50276 "EHLO mail.kernel.org"
+        id S1359012AbhKZCpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 21:45:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49808 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1358706AbhKZCn2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Nov 2021 21:43:28 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2165261279;
-        Fri, 26 Nov 2021 02:35:39 +0000 (UTC)
+        id S1357972AbhKZCng (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Nov 2021 21:43:36 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 88D9061283;
+        Fri, 26 Nov 2021 02:35:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637894140;
-        bh=4NavWYfLGsaGv+WsbTZvoOoMo1/BulMyJdNUq5Jgrzg=;
+        s=k20201202; t=1637894141;
+        bh=N2hQwQrj8/ZltlL4+WHRDjcfhcttg2gMAZKuvKrGMY4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D8WvvIKd24Yee7oHgDf3WKrT1O3ktOTmAv3/WlIqHGgF2QUR7X7Fi6p41+6O3dt1t
-         uC1R+gqb0JKs5zPBS+53A2paGql6nqGCd6HLu2ZOjyrBnsTVjFGJapLDwbwfVOv8Ma
-         9kLAiAXNee625lVSVSnWhu3DpuisdvxcmPhH69/RFfThEFfyKu2PpV06LSer1Myygh
-         AEZRACySpaSEJMUHDDW/xuQIR+9NXyNqGjdEHGavLqwXy9ut+8AmhaW41W372HsCtn
-         slkLw5Nu5KTfNtpGAiKwf/exlTXaOl5Lx1ERaqezWLdeqcKc/ackvETBOrbdvegxwp
-         NvtBVmp9AYrUg==
+        b=TBg/xy0NCOBEikv9MJ83oT2/c7D09YUx1ChhfRP6op297zo1C0HJp2GRpSyJBZtgc
+         hP0rKoY3YjdyxBY+YgJiGBtzb2SZ399ewTekQ8xZy4vvU9jfcsx97Dx8bPG5Hf5eOj
+         L/ZLiiJJaX4+P/LqABT7wPHMJxJATDToF4TQSCrNfkl0ZtnbYmIGclpc1yGrXnz+Mw
+         aJ8cWyCBEvO+/1UNS94PbSRvg8dnPpJjQPObNrSTQTL8uZ/gXeaPk7/MYGkddBy1ay
+         3wcXbu4LZEDsIwHI21uA4hNw6WPg6VUazx3F8pCfyuB8eOja9/mXAfdaOmXGFNCLjC
+         E3HsAAiapudLw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zekun Shen <bruceshenzk@gmail.com>,
-        Brendan Dolan-Gavitt <brendandg@nyu.edu>,
+Cc:     liuguoqiang <liuguoqiang@uniontech.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, irusskikh@marvell.com,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 03/15] atlantic: Fix OOB read and write in hw_atl_utils_fw_rpc_wait
-Date:   Thu, 25 Nov 2021 21:35:21 -0500
-Message-Id: <20211126023533.442895-3-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 04/15] net: return correct error code
+Date:   Thu, 25 Nov 2021 21:35:22 -0500
+Message-Id: <20211126023533.442895-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211126023533.442895-1-sashal@kernel.org>
 References: <20211126023533.442895-1-sashal@kernel.org>
@@ -44,90 +43,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+From: liuguoqiang <liuguoqiang@uniontech.com>
 
-[ Upstream commit b922f622592af76b57cbc566eaeccda0b31a3496 ]
+[ Upstream commit 6def480181f15f6d9ec812bca8cbc62451ba314c ]
 
-This bug report shows up when running our research tools. The
-reports is SOOB read, but it seems SOOB write is also possible
-a few lines below.
+When kmemdup called failed and register_net_sysctl return NULL, should
+return ENOMEM instead of ENOBUFS
 
-In details, fw.len and sw.len are inputs coming from io. A len
-over the size of self->rpc triggers SOOB. The patch fixes the
-bugs by adding sanity checks.
-
-The bugs are triggerable with compromised/malfunctioning devices.
-They are potentially exploitable given they first leak up to
-0xffff bytes and able to overwrite the region later.
-
-The patch is tested with QEMU emulater.
-This is NOT tested with a real device.
-
-Attached is the log we found by fuzzing.
-
-BUG: KASAN: slab-out-of-bounds in
-	hw_atl_utils_fw_upload_dwords+0x393/0x3c0 [atlantic]
-Read of size 4 at addr ffff888016260b08 by task modprobe/213
-CPU: 0 PID: 213 Comm: modprobe Not tainted 5.6.0 #1
-Call Trace:
- dump_stack+0x76/0xa0
- print_address_description.constprop.0+0x16/0x200
- ? hw_atl_utils_fw_upload_dwords+0x393/0x3c0 [atlantic]
- ? hw_atl_utils_fw_upload_dwords+0x393/0x3c0 [atlantic]
- __kasan_report.cold+0x37/0x7c
- ? aq_hw_read_reg_bit+0x60/0x70 [atlantic]
- ? hw_atl_utils_fw_upload_dwords+0x393/0x3c0 [atlantic]
- kasan_report+0xe/0x20
- hw_atl_utils_fw_upload_dwords+0x393/0x3c0 [atlantic]
- hw_atl_utils_fw_rpc_call+0x95/0x130 [atlantic]
- hw_atl_utils_fw_rpc_wait+0x176/0x210 [atlantic]
- hw_atl_utils_mpi_create+0x229/0x2e0 [atlantic]
- ? hw_atl_utils_fw_rpc_wait+0x210/0x210 [atlantic]
- ? hw_atl_utils_initfw+0x9f/0x1c8 [atlantic]
- hw_atl_utils_initfw+0x12a/0x1c8 [atlantic]
- aq_nic_ndev_register+0x88/0x650 [atlantic]
- ? aq_nic_ndev_init+0x235/0x3c0 [atlantic]
- aq_pci_probe+0x731/0x9b0 [atlantic]
- ? aq_pci_func_init+0xc0/0xc0 [atlantic]
- local_pci_probe+0xd3/0x160
- pci_device_probe+0x23f/0x3e0
-
-Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: liuguoqiang <liuguoqiang@uniontech.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c   | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ net/ipv4/devinet.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
-index 096ec18e8f15a..49c80bac9ce28 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
-@@ -459,6 +459,11 @@ int hw_atl_utils_fw_rpc_wait(struct aq_hw_s *self,
- 			goto err_exit;
+diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
+index 12a2cea9d606a..e2ab8cdb71347 100644
+--- a/net/ipv4/devinet.c
++++ b/net/ipv4/devinet.c
+@@ -2354,7 +2354,7 @@ static int __devinet_sysctl_register(struct net *net, char *dev_name,
+ free:
+ 	kfree(t);
+ out:
+-	return -ENOBUFS;
++	return -ENOMEM;
+ }
  
- 		if (fw.len == 0xFFFFU) {
-+			if (sw.len > sizeof(self->rpc)) {
-+				printk(KERN_INFO "Invalid sw len: %x\n", sw.len);
-+				err = -EINVAL;
-+				goto err_exit;
-+			}
- 			err = hw_atl_utils_fw_rpc_call(self, sw.len);
- 			if (err < 0)
- 				goto err_exit;
-@@ -469,6 +474,11 @@ int hw_atl_utils_fw_rpc_wait(struct aq_hw_s *self,
- 
- 	if (rpc) {
- 		if (fw.len) {
-+			if (fw.len > sizeof(self->rpc)) {
-+				printk(KERN_INFO "Invalid fw len: %x\n", fw.len);
-+				err = -EINVAL;
-+				goto err_exit;
-+			}
- 			err =
- 			hw_atl_utils_fw_downld_dwords(self,
- 						      self->rpc_addr,
+ static void __devinet_sysctl_unregister(struct net *net,
 -- 
 2.33.0
 
