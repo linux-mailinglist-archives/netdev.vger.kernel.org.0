@@ -2,150 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C78D45F5A3
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 21:06:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 988A645F5B9
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 21:19:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230247AbhKZUJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Nov 2021 15:09:36 -0500
-Received: from mga17.intel.com ([192.55.52.151]:23888 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238834AbhKZUHg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Nov 2021 15:07:36 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10180"; a="216419660"
-X-IronPort-AV: E=Sophos;i="5.87,266,1631602800"; 
-   d="scan'208";a="216419660"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2021 12:04:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,266,1631602800"; 
-   d="scan'208";a="652265759"
-Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 26 Nov 2021 12:04:19 -0800
-Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1mqhSA-0008Wj-3C; Fri, 26 Nov 2021 20:04:14 +0000
-Date:   Sat, 27 Nov 2021 04:04:11 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Subject: Re: [PATCH net-next v3 4/4] net: ocelot: add FDMA support
-Message-ID: <202111270323.iOXcpsFC-lkp@intel.com>
-References: <20211126172739.329098-5-clement.leger@bootlin.com>
+        id S233715AbhKZUWM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 15:22:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54466 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240250AbhKZUUF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 15:20:05 -0500
+Received: from mail-vk1-xa36.google.com (mail-vk1-xa36.google.com [IPv6:2607:f8b0:4864:20::a36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B65C0613F7
+        for <netdev@vger.kernel.org>; Fri, 26 Nov 2021 12:14:22 -0800 (PST)
+Received: by mail-vk1-xa36.google.com with SMTP id 70so6668811vkx.7
+        for <netdev@vger.kernel.org>; Fri, 26 Nov 2021 12:14:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=cnyYg0oNUcfsFuinF9v5fR9llU64pXeaHW/hgjWtFrE=;
+        b=mz0tRhfcm5k5sZ+RqGB/sdHZwe+Mw67tp7J2qOtdlZ+RBOGqDE+ACXyv4gdrB38n/j
+         IJaEIBBbQaFHbFah9/DHloOv19QL3ImV62s79IA+LmDwDdotKR54G5UbiE4vs92nlhLr
+         49rVyM7Tv128bc1XSExZIZ7X1AJfN6fs61IXllOZBoNctkg8UjF+MQwJim4E1tFq/KV1
+         ABrg8RamWKq38E7eAQbok68hbaM9jIspwPRlBd4O/0Uyp2KB6OvuTgBsfNxP5kN1yFqp
+         N/4esJ05hJurxyNurE5Tv4An8VP86ZzJQcU3R7WO3SzuhJ3MDJ7NTY5irRuMKSeSTKC4
+         FDPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=cnyYg0oNUcfsFuinF9v5fR9llU64pXeaHW/hgjWtFrE=;
+        b=w0EfTQkG+tePdPzNt+dGGclNSrFNOPwTEB8hlhxmnJYtBrqft9m/W9kV2QJnuMzDfm
+         cbOOiVObLIGbsGcC/dx6z4IOqkO+5my9atKdnTP8N0lqva/hRpd3Ov8l32jzKqv2BUoC
+         /JroY62j9cICNhuylGYY+Aa+71V4jGEcWptSQSIEXJQ9CdBvDlWPF7jCSWx1BOn843cx
+         4QvgFsM62fB88DfeF3zt8k4csAoCk2ANGxjGmxeLeG2ri7pJvY73atqnbaGZ6zDGoWL/
+         fUM1+Uvj+Z1Yb73LxwiWvWe8GlQyMx4jUk9Pfqj1XtmL2w3nnLS4myZNdEPQOcn2RoZ9
+         8UoQ==
+X-Gm-Message-State: AOAM532yiIMc+VMD7YRPw788mFr1GHYyinqNsbl1WCPA879scirpbZvM
+        3hEm+nWOjqxHLmlfrmMoV96psnGnvjw=
+X-Google-Smtp-Source: ABdhPJyFM8DxbGrwf5DkHaASFO0KofqNVGSupFkSjn4jTBSKDc+VMrD1jtb0AD7WbP8VtMJWSoeERg==
+X-Received: by 2002:a1f:18cb:: with SMTP id 194mr22249085vky.16.1637957660409;
+        Fri, 26 Nov 2021 12:14:20 -0800 (PST)
+Received: from tresc043793.tre-sc.gov.br (187-049-235-234.floripa.net.br. [187.49.235.234])
+        by smtp.gmail.com with ESMTPSA id 15sm4086766vkj.49.2021.11.26.12.14.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Nov 2021 12:14:19 -0800 (PST)
+From:   luizluca@gmail.com
+To:     netdev@vger.kernel.org
+Cc:     alsi@bang-olufsen.dk,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Subject: [PATCH net v3] net: dsa: realtek-smi: fix indirect reg access for ports>3
+Date:   Fri, 26 Nov 2021 17:13:55 -0300
+Message-Id: <20211126201355.5791-1-luizluca@gmail.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20211126081123.32219-1-luizluca@gmail.com>
+References: <20211126081123.32219-1-luizluca@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211126172739.329098-5-clement.leger@bootlin.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi "Clément,
+From: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 
-Thank you for the patch! Perhaps something to improve:
+This switch family can have up to 8 UTP ports {0..7}. However,
+INDIRECT_ACCESS_ADDRESS_PHYNUM_MASK was using 2 bits instead of 3,
+dropping the most significant bit during indirect register reads and
+writes. Reading or writing ports 4, 5, 6, and 7 registers was actually
+manipulating, respectively, ports 0, 1, 2, and 3 registers.
 
-[auto build test WARNING on robh/for-next]
-[also build test WARNING on net/master linus/master v5.16-rc2 next-20211126]
-[cannot apply to net-next/master]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+This is not sufficient but necessary to support any variant with more
+than 4 UTP ports, like RTL8367S.
 
-url:    https://github.com/0day-ci/linux/commits/Cl-ment-L-ger/Add-FDMA-support-on-ocelot-switch-driver/20211127-013140
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-config: m68k-allyesconfig (https://download.01.org/0day-ci/archive/20211127/202111270323.iOXcpsFC-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/07c95fe9105be293d2b7edf193e5fd139c70c194
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Cl-ment-L-ger/Add-FDMA-support-on-ocelot-switch-driver/20211127-013140
-        git checkout 07c95fe9105be293d2b7edf193e5fd139c70c194
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=m68k SHELL=/bin/bash drivers/net/ethernet/mscc/
+rtl8365mb_phy_{read,write} will now returns -EINVAL if phy is greater
+than 7.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/net/ethernet/mscc/ocelot_fdma.c: In function 'ocelot_fdma_tx_cleanup':
->> drivers/net/ethernet/mscc/ocelot_fdma.c:306:22: warning: variable 'tmp_head' set but not used [-Wunused-but-set-variable]
-     306 |         unsigned int tmp_head, new_null_llp_idx;
-         |                      ^~~~~~~~
-
-
-vim +/tmp_head +306 drivers/net/ethernet/mscc/ocelot_fdma.c
-
-   302	
-   303	static void ocelot_fdma_tx_cleanup(struct ocelot_fdma *fdma, int budget)
-   304	{
-   305		struct ocelot_fdma_ring *ring = &fdma->inj;
- > 306		unsigned int tmp_head, new_null_llp_idx;
-   307		struct ocelot_fdma_dcb *dcb;
-   308		bool end_of_list = false;
-   309		int ret;
-   310	
-   311		spin_lock_bh(&fdma->xmit_lock);
-   312	
-   313		/* Purge the TX packets that have been sent up to the NULL llp or the
-   314		 * end of done list.
-   315		 */
-   316		while (!ocelot_fdma_ring_empty(&fdma->inj)) {
-   317			dcb = &ring->dcbs[ring->head];
-   318			if (!(dcb->hw->stat & MSCC_FDMA_DCB_STAT_PD))
-   319				break;
-   320	
-   321			tmp_head = ring->head;
-   322			ring->head = ocelot_fdma_idx_incr(ring->head);
-   323	
-   324			dma_unmap_single(fdma->dev, dcb->mapping, dcb->mapped_size,
-   325					 DMA_TO_DEVICE);
-   326			napi_consume_skb(dcb->skb, budget);
-   327	
-   328			/* If we hit the NULL LLP, stop, we might need to reload FDMA */
-   329			if (dcb->hw->llp == 0) {
-   330				end_of_list = true;
-   331				break;
-   332			}
-   333		}
-   334	
-   335		/* If there is still some DCBs to be processed by the FDMA or if the
-   336		 * pending list is empty, there is no need to restart the FDMA.
-   337		 */
-   338		if (!end_of_list || ocelot_fdma_ring_empty(&fdma->inj))
-   339			goto out_unlock;
-   340	
-   341		ret = ocelot_fdma_wait_chan_safe(fdma, MSCC_FDMA_INJ_CHAN);
-   342		if (ret) {
-   343			dev_warn(fdma->dev, "Failed to wait for TX channel to stop\n");
-   344			goto out_unlock;
-   345		}
-   346	
-   347		/* Set NULL LLP */
-   348		new_null_llp_idx = ocelot_fdma_idx_decr(ring->tail);
-   349		dcb = &ring->dcbs[new_null_llp_idx];
-   350		dcb->hw->llp = 0;
-   351	
-   352		dcb = &ring->dcbs[ring->head];
-   353		ocelot_fdma_activate_chan(fdma, dcb, MSCC_FDMA_INJ_CHAN);
-   354	
-   355	out_unlock:
-   356		spin_unlock_bh(&fdma->xmit_lock);
-   357	}
-   358	
-
+Fixes: 4af2950c50c8 ("net: dsa: realtek-smi: add rtl8365mb subdriver for RTL8365MB-VC")
+Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/net/dsa/rtl8365mb.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/dsa/rtl8365mb.c b/drivers/net/dsa/rtl8365mb.c
+index baaae97283c5..078ca4cd7160 100644
+--- a/drivers/net/dsa/rtl8365mb.c
++++ b/drivers/net/dsa/rtl8365mb.c
+@@ -107,6 +107,7 @@
+ #define RTL8365MB_LEARN_LIMIT_MAX_8365MB_VC	2112
+ 
+ /* Family-specific data and limits */
++#define RTL8365MB_PHYADDRMAX	7
+ #define RTL8365MB_NUM_PHYREGS	32
+ #define RTL8365MB_PHYREGMAX	(RTL8365MB_NUM_PHYREGS - 1)
+ #define RTL8365MB_MAX_NUM_PORTS	(RTL8365MB_CPU_PORT_NUM_8365MB_VC + 1)
+@@ -176,7 +177,7 @@
+ #define RTL8365MB_INDIRECT_ACCESS_STATUS_REG			0x1F01
+ #define RTL8365MB_INDIRECT_ACCESS_ADDRESS_REG			0x1F02
+ #define   RTL8365MB_INDIRECT_ACCESS_ADDRESS_OCPADR_5_1_MASK	GENMASK(4, 0)
+-#define   RTL8365MB_INDIRECT_ACCESS_ADDRESS_PHYNUM_MASK		GENMASK(6, 5)
++#define   RTL8365MB_INDIRECT_ACCESS_ADDRESS_PHYNUM_MASK		GENMASK(7, 5)
+ #define   RTL8365MB_INDIRECT_ACCESS_ADDRESS_OCPADR_9_6_MASK	GENMASK(11, 8)
+ #define   RTL8365MB_PHY_BASE					0x2000
+ #define RTL8365MB_INDIRECT_ACCESS_WRITE_DATA_REG		0x1F03
+@@ -679,6 +680,9 @@ static int rtl8365mb_phy_read(struct realtek_smi *smi, int phy, int regnum)
+ 	u16 val;
+ 	int ret;
+ 
++	if (phy > RTL8365MB_PHYADDRMAX)
++		return -EINVAL;
++
+ 	if (regnum > RTL8365MB_PHYREGMAX)
+ 		return -EINVAL;
+ 
+@@ -704,6 +708,9 @@ static int rtl8365mb_phy_write(struct realtek_smi *smi, int phy, int regnum,
+ 	u32 ocp_addr;
+ 	int ret;
+ 
++	if (phy > RTL8365MB_PHYADDRMAX)
++		return -EINVAL;
++
+ 	if (regnum > RTL8365MB_PHYREGMAX)
+ 		return -EINVAL;
+ 
+-- 
+2.33.1
+
