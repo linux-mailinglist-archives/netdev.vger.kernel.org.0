@@ -2,81 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1651B45EA2E
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 10:17:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07A3045EA0A
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 10:12:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359378AbhKZJUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Nov 2021 04:20:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51170 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230454AbhKZJSl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 04:18:41 -0500
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D963FC0613F1
-        for <netdev@vger.kernel.org>; Fri, 26 Nov 2021 01:10:58 -0800 (PST)
-Received: by mail-io1-xd32.google.com with SMTP id 14so10488483ioe.2
-        for <netdev@vger.kernel.org>; Fri, 26 Nov 2021 01:10:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=zVlKoJV5QCc33RQJubZEDQDRV60YVKYMw2KVtAWGMJk=;
-        b=jMmaaYEtxysp1kW8x3KnOLN2GGeuKKqnex18iFZW2CeWlAhtPeKndKARHFrPrp+GzZ
-         x+x2MRoHy3WKzGNmW5JTRlkFDdpMjjk8rmfQoAmXvZ15uGBmDLCq6cJjo4XFPEROq5Mp
-         CUvNXd2tk1xgk/3NdT9lGQWpxKrBkCbHZ38f7alW3q9h6E+Wjhbswn0YyOjgTsqTsfJW
-         jLwNw+W5gnI9omeUOw2pEFKsJ9A3fr/Dbk7+KcrdOzqJKbxRDOFVWwwPBe4j455j0ddF
-         zMdP+OmqmBEhakPGj5Gwp72MNb1fAUgYREZEeyQ3z7OgSK9FoP0tFKI3X+Nmf97hGagH
-         gTvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=zVlKoJV5QCc33RQJubZEDQDRV60YVKYMw2KVtAWGMJk=;
-        b=ij+jH/tl/9sPi6bPXRXiBEkb2YvcK3/TkonQePxbrdGnvbcPfxMhnJeYOVZpUnBKns
-         OzSmRdQzagdbSvU9h9aWchzJgrnpy8vkE+a1pNMRyWFPjGW6/nGzAJmyIewYgcyvronn
-         y31JGdfGZ1qVnCHBwOuiuv+tHcU3OtdhlHTBPkNavLS0cYSMm23dqKtOnAbEhdxLclzI
-         B5dZPJzAhiaCZ66Y4DuAnbBa/BytD7MiQ5EngD6m/GhWCstIFyq12Qyl9+57Nju/llOf
-         ixRwdQmQWTCIM9sFkrvSok2cpQG1ptHzAWWLqKp1K4vNPassKZo9VPzjo00ZHcIA/Z/L
-         H5aA==
-X-Gm-Message-State: AOAM533hD9D0gwnUn639YEh1YcUA3+VKR1Eq+6h18rXdGcZcNR46xdYY
-        KRhegEzJGXu0nRQq/mnqkSRKlpIrbOw3gXS9GPU=
-X-Google-Smtp-Source: ABdhPJzNakvEh389jNk0+aLRx3nN1DF/aYecpKOZTdKMVpdYMyNgVkOw1dWjTfe1RqKhsT4jkJKyc8xsSahZGpD2wRc=
-X-Received: by 2002:a5e:da09:: with SMTP id x9mr36003059ioj.171.1637917858323;
- Fri, 26 Nov 2021 01:10:58 -0800 (PST)
+        id S1359846AbhKZJPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 04:15:40 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:36981 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238592AbhKZJNk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 04:13:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1637917827; x=1669453827;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ru+c9z1oNlyIiQwDj3KxFHyHp3VS1yhZ8W7J+7bnaBo=;
+  b=GtZtKkOUhhl5OVBMJILGEP+tDQ0Xhxiuxlm1RrAamI4t3aenqj3+RSbb
+   4FsTBHLqe4/0FT9bWIPxSlkG74+6WnFLsbdvopArTzhanSB7wYNUKMWGA
+   h9VzpFFs1xHNYbf8gevPtTaR4kwwY863bE5DzdLxCM6A6azQo/bZLSURu
+   5Vq8tDb8ju51PN/jKApcbBRBZZPNPjdAx/aenfV3/UsQqZYfGgS6reavB
+   WIkZAi4Vb+2Ke4ro1qmYK4xqa3czVcGr39HwTEECtqe+SMS4EiHDzk2cR
+   dMq6LVASarA+qOglV4sllzcS5TXBbBzdVOPH45ruNwAz6AbIp3fRYmkbq
+   w==;
+IronPort-SDR: xw72zawMbrjhpLX6vr0whCXdh/U3N16Oey1brVEYT9kTvjcNfYn5y+Kj3u+BtWkkiRr/eDdLo7
+ svoo2ou2MVZrvu/rerouXWD8H73I3/z0Pjn9YVFPxjAHRMso9wujcLwNQXofE9HE9aO/EJjD/W
+ wOXeXuf0N4BqMr3Ugae026LoOGa6ObONzRZLh5QcpCwzbCoe/g0xLwnJRp/NZMpkuHDB32hcPZ
+ Uq/5SLxK7kSZdQ88H8BBqkJdTbm7hNcBI6PIxbvIEoPveMi6iVoQtxfwiU3fvaofvliCCR5sPH
+ V9MC7xcRZqbSq1l5kLub8Hg1
+X-IronPort-AV: E=Sophos;i="5.87,265,1631602800"; 
+   d="scan'208";a="153320083"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Nov 2021 02:10:27 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Fri, 26 Nov 2021 02:10:27 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2176.14 via Frontend
+ Transport; Fri, 26 Nov 2021 02:10:26 -0700
+Date:   Fri, 26 Nov 2021 10:12:21 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <p.zabel@pengutronix.de>,
+        <linux@armlinux.org.uk>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 3/6] net: lan966x: add port module support
+Message-ID: <20211126091221.tzrqsgawavlzitp5@soft-dev3-1.localhost>
+References: <20211123135517.4037557-1-horatiu.vultur@microchip.com>
+ <20211123135517.4037557-4-horatiu.vultur@microchip.com>
+ <YZ59hpDWjNjvx5kP@lunn.ch>
+ <20211125092638.7b2u75zdv2ulekmo@soft-dev3-1.localhost>
+ <YZ+kvpCmWomKNr9l@lunn.ch>
 MIME-Version: 1.0
-Received: by 2002:a92:c56d:0:0:0:0:0 with HTTP; Fri, 26 Nov 2021 01:10:58
- -0800 (PST)
-Reply-To: mrsaishag45@gmail.com
-From:   Mrs Aisha Al-Qaddafi <mrsaishagaddafi488@gmail.com>
-Date:   Fri, 26 Nov 2021 01:10:58 -0800
-Message-ID: <CAOXivUo+_fyEnXBH2mzW0WgqfsrBvF4Wqa-yfWTw5gmKe=U8Ug@mail.gmail.com>
-Subject: Dear Friend,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <YZ+kvpCmWomKNr9l@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I came across your e-mail contact prior a private search while in need
-of your assistance. My name is Aisha Gaddafi a single
+The 11/25/2021 15:59, Andrew Lunn wrote:
 
-Mother and a Widow with three Children. I am the only biological
-Daughter of late Libyan President (Late Colonel Muammar
+Hi Andrew,
 
-Gaddafi).
+> 
+> > If I undestood you correctly I have tried to do the following:
+> >
+> > struct lan966x_ifh {
+> >     __be32 timestamp;
+> >     __be32 bypass : 1;
+> >     __be32 port : 3;
+> >     ...
+> > };
+> >
+> > But then I start to get errors from sparse:
+> >
+> > error: invalid bitfield specifier for type restricted __be32.
+> 
+> Maybe look at struct iphdr. It has bitfields for the header length and
+> the IP version.
 
-I have investment funds worth Twenty Seven Million Five Hundred
-Thousand United State Dollar ($27.500.000.00 ) and i need a
+I think it would get pretty messy to add all these defines in the
+lan966x_ifh struct. One reason is that the IFH contains 38 fields.
 
-trusted investment Manager/Partner because of my current refugee
-status, however, I am interested in you for investment
+I have send another version(v4) where I think I have simplified it a little
+bit more. If you think is still not clear enough, I will try again the
+approach that you proposed.
 
-project assistance in your country, may be from there, we can build
-business relationship in the nearest future.
+> 
+>     Andrew
 
-I am willing to negotiate investment/business profit sharing ratio
-with you base on the future investment earning profits.
-If you are willing to handle this project on my behalf kindly reply
-urgent to enable me provide you more information about
-
-Best Regards
-Mrs Aisha Al-Qaddafi
+-- 
+/Horatiu
