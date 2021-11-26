@@ -2,147 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D392D45EBAC
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 11:33:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BEB945EB75
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 11:26:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376749AbhKZKgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Nov 2021 05:36:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40114 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377018AbhKZKeT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 05:34:19 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1B79C061784;
-        Fri, 26 Nov 2021 02:21:10 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id o13so17501284wrs.12;
-        Fri, 26 Nov 2021 02:21:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to
-         :references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=yZ/tCit1NmMtiFas6Nxi4G9wPKK7nJJkoETrht0RK38=;
-        b=OSTduz72gGcF+/TB3oTsc0dWxUQmTbPuv3bA2jRmjrsGzPvedTL6GnXWzPe0fdc1SV
-         FUq8R1RxvUcaKvqEW5YmqpXpC5EVSjkYPJnDRgFgELe28S34AVKwSvuqiLKLag122Kl1
-         WyoK6ZO+yY0P5X7d6xadqcVyckrU1VS8hVtbuPLITziuCSjQ3G8t6Mci4jqGQMtqTJcy
-         Bevsfdzs130wDDKMQPp/B0J2ks6lxJlVkC2A4kygJp7VE+iIage7ZQ/usV4QsWOo81+Y
-         8iHRNqs8vv45yH7Z4vbDa4FJQT1kLMFvIFBm7SZcqhcR4ZcNNuaMdHDPjmxUomuDu/SE
-         TUDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=yZ/tCit1NmMtiFas6Nxi4G9wPKK7nJJkoETrht0RK38=;
-        b=ecwVGGSIu5SHwDVFqOGmdhB8d2aZ94njDwjpYs+IuKDNM70lz8Qd/Bzn/fotPvcb1Z
-         xCIA4pnMIu8kTRpsn7HCOZCRXXT9Qe2x8gHkm4YBmnmoXWHs2D66o+NIN32al5AjWqaF
-         PKInVKLe228kaU93Tz0iqJ3pzWFzXF0a03+kHnjO5zliykHclTsmR7dA3pDiCk/HLD9M
-         49Q5xopv6eRWJWG49vI7oqu78zUbSBAsMLS0AAXpk63RFQtNQQcSP/aHF8rc3DNjoKa6
-         +gsgrXwnxSwTu5K7oIBtPfH99yzDa+R4/ECkHV/LNd0KY3NvWicy+ihIlSmbFpDqT3Gf
-         0COw==
-X-Gm-Message-State: AOAM530bkXd37vYSGSsTMv+q44NKYNIqE+Pc5+HSbfieh9bWYYnziau0
-        LtFBJdqAHnTt32hq+WWfdZ4=
-X-Google-Smtp-Source: ABdhPJyeS+5pbpcOHAqvyN/g/r7R5Rkqo4J/Nr/TdC4nBezU/fWjN+afDxc5nAp6zdcpO6XyWzoXsQ==
-X-Received: by 2002:a5d:648e:: with SMTP id o14mr12900579wri.69.1637922069507;
-        Fri, 26 Nov 2021 02:21:09 -0800 (PST)
-Received: from ?IPV6:2003:ea:8f1a:f00:eda0:b7b0:4339:bfa2? (p200300ea8f1a0f00eda0b7b04339bfa2.dip0.t-ipconnect.de. [2003:ea:8f1a:f00:eda0:b7b0:4339:bfa2])
-        by smtp.googlemail.com with ESMTPSA id w15sm4967366wrk.77.2021.11.26.02.21.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Nov 2021 02:21:09 -0800 (PST)
-Message-ID: <c6d37ae0-9ccb-a527-4f55-e96972813a53@gmail.com>
-Date:   Fri, 26 Nov 2021 11:21:03 +0100
+        id S1377279AbhKZK33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 05:29:29 -0500
+Received: from relay2-d.mail.gandi.net ([217.70.183.194]:54961 "EHLO
+        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376707AbhKZK12 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 05:27:28 -0500
+Received: (Authenticated sender: maxime.chevallier@bootlin.com)
+        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id 5F7334000D;
+        Fri, 26 Nov 2021 10:24:11 +0000 (UTC)
+Date:   Fri, 26 Nov 2021 11:24:10 +0100
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        gregory.clement@bootlin.com, Andrew Lunn <andrew@lunn.ch>,
+        Pali =?UTF-8?B?Um9ow6Fy?= <pali@kernel.org>
+Subject: Re: [PATCH net-next 4/4] net: mvneta: Add TC traffic shaping
+ offload
+Message-ID: <20211126112410.549a108d@bootlin.com>
+In-Reply-To: <20211125095029.342b3594@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20211125154813.579169-1-maxime.chevallier@bootlin.com>
+        <20211125154813.579169-5-maxime.chevallier@bootlin.com>
+        <20211125095029.342b3594@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Content-Language: en-US
-To:     Yinbo Zhu <zhuyinbo@loongson.cn>, Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kbuild@vger.kernel.org
-References: <1637919957-21635-1-git-send-email-zhuyinbo@loongson.cn>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH v2 1/2] modpost: file2alias: fixup mdio alias garbled code
- in modules.alias
-In-Reply-To: <1637919957-21635-1-git-send-email-zhuyinbo@loongson.cn>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26.11.2021 10:45, Yinbo Zhu wrote:
-> After module compilation, module alias mechanism will generate a ugly
-> mdio modules alias configure if ethernet phy was selected, this patch
-> is to fixup mdio alias garbled code.
-> 
-> In addition, that ugly alias configure will cause ethernet phy module
-> doens't match udev, phy module auto-load is fail, but add this patch
-> that it is well mdio driver alias configure match phy device uevent.
-> 
-I think Andrew asked you for an example already.
-For which PHY's the driver isn't auto-loaded?
+Hello Jakub,
 
-In addition your commit descriptions are hard to read, especially the
-one for patch 2. Could you please try to change them to proper English?
-Not being a native speaker myself ..
+On Thu, 25 Nov 2021 09:50:29 -0800
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-> Signed-off-by: Yinbo Zhu <zhuyinbo@loongson.cn>
-> ---
-> Change in v2:
-> 		Add a MDIO_ANY_ID for considering some special phy device 
-> 		which phy id doesn't be read from phy register.
-> 
-> 
->  include/linux/mod_devicetable.h |  2 ++
->  scripts/mod/file2alias.c        | 17 +----------------
->  2 files changed, 3 insertions(+), 16 deletions(-)
-> 
-> diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
-> index ae2e75d..7bd23bf 100644
-> --- a/include/linux/mod_devicetable.h
-> +++ b/include/linux/mod_devicetable.h
-> @@ -595,6 +595,8 @@ struct platform_device_id {
->  	kernel_ulong_t driver_data;
->  };
->  
-> +#define MDIO_ANY_ID (~0)
-> +
->  #define MDIO_NAME_SIZE		32
->  #define MDIO_MODULE_PREFIX	"mdio:"
->  
-> diff --git a/scripts/mod/file2alias.c b/scripts/mod/file2alias.c
-> index 49aba86..63f3149 100644
-> --- a/scripts/mod/file2alias.c
-> +++ b/scripts/mod/file2alias.c
-> @@ -1027,24 +1027,9 @@ static int do_platform_entry(const char *filename,
->  static int do_mdio_entry(const char *filename,
->  			 void *symval, char *alias)
->  {
-> -	int i;
->  	DEF_FIELD(symval, mdio_device_id, phy_id);
-> -	DEF_FIELD(symval, mdio_device_id, phy_id_mask);
-> -
->  	alias += sprintf(alias, MDIO_MODULE_PREFIX);
-> -
-> -	for (i = 0; i < 32; i++) {
-> -		if (!((phy_id_mask >> (31-i)) & 1))
-> -			*(alias++) = '?';
-> -		else if ((phy_id >> (31-i)) & 1)
-> -			*(alias++) = '1';
-> -		else
-> -			*(alias++) = '0';
-> -	}
-> -
-> -	/* Terminate the string */
-> -	*alias = 0;
-> -
-> +	ADD(alias, "p", phy_id != MDIO_ANY_ID, phy_id);
->  	return 1;
->  }
->  
-> 
+>On Thu, 25 Nov 2021 16:48:13 +0100 Maxime Chevallier wrote:
+>> The mvneta controller is able to do some tocken-bucket per-queue traffic
+>> shaping. This commit adds support for setting these using the TC mqprio
+>> interface.
+>> 
+>> The token-bucket parameters are customisable, but the current
+>> implementation configures them to have a 10kbps resolution for the
+>> rate limitation, since it allows to cover the whole range of max_rate
+>> values from 10kbps to 5Gbps with 10kbps increments.
+>> 
+>> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>  
+>
+>Breaks 32bit build, please make sure you use division helpers for 64b.
 
+My bad, I'll update to use the proper helpers then (and compile-test
+for 32bits this time too, sorry about that)
+
+Thanks,
+
+Maxime
+
+-- 
+Maxime Chevallier, Bootlin
+Embedded Linux and kernel engineering
+https://bootlin.com
