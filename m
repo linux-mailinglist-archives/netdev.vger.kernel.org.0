@@ -2,185 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D913545F562
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 20:45:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8481F45F50C
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 20:15:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238323AbhKZTtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Nov 2021 14:49:05 -0500
-Received: from spf.hitachienergy.com ([138.225.1.74]:33984 "EHLO
-        inet10.abb.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236248AbhKZTrE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Nov 2021 14:47:04 -0500
-Received: from gitsiv.ch.abb.com (gitsiv.keymile.net [10.41.156.251])
-        by inet10.abb.com (8.14.7/8.14.7) with SMTP id 1AQFh7ph005537;
-        Fri, 26 Nov 2021 16:43:07 +0100
-Received: from ch10641.keymile.net.net (ch10641.keymile.net [172.31.40.7])
-        by gitsiv.ch.abb.com (Postfix) with ESMTP id 785C065A4214;
-        Fri, 26 Nov 2021 16:43:07 +0100 (CET)
-From:   Holger Brunck <holger.brunck@hitachienergy.com>
-To:     netdev@vger.kernel.org
-Cc:     Holger Brunck <holger.brunck@hitachienergy.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 2/2] dsa: mv88e6xxx: make serdes SGMII/Fiber output amplitude configurable
-Date:   Fri, 26 Nov 2021 16:42:49 +0100
-Message-Id: <20211126154249.2958-2-holger.brunck@hitachienergy.com>
-X-Mailer: git-send-email 2.34.0
+        id S231672AbhKZTSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 14:18:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41072 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230166AbhKZTQp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 14:16:45 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9945C0619F6
+        for <netdev@vger.kernel.org>; Fri, 26 Nov 2021 10:37:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E229CB82876
+        for <netdev@vger.kernel.org>; Fri, 26 Nov 2021 18:37:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B621C93056;
+        Fri, 26 Nov 2021 18:37:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637951847;
+        bh=NDVImURTM0EtfnxkSvjDQmpEOs3wTkpsqhkQfuYE/a0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=JHRbKjB4hDh8MUNeQMtS16jZsUQ8d2RNOkerZerk+2fAiDjux2ZYJlbs3S9WlMdeZ
+         wpeCHCfBVCAG3bBYm6ovO3wV1D1MRJKD6sDHo7O95cbjIAZ9to1y0mWYEpGUsk94v5
+         lypc4Gj7+rnMpOI5PqdjbI8R1EwwWyj68NBJ+5bSlFy7qArxT/rBd2Xy/9BFsa7Szr
+         Q6+wxZogrRrfN1kEx3p8dQ0lbn47s/uJUx8SCM3ShkI7DxUCQUjtCsyer4OCLOKxSO
+         VNWghWLQS+kI6WIVVpADqqc/Khib46WwuFw4gjfhk8xTXioMeKUC3LPFN/IqCic387
+         mGFdvsBUOYjjw==
+Date:   Fri, 26 Nov 2021 10:37:26 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Holger Brunck <holger.brunck@hitachienergy.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH 1/2] Docs/devicetree: add serdes-output-amplitude to
+ marvell.txt
+Message-ID: <20211126103726.6f3976a4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 In-Reply-To: <20211126154249.2958-1-holger.brunck@hitachienergy.com>
 References: <20211126154249.2958-1-holger.brunck@hitachienergy.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The mv88e6352, mv88e6240 and mv88e6176  have a serdes interface. This pat=
-ch
-allows to configure the output swing to a desired value in the
-devicetree node of the switch.
+On Fri, 26 Nov 2021 16:42:48 +0100 Holger Brunck wrote:
+> This can be configured from the device tree. Add this property to the
+> documentation accordingly.
+> The eight different values added in the dt-bindings file correspond to
+> the values we can configure on 88E6352, 88E6240 and 88E6176 switches
+> according to the datasheet.
+> 
+> CC: Andrew Lunn <andrew@lunn.ch>
+> CC: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Holger Brunck <holger.brunck@hitachienergy.com>
 
-CC: Andrew Lunn <andrew@lunn.ch>
-CC: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Holger Brunck <holger.brunck@hitachienergy.com>
----
- drivers/net/dsa/mv88e6xxx/chip.c   | 14 ++++++++++++++
- drivers/net/dsa/mv88e6xxx/chip.h   |  3 +++
- drivers/net/dsa/mv88e6xxx/serdes.c | 14 ++++++++++++++
- drivers/net/dsa/mv88e6xxx/serdes.h |  4 ++++
- 4 files changed, 35 insertions(+)
+Not sure why but FWIW your patches did not show up in patchwork on in
+lore. We can see Andrew's review but not the patches themselves:
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx=
-/chip.c
-index f00cbf5753b9..5182128959a0 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3173,9 +3173,11 @@ static void mv88e6xxx_teardown(struct dsa_switch *=
-ds)
- static int mv88e6xxx_setup(struct dsa_switch *ds)
- {
- 	struct mv88e6xxx_chip *chip =3D ds->priv;
-+	struct device_node *np =3D chip->dev->of_node;
- 	u8 cmode;
- 	int err;
- 	int i;
-+	int out_amp;
-=20
- 	chip->ds =3D ds;
- 	ds->slave_mii_bus =3D mv88e6xxx_default_mdio_bus(chip);
-@@ -3292,6 +3294,15 @@ static int mv88e6xxx_setup(struct dsa_switch *ds)
- 	if (err)
- 		goto unlock;
-=20
-+	if (chip->info->ops->serdes_set_out_amplitude && np) {
-+		if (!of_property_read_u32(np, "serdes-output-amplitude",
-+					  &out_amp)) {
-+			err =3D mv88e6352_serdes_set_out_amplitude(chip, out_amp);
-+			if (err)
-+				goto unlock;
-+		}
-+	}
-+
- unlock:
- 	mv88e6xxx_reg_unlock(chip);
-=20
-@@ -4076,6 +4087,7 @@ static const struct mv88e6xxx_ops mv88e6176_ops =3D=
- {
- 	.serdes_irq_status =3D mv88e6352_serdes_irq_status,
- 	.serdes_get_regs_len =3D mv88e6352_serdes_get_regs_len,
- 	.serdes_get_regs =3D mv88e6352_serdes_get_regs,
-+	.serdes_set_out_amplitude =3D mv88e6352_serdes_set_out_amplitude,
- 	.gpio_ops =3D &mv88e6352_gpio_ops,
- 	.phylink_validate =3D mv88e6352_phylink_validate,
- };
-@@ -4356,6 +4368,7 @@ static const struct mv88e6xxx_ops mv88e6240_ops =3D=
- {
- 	.serdes_irq_status =3D mv88e6352_serdes_irq_status,
- 	.serdes_get_regs_len =3D mv88e6352_serdes_get_regs_len,
- 	.serdes_get_regs =3D mv88e6352_serdes_get_regs,
-+	.serdes_set_out_amplitude =3D mv88e6352_serdes_set_out_amplitude,
- 	.gpio_ops =3D &mv88e6352_gpio_ops,
- 	.avb_ops =3D &mv88e6352_avb_ops,
- 	.ptp_ops =3D &mv88e6352_ptp_ops,
-@@ -4762,6 +4775,7 @@ static const struct mv88e6xxx_ops mv88e6352_ops =3D=
- {
- 	.serdes_get_stats =3D mv88e6352_serdes_get_stats,
- 	.serdes_get_regs_len =3D mv88e6352_serdes_get_regs_len,
- 	.serdes_get_regs =3D mv88e6352_serdes_get_regs,
-+	.serdes_set_out_amplitude =3D mv88e6352_serdes_set_out_amplitude,
- 	.phylink_validate =3D mv88e6352_phylink_validate,
- };
-=20
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx=
-/chip.h
-index 8271b8aa7b71..d931039ee995 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -586,6 +586,9 @@ struct mv88e6xxx_ops {
- 	void (*serdes_get_regs)(struct mv88e6xxx_chip *chip, int port,
- 				void *_p);
-=20
-+	/* SERDES SGMII/Fiber Output Amplitude */
-+	int (*serdes_set_out_amplitude)(struct mv88e6xxx_chip *chip, int val);
-+
- 	/* Address Translation Unit operations */
- 	int (*atu_get_hash)(struct mv88e6xxx_chip *chip, u8 *hash);
- 	int (*atu_set_hash)(struct mv88e6xxx_chip *chip, u8 hash);
-diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6x=
-xx/serdes.c
-index 6ea003678798..835137595de5 100644
---- a/drivers/net/dsa/mv88e6xxx/serdes.c
-+++ b/drivers/net/dsa/mv88e6xxx/serdes.c
-@@ -1271,6 +1271,20 @@ void mv88e6390_serdes_get_regs(struct mv88e6xxx_ch=
-ip *chip, int port, void *_p)
- 	}
- }
-=20
-+int mv88e6352_serdes_set_out_amplitude(struct mv88e6xxx_chip *chip, int =
-val)
-+{
-+	u16 reg;
-+	int err;
-+
-+	err =3D mv88e6352_serdes_read(chip, MV88E6352_SERDES_SPEC_CTRL2, &reg);
-+	if (err)
-+		return err;
-+
-+	reg =3D (reg & MV88E6352_SERDES_OUT_AMP_MASK) | val;
-+
-+	return mv88e6352_serdes_write(chip, MV88E6352_SERDES_SPEC_CTRL2, reg);
-+}
-+
- static int mv88e6393x_serdes_port_errata(struct mv88e6xxx_chip *chip, in=
-t lane)
- {
- 	u16 reg, pcs;
-diff --git a/drivers/net/dsa/mv88e6xxx/serdes.h b/drivers/net/dsa/mv88e6x=
-xx/serdes.h
-index cbb3ba30caea..71dddc65b642 100644
---- a/drivers/net/dsa/mv88e6xxx/serdes.h
-+++ b/drivers/net/dsa/mv88e6xxx/serdes.h
-@@ -27,6 +27,8 @@
- #define MV88E6352_SERDES_INT_FIBRE_ENERGY	BIT(4)
- #define MV88E6352_SERDES_INT_STATUS	0x13
-=20
-+#define MV88E6352_SERDES_SPEC_CTRL2	0x1a
-+#define MV88E6352_SERDES_OUT_AMP_MASK		0xfffc
-=20
- #define MV88E6341_PORT5_LANE		0x15
-=20
-@@ -172,6 +174,8 @@ void mv88e6352_serdes_get_regs(struct mv88e6xxx_chip =
-*chip, int port, void *_p);
- int mv88e6390_serdes_get_regs_len(struct mv88e6xxx_chip *chip, int port)=
-;
- void mv88e6390_serdes_get_regs(struct mv88e6xxx_chip *chip, int port, vo=
-id *_p);
-=20
-+int mv88e6352_serdes_set_out_amplitude(struct mv88e6xxx_chip *chip, int =
-val);
-+
- /* Return the (first) SERDES lane address a port is using, -errno otherw=
-ise. */
- static inline int mv88e6xxx_serdes_get_lane(struct mv88e6xxx_chip *chip,
- 					    int port)
---=20
-2.34.0
-
+https://lore.kernel.org/all/YaEIVQ6gKOSD1Vf%2F@lunn.ch/
