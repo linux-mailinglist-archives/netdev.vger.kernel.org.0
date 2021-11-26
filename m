@@ -2,93 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C302145F60F
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 21:45:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BEBF45F610
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 21:45:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241124AbhKZUsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Nov 2021 15:48:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60718 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229840AbhKZUqy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 15:46:54 -0500
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6583FC0613FE;
-        Fri, 26 Nov 2021 12:41:13 -0800 (PST)
-Received: by mail-qk1-x736.google.com with SMTP id i9so15973595qki.3;
-        Fri, 26 Nov 2021 12:41:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HNz3Duqca+HlLoVbIohH9bsymmp0UBoU7O3wxp6FWTc=;
-        b=qLkPySkLuhaBpRl6cbqyMiEjOMcORxCs8lmYoVHL3zOktNz7uxXz5M0Ey01TvY8a/i
-         0Q+2Mx6NBMVRF4UqrmrhtQwyCQ9XU6Ed0WXVyu9tbo3ga5pE5U1lE4P1FHTF8lz7sJvS
-         5xz7+FvibkcBLdQ1QjKAP9Gi4S0sUxvWNgl/NWlYOujbVtJKKD3oTWHj+HC/QBvJnH9j
-         t9t9sLcD8czCHoVJzptoFfRrcIjbyDT9a/yF+/WpCUR17CwMDkL5WeTv/RZWxitQorPK
-         0ij7bECPo3Ur/c3CxsOCjyp5AGioMc+6U4fsV4mJ2wjFeJhhB3MypNWtg7bHYTrCcGAC
-         Bsyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HNz3Duqca+HlLoVbIohH9bsymmp0UBoU7O3wxp6FWTc=;
-        b=n7qIGzlP7sFrR65BigmihES2YKm8+qZAz1InEYfQoWF1tbSJw5KJBhUQXe54BTQG6N
-         T3R+M903JapkUhJkvuRc/Ye6aO1u6ADfzJOZPsfAnpiT9ICRLBW2YcZS6GIauF0aCF1X
-         TxLJNsmQdUEIfPCO9TuP8aEWIxbopAjC81BDMLDNXtwOXCzoAr+gRGg88TdMaq0ght+c
-         Rd7rBnEEEj7We278zL4+g+zLANyz188LeiK1LNfQPq1FpY5p1OuyxwHWhJE/5yyvJgCu
-         8lAR7hXukb2BhDFZ+noueP3fldcvwVFJRkVmizV85tgxaFM6n8E004jc+btxFgn+pwke
-         Y0zA==
-X-Gm-Message-State: AOAM531xl5ANGljw2TOgjlbtFxNkTP/MmK3ltubI1QHg1QCVLQI+iCm7
-        N+KpEyhLjqWLwXV+YSp8KCnvYJI9c6M=
-X-Google-Smtp-Source: ABdhPJxAOm9aVpJZaK6e4MyIWbYMdoYb4tPmazjB76XigeV8UTYeqpx4Hsh87ZnnqviPA+i1Jr7ydg==
-X-Received: by 2002:a05:620a:2447:: with SMTP id h7mr23937005qkn.75.1637959272386;
-        Fri, 26 Nov 2021 12:41:12 -0800 (PST)
-Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:4fa:e845:6c9f:cd5b])
-        by smtp.gmail.com with ESMTPSA id u188sm3675024qkh.30.2021.11.26.12.41.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Nov 2021 12:41:12 -0800 (PST)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Subject: [PATCH bpf] libbpf: fix missing section "sk_skb/skb_verdict"
-Date:   Fri, 26 Nov 2021 12:41:08 -0800
-Message-Id: <20211126204108.11530-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        id S240939AbhKZUtA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 15:49:00 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:54112 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231849AbhKZUrA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Nov 2021 15:47:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=yqBa/1dM5GMhVnLlG/PXnBAWMNB4kSm2agdyG6EOEkQ=; b=w5oe5BCNaz8x+mTBLGP0VtxNlx
+        Mfe9HnWNgafhDfm+ntTdKHMMoRiltrJgEURETNga76OPMAjb7zoc3pfNUaDNUHOD9Rmj8fRwFP45g
+        8KXKq1L+AN5WFwx9mC4zOX1EoO8P1Wb8quj5eZmToNk+BTFpguTWqBG7uQHR++DRtX4Y=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mqi4P-00EjCj-MH; Fri, 26 Nov 2021 21:43:45 +0100
+Date:   Fri, 26 Nov 2021 21:43:45 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     Holger Brunck <holger.brunck@hitachienergy.com>,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH 2/2] dsa: mv88e6xxx: make serdes SGMII/Fiber output
+ amplitude configurable
+Message-ID: <YaFHAbXbEH1fokkx@lunn.ch>
+References: <20211126154249.2958-1-holger.brunck@hitachienergy.com>
+ <20211126154249.2958-2-holger.brunck@hitachienergy.com>
+ <20211126205625.5c0e38c5@thinkpad>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211126205625.5c0e38c5@thinkpad>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
+> > +	if (chip->info->ops->serdes_set_out_amplitude && np) {
+> > +		if (!of_property_read_u32(np, "serdes-output-amplitude",
+> 
+> Hmm. Andrew, why don't we use <linux/property.h> instead of
+> <linux/of*.h> stuff in this dirver? Is there a reason or is this just
+> because it wasn't converted yet?
 
-When BPF_SK_SKB_VERDICT was introduced, I forgot to add
-a section mapping for it in libbpf.
+The problem with device_property_read is that it takes a device. But
+this is not actually a device scoped property, it should be considered
+a port scoped property. And the port is not a device. DSA is not
+likely to convert to the device API because the device API is too
+limiting.
 
-Fixes: a7ba4558e69a ("sock_map: Introduce BPF_SK_SKB_VERDICT")
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: Jakub Sitnicki <jakub@cloudflare.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
----
- tools/lib/bpf/libbpf.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 7c74342bb668..92fbebb12591 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -8346,6 +8346,7 @@ static const struct bpf_sec_def section_defs[] = {
- 	SEC_DEF("sockops",		SOCK_OPS, BPF_CGROUP_SOCK_OPS, SEC_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
- 	SEC_DEF("sk_skb/stream_parser",	SK_SKB, BPF_SK_SKB_STREAM_PARSER, SEC_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
- 	SEC_DEF("sk_skb/stream_verdict",SK_SKB, BPF_SK_SKB_STREAM_VERDICT, SEC_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
-+	SEC_DEF("sk_skb/skb_verdict",	SK_SKB, BPF_SK_SKB_VERDICT, SEC_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
- 	SEC_DEF("sk_skb",		SK_SKB, 0, SEC_NONE | SEC_SLOPPY_PFX),
- 	SEC_DEF("sk_msg",		SK_MSG, BPF_SK_MSG_VERDICT, SEC_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
- 	SEC_DEF("lirc_mode2",		LIRC_MODE2, BPF_LIRC_MODE2, SEC_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
--- 
-2.30.2
-
+	Andrew
