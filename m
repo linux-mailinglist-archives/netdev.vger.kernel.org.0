@@ -2,61 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 989A345F388
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 19:09:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F17245F2A9
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 18:11:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237585AbhKZSMr convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 26 Nov 2021 13:12:47 -0500
-Received: from ns1011254.ip-92-204-144.us ([92.204.144.117]:38342 "EHLO
-        ns1011254.ip-92-204-144.us" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235539AbhKZSKr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 13:10:47 -0500
-X-Greylist: delayed 85001 seconds by postgrey-1.27 at vger.kernel.org; Fri, 26 Nov 2021 13:10:47 EST
-Received: from [198.38.92.143] (port=64584 helo=greatnorthreserve.com)
-        by ns1011254.ip-92-204-144.us with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <adahl@greatnorthreserve.com>)
-        id 1mqJWL-000G5b-5P
-        for netdev@vger.kernel.org; Thu, 25 Nov 2021 18:30:53 +0000
-Reply-To: stt78504@gmail.com
-From:   "Wesley  Adams" <adahl@greatnorthreserve.com>
-To:     netdev@vger.kernel.org
-Subject: Re: investment offer
-Date:   25 Nov 2021 10:31:08 -0800
-Message-ID: <20211125103108.C0EBFCF4640DB0AB@greatnorthreserve.com>
+        id S240197AbhKZROl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 12:14:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41808 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240301AbhKZRMk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 12:12:40 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6086BC061377;
+        Fri, 26 Nov 2021 08:43:10 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id x6so41117002edr.5;
+        Fri, 26 Nov 2021 08:43:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dVeISUeEVpHClnKkMQ0OE78WRtyIlTFqST8HoKpB/lg=;
+        b=DxdnNn4/6AD1BmHYf5TrT1sjjfs9xfvEnRKBa9v7vQ8FsQbzMPj/gIx3zzx7P667bw
+         gORGVioI7zFtG9UDXnwAx4Z+MyqSrBIj4BtAD+7nPt9FHDyVITXUDy5HDsREnnK9/wCK
+         ea00ohCzpkKNtaztZksg6IZK2BzZVLB1SHJalYy73zDE0SIaVjPWmZqiIZgigyQAg0Ev
+         Tn0Q3h6G7I7g99oVl6gnODMV0iZrF/JdDvVzP3L3WigN2d1LG9VRXSd3xyhEwlS8QaYo
+         yWOQUZDxIkpw+k03pmvvM3fLErMGtTiskLCbZwrwrJOcFwaEDDyR/UTlMIvBp7YIZXt1
+         imOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dVeISUeEVpHClnKkMQ0OE78WRtyIlTFqST8HoKpB/lg=;
+        b=7/3xNazpmrJAaIJHvqHh7NWXyKba/11wkMU00UFO+0jWUFwc8KXt7VVtiav6sHE2dS
+         oJAXAziTtxo75hnaFr2O5YAEkhnzhnjCn2BbMGXFC01XTtyEKak73ELJuySoXIWuSMLe
+         isfmDuv/qAeWAxo2KCuGJKqrr7fbAJGvjRbDOd/PkprN7Ckp9YVeB8GwfuneNy3B1jg5
+         EJCPSrPezubS5l3RrgqwaRH8NqPH/KEW6z1kP4co2VfEOl8+lRygEHctWIXof7vxvrmj
+         vskzQsbhlwPaxMtoo6jUuPp1A9M+hx15DJKlgvDplns5BVXDO228H3qxBrWZk2dUJl18
+         x4sQ==
+X-Gm-Message-State: AOAM5315x+082GXHH82z3kqsLnKwn9N+rEpRJgeZp0QFD3PfabC9LAVQ
+        iH6p9fakkAT3KHbRGtvsSg6JFx+jPpeQ/LRRo7c=
+X-Google-Smtp-Source: ABdhPJySPGwvu3kvPxM2wVnk62RJ8nPgqOlUHoeRsfwBzHAnR9RPDlEl9xHXphDzi/PCEDsHrfxYQXjqMnq1xYxUsPM=
+X-Received: by 2002:a17:907:7245:: with SMTP id ds5mr29560062ejc.206.1637944988863;
+ Fri, 26 Nov 2021 08:43:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: 8BIT
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - ns1011254.ip-92-204-144.us
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - greatnorthreserve.com
-X-Get-Message-Sender-Via: ns1011254.ip-92-204-144.us: authenticated_id: yvtcxmgkgon/only user confirmed/virtual account not confirmed
-X-Authenticated-Sender: ns1011254.ip-92-204-144.us: yvtcxmgkgon
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+References: <ba543ae4-3a71-13fe-fa82-600ac37eaf5a@linutronix.de>
+ <20211105141319.GA16456@hoboy.vegasvil.org> <20211105142833.nv56zd5bqrkyjepd@skbuf>
+ <20211106001804.GA24062@hoboy.vegasvil.org> <20211106003606.qvfkitgyzoutznlw@skbuf>
+ <20211107140534.GB18693@hoboy.vegasvil.org> <20211107142703.tid4l4onr6y2gxic@skbuf>
+ <20211108144824.GD7170@hoboy.vegasvil.org> <20211125170518.socgptqrhrds2vl3@skbuf>
+ <87r1b3nw93.fsf@kurt> <20211126163108.GA27081@hoboy.vegasvil.org>
+In-Reply-To: <20211126163108.GA27081@hoboy.vegasvil.org>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Fri, 26 Nov 2021 18:42:57 +0200
+Message-ID: <CA+h21hq=6eMrCJ=TS+zdrxHhuxcmVFLU0hzGmhLXUGFU-vLhPg@mail.gmail.com>
+Subject: Re: [PATCH 7/7] net: dsa: b53: Expose PTP timestamping ioctls to userspace
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Kurt Kanzenbach <kurt@linutronix.de>,
+        Martin Kaistra <martin.kaistra@linutronix.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+On Fri, 26 Nov 2021 at 18:31, Richard Cochran <richardcochran@gmail.com> wrote:
+>
+> On Fri, Nov 26, 2021 at 09:42:32AM +0100, Kurt Kanzenbach wrote:
+> > On Thu Nov 25 2021, Vladimir Oltean wrote:
+> > > Richard, when the request is PTP_V2_EVENT and the response is
+> > > PTP_V2_L2_EVENT, is that an upgrade or a downgrade?
+> >
+> > It is a downgrade, isn't it?
+>
+> Yes.  "Any kind of PTP Event" is a superset of "Any Layer-2 Event".
+>
+> When userland asks for "any kind", then it wants to run PTP over IPv4,
+> IPv6, or Layer2, maybe even more than one at the same time.  If the
+> driver changes that to Layer2 only, then the PTP possibilities have
+> been downgraded.
 
-Good day to you ,thank you for your time and I hope you and your 
-family are staying safe. My name is Wesley Adams, I represent 
-Belair Investment LP UK as the company secretary. We are 
-Corporate Financing company that generally engage in Project 
-Financing. In the cause of our research for companies / 
-individuals applying for project funding, we came across your 
-contact details. At present, We have funds available to finance 
-projects in a deposit account with HSBC UK.
-
-Kindly reply with your Proposal (Project plan/Executive Summary)
-
-Best regards
-
-Wesley Adams
-Company Secretary
-Belair Investment Lp.
+Well, when I said that it's essentially the same pattern, this is what
+I was talking about. The b53 driver downgrades everything and the
+kitchen sink to HWTSTAMP_FILTER_PTP_V2_L2_EVENT, the ocelot driver to
+HWTSTAMP_FILTER_PTP_V2_EVENT, and both are buggy for the same reason.
+I don't see why you mention that there is an important difference
+between HWTSTAMP_FILTER_PTP_V2_L2_EVENT and
+HWTSTAMP_FILTER_PTP_V2_EVENT. I know there is, but the _pattern_ is
+the same.
+I'm still missing something obvious, aren't I?
