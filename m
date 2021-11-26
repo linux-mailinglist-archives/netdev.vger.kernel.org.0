@@ -2,58 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B974F45E544
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 03:39:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19B2245E61D
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 04:01:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357817AbhKZClR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 21:41:17 -0500
-Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:54941 "EHLO
-        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1357966AbhKZCjQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 21:39:16 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0UyKa2w-_1637894161;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0UyKa2w-_1637894161)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 26 Nov 2021 10:36:02 +0800
-Date:   Fri, 26 Nov 2021 10:36:01 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: Re: [PATCH net v2] net/smc: Don't call clcsock shutdown twice when
- smc shutdown
-Message-ID: <YaBIEUO0eOUNqf0b@TonyMac-Alibaba>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <20211125132431.23264-1-tonylu@linux.alibaba.com>
- <1a7b27ec-22fc-f1b0-6b7c-4a61c072ff38@linux.ibm.com>
+        id S1359644AbhKZCuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 21:50:00 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50924 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1359009AbhKZCph (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Nov 2021 21:45:37 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C2C7261355;
+        Fri, 26 Nov 2021 02:36:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637894188;
+        bh=Yibu21T4UbpkU3YOXbQDC588MDn3gZHuhxgP5kuPwHI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Pdw0AlthRTHJ/6RXN/MSWT7qyJIidnGrYdEp9InJCOhw2VW5DeHiqMi1o2/AdeJ2J
+         RxXkbs3i4S11BIIVpiK/RcQf0mk7QJSPfoY577sMaupPghmjbS2c2wmXI2W1KQTlqs
+         1jNF5Sh7AwNNywNNYv6cdwDPHoz6kP7Ks36g6f76gYLjF4iBvIbtte48gfjD3puaW/
+         JH7M294jI/XZTDUFg11lk8SolRWk2Bw1Dex5+0JPC1JsW3ezqwc2ubtmuCOfZBSrok
+         Si40uSO28ty5PdlbOC2xZ5ipv/4HvGY9I84ME+NWqf3eX4xXaG02OOKU63kTmIHNS8
+         JNjbDJ0jcMBDw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Teng Qi <starmiku1207184332@gmail.com>,
+        TOTE Robot <oslab@tsinghua.edu.cn>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, yisen.zhuang@huawei.com,
+        salil.mehta@huawei.com, kuba@kernel.org, lipeng321@huawei.com,
+        huangguangbin2@huawei.com, tanhuazhong@huawei.com,
+        shenyang39@huawei.com, zhengyongjun3@huawei.com,
+        liuyonglong@huawei.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 09/12] ethernet: hisilicon: hns: hns_dsaf_misc: fix a possible array overflow in hns_dsaf_ge_srst_by_port()
+Date:   Thu, 25 Nov 2021 21:36:05 -0500
+Message-Id: <20211126023611.443098-9-sashal@kernel.org>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20211126023611.443098-1-sashal@kernel.org>
+References: <20211126023611.443098-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1a7b27ec-22fc-f1b0-6b7c-4a61c072ff38@linux.ibm.com>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 25, 2021 at 03:51:06PM +0100, Karsten Graul wrote:
-> On 25/11/2021 14:24, Tony Lu wrote:
-> > @@ -2398,7 +2400,12 @@ static int smc_shutdown(struct socket *sock, int how)
-> >  	}
-> >  	switch (how) {
-> >  	case SHUT_RDWR:		/* shutdown in both directions */
-> > +		old_state = sk->sk_state;
-> >  		rc = smc_close_active(smc);
-> > +		if (old_state == SMC_ACTIVE &&
-> > +		    sk->sk_state == SMC_PEERCLOSEWAIT1)
-> > +			do_shutdown = false;
-> > +
-> >  		break;
-> 
-> Please send a v3 without the extra empty line before the break statement,
-> and then the patch is fine with me.
-> 
-> Thank you!
+From: Teng Qi <starmiku1207184332@gmail.com>
 
-I will fix it, and send it out soon.
+[ Upstream commit a66998e0fbf213d47d02813b9679426129d0d114 ]
 
-Thanks,
-Tony Lu
+The if statement:
+  if (port >= DSAF_GE_NUM)
+        return;
+
+limits the value of port less than DSAF_GE_NUM (i.e., 8).
+However, if the value of port is 6 or 7, an array overflow could occur:
+  port_rst_off = dsaf_dev->mac_cb[port]->port_rst_off;
+
+because the length of dsaf_dev->mac_cb is DSAF_MAX_PORT_NUM (i.e., 6).
+
+To fix this possible array overflow, we first check port and if it is
+greater than or equal to DSAF_MAX_PORT_NUM, the function returns.
+
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Teng Qi <starmiku1207184332@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c
+index 408b63faf9a81..c4e56784ed1b8 100644
+--- a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c
++++ b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c
+@@ -336,6 +336,10 @@ static void hns_dsaf_ge_srst_by_port(struct dsaf_device *dsaf_dev, u32 port,
+ 		return;
+ 
+ 	if (!HNS_DSAF_IS_DEBUG(dsaf_dev)) {
++		/* DSAF_MAX_PORT_NUM is 6, but DSAF_GE_NUM is 8.
++		   We need check to prevent array overflow */
++		if (port >= DSAF_MAX_PORT_NUM)
++			return;
+ 		reg_val_1  = 0x1 << port;
+ 		port_rst_off = dsaf_dev->mac_cb[port]->port_rst_off;
+ 		/* there is difference between V1 and V2 in register.*/
+-- 
+2.33.0
+
