@@ -2,128 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 988A645F5B9
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 21:19:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AFC345F60C
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 21:44:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233715AbhKZUWM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Nov 2021 15:22:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54466 "EHLO
+        id S240703AbhKZUsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 15:48:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240250AbhKZUUF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 15:20:05 -0500
-Received: from mail-vk1-xa36.google.com (mail-vk1-xa36.google.com [IPv6:2607:f8b0:4864:20::a36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B65C0613F7
-        for <netdev@vger.kernel.org>; Fri, 26 Nov 2021 12:14:22 -0800 (PST)
-Received: by mail-vk1-xa36.google.com with SMTP id 70so6668811vkx.7
-        for <netdev@vger.kernel.org>; Fri, 26 Nov 2021 12:14:22 -0800 (PST)
+        with ESMTP id S241098AbhKZUqI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 15:46:08 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174E5C061574;
+        Fri, 26 Nov 2021 12:41:03 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id l25so43156822eda.11;
+        Fri, 26 Nov 2021 12:41:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=cnyYg0oNUcfsFuinF9v5fR9llU64pXeaHW/hgjWtFrE=;
-        b=mz0tRhfcm5k5sZ+RqGB/sdHZwe+Mw67tp7J2qOtdlZ+RBOGqDE+ACXyv4gdrB38n/j
-         IJaEIBBbQaFHbFah9/DHloOv19QL3ImV62s79IA+LmDwDdotKR54G5UbiE4vs92nlhLr
-         49rVyM7Tv128bc1XSExZIZ7X1AJfN6fs61IXllOZBoNctkg8UjF+MQwJim4E1tFq/KV1
-         ABrg8RamWKq38E7eAQbok68hbaM9jIspwPRlBd4O/0Uyp2KB6OvuTgBsfNxP5kN1yFqp
-         N/4esJ05hJurxyNurE5Tv4An8VP86ZzJQcU3R7WO3SzuhJ3MDJ7NTY5irRuMKSeSTKC4
-         FDPQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=OKsS2VBzzc/tYXgXzO7xiKe6VTOcM/AUGTPgRtdxw1A=;
+        b=lEWSh+vpqx/cCMLU8/tKnXdgaFYpN3ZHHWpwPigLGQeu4k5aqPh9U7NZn0blvRvg+s
+         ID6FCPD4KVBT3Ywfn+O/8woU0n85OZEdd45fze8PPtW63nEO9Uo1t07C4bEcqnvVuNeK
+         5tvAnuNqUZhnBv8E0NnrTZaMIK3jtG20N8fftDqZDSG6JHQaTPe7gW5OjB9N/tKbfiW4
+         zq2hfJl8drJ5JetkEvYsHSTou0Nf8QPzY/RvBBhiPyZSS0c5Y0fh8pHILP3I+I6jCiIG
+         DTCgYOlp/7PPaI3g7drHhXpYj/zDM4XAW8Ies86RLzIGSg8O5PYbGVPVx27uZbRKe0KV
+         4kIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=cnyYg0oNUcfsFuinF9v5fR9llU64pXeaHW/hgjWtFrE=;
-        b=w0EfTQkG+tePdPzNt+dGGclNSrFNOPwTEB8hlhxmnJYtBrqft9m/W9kV2QJnuMzDfm
-         cbOOiVObLIGbsGcC/dx6z4IOqkO+5my9atKdnTP8N0lqva/hRpd3Ov8l32jzKqv2BUoC
-         /JroY62j9cICNhuylGYY+Aa+71V4jGEcWptSQSIEXJQ9CdBvDlWPF7jCSWx1BOn843cx
-         4QvgFsM62fB88DfeF3zt8k4csAoCk2ANGxjGmxeLeG2ri7pJvY73atqnbaGZ6zDGoWL/
-         fUM1+Uvj+Z1Yb73LxwiWvWe8GlQyMx4jUk9Pfqj1XtmL2w3nnLS4myZNdEPQOcn2RoZ9
-         8UoQ==
-X-Gm-Message-State: AOAM532yiIMc+VMD7YRPw788mFr1GHYyinqNsbl1WCPA879scirpbZvM
-        3hEm+nWOjqxHLmlfrmMoV96psnGnvjw=
-X-Google-Smtp-Source: ABdhPJyFM8DxbGrwf5DkHaASFO0KofqNVGSupFkSjn4jTBSKDc+VMrD1jtb0AD7WbP8VtMJWSoeERg==
-X-Received: by 2002:a1f:18cb:: with SMTP id 194mr22249085vky.16.1637957660409;
-        Fri, 26 Nov 2021 12:14:20 -0800 (PST)
-Received: from tresc043793.tre-sc.gov.br (187-049-235-234.floripa.net.br. [187.49.235.234])
-        by smtp.gmail.com with ESMTPSA id 15sm4086766vkj.49.2021.11.26.12.14.18
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OKsS2VBzzc/tYXgXzO7xiKe6VTOcM/AUGTPgRtdxw1A=;
+        b=JfMJhN4j/rUyMAgVJfBo2WPxWERsgCxtmbhDNe4rDTDQXyQHPuNzE4XcF5p9eqYaj1
+         Wuui9dALZDqnbDXToIAKmjbMlMgWCnWs0y8WKtrlBSlA1uXIO8lmG7F8JmvKOVW4AZkv
+         YJ21EyG7BYRZjEnblUaG6+dFqCv4ooAg0oYATuDGAt6XdFCSGLz7AmIwPA5F94qWBLOY
+         53bZH10kuyLVogpX7/sgoZ1dqFBje79uaWZVGmv5iafTWdjBcp8jXjqtsfbuTA0oreJi
+         9Qw7rirFFo75PqshL80yJ6sjS+X3ecMa0NeUnUUXW0+oe+IGp+RV6KeegX48/qnt+bYO
+         Lccw==
+X-Gm-Message-State: AOAM5304NbYM4IBp/ObeavYCZDksagEisMc89Se7wgrjildf3UHHUnz+
+        w8gDEMcYhbTHPc3vqJyqiIHOxJ7u5R8=
+X-Google-Smtp-Source: ABdhPJy40Uo0DkuaWW+a1xLkC0YdTjDA59fansEUFqjRW8eEiCHLfgNdW3cxHeWUuJnAYvv0X8KKsA==
+X-Received: by 2002:aa7:cc82:: with SMTP id p2mr49875327edt.201.1637959261507;
+        Fri, 26 Nov 2021 12:41:01 -0800 (PST)
+Received: from skbuf ([188.25.173.50])
+        by smtp.gmail.com with ESMTPSA id s16sm4273010edt.30.2021.11.26.12.41.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Nov 2021 12:14:19 -0800 (PST)
-From:   luizluca@gmail.com
-To:     netdev@vger.kernel.org
-Cc:     alsi@bang-olufsen.dk,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Subject: [PATCH net v3] net: dsa: realtek-smi: fix indirect reg access for ports>3
-Date:   Fri, 26 Nov 2021 17:13:55 -0300
-Message-Id: <20211126201355.5791-1-luizluca@gmail.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20211126081123.32219-1-luizluca@gmail.com>
-References: <20211126081123.32219-1-luizluca@gmail.com>
+        Fri, 26 Nov 2021 12:41:01 -0800 (PST)
+Date:   Fri, 26 Nov 2021 22:40:59 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v3 1/1] net: dsa: microchip: implement multi-bridge
+ support
+Message-ID: <20211126204059.l24m2n6tsjxaycvl@skbuf>
+References: <20211126123926.2981028-1-o.rempel@pengutronix.de>
+ <20211126114336.05fd7ebd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211126114336.05fd7ebd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+On Fri, Nov 26, 2021 at 11:43:36AM -0800, Jakub Kicinski wrote:
+> On Fri, 26 Nov 2021 13:39:26 +0100 Oleksij Rempel wrote:
+> > Current driver version is able to handle only one bridge at time.
+> > Configuring two bridges on two different ports would end up shorting this
+> > bridges by HW. To reproduce it:
+> > 
+> > 	ip l a name br0 type bridge
+> > 	ip l a name br1 type bridge
+> > 	ip l s dev br0 up
+> > 	ip l s dev br1 up
+> > 	ip l s lan1 master br0
+> > 	ip l s dev lan1 up
+> > 	ip l s lan2 master br1
+> > 	ip l s dev lan2 up
+> > 
+> > 	Ping on lan1 and get response on lan2, which should not happen.
+> > 
+> > This happened, because current driver version is storing one global "Port VLAN
+> > Membership" and applying it to all ports which are members of any
+> > bridge.
+> > To solve this issue, we need to handle each port separately.
+> > 
+> > This patch is dropping the global port member storage and calculating
+> > membership dynamically depending on STP state and bridge participation.
+> > 
+> > Note: STP support was broken before this patch and should be fixed
+> > separately.
+> > 
+> > Fixes: c2e866911e25 ("net: dsa: microchip: break KSZ9477 DSA driver into two files")
+> 
+> Suspicious, this sounds like a code reshuffling commit.
 
-This switch family can have up to 8 UTP ports {0..7}. However,
-INDIRECT_ACCESS_ADDRESS_PHYNUM_MASK was using 2 bits instead of 3,
-dropping the most significant bit during indirect register reads and
-writes. Reading or writing ports 4, 5, 6, and 7 registers was actually
-manipulating, respectively, ports 0, 1, 2, and 3 registers.
+This intrigued me, so I looked it up. If you look at the git diff of
+that commit, you'll see that the "member" variable of struct ksz_port
+only appears in the green portion of the delta, not even once in the red
+portion. In fact, struct ksz_port was _introduced_ by that commit!
 
-This is not sufficient but necessary to support any variant with more
-than 4 UTP ports, like RTL8367S.
+> Where was the bad code introduced? The fixes tag should point at the
+> earliest point in the git history where the problem exists.
 
-rtl8365mb_phy_{read,write} will now returns -EINVAL if phy is greater
-than 7.
+What bad code? As far as I can tell, prior to that commit, there was no
+restriction of forwarding domain applied to this switch. Heck,
+->port_bridge_join() was added in that commit! After that commit,
+restricting the forwarding domain was done poorly. No wonder, since
+reviewers probably did not notice what was going on.
 
-Fixes: 4af2950c50c8 ("net: dsa: realtek-smi: add rtl8365mb subdriver for RTL8365MB-VC")
-Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
----
- drivers/net/dsa/rtl8365mb.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+We are talking here about a very poorly written and subpar driver.
+I wouldn't be too mad at Oleksij for not doing a cleaner job for this
+commit, it's pretty much "delete the bogus stuff and rewrite it the way
+it should be", which I think is fine at this stage, this driver needs that.
+His code appears fine to my non-expert fine, I've added very similar
+logic to ocelot which has the same constraints of juggling with the
+forwarding domain based on STP states.
 
-diff --git a/drivers/net/dsa/rtl8365mb.c b/drivers/net/dsa/rtl8365mb.c
-index baaae97283c5..078ca4cd7160 100644
---- a/drivers/net/dsa/rtl8365mb.c
-+++ b/drivers/net/dsa/rtl8365mb.c
-@@ -107,6 +107,7 @@
- #define RTL8365MB_LEARN_LIMIT_MAX_8365MB_VC	2112
- 
- /* Family-specific data and limits */
-+#define RTL8365MB_PHYADDRMAX	7
- #define RTL8365MB_NUM_PHYREGS	32
- #define RTL8365MB_PHYREGMAX	(RTL8365MB_NUM_PHYREGS - 1)
- #define RTL8365MB_MAX_NUM_PORTS	(RTL8365MB_CPU_PORT_NUM_8365MB_VC + 1)
-@@ -176,7 +177,7 @@
- #define RTL8365MB_INDIRECT_ACCESS_STATUS_REG			0x1F01
- #define RTL8365MB_INDIRECT_ACCESS_ADDRESS_REG			0x1F02
- #define   RTL8365MB_INDIRECT_ACCESS_ADDRESS_OCPADR_5_1_MASK	GENMASK(4, 0)
--#define   RTL8365MB_INDIRECT_ACCESS_ADDRESS_PHYNUM_MASK		GENMASK(6, 5)
-+#define   RTL8365MB_INDIRECT_ACCESS_ADDRESS_PHYNUM_MASK		GENMASK(7, 5)
- #define   RTL8365MB_INDIRECT_ACCESS_ADDRESS_OCPADR_9_6_MASK	GENMASK(11, 8)
- #define   RTL8365MB_PHY_BASE					0x2000
- #define RTL8365MB_INDIRECT_ACCESS_WRITE_DATA_REG		0x1F03
-@@ -679,6 +680,9 @@ static int rtl8365mb_phy_read(struct realtek_smi *smi, int phy, int regnum)
- 	u16 val;
- 	int ret;
- 
-+	if (phy > RTL8365MB_PHYADDRMAX)
-+		return -EINVAL;
-+
- 	if (regnum > RTL8365MB_PHYREGMAX)
- 		return -EINVAL;
- 
-@@ -704,6 +708,9 @@ static int rtl8365mb_phy_write(struct realtek_smi *smi, int phy, int regnum,
- 	u32 ocp_addr;
- 	int ret;
- 
-+	if (phy > RTL8365MB_PHYADDRMAX)
-+		return -EINVAL;
-+
- 	if (regnum > RTL8365MB_PHYREGMAX)
- 		return -EINVAL;
- 
--- 
-2.33.1
-
+Also, in case you're wondering why I'm responding in his defense, it is
+for very selfish reasons, of course :) I'd like to continue working on
+this patch series:
+https://patchwork.kernel.org/project/netdevbpf/cover/20211026162625.1385035-1-vladimir.oltean@nxp.com/
+which is invasive because it touches every driver's bridging callbacks.
+So the sooner that in-flight patches related to bridging can go in, the
+sooner I can resend a new version of my API rework.
