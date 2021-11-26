@@ -2,71 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A37C45F617
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 21:52:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5422345F55A
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 20:43:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237890AbhKZU4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Nov 2021 15:56:05 -0500
-Received: from sender4-op-o13.zoho.com ([136.143.188.13]:17348 "EHLO
-        sender4-op-o13.zoho.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230477AbhKZUyE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 15:54:04 -0500
-ARC-Seal: i=1; a=rsa-sha256; t=1637931451; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=fgI3YSi5v83dF9kYhFY1vM1HjebT6UT5/xWxah1DHTvdouH0f6I5RwjmK7ZVmIx4EbmLK0kFK0xraDWbb6yXAgUgmRWHpHC7E+v8to30Ai8gi1rL95knexIrXaz+a1kHS7Aynj0yri6uyrXmaLl47V/tWwnWNxDWExXAUE5PnHw=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1637931451; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=uUoJmVabYiqmYCRYGKBn/s9kqyNDOLiX94fmlwy2OKg=; 
-        b=BFlGZczFmsBLNd8vfXL5ZQjb5K6si/THNIny4pVvZsOC5Sh2aN7qno0XhcaY9t87Pudu2ZYSiQFZ0lm4vg4Bhc2lKePoTmqULcWwY3F0Uj7UKfNUcfjVl5ufm8VgTcs6gK9DagUbrGkHoNJJVToPxuLLp6wTXHEAfoUQ5gLL/is=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1637931451;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Content-Type:Content-Transfer-Encoding:From:Mime-Version:Subject:Date:Message-Id:References:Cc:In-Reply-To:To;
-        bh=uUoJmVabYiqmYCRYGKBn/s9kqyNDOLiX94fmlwy2OKg=;
-        b=D7uwZ7AJnD/V/uhuNDN8ElIZ1RqIKE28AvTV76Ybdmff3aPNTFs8UmhOFlnYJ+PO
-        JebNo99iI64AgWG4Vc3T/aS4UPG31/1hSB+8cqndTFpNTdU8Sp7JnkF6TQKh1KTwE7i
-        rx8wP1icOh0l9IaurSOuXKqJXQm/OfoucA+tuu8o=
-Received: from [10.10.9.3] (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 1637931449553968.1568334094624; Fri, 26 Nov 2021 04:57:29 -0800 (PST)
-Content-Type: text/plain; charset=utf-8
+        id S236382AbhKZTqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 14:46:55 -0500
+Received: from inet10.abb.com ([138.225.1.74]:33804 "EHLO inet10.abb.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232237AbhKZToz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Nov 2021 14:44:55 -0500
+X-Greylist: delayed 14290 seconds by postgrey-1.27 at vger.kernel.org; Fri, 26 Nov 2021 14:44:54 EST
+Received: from gitsiv.ch.abb.com (gitsiv.keymile.net [10.41.156.251])
+        by inet10.abb.com (8.14.7/8.14.7) with SMTP id 1AQFh7Dp005536;
+        Fri, 26 Nov 2021 16:43:07 +0100
+Received: from ch10641.keymile.net.net (ch10641.keymile.net [172.31.40.7])
+        by gitsiv.ch.abb.com (Postfix) with ESMTP id 6674865A4213;
+        Fri, 26 Nov 2021 16:43:07 +0100 (CET)
+From:   Holger Brunck <holger.brunck@hitachienergy.com>
+To:     netdev@vger.kernel.org
+Cc:     Holger Brunck <holger.brunck@hitachienergy.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 1/2] Docs/devicetree: add serdes-output-amplitude to marvell.txt
+Date:   Fri, 26 Nov 2021 16:42:48 +0100
+Message-Id: <20211126154249.2958-1-holger.brunck@hitachienergy.com>
+X-Mailer: git-send-email 2.34.0
+MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-From:   =?utf-8?Q?Ar=C4=B1n=C3=A7_=C3=9CNAL?= <arinc.unal@arinc9.com>
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH net 3/3] net: dsa: rtl8365mb: set RGMII RX delay in steps of 0.3 ns
-Date:   Fri, 26 Nov 2021 15:57:23 +0300
-Message-Id: <8F46AA41-9B98-4EFA-AB2E-03990632D75C@arinc9.com>
-References: <20211126125007.1319946-3-alvin@pqrs.dk>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        =?utf-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
-In-Reply-To: <20211126125007.1319946-3-alvin@pqrs.dk>
-To:     =?utf-8?Q?Alvin_=C5=A0ipraga?= <alvin@pqrs.dk>
-X-Mailer: iPhone Mail (17H35)
-X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On 26 Nov 2021, at 15:50, Alvin =C5=A0ipraga <alvin@pqrs.dk> wrote:
->=20
-> =EF=BB=BFFrom: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
->=20
-> A contact at Realtek has clarified what exactly the units of RGMII RX
-> delay are. The answer is that the unit of RX delay is "about 0.3 ns".
-> Take this into account when parsing rx-internal-delay-ps by
-> approximating the closest step value. Delays of more than 2.1 ns are
-> rejected.
->=20
-> This obviously contradicts the previous assumption in the driver that a
-> step value of 4 was "about 2 ns", but Realtek also points out that it is
-> easy to find more than one RX delay step value which makes RGMII work.
->=20
-> Fixes: 4af2950c50c8 ("net: dsa: realtek-smi: add rtl8365mb subdriver for R=
-TL8365MB-VC")
-> Cc: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
-> Signed-off-by: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
+This can be configured from the device tree. Add this property to the
+documentation accordingly.
+The eight different values added in the dt-bindings file correspond to
+the values we can configure on 88E6352, 88E6240 and 88E6176 switches
+according to the datasheet.
 
-Acked-by: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>=
+CC: Andrew Lunn <andrew@lunn.ch>
+CC: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Holger Brunck <holger.brunck@hitachienergy.com>
+---
+ .../devicetree/bindings/net/dsa/marvell.txt    |  3 +++
+ include/dt-bindings/net/mv-88e6xxx.h           | 18 ++++++++++++++++++
+ 2 files changed, 21 insertions(+)
+ create mode 100644 include/dt-bindings/net/mv-88e6xxx.h
+
+diff --git a/Documentation/devicetree/bindings/net/dsa/marvell.txt b/Docu=
+mentation/devicetree/bindings/net/dsa/marvell.txt
+index 2363b412410c..bff397a2dc49 100644
+--- a/Documentation/devicetree/bindings/net/dsa/marvell.txt
++++ b/Documentation/devicetree/bindings/net/dsa/marvell.txt
+@@ -46,6 +46,9 @@ Optional properties:
+ - mdio?		: Container of PHYs and devices on the external MDIO
+ 			  bus. The node must contains a compatible string of
+ 			  "marvell,mv88e6xxx-mdio-external"
++- serdes-output-amplitude: Configure the output amplitude of the serdes
++			   interface.
++    serdes-output-amplitude =3D <MV88E6352_SERDES_OUT_AMP_210MV>;
+=20
+ Example:
+=20
+diff --git a/include/dt-bindings/net/mv-88e6xxx.h b/include/dt-bindings/n=
+et/mv-88e6xxx.h
+new file mode 100644
+index 000000000000..9bc6decaee83
+--- /dev/null
++++ b/include/dt-bindings/net/mv-88e6xxx.h
+@@ -0,0 +1,18 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Device Tree constants for the Marvell 88E6XXX switch devices
++ */
++
++#ifndef _DT_BINDINGS_MV_88E6XXX_H
++#define _DT_BINDINGS_MV_88E6XXX_H
++
++#define MV88E6352_SERDES_OUT_AMP_14MV		0x0
++#define MV88E6352_SERDES_OUT_AMP_112MV		0x1
++#define MV88E6352_SERDES_OUT_AMP_210MV		0x2
++#define MV88E6352_SERDES_OUT_AMP_308MV		0x3
++#define MV88E6352_SERDES_OUT_AMP_406MV		0x4
++#define MV88E6352_SERDES_OUT_AMP_504MV		0x5
++#define MV88E6352_SERDES_OUT_AMP_602MV		0x6
++#define MV88E6352_SERDES_OUT_AMP_700MV		0x7
++
++#endif
+--=20
+2.34.0
 
