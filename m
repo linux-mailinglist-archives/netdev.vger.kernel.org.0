@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 319A645E801
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 07:42:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC02445E804
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 07:43:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346291AbhKZGp4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Nov 2021 01:45:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43200 "EHLO mail.kernel.org"
+        id S1352592AbhKZGqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 01:46:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43340 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1347177AbhKZGnz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Nov 2021 01:43:55 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 543B561163;
-        Fri, 26 Nov 2021 06:40:43 +0000 (UTC)
+        id S1345984AbhKZGod (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Nov 2021 01:44:33 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0C15C6115B;
+        Fri, 26 Nov 2021 06:41:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637908843;
-        bh=XzAf37h1rnADfzTrJqAT4rHQSajqyx47TxSipD3GmV8=;
+        s=k20201202; t=1637908881;
+        bh=AUXyQOGOWNAzps8KIoh/n32oJ/jyu+SFPv0P+hCkpkA=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=X7aQJv/MzkOlP6+G85aEGewE1PUB3t1OId2ecVG9XtGFxdeJx7CZCxXNow2iWkUtb
-         8buBx4ub/SEd1R7vVPZ5b1whF5UkWI15anq2IewZVPaFiw88Rw2BbEUhXOw+Qb94sZ
-         uCM9GB/mzIje7TEBWIniKdSjFCccAuvJyal1JMXVZ+fhpzjOmpV6jRjIOVTrpkN+Sf
-         rskWTgmsfgEUSXN9p1l5PvP8dWLtG8En2W3g5Z1e4nU96NKF4lVWqmK2BmU7Ucqc22
-         c0lBaU5FipjBcBhcyHZNradm/en6+LnXFSjuRyKhU6KNE8r6bHF0a7M1hSm/LFyvl1
-         hhhRanYabEv0Q==
-Received: by mail-yb1-f169.google.com with SMTP id v7so17739745ybq.0;
-        Thu, 25 Nov 2021 22:40:43 -0800 (PST)
-X-Gm-Message-State: AOAM530hMZ/6fmtpMrGD2W1YPkQDlo5yRHxBC2tS+bjx4iHQ6qVu3J5W
-        XoPgVWfzMsyDQUFna9UeniIrOXb8l1noitqo4oQ=
-X-Google-Smtp-Source: ABdhPJxIDlEn42Kw+qo0W6K2g0dCJrPzIBGwO99WozlELE4s2VKvvPohtunlhMJWSPUx/3G50zh7PIGTrFT1NHB3/+U=
-X-Received: by 2002:a25:bd45:: with SMTP id p5mr13762833ybm.213.1637908842546;
- Thu, 25 Nov 2021 22:40:42 -0800 (PST)
+        b=pXoxpA0Z6gGvKjcDt6+gT6TR2RTSMcmL1Na8bx34P91wwn7yKujTWwohzxw3ZwB3S
+         QCj04fh/VlIwyT4eBJMYcVrpYJSk2yyG3CemuWtS3R7Yw1Ve5SkNxZr1/quM1UjWCq
+         9aUpLUAQ2GS7MO/idSra+jyatM+9QpZrESiP+XJAHoFyLcR1NSy+MW76Kt2gn4sfrG
+         6lJfBtC7AkOy6jBaqgnvvkvKGe113ANBOo4bRvbBOebz5gJVO3CPYlTzalIqz0+2xa
+         IIrDHN1oqG9pjxKCvZR652Mi8n9nnxETZR+JRRsIQZ4cpsxeGKclzfF7KncmT8lkKd
+         3dAK8wccmJofA==
+Received: by mail-yb1-f174.google.com with SMTP id g17so17517378ybe.13;
+        Thu, 25 Nov 2021 22:41:21 -0800 (PST)
+X-Gm-Message-State: AOAM533vbYJ1IWnyvuY1mH74nCSeYQg78vHlflbuuvtm8Tq+/vHgNiAW
+        5ouh4pQdxCG1bVeex3QkSRUyVq9A88sQHNyEsyA=
+X-Google-Smtp-Source: ABdhPJxlpUsnFBSc8Rfq5LfioaeutmMDqCDcv5lcgpfQz9zptDwIgOmOdob7MBfDuX9yy+hd3Sxr2A/vm8ZqGCBn6v8=
+X-Received: by 2002:a25:bfca:: with SMTP id q10mr13234674ybm.68.1637908880328;
+ Thu, 25 Nov 2021 22:41:20 -0800 (PST)
 MIME-Version: 1.0
-References: <20211119163215.971383-1-hch@lst.de> <20211119163215.971383-5-hch@lst.de>
-In-Reply-To: <20211119163215.971383-5-hch@lst.de>
+References: <20211119163215.971383-1-hch@lst.de> <20211119163215.971383-6-hch@lst.de>
+In-Reply-To: <20211119163215.971383-6-hch@lst.de>
 From:   Song Liu <song@kernel.org>
-Date:   Thu, 25 Nov 2021 22:40:31 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW51eFJd1O=ds7jMcdXJhj9PDkV03gi1zo3--uU3+_YQgA@mail.gmail.com>
-Message-ID: <CAPhsuW51eFJd1O=ds7jMcdXJhj9PDkV03gi1zo3--uU3+_YQgA@mail.gmail.com>
-Subject: Re: [PATCH 4/5] bpf, docs: move handling of maps to Documentation/bpf/maps.rst
+Date:   Thu, 25 Nov 2021 22:41:09 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW4fG7hUTFaC6Ht4Ae9m_1N-LXYHxSH4QZZhHcOMundjAA@mail.gmail.com>
+Message-ID: <CAPhsuW4fG7hUTFaC6Ht4Ae9m_1N-LXYHxSH4QZZhHcOMundjAA@mail.gmail.com>
+Subject: Re: [PATCH 5/5] bpf, docs: split general purpose eBPF documentation
+ out of filter.rst
 To:     Christoph Hellwig <hch@lst.de>
 Cc:     Jonathan Corbet <corbet@lwn.net>,
         "David S. Miller" <davem@davemloft.net>,
@@ -58,9 +59,13 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, Nov 19, 2021 at 8:32 AM Christoph Hellwig <hch@lst.de> wrote:
 >
-> Move the general maps documentation into the maps.rst file from the
-> overall networking filter documentation and add a link instead.
+> filter.rst starts out documenting the classic BPF and then spills into
+> introducing and documentating eBPF.  Move the eBPF documentation into
+> rwo new files under Documentation/bpf/ for the instruction set and
+> the verifier and link to the BPF documentation from filter.rst.
 >
 > Signed-off-by: Christoph Hellwig <hch@lst.de>
 
 Acked-by: Song Liu <songliubraving@fb.com>
+
+[...]
