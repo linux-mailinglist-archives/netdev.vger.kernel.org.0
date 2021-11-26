@@ -2,36 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 707B245E558
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 03:39:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EE0C45E589
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 04:00:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358308AbhKZClb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 21:41:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48282 "EHLO mail.kernel.org"
+        id S1358770AbhKZCne (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 21:43:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50236 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1358003AbhKZCjZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Nov 2021 21:39:25 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 33F1661241;
-        Fri, 26 Nov 2021 02:33:59 +0000 (UTC)
+        id S244262AbhKZClM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Nov 2021 21:41:12 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 44FDD611C1;
+        Fri, 26 Nov 2021 02:34:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637894040;
-        bh=/Z7CNgucd+B3GlywSkB//6+/YCEKR6UbH4HGynuhu+8=;
+        s=k20201202; t=1637894063;
+        bh=EgrS4pubz4LuPdnjybQq5Kip6l5qYfdPOzl59f3I0kI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zrx1HvMC1MDWQknsVORByu0IgaSdbgPGvMV2jA86WIbnyASF8Q8a0E0albOxPnlZZ
-         0yjlCA50y0/6P5+LS2ltbcolpms5BJIRJJqRvTh/H7E4kcl0x6KQADrqbpJ7XjcCT3
-         pGEiUy8sN7PQC+IWLzJzmKEKNKfr7NBAcJe3gMV2tBBVUXQ5I/IyyQyhusfznLsM+r
-         NfR/qrTqECPPCJMOxd/cnyWPfsUHCDT1CAb7EE4W7WxN8PQQwlJ0D5YiLyF8rPW0bH
-         RxAOaj1fWOJ4W3/PVDxODAynPfRsR6H+Z+jnUVrCEVr+eonJtgmebT66TOj/0PUMUb
-         FrvuVARSD2McQ==
+        b=cLTRxmbC0OaP/415UhPkoZCDBkpuqPlXlJgJr4UP28BRpp5RR+ciCre3JDkKGNsaP
+         ykxJ3TEyFV8V3Aqn7hsLSxFfYRBWr6W7GIURA9rCCpl0fZGH9i+8kYFoRkjg3ZUkcC
+         tv7Jh9WOkVSj+Y2OxaAwmsbG9eo5tsKyfTk7WklEU5X5W7kNuxUF0MslhfNjlOjJQm
+         OiXPJ8bo63CzPHNEkWQK4VNodPabvMUzh5GGqMCFpCy4F+UIwjfQPReJXciWRmxpQc
+         mR7cOdT+2ENyOS2uvvKU2yEpZdB8UwcvSdvd/lshD0haguZTKpg4bhCCCieO0tNHRo
+         Lapp/VuuWpbWw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     liuguoqiang <liuguoqiang@uniontech.com>,
+Cc:     Teng Qi <starmiku1207184332@gmail.com>,
+        TOTE Robot <oslab@tsinghua.edu.cn>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 09/28] net: return correct error code
-Date:   Thu, 25 Nov 2021 21:33:24 -0500
-Message-Id: <20211126023343.442045-9-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, yisen.zhuang@huawei.com,
+        salil.mehta@huawei.com, kuba@kernel.org, huangguangbin2@huawei.com,
+        lipeng321@huawei.com, zhengyongjun3@huawei.com,
+        shenyang39@huawei.com, liuyonglong@huawei.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 22/28] ethernet: hisilicon: hns: hns_dsaf_misc: fix a possible array overflow in hns_dsaf_ge_srst_by_port()
+Date:   Thu, 25 Nov 2021 21:33:37 -0500
+Message-Id: <20211126023343.442045-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211126023343.442045-1-sashal@kernel.org>
 References: <20211126023343.442045-1-sashal@kernel.org>
@@ -43,33 +47,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: liuguoqiang <liuguoqiang@uniontech.com>
+From: Teng Qi <starmiku1207184332@gmail.com>
 
-[ Upstream commit 6def480181f15f6d9ec812bca8cbc62451ba314c ]
+[ Upstream commit a66998e0fbf213d47d02813b9679426129d0d114 ]
 
-When kmemdup called failed and register_net_sysctl return NULL, should
-return ENOMEM instead of ENOBUFS
+The if statement:
+  if (port >= DSAF_GE_NUM)
+        return;
 
-Signed-off-by: liuguoqiang <liuguoqiang@uniontech.com>
+limits the value of port less than DSAF_GE_NUM (i.e., 8).
+However, if the value of port is 6 or 7, an array overflow could occur:
+  port_rst_off = dsaf_dev->mac_cb[port]->port_rst_off;
+
+because the length of dsaf_dev->mac_cb is DSAF_MAX_PORT_NUM (i.e., 6).
+
+To fix this possible array overflow, we first check port and if it is
+greater than or equal to DSAF_MAX_PORT_NUM, the function returns.
+
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Teng Qi <starmiku1207184332@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/devinet.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
-index 7c18597774297..148ef484a66ce 100644
---- a/net/ipv4/devinet.c
-+++ b/net/ipv4/devinet.c
-@@ -2582,7 +2582,7 @@ static int __devinet_sysctl_register(struct net *net, char *dev_name,
- free:
- 	kfree(t);
- out:
--	return -ENOBUFS;
-+	return -ENOMEM;
- }
+diff --git a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c
+index a9aca8c24e90d..aa87e4d121532 100644
+--- a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c
++++ b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.c
+@@ -400,6 +400,10 @@ static void hns_dsaf_ge_srst_by_port(struct dsaf_device *dsaf_dev, u32 port,
+ 		return;
  
- static void __devinet_sysctl_unregister(struct net *net,
+ 	if (!HNS_DSAF_IS_DEBUG(dsaf_dev)) {
++		/* DSAF_MAX_PORT_NUM is 6, but DSAF_GE_NUM is 8.
++		   We need check to prevent array overflow */
++		if (port >= DSAF_MAX_PORT_NUM)
++			return;
+ 		reg_val_1  = 0x1 << port;
+ 		port_rst_off = dsaf_dev->mac_cb[port]->port_rst_off;
+ 		/* there is difference between V1 and V2 in register.*/
 -- 
 2.33.0
 
