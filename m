@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AB9E45E592
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 04:00:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19DE845E5AD
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 04:00:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358472AbhKZCng (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 21:43:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50250 "EHLO mail.kernel.org"
+        id S1357779AbhKZCoJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 21:44:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49808 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1358454AbhKZClS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Nov 2021 21:41:18 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 04B4561185;
-        Fri, 26 Nov 2021 02:34:30 +0000 (UTC)
+        id S1358325AbhKZClg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Nov 2021 21:41:36 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 919016125F;
+        Fri, 26 Nov 2021 02:34:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637894072;
-        bh=1kqdhOluEWtrRbIzXXDi+UZkBE3XgsycI2GlIXBpo/I=;
+        s=k20201202; t=1637894093;
+        bh=8n2IBl+k1S/Bq+MjR5lhlxC6Vz+D8xdsiTdby2ApKEc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IdiRtOGr8yIbWHEZNE+vS/IlGDzOKPWK3XI4o72VQv+UReXBaPTAGoZPbkDwJpP7N
-         Nk2NyPvGnjyn/DVG9SwogEJ4HlrwL0PavEY6QFm2yCQ2+wyLlrA+n5FieG+RXKZqOT
-         Cj0tETFlpttMjTdaZZ8j7EJIRZyBEuCzoPzv06Ptgeb+PHI+B/43PsATyn8MjNgjw/
-         FFcz/P2fWuP6T2a1yVomBuv5ii7tcT5MtXrV00oj/OqOfjFQ9laeU3035L2qkIvLwZ
-         0v17iGk3/ukOXMhm9CVWPVtcU3iG7SajCP8aOMnWhJjPrAfW1mfup/l4aRH2Aul+jS
-         ICUzhaC8Gu1ag==
+        b=bt4+np51pe+p07qFgTRmCmrgZgXpZlcsRuZvHwUnb/Cc+n1YL5KduUgA1RiTY3Ej6
+         NztwP+pfJw023+3fFE7Vmo72VlBpOFWOnDeOCVN6zPyHONSnjcdqd7JNBVuC1IHnj/
+         8uy+j/KEEezU7uXvd4xWACHoy6fqE6KtZnKblfSObt7qUvTxXeatJ+PJR/McZle8Yd
+         MnAUy79pa4zSnTFSOfZhUVLilbEMjoIbUC5KIm/nMq7YyWL2YJ3CrfJaoK5aZk2xdl
+         TQHfPn+jYeqcPq85+k4irHh1EffK698u7vS8n4XBUYWeK0lEzaRKa9hizPfqJbjGJz
+         WD7LG11Cz4d+Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Teng Qi <starmiku1207184332@gmail.com>,
-        TOTE Robot <oslab@tsinghua.edu.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        tanghui20@huawei.com, zhangyue1@kylinos.cn, netdev@vger.kernel.org,
-        linux-parisc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 25/28] net: ethernet: dec: tulip: de4x5: fix possible array overflows in type3_infoblock()
-Date:   Thu, 25 Nov 2021 21:33:40 -0500
-Message-Id: <20211126023343.442045-25-sashal@kernel.org>
+Cc:     Xing Song <xing.song@mediatek.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        davem@davemloft.net, kuba@kernel.org, matthias.bgg@gmail.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 03/19] mac80211: do not access the IV when it was stripped
+Date:   Thu, 25 Nov 2021 21:34:32 -0500
+Message-Id: <20211126023448.442529-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211126023343.442045-1-sashal@kernel.org>
-References: <20211126023343.442045-1-sashal@kernel.org>
+In-Reply-To: <20211126023448.442529-1-sashal@kernel.org>
+References: <20211126023448.442529-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -46,55 +46,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Teng Qi <starmiku1207184332@gmail.com>
+From: Xing Song <xing.song@mediatek.com>
 
-[ Upstream commit 0fa68da72c3be09e06dd833258ee89c33374195f ]
+[ Upstream commit 77dfc2bc0bb4b8376ecd7a430f27a4a8fff6a5a0 ]
 
-The definition of macro MOTO_SROM_BUG is:
-  #define MOTO_SROM_BUG    (lp->active == 8 && (get_unaligned_le32(
-  dev->dev_addr) & 0x00ffffff) == 0x3e0008)
+ieee80211_get_keyid() will return false value if IV has been stripped,
+such as return 0 for IP/ARP frames due to LLC header, and return -EINVAL
+for disassociation frames due to its length... etc. Don't try to access
+it if it's not present.
 
-and the if statement
-  if (MOTO_SROM_BUG) lp->active = 0;
-
-using this macro indicates lp->active could be 8. If lp->active is 8 and
-the second comparison of this macro is false. lp->active will remain 8 in:
-  lp->phy[lp->active].gep = (*p ? p : NULL); p += (2 * (*p) + 1);
-  lp->phy[lp->active].rst = (*p ? p : NULL); p += (2 * (*p) + 1);
-  lp->phy[lp->active].mc  = get_unaligned_le16(p); p += 2;
-  lp->phy[lp->active].ana = get_unaligned_le16(p); p += 2;
-  lp->phy[lp->active].fdx = get_unaligned_le16(p); p += 2;
-  lp->phy[lp->active].ttm = get_unaligned_le16(p); p += 2;
-  lp->phy[lp->active].mci = *p;
-
-However, the length of array lp->phy is 8, so array overflows can occur.
-To fix these possible array overflows, we first check lp->active and then
-return -EINVAL if it is greater or equal to ARRAY_SIZE(lp->phy) (i.e. 8).
-
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Teng Qi <starmiku1207184332@gmail.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Xing Song <xing.song@mediatek.com>
+Link: https://lore.kernel.org/r/20211101024657.143026-1-xing.song@mediatek.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/dec/tulip/de4x5.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ net/mac80211/rx.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/dec/tulip/de4x5.c b/drivers/net/ethernet/dec/tulip/de4x5.c
-index ffc25ecfa8d6a..8edd394bc3358 100644
---- a/drivers/net/ethernet/dec/tulip/de4x5.c
-+++ b/drivers/net/ethernet/dec/tulip/de4x5.c
-@@ -4706,6 +4706,10 @@ type3_infoblock(struct net_device *dev, u_char count, u_char *p)
-         lp->ibn = 3;
-         lp->active = *p++;
- 	if (MOTO_SROM_BUG) lp->active = 0;
-+	/* if (MOTO_SROM_BUG) statement indicates lp->active could
-+	 * be 8 (i.e. the size of array lp->phy) */
-+	if (WARN_ON(lp->active >= ARRAY_SIZE(lp->phy)))
-+		return -EINVAL;
- 	lp->phy[lp->active].gep = (*p ? p : NULL); p += (2 * (*p) + 1);
- 	lp->phy[lp->active].rst = (*p ? p : NULL); p += (2 * (*p) + 1);
- 	lp->phy[lp->active].mc  = get_unaligned_le16(p); p += 2;
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index c7e6bf7c22c78..282bf336b15a4 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -1918,7 +1918,8 @@ ieee80211_rx_h_decrypt(struct ieee80211_rx_data *rx)
+ 		int keyid = rx->sta->ptk_idx;
+ 		sta_ptk = rcu_dereference(rx->sta->ptk[keyid]);
+ 
+-		if (ieee80211_has_protected(fc)) {
++		if (ieee80211_has_protected(fc) &&
++		    !(status->flag & RX_FLAG_IV_STRIPPED)) {
+ 			cs = rx->sta->cipher_scheme;
+ 			keyid = ieee80211_get_keyid(rx->skb, cs);
+ 
 -- 
 2.33.0
 
