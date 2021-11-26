@@ -2,81 +2,471 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EDC845EE45
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 13:47:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4651F45EF1D
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 14:28:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229894AbhKZMuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Nov 2021 07:50:15 -0500
-Received: from mga07.intel.com ([134.134.136.100]:44583 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1347449AbhKZMsO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Nov 2021 07:48:14 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10179"; a="299062024"
-X-IronPort-AV: E=Sophos;i="5.87,265,1631602800"; 
-   d="scan'208";a="299062024"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2021 04:37:33 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,265,1631602800"; 
-   d="scan'208";a="598507114"
-Received: from boxer.igk.intel.com ([10.102.20.173])
-  by fmsmga002.fm.intel.com with ESMTP; 26 Nov 2021 04:37:31 -0800
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net
-Cc:     bpf@vger.kernel.org, anthony.l.nguyen@intel.com,
-        alexandr.lobakin@intel.com, magnus.karlsson@intel.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH net] ice: xsk: clear status_error0 for each allocated desc
-Date:   Fri, 26 Nov 2021 15:38:48 +0100
-Message-Id: <20211126143848.17490-1-maciej.fijalkowski@intel.com>
-X-Mailer: git-send-email 2.31.1
+        id S1347882AbhKZNbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 08:31:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50064 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343881AbhKZN3b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 08:29:31 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A02B0C061761
+        for <netdev@vger.kernel.org>; Fri, 26 Nov 2021 04:39:39 -0800 (PST)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1mqaVk-0000MD-KH; Fri, 26 Nov 2021 13:39:28 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1mqaVj-00CVVx-3w; Fri, 26 Nov 2021 13:39:27 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net v3 1/1] net: dsa: microchip: implement multi-bridge support
+Date:   Fri, 26 Nov 2021 13:39:26 +0100
+Message-Id: <20211126123926.2981028-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix a bug in which the receiving of packets can stop in the zero-copy
-driver. Ice HW ignores 3 lower bits from QRX_TAIL register, which means
-that tail is bumped only on intervals of 8. Currently with XSK RX
-batching in place, ice_alloc_rx_bufs_zc() clears the status_error0 only
-of the last descriptor that has been allocated/taken from the XSK buffer
-pool. status_error0 includes DD bit that is looked upon by the
-ice_clean_rx_irq_zc() to tell if a descriptor can be processed.
+Current driver version is able to handle only one bridge at time.
+Configuring two bridges on two different ports would end up shorting this
+bridges by HW. To reproduce it:
 
-The bug can be triggered when driver updates the ntu but not the
-QRX_TAIL, so HW wouldn't have a chance to write to the ready
-descriptors. Later on driver moves the ntc to the mentioned set of
-descriptors and interprets them as a ready to be processed, since
-corresponding DD bits were not cleared nor any writeback has happened
-that would clear it. This can then lead to ntc == ntu case which means
-that ring is empty and no further packet processing.
+	ip l a name br0 type bridge
+	ip l a name br1 type bridge
+	ip l s dev br0 up
+	ip l s dev br1 up
+	ip l s lan1 master br0
+	ip l s dev lan1 up
+	ip l s lan2 master br1
+	ip l s dev lan2 up
 
-Fix the XSK traffic hang that can be observed when l2fwd scenario from
-xdpsock is used by making sure that status_error0 is cleared for each
-descriptor that is fed to HW and therefore we are sure that driver will
-not processed non-valid DD bits. This will also prevent the driver from
-processing the descriptors that were allocated in favor of the
-previously processed ones, but writeback didn't happen yet.
+	Ping on lan1 and get response on lan2, which should not happen.
 
-Fixes: db804cfc21e9 ("ice: Use the xsk batched rx allocation interface")
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+This happened, because current driver version is storing one global "Port VLAN
+Membership" and applying it to all ports which are members of any
+bridge.
+To solve this issue, we need to handle each port separately.
+
+This patch is dropping the global port member storage and calculating
+membership dynamically depending on STP state and bridge participation.
+
+Note: STP support was broken before this patch and should be fixed
+separately.
+
+Fixes: c2e866911e25 ("net: dsa: microchip: break KSZ9477 DSA driver into two files")
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/ethernet/intel/ice/ice_xsk.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/dsa/microchip/ksz8795.c    | 56 +++-------------------
+ drivers/net/dsa/microchip/ksz9477.c    | 66 ++++----------------------
+ drivers/net/dsa/microchip/ksz_common.c | 50 ++++++++++---------
+ drivers/net/dsa/microchip/ksz_common.h |  4 --
+ 4 files changed, 43 insertions(+), 133 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-index ff55cb415b11..bb9a80847298 100644
---- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -383,6 +383,7 @@ bool ice_alloc_rx_bufs_zc(struct ice_rx_ring *rx_ring, u16 count)
- 	while (i--) {
- 		dma = xsk_buff_xdp_get_dma(*xdp);
- 		rx_desc->read.pkt_addr = cpu_to_le64(dma);
-+		rx_desc->wb.status_error0 = 0;
+diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+index 43fc3087aeb3..013e9c02be71 100644
+--- a/drivers/net/dsa/microchip/ksz8795.c
++++ b/drivers/net/dsa/microchip/ksz8795.c
+@@ -1002,57 +1002,32 @@ static void ksz8_cfg_port_member(struct ksz_device *dev, int port, u8 member)
+ 	data &= ~PORT_VLAN_MEMBERSHIP;
+ 	data |= (member & dev->port_mask);
+ 	ksz_pwrite8(dev, port, P_MIRROR_CTRL, data);
+-	dev->ports[port].member = member;
+ }
  
- 		rx_desc++;
- 		xdp++;
+ static void ksz8_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
+ {
+ 	struct ksz_device *dev = ds->priv;
+-	int forward = dev->member;
+ 	struct ksz_port *p;
+-	int member = -1;
+ 	u8 data;
+ 
+-	p = &dev->ports[port];
+-
+ 	ksz_pread8(dev, port, P_STP_CTRL, &data);
+ 	data &= ~(PORT_TX_ENABLE | PORT_RX_ENABLE | PORT_LEARN_DISABLE);
+ 
+ 	switch (state) {
+ 	case BR_STATE_DISABLED:
+ 		data |= PORT_LEARN_DISABLE;
+-		if (port < dev->phy_port_cnt)
+-			member = 0;
+ 		break;
+ 	case BR_STATE_LISTENING:
+ 		data |= (PORT_RX_ENABLE | PORT_LEARN_DISABLE);
+-		if (port < dev->phy_port_cnt &&
+-		    p->stp_state == BR_STATE_DISABLED)
+-			member = dev->host_mask | p->vid_member;
+ 		break;
+ 	case BR_STATE_LEARNING:
+ 		data |= PORT_RX_ENABLE;
+ 		break;
+ 	case BR_STATE_FORWARDING:
+ 		data |= (PORT_TX_ENABLE | PORT_RX_ENABLE);
+-
+-		/* This function is also used internally. */
+-		if (port == dev->cpu_port)
+-			break;
+-
+-		/* Port is a member of a bridge. */
+-		if (dev->br_member & BIT(port)) {
+-			dev->member |= BIT(port);
+-			member = dev->member;
+-		} else {
+-			member = dev->host_mask | p->vid_member;
+-		}
+ 		break;
+ 	case BR_STATE_BLOCKING:
+ 		data |= PORT_LEARN_DISABLE;
+-		if (port < dev->phy_port_cnt &&
+-		    p->stp_state == BR_STATE_DISABLED)
+-			member = dev->host_mask | p->vid_member;
+ 		break;
+ 	default:
+ 		dev_err(ds->dev, "invalid STP state: %d\n", state);
+@@ -1060,22 +1035,11 @@ static void ksz8_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
+ 	}
+ 
+ 	ksz_pwrite8(dev, port, P_STP_CTRL, data);
++
++	p = &dev->ports[port];
+ 	p->stp_state = state;
+-	/* Port membership may share register with STP state. */
+-	if (member >= 0 && member != p->member)
+-		ksz8_cfg_port_member(dev, port, (u8)member);
+-
+-	/* Check if forwarding needs to be updated. */
+-	if (state != BR_STATE_FORWARDING) {
+-		if (dev->br_member & BIT(port))
+-			dev->member &= ~BIT(port);
+-	}
+ 
+-	/* When topology has changed the function ksz_update_port_member
+-	 * should be called to modify port forwarding behavior.
+-	 */
+-	if (forward != dev->member)
+-		ksz_update_port_member(dev, port);
++	ksz_update_port_member(dev, port);
+ }
+ 
+ static void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port)
+@@ -1341,7 +1305,7 @@ static void ksz8795_cpu_interface_select(struct ksz_device *dev, int port)
+ 
+ static void ksz8_port_setup(struct ksz_device *dev, int port, bool cpu_port)
+ {
+-	struct ksz_port *p = &dev->ports[port];
++	struct dsa_switch *ds = dev->ds;
+ 	struct ksz8 *ksz8 = dev->priv;
+ 	const u32 *masks;
+ 	u8 member;
+@@ -1368,10 +1332,11 @@ static void ksz8_port_setup(struct ksz_device *dev, int port, bool cpu_port)
+ 		if (!ksz_is_ksz88x3(dev))
+ 			ksz8795_cpu_interface_select(dev, port);
+ 
+-		member = dev->port_mask;
++		member = dsa_user_ports(ds);
+ 	} else {
+-		member = dev->host_mask | p->vid_member;
++		member = BIT(dsa_upstream_port(ds, port));
+ 	}
++
+ 	ksz8_cfg_port_member(dev, port, member);
+ }
+ 
+@@ -1392,20 +1357,13 @@ static void ksz8_config_cpu_port(struct dsa_switch *ds)
+ 	ksz_cfg(dev, regs[S_TAIL_TAG_CTRL], masks[SW_TAIL_TAG_ENABLE], true);
+ 
+ 	p = &dev->ports[dev->cpu_port];
+-	p->vid_member = dev->port_mask;
+ 	p->on = 1;
+ 
+ 	ksz8_port_setup(dev, dev->cpu_port, true);
+-	dev->member = dev->host_mask;
+ 
+ 	for (i = 0; i < dev->phy_port_cnt; i++) {
+ 		p = &dev->ports[i];
+ 
+-		/* Initialize to non-zero so that ksz_cfg_port_member() will
+-		 * be called.
+-		 */
+-		p->vid_member = BIT(i);
+-		p->member = dev->port_mask;
+ 		ksz8_port_stp_state_set(ds, i, BR_STATE_DISABLED);
+ 
+ 		/* Last port may be disabled. */
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index 854e25f43fa7..353b5f981740 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -391,7 +391,6 @@ static void ksz9477_cfg_port_member(struct ksz_device *dev, int port,
+ 				    u8 member)
+ {
+ 	ksz_pwrite32(dev, port, REG_PORT_VLAN_MEMBERSHIP__4, member);
+-	dev->ports[port].member = member;
+ }
+ 
+ static void ksz9477_port_stp_state_set(struct dsa_switch *ds, int port,
+@@ -400,8 +399,6 @@ static void ksz9477_port_stp_state_set(struct dsa_switch *ds, int port,
+ 	struct ksz_device *dev = ds->priv;
+ 	struct ksz_port *p = &dev->ports[port];
+ 	u8 data;
+-	int member = -1;
+-	int forward = dev->member;
+ 
+ 	ksz_pread8(dev, port, P_STP_CTRL, &data);
+ 	data &= ~(PORT_TX_ENABLE | PORT_RX_ENABLE | PORT_LEARN_DISABLE);
+@@ -409,40 +406,18 @@ static void ksz9477_port_stp_state_set(struct dsa_switch *ds, int port,
+ 	switch (state) {
+ 	case BR_STATE_DISABLED:
+ 		data |= PORT_LEARN_DISABLE;
+-		if (port != dev->cpu_port)
+-			member = 0;
+ 		break;
+ 	case BR_STATE_LISTENING:
+ 		data |= (PORT_RX_ENABLE | PORT_LEARN_DISABLE);
+-		if (port != dev->cpu_port &&
+-		    p->stp_state == BR_STATE_DISABLED)
+-			member = dev->host_mask | p->vid_member;
+ 		break;
+ 	case BR_STATE_LEARNING:
+ 		data |= PORT_RX_ENABLE;
+ 		break;
+ 	case BR_STATE_FORWARDING:
+ 		data |= (PORT_TX_ENABLE | PORT_RX_ENABLE);
+-
+-		/* This function is also used internally. */
+-		if (port == dev->cpu_port)
+-			break;
+-
+-		member = dev->host_mask | p->vid_member;
+-		mutex_lock(&dev->dev_mutex);
+-
+-		/* Port is a member of a bridge. */
+-		if (dev->br_member & (1 << port)) {
+-			dev->member |= (1 << port);
+-			member = dev->member;
+-		}
+-		mutex_unlock(&dev->dev_mutex);
+ 		break;
+ 	case BR_STATE_BLOCKING:
+ 		data |= PORT_LEARN_DISABLE;
+-		if (port != dev->cpu_port &&
+-		    p->stp_state == BR_STATE_DISABLED)
+-			member = dev->host_mask | p->vid_member;
+ 		break;
+ 	default:
+ 		dev_err(ds->dev, "invalid STP state: %d\n", state);
+@@ -451,23 +426,8 @@ static void ksz9477_port_stp_state_set(struct dsa_switch *ds, int port,
+ 
+ 	ksz_pwrite8(dev, port, P_STP_CTRL, data);
+ 	p->stp_state = state;
+-	mutex_lock(&dev->dev_mutex);
+-	/* Port membership may share register with STP state. */
+-	if (member >= 0 && member != p->member)
+-		ksz9477_cfg_port_member(dev, port, (u8)member);
+-
+-	/* Check if forwarding needs to be updated. */
+-	if (state != BR_STATE_FORWARDING) {
+-		if (dev->br_member & (1 << port))
+-			dev->member &= ~(1 << port);
+-	}
+ 
+-	/* When topology has changed the function ksz_update_port_member
+-	 * should be called to modify port forwarding behavior.
+-	 */
+-	if (forward != dev->member)
+-		ksz_update_port_member(dev, port);
+-	mutex_unlock(&dev->dev_mutex);
++	ksz_update_port_member(dev, port);
+ }
+ 
+ static void ksz9477_flush_dyn_mac_table(struct ksz_device *dev, int port)
+@@ -1168,10 +1128,10 @@ static void ksz9477_phy_errata_setup(struct ksz_device *dev, int port)
+ 
+ static void ksz9477_port_setup(struct ksz_device *dev, int port, bool cpu_port)
+ {
+-	u8 data8;
+-	u8 member;
+-	u16 data16;
+ 	struct ksz_port *p = &dev->ports[port];
++	struct dsa_switch *ds = dev->ds;
++	u8 data8, member;
++	u16 data16;
+ 
+ 	/* enable tag tail for host port */
+ 	if (cpu_port)
+@@ -1250,12 +1210,12 @@ static void ksz9477_port_setup(struct ksz_device *dev, int port, bool cpu_port)
+ 		ksz_pwrite8(dev, port, REG_PORT_XMII_CTRL_1, data8);
+ 		p->phydev.duplex = 1;
+ 	}
+-	mutex_lock(&dev->dev_mutex);
++
+ 	if (cpu_port)
+-		member = dev->port_mask;
++		member = dsa_user_ports(ds);
+ 	else
+-		member = dev->host_mask | p->vid_member;
+-	mutex_unlock(&dev->dev_mutex);
++		member = BIT(dsa_upstream_port(ds, port));
++
+ 	ksz9477_cfg_port_member(dev, port, member);
+ 
+ 	/* clear pending interrupts */
+@@ -1276,8 +1236,6 @@ static void ksz9477_config_cpu_port(struct dsa_switch *ds)
+ 			const char *prev_mode;
+ 
+ 			dev->cpu_port = i;
+-			dev->host_mask = (1 << dev->cpu_port);
+-			dev->port_mask |= dev->host_mask;
+ 			p = &dev->ports[i];
+ 
+ 			/* Read from XMII register to determine host port
+@@ -1312,23 +1270,15 @@ static void ksz9477_config_cpu_port(struct dsa_switch *ds)
+ 
+ 			/* enable cpu port */
+ 			ksz9477_port_setup(dev, i, true);
+-			p->vid_member = dev->port_mask;
+ 			p->on = 1;
+ 		}
+ 	}
+ 
+-	dev->member = dev->host_mask;
+-
+ 	for (i = 0; i < dev->port_cnt; i++) {
+ 		if (i == dev->cpu_port)
+ 			continue;
+ 		p = &dev->ports[i];
+ 
+-		/* Initialize to non-zero so that ksz_cfg_port_member() will
+-		 * be called.
+-		 */
+-		p->vid_member = (1 << i);
+-		p->member = dev->port_mask;
+ 		ksz9477_port_stp_state_set(ds, i, BR_STATE_DISABLED);
+ 		p->on = 1;
+ 		if (i < dev->phy_port_cnt)
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 7c2968a639eb..8a04302018dc 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -22,21 +22,40 @@
+ 
+ void ksz_update_port_member(struct ksz_device *dev, int port)
+ {
+-	struct ksz_port *p;
++	struct ksz_port *p = &dev->ports[port];
++	struct dsa_switch *ds = dev->ds;
++	u8 port_member = 0, cpu_port;
++	const struct dsa_port *dp;
+ 	int i;
+ 
+-	for (i = 0; i < dev->port_cnt; i++) {
+-		if (i == port || i == dev->cpu_port)
++	if (!dsa_is_user_port(ds, port))
++		return;
++
++	dp = dsa_to_port(ds, port);
++	cpu_port = BIT(dsa_upstream_port(ds, port));
++
++	for (i = 0; i < ds->num_ports; i++) {
++		const struct dsa_port *other_dp = dsa_to_port(ds, i);
++		struct ksz_port *other_p = &dev->ports[i];
++		u8 val = 0;
++
++		if (!dsa_is_user_port(ds, i))
+ 			continue;
+-		p = &dev->ports[i];
+-		if (!(dev->member & (1 << i)))
++		if (port == i)
++			continue;
++		if (!dp->bridge_dev || dp->bridge_dev != other_dp->bridge_dev)
+ 			continue;
+ 
+-		/* Port is a member of the bridge and is forwarding. */
+-		if (p->stp_state == BR_STATE_FORWARDING &&
+-		    p->member != dev->member)
+-			dev->dev_ops->cfg_port_member(dev, i, dev->member);
++		if (other_p->stp_state == BR_STATE_FORWARDING &&
++		    p->stp_state == BR_STATE_FORWARDING) {
++			val |= BIT(port);
++			port_member |= BIT(i);
++		}
++
++		dev->dev_ops->cfg_port_member(dev, i, val | cpu_port);
+ 	}
++
++	dev->dev_ops->cfg_port_member(dev, port, port_member | cpu_port);
+ }
+ EXPORT_SYMBOL_GPL(ksz_update_port_member);
+ 
+@@ -175,12 +194,6 @@ EXPORT_SYMBOL_GPL(ksz_get_ethtool_stats);
+ int ksz_port_bridge_join(struct dsa_switch *ds, int port,
+ 			 struct net_device *br)
+ {
+-	struct ksz_device *dev = ds->priv;
+-
+-	mutex_lock(&dev->dev_mutex);
+-	dev->br_member |= (1 << port);
+-	mutex_unlock(&dev->dev_mutex);
+-
+ 	/* port_stp_state_set() will be called after to put the port in
+ 	 * appropriate state so there is no need to do anything.
+ 	 */
+@@ -192,13 +205,6 @@ EXPORT_SYMBOL_GPL(ksz_port_bridge_join);
+ void ksz_port_bridge_leave(struct dsa_switch *ds, int port,
+ 			   struct net_device *br)
+ {
+-	struct ksz_device *dev = ds->priv;
+-
+-	mutex_lock(&dev->dev_mutex);
+-	dev->br_member &= ~(1 << port);
+-	dev->member &= ~(1 << port);
+-	mutex_unlock(&dev->dev_mutex);
+-
+ 	/* port_stp_state_set() will be called after to put the port in
+ 	 * forwarding state so there is no need to do anything.
+ 	 */
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 1597c63988b4..54b456bc8972 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -25,8 +25,6 @@ struct ksz_port_mib {
+ };
+ 
+ struct ksz_port {
+-	u16 member;
+-	u16 vid_member;
+ 	bool remove_tag;		/* Remove Tag flag set, for ksz8795 only */
+ 	int stp_state;
+ 	struct phy_device phydev;
+@@ -83,8 +81,6 @@ struct ksz_device {
+ 	struct ksz_port *ports;
+ 	struct delayed_work mib_read;
+ 	unsigned long mib_read_interval;
+-	u16 br_member;
+-	u16 member;
+ 	u16 mirror_rx;
+ 	u16 mirror_tx;
+ 	u32 features;			/* chip specific features */
 -- 
-2.31.1
+2.30.2
 
