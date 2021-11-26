@@ -2,108 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AACD945EC73
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 12:21:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EB2745EC74
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 12:21:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237993AbhKZLYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Nov 2021 06:24:54 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52974 "EHLO
+        id S238018AbhKZLYz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 06:24:55 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:27760 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237992AbhKZLWv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 06:22:51 -0500
+        by vger.kernel.org with ESMTP id S230313AbhKZLWx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 06:22:53 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1637925578;
+        s=mimecast20190719; t=1637925580;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=qkz3t6yTtCyGGIa4smq1sgd2IxE223NuLT4wxqa7ekM=;
-        b=OitM6paGFrDHvquKvAiHhdr30O693FgspUkKg0d+giwPwj5lLgEaaJw6hrMD2wvEKDBFVq
-        anVFrXAL9Fp0rXBW3c5SBOuAEpfOiLPBeC8SATPZ1xmiswWDUF8z92EGSCxkHt255f+KXM
-        Qwd7UihIXwneexA/A9XOs/JeJ75O+LA=
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VP2wsyySLKig79PhgG1vpE6dmyB/yBoLf1Bs2JAB+/A=;
+        b=I9RXbj6lUspCiuXUgr8LMySvMBuPOFupaSjrkjHOebuH5DicQGnYIKUXo8mfQ25HoDK5Nd
+        bF5TAIXZNs+7sBGv0sEvTwUloxE/IGAxlhg4g9SYPMW5YUkqm0M0ie1fBa5YWPSn+75rcP
+        Lm+I4w7n/1YwQyHy/uZyc37UityEG48=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-432-HCoO5XZEMrWFZARas5sMyA-1; Fri, 26 Nov 2021 06:19:35 -0500
-X-MC-Unique: HCoO5XZEMrWFZARas5sMyA-1
+ us-mta-470-x8yMdHCFMlyA4jV8o0C42A-1; Fri, 26 Nov 2021 06:19:37 -0500
+X-MC-Unique: x8yMdHCFMlyA4jV8o0C42A-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 489F61853022;
-        Fri, 26 Nov 2021 11:19:34 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 03D6F185302E;
+        Fri, 26 Nov 2021 11:19:36 +0000 (UTC)
 Received: from gerbillo.fritz.box (unknown [10.39.194.163])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 796E960BF4;
-        Fri, 26 Nov 2021 11:19:19 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A24B260BF4;
+        Fri, 26 Nov 2021 11:19:34 +0000 (UTC)
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCH net-next v2 0/2] bpf: do not WARN in bpf_warn_invalid_xdp_action()
-Date:   Fri, 26 Nov 2021 12:19:09 +0100
-Message-Id: <cover.1637924200.git.pabeni@redhat.com>
+Subject: [PATCH net-next v2 1/2] bpf: do not WARN in bpf_warn_invalid_xdp_action()
+Date:   Fri, 26 Nov 2021 12:19:10 +0100
+Message-Id: <1817b31eac5f1b10abb2870ff09ed6af4814ef01.1637924200.git.pabeni@redhat.com>
+In-Reply-To: <cover.1637924200.git.pabeni@redhat.com>
+References: <cover.1637924200.git.pabeni@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The mentioned WARN is quite noisy, especially vs fuzzers and
-apparently used only to track the relevant BPF program and/or
-involved driver.
+The WARN_ONCE() in bpf_warn_invalid_xdp_action() can be triggered by
+any bugged program, and even attaching a correct program to a NIC
+not supporting the given action.
 
-The first patch replace it with a pr_warn_once(), and the 2nd
-patch allow dumps relevant info to track the reported issue.
+The resulting splat, beyond polluting the logs, fouls automated tools:
+e.g. a syzkaller reproducers using an XDP program returning an
+unsupported action will never pass validation.
 
-This is quite invasive, but the mentioned WARN makes the hunt
-for some bugs reported by syzkaller quite difficult.
+Replace the WARN_ONCE with a less intrusive pr_warn_once().
 
-v1 -> v2:
- - do not include the device name for maps caller (Toke)
+Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ net/core/filter.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Paolo Abeni (2):
-  bpf: do not WARN in bpf_warn_invalid_xdp_action()
-  bpf: let bpf_warn_invalid_xdp_action() report more info
-
- drivers/net/ethernet/amazon/ena/ena_netdev.c           | 2 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c          | 2 +-
- drivers/net/ethernet/cavium/thunder/nicvf_main.c       | 2 +-
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c         | 2 +-
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c       | 2 +-
- drivers/net/ethernet/freescale/enetc/enetc.c           | 2 +-
- drivers/net/ethernet/intel/i40e/i40e_txrx.c            | 2 +-
- drivers/net/ethernet/intel/i40e/i40e_xsk.c             | 2 +-
- drivers/net/ethernet/intel/ice/ice_txrx.c              | 2 +-
- drivers/net/ethernet/intel/ice/ice_xsk.c               | 2 +-
- drivers/net/ethernet/intel/igb/igb_main.c              | 2 +-
- drivers/net/ethernet/intel/igc/igc_main.c              | 2 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c          | 2 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c           | 2 +-
- drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c      | 2 +-
- drivers/net/ethernet/marvell/mvneta.c                  | 2 +-
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c        | 2 +-
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c | 2 +-
- drivers/net/ethernet/mellanox/mlx4/en_rx.c             | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c       | 2 +-
- drivers/net/ethernet/microsoft/mana/mana_bpf.c         | 2 +-
- drivers/net/ethernet/netronome/nfp/nfp_net_common.c    | 2 +-
- drivers/net/ethernet/qlogic/qede/qede_fp.c             | 2 +-
- drivers/net/ethernet/sfc/rx.c                          | 2 +-
- drivers/net/ethernet/socionext/netsec.c                | 2 +-
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c      | 2 +-
- drivers/net/ethernet/ti/cpsw_priv.c                    | 2 +-
- drivers/net/hyperv/netvsc_bpf.c                        | 2 +-
- drivers/net/tun.c                                      | 2 +-
- drivers/net/veth.c                                     | 4 ++--
- drivers/net/virtio_net.c                               | 4 ++--
- drivers/net/xen-netfront.c                             | 2 +-
- include/linux/filter.h                                 | 2 +-
- kernel/bpf/cpumap.c                                    | 4 ++--
- kernel/bpf/devmap.c                                    | 4 ++--
- net/core/dev.c                                         | 2 +-
- net/core/filter.c                                      | 8 ++++----
- 37 files changed, 44 insertions(+), 44 deletions(-)
-
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 8271624a19aa..5631acf3f10c 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -8185,9 +8185,9 @@ void bpf_warn_invalid_xdp_action(u32 act)
+ {
+ 	const u32 act_max = XDP_REDIRECT;
+ 
+-	WARN_ONCE(1, "%s XDP return value %u, expect packet loss!\n",
+-		  act > act_max ? "Illegal" : "Driver unsupported",
+-		  act);
++	pr_warn_once("%s XDP return value %u, expect packet loss!\n",
++		     act > act_max ? "Illegal" : "Driver unsupported",
++		     act);
+ }
+ EXPORT_SYMBOL_GPL(bpf_warn_invalid_xdp_action);
+ 
 -- 
 2.33.1
 
