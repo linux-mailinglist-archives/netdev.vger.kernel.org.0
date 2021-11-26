@@ -2,69 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8C8345E66D
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 04:09:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 398DF45E669
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 04:03:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344001AbhKZDMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 22:12:20 -0500
-Received: from m12-13.163.com ([220.181.12.13]:39909 "EHLO m12-13.163.com"
+        id S243692AbhKZDGP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 22:06:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53956 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344865AbhKZDKU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Nov 2021 22:10:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=0oY/MG+Yhmc81YNGi4
-        zbRgDI258IH1wg0UuqAzQsMzk=; b=SgkO8x4SeneLZu99sSDrZrJb84MegQlg5A
-        KC6ZvB38NX2Ov0cw3ZGNswphWrlo0XAo/3+lAo/T6FwcBWa1qLmtlJP6yXxeuPyc
-        UuEsd0SjBdOms6OEBx1GfqEyF3n41uiwXnMVnKIAwsKvPX+y7zxxfmkU5+vAlUI/
-        xJeWR/BUg=
-Received: from wengjianfeng.ccdomain.com (unknown [218.17.89.92])
-        by smtp9 (Coremail) with SMTP id DcCowAC3bMl1OaBhnUCuPw--.68S2;
-        Fri, 26 Nov 2021 09:33:52 +0800 (CST)
-From:   samirweng1979 <samirweng1979@163.com>
-To:     krzysztof.kozlowski@canonical.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        wengjianfeng <wengjianfeng@yulong.com>
-Subject: [PATCH] nfc: fdp: Merge the same judgment
-Date:   Fri, 26 Nov 2021 09:31:30 +0800
-Message-Id: <20211126013130.27112-1-samirweng1979@163.com>
-X-Mailer: git-send-email 2.15.0.windows.1
-X-CM-TRANSID: DcCowAC3bMl1OaBhnUCuPw--.68S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtrW7CFWfZF1fAw17Aw15CFg_yoW3JFg_CF
-        s3XrW7ZrWFgr1YyryfCr9IvFyFqF17Ww1fGay5KayYyrykCF47C34UCr93A3WfWa10vF9r
-        WFnxC34SyrWDujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUYyGQDUUUUU==
-X-Originating-IP: [218.17.89.92]
-X-CM-SenderInfo: pvdpx25zhqwiqzxzqiywtou0bp/xtbBHAZXsV3mCNEsxAAAs2
+        id S245633AbhKZDEO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Nov 2021 22:04:14 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E367A6104F;
+        Fri, 26 Nov 2021 03:01:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637895662;
+        bh=42Z3prBA3T0fHds5xnp4RN0xuyReiijwA0liS98YTkQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FLnF26FpY3IW78MZH5EWHlNP0V58Doj/Dg6q2xiTC9P3LTujP+uZR9go0g5HiXzCY
+         O0Hgj5uBwsDEiPWCt+Xic27p6tOFuKFql0ewdskNd+gBu43PHVmRvjNITP+nBx1B6n
+         MYC4/7TUBL+eEkeJ+EFKtPzNPDvlnmz7TzIVUlnux1Y3OB/9Yn54NbQElg5yRrfWla
+         0JBMC9yRO8lxFPWdrKrPoZ7csk7Ys/KG9qsRk0o6E9dJ5D8wALKZIe/RP3WeSV7NKO
+         Se4/85GT35W3WgWJLMQQZ7tLlnAICSDVEArjio4YCgEKoYb1Jfg6SMwEbQNgldWgni
+         flbyuMb4Ym14w==
+Date:   Thu, 25 Nov 2021 19:01:01 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Po Liu <po.liu@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        "Y.B. Lu" <yangbo.lu@nxp.com>, Rui Sousa <rui.sousa@nxp.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "Allan W . Nielsen" <allan.nielsen@microchip.com>
+Subject: Re: [PATCH net-next 0/4] Fix broken PTP over IP on Ocelot switches
+Message-ID: <20211125190101.63f1f0a2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211125234520.2h6vtwar4hkb2knd@skbuf>
+References: <20211125232118.2644060-1-vladimir.oltean@nxp.com>
+        <20211125234520.2h6vtwar4hkb2knd@skbuf>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wengjianfeng <wengjianfeng@yulong.com>
+On Thu, 25 Nov 2021 23:45:21 +0000 Vladimir Oltean wrote:
+> On Fri, Nov 26, 2021 at 01:21:14AM +0200, Vladimir Oltean wrote:
+> > Po Liu reported recently that timestamping PTP over IPv4 is broken using
+> > the felix driver on NXP LS1028A. This has been known for a while, of
+> > course, since it has always been broken. The reason is because IP PTP
+> > packets are currently treated as unknown IP multicast, which is not
+> > flooded to the CPU port in the ocelot driver design, so packets don't
+> > reach the ptp4l program.
+> > 
+> > The series solves the problem by installing packet traps per port when
+> > the timestamping ioctl is called, depending on the RX filter selected
+> > (L2, L4 or both).
+> 
+> I don't know why I targeted these patches to "net-next". Habit I guess.
+> Nonetheless, they apply equally well to "net", can they be considered
+> for merging there without me resending?
 
-Combine two judgments that return the same value
+Only patch 1 looks like a fix, tho? Patch 4 seems to fall into 
+the "this never worked and doesn't cause a crash" category.
 
-Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
----
- drivers/nfc/fdp/i2c.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/nfc/fdp/i2c.c b/drivers/nfc/fdp/i2c.c
-index f78670bf41e0..28a9e1eb9bcf 100644
---- a/drivers/nfc/fdp/i2c.c
-+++ b/drivers/nfc/fdp/i2c.c
-@@ -205,9 +205,7 @@ static irqreturn_t fdp_nci_i2c_irq_thread_fn(int irq, void *phy_id)
- 
- 	r = fdp_nci_i2c_read(phy, &skb);
- 
--	if (r == -EREMOTEIO)
--		return IRQ_HANDLED;
--	else if (r == -ENOMEM || r == -EBADMSG)
-+	if (r == -EREMOTEIO || r == -ENOMEM || r == -EBADMSG)
- 		return IRQ_HANDLED;
- 
- 	if (skb != NULL)
--- 
-2.29.0
-
-
+I'm hoping to send a PR tomorrow, so if you resend quickly it 
+will be in net-next soon.
