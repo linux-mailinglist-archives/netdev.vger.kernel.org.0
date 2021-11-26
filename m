@@ -2,95 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0F9545E611
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 04:01:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A52C45E663
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 04:01:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358840AbhKZCty (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Nov 2021 21:49:54 -0500
-Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:52845 "EHLO
-        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1359112AbhKZCp5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Nov 2021 21:45:57 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0UyJiZM._1637894563;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0UyJiZM._1637894563)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 26 Nov 2021 10:42:43 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     kgraul@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH net v3] net/smc: Don't call clcsock shutdown twice when smc shutdown
-Date:   Fri, 26 Nov 2021 10:41:35 +0800
-Message-Id: <20211126024134.45693-1-tonylu@linux.alibaba.com>
-X-Mailer: git-send-email 2.34.0
+        id S1358075AbhKZC4x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Nov 2021 21:56:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52640 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1358124AbhKZCyw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Nov 2021 21:54:52 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 393C361106;
+        Fri, 26 Nov 2021 02:51:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637895100;
+        bh=xUlZvULXQ6rOq+Z7FE3dDoJ3dhTX0UZTxAaPNoSKV4k=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lUlwgwytff92HjYig8Cp0RhZf1Geojck1CyhnhTIVO9Da13fzfAwrKtmYPF8nvU1z
+         UldZtJ07Dcsi38XGGy4ftKIp5tdNRn1SM+1kzv3XnOJObjEUETDyz2r9vZY/trumA3
+         gXWu/l3YgJK7rO7CCfHXRciZiJqg/NILqN3NSNptFTME/pZ2SGXwkUhPkqdwrDrhHu
+         RSpYm0JysIelpRH0zO0ABtPO15sgKVMn5NBk93E3GOAyjRszssVEGMDGatwBX2wXBC
+         vzyqyhfv9pTSOSymjvfzXuZKD95PURGOTZM0Gje1GWnLSED5gc6SVGVG3baTdAzGwq
+         hDNWfduoOCWXQ==
+Date:   Thu, 25 Nov 2021 18:51:39 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Wen Gu <guwen@linux.alibaba.com>,
+        Tony Lu <tonylu@linux.alibaba.com>,
+        "David S . Miller" <davem@davemloft.net>, kgraul@linux.ibm.com,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.15 10/39] net/smc: Transfer remaining wait
+ queue entries during fallback
+Message-ID: <20211125185139.0007069f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211126023156.441292-10-sashal@kernel.org>
+References: <20211126023156.441292-1-sashal@kernel.org>
+        <20211126023156.441292-10-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When applications call shutdown() with SHUT_RDWR in userspace,
-smc_close_active() calls kernel_sock_shutdown(), and it is called
-twice in smc_shutdown().
+On Thu, 25 Nov 2021 21:31:27 -0500 Sasha Levin wrote:
+> From: Wen Gu <guwen@linux.alibaba.com>
+> 
+> [ Upstream commit 2153bd1e3d3dbf6a3403572084ef6ed31c53c5f0 ]
+> 
+> The SMC fallback is incomplete currently. There may be some
+> wait queue entries remaining in smc socket->wq, which should
+> be removed to clcsocket->wq during the fallback.
+> 
+> For example, in nginx/wrk benchmark, this issue causes an
+> all-zeros test result:
 
-This fixes this by checking sk_state before do clcsock shutdown, and
-avoids missing the application's call of smc_shutdown().
+Hold this one, please, there is a fix coming: 7a61432dc813 ("net/smc:
+Avoid warning of possible recursive locking").
 
-Link: https://lore.kernel.org/linux-s390/1f67548e-cbf6-0dce-82b5-10288a4583bd@linux.ibm.com/
-Fixes: 606a63c9783a ("net/smc: Ensure the active closing peer first closes clcsock")
-Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
-Reviewed-by: Wen Gu <guwen@linux.alibaba.com>
----
-
-changes:
-
-v2->v3:
-- code format
-
-v1->v2:
-- code format
-- use bool do_shutdown
-
----
- net/smc/af_smc.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 4b62c925a13e..230072f9ec48 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -2370,8 +2370,10 @@ static __poll_t smc_poll(struct file *file, struct socket *sock,
- static int smc_shutdown(struct socket *sock, int how)
- {
- 	struct sock *sk = sock->sk;
-+	bool do_shutdown = true;
- 	struct smc_sock *smc;
- 	int rc = -EINVAL;
-+	int old_state;
- 	int rc1 = 0;
- 
- 	smc = smc_sk(sk);
-@@ -2398,7 +2400,11 @@ static int smc_shutdown(struct socket *sock, int how)
- 	}
- 	switch (how) {
- 	case SHUT_RDWR:		/* shutdown in both directions */
-+		old_state = sk->sk_state;
- 		rc = smc_close_active(smc);
-+		if (old_state == SMC_ACTIVE &&
-+		    sk->sk_state == SMC_PEERCLOSEWAIT1)
-+			do_shutdown = false;
- 		break;
- 	case SHUT_WR:
- 		rc = smc_close_shutdown_write(smc);
-@@ -2408,7 +2414,7 @@ static int smc_shutdown(struct socket *sock, int how)
- 		/* nothing more to do because peer is not involved */
- 		break;
- 	}
--	if (smc->clcsock)
-+	if (do_shutdown && smc->clcsock)
- 		rc1 = kernel_sock_shutdown(smc->clcsock, how);
- 	/* map sock_shutdown_cmd constants to sk_shutdown value range */
- 	sk->sk_shutdown |= how + 1;
--- 
-2.32.0.3.g01195cf9f
 
