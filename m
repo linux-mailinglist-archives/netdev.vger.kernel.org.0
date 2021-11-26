@@ -2,89 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D671E45E9F2
-	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 10:06:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1651B45EA2E
+	for <lists+netdev@lfdr.de>; Fri, 26 Nov 2021 10:17:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376261AbhKZJJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Nov 2021 04:09:28 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:53208 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353708AbhKZJHZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 04:07:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1637917453; x=1669453453;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=UIHMpNXddcd67qrfo49O4jdt/yShSMnZhW80ZeQOW54=;
-  b=2SRNoek9REOkYjzjr3BGQ/dW5txAzmxWoQzqQsuCNzexcATEyNHQR0pp
-   +1jaw9ocqZk8Lkdb7B0A9M9mBPHwahAN+wzs2NrKlGNpe2EclOA2/P5us
-   MFeLMu5VaWUBxna1ry32YYd780wTQBbqMpX4QgTxUl7G8QFyBQAd3bwSb
-   aYQgmzE8O9MpwC9P9c20CecKhEz0bzbneh9k7zqlQGlNnoMc3cJGZofKx
-   yukXHUfzF703qbtR0Cwybd+uoM4LGnMMGedGbfVVsiGnrUUSpCG8Ipfwi
-   6ThbDL+TA/A3FbT+buYB8JTRHAHY6OlZtMq+UUUxPrwJRJQL6Geu/5V0n
-   A==;
-IronPort-SDR: b5bNLm994v4U3Ri71JCUmrhtMsDXJ/K/gTmwzLI01R1ZAjVraTywacqqJfrKFjTc4uVm9jX6M3
- w0E+s+S5jwIXRooTrxwYoGD6oqqwTDEZqa+OAUzvdnHKOP/NlUH3xACZB3JmQFMpklItSudCaQ
- +gByivvQd1T/yZAJdFfEdwq4PCyA+nut9XYbW1FnX6zXG2su7b8NdXPbqgsu6KoQRvjYFAkJ2E
- HGE/TSJNdszGm+Y3LktSXTmGjIknLdx6cilxAbhM6r2BF3sLxEgN6/VnXqp+k5pQRePCX72XrM
- V1HhDxJteBSYEIr35itRusI9
-X-IronPort-AV: E=Sophos;i="5.87,265,1631602800"; 
-   d="scan'208";a="77659900"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Nov 2021 02:04:12 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Fri, 26 Nov 2021 02:04:11 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Fri, 26 Nov 2021 02:04:09 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <p.zabel@pengutronix.de>,
-        <linux@armlinux.org.uk>, <andrew@lunn.ch>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v4 6/6] net: lan966x: Update MAINTAINERS to include lan966x driver
-Date:   Fri, 26 Nov 2021 10:05:40 +0100
-Message-ID: <20211126090540.3550913-7-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211126090540.3550913-1-horatiu.vultur@microchip.com>
-References: <20211126090540.3550913-1-horatiu.vultur@microchip.com>
+        id S1359378AbhKZJUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Nov 2021 04:20:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51170 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230454AbhKZJSl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Nov 2021 04:18:41 -0500
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D963FC0613F1
+        for <netdev@vger.kernel.org>; Fri, 26 Nov 2021 01:10:58 -0800 (PST)
+Received: by mail-io1-xd32.google.com with SMTP id 14so10488483ioe.2
+        for <netdev@vger.kernel.org>; Fri, 26 Nov 2021 01:10:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=zVlKoJV5QCc33RQJubZEDQDRV60YVKYMw2KVtAWGMJk=;
+        b=jMmaaYEtxysp1kW8x3KnOLN2GGeuKKqnex18iFZW2CeWlAhtPeKndKARHFrPrp+GzZ
+         x+x2MRoHy3WKzGNmW5JTRlkFDdpMjjk8rmfQoAmXvZ15uGBmDLCq6cJjo4XFPEROq5Mp
+         CUvNXd2tk1xgk/3NdT9lGQWpxKrBkCbHZ38f7alW3q9h6E+Wjhbswn0YyOjgTsqTsfJW
+         jLwNw+W5gnI9omeUOw2pEFKsJ9A3fr/Dbk7+KcrdOzqJKbxRDOFVWwwPBe4j455j0ddF
+         zMdP+OmqmBEhakPGj5Gwp72MNb1fAUgYREZEeyQ3z7OgSK9FoP0tFKI3X+Nmf97hGagH
+         gTvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=zVlKoJV5QCc33RQJubZEDQDRV60YVKYMw2KVtAWGMJk=;
+        b=ij+jH/tl/9sPi6bPXRXiBEkb2YvcK3/TkonQePxbrdGnvbcPfxMhnJeYOVZpUnBKns
+         OzSmRdQzagdbSvU9h9aWchzJgrnpy8vkE+a1pNMRyWFPjGW6/nGzAJmyIewYgcyvronn
+         y31JGdfGZ1qVnCHBwOuiuv+tHcU3OtdhlHTBPkNavLS0cYSMm23dqKtOnAbEhdxLclzI
+         B5dZPJzAhiaCZ66Y4DuAnbBa/BytD7MiQ5EngD6m/GhWCstIFyq12Qyl9+57Nju/llOf
+         ixRwdQmQWTCIM9sFkrvSok2cpQG1ptHzAWWLqKp1K4vNPassKZo9VPzjo00ZHcIA/Z/L
+         H5aA==
+X-Gm-Message-State: AOAM533hD9D0gwnUn639YEh1YcUA3+VKR1Eq+6h18rXdGcZcNR46xdYY
+        KRhegEzJGXu0nRQq/mnqkSRKlpIrbOw3gXS9GPU=
+X-Google-Smtp-Source: ABdhPJzNakvEh389jNk0+aLRx3nN1DF/aYecpKOZTdKMVpdYMyNgVkOw1dWjTfe1RqKhsT4jkJKyc8xsSahZGpD2wRc=
+X-Received: by 2002:a5e:da09:: with SMTP id x9mr36003059ioj.171.1637917858323;
+ Fri, 26 Nov 2021 01:10:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Received: by 2002:a92:c56d:0:0:0:0:0 with HTTP; Fri, 26 Nov 2021 01:10:58
+ -0800 (PST)
+Reply-To: mrsaishag45@gmail.com
+From:   Mrs Aisha Al-Qaddafi <mrsaishagaddafi488@gmail.com>
+Date:   Fri, 26 Nov 2021 01:10:58 -0800
+Message-ID: <CAOXivUo+_fyEnXBH2mzW0WgqfsrBvF4Wqa-yfWTw5gmKe=U8Ug@mail.gmail.com>
+Subject: Dear Friend,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update MAINTAINERS to include lan966x driver
+I came across your e-mail contact prior a private search while in need
+of your assistance. My name is Aisha Gaddafi a single
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- MAINTAINERS | 7 +++++++
- 1 file changed, 7 insertions(+)
+Mother and a Widow with three Children. I am the only biological
+Daughter of late Libyan President (Late Colonel Muammar
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 10c8ae3a8c73..722a00d8df9e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12513,6 +12513,13 @@ L:	netdev@vger.kernel.org
- S:	Maintained
- F:	drivers/net/ethernet/microchip/lan743x_*
- 
-+MICROCHIP LAN966X ETHERNET DRIVER
-+M:	Horatiu Vultur <horatiu.vultur@microchip.com>
-+M:	UNGLinuxDriver@microchip.com
-+L:	netdev@vger.kernel.org
-+S:	Maintained
-+F:	drivers/net/ethernet/microchip/lan966x/*
-+
- MICROCHIP LCDFB DRIVER
- M:	Nicolas Ferre <nicolas.ferre@microchip.com>
- L:	linux-fbdev@vger.kernel.org
--- 
-2.33.0
+Gaddafi).
 
+I have investment funds worth Twenty Seven Million Five Hundred
+Thousand United State Dollar ($27.500.000.00 ) and i need a
+
+trusted investment Manager/Partner because of my current refugee
+status, however, I am interested in you for investment
+
+project assistance in your country, may be from there, we can build
+business relationship in the nearest future.
+
+I am willing to negotiate investment/business profit sharing ratio
+with you base on the future investment earning profits.
+If you are willing to handle this project on my behalf kindly reply
+urgent to enable me provide you more information about
+
+Best Regards
+Mrs Aisha Al-Qaddafi
