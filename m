@@ -2,258 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 759E1460087
-	for <lists+netdev@lfdr.de>; Sat, 27 Nov 2021 18:30:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62CC64600A3
+	for <lists+netdev@lfdr.de>; Sat, 27 Nov 2021 18:44:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351895AbhK0ReA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Nov 2021 12:34:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47710 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244393AbhK0Rb7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Nov 2021 12:31:59 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6639EC061759
-        for <netdev@vger.kernel.org>; Sat, 27 Nov 2021 09:28:45 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id h24so9304205pjq.2
-        for <netdev@vger.kernel.org>; Sat, 27 Nov 2021 09:28:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=1fyCrRyojJQKUvnxpDWurEa4BnFxMWH/z3B3zGW/tQk=;
-        b=Qeio0pdTOio5+kG8hsLArzSR8eMIcMQ+/u8NTmZZjU6rMo+P3D4t2aA4ZU6kXZFZfb
-         RhZ+t+abZg+3XMkAAzMtRzhSWr3abZMEgO67+ek6K8+8Z6e3JXKsP8KjPKOk4DYWk+Q2
-         O/1PY76c51DmYX4kSFF33NQrbflrQvD29psKcScX7gPX0z86iq+Fi8qmY0kbrpNXc9TD
-         8hkZLp7MmZT+gZbwhIa+tuVzpW2EhELsCcrvwvD2F6fMTiB75vHyOxRPwKsKip6BD6Kz
-         pzO3LV8TncvKEHJagbQ5Z++llGrR3L/Kw2sK6D8Abxf4GWVrDsm5vBhg7qwlGPfaSTC0
-         uvAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=1fyCrRyojJQKUvnxpDWurEa4BnFxMWH/z3B3zGW/tQk=;
-        b=x43GzXCNFrMifM2CW6+Tu1UP6rsoikUFKaRMoMXWhj0hW3VEGcj7lztDBu32l1mzxy
-         HUKbPsOEWy0XN5+kGwuSeP0HmaseDowtkPIa58kE4blmpXv3CkpqeEtfHOzbm16mrEWC
-         /fbfiXJUk2+aD9+61TsjDFUlF0vcPJpEsgEInH3dtO13fjbXPptb72uKKgi5o9OFy+iG
-         AmK0z/DBLDTOazBsHoNW1BnQPsONfpcf9NupgbB0CG1KQ3s/NuB3DeROxi2sM3+7ga4c
-         LMqZarSG+wSFtmQT1ReiTBDcweGox+OOE/fRTmZAxFvetZTAJgk72Hj79+bUBNCbOsLR
-         JUug==
-X-Gm-Message-State: AOAM5338Br++IZa0lKuxjA9ESBra8XMdFKxOxn2zQEhrWDH6kUR2iyLh
-        I2vzRP58qcnMe/lWvq5mPdMby1kg/vb7DQ==
-X-Google-Smtp-Source: ABdhPJyjdQJPh7JT4dAnHMPp7TE1SLr6RvA2pSxWj0AGhfH4+7yfiq0Yj6UmUpgdZCVXNKAxHiVMFA==
-X-Received: by 2002:a17:902:ce8f:b0:141:f85a:e0de with SMTP id f15-20020a170902ce8f00b00141f85ae0demr47550850plg.69.1638034124723;
-        Sat, 27 Nov 2021 09:28:44 -0800 (PST)
-Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
-        by smtp.gmail.com with ESMTPSA id a3sm1062937pgj.2.2021.11.27.09.28.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Nov 2021 09:28:44 -0800 (PST)
-Date:   Sat, 27 Nov 2021 09:28:41 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Cc:     ramanan.govindarajan@oracle.com, george.kennedy@oracle.com,
-        vijayendra.suman@oracle.com,
-        syzkaller <syzkaller@googlegroups.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        David Ahern <dsahern@kernel.org>,
-        Florian Westphal <fw@strlen.de>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Alexander Aring <aahringo@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] net: netlink: af_netlink: Prevent empty skb by
- adding a check on len.
-Message-ID: <20211127092841.57b6a217@hermes.local>
-In-Reply-To: <20211127081458.6936-1-harshit.m.mogalapalli@oracle.com>
-References: <20211127081458.6936-1-harshit.m.mogalapalli@oracle.com>
+        id S1355515AbhK0Rrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Nov 2021 12:47:47 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.54]:9000 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239269AbhK0Rpr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Nov 2021 12:45:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1638034590;
+    s=strato-dkim-0002; d=gerhold.net;
+    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
+    bh=Xzv17N3CDQDDrbPVHlU8qZQIuDU6u6Dr5h5Df6SE3wA=;
+    b=B9rXyFw8uHwexIUdODY87ISEyGmWSrdi5PPnVJ4qqlP8y+aNEgvaLMBljoN4uwaVCL
+    T7HfDYzPFUCcsYDe6Q/n1X1A4xhCSqdVnYhTetRmRU48XXG6x/ydlHnFRqfNtY3P2DoY
+    Fv3B4G1lWoc3BSXKuqlrh2EJffSWCVmLV4Nxn7Qq4hNc8dO4hsW/RUT6SZp9fEW7dwl6
+    kk37etvM3Q43LJvQduG/1WjECmkN5q+2HiYsVVXJ4mn876bt9n/2KlbQFVL4YH7q4+lH
+    SbeqJdUrLb8DGMvjbJyW5zirOpdcdJKRgVMGLri+pCMsNnQ7RoG9V/2W1z9CCJp1/ByG
+    Qflg==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVORvLd4SsytBXQ7UOGqRde+a0fiL/b+s="
+X-RZG-CLASS-ID: mo00
+Received: from droid..
+    by smtp.strato.de (RZmta 47.34.10 AUTH)
+    with ESMTPSA id j03bcbxARHaTFuH
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Sat, 27 Nov 2021 18:36:29 +0100 (CET)
+From:   Stephan Gerhold <stephan@gerhold.net>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Aleksander Morgado <aleksander@aleksander.es>,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
+        Stephan Gerhold <stephan@gerhold.net>
+Subject: [PATCH net-next v3 0/2] net: wwan: Add Qualcomm BAM-DMUX WWAN network driver
+Date:   Sat, 27 Nov 2021 18:31:06 +0100
+Message-Id: <20211127173108.3992-1-stephan@gerhold.net>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 27 Nov 2021 00:14:57 -0800
-Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com> wrote:
+The BAM Data Multiplexer provides access to the network data channels
+of modems integrated into many older Qualcomm SoCs, e.g. Qualcomm MSM8916
+or MSM8974. This series adds a driver that allows using it.
 
-> Adding a check on len parameter to avoid empty skb. This prevents a
-> division error in netem_enqueue function which is caused when skb->len=0
-> and skb->data_len=0 in the randomized corruption step as shown below.
-> 
-> skb->data[prandom_u32() % skb_headlen(skb)] ^= 1<<(prandom_u32() % 8);
-> 
-> Crash Report:
-> [  343.170349] netdevsim netdevsim0 netdevsim3: set [1, 0] type 2 family
-> 0 port 6081 - 0
-> [  343.216110] netem: version 1.3
-> [  343.235841] divide error: 0000 [#1] PREEMPT SMP KASAN NOPTI
-> [  343.236680] CPU: 3 PID: 4288 Comm: reproducer Not tainted 5.16.0-rc1+
-> [  343.237569] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-> BIOS 1.11.0-2.el7 04/01/2014
-> [  343.238707] RIP: 0010:netem_enqueue+0x1590/0x33c0 [sch_netem]
-> [  343.239499] Code: 89 85 58 ff ff ff e8 5f 5d e9 d3 48 8b b5 48 ff ff
-> ff 8b 8d 50 ff ff ff 8b 85 58 ff ff ff 48 8b bd 70 ff ff ff 31 d2 2b 4f
-> 74 <f7> f1 48 b8 00 00 00 00 00 fc ff df 49 01 d5 4c 89 e9 48 c1 e9 03
-> [  343.241883] RSP: 0018:ffff88800bcd7368 EFLAGS: 00010246
-> [  343.242589] RAX: 00000000ba7c0a9c RBX: 0000000000000001 RCX:
-> 0000000000000000
-> [  343.243542] RDX: 0000000000000000 RSI: ffff88800f8edb10 RDI:
-> ffff88800f8eda40
-> [  343.244474] RBP: ffff88800bcd7458 R08: 0000000000000000 R09:
-> ffffffff94fb8445
-> [  343.245403] R10: ffffffff94fb8336 R11: ffffffff94fb8445 R12:
-> 0000000000000000
-> [  343.246355] R13: ffff88800a5a7000 R14: ffff88800a5b5800 R15:
-> 0000000000000020
-> [  343.247291] FS:  00007fdde2bd7700(0000) GS:ffff888109780000(0000)
-> knlGS:0000000000000000
-> [  343.248350] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  343.249120] CR2: 00000000200000c0 CR3: 000000000ef4c000 CR4:
-> 00000000000006e0
-> [  343.250076] Call Trace:
-> [  343.250423]  <TASK>
-> [  343.250713]  ? memcpy+0x4d/0x60
-> [  343.251162]  ? netem_init+0xa0/0xa0 [sch_netem]
-> [  343.251795]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> [  343.252443]  netem_enqueue+0xe28/0x33c0 [sch_netem]
-> [  343.253102]  ? stack_trace_save+0x87/0xb0
-> [  343.253655]  ? filter_irq_stacks+0xb0/0xb0
-> [  343.254220]  ? netem_init+0xa0/0xa0 [sch_netem]
-> [  343.254837]  ? __kasan_check_write+0x14/0x20
-> [  343.255418]  ? _raw_spin_lock+0x88/0xd6
-> [  343.255953]  dev_qdisc_enqueue+0x50/0x180
-> [  343.256508]  __dev_queue_xmit+0x1a7e/0x3090
-> [  343.257083]  ? netdev_core_pick_tx+0x300/0x300
-> [  343.257690]  ? check_kcov_mode+0x10/0x40
-> [  343.258219]  ? _raw_spin_unlock_irqrestore+0x29/0x40
-> [  343.258899]  ? __kasan_init_slab_obj+0x24/0x30
-> [  343.259529]  ? setup_object.isra.71+0x23/0x90
-> [  343.260121]  ? new_slab+0x26e/0x4b0
-> [  343.260609]  ? kasan_poison+0x3a/0x50
-> [  343.261118]  ? kasan_unpoison+0x28/0x50
-> [  343.261637]  ? __kasan_slab_alloc+0x71/0x90
-> [  343.262214]  ? memcpy+0x4d/0x60
-> [  343.262674]  ? write_comp_data+0x2f/0x90
-> [  343.263209]  ? __kasan_check_write+0x14/0x20
-> [  343.263802]  ? __skb_clone+0x5d6/0x840
-> [  343.264329]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> [  343.264958]  dev_queue_xmit+0x1c/0x20
-> [  343.265470]  netlink_deliver_tap+0x652/0x9c0
-> [  343.266067]  netlink_unicast+0x5a0/0x7f0
-> [  343.266608]  ? netlink_attachskb+0x860/0x860
-> [  343.267183]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> [  343.267820]  ? write_comp_data+0x2f/0x90
-> [  343.268367]  netlink_sendmsg+0x922/0xe80
-> [  343.268899]  ? netlink_unicast+0x7f0/0x7f0
-> [  343.269472]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> [  343.270099]  ? write_comp_data+0x2f/0x90
-> [  343.270644]  ? netlink_unicast+0x7f0/0x7f0
-> [  343.271210]  sock_sendmsg+0x155/0x190
-> [  343.271721]  ____sys_sendmsg+0x75f/0x8f0
-> [  343.272262]  ? kernel_sendmsg+0x60/0x60
-> [  343.272788]  ? write_comp_data+0x2f/0x90
-> [  343.273332]  ? write_comp_data+0x2f/0x90
-> [  343.273869]  ___sys_sendmsg+0x10f/0x190
-> [  343.274405]  ? sendmsg_copy_msghdr+0x80/0x80
-> [  343.274984]  ? slab_post_alloc_hook+0x70/0x230
-> [  343.275597]  ? futex_wait_setup+0x240/0x240
-> [  343.276175]  ? security_file_alloc+0x3e/0x170
-> [  343.276779]  ? write_comp_data+0x2f/0x90
-> [  343.277313]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> [  343.277969]  ? write_comp_data+0x2f/0x90
-> [  343.278515]  ? __fget_files+0x1ad/0x260
-> [  343.279048]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> [  343.279685]  ? write_comp_data+0x2f/0x90
-> [  343.280234]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> [  343.280874]  ? sockfd_lookup_light+0xd1/0x190
-> [  343.281481]  __sys_sendmsg+0x118/0x200
-> [  343.281998]  ? __sys_sendmsg_sock+0x40/0x40
-> [  343.282578]  ? alloc_fd+0x229/0x5e0
-> [  343.283070]  ? write_comp_data+0x2f/0x90
-> [  343.283610]  ? write_comp_data+0x2f/0x90
-> [  343.284135]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> [  343.284776]  ? ktime_get_coarse_real_ts64+0xb8/0xf0
-> [  343.285450]  __x64_sys_sendmsg+0x7d/0xc0
-> [  343.285981]  ? syscall_enter_from_user_mode+0x4d/0x70
-> [  343.286664]  do_syscall_64+0x3a/0x80
-> [  343.287158]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> [  343.287850] RIP: 0033:0x7fdde24cf289
-> [  343.288344] Code: 01 00 48 81 c4 80 00 00 00 e9 f1 fe ff ff 0f 1f 00
-> 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f
-> 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 db 2c 00 f7 d8 64 89 01 48
-> [  343.290729] RSP: 002b:00007fdde2bd6d98 EFLAGS: 00000246 ORIG_RAX:
-> 000000000000002e
-> [  343.291730] RAX: ffffffffffffffda RBX: 0000000000000000 RCX:
-> 00007fdde24cf289
-> [  343.292673] RDX: 0000000000000000 RSI: 00000000200000c0 RDI:
-> 0000000000000004
-> [  343.293618] RBP: 00007fdde2bd6e20 R08: 0000000100000001 R09:
-> 0000000000000000
-> [  343.294557] R10: 0000000100000001 R11: 0000000000000246 R12:
-> 0000000000000000
-> [  343.295493] R13: 0000000000021000 R14: 0000000000000000 R15:
-> 00007fdde2bd7700
-> [  343.296432]  </TASK>
-> [  343.296735] Modules linked in: sch_netem ip6_vti ip_vti ip_gre ipip
-> sit ip_tunnel geneve macsec macvtap tap ipvlan macvlan 8021q garp mrp
-> hsr wireguard libchacha20poly1305 chacha_x86_64 poly1305_x86_64
-> ip6_udp_tunnel udp_tunnel libblake2s blake2s_x86_64 libblake2s_generic
-> curve25519_x86_64 libcurve25519_generic libchacha xfrm_interface
-> xfrm6_tunnel tunnel4 veth netdevsim psample batman_adv nlmon dummy team
-> bonding tls vcan ip6_gre ip6_tunnel tunnel6 gre tun ip6t_rpfilter
-> ipt_REJECT nf_reject_ipv4 ip6t_REJECT nf_reject_ipv6 xt_conntrack ip_set
-> ebtable_nat ebtable_broute ip6table_nat ip6table_mangle
-> ip6table_security ip6table_raw iptable_nat nf_nat nf_conntrack
-> nf_defrag_ipv6 nf_defrag_ipv4 iptable_mangle iptable_security
-> iptable_raw ebtable_filter ebtables rfkill ip6table_filter ip6_tables
-> iptable_filter ppdev bochs drm_vram_helper drm_ttm_helper ttm
-> drm_kms_helper cec parport_pc drm joydev floppy parport sg syscopyarea
-> sysfillrect sysimgblt i2c_piix4 qemu_fw_cfg fb_sys_fops pcspkr
-> [  343.297459]  ip_tables xfs virtio_net net_failover failover sd_mod
-> sr_mod cdrom t10_pi ata_generic pata_acpi ata_piix libata virtio_pci
-> virtio_pci_legacy_dev serio_raw virtio_pci_modern_dev dm_mirror
-> dm_region_hash dm_log dm_mod
-> [  343.311074] Dumping ftrace buffer:
-> [  343.311532]    (ftrace buffer empty)
-> [  343.312040] ---[ end trace a2e3db5a6ae05099 ]---
-> [  343.312691] RIP: 0010:netem_enqueue+0x1590/0x33c0 [sch_netem]
-> [  343.313481] Code: 89 85 58 ff ff ff e8 5f 5d e9 d3 48 8b b5 48 ff ff
-> ff 8b 8d 50 ff ff ff 8b 85 58 ff ff ff 48 8b bd 70 ff ff ff 31 d2 2b 4f
-> 74 <f7> f1 48 b8 00 00 00 00 00 fc ff df 49 01 d5 4c 89 e9 48 c1 e9 03
-> [  343.315893] RSP: 0018:ffff88800bcd7368 EFLAGS: 00010246
-> [  343.316622] RAX: 00000000ba7c0a9c RBX: 0000000000000001 RCX:
-> 0000000000000000
-> [  343.317585] RDX: 0000000000000000 RSI: ffff88800f8edb10 RDI:
-> ffff88800f8eda40
-> [  343.318549] RBP: ffff88800bcd7458 R08: 0000000000000000 R09:
-> ffffffff94fb8445
-> [  343.319503] R10: ffffffff94fb8336 R11: ffffffff94fb8445 R12:
-> 0000000000000000
-> [  343.320455] R13: ffff88800a5a7000 R14: ffff88800a5b5800 R15:
-> 0000000000000020
-> [  343.321414] FS:  00007fdde2bd7700(0000) GS:ffff888109780000(0000)
-> knlGS:0000000000000000
-> [  343.322489] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  343.323283] CR2: 00000000200000c0 CR3: 000000000ef4c000 CR4:
-> 00000000000006e0
-> [  343.324264] Kernel panic - not syncing: Fatal exception in interrupt
-> [  343.333717] Dumping ftrace buffer:
-> [  343.334175]    (ftrace buffer empty)
-> [  343.334653] Kernel Offset: 0x13600000 from 0xffffffff81000000
-> (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
-> [  343.336027] Rebooting in 86400 seconds..
-> 
-> Reported-by: syzkaller <syzkaller@googlegroups.com>
-> Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-> ---
-> Changes v1->v2: Removed dropping of packet and just added a check on
-> skb_headlen before corruption.
-> Changes v2->v3: Add check on len to prevent empty skb.
+All the changes in this patch series are based on a quite complicated
+driver from Qualcomm [1]. The driver has been used in postmarketOS [2]
+on various smartphones/tablets based on Qualcomm MSM8916 and MSM8974
+for more than a year now with no reported problems. It works out of
+the box with open-source WWAN userspace such as ModemManager.
 
+[1]: https://source.codeaurora.org/quic/la/kernel/msm-3.10/tree/drivers/soc/qcom/bam_dmux.c?h=LA.BR.1.2.9.1-02310-8x16.0
+[2]: https://postmarketos.org/
 
-Are you sure no application is doing zero length send for some
-reason?
-Maybe doing the check in netlink_deliver_tap would be less likely
-to cause visible change in behavior to applications.
+---
+Changes in v3:
+  - Clarify DT schema based on discussion
+  - Drop bam_dma/dmaengine patches since they already landed in 5.16
+  - Rebase on net-next
+  - Simplify cover letter and commit messages
+
+Changes in v2:
+  - Rename "qcom,remote-power-collapse" -> "qcom,powered-remotely"
+  - Rebase on net-next and fix conflicts
+  - Rename network interfaces from "rmnet%d" -> "wwan%d"
+  - Fix wrong file name in MAINTAINERS entry
+
+Stephan Gerhold (2):
+  dt-bindings: net: Add schema for Qualcomm BAM-DMUX
+  net: wwan: Add Qualcomm BAM-DMUX WWAN network driver
+
+ .../bindings/net/qcom,bam-dmux.yaml           |  92 ++
+ MAINTAINERS                                   |   8 +
+ drivers/net/wwan/Kconfig                      |  13 +
+ drivers/net/wwan/Makefile                     |   1 +
+ drivers/net/wwan/qcom_bam_dmux.c              | 907 ++++++++++++++++++
+ 5 files changed, 1021 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/qcom,bam-dmux.yaml
+ create mode 100644 drivers/net/wwan/qcom_bam_dmux.c
+
+-- 
+2.34.1
+
