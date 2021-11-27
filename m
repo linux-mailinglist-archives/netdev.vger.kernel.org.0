@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA2DE45FFF3
-	for <lists+netdev@lfdr.de>; Sat, 27 Nov 2021 16:47:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F77845FFF4
+	for <lists+netdev@lfdr.de>; Sat, 27 Nov 2021 16:47:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355384AbhK0PuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Nov 2021 10:50:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53402 "EHLO
+        id S1355406AbhK0PuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Nov 2021 10:50:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349232AbhK0PsF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Nov 2021 10:48:05 -0500
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107BCC061746;
-        Sat, 27 Nov 2021 07:44:51 -0800 (PST)
-Received: by mail-ot1-x332.google.com with SMTP id u18-20020a9d7212000000b00560cb1dc10bso18449191otj.11;
-        Sat, 27 Nov 2021 07:44:51 -0800 (PST)
+        with ESMTP id S1350380AbhK0PsH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Nov 2021 10:48:07 -0500
+Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E82C061748;
+        Sat, 27 Nov 2021 07:44:52 -0800 (PST)
+Received: by mail-ot1-x32f.google.com with SMTP id r10-20020a056830080a00b0055c8fd2cebdso18471263ots.6;
+        Sat, 27 Nov 2021 07:44:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Lv/Kp6ESRC+AN4NQxCwaPZ0reLg9vm5QGJqQKdUOXVg=;
-        b=d1d/8dbPRcDmnVpofqbwE5RzKqtuRjnKloIhHdZsx99LppSQdVXasmpMJASCqsxbRT
-         B3K6GfXJnaZrUK+o+2E5IkLnKK35WR4CowCi4rxx/i3J81gijaVO1Y4SaHkyyP8kxfa4
-         lDPkKUCtjO+vyWAl3Lwd9cFhtgDK7eqzYYeNngiUhpmYExX2Z1E3GyTcj5tsb7f1KCVL
-         JQXtYICmtI81GSy7R7AMY/6QQs4NBqUwnrga9X48KwKIN9j0T8VuwJkrsWCf1PjJrq0r
-         BVcN25uE9ymi625sKwJOSc5Mv/vtCf4BIekVhnrfSBHGeG51iBllPCslQEiZnp9N/RZ0
-         kInQ==
+        bh=1FCj0eg3qCaMYcJXsF4imAvHr1mf3lurCF+mcbDbEBs=;
+        b=Qf45wa8fLOp9BUn1Le2czW7jAmqgqTrZRN9J9PA+lNZ43PIPd9HEnbEOK2QWpcoiJy
+         Gf9XBTlMSjTcS3HrQ1lGOdYs54yKVe+DnoqLn+plOlSZb4by51wV70StOG158AeVSx+P
+         RmTa5wgoICakylcnD7UEMPwRE/E/f5oJPeZPumOr4YVb+QHICSZeXCppW0qIH7jK0KsD
+         3H038dH7vGaK3U6s/NXvp4eMeQyNVUprfaHzD/4mfCHM5lD4wfrYpBDg9mXQ2vzG/sFy
+         qDu29dR3UPWDfjvdUUMqMMF7qm/NCgK9rqPQgTLM3qtWGAYkKDmDrVKlBW4BeaauJfNx
+         3U8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
          :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=Lv/Kp6ESRC+AN4NQxCwaPZ0reLg9vm5QGJqQKdUOXVg=;
-        b=CX4JF17hXywbeeDkU2QxUV9sSP6EG3qfROmJhDCn8Oek1yWFML/uXCdJkIAYBlT75m
-         8qSz6lbNfVZNoWUBnFWdiJqcKBq5vLHHs5Ah6OgQ1kZ44nShdoCRNyJCeylAbSVGlkXu
-         gE5Jeswb8CnG79+S46wkBD8jlfe21+g0RNj16OmbCk+FDf040imQxPMzT8r7mMkNTD4e
-         IAy84p6WVcHmgfEYp/Qinu5PQP1Mmk6sYKviQwo19qQ+CkmkxWssaq92Zh6fMinfrhm4
-         /HYiSfawmpn+scQAjwyY2ib/u/kZ+oId1oVy4qAp+/sNV8FEyrFRRsFvoZg/nZO/QEGx
-         jZwA==
-X-Gm-Message-State: AOAM5313Q6ZQXmDhfmm2M58nr/4qPO9SyrPVLejmLnHmG2LhM2zDjvFR
-        +zl/fyR9TQkdh4b7dva0RNmy8I4octc=
-X-Google-Smtp-Source: ABdhPJz9alk4Sxe468wNHlmX+qYIK5Ar0oCeG8YckZefgGjtGwwcCC+vU/s+XoYduarsU12us77tnQ==
-X-Received: by 2002:a9d:1b0f:: with SMTP id l15mr33791138otl.38.1638027890450;
-        Sat, 27 Nov 2021 07:44:50 -0800 (PST)
+        bh=1FCj0eg3qCaMYcJXsF4imAvHr1mf3lurCF+mcbDbEBs=;
+        b=v0FuS9e4zVRE7klZ35NK7KfQAWv3MaYciS60Qwoda/zuqhbIMU1fy6/7aP380jGtt9
+         9V9Y8MFo3ZqMStedbS9YFQ4iRYC3sP1414RbMikoTHi8vi0HBhPHbUOGXlo+N01wqqFF
+         hX2XryARd4bqkmbqqgJU9ExYwsTas9k5FbXY13hfdQoh/EUWSETmsdSAagvA0fAlMPse
+         Jgpuhh0r2xHXSpUKNeWpryWgRnc6suLMq4rpNqE+4uGWDJ7YG02XFyftwpb/tZ/mkjdp
+         b6poXpqjdWuyjzrFNknyqM3hSQ12DfAh0qzQPQmHQ9nYUfL714jp032SdHfIJBDbuG5J
+         vCdQ==
+X-Gm-Message-State: AOAM530FJR8onZoLhSjDL9jaZD2qvna6F0sfIMewVV6UqSm5qIEOqtWa
+        2734oPTEsNyswg6IWtCLwuw=
+X-Google-Smtp-Source: ABdhPJzRYuRmQj7vEqYGDPE43oGeBHCDNNMnrWWDZ4u66bbB/oYUTmJrWR/gReCZUw/i+mq4YDbrgw==
+X-Received: by 2002:a9d:12a6:: with SMTP id g35mr35177546otg.61.1638027892296;
+        Sat, 27 Nov 2021 07:44:52 -0800 (PST)
 Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id r37sm1637094otv.54.2021.11.27.07.44.49
+        by smtp.gmail.com with ESMTPSA id n26sm1510723ooq.36.2021.11.27.07.44.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Nov 2021 07:44:49 -0800 (PST)
+        Sat, 27 Nov 2021 07:44:51 -0800 (PST)
 Sender: Guenter Roeck <groeck7@gmail.com>
 From:   Guenter Roeck <linux@roeck-us.net>
 To:     Anton Altaparmakov <anton@tuxera.com>
@@ -58,9 +58,9 @@ Cc:     linux-ntfs-dev@lists.sourceforge.net, linux-kernel@vger.kernel.org,
         Linus Torvalds <torvalds@linux-foundation.org>,
         Arnd Bergmann <arnd@arndb.de>,
         Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH v3 2/3] fs: ntfs: Limit NTFS_RW to page sizes smaller than 64k
-Date:   Sat, 27 Nov 2021 07:44:41 -0800
-Message-Id: <20211127154442.3676290-3-linux@roeck-us.net>
+Subject: [PATCH v3 3/3] vmxnet3: Use generic Kconfig option for page size limit
+Date:   Sat, 27 Nov 2021 07:44:42 -0800
+Message-Id: <20211127154442.3676290-4-linux@roeck-us.net>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211127154442.3676290-1-linux@roeck-us.net>
 References: <20211127154442.3676290-1-linux@roeck-us.net>
@@ -70,44 +70,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-NTFS_RW code allocates page size dependent arrays on the stack. This
-results in build failures if the page size is 64k or larger.
-
-fs/ntfs/aops.c: In function 'ntfs_write_mst_block':
-fs/ntfs/aops.c:1311:1: error:
-	the frame size of 2240 bytes is larger than 2048 bytes
-
-Since commit f22969a66041 ("powerpc/64s: Default to 64K pages for 64 bit
-book3s") this affects ppc:allmodconfig builds, but other architectures
-supporting page sizes of 64k or larger are also affected.
-
-Increasing the maximum frame size for affected architectures just to
-silence this error does not really help. The frame size would have to be
-set to a really large value for 256k pages. Also, a large frame size could
-potentially result in stack overruns in this code and elsewhere and is
-therefore not desirable. Make NTFS_RW dependent on page sizes smaller than
-64k instead.
+Use the architecture independent Kconfig option PAGE_SIZE_LESS_THAN_64KB
+to indicate that VMXNET3 requires a page size smaller than 64kB.
 
 Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 ---
-v3: Use generic configuration flag
-v2: More comprehensive dependencies
+v3: Added patch to make VMXNET3 page size dependency architecture
+    independent
 
- fs/ntfs/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/Kconfig | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/fs/ntfs/Kconfig b/fs/ntfs/Kconfig
-index 1667a7e590d8..f93e69a61283 100644
---- a/fs/ntfs/Kconfig
-+++ b/fs/ntfs/Kconfig
-@@ -52,6 +52,7 @@ config NTFS_DEBUG
- config NTFS_RW
- 	bool "NTFS write support"
- 	depends on NTFS_FS
+diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+index 10506a4b66ef..6cccc3dc00bc 100644
+--- a/drivers/net/Kconfig
++++ b/drivers/net/Kconfig
+@@ -567,9 +567,7 @@ config XEN_NETDEV_BACKEND
+ config VMXNET3
+ 	tristate "VMware VMXNET3 ethernet driver"
+ 	depends on PCI && INET
+-	depends on !(PAGE_SIZE_64KB || ARM64_64K_PAGES || \
+-		     IA64_PAGE_SIZE_64KB || PARISC_PAGE_SIZE_64KB || \
+-		     PPC_64K_PAGES)
 +	depends on PAGE_SIZE_LESS_THAN_64KB
  	help
- 	  This enables the partial, but safe, write support in the NTFS driver.
- 
+ 	  This driver supports VMware's vmxnet3 virtual ethernet NIC.
+ 	  To compile this driver as a module, choose M here: the
 -- 
 2.33.0
 
