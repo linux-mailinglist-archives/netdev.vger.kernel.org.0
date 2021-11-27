@@ -2,56 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C32864600FC
-	for <lists+netdev@lfdr.de>; Sat, 27 Nov 2021 19:49:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4918446017D
+	for <lists+netdev@lfdr.de>; Sat, 27 Nov 2021 21:49:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239838AbhK0SxJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Nov 2021 13:53:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36224 "EHLO
+        id S1356121AbhK0Uqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Nov 2021 15:46:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356043AbhK0SvI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Nov 2021 13:51:08 -0500
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31155C0613E1
-        for <netdev@vger.kernel.org>; Sat, 27 Nov 2021 10:46:48 -0800 (PST)
-Received: by mail-ed1-x544.google.com with SMTP id y12so52964993eda.12
-        for <netdev@vger.kernel.org>; Sat, 27 Nov 2021 10:46:48 -0800 (PST)
+        with ESMTP id S240132AbhK0Uoc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Nov 2021 15:44:32 -0500
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4089C061574
+        for <netdev@vger.kernel.org>; Sat, 27 Nov 2021 12:41:17 -0800 (PST)
+Received: by mail-ot1-x342.google.com with SMTP id n104-20020a9d2071000000b005799790cf0bso19342792ota.5
+        for <netdev@vger.kernel.org>; Sat, 27 Nov 2021 12:41:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to
+        h=mime-version:reply-to:from:date:message-id:subject:to
          :content-transfer-encoding;
-        bh=oNd+yoKFdt4ZkISv7Jib53kui1CUs3HWEeusHpSFEuc=;
-        b=WPK9m9Tc9IN7VznJkfhyNTRrzEgI8QvQ7OYjrMoK63Vjgjm31ifW8Sr+BzQqp8ek4v
-         X/VbqyxycMQQOeV9bB9rnPIEnPwUFnw9U0jW8jbBUY7ZGzYoSfyXwZipgHwHQYYxFFGI
-         yu50uMuZOkQUljAtA1vWiHvM3qbRTz3lhUj6MzdWON4PLFaMnCzyrr8umuqAsR5BkFfE
-         H5SYtQocHjJDIKjxLQhENatDKuMViN4gfkroiQo1YrItYKjJfTsLgRJwubkhuV1mz7cr
-         HqvuWbzrYinxauHQiEpEtktsQDF8LVCSPJfR8K2Y33dLYfwOOA+THbb9dvuImHdbDH/A
-         5GiQ==
+        bh=egk26ZyuKP6hdtL948MmA7SNlRqkI1VfSBd60XDNYVY=;
+        b=jFI0mSek0rBU9h7PNXx5Zc5w8TzhPxFx9NG7GWaP7BGifvOwJd0N3SIT6gh67ry9fv
+         +uSB7cBQ9wwo2MCtwU60F2Bb/rdJJwkFlnoJZU6E6SkrWg+R50Nf+TB0CCEomiFOp+mB
+         xRt2pSMmrE9AJlHip8yDPSI2meTrYk6Xp04SwFekKl5PPNrOktFBcIFRcmweiFecyJNi
+         IL/HbvxHo0hB8+4MpxnlQh0OJpCJoOttqCUqX0TJZZPGIzx3bSKeDK7JcIfejquBo43O
+         DEx97LbLHqxMq6w6PnDAqAd1iMyE+utT/NqxqOQpiBeWxXAcMyOKgGNDq9UQbNcAiTJI
+         9n2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to:content-transfer-encoding;
-        bh=oNd+yoKFdt4ZkISv7Jib53kui1CUs3HWEeusHpSFEuc=;
-        b=dLp7rswqgSK5DImHfa7AaAI1KUtQsgOMymY3f640zWhNn3O3X8kz9xqZyjMOj6kc5t
-         UVaFmlpZSKrDy4usJcC/LkFu1YlmBWYC6iDE7SI576l24o8+kZlmLKwmdRSC8JjUfRr9
-         tor1Xy66iBiYzEFAJI2F8osGtcNlcMTe2mUozifCvEUrzl/tyEILpd5p5X18FfuGkW9g
-         LV41aKgo4DP/HmL5TspyGm5ie9xQ+qpKeO+ve1aM2f+TSXtoazG/v7CDcOTxvEe42HkQ
-         +q4bM989eOVzDkZLfP7mqfC3jaFCp/rsT2w4Me8Dkn6G8gZjwL935+9fqaWLU+VevPN3
-         +l5Q==
-X-Gm-Message-State: AOAM532e3XlnCu6MEQdGLBh0qV7s2nRlYOmUfQ8AY9+VcN/O4Yp8AmKv
-        xUaXscv+f+7XMZl5bUcF1aSfL1opHOI95/z+erc=
-X-Google-Smtp-Source: ABdhPJzpD1DLV68gyo0udhhRoUB80lHVIkZZJ8hUPzIggyZCRyQ/3y7hqEZIOmriWWMfIbhtvRNNQDZ3fWa71166GpE=
-X-Received: by 2002:a50:e608:: with SMTP id y8mr58741479edm.39.1638038806712;
- Sat, 27 Nov 2021 10:46:46 -0800 (PST)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=egk26ZyuKP6hdtL948MmA7SNlRqkI1VfSBd60XDNYVY=;
+        b=wXVWvC+NoVsoFklYh9B1BVJqIGbdRsKPn9xqzBOlHgYc2btxUvyr+zd2gi9zM7QVjw
+         324lARJabogwm4QqQEEg9y6QL9kDf2632j2wF6Cv9cJDcNStj/kgsNI2/yw4x6OJZkow
+         Lyi9KRV0bzCDGG7KsOhbviCOcRodTP7cW/axsNzJOTneDamrTHwqKX/VZ4posibod+KT
+         izF1tqZaW+8Kq8TFB1weAHexLkx+VEqvLFNWDbEWp0t+r00UyYFOGxhK/OGEzNV5LXxR
+         w4wOnjWJU5QU+kWh2umOPAGyuNp0YBF0QNywuZVo3Qx5Ykw5RNEfRJsupBpVdyKbvE/3
+         B2Pg==
+X-Gm-Message-State: AOAM533jZYvDNfyhfWD4Dk8vXWDurHswlTyaCksY96hIKdNTiZifzUDo
+        U5xwUdIOfVTpstXZBmPwrA16vF7Lh5slsTpz5l4=
+X-Google-Smtp-Source: ABdhPJzMwmrh1TDNIxbTY9sWPS9maUrXp84Y3lDiIJGu/egmK8rOLM2IDCeAa2RWGIa4rN/g6vrCxHx9i71o/Ez+g/8=
+X-Received: by 2002:a05:6830:2aa7:: with SMTP id s39mr36270182otu.151.1638045677090;
+ Sat, 27 Nov 2021 12:41:17 -0800 (PST)
 MIME-Version: 1.0
-Sender: xxnancystevens2@gmail.com
-Received: by 2002:a50:2281:0:0:0:0:0 with HTTP; Sat, 27 Nov 2021 10:46:46
+Received: by 2002:a05:6838:264b:0:0:0:0 with HTTP; Sat, 27 Nov 2021 12:41:16
  -0800 (PST)
-From:   Aisha Al-Qaddafi <aishaqadafi77@gmail.com>
-Date:   Sat, 27 Nov 2021 19:46:46 +0100
-X-Google-Sender-Auth: cxkJ4tz8u9q8bjHW-YfPVaD56q8
-Message-ID: <CAEL8qk1GzLf6u0k84q-T2qiZNA-X7vM-B6_zzRjVe_U0KJg76A@mail.gmail.com>
-Subject: hello dear please kindly reply my email is very urgent
+Reply-To: mrspeninnaharielbenaiah263@gmail.com
+From:   "Mrs. Peninnah Ariel Benaiah" <mrsarchanaahmed@gmail.com>
+Date:   Sat, 27 Nov 2021 12:41:16 -0800
+Message-ID: <CAGuh7Mq=t7mvX_BiVX4-mSuCP6yn5jyQQ7n_6UJ87MjvYxDZLw@mail.gmail.com>
+Subject: Greetings in the name of Lord
 To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
@@ -59,43 +58,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello My Beloved One, i need your assistance,
+--=20
 
-Please bear with me. I am writing this letter to you with tears and
-sorrow from my heart.
 
-I am Aisha Muammar Gaddafi, the only daughter of the embattled
-president of Libya, Hon. Muammar Gaddafi. I know my mail might come to
-you as a surprise because you don=E2=80=99t know me, but due to the
-unsolicited nature of my situation here in Refugee camp Ouagadougou
-Burkina Faso i decided to contact you for help. I have passed through
-pains and sorrowful moments since the death of my father. At the same
-time, my family is the target of Western nations led by Nato who want
-to destroy my father at all costs. Our investments and bank accounts
-in several countries are their targets to freeze.
+Greetings in the name of Lord
 
-My Father of blessed memory deposited the sum of $27.5M (Twenty Seven
-Million Five Hundred Thousand Dollars) in a Bank at Burkina Faso which
-he used my name as the next of kin. I have been commissioned by the
-(BOA) bank to present an interested foreign investor/partner who can
-stand as my trustee and receive the fund in his account for a possible
-investment in his country due to my refugee status here in Burkina
-Faso.
 
-I am in search of an honest and reliable person who will help me and
-stand as my trustee so that I will present him to the Bank for the
-transfer of the fund to his bank account overseas. I have chosen to
-contact you after my prayers and I believe that you will not betray my
-trust but rather take me as your own sister or daughter. If this
-transaction interests you, you don't have to disclose it to anybody
-because of what is going on with my entire family, if the United
-nation happens to know this account, they will freeze it as they
-freeze others, so please keep this transaction only to yourself until
-we finalize it.
+My name is Mrs. Peninnah Ariel Benaiah I am a Norway Citizen who is living
+in Burkina Faso, I am married to Mr. Benaiah Jeremiah, a politician who
+owns a small gold company in Burkina Faso; He died of Leprosy and Radesyge,
+in the year February 2010, During his lifetime he deposited the sum of =E2=
+=82=AC
+8.5 Million Euro) Eight million, Five hundred thousand Euros in a bank in
+Brussels the capital city of Belgium in Europe The money was from the sale
+of his company and death benefits payment and entitlements of my deceased
+husband by his company.
 
-Sorry for my pictures. I will enclose it in my next mail and more
-about me when I hear from you okay.
+I am sending you this message with heavy tears in my eyes and great sorrow
+in my heart, and also praying that it will reach you in good health because
+I am not in good health, I sleep every night without knowing if I may be
+alive to see the next day. I am suffering from long time cancer and
+presently I am partially suffering from Leprosy, which has become difficult
+for me to move around. I was married to my late husband for more than 6
+years without having a child and my doctor confided that I have less chance
+to live, having to know when the cup of death will come, I decided to
+contact you to claim the fund since I don't have any relation I grew up
+from an orphanage home.
 
-Yours Sincerely
-Best Regard,
-Aisha Gaddafi
+I have decided to donate this money for the support of helping Motherless
+babies/Less privileged/Widows and churches also to build the house of God
+because I am dying and diagnosed with cancer for about 3 years ago. I have
+decided to donate from what I have inherited from my late husband to you
+for the good work of Almighty God; I will be going in for an operation
+surgery soon.
+
+Now I want you to stand as my next of kin to claim the funds for charity
+purposes. Because of this money remains unclaimed after my death, the bank
+executives or the government will take the money as unclaimed fund and
+maybe use it for selfishness and worthless ventures, I need a very honest
+person who can claim this money and use it for Charity works, for
+orphanages, widows and also build schools and churches for less privilege
+that will be named after my late husband and my name.
+
+I need your urgent answer to know if you will be able to execute this
+project, and I will give you more information on how the fund will be
+transferred to your bank account or online banking.
+
+Thanks
+Mrs. Peninnah Ariel Benaiah
