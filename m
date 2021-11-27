@@ -2,155 +2,317 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 662AB45FE28
-	for <lists+netdev@lfdr.de>; Sat, 27 Nov 2021 11:38:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B86D545FE2C
+	for <lists+netdev@lfdr.de>; Sat, 27 Nov 2021 11:43:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349716AbhK0KmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Nov 2021 05:42:11 -0500
-Received: from mail-eopbgr50134.outbound.protection.outlook.com ([40.107.5.134]:16705
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1354266AbhK0KkL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 27 Nov 2021 05:40:11 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HSo/w/I4PgtroxvR35C53UAQk4gwdgB6ivQx7vjv2rv/1T/m+LCv58mdSy+FWvCXULQ/3aqyklU4+a82Ia0kWl1TTyHsI7yenPCgBjhT0YvgwyOpqSe4728/+iGbaw38moDsW+VHf3QCXwqd4gNMZpxQJBPs+DC10KDKYFYh1JV7AAFXfkxygxcenE0p3YFcp74n5CmSARezkP4J3iYXT/ADnlxhy9a3WKnBlhtuQJ8l/gEwbL+XkovY6Am1H5rq8H0CtcVvKiQWQ9O5p3qzE1AuEktmKVQ0cjftz2fADaMKcvTiPJRMUn5sBTTT9njXAlrReymx7AnkXZrz1WuB4g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+u2HYU+eYEX6RW/sEMxBy1/goxyMP/nuMx4coQ2R9s4=;
- b=Rn0Qzq7HISuaCCZyeQHxd/Nq6wKVqw3pkR9tm5ODj1HzEjBhEgP6gZL20Sq8b8zp4d/oAyuhfE+U6ixo11mcLN31+71cOHdkdM5XFLXYBIilnys2p+5mPwt9n3ZfLEMrtxHH3SqlMLIqYVXEo+ru5q1TImUiy9WhyBwGIeFQViutd05TjgyEZuqS04ogjfA5bY/os+5QQuXwToZQ7+3a3TInCvPg+praH6LVWpfm5ec987Augfw5B0DaskV2vGIBnaZMIF7oAe+fHYAsnLioyWv+TQPHqGs2P69S5bIQV6I9njpVVOfsz0MOusy6rewbO4jMzyFyTlAkK1++X2xJoQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=schleissheimer.de; dmarc=pass action=none
- header.from=schleissheimer.de; dkim=pass header.d=schleissheimer.de; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=schleissheimer.onmicrosoft.com; s=selector1-schleissheimer-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+u2HYU+eYEX6RW/sEMxBy1/goxyMP/nuMx4coQ2R9s4=;
- b=L5OYprAkcjeZ4IDvlcrXOUVofjlEb1/A5uRz0r/wMYBqOhqmk4lYKFKtMEskAB2ojcQFcJob1tckR3vkMe5EayMWRsNXmWLthIXXDrMTAVs2lyaR34vdV5oAAXHDp4K7+ZS2dAS3ExoZrd87pJZygZhrYxmDEf0XlzCxi8MyoBY=
-Received: from PA4P190MB1390.EURP190.PROD.OUTLOOK.COM (2603:10a6:102:103::8)
- by PR3P190MB0923.EURP190.PROD.OUTLOOK.COM (2603:10a6:102:91::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.23; Sat, 27 Nov
- 2021 10:36:54 +0000
-Received: from PA4P190MB1390.EURP190.PROD.OUTLOOK.COM
- ([fe80::ac46:910d:6989:a309]) by PA4P190MB1390.EURP190.PROD.OUTLOOK.COM
- ([fe80::ac46:910d:6989:a309%4]) with mapi id 15.20.4734.023; Sat, 27 Nov 2021
- 10:36:54 +0000
-From:   Sven Schuchmann <schuchmann@schleissheimer.de>
-To:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: AW: [PATCH] net: usb: lan78xx: lan78xx_phy_init(): use PHY_POLL
- instead of "0" if no IRQ is available
-Thread-Topic: [PATCH] net: usb: lan78xx: lan78xx_phy_init(): use PHY_POLL
- instead of "0" if no IRQ is available
-Thread-Index: AQHX4tk+edkqRJbdE0CwrXboJp/yRKwV9wcAgAA8pICAAPu9IA==
-Date:   Sat, 27 Nov 2021 10:36:53 +0000
-Message-ID: <PA4P190MB1390D5F29BEAF13BC3B25097D9649@PA4P190MB1390.EURP190.PROD.OUTLOOK.COM>
-References: <20211126152040.29058-1-schuchmann@schleissheimer.de>
-        <YaED/p7O0iYQF6bW@lunn.ch>
- <20211126113440.5463ff74@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211126113440.5463ff74@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=schleissheimer.de;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d75df2ba-c76d-49eb-1d8f-08d9b191d466
-x-ms-traffictypediagnostic: PR3P190MB0923:
-x-microsoft-antispam-prvs: <PR3P190MB0923402B603C0EA3B9EC7767D9649@PR3P190MB0923.EURP190.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: A+g/r6KQPY8bPZaUksNg3v/Q6HWwCGES39/HhoPvNdZKtkHv5OqZSGqJ7oudTQM+7QXPEj2rL4/dHH81y4ivlBFC0lKtijrfVTNAaBOnSCspGKJ2nQ0xkv9cW2gaNt2g+EMOcikdcGqIxEGPnFrHwdMU/9QcbSab9bc5T4xvjjAM7QG8MVW3bNSuN+CiZBP078gMjiGBdlac2/PvnD0HGY9gxdU1pMLoIW8+gSzIyOg01DspAPemEhV9WkAZzFjw8JYH7/kGL/ndrxzVH8wvGd7lI97PJY4dUKzM0zfzxtrMLkBHbqfJyd1+VcFErEZPLTbc40JNiC+zBi9EI8k3W1VtP0re8icYnUt1IfGAZP9yUccPZKGhRa0tbJpGFf+g1Rbs2bfj7ousCkLMzgP5attAJDowmOf/I5tXFrfoKzLr00pNNJRtqqfGCMTzP0iXqFBosB7b2dpQAofV8Mv/mLt4pnyT6GS5Ra5puTb3ipFSF2AZP1ivOAqplPaIMov+imAYuuYYv9f83bRYcDCtgTmsbu2Ls3HgOP9LKycoUuEfKpHANX/bZhe2X1eOwbNfK0pwtricMVgk6SHzu51Lxg9lHfvasJHjHyFMoA79lw9Y83qAuVjLqAOLAy6d+xO8osjRbNu7O4Uodn0CXMVVBLXUFR2n4krKFoI7rRWNN7B5p1KjTUB9VQzkhNBieO99cu6qc3uUdmeu19O27iAnCA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4P190MB1390.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(346002)(396003)(376002)(136003)(366004)(39830400003)(4326008)(52536014)(8936002)(26005)(316002)(7696005)(76116006)(83380400001)(66946007)(2906002)(4744005)(38100700002)(5660300002)(33656002)(66476007)(71200400001)(38070700005)(9686003)(55016003)(86362001)(6506007)(8676002)(64756008)(54906003)(508600001)(122000001)(66446008)(66556008)(186003)(110136005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?CmkLcfrtuKF+SC2cA8jHLvfmnreeLNQz9NySLOYEywNmKdtexmISI8hGimNX?=
- =?us-ascii?Q?/LPTtLMUqpe0gMAsJDRFD6Xe9+o/rihawQrGCUOpR+JkFafjJy5+2HPnIfxn?=
- =?us-ascii?Q?vWuaDnbwzQEWs2LF+o7ZbB1e7po7HBuw4llal83T7RVbh2F9CToPmfb3CDC/?=
- =?us-ascii?Q?DKsF3aE0nHto6EpDh451dBglnEVONewWWQktPmL58OGlQg+R/u9ZZmuDo5Ic?=
- =?us-ascii?Q?hy/pz0V1Z6Lfmblox9fZqj+8kF5vjKjuus+fj0QlaX+IJ55m6lCNlCXJPUZo?=
- =?us-ascii?Q?0IBGaR3EtdzZVA/SZJcUvLZjmc+Xsl25X0IjsHTuBeepRWalFIzY5hlQZvAQ?=
- =?us-ascii?Q?v9S3calxSqBZuHSbfdL38tY+jGosepgR7AwcAF3wgI6qE5QOOoFY7654/cC1?=
- =?us-ascii?Q?Hc9EFpAg0xsI1+XZSuhEqf0sBzAx3ExdTq8Gu6fewUr4axXLT4A8NJfulsFC?=
- =?us-ascii?Q?hKMT3zLvCUMdAKCHmcgfSeo6g9z0yjf0Gp/skDh6BVZJheAnXD2PF73tJVGn?=
- =?us-ascii?Q?gwg3en3I6gU+qS/EM9oMNrjeUsWpZO5zWIcIkUdPmhZxJKRDHFCnkqU1Lpxi?=
- =?us-ascii?Q?cdARmoNBt9YVQdu4ty9ceqOeyy1r0i7efr9MjmU+O6PlwJN3HChBr6FZ+/dm?=
- =?us-ascii?Q?AVj/yEH+vrhWUOQkmHNkNbOVyli+BFr8CHB22WLSPfsx6anZON2ufXtR9kny?=
- =?us-ascii?Q?Mh4+v81Uk+ij5sh1NPGRkD1vs3jFznIz7wtvX2+35HrpCaQP4BJZI7L31i92?=
- =?us-ascii?Q?W+Z27DPaYKiawwSzfESEaWrygIONVK8RTOyzF+0Rt/60yEQd/XI/FroL/QQj?=
- =?us-ascii?Q?3p92zu2TfEeWNTBZASyNYH8b2kYT3I2IC5+7EmN6z/yReyit9+mvIDJs/fzv?=
- =?us-ascii?Q?RBS40gd9j6zv65u/gM+bj7dXt72n+O4jRLzdTZAq7a4u0jGSm2zXJUim+9TH?=
- =?us-ascii?Q?fo2cvkuwijA3Vmi8XVCgc/9OuxMljQAti0IGToxYh4eyq/iYiUVHqEsI+9mh?=
- =?us-ascii?Q?OPnw5erBCDDHPuzlU3DhrB3NeweSoHX4s8Xmxmc/J2nveDcCQ9hNejw38Buy?=
- =?us-ascii?Q?r2cOJiFW3GGvBi4oETHZlEXtr4VGa2gnrqQ/XpnVd9YCNyN5RpCypel7u/10?=
- =?us-ascii?Q?TLHinK+pPHulN8Kkn4KlVB6saf0djUX30JzKASW2fEvN1BYoId9Ro7LBXOew?=
- =?us-ascii?Q?7j+BzUDwZd9KP9Gzce58L/s0oiM3SmWC9AgNrZSKjO3M/8tfz1oAr9q+fbTb?=
- =?us-ascii?Q?UcqI0nYvMWIxDaBSORmAZQCOvt4lHReMHiY+JOaWc8CTTDtcuxTzXqLURY5h?=
- =?us-ascii?Q?+AXk+jnNWSdBvq5LLvAm7r+V/fWWB/r6QSbLlMUynsNJeJgIgzndUUJhnjfy?=
- =?us-ascii?Q?gABbQvQIyzx9Tr/JKVlOc9nO1Pwzq9oZeNSyB/3pbktoo5h8WQ0GdUbKau1X?=
- =?us-ascii?Q?5/yblOEb217H3nIx4f+ZtMGtS+jVIYj3jmtZdGCB5GoFeSRaCQDPbnvxd4BF?=
- =?us-ascii?Q?DMKg4MyPSJ0oDMoXFHZCErepp91x8aNHVVKjnht4/+ZERjyjUjrZ/jGDXnoZ?=
- =?us-ascii?Q?tHqNoTvaZWPvVLtXO4pl78I9pkZlzQrO464Ec40tJ3KySbzpQFryEezgHVQV?=
- =?us-ascii?Q?so+uwwOQf+mHsC8zfQN6pfmzcbIDAKhmINtcJnYMb9oIoDE3IkEcDMRqAQkJ?=
- =?us-ascii?Q?9JONxg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S231696AbhK0Kql (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Nov 2021 05:46:41 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:54296 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230475AbhK0Kol (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Nov 2021 05:44:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1638009686;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+oCtSZw+hU9Geau33+wFsSslq0uK7JYa5qmKFZ7JrpA=;
+        b=bJr/DMBwofKchbc8PB73rAH7iJTg6BRY4wwp25ZFNnf7dAI6lIzXNoQNvPTzSeg/8cAA9m
+        hReU/XJzf73mk03N0Z/qVpRuoIYSxptE83THHObePB7iW6grbQBFzjKXBKfXRSnDRedlN8
+        KJN3Q85FO8LeKlsIlI6DUGiQaMUchwI=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-132-J_mKI_-UMZa51oFESfEQJA-1; Sat, 27 Nov 2021 05:41:25 -0500
+X-MC-Unique: J_mKI_-UMZa51oFESfEQJA-1
+Received: by mail-wm1-f70.google.com with SMTP id 145-20020a1c0197000000b0032efc3eb9bcso8502907wmb.0
+        for <netdev@vger.kernel.org>; Sat, 27 Nov 2021 02:41:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
+         :subject:content-language:to:references:in-reply-to
+         :content-transfer-encoding;
+        bh=+oCtSZw+hU9Geau33+wFsSslq0uK7JYa5qmKFZ7JrpA=;
+        b=NAeTGcP6FxbMsJdHnoa50E9zXaNFNq03v6URY8ElNmr3yT53gtYI1CKqeUFfE7FXs+
+         XWtTim0MuAr18ZUKzxEtguyPTeiJq2pD8XBlbgnAx2Wl6i64at/HvCwedeGgPrv2N3Zs
+         m+QOUz1ufnBF6QzXUDxsGYpB/4sc+VJzI97QutzDhvdV7+qgZ4k9Q3sYOcAfL5xTLGfG
+         WoV03enlq4yxowLEhPFcG1iJmBZQiFU8KCH1JulbF8e+eqHHXvP+52NHXRPNuWWuM6F8
+         7rpwRWfXjn84LIUZa0K2us1g17Ld8ggKc7qLsuegMllUdwvGe/m1SLjbgJ0nugkeLmU3
+         9qnQ==
+X-Gm-Message-State: AOAM533Q/CguX1dUuCzy/uQ1yvuepQRCwVKM3X9BXz2M8z4afgl0RHsu
+        rqvQ93WJWk3BOGc6w12CY25hn1JlQpZfJP4ioiyZIT6cXLjj3D0+zUz8q8Cwj58PZtsmAu/6gXg
+        ny4ZqP2Z7w7d13PdG
+X-Received: by 2002:a1c:9d48:: with SMTP id g69mr22496038wme.188.1638009683931;
+        Sat, 27 Nov 2021 02:41:23 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx1IaEBbJWuRPGq00LIOJhB7+MEfEQpVy32cGu/bVRUHgm5FT5gDXP+M17dNi3TJn2AI9ZJvw==
+X-Received: by 2002:a1c:9d48:: with SMTP id g69mr22496006wme.188.1638009683598;
+        Sat, 27 Nov 2021 02:41:23 -0800 (PST)
+Received: from [192.168.2.13] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
+        by smtp.gmail.com with ESMTPSA id q123sm13157656wma.30.2021.11.27.02.41.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 27 Nov 2021 02:41:22 -0800 (PST)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <7a3b7d98-d882-5197-3dae-80ffe1e59af6@redhat.com>
+Date:   Sat, 27 Nov 2021 11:41:21 +0100
 MIME-Version: 1.0
-X-OriginatorOrg: schleissheimer.de
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PA4P190MB1390.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: d75df2ba-c76d-49eb-1d8f-08d9b191d466
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Nov 2021 10:36:54.0098
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: ba05321a-a007-44df-8805-c7e62d5887b5
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: nLd7e9i6xkuDPWhbbC+nGKzpJUPTBWhqU8tt0PZUrCfM86sQMjJvSdkR4DQaWnWnQu1i7ZstZQo5OPx7mN7vOvkvTleu7uIMDGI0z7kER3M=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3P190MB0923
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
+Cc:     brouer@redhat.com, bjorn@kernel.org,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>
+Subject: Re: [PATCH bpf-next 3/4] samples/bpf: xdpsock: add period cycle time
+ to Tx operation
+Content-Language: en-US
+To:     Ong Boon Leong <boon.leong.ong@intel.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20211124091821.3916046-1-boon.leong.ong@intel.com>
+ <20211124091821.3916046-4-boon.leong.ong@intel.com>
+In-Reply-To: <20211124091821.3916046-4-boon.leong.ong@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Jakub,
 
-> Von: Jakub Kicinski <kuba@kernel.org>
-> Gesendet: Freitag, 26. November 2021 20:35
-> An: Andrew Lunn <andrew@lunn.ch>; Sven Schuchmann <schuchmann@schleisshei=
-mer.de>
-> Cc: Woojung Huh <woojung.huh@microchip.com>; UNGLinuxDriver@microchip.com=
-; David S. Miller
-> <davem@davemloft.net>; netdev@vger.kernel.org; linux-usb@vger.kernel.org;=
- linux-
-> kernel@vger.kernel.org
-> Betreff: Re: [PATCH] net: usb: lan78xx: lan78xx_phy_init(): use PHY_POLL =
-instead of "0" if
-> no IRQ is available
->=20
-> On Fri, 26 Nov 2021 16:57:50 +0100 Andrew Lunn wrote:
-> > On Fri, Nov 26, 2021 at 04:20:40PM +0100, Sven Schuchmann wrote:
-> > > On most systems request for IRQ 0 will fail, phylib will print an err=
-or message
-> > > and fall back to polling. To fix this set the phydev->irq to PHY_POLL=
- if no IRQ
-> > > is available.
-> > >
-> > > Signed-off-by: Sven Schuchmann <schuchmann@schleissheimer.de>
-> >
-> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
->=20
-> Fixes: cc89c323a30e ("lan78xx: Use irq_domain for phy interrupt from USB =
-Int. EP")
->=20
-> right?
 
-Seems right, will send a v2
+On 24/11/2021 10.18, Ong Boon Leong wrote:
+> Tx cycle time is in micro-seconds unit. By combining the batch size (-b M)
+> and Tx cycle time (-T|--tx-cycle N), xdpsock now can transmit batch-size of
+> packets every N-us periodically.
 
-Sven
+Does this also work for --poll mode (which is a wakeup mode) ?
+
+> For example to transmit 1 packet each 1ms cycle time for total of 2000000
+> packets:
+> 
+>   $ xdpsock -i eth0 -T -N -z -T 1000 -b 1 -C 2000000
+> 
+>   sock0@enp0s29f1:2 txonly xdp-drv
+>                     pps            pkts           1.00
+> rx                 0              0
+> tx                 1000           1996872
+> 
+>   sock0@enp0s29f1:2 txonly xdp-drv
+>                     pps            pkts           1.00
+> rx                 0              0
+> tx                 1000           1997872
+> 
+>   sock0@enp0s29f1:2 txonly xdp-drv
+>                     pps            pkts           1.00
+> rx                 0              0
+> tx                 1000           1998872
+> 
+>   sock0@enp0s29f1:2 txonly xdp-drv
+>                     pps            pkts           1.00
+> rx                 0              0
+> tx                 1000           1999872
+> 
+>   sock0@enp0s29f1:2 txonly xdp-drv
+>                     pps            pkts           1.00
+> rx                 0              0
+> tx                 128            2000000
+> 
+>   sock0@enp0s29f1:2 txonly xdp-drv
+>                     pps            pkts           0.00
+> rx                 0              0
+> tx                 0              2000000
+> 
+> Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+> ---
+>   samples/bpf/xdpsock_user.c | 36 +++++++++++++++++++++++++++++++-----
+>   1 file changed, 31 insertions(+), 5 deletions(-)
+> 
+> diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
+> index 691f442bbb2..61d4063f11a 100644
+> --- a/samples/bpf/xdpsock_user.c
+> +++ b/samples/bpf/xdpsock_user.c
+> @@ -111,6 +111,7 @@ static u32 opt_num_xsks = 1;
+>   static u32 prog_id;
+>   static bool opt_busy_poll;
+>   static bool opt_reduced_cap;
+> +static unsigned long opt_cycle_time;
+>   
+>   struct vlan_ethhdr {
+>   	unsigned char h_dest[6];
+> @@ -173,6 +174,8 @@ struct xsk_socket_info {
+>   	struct xsk_app_stats app_stats;
+>   	struct xsk_driver_stats drv_stats;
+>   	u32 outstanding_tx;
+> +	unsigned long prev_tx_time;
+> +	unsigned long tx_cycle_time;
+>   };
+>   
+>   static int num_socks;
+> @@ -972,6 +975,7 @@ static struct option long_options[] = {
+>   	{"tx-vlan-pri", required_argument, 0, 'K'},
+>   	{"tx-dmac", required_argument, 0, 'G'},
+>   	{"tx-smac", required_argument, 0, 'H'},
+> +	{"tx-cycle", required_argument, 0, 'T'},
+>   	{"extra-stats", no_argument, 0, 'x'},
+>   	{"quiet", no_argument, 0, 'Q'},
+>   	{"app-stats", no_argument, 0, 'a'},
+> @@ -1017,6 +1021,7 @@ static void usage(const char *prog)
+>   		"  -K, --tx-vlan-pri=n  Tx VLAN Priority [0-7]. Default: %d (For -V|--tx-vlan)\n"
+>   		"  -G, --tx-dmac=<MAC>  Dest MAC addr of TX frame in aa:bb:cc:dd:ee:ff format (For -V|--tx-vlan)\n"
+>   		"  -H, --tx-smac=<MAC>  Src MAC addr of TX frame in aa:bb:cc:dd:ee:ff format (For -V|--tx-vlan)\n"
+> +		"  -T, --tx-cycle=n     Tx cycle time in micro-seconds (For -t|--txonly).\n"
+>   		"  -x, --extra-stats	Display extra statistics.\n"
+>   		"  -Q, --quiet          Do not display any stats.\n"
+>   		"  -a, --app-stats	Display application (syscall) statistics.\n"
+> @@ -1039,7 +1044,7 @@ static void parse_command_line(int argc, char **argv)
+>   	opterr = 0;
+>   
+>   	for (;;) {
+> -		c = getopt_long(argc, argv, "Frtli:q:pSNn:czf:muMd:b:C:s:P:VJ:K:G:H:xQaI:BR",
+> +		c = getopt_long(argc, argv, "Frtli:q:pSNn:czf:muMd:b:C:s:P:VJ:K:G:H:T:xQaI:BR",
+>   				long_options, &option_index);
+>   		if (c == -1)
+>   			break;
+> @@ -1145,6 +1150,10 @@ static void parse_command_line(int argc, char **argv)
+>   				usage(basename(argv[0]));
+>   			}
+>   			break;
+> +		case 'T':
+> +			opt_cycle_time = atoi(optarg);
+> +			opt_cycle_time *= 1000;
+
+Converting to nanosec, right(?).
+
+> +			break;
+>   		case 'x':
+>   			opt_extra_stats = 1;
+>   			break;
+> @@ -1350,16 +1359,25 @@ static void rx_drop_all(void)
+>   	}
+>   }
+>   
+> -static void tx_only(struct xsk_socket_info *xsk, u32 *frame_nb, int batch_size)
+> +static int tx_only(struct xsk_socket_info *xsk, u32 *frame_nb, int batch_size)
+>   {
+>   	u32 idx;
+>   	unsigned int i;
+>   
+> +	if (xsk->tx_cycle_time) {
+> +		unsigned long now = get_nsecs();
+> +
+> +		if ((now - xsk->prev_tx_time) < xsk->tx_cycle_time)
+> +			return 0;
+
+So, this test is actively spinning until the time is reached, spending 
+100% CPU time on this. I guess we can have this as a test for most 
+accurate transmit (cyclic period) with AF_XDP.
+
+Do you have a use-case for this?
+
+I have a customer use-case, but my customer don't want to actively spin.
+My plan is to use clock_nanosleep() and wakeup slightly before the 
+target time and then we can spin shortly for the Tx time slot.
+
+I will need to code this up for the customer soon anyway... perhaps we 
+can extend your code with this idea?
+
+I have coded the period cycle Tx with UDP packets, here[1], if you like 
+to see some code using clock_nanosleep().  Next step (for me) is doing 
+this for AF_XDP (likely in my example[2].
+
+[1] 
+https://github.com/netoptimizer/network-testing/blob/master/src/udp_pacer.c
+
+[2] 
+https://github.com/xdp-project/bpf-examples/tree/master/AF_XDP-interaction
+
+> +
+> +		xsk->prev_tx_time = now;
+
+Would it be valuable to know how-much we shoot "over" the tx_cycle_time?
+
+For my use-case, I will be monitoring the other-side receiving the 
+packets (and using HW RX-time) to evaluate how accurate my sender is. In 
+this case, I would like to know if my software "knew" if was not 100% 
+accurate.
+
+
+> +	}
+> +
+>   	while (xsk_ring_prod__reserve(&xsk->tx, batch_size, &idx) <
+>   				      batch_size) {
+>   		complete_tx_only(xsk, batch_size);
+>   		if (benchmark_done)
+> -			return;
+> +			return 0;
+>   	}
+
+I wonder if this step can introduce jitter/delay before the actual Tx 
+happens?
+
+I mean, the real transmit cannot happen before xsk_ring_prod__submit() 
+is called.  If the cycles spend are exactly the same, it doesn't matter 
+if you tx_cycle_time timestamp is done above.
+Here you have a potential call to complete_tx_only(), which can 
+introduce variance for your period.
+
+I will suggest moving the TX completion handling, so it doesn't 
+interfere with accurate TX.
+
+>   
+>   	for (i = 0; i < batch_size; i++) {
+> @@ -1375,6 +1393,8 @@ static void tx_only(struct xsk_socket_info *xsk, u32 *frame_nb, int batch_size)
+>   	*frame_nb += batch_size;
+>   	*frame_nb %= NUM_FRAMES;
+>   	complete_tx_only(xsk, batch_size);
+> +
+> +	return batch_size;
+>   }
+>   
+>   static inline int get_batch_size(int pkt_cnt)
+> @@ -1407,6 +1427,7 @@ static void complete_tx_only_all(void)
+>   static void tx_only_all(void)
+>   {
+>   	struct pollfd fds[MAX_SOCKS] = {};
+> +	unsigned long now = get_nsecs();
+>   	u32 frame_nb[MAX_SOCKS] = {};
+>   	int pkt_cnt = 0;
+>   	int i, ret;
+> @@ -1414,10 +1435,15 @@ static void tx_only_all(void)
+>   	for (i = 0; i < num_socks; i++) {
+>   		fds[0].fd = xsk_socket__fd(xsks[i]->xsk);
+>   		fds[0].events = POLLOUT;
+> +		if (opt_cycle_time) {
+> +			xsks[i]->prev_tx_time = now;
+> +			xsks[i]->tx_cycle_time = opt_cycle_time;
+> +		}
+>   	}
+>   
+>   	while ((opt_pkt_count && pkt_cnt < opt_pkt_count) || !opt_pkt_count) {
+>   		int batch_size = get_batch_size(pkt_cnt);
+> +		int tx_cnt = 0;
+>   
+>   		if (opt_poll) {
+>   			for (i = 0; i < num_socks; i++)
+> @@ -1431,9 +1457,9 @@ static void tx_only_all(void)
+>   		}
+>   
+>   		for (i = 0; i < num_socks; i++)
+> -			tx_only(xsks[i], &frame_nb[i], batch_size);
+> +			tx_cnt += tx_only(xsks[i], &frame_nb[i], batch_size);
+>   
+> -		pkt_cnt += batch_size;
+> +		pkt_cnt += tx_cnt;
+>   
+>   		if (benchmark_done)
+>   			break;
+> 
+
