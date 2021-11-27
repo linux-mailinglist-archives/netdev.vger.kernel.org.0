@@ -2,317 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B86D545FE2C
-	for <lists+netdev@lfdr.de>; Sat, 27 Nov 2021 11:43:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C7DE45FE2F
+	for <lists+netdev@lfdr.de>; Sat, 27 Nov 2021 11:50:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231696AbhK0Kql (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Nov 2021 05:46:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:54296 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230475AbhK0Kol (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Nov 2021 05:44:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1638009686;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+oCtSZw+hU9Geau33+wFsSslq0uK7JYa5qmKFZ7JrpA=;
-        b=bJr/DMBwofKchbc8PB73rAH7iJTg6BRY4wwp25ZFNnf7dAI6lIzXNoQNvPTzSeg/8cAA9m
-        hReU/XJzf73mk03N0Z/qVpRuoIYSxptE83THHObePB7iW6grbQBFzjKXBKfXRSnDRedlN8
-        KJN3Q85FO8LeKlsIlI6DUGiQaMUchwI=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-132-J_mKI_-UMZa51oFESfEQJA-1; Sat, 27 Nov 2021 05:41:25 -0500
-X-MC-Unique: J_mKI_-UMZa51oFESfEQJA-1
-Received: by mail-wm1-f70.google.com with SMTP id 145-20020a1c0197000000b0032efc3eb9bcso8502907wmb.0
-        for <netdev@vger.kernel.org>; Sat, 27 Nov 2021 02:41:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
-         :subject:content-language:to:references:in-reply-to
-         :content-transfer-encoding;
-        bh=+oCtSZw+hU9Geau33+wFsSslq0uK7JYa5qmKFZ7JrpA=;
-        b=NAeTGcP6FxbMsJdHnoa50E9zXaNFNq03v6URY8ElNmr3yT53gtYI1CKqeUFfE7FXs+
-         XWtTim0MuAr18ZUKzxEtguyPTeiJq2pD8XBlbgnAx2Wl6i64at/HvCwedeGgPrv2N3Zs
-         m+QOUz1ufnBF6QzXUDxsGYpB/4sc+VJzI97QutzDhvdV7+qgZ4k9Q3sYOcAfL5xTLGfG
-         WoV03enlq4yxowLEhPFcG1iJmBZQiFU8KCH1JulbF8e+eqHHXvP+52NHXRPNuWWuM6F8
-         7rpwRWfXjn84LIUZa0K2us1g17Ld8ggKc7qLsuegMllUdwvGe/m1SLjbgJ0nugkeLmU3
-         9qnQ==
-X-Gm-Message-State: AOAM533Q/CguX1dUuCzy/uQ1yvuepQRCwVKM3X9BXz2M8z4afgl0RHsu
-        rqvQ93WJWk3BOGc6w12CY25hn1JlQpZfJP4ioiyZIT6cXLjj3D0+zUz8q8Cwj58PZtsmAu/6gXg
-        ny4ZqP2Z7w7d13PdG
-X-Received: by 2002:a1c:9d48:: with SMTP id g69mr22496038wme.188.1638009683931;
-        Sat, 27 Nov 2021 02:41:23 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx1IaEBbJWuRPGq00LIOJhB7+MEfEQpVy32cGu/bVRUHgm5FT5gDXP+M17dNi3TJn2AI9ZJvw==
-X-Received: by 2002:a1c:9d48:: with SMTP id g69mr22496006wme.188.1638009683598;
-        Sat, 27 Nov 2021 02:41:23 -0800 (PST)
-Received: from [192.168.2.13] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
-        by smtp.gmail.com with ESMTPSA id q123sm13157656wma.30.2021.11.27.02.41.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 27 Nov 2021 02:41:22 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <7a3b7d98-d882-5197-3dae-80ffe1e59af6@redhat.com>
-Date:   Sat, 27 Nov 2021 11:41:21 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Cc:     brouer@redhat.com, bjorn@kernel.org,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>
-Subject: Re: [PATCH bpf-next 3/4] samples/bpf: xdpsock: add period cycle time
- to Tx operation
-Content-Language: en-US
-To:     Ong Boon Leong <boon.leong.ong@intel.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20211124091821.3916046-1-boon.leong.ong@intel.com>
- <20211124091821.3916046-4-boon.leong.ong@intel.com>
-In-Reply-To: <20211124091821.3916046-4-boon.leong.ong@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        id S230044AbhK0Kx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Nov 2021 05:53:57 -0500
+Received: from mail-vi1eur05on2134.outbound.protection.outlook.com ([40.107.21.134]:17455
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230023AbhK0Kv5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 27 Nov 2021 05:51:57 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AcYyWa7GZenaEo4AylbXbKdA9XYNySDtlIHgKRuTn4OM5Cnuwj9YkP8SE+vPdOHD+DP7767RnJUftWzh/2olJtQQFbf7dPO331iyWVWd7DQOcDKup7M6PFEv9/69zpwqHxNErFRbzUJIdm/uWsfCdrjCK8FgmNOtGnBJGs4g+IcEwpxniZMCKMvJq6T9Y5hzbWUIgVyhFxxs0VlXerLZYucB22fTlRIbrcV3TJNmr+zlrrGa/kcgmNHUGXvLNZybZd5mRNDPBIpWlp9bvHiHWyJNjfdxJ/w9q2ah7oebmuaV1Y/8bA5OjrhJyn6TA2lUpgv3QOnOW5bpNobCbZZGLQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AzTc+Ky3twYxoalB9EmWkcthoIWrmrW1gPHJzZkumOs=;
+ b=Xz+P7r5bC9fLodUI/GcsSBfroW4r/30aNKajrElddD5scXc39Ga43TPlDMTVpBH0RWLXcpIXKk0YIDfpNKoQHmMA9IOmapP0LLMBdipBhdwic7ji5aSUCy3x7DQPiYlpd7v8mvvIg0zLe/STplH7lkshI+QhraWUPjIng04lXWvExHawoz8d7RV7le2g/PLDQfKp3py94BMAN/zecv8bhwNw9JKfUPYX2x5eXHauW9JXJTrfIQfrU+leMooLC74vHtA9vII2kGJgAUIm/kf/zc+ity4myvlJnVhkpdW9YznN0jcsHpREemfDNR7u6Y0KWCnbKoUGf0RonqvPza+zbw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
+ 62.153.209.162) smtp.rcpttodomain=vger.kernel.org
+ smtp.mailfrom=schleissheimer.de; dmarc=none action=none
+ header.from=schleissheimer.de; dkim=fail (no key for signature)
+ header.d=schleissheimer.de; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=schleissheimer.onmicrosoft.com; s=selector1-schleissheimer-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AzTc+Ky3twYxoalB9EmWkcthoIWrmrW1gPHJzZkumOs=;
+ b=djXo/BgCscfx/uqJ01Ul5bmgCZIU7KDHhAMPNv3f6kFWmqouqTB3njL60GoWLF5UKTYqhrYr6OPmLnFFuLIn527OjWKAW+we9N/d6fRc7VfvF/zFBOsVDy+P2qJJPLfCnTdUb9mTgMpjpvCVbTW/g608DeKX5tjmeujx4p6Zfrs=
+Received: from DB7PR02CA0008.eurprd02.prod.outlook.com (2603:10a6:10:52::21)
+ by DB9P190MB1723.EURP190.PROD.OUTLOOK.COM (2603:10a6:10:327::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.22; Sat, 27 Nov
+ 2021 10:48:41 +0000
+Received: from DB3EUR04FT004.eop-eur04.prod.protection.outlook.com
+ (2603:10a6:10:52:cafe::f1) by DB7PR02CA0008.outlook.office365.com
+ (2603:10a6:10:52::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.20 via Frontend
+ Transport; Sat, 27 Nov 2021 10:48:41 +0000
+X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 62.153.209.162)
+ smtp.mailfrom=schleissheimer.de; dkim=fail (no key for signature)
+ header.d=schleissheimer.de;dmarc=none action=none
+ header.from=schleissheimer.de;
+Received-SPF: Fail (protection.outlook.com: domain of schleissheimer.de does
+ not designate 62.153.209.162 as permitted sender)
+ receiver=protection.outlook.com; client-ip=62.153.209.162;
+ helo=mail.schleissheimer.de;
+Received: from mail.schleissheimer.de (62.153.209.162) by
+ DB3EUR04FT004.mail.protection.outlook.com (10.152.24.235) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4734.20 via Frontend Transport; Sat, 27 Nov 2021 10:48:41 +0000
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=schleissheimer.de; s=dkim1; h=Message-Id:Date:Subject:Cc:To:From:Sender:
+        Reply-To:MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=AzTc+Ky3twYxoalB9EmWkcthoIWrmrW1gPHJzZkumOs=; b=Kduj2jMh6tmTJPX6MgBv6Lq2GF
+        m9152LF2vKjRv13wpk5o954myGm0Akwq+eF60AZWvLUWQdn7U9PVOFLpLpRnt8IkPY0NySKgU+t1u
+        IcR3XIGP4Xcw4SEnsslDJrYabsXCT3PS+91nnFsk5vj/jUuKso/U1nHVYDCNPvUJ3wQg=;
+Received: from [192.168.10.165] (port=59684 helo=contiredmine.schleissheimer.de)
+        by mail.schleissheimer.de with esmtp (Exim 4.94.2)
+        (envelope-from <schuchmann@schleissheimer.de>)
+        id 1mqvFw-0007XO-2Z; Sat, 27 Nov 2021 11:48:33 +0100
+X-SASI-Hits: BODYTEXTP_SIZE_3000_LESS 0.000000, BODY_SIZE_1000_LESS 0.000000,
+        BODY_SIZE_2000_LESS 0.000000, BODY_SIZE_5000_LESS 0.000000,
+        BODY_SIZE_7000_LESS 0.000000, BODY_SIZE_900_999 0.000000,
+        HTML_00_01 0.050000, HTML_00_10 0.050000, LEGITIMATE_SIGNS 0.000000,
+        MULTIPLE_RCPTS 0.100000, MULTIPLE_REAL_RCPTS 0.000000,
+        NO_CTA_URI_FOUND 0.000000, NO_FUR_HEADER 0.000000, NO_URI_HTTPS 0.000000,
+        OUTBOUND 0.000000, OUTBOUND_SOPHOS 0.000000, SENDER_NO_AUTH 0.000000,
+        __ANY_URI 0.000000, __BODY_NO_MAILTO 0.000000, __CC_NAME 0.000000,
+        __CC_NAME_DIFF_FROM_ACC 0.000000, __CC_REAL_NAMES 0.000000,
+        __DQ_NEG_HEUR 0.000000, __DQ_NEG_IP 0.000000, __FUR_RDNS_SOPHOS 0.000000,
+        __HAS_CC_HDR 0.000000, __HAS_FROM 0.000000, __HAS_MSGID 0.000000,
+        __HAS_X_MAILER 0.000000, __MIME_TEXT_ONLY 0.000000, __MIME_TEXT_P 0.000000,
+        __MIME_TEXT_P1 0.000000, __MULTIPLE_RCPTS_CC_X2 0.000000,
+        __MULTIPLE_RCPTS_TO_X2 0.000000, __NO_HTML_TAG_RAW 0.000000,
+        __OUTBOUND_SOPHOS_FUR 0.000000, __OUTBOUND_SOPHOS_FUR_IP 0.000000,
+        __OUTBOUND_SOPHOS_FUR_RDNS 0.000000, __PHISH_SPEAR_REASONS 0.000000,
+        __PHISH_SPEAR_REASONS2 0.000000, __SANE_MSGID 0.000000,
+        __SUBJ_ALPHA_END 0.000000, __SUBJ_STARTS_S_BRACKETS 0.000000,
+        __TO_MALFORMED_2 0.000000, __TO_NO_NAME 0.000000, __URI_MAILTO 0.000000,
+        __URI_NO_WWW 0.000000, __URI_NS 0.000000
+X-SASI-Probability: 8%
+X-SASI-RCODE: 200
+X-SASI-Version: Antispam-Engine: 4.1.4, AntispamData: 2021.11.27.95716
+From:   Sven Schuchmann <schuchmann@schleissheimer.de>
+To:     john.efstathiades@pebblebay.com, kuba@kernel.org, andrew@lunn.ch
+Cc:     Sven Schuchmann <schuchmann@schleissheimer.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] net: usb: lan78xx: lan78xx_phy_init(): use PHY_POLL instead of "0" if no IRQ is available
+Date:   Sat, 27 Nov 2021 11:47:07 +0100
+Message-Id: <20211127104707.2546-1-schuchmann@schleissheimer.de>
+X-Mailer: git-send-email 2.17.1
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4f9cd00e-0634-481b-6540-08d9b19379ef
+X-MS-TrafficTypeDiagnostic: DB9P190MB1723:
+X-Microsoft-Antispam-PRVS: <DB9P190MB172340D2B787477770BD3230DA649@DB9P190MB1723.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 4PU51V9q9uVd+CVJDLXSXxauZx/Vj9YuQez981xBGH+yQtzx2INxttXu4IidGOm7plt0fNTpZ3oY79cdbTZ3jMHAYrpx3B8/RfJG0nxvjZEodnVEhI2YWBz6IzCcLQ6Cp7OrXZVXIaDGUC+S3OpUot0Na45wcuEceK/6wBOWQmFAx9S9Ox2zTBh8dHNeE/5bMxk8ItPDxbg2lK6cONaXyG3cPOsJKd6hyxyok9Z06SANxr0uugsEwV6Qw4UthhbNkt9y536N8E5zT1CYNyrf672G5T6DjRnzm9Lbj7AB2BKgSg8nZYT47xkbDK5sK503WZ8IG6kfmkunwN1BcQkRB/Ox6BJbyF6ZMd57Qo89d6fGNc5QhW2ZIWKGNrQ+PpC6DdNNE/RCyuptVygmQAYJ7FbT1mUpyWFNRkBQkA9Zqabtu4i2Rm55QAcCMkPHQ9lrRJqb87+P+AmMAR1PcQQ8Jg9PKHKxNwtYW1ZrDK0WFtHzPTe953NVAvfJA0oiAXd/qFKxooW+LvSYxqUCMnWp5c2GhuwcDPlAODrKrtTNYezrqTIZbknwect7JpFDrMEou3LcyU3H6lKNXYghV/2oYQeq2diCvcaZR+m7m9SdKsq2mDLsZbQ4/c60VRrjOIIqvSKUj65BekfY9hmDeuwhkxmi7LSG6dFwPgpnNhhzkuVE3xE1T+0y1QE84XE+dXP/zXVdFvHviouxWHGsxXGQfA==
+X-Forefront-Antispam-Report: CIP:62.153.209.162;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.schleissheimer.de;PTR:www.schleissheimer.de;CAT:NONE;SFS:(4636009)(39830400003)(346002)(136003)(376002)(396003)(36840700001)(46966006)(54906003)(336012)(70586007)(70206006)(508600001)(47076005)(2906002)(36860700001)(36756003)(9786002)(6666004)(356005)(426003)(186003)(8936002)(4326008)(7636003)(2616005)(5660300002)(83380400001)(316002)(7696005)(1076003)(26005)(4744005)(82310400004)(8676002);DIR:OUT;SFP:1102;
+X-OriginatorOrg: schleissheimer.de
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Nov 2021 10:48:41.2847
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4f9cd00e-0634-481b-6540-08d9b19379ef
+X-MS-Exchange-CrossTenant-Id: ba05321a-a007-44df-8805-c7e62d5887b5
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=ba05321a-a007-44df-8805-c7e62d5887b5;Ip=[62.153.209.162];Helo=[mail.schleissheimer.de]
+X-MS-Exchange-CrossTenant-AuthSource: DB3EUR04FT004.eop-eur04.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9P190MB1723
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On most systems request for IRQ 0 will fail, phylib will print an error message
+and fall back to polling. To fix this set the phydev->irq to PHY_POLL if no IRQ
+is available.
 
+Fixes: cc89c323a30e ("lan78xx: Use irq_domain for phy interrupt from USB Int. EP")
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Sven Schuchmann <schuchmann@schleissheimer.de>
+---
+Changes v1->v2: Added "Fixes" and "Reviewed-by"
+---
+ drivers/net/usb/lan78xx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On 24/11/2021 10.18, Ong Boon Leong wrote:
-> Tx cycle time is in micro-seconds unit. By combining the batch size (-b M)
-> and Tx cycle time (-T|--tx-cycle N), xdpsock now can transmit batch-size of
-> packets every N-us periodically.
-
-Does this also work for --poll mode (which is a wakeup mode) ?
-
-> For example to transmit 1 packet each 1ms cycle time for total of 2000000
-> packets:
-> 
->   $ xdpsock -i eth0 -T -N -z -T 1000 -b 1 -C 2000000
-> 
->   sock0@enp0s29f1:2 txonly xdp-drv
->                     pps            pkts           1.00
-> rx                 0              0
-> tx                 1000           1996872
-> 
->   sock0@enp0s29f1:2 txonly xdp-drv
->                     pps            pkts           1.00
-> rx                 0              0
-> tx                 1000           1997872
-> 
->   sock0@enp0s29f1:2 txonly xdp-drv
->                     pps            pkts           1.00
-> rx                 0              0
-> tx                 1000           1998872
-> 
->   sock0@enp0s29f1:2 txonly xdp-drv
->                     pps            pkts           1.00
-> rx                 0              0
-> tx                 1000           1999872
-> 
->   sock0@enp0s29f1:2 txonly xdp-drv
->                     pps            pkts           1.00
-> rx                 0              0
-> tx                 128            2000000
-> 
->   sock0@enp0s29f1:2 txonly xdp-drv
->                     pps            pkts           0.00
-> rx                 0              0
-> tx                 0              2000000
-> 
-> Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
-> ---
->   samples/bpf/xdpsock_user.c | 36 +++++++++++++++++++++++++++++++-----
->   1 file changed, 31 insertions(+), 5 deletions(-)
-> 
-> diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-> index 691f442bbb2..61d4063f11a 100644
-> --- a/samples/bpf/xdpsock_user.c
-> +++ b/samples/bpf/xdpsock_user.c
-> @@ -111,6 +111,7 @@ static u32 opt_num_xsks = 1;
->   static u32 prog_id;
->   static bool opt_busy_poll;
->   static bool opt_reduced_cap;
-> +static unsigned long opt_cycle_time;
->   
->   struct vlan_ethhdr {
->   	unsigned char h_dest[6];
-> @@ -173,6 +174,8 @@ struct xsk_socket_info {
->   	struct xsk_app_stats app_stats;
->   	struct xsk_driver_stats drv_stats;
->   	u32 outstanding_tx;
-> +	unsigned long prev_tx_time;
-> +	unsigned long tx_cycle_time;
->   };
->   
->   static int num_socks;
-> @@ -972,6 +975,7 @@ static struct option long_options[] = {
->   	{"tx-vlan-pri", required_argument, 0, 'K'},
->   	{"tx-dmac", required_argument, 0, 'G'},
->   	{"tx-smac", required_argument, 0, 'H'},
-> +	{"tx-cycle", required_argument, 0, 'T'},
->   	{"extra-stats", no_argument, 0, 'x'},
->   	{"quiet", no_argument, 0, 'Q'},
->   	{"app-stats", no_argument, 0, 'a'},
-> @@ -1017,6 +1021,7 @@ static void usage(const char *prog)
->   		"  -K, --tx-vlan-pri=n  Tx VLAN Priority [0-7]. Default: %d (For -V|--tx-vlan)\n"
->   		"  -G, --tx-dmac=<MAC>  Dest MAC addr of TX frame in aa:bb:cc:dd:ee:ff format (For -V|--tx-vlan)\n"
->   		"  -H, --tx-smac=<MAC>  Src MAC addr of TX frame in aa:bb:cc:dd:ee:ff format (For -V|--tx-vlan)\n"
-> +		"  -T, --tx-cycle=n     Tx cycle time in micro-seconds (For -t|--txonly).\n"
->   		"  -x, --extra-stats	Display extra statistics.\n"
->   		"  -Q, --quiet          Do not display any stats.\n"
->   		"  -a, --app-stats	Display application (syscall) statistics.\n"
-> @@ -1039,7 +1044,7 @@ static void parse_command_line(int argc, char **argv)
->   	opterr = 0;
->   
->   	for (;;) {
-> -		c = getopt_long(argc, argv, "Frtli:q:pSNn:czf:muMd:b:C:s:P:VJ:K:G:H:xQaI:BR",
-> +		c = getopt_long(argc, argv, "Frtli:q:pSNn:czf:muMd:b:C:s:P:VJ:K:G:H:T:xQaI:BR",
->   				long_options, &option_index);
->   		if (c == -1)
->   			break;
-> @@ -1145,6 +1150,10 @@ static void parse_command_line(int argc, char **argv)
->   				usage(basename(argv[0]));
->   			}
->   			break;
-> +		case 'T':
-> +			opt_cycle_time = atoi(optarg);
-> +			opt_cycle_time *= 1000;
-
-Converting to nanosec, right(?).
-
-> +			break;
->   		case 'x':
->   			opt_extra_stats = 1;
->   			break;
-> @@ -1350,16 +1359,25 @@ static void rx_drop_all(void)
->   	}
->   }
->   
-> -static void tx_only(struct xsk_socket_info *xsk, u32 *frame_nb, int batch_size)
-> +static int tx_only(struct xsk_socket_info *xsk, u32 *frame_nb, int batch_size)
->   {
->   	u32 idx;
->   	unsigned int i;
->   
-> +	if (xsk->tx_cycle_time) {
-> +		unsigned long now = get_nsecs();
-> +
-> +		if ((now - xsk->prev_tx_time) < xsk->tx_cycle_time)
-> +			return 0;
-
-So, this test is actively spinning until the time is reached, spending 
-100% CPU time on this. I guess we can have this as a test for most 
-accurate transmit (cyclic period) with AF_XDP.
-
-Do you have a use-case for this?
-
-I have a customer use-case, but my customer don't want to actively spin.
-My plan is to use clock_nanosleep() and wakeup slightly before the 
-target time and then we can spin shortly for the Tx time slot.
-
-I will need to code this up for the customer soon anyway... perhaps we 
-can extend your code with this idea?
-
-I have coded the period cycle Tx with UDP packets, here[1], if you like 
-to see some code using clock_nanosleep().  Next step (for me) is doing 
-this for AF_XDP (likely in my example[2].
-
-[1] 
-https://github.com/netoptimizer/network-testing/blob/master/src/udp_pacer.c
-
-[2] 
-https://github.com/xdp-project/bpf-examples/tree/master/AF_XDP-interaction
-
-> +
-> +		xsk->prev_tx_time = now;
-
-Would it be valuable to know how-much we shoot "over" the tx_cycle_time?
-
-For my use-case, I will be monitoring the other-side receiving the 
-packets (and using HW RX-time) to evaluate how accurate my sender is. In 
-this case, I would like to know if my software "knew" if was not 100% 
-accurate.
-
-
-> +	}
-> +
->   	while (xsk_ring_prod__reserve(&xsk->tx, batch_size, &idx) <
->   				      batch_size) {
->   		complete_tx_only(xsk, batch_size);
->   		if (benchmark_done)
-> -			return;
-> +			return 0;
->   	}
-
-I wonder if this step can introduce jitter/delay before the actual Tx 
-happens?
-
-I mean, the real transmit cannot happen before xsk_ring_prod__submit() 
-is called.  If the cycles spend are exactly the same, it doesn't matter 
-if you tx_cycle_time timestamp is done above.
-Here you have a potential call to complete_tx_only(), which can 
-introduce variance for your period.
-
-I will suggest moving the TX completion handling, so it doesn't 
-interfere with accurate TX.
-
->   
->   	for (i = 0; i < batch_size; i++) {
-> @@ -1375,6 +1393,8 @@ static void tx_only(struct xsk_socket_info *xsk, u32 *frame_nb, int batch_size)
->   	*frame_nb += batch_size;
->   	*frame_nb %= NUM_FRAMES;
->   	complete_tx_only(xsk, batch_size);
-> +
-> +	return batch_size;
->   }
->   
->   static inline int get_batch_size(int pkt_cnt)
-> @@ -1407,6 +1427,7 @@ static void complete_tx_only_all(void)
->   static void tx_only_all(void)
->   {
->   	struct pollfd fds[MAX_SOCKS] = {};
-> +	unsigned long now = get_nsecs();
->   	u32 frame_nb[MAX_SOCKS] = {};
->   	int pkt_cnt = 0;
->   	int i, ret;
-> @@ -1414,10 +1435,15 @@ static void tx_only_all(void)
->   	for (i = 0; i < num_socks; i++) {
->   		fds[0].fd = xsk_socket__fd(xsks[i]->xsk);
->   		fds[0].events = POLLOUT;
-> +		if (opt_cycle_time) {
-> +			xsks[i]->prev_tx_time = now;
-> +			xsks[i]->tx_cycle_time = opt_cycle_time;
-> +		}
->   	}
->   
->   	while ((opt_pkt_count && pkt_cnt < opt_pkt_count) || !opt_pkt_count) {
->   		int batch_size = get_batch_size(pkt_cnt);
-> +		int tx_cnt = 0;
->   
->   		if (opt_poll) {
->   			for (i = 0; i < num_socks; i++)
-> @@ -1431,9 +1457,9 @@ static void tx_only_all(void)
->   		}
->   
->   		for (i = 0; i < num_socks; i++)
-> -			tx_only(xsks[i], &frame_nb[i], batch_size);
-> +			tx_cnt += tx_only(xsks[i], &frame_nb[i], batch_size);
->   
-> -		pkt_cnt += batch_size;
-> +		pkt_cnt += tx_cnt;
->   
->   		if (benchmark_done)
->   			break;
-> 
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 2bfb59ae0eaf..185e08c1af31 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -2398,7 +2398,7 @@ static int lan78xx_phy_init(struct lan78xx_net *dev)
+ 	if (dev->domain_data.phyirq > 0)
+ 		phydev->irq = dev->domain_data.phyirq;
+ 	else
+-		phydev->irq = 0;
++		phydev->irq = PHY_POLL;
+ 	netdev_dbg(dev->net, "phydev->irq = %d\n", phydev->irq);
+ 
+ 	/* set to AUTOMDIX */
+-- 
+2.17.1
 
