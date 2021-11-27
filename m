@@ -2,107 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4918446017D
-	for <lists+netdev@lfdr.de>; Sat, 27 Nov 2021 21:49:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82BEB46019E
+	for <lists+netdev@lfdr.de>; Sat, 27 Nov 2021 22:15:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356121AbhK0Uqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Nov 2021 15:46:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32958 "EHLO
+        id S233499AbhK0VSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Nov 2021 16:18:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240132AbhK0Uoc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Nov 2021 15:44:32 -0500
-Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4089C061574
-        for <netdev@vger.kernel.org>; Sat, 27 Nov 2021 12:41:17 -0800 (PST)
-Received: by mail-ot1-x342.google.com with SMTP id n104-20020a9d2071000000b005799790cf0bso19342792ota.5
-        for <netdev@vger.kernel.org>; Sat, 27 Nov 2021 12:41:17 -0800 (PST)
+        with ESMTP id S240446AbhK0VQl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Nov 2021 16:16:41 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38EB9C061574
+        for <netdev@vger.kernel.org>; Sat, 27 Nov 2021 13:13:26 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id p3-20020a05600c1d8300b003334fab53afso13427848wms.3
+        for <netdev@vger.kernel.org>; Sat, 27 Nov 2021 13:13:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=egk26ZyuKP6hdtL948MmA7SNlRqkI1VfSBd60XDNYVY=;
-        b=jFI0mSek0rBU9h7PNXx5Zc5w8TzhPxFx9NG7GWaP7BGifvOwJd0N3SIT6gh67ry9fv
-         +uSB7cBQ9wwo2MCtwU60F2Bb/rdJJwkFlnoJZU6E6SkrWg+R50Nf+TB0CCEomiFOp+mB
-         xRt2pSMmrE9AJlHip8yDPSI2meTrYk6Xp04SwFekKl5PPNrOktFBcIFRcmweiFecyJNi
-         IL/HbvxHo0hB8+4MpxnlQh0OJpCJoOttqCUqX0TJZZPGIzx3bSKeDK7JcIfejquBo43O
-         DEx97LbLHqxMq6w6PnDAqAd1iMyE+utT/NqxqOQpiBeWxXAcMyOKgGNDq9UQbNcAiTJI
-         9n2g==
+        h=from:to:subject:message-id:date:user-agent:mime-version
+         :content-transfer-encoding:content-language;
+        bh=RNYvHGoo3XgD4zWVn+gECMaOLr/NueTsqEW6C9XBttY=;
+        b=CcRwrjFBfSTxfOQ6FVZ8fAbI02LJQpq92laFulqkPZCzjs2KwOvIp4LnPrd6us7jPD
+         KatpURdMWf3WXY61Dbw9AwTMnf6ilNW/pPHk5A2KOofYw3NScgERfnfrubJjdj6jcEUx
+         39qaiEbhYppFKuVR4MwYIzGgh4/NjGQVQJW3yYNgwI96ESGJcdmC++fa+/rJLeCLPWuH
+         WEqWVon1yW6rc+vL2dZoQmguPYS9AjV0mnWMY099GkH8LeJZKAvGbYgFwQS1hyy2d/cj
+         uNGcfKxYvEcQQ6e5PgDElLqaitGg7zDLqSTBJJFR7tAwk/bHrxPXnfr6vpPg6rMjTUpm
+         j80w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=egk26ZyuKP6hdtL948MmA7SNlRqkI1VfSBd60XDNYVY=;
-        b=wXVWvC+NoVsoFklYh9B1BVJqIGbdRsKPn9xqzBOlHgYc2btxUvyr+zd2gi9zM7QVjw
-         324lARJabogwm4QqQEEg9y6QL9kDf2632j2wF6Cv9cJDcNStj/kgsNI2/yw4x6OJZkow
-         Lyi9KRV0bzCDGG7KsOhbviCOcRodTP7cW/axsNzJOTneDamrTHwqKX/VZ4posibod+KT
-         izF1tqZaW+8Kq8TFB1weAHexLkx+VEqvLFNWDbEWp0t+r00UyYFOGxhK/OGEzNV5LXxR
-         w4wOnjWJU5QU+kWh2umOPAGyuNp0YBF0QNywuZVo3Qx5Ykw5RNEfRJsupBpVdyKbvE/3
-         B2Pg==
-X-Gm-Message-State: AOAM533jZYvDNfyhfWD4Dk8vXWDurHswlTyaCksY96hIKdNTiZifzUDo
-        U5xwUdIOfVTpstXZBmPwrA16vF7Lh5slsTpz5l4=
-X-Google-Smtp-Source: ABdhPJzMwmrh1TDNIxbTY9sWPS9maUrXp84Y3lDiIJGu/egmK8rOLM2IDCeAa2RWGIa4rN/g6vrCxHx9i71o/Ez+g/8=
-X-Received: by 2002:a05:6830:2aa7:: with SMTP id s39mr36270182otu.151.1638045677090;
- Sat, 27 Nov 2021 12:41:17 -0800 (PST)
+        h=x-gm-message-state:from:to:subject:message-id:date:user-agent
+         :mime-version:content-transfer-encoding:content-language;
+        bh=RNYvHGoo3XgD4zWVn+gECMaOLr/NueTsqEW6C9XBttY=;
+        b=KYfmAIki2RlVwjMNOYjzAKB3KAfQqDjg6NTzm/A64cPdI0jU7WHNuCVzSaoWWsulxd
+         KcR9gT1fYqL/OoTQR3O5YdB+OaqIJxQarAmVV37k3JHnP5cgXwnbC6EZLUyknIPSAI1x
+         kacYroGOrIEtv3t8Gfjo39p4IpvHgELWb23iU1noS+g59pjah/A4v6YqGMR12LQ5rHEJ
+         1c5Bh0QiXbQl0MlWju65XXfY5deFeJwTltZwkJjhIjjs9LAMbtSWGkJMHdV4m8PyXLbZ
+         Wr6IzJx/iMhhSpYzahiUvlyIsqOsnv62P0auvQz7DSl9QXxqBNx27ThAbPIkt0aNNbFq
+         Z7wg==
+X-Gm-Message-State: AOAM532T8NB/kXc2PzHqMlv3uE/nBrtk0cFiyGh9a34Umr+xCMdwsKJw
+        oU4UGr3gsCfiQk6vFk80Axt5op3PWPr3JlFp
+X-Google-Smtp-Source: ABdhPJxwOnfoMC4fdvELG+fyvV2DfA2awM1qDt1LsqrtVHrdj6sxMiqfwoCVdlll0OqNYQy9J7pjGw==
+X-Received: by 2002:a1c:4e04:: with SMTP id g4mr24590012wmh.15.1638047604290;
+        Sat, 27 Nov 2021 13:13:24 -0800 (PST)
+Received: from [172.20.10.7] ([197.210.47.56])
+        by smtp.gmail.com with ESMTPSA id r15sm14546397wmh.13.2021.11.27.13.13.23
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 27 Nov 2021 13:13:23 -0800 (PST)
+From:   wehrsig sylvia <wehrsigsylvia12@gmail.com>
+To:     netdev@vger.kernel.org
+Subject: =?UTF-8?B?5oiR5Y+v5Lul55u45L+h5L2g5ZCX?=
+Message-ID: <c7c970a4-53e9-0cf3-5931-4f708def9f08@gmail.com>
+Date:   Sat, 27 Nov 2021 15:13:29 -0600
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Received: by 2002:a05:6838:264b:0:0:0:0 with HTTP; Sat, 27 Nov 2021 12:41:16
- -0800 (PST)
-Reply-To: mrspeninnaharielbenaiah263@gmail.com
-From:   "Mrs. Peninnah Ariel Benaiah" <mrsarchanaahmed@gmail.com>
-Date:   Sat, 27 Nov 2021 12:41:16 -0800
-Message-ID: <CAGuh7Mq=t7mvX_BiVX4-mSuCP6yn5jyQQ7n_6UJ87MjvYxDZLw@mail.gmail.com>
-Subject: Greetings in the name of Lord
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=20
+亲爱的你好，你好吗，很高兴认识你。我认为，如果我们交谈，成为我们主的好朋友，并且看到权力越大，责任越大，你就会产生很大的不同。你可以改变他人的生活，尤其是那些内心贫穷的人和弱势群体。第一的。我想我会从自我介绍开始……我是 
+Sylvia J Wehrsig 夫人，来自纽约布鲁克林，我的妈妈来自别井中国，是 Late 
+Anderson 的遗孀，今年 67 岁，长期患有癌症胸部 
+。从所有迹象来看，我的病情确实在恶化，很明显，我下次手术后可能活不到四个月，因为癌症分期已经到了非常严重的阶段。我的私人医生告诉我，我可能活不过 
+2 
+个月，我很害怕。我没有我的孩子，尽管我希望我有。现在你知道已经晚了，因为我不能再结婚了，而且年龄不再站在我这边。 
 
 
-Greetings in the name of Lord
+诗篇 119:116 求你照你的话扶持我，使我得以存活，不要以我的盼望为耻。
+
+诗篇 138：7 我虽行在患难中，你必使我苏醒
+
+诗篇 145:18 诗篇 57:7 我的心坚定。神啊，我的心坚定，我要歌唱赞美
+
+诗篇 51:17 神的祭物是破碎的灵，破碎痛悔的心，神啊，你必不轻看。
+
+诗篇 41：1 体贴贫穷的有福了，耶和华在患难的时候搭救他。
+最喜欢的两句歌词：
+
+腓立比书 
+2:27：因为他病得快要死了，但神怜悯他，只怜悯他，也怜悯我，免得我悲痛加悲伤。 
+（我一直在心里这么说），我现在决定分出我的一部分财富，通过为无母婴孩之家、贫困户、贫困户、慈善之家和寡妇的发展做出贡献。我愿意捐出巨额的320 
+万美元，这仍然是我留下的主要遗产。我希望你能成为我全心全意信任的人，让我的这个愿望成真……请注意，这个基金是在银行里的。 
 
 
-My name is Mrs. Peninnah Ariel Benaiah I am a Norway Citizen who is living
-in Burkina Faso, I am married to Mr. Benaiah Jeremiah, a politician who
-owns a small gold company in Burkina Faso; He died of Leprosy and Radesyge,
-in the year February 2010, During his lifetime he deposited the sum of =E2=
-=82=AC
-8.5 Million Euro) Eight million, Five hundred thousand Euros in a bank in
-Brussels the capital city of Belgium in Europe The money was from the sale
-of his company and death benefits payment and entitlements of my deceased
-husband by his company.
+我需要你用这笔钱帮助穷人。我知道这很难，需要一颗非常坚强的心才能完成，但你应该牢记这句话，我就像圣经中的摩西。他来到红海，法老跟在他身后，无法转身，但上帝奇迹般地拯救了他。能够帮助上帝放在我们心中的所有亲爱的人，这将是上帝的奇迹。 
 
-I am sending you this message with heavy tears in my eyes and great sorrow
-in my heart, and also praying that it will reach you in good health because
-I am not in good health, I sleep every night without knowing if I may be
-alive to see the next day. I am suffering from long time cancer and
-presently I am partially suffering from Leprosy, which has become difficult
-for me to move around. I was married to my late husband for more than 6
-years without having a child and my doctor confided that I have less chance
-to live, having to know when the cup of death will come, I decided to
-contact you to claim the fund since I don't have any relation I grew up
-from an orphanage home.
 
-I have decided to donate this money for the support of helping Motherless
-babies/Less privileged/Widows and churches also to build the house of God
-because I am dying and diagnosed with cancer for about 3 years ago. I have
-decided to donate from what I have inherited from my late husband to you
-for the good work of Almighty God; I will be going in for an operation
-surgery soon.
+这就是为什么我心中有上帝，我与您联系，我希望您与我联系，也与那里所有可怜的灵魂联系。给予新的生命、希望和日子。我发现没有基督而获得财富是虚空的，我希望你也同意这一点。我会努力祈祷撒旦不会停止这种努力。请回复我，我会告诉你更多你想知道的。请通过电子邮件与我联系以获取进一步的程序。我等着读你的电子邮件。 
 
-Now I want you to stand as my next of kin to claim the funds for charity
-purposes. Because of this money remains unclaimed after my death, the bank
-executives or the government will take the money as unclaimed fund and
-maybe use it for selfishness and worthless ventures, I need a very honest
-person who can claim this money and use it for Charity works, for
-orphanages, widows and also build schools and churches for less privilege
-that will be named after my late husband and my name.
 
-I need your urgent answer to know if you will be able to execute this
-project, and I will give you more information on how the fund will be
-transferred to your bank account or online banking.
+最良好的问候
+西尔维娅·J·维尔西格夫人
 
-Thanks
-Mrs. Peninnah Ariel Benaiah
