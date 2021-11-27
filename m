@@ -2,82 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00D0B4600C7
-	for <lists+netdev@lfdr.de>; Sat, 27 Nov 2021 18:53:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DBA44600DF
+	for <lists+netdev@lfdr.de>; Sat, 27 Nov 2021 19:12:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351809AbhK0R44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Nov 2021 12:56:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52740 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355852AbhK0Ryz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Nov 2021 12:54:55 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 518B9C061746
-        for <netdev@vger.kernel.org>; Sat, 27 Nov 2021 09:50:12 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id r11so52669839edd.9
-        for <netdev@vger.kernel.org>; Sat, 27 Nov 2021 09:50:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IvT9A5PgUmmsdPPgmPRktfoLrELQ59r0exofkW/Ii+s=;
-        b=NG/FrhUNB8KbyEz2TDL042nDzHzH+VadLD01K1N9pZwyXL8vXfmRFKJMa+97iUJZwW
-         KBrgbnqr3+j89Q2pkbY5D0aL+tGvXnmERU/bcRrMS6vcBUu2Sb1eW8UgOn5IAYS51JVg
-         i9UpH4LAFB4YhLF1HuYB+dFSkyRJ71mwJ6DUU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IvT9A5PgUmmsdPPgmPRktfoLrELQ59r0exofkW/Ii+s=;
-        b=xODUdCxx6R4LPXgqNyLU6x8lqkvfmB5aolek6txah09mYsoJy1drV21SBSEyShtfm8
-         aF1e35jRXDqmOx8VPgOrr3056jbYO/4IAvq/OIWa0DPdi5w+OzuX9h5XD2F3N6lpYlff
-         Nz+2UyceLJn1OEIGuT0XfqKI9sVp/cc8vMNridfZZzykpJ6LqOVjO/Dfigr1SwZODtUD
-         3JZVZeAjUllKqw2KZNzLLpwp7w8n5AcEtmAbvGFMOKIO4zF9rCZbjY1hxkZk5QDYWWak
-         eXmu/5FZEL4fzWxxHKK88rmXLNSBFzPXmMw3lP9C2+xUCHs4zbIKMN9/lHA2g0txfQ9Z
-         ktUA==
-X-Gm-Message-State: AOAM5325vtAzbS+i0pst7K9GLgA2MmpkbR0wP98cVGcPn/S0LmFfq3+i
-        tFqLhnCdDkkIpsf2GQV3A6pqLC0QIxP7LWbX
-X-Google-Smtp-Source: ABdhPJxVQWTN3hzTw+/CWYKMvI43tZjCIbrBHFSglWA1ljQfGHKQFftrTi9DgBp6bORzeaEVxyvsPg==
-X-Received: by 2002:a05:6402:190c:: with SMTP id e12mr58647211edz.396.1638035410474;
-        Sat, 27 Nov 2021 09:50:10 -0800 (PST)
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com. [209.85.221.51])
-        by smtp.gmail.com with ESMTPSA id hx14sm4668646ejc.92.2021.11.27.09.50.07
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 27 Nov 2021 09:50:09 -0800 (PST)
-Received: by mail-wr1-f51.google.com with SMTP id s13so26238564wrb.3
-        for <netdev@vger.kernel.org>; Sat, 27 Nov 2021 09:50:07 -0800 (PST)
-X-Received: by 2002:adf:e5c7:: with SMTP id a7mr22736016wrn.318.1638035407409;
- Sat, 27 Nov 2021 09:50:07 -0800 (PST)
+        id S1343810AbhK0SPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Nov 2021 13:15:43 -0500
+Received: from mail2-relais-roc.national.inria.fr ([192.134.164.83]:39612 "EHLO
+        mail2-relais-roc.national.inria.fr" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1355929AbhK0SNn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Nov 2021 13:13:43 -0500
+IronPort-Data: =?us-ascii?q?A9a23=3AASQ/Fq2uzpzk+kFHD/bD5fNwkn2cJEfYwER7XOP?=
+ =?us-ascii?q?LsXnJgT0r1GNRxjAWWjqAOviKMWChfdwlat6+pB4EvZDdmtM2QQE+nZ1PZyIT+?=
+ =?us-ascii?q?JCdXbx1DW+pYnjMdpWbJK5fAnR3huDodKjYdVeB4EfyWlTdhSMkj/jRH+CjULS?=
+ =?us-ascii?q?s1h1ZHmeIdg9w0HqPpMZp2uaEsfDha++8kYuaT//3YDdJ6BYoWo4g0J9vnTs01?=
+ =?us-ascii?q?BjEVJz0iXRlDRxDlAe2e3D4l/vzL4npR5fzatE88uJX24/+IL+FEmPxp3/BC/u?=
+ =?us-ascii?q?lm7rhc0AMKlLQFVjTzCQGHfH4214b+XdaPqUTbZLwbW9VljGIlpZ1wcpEsZiYS?=
+ =?us-ascii?q?AEzP6SKlv51vxxwTXwiY/IYpdcrJlD666R/1XbuY3rlxPFvBUc5e5wR/OlAWEl?=
+ =?us-ascii?q?I5eReIzcIBjiAjf+3xL7+Q+1orsAiN9XwettG/HZ6wlnxCfcgXICGRqDi5sFR1?=
+ =?us-ascii?q?zR2gdpBdd7AY8MVaD9udlLHZwFCM1E/DoIm2uyvgxHXeDlRtV6UuOwy6m7UzQh?=
+ =?us-ascii?q?Z1qj1dtHSf7SiTMFYjk+eqnjLuW70BhUdMt23wz2C7natgKnEmiaTcL80O5m58?=
+ =?us-ascii?q?ON6rEeS2GEJIBgXXkG8qvm4kgi1XNc3A0US9jAjsoA26UqtCNL9NzWmoWCFsxh?=
+ =?us-ascii?q?aV9tcHuk99CmCz6PV50CSAW1sZjAHZtUnssIyQT0C2VqAntevDjtq2JWWVHiU3?=
+ =?us-ascii?q?rSZtzW/PW4SN2BqTSkJUQcI/fH9r4wpyBHCVNBuFOiylNKdJN1a61hmtwBn2O5?=
+ =?us-ascii?q?V1JRSkfvruwCaxSihuN7SQBRz4AjLNl9JJzhRPOaND7FEI3CChRqYELukcw=3D?=
+ =?us-ascii?q?=3D?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3ARqWdJKrSCqTaboVCmzFHGMgaV5rYeYIsimQD?=
+ =?us-ascii?q?101hICG9Ffbo6/xG/c5rqCMc7Qx7NU3I9urwQ5VoPkmsjKKdjbN8AV7AZnidhI?=
+ =?us-ascii?q?LXFvAb0WKK+VSJcUPDH4hmpMJdmsNFZ+EYY2IK7/rS0U2cE9EjxdmB/rrtrerS?=
+ =?us-ascii?q?1Ht2Vw1nApsA0y5JTiOaFU9yRA5JH94YE5Wbj/A3xAaISDAzbsO4A3kDUfKGnd?=
+ =?us-ascii?q?HNmZ78CCRnO/ZngjP+6w9AH4SKd2n+4isj?=
+X-IronPort-AV: E=Sophos;i="5.87,269,1631570400"; 
+   d="scan'208";a="6546765"
+Received: from 173.121.68.85.rev.sfr.net (HELO hadrien) ([85.68.121.173])
+  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 27 Nov 2021 19:03:20 +0100
+Date:   Sat, 27 Nov 2021 19:03:20 +0100 (CET)
+From:   Julia Lawall <julia.lawall@inria.fr>
+X-X-Sender: jll@hadrien
+To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+cc:     kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH] net: dsa: felix: fix flexible_array.cocci warnings
+Message-ID: <alpine.DEB.2.22.394.2111271902400.2864@hadrien>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-References: <20211127154442.3676290-1-linux@roeck-us.net>
-In-Reply-To: <20211127154442.3676290-1-linux@roeck-us.net>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sat, 27 Nov 2021 09:49:51 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wh9g5Mu9V=dsQLkfmCZ-O7zjvhE6F=-42BbQuis2qWEpg@mail.gmail.com>
-Message-ID: <CAHk-=wh9g5Mu9V=dsQLkfmCZ-O7zjvhE6F=-42BbQuis2qWEpg@mail.gmail.com>
-Subject: Re: [PATCH v3 0/3] Limit NTFS_RW to page sizes smaller than 64k
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Anton Altaparmakov <anton@tuxera.com>,
-        linux-ntfs-dev@lists.sourceforge.net,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>, Joel Stanley <joel@jms.id.au>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 27, 2021 at 7:44 AM Guenter Roeck <linux@roeck-us.net> wrote:
->
-> This is the third attempt to fix the following build error.
+From: kernel test robot <lkp@intel.com>
 
-Thanks, looks good to me.
+Zero-length and one-element arrays are deprecated, see
+Documentation/process/deprecated.rst
+Flexible-array members should be used instead.
 
-Should I apply the patches directly, or were you planning on sending a
-pull request when everybody was happy with it?
+Generated by: scripts/coccinelle/misc/flexible_array.cocci
 
-           Linus
+Fixes: 23ae3a787771 ("net: dsa: felix: add stream gate settings for psfp")
+CC: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Julia Lawall <julia.lawall@inria.fr>
+---
+
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+head:   f81e94e91878bded599cc60f2881cfd50991aeb9
+commit: 23ae3a7877718931474684ef4fbbaf1d1511ee84 [2018/3632] net: dsa: felix: add stream gate settings for psfp
+:::::: branch date: 12 hours ago
+:::::: commit date: 7 days ago
+
+ felix_vsc9959.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -1385,7 +1385,7 @@ struct felix_stream_gate {
+ 	u64 cycletime;
+ 	u64 cycletime_ext;
+ 	u32 num_entries;
+-	struct action_gate_entry entries[0];
++	struct action_gate_entry entries[];
+ };
+
+ struct felix_stream_gate_entry {
