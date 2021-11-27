@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D77445FD22
-	for <lists+netdev@lfdr.de>; Sat, 27 Nov 2021 07:42:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7247A45FD24
+	for <lists+netdev@lfdr.de>; Sat, 27 Nov 2021 07:48:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352638AbhK0Gpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Nov 2021 01:45:45 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41832 "EHLO
+        id S238719AbhK0GvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Nov 2021 01:51:20 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:43248 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236810AbhK0Gnp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Nov 2021 01:43:45 -0500
+        with ESMTP id S1348932AbhK0GtU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Nov 2021 01:49:20 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0D41AB82944;
-        Sat, 27 Nov 2021 06:40:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90BAAC53FCC;
-        Sat, 27 Nov 2021 06:40:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9636B82946;
+        Sat, 27 Nov 2021 06:46:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80436C53FCC;
+        Sat, 27 Nov 2021 06:46:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637995228;
-        bh=j9Q7WPg7Olse81zE9WUmUkqRYDRcK0cBD+vPzJx2Va0=;
+        s=k20201202; t=1637995562;
+        bh=wQ/Vo+26AE+z8+JhLsdwErI3+CaDGfIdoHcExvqcoIo=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=mat55cEYgVRESO5+pPzVYB4Ce9P5reRTsHNwXhJUc5ViomofUiGWVSHFnpTPqFgAo
-         vSL0JxP6XbHDUc/tkA3YxBJCHoVyyvNkLppGGJi9V4vFIijCjZ64iQmD0Gd1v/fGwJ
-         D6BQaYrCxsqqhUfx0Mhvw1OHwjrfHwOM0oXVwa9MT5jXfzzPud+ZgJVnpmFJtXrf0u
-         7usfjFfSxT8PV1lDPqQqFOlA02iN6YuL31/UGv7q7Tl/Zrwo1VaA5LWWaXfxkjDQFC
-         nGlF3viRstABYdWdDyW4H2EW59bZF7VT+aYyZW/i+34XqUEaNLO6NKXUcQ8aCevxEw
-         AePHZEMBA1qjQ==
-Received: by mail-yb1-f176.google.com with SMTP id f186so25822560ybg.2;
-        Fri, 26 Nov 2021 22:40:28 -0800 (PST)
-X-Gm-Message-State: AOAM532n2eg8SaPWM00cjBk2pGweRPmUzEBqRjRKB7uh4pglnAnzJmjQ
-        Z3QNBrzAI94PwBqv3uxlw7TecdmBoH1Enr9XWow=
-X-Google-Smtp-Source: ABdhPJy/H95foMqL7hd7E0HeeB9Lm0N2R32Lsljo37CAMTOJ18OExq6stN5EgynOvaoM5kruWYNaN+tGHUgiQp7nbxg=
-X-Received: by 2002:a25:bd45:: with SMTP id p5mr22530188ybm.213.1637995227607;
- Fri, 26 Nov 2021 22:40:27 -0800 (PST)
+        b=E0BFu98JdBafGTHTVTJ5FzW20ek3B2/aOn5oBNw7EfS9C7gv9aCcRdrg0QV88UFai
+         mKJGHTZ03UiMxj4HHbrnp4QynvOPLQvBP9dLFUHHM9Lla4Ef2DO5sodsc7NXCl+1g1
+         jNlB0xxux8aABJzJTEhLfenWNL4RygSc88X4PYX0FMUR3izwM+Sft8dy+1RDCZPZlD
+         ZYunsbF1BDduHol3gct9uWqSIPqi/kJdMAb0zIgZYX1nQh2xQQ3hT3PJPWvoti8RLD
+         57lGB8Flw6eoZEvMDgwj9BrF0b2cR8AIdDL0bDIDvlqnbMLtFEPKFrYkihTloZs77k
+         eS38RikJV0eqQ==
+Received: by mail-yb1-f178.google.com with SMTP id v138so25823740ybb.8;
+        Fri, 26 Nov 2021 22:46:02 -0800 (PST)
+X-Gm-Message-State: AOAM530eb2Wpn/b59Wz9rjsnyvwgeqW51bTWIyoiX/dWN3XWojOBY8zc
+        qD8cKuVC0f689gje3klPmJuG7pgjoie970mT/+Y=
+X-Google-Smtp-Source: ABdhPJzPPhwZ2EPkStPsgxToLvW/4PcaG1whvCG1SsWi1exesEosgg9MGP6/E/c2iWEFTmR+YWf3Qck57nCTF8xjrLQ=
+X-Received: by 2002:a25:af82:: with SMTP id g2mr21718822ybh.509.1637995561629;
+ Fri, 26 Nov 2021 22:46:01 -0800 (PST)
 MIME-Version: 1.0
-References: <20211124091821.3916046-1-boon.leong.ong@intel.com> <20211124091821.3916046-3-boon.leong.ong@intel.com>
-In-Reply-To: <20211124091821.3916046-3-boon.leong.ong@intel.com>
+References: <20211124091821.3916046-1-boon.leong.ong@intel.com> <20211124091821.3916046-5-boon.leong.ong@intel.com>
+In-Reply-To: <20211124091821.3916046-5-boon.leong.ong@intel.com>
 From:   Song Liu <song@kernel.org>
-Date:   Fri, 26 Nov 2021 22:40:16 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW7URE0jU0DzKu86zaVUZ1rcUFEXHNF3K_O7r5_x_mZAPQ@mail.gmail.com>
-Message-ID: <CAPhsuW7URE0jU0DzKu86zaVUZ1rcUFEXHNF3K_O7r5_x_mZAPQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/4] samples/bpf: xdpsock: add Dest and Src MAC
- setting for Tx-only operation
+Date:   Fri, 26 Nov 2021 22:45:51 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW4AiqzH+vx3hOJb5taae0cN0NDKUUNsi5iybG+PF9xYgg@mail.gmail.com>
+Message-ID: <CAPhsuW4AiqzH+vx3hOJb5taae0cN0NDKUUNsi5iybG+PF9xYgg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 4/4] samples/bpf: xdpsock: add time-out for
+ cleaning Tx
 To:     Ong Boon Leong <boon.leong.ong@intel.com>
 Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         bjorn@kernel.org, Magnus Karlsson <magnus.karlsson@intel.com>,
@@ -63,20 +63,113 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 24, 2021 at 1:21 AM Ong Boon Leong <boon.leong.ong@intel.com> wrote:
+On Wed, Nov 24, 2021 at 1:22 AM Ong Boon Leong <boon.leong.ong@intel.com> wrote:
 >
-> To set Dest MAC address (-G|--tx-dmac) only:
->  $ xdpsock -i eth0 -t -N -z -G aa:bb:cc:dd:ee:ff
+> When user sets tx-pkt-count and in case where there are invalid Tx frame,
+> the complete_tx_only_all() process polls indefinitely. So, this patch
+> adds a time-out mechanism into the process so that the application
+> can terminate automatically after it retries 3*polling interval duration.
 >
-> To set Source MAC address (-H|--tx-smac) only:
->  $ xdpsock -i eth0 -t -N -z -H 11:22:33:44:55:66
+>  sock0@enp0s29f1:2 txonly xdp-drv
+>                    pps            pkts           1.00
+> rx                 0              0
+> tx                 136383         1000000
+> rx dropped         0              0
+> rx invalid         0              0
+> tx invalid         35             245
+> rx queue full      0              0
+> fill ring empty    0              1
+> tx ring empty      957            7011
 >
-> To set both Dest and Source MAC address:
->  $ xdpsock -i eth0 -t -N -z -G aa:bb:cc:dd:ee:ff \
->    -H 11:22:33:44:55:66
+>  sock0@enp0s29f1:2 txonly xdp-drv
+>                    pps            pkts           1.00
+> rx                 0              0
+> tx                 0              1000000
+> rx dropped         0              0
+> rx invalid         0              0
+> tx invalid         0              245
+> rx queue full      0              0
+> fill ring empty    0              1
+> tx ring empty      1              7012
 >
-> The default Dest and Source MAC address remain the same as before.
+>  sock0@enp0s29f1:2 txonly xdp-drv
+>                    pps            pkts           1.00
+> rx                 0              0
+> tx                 0              1000000
+> rx dropped         0              0
+> rx invalid         0              0
+> tx invalid         0              245
+> rx queue full      0              0
+> fill ring empty    0              1
+> tx ring empty      1              7013
+>
+>  sock0@enp0s29f1:2 txonly xdp-drv
+>                    pps            pkts           1.00
+> rx                 0              0
+> tx                 0              1000000
+> rx dropped         0              0
+> rx invalid         0              0
+> tx invalid         0              245
+> rx queue full      0              0
+> fill ring empty    0              1
+> tx ring empty      1              7014
+>
+>  sock0@enp0s29f1:2 txonly xdp-drv
+>                    pps            pkts           1.00
+> rx                 0              0
+> tx                 0              1000000
+> rx dropped         0              0
+> rx invalid         0              0
+> tx invalid         0              245
+> rx queue full      0              0
+> fill ring empty    0              1
+> tx ring empty      0              7014
+>
+>  sock0@enp0s29f1:2 txonly xdp-drv
+>                    pps            pkts           0.00
+> rx                 0              0
+> tx                 0              1000000
+> rx dropped         0              0
+> rx invalid         0              0
+> tx invalid         0              245
+> rx queue full      0              0
+> fill ring empty    0              1
+> tx ring empty      0              7014
+
+I am not following why we need examples above in the commit log.
+
 >
 > Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+> ---
+>  samples/bpf/xdpsock_user.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+>
+> diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
+> index 61d4063f11a..9c3311329ec 100644
+> --- a/samples/bpf/xdpsock_user.c
+> +++ b/samples/bpf/xdpsock_user.c
+> @@ -1410,6 +1410,7 @@ static inline int get_batch_size(int pkt_cnt)
+>
+>  static void complete_tx_only_all(void)
+>  {
+> +       u32 retries = 3;
 
-Acked-by: Song Liu <songliubraving@fb.com>
+Shall we make the retry value configurable? And maybe make it a timeout
+value in seconds?
+
+>         bool pending;
+>         int i;
+>
+> @@ -1421,7 +1422,8 @@ static void complete_tx_only_all(void)
+>                                 pending = !!xsks[i]->outstanding_tx;
+>                         }
+>                 }
+> -       } while (pending);
+> +               sleep(opt_interval);
+> +       } while (pending && retries-- > 0);
+>  }
+>
+>  static void tx_only_all(void)
+> --
+> 2.25.1
+>
