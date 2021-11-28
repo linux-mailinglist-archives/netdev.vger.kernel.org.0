@@ -2,127 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97B314604DA
-	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 07:03:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 488AC460524
+	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 08:35:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232631AbhK1GG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Nov 2021 01:06:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40458 "EHLO
+        id S1356819AbhK1HiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Nov 2021 02:38:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231408AbhK1GEY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 01:04:24 -0500
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D8C1C061756;
-        Sat, 27 Nov 2021 22:01:09 -0800 (PST)
-Received: by mail-pj1-x1044.google.com with SMTP id gb13-20020a17090b060d00b001a674e2c4a8so11102404pjb.4;
-        Sat, 27 Nov 2021 22:01:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aLJ/lxXELr8am2FtU26Nt2UvXeJI3sLnmcAPGHnyFqo=;
-        b=V1/h7Kiu6O8Ho1jMG6tmVjWFZE6ZBZg+1mXeP/HPfqT8R/OsOfskzAkOieZgM4rKQg
-         BPhvK9bb49LlM6Y4/UJHSdXf8Arz8Qf4c0zAK3bf4WQFxw3h+PdN2qus6qoNRhubLZVQ
-         KFB0tQkBMSJm2uwEGNrxZJKvq04dDdYaBGtQZ0sX1yLuxWWpLedxcSxb72AyOq3btO6D
-         v3djU5dk+mzMPTwkWBXDTr/AsbGKgNM72T0phC4kHd6mYCxtp0lowp3qGhr+Nh1+Tdf2
-         HhTAPjPmFfpDlZ8uyhjAzxEADZNpIAXGLSv3wMYvCypm+QVYXL9yaqecnJ2KBtWZRUYV
-         oTXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aLJ/lxXELr8am2FtU26Nt2UvXeJI3sLnmcAPGHnyFqo=;
-        b=C93Patv0u9WurjOSXfojfHO+fSqytJ1UQc1F2Q1zRj7FDc2AZGuFjAp+p70jzbIUlH
-         q9QocgUGQ7n1M0MuebakdO/lNMxvGgu8pmi6kP9FMM6FC62wqH8ZyFxHVnSUlIs7htgP
-         gzj20RGwsjHGzjuOqA53YZMJc0dChqM+4Np1dEdKh7v84KWhgMMRyGZESe+awekQYTjl
-         PokxO/j+NJRtNi1nBjs6xRIVErUEpPbyvmvZGQKgdxMaa2GfaMYlC3CbDxsbRtzSPRCO
-         b9/tzf55K2xwj1S8bVaU1G3kQqcb8aCrYHDF2skjMrvBnk3pSr1vstuWwDHA9UCqsvQY
-         XsQA==
-X-Gm-Message-State: AOAM530prlvniXAgfDbvR27BJBuEHugN9nErKmp9Oe8con+ZLIFiTwck
-        ScAeMQH1XXVSvN8XwaPh/84=
-X-Google-Smtp-Source: ABdhPJyn1r3AZo5z2nmDFExlnhZOMgIFEVUmn+Qi7LZzk6UFgM5Kw6+Nn881Yk8GJm4hN/I0LW541g==
-X-Received: by 2002:a17:902:ab14:b0:143:77d8:2558 with SMTP id ik20-20020a170902ab1400b0014377d82558mr50491570plb.54.1638079268890;
-        Sat, 27 Nov 2021 22:01:08 -0800 (PST)
-Received: from localhost.localdomain ([43.132.141.9])
-        by smtp.gmail.com with ESMTPSA id t4sm12989664pfq.163.2021.11.27.22.01.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Nov 2021 22:01:08 -0800 (PST)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     kuba@kernel.org
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        edumazet@google.com, imagedong@tencent.com, ycheng@google.com,
-        kuniyu@amazon.co.jp, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH v2 net-next] net: snmp: add statistics for tcp small queue check
-Date:   Sun, 28 Nov 2021 14:01:02 +0800
-Message-Id: <20211128060102.6504-1-imagedong@tencent.com>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S229907AbhK1HgX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 02:36:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 682FAC061756
+        for <netdev@vger.kernel.org>; Sat, 27 Nov 2021 23:33:07 -0800 (PST)
+Received: from mail.kernel.org (unknown [198.145.29.99])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC6C760F60
+        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 07:33:05 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 94E8160273;
+        Sun, 28 Nov 2021 07:33:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638084785;
+        bh=VFHDk015X7N3symkTjAiMqR/Gw+8Cscs9M0ebYapJxo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KC1WaBaexPQUm4dJE/ywbvQjnQGK3g3bAqO8y5V/OrblY4Gtvjv5yWVbmMQ56Lb7y
+         AqYZh9Pn4eM/wRf+5PN2Kf+z/5RCeg/6SrdCoKHXdON1rRzJ8AUsv03TYPHtGZshqi
+         ohXSMm0xYmxmDRZSLsjaC1knMuaFg/RPxZjcLdZnDwDLYNKxpUicPzsbSl73L5ymRi
+         A6u7co38k05V+NnkB7w7QQn/kqmLJeSOFi0UXSCmE9lwJF6HM0yyK8jm4jSa36NrLw
+         aSU3DUM2imQWokIVKTDpTQNuKykSBAusSeY0y+jwhMEHmsw+7lX9kAwG/7j+yYE+ds
+         /9J3HeqlQO3Tw==
+Date:   Sun, 28 Nov 2021 09:33:01 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Lahav Schlesinger <lschlesinger@drivenets.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, dsahern@gmail.com
+Subject: Re: [PATCH net-next v3] rtnetlink: Support fine-grained netdevice
+ bulk deletion
+Message-ID: <YaMwrajs8D5OJ3yS@unreal>
+References: <20211125165146.21298-1-lschlesinger@drivenets.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211125165146.21298-1-lschlesinger@drivenets.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+On Thu, Nov 25, 2021 at 06:51:46PM +0200, Lahav Schlesinger wrote:
+> Under large scale, some routers are required to support tens of thousands
+> of devices at once, both physical and virtual (e.g. loopbacks, tunnels,
+> vrfs, etc).
+> At times such routers are required to delete massive amounts of devices
+> at once, such as when a factory reset is performed on the router (causing
+> a deletion of all devices), or when a configuration is restored after an
+> upgrade, or as a request from an operator.
+> 
+> Currently there are 2 means of deleting devices using Netlink:
+> 1. Deleting a single device (either by ifindex using ifinfomsg::ifi_index,
+> or by name using IFLA_IFNAME)
+> 2. Delete all device that belong to a group (using IFLA_GROUP)
+> 
+> Deletion of devices one-by-one has poor performance on large scale of
+> devices compared to "group deletion":
+> After all device are handled, netdev_run_todo() is called which
+> calls rcu_barrier() to finish any outstanding RCU callbacks that were
+> registered during the deletion of the device, then wait until the
+> refcount of all the devices is 0, then perform final cleanups.
+> 
+> However, calling rcu_barrier() is a very costly operation, each call
+> taking in the order of 10s of milliseconds.
+> 
+> When deleting a large number of device one-by-one, rcu_barrier()
+> will be called for each device being deleted.
+> As an example, following benchmark deletes 10K loopback devices,
+> all of which are UP and with only IPv6 LLA being configured:
+> 
+> 1. Deleting one-by-one using 1 thread : 243 seconds
+> 2. Deleting one-by-one using 10 thread: 70 seconds
+> 3. Deleting one-by-one using 50 thread: 54 seconds
+> 4. Deleting all using "group deletion": 30 seconds
+> 
+> Note that even though the deletion logic takes place under the rtnl
+> lock, since the call to rcu_barrier() is outside the lock we gain
+> some improvements.
+> 
+> But, while "group deletion" is the fastest, it is not suited for
+> deleting large number of arbitrary devices which are unknown a head of
+> time. Furthermore, moving large number of devices to a group is also a
+> costly operation.
+> 
+> This patch adds support for passing an arbitrary list of ifindex of
+> devices to delete with a new IFLA_IFINDEX_LIST attribute.
+> This gives a more fine-grained control over which devices to delete,
+> while still resulting in rcu_barrier() being called only once.
+> Indeed, the timings of using this new API to delete 10K devices is
+> the same as using the existing "group" deletion.
+> 
+> The size constraints on the attribute means the API can delete at most
+> 16382 devices in a single request.
+> 
+> Signed-off-by: Lahav Schlesinger <lschlesinger@drivenets.com>
+> ---
+> v2 -> v3
+>  - Rename 'ifindex_list' to 'ifindices', and pass it as int*
+>  - Clamp 'ops' variable in second loop.
+> 
+> v1 -> v2
+>  - Unset 'len' of IFLA_IFINDEX_LIST in policy.
+>  - Use __dev_get_by_index() instead of n^2 loop.
+>  - Return -ENODEV if any ifindex is not present.
+>  - Saved devices in an array.
+>  - Fix formatting.
+> 
+>  include/uapi/linux/if_link.h |  1 +
+>  net/core/rtnetlink.c         | 50 ++++++++++++++++++++++++++++++++++++
+>  2 files changed, 51 insertions(+)
+> 
+> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+> index eebd3894fe89..f950bf6ed025 100644
+> --- a/include/uapi/linux/if_link.h
+> +++ b/include/uapi/linux/if_link.h
+> @@ -348,6 +348,7 @@ enum {
+>  	IFLA_PARENT_DEV_NAME,
+>  	IFLA_PARENT_DEV_BUS_NAME,
+>  
+> +	IFLA_IFINDEX_LIST,
+>  	__IFLA_MAX
+>  };
+>  
+> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+> index fd030e02f16d..49d1a3954a01 100644
+> --- a/net/core/rtnetlink.c
+> +++ b/net/core/rtnetlink.c
+> @@ -1880,6 +1880,7 @@ static const struct nla_policy ifla_policy[IFLA_MAX+1] = {
+>  	[IFLA_PROTO_DOWN_REASON] = { .type = NLA_NESTED },
+>  	[IFLA_NEW_IFINDEX]	= NLA_POLICY_MIN(NLA_S32, 1),
+>  	[IFLA_PARENT_DEV_NAME]	= { .type = NLA_NUL_STRING },
+> +	[IFLA_IFINDEX_LIST]	= { .type = NLA_BINARY },
+>  };
+>  
+>  static const struct nla_policy ifla_info_policy[IFLA_INFO_MAX+1] = {
+> @@ -3050,6 +3051,52 @@ static int rtnl_group_dellink(const struct net *net, int group)
+>  	return 0;
+>  }
+>  
+> +static int rtnl_list_dellink(struct net *net, int *ifindices, int size)
+> +{
+> +	const int num_devices = size / sizeof(int);
+> +	struct net_device **dev_list;
+> +	LIST_HEAD(list_kill);
+> +	int i, ret;
+> +
+> +	if (size <= 0 || size % sizeof(int))
+> +		return -EINVAL;
+> +
+> +	dev_list = kmalloc_array(num_devices, sizeof(*dev_list), GFP_KERNEL);
+> +	if (!dev_list)
+> +		return -ENOMEM;
+> +
+> +	for (i = 0; i < num_devices; i++) {
+> +		const struct rtnl_link_ops *ops;
+> +		struct net_device *dev;
+> +
+> +		ret = -ENODEV;
+> +		dev = __dev_get_by_index(net, ifindices[i]);
+> +		if (!dev)
+> +			goto out_free;
+> +
+> +		ret = -EOPNOTSUPP;
+> +		ops = dev->rtnl_link_ops;
+> +		if (!ops || !ops->dellink)
+> +			goto out_free;
 
-Once tcp small queue check failed in tcp_small_queue_check(), the
-throughput of tcp will be limited, and it's hard to distinguish
-whether it is out of tcp congestion control.
+I'm just curious, how does user know that specific device doesn't
+have ->delink implementation? It is important to know because you
+are failing whole batch deletion. At least for single delink, users
+have chance to skip "failed" one and continue.
 
-Add statistics of LINUX_MIB_TCPSMALLQUEUEFAILURE for this scene.
+Thanks
 
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
----
-v2:
-- use NET_INC_STATS() instead of __NET_INC_STATS()
----
- include/uapi/linux/snmp.h | 1 +
- net/ipv4/proc.c           | 1 +
- net/ipv4/tcp_output.c     | 5 ++++-
- 3 files changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
-index 904909d020e2..e32ec6932e82 100644
---- a/include/uapi/linux/snmp.h
-+++ b/include/uapi/linux/snmp.h
-@@ -292,6 +292,7 @@ enum
- 	LINUX_MIB_TCPDSACKIGNOREDDUBIOUS,	/* TCPDSACKIgnoredDubious */
- 	LINUX_MIB_TCPMIGRATEREQSUCCESS,		/* TCPMigrateReqSuccess */
- 	LINUX_MIB_TCPMIGRATEREQFAILURE,		/* TCPMigrateReqFailure */
-+	LINUX_MIB_TCPSMALLQUEUEFAILURE,		/* TCPSmallQueueFailure */
- 	__LINUX_MIB_MAX
- };
- 
-diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
-index f30273afb539..43b7a77cd6b4 100644
---- a/net/ipv4/proc.c
-+++ b/net/ipv4/proc.c
-@@ -297,6 +297,7 @@ static const struct snmp_mib snmp4_net_list[] = {
- 	SNMP_MIB_ITEM("TCPDSACKIgnoredDubious", LINUX_MIB_TCPDSACKIGNOREDDUBIOUS),
- 	SNMP_MIB_ITEM("TCPMigrateReqSuccess", LINUX_MIB_TCPMIGRATEREQSUCCESS),
- 	SNMP_MIB_ITEM("TCPMigrateReqFailure", LINUX_MIB_TCPMIGRATEREQFAILURE),
-+	SNMP_MIB_ITEM("TCPSmallQueueFailure", LINUX_MIB_TCPSMALLQUEUEFAILURE),
- 	SNMP_MIB_SENTINEL
- };
- 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 2e6e5a70168e..835a556a597a 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -2524,8 +2524,11 @@ static bool tcp_small_queue_check(struct sock *sk, const struct sk_buff *skb,
- 		 * test again the condition.
- 		 */
- 		smp_mb__after_atomic();
--		if (refcount_read(&sk->sk_wmem_alloc) > limit)
-+		if (refcount_read(&sk->sk_wmem_alloc) > limit) {
-+			NET_INC_STATS(sock_net(sk),
-+				      LINUX_MIB_TCPSMALLQUEUEFAILURE);
- 			return true;
-+		}
- 	}
- 	return false;
- }
--- 
-2.30.2
-
+> +
+> +		dev_list[i] = dev;
+> +	}
+> +
+> +	for (i = 0; i < num_devices; i++) {
+> +		struct net_device *dev = dev_list[i];
+> +
+> +		dev->rtnl_link_ops->dellink(dev, &list_kill);
+> +	}
+> +
+> +	unregister_netdevice_many(&list_kill);
+> +
+> +	ret = 0;
+> +
+> +out_free:
+> +	kfree(dev_list);
+> +	return ret;
+> +}
+> +
+>  int rtnl_delete_link(struct net_device *dev)
+>  {
+>  	const struct rtnl_link_ops *ops;
+> @@ -3102,6 +3149,9 @@ static int rtnl_dellink(struct sk_buff *skb, struct nlmsghdr *nlh,
+>  				   tb[IFLA_ALT_IFNAME], NULL);
+>  	else if (tb[IFLA_GROUP])
+>  		err = rtnl_group_dellink(tgt_net, nla_get_u32(tb[IFLA_GROUP]));
+> +	else if (tb[IFLA_IFINDEX_LIST])
+> +		err = rtnl_list_dellink(tgt_net, nla_data(tb[IFLA_IFINDEX_LIST]),
+> +					nla_len(tb[IFLA_IFINDEX_LIST]));
+>  	else
+>  		goto out;
+>  
+> -- 
+> 2.25.1
+> 
