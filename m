@@ -2,77 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AA1C4607D7
-	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 18:07:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81B224607DA
+	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 18:10:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235243AbhK1RLN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Nov 2021 12:11:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41746 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358617AbhK1RJN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 12:09:13 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2979FC06174A
-        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 09:05:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=kQxB4LtueUM5/YDDNjUA+LxY30OxshLIqXizOxXLazk=;
-        t=1638119113; x=1639328713; b=h9bm8hK05Z2D6XqxeJQp36Ys9mF+KvrSmFF/mD35687KYV0
-        QnGdZYCbOcaXrT5xFl536yvGIBcfHhT1C6aUFN2npwmoj5W0dmYo9/h8s2vtnizh7acNpDbLxNv5k
-        AO8O/SycvViDQhTuXc+jb2IEM7pYem24WZpioXVWMGceG2BeVMS+hZeRHZEH6AcKaOObAdMkUSH1P
-        jzkLcsHJLBb/ooC5f8gZCyrWVc45cgF32svZY8nBae1wGIqfPyGK1lSwIuyx9Qr6PMC2OMr/9xJkK
-        ivisjL+wkCcqr7oX2e6+XLSWTDSN2cSIHlsfrXP7RSesBZDLZ1ggZJQVaSG5SqZQ==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1mrNbv-0044n2-UN;
-        Sun, 28 Nov 2021 18:05:08 +0100
-Message-ID: <dff6b112e225993b113ec04f3205d837352b8961.camel@sipsolutions.net>
-Subject: Re: [PATCH RESEND net-next 5/5] net: wwan: core: make debugfs
- optional
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, M Chetan Kumar <m.chetan.kumar@intel.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        Loic Poulain <loic.poulain@linaro.org>
-Date:   Sun, 28 Nov 2021 18:05:06 +0100
-In-Reply-To: <20211128125522.23357-6-ryazanov.s.a@gmail.com>
-References: <20211128125522.23357-1-ryazanov.s.a@gmail.com>
-         <20211128125522.23357-6-ryazanov.s.a@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.1 (3.42.1-1.fc35) 
+        id S231855AbhK1RNx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Nov 2021 12:13:53 -0500
+Received: from marcansoft.com ([212.63.210.85]:36086 "EHLO mail.marcansoft.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234143AbhK1RLw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 28 Nov 2021 12:11:52 -0500
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 988D242684;
+        Sun, 28 Nov 2021 17:08:30 +0000 (UTC)
+To:     Andrew Lunn <andrew@lunn.ch>, Tianhao Chai <cth451@gmail.com>
+Cc:     Igor Russkikh <irusskikh@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>
+References: <20211128023733.GA466664@cth-desktop-dorm.mad.wi.cth451.me>
+ <YaOvShya4kP4SRk7@lunn.ch>
+From:   Hector Martin <marcan@marcan.st>
+Subject: Re: [PATCH] ethernet: aquantia: Try MAC address from device tree
+Message-ID: <37679b8b-7a81-5605-23af-e442f9e91816@marcan.st>
+Date:   Mon, 29 Nov 2021 02:08:28 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
+In-Reply-To: <YaOvShya4kP4SRk7@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: es-ES
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2021-11-28 at 15:55 +0300, Sergey Ryazanov wrote:
+On 29/11/2021 01.33, Andrew Lunn wrote:
+> On Sat, Nov 27, 2021 at 08:37:33PM -0600, Tianhao Chai wrote:
+>> Apple M1 Mac minis (2020) with 10GE NICs do not have MAC address in the
+>> card, but instead need to obtain MAC addresses from the device tree. In
+>> this case the hardware will report an invalid MAC.
+>>
+>> Currently atlantic driver does not query the DT for MAC address and will
+>> randomly assign a MAC if the NIC doesn't have a permanent MAC burnt in.
+>> This patch causes the driver to perfer a valid MAC address from OF (if
+>> present) over HW self-reported MAC and only fall back to a random MAC
+>> address when neither of them is valid.
 > 
-> +#ifdef CONFIG_WWAN_DEBUGFS
->  struct dentry *wwan_get_debugfs_dir(struct device *parent);
-> +#else
-> +static inline struct dentry *wwan_get_debugfs_dir(struct device *parent)
-> +{
-> +	return NULL;
-> +}
-> +#endif
+> This is a change in behaviour, and could cause regressions. It would
+> be better to keep with the current flow. Call
+> aq_fw_ops->get_mac_permanent() first. If that does not give a valid
+> MAC address, then try DT, and lastly use a random MAC address.
 
-Now I have to send another email anyway ... but this one probably should
-be ERR_PTR(-ENODEV) or something, a la debugfs_create_dir() if debugfs
-is disabled, because then a trivial user of wwan's debugfs doesn't even
-have to care about whether it's enabled or not, it can just
-debugfs_create_dir() for its own and the debugfs core code will check
-and return immediately. Yes that's a bit more code space, but if you
-just have a debugfs file or two, having an extra Kconfig option is
-possibly overkill too. Especially if we get into this path because
-DEBUG_FS is disabled *entirely*, and thus all the functions will be
-empty inlines (but it might not be, so it should be consistent with
-debugfs always returning non-NULL).
+On DT platforms, it is expected that the device tree MAC will override 
+whatever the device thinks is its MAC address. See tg3, igb, igc, r8169, 
+for examples where eth_platform_get_mac_address takes precedence over 
+everything else.
 
-johannes
+I would not expect any other existing platform to have a MAC assigned to 
+the device in this way using these cards; if any platforms do, chances 
+are they intended it for it to be used and this patch will fix a current 
+bug. If some platforms out there really have bogus MACs assigned in this 
+way, that's a firmware bug, and we'd have to find out and add explicit, 
+targeted workaround code. Are you aware of any such platforms? :)
+
+-- 
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
