@@ -2,84 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEC02460A5C
-	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 22:37:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44B7C460A60
+	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 22:44:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232140AbhK1VlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Nov 2021 16:41:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44684 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236262AbhK1VjI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 16:39:08 -0500
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7C4DC061574
-        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 13:35:51 -0800 (PST)
-Received: by mail-ot1-x32d.google.com with SMTP id v15-20020a9d604f000000b0056cdb373b82so22703506otj.7
-        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 13:35:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=19jfq8NAkngt5WmeNAQHwt32b8mM7OVqSc5ixcyl4Ng=;
-        b=SiBjonBeGPUVYw7qv7L+5TfKisv5/McCBOXLmBXUz1+/VsJ9gI3UPGibBXqcBZ80BU
-         x7XyxyvwoUrguqjvXc4gOU8Fdy1186y6xiLrG1ragIDSXK1N82vJi2PPMnU9aDoqyME3
-         XEfhd53SWw2GijC+tUWECqYLSwxs8/7dJyF7BLg4bndS6jVzyFjk+iSJUw4yn47/BuJ+
-         ROf2Fqx2XwdMATOXEeH/GLSjdmRm/PKTYCHOfsTrCN4i2YfyvX1L5DLLc+N1nKOlZLfa
-         z6EalvozSYI9EDD83H8klyni1vET8sc2QOhBTE9hTkQI8J2fZu2t7+geZX4TjDXcNkh+
-         9W4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=19jfq8NAkngt5WmeNAQHwt32b8mM7OVqSc5ixcyl4Ng=;
-        b=uNXI6r6NSfozNjgXZOeQuzL1O84XYPWs8i+pE+TUxSRIw6yM8RGRNq29fSbnB4z2FK
-         sCH7jlkeoOigy+aocd+8/H0ETJ1Fv8Lu6Q1PuwvFeJ8JJiuiR65L7QDuPxKmEwT9tQCg
-         kuX8EfP7BfDCo7zVLmz8x1Rvg1DDSui+Clkr0aUfTW49cbAp+Z5gzuGcxuswG1k2hXFr
-         CMIzx5Mn3ASJWxKS38x7gg81RJpzPArTIoQOTabhfQitF3YB2yzPxY/nNbJoGrtRrL7I
-         YMqwHVyfJc4jz5XW59KL6eSa/6TpjFB8zD+OmXbHEAR9PaaMWP90ZV7WCceNBq7LAhHj
-         dakw==
-X-Gm-Message-State: AOAM5325BqcK9izyjFWbm1MuDDmQ/uWvMiX26fbhPcylUzFHHwVLgEfi
-        ADh+MuRV0S5rzJWV7OkVgePvBGHyEJU=
-X-Google-Smtp-Source: ABdhPJw71N9PW7PWxReq+F72QME3PFNmaXzKM7lrM8RgHlGTe0s626OZxMRSD8ZRdKZnpR39uZOGqg==
-X-Received: by 2002:a05:6830:1049:: with SMTP id b9mr41140506otp.60.1638135351271;
-        Sun, 28 Nov 2021 13:35:51 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id s6sm2693155ois.3.2021.11.28.13.35.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 28 Nov 2021 13:35:50 -0800 (PST)
-Message-ID: <89face48-9b1b-fc0a-2ae2-212bbb1c5af6@gmail.com>
-Date:   Sun, 28 Nov 2021 14:35:49 -0700
+        id S236262AbhK1VsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Nov 2021 16:48:10 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:47940 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S236303AbhK1VqK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 16:46:10 -0500
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1ASKud1L006735;
+        Sun, 28 Nov 2021 21:42:50 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=53T3DVQXoOmGk0Ru/bhYIr21fbVr8KqJ17GtJgDRD9I=;
+ b=l3n4T7on+31LPEFelJ6Pu/7akDMPbgrPmUOsJ5gi1kWmekxE1GKlbF7A3RI+PkswfSdx
+ mKZNTlf10solSPUSonUdJJt/ns8QxHSayq41bNSXXj/s43SmYlQNSPFGmb6F+lFjC0ij
+ SzNejjGEvlXdgSnJ0Z9Bgn0rzyje+SGqqTZCQOjqGoXSVtqMTViKUBIa24nNln+MO2jB
+ FZ0GOF4fcPbMJXPnL4B1q1EoqSDSQ129vb7ux37q811fQgvaaEVCxiA7PortAs+YPC21
+ LuSkZV9+X5Q1OKG+RWZWE3JrLb7spqU3aDoCg+MfSRucwpd0W1te8g7zRElkMFQbGBPG kA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3cmh8d8f2n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 28 Nov 2021 21:42:50 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1ASLeB8R032291;
+        Sun, 28 Nov 2021 21:42:49 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3cmh8d8f2a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 28 Nov 2021 21:42:49 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1ASLbHKJ028231;
+        Sun, 28 Nov 2021 21:42:48 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma01fra.de.ibm.com with ESMTP id 3ckca96fq8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 28 Nov 2021 21:42:48 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1ASLgj7U59113762
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 28 Nov 2021 21:42:45 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B56A6A405B;
+        Sun, 28 Nov 2021 21:42:45 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5D53FA4054;
+        Sun, 28 Nov 2021 21:42:45 +0000 (GMT)
+Received: from [9.145.59.207] (unknown [9.145.59.207])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Sun, 28 Nov 2021 21:42:45 +0000 (GMT)
+Message-ID: <883f1ab1-21be-9019-d8c6-3942a0b8588c@linux.ibm.com>
+Date:   Sun, 28 Nov 2021 22:42:50 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.1
-Subject: Re: [PATCH net v2 1/3] net: ipv6: add fib6_nh_release_dsts stub
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH net] net/smc: Clear memory when release and reuse buffer
 Content-Language: en-US
-To:     Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        netdev@vger.kernel.org
-Cc:     idosch@idosch.org, davem@davemloft.net, kuba@kernel.org
-References: <20211122151514.2813935-1-razor@blackwall.org>
- <20211122151514.2813935-2-razor@blackwall.org>
- <28dd7421-15f3-db72-4e1e-3d86fa2129d7@gmail.com>
- <b75dd859-266e-16d7-f37a-1c349fccacd4@nvidia.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <b75dd859-266e-16d7-f37a-1c349fccacd4@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Tony Lu <tonylu@linux.alibaba.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+References: <20211125122858.90726-1-tonylu@linux.alibaba.com>
+ <20211126112855.37274cb7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <20211126112855.37274cb7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: gArUDayhvrN29MTxd2k2bNRQBnzh0YlT
+X-Proofpoint-GUID: RbmPb3ySMcWuxDcUW-fEtS-yD77t07at
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-11-28_07,2021-11-28_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 adultscore=0
+ mlxscore=0 clxscore=1015 priorityscore=1501 malwarescore=0
+ lowpriorityscore=0 spamscore=0 impostorscore=0 phishscore=0
+ mlxlogscore=999 bulkscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2110150000 definitions=main-2111280126
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/28/21 1:14 PM, Nikolay Aleksandrov wrote:
-> It duplicates a part of it but in a safe way because the fib6_nh could still be visible,
-> while fib6_nh_release does it in a way that assumes it's not. I could re-use
-> this helper in fib6_nh_release though, since it doesn't matter how the entries are
-> freed there. I'm guessing that is what you meant?
+On 26/11/2021 20:28, Jakub Kicinski wrote:
+> The tag in the subject seems incorrect, we tag things as [PATCH net] 
+> if they are fixes, and as [PATCH net-next] if they are new features,
+> code refactoring or performance improvements.
+> 
+> Is this a fix for a regression? In which case we need a Fixes tag to
+> indicate where it was introduced. Otherwise it needs to be tagged as
+> [PATCH net-next].
+> 
+> I'm assuming Karsten will take it via his tree, otherwise you'll need
+> to repost.
+> 
 
-yes, that is what I meant - it duplicates a chunk of the code in
-fib6_nh_release.
-
-> I'll take care of that and of the few possible optimizations for nexthop in net-next.
-
-thanks!
+We are testing this change atm and will submit it via our tree.
+Very nice change, I like it!
