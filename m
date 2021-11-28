@@ -2,194 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D8D946083D
-	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 18:57:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B11A6460842
+	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 19:00:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359100AbhK1SAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Nov 2021 13:00:16 -0500
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:42821 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239305AbhK1R6P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 12:58:15 -0500
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 5B9425802EE;
-        Sun, 28 Nov 2021 12:54:58 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Sun, 28 Nov 2021 12:54:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; bh=UUHBKcGQTfc55BryKks38P9q1VVkigTZnH+REkQ6S
-        Co=; b=iYiN+YmWJhZj5r+gfNGtNnX5WxIBt9yrnzuHllXQ5/GUOrZwgE+2B6kqq
-        v1LacLeZi5zTVMsNqmYhaoCVMmR7ErWb/6IMezfXpj4u51pcnQtnt5/PL1NDm5AK
-        d9CZlDHePScIbPZ7dXxmGzpUDRkVmvPH5Em/yqEQ5o71cDbP6BJlajUs4CRXojAc
-        LzDVEKJNK78Vz3a45eafY2sJ76R61tmWYjTYc4AtkcIHMr9qmajW5sqDYL0fpYei
-        h6Pe7CTiBbD0MbI7zqJGjx+gCDQ2nW3O0Uo+4yN6QuRPMxk6JKI8Svoa6WW0kNuo
-        tVzHESLM+PoWuo8LTnmU9cpdyMP3A==
-X-ME-Sender: <xms:cMKjYWPd5DduNFfJjqZGpi_Wq71dAWE-J_wxpNXVNN7XTVtZ_QJQOw>
-    <xme:cMKjYU9Rk6Tqx55hmFgiPLQKDLq2WNdabM2IbEvkxdvab2oCAl8BYbJpTf3_rCUOp
-    53xpJsCz_pSqq8>
-X-ME-Received: <xmr:cMKjYdTw-ttGcSarl-eU2ZcZwmqsKK1hsatFaqZGuF6YohTU7eyzmsq4leif>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrheeigddutdekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtugfgjgesthekrodttddtudenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnhepieevhfevtdejhfethedvkefgudetudegudethfdtfeefleektdekkeefjeel
-    tedtnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghdpghhithhhuhgsrdgtohhmnecuve
-    hluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
-    sehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:cMKjYWtuij49OVBZsOZ08kX7vOuYx2zKXpEQngCdpqkooYt8LbI4gQ>
-    <xmx:cMKjYefpDNGR53rK7VKwO17_5hlV0ErgOrbjeks77FFLX_bPwm1JjA>
-    <xmx:cMKjYa29fxDeX6UVEYihZVEcU-Ns9Ce4QLuSS0jmtGkEHd2vzlMc1w>
-    <xmx:csKjYbWeDFzgpl2GEEg_ew_X8_3slLF376ZQh0yCCLJ9kVNpVD_Ylw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 28 Nov 2021 12:54:55 -0500 (EST)
-Date:   Sun, 28 Nov 2021 19:54:53 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shay Agroskin <shayagr@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        David Arinzon <darinzon@amazon.com>,
-        Noam Dagan <ndagan@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Andrei Vagin <avagin@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Cong Wang <cong.wang@bytedance.com>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, petrm@nvidia.com,
-        nikolay@nvidia.com
-Subject: Re: [PATCH v2 net-next 21/26] ice: add XDP and XSK generic
- per-channel statistics
-Message-ID: <YaPCbaMVaVlxXcHC@shredder>
-References: <20211123163955.154512-22-alexandr.lobakin@intel.com>
- <77407c26-4e32-232c-58e0-2d601d781f84@iogearbox.net>
- <87bl28bga6.fsf@toke.dk>
- <20211125170708.127323-1-alexandr.lobakin@intel.com>
- <20211125094440.6c402d63@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20211125204007.133064-1-alexandr.lobakin@intel.com>
- <87sfvj9k13.fsf@toke.dk>
- <20211126100611.514df099@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <87ee72ah56.fsf@toke.dk>
- <20211126111431.4a2ed007@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1345427AbhK1SD2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Nov 2021 13:03:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:59457 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1359176AbhK1SB2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 13:01:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1638122291;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=aw8bghuFT1gVRspF1SIwJ9nxGGoDXPynCf2IvVb5wz8=;
+        b=VU6zYd1Zm0uNnlP8aK2oBhKy13kekURFCPNzJPM4vWgJRLWOpNZRvglM/0CMhBL5qkZZCL
+        robaFoIwZAE+5LyaA1Z1sAqdLe1BJhxBEwbdyNo6BzIrDeOtHzQjs90+DwxXCzZjERyAi+
+        PS8dyk1yXhtwAvDzeksLBWHTVJrm3MI=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-249-azYkzD8OOju3Ozy-Vu3sOQ-1; Sun, 28 Nov 2021 12:58:10 -0500
+X-MC-Unique: azYkzD8OOju3Ozy-Vu3sOQ-1
+Received: by mail-ed1-f69.google.com with SMTP id 30-20020a508e5e000000b003f02e458b17so4989598edx.17
+        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 09:58:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=aw8bghuFT1gVRspF1SIwJ9nxGGoDXPynCf2IvVb5wz8=;
+        b=xs0JA7B/p/qR0sC3eh9ZLuPaBdr8AEq4ldU/KOHD5Gg/jFccf3bdjm+aDMGd8cmZCA
+         G+kya54/4CVOso+vucO3OLw5xHv+jPXSsd9CxVn5+bmXVHhDSJwdDBbkC3/zKH/L7/uk
+         Mim3EIMGhCSY3A/JpRzTLp+BJ0ZfDCNj7KD5HgXP+u4Jy65HAI/dQ/XyScM/+Kq4GuHe
+         C1FWtAxw9LILlL9GnYQ0zqKclcp5qM1LZDBjZNRQEZfnJ/WZDnmA+HO09lUlDZcuKLKk
+         xOpcG5DnZGb1JiHZIRen8AGUxB+8r5l4syNPI92mN56Yxsbjh/U7YLsNLMQVop6XgqY8
+         AjNA==
+X-Gm-Message-State: AOAM533oAmtmUvvcYVHlkZECyKIFR6Kizcbz3QdH7JVRcC+RQe1LqvhH
+        6kcLri3XVKnXgERsmSWBPKKJgDhTfp1JVaOIS1k23FX1hMV+jRp7uZQL/fpfzNaBVFkZJx5SC2Z
+        AsNiSlYGtn5iUqpKH
+X-Received: by 2002:a05:6402:35c2:: with SMTP id z2mr67408184edc.92.1638122289280;
+        Sun, 28 Nov 2021 09:58:09 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwmcTF6gn5TCzS+/rpoMf1mqbfbhiRbIxVsZL7CgEHFdEJ4mkHhQm2BnrUXrbOR/h6u/h/cxQ==
+X-Received: by 2002:a05:6402:35c2:: with SMTP id z2mr67408154edc.92.1638122289105;
+        Sun, 28 Nov 2021 09:58:09 -0800 (PST)
+Received: from redhat.com ([2a03:c5c0:107d:bc0b:b6a8:e3e8:8431:4d58])
+        by smtp.gmail.com with ESMTPSA id oz31sm6090037ejc.35.2021.11.28.09.58.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Nov 2021 09:58:08 -0800 (PST)
+Date:   Sun, 28 Nov 2021 12:58:03 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jasowang@redhat.com, longpeng2@huawei.com, mst@redhat.com,
+        pasic@linux.ibm.com, sgarzare@redhat.com, stable@vger.kernel.org,
+        wuzongyong@linux.alibaba.com, ye.guojin@zte.com.cn,
+        zealci@zte.com.cn
+Subject: [GIT PULL] vhost,virtio,vdpa: bugfixes
+Message-ID: <20211128125803-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211126111431.4a2ed007@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-Mutt-Fcc: =sent
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+Petr, Nik
+The following changes since commit 136057256686de39cc3a07c2e39ef6bc43003ff6:
 
-On Fri, Nov 26, 2021 at 11:14:31AM -0800, Jakub Kicinski wrote:
-> On Fri, 26 Nov 2021 19:47:17 +0100 Toke Høiland-Jørgensen wrote:
-> > > Fair. In all honesty I said that hoping to push for a more flexible
-> > > approach hidden entirely in BPF, and not involving driver changes.
-> > > Assuming the XDP program has more fine grained stats we should be able
-> > > to extract those instead of double-counting. Hence my vague "let's work
-> > > with apps" comment.
-> > >
-> > > For example to a person familiar with the workload it'd be useful to
-> > > know if program returned XDP_DROP because of configured policy or
-> > > failure to parse a packet. I don't think that sort distinction is
-> > > achievable at the level of standard stats.
-> > >
-> > > The information required by the admin is higher level. As you say the
-> > > primary concern there is "how many packets did XDP eat".  
-> > 
-> > Right, sure, I am also totally fine with having only a somewhat
-> > restricted subset of stats available at the interface level and make
-> > everything else be BPF-based. I'm hoping we can converge of a common
-> > understanding of what this "minimal set" should be :)
-> > 
-> > > Speaking of which, one thing that badly needs clarification is our
-> > > expectation around XDP packets getting counted towards the interface
-> > > stats.  
-> > 
-> > Agreed. My immediate thought is that "XDP packets are interface packets"
-> > but that is certainly not what we do today, so not sure if changing it
-> > at this point would break things?
-> 
-> I'd vote for taking the risk and trying to align all the drivers.
+  Linux 5.16-rc2 (2021-11-21 13:47:39 -0800)
 
-I agree. I think IFLA_STATS64 in RTM_NEWLINK should contain statistics
-of all the packets seen by the netdev. The breakdown into software /
-hardware / XDP should be reported via RTM_NEWSTATS.
+are available in the Git repository at:
 
-Currently, for soft devices such as VLANs, bridges and GRE, user space
-only sees statistics of packets forwarded by software, which is quite
-useless when forwarding is offloaded from the kernel to hardware.
+  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
 
-Petr is working on exposing hardware statistics for such devices via
-rtnetlink. Unlike XDP (?), we need to be able to let user space enable /
-disable hardware statistics as we have a limited number of hardware
-counters and they can also reduce the bandwidth when enabled. We are
-thinking of adding a new RTM_SETSTATS for that:
+for you to fetch changes up to bb93ce4b150dde79f58e34103cbd1fe829796649:
 
-# ip stats set dev swp1 hw_stats on
+  vdpa_sim: avoid putting an uninitialized iova_domain (2021-11-24 19:00:29 -0500)
 
-For query, something like (under discussion):
+----------------------------------------------------------------
+vhost,virtio,vdpa: bugfixes
 
-# ip stats show dev swp1 // all groups
-# ip stats show dev swp1 group link
-# ip stats show dev swp1 group offload // all sub-groups
-# ip stats show dev swp1 group offload sub-group cpu
-# ip stats show dev swp1 group offload sub-group hw
+Misc fixes all over the place.
 
-Like other iproute2 commands, these follow the nesting of the
-RTM_{NEW,GET}STATS uAPI.
+Revert of virtio used length validation series: the approach taken does
+not seem to work, breaking too many guests in the process. We'll need to
+do length validation using some other approach.
 
-Looking at patch #1 [1], I think that whatever you decide to expose for
-XDP can be queried via:
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 
-# ip stats show dev swp1 group xdp
-# ip stats show dev swp1 group xdp sub-group regular
-# ip stats show dev swp1 group xdp sub-group xsk
+----------------------------------------------------------------
+Longpeng (1):
+      vdpa_sim: avoid putting an uninitialized iova_domain
 
-Regardless, the following command should show statistics of all the
-packets seen by the netdev:
+Michael S. Tsirkin (4):
+      Revert "virtio-scsi: don't let virtio core to validate used buffer length"
+      Revert "virtio-blk: don't let virtio core to validate used length"
+      Revert "virtio-net: don't let virtio core to validate used length"
+      Revert "virtio_ring: validate used buffer length"
 
-# ip -s link show dev swp1
+Stefano Garzarella (2):
+      vhost/vsock: fix incorrect used length reported to the guest
+      vhost/vsock: cleanup removing `len` variable
 
-There is a PR [2] for node_exporter to use rtnetlink to fetch netdev
-statistics instead of the old proc interface. It should be possible to
-extend it to use RTM_*STATS for more fine-grained statistics.
+Wu Zongyong (1):
+      vhost-vdpa: clean irqs before reseting vdpa device
 
-[1] https://lore.kernel.org/netdev/20211123163955.154512-2-alexandr.lobakin@intel.com/
-[2] https://github.com/prometheus/node_exporter/pull/2074
+Ye Guojin (1):
+      virtio-blk: modify the value type of num in virtio_queue_rq()
+
+ drivers/block/virtio_blk.c       |  3 +-
+ drivers/net/virtio_net.c         |  1 -
+ drivers/scsi/virtio_scsi.c       |  1 -
+ drivers/vdpa/vdpa_sim/vdpa_sim.c |  7 +++--
+ drivers/vhost/vdpa.c             |  2 +-
+ drivers/vhost/vsock.c            |  8 ++----
+ drivers/virtio/virtio_ring.c     | 60 ----------------------------------------
+ include/linux/virtio.h           |  2 --
+ 8 files changed, 9 insertions(+), 75 deletions(-)
+
