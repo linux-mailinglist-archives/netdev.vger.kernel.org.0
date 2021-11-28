@@ -2,96 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C60A84607BA
-	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 17:55:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83D9D4607CF
+	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 18:04:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358438AbhK1Q6f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Nov 2021 11:58:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39850 "EHLO
+        id S1346922AbhK1RHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Nov 2021 12:07:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346922AbhK1Q4e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 11:56:34 -0500
-Received: from mail-ua1-x934.google.com (mail-ua1-x934.google.com [IPv6:2607:f8b0:4864:20::934])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42DECC0613D7
-        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 08:53:18 -0800 (PST)
-Received: by mail-ua1-x934.google.com with SMTP id ay21so29004255uab.12
-        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 08:53:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=paHVaxEa9CqakgP4O4RXlNI7wYyMct8sjfhm7iOajfc=;
-        b=MBhxMJ0n8+deUaEsyWe2e3zVPG3xmbn3KqqP6ajtKMmIPWgamstLPp3XIt3Ez5jn30
-         NRwQHEoXbkrGZGzznT47MazVQXYPm8vwRD8545msy4eAc4iELFdGgWXb2hsy41W/TW7g
-         udtyk1H9LA8gyNsABfkltsuXYXVPWSYkJToBscqw8ePAtmwbKCm7Po5CQJ3iL+XjE8M3
-         aWX8Ud8Kv/JUsDCY5N2cZl8jYJ141weTM6I4+Q33jChyT0J+CaM7u71WBnRInBw4hcdS
-         P6bLGT98d4W204/WBcxV/nqJI3uJf2TRoqwBCKl59U2SCKTVGKPAfmUyoZDgLMQ/3i2z
-         wY+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=paHVaxEa9CqakgP4O4RXlNI7wYyMct8sjfhm7iOajfc=;
-        b=BurFj6onBIEkLQpJEMmG53e9w0JUSSIXmkFNHCgcaEcls5tSrt+gfOMJjTA1EcG/W4
-         0O+56+dqVKlTqG0aldua4kWRPMm07R0sFS3GuXnXj5AnpPpVQ9ax6vKmbDRqpghkkyzU
-         i5SXsS3R32c6I26GryM2fL+YlEKzUOkG/YZTHnJgolccibRWK5HTKUy8hlTzE3LpqWDW
-         iE8JXGkDBxiBn9jpQK76yF+hiyNE6CHoJDJgZa97/zb2WoRbiv5XT9KMbz4M1HIwhlch
-         AHQJWVWTWedxB7XVEbFMELlKsHiJmyQVsUecEx7wQxOIIJrXIC1e3AZz5nbi7zjvhR8w
-         amBw==
-X-Gm-Message-State: AOAM530LXYLIaTzvHnKz51hBKJt9bh+nmp/UGv+yThiRaPpWm5ELTLgX
-        3WEBzj/Ynm2Pszy84zDvmOIENh3S9QTC2d6LHmdDvGgtqwU=
-X-Google-Smtp-Source: ABdhPJxWN7qNIIE3vAq2ZR2vshpG1uaxzBq1wbTb3rLlr7JezLI3V2ihBrM/Ufllc7d90MZoyaPemYIU9WiCKi86ESw=
-X-Received: by 2002:a67:c29a:: with SMTP id k26mr28588936vsj.32.1638118397433;
- Sun, 28 Nov 2021 08:53:17 -0800 (PST)
-MIME-Version: 1.0
-References: <20211120162155.1216081-1-m.chetan.kumar@linux.intel.com> <20211120162155.1216081-2-m.chetan.kumar@linux.intel.com>
-In-Reply-To: <20211120162155.1216081-2-m.chetan.kumar@linux.intel.com>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Sun, 28 Nov 2021 19:53:06 +0300
-Message-ID: <CAHNKnsQjB2f=9nadsqKTSAA0ZewFrPrDFTx4H804+y6ztTrXCQ@mail.gmail.com>
-Subject: Re: [PATCH V3 net-next 1/2] net: wwan: common debugfs base dir for
- wwan device
-To:     M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        krishna.c.sudi@intel.com,
-        M Chetan Kumar <m.chetan.kumar@intel.com>,
-        Intel Corporation <linuxwwan@intel.com>
+        with ESMTP id S1352769AbhK1RFM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 12:05:12 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 742E3C06175D
+        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 09:01:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=qodTO7vz1VyFH07+6LrHwDalv0kIEJyZxDnwQc5CPTs=;
+        t=1638118904; x=1639328504; b=pcA2WfwvtCSbtvLPV0ikqtD37WmhsPYF7Q8Fm6KtJTmpzKD
+        zey/KhDwP7arIYKritGXZRrusxosNeRSDbcnlub9ldBbG3ryCQGqdK8OvGZwgZH3tO1XsF8XkR9W6
+        DE3tHzna86skvbwS+i0yJYaqgCKzgCXJ+De1HVJAly+2MSOvxnEtNtMT0lIHTtEHGltHmejEWZ4Es
+        gPwiko8XlQmv5XAYGdjAuVAmhm+zLdClnzlvJ3yb1clwXIbC+yU019hb9ycVcbkXK4jr1ZXJDd7SV
+        BWHknTmNIcZCmdULrUV/ncVboXQ7fZoprLWt9OHACmLvSIFDZJdMQZG/G2IpVrbg==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.95)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1mrNYW-0044hN-7P;
+        Sun, 28 Nov 2021 18:01:36 +0100
+Message-ID: <ac532d400cd61a0f86ad5b1931df87a83582323c.camel@sipsolutions.net>
+Subject: Re: [PATCH RESEND net-next 5/5] net: wwan: core: make debugfs
+ optional
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, M Chetan Kumar <m.chetan.kumar@intel.com>,
+        Intel Corporation <linuxwwan@intel.com>,
+        Loic Poulain <loic.poulain@linaro.org>
+Date:   Sun, 28 Nov 2021 18:01:35 +0100
+In-Reply-To: <20211128125522.23357-6-ryazanov.s.a@gmail.com>
+References: <20211128125522.23357-1-ryazanov.s.a@gmail.com>
+         <20211128125522.23357-6-ryazanov.s.a@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.1 (3.42.1-1.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sun, 2021-11-28 at 15:55 +0300, Sergey Ryazanov wrote:
+> 
+> +config WWAN_DEBUGFS
+> +	bool "WWAN subsystem common debugfs interface"
+> +	depends on DEBUG_FS
+> +	help
+> +	  Enables common debugfs infrastructure for WWAN devices.
+> +
+> +	  If unsure, say N.
+> 
 
-On Sat, Nov 20, 2021 at 7:14 PM M Chetan Kumar
-<m.chetan.kumar@linux.intel.com> wrote:
-> This patch set brings in a common debugfs base directory
-> i.e. /sys/kernel/debugfs/wwan/ in WWAN Subsystem for a
-> WWAN device instance. So that it avoids driver polluting
-> debugfs root with unrelated directories & possible name
-> collusion.
->
-> Having a common debugfs base directory for WWAN drivers
-> eases user to match control devices with debugfs entries.
->
-> WWAN Subsystem creates dentry (/sys/kernel/debugfs/wwan)
-> on module load & removes dentry on module unload.
->
-> When driver registers a new wwan device, dentry (wwanX)
-> is created for WWAN device instance & on driver unregister
-> dentry is removed.
->
-> New API is introduced to return the wwan device instance
-> dentry so that driver can create debugfs entries under it.
+I wonder if that really should even say "If unsure, say N." because
+really, once you have DEBUG_FS enabled, you can expect things to show up
+there?
 
-Thank you for taking care of the debugfs implementation for the WWAN core.
+And I'd probably even argue that it should be
 
-Please find my follow-up series that tweak the IOSM/WWAN debugfs
-interface a bit:
-https://lore.kernel.org/all/20211128125522.23357-1-ryazanov.s.a@gmail.com
+	bool "..." if EXPERT
+	default y
+	depends on DEBUG_FS
 
--- 
-Sergey
+so most people aren't even bothered by the question?
+
+
+>  config WWAN_HWSIM
+>  	tristate "Simulated WWAN device"
+>  	help
+> @@ -83,6 +91,7 @@ config IOSM
+>  config IOSM_DEBUGFS
+>  	bool "IOSM Debugfs support"
+>  	depends on IOSM && DEBUG_FS
+> +	select WWAN_DEBUGFS
+> 
+I guess it's kind of a philosophical question, but perhaps it would make
+more sense for that to be "depends on" (and then you can remove &&
+DEBUG_FS"), since that way it becomes trivial to disable all of WWAN
+debugfs and not have to worry about individual driver settings?
+
+
+And after that change, I'd probably just make this one "def_bool y"
+instead of asking the user.
+
+
+johannes
