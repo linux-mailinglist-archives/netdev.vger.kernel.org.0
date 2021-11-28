@@ -2,100 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14D5846056C
-	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 10:24:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73F87460574
+	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 10:29:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356950AbhK1J1e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Nov 2021 04:27:34 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:57229 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245141AbhK1JZd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 04:25:33 -0500
-Received: by mail-il1-f197.google.com with SMTP id s10-20020a056e021a0a00b0029e76c20cc0so19862043ild.23
-        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 01:22:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=/gh/RIirNb12dG3VUXwDsG22Fm8KS1ZnNB70KsKbfa8=;
-        b=YeejmdjTR9/ubJS/ht9waF9Hmc/gCR7qckdCA20zxw4V2KIdVqRlyF/UXz7MidTiFA
-         284DGjLTlbmM+eK55DGtMztPsLBM3zekRdtJ8z3o/Ue4ZmdzTLT/Zeblx7HY44M5Tuwd
-         zFGt3on63jg9kI0779sdUu57j8SZNACaVmQlxtGze4RgnQgECVDGHtqIn9i9J1yLsTR1
-         5NSgcAHbycakQMRQyVj5m+8g0kQiokx/j/SxNEEa0KKJUKL1dtEH5zVsy7us+VNmlEem
-         VZnTV3VKF5BeHR/Ddu28cI0YR+HSRYOWspHN+B+os7EL3RxhtVbgpUv20FoUo1TlKn/l
-         nI1w==
-X-Gm-Message-State: AOAM532EjLmDC9+obiKhKGdKb0lnwSRqK+blqOQFpy2F3GKKB4w+JXk8
-        lcManL1O/THQiIe3tFV+tW0yzBPLXsuqoMv7BeL2byh+pK9E
-X-Google-Smtp-Source: ABdhPJye5Ui+qEY5l/8O444JqqbQhowZO9TRfMvoZ72SWuUt2trfxS5NlwmhUs8VBemz4qXCkJV/M6A/y+rgmfwxJT06ZJUxsouY
+        id S1356977AbhK1JcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Nov 2021 04:32:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56394 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356986AbhK1JaS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 04:30:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FA68C061574;
+        Sun, 28 Nov 2021 01:27:03 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 651CAB80B32;
+        Sun, 28 Nov 2021 09:27:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2040EC004E1;
+        Sun, 28 Nov 2021 09:26:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638091618;
+        bh=FG7LziXTNR9pOZpPTgkq7GwwV41CUyDUZpq1gYQc6yc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WHZM00gaLoig9ClUH0mJYJQoBnbCTzYJRl6GEsSR2wRe8tc2K5kRsOTgtDgasMRK8
+         WcmtRDbiu9IrGgzUi1hZXzSg0RWWAQGf1uHhtw0wYDHyicnd4DzHcq30+PGA2GEnpj
+         +/7Tsz0YiawugyEiYbU97jr8p5NJI+JTCLgsfzR4tto8FiaJB3VawhrxJuGxPxv19X
+         hGqPW93wuy+UVRrsh6DBFFFVHKQCFYfZRDSs273JU7NOZ3br0smu4jgk+bO6v4po9B
+         yUm6vm1CNphN9JA+0YbR4Zt4+fXHawNZpXVGd/6+JFLgHzT+FwxHZluC8cyxu6XBmb
+         MT5lK/RBCKJ2g==
+Date:   Sun, 28 Nov 2021 11:26:54 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Parav Pandit <parav@nvidia.com>, Vu Pham <vuhuong@nvidia.com>,
+        Shay Drory <shayd@nvidia.com>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Wan Jiabing <wanjiabing@vivo.com>, Eli Cohen <elic@nvidia.com>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net-next] net/mlx5: SF, silence an uninitialized variable
+ warning
+Message-ID: <YaNLXvuDBnX1LU4y@unreal>
+References: <20211127141953.GD24002@kili>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:148c:: with SMTP id n12mr10574733ilk.209.1638091337453;
- Sun, 28 Nov 2021 01:22:17 -0800 (PST)
-Date:   Sun, 28 Nov 2021 01:22:17 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000047549805d1d5dcdc@google.com>
-Subject: [syzbot] KMSAN: uninit-value in hci_conn_complete_evt
-From:   syzbot <syzbot+dcb7d98a388eafb85ecb@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, glider@google.com, johan.hedberg@gmail.com,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
-        marcel@holtmann.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211127141953.GD24002@kili>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sat, Nov 27, 2021 at 05:19:53PM +0300, Dan Carpenter wrote:
+> This code sometimes calls mlx5_sf_hw_table_hwc_init() when "ext_base_id"
+> is uninitialized.  It's not used on that path, but it generates a static
+> checker warning to pass uninitialized variables to another function.
+> It may also generate runtime UBSan  warnings depending on if the
+> mlx5_sf_hw_table_hwc_init() function is inlined or not.
+> 
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-syzbot found the following issue on:
-
-HEAD commit:    a535b0caaa2f Revert "DO-NOT-SUBMIT: kmsan: suppress a repo..
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=10becf06b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2d142cdf4204061
-dashboard link: https://syzkaller.appspot.com/bug?extid=dcb7d98a388eafb85ecb
-compiler:       clang version 14.0.0 (git@github.com:llvm/llvm-project.git 0996585c8e3b3d409494eb5f1cad714b9e1f7fb5), GNU ld (GNU Binutils for Debian) 2.35.2
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+dcb7d98a388eafb85ecb@syzkaller.appspotmail.com
-
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_complete_evt+0x8e7/0x1de0 net/bluetooth/hci_event.c:2668
- hci_conn_complete_evt+0x8e7/0x1de0 net/bluetooth/hci_event.c:2668
- hci_event_packet+0x1670/0x22e0 net/bluetooth/hci_event.c:6311
- hci_rx_work+0x6ae/0xd10 net/bluetooth/hci_core.c:5136
- process_one_work+0xdc7/0x1760 kernel/workqueue.c:2297
- worker_thread+0x1101/0x22b0 kernel/workqueue.c:2444
- kthread+0x66b/0x780 kernel/kthread.c:319
- ret_from_fork+0x1f/0x30
-
-Uninit was created at:
- slab_post_alloc_hook mm/slab.h:524 [inline]
- slab_alloc_node mm/slub.c:3227 [inline]
- __kmalloc_node_track_caller+0xa3b/0x13c0 mm/slub.c:4962
- kmalloc_reserve net/core/skbuff.c:356 [inline]
- __alloc_skb+0x4db/0xe40 net/core/skbuff.c:427
- alloc_skb include/linux/skbuff.h:1116 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- bcsp_recv+0x1550/0x2120 drivers/bluetooth/hci_bcsp.c:673
- hci_uart_tty_receive+0x345/0x7a0 drivers/bluetooth/hci_ldisc.c:613
- tty_ldisc_receive_buf+0x32a/0x390 drivers/tty/tty_buffer.c:475
- tty_port_default_receive_buf+0x14b/0x1e0 drivers/tty/tty_port.c:39
- receive_buf drivers/tty/tty_buffer.c:491 [inline]
- flush_to_ldisc+0x3b5/0x940 drivers/tty/tty_buffer.c:543
- process_one_work+0xdc7/0x1760 kernel/workqueue.c:2297
- worker_thread+0x1101/0x22b0 kernel/workqueue.c:2444
- kthread+0x66b/0x780 kernel/kthread.c:319
- ret_from_fork+0x1f/0x30
-=====================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
