@@ -2,456 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 680E6460691
-	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 14:52:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 259044606A5
+	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 15:02:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236146AbhK1NzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Nov 2021 08:55:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56644 "EHLO
+        id S1357814AbhK1OFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Nov 2021 09:05:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234466AbhK1NxW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 08:53:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AEFEC061574;
-        Sun, 28 Nov 2021 05:50:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD547B80CF5;
-        Sun, 28 Nov 2021 13:50:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07A1DC004E1;
-        Sun, 28 Nov 2021 13:49:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638107402;
-        bh=062H38l6mzmzT4jamvFI/rwrJx+HRwW16I0vLWyfaVo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mbUZqiJSPgZcBPglE+nDYp6eD4hmGxaE8OY9A+7J9ilerwBZf2khql08Ifd3c8Vtx
-         mFFTUiWLTgmWOdPvj0o5xWda2e8E+sw+/FvVAUfHKbwwkX2lwfXdrAKx1zPZLHRGWB
-         rvEFVTNw9NSoCrzbSyRKu81eGpRCrNd9QAoNYJ9VGQuBhx98DFKYZYrrQCZlwp8LDn
-         BPKLwJxVjSqooTk6HRDn8p5FXgEenw+8S2dhHkr3HpDs0aX5vAw9j6OGTvRa0jamOl
-         I0/mQBJP1E3LwIIWsJemH23+gr3UqNfc4vZdBLeDWLOKL18WcOfPtcQTJ9aTGz4Zs+
-         S1By4JnN9bkvA==
-Date:   Sun, 28 Nov 2021 22:49:54 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Steven Rostedt <rostedt@goodmis.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Ravi Bangoria <ravi.bangoria@amd.com>
-Subject: Re: [PATCH 1/8] perf/kprobe: Add support to create multiple probes
-Message-Id: <20211128224954.11e8ac2a2ff1f45354c4a161@kernel.org>
-In-Reply-To: <20211124084119.260239-2-jolsa@kernel.org>
-References: <20211124084119.260239-1-jolsa@kernel.org>
-        <20211124084119.260239-2-jolsa@kernel.org>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        with ESMTP id S1357817AbhK1ODs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 09:03:48 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2232C0613F6;
+        Sun, 28 Nov 2021 05:57:16 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id y13so60326248edd.13;
+        Sun, 28 Nov 2021 05:57:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=WxyvII6OmnQeCAY+DJ4uBaCQep/MW3p/jfUqUkGPhKg=;
+        b=TwMUP/DXnY70GvOEWDlRhxHKej9qY3L1d+Ha9pMZ/Qm3pZvOwxtWDMdwio1aAAjo50
+         +Mo8f1K+SA5m8lSr7wkFVg3lAsGc2nncWTYvajZ/PxAfdUb2He0jda6neOl9zaBh9xri
+         e5TL5mgqrYcWEbsZ6TtmgoVz4nYfgYYvy2g9D2MGZRFn23quhyexpyRawgbi6J42dEw3
+         vTt4a4Ct9e86w0JRlctf9d3dH6D4u22+7g/jeK5VyhsbaDF0d87u1pTsS+AhBXpBCj2G
+         jjFGC4qkVe0wJ0oBP9iTKda3ORRTpY6cZm8oNTWbkLw22LkdHqw82lCv4GODjPSWFCzQ
+         kG3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=WxyvII6OmnQeCAY+DJ4uBaCQep/MW3p/jfUqUkGPhKg=;
+        b=RZOiHhDLSVLGuamkW8zBLQ1KieiZahNcxcAKScoewaHE4yraZg5UVXwj4l7kbfrfg1
+         Md2+6eH1M6jWld29Y5jXx/r0ZjooWr+kNFtdScukHybRotAvug4t1aFkwEagdXqqw72n
+         Jo1zzQK7NhhHKGANEJAMJGkPuqXQZ9e2cPDw1OLF0EZ+mtT5WeBmr9YmNqLhvJkl778X
+         mGa80zkdQi1UcKShVLFs7TZmsdtv310IizrMEx5cdokJQ2G4vWYUlgP1fzhRU/aE9Fba
+         EcIi7f7vWpwNDDWkQ6CatMXQoI/eE8jd4HTvIMLbtyG6P/1ksfGFCijsZ9hhDYCt4jwu
+         Av1A==
+X-Gm-Message-State: AOAM533aU3f1J3aC7wgJY3RMtakXrH071p7x/yu9u5LzPr8E+u0tA6PC
+        nBS60vvNJ/Kg02IqsGHG6bg=
+X-Google-Smtp-Source: ABdhPJz6nXfc+mVeK1gz4vdbNriFAG/nL94eSnXm4Z5qazr0myWosKzt5iyFKC2FoRAMixMfuqCDBw==
+X-Received: by 2002:a05:6402:2026:: with SMTP id ay6mr65342803edb.202.1638107835368;
+        Sun, 28 Nov 2021 05:57:15 -0800 (PST)
+Received: from [192.168.0.108] ([77.124.1.33])
+        by smtp.gmail.com with ESMTPSA id og14sm5883651ejc.107.2021.11.28.05.57.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 28 Nov 2021 05:57:14 -0800 (PST)
+Message-ID: <f76ad3e6-fccb-a481-8283-c8ff3100a82b@gmail.com>
+Date:   Sun, 28 Nov 2021 15:57:12 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH] net/mlx4_en: Update reported link modes for 1/10G
+Content-Language: en-US
+To:     Erik Ekman <erik@kryo.se>, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Michael Stapelberg <michael@stapelberg.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20211128123712.82096-1-erik@kryo.se>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+In-Reply-To: <20211128123712.82096-1-erik@kryo.se>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 24 Nov 2021 09:41:12 +0100
-Jiri Olsa <jolsa@redhat.com> wrote:
 
-> Adding support to create multiple probes within single perf event.
-> This way we can associate single bpf program with multiple kprobes,
-> because bpf program gets associated with the perf event.
-> 
-> The perf_event_attr is not extended, current fields for kprobe
-> attachment are used for multi attachment.
-> 
-> For current kprobe atachment we use either:
-> 
->    kprobe_func (in config1) + probe_offset (in config2)
-> 
-> to define kprobe by function name with offset, or:
-> 
->    kprobe_addr (in config2)
-> 
-> to define kprobe with direct address value.
-> 
-> For multi probe attach the same fields point to array of values
-> with the same semantic. Each probe is defined as set of values
-> with the same array index (idx) as:
-> 
->    kprobe_func[idx]  + probe_offset[idx]
-> 
-> to define kprobe by function name with offset, or:
-> 
->    kprobe_addr[idx]
-> 
-> to define kprobe with direct address value.
-> 
-> The number of probes is passed in probe_cnt value, which shares
-> the union with wakeup_events/wakeup_watermark values which are
-> not used for kprobes.
-> 
-> Since [1] it's possible to stack multiple probes events under
-> one head event. Using the same code to allow that for probes
-> defined under perf kprobe interface.
 
-OK, so you also want to add multi-probes on single event by
-single perf-event syscall. Not defining different events.
-
-Those are bit different, multi-probes on single event can
-invoke single event handler from different probe points. For
-exapmple same user bpf handler will be invoked from different
-address.
-
+On 11/28/2021 2:37 PM, Erik Ekman wrote:
+> When link modes were initially added in commit 2c762679435dc
+> ("net/mlx4_en: Use PTYS register to query ethtool settings") and
+> later updated for the new ethtool API in commit 3d8f7cc78d0eb
+> ("net: mlx4: use new ETHTOOL_G/SSETTINGS API") the only 1/10G non-baseT
+> link modes configured were 1000baseKX, 10000baseKX4 and 10000baseKR.
+> It looks like these got picked to represent other modes since nothing
+> better was available.
 > 
-> [1] https://lore.kernel.org/lkml/156095682948.28024.14190188071338900568.stgit@devnote2/
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> Switch to using more specific link modes added in commit 5711a98221443
+> ("net: ethtool: add support for 1000BaseX and missing 10G link modes").
+> 
+> Tested with MCX311A-XCAT connected via DAC.
+> Before:
+> 
+> % sudo ethtool enp3s0
+> Settings for enp3s0:
+> 	Supported ports: [ FIBRE ]
+> 	Supported link modes:   1000baseKX/Full
+> 	                        10000baseKR/Full
+> 	Supported pause frame use: Symmetric Receive-only
+> 	Supports auto-negotiation: No
+> 	Supported FEC modes: Not reported
+> 	Advertised link modes:  1000baseKX/Full
+> 	                        10000baseKR/Full
+> 	Advertised pause frame use: Symmetric
+> 	Advertised auto-negotiation: No
+> 	Advertised FEC modes: Not reported
+> 	Speed: 10000Mb/s
+> 	Duplex: Full
+> 	Auto-negotiation: off
+> 	Port: Direct Attach Copper
+> 	PHYAD: 0
+> 	Transceiver: internal
+> 	Supports Wake-on: d
+> 	Wake-on: d
+>          Current message level: 0x00000014 (20)
+>                                 link ifdown
+> 	Link detected: yes
+> 
+> With this change:
+> 
+> % sudo ethtool enp3s0
+> 	Settings for enp3s0:
+> 	Supported ports: [ FIBRE ]
+> 	Supported link modes:   1000baseX/Full
+> 	                        10000baseCR/Full
+>   	                        10000baseSR/Full
+> 	Supported pause frame use: Symmetric Receive-only
+> 	Supports auto-negotiation: No
+> 	Supported FEC modes: Not reported
+> 	Advertised link modes:  1000baseX/Full
+>   	                        10000baseCR/Full
+>   	                        10000baseSR/Full
+> 	Advertised pause frame use: Symmetric
+> 	Advertised auto-negotiation: No
+> 	Advertised FEC modes: Not reported
+> 	Speed: 10000Mb/s
+> 	Duplex: Full
+> 	Auto-negotiation: off
+> 	Port: Direct Attach Copper
+> 	PHYAD: 0
+> 	Transceiver: internal
+> 	Supports Wake-on: d
+> 	Wake-on: d
+>          Current message level: 0x00000014 (20)
+>                                 link ifdown
+> 	Link detected: yes
+> 
+> Tested-by: Michael Stapelberg <michael@stapelberg.ch>
+> Signed-off-by: Erik Ekman <erik@kryo.se>
 > ---
->  include/uapi/linux/perf_event.h |   1 +
->  kernel/trace/trace_event_perf.c | 106 ++++++++++++++++++++++++++++----
->  kernel/trace/trace_kprobe.c     |  47 ++++++++++++--
->  kernel/trace/trace_probe.c      |   2 +-
->  kernel/trace/trace_probe.h      |   3 +-
->  5 files changed, 138 insertions(+), 21 deletions(-)
+>   drivers/net/ethernet/mellanox/mlx4/en_ethtool.c | 6 +++---
+>   1 file changed, 3 insertions(+), 3 deletions(-)
 > 
-> diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
-> index bd8860eeb291..eea80709d1ed 100644
-> --- a/include/uapi/linux/perf_event.h
-> +++ b/include/uapi/linux/perf_event.h
-> @@ -414,6 +414,7 @@ struct perf_event_attr {
->  	union {
->  		__u32		wakeup_events;	  /* wakeup every n events */
->  		__u32		wakeup_watermark; /* bytes before wakeup   */
-> +		__u32		probe_cnt;	  /* number of [k,u] probes */
->  	};
->  
->  	__u32			bp_type;
-> diff --git a/kernel/trace/trace_event_perf.c b/kernel/trace/trace_event_perf.c
-> index a114549720d6..26078e40c299 100644
-> --- a/kernel/trace/trace_event_perf.c
-> +++ b/kernel/trace/trace_event_perf.c
-> @@ -245,23 +245,27 @@ void perf_trace_destroy(struct perf_event *p_event)
->  }
->  
->  #ifdef CONFIG_KPROBE_EVENTS
-> -int perf_kprobe_init(struct perf_event *p_event, bool is_retprobe)
-> +static struct trace_event_call*
-> +kprobe_init(bool is_retprobe, u64 kprobe_func, u64 kprobe_addr,
-> +	    u64 probe_offset, struct trace_event_call *old)
->  {
->  	int ret;
->  	char *func = NULL;
->  	struct trace_event_call *tp_event;
->  
-> -	if (p_event->attr.kprobe_func) {
-> +	if (kprobe_func) {
->  		func = kzalloc(KSYM_NAME_LEN, GFP_KERNEL);
->  		if (!func)
-> -			return -ENOMEM;
-> +			return ERR_PTR(-ENOMEM);
->  		ret = strncpy_from_user(
-> -			func, u64_to_user_ptr(p_event->attr.kprobe_func),
-> +			func, u64_to_user_ptr(kprobe_func),
->  			KSYM_NAME_LEN);
->  		if (ret == KSYM_NAME_LEN)
->  			ret = -E2BIG;
-> -		if (ret < 0)
-> -			goto out;
-> +		if (ret < 0) {
-> +			kfree(func);
-> +			return ERR_PTR(ret);
-> +		}
->  
->  		if (func[0] == '\0') {
->  			kfree(func);
-> @@ -270,20 +274,96 @@ int perf_kprobe_init(struct perf_event *p_event, bool is_retprobe)
->  	}
->  
->  	tp_event = create_local_trace_kprobe(
-> -		func, (void *)(unsigned long)(p_event->attr.kprobe_addr),
-> -		p_event->attr.probe_offset, is_retprobe);
-> -	if (IS_ERR(tp_event)) {
-> -		ret = PTR_ERR(tp_event);
-> -		goto out;
-> +		func, (void *)(unsigned long)(kprobe_addr),
-> +		probe_offset, is_retprobe, old);
-
-Hmm, here I have a concern (maybe no real issue is caused at this momemnt.)
-Since ftrace's multi-probe event has same event/group name among the
-probes's internal event-calls. However, create_local_trace_kprobe()
-actually uses the "func" name for the event name.
-I think you should choose a randome different "representative" event name
-for the event (not probe), and share it among the probes on the event,
-if the perf event has no event name.
-
-(I'm not sure how the event names are used from inside of the BPF programs,
-but just for the consistency.)
-
-> +	kfree(func);
-> +	return tp_event;
-> +}
-> +
-> +static struct trace_event_call*
-> +kprobe_init_multi(struct perf_event *p_event, bool is_retprobe)
-> +{
-> +	void __user *kprobe_func = u64_to_user_ptr(p_event->attr.kprobe_func);
-> +	void __user *kprobe_addr = u64_to_user_ptr(p_event->attr.kprobe_addr);
-> +	u64 *funcs = NULL, *addrs = NULL, *offs = NULL;
-> +	struct trace_event_call *tp_event, *tp_old = NULL;
-> +	u32 i, cnt = p_event->attr.probe_cnt;
-> +	int ret = -EINVAL;
-> +	size_t size;
-> +
-> +	if (!cnt)
-> +		return ERR_PTR(-EINVAL);
-> +
-> +	size = cnt * sizeof(u64);
-> +	if (kprobe_func) {
-> +		ret = -ENOMEM;
-> +		funcs = kmalloc(size, GFP_KERNEL);
-> +		if (!funcs)
-> +			goto out;
-> +		ret = -EFAULT;
-> +		if (copy_from_user(funcs, kprobe_func, size))
-> +			goto out;
-> +	}
-> +
-> +	if (kprobe_addr) {
-> +		ret = -ENOMEM;
-> +		addrs = kmalloc(size, GFP_KERNEL);
-> +		if (!addrs)
-> +			goto out;
-> +		ret = -EFAULT;
-> +		if (copy_from_user(addrs, kprobe_addr, size))
-> +			goto out;
-> +		/* addresses and ofsets share the same array */
-> +		offs = addrs;
->  	}
->  
-> +	for (i = 0; i < cnt; i++) {
-> +		tp_event = kprobe_init(is_retprobe, funcs ? funcs[i] : 0,
-> +				       addrs ? addrs[i] : 0, offs ? offs[i] : 0,
-> +				       tp_old);
-> +		if (IS_ERR(tp_event)) {
-> +			if (tp_old)
-> +				destroy_local_trace_kprobe(tp_old);
-> +			ret = PTR_ERR(tp_event);
-> +			goto out;
-> +		}
-> +		if (!tp_old)
-> +			tp_old = tp_event;
-> +	}
-> +	ret = 0;
-> +out:
-> +	kfree(funcs);
-> +	kfree(addrs);
-> +	return ret ? ERR_PTR(ret) : tp_old;
-> +}
-> +
-> +static struct trace_event_call*
-> +kprobe_init_single(struct perf_event *p_event, bool is_retprobe)
-> +{
-> +	struct perf_event_attr *attr = &p_event->attr;
-> +
-> +	return kprobe_init(is_retprobe, attr->kprobe_func, attr->kprobe_addr,
-> +			   attr->probe_offset, NULL);
-> +}
-> +
-> +int perf_kprobe_init(struct perf_event *p_event, bool is_retprobe)
-> +{
-> +	struct trace_event_call *tp_event;
-> +	int ret;
-> +
-> +	if (p_event->attr.probe_cnt)
-
-isn't this "p_event->attr.probe_cnt > 1" ?
-
-> +		tp_event = kprobe_init_multi(p_event, is_retprobe);
-> +	else
-> +		tp_event = kprobe_init_single(p_event, is_retprobe);
-> +
-> +	if (IS_ERR(tp_event))
-> +		return PTR_ERR(tp_event);
-> +
->  	mutex_lock(&event_mutex);
->  	ret = perf_trace_event_init(tp_event, p_event);
->  	if (ret)
->  		destroy_local_trace_kprobe(tp_event);
->  	mutex_unlock(&event_mutex);
-> -out:
-> -	kfree(func);
->  	return ret;
->  }
->  
-> diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
-> index 33272a7b6912..86a7aada853a 100644
-> --- a/kernel/trace/trace_kprobe.c
-> +++ b/kernel/trace/trace_kprobe.c
-> @@ -237,13 +237,18 @@ static int kprobe_dispatcher(struct kprobe *kp, struct pt_regs *regs);
->  static int kretprobe_dispatcher(struct kretprobe_instance *ri,
->  				struct pt_regs *regs);
->  
-> +static void __free_trace_kprobe(struct trace_kprobe *tk)
-> +{
-> +	kfree(tk->symbol);
-> +	free_percpu(tk->nhit);
-> +	kfree(tk);
-> +}
-> +
->  static void free_trace_kprobe(struct trace_kprobe *tk)
->  {
->  	if (tk) {
->  		trace_probe_cleanup(&tk->tp);
-> -		kfree(tk->symbol);
-> -		free_percpu(tk->nhit);
-> -		kfree(tk);
-> +		__free_trace_kprobe(tk);
-
-Why is this needed?
-
->  	}
->  }
->  
-> @@ -1796,7 +1801,7 @@ static int unregister_kprobe_event(struct trace_kprobe *tk)
->  /* create a trace_kprobe, but don't add it to global lists */
->  struct trace_event_call *
->  create_local_trace_kprobe(char *func, void *addr, unsigned long offs,
-> -			  bool is_return)
-> +			  bool is_return, struct trace_event_call *old)
->  {
->  	enum probe_print_type ptype;
->  	struct trace_kprobe *tk;
-> @@ -1820,6 +1825,28 @@ create_local_trace_kprobe(char *func, void *addr, unsigned long offs,
->  		return ERR_CAST(tk);
->  	}
->  
-> +	if (old) {
-> +		struct trace_kprobe *tk_old;
-> +
-> +		tk_old = trace_kprobe_primary_from_call(old);
-
-So, this will choose the first(primary) probe's function name as
-the representative event name. But other probes can have different
-event names.
-
-> +		if (!tk_old) {
-> +			ret = -EINVAL;
-> +			goto error;
-> +		}
-> +
-> +		/* Append to existing event */
-> +		ret = trace_probe_append(&tk->tp, &tk_old->tp);
-> +		if (ret)
-> +			goto error;
-> +
-> +		/* Register k*probe */
-> +		ret = __register_trace_kprobe(tk);
-> +		if (ret)
-> +			goto error;
-
-If "appended" probe failed to register, it must be "unlinked" from
-the first one and goto error to free the trace_kprobe.
-
-	if (ret) {
-		trace_probe_unlink(&tk->tp);
-		goto error;
-	}
-
-See append_trace_kprobe() for details.
-
-> +
-> +		return trace_probe_event_call(&tk->tp);
-> +	}
-> +
->  	init_trace_event_call(tk);
->  
->  	ptype = trace_kprobe_is_return(tk) ?
-> @@ -1841,6 +1868,8 @@ create_local_trace_kprobe(char *func, void *addr, unsigned long offs,
->  
->  void destroy_local_trace_kprobe(struct trace_event_call *event_call)
->  {
-> +	struct trace_probe_event *event;
-> +	struct trace_probe *pos, *tmp;
->  	struct trace_kprobe *tk;
->  
->  	tk = trace_kprobe_primary_from_call(event_call);
-> @@ -1852,9 +1881,15 @@ void destroy_local_trace_kprobe(struct trace_event_call *event_call)
->  		return;
->  	}
->  
-> -	__unregister_trace_kprobe(tk);
-> +	event = tk->tp.event;
-> +	list_for_each_entry_safe(pos, tmp, &event->probes, list) {
-> +		list_for_each_entry_safe(pos, tmp, &event->probes, list) {
-> +		list_del_init(&pos->list);
-> +		__unregister_trace_kprobe(tk);
-> +		__free_trace_kprobe(tk);
-> +	}
->  
-> -	free_trace_kprobe(tk);
-> +	trace_probe_event_free(event);
-
-Actually, each probe already allocated the trace_probe events (which are not
-used if it is appended). Thus you have to use trace_probe_unlink(&tk->tp) in
-the above loop.
-
-	list_for_each_entry_safe(pos, tmp, &event->probes, list) {
-		list_for_each_entry_safe(pos, tmp, &event->probes, list) {
-		__unregister_trace_kprobe(tk);
-		trace_probe_unlink(&tk->tp); /* This will call trace_probe_event_free() internally */
-		free_trace_kprobe(tk);
-	}
-
-Thank you,
-
->  }
->  #endif /* CONFIG_PERF_EVENTS */
->  
-> diff --git a/kernel/trace/trace_probe.c b/kernel/trace/trace_probe.c
-> index 3ed2a3f37297..2dff85aa21e9 100644
-> --- a/kernel/trace/trace_probe.c
-> +++ b/kernel/trace/trace_probe.c
-> @@ -974,7 +974,7 @@ int traceprobe_define_arg_fields(struct trace_event_call *event_call,
->  	return 0;
->  }
->  
-> -static void trace_probe_event_free(struct trace_probe_event *tpe)
-> +void trace_probe_event_free(struct trace_probe_event *tpe)
->  {
->  	kfree(tpe->class.system);
->  	kfree(tpe->call.name);
-> diff --git a/kernel/trace/trace_probe.h b/kernel/trace/trace_probe.h
-> index 99e7a5df025e..ba8e46c7efe8 100644
-> --- a/kernel/trace/trace_probe.h
-> +++ b/kernel/trace/trace_probe.h
-> @@ -333,6 +333,7 @@ int trace_probe_init(struct trace_probe *tp, const char *event,
->  		     const char *group, bool alloc_filter);
->  void trace_probe_cleanup(struct trace_probe *tp);
->  int trace_probe_append(struct trace_probe *tp, struct trace_probe *to);
-> +void trace_probe_event_free(struct trace_probe_event *tpe);
->  void trace_probe_unlink(struct trace_probe *tp);
->  int trace_probe_register_event_call(struct trace_probe *tp);
->  int trace_probe_add_file(struct trace_probe *tp, struct trace_event_file *file);
-> @@ -377,7 +378,7 @@ extern int traceprobe_set_print_fmt(struct trace_probe *tp, enum probe_print_typ
->  #ifdef CONFIG_PERF_EVENTS
->  extern struct trace_event_call *
->  create_local_trace_kprobe(char *func, void *addr, unsigned long offs,
-> -			  bool is_return);
-> +			  bool is_return, struct trace_event_call *old);
->  extern void destroy_local_trace_kprobe(struct trace_event_call *event_call);
->  
->  extern struct trace_event_call *
-> -- 
-> 2.33.1
+> diff --git a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
+> index 066d79e4ecfc..10238bedd694 100644
+> --- a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
+> +++ b/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
+> @@ -670,7 +670,7 @@ void __init mlx4_en_init_ptys2ethtool_map(void)
+>   	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_1000BASE_T, SPEED_1000,
+>   				       ETHTOOL_LINK_MODE_1000baseT_Full_BIT);
+>   	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_1000BASE_CX_SGMII, SPEED_1000,
+> -				       ETHTOOL_LINK_MODE_1000baseKX_Full_BIT);
+> +				       ETHTOOL_LINK_MODE_1000baseX_Full_BIT);
+>   	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_1000BASE_KX, SPEED_1000,
+>   				       ETHTOOL_LINK_MODE_1000baseKX_Full_BIT);
+>   	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_10GBASE_T, SPEED_10000,
+> @@ -682,9 +682,9 @@ void __init mlx4_en_init_ptys2ethtool_map(void)
+>   	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_10GBASE_KR, SPEED_10000,
+>   				       ETHTOOL_LINK_MODE_10000baseKR_Full_BIT);
+>   	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_10GBASE_CR, SPEED_10000,
+> -				       ETHTOOL_LINK_MODE_10000baseKR_Full_BIT);
+> +				       ETHTOOL_LINK_MODE_10000baseCR_Full_BIT);
+>   	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_10GBASE_SR, SPEED_10000,
+> -				       ETHTOOL_LINK_MODE_10000baseKR_Full_BIT);
+> +				       ETHTOOL_LINK_MODE_10000baseSR_Full_BIT);
+>   	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_20GBASE_KR2, SPEED_20000,
+>   				       ETHTOOL_LINK_MODE_20000baseMLD2_Full_BIT,
+>   				       ETHTOOL_LINK_MODE_20000baseKR2_Full_BIT);
 > 
 
-
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
+LGTM. Thanks for your patch.
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
