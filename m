@@ -2,160 +2,493 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41A24460AB1
-	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 23:26:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A30C460AC6
+	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 23:36:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359474AbhK1W3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Nov 2021 17:29:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54710 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359430AbhK1W1w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 17:27:52 -0500
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F4DAC061763;
-        Sun, 28 Nov 2021 14:23:53 -0800 (PST)
-Received: by mail-oi1-x22d.google.com with SMTP id bj13so30910962oib.4;
-        Sun, 28 Nov 2021 14:23:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=M5rtFSgsWKzafi8Cs4A/snez2F9siOW7EyMGKMlf5GI=;
-        b=hq9071HUdLZ2TaOnDWMrUmkEjmGHPPdTYkA47Un8OgZrB6yRF/DDW8F2TRjD1Te19u
-         iwz7IofjNHmeoxPcYl7UCdDln5AfF+oBejaZnHIFQwTg+gm1U9+1Rb0P0GWb/NR69e4e
-         HeUhV/KFKLd9XUXKFJVmgeC4J0r5TQnv1NJ+2Bx+oe5ZCTpFo0EJ7t29VyUgLvsKBoqI
-         /u1OO+yD8J5oRDDhs/6UAFhdL1gR7NeF9utMME7xbGZnk7Dwf0OIocm2klvolQJMDSs2
-         1QegL3fy+FKj/LJwCCf6vQ7+wg9TQOQVwwqfaZxdwTR7sSWQu8DzfoZ1VoZlEQJGdoFg
-         yLaQ==
+        id S1359251AbhK1Wjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Nov 2021 17:39:39 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:40175 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S244249AbhK1Whf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 17:37:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1638138858;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SiBeCQgxXQAu5ozvORDzA8+7QhkHumTeqXoN8dJ0Bwc=;
+        b=TLsXO0UwwsDR6nTRK1Wi+ha28i/9BYDarkpP4LB5mlrri0whxubfWBSCTppBuO6ISS1rqa
+        i4pcSSCZAvtXt/HMQNK37IH+fbw/+jIaOm6ahoJntr7QeQNiRNvUCIFAsbPiz0/zQ4KYTP
+        KvceBPqq9681Uw1F+jTuDs9p4xA1Mq8=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-220-SYftW2coNOCOiHmKoLc9wQ-1; Sun, 28 Nov 2021 17:34:17 -0500
+X-MC-Unique: SYftW2coNOCOiHmKoLc9wQ-1
+Received: by mail-wm1-f70.google.com with SMTP id n41-20020a05600c502900b003335ab97f41so9531595wmr.3
+        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 14:34:16 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=M5rtFSgsWKzafi8Cs4A/snez2F9siOW7EyMGKMlf5GI=;
-        b=BHMNg+OBT2fBeuD/ovlMpqWsxOQNR4hFGdeZh9pM7EFgXY69dipXA016diHw1dG2x5
-         lOyhSiJaDqPI6/DOrzN06rad97jRizdNRGK7ndG4wZ/3JDcLRHADL72LtdYVV8sJYSBf
-         Wa4865mBuqDV9KqEsCVOuLZI891ulPOzJRyzUwlGyWORtLFuQtfi8oMd93cDQn+ouIan
-         pcivrbf2Q/uJojQH1MLX6oWCBqMVrq0OC73RepFWX9+WRHfToKP6OCKINPqFsUGu66Vq
-         nizVSYldwQFNQMVQhqPfnxQJZIEuRs6caihngz+HKf+BUqGOpM3pREZqsEhJ4+Teu0BR
-         +XVQ==
-X-Gm-Message-State: AOAM531EBglsM8L1fEWMGLYYoVAFUPL9817Q3pfJePARhrsKMtQUIeQG
-        JYtmvWQp+7AaUN1MVbPs6PE=
-X-Google-Smtp-Source: ABdhPJzDpxaefKBU6oCHFFQgwoEO9P28FUz/LwlZRp8iIlHj4Qp+gFDBjfKDrMFg6OvgX+VjCyPvHw==
-X-Received: by 2002:a54:4614:: with SMTP id p20mr38321110oip.39.1638138232614;
-        Sun, 28 Nov 2021 14:23:52 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id l9sm2021123oom.4.2021.11.28.14.23.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 28 Nov 2021 14:23:52 -0800 (PST)
-Message-ID: <2b9c3c1f-159f-f7c0-d4cb-1159e17e0dd4@gmail.com>
-Date:   Sun, 28 Nov 2021 15:23:41 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.1
-Subject: Re: [PATCH v2 net-next 00/26] net: introduce and use generic XDP
- stats
-Content-Language: en-US
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shay Agroskin <shayagr@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        David Arinzon <darinzon@amazon.com>,
-        Noam Dagan <ndagan@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=SiBeCQgxXQAu5ozvORDzA8+7QhkHumTeqXoN8dJ0Bwc=;
+        b=LYxwvRk1zguuzNThB1g43UUasE89GZJUxcqAWidEBAXFB+jWHUgdE/q0573Foqei0/
+         Tx+xq04ZSaxTfaB67dxCdIANjFaETqrce515IMWfQT+HURnbuJ/h8JpNDk6bikejnOfY
+         3P7nl4Mv9SU+SoXFC2Ef+mYvUXbqAHBzscK957Zfh1K9dAatmNo7ka/Venmds1k1R3cn
+         kC25LZfOVn1diAO1NxCjLt+JcUfI/ogHdcfdGaZBgGwROVIb8mEXDbNETY+Ymm4oUNa4
+         SHyS+2CkDFQ7weaU2AdvDVH6vRwdEWfVKxAky5XINjBjwJSpiDXAqfTzJnXh+cFNBiUi
+         j5Ug==
+X-Gm-Message-State: AOAM531FlQ1rrwyk/V0b3uYaUqEmP0LPQ6WZxpQfG0MbMvL4AHnH24TX
+        qmtW2/47uYgCTTZj/MCaAvTXPzzJClzNjWswH6TX3/rIY2jVxV/n36hn0OOgOGltS4E89jeAV3T
+        U6icet9V5WQOmsvLA
+X-Received: by 2002:adf:ce08:: with SMTP id p8mr29736675wrn.154.1638138855663;
+        Sun, 28 Nov 2021 14:34:15 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwTuGqXCmuhYDtqiUT/gAE5vGSE9GEnS4LQiBLJpXljgc6TTlRnQJbc6Mw7zsMMJRIp8Kk1zg==
+X-Received: by 2002:adf:ce08:: with SMTP id p8mr29736648wrn.154.1638138855371;
+        Sun, 28 Nov 2021 14:34:15 -0800 (PST)
+Received: from krava ([83.240.60.218])
+        by smtp.gmail.com with ESMTPSA id n7sm11674471wro.68.2021.11.28.14.34.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Nov 2021 14:34:14 -0800 (PST)
+Date:   Sun, 28 Nov 2021 23:34:13 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
         Andrii Nakryiko <andrii@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Steven Rostedt <rostedt@goodmis.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
         Martin KaFai Lau <kafai@fb.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Andrei Vagin <avagin@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Cong Wang <cong.wang@bytedance.com>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-References: <20211123163955.154512-1-alexandr.lobakin@intel.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20211123163955.154512-1-alexandr.lobakin@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Ravi Bangoria <ravi.bangoria@amd.com>
+Subject: Re: [PATCH 1/8] perf/kprobe: Add support to create multiple probes
+Message-ID: <YaQD5d7Uc6GCvNbe@krava>
+References: <20211124084119.260239-1-jolsa@kernel.org>
+ <20211124084119.260239-2-jolsa@kernel.org>
+ <20211128224954.11e8ac2a2ff1f45354c4a161@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211128224954.11e8ac2a2ff1f45354c4a161@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/23/21 9:39 AM, Alexander Lobakin wrote:
-> This is an almost complete rework of [0].
+On Sun, Nov 28, 2021 at 10:49:54PM +0900, Masami Hiramatsu wrote:
+> On Wed, 24 Nov 2021 09:41:12 +0100
+> Jiri Olsa <jolsa@redhat.com> wrote:
 > 
-> This series introduces generic XDP statistics infra based on rtnl
-> xstats (Ethtool standard stats previously), and wires up the drivers
-> which collect appropriate statistics to this new interface. Finally,
-> it introduces XDP/XSK statistics to all XDP-capable Intel drivers.
+> > Adding support to create multiple probes within single perf event.
+> > This way we can associate single bpf program with multiple kprobes,
+> > because bpf program gets associated with the perf event.
+> > 
+> > The perf_event_attr is not extended, current fields for kprobe
+> > attachment are used for multi attachment.
+> > 
+> > For current kprobe atachment we use either:
+> > 
+> >    kprobe_func (in config1) + probe_offset (in config2)
+> > 
+> > to define kprobe by function name with offset, or:
+> > 
+> >    kprobe_addr (in config2)
+> > 
+> > to define kprobe with direct address value.
+> > 
+> > For multi probe attach the same fields point to array of values
+> > with the same semantic. Each probe is defined as set of values
+> > with the same array index (idx) as:
+> > 
+> >    kprobe_func[idx]  + probe_offset[idx]
+> > 
+> > to define kprobe by function name with offset, or:
+> > 
+> >    kprobe_addr[idx]
+> > 
+> > to define kprobe with direct address value.
+> > 
+> > The number of probes is passed in probe_cnt value, which shares
+> > the union with wakeup_events/wakeup_watermark values which are
+> > not used for kprobes.
+> > 
+> > Since [1] it's possible to stack multiple probes events under
+> > one head event. Using the same code to allow that for probes
+> > defined under perf kprobe interface.
 > 
-> Those counters are:
-> * packets: number of frames passed to bpf_prog_run_xdp().
-> * bytes: number of bytes went through bpf_prog_run_xdp().
-> * errors: number of general XDP errors, if driver has one unified
->   counter.
-> * aborted: number of XDP_ABORTED returns.
-> * drop: number of XDP_DROP returns.
-> * invalid: number of returns of unallowed values (i.e. not XDP_*).
-> * pass: number of XDP_PASS returns.
-> * redirect: number of successfully performed XDP_REDIRECT requests.
-> * redirect_errors: number of failed XDP_REDIRECT requests.
-> * tx: number of successfully performed XDP_TX requests.
-> * tx_errors: number of failed XDP_TX requests.
-> * xmit_packets: number of successfully transmitted XDP/XSK frames.
-> * xmit_bytes: number of successfully transmitted XDP/XSK frames.
-> * xmit_errors: of XDP/XSK frames failed to transmit.
-> * xmit_full: number of XDP/XSK queue being full at the moment of
->   transmission.
+> OK, so you also want to add multi-probes on single event by
+> single perf-event syscall. Not defining different events.
+
+correct.. bpf program is then attached to perf event with
+ioctl call.. this way we can have multiple probes attached
+to single bpf program
+
 > 
-> To provide them, developers need to implement .ndo_get_xdp_stats()
-> and, if they want to expose stats on a per-channel basis,
-> .ndo_get_xdp_stats_nch(). include/net/xdp.h contains some helper
+> Those are bit different, multi-probes on single event can
+> invoke single event handler from different probe points. For
+> exapmple same user bpf handler will be invoked from different
+> address.
 
-Why the tie to a channel? There are Rx queues and Tx queues and no
-requirement to link them into a channel. It would be better (more
-flexible) to allow them to be independent. Rather than ask the driver
-"how many channels", ask 'how many Rx queues' and 'how many Tx queues'
-for which xdp stats are reported.
+right, that's the goal, having single bpf program executed
+from multiple probes
 
-From there, allow queue numbers or queue id's to be non-consecutive and
-add a queue id or number as an attribute. e.g.,
+> 
+> > 
+> > [1] https://lore.kernel.org/lkml/156095682948.28024.14190188071338900568.stgit@devnote2/
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> >  include/uapi/linux/perf_event.h |   1 +
+> >  kernel/trace/trace_event_perf.c | 106 ++++++++++++++++++++++++++++----
+> >  kernel/trace/trace_kprobe.c     |  47 ++++++++++++--
+> >  kernel/trace/trace_probe.c      |   2 +-
+> >  kernel/trace/trace_probe.h      |   3 +-
+> >  5 files changed, 138 insertions(+), 21 deletions(-)
+> > 
+> > diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
+> > index bd8860eeb291..eea80709d1ed 100644
+> > --- a/include/uapi/linux/perf_event.h
+> > +++ b/include/uapi/linux/perf_event.h
+> > @@ -414,6 +414,7 @@ struct perf_event_attr {
+> >  	union {
+> >  		__u32		wakeup_events;	  /* wakeup every n events */
+> >  		__u32		wakeup_watermark; /* bytes before wakeup   */
+> > +		__u32		probe_cnt;	  /* number of [k,u] probes */
+> >  	};
+> >  
+> >  	__u32			bp_type;
+> > diff --git a/kernel/trace/trace_event_perf.c b/kernel/trace/trace_event_perf.c
+> > index a114549720d6..26078e40c299 100644
+> > --- a/kernel/trace/trace_event_perf.c
+> > +++ b/kernel/trace/trace_event_perf.c
+> > @@ -245,23 +245,27 @@ void perf_trace_destroy(struct perf_event *p_event)
+> >  }
+> >  
+> >  #ifdef CONFIG_KPROBE_EVENTS
+> > -int perf_kprobe_init(struct perf_event *p_event, bool is_retprobe)
+> > +static struct trace_event_call*
+> > +kprobe_init(bool is_retprobe, u64 kprobe_func, u64 kprobe_addr,
+> > +	    u64 probe_offset, struct trace_event_call *old)
+> >  {
+> >  	int ret;
+> >  	char *func = NULL;
+> >  	struct trace_event_call *tp_event;
+> >  
+> > -	if (p_event->attr.kprobe_func) {
+> > +	if (kprobe_func) {
+> >  		func = kzalloc(KSYM_NAME_LEN, GFP_KERNEL);
+> >  		if (!func)
+> > -			return -ENOMEM;
+> > +			return ERR_PTR(-ENOMEM);
+> >  		ret = strncpy_from_user(
+> > -			func, u64_to_user_ptr(p_event->attr.kprobe_func),
+> > +			func, u64_to_user_ptr(kprobe_func),
+> >  			KSYM_NAME_LEN);
+> >  		if (ret == KSYM_NAME_LEN)
+> >  			ret = -E2BIG;
+> > -		if (ret < 0)
+> > -			goto out;
+> > +		if (ret < 0) {
+> > +			kfree(func);
+> > +			return ERR_PTR(ret);
+> > +		}
+> >  
+> >  		if (func[0] == '\0') {
+> >  			kfree(func);
+> > @@ -270,20 +274,96 @@ int perf_kprobe_init(struct perf_event *p_event, bool is_retprobe)
+> >  	}
+> >  
+> >  	tp_event = create_local_trace_kprobe(
+> > -		func, (void *)(unsigned long)(p_event->attr.kprobe_addr),
+> > -		p_event->attr.probe_offset, is_retprobe);
+> > -	if (IS_ERR(tp_event)) {
+> > -		ret = PTR_ERR(tp_event);
+> > -		goto out;
+> > +		func, (void *)(unsigned long)(kprobe_addr),
+> > +		probe_offset, is_retprobe, old);
+> 
+> Hmm, here I have a concern (maybe no real issue is caused at this momemnt.)
+> Since ftrace's multi-probe event has same event/group name among the
+> probes's internal event-calls. However, create_local_trace_kprobe()
+> actually uses the "func" name for the event name.
+> I think you should choose a randome different "representative" event name
+> for the event (not probe), and share it among the probes on the event,
+> if the perf event has no event name.
+> 
+> (I'm not sure how the event names are used from inside of the BPF programs,
+> but just for the consistency.)
 
-[XDP stats]
-	[ Rx queue N]
-		counters
+ok, I don't think event names are used, I'll check
 
+> 
+> > +	kfree(func);
+> > +	return tp_event;
+> > +}
+> > +
+> > +static struct trace_event_call*
+> > +kprobe_init_multi(struct perf_event *p_event, bool is_retprobe)
+> > +{
+> > +	void __user *kprobe_func = u64_to_user_ptr(p_event->attr.kprobe_func);
+> > +	void __user *kprobe_addr = u64_to_user_ptr(p_event->attr.kprobe_addr);
+> > +	u64 *funcs = NULL, *addrs = NULL, *offs = NULL;
+> > +	struct trace_event_call *tp_event, *tp_old = NULL;
+> > +	u32 i, cnt = p_event->attr.probe_cnt;
+> > +	int ret = -EINVAL;
+> > +	size_t size;
+> > +
+> > +	if (!cnt)
+> > +		return ERR_PTR(-EINVAL);
+> > +
+> > +	size = cnt * sizeof(u64);
+> > +	if (kprobe_func) {
+> > +		ret = -ENOMEM;
+> > +		funcs = kmalloc(size, GFP_KERNEL);
+> > +		if (!funcs)
+> > +			goto out;
+> > +		ret = -EFAULT;
+> > +		if (copy_from_user(funcs, kprobe_func, size))
+> > +			goto out;
+> > +	}
+> > +
+> > +	if (kprobe_addr) {
+> > +		ret = -ENOMEM;
+> > +		addrs = kmalloc(size, GFP_KERNEL);
+> > +		if (!addrs)
+> > +			goto out;
+> > +		ret = -EFAULT;
+> > +		if (copy_from_user(addrs, kprobe_addr, size))
+> > +			goto out;
+> > +		/* addresses and ofsets share the same array */
+> > +		offs = addrs;
+> >  	}
+> >  
+> > +	for (i = 0; i < cnt; i++) {
+> > +		tp_event = kprobe_init(is_retprobe, funcs ? funcs[i] : 0,
+> > +				       addrs ? addrs[i] : 0, offs ? offs[i] : 0,
+> > +				       tp_old);
+> > +		if (IS_ERR(tp_event)) {
+> > +			if (tp_old)
+> > +				destroy_local_trace_kprobe(tp_old);
+> > +			ret = PTR_ERR(tp_event);
+> > +			goto out;
+> > +		}
+> > +		if (!tp_old)
+> > +			tp_old = tp_event;
+> > +	}
+> > +	ret = 0;
+> > +out:
+> > +	kfree(funcs);
+> > +	kfree(addrs);
+> > +	return ret ? ERR_PTR(ret) : tp_old;
+> > +}
+> > +
+> > +static struct trace_event_call*
+> > +kprobe_init_single(struct perf_event *p_event, bool is_retprobe)
+> > +{
+> > +	struct perf_event_attr *attr = &p_event->attr;
+> > +
+> > +	return kprobe_init(is_retprobe, attr->kprobe_func, attr->kprobe_addr,
+> > +			   attr->probe_offset, NULL);
+> > +}
+> > +
+> > +int perf_kprobe_init(struct perf_event *p_event, bool is_retprobe)
+> > +{
+> > +	struct trace_event_call *tp_event;
+> > +	int ret;
+> > +
+> > +	if (p_event->attr.probe_cnt)
+> 
+> isn't this "p_event->attr.probe_cnt > 1" ?
 
-	[ Tx queue N]
-		counters
+right, probe_cnt is just added by this patchset and used only when
+there are multiple probes being attached, so that's why it works
+even with 1 at the moment
 
-This would allow a follow on patch set to do something like "Give me XDP
-stats for Rx queue N" instead of doing a full dump.
+will change
+
+> 
+> > +		tp_event = kprobe_init_multi(p_event, is_retprobe);
+> > +	else
+> > +		tp_event = kprobe_init_single(p_event, is_retprobe);
+> > +
+> > +	if (IS_ERR(tp_event))
+> > +		return PTR_ERR(tp_event);
+> > +
+> >  	mutex_lock(&event_mutex);
+> >  	ret = perf_trace_event_init(tp_event, p_event);
+> >  	if (ret)
+> >  		destroy_local_trace_kprobe(tp_event);
+> >  	mutex_unlock(&event_mutex);
+> > -out:
+> > -	kfree(func);
+> >  	return ret;
+> >  }
+> >  
+> > diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
+> > index 33272a7b6912..86a7aada853a 100644
+> > --- a/kernel/trace/trace_kprobe.c
+> > +++ b/kernel/trace/trace_kprobe.c
+> > @@ -237,13 +237,18 @@ static int kprobe_dispatcher(struct kprobe *kp, struct pt_regs *regs);
+> >  static int kretprobe_dispatcher(struct kretprobe_instance *ri,
+> >  				struct pt_regs *regs);
+> >  
+> > +static void __free_trace_kprobe(struct trace_kprobe *tk)
+> > +{
+> > +	kfree(tk->symbol);
+> > +	free_percpu(tk->nhit);
+> > +	kfree(tk);
+> > +}
+> > +
+> >  static void free_trace_kprobe(struct trace_kprobe *tk)
+> >  {
+> >  	if (tk) {
+> >  		trace_probe_cleanup(&tk->tp);
+> > -		kfree(tk->symbol);
+> > -		free_percpu(tk->nhit);
+> > -		kfree(tk);
+> > +		__free_trace_kprobe(tk);
+> 
+> Why is this needed?
+
+I needed some free function that does not call trace_probe_cleanup and
+trace_probe_unlink.. I wrote details in the destroy_local_trace_kprobe
+comment below
+
+> 
+> >  	}
+> >  }
+> >  
+> > @@ -1796,7 +1801,7 @@ static int unregister_kprobe_event(struct trace_kprobe *tk)
+> >  /* create a trace_kprobe, but don't add it to global lists */
+> >  struct trace_event_call *
+> >  create_local_trace_kprobe(char *func, void *addr, unsigned long offs,
+> > -			  bool is_return)
+> > +			  bool is_return, struct trace_event_call *old)
+> >  {
+> >  	enum probe_print_type ptype;
+> >  	struct trace_kprobe *tk;
+> > @@ -1820,6 +1825,28 @@ create_local_trace_kprobe(char *func, void *addr, unsigned long offs,
+> >  		return ERR_CAST(tk);
+> >  	}
+> >  
+> > +	if (old) {
+> > +		struct trace_kprobe *tk_old;
+> > +
+> > +		tk_old = trace_kprobe_primary_from_call(old);
+> 
+> So, this will choose the first(primary) probe's function name as
+> the representative event name. But other probes can have different
+> event names.
+
+ok
+
+> 
+> > +		if (!tk_old) {
+> > +			ret = -EINVAL;
+> > +			goto error;
+> > +		}
+> > +
+> > +		/* Append to existing event */
+> > +		ret = trace_probe_append(&tk->tp, &tk_old->tp);
+> > +		if (ret)
+> > +			goto error;
+> > +
+> > +		/* Register k*probe */
+> > +		ret = __register_trace_kprobe(tk);
+> > +		if (ret)
+> > +			goto error;
+> 
+> If "appended" probe failed to register, it must be "unlinked" from
+> the first one and goto error to free the trace_kprobe.
+> 
+> 	if (ret) {
+> 		trace_probe_unlink(&tk->tp);
+> 		goto error;
+> 	}
+> 
+> See append_trace_kprobe() for details.
+
+so there's goto error jumping to:
+
+error:
+	free_trace_kprobe(tk);
+
+that calls:
+	trace_probe_cleanup
+	  -> trace_probe_unlink
+
+that should do it, right?
+
+> 
+> > +
+> > +		return trace_probe_event_call(&tk->tp);
+> > +	}
+> > +
+> >  	init_trace_event_call(tk);
+> >  
+> >  	ptype = trace_kprobe_is_return(tk) ?
+> > @@ -1841,6 +1868,8 @@ create_local_trace_kprobe(char *func, void *addr, unsigned long offs,
+> >  
+> >  void destroy_local_trace_kprobe(struct trace_event_call *event_call)
+> >  {
+> > +	struct trace_probe_event *event;
+> > +	struct trace_probe *pos, *tmp;
+> >  	struct trace_kprobe *tk;
+> >  
+> >  	tk = trace_kprobe_primary_from_call(event_call);
+> > @@ -1852,9 +1881,15 @@ void destroy_local_trace_kprobe(struct trace_event_call *event_call)
+> >  		return;
+> >  	}
+> >  
+> > -	__unregister_trace_kprobe(tk);
+> > +	event = tk->tp.event;
+> > +	list_for_each_entry_safe(pos, tmp, &event->probes, list) {
+> > +		list_for_each_entry_safe(pos, tmp, &event->probes, list) {
+> > +		list_del_init(&pos->list);
+> > +		__unregister_trace_kprobe(tk);
+> > +		__free_trace_kprobe(tk);
+> > +	}
+> >  
+> > -	free_trace_kprobe(tk);
+> > +	trace_probe_event_free(event);
+> 
+> Actually, each probe already allocated the trace_probe events (which are not
+> used if it is appended). Thus you have to use trace_probe_unlink(&tk->tp) in
+> the above loop.
+> 
+> 	list_for_each_entry_safe(pos, tmp, &event->probes, list) {
+> 		list_for_each_entry_safe(pos, tmp, &event->probes, list) {
+> 		__unregister_trace_kprobe(tk);
+> 		trace_probe_unlink(&tk->tp); /* This will call trace_probe_event_free() internally */
+> 		free_trace_kprobe(tk);
+> 	}
+
+so calling trace_probe_event_free inside this loop is a problem,
+because the loop iterates that trace_probe_event's probes list,
+and last probe removed will trigger trace_probe_event_free, that
+will free the list we iterate..  and we go down ;-)
+
+so that's why I added new free function '__free_trace_kprobe'
+that frees everything as free_trace_kprobe, but does not call
+trace_probe_unlink
+
+	event = tk->tp.event;
+	list_for_each_entry_safe(pos, tmp, &event->probes, list) {
+		list_for_each_entry_safe(pos, tmp, &event->probes, list) {
+		list_del_init(&pos->list);
+		__unregister_trace_kprobe(tk);
+		__free_trace_kprobe(tk);
+	}
+
+	trace_probe_event_free(event);
+
+and there's trace_probe_event_free(event) to make the final free
+
+thanks,
+jirka
+
