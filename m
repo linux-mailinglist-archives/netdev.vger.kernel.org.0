@@ -2,88 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB823460AFB
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 00:13:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5522460B01
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 00:14:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348477AbhK1XQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Nov 2021 18:16:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36962 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234011AbhK1XOc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 18:14:32 -0500
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06DBDC061574
-        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 15:11:15 -0800 (PST)
-Received: by mail-ot1-x332.google.com with SMTP id n104-20020a9d2071000000b005799790cf0bso22964659ota.5
-        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 15:11:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=3ANDAvy+t87+3k5fGu7wTBnNzcrlVzmpNe5vJe65QFk=;
-        b=pR9JVFo/Tbs40ZSiCvRnrFuo2U0dIsVnU7ajJQy4T+mes52oW0uIWxmKIJ+0Fn190d
-         ACzqin7cSPQqQDx6H1VeK3NOa1jUhMH7GcatxQe4dm62xgIDHZOe3nQzprBlO8U4phtT
-         75NxW6E+duXM//WSih0gyCwRp+9o6bxz3sb3N1ABOmrE/PSNg9zbpWkceXbBaKpLWSfZ
-         7pNl6Od86Ev//cLdSs3FoM80wdR81wgQhxVRSh6T2MJZFEgRGIFspYHI+iLhksY8M9ZN
-         imJK4bxeWUcQeQylQyOFbuaJHAJLdKotldMgeatA8ts9LkhJtc/loJrO8lJd7EF/2MKE
-         9Aeg==
+        id S1359449AbhK1XRU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Nov 2021 18:17:20 -0500
+Received: from mail-ot1-f54.google.com ([209.85.210.54]:45008 "EHLO
+        mail-ot1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235189AbhK1XPT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 18:15:19 -0500
+Received: by mail-ot1-f54.google.com with SMTP id u18-20020a9d7212000000b00560cb1dc10bso22910749otj.11;
+        Sun, 28 Nov 2021 15:12:03 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=3ANDAvy+t87+3k5fGu7wTBnNzcrlVzmpNe5vJe65QFk=;
-        b=5ykKQXKyHoYUEADy8rfSwDzyttoeOEri5TzliQlJedq2sGCxWi7uO/dira+v2HpwHo
-         SMWSQaTXN/F0oFtCYv90fZHpYhnkkMT5pp1CzfoayOkWs3Lvbou9cK9veQ49T5XSoIqk
-         EIN76s8PRy9i/n2etrqQGqFwwQkU0Eq7ndxdeCv1zXLhVrG5eC2yxKsdgX3jnHzRAcPK
-         /9Y3LGSggufxBfR0OlcgSk3Gs5XOEORE9qoOKpZUcDbWxm2DOnxFu8lQ32HL6RyDWN9N
-         3u8tUBnrMO02nPLAfnopYoCM8EDXoXAunWoIQqVnpsXRuhfbN3tU/mCUaSkesmGYPdLX
-         Y5EQ==
-X-Gm-Message-State: AOAM533FMbRFn5bklJzr7gTKJgwFXo/oXcaqnsj6NeIiIf2HgUfTehtc
-        z+9p1qsYfqjV5CjutcbjoNuD3rNXfiw=
-X-Google-Smtp-Source: ABdhPJy3LYSM6d4NzQOHQS+MfIQlg73Dw/Rt92xAUfNIigDCreWabJ4T9qKnF7OfShIlOvf6H5oXlA==
-X-Received: by 2002:a9d:4f0b:: with SMTP id d11mr41581006otl.227.1638141075317;
-        Sun, 28 Nov 2021 15:11:15 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id a6sm2649161oic.39.2021.11.28.15.11.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 28 Nov 2021 15:11:15 -0800 (PST)
-Message-ID: <ab9b65b4-04d6-0bfe-4fd1-91af9ac5aa0d@gmail.com>
-Date:   Sun, 28 Nov 2021 16:11:12 -0700
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JLhPhE/vqeyhzLIFVNAra68Ko84ibz16Pik9DMMX/dw=;
+        b=bdWWSWIJsDZLuaU2J1kSGM/iD7Ik6e81jU38OOHq1GIr+OZEV6qBqhJLURFlpuUHED
+         jDP/+1CqlLzhvFQEjcLrCbosD5/5TnHIwPTfZUbL0G99IheTZOCEyxhtnKjqYkuZehmg
+         YwXSuyM4/JhTN7UYjlz+tFqTtzX9eCIvz94sGsDb3fgjrtobnIjo/KupfQaK+DRaM/mB
+         BvWiGY30W36Dysty8T3OeBteyn/H8V2QqS4CSae+GhURRPWthDWpS1VPeJbAAbJzizgr
+         AoE/wHsmg56TCJSWLP08on7GWcfSf3Ni8DkfRlTNJNpCdOmG3QHUp4y1hxNl/NsUAVz6
+         MfDA==
+X-Gm-Message-State: AOAM5332NYKK9mVhgSKK/5O8zwzzhMnVKpH2UyEWE8UY7H7Ha2o9pZzg
+        sa/pfkPpnMsveunCXLvjUQ==
+X-Google-Smtp-Source: ABdhPJxnoaCUiUDnWSQD8mFyahvMWj6jz9E+kBryiWl4VWlE+blEDR0rRJf4SpaDjOSW8IgqQXVboA==
+X-Received: by 2002:a9d:6b87:: with SMTP id b7mr42246123otq.204.1638141122497;
+        Sun, 28 Nov 2021 15:12:02 -0800 (PST)
+Received: from robh.at.kernel.org ([2607:fb90:5fe7:4487:4f99:dbc0:75d1:3e27])
+        by smtp.gmail.com with ESMTPSA id t18sm2346542ott.2.2021.11.28.15.11.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Nov 2021 15:12:01 -0800 (PST)
+Received: (nullmailer pid 2790419 invoked by uid 1000);
+        Sun, 28 Nov 2021 23:11:57 -0000
+Date:   Sun, 28 Nov 2021 17:11:57 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Subject: Re: [PATCH v5 8/8] dt-bindings: net: dsa: qca8k: add LEDs definition
+ example
+Message-ID: <YaQMvSEEFu2AW1Pk@robh.at.kernel.org>
+References: <20211112153557.26941-1-ansuelsmth@gmail.com>
+ <20211112153557.26941-9-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.1
-Subject: Re: IPv6 Router Advertisement Router Preference (RFC 4191) behavior
- issue
-Content-Language: en-US
-To:     Juhamatti Kuusisaari <juhamatk@gmail.com>, netdev@vger.kernel.org
-References: <CACS3ZpA=QDLqXE6RyCox8sCX753B=8+JC3jSxpv+vkbKAOwkYQ@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <CACS3ZpA=QDLqXE6RyCox8sCX753B=8+JC3jSxpv+vkbKAOwkYQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211112153557.26941-9-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/18/21 3:35 AM, Juhamatti Kuusisaari wrote:
-> Hello,
+On Fri, Nov 12, 2021 at 04:35:57PM +0100, Ansuel Smith wrote:
+> Add LEDs definition example for qca8k using the offload trigger as the
+> default trigger and add all the supported offload triggers by the
+> switch.
 > 
-> I have been testing IPv6 Router Advertisement Default Router
-> Preference on 5.1X and it seems it is not honoured by the Linux
-> networking stack. Whenever a new default router preference with a
-> higher or lower preference value is received, a new default gateway is
-> added as an ECMP route in the routing table with equal weight. This is
-> a bit surprising as RFC 4191 Sec. 3.2 mentions that the higher
-> preference value should be preferred. This part seems to be missing
-> from the Linux implementation.
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
+>  .../devicetree/bindings/net/dsa/qca8k.yaml    | 20 +++++++++++++++++++
+>  1 file changed, 20 insertions(+)
 > 
-> The problem has existed apparently for a while, see below discussion
-> for reference:
-> https://serverfault.com/questions/768932/can-linux-be-made-to-honour-ipv6-route-advertisement-preferences
-> 
-> I am happy to test any improvements to this, in case someone takes a look.
-> 
+> diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
+> index 48de0ace265d..106d95adc1e8 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
+> @@ -64,6 +64,8 @@ properties:
+>                   internal mdio access is used.
+>                   With the legacy mapping the reg corresponding to the internal
+>                   mdio is the switch reg with an offset of -1.
+> +                 Each phy have at least 3 LEDs connected and can be declared
+> +                 using the standard LEDs structure.
 
-do you have CONFIG_IPV6_ROUTER_PREF enabled and accept_ra_rtr_pref set
-for the device?
+at most 3? As the example only has 2...
+
+>  
+>      properties:
+>        '#address-cells':
+> @@ -340,6 +342,24 @@ examples:
+>  
+>                  internal_phy_port1: ethernet-phy@0 {
+>                      reg = <0>;
+> +
+> +                    leds {
+> +                        led@0 {
+> +                            reg = <0>;
+> +                            color = <LED_COLOR_ID_WHITE>;
+> +                            function = LED_FUNCTION_LAN;
+> +                            function-enumerator = <1>;
+> +                            linux,default-trigger = "offload-phy-activity";
+
+function is intended to replace 'linux,default-trigger'.
+
+> +                        };
+> +
+> +                        led@1 {
+> +                            reg = <1>;
+> +                            color = <LED_COLOR_ID_AMBER>;
+> +                            function = LED_FUNCTION_LAN;
+> +                            function-enumerator = <1>;
+
+Should be a different value than led@0?
+
+> +                            linux,default-trigger = "offload-phy-activity";
+> +                        };
+> +                    };
+>                  };
+>  
+>                  internal_phy_port2: ethernet-phy@1 {
+> -- 
+> 2.32.0
+> 
+> 
