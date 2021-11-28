@@ -2,103 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44B7C460A60
-	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 22:44:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41A24460AB1
+	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 23:26:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236262AbhK1VsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Nov 2021 16:48:10 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:47940 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S236303AbhK1VqK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 16:46:10 -0500
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1ASKud1L006735;
-        Sun, 28 Nov 2021 21:42:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=53T3DVQXoOmGk0Ru/bhYIr21fbVr8KqJ17GtJgDRD9I=;
- b=l3n4T7on+31LPEFelJ6Pu/7akDMPbgrPmUOsJ5gi1kWmekxE1GKlbF7A3RI+PkswfSdx
- mKZNTlf10solSPUSonUdJJt/ns8QxHSayq41bNSXXj/s43SmYlQNSPFGmb6F+lFjC0ij
- SzNejjGEvlXdgSnJ0Z9Bgn0rzyje+SGqqTZCQOjqGoXSVtqMTViKUBIa24nNln+MO2jB
- FZ0GOF4fcPbMJXPnL4B1q1EoqSDSQ129vb7ux37q811fQgvaaEVCxiA7PortAs+YPC21
- LuSkZV9+X5Q1OKG+RWZWE3JrLb7spqU3aDoCg+MfSRucwpd0W1te8g7zRElkMFQbGBPG kA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3cmh8d8f2n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 28 Nov 2021 21:42:50 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1ASLeB8R032291;
-        Sun, 28 Nov 2021 21:42:49 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3cmh8d8f2a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 28 Nov 2021 21:42:49 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1ASLbHKJ028231;
-        Sun, 28 Nov 2021 21:42:48 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma01fra.de.ibm.com with ESMTP id 3ckca96fq8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 28 Nov 2021 21:42:48 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1ASLgj7U59113762
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 28 Nov 2021 21:42:45 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B56A6A405B;
-        Sun, 28 Nov 2021 21:42:45 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5D53FA4054;
-        Sun, 28 Nov 2021 21:42:45 +0000 (GMT)
-Received: from [9.145.59.207] (unknown [9.145.59.207])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Sun, 28 Nov 2021 21:42:45 +0000 (GMT)
-Message-ID: <883f1ab1-21be-9019-d8c6-3942a0b8588c@linux.ibm.com>
-Date:   Sun, 28 Nov 2021 22:42:50 +0100
+        id S1359474AbhK1W3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Nov 2021 17:29:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54710 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359430AbhK1W1w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 17:27:52 -0500
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F4DAC061763;
+        Sun, 28 Nov 2021 14:23:53 -0800 (PST)
+Received: by mail-oi1-x22d.google.com with SMTP id bj13so30910962oib.4;
+        Sun, 28 Nov 2021 14:23:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=M5rtFSgsWKzafi8Cs4A/snez2F9siOW7EyMGKMlf5GI=;
+        b=hq9071HUdLZ2TaOnDWMrUmkEjmGHPPdTYkA47Un8OgZrB6yRF/DDW8F2TRjD1Te19u
+         iwz7IofjNHmeoxPcYl7UCdDln5AfF+oBejaZnHIFQwTg+gm1U9+1Rb0P0GWb/NR69e4e
+         HeUhV/KFKLd9XUXKFJVmgeC4J0r5TQnv1NJ+2Bx+oe5ZCTpFo0EJ7t29VyUgLvsKBoqI
+         /u1OO+yD8J5oRDDhs/6UAFhdL1gR7NeF9utMME7xbGZnk7Dwf0OIocm2klvolQJMDSs2
+         1QegL3fy+FKj/LJwCCf6vQ7+wg9TQOQVwwqfaZxdwTR7sSWQu8DzfoZ1VoZlEQJGdoFg
+         yLaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=M5rtFSgsWKzafi8Cs4A/snez2F9siOW7EyMGKMlf5GI=;
+        b=BHMNg+OBT2fBeuD/ovlMpqWsxOQNR4hFGdeZh9pM7EFgXY69dipXA016diHw1dG2x5
+         lOyhSiJaDqPI6/DOrzN06rad97jRizdNRGK7ndG4wZ/3JDcLRHADL72LtdYVV8sJYSBf
+         Wa4865mBuqDV9KqEsCVOuLZI891ulPOzJRyzUwlGyWORtLFuQtfi8oMd93cDQn+ouIan
+         pcivrbf2Q/uJojQH1MLX6oWCBqMVrq0OC73RepFWX9+WRHfToKP6OCKINPqFsUGu66Vq
+         nizVSYldwQFNQMVQhqPfnxQJZIEuRs6caihngz+HKf+BUqGOpM3pREZqsEhJ4+Teu0BR
+         +XVQ==
+X-Gm-Message-State: AOAM531EBglsM8L1fEWMGLYYoVAFUPL9817Q3pfJePARhrsKMtQUIeQG
+        JYtmvWQp+7AaUN1MVbPs6PE=
+X-Google-Smtp-Source: ABdhPJzDpxaefKBU6oCHFFQgwoEO9P28FUz/LwlZRp8iIlHj4Qp+gFDBjfKDrMFg6OvgX+VjCyPvHw==
+X-Received: by 2002:a54:4614:: with SMTP id p20mr38321110oip.39.1638138232614;
+        Sun, 28 Nov 2021 14:23:52 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id l9sm2021123oom.4.2021.11.28.14.23.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 28 Nov 2021 14:23:52 -0800 (PST)
+Message-ID: <2b9c3c1f-159f-f7c0-d4cb-1159e17e0dd4@gmail.com>
+Date:   Sun, 28 Nov 2021 15:23:41 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH net] net/smc: Clear memory when release and reuse buffer
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.3.1
+Subject: Re: [PATCH v2 net-next 00/26] net: introduce and use generic XDP
+ stats
 Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Tony Lu <tonylu@linux.alibaba.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <20211125122858.90726-1-tonylu@linux.alibaba.com>
- <20211126112855.37274cb7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <20211126112855.37274cb7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Shay Agroskin <shayagr@amazon.com>,
+        Arthur Kiyanovski <akiyano@amazon.com>,
+        David Arinzon <darinzon@amazon.com>,
+        Noam Dagan <ndagan@amazon.com>,
+        Saeed Bishara <saeedb@amazon.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Andrei Vagin <avagin@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Cong Wang <cong.wang@bytedance.com>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+References: <20211123163955.154512-1-alexandr.lobakin@intel.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20211123163955.154512-1-alexandr.lobakin@intel.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: gArUDayhvrN29MTxd2k2bNRQBnzh0YlT
-X-Proofpoint-GUID: RbmPb3ySMcWuxDcUW-fEtS-yD77t07at
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-11-28_07,2021-11-28_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 adultscore=0
- mlxscore=0 clxscore=1015 priorityscore=1501 malwarescore=0
- lowpriorityscore=0 spamscore=0 impostorscore=0 phishscore=0
- mlxlogscore=999 bulkscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2110150000 definitions=main-2111280126
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26/11/2021 20:28, Jakub Kicinski wrote:
-> The tag in the subject seems incorrect, we tag things as [PATCH net] 
-> if they are fixes, and as [PATCH net-next] if they are new features,
-> code refactoring or performance improvements.
+On 11/23/21 9:39 AM, Alexander Lobakin wrote:
+> This is an almost complete rework of [0].
 > 
-> Is this a fix for a regression? In which case we need a Fixes tag to
-> indicate where it was introduced. Otherwise it needs to be tagged as
-> [PATCH net-next].
+> This series introduces generic XDP statistics infra based on rtnl
+> xstats (Ethtool standard stats previously), and wires up the drivers
+> which collect appropriate statistics to this new interface. Finally,
+> it introduces XDP/XSK statistics to all XDP-capable Intel drivers.
 > 
-> I'm assuming Karsten will take it via his tree, otherwise you'll need
-> to repost.
+> Those counters are:
+> * packets: number of frames passed to bpf_prog_run_xdp().
+> * bytes: number of bytes went through bpf_prog_run_xdp().
+> * errors: number of general XDP errors, if driver has one unified
+>   counter.
+> * aborted: number of XDP_ABORTED returns.
+> * drop: number of XDP_DROP returns.
+> * invalid: number of returns of unallowed values (i.e. not XDP_*).
+> * pass: number of XDP_PASS returns.
+> * redirect: number of successfully performed XDP_REDIRECT requests.
+> * redirect_errors: number of failed XDP_REDIRECT requests.
+> * tx: number of successfully performed XDP_TX requests.
+> * tx_errors: number of failed XDP_TX requests.
+> * xmit_packets: number of successfully transmitted XDP/XSK frames.
+> * xmit_bytes: number of successfully transmitted XDP/XSK frames.
+> * xmit_errors: of XDP/XSK frames failed to transmit.
+> * xmit_full: number of XDP/XSK queue being full at the moment of
+>   transmission.
 > 
+> To provide them, developers need to implement .ndo_get_xdp_stats()
+> and, if they want to expose stats on a per-channel basis,
+> .ndo_get_xdp_stats_nch(). include/net/xdp.h contains some helper
 
-We are testing this change atm and will submit it via our tree.
-Very nice change, I like it!
+Why the tie to a channel? There are Rx queues and Tx queues and no
+requirement to link them into a channel. It would be better (more
+flexible) to allow them to be independent. Rather than ask the driver
+"how many channels", ask 'how many Rx queues' and 'how many Tx queues'
+for which xdp stats are reported.
+
+From there, allow queue numbers or queue id's to be non-consecutive and
+add a queue id or number as an attribute. e.g.,
+
+[XDP stats]
+	[ Rx queue N]
+		counters
+
+
+	[ Tx queue N]
+		counters
+
+This would allow a follow on patch set to do something like "Give me XDP
+stats for Rx queue N" instead of doing a full dump.
