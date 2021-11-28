@@ -2,102 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2546460300
-	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 03:32:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D119460302
+	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 03:40:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229779AbhK1Cf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Nov 2021 21:35:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51532 "EHLO
+        id S237761AbhK1Cmw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Nov 2021 21:42:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237814AbhK1Cd5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Nov 2021 21:33:57 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA040C061748
-        for <netdev@vger.kernel.org>; Sat, 27 Nov 2021 18:30:40 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id r11so56040709edd.9
-        for <netdev@vger.kernel.org>; Sat, 27 Nov 2021 18:30:40 -0800 (PST)
+        with ESMTP id S235964AbhK1Ckw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Nov 2021 21:40:52 -0500
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0589DC061574;
+        Sat, 27 Nov 2021 18:37:36 -0800 (PST)
+Received: by mail-il1-x129.google.com with SMTP id s11so5967868ilv.3;
+        Sat, 27 Nov 2021 18:37:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=inGg2ozIO61DUeekcaBgdee8gmnFxwlwbC+Dglgl2cg=;
-        b=qIwtGvXCUht/WcKCCz80/5AZkEvxP+eDMeQDLyMiw2k31l/5kdrTUOKWN2jIQj1+2A
-         EWQMA7a8KZMp0+8sGDl5nDEpRTS7RlPvdMz/ihHPAFxyps/kl70YP4muC7edz8igiqOK
-         54bI9iY0CUCcXdcSwRICXCieM2ecx/kwS9EhLCBIX92SkHzCBJEPSAFi/XPVBI0nyQkK
-         lqvzGkznuL1fKfaHW6Mk1w0qP15HqYzR4gnFjS5cGKWB/fAYGpoonBVt4ZPDzFF91ngL
-         zOY9SWQK0fWmlR8hUmvvTauA7CBXnkBdTdol1FU/RcdF+kTy3yvQwOjLdpWvOlUIix9m
-         vVLQ==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=uZsW4vKAD42FBQLBm7RlaIj3WM0Zuzdt9kxEEmUrNBc=;
+        b=pS0Yvh2bATvCt+KtwU4raYn0HDh4lHnAJCf1ChnjFfFyCsAY5MnRfNbZqqobhfUT/Y
+         03cAIrqtaFVT5OJUmYwCptETrSDbZKCedyg65G6MQgGDohs2Jye57Si/aSGI6wq4pKZE
+         aiTfPIkZpetDjwG7gRXGSZl6ChDWWicYRhdAr7bMxrcdAMqgDo83yIZyoRGU6lOAZ438
+         bZJXCZTzZJSNV3aRTslUw1ozgSVND9aR3NqDFBOQqkl1hLdzzUxUt0ilYdwZ3Nqr62yG
+         SLizbcwV6orw34BE7tmD53FdCjV5hIY69bSlH+08+lVfsCk+hpzpT7BI+7+BTa9LWwk8
+         G+gA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=inGg2ozIO61DUeekcaBgdee8gmnFxwlwbC+Dglgl2cg=;
-        b=XouCFpHSGjdmWIpmwB6lvA0J+bw1tuzWHFmfkZgd1jNzYi4M0XYHmEbrwxMzJSLs/V
-         PxyJH7QrTBJTxzaMqLNfYYMb54c7CxWI0pTDcG0u4QWNftfiZY69FSUI/GuqlyFNvq7v
-         E7SV7sq111HQAVZBKPkGEV+WgMgMZfTlYDDIMYRYAgEi7vW/G7HfTypaJwRtxaKCw1+Q
-         9djJaT3aoHHEdcEnh6N6jyn1khu5fFmW8wCxq6/nD1VMmfE7K/+vcVP1CkiL/vyokcc+
-         +p/Uy+6C0t6MJKGrMIEi0wI6KJW6cmX3YFmH70r4uoUCO+OYwT5U7rq1Ak5sbRsJxoVG
-         59RA==
-X-Gm-Message-State: AOAM533zxuPfs81xOCDlzG4727FpWZoyOusFTP/sdB/WzdF/JQmMJHsJ
-        /BUdTAPeqspTc0/C18q94quYkmlAmcMmcdx0yDw=
-X-Google-Smtp-Source: ABdhPJx8Ye/T2MrM/gUdl3GI9cflX5R8fc3uoSdEU98J51vIYnOa30jQZhrXDAU4wl4pINq9yPd8mvhanAfob0u3758=
-X-Received: by 2002:a05:6402:1014:: with SMTP id c20mr62408074edu.186.1638066639231;
- Sat, 27 Nov 2021 18:30:39 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=uZsW4vKAD42FBQLBm7RlaIj3WM0Zuzdt9kxEEmUrNBc=;
+        b=FvkkHWpTQUkzPSxRvqkfl8JhIco3ktTnFY+LCfF/N30GroJh7irboK6n9eLzUOGFQ6
+         Rxr2jRIlZcDSqxKs31V0ygB/goqXRJ6prp4HvEHRegujFA0VTdxDS+HVznkCFK7ZoZR8
+         l5VpZESd11BWoArlQPdFA8NOm12UmpSEqU6/oJtQiwfMAQXcpyLYZsdySdwlh4bi9eIx
+         VWv5G46C82ZZRgYYze5xZcMbP39t+eEfnPiezXcAVXEix8QO1YsDa5Qoevtbz0rTXFJu
+         vRLe2VN6jl/UPH/m3N6xz9EXMQ5+Wz33/jsL8IkNN3mJWcYSp0MxCbSZBh+gyJp12QFr
+         MCig==
+X-Gm-Message-State: AOAM531pc+zqqtciuVp6g6VllfwsGoKJ9EGnm8GdEr4C1kG1XMZ91Yqa
+        KJDwFTfzWmMm9qPNaYAXLnLvaPip4AMgaA==
+X-Google-Smtp-Source: ABdhPJz+xKA0D6Bb6XV9fJrfFY2XXSpo2QcxVDRwW6lZtC+Sdb9sM2zDpYRzEVqmCchQX26oEn/M2w==
+X-Received: by 2002:a05:6e02:1d10:: with SMTP id i16mr46494963ila.182.1638067056229;
+        Sat, 27 Nov 2021 18:37:36 -0800 (PST)
+Received: from cth-desktop-dorm.mad.wi.cth451.me ([2600:6c44:113f:8901:6f66:c6f8:91db:cfda])
+        by smtp.gmail.com with ESMTPSA id g7sm4337845iln.67.2021.11.27.18.37.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 27 Nov 2021 18:37:35 -0800 (PST)
+Date:   Sat, 27 Nov 2021 20:37:33 -0600
+From:   Tianhao Chai <cth451@gmail.com>
+To:     Igor Russkikh <irusskikh@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>
+Subject: [PATCH] ethernet: aquantia: Try MAC address from device tree
+Message-ID: <20211128023733.GA466664@cth-desktop-dorm.mad.wi.cth451.me>
 MIME-Version: 1.0
-Sender: zaring.kkipkalya@gmail.com
-Received: by 2002:a17:906:d555:0:0:0:0 with HTTP; Sat, 27 Nov 2021 18:30:38
- -0800 (PST)
-From:   Jackie Fowler <jackiefowler597@gmail.com>
-Date:   Sun, 28 Nov 2021 02:30:38 +0000
-X-Google-Sender-Auth: v5-7WyuKZ2q_iCt74pWebYSr10I
-Message-ID: <CANmOZ0w1X1iSe4KFUfGcnYYCyy2asaVijF-yeE2XFybpkx9Upw@mail.gmail.com>
-Subject: Hello
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Gooday,
+Apple M1 Mac minis (2020) with 10GE NICs do not have MAC address in the
+card, but instead need to obtain MAC addresses from the device tree. In
+this case the hardware will report an invalid MAC.
 
-It's my pleasure to contact you to seek for your urgent assistance in
-this humanitarian social investment project to be establish in your
-country for the mutual benefit of the orphans and the less privileged
-ones, haven't known each other or meet before, I know that everything
-is controlled by God as there is nothing impossible to him. I believe
-that you and I can cooperate together in the service of the Lord,
-please open your heart to assist me in carrying out this benevolently
-project in your country/position. I am Mrs.Fowler Jackie. a dying
-widow hospitalized undergoing treatment for brain tumor disease, I
-believe that you will not expose or betray this trust and confidence
-that I am about to entrust on you for the mutual benefit of the
-orphans and the less privileged ones. My late husband made a
-substantial deposit with the Bank which I have decided to hand over
-and entrust the sum of ($ 12,500,000.00 Dollars) in the account under
-your custody for you to invest it into any social charitable project
-in your location or your country. Based on my present health status I
-am permanently indisposed to handle finances or any financial related
-project.
+Currently atlantic driver does not query the DT for MAC address and will
+randomly assign a MAC if the NIC doesn't have a permanent MAC burnt in.
+This patch causes the driver to perfer a valid MAC address from OF (if
+present) over HW self-reported MAC and only fall back to a random MAC
+address when neither of them is valid.
 
-This is the reason why I decided to contact you for your support and
-help to stand as my rightful beneficiary and claim the money for
-humanitarian purposes for the mutual benefits of the less privileged
-ones. Because If the money remains unclaimed with the bank after my
-death, those greedy bank executives will place the money as an
-unclaimed Fund and share it for their selfish and worthless ventures.
-However I need your sincerity and ability to carry out this
-transaction and fulfill my final wish in implementing the charitable
-investment project in your country as it requires absolute trust and
-devotion without any failure. Meanwhile It will be my pleasure to
-compensate you with part of the total money as my Investment
-manager/partner for your effort in handling the transaction, while the
-remaining amount shall be invested into any charity project of your
-choice there in your country.
-Please I'm waiting for your prompt response if only you are
-interested. I will send you further details and the bank contact
-details where the fund has been deposited for you to contact the Bank
-for immediate release and transfer of the fund into your bank account
-as my rightful beneficiary.
-May god bless you and your family.
-Respectfully.
-Mrs.Fowler Jackie.
-Written from the Hospital.
+Signed-off-by: Tianhao Chai <cth451@gmail.com>
+---
+ .../net/ethernet/aquantia/atlantic/aq_nic.c   | 28 ++++++++++++-------
+ 1 file changed, 18 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+index 1acf544afeb4..ae6c4a044390 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+@@ -316,18 +316,26 @@ int aq_nic_ndev_register(struct aq_nic_s *self)
+ 	aq_macsec_init(self);
+ #endif
+ 
+-	mutex_lock(&self->fwreq_mutex);
+-	err = self->aq_fw_ops->get_mac_permanent(self->aq_hw, addr);
+-	mutex_unlock(&self->fwreq_mutex);
+-	if (err)
+-		goto err_exit;
++	if (eth_platform_get_mac_address(&self->pdev->dev, addr) == 0 &&
++	    is_valid_ether_addr(addr)) {
++		// DT supplied a valid MAC address
++		eth_hw_addr_set(self->ndev, addr);
++	} else {
++		// If DT has none or an invalid one, ask device for MAC address
++		mutex_lock(&self->fwreq_mutex);
++		err = self->aq_fw_ops->get_mac_permanent(self->aq_hw, addr);
++		mutex_unlock(&self->fwreq_mutex);
+ 
+-	eth_hw_addr_set(self->ndev, addr);
++		if (err)
++			goto err_exit;
+ 
+-	if (!is_valid_ether_addr(self->ndev->dev_addr) ||
+-	    !aq_nic_is_valid_ether_addr(self->ndev->dev_addr)) {
+-		netdev_warn(self->ndev, "MAC is invalid, will use random.");
+-		eth_hw_addr_random(self->ndev);
++		if (is_valid_ether_addr(addr) &&
++		    aq_nic_is_valid_ether_addr(addr)) {
++			eth_hw_addr_set(self->ndev, addr);
++		} else {
++			netdev_warn(self->ndev, "MAC is invalid, will use random.");
++			eth_hw_addr_random(self->ndev);
++		}
+ 	}
+ 
+ #if defined(AQ_CFG_MAC_ADDR_PERMANENT)
+-- 
+2.30.2
+
