@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5767E460650
-	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 14:00:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 292AA460651
+	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 14:00:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357420AbhK1ND3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Nov 2021 08:03:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45412 "EHLO
+        id S1357565AbhK1NDh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Nov 2021 08:03:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344496AbhK1NB2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 08:01:28 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4FC8C061758
-        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 04:55:37 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id u3so37159005lfl.2
-        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 04:55:37 -0800 (PST)
+        with ESMTP id S1345845AbhK1NBg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 08:01:36 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFF37C06175B
+        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 04:55:38 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id z7so2812598lfi.11
+        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 04:55:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Ut2j330bo/IxIjJswmV42yHAdJERMb8IowsBpx/nbpM=;
-        b=THZa4bBhSrqWyIRUpaQ8GE7t418jV9HGBRuFRTOJqEe8ZkzfO5JvxQFtJ4O5GIkBIE
-         7pkqYOISlPapLHtdfZmLj/3N3naZ+orlOunQLpn+dy4mz/W+ZO6GMShhGgeO9XnYPnVg
-         garVYVZM95xBe2+++UVtL82b7l0Xy+hxw8Steci0Sh4NmOLXDj87avUTkmz9IYlHJO2t
-         ipJarGlJXSAnRlAZ//yZeyB8JJC9cquyNVEOP/0CqlgQqPhBFvBUL4j8yn5OxeXd/QS1
-         MV7G7OSUrKtxYofBF0orhlUZki/cwxUVvNzwRhvp3WUH5PLJt3L0syAgZWEUdjXdT4TR
-         CSrg==
+        bh=1EfcGdLjQUtK7/5MZ3LTCPhBBgh6JFpaX3qkMx9GGyA=;
+        b=oKhdIwStzFQ5YOX/4wsWIAzClfhNLG1/SMrM63T6ir5e+YHsV012Cp9v5Vbi4GVXnh
+         N3BTZ7b0Td44x8gvKWzyXsXoHz+eOPHOhK7oasqjAsSW2l6VnG2z0OYSpJKdVNMrsl3m
+         gbRX+aBRxIb68BkeTFz3h9+2XGu1IJ8ji48lS6wF8qXNmzUlkXlL/XHLfwmR++ee3veI
+         xnC3CbpyrSZclBLA3sy6SZDuI539bcccKOLIrxBab8lC9xGqBaml0dqZxjZqs20kHazw
+         xw9kW68C8L5KdSmevNfnssYSg70sS4cN+ZsAlAIYb4y+uGEPAjDobFUzo5+wsP8JB53H
+         xDxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Ut2j330bo/IxIjJswmV42yHAdJERMb8IowsBpx/nbpM=;
-        b=XZlvOPtdlpH/lMbwwN0M6VqFKE/mCByvV5wr55DGBULfVhQvtcN7YXyNj1dCS16H1X
-         hrHM8YcygQ8rJlCKVeCG/KUugqcorXeB1Jfq1TGLQrdiBff2BCtYEG0aCvTmeuvWUILK
-         kPBoVS6tUeIUmjsbrEtc7YHBu8EGs6iyVz1ri3chfOAYzovaslNWDNUc71F/N9JmMuEI
-         aMTza93jJ+lgQX9GV2kNWQIoN1AowoJc0lKzq82WWDnXhVcI+iNfjgVPaG7F7Qog7ZIu
-         P12OPQvZPxG1v0lMGpLwDQ1SU81T5/FIx8ybXQuo28K2DyLq5LP5fPmPrRyu1kPs5Z0T
-         U0Lg==
-X-Gm-Message-State: AOAM530yhrMsOQL3iUoRsXopURc92maB9RRveLzHCr0nko5RfJeLUkyZ
-        c3nrekEU7xWy2Wh6xWZaplE=
-X-Google-Smtp-Source: ABdhPJyGSMUla9XIloHOuxPhrzy26KU1v/iksoa5hSj3DCSnVsHNgaVjMEc4bmJE4WkVov6taKcZBw==
-X-Received: by 2002:a19:4895:: with SMTP id v143mr39384108lfa.142.1638104136037;
-        Sun, 28 Nov 2021 04:55:36 -0800 (PST)
+        bh=1EfcGdLjQUtK7/5MZ3LTCPhBBgh6JFpaX3qkMx9GGyA=;
+        b=hzhOxId1RtrenhxEkYize0R8v1C4NbeBGAvwotUhLaSw04TKitqzeYKT+NZj0xmEkO
+         vjB7cW+Losu+XOme5VKag3zp7nSm/GSgTsCKQk1LWudhOa0RixyPo2KPPSbdPlF9SNP5
+         lJTmE/2dtRKA7TgMbPQXVEifxepW13TIWvwfe9Q8wlxzEKdBYBmZ4/rTMvxmnGj7+VyY
+         9pt0wh39KVPVaUPGHjr7et4YQViY3S4THxj1u5VWIQ7ZobGzyzgmlCDvgKd77DV/fhmZ
+         32OVhjoS654Kev9DLFLgTVwJaN9k5rSUSsVDS06ybg4dPW9DizZHzHoS/HL+lNeG4bXQ
+         t17w==
+X-Gm-Message-State: AOAM533WgbudqdLrQxDi69gmO0/5v19OqM4EujBfx5eU9q5RwJieQLTI
+        2YcUj290VQKkiPDktBRMSFA=
+X-Google-Smtp-Source: ABdhPJxqfOWEAbqAa9OGo38k4nmEHdQtuXpRH4a7G+KP1Vj47D6+JZ0Dco/5ZxW7rjO1aESlpZtBJA==
+X-Received: by 2002:a05:6512:1690:: with SMTP id bu16mr2899777lfb.38.1638104137176;
+        Sun, 28 Nov 2021 04:55:37 -0800 (PST)
 Received: from rsa-laptop.internal.lan ([217.25.229.52])
-        by smtp.gmail.com with ESMTPSA id c1sm1066595ljr.111.2021.11.28.04.55.35
+        by smtp.gmail.com with ESMTPSA id c1sm1066595ljr.111.2021.11.28.04.55.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Nov 2021 04:55:35 -0800 (PST)
+        Sun, 28 Nov 2021 04:55:36 -0800 (PST)
 From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -54,9 +54,9 @@ Cc:     netdev@vger.kernel.org, M Chetan Kumar <m.chetan.kumar@intel.com>,
         Intel Corporation <linuxwwan@intel.com>,
         Loic Poulain <loic.poulain@linaro.org>,
         Johannes Berg <johannes@sipsolutions.net>
-Subject: [PATCH RESEND net-next 4/5] net: wwan: iosm: make debugfs optional
-Date:   Sun, 28 Nov 2021 15:55:21 +0300
-Message-Id: <20211128125522.23357-5-ryazanov.s.a@gmail.com>
+Subject: [PATCH RESEND net-next 5/5] net: wwan: core: make debugfs optional
+Date:   Sun, 28 Nov 2021 15:55:22 +0300
+Message-Id: <20211128125522.23357-6-ryazanov.s.a@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211128125522.23357-1-ryazanov.s.a@gmail.com>
 References: <20211128125522.23357-1-ryazanov.s.a@gmail.com>
@@ -66,166 +66,115 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Collecting modem firmware traces is optional for the regular modem use.
-Some distros and users will want to disable this feature for security or
-kernel size reasons. So add a configuration option that allows to
-completely disable the driver debugfs interface.
+Current WWAN debugfs interface does not take too much space, but it is
+useless without driver-specific debugfs interfaces. To avoid overloading
+debugfs with empty directories, make the common WWAN debugfs interface
+optional. And force its selection if any driver-specific interface (only
+IOSM at the moment) is enabled by user.
 
 Signed-off-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
 ---
- drivers/net/wwan/Kconfig                 |  8 ++++++++
- drivers/net/wwan/iosm/Makefile           |  4 +++-
- drivers/net/wwan/iosm/iosm_ipc_debugfs.h |  5 +++++
- drivers/net/wwan/iosm/iosm_ipc_imem.c    |  2 +-
- drivers/net/wwan/iosm/iosm_ipc_imem.h    |  4 ++++
- drivers/net/wwan/iosm/iosm_ipc_trace.c   |  6 ++++--
- drivers/net/wwan/iosm/iosm_ipc_trace.h   | 20 +++++++++++++++++++-
- 7 files changed, 44 insertions(+), 5 deletions(-)
+ drivers/net/wwan/Kconfig     | 9 +++++++++
+ drivers/net/wwan/wwan_core.c | 8 ++++++++
+ include/linux/wwan.h         | 7 +++++++
+ 3 files changed, 24 insertions(+)
 
 diff --git a/drivers/net/wwan/Kconfig b/drivers/net/wwan/Kconfig
-index 17543be14665..e204e74edcec 100644
+index e204e74edcec..6e1ef08650c9 100644
 --- a/drivers/net/wwan/Kconfig
 +++ b/drivers/net/wwan/Kconfig
-@@ -80,6 +80,14 @@ config IOSM
+@@ -16,6 +16,14 @@ config WWAN
  
- 	  If unsure, say N.
+ if WWAN
  
-+config IOSM_DEBUGFS
-+	bool "IOSM Debugfs support"
-+	depends on IOSM && DEBUG_FS
++config WWAN_DEBUGFS
++	bool "WWAN subsystem common debugfs interface"
++	depends on DEBUG_FS
 +	help
-+	  Enables debugfs driver interface for traces collection.
++	  Enables common debugfs infrastructure for WWAN devices.
 +
 +	  If unsure, say N.
 +
- endif # WWAN
+ config WWAN_HWSIM
+ 	tristate "Simulated WWAN device"
+ 	help
+@@ -83,6 +91,7 @@ config IOSM
+ config IOSM_DEBUGFS
+ 	bool "IOSM Debugfs support"
+ 	depends on IOSM && DEBUG_FS
++	select WWAN_DEBUGFS
+ 	help
+ 	  Enables debugfs driver interface for traces collection.
  
- endmenu
-diff --git a/drivers/net/wwan/iosm/Makefile b/drivers/net/wwan/iosm/Makefile
-index 5091f664af0d..bf28b29f6151 100644
---- a/drivers/net/wwan/iosm/Makefile
-+++ b/drivers/net/wwan/iosm/Makefile
-@@ -21,7 +21,9 @@ iosm-y = \
- 	iosm_ipc_mux_codec.o		\
- 	iosm_ipc_devlink.o		\
- 	iosm_ipc_flash.o		\
--	iosm_ipc_coredump.o		\
-+	iosm_ipc_coredump.o
-+
-+iosm-$(CONFIG_IOSM_DEBUGFS) += \
- 	iosm_ipc_debugfs.o		\
- 	iosm_ipc_trace.o
+diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
+index 5bf62dc35ac7..b41104129d1a 100644
+--- a/drivers/net/wwan/wwan_core.c
++++ b/drivers/net/wwan/wwan_core.c
+@@ -146,6 +146,7 @@ static struct wwan_device *wwan_dev_get_by_name(const char *name)
+ 	return to_wwan_dev(dev);
+ }
  
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_debugfs.h b/drivers/net/wwan/iosm/iosm_ipc_debugfs.h
-index 35788039f13f..3e3bb968fa03 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_debugfs.h
-+++ b/drivers/net/wwan/iosm/iosm_ipc_debugfs.h
-@@ -6,7 +6,12 @@
- #ifndef IOSM_IPC_DEBUGFS_H
- #define IOSM_IPC_DEBUGFS_H
- 
-+#ifdef CONFIG_IOSM_DEBUGFS
- void ipc_debugfs_init(struct iosm_imem *ipc_imem);
- void ipc_debugfs_deinit(struct iosm_imem *ipc_imem);
-+#else
-+static inline void ipc_debugfs_init(struct iosm_imem *ipc_imem) {}
-+static inline void ipc_debugfs_deinit(struct iosm_imem *ipc_imem) {}
-+#endif
- 
- #endif
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_imem.c b/drivers/net/wwan/iosm/iosm_ipc_imem.c
-index 25b889922912..2a6ddd7c6c88 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_imem.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_imem.c
-@@ -274,7 +274,7 @@ static void ipc_imem_dl_skb_process(struct iosm_imem *ipc_imem,
- 			ipc_imem_sys_devlink_notify_rx(ipc_imem->ipc_devlink,
- 						       skb);
- 		else if (ipc_is_trace_channel(ipc_imem, port_id))
--			ipc_trace_port_rx(ipc_imem->trace, skb);
-+			ipc_trace_port_rx(ipc_imem, skb);
- 		else
- 			wwan_port_rx(ipc_imem->ipc_port[port_id]->iosm_port,
- 				     skb);
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_imem.h b/drivers/net/wwan/iosm/iosm_ipc_imem.h
-index df3b471f6fa9..cca4b32c63cd 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_imem.h
-+++ b/drivers/net/wwan/iosm/iosm_ipc_imem.h
-@@ -350,7 +350,9 @@ struct iosm_imem {
- 	struct iosm_mux *mux;
- 	struct iosm_cdev *ipc_port[IPC_MEM_MAX_CHANNELS];
- 	struct iosm_pcie *pcie;
-+#ifdef CONFIG_IOSM_DEBUGFS
- 	struct iosm_trace *trace;
-+#endif
- 	struct device *dev;
- 	enum ipc_mem_device_ipc_state ipc_requested_state;
- 	struct ipc_mem_channel channels[IPC_MEM_MAX_CHANNELS];
-@@ -380,7 +382,9 @@ struct iosm_imem {
- 	   ev_mux_net_transmit_pending:1,
- 	   reset_det_n:1,
- 	   pcie_wake_n:1;
-+#ifdef CONFIG_IOSM_DEBUGFS
- 	struct dentry *debugfs_dir;
-+#endif
- };
- 
- /**
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_trace.c b/drivers/net/wwan/iosm/iosm_ipc_trace.c
-index 5243ead90b5f..eeecfa3d10c5 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_trace.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_trace.c
-@@ -17,11 +17,13 @@
- 
- /**
-  * ipc_trace_port_rx - Receive trace packet from cp and write to relay buffer
-- * @ipc_trace:  Pointer to the ipc trace data-struct
-+ * @ipc_imem:   Pointer to iosm_imem structure
-  * @skb:        Pointer to struct sk_buff
-  */
--void ipc_trace_port_rx(struct iosm_trace *ipc_trace, struct sk_buff *skb)
-+void ipc_trace_port_rx(struct iosm_imem *ipc_imem, struct sk_buff *skb)
++#ifdef CONFIG_WWAN_DEBUGFS
+ struct dentry *wwan_get_debugfs_dir(struct device *parent)
  {
-+	struct iosm_trace *ipc_trace = ipc_imem->trace;
-+
- 	if (ipc_trace->ipc_rchan)
- 		relay_write(ipc_trace->ipc_rchan, skb->data, skb->len);
- 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_trace.h b/drivers/net/wwan/iosm/iosm_ipc_trace.h
-index 419540c91219..0d74836df90c 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_trace.h
-+++ b/drivers/net/wwan/iosm/iosm_ipc_trace.h
-@@ -45,6 +45,8 @@ struct iosm_trace {
- 	enum trace_ctrl_mode mode;
- };
- 
-+#ifdef CONFIG_IOSM_DEBUGFS
-+
- static inline bool ipc_is_trace_channel(struct iosm_imem *ipc_mem, u16 chl_id)
- {
- 	return ipc_mem->trace && ipc_mem->trace->chl_id == chl_id;
-@@ -52,5 +54,21 @@ static inline bool ipc_is_trace_channel(struct iosm_imem *ipc_mem, u16 chl_id)
- 
- struct iosm_trace *ipc_trace_init(struct iosm_imem *ipc_imem);
- void ipc_trace_deinit(struct iosm_trace *ipc_trace);
--void ipc_trace_port_rx(struct iosm_trace *ipc_trace, struct sk_buff *skb);
-+void ipc_trace_port_rx(struct iosm_imem *ipc_imem, struct sk_buff *skb);
-+
-+#else
-+
-+static inline bool ipc_is_trace_channel(struct iosm_imem *ipc_mem, u16 chl_id)
-+{
-+	return false;
-+}
-+
-+static inline void ipc_trace_port_rx(struct iosm_imem *ipc_imem,
-+				     struct sk_buff *skb)
-+{
-+	dev_kfree_skb(skb);
-+}
-+
+ 	struct wwan_device *wwandev;
+@@ -157,6 +158,7 @@ struct dentry *wwan_get_debugfs_dir(struct device *parent)
+ 	return wwandev->debugfs_dir;
+ }
+ EXPORT_SYMBOL_GPL(wwan_get_debugfs_dir);
 +#endif
-+
- #endif
+ 
+ /* This function allocates and registers a new WWAN device OR if a WWAN device
+  * already exist for the given parent, it gets a reference and return it.
+@@ -207,8 +209,10 @@ static struct wwan_device *wwan_create_dev(struct device *parent)
+ 	}
+ 
+ 	wwandev_name = kobject_name(&wwandev->dev.kobj);
++#ifdef CONFIG_WWAN_DEBUGFS
+ 	wwandev->debugfs_dir = debugfs_create_dir(wwandev_name,
+ 						  wwan_debugfs_dir);
++#endif
+ 
+ done_unlock:
+ 	mutex_unlock(&wwan_register_lock);
+@@ -240,7 +244,9 @@ static void wwan_remove_dev(struct wwan_device *wwandev)
+ 		ret = device_for_each_child(&wwandev->dev, NULL, is_wwan_child);
+ 
+ 	if (!ret) {
++#ifdef CONFIG_WWAN_DEBUGFS
+ 		debugfs_remove_recursive(wwandev->debugfs_dir);
++#endif
+ 		device_unregister(&wwandev->dev);
+ 	} else {
+ 		put_device(&wwandev->dev);
+@@ -1140,7 +1146,9 @@ static int __init wwan_init(void)
+ 		goto destroy;
+ 	}
+ 
++#ifdef CONFIG_WWAN_DEBUGFS
+ 	wwan_debugfs_dir = debugfs_create_dir("wwan", NULL);
++#endif
+ 
+ 	return 0;
+ 
+diff --git a/include/linux/wwan.h b/include/linux/wwan.h
+index 1646aa3e6779..b84ccf7d34da 100644
+--- a/include/linux/wwan.h
++++ b/include/linux/wwan.h
+@@ -171,6 +171,13 @@ int wwan_register_ops(struct device *parent, const struct wwan_ops *ops,
+ 
+ void wwan_unregister_ops(struct device *parent);
+ 
++#ifdef CONFIG_WWAN_DEBUGFS
+ struct dentry *wwan_get_debugfs_dir(struct device *parent);
++#else
++static inline struct dentry *wwan_get_debugfs_dir(struct device *parent)
++{
++	return NULL;
++}
++#endif
+ 
+ #endif /* __WWAN_H */
 -- 
 2.32.0
 
