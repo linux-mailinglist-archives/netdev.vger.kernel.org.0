@@ -2,177 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 259044606A5
-	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 15:02:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 323A74606A8
+	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 15:03:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357814AbhK1OFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Nov 2021 09:05:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58472 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357817AbhK1ODs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 09:03:48 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2232C0613F6;
-        Sun, 28 Nov 2021 05:57:16 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id y13so60326248edd.13;
-        Sun, 28 Nov 2021 05:57:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=WxyvII6OmnQeCAY+DJ4uBaCQep/MW3p/jfUqUkGPhKg=;
-        b=TwMUP/DXnY70GvOEWDlRhxHKej9qY3L1d+Ha9pMZ/Qm3pZvOwxtWDMdwio1aAAjo50
-         +Mo8f1K+SA5m8lSr7wkFVg3lAsGc2nncWTYvajZ/PxAfdUb2He0jda6neOl9zaBh9xri
-         e5TL5mgqrYcWEbsZ6TtmgoVz4nYfgYYvy2g9D2MGZRFn23quhyexpyRawgbi6J42dEw3
-         vTt4a4Ct9e86w0JRlctf9d3dH6D4u22+7g/jeK5VyhsbaDF0d87u1pTsS+AhBXpBCj2G
-         jjFGC4qkVe0wJ0oBP9iTKda3ORRTpY6cZm8oNTWbkLw22LkdHqw82lCv4GODjPSWFCzQ
-         kG3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=WxyvII6OmnQeCAY+DJ4uBaCQep/MW3p/jfUqUkGPhKg=;
-        b=RZOiHhDLSVLGuamkW8zBLQ1KieiZahNcxcAKScoewaHE4yraZg5UVXwj4l7kbfrfg1
-         Md2+6eH1M6jWld29Y5jXx/r0ZjooWr+kNFtdScukHybRotAvug4t1aFkwEagdXqqw72n
-         Jo1zzQK7NhhHKGANEJAMJGkPuqXQZ9e2cPDw1OLF0EZ+mtT5WeBmr9YmNqLhvJkl778X
-         mGa80zkdQi1UcKShVLFs7TZmsdtv310IizrMEx5cdokJQ2G4vWYUlgP1fzhRU/aE9Fba
-         EcIi7f7vWpwNDDWkQ6CatMXQoI/eE8jd4HTvIMLbtyG6P/1ksfGFCijsZ9hhDYCt4jwu
-         Av1A==
-X-Gm-Message-State: AOAM533aU3f1J3aC7wgJY3RMtakXrH071p7x/yu9u5LzPr8E+u0tA6PC
-        nBS60vvNJ/Kg02IqsGHG6bg=
-X-Google-Smtp-Source: ABdhPJz6nXfc+mVeK1gz4vdbNriFAG/nL94eSnXm4Z5qazr0myWosKzt5iyFKC2FoRAMixMfuqCDBw==
-X-Received: by 2002:a05:6402:2026:: with SMTP id ay6mr65342803edb.202.1638107835368;
-        Sun, 28 Nov 2021 05:57:15 -0800 (PST)
-Received: from [192.168.0.108] ([77.124.1.33])
-        by smtp.gmail.com with ESMTPSA id og14sm5883651ejc.107.2021.11.28.05.57.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 28 Nov 2021 05:57:14 -0800 (PST)
-Message-ID: <f76ad3e6-fccb-a481-8283-c8ff3100a82b@gmail.com>
-Date:   Sun, 28 Nov 2021 15:57:12 +0200
+        id S1352641AbhK1OGs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Nov 2021 09:06:48 -0500
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:56499 "EHLO
+        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1357792AbhK1OEr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 09:04:47 -0500
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 5025D580233;
+        Sun, 28 Nov 2021 09:01:31 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Sun, 28 Nov 2021 09:01:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=9QEJ4a
+        3JCf6f6EXsCeOpWCQYkSVQO3Izw6ivvg22kAE=; b=JRVJLyvr9erNruhr6GmpWw
+        /hJVhQL5Hrni3Xtg9nhLSsZOkl4GzzRKRLmqGKhWFJljPbOK7sGUF3wUa85VojPp
+        pOAvEwHdNzH1gB7WQ5GuffWV/40PEXvw/jrEaaMFS35nbTklfEM24XTVfOFvLWmF
+        PLdGyyLpkLmciOCNPoaWNTJKrzxEKa35Idk7ijnDJmbVsUlkhvL0mhpzuQPMG+ji
+        Pmrf6rHnVbMxmyqupW/AuhheKmFZXr0Q9jJFXhWB3NHbJvdh0vxJIVc2neiQkr4d
+        14DFZaPANpylVdUcQteNEtqxmuwRFUvoY73C0J4mPWflXfK7vvECa3jj3iDnjUKw
+        ==
+X-ME-Sender: <xms:uoujYbPMjp1d4grp2Bi15pUbY_vDUwCJB9pCzj_Hq1U8T3RVAWLgiQ>
+    <xme:uoujYV8WsJiDdMTS_7Eqx-IWaWRySZo2uk5tV63zWIJ9NhVL6OIccEmK8a6xiV3js
+    FHTIVYvDy8d2Cg>
+X-ME-Received: <xmr:uoujYaQ4BzAb8WE8aj2jRcnuggPQ8ugdlEMPrjb5ugAudQIzCvrHNpL9-iN6>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrheeigdehlecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:uoujYfvhCaTdlwuAxDryXF4tEBk5LA1if9Q5PrBdzauzNG77BcJbpA>
+    <xmx:uoujYTd-5PJsjrJOZ7cAFzopq6NGvQWisXS_xJQwPxkD89oJjFv4kA>
+    <xmx:uoujYb3DSUL6kfuLhsOz_QprwFtlxu8QpHYtkun86Qstxd54CVW8pw>
+    <xmx:u4ujYSySRaJplu8LpJqxc75ic6qQgLcUHROqcIWQq8X5tmjYIq2Mnw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 28 Nov 2021 09:01:30 -0500 (EST)
+Date:   Sun, 28 Nov 2021 16:01:27 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Andrei Vagin <avagin@gmail.com>,
+        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
+        Alexander Mikhalitsyn <alexander@mihalicyn.com>
+Subject: Re: [PATCH net-next] rtnetlink: add RTNH_REJECT_MASK
+Message-ID: <YaOLt2M1hBnoVFKd@shredder>
+References: <20211111160240.739294-1-alexander.mikhalitsyn@virtuozzo.com>
+ <20211126134311.920808-1-alexander.mikhalitsyn@virtuozzo.com>
+ <20211126134311.920808-2-alexander.mikhalitsyn@virtuozzo.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH] net/mlx4_en: Update reported link modes for 1/10G
-Content-Language: en-US
-To:     Erik Ekman <erik@kryo.se>, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Michael Stapelberg <michael@stapelberg.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20211128123712.82096-1-erik@kryo.se>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <20211128123712.82096-1-erik@kryo.se>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211126134311.920808-2-alexander.mikhalitsyn@virtuozzo.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Nov 26, 2021 at 04:43:11PM +0300, Alexander Mikhalitsyn wrote:
+> diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+> index 5888492a5257..9c065e2fdef9 100644
+> --- a/include/uapi/linux/rtnetlink.h
+> +++ b/include/uapi/linux/rtnetlink.h
+> @@ -417,6 +417,9 @@ struct rtnexthop {
+>  #define RTNH_COMPARE_MASK	(RTNH_F_DEAD | RTNH_F_LINKDOWN | \
+>  				 RTNH_F_OFFLOAD | RTNH_F_TRAP)
+>  
+> +/* these flags can't be set by the userspace */
+> +#define RTNH_REJECT_MASK	(RTNH_F_DEAD | RTNH_F_LINKDOWN)
+> +
+>  /* Macros to handle hexthops */
+>  
+>  #define RTNH_ALIGNTO	4
+> diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+> index 4c0c33e4710d..805f5e05b56d 100644
+> --- a/net/ipv4/fib_semantics.c
+> +++ b/net/ipv4/fib_semantics.c
+> @@ -685,7 +685,7 @@ static int fib_get_nhs(struct fib_info *fi, struct rtnexthop *rtnh,
+>  			return -EINVAL;
+>  		}
+>  
+> -		if (rtnh->rtnh_flags & (RTNH_F_DEAD | RTNH_F_LINKDOWN)) {
+> +		if (rtnh->rtnh_flags & RTNH_REJECT_MASK) {
+>  			NL_SET_ERR_MSG(extack,
+>  				       "Invalid flags for nexthop - can not contain DEAD or LINKDOWN");
+>  			return -EINVAL;
+> @@ -1363,7 +1363,7 @@ struct fib_info *fib_create_info(struct fib_config *cfg,
+>  		goto err_inval;
+>  	}
+>  
+> -	if (cfg->fc_flags & (RTNH_F_DEAD | RTNH_F_LINKDOWN)) {
+> +	if (cfg->fc_flags & RTNH_REJECT_MASK) {
+>  		NL_SET_ERR_MSG(extack,
+>  			       "Invalid rtm_flags - can not contain DEAD or LINKDOWN");
 
+Instead of a deny list as in the legacy nexthop code, the new nexthop
+code has an allow list (from rtm_to_nh_config()):
 
-On 11/28/2021 2:37 PM, Erik Ekman wrote:
-> When link modes were initially added in commit 2c762679435dc
-> ("net/mlx4_en: Use PTYS register to query ethtool settings") and
-> later updated for the new ethtool API in commit 3d8f7cc78d0eb
-> ("net: mlx4: use new ETHTOOL_G/SSETTINGS API") the only 1/10G non-baseT
-> link modes configured were 1000baseKX, 10000baseKX4 and 10000baseKR.
-> It looks like these got picked to represent other modes since nothing
-> better was available.
-> 
-> Switch to using more specific link modes added in commit 5711a98221443
-> ("net: ethtool: add support for 1000BaseX and missing 10G link modes").
-> 
-> Tested with MCX311A-XCAT connected via DAC.
-> Before:
-> 
-> % sudo ethtool enp3s0
-> Settings for enp3s0:
-> 	Supported ports: [ FIBRE ]
-> 	Supported link modes:   1000baseKX/Full
-> 	                        10000baseKR/Full
-> 	Supported pause frame use: Symmetric Receive-only
-> 	Supports auto-negotiation: No
-> 	Supported FEC modes: Not reported
-> 	Advertised link modes:  1000baseKX/Full
-> 	                        10000baseKR/Full
-> 	Advertised pause frame use: Symmetric
-> 	Advertised auto-negotiation: No
-> 	Advertised FEC modes: Not reported
-> 	Speed: 10000Mb/s
-> 	Duplex: Full
-> 	Auto-negotiation: off
-> 	Port: Direct Attach Copper
-> 	PHYAD: 0
-> 	Transceiver: internal
-> 	Supports Wake-on: d
-> 	Wake-on: d
->          Current message level: 0x00000014 (20)
->                                 link ifdown
-> 	Link detected: yes
-> 
-> With this change:
-> 
-> % sudo ethtool enp3s0
-> 	Settings for enp3s0:
-> 	Supported ports: [ FIBRE ]
-> 	Supported link modes:   1000baseX/Full
-> 	                        10000baseCR/Full
->   	                        10000baseSR/Full
-> 	Supported pause frame use: Symmetric Receive-only
-> 	Supports auto-negotiation: No
-> 	Supported FEC modes: Not reported
-> 	Advertised link modes:  1000baseX/Full
->   	                        10000baseCR/Full
->   	                        10000baseSR/Full
-> 	Advertised pause frame use: Symmetric
-> 	Advertised auto-negotiation: No
-> 	Advertised FEC modes: Not reported
-> 	Speed: 10000Mb/s
-> 	Duplex: Full
-> 	Auto-negotiation: off
-> 	Port: Direct Attach Copper
-> 	PHYAD: 0
-> 	Transceiver: internal
-> 	Supports Wake-on: d
-> 	Wake-on: d
->          Current message level: 0x00000014 (20)
->                                 link ifdown
-> 	Link detected: yes
-> 
-> Tested-by: Michael Stapelberg <michael@stapelberg.ch>
-> Signed-off-by: Erik Ekman <erik@kryo.se>
-> ---
->   drivers/net/ethernet/mellanox/mlx4/en_ethtool.c | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
-> index 066d79e4ecfc..10238bedd694 100644
-> --- a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
-> +++ b/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
-> @@ -670,7 +670,7 @@ void __init mlx4_en_init_ptys2ethtool_map(void)
->   	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_1000BASE_T, SPEED_1000,
->   				       ETHTOOL_LINK_MODE_1000baseT_Full_BIT);
->   	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_1000BASE_CX_SGMII, SPEED_1000,
-> -				       ETHTOOL_LINK_MODE_1000baseKX_Full_BIT);
-> +				       ETHTOOL_LINK_MODE_1000baseX_Full_BIT);
->   	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_1000BASE_KX, SPEED_1000,
->   				       ETHTOOL_LINK_MODE_1000baseKX_Full_BIT);
->   	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_10GBASE_T, SPEED_10000,
-> @@ -682,9 +682,9 @@ void __init mlx4_en_init_ptys2ethtool_map(void)
->   	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_10GBASE_KR, SPEED_10000,
->   				       ETHTOOL_LINK_MODE_10000baseKR_Full_BIT);
->   	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_10GBASE_CR, SPEED_10000,
-> -				       ETHTOOL_LINK_MODE_10000baseKR_Full_BIT);
-> +				       ETHTOOL_LINK_MODE_10000baseCR_Full_BIT);
->   	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_10GBASE_SR, SPEED_10000,
-> -				       ETHTOOL_LINK_MODE_10000baseKR_Full_BIT);
-> +				       ETHTOOL_LINK_MODE_10000baseSR_Full_BIT);
->   	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_20GBASE_KR2, SPEED_20000,
->   				       ETHTOOL_LINK_MODE_20000baseMLD2_Full_BIT,
->   				       ETHTOOL_LINK_MODE_20000baseKR2_Full_BIT);
-> 
+```
+	if (nhm->nh_flags & ~NEXTHOP_VALID_USER_FLAGS) {
+		NL_SET_ERR_MSG(extack, "Invalid nexthop flags in ancillary header");
+		goto out;
+	}
+```
 
-LGTM. Thanks for your patch.
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Where:
+
+```
+#define NEXTHOP_VALID_USER_FLAGS RTNH_F_ONLINK
+```
+
+So while the legacy nexthop code allows setting flags such as
+RTNH_F_OFFLOAD, the new nexthop code denies them. I don't have a use
+case for setting these flags from user space so I don't care if we allow
+or deny them, but I believe the legacy and new nexthop code should be
+consistent.
+
+WDYT? Should we allow these flags in the new nexthop code as well or
+keep denying them?
+
+>  		goto err_inval;
+> -- 
+> 2.31.1
+> 
