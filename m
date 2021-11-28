@@ -2,92 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE5E9460589
-	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 10:52:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3270A4605B0
+	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 11:37:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357012AbhK1Jzp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Nov 2021 04:55:45 -0500
-Received: from mxout01.lancloud.ru ([45.84.86.81]:58056 "EHLO
-        mxout01.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357016AbhK1Jxp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 04:53:45 -0500
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout01.lancloud.ru 2FBA120DD7D0
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Message-ID: <c5682fa2-d861-0261-3832-74a6266d5131@omp.ru>
-Date:   Sun, 28 Nov 2021 12:50:23 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [PATCH AUTOSEL 5.15 23/39] net: usb: r8152: Add MAC passthrough
- support for more Lenovo Docks
-Content-Language: en-US
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-To:     Sasha Levin <sashal@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <stable@vger.kernel.org>
-CC:     Aaron Ma <aaron.ma@canonical.com>,
-        "David S . Miller" <davem@davemloft.net>, <kuba@kernel.org>,
-        <hayeswang@realtek.com>, <tiwai@suse.de>,
-        <linux-usb@vger.kernel.org>, <netdev@vger.kernel.org>
-References: <20211126023156.441292-1-sashal@kernel.org>
- <20211126023156.441292-23-sashal@kernel.org>
- <c3af6d99-7876-a704-b132-7c0d82b7fe8e@omp.ru>
-Organization: Open Mobile Platform
-In-Reply-To: <c3af6d99-7876-a704-b132-7c0d82b7fe8e@omp.ru>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+        id S1357107AbhK1KkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Nov 2021 05:40:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42740 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234612AbhK1KiP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 05:38:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DDBBC061574;
+        Sun, 28 Nov 2021 02:34:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D88F260F17;
+        Sun, 28 Nov 2021 10:34:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D3F1C004E1;
+        Sun, 28 Nov 2021 10:34:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638095698;
+        bh=+8T3JcjffAOWYDApIveGl9HhTHeoo4rTTyhbueXv0QI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=q/2TbPHtAaSsEKff9XOEXMGU1xfRPZTrMxRtH1qzxYWwGLCS+Ucw59axB7CeqKkTL
+         aJOIf3/Za+8U4Ajcc5S9YWVYztV7HkuGSi5lIVHfIAcY0ni0CZXihirmlgaFH8F7Yr
+         QE31eqW/NUz7bg0mALlcHlZ1p1kiKqaM8FwvJW8rTs1xpVGbVr3/m8AmAwhKXU2SUw
+         e2CSH6rpD7r8Fq6GX0m5S95aBpVuFO7Ryd4xoa6e8lRcbINArqn5AXY+Ex9xRTj2IN
+         tv55Gf+cSsvyPhGcPN+7DarOAZFrR4mPFK8g9dsTrxc21l0XotbujLEKWYp6+9ngjW
+         okUnX0rKuyP6A==
+Date:   Sun, 28 Nov 2021 19:34:50 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Steven Rostedt <rostedt@goodmis.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Ravi Bangoria <ravi.bangoria@amd.com>
+Subject: Re: [RFC 0/8] perf/bpf: Add batch support for [ku]probes attach
+Message-Id: <20211128193450.8147832ab7d0d10494102ffb@kernel.org>
+In-Reply-To: <20211124084119.260239-1-jolsa@kernel.org>
+References: <20211124084119.260239-1-jolsa@kernel.org>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28.11.2021 12:49, Sergey Shtylyov wrote:
+Hi Jiri,
 
->> From: Aaron Ma <aaron.ma@canonical.com>
->>
->> [ Upstream commit f77b83b5bbab53d2be339184838b19ed2c62c0a5 ]
->>
->> Like ThinkaPad Thunderbolt 4 Dock, more Lenovo docks start to use the original
->> Realtek USB ethernet chip ID 0bda:8153.
->>
->> Lenovo Docks always use their own IDs for usb hub, even for older Docks.
->> If parent hub is from Lenovo, then r8152 should try MAC passthrough.
->> Verified on Lenovo TBT3 dock too.
->>
->> Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
->> Signed-off-by: David S. Miller <davem@davemloft.net>
->> Signed-off-by: Sasha Levin <sashal@kernel.org>
->> ---
->>   drivers/net/usb/r8152.c | 9 +++------
->>   1 file changed, 3 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
->> index f329e39100a7d..d3da350777a4d 100644
->> --- a/drivers/net/usb/r8152.c
->> +++ b/drivers/net/usb/r8152.c
->> @@ -9603,12 +9603,9 @@ static int rtl8152_probe(struct usb_interface *intf,
->>           netdev->hw_features &= ~NETIF_F_RXCSUM;
->>       }
->> -    if (le16_to_cpu(udev->descriptor.idVendor) == VENDOR_ID_LENOVO) {
->> -        switch (le16_to_cpu(udev->descriptor.idProduct)) {
->> -        case DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2:
->> -        case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2:
->> -            tp->lenovo_macpassthru = 1;
->> -        }
->> +    if (udev->parent &&
->> +            le16_to_cpu(udev->parent->descriptor.idVendor) == 
->> VENDOR_ID_LENOVO) {
->> +        tp->lenovo_macpassthru = 1;
->>       }
+On Wed, 24 Nov 2021 09:41:11 +0100
+Jiri Olsa <jolsa@redhat.com> wrote:
+
+> hi,
+> adding support to create multiple kprobes/uprobes within single
+> perf event. This way we can associate single bpf program with
+> multiple kprobes.
+
+Thanks for the change, basically, you can repeatedly call the
+create_local_trace_kprobe() and register it.
+
 > 
->     {} not needed anymore, please remove 'em.
+> Sending this as RFC because I'm not completely sure I haven't
+> missed anything in the trace/events area.
 
-    Oops, sorry didn't notice that this is a stable patch. :-)
+OK let me check that.
 
-> [...]
+Thanks,
 
-MBR, Sergey
+> 
+> Also it needs following uprobe fix to work properly:
+>   https://lore.kernel.org/lkml/20211123142801.182530-1-jolsa@kernel.org/
+> 
+> Also available at:
+>   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
+>   bpf/kuprobe_batch
+> 
+> thanks,
+> jirka
+> 
+> 
+> ---
+> Jiri Olsa (8):
+>       perf/kprobe: Add support to create multiple probes
+>       perf/uprobe: Add support to create multiple probes
+>       libbpf: Add libbpf__kallsyms_parse function
+>       libbpf: Add struct perf_event_open_args
+>       libbpf: Add support to attach multiple [ku]probes
+>       libbpf: Add support for k[ret]probe.multi program section
+>       selftest/bpf: Add kprobe multi attach test
+>       selftest/bpf: Add uprobe multi attach test
+> 
+>  include/uapi/linux/perf_event.h                            |   1 +
+>  kernel/trace/trace_event_perf.c                            | 214 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-----------
+>  kernel/trace/trace_kprobe.c                                |  47 ++++++++++++++++---
+>  kernel/trace/trace_probe.c                                 |   2 +-
+>  kernel/trace/trace_probe.h                                 |   6 ++-
+>  kernel/trace/trace_uprobe.c                                |  43 +++++++++++++++--
+>  tools/include/uapi/linux/perf_event.h                      |   1 +
+>  tools/lib/bpf/libbpf.c                                     | 235 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++--------------
+>  tools/lib/bpf/libbpf.h                                     |  25 +++++++++-
+>  tools/lib/bpf/libbpf_internal.h                            |   5 ++
+>  tools/testing/selftests/bpf/prog_tests/multi_kprobe_test.c |  83 +++++++++++++++++++++++++++++++++
+>  tools/testing/selftests/bpf/prog_tests/multi_uprobe_test.c |  97 ++++++++++++++++++++++++++++++++++++++
+>  tools/testing/selftests/bpf/progs/multi_kprobe.c           |  58 +++++++++++++++++++++++
+>  tools/testing/selftests/bpf/progs/multi_uprobe.c           |  26 +++++++++++
+>  14 files changed, 765 insertions(+), 78 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/multi_kprobe_test.c
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/multi_uprobe_test.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/multi_kprobe.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/multi_uprobe.c
+> 
+
+
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
