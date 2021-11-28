@@ -2,60 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD47946079C
-	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 17:35:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C60A84607BA
+	for <lists+netdev@lfdr.de>; Sun, 28 Nov 2021 17:55:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358566AbhK1Qio (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Nov 2021 11:38:44 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:55344 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244871AbhK1Qgn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 28 Nov 2021 11:36:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=JL1D5jpsdNCz3lOSZV2Opy0UGJH6As2zHwmP3iiE+Ew=; b=n+Up8E7EAIwCHXU478yckdMUf7
-        oBuN+eIS/FZNll8KAdlMzhDMMWSwgty4N7SptBC/td7xPk86u4swpVWoNxStyC59drT74SouaXdF/
-        JuQ/f3EFdVp++VIAnaT3eKJRAooe5UksuMt/QIGOfS8SlJQkbxNyhblnKXb0Ug/tnn/A=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mrN74-00EqcM-ME; Sun, 28 Nov 2021 17:33:14 +0100
-Date:   Sun, 28 Nov 2021 17:33:14 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Tianhao Chai <cth451@gmail.com>
-Cc:     Igor Russkikh <irusskikh@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>
-Subject: Re: [PATCH] ethernet: aquantia: Try MAC address from device tree
-Message-ID: <YaOvShya4kP4SRk7@lunn.ch>
-References: <20211128023733.GA466664@cth-desktop-dorm.mad.wi.cth451.me>
+        id S1358438AbhK1Q6f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Nov 2021 11:58:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39850 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346922AbhK1Q4e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 11:56:34 -0500
+Received: from mail-ua1-x934.google.com (mail-ua1-x934.google.com [IPv6:2607:f8b0:4864:20::934])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42DECC0613D7
+        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 08:53:18 -0800 (PST)
+Received: by mail-ua1-x934.google.com with SMTP id ay21so29004255uab.12
+        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 08:53:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=paHVaxEa9CqakgP4O4RXlNI7wYyMct8sjfhm7iOajfc=;
+        b=MBhxMJ0n8+deUaEsyWe2e3zVPG3xmbn3KqqP6ajtKMmIPWgamstLPp3XIt3Ez5jn30
+         NRwQHEoXbkrGZGzznT47MazVQXYPm8vwRD8545msy4eAc4iELFdGgWXb2hsy41W/TW7g
+         udtyk1H9LA8gyNsABfkltsuXYXVPWSYkJToBscqw8ePAtmwbKCm7Po5CQJ3iL+XjE8M3
+         aWX8Ud8Kv/JUsDCY5N2cZl8jYJ141weTM6I4+Q33jChyT0J+CaM7u71WBnRInBw4hcdS
+         P6bLGT98d4W204/WBcxV/nqJI3uJf2TRoqwBCKl59U2SCKTVGKPAfmUyoZDgLMQ/3i2z
+         wY+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=paHVaxEa9CqakgP4O4RXlNI7wYyMct8sjfhm7iOajfc=;
+        b=BurFj6onBIEkLQpJEMmG53e9w0JUSSIXmkFNHCgcaEcls5tSrt+gfOMJjTA1EcG/W4
+         0O+56+dqVKlTqG0aldua4kWRPMm07R0sFS3GuXnXj5AnpPpVQ9ax6vKmbDRqpghkkyzU
+         i5SXsS3R32c6I26GryM2fL+YlEKzUOkG/YZTHnJgolccibRWK5HTKUy8hlTzE3LpqWDW
+         iE8JXGkDBxiBn9jpQK76yF+hiyNE6CHoJDJgZa97/zb2WoRbiv5XT9KMbz4M1HIwhlch
+         AHQJWVWTWedxB7XVEbFMELlKsHiJmyQVsUecEx7wQxOIIJrXIC1e3AZz5nbi7zjvhR8w
+         amBw==
+X-Gm-Message-State: AOAM530LXYLIaTzvHnKz51hBKJt9bh+nmp/UGv+yThiRaPpWm5ELTLgX
+        3WEBzj/Ynm2Pszy84zDvmOIENh3S9QTC2d6LHmdDvGgtqwU=
+X-Google-Smtp-Source: ABdhPJxWN7qNIIE3vAq2ZR2vshpG1uaxzBq1wbTb3rLlr7JezLI3V2ihBrM/Ufllc7d90MZoyaPemYIU9WiCKi86ESw=
+X-Received: by 2002:a67:c29a:: with SMTP id k26mr28588936vsj.32.1638118397433;
+ Sun, 28 Nov 2021 08:53:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211128023733.GA466664@cth-desktop-dorm.mad.wi.cth451.me>
+References: <20211120162155.1216081-1-m.chetan.kumar@linux.intel.com> <20211120162155.1216081-2-m.chetan.kumar@linux.intel.com>
+In-Reply-To: <20211120162155.1216081-2-m.chetan.kumar@linux.intel.com>
+From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Date:   Sun, 28 Nov 2021 19:53:06 +0300
+Message-ID: <CAHNKnsQjB2f=9nadsqKTSAA0ZewFrPrDFTx4H804+y6ztTrXCQ@mail.gmail.com>
+Subject: Re: [PATCH V3 net-next 1/2] net: wwan: common debugfs base dir for
+ wwan device
+To:     M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        krishna.c.sudi@intel.com,
+        M Chetan Kumar <m.chetan.kumar@intel.com>,
+        Intel Corporation <linuxwwan@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 27, 2021 at 08:37:33PM -0600, Tianhao Chai wrote:
-> Apple M1 Mac minis (2020) with 10GE NICs do not have MAC address in the
-> card, but instead need to obtain MAC addresses from the device tree. In
-> this case the hardware will report an invalid MAC.
-> 
-> Currently atlantic driver does not query the DT for MAC address and will
-> randomly assign a MAC if the NIC doesn't have a permanent MAC burnt in.
-> This patch causes the driver to perfer a valid MAC address from OF (if
-> present) over HW self-reported MAC and only fall back to a random MAC
-> address when neither of them is valid.
+Hello,
 
-This is a change in behaviour, and could cause regressions. It would
-be better to keep with the current flow. Call
-aq_fw_ops->get_mac_permanent() first. If that does not give a valid
-MAC address, then try DT, and lastly use a random MAC address.
+On Sat, Nov 20, 2021 at 7:14 PM M Chetan Kumar
+<m.chetan.kumar@linux.intel.com> wrote:
+> This patch set brings in a common debugfs base directory
+> i.e. /sys/kernel/debugfs/wwan/ in WWAN Subsystem for a
+> WWAN device instance. So that it avoids driver polluting
+> debugfs root with unrelated directories & possible name
+> collusion.
+>
+> Having a common debugfs base directory for WWAN drivers
+> eases user to match control devices with debugfs entries.
+>
+> WWAN Subsystem creates dentry (/sys/kernel/debugfs/wwan)
+> on module load & removes dentry on module unload.
+>
+> When driver registers a new wwan device, dentry (wwanX)
+> is created for WWAN device instance & on driver unregister
+> dentry is removed.
+>
+> New API is introduced to return the wwan device instance
+> dentry so that driver can create debugfs entries under it.
 
-    Andrew
+Thank you for taking care of the debugfs implementation for the WWAN core.
+
+Please find my follow-up series that tweak the IOSM/WWAN debugfs
+interface a bit:
+https://lore.kernel.org/all/20211128125522.23357-1-ryazanov.s.a@gmail.com
+
+-- 
+Sergey
