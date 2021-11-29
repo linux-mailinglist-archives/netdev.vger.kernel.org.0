@@ -2,236 +2,279 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4278D461FDA
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 20:05:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E28A461FF6
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 20:14:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345604AbhK2TIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 14:08:37 -0500
-Received: from mga11.intel.com ([192.55.52.93]:16347 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237628AbhK2TGh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Nov 2021 14:06:37 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10183"; a="233552372"
-X-IronPort-AV: E=Sophos;i="5.87,273,1631602800"; 
-   d="scan'208";a="233552372"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2021 11:03:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,273,1631602800"; 
-   d="scan'208";a="600310166"
-Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
-  by fmsmga002.fm.intel.com with ESMTP; 29 Nov 2021 11:03:17 -0800
-Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
- fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Mon, 29 Nov 2021 11:03:17 -0800
-Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
- fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Mon, 29 Nov 2021 11:03:16 -0800
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20 via Frontend Transport; Mon, 29 Nov 2021 11:03:16 -0800
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.108)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.20; Mon, 29 Nov 2021 11:03:16 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=C/UhQRMiz0uFzhEmv37YCmuWbG1rRmFEm+sfWOTcmZuu+O6fcBOLvfSykrEHnKGshKXIFDV810IqLvBMNgAt08H9RdtI7Ut2ucd8/dlIxIWV9ZXvrVzcKmKbLJ33nYkn5fmXfiRLzbqrvV3tQ7ndkAlVDP0SN7zvJ0vZXMma/PL5OyI69ezk9QZxFPx0y339i6i/uy4SJiYp+reM3StyWmhzDe2HFsSGwqFHJYW/riwyuXWv7YTj9nPgOsrjqnGV5Y5iBUHSs66APiuUjBGMfYGSoOg6HMKsjCkXO8lQ2iYzCAxgWHRYiwV3QpWNAmUAQDMzU1m/Q66k7xqzxIJ6nQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=AeCPkIJg6FDImUbht4sBu3Ug628JcUJDGqLYZmZS8wo=;
- b=KHeu5YOa0Eo1RxmhEMbgb9cTDoco8wxj0O/zv8nDKHNl2bESI8AiY9MOFD9qLt0B6j8ZFV+C8xVFVhfDtwteRUxb597Egsn0It6eyZ+cv25raKC4NiTg1/+l6HJvmGqdiNRJhSa4Sp4cCbW5xxnvu1l93CBhjZy5doBoiENTDFitSwv5rSGN2yK7X08DQJCf4tPR3SUCTx/gb4Xo3PX4oqv/A7hNB7s3KZSsU61VWJdshP+0CT+V1dNCyNvmQROnJx35b6BCl0tlGFqp7VzzN94M9H0Rn/qUye6ci6hPfpFAdyoyowXBkGV883/ZQQYxPl0z9RvpOh/RRuKRgMLhPw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AeCPkIJg6FDImUbht4sBu3Ug628JcUJDGqLYZmZS8wo=;
- b=SOyV+RDyDiBaMbLu3oWk8lBD6364J7zsNQ683ihhZpofoxbGGGEW4sg8tf1uVLfE19jXvpdLgB+o1CEYS/1sMPH8rax1beVCPy83yE0J44Z/970C8UAxJR6FYw5WHx9PY9srCczUcutPdyX/dk1MhNUnSH6BWL3W4kLJs6V3S0s=
-Received: from SN6PR11MB3229.namprd11.prod.outlook.com (2603:10b6:805:ba::28)
- by SA0PR11MB4686.namprd11.prod.outlook.com (2603:10b6:806:97::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.21; Mon, 29 Nov
- 2021 19:03:15 +0000
-Received: from SN6PR11MB3229.namprd11.prod.outlook.com
- ([fe80::a5ee:3fab:456b:86d8]) by SN6PR11MB3229.namprd11.prod.outlook.com
- ([fe80::a5ee:3fab:456b:86d8%7]) with mapi id 15.20.4734.024; Mon, 29 Nov 2021
- 19:03:15 +0000
-From:   "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-To:     "Lobakin, Alexandr" <alexandr.lobakin@intel.com>,
-        "jbrouer@redhat.com" <jbrouer@redhat.com>
-CC:     "borkmann@iogearbox.net" <borkmann@iogearbox.net>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "bjorn@kernel.org" <bjorn@kernel.org>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 2/2] igc: enable XDP metadata in driver
-Thread-Topic: [PATCH net-next 2/2] igc: enable XDP metadata in driver
-Thread-Index: AQHX2mCW3qOYExLw3UOcMLuBafaes6wWDUaAgASbrwCAAAPogIAAN/UAgAANowA=
-Date:   Mon, 29 Nov 2021 19:03:15 +0000
-Message-ID: <9948428f33d013105108872d51f7e6ebec21203c.camel@intel.com>
-References: <163700856423.565980.10162564921347693758.stgit@firesoul>
-         <163700859087.565980.3578855072170209153.stgit@firesoul>
-         <20211126161649.151100-1-alexandr.lobakin@intel.com>
-         <6de05aea-9cf4-c938-eff2-9e3b138512a4@redhat.com>
-         <20211129145303.10507-1-alexandr.lobakin@intel.com>
-         <20211129181320.579477-1-alexandr.lobakin@intel.com>
-In-Reply-To: <20211129181320.579477-1-alexandr.lobakin@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.40.4 (3.40.4-1.fc34) 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7fa8bd1a-74fa-4ca7-a9cb-08d9b36ae611
-x-ms-traffictypediagnostic: SA0PR11MB4686:
-x-microsoft-antispam-prvs: <SA0PR11MB46862FBEE60C85E5E2CBABC6C6669@SA0PR11MB4686.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ZLfQMdVL5SUAwflq6vW73/3HEWIcy2pnrluzm5gItysBa0lXX1j8enTni/+qxW3FA26wSuWaZ45WEdw0GrP8yVVbtgrdjR6+tR8cgwPgjlr96K+7tkHaD6s90Q66b4wRyj+5Hvr1cM8n+xfyjvRz5DrDmkN+djC+kEoyTbP902aDCa6kG9ffih3Xu1c72s9CMa42wetd50pWv/TfD/jBjMg+sF4Eb+Fu5Q7B1PcjNEHCL3up+68AgsmFm8Q1lHB9AjgddU42gmELViC16TkfWt1N2yPWydPHmiI397NUyPy0wL1zK7peFRRI2Xrph3arwyezIO3dG5o1kpup1Iu7B/cQeOyUqkMmMoZa+o6ufS+ynAxXPxSGiCKNmqrFcGk/9G8XicIuQCrOI9f9YMzpb6ztBjGaip5sFiOXiAEdQz8WUzliLL5cZ/+Kdd40qi8nhQ5dbmgTWkQD8bLtCdbq5DSc7PtI7wlwrCjaATgJyNOYIWWXWmiU14UozvS9n72jQP46vvXchKeSPMHZllk4uKmae1mAvpktPzunxvm964DMWip/2aLmx3ylJh+voSStxp4dbod5CcboSaEGd49bey6ogi/lkDu40JymUyRghf9e1wGk0VmkmZ1NkLP1L0eHSKYwfXFhCMQWxSBA7hcCEZNpL6/3YTENPy8Y/ZoncFMNn1Ca8Vqi+5eJTwEtzOPTjR51dhXnh/EC7Xap8viSyA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3229.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(508600001)(8676002)(66476007)(76116006)(66556008)(71200400001)(26005)(2906002)(122000001)(66446008)(64756008)(316002)(83380400001)(5660300002)(38070700005)(6506007)(6486002)(4326008)(82960400001)(86362001)(186003)(6512007)(54906003)(8936002)(2616005)(110136005)(36756003)(38100700002)(66946007)(4001150100001)(91956017);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?VGZDckFsd2NiWk5EMnc2THc4Rmt4MDRkVHMzZ1pnWUJjdmlDL0I5MzBEWkJG?=
- =?utf-8?B?NldsLzQ2TXNVczBsRE5Ed3lNdjVkWG9LKzdJUmFsczFURGNYNU12aVdjME5i?=
- =?utf-8?B?ZVdjdjdlZ2pHV2JLT3lDTTBBUnpPYkN0YldneE9rQlVwVk9MT3Rrb1dIYldu?=
- =?utf-8?B?VVFQVWtVanVYZTlWM25vMXp5NUJZZTVYMHpBdi95TkN2eEhiZG90cnA2NFZO?=
- =?utf-8?B?SEV5bndydE5yb3huVzBYcUR6MTE5cEdLWGtueEVpaGh0VHZsWm56MS9tV3Bp?=
- =?utf-8?B?YmxiaTdETmZsL2lvWXpZR3NYVmxyRG1HS01hVUpuUmJJeW1vZmpzRW5UM3FW?=
- =?utf-8?B?T3RWWklITUEzNUJMckFLcHdQN2x0MjEvN1pSR0ZLaytIY1VaRm9PeWdiMGtJ?=
- =?utf-8?B?RC9HVVVZODZYd2VvVitjREs3SzNlS1AzalhQUi9pUjlkRS9IMUZFd1N6TytH?=
- =?utf-8?B?K09aU0Z3V3p4MjdYN3pETXlwNTNqS0VyYk9iZ0hTQjdKQmFaRk9aazZQcS81?=
- =?utf-8?B?V0g4bkozSmtmRE44bjZERzI1eHB1eFBvdjJDQ1lCa2FlRUswUUpFblFMQWdj?=
- =?utf-8?B?TDliL01aTFMzdlVuOWJzUXg0Qy85M29uM3JUUVY5TkhjbVY3V1lMbWZMTUIy?=
- =?utf-8?B?K3hGcjNzMlhxeEh4dXVXSFQ4eUZJY0VhL0J1N2pNRGErYUlONU1XcnRqSzhS?=
- =?utf-8?B?dDVmT0hXZTRHQ3ZhaXM3OFBEazlUMEl6NlF1eCtpS0xjMDdHVGpxZlZjV2Yr?=
- =?utf-8?B?UnJOL2pPaXdKT0ErczlpYnZmb1ZaRVdrMlpuYVlhUGU2SFhOY0dDeW9VQ09r?=
- =?utf-8?B?QTFPa3MxdTlxelVQMUwvTDF4K3NBNFpUY2JlQ216UEU4Tk85ekpZTlo0TmlB?=
- =?utf-8?B?RElsSHdxYXJSL05FZ3dLa1dPQStCQVBrMHhuWU1iTysyTWNSbFNaVThneU1x?=
- =?utf-8?B?NGlFTjlxVU80QWs3VWY0N2FVcitFbTJMcVZTdTgzM0hKdFNsL1l1ZDV5MlNq?=
- =?utf-8?B?dHVBdForaHFHbTVnN0NvZ1JmeEozc2d6a0QyMmZPbVhNNE5xbWtMYUdLSXZk?=
- =?utf-8?B?Z2lpdVdhRVFIM2RTc0tDaUdZSnlKRkZDcWwyMEVFUTVhdTl5TnRDVmRKRVBz?=
- =?utf-8?B?RnZUY0sraUhidGhSbVJ4OXJuSVE2VWRsWVBtZXdHU243SXdiZ00wUVUvS1Rt?=
- =?utf-8?B?MGg2cnBOVlR6SnlUZUdlZHU2YW5MY2ltMUFOczhjeXBOUU5wK3lzZk4vWnpU?=
- =?utf-8?B?RS9JbENmTlVldEU2dEpoWTJoMENya1drQklJWjhBOU43a09SMktMbldramZL?=
- =?utf-8?B?YnFUSWVva0lrQ2YxQXcvMHpxK1JReXZ6eWZSY0EzRkNRT1BqcDNZUHFjekRn?=
- =?utf-8?B?UXpPRFFYeFplU2xjTDNXLzZqbjl2OUZwMTNiTjFESytCSDJVeGtKVWpQSUdq?=
- =?utf-8?B?NnNpTkRjQk44QkJEb2ZldDNvRDlnU1FlUHkySlBrZStURlVZQWNhdGJFbkZu?=
- =?utf-8?B?WlBHenJPdWp6Y1NxNTNhbEpaZXc3QWNBYWd2NzYvcnhxWjI2N0RWWFlBUS8z?=
- =?utf-8?B?OUhMTStCbVhrbVBVNkRmZDJMSkJNVGhXSURCQ3p3ZEVXSXdjeTBVMlRIaXps?=
- =?utf-8?B?a3plRWhZd2g3SjRvTWgxWkYraWhubVQ1RmRtU3lETVpySktSVk9zcmQwT3ZV?=
- =?utf-8?B?anNjbHlQQ09ldGRTay80R25NSzhFbGxBLzBCNWFRYnZHVjNFdVgzNUNuRDYz?=
- =?utf-8?B?Tm4zL3MvQlhHZnNqVHdVL3FCV3d6a25SM2Zzd2RGdEw1QmN0UGplRm90Y2N1?=
- =?utf-8?B?VGRQWXh6TFUyYm91ZnRzSFBmeStmV0dZQ1F4dUl2d0dwSDVzWm1obm13SUhY?=
- =?utf-8?B?Nm5ySnZFVmJmT2xFWDFHdlYrMkxZQnMxSU5RS0M4V3RoNEJWUVBxT253aHJ2?=
- =?utf-8?B?QmNYZi9TbXRiVmRmd1RJUXJTOG11Nk81UWJFcUJ0aEM0NXVNQVBwc0hnY0h5?=
- =?utf-8?B?QmpXVktiZ0xvM3g4Rm5yRzBrazdySDBVYXVtVGhWZDg4eDBqZDlOMjMvZDZT?=
- =?utf-8?B?Y3pZNHFCZ3dHTU9BbDlucnVTd29QTWU4MU9ZT1VBOHhja3lQZFhzQUdtTGZp?=
- =?utf-8?B?TlAvaS80aXN1M3JzM2JTSVF5dTdrZFBSOCt1d0tDK3VURFB0eXNDRFJ0NFN0?=
- =?utf-8?B?WXNPbGVNWmwyL3kzaUcrR0NDWnpFeTEvc2luNXJ5cU9UQzVYWWNMYXFmMkhy?=
- =?utf-8?Q?r7s+Q2H+L5g3jOjL70IPmePf5KGSyXCmCW4BfpSO+M=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <A62250879B2934469703AD6C5CF20DE8@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S241151AbhK2TRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 14:17:31 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:49620 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230123AbhK2TPb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 14:15:31 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 0607F2171F;
+        Mon, 29 Nov 2021 19:12:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1638213132; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=J6DbeLoaxoIoVBuY+oAGOd6/4lG4MBC1R+rNbufZnx4=;
+        b=upItkPK9G8DG+82DST9R5FOSSSNHPSnEQF3tYT3hPX1YOANA9w3qqmozKUymADC3GK6qUO
+        G6nrsxvhybVitG69we27+1h251wqhN13UuvXv9TFn1XO1SwMDX9+6/s/vHJAA1zmpkXa1T
+        C0mSGTUiY2sRGiE95aJeVsxax+GoC8k=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1638213132;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=J6DbeLoaxoIoVBuY+oAGOd6/4lG4MBC1R+rNbufZnx4=;
+        b=lw1cySSdieAWDxZIkhtJOC6OONrj348LcM9TN3zxSlnkPCbONh2hL9sKLohZcl+Tj18rqs
+        28fGs1goFYeys5Dw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CEFC813BB8;
+        Mon, 29 Nov 2021 19:12:09 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id yUHGKQkmpWE9CQAAMHmgww
+        (envelope-from <dkirjanov@suse.de>); Mon, 29 Nov 2021 19:12:09 +0000
+Subject: Re: [PATCH v4] net: netlink: af_netlink: Prevent empty skb by adding
+ a check on len.
+To:     Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Cc:     ramanan.govindarajan@oracle.com, george.kennedy@oracle.com,
+        vijayendra.suman@oracle.com, stephen@networkplumber.org,
+        syzkaller <syzkaller@googlegroups.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        David Ahern <dsahern@kernel.org>,
+        Florian Westphal <fw@strlen.de>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Alexander Aring <aahringo@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20211129175328.55339-1-harshit.m.mogalapalli@oracle.com>
+From:   Denis Kirjanov <dkirjanov@suse.de>
+Message-ID: <80cab9de-c7b4-568d-02f9-7f16be1e6820@suse.de>
+Date:   Mon, 29 Nov 2021 22:12:08 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3229.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7fa8bd1a-74fa-4ca7-a9cb-08d9b36ae611
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Nov 2021 19:03:15.6538
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: QTckxvm5pMYXbvW6EnSo8tbAg9EYZFQUDKpsRJuVKEMkKG23DW8Yip/uiRrcqZ/r7Dl9kRkqWvV09j29Wg7ZYbnHzv7b4I5m/Yp1eEZwEMo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4686
-X-OriginatorOrg: intel.com
+In-Reply-To: <20211129175328.55339-1-harshit.m.mogalapalli@oracle.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: ru
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gTW9uLCAyMDIxLTExLTI5IGF0IDE5OjEzICswMTAwLCBBbGV4YW5kZXIgTG9iYWtpbiB3cm90
-ZToKPiBGcm9tOiBBbGV4YW5kZXIgTG9iYWtpbiA8YWxleGFuZHIubG9iYWtpbkBpbnRlbC5jb20+
-Cj4gRGF0ZTogTW9uLCAyOSBOb3YgMjAyMSAxNTo1MzowMyArMDEwMAo+IAo+ID4gRnJvbTogSmVz
-cGVyIERhbmdhYXJkIEJyb3VlciA8amJyb3VlckByZWRoYXQuY29tPgo+ID4gRGF0ZTogTW9uLCAy
-OSBOb3YgMjAyMSAxNTozOTowNCArMDEwMAo+ID4gCj4gPiA+IE9uIDI2LzExLzIwMjEgMTcuMTYs
-IEFsZXhhbmRlciBMb2Jha2luIHdyb3RlOgo+ID4gPiA+IEZyb206IEplc3BlciBEYW5nYWFyZCBC
-cm91ZXIgPGJyb3VlckByZWRoYXQuY29tPgo+ID4gPiA+IERhdGU6IE1vbiwgMTUgTm92IDIwMjEg
-MjE6MzY6MzAgKzAxMDAKPiA+ID4gPiAKPiA+ID4gPiA+IEVuYWJsaW5nIHRoZSBYRFAgYnBmX3By
-b2cgYWNjZXNzIHRvIGRhdGFfbWV0YSBhcmVhIGlzIGEgdmVyeQo+ID4gPiA+ID4gc21hbGwKPiA+
-ID4gPiA+IGNoYW5nZS4gSGludCBwYXNzaW5nICd0cnVlJyB0byB4ZHBfcHJlcGFyZV9idWZmKCku
-Cj4gCj4gWyBzbmlwIF0KPiAKPiA+ID4gUHJlZmV0Y2ggd29ya3MgZm9yICJmdWxsIiBjYWNoZWxp
-bmVzLiBJbnRlbCBDUFVzIG9mdGVuIHByZWZlY3QKPiA+ID4gdHdvIAo+ID4gPiBjYWNoZS1saW5l
-cywgd2hlbiBkb2luZyB0aGlzLCB0aHVzIEkgZ3Vlc3Mgd2Ugc3RpbGwgZ2V0IHhkcC0KPiA+ID4g
-PmRhdGEuCj4gPiAKPiA+IFN1cmUuIEkgbWVhbiwgbmV0X3ByZWZldGNoKCkgcHJlZmV0Y2hlcyAx
-MjggYnl0ZXMgaW4gYSByb3cuCj4gPiB4ZHAtPmRhdGEgaXMgdXN1YWxseSBhbGlnbmVkIHRvIFhE
-UF9QQUNLRVRfSEVBRFJPT00gKG9yIHR3byBieXRlcwo+ID4gdG8gdGhlIHJpZ2h0KS4gSWYgb3Vy
-IENMIGlzIDY0IGFuZCB0aGUgbWV0YSBpcyBwcmVzZW50LCB0aGVuLi4uIGFoCj4gPiByaWdodCwg
-NjQgdG8gdGhlIGxlZnQgYW5kIDY0IHN0YXJ0aW5nIGZyb20gZGF0YSB0byB0aGUgcmlnaHQuCj4g
-PiAKPiA+ID4gSSBkb24ndCBtaW5kIHByZWZldGNoaW5nIHhkcC0+ZGF0YV9tZXRhLCBidXQgKDEp
-IEkgdHJpZWQgdG8ga2VlcAo+ID4gPiB0aGUgCj4gPiA+IHhkcC0+ZGF0YSBzdGFydHMgb24gYSBj
-YWNoZWxpbmUgYW5kIHdlIGtub3cgTklDIGhhcmR3YXJlIGhhdmUKPiA+ID4gdG91Y2hlZCAKPiA+
-ID4gdGhhdCwgaXQgaXMgbm90IGEgZnVsbC1jYWNoZS1taXNzIGR1ZSB0byBERElPL0RDQSBpdCBp
-cyBrbm93biB0bwo+ID4gPiBiZSBpbiAKPiA+ID4gTDMgY2FjaGUgKGdhaW4gaXMgYXJvdW5kIDIt
-MyBucyBpbiBteSBtYWNoaW5lIGZvciBkYXRhIHByZWZldGNoKS4KPiA+ID4gR2l2ZW4gdGhpcyBp
-cyBvbmx5IGEgMi41IEdiaXQvcyBkcml2ZXIvSFcgSSBkb3VidCB0aGlzIG1ha2UgYW55Cj4gPiA+
-IGRpZmZlcmVuY2UuCj4gPiAKPiA+IENvZGUgY29uc3Rpc3RlbmN5IGF0IGxlYXN0LiBPbiAxMCsg
-R2JwcyB3ZSBwcmVmZXRjaCBtZXRhLCBhbmQgSQo+ID4gcGxhbgo+ID4gdG8gY29udGludWUgZG9p
-bmcgdGhpcyBpbiBteSBzZXJpZXMuCj4gPiAKPiA+ID4gVG9ueSBpcyBpdCB3b3J0aCByZXNlbmRp
-bmcgYSBWMiBvZiB0aGlzIHBhdGNoPwo+ID4gCj4gPiBUb255LCB5b3UgY2FuIHRha2UgaXQgYXMg
-aXQgaXMgaWYgeW91IHdhbnQsIEknbGwgY29ycmVjdCBpdCBsYXRlcgo+ID4gaW4KPiA+IG1pbmUu
-IFVwIHRvIHlvdS4KPiAKPiBNeSAiZml4dXAiIGxvb2tzIGxpa2UgKGluIGNhc2Ugb2YgdjIgbmVl
-ZGVkIG9yIHNvKToKClRoYW5rcyBBbC4gSWYgSmVzcGVyIGlzIG9rIHdpdGggdGhpcywgSSdsbCBp
-bmNvcnBvcmF0ZSBpdCBpbiBiZWZvcmUKc2VuZGluZyB0aGUgcHVsbCByZXF1ZXN0IHRvIG5ldGRl
-di4gT3RoZXJ3aXNlLCB5b3UgY2FuIGRvIGl0IGFzIGZvbGxvdwpvbiBpbiB0aGUgb3RoZXIgc2Vy
-aWVzIHlvdSBwcmV2aW91c2x5IHJlZmVyZW5jZWQuCgpUaGFua3MsClRvbnkKCj4gZGlmZiAtLWdp
-dCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2lnYy9pZ2NfbWFpbi5jCj4gYi9kcml2ZXJz
-L25ldC9ldGhlcm5ldC9pbnRlbC9pZ2MvaWdjX21haW4uYwo+IGluZGV4IGI1MTZmMWIzMDFiNC4u
-MTQyYzU3YjdhNDUxIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2ln
-Yy9pZ2NfbWFpbi5jCj4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvaW50ZWwvaWdjL2lnY19t
-YWluLmMKPiBAQCAtMTcyNiw3ICsxNzI2LDcgQEAgc3RhdGljIHN0cnVjdCBza19idWZmICppZ2Nf
-YnVpbGRfc2tiKHN0cnVjdAo+IGlnY19yaW5nICpyeF9yaW5nLAo+IMKgwqDCoMKgwqDCoMKgwqBz
-dHJ1Y3Qgc2tfYnVmZiAqc2tiOwo+IMKgCj4gwqDCoMKgwqDCoMKgwqDCoC8qIHByZWZldGNoIGZp
-cnN0IGNhY2hlIGxpbmUgb2YgZmlyc3QgcGFnZSAqLwo+IC3CoMKgwqDCoMKgwqDCoG5ldF9wcmVm
-ZXRjaCh4ZHAtPmRhdGEpOwo+ICvCoMKgwqDCoMKgwqDCoG5ldF9wcmVmZXRjaCh4ZHAtPmRhdGFf
-bWV0YSk7Cj4gwqAKPiDCoMKgwqDCoMKgwqDCoMKgLyogYnVpbGQgYW4gc2tiIGFyb3VuZCB0aGUg
-cGFnZSBidWZmZXIgKi8KPiDCoMKgwqDCoMKgwqDCoMKgc2tiID0gYnVpbGRfc2tiKHhkcC0+ZGF0
-YV9oYXJkX3N0YXJ0LCB0cnVlc2l6ZSk7Cj4gQEAgLTE3NTYsMTAgKzE3NTYsMTEgQEAgc3RhdGlj
-IHN0cnVjdCBza19idWZmCj4gKmlnY19jb25zdHJ1Y3Rfc2tiKHN0cnVjdCBpZ2NfcmluZyAqcnhf
-cmluZywKPiDCoMKgwqDCoMKgwqDCoMKgc3RydWN0IHNrX2J1ZmYgKnNrYjsKPiDCoAo+IMKgwqDC
-oMKgwqDCoMKgwqAvKiBwcmVmZXRjaCBmaXJzdCBjYWNoZSBsaW5lIG9mIGZpcnN0IHBhZ2UgKi8K
-PiAtwqDCoMKgwqDCoMKgwqBuZXRfcHJlZmV0Y2godmEpOwo+ICvCoMKgwqDCoMKgwqDCoG5ldF9w
-cmVmZXRjaCh4ZHAtPmRhdGFfbWV0YSk7Cj4gwqAKPiDCoMKgwqDCoMKgwqDCoMKgLyogYWxsb2Nh
-dGUgYSBza2IgdG8gc3RvcmUgdGhlIGZyYWdzICovCj4gLcKgwqDCoMKgwqDCoMKgc2tiID0gbmFw
-aV9hbGxvY19za2IoJnJ4X3JpbmctPnFfdmVjdG9yLT5uYXBpLCBJR0NfUlhfSERSX0xFTgo+ICsg
-bWV0YXNpemUpOwo+ICvCoMKgwqDCoMKgwqDCoHNrYiA9IG5hcGlfYWxsb2Nfc2tiKCZyeF9yaW5n
-LT5xX3ZlY3Rvci0+bmFwaSwKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgIElHQ19SWF9IRFJfTEVOICsgbWV0YXNpemUpOwo+IMKgwqDCoMKg
-wqDCoMKgwqBpZiAodW5saWtlbHkoIXNrYikpCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqByZXR1cm4gTlVMTDsKPiDCoAo+IEBAIC0yMzYzLDcgKzIzNjQsOCBAQCBzdGF0aWMgaW50
-IGlnY19jbGVhbl9yeF9pcnEoc3RydWN0IGlnY19xX3ZlY3Rvcgo+ICpxX3ZlY3RvciwgY29uc3Qg
-aW50IGJ1ZGdldCkKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGlmICghc2tiKSB7
-Cj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgeGRwX2lu
-aXRfYnVmZigmeGRwLCB0cnVlc2l6ZSwgJnJ4X3JpbmctCj4gPnhkcF9yeHEpOwo+IMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHhkcF9wcmVwYXJlX2J1ZmYo
-JnhkcCwgcGt0YnVmIC0KPiBpZ2Nfcnhfb2Zmc2V0KHJ4X3JpbmcpLAo+IC3CoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqAgaWdjX3J4X29mZnNldChyeF9yaW5nKSArCj4gcGt0X29mZnNldCwgc2l6ZSwgdHJ1
-ZSk7Cj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpZ2Nfcnhfb2Zmc2V0KHJ4X3JpbmcpICsKPiBw
-a3Rfb2Zmc2V0LAo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc2l6ZSwgdHJ1ZSk7Cj4gwqAKPiDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBza2IgPSBpZ2Nf
-eGRwX3J1bl9wcm9nKGFkYXB0ZXIsICZ4ZHApOwo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgfQoK
+
+
+11/29/21 8:53 PM, Harshit Mogalapalli пишет:
+> Adding a check on len parameter to avoid empty skb. This prevents a
+> division error in netem_enqueue function which is caused when skb->len=0
+> and skb->data_len=0 in the randomized corruption step as shown below.
+> 
+> skb->data[prandom_u32() % skb_headlen(skb)] ^= 1<<(prandom_u32() % 8);
+> 
+> Crash Report:
+> [  343.170349] netdevsim netdevsim0 netdevsim3: set [1, 0] type 2 family
+> 0 port 6081 - 0
+> [  343.216110] netem: version 1.3
+> [  343.235841] divide error: 0000 [#1] PREEMPT SMP KASAN NOPTI
+> [  343.236680] CPU: 3 PID: 4288 Comm: reproducer Not tainted 5.16.0-rc1+
+> [  343.237569] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+> BIOS 1.11.0-2.el7 04/01/2014
+> [  343.238707] RIP: 0010:netem_enqueue+0x1590/0x33c0 [sch_netem]
+> [  343.239499] Code: 89 85 58 ff ff ff e8 5f 5d e9 d3 48 8b b5 48 ff ff
+> ff 8b 8d 50 ff ff ff 8b 85 58 ff ff ff 48 8b bd 70 ff ff ff 31 d2 2b 4f
+> 74 <f7> f1 48 b8 00 00 00 00 00 fc ff df 49 01 d5 4c 89 e9 48 c1 e9 03
+> [  343.241883] RSP: 0018:ffff88800bcd7368 EFLAGS: 00010246
+> [  343.242589] RAX: 00000000ba7c0a9c RBX: 0000000000000001 RCX:
+> 0000000000000000
+> [  343.243542] RDX: 0000000000000000 RSI: ffff88800f8edb10 RDI:
+> ffff88800f8eda40
+> [  343.244474] RBP: ffff88800bcd7458 R08: 0000000000000000 R09:
+> ffffffff94fb8445
+> [  343.245403] R10: ffffffff94fb8336 R11: ffffffff94fb8445 R12:
+> 0000000000000000
+> [  343.246355] R13: ffff88800a5a7000 R14: ffff88800a5b5800 R15:
+> 0000000000000020
+> [  343.247291] FS:  00007fdde2bd7700(0000) GS:ffff888109780000(0000)
+> knlGS:0000000000000000
+> [  343.248350] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  343.249120] CR2: 00000000200000c0 CR3: 000000000ef4c000 CR4:
+> 00000000000006e0
+> [  343.250076] Call Trace:
+> [  343.250423]  <TASK>
+> [  343.250713]  ? memcpy+0x4d/0x60
+> [  343.251162]  ? netem_init+0xa0/0xa0 [sch_netem]
+> [  343.251795]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> [  343.252443]  netem_enqueue+0xe28/0x33c0 [sch_netem]
+> [  343.253102]  ? stack_trace_save+0x87/0xb0
+> [  343.253655]  ? filter_irq_stacks+0xb0/0xb0
+> [  343.254220]  ? netem_init+0xa0/0xa0 [sch_netem]
+> [  343.254837]  ? __kasan_check_write+0x14/0x20
+> [  343.255418]  ? _raw_spin_lock+0x88/0xd6
+> [  343.255953]  dev_qdisc_enqueue+0x50/0x180
+> [  343.256508]  __dev_queue_xmit+0x1a7e/0x3090
+> [  343.257083]  ? netdev_core_pick_tx+0x300/0x300
+> [  343.257690]  ? check_kcov_mode+0x10/0x40
+> [  343.258219]  ? _raw_spin_unlock_irqrestore+0x29/0x40
+> [  343.258899]  ? __kasan_init_slab_obj+0x24/0x30
+> [  343.259529]  ? setup_object.isra.71+0x23/0x90
+> [  343.260121]  ? new_slab+0x26e/0x4b0
+> [  343.260609]  ? kasan_poison+0x3a/0x50
+> [  343.261118]  ? kasan_unpoison+0x28/0x50
+> [  343.261637]  ? __kasan_slab_alloc+0x71/0x90
+> [  343.262214]  ? memcpy+0x4d/0x60
+> [  343.262674]  ? write_comp_data+0x2f/0x90
+> [  343.263209]  ? __kasan_check_write+0x14/0x20
+> [  343.263802]  ? __skb_clone+0x5d6/0x840
+> [  343.264329]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> [  343.264958]  dev_queue_xmit+0x1c/0x20
+> [  343.265470]  netlink_deliver_tap+0x652/0x9c0
+> [  343.266067]  netlink_unicast+0x5a0/0x7f0
+> [  343.266608]  ? netlink_attachskb+0x860/0x860
+> [  343.267183]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> [  343.267820]  ? write_comp_data+0x2f/0x90
+> [  343.268367]  netlink_sendmsg+0x922/0xe80
+> [  343.268899]  ? netlink_unicast+0x7f0/0x7f0
+> [  343.269472]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> [  343.270099]  ? write_comp_data+0x2f/0x90
+> [  343.270644]  ? netlink_unicast+0x7f0/0x7f0
+> [  343.271210]  sock_sendmsg+0x155/0x190
+> [  343.271721]  ____sys_sendmsg+0x75f/0x8f0
+> [  343.272262]  ? kernel_sendmsg+0x60/0x60
+> [  343.272788]  ? write_comp_data+0x2f/0x90
+> [  343.273332]  ? write_comp_data+0x2f/0x90
+> [  343.273869]  ___sys_sendmsg+0x10f/0x190
+> [  343.274405]  ? sendmsg_copy_msghdr+0x80/0x80
+> [  343.274984]  ? slab_post_alloc_hook+0x70/0x230
+> [  343.275597]  ? futex_wait_setup+0x240/0x240
+> [  343.276175]  ? security_file_alloc+0x3e/0x170
+> [  343.276779]  ? write_comp_data+0x2f/0x90
+> [  343.277313]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> [  343.277969]  ? write_comp_data+0x2f/0x90
+> [  343.278515]  ? __fget_files+0x1ad/0x260
+> [  343.279048]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> [  343.279685]  ? write_comp_data+0x2f/0x90
+> [  343.280234]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> [  343.280874]  ? sockfd_lookup_light+0xd1/0x190
+> [  343.281481]  __sys_sendmsg+0x118/0x200
+> [  343.281998]  ? __sys_sendmsg_sock+0x40/0x40
+> [  343.282578]  ? alloc_fd+0x229/0x5e0
+> [  343.283070]  ? write_comp_data+0x2f/0x90
+> [  343.283610]  ? write_comp_data+0x2f/0x90
+> [  343.284135]  ? __sanitizer_cov_trace_pc+0x21/0x60
+> [  343.284776]  ? ktime_get_coarse_real_ts64+0xb8/0xf0
+> [  343.285450]  __x64_sys_sendmsg+0x7d/0xc0
+> [  343.285981]  ? syscall_enter_from_user_mode+0x4d/0x70
+> [  343.286664]  do_syscall_64+0x3a/0x80
+> [  343.287158]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> [  343.287850] RIP: 0033:0x7fdde24cf289
+> [  343.288344] Code: 01 00 48 81 c4 80 00 00 00 e9 f1 fe ff ff 0f 1f 00
+> 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f
+> 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 db 2c 00 f7 d8 64 89 01 48
+> [  343.290729] RSP: 002b:00007fdde2bd6d98 EFLAGS: 00000246 ORIG_RAX:
+> 000000000000002e
+> [  343.291730] RAX: ffffffffffffffda RBX: 0000000000000000 RCX:
+> 00007fdde24cf289
+> [  343.292673] RDX: 0000000000000000 RSI: 00000000200000c0 RDI:
+> 0000000000000004
+> [  343.293618] RBP: 00007fdde2bd6e20 R08: 0000000100000001 R09:
+> 0000000000000000
+> [  343.294557] R10: 0000000100000001 R11: 0000000000000246 R12:
+> 0000000000000000
+> [  343.295493] R13: 0000000000021000 R14: 0000000000000000 R15:
+> 00007fdde2bd7700
+> [  343.296432]  </TASK>
+> [  343.296735] Modules linked in: sch_netem ip6_vti ip_vti ip_gre ipip
+> sit ip_tunnel geneve macsec macvtap tap ipvlan macvlan 8021q garp mrp
+> hsr wireguard libchacha20poly1305 chacha_x86_64 poly1305_x86_64
+> ip6_udp_tunnel udp_tunnel libblake2s blake2s_x86_64 libblake2s_generic
+> curve25519_x86_64 libcurve25519_generic libchacha xfrm_interface
+> xfrm6_tunnel tunnel4 veth netdevsim psample batman_adv nlmon dummy team
+> bonding tls vcan ip6_gre ip6_tunnel tunnel6 gre tun ip6t_rpfilter
+> ipt_REJECT nf_reject_ipv4 ip6t_REJECT nf_reject_ipv6 xt_conntrack ip_set
+> ebtable_nat ebtable_broute ip6table_nat ip6table_mangle
+> ip6table_security ip6table_raw iptable_nat nf_nat nf_conntrack
+> nf_defrag_ipv6 nf_defrag_ipv4 iptable_mangle iptable_security
+> iptable_raw ebtable_filter ebtables rfkill ip6table_filter ip6_tables
+> iptable_filter ppdev bochs drm_vram_helper drm_ttm_helper ttm
+> drm_kms_helper cec parport_pc drm joydev floppy parport sg syscopyarea
+> sysfillrect sysimgblt i2c_piix4 qemu_fw_cfg fb_sys_fops pcspkr
+> [  343.297459]  ip_tables xfs virtio_net net_failover failover sd_mod
+> sr_mod cdrom t10_pi ata_generic pata_acpi ata_piix libata virtio_pci
+> virtio_pci_legacy_dev serio_raw virtio_pci_modern_dev dm_mirror
+> dm_region_hash dm_log dm_mod
+> [  343.311074] Dumping ftrace buffer:
+> [  343.311532]    (ftrace buffer empty)
+> [  343.312040] ---[ end trace a2e3db5a6ae05099 ]---
+> [  343.312691] RIP: 0010:netem_enqueue+0x1590/0x33c0 [sch_netem]
+> [  343.313481] Code: 89 85 58 ff ff ff e8 5f 5d e9 d3 48 8b b5 48 ff ff
+> ff 8b 8d 50 ff ff ff 8b 85 58 ff ff ff 48 8b bd 70 ff ff ff 31 d2 2b 4f
+> 74 <f7> f1 48 b8 00 00 00 00 00 fc ff df 49 01 d5 4c 89 e9 48 c1 e9 03
+> [  343.315893] RSP: 0018:ffff88800bcd7368 EFLAGS: 00010246
+> [  343.316622] RAX: 00000000ba7c0a9c RBX: 0000000000000001 RCX:
+> 0000000000000000
+> [  343.317585] RDX: 0000000000000000 RSI: ffff88800f8edb10 RDI:
+> ffff88800f8eda40
+> [  343.318549] RBP: ffff88800bcd7458 R08: 0000000000000000 R09:
+> ffffffff94fb8445
+> [  343.319503] R10: ffffffff94fb8336 R11: ffffffff94fb8445 R12:
+> 0000000000000000
+> [  343.320455] R13: ffff88800a5a7000 R14: ffff88800a5b5800 R15:
+> 0000000000000020
+> [  343.321414] FS:  00007fdde2bd7700(0000) GS:ffff888109780000(0000)
+> knlGS:0000000000000000
+> [  343.322489] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  343.323283] CR2: 00000000200000c0 CR3: 000000000ef4c000 CR4:
+> 00000000000006e0
+> [  343.324264] Kernel panic - not syncing: Fatal exception in interrupt
+> [  343.333717] Dumping ftrace buffer:
+> [  343.334175]    (ftrace buffer empty)
+> [  343.334653] Kernel Offset: 0x13600000 from 0xffffffff81000000
+> (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+> [  343.336027] Rebooting in 86400 seconds..
+> 
+> Reported-by: syzkaller <syzkaller@googlegroups.com>
+> Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+> ---
+> Changes v1->v2: Removed dropping of packet and just added a check on
+> skb_headlen before corruption.
+> Changes v2->v3: Add check on len to prevent empty skb.
+
+So if we have no application setting the length value to zero it's okay.
+Sorry, haven't seen a reply for the last comment in v3
+
+> Changes v3->v4: Add a pr_warn_once() statement.
+> 
+>   net/netlink/af_netlink.c | 5 +++++
+>   1 file changed, 5 insertions(+)
+> 
+> diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+> index 4c575324a985..9eba2e648385 100644
+> --- a/net/netlink/af_netlink.c
+> +++ b/net/netlink/af_netlink.c
+> @@ -1852,6 +1852,11 @@ static int netlink_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+>   	if (msg->msg_flags & MSG_OOB)
+>   		return -EOPNOTSUPP;
+>   
+> +	if (len == 0) {
+> +		pr_warn_once("Zero length message leads to an empty skb\n");
+> +		return -ENODATA;
+> +	}
+> +
+>   	err = scm_send(sock, msg, &scm, true);
+>   	if (err < 0)
+>   		return err;
+> 
