@@ -2,82 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65A84461FE8
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 20:09:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBC51461FEC
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 20:10:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241151AbhK2TM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 14:12:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43266 "EHLO
+        id S244092AbhK2TNi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 14:13:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244800AbhK2TK4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 14:10:56 -0500
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C32C052920
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 07:30:18 -0800 (PST)
-Received: by mail-oi1-x232.google.com with SMTP id o4so35250396oia.10
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 07:30:18 -0800 (PST)
+        with ESMTP id S1347911AbhK2TLh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 14:11:37 -0500
+Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23DC1C06175B
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 07:32:14 -0800 (PST)
+Received: by mail-ot1-x332.google.com with SMTP id w6-20020a9d77c6000000b0055e804fa524so25990911otl.3
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 07:32:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Syr0ONfCYHbV19iNYE6IrWYtIUc2TwPwgKVevnNHbTY=;
-        b=c++sGWRpKYT+Ycv64f39xVz+jy0Rn1TNcq69P1h0PDSiITJMTmUMlfIB1Y/8+d3x1s
-         GhI664exFRZwaN9VG43cemgf4xDkx53HCEjg9UpL8Ki0fJdhYziAK74mABUSDyxWLZdQ
-         ty4JNRzgF1NLSQOTyPvQyQ5TKzMNPzeEfV5r1Xc1CHDdiSYC2xH/UqnS0drTJ08k+a6k
-         ZYrDyvIeRvPtoVm8s7Jnu/qnEbnPqSDzOl7ZaEL2zInCfYLPyw5K1amIFv8/K5KijjAs
-         LAXrWbhvhMo0IOGOmQkiKZYCxSoENn1PUNBQjHPv51wg7Ft4vZdunyN1gFBRPa747j62
-         yqTg==
+        bh=MOZ/DFQuHWnZD4wx4PFRuKHng2uYWDVPLxUaSdu60uI=;
+        b=AQ/AGbmkZE8Z3Jg9HzZJK1fl6pX48k7k+iihnYMh7E5Lt80d5pvkY+1R3j9zg3TUqt
+         hJ2/SFYwb3PowjfZyyVjeyBjmuC2jAaQO/98lZ67mg87nxcl8pJeANdjhiYgYePUXaUW
+         sbCGvg4m0lhU7FZRfM2erTwC/8e+NlqogW+re422B7Q+keszyEj/cTcmi/nptCDS56XR
+         7JjrOAaRAaEDnfbDS+EO5JldQAwHH0P4tkcjUK1fjIhL8ScC2krK+GJ4ZG78JdEj884a
+         G9aUGBTMFzZBeaFJ3eGLTESvGnba7khh1ydKb/iGJmehUlXHklGJsb7kgrXLg+CkX9J5
+         nObQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=Syr0ONfCYHbV19iNYE6IrWYtIUc2TwPwgKVevnNHbTY=;
-        b=s86VEdl1wViuoVPL53cyiks8mOf0Romvt1QDuOWsGv5cYdW7a+i22Xt7/DT7TizxT1
-         aK/hDi9E5hu01XL25y54w3RyYtvYvTg4MKjl0xNuankV1peb4yEk7Yfz2QlW1NUL4RGO
-         t6+lgqpmL6nyY0UdLGEwWIV4d3mf7IujGjLnBwY1HXIF47QOxk43kIhWpWYc+KhPoVsJ
-         eRGEB2QXmkNyO4rgKl54bse2rDDVyZnfNljJQqFEK8l8bNwfWHuZzJ9h5ivm5ts8DYVX
-         RW0BZOPKG4q+tSVTJbtOOs0UrKVQSXKhc3e6320M0UHwxJwGNnu7P7DVGEKpshF8Rlsj
-         puAw==
-X-Gm-Message-State: AOAM5323ElmWO1OvmU1l0aSUQcbG1kRYDSNrksA6YB0+1/TDgE8O19+P
-        iov0hjQ0B00Jcw+llza7DyY=
-X-Google-Smtp-Source: ABdhPJwYEdBOcSKLRm7dHJ9GUQaQvQR8KyvK+v4AbBEsyIMND9exDuH7p4oe4pKBxHtoZlSE69pH4g==
-X-Received: by 2002:aca:1b15:: with SMTP id b21mr40901578oib.64.1638199817731;
-        Mon, 29 Nov 2021 07:30:17 -0800 (PST)
+        bh=MOZ/DFQuHWnZD4wx4PFRuKHng2uYWDVPLxUaSdu60uI=;
+        b=bFzMISp7QZe3xUSXGVNG3z1PwAiI/e10DphgcXc65JXiEFG8JsHo3gtZ72Z4JdUUgD
+         mAPrcoAU9EdmxPr2Jspxemmb9Iv4fRHplgWv5J/JmVcKeEDcxrOIBTkzHR3y/MMLi58w
+         3aq+y7BbKRgOauKlisbinLwNslZraA8euhadj+UclxNVul++jeidljvSgdvPttx9qFv9
+         ALB0z2JHGSPfws+swfRhs6bNJjou87H8khxZlbsrLwnkpBv0n1w3JRR9iNKHpiYYaefA
+         iQpjcywCpURq5kAFrg3E/QTuGNy00KAnY29NU30tLSWDvVpNtaXrNMOUgvJyVxh0fCLy
+         /vbA==
+X-Gm-Message-State: AOAM5300Nj0tv8n7dzt9FeR0ZmocvxyG2aqyCfM6/cJ2rNce/daa8SX7
+        ZsgBbftahiM+HDs81XcQmrk=
+X-Google-Smtp-Source: ABdhPJxkeT1Mi58nN+GbFIBmUFKfTLHEqLRu8/ma2w2R8RAhYoyEVbbwagGF5l7rGr2YHaymKTtnlw==
+X-Received: by 2002:a9d:6f13:: with SMTP id n19mr44558784otq.317.1638199933576;
+        Mon, 29 Nov 2021 07:32:13 -0800 (PST)
 Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id 186sm3032042oig.28.2021.11.29.07.30.16
+        by smtp.googlemail.com with ESMTPSA id k4sm3029067oij.54.2021.11.29.07.32.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Nov 2021 07:30:17 -0800 (PST)
-Message-ID: <21da13fb-e629-0d6e-1aa1-56e2eb86d1c3@gmail.com>
-Date:   Mon, 29 Nov 2021 08:30:16 -0700
+        Mon, 29 Nov 2021 07:32:13 -0800 (PST)
+Message-ID: <8b4a8d7c-a801-fc91-90a1-c973deb07eed@gmail.com>
+Date:   Mon, 29 Nov 2021 08:32:11 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
  Gecko/20100101 Thunderbird/91.3.1
-Subject: Re: [PATCH net-next v3] rtnetlink: Support fine-grained netdevice
- bulk deletion
+Subject: Re: [PATCH net-next] net: nexthop: reduce rcu synchronizations when
+ replacing resilient groups
 Content-Language: en-US
-To:     Lahav Schlesinger <lschlesinger@drivenets.com>
-Cc:     Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
-        kuba@kernel.org
-References: <20211125165146.21298-1-lschlesinger@drivenets.com>
- <YaMwrajs8D5OJ3yS@unreal> <20211128111313.hjywmtmnipg4ul4f@kgollan-pc>
- <YaNrd6+9V18ku+Vk@unreal> <09296394-a69a-ee66-0897-c9018185cfde@gmail.com>
- <20211129135307.mxtfw6j7v4hdex4f@kgollan-pc>
+To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Ido Schimmel <idosch@idosch.org>
+References: <20211129120924.461545-1-razor@blackwall.org>
 From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20211129135307.mxtfw6j7v4hdex4f@kgollan-pc>
+In-Reply-To: <20211129120924.461545-1-razor@blackwall.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/29/21 6:53 AM, Lahav Schlesinger wrote:
-> Hi David, while I also don't have any strong preference here, my
-> reasoning for failing the whole request if one device can't be deleted
-> was so it will share the behaviour we currently have with group deletion.
-> If you're okay with this asymmetry I'll send a V4.
+On 11/29/21 5:09 AM, Nikolay Aleksandrov wrote:
+> From: Nikolay Aleksandrov <nikolay@nvidia.com>
+> 
+> We can optimize resilient nexthop group replaces by reducing the number of
+> synchronize_net calls. After commit 1005f19b9357 ("net: nexthop: release
+> IPv6 per-cpu dsts when replacing a nexthop group") we always do a
+> synchronize_net because we must ensure no new dsts can be created for the
+> replaced group's removed nexthops, but we already did that when replacing
+> resilient groups, so if we always call synchronize_net after any group
+> type replacement we'll take care of both cases and reduce synchronize_net
+> calls for resilient groups.
+> 
+> Suggested-by: Ido Schimmel <idosch@idosch.org>
+> Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+> ---
+>  net/ipv4/nexthop.c | 8 +++-----
+>  1 file changed, 3 insertions(+), 5 deletions(-)
+> 
 
-good point - new features should be consistent with existing code.
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
-You can add another attribute to the request to say 'Skip devices that
-can not be deleted'.
+
