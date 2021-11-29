@@ -2,171 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A70C7461A08
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 15:41:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0471461A1C
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 15:42:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241732AbhK2Oob (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 09:44:31 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:22482 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1378723AbhK2Om1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 09:42:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1638196749;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=O7S5OjizQijBIczl+/4wBXHSjD2sJgr/PTbq1lX6VZ4=;
-        b=XpXEEVQDWC8KBgPoS10ox6zrsyG4I4IvHyhBlyeIm4fkRB8HTl5s+LemdrypPb+CREc6tz
-        Nwa8DppYz4oClsf36pv1A6MZSVYzksIQbqOXvE8/NmN7QRRUcKgqwjBp9TefJA8UlCR/nA
-        FR0JiUoq2UbsLwWAhbvrL3GTLGkjuK8=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-249-Mcq7tAITMoaU0Oz8noVp2g-1; Mon, 29 Nov 2021 09:39:07 -0500
-X-MC-Unique: Mcq7tAITMoaU0Oz8noVp2g-1
-Received: by mail-ed1-f69.google.com with SMTP id s12-20020a50ab0c000000b003efdf5a226fso7766257edc.10
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 06:39:06 -0800 (PST)
+        id S1378459AbhK2OpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 09:45:25 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:55326
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1379122AbhK2OnX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 09:43:23 -0500
+Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com [209.85.216.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 9C60F3F316
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 14:40:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1638196803;
+        bh=w6+BoYvnmAnd+GSm1CSG2oy2MCenL4FLdq4APeVFVSU=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=SSLBrO4hzgCknz6ZobYMdyV465cWrP+t1PQ0rWkP7d3I2eKnS/cvpV5Xeen3vztfj
+         ZOCCADslzkI4U5vZddG1VdsUud/hYbCRgnUNhFRvoO4YW20M/NZxoctqTFDy2H/6mr
+         t941Ig8jP+99IPNt8PU7WRicMM8bW9XxYzoD8mJPLs02RCFS61hTd1Ho25rYmU4A5j
+         zm/FvGcr/wiV9dnCpGh6l1FDg7E5z6B7c1w8bjUITwEmhX7JM+UlghGtOR7Z86SE/u
+         J8LbILLuEtqEWfUFT0VCLi2O15L5ma5YGqmzwUp0/X+L3upGgUiRPk/GYTyuKn5shP
+         Po0FuiMmTLAAw==
+Received: by mail-pj1-f70.google.com with SMTP id p12-20020a17090b010c00b001a65bfe8054so8035739pjz.8
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 06:40:03 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
-         :subject:content-language:to:references:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=O7S5OjizQijBIczl+/4wBXHSjD2sJgr/PTbq1lX6VZ4=;
-        b=A8xVmZEhtizt+m2j3lBf52wl2jc+Hv3LwpqzWhDzjbOzzPPqGQdQ+SnDmU98SrifWB
-         jelXr60rl4eJpDG7QXEsfrN63zo8+an7KOM/UGW5nWVGm7bvsE//FLRIZycI4m2Nz5jA
-         a1hMvs+MbWAqRkc3qjb4sQ+yRpJ4ZIfmxxVntPSQ50sDIayGFFNh1qZ4tWBOhxQpd6VU
-         Niwh5QmKyEMU0JEFILwIclOUBmvou6dA9lU24SK8m6jM55x4j/llJXV4akVRo/S0Y8mq
-         xO93ftqDywDrI9tvP9NX9dJxBL6TJ4XqU4sUKqIlX3xQX+2D9z+r9toynCZ5Qrpp5dmD
-         z6Kg==
-X-Gm-Message-State: AOAM532P2dQ47Ip4slu/fVYFGraV9PrSRe3DiZME1ouH6uqzlS9N23/B
-        zrXly7GWL/LkLZ6v2c8zt8lFKf5/4lc6REl22NmPzUMrFtD1Jixw2F0Hf2tbCBTJTv/26iVmwsN
-        1QVmGEdJLTR6h7ti8
-X-Received: by 2002:a17:907:6e8e:: with SMTP id sh14mr60718732ejc.536.1638196745923;
-        Mon, 29 Nov 2021 06:39:05 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx6bdVXynDkMurbo0wdDJkXKq7sUHLsLuYlZSX0wdDkgLTI+lyg0CzaDm0yWoDDUyjO4luUjQ==
-X-Received: by 2002:a17:907:6e8e:: with SMTP id sh14mr60718710ejc.536.1638196745735;
-        Mon, 29 Nov 2021 06:39:05 -0800 (PST)
-Received: from [192.168.2.13] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
-        by smtp.gmail.com with ESMTPSA id hg19sm7327636ejc.1.2021.11.29.06.39.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Nov 2021 06:39:05 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <6de05aea-9cf4-c938-eff2-9e3b138512a4@redhat.com>
-Date:   Mon, 29 Nov 2021 15:39:04 +0100
+        bh=w6+BoYvnmAnd+GSm1CSG2oy2MCenL4FLdq4APeVFVSU=;
+        b=OB3M3cnjKFh1w3Z13gYL5MAlF0I75hMdb7JggLZJJlw4HR+BYGWV+zFErT+2m1XK3C
+         Uy86WlQT3CDqMdihNuiFooqPLFF00j/GKLtSXj0ZO+KuGYNxbblh0eiVSRkR67mN9fQY
+         OTIXuEq7apemVLqnQQvBsVcYo3WgTvwkCKcyN4NHdclegV4z4GRD59mDMEPONBKhJBFl
+         Ce4bWCRElfdwlCgfuuvg/dFZ1Wss/vbH96g76D1BZSzZkdn5CntVj6VCjBHM9gDLJCET
+         daw6RNUK3+ZZQDydf5D3+/v7sC+BuU7dhdXE+kQkdAIvrzN6/1K89AL4bYNhjthufFx2
+         hnUg==
+X-Gm-Message-State: AOAM53005Upa9t7/bCK/Xf4DUtaiG52+qE0F+8ZlPooZ3Uk4IJZQ0lI3
+        4pvhUokUNZs4qWM0MIBuObYkEj8Ux8VpIhjYTHscy5vOdKePRtwcNWbImEBX6OcrwLIpQSefVtk
+        okUlJEa5QoEJwfe59hLdXsWMzTcC8ipy04w==
+X-Received: by 2002:a17:90b:4c89:: with SMTP id my9mr38888791pjb.229.1638196801872;
+        Mon, 29 Nov 2021 06:40:01 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzu+OIHnSidQX9q38q/ISn/oYi/aZG1iV/zfzuNI9YibcOhqr2H6QmGitjdqa/6oOI6TNG41Q==
+X-Received: by 2002:a17:90b:4c89:: with SMTP id my9mr38888748pjb.229.1638196801543;
+        Mon, 29 Nov 2021 06:40:01 -0800 (PST)
+Received: from localhost.localdomain (2001-b400-e254-16ab-fe1c-26fe-b098-aa3d.emome-ip6.hinet.net. [2001:b400:e254:16ab:fe1c:26fe:b098:aa3d])
+        by smtp.gmail.com with ESMTPSA id p188sm16862766pfg.102.2021.11.29.06.39.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Nov 2021 06:40:01 -0800 (PST)
+From:   Chris Chiu <chris.chiu@canonical.com>
+To:     Jes.Sorensen@gmail.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chris Chiu <chris.chiu@canonical.com>
+Subject: [PATCH] rtl8xxxu: Improve the A-MPDU retransmission rate with RTS/CTS protection
+Date:   Mon, 29 Nov 2021 22:39:53 +0800
+Message-Id: <20211129143953.369557-1-chris.chiu@canonical.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Cc:     brouer@redhat.com, bpf@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        anthony.l.nguyen@intel.com, jesse.brandeburg@intel.com,
-        intel-wired-lan@lists.osuosl.org, magnus.karlsson@intel.com,
-        bjorn@kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 2/2] igc: enable XDP metadata in driver
-Content-Language: en-US
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-References: <163700856423.565980.10162564921347693758.stgit@firesoul>
- <163700859087.565980.3578855072170209153.stgit@firesoul>
- <20211126161649.151100-1-alexandr.lobakin@intel.com>
-In-Reply-To: <20211126161649.151100-1-alexandr.lobakin@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The A-MPDU retransmission rate is always high (> 20%) even in a very
+clean environment. However, the vendor driver retransimission rate is
+< 10% in the same test bed. The different is the vendor driver starts
+the A-MPDU TXOP with initial RTS/CTS handshake which is observed in the
+air capture and the TX descriptor. Since there's no related field in
+TX descriptor to enable the L-SIG TXOP protection and the duration,
+applying the RTS/CTS protection instead helps to lower the retransmission
+rate from > 20% to ~12% in the same test setup.
 
+Signed-off-by: Chris Chiu <chris.chiu@canonical.com>
+---
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-On 26/11/2021 17.16, Alexander Lobakin wrote:
-> From: Jesper Dangaard Brouer <brouer@redhat.com>
-> Date: Mon, 15 Nov 2021 21:36:30 +0100
-> 
->> Enabling the XDP bpf_prog access to data_meta area is a very small
->> change. Hint passing 'true' to xdp_prepare_buff().
->>
->> The SKB layers can also access data_meta area, which required more
->> driver changes to support. Reviewers, notice the igc driver have two
->> different functions that can create SKBs, depending on driver config.
->>
->> Hint for testers, ethtool priv-flags legacy-rx enables
->> the function igc_construct_skb()
->>
->>   ethtool --set-priv-flags DEV legacy-rx on
->>
->> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
->> ---
->>   drivers/net/ethernet/intel/igc/igc_main.c |   29 +++++++++++++++++++----------
->>   1 file changed, 19 insertions(+), 10 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
->> index 76b0a7311369..b516f1b301b4 100644
->> --- a/drivers/net/ethernet/intel/igc/igc_main.c
->> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
->> @@ -1718,24 +1718,26 @@ static void igc_add_rx_frag(struct igc_ring *rx_ring,
->>   
->>   static struct sk_buff *igc_build_skb(struct igc_ring *rx_ring,
->>   				     struct igc_rx_buffer *rx_buffer,
->> -				     union igc_adv_rx_desc *rx_desc,
->> -				     unsigned int size)
->> +				     struct xdp_buff *xdp)
->>   {
->> -	void *va = page_address(rx_buffer->page) + rx_buffer->page_offset;
->> +	unsigned int size = xdp->data_end - xdp->data;
->>   	unsigned int truesize = igc_get_rx_frame_truesize(rx_ring, size);
->> +	unsigned int metasize = xdp->data - xdp->data_meta;
->>   	struct sk_buff *skb;
->>   
->>   	/* prefetch first cache line of first page */
->> -	net_prefetch(va);
->> +	net_prefetch(xdp->data);
-> 
-> I'd prefer prefetching xdp->data_meta here. GRO layer accesses it.
-> Maximum meta size for now is 32, so at least 96 bytes of the frame
-> will stil be prefetched.
-
-Prefetch works for "full" cachelines. Intel CPUs often prefect two 
-cache-lines, when doing this, thus I guess we still get xdp->data.
-
-I don't mind prefetching xdp->data_meta, but (1) I tried to keep the 
-change minimal as current behavior was data area I kept that. (2) 
-xdp->data starts on a cacheline and we know NIC hardware have touched 
-that, it is not a full-cache-miss due to DDIO/DCA it is known to be in 
-L3 cache (gain is around 2-3 ns in my machine for data prefetch).
-Given this is only a 2.5 Gbit/s driver/HW I doubt this make any difference.
-
-Tony is it worth resending a V2 of this patch?
-
->>   
->>   	/* build an skb around the page buffer */
->> -	skb = build_skb(va - IGC_SKB_PAD, truesize);
->> +	skb = build_skb(xdp->data_hard_start, truesize);
->>   	if (unlikely(!skb))
->>   		return NULL;
->>   
->>   	/* update pointers within the skb to store the data */
->> -	skb_reserve(skb, IGC_SKB_PAD);
->> +	skb_reserve(skb, xdp->data - xdp->data_hard_start);
->>   	__skb_put(skb, size);
->> +	if (metasize)
->> +		skb_metadata_set(skb, metasize);
->>   
->>   	igc_rx_buffer_flip(rx_buffer, truesize);
->>   	return skb;
->> @@ -1746,6 +1748,7 @@ static struct sk_buff *igc_construct_skb(struct igc_ring *rx_ring,
->>   					 struct xdp_buff *xdp,
->>   					 ktime_t timestamp)
->>   {
->> +	unsigned int metasize = xdp->data - xdp->data_meta;
->>   	unsigned int size = xdp->data_end - xdp->data;
->>   	unsigned int truesize = igc_get_rx_frame_truesize(rx_ring, size);
->>   	void *va = xdp->data;
->> @@ -1756,7 +1759,7 @@ static struct sk_buff *igc_construct_skb(struct igc_ring *rx_ring,
->>   	net_prefetch(va);
-> 
-> ...here as well.
-> 
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+index a42e2081b75f..06d59ffb7444 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+@@ -4859,7 +4859,7 @@ rtl8xxxu_fill_txdesc_v1(struct ieee80211_hw *hw, struct ieee80211_hdr *hdr,
+ 	 * rts_rate is zero if RTS/CTS or CTS to SELF are not enabled
+ 	 */
+ 	tx_desc->txdw4 |= cpu_to_le32(rts_rate << TXDESC32_RTS_RATE_SHIFT);
+-	if (rate_flags & IEEE80211_TX_RC_USE_RTS_CTS) {
++	if (ampdu_enable || (rate_flags & IEEE80211_TX_RC_USE_RTS_CTS)) {
+ 		tx_desc->txdw4 |= cpu_to_le32(TXDESC32_RTS_CTS_ENABLE);
+ 		tx_desc->txdw4 |= cpu_to_le32(TXDESC32_HW_RTS_ENABLE);
+ 	} else if (rate_flags & IEEE80211_TX_RC_USE_CTS_PROTECT) {
+@@ -4930,7 +4930,7 @@ rtl8xxxu_fill_txdesc_v2(struct ieee80211_hw *hw, struct ieee80211_hdr *hdr,
+ 	/*
+ 	 * rts_rate is zero if RTS/CTS or CTS to SELF are not enabled
+ 	 */
+-	if (rate_flags & IEEE80211_TX_RC_USE_RTS_CTS) {
++	if (ampdu_enable || (rate_flags & IEEE80211_TX_RC_USE_RTS_CTS)) {
+ 		tx_desc40->txdw3 |= cpu_to_le32(TXDESC40_RTS_CTS_ENABLE);
+ 		tx_desc40->txdw3 |= cpu_to_le32(TXDESC40_HW_RTS_ENABLE);
+ 	} else if (rate_flags & IEEE80211_TX_RC_USE_CTS_PROTECT) {
+-- 
+2.25.1
 
