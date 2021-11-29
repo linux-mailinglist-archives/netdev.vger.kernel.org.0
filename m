@@ -2,459 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 986CC4611EB
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 11:15:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF3EE4611F0
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 11:16:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233760AbhK2KS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 05:18:56 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:38100 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234069AbhK2KQz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 05:16:55 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1ATADZWJ0027609, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1ATADZWJ0027609
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 29 Nov 2021 18:13:35 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Mon, 29 Nov 2021 18:13:35 +0800
-Received: from fc34.localdomain (172.21.177.102) by RTEXMBS04.realtek.com.tw
- (172.21.6.97) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.15; Mon, 29 Nov
- 2021 18:13:33 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     <hkallweit1@gmail.com>
-CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
-        Hayes Wang <hayeswang@realtek.com>
-Subject: [RFC PATCH 4/4] r8169: add sysfs for dash
-Date:   Mon, 29 Nov 2021 18:13:15 +0800
-Message-ID: <20211129101315.16372-385-nic_swsd@realtek.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211129101315.16372-381-nic_swsd@realtek.com>
-References: <20211129101315.16372-381-nic_swsd@realtek.com>
+        id S237668AbhK2KTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 05:19:47 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:10164 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232318AbhK2KRp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 05:17:45 -0500
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1AT9lO29006206;
+        Mon, 29 Nov 2021 10:13:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : references : date : in-reply-to : message-id : mime-version :
+ content-type; s=pp1; bh=bTykWiZilsgvIEF8053GRPR7j2ZWFDbGpwj1KiG5Zb8=;
+ b=ZRE/D4iZlWQha3YL2zQJ5zfjlQOQWX3mJjlDDOtDsbip+iNART4SQ9TYsBVlt6sQ9Lvg
+ lhcgSJ/vR8ria0U2HK7ve1FWaeu13ghyyPlTALSRwVqkoO5J4f+oRgQ3GJ1jENxs4mlD
+ wBCb/yvDvJfJrIqHSupTFsxkmGEVI8h2KHSVa4efgopiXMJNh2WvFLOJ1Lp9kiK1Zx2e
+ YoMGsqehghyuHXuDSSMvq/2AR6MJAfB5XHx5vadvs6QPCRefk3mCDyGkHdvUQXt0KudR
+ EzqoKVBLFwyoApWg7k40rBgQ0UjvJDgR2H5t8gDOMcDc24QUtZA4STRUEYv8NTKgCZ7f Nw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3cmvht8gh0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 29 Nov 2021 10:13:39 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1AT9nGP2013939;
+        Mon, 29 Nov 2021 10:13:38 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3cmvht8gg8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 29 Nov 2021 10:13:38 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1ATADJsi020937;
+        Mon, 29 Nov 2021 10:13:35 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma01fra.de.ibm.com with ESMTP id 3ckca9ajq7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 29 Nov 2021 10:13:35 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1ATADWKX22544770
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 29 Nov 2021 10:13:32 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 83AC611C04A;
+        Mon, 29 Nov 2021 10:13:32 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E328911C04C;
+        Mon, 29 Nov 2021 10:13:31 +0000 (GMT)
+Received: from tuxmaker.linux.ibm.com (unknown [9.152.85.9])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Mon, 29 Nov 2021 10:13:31 +0000 (GMT)
+From:   Sven Schnelle <svens@linux.ibm.com>
+To:     Yafang Shao <laoar.shao@gmail.com>
+Cc:     akpm@linux-foundation.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, oliver.sang@intel.com, lkp@intel.com,
+        Andrii Nakryiko <andrii@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Kees Cook <keescook@chromium.org>,
+        Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH v2 7/7] tools/testing/selftests/bpf: replace open-coded
+ 16 with TASK_COMM_LEN
+References: <20211120112738.45980-1-laoar.shao@gmail.com>
+        <20211120112738.45980-8-laoar.shao@gmail.com>
+Date:   Mon, 29 Nov 2021 11:13:31 +0100
+In-Reply-To: <20211120112738.45980-8-laoar.shao@gmail.com> (Yafang Shao's
+        message of "Sat, 20 Nov 2021 11:27:38 +0000")
+Message-ID: <yt9d35nf1d84.fsf@linux.ibm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [172.21.177.102]
-X-ClientProxiedBy: RTEXH36504.realtek.com.tw (172.21.6.27) To
- RTEXMBS04.realtek.com.tw (172.21.6.97)
-X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
-X-KSE-AntiSpam-Interceptor-Info: trusted connection
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 11/29/2021 10:02:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzExLzI5IKRXpMggMDg6MjY6MDA=?=
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+Content-Type: text/plain
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: tCV3Q3i4lUvrnwlJ9X-_0skwr0F3PEoJ
+X-Proofpoint-ORIG-GUID: 9MlKZj6a0c4TU5bozMc3VrKzCk8L9suc
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-11-29_07,2021-11-28_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 clxscore=1011
+ bulkscore=0 phishscore=0 impostorscore=0 lowpriorityscore=0
+ priorityscore=1501 mlxscore=0 mlxlogscore=999 malwarescore=0 adultscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2111290049
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the sysfs for dash. Then the application could configure the
-firmware through them.
+Hi,
 
-Signed-off-by: Hayes Wang <hayeswang@realtek.com>
----
- drivers/net/ethernet/realtek/r8169_dash.c | 131 +++++++++++++++
- drivers/net/ethernet/realtek/r8169_dash.h |   8 +
- drivers/net/ethernet/realtek/r8169_main.c | 188 +++++++++++++++++++++-
- 3 files changed, 326 insertions(+), 1 deletion(-)
+Yafang Shao <laoar.shao@gmail.com> writes:
 
-diff --git a/drivers/net/ethernet/realtek/r8169_dash.c b/drivers/net/ethernet/realtek/r8169_dash.c
-index acee7519e9f1..197feb2c4a23 100644
---- a/drivers/net/ethernet/realtek/r8169_dash.c
-+++ b/drivers/net/ethernet/realtek/r8169_dash.c
-@@ -754,3 +754,134 @@ void rtl_dash_interrupt(struct rtl_dash *dash)
- 	tasklet_schedule(&dash->tl);
- }
- 
-+int rtl_dash_to_fw(struct rtl_dash *dash, u8 *src, int size)
-+{
-+	int ret;
-+	long t;
-+
-+	if (dash->cmac_state != CMAC_STATE_RUNNING)
-+		return -ENETDOWN;
-+
-+	spin_lock_bh(&dash->cmac_lock);
-+	ret = dash_rx_data(dash, NULL, 0);
-+	spin_unlock_bh(&dash->cmac_lock);
-+	if (ret < 0)
-+		return -EUCLEAN;
-+
-+	reinit_completion(&dash->cmac_tx);
-+	reinit_completion(&dash->fw_ack);
-+
-+	spin_lock_bh(&dash->cmac_lock);
-+	ret = cmac_start_xmit(dash, src, size, false);
-+	spin_unlock_bh(&dash->cmac_lock);
-+
-+	if (ret < 0)
-+		goto err;
-+
-+	t = wait_for_completion_interruptible_timeout(&dash->cmac_tx,
-+						      CMAC_TIMEOUT);
-+	if (!t) {
-+		ret = -ETIMEDOUT;
-+		dev_err(&dash->pdev_cmac->dev, "CMAC tx timeout\n");
-+		goto err;
-+	} else if (t < 0) {
-+		ret = t;
-+		dev_err(&dash->pdev_cmac->dev, "CMAC tx fail %ld\n", t);
-+		goto err;
-+	}
-+
-+	t = wait_for_completion_interruptible_timeout(&dash->fw_ack,
-+						      CMAC_TIMEOUT);
-+	if (!t) {
-+		ret = -ETIMEDOUT;
-+		dev_err(&dash->pdev_cmac->dev, "FW ACK timeout\n");
-+	} else if (t < 0) {
-+		ret = t;
-+		dev_err(&dash->pdev_cmac->dev, "FW ACK fail %ld\n", t);
-+	}
-+
-+err:
-+	return ret;
-+}
-+
-+int rtl_dash_from_fw(struct rtl_dash *dash, u8 *src, int size)
-+{
-+	int ret;
-+	long t;
-+
-+	if (dash->cmac_state != CMAC_STATE_RUNNING)
-+		return -ENETDOWN;
-+
-+	reinit_completion(&dash->cmac_rx);
-+
-+	spin_lock_bh(&dash->cmac_lock);
-+	ret = dash_rx_data(dash, src, size);
-+	spin_unlock_bh(&dash->cmac_lock);
-+
-+	if (ret)
-+		goto out;
-+
-+	t = wait_for_completion_interruptible_timeout(&dash->cmac_rx,
-+						      CMAC_TIMEOUT);
-+	if (!t) {
-+		dev_warn(&dash->pdev_cmac->dev, "CMAC data timeout\n");
-+	} else if (t < 0) {
-+		ret = t;
-+		dev_err(&dash->pdev_cmac->dev, "Wait CMAC data fail %ld\n", t);
-+		goto out;
-+	}
-+
-+	spin_lock_bh(&dash->cmac_lock);
-+	ret = dash_rx_data(dash, src, size);
-+	spin_unlock_bh(&dash->cmac_lock);
-+
-+out:
-+	return ret;
-+}
-+
-+void rtl_dash_set_ap_ready(struct rtl_dash *dash, bool enable)
-+{
-+	struct rtl8169_private *tp = dash->tp;
-+	u32 data;
-+
-+	data = r8168ep_ocp_read(tp, 0x124);
-+	if (enable)
-+		data |= BIT(1);
-+	else
-+		data &= ~BIT(1);
-+	r8168ep_ocp_write(tp, 0x1, 0x124, data);
-+}
-+
-+bool rtl_dash_get_ap_ready(struct rtl_dash *dash)
-+{
-+	struct rtl8169_private *tp = dash->tp;
-+
-+	if (r8168ep_ocp_read(tp, 0x124) & BIT(1))
-+		return true;
-+	else
-+		return false;
-+}
-+
-+ssize_t rtl_dash_info(struct rtl_dash *dash, char *buf)
-+{
-+	struct rtl8169_private *tp = dash->tp;
-+	char *dest = buf;
-+	int size;
-+	u32 data;
-+
-+	data = r8168ep_ocp_read(tp, 0x120);
-+	size = sprintf(dest, "FW_VERSION=0x%08X\n", data);
-+	if (size > 0)
-+		dest += size;
-+	else
-+		return size;
-+
-+	data = r8168ep_ocp_read(tp, 0x174);
-+	size = sprintf(dest, "FW_BUILD=0x%08X\n", data);
-+	if (size > 0)
-+		dest += size;
-+	else
-+		return size;
-+
-+	return strlen(buf) + 1;
-+}
-diff --git a/drivers/net/ethernet/realtek/r8169_dash.h b/drivers/net/ethernet/realtek/r8169_dash.h
-index 1e9a54a3df1b..b33f3adeef13 100644
---- a/drivers/net/ethernet/realtek/r8169_dash.h
-+++ b/drivers/net/ethernet/realtek/r8169_dash.h
-@@ -16,6 +16,14 @@ void rtl_dash_up(struct rtl_dash *dash);
- void rtl_dash_down(struct rtl_dash *dash);
- void rtl_dash_cmac_reset_indicate(struct rtl_dash *dash);
- void rtl_dash_interrupt(struct rtl_dash *dash);
-+void rtl_dash_set_ap_ready(struct rtl_dash *dash, bool enable);
-+
-+int rtl_dash_to_fw(struct rtl_dash *dash, u8 *src, int size);
-+int rtl_dash_from_fw(struct rtl_dash *dash, u8 *src, int size);
-+
-+bool rtl_dash_get_ap_ready(struct rtl_dash *dash);
-+
-+ssize_t rtl_dash_info(struct rtl_dash *dash, char *buf);
- 
- struct rtl_dash *rtl_request_dash(struct rtl8169_private *tp,
- 				  struct pci_dev *pci_dev, enum mac_version ver,
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 83da05e5769e..4c8439d3ae4d 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4654,6 +4654,184 @@ static int r8169_phy_connect(struct rtl8169_private *tp)
- 	return 0;
- }
- 
-+static ssize_t
-+information_show(struct device *dev, struct device_attribute *attr, char *buf)
-+{
-+	struct net_device *net = to_net_dev(dev);
-+	struct rtl8169_private *tp = netdev_priv(net);
-+	ssize_t ret;
-+
-+	if (rtnl_lock_killable())
-+		return -EINTR;
-+
-+	ret = rtl_dash_info(tp->rtl_dash, buf);
-+
-+	rtnl_unlock();
-+
-+	return ret;
-+}
-+
-+static DEVICE_ATTR_RO(information);
-+
-+static ssize_t
-+ap_ready_show(struct device *dev, struct device_attribute *attr, char *buf)
-+{
-+	struct net_device *net = to_net_dev(dev);
-+	struct rtl8169_private *tp = netdev_priv(net);
-+	bool enable;
-+
-+	if (rtnl_lock_killable())
-+		return -EINTR;
-+
-+	enable = rtl_dash_get_ap_ready(tp->rtl_dash);
-+
-+	rtnl_unlock();
-+
-+	if (enable)
-+		strcat(buf, "enable\n");
-+	else
-+		strcat(buf, "disable\n");
-+
-+	return (strlen(buf) + 1);
-+}
-+
-+static ssize_t ap_ready_store(struct device *dev, struct device_attribute *attr,
-+			      const char *buf, size_t count)
-+{
-+	struct net_device *net = to_net_dev(dev);
-+	struct rtl8169_private *tp = netdev_priv(net);
-+	ssize_t len = strlen(buf);
-+	bool enable;
-+
-+	if (buf[len - 1] <= ' ')
-+		len--;
-+
-+	/* strlen("enable") = 6, and strlen("disable") = 7 */
-+	if (len != 6 && len != 7)
-+		return -EINVAL;
-+
-+	if (len == 6 && !strncmp(buf, "enable", 6))
-+		enable = true;
-+	else if (len == 7 && !strncmp(buf, "disable", 7))
-+		enable = false;
-+	else
-+		return -EINVAL;
-+
-+	if (rtnl_lock_killable())
-+		return -EINTR;
-+
-+	rtl_dash_set_ap_ready(tp->rtl_dash, enable);
-+
-+	rtnl_unlock();
-+
-+	return count;
-+}
-+
-+static DEVICE_ATTR_RW(ap_ready);
-+
-+static struct attribute *rtl_dash_attrs[] = {
-+	&dev_attr_ap_ready.attr,
-+	&dev_attr_information.attr,
-+	NULL
-+};
-+
-+static ssize_t cmac_data_write(struct file *fp, struct kobject *kobj,
-+			       struct bin_attribute *attr, char *buf,
-+			       loff_t offset, size_t size)
-+{
-+	struct device *dev = kobj_to_dev(kobj);
-+	struct net_device *net = to_net_dev(dev);
-+	struct rtl8169_private *tp = netdev_priv(net);
-+	int ret;
-+
-+	if (IS_ERR_OR_NULL(tp->rtl_dash))
-+		return -ENODEV;
-+
-+	if (size > CMAC_BUF_SIZE)
-+		return -EFBIG;
-+
-+	if (offset)
-+		return -EINVAL;
-+
-+	if (rtnl_lock_killable())
-+		return -EINTR;
-+
-+	ret = rtl_dash_to_fw(tp->rtl_dash, buf, size);
-+
-+	rtnl_unlock();
-+
-+	return ret;
-+}
-+
-+static ssize_t cmac_data_read(struct file *fp, struct kobject *kobj,
-+			      struct bin_attribute *attr, char *buf,
-+			      loff_t offset, size_t size)
-+{
-+	struct device *dev = kobj_to_dev(kobj);
-+	struct net_device *net = to_net_dev(dev);
-+	struct rtl8169_private *tp = netdev_priv(net);
-+	int ret;
-+
-+	if (IS_ERR_OR_NULL(tp->rtl_dash))
-+		return -ENODEV;
-+
-+	if (offset)
-+		return -EINVAL;
-+
-+	if (rtnl_lock_killable())
-+		return -EINTR;
-+
-+	ret = rtl_dash_from_fw(tp->rtl_dash, buf, size);
-+
-+	rtnl_unlock();
-+
-+	return ret;
-+}
-+
-+static BIN_ATTR_RW(cmac_data, CMAC_BUF_SIZE);
-+
-+static struct bin_attribute *rtl_dash_bin_attrs[] = {
-+	&bin_attr_cmac_data,
-+	NULL
-+};
-+
-+static umode_t is_dash_visible(struct kobject *kobj, struct attribute *attr,
-+			       int n)
-+{
-+	struct device *dev = kobj_to_dev(kobj);
-+	struct net_device *net = to_net_dev(dev);
-+	struct rtl8169_private *tp = netdev_priv(net);
-+
-+	if (IS_ERR_OR_NULL(tp->rtl_dash))
-+		return 0;
-+
-+	if (attr == &dev_attr_information.attr)
-+		return 0440;
-+
-+	return 0660;
-+}
-+
-+static umode_t is_dash_bin_visible(struct kobject *kobj,
-+				   struct bin_attribute *attr, int n)
-+{
-+	struct device *dev = kobj_to_dev(kobj);
-+	struct net_device *net = to_net_dev(dev);
-+	struct rtl8169_private *tp = netdev_priv(net);
-+
-+	if (IS_ERR_OR_NULL(tp->rtl_dash))
-+		return 0;
-+
-+	return 0660;
-+}
-+
-+static struct attribute_group rtl_dash_grp = {
-+	.name = "dash",
-+	.is_visible	= is_dash_visible,
-+	.attrs		= rtl_dash_attrs,
-+	.is_bin_visible = is_dash_bin_visible,
-+	.bin_attrs = rtl_dash_bin_attrs,
-+};
-+
- static void rtl8169_dash_release(struct rtl8169_private *tp)
- {
- 	if (tp->dash_type > RTL_DASH_DP) {
-@@ -4717,6 +4895,8 @@ static int rtl8169_close(struct net_device *dev)
- 
- 	phy_disconnect(tp->phydev);
- 
-+	sysfs_remove_group(&dev->dev.kobj, &rtl_dash_grp);
-+
- 	dma_free_coherent(&pdev->dev, R8169_RX_RING_BYTES, tp->RxDescArray,
- 			  tp->RxPhyAddr);
- 	dma_free_coherent(&pdev->dev, R8169_TX_RING_BYTES, tp->TxDescArray,
-@@ -4775,6 +4955,10 @@ static int rtl_open(struct net_device *dev)
- 		if (retval)
- 			goto err_release_fw_2;
- 
-+		retval = sysfs_create_group(&dev->dev.kobj, &rtl_dash_grp);
-+		if (retval < 0)
-+			goto err_release_dash;
-+
- 		tp->irq_mask |= DashCMAC | DashIntr;
- 	}
- 
-@@ -4782,7 +4966,7 @@ static int rtl_open(struct net_device *dev)
- 	retval = request_irq(pci_irq_vector(pdev, 0), rtl8169_interrupt,
- 			     irqflags, dev->name, tp);
- 	if (retval < 0)
--		goto err_release_dash;
-+		goto err_remove_group;
- 
- 	retval = r8169_phy_connect(tp);
- 	if (retval)
-@@ -4798,6 +4982,8 @@ static int rtl_open(struct net_device *dev)
- 
- err_free_irq:
- 	free_irq(pci_irq_vector(pdev, 0), tp);
-+err_remove_group:
-+	sysfs_remove_group(&dev->dev.kobj, &rtl_dash_grp);
- err_release_dash:
- 	rtl8169_dash_release(tp);
- err_release_fw_2:
--- 
-2.31.1
+> As the sched:sched_switch tracepoint args are derived from the kernel,
+> we'd better make it same with the kernel. So the macro TASK_COMM_LEN is
+> converted to type enum, then all the BPF programs can get it through BTF.
+>
+> The BPF program which wants to use TASK_COMM_LEN should include the header
+> vmlinux.h. Regarding the test_stacktrace_map and test_tracepoint, as the
+> type defined in linux/bpf.h are also defined in vmlinux.h, so we don't
+> need to include linux/bpf.h again.
+>
+> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> Acked-by: David Hildenbrand <david@redhat.com>
+> Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+> Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+> Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> Cc: Michal Miroslaw <mirq-linux@rere.qmqm.pl>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Steven Rostedt <rostedt@goodmis.org>
+> Cc: Matthew Wilcox <willy@infradead.org>
+> Cc: David Hildenbrand <david@redhat.com>
+> Cc: Al Viro <viro@zeniv.linux.org.uk>
+> Cc: Kees Cook <keescook@chromium.org>
+> Cc: Petr Mladek <pmladek@suse.com>
+> ---
+>  include/linux/sched.h                                   | 9 +++++++--
+>  tools/testing/selftests/bpf/progs/test_stacktrace_map.c | 6 +++---
+>  tools/testing/selftests/bpf/progs/test_tracepoint.c     | 6 +++---
+>  3 files changed, 13 insertions(+), 8 deletions(-)
+>
+> diff --git a/include/linux/sched.h b/include/linux/sched.h
+> index 78c351e35fec..cecd4806edc6 100644
+> --- a/include/linux/sched.h
+> +++ b/include/linux/sched.h
+> @@ -274,8 +274,13 @@ struct task_group;
+>  
+>  #define get_current_state()	READ_ONCE(current->__state)
+>  
+> -/* Task command name length: */
+> -#define TASK_COMM_LEN			16
+> +/*
+> + * Define the task command name length as enum, then it can be visible to
+> + * BPF programs.
+> + */
+> +enum {
+> +	TASK_COMM_LEN = 16,
+> +};
 
+This breaks the trigger-field-variable-support.tc from the ftrace test
+suite at least on s390:
+
+echo 'hist:keys=next_comm:wakeup_lat=common_timestamp.usecs-$ts0:onmatch(sched.sched_waking).wakeup_latency($wakeup_lat,next_pid,sched.sched_waking.prio,next_comm) if next_comm=="ping"'
+linux/tools/testing/selftests/ftrace/test.d/trigger/inter-event/trigger-field-variable-support.tc: line 15: echo: write error: Invalid argument
+
+I added a debugging line into check_synth_field():
+
+[   44.091037] field->size 16, hist_field->size 16, field->is_signed 1, hist_field->is_signed 0
+
+Note the difference in the signed field.
+
+Regards
+Sven
