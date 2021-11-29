@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA4C246177E
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 15:07:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22625461780
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 15:07:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344135AbhK2OKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 09:10:31 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:16316 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240180AbhK2OI1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 09:08:27 -0500
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4J2nCn47cWz91S4;
-        Mon, 29 Nov 2021 22:04:37 +0800 (CST)
+        id S1348983AbhK2OKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 09:10:35 -0500
+Received: from szxga08-in.huawei.com ([45.249.212.255]:28124 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240286AbhK2OI2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 09:08:28 -0500
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4J2n9K6TsQz1DJm0;
+        Mon, 29 Nov 2021 22:02:29 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
  dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -27,9 +27,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <wangjie125@huawei.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
         <chenhao288@hisilicon.com>
-Subject: [PATCH net-next 09/10] net: hns3: split function hns3_handle_bdinfo()
-Date:   Mon, 29 Nov 2021 22:00:26 +0800
-Message-ID: <20211129140027.23036-10-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 10/10] net: hns3: split function hns3_set_l2l3l4()
+Date:   Mon, 29 Nov 2021 22:00:27 +0800
+Message-ID: <20211129140027.23036-11-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211129140027.23036-1-huangguangbin2@huawei.com>
 References: <20211129140027.23036-1-huangguangbin2@huawei.com>
@@ -46,89 +46,145 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yufeng Mo <moyufeng@huawei.com>
 
-Function hns3_handle_bdinfo() is a bit too long. So add two
-new functions hns3_handle_rx_ts_info() and hns3_handle_rx_vlan_tag(
+Function hns3_set_l2l3l4() is a bit too long. So add two
+new functions hns3_set_l3_type() and hns3_set_l4_csum_length()
 to simplify code and improve code readability.
 
 Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- .../net/ethernet/hisilicon/hns3/hns3_enet.c   | 54 ++++++++++++-------
- 1 file changed, 35 insertions(+), 19 deletions(-)
+ .../net/ethernet/hisilicon/hns3/hns3_enet.c   | 102 ++++++++++--------
+ 1 file changed, 57 insertions(+), 45 deletions(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index fe1f5ead1be4..5fc8f9dc6e3e 100644
+index 5fc8f9dc6e3e..8c7707263f9d 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -4043,6 +4043,39 @@ static void hns3_set_rx_skb_rss_type(struct hns3_enet_ring *ring,
- 	skb_set_hash(skb, rss_hash, rss_type);
+@@ -1355,44 +1355,9 @@ static void hns3_set_outer_l2l3l4(struct sk_buff *skb, u8 ol4_proto,
+ 			       HNS3_TUN_NVGRE);
  }
  
-+static void hns3_handle_rx_ts_info(struct net_device *netdev,
-+				   struct hns3_desc *desc, struct sk_buff *skb,
-+				   u32 bd_base_info)
-+{
-+	if (unlikely(bd_base_info & BIT(HNS3_RXD_TS_VLD_B))) {
-+		struct hnae3_handle *h = hns3_get_handle(netdev);
-+		u32 nsec = le32_to_cpu(desc->ts_nsec);
-+		u32 sec = le32_to_cpu(desc->ts_sec);
-+
-+		if (h->ae_algo->ops->get_rx_hwts)
-+			h->ae_algo->ops->get_rx_hwts(h, skb, nsec, sec);
-+	}
-+}
-+
-+static void hns3_handle_rx_vlan_tag(struct hns3_enet_ring *ring,
-+				    struct hns3_desc *desc, struct sk_buff *skb,
-+				    u32 l234info)
-+{
-+	struct net_device *netdev = ring_to_netdev(ring);
-+
-+	/* Based on hw strategy, the tag offloaded will be stored at
-+	 * ot_vlan_tag in two layer tag case, and stored at vlan_tag
-+	 * in one layer tag case.
-+	 */
-+	if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX) {
-+		u16 vlan_tag;
-+
-+		if (hns3_parse_vlan_tag(ring, desc, l234info, &vlan_tag))
-+			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
-+					       vlan_tag);
-+	}
-+}
-+
- static int hns3_handle_bdinfo(struct hns3_enet_ring *ring, struct sk_buff *skb)
+-static int hns3_set_l2l3l4(struct sk_buff *skb, u8 ol4_proto,
+-			   u8 il4_proto, u32 *type_cs_vlan_tso,
+-			   u32 *ol_type_vlan_len_msec)
++static void hns3_set_l3_type(struct sk_buff *skb, union l3_hdr_info l3,
++			     u32 *type_cs_vlan_tso)
  {
- 	struct net_device *netdev = ring_to_netdev(ring);
-@@ -4065,26 +4098,9 @@ static int hns3_handle_bdinfo(struct hns3_enet_ring *ring, struct sk_buff *skb)
- 	ol_info = le32_to_cpu(desc->rx.ol_info);
- 	csum = le16_to_cpu(desc->csum);
- 
--	if (unlikely(bd_base_info & BIT(HNS3_RXD_TS_VLD_B))) {
--		struct hnae3_handle *h = hns3_get_handle(netdev);
--		u32 nsec = le32_to_cpu(desc->ts_nsec);
--		u32 sec = le32_to_cpu(desc->ts_sec);
+-	unsigned char *l2_hdr = skb->data;
+-	u32 l4_proto = ol4_proto;
+-	union l4_hdr_info l4;
+-	union l3_hdr_info l3;
+-	u32 l2_len, l3_len;
 -
--		if (h->ae_algo->ops->get_rx_hwts)
--			h->ae_algo->ops->get_rx_hwts(h, skb, nsec, sec);
--	}
-+	hns3_handle_rx_ts_info(netdev, desc, skb, bd_base_info);
- 
--	/* Based on hw strategy, the tag offloaded will be stored at
--	 * ot_vlan_tag in two layer tag case, and stored at vlan_tag
--	 * in one layer tag case.
--	 */
--	if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX) {
--		u16 vlan_tag;
+-	l4.hdr = skb_transport_header(skb);
+-	l3.hdr = skb_network_header(skb);
 -
--		if (hns3_parse_vlan_tag(ring, desc, l234info, &vlan_tag))
--			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
--					       vlan_tag);
+-	/* handle encapsulation skb */
+-	if (skb->encapsulation) {
+-		/* If this is a not UDP/GRE encapsulation skb */
+-		if (!(ol4_proto == IPPROTO_UDP || ol4_proto == IPPROTO_GRE)) {
+-			/* drop the skb tunnel packet if hardware don't support,
+-			 * because hardware can't calculate csum when TSO.
+-			 */
+-			if (skb_is_gso(skb))
+-				return -EDOM;
+-
+-			/* the stack computes the IP header already,
+-			 * driver calculate l4 checksum when not TSO.
+-			 */
+-			return skb_checksum_help(skb);
+-		}
+-
+-		hns3_set_outer_l2l3l4(skb, ol4_proto, ol_type_vlan_len_msec);
+-
+-		/* switch to inner header */
+-		l2_hdr = skb_inner_mac_header(skb);
+-		l3.hdr = skb_inner_network_header(skb);
+-		l4.hdr = skb_inner_transport_header(skb);
+-		l4_proto = il4_proto;
 -	}
-+	hns3_handle_rx_vlan_tag(ring, desc, skb, l234info);
+-
+ 	if (l3.v4->version == 4) {
+ 		hns3_set_field(*type_cs_vlan_tso, HNS3_TXD_L3T_S,
+ 			       HNS3_L3T_IPV4);
+@@ -1406,15 +1371,11 @@ static int hns3_set_l2l3l4(struct sk_buff *skb, u8 ol4_proto,
+ 		hns3_set_field(*type_cs_vlan_tso, HNS3_TXD_L3T_S,
+ 			       HNS3_L3T_IPV6);
+ 	}
++}
  
- 	if (unlikely(!desc->rx.pkt_len || (l234info & (BIT(HNS3_RXD_TRUNCAT_B) |
- 				  BIT(HNS3_RXD_L2E_B))))) {
+-	/* compute inner(/normal) L2 header size, defined in 2 Bytes */
+-	l2_len = l3.hdr - l2_hdr;
+-	hns3_set_field(*type_cs_vlan_tso, HNS3_TXD_L2LEN_S, l2_len >> 1);
+-
+-	/* compute inner(/normal) L3 header size, defined in 4 Bytes */
+-	l3_len = l4.hdr - l3.hdr;
+-	hns3_set_field(*type_cs_vlan_tso, HNS3_TXD_L3LEN_S, l3_len >> 2);
+-
++static int hns3_set_l4_csum_length(struct sk_buff *skb, union l4_hdr_info l4,
++				   u32 l4_proto, u32 *type_cs_vlan_tso)
++{
+ 	/* compute inner(/normal) L4 header size, defined in 4 Bytes */
+ 	switch (l4_proto) {
+ 	case IPPROTO_TCP:
+@@ -1460,6 +1421,57 @@ static int hns3_set_l2l3l4(struct sk_buff *skb, u8 ol4_proto,
+ 	return 0;
+ }
+ 
++static int hns3_set_l2l3l4(struct sk_buff *skb, u8 ol4_proto,
++			   u8 il4_proto, u32 *type_cs_vlan_tso,
++			   u32 *ol_type_vlan_len_msec)
++{
++	unsigned char *l2_hdr = skb->data;
++	u32 l4_proto = ol4_proto;
++	union l4_hdr_info l4;
++	union l3_hdr_info l3;
++	u32 l2_len, l3_len;
++
++	l4.hdr = skb_transport_header(skb);
++	l3.hdr = skb_network_header(skb);
++
++	/* handle encapsulation skb */
++	if (skb->encapsulation) {
++		/* If this is a not UDP/GRE encapsulation skb */
++		if (!(ol4_proto == IPPROTO_UDP || ol4_proto == IPPROTO_GRE)) {
++			/* drop the skb tunnel packet if hardware don't support,
++			 * because hardware can't calculate csum when TSO.
++			 */
++			if (skb_is_gso(skb))
++				return -EDOM;
++
++			/* the stack computes the IP header already,
++			 * driver calculate l4 checksum when not TSO.
++			 */
++			return skb_checksum_help(skb);
++		}
++
++		hns3_set_outer_l2l3l4(skb, ol4_proto, ol_type_vlan_len_msec);
++
++		/* switch to inner header */
++		l2_hdr = skb_inner_mac_header(skb);
++		l3.hdr = skb_inner_network_header(skb);
++		l4.hdr = skb_inner_transport_header(skb);
++		l4_proto = il4_proto;
++	}
++
++	hns3_set_l3_type(skb, l3, type_cs_vlan_tso);
++
++	/* compute inner(/normal) L2 header size, defined in 2 Bytes */
++	l2_len = l3.hdr - l2_hdr;
++	hns3_set_field(*type_cs_vlan_tso, HNS3_TXD_L2LEN_S, l2_len >> 1);
++
++	/* compute inner(/normal) L3 header size, defined in 4 Bytes */
++	l3_len = l4.hdr - l3.hdr;
++	hns3_set_field(*type_cs_vlan_tso, HNS3_TXD_L3LEN_S, l3_len >> 2);
++
++	return hns3_set_l4_csum_length(skb, l4, l4_proto, type_cs_vlan_tso);
++}
++
+ static int hns3_handle_vtags(struct hns3_enet_ring *tx_ring,
+ 			     struct sk_buff *skb)
+ {
 -- 
 2.33.0
 
