@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8ABF460C86
+	by mail.lfdr.de (Postfix) with ESMTP id 12C11460C84
 	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 03:02:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242110AbhK2CEL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Nov 2021 21:04:11 -0500
-Received: from mail-bn8nam12on2136.outbound.protection.outlook.com ([40.107.237.136]:4161
+        id S240621AbhK2CDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Nov 2021 21:03:41 -0500
+Received: from mail-bn8nam12on2099.outbound.protection.outlook.com ([40.107.237.99]:52576
         "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235039AbhK2CCJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 28 Nov 2021 21:02:09 -0500
+        id S231578AbhK2CBk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 28 Nov 2021 21:01:40 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=J8eNsSZDdzz+mQ3HM4l00JZsJWKFF2bCzi2eKHjGxxvi/ijmsyqEvZBmH6bIXiyLPOSP+4pj/gBZsJaBaHk9kEnLCSpJEfC2L58P3HwswwkXFS0tpLPZwR5h/kh4MBP4MhvT4BQXbufs/PD8sRgkF2Ecnnn97SXAq8BObaFOFlWVL003W2L1Q/gjtVz9E5bu6GrJd65yOXVBN9dYPOvCONEGgmePZLwweNr/0PH21djsDhPK1I6gB7XGvGLtjtCWEVu7/pgTsaMNrAVPKICQZnA+J7EHDg6+q9n0hVGTh4Xk1HXELC7VHVkq8K4TUEE2Nz74S5L1CT8sGiIQm9ptkw==
+ b=SRGLc8mD2x0yiiV1mcX1eW3YLHtP0guY/4Nt11yr+8+03TAgag6UVZNuYf4XH9BooLeYjyZim5pLoOkkBHvUIfpaxi5ZJsaItDy530LQT2YGKhkueR4tcrXFxLsfNeweWWf52C9eyTo3R8Jya3EWe2CdX9dzffGTnY2Vi8g1GcyQXdSUtR+oKzbAR8z4/JpSrnfg/Edm4UcyYiAibyie8CKV5NhyXNxeBjGt6scAsiTqIBgvpUI95+2SfIJYEpg3KAkHRNj3o8MzkjSu+ri9GhmcapFh4QFZlUVpuF/8da1eL7E9Nj9CrfHWf31p/fjapoDNyJWoXpXjfLdGrG01Mg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Sl7WpUP6f49tMax/aIybtCiXIVuc7nxdPBDYWsOAWa8=;
- b=OVpTFsQx4vWVLXZzWyOsA9uFVh4/z+Zxc7jK2EliybfWar9Ag1j10vd8dQSE+Q35GPGY+FBInIRJhWjWwaeJO8WZmTIlbGGw2s9S9fEf+fXSbwBAGW9hFWRQT3DTVGyWikokmu8CmNE6cc2W2FKDRVI3VOSnOLG1+9NyG8uB0LHvBOKslmagbNSNZR1UjuMsu+F//j4WeEjcU7yaoClccDzSgq1fhdFu2/3OUAH0lCOCWzO1kCUt5235v85YS6cJe4TOBD5D2QhCrcyw/+4b1jhMbiAT923tEGN9zQ3krCSFxkOXPUlwmCG+iM+sjRsyrLlD3d3HIVnDSBjxtIIe/g==
+ bh=G3lKtXASmqFGMg7xuzV0I0WpD4SBZ2FZiF9Gqqe9yiI=;
+ b=IRUJle273W46uvdbFPhitUiGlsu5tmXMynOMsTFMTFHiDi68Pdrfru6pd6NwkOzIA7/YjTiTQAJ7xVGWaIXhJk0C5zmWyYQGth9fDgn0Y0xtvRQHNsAciI3jfUSxo9n/BeLMrXHnLYfxJ0l+UbKiaNsaLBtVbwzSTsqq8s81vigX4arO0KCQPeFLEjHVojUshvKsj3qmpBWS+8KMbJVve4JxkUP+nOK+UGZLOsuk54DaIo8OaHeX3DwfeMT6kbVxmox59gSZDKs0syD7d+q2cwE9jW0JwBtMPmbuRtLKXOayqyHGzpqb+8HQ+3rmCi8Uh2S+C9TMUtZZc4nSKgi2yQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=in-advantage.com; dmarc=pass action=none
  header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Sl7WpUP6f49tMax/aIybtCiXIVuc7nxdPBDYWsOAWa8=;
- b=AOs83TJDPGjLN43BgYnw2ThDPixqntJ9mJEHFrT8cGwr0821eLNps0hXxByzN8k5l8hmTBfgMszLdw1PilVPQs+VPZE/BZe0UUpDLY4Zq0yVMXlDSTJ4Rg7jHq3MqvFSrUKsanQvdY6QyvfG8eG8NlmUFHBje/nsrqu4EOXOKdU=
+ bh=G3lKtXASmqFGMg7xuzV0I0WpD4SBZ2FZiF9Gqqe9yiI=;
+ b=eFLJaq5xEB5D/GweSBrwrMzWpHJvSpigcNNFg0XCp5z7zsgyOrC5piZEP65aoZBJvtHECJsPWF9rIfhn6xh4MLyjCgUwBrMcSDaJDs75TqGAgt4zr0BeTKwc5ktvHJvX7xmHFHFj3FAKIHkCjnYidUvEgFzNCgPE/TYkI/2zdNw=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=in-advantage.com;
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
  (2603:10b6:301:35::37) by MWHPR10MB1341.namprd10.prod.outlook.com
  (2603:10b6:300:20::9) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.24; Mon, 29 Nov
- 2021 01:57:47 +0000
+ 2021 01:57:48 +0000
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
  ([fe80::6430:b20:8805:cd9f]) by MWHPR1001MB2351.namprd10.prod.outlook.com
  ([fe80::6430:b20:8805:cd9f%5]) with mapi id 15.20.4734.023; Mon, 29 Nov 2021
- 01:57:47 +0000
+ 01:57:48 +0000
 From:   Colin Foster <colin.foster@in-advantage.com>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
@@ -50,105 +50,335 @@ Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>
-Subject: [PATCH v3 net-next 0/3] update seville to use shared MDIO driver
-Date:   Sun, 28 Nov 2021 17:57:34 -0800
-Message-Id: <20211129015737.132054-1-colin.foster@in-advantage.com>
+Subject: [PATCH v3 net-next 1/3] net: mdio: mscc-miim: convert to a regmap implementation
+Date:   Sun, 28 Nov 2021 17:57:35 -0800
+Message-Id: <20211129015737.132054-2-colin.foster@in-advantage.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20211129015737.132054-1-colin.foster@in-advantage.com>
+References: <20211129015737.132054-1-colin.foster@in-advantage.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: MW4PR04CA0050.namprd04.prod.outlook.com
  (2603:10b6:303:6a::25) To MWHPR1001MB2351.namprd10.prod.outlook.com
  (2603:10b6:301:35::37)
 MIME-Version: 1.0
-Received: from localhost.localdomain (67.185.175.147) by MW4PR04CA0050.namprd04.prod.outlook.com (2603:10b6:303:6a::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.20 via Frontend Transport; Mon, 29 Nov 2021 01:57:46 +0000
+Received: from localhost.localdomain (67.185.175.147) by MW4PR04CA0050.namprd04.prod.outlook.com (2603:10b6:303:6a::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.20 via Frontend Transport; Mon, 29 Nov 2021 01:57:47 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b8da7fba-a680-4baf-2dad-08d9b2dba41c
+X-MS-Office365-Filtering-Correlation-Id: 6bf049fd-f75a-4425-01a9-08d9b2dba4a1
 X-MS-TrafficTypeDiagnostic: MWHPR10MB1341:
-X-Microsoft-Antispam-PRVS: <MWHPR10MB1341AB396B0CFEB333F3BC6EA4669@MWHPR10MB1341.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-Microsoft-Antispam-PRVS: <MWHPR10MB134153797236B3C6823B0729A4669@MWHPR10MB1341.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:923;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: aJbORb0I5uQuC9ytvDwvhDY1JE/NAsnIhlmhVSeAfV1ZGF8LB3ImytloWGuSJruuacqzG40KVEmkxGB5KY8/vh7sDljMSn98KM3mQvb6EsHH+yLMGMrerlqiWdGQk0NSQi7shiLF2fl8LvEsMc+SzeVxmCg6vigZxdws/AwYL1xYkiy28FKrJdXBHCoefZZwVIc1Snzb/hjT7uJb/794Q6CJXRIXIZJlNpWXLtPNAePTdssyQxvgzVWgxiqr6bTzjetwIz7vbmW2tmNQQSwUrvcHLzhh9g6QmeUcTsiLazsSzyDdQO3LwjKbfUO5SYhMQJ1RRRQ0PrtdsTaYHA2TWvf6VoADGszvQR6oK8xLkejrI+JeY+AxPdem6Epw2k2CWPv8njEY2WNgFJD+XmkF7UQdC9RtBKgIEEkNGFz2L+BKoGj/XCHC7ME499Mo37GCoTrXUw/vfE2NOEPOZCqSC7dUm0ebXYxxZM+7nXFTmfs7VNuccH3h5EAJi4IvVHIdDXhrgxjPhzCltCJJCvM7yKn6chhlXni9fNP+Qz+IUsVow5OTqB5Eat3kTCR6rlg7fpt4aWcTV21+SqpXVOFalp8lmb4en5+TZ4CdjV0nl8EImaOb8rQKGsgKcj1pSfSpFOvBDi6KB7UAwAlV6xkQE+DZX5SpMk8RpEBoT+LJTr48IBkM2N6dllDY5lYI7oSlgIPUZxEKyG9B0EZutgJMdg==
+X-Microsoft-Antispam-Message-Info: az8jSekGbqESnzYAUIBYu1rv+AstonqhT18W45em3dgih4Lxk3FZk8u6avMc2TblaxkvucAv9SXr30AgkmcrmWS+I8xu5T/AiNr1LPz7YPgT+50+gAKtLmqsaR0xF9GZk6qoukDOt6j5CQEIr0LA67Eyf38NRpvwRRiIgPMC7RmMbA3LpIZ0x3JY8J3wtm2OyO/1uIsduNOv9pJLfg7RC04F2BVLOzPXedLmEzedSknqoU1224/PXKv/gYb9WHoARbVqssvS9mUpaZB62gnmcfiPkWh109yD1Vn8ql/6UvrDSVnoF1Nr5RHUZfwJEJKj5SyydWvT44XwOiLrs0T5ORE1GAyB1E0W/CsrpSVk0bF+lp9veG089HYyst4qLsqdseKjrxum1rxS21nh+A63aUwyWg667/7wL4H9wlDtpAJdm90hGlbuLdgO0lBaEOpPMH+wERG+PE76bhIOe1HKkpG3xa0hmI7ieL52lYVgXJ3xuaI+jL7B2DecNZO8775lWV3vgrzcFRGtnzp3XdZ7rvEcoUjBtmreEnGuyET+bI6t/dQGq9yCuKITTH/Pb/b9zYZ1C2LNi27SwJSt8gYsEvGEtXWd73i8pV4HNsqqbd90ryp5P29pOfM3L/P0GfzljbR8lw5XfZhleNkV3BQkEa1B9jfQVlgO/ZQw91hlplRuRmMQ+j8l3RrzPuLDRnezbIzmu2YIdKp8Jnrkvo07bw==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(39830400003)(346002)(396003)(136003)(376002)(366004)(26005)(66556008)(66476007)(66946007)(38100700002)(38350700002)(186003)(8676002)(316002)(83380400001)(6506007)(8936002)(2906002)(508600001)(36756003)(6486002)(54906003)(4326008)(5660300002)(52116002)(6512007)(44832011)(7416002)(6666004)(956004)(2616005)(86362001)(1076003);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?IZ4EBXYrE0q4mC4mKiHerrrA1necXevku2FXI5LvPT9+FVUj39WG7GTp+dlj?=
- =?us-ascii?Q?Z3PJ9VS+0ZfFFfpq2/NLapDx3jqSNlm0f548ZhTNdKWLxH1eMtlI2f06XzlK?=
- =?us-ascii?Q?RtujaBZzygof+MHYBf+rzECx2BLyHnPLe+9JehfjCg0O5EheyWGlJxSmEOOK?=
- =?us-ascii?Q?YGNNI96KbvDdjLn1DAKyyX+SFgenELAhIlMOAXVLfNO2eDrlD4rcq7biyWkF?=
- =?us-ascii?Q?wi7Y2UmsK1dKBnXTjOARqzdIeII7ybUJm0ls6Xa+fNTIZ5UBn6HZ6rJNOhxP?=
- =?us-ascii?Q?AkSu0a4E3etZDLNfcx3nxg2B0VfFCX7oBr+BtFnehuobOp61JYjQvuMJvKeJ?=
- =?us-ascii?Q?dpReKolagZMpUSedtW/1bsR6QToBgPyS8k6BsILvfKjFFgI+mH66x9XJT5hJ?=
- =?us-ascii?Q?7AMYxCEw8tqVjuM9L82I5vxOTGJdKjqlgGDBuKGgrKb02uCaa9JKj75S9Dhv?=
- =?us-ascii?Q?8fXKOgMg1XE+2GB9i6scWfYVF73Md3Lqt0yaXXzj7YIk2oOBvI5SxDBNeeTl?=
- =?us-ascii?Q?nDXPdmK/hi05JhfbDWPNsQVKYjNfBQDj9I3a1Y+xMcIaG+/4BaaAbgTkChw6?=
- =?us-ascii?Q?WZTtUu9YfGWiXtQOwTSWKG87w3D9GCFgBQOLpyFKDhk0VMOfx4Qpnkgrsjod?=
- =?us-ascii?Q?XXKSr8oLCovoGuN6L4DW/YYVxzZ8tPEMwPjIbGQxEzPiMRsxsVJC2mVpPoiL?=
- =?us-ascii?Q?JaxR1fYZSGKhYzN7YRqG15GkO2eoh/M37TZRy5QtEhGyRIUogCw0sV4s31i9?=
- =?us-ascii?Q?bQSbxMlZDPBJp/RMyLFYWoGNkfyqRZ2FqGOKpmv4QDN20bgFP6ljQFLm1U6a?=
- =?us-ascii?Q?kIKg8XepYESUJgVvzNWJemGjqd3rlax8jDLcpOApQGgAzHNCkanCyLtVR2Of?=
- =?us-ascii?Q?t1ospB8yYo7Lxul0QCdTsjzvwz8EZZwN2vY8MhT6FFIOhvzbYXCPKSs5LKAE?=
- =?us-ascii?Q?on5Kye+UL5nC238AeRdzu3JbOGq5uRIWpFyxD01cdnAAxdYfxoCbwX/x5U5d?=
- =?us-ascii?Q?gKDDk5fysA2FKhQhUD5GUHjP7ZWuy4aGwrSUIV7cNOgoOLjBQtFeFXONf692?=
- =?us-ascii?Q?O/EKB5zlCjHFvLexmqu43dBleZNv+iQ31Xz9E+ZZB5WYIEbBkd/zg/ahx9XX?=
- =?us-ascii?Q?8hEIgNyz9wOhRUnKamVut050y9UmWG8ZEXJdalmrnJxGu81debRQT03HZwB2?=
- =?us-ascii?Q?LGQ7cLKy3JCKmIozrgKuPK/KVwpSNVXEWlJx0fmjezLiw2LonEzsAt3M531Z?=
- =?us-ascii?Q?4l/0jF5u7BbqYLdPmPM8tb/DVDcpQ8TmrMscHUsGC5/V7fFUVE8BI5+du5wx?=
- =?us-ascii?Q?NUwGh/6TmchzXdGjBI0wZEa08BsIUdfbpt8yHZycn8ci+cemce0ReLKMiHQq?=
- =?us-ascii?Q?siGDUfpOD4yFM38uNhXSafLz5aciPaOLle6FBI0uS3vHRFbYDVtv3wv14x6w?=
- =?us-ascii?Q?v1xy8GevYzlQ/a3Z8FfbxJhBrxEFmcgpHx3fujYz36ZCaerMpixRJf/uu0rf?=
- =?us-ascii?Q?JdRzzkbZrdHYe97+Fd67zhavWoKWwedFzunQsvatTUze1+1nJkLbwqeO1oCg?=
- =?us-ascii?Q?sygTMIsUa5Q7ce2dmI69VBwpNlQv3rRBXLwQn7y33RMYla/yPdJ9o/HL3yBD?=
- =?us-ascii?Q?sOhOiinof/+YkvQHGZYnrHDZtzDoi0ziyE3MG2M3eR2vm34UBYrMF5unqjI1?=
- =?us-ascii?Q?DKq5cQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Sk38gO0wlbgJtSq4UckL6HJt60/TrjKp8ROv+ejXd3V+wVbNMtVepMRtYj0/?=
+ =?us-ascii?Q?ceErxn4x+ndqL4UciEuIYDUOBM9DuKEDdw0kQCJI7YIg7J+vjFtLUYmomRVU?=
+ =?us-ascii?Q?cMUomfQ14uIaS4qeeW7rEA30zMGAc/z//WJI8B3bfqb21+uqKVB7hYArsrwz?=
+ =?us-ascii?Q?Xpny27aos3CQihZdUwV/J1bmSLGOPgE+9dQMEb7h50tOnEf2uXtu0bnXVCAS?=
+ =?us-ascii?Q?VsTQAvLGBSvydwPdO5iSXcupLFH9vefTWsSKSzfRts9E44ztWmutSBoXuKvM?=
+ =?us-ascii?Q?WchL7rATN601VyfUyqrD0ab8aznrBPWdWIF+C7e0JFNJIwOIahNOXgZj4zf5?=
+ =?us-ascii?Q?9Ncps6cOWuqSNMGULxKDHoTni3oSFaL8npy6Si8n5UPcsBLnv65UIufzL4NX?=
+ =?us-ascii?Q?xB29Qj9I+J6VqQ8b1IMhfdbCrJRbQSs6cAONX/W6xj4PBTcG0yEwI1XkewTt?=
+ =?us-ascii?Q?d4tOl2zXPHnCB+nJRgFYtNQM3md5MOEK3KsTHyr6/YRY5jDb/tnjiZOo9qet?=
+ =?us-ascii?Q?BhVN/hsTmtAYntwFZtvvP9Jqs4b5p9iGM9z4b/lTLefPrQqSnJKTwWGNaEEg?=
+ =?us-ascii?Q?osPFv87DFb+zz2WAqXfBgo9eipZnLW1aUmhrxplYY1mv8rE4+nj2eGqB3ko8?=
+ =?us-ascii?Q?n/d2oB4oDFdGJu/TqfvKHbxuV7zh6YNtr9bAE+JARkS0B3ggCV86YUZSKgWR?=
+ =?us-ascii?Q?jdzEg0AXfL6rH4fsltdbORgRpCS0/9OSlKUP18DqUml//mvPnj6ii12LKDOB?=
+ =?us-ascii?Q?lpMU/sk5aJLI9q3EPuUi5FpmL8l+FEbijgt//M72/Y5dUNIDVfCb20tD/YRi?=
+ =?us-ascii?Q?XXzaq1zxf+ufxuSUMlR7zh55kFA8CanMQ8vpEchXWFljXtuLsMb/jfVs2ppb?=
+ =?us-ascii?Q?BURSJoLZdvsQTYxM0mf7vKhq3U3hN30beleqrPyGwhytHvb682Uc45ciGuBF?=
+ =?us-ascii?Q?k3rg8Vk7bxZJM9yMCtsSLZSYlIP4HFiTeY1plX9PblbdhQlGw+KuUpo5f3Ba?=
+ =?us-ascii?Q?brf9jMDomODsTV1W2cQcB9Yq/6dX2ls7bjS21zg67T49qF0w2CWbGlNBS0Ts?=
+ =?us-ascii?Q?zGKhe6/tpATEVqQ/pQ8/1IyQCV3sdx+LjuKhgaM9bWekVSTrBe0qwQM9MR3R?=
+ =?us-ascii?Q?WJQkLjWZfISoo5by+8C9VOs3nDIr+Y99KrWRAaB4qUnZscbB+rKhO2W0l980?=
+ =?us-ascii?Q?SAlkjDXojGZn1kvVDOsP5Qo4xw/Uoy2JBeOdS4HYc64S7T5kYiUOimWVCQfA?=
+ =?us-ascii?Q?Fkph2cgUE9U3JItoyOPOZRQPazqfxFGg26pPJXCc3TxZrzb6eSutRVXX98gb?=
+ =?us-ascii?Q?+n6dYQr8+qm8jUPBWIMXigiQBXIbakLhesj4bEFhkd8ir1XBBS5epES1kqIq?=
+ =?us-ascii?Q?G2tYTyuD9UDBmGe2n48pdRF9XhvOJZbMMgNYgoUvmYzVmYmbLbNuJ6va3dSP?=
+ =?us-ascii?Q?VQkDDWQutfpCPe/qf9h7rd0FvXig3XuoH4oejFYg1Wg2H9JXMvIgYq6Rm8Fo?=
+ =?us-ascii?Q?Yz/xLl5CPLnRGJle0AurdpjJ9NMdYQIpAMWXFypImYj+qZBU4T/pQn0DuQIc?=
+ =?us-ascii?Q?bzpRO/ai1TnGwE4v3fYjD3CeS4OlgA+rKJFqg2wFN4YHbdDRDp69N/rja9NG?=
+ =?us-ascii?Q?ZkXxv5HetkFwnWQE+pTrlCA+jB58PBtUdNHJLl86bQ0dqJdwhqTyH5kIEuoz?=
+ =?us-ascii?Q?zVBXFw=3D=3D?=
 X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b8da7fba-a680-4baf-2dad-08d9b2dba41c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6bf049fd-f75a-4425-01a9-08d9b2dba4a1
 X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Nov 2021 01:57:47.3496
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Nov 2021 01:57:48.1211
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qHtAqvAGUZ6I48sWnWHkQG0mAYdKIEOXb6IRlbH9yObDWZ0j6LEROvv5CvVYYa4ZFMQv6BT1gwv2/hJJrnQnU4MqtKeR6PhsrSr2JywRhQY=
+X-MS-Exchange-CrossTenant-UserPrincipalName: pXLUpPk65hJY8kOc0qUBjwDJrW2tr2tT43zDKOjdShJHo+ojiPxUijuk0AthzmkxucI4TJICPdCNB2V9w8sZJcKueNSQqq9fX+W4ueifHoc=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB1341
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set exposes and utilizes the shared MDIO bus in
-drivers/net/mdio/msio-mscc-miim.c
+Utilize regmap instead of __iomem to perform indirect mdio access. This
+will allow for custom regmaps to be used by way of the mscc_miim_setup
+function.
 
-v3: 
-    * Fix errors using uninitilized "dev" inside the probe function.
-    * Remove phy_regmap from the setup function, since it currently
-    isn't used
-    * Remove GCB_PHY_PHY_CFG definition from ocelot.h - it isn't used
-    yet...
+Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/mdio/mdio-mscc-miim.c | 163 ++++++++++++++++++++++--------
+ 1 file changed, 121 insertions(+), 42 deletions(-)
 
-v2:
-    * Error handling (thanks Andrew Lunn)
-    * Fix logic errors calling mscc_miim_setup during patch 1/3 (thanks
-    Jakub Kicinski)
-    * Remove unnecessary felix_mdio file (thanks Vladimir Oltean)
-    * Pass NULL to mscc_miim_setup instead of GCB_PHY_PHY_CFG, since the
-    phy reset isn't handled at that point of the Seville driver (patch
-    3/3)
-
-
-Colin Foster (3):
-  net: mdio: mscc-miim: convert to a regmap implementation
-  net: dsa: ocelot: seville: utilize of_mdiobus_register
-  net: dsa: ocelot: felix: utilize shared mscc-miim driver for indirect
-    MDIO access
-
- drivers/net/dsa/ocelot/Kconfig           |   1 +
- drivers/net/dsa/ocelot/seville_vsc9953.c | 103 ++-----------
- drivers/net/mdio/mdio-mscc-miim.c        | 181 +++++++++++++++++------
- include/linux/mdio/mdio-mscc-miim.h      |  19 +++
- 4 files changed, 168 insertions(+), 136 deletions(-)
- create mode 100644 include/linux/mdio/mdio-mscc-miim.h
-
+diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
+index 17f98f609ec8..e016b32ad208 100644
+--- a/drivers/net/mdio/mdio-mscc-miim.c
++++ b/drivers/net/mdio/mdio-mscc-miim.c
+@@ -14,6 +14,7 @@
+ #include <linux/of_mdio.h>
+ #include <linux/phy.h>
+ #include <linux/platform_device.h>
++#include <linux/regmap.h>
+ 
+ #define MSCC_MIIM_REG_STATUS		0x0
+ #define		MSCC_MIIM_STATUS_STAT_PENDING	BIT(2)
+@@ -35,37 +36,49 @@
+ #define MSCC_PHY_REG_PHY_STATUS	0x4
+ 
+ struct mscc_miim_dev {
+-	void __iomem *regs;
+-	void __iomem *phy_regs;
++	struct regmap *regs;
++	struct regmap *phy_regs;
+ };
+ 
+ /* When high resolution timers aren't built-in: we can't use usleep_range() as
+  * we would sleep way too long. Use udelay() instead.
+  */
+-#define mscc_readl_poll_timeout(addr, val, cond, delay_us, timeout_us)	\
+-({									\
+-	if (!IS_ENABLED(CONFIG_HIGH_RES_TIMERS))			\
+-		readl_poll_timeout_atomic(addr, val, cond, delay_us,	\
+-					  timeout_us);			\
+-	readl_poll_timeout(addr, val, cond, delay_us, timeout_us);	\
++#define mscc_readx_poll_timeout(op, addr, val, cond, delay_us, timeout_us)\
++({									  \
++	if (!IS_ENABLED(CONFIG_HIGH_RES_TIMERS))			  \
++		readx_poll_timeout_atomic(op, addr, val, cond, delay_us,  \
++					  timeout_us);			  \
++	readx_poll_timeout(op, addr, val, cond, delay_us, timeout_us);	  \
+ })
+ 
+-static int mscc_miim_wait_ready(struct mii_bus *bus)
++static int mscc_miim_status(struct mii_bus *bus)
+ {
+ 	struct mscc_miim_dev *miim = bus->priv;
++	int val, ret;
++
++	ret = regmap_read(miim->regs, MSCC_MIIM_REG_STATUS, &val);
++	if (ret < 0) {
++		WARN_ONCE(1, "mscc miim status read error %d\n", ret);
++		return ret;
++	}
++
++	return val;
++}
++
++static int mscc_miim_wait_ready(struct mii_bus *bus)
++{
+ 	u32 val;
+ 
+-	return mscc_readl_poll_timeout(miim->regs + MSCC_MIIM_REG_STATUS, val,
++	return mscc_readx_poll_timeout(mscc_miim_status, bus, val,
+ 				       !(val & MSCC_MIIM_STATUS_STAT_BUSY), 50,
+ 				       10000);
+ }
+ 
+ static int mscc_miim_wait_pending(struct mii_bus *bus)
+ {
+-	struct mscc_miim_dev *miim = bus->priv;
+ 	u32 val;
+ 
+-	return mscc_readl_poll_timeout(miim->regs + MSCC_MIIM_REG_STATUS, val,
++	return mscc_readx_poll_timeout(mscc_miim_status, bus, val,
+ 				       !(val & MSCC_MIIM_STATUS_STAT_PENDING),
+ 				       50, 10000);
+ }
+@@ -80,15 +93,27 @@ static int mscc_miim_read(struct mii_bus *bus, int mii_id, int regnum)
+ 	if (ret)
+ 		goto out;
+ 
+-	writel(MSCC_MIIM_CMD_VLD | (mii_id << MSCC_MIIM_CMD_PHYAD_SHIFT) |
+-	       (regnum << MSCC_MIIM_CMD_REGAD_SHIFT) | MSCC_MIIM_CMD_OPR_READ,
+-	       miim->regs + MSCC_MIIM_REG_CMD);
++	ret = regmap_write(miim->regs, MSCC_MIIM_REG_CMD, MSCC_MIIM_CMD_VLD |
++			   (mii_id << MSCC_MIIM_CMD_PHYAD_SHIFT) |
++			   (regnum << MSCC_MIIM_CMD_REGAD_SHIFT) |
++			   MSCC_MIIM_CMD_OPR_READ);
++
++	if (ret < 0) {
++		WARN_ONCE(1, "mscc miim write cmd reg error %d\n", ret);
++		goto out;
++	}
+ 
+ 	ret = mscc_miim_wait_ready(bus);
+ 	if (ret)
+ 		goto out;
+ 
+-	val = readl(miim->regs + MSCC_MIIM_REG_DATA);
++	ret = regmap_read(miim->regs, MSCC_MIIM_REG_DATA, &val);
++
++	if (ret < 0) {
++		WARN_ONCE(1, "mscc miim read data reg error %d\n", ret);
++		goto out;
++	}
++
+ 	if (val & MSCC_MIIM_DATA_ERROR) {
+ 		ret = -EIO;
+ 		goto out;
+@@ -109,12 +134,14 @@ static int mscc_miim_write(struct mii_bus *bus, int mii_id,
+ 	if (ret < 0)
+ 		goto out;
+ 
+-	writel(MSCC_MIIM_CMD_VLD | (mii_id << MSCC_MIIM_CMD_PHYAD_SHIFT) |
+-	       (regnum << MSCC_MIIM_CMD_REGAD_SHIFT) |
+-	       (value << MSCC_MIIM_CMD_WRDATA_SHIFT) |
+-	       MSCC_MIIM_CMD_OPR_WRITE,
+-	       miim->regs + MSCC_MIIM_REG_CMD);
++	ret = regmap_write(miim->regs, MSCC_MIIM_REG_CMD, MSCC_MIIM_CMD_VLD |
++			   (mii_id << MSCC_MIIM_CMD_PHYAD_SHIFT) |
++			   (regnum << MSCC_MIIM_CMD_REGAD_SHIFT) |
++			   (value << MSCC_MIIM_CMD_WRDATA_SHIFT) |
++			   MSCC_MIIM_CMD_OPR_WRITE);
+ 
++	if (ret < 0)
++		WARN_ONCE(1, "mscc miim write error %d\n", ret);
+ out:
+ 	return ret;
+ }
+@@ -122,24 +149,40 @@ static int mscc_miim_write(struct mii_bus *bus, int mii_id,
+ static int mscc_miim_reset(struct mii_bus *bus)
+ {
+ 	struct mscc_miim_dev *miim = bus->priv;
++	int ret;
+ 
+ 	if (miim->phy_regs) {
+-		writel(0, miim->phy_regs + MSCC_PHY_REG_PHY_CFG);
+-		writel(0x1ff, miim->phy_regs + MSCC_PHY_REG_PHY_CFG);
++		ret = regmap_write(miim->phy_regs, MSCC_PHY_REG_PHY_CFG, 0);
++		if (ret < 0) {
++			WARN_ONCE(1, "mscc reset set error %d\n", ret);
++			return ret;
++		}
++
++		ret = regmap_write(miim->phy_regs, MSCC_PHY_REG_PHY_CFG, 0x1ff);
++		if (ret < 0) {
++			WARN_ONCE(1, "mscc reset clear error %d\n", ret);
++			return ret;
++		}
++
+ 		mdelay(500);
+ 	}
+ 
+ 	return 0;
+ }
+ 
+-static int mscc_miim_probe(struct platform_device *pdev)
++static const struct regmap_config mscc_miim_regmap_config = {
++	.reg_bits	= 32,
++	.val_bits	= 32,
++	.reg_stride	= 4,
++};
++
++static int mscc_miim_setup(struct device *dev, struct mii_bus **pbus,
++			   struct regmap *mii_regmap)
+ {
+-	struct mscc_miim_dev *dev;
+-	struct resource *res;
++	struct mscc_miim_dev *miim;
+ 	struct mii_bus *bus;
+-	int ret;
+ 
+-	bus = devm_mdiobus_alloc_size(&pdev->dev, sizeof(*dev));
++	bus = devm_mdiobus_alloc_size(dev, sizeof(*miim));
+ 	if (!bus)
+ 		return -ENOMEM;
+ 
+@@ -147,26 +190,62 @@ static int mscc_miim_probe(struct platform_device *pdev)
+ 	bus->read = mscc_miim_read;
+ 	bus->write = mscc_miim_write;
+ 	bus->reset = mscc_miim_reset;
+-	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-mii", dev_name(&pdev->dev));
+-	bus->parent = &pdev->dev;
++	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-mii", dev_name(dev));
++	bus->parent = dev;
++
++	miim = bus->priv;
++
++	*pbus = bus;
++
++	miim->regs = mii_regmap;
++
++	return 0;
++}
++
++static int mscc_miim_probe(struct platform_device *pdev)
++{
++	struct regmap *mii_regmap, *phy_regmap;
++	void __iomem *regs, *phy_regs;
++	struct mscc_miim_dev *miim;
++	struct mii_bus *bus;
++	int ret;
+ 
+-	dev = bus->priv;
+-	dev->regs = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
+-	if (IS_ERR(dev->regs)) {
++	regs = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
++	if (IS_ERR(regs)) {
+ 		dev_err(&pdev->dev, "Unable to map MIIM registers\n");
+-		return PTR_ERR(dev->regs);
++		return PTR_ERR(regs);
+ 	}
+ 
+-	/* This resource is optional */
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-	if (res) {
+-		dev->phy_regs = devm_ioremap_resource(&pdev->dev, res);
+-		if (IS_ERR(dev->phy_regs)) {
+-			dev_err(&pdev->dev, "Unable to map internal phy registers\n");
+-			return PTR_ERR(dev->phy_regs);
+-		}
++	mii_regmap = devm_regmap_init_mmio(&pdev->dev, regs,
++					   &mscc_miim_regmap_config);
++
++	if (IS_ERR(mii_regmap)) {
++		dev_err(&pdev->dev, "Unable to create MIIM regmap\n");
++		return PTR_ERR(mii_regmap);
+ 	}
+ 
++	phy_regs = devm_platform_ioremap_resource(pdev, 1);
++	if (IS_ERR(phy_regs)) {
++		dev_err(&pdev->dev, "Unable to map internal phy registers\n");
++		return PTR_ERR(phy_regs);
++	}
++
++	phy_regmap = devm_regmap_init_mmio(&pdev->dev, phy_regs,
++					   &mscc_miim_regmap_config);
++	if (IS_ERR(phy_regmap)) {
++		dev_err(&pdev->dev, "Unable to create phy register regmap\n");
++		return PTR_ERR(phy_regmap);
++	}
++
++	ret = mscc_miim_setup(&pdev->dev, &bus, mii_regmap);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "Unable to setup the MDIO bus\n");
++		return ret;
++	}
++
++	miim = bus->priv;
++	miim->phy_regs = phy_regmap;
++
+ 	ret = of_mdiobus_register(bus, pdev->dev.of_node);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "Cannot register MDIO bus (%d)\n", ret);
 -- 
 2.25.1
 
