@@ -2,81 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F08C6461B72
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 16:56:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 551FC461B85
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 17:07:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344406AbhK2P7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 10:59:37 -0500
-Received: from mail-dm6nam10on2064.outbound.protection.outlook.com ([40.107.93.64]:39626
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S243254AbhK2P5g (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Nov 2021 10:57:36 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Wn8F/+BHmf8c0w87XRqaHN8OXuBT/uyLt8JoT4neuAtSYew8f5ShZqwq4mWhiGR2VrKj0xBOALfI4bqP+uR5AUsFJagNEtSsbfCnQOjRE7+sL//SEUKesspEm9BejTDlqd/jCjBwBKJ4kzIwS7oAak/xdp3sD2iItCDcjJj6bN3qL9fyhl424bAIedvcNqQyKcD0zB9gLLZKe55dsj+4Nfmb4Hl50OU4vEexFHChQ4FwZC2zXN8cKVjwTeSNSLHbt5yVzfuQCLOiD/7GYxD1TnjUXH3YQGsZlmTCazYM+d2NDK2CFUG7YElX4wUE/l4dRKBMHmdpKD456qxc153YFg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=05IzV4atmWg/ao96fyu1ife/Oy1yXpSTfde2f8fSD4c=;
- b=LE9JSo8aDP45CYJj2aSl/MgR/awvFw3X8ltMJISkFmmiyLeCrQQAukgb/WCxnL9EnPL3P1LYISOiCCQaEvJXfajHLVkM3ggugtCgKYDcuhCxU72rYRYJYB1EarR56OOm2x6uLJFxonqLK+FSgzCzkgWB22yxE5XW+47wfyiLk9DWfyfU1xsPykuFWF3/+op756SzHDSdnpd6zfVWuD+fziLvOUiDzHGRb720vUD5XYa7LLNG3r74gp27a7sUSBkob9u2zn5vQtbWB1bCOjPMf9rBspRAe0Fo4uRHJCgyfMi8gAiP9jNGcc1Z7XpnZ7+T24iyG0QAGxzliBKTAi6nbA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.36) smtp.rcpttodomain=nxp.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=05IzV4atmWg/ao96fyu1ife/Oy1yXpSTfde2f8fSD4c=;
- b=q9GrYlM+sn4cZo5aaX7U9KnXSSJUwqhlYwc4a6LpLmA1UmDPz1UugCsSGKWB/4Y6g5ALrBM5CqeVqiwvAyvM1t5Uum0x+7JfBQ9UgJ/3Eq/SFiixvrJMpmoDfljy19k71zJ2P3aiUJLWSjvfmnrtCVlJLgKqAWAeQA4aRT3qcfVZnvYBbnQwV9qrzQiuOjjGGxPHKl9UmBCn3n62RwTsiU6Y33D41AiC2gLHzX6UdzYNfe49+CCaQecBgALOZSclTKEpQF8hSNoN7JeMj22L4hweCktmi3NKxzc4LY204aGGJBhSOjFvN7UPtpPzedSwqDS2Kq8Iz0XTB3zOlCrXqQ==
-Received: from BN6PR19CA0100.namprd19.prod.outlook.com (2603:10b6:404:a0::14)
- by DM8PR12MB5414.namprd12.prod.outlook.com (2603:10b6:8:3e::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.21; Mon, 29 Nov
- 2021 15:54:16 +0000
-Received: from BN8NAM11FT051.eop-nam11.prod.protection.outlook.com
- (2603:10b6:404:a0:cafe::8e) by BN6PR19CA0100.outlook.office365.com
- (2603:10b6:404:a0::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.23 via Frontend
- Transport; Mon, 29 Nov 2021 15:54:16 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.36)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.36 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.36; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.36) by
- BN8NAM11FT051.mail.protection.outlook.com (10.13.177.66) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4734.22 via Frontend Transport; Mon, 29 Nov 2021 15:54:16 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 29 Nov
- 2021 15:54:15 +0000
-Received: from yaviefel (172.20.187.5) by rnnvmail201.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.5; Mon, 29 Nov 2021
- 07:54:03 -0800
-References: <20211123163955.154512-22-alexandr.lobakin@intel.com>
- <77407c26-4e32-232c-58e0-2d601d781f84@iogearbox.net>
- <87bl28bga6.fsf@toke.dk>
- <20211125170708.127323-1-alexandr.lobakin@intel.com>
- <20211125094440.6c402d63@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20211125204007.133064-1-alexandr.lobakin@intel.com>
- <87sfvj9k13.fsf@toke.dk>
- <20211126100611.514df099@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <87ee72ah56.fsf@toke.dk>
- <20211126111431.4a2ed007@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YaPCbaMVaVlxXcHC@shredder>
- <20211129064755.539099c0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <874k7vq7tl.fsf@nvidia.com>
-User-agent: mu4e 1.4.15; emacs 27.2
-From:   Petr Machata <petrm@nvidia.com>
+        id S243437AbhK2QK0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 11:10:26 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:49094 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232047AbhK2QIZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 11:08:25 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6B26CB811F5;
+        Mon, 29 Nov 2021 16:05:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F363C53FAD;
+        Mon, 29 Nov 2021 16:05:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638201905;
+        bh=4N87j1xF0qZOK6vkTN+k9+VLDwxHQq/Q1A1VR38B4AQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hYd722QiYpC36Bf6Q9uJFPlKPCw4bp52LuJo88+FRlqHBDPZiJV2xxZjo5MUc2moR
+         hNcG5kc9SZg08L6NdNQ0reOmJIK1mIvsFygISYhUiJ6MF9siH9EUqUOj7eLQsFWlvc
+         73QsXWTh7LmGU+fDc5lAIFUsUpf+NXCnpB4qQASFhFOqBauVjGuzAs991gYajYQElr
+         ng6WG+dmtohCxSRwl0esJqyoAD4Ye6lAZMKHbWz1JP10FvCcHktWdX+dRAK2TARvCP
+         ek5C6JqhSLqcO9P9xiKcnXSQiLy6RbxYR9QImV2JZIjuBM/KXbDM66Sto0EIB70cHi
+         6KEDTLA4Ptsfg==
+Date:   Mon, 29 Nov 2021 08:05:02 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
 To:     Petr Machata <petrm@nvidia.com>
-CC:     Jakub Kicinski <kuba@kernel.org>, Ido Schimmel <idosch@idosch.org>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        "Alexander Lobakin" <alexandr.lobakin@intel.com>,
+Cc:     Ido Schimmel <idosch@idosch.org>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdl?= =?UTF-8?B?bnNlbg==?= 
+        <toke@redhat.com>, Alexander Lobakin <alexandr.lobakin@intel.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         "David S. Miller" <davem@davemloft.net>,
-        "Jesse Brandeburg" <jesse.brandeburg@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
         Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
         Jonathan Corbet <corbet@lwn.net>,
@@ -117,54 +77,85 @@ CC:     Jakub Kicinski <kuba@kernel.org>, Ido Schimmel <idosch@idosch.org>,
         <virtualization@lists.linux-foundation.org>, <nikolay@nvidia.com>
 Subject: Re: [PATCH v2 net-next 21/26] ice: add XDP and XSK generic
  per-channel statistics
+Message-ID: <20211129080502.53f7d316@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 In-Reply-To: <874k7vq7tl.fsf@nvidia.com>
-Date:   Mon, 29 Nov 2021 16:54:00 +0100
-Message-ID: <87y257ot47.fsf@nvidia.com>
+References: <20211123163955.154512-22-alexandr.lobakin@intel.com>
+        <77407c26-4e32-232c-58e0-2d601d781f84@iogearbox.net>
+        <87bl28bga6.fsf@toke.dk>
+        <20211125170708.127323-1-alexandr.lobakin@intel.com>
+        <20211125094440.6c402d63@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20211125204007.133064-1-alexandr.lobakin@intel.com>
+        <87sfvj9k13.fsf@toke.dk>
+        <20211126100611.514df099@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <87ee72ah56.fsf@toke.dk>
+        <20211126111431.4a2ed007@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YaPCbaMVaVlxXcHC@shredder>
+        <20211129064755.539099c0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <874k7vq7tl.fsf@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.20.187.5]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e535f1ff-1677-4a79-c040-08d9b3507f6f
-X-MS-TrafficTypeDiagnostic: DM8PR12MB5414:
-X-Microsoft-Antispam-PRVS: <DM8PR12MB5414E235B36A38A989D4E2DDD6669@DM8PR12MB5414.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 74RVFjkWGin3p+OD+fHF6ctqb8Ny7pTcfXrmr3wK9kvEDPqtfqomrRiQBzd8Bhh2aMHc8OINLP27Bo3H42K+OIZhEGlwks/Sp2XVRTMY3QgqgXPcyOdOg7V10Kzv1SwQhKilKzGhbp7039PrJTsKL0ggZyfcBFU+bit3XMnVKRXZ0YYWjXUybDFL1E/pHhhC1y+RIAmghSP9ExAaIFxVi1DPhEfFeRaAhIHkzA8frSYUC36jUKckb01zVgpg8qerUOUXo3N1Tjgsfdnjb+hzHijSIbrrqeXHihvKNoBiOKdD4iH45rp90kaKWKmPtcs/AvlwTmDjRRJfE+566Prc4FLuV5G19KSIPuAFDJxrBklEFbqg0bcn/uj2XL/gOWNoPo7DNPGZKzv/jzZLL9S7jnkZtfaZOZEvWAa5IsUv6r5Rryk+XnGW0MUTB/53olmQaX9CF7sB8+8Q541INPtv+4+41/pgcEFzzvFWyAU0ARltY1ORPRY3p7ivRIGZak1O3nQaudxshw/Id2nbHk7/Bfa46IPzNQ2gzvKRibh0dljS1o0lwb9onqdLnwYwr/i2CDKmyrcksm9wsOJU0uD1CI4FmVTVOlgCdJ6L3aYTCPgbUg022POhpbDWhxSC1LsIv4isCEVv5QPaG4XK7aHn0d7c7+d6oDTIw8WPzE5x4SgbyyUIoGzp4EftuXnM+MTQ3ozxK4CurcEA9WHGgR5ISuwbkNqF36MXZDLKgt0yRpc=
-X-Forefront-Antispam-Report: CIP:216.228.112.36;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid05.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(107886003)(36756003)(356005)(70206006)(5660300002)(8676002)(36860700001)(508600001)(70586007)(86362001)(6862004)(47076005)(8936002)(4326008)(82310400004)(37006003)(54906003)(4744005)(316002)(6200100001)(16526019)(186003)(7406005)(7416002)(2906002)(26005)(2616005)(426003)(7636003)(336012)(41533002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Nov 2021 15:54:16.0974
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e535f1ff-1677-4a79-c040-08d9b3507f6f
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.36];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT051.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5414
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-Petr Machata <petrm@nvidia.com> writes:
-
+On Mon, 29 Nov 2021 16:51:02 +0100 Petr Machata wrote:
 > Jakub Kicinski <kuba@kernel.org> writes:
->
->> On Sun, 28 Nov 2021 19:54:53 +0200 Ido Schimmel wrote:
->>> # ip stats set dev swp1 hw_stats on
->>
->> Does it belong on the switch port? Not the netdev we want to track?
->
+> > On Sun, 28 Nov 2021 19:54:53 +0200 Ido Schimmel wrote:  
+> >> I agree. I think IFLA_STATS64 in RTM_NEWLINK should contain statistics
+> >> of all the packets seen by the netdev. The breakdown into software /
+> >> hardware / XDP should be reported via RTM_NEWSTATS.  
+> >
+> > Hm, in the offload case "seen by the netdev" may be unclear. For 
+> > the offload case I believe our recommendation was phrased more like 
+> > "all packets which would be seen by the netdev if there was no
+> > routing/tc offload", right?  
+> 
+> Yes. The idea is to expose to Linux stats about traffic at conceptually
+> corresponding objects in the HW.
+
+Great.
+
+> >> Currently, for soft devices such as VLANs, bridges and GRE, user space
+> >> only sees statistics of packets forwarded by software, which is quite
+> >> useless when forwarding is offloaded from the kernel to hardware.
+> >> 
+> >> Petr is working on exposing hardware statistics for such devices via
+> >> rtnetlink. Unlike XDP (?), we need to be able to let user space enable /
+> >> disable hardware statistics as we have a limited number of hardware
+> >> counters and they can also reduce the bandwidth when enabled. We are
+> >> thinking of adding a new RTM_SETSTATS for that:
+> >> 
+> >> # ip stats set dev swp1 hw_stats on  
+> >
+> > Does it belong on the switch port? Not the netdev we want to track?  
+> 
 > Yes, it does, and is designed that way. That was just muscle memory
 > typing that "swp1" above :)
-
-And by "yes, it does", I obviously meant "no, it doesn't". It does
-belong to the device that you want counters for.
-
+> 
 > You would do e.g. "ip stats set dev swp1.200 hw_stats on" or, "dev br1",
 > or something like that.
+
+I see :)
+
+> >> For query, something like (under discussion):
+> >> 
+> >> # ip stats show dev swp1 // all groups
+> >> # ip stats show dev swp1 group link
+> >> # ip stats show dev swp1 group offload // all sub-groups
+> >> # ip stats show dev swp1 group offload sub-group cpu
+> >> # ip stats show dev swp1 group offload sub-group hw
+> >> 
+> >> Like other iproute2 commands, these follow the nesting of the
+> >> RTM_{NEW,GET}STATS uAPI.  
+> >
+> > But we do have IFLA_STATS_LINK_OFFLOAD_XSTATS, isn't it effectively 
+> > the same use case?  
+> 
+> IFLA_STATS_LINK_OFFLOAD_XSTATS is a nest. Currently it carries just
+> CPU_HIT stats. The idea is to carry HW stats as well in that group.
+
+Hm, the expectation was that the HW stats == total - SW. I believe that
+still holds true for you, even if HW stats are not "complete" (e.g.
+user enabled them after device was already forwarding for a while).
+Is the concern about backward compat or such?
