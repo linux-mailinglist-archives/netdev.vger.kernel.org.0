@@ -2,166 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFA19461AE8
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 16:29:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCDC8461B91
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 17:10:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349331AbhK2Pcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 10:32:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51168 "EHLO
+        id S1344257AbhK2QN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 11:13:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343859AbhK2Pap (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 10:30:45 -0500
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53E1C05291B;
-        Mon, 29 Nov 2021 05:41:48 -0800 (PST)
-Received: by mail-qt1-x82d.google.com with SMTP id t11so16552401qtw.3;
-        Mon, 29 Nov 2021 05:41:48 -0800 (PST)
+        with ESMTP id S1344237AbhK2QLV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 11:11:21 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02550C08EA77
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 06:11:56 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id o20so72130098eds.10
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 06:11:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fhEsQAK98bM5StiE4nhRYixbgK7BmdEmPc2JUmkzNuE=;
-        b=OPD4a0BbOCx/FwKr9ugrv/ROrF8AV8trJRIupc+DGvBkpArkblK6Vf7ThfjN45aaQx
-         +4tY0VYjZJxl8P1vbJ++e/HVMPYxXgxG7oPThz/y4Eyks1pROtqYrnlq27waj1Jvwhxn
-         O1n97pTLMFzxnBa4efTROYFYfSml95/Ip3O7RBzVZvGZYo6+ChdPL8s0o2JFx2gDz7oQ
-         RSQp/sslhuaFaXPYGRHaRVNKgR3xBYeXrI+SvAsiJXQkWnzqqQL3yFqzQ3ebLgRwmLo6
-         ZJKNwzLsde6LoPB7PutSs3sH0wX6epaXkVO3m1jHVMV1yfypRsT1W5T5hQAJIvfPTIvN
-         dN9Q==
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ynN37RQfo3w1GXu23FSiWbODZ6CssweCoIJBmZ7EnNg=;
+        b=SwDPCaX4bFMt5rQqU+IWB4WAEAKj+cPcaX9hasPL0AU348DDOHilli1HTAnfjs3Ty6
+         SM11PykkTOEZjQNbxFXelQ+m11pcHfM0/Tx2nXjiqoYQ8PWuge3nYi5hy5C7RiKN0Yhs
+         qRqapXl+NBQNcd7cxMok0TT2TMdSedDQvGI2zJHPV/2zkGr/n29a1rXopPqPoiQ2CE0H
+         lH0zKOt7v75Vn82+UHqpRw0DvUASkBCh4FFA9Nk05LIE4JVt70RfcHdC9gD9uX0MAsRF
+         +MJCN3AivwNrTIGSOM7wb0vk0bPpSeYxDAsKS6W6x98d5NtmjWvByyt5OI17ciE/HzBr
+         XhQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fhEsQAK98bM5StiE4nhRYixbgK7BmdEmPc2JUmkzNuE=;
-        b=CVUc3leK/qoKvDvp75+mQYFbCf2ly4Uvy8HkuswUcObMyMq7hbhs9V7ugSNvW4WOI6
-         THBGpj6DCfMXAkOyv8TKzNuYOfa3Wc6dvblNO3pE8ezId/2jeccnvCBfTpIctMIlSsjt
-         jitCxVhVF8ybHe9M1j166KUVzlN7jHuHNUmE+uzDjIo2Q90jGyDO/v1yvh6f5Qe8Ao7m
-         t4O91X3iJYSHK8lkkeKVXZNQmlDp16zECW4/X/TcWE8yE0HFKV6ksyR9yAYA27VGr1fI
-         1KcUcyoR2VrSZbXVRJ6pjH62CKj7faBUCd0cfbs24mbJjRXcYs2TMO97CpTJP9wKR7nU
-         AFPQ==
-X-Gm-Message-State: AOAM531CyfUhUWgtdoJaLXx4Ezyempvbgoqa0SvJrhDBLPhPR788v3u6
-        SXJzimjCjiAhf/JMCak/X7jKy2fSOqxx1wX5jTkpt7LblJTTJryBAJQ=
-X-Google-Smtp-Source: ABdhPJwtYuAs3Eyp35qBUS3u4YeJbSdbd0Fj/uaKBQS5Zkwii/UENBRf3c8ern+XfOlGXgg+DCkb17rNDqYBaO6+dq4=
-X-Received: by 2002:ac8:5894:: with SMTP id t20mr34675354qta.450.1638193308018;
- Mon, 29 Nov 2021 05:41:48 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ynN37RQfo3w1GXu23FSiWbODZ6CssweCoIJBmZ7EnNg=;
+        b=W4DhcBovhaPqYquvy/5L1uu1xTlPWLdT9JKtkpyiLrcR+7dkrc91FUlZZXwHyEqDUR
+         BmvTN1JK4wUlYpy0nWqoe45h/E6iCOfyiPSSZ67Qh9XnrvwhNVYRF1z5HSDR2EUCbHxu
+         nbjc9dr12mA4upmQ5VSA+H8Z589gaOVcTVI3wptpJN9ZPRTKMLDHCRloEyn+Jlf52Krg
+         Um4MwxqTIjX2UIVNy2unegwqR79gL0/9NiPkgjuM0HC4ZTJvJwDyZ0VbahUV+FhPPwso
+         0iEUteiZhygNNTbEUAqWjsxHna6qvmMYVnTVhpK331TK/Ia6AH8oELpC/w3m64UqlwEN
+         rmWg==
+X-Gm-Message-State: AOAM533Y5pB63xuINckUAoT9cH8i7HBIwCpU9FkFhvdbxtVnzys0GG4s
+        RzASRTx62k9XyQDU0WAF6QB5P8HgZMbPmnO5
+X-Google-Smtp-Source: ABdhPJwlbns48iu39TJ+KhzVpb20hhtWqeKu6Bx/BNEX+ZehWlRCRjdyOPqgNCVte1iSfQUxp1NrQQ==
+X-Received: by 2002:a05:6402:4389:: with SMTP id o9mr74817188edc.138.1638195113865;
+        Mon, 29 Nov 2021 06:11:53 -0800 (PST)
+Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id gn26sm7716605ejc.14.2021.11.29.06.11.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Nov 2021 06:11:53 -0800 (PST)
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
+        idosch@idosch.org, Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: [RFC PATCH net] net: ipv6: make fib6_nh_init properly clean after itself on error
+Date:   Mon, 29 Nov 2021 16:11:51 +0200
+Message-Id: <20211129141151.490533-1-razor@blackwall.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20211120112738.45980-1-laoar.shao@gmail.com> <20211120112738.45980-8-laoar.shao@gmail.com>
- <yt9d35nf1d84.fsf@linux.ibm.com>
-In-Reply-To: <yt9d35nf1d84.fsf@linux.ibm.com>
-From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Mon, 29 Nov 2021 21:41:11 +0800
-Message-ID: <CALOAHbDtqpkN4D0vHvGxTSpQkksMWtFm3faMy0n+pazxN_RPPg@mail.gmail.com>
-Subject: Re: [PATCH v2 7/7] tools/testing/selftests/bpf: replace open-coded 16
- with TASK_COMM_LEN
-To:     Sven Schnelle <svens@linux.ibm.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel test robot <oliver.sang@intel.com>,
-        kbuild test robot <lkp@intel.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Kees Cook <keescook@chromium.org>,
-        Petr Mladek <pmladek@suse.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 29, 2021 at 6:13 PM Sven Schnelle <svens@linux.ibm.com> wrote:
->
-> Hi,
->
-> Yafang Shao <laoar.shao@gmail.com> writes:
->
-> > As the sched:sched_switch tracepoint args are derived from the kernel,
-> > we'd better make it same with the kernel. So the macro TASK_COMM_LEN is
-> > converted to type enum, then all the BPF programs can get it through BTF.
-> >
-> > The BPF program which wants to use TASK_COMM_LEN should include the header
-> > vmlinux.h. Regarding the test_stacktrace_map and test_tracepoint, as the
-> > type defined in linux/bpf.h are also defined in vmlinux.h, so we don't
-> > need to include linux/bpf.h again.
-> >
-> > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> > Acked-by: Andrii Nakryiko <andrii@kernel.org>
-> > Acked-by: David Hildenbrand <david@redhat.com>
-> > Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> > Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-> > Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> > Cc: Michal Miroslaw <mirq-linux@rere.qmqm.pl>
-> > Cc: Peter Zijlstra <peterz@infradead.org>
-> > Cc: Steven Rostedt <rostedt@goodmis.org>
-> > Cc: Matthew Wilcox <willy@infradead.org>
-> > Cc: David Hildenbrand <david@redhat.com>
-> > Cc: Al Viro <viro@zeniv.linux.org.uk>
-> > Cc: Kees Cook <keescook@chromium.org>
-> > Cc: Petr Mladek <pmladek@suse.com>
-> > ---
-> >  include/linux/sched.h                                   | 9 +++++++--
-> >  tools/testing/selftests/bpf/progs/test_stacktrace_map.c | 6 +++---
-> >  tools/testing/selftests/bpf/progs/test_tracepoint.c     | 6 +++---
-> >  3 files changed, 13 insertions(+), 8 deletions(-)
-> >
-> > diff --git a/include/linux/sched.h b/include/linux/sched.h
-> > index 78c351e35fec..cecd4806edc6 100644
-> > --- a/include/linux/sched.h
-> > +++ b/include/linux/sched.h
-> > @@ -274,8 +274,13 @@ struct task_group;
-> >
-> >  #define get_current_state()  READ_ONCE(current->__state)
-> >
-> > -/* Task command name length: */
-> > -#define TASK_COMM_LEN                        16
-> > +/*
-> > + * Define the task command name length as enum, then it can be visible to
-> > + * BPF programs.
-> > + */
-> > +enum {
-> > +     TASK_COMM_LEN = 16,
-> > +};
->
-> This breaks the trigger-field-variable-support.tc from the ftrace test
-> suite at least on s390:
->
-> echo 'hist:keys=next_comm:wakeup_lat=common_timestamp.usecs-$ts0:onmatch(sched.sched_waking).wakeup_latency($wakeup_lat,next_pid,sched.sched_waking.prio,next_comm) if next_comm=="ping"'
-> linux/tools/testing/selftests/ftrace/test.d/trigger/inter-event/trigger-field-variable-support.tc: line 15: echo: write error: Invalid argument
->
-> I added a debugging line into check_synth_field():
->
-> [   44.091037] field->size 16, hist_field->size 16, field->is_signed 1, hist_field->is_signed 0
->
-> Note the difference in the signed field.
->
+From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-Hi Sven,
+Currently we have different cleanup expectations by different users of
+fib6_nh_init:
+ 1. nh_create_ipv6
+ - calls fib6_nh_release manually which does full cleanup
 
-Thanks for the report and debugging!
-Seems we should explicitly define it as signed ?
-Could you pls. help verify it?
+ 2. ip6_route_info_create
+ - calls fib6_info_release to drop refs to 0 and schedules rcu call
+   for fib6_info_destroy_rcu() which also does full cleanup
 
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index cecd4806edc6..44d36c6af3e1 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -278,7 +278,7 @@ struct task_group;
-  * Define the task command name length as enum, then it can be visible to
-  * BPF programs.
-  */
--enum {
-+enum SignedEnum {
-        TASK_COMM_LEN = 16,
- };
+ 3. fib_check_nh_v6_gw
+ - doesn't do any cleanup on error, expects fib6_nh_init to clean up
+   after itself fully (nhc_pcpu_rth_output per-cpu memory leak on error)
 
+We can alter fib6_nh_init to properly cleanup after itself so
+expectations would be the same for everyone and noone would have to do
+anything in such case. It is safe because the route is not inserted yet
+so the fib6_nh should not be visible at fib6_nh_init point, thus it
+should be possible to free up all resources in its error path. The
+problems (and leaks) are because it doesn't free all resources in its
+error path, the nhc_pcpu_rth_output per-cpu allocation done by
+fib_nh_common_init is not cleaned up and it expects its callers to clean
+up if an error occurred after it, e.g. the dst per-cpu allocation
+might fail. This change allows us to fix the memory leak at 3. and also
+to simplify nh_create_ipv6 and remove the special error handling.
+
+Fixes: 717a8f5b2923 ("ipv4: Add fib_check_nh_v6_gw")
+Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+---
+Sending as RFC to see what people think. I've tested this patch under
+heavy load with replacing/traffic forwarding/nexthop add/del etc.
+I've also tested error paths by adding artificial ENOMEM errors in
+different fib6_nh_init stages while running kmemleak.
+
+ net/ipv4/nexthop.c |  8 +-------
+ net/ipv6/route.c   | 15 +++++++++------
+ 2 files changed, 10 insertions(+), 13 deletions(-)
+
+diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+index 5dbd4b5505eb..a7debafe8b90 100644
+--- a/net/ipv4/nexthop.c
++++ b/net/ipv4/nexthop.c
+@@ -2565,14 +2565,8 @@ static int nh_create_ipv6(struct net *net,  struct nexthop *nh,
+ 	/* sets nh_dev if successful */
+ 	err = ipv6_stub->fib6_nh_init(net, fib6_nh, &fib6_cfg, GFP_KERNEL,
+ 				      extack);
+-	if (err) {
+-		/* IPv6 is not enabled, don't call fib6_nh_release */
+-		if (err == -EAFNOSUPPORT)
+-			goto out;
+-		ipv6_stub->fib6_nh_release(fib6_nh);
+-	} else {
++	if (!err)
+ 		nh->nh_flags = fib6_nh->fib_nh_flags;
+-	}
+ out:
+ 	return err;
+ }
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 42d60c76d30a..2107b13cc9ab 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -3635,7 +3635,9 @@ int fib6_nh_init(struct net *net, struct fib6_nh *fib6_nh,
+ 		in6_dev_put(idev);
+ 
+ 	if (err) {
+-		lwtstate_put(fib6_nh->fib_nh_lws);
++		/* check if we failed after fib_nh_common_init() was called */
++		if (fib6_nh->nh_common.nhc_pcpu_rth_output)
++			fib_nh_common_release(&fib6_nh->nh_common);
+ 		fib6_nh->fib_nh_lws = NULL;
+ 		dev_put(dev);
+ 	}
+@@ -3822,7 +3824,7 @@ static struct fib6_info *ip6_route_info_create(struct fib6_config *cfg,
+ 	} else {
+ 		err = fib6_nh_init(net, rt->fib6_nh, cfg, gfp_flags, extack);
+ 		if (err)
+-			goto out;
++			goto out_free;
+ 
+ 		fib6_nh = rt->fib6_nh;
+ 
+@@ -3841,7 +3843,7 @@ static struct fib6_info *ip6_route_info_create(struct fib6_config *cfg,
+ 		if (!ipv6_chk_addr(net, &cfg->fc_prefsrc, dev, 0)) {
+ 			NL_SET_ERR_MSG(extack, "Invalid source address");
+ 			err = -EINVAL;
+-			goto out;
++			goto out_free;
+ 		}
+ 		rt->fib6_prefsrc.addr = cfg->fc_prefsrc;
+ 		rt->fib6_prefsrc.plen = 128;
+@@ -3849,12 +3851,13 @@ static struct fib6_info *ip6_route_info_create(struct fib6_config *cfg,
+ 		rt->fib6_prefsrc.plen = 0;
+ 
+ 	return rt;
+-out:
+-	fib6_info_release(rt);
+-	return ERR_PTR(err);
++
+ out_free:
+ 	ip_fib_metrics_put(rt->fib6_metrics);
++	if (rt->nh)
++		nexthop_put(rt->nh);
+ 	kfree(rt);
++out:
+ 	return ERR_PTR(err);
+ }
+ 
 -- 
-Thanks
-Yafang
+2.31.1
+
