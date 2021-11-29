@@ -2,67 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95F094615B4
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 14:02:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B80CE4615EC
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 14:12:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346598AbhK2NF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 08:05:29 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:56672 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1377319AbhK2ND2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Nov 2021 08:03:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=HDc1o/B4vfmKQoJFWo8BmBrk7PDXDp+/EECoB/Wvu8k=; b=XM
-        wUSC/PGYDp10c6karXvlR05J/n1Zbw/Fva4FYXGpO3JpduI96EMC/glt+jmQ5ua2s0goAPozRnvPc
-        sM48U+RwPD9FSS7xNGmMpmHnjYKVV0UKfyXLC3QcaPnfWAmcFmedjJVwN4N2bcxJLwYsgRvf5suGE
-        tpJ+hmyqs7J4ssc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mrgGQ-00Eulp-0e; Mon, 29 Nov 2021 14:00:10 +0100
-Date:   Mon, 29 Nov 2021 14:00:10 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Alvin =?utf-8?Q?=C5=A0ipraga?= <alvin@pqrs.dk>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linus.walleij@linaro.org, f.fainelli@gmail.com, olteanv@gmail.com,
-        vivien.didelot@gmail.com, hkallweit1@gmail.com,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Subject: Re: [PATCH net v2 3/3] net: dsa: rtl8365mb: set RGMII RX delay in
- steps of 0.3 ns
-Message-ID: <YaTO2hO2/vPbijCu@lunn.ch>
-References: <20211129103019.1997018-1-alvin@pqrs.dk>
- <20211129103019.1997018-3-alvin@pqrs.dk>
+        id S1377643AbhK2NP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 08:15:27 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56392 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377835AbhK2NN0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 08:13:26 -0500
+Received: from mail.kernel.org (unknown [198.145.29.99])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D2984614D4;
+        Mon, 29 Nov 2021 13:10:08 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 4EDA560184;
+        Mon, 29 Nov 2021 13:10:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638191408;
+        bh=LbXp/8u1CeGkCAxRN5Nfg4W8o4qGxClR38ODgpiv/kQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ioCJIjjWs6s6kxDYH45CfgnKLYoSzAW72I3L6D+uWC66WG5gPxqrbsgA7q7omNtPG
+         hs3wfbSUIkir17tS9FSnXFk0JSBobJHDavhoS7vh2LyiqN73Z6eT9CYL7CMCDCbxyb
+         ynZmnfCxwUjDF8gfFO//lhhnDUd1c4HvKDfHUuRlHaz/HMHoq7Jh2yGlG40Y+R4G07
+         fH7gwscfStaD4Ci7r7jL76Fm1aqqYMSlRe9YlsHy93gHDgtsY/+Rwyk2W/Ki2psMpH
+         36nUQg7fZ3WnuGb1k3Fvu7TRee2i9UvJb1G17YXO2du8/CVDOD01f8pqY2Q48QRTd5
+         6VW3xZl0cc7+g==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4095160A4D;
+        Mon, 29 Nov 2021 13:10:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211129103019.1997018-3-alvin@pqrs.dk>
+Subject: Re: [PATCH] net/mlx4_en: Update reported link modes for 1/10G
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163819140825.10588.15476422794960132673.git-patchwork-notify@kernel.org>
+Date:   Mon, 29 Nov 2021 13:10:08 +0000
+References: <20211128123712.82096-1-erik@kryo.se>
+In-Reply-To: <20211128123712.82096-1-erik@kryo.se>
+To:     Erik Ekman <erik@kryo.se>
+Cc:     tariqt@nvidia.com, davem@davemloft.net, kuba@kernel.org,
+        michael@stapelberg.ch, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 29, 2021 at 11:30:19AM +0100, Alvin Šipraga wrote:
-> From: Alvin Šipraga <alsi@bang-olufsen.dk>
-> 
-> A contact at Realtek has clarified what exactly the units of RGMII RX
-> delay are. The answer is that the unit of RX delay is "about 0.3 ns".
-> Take this into account when parsing rx-internal-delay-ps by
-> approximating the closest step value. Delays of more than 2.1 ns are
-> rejected.
-> 
-> This obviously contradicts the previous assumption in the driver that a
-> step value of 4 was "about 2 ns", but Realtek also points out that it is
-> easy to find more than one RX delay step value which makes RGMII work.
-> 
-> Fixes: 4af2950c50c8 ("net: dsa: realtek-smi: add rtl8365mb subdriver for RTL8365MB-VC")
-> Cc: Arınç ÜNAL <arinc.unal@arinc9.com>
-> Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-> Acked-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Hello:
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-    Andrew
+On Sun, 28 Nov 2021 13:37:11 +0100 you wrote:
+> When link modes were initially added in commit 2c762679435dc
+> ("net/mlx4_en: Use PTYS register to query ethtool settings") and
+> later updated for the new ethtool API in commit 3d8f7cc78d0eb
+> ("net: mlx4: use new ETHTOOL_G/SSETTINGS API") the only 1/10G non-baseT
+> link modes configured were 1000baseKX, 10000baseKX4 and 10000baseKR.
+> It looks like these got picked to represent other modes since nothing
+> better was available.
+> 
+> [...]
+
+Here is the summary with links:
+  - net/mlx4_en: Update reported link modes for 1/10G
+    https://git.kernel.org/netdev/net/c/2191b1dfef7d
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
