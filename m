@@ -2,41 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A145462147
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 21:00:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55EE6462148
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 21:00:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242112AbhK2UDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 15:03:49 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:48346 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352616AbhK2UBs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 15:01:48 -0500
+        id S242400AbhK2UDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 15:03:50 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37682 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348382AbhK2UBt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 15:01:49 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7EAECCE13DE
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 19:58:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21821C53FAD;
-        Mon, 29 Nov 2021 19:58:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0D40EB815C5
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 19:58:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FA51C53FD0;
+        Mon, 29 Nov 2021 19:58:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638215907;
-        bh=bctvTNidKaCjD9cheDo0oLTYboxrl/9Hkt+FM+AZ9AU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=oF13BB+5qSpVhtt+uCGjsg7zVROfktzJhmp5/0W86THombBzcaxlzb5OZVgu7+/Ea
-         vjPJLMzJsKggdaeIzYgHEQaQds1GJstwQnv538ynwyLAMPHx1Xtl0qTvvdX8Wqc/+j
-         Rs1r3j+yNrpaK4w1fIjJDjKpVq6x1SywPSzux8HWXMccxaBDvcLUxZPrvApbnvYFg8
-         b1DOR+zqgfhHPJ5KJzNnAsA4qDxBiyMFYOY0CtTgr/FFb7atXp6xRYcQ2AQhGrgZwC
-         AaVPz11BxpPxfoqB+1aRyGVw+FDlNwLdqrlNj7dd7cIX5DvDx9SAXXzsj5U8sEra19
-         dfB9jBcGGLeZQ==
+        s=k20201202; t=1638215909;
+        bh=/8iZcp0F1D9bcrtGapFLOUAM0jt3fgL3i565y2g4YJ4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Oz/+D7XCQGAbDAAAWZMOgzW//bQmqXSrAmC5PyNEVXs+PT7CV2D3aCT17/XcXtdHb
+         ZZb7lEp6LaYZVUsHktay+8cFUomgymTakR/JTzbh2G3MWJDvFP1aZkq0KzQfyozbfN
+         CvAMPOOW21/ZiSd7e586D+2LulZeR7eACQV/DE4lgbGr5Brcsf4c9yXBUi/tj9M0qL
+         2+TItHKAkX5XuE2i7QnUoNIRUvMbR1Mg+c23GnkYLVSiL63fefHNHLzQniGOBymPhc
+         CRbj3R3UtMWmOy43hQNGz0P0FBgiw1jSC/pjsgn6+tYh0F+xByl0cpxWiJUGd/r/yi
+         B82Qb3BoxXVQg==
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
 To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
 Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
         Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net 0/6] mv88e6xxx fixes (mainly 88E6393X family)
-Date:   Mon, 29 Nov 2021 20:58:17 +0100
-Message-Id: <20211129195823.11766-1-kabel@kernel.org>
+Subject: [PATCH net 1/6] net: dsa: mv88e6xxx: Fix application of erratum 4.8 for 88E6393X
+Date:   Mon, 29 Nov 2021 20:58:18 +0100
+Message-Id: <20211129195823.11766-2-kabel@kernel.org>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20211129195823.11766-1-kabel@kernel.org>
+References: <20211129195823.11766-1-kabel@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -44,36 +46,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+According to SERDES scripts for 88E6393X, erratum 4.8 has to be applied
+every time before SerDes is powered on.
 
-so I managed to discovered how to fix inband AN for 2500base-x mode on
-88E6393x (Amethyst) family.
+Split the code for erratum 4.8 into separate function and call it in
+mv88e6393x_serdes_power().
 
-This series fixes application of erratum 4.8, adds fix for erratum 5.2,
-adds support for completely disablign SerDes receiver / transmitter,
-fixes inband AN for 2500base-x mode by using 1000base-x mode and simply
-changing frequeny to 3.125 GHz, all this for 88E6393X.
+Fixes: de776d0d316f ("net: dsa: mv88e6xxx: add support for mv88e6393x family")
+Signed-off-by: Marek Behún <kabel@kernel.org>
+---
+ drivers/net/dsa/mv88e6xxx/serdes.c | 53 +++++++++++++++++++-----------
+ 1 file changed, 33 insertions(+), 20 deletions(-)
 
-The last commit fixes linking when link partner has AN disabled and the
-device invokes the AN bypass feature. Currently we fail to link in this
-case.
-
-Marek
-
-Marek Behún (6):
-  net: dsa: mv88e6xxx: Fix application of erratum 4.8 for 88E6393X
-  net: dsa: mv88e6xxx: Drop unnecessary check in
-    mv88e6393x_serdes_erratum_4_6()
-  net: dsa: mv88e6xxx: Save power by disabling SerDes trasmitter and
-    receiver
-  net: dsa: mv88e6xxx: Add fix for erratum 5.2 of 88E6393X family
-  net: dsa: mv88e6xxx: Fix inband AN for 2500base-x on 88E6393X family
-  net: dsa: mv88e6xxx: Link in pcs_get_state() if AN is bypassed
-
- drivers/net/dsa/mv88e6xxx/serdes.c | 240 +++++++++++++++++++++++++----
- drivers/net/dsa/mv88e6xxx/serdes.h |   4 +
- 2 files changed, 213 insertions(+), 31 deletions(-)
-
+diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
+index 6ea003678798..0658ee3b014c 100644
+--- a/drivers/net/dsa/mv88e6xxx/serdes.c
++++ b/drivers/net/dsa/mv88e6xxx/serdes.c
+@@ -1271,9 +1271,9 @@ void mv88e6390_serdes_get_regs(struct mv88e6xxx_chip *chip, int port, void *_p)
+ 	}
+ }
+ 
+-static int mv88e6393x_serdes_port_errata(struct mv88e6xxx_chip *chip, int lane)
++static int mv88e6393x_serdes_erratum_4_6(struct mv88e6xxx_chip *chip, int lane)
+ {
+-	u16 reg, pcs;
++	u16 reg;
+ 	int err;
+ 
+ 	/* mv88e6393x family errata 4.6:
+@@ -1300,11 +1300,32 @@ static int mv88e6393x_serdes_port_errata(struct mv88e6xxx_chip *chip, int lane)
+ 		if (err)
+ 			return err;
+ 
+-		err = mv88e6390_serdes_power_sgmii(chip, lane, false);
+-		if (err)
+-			return err;
++		return mv88e6390_serdes_power_sgmii(chip, lane, false);
+ 	}
+ 
++	return 0;
++}
++
++int mv88e6393x_serdes_setup_errata(struct mv88e6xxx_chip *chip)
++{
++	int err;
++
++	err = mv88e6393x_serdes_erratum_4_6(chip, MV88E6393X_PORT0_LANE);
++	if (err)
++		return err;
++
++	err = mv88e6393x_serdes_erratum_4_6(chip, MV88E6393X_PORT9_LANE);
++	if (err)
++		return err;
++
++	return mv88e6393x_serdes_erratum_4_6(chip, MV88E6393X_PORT10_LANE);
++}
++
++static int mv88e6393x_serdes_erratum_4_8(struct mv88e6xxx_chip *chip, int lane)
++{
++	u16 reg, pcs;
++	int err;
++
+ 	/* mv88e6393x family errata 4.8:
+ 	 * When a SERDES port is operating in 1000BASE-X or SGMII mode link may
+ 	 * not come up after hardware reset or software reset of SERDES core.
+@@ -1334,29 +1355,21 @@ static int mv88e6393x_serdes_port_errata(struct mv88e6xxx_chip *chip, int lane)
+ 				      MV88E6393X_ERRATA_4_8_REG, reg);
+ }
+ 
+-int mv88e6393x_serdes_setup_errata(struct mv88e6xxx_chip *chip)
+-{
+-	int err;
+-
+-	err = mv88e6393x_serdes_port_errata(chip, MV88E6393X_PORT0_LANE);
+-	if (err)
+-		return err;
+-
+-	err = mv88e6393x_serdes_port_errata(chip, MV88E6393X_PORT9_LANE);
+-	if (err)
+-		return err;
+-
+-	return mv88e6393x_serdes_port_errata(chip, MV88E6393X_PORT10_LANE);
+-}
+-
+ int mv88e6393x_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
+ 			    bool on)
+ {
+ 	u8 cmode = chip->ports[port].cmode;
++	int err;
+ 
+ 	if (port != 0 && port != 9 && port != 10)
+ 		return -EOPNOTSUPP;
+ 
++	if (on) {
++		err = mv88e6393x_serdes_erratum_4_8(chip, lane);
++		if (err)
++			return err;
++	}
++
+ 	switch (cmode) {
+ 	case MV88E6XXX_PORT_STS_CMODE_SGMII:
+ 	case MV88E6XXX_PORT_STS_CMODE_1000BASEX:
 -- 
 2.32.0
 
