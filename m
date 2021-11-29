@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 225FF4619E0
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 15:39:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7085E4619DE
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 15:39:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378715AbhK2Om0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 09:42:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40626 "EHLO
+        id S1378621AbhK2OmZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 09:42:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379018AbhK2OkW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 09:40:22 -0500
+        with ESMTP id S1379003AbhK2OkT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 09:40:19 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CDD7C08ED7C;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A762C08ED73;
         Mon, 29 Nov 2021 05:10:13 -0800 (PST)
 Received: from mail.kernel.org (unknown [198.145.29.99])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 34A24B81135;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14ADEB81134;
         Mon, 29 Nov 2021 13:10:12 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPS id E384360E92;
+Received: by mail.kernel.org (Postfix) with ESMTPS id CD94C60E53;
         Mon, 29 Nov 2021 13:10:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1638191410;
-        bh=7Hj74nheowp4ciRWkGklKqvWkQVJ89Ooc5h5UfcuYBM=;
+        bh=s41b6GiY1ZU+Ca9khnTQavt7z2c/AiOPUYC9uapD8DI=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fRHoLCNswiFv59k1AW5iqrC3x+5k0MKz4B585EtViCRV/mEllIR1cWh6j4ahYv/Wo
-         Hj/E7WRHfrW/WNiuVoJ6loTCwArEJBUJZl4qfYg+0CDbUtuGUE8aWq0adAiwzs5muR
-         YSBF+YT6cGSnHpW3kQS3qrlcwYyJ99W063zbohFT7Q+wbbaIqlfl8XM/JzK5ZhTaCs
-         DW5x6XAhB9xC8C4HNyUiDBCXyDIpMxnbL0SOn19Ptaoyitd8hgyE2c6IztdGOgl7oN
-         h3RVpFjNZdnPkr4qogjTB8olk5ILnD6DBiKodppcviBBydbf71SOuSKZG8onWZno4W
-         iadGbENRFCxGA==
+        b=VUcyHcr2GSfOkcNP6RYeTfC6yniIa3Dx+QQ7n3XA7iSEXm1AD79nWNfwDkOR9ai8v
+         R+AXqiMNAWufoVVeazpqfIs7JYbFrfw4YmDQKl3NP9rJiYrXi5G/A8dbJylo/iEbrS
+         mGHbHbAPVhIeI6ttkdoncGc2M0p+qPu3gBtGwejwj4vKCeeFJB+lEKMk3Wtm9dibrH
+         dRlvMJFTbIPk+IYJdOcISiRjE1HizXa8obry+s6VJVUq4pFltnMXlyKeDLyp+6ccQJ
+         HcZysrRbNlc+yD9ofnc42WRuHpXFnuBm5ZKuGxZp3JJoock0o9eLL1q5ImyQOuXKIv
+         1Gfdvgi0Z25JQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DCE1860A4D;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C73B9609D5;
         Mon, 29 Nov 2021 13:10:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v1] devlink: Remove misleading internal_flags from
- health reporter dump
+Subject: Re: [PATCH v2 net-next] net: snmp: add statistics for tcp small queue
+ check
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163819141090.10588.4054297154663803863.git-patchwork-notify@kernel.org>
+Message-Id: <163819141081.10588.17086173547137310725.git-patchwork-notify@kernel.org>
 Date:   Mon, 29 Nov 2021 13:10:10 +0000
-References: <f85ab0a57f0206e9452c32ab28dc81e1b2aae3d4.1638101585.git.leonro@nvidia.com>
-In-Reply-To: <f85ab0a57f0206e9452c32ab28dc81e1b2aae3d4.1638101585.git.leonro@nvidia.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, leonro@nvidia.com,
-        ayal@mellanox.com, jiri@nvidia.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, saeedm@mellanox.com
+References: <20211128060102.6504-1-imagedong@tencent.com>
+In-Reply-To: <20211128060102.6504-1-imagedong@tencent.com>
+To:     Menglong Dong <menglong8.dong@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, edumazet@google.com, imagedong@tencent.com,
+        ycheng@google.com, kuniyu@amazon.co.jp,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -57,20 +58,20 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Sun, 28 Nov 2021 14:14:46 +0200 you wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
+On Sun, 28 Nov 2021 14:01:02 +0800 you wrote:
+> From: Menglong Dong <imagedong@tencent.com>
 > 
-> DEVLINK_CMD_HEALTH_REPORTER_DUMP_GET command doesn't have .doit callback
-> and has no use in internal_flags at all. Remove this misleading assignment.
+> Once tcp small queue check failed in tcp_small_queue_check(), the
+> throughput of tcp will be limited, and it's hard to distinguish
+> whether it is out of tcp congestion control.
 > 
-> Fixes: e44ef4e4516c ("devlink: Hang reporter's dump method on a dumpit cb")
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> Add statistics of LINUX_MIB_TCPSMALLQUEUEFAILURE for this scene.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v1] devlink: Remove misleading internal_flags from health reporter dump
-    https://git.kernel.org/netdev/net-next/c/e9538f8270db
+  - [v2,net-next] net: snmp: add statistics for tcp small queue check
+    https://git.kernel.org/netdev/net-next/c/aeeecb889165
 
 You are awesome, thank you!
 -- 
