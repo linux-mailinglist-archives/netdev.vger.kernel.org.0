@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D3894612C9
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 11:45:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B40254612CA
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 11:46:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352490AbhK2Ksy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 05:48:54 -0500
-Received: from so254-9.mailgun.net ([198.61.254.9]:36032 "EHLO
+        id S1345699AbhK2KtV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 05:49:21 -0500
+Received: from so254-9.mailgun.net ([198.61.254.9]:29827 "EHLO
         so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351301AbhK2Kqy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 05:46:54 -0500
+        with ESMTP id S1345458AbhK2KrV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 05:47:21 -0500
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1638182616; h=Date: Message-ID: Cc: To: References:
+ s=smtp; t=1638182644; h=Date: Message-ID: Cc: To: References:
  In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=KDEueJuZ/qunvbMBJmEsrbgcZilnFPukYMrEY6XOGsA=;
- b=mYT67lhzuRBzXzMjPUz0gg+piHGkLjRqmkTY0lmiM99pUlPLxzmx2BElhZGtM4iqYkSP5EeM
- h4TMk4GuRX+E4yKvW6YMhWJ6E710tFG8vU2sFs13Pn/2YB74cpnZUJuENmIGAfa1yOXO1Byu
- DSXCTasRDBK5cSGJQr6cfdj4huU=
+ Content-Type: Sender; bh=2I88Xn2Ts20lCCx2wTdYz1XRBgOWv3XNLuEXT6BszcU=;
+ b=Ftn8HZbr5Rg/ytnq+gZPSByL5bJAt5k6msLaWVqjLZ8SKRIByI+j+8GaPvWiYH0tRkZ60Nch
+ Jhmy/NljGUF5+sMGMtw+5ZErD9Du6blARRSMjzHh5czBnEUS16i6g6OqWbsWQn65b+PWTXBx
+ ZMMX/JoXakl30Mjt7pT486qbMBk=
 X-Mailgun-Sending-Ip: 198.61.254.9
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
- 61a4aed8e7d68470af9ef1f7 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 29 Nov 2021 10:43:36
+ smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
+ 61a4aef36bacc185a5988642 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 29 Nov 2021 10:44:03
  GMT
 Sender: kvalo=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id A868EC43618; Mon, 29 Nov 2021 10:43:35 +0000 (UTC)
+        id 25680C43617; Mon, 29 Nov 2021 10:44:03 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -39,18 +39,18 @@ Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A7339C4338F;
-        Mon, 29 Nov 2021 10:43:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org A7339C4338F
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 5F758C4338F;
+        Mon, 29 Nov 2021 10:44:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 5F758C4338F
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: rsi: Fix use-after-free in rsi_rx_done_handler()
+Subject: Re: rsi: Fix out-of-bounds read in rsi_read_pkt()
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <YXxQL/vIiYcZUu/j@10-18-43-117.dynapool.wireless.nyu.edu>
-References: <YXxQL/vIiYcZUu/j@10-18-43-117.dynapool.wireless.nyu.edu>
+In-Reply-To: <YXxXS4wgu2OsmlVv@10-18-43-117.dynapool.wireless.nyu.edu>
+References: <YXxXS4wgu2OsmlVv@10-18-43-117.dynapool.wireless.nyu.edu>
 To:     Zekun Shen <bruceshenzk@gmail.com>
 Cc:     bruceshenzk@gmail.com, Amitkumar Karwar <amitkarwar@gmail.com>,
         Siva Rebbagondla <siva8118@gmail.com>,
@@ -59,61 +59,61 @@ Cc:     bruceshenzk@gmail.com, Amitkumar Karwar <amitkarwar@gmail.com>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, brendandg@nyu.edu
 User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <163818261048.17830.10234717976356726248.kvalo@codeaurora.org>
-Date:   Mon, 29 Nov 2021 10:43:35 +0000 (UTC)
+Message-ID: <163818263840.17830.8833980282419923502.kvalo@codeaurora.org>
+Date:   Mon, 29 Nov 2021 10:44:03 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Zekun Shen <bruceshenzk@gmail.com> wrote:
 
-> When freeing rx_cb->rx_skb, the pointer is not set to NULL,
-> a later rsi_rx_done_handler call will try to read the freed
-> address.
-> This bug will very likley lead to double free, although
-> detected early as use-after-free bug.
+> rsi_get_* functions rely on an offset variable from usb
+> input. The size of usb input is RSI_MAX_RX_USB_PKT_SIZE(3000),
+> while 2-byte offset can be up to 0xFFFF. Thus a large offset
+> can cause out-of-bounds read.
 > 
-> The bug is triggerable with a compromised/malfunctional usb
-> device. After applying the patch, the same input no longer
-> triggers the use-after-free.
+> The patch adds a bound checking condition when rcv_pkt_len is 0,
+> indicating it's USB. It's unclear whether this is triggerable
+> from other type of bus. The following check might help in that case.
+> offset > rcv_pkt_len - FRAME_DESC_SZ
 > 
-> Attached is the kasan report from fuzzing.
+> The bug is trigerrable with conpromised/malfunctioning USB devices.
+> I tested the patch with the crashing input and got no more bug report.
 > 
-> BUG: KASAN: use-after-free in rsi_rx_done_handler+0x354/0x430 [rsi_usb]
-> Read of size 4 at addr ffff8880188e5930 by task modprobe/231
+> Attached is the KASAN report from fuzzing.
+> 
+> BUG: KASAN: slab-out-of-bounds in rsi_read_pkt+0x42e/0x500 [rsi_91x]
+> Read of size 2 at addr ffff888019439fdb by task RX-Thread/227
+> 
+> CPU: 0 PID: 227 Comm: RX-Thread Not tainted 5.6.0 #66
 > Call Trace:
->  <IRQ>
 >  dump_stack+0x76/0xa0
 >  print_address_description.constprop.0+0x16/0x200
->  ? rsi_rx_done_handler+0x354/0x430 [rsi_usb]
->  ? rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+>  ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
+>  ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
 >  __kasan_report.cold+0x37/0x7c
->  ? dma_direct_unmap_page+0x90/0x110
->  ? rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+>  ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
 >  kasan_report+0xe/0x20
->  rsi_rx_done_handler+0x354/0x430 [rsi_usb]
->  __usb_hcd_giveback_urb+0x1e4/0x380
->  usb_giveback_urb_bh+0x241/0x4f0
->  ? __usb_hcd_giveback_urb+0x380/0x380
->  ? apic_timer_interrupt+0xa/0x20
->  tasklet_action_common.isra.0+0x135/0x330
->  __do_softirq+0x18c/0x634
->  ? handle_irq_event+0xcd/0x157
->  ? handle_edge_irq+0x1eb/0x7b0
->  irq_exit+0x114/0x140
->  do_IRQ+0x91/0x1e0
->  common_interrupt+0xf/0xf
->  </IRQ>
+>  rsi_read_pkt+0x42e/0x500 [rsi_91x]
+>  rsi_usb_rx_thread+0x1b1/0x2fc [rsi_usb]
+>  ? rsi_probe+0x16a0/0x16a0 [rsi_usb]
+>  ? _raw_spin_lock_irqsave+0x7b/0xd0
+>  ? _raw_spin_trylock_bh+0x120/0x120
+>  ? __wake_up_common+0x10b/0x520
+>  ? rsi_probe+0x16a0/0x16a0 [rsi_usb]
+>  kthread+0x2b5/0x3b0
+>  ? kthread_create_on_node+0xd0/0xd0
+>  ret_from_fork+0x22/0x40
 > 
 > Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
 > Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
 
 Patch applied to wireless-drivers-next.git, thanks.
 
-b07e3c6ebc0c rsi: Fix use-after-free in rsi_rx_done_handler()
+f1cb3476e48b rsi: Fix out-of-bounds read in rsi_read_pkt()
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/YXxQL/vIiYcZUu/j@10-18-43-117.dynapool.wireless.nyu.edu/
+https://patchwork.kernel.org/project/linux-wireless/patch/YXxXS4wgu2OsmlVv@10-18-43-117.dynapool.wireless.nyu.edu/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
