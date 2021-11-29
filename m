@@ -2,74 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13A58462420
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 23:13:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D87974623CE
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 22:55:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231979AbhK2WQl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 17:16:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56646 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231984AbhK2WQj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 17:16:39 -0500
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F95C0E49B2;
-        Mon, 29 Nov 2021 13:50:44 -0800 (PST)
-Received: from localhost (unknown [IPv6:2601:281:8300:104d::5f6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id A83DC2CD;
-        Mon, 29 Nov 2021 21:48:42 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net A83DC2CD
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1638222522; bh=39Wf2jQacq55Jsij//SwK4jCDJVc1MaR/DIe2vg0nK4=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=BPyMy+zVcVhpN0/7pbgHM7TivyCjGoBSJEAyPq3G3hcxOzNjUqWACwwS1K1n7k/gO
-         h6gETcTpEgugfhHPiq7FyFUYD6tQdYnXjUSvpBYWneyssfWLkdYBA9Ng2DDQ+hgiCu
-         nVRQTHATJZJHW0S15fOOJAWhN/iSNsE2VtFSe1RLyrpRvJ7Ddck9yG8/+UWQ5Y81XX
-         PDQU8HIGDO8xaxbgj5t9i38qwwfQQ4imm33SoM+nxRgaCjgrhNiopUZlXRS9IPJeT+
-         36OekPjlZV7uU8yCuE5bqNEfzV6gNSyKLfj0BRX9HcIWrgVE+ehKTgEKRnHMmGqG5h
-         2QbCWm3I5FbWg==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/1 v2] Documentation: Add minimum pahole version
-In-Reply-To: <YZfzQ0DvHD5o26Bt@kernel.org>
-References: <YZfzQ0DvHD5o26Bt@kernel.org>
-Date:   Mon, 29 Nov 2021 14:48:42 -0700
-Message-ID: <87k0gqsked.fsf@meer.lwn.net>
+        id S231518AbhK2V6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 16:58:50 -0500
+Received: from smtp06.smtpout.orange.fr ([80.12.242.128]:52229 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229717AbhK2V4t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 16:56:49 -0500
+Received: from pop-os.home ([86.243.171.122])
+        by smtp.orange.fr with ESMTPA
+        id roaWmkOaeRLGproaWmw5eq; Mon, 29 Nov 2021 22:53:29 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Mon, 29 Nov 2021 22:53:29 +0100
+X-ME-IP: 86.243.171.122
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     mw@semihalf.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, atenart@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] net: marvell: mvpp2: Fix the computation of shared CPUs
+Date:   Mon, 29 Nov 2021 22:53:27 +0100
+Message-Id: <1093499694f6b375617197eae87db2083a17aaf4.1638222729.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Arnaldo Carvalho de Melo <acme@kernel.org> writes:
+'bitmap_fill()' fills a bitmap one 'long' at a time.
+It is likely that an exact number of bits is expected.
 
-> A report was made in https://github.com/acmel/dwarves/issues/26 about
-> pahole not being listed in the process/changes.rst file as being needed
-> for building the kernel, address that.
->
-> Link: https://github.com/acmel/dwarves/issues/26
-> Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-> Acked-by: Andrii Nakryiko <andrii@kernel.org>
-> Acked-by: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Cc: Jiri Olsa <jolsa@redhat.com>
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: bpf@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Link: http://lore.kernel.org/lkml/YZPQ6+u2wTHRfR+W@kernel.org
-> Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-> ---
->  Documentation/process/changes.rst | 11 +++++++++++
->  1 file changed, 11 insertions(+)
+Use 'bitmap_set()' instead in order not to set unexpected bits.
 
-Applied (with the duplicate SOB removed), thanks.
+Fixes: e531f76757eb ("net: mvpp2: handle cases where more CPUs are available than s/w threads")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+Having extra bits set looks harmless to me, but would require some
+unneeded locking.
+---
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-jon
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index a48e804c46f2..252e215a14f1 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -7454,7 +7454,7 @@ static int mvpp2_probe(struct platform_device *pdev)
+ 
+ 	shared = num_present_cpus() - priv->nthreads;
+ 	if (shared > 0)
+-		bitmap_fill(&priv->lock_map,
++		bitmap_set(&priv->lock_map, 0,
+ 			    min_t(int, shared, MVPP2_MAX_THREADS));
+ 
+ 	for (i = 0; i < MVPP2_MAX_THREADS; i++) {
+-- 
+2.30.2
+
