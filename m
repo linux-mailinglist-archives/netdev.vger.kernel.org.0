@@ -2,218 +2,304 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E6F5461D39
+	by mail.lfdr.de (Postfix) with ESMTP id 67467461D3A
 	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 18:59:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347117AbhK2SCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 13:02:19 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:40496 "EHLO
+        id S1349908AbhK2SCU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 13:02:20 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:40500 "EHLO
         sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348295AbhK2SAS (ORCPT
+        with ESMTP id S1349524AbhK2SAS (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 13:00:18 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 60FFECE13C1
+        by sin.source.kernel.org (Postfix) with ESMTPS id DB46BCE13C2
         for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 17:56:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65632C53FCD
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCBB1C53FC7
         for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 17:56:57 +0000 (UTC)
 Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="PIuNwofN"
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="UHnGiViM"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1638208616;
+        t=1638208617;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=a3b2xJl1knSQQ8dEP9b2CqqIKHi4FdugAOa9My70hxk=;
-        b=PIuNwofNY0FcRNfpRYyxtUhtHFNB+05J5q5ZLj+v8ely46VACFcgEmsWm93b+dRFzRESYb
-        w2AbWya9UkMRVKVY7xQdkp48IT8qfnJFSCh67CED0ZIpOxjc2zk4kOGLEtTt6/ZTkIbtNi
-        D4B93VeW7dc8TDRRlxplaq61ZoY1wro=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id ee95b73c (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
+        bh=SZEgWodBLzbj8Z2U6w4Ybq2WYqWUzWPsSXssWhx4fKc=;
+        b=UHnGiViMyyW/zXsnr9yNqR+vzljOlPShCCQafGWYzeTCiupzOsEYSdIUYCHPGYXknBgDxf
+        1nkyM9qIQwb9kjQEROI7a88dAkURjEptE82bEJIsKHHHmaNzysv5dsSid4Y6nu0ZY8tmCl
+        7lbrQyZIz0hPqfYsW9u2qaA6K3XU0Qw=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 7db5fc15 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
         for <netdev@vger.kernel.org>;
-        Mon, 29 Nov 2021 17:56:56 +0000 (UTC)
+        Mon, 29 Nov 2021 17:56:57 +0000 (UTC)
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Hangbin Liu <liuhangbin@gmail.com>, Xiumei Mu <xmu@redhat.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>, stable@vger.kernel.org
-Subject: [PATCH net 06/10] wireguard: device: reset peer src endpoint when netns exits
-Date:   Mon, 29 Nov 2021 10:39:25 -0500
-Message-Id: <20211129153929.3457-7-Jason@zx2c4.com>
+        Streun Fabio <fstreun@student.ethz.ch>,
+        Joel Wanner <joel.wanner@inf.ethz.ch>, stable@vger.kernel.org
+Subject: [PATCH net 07/10] wireguard: receive: use ring buffer for incoming handshakes
+Date:   Mon, 29 Nov 2021 10:39:26 -0500
+Message-Id: <20211129153929.3457-8-Jason@zx2c4.com>
 In-Reply-To: <20211129153929.3457-1-Jason@zx2c4.com>
 References: <20211129153929.3457-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Each peer's endpoint contains a dst_cache entry that takes a reference
-to another netdev. When the containing namespace exits, we take down the
-socket and prevent future sockets from being created (by setting
-creating_net to NULL), which removes that potential reference on the
-netns. However, it doesn't release references to the netns that a netdev
-cached in dst_cache might be taking, so the netns still might fail to
-exit. Since the socket is gimped anyway, we can simply clear all the
-dst_caches (by way of clearing the endpoint src), which will release all
-references.
+Apparently the spinlock on incoming_handshake's skb_queue is highly
+contended, and a torrent of handshake or cookie packets can bring the
+data plane to its knees, simply by virtue of enqueueing the handshake
+packets to be processed asynchronously. So, we try switching this to a
+ring buffer to hopefully have less lock contention. This alleviates the
+problem somewhat, though it still isn't perfect, so future patches will
+have to improve this further. However, it at least doesn't completely
+diminish the data plane.
 
-However, the current dst_cache_reset function only releases those
-references lazily. But it turns out that all of our usages of
-wg_socket_clear_peer_endpoint_src are called from contexts that are not
-exactly high-speed or bottle-necked. For example, when there's
-connection difficulty, or when userspace is reconfiguring the interface.
-And in particular for this patch, when the netns is exiting. So for
-those cases, it makes more sense to call dst_release immediately. For
-that, we add a small helper function to dst_cache.
-
-This patch also adds a test to netns.sh from Hangbin Liu to ensure this
-doesn't regress.
-
-Test-by: Hangbin Liu <liuhangbin@gmail.com>
-Reported-by: Xiumei Mu <xmu@redhat.com>
-Cc: Hangbin Liu <liuhangbin@gmail.com>
-Cc: Toke Høiland-Jørgensen <toke@redhat.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Fixes: 900575aa33a3 ("wireguard: device: avoid circular netns references")
+Reported-by: Streun Fabio <fstreun@student.ethz.ch>
+Reported-by: Joel Wanner <joel.wanner@inf.ethz.ch>
 Cc: stable@vger.kernel.org
+Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- drivers/net/wireguard/device.c             |  3 +++
- drivers/net/wireguard/socket.c             |  2 +-
- include/net/dst_cache.h                    | 11 ++++++++++
- net/core/dst_cache.c                       | 19 +++++++++++++++++
- tools/testing/selftests/wireguard/netns.sh | 24 +++++++++++++++++++++-
- 5 files changed, 57 insertions(+), 2 deletions(-)
+ drivers/net/wireguard/device.c   | 36 ++++++++++++++++----------------
+ drivers/net/wireguard/device.h   |  9 +++-----
+ drivers/net/wireguard/queueing.c |  6 +++---
+ drivers/net/wireguard/queueing.h |  2 +-
+ drivers/net/wireguard/receive.c  | 27 +++++++++++-------------
+ 5 files changed, 37 insertions(+), 43 deletions(-)
 
 diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
-index 551ddaaaf540..77e64ea6be67 100644
+index 77e64ea6be67..a46067c38bf5 100644
 --- a/drivers/net/wireguard/device.c
 +++ b/drivers/net/wireguard/device.c
-@@ -398,6 +398,7 @@ static struct rtnl_link_ops link_ops __read_mostly = {
- static void wg_netns_pre_exit(struct net *net)
+@@ -98,6 +98,7 @@ static int wg_stop(struct net_device *dev)
  {
- 	struct wg_device *wg;
-+	struct wg_peer *peer;
+ 	struct wg_device *wg = netdev_priv(dev);
+ 	struct wg_peer *peer;
++	struct sk_buff *skb;
  
- 	rtnl_lock();
- 	list_for_each_entry(wg, &device_list, device_list) {
-@@ -407,6 +408,8 @@ static void wg_netns_pre_exit(struct net *net)
- 			mutex_lock(&wg->device_update_lock);
- 			rcu_assign_pointer(wg->creating_net, NULL);
- 			wg_socket_reinit(wg, NULL, NULL);
-+			list_for_each_entry(peer, &wg->peer_list, peer_list)
-+				wg_socket_clear_peer_endpoint_src(peer);
- 			mutex_unlock(&wg->device_update_lock);
- 		}
+ 	mutex_lock(&wg->device_update_lock);
+ 	list_for_each_entry(peer, &wg->peer_list, peer_list) {
+@@ -108,7 +109,9 @@ static int wg_stop(struct net_device *dev)
+ 		wg_noise_reset_last_sent_handshake(&peer->last_sent_handshake);
  	}
-diff --git a/drivers/net/wireguard/socket.c b/drivers/net/wireguard/socket.c
-index 8c496b747108..6f07b949cb81 100644
---- a/drivers/net/wireguard/socket.c
-+++ b/drivers/net/wireguard/socket.c
-@@ -308,7 +308,7 @@ void wg_socket_clear_peer_endpoint_src(struct wg_peer *peer)
+ 	mutex_unlock(&wg->device_update_lock);
+-	skb_queue_purge(&wg->incoming_handshakes);
++	while ((skb = ptr_ring_consume(&wg->handshake_queue.ring)) != NULL)
++		kfree_skb(skb);
++	atomic_set(&wg->handshake_queue_len, 0);
+ 	wg_socket_reinit(wg, NULL, NULL);
+ 	return 0;
+ }
+@@ -235,14 +238,13 @@ static void wg_destruct(struct net_device *dev)
+ 	destroy_workqueue(wg->handshake_receive_wq);
+ 	destroy_workqueue(wg->handshake_send_wq);
+ 	destroy_workqueue(wg->packet_crypt_wq);
+-	wg_packet_queue_free(&wg->decrypt_queue);
+-	wg_packet_queue_free(&wg->encrypt_queue);
++	wg_packet_queue_free(&wg->handshake_queue, true);
++	wg_packet_queue_free(&wg->decrypt_queue, false);
++	wg_packet_queue_free(&wg->encrypt_queue, false);
+ 	rcu_barrier(); /* Wait for all the peers to be actually freed. */
+ 	wg_ratelimiter_uninit();
+ 	memzero_explicit(&wg->static_identity, sizeof(wg->static_identity));
+-	skb_queue_purge(&wg->incoming_handshakes);
+ 	free_percpu(dev->tstats);
+-	free_percpu(wg->incoming_handshakes_worker);
+ 	kvfree(wg->index_hashtable);
+ 	kvfree(wg->peer_hashtable);
+ 	mutex_unlock(&wg->device_update_lock);
+@@ -298,7 +300,6 @@ static int wg_newlink(struct net *src_net, struct net_device *dev,
+ 	init_rwsem(&wg->static_identity.lock);
+ 	mutex_init(&wg->socket_update_lock);
+ 	mutex_init(&wg->device_update_lock);
+-	skb_queue_head_init(&wg->incoming_handshakes);
+ 	wg_allowedips_init(&wg->peer_allowedips);
+ 	wg_cookie_checker_init(&wg->cookie_checker, wg);
+ 	INIT_LIST_HEAD(&wg->peer_list);
+@@ -316,16 +317,10 @@ static int wg_newlink(struct net *src_net, struct net_device *dev,
+ 	if (!dev->tstats)
+ 		goto err_free_index_hashtable;
+ 
+-	wg->incoming_handshakes_worker =
+-		wg_packet_percpu_multicore_worker_alloc(
+-				wg_packet_handshake_receive_worker, wg);
+-	if (!wg->incoming_handshakes_worker)
+-		goto err_free_tstats;
+-
+ 	wg->handshake_receive_wq = alloc_workqueue("wg-kex-%s",
+ 			WQ_CPU_INTENSIVE | WQ_FREEZABLE, 0, dev->name);
+ 	if (!wg->handshake_receive_wq)
+-		goto err_free_incoming_handshakes;
++		goto err_free_tstats;
+ 
+ 	wg->handshake_send_wq = alloc_workqueue("wg-kex-%s",
+ 			WQ_UNBOUND | WQ_FREEZABLE, 0, dev->name);
+@@ -347,10 +342,15 @@ static int wg_newlink(struct net *src_net, struct net_device *dev,
+ 	if (ret < 0)
+ 		goto err_free_encrypt_queue;
+ 
+-	ret = wg_ratelimiter_init();
++	ret = wg_packet_queue_init(&wg->handshake_queue, wg_packet_handshake_receive_worker,
++				   MAX_QUEUED_INCOMING_HANDSHAKES);
+ 	if (ret < 0)
+ 		goto err_free_decrypt_queue;
+ 
++	ret = wg_ratelimiter_init();
++	if (ret < 0)
++		goto err_free_handshake_queue;
++
+ 	ret = register_netdevice(dev);
+ 	if (ret < 0)
+ 		goto err_uninit_ratelimiter;
+@@ -367,18 +367,18 @@ static int wg_newlink(struct net *src_net, struct net_device *dev,
+ 
+ err_uninit_ratelimiter:
+ 	wg_ratelimiter_uninit();
++err_free_handshake_queue:
++	wg_packet_queue_free(&wg->handshake_queue, false);
+ err_free_decrypt_queue:
+-	wg_packet_queue_free(&wg->decrypt_queue);
++	wg_packet_queue_free(&wg->decrypt_queue, false);
+ err_free_encrypt_queue:
+-	wg_packet_queue_free(&wg->encrypt_queue);
++	wg_packet_queue_free(&wg->encrypt_queue, false);
+ err_destroy_packet_crypt:
+ 	destroy_workqueue(wg->packet_crypt_wq);
+ err_destroy_handshake_send:
+ 	destroy_workqueue(wg->handshake_send_wq);
+ err_destroy_handshake_receive:
+ 	destroy_workqueue(wg->handshake_receive_wq);
+-err_free_incoming_handshakes:
+-	free_percpu(wg->incoming_handshakes_worker);
+ err_free_tstats:
+ 	free_percpu(dev->tstats);
+ err_free_index_hashtable:
+diff --git a/drivers/net/wireguard/device.h b/drivers/net/wireguard/device.h
+index 854bc3d97150..43c7cebbf50b 100644
+--- a/drivers/net/wireguard/device.h
++++ b/drivers/net/wireguard/device.h
+@@ -39,21 +39,18 @@ struct prev_queue {
+ 
+ struct wg_device {
+ 	struct net_device *dev;
+-	struct crypt_queue encrypt_queue, decrypt_queue;
++	struct crypt_queue encrypt_queue, decrypt_queue, handshake_queue;
+ 	struct sock __rcu *sock4, *sock6;
+ 	struct net __rcu *creating_net;
+ 	struct noise_static_identity static_identity;
+-	struct workqueue_struct *handshake_receive_wq, *handshake_send_wq;
+-	struct workqueue_struct *packet_crypt_wq;
+-	struct sk_buff_head incoming_handshakes;
+-	int incoming_handshake_cpu;
+-	struct multicore_worker __percpu *incoming_handshakes_worker;
++	struct workqueue_struct *packet_crypt_wq,*handshake_receive_wq, *handshake_send_wq;
+ 	struct cookie_checker cookie_checker;
+ 	struct pubkey_hashtable *peer_hashtable;
+ 	struct index_hashtable *index_hashtable;
+ 	struct allowedips peer_allowedips;
+ 	struct mutex device_update_lock, socket_update_lock;
+ 	struct list_head device_list, peer_list;
++	atomic_t handshake_queue_len;
+ 	unsigned int num_peers, device_update_gen;
+ 	u32 fwmark;
+ 	u16 incoming_port;
+diff --git a/drivers/net/wireguard/queueing.c b/drivers/net/wireguard/queueing.c
+index 48e7b982a307..1de413b19e34 100644
+--- a/drivers/net/wireguard/queueing.c
++++ b/drivers/net/wireguard/queueing.c
+@@ -38,11 +38,11 @@ int wg_packet_queue_init(struct crypt_queue *queue, work_func_t function,
+ 	return 0;
+ }
+ 
+-void wg_packet_queue_free(struct crypt_queue *queue)
++void wg_packet_queue_free(struct crypt_queue *queue, bool purge)
  {
- 	write_lock_bh(&peer->endpoint_lock);
- 	memset(&peer->endpoint.src6, 0, sizeof(peer->endpoint.src6));
--	dst_cache_reset(&peer->endpoint_cache);
-+	dst_cache_reset_now(&peer->endpoint_cache);
- 	write_unlock_bh(&peer->endpoint_lock);
+ 	free_percpu(queue->worker);
+-	WARN_ON(!__ptr_ring_empty(&queue->ring));
+-	ptr_ring_cleanup(&queue->ring, NULL);
++	WARN_ON(!purge && !__ptr_ring_empty(&queue->ring));
++	ptr_ring_cleanup(&queue->ring, purge ? (void(*)(void*))kfree_skb : NULL);
  }
  
-diff --git a/include/net/dst_cache.h b/include/net/dst_cache.h
-index 67634675e919..df6622a5fe98 100644
---- a/include/net/dst_cache.h
-+++ b/include/net/dst_cache.h
-@@ -79,6 +79,17 @@ static inline void dst_cache_reset(struct dst_cache *dst_cache)
- 	dst_cache->reset_ts = jiffies;
- }
+ #define NEXT(skb) ((skb)->prev)
+diff --git a/drivers/net/wireguard/queueing.h b/drivers/net/wireguard/queueing.h
+index 4ef2944a68bc..e2388107f7fd 100644
+--- a/drivers/net/wireguard/queueing.h
++++ b/drivers/net/wireguard/queueing.h
+@@ -23,7 +23,7 @@ struct sk_buff;
+ /* queueing.c APIs: */
+ int wg_packet_queue_init(struct crypt_queue *queue, work_func_t function,
+ 			 unsigned int len);
+-void wg_packet_queue_free(struct crypt_queue *queue);
++void wg_packet_queue_free(struct crypt_queue *queue, bool purge);
+ struct multicore_worker __percpu *
+ wg_packet_percpu_multicore_worker_alloc(work_func_t function, void *ptr);
  
-+/**
-+ *	dst_cache_reset_now - invalidate the cache contents immediately
-+ *	@dst_cache: the cache
-+ *
-+ *	The caller must be sure there are no concurrent users, as this frees
-+ *	all dst_cache users immediately, rather than waiting for the next
-+ *	per-cpu usage like dst_cache_reset does. Most callers should use the
-+ *	higher speed lazily-freed dst_cache_reset function instead.
-+ */
-+void dst_cache_reset_now(struct dst_cache *dst_cache);
-+
- /**
-  *	dst_cache_init - initialize the cache, allocating the required storage
-  *	@dst_cache: the cache
-diff --git a/net/core/dst_cache.c b/net/core/dst_cache.c
-index be74ab4551c2..0ccfd5fa5cb9 100644
---- a/net/core/dst_cache.c
-+++ b/net/core/dst_cache.c
-@@ -162,3 +162,22 @@ void dst_cache_destroy(struct dst_cache *dst_cache)
- 	free_percpu(dst_cache->cache);
- }
- EXPORT_SYMBOL_GPL(dst_cache_destroy);
-+
-+void dst_cache_reset_now(struct dst_cache *dst_cache)
-+{
-+	int i;
-+
-+	if (!dst_cache->cache)
-+		return;
-+
-+	dst_cache->reset_ts = jiffies;
-+	for_each_possible_cpu(i) {
-+		struct dst_cache_pcpu *idst = per_cpu_ptr(dst_cache->cache, i);
-+		struct dst_entry *dst = idst->dst;
-+
-+		idst->cookie = 0;
-+		idst->dst = NULL;
-+		dst_release(dst);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(dst_cache_reset_now);
-diff --git a/tools/testing/selftests/wireguard/netns.sh b/tools/testing/selftests/wireguard/netns.sh
-index 2e5c1630885e..8a9461aa0878 100755
---- a/tools/testing/selftests/wireguard/netns.sh
-+++ b/tools/testing/selftests/wireguard/netns.sh
-@@ -613,6 +613,28 @@ ip0 link set wg0 up
- kill $ncat_pid
- ip0 link del wg0
+diff --git a/drivers/net/wireguard/receive.c b/drivers/net/wireguard/receive.c
+index 7dc84bcca261..f4e537e3e8ec 100644
+--- a/drivers/net/wireguard/receive.c
++++ b/drivers/net/wireguard/receive.c
+@@ -116,8 +116,8 @@ static void wg_receive_handshake_packet(struct wg_device *wg,
+ 		return;
+ 	}
  
-+# Ensure that dst_cache references don't outlive netns lifetime
-+ip1 link add dev wg0 type wireguard
-+ip2 link add dev wg0 type wireguard
-+configure_peers
-+ip1 link add veth1 type veth peer name veth2
-+ip1 link set veth2 netns $netns2
-+ip1 addr add fd00:aa::1/64 dev veth1
-+ip2 addr add fd00:aa::2/64 dev veth2
-+ip1 link set veth1 up
-+ip2 link set veth2 up
-+waitiface $netns1 veth1
-+waitiface $netns2 veth2
-+ip1 -6 route add default dev veth1 via fd00:aa::2
-+ip2 -6 route add default dev veth2 via fd00:aa::1
-+n1 wg set wg0 peer "$pub2" endpoint [fd00:aa::2]:2
-+n2 wg set wg0 peer "$pub1" endpoint [fd00:aa::1]:1
-+n1 ping6 -c 1 fd00::2
-+pp ip netns delete $netns1
-+pp ip netns delete $netns2
-+pp ip netns add $netns1
-+pp ip netns add $netns2
-+
- # Ensure there aren't circular reference loops
- ip1 link add wg1 type wireguard
- ip2 link add wg2 type wireguard
-@@ -631,7 +653,7 @@ while read -t 0.1 -r line 2>/dev/null || [[ $? -ne 142 ]]; do
- done < /dev/kmsg
- alldeleted=1
- for object in "${!objects[@]}"; do
--	if [[ ${objects["$object"]} != *createddestroyed ]]; then
-+	if [[ ${objects["$object"]} != *createddestroyed && ${objects["$object"]} != *createdcreateddestroyeddestroyed ]]; then
- 		echo "Error: $object: merely ${objects["$object"]}" >&3
- 		alldeleted=0
- 	fi
+-	under_load = skb_queue_len(&wg->incoming_handshakes) >=
+-		     MAX_QUEUED_INCOMING_HANDSHAKES / 8;
++	under_load = atomic_read(&wg->handshake_queue_len) >=
++			MAX_QUEUED_INCOMING_HANDSHAKES / 8;
+ 	if (under_load) {
+ 		last_under_load = ktime_get_coarse_boottime_ns();
+ 	} else if (last_under_load) {
+@@ -212,13 +212,14 @@ static void wg_receive_handshake_packet(struct wg_device *wg,
+ 
+ void wg_packet_handshake_receive_worker(struct work_struct *work)
+ {
+-	struct wg_device *wg = container_of(work, struct multicore_worker,
+-					    work)->ptr;
++	struct crypt_queue *queue = container_of(work, struct multicore_worker, work)->ptr;
++	struct wg_device *wg = container_of(queue, struct wg_device, handshake_queue);
+ 	struct sk_buff *skb;
+ 
+-	while ((skb = skb_dequeue(&wg->incoming_handshakes)) != NULL) {
++	while ((skb = ptr_ring_consume_bh(&queue->ring)) != NULL) {
+ 		wg_receive_handshake_packet(wg, skb);
+ 		dev_kfree_skb(skb);
++		atomic_dec(&wg->handshake_queue_len);
+ 		cond_resched();
+ 	}
+ }
+@@ -554,21 +555,17 @@ void wg_packet_receive(struct wg_device *wg, struct sk_buff *skb)
+ 	case cpu_to_le32(MESSAGE_HANDSHAKE_RESPONSE):
+ 	case cpu_to_le32(MESSAGE_HANDSHAKE_COOKIE): {
+ 		int cpu;
+-
+-		if (skb_queue_len(&wg->incoming_handshakes) >
+-			    MAX_QUEUED_INCOMING_HANDSHAKES ||
+-		    unlikely(!rng_is_initialized())) {
++		if (unlikely(!rng_is_initialized() ||
++			     ptr_ring_produce_bh(&wg->handshake_queue.ring, skb))) {
+ 			net_dbg_skb_ratelimited("%s: Dropping handshake packet from %pISpfsc\n",
+ 						wg->dev->name, skb);
+ 			goto err;
+ 		}
+-		skb_queue_tail(&wg->incoming_handshakes, skb);
+-		/* Queues up a call to packet_process_queued_handshake_
+-		 * packets(skb):
+-		 */
+-		cpu = wg_cpumask_next_online(&wg->incoming_handshake_cpu);
++		atomic_inc(&wg->handshake_queue_len);
++		cpu = wg_cpumask_next_online(&wg->handshake_queue.last_cpu);
++		/* Queues up a call to packet_process_queued_handshake_packets(skb): */
+ 		queue_work_on(cpu, wg->handshake_receive_wq,
+-			&per_cpu_ptr(wg->incoming_handshakes_worker, cpu)->work);
++			      &per_cpu_ptr(wg->handshake_queue.worker, cpu)->work);
+ 		break;
+ 	}
+ 	case cpu_to_le32(MESSAGE_DATA):
 -- 
 2.34.1
 
