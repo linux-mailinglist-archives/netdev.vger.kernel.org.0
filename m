@@ -2,227 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D63F460E40
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 05:58:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B7BA460E42
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 06:00:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232611AbhK2FBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 00:01:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55044 "EHLO
+        id S229946AbhK2FDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 00:03:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239218AbhK2E7Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 23:59:24 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F977C0613DD
-        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 20:55:26 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id j6-20020a17090a588600b001a78a5ce46aso14591307pji.0
-        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 20:55:26 -0800 (PST)
+        with ESMTP id S232000AbhK2FBm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 00:01:42 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD788C06175D
+        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 20:58:25 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id y13so66306553edd.13
+        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 20:58:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=2tgWJcHuCeT/qGLGpdTorajcshX7da/TcHZxbHFv3C8=;
-        b=O/SaN7LxiPIneVD8135QuHux5XNs5Lj8yywGPXBL48DLLfAt8T6qkfOUna0dCjBkoe
-         xK5AeV6uOTfmLGx5WZeMZyLB1/s4Q/cF/ea+nbFam7lYq7st95ed+M2KO9BXS5TiSIHN
-         GbYjkbaXC8z3EaNWgCxvwXd9yCmhg6BBqpdxNwsFm9jhe2dQtEJJSJeUdAY8sYtgrXGg
-         GUArqNCmlndWz7I2P0ai2+CciEPw+E6X7QkAbWVmUlNfbgQy6lbPoo6Mity9PlZRWeKn
-         KavGl3CxQt0MCBGO7MNGm98b0J5/tLgOVz9sgPt467LJK7E9V0nZB6YZw8MIt2A/v6WE
-         2xfQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=i6qj48g3hWlAT+PE0Bq+Pz+MZqvHl1s8iEv3kTvxvmI=;
+        b=f5bmLFfeoKpmMyfLoPGk9i/BNB/Tf1l18R3EVlw24nkxN7jbRV43CX1sx2G5tZJuL/
+         sCUcanzHKJnEyfhqRvSRWLzYgFkFY9w9kWZll9vUePA87HF4Eszl9I8hhTVRmwFTY09N
+         /ytwl5o8tRRxVVYFemjlNthogcqptiLCGUciuye2TcjottLvfozc3Go5Tpb5RtxQB/3L
+         5ZnC6ADUSvrG59j4f0E8wySV8dqqFsrOURiqtyAAebn7Pr+K/Un+vx9iXqH5uKF5gKfB
+         OLGcnFdxhojTDp/Eo2HSn48UuvScQc1nS2kDx9timaf/n4aOy3M+NoGd1+YXz4ZtvfRE
+         l7eg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2tgWJcHuCeT/qGLGpdTorajcshX7da/TcHZxbHFv3C8=;
-        b=XptD+MiEitAkqwpFsl1Wkhb6Dc98C4lokmPral9ti8PnDCpv1wnzc/5enP4DJSZkkV
-         R+T0+gGURj6Ch1wFSl0ZFCBJbwSO2IDiBcgUBOXXJqPOgKAvB8n20J10NTxrt8USxoFi
-         4T5bhrgS0BZiMLE65iXAx/2q1fxtU5d0ydi4dnQ7z0/SakGCoEKG89bzEqN+Ry/GFA6y
-         z5hQ09DWqVhCL2Hl1BdFlsUcdcV1Ft76JnCO9RNvtwhZNpGRq/aCb97b8abRhnSU0nf3
-         lj1vQx/fV+jXNGgoGaxTAVCmLlZdWav3/fiMmq8u79AAEebeYAvBUmOPBLia8vsalzst
-         EJKA==
-X-Gm-Message-State: AOAM532cdoUUb5w67unS3+PGnUtLIckdCclO+82ihU4YAts/NRIvDgu6
-        zfD98FSxVARXuSqrktX0r32HfLT/E8iH4g==
-X-Google-Smtp-Source: ABdhPJyY8wQlR84YHCVha2QjT6V+0E1NmVU+mzo1Ihph9IEdLVXmUALa2RwexsIZvN6j0akLkEivqQ==
-X-Received: by 2002:a17:903:31d1:b0:141:f14b:6ebd with SMTP id v17-20020a17090331d100b00141f14b6ebdmr56959881ple.75.1638161725599;
-        Sun, 28 Nov 2021 20:55:25 -0800 (PST)
-Received: from localhost.localdomain ([111.204.182.106])
-        by smtp.gmail.com with ESMTPSA id p33sm10781329pgm.85.2021.11.28.20.55.20
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 28 Nov 2021 20:55:25 -0800 (PST)
-From:   xiangxia.m.yue@gmail.com
-To:     netdev@vger.kernel.org
-Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Wei Wang <weiwan@google.com>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [net v3 3/3] selftests: bpf: add bpf_redirect to ifb
-Date:   Mon, 29 Nov 2021 12:55:03 +0800
-Message-Id: <20211129045503.20217-3-xiangxia.m.yue@gmail.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
-In-Reply-To: <20211129045503.20217-1-xiangxia.m.yue@gmail.com>
-References: <20211129045503.20217-1-xiangxia.m.yue@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=i6qj48g3hWlAT+PE0Bq+Pz+MZqvHl1s8iEv3kTvxvmI=;
+        b=TbH14uQWHDzo9CN+Br9Nz4Qe/D+zmuatsseTNggXZ0iY1Z58kegyawaoEyqdkie7Bs
+         LP/psMZsupjKumyLaowsZvYhWchujWFREo+v3TD3KNAjxafy7nAn1Vyzg5JBJiUALsYl
+         V890YAMQ8QVJ8wPZSyMWLdQZGX8MkoPR3lgJursExfbCzxnyzmn1t/7t5QxAqv8LEGRP
+         Or0kaMJ7nycJJ/Ijb5GAl7WJoUBNKdktpyuQZyam0SE2o00YabOu6jAUZq23ygdvjM/N
+         fucOpU5qt2mZ5AoJZCCPsZPPVvDOlhDm2QZJkUXeMOAR3JNIpiB+K6bYngh5vsqgRt8U
+         vu4Q==
+X-Gm-Message-State: AOAM533ilRrixo0hLi8Laj6Q0L3mgukd0W1AeyAsjpg7dhDpfUMqK32m
+        LWTmc+Z/UIXbwvgjWxswQbLiCFcdQkVUTczpEDRNBO98a8zlsA==
+X-Google-Smtp-Source: ABdhPJwC81XJskp5B/WxH/kRQAJy8iyufMdUqIu/Wv04V/Y1dWsGQdc25GLhaYKNDfP1es+zdWmkMh5Yqx02CIvZS08=
+X-Received: by 2002:a17:906:d54d:: with SMTP id cr13mr13953567ejc.409.1638161904314;
+ Sun, 28 Nov 2021 20:58:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20211126032305.13571-1-xiangxia.m.yue@gmail.com> <20211126134254.45bd82c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211126134254.45bd82c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Mon, 29 Nov 2021 12:57:48 +0800
+Message-ID: <CAMDZJNVYnPHCNa3+6qHgEV3D0LGvRS0ov5bv2=zy+mwgC3oyDg@mail.gmail.com>
+Subject: Re: [net-next v2] net: ifb: support ethtools stats
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+On Sat, Nov 27, 2021 at 5:42 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Fri, 26 Nov 2021 11:23:05 +0800 xiangxia.m.yue@gmail.com wrote:
+> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> >
+> > With this feature, we can use the ethtools to get tx/rx
+> > queues stats. This patch, introduce the ifb_update_q_stats
+> > helper to update the queues stats, and ifb_q_stats to simplify
+> > the codes. In future, we can add more metrics in ifb_q_stats.
+> >
+> > Cc: Jakub Kicinski <kuba@kernel.org>
+> > Cc: "David S. Miller" <davem@davemloft.net>
+> > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+>
+> >  static netdev_tx_t ifb_xmit(struct sk_buff *skb, struct net_device *dev);
+> >  static int ifb_open(struct net_device *dev);
+> >  static int ifb_close(struct net_device *dev);
+> >
+> > +static inline void ifb_update_q_stats(struct ifb_q_stats *stats, int len)
+>
+> Please remove the "inline" keywords, we prefer to leave the choice to
+> the compiler (plus it hides "unused function" warnings if the caller
+> is ever removed).
+>
+> > +static void ifb_get_strings(struct net_device *dev, u32 stringset, u8 *buf)
+> > +{
+> > +     u8 *p = buf;
+> > +     int i, j;
+> > +
+> > +     switch(stringset) {
+> > +     case ETH_SS_STATS:
+> > +             for (i = 0; i < dev->real_num_rx_queues; i++)
+> > +                     for (j = 0; j < IFB_Q_STATS_LEN; j++)
+> > +                             ethtool_sprintf(&p, "rx_queue_%u_%.18s",
+> > +                                             i, ifb_q_stats_desc[j].desc);
+> > +
+> > +             for (i = 0; i < dev->real_num_tx_queues; i++)
+> > +                     for (j = 0; j < IFB_Q_STATS_LEN; j++)
+> > +                             ethtool_sprintf(&p, "tx_queue_%u_%.18s",
+> > +                                             i, ifb_q_stats_desc[j].desc);
+> > +
+> > +             break;
+> > +     }
+> > +}
+> > +
+> > +static int ifb_get_sset_count(struct net_device *dev, int sset)
+> > +{
+> > +     switch (sset) {
+> > +     case ETH_SS_STATS:
+> > +             return IFB_Q_STATS_LEN * (dev->real_num_rx_queues +
+> > +                    dev->real_num_tx_queues);
+>
+> Needs to align under opening bracket, try checkpatch --strict.
+>
+> > +     default:
+> > +             return -EOPNOTSUPP;
+> > +     }
+> > +}
+> > +
+> > +static inline void ifb_fill_stats_data(u64 **data,
+> > +                                    struct ifb_q_stats *q_stats)
+>
+> another inline
+Thanks, Jakub
+v3 is sent, https://patchwork.kernel.org/project/netdevbpf/patch/20211128014631.43627-1-xiangxia.m.yue@gmail.com/
 
-ifb netdev is used for queueing incoming traffic for shaping.
-we may run bpf progs in tc cls hook(ingress or egress), to
-redirect the packets to ifb.
+> The logic itself LGTM.
 
-This patch adds this test, for bpf.
 
-Cc: Willem de Bruijn <willemb@google.com>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Andrii Nakryiko <andrii@kernel.org>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: KP Singh <kpsingh@kernel.org>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Antoine Tenart <atenart@kernel.org>
-Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc: Wei Wang <weiwan@google.com>
-Cc: "Björn Töpel" <bjorn@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
----
- tools/testing/selftests/bpf/Makefile          |  1 +
- .../bpf/progs/test_bpf_redirect_ifb.c         | 10 +++
- .../selftests/bpf/test_bpf_redirect_ifb.sh    | 73 +++++++++++++++++++
- 3 files changed, 84 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/test_bpf_redirect_ifb.c
- create mode 100755 tools/testing/selftests/bpf/test_bpf_redirect_ifb.sh
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 5d42db2e129a..6ec8b97af0ea 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -65,6 +65,7 @@ TEST_PROGS := test_kmod.sh \
- 	test_xdp_vlan_mode_native.sh \
- 	test_lwt_ip_encap.sh \
- 	test_tcp_check_syncookie.sh \
-+	test_bpf_redirect_ifb.sh \
- 	test_tc_tunnel.sh \
- 	test_tc_edt.sh \
- 	test_xdping.sh \
-diff --git a/tools/testing/selftests/bpf/progs/test_bpf_redirect_ifb.c b/tools/testing/selftests/bpf/progs/test_bpf_redirect_ifb.c
-new file mode 100644
-index 000000000000..d3205ad5e35a
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_bpf_redirect_ifb.c
-@@ -0,0 +1,10 @@
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+SEC("redirect_ifb")
-+int redirect(struct __sk_buff *skb)
-+{
-+	return bpf_redirect(skb->ifindex + 1 /* ifbX */, 0);
-+}
-+
-+char __license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/test_bpf_redirect_ifb.sh b/tools/testing/selftests/bpf/test_bpf_redirect_ifb.sh
-new file mode 100755
-index 000000000000..0933439696ab
---- /dev/null
-+++ b/tools/testing/selftests/bpf/test_bpf_redirect_ifb.sh
-@@ -0,0 +1,73 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+
-+# Topology:
-+# ---------
-+#      n1 namespace    |     n2 namespace
-+#                      |
-+#      -----------     |     ----------------
-+#      |  veth0  | --------- |  veth1, ifb1 |
-+#      -----------   peer    ----------------
-+#
-+
-+readonly prefix="ns-$$-"
-+readonly ns1="${prefix}1"
-+readonly ns2="${prefix}2"
-+readonly ns1_addr=192.168.1.1
-+readonly ns2_addr=192.168.1.2
-+
-+setup() {
-+	echo "Load ifb module"
-+	if ! /sbin/modprobe -q -n ifb; then
-+		echo "test_bpf_redirect ifb: module ifb is not found [SKIP]"
-+		exit 4
-+	fi
-+
-+	modprobe -q ifb numifbs=0
-+
-+	ip netns add "${ns1}"
-+	ip netns add "${ns2}"
-+
-+	ip link add dev veth0 mtu 1500 netns "${ns1}" type veth \
-+	      peer name veth1 mtu 1500 netns "${ns2}"
-+	# ifb1 created after veth1
-+	ip link add dev ifb1 mtu 1500 netns "${ns2}" type ifb
-+
-+	ip -netns "${ns1}" link set veth0 up
-+	ip -netns "${ns2}" link set veth1 up
-+	ip -netns "${ns2}" link set ifb1 up
-+	ip -netns "${ns1}" -4 addr add "${ns1_addr}/24" dev veth0
-+	ip -netns "${ns2}" -4 addr add "${ns2_addr}/24" dev veth1
-+
-+	ip netns exec "${ns2}" tc qdisc add dev veth1 clsact
-+}
-+
-+cleanup() {
-+	ip netns del "${ns2}" &>/dev/null
-+	ip netns del "${ns1}" &>/dev/null
-+	modprobe -r ifb
-+}
-+
-+trap cleanup EXIT
-+
-+setup
-+
-+ip netns exec "${ns2}" tc filter add dev veth1 \
-+	ingress bpf direct-action obj test_bpf_redirect_ifb.o sec redirect_ifb
-+ip netns exec "${ns1}" ping -W 2 -c 2 -i 0.2 -q "${ns2_addr}" &>/dev/null
-+if [ $? -ne 0 ]; then
-+	echo "bpf redirect to ifb on ingress path [FAILED]"
-+	exit 1
-+fi
-+
-+ip netns exec "${ns2}" tc filter del dev veth1 ingress
-+ip netns exec "${ns2}" tc filter add dev veth1 \
-+	egress bpf direct-action obj test_bpf_redirect_ifb.o sec redirect_ifb
-+ip netns exec "${ns1}" ping -W 2 -c 2 -i 0.2 -q "${ns2_addr}" &>/dev/null
-+if [ $? -ne 0 ]; then
-+	echo "bpf redirect to ifb on egress path [FAILED]"
-+	exit 1
-+fi
-+
-+echo OK
--- 
-2.27.0
 
+--
+Best regards, Tonghao
