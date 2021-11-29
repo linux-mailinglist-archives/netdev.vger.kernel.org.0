@@ -2,73 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0701946112D
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 10:34:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8332461190
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 11:00:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244459AbhK2Jhh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 04:37:37 -0500
-Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:58636 "EHLO
-        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S244552AbhK2Jfd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 04:35:33 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=tianjia.zhang@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0Uyf2n9o_1638178333;
-Received: from localhost(mailfrom:tianjia.zhang@linux.alibaba.com fp:SMTPD_---0Uyf2n9o_1638178333)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 29 Nov 2021 17:32:14 +0800
-From:   Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Vakul Garg <vakul.garg@nxp.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-Subject: [PATCH] net/tls: Fix authentication failure in CCM mode
-Date:   Mon, 29 Nov 2021 17:32:12 +0800
-Message-Id: <20211129093212.4053-1-tianjia.zhang@linux.alibaba.com>
-X-Mailer: git-send-email 2.32.0
+        id S1344379AbhK2KEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 05:04:15 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:21191 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1345014AbhK2KCO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 05:02:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1638179937;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=DuHgrG37at6Yd+kpyqL+6ZWTxH/BYHA0MHxcriPZi+U=;
+        b=U2TeEvIF+Y09voVUOJh33M2sbL9RF4rrIU3EduE6+WsABZw+w0xkGjJ6krHY4N0ZkM+d96
+        B1P2pLAeD9dmmPNt8StzS2jwRa4xcwJjqru/uG71OKSVfWBNdZEj3S65jx3Sx6jUsdE8+B
+        J45lHk1ScpBiliZlMmqHqad4sNymFQs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-512-UPKWDGbVN-G44svR7ogyYQ-1; Mon, 29 Nov 2021 04:58:53 -0500
+X-MC-Unique: UPKWDGbVN-G44svR7ogyYQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B63CF190D340;
+        Mon, 29 Nov 2021 09:58:52 +0000 (UTC)
+Received: from ceranb.redhat.com (unknown [10.39.195.156])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BF21260C0F;
+        Mon, 29 Nov 2021 09:58:51 +0000 (UTC)
+From:   Ivan Vecera <ivecera@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: [PATCH net-next] selftests: net: bridge: fix typo in vlan_filtering dependency test
+Date:   Mon, 29 Nov 2021 10:58:50 +0100
+Message-Id: <20211129095850.2018071-1-ivecera@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the TLS cipher suite uses CCM mode, including AES CCM and
-SM4 CCM, the first byte of the B0 block is flags, and the real
-IV starts from the second byte. The XOR operation of the IV and
-rec_seq should be skip this byte, that is, add the iv_offset.
+Prior patch:
+]# TESTS=vlmc_filtering_test ./bridge_vlan_mcast.sh
+TEST: Vlan multicast snooping enable                                [ OK ]
+Device "bridge" does not exist.
+TEST: Disable multicast vlan snooping when vlan filtering is disabled   [FAIL]
+        Vlan filtering is disabled but multicast vlan snooping is still enabled
 
-Fixes: f295b3ae9f59 ("net/tls: Add support of AES128-CCM based ciphers")
-Signed-off-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-Cc: Vakul Garg <vakul.garg@nxp.com>
-Cc: stable@vger.kernel.org # v5.2+
+After patch:
+# TESTS=vlmc_filtering_test ./bridge_vlan_mcast.sh
+TEST: Vlan multicast snooping enable                                [ OK ]
+TEST: Disable multicast vlan snooping when vlan filtering is disabled   [ OK ]
+
+Fixes: f5a9dd58f48b7c ("selftests: net: bridge: add test for vlan_filtering dependency")
+Cc: Nikolay Aleksandrov <nikolay@nvidia.com>
+Signed-off-by: Ivan Vecera <ivecera@redhat.com>
 ---
- net/tls/tls_sw.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/testing/selftests/net/forwarding/bridge_vlan_mcast.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index d3e7ff90889e..dfe623a4e72f 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -521,7 +521,7 @@ static int tls_do_encryption(struct sock *sk,
- 	memcpy(&rec->iv_data[iv_offset], tls_ctx->tx.iv,
- 	       prot->iv_size + prot->salt_size);
- 
--	xor_iv_with_seq(prot, rec->iv_data, tls_ctx->tx.rec_seq);
-+	xor_iv_with_seq(prot, rec->iv_data + iv_offset, tls_ctx->tx.rec_seq);
- 
- 	sge->offset += prot->prepend_size;
- 	sge->length -= prot->prepend_size;
-@@ -1499,7 +1499,7 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
- 	else
- 		memcpy(iv + iv_offset, tls_ctx->rx.iv, prot->salt_size);
- 
--	xor_iv_with_seq(prot, iv, tls_ctx->rx.rec_seq);
-+	xor_iv_with_seq(prot, iv + iv_offset, tls_ctx->rx.rec_seq);
- 
- 	/* Prepare AAD */
- 	tls_make_aad(aad, rxm->full_len - prot->overhead_size +
+diff --git a/tools/testing/selftests/net/forwarding/bridge_vlan_mcast.sh b/tools/testing/selftests/net/forwarding/bridge_vlan_mcast.sh
+index 5224a5a8595b32..8748d1b1d95b71 100755
+--- a/tools/testing/selftests/net/forwarding/bridge_vlan_mcast.sh
++++ b/tools/testing/selftests/net/forwarding/bridge_vlan_mcast.sh
+@@ -527,7 +527,7 @@ vlmc_filtering_test()
+ {
+ 	RET=0
+ 	ip link set dev br0 type bridge vlan_filtering 0
+-	ip -j -d link show dev bridge | \
++	ip -j -d link show dev br0 | \
+ 	jq -e "select(.[0].linkinfo.info_data.mcast_vlan_snooping == 1)" &>/dev/null
+ 	check_fail $? "Vlan filtering is disabled but multicast vlan snooping is still enabled"
+ 	log_test "Disable multicast vlan snooping when vlan filtering is disabled"
 -- 
 2.32.0
 
