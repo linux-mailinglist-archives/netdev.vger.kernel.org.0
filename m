@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2243462149
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 21:00:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A82F246214A
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 21:00:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349457AbhK2UD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 15:03:59 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:48426 "EHLO
+        id S1351964AbhK2UEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 15:04:02 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:48436 "EHLO
         sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355389AbhK2UB6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 15:01:58 -0500
+        with ESMTP id S238261AbhK2UCA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 15:02:00 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BF59ACE13E1
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 19:58:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 680F1C53FD0;
-        Mon, 29 Nov 2021 19:58:36 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CDC43CE1407
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 19:58:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75DFCC53FAD;
+        Mon, 29 Nov 2021 19:58:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638215918;
-        bh=Ghrs8FGLyuBK1J9ebl8bO5xR9wF2PcTIR4kNX7Gtstc=;
+        s=k20201202; t=1638215920;
+        bh=cmVRqapduWLa1yumZyzJW0WtWufxH0Bx2ni/41EbF40=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MjBy9t0S/fHrX1awyfJRzySI8SuIo3YwgLEOlVgdqkstDtCKjsRsdaePW6taHGKfp
-         s2M6vxL5y+smwafEXstG9ri2CqCnwemFIFCNf7XijiK/A5AZZUV1KDKRCrQs5GwDaf
-         ZRlJeBsY5vlXP2QwyEKD/4ZIp0+HhhUqOB3TpNMJUCg8YzOCgb18wcS1zE/2IUm6YW
-         R/50YSXdg78tIc3BIDRIP1rtNtX5NK5y3mGX0pk/1O1ZHtupd/nHaWkgnb4xZSPdkl
-         1tP89Y7ylX6oD6tWIVyM3D8wp6HyBz+7iPSXQWgokUNa/6YKQLJznT4uqKmGhSsUF+
-         ekO3mvWnyKrEg==
+        b=S/cYkK0/Ee9g0E+PYE2L6ZGmdfEbscNOSrbtuloLOYta06h8qT+SJrlK3vdN83TJk
+         zcYGX2LChqO+cw2eiw/4hYTjDt86EGQyS27SuiXhvB5aKrEZ8F+Qwc/w48Aoa7XDKG
+         R8rnZGD8m2chFY+1ynOqk2drdvabRaZUfbCXgOgTzKWH6+tgSx8lsCoVjI5t26u4es
+         AWCL1CwEK2+TlD61vWVWPzMWW+D80Y7LYm+oP1xn9h91MQmEiEYcPJIJkQNud5MbBU
+         GJuOULz5QSKiiSB3jCL15970a+gDTilyz4KWraPYqtXXHkOUJBkY9vNQasSrnXT7v3
+         dQ/T/6tFYZEcw==
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
 To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
 Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
         Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net 5/6] net: dsa: mv88e6xxx: Fix inband AN for 2500base-x on 88E6393X family
-Date:   Mon, 29 Nov 2021 20:58:22 +0100
-Message-Id: <20211129195823.11766-6-kabel@kernel.org>
+Subject: [PATCH net 6/6] net: dsa: mv88e6xxx: Link in pcs_get_state() if AN is bypassed
+Date:   Mon, 29 Nov 2021 20:58:23 +0100
+Message-Id: <20211129195823.11766-7-kabel@kernel.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211129195823.11766-1-kabel@kernel.org>
 References: <20211129195823.11766-1-kabel@kernel.org>
@@ -46,163 +46,116 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Inband AN is broken on Amethyst in 2500base-x mode when set by standard
-mechanism (via cmode).
+Function mv88e6xxx_serdes_pcs_get_state() currently does not report link
+up if AN is enabled, Link bit is set, but Speed and Duplex Resolved bit
+is not set, which testing shows is the case for when auto-negotiation
+was bypassed (we have enabled AN but link partner does not).
 
-(There probably is some weird setting done by default in the switch for
- this mode that make it cycle in some state or something, because when
- the peer is the mvneta controller, it receives link change interrupts
- every ~0.3ms, but the link is always down.)
+An example of such link partner is Marvell 88X3310 PHY, when put into
+the mode where host interface changes between 10gbase-r, 5gbase-r,
+2500base-x and sgmii according to copper speed. The 88X3310 does not
+enable AN in 2500base-x, and so SerDes on mv88e6xxx currently does not
+link with it.
 
-Get around this by configuring the PCS mode to 1000base-x (where inband
-AN works), and then changing the SerDes frequency while SerDes
-transmitter and receiver are disabled, before enabling SerDes PHY. After
-disabling SerDes PHY, change the PCS mode back to 2500base-x, to avoid
-confusing the device (if we leave it at 1000base-x PCS mode but with
-different frequency, and then change cmode to sgmii, the device won't
-change the frequency because it thinks it already has the correct one).
+Fix this.
 
-The register which changes the frequency is undocumented. I discovered
-it by going through all registers in the ranges 4.f000-4.f100 and
-1e.8000-1e.8200 for all SerDes cmodes (sgmii, 1000base-x, 2500base-x,
-5gbase-r, 10gbase-r, usxgmii) and filtering out registers that didn't
-make sense (the value was the same for modes which have different
-frequency). The result of this was:
-
-    reg   sgmii 1000base-x 2500base-x 5gbase-r 10gbase-r usxgmii
-  04.f002  005b       0058       0059     005c      005d    005f
-  04.f076  3000       0000       1000     4000      5000    7000
-  04.f07c  0950       0950       1850     0550      0150    0150
-  1e.8000  0059       0059       0058     0055      0051    0051
-  1e.8140  0e20       0e20       0e28     0e21      0e42    0e42
-
-Register 04.f002 is the documented Port Operational Confiuration
-register, it's last 3 bits select PCS type, so changing this register
-also changes the frequency to the appropriate value.
-
-Registers 04.f076 and 04.f07c are not writable.
-
-Undocumented register 1e.8000 was the one: changing bits 3:0 from 9 to 8
-changed SerDes frequency to 3.125 GHz, while leaving the value of PCS
-mode in register 04.f002.2:0 at 1000base-x. Inband autonegotiation
-started working correctly.
-
-(I didn't try anything with register 1e.8140 since 1e.8000 solved the
- problem.)
-
-Since I don't have documentation for this register 1e.8000.3:0, I am
-using the constants without names, but my hypothesis is that this
-register selects PHY frequency. If in the future I have access to an
-oscilloscope able to handle these frequencies, I will try to test this
-hypothesis.
-
-Fixes: de776d0d316f ("net: dsa: mv88e6xxx: add support for mv88e6393x family")
+Fixes: a5a6858b793f ("net: dsa: mv88e6xxx: extend phylink to Serdes PHYs")
 Signed-off-by: Marek Behún <kabel@kernel.org>
 ---
- drivers/net/dsa/mv88e6xxx/serdes.c | 63 +++++++++++++++++++++++++++++-
- drivers/net/dsa/mv88e6xxx/serdes.h |  1 +
- 2 files changed, 62 insertions(+), 2 deletions(-)
+ drivers/net/dsa/mv88e6xxx/serdes.c | 38 +++++++++++++++++++++++++-----
+ 1 file changed, 32 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
-index 9901219780e6..d297131afe21 100644
+index d297131afe21..a145598905a5 100644
 --- a/drivers/net/dsa/mv88e6xxx/serdes.c
 +++ b/drivers/net/dsa/mv88e6xxx/serdes.c
-@@ -1419,6 +1419,54 @@ static int mv88e6393x_serdes_erratum_5_2(struct mv88e6xxx_chip *chip, int lane,
- 	return 0;
+@@ -50,11 +50,13 @@ static int mv88e6390_serdes_write(struct mv88e6xxx_chip *chip,
  }
  
-+static int mv88e6393x_serdes_fix_2500basex_an(struct mv88e6xxx_chip *chip,
-+					      int lane, u8 cmode, bool on)
-+{
-+	u16 reg;
-+	int err;
-+
-+	if (cmode != MV88E6XXX_PORT_STS_CMODE_2500BASEX)
-+		return 0;
-+
-+	/* Inband AN is broken on Amethyst in 2500base-x mode when set by
-+	 * standard mechanism (via cmode).
-+	 * We can get around this by configuring the PCS mode to 1000base-x
-+	 * and then writing value 0x58 to register 1e.8000. (This must be done
-+	 * while SerDes receiver and transmitter are disabled, which is, when
-+	 * this function is called.)
-+	 * It seem that when we do this configuration to 2500base-x mode (by
-+	 * changing PCS mode to 1000base-x and frequency to 3.125 GHz from
-+	 * 1.25 GHz) and then configure to sgmii or 1000base-x, the device
-+	 * thinks that it already has SerDes at 1.25 GHz and does not change
-+	 * the 1e.8000 register, leaving SerDes at 3.125 GHz.
-+	 * To avoid this, change PCS mode back to 2500base-x when disabling
-+	 * SerDes from 2500base-x mode.
-+	 */
-+	err = mv88e6390_serdes_read(chip, lane, MDIO_MMD_PHYXS,
-+				    MV88E6393X_SERDES_POC, &reg);
-+	if (err)
-+		return err;
-+
-+	reg &= ~(MV88E6393X_SERDES_POC_PCS_MASK | MV88E6393X_SERDES_POC_AN);
-+	if (on)
-+		reg |= MV88E6393X_SERDES_POC_PCS_1000BASEX |
-+		       MV88E6393X_SERDES_POC_AN;
-+	else
-+		reg |= MV88E6393X_SERDES_POC_PCS_2500BASEX;
-+	reg |= MV88E6393X_SERDES_POC_RESET;
-+
-+	err = mv88e6390_serdes_write(chip, lane, MDIO_MMD_PHYXS,
-+				     MV88E6393X_SERDES_POC, reg);
-+	if (err)
-+		return err;
-+
-+	err = mv88e6390_serdes_write(chip, lane, MDIO_MMD_VEND1, 0x8000, 0x58);
-+	if (err)
-+		return err;
-+
-+	return 0;
-+}
-+
- int mv88e6393x_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
- 			    bool on)
+ static int mv88e6xxx_serdes_pcs_get_state(struct mv88e6xxx_chip *chip,
+-					  u16 status, u16 lpa,
++					  u16 ctrl, u16 status, u16 lpa,
+ 					  struct phylink_link_state *state)
  {
-@@ -1437,6 +1485,11 @@ int mv88e6393x_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
- 		if (err)
- 			return err;
- 
-+		err = mv88e6393x_serdes_fix_2500basex_an(chip, lane, cmode,
-+							 true);
-+		if (err)
-+			return err;
++	state->link = !!(status & MV88E6390_SGMII_PHY_STATUS_LINK);
 +
- 		err = mv88e6393x_serdes_power_lane(chip, lane, true);
- 		if (err)
- 			return err;
-@@ -1457,8 +1510,14 @@ int mv88e6393x_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
- 	if (err)
- 		return err;
+ 	if (status & MV88E6390_SGMII_PHY_STATUS_SPD_DPL_VALID) {
+-		state->link = !!(status & MV88E6390_SGMII_PHY_STATUS_LINK);
++		state->an_complete = !!(ctrl & BMCR_ANENABLE);
+ 		state->duplex = status &
+ 				MV88E6390_SGMII_PHY_STATUS_DUPLEX_FULL ?
+ 			                         DUPLEX_FULL : DUPLEX_HALF;
+@@ -81,6 +83,17 @@ static int mv88e6xxx_serdes_pcs_get_state(struct mv88e6xxx_chip *chip,
+ 			dev_err(chip->dev, "invalid PHY speed\n");
+ 			return -EINVAL;
+ 		}
++	} else if (state->link &&
++		   state->interface != PHY_INTERFACE_MODE_SGMII) {
++		/* The Spped and Duplex Resolved register is always 1 when AN is
++		 * disabled. If it is not set, and link is up, it means that the
++		 * SerDes PHY AN bypass feature was invoked.
++		 */
++		state->duplex = DUPLEX_FULL;
++		if (state->interface == PHY_INTERFACE_MODE_2500BASEX)
++			state->speed = SPEED_2500;
++		else
++			state->speed = SPEED_1000;
+ 	} else {
+ 		state->link = false;
+ 	}
+@@ -168,9 +181,15 @@ int mv88e6352_serdes_pcs_config(struct mv88e6xxx_chip *chip, int port,
+ int mv88e6352_serdes_pcs_get_state(struct mv88e6xxx_chip *chip, int port,
+ 				   int lane, struct phylink_link_state *state)
+ {
+-	u16 lpa, status;
++	u16 lpa, status, ctrl;
+ 	int err;
  
--	if (!on)
--		return mv88e6393x_serdes_power_lane(chip, lane, false);
-+	if (!on) {
-+		err = mv88e6393x_serdes_power_lane(chip, lane, false);
-+		if (err)
-+			return err;
-+
-+		return mv88e6393x_serdes_fix_2500basex_an(chip, lane, cmode,
-+							  false);
++	err = mv88e6352_serdes_read(chip, MII_BMCR, &ctrl);
++	if (err) {
++		dev_err(chip->dev, "can't read Serdes PHY control: %d\n", err);
++		return err;
 +	}
++
+ 	err = mv88e6352_serdes_read(chip, 0x11, &status);
+ 	if (err) {
+ 		dev_err(chip->dev, "can't read Serdes PHY status: %d\n", err);
+@@ -183,7 +202,7 @@ int mv88e6352_serdes_pcs_get_state(struct mv88e6xxx_chip *chip, int port,
+ 		return err;
+ 	}
  
- 	return 0;
+-	return mv88e6xxx_serdes_pcs_get_state(chip, status, lpa, state);
++	return mv88e6xxx_serdes_pcs_get_state(chip, ctrl, status, lpa, state);
  }
-diff --git a/drivers/net/dsa/mv88e6xxx/serdes.h b/drivers/net/dsa/mv88e6xxx/serdes.h
-index e9292c8beee4..8dd8ed225b45 100644
---- a/drivers/net/dsa/mv88e6xxx/serdes.h
-+++ b/drivers/net/dsa/mv88e6xxx/serdes.h
-@@ -93,6 +93,7 @@
- #define MV88E6393X_SERDES_POC_PCS_MASK		0x0007
- #define MV88E6393X_SERDES_POC_RESET		BIT(15)
- #define MV88E6393X_SERDES_POC_PDOWN		BIT(5)
-+#define MV88E6393X_SERDES_POC_AN		BIT(3)
- #define MV88E6393X_SERDES_CTRL1			0xf003
- #define MV88E6393X_SERDES_CTRL1_TX_PDOWN	BIT(9)
- #define MV88E6393X_SERDES_CTRL1_RX_PDOWN	BIT(8)
+ 
+ int mv88e6352_serdes_pcs_an_restart(struct mv88e6xxx_chip *chip, int port,
+@@ -883,9 +902,16 @@ int mv88e6390_serdes_pcs_config(struct mv88e6xxx_chip *chip, int port,
+ static int mv88e6390_serdes_pcs_get_state_sgmii(struct mv88e6xxx_chip *chip,
+ 	int port, int lane, struct phylink_link_state *state)
+ {
+-	u16 lpa, status;
++	u16 lpa, status, ctrl;
+ 	int err;
+ 
++	err = mv88e6390_serdes_read(chip, lane, MDIO_MMD_PHYXS,
++				    MV88E6390_SGMII_BMCR, &ctrl);
++	if (err) {
++		dev_err(chip->dev, "can't read Serdes PHY control: %d\n", err);
++		return err;
++	}
++
+ 	err = mv88e6390_serdes_read(chip, lane, MDIO_MMD_PHYXS,
+ 				    MV88E6390_SGMII_PHY_STATUS, &status);
+ 	if (err) {
+@@ -900,7 +926,7 @@ static int mv88e6390_serdes_pcs_get_state_sgmii(struct mv88e6xxx_chip *chip,
+ 		return err;
+ 	}
+ 
+-	return mv88e6xxx_serdes_pcs_get_state(chip, status, lpa, state);
++	return mv88e6xxx_serdes_pcs_get_state(chip, ctrl, status, lpa, state);
+ }
+ 
+ static int mv88e6390_serdes_pcs_get_state_10g(struct mv88e6xxx_chip *chip,
 -- 
 2.32.0
 
