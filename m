@@ -2,99 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E743C4620BA
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 20:42:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB36B4620BC
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 20:42:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351709AbhK2Tpn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 14:45:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49972 "EHLO
+        id S1352821AbhK2Tpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 14:45:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240131AbhK2Tnl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 14:43:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65BB5C08EA72;
-        Mon, 29 Nov 2021 08:01:44 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 029FB61536;
-        Mon, 29 Nov 2021 16:01:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59321C53FAD;
-        Mon, 29 Nov 2021 16:01:41 +0000 (UTC)
-Date:   Mon, 29 Nov 2021 11:01:40 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     akpm@linux-foundation.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, oliver.sang@intel.com, lkp@intel.com,
-        Kees Cook <keescook@chromium.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH v2 4/7] fs/binfmt_elf: replace open-coded string copy
- with get_task_comm
-Message-ID: <20211129110140.733475f3@gandalf.local.home>
-In-Reply-To: <20211120112738.45980-5-laoar.shao@gmail.com>
-References: <20211120112738.45980-1-laoar.shao@gmail.com>
-        <20211120112738.45980-5-laoar.shao@gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S1344184AbhK2Tnm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 14:43:42 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 278C5C042382
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 08:03:08 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id w1so74214969edc.6
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 08:03:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=A9mpHfvDXsmkNMhyOGewzekr0FIgj4cYBvcSjhTr+N0=;
+        b=knKrbOyQTWBk7k+Jme53THFfx015/vZNo8Fq0rEdd9Apm3hOgbLge1tVVDyJa7jtSS
+         FsRSMxHLdGf0wqzrJ4IVxWp2bnEQtqXwwLbI+Zxgm9kVYftycPHxcvrDeBP2xSWc2Qgw
+         rlNyej3GLpkjQha6nu639cx+SJiRsZyr4mHXngQLQqnKjRR3vskBnbzG4honF6wvFd+x
+         6PvfO5xwrVxbzUKqJ991VH4ckNYaHsd3OgXTfGNt/Mo1TdAS2qKsMcDlVOuqbuhVoVFQ
+         3eFDzNJ47moY/9L9zVZXjHTNJL2M/J+5lHJMO5KbXwugW1UcC9+ZjxxUtlxmOjIPvXMX
+         PvcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=A9mpHfvDXsmkNMhyOGewzekr0FIgj4cYBvcSjhTr+N0=;
+        b=sA1U28S9JLfdv6XS5n9/I7kk/BqXcXIV2zXp21N5JXrTnm5M6eoz0TWdDlozi9fmlT
+         FbIDdbCeCsJ6Lpp3PEhHh1+riV+/duczOvC8lbgrepFKi4NgCSEWrKgVwQBN99RsjuQr
+         1afDdGgsTkTM4jqitdBXDdcdED2CNVmHX0l2A+T3cznBUAhd48fbWVZOTxWknd52Li+C
+         evryNUP4UMH+dXSEE7YLdlV9zrExw6dI7vOVgd5KbjsRdEES1yCQxDVRIk1Uo+laeIiu
+         QnKimpd9b7hcM1dH+ZlKcc6g6tB4zdf7eZlZbS9F/w7iQ5ZoAvmdEj6tgvdVoMo7pHpS
+         0e+Q==
+X-Gm-Message-State: AOAM532PocOwgPHVi0T1uJ8rJWXi9tRQA2PvATODyhIy0S3W7iydzAem
+        avOh0VgkATl7sSkuET3eD65eO/0jRGxWE6H/dbY=
+X-Google-Smtp-Source: ABdhPJyiFNHKK+7Ng/8jcZysyrzCffTvRrKkxxWNzp+nr0VTunlIKdgC8skGMmSq9EANpUEEb3zsPjbCxFRUH0+tq7g=
+X-Received: by 2002:a17:906:390:: with SMTP id b16mr64798748eja.123.1638201782039;
+ Mon, 29 Nov 2021 08:03:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a17:906:d54e:0:0:0:0 with HTTP; Mon, 29 Nov 2021 08:03:00
+ -0800 (PST)
+Reply-To: fredbenson1950@gmail.com
+From:   fred <obicasmir428@gmail.com>
+Date:   Mon, 29 Nov 2021 16:03:00 +0000
+Message-ID: <CABzKOhapYNN9=CSATFhsAg6_N-agbROjoE+xQhV2b1imX=k9+Q@mail.gmail.com>
+Subject: hi
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 20 Nov 2021 11:27:35 +0000
-Yafang Shao <laoar.shao@gmail.com> wrote:
-
-> diff --git a/include/linux/elfcore-compat.h b/include/linux/elfcore-compat.h
-> index e272c3d452ce..54feb64e9b5d 100644
-> --- a/include/linux/elfcore-compat.h
-> +++ b/include/linux/elfcore-compat.h
-> @@ -43,6 +43,11 @@ struct compat_elf_prpsinfo
->  	__compat_uid_t			pr_uid;
->  	__compat_gid_t			pr_gid;
->  	compat_pid_t			pr_pid, pr_ppid, pr_pgrp, pr_sid;
-> +	/*
-> +	 * The hard-coded 16 is derived from TASK_COMM_LEN, but it can't be
-> +	 * changed as it is exposed to userspace. We'd better make it hard-coded
-> +	 * here.
-
-Didn't I once suggest having a macro called something like:
-
-  TASK_COMM_LEN_16 ?
-
-
-https://lore.kernel.org/all/20211014221409.5da58a42@oasis.local.home/
-
--- Steve
-
-
-> +	 */
->  	char				pr_fname[16];
->  	char				pr_psargs[ELF_PRARGSZ];
->  };
-> diff --git a/include/linux/elfcore.h b/include/linux/elfcore.h
-> index 957ebec35aad..746e081879a5 100644
-> --- a/include/linux/elfcore.h
-> +++ b/include/linux/elfcore.h
-> @@ -65,6 +65,11 @@ struct elf_prpsinfo
->  	__kernel_gid_t	pr_gid;
->  	pid_t	pr_pid, pr_ppid, pr_pgrp, pr_sid;
->  	/* Lots missing */
-> +	/*
-> +	 * The hard-coded 16 is derived from TASK_COMM_LEN, but it can't be
-> +	 * changed as it is exposed to userspace. We'd better make it hard-coded
-> +	 * here.
-> +	 */
->  	char	pr_fname[16];	/* filename of executable */
->  	char	pr_psargs[ELF_PRARGSZ];	/* initial part of arg list */
->  };
+Good day dear friend. My name is FRED BENSON; I'm the senior partner
+at FRED BENSON & Associate Law Firm based in Togo republic.
+I want us to claim the sum of (US$ 4.5 MILLION ) from the BTCI bank
+Lome Togo security company. You get 40% from the total amount.
+We work together and there will be success at the end. Reply for more details.
