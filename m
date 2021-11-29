@@ -2,73 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A18FC461FA4
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 19:52:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A8C4461D02
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 18:50:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378722AbhK2S4O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 13:56:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39644 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231559AbhK2SyN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 13:54:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F9C1C08C5D9;
-        Mon, 29 Nov 2021 07:12:59 -0800 (PST)
+        id S241836AbhK2Rxk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 12:53:40 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:43090 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233128AbhK2Rvk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 12:51:40 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA65561241;
-        Mon, 29 Nov 2021 15:12:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23D53C004E1;
-        Mon, 29 Nov 2021 15:12:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638198778;
-        bh=ADugjtCiZDrN0uMz5QUqwcnpM502BuoI8JK5TuLR/TQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oBqGzch9xCxxoCk/dkSODXpuKnct+4tCjUz5AysRge2uuv4d3CUMW2fUgaqiehGBU
-         D2cjRYWfRm9JCvKbh12m5qNfI7nZmcuSbQFvEUmd8pJ6zrGueZ4sRGCoDPHEf3ci/q
-         +ZjG1zJ/Xeu2WQwvgi356I5poy65nD9I9TAW7oKBb1Ik5zmp2rG2gPkLoLE4QOupFZ
-         11PRmHtLyAgQr/p5G2drpNiT1Gb0v6n1SEiQk4zEhg1sUIF2u8BniNXySDX968WXDg
-         sDCi/Z6IkJfdjmNnOUdI1iiDa7EvL9hEE5A1q8H4f6HcGg4DRwaYimYsEdXHnzD2Lb
-         mGOHXk8jI1x9w==
-Date:   Mon, 29 Nov 2021 07:12:57 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
-        Toke =?UTF-8?B?SMO4?= =?UTF-8?B?aWxhbmQtSsO4cmdlbnNlbg==?= 
-        <toke@redhat.com>
-Subject: Re: [PATCH net-next v2 2/2] bpf: let bpf_warn_invalid_xdp_action()
- report more info
-Message-ID: <20211129071257.302c6c0e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <5f96722557fbde5b9711da8d53c709858c03af47.camel@redhat.com>
-References: <cover.1637924200.git.pabeni@redhat.com>
-        <277a9483b38f9016bc78ce66707753681684fbd7.1637924200.git.pabeni@redhat.com>
-        <20211126101941.029e1d7f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <8f6f900b2b48aaedf031b20a7831ec193793768b.camel@redhat.com>
-        <5f96722557fbde5b9711da8d53c709858c03af47.camel@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 69087B80EB9
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 17:48:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0B6DC53FAD
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 17:48:19 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="DntUElb5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1638208098;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Vg8cBIgEKcsZAIxv08JYqcHCDn7mzWJPmsUn31Jwvbc=;
+        b=DntUElb5I/TQl6IRBWSivu8SbksVIxS+5wOkOKGW//naS3+GJRBoGmh+zVsTollC0Mqon9
+        y2kDllGBWxBh1y1WgX1LRFhHEVbY5id9+Q4NkoPDD3EpdsvoFSy5qMOqY0pk2hkGlVV8ua
+        OcnfIclYTRhgS869/Elr3JOKtc2darI=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 215db00a (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Mon, 29 Nov 2021 17:48:18 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH net 00/10] wireguard/siphash patches for 5.16-rc6
+Date:   Mon, 29 Nov 2021 10:39:19 -0500
+Message-Id: <20211129153929.3457-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 29 Nov 2021 15:56:33 +0100 Paolo Abeni wrote:
-> On Fri, 2021-11-26 at 19:57 +0100, Paolo Abeni wrote:
-> > On Fri, 2021-11-26 at 10:19 -0800, Jakub Kicinski wrote:  
-> > > Since we have to touch all the drivers each time the prototype of this
-> > > function is changed - would it make sense to pass in rxq instead? It has
-> > > more info which may become useful at some point.  
-> > 
-> > I *think* for this specific scenario the device name provides all the
-> > necessary info - the users need to know the driver causing the issue.
-> > 
-> > Others similar xdp helpers - e.g. trace_xdp_exception() - have the same
-> > arguments list used here. If the rxq is useful I guess we will have to
-> > change even them, and touch all the drivers anyway.  
-> 
-> Following the above reasoning I'm going to post v3 with the same
-> argument list used here, unless someone stops me soon ;)
+Hi Dave/Jakub,
 
-It's fine, it was just a thought :)
+Here's quite a largeish set of stable patches I've had queued up and
+testing for a number of months now:
+
+  - Patch (1) squelches a sparse warning by fixing an annotation.
+  - Patches (2), (3), and (5) are minor improvements and fixes to the
+    test suite.
+  - Patch (4) is part of a tree-wide cleanup to have module-specific
+    init and exit functions.
+  - Patch (6) fixes a an issue with dangling dst references, by having a
+    function to release references immediately rather than deferring,
+    and adds an associated test case to prevent this from regressing.
+  - Patches (7) and (8) help mitigate somewhat a potential DoS on the
+    ingress path due to the use of skb_list's locking hitting contention
+    on multiple cores by switching to using a ring buffer and dropping
+    packets on contention rather than locking up another core spinning.
+  - Patch (9) switches kvzalloc to kvcalloc for better form.
+  - Patch (10) fixes alignment traps in siphash with clang-13 (and maybe
+    other compilers) on armv6, by switching to using the unaligned
+    functions by default instead of the aligned functions by default.
+
+Thanks,
+Jason
+
+Arnd Bergmann (1):
+  siphash: use _unaligned version by default
+
+Gustavo A. R. Silva (1):
+  wireguard: ratelimiter: use kvcalloc() instead of kvzalloc()
+
+Jason A. Donenfeld (6):
+  wireguard: allowedips: add missing __rcu annotation to satisfy sparse
+  wireguard: selftests: increase default dmesg log size
+  wireguard: selftests: actually test for routing loops
+  wireguard: device: reset peer src endpoint when netns exits
+  wireguard: receive: use ring buffer for incoming handshakes
+  wireguard: receive: drop handshakes if queue lock is contended
+
+Li Zhijian (1):
+  wireguard: selftests: rename DEBUG_PI_LIST to DEBUG_PLIST
+
+Randy Dunlap (1):
+  wireguard: main: rename 'mod_init' & 'mod_exit' functions to be
+    module-specific
+
+ drivers/net/wireguard/allowedips.c            |  2 +-
+ drivers/net/wireguard/device.c                | 39 ++++++++++---------
+ drivers/net/wireguard/device.h                |  9 ++---
+ drivers/net/wireguard/main.c                  |  8 ++--
+ drivers/net/wireguard/queueing.c              |  6 +--
+ drivers/net/wireguard/queueing.h              |  2 +-
+ drivers/net/wireguard/ratelimiter.c           |  4 +-
+ drivers/net/wireguard/receive.c               | 39 +++++++++++--------
+ drivers/net/wireguard/socket.c                |  2 +-
+ include/linux/siphash.h                       | 14 ++-----
+ include/net/dst_cache.h                       | 11 ++++++
+ lib/siphash.c                                 | 12 +++---
+ net/core/dst_cache.c                          | 19 +++++++++
+ tools/testing/selftests/wireguard/netns.sh    | 30 +++++++++++++-
+ .../selftests/wireguard/qemu/debug.config     |  2 +-
+ .../selftests/wireguard/qemu/kernel.config    |  1 +
+ 16 files changed, 129 insertions(+), 71 deletions(-)
+
+-- 
+2.34.1
+
