@@ -2,89 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D85D8461CC7
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 18:33:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E075461CE2
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 18:42:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349145AbhK2RgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 12:36:15 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:33094 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242578AbhK2ReK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 12:34:10 -0500
+        id S1346560AbhK2Rp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 12:45:29 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:39142 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231601AbhK2Rn3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 12:43:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 669A2CE13A7;
-        Mon, 29 Nov 2021 17:30:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35211C53FAD;
-        Mon, 29 Nov 2021 17:30:46 +0000 (UTC)
-Date:   Mon, 29 Nov 2021 12:30:43 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Sven Schnelle <svens@linux.ibm.com>
-Cc:     Yafang Shao <laoar.shao@gmail.com>, akpm@linux-foundation.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        oliver.sang@intel.com, lkp@intel.com,
-        Andrii Nakryiko <andrii@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Kees Cook <keescook@chromium.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Tom Zanussi <zanussi@kernel.org>
-Subject: Re: [PATCH v2 7/7] tools/testing/selftests/bpf: replace open-coded
- 16 with TASK_COMM_LEN
-Message-ID: <20211129123043.5cfd687a@gandalf.local.home>
-In-Reply-To: <yt9d35nf1d84.fsf@linux.ibm.com>
-References: <20211120112738.45980-1-laoar.shao@gmail.com>
-        <20211120112738.45980-8-laoar.shao@gmail.com>
-        <yt9d35nf1d84.fsf@linux.ibm.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65BAEB8159F;
+        Mon, 29 Nov 2021 17:40:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 108C1C53FAD;
+        Mon, 29 Nov 2021 17:40:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638207609;
+        bh=dccMp4qWzGZyhIoQfq16V2DtLbONeetd98FYSGIoB4A=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Co5bd/d84jArxton/fOudSQoUKD15LpRUftXX+jf6EQTgSYeoVlKlHaPxLzX79TdC
+         tkmNILuLng1upcJbN/lxEWFfXripH+La1ZU3HjsqoB8k3SVUyxfB2qw4hFgkgzau78
+         6q2fFrAvUovDulQV+C+uYWgX0XDGtgzqe8wu3u+Xb5vNrx23KUkpMz0q0baTLgf3Xb
+         4xPjzQ6JJP85nXOGEqcfAsDI8g+aBo6TL1luFbSTsUAvI+ahaUILwUOUsEn/0qMhwf
+         QvZSCmkvpv0nnRLao7jLciA0lZMzrJXoe/cetwRKZObMg3Jdl/aMZmMLA0c8PSK2ao
+         ZTj9b9GbwBgUg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DC816609D5;
+        Mon, 29 Nov 2021 17:40:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf] libbpf: silence uninitialized warning/error in
+ btf_dump_dump_type_data
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163820760889.6331.14578711690771500673.git-patchwork-notify@kernel.org>
+Date:   Mon, 29 Nov 2021 17:40:08 +0000
+References: <1638180040-8037-1-git-send-email-alan.maguire@oracle.com>
+In-Reply-To: <1638180040-8037-1-git-send-email-alan.maguire@oracle.com>
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 29 Nov 2021 11:13:31 +0100
-Sven Schnelle <svens@linux.ibm.com> wrote:
+Hello:
 
+This patch was applied to bpf/bpf-next.git (master)
+by Andrii Nakryiko <andrii@kernel.org>:
 
-> This breaks the trigger-field-variable-support.tc from the ftrace test
-> suite at least on s390:
+On Mon, 29 Nov 2021 10:00:40 +0000 you wrote:
+> When compiling libbpf with gcc 4.8.5, we see:
 > 
-> echo 'hist:keys=next_comm:wakeup_lat=common_timestamp.usecs-$ts0:onmatch(sched.sched_waking).wakeup_latency($wakeup_lat,next_pid,sched.sched_waking.prio,next_comm) if next_comm=="ping"'
-> linux/tools/testing/selftests/ftrace/test.d/trigger/inter-event/trigger-field-variable-support.tc: line 15: echo: write error: Invalid argument
+>   CC       staticobjs/btf_dump.o
+> btf_dump.c: In function ‘btf_dump_dump_type_data.isra.24’:
+> btf_dump.c:2296:5: error: ‘err’ may be used uninitialized in this function [-Werror=maybe-uninitialized]
+>   if (err < 0)
+>      ^
+> cc1: all warnings being treated as errors
+> make: *** [staticobjs/btf_dump.o] Error 1
 > 
-> I added a debugging line into check_synth_field():
-> 
-> [   44.091037] field->size 16, hist_field->size 16, field->is_signed 1, hist_field->is_signed 0
-> 
-> Note the difference in the signed field.
+> [...]
 
-That should not break on strings.
+Here is the summary with links:
+  - [bpf] libbpf: silence uninitialized warning/error in btf_dump_dump_type_data
+    https://git.kernel.org/bpf/bpf-next/c/43174f0d4597
 
-Does this fix it (if you keep the patch)?
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
--- Steve
 
-diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
-index 9555b8e1d1e3..319f9c8ca7e7 100644
---- a/kernel/trace/trace_events_hist.c
-+++ b/kernel/trace/trace_events_hist.c
-@@ -3757,7 +3757,7 @@ static int check_synth_field(struct synth_event *event,
- 
- 	if (strcmp(field->type, hist_field->type) != 0) {
- 		if (field->size != hist_field->size ||
--		    field->is_signed != hist_field->is_signed)
-+		    (!field->is_string && field->is_signed != hist_field->is_signed))
- 			return -EINVAL;
- 	}
- 
