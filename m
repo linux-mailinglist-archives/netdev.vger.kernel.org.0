@@ -2,99 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 187624623FC
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 23:09:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFEDF462766
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 00:01:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231357AbhK2WMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 17:12:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54880 "EHLO
+        id S235852AbhK2XEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 18:04:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231492AbhK2WKa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 17:10:30 -0500
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CFF1C043AD2;
-        Mon, 29 Nov 2021 12:50:59 -0800 (PST)
-Received: by mail-ot1-x32a.google.com with SMTP id n104-20020a9d2071000000b005799790cf0bso27293265ota.5;
-        Mon, 29 Nov 2021 12:50:59 -0800 (PST)
+        with ESMTP id S236167AbhK2XCM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 18:02:12 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F9DC0F74FA
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 13:14:16 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id i5so39720521wrb.2
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 13:14:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pJBTR3BH6vzrkacIA76MPyr7dPfgB6U0dNhSAI4N4Ow=;
-        b=kca9GB/UCYu/dIREElCnm6R+uO8PYnBQSUu5QC9nBgCepubV7A9WvE9bv0WzRHXcKH
-         l5JEhAY7xZk3yAoXwirrzDRrGOkI6xu6+bSass6mcGggN6gTduzROcT6CSI/A3SOTZl/
-         ZVgevoFT2H/kFgAiKazJ6baFaROT1pWEUScjF/DRfv/3pJILr7HVhmLG0w778cq6iDhG
-         624tQPYtKod9U3QgxgibN3njIu2Az4TJHYYGnymVcVkO3eVYFzKglkpp0qIJcnWPI1ud
-         mbd6bJdw5K/4MXnqvkai+8eUOpfoN09fX9arVlIcULGrnC63V11yrcZNm30erZFfUeHt
-         mjWw==
+        h=message-id:date:mime-version:user-agent:content-language:from:to:cc
+         :subject:content-transfer-encoding;
+        bh=srpjM+m9JSVbLhmkoMDgkNUzsBwUW0ZKuLG4RFIBe9U=;
+        b=VE4YeEhY07b0ts76fiWRR4NNPUyDIbFXDC20ibjjGzAErJw+czwq31XOaT8vrJnz6j
+         vBeNOILKJ8jzb9rcgy0jbKUc+pMpajA+GtMOGfG20OJidzrFzcgUUw9BlSHyEZTHSX3l
+         pi0e4hWpfn0GHRS9N2NMAtWI2mS1FbxJCNrBaR+5fcV1iTmGIkpgQlWGTfaANm98x1fC
+         BTXo3If3OxbT18VJkLNAj1ZHnKT7IwchZeq1aYTmjvQVoFDn0rMY+Jo5UJG9zO93hTET
+         dKWi2/9U8B5KwlSWgjolK7Wb6c5wOdYXMtIld1tCbfsvVWgT4/D9alo7BfVcGSlHPXCw
+         J7eA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pJBTR3BH6vzrkacIA76MPyr7dPfgB6U0dNhSAI4N4Ow=;
-        b=afctQqt7LdVONkaaQ+q55LpmrbLZiTrRx4LxgyrpvYeC5wgGPi6kzUqxnR3hQLKGzC
-         zFoTw5hcjLEdaoFqXCh0VjjAojBSsFuJGnMhL9LmnnqreGBW+OQCxDj3yKqd2th5a97g
-         ZS0YxaeBRgdX4LNrr2M/r/5TsdZE31SqK4Somjrw0CccmDWBxeMCNXDa26eI2nB3oUVS
-         kRvDYBdRGu2GV7fdNkg6KB9KfrUs5PDhdlD1glKCrT4m3h47joERaIbjcDnFi7GbXjKA
-         +ng2uPsEwQvs/ctcSbbcQ56csITQo9QihilSCF10xKKbxjLSMCc2vhJPYjOVaKDDAyE0
-         dXOw==
-X-Gm-Message-State: AOAM531y427Y8tWD0PxuWdniC1WolpcTJrJzudwQjKsXAqpjdRICWYbZ
-        xIe6Uhn/Tb//PM4F1WAC2ee00N6dbRc=
-X-Google-Smtp-Source: ABdhPJw/AOSYVMeVke9r4fhDJ9GYRZc0SXypBrljMQAVMd5lAKeZ7m4mJPYSkgxynWY48hhD6+pfQg==
-X-Received: by 2002:a05:6830:1be9:: with SMTP id k9mr46292294otb.123.1638219058858;
-        Mon, 29 Nov 2021 12:50:58 -0800 (PST)
-Received: from localhost ([2600:1700:65a0:ab60:fb28:e684:3c51:f69c])
-        by smtp.gmail.com with ESMTPSA id o6sm2436638oou.41.2021.11.29.12.50.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Nov 2021 12:50:58 -0800 (PST)
-Date:   Mon, 29 Nov 2021 12:50:57 -0800
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     Song Liu <song@kernel.org>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Subject: Re: [PATCH bpf] libbpf: fix missing section "sk_skb/skb_verdict"
-Message-ID: <YaU9Mdv+7kEa4JOJ@unknown>
-References: <20211126204108.11530-1-xiyou.wangcong@gmail.com>
- <CAPhsuW4zR5Yuwuywd71fdfP1YXX5cw6uNmhqULHy8BhfcbEAAQ@mail.gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:from:to:cc:subject:content-transfer-encoding;
+        bh=srpjM+m9JSVbLhmkoMDgkNUzsBwUW0ZKuLG4RFIBe9U=;
+        b=j5wtlgpTb1p9tqWXmVxPPpmSnwIsBVd1nJKDweOvB2flUD+rPJ+5snXdAGi0ffZHvA
+         S3IpTjbIwgwVr5bfP3j/GJKEIllH20hHaVOOASS4OSXyed26zXlaj3ddBJhp1ZnXYgZB
+         Utxhkz3yb9B5Xn1nv3CmdbnAJ4kQnAjWWd6E/rGlUSVEwNgq4pNppSec69KuoMtVI0tT
+         zcxbfgukzEkj4WmxQulepHNEF1BSA37AWTlHlLkHfdZ/r0k7bxl8ZXPWB/ErKMDBBYVA
+         tujPZRxv/ErgrWgIor/h4b+MplSixBAhQVvTS1fGdBKGo9U6sdOhCSb98la6uPez8VKe
+         jEwQ==
+X-Gm-Message-State: AOAM532G0XlOkNwuUeHlJzJFKNetFqN8k3PL55h+gmhm/UlRlCbxmaKe
+        LtBZKId8xfRoLPpt7o2PHlg=
+X-Google-Smtp-Source: ABdhPJy38C4v2oUW6VpP+dLOpd170KnfpHdmsZwqBVhAuS7jgxo+TOWeGoBLpeakOFYhC4jOSFSBjQ==
+X-Received: by 2002:a05:6000:168f:: with SMTP id y15mr36091337wrd.61.1638220454987;
+        Mon, 29 Nov 2021 13:14:14 -0800 (PST)
+Received: from ?IPV6:2003:ea:8f1a:f00:8596:696b:f4cd:9c8e? (p200300ea8f1a0f008596696bf4cd9c8e.dip0.t-ipconnect.de. [2003:ea:8f1a:f00:8596:696b:f4cd:9c8e])
+        by smtp.googlemail.com with ESMTPSA id k37sm410371wms.21.2021.11.29.13.14.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Nov 2021 13:14:14 -0800 (PST)
+Message-ID: <6bb28d2f-4884-7696-0582-c26c35534bae@gmail.com>
+Date:   Mon, 29 Nov 2021 22:14:06 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPhsuW4zR5Yuwuywd71fdfP1YXX5cw6uNmhqULHy8BhfcbEAAQ@mail.gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Content-Language: en-US
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
+Subject: [PATCH net] igb: fix deadlock caused by taking RTNL in RPM resume
+ path
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 26, 2021 at 04:20:34PM -0800, Song Liu wrote:
-> On Fri, Nov 26, 2021 at 12:45 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >
-> > From: Cong Wang <cong.wang@bytedance.com>
-> >
-> > When BPF_SK_SKB_VERDICT was introduced, I forgot to add
-> > a section mapping for it in libbpf.
-> >
-> > Fixes: a7ba4558e69a ("sock_map: Introduce BPF_SK_SKB_VERDICT")
-> > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > Cc: John Fastabend <john.fastabend@gmail.com>
-> > Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> 
-> The patch looks good to me. But seems the selftests are OK without this. So,
-> do we really need this?
-> 
+Recent net core changes caused an issue with few Intel drivers
+(reportedly igb), where taking RTNL in RPM resume path results in a
+deadlock. See [0] for a bug report. I don't think the core changes
+are wrong, but taking RTNL in RPM resume path isn't needed.
+The Intel drivers are the only ones doing this. See [1] for a
+discussion on the issue. Following patch changes the RPM resume path
+to not take RTNL.
 
-Not sure if I understand this question.
+[0] https://bugzilla.kernel.org/show_bug.cgi?id=215129
+[1] https://lore.kernel.org/netdev/20211125074949.5f897431@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/t/
 
-At least BPF_SK_SKB_STREAM_PARSER and BPF_SK_SKB_STREAM_VERDICT are already
-there, so either we should remove all of them or add BPF_SK_SKB_VERDICT for
-completeness.
+Fixes: bd869245a3dc ("net: core: try to runtime-resume detached device in __dev_open")
+Fixes: f32a21376573 ("ethtool: runtime-resume netdev parent before ethtool ioctl ops")
+Tested-by: Martin Stolpe <martin.stolpe@gmail.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/intel/igb/igb_main.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
 
-Or are you suggesting we should change it back in selftests too? Note, it was
-changed by Andrii in commit 15669e1dcd75fe6d51e495f8479222b5884665b6:
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index dd208930f..8073cce73 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -9254,7 +9254,7 @@ static int __maybe_unused igb_suspend(struct device *dev)
+ 	return __igb_shutdown(to_pci_dev(dev), NULL, 0);
+ }
+ 
+-static int __maybe_unused igb_resume(struct device *dev)
++static int __maybe_unused __igb_resume(struct device *dev, bool rpm)
+ {
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+ 	struct net_device *netdev = pci_get_drvdata(pdev);
+@@ -9297,17 +9297,24 @@ static int __maybe_unused igb_resume(struct device *dev)
+ 
+ 	wr32(E1000_WUS, ~0);
+ 
+-	rtnl_lock();
++	if (!rpm)
++		rtnl_lock();
+ 	if (!err && netif_running(netdev))
+ 		err = __igb_open(netdev, true);
+ 
+ 	if (!err)
+ 		netif_device_attach(netdev);
+-	rtnl_unlock();
++	if (!rpm)
++		rtnl_unlock();
+ 
+ 	return err;
+ }
+ 
++static int __maybe_unused igb_resume(struct device *dev)
++{
++	return __igb_resume(dev, false);
++}
++
+ static int __maybe_unused igb_runtime_idle(struct device *dev)
+ {
+ 	struct net_device *netdev = dev_get_drvdata(dev);
+@@ -9326,7 +9333,7 @@ static int __maybe_unused igb_runtime_suspend(struct device *dev)
+ 
+ static int __maybe_unused igb_runtime_resume(struct device *dev)
+ {
+-	return igb_resume(dev);
++	return __igb_resume(dev, true);
+ }
+ 
+ static void igb_shutdown(struct pci_dev *pdev)
+@@ -9442,7 +9449,7 @@ static pci_ers_result_t igb_io_error_detected(struct pci_dev *pdev,
+  *  @pdev: Pointer to PCI device
+  *
+  *  Restart the card from scratch, as if from a cold-boot. Implementation
+- *  resembles the first-half of the igb_resume routine.
++ *  resembles the first-half of the __igb_resume routine.
+  **/
+ static pci_ers_result_t igb_io_slot_reset(struct pci_dev *pdev)
+ {
+@@ -9482,7 +9489,7 @@ static pci_ers_result_t igb_io_slot_reset(struct pci_dev *pdev)
+  *
+  *  This callback is called when the error recovery driver tells us that
+  *  its OK to resume normal operation. Implementation resembles the
+- *  second-half of the igb_resume routine.
++ *  second-half of the __igb_resume routine.
+  */
+ static void igb_io_resume(struct pci_dev *pdev)
+ {
+-- 
+2.34.1
 
--SEC("sk_skb/skb_verdict")
-+SEC("sk_skb")
-
-Thanks.
