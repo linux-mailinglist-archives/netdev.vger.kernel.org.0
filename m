@@ -2,103 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 844B1462615
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 23:43:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D32B462629
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 23:45:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231750AbhK2Wq7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 17:46:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34868 "EHLO
+        id S234822AbhK2WsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 17:48:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234398AbhK2WoZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 17:44:25 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB8D2C0C0876
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 09:44:51 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id s13so38660316wrb.3
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 09:44:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hzOx1eG/eR2CEdkQAHdZsD7yeCZJIch9Df75X0dhFac=;
-        b=Y0untIZS8EpGk+szKxNKpY7wxQbRa9XJTEz0sC4T9wXurF9g+mFsu0YLLFKh7XN4SQ
-         THr/PUjXONxqRvNXgZ14+Xbwz/EpphmuWf/bDNUqY9oCUu/660OFJSMXWTRMGHy/A01B
-         Fpzn+1Lm5UzAfepDxY0zAY/nSCRZYxVcKH52sVs2vvEoi8ug+eMyjxeoaoRt7YRSznC3
-         6Y+Wy7NpssYCuqP1a56pMeKC2Pb32t+PzaNghMM7oD/BISXUvPmgDA3LTizNRrHjJyEv
-         BBuGfB2CMv3W2PZ9dYZCyIJRW2t3tTPbGNuxEF+JA6GpUJcGLtP41+sxM1GPfMSrtHUt
-         Owow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hzOx1eG/eR2CEdkQAHdZsD7yeCZJIch9Df75X0dhFac=;
-        b=k+zGKsjnKEDdQmLedHjHEaYfGH6BIbwVOsCY9HXbqYJWmhqHC02UCw0NDPhHlGwtHr
-         o1CsVejn0jvDg3ZHbPNP7pK7MOh2AeQ/0kIMIRv+H09XiwHq4NuBhanp73WEL/IwK0uP
-         KFSKWh8Z20IUO7J9MZAfJl3VlGEnn4vmCKHHAxQ9h7sCENdiUSwbfi8YfTz1deRSPFVe
-         ic82Gt6posVQfoeZ5ln/96FGnKiEt7E8sgilnEbir73Bg4CcMQI3nGaEDm8gI/TMWgxf
-         cvB7mJieNx4OdoqpMW3vOfUMVyiwMQpu51h0kMxjJNSdBJeu+NV/yIJavZRalybCFTJF
-         2YIA==
-X-Gm-Message-State: AOAM533MyhQfye78M3qHlJwdMv8IdDpYtDtgHXvXJM4UMmkf09NoqGmn
-        X42W7jB/n8qS5DkNVYLWAlzx9q+V+0up91L40WvT4g==
-X-Google-Smtp-Source: ABdhPJw/anl8SIvJAx2fOTcG8isi4uRA64oQ3G08WeANzyDxgQAkhWKm5capv2zIIi9w1215FVjL9AX5UFBkn4bzAbs=
-X-Received: by 2002:adf:fb86:: with SMTP id a6mr35706630wrr.35.1638207889987;
- Mon, 29 Nov 2021 09:44:49 -0800 (PST)
+        with ESMTP id S235045AbhK2Wrc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 17:47:32 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC7CEC03AD56
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 10:10:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3E94FCE13AB
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 18:10:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 451C0C53FC7;
+        Mon, 29 Nov 2021 18:10:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638209432;
+        bh=+jZXABAy86NtUcVg64ekIYcdwQVVvfyTYydQwcFdiCU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=eETQg1VGpEizZw0j5AsfFa1wLWzYXjoQuZ+SgqmdJ7/IQMkCdXc45OqEbKGjNULWQ
+         /oCNLmDhJurg9mz+tl3iBuivGmYL41wdRj6f6y6LdXLi3EuzLRFO4rbQ9Cgabq1mhS
+         WzNAgqT3ej3BKFK6LiBue3mwWMMXdUnKi2lt4QsAWh3mF9OqVqOFepT1vxKIRq7GE5
+         5QmDQqhX5zMFh5zc7nuDARH29A2g/JF0tB7/0KRr8NpIP64r6ourUgNlsNS9HibIPu
+         qw8F5z0K0/zJtbGFmC0gmxInJLeKqmenBiMtgSdZtmJXL3f/X1KK55TFxFhdk/Y6bQ
+         q3ZCStyn3mLTw==
+Date:   Mon, 29 Nov 2021 10:10:31 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Lahav Schlesinger <lschlesinger@drivenets.com>,
+        Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v3] rtnetlink: Support fine-grained netdevice
+ bulk deletion
+Message-ID: <20211129101031.25d35a5d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <21da13fb-e629-0d6e-1aa1-56e2eb86d1c3@gmail.com>
+References: <20211125165146.21298-1-lschlesinger@drivenets.com>
+        <YaMwrajs8D5OJ3yS@unreal>
+        <20211128111313.hjywmtmnipg4ul4f@kgollan-pc>
+        <YaNrd6+9V18ku+Vk@unreal>
+        <09296394-a69a-ee66-0897-c9018185cfde@gmail.com>
+        <20211129135307.mxtfw6j7v4hdex4f@kgollan-pc>
+        <21da13fb-e629-0d6e-1aa1-56e2eb86d1c3@gmail.com>
 MIME-Version: 1.0
-References: <20211129045503.20217-1-xiangxia.m.yue@gmail.com> <20211129045503.20217-2-xiangxia.m.yue@gmail.com>
-In-Reply-To: <20211129045503.20217-2-xiangxia.m.yue@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 29 Nov 2021 09:44:38 -0800
-Message-ID: <CANn89i+Pk61q+7gxzhDEDgQBkcOhOLpx80QoiuDM2ceunFkqvg@mail.gmail.com>
-Subject: Re: [net v3 2/3] net: sched: add check tc_skip_classify in sch egress
-To:     xiangxia.m.yue@gmail.com
-Cc:     netdev@vger.kernel.org, Willem de Bruijn <willemb@google.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Antoine Tenart <atenart@kernel.org>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Wei Wang <weiwan@google.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 28, 2021 at 8:55 PM <xiangxia.m.yue@gmail.com> wrote:
->
-> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
->
-> Try to resolve the issues as below:
-> * We look up and then check tc_skip_classify flag in net
->   sched layer, even though skb don't want to be classified.
->   That case may consume a lot of cpu cycles.
->
->   Install the rules as below:
->   $ for id in $(seq 1 100); do
->   $       tc filter add ... egress prio $id ... action mirred egress redirect dev ifb0
->   $ done
->
->   netperf:
->   $ taskset -c 1 netperf -t TCP_RR -H ip -- -r 32,32
->   $ taskset -c 1 netperf -t TCP_STREAM -H ip -- -m 32
->
->   Before: 10662.33 tps, 108.95 Mbit/s
->   After:  12434.48 tps, 145.89 Mbit/s
->   For TCP_RR, there are 16.6% improvement, TCP_STREAM 33.9%.
+On Mon, 29 Nov 2021 08:30:16 -0700 David Ahern wrote:
+> On 11/29/21 6:53 AM, Lahav Schlesinger wrote:
+> > Hi David, while I also don't have any strong preference here, my
+> > reasoning for failing the whole request if one device can't be deleted
+> > was so it will share the behaviour we currently have with group deletion.
+> > If you're okay with this asymmetry I'll send a V4.  
+> 
+> good point - new features should be consistent with existing code.
+> 
+> You can add another attribute to the request to say 'Skip devices that
+> can not be deleted'.
 
-These numbers mean nothing, really.
+The patch is good as is then? I can resurrect it from 'Changes
+Requested' and apply.
 
-I think you should put 10,000 filters instead of 100 so that the
-numbers look even better ?
-
-As a matter of fact, you add yet another check in fast  path.
-
-For some reason I have not received the cover letter and patch 1/3.
+Any opinion on wrapping the ifindices into separate attrs, Dave?
+I don't think the 32k vs 64k max distinction matters all that much,
+user can send multiple messages, and we could point the extack at
+the correct ifindex's attribute.
