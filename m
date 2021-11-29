@@ -2,323 +2,264 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE116461D19
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 18:53:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A451461D24
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 18:55:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242407AbhK2R4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 12:56:37 -0500
-Received: from mail-bn1nam07on2056.outbound.protection.outlook.com ([40.107.212.56]:17280
-        "EHLO NAM02-BN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S243697AbhK2Ryg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Nov 2021 12:54:36 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PecyqwI4vvq3o073A/6vDr9aSpnSwQxpmxJe7as+5A/3nQjVpQ66IqWTmo8YnR00IXk0tgCxWsHFsrYLdr2Y8dgMxWnXcaaeS9cgVBW1ktlQpf3LTGRxj3NlFsq7nfexPRto85yFyHYgKSW0Bb8InkX18y/wNOfUEeu/SAHR9w7ECyJ8UEEfpQ2hO0HEomhrxGipCPz7Q0dwlPuPrYxgbfTAGK0kbV256+YtcCX/uTLlg2IEnki5W/EWp7YOq9d4vC8+rf62aZguvdFq1H7gIQCG41v/TcrbmF33c8lVw13KaigxbSWfqUcEPs4/cQvrm4PRM1OaaTNKbM7lcPXAjQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yTwjKW+jtxi0GmHcuM9THp0gYiMI2/1kRyhg4bXnAXw=;
- b=WfuI33gz3P7swl8Lq+Cao8wy23Dsott0F6EDpYt6554BIbrwjhwt+YmkuFx3v8gIjSpiWYyfzhMVf9CQhGUoWviVKIWxyMjIwt2QKHhsBaGwVbOf0KT/EKnZ7S6UDYz2eVK+/LsrBbNbIJbQIbrUCdHn9s7tOr8SFz+mBA9akuX+W8VqItfFWlxgCP1hYF9alCuYQSbOgvMNIKABW4illobnEwXOUx/CumW0CoAHsuYqeX/ln3B7yS8lEt9xoE8toW1O87g10mouFo0TZo/fGFZqkAAAgyTFXJEKnJDu3GjW4b6+77Qg41imAExM0ZQg0KWP6Evi1jqhZKdWvmeeew==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=fb.com smtp.mailfrom=nvidia.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yTwjKW+jtxi0GmHcuM9THp0gYiMI2/1kRyhg4bXnAXw=;
- b=HYDS3S0Z5mbNjzUjFmwilBbqDuuAtCj4bMto6gVAB8o8g5xKHcQVGYW8YB4614YEtA8EldRkinA/XjJNQhKy5Sn9wRv7rOdWYfYfNBm5X/cJ3HzCoX8WNX++eO+McxJX8N54iNsmHeZCnAyEwKozUQY+uskIkekJJ7rTDigULOoyCR69HE+efjILYgQxwFp8xKfQgIcpWSA3ks2uVbk/mHpR1AmlOcZJpE/ZlmWMzVRr4xLbbEr11GSniZzH+Sr4LznMpkqpPGDHCFjWmrwyzy+cA8BOrciJRUxUY7z+QnJmQSAocQ8nkL2glQzObyUtDnZm/jccmJ+ezMJmvO6W2g==
-Received: from MW4PR03CA0205.namprd03.prod.outlook.com (2603:10b6:303:b8::30)
- by CH2PR12MB4277.namprd12.prod.outlook.com (2603:10b6:610:ae::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.20; Mon, 29 Nov
- 2021 17:51:16 +0000
-Received: from CO1NAM11FT031.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:b8:cafe::ba) by MW4PR03CA0205.outlook.office365.com
- (2603:10b6:303:b8::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.21 via Frontend
- Transport; Mon, 29 Nov 2021 17:51:16 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- CO1NAM11FT031.mail.protection.outlook.com (10.13.174.118) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4734.22 via Frontend Transport; Mon, 29 Nov 2021 17:51:16 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 29 Nov
- 2021 17:51:15 +0000
-Received: from [172.27.15.20] (172.20.187.5) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.5; Mon, 29 Nov 2021
- 09:51:06 -0800
-Message-ID: <0a958197-67ab-8773-3611-f8156ebdb9e0@nvidia.com>
-Date:   Mon, 29 Nov 2021 19:51:02 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [PATCH bpf-next 09/10] bpf: Add a helper to issue timestamp
- cookies in XDP
-Content-Language: en-US
-To:     Yonghong Song <yhs@fb.com>
-CC:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        "Lorenz Bauer" <lmb@cloudflare.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "Martin KaFai Lau" <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
+        id S1344823AbhK2R7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 12:59:13 -0500
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:22004 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243029AbhK2R5N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 12:57:13 -0500
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1ATHSqZK010516;
+        Mon, 29 Nov 2021 17:53:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding;
+ s=corp-2021-07-09; bh=zhbwo7WfgNSrBwjya6nNg0MoekvBDhsGS1MJXgyX6UE=;
+ b=vEx/avajp86Db5k1j/NvSHrFLSczjZhm9d5EV0RB9rNMoHr1FgXWM05KmVhCufmxcSHT
+ en5JFadOUTC798Z2FKmkw3ZCnsDCjtrSJkPdCYpfvtWfhqS4FhvulvJHwoyhcSqAqeTY
+ wpebtLEkjSpWmVxwUb/R2ALJ+AqmxOu669u/nh6QWip2CHghuTSBIYmHOPxcTbro5IcW
+ 46cCz6lHaQtZTg8eH0SaquzvQK3F4/Ptb+xYiEyU+lZtNoFOYs9YjWq9dZ2W/6N9vX/I
+ JipzwqFIrIo+aXCDcEh8d5g3I/pi2B7VtkT1r8l7llSEeNwZiGEgXz14fJTfZTbZ+deP KA== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3cmt8c37tk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 29 Nov 2021 17:53:38 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 1ATHphqF093410;
+        Mon, 29 Nov 2021 17:53:38 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3030.oracle.com with ESMTP id 3ck9swt6v5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 29 Nov 2021 17:53:37 +0000
+Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 1ATHrb37099662;
+        Mon, 29 Nov 2021 17:53:37 GMT
+Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.147.25.63])
+        by userp3030.oracle.com with ESMTP id 3ck9swt6u7-1;
+        Mon, 29 Nov 2021 17:53:37 +0000
+From:   Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Cc:     harshit.m.mogalapalli@oracle.com, ramanan.govindarajan@oracle.com,
+        george.kennedy@oracle.com, vijayendra.suman@oracle.com,
+        stephen@networkplumber.org, syzkaller <syzkaller@googlegroups.com>,
         "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yajun Deng <yajun.deng@linux.dev>,
         David Ahern <dsahern@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Brendan Jackman <jackmanb@google.com>,
-        "Florent Revest" <revest@chromium.org>,
-        Joe Stringer <joe@cilium.io>, Tariq Toukan <tariqt@nvidia.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        <clang-built-linux@googlegroups.com>
-References: <20211019144655.3483197-1-maximmi@nvidia.com>
- <20211019144655.3483197-10-maximmi@nvidia.com>
- <CACAyw9_MT-+n_b1pLYrU+m6OicgRcndEBiOwb5Kc1w0CANd_9A@mail.gmail.com>
- <87y26nekoc.fsf@toke.dk> <1901a631-25c0-158d-b37f-df6d23d8e8ab@nvidia.com>
- <103c5154-cc29-a5ab-3c30-587fc0fbeae2@fb.com>
- <1b9b3c40-f933-59c3-09e6-aa6c3dda438f@nvidia.com>
- <68a63a77-f856-1690-cb60-327fc753b476@fb.com>
- <3e673e1a-2711-320b-f0be-2432cf4bbe9c@nvidia.com>
- <f08fa9aa-8b0d-8217-1823-2830b2b2587c@fb.com>
- <cbd2e655-8113-e719-4b9d-b3987c398b04@nvidia.com>
- <ce2d9407-b141-6647-939f-0f679157fdf7@fb.com>
-From:   Maxim Mikityanskiy <maximmi@nvidia.com>
-In-Reply-To: <ce2d9407-b141-6647-939f-0f679157fdf7@fb.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+        Florian Westphal <fw@strlen.de>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Alexander Aring <aahringo@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4] net: netlink: af_netlink: Prevent empty skb by adding a check on len.
+Date:   Mon, 29 Nov 2021 09:53:27 -0800
+Message-Id: <20211129175328.55339-1-harshit.m.mogalapalli@oracle.com>
+X-Mailer: git-send-email 2.27.0
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [172.20.187.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 55aa4e3c-0192-449a-03b1-08d9b360d784
-X-MS-TrafficTypeDiagnostic: CH2PR12MB4277:
-X-Microsoft-Antispam-PRVS: <CH2PR12MB4277ED9A31C634BED92ECD84DC669@CH2PR12MB4277.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: I/TLAcLOZ3cwKMp24N35ilqlwkK5WJr4NuPgxMgVzpt/z3mdOS0fASkQLvlaysZcLUoDqaHuk43YLUdKmM+wyV7hdNb0QppTwMwmJbFZiU5/KtKRQjlyz6DwuPI9E6Ozfb/V4eM+R3UhHLRoOKBh/HLJ+X82qCXvc7G/uyWuwR+pDo85TAXZQLZFpvn6JnvbDRTFrC7YFRfuVT0s03Qp7opvkO7KEHxk/7ChTCO3sTTThUr3ZQjPjfzwiddcwCFcvY4joQ9NPP9mFORBEfJV15Mrg2aBsH+Va5zJGid9caCP6lfcWt/pMiPhBCnPKaIU8GRXvwmxBeLKNflmHrJbFNCwUPb8cpbF0l/0mJVK39vzwDPITZj8Hl7kXB7GDBuGEK5yeHKtGQKE2YydPywKh6JuuE5rZibUP3++pK/pGibCte7aGlA/9gF6YkXBLDlS3krf2F36CP8JGCxhQ8BQu9FiX8laSVOCU2AO47Qm6OauTX4QoDwigUq4K+FyU1jkDQBBIMJqDCZ6TpPtMcqkjlSiAAS0DOqVhN/p6KxPaEaPLRhdThcHl2q/EzvCJm2JXmTFfP3UIz1U2LYnGMNc49SJ08PdM51D7uwhOz2GYxgsNiVnlkIfIM2oroHFrF3L4ceCsdPk28ZohExObFhJwBNwMLhkDmIg7J1ESjJqLSm8mG7DndBpOdj+sHAAXHvViii+m1l7S57aB9Bpvv1WWZ9kxs59wu/wuLPJz2xOr0kqW6ERjdZ3Qam7PM1ewNyh2QsWtrcqzpdfW0aZtUOwMi03dJzz0EA7efUvqmbsu36s9zWqknRm3+OuNQdu4U6Q
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(82310400004)(70586007)(66574015)(7636003)(36860700001)(8936002)(316002)(336012)(86362001)(83380400001)(16576012)(186003)(426003)(966005)(53546011)(2906002)(31686004)(8676002)(6666004)(508600001)(47076005)(356005)(2616005)(16526019)(36756003)(26005)(4001150100001)(54906003)(5660300002)(4326008)(7416002)(6916009)(70206006)(31696002)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Nov 2021 17:51:16.2541
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 55aa4e3c-0192-449a-03b1-08d9b360d784
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT031.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4277
+X-Proofpoint-ORIG-GUID: TgLBbaBRz3-2R6NoFE6-HtPB5wQAWDLB
+X-Proofpoint-GUID: TgLBbaBRz3-2R6NoFE6-HtPB5wQAWDLB
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-11-26 19:07, Yonghong Song wrote:
-> 
-> 
-> On 11/26/21 8:50 AM, Maxim Mikityanskiy wrote:
->> On 2021-11-26 07:43, Yonghong Song wrote:
->>>
->>>
->>> On 11/25/21 6:34 AM, Maxim Mikityanskiy wrote:
->>>> On 2021-11-09 09:11, Yonghong Song wrote:
->>>>>
->>>>>
->>>>> On 11/3/21 7:02 AM, Maxim Mikityanskiy wrote:
->>>>>> On 2021-11-03 04:10, Yonghong Song wrote:
->>>>>>>
->>>>>>>
->>>>>>> On 11/1/21 4:14 AM, Maxim Mikityanskiy wrote:
->>>>>>>> On 2021-10-20 19:16, Toke Høiland-Jørgensen wrote:
->>>>>>>>> Lorenz Bauer <lmb@cloudflare.com> writes:
->>>>>>>>>
->>>>>>>>>>> +bool cookie_init_timestamp_raw(struct tcphdr *th, __be32 
->>>>>>>>>>> *tsval, __be32 *tsecr)
->>>>>>>>>>
->>>>>>>>>> I'm probably missing context, Is there something in this 
->>>>>>>>>> function that
->>>>>>>>>> means you can't implement it in BPF?
->>>>>>>>>
->>>>>>>>> I was about to reply with some other comments but upon closer 
->>>>>>>>> inspection
->>>>>>>>> I ended up at the same conclusion: this helper doesn't seem to 
->>>>>>>>> be needed
->>>>>>>>> at all?
->>>>>>>>
->>>>>>>> After trying to put this code into BPF (replacing the underlying 
->>>>>>>> ktime_get_ns with ktime_get_mono_fast_ns), I experienced issues 
->>>>>>>> with passing the verifier.
->>>>>>>>
->>>>>>>> In addition to comparing ptr to end, I had to add checks that 
->>>>>>>> compare ptr to data_end, because the verifier can't deduce that 
->>>>>>>> end <= data_end. More branches will add a certain slowdown (not 
->>>>>>>> measured).
->>>>>>>>
->>>>>>>> A more serious issue is the overall program complexity. Even 
->>>>>>>> though the loop over the TCP options has an upper bound, and the 
->>>>>>>> pointer advances by at least one byte every iteration, I had to 
->>>>>>>> limit the total number of iterations artificially. The maximum 
->>>>>>>> number of iterations that makes the verifier happy is 10. With 
->>>>>>>> more iterations, I have the following error:
->>>>>>>>
->>>>>>>> BPF program is too large. Processed 1000001 insn
->>>>>>>>
->>>>>>>>                         processed 1000001 insns (limit 1000000) 
->>>>>>>> max_states_per_insn 29 total_states 35489 peak_states 596 
->>>>>>>> mark_read 45
->>>>>>>>
->>>>>>>> I assume that BPF_COMPLEXITY_LIMIT_INSNS (1 million) is the 
->>>>>>>> accumulated amount of instructions that the verifier can process 
->>>>>>>> in all branches, is that right? It doesn't look realistic that 
->>>>>>>> my program can run 1 million instructions in a single run, but 
->>>>>>>> it might be that if you take all possible flows and add up the 
->>>>>>>> instructions from these flows, it will exceed 1 million.
->>>>>>>>
->>>>>>>> The limitation of maximum 10 TCP options might be not enough, 
->>>>>>>> given that valid packets are permitted to include more than 10 
->>>>>>>> NOPs. An alternative of using bpf_load_hdr_opt and calling it 
->>>>>>>> three times doesn't look good either, because it will be about 
->>>>>>>> three times slower than going over the options once. So maybe 
->>>>>>>> having a helper for that is better than trying to fit it into BPF?
->>>>>>>>
->>>>>>>> One more interesting fact is the time that it takes for the 
->>>>>>>> verifier to check my program. If it's limited to 10 iterations, 
->>>>>>>> it does it pretty fast, but if I try to increase the number to 
->>>>>>>> 11 iterations, it takes several minutes for the verifier to 
->>>>>>>> reach 1 million instructions and print the error then. I also 
->>>>>>>> tried grouping the NOPs in an inner loop to count only 10 real 
->>>>>>>> options, and the verifier has been running for a few hours 
->>>>>>>> without any response. Is it normal? 
->>>>>>>
->>>>>>> Maxim, this may expose a verifier bug. Do you have a reproducer I 
->>>>>>> can access? I would like to debug this to see what is the root 
->>>>>>> case. Thanks!
->>>>>>
->>>>>> Thanks, I appreciate your help in debugging it. The reproducer is 
->>>>>> based on the modified XDP program from patch 10 in this series. 
->>>>>> You'll need to apply at least patches 6, 7, 8 from this series to 
->>>>>> get new BPF helpers needed for the XDP program (tell me if that's 
->>>>>> a problem, I can try to remove usage of new helpers, but it will 
->>>>>> affect the program length and may produce different results in the 
->>>>>> verifier).
->>>>>>
->>>>>> See the C code of the program that passes the verifier (compiled 
->>>>>> with clang version 12.0.0-1ubuntu1) in the bottom of this email. 
->>>>>> If you increase the loop boundary from 10 to at least 11 in 
->>>>>> cookie_init_timestamp_raw(), it fails the verifier after a few 
->>>>>> minutes. 
->>>>>
->>>>> I tried to reproduce with latest llvm (llvm-project repo),
->>>>> loop boundary 10 is okay and 11 exceeds the 1M complexity limit. 
->>>>> For 10,
->>>>> the number of verified instructions is 563626 (more than 0.5M) so 
->>>>> it is
->>>>> totally possible that one more iteration just blows past the limit.
->>>>
->>>> So, does it mean that the verifying complexity grows exponentially 
->>>> with increasing the number of loop iterations (options parsed)?
->>>
->>> Depending on verification time pruning results, it is possible 
->>> slightly increase number of branches could result quite some (2x, 4x, 
->>> etc.) of
->>> to-be-verified dynamic instructions.
->>
->> Is it at least theoretically possible to make this coefficient below 
->> 2x? I.e. write a loop, so that adding another iteration will not 
->> double the number of verified instructions, but will have a smaller 
->> increase?
->>
->> If that's not possible, then it looks like BPF can't have loops bigger 
->> than ~19 iterations (2^20 > 1M), and this function is not 
->> implementable in BPF.
-> 
-> This is the worst case. As I mentioned pruning plays a huge role in 
-> verification. Effective pruning can add little increase of dynamic 
-> instructions say from 19 iterations to 20 iterations. But we have
-> to look at verifier log to find out whether pruning is less effective or
-> something else... Based on my experience, in most cases, pruning is
-> quite effective. But occasionally it is not... You can look at
-> verifier.c file to roughly understand how pruning work.
-> 
-> Not sure whether in this case it is due to less effective pruning or 
-> inherently we just have to go through all these dynamic instructions for 
-> verification.
-> 
->>
->>>>
->>>> Is it a good enough reason to keep this code as a BPF helper, rather 
->>>> than trying to fit it into the BPF program?
->>>
->>> Another option is to use global function, which is verified separately
->>> from the main bpf program.
->>
->> Simply removing __always_inline didn't change anything. Do I need to 
->> make any other changes? Will it make sense to call a global function 
->> in a loop, i.e. will it increase chances to pass the verifier?
-> 
-> global function cannot be static function. You can try
-> either global function inside the loop or global function
-> containing the loop. It probably more effective to put loops
-> inside the global function. You have to do some experiments
-> to see which one is better.
+Adding a check on len parameter to avoid empty skb. This prevents a
+division error in netem_enqueue function which is caused when skb->len=0
+and skb->data_len=0 in the randomized corruption step as shown below.
 
-Sorry for a probably noob question, but how can I pass data_end to a 
-global function? I'm getting this error:
+skb->data[prandom_u32() % skb_headlen(skb)] ^= 1<<(prandom_u32() % 8);
 
-Validating cookie_init_timestamp_raw() func#1...
-arg#4 reference type('UNKNOWN ') size cannot be determined: -22
-processed 0 insns (limit 1000000) max_states_per_insn 0 total_states 0 
-peak_states 0 mark_read 0
+Crash Report:
+[  343.170349] netdevsim netdevsim0 netdevsim3: set [1, 0] type 2 family
+0 port 6081 - 0
+[  343.216110] netem: version 1.3
+[  343.235841] divide error: 0000 [#1] PREEMPT SMP KASAN NOPTI
+[  343.236680] CPU: 3 PID: 4288 Comm: reproducer Not tainted 5.16.0-rc1+
+[  343.237569] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+BIOS 1.11.0-2.el7 04/01/2014
+[  343.238707] RIP: 0010:netem_enqueue+0x1590/0x33c0 [sch_netem]
+[  343.239499] Code: 89 85 58 ff ff ff e8 5f 5d e9 d3 48 8b b5 48 ff ff
+ff 8b 8d 50 ff ff ff 8b 85 58 ff ff ff 48 8b bd 70 ff ff ff 31 d2 2b 4f
+74 <f7> f1 48 b8 00 00 00 00 00 fc ff df 49 01 d5 4c 89 e9 48 c1 e9 03
+[  343.241883] RSP: 0018:ffff88800bcd7368 EFLAGS: 00010246
+[  343.242589] RAX: 00000000ba7c0a9c RBX: 0000000000000001 RCX:
+0000000000000000
+[  343.243542] RDX: 0000000000000000 RSI: ffff88800f8edb10 RDI:
+ffff88800f8eda40
+[  343.244474] RBP: ffff88800bcd7458 R08: 0000000000000000 R09:
+ffffffff94fb8445
+[  343.245403] R10: ffffffff94fb8336 R11: ffffffff94fb8445 R12:
+0000000000000000
+[  343.246355] R13: ffff88800a5a7000 R14: ffff88800a5b5800 R15:
+0000000000000020
+[  343.247291] FS:  00007fdde2bd7700(0000) GS:ffff888109780000(0000)
+knlGS:0000000000000000
+[  343.248350] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  343.249120] CR2: 00000000200000c0 CR3: 000000000ef4c000 CR4:
+00000000000006e0
+[  343.250076] Call Trace:
+[  343.250423]  <TASK>
+[  343.250713]  ? memcpy+0x4d/0x60
+[  343.251162]  ? netem_init+0xa0/0xa0 [sch_netem]
+[  343.251795]  ? __sanitizer_cov_trace_pc+0x21/0x60
+[  343.252443]  netem_enqueue+0xe28/0x33c0 [sch_netem]
+[  343.253102]  ? stack_trace_save+0x87/0xb0
+[  343.253655]  ? filter_irq_stacks+0xb0/0xb0
+[  343.254220]  ? netem_init+0xa0/0xa0 [sch_netem]
+[  343.254837]  ? __kasan_check_write+0x14/0x20
+[  343.255418]  ? _raw_spin_lock+0x88/0xd6
+[  343.255953]  dev_qdisc_enqueue+0x50/0x180
+[  343.256508]  __dev_queue_xmit+0x1a7e/0x3090
+[  343.257083]  ? netdev_core_pick_tx+0x300/0x300
+[  343.257690]  ? check_kcov_mode+0x10/0x40
+[  343.258219]  ? _raw_spin_unlock_irqrestore+0x29/0x40
+[  343.258899]  ? __kasan_init_slab_obj+0x24/0x30
+[  343.259529]  ? setup_object.isra.71+0x23/0x90
+[  343.260121]  ? new_slab+0x26e/0x4b0
+[  343.260609]  ? kasan_poison+0x3a/0x50
+[  343.261118]  ? kasan_unpoison+0x28/0x50
+[  343.261637]  ? __kasan_slab_alloc+0x71/0x90
+[  343.262214]  ? memcpy+0x4d/0x60
+[  343.262674]  ? write_comp_data+0x2f/0x90
+[  343.263209]  ? __kasan_check_write+0x14/0x20
+[  343.263802]  ? __skb_clone+0x5d6/0x840
+[  343.264329]  ? __sanitizer_cov_trace_pc+0x21/0x60
+[  343.264958]  dev_queue_xmit+0x1c/0x20
+[  343.265470]  netlink_deliver_tap+0x652/0x9c0
+[  343.266067]  netlink_unicast+0x5a0/0x7f0
+[  343.266608]  ? netlink_attachskb+0x860/0x860
+[  343.267183]  ? __sanitizer_cov_trace_pc+0x21/0x60
+[  343.267820]  ? write_comp_data+0x2f/0x90
+[  343.268367]  netlink_sendmsg+0x922/0xe80
+[  343.268899]  ? netlink_unicast+0x7f0/0x7f0
+[  343.269472]  ? __sanitizer_cov_trace_pc+0x21/0x60
+[  343.270099]  ? write_comp_data+0x2f/0x90
+[  343.270644]  ? netlink_unicast+0x7f0/0x7f0
+[  343.271210]  sock_sendmsg+0x155/0x190
+[  343.271721]  ____sys_sendmsg+0x75f/0x8f0
+[  343.272262]  ? kernel_sendmsg+0x60/0x60
+[  343.272788]  ? write_comp_data+0x2f/0x90
+[  343.273332]  ? write_comp_data+0x2f/0x90
+[  343.273869]  ___sys_sendmsg+0x10f/0x190
+[  343.274405]  ? sendmsg_copy_msghdr+0x80/0x80
+[  343.274984]  ? slab_post_alloc_hook+0x70/0x230
+[  343.275597]  ? futex_wait_setup+0x240/0x240
+[  343.276175]  ? security_file_alloc+0x3e/0x170
+[  343.276779]  ? write_comp_data+0x2f/0x90
+[  343.277313]  ? __sanitizer_cov_trace_pc+0x21/0x60
+[  343.277969]  ? write_comp_data+0x2f/0x90
+[  343.278515]  ? __fget_files+0x1ad/0x260
+[  343.279048]  ? __sanitizer_cov_trace_pc+0x21/0x60
+[  343.279685]  ? write_comp_data+0x2f/0x90
+[  343.280234]  ? __sanitizer_cov_trace_pc+0x21/0x60
+[  343.280874]  ? sockfd_lookup_light+0xd1/0x190
+[  343.281481]  __sys_sendmsg+0x118/0x200
+[  343.281998]  ? __sys_sendmsg_sock+0x40/0x40
+[  343.282578]  ? alloc_fd+0x229/0x5e0
+[  343.283070]  ? write_comp_data+0x2f/0x90
+[  343.283610]  ? write_comp_data+0x2f/0x90
+[  343.284135]  ? __sanitizer_cov_trace_pc+0x21/0x60
+[  343.284776]  ? ktime_get_coarse_real_ts64+0xb8/0xf0
+[  343.285450]  __x64_sys_sendmsg+0x7d/0xc0
+[  343.285981]  ? syscall_enter_from_user_mode+0x4d/0x70
+[  343.286664]  do_syscall_64+0x3a/0x80
+[  343.287158]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  343.287850] RIP: 0033:0x7fdde24cf289
+[  343.288344] Code: 01 00 48 81 c4 80 00 00 00 e9 f1 fe ff ff 0f 1f 00
+48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f
+05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 db 2c 00 f7 d8 64 89 01 48
+[  343.290729] RSP: 002b:00007fdde2bd6d98 EFLAGS: 00000246 ORIG_RAX:
+000000000000002e
+[  343.291730] RAX: ffffffffffffffda RBX: 0000000000000000 RCX:
+00007fdde24cf289
+[  343.292673] RDX: 0000000000000000 RSI: 00000000200000c0 RDI:
+0000000000000004
+[  343.293618] RBP: 00007fdde2bd6e20 R08: 0000000100000001 R09:
+0000000000000000
+[  343.294557] R10: 0000000100000001 R11: 0000000000000246 R12:
+0000000000000000
+[  343.295493] R13: 0000000000021000 R14: 0000000000000000 R15:
+00007fdde2bd7700
+[  343.296432]  </TASK>
+[  343.296735] Modules linked in: sch_netem ip6_vti ip_vti ip_gre ipip
+sit ip_tunnel geneve macsec macvtap tap ipvlan macvlan 8021q garp mrp
+hsr wireguard libchacha20poly1305 chacha_x86_64 poly1305_x86_64
+ip6_udp_tunnel udp_tunnel libblake2s blake2s_x86_64 libblake2s_generic
+curve25519_x86_64 libcurve25519_generic libchacha xfrm_interface
+xfrm6_tunnel tunnel4 veth netdevsim psample batman_adv nlmon dummy team
+bonding tls vcan ip6_gre ip6_tunnel tunnel6 gre tun ip6t_rpfilter
+ipt_REJECT nf_reject_ipv4 ip6t_REJECT nf_reject_ipv6 xt_conntrack ip_set
+ebtable_nat ebtable_broute ip6table_nat ip6table_mangle
+ip6table_security ip6table_raw iptable_nat nf_nat nf_conntrack
+nf_defrag_ipv6 nf_defrag_ipv4 iptable_mangle iptable_security
+iptable_raw ebtable_filter ebtables rfkill ip6table_filter ip6_tables
+iptable_filter ppdev bochs drm_vram_helper drm_ttm_helper ttm
+drm_kms_helper cec parport_pc drm joydev floppy parport sg syscopyarea
+sysfillrect sysimgblt i2c_piix4 qemu_fw_cfg fb_sys_fops pcspkr
+[  343.297459]  ip_tables xfs virtio_net net_failover failover sd_mod
+sr_mod cdrom t10_pi ata_generic pata_acpi ata_piix libata virtio_pci
+virtio_pci_legacy_dev serio_raw virtio_pci_modern_dev dm_mirror
+dm_region_hash dm_log dm_mod
+[  343.311074] Dumping ftrace buffer:
+[  343.311532]    (ftrace buffer empty)
+[  343.312040] ---[ end trace a2e3db5a6ae05099 ]---
+[  343.312691] RIP: 0010:netem_enqueue+0x1590/0x33c0 [sch_netem]
+[  343.313481] Code: 89 85 58 ff ff ff e8 5f 5d e9 d3 48 8b b5 48 ff ff
+ff 8b 8d 50 ff ff ff 8b 85 58 ff ff ff 48 8b bd 70 ff ff ff 31 d2 2b 4f
+74 <f7> f1 48 b8 00 00 00 00 00 fc ff df 49 01 d5 4c 89 e9 48 c1 e9 03
+[  343.315893] RSP: 0018:ffff88800bcd7368 EFLAGS: 00010246
+[  343.316622] RAX: 00000000ba7c0a9c RBX: 0000000000000001 RCX:
+0000000000000000
+[  343.317585] RDX: 0000000000000000 RSI: ffff88800f8edb10 RDI:
+ffff88800f8eda40
+[  343.318549] RBP: ffff88800bcd7458 R08: 0000000000000000 R09:
+ffffffff94fb8445
+[  343.319503] R10: ffffffff94fb8336 R11: ffffffff94fb8445 R12:
+0000000000000000
+[  343.320455] R13: ffff88800a5a7000 R14: ffff88800a5b5800 R15:
+0000000000000020
+[  343.321414] FS:  00007fdde2bd7700(0000) GS:ffff888109780000(0000)
+knlGS:0000000000000000
+[  343.322489] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  343.323283] CR2: 00000000200000c0 CR3: 000000000ef4c000 CR4:
+00000000000006e0
+[  343.324264] Kernel panic - not syncing: Fatal exception in interrupt
+[  343.333717] Dumping ftrace buffer:
+[  343.334175]    (ftrace buffer empty)
+[  343.334653] Kernel Offset: 0x13600000 from 0xffffffff81000000
+(relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+[  343.336027] Rebooting in 86400 seconds..
 
-When I removed data_end, I got another one:
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+---
+Changes v1->v2: Removed dropping of packet and just added a check on
+skb_headlen before corruption.
+Changes v2->v3: Add check on len to prevent empty skb.
+Changes v3->v4: Add a pr_warn_once() statement.
 
-; opcode = ptr[0];
-969: (71) r8 = *(u8 *)(r0 +0)
-  R0=mem(id=0,ref_obj_id=0,off=20,imm=0) 
-R1=mem(id=0,ref_obj_id=0,off=0,umin_value=4,umax_value=60,var_off=(0x0; 
-0x3f),s32_min_value=0,s32_max_value=63,u32_max_value=63)
-  R2=invP0 R3=invP0 R4=mem_or_null(id=6,ref_obj_id=0,off=0,imm=0) 
-R5=invP0 R6=mem_or_null(id=5,ref_obj_id=0,off=0,imm=0) 
-R7=mem(id=0,ref_obj_id=0,off=0,imm=0) R10=fp0 fp
--8=00000000 fp-16=invP15
-invalid access to memory, mem_size=20 off=20 size=1
-R0 min value is outside of the allowed memory range
-processed 20 insns (limit 1000000) max_states_per_insn 0 total_states 2 
-peak_states 2 mark_read 1
+ net/netlink/af_netlink.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-It looks like pointers to the context aren't supported:
-
-https://www.spinics.net/lists/bpf/msg34907.html
-
- > test_global_func11 - check that CTX pointer cannot be passed
-
-What is the standard way to pass packet data to a global function?
-
-Thanks,
-Max
-
->>
->>>>
->>>>>
->>>>>> If you apply this tiny change, it fails the verifier after about 3 
->>>>>> hours:
->>>>>>
->>> [...]
->>
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index 4c575324a985..9eba2e648385 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -1852,6 +1852,11 @@ static int netlink_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ 	if (msg->msg_flags & MSG_OOB)
+ 		return -EOPNOTSUPP;
+ 
++	if (len == 0) {
++		pr_warn_once("Zero length message leads to an empty skb\n");
++		return -ENODATA;
++	}
++
+ 	err = scm_send(sock, msg, &scm, true);
+ 	if (err < 0)
+ 		return err;
+-- 
+2.27.0
 
