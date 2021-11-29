@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C78E46166E
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 14:30:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E66C4616C4
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 14:38:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245416AbhK2Ndq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 08:33:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53416 "EHLO
+        id S239313AbhK2Nlq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 08:41:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343654AbhK2Nbp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 08:31:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7302C08E997;
-        Mon, 29 Nov 2021 04:10:10 -0800 (PST)
+        with ESMTP id S239691AbhK2Njq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 08:39:46 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 030DEC08EC6B
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 04:20:13 -0800 (PST)
 Received: from mail.kernel.org (unknown [198.145.29.99])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74B4E61309;
-        Mon, 29 Nov 2021 12:10:10 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPS id D25846056B;
-        Mon, 29 Nov 2021 12:10:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 579A6B8102B
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 12:20:12 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 00F9D60E94;
+        Mon, 29 Nov 2021 12:20:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638187809;
-        bh=QiB6FpuovEaPGQFRX74NrjKdQ4ATrryiEkbAxJpv3Wo=;
+        s=k20201202; t=1638188411;
+        bh=0RU2qjZ8uAhAB4Na03CqEwL7KMXkBg0kg3KL0QhU1eo=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=SivNtiha/CLe0CXrovDZxpnnmRaxFZkF2WKny7b7Wt18/cekxC2hQYfp8NRoAlJ9d
-         iyqeLU/7ayRPijBIk3dsXZmn8+VhlLGZ991sCwngkc/Eh/oKhVPEEXIFmMwS7kXyR9
-         mMxG+bvC89MUnRIH06ZWoVgzlAd+0MDRYh4zhB02v2QsZFlDe0ovWvvvIG+dHZd4HF
-         lyoMUTlWO1u34BKVoT9X5CKQuW1K2Mi1v/YyWniVf2l92pj38JRItVkmIYXxSZymo9
-         c+G+TMyzpS5YzrwIN5x13zZ43yYeytxSB1YPVCRQ8CjdRrAHTLJ7q9qGA6cdLk38Ze
-         nszAFk9yydR5g==
+        b=gOi1A48YqeIcpeHM24kLGrEH4Di2OH9xgTj1340GEu0FrdXZS6csQrYC/2FNB7A67
+         +ddmt5DAQhB0kKQ7fRjRTZDlyHeCl0Bm2b1zCmcvk0pXUXPMP6HuAT3vodQEbzm9Vr
+         hAP5N9Vl5tHTnePMT2zdTQah8T1xuO3ebHyyaIdByJbEfqNPQxwBXAmyrBOCUvTVmi
+         4BTYlIC03ARcq/k8FDxEeCPfnKGg4RDXLIekpvFM5rUh4YIuR/ztifqSt5nQkL5G7y
+         LDXUTY1fgbnZQqh2mDXLTZ2MuoEcx8H/MoiMIbKLxUBQNW9xieKilSFPAzv2l6zcZo
+         8wm8/3s5AQI7w==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BEA1060A4D;
-        Mon, 29 Nov 2021 12:10:09 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EAD4460A5A;
+        Mon, 29 Nov 2021 12:20:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH -next] net: mdio: ipq8064: replace ioremap() with
- devm_ioremap()
+Subject: Re: [PATCH net-next] net: Write lock dev_base_lock without disabling
+ bottom halves.
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163818780977.15002.4203481607121206602.git-patchwork-notify@kernel.org>
-Date:   Mon, 29 Nov 2021 12:10:09 +0000
-References: <20211126091340.1013726-1-yangyingliang@huawei.com>
-In-Reply-To: <20211126091340.1013726-1-yangyingliang@huawei.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        andrew@lunn.ch, kuba@kernel.org, davem@davemloft.net
+Message-Id: <163818841095.20614.3229662488535132477.git-patchwork-notify@kernel.org>
+Date:   Mon, 29 Nov 2021 12:20:10 +0000
+References: <20211126161529.hwqbkv6z2svox3zs@linutronix.de>
+In-Reply-To: <20211126161529.hwqbkv6z2svox3zs@linutronix.de>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     netdev@vger.kernel.org, lgoncalv@redhat.com, rostedt@goodmis.org,
+        nilal@redhat.com, pezhang@redhat.com, davem@davemloft.net,
+        kuba@kernel.org, tglx@linutronix.de
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -56,17 +57,25 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 26 Nov 2021 17:13:40 +0800 you wrote:
-> Use devm_ioremap() instead of ioremap() to avoid iounmap() missing.
+On Fri, 26 Nov 2021 17:15:29 +0100 you wrote:
+> The writer acquires dev_base_lock with disabled bottom halves.
+> The reader can acquire dev_base_lock without disabling bottom halves
+> because there is no writer in softirq context.
 > 
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
->  drivers/net/mdio/mdio-ipq8064.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> On PREEMPT_RT the softirqs are preemptible and local_bh_disable() acts
+> as a lock to ensure that resources, that are protected by disabling
+> bottom halves, remain protected.
+> This leads to a circular locking dependency if the lock acquired with
+> disabled bottom halves (as in write_lock_bh()) and somewhere else with
+> enabled bottom halves (as by read_lock() in netstat_show()) followed by
+> disabling bottom halves (cxgb_get_stats() -> t4_wr_mbox_meat_timeout()
+> -> spin_lock_bh()). This is the reverse locking order.
+> 
+> [...]
 
 Here is the summary with links:
-  - [-next] net: mdio: ipq8064: replace ioremap() with devm_ioremap()
-    https://git.kernel.org/netdev/net-next/c/2f7ed29f2c54
+  - [net-next] net: Write lock dev_base_lock without disabling bottom halves.
+    https://git.kernel.org/netdev/net-next/c/fd888e85fe6b
 
 You are awesome, thank you!
 -- 
