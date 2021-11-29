@@ -2,109 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B315461A84
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 15:59:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFA19461AE8
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 16:29:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347099AbhK2PC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 10:02:26 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52330 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243457AbhK2PAZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 10:00:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1638197827;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uHNWRqIpLHDPYpH7xpvccx6XYrK+C3venxkz4l+xkUI=;
-        b=G+RtDDyRrTli+XHKjCZcWwCY+vkYz0P7Pl63AmZMQKhPkGtrB7oMghAh5KLfgKp2TGcTWE
-        AiyDRGnvuA3PE3ywLPquIMFdd0zHNEceUaH8ZDNClIHHkKG5TrlJQrFh4Ae779p11rIOZ7
-        5eKjV5FhtHFtU5iF+QiPQMjBn4pSs24=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-150-g6RSE_LXPgCl_7E3lazKtg-1; Mon, 29 Nov 2021 09:56:36 -0500
-X-MC-Unique: g6RSE_LXPgCl_7E3lazKtg-1
-Received: by mail-ed1-f72.google.com with SMTP id w5-20020a05640234c500b003f1b9ab06d2so1804165edc.13
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 06:56:36 -0800 (PST)
+        id S1349331AbhK2Pcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 10:32:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51168 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343859AbhK2Pap (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 10:30:45 -0500
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53E1C05291B;
+        Mon, 29 Nov 2021 05:41:48 -0800 (PST)
+Received: by mail-qt1-x82d.google.com with SMTP id t11so16552401qtw.3;
+        Mon, 29 Nov 2021 05:41:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fhEsQAK98bM5StiE4nhRYixbgK7BmdEmPc2JUmkzNuE=;
+        b=OPD4a0BbOCx/FwKr9ugrv/ROrF8AV8trJRIupc+DGvBkpArkblK6Vf7ThfjN45aaQx
+         +4tY0VYjZJxl8P1vbJ++e/HVMPYxXgxG7oPThz/y4Eyks1pROtqYrnlq27waj1Jvwhxn
+         O1n97pTLMFzxnBa4efTROYFYfSml95/Ip3O7RBzVZvGZYo6+ChdPL8s0o2JFx2gDz7oQ
+         RSQp/sslhuaFaXPYGRHaRVNKgR3xBYeXrI+SvAsiJXQkWnzqqQL3yFqzQ3ebLgRwmLo6
+         ZJKNwzLsde6LoPB7PutSs3sH0wX6epaXkVO3m1jHVMV1yfypRsT1W5T5hQAJIvfPTIvN
+         dN9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=uHNWRqIpLHDPYpH7xpvccx6XYrK+C3venxkz4l+xkUI=;
-        b=Vh7exhAMOtrXT3KD5S+U1CnHLDWkrJfkCXs1dMN+0cxumZhVFKacRc7O3KLgJ25uC0
-         1tpoSMwGZsjKg+wDdyYDVa9APpEPmH9uC+BHJr/x8nGijE+6XZ4xuZoLnEGGT3OKO7EA
-         qqp1WcbZptdQOcR3uyIXREMoKxqo78f7spXWy1qt6C/PUcMOZjjE3CSjfK/2TXR4i7T+
-         LfAjtSZkVQ3Ii5scDFQH6XSN6K2Ri79Di16YmeK9HDx9y4MNtNtDyYvHQ7R1YxAgzK9P
-         +oos445p8OPQ7ajteB38BVTd0P+Sje54ky/X634E5iSZa1IRC1AnFjsUttfL+xLujzi8
-         Qzlw==
-X-Gm-Message-State: AOAM533xcWRaxZL6rEpidpAWBp+zjccRBzQdCrTPmpyTdjhpjx3fwdlI
-        5uisTc4e8HECvveoRy84RSm3/053EJhGBFSNXY7SGlmbGidvnkXpzF9BKRZyPicjX+No4rfo8hV
-        nW/NBeIdaXwCt9Ujq
-X-Received: by 2002:a17:906:4c56:: with SMTP id d22mr59006329ejw.1.1638197795049;
-        Mon, 29 Nov 2021 06:56:35 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx+oPfl/380gc/KofkfkFLf7m9XNmkqRbDujlDyZUcjmJ9z9nBeVFduKGlCx46eN+HxxY/WOw==
-X-Received: by 2002:a17:906:4c56:: with SMTP id d22mr59006307ejw.1.1638197794819;
-        Mon, 29 Nov 2021 06:56:34 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-97-140.dyn.eolo.it. [146.241.97.140])
-        by smtp.gmail.com with ESMTPSA id g21sm7468959ejt.87.2021.11.29.06.56.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Nov 2021 06:56:34 -0800 (PST)
-Message-ID: <5f96722557fbde5b9711da8d53c709858c03af47.camel@redhat.com>
-Subject: Re: [PATCH net-next v2 2/2] bpf: let bpf_warn_invalid_xdp_action()
- report more info
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
-        Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Date:   Mon, 29 Nov 2021 15:56:33 +0100
-In-Reply-To: <8f6f900b2b48aaedf031b20a7831ec193793768b.camel@redhat.com>
-References: <cover.1637924200.git.pabeni@redhat.com>
-         <277a9483b38f9016bc78ce66707753681684fbd7.1637924200.git.pabeni@redhat.com>
-         <20211126101941.029e1d7f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <8f6f900b2b48aaedf031b20a7831ec193793768b.camel@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.1 (3.42.1-1.fc35) 
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fhEsQAK98bM5StiE4nhRYixbgK7BmdEmPc2JUmkzNuE=;
+        b=CVUc3leK/qoKvDvp75+mQYFbCf2ly4Uvy8HkuswUcObMyMq7hbhs9V7ugSNvW4WOI6
+         THBGpj6DCfMXAkOyv8TKzNuYOfa3Wc6dvblNO3pE8ezId/2jeccnvCBfTpIctMIlSsjt
+         jitCxVhVF8ybHe9M1j166KUVzlN7jHuHNUmE+uzDjIo2Q90jGyDO/v1yvh6f5Qe8Ao7m
+         t4O91X3iJYSHK8lkkeKVXZNQmlDp16zECW4/X/TcWE8yE0HFKV6ksyR9yAYA27VGr1fI
+         1KcUcyoR2VrSZbXVRJ6pjH62CKj7faBUCd0cfbs24mbJjRXcYs2TMO97CpTJP9wKR7nU
+         AFPQ==
+X-Gm-Message-State: AOAM531CyfUhUWgtdoJaLXx4Ezyempvbgoqa0SvJrhDBLPhPR788v3u6
+        SXJzimjCjiAhf/JMCak/X7jKy2fSOqxx1wX5jTkpt7LblJTTJryBAJQ=
+X-Google-Smtp-Source: ABdhPJwtYuAs3Eyp35qBUS3u4YeJbSdbd0Fj/uaKBQS5Zkwii/UENBRf3c8ern+XfOlGXgg+DCkb17rNDqYBaO6+dq4=
+X-Received: by 2002:ac8:5894:: with SMTP id t20mr34675354qta.450.1638193308018;
+ Mon, 29 Nov 2021 05:41:48 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <20211120112738.45980-1-laoar.shao@gmail.com> <20211120112738.45980-8-laoar.shao@gmail.com>
+ <yt9d35nf1d84.fsf@linux.ibm.com>
+In-Reply-To: <yt9d35nf1d84.fsf@linux.ibm.com>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Mon, 29 Nov 2021 21:41:11 +0800
+Message-ID: <CALOAHbDtqpkN4D0vHvGxTSpQkksMWtFm3faMy0n+pazxN_RPPg@mail.gmail.com>
+Subject: Re: [PATCH v2 7/7] tools/testing/selftests/bpf: replace open-coded 16
+ with TASK_COMM_LEN
+To:     Sven Schnelle <svens@linux.ibm.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel test robot <oliver.sang@intel.com>,
+        kbuild test robot <lkp@intel.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Kees Cook <keescook@chromium.org>,
+        Petr Mladek <pmladek@suse.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, Nov 29, 2021 at 6:13 PM Sven Schnelle <svens@linux.ibm.com> wrote:
+>
+> Hi,
+>
+> Yafang Shao <laoar.shao@gmail.com> writes:
+>
+> > As the sched:sched_switch tracepoint args are derived from the kernel,
+> > we'd better make it same with the kernel. So the macro TASK_COMM_LEN is
+> > converted to type enum, then all the BPF programs can get it through BTF.
+> >
+> > The BPF program which wants to use TASK_COMM_LEN should include the header
+> > vmlinux.h. Regarding the test_stacktrace_map and test_tracepoint, as the
+> > type defined in linux/bpf.h are also defined in vmlinux.h, so we don't
+> > need to include linux/bpf.h again.
+> >
+> > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> > Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> > Acked-by: David Hildenbrand <david@redhat.com>
+> > Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+> > Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+> > Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> > Cc: Michal Miroslaw <mirq-linux@rere.qmqm.pl>
+> > Cc: Peter Zijlstra <peterz@infradead.org>
+> > Cc: Steven Rostedt <rostedt@goodmis.org>
+> > Cc: Matthew Wilcox <willy@infradead.org>
+> > Cc: David Hildenbrand <david@redhat.com>
+> > Cc: Al Viro <viro@zeniv.linux.org.uk>
+> > Cc: Kees Cook <keescook@chromium.org>
+> > Cc: Petr Mladek <pmladek@suse.com>
+> > ---
+> >  include/linux/sched.h                                   | 9 +++++++--
+> >  tools/testing/selftests/bpf/progs/test_stacktrace_map.c | 6 +++---
+> >  tools/testing/selftests/bpf/progs/test_tracepoint.c     | 6 +++---
+> >  3 files changed, 13 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/include/linux/sched.h b/include/linux/sched.h
+> > index 78c351e35fec..cecd4806edc6 100644
+> > --- a/include/linux/sched.h
+> > +++ b/include/linux/sched.h
+> > @@ -274,8 +274,13 @@ struct task_group;
+> >
+> >  #define get_current_state()  READ_ONCE(current->__state)
+> >
+> > -/* Task command name length: */
+> > -#define TASK_COMM_LEN                        16
+> > +/*
+> > + * Define the task command name length as enum, then it can be visible to
+> > + * BPF programs.
+> > + */
+> > +enum {
+> > +     TASK_COMM_LEN = 16,
+> > +};
+>
+> This breaks the trigger-field-variable-support.tc from the ftrace test
+> suite at least on s390:
+>
+> echo 'hist:keys=next_comm:wakeup_lat=common_timestamp.usecs-$ts0:onmatch(sched.sched_waking).wakeup_latency($wakeup_lat,next_pid,sched.sched_waking.prio,next_comm) if next_comm=="ping"'
+> linux/tools/testing/selftests/ftrace/test.d/trigger/inter-event/trigger-field-variable-support.tc: line 15: echo: write error: Invalid argument
+>
+> I added a debugging line into check_synth_field():
+>
+> [   44.091037] field->size 16, hist_field->size 16, field->is_signed 1, hist_field->is_signed 0
+>
+> Note the difference in the signed field.
+>
 
-On Fri, 2021-11-26 at 19:57 +0100, Paolo Abeni wrote:
-> On Fri, 2021-11-26 at 10:19 -0800, Jakub Kicinski wrote:
-> > On Fri, 26 Nov 2021 12:19:11 +0100 Paolo Abeni wrote:
-> > > -void bpf_warn_invalid_xdp_action(u32 act)
-> > > +void bpf_warn_invalid_xdp_action(struct net_device *dev, struct bpf_prog *prog, u32 act)
-> > >  {
-> > >  	const u32 act_max = XDP_REDIRECT;
-> > >  
-> > > -	pr_warn_once("%s XDP return value %u, expect packet loss!\n",
-> > > +	pr_warn_once("%s XDP return value %u on prog %s (id %d) dev %s, expect packet loss!\n",
-> > >  		     act > act_max ? "Illegal" : "Driver unsupported",
-> > > -		     act);
-> > > +		     act, prog->aux->name, prog->aux->id, dev->name ? dev->name : "");
-> > >  }
-> > 
-> > Since we have to touch all the drivers each time the prototype of this
-> > function is changed - would it make sense to pass in rxq instead? It has
-> > more info which may become useful at some point.
-> 
-> I *think* for this specific scenario the device name provides all the
-> necessary info - the users need to know the driver causing the issue.
-> 
-> Others similar xdp helpers - e.g. trace_xdp_exception() - have the same
-> arguments list used here. If the rxq is useful I guess we will have to
-> change even them, and touch all the drivers anyway.
+Hi Sven,
 
-Following the above reasoning I'm going to post v3 with the same
-argument list used here, unless someone stops me soon ;)
+Thanks for the report and debugging!
+Seems we should explicitly define it as signed ?
+Could you pls. help verify it?
 
-Thanks,
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index cecd4806edc6..44d36c6af3e1 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -278,7 +278,7 @@ struct task_group;
+  * Define the task command name length as enum, then it can be visible to
+  * BPF programs.
+  */
+-enum {
++enum SignedEnum {
+        TASK_COMM_LEN = 16,
+ };
 
-Paolo
-
+-- 
+Thanks
+Yafang
