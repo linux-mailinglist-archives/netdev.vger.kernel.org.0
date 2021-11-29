@@ -2,279 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E28A461FF6
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 20:14:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BA664620A3
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 20:36:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241151AbhK2TRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 14:17:31 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:49620 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230123AbhK2TPb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 14:15:31 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        id S242794AbhK2TkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 14:40:09 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53364 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234990AbhK2TiH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 14:38:07 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 0607F2171F;
-        Mon, 29 Nov 2021 19:12:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1638213132; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=J6DbeLoaxoIoVBuY+oAGOd6/4lG4MBC1R+rNbufZnx4=;
-        b=upItkPK9G8DG+82DST9R5FOSSSNHPSnEQF3tYT3hPX1YOANA9w3qqmozKUymADC3GK6qUO
-        G6nrsxvhybVitG69we27+1h251wqhN13UuvXv9TFn1XO1SwMDX9+6/s/vHJAA1zmpkXa1T
-        C0mSGTUiY2sRGiE95aJeVsxax+GoC8k=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1638213132;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=J6DbeLoaxoIoVBuY+oAGOd6/4lG4MBC1R+rNbufZnx4=;
-        b=lw1cySSdieAWDxZIkhtJOC6OONrj348LcM9TN3zxSlnkPCbONh2hL9sKLohZcl+Tj18rqs
-        28fGs1goFYeys5Dw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CEFC813BB8;
-        Mon, 29 Nov 2021 19:12:09 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id yUHGKQkmpWE9CQAAMHmgww
-        (envelope-from <dkirjanov@suse.de>); Mon, 29 Nov 2021 19:12:09 +0000
-Subject: Re: [PATCH v4] net: netlink: af_netlink: Prevent empty skb by adding
- a check on len.
-To:     Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Cc:     ramanan.govindarajan@oracle.com, george.kennedy@oracle.com,
-        vijayendra.suman@oracle.com, stephen@networkplumber.org,
-        syzkaller <syzkaller@googlegroups.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        David Ahern <dsahern@kernel.org>,
-        Florian Westphal <fw@strlen.de>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Alexander Aring <aahringo@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20211129175328.55339-1-harshit.m.mogalapalli@oracle.com>
-From:   Denis Kirjanov <dkirjanov@suse.de>
-Message-ID: <80cab9de-c7b4-568d-02f9-7f16be1e6820@suse.de>
-Date:   Mon, 29 Nov 2021 22:12:08 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE402B815CE;
+        Mon, 29 Nov 2021 19:34:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3B7EC53FC7;
+        Mon, 29 Nov 2021 19:34:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638214487;
+        bh=uePvt5gMX4TCL27r5CN6jhQcivmaVfv/7LWiS3z51Z4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MEE8n62NGTa/brNFFlvb9FgYyKurmn24pS/XrKGR42MPp1tduyLil2D7SAgiVPTb+
+         Zoy2CsrLD4FTlDlE+Q9xSXjuOxxv1LG8RZ9DDrCFCGzCBVWjJ82aAJc70B9OsAVhEG
+         LjlYy+7j5hxgxDfInoCEtj0pzGelawbuwJ1h9sYz/LgiMXQ9M2rkCHf7AuqJ2vZfi7
+         bXMwo7KmTo4TIpSryev2s5bxpe8FdQdkqaBnOy4Oe1gw70wivT0AGrWi4xeoW7Rzjf
+         j7Dq3+KI/WsW+1N91On/pJHrcllIxemTzTc4nsC01Xoe3RYNdNBgtfzfauU9eNal6H
+         MSqpTEVTeFhAA==
+Date:   Mon, 29 Nov 2021 20:34:44 +0100
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Matt Johnston <matt@codeconstruct.com.au>
+Cc:     zev@bewilderbeest.net, robh+dt@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, brendanhiggins@google.com,
+        benh@kernel.crashing.org, joel@jms.id.au, andrew@aj.id.au,
+        avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
+        venture@google.com, yuenn@google.com, benjaminfair@google.com,
+        jk@codeconstruct.com.au, linux-i2c@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v3 0/6] MCTP I2C driver
+Message-ID: <YaUrVD0AMwCc7+Cf@kunai>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Matt Johnston <matt@codeconstruct.com.au>, zev@bewilderbeest.net,
+        robh+dt@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        brendanhiggins@google.com, benh@kernel.crashing.org, joel@jms.id.au,
+        andrew@aj.id.au, avifishman70@gmail.com, tmaimon77@gmail.com,
+        tali.perry1@gmail.com, venture@google.com, yuenn@google.com,
+        benjaminfair@google.com, jk@codeconstruct.com.au,
+        linux-i2c@vger.kernel.org, netdev@vger.kernel.org
+References: <20211115024926.205385-1-matt@codeconstruct.com.au>
+ <163698601142.19991.3686735228078461111.git-patchwork-notify@kernel.org>
+ <YZJ9H4eM/M7OXVN0@shikoro>
+ <20211124031522.GB18900@codeconstruct.com.au>
 MIME-Version: 1.0
-In-Reply-To: <20211129175328.55339-1-harshit.m.mogalapalli@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: ru
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="gpsjBBqS4+607dEI"
+Content-Disposition: inline
+In-Reply-To: <20211124031522.GB18900@codeconstruct.com.au>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--gpsjBBqS4+607dEI
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-11/29/21 8:53 PM, Harshit Mogalapalli пишет:
-> Adding a check on len parameter to avoid empty skb. This prevents a
-> division error in netem_enqueue function which is caused when skb->len=0
-> and skb->data_len=0 in the randomized corruption step as shown below.
-> 
-> skb->data[prandom_u32() % skb_headlen(skb)] ^= 1<<(prandom_u32() % 8);
-> 
-> Crash Report:
-> [  343.170349] netdevsim netdevsim0 netdevsim3: set [1, 0] type 2 family
-> 0 port 6081 - 0
-> [  343.216110] netem: version 1.3
-> [  343.235841] divide error: 0000 [#1] PREEMPT SMP KASAN NOPTI
-> [  343.236680] CPU: 3 PID: 4288 Comm: reproducer Not tainted 5.16.0-rc1+
-> [  343.237569] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-> BIOS 1.11.0-2.el7 04/01/2014
-> [  343.238707] RIP: 0010:netem_enqueue+0x1590/0x33c0 [sch_netem]
-> [  343.239499] Code: 89 85 58 ff ff ff e8 5f 5d e9 d3 48 8b b5 48 ff ff
-> ff 8b 8d 50 ff ff ff 8b 85 58 ff ff ff 48 8b bd 70 ff ff ff 31 d2 2b 4f
-> 74 <f7> f1 48 b8 00 00 00 00 00 fc ff df 49 01 d5 4c 89 e9 48 c1 e9 03
-> [  343.241883] RSP: 0018:ffff88800bcd7368 EFLAGS: 00010246
-> [  343.242589] RAX: 00000000ba7c0a9c RBX: 0000000000000001 RCX:
-> 0000000000000000
-> [  343.243542] RDX: 0000000000000000 RSI: ffff88800f8edb10 RDI:
-> ffff88800f8eda40
-> [  343.244474] RBP: ffff88800bcd7458 R08: 0000000000000000 R09:
-> ffffffff94fb8445
-> [  343.245403] R10: ffffffff94fb8336 R11: ffffffff94fb8445 R12:
-> 0000000000000000
-> [  343.246355] R13: ffff88800a5a7000 R14: ffff88800a5b5800 R15:
-> 0000000000000020
-> [  343.247291] FS:  00007fdde2bd7700(0000) GS:ffff888109780000(0000)
-> knlGS:0000000000000000
-> [  343.248350] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  343.249120] CR2: 00000000200000c0 CR3: 000000000ef4c000 CR4:
-> 00000000000006e0
-> [  343.250076] Call Trace:
-> [  343.250423]  <TASK>
-> [  343.250713]  ? memcpy+0x4d/0x60
-> [  343.251162]  ? netem_init+0xa0/0xa0 [sch_netem]
-> [  343.251795]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> [  343.252443]  netem_enqueue+0xe28/0x33c0 [sch_netem]
-> [  343.253102]  ? stack_trace_save+0x87/0xb0
-> [  343.253655]  ? filter_irq_stacks+0xb0/0xb0
-> [  343.254220]  ? netem_init+0xa0/0xa0 [sch_netem]
-> [  343.254837]  ? __kasan_check_write+0x14/0x20
-> [  343.255418]  ? _raw_spin_lock+0x88/0xd6
-> [  343.255953]  dev_qdisc_enqueue+0x50/0x180
-> [  343.256508]  __dev_queue_xmit+0x1a7e/0x3090
-> [  343.257083]  ? netdev_core_pick_tx+0x300/0x300
-> [  343.257690]  ? check_kcov_mode+0x10/0x40
-> [  343.258219]  ? _raw_spin_unlock_irqrestore+0x29/0x40
-> [  343.258899]  ? __kasan_init_slab_obj+0x24/0x30
-> [  343.259529]  ? setup_object.isra.71+0x23/0x90
-> [  343.260121]  ? new_slab+0x26e/0x4b0
-> [  343.260609]  ? kasan_poison+0x3a/0x50
-> [  343.261118]  ? kasan_unpoison+0x28/0x50
-> [  343.261637]  ? __kasan_slab_alloc+0x71/0x90
-> [  343.262214]  ? memcpy+0x4d/0x60
-> [  343.262674]  ? write_comp_data+0x2f/0x90
-> [  343.263209]  ? __kasan_check_write+0x14/0x20
-> [  343.263802]  ? __skb_clone+0x5d6/0x840
-> [  343.264329]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> [  343.264958]  dev_queue_xmit+0x1c/0x20
-> [  343.265470]  netlink_deliver_tap+0x652/0x9c0
-> [  343.266067]  netlink_unicast+0x5a0/0x7f0
-> [  343.266608]  ? netlink_attachskb+0x860/0x860
-> [  343.267183]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> [  343.267820]  ? write_comp_data+0x2f/0x90
-> [  343.268367]  netlink_sendmsg+0x922/0xe80
-> [  343.268899]  ? netlink_unicast+0x7f0/0x7f0
-> [  343.269472]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> [  343.270099]  ? write_comp_data+0x2f/0x90
-> [  343.270644]  ? netlink_unicast+0x7f0/0x7f0
-> [  343.271210]  sock_sendmsg+0x155/0x190
-> [  343.271721]  ____sys_sendmsg+0x75f/0x8f0
-> [  343.272262]  ? kernel_sendmsg+0x60/0x60
-> [  343.272788]  ? write_comp_data+0x2f/0x90
-> [  343.273332]  ? write_comp_data+0x2f/0x90
-> [  343.273869]  ___sys_sendmsg+0x10f/0x190
-> [  343.274405]  ? sendmsg_copy_msghdr+0x80/0x80
-> [  343.274984]  ? slab_post_alloc_hook+0x70/0x230
-> [  343.275597]  ? futex_wait_setup+0x240/0x240
-> [  343.276175]  ? security_file_alloc+0x3e/0x170
-> [  343.276779]  ? write_comp_data+0x2f/0x90
-> [  343.277313]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> [  343.277969]  ? write_comp_data+0x2f/0x90
-> [  343.278515]  ? __fget_files+0x1ad/0x260
-> [  343.279048]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> [  343.279685]  ? write_comp_data+0x2f/0x90
-> [  343.280234]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> [  343.280874]  ? sockfd_lookup_light+0xd1/0x190
-> [  343.281481]  __sys_sendmsg+0x118/0x200
-> [  343.281998]  ? __sys_sendmsg_sock+0x40/0x40
-> [  343.282578]  ? alloc_fd+0x229/0x5e0
-> [  343.283070]  ? write_comp_data+0x2f/0x90
-> [  343.283610]  ? write_comp_data+0x2f/0x90
-> [  343.284135]  ? __sanitizer_cov_trace_pc+0x21/0x60
-> [  343.284776]  ? ktime_get_coarse_real_ts64+0xb8/0xf0
-> [  343.285450]  __x64_sys_sendmsg+0x7d/0xc0
-> [  343.285981]  ? syscall_enter_from_user_mode+0x4d/0x70
-> [  343.286664]  do_syscall_64+0x3a/0x80
-> [  343.287158]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> [  343.287850] RIP: 0033:0x7fdde24cf289
-> [  343.288344] Code: 01 00 48 81 c4 80 00 00 00 e9 f1 fe ff ff 0f 1f 00
-> 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f
-> 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 db 2c 00 f7 d8 64 89 01 48
-> [  343.290729] RSP: 002b:00007fdde2bd6d98 EFLAGS: 00000246 ORIG_RAX:
-> 000000000000002e
-> [  343.291730] RAX: ffffffffffffffda RBX: 0000000000000000 RCX:
-> 00007fdde24cf289
-> [  343.292673] RDX: 0000000000000000 RSI: 00000000200000c0 RDI:
-> 0000000000000004
-> [  343.293618] RBP: 00007fdde2bd6e20 R08: 0000000100000001 R09:
-> 0000000000000000
-> [  343.294557] R10: 0000000100000001 R11: 0000000000000246 R12:
-> 0000000000000000
-> [  343.295493] R13: 0000000000021000 R14: 0000000000000000 R15:
-> 00007fdde2bd7700
-> [  343.296432]  </TASK>
-> [  343.296735] Modules linked in: sch_netem ip6_vti ip_vti ip_gre ipip
-> sit ip_tunnel geneve macsec macvtap tap ipvlan macvlan 8021q garp mrp
-> hsr wireguard libchacha20poly1305 chacha_x86_64 poly1305_x86_64
-> ip6_udp_tunnel udp_tunnel libblake2s blake2s_x86_64 libblake2s_generic
-> curve25519_x86_64 libcurve25519_generic libchacha xfrm_interface
-> xfrm6_tunnel tunnel4 veth netdevsim psample batman_adv nlmon dummy team
-> bonding tls vcan ip6_gre ip6_tunnel tunnel6 gre tun ip6t_rpfilter
-> ipt_REJECT nf_reject_ipv4 ip6t_REJECT nf_reject_ipv6 xt_conntrack ip_set
-> ebtable_nat ebtable_broute ip6table_nat ip6table_mangle
-> ip6table_security ip6table_raw iptable_nat nf_nat nf_conntrack
-> nf_defrag_ipv6 nf_defrag_ipv4 iptable_mangle iptable_security
-> iptable_raw ebtable_filter ebtables rfkill ip6table_filter ip6_tables
-> iptable_filter ppdev bochs drm_vram_helper drm_ttm_helper ttm
-> drm_kms_helper cec parport_pc drm joydev floppy parport sg syscopyarea
-> sysfillrect sysimgblt i2c_piix4 qemu_fw_cfg fb_sys_fops pcspkr
-> [  343.297459]  ip_tables xfs virtio_net net_failover failover sd_mod
-> sr_mod cdrom t10_pi ata_generic pata_acpi ata_piix libata virtio_pci
-> virtio_pci_legacy_dev serio_raw virtio_pci_modern_dev dm_mirror
-> dm_region_hash dm_log dm_mod
-> [  343.311074] Dumping ftrace buffer:
-> [  343.311532]    (ftrace buffer empty)
-> [  343.312040] ---[ end trace a2e3db5a6ae05099 ]---
-> [  343.312691] RIP: 0010:netem_enqueue+0x1590/0x33c0 [sch_netem]
-> [  343.313481] Code: 89 85 58 ff ff ff e8 5f 5d e9 d3 48 8b b5 48 ff ff
-> ff 8b 8d 50 ff ff ff 8b 85 58 ff ff ff 48 8b bd 70 ff ff ff 31 d2 2b 4f
-> 74 <f7> f1 48 b8 00 00 00 00 00 fc ff df 49 01 d5 4c 89 e9 48 c1 e9 03
-> [  343.315893] RSP: 0018:ffff88800bcd7368 EFLAGS: 00010246
-> [  343.316622] RAX: 00000000ba7c0a9c RBX: 0000000000000001 RCX:
-> 0000000000000000
-> [  343.317585] RDX: 0000000000000000 RSI: ffff88800f8edb10 RDI:
-> ffff88800f8eda40
-> [  343.318549] RBP: ffff88800bcd7458 R08: 0000000000000000 R09:
-> ffffffff94fb8445
-> [  343.319503] R10: ffffffff94fb8336 R11: ffffffff94fb8445 R12:
-> 0000000000000000
-> [  343.320455] R13: ffff88800a5a7000 R14: ffff88800a5b5800 R15:
-> 0000000000000020
-> [  343.321414] FS:  00007fdde2bd7700(0000) GS:ffff888109780000(0000)
-> knlGS:0000000000000000
-> [  343.322489] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  343.323283] CR2: 00000000200000c0 CR3: 000000000ef4c000 CR4:
-> 00000000000006e0
-> [  343.324264] Kernel panic - not syncing: Fatal exception in interrupt
-> [  343.333717] Dumping ftrace buffer:
-> [  343.334175]    (ftrace buffer empty)
-> [  343.334653] Kernel Offset: 0x13600000 from 0xffffffff81000000
-> (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
-> [  343.336027] Rebooting in 86400 seconds..
-> 
-> Reported-by: syzkaller <syzkaller@googlegroups.com>
-> Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-> ---
-> Changes v1->v2: Removed dropping of packet and just added a check on
-> skb_headlen before corruption.
-> Changes v2->v3: Add check on len to prevent empty skb.
+Hi Matt,
 
-So if we have no application setting the length value to zero it's okay.
-Sorry, haven't seen a reply for the last comment in v3
+sorry for the long delay. This cycle, I am concentrating on overhauling the
+bus_recovery handling. I am rather unsure if I have the bandwidth for
+larger block reads this cycle. But it is planned for next cycle.
 
-> Changes v3->v4: Add a pr_warn_once() statement.
-> 
->   net/netlink/af_netlink.c | 5 +++++
->   1 file changed, 5 insertions(+)
-> 
-> diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-> index 4c575324a985..9eba2e648385 100644
-> --- a/net/netlink/af_netlink.c
-> +++ b/net/netlink/af_netlink.c
-> @@ -1852,6 +1852,11 @@ static int netlink_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
->   	if (msg->msg_flags & MSG_OOB)
->   		return -EOPNOTSUPP;
->   
-> +	if (len == 0) {
-> +		pr_warn_once("Zero length message leads to an empty skb\n");
-> +		return -ENODATA;
-> +	}
-> +
->   	err = scm_send(sock, msg, &scm, true);
->   	if (err < 0)
->   		return err;
-> 
+> > (extending SMBus calls to 255 byte) is complicated because we need ABI
+> > backwards compatibility.
+>=20
+> Is it only the i2c-dev ABI that you are concerned about?
+
+To at least give you a pointer what we discussed last time, have a look
+here:
+
+https://lore.kernel.org/r/20200728004708.4430-1-daniel.stodden@gmail.com
+
+I can't go into details now because they escaped my mind :/ But I'll
+work into it again when the bus_recovery thing is done and the recent
+driver patches are handled. But you probably will get the idea without
+me...
+
+Thanks for sharing your script and working on the issue.
+
+Happy hacking,
+
+   Wolfram
+
+
+--gpsjBBqS4+607dEI
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmGlK1AACgkQFA3kzBSg
+KbZQDBAAl9AQd3eSooJNmxHZhi63DLh9LFY+YPCISpqGsUYmntckM1+2LPF/hdv5
+fK+YDAnLGeLd/G9VgbQ+gzE9DdLQyv/rxpaNz/vgLkdWF4uz32n4qswYiZrpEFwP
+ByH4C3hcdwt7DErHNABidkzchbXW/3yZ9gQNX0fTbeTaNqvv+OrqrawGMHEKbFMZ
+09M98fQ+aTSztAmpgSKMvJEyy96+afkTAcFsIbGgGC17I8u0daOpuaFoiGakIsvv
+HviYzdpVDeovy20Y9kGAhvxp3IscRBAW9YX9IQpASv5c4OC1NY7Gtw8gkwFqsqHY
+QHXUMrgFqOaglaghfQyFyxcUIKxgq0elq1KFz3dZHOHkddd3xq1Ixkd1AG7wtL4f
+XoL/cTsE1N5YPn8LeVLRNfKvAxwc7uEwi7nC5LwXWHTiu3PRH6rP19PmzyGv/pNL
+Ge10kKSViKy04B4cnCAGMdbM17RZ0Py+nEJdOpKDU4YTGLOVU3c6ciulYjZ+L3uK
+8y7GGu2ilfdryCN0DrlwRslJjfX2SE5Pq7UKpmgxTXsQzuRinqodpzb7v8h2S6pL
+pGQRu1NypiuE9nyt67W5a6DcS474qFlbKYfZYGXpqt48tXQJX8sdnkRuHdYOqU1X
+GqXmNXtuDOmYe9vOlDKP+PQaTx2v3CQ129MtY2H1WIAo6+Zd444=
+=/GFC
+-----END PGP SIGNATURE-----
+
+--gpsjBBqS4+607dEI--
