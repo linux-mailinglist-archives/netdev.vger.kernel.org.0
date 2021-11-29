@@ -2,120 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E662F462613
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 23:43:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 844B1462615
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 23:43:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235439AbhK2Wq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 17:46:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34832 "EHLO
+        id S231750AbhK2Wq7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 17:46:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234338AbhK2WoT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 17:44:19 -0500
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5C57C111CE7;
-        Mon, 29 Nov 2021 09:39:12 -0800 (PST)
-Received: by mail-yb1-xb2f.google.com with SMTP id v138so44556606ybb.8;
-        Mon, 29 Nov 2021 09:39:12 -0800 (PST)
+        with ESMTP id S234398AbhK2WoZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 17:44:25 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB8D2C0C0876
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 09:44:51 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id s13so38660316wrb.3
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 09:44:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=N/h+zmVfAqy959zZ9BMXX2/1A5wdWpzzXEiwOZkidAo=;
-        b=Es/C2bASl8GHz5I7lyf6uhdpLBEaXtgpaj8Y00kQuxvSfKKHt2BGvZMwQV2KlZxfXt
-         0Jou8XgkBwQDdNUiNftc4seTAyOgmDc+ayN+uI6XZYb2G6tCX9V8OUyr8VG/71jfue67
-         oV1L3rJIzxoew96VzZ900MNBB6bO+DINhL7qC378R1LjjbhbsfNCQ+YZE8TnrBudSwJ9
-         2MXwoizwcCvvB4qSA3UR+QpEUqeue4FAX6JBvS1rXmvt4aq8VpJP7G/puGG051lOFTbK
-         X3rDezDb07PEGRcpnXsPUR0KSQ9eK+AGOsw+A/Ev9BFbvPqwfXKRzdjw4S31kCVurrFK
-         MSrQ==
+         :cc;
+        bh=hzOx1eG/eR2CEdkQAHdZsD7yeCZJIch9Df75X0dhFac=;
+        b=Y0untIZS8EpGk+szKxNKpY7wxQbRa9XJTEz0sC4T9wXurF9g+mFsu0YLLFKh7XN4SQ
+         THr/PUjXONxqRvNXgZ14+Xbwz/EpphmuWf/bDNUqY9oCUu/660OFJSMXWTRMGHy/A01B
+         Fpzn+1Lm5UzAfepDxY0zAY/nSCRZYxVcKH52sVs2vvEoi8ug+eMyjxeoaoRt7YRSznC3
+         6Y+Wy7NpssYCuqP1a56pMeKC2Pb32t+PzaNghMM7oD/BISXUvPmgDA3LTizNRrHjJyEv
+         BBuGfB2CMv3W2PZ9dYZCyIJRW2t3tTPbGNuxEF+JA6GpUJcGLtP41+sxM1GPfMSrtHUt
+         Owow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=N/h+zmVfAqy959zZ9BMXX2/1A5wdWpzzXEiwOZkidAo=;
-        b=7KYOQFp55axLYSqORQrCFZqB8ViMSMcRsF8INiBGcK5vO2k4M3Oo3jWNJ2+lM+/yxg
-         P8zXYG+LnPh4Aw4+sDv0jd2Jd/A5t4V/YmJdnxoxX8OKikLWG7k23JQqh1Z46Sds3S/0
-         YPMct2BKMYHLLnTsrIOVGp1Wl6S2tdgRUOTedaICk4dU/noX2dkoRWJCVyQp1DjrVrmY
-         a0E7ylzODATtwDuZeILkjeLG9Tj6/nQD8gMACB7JHe+OoUDDAuURqtXaW+eb6phntLD6
-         RYvR2GE+vOjqmKXgDB0VBq7WcQjjLJy4pvE75NCMnvKw7PivG5TysuYOGJ5NVxu/pcyL
-         sJWw==
-X-Gm-Message-State: AOAM532Zwf3326YdAo263K9oSbPofrXfO50gHVi+OgWLkW8hsHN05tDo
-        RRzVgPFF6ZsE4cmOGdyIrLW4Ai+OmJKa8THUY55YB8P2/ZU=
-X-Google-Smtp-Source: ABdhPJzAb+zhz5Hk2/zQvp+Kc9uZ/wFYqmRadUzC5zH2p6qh8JLtGZLeWJejWEerR5rRbl8C/vH8QPL5tIXX6iFhjpU=
-X-Received: by 2002:a25:b204:: with SMTP id i4mr36682982ybj.263.1638207552001;
- Mon, 29 Nov 2021 09:39:12 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=hzOx1eG/eR2CEdkQAHdZsD7yeCZJIch9Df75X0dhFac=;
+        b=k+zGKsjnKEDdQmLedHjHEaYfGH6BIbwVOsCY9HXbqYJWmhqHC02UCw0NDPhHlGwtHr
+         o1CsVejn0jvDg3ZHbPNP7pK7MOh2AeQ/0kIMIRv+H09XiwHq4NuBhanp73WEL/IwK0uP
+         KFSKWh8Z20IUO7J9MZAfJl3VlGEnn4vmCKHHAxQ9h7sCENdiUSwbfi8YfTz1deRSPFVe
+         ic82Gt6posVQfoeZ5ln/96FGnKiEt7E8sgilnEbir73Bg4CcMQI3nGaEDm8gI/TMWgxf
+         cvB7mJieNx4OdoqpMW3vOfUMVyiwMQpu51h0kMxjJNSdBJeu+NV/yIJavZRalybCFTJF
+         2YIA==
+X-Gm-Message-State: AOAM533MyhQfye78M3qHlJwdMv8IdDpYtDtgHXvXJM4UMmkf09NoqGmn
+        X42W7jB/n8qS5DkNVYLWAlzx9q+V+0up91L40WvT4g==
+X-Google-Smtp-Source: ABdhPJw/anl8SIvJAx2fOTcG8isi4uRA64oQ3G08WeANzyDxgQAkhWKm5capv2zIIi9w1215FVjL9AX5UFBkn4bzAbs=
+X-Received: by 2002:adf:fb86:: with SMTP id a6mr35706630wrr.35.1638207889987;
+ Mon, 29 Nov 2021 09:44:49 -0800 (PST)
 MIME-Version: 1.0
-References: <1638180040-8037-1-git-send-email-alan.maguire@oracle.com>
-In-Reply-To: <1638180040-8037-1-git-send-email-alan.maguire@oracle.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 29 Nov 2021 09:39:01 -0800
-Message-ID: <CAEf4BzayWEsojyZQsdWmtmaHXS88j8yLyxDV8VC13t5e-Or+kg@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: silence uninitialized warning/error in btf_dump_dump_type_data
-To:     Alan Maguire <alan.maguire@oracle.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+References: <20211129045503.20217-1-xiangxia.m.yue@gmail.com> <20211129045503.20217-2-xiangxia.m.yue@gmail.com>
+In-Reply-To: <20211129045503.20217-2-xiangxia.m.yue@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 29 Nov 2021 09:44:38 -0800
+Message-ID: <CANn89i+Pk61q+7gxzhDEDgQBkcOhOLpx80QoiuDM2ceunFkqvg@mail.gmail.com>
+Subject: Re: [net v3 2/3] net: sched: add check tc_skip_classify in sch egress
+To:     xiangxia.m.yue@gmail.com
+Cc:     netdev@vger.kernel.org, Willem de Bruijn <willemb@google.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+        Antoine Tenart <atenart@kernel.org>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Wei Wang <weiwan@google.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 29, 2021 at 2:01 AM Alan Maguire <alan.maguire@oracle.com> wrot=
-e:
+On Sun, Nov 28, 2021 at 8:55 PM <xiangxia.m.yue@gmail.com> wrote:
 >
-> When compiling libbpf with gcc 4.8.5, we see:
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 >
->   CC       staticobjs/btf_dump.o
-> btf_dump.c: In function =E2=80=98btf_dump_dump_type_data.isra.24=E2=80=99=
-:
-> btf_dump.c:2296:5: error: =E2=80=98err=E2=80=99 may be used uninitialized=
- in this function [-Werror=3Dmaybe-uninitialized]
->   if (err < 0)
->      ^
-> cc1: all warnings being treated as errors
-> make: *** [staticobjs/btf_dump.o] Error 1
+> Try to resolve the issues as below:
+> * We look up and then check tc_skip_classify flag in net
+>   sched layer, even though skb don't want to be classified.
+>   That case may consume a lot of cpu cycles.
 >
-> While gcc 4.8.5 is too old to build the upstream kernel, it's possible it
-> could be used to build standalone libbpf which suffers from the same prob=
-lem.
-> Silence the error by initializing 'err' to 0.  The warning/error seems to=
- be
-> a false positive since err is set early in the function.  Regardless we
-> shouldn't prevent libbpf from building for this.
+>   Install the rules as below:
+>   $ for id in $(seq 1 100); do
+>   $       tc filter add ... egress prio $id ... action mirred egress redirect dev ifb0
+>   $ done
 >
-> Fixes: 920d16af9b42 ("libbpf: BTF dumper support for typed data")
+>   netperf:
+>   $ taskset -c 1 netperf -t TCP_RR -H ip -- -r 32,32
+>   $ taskset -c 1 netperf -t TCP_STREAM -H ip -- -m 32
 >
-> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
-> ---
+>   Before: 10662.33 tps, 108.95 Mbit/s
+>   After:  12434.48 tps, 145.89 Mbit/s
+>   For TCP_RR, there are 16.6% improvement, TCP_STREAM 33.9%.
 
-Arnaldo also complained about this.
+These numbers mean nothing, really.
 
-Applied to bpf-next, I don't think it needs to be in the bpf tree. Thanks.
+I think you should put 10,000 filters instead of 100 so that the
+numbers look even better ?
 
+As a matter of fact, you add yet another check in fast  path.
 
->  tools/lib/bpf/btf_dump.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-> index 17db62b..5cae716 100644
-> --- a/tools/lib/bpf/btf_dump.c
-> +++ b/tools/lib/bpf/btf_dump.c
-> @@ -2194,7 +2194,7 @@ static int btf_dump_dump_type_data(struct btf_dump =
-*d,
->                                    __u8 bits_offset,
->                                    __u8 bit_sz)
->  {
-> -       int size, err;
-> +       int size, err =3D 0;
->
->         size =3D btf_dump_type_data_check_overflow(d, t, id, data, bits_o=
-ffset);
->         if (size < 0)
-> --
-> 1.8.3.1
->
+For some reason I have not received the cover letter and patch 1/3.
