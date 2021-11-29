@@ -2,133 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B3BA4613B9
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 12:16:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5671461350
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 12:08:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240772AbhK2LTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 06:19:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52466 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236859AbhK2LRX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 06:17:23 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC36C0619D9
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 02:30:30 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id z5so4395088edd.3
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 02:30:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pqrs.dk; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=KX8QCfye58yms3sdgysq4GNHlgEcGIVnlY8KvEWOgUc=;
-        b=TmQyp/VnoK+te/voTjScOuGbQglrQfDVrtZMw/Xq/iCKk5l+vN6VL5MoOIloaF+E6/
-         Bc4mvYxjrs95Z39ids8NU3+6lfL9FmjqGgdR+cHbCi6Hve5lds1o/mrHDp4s0jhJ7DpW
-         P1iJoMhZNwEajRoKaclM4hjTE0TwrZ/V0fypw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=KX8QCfye58yms3sdgysq4GNHlgEcGIVnlY8KvEWOgUc=;
-        b=3N/z1aYDMzTym7YpL+y9kufBkqwC79DeWJdb/p16nVbp9H1mf0h5t34V7TW0X5VRcw
-         P8cNYwC1XAhGAUATbK4n2qJ9FkOqkhXqkSr4q4AwN7W5kWCJC0HgfcktnYZ/BQggt3RO
-         ng0A/sMc1F36oGZulkyFQx65NRcmCvG8tr7OH8orH7U9dRbEJgWyoQJVPXfpp6C5w03L
-         Y3qBrPlTwkJd9A8dxq4v6PTEfDpc58nrsVa7PxWiAFC5tzSwq5xbjJwrYCtOgZzrzbyu
-         XNq7A5jUIOokE3T1RfBSZu++N8pEEoDYkPQLbSuC5PAPbu8XTsL5kkJZ8HGBo/qHZmYT
-         UVXg==
-X-Gm-Message-State: AOAM533sTbCgDll0yMkHb5LvvIv1PMUNajdUUgWyC++aUm5JW7V8kvT2
-        +uOcs4X6Z9SrPMholPM/nPSD0Iyoy9uo41t0
-X-Google-Smtp-Source: ABdhPJweWc6cH4Cjup9tDg8G0C+HLhNmhbjo6nFQEexmblDpfcyectJreQBwn/wAXMxTWzf5GoRQzA==
-X-Received: by 2002:a17:906:3e83:: with SMTP id a3mr60063753ejj.383.1638181828823;
-        Mon, 29 Nov 2021 02:30:28 -0800 (PST)
-Received: from capella.. (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
-        by smtp.gmail.com with ESMTPSA id cy26sm9008402edb.7.2021.11.29.02.30.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Nov 2021 02:30:28 -0800 (PST)
-From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linus.walleij@linaro.org,
-        andrew@lunn.ch, f.fainelli@gmail.com, olteanv@gmail.com,
-        vivien.didelot@gmail.com, hkallweit1@gmail.com,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-Subject: [PATCH net v2 3/3] net: dsa: rtl8365mb: set RGMII RX delay in steps of 0.3 ns
-Date:   Mon, 29 Nov 2021 11:30:19 +0100
-Message-Id: <20211129103019.1997018-3-alvin@pqrs.dk>
-X-Mailer: git-send-email 2.34.0
-In-Reply-To: <20211129103019.1997018-1-alvin@pqrs.dk>
-References: <20211129103019.1997018-1-alvin@pqrs.dk>
+        id S242974AbhK2LL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 06:11:57 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:52874 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233362AbhK2LJ5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 06:09:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1638184000; x=1669720000;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=px9O/Bq5B4DL5jCTNt3L7dJdnR2fEC1xr8C2iqfLWtU=;
+  b=bwCDp6gNmzMKX5vAgsJe8BqezpB+96n9TBcOrx5vb2EcNSAoZghf6eq/
+   VI/19J+Zk1IHNNZHIE25MphIptaN5KrF01q5PMEP5dqFt1DgG8IPj4IIG
+   iWDvGNGK3Tb/cgGywk4q9AhZqnVzdqLZoFMkDN0cRrRjIg+7rFQXvaolY
+   ea6O3Hu5qokej34ZPhVX4USFs4wq3h8N2P6jMhFZ0T0kbjXj6XQ8CUUME
+   A+Muda6fGIeYYVFtbQuly3UtHZE34PBVJeCtowwRhjqLO9eeyYYYW91Vj
+   T2CKm0u4E9P9frvcGg1Ermr7L1cRRZKzy9vsqDmIdtjfneK8iqnzj2din
+   A==;
+IronPort-SDR: 80zuOpP18NibtUCEZqIRvXSBV++FIA/BG92vVkFxqNwpRKtLQypaupvoZnXrrR3vaWu3v53xUd
+ Rwuu3BoD0zEoHGqPO8TzmBg5TSm8Plskqow4bo44/ev3qxCnPw0AuNr89h62laYd8+x6fIeqg3
+ F6qzvlff3cGRsiGDvuqSfCFmxJoFd6VKtgku1l1dpQwoh/6V1ZK9XE3mrXZlPFQv4Ne40syZGC
+ opn0CJ/I9OSAQQKNB3lq6pNf33Dj438oT5RuItm6+NDvufUk86gSqqRwgUvjKzcIR5wmAgyUyS
+ a3LEb/7jL3qyBTIZIn8Nz6/J
+X-IronPort-AV: E=Sophos;i="5.87,273,1631602800"; 
+   d="scan'208";a="140561184"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Nov 2021 04:06:39 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Mon, 29 Nov 2021 04:06:39 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2176.14 via Frontend
+ Transport; Mon, 29 Nov 2021 04:06:38 -0700
+Date:   Mon, 29 Nov 2021 12:08:34 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <p.zabel@pengutronix.de>,
+        <andrew@lunn.ch>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v4 3/6] net: lan966x: add port module support
+Message-ID: <20211129110834.yy6wai63vaftnias@soft-dev3-1.localhost>
+References: <20211126090540.3550913-1-horatiu.vultur@microchip.com>
+ <20211126090540.3550913-4-horatiu.vultur@microchip.com>
+ <YaC/OT0f2JKBPMOb@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <YaC/OT0f2JKBPMOb@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alvin Šipraga <alsi@bang-olufsen.dk>
+The 11/26/2021 11:04, Russell King (Oracle) wrote:
+> 
+> On Fri, Nov 26, 2021 at 10:05:37AM +0100, Horatiu Vultur wrote:
+> > This patch adds support for netdev and phylink in the switch. The
+> > injection + extraction is register based. This will be replaced with DMA
+> > accees.
+> >
+> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> 
+> This looks mostly good now, thanks. There's one remaining issue:
 
-A contact at Realtek has clarified what exactly the units of RGMII RX
-delay are. The answer is that the unit of RX delay is "about 0.3 ns".
-Take this into account when parsing rx-internal-delay-ps by
-approximating the closest step value. Delays of more than 2.1 ns are
-rejected.
+Thanks for the help!
 
-This obviously contradicts the previous assumption in the driver that a
-step value of 4 was "about 2 ns", but Realtek also points out that it is
-easy to find more than one RX delay step value which makes RGMII work.
+> 
+> > +int lan966x_port_pcs_set(struct lan966x_port *port,
+> > +                      struct lan966x_port_config *config)
+> > +{
+> > +     struct lan966x *lan966x = port->lan966x;
+> > +     bool inband_aneg = false;
+> > +     bool outband;
+> > +     int err;
+> > +
+> > +     lan966x_port_link_down(port);
+> 
+> This looks like something the MAC layer should be doing. Phylink won't
+> change the interface mode by just calling the PCS - it will do this
+> sequence, known as a major reconfiguration:
+> 
+> mac_link_down() (if the link was previously up)
+> mac_prepare()
+> mac_config()
+> if (pcs_config() > 0)
+>   pcs_an_restart()
+> mac_finish()
+> 
+> pcs_config() will also be called thusly:
+> 
+> if (pcs_config() > 0)
+>   pcs_an_restart()
+> 
+> to change the ethtool advertising mask which changes the inband advert
+> or the Autoneg bit, which has an effect only on your DEV_PCS1G_ANEG_CFG()
+> register, and this may be called with the link up or down.
+> 
+> Also, pcs_config() is supposed to return 0 if the inband advert has not
+> changed, or positive if it has (so pcs_an_restart() is called to cause
+> in-band negotiation to be restarted.)
+> 
+> Note also that pcs_an_restart() may  also be called when ethtool
+> requests negotiation restart when we're operating in 802.3z modes.
+> 
+> So, my question is - do you need to be so heavy weight with the call to
+> lan966x_port_link_down() to take everything down when pcs_config() is
+> called, and is it really in the right place through the sequence for
+> a major reconfiguration?
 
-Fixes: 4af2950c50c8 ("net: dsa: realtek-smi: add rtl8365mb subdriver for RTL8365MB-VC")
-Cc: Arınç ÜNAL <arinc.unal@arinc9.com>
-Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-Acked-by: Arınç ÜNAL <arinc.unal@arinc9.com>
----
- drivers/net/dsa/rtl8365mb.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+Thanks for the detail explanation.
+You are right, it doesn't look like it is needed to call
+lan966x_port_link_down when pcs_config is called.
+I can put the lan966x_port_link_down() inside the mac_link_down() callback.
 
-v2: add Arınç's Acked-by
+> 
+> Thanks.
+> 
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
 
-diff --git a/drivers/net/dsa/rtl8365mb.c b/drivers/net/dsa/rtl8365mb.c
-index c52225d115d4..bb65576ebf3c 100644
---- a/drivers/net/dsa/rtl8365mb.c
-+++ b/drivers/net/dsa/rtl8365mb.c
-@@ -760,7 +760,8 @@ static int rtl8365mb_ext_config_rgmii(struct realtek_smi *smi, int port,
- 	 *     0 = no delay, 1 = 2 ns delay
- 	 *   RX delay:
- 	 *     0 = no delay, 7 = maximum delay
--	 *     No units are specified, but there are a total of 8 steps.
-+	 *     Each step is approximately 0.3 ns, so the maximum delay is about
-+	 *     2.1 ns.
- 	 *
- 	 * The vendor driver also states that this must be configured *before*
- 	 * forcing the external interface into a particular mode, which is done
-@@ -771,10 +772,6 @@ static int rtl8365mb_ext_config_rgmii(struct realtek_smi *smi, int port,
- 	 * specified. We ignore the detail of the RGMII interface mode
- 	 * (RGMII_{RXID, TXID, etc.}), as this is considered to be a PHY-only
- 	 * property.
--	 *
--	 * For the RX delay, we assume that a register value of 4 corresponds to
--	 * 2 ns. But this is just an educated guess, so ignore all other values
--	 * to avoid too much confusion.
- 	 */
- 	if (!of_property_read_u32(dn, "tx-internal-delay-ps", &val)) {
- 		val = val / 1000; /* convert to ns */
-@@ -787,13 +784,13 @@ static int rtl8365mb_ext_config_rgmii(struct realtek_smi *smi, int port,
- 	}
- 
- 	if (!of_property_read_u32(dn, "rx-internal-delay-ps", &val)) {
--		val = val / 1000; /* convert to ns */
-+		val = DIV_ROUND_CLOSEST(val, 300); /* convert to 0.3 ns step */
- 
--		if (val == 0 || val == 2)
--			rx_delay = val * 2;
-+		if (val <= 7)
-+			rx_delay = val;
- 		else
- 			dev_warn(smi->dev,
--				 "EXT port RX delay must be 0 to 2 ns\n");
-+				 "EXT port RX delay must be 0 to 2.1 ns\n");
- 	}
- 
- 	ret = regmap_update_bits(
 -- 
-2.34.0
-
+/Horatiu
