@@ -2,62 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB36B4620BC
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 20:42:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDAB94620D7
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 20:45:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352821AbhK2Tpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 14:45:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49984 "EHLO
+        id S1355305AbhK2TtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 14:49:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344184AbhK2Tnm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 14:43:42 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 278C5C042382
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 08:03:08 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id w1so74214969edc.6
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 08:03:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=A9mpHfvDXsmkNMhyOGewzekr0FIgj4cYBvcSjhTr+N0=;
-        b=knKrbOyQTWBk7k+Jme53THFfx015/vZNo8Fq0rEdd9Apm3hOgbLge1tVVDyJa7jtSS
-         FsRSMxHLdGf0wqzrJ4IVxWp2bnEQtqXwwLbI+Zxgm9kVYftycPHxcvrDeBP2xSWc2Qgw
-         rlNyej3GLpkjQha6nu639cx+SJiRsZyr4mHXngQLQqnKjRR3vskBnbzG4honF6wvFd+x
-         6PvfO5xwrVxbzUKqJ991VH4ckNYaHsd3OgXTfGNt/Mo1TdAS2qKsMcDlVOuqbuhVoVFQ
-         3eFDzNJ47moY/9L9zVZXjHTNJL2M/J+5lHJMO5KbXwugW1UcC9+ZjxxUtlxmOjIPvXMX
-         PvcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=A9mpHfvDXsmkNMhyOGewzekr0FIgj4cYBvcSjhTr+N0=;
-        b=sA1U28S9JLfdv6XS5n9/I7kk/BqXcXIV2zXp21N5JXrTnm5M6eoz0TWdDlozi9fmlT
-         FbIDdbCeCsJ6Lpp3PEhHh1+riV+/duczOvC8lbgrepFKi4NgCSEWrKgVwQBN99RsjuQr
-         1afDdGgsTkTM4jqitdBXDdcdED2CNVmHX0l2A+T3cznBUAhd48fbWVZOTxWknd52Li+C
-         evryNUP4UMH+dXSEE7YLdlV9zrExw6dI7vOVgd5KbjsRdEES1yCQxDVRIk1Uo+laeIiu
-         QnKimpd9b7hcM1dH+ZlKcc6g6tB4zdf7eZlZbS9F/w7iQ5ZoAvmdEj6tgvdVoMo7pHpS
-         0e+Q==
-X-Gm-Message-State: AOAM532PocOwgPHVi0T1uJ8rJWXi9tRQA2PvATODyhIy0S3W7iydzAem
-        avOh0VgkATl7sSkuET3eD65eO/0jRGxWE6H/dbY=
-X-Google-Smtp-Source: ABdhPJyiFNHKK+7Ng/8jcZysyrzCffTvRrKkxxWNzp+nr0VTunlIKdgC8skGMmSq9EANpUEEb3zsPjbCxFRUH0+tq7g=
-X-Received: by 2002:a17:906:390:: with SMTP id b16mr64798748eja.123.1638201782039;
- Mon, 29 Nov 2021 08:03:02 -0800 (PST)
+        with ESMTP id S1351964AbhK2Tq6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 14:46:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0FB1C042395;
+        Mon, 29 Nov 2021 08:09:03 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47DEF61597;
+        Mon, 29 Nov 2021 16:09:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69AA5C53FAD;
+        Mon, 29 Nov 2021 16:09:00 +0000 (UTC)
+Date:   Mon, 29 Nov 2021 11:08:58 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Yafang Shao <laoar.shao@gmail.com>
+Cc:     Sven Schnelle <svens@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel test robot <oliver.sang@intel.com>,
+        kbuild test robot <lkp@intel.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Kees Cook <keescook@chromium.org>,
+        Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH v2 7/7] tools/testing/selftests/bpf: replace open-coded
+ 16 with TASK_COMM_LEN
+Message-ID: <20211129110858.1484ecd3@gandalf.local.home>
+In-Reply-To: <20211129110755.616133df@gandalf.local.home>
+References: <20211120112738.45980-1-laoar.shao@gmail.com>
+        <20211120112738.45980-8-laoar.shao@gmail.com>
+        <yt9d35nf1d84.fsf@linux.ibm.com>
+        <CALOAHbDtqpkN4D0vHvGxTSpQkksMWtFm3faMy0n+pazxN_RPPg@mail.gmail.com>
+        <yt9d35nfvy8s.fsf@linux.ibm.com>
+        <54e1b56c-e424-a4b3-4d61-3018aa095f36@redhat.com>
+        <yt9dy257uivg.fsf@linux.ibm.com>
+        <CALOAHbDkMhnO_OfQiV4gA8rGnLpyQ27nUcWSnN_-8TXkfQ1Eyw@mail.gmail.com>
+        <20211129110755.616133df@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Received: by 2002:a17:906:d54e:0:0:0:0 with HTTP; Mon, 29 Nov 2021 08:03:00
- -0800 (PST)
-Reply-To: fredbenson1950@gmail.com
-From:   fred <obicasmir428@gmail.com>
-Date:   Mon, 29 Nov 2021 16:03:00 +0000
-Message-ID: <CABzKOhapYNN9=CSATFhsAg6_N-agbROjoE+xQhV2b1imX=k9+Q@mail.gmail.com>
-Subject: hi
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Good day dear friend. My name is FRED BENSON; I'm the senior partner
-at FRED BENSON & Associate Law Firm based in Togo republic.
-I want us to claim the sum of (US$ 4.5 MILLION ) from the BTCI bank
-Lome Togo security company. You get 40% from the total amount.
-We work together and there will be success at the end. Reply for more details.
+On Mon, 29 Nov 2021 11:07:55 -0500
+Steven Rostedt <rostedt@goodmis.org> wrote:
+
+> I wonder if BTF could take advantage of the tracing:
+> 
+> TRACE_DEFINE_ENUM() macros?
+
+Bah' BTF does handle enums, it doesn't handle macros. But I wonder if we
+could do something similar for BTF. That is, force it.
+
+-- Steve
