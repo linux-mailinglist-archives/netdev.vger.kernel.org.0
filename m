@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE407462044
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 20:20:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6D26462047
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 20:20:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241273AbhK2TXl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 14:23:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46056 "EHLO
+        id S242201AbhK2TXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 14:23:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349985AbhK2TVl (ORCPT
+        with ESMTP id S230379AbhK2TVl (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 14:21:41 -0500
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CDD3C0619D5
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6461C0619D6
         for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 07:39:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 87F3FCE1304
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 15:39:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79120C53FAD;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1EA60CE12FD
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 15:39:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2AA8C53FCE;
         Mon, 29 Nov 2021 15:39:45 +0000 (UTC)
 Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="RD/MEW2C"
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="WDs6G3m5"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1638200384;
+        t=1638200385;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=j/3bonQViHsboctTvyrm0YSZ77JkTXKXdjpqXCNJMMI=;
-        b=RD/MEW2CNoXjjfegvbB5TlUwZ67liPZXghB0Q4jzzReJWqvSezIz5taQJM5wQ7s/LL5x94
-        TQ19zXqaDRaKRr6kUjPuHtxXcJeaj3uWH4w+aNZbzKOCziSysXa6DrSiS6P8nvqbDfYXGH
-        oWBE1mwas1AEOa/BWJpBipplGaB1rH0=
-Received: by mail.zx2c4.com (OpenSMTPD) with ESMTPSA id 44838ef1 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Mon, 29 Nov 2021 15:39:44 +0000 (UTC)
+        bh=2netmKfr/Q930og4HTXi2bnMk7IQqUnB8lyoa6lVhqk=;
+        b=WDs6G3m5qrwix4ebC8sVvnuDgtWvhR+jr+GpFkrqekaoJwrlRx1TL3naNayXwil+lqvTFB
+        02v9qGpINXXaIfJwXNWdfhtaX6jq4cBXDqIgItA5hFd/dnmYFaWBbnH1kzMhyiHG9u/fnZ
+        28VjJ2HogZg6F/QFfM+p9nz4aG0RSLY=
+Received: by mail.zx2c4.com (OpenSMTPD) with ESMTPSA id 2a1ddfb7 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Mon, 29 Nov 2021 15:39:45 +0000 (UTC)
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH net 03/10] wireguard: selftests: actually test for routing loops
-Date:   Mon, 29 Nov 2021 10:39:22 -0500
-Message-Id: <20211129153929.3457-4-Jason@zx2c4.com>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH net 04/10] wireguard: main: rename 'mod_init' & 'mod_exit' functions to be module-specific
+Date:   Mon, 29 Nov 2021 10:39:23 -0500
+Message-Id: <20211129153929.3457-5-Jason@zx2c4.com>
 In-Reply-To: <20211129153929.3457-1-Jason@zx2c4.com>
 References: <20211129153929.3457-1-Jason@zx2c4.com>
 MIME-Version: 1.0
@@ -49,38 +50,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We previously removed the restriction on looping to self, and then added
-a test to make sure the kernel didn't blow up during a routing loop. The
-kernel didn't blow up, thankfully, but on certain architectures where
-skb fragmentation is easier, such as ppc64, the skbs weren't actually
-being discarded after a few rounds through. But the test wasn't catching
-this. So actually test explicitly for massive increases in tx to see if
-we have a routing loop. Note that the actual loop problem will need to
-be addressed in a different commit.
+From: Randy Dunlap <rdunlap@infradead.org>
 
-Fixes: b673e24aad36 ("wireguard: socket: remove errant restriction on looping to self")
+Rename module_init & module_exit functions that are named
+"mod_init" and "mod_exit" so that they are unique in both the
+System.map file and in initcall_debug output instead of showing
+up as almost anonymous "mod_init".
+
+This is helpful for debugging and in determining how long certain
+module_init calls take to execute.
+
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- tools/testing/selftests/wireguard/netns.sh | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/wireguard/main.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/tools/testing/selftests/wireguard/netns.sh b/tools/testing/selftests/wireguard/netns.sh
-index ebc4ee0fe179..2e5c1630885e 100755
---- a/tools/testing/selftests/wireguard/netns.sh
-+++ b/tools/testing/selftests/wireguard/netns.sh
-@@ -276,7 +276,11 @@ n0 ping -W 1 -c 1 192.168.241.2
- n1 wg set wg0 peer "$pub2" endpoint 192.168.241.2:7
- ip2 link del wg0
- ip2 link del wg1
--! n0 ping -W 1 -c 10 -f 192.168.241.2 || false # Should not crash kernel
-+read _ _ tx_bytes_before < <(n0 wg show wg1 transfer)
-+! n0 ping -W 1 -c 10 -f 192.168.241.2 || false
-+sleep 1
-+read _ _ tx_bytes_after < <(n0 wg show wg1 transfer)
-+(( tx_bytes_after - tx_bytes_before < 70000 ))
+diff --git a/drivers/net/wireguard/main.c b/drivers/net/wireguard/main.c
+index 75dbe77b0b4b..ee4da9ab8013 100644
+--- a/drivers/net/wireguard/main.c
++++ b/drivers/net/wireguard/main.c
+@@ -17,7 +17,7 @@
+ #include <linux/genetlink.h>
+ #include <net/rtnetlink.h>
  
- ip0 link del wg1
- ip1 link del wg0
+-static int __init mod_init(void)
++static int __init wg_mod_init(void)
+ {
+ 	int ret;
+ 
+@@ -60,7 +60,7 @@ static int __init mod_init(void)
+ 	return ret;
+ }
+ 
+-static void __exit mod_exit(void)
++static void __exit wg_mod_exit(void)
+ {
+ 	wg_genetlink_uninit();
+ 	wg_device_uninit();
+@@ -68,8 +68,8 @@ static void __exit mod_exit(void)
+ 	wg_allowedips_slab_uninit();
+ }
+ 
+-module_init(mod_init);
+-module_exit(mod_exit);
++module_init(wg_mod_init);
++module_exit(wg_mod_exit);
+ MODULE_LICENSE("GPL v2");
+ MODULE_DESCRIPTION("WireGuard secure network tunnel");
+ MODULE_AUTHOR("Jason A. Donenfeld <Jason@zx2c4.com>");
 -- 
 2.34.1
 
