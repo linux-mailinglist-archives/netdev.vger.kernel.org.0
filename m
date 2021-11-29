@@ -2,101 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC64C4618D6
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 15:31:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 925674618F1
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 15:32:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344993AbhK2Oep (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 09:34:45 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:48274 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1378834AbhK2Oca (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 09:32:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1638196152;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rf8O5ctAw0vGE3sOZEtvXA5okWE5nRdwUi7RWsMQCzw=;
-        b=Z3MWlBzCpZaXMjZ6HytNUHJzQRDfNsaTwknuq7MhwCWZXbZYh9f4DrWN+JDm9S1cDGnhRF
-        25cClBBlSWIrV7cTecf6F09hiD3clUznN1asy9H6dSpzMm5eZSRgEM3OqaehtTVnk4vgoz
-        muaJl4qyxmq4OM3KsruAGS40ZEJ2wpc=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-551-wcD6G2hsOACZB8UjWs1JsQ-1; Mon, 29 Nov 2021 09:29:11 -0500
-X-MC-Unique: wcD6G2hsOACZB8UjWs1JsQ-1
-Received: by mail-ed1-f70.google.com with SMTP id w4-20020aa7cb44000000b003e7c0f7cfffso13909440edt.2
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 06:29:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
-         :subject:content-language:to:references:in-reply-to
-         :content-transfer-encoding;
-        bh=rf8O5ctAw0vGE3sOZEtvXA5okWE5nRdwUi7RWsMQCzw=;
-        b=k7a1VjWVksvX1+gRV5caKqxKUeanUeVAIMU7QXKn6d46612sC8YtEeWAJNQ/spqXde
-         XVgiTI+2xFIOjf7V5RB89WRFySY3vRm9BBiDQkKMw4SvgRn0NUmFkyQ1DQ3r7NFGfFs7
-         abidPVkqF3goKHS3gwvBx7x977ZAQlaa/cjIgzj6TvNC9iXV9bFqrnCYirwGtDz+mVyV
-         7yDnVpyILVw/r9dHvEROh2bdJSo4Ih9ZJHXB2Soq0WwFPzWwnNiRbitCfIQPc5+vwV3z
-         fwDkVpHsu7KdAQhpBx/uoFGgVo2ZXwjs4HmYfxivghvpDYTnCycHDMTHnAlVXmjH20CN
-         wvPw==
-X-Gm-Message-State: AOAM530zfkZRLLwNuLOicLCL7tgHJdwx7qGjMySho+DJciGOPpqbvIUA
-        O1hHAJpxXklDiQEyo830Oec4eDVTFUog84xi6IcPcvMFY4Vyhtfj3AzTj0KmD5zLbgZK0jzMUIO
-        rzBgn1BPbCG21Sack
-X-Received: by 2002:a17:907:e86:: with SMTP id ho6mr62462228ejc.209.1638196149947;
-        Mon, 29 Nov 2021 06:29:09 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy5srlFAN9dumOiSNmAAdhgitW5lf/zV1A0C1Mxkj4ak17HFZsRXxea9V+nJ/LVfKWv7yl4OA==
-X-Received: by 2002:a17:907:e86:: with SMTP id ho6mr62462210ejc.209.1638196149799;
-        Mon, 29 Nov 2021 06:29:09 -0800 (PST)
-Received: from [192.168.2.13] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
-        by smtp.gmail.com with ESMTPSA id qz24sm7393876ejc.29.2021.11.29.06.29.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Nov 2021 06:29:09 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <de14fefc-a8c1-ff6c-5354-8cce4a3f66f9@redhat.com>
-Date:   Mon, 29 Nov 2021 15:29:07 +0100
+        id S1378630AbhK2Ofg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 09:35:36 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37996 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378536AbhK2Odd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 09:33:33 -0500
+Received: from mail.kernel.org (unknown [198.145.29.99])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5165961528
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 14:30:10 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id AC6F86056B;
+        Mon, 29 Nov 2021 14:30:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638196209;
+        bh=icyoYRPpEyzydcir8h7mlqhsF52HfbtAbbxubYTF9SM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=RNk0Cx16h8npiLkf3UeM4vPVUpqkWyA+jpHaapyl1dC2zoa/RGkjVPQ2I5PpSSY9P
+         krj4THJCWZMloGSpHvQ6ckbtb57CJPCiSz4uCI0bGJc8OwpqwkA5eJh8c6gy8l0FZ6
+         CLjwNypjzNIWrGmvKToNF+S8m87NG1EsiX8X8xSzsAEG4xvVZzXPzEkySkq0TsukM1
+         h9NMPWe7unG8szARAqntL2FncTX5uE8Buy75qMRnKfWvQg37TCB82MGfYcJUaMSKpt
+         3GEeGjE7adSZRhBispzTLEZWbA9RiuBfBAifJWFvI0ke/MoMlck9VPk7yCoPCUr0Nb
+         DvzpLOKv946tA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9CC64609DB;
+        Mon, 29 Nov 2021 14:30:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Cc:     brouer@redhat.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        jesse.brandeburg@intel.com, intel-wired-lan@lists.osuosl.org,
-        magnus.karlsson@intel.com, bjorn@kernel.org,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: Re: [PATCH net-next 0/2] igc: driver change to support XDP metadata
-Content-Language: en-US
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-References: <163700856423.565980.10162564921347693758.stgit@firesoul>
- <20211129141047.8939-1-alexandr.lobakin@intel.com>
-In-Reply-To: <20211129141047.8939-1-alexandr.lobakin@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/7] net: atlantic: 11-2021 fixes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163819620963.16432.4147550340393495530.git-patchwork-notify@kernel.org>
+Date:   Mon, 29 Nov 2021 14:30:09 +0000
+References: <20211129132829.16038-1-skalluru@marvell.com>
+In-Reply-To: <20211129132829.16038-1-skalluru@marvell.com>
+To:     Sudarsana Reddy Kalluru <skalluru@marvell.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, irusskikh@marvell.com,
+        dbezrukov@marvell.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
-On 29/11/2021 15.10, Alexander Lobakin wrote:
-> From: Jesper Dangaard Brouer <brouer@redhat.com>
-> Date: Mon, 15 Nov 2021 21:36:20 +0100
+This series was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Mon, 29 Nov 2021 05:28:22 -0800 you wrote:
+> The patch series contains fixes for atlantic driver to improve support
+> of latest AQC113 chipset.
 > 
->> Changes to fix and enable XDP metadata to a specific Intel driver igc.
->> Tested with hardware i225 that uses driver igc, while testing AF_XDP
->> access to metadata area.
+> Please consider applying it to 'net' tree.
 > 
-> Would you mind if I take this your series into my bigger one that
-> takes care of it throughout all the Intel drivers?
+> Dmitry Bogdanov (2):
+>   atlantic: Increase delay for fw transactions
+>   atlantic: Fix statistics logic for production hardware
+> 
+> [...]
 
-I have a customer that depend on this fix.  They will have to do the 
-backport anyway (to v5.13), but it would bring confidence on their side 
-if the commits appear in an official git-tree before doing the backport 
-(and optimally with a SHA they can refer to).
+Here is the summary with links:
+  - [net,1/7] atlantic: Increase delay for fw transactions
+    https://git.kernel.org/netdev/net/c/aa1dcb5646fd
+  - [net,2/7] atlatnic: enable Nbase-t speeds with base-t
+    https://git.kernel.org/netdev/net/c/aa685acd98ea
+  - [net,3/7] atlantic: Fix to display FW bundle version instead of FW mac version.
+    https://git.kernel.org/netdev/net/c/2465c802232b
+  - [net,4/7] atlantic: Add missing DIDs and fix 115c.
+    https://git.kernel.org/netdev/net/c/413d5e09caa5
+  - [net,5/7] Remove Half duplex mode speed capabilities.
+    https://git.kernel.org/netdev/net/c/03fa512189eb
+  - [net,6/7] atlantic: Fix statistics logic for production hardware
+    https://git.kernel.org/netdev/net/c/2087ced0fc3a
+  - [net,7/7] atlantic: Remove warn trace message.
+    https://git.kernel.org/netdev/net/c/060a0fb721ec
 
-Tony Nguyen have these landed in your git-tree?
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
---JEsper
 
