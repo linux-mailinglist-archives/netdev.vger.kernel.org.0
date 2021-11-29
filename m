@@ -2,107 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0471461A1C
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 15:42:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E860461A1E
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 15:42:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378459AbhK2OpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 09:45:25 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:55326
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1379122AbhK2OnX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 09:43:23 -0500
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com [209.85.216.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        id S1378832AbhK2Opf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 09:45:35 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43666 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1379173AbhK2On2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 09:43:28 -0500
+Received: from mail.kernel.org (unknown [198.145.29.99])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 9C60F3F316
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 14:40:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1638196803;
-        bh=w6+BoYvnmAnd+GSm1CSG2oy2MCenL4FLdq4APeVFVSU=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=SSLBrO4hzgCknz6ZobYMdyV465cWrP+t1PQ0rWkP7d3I2eKnS/cvpV5Xeen3vztfj
-         ZOCCADslzkI4U5vZddG1VdsUud/hYbCRgnUNhFRvoO4YW20M/NZxoctqTFDy2H/6mr
-         t941Ig8jP+99IPNt8PU7WRicMM8bW9XxYzoD8mJPLs02RCFS61hTd1Ho25rYmU4A5j
-         zm/FvGcr/wiV9dnCpGh6l1FDg7E5z6B7c1w8bjUITwEmhX7JM+UlghGtOR7Z86SE/u
-         J8LbILLuEtqEWfUFT0VCLi2O15L5ma5YGqmzwUp0/X+L3upGgUiRPk/GYTyuKn5shP
-         Po0FuiMmTLAAw==
-Received: by mail-pj1-f70.google.com with SMTP id p12-20020a17090b010c00b001a65bfe8054so8035739pjz.8
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 06:40:03 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=w6+BoYvnmAnd+GSm1CSG2oy2MCenL4FLdq4APeVFVSU=;
-        b=OB3M3cnjKFh1w3Z13gYL5MAlF0I75hMdb7JggLZJJlw4HR+BYGWV+zFErT+2m1XK3C
-         Uy86WlQT3CDqMdihNuiFooqPLFF00j/GKLtSXj0ZO+KuGYNxbblh0eiVSRkR67mN9fQY
-         OTIXuEq7apemVLqnQQvBsVcYo3WgTvwkCKcyN4NHdclegV4z4GRD59mDMEPONBKhJBFl
-         Ce4bWCRElfdwlCgfuuvg/dFZ1Wss/vbH96g76D1BZSzZkdn5CntVj6VCjBHM9gDLJCET
-         daw6RNUK3+ZZQDydf5D3+/v7sC+BuU7dhdXE+kQkdAIvrzN6/1K89AL4bYNhjthufFx2
-         hnUg==
-X-Gm-Message-State: AOAM53005Upa9t7/bCK/Xf4DUtaiG52+qE0F+8ZlPooZ3Uk4IJZQ0lI3
-        4pvhUokUNZs4qWM0MIBuObYkEj8Ux8VpIhjYTHscy5vOdKePRtwcNWbImEBX6OcrwLIpQSefVtk
-        okUlJEa5QoEJwfe59hLdXsWMzTcC8ipy04w==
-X-Received: by 2002:a17:90b:4c89:: with SMTP id my9mr38888791pjb.229.1638196801872;
-        Mon, 29 Nov 2021 06:40:01 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzu+OIHnSidQX9q38q/ISn/oYi/aZG1iV/zfzuNI9YibcOhqr2H6QmGitjdqa/6oOI6TNG41Q==
-X-Received: by 2002:a17:90b:4c89:: with SMTP id my9mr38888748pjb.229.1638196801543;
-        Mon, 29 Nov 2021 06:40:01 -0800 (PST)
-Received: from localhost.localdomain (2001-b400-e254-16ab-fe1c-26fe-b098-aa3d.emome-ip6.hinet.net. [2001:b400:e254:16ab:fe1c:26fe:b098:aa3d])
-        by smtp.gmail.com with ESMTPSA id p188sm16862766pfg.102.2021.11.29.06.39.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Nov 2021 06:40:01 -0800 (PST)
-From:   Chris Chiu <chris.chiu@canonical.com>
-To:     Jes.Sorensen@gmail.com, kvalo@codeaurora.org, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Chris Chiu <chris.chiu@canonical.com>
-Subject: [PATCH] rtl8xxxu: Improve the A-MPDU retransmission rate with RTS/CTS protection
-Date:   Mon, 29 Nov 2021 22:39:53 +0800
-Message-Id: <20211129143953.369557-1-chris.chiu@canonical.com>
-X-Mailer: git-send-email 2.25.1
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0DF3B61536;
+        Mon, 29 Nov 2021 14:40:11 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 533686056B;
+        Mon, 29 Nov 2021 14:40:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638196810;
+        bh=0QZyL1/omFoFM0oSe+ruCABogOsAksI9L44Xdvjnsro=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=CyubTxm4PWvQqaAVi9bm7PZ5E5QhVkNOTe67JIDwap1mE0Vb1WbMGNnaVTytxdHNT
+         2v14XBX1ThLLQGcjVEj71sQugEQrJa8D9pr0oOF1Me+4XVYNmnSBSeevAS2rFADBrO
+         TWNqu+LH7EPUfMG82vf1fDlJYgrN4zDmHyFnLKVL7j/t45WJ0FXHEay2YoQRtfi2MP
+         g3GszrQCumJbi/XTVFW7riOiNIGFRN9qe4HbuFxvLL7/vtMcbEHUYqH1EqAtSdghAy
+         0mPZ+EbJsQDUwtzmuySDw/xSoHjk7vUp8/t0cLX8R3Fy+2Y/LaUfQq9pNmrq7cP0Zq
+         RTQf9wUxFM7+Q==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3AED860A88;
+        Mon, 29 Nov 2021 14:40:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 00/10] net: hns3: some cleanups for -next
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163819681023.20833.8288126722128597970.git-patchwork-notify@kernel.org>
+Date:   Mon, 29 Nov 2021 14:40:10 +0000
+References: <20211129140027.23036-1-huangguangbin2@huawei.com>
+In-Reply-To: <20211129140027.23036-1-huangguangbin2@huawei.com>
+To:     Guangbin Huang <huangguangbin2@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, wangjie125@huawei.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lipeng321@huawei.com, chenhao288@hisilicon.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The A-MPDU retransmission rate is always high (> 20%) even in a very
-clean environment. However, the vendor driver retransimission rate is
-< 10% in the same test bed. The different is the vendor driver starts
-the A-MPDU TXOP with initial RTS/CTS handshake which is observed in the
-air capture and the TX descriptor. Since there's no related field in
-TX descriptor to enable the L-SIG TXOP protection and the duration,
-applying the RTS/CTS protection instead helps to lower the retransmission
-rate from > 20% to ~12% in the same test setup.
+Hello:
 
-Signed-off-by: Chris Chiu <chris.chiu@canonical.com>
----
- drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index a42e2081b75f..06d59ffb7444 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -4859,7 +4859,7 @@ rtl8xxxu_fill_txdesc_v1(struct ieee80211_hw *hw, struct ieee80211_hdr *hdr,
- 	 * rts_rate is zero if RTS/CTS or CTS to SELF are not enabled
- 	 */
- 	tx_desc->txdw4 |= cpu_to_le32(rts_rate << TXDESC32_RTS_RATE_SHIFT);
--	if (rate_flags & IEEE80211_TX_RC_USE_RTS_CTS) {
-+	if (ampdu_enable || (rate_flags & IEEE80211_TX_RC_USE_RTS_CTS)) {
- 		tx_desc->txdw4 |= cpu_to_le32(TXDESC32_RTS_CTS_ENABLE);
- 		tx_desc->txdw4 |= cpu_to_le32(TXDESC32_HW_RTS_ENABLE);
- 	} else if (rate_flags & IEEE80211_TX_RC_USE_CTS_PROTECT) {
-@@ -4930,7 +4930,7 @@ rtl8xxxu_fill_txdesc_v2(struct ieee80211_hw *hw, struct ieee80211_hdr *hdr,
- 	/*
- 	 * rts_rate is zero if RTS/CTS or CTS to SELF are not enabled
- 	 */
--	if (rate_flags & IEEE80211_TX_RC_USE_RTS_CTS) {
-+	if (ampdu_enable || (rate_flags & IEEE80211_TX_RC_USE_RTS_CTS)) {
- 		tx_desc40->txdw3 |= cpu_to_le32(TXDESC40_RTS_CTS_ENABLE);
- 		tx_desc40->txdw3 |= cpu_to_le32(TXDESC40_HW_RTS_ENABLE);
- 	} else if (rate_flags & IEEE80211_TX_RC_USE_CTS_PROTECT) {
+On Mon, 29 Nov 2021 22:00:17 +0800 you wrote:
+> To improve code readability and simplicity, this series refactor some
+> functions in the HNS3 ethernet driver.
+> 
+> Guangbin Huang (3):
+>   net: hns3: refine function hclge_cfg_mac_speed_dup_hw()
+>   net: hns3: add new function hclge_tm_schd_mode_tc_base_cfg()
+>   net: hns3: refine function hclge_tm_pri_q_qs_cfg()
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,01/10] net: hns3: refactor reset_prepare_general retry statement
+    https://git.kernel.org/netdev/net-next/c/ed0e658c51aa
+  - [net-next,02/10] net: hns3: refactor hns3_nic_reuse_page()
+    https://git.kernel.org/netdev/net-next/c/e74a726da2c4
+  - [net-next,03/10] net: hns3: refactor two hns3 debugfs functions
+    https://git.kernel.org/netdev/net-next/c/e6fe5e167185
+  - [net-next,04/10] net: hns3: split function hns3_get_tx_timeo_queue_info()
+    https://git.kernel.org/netdev/net-next/c/a4ae2bc0abd4
+  - [net-next,05/10] net: hns3: refine function hclge_cfg_mac_speed_dup_hw()
+    https://git.kernel.org/netdev/net-next/c/e46da6a3d4d3
+  - [net-next,06/10] net: hns3: add new function hclge_tm_schd_mode_tc_base_cfg()
+    https://git.kernel.org/netdev/net-next/c/7ca561be11d0
+  - [net-next,07/10] net: hns3: refine function hclge_tm_pri_q_qs_cfg()
+    https://git.kernel.org/netdev/net-next/c/e06dac5290b7
+  - [net-next,08/10] net: hns3: split function hns3_nic_get_stats64()
+    https://git.kernel.org/netdev/net-next/c/8469b645c9a1
+  - [net-next,09/10] net: hns3: split function hns3_handle_bdinfo()
+    https://git.kernel.org/netdev/net-next/c/2fbf6a07f537
+  - [net-next,10/10] net: hns3: split function hns3_set_l2l3l4()
+    https://git.kernel.org/netdev/net-next/c/1d851c0905f8
+
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
