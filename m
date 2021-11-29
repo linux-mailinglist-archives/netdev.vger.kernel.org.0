@@ -2,114 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5571462076
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 20:27:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0B1C462073
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 20:27:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351341AbhK2TbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 14:31:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47230 "EHLO
+        id S1350318AbhK2TbE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 14:31:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234073AbhK2T3H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 14:29:07 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FBCAC0619E7
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 07:45:43 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id r11so73866699edd.9
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 07:45:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=pyCZ3N2/s9z1KvrmmNMWax4N7x3EG1EhXxsdNmvBuM4=;
-        b=VAgeWABXgNoJ0RN7xP8bO9tjnYW9+i82AQuYn26LhrT/TQTiqmnJAtV94v/oXTPRPb
-         9fGOklJKE2PdOvuNFgYH7ljCypKpTmAFs/XyjDo/lH9PmfH6aUZweUdJ3dX3FOpo6Esp
-         VrdmzBkbYawY//md1DMxklcQZy9rm4/Xl6CdJhVX4OaR3/L4WLiHvkzMVVAFvwxIka/g
-         qZuW/+yj7fdf9j3yT81njp7TNdh3MJrcX+jZASpvFbSExTjusYya5aQFZhLQrgcbYAl+
-         uuwcbDgDT2UHpRU+sFWXd2UnzsEkKJZOoiKV+jvTqHM+9xgLlG9oU3XnjCuYq627bcFy
-         hNgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=pyCZ3N2/s9z1KvrmmNMWax4N7x3EG1EhXxsdNmvBuM4=;
-        b=azQDN/NXGW5tPskVSDjHARD4dzysM8zlLvVYn6WOe0i7CYs2DzpIPPHnycoZw2Amrf
-         tmH+cKjbLH3MKe4QJLcB5OzshPVgR7DQvRl1ckzJe3PBfBuFLjcoVhLBFFOGzCC8TCpm
-         SoOPjpPf4atuwVIbW6x0K77J6czBUh9T0Gv1j17blowQamMkK3AQs2dWLVI5IqZHwLOs
-         TdHRDaBe+L6vifySevIdA9JobRWMzXLLp17rPuJbhWMbX/roJ+g8ZZ0Dr8jODzpKxz7M
-         fQ0x0Z2Tq2i04G7odt7kZS4ORntdh9cBUsW2oYsB2aZgekWQHxpe4Y+x72wSWisEvpEQ
-         K4eA==
-X-Gm-Message-State: AOAM530FCp15ZUCpSwYm1VhnhYdyVHpEUq/uizvum53OXzhpznc620TA
-        wO30KaBzbsswKP2moGc84eIap2J0qH/1FgRT
-X-Google-Smtp-Source: ABdhPJzuZjfkDoLx/gV4cmgLUeki9U6mQqnaezNJ6EFVrjK8V9yoR9640t6HkfJnDo2xoJWyB50vxw==
-X-Received: by 2002:a05:6402:1849:: with SMTP id v9mr75503663edy.335.1638200741324;
-        Mon, 29 Nov 2021 07:45:41 -0800 (PST)
-Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id e26sm9623972edr.82.2021.11.29.07.45.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Nov 2021 07:45:39 -0800 (PST)
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH net-next v2] net: ipv6: use the new fib6_nh_release_dsts helper in fib6_nh_release
-Date:   Mon, 29 Nov 2021 17:44:11 +0200
-Message-Id: <20211129154411.561783-1-razor@blackwall.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <8f11307c-9acf-2d83-a7f4-675c46966ede@nvidia.com>
-References: <8f11307c-9acf-2d83-a7f4-675c46966ede@nvidia.com>
+        with ESMTP id S243298AbhK2T3C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 14:29:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F71AC0619E6
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 07:45:25 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B7C061536
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 15:45:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C003CC53FCB;
+        Mon, 29 Nov 2021 15:45:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638200724;
+        bh=JAVRsWBl/8H4mLOxaWCkobg96klL0MG+50z2oZBz0ps=;
+        h=From:To:Cc:Subject:Date:From;
+        b=D1u3f1g8waBQn7l+Oxj4jS6t1LGPrvug+0nPqtkpMroI2xM/DYG7xDeEkuXoQMEoy
+         e5dlapMpNaqtxF9q3JKcpZoOjHnUnWsO+watsYmTFZqN27TbZntWvdT0YSTthMuIaF
+         8bm2JpzDLgc5JVwrxna7H9nLyXenP0PwKjieLetUIdAfzc1eJLUngzVnxZF6qjZwi+
+         LtQKoeD/6u0GD/jB6VH/sEjzkspQ02z0Kvdj0Md7Y1DzhLytmvfbB+JjnBqeSgQU40
+         qZFYk6MJ/PCvoKocTSelYM9YQQIlAchGVid4rBIAPV/Vcu1dJ5fTZP4dkhpHKaSDae
+         7T8b1TSIfy+Cw==
+From:   Antoine Tenart <atenart@kernel.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Antoine Tenart <atenart@kernel.org>, alexander.duyck@gmail.com,
+        netdev@vger.kernel.org
+Subject: [PATCH net] net-sysfs: update the queue counts in the unregistration path
+Date:   Mon, 29 Nov 2021 16:45:20 +0100
+Message-Id: <20211129154520.295823-1-atenart@kernel.org>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@nvidia.com>
+When updating Rx and Tx queue kobjects, the queue count should always be
+updated to match the queue kobjects count. This was not done in the net
+device unregistration path and due to the Tx queue logic allowing
+updates when unregistering (for qdisc cleanup) it was possible with
+ethtool to manually add new queues after unregister, leading to NULL
+pointer exceptions and UaFs, such as:
 
-We can remove a bit of code duplication by reusing the new
-fib6_nh_release_dsts helper in fib6_nh_release. Their only difference is
-that fib6_nh_release's version doesn't use atomic operation to swap the
-pointers because it assumes the fib6_nh is no longer visible, while
-fib6_nh_release_dsts can be used anywhere.
+  BUG: KASAN: use-after-free in kobject_get+0x14/0x90
+  Read of size 1 at addr ffff88801961248c by task ethtool/755
 
-Suggested-by: David Ahern <dsahern@gmail.com>
-Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+  CPU: 0 PID: 755 Comm: ethtool Not tainted 5.15.0-rc6+ #778
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-4.fc34 04/014
+  Call Trace:
+   dump_stack_lvl+0x57/0x72
+   print_address_description.constprop.0+0x1f/0x140
+   kasan_report.cold+0x7f/0x11b
+   kobject_get+0x14/0x90
+   kobject_add_internal+0x3d1/0x450
+   kobject_init_and_add+0xba/0xf0
+   netdev_queue_update_kobjects+0xcf/0x200
+   netif_set_real_num_tx_queues+0xb4/0x310
+   veth_set_channels+0x1c3/0x550
+   ethnl_set_channels+0x524/0x610
+
+Updating the queue counts in the unregistration path solve the above
+issue, as the ethtool path updating the queue counts makes sanity checks
+and a queue count of 0 should prevent any update.
+
+Fixes: 5c56580b74e5 ("net: Adjust TX queue kobjects if number of queues changes during unregister")
+Signed-off-by: Antoine Tenart <atenart@kernel.org>
 ---
-v2: no need to check for NULL rt6i_pcpu before calling free_percpu
 
- net/ipv6/route.c | 20 ++------------------
- 1 file changed, 2 insertions(+), 18 deletions(-)
+Hello,
 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 62f1e16eea2b..f0d29fcb2094 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -3656,24 +3656,8 @@ void fib6_nh_release(struct fib6_nh *fib6_nh)
+Following a previous thread[1] I had another look at this issue and now
+have a better fix (this patch). In this previous thread we also
+discussed preventing ethtool operations after unregister and adding a
+warning in netdev_queue_update_kobjects; I'll send two patches for this
+but targetting net-next.
+
+Thanks!
+Antoine
+
+[1] https://lore.kernel.org/all/20211122162007.303623-1-atenart@kernel.org/T/
+
+ net/core/net-sysfs.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 9c01c642cf9e..d7f9ee830d34 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -1820,6 +1820,9 @@ static void remove_queue_kobjects(struct net_device *dev)
  
- 	rcu_read_unlock();
- 
--	if (fib6_nh->rt6i_pcpu) {
--		int cpu;
--
--		for_each_possible_cpu(cpu) {
--			struct rt6_info **ppcpu_rt;
--			struct rt6_info *pcpu_rt;
--
--			ppcpu_rt = per_cpu_ptr(fib6_nh->rt6i_pcpu, cpu);
--			pcpu_rt = *ppcpu_rt;
--			if (pcpu_rt) {
--				dst_dev_put(&pcpu_rt->dst);
--				dst_release(&pcpu_rt->dst);
--				*ppcpu_rt = NULL;
--			}
--		}
--
--		free_percpu(fib6_nh->rt6i_pcpu);
--	}
-+	fib6_nh_release_dsts(fib6_nh);
-+	free_percpu(fib6_nh->rt6i_pcpu);
- 
- 	fib_nh_common_release(&fib6_nh->nh_common);
- }
+ 	net_rx_queue_update_kobjects(dev, real_rx, 0);
+ 	netdev_queue_update_kobjects(dev, real_tx, 0);
++
++	dev->real_num_rx_queues = 0;
++	dev->real_num_tx_queues = 0;
+ #ifdef CONFIG_SYSFS
+ 	kset_unregister(dev->queues_kset);
+ #endif
 -- 
-2.31.1
+2.33.1
 
