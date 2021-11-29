@@ -2,138 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D3DF462546
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 23:34:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D660B4624E2
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 23:29:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233594AbhK2Wh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 17:37:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33706 "EHLO
+        id S231942AbhK2Wcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 17:32:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234044AbhK2WhA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 17:37:00 -0500
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B8D5C006844;
-        Mon, 29 Nov 2021 14:12:04 -0800 (PST)
-Received: by mail-wm1-x32e.google.com with SMTP id y196so15852110wmc.3;
-        Mon, 29 Nov 2021 14:12:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc
-         :references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=ggbCWzRHc8v6BD4e49B0lyVFo6tInErcTUuCR8IjV80=;
-        b=hWpgli47jqMDnyJk623WauGE9bqO788jiJdDGlZAOc484EC8hlSLA9yGY17rY6rb4a
-         6zdwbupCg+gacOKN2btEvQk7acJ+iLrbBYBmny2Y54l+T99mzwwsZYKOzGT3+HWGU+bq
-         iijJG6MiuHVHAJEX8EKL8eOsQkE2O19dRLiIMH25PX0bSOcui2SZiakU1qaH3YqmmMa4
-         Da8B7iNGjZaaCAxRVYQzVTR2x90QGnYxnoarIOOllRtMlDaPvTyIV7pKnssuRwQkcgvE
-         Z410i4hHYNPsVe0AuN1cm/94hgABuWi8gv9kRE4HVLSWeiy9m0WIN6MTzvnNUnOLQyr+
-         58mA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=ggbCWzRHc8v6BD4e49B0lyVFo6tInErcTUuCR8IjV80=;
-        b=Y+QlNIIbRxOWvCvrFhz3i3wOHKLDeGK1kZsd/JVhq6nlufBHukUVTwneR7n9qBsx6Z
-         WA/3LDxAii95vjJwvZOS1ixzRrzp07hxPeEsR+VcXb8v+eL8hzdHZXmDBBA3gMaEKShB
-         NRhCLgqYMILFevZdLOexvZ1rkTtRRqwTkNUtrYLmGD/4sbvcevrG7O8siwI/Oy4s0qFo
-         /7cUHKvtb1TZNxf3Os5vWyov+jGkwazYz2K1yMsFCsUIAKCCRpn2cn4luWYJ9O8AuLt/
-         irRAeuNcNbVFkZsLFxaeWilnqkZ7/GJn8iPN9/ZOaHc727dTnGnbzAM6tpSFTiwPPLcg
-         T9RQ==
-X-Gm-Message-State: AOAM530jVrvc5Q+DMlYWq11UjalDp5HSA9yTgGTOOdhZZkmS+hOir7KN
-        G2H5U0uAc5eOurQdXXQHngIc451wDi4=
-X-Google-Smtp-Source: ABdhPJzH0E+uDDE2OFKb8jQki6IakYhnY290to4kPejALTQ3I4rGdRcaJx8l5NELh2FVGvU+c8456Q==
-X-Received: by 2002:a05:600c:4c96:: with SMTP id g22mr768693wmp.46.1638223923144;
-        Mon, 29 Nov 2021 14:12:03 -0800 (PST)
-Received: from ?IPV6:2003:ea:8f1a:f00:d1cd:76c9:39c5:e078? (p200300ea8f1a0f00d1cd76c939c5e078.dip0.t-ipconnect.de. [2003:ea:8f1a:f00:d1cd:76c9:39c5:e078])
-        by smtp.googlemail.com with ESMTPSA id az4sm474590wmb.20.2021.11.29.14.12.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Nov 2021 14:12:02 -0800 (PST)
-Message-ID: <223aeb87-0949-65f1-f119-4c55d58bc14a@gmail.com>
-Date:   Mon, 29 Nov 2021 23:11:58 +0100
+        with ESMTP id S231992AbhK2Wcn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 17:32:43 -0500
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C7FC08EAF8;
+        Mon, 29 Nov 2021 14:20:17 -0800 (PST)
+Received: from localhost (unknown [IPv6:2601:281:8300:104d::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 689EF221;
+        Mon, 29 Nov 2021 22:20:17 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 689EF221
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1638224417; bh=cWLrV3sN2L9a4mscHC8cxOkPTpNjGMnBB/U3F0GHUiU=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=amLKGQw3djDEOU+47izoYgQzfXrLLH34050mH4vZTGowUk3dD499jGGSQqAZxHjfP
+         A/lacmoeR1uI2rAADXQDiuks3pAkl4qUwfjFSsNxqo0RNUMH5VnWz00Q3ADdoU4DU4
+         DGm5iQ/oP628IjteMr6Nn1hKpSlTypvkjzdawST30dQ4SzsYGGfn6rXEVPofllAAo/
+         N3YMha6D8WFjIxlGVavWNI1zJsb+uenrT0EbK7v1+xGYugVlmDP0OPaJeAJw2VjhOR
+         l0Nx3LWHur7+Q8RGQ63g9sRTuinhgHC25dQQw/rm7ZNmTWrFMRpNyPxnr7mnKyJVwS
+         Pj35NErOMidVg==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Ahmed Zaki <anzaki@gmail.com>, linux-doc@vger.kernel.org
+Cc:     Ahmed Zaki <anzaki@gmail.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH] Doc: networking: Fix the title's Sphinx overline in
+ rds.rst
+In-Reply-To: <20211128171719.3286255-1-anzaki@gmail.com>
+References: <20211128171719.3286255-1-anzaki@gmail.com>
+Date:   Mon, 29 Nov 2021 15:20:16 -0700
+Message-ID: <87y256r4db.fsf@meer.lwn.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Content-Language: en-US
-To:     Tianhao Chai <cth451@gmail.com>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>
-References: <20211128023733.GA466664@cth-desktop-dorm.mad.wi.cth451.me>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH] ethernet: aquantia: Try MAC address from device tree
-In-Reply-To: <20211128023733.GA466664@cth-desktop-dorm.mad.wi.cth451.me>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28.11.2021 03:37, Tianhao Chai wrote:
-> Apple M1 Mac minis (2020) with 10GE NICs do not have MAC address in the
-> card, but instead need to obtain MAC addresses from the device tree. In
-> this case the hardware will report an invalid MAC.
-> 
-> Currently atlantic driver does not query the DT for MAC address and will
-> randomly assign a MAC if the NIC doesn't have a permanent MAC burnt in.
-> This patch causes the driver to perfer a valid MAC address from OF (if
-> present) over HW self-reported MAC and only fall back to a random MAC
-> address when neither of them is valid.
-> 
-> Signed-off-by: Tianhao Chai <cth451@gmail.com>
+Ahmed Zaki <anzaki@gmail.com> writes:
+
+> A missing "=" caused the title and sections to not show up properly in
+> the htmldocs.
+>
+> Signed-off-by: Ahmed Zaki <anzaki@gmail.com>
 > ---
->  .../net/ethernet/aquantia/atlantic/aq_nic.c   | 28 ++++++++++++-------
->  1 file changed, 18 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-> index 1acf544afeb4..ae6c4a044390 100644
-> --- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-> +++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-> @@ -316,18 +316,26 @@ int aq_nic_ndev_register(struct aq_nic_s *self)
->  	aq_macsec_init(self);
->  #endif
+>  Documentation/networking/rds.rst | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/Documentation/networking/rds.rst b/Documentation/networking/rds.rst
+> index 44936c27ab3a..498395f5fbcb 100644
+> --- a/Documentation/networking/rds.rst
+> +++ b/Documentation/networking/rds.rst
+> @@ -1,6 +1,6 @@
+>  .. SPDX-License-Identifier: GPL-2.0
 >  
-> -	mutex_lock(&self->fwreq_mutex);
-> -	err = self->aq_fw_ops->get_mac_permanent(self->aq_hw, addr);
-> -	mutex_unlock(&self->fwreq_mutex);
-> -	if (err)
-> -		goto err_exit;
-> +	if (eth_platform_get_mac_address(&self->pdev->dev, addr) == 0 &&
-> +	    is_valid_ether_addr(addr)) {
+> -==
+> +===
+>  RDS
+>  ===
 
-Calling is_valid_ether_addr() shouldn't be needed here. of_get_mac_addr()
-does this check already. If you should decide to keep this check:
-Kernel doc of is_valid_ether_addr() states that argument must be
-word-aligned. So you may need to add a __align(2) to the address char
-array definition.
+The networking folks normally like to handle documentation patches for
+their subsystem, so netdev@vger.kernel.org should have been in the CC.
+I believe scripts/get_maintainer.pl should have told you that.
 
-> +		// DT supplied a valid MAC address
-> +		eth_hw_addr_set(self->ndev, addr);
-> +	} else {
-> +		// If DT has none or an invalid one, ask device for MAC address
-> +		mutex_lock(&self->fwreq_mutex);
-> +		err = self->aq_fw_ops->get_mac_permanent(self->aq_hw, addr);
-> +		mutex_unlock(&self->fwreq_mutex);
->  
-> -	eth_hw_addr_set(self->ndev, addr);
-> +		if (err)
-> +			goto err_exit;
->  
-> -	if (!is_valid_ether_addr(self->ndev->dev_addr) ||
-> -	    !aq_nic_is_valid_ether_addr(self->ndev->dev_addr)) {
-> -		netdev_warn(self->ndev, "MAC is invalid, will use random.");
-> -		eth_hw_addr_random(self->ndev);
-> +		if (is_valid_ether_addr(addr) &&
-> +		    aq_nic_is_valid_ether_addr(addr)) {
-> +			eth_hw_addr_set(self->ndev, addr);
-> +		} else {
-> +			netdev_warn(self->ndev, "MAC is invalid, will use random.");
-> +			eth_hw_addr_random(self->ndev);
-> +		}
->  	}
->  
->  #if defined(AQ_CFG_MAC_ADDR_PERMANENT)
-> 
+For something so small and obvious, though, I don't see any point in
+making you do it again, so I've just applied it; hopefully they'll
+forgive me :)
 
+Thanks,
+
+jon
