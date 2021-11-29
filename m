@@ -2,178 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A793846189C
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 15:29:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 274B94618DA
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 15:31:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378494AbhK2Ocb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 09:32:31 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:45504 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378482AbhK2OaY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 09:30:24 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 0759A1FCA1;
-        Mon, 29 Nov 2021 14:27:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1638196025; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cESAjeUfglTUr7szSA+VXFGaNNk5Imodw6mQbhRwcqM=;
-        b=zx3vTE0qA6M+ONAYdF7FCLvjoDWk+VMNCgaZsncED4xdQO/sIMhQeDkYOBlaK06cG6UkEk
-        UkS8JtmJ894xxyDTuJQ1syZcibPMrhenFB1c7LqNgiSVfGrp2xnKgf6Qst+i55UnB3rRKu
-        jJIBiKaJeVy8j3QA/hdrr0JExh07mrA=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1638196025;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cESAjeUfglTUr7szSA+VXFGaNNk5Imodw6mQbhRwcqM=;
-        b=uDhxL1whI+L4wdAZ1PjYZSPJtkv/t91T7LeLhmYRytCeathGoruMcPOGHrxBMxC0Loikat
-        dQGmvaiIKfd3B8AQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 83A8F13B15;
-        Mon, 29 Nov 2021 14:27:03 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id LoS7GjfjpGH5fwAAMHmgww
-        (envelope-from <dkirjanov@suse.de>); Mon, 29 Nov 2021 14:27:03 +0000
-Subject: Re: [PATCH net-next 01/10] net: hns3: refactor reset_prepare_general
- retry statement
-To:     Guangbin Huang <huangguangbin2@huawei.com>, davem@davemloft.net,
-        kuba@kernel.org, wangjie125@huawei.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lipeng321@huawei.com, chenhao288@hisilicon.com
-References: <20211129140027.23036-1-huangguangbin2@huawei.com>
- <20211129140027.23036-2-huangguangbin2@huawei.com>
-From:   Denis Kirjanov <dkirjanov@suse.de>
-Message-ID: <b66ad578-ab66-a6a5-961f-278db6ebe1dc@suse.de>
-Date:   Mon, 29 Nov 2021 17:27:02 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S245425AbhK2Oer (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 09:34:47 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:45041 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1378468AbhK2Oca (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 09:32:30 -0500
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 261D25C0110;
+        Mon, 29 Nov 2021 09:29:09 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute6.internal (MEProxy); Mon, 29 Nov 2021 09:29:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=ODm1Tu
+        n5Dn3eeRSRL1/FeAQ+5jHGPNz8LLO7NS3C+dI=; b=XEEm4sO++9zWX73vRCb6Gn
+        9y3V0VboMKm0EopFAjDPq2eN3FVqypUU7ipEkFJmPClWhgksNCx47276mi/yLazR
+        J1rqBaAtBTjK/O39veIfRhmzDF3tSshG1YzS4aGJ/dCpLby15lNfuF/VSIYL5L0h
+        +OZ9a2srf2h+ResbEy7Td/9f7ltgH1qTIB0sL81k65/nEfSyo23/fVN8VX1KeF+t
+        4NXUHxGV4LKxIeNPHKels/fRcrNj94LDW425TAduxAMj/KgaAyi3fSSOQ6fKRfIc
+        R60VgnRMKP51YThLIcnuLFZVeBsYMvd3B6qJ8IGyvFUOwwzLu01Sb27goXN2Nsjg
+        ==
+X-ME-Sender: <xms:teOkYYo5Oc63gO8FcxXJDDC5nKOAbd1-I0NFr75MlhFMkbPML9hcyg>
+    <xme:teOkYeqXPTf3JXHyt85x23mfDJj-bLP9qv1jHm21fVAhfT9f_uZgy7Yvyy9t_Li7c
+    4BjZCMhRnBEiWM>
+X-ME-Received: <xmr:teOkYdNCzsqUZZ92OlG1Y0KcrkW_RygvibWYjbsLrx_vQRNG8e3EeqzWb9AsU-iyXRmBQdi0o-99XYfRz4JEhwBpogjUew>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrheelgdeihecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:teOkYf5xQ4NvnCVSc7zda36gmRAa4qMX9xX9rJBbOquVkPvRfbztjQ>
+    <xmx:teOkYX6BjRIVm8mQzjm5h4Wt5pqxi0J9eJBRsfRKzXSCM7xbq7Zx5A>
+    <xmx:teOkYfjypS1-USMKcDD7wXTMqHq4CPtGavZ9jwXP5DbqbDLJki3PLA>
+    <xmx:teOkYZm_zP8aj9FbHdA5eS31k87pNTnF54EwlEdTzBfY66VMSyFExg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 29 Nov 2021 09:29:08 -0500 (EST)
+Date:   Mon, 29 Nov 2021 16:29:04 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        dsahern@gmail.com, Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: Re: [PATCH net-next] net: nexthop: reduce rcu synchronizations when
+ replacing resilient groups
+Message-ID: <YaTjsHnf3kpH3SqW@shredder>
+References: <20211129120924.461545-1-razor@blackwall.org>
 MIME-Version: 1.0
-In-Reply-To: <20211129140027.23036-2-huangguangbin2@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: ru
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211129120924.461545-1-razor@blackwall.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Nov 29, 2021 at 02:09:24PM +0200, Nikolay Aleksandrov wrote:
+> From: Nikolay Aleksandrov <nikolay@nvidia.com>
+> 
+> We can optimize resilient nexthop group replaces by reducing the number of
+> synchronize_net calls. After commit 1005f19b9357 ("net: nexthop: release
+> IPv6 per-cpu dsts when replacing a nexthop group") we always do a
+> synchronize_net because we must ensure no new dsts can be created for the
+> replaced group's removed nexthops, but we already did that when replacing
+> resilient groups, so if we always call synchronize_net after any group
+> type replacement we'll take care of both cases and reduce synchronize_net
+> calls for resilient groups.
+> 
+> Suggested-by: Ido Schimmel <idosch@idosch.org>
+> Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 
+I ran fib_nexthops.sh that used to trigger the bug fixed by commit
+563f23b00253 ("nexthop: Fix division by zero while replacing a resilient
+group") and it looks good.
 
-11/29/21 5:00 PM, Guangbin Huang пишет:
-> From: Jiaran Zhang <zhangjiaran@huawei.com>
-> 
-> Currently, the hclge_reset_prepare_general function uses the goto
-> statement to jump upwards, which increases code complexity and makes
-> the program structure difficult to understand. In addition, if
-> reset_pending is set, retry_cnt cannot be increased. This may result
-> in a failure to exit the retry or increase the number of retries.
-> 
-> Use the while statement instead to make the program easier to understand
-> and solve the problem that the goto statement cannot be exited.
-> 
-> Signed-off-by: Jiaran Zhang <zhangjiaran@huawei.com>
-> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-> ---
->   .../hisilicon/hns3/hns3pf/hclge_main.c        | 32 ++++++++-----------
->   .../hisilicon/hns3/hns3vf/hclgevf_main.c      | 32 ++++++++-----------
->   2 files changed, 28 insertions(+), 36 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-> index a0628d139149..5282f2632b3b 100644
-> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-> @@ -11589,24 +11589,20 @@ static void hclge_reset_prepare_general(struct hnae3_ae_dev *ae_dev,
->   	int retry_cnt = 0;
->   	int ret;
->   
-> -retry:
-> -	down(&hdev->reset_sem);
-> -	set_bit(HCLGE_STATE_RST_HANDLING, &hdev->state);
-> -	hdev->reset_type = rst_type;
-> -	ret = hclge_reset_prepare(hdev);
-> -	if (ret || hdev->reset_pending) {
-> -		dev_err(&hdev->pdev->dev, "fail to prepare to reset, ret=%d\n",
-> -			ret);
-> -		if (hdev->reset_pending ||
-> -		    retry_cnt++ < HCLGE_RESET_RETRY_CNT) {
-> -			dev_err(&hdev->pdev->dev,
-> -				"reset_pending:0x%lx, retry_cnt:%d\n",
-> -				hdev->reset_pending, retry_cnt);
-> -			clear_bit(HCLGE_STATE_RST_HANDLING, &hdev->state);
-> -			up(&hdev->reset_sem);
-> -			msleep(HCLGE_RESET_RETRY_WAIT_MS);
-> -			goto retry;
-> -		}
-> +	while (retry_cnt++ < HCLGE_RESET_RETRY_CNT) {
-> +		down(&hdev->reset_sem);
-> +		set_bit(HCLGE_STATE_RST_HANDLING, &hdev->state);
-> +		hdev->reset_type = rst_type;
-> +		ret = hclge_reset_prepare(hdev);
-> +		if (!ret && !hdev->reset_pending)
-> +			break;
-up(&hdev->reset_sem); ?
-> +
-> +		dev_err(&hdev->pdev->dev,
-> +			"failed to prepare to reset, ret=%d, reset_pending:0x%lx, retry_cnt:%d\n",
-> +			ret, hdev->reset_pending, retry_cnt);
-> +		clear_bit(HCLGE_STATE_RST_HANDLING, &hdev->state);
-> +		up(&hdev->reset_sem);
-> +		msleep(HCLGE_RESET_RETRY_WAIT_MS);
->   	}
->   
->   	/* disable misc vector before reset done */
-> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-> index 3f29062eaf2e..0568cc31d391 100644
-> --- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-> @@ -2166,24 +2166,20 @@ static void hclgevf_reset_prepare_general(struct hnae3_ae_dev *ae_dev,
->   	int retry_cnt = 0;
->   	int ret;
->   
-> -retry:
-> -	down(&hdev->reset_sem);
-> -	set_bit(HCLGEVF_STATE_RST_HANDLING, &hdev->state);
-> -	hdev->reset_type = rst_type;
-> -	ret = hclgevf_reset_prepare(hdev);
-> -	if (ret) {
-> -		dev_err(&hdev->pdev->dev, "fail to prepare to reset, ret=%d\n",
-> -			ret);
-> -		if (hdev->reset_pending ||
-> -		    retry_cnt++ < HCLGEVF_RESET_RETRY_CNT) {
-> -			dev_err(&hdev->pdev->dev,
-> -				"reset_pending:0x%lx, retry_cnt:%d\n",
-> -				hdev->reset_pending, retry_cnt);
-> -			clear_bit(HCLGEVF_STATE_RST_HANDLING, &hdev->state);
-> -			up(&hdev->reset_sem);
-> -			msleep(HCLGEVF_RESET_RETRY_WAIT_MS);
-> -			goto retry;
-> -		}
-> +	while (retry_cnt++ < HCLGEVF_RESET_RETRY_CNT) {
-> +		down(&hdev->reset_sem);
-> +		set_bit(HCLGEVF_STATE_RST_HANDLING, &hdev->state);
-> +		hdev->reset_type = rst_type;
-> +		ret = hclgevf_reset_prepare(hdev);
-> +		if (!ret && !hdev->reset_pending)
-> +			break;
-same here
-> +
-> +		dev_err(&hdev->pdev->dev,
-> +			"failed to prepare to reset, ret=%d, reset_pending:0x%lx, retry_cnt:%d\n",
-> +			ret, hdev->reset_pending, retry_cnt);
-> +		clear_bit(HCLGEVF_STATE_RST_HANDLING, &hdev->state);
-> +		up(&hdev->reset_sem);
-> +		msleep(HCLGEVF_RESET_RETRY_WAIT_MS);
->   	}
->   
->   	/* disable misc vector before reset done */
-> 
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Tested-by: Ido Schimmel <idosch@nvidia.com>
+
+Thanks!
