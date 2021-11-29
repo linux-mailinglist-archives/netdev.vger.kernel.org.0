@@ -2,54 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04BC5460E3F
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 05:58:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B00B5460E3E
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 05:58:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232516AbhK2FB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S232366AbhK2FB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 29 Nov 2021 00:01:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55042 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238207AbhK2E7Y (ORCPT
+        with ESMTP id S238488AbhK2E7Y (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 28 Nov 2021 23:59:24 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD56C061763
-        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 20:55:15 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id gf14-20020a17090ac7ce00b001a7a2a0b5c3so14535001pjb.5
-        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 20:55:15 -0800 (PST)
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58776C0613D7
+        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 20:55:21 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id o4so15527917pfp.13
+        for <netdev@vger.kernel.org>; Sun, 28 Nov 2021 20:55:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LNM8sfQpMLWvuNtmqh46qWd8UWJ7MTXUa8CLFYTumGA=;
-        b=jT4jvsFQSDqsw7A6NLlvDsGVroRQgCJaHU2DlzWOl6AlqF8kZAkWzmMbyX4NmUGxdd
-         vR+AKHeG0UXTU/HaBc59E+liX1AtXMz7ApstY2NoF1wR5yyOHHxxMGV4P6n87CZVhKsz
-         wq8a8l4YN49Cw+yEAPfaZXWx51TJRwLc3y8zLP+e6T8o6ABfPP+Uz9ZbINyX3hnxs0Rq
-         na9Q++jLTcnsqKUmijDzk1xbCxA9qoc38hCbvgIPtyBQ0/oVuS9TP9lDRZVzUYVpBFLY
-         QPdEmxsoll/HYcJh0v7w47dwQX/eWO9JtjQXBwQH0BqxAZfP7IB3wvb+51ZgcXQH/Esh
-         HvQg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=EqYRUqqd41aXlKA0/ZYdi5FpiIkmQPnY727rVIh/6mk=;
+        b=EQN7scL8XVWVBSaRuNL3dIX9JUw4vUuIAuIDeAxmXtH16BtX2RYCiBjJm5QSxDUzRg
+         ofFio8JK6ZErkFyhJspoCMpHEqKlbF6B9ScrwU2/IddixGSTMXl9tl/Mik3/0kR5v1Lo
+         llCHmPLV/9jpDqcSI2XeVfZ31S/h6JLyIxiVWcYSaMbDR3T69J+GQiVFZWUUZP2IucPx
+         9kiF9Vh+yIU2CRwfTEPHASmrJIxYr8YdLHGFq0+FTq9PyaLtHXMoosLHKGmkHdG+cpOk
+         hINYWNp/tEhuEdbR+Fto0jBH55VO4a/bRdENcMGm6gi55hVvzY5N2+GaQQcCkoZ7+Kfm
+         GC2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LNM8sfQpMLWvuNtmqh46qWd8UWJ7MTXUa8CLFYTumGA=;
-        b=Ce68e6q7LFO5gOUL5WobqRgJBKR+FemK6uPPX1yH3XXEvLKpzq940k+wSwoK4jXLmW
-         mk591A/11Xupnn0zNt0wcYRRbK6k/VulG8UrmYqoBLFCncIgi0FRKgDxvvv4TsQjvB5b
-         AZQPD9aXgHJwxDpxcoYpIio9clwzi6Kfewt4EqKgj1ri9Ev+7xvXad3cilNKX6ruFU2b
-         e0ZS0TFzks6/XrsO3K4auE1IrDGFbfQu9qrjh3ep1SIjX4TDy1HSQUZCEV13HxIKL7rc
-         bDpLL69UbiNcHyKpMjERxdZmke0I2WQp0FIgM5HOqff+2qv3Loxb7+UXeVHHUgTz1wm+
-         9lXA==
-X-Gm-Message-State: AOAM533luLvDVJEcG2MXo59T2ohphFbDrZuIZr4dTvWE2lUCOsB06fWS
-        bJRYhPgBqL0QdN0zLY6MVl1FLXvsw2w=
-X-Google-Smtp-Source: ABdhPJwzVzjq+VxD3YdGR8tzb2kpxE+QhFlNATFcXHyCwLyb9cYnP8kKMG3u90ZvuT+7GJBPRxKbyQ==
-X-Received: by 2002:a17:90a:e7cc:: with SMTP id kb12mr35596580pjb.172.1638161715170;
-        Sun, 28 Nov 2021 20:55:15 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=EqYRUqqd41aXlKA0/ZYdi5FpiIkmQPnY727rVIh/6mk=;
+        b=5woSzvxdIu1ia7vwXb0PnJ6EluCahjnSFmRSUxq4MtIXLQ7PoQumuFVs0f/T7ijHmr
+         hKylnOdDUOdyY4utIp5fmsVuLp5zs0QDY6ZusR8rKOCMsho8W8PVH1bM7hAt9vAZBnxr
+         ucRMvZ33H9/FmBY2LClrx4LSWpm05pHEbFitsl5bFfYdme/NUYd5ZQ2PY6Fhem4m1Cub
+         8PTKJ65f41Lzo4tlq89V5xtGkMdA2+hSScub3NxOe0B7/lHx5t/8A6BJ+PIkOoHzg2L9
+         yksMVyx+tyqIctKNM17klW8pGWKIo8fbQT1tVIcnHPftxW+ngU8Xq/9pdZEKe3gGCl7x
+         jexQ==
+X-Gm-Message-State: AOAM532v/5cmFNL06aqimBp6N47qQ55ONa3Ld+cKRDJ6uEmjDWBtELw6
+        75K827caB1nx5DAnn0Y3fQYfjkU+SqJ/+Q==
+X-Google-Smtp-Source: ABdhPJzBn0g76xnzIOKtfIGbytb6XmznkyPdo2jIMe4QpxOe82kBW11TQLwGS3NXFzKAh7pb+ZdPPw==
+X-Received: by 2002:a05:6a00:1909:b0:49f:a0d0:abcf with SMTP id y9-20020a056a00190900b0049fa0d0abcfmr36838056pfi.70.1638161720598;
+        Sun, 28 Nov 2021 20:55:20 -0800 (PST)
 Received: from localhost.localdomain ([111.204.182.106])
-        by smtp.gmail.com with ESMTPSA id p33sm10781329pgm.85.2021.11.28.20.55.11
+        by smtp.gmail.com with ESMTPSA id p33sm10781329pgm.85.2021.11.28.20.55.15
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 28 Nov 2021 20:55:14 -0800 (PST)
+        Sun, 28 Nov 2021 20:55:20 -0800 (PST)
 From:   xiangxia.m.yue@gmail.com
 To:     netdev@vger.kernel.org
 Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
@@ -57,13 +61,20 @@ Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [net v3 1/3] net: core: set skb useful vars in __bpf_tx_skb
-Date:   Mon, 29 Nov 2021 12:55:01 +0800
-Message-Id: <20211129045503.20217-1-xiangxia.m.yue@gmail.com>
+        Eric Dumazet <edumazet@google.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Wei Wang <weiwan@google.com>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [net v3 2/3] net: sched: add check tc_skip_classify in sch egress
+Date:   Mon, 29 Nov 2021 12:55:02 +0800
+Message-Id: <20211129045503.20217-2-xiangxia.m.yue@gmail.com>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+In-Reply-To: <20211129045503.20217-1-xiangxia.m.yue@gmail.com>
+References: <20211129045503.20217-1-xiangxia.m.yue@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -71,17 +82,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-We may use bpf_redirect to redirect the packets to other
-netdevice (e.g. ifb) in ingress and egress path.
+Try to resolve the issues as below:
+* We look up and then check tc_skip_classify flag in net
+  sched layer, even though skb don't want to be classified.
+  That case may consume a lot of cpu cycles.
 
-The target netdevice may check the *skb_iif, *redirected
-and *from_ingress, for example, if skb_iif or redirected
-is 0, ifb will drop the packets.
+  Install the rules as below:
+  $ for id in $(seq 1 100); do
+  $       tc filter add ... egress prio $id ... action mirred egress redirect dev ifb0
+  $ done
 
-bpf_redirect may be invoked in ingress or egress path, so
-we set the *skb_iif unconditionally.
+  netperf:
+  $ taskset -c 1 netperf -t TCP_RR -H ip -- -r 32,32
+  $ taskset -c 1 netperf -t TCP_STREAM -H ip -- -m 32
 
-Fixes: a70b506efe89 ("bpf: enforce recursion limit on redirects")
+  Before: 10662.33 tps, 108.95 Mbit/s
+  After:  12434.48 tps, 145.89 Mbit/s
+  For TCP_RR, there are 16.6% improvement, TCP_STREAM 33.9%.
+
+* bpf_redirect may be invoked in egress path. if we don't
+  check the flags and then return immediately, the packets
+  will loopback.
+
+  $ tc filter add dev eth0 egress bpf direct-action obj \
+	  test_tc_redirect_ifb.o sec redirect_ifb
+
+Cc: Willem de Bruijn <willemb@google.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
 Cc: Alexei Starovoitov <ast@kernel.org>
 Cc: Daniel Borkmann <daniel@iogearbox.net>
 Cc: Andrii Nakryiko <andrii@kernel.org>
@@ -90,38 +120,35 @@ Cc: Song Liu <songliubraving@fb.com>
 Cc: Yonghong Song <yhs@fb.com>
 Cc: John Fastabend <john.fastabend@gmail.com>
 Cc: KP Singh <kpsingh@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Antoine Tenart <atenart@kernel.org>
+Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc: Wei Wang <weiwan@google.com>
+Cc: "Björn Töpel" <bjorn@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 ---
- net/core/filter.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+v2: https://patchwork.kernel.org/project/netdevbpf/patch/20211103143208.41282-1-xiangxia.m.yue@gmail.com/
+Willem de Bruijn and Daniel Borkmann, comment this patch, but I think we should fix this,
+bpf_redirect may also loopback the packets. I hope there are more comments?
+---
+ net/core/dev.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 8271624a19aa..225dc8743863 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -2107,9 +2107,19 @@ static inline int __bpf_tx_skb(struct net_device *dev, struct sk_buff *skb)
- 		return -ENETDOWN;
- 	}
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 823917de0d2b..4ceb927b1577 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3823,6 +3823,9 @@ sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
+ 	if (!miniq)
+ 		return skb;
  
--	skb->dev = dev;
-+	/* The target netdevice (e.g. ifb) may use the:
-+	 * - skb_iif, bpf_redirect may be invoked in ingress or egress path.
-+	 * - redirected
-+	 * - from_ingress
-+	 */
-+	skb->skb_iif = skb->dev->ifindex;
-+#ifdef CONFIG_NET_CLS_ACT
-+	skb_set_redirected(skb, skb->tc_at_ingress);
-+#else
- 	skb->tstamp = 0;
-+#endif
- 
-+	skb->dev = dev;
- 	dev_xmit_recursion_inc();
- 	ret = dev_queue_xmit(skb);
- 	dev_xmit_recursion_dec();
++	if (skb_skip_tc_classify(skb))
++		return skb;
++
+ 	/* qdisc_skb_cb(skb)->pkt_len was already set by the caller. */
+ 	qdisc_skb_cb(skb)->mru = 0;
+ 	qdisc_skb_cb(skb)->post_ct = false;
 -- 
 2.27.0
 
