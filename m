@@ -2,93 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E860461A1E
-	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 15:42:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F36B461A6C
+	for <lists+netdev@lfdr.de>; Mon, 29 Nov 2021 15:55:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378832AbhK2Opf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 09:45:35 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:43666 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379173AbhK2On2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 09:43:28 -0500
-Received: from mail.kernel.org (unknown [198.145.29.99])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0DF3B61536;
-        Mon, 29 Nov 2021 14:40:11 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPS id 533686056B;
-        Mon, 29 Nov 2021 14:40:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638196810;
-        bh=0QZyL1/omFoFM0oSe+ruCABogOsAksI9L44Xdvjnsro=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=CyubTxm4PWvQqaAVi9bm7PZ5E5QhVkNOTe67JIDwap1mE0Vb1WbMGNnaVTytxdHNT
-         2v14XBX1ThLLQGcjVEj71sQugEQrJa8D9pr0oOF1Me+4XVYNmnSBSeevAS2rFADBrO
-         TWNqu+LH7EPUfMG82vf1fDlJYgrN4zDmHyFnLKVL7j/t45WJ0FXHEay2YoQRtfi2MP
-         g3GszrQCumJbi/XTVFW7riOiNIGFRN9qe4HbuFxvLL7/vtMcbEHUYqH1EqAtSdghAy
-         0mPZ+EbJsQDUwtzmuySDw/xSoHjk7vUp8/t0cLX8R3Fy+2Y/LaUfQq9pNmrq7cP0Zq
-         RTQf9wUxFM7+Q==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3AED860A88;
-        Mon, 29 Nov 2021 14:40:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S238205AbhK2O6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 09:58:18 -0500
+Received: from mga03.intel.com ([134.134.136.65]:1321 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238818AbhK2O4R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Nov 2021 09:56:17 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10182"; a="235913998"
+X-IronPort-AV: E=Sophos;i="5.87,273,1631602800"; 
+   d="scan'208";a="235913998"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2021 06:41:59 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,273,1631602800"; 
+   d="scan'208";a="594695339"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by FMSMGA003.fm.intel.com with ESMTP; 29 Nov 2021 06:41:56 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1ATEfsWP002801;
+        Mon, 29 Nov 2021 14:41:54 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>, brouer@redhat.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        jesse.brandeburg@intel.com, intel-wired-lan@lists.osuosl.org,
+        magnus.karlsson@intel.com, bjorn@kernel.org,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: Re: [PATCH net-next 0/2] igc: driver change to support XDP metadata
+Date:   Mon, 29 Nov 2021 15:41:47 +0100
+Message-Id: <20211129144147.10242-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <de14fefc-a8c1-ff6c-5354-8cce4a3f66f9@redhat.com>
+References: <163700856423.565980.10162564921347693758.stgit@firesoul> <20211129141047.8939-1-alexandr.lobakin@intel.com> <de14fefc-a8c1-ff6c-5354-8cce4a3f66f9@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/10] net: hns3: some cleanups for -next
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163819681023.20833.8288126722128597970.git-patchwork-notify@kernel.org>
-Date:   Mon, 29 Nov 2021 14:40:10 +0000
-References: <20211129140027.23036-1-huangguangbin2@huawei.com>
-In-Reply-To: <20211129140027.23036-1-huangguangbin2@huawei.com>
-To:     Guangbin Huang <huangguangbin2@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, wangjie125@huawei.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lipeng321@huawei.com, chenhao288@hisilicon.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Jesper Dangaard Brouer <jbrouer@redhat.com>
+Date: Mon, 29 Nov 2021 15:29:07 +0100
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Mon, 29 Nov 2021 22:00:17 +0800 you wrote:
-> To improve code readability and simplicity, this series refactor some
-> functions in the HNS3 ethernet driver.
+> On 29/11/2021 15.10, Alexander Lobakin wrote:
+> > From: Jesper Dangaard Brouer <brouer@redhat.com>
+> > Date: Mon, 15 Nov 2021 21:36:20 +0100
+> > 
+> >> Changes to fix and enable XDP metadata to a specific Intel driver igc.
+> >> Tested with hardware i225 that uses driver igc, while testing AF_XDP
+> >> access to metadata area.
+> > 
+> > Would you mind if I take this your series into my bigger one that
+> > takes care of it throughout all the Intel drivers?
 > 
-> Guangbin Huang (3):
->   net: hns3: refine function hclge_cfg_mac_speed_dup_hw()
->   net: hns3: add new function hclge_tm_schd_mode_tc_base_cfg()
->   net: hns3: refine function hclge_tm_pri_q_qs_cfg()
-> 
-> [...]
+> I have a customer that depend on this fix.  They will have to do the 
+> backport anyway (to v5.13), but it would bring confidence on their side 
+> if the commits appear in an official git-tree before doing the backport 
+> (and optimally with a SHA they can refer to).
 
-Here is the summary with links:
-  - [net-next,01/10] net: hns3: refactor reset_prepare_general retry statement
-    https://git.kernel.org/netdev/net-next/c/ed0e658c51aa
-  - [net-next,02/10] net: hns3: refactor hns3_nic_reuse_page()
-    https://git.kernel.org/netdev/net-next/c/e74a726da2c4
-  - [net-next,03/10] net: hns3: refactor two hns3 debugfs functions
-    https://git.kernel.org/netdev/net-next/c/e6fe5e167185
-  - [net-next,04/10] net: hns3: split function hns3_get_tx_timeo_queue_info()
-    https://git.kernel.org/netdev/net-next/c/a4ae2bc0abd4
-  - [net-next,05/10] net: hns3: refine function hclge_cfg_mac_speed_dup_hw()
-    https://git.kernel.org/netdev/net-next/c/e46da6a3d4d3
-  - [net-next,06/10] net: hns3: add new function hclge_tm_schd_mode_tc_base_cfg()
-    https://git.kernel.org/netdev/net-next/c/7ca561be11d0
-  - [net-next,07/10] net: hns3: refine function hclge_tm_pri_q_qs_cfg()
-    https://git.kernel.org/netdev/net-next/c/e06dac5290b7
-  - [net-next,08/10] net: hns3: split function hns3_nic_get_stats64()
-    https://git.kernel.org/netdev/net-next/c/8469b645c9a1
-  - [net-next,09/10] net: hns3: split function hns3_handle_bdinfo()
-    https://git.kernel.org/netdev/net-next/c/2fbf6a07f537
-  - [net-next,10/10] net: hns3: split function hns3_set_l2l3l4()
-    https://git.kernel.org/netdev/net-next/c/1d851c0905f8
+Yeah, sure, it's totally fine to get them accepted separately, I'll
+just refer to them in my series.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> Tony Nguyen have these landed in your git-tree?
 
+Doesn't seem like. The reason might be that you responded to my
+patch 2/2 comments only now.
 
+> --JEsper
+
+Al
