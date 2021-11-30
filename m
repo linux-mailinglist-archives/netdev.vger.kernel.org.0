@@ -2,64 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 534EC462AD3
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 04:02:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F33F462ADB
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 04:04:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233466AbhK3DFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 22:05:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39200 "EHLO
+        id S237763AbhK3DHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 22:07:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232638AbhK3DFW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 22:05:22 -0500
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B69ECC061574;
-        Mon, 29 Nov 2021 19:02:03 -0800 (PST)
-Received: by mail-qk1-x732.google.com with SMTP id m192so25269464qke.2;
-        Mon, 29 Nov 2021 19:02:03 -0800 (PST)
+        with ESMTP id S231721AbhK3DHo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 22:07:44 -0500
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B36C061574;
+        Mon, 29 Nov 2021 19:04:25 -0800 (PST)
+Received: by mail-qv1-xf2a.google.com with SMTP id i13so16582253qvm.1;
+        Mon, 29 Nov 2021 19:04:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hilByPD8L3h9Ytyg6eTvXqp0WXWx+OL3wX2IRfH8TVI=;
-        b=Xo1NrVoBOqABaaCVvLLEZyjUAmGr5+STOyjB+Pl/KgnHbeqPB0r+ESX4feZTOYkB2q
-         aoweXGM9moAULJSK1z/msCYVpKpkCwdkqiyZNGpMWWv481qk8A19r1fU1siANLz0Hgn1
-         vKfwoyFzqm0Ai8EVILk3tVtyor84mNb1ryzwvrXiTnCII28eF/u7hesuFgSHxxVyZwCX
-         UAU0N60V6jiuC/x3h1E9V0VqtqaKb2D8va5yc3TskropS9N2TlDwZz8Ct8OdEMGXBz+D
-         /BikptCg66Nw8qd2stBC6QJQ2u1tQDQYaXDFqtm9suppBCUNCU5cJVmuoyvOKAHT1/B9
-         3xtQ==
+        bh=qn3rCiMydHKwJRSqvEKBqOJQ42ze7JPZml2l4kAkwYE=;
+        b=UWpY48Db8SSSvrI1MpFmmka3FNt2E40Ilz07diUL+rlM7Ybkp3oZER0vU6RA8FBNLB
+         AjNAgOFvOuqN8bSUqDNbutYPGM/ubZZF3gbJqlTw8+BFVplkPcMsxAyYKWI2CltHW5SD
+         01UCvWTIXS3pPbhomp3NFBzawnac/+QAeZEQ1mvQqjXjSRPlUgw2fIILZ18F34j4cp3R
+         LWP98ME54aLX2n4dbxs7gBaohVBXQVo9hRXbuWK/YGs1zp7PnnJZZ8DDo0wtwOVz7tmj
+         6HEWNE1MWGThUyb7WyNQb/I2txyAFbPnQRXXX3J8Prr8HaltOetdUg1M1wl6HD3hMBWz
+         lovw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hilByPD8L3h9Ytyg6eTvXqp0WXWx+OL3wX2IRfH8TVI=;
-        b=hKG3bC/7Ic1ZX8mcUwxUunhkuZZneFu/VP3wKciq56yBHfhjUL14dbjQaeDKenDKSr
-         UDaIhIgm4b7gUgtmbDVlMkJgFk0s4zUXUfu+yMOIOZJUGgaR3qClLeZoDMUnPihRNFix
-         lQrwaTavaYw1dcEJ2mpRtDsL0MmzeVZVffRMsdJJBIutraDh3Gk3VNLVPnKACOgPuKRu
-         jNkewxN6LuXtkikaOOU2qb/GpfV+zvxD63LGTZcIoozPZ9tqSZruMJLgD8NhY040FU/R
-         tv/gpEDL+06y0DPBUJ+tjVX+janp1E2ubHy+6nG48G7w5iC5ENrhjpUyErujlmeAlkyr
-         1fFA==
-X-Gm-Message-State: AOAM532sRnlIdBAbTQBZPz4SIrhQ71j3KojDnwMmyjj4p6RZSNIbIHBX
-        8ZdoudzSpV2UOCOtvOX5VNo2H7c3Av4WxLjXquY=
-X-Google-Smtp-Source: ABdhPJyUj8zY9/gTmJm9gnBT3BhDDzchPwLsvCPELhO/9hrEsiUYremqHf1uk5r6y5RjtYcFFgfFfydWTIJYBrtoeSk=
-X-Received: by 2002:a05:620a:134a:: with SMTP id c10mr43400535qkl.207.1638241322873;
- Mon, 29 Nov 2021 19:02:02 -0800 (PST)
+        bh=qn3rCiMydHKwJRSqvEKBqOJQ42ze7JPZml2l4kAkwYE=;
+        b=lrNKHVhXjrKHx5BrPnmkV/h7FEaQjkP3bneevuUwiYGYslEG44iuG0lCD1uWtXW6Ut
+         Lw+WZZxx1FM8ff1wyKjviIKFnsM5PzQV5+M+uOpZjxfF4K2De0RJlsDSJRpRHk1NK3M5
+         6z/opn520Ss8Mt649GHPZnfXsTrqSYwk4cNjvqkhCWrm+lSpDPxvNiCchO6NB4JJwm/6
+         RpTwx0e9AWijklMi9IdOe3LCP5iSAhQ6dt27uOeye8bsj9qVdIYnV+pXp7ptUKBAacDL
+         /Ftrg4wyoujSpXV4yMOpGk4jOZYaFD/ME0yB/GXZAUD6EVSsQSoalPfLFvAMzQCl10Cn
+         +1pQ==
+X-Gm-Message-State: AOAM531tWWLBczEY7D3chaUPhKydkBRn95DbEofl0aEi0jjyoBgnVH8I
+        nyG7tPS3Pe7cxOrx+yN0oWLXqSVxpqPv6giA16UWcA3EuJyGofpI
+X-Google-Smtp-Source: ABdhPJzye7Mau6MSRuZs3vTVhbPaBitlduhkL5wMdjAF8yiGEWsIUxxfoSh994+EmmAGwTuyk858XFoZnyNCCbpCA2A=
+X-Received: by 2002:a05:6214:2303:: with SMTP id gc3mr34265426qvb.90.1638241464734;
+ Mon, 29 Nov 2021 19:04:24 -0800 (PST)
 MIME-Version: 1.0
-References: <20211120112738.45980-1-laoar.shao@gmail.com> <20211120112738.45980-5-laoar.shao@gmail.com>
- <20211129110140.733475f3@gandalf.local.home>
-In-Reply-To: <20211129110140.733475f3@gandalf.local.home>
+References: <20211120112738.45980-1-laoar.shao@gmail.com> <20211120112738.45980-8-laoar.shao@gmail.com>
+ <yt9d35nf1d84.fsf@linux.ibm.com> <20211129123043.5cfd687a@gandalf.local.home>
+In-Reply-To: <20211129123043.5cfd687a@gandalf.local.home>
 From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Tue, 30 Nov 2021 11:01:27 +0800
-Message-ID: <CALOAHbB-2ESG0QgESN_b=bXzESbq+UBP-dqttirKnt1c9TZHZA@mail.gmail.com>
-Subject: Re: [PATCH v2 4/7] fs/binfmt_elf: replace open-coded string copy with get_task_comm
+Date:   Tue, 30 Nov 2021 11:03:48 +0800
+Message-ID: <CALOAHbCVJcPdYq2j_VvhHBE-xLBnizRRx2oBu-KNgOr5jMf6RQ@mail.gmail.com>
+Subject: Re: [PATCH v2 7/7] tools/testing/selftests/bpf: replace open-coded 16
+ with TASK_COMM_LEN
 To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
+Cc:     Sven Schnelle <svens@linux.ibm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
         netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         "linux-perf-use." <linux-perf-users@vger.kernel.org>,
         linux-fsdevel@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
         LKML <linux-kernel@vger.kernel.org>,
         kernel test robot <oliver.sang@intel.com>,
         kbuild test robot <lkp@intel.com>,
-        Kees Cook <keescook@chromium.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
         David Hildenbrand <david@redhat.com>,
         Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
         Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
@@ -68,83 +70,55 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Peter Zijlstra <peterz@infradead.org>,
         Matthew Wilcox <willy@infradead.org>,
         Al Viro <viro@zeniv.linux.org.uk>,
-        Petr Mladek <pmladek@suse.com>
+        Kees Cook <keescook@chromium.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Tom Zanussi <zanussi@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 30, 2021 at 12:01 AM Steven Rostedt <rostedt@goodmis.org> wrote:
+On Tue, Nov 30, 2021 at 1:30 AM Steven Rostedt <rostedt@goodmis.org> wrote:
 >
-> On Sat, 20 Nov 2021 11:27:35 +0000
-> Yafang Shao <laoar.shao@gmail.com> wrote:
->
-> > diff --git a/include/linux/elfcore-compat.h b/include/linux/elfcore-compat.h
-> > index e272c3d452ce..54feb64e9b5d 100644
-> > --- a/include/linux/elfcore-compat.h
-> > +++ b/include/linux/elfcore-compat.h
-> > @@ -43,6 +43,11 @@ struct compat_elf_prpsinfo
-> >       __compat_uid_t                  pr_uid;
-> >       __compat_gid_t                  pr_gid;
-> >       compat_pid_t                    pr_pid, pr_ppid, pr_pgrp, pr_sid;
-> > +     /*
-> > +      * The hard-coded 16 is derived from TASK_COMM_LEN, but it can't be
-> > +      * changed as it is exposed to userspace. We'd better make it hard-coded
-> > +      * here.
->
-> Didn't I once suggest having a macro called something like:
->
->   TASK_COMM_LEN_16 ?
+> On Mon, 29 Nov 2021 11:13:31 +0100
+> Sven Schnelle <svens@linux.ibm.com> wrote:
 >
 >
-> https://lore.kernel.org/all/20211014221409.5da58a42@oasis.local.home/
-
-Hi Steven,
-
-TASK_COMM_LEN_16 is a good idea, but not all hard-coded 16 can be
-replaced by this macro (which is defined in include/sched.h).
-For example,  the comm[16] in include/uapi/linux/cn_proc.h can't be
-replaced as it is a uapi header which can't include  linux/sched.h.
-That's why I prefer to keep the hard-coded 16 as-is.
-
-There are three options,
-- option 1
-  comment on all the hard-coded 16 to explain why it is hard-coded
-- option 2
-  replace the hard-coded 16 that can be replaced and comment on the
-others which can't be replaced.
-- option 3
-   replace the hard-coded 16 that can be replaced and specifically
-define TASK_COMM_LEN_16 in other files which can't include
-linux/sched.h.
-
-Which one do you prefer ?
-
-
+> > This breaks the trigger-field-variable-support.tc from the ftrace test
+> > suite at least on s390:
+> >
+> > echo 'hist:keys=next_comm:wakeup_lat=common_timestamp.usecs-$ts0:onmatch(sched.sched_waking).wakeup_latency($wakeup_lat,next_pid,sched.sched_waking.prio,next_comm) if next_comm=="ping"'
+> > linux/tools/testing/selftests/ftrace/test.d/trigger/inter-event/trigger-field-variable-support.tc: line 15: echo: write error: Invalid argument
+> >
+> > I added a debugging line into check_synth_field():
+> >
+> > [   44.091037] field->size 16, hist_field->size 16, field->is_signed 1, hist_field->is_signed 0
+> >
+> > Note the difference in the signed field.
 >
+> That should not break on strings.
 >
-> > +      */
-> >       char                            pr_fname[16];
-> >       char                            pr_psargs[ELF_PRARGSZ];
-> >  };
-> > diff --git a/include/linux/elfcore.h b/include/linux/elfcore.h
-> > index 957ebec35aad..746e081879a5 100644
-> > --- a/include/linux/elfcore.h
-> > +++ b/include/linux/elfcore.h
-> > @@ -65,6 +65,11 @@ struct elf_prpsinfo
-> >       __kernel_gid_t  pr_gid;
-> >       pid_t   pr_pid, pr_ppid, pr_pgrp, pr_sid;
-> >       /* Lots missing */
-> > +     /*
-> > +      * The hard-coded 16 is derived from TASK_COMM_LEN, but it can't be
-> > +      * changed as it is exposed to userspace. We'd better make it hard-coded
-> > +      * here.
-> > +      */
-> >       char    pr_fname[16];   /* filename of executable */
-> >       char    pr_psargs[ELF_PRARGSZ]; /* initial part of arg list */
-> >  };
+> Does this fix it (if you keep the patch)?
+>
+> -- Steve
+>
+> diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
+> index 9555b8e1d1e3..319f9c8ca7e7 100644
+> --- a/kernel/trace/trace_events_hist.c
+> +++ b/kernel/trace/trace_events_hist.c
+> @@ -3757,7 +3757,7 @@ static int check_synth_field(struct synth_event *event,
+>
+>         if (strcmp(field->type, hist_field->type) != 0) {
+>                 if (field->size != hist_field->size ||
+> -                   field->is_signed != hist_field->is_signed)
+> +                   (!field->is_string && field->is_signed != hist_field->is_signed))
+>                         return -EINVAL;
+>         }
+>
 
-
+Many thanks for the quick fix!
+It seems this fix should be ahead of patch #7.
+I will send v3 which contains your fix.
 
 -- 
 Thanks
