@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B25B0463903
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 16:03:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D768F463905
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 16:03:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245112AbhK3PGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 10:06:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33364 "EHLO
+        id S245215AbhK3PHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 10:07:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244478AbhK3PB7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 10:01:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD77EC061761;
-        Tue, 30 Nov 2021 06:53:10 -0800 (PST)
+        with ESMTP id S244490AbhK3PCA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 10:02:00 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F12EEC0619D3;
+        Tue, 30 Nov 2021 06:53:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 836E1B81A42;
-        Tue, 30 Nov 2021 14:53:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76396C53FCD;
-        Tue, 30 Nov 2021 14:53:07 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4B96BCE1A6C;
+        Tue, 30 Nov 2021 14:53:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF4FDC53FCF;
+        Tue, 30 Nov 2021 14:53:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638283988;
-        bh=U+AXvxMoXF3uSYEH6wRnPsYtCNVw/U6wbtrnfuEAncA=;
+        s=k20201202; t=1638283993;
+        bh=3S8VXlKrj+L2ZDJaTf2TKOa7vJOrypHi0QhZPauYvuU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QeOJfE33v8WT9AVX1G4ujmy5zy9wiV4wtCdXpONmFIjIC7uNCIKGaqQY3sOpIhN/h
-         5X6d/aWku/TZGz5fee/1685ZfwkL4XG5j2AdEQSrtpvzstK0g/Bv7Gon4J9nr0e0xh
-         Xrii2QGAyhYMVcwmval0phg97/N2OwmBNy1Yaa88z99xD5JZHdR1A0Vmz6wjCqeUmE
-         iWeF17ctewfsKWAT9KHAl/6Tv/8pPPDg16qWtl9W8raQAMsBwe/cEOzuzlaI8vhbq+
-         q+pFSqasYYXysKYOkJMyOuq4DcSj42A9rE3yWVagQgPXI24/XVkGEM8BaGAid9enIb
-         vshHl8hQGnI5g==
+        b=VSwVaUFJnHWN52vu/QAMn1BmtXUpKvMtXL7P735UQtM+M0GWzLyEbyv+mMkxm6gIv
+         Tu7exv1gT0ERRk4VwIen1WPcVkgn6MP5Ewu13hPL31U8nIszDTyvA6yK9ZoUDEexX9
+         yyI1lID9mr3nImoo8a7mNqYzXkLizgYNMkMsDxioFTBA/LUE9cdoJBiS5lC9lqcDV0
+         b89AA/hN3A/hS3UFZSb4jJQJV2YigFBM4UmHx7BNDawxEzTcQbbw5EQ7hCr3ELSoFu
+         EzcyaHPUghTFpl7UYd11Famxck1W5itJvxhaUcdYY4NaXFSvkhx/kPsLXcLavaQDtx
+         DtTjr0WIXi6uQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, rajur@chelsio.com,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 12/17] net: chelsio: cxgb4vf: Fix an error code in cxgb4vf_pci_probe()
-Date:   Tue, 30 Nov 2021 09:52:36 -0500
-Message-Id: <20211130145243.946407-12-sashal@kernel.org>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 16/17] net: ptp: add a definition for the UDP port for IEEE 1588 general messages
+Date:   Tue, 30 Nov 2021 09:52:40 -0500
+Message-Id: <20211130145243.946407-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211130145243.946407-1-sashal@kernel.org>
 References: <20211130145243.946407-1-sashal@kernel.org>
@@ -51,37 +51,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit b82d71c0f84a2e5ccaaa7571dfd5c69e0e2cfb4a ]
+[ Upstream commit ec15baec3272bbec576f2ce7ce47765a8e9b7b1c ]
 
-During the process of driver probing, probe function should return < 0
-for failure, otherwise kernel will treat value == 0 as success.
+As opposed to event messages (Sync, PdelayReq etc) which require
+timestamping, general messages (Announce, FollowUp etc) do not.
+In PTP they are part of different streams of data.
 
-Therefore, we should set err to -EINVAL when
-adapter->registered_device_map is NULL. Otherwise kernel will assume
-that driver has been successfully probed and will cause unexpected
-errors.
+IEEE 1588-2008 Annex D.2 "UDP port numbers" states that the UDP
+destination port assigned by IANA is 319 for event messages, and 320 for
+general messages. Yet the kernel seems to be missing the definition for
+general messages. This patch adds it.
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c | 1 +
+ include/linux/ptp_classify.h | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c b/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
-index 15029a5e62b9b..3c3ff62e4fea5 100644
---- a/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
-@@ -3202,6 +3202,7 @@ static int cxgb4vf_pci_probe(struct pci_dev *pdev,
- 	}
- 	if (adapter->registered_device_map == 0) {
- 		dev_err(&pdev->dev, "could not register any net devices\n");
-+		err = -EINVAL;
- 		goto err_disable_interrupts;
- 	}
+diff --git a/include/linux/ptp_classify.h b/include/linux/ptp_classify.h
+index 0592420306312..82772a9ecf780 100644
+--- a/include/linux/ptp_classify.h
++++ b/include/linux/ptp_classify.h
+@@ -45,6 +45,7 @@
+ #define PTP_CLASS_L4      (PTP_CLASS_IPV4 | PTP_CLASS_IPV6)
  
+ #define PTP_EV_PORT 319
++#define PTP_GEN_PORT 320
+ #define PTP_GEN_BIT 0x08 /* indicates general message, if set in message type */
+ 
+ #define OFF_PTP_SOURCE_UUID	22 /* PTPv1 only */
 -- 
 2.33.0
 
