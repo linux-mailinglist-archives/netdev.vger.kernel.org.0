@@ -2,44 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E6D7463790
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 15:51:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A7F1463794
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 15:51:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243198AbhK3Oyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 09:54:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60222 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242909AbhK3Ox1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 09:53:27 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D0BC061396;
-        Tue, 30 Nov 2021 06:48:52 -0800 (PST)
+        id S243241AbhK3Oyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 09:54:50 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:47336 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242744AbhK3Ox3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 09:53:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1DBECB81A1C;
-        Tue, 30 Nov 2021 14:48:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16D20C53FCF;
-        Tue, 30 Nov 2021 14:48:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 204E5B81A22;
+        Tue, 30 Nov 2021 14:50:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAD23C53FC1;
+        Tue, 30 Nov 2021 14:50:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638283729;
-        bh=5RbvXI9M6kcP7CDydmm0QlTa4fNClhKpVcRGGt1zBjU=;
+        s=k20201202; t=1638283807;
+        bh=HNxKbjB96XxCJFowlbjGxNOiW3Tjj8GTqWkuCBB7DGc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ffNer+3UUocJvGKvK9lSo11Sy6aphGjGIwONwy5YkGGdtL1RYHNooTUll1VARp2pA
-         nMxUAfw2L2DqXXHoUn2SdhgFyMtXAVqH5DeNX21hg82Yq5ZkdvotzqWMRY5s8Mc7d/
-         +p9z57s1JvWtk5sPqxzAvv8d3juOgbQF06/2XKlfH2nvf6S7CmMvC5Qg9rbLgYDy84
-         kj4Yb8RVr1HWWmADiVqBDesLmKOjM+d0d0tAMwPSvB3RKNftgdXpocobftlhMMhkZv
-         Mk6YgBDFcvYZURtjZakpg0bXCYfaJdFfY6sSVqP+6oZH3TFGKM3FjDlDlAKG6Oe/8d
-         +frUnbvZJd/SQ==
+        b=f7biZn8imblMLA8gd2rqI6G8NZEGuStcPdlox/bQ+uZ1QUE+JO52helIL67wH6Jq+
+         f28CKv7Eq8uwPP51+FGJB15/vHOX5BIFtDNGpDvZRyOtVnqHRpoUiUiOoDoAqNHRek
+         f4e7Db1IWPXIx9Q6d/NWnncSQik9THy2hRA7aP0BlYV9zWiETc5cuRc5BE4QQ5rxPl
+         2tZGMCFtm31PeROXdyR6XqHoCk+K4VLiBIY2RXXZIeaY/mQ938Yqg1uUw8u1rc/jBA
+         3fld6Sayg7Ux/CF0IDARBrQwjiGlVpC7xfm3qVxkhMGGcfqEx3GMunt5Zap6A+hqVt
+         583tNCrf2P9rg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, rajur@chelsio.com,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 37/68] net: chelsio: cxgb4vf: Fix an error code in cxgb4vf_pci_probe()
-Date:   Tue, 30 Nov 2021 09:46:33 -0500
-Message-Id: <20211130144707.944580-37-sashal@kernel.org>
+Cc:     Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 61/68] vhost-vdpa: clean irqs before reseting vdpa device
+Date:   Tue, 30 Nov 2021 09:46:57 -0500
+Message-Id: <20211130144707.944580-61-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211130144707.944580-1-sashal@kernel.org>
 References: <20211130144707.944580-1-sashal@kernel.org>
@@ -51,37 +49,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Wu Zongyong <wuzongyong@linux.alibaba.com>
 
-[ Upstream commit b82d71c0f84a2e5ccaaa7571dfd5c69e0e2cfb4a ]
+[ Upstream commit ea8f17e44fa7d54fae287ccbe30ce269afb5ee42 ]
 
-During the process of driver probing, probe function should return < 0
-for failure, otherwise kernel will treat value == 0 as success.
+Vdpa devices should be reset after unseting irqs of virtqueues, or we
+will get errors when killing qemu process:
 
-Therefore, we should set err to -EINVAL when
-adapter->registered_device_map is NULL. Otherwise kernel will assume
-that driver has been successfully probed and will cause unexpected
-errors.
+>> pi_update_irte: failed to update PI IRTE
+>> irq bypass consumer (token 0000000065102a43) unregistration fails: -22
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Wu Zongyong <wuzongyong@linux.alibaba.com>
+Link: https://lore.kernel.org/r/a2cb60cf73be9da5c4e6399242117d8818f975ae.1636946171.git.wuzongyong@linux.alibaba.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/vhost/vdpa.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c b/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
-index 49b76fd47daa0..ff4c0d3fde861 100644
---- a/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
-@@ -3198,6 +3198,7 @@ static int cxgb4vf_pci_probe(struct pci_dev *pdev,
- 	}
- 	if (adapter->registered_device_map == 0) {
- 		dev_err(&pdev->dev, "could not register any net devices\n");
-+		err = -EINVAL;
- 		goto err_disable_interrupts;
- 	}
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index 39039e0461175..e73bff6fcff98 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -1015,12 +1015,12 @@ static int vhost_vdpa_release(struct inode *inode, struct file *filep)
  
+ 	mutex_lock(&d->mutex);
+ 	filep->private_data = NULL;
++	vhost_vdpa_clean_irq(v);
+ 	vhost_vdpa_reset(v);
+ 	vhost_dev_stop(&v->vdev);
+ 	vhost_vdpa_iotlb_free(v);
+ 	vhost_vdpa_free_domain(v);
+ 	vhost_vdpa_config_put(v);
+-	vhost_vdpa_clean_irq(v);
+ 	vhost_dev_cleanup(&v->vdev);
+ 	kfree(v->vdev.vqs);
+ 	mutex_unlock(&d->mutex);
 -- 
 2.33.0
 
