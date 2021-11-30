@@ -2,82 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5031D462ADF
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 04:06:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 165F2462AEC
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 04:12:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231604AbhK3DJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 22:09:20 -0500
-Received: from szxga01-in.huawei.com ([45.249.212.187]:31924 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229745AbhK3DJT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 22:09:19 -0500
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4J36YD6wRBzcbfR;
-        Tue, 30 Nov 2021 11:05:52 +0800 (CST)
-Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
- dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 30 Nov 2021 11:05:58 +0800
-Received: from huawei.com (10.175.103.91) by dggpeml500017.china.huawei.com
- (7.185.36.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Tue, 30 Nov
- 2021 11:05:58 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <jk@codeconstruct.com.au>, <davem@davemloft.net>, <kuba@kernel.org>
-Subject: [PATCH -next] mctp: remove unnecessary check before calling kfree_skb()
-Date:   Tue, 30 Nov 2021 11:12:43 +0800
-Message-ID: <20211130031243.768823-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S237798AbhK3DQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 22:16:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41590 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230208AbhK3DQO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 22:16:14 -0500
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5594CC061574;
+        Mon, 29 Nov 2021 19:12:56 -0800 (PST)
+Received: by mail-il1-x133.google.com with SMTP id 15so10551068ilq.2;
+        Mon, 29 Nov 2021 19:12:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=fx1elTupkFbgmCM3YD9gEMysoL18Kn1d1nNxskCtHmU=;
+        b=G2YSevvrJU/zsMfhPYtIuOqj4U4rEtZGbaV9+ELTq+jawNeYd1ee0FxJP+TTt9Ti3Z
+         5ExUXsYTU6ZkAQvb0xppKuK20p+QWLjJv6BtCkIrkE/ToYkdV5Ynnpcjl+C5icanYw6x
+         gMZiiGwO0qJTItadpTySGlhYKCv2FyRIcPUgZI2T6SeIp3f8Sv8u3ygoQ+SBtQNmikAX
+         OemBM0g+CRss0zQZe9c+rYUk95FCGnNfC6nKqeU11PlQ0jxyn+hbCyOg0Zxr7wRo1FbX
+         eJOoCuqchrcim+5AuN/gnCJfgsU/BlJvSwjx3HY3U/FYOcmp4gwGrqNaZr5Ph7UjeD/s
+         g1JA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fx1elTupkFbgmCM3YD9gEMysoL18Kn1d1nNxskCtHmU=;
+        b=jwT3yai7kkzQqLft1DDXdI5XxaZpZum6MwW4L8bWnYO2fnb0/CLeRVwEaJSdRbzGUR
+         mlBXhmbdv84CeGAeoVKUGfaDFj+bPaZxMzqGAvv1uPd7XjnkupvPGSkqXcycvGJTDvZ5
+         JmYdxrOUPPyKvr/8vBmgxQYhfdS9nyL7FYwDneFAnf4MDn/kQh4Sos2nN4yjqGHyWPqM
+         2Mh/daT5htfJz9vjifNzYuW1WeDY8+ecb4TQpgxp3A1MlE+w0R6ACKGFLFPQSbpcH1Kw
+         dibFjOe6peMxNgVxA+9S0zJsoAl/8CRabr9dziwj9U9H6Tv2ieFAjn1zP8mF4AuDOIy+
+         XTxQ==
+X-Gm-Message-State: AOAM532NqNGmptjrcENzDxx/C67+knxKTx9CnaAvAbHP5gCdMJEbD+ZS
+        NOAv7//s3AzmzR7CotHCmoU=
+X-Google-Smtp-Source: ABdhPJwm/iFxG7GtT6zyr5QKBe4DoTVnfOn7/S5fnsPnymtg+/3+AxgbIMYsXg/FqBZ5vLrgDIS1Gg==
+X-Received: by 2002:a92:c04e:: with SMTP id o14mr49149633ilf.273.1638241974780;
+        Mon, 29 Nov 2021 19:12:54 -0800 (PST)
+Received: from cth-desktop-dorm.mad.wi.cth451.me ([2600:6c44:113f:8901:6f66:c6f8:91db:cfda])
+        by smtp.gmail.com with ESMTPSA id s21sm9094756ioj.11.2021.11.29.19.12.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Nov 2021 19:12:54 -0800 (PST)
+Date:   Mon, 29 Nov 2021 21:12:51 -0600
+From:   Tianhao Chai <cth451@gmail.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Igor Russkikh <irusskikh@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>
+Subject: Re: [PATCH] ethernet: aquantia: Try MAC address from device tree
+Message-ID: <20211130031251.GA1416412@cth-desktop-dorm.mad.wi.cth451.me>
+References: <20211128023733.GA466664@cth-desktop-dorm.mad.wi.cth451.me>
+ <223aeb87-0949-65f1-f119-4c55d58bc14a@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500017.china.huawei.com (7.185.36.243)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <223aeb87-0949-65f1-f119-4c55d58bc14a@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The skb will be checked inside kfree_skb(), so remove the
-outside check.
+> Calling is_valid_ether_addr() shouldn't be needed here. of_get_mac_addr()
+> does this check already.
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- net/mctp/af_mctp.c | 3 +--
- net/mctp/route.c   | 4 +---
- 2 files changed, 2 insertions(+), 5 deletions(-)
+You are right. I'll remove the check.
 
-diff --git a/net/mctp/af_mctp.c b/net/mctp/af_mctp.c
-index 871cf6266125..c921de63b494 100644
---- a/net/mctp/af_mctp.c
-+++ b/net/mctp/af_mctp.c
-@@ -405,8 +405,7 @@ static void mctp_sk_unhash(struct sock *sk)
- 		trace_mctp_key_release(key, MCTP_TRACE_KEY_CLOSED);
- 
- 		spin_lock(&key->lock);
--		if (key->reasm_head)
--			kfree_skb(key->reasm_head);
-+		kfree_skb(key->reasm_head);
- 		key->reasm_head = NULL;
- 		key->reasm_dead = true;
- 		key->valid = false;
-diff --git a/net/mctp/route.c b/net/mctp/route.c
-index 46c44823edb7..8d759b48f747 100644
---- a/net/mctp/route.c
-+++ b/net/mctp/route.c
-@@ -231,9 +231,7 @@ static void __mctp_key_unlock_drop(struct mctp_sk_key *key, struct net *net,
- 	/* and one for the local reference */
- 	mctp_key_unref(key);
- 
--	if (skb)
--		kfree_skb(skb);
--
-+	kfree_skb(skb);
- }
- 
- #ifdef CONFIG_MCTP_FLOWS
--- 
-2.25.1
-
+~cth451
