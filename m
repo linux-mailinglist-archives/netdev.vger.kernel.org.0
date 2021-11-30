@@ -2,93 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72EBF462B83
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 05:06:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF3F0462B8F
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 05:14:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232138AbhK3EJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 23:09:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53300 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232110AbhK3EJ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 23:09:26 -0500
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99904C061574;
-        Mon, 29 Nov 2021 20:06:07 -0800 (PST)
-Received: by mail-pg1-x52e.google.com with SMTP id r5so18267335pgi.6;
-        Mon, 29 Nov 2021 20:06:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/3sipgFsYx4nTsFXeXnXh9bfVECakyAq+Xo8bhn0cKY=;
-        b=YNf/8WTZMctueICeEPTxKNFxLOdExgc4YxHwmBHxsyhZDOB37kpS/gwJqnLRj6pzbb
-         7vjcFY8LuS1I4wGU3b1W3fByvWUrcKg9bdjYTtFF7eQLK02+rZ4w899N5YxGo47vMnMM
-         DRBwHHYa8WyZDqAiDfggpdGkujtN+g+MAHn4qDInqp8+/Eu9dBtNBwrPCobtylSsBEkk
-         hZDQ6j1oiqu2gfkHC4ZMVHdBTkVPXP+6iYOBmz1X0yGRQItDadLpySYPzdVjxw8F3RQm
-         q2xf915EwI0av7kDHuBpeuhPpSDF0XYyP7APzhxPRip84y39d5F2Q74LAldvNantTNnT
-         VzAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/3sipgFsYx4nTsFXeXnXh9bfVECakyAq+Xo8bhn0cKY=;
-        b=KF4+YVNBmZKthkEXURItO5pDUc/Lc6j8DrZzk22DLHGd48hSRV10hEhKQ9tmpscZZP
-         gqFMm3vsQTrXvEWiS/2+r6YDadgOk5/u+RC/WmhPhIsrEMXAvvHrcvU4vt0mLZ+CsOPZ
-         lNcW/J25ymgrgp3vapwWH5iotXpBxGGME3tkRK7jNIUVnZSPDq6qmXZ85CAt7l2wP/Mk
-         3rqFLodNZzIClNAofFEC40xVSkcOGuwKWTKr2cUy2f0aVhPtlwATmRvslyXOxm3WbXUm
-         UmDhH1TM2ebvDRbW1cNFwhQS47g8Db3QX8jjIQ7ovWTm3zjh9QW/7AZm94lYb29IcsuN
-         ktOQ==
-X-Gm-Message-State: AOAM530dg6ILeQf+AhFO1XXEaJ393B3fbvjxv5F2N8d8E8WGUmR3+IzC
-        AZx93EZgsasAstHSyENCxgI=
-X-Google-Smtp-Source: ABdhPJwgmi0fWes54vGJMTyaEVxmZV86S5SM8EKRgEg2RclJoumK0u6HH4iSRag8Kgp7VE0otm9R2Q==
-X-Received: by 2002:a05:6a00:1594:b0:49f:c5f0:19df with SMTP id u20-20020a056a00159400b0049fc5f019dfmr43134007pfk.70.1638245166942;
-        Mon, 29 Nov 2021 20:06:06 -0800 (PST)
-Received: from localhost.localdomain ([94.177.118.4])
-        by smtp.gmail.com with ESMTPSA id s15sm748299pjs.51.2021.11.29.20.06.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Nov 2021 20:06:06 -0800 (PST)
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Yangbo Lu <yangbo.lu@nxp.com>
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] dpaa2-eth: destroy workqueue at the end of remove function
-Date:   Tue, 30 Nov 2021 12:05:54 +0800
-Message-Id: <20211130040554.868846-1-mudongliangabcd@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S238140AbhK3ERY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 23:17:24 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:37890 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232110AbhK3ERY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 23:17:24 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 77705CE1415;
+        Tue, 30 Nov 2021 04:14:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34C8EC53FC1;
+        Tue, 30 Nov 2021 04:14:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638245642;
+        bh=eRgr8ruLS/HXkYygaB9wTl2f3VahlDG+KskOZEp4GJ0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BIZL3x9UXrd584JCXX49+ZFOKJrODOqaJ3JvCIKuc9EiVoCqPaNBqATP4B4C2vJ69
+         CJsG/XYckW/0eq6yswqAu93U4MFw4bSwbANKfFB/HZ8g31UlSEOb8QFRezvkKia3ZG
+         qRLiTIJZGko5HGUuhfyJ1i59LB8vouTgbA/GKx6S2Fm/InT2PwvNMzrwcisAnH8iwi
+         GBX6IPRXboDZTfmQpTD+60H5dfneTDmZiJzst5sIwBATjiSPYNIk3kTPksvpJ3hf+D
+         4DPzYlla0l5kKMpIHnPhUUlgH7L7BpZRsiKdHBSVu9zm8QqlAUxsPtLM5HvutL5KWy
+         GdGoanpFxA4eQ==
+Date:   Mon, 29 Nov 2021 20:14:00 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH net-next v1] devlink: Simplify devlink resources
+ unregister call
+Message-ID: <20211129201400.488c8ef9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <e8684abc2c8ced4e35026e8fa85fe29447ef60b6.1638103213.git.leonro@nvidia.com>
+References: <e8684abc2c8ced4e35026e8fa85fe29447ef60b6.1638103213.git.leonro@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit c55211892f46 ("dpaa2-eth: support PTP Sync packet one-step
-timestamping") forgets to destroy workqueue at the end of remove
-function.
+On Sun, 28 Nov 2021 14:42:44 +0200 Leon Romanovsky wrote:
+> The devlink_resources_unregister() used second parameter as an
+> entry point for the recursive removal of devlink resources. None
+> of external to devlink users needed to use this field, so lat's
 
-Fix this by adding destroy_workqueue before fsl_mc_portal_free and
-free_netdev.
+None of the callers outside of devlink core...
+s/lat/let/
 
-Fixes: c55211892f46 ("dpaa2-eth: support PTP Sync packet one-step timestamping")
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
----
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 2 ++
- 1 file changed, 2 insertions(+)
+> remove it.
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index 6451c8383639..8e643567abce 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -4550,6 +4550,8 @@ static int dpaa2_eth_remove(struct fsl_mc_device *ls_dev)
- 
- 	fsl_mc_portal_free(priv->mc_io);
- 
-+	destroy_workqueue(priv->dpaa2_ptp_wq);
-+
- 	dev_dbg(net_dev->dev.parent, "Removed interface %s\n", net_dev->name);
- 
- 	free_netdev(net_dev);
--- 
-2.25.1
+> diff --git a/include/net/devlink.h b/include/net/devlink.h
+> index e3c88fabd700..043fcec8b0aa 100644
+> --- a/include/net/devlink.h
+> +++ b/include/net/devlink.h
+> @@ -361,33 +361,6 @@ devlink_resource_size_params_init(struct devlink_resource_size_params *size_para
+>  
+>  typedef u64 devlink_resource_occ_get_t(void *priv);
+>  
+> -/**
+> - * struct devlink_resource - devlink resource
+> - * @name: name of the resource
+> - * @id: id, per devlink instance
+> - * @size: size of the resource
+> - * @size_new: updated size of the resource, reload is needed
+> - * @size_valid: valid in case the total size of the resource is valid
+> - *              including its children
+> - * @parent: parent resource
+> - * @size_params: size parameters
+> - * @list: parent list
+> - * @resource_list: list of child resources
+> - */
+> -struct devlink_resource {
+> -	const char *name;
+> -	u64 id;
+> -	u64 size;
+> -	u64 size_new;
+> -	bool size_valid;
+> -	struct devlink_resource *parent;
+> -	struct devlink_resource_size_params size_params;
+> -	struct list_head list;
+> -	struct list_head resource_list;
+> -	devlink_resource_occ_get_t *occ_get;
+> -	void *occ_get_priv;
+> -};
 
+> diff --git a/net/core/devlink.c b/net/core/devlink.c
+> index fd21022145a3..db3b52110cf2 100644
+> --- a/net/core/devlink.c
+> +++ b/net/core/devlink.c
+> @@ -69,6 +69,35 @@ struct devlink {
+>  	char priv[] __aligned(NETDEV_ALIGN);
+>  };
+>  
+> +/**
+> + * struct devlink_resource - devlink resource
+> + * @name: name of the resource
+> + * @id: id, per devlink instance
+> + * @size: size of the resource
+> + * @size_new: updated size of the resource, reload is needed
+> + * @size_valid: valid in case the total size of the resource is valid
+> + *              including its children
+> + * @parent: parent resource
+> + * @size_params: size parameters
+> + * @list: parent list
+> + * @resource_list: list of child resources
+> + * @occ_get: occupancy getter callback
+> + * @occ_get_priv: occupancy getter callback priv
+> + */
+> +struct devlink_resource {
+> +	const char *name;
+> +	u64 id;
+> +	u64 size;
+> +	u64 size_new;
+> +	bool size_valid;
+> +	struct devlink_resource *parent;
+> +	struct devlink_resource_size_params size_params;
+> +	struct list_head list;
+> +	struct list_head resource_list;
+> +	devlink_resource_occ_get_t *occ_get;
+> +	void *occ_get_priv;
+> +};
+
+Hiding struct devlink_resource is not mentioned in the commit message
+and entirely unrelated to removal of the unused argument.
