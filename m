@@ -2,139 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64AAD462FDD
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 10:39:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B992463001
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 10:46:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240307AbhK3JnE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 04:43:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43850 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235639AbhK3JnE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 04:43:04 -0500
-Received: from mail-wr1-x449.google.com (mail-wr1-x449.google.com [IPv6:2a00:1450:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B921C061574
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 01:39:45 -0800 (PST)
-Received: by mail-wr1-x449.google.com with SMTP id q15-20020adfbb8f000000b00191d3d89d09so3424718wrg.3
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 01:39:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=kELG4qNiHubyqw+GHawv5id0iTgcwVQeZoU1KiAX7cg=;
-        b=cYKsBgum6CbGbNMXiRqSOGmUnmKPlZzir9ODQnP7ZSMf3OGZzNIl9ljLw92DPQ5lzE
-         EheFwtJyJ1EEWc8oLh7FIEf1S0y+gb0/dgUTmH8NMBQytFUUpPKbE5Gz4irO68YSFdcb
-         d+NWwWTEDQWpi1Qcc3tpOXUn2RaeBK0rfBUIjvUOM/aoqFwRSy92bzleyWkrfEjK1glN
-         OaGc9hb/H62u5Y9go4YbWbiIH8SXjbKVMPoPC1cyW49JINpABcwpgNZ1o6YPFpr03hZz
-         iehENzMCefRcitFBvG3oh2ZmQZpOt6KepGx00cFYhfa3eNh0JY4GhbamutPZ4fXGpehc
-         8y7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=kELG4qNiHubyqw+GHawv5id0iTgcwVQeZoU1KiAX7cg=;
-        b=y9SrwYtRMEBXH4WUi4W9N+RI04n79wJzDJjgVRpYZ0Ozorr7K4ialFJTIvrMIqWqfF
-         tx3zo+/h/msiN7P0dwYv5rbSLMUQURnMZX7yop+05+SE9XiIzgtr05lTaHR3EHNn3/ri
-         YPhtynERt2CujEHc9UPVYChVhxf0uDHTZpT565cRefdkbH8Q0vvR1U5Y+fPEQAIJ8vQe
-         eYqEWR1GagjxpOHzPpqvmh3sVdO9L35CGwGsnM+RZ3qh9Ml8+s93yeuN6elOkUPbgaxh
-         dhxQW1AXXhqkJqLtXnibexdUL0sTXAbtBvbogDB0eniL71qToKCvjhC4AkfLnOAi9NEF
-         kI8Q==
-X-Gm-Message-State: AOAM531cikEnc/zgeKoof/lC/XiIMSYbW0sulb3MBIobakVI5cCZWkdd
-        XZethkqMkeFgWhv+rePZREA6t0tC5zzA
-X-Google-Smtp-Source: ABdhPJzP07EGlbfgMOkGabHIaXfvMk3ZPzmr0ipqOJR5t06BpGMFsKoCThWTsi90O/5cJjKGLojv34CNVgoX
-X-Received: from dvyukov-desk.muc.corp.google.com ([2a00:79e0:15:13:1e84:81dc:2c2c:50e2])
- (user=dvyukov job=sendgmr) by 2002:a5d:64eb:: with SMTP id
- g11mr39838154wri.438.1638265183653; Tue, 30 Nov 2021 01:39:43 -0800 (PST)
-Date:   Tue, 30 Nov 2021 10:39:39 +0100
-In-Reply-To: <20211117192031.3906502-2-eric.dumazet@gmail.com>
-Message-Id: <20211130093939.4092417-1-dvyukov@google.com>
-Mime-Version: 1.0
-References: <20211117192031.3906502-2-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.34.0.rc2.393.gf8c9666880-goog
-Subject: Re: [RFC -next 1/2] lib: add reference counting infrastructure
-From:   Dmitry Vyukov <dvyukov@google.com>
-To:     eric.dumazet@gmail.com
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        id S240378AbhK3JuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 04:50:11 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:47587 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240328AbhK3JuL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 04:50:11 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 05F845C0117;
+        Tue, 30 Nov 2021 04:46:52 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Tue, 30 Nov 2021 04:46:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=TdGnsP
+        MpHdhEUgYd+x6DQ+EtpxfxerJd/7IvyvpbzI0=; b=gYBobs2RZgFB2kLXtzxrBW
+        JlSLoNhJBYCrSgK9kxbARR3jsEQ/QfzwEopgrBfPREyk9ayML+/nQrNKUSmRW9jy
+        VnLMFyweGrzDRqJyPN3+ffFeLb4UpdvMdQZlaFivtFCSi7a4jujGlmyvuRw+CK5R
+        5w45YOzuqMomizfMUlfuc4nx4/Zkix+Df+sWEdSqfp/PCmUsuEQXW21k+uleQsW0
+        dKx+3atYaQweG4U/AmoMa/wWn9aT0yzIV4oWeTkz2Bc/Bg7A2H89vcDuJAGxoG4+
+        qR1juYa74V5Xuzp3zlBYZghMC8d4PLgVHqXr0j/lb97eiYRRBWlurT4ns9PYfY6g
+        ==
+X-ME-Sender: <xms:C_OlYTQ9qZp5mJVmUVoHlRMP1EDemAhVA0CG0vct8pqlWPMjpymmrw>
+    <xme:C_OlYUzj8bJvue9wbjcdQvqJZa4_EBPpM4cFWhX1CNSGIqRYMp3C4bDVeMaKFezTL
+    -U1NVhMs-QKO3I>
+X-ME-Received: <xmr:C_OlYY1npOwGShJc-RKFqQ_kdqn5cXUYinSR4ydq1_1qTxXauIrLJPSBb9a60-TjZRnJVZh_m6IQqF3nsjlCOdsvfw6Nuw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddriedugddtkecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtrodttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnhepgfejvefhvdegiedukeetudevgeeujeefffeffeetkeekueeuheejudeltdejuedu
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:C_OlYTAx6HfGLEtw-yXVEbFXfPhOaY-aSPGUiT7ECWwPmy2LecJyYA>
+    <xmx:C_OlYcjVkd6NkxcrFeG2FFDj4-6usOpK5tnRvMWqGSY_5hvpGHrG9A>
+    <xmx:C_OlYXpScM9zkOFlkKUeKGPL0lFM1w1jPBDkxfjK_BZoQnGkj4Qs9g>
+    <xmx:DPOlYYjYCsR_olR79e-lo5RA1Erfv8qJxRPkG9jhh6fh38eBiT2bIw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 30 Nov 2021 04:46:51 -0500 (EST)
+Date:   Tue, 30 Nov 2021 11:46:48 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, andrew@lunn.ch, pali@kernel.org,
+        jacob.e.keller@intel.com, vadimp@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next 0/4] ethtool: Add ability to flash and query
+ transceiver modules' firmware
+Message-ID: <YaXzCKEwuICECkyz@shredder>
+References: <20211127174530.3600237-1-idosch@idosch.org>
+ <20211129093724.3b76ebff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YaXicrPwrHJoTi9w@shredder>
+ <20211130085426.txa5xrrd3nipxgtz@lion.mk-sys.cz>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211130085426.txa5xrrd3nipxgtz@lion.mk-sys.cz>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+On Tue, Nov 30, 2021 at 09:54:26AM +0100, Michal Kubecek wrote:
+> On Tue, Nov 30, 2021 at 10:36:02AM +0200, Ido Schimmel wrote:
+> > On Mon, Nov 29, 2021 at 09:37:24AM -0800, Jakub Kicinski wrote:
+> > > 
+> > > Immediate question I have is why not devlink. We purposefully moved 
+> > > FW flashing to devlink because I may take long, so doing it under
+> > > rtnl_lock is really bad. Other advantages exist (like flashing
+> > > non-Ethernet ports). Ethtool netlink already existed at the time.
+> > 
+> > Device firmware flashing doesn't belong in devlink because of locking
+> > semantics. It belongs in devlink because you are updating the firmware
+> > of the device, which can instantiate multiple netdevs. For multi-port
+> > devices, it always seemed weird to tell users "choose some random port
+> > and use it for 'ethtool -f'". I remember being asked if the command
+> > needs to be run for all swp* netdevs (no).
+> > 
+> > On the other hand, each netdev corresponds to a single transceiver
+> > module and each transceiver module corresponds to a single netdev
+> > (modulo split which is a user configuration).
+> 
+> Devlink also has abstraction for ports so it can be used so it is not
+> necessarily a problem.
+> 
+> > In addition, users are already dumping the EEPROM contents of
+> > transceiver modules via ethtool and also toggling their settings.
+> > 
+> > Given the above, it's beyond me why we should tell users to use anything
+> > other than ethtool to update transceiver modules' firmware.
+> 
+> As I already mentioned, we should distinguish between ethtool API and
+> ethtool utility. It is possible to implement the flashing in devlink API
+> and let both devlink and ethtool utilities use that API.
+> 
+> I'm not saying ethtool API is a wrong choice, IMHO either option has its
+> pros and cons.
 
-Nice! Especially ref_tracker_dir_print() in netdev_wait_allrefs().
+What are the cons of implementing it in ethtool? It seems that the only
+thing devlink has going for it is the fact that it supports devlink
+device firmware update API, but it cannot be used as-is and needs to be
+heavily extended (e.g., asynchronicity is a must, per-port as opposed to
+per-device). It doesn't support any transceiver module API, as opposed
+to ethtool.
 
-> +	*trackerp = tracker = kzalloc(sizeof(*tracker), gfp);
+> I'm just trying to point out that implementation in devlink API does
+> not necessarily mean one cannot use the ethtool to use the feature.
 
-This may benefit from __GFP_NOFAIL. syzkaller will use fault injection to fail
-this. And I think it will do more bad than good.
-
-We could also note this condition in dir, along the lines of:
-
-	if (!tracker) {
-		dir->failed = true;
-
-To print on any errors and to check in ref_tracker_free():
-
-int ref_tracker_free(struct ref_tracker_dir *dir,
-		     struct ref_tracker **trackerp)
-{
-...
-	if (!tracker) {
-		WARN_ON(!dir->failed);
-		return -EEXIST;
-	}
-
-This would be a bug, right?
-Or:
-
-	*trackerp = tracker = kzalloc(sizeof(*tracker), gfp);
-	if (!tracker) {
-		*tracker = TRACKERP_ALLOC_FAILED;
-		 return -ENOMEM;
-	}
-
-and then check TRACKERP_ALLOC_FAILED in ref_tracker_free().
-dev_hold_track() ignores the return value, so it would be useful to note
-this condition.
-
-> +	if (tracker->dead) {
-> +		pr_err("reference already released.\n");
-
-This and other custom prints won't be detected as bugs by syzkaller and other
-testing systems, they detect the standard BUG/WARNING. Please use these.
-
-ref_tracker_free() uses unnecesary long critical sections. I understand this
-is debugging code, but frequently debugging code is so pessimistic that nobody
-use it. If we enable this on syzbot, it will also slowdown all fuzzing.
-I think with just a small code shuffling critical sections can be
-significantly reduced:
-
-	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 1);
-	tracker->free_stack_handle = stack_depot_save(entries, nr_entries, GFP_ATOMIC);
-
-	spin_lock_irqsave(&dir->lock, flags);
-	if (tracker->dead)
-		...
-	tracker->dead = true;
-
-	list_move_tail(&tracker->head, &dir->quarantine);
-	if (!dir->quarantine_avail) {
-		tracker = list_first_entry(&dir->quarantine, struct ref_tracker, head);
-		list_del(&tracker->head);
-	} else {
-		dir->quarantine_avail--;
-		tracker = NULL;
-	}
-	spin_unlock_irqrestore(&dir->lock, flags);
-
-	kfree(tracker);
-
-> +#define REF_TRACKER_STACK_ENTRIES 16
-> +	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 1);
-> +	tracker->alloc_stack_handle = stack_depot_save(entries, nr_entries, gfp);
-
-The saved stacks can be longer because they are de-duped. But stacks insered
-into stack_depot need to be trimmed with filter_irq_stacks(). It seems that
-almost all current users got it wrong. We are considering moving
-filter_irq_stacks() into stack_depot_save(), but it's not done yet.
+I agree it can be done, but the fact that something can be done doesn't
+mean it should be done. If I'm extending devlink with new uAPI, then I
+will add support for it in devlink(8) and not ethtool(8) and vice versa.
