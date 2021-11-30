@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDFEA463619
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 15:07:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EBBA463615
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 15:07:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233267AbhK3OKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 09:10:24 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:27320 "EHLO
+        id S242016AbhK3OKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 09:10:21 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:16326 "EHLO
         szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233178AbhK3OKU (ORCPT
+        with ESMTP id S233194AbhK3OKU (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 09:10:20 -0500
-Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4J3PCw13ytzbjBL;
-        Tue, 30 Nov 2021 22:06:52 +0800 (CST)
+Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4J3PCR2dvqz91PG;
+        Tue, 30 Nov 2021 22:06:27 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by dggpeml500025.china.huawei.com
  (7.185.36.35) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Tue, 30 Nov
@@ -24,13 +24,15 @@ CC:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>, <houtao1@huawei.com>
-Subject: [PATCH bpf-next 0/5] introduce bpf_strncmp() helper
-Date:   Tue, 30 Nov 2021 22:22:10 +0800
-Message-ID: <20211130142215.1237217-1-houtao1@huawei.com>
+Subject: [PATCH bpf-next 1/5] bpf: add bpf_strncmp helper
+Date:   Tue, 30 Nov 2021 22:22:11 +0800
+Message-ID: <20211130142215.1237217-2-houtao1@huawei.com>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20211130142215.1237217-1-houtao1@huawei.com>
+References: <20211130142215.1237217-1-houtao1@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [10.175.124.27]
 X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
  dggpeml500025.china.huawei.com (7.185.36.35)
@@ -39,105 +41,123 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+The helper compares two strings: one string is a null-terminated
+read-only string, and another string has const max storage size
+but doesn't need to be null-terminated. It can be used to compare
+file name in tracing or LSM program.
 
-The motivation for introducing bpf_strncmp() helper comes from
-two aspects:
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+---
+ include/linux/bpf.h            |  1 +
+ include/uapi/linux/bpf.h       | 11 +++++++++++
+ kernel/bpf/helpers.c           | 16 ++++++++++++++++
+ tools/include/uapi/linux/bpf.h | 11 +++++++++++
+ 4 files changed, 39 insertions(+)
 
-(1) clang doesn't always replace strncmp() automatically
-In tracing program, sometimes we need to using a home-made
-strncmp() to check whether or not the file name is expected.
-
-(2) the performance of home-made strncmp is not so good
-As shown in the benchmark in patch #4, the performance of
-bpf_strncmp() helper is 18% or 33% better than home-made strncmp()
-under x86-64 or arm64 when the compared string length is 64. When
-the string length grows to 4095, the performance win will be
-179% or 600% under x86-64 or arm64.
-
-The prototype of bpf_strncmp() has changed from
-
-  bpf_strncmp(const char *s1, const char *s2, u32 s2_sz)
-
-to
-
-  bpf_strncmp(const char *s1, u32 s1_sz, const char *s2)
-
-The main reason is readability and there is nearly no performance
-difference between these two APIs (refer to the data attached below
-[1]).
-
-Any comments are welcome.
-Regards,
-Tao
-
-Change Log:
-v1:
- * change API to bpf_strncmp(const char *s1, u32 s1_sz, const char *s2)
- * add benchmark refactor and benchmark between bpf_strncmp() and strncmp()
-
-RFC: https://lore.kernel.org/bpf/20211106132822.1396621-1-houtao1@huawei.com/
-
-[1] Performance difference between two APIs under x86-64:
-
-helper_rfc-X: use bpf_strncmp in RFC to compare X-sized string
-helper-Y: use bpf_strncmp in v1 to compare Y-sized string
-
-helper_rfc-1         3.482 ± 0.002M/s (drops 0.000 ± 0.000M/s)
-helper-1             3.485 ± 0.001M/s (drops 0.000 ± 0.000M/s)
-
-helper_rfc-8         3.428 ± 0.001M/s (drops 0.000 ± 0.000M/s)
-helper-8             3.434 ± 0.001M/s (drops 0.000 ± 0.000M/s)
-
-helper_rfc-32        3.253 ± 0.002M/s (drops 0.000 ± 0.000M/s)
-helper-32            3.234 ± 0.001M/s (drops 0.000 ± 0.000M/s)
-
-helper_rfc-64        3.039 ± 0.000M/s (drops 0.000 ± 0.000M/s)
-helper-64            3.042 ± 0.001M/s (drops 0.000 ± 0.000M/s)
-
-helper_rfc-128       2.640 ± 0.000M/s (drops 0.000 ± 0.000M/s)
-helper-128           2.633 ± 0.000M/s (drops 0.000 ± 0.000M/s)
-
-helper_rfc-512       1.576 ± 0.000M/s (drops 0.000 ± 0.000M/s)
-helper-512           1.574 ± 0.000M/s (drops 0.000 ± 0.000M/s)
-
-helper_rfc-2048      0.602 ± 0.000M/s (drops 0.000 ± 0.000M/s)
-helper-2048          0.602 ± 0.000M/s (drops 0.000 ± 0.000M/s)
-
-helper_rfc-4095      0.328 ± 0.000M/s (drops 0.000 ± 0.000M/s)
-helper-4095          0.328 ± 0.000M/s (drops 0.000 ± 0.000M/s)
-
-Hou Tao (5):
-  bpf: add bpf_strncmp helper
-  selftests/bpf: fix checkpatch error on empty function parameter
-  selftests/bpf: factor out common helpers for benchmarks
-  selftests/bpf: add benchmark for bpf_strncmp() helper
-  selftests/bpf: add test cases for bpf_strncmp()
-
- include/linux/bpf.h                           |   1 +
- include/uapi/linux/bpf.h                      |  11 ++
- kernel/bpf/helpers.c                          |  16 ++
- tools/include/uapi/linux/bpf.h                |  11 ++
- tools/testing/selftests/bpf/Makefile          |   4 +-
- tools/testing/selftests/bpf/bench.c           |  21 ++-
- tools/testing/selftests/bpf/bench.h           |  34 +++-
- .../bpf/benchs/bench_bloom_filter_map.c       |  44 ++---
- .../selftests/bpf/benchs/bench_count.c        |  16 +-
- .../selftests/bpf/benchs/bench_rename.c       |  43 ++---
- .../selftests/bpf/benchs/bench_ringbufs.c     |  21 +--
- .../selftests/bpf/benchs/bench_strncmp.c      | 150 ++++++++++++++++
- .../selftests/bpf/benchs/bench_trigger.c      |  79 ++++----
- .../selftests/bpf/benchs/run_bench_strncmp.sh |  12 ++
- .../selftests/bpf/prog_tests/test_strncmp.c   | 170 ++++++++++++++++++
- .../selftests/bpf/progs/strncmp_bench.c       |  50 ++++++
- .../selftests/bpf/progs/strncmp_test.c        |  59 ++++++
- 17 files changed, 604 insertions(+), 138 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/benchs/bench_strncmp.c
- create mode 100755 tools/testing/selftests/bpf/benchs/run_bench_strncmp.sh
- create mode 100644 tools/testing/selftests/bpf/prog_tests/test_strncmp.c
- create mode 100644 tools/testing/selftests/bpf/progs/strncmp_bench.c
- create mode 100644 tools/testing/selftests/bpf/progs/strncmp_test.c
-
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index a7cbc29b0994..685c8fe5c0be 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -2165,6 +2165,7 @@ extern const struct bpf_func_proto bpf_sk_setsockopt_proto;
+ extern const struct bpf_func_proto bpf_sk_getsockopt_proto;
+ extern const struct bpf_func_proto bpf_kallsyms_lookup_name_proto;
+ extern const struct bpf_func_proto bpf_find_vma_proto;
++extern const struct bpf_func_proto bpf_strncmp_proto;
+ 
+ const struct bpf_func_proto *tracing_prog_func_proto(
+   enum bpf_func_id func_id, const struct bpf_prog *prog);
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index a69e4b04ffeb..afdc52efa4a1 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -4957,6 +4957,16 @@ union bpf_attr {
+  *		**-ENOENT** if *task->mm* is NULL, or no vma contains *addr*.
+  *		**-EBUSY** if failed to try lock mmap_lock.
+  *		**-EINVAL** for invalid **flags**.
++ *
++ * long bpf_strncmp(const char *s1, u32 s1_sz, const char *s2)
++ *	Description
++ *		Do strncmp() between **s1** and **s2**. **s1** doesn't need
++ *		to be null-terminated and **s1_sz** is the maximum storage
++ *		size of **s1**. **s2** must be a read-only string.
++ *	Return
++ *		An integer less than, equal to, or greater than zero
++ *		if the first **s1_sz** bytes of **s1** is found to be
++ *		less than, to match, or be greater than **s2**.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -5140,6 +5150,7 @@ union bpf_attr {
+ 	FN(skc_to_unix_sock),		\
+ 	FN(kallsyms_lookup_name),	\
+ 	FN(find_vma),			\
++	FN(strncmp),			\
+ 	/* */
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index 1ffd469c217f..a7d3a8d48e00 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -565,6 +565,20 @@ const struct bpf_func_proto bpf_strtoul_proto = {
+ };
+ #endif
+ 
++BPF_CALL_3(bpf_strncmp, const char *, s1, u32, s1_sz, const char *, s2)
++{
++	return strncmp(s1, s2, s1_sz);
++}
++
++const struct bpf_func_proto bpf_strncmp_proto = {
++	.func		= bpf_strncmp,
++	.gpl_only	= false,
++	.ret_type	= RET_INTEGER,
++	.arg1_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_CONST_SIZE,
++	.arg3_type	= ARG_PTR_TO_CONST_STR,
++};
++
+ BPF_CALL_4(bpf_get_ns_current_pid_tgid, u64, dev, u64, ino,
+ 	   struct bpf_pidns_info *, nsdata, u32, size)
+ {
+@@ -1378,6 +1392,8 @@ bpf_base_func_proto(enum bpf_func_id func_id)
+ 		return &bpf_ringbuf_query_proto;
+ 	case BPF_FUNC_for_each_map_elem:
+ 		return &bpf_for_each_map_elem_proto;
++	case BPF_FUNC_strncmp:
++		return &bpf_strncmp_proto;
+ 	default:
+ 		break;
+ 	}
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index a69e4b04ffeb..afdc52efa4a1 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -4957,6 +4957,16 @@ union bpf_attr {
+  *		**-ENOENT** if *task->mm* is NULL, or no vma contains *addr*.
+  *		**-EBUSY** if failed to try lock mmap_lock.
+  *		**-EINVAL** for invalid **flags**.
++ *
++ * long bpf_strncmp(const char *s1, u32 s1_sz, const char *s2)
++ *	Description
++ *		Do strncmp() between **s1** and **s2**. **s1** doesn't need
++ *		to be null-terminated and **s1_sz** is the maximum storage
++ *		size of **s1**. **s2** must be a read-only string.
++ *	Return
++ *		An integer less than, equal to, or greater than zero
++ *		if the first **s1_sz** bytes of **s1** is found to be
++ *		less than, to match, or be greater than **s2**.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -5140,6 +5150,7 @@ union bpf_attr {
+ 	FN(skc_to_unix_sock),		\
+ 	FN(kallsyms_lookup_name),	\
+ 	FN(find_vma),			\
++	FN(strncmp),			\
+ 	/* */
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
 -- 
 2.29.2
 
