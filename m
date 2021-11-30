@@ -2,282 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7908D463E7D
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 20:15:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33E12463EAA
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 20:33:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245704AbhK3TSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 14:18:15 -0500
-Received: from mga12.intel.com ([192.55.52.136]:13477 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230100AbhK3TSN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Nov 2021 14:18:13 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10184"; a="216316676"
-X-IronPort-AV: E=Sophos;i="5.87,276,1631602800"; 
-   d="scan'208";a="216316676"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2021 11:14:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,276,1631602800"; 
-   d="scan'208";a="511659480"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga007.fm.intel.com with ESMTP; 30 Nov 2021 11:14:44 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1AUJEfUt019797;
-        Tue, 30 Nov 2021 19:14:41 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Shay Agroskin <shayagr@amazon.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "Michal Swiatkowski" <michal.swiatkowski@linux.intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "Arthur Kiyanovski" <akiyano@amazon.com>,
-        David Arinzon <darinzon@amazon.com>,
-        "Noam Dagan" <ndagan@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>,
-        "Ioana Ciornei" <ioana.ciornei@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        "Russell King" <linux@armlinux.org.uk>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        "Leon Romanovsky" <leon@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        "John Fastabend" <john.fastabend@gmail.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        "Martin Habets" <habetsm.xilinx@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "Lorenzo Bianconi" <lorenzo@kernel.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        "Sergey Ryazanov" <ryazanov.s.a@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Andrei Vagin <avagin@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Cong Wang <cong.wang@bytedance.com>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH v2 net-next 03/26] ena: implement generic XDP statistics callbacks
-Date:   Tue, 30 Nov 2021 20:14:29 +0100
-Message-Id: <20211130191429.1171038-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <pj41zlh7bvyt75.fsf@u570694869fb251.ant.amazon.com>
-References: <20211123163955.154512-1-alexandr.lobakin@intel.com> <20211123163955.154512-4-alexandr.lobakin@intel.com> <pj41zlh7bvyt75.fsf@u570694869fb251.ant.amazon.com>
+        id S233472AbhK3Tg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 14:36:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41828 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233740AbhK3Tg0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 14:36:26 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAAFFC061574;
+        Tue, 30 Nov 2021 11:33:06 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id n15-20020a17090a160f00b001a75089daa3so19088938pja.1;
+        Tue, 30 Nov 2021 11:33:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=j5j01hsMPKatw6J9LHgeBzeOI5eEAQWOSckfd+vDINY=;
+        b=iuZ6AuNS7MOGEn3ec90iQbwYyCJRaUKQ1YBAj1MNYztpNiGfeVdePuMNmt+e7GJNjh
+         iNX9vjRXuXknsNaenWk3zi0ucqxVMAr7sMSe6wra3ifAmFZDySVImiIs3wsvNX9fMwcC
+         cqxpXA81t/aTbqvBq4foIBWVO1cwBZowDSyg2f3OjAotJum5VcsiDUTCCZtpYJAY//xV
+         MJvRSH/qo6R5/SHx1fPtGVJebIz/LC5+uTW4eddBi0PjIkv0tHIOhatYr9nCVFWZmxdl
+         Eh7ae4pl1vZQrm/ihWgqIj38H4PAYzIbGLnqq+h2AX7g38yG9wcf8zIw/KGAtQi+PyF5
+         If/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=j5j01hsMPKatw6J9LHgeBzeOI5eEAQWOSckfd+vDINY=;
+        b=dRSDq5uteO+WVOeB3kUEwGMh/LfGl9xwTA6v4vic7Ve7X5kw6oZaPtk+BS8hF+xK5I
+         HJZbCtnq9YsnGwQ0KKrQprAQySLtTAPpm4XXBqeaI/95jF3a37i7ERmmXezu9lQLxNih
+         wPdjB3hD3hwA8euSIdQK+YdusZqtERv7ffeDl5Fo+LUtc1ngty8X2mLXu+w0o/m1SZMX
+         j/saFR2q0A/wu9G/YjmRY/D3cf54x5w9PDBPjY/oDS/SGRyvbQ71LTLVD2hawNw8usGf
+         xGT+Ks5X+vvwW5/RdXCClFfBP9bPsDcepJ3CyWi6xL7F45c96ffGzIaMJed1+Y4+rCbA
+         b//A==
+X-Gm-Message-State: AOAM5310XJ2hyS28+w65Oe2nnYkA2uVeb0fHIXzunV/e9AVPlHj3qsJF
+        9/YjVDwtI0SN2J+IUh1OGXnqOZleGfYas4BE4wg=
+X-Google-Smtp-Source: ABdhPJxKJZ/Q+/rIlw1C7glnp2AXNKSBRuea6fJX6dqLGqUaXI33f583yqTPZWagtJf3Bo+J32GSO11HUmItts5/n1w=
+X-Received: by 2002:a17:90a:17a5:: with SMTP id q34mr1218321pja.122.1638300786367;
+ Tue, 30 Nov 2021 11:33:06 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211102101536.2958763-1-houtao1@huawei.com> <915a9acd-1831-2470-1490-ec8af4770e28@huawei.com>
+In-Reply-To: <915a9acd-1831-2470-1490-ec8af4770e28@huawei.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 30 Nov 2021 11:32:54 -0800
+Message-ID: <CAADnVQJCBnxOoVC9H=73OvKFwTUv5+aKCLix25eU1Kg6pOkXtQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 0/2] clean-up for BPF_LOG_KERNEL log level
+To:     Hou Tao <houtao1@huawei.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shay Agroskin <shayagr@amazon.com>
-Date: Mon, 29 Nov 2021 15:34:19 +0200
+On Tue, Nov 30, 2021 at 3:48 AM Hou Tao <houtao1@huawei.com> wrote:
+>
+> Hi Alexei,
+>
+> Could you please pick the patchset for v5.16 ?
 
-> Alexander Lobakin <alexandr.lobakin@intel.com> writes:
-> 
-> > ena driver has 6 XDP counters collected per-channel. Add 
-> > callbacks
-> > for getting the number of channels and those counters using 
-> > generic
-> > XDP stats infra.
+Sorry it got lost in patchwork.
+Please resubmit.
+
+> On 11/2/2021 6:15 PM, Hou Tao wrote:
+> > Hi,
 > >
-> > Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> > Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> > ---
-> >  drivers/net/ethernet/amazon/ena/ena_netdev.c | 53 
-> >  ++++++++++++++++++++
-> >  1 file changed, 53 insertions(+)
+> > There are just two clean-up patches for BPF_LOG_KERNEL log level:
+> > patch #1 fixes the possible extra newline for bpf_log() and removes
+> > the unnecessary calculation and truncation, and patch #2 disallows
+> > BPF_LOG_KERNEL log level for bpf_btf_load().
 > >
-> > diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c 
-> > b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> > index 7d5d885d85d5..83e9b85cc998 100644
-> > --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> > +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> > @@ -3313,12 +3313,65 @@ static void ena_get_stats64(struct 
-> > net_device *netdev,
-> >  	stats->tx_errors = 0;
-> >  }
+> > Comments are welcome.
 > >
-> > +static int ena_get_xdp_stats_nch(const struct net_device 
-> > *netdev, u32 attr_id)
-> > +{
-> > +	const struct ena_adapter *adapter = netdev_priv(netdev);
-> > +
-> > +	switch (attr_id) {
-> > +	case IFLA_XDP_XSTATS_TYPE_XDP:
-> > +		return adapter->num_io_queues;
-> > +	default:
-> > +		return -EOPNOTSUPP;
-> > +	}
-> > +}
-> > +
-> > +static int ena_get_xdp_stats(const struct net_device *netdev, 
-> > u32 attr_id,
-> > +			     void *attr_data)
-> > +{
-> > +	const struct ena_adapter *adapter = netdev_priv(netdev);
-> > +	struct ifla_xdp_stats *xdp_stats = attr_data;
-> > +	u32 i;
-> > +
-> > +	switch (attr_id) {
-> > +	case IFLA_XDP_XSTATS_TYPE_XDP:
-> > +		break;
-> > +	default:
-> > +		return -EOPNOTSUPP;
-> > +	}
-> > +
-> > +	for (i = 0; i < adapter->num_io_queues; i++) {
-> > +		const struct u64_stats_sync *syncp;
-> > +		const struct ena_stats_rx *stats;
-> > +		u32 start;
-> > +
-> > +		stats = &adapter->rx_ring[i].rx_stats;
-> > +		syncp = &adapter->rx_ring[i].syncp;
-> > +
-> > +		do {
-> > +			start = u64_stats_fetch_begin_irq(syncp);
-> > +
-> > +			xdp_stats->drop = stats->xdp_drop;
-> > +			xdp_stats->pass = stats->xdp_pass;
-> > +			xdp_stats->tx = stats->xdp_tx;
-> > +			xdp_stats->redirect = stats->xdp_redirect;
-> > +			xdp_stats->aborted = stats->xdp_aborted;
-> > +			xdp_stats->invalid = stats->xdp_invalid;
-> > +		} while (u64_stats_fetch_retry_irq(syncp, start));
-> > +
-> > +		xdp_stats++;
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> 
-> Hi,
-> thank you for the time you took in adding ENA support, this code 
-> doesn't update the XDP TX queues (which only available when an XDP 
-> program is loaded).
-> 
-> In theory the following patch should fix it, but I was unable to 
-> compile your version of iproute2 and test the patch properly. Can 
-> you please let me know if I need to do anything special to bring 
-> up your version of iproute2 and test this patch?
-
-Did you clone 'xdp_stats' branch? I've just rechecked on a freshly
-cloned copy, works for me.
-
-> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c 
-> b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> index 7d5d885d8..4e89a7d60 100644
-> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> @@ -3313,12 +3313,85 @@ static void ena_get_stats64(struct 
-> net_device *netdev,
->  	stats->tx_errors = 0;
->  }
->  
-> +static int ena_get_xdp_stats_nch(const struct net_device *netdev, 
-> u32 attr_id)
-> +{
-> +	const struct ena_adapter *adapter = netdev_priv(netdev);
-> +
-> +	switch (attr_id) {
-> +	case IFLA_XDP_XSTATS_TYPE_XDP:
-> +		return adapter->num_io_queues;
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +}
-> +
-> +static int ena_get_xdp_stats(const struct net_device *netdev, u32 
-> attr_id,
-> +			     void *attr_data)
-> +{
-> +	const struct ena_adapter *adapter = netdev_priv(netdev);
-> +	struct ifla_xdp_stats *xdp_stats = attr_data;
-> +	const struct u64_stats_sync *syncp;
-> +	u32 start;
-> +	u32 i;
-> +
-> +	switch (attr_id) {
-> +	case IFLA_XDP_XSTATS_TYPE_XDP:
-> +		break;
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	for (i = 0; i < adapter->num_io_queues; i++) {
-> +		const struct ena_stats_rx *rx_stats;
-> +
-> +		rx_stats = &adapter->rx_ring[i].rx_stats;
-> +		syncp = &adapter->rx_ring[i].syncp;
-> +
-> +		do {
-> +			start = u64_stats_fetch_begin_irq(syncp);
-> +
-> +			xdp_stats->drop = rx_stats->xdp_drop;
-> +			xdp_stats->pass = rx_stats->xdp_pass;
-> +			xdp_stats->tx = rx_stats->xdp_tx;
-> +			xdp_stats->redirect = 
-> rx_stats->xdp_redirect;
-> +			xdp_stats->aborted = 
-> rx_stats->xdp_aborted;
-> +			xdp_stats->invalid = 
-> rx_stats->xdp_invalid;
-> +		} while (u64_stats_fetch_retry_irq(syncp, start));
-> +
-> +		xdp_stats++;
-> +	}
-> +
-> +	xdp_stats = attr_data;
-> +	/* xdp_num_queues can be 0 if an XDP program isn't loaded 
-> */
-> +	for (i = 0; i < adapter->xdp_num_queues; i++) {
-> +		const struct ena_stats_tx *tx_stats;
-> +
-> +		tx_stats = 
-> &adapter->rx_ring[i].xdp_ring->tx_stats;
-> +		syncp = &adapter->rx_ring[i].xdp_ring->syncp;
-> +
-> +		do {
-> +			start = u64_stats_fetch_begin_irq(syncp);
-> +
-> +			xdp_stats->xmit_packets = tx_stats->cnt;
-> +			xdp_stats->xmit_bytes = tx_stats->bytes;
-> +			xdp_stats->xmit_errors = 
-> tx_stats->dma_mapping_err +
-> + 
-> tx_stats->prepare_ctx_err;
-> +		} while (u64_stats_fetch_retry_irq(syncp, start));
-> +
-> +		xdp_stats++;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  static const struct net_device_ops ena_netdev_ops = {
->  	.ndo_open		= ena_open,
->  	.ndo_stop		= ena_close,
->  	.ndo_start_xmit		= ena_start_xmit,
->  	.ndo_select_queue	= ena_select_queue,
->  	.ndo_get_stats64	= ena_get_stats64,
-> +	.ndo_get_xdp_stats_nch	= ena_get_xdp_stats_nch,
-> +	.ndo_get_xdp_stats	= ena_get_xdp_stats,
->  	.ndo_tx_timeout		= ena_tx_timeout,
->  	.ndo_change_mtu		= ena_change_mtu,
->  	.ndo_set_mac_address	= NULL,
-
-I'll update it in v3 and mention you, thanks!
-
-Al
+> > Regards,
+> > Tao
+> >
+> > Change Log:
+> > v3:
+> >   * rebased on bpf-next
+> >   * address comments from Daniel Borkmann:
+> >     patch #1: add prefix "BPF: " instead of "BPF:" for error message
+> >     patch #2: remove uncessary parenthesis, keep the max buffer length
+> >               setting of btf verifier, and add Fixes tag.
+> >
+> > v2: https://www.spinics.net/lists/bpf/msg48809.html
+> >   * rebased on bpf-next
+> >   * patch #1: add a trailing newline if needed (suggested by Martin)
+> >   * add patch #2
+> >
+> > v1: https://www.spinics.net/lists/bpf/msg48550.html
+> >
+> > Hou Tao (2):
+> >   bpf: clean-up bpf_verifier_vlog() for BPF_LOG_KERNEL log level
+> >   bpf: disallow BPF_LOG_KERNEL log level for bpf(BPF_BTF_LOAD)
+> >
+> >  include/linux/bpf_verifier.h |  7 +++++++
+> >  kernel/bpf/btf.c             |  3 +--
+> >  kernel/bpf/verifier.c        | 16 +++++++++-------
+> >  3 files changed, 17 insertions(+), 9 deletions(-)
+> >
+>
