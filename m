@@ -2,32 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50F86463FDA
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 22:22:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FD71463FDC
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 22:22:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344032AbhK3VZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 16:25:17 -0500
-Received: from mga03.intel.com ([134.134.136.65]:13468 "EHLO mga03.intel.com"
+        id S1344084AbhK3VZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 16:25:43 -0500
+Received: from mga03.intel.com ([134.134.136.65]:13461 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344044AbhK3VYq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1344043AbhK3VYq (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 30 Nov 2021 16:24:46 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10184"; a="236263999"
+X-IronPort-AV: E=McAfee;i="6200,9189,10184"; a="236264001"
 X-IronPort-AV: E=Sophos;i="5.87,277,1631602800"; 
-   d="scan'208";a="236263999"
+   d="scan'208";a="236264001"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
   by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2021 13:21:18 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,277,1631602800"; 
-   d="scan'208";a="744895456"
+   d="scan'208";a="744895465"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga006.fm.intel.com with ESMTP; 30 Nov 2021 13:21:17 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
-        sassmann@redhat.com, Tony Brelinski <tony.brelinski@intel.com>
-Subject: [PATCH net-next v2 05/10] iavf: Enable setting RSS hash key
-Date:   Tue, 30 Nov 2021 13:19:59 -0800
-Message-Id: <20211130212004.198898-6-anthony.l.nguyen@intel.com>
+Cc:     Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        sassmann@redhat.com,
+        Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>
+Subject: [PATCH net-next v2 06/10] iavf: Refactor iavf_mac_filter struct memory usage
+Date:   Tue, 30 Nov 2021 13:20:00 -0800
+Message-Id: <20211130212004.198898-7-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211130212004.198898-1-anthony.l.nguyen@intel.com>
 References: <20211130212004.198898-1-anthony.l.nguyen@intel.com>
@@ -37,58 +40,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Driver support for changing the RSS hash key exists, however, checks
-have caused it to be reported as unsupported. Remove the check and
-allow the hash key to be specified.
+From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
 
+iavf_mac_filter struct contained couple boolean
+flags using up more memory than is necessary.
+Change the flags to be bitfields in an anonymous struct
+so all the flags now fit in one byte.
+
+Signed-off-by: Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
+Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Tested-by: Tony Brelinski <tony.brelinski@intel.com>
 ---
- drivers/net/ethernet/intel/iavf/iavf_ethtool.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf.h | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
-index 27c7b36427d2..f0e8b5adfecc 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
-@@ -1910,7 +1910,7 @@ static int iavf_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key,
-  * @key: hash key
-  * @hfunc: hash function to use
-  *
-- * Returns -EINVAL if the table specifies an inavlid queue id, otherwise
-+ * Returns -EINVAL if the table specifies an invalid queue id, otherwise
-  * returns 0 after programming the table.
-  **/
- static int iavf_set_rxfh(struct net_device *netdev, const u32 *indir,
-@@ -1919,19 +1919,21 @@ static int iavf_set_rxfh(struct net_device *netdev, const u32 *indir,
- 	struct iavf_adapter *adapter = netdev_priv(netdev);
- 	u16 i;
+diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
+index 3789269ce741..b5728bdbcf33 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf.h
++++ b/drivers/net/ethernet/intel/iavf/iavf.h
+@@ -137,9 +137,13 @@ struct iavf_q_vector {
+ struct iavf_mac_filter {
+ 	struct list_head list;
+ 	u8 macaddr[ETH_ALEN];
+-	bool is_new_mac;	/* filter is new, wait for PF decision */
+-	bool remove;		/* filter needs to be removed */
+-	bool add;		/* filter needs to be added */
++	struct {
++		u8 is_new_mac:1;    /* filter is new, wait for PF decision */
++		u8 remove:1;        /* filter needs to be removed */
++		u8 add:1;           /* filter needs to be added */
++		u8 is_primary:1;    /* filter is a default VF MAC */
++		u8 padding:4;
++	};
+ };
  
--	/* We do not allow change in unsupported parameters */
--	if (key ||
--	    (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP))
-+	/* Only support toeplitz hash function */
-+	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP)
- 		return -EOPNOTSUPP;
--	if (!indir)
-+
-+	if (!key && !indir)
- 		return 0;
- 
- 	if (key)
- 		memcpy(adapter->rss_key, key, adapter->rss_key_size);
- 
--	/* Each 32 bits pointed by 'indir' is stored with a lut entry */
--	for (i = 0; i < adapter->rss_lut_size; i++)
--		adapter->rss_lut[i] = (u8)(indir[i]);
-+	if (indir) {
-+		/* Each 32 bits pointed by 'indir' is stored with a lut entry */
-+		for (i = 0; i < adapter->rss_lut_size; i++)
-+			adapter->rss_lut[i] = (u8)(indir[i]);
-+	}
- 
- 	return iavf_config_rss(adapter);
- }
+ struct iavf_vlan_filter {
 -- 
 2.31.1
 
