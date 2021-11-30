@@ -2,73 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA85B463B91
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 17:19:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FB96463B9A
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 17:20:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242507AbhK3QWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 11:22:31 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:43631 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238903AbhK3QWa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 11:22:30 -0500
-Received: by mail-il1-f197.google.com with SMTP id j1-20020a056e02154100b002a181a1ce89so20298202ilu.10
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 08:19:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=82PcJsGJmWA9J7EfSsaBo8R7BvPCcHNRldX54MbqtUk=;
-        b=lc7nwPpAHVbKNB8aMxDYoBmchQp3TjIB0pSamDNAM7QqpuG5KLOqvc9LzcWHYklDXI
-         aq4ZC2sx1BbYe3JDPYrk8wWtwg+mAmi0lxCxtDtXLd78MS74NRejHDLHUeREE4OnONO2
-         fQhMfOtccIYB5HfP98Qo3uEEuzI8iz1Fy0j7lV5ZQqVkjJpFBKNWr1fEKoOT1Se2/F16
-         fFi2tymiphqRMP3Inf5m8bFZDLb9uoD0jrjYkvO34v+g3YIDEBR3Nf0sUBAInq/DLuKz
-         znO0GNTjYzLpCyEz7/moOTHoqTEPPkLcJOtVh+bcPzULHUmNlDLKPcjpkeems9GwapSh
-         CoQw==
-X-Gm-Message-State: AOAM533oo/2IUVKMyAtrSxnjVqWYPaZPtXgfBIddFeUmbJTRWnTSJjqP
-        c6SPAsTGCBHoQ7WB9/U4gx056p64XEaqX7OCSG4JT3FWTA+5
-X-Google-Smtp-Source: ABdhPJyxuzWxbXXQxXt/uLUyAQu5gmBfd3on9w/gXZzhkfqblOPzJkm/nRXJfXP2GwX0YVZSMLpgNz44tT0MMcAsVMq1dotg6xoH
+        id S239039AbhK3QXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 11:23:50 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:60628 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238935AbhK3QXu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 11:23:50 -0500
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1AUGFmq8001133;
+        Tue, 30 Nov 2021 16:20:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Qk42CDtrcUM2A4btLlkJr7y1lj6c4uq40SLP91nfLjw=;
+ b=riwH4Id6CmYS5yS/CwxoIRPynYfseX1tB9necV2Cygjtd7Srn6LMeiIBAiKSbHEK02Zf
+ dZpz7ym+Nm5421CBvd+kO6sAAGp1w/HVXBA8SnMrPXLGdfR5Pev3ubzl4vpLJF382/hG
+ 9y3i+UQ2Dex8usTru9BUs6auFAdx99/1AS/bFghSbQTCun9qtG1iDyjCP/UQ675/Na5A
+ TMDcSOHS5JnDXCiAskcqlg7Tec0WxPHkx97jCgA3QZsqetnhDO19e3vqiwC1F1ttbsXp
+ 3oD5MpGjDWvEpTZx+wXavVFma4U5uqXEPi6t8sAGrMUwzjJM/x93k2M5dyqMZRg48d1h 4g== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3cnqavr3qs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 30 Nov 2021 16:20:25 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1AUGG7o5001933;
+        Tue, 30 Nov 2021 16:20:25 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3cnqavr3pv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 30 Nov 2021 16:20:25 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1AUG4JJ7008329;
+        Tue, 30 Nov 2021 16:20:23 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma06ams.nl.ibm.com with ESMTP id 3ckbxk0v5j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 30 Nov 2021 16:20:22 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1AUGKKJV21037526
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 30 Nov 2021 16:20:20 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7D0F411C058;
+        Tue, 30 Nov 2021 16:20:20 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1ACDB11C04A;
+        Tue, 30 Nov 2021 16:20:20 +0000 (GMT)
+Received: from [9.145.172.190] (unknown [9.145.172.190])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 30 Nov 2021 16:20:20 +0000 (GMT)
+Message-ID: <7d09ae3d-3715-ecf6-08d5-a9606bd4966d@linux.ibm.com>
+Date:   Tue, 30 Nov 2021 17:20:19 +0100
 MIME-Version: 1.0
-X-Received: by 2002:a92:d8cf:: with SMTP id l15mr1635ilo.59.1638289150573;
- Tue, 30 Nov 2021 08:19:10 -0800 (PST)
-Date:   Tue, 30 Nov 2021 08:19:10 -0800
-In-Reply-To: <000000000000f5964705b7d47d8c@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000dc091705d203eac6@google.com>
-Subject: Re: [syzbot] INFO: trying to register non-static key in l2cap_sock_teardown_cb
-From:   syzbot <syzbot+a41dfef1d2e04910eb2e@syzkaller.appspotmail.com>
-To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        bobo.shaobowang@huawei.com, davem@davemloft.net, hdanton@sina.com,
-        johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
-        luiz.von.dentz@intel.com, marcel@holtmann.org,
-        mareklindner@neomailbox.ch, miklos@szeredi.hu, mszeredi@redhat.com,
-        netdev@vger.kernel.org, sw@simonwunderlich.de,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH net] net/smc: fix wrong list_del in smc_lgr_cleanup_early
+Content-Language: en-US
+To:     Dust Li <dust.li@linux.alibaba.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Tony Lu <tonylu@linux.alibaba.com>,
+        Wen Gu <guwen@linux.alibaba.com>, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20211130151731.55951-1-dust.li@linux.alibaba.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <20211130151731.55951-1-dust.li@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: -sp9lLt4eF6VU9vlPdZd3sCiEDStMPNZ
+X-Proofpoint-GUID: MIYfMH69gYkEeLUaCftV_9RETarbTNlL
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-11-30_09,2021-11-28_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 clxscore=1015
+ mlxlogscore=971 bulkscore=0 lowpriorityscore=0 adultscore=0
+ impostorscore=0 phishscore=0 priorityscore=1501 suspectscore=0
+ malwarescore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2111300084
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
+On 30/11/2021 16:17, Dust Li wrote:
+> smc_lgr_cleanup_early() meant to deleted the link
+> group from the link group list, but it deleted
+> the list head by mistake.
+> 
+> This may cause memory corruption since we didn't
+> remove the real link group from the list and later
+> memseted the link group structure.
 
-commit 1bff51ea59a9afb67d2dd78518ab0582a54a472c
-Author: Wang ShaoBo <bobo.shaobowang@huawei.com>
-Date:   Wed Sep 1 00:35:37 2021 +0000
+Great finding, thank you!
 
-    Bluetooth: fix use-after-free error in lock_sock_nested()
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=134c881eb00000
-start commit:   73b7a6047971 net: dsa: bcm_sf2: support BCM4908's integrat..
-git tree:       net-next
-kernel config:  https://syzkaller.appspot.com/x/.config?x=9ce34124da4c882b
-dashboard link: https://syzkaller.appspot.com/bug?extid=a41dfef1d2e04910eb2e
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=166ee4cf500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1337172f500000
-
-If the result looks correct, please mark the issue as fixed by replying with:
-
-#syz fix: Bluetooth: fix use-after-free error in lock_sock_nested()
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Acked-by: Karsten Graul <kgraul@linux.ibm.com>
