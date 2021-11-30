@@ -2,69 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70C1D463DD7
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 19:30:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69A6C463D72
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 19:13:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245494AbhK3Sdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 13:33:51 -0500
-Received: from mga01.intel.com ([192.55.52.88]:54000 "EHLO mga01.intel.com"
+        id S239326AbhK3SQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 13:16:47 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:59940 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245475AbhK3Sdt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Nov 2021 13:33:49 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10184"; a="260251841"
-X-IronPort-AV: E=Sophos;i="5.87,276,1631602800"; 
-   d="scan'208";a="260251841"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2021 10:14:01 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,276,1631602800"; 
-   d="scan'208";a="499878828"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga007.jf.intel.com with ESMTP; 30 Nov 2021 10:14:00 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Shiraz Saleem <shiraz.saleem@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, linux-rdma@vger.kernel.org,
-        mustafa.ismail@intel.com, jacob.e.keller@intel.com,
-        parav@nvidia.com, jiri@nvidia.com
-Subject: [PATCH net-next 2/2] net/ice: Remove unused enum
-Date:   Tue, 30 Nov 2021 10:12:43 -0800
-Message-Id: <20211130181243.3707618-3-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211130181243.3707618-1-anthony.l.nguyen@intel.com>
-References: <20211130181243.3707618-1-anthony.l.nguyen@intel.com>
+        id S235213AbhK3SQo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Nov 2021 13:16:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=nyEKgO2cVoWXQUIJS+Dmd2AJmEEUePOC8YNFDSKHJwk=; b=WIqF4y/N1BCoyF57bVuav6ucRu
+        rjOS/2RDluEzGlo8jt6tu7GD7ohPA6ElBC6VNS1XOhtpF2HhpwUHWQEvw9ePp2/2PmO9wmJ2Y1Ir5
+        EQqIsojgoDgeeGgh7DVkn/zzgUO+EXiqlPaykl0zyfkj6MxIOueVVeKt0T+v2ToemsVM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ms7cw-00F85R-0M; Tue, 30 Nov 2021 19:13:14 +0100
+Date:   Tue, 30 Nov 2021 19:13:13 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tianchen Ding <dtcccc@linux.alibaba.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: mdio: mscc-miim: Add depend of REGMAP_MMIO on
+ MDIO_MSCC_MIIM
+Message-ID: <YaZpufJdRIqvm9q7@lunn.ch>
+References: <20211130110209.804536-1-dtcccc@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211130110209.804536-1-dtcccc@linux.alibaba.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shiraz Saleem <shiraz.saleem@intel.com>
+On Tue, Nov 30, 2021 at 07:02:09PM +0800, Tianchen Ding wrote:
+> There's build error while CONFIG_REGMAP_MMIO is not set
+> and CONFIG_MDIO_MSCC_MIIM=m.
+> 
+> ERROR: modpost: "__devm_regmap_init_mmio_clk"
+> [drivers/net/mdio/mdio-mscc-miim.ko] undefined!
+> 
+> Add the depend of REGMAP_MMIO to fix it.
+> 
+> Fixes: a27a76282837 ("net: mdio: mscc-miim: convert to a regmap implementation")
+> Signed-off-by: Tianchen Ding <dtcccc@linux.alibaba.com>
 
-Remove ice_devlink_param_id enum as its not used.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Suggested-by: Parav Pandit <parav@nvidia.com>
-Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_devlink.h | 4 ----
- 1 file changed, 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.h b/drivers/net/ethernet/intel/ice/ice_devlink.h
-index faea757fcf5d..fe006d9946f8 100644
---- a/drivers/net/ethernet/intel/ice/ice_devlink.h
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.h
-@@ -4,10 +4,6 @@
- #ifndef _ICE_DEVLINK_H_
- #define _ICE_DEVLINK_H_
- 
--enum ice_devlink_param_id {
--	ICE_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
--};
--
- struct ice_pf *ice_allocate_pf(struct device *dev);
- 
- void ice_devlink_register(struct ice_pf *pf);
--- 
-2.31.1
-
+    Andrew
