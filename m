@@ -2,101 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FB96463B9A
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 17:20:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F85E463BA2
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 17:22:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239039AbhK3QXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 11:23:50 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:60628 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238935AbhK3QXu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 11:23:50 -0500
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1AUGFmq8001133;
-        Tue, 30 Nov 2021 16:20:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=Qk42CDtrcUM2A4btLlkJr7y1lj6c4uq40SLP91nfLjw=;
- b=riwH4Id6CmYS5yS/CwxoIRPynYfseX1tB9necV2Cygjtd7Srn6LMeiIBAiKSbHEK02Zf
- dZpz7ym+Nm5421CBvd+kO6sAAGp1w/HVXBA8SnMrPXLGdfR5Pev3ubzl4vpLJF382/hG
- 9y3i+UQ2Dex8usTru9BUs6auFAdx99/1AS/bFghSbQTCun9qtG1iDyjCP/UQ675/Na5A
- TMDcSOHS5JnDXCiAskcqlg7Tec0WxPHkx97jCgA3QZsqetnhDO19e3vqiwC1F1ttbsXp
- 3oD5MpGjDWvEpTZx+wXavVFma4U5uqXEPi6t8sAGrMUwzjJM/x93k2M5dyqMZRg48d1h 4g== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3cnqavr3qs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 30 Nov 2021 16:20:25 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1AUGG7o5001933;
-        Tue, 30 Nov 2021 16:20:25 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3cnqavr3pv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 30 Nov 2021 16:20:25 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1AUG4JJ7008329;
-        Tue, 30 Nov 2021 16:20:23 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3ckbxk0v5j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 30 Nov 2021 16:20:22 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1AUGKKJV21037526
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 30 Nov 2021 16:20:20 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7D0F411C058;
-        Tue, 30 Nov 2021 16:20:20 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1ACDB11C04A;
-        Tue, 30 Nov 2021 16:20:20 +0000 (GMT)
-Received: from [9.145.172.190] (unknown [9.145.172.190])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 30 Nov 2021 16:20:20 +0000 (GMT)
-Message-ID: <7d09ae3d-3715-ecf6-08d5-a9606bd4966d@linux.ibm.com>
-Date:   Tue, 30 Nov 2021 17:20:19 +0100
+        id S238587AbhK3QZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 11:25:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54720 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237898AbhK3QZk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 11:25:40 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F12F3C061574
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 08:22:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=rWNnMiJCsMsBfjBD6NUJPJdWzkzppOxkrZgfdQslB14=; b=UjHFrEjQ1vhWZ+AApVY2YZ07mM
+        Y0ip17iGKA0clFuF3jbIxuWdV43hwwa7mwTgpgPilJAhWQjJ9hau3mUOiu7fQnWKLme0U5f2OJIIF
+        DEwcgZmBo9mA/0vBkGSrPXvt59ayGw8/PaxRTJs49KlfpbY6qzjeNCR+K/aFBRBtFY3A2EOlNF7ug
+        lp7d5QNNn0JFKWvFWVESAKmHba5I5kfoDR+G3Oe0FL6ZupIrqmxKUpuqYYvFx0mRiSyv6HYIyEgcj
+        T5ivFI8SAYavZrC2uH496seqkh/hv3gN7RTNbwfj5dRMiPgpcacypU08tk14UfCqj4JtIJ11ErYTE
+        RHr5m95A==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55992)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ms5tb-00079B-7C; Tue, 30 Nov 2021 16:22:19 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ms5ta-0007BS-Og; Tue, 30 Nov 2021 16:22:18 +0000
+Date:   Tue, 30 Nov 2021 16:22:18 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Subject: Re: [PATCH net 6/6] net: dsa: mv88e6xxx: Link in pcs_get_state() if
+ AN is bypassed
+Message-ID: <YaZPutgAUbd4eUqN@shell.armlinux.org.uk>
+References: <20211129195823.11766-1-kabel@kernel.org>
+ <20211129195823.11766-7-kabel@kernel.org>
+ <YaVeyWsGd06eRUqv@shell.armlinux.org.uk>
+ <20211130011812.08baccdc@thinkpad>
+ <20211130170911.6355db44@thinkpad>
+ <YaZONv7fmRWK+qCb@shell.armlinux.org.uk>
+ <20211130171859.6deeb17d@thinkpad>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [PATCH net] net/smc: fix wrong list_del in smc_lgr_cleanup_early
-Content-Language: en-US
-To:     Dust Li <dust.li@linux.alibaba.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Tony Lu <tonylu@linux.alibaba.com>,
-        Wen Gu <guwen@linux.alibaba.com>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20211130151731.55951-1-dust.li@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <20211130151731.55951-1-dust.li@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: -sp9lLt4eF6VU9vlPdZd3sCiEDStMPNZ
-X-Proofpoint-GUID: MIYfMH69gYkEeLUaCftV_9RETarbTNlL
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-11-30_09,2021-11-28_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 clxscore=1015
- mlxlogscore=971 bulkscore=0 lowpriorityscore=0 adultscore=0
- impostorscore=0 phishscore=0 priorityscore=1501 suspectscore=0
- malwarescore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2111300084
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211130171859.6deeb17d@thinkpad>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/11/2021 16:17, Dust Li wrote:
-> smc_lgr_cleanup_early() meant to deleted the link
-> group from the link group list, but it deleted
-> the list head by mistake.
+On Tue, Nov 30, 2021 at 05:18:59PM +0100, Marek Behún wrote:
+> On Tue, 30 Nov 2021 16:15:50 +0000
+> "Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
 > 
-> This may cause memory corruption since we didn't
-> remove the real link group from the list and later
-> memseted the link group structure.
+> > On Tue, Nov 30, 2021 at 05:09:11PM +0100, Marek Behún wrote:
+> > > Seems that BMSR_ANEGCAPABLE is set even if AN is disabled in BMCR.  
+> > 
+> > Hmm, that behaviour goes against 22.2.4.2.10:
+> > 
+> > A PHY shall return a value of zero in bit 1.5 if Auto-Negotiation is
+> > disabled by clearing bit 0.12. A PHY shall also return a value of zero
+> > in bit 1.5 if it lacks the ability to perform Auto-Negotiation.
+> > 
+> > > I was under the impression that
+> > >   state->an_complete
+> > > should only be set to true if AN is enabled.  
+> > 
+> > Yes - however as you've stated, the PHY doesn't follow 802.3 behaviour
+> > so I guess we should make the emulation appear compliant by fixing it
+> > like this.
+> 
+> OK, I will use BMCR_ANENABLE and add a comment explaining that we can't
+> use BMSR_ANEGCAPABLE because the PHY violates standard. Would that be
+> okay?
 
-Great finding, thank you!
+Yes, thanks.
 
-Acked-by: Karsten Graul <kgraul@linux.ibm.com>
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
