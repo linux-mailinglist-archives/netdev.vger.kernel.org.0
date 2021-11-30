@@ -2,44 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4072F463808
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 15:54:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3121463823
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 15:55:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243653AbhK3O5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 09:57:48 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:48072 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232187AbhK3Ozr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 09:55:47 -0500
+        id S243099AbhK3O6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 09:58:21 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:58722 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242880AbhK3O4X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 09:56:23 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 83BBDB81A5F;
-        Tue, 30 Nov 2021 14:52:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80A7BC8D180;
-        Tue, 30 Nov 2021 14:52:24 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 717A2CE1A70;
+        Tue, 30 Nov 2021 14:53:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42599C53FC7;
+        Tue, 30 Nov 2021 14:52:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638283945;
-        bh=A4f6DIUx4t28wWw6o3+t5fELurv1o9rgYYTfIMlw3NE=;
+        s=k20201202; t=1638283980;
+        bh=y8sSD1M0rmRs8aa71ZeIsNb3AxdnPDLqgJeWwCEXq7s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BCiQmFHLs3HZe98fcv0P9ZexAoumZzuPmxxx11kWEiAqU9rLZFNsGLN1aTioFRAlX
-         dOrUIGOTfOEcxvZrO+C1WEfRA8ssswM7XjidByZt7LrbK+jFhHPuU+AQyWKUt1HgnW
-         ySr0Rich0UeBFzAdfifWnhvqxNTvyA6tYb7jsA4VqlNeqY82K7ZzNDXYmLvD/+4mMS
-         wCw4Cy9cr5477LLwcRWLXifzJSXbL4PqghN3ZPo7F38KE8cWhDdWGmwCPwD1GkGnMV
-         wI6WPNYne4J8u6RJEnloQGnCj0Ya55cMu3F1OdpXPaRF7fg+Yx3jvQUzuCPI827y/b
-         bvmC7vW9qC3qQ==
+        b=q83jGDYnNRXge6TYofA5qtA+/CSZPmkWrR9Qs/niXywqPiPVWOn5ojPFqFVGylq/y
+         6Mv8FQDwWx4RlGHPZD22CLIuMNOFU6l4aoPGGKldfMfMpJu9ZON9NndPhV/76oAEk2
+         09VZYs9HG/Kg2d4scE0b3zzVSPfXcb2V3FvLXKxoNXLguNg4OPD3XVhACFfy7/WYmR
+         HB4NsRrPNdRfjAa+I0ZTYgssSmVQ0Zem4/T2S917758CaLnu5XxT1aN1goTvWlzwLq
+         NqDP4yBUhG5Zn+O5K43C7XFz+53gvLuTr9yejp36DefLVAbBiiBI8Oqmd0T5rIIRPT
+         OM87ScZLGvAuQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>,
+Cc:     Li Zhijian <zhijianx.li@intel.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, rajur@chelsio.com,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 14/25] net: chelsio: cxgb4vf: Fix an error code in cxgb4vf_pci_probe()
-Date:   Tue, 30 Nov 2021 09:51:44 -0500
-Message-Id: <20211130145156.946083-14-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, shuah@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 08/17] selftests/tc-testings: Be compatible with newer tc output
+Date:   Tue, 30 Nov 2021 09:52:32 -0500
+Message-Id: <20211130145243.946407-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211130145156.946083-1-sashal@kernel.org>
-References: <20211130145156.946083-1-sashal@kernel.org>
+In-Reply-To: <20211130145243.946407-1-sashal@kernel.org>
+References: <20211130145243.946407-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -48,37 +51,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Li Zhijian <zhijianx.li@intel.com>
 
-[ Upstream commit b82d71c0f84a2e5ccaaa7571dfd5c69e0e2cfb4a ]
+[ Upstream commit ac2944abe4d7732f29a79f063c9cae7df2a3e3cc ]
 
-During the process of driver probing, probe function should return < 0
-for failure, otherwise kernel will treat value == 0 as success.
+old tc(iproute2-5.9.0) output:
+ action order 1: bpf action.o:[action-ok] id 60 tag bcf7977d3b93787c jited default-action pipe
+newer tc(iproute2-5.14.0) output:
+ action order 1: bpf action.o:[action-ok] id 64 name tag bcf7977d3b93787c jited default-action pipe
 
-Therefore, we should set err to -EINVAL when
-adapter->registered_device_map is NULL. Otherwise kernel will assume
-that driver has been successfully probed and will cause unexpected
-errors.
+It can fix below errors:
+ # ok 260 f84a - Add cBPF action with invalid bytecode
+ # not ok 261 e939 - Add eBPF action with valid object-file
+ #       Could not match regex pattern. Verify command output:
+ # total acts 0
+ #
+ #       action order 1: bpf action.o:[action-ok] id 42 name  tag bcf7977d3b93787c jited default-action pipe
+ #        index 667 ref 1 bind 0
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Li Zhijian <zhijianx.li@intel.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c | 1 +
- 1 file changed, 1 insertion(+)
+ tools/testing/selftests/tc-testing/tc-tests/actions/bpf.json | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c b/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
-index f4d41f968afa2..fb747901462e0 100644
---- a/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
-@@ -3246,6 +3246,7 @@ static int cxgb4vf_pci_probe(struct pci_dev *pdev,
- 	}
- 	if (adapter->registered_device_map == 0) {
- 		dev_err(&pdev->dev, "could not register any net devices\n");
-+		err = -EINVAL;
- 		goto err_disable_interrupts;
- 	}
- 
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/bpf.json b/tools/testing/selftests/tc-testing/tc-tests/actions/bpf.json
+index 1a9b282dd0be2..7590f883d7edf 100644
+--- a/tools/testing/selftests/tc-testing/tc-tests/actions/bpf.json
++++ b/tools/testing/selftests/tc-testing/tc-tests/actions/bpf.json
+@@ -66,7 +66,7 @@
+         "cmdUnderTest": "$TC action add action bpf object-file $EBPFDIR/action.o section action-ok index 667",
+         "expExitCode": "0",
+         "verifyCmd": "$TC action get action bpf index 667",
+-        "matchPattern": "action order [0-9]*: bpf action.o:\\[action-ok\\] id [0-9]* tag [0-9a-f]{16}( jited)? default-action pipe.*index 667 ref",
++        "matchPattern": "action order [0-9]*: bpf action.o:\\[action-ok\\] id [0-9].* tag [0-9a-f]{16}( jited)? default-action pipe.*index 667 ref",
+         "matchCount": "1",
+         "teardown": [
+             "$TC action flush action bpf",
 -- 
 2.33.0
 
