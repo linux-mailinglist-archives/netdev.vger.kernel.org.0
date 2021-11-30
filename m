@@ -2,125 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66B6F463C46
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 17:51:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A5D5463C63
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 17:59:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244500AbhK3QyW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 11:54:22 -0500
-Received: from mta-p6.oit.umn.edu ([134.84.196.206]:55938 "EHLO
-        mta-p6.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244588AbhK3QyM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 11:54:12 -0500
-Received: from localhost (unknown [127.0.0.1])
-        by mta-p6.oit.umn.edu (Postfix) with ESMTP id 4J3Ss43ynyz9vqlK
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 16:50:48 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at umn.edu
-Received: from mta-p6.oit.umn.edu ([127.0.0.1])
-        by localhost (mta-p6.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 9y8VP0iEd8mI for <netdev@vger.kernel.org>;
-        Tue, 30 Nov 2021 10:50:48 -0600 (CST)
-Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com [209.85.216.72])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S244500AbhK3RDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 12:03:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35234 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229750AbhK3RDA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 12:03:00 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63F6FC061574
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 08:59:41 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mta-p6.oit.umn.edu (Postfix) with ESMTPS id 4J3Ss41vr9z9vqlJ
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 10:50:48 -0600 (CST)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p6.oit.umn.edu 4J3Ss41vr9z9vqlJ
-DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p6.oit.umn.edu 4J3Ss41vr9z9vqlJ
-Received: by mail-pj1-f72.google.com with SMTP id x1-20020a17090a294100b001a6e7ba6b4eso10134620pjf.9
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 08:50:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=umn.edu; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=W4lvCUBRSibHXkkFm5Ye1P7mrNgQ0tt0c7dI8z7Afww=;
-        b=Dlmdt+ElX1hlkn6am6/1pELOrapSy/t1WY9DyPuGdNODNSWoBFeg6Wg4xITA/iEoa+
-         j4UCUIK35xCdxg9kcWVBrMZ3+D4yib/Xz7aoYtZMWLfhcRurW28K6O3Dc1uEawwx2xWb
-         UnRdDxZH0zR+RiLuPciO9KahoCMNO39X6DAX2bYzqXBGqfzCQrInM9FySrJV/5bIGuhy
-         IP/zUAahOdVn7DuG4f+p5FQdh2XxsfHaNFMhPV5eeV7gilXCqx7yGBAnRoRVH5Jm8GTm
-         OrCgXUSdH8kmb9uySd9GtUchctxqAVqYacwvcBpMg490GB/Pd2dtNfnunRAibwGRPe+w
-         70uQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=W4lvCUBRSibHXkkFm5Ye1P7mrNgQ0tt0c7dI8z7Afww=;
-        b=AjGyFLtdJaf4T6ICmuVTLzl/dTLEwMZ1UXQntxXWHtu7PVm3/q1yjX6qf7nVyAF01j
-         m13J9U1vU4Em9mZsGOFaRGL64SdDzmt0R2LtBOD7xemFBX3vFq5QCCi/EoAQyQZ/56Yd
-         sJ8oBnXE7lm/anXxYql4RflW9ypYC/7lUP0W3797H1wrLFrEBJjOJPZxgJf91JfqlfUu
-         NNjZcU7uYWuPcrfz0apZlEp499vhBygKIn1SndDjsK/dLKAbsi+urviZg7TtbJAgog39
-         ORy4+Y/uN4UnAYElVx5LkjuPG1mfWSeT1FSNZaIpHMVSAMbOI8JXC2y7evfMGXIB9ZeB
-         ZMbA==
-X-Gm-Message-State: AOAM532VlGBvXFUlIoo5GebNGbcM2moo3mjVNUaqIydn6kVf/xneewOi
-        B7NzUIubglWOXL7GU7O5xBoEI6HeNoz9kL8R0Kq93chv+49aw3zDCQCSw7lZDmXHWgUBl2oPKCH
-        YXhMudC25kq4yJZ2qR2H7
-X-Received: by 2002:a63:d848:: with SMTP id k8mr219758pgj.467.1638291047499;
-        Tue, 30 Nov 2021 08:50:47 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzUoLI32LU8MqKKgo7LZRAezZSN58Vg9+5tPg/RV3rRdVJexTB/R0GhOJHYcIY2IKHynr7WlQ==
-X-Received: by 2002:a63:d848:: with SMTP id k8mr219736pgj.467.1638291047279;
-        Tue, 30 Nov 2021 08:50:47 -0800 (PST)
-Received: from zqy787-GE5S.lan ([36.7.42.137])
-        by smtp.gmail.com with ESMTPSA id y4sm22832295pfi.178.2021.11.30.08.50.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Nov 2021 08:50:47 -0800 (PST)
-From:   Zhou Qingyang <zhou1615@umn.edu>
-To:     zhou1615@umn.edu
-Cc:     kjlu@umn.edu, Sunil Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] octeontx2-af: Fix a memleak bug in rvu_mbox_init()
-Date:   Wed,  1 Dec 2021 00:50:39 +0800
-Message-Id: <20211130165039.192426-1-zhou1615@umn.edu>
-X-Mailer: git-send-email 2.25.1
+        by sin.source.kernel.org (Postfix) with ESMTPS id A9EFBCE1A80
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 16:59:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51715C53FC7;
+        Tue, 30 Nov 2021 16:59:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638291577;
+        bh=dRUUd9PrdQq9Y9CVA37l7KFOaYhvZ7gRA9x58SEESFA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dpBYKgHWjXlDO6uf4mFWncrVlL8wirXhRM/D/6LrdzGb8LtIERpzsN8dxOg6lyB8n
+         uprJ7l6op7wJMwDHMTVevUNZn6Trsn/tgsdoriuPUCYoq0el8Pq3D5v5mM60vSpb1v
+         yRVnL/M1qm3rJq055xiQmmBq087q2SKPWcO+Cso0Prehhaz5mAv2ADK07PgDgnCDUS
+         ezQAuSxXrrx0z4pT/W7IesGAe2EZ9gkugdTUu9gF1F9D60l2pSYduyW3OfxcJtbyVn
+         BjOPE+jyeixEqgXddkUfQBFzfVQU3pfTg4F8x0sBfbO99NBPamZJDgBVJ8CYQxBuYV
+         InhKTO4sO5f0g==
+Date:   Tue, 30 Nov 2021 08:59:36 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org,
+        davem@davemloft.net, andrew@lunn.ch, pali@kernel.org,
+        jacob.e.keller@intel.com, vadimp@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next 0/4] ethtool: Add ability to flash and
+ query transceiver modules' firmware
+Message-ID: <20211130085936.669eb48c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YaXzCKEwuICECkyz@shredder>
+References: <20211127174530.3600237-1-idosch@idosch.org>
+        <20211129093724.3b76ebff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YaXicrPwrHJoTi9w@shredder>
+        <20211130085426.txa5xrrd3nipxgtz@lion.mk-sys.cz>
+        <YaXzCKEwuICECkyz@shredder>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In rvu_mbox_init(), mbox_regions is not freed or passed out
-under the switch-default region, which could lead to a memory leak.
+On Tue, 30 Nov 2021 11:46:48 +0200 Ido Schimmel wrote:
+> > As I already mentioned, we should distinguish between ethtool API and
+> > ethtool utility. It is possible to implement the flashing in devlink API
+> > and let both devlink and ethtool utilities use that API.
+> >=20
+> > I'm not saying ethtool API is a wrong choice, IMHO either option has its
+> > pros and cons. =20
+>=20
+> What are the cons of implementing it in ethtool? It seems that the only
+> thing devlink has going for it is the fact that it supports devlink
+> device firmware update API, but it cannot be used as-is and needs to be
+> heavily extended (e.g., asynchronicity is a must, per-port as opposed to
+> per-device). It doesn't support any transceiver module API, as opposed
+> to ethtool.
 
-Fix this bug by changing 'return err' to 'goto free_regions'.
+The primary advantage is that we could hopefully share some of the
+infrastructure around versioning, A/B image selection, activation and
+error reporting. All those are universal firmware update problems.
 
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
+> > I'm just trying to point out that implementation in devlink API does
+> > not necessarily mean one cannot use the ethtool to use the feature. =20
+>=20
+> I agree it can be done, but the fact that something can be done doesn't
+> mean it should be done. If I'm extending devlink with new uAPI, then I
+> will add support for it in devlink(8) and not ethtool(8) and vice versa.
 
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
+I'm not dead set on SFP flashing being in devlink, I just think it's
+the right choice, but at the end of the day - your call.
 
-Builds with CONFIG_OCTEONTX2_AF=y show no new warnings,
-and our static analyzer no longer warns about this code.
+=46rom my experience working with and on FW management in production
+(using devlink) I don't think that the "rest of the SFP API is in
+ethtool" motivation matters in practice. At least not in my
+environment. Upgrading firmware is a process that's more concerned with
+different device components than the functionality those devices
+actually provide. For a person writing FW update automation its better
+if they have one type of API to talk to. IOW nobody cares if e.g. the FW
+upgrade on a soundcard is via the sound API.
 
-Fixes: 98c561116360 (“octeontx2-af: cn10k: Add mbox support for CN10K platform”)
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
----
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-index cb56e171ddd4..3ca6b942ebe2 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-@@ -2341,7 +2341,7 @@ static int rvu_mbox_init(struct rvu *rvu, struct mbox_wq_info *mw,
- 			goto free_regions;
- 		break;
- 	default:
--		return err;
-+		goto free_regions;
- 	}
- 
- 	mw->mbox_wq = alloc_workqueue(name,
--- 
-2.25.1
-
+When automation gets more complex (again versioning, checking if there
+is degradation and FW has to be re-applied, checking if upgrades can be
+live, or device has to be reset, power cycled, etc) plugging into a
+consistent API is what matters most.
