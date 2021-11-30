@@ -2,103 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 216BD4636FB
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 15:44:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89F45463753
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 15:49:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242312AbhK3Ore (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 09:47:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58958 "EHLO
+        id S242808AbhK3OxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 09:53:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235682AbhK3Ord (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 09:47:33 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17440C061574
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 06:44:14 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id o20so87275426eds.10
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 06:44:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jDEDWNzDGOOvqfj1Z/NnYbI6iPu0zAjWn6iQvmfxq4A=;
-        b=GAvX7ZsnTPyIio0prs35hvy4SM0A9CmLNFh5fBcJmXHWXV5MJMhgILrHmDgBNOGTpA
-         Ga5RGILKPwDIEdUAKPwate7uS6XVyPqn5El/41dg5JUvOywa4HPH+KFo08rgocq+RQ3t
-         JWHj4J49GPiauKKgbHtLi3bDYh6WAcibcdF+tW4mCa1CZESMSUwgeNJcMLrPKMVzrR0Z
-         yFDVVLeLgtlqpp4oMA7s3qOokwehhKeWEkpi3jx+PwsrHNMUqqg2ufq38GPZTkNLkmGL
-         mBL4Nk7ogb5vrh4OdQHlt9oE0QsFh23U5z4HHH0eeTr6ubsWklQinxfAoBVbR46fE/T2
-         c5uQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jDEDWNzDGOOvqfj1Z/NnYbI6iPu0zAjWn6iQvmfxq4A=;
-        b=HVnxcKyRQ9n4KnNT8rKhlvpepQA8en8sOi1KiLlgW4G0wXPwg13eK0b0zUgdMWnhrB
-         p0RYgEEnpO6kyb7VdPDUENSVpP43BQlCp3bQlQb86iBOp2j1CysVsTrsaY0NKxpYPvc5
-         3+AgQAeyugBsxY4yfx8qlNS82Iqq/nCg2UcWoK4pfCX30dRnr8c9AbZtkyh8cV9nyLng
-         XW5LFi9lIFzpzTLOvH1xsbqhJHzR1Jtb0+cC2ejh+L5PkeZWkx8laFW5L1RIplT6e/tX
-         25068mNus2nhUutynjNBdsCTwdsoON7f95hzfdTHKuhNbJ03Cp9UUU7fSOTYGYMuRYt4
-         qVJw==
-X-Gm-Message-State: AOAM530Demwhn6GxC/3mFEnbbHSESngQ4nUZJKrASLNvCxUNh5gLESBV
-        9RorureYMPTi/fPGuEFTMI+BDIqzft/IfLAEQTs=
-X-Google-Smtp-Source: ABdhPJzlFLfumuxUk5j98s2NjXxGfGarkBF+pUiSdjIMQ7JD6JKkL+k2dz2xMhICkIbFNAQ5mHF9hAafIJb/cGULT1I=
-X-Received: by 2002:a17:906:dc94:: with SMTP id cs20mr65214444ejc.117.1638283451797;
- Tue, 30 Nov 2021 06:44:11 -0800 (PST)
+        with ESMTP id S242684AbhK3OwW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 09:52:22 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66608C061763;
+        Tue, 30 Nov 2021 06:48:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B41B4CE1A46;
+        Tue, 30 Nov 2021 14:48:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F29F5C53FD1;
+        Tue, 30 Nov 2021 14:48:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638283693;
+        bh=+ug5frNLAhWmKn65zvB3H/+90mRBptjXOvLo4yejWA8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=R4min4gvEY62KhFUElcGrINZ1eyQ9Ocn5xx8qmIuQic7PA7RLl6eMyQkf1PmAAtcF
+         s/vPi7Ag09v1h5vP03ZhSsYzj+1/H8nukdr+9vpBuu0eLrjHhU7Or0qVNNHHuWWUmS
+         YDFgb9r4R1b+GtHLOAGKEPbhfjxOgo6jq2Bizj5hzeY5PT0mIW/DNEbrhUSj68SK/t
+         VRWHm8A73PQy7l0a+3e3+cPE3NqFdvF7IbKZuPyT/J9bF/mOSaibHzPgHoH5xthIEv
+         pJNUY/dKyrWc3xwOye/CRaXwN0HVaoP0v3DKHSvBng7kiFj1yosNhw6O0onzOYjt7F
+         5g+c/16ewEXxQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Zekun Shen <bruceshenzk@gmail.com>,
+        Brendan Dolan-Gavitt <brendandg@nyu.edu>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 21/68] atlantic: fix double-free in aq_ring_tx_clean
+Date:   Tue, 30 Nov 2021 09:46:17 -0500
+Message-Id: <20211130144707.944580-21-sashal@kernel.org>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20211130144707.944580-1-sashal@kernel.org>
+References: <20211130144707.944580-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20211130063939.6929-1-rdunlap@infradead.org>
-In-Reply-To: <20211130063939.6929-1-rdunlap@infradead.org>
-From:   Max Filippov <jcmvbkbc@gmail.com>
-Date:   Tue, 30 Nov 2021 06:44:00 -0800
-Message-ID: <CAMo8BfLwhVPgWYf4SOFkqRJC7tLHNnoT15W5nvE3gLM6iEDkqw@mail.gmail.com>
-Subject: Re: [PATCH 1/2 -net] natsemi: xtensa: allow writing to const dev_addr array
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Chris Zankel <chris@zankel.net>,
-        "open list:TENSILICA XTENSA PORT (xtensa)" 
-        <linux-xtensa@linux-xtensa.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Randy,
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-On Mon, Nov 29, 2021 at 10:39 PM Randy Dunlap <rdunlap@infradead.org> wrote:
->
-> Let the compiler know that it's ok to write to this const field.
->
-> Fixes these build errors:
->
-> ../drivers/net/ethernet/natsemi/xtsonic.c: In function 'sonic_probe1':
-> ../drivers/net/ethernet/natsemi/xtsonic.c:166:36: error: assignment of read-only location '*(dev->dev_addr + (sizetype)(i * 2))'
->   166 |                 dev->dev_addr[i*2] = val;
-> ../drivers/net/ethernet/natsemi/xtsonic.c:167:38: error: assignment of read-only location '*(dev->dev_addr + ((sizetype)(i * 2) + 1))'
->   167 |                 dev->dev_addr[i*2+1] = val >> 8;
->
-> Fixes: 74f2a5f0ef64 ("xtensa: Add support for the Sonic Ethernet device for the XT2000 board.")
+[ Upstream commit 6a405f6c372d14707b87d3097b361b69899a26c8 ]
 
-I don't think the original code was broken. But the change
-adeef3e32146 ("net: constify netdev->dev_addr")
-stated that all users of net_device::dev_addr were converted
-to use helpers which is not correct.
+We found this bug while fuzzing the device driver. Using and freeing
+the dangling pointer buff->skb would cause use-after-free and
+double-free.
 
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-> Cc: Chris Zankel <chris@zankel.net>
-> Cc: Max Filippov <jcmvbkbc@gmail.com>
-> Cc: linux-xtensa@linux-xtensa.org
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> ---
->  drivers/net/ethernet/natsemi/xtsonic.c |    7 ++++---
+This bug is triggerable with compromised/malfunctioning devices. We
+found the bug with QEMU emulation and tested the patch by emulation.
+We did NOT test on a real device.
 
-There's also jazzsonic.c in this directory with the same pattern
-in it. I've posted another patch that fixes them both using helper
-function, as I guess was originally intended, here:
-https://lore.kernel.org/lkml/20211130143600.31970-1-jcmvbkbc@gmail.com/
+Attached is the bug report.
 
+BUG: KASAN: double-free or invalid-free in consume_skb+0x6c/0x1c0
+
+Call Trace:
+ dump_stack+0x76/0xa0
+ print_address_description.constprop.0+0x16/0x200
+ ? consume_skb+0x6c/0x1c0
+ kasan_report_invalid_free+0x61/0xa0
+ ? consume_skb+0x6c/0x1c0
+ __kasan_slab_free+0x15e/0x170
+ ? consume_skb+0x6c/0x1c0
+ kfree+0x8c/0x230
+ consume_skb+0x6c/0x1c0
+ aq_ring_tx_clean+0x5c2/0xa80 [atlantic]
+ aq_vec_poll+0x309/0x5d0 [atlantic]
+ ? _sub_I_65535_1+0x20/0x20 [atlantic]
+ ? __next_timer_interrupt+0xba/0xf0
+ net_rx_action+0x363/0xbd0
+ ? call_timer_fn+0x240/0x240
+ ? __switch_to_asm+0x34/0x70
+ ? napi_busy_loop+0x520/0x520
+ ? net_tx_action+0x379/0x720
+ __do_softirq+0x18c/0x634
+ ? takeover_tasklets+0x5f0/0x5f0
+ run_ksoftirqd+0x15/0x20
+ smpboot_thread_fn+0x2f1/0x6b0
+ ? smpboot_unregister_percpu_thread+0x160/0x160
+ ? __kthread_parkme+0x80/0x100
+ ? smpboot_unregister_percpu_thread+0x160/0x160
+ kthread+0x2b5/0x3b0
+ ? kthread_create_on_node+0xd0/0xd0
+ ret_from_fork+0x22/0x40
+
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Reviewed-by: Igor Russkikh <irusskikh@marvell.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/aquantia/atlantic/aq_ring.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+index 24122ccda614c..81b3756417ec2 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+@@ -298,13 +298,14 @@ bool aq_ring_tx_clean(struct aq_ring_s *self)
+ 			}
+ 		}
+ 
+-		if (unlikely(buff->is_eop)) {
++		if (unlikely(buff->is_eop && buff->skb)) {
+ 			u64_stats_update_begin(&self->stats.tx.syncp);
+ 			++self->stats.tx.packets;
+ 			self->stats.tx.bytes += buff->skb->len;
+ 			u64_stats_update_end(&self->stats.tx.syncp);
+ 
+ 			dev_kfree_skb_any(buff->skb);
++			buff->skb = NULL;
+ 		}
+ 		buff->pa = 0U;
+ 		buff->eop_index = 0xffffU;
 -- 
-Thanks.
--- Max
+2.33.0
+
