@@ -2,322 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBFE14630D7
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 11:16:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AECFB4630FA
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 11:28:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231216AbhK3KTs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 05:19:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52550 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229729AbhK3KTs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 05:19:48 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C68BC061574;
-        Tue, 30 Nov 2021 02:16:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 431E4CE1839;
-        Tue, 30 Nov 2021 10:16:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7416C53FC1;
-        Tue, 30 Nov 2021 10:16:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638267385;
-        bh=1zbVNs7CGxoHO8YD8XYILaoPM51VGGD2L2TYbSAciqA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=UWzPJDA6mpu7o6HMD6I/cVweOkdtnkqMXZh22gcuYOaEORIXzwVTEMzRLawJfc241
-         JY/k5Xzjh1augYyj/Z89BfC9+nhtaXoXl0PRauREMofz1RUNx+DVdCARn212T2TX2g
-         cydX3k31ZdrRGsckzbjrLQKRUexsXcVuqZj0BMAdxmcQIRexyZNaLkeQK+Kql10xCe
-         rXxFG9gWAYW66wxQ7mP67eI1xllMt4zpBaB86uQzNCPBLql8K3L2n6wQpLUEgvKjA0
-         FFnGPPiLFgE/hcGPX7aypdZgPCr0RN3mbpUj5/Hy4NdSfaa+wPPyT0eJ4jdMwpiW8o
-         L8zN9poGVtFvw==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@nvidia.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next v2] devlink: Simplify devlink resources unregister call
-Date:   Tue, 30 Nov 2021 12:16:20 +0200
-Message-Id: <b5b984a05fd069ff3b01683440f5461a64e44512.1638267154.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.33.1
+        id S232596AbhK3Kbm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 05:31:42 -0500
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:39537 "EHLO
+        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231216AbhK3Kbl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 05:31:41 -0500
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 5934058031E;
+        Tue, 30 Nov 2021 05:28:21 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute6.internal (MEProxy); Tue, 30 Nov 2021 05:28:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=uIwkoD
+        8Pi03mbKbjXRQW0yvHkpeb/tjA53Ma7wUz9Vs=; b=i0rE/UjtG5lzFWaD/SU+a7
+        KvcRMmY+y7sdGIlHQtz6jmxODjnUch+j2hojzjF1wJeK7+fG+TRQPkzq/roL5WI4
+        l9pwjFFA++WcWyaNaWeJN1jJeREfIj7JNNGeqO1Zr+uYoYygANROjjlfY29gxYhb
+        3KSeuSug1Y1OexxVfIIOYZbagZYPYY0Dwp3bkCahMrGyHH17GYLR5ADUHz0XAXKW
+        UuSxI06Y4mv0ndu3HGrESRz5giGbzNvU+YBY3nmzsoArteFe6VBDcjRs7uvKhplA
+        nYew3CpM3GSbTsiVGuArJX8gJ6MJR8ay9xordzmL8Oeh186TNC2Wu7k/Ptes+qOw
+        ==
+X-ME-Sender: <xms:xPylYdGZxH4Fekz54PWaE8mvsXczETaBPfgPEVbjhTU6EGR6UAsETg>
+    <xme:xPylYSVgie7Zrhy6-zcILEkI27jlzpJ93l5cXUwLXwTbd8j20eeJ-9MeZwWeypKT4
+    BSIb2KjmJJCEfA>
+X-ME-Received: <xmr:xPylYfKFW6xb7SrNQujxhm4XWU9H3pIFH2Xxc07SP2YNDGS9TcrCvtwLzAjnEpF83jNYmJY0lJqJrX1SLlKb1Ky7psvrmw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddriedugdduiecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnhepgfevgfevueduueffieffheeifffgjeelvedtteeuteeuffekvefggfdtudfgkeev
+    necuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:xPylYTHgSjk8z0fNE26L0bHYYisNZXRnklO8CXZh4k6owTuDcGNmng>
+    <xmx:xPylYTU_vRG5LZY-Uo0AASFcRQEOgdvVHVGw7bIO_gI0hdCVRXRYWA>
+    <xmx:xPylYeMjIFDFnTYxpTqOON3lNUFRP-0MjE4tajIsv5851irGdWVCJg>
+    <xmx:xfylYfrOnyM7-rL6BOSn_VuQf-av21gw-vOhOSn4GerxuuQwdPOopA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 30 Nov 2021 05:28:20 -0500 (EST)
+Date:   Tue, 30 Nov 2021 12:28:17 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
+        roopa@nvidia.com
+Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
+        David Miller <davem@davemloft.net>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrei Vagin <avagin@gmail.com>,
+        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
+        Alexander Mikhalitsyn <alexander@mihalicyn.com>
+Subject: Re: [PATCH net-next] rtnetlink: add RTNH_REJECT_MASK
+Message-ID: <YaX8wa5R/r5sbca5@shredder>
+References: <20211111160240.739294-1-alexander.mikhalitsyn@virtuozzo.com>
+ <20211126134311.920808-1-alexander.mikhalitsyn@virtuozzo.com>
+ <20211126134311.920808-2-alexander.mikhalitsyn@virtuozzo.com>
+ <YaOLt2M1hBnoVFKd@shredder>
+ <e3d13710-2780-5dff-3cbf-fa0fd7cb5d32@gmail.com>
+ <YaXZ3WdgwdeocakQ@shredder>
+ <20211130113517.35324af97e168a9b0676b751@virtuozzo.com>
+ <YaXuwEg/hdkwNYEN@shredder>
+ <20211130125352.4bbcc68c01fe763c1f43bfdc@virtuozzo.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211130125352.4bbcc68c01fe763c1f43bfdc@virtuozzo.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+On Tue, Nov 30, 2021 at 12:53:52PM +0300, Alexander Mikhalitsyn wrote:
+> On Tue, 30 Nov 2021 11:28:32 +0200
+> Ido Schimmel <idosch@idosch.org> wrote:
+> 
+> > On Tue, Nov 30, 2021 at 11:35:17AM +0300, Alexander Mikhalitsyn wrote:
+> > > On Tue, 30 Nov 2021 09:59:25 +0200
+> > > Ido Schimmel <idosch@idosch.org> wrote:
+> > > > Looking at the patch again, what is the motivation to expose
+> > > > RTNH_REJECT_MASK to user space? iproute2 already knows that it only
+> > > > makes sense to set RTNH_F_ONLINK. Can't we just do:
+> > > 
+> > > Sorry, but that's not fully clear for me, why we should exclude RTNH_F_ONLINK?
+> > > I thought that we should exclude RTNH_F_DEAD and RTNH_F_LINKDOWN just because
+> > > kernel doesn't allow to set these flags.
+> > 
+> > I don't think we should exclude RTNH_F_ONLINK. I'm saying that it is the
+> > only flag that it makes sense to send to the kernel in the ancillary
+> > header of RTM_NEWROUTE messages. The rest of the RNTH_F_* flags are
+> > either not used by the kernel or are only meant to be sent from the
+> > kernel to user space. Due to omission, they are mistakenly allowed.
+> 
+> Ah, okay, so, the patch should be like
+> 
+> diff --git a/ip/iproute.c b/ip/iproute.c
+> index 1447a5f78f49..0e6dad2b67e5 100644
+> --- a/ip/iproute.c
+> +++ b/ip/iproute.c
+> @@ -1632,6 +1632,8 @@ static int save_route(struct nlmsghdr *n, void *arg)
+>         if (!filter_nlmsg(n, tb, host_len))
+>                 return 0;
+>  
+> +       r->rtm_flags &= RTNH_F_ONLINK;
+> +
+>         ret = write(STDOUT_FILENO, n, n->nlmsg_len);
+>         if ((ret > 0) && (ret != n->nlmsg_len)) {
+>                 fprintf(stderr, "Short write while saving nlmsg\n");
+> 
+> to filter out all flags *except* RTNH_F_ONLINK.
 
-The devlink_resources_unregister() used second parameter as an
-entry point for the recursive removal of devlink resources. None
-of the callers outside of devlink core needed to use this field,
-so let's remove it.
+Yes
 
-As part of this removal, the "struct devlink_resource" was moved
-from .h to .c file as it is not possible to use in any place in
-the code except devlink.c.
+> 
+> But what about discussion from
+> https://lore.kernel.org/netdev/ff405eae-21d9-35f4-1397-b6f9a29a57ff@nvidia.com/
+> 
+> As far as I understand Roopa, we have to save at least RTNH_F_OFFLOAD flag too,
+> for instance, if user uses Cumulus and want to dump/restore routes.
+> 
+> I'm sorry if I misunderstood something.
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
-v2:
- * Extended commit message and fixed typo.
-v1: https://lore.kernel.org/all/e8684abc2c8ced4e35026e8fa85fe29447ef60b6.1638103213.git.leonro@nvidia.com
- * Sent as standalone change
- * Moved struct recource from .h to .c file
- * Added missing descriptions fields in struct resource
-v0: https://lore.kernel.org/all/cover.1637173517.git.leonro@nvidia.com
----
- drivers/net/ethernet/mellanox/mlxsw/core.c    |  8 +--
- .../net/ethernet/mellanox/mlxsw/spectrum.c    |  4 +-
- drivers/net/netdevsim/dev.c                   |  4 +-
- include/net/devlink.h                         | 30 +--------
- net/core/devlink.c                            | 63 ++++++++++++++-----
- net/dsa/dsa.c                                 |  2 +-
- 6 files changed, 58 insertions(+), 53 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index 3fd3812b8f31..0d1f08bbf631 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -160,7 +160,7 @@ static void mlxsw_ports_fini(struct mlxsw_core *mlxsw_core, bool reload)
- 
- 	devlink_resource_occ_get_unregister(devlink, MLXSW_CORE_RESOURCE_PORTS);
- 	if (!reload)
--		devlink_resources_unregister(priv_to_devlink(mlxsw_core), NULL);
-+		devlink_resources_unregister(priv_to_devlink(mlxsw_core));
- 
- 	kfree(mlxsw_core->ports);
- }
-@@ -2033,7 +2033,7 @@ __mlxsw_core_bus_device_register(const struct mlxsw_bus_info *mlxsw_bus_info,
- 	mlxsw_ports_fini(mlxsw_core, reload);
- err_ports_init:
- 	if (!reload)
--		devlink_resources_unregister(devlink, NULL);
-+		devlink_resources_unregister(devlink);
- err_register_resources:
- 	mlxsw_bus->fini(bus_priv);
- err_bus_init:
-@@ -2099,7 +2099,7 @@ void mlxsw_core_bus_device_unregister(struct mlxsw_core *mlxsw_core,
- 	kfree(mlxsw_core->lag.mapping);
- 	mlxsw_ports_fini(mlxsw_core, reload);
- 	if (!reload)
--		devlink_resources_unregister(devlink, NULL);
-+		devlink_resources_unregister(devlink);
- 	mlxsw_core->bus->fini(mlxsw_core->bus_priv);
- 	if (!reload)
- 		devlink_free(devlink);
-@@ -2108,7 +2108,7 @@ void mlxsw_core_bus_device_unregister(struct mlxsw_core *mlxsw_core,
- 
- reload_fail_deinit:
- 	mlxsw_core_params_unregister(mlxsw_core);
--	devlink_resources_unregister(devlink, NULL);
-+	devlink_resources_unregister(devlink);
- 	devlink_free(devlink);
- }
- EXPORT_SYMBOL(mlxsw_core_bus_device_unregister);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 24157bb59881..f1ed7660b0b5 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -3336,7 +3336,7 @@ static int mlxsw_sp1_resources_register(struct mlxsw_core *mlxsw_core)
- err_policer_resources_register:
- err_resources_counter_register:
- err_resources_span_register:
--	devlink_resources_unregister(priv_to_devlink(mlxsw_core), NULL);
-+	devlink_resources_unregister(priv_to_devlink(mlxsw_core));
- 	return err;
- }
- 
-@@ -3370,7 +3370,7 @@ static int mlxsw_sp2_resources_register(struct mlxsw_core *mlxsw_core)
- err_policer_resources_register:
- err_resources_counter_register:
- err_resources_span_register:
--	devlink_resources_unregister(priv_to_devlink(mlxsw_core), NULL);
-+	devlink_resources_unregister(priv_to_devlink(mlxsw_core));
- 	return err;
- }
- 
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 54345c096a16..08d7b465a0de 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -1622,7 +1622,7 @@ int nsim_drv_probe(struct nsim_bus_dev *nsim_bus_dev)
- 	devlink_params_unregister(devlink, nsim_devlink_params,
- 				  ARRAY_SIZE(nsim_devlink_params));
- err_dl_unregister:
--	devlink_resources_unregister(devlink, NULL);
-+	devlink_resources_unregister(devlink);
- err_vfc_free:
- 	kfree(nsim_dev->vfconfigs);
- err_devlink_free:
-@@ -1668,7 +1668,7 @@ void nsim_drv_remove(struct nsim_bus_dev *nsim_bus_dev)
- 	nsim_dev_debugfs_exit(nsim_dev);
- 	devlink_params_unregister(devlink, nsim_devlink_params,
- 				  ARRAY_SIZE(nsim_devlink_params));
--	devlink_resources_unregister(devlink, NULL);
-+	devlink_resources_unregister(devlink);
- 	kfree(nsim_dev->vfconfigs);
- 	devlink_free(devlink);
- 	dev_set_drvdata(&nsim_bus_dev->dev, NULL);
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index e3c88fabd700..043fcec8b0aa 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -361,33 +361,6 @@ devlink_resource_size_params_init(struct devlink_resource_size_params *size_para
- 
- typedef u64 devlink_resource_occ_get_t(void *priv);
- 
--/**
-- * struct devlink_resource - devlink resource
-- * @name: name of the resource
-- * @id: id, per devlink instance
-- * @size: size of the resource
-- * @size_new: updated size of the resource, reload is needed
-- * @size_valid: valid in case the total size of the resource is valid
-- *              including its children
-- * @parent: parent resource
-- * @size_params: size parameters
-- * @list: parent list
-- * @resource_list: list of child resources
-- */
--struct devlink_resource {
--	const char *name;
--	u64 id;
--	u64 size;
--	u64 size_new;
--	bool size_valid;
--	struct devlink_resource *parent;
--	struct devlink_resource_size_params size_params;
--	struct list_head list;
--	struct list_head resource_list;
--	devlink_resource_occ_get_t *occ_get;
--	void *occ_get_priv;
--};
--
- #define DEVLINK_RESOURCE_ID_PARENT_TOP 0
- 
- #define DEVLINK_RESOURCE_GENERIC_NAME_PORTS "physical_ports"
-@@ -1571,8 +1544,7 @@ int devlink_resource_register(struct devlink *devlink,
- 			      u64 resource_id,
- 			      u64 parent_resource_id,
- 			      const struct devlink_resource_size_params *size_params);
--void devlink_resources_unregister(struct devlink *devlink,
--				  struct devlink_resource *resource);
-+void devlink_resources_unregister(struct devlink *devlink);
- int devlink_resource_size_get(struct devlink *devlink,
- 			      u64 resource_id,
- 			      u64 *p_resource_size);
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index fd21022145a3..db3b52110cf2 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -69,6 +69,35 @@ struct devlink {
- 	char priv[] __aligned(NETDEV_ALIGN);
- };
- 
-+/**
-+ * struct devlink_resource - devlink resource
-+ * @name: name of the resource
-+ * @id: id, per devlink instance
-+ * @size: size of the resource
-+ * @size_new: updated size of the resource, reload is needed
-+ * @size_valid: valid in case the total size of the resource is valid
-+ *              including its children
-+ * @parent: parent resource
-+ * @size_params: size parameters
-+ * @list: parent list
-+ * @resource_list: list of child resources
-+ * @occ_get: occupancy getter callback
-+ * @occ_get_priv: occupancy getter callback priv
-+ */
-+struct devlink_resource {
-+	const char *name;
-+	u64 id;
-+	u64 size;
-+	u64 size_new;
-+	bool size_valid;
-+	struct devlink_resource *parent;
-+	struct devlink_resource_size_params size_params;
-+	struct list_head list;
-+	struct list_head resource_list;
-+	devlink_resource_occ_get_t *occ_get;
-+	void *occ_get_priv;
-+};
-+
- void *devlink_priv(struct devlink *devlink)
- {
- 	return &devlink->priv;
-@@ -9908,34 +9937,38 @@ int devlink_resource_register(struct devlink *devlink,
- }
- EXPORT_SYMBOL_GPL(devlink_resource_register);
- 
-+static void devlink_resource_unregister(struct devlink *devlink,
-+					struct devlink_resource *resource)
-+{
-+	struct devlink_resource *tmp, *child_resource;
-+
-+	list_for_each_entry_safe(child_resource, tmp, &resource->resource_list,
-+				 list) {
-+		devlink_resource_unregister(devlink, child_resource);
-+		list_del(&child_resource->list);
-+		kfree(child_resource);
-+	}
-+}
-+
- /**
-  *	devlink_resources_unregister - free all resources
-  *
-  *	@devlink: devlink
-- *	@resource: resource
-  */
--void devlink_resources_unregister(struct devlink *devlink,
--				  struct devlink_resource *resource)
-+void devlink_resources_unregister(struct devlink *devlink)
- {
- 	struct devlink_resource *tmp, *child_resource;
--	struct list_head *resource_list;
--
--	if (resource)
--		resource_list = &resource->resource_list;
--	else
--		resource_list = &devlink->resource_list;
- 
--	if (!resource)
--		mutex_lock(&devlink->lock);
-+	mutex_lock(&devlink->lock);
- 
--	list_for_each_entry_safe(child_resource, tmp, resource_list, list) {
--		devlink_resources_unregister(devlink, child_resource);
-+	list_for_each_entry_safe(child_resource, tmp, &devlink->resource_list,
-+				 list) {
-+		devlink_resource_unregister(devlink, child_resource);
- 		list_del(&child_resource->list);
- 		kfree(child_resource);
- 	}
- 
--	if (!resource)
--		mutex_unlock(&devlink->lock);
-+	mutex_unlock(&devlink->lock);
- }
- EXPORT_SYMBOL_GPL(devlink_resources_unregister);
- 
-diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-index ea5169e671ae..d9d0d227092c 100644
---- a/net/dsa/dsa.c
-+++ b/net/dsa/dsa.c
-@@ -406,7 +406,7 @@ EXPORT_SYMBOL_GPL(dsa_devlink_resource_register);
- 
- void dsa_devlink_resources_unregister(struct dsa_switch *ds)
- {
--	devlink_resources_unregister(ds->devlink, NULL);
-+	devlink_resources_unregister(ds->devlink);
- }
- EXPORT_SYMBOL_GPL(dsa_devlink_resources_unregister);
- 
--- 
-2.33.1
-
+Roopa, do you see a problem with the above patch?
