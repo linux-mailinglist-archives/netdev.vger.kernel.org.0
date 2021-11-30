@@ -2,74 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3CBC4637B1
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 15:53:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4072F463808
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 15:54:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242476AbhK3Ozf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 09:55:35 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:57988 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242752AbhK3Oxb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 09:53:31 -0500
+        id S243653AbhK3O5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 09:57:48 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:48072 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232187AbhK3Ozr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 09:55:47 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 917EACE1A46;
-        Tue, 30 Nov 2021 14:50:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BF4F8C53FCD;
-        Tue, 30 Nov 2021 14:50:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83BBDB81A5F;
+        Tue, 30 Nov 2021 14:52:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80A7BC8D180;
+        Tue, 30 Nov 2021 14:52:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638283808;
-        bh=qcjOVQoYFRDYhxbeEnbphJ1qf5WhO/w8g+E2V9S8hx8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=QEet9Ij0cIhCmRLJmGwiC5Xn2i79YDy5XL1mGhKhQz55/j2OuD+kfLsaZUDquqHPD
-         hob6F45GYpkij5AM6OdYj2hQCFRf7hu2Jc6wp4Riw5IHZYluxTwQ4CO9iPquAOAyiZ
-         v+LIElmrnIWUshpDFSrVUR9CoyzVkMzLFD8+B9UKwU/NGaXU0lOIsM9+hFf1X7E1Dj
-         rNKxk8vqJSkHI+7PlsKiQREWXN9GB7QQfR0Xu1fXp4uzLfuaIFhRj6EOtHwQJxE+Bn
-         o4qVMV/fn9XU6mjfTWWdAz8LlOwhpAXQNDj84TajEp7PLiOvSJC1NCYVNSuwvS/xIx
-         IaVNqBXJazPvQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A907260A94;
-        Tue, 30 Nov 2021 14:50:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1638283945;
+        bh=A4f6DIUx4t28wWw6o3+t5fELurv1o9rgYYTfIMlw3NE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BCiQmFHLs3HZe98fcv0P9ZexAoumZzuPmxxx11kWEiAqU9rLZFNsGLN1aTioFRAlX
+         dOrUIGOTfOEcxvZrO+C1WEfRA8ssswM7XjidByZt7LrbK+jFhHPuU+AQyWKUt1HgnW
+         ySr0Rich0UeBFzAdfifWnhvqxNTvyA6tYb7jsA4VqlNeqY82K7ZzNDXYmLvD/+4mMS
+         wCw4Cy9cr5477LLwcRWLXifzJSXbL4PqghN3ZPo7F38KE8cWhDdWGmwCPwD1GkGnMV
+         wI6WPNYne4J8u6RJEnloQGnCj0Ya55cMu3F1OdpXPaRF7fg+Yx3jvQUzuCPI827y/b
+         bvmC7vW9qC3qQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Zheyu Ma <zheyuma97@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, rajur@chelsio.com,
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 14/25] net: chelsio: cxgb4vf: Fix an error code in cxgb4vf_pci_probe()
+Date:   Tue, 30 Nov 2021 09:51:44 -0500
+Message-Id: <20211130145156.946083-14-sashal@kernel.org>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20211130145156.946083-1-sashal@kernel.org>
+References: <20211130145156.946083-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/2] Update non-RT users of migrate_disable().
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163828380868.32639.9644324450074262877.git-patchwork-notify@kernel.org>
-Date:   Tue, 30 Nov 2021 14:50:08 +0000
-References: <20211127163200.10466-1-bigeasy@linutronix.de>
-In-Reply-To: <20211127163200.10466-1-bigeasy@linutronix.de>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-doc@vger.kernel.org, peterz@infradead.org, corbet@lwn.net,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, tglx@linutronix.de
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-This series was applied to bpf/bpf.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
+[ Upstream commit b82d71c0f84a2e5ccaaa7571dfd5c69e0e2cfb4a ]
 
-On Sat, 27 Nov 2021 17:31:58 +0100 you wrote:
-> While browsing through code I noticed outdated code/ documentation
-> regarding migrate_disable() on non-PREEMPT_RT kernels.
-> 
-> Sebastian
+During the process of driver probing, probe function should return < 0
+for failure, otherwise kernel will treat value == 0 as success.
 
-Here is the summary with links:
-  - [doc,1/2] Documentation/locking/locktypes: Update migrate_disable() bits.
-    https://git.kernel.org/bpf/bpf/c/6a631c0432dc
-  - [net,2/2] bpf: Make sure bpf_disable_instrumentation() is safe vs preemption.
-    https://git.kernel.org/bpf/bpf/c/79364031c5b4
+Therefore, we should set err to -EINVAL when
+adapter->registered_device_map is NULL. Otherwise kernel will assume
+that driver has been successfully probed and will cause unexpected
+errors.
 
-You are awesome, thank you!
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c b/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
+index f4d41f968afa2..fb747901462e0 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
+@@ -3246,6 +3246,7 @@ static int cxgb4vf_pci_probe(struct pci_dev *pdev,
+ 	}
+ 	if (adapter->registered_device_map == 0) {
+ 		dev_err(&pdev->dev, "could not register any net devices\n");
++		err = -EINVAL;
+ 		goto err_disable_interrupts;
+ 	}
+ 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.33.0
 
