@@ -2,101 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C501D462E2E
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 09:04:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EADD5462E68
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 09:18:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239379AbhK3IHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 03:07:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50070 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233878AbhK3IHj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 03:07:39 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C3BCC061574
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 00:04:20 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id a9so42436069wrr.8
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 00:04:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=BU/92BaHe4dmhxB7ODPEPDd8pWIhuBNxhjbCDaTqdWU=;
-        b=AZmDE9fdueUn/T0dHIJB1TzmQsVXXTv8TY9mdeE1F2fVB8mzq14Yohcm1Vp63LQmOG
-         Eh3UyVuS4arKBbKrSiKxUvZ5j+4DNBPKVLRSl4ObT2iTUgtkJNfX4M5/0ccYiNawnLg3
-         3ZavZu0F0pkLHfc6yPkTWUjx3tHekc0zuCIbp7EsLXKg7bFgvalN0HC4LOpGYiwQymAh
-         4+O0VP0legaDJzU+n8WYjRlOiaZe4uh7iH0doDGoFwzUQVzcLyPC2p9rDZnLiTwCBFhr
-         byXPANXecqV0StnsuRIKHPAHUmlCo9dEZ/R666mQwfenO59mlbUVxucOB3MBKthzUBej
-         2pYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=BU/92BaHe4dmhxB7ODPEPDd8pWIhuBNxhjbCDaTqdWU=;
-        b=ZwxuKaAOHZXp8zxsf/a8We0GiFV5WC+OZ4NkkXKgv+hUQzdyS3ItWDO9tY1MK8Zyut
-         gjxKWEGe8GdoUHN+jv92lA20u6OPRuG4Y+QrGnmGiqGo80qkUvoXs1TCOdK6oT3/17oT
-         yfTcmAbZNjBE2OJ+neHTQTJtEBTFJ+1qUZatQidCS5wPqyNqzIuO9sfsIT5CcVkZsbmR
-         dIpTXh9dqMAH9WLlOjm+m+yPZ/NjYEsQGrosERFuOHckZ/q5WMEBEeuVvBIuHiVofwRB
-         D9BpaAF0QSV0aeJA+UrAjrFv+Hq7vnP+9lYFCfK3vzl5yjVhXS8NbfRFLdjkJQWXAFO0
-         XtNQ==
-X-Gm-Message-State: AOAM532Naj+1tsuW1PZLeQEpMt24BlXK3htKkbWtGyjaXlKQS+VlYEHn
-        Xgoe59NbNIrhSzWDxwTkJUagGObFSD8OqA==
-X-Google-Smtp-Source: ABdhPJyfSJjFG0B4n5OzGpez2NvPlmJSnncpzcf677PLSriAXGEQ1nAfTZdDL4LLZ9+EejIFE90s8A==
-X-Received: by 2002:adf:fe8e:: with SMTP id l14mr39805670wrr.177.1638259459269;
-        Tue, 30 Nov 2021 00:04:19 -0800 (PST)
-Received: from ?IPv6:2a01:e0a:b41:c160:854f:2f27:d1d8:2752? ([2a01:e0a:b41:c160:854f:2f27:d1d8:2752])
-        by smtp.gmail.com with ESMTPSA id c6sm1907661wmq.46.2021.11.30.00.04.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Nov 2021 00:04:18 -0800 (PST)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH net-next v3] rtnetlink: Support fine-grained netdevice
- bulk deletion
-To:     Jakub Kicinski <kuba@kernel.org>, David Ahern <dsahern@gmail.com>
-Cc:     Lahav Schlesinger <lschlesinger@drivenets.com>,
-        Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org
-References: <20211125165146.21298-1-lschlesinger@drivenets.com>
- <YaMwrajs8D5OJ3yS@unreal> <20211128111313.hjywmtmnipg4ul4f@kgollan-pc>
- <YaNrd6+9V18ku+Vk@unreal> <09296394-a69a-ee66-0897-c9018185cfde@gmail.com>
- <20211129135307.mxtfw6j7v4hdex4f@kgollan-pc>
- <21da13fb-e629-0d6e-1aa1-56e2eb86d1c3@gmail.com>
- <20211129101031.25d35a5d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <ef12108a-6355-de79-d20e-4576561197f6@6wind.com>
-Date:   Tue, 30 Nov 2021 09:04:18 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-MIME-Version: 1.0
-In-Reply-To: <20211129101031.25d35a5d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        id S235224AbhK3IVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 03:21:37 -0500
+Received: from relay.sw.ru ([185.231.240.75]:56036 "EHLO relay.sw.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229951AbhK3IVh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Nov 2021 03:21:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=virtuozzo.com; s=relay; h=Content-Type:Mime-Version:Message-Id:Subject:From
+        :Date; bh=2wnIBgDiWd/NvnzHclv2xy3kp8AYM9EQW7Lm5q/ExzI=; b=NasbWUqM+FJdbYwqA39
+        ELybBr/KhxbF0TVdytF7cEjaJEP2mHdxljdT/Ns+X4yTZ6jrM7ym1QAsZR68yKIS21jWcCC6uywXg
+        IDeCkVzZ8TUh1/Yau19SlRRuN3fQ/I21IEnwSm0FszbfhQyFyR9voBCCW4TU6OeYLh7i8Ug2kSU=;
+Received: from [192.168.15.149] (helo=mikhalitsyn-laptop)
+        by relay.sw.ru with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <alexander.mikhalitsyn@virtuozzo.com>)
+        id 1mryL7-001rwn-IO; Tue, 30 Nov 2021 11:18:13 +0300
+Date:   Tue, 30 Nov 2021 11:18:13 +0300
+From:   Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Andrei Vagin <avagin@gmail.com>,
+        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
+        Alexander Mikhalitsyn <alexander@mihalicyn.com>
+Subject: Re: [PATCH net-next] rtnetlink: add RTNH_REJECT_MASK
+Message-Id: <20211130111813.272af77c530a9b13152178ee@virtuozzo.com>
+In-Reply-To: <YaOLt2M1hBnoVFKd@shredder>
+References: <20211111160240.739294-1-alexander.mikhalitsyn@virtuozzo.com>
+        <20211126134311.920808-1-alexander.mikhalitsyn@virtuozzo.com>
+        <20211126134311.920808-2-alexander.mikhalitsyn@virtuozzo.com>
+        <YaOLt2M1hBnoVFKd@shredder>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 29/11/2021 à 19:10, Jakub Kicinski a écrit :
-> On Mon, 29 Nov 2021 08:30:16 -0700 David Ahern wrote:
->> On 11/29/21 6:53 AM, Lahav Schlesinger wrote:
->>> Hi David, while I also don't have any strong preference here, my
->>> reasoning for failing the whole request if one device can't be deleted
->>> was so it will share the behaviour we currently have with group deletion.
->>> If you're okay with this asymmetry I'll send a V4.  
->>
->> good point - new features should be consistent with existing code.
->>
->> You can add another attribute to the request to say 'Skip devices that
->> can not be deleted'.
-> 
-> The patch is good as is then? I can resurrect it from 'Changes
-> Requested' and apply.
-> 
-> Any opinion on wrapping the ifindices into separate attrs, Dave?
-> I don't think the 32k vs 64k max distinction matters all that much,
-I agree.
+On Sun, 28 Nov 2021 16:01:27 +0200
+Ido Schimmel <idosch@idosch.org> wrote:
 
-> user can send multiple messages, and we could point the extack at
-> the correct ifindex's attribute.
+> On Fri, Nov 26, 2021 at 04:43:11PM +0300, Alexander Mikhalitsyn wrote:
+> > diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+> > index 5888492a5257..9c065e2fdef9 100644
+> > --- a/include/uapi/linux/rtnetlink.h
+> > +++ b/include/uapi/linux/rtnetlink.h
+> > @@ -417,6 +417,9 @@ struct rtnexthop {
+> >  #define RTNH_COMPARE_MASK	(RTNH_F_DEAD | RTNH_F_LINKDOWN | \
+> >  				 RTNH_F_OFFLOAD | RTNH_F_TRAP)
+> >  
+> > +/* these flags can't be set by the userspace */
+> > +#define RTNH_REJECT_MASK	(RTNH_F_DEAD | RTNH_F_LINKDOWN)
+> > +
+> >  /* Macros to handle hexthops */
+> >  
+> >  #define RTNH_ALIGNTO	4
+> > diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+> > index 4c0c33e4710d..805f5e05b56d 100644
+> > --- a/net/ipv4/fib_semantics.c
+> > +++ b/net/ipv4/fib_semantics.c
+> > @@ -685,7 +685,7 @@ static int fib_get_nhs(struct fib_info *fi, struct rtnexthop *rtnh,
+> >  			return -EINVAL;
+> >  		}
+> >  
+> > -		if (rtnh->rtnh_flags & (RTNH_F_DEAD | RTNH_F_LINKDOWN)) {
+> > +		if (rtnh->rtnh_flags & RTNH_REJECT_MASK) {
+> >  			NL_SET_ERR_MSG(extack,
+> >  				       "Invalid flags for nexthop - can not contain DEAD or LINKDOWN");
+> >  			return -EINVAL;
+> > @@ -1363,7 +1363,7 @@ struct fib_info *fib_create_info(struct fib_config *cfg,
+> >  		goto err_inval;
+> >  	}
+> >  
+> > -	if (cfg->fc_flags & (RTNH_F_DEAD | RTNH_F_LINKDOWN)) {
+> > +	if (cfg->fc_flags & RTNH_REJECT_MASK) {
+> >  		NL_SET_ERR_MSG(extack,
+> >  			       "Invalid rtm_flags - can not contain DEAD or LINKDOWN");
 > 
-Good point, it would be clearer from an API POV.
+> Instead of a deny list as in the legacy nexthop code, the new nexthop
+> code has an allow list (from rtm_to_nh_config()):
+> 
+> ```
+> 	if (nhm->nh_flags & ~NEXTHOP_VALID_USER_FLAGS) {
+> 		NL_SET_ERR_MSG(extack, "Invalid nexthop flags in ancillary header");
+> 		goto out;
+> 	}
+> ```
+> 
+> Where:
+> 
+> ```
+> #define NEXTHOP_VALID_USER_FLAGS RTNH_F_ONLINK
+> ```
+> 
+> So while the legacy nexthop code allows setting flags such as
+> RTNH_F_OFFLOAD, the new nexthop code denies them. I don't have a use
+> case for setting these flags from user space so I don't care if we allow
+> or deny them, but I believe the legacy and new nexthop code should be
+> consistent.
+
+Dear Ido,
+
+thanks for your attention to the patches and our checkpoint/restore problem.
+
+Yep, I've read nexthop code too and notices some inconsistencies, but
+unfortunately I'm newbie here and my first goal is to fix thing and not break
+something, that's why my patch is so trivial and not invasive :)
+
+We have some discussion about these flags here:
+https://lore.kernel.org/netdev/d7c2d8fa-052e-b941-2ef1-830c1ba655c1@gmail.com/#r
+
+I've noticed, that current iproute2 code not allows us to set RTNH_F_OFFLOAD and
+RTNH_F_TRAP directly. And asked If we should prohibit setting these flags from
+the userspace. But huge thanks to Roopa and David here - it turned out that some
+userspace code usings these flags and sets it.
+
+So, let's decide which flags we should allow to set from the userspace side
+and which not. I'm ready to prepare all needed changes for both the kernel and
+iproute2 side. ;)
+
+> 
+> WDYT? Should we allow these flags in the new nexthop code as well or
+> keep denying them?
+
+IMHO, we should try to be consistent between the new nexthop code and the lagacy one.
+
+Regards,
+Alex
+
+> 
+> >  		goto err_inval;
+> > -- 
+> > 2.31.1
+> > 
+
+
