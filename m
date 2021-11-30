@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2D65462D49
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 08:03:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03348462D4B
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 08:04:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238945AbhK3HHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 02:07:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36216 "EHLO
+        id S238943AbhK3HHR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 02:07:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238943AbhK3HHL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 02:07:11 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7B02C061574
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 23:03:52 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id t5so82871578edd.0
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 23:03:52 -0800 (PST)
+        with ESMTP id S238955AbhK3HHQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 02:07:16 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8637DC061574
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 23:03:57 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id x6so82224720edr.5
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 23:03:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=76fBQ3m8zaXnv0k+vzxFiLe3EqjE3QNEI4UdiuCTMic=;
-        b=JSow12YOxzIjsF1cOP/gMuJtvr27QWodBUvhioXsOaIWiDRvUJhG2mJ69n6dsi04A7
-         EX934LYu4lN9Y7Q6Yj9/hujs9LgNz1xrX/5uoaS3XWDFd2LBiNfW8WVYcUhPiL6xwDhu
-         1u4nJFmUcneDfSuD2uJjI07GjvQvfPZUdl0ER+6/1Nd5PTNoSd8VmVdoyY1yKra2oVdg
-         kop8WIcV4v+ErFcE3HI0fz2NXFywFidSUkWkG6Fvs7prSCZl6ObeZ74XNpJ8utGUZz0T
-         5+PeEHFWb8mENbu11WF4KPriCuO2K5XbujuKi4prH902Wgilvhfu8FQE5sXqoSq+rxEX
-         Ul/Q==
+        bh=pM7Wb9OHxYU4Pb1IxUY6BrM958hr+TqWW5D8jHDE20I=;
+        b=BaGFP4F06wjtZ9B5ZOBHOrn/SG5cpe9IJiioUCcy1L+E0vCWOGboLdVIcJEiHdBPvU
+         jY6WHYdpQAzwRC5vxcIr2ZsJNiRKkuhCjWuxZAqfhL2FR11XtMOaHkCk8+M0cDdD1GDS
+         yBrWsKNpAaFFq1hPdXwlkhQ2ReeIV6BxTaDQy12hU/1vQNBR+UUssooAlMW6EzSFBJ5v
+         2OL0JO/1OGgGyrL8z4rd36UzlfdJMBnwdcCVRvCAyP8v5zUq5tlt9GfzRSW6IW0ftpOH
+         vV0l9dIRd4ugzsqQ+z0ZhdhllGzhbds+Nf8jFvJfjt/0euRaQ+tzSq8Io1Dsv9gQkeqS
+         J2VA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=76fBQ3m8zaXnv0k+vzxFiLe3EqjE3QNEI4UdiuCTMic=;
-        b=xIUqfl08LlNF31jwsf9xq9JJg3wEm3wzxl4Xd99C66+6dYRjUAcmlj7wbilElHYa+P
-         HbOqGYD0lJbik++REN1Zramqtr+Ep9umGCN46gtKFNKnPeR5QMMuDJGfRK0Li5owbInR
-         uzPflC4WxzGqEYpQ7ua6QoafJOY3Jsik0NtNoOeJ5vvwDamJ+Dfg6R/25MRSLbujQkfh
-         YWUga4yyfvXhMLawy5Da3lenRR577CIwvN4LAfDtY/RUOBKxw4s3Z5bQAqidTvjCPUtT
-         WryvFbOwStv5aBbazN8aFOtzEvp9Cy/EqGk0kH1o3nKV/K1dXuAyn5O6jdHILiFEmYO9
-         jpxA==
-X-Gm-Message-State: AOAM53279DByud2HTP4f1SeUD39RZipoZCI9YOphGMAH729d5cw8tBiT
-        0yFUh71L+rnOaUfEmiH04TI=
-X-Google-Smtp-Source: ABdhPJySoqdjUjlR7AVA3s6xsYS6X0c/iqT12SIgdsF59XgTlElHJ2J4Gw7LWSFGtJROqzSsUlX87g==
-X-Received: by 2002:a17:907:a0d4:: with SMTP id hw20mr65885048ejc.16.1638255831527;
-        Mon, 29 Nov 2021 23:03:51 -0800 (PST)
+        bh=pM7Wb9OHxYU4Pb1IxUY6BrM958hr+TqWW5D8jHDE20I=;
+        b=wfgjQe1+7cAKCWc26QO2vbfSf0OgiWpb3Q2sijLyS1fRjBmabDxAzI0l89WPj+eaVM
+         UKs9dTHQQ/Owms7vQUKFLNyLDdIrYauzNE3F9Z8UOvaYr4Z+ng25xKIR7/Av+/82Bc5A
+         onHtZdLGEkjmKiqnlHZ5hIcwocVyhkU+PTFNrxYockAfnYtPX3iifJT9vSBtlVL4vEtZ
+         T/KtRwpcAXzyH0jrlGS7SyCNp1dQ1PumI+2ffBCRmumngugH3S3TvQtOChV00aImqUYE
+         SkZ9dhPhvzXnJ6CKGNmEUBo08sjrr+fq60mSpbXQLK0icY5dZ9XEiOZ0aBtZDJP0v9id
+         C+oQ==
+X-Gm-Message-State: AOAM530rl0biNhH6I5DVrCC6H8Z7yCz1BMHI1zXFCVr3Zu+4Lf/K4s9D
+        EZTtPuIiR7m+nM5GysvYz0Q=
+X-Google-Smtp-Source: ABdhPJwTeqJL6CEzSSCWHdmavWQV6i8OoBlN5McRiPP+bOGhtYBAJ5twhPHyuJrIqS9imm+MtvL5sA==
+X-Received: by 2002:a05:6402:34d1:: with SMTP id w17mr81730472edc.229.1638255836180;
+        Mon, 29 Nov 2021 23:03:56 -0800 (PST)
 Received: from localhost ([45.153.160.134])
-        by smtp.gmail.com with ESMTPSA id nc29sm8891703ejc.3.2021.11.29.23.03.50
+        by smtp.gmail.com with ESMTPSA id oz31sm8504419ejc.35.2021.11.29.23.03.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Nov 2021 23:03:51 -0800 (PST)
+        Mon, 29 Nov 2021 23:03:55 -0800 (PST)
 From:   =?UTF-8?q?J=CE=B5an=20Sacren?= <sakiwit@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, hkallweit1@gmail.com,
-        andrew@lunn.ch, netdev@vger.kernel.org
-Subject: [PATCH net-next] net: cxgb: fix a typo in kernel doc
-Date:   Tue, 30 Nov 2021 00:03:11 -0700
-Message-Id: <20211130070312.5494-2-sakiwit@gmail.com>
+To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next] net: xfrm: drop check of pols[0] for the second time
+Date:   Tue, 30 Nov 2021 00:03:12 -0700
+Message-Id: <20211130070312.5494-3-sakiwit@gmail.com>
 X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -62,23 +62,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jean Sacren <sakiwit@gmail.com>
 
-Fix a trivial typo of 'pakcet' in cxgb kernel doc.
+!pols[0] is checked earlier.  If we don't return, pols[0] is always
+true.  We should drop the check of pols[0] for the second time and the
+binary is also smaller.
+
+Before:
+   text	   data	    bss	    dec	    hex	filename
+  48395	    957	    240	  49592	   c1b8	net/xfrm/xfrm_policy.o
+
+After:
+   text	   data	    bss	    dec	    hex	filename
+  48379	    957	    240	  49576	   c1a8	net/xfrm/xfrm_policy.o
 
 Signed-off-by: Jean Sacren <sakiwit@gmail.com>
 ---
- drivers/net/ethernet/chelsio/cxgb/sge.c | 2 +-
+ net/xfrm/xfrm_policy.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb/sge.c b/drivers/net/ethernet/chelsio/cxgb/sge.c
-index cda01f22c71c..12e76fd0ae91 100644
---- a/drivers/net/ethernet/chelsio/cxgb/sge.c
-+++ b/drivers/net/ethernet/chelsio/cxgb/sge.c
-@@ -1359,7 +1359,7 @@ static void restart_sched(struct tasklet_struct *t)
-  *	@fl: the free list that contains the packet buffer
-  *	@len: the packet length
-  *
-- *	Process an ingress ethernet pakcet and deliver it to the stack.
-+ *	Process an ingress ethernet packet and deliver it to the stack.
-  */
- static void sge_rx(struct sge *sge, struct freelQ *fl, unsigned int len)
- {
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 1a06585022ab..f1bf43b491dc 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -2680,7 +2680,7 @@ static int xfrm_expand_policies(const struct flowi *fl, u16 family,
+ 	*num_xfrms = pols[0]->xfrm_nr;
+ 
+ #ifdef CONFIG_XFRM_SUB_POLICY
+-	if (pols[0] && pols[0]->action == XFRM_POLICY_ALLOW &&
++	if (pols[0]->action == XFRM_POLICY_ALLOW &&
+ 	    pols[0]->type != XFRM_POLICY_TYPE_MAIN) {
+ 		pols[1] = xfrm_policy_lookup_bytype(xp_net(pols[0]),
+ 						    XFRM_POLICY_TYPE_MAIN,
