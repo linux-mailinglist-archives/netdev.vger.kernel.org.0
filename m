@@ -2,92 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2619462AB0
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 03:48:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EAC4462AB8
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 03:52:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230096AbhK3Cvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 21:51:31 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:58286 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230034AbhK3Cva (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Nov 2021 21:51:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=KbhHigOXFWHvCOs1n7KzFI71MHRCrsAnkDvFFCZBeIE=; b=TOCJWGCdlgJVLuz2pz0kYux4Of
-        Kjxzn6OBOZsVfLeo0x9rqHNn2ozETL9Mba/5ldrB73MZrfrIrI/1C9bFhhx+1DQy4gvQE+wEmegw+
-        rT2CxqQ6hwvY0BSM15je5jQI+Mzi+JMMy7OtRG0XCcTgPNFa3STCvuJ/qlVJKK3/fDl8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mrtBi-00EzVL-5J; Tue, 30 Nov 2021 03:48:10 +0100
-Date:   Tue, 30 Nov 2021 03:48:10 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Sudarsana Reddy Kalluru <skalluru@marvell.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, irusskikh@marvell.com,
-        dbezrukov@marvell.com
-Subject: Re: [PATCH net 1/7] atlantic: Increase delay for fw transactions
-Message-ID: <YaWQ6gib3t5zu8pE@lunn.ch>
-References: <20211129132829.16038-1-skalluru@marvell.com>
- <20211129132829.16038-2-skalluru@marvell.com>
+        id S231944AbhK3Cz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 21:55:59 -0500
+Received: from out4436.biz.mail.alibaba.com ([47.88.44.36]:39379 "EHLO
+        out4436.biz.mail.alibaba.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230143AbhK3Cz7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 21:55:59 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0UypgG0C_1638240747;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0UypgG0C_1638240747)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 30 Nov 2021 10:52:28 +0800
+Date:   Tue, 30 Nov 2021 10:52:27 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     kgraul@linux.ibm.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net] net/smc: Clear memory when release and reuse buffer
+Message-ID: <YaWR6zXoYKrqtznt@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <20211125122858.90726-1-tonylu@linux.alibaba.com>
+ <20211126112855.37274cb7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211129132829.16038-2-skalluru@marvell.com>
+In-Reply-To: <20211126112855.37274cb7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 29, 2021 at 05:28:23AM -0800, Sudarsana Reddy Kalluru wrote:
-> From: Dmitry Bogdanov <dbezrukov@marvell.com>
+On Fri, Nov 26, 2021 at 11:28:55AM -0800, Jakub Kicinski wrote:
+> On Thu, 25 Nov 2021 20:28:59 +0800 Tony Lu wrote:
+> > Currently, buffers are clear when smc create connections and reuse
+> > buffer. It will slow down the speed of establishing new connection. In
+> > most cases, the applications hope to establish connections as quickly as
+> > possible.
+> > 
+> > This patch moves memset() from connection creation path to release and
+> > buffer unuse path, this trades off between speed of establishing and
+> > release.
+> > 
+> > Test environments:
+> > - CPU Intel Xeon Platinum 8 core, mem 32 GiB, nic Mellanox CX4
+> > - socket sndbuf / rcvbuf: 16384 / 131072 bytes
+> > - w/o first round, 5 rounds, avg, 100 conns batch per round
+> > - smc_buf_create() use bpftrace kprobe, introduces extra latency
+> > 
+> > Latency benchmarks for smc_buf_create():
+> >   w/o patch : 19040.0 ns
+> >   w/  patch :  1932.6 ns
+> >   ratio :        10.2% (-89.8%)
+> > 
+> > Latency benchmarks for socket create and connect:
+> >   w/o patch :   143.3 us
+> >   w/  patch :   102.2 us
+> >   ratio :        71.3% (-28.7%)
+> > 
+> > The latency of establishing connections is reduced by 28.7%.
+> > 
+> > Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
+> > Reviewed-by: Wen Gu <guwen@linux.alibaba.com>
 > 
-> The max waiting period (of 1 ms) while reading the data from FW shared
-> buffer is too small for certain types of data (e.g., stats). There's a
-> chance that FW could be updating buffer at the same time and driver
-> would be unsuccessful in reading data. Firmware manual recommends to
-> have 1 sec timeout to fix this issue.
+> The tag in the subject seems incorrect, we tag things as [PATCH net] 
+> if they are fixes, and as [PATCH net-next] if they are new features,
+> code refactoring or performance improvements.
 > 
-> Fixes: 5cfd54d7dc186 ("net: atlantic: minimal A2 fw_ops")
-> Signed-off-by: Dmitry Bogdanov <dbezrukov@marvell.com>
-> Signed-off-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
-> Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
-> ---
->  .../ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c  | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
+> Is this a fix for a regression? In which case we need a Fixes tag to
+> indicate where it was introduced. Otherwise it needs to be tagged as
+> [PATCH net-next].
 > 
-> diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c
-> index dd259c8f2f4f..b0e4119b9883 100644
-> --- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c
-> +++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c
-> @@ -84,7 +84,7 @@ static int hw_atl2_shared_buffer_read_block(struct aq_hw_s *self,
->  			if (cnt > AQ_A2_FW_READ_TRY_MAX)
->  				return -ETIME;
->  			if (tid1.transaction_cnt_a != tid1.transaction_cnt_b)
-> -				udelay(1);
-> +				mdelay(1);
->  		} while (tid1.transaction_cnt_a != tid1.transaction_cnt_b);
+> I'm assuming Karsten will take it via his tree, otherwise you'll need
+> to repost.
 
-This change is the 1 second timeout.
+Sorry for the unclear tag. This patch introduces a performance
+improvement. It should be with net-next.
 
->  
->  		hw_atl2_mif_shared_buf_read(self, offset, (u32 *)data, dwords);
-> @@ -339,8 +339,11 @@ static int aq_a2_fw_update_stats(struct aq_hw_s *self)
->  {
->  	struct hw_atl2_priv *priv = (struct hw_atl2_priv *)self->priv;
->  	struct statistics_s stats;
-> +	int err;
->  
-> -	hw_atl2_shared_buffer_read_safe(self, stats, &stats);
-> +	err = hw_atl2_shared_buffer_read_safe(self, stats, &stats);
-> +	if (err)
-> +		return err;
+I will fix it and send v2. Thank you.
 
-This change however does not seem to be explained in the commit
-message. Not discarding an error is a good change, but it needs
-commenting on.
-
-Also, looking at hw_atl2_shared_buffer_read_block() i notice it
-returns -ETIME. It should be -ETIMEDOUT.
-
-	Andrew
+Thanks,
+Tony Lu
