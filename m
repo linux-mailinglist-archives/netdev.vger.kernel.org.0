@@ -2,34 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83347463FD6
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 22:21:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFE87463FE2
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 22:22:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344048AbhK3VYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 16:24:49 -0500
+        id S1344100AbhK3V0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 16:26:10 -0500
 Received: from mga03.intel.com ([134.134.136.65]:13470 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344031AbhK3VYj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Nov 2021 16:24:39 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10184"; a="236263992"
+        id S1344038AbhK3VYk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Nov 2021 16:24:40 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10184"; a="236263994"
 X-IronPort-AV: E=Sophos;i="5.87,277,1631602800"; 
-   d="scan'208";a="236263992"
+   d="scan'208";a="236263994"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2021 13:21:16 -0800
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2021 13:21:17 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,277,1631602800"; 
-   d="scan'208";a="744895435"
+   d="scan'208";a="744895443"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga006.fm.intel.com with ESMTP; 30 Nov 2021 13:21:16 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Grzegorz Szczurek <grzegorzx.szczurek@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        sassmann@redhat.com,
-        George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
-Subject: [PATCH net-next v2 02/10] iavf: Log info when VF is entering and leaving Allmulti mode
-Date:   Tue, 30 Nov 2021 13:19:56 -0800
-Message-Id: <20211130212004.198898-3-anthony.l.nguyen@intel.com>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com, sassmann@redhat.com,
+        Konrad Jankowski <konrad0.jankowski@intel.com>
+Subject: [PATCH net-next v2 03/10] iavf: return errno code instead of status code
+Date:   Tue, 30 Nov 2021 13:19:57 -0800
+Message-Id: <20211130212004.198898-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211130212004.198898-1-anthony.l.nguyen@intel.com>
 References: <20211130212004.198898-1-anthony.l.nguyen@intel.com>
@@ -39,54 +38,113 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
+From: Jacob Keller <jacob.e.keller@intel.com>
 
-Add log when VF is entering and leaving Allmulti mode.
-The change of VF state is visible in dmesg now.
-Without this commit, entering and leaving Allmulti mode
-is not logged in dmesg.
+The iavf_parse_cls_flower function returns an integer error code, and
+not an iavf_status enumeration.
 
-Signed-off-by: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
-Tested-by: George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
+Fix the function to use the standard errno value EINVAL as its return
+instead of using IAVF_ERR_CONFIG.
+
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- .../net/ethernet/intel/iavf/iavf_virtchnl.c   | 20 +++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-index d60bf7c21200..5c64f06d44f8 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-@@ -762,15 +762,23 @@ void iavf_set_promiscuous(struct iavf_adapter *adapter, int flags)
- 	if (flags & FLAG_VF_MULTICAST_PROMISC) {
- 		adapter->flags |= IAVF_FLAG_ALLMULTI_ON;
- 		adapter->aq_required &= ~IAVF_FLAG_AQ_REQUEST_ALLMULTI;
--		dev_info(&adapter->pdev->dev, "Entering multicast promiscuous mode\n");
-+		dev_info(&adapter->pdev->dev, "%s is entering multicast promiscuous mode\n",
-+			 adapter->netdev->name);
- 	}
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index ec8b2e40eaca..b1221aaf1e46 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -2910,7 +2910,7 @@ static int iavf_parse_cls_flower(struct iavf_adapter *adapter,
+ 			} else {
+ 				dev_err(&adapter->pdev->dev, "Bad ether dest mask %pM\n",
+ 					match.mask->dst);
+-				return IAVF_ERR_CONFIG;
++				return -EINVAL;
+ 			}
+ 		}
  
- 	if (!flags) {
--		adapter->flags &= ~(IAVF_FLAG_PROMISC_ON |
--				    IAVF_FLAG_ALLMULTI_ON);
--		adapter->aq_required &= ~(IAVF_FLAG_AQ_RELEASE_PROMISC |
--					  IAVF_FLAG_AQ_RELEASE_ALLMULTI);
--		dev_info(&adapter->pdev->dev, "Leaving promiscuous mode\n");
-+		if (adapter->flags & IAVF_FLAG_PROMISC_ON) {
-+			adapter->flags &= ~IAVF_FLAG_PROMISC_ON;
-+			adapter->aq_required &= ~IAVF_FLAG_AQ_RELEASE_PROMISC;
-+			dev_info(&adapter->pdev->dev, "Leaving promiscuous mode\n");
-+		}
-+
-+		if (adapter->flags & IAVF_FLAG_ALLMULTI_ON) {
-+			adapter->flags &= ~IAVF_FLAG_ALLMULTI_ON;
-+			adapter->aq_required &= ~IAVF_FLAG_AQ_RELEASE_ALLMULTI;
-+			dev_info(&adapter->pdev->dev, "%s is leaving multicast promiscuous mode\n",
-+				 adapter->netdev->name);
-+		}
- 	}
+@@ -2920,7 +2920,7 @@ static int iavf_parse_cls_flower(struct iavf_adapter *adapter,
+ 			} else {
+ 				dev_err(&adapter->pdev->dev, "Bad ether src mask %pM\n",
+ 					match.mask->src);
+-				return IAVF_ERR_CONFIG;
++				return -EINVAL;
+ 			}
+ 		}
  
- 	adapter->current_op = VIRTCHNL_OP_CONFIG_PROMISCUOUS_MODE;
+@@ -2955,7 +2955,7 @@ static int iavf_parse_cls_flower(struct iavf_adapter *adapter,
+ 			} else {
+ 				dev_err(&adapter->pdev->dev, "Bad vlan mask %u\n",
+ 					match.mask->vlan_id);
+-				return IAVF_ERR_CONFIG;
++				return -EINVAL;
+ 			}
+ 		}
+ 		vf->mask.tcp_spec.vlan_id |= cpu_to_be16(0xffff);
+@@ -2979,7 +2979,7 @@ static int iavf_parse_cls_flower(struct iavf_adapter *adapter,
+ 			} else {
+ 				dev_err(&adapter->pdev->dev, "Bad ip dst mask 0x%08x\n",
+ 					be32_to_cpu(match.mask->dst));
+-				return IAVF_ERR_CONFIG;
++				return -EINVAL;
+ 			}
+ 		}
+ 
+@@ -2989,13 +2989,13 @@ static int iavf_parse_cls_flower(struct iavf_adapter *adapter,
+ 			} else {
+ 				dev_err(&adapter->pdev->dev, "Bad ip src mask 0x%08x\n",
+ 					be32_to_cpu(match.mask->dst));
+-				return IAVF_ERR_CONFIG;
++				return -EINVAL;
+ 			}
+ 		}
+ 
+ 		if (field_flags & IAVF_CLOUD_FIELD_TEN_ID) {
+ 			dev_info(&adapter->pdev->dev, "Tenant id not allowed for ip filter\n");
+-			return IAVF_ERR_CONFIG;
++			return -EINVAL;
+ 		}
+ 		if (match.key->dst) {
+ 			vf->mask.tcp_spec.dst_ip[0] |= cpu_to_be32(0xffffffff);
+@@ -3016,7 +3016,7 @@ static int iavf_parse_cls_flower(struct iavf_adapter *adapter,
+ 		if (ipv6_addr_any(&match.mask->dst)) {
+ 			dev_err(&adapter->pdev->dev, "Bad ipv6 dst mask 0x%02x\n",
+ 				IPV6_ADDR_ANY);
+-			return IAVF_ERR_CONFIG;
++			return -EINVAL;
+ 		}
+ 
+ 		/* src and dest IPv6 address should not be LOOPBACK
+@@ -3026,7 +3026,7 @@ static int iavf_parse_cls_flower(struct iavf_adapter *adapter,
+ 		    ipv6_addr_loopback(&match.key->src)) {
+ 			dev_err(&adapter->pdev->dev,
+ 				"ipv6 addr should not be loopback\n");
+-			return IAVF_ERR_CONFIG;
++			return -EINVAL;
+ 		}
+ 		if (!ipv6_addr_any(&match.mask->dst) ||
+ 		    !ipv6_addr_any(&match.mask->src))
+@@ -3051,7 +3051,7 @@ static int iavf_parse_cls_flower(struct iavf_adapter *adapter,
+ 			} else {
+ 				dev_err(&adapter->pdev->dev, "Bad src port mask %u\n",
+ 					be16_to_cpu(match.mask->src));
+-				return IAVF_ERR_CONFIG;
++				return -EINVAL;
+ 			}
+ 		}
+ 
+@@ -3061,7 +3061,7 @@ static int iavf_parse_cls_flower(struct iavf_adapter *adapter,
+ 			} else {
+ 				dev_err(&adapter->pdev->dev, "Bad dst port mask %u\n",
+ 					be16_to_cpu(match.mask->dst));
+-				return IAVF_ERR_CONFIG;
++				return -EINVAL;
+ 			}
+ 		}
+ 		if (match.key->dst) {
 -- 
 2.31.1
 
