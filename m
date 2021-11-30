@@ -2,157 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F62C462DE4
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 08:51:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F014462E16
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 08:59:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239196AbhK3Hyg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 02:54:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46908 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239212AbhK3Hye (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 02:54:34 -0500
-X-Greylist: delayed 672 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 29 Nov 2021 23:51:14 PST
-Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A51F7C061746
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 23:51:14 -0800 (PST)
-Received: from miraculix.mork.no ([IPv6:2a01:799:95f:8b0a:1e21:3a05:ad2e:f4a6])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 1AU7djYS3670446
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Tue, 30 Nov 2021 08:39:45 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1638257986; bh=MdhgJmRuBVPrlLFEYYA6UyP1RKqvOI80nMgCe14kU2s=;
-        h=From:To:Cc:Subject:Date:Message-Id:From;
-        b=CUhC0MCf92fzae7EfBY4huOT0cS7KQqIyPuD0jz4X+UoIDdT1KTp0LilEEqDabRxP
-         br83M6iUWKKTF22r3ncX6GtEBOvP0YgMxL/YTWFUDEg4XZGw6W7wSGhhZGgYKSROLa
-         7BNWCvVTdo9UGZq4tku2Wfdl8MNSZkdHaLPfbIhQ=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.94.2)
-        (envelope-from <bjorn@miraculix.mork.no>)
-        id 1mrxjn-001a4V-GF; Tue, 30 Nov 2021 08:39:39 +0100
-From:   =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
-To:     netdev@vger.kernel.org
-Cc:     =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
-        =?UTF-8?q?=E7=85=A7=E5=B1=B1=E5=91=A8=E4=B8=80=E9=83=8E?= 
-        <teruyama@springboard-inc.jp>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH net,stable] phy: sfp: fix high power modules without diag mode
-Date:   Tue, 30 Nov 2021 08:39:29 +0100
-Message-Id: <20211130073929.376942-1-bjorn@mork.no>
-X-Mailer: git-send-email 2.30.2
+        id S235208AbhK3ICy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 03:02:54 -0500
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:43821 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234489AbhK3ICx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 03:02:53 -0500
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 7D5B958040A;
+        Tue, 30 Nov 2021 02:59:30 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Tue, 30 Nov 2021 02:59:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=xwfysu
+        v5362TwpmMRE7HSBpUkmNbT2YC5WgTz6+F76o=; b=IOhel0CaZt5/PaFQEcYXdW
+        dz+NamLWdpEyyrmXCsM1g1a3sHahVczJaFoaKDJQh4MGEemJnQM+gOhKCBr4HGU6
+        tgWALySlkhiIXYEYw0A/RpUZJL5wY9++vCbbRasTuAMTkCIBTwvg1TP8uSmrebEq
+        5wCD5Sbrp0Fg/+VHLKtR19csO5e1X8Hso3OnCvXU4AiK6RFI3bqCmzWdRgNrs31T
+        1Yf0gunjiEBgRSc/Lqi94TdAoWotGn/rz5w5xH3dcwp7nJkHn1dmPAOPSYCpp415
+        TnMpem8uockIz72RjSdasgIw5m9BSzG/ZS/5/iuqQQA+h5e68KELIuxXPyra6y3Q
+        ==
+X-ME-Sender: <xms:4dmlYXTB_re6AuFiQ0YAL2RZw1c8WOQzYLIG8C6acxmeFv_rIO0ZhA>
+    <xme:4dmlYYyyLHAKRASSwQJaUN4aaTak4Q8o8AQMX1R5eypaK9YpoylUBA3Vmyq8PmcOA
+    koCvvN4FKICj6w>
+X-ME-Received: <xmr:4dmlYc0l4uP3qN9VvpqC5H6Ogq3NmAMf2lhP4gX_zdvi_-OXlOUUfjr2x5uf0l1R0E-hfZ1wQX46WDAYU0xHNImPhr_ESg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddriedtgdduudegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    hoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:4dmlYXCyHxklEl4Gv6ir9z9Hd1JHBvUAL_ozwA9y3pSOT7gGHPaUZA>
+    <xmx:4dmlYQheUwjLlX40nbluEB1Lit_OMHU1ia5LuVpa8qiEEdG3HlA_2A>
+    <xmx:4dmlYbrVQJIRASCGhUbFreAMLOFgjLqmgrxZ841fEYbUfAIJmzVEPg>
+    <xmx:4tmlYZUbStkVvO9S342Sk0-_WhI77U0yT52XSAcklj77wuCB2LKqHg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 30 Nov 2021 02:59:28 -0500 (EST)
+Date:   Tue, 30 Nov 2021 09:59:25 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
+        netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Andrei Vagin <avagin@gmail.com>,
+        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
+        Alexander Mikhalitsyn <alexander@mihalicyn.com>
+Subject: Re: [PATCH net-next] rtnetlink: add RTNH_REJECT_MASK
+Message-ID: <YaXZ3WdgwdeocakQ@shredder>
+References: <20211111160240.739294-1-alexander.mikhalitsyn@virtuozzo.com>
+ <20211126134311.920808-1-alexander.mikhalitsyn@virtuozzo.com>
+ <20211126134311.920808-2-alexander.mikhalitsyn@virtuozzo.com>
+ <YaOLt2M1hBnoVFKd@shredder>
+ <e3d13710-2780-5dff-3cbf-fa0fd7cb5d32@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.103.3 at canardo
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e3d13710-2780-5dff-3cbf-fa0fd7cb5d32@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 7cfa9c92d0a3 ("net: sfp: avoid power switch on address-change
-modules") changed semantics for high power modules without diag mode.
-We repeatedly try to read the current power status from the non-existing
-0xa2 address, in the futile hope this failure is temporary:
+On Sun, Nov 28, 2021 at 05:19:38PM -0700, David Ahern wrote:
+> On 11/28/21 7:01 AM, Ido Schimmel wrote:
+> > On Fri, Nov 26, 2021 at 04:43:11PM +0300, Alexander Mikhalitsyn wrote:
+> >> diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+> >> index 5888492a5257..9c065e2fdef9 100644
+> >> --- a/include/uapi/linux/rtnetlink.h
+> >> +++ b/include/uapi/linux/rtnetlink.h
+> >> @@ -417,6 +417,9 @@ struct rtnexthop {
+> >>  #define RTNH_COMPARE_MASK	(RTNH_F_DEAD | RTNH_F_LINKDOWN | \
+> >>  				 RTNH_F_OFFLOAD | RTNH_F_TRAP)
+> >>  
+> >> +/* these flags can't be set by the userspace */
+> >> +#define RTNH_REJECT_MASK	(RTNH_F_DEAD | RTNH_F_LINKDOWN)
+> >> +
+> >>  /* Macros to handle hexthops */
+> >>  
+> >>  #define RTNH_ALIGNTO	4
+> >> diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+> >> index 4c0c33e4710d..805f5e05b56d 100644
+> >> --- a/net/ipv4/fib_semantics.c
+> >> +++ b/net/ipv4/fib_semantics.c
+> >> @@ -685,7 +685,7 @@ static int fib_get_nhs(struct fib_info *fi, struct rtnexthop *rtnh,
+> >>  			return -EINVAL;
+> >>  		}
+> >>  
+> >> -		if (rtnh->rtnh_flags & (RTNH_F_DEAD | RTNH_F_LINKDOWN)) {
+> >> +		if (rtnh->rtnh_flags & RTNH_REJECT_MASK) {
+> >>  			NL_SET_ERR_MSG(extack,
+> >>  				       "Invalid flags for nexthop - can not contain DEAD or LINKDOWN");
+> >>  			return -EINVAL;
+> >> @@ -1363,7 +1363,7 @@ struct fib_info *fib_create_info(struct fib_config *cfg,
+> >>  		goto err_inval;
+> >>  	}
+> >>  
+> >> -	if (cfg->fc_flags & (RTNH_F_DEAD | RTNH_F_LINKDOWN)) {
+> >> +	if (cfg->fc_flags & RTNH_REJECT_MASK) {
+> >>  		NL_SET_ERR_MSG(extack,
+> >>  			       "Invalid rtm_flags - can not contain DEAD or LINKDOWN");
+> > 
+> > Instead of a deny list as in the legacy nexthop code, the new nexthop
+> > code has an allow list (from rtm_to_nh_config()):
+> > 
+> > ```
+> > 	if (nhm->nh_flags & ~NEXTHOP_VALID_USER_FLAGS) {
+> > 		NL_SET_ERR_MSG(extack, "Invalid nexthop flags in ancillary header");
+> > 		goto out;
+> > 	}
+> > ```
+> > 
+> > Where:
+> > 
+> > ```
+> > #define NEXTHOP_VALID_USER_FLAGS RTNH_F_ONLINK
+> > ```
+> > 
+> > So while the legacy nexthop code allows setting flags such as
+> > RTNH_F_OFFLOAD, the new nexthop code denies them. I don't have a use
+> > case for setting these flags from user space so I don't care if we allow
+> > or deny them, but I believe the legacy and new nexthop code should be
+> > consistent.
+> > 
+> > WDYT? Should we allow these flags in the new nexthop code as well or
+> > keep denying them?
+> > 
+> >>  		goto err_inval;
+> 
+> I like the positive naming - RTNH_VALID_USER_FLAGS.
 
-[    8.856051] sfp sfp-eth3: module NTT              0000000000000000 rev 0000 sn 0000000000000000 dc 160408
-[    8.865843] mvpp2 f4000000.ethernet eth3: switched to inband/1000base-x link mode
-[    8.873469] sfp sfp-eth3: Failed to read EEPROM: -5
-[    8.983251] sfp sfp-eth3: Failed to read EEPROM: -5
-[    9.103250] sfp sfp-eth3: Failed to read EEPROM: -5
+I don't think we can move the legacy code to the same allow list as the
+new nexthop code without potentially breaking user space. The legacy
+code allows for much more flags to be set in the ancillary header than
+the new nexthop code.
 
-Eeprom dump:
+Looking at the patch again, what is the motivation to expose
+RTNH_REJECT_MASK to user space? iproute2 already knows that it only
+makes sense to set RTNH_F_ONLINK. Can't we just do:
 
-0x0000: 03 04 01 00 00 00 80 00 00 00 00 01 0d 00 0a 64
-0x0010: 00 00 00 00 4e 54 54 20 20 20 20 20 20 20 20 20
-0x0020: 20 20 20 20 00 00 00 00 30 30 30 30 30 30 30 30
-0x0030: 30 30 30 30 30 30 30 30 30 30 30 30 05 1e 00 7d
-0x0040: 02 00 00 00 30 30 30 30 30 30 30 30 30 30 30 30
-0x0050: 30 30 30 30 31 36 30 34 30 38 20 20 00 00 00 75
-0x0060: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0x0070: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0x0080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0x0090: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0x00a0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0x00b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0x00c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0x00d0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0x00e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0x00f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-
-Previously we assumed such modules were powered up in the correct
-mode, continuing without further configuration as long as the
-required power class was supported by the host.
-
-Revert to that behaviour, refactoring to keep the improved
-diagnostic messages.
-
-Fixes: 7cfa9c92d0a3 ("net: sfp: avoid power switch on address-change modules")
-Reported-and-tested-by: 照山周一郎 <teruyama@springboard-inc.jp>
-Cc: Russell King <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Bjørn Mork <bjorn@mork.no>
----
- drivers/net/phy/sfp.c | 42 +++++++++++++++++++++---------------------
- 1 file changed, 21 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index ab77a9f439ef..9742469a1e58 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -1647,27 +1647,6 @@ static int sfp_module_parse_power(struct sfp *sfp)
- 	if (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_HIGH_POWER_LEVEL))
- 		power_mW = 2000;
+diff --git a/ip/iproute.c b/ip/iproute.c
+index 1447a5f78f49..0e6dad2b67e5 100644
+--- a/ip/iproute.c
++++ b/ip/iproute.c
+@@ -1632,6 +1632,8 @@ static int save_route(struct nlmsghdr *n, void *arg)
+        if (!filter_nlmsg(n, tb, host_len))
+                return 0;
  
--	if (power_mW > sfp->max_power_mW) {
--		/* Module power specification exceeds the allowed maximum. */
--		if (sfp->id.ext.sff8472_compliance ==
--			SFP_SFF8472_COMPLIANCE_NONE &&
--		    !(sfp->id.ext.diagmon & SFP_DIAGMON_DDM)) {
--			/* The module appears not to implement bus address
--			 * 0xa2, so assume that the module powers up in the
--			 * indicated mode.
--			 */
--			dev_err(sfp->dev,
--				"Host does not support %u.%uW modules\n",
--				power_mW / 1000, (power_mW / 100) % 10);
--			return -EINVAL;
--		} else {
--			dev_warn(sfp->dev,
--				 "Host does not support %u.%uW modules, module left in power mode 1\n",
--				 power_mW / 1000, (power_mW / 100) % 10);
--			return 0;
--		}
--	}
--
- 	/* If the module requires a higher power mode, but also requires
- 	 * an address change sequence, warn the user that the module may
- 	 * not be functional.
-@@ -1679,6 +1658,27 @@ static int sfp_module_parse_power(struct sfp *sfp)
- 		return 0;
- 	}
- 
-+	if (sfp->id.ext.sff8472_compliance == SFP_SFF8472_COMPLIANCE_NONE &&
-+	    !(sfp->id.ext.diagmon & SFP_DIAGMON_DDM)) {
-+		/* The module appears not to implement bus address
-+		 * 0xa2, so assume that the module powers up in the
-+		 * indicated mode.
-+		 */
-+		if (power_mW <= sfp->max_power_mW)
-+			return 0;
++       r->rtm_flags &= ~RTNH_F_ONLINK;
 +
-+		dev_err(sfp->dev, "Host does not support %u.%uW modules\n",
-+			power_mW / 1000, (power_mW / 100) % 10);
-+		return -EINVAL;
-+	}
-+
-+	if (power_mW > sfp->max_power_mW) {
-+		dev_warn(sfp->dev,
-+			 "Host does not support %u.%uW modules, module left in power mode 1\n",
-+			 power_mW / 1000, (power_mW / 100) % 10);
-+		return 0;
-+	}
-+
- 	sfp->module_power_mW = power_mW;
- 
- 	return 0;
--- 
-2.30.2
+        ret = write(STDOUT_FILENO, n, n->nlmsg_len);
+        if ((ret > 0) && (ret != n->nlmsg_len)) {
+                fprintf(stderr, "Short write while saving nlmsg\n");
 
+> 
+> nexthop API should allow the OFFLOAD flag to be consistent; separate
+> change though.
+> 
