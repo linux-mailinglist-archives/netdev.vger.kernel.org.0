@@ -2,132 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3750462EE0
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 09:48:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 512E5462EC2
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 09:45:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239799AbhK3Ivm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 03:51:42 -0500
-Received: from mta-p8.oit.umn.edu ([134.84.196.208]:45030 "EHLO
-        mta-p8.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239788AbhK3Ivm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 03:51:42 -0500
-Received: from localhost (unknown [127.0.0.1])
-        by mta-p8.oit.umn.edu (Postfix) with ESMTP id 4J3G2T0zR1z9vBtK
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 08:43:13 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at umn.edu
-Received: from mta-p8.oit.umn.edu ([127.0.0.1])
-        by localhost (mta-p8.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id P27oeJgeX1TG for <netdev@vger.kernel.org>;
-        Tue, 30 Nov 2021 02:43:13 -0600 (CST)
-Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mta-p8.oit.umn.edu (Postfix) with ESMTPS id 4J3G2S64mXz9vBtZ
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 02:43:12 -0600 (CST)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p8.oit.umn.edu 4J3G2S64mXz9vBtZ
-DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p8.oit.umn.edu 4J3G2S64mXz9vBtZ
-Received: by mail-pl1-f197.google.com with SMTP id f16-20020a170902ce9000b001436ba39b2bso7893189plg.3
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 00:43:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=umn.edu; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=w2+HpAwDa/HBxXc2VVtjYSYS1Y8V8tVj3abGe9wGHDk=;
-        b=EdYA5Q2GIemYjDJPqF+oyaUvV3P5LSX4m2c2Kd71J8lrsdewKdAelfbMsXMWGixvrE
-         ceKGqkzdfu8BTzITpU7Bm7eMLDRwZt88KJfPHAoCldicPib4kTbctWhbM4Z0CVSrYQ/8
-         vGzBDlg9UraEEmBUNVNcH8xEhdqXIh/XQsxbCHVdsGRvu4JXwsVeyXY975BWku96n/c9
-         5AzccnN4ccJtbQUCTa1LR8sTLof+wAgnBHqGPsmURKhn5E9qvuMok2t9/t+ywJdKUv8x
-         avhvMdfqPYAzobUSeT6iNOln3B8KwSyqpIXxQCh34ZTuPOoxxHEFw/CLdOrLZt35x+S1
-         MAgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=w2+HpAwDa/HBxXc2VVtjYSYS1Y8V8tVj3abGe9wGHDk=;
-        b=sWBuJSNhouOf5M3vuBdne+Cjk8QH/U56SB7IOmealw8Ie30orNSWpI/7olxmj8F+b0
-         nS/WIX00JzomY6PktV2NYbeIvYZ4d0vfoIt6RLwemxGHbxH600OZRRDrTaJoMSS6kVGr
-         eWUpBFK6qrHINJOR90VKxoJbNu+FN3+s00EZdTOXiaQHP+4bF/sX3xRfosY/cGQDcg6v
-         8aASFxVBg08vbSFg/LQr9vn4Ow6j9gUTmiFS3DvaYMDQYjfArwXe2CDjuKz4Fu95k6NC
-         Y5TuN09lZPU1x3VKqtXL5r1YZmcx24gLV3mpxMbHD3guZBmZs/aMwKGdAOcsodPZ7PaA
-         3fSw==
-X-Gm-Message-State: AOAM532Yu5iAIPPhCfyFvvgOeE+H8Q9skhVn3ZYdW/nqigcQkxWYPMX7
-        MPq52HFe0/V+WDcOqgSvuavAjs8TEEA9D8GdwThXnvZRkd6btP67WJ6xBsE4NUWIj9gEVx5Cua8
-        wuAfehVh1fdxY/kOtagjD
-X-Received: by 2002:a17:90a:c58f:: with SMTP id l15mr4344406pjt.168.1638261790879;
-        Tue, 30 Nov 2021 00:43:10 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy0xFxpS2KHZUTUB75/FtM3PAAx67zjQxerMVpND32xQFqaPgXo3bBmJYOsoiUb/JCP/+UwFQ==
-X-Received: by 2002:a17:90a:c58f:: with SMTP id l15mr4344381pjt.168.1638261790641;
-        Tue, 30 Nov 2021 00:43:10 -0800 (PST)
-Received: from zqy787-GE5S.lan ([36.7.42.137])
-        by smtp.gmail.com with ESMTPSA id d2sm20962168pfj.42.2021.11.30.00.43.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Nov 2021 00:43:10 -0800 (PST)
-From:   Zhou Qingyang <zhou1615@umn.edu>
-To:     zhou1615@umn.edu
-Cc:     kjlu@umn.edu, Kalle Valo <kvalo@codeaurora.org>,
+        id S239686AbhK3Isq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 03:48:46 -0500
+Received: from mail.loongson.cn ([114.242.206.163]:45244 "EHLO loongson.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S239664AbhK3Isq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Nov 2021 03:48:46 -0500
+Received: from [10.180.13.93] (unknown [10.180.13.93])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9AxismT5KVh97YBAA--.3687S2;
+        Tue, 30 Nov 2021 16:45:14 +0800 (CST)
+Subject: Re: [PATCH v2 1/2] modpost: file2alias: fixup mdio alias garbled code
+ in modules.alias
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Manikanta Pubbisetty <mpubbise@codeaurora.org>,
-        Shashidhar Lakkavalli <slakkavalli@datto.com>,
-        Govindaraj Saminathan <gsamin@codeaurora.org>,
-        Vasanthakumar Thiagarajan <vthiagar@codeaurora.org>,
-        Pradeep Kumar Chitrapu <pradeepc@codeaurora.org>,
-        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ath11k: Fix a NULL pointer dereference in ath11k_mac_op_hw_scan()
-Date:   Tue, 30 Nov 2021 16:43:04 +0800
-Message-Id: <20211130084304.72160-1-zhou1615@umn.edu>
-X-Mailer: git-send-email 2.25.1
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kbuild@vger.kernel.org
+References: <1637919957-21635-1-git-send-email-zhuyinbo@loongson.cn>
+ <c6d37ae0-9ccb-a527-4f55-e96972813a53@gmail.com>
+From:   zhuyinbo <zhuyinbo@loongson.cn>
+Cc:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, zhuyinbo@loongson.cn
+Message-ID: <a569842b-a1e9-0ace-67a4-96d4d0429fbd@loongson.cn>
+Date:   Tue, 30 Nov 2021 16:45:07 +0800
+User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
+In-Reply-To: <c6d37ae0-9ccb-a527-4f55-e96972813a53@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-CM-TRANSID: AQAAf9AxismT5KVh97YBAA--.3687S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxGw17XF1xGFy8Jr1xZF17trb_yoW5Xr4UpF
+        W3GFy5KFWkGF429a1F93WUWryUXw47Kr95Wa1jqF1vgF9Iyry0vr4SkF4Sga4kZFZ2va40
+        g3W5uFyDur4DZrDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU9K14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+        6r4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvEwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka
+        0xkIwI1lc7I2V7IY0VAS07AlzVAYIcxG8wCY02Avz4vE-syl42xK82IYc2Ij64vIr41l4I
+        8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AK
+        xVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcV
+        AFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8I
+        cIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14
+        v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUoOJ5UUUUU
+X-CM-SenderInfo: 52kx5xhqerqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In ath11k_mac_op_hw_scan(), the return value of kzalloc() is directly
-used in memcpy(), which may lead to a NULL pointer dereference on
-failure of kzalloc().
 
-Fix this bug by adding a check of arg.extraie.ptr.
+在 2021/11/26 下午6:21, Heiner Kallweit 写道:
+> On 26.11.2021 10:45, Yinbo Zhu wrote:
+>> After module compilation, module alias mechanism will generate a ugly
+>> mdio modules alias configure if ethernet phy was selected, this patch
+>> is to fixup mdio alias garbled code.
+>>
+>> In addition, that ugly alias configure will cause ethernet phy module
+>> doens't match udev, phy module auto-load is fail, but add this patch
+>> that it is well mdio driver alias configure match phy device uevent.
+>>
+> I think Andrew asked you for an example already.
+> For which PHY's the driver isn't auto-loaded?
 
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
+I test that use marvell phy, another colleague use motorcomm phy,  which 
+auto load function was all fail.
 
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
+and I need to emphasize one thing that the mdio auto load issue is 
+generally issue, not special phy issue.
 
-Builds with CONFIG_ATH11K=m show no new warnings, and our static
-analyzer no longer warns about this code.
 
-Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
----
- drivers/net/wireless/ath/ath11k/mac.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 1cc55602787b..095f1f9b7611 100644
---- a/drivers/net/wireless/ath/ath11k/mac.c
-+++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -3237,8 +3237,13 @@ static int ath11k_mac_op_hw_scan(struct ieee80211_hw *hw,
- 	arg.scan_id = ATH11K_SCAN_ID;
- 
- 	if (req->ie_len) {
--		arg.extraie.len = req->ie_len;
- 		arg.extraie.ptr = kzalloc(req->ie_len, GFP_KERNEL);
-+		if (!arg.extraie.ptr) {
-+			ret = -ENOMEM;
-+			goto exit;
-+		}
-+
-+		arg.extraie.len = req->ie_len;
- 		memcpy(arg.extraie.ptr, req->ie, req->ie_len);
- 	}
- 
--- 
-2.25.1
+>
+> In addition your commit descriptions are hard to read, especially the
+> one for patch 2. Could you please try to change them to proper English?
+> Not being a native speaker myself ..
+I had changed commit information as v3 version, please you check.
+>> Signed-off-by: Yinbo Zhu <zhuyinbo@loongson.cn>
+>> ---
+>> Change in v2:
+>> 		Add a MDIO_ANY_ID for considering some special phy device
+>> 		which phy id doesn't be read from phy register.
+>>
+>>
+>>   include/linux/mod_devicetable.h |  2 ++
+>>   scripts/mod/file2alias.c        | 17 +----------------
+>>   2 files changed, 3 insertions(+), 16 deletions(-)
+>>
+>> diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
+>> index ae2e75d..7bd23bf 100644
+>> --- a/include/linux/mod_devicetable.h
+>> +++ b/include/linux/mod_devicetable.h
+>> @@ -595,6 +595,8 @@ struct platform_device_id {
+>>   	kernel_ulong_t driver_data;
+>>   };
+>>   
+>> +#define MDIO_ANY_ID (~0)
+>> +
+>>   #define MDIO_NAME_SIZE		32
+>>   #define MDIO_MODULE_PREFIX	"mdio:"
+>>   
+>> diff --git a/scripts/mod/file2alias.c b/scripts/mod/file2alias.c
+>> index 49aba86..63f3149 100644
+>> --- a/scripts/mod/file2alias.c
+>> +++ b/scripts/mod/file2alias.c
+>> @@ -1027,24 +1027,9 @@ static int do_platform_entry(const char *filename,
+>>   static int do_mdio_entry(const char *filename,
+>>   			 void *symval, char *alias)
+>>   {
+>> -	int i;
+>>   	DEF_FIELD(symval, mdio_device_id, phy_id);
+>> -	DEF_FIELD(symval, mdio_device_id, phy_id_mask);
+>> -
+>>   	alias += sprintf(alias, MDIO_MODULE_PREFIX);
+>> -
+>> -	for (i = 0; i < 32; i++) {
+>> -		if (!((phy_id_mask >> (31-i)) & 1))
+>> -			*(alias++) = '?';
+>> -		else if ((phy_id >> (31-i)) & 1)
+>> -			*(alias++) = '1';
+>> -		else
+>> -			*(alias++) = '0';
+>> -	}
+>> -
+>> -	/* Terminate the string */
+>> -	*alias = 0;
+>> -
+>> +	ADD(alias, "p", phy_id != MDIO_ANY_ID, phy_id);
+>>   	return 1;
+>>   }
+>>   
+>>
 
