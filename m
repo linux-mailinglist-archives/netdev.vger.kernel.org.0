@@ -2,88 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37C9D46382C
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 15:55:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D08824637DF
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 15:53:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243128AbhK3O6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 09:58:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60744 "EHLO
+        id S243471AbhK3O4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 09:56:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243143AbhK3O41 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 09:56:27 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F7BC061A20;
-        Tue, 30 Nov 2021 06:50:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59F8AB81A29;
-        Tue, 30 Nov 2021 14:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C306C53FC1;
-        Tue, 30 Nov 2021 14:50:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638283816;
-        bh=meQhLRbhvx/RwYVCeyTbQAwKAyZcEHM+S8EeTgnF/VM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bef7MfDwhALHzu09GgWI0mYofUpfc/qeIw9QgZ0nLAHsdiSs5gqBB6E8A6pm9VYYJ
-         TaZEGi4Zz3mCeSQIW5BpAG1NDPmfV49UnS5bTCjvQ6DudgQ7f6tt8R1I2Sxf4Vvyl6
-         HFJZNcGqMprJW0NZkzi8kRc3PjHiW3aB1ihn4W34gBxMH5Aih4HEopi4DqMQqFqRV4
-         PkApKVGgQrvM6pJenfx7RnyJkKPgpsWGrlPZlnQ2h2lMh/iM8anLdPSBrblGLpBLFP
-         qKABbkmSK42xrpLP0xbF1pf0NDQAUkIgSbqd8bSSWO2muSMuWK0fezWy6bnjpfRGLN
-         VasCvc5McoEUQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 66/68] net: ptp: add a definition for the UDP port for IEEE 1588 general messages
-Date:   Tue, 30 Nov 2021 09:47:02 -0500
-Message-Id: <20211130144707.944580-66-sashal@kernel.org>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211130144707.944580-1-sashal@kernel.org>
-References: <20211130144707.944580-1-sashal@kernel.org>
+        with ESMTP id S243203AbhK3Oyr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 09:54:47 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18AF5C061763
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 06:49:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=YEinrairKTdo02mxPsf+96PtVu7lPvrxZkoITCgtFVU=; b=g5GA/AqNB0yO5EKUEQRxzPrwaW
+        pFiew24xpnQmaDeRZOVU00jYfwuesfECR34XzEmKMC9OmALjKIzI+TglVOtQMBtIoN3byyFpcmuHs
+        GUqFLI5EHGcm/ubnR1ZxrZlKvjxS27eBxGjgY5kFj0Zn4h6nAcaZ3O0M2KUdwkO7bEP8G8SkErJ6/
+        vb7TzzvQrhYdkZUbNKeIqTHNavXLc84HC6VZ6vBoE1PrXDIqZNdRBTkKE3yIsBJrqtg16UtXW//5b
+        Lf75Apolcr6f6b1rvJy5PC4/Lnx3izNc+P0PwFOqsDbntlKHwdF0yDz6K6XqgRndTEcx0XCdtf4zL
+        cquiCftw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:40154 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1ms4Rx-00073E-Ua; Tue, 30 Nov 2021 14:49:42 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1ms4Rx-00EKEc-En; Tue, 30 Nov 2021 14:49:41 +0000
+From:   Russell King <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next] net: phylink: tidy up disable bit clearing
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1ms4Rx-00EKEc-En@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Tue, 30 Nov 2021 14:49:41 +0000
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Tidy up the disable bit clearing where we clear a bit and the run the
+link resolver.
 
-[ Upstream commit ec15baec3272bbec576f2ce7ce47765a8e9b7b1c ]
-
-As opposed to event messages (Sync, PdelayReq etc) which require
-timestamping, general messages (Announce, FollowUp etc) do not.
-In PTP they are part of different streams of data.
-
-IEEE 1588-2008 Annex D.2 "UDP port numbers" states that the UDP
-destination port assigned by IANA is 319 for event messages, and 320 for
-general messages. Yet the kernel seems to be missing the definition for
-general messages. This patch adds it.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- include/linux/ptp_classify.h | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/phy/phylink.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/ptp_classify.h b/include/linux/ptp_classify.h
-index ae04968a3a472..9afd34a2d36c5 100644
---- a/include/linux/ptp_classify.h
-+++ b/include/linux/ptp_classify.h
-@@ -37,6 +37,7 @@
- #define PTP_MSGTYPE_PDELAY_RESP 0x3
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index eacbb0e6a24b..8e3861f09b4f 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -1090,6 +1090,12 @@ static void phylink_run_resolve_and_disable(struct phylink *pl, int bit)
+ 	}
+ }
  
- #define PTP_EV_PORT 319
-+#define PTP_GEN_PORT 320
- #define PTP_GEN_BIT 0x08 /* indicates general message, if set in message type */
++static void phylink_enable_and_run_resolve(struct phylink *pl, int bit)
++{
++	clear_bit(bit, &pl->phylink_disable_state);
++	phylink_run_resolve(pl);
++}
++
+ static void phylink_fixed_poll(struct timer_list *t)
+ {
+ 	struct phylink *pl = container_of(t, struct phylink, link_poll);
+@@ -1574,8 +1580,7 @@ void phylink_start(struct phylink *pl)
+ 	 */
+ 	phylink_mac_initial_config(pl, true);
  
- #define OFF_PTP_SOURCE_UUID	22 /* PTPv1 only */
+-	clear_bit(PHYLINK_DISABLE_STOPPED, &pl->phylink_disable_state);
+-	phylink_run_resolve(pl);
++	phylink_enable_and_run_resolve(pl, PHYLINK_DISABLE_STOPPED);
+ 
+ 	if (pl->cfg_link_an_mode == MLO_AN_FIXED && pl->link_gpio) {
+ 		int irq = gpiod_to_irq(pl->link_gpio);
+@@ -1715,8 +1720,7 @@ void phylink_resume(struct phylink *pl)
+ 		phylink_mac_initial_config(pl, true);
+ 
+ 		/* Re-enable and re-resolve the link parameters */
+-		clear_bit(PHYLINK_DISABLE_MAC_WOL, &pl->phylink_disable_state);
+-		phylink_run_resolve(pl);
++		phylink_enable_and_run_resolve(pl, PHYLINK_DISABLE_MAC_WOL);
+ 	} else {
+ 		phylink_start(pl);
+ 	}
+@@ -2645,8 +2649,7 @@ static void phylink_sfp_link_up(void *upstream)
+ 
+ 	ASSERT_RTNL();
+ 
+-	clear_bit(PHYLINK_DISABLE_LINK, &pl->phylink_disable_state);
+-	phylink_run_resolve(pl);
++	phylink_enable_and_run_resolve(pl, PHYLINK_DISABLE_LINK);
+ }
+ 
+ /* The Broadcom BCM84881 in the Methode DM7052 is unable to provide a SGMII
 -- 
-2.33.0
+2.30.2
 
