@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C89BA463909
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 16:03:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DD7F46390A
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 16:03:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245262AbhK3PHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 10:07:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33520 "EHLO
+        id S245294AbhK3PHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 10:07:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244561AbhK3PCc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 10:02:32 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D6E9C0619FF;
-        Tue, 30 Nov 2021 06:53:39 -0800 (PST)
+        with ESMTP id S244756AbhK3PCl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 10:02:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7ED8C08EA71;
+        Tue, 30 Nov 2021 06:53:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id AA66FCE1A81;
-        Tue, 30 Nov 2021 14:53:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55A7FC53FD0;
-        Tue, 30 Nov 2021 14:53:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91EA3B81A21;
+        Tue, 30 Nov 2021 14:53:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8872DC53FCF;
+        Tue, 30 Nov 2021 14:53:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638284017;
-        bh=r2+hGVkNf5ayMWDym0CWmxwQAfcI0oZSKo0wah+zbyk=;
+        s=k20201202; t=1638284036;
+        bh=L/vkYAiPnUZOw0+RA29NGcdgiSkdtnKXz6T1fAVsn5A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lh16bvySDfUKvIf1tUWloILQD2uA4u5NUBc7P/jQ0IA0X2U3kpJ4Xxo3Uo2flig8M
-         64eAxkEJDvW1xyRyjD6Is29Cjye/ZmalEduLEhDzZR3BWFwXEnxXh9JvmOeuK63bIj
-         9G7z0JT+1iZRjXGwLPkV46fidjQnzXWsXzWSUIjTa69o1OfT4mCnFM5/37mWjEO6Cy
-         NBY08Mdjgep0EtZFvbnO42rUBJ/HpJjhhkc0AW8mfBMVaTJFasYChvablxd58j9e9Z
-         r2gD8veBW9c+noIT+lyPxYbokCTtaLzMwJrPps52i1xDpniB1Y1V++0GXOEQA0hBHY
-         t8DiZLoW04Wow==
+        b=LdSecbZoyyW4C52fsrRXN19+gMY/9eh33yBlaPT9HWfD/lqfyHHJdq4jwfrv2ojH0
+         Rlml9BI1OvMYexgLtaR4WiP5E6uUkJt+ZIY/9nVC1ahzHQ+CK0rvsBk63Ld9Jl3NYu
+         O47vLzeiHA9oYXgS7hhanJ1oY8wjp6v1NyK/nw5lo31YK+cQXEdf+ASR+p77h24Em2
+         FzfLu8DpKtM5yabv06AojINdBQAp9mkIa3OB0vEiUMQRq+HMp0MBG1ekLveUBxDV9m
+         MZTowuJZZ7QfpzG+cvt8uU1n45vc8FMWnncblJIEtF0iQPvhPMOEaEevZnjvseWaFg
+         aD3+Og5yIKAMw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     zhangyue <zhangyue1@kylinos.cn>, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, aelior@marvell.com,
-        manishc@marvell.com, davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 12/14] net: qed: fix the array may be out of bound
-Date:   Tue, 30 Nov 2021 09:53:13 -0500
-Message-Id: <20211130145317.946676-12-sashal@kernel.org>
+Cc:     Zheyu Ma <zheyuma97@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, rajur@chelsio.com,
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 08/12] net: chelsio: cxgb4vf: Fix an error code in cxgb4vf_pci_probe()
+Date:   Tue, 30 Nov 2021 09:53:36 -0500
+Message-Id: <20211130145341.946891-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211130145317.946676-1-sashal@kernel.org>
-References: <20211130145317.946676-1-sashal@kernel.org>
+In-Reply-To: <20211130145341.946891-1-sashal@kernel.org>
+References: <20211130145341.946891-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -50,57 +51,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: zhangyue <zhangyue1@kylinos.cn>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 0435a4d08032c8fba2966cebdac870e22238cacc ]
+[ Upstream commit b82d71c0f84a2e5ccaaa7571dfd5c69e0e2cfb4a ]
 
-If the variable 'p_bit->flags' is always 0,
-the loop condition is always 0.
+During the process of driver probing, probe function should return < 0
+for failure, otherwise kernel will treat value == 0 as success.
 
-The variable 'j' may be greater than or equal to 32.
+Therefore, we should set err to -EINVAL when
+adapter->registered_device_map is NULL. Otherwise kernel will assume
+that driver has been successfully probed and will cause unexpected
+errors.
 
-At this time, the array 'p_aeu->bits[32]' may be out
-of bound.
-
-Signed-off-by: zhangyue <zhangyue1@kylinos.cn>
-Link: https://lore.kernel.org/r/20211125113610.273841-1-zhangyue1@kylinos.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qed/qed_int.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_int.c b/drivers/net/ethernet/qlogic/qed/qed_int.c
-index f8d1d02a3cd4a..289101ce0e409 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_int.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_int.c
-@@ -865,7 +865,7 @@ static int qed_int_deassertion(struct qed_hwfn  *p_hwfn,
- 		if (!parities)
- 			continue;
+diff --git a/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c b/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
+index 17db5be9d2b7a..d350797ce1245 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
+@@ -3064,6 +3064,7 @@ static int cxgb4vf_pci_probe(struct pci_dev *pdev,
+ 	}
+ 	if (adapter->registered_device_map == 0) {
+ 		dev_err(&pdev->dev, "could not register any net devices\n");
++		err = -EINVAL;
+ 		goto err_disable_interrupts;
+ 	}
  
--		for (j = 0, bit_idx = 0; bit_idx < 32; j++) {
-+		for (j = 0, bit_idx = 0; bit_idx < 32 && j < 32; j++) {
- 			struct aeu_invert_reg_bit *p_bit = &p_aeu->bits[j];
- 
- 			if (qed_int_is_parity_flag(p_hwfn, p_bit) &&
-@@ -903,7 +903,7 @@ static int qed_int_deassertion(struct qed_hwfn  *p_hwfn,
- 			 * to current group, making them responsible for the
- 			 * previous assertion.
- 			 */
--			for (j = 0, bit_idx = 0; bit_idx < 32; j++) {
-+			for (j = 0, bit_idx = 0; bit_idx < 32 && j < 32; j++) {
- 				long unsigned int bitmask;
- 				u8 bit, bit_len;
- 
-@@ -1201,7 +1201,7 @@ static void qed_int_sb_attn_init(struct qed_hwfn *p_hwfn,
- 	memset(sb_info->parity_mask, 0, sizeof(u32) * NUM_ATTN_REGS);
- 	for (i = 0; i < NUM_ATTN_REGS; i++) {
- 		/* j is array index, k is bit index */
--		for (j = 0, k = 0; k < 32; j++) {
-+		for (j = 0, k = 0; k < 32 && j < 32; j++) {
- 			struct aeu_invert_reg_bit *p_aeu;
- 
- 			p_aeu = &aeu_descs[i].bits[j];
 -- 
 2.33.0
 
