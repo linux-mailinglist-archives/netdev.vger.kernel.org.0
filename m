@@ -2,97 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA41A462EF5
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 09:54:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B9B4462F4F
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 10:10:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239863AbhK3I5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 03:57:49 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:53148 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239864AbhK3I5t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 03:57:49 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 4C4CC1FD2F;
-        Tue, 30 Nov 2021 08:54:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1638262469; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=djDnA+ME6UfUZnWzUVmeJ7d2dpPBA27usHWKRJj5kUg=;
-        b=r/g9U57eILI24zaHOrQcOu14G5CeFpUMKP4B5opruF0sKFYL1NIyThjlTIsl97nvjVze/J
-        rb2ErAsX9zzryv7R7wWM669wDQ2mAv7GWn0ouVKSeIQBR49y605yi7CHr3gaX3mwLtXlck
-        1M2yxz9aV2nK8IM1SfvqSNL/h3ybrwc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1638262469;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=djDnA+ME6UfUZnWzUVmeJ7d2dpPBA27usHWKRJj5kUg=;
-        b=wfu1ETjEjJrOeOLqUMPUvtcnOloUJOkzhMNN4hKguEvrxXmSd7a5WUNx68kvkoMsTCZtOV
-        rb4TLLqHmtfqBgAQ==
-Received: from lion.mk-sys.cz (unknown [10.100.200.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 34295A3B8E;
-        Tue, 30 Nov 2021 08:54:29 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 8FEF5607EF; Tue, 30 Nov 2021 09:54:26 +0100 (CET)
-Date:   Tue, 30 Nov 2021 09:54:26 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, andrew@lunn.ch, pali@kernel.org,
-        jacob.e.keller@intel.com, vadimp@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [RFC PATCH net-next 0/4] ethtool: Add ability to flash and query
- transceiver modules' firmware
-Message-ID: <20211130085426.txa5xrrd3nipxgtz@lion.mk-sys.cz>
-References: <20211127174530.3600237-1-idosch@idosch.org>
- <20211129093724.3b76ebff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YaXicrPwrHJoTi9w@shredder>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YaXicrPwrHJoTi9w@shredder>
+        id S235627AbhK3JNR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 04:13:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36978 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234752AbhK3JNQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 04:13:16 -0500
+Received: from mail-wr1-x449.google.com (mail-wr1-x449.google.com [IPv6:2a00:1450:4864:20::449])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C47DDC061574
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 01:09:57 -0800 (PST)
+Received: by mail-wr1-x449.google.com with SMTP id b1-20020a5d6341000000b001901ddd352eso3415381wrw.7
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 01:09:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=W8jbV8uR0irmQJZ7XSBwWnCVGf+O5EBe0lK8t0Ctz0g=;
+        b=OalF+pDck24HiZlPvBX5uQQCtALURyBZVdTGythcwDykvLg0kVCdUCSNiKLxTNE4iI
+         WEN2y8D+l8ZjcO0UCf1QGJZjkc6s68Xz8sHZcVZaD0cwStdC++TK5bQZMPrYaP0C1W2L
+         +R8t3X6SIICqG6MwlP0tUs5MurbEzXbI/X+G66bEWzUiHxxFQHNyEJjA21bV2vbXz8DR
+         9eLZDXhPHNedn9jF6CXML4t0peKeD08aSnmL5ao2h7NLa8/hq1ljB8E+v+rT+Ti+wH9i
+         Skd8zgICnwoj+Rk8We6C1E6UjNK5vNxt/3M1cHJOFEMY/iOJvSOn93fALjXqxEcAIxLS
+         UIBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=W8jbV8uR0irmQJZ7XSBwWnCVGf+O5EBe0lK8t0Ctz0g=;
+        b=PctBMeTmsGcas93n4X2IX5d8Exw4/Gg3ix5etV3I4G+4gijD1+d//S95ifQYi97Om2
+         k4AOFPl9QDdnD9PHQ6rFKixpeuLW3+vQjoE9H6yirCg3y2+IecqJ5WryTjZArkyMvQRv
+         4zACLW5tPYhfXkgoECTHH7cFa6mgpjXetf6Z9ahy40AZR/klnToPep8jkO8DjFyC2YYG
+         BJNSvU+lttB0DT6w4RhGZlSfxzQBQVCsVx+yJfzDhGlvNo9HTVxg7NG6tuBULpj85hLG
+         dY+6XcT4CXnFq3HyFTteEQvvr4UWLaq7Lem12/bAO0VeUb4ZNIhlQno2jAiJi+QcF7iz
+         tQRA==
+X-Gm-Message-State: AOAM533wsninBtu2dN7tiMrEkdOASdbKR0ty/2R3mefnURq8fePtJTuI
+        ypc7HaNGyTOYfamhFpEEsfwgZ7mUFf/T
+X-Google-Smtp-Source: ABdhPJx352IZmH1efU047AiFh62rid6tJ8SQroycJmeGfa+YuP6PfkVdTheLFbzoL2SqLc5y1wXo0NlFLmUP
+X-Received: from dvyukov-desk.muc.corp.google.com ([2a00:79e0:15:13:1e84:81dc:2c2c:50e2])
+ (user=dvyukov job=sendgmr) by 2002:a5d:6d06:: with SMTP id
+ e6mr4964384wrq.330.1638263396198; Tue, 30 Nov 2021 01:09:56 -0800 (PST)
+Date:   Tue, 30 Nov 2021 10:09:52 +0100
+In-Reply-To: <b7c0fed4-bb30-e905-aae2-5e380b582f4c@gmail.com>
+Message-Id: <20211130090952.4089393-1-dvyukov@google.com>
+Mime-Version: 1.0
+References: <b7c0fed4-bb30-e905-aae2-5e380b582f4c@gmail.com>
+X-Mailer: git-send-email 2.34.0.rc2.393.gf8c9666880-goog
+Subject: Re: [RFC -next 1/2] lib: add reference counting infrastructure
+From:   Dmitry Vyukov <dvyukov@google.com>
+To:     eric.dumazet@gmail.com
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 30, 2021 at 10:36:02AM +0200, Ido Schimmel wrote:
-> On Mon, Nov 29, 2021 at 09:37:24AM -0800, Jakub Kicinski wrote:
-> > 
-> > Immediate question I have is why not devlink. We purposefully moved 
-> > FW flashing to devlink because I may take long, so doing it under
-> > rtnl_lock is really bad. Other advantages exist (like flashing
-> > non-Ethernet ports). Ethtool netlink already existed at the time.
-> 
-> Device firmware flashing doesn't belong in devlink because of locking
-> semantics. It belongs in devlink because you are updating the firmware
-> of the device, which can instantiate multiple netdevs. For multi-port
-> devices, it always seemed weird to tell users "choose some random port
-> and use it for 'ethtool -f'". I remember being asked if the command
-> needs to be run for all swp* netdevs (no).
-> 
-> On the other hand, each netdev corresponds to a single transceiver
-> module and each transceiver module corresponds to a single netdev
-> (modulo split which is a user configuration).
+Hi Eric, Jakub,
 
-Devlink also has abstraction for ports so it can be used so it is not
-necessarily a problem.
+How strongly do you want to make this work w/o KASAN?
+I am asking because KASAN will already memorize alloc/free stacks for every
+heap object (+ pids + 2 aux stacks with kasan_record_aux_stack()).
+So basically we just need to alloc struct list_head and won't need
+quarantine/quarantine_avail in ref_tracker_dir.
+If there are some refcount bugs, it may be due to a previous use-after-free,
+so debugging a refcount bug w/o KASAN may be waste of time.
 
-> In addition, users are already dumping the EEPROM contents of
-> transceiver modules via ethtool and also toggling their settings.
-> 
-> Given the above, it's beyond me why we should tell users to use anything
-> other than ethtool to update transceiver modules' firmware.
-
-As I already mentioned, we should distinguish between ethtool API and
-ethtool utility. It is possible to implement the flashing in devlink API
-and let both devlink and ethtool utilities use that API.
-
-I'm not saying ethtool API is a wrong choice, IMHO either option has its
-pros and cons. I'm just trying to point out that implementation in
-devlink API does not necessarily mean one cannot use the ethtool to use
-the feature.
-
-Michal
