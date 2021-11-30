@@ -2,64 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3D32463D2C
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 18:46:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38B06463D4B
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 18:56:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239341AbhK3RtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 12:49:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45900 "EHLO
+        id S245102AbhK3R7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 12:59:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231362AbhK3RtQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 12:49:16 -0500
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BFDDC061574;
-        Tue, 30 Nov 2021 09:45:56 -0800 (PST)
-Received: by mail-oi1-x231.google.com with SMTP id be32so42705852oib.11;
-        Tue, 30 Nov 2021 09:45:56 -0800 (PST)
+        with ESMTP id S238677AbhK3R7t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 12:59:49 -0500
+Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C6ADC061574;
+        Tue, 30 Nov 2021 09:56:30 -0800 (PST)
+Received: by mail-ot1-x32f.google.com with SMTP id a23-20020a9d4717000000b0056c15d6d0caso31304953otf.12;
+        Tue, 30 Nov 2021 09:56:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=XQDjVUqMHzhsaLSX72FpGvCv4WfW3bJNSIFmp2dV73Y=;
-        b=i6RIwWLgsrCTl7jGOwupWsLU63T4N22hibLuzIctrW/RPwt8MAAmE3hpHlxS62fgGH
-         yf83zD2tYKiIL0uvvLSDiG/MtLgPVRNVam85g9P/LDl4DDIA5IKrUdVngb3C4BM6U7/N
-         /rbGn3p9sWO4MfjS9kGWlInpqhsIu+Te3zIhSXlyHUoreFE77oEecisKbn+41TXA8Xih
-         W8JQjZKx2NIInNntdipij+O9RiUv1fWvXzCc2qhJm8Xa+X5oYxUMNFiFojIII9cxydFm
-         J3jvQ1ur3a7M/6jYdHRPkXQ5JA5eeNR0ZuEqNY7/UeJarOJmzBVPDihzZaDtBl8lLAzi
-         ELRA==
+        bh=sP3a2w9TIAvowtRsPrZvQyg1T33o3v6kWhUG+u0tLlE=;
+        b=b4upmZcT1t7xQzyUYE8KQU475W7lJjkGOOYfS1joYDLLcIERbWMU/rYjx7209HwrNK
+         algIH55puJuHwwc10ZxvR1AEIiK4O2PxuSQVc8xC3OZkhiAusKoWmtGw0R/JSagg5hqj
+         KOOgnN/EGXChaY7ZmP60oildRx3fhZZhcDhel4GtuG1xIv6nTDwuRXVJkksQZWh1IagO
+         omft/vl1YWdZRzgivXLMgLiuDzpHzGrF4WSVr4AH6Usp1IBVbxoh9j+cH1ov3fP5ziir
+         rRlrtvtaHkZ2YdiEPHMCzm8vwp+Gotsvw/4NMmw20OEne3Yob3RGtquWPRUGJqLVs4fO
+         gfmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=XQDjVUqMHzhsaLSX72FpGvCv4WfW3bJNSIFmp2dV73Y=;
-        b=r+mdWKr0I8EzB8EQ7n+IOljAHW8FN6atGKOPZB3zmbqcoohM1L6sOrVPWXyKU1GTbD
-         r/frXHQwCqgQdMgT+S+2s410fwH7OvdlnMhx1oPJ7fhVc3a4gOjhdHScZ+yc1CyoR00J
-         cBvQBdjwoCmHRyoWb8nzxaFTFxZnJA2S414js2v3s9iwxW4TMER1GbrkVeUxFoxtgw/V
-         FScgzCN0qQgptcC4a+JELwMdk067XJ5IKNM4Yj67rfOGonyN7ijD/Wl6v5sXR9Fv3Opf
-         u2UwKjtxT0VmSLIGG1ZkQmejJJO3YsTYo6O/oyfjeo9YslS/HSTkcfzFY/0FyGWq+JPO
-         H6dQ==
-X-Gm-Message-State: AOAM531t+wwDUk7mf0AHLyMUn95qX9T/ZkWGrobjovQuVrVI1DeljG/i
-        10AOUq1lIjFqEyTtUWh6MZA=
-X-Google-Smtp-Source: ABdhPJzn1aa/vW8m1o9/rqJ9jY1Q1riv+YPz8e4+I2zQ9i+vkgbHrskkZ/2npSiRO579znJxNKX/mA==
-X-Received: by 2002:a54:4614:: with SMTP id p20mr385770oip.39.1638294356099;
-        Tue, 30 Nov 2021 09:45:56 -0800 (PST)
+        bh=sP3a2w9TIAvowtRsPrZvQyg1T33o3v6kWhUG+u0tLlE=;
+        b=XgDoTK2KdmgGZOKfCcXH8MppavQ5Cnv27XeWrioO8OTXLx/e+zkM1B/+ik55tAaaEX
+         nx9hy+94HYdvcHt8kp3IGejG1p/113RDYLcpKt+dxha063E53oW+0FNpfgJWTNiYtU5N
+         FLJLfLthwU2i6lpg2FKWShQMDN3+wUsL5b+XoS5msMSXqWfiuMpyeP7NNMetdcYf7PFt
+         RxBj9pJccork6BWb215fURx7oTjvZobC0Nw0BOliYAp28dhPKowRi1QkjlDLMswwaczZ
+         a+OM2kDIUDkzqAbUDHEzKjTM9xizty8nf/nbttfmM8/KPsAjaiID25bPdADVXqmYRe7F
+         SHbg==
+X-Gm-Message-State: AOAM5321Ve7HOpKNAyaa01KJ73i40OjiDL4xjf9WjM+j7LdnL8bAQu0G
+        BF13+PMwQkNKy6JtgWyjmYU=
+X-Google-Smtp-Source: ABdhPJzy2Yq4AwU02waQ4hZbuxHokWD5+Xy6wCmmsKNJziTS72PXddbDdSp6ndvI+xhGOJyxmVEkkA==
+X-Received: by 2002:a9d:67d5:: with SMTP id c21mr733642otn.128.1638294989887;
+        Tue, 30 Nov 2021 09:56:29 -0800 (PST)
 Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id a17sm3858966oiw.43.2021.11.30.09.45.53
+        by smtp.googlemail.com with ESMTPSA id r5sm3859326oiw.20.2021.11.30.09.56.26
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Nov 2021 09:45:55 -0800 (PST)
-Message-ID: <85d2b974-f596-f36e-099f-a698b6be464e@gmail.com>
-Date:   Tue, 30 Nov 2021 10:45:52 -0700
+        Tue, 30 Nov 2021 09:56:29 -0800 (PST)
+Message-ID: <d9be528c-af35-6c10-c458-9e2f7759bbb3@gmail.com>
+Date:   Tue, 30 Nov 2021 10:56:26 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
  Gecko/20100101 Thunderbird/91.3.1
 Subject: Re: [PATCH v2 net-next 00/26] net: introduce and use generic XDP
  stats
 Content-Language: en-US
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+To:     Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vu?= =?UTF-8?Q?sen?= 
+        <toke@redhat.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
         Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
         Jonathan Corbet <corbet@lwn.net>,
@@ -79,7 +81,6 @@ Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
         John Fastabend <john.fastabend@gmail.com>,
         Edward Cree <ecree.xilinx@gmail.com>,
         Martin Habets <habetsm.xilinx@gmail.com>,
@@ -101,21 +102,36 @@ Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
         linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
         virtualization@lists.linux-foundation.org
 References: <20211123163955.154512-1-alexandr.lobakin@intel.com>
- <20211130155612.594688-1-alexandr.lobakin@intel.com>
+ <20211130155612.594688-1-alexandr.lobakin@intel.com> <871r2x8vor.fsf@toke.dk>
+ <20211130090716.4a557036@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20211130155612.594688-1-alexandr.lobakin@intel.com>
+In-Reply-To: <20211130090716.4a557036@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/30/21 8:56 AM, Alexander Lobakin wrote:
-> Rest:
->  - don't create a separate `ip` command and report under `-s`;
+On 11/30/21 10:07 AM, Jakub Kicinski wrote:
+> On Tue, 30 Nov 2021 17:17:24 +0100 Toke Høiland-Jørgensen wrote:
+>>> 1. Channels vs queues vs global.
+>>>
+>>> Jakub: no per-channel.
+>>> David (Ahern): it's worth it to separate as Rx/Tx.
+>>> Toke is fine with globals at the end I think?  
+>>
+>> Well, I don't like throwing data away, so in that sense I do like
+>> per-queue stats, but it's not a very strong preference (i.e., I can live
+>> with either)...
+> 
+> We don't even have a clear definition of a queue in Linux.
+> 
 
-Reporting XDP stats under 'ip -s' is not going to be scalable from a
-readability perspective.
+The summary above says "Jakub: no per-channel", and then you have this
+comment about a clear definition of a queue. What is your preference
+here, Jakub? I think I have gotten lost in all of the coments.
 
-ifstat (misc/ifstat.c) has support for extended stats which is where you
-are adding these.
+My request was just to not lump Rx and Tx together under a 'channel'
+definition as a new API. Proposals like zctap and 'queues as a first
+class citizen' are examples of intentions / desires to move towards Rx
+and Tx queues beyond what exists today.
