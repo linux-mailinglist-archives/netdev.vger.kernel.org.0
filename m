@@ -2,123 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E3AD462BD5
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 05:51:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4847462BF2
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 06:13:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238282AbhK3EzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 23:55:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35004 "EHLO
+        id S238291AbhK3FQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 00:16:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231844AbhK3EzK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 23:55:10 -0500
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED90C061574;
-        Mon, 29 Nov 2021 20:51:51 -0800 (PST)
-Received: by mail-qk1-x729.google.com with SMTP id m186so25481295qkb.4;
-        Mon, 29 Nov 2021 20:51:51 -0800 (PST)
+        with ESMTP id S235269AbhK3FQq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 00:16:46 -0500
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 809FDC061574;
+        Mon, 29 Nov 2021 21:13:27 -0800 (PST)
+Received: by mail-qk1-x732.google.com with SMTP id p4so25510630qkm.7;
+        Mon, 29 Nov 2021 21:13:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=M17/W6kgOYyF+cgBlFzL7pz8EMYW8LaCbMQL/p87ZvU=;
-        b=WilKfh5xdx7JWpQVQ87QlY2Tc2f4BoDmdEbmoKdLxq1DIgdXw/X+d0rGI0kVcUsvq7
-         1vwX26v6MmaamyismCkoGwyRUV1jxLWeXSNjAZGNxi6tYi9cQr7JKqjeO0/tyB8Cx+aq
-         QI9D6EuOsdW7JxeaDsLTnSfSvWDqp9bNQyrpdTb5TIUToZuTAOUvvKetEKAkv78p0uel
-         3zoeSzSlJZhhG/XiqPDsGQNO7Nsi+9lYWSCh9LTgzL/r0b2pTLzhyxfRkAb2s0OYGx++
-         4Mxdoo8qg2yzU475PYLuUb1/ugZfpWxqsJQs38/LivHhQu36ak1rjdHWdX/VQrPqlw58
-         ejSQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xT3OJBmBSLdDKQA0pF/Eep+RHgJNEz3TGcshjvO7yNM=;
+        b=MVeA5cD2hTTZmfLu3F2ocne4+g4w6KTcjFFyyOBO4tV+EFfu7KyGNKSIwIElhefpTH
+         NW7pWcA+P/9L9mKTlopbnOjTbZmwrGQ+Jd+e615NJljYeHwjYRXFj9qhmDaYdSq4me84
+         n4QOwhih703FmTwCXhQH8BnfNm7B3m+eCmh6d5ZLWe8pmlO2AteNIRm1I737FqlT54Dc
+         RliTSjySiOB9qx+ZVIsdstbNrLe0F8NQtlrb8T27HJC+xtETVqoacAV3B0aES3n5vVXw
+         342hH5l8qWX9daltZgvhKYAr96bKYTEHX98MS5AiGaoKabB+pOo/8aRt1KSqnE0WEIbN
+         sNmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=M17/W6kgOYyF+cgBlFzL7pz8EMYW8LaCbMQL/p87ZvU=;
-        b=N6B+1xzguiHVbQn/R7YviU4JL954CIbb/aobv4PK/a7e8bmh6w/qSmDjc+yPJJuqpK
-         1oOyGZlk7cqfyUC6uTMBlC+tzVga2X9Tbt5CDDze7O+o68jKa0RBR+qEIEKj0QvGTH4S
-         4Uf2C/Di0LEyKkGQP/pCmikYaRb9CvM713Tg54fkxCt5ZN+P0fTsOw4dOiCIKebGrg/X
-         D73noBwu3LI5PMlEUwhtg26+a6TBwv0aNxjTGHH1S81SPHxbFV3vz361XLkhh7g1d8N/
-         rNYYKBorl6gLk0q4+NTbI283TjYpu5+0DexuZgHtOPt6WvyN8gj8k1pkpThXTDZ785Uc
-         uctg==
-X-Gm-Message-State: AOAM533z+ELEWjbVtc7n0+LDPCb5yAAoPYCnD9xjvSIEeac63ca++NG9
-        34FFuVj9qNcMxWW3VXy9VqtYUAvKABNYpA==
-X-Google-Smtp-Source: ABdhPJzQ/vsYYIksg0wFuByOjXmqgUaAOkOQiVfQnAqSIxgk2Ot+y28LxMwM/fk1tHJ9t7pzx0eWOQ==
-X-Received: by 2002:a37:c205:: with SMTP id i5mr36344229qkm.657.1638247910821;
-        Mon, 29 Nov 2021 20:51:50 -0800 (PST)
-Received: from cth-desktop-dorm.mad.wi.cth451.me ([2600:6c44:113f:8901:6f66:c6f8:91db:cfda])
-        by smtp.gmail.com with ESMTPSA id e20sm10265127qty.14.2021.11.29.20.51.49
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xT3OJBmBSLdDKQA0pF/Eep+RHgJNEz3TGcshjvO7yNM=;
+        b=jNndvgtflS3xJUT6i44phW0J1jtnwBVfefMxlQBY0TeyVULKL++vmKYEOiLKOochaf
+         58OTfVZILcfyLUbpkCX1QcBwihoOX1czi09y1Xr0RU3ATbwoeAjEMLiA/AGaWRv2CQEz
+         OA7k3FXxPKAAO3sOQzy4x3z6hD/UPvb2LzHOJUzYX4ibxtIY+5ROJIztvMD8Z7/DACRH
+         /9athpPcVoYznN/NSqnI8kYN45JK/VNBiYcF1Qe4rsS48bTVr6tDfN1csWamS4HV2d3L
+         HK/siSw6hxJkC0xYZ+GWBQ23tZyeigbiTKLFx+ERyWrr642gFfZMfo4Ejr8Ng+jgMZ61
+         M1uQ==
+X-Gm-Message-State: AOAM530tVY8fOhVKnUWqcGp3/YkQz9jyviarkH+eaAIyaruitArrJJ9l
+        uFbr7KjxUQh87enIdlc9QQ==
+X-Google-Smtp-Source: ABdhPJxwR6z4vFjYRZTUewtGwlCIjV891UP5pTH35Ox/xk+CLMCyyFjIQbwieGXaVrlS7N8cwWX9IQ==
+X-Received: by 2002:a05:620a:2955:: with SMTP id n21mr34627497qkp.581.1638249206710;
+        Mon, 29 Nov 2021 21:13:26 -0800 (PST)
+Received: from bytedance (ec2-13-57-97-131.us-west-1.compute.amazonaws.com. [13.57.97.131])
+        by smtp.gmail.com with ESMTPSA id e13sm10104176qte.56.2021.11.29.21.13.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Nov 2021 20:51:50 -0800 (PST)
-Date:   Mon, 29 Nov 2021 22:51:47 -0600
-From:   Tianhao Chai <cth451@gmail.com>
-To:     Igor Russkikh <irusskikh@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>
-Subject: [PATCHv2] ethernet: aquantia: Try MAC address from device tree
-Message-ID: <20211130045147.GA1456556@cth-desktop-dorm.mad.wi.cth451.me>
+        Mon, 29 Nov 2021 21:13:26 -0800 (PST)
+Date:   Mon, 29 Nov 2021 21:13:22 -0800
+From:   Peilin Ye <yepeilin.cs@gmail.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v2] selftests/fib_tests: ping from dummy0 in
+ fib_rp_filter_test()
+Message-ID: <20211130051322.GA4450@bytedance>
+References: <20211129225230.3668-1-yepeilin.cs@gmail.com>
+ <20211130004905.4146-1-yepeilin.cs@gmail.com>
+ <c19ebcb5-2e25-ce9c-af83-e934cc3d0996@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <c19ebcb5-2e25-ce9c-af83-e934cc3d0996@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Apple M1 Mac minis (2020) with 10GE NICs do not have MAC address in the
-card, but instead need to obtain MAC addresses from the device tree. In
-this case the hardware will report an invalid MAC.
+Hi David,
 
-Currently atlantic driver does not query the DT for MAC address and will
-randomly assign a MAC if the NIC doesn't have a permanent MAC burnt in.
-This patch causes the driver to perfer a valid MAC address from OF (if
-present) over HW self-reported MAC and only fall back to a random MAC
-address when neither of them is valid.
+On Mon, Nov 29, 2021 at 06:16:48PM -0700, David Ahern wrote:
+> On 11/29/21 5:49 PM, Peilin Ye wrote:
+> > -	run_cmd "ip netns exec ns1 ping -I dummy1 -w1 -c1 198.51.100.1"
+> > +	run_cmd "ip netns exec ns1 ping -I dummy0 -w1 -c1 198.51.100.1"
+> >  	log_test $? 0 "rp_filter passes local packets"
+> 
+> confused by the point of this test if you are going to change dummy1 to
+> dummy0. dummy0 has 198.51.100.1 assigned to it, so the ping should
+> always work.
 
-Signed-off-by: Tianhao Chai <cth451@gmail.com>
----
- .../net/ethernet/aquantia/atlantic/aq_nic.c   | 27 ++++++++++++-------
- 1 file changed, 17 insertions(+), 10 deletions(-)
+Ah...  Thanks for pointing this out, I'll try to figure out a different
+way to test it in v3.
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-index 1acf544afeb4..ad89721c1cf6 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-@@ -316,18 +316,25 @@ int aq_nic_ndev_register(struct aq_nic_s *self)
- 	aq_macsec_init(self);
- #endif
- 
--	mutex_lock(&self->fwreq_mutex);
--	err = self->aq_fw_ops->get_mac_permanent(self->aq_hw, addr);
--	mutex_unlock(&self->fwreq_mutex);
--	if (err)
--		goto err_exit;
-+	if (eth_platform_get_mac_address(&self->pdev->dev, addr) == 0) {
-+		// DT supplied a valid MAC address
-+		eth_hw_addr_set(self->ndev, addr);
-+	} else {
-+		// If DT has none or an invalid one, ask device for MAC address
-+		mutex_lock(&self->fwreq_mutex);
-+		err = self->aq_fw_ops->get_mac_permanent(self->aq_hw, addr);
-+		mutex_unlock(&self->fwreq_mutex);
- 
--	eth_hw_addr_set(self->ndev, addr);
-+		if (err)
-+			goto err_exit;
- 
--	if (!is_valid_ether_addr(self->ndev->dev_addr) ||
--	    !aq_nic_is_valid_ether_addr(self->ndev->dev_addr)) {
--		netdev_warn(self->ndev, "MAC is invalid, will use random.");
--		eth_hw_addr_random(self->ndev);
-+		if (is_valid_ether_addr(addr) &&
-+		    aq_nic_is_valid_ether_addr(addr)) {
-+			eth_hw_addr_set(self->ndev, addr);
-+		} else {
-+			netdev_warn(self->ndev, "MAC is invalid, will use random.");
-+			eth_hw_addr_random(self->ndev);
-+		}
- 	}
- 
- #if defined(AQ_CFG_MAC_ADDR_PERMANENT)
--- 
-2.30.2
+Thanks,
+Peilin Ye
 
