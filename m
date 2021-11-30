@@ -2,78 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A463E463B8E
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 17:19:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA85B463B91
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 17:19:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243181AbhK3QW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 11:22:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53922 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243789AbhK3QWZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 11:22:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32CE2C061574
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 08:19:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F14CFB81A5B
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 16:19:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73E34C53FCD;
-        Tue, 30 Nov 2021 16:19:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638289143;
-        bh=w/xVcM1PWCHRyh+4ITK8ESet4RtKgSSuT9vBi2yG94E=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pXsqzT8E6UGFTCkoXG+74UWJIiFkIl6nTycE0qtGYCF8E7hM2dbi4+aCKupq5cpwW
-         oTtyviYnBsEKlYmcaYmUwGCOYvZEPwvUc3I0OYrvyjq9xnIy7uuGR7LSwtBWQT8qXQ
-         j7KwERnIjTc/52uiAoz0oYJzKsrTccQoAcxSC13hrELracwVuB4PsBiDSXpOplHsP6
-         oHmAbO1GM1OM6qkBiZMMpD0ZkHDv87U32BIPoqUOIhvPgK5OKlu0AnYQ1WEN7CiQBI
-         fxpLptA8aXFSpb1JTwTy+UauX4GHw8IidP0AvL7SPO6O8BN1y1vuCK15tOgSAXfMyF
-         CsBnRRbMJbCeQ==
-Date:   Tue, 30 Nov 2021 17:18:59 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Subject: Re: [PATCH net 6/6] net: dsa: mv88e6xxx: Link in pcs_get_state() if
- AN is bypassed
-Message-ID: <20211130171859.6deeb17d@thinkpad>
-In-Reply-To: <YaZONv7fmRWK+qCb@shell.armlinux.org.uk>
-References: <20211129195823.11766-1-kabel@kernel.org>
-        <20211129195823.11766-7-kabel@kernel.org>
-        <YaVeyWsGd06eRUqv@shell.armlinux.org.uk>
-        <20211130011812.08baccdc@thinkpad>
-        <20211130170911.6355db44@thinkpad>
-        <YaZONv7fmRWK+qCb@shell.armlinux.org.uk>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S242507AbhK3QWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 11:22:31 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:43631 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238903AbhK3QWa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 11:22:30 -0500
+Received: by mail-il1-f197.google.com with SMTP id j1-20020a056e02154100b002a181a1ce89so20298202ilu.10
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 08:19:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=82PcJsGJmWA9J7EfSsaBo8R7BvPCcHNRldX54MbqtUk=;
+        b=lc7nwPpAHVbKNB8aMxDYoBmchQp3TjIB0pSamDNAM7QqpuG5KLOqvc9LzcWHYklDXI
+         aq4ZC2sx1BbYe3JDPYrk8wWtwg+mAmi0lxCxtDtXLd78MS74NRejHDLHUeREE4OnONO2
+         fQhMfOtccIYB5HfP98Qo3uEEuzI8iz1Fy0j7lV5ZQqVkjJpFBKNWr1fEKoOT1Se2/F16
+         fFi2tymiphqRMP3Inf5m8bFZDLb9uoD0jrjYkvO34v+g3YIDEBR3Nf0sUBAInq/DLuKz
+         znO0GNTjYzLpCyEz7/moOTHoqTEPPkLcJOtVh+bcPzULHUmNlDLKPcjpkeems9GwapSh
+         CoQw==
+X-Gm-Message-State: AOAM533oo/2IUVKMyAtrSxnjVqWYPaZPtXgfBIddFeUmbJTRWnTSJjqP
+        c6SPAsTGCBHoQ7WB9/U4gx056p64XEaqX7OCSG4JT3FWTA+5
+X-Google-Smtp-Source: ABdhPJyxuzWxbXXQxXt/uLUyAQu5gmBfd3on9w/gXZzhkfqblOPzJkm/nRXJfXP2GwX0YVZSMLpgNz44tT0MMcAsVMq1dotg6xoH
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-Received: by 2002:a92:d8cf:: with SMTP id l15mr1635ilo.59.1638289150573;
+ Tue, 30 Nov 2021 08:19:10 -0800 (PST)
+Date:   Tue, 30 Nov 2021 08:19:10 -0800
+In-Reply-To: <000000000000f5964705b7d47d8c@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000dc091705d203eac6@google.com>
+Subject: Re: [syzbot] INFO: trying to register non-static key in l2cap_sock_teardown_cb
+From:   syzbot <syzbot+a41dfef1d2e04910eb2e@syzkaller.appspotmail.com>
+To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        bobo.shaobowang@huawei.com, davem@davemloft.net, hdanton@sina.com,
+        johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
+        luiz.von.dentz@intel.com, marcel@holtmann.org,
+        mareklindner@neomailbox.ch, miklos@szeredi.hu, mszeredi@redhat.com,
+        netdev@vger.kernel.org, sw@simonwunderlich.de,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Nov 2021 16:15:50 +0000
-"Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
+syzbot suspects this issue was fixed by commit:
 
-> On Tue, Nov 30, 2021 at 05:09:11PM +0100, Marek Beh=C3=BAn wrote:
-> > Seems that BMSR_ANEGCAPABLE is set even if AN is disabled in BMCR. =20
->=20
-> Hmm, that behaviour goes against 22.2.4.2.10:
->=20
-> A PHY shall return a value of zero in bit 1.5 if Auto-Negotiation is
-> disabled by clearing bit 0.12. A PHY shall also return a value of zero
-> in bit 1.5 if it lacks the ability to perform Auto-Negotiation.
->=20
-> > I was under the impression that
-> >   state->an_complete
-> > should only be set to true if AN is enabled. =20
->=20
-> Yes - however as you've stated, the PHY doesn't follow 802.3 behaviour
-> so I guess we should make the emulation appear compliant by fixing it
-> like this.
+commit 1bff51ea59a9afb67d2dd78518ab0582a54a472c
+Author: Wang ShaoBo <bobo.shaobowang@huawei.com>
+Date:   Wed Sep 1 00:35:37 2021 +0000
 
-OK, I will use BMCR_ANENABLE and add a comment explaining that we can't
-use BMSR_ANEGCAPABLE because the PHY violates standard. Would that be
-okay?
+    Bluetooth: fix use-after-free error in lock_sock_nested()
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=134c881eb00000
+start commit:   73b7a6047971 net: dsa: bcm_sf2: support BCM4908's integrat..
+git tree:       net-next
+kernel config:  https://syzkaller.appspot.com/x/.config?x=9ce34124da4c882b
+dashboard link: https://syzkaller.appspot.com/bug?extid=a41dfef1d2e04910eb2e
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=166ee4cf500000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1337172f500000
+
+If the result looks correct, please mark the issue as fixed by replying with:
+
+#syz fix: Bluetooth: fix use-after-free error in lock_sock_nested()
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
