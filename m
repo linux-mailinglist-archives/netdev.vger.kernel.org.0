@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51477463375
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 12:54:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69CEA463373
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 12:54:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232281AbhK3L5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 06:57:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47252 "EHLO
+        id S232128AbhK3L5e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 06:57:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231786AbhK3L51 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 06:57:27 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 218C4C061574;
-        Tue, 30 Nov 2021 03:54:08 -0800 (PST)
+        with ESMTP id S231820AbhK3L5b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 06:57:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1756C061746;
+        Tue, 30 Nov 2021 03:54:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6E22CCE18B3;
-        Tue, 30 Nov 2021 11:54:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C46D2C53FCD;
-        Tue, 30 Nov 2021 11:54:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A7BD5B81860;
+        Tue, 30 Nov 2021 11:54:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85CF9C53FD3;
+        Tue, 30 Nov 2021 11:54:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638273244;
-        bh=jbwWgPgWVRIZzB6O+uyCCkegSED8Z49EAAWfas72+Dg=;
+        s=k20201202; t=1638273249;
+        bh=E9WE0yczLyhNGK9QtzeDC71awa6w1/0Jo/71/FNommA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XAyPbJVKyZ3KVV51gJr05wlRWQEknw9zDpa3dBFDunrfLfiB51qGBFe+6vNeEEyKd
-         aoP4wTrbwDdIgCAWMZPHJyuiAEkOiiabZkxIpKRyUGhQt5pZsLBMXRmpl5GKCWK8vO
-         LIZb43IA5JM898rdwZUGmeljKlKsJcb/L2hB3MVoE+3rdv/pTBy+rDZk/+hgii5JQm
-         +y6fREOFKXzEIYl5VhDyn1cbXXy9IU1hgo4UI8QkdVf/nIv+z/+gUu8EpQDrPkwphX
-         9FNAHzO2RqR+fAwnPoBRm+pTagSJy5EY1t9vn8SeiuYc/PjQFoVLp2HZgzx+oxVzz/
-         2CC/b/24L4zAg==
+        b=AmxWL80r0PzFh8BtOf7Z71WBZ5fdxjiUderFAnfSK9Mj1rj1UkqeuFj5gUJZ3M9lP
+         8ueyyS59e4H+eN3lXOJd+4vnW/HI3TyjLT9AqeWvMyALhjOap1rjEwPF1/eVVSss2U
+         64d/2pYtcnGvkBn/WDU2D4pdJkaj2QP2niEobKmTKaa3l0vfLkj+E6e7mMPbiu4y5O
+         OY8jHUtgi6rQnLItm5MkOhCWtGK6ua+Smy93xFmeocTWJTTzDMg2xMtK2yGopQDDbj
+         uL/haXaF3RB4WiEVUIV07I/FYL6dmKGBWZBGoAHq61DtYeb2W77V0R7dvhbj+0JEm9
+         skiVQGdKB9iNA==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
@@ -40,9 +40,9 @@ Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         alexander.duyck@gmail.com, saeed@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
         tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: [PATCH v19 bpf-next 04/23] net: mvneta: simplify mvneta_swbm_add_rx_fragment management
-Date:   Tue, 30 Nov 2021 12:52:48 +0100
-Message-Id: <447d7430c0ea209b5c8742281fe2f289ab4f5ff1.1638272238.git.lorenzo@kernel.org>
+Subject: [PATCH v19 bpf-next 05/23] net: xdp: add xdp_update_skb_shared_info utility routine
+Date:   Tue, 30 Nov 2021 12:52:49 +0100
+Message-Id: <90a6c9dfd3877a44248daca8fe7cc33a8c0addf0.1638272238.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1638272238.git.lorenzo@kernel.org>
 References: <cover.1638272238.git.lorenzo@kernel.org>
@@ -52,168 +52,128 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Relying on xdp mb bit, remove skb_shared_info structure allocated on the
-stack in mvneta_rx_swbm routine and simplify mvneta_swbm_add_rx_fragment
-accessing skb_shared_info in the xdp_buff structure directly. There is no
-performance penalty in this approach since mvneta_swbm_add_rx_fragment
-is run just for multi-buff use-case.
+Introduce xdp_update_skb_shared_info routine to update frags array
+metadata in skb_shared_info data structure converting to a skb from
+a xdp_buff or xdp_frame.
+According to the current skb_shared_info architecture in
+xdp_frame/xdp_buff and to the xdp multi-buff support, there is
+no need to run skb_add_rx_frag() and reset frags array converting the buffer
+to a skb since the frag array will be in the same position for xdp_buff/xdp_frame
+and for the skb, we just need to update memory metadata.
+Introduce XDP_FLAGS_PF_MEMALLOC flag in xdp_buff_flags in order to mark
+the xdp_buff or xdp_frame as under memory-pressure if pages of the frags array
+are under memory pressure. Doing so we can avoid looping over all fragments in
+xdp_update_skb_shared_info routine. The driver is expected to set the
+flag constructing the xdp_buffer using xdp_buff_set_frag_pfmemalloc
+utility routine.
+Rely on xdp_update_skb_shared_info in __xdp_build_skb_from_frame routine
+converting the multi-buff xdp_frame to a skb after performing a XDP_REDIRECT.
 
 Acked-by: John Fastabend <john.fastabend@gmail.com>
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/marvell/mvneta.c | 42 ++++++++++-----------------
- 1 file changed, 15 insertions(+), 27 deletions(-)
+ include/net/xdp.h | 33 ++++++++++++++++++++++++++++++++-
+ net/core/xdp.c    | 12 ++++++++++++
+ 2 files changed, 44 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 208dc9116147..567358a021a9 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -2032,9 +2032,9 @@ int mvneta_rx_refill_queue(struct mvneta_port *pp, struct mvneta_rx_queue *rxq)
+diff --git a/include/net/xdp.h b/include/net/xdp.h
+index 4ec7bdf0d937..e594016eb193 100644
+--- a/include/net/xdp.h
++++ b/include/net/xdp.h
+@@ -67,7 +67,10 @@ struct xdp_txq_info {
+ };
  
- static void
- mvneta_xdp_put_buff(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
--		    struct xdp_buff *xdp, struct skb_shared_info *sinfo,
--		    int sync_len)
-+		    struct xdp_buff *xdp, int sync_len)
- {
-+	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
- 	int i;
+ enum xdp_buff_flags {
+-	XDP_FLAGS_MULTI_BUFF	= BIT(0), /* non-linear xdp buff */
++	XDP_FLAGS_MULTI_BUFF		= BIT(0), /* non-linear xdp buff */
++	XDP_FLAGS_FRAGS_PF_MEMALLOC	= BIT(1), /* xdp multi-buff paged memory
++						   * is under pressure
++						   */
+ };
  
- 	if (likely(!xdp_buff_is_mb(xdp)))
-@@ -2182,7 +2182,6 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 	       struct bpf_prog *prog, struct xdp_buff *xdp,
- 	       u32 frame_sz, struct mvneta_stats *stats)
- {
--	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
- 	unsigned int len, data_len, sync;
- 	u32 ret, act;
- 
-@@ -2203,7 +2202,7 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 
- 		err = xdp_do_redirect(pp->dev, xdp, prog);
- 		if (unlikely(err)) {
--			mvneta_xdp_put_buff(pp, rxq, xdp, sinfo, sync);
-+			mvneta_xdp_put_buff(pp, rxq, xdp, sync);
- 			ret = MVNETA_XDP_DROPPED;
- 		} else {
- 			ret = MVNETA_XDP_REDIR;
-@@ -2214,7 +2213,7 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 	case XDP_TX:
- 		ret = mvneta_xdp_xmit_back(pp, xdp);
- 		if (ret != MVNETA_XDP_TX)
--			mvneta_xdp_put_buff(pp, rxq, xdp, sinfo, sync);
-+			mvneta_xdp_put_buff(pp, rxq, xdp, sync);
- 		break;
- 	default:
- 		bpf_warn_invalid_xdp_action(act);
-@@ -2223,7 +2222,7 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 		trace_xdp_exception(pp->dev, prog, act);
- 		fallthrough;
- 	case XDP_DROP:
--		mvneta_xdp_put_buff(pp, rxq, xdp, sinfo, sync);
-+		mvneta_xdp_put_buff(pp, rxq, xdp, sync);
- 		ret = MVNETA_XDP_DROPPED;
- 		stats->xdp_drop++;
- 		break;
-@@ -2275,9 +2274,9 @@ mvneta_swbm_add_rx_fragment(struct mvneta_port *pp,
- 			    struct mvneta_rx_desc *rx_desc,
- 			    struct mvneta_rx_queue *rxq,
- 			    struct xdp_buff *xdp, int *size,
--			    struct skb_shared_info *xdp_sinfo,
- 			    struct page *page)
- {
-+	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
- 	struct net_device *dev = pp->dev;
- 	enum dma_data_direction dma_dir;
- 	int data_len, len;
-@@ -2295,8 +2294,11 @@ mvneta_swbm_add_rx_fragment(struct mvneta_port *pp,
- 				len, dma_dir);
- 	rx_desc->buf_phys_addr = 0;
- 
--	if (data_len > 0 && xdp_sinfo->nr_frags < MAX_SKB_FRAGS) {
--		skb_frag_t *frag = &xdp_sinfo->frags[xdp_sinfo->nr_frags++];
-+	if (!xdp_buff_is_mb(xdp))
-+		sinfo->nr_frags = 0;
-+
-+	if (data_len > 0 && sinfo->nr_frags < MAX_SKB_FRAGS) {
-+		skb_frag_t *frag = &sinfo->frags[sinfo->nr_frags++];
- 
- 		skb_frag_off_set(frag, pp->rx_offset_correction);
- 		skb_frag_size_set(frag, data_len);
-@@ -2307,16 +2309,6 @@ mvneta_swbm_add_rx_fragment(struct mvneta_port *pp,
- 	} else {
- 		page_pool_put_full_page(rxq->page_pool, page, true);
- 	}
--
--	/* last fragment */
--	if (len == *size) {
--		struct skb_shared_info *sinfo;
--
--		sinfo = xdp_get_shared_info_from_buff(xdp);
--		sinfo->nr_frags = xdp_sinfo->nr_frags;
--		memcpy(sinfo->frags, xdp_sinfo->frags,
--		       sinfo->nr_frags * sizeof(skb_frag_t));
--	}
- 	*size -= len;
+ struct xdp_buff {
+@@ -96,6 +99,16 @@ static __always_inline void xdp_buff_clear_mb(struct xdp_buff *xdp)
+ 	xdp->flags &= ~XDP_FLAGS_MULTI_BUFF;
  }
  
-@@ -2364,7 +2356,6 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
++static __always_inline bool xdp_buff_is_frag_pfmemalloc(struct xdp_buff *xdp)
++{
++	return !!(xdp->flags & XDP_FLAGS_FRAGS_PF_MEMALLOC);
++}
++
++static __always_inline void xdp_buff_set_frag_pfmemalloc(struct xdp_buff *xdp)
++{
++	xdp->flags |= XDP_FLAGS_FRAGS_PF_MEMALLOC;
++}
++
+ static __always_inline void
+ xdp_init_buff(struct xdp_buff *xdp, u32 frame_sz, struct xdp_rxq_info *rxq)
  {
- 	int rx_proc = 0, rx_todo, refill, size = 0;
- 	struct net_device *dev = pp->dev;
--	struct skb_shared_info sinfo;
- 	struct mvneta_stats ps = {};
- 	struct bpf_prog *xdp_prog;
- 	u32 desc_status, frame_sz;
-@@ -2373,8 +2364,6 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
- 	xdp_init_buff(&xdp_buf, PAGE_SIZE, &rxq->xdp_rxq);
- 	xdp_buf.data_hard_start = NULL;
+@@ -151,6 +164,11 @@ static __always_inline bool xdp_frame_is_mb(struct xdp_frame *frame)
+ 	return !!(frame->flags & XDP_FLAGS_MULTI_BUFF);
+ }
  
--	sinfo.nr_frags = 0;
--
- 	/* Get number of received packets */
- 	rx_todo = mvneta_rxq_busy_desc_num_get(pp, rxq);
++static __always_inline bool xdp_frame_is_frag_pfmemalloc(struct xdp_frame *frame)
++{
++	return !!(frame->flags & XDP_FLAGS_FRAGS_PF_MEMALLOC);
++}
++
+ #define XDP_BULK_QUEUE_SIZE	16
+ struct xdp_frame_bulk {
+ 	int count;
+@@ -186,6 +204,19 @@ static inline void xdp_scrub_frame(struct xdp_frame *frame)
+ 	frame->dev_rx = NULL;
+ }
  
-@@ -2416,7 +2405,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
- 			}
++static inline void
++xdp_update_skb_shared_info(struct sk_buff *skb, u8 nr_frags,
++			   unsigned int size, unsigned int truesize,
++			   bool pfmemalloc)
++{
++	skb_shinfo(skb)->nr_frags = nr_frags;
++
++	skb->len += size;
++	skb->data_len += size;
++	skb->truesize += truesize;
++	skb->pfmemalloc |= pfmemalloc;
++}
++
+ /* Avoids inlining WARN macro in fast-path */
+ void xdp_warn(const char *msg, const char *func, const int line);
+ #define XDP_WARN(msg) xdp_warn(msg, __func__, __LINE__)
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index 5ddc29f29bad..89183b2e3c07 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -529,8 +529,14 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
+ 					   struct sk_buff *skb,
+ 					   struct net_device *dev)
+ {
++	struct skb_shared_info *sinfo = xdp_get_shared_info_from_frame(xdpf);
+ 	unsigned int headroom, frame_size;
+ 	void *hard_start;
++	u8 nr_frags;
++
++	/* xdp multi-buff frame */
++	if (unlikely(xdp_frame_is_mb(xdpf)))
++		nr_frags = sinfo->nr_frags;
  
- 			mvneta_swbm_add_rx_fragment(pp, rx_desc, rxq, &xdp_buf,
--						    &size, &sinfo, page);
-+						    &size, page);
- 		} /* Middle or Last descriptor */
+ 	/* Part of headroom was reserved to xdpf */
+ 	headroom = sizeof(*xdpf) + xdpf->headroom;
+@@ -550,6 +556,12 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
+ 	if (xdpf->metasize)
+ 		skb_metadata_set(skb, xdpf->metasize);
  
- 		if (!(rx_status & MVNETA_RXD_LAST_DESC))
-@@ -2424,7 +2413,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
- 			continue;
++	if (unlikely(xdp_frame_is_mb(xdpf)))
++		xdp_update_skb_shared_info(skb, nr_frags,
++					   sinfo->xdp_frags_size,
++					   nr_frags * xdpf->frame_sz,
++					   xdp_frame_is_frag_pfmemalloc(xdpf));
++
+ 	/* Essential SKB info: protocol and skb->dev */
+ 	skb->protocol = eth_type_trans(skb, dev);
  
- 		if (size) {
--			mvneta_xdp_put_buff(pp, rxq, &xdp_buf, &sinfo, -1);
-+			mvneta_xdp_put_buff(pp, rxq, &xdp_buf, -1);
- 			goto next;
- 		}
- 
-@@ -2436,7 +2425,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
- 		if (IS_ERR(skb)) {
- 			struct mvneta_pcpu_stats *stats = this_cpu_ptr(pp->stats);
- 
--			mvneta_xdp_put_buff(pp, rxq, &xdp_buf, &sinfo, -1);
-+			mvneta_xdp_put_buff(pp, rxq, &xdp_buf, -1);
- 
- 			u64_stats_update_begin(&stats->syncp);
- 			stats->es.skb_alloc_error++;
-@@ -2453,11 +2442,10 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
- 		napi_gro_receive(napi, skb);
- next:
- 		xdp_buf.data_hard_start = NULL;
--		sinfo.nr_frags = 0;
- 	}
- 
- 	if (xdp_buf.data_hard_start)
--		mvneta_xdp_put_buff(pp, rxq, &xdp_buf, &sinfo, -1);
-+		mvneta_xdp_put_buff(pp, rxq, &xdp_buf, -1);
- 
- 	if (ps.xdp_redirect)
- 		xdp_do_flush_map();
 -- 
 2.31.1
 
