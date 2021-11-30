@@ -2,130 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E7B44636DA
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 15:36:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0BA74636E6
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 15:39:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236345AbhK3Oji (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 09:39:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57038 "EHLO
+        id S242291AbhK3Oma (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 09:42:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231570AbhK3Ojh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 09:39:37 -0500
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 328F0C061574;
-        Tue, 30 Nov 2021 06:36:18 -0800 (PST)
-Received: by mail-lj1-x229.google.com with SMTP id 207so41446812ljf.10;
-        Tue, 30 Nov 2021 06:36:18 -0800 (PST)
+        with ESMTP id S242282AbhK3Om3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 09:42:29 -0500
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17ADAC06174A;
+        Tue, 30 Nov 2021 06:39:09 -0800 (PST)
+Received: by mail-ed1-x541.google.com with SMTP id l25so87454181eda.11;
+        Tue, 30 Nov 2021 06:39:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EEa2SWS6B6mcdcA3Bj4MK8Wfpmi4Iz2Z4/pNdQbGwyA=;
-        b=GBQPnMu3ywYgUV8Xb39wJ/ihX/tOOZmrT86JeUnf5u5Dm3MwMA+eZaKlKgVNcxhVPB
-         QYsMpYvFLYq0wjcxDBg5y8N9AfUk1vuisl2V/jPVX5SogCy3NqIzE10nGC/+9gYAq8FO
-         gIGv8HVimWJxJw7ZnIsRFjwScccyqazCumkfIMgLE8AqV3dF/TYZJVCfn09YwZ/lPpKg
-         pD6x8SN3duq5zgoGJUo056TKdWU5DwCS/QNQE8sJhIC7yafIopFfoJ86jBFkm7b7FFnA
-         khmB0mM1oa5LGr1ukZy6F7BvljXJtBQi2MUs5YfmksJfgxc7fhYC9cPQeXAH6k6Gm2/W
-         8x0w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=M6DtkT7yqdJnxtyLICuawnpZM7p79Wj4fCV0rOvuorc=;
+        b=kWQKHzgCw0nBmZ3KPMcZlngLgy0R3fADL9T6FpN+8T6f0/8Q340Bfe6WTP8fxqMC6B
+         xilA11oYDQ8S8ZRy+cQ9XoC/TRc7a1/pvGKh2ktPlJQ2u8WgaT9APjwT7BNnmwQOwLbn
+         fZmuQ4+gOxaun276AtofMqTN84jvrtBr1fIBOkxT8KcU6Zhw2SI3NL8o7wSxeS9gYukJ
+         WVUGuD2E1fzYGZYrtaLMhk1b2mH+ej3sRDRqMkGnUfXcFiK/MLYFs6i7JvbQXcJ42oef
+         15LDy8T8X1g51OZW/RgDpW0upS3LxWgtcJ3X8bK7+QAbw28vLj3N8gozCfvCsk14nWxG
+         hlJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EEa2SWS6B6mcdcA3Bj4MK8Wfpmi4Iz2Z4/pNdQbGwyA=;
-        b=1EhfWXaLtCq3fAKea78jt/POVZ5r/Xkk6eOOK7VVgs2t3sgrXSAuhOzysHJNaTYeYq
-         kDiQQ+nHeAyt+vekg82S/Wp1HzxvJtwg3JrV6FZ4tvTV/itUYPzA928w5HT7LUIs3o9x
-         49Nc8rTVHTGnws9AodbLGXcGSWQzj8uKvvrmKny5aIOC0pxsgZA+pU5c3XqWrFFPWH1f
-         Br6ncoRGxKoPPprHQpeyyTqPFmWHSDOBtWg28+1Ankr7JWoQtyrpa3Pm3YEK1PTbXCil
-         77SOwrWX0eVyjY5/fzUYGbaLgOuprWHBuKzzIuHnrTMJeRl/U0V/dqkEVN/DFt/8VZl9
-         zyKQ==
-X-Gm-Message-State: AOAM530+1yKis1qpr3kyFfE7HYZglPU0N8qvR/D9IoDBOtYMPTDOUqrq
-        orG6Cg5PLGv0rSR+ti6UsfwPDK/lTDj4lQ==
-X-Google-Smtp-Source: ABdhPJwtuzvyNmm+a0X743uFT38Lfbj0hu8MT8lCzgZjKjSDM2vP6Lo5PY6HUifiZfrm8du4QNlmdg==
-X-Received: by 2002:a2e:5c46:: with SMTP id q67mr31136329ljb.271.1638282976166;
-        Tue, 30 Nov 2021 06:36:16 -0800 (PST)
-Received: from octofox.metropolis ([5.18.187.11])
-        by smtp.gmail.com with ESMTPSA id q4sm831045lfh.277.2021.11.30.06.36.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Nov 2021 06:36:15 -0800 (PST)
-From:   Max Filippov <jcmvbkbc@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH] net: natsemi: fix hw address initialization for jazz and xtensa
-Date:   Tue, 30 Nov 2021 06:36:00 -0800
-Message-Id: <20211130143600.31970-1-jcmvbkbc@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=M6DtkT7yqdJnxtyLICuawnpZM7p79Wj4fCV0rOvuorc=;
+        b=g5B3vMP4bclXs/vOOSPNtqSb+axnQY3VdTWhs6FxcHVZJYLjWe1TcKh/aoWZH9yQLx
+         +lvimaFekO9sMHnAG+2q9nHh+zGcGLycKUZ6D18XMn6CCOVAjf221NbP5Q2gWeayc4ps
+         Gciy5niVM626LDy5ALG4vLJKpSXRAZGhmB6cS6PD+YAD5ZbFuR0YqpkClAmnfD1sJnGx
+         wgu7oVA0r8f25FQymIYD3YUBYW4552y3FVfAXKL+9qkE5f2rD0crbKkza8J49iUg/W3m
+         GmNgQzH1TUoyh3ifqQSTLilTr06D6QJ8qE8Hj+I/7a/YEAmHhi9WxJi7BHarGDGvQOma
+         mKUA==
+X-Gm-Message-State: AOAM532eF6FTkZnJSQPIQsgLHbCLy+pN3Lj7nDLOP7n1ExDtikS9QHfd
+        CGeDiHhQxKN9205rdodiLrirLPOARJaqL/jTFCk=
+X-Google-Smtp-Source: ABdhPJweaAObaI0URjNLnhUOKtwKK07rAqckNLWdRLVytqGybnD74/eNpXw48zCymxAK4tp2IHkO4NsDn6iMaBNby20=
+X-Received: by 2002:a05:6402:2692:: with SMTP id w18mr83091835edd.220.1638283148308;
+ Tue, 30 Nov 2021 06:39:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211128060102.6504-1-imagedong@tencent.com> <20211129075707.47ab0ffe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211129075707.47ab0ffe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Tue, 30 Nov 2021 22:36:59 +0800
+Message-ID: <CADxym3YJwgs1-hYZURUf+K56zTtQmWHbwAvEG27s_w8FwQrkQQ@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next] net: snmp: add statistics for tcp small queue check
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        dsahern@kernel.org, Eric Dumazet <edumazet@google.com>,
+        Menglong Dong <imagedong@tencent.com>,
+        Yuchung Cheng <ycheng@google.com>, kuniyu@amazon.co.jp,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use eth_hw_addr_set function instead of writing the address directly to
-net_device::dev_addr.
+On Mon, Nov 29, 2021 at 11:57 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Sun, 28 Nov 2021 14:01:02 +0800 menglong8.dong@gmail.com wrote:
+> > Once tcp small queue check failed in tcp_small_queue_check(), the
+> > throughput of tcp will be limited, and it's hard to distinguish
+> > whether it is out of tcp congestion control.
+> >
+> > Add statistics of LINUX_MIB_TCPSMALLQUEUEFAILURE for this scene.
+>
+> Isn't this going to trigger all the time and alarm users because of the
+> "Failure" in the TCPSmallQueueFailure name?  Isn't it perfectly fine
+> for TCP to bake full TSQ amount of data and have it paced out onto the
+> wire? What's your link speed?
 
-Fixes: adeef3e32146 ("net: constify netdev->dev_addr")
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
-Cc: Randy Dunlap <rdunlap@infradead.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
----
- drivers/net/ethernet/natsemi/jazzsonic.c | 6 ++++--
- drivers/net/ethernet/natsemi/xtsonic.c   | 6 ++++--
- 2 files changed, 8 insertions(+), 4 deletions(-)
+Well, it's a little complex. In my case, there is a guest in kvm, and virti=
+o_net
+is used with napi_tx enabled.
 
-diff --git a/drivers/net/ethernet/natsemi/jazzsonic.c b/drivers/net/ethernet/natsemi/jazzsonic.c
-index d74a80f010c5..3f371faeb6d0 100644
---- a/drivers/net/ethernet/natsemi/jazzsonic.c
-+++ b/drivers/net/ethernet/natsemi/jazzsonic.c
-@@ -114,6 +114,7 @@ static int sonic_probe1(struct net_device *dev)
- 	struct sonic_local *lp = netdev_priv(dev);
- 	int err = -ENODEV;
- 	int i;
-+	unsigned char addr[ETH_ALEN];
- 
- 	if (!request_mem_region(dev->base_addr, SONIC_MEM_SIZE, jazz_sonic_string))
- 		return -EBUSY;
-@@ -143,9 +144,10 @@ static int sonic_probe1(struct net_device *dev)
- 	SONIC_WRITE(SONIC_CEP,0);
- 	for (i=0; i<3; i++) {
- 		val = SONIC_READ(SONIC_CAP0-i);
--		dev->dev_addr[i*2] = val;
--		dev->dev_addr[i*2+1] = val >> 8;
-+		addr[i*2] = val;
-+		addr[i*2+1] = val >> 8;
- 	}
-+	eth_hw_addr_set(dev, addr);
- 
- 	lp->dma_bitmode = SONIC_BITMODE32;
- 
-diff --git a/drivers/net/ethernet/natsemi/xtsonic.c b/drivers/net/ethernet/natsemi/xtsonic.c
-index ca4686094701..7d51bcb1b918 100644
---- a/drivers/net/ethernet/natsemi/xtsonic.c
-+++ b/drivers/net/ethernet/natsemi/xtsonic.c
-@@ -127,6 +127,7 @@ static int __init sonic_probe1(struct net_device *dev)
- 	unsigned int base_addr = dev->base_addr;
- 	int i;
- 	int err = 0;
-+	unsigned char addr[ETH_ALEN];
- 
- 	if (!request_mem_region(base_addr, 0x100, xtsonic_string))
- 		return -EBUSY;
-@@ -163,9 +164,10 @@ static int __init sonic_probe1(struct net_device *dev)
- 
- 	for (i=0; i<3; i++) {
- 		unsigned int val = SONIC_READ(SONIC_CAP0-i);
--		dev->dev_addr[i*2] = val;
--		dev->dev_addr[i*2+1] = val >> 8;
-+		addr[i*2] = val;
-+		addr[i*2+1] = val >> 8;
- 	}
-+	eth_hw_addr_set(dev, addr);
- 
- 	lp->dma_bitmode = SONIC_BITMODE32;
- 
--- 
-2.20.1
+With napi_tx enabled, skb won't be orphaned after it is passed to virtio_ne=
+t,
+until it is released. The point is that the sending interrupt of
+virtio_net will be
+turned off and the skb can't be released until the next net_rx interrupt co=
+mes.
+So, wmem_alloc can't decrease on time, and the bandwidth is limited. When
+this happens, the bandwidth can decrease from 500M to 10M.
 
+In fact, this issue of uapi_tx is fixed in this commit:
+https://lore.kernel.org/lkml/20210719144949.935298466@linuxfoundation.org/
+
+I added this statistics to monitor the sending failure (may be called
+sending delay)
+caused by qdisc and net_device. When something happen, maybe users can
+raise =E2=80=98/proc/sys/net/ipv4/tcp_pacing_ss_ratio=E2=80=99 to get bette=
+r bandwidth.
+
+Thanks!
+Menglong Dong
