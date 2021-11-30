@@ -2,110 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14C7D463AAA
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 16:54:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBF4D463AB6
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 16:56:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242276AbhK3P51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 10:57:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47832 "EHLO
+        id S243070AbhK3P7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 10:59:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237730AbhK3P5Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 10:57:25 -0500
-Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B32FC061574;
-        Tue, 30 Nov 2021 07:54:06 -0800 (PST)
-Received: by mail-qk1-x734.google.com with SMTP id d2so27208110qki.12;
-        Tue, 30 Nov 2021 07:54:06 -0800 (PST)
+        with ESMTP id S242330AbhK3P7W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 10:59:22 -0500
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 274BFC061574
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 07:56:03 -0800 (PST)
+Received: by mail-yb1-xb33.google.com with SMTP id v203so54044401ybe.6
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 07:56:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5jfG9Qw6wgd9sRjYfyHDytET8Ac/XcqwnteljgGuckk=;
-        b=BntxTnwecg6BJSWIvVKExBquBtQ30s/lQ1YU/vtHIPa1Rx8ar/0r4fbnZzkVxmuMAb
-         OzAbN7axchp00LTYFaxf1R9+06zsQfibPFDthdJkWHwessPgB59jSkf2hhJC9Jya5qyy
-         HlASVFBQYACqEYVUo0srq3QkMFzJGpti1VVHtgcnXPBDChfHu3LanOSzPF2UPdSdM8Gk
-         ouRdu2IXl6S/VnlWEksWw3jwf6CY3mhCilbCsObeM91dghSXL7b0a41ke+NdWEQkEgzh
-         Won2HU6OUxb+j1fd9BYxScLJplAHx9QZ5JOlu9jWIR1hHSvIoz2zJCWmVGE6ELg+suCU
-         X1ZQ==
+         :cc:content-transfer-encoding;
+        bh=tGm7hrKxQYGOtlSWcLfqDB5yQBnW+xxziphYxmJWypE=;
+        b=tjTls+AGTH6tQ+6JuY32k0yReYU6oyWvzJWIOErYvbYHvGuzyZ7xhpZ4+FpNa02hWi
+         GAWpij/CrE1gNPiE3Pi1jg+MrLR9z1v8qc1iO5Gv3A0uq3X4WoRXl6CcGWI7XG6fUh3J
+         EaPY69WMjqkMOVwXnyiDzXUcpxtYDWSzGM/X60vXCt/W2HIqNTAkVXh9lS16sY8vxKB6
+         5kCsymxS3y7YzXGOC+GC2LvC8Qoav3uVpaioZTlIFEhLKkEubhCThI4m3a3LW8rcELEy
+         DDSVupucQNYj9wbqOyUUpxiSkIcmgawxMQ+G1BWq8BzD1Pt0fEiH/Pds3n5SSYZaFWBq
+         NgKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5jfG9Qw6wgd9sRjYfyHDytET8Ac/XcqwnteljgGuckk=;
-        b=QYu8T1KZNItC3Ow00Hp4fcFAx9qIKgKa93R0Bdf7diNfT1y2kfSr7LZF8bTFEA9rzJ
-         vQDUq+LeP5zkG0V1d+YUQFMnwqif4tsZg8GN4iLgL6CWODCtibYyc4Lcv/w6EyZB+IeJ
-         1T+dI+X9sQ8vcwwlHGnSKrwIbQWs4nraED1OKHNCRTZzRrwKzfXxozYIINl4XjahE4PJ
-         tPALFOyxes7JSa4jsvCLDh8u9S20GEQuH2nhQZsgvcnJH+q1JWFYrGWws/J/sUxDtgWn
-         VZ5L7kAZNJjgsNbMrYJrKCVPLldMEDmX4pGt4HultIKI/VWBdqYQPDbrZM+E52wK1qtq
-         p5sw==
-X-Gm-Message-State: AOAM530gmFMeBNgWhlcwRZ9s7kMo0HSPkAh81OcsG7lC/JMw8kfwwWkS
-        DH7lH3JN3ZWjtouwppGoSY22fH9pnZ02BFk/juY=
-X-Google-Smtp-Source: ABdhPJyonKn3G8UIi6BT3phblLDnrVQm6qLkdWviQusM/bKsEz//a+DZxT6MhXu5EzeyFmfNCV15y1QUuJs0ifkzE2Y=
-X-Received: by 2002:a05:620a:2e3:: with SMTP id a3mr7577qko.451.1638287645274;
- Tue, 30 Nov 2021 07:54:05 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=tGm7hrKxQYGOtlSWcLfqDB5yQBnW+xxziphYxmJWypE=;
+        b=UU3PZn7zysVQ9z0kKStnCV1AieGH9kHUzomKtCTBiR87kO4QJooJwxO4rueBuKD1jR
+         3ZHZZvFILWGLa7Zpw9OL2GLLJu2JFMg6a4B6XKL9N/5Outu/kl1ug5GxthsbRG310F95
+         YNstV+VcWkgE3agGnpS/amBGovtL/o0WZzV31jvEyKjrp922ViKjW+EaOpKx+HSrZby4
+         GvrsnsH32wSzCTH71sNFyeEa6pKfuBGllFbw7G37Mejjk+3/7IrBkoIa20Ef6uu/MKt1
+         pk0GUSWjntYEb+/YiLW4ka/HP80exyhiEC/MJFLoayWpzJoOz8nCSRrlzOtY3GEpDBgm
+         KHVQ==
+X-Gm-Message-State: AOAM530lkWAL75FYm9kocmfptK+SCR7ZZ3uZev2/ldts04UKRiYpWkV5
+        z82njpoYxNJiaW8BCOB3z+Tvj4zR64bS1RxV+apzgA==
+X-Google-Smtp-Source: ABdhPJyEB6BXIvnI4F6N82Esf5zou+hyPxilsfdIYtEyWP4jjQMoHV5EimOvGfqyMKjz0j/Vh3Cr2qFNwEdpdmef3Ek=
+X-Received: by 2002:a25:6c6:: with SMTP id 189mr14650953ybg.753.1638287761883;
+ Tue, 30 Nov 2021 07:56:01 -0800 (PST)
 MIME-Version: 1.0
-References: <20211120112738.45980-1-laoar.shao@gmail.com> <20211120112738.45980-5-laoar.shao@gmail.com>
- <20211129110140.733475f3@gandalf.local.home> <CALOAHbB-2ESG0QgESN_b=bXzESbq+UBP-dqttirKnt1c9TZHZA@mail.gmail.com>
- <20211130092240.312f68a4@gandalf.local.home>
-In-Reply-To: <20211130092240.312f68a4@gandalf.local.home>
-From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Tue, 30 Nov 2021 23:53:30 +0800
-Message-ID: <CALOAHbB6oTNpRUHvgMaH+kxJn7Fr7zE2bkvkniPFsPzH-SuHjA@mail.gmail.com>
-Subject: Re: [PATCH v2 4/7] fs/binfmt_elf: replace open-coded string copy with get_task_comm
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
+References: <20211128060102.6504-1-imagedong@tencent.com> <20211129075707.47ab0ffe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CADxym3YJwgs1-hYZURUf+K56zTtQmWHbwAvEG27s_w8FwQrkQQ@mail.gmail.com> <20211130072308.76cc711c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211130072308.76cc711c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 30 Nov 2021 07:55:50 -0800
+Message-ID: <CANn89i+nQb7GEAhbRKZKaf=wTk1XcepT6whnk3P8qTZxeAHyow@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next] net: snmp: add statistics for tcp small queue check
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Menglong Dong <menglong8.dong@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        dsahern@kernel.org, Menglong Dong <imagedong@tencent.com>,
+        Yuchung Cheng <ycheng@google.com>, kuniyu@amazon.co.jp,
         LKML <linux-kernel@vger.kernel.org>,
-        kernel test robot <oliver.sang@intel.com>,
-        kbuild test robot <lkp@intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Petr Mladek <pmladek@suse.com>
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 30, 2021 at 10:22 PM Steven Rostedt <rostedt@goodmis.org> wrote:
+On Tue, Nov 30, 2021 at 7:23 AM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> On Tue, 30 Nov 2021 11:01:27 +0800
-> Yafang Shao <laoar.shao@gmail.com> wrote:
->
-> > There are three options,
-> > - option 1
-> >   comment on all the hard-coded 16 to explain why it is hard-coded
-> > - option 2
-> >   replace the hard-coded 16 that can be replaced and comment on the
-> > others which can't be replaced.
-> > - option 3
-> >    replace the hard-coded 16 that can be replaced and specifically
-> > define TASK_COMM_LEN_16 in other files which can't include
-> > linux/sched.h.
+> On Tue, 30 Nov 2021 22:36:59 +0800 Menglong Dong wrote:
+> > On Mon, Nov 29, 2021 at 11:57 PM Jakub Kicinski <kuba@kernel.org> wrote=
+:
+> > >
+> > > On Sun, 28 Nov 2021 14:01:02 +0800 menglong8.dong@gmail.com wrote:
+> > > > Once tcp small queue check failed in tcp_small_queue_check(), the
+> > > > throughput of tcp will be limited, and it's hard to distinguish
+> > > > whether it is out of tcp congestion control.
+> > > >
+> > > > Add statistics of LINUX_MIB_TCPSMALLQUEUEFAILURE for this scene.
+> > >
+> > > Isn't this going to trigger all the time and alarm users because of t=
+he
+> > > "Failure" in the TCPSmallQueueFailure name?  Isn't it perfectly fine
+> > > for TCP to bake full TSQ amount of data and have it paced out onto th=
+e
+> > > wire? What's your link speed?
 > >
-> > Which one do you prefer ?
+> > Well, it's a little complex. In my case, there is a guest in kvm, and v=
+irtio_net
+> > is used with napi_tx enabled.
 > >
+> > With napi_tx enabled, skb won't be orphaned after it is passed to virti=
+o_net,
+> > until it is released. The point is that the sending interrupt of
+> > virtio_net will be
+> > turned off and the skb can't be released until the next net_rx interrup=
+t comes.
+> > So, wmem_alloc can't decrease on time, and the bandwidth is limited. Wh=
+en
+> > this happens, the bandwidth can decrease from 500M to 10M.
+> >
+> > In fact, this issue of uapi_tx is fixed in this commit:
+> > https://lore.kernel.org/lkml/20210719144949.935298466@linuxfoundation.o=
+rg/
+> >
+> > I added this statistics to monitor the sending failure (may be called
+> > sending delay)
+> > caused by qdisc and net_device. When something happen, maybe users can
+> > raise =E2=80=98/proc/sys/net/ipv4/tcp_pacing_ss_ratio=E2=80=99 to get b=
+etter bandwidth.
 >
-> Option 3. Since TASK_COMM_LEN_16 is, by it's name, already hard coded to
-> 16, it doesn't really matter if you define it in more than one location.
->
-> Or we could define it in another header that include/sched.h can include.
->
-> The idea of having TASK_COMM_LEN_16 is to easily grep for it, and also know
-> exactly what it is used for when people see it being used.
->
+> Sounds very second-order and particular to a buggy driver :/
+> Let's see what Eric says but I vote revert.
 
-I will send a separate patch (or patchset) to replace all the old
-hard-coded 16 with TASK_COMM_LEN_16 based on the -mm tree.
+I did some tests yesterday, using one high speed TCP_STREAM (~90Gbit),
+and got plenty of increments when using pfifo_fast qdisc.
+Yet seed was nominal (bottleneck is the copyout() cost at receiver)
 
---
-Thanks
-Yafang
+I got few counter increments when qdisc is fq as expected
+(because of commit c73e5807e4f6fc6d "tcp: tsq: no longer use
+limit_output_bytes for paced flows")
+
+
+So this new SNMP counter is not a proxy for the kind of problems that a bug=
+gy
+driver would trigger.
+
+I also suggest we revert this patch.
+
+Thanks !
