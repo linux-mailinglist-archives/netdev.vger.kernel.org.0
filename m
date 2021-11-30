@@ -2,117 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 413D4463970
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 16:09:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0CFD4639A0
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 16:15:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238896AbhK3PMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 10:12:15 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:32900 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244928AbhK3PKd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 10:10:33 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 426B1B81A1D;
-        Tue, 30 Nov 2021 15:07:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68A3AC53FC7;
-        Tue, 30 Nov 2021 15:07:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638284831;
-        bh=jFQ+6eYpfo8AQTphnbl6MyyOotoZuBDGCJKxTEg5dTg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=okOaZXwVQha6VENLbtkW/K3UpmSv4x49LI137OshO7/GQ3udI34yAew/t1F4aeWjp
-         9RRQJdhcJifvYVBtH1uv9s90R9dXC+jkftp+VyKrmGOwTZU1drMlxR78YGJ4tUsNTb
-         ZeHxC/J1Ylt1+gxhsRnzopmxV2PFCL0Mi6ejlLDDN9agiengKlehxRxCy8hak+mcD+
-         XhyTEYILzqgFd9PW/SlVvRy6r+/OiSN8cbVsLxju8oy1ZuZ5WtvL/qEwyU58CrvAEg
-         mq/1Ni4N4qOnq/1dV/zSGy7z/TRfGgF4iADeKw5XsZJKXHsXoz5d70RsGtE3tfVb+j
-         UOXFLXcmuzxxw==
-Date:   Tue, 30 Nov 2021 07:07:09 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Petr Machata <petrm@nvidia.com>
-Cc:     Ido Schimmel <idosch@idosch.org>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdl?= =?UTF-8?B?bnNlbg==?= 
-        <toke@redhat.com>,
-        "Alexander Lobakin" <alexandr.lobakin@intel.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jesse Brandeburg" <jesse.brandeburg@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "Shay Agroskin" <shayagr@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        "David Arinzon" <darinzon@amazon.com>,
-        Noam Dagan <ndagan@amazon.com>,
-        "Saeed Bishara" <saeedb@amazon.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "Claudiu Manoil" <claudiu.manoil@nxp.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        "Martin Habets" <habetsm.xilinx@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "Martin KaFai Lau" <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Andrei Vagin <avagin@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        "Vladimir Oltean" <vladimir.oltean@nxp.com>,
-        Cong Wang <cong.wang@bytedance.com>, <netdev@vger.kernel.org>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-rdma@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>, <nikolay@nvidia.com>
-Subject: Re: [PATCH v2 net-next 21/26] ice: add XDP and XSK generic
- per-channel statistics
-Message-ID: <20211130070709.0ddf19f3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <87o861q2m4.fsf@nvidia.com>
-References: <20211123163955.154512-22-alexandr.lobakin@intel.com>
-        <77407c26-4e32-232c-58e0-2d601d781f84@iogearbox.net>
-        <87bl28bga6.fsf@toke.dk>
-        <20211125170708.127323-1-alexandr.lobakin@intel.com>
-        <20211125094440.6c402d63@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20211125204007.133064-1-alexandr.lobakin@intel.com>
-        <87sfvj9k13.fsf@toke.dk>
-        <20211126100611.514df099@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <87ee72ah56.fsf@toke.dk>
-        <20211126111431.4a2ed007@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YaPCbaMVaVlxXcHC@shredder>
-        <20211129064755.539099c0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <874k7vq7tl.fsf@nvidia.com>
-        <20211129080502.53f7d316@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <87sfveq48z.fsf@nvidia.com>
-        <20211129091713.2dc8462f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <87o861q2m4.fsf@nvidia.com>
+        id S233693AbhK3PSC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 10:18:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36746 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244998AbhK3PQi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 10:16:38 -0500
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD399C08E897
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 07:08:02 -0800 (PST)
+Received: by mail-yb1-xb29.google.com with SMTP id e136so53415354ybc.4
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 07:08:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=l2skKMNgf13ma0Gw8CEfIcE4gBelJ5As1NMc9eHUE/c=;
+        b=CjgMBJ1Swt1ZTWjUP7wtXeRh3mviebEOpMcpTlhfZ28h+H9KexmKQXxsGhMNR5Knkc
+         tcNhTzsoAJTqgJoxVVUPmqHxz1HZirx7o5JqWh1NgtxDqZ6tU8TE2Adjt4HSqSiBo2lV
+         62YvdEem9Jpto28eQvpU2HMeD/YgOK+tcUIurN24vM6gUqauVXLveoK9ho/SlCmh14w6
+         ZeSz8zbVywKy3kYVxHzNI+hCo5oclgFvpH8WwIzV43/x2lvmonJmkAyk7gr8YRQ8zYnz
+         9bNersWxfz40y0N0xKN4d5Z3Yqc0qKNXuHeThbHEy6PEvJAPeD/KWot2tYidOtoCsxQu
+         GjbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=l2skKMNgf13ma0Gw8CEfIcE4gBelJ5As1NMc9eHUE/c=;
+        b=ZcLHABpewtjgWWsbD09nuFoAWF8tegbnfzJK4ZSmATPvorcEMMsBfv/ymQ2+RFct1x
+         ez+JG8aFfo5WgzSSSaFyMqDKKEpNBEuhjimPxqWZmh0QH1sdYukoyiKPm+y8bPut2Frb
+         56X6E5GzKL53ZesYZREymcJ73TYFy2ZM5HpjWJqjhZeXs5NdFl16nZm4hCMTyAKdLTAP
+         D3mTfsSlrklazPp4JYbdCc8b9PGVQsRD9eqv2hRyuLYzVPxRZZ8bonOi5fD/UsBSB8G6
+         oKQcHMBIrAcvMKiJy1kgvmxLgIIPM5n7vhpHlc4t0ARekh7/QjY3Kh6QwwFxVleOcj1d
+         209g==
+X-Gm-Message-State: AOAM530LqEd2YREd08M0sVyjc1K/Zl6HdlTGUp87RvX/XplC8NAdwZE5
+        VrAqkaRdEdn4LGe4vs5wSUJPPmoRI/C2KC8eY7jf3oF63I6wYQ==
+X-Google-Smtp-Source: ABdhPJyECRVxXhkFw1vi7g5sU1bcfkJ3h9femyhEPQ8mFWssonHsQH28MuFyqrzZqSlYRnC+p9QwsqSpM1gUkHkYLsU=
+X-Received: by 2002:a25:cc8e:: with SMTP id l136mr40948197ybf.293.1638284881393;
+ Tue, 30 Nov 2021 07:08:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <b7c0fed4-bb30-e905-aae2-5e380b582f4c@gmail.com> <20211130090952.4089393-1-dvyukov@google.com>
+In-Reply-To: <20211130090952.4089393-1-dvyukov@google.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 30 Nov 2021 07:07:50 -0800
+Message-ID: <CANn89iLnk+cfKcBk-6oQhiKDYg=mYaYrp-S=k0M5WJCkgHm+bw@mail.gmail.com>
+Subject: Re: [RFC -next 1/2] lib: add reference counting infrastructure
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     eric.dumazet@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Nov 2021 12:55:47 +0100 Petr Machata wrote:
-> I still think it would be better to report HW_STATS explicitly as well
-> though. One reason is simply convenience. The other is that OK, now we
-> have SW stats, and XDP stats, and total stats, and I (as a client) don't
-> necessarily know how it all fits together. But the contract for HW_STATS
-> is very clear.
+On Tue, Nov 30, 2021 at 1:09 AM Dmitry Vyukov <dvyukov@google.com> wrote:
+>
+> Hi Eric, Jakub,
+>
+> How strongly do you want to make this work w/o KASAN?
+> I am asking because KASAN will already memorize alloc/free stacks for every
+> heap object (+ pids + 2 aux stacks with kasan_record_aux_stack()).
+> So basically we just need to alloc struct list_head and won't need
+> quarantine/quarantine_avail in ref_tracker_dir.
+> If there are some refcount bugs, it may be due to a previous use-after-free,
+> so debugging a refcount bug w/o KASAN may be waste of time.
+>
 
-Would be good to check with Jiri, my recollection is that this argument
-was brought up when CPU_HIT stats were added. I don't recall the
-reasoning.
-
-<insert xkcd standards>
+No strong opinion, we could have the quarantine stuff enabled only if
+KASAN is not compiled in.
+I was trying to make something that could be used even in a production
+environment, for seldom modified refcounts.
+As this tracking is optional, we do not have to use it in very small
+sections of code, where the inc/dec are happening in obviously correct
+and not long living pairs.
