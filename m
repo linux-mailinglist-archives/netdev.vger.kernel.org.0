@@ -2,250 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E044C463523
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 14:10:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C13E24635D4
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 14:51:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238465AbhK3NNo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 08:13:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36934 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238372AbhK3NNl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 08:13:41 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49AFC061574
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 05:10:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=OnEMZyIvpRcmBRwW6BvkKIFJAJC7XI6iMcjW6DXa5nY=; b=sexmAm2qEDtbWnhiny3IcED1vH
-        gfkvAJi7JT6kKJD8kzYN0RJBOvjQfnys/nE+t5ba88YmGB9Z+iIEpdLxTEo50HppZyltpix3cM3wc
-        JlMbe68GRut+ImLnPt7elxGGmdGiyUTKqFy2dsqaMUtmQBHo+TIj5HsjozcqCjRd+XvCz9Hu0SucQ
-        gtaxoSpC7BWwXbW5Y0JwNi/CsuZiiu/bpxiceUVu3VPAjqP3eJZQbmbhOBestbOb6bKRGMmV95Iyd
-        BzdzA5oG6aYEW0n5LJ55h6DOjui8JlU6RgYDJ1AdIs02vOGWQzo36y57awjtLM5ESza0KGePf1YxB
-        6pxPIV1w==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:39444 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1ms2tk-0006vv-Tf; Tue, 30 Nov 2021 13:10:16 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1ms2tk-00ECJT-Eb; Tue, 30 Nov 2021 13:10:16 +0000
-In-Reply-To: <YaYiiU9nvmVugqnJ@shell.armlinux.org.uk>
-References: <YaYiiU9nvmVugqnJ@shell.armlinux.org.uk>
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next 5/5] net: dsa: lantiq: convert to
- phylink_generic_validate()
+        id S241761AbhK3NzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 08:55:16 -0500
+Received: from mga07.intel.com ([134.134.136.100]:23353 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241821AbhK3NzN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Nov 2021 08:55:13 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10183"; a="299609782"
+X-IronPort-AV: E=Sophos;i="5.87,276,1631602800"; 
+   d="scan'208";a="299609782"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2021 05:51:53 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,276,1631602800"; 
+   d="scan'208";a="744738557"
+Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
+  by fmsmga006.fm.intel.com with ESMTP; 30 Nov 2021 05:51:50 -0800
+Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1ms3Xx-000DN9-Pn; Tue, 30 Nov 2021 13:51:49 +0000
+Date:   Tue, 30 Nov 2021 21:51:29 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Wells Lu <wellslutw@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, robh+dt@kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        p.zabel@pengutronix.de
+Cc:     kbuild-all@lists.01.org, wells.lu@sunplus.com,
+        vincent.shih@sunplus.com, Wells Lu <wellslutw@gmail.com>
+Subject: Re: [PATCH net-next v3 2/2] net: ethernet: Add driver for Sunplus
+ SP7021
+Message-ID: <202111302126.kdjsLCiQ-lkp@intel.com>
+References: <1638266572-5831-3-git-send-email-wellslutw@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1ms2tk-00ECJT-Eb@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Tue, 30 Nov 2021 13:10:16 +0000
+In-Reply-To: <1638266572-5831-3-git-send-email-wellslutw@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Populate the supported interfaces and MAC capabilities for the Lantiq
-DSA switches and remove the old validate implementation to allow DSA to
-use phylink_generic_validate() for this switch driver.
+Hi Wells,
 
-The exclusion of Gigabit linkmodes for MII, Reverse MII and Reduced MII
-links is handled within phylink_generic_validate() in phylink, so there
-is no need to make them conditional on the interface mode in the driver.
+I love your patch! Perhaps something to improve:
 
-Reviewed-by: Hauke Mehrtens <hauke@hauke-m.de>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+[auto build test WARNING on net-next/master]
+
+url:    https://github.com/0day-ci/linux/commits/Wells-Lu/This-is-a-patch-series-for-pinctrl-driver-for-Sunplus-SP7021-SoC/20211130-180452
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 09ae03e2fc9d04240c21759ce9f1ef63d7651850
+config: alpha-allyesconfig (https://download.01.org/0day-ci/archive/20211130/202111302126.kdjsLCiQ-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/c5416cd4312a02ecbd1752129b61392a857a45fb
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Wells-Lu/This-is-a-patch-series-for-pinctrl-driver-for-Sunplus-SP7021-SoC/20211130-180452
+        git checkout c5416cd4312a02ecbd1752129b61392a857a45fb
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=alpha SHELL=/bin/bash drivers/net/ethernet/sunplus/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   drivers/net/ethernet/sunplus/spl2sw_int.c: In function 'spl2sw_tx_poll':
+>> drivers/net/ethernet/sunplus/spl2sw_int.c:157:28: warning: variable 'mac' set but not used [-Wunused-but-set-variable]
+     157 |         struct spl2sw_mac *mac;
+         |                            ^~~
+
+
+vim +/mac +157 drivers/net/ethernet/sunplus/spl2sw_int.c
+
+   151	
+   152	int spl2sw_tx_poll(struct napi_struct *napi, int budget)
+   153	{
+   154		struct spl2sw_common *comm = container_of(napi, struct spl2sw_common, tx_napi);
+   155		struct spl2sw_skb_info *skbinfo;
+   156		struct net_device_stats *stats;
+ > 157		struct spl2sw_mac *mac;
+   158		u32 tx_done_pos;
+   159		u32 mask;
+   160		u32 cmd;
+   161		int i;
+   162	
+   163		spin_lock(&comm->tx_lock);
+   164	
+   165		tx_done_pos = comm->tx_done_pos;
+   166		while ((tx_done_pos != comm->tx_pos) || (comm->tx_desc_full == 1)) {
+   167			cmd = comm->tx_desc[tx_done_pos].cmd1;
+   168			if (cmd & TXD_OWN)
+   169				break;
+   170	
+   171			skbinfo = &comm->tx_temp_skb_info[tx_done_pos];
+   172			if (unlikely(!skbinfo->skb))
+   173				goto spl2sw_tx_poll_next;
+   174	
+   175			i = spl2sw_bit_pos_to_port_num(FIELD_GET(TXD_VLAN, cmd));
+   176			if (i < MAX_NETDEV_NUM && comm->ndev[i]) {
+   177				mac = netdev_priv(comm->ndev[i]);
+   178				stats = &comm->ndev[i]->stats;
+   179			} else {
+   180				goto spl2sw_tx_poll_unmap;
+   181			}
+   182	
+   183			if (unlikely(cmd & (TXD_ERR_CODE))) {
+   184				stats->tx_errors++;
+   185			} else {
+   186				stats->tx_packets++;
+   187				stats->tx_bytes += skbinfo->len;
+   188			}
+   189	
+   190	spl2sw_tx_poll_unmap:
+   191			dma_unmap_single(&comm->pdev->dev, skbinfo->mapping, skbinfo->len,
+   192					 DMA_TO_DEVICE);
+   193			skbinfo->mapping = 0;
+   194			dev_kfree_skb_irq(skbinfo->skb);
+   195			skbinfo->skb = NULL;
+   196	
+   197	spl2sw_tx_poll_next:
+   198			/* Move tx_done_pos to next position */
+   199			tx_done_pos = ((tx_done_pos + 1) == TX_DESC_NUM) ? 0 : tx_done_pos + 1;
+   200	
+   201			if (comm->tx_desc_full == 1)
+   202				comm->tx_desc_full = 0;
+   203		}
+   204	
+   205		comm->tx_done_pos = tx_done_pos;
+   206		if (!comm->tx_desc_full)
+   207			for (i = 0; i < MAX_NETDEV_NUM; i++)
+   208				if (comm->ndev[i])
+   209					if (netif_queue_stopped(comm->ndev[i]))
+   210						netif_wake_queue(comm->ndev[i]);
+   211	
+   212		spin_unlock(&comm->tx_lock);
+   213	
+   214		wmb();			/* make sure settings are effective. */
+   215		mask = readl(comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
+   216		mask &= ~MAC_INT_TX;
+   217		writel(mask, comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
+   218	
+   219		napi_complete(napi);
+   220		return 0;
+   221	}
+   222	
+
 ---
- drivers/net/dsa/lantiq_gswip.c | 120 +++++++++++----------------------
- 1 file changed, 38 insertions(+), 82 deletions(-)
-
-diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-index 7056d98d8177..583af774e1bd 100644
---- a/drivers/net/dsa/lantiq_gswip.c
-+++ b/drivers/net/dsa/lantiq_gswip.c
-@@ -1438,114 +1438,70 @@ static int gswip_port_fdb_dump(struct dsa_switch *ds, int port,
- 	return 0;
- }
- 
--static void gswip_phylink_set_capab(unsigned long *supported,
--				    struct phylink_link_state *state)
--{
--	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
--
--	/* Allow all the expected bits */
--	phylink_set(mask, Autoneg);
--	phylink_set_port_modes(mask);
--	phylink_set(mask, Pause);
--	phylink_set(mask, Asym_Pause);
--
--	/* With the exclusion of MII, Reverse MII and Reduced MII, we
--	 * support Gigabit, including Half duplex
--	 */
--	if (state->interface != PHY_INTERFACE_MODE_MII &&
--	    state->interface != PHY_INTERFACE_MODE_REVMII &&
--	    state->interface != PHY_INTERFACE_MODE_RMII) {
--		phylink_set(mask, 1000baseT_Full);
--		phylink_set(mask, 1000baseT_Half);
--	}
--
--	phylink_set(mask, 10baseT_Half);
--	phylink_set(mask, 10baseT_Full);
--	phylink_set(mask, 100baseT_Half);
--	phylink_set(mask, 100baseT_Full);
--
--	linkmode_and(supported, supported, mask);
--	linkmode_and(state->advertising, state->advertising, mask);
--}
--
--static void gswip_xrx200_phylink_validate(struct dsa_switch *ds, int port,
--					  unsigned long *supported,
--					  struct phylink_link_state *state)
-+static void gswip_xrx200_phylink_get_caps(struct dsa_switch *ds, int port,
-+					  struct phylink_config *config)
- {
- 	switch (port) {
- 	case 0:
- 	case 1:
--		if (!phy_interface_mode_is_rgmii(state->interface) &&
--		    state->interface != PHY_INTERFACE_MODE_MII &&
--		    state->interface != PHY_INTERFACE_MODE_REVMII &&
--		    state->interface != PHY_INTERFACE_MODE_RMII)
--			goto unsupported;
-+		phy_interface_set_rgmii(config->supported_interfaces);
-+		__set_bit(PHY_INTERFACE_MODE_MII,
-+			  config->supported_interfaces);
-+		__set_bit(PHY_INTERFACE_MODE_REVMII,
-+			  config->supported_interfaces);
-+		__set_bit(PHY_INTERFACE_MODE_RMII,
-+			  config->supported_interfaces);
- 		break;
-+
- 	case 2:
- 	case 3:
- 	case 4:
--		if (state->interface != PHY_INTERFACE_MODE_INTERNAL)
--			goto unsupported;
-+		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
-+			  config->supported_interfaces);
- 		break;
-+
- 	case 5:
--		if (!phy_interface_mode_is_rgmii(state->interface) &&
--		    state->interface != PHY_INTERFACE_MODE_INTERNAL)
--			goto unsupported;
-+		phy_interface_set_rgmii(config->supported_interfaces);
-+		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
-+			  config->supported_interfaces);
- 		break;
--	default:
--		linkmode_zero(supported);
--		dev_err(ds->dev, "Unsupported port: %i\n", port);
--		return;
- 	}
- 
--	gswip_phylink_set_capab(supported, state);
--
--	return;
--
--unsupported:
--	linkmode_zero(supported);
--	dev_err(ds->dev, "Unsupported interface '%s' for port %d\n",
--		phy_modes(state->interface), port);
-+	config->mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
-+		MAC_10 | MAC_100 | MAC_1000;
- }
- 
--static void gswip_xrx300_phylink_validate(struct dsa_switch *ds, int port,
--					  unsigned long *supported,
--					  struct phylink_link_state *state)
-+static void gswip_xrx300_phylink_get_caps(struct dsa_switch *ds, int port,
-+					  struct phylink_config *config)
- {
- 	switch (port) {
- 	case 0:
--		if (!phy_interface_mode_is_rgmii(state->interface) &&
--		    state->interface != PHY_INTERFACE_MODE_GMII &&
--		    state->interface != PHY_INTERFACE_MODE_RMII)
--			goto unsupported;
-+		phy_interface_set_rgmii(config->supported_interfaces);
-+		__set_bit(PHY_INTERFACE_MODE_GMII,
-+			  config->supported_interfaces);
-+		__set_bit(PHY_INTERFACE_MODE_RMII,
-+			  config->supported_interfaces);
- 		break;
-+
- 	case 1:
- 	case 2:
- 	case 3:
- 	case 4:
--		if (state->interface != PHY_INTERFACE_MODE_INTERNAL)
--			goto unsupported;
-+		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
-+			  config->supported_interfaces);
- 		break;
-+
- 	case 5:
--		if (!phy_interface_mode_is_rgmii(state->interface) &&
--		    state->interface != PHY_INTERFACE_MODE_INTERNAL &&
--		    state->interface != PHY_INTERFACE_MODE_RMII)
--			goto unsupported;
-+		phy_interface_set_rgmii(config->supported_interfaces);
-+		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
-+			  config->supported_interfaces);
-+		__set_bit(PHY_INTERFACE_MODE_RMII,
-+			  config->supported_interfaces);
- 		break;
--	default:
--		linkmode_zero(supported);
--		dev_err(ds->dev, "Unsupported port: %i\n", port);
--		return;
- 	}
- 
--	gswip_phylink_set_capab(supported, state);
--
--	return;
--
--unsupported:
--	linkmode_zero(supported);
--	dev_err(ds->dev, "Unsupported interface '%s' for port %d\n",
--		phy_modes(state->interface), port);
-+	config->mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
-+		MAC_10 | MAC_100 | MAC_1000;
- }
- 
- static void gswip_port_set_link(struct gswip_priv *priv, int port, bool link)
-@@ -1827,7 +1783,7 @@ static const struct dsa_switch_ops gswip_xrx200_switch_ops = {
- 	.port_fdb_add		= gswip_port_fdb_add,
- 	.port_fdb_del		= gswip_port_fdb_del,
- 	.port_fdb_dump		= gswip_port_fdb_dump,
--	.phylink_validate	= gswip_xrx200_phylink_validate,
-+	.phylink_get_caps	= gswip_xrx200_phylink_get_caps,
- 	.phylink_mac_config	= gswip_phylink_mac_config,
- 	.phylink_mac_link_down	= gswip_phylink_mac_link_down,
- 	.phylink_mac_link_up	= gswip_phylink_mac_link_up,
-@@ -1851,7 +1807,7 @@ static const struct dsa_switch_ops gswip_xrx300_switch_ops = {
- 	.port_fdb_add		= gswip_port_fdb_add,
- 	.port_fdb_del		= gswip_port_fdb_del,
- 	.port_fdb_dump		= gswip_port_fdb_dump,
--	.phylink_validate	= gswip_xrx300_phylink_validate,
-+	.phylink_get_caps	= gswip_xrx300_phylink_get_caps,
- 	.phylink_mac_config	= gswip_phylink_mac_config,
- 	.phylink_mac_link_down	= gswip_phylink_mac_link_down,
- 	.phylink_mac_link_up	= gswip_phylink_mac_link_up,
--- 
-2.30.2
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
