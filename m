@@ -2,163 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DFCE463D91
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 19:17:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1582463DBE
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 19:21:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245407AbhK3SVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 13:21:02 -0500
-Received: from mga17.intel.com ([192.55.52.151]:22722 "EHLO mga17.intel.com"
+        id S245436AbhK3SZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 13:25:17 -0500
+Received: from mga11.intel.com ([192.55.52.93]:22001 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245432AbhK3SVB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Nov 2021 13:21:01 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10184"; a="216976661"
+        id S245437AbhK3SZQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Nov 2021 13:25:16 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10184"; a="233787711"
 X-IronPort-AV: E=Sophos;i="5.87,276,1631602800"; 
-   d="scan'208";a="216976661"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2021 10:00:29 -0800
+   d="scan'208";a="233787711"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2021 10:08:05 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,276,1631602800"; 
-   d="scan'208";a="654258459"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga001.fm.intel.com with ESMTP; 30 Nov 2021 10:00:28 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, sasha.neftin@intel.com,
-        vitaly.lifshits@intel.com, maciej.fijalkowski@intel.com,
-        magnus.karlsson@intel.com, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com, bpf@vger.kernel.org,
-        andrii@kernel.org, kpsingh@kernel.org, kafai@fb.com, yhs@fb.com,
-        songliubraving@fb.com,
-        Nechama Kraus <nechamax.kraus@linux.intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-Subject: [PATCH net-next 2/2] igc: enable XDP metadata in driver
-Date:   Tue, 30 Nov 2021 09:59:18 -0800
-Message-Id: <20211130175918.3705966-3-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211130175918.3705966-1-anthony.l.nguyen@intel.com>
-References: <20211130175918.3705966-1-anthony.l.nguyen@intel.com>
+   d="scan'208";a="676931116"
+Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 30 Nov 2021 10:08:03 -0800
+Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1ms7Xu-000Dc3-Ao; Tue, 30 Nov 2021 18:08:02 +0000
+Date:   Wed, 1 Dec 2021 02:07:46 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Dust Li <dust.li@linux.alibaba.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ursula Braun <ubraun@linux.ibm.com>
+Cc:     kbuild-all@lists.01.org, Tony Lu <tonylu@linux.alibaba.com>,
+        Wen Gu <guwen@linux.alibaba.com>, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] net/smc: fix wrong list_del in smc_lgr_cleanup_early
+Message-ID: <202112010159.e2LA9rIR-lkp@intel.com>
+References: <20211130151731.55951-1-dust.li@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211130151731.55951-1-dust.li@linux.alibaba.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Hi Dust,
 
-Enabling the XDP bpf_prog access to data_meta area is a very small
-change. Hint passing 'true' to xdp_prepare_buff().
+Thank you for the patch! Perhaps something to improve:
 
-The SKB layers can also access data_meta area, which required more
-driver changes to support. Reviewers, notice the igc driver have two
-different functions that can create SKBs, depending on driver config.
+[auto build test WARNING on net/master]
 
-Hint for testers, ethtool priv-flags legacy-rx enables
-the function igc_construct_skb()
+url:    https://github.com/0day-ci/linux/commits/Dust-Li/net-smc-fix-wrong-list_del-in-smc_lgr_cleanup_early/20211130-232151
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 34d8778a943761121f391b7921f79a7adbe1feaf
+config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20211201/202112010159.e2LA9rIR-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/9b9af6a458f20989d91478dc8e038325978e16d5
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Dust-Li/net-smc-fix-wrong-list_del-in-smc_lgr_cleanup_early/20211130-232151
+        git checkout 9b9af6a458f20989d91478dc8e038325978e16d5
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash net/smc/
 
- ethtool --set-priv-flags DEV legacy-rx on
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
-Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+All warnings (new ones prefixed by >>):
+
+   net/smc/smc_core.c: In function 'smc_lgr_cleanup_early':
+>> net/smc/smc_core.c:628:27: warning: variable 'lgr_list' set but not used [-Wunused-but-set-variable]
+     628 |         struct list_head *lgr_list;
+         |                           ^~~~~~~~
+
+
+vim +/lgr_list +628 net/smc/smc_core.c
+
+8f9dde4bf230f5 Guvenc Gulce  2020-12-01  624  
+51e3dfa8906ace Ursula Braun  2020-02-25  625  void smc_lgr_cleanup_early(struct smc_connection *conn)
+51e3dfa8906ace Ursula Braun  2020-02-25  626  {
+51e3dfa8906ace Ursula Braun  2020-02-25  627  	struct smc_link_group *lgr = conn->lgr;
+9ec6bf19ec8bb1 Karsten Graul 2020-05-03 @628  	struct list_head *lgr_list;
+9ec6bf19ec8bb1 Karsten Graul 2020-05-03  629  	spinlock_t *lgr_lock;
+51e3dfa8906ace Ursula Braun  2020-02-25  630  
+51e3dfa8906ace Ursula Braun  2020-02-25  631  	if (!lgr)
+51e3dfa8906ace Ursula Braun  2020-02-25  632  		return;
+51e3dfa8906ace Ursula Braun  2020-02-25  633  
+51e3dfa8906ace Ursula Braun  2020-02-25  634  	smc_conn_free(conn);
+9ec6bf19ec8bb1 Karsten Graul 2020-05-03  635  	lgr_list = smc_lgr_list_head(lgr, &lgr_lock);
+9ec6bf19ec8bb1 Karsten Graul 2020-05-03  636  	spin_lock_bh(lgr_lock);
+9ec6bf19ec8bb1 Karsten Graul 2020-05-03  637  	/* do not use this link group for new connections */
+9b9af6a458f209 Dust Li       2021-11-30  638  	if (!list_empty(&lgr->list))
+9b9af6a458f209 Dust Li       2021-11-30  639  		list_del_init(&lgr->list);
+9ec6bf19ec8bb1 Karsten Graul 2020-05-03  640  	spin_unlock_bh(lgr_lock);
+f9aab6f2ce5761 Ursula Braun  2020-09-10  641  	__smc_lgr_terminate(lgr, true);
+51e3dfa8906ace Ursula Braun  2020-02-25  642  }
+51e3dfa8906ace Ursula Braun  2020-02-25  643  
+
 ---
- drivers/net/ethernet/intel/igc/igc_main.c | 33 +++++++++++++++--------
- 1 file changed, 22 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 76b0a7311369..142c57b7a451 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -1718,24 +1718,26 @@ static void igc_add_rx_frag(struct igc_ring *rx_ring,
- 
- static struct sk_buff *igc_build_skb(struct igc_ring *rx_ring,
- 				     struct igc_rx_buffer *rx_buffer,
--				     union igc_adv_rx_desc *rx_desc,
--				     unsigned int size)
-+				     struct xdp_buff *xdp)
- {
--	void *va = page_address(rx_buffer->page) + rx_buffer->page_offset;
-+	unsigned int size = xdp->data_end - xdp->data;
- 	unsigned int truesize = igc_get_rx_frame_truesize(rx_ring, size);
-+	unsigned int metasize = xdp->data - xdp->data_meta;
- 	struct sk_buff *skb;
- 
- 	/* prefetch first cache line of first page */
--	net_prefetch(va);
-+	net_prefetch(xdp->data_meta);
- 
- 	/* build an skb around the page buffer */
--	skb = build_skb(va - IGC_SKB_PAD, truesize);
-+	skb = build_skb(xdp->data_hard_start, truesize);
- 	if (unlikely(!skb))
- 		return NULL;
- 
- 	/* update pointers within the skb to store the data */
--	skb_reserve(skb, IGC_SKB_PAD);
-+	skb_reserve(skb, xdp->data - xdp->data_hard_start);
- 	__skb_put(skb, size);
-+	if (metasize)
-+		skb_metadata_set(skb, metasize);
- 
- 	igc_rx_buffer_flip(rx_buffer, truesize);
- 	return skb;
-@@ -1746,6 +1748,7 @@ static struct sk_buff *igc_construct_skb(struct igc_ring *rx_ring,
- 					 struct xdp_buff *xdp,
- 					 ktime_t timestamp)
- {
-+	unsigned int metasize = xdp->data - xdp->data_meta;
- 	unsigned int size = xdp->data_end - xdp->data;
- 	unsigned int truesize = igc_get_rx_frame_truesize(rx_ring, size);
- 	void *va = xdp->data;
-@@ -1753,10 +1756,11 @@ static struct sk_buff *igc_construct_skb(struct igc_ring *rx_ring,
- 	struct sk_buff *skb;
- 
- 	/* prefetch first cache line of first page */
--	net_prefetch(va);
-+	net_prefetch(xdp->data_meta);
- 
- 	/* allocate a skb to store the frags */
--	skb = napi_alloc_skb(&rx_ring->q_vector->napi, IGC_RX_HDR_LEN);
-+	skb = napi_alloc_skb(&rx_ring->q_vector->napi,
-+			     IGC_RX_HDR_LEN + metasize);
- 	if (unlikely(!skb))
- 		return NULL;
- 
-@@ -1769,7 +1773,13 @@ static struct sk_buff *igc_construct_skb(struct igc_ring *rx_ring,
- 		headlen = eth_get_headlen(skb->dev, va, IGC_RX_HDR_LEN);
- 
- 	/* align pull length to size of long to optimize memcpy performance */
--	memcpy(__skb_put(skb, headlen), va, ALIGN(headlen, sizeof(long)));
-+	memcpy(__skb_put(skb, headlen + metasize), xdp->data_meta,
-+	       ALIGN(headlen + metasize, sizeof(long)));
-+
-+	if (metasize) {
-+		skb_metadata_set(skb, metasize);
-+		__skb_pull(skb, metasize);
-+	}
- 
- 	/* update all of the pointers */
- 	size -= headlen;
-@@ -2354,7 +2364,8 @@ static int igc_clean_rx_irq(struct igc_q_vector *q_vector, const int budget)
- 		if (!skb) {
- 			xdp_init_buff(&xdp, truesize, &rx_ring->xdp_rxq);
- 			xdp_prepare_buff(&xdp, pktbuf - igc_rx_offset(rx_ring),
--					 igc_rx_offset(rx_ring) + pkt_offset, size, false);
-+					 igc_rx_offset(rx_ring) + pkt_offset,
-+					 size, true);
- 
- 			skb = igc_xdp_run_prog(adapter, &xdp);
- 		}
-@@ -2378,7 +2389,7 @@ static int igc_clean_rx_irq(struct igc_q_vector *q_vector, const int budget)
- 		} else if (skb)
- 			igc_add_rx_frag(rx_ring, rx_buffer, skb, size);
- 		else if (ring_uses_build_skb(rx_ring))
--			skb = igc_build_skb(rx_ring, rx_buffer, rx_desc, size);
-+			skb = igc_build_skb(rx_ring, rx_buffer, &xdp);
- 		else
- 			skb = igc_construct_skb(rx_ring, rx_buffer, &xdp,
- 						timestamp);
--- 
-2.31.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
