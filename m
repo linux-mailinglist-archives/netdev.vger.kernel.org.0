@@ -2,92 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B07C9462B66
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 05:01:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72EBF462B83
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 05:06:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232542AbhK3EEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 23:04:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52178 "EHLO
+        id S232138AbhK3EJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 23:09:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230427AbhK3EEb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 23:04:31 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE9B6C061574
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 20:01:12 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id t26so50194513lfk.9
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 20:01:12 -0800 (PST)
+        with ESMTP id S232110AbhK3EJ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 23:09:26 -0500
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99904C061574;
+        Mon, 29 Nov 2021 20:06:07 -0800 (PST)
+Received: by mail-pg1-x52e.google.com with SMTP id r5so18267335pgi.6;
+        Mon, 29 Nov 2021 20:06:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lpfJur1QYE2rvU84HwIrDOOzWm6gtJBXI5SMWtLmk7U=;
-        b=EdCxD7x2CYKKefvSxQG/qa+mE2dauxtKD16jMDYFrR8v+KqFZkIU8Dtn9HkU7JuUwn
-         P4KOJT5U/lp7dXlH4BSbpYu13MpESteYXGwEfv0WIViiJVJaYHg8EiC1KSR5TFSt5NC5
-         VKGbaM5kI/QDvR6oGqQAZwlVTYyU+DXNIVgs3sssfHKC6XDRoObeKEhC7A+Ini9cibDg
-         JFXpNNOr9ci+FGH3ieBjXjXieqAP2jnBNh0FN+dJZYTKt7qzLnH2YyaAn8H4Zll4IhHz
-         LPsM5H7Y3BdWDVraEJ0yzciwaTlKIP72mP+VfOmz1CZ3i1jxdTZkCzKAcVfHnStsdmBR
-         RPmw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/3sipgFsYx4nTsFXeXnXh9bfVECakyAq+Xo8bhn0cKY=;
+        b=YNf/8WTZMctueICeEPTxKNFxLOdExgc4YxHwmBHxsyhZDOB37kpS/gwJqnLRj6pzbb
+         7vjcFY8LuS1I4wGU3b1W3fByvWUrcKg9bdjYTtFF7eQLK02+rZ4w899N5YxGo47vMnMM
+         DRBwHHYa8WyZDqAiDfggpdGkujtN+g+MAHn4qDInqp8+/Eu9dBtNBwrPCobtylSsBEkk
+         hZDQ6j1oiqu2gfkHC4ZMVHdBTkVPXP+6iYOBmz1X0yGRQItDadLpySYPzdVjxw8F3RQm
+         q2xf915EwI0av7kDHuBpeuhPpSDF0XYyP7APzhxPRip84y39d5F2Q74LAldvNantTNnT
+         VzAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lpfJur1QYE2rvU84HwIrDOOzWm6gtJBXI5SMWtLmk7U=;
-        b=M98zsmS9wnu0fr7Nu2Vg7FzkDFVnRmdzuybn+2rCT9K1sf/QQi1N9kVzI1d9fViSSD
-         xitWmyTeU+0SUYrX5XB3HkzOSnUKK8o1gg7YUYRSbDvGaUEcR7/HMPs3aAZwEUqLzfb/
-         K5hsoy6E2jcapmGC9fvef0khuKWRPw+4BNV2NLGWh5GwyXEtAdFbUbFcAWwqzsJOutHR
-         0woHriUbkDofDE1fg2wHe0NR0FibSolUm7WlDUC5lRC4AdVe/OHB+eKmYRumTvcYBFIw
-         cMfo9Q0Yj7dM1BmUm5JlDEtSYVu+Q+SKOYp6mvJ8r/AOb58Wym7bT8zAh8AQV6TLd58w
-         hXYA==
-X-Gm-Message-State: AOAM532kjrdzXtCHSIx3DR1Pn0bqPQHeRgJI+rJWdx3VvF/oRteSMpss
-        dE+vX2jo1gYtFpdTizRCLTydldQyz9WCdPi8QOGBA/pc
-X-Google-Smtp-Source: ABdhPJxI/ZSOC1AOn22iXcD4g6ge26Y4dsD9skSFXauTk3N2IJhzuxDsNlDPaY7U7kDwQGA2nJfCAAoTMTscsYCP32I=
-X-Received: by 2002:a05:6512:1151:: with SMTP id m17mr53816770lfg.154.1638244871039;
- Mon, 29 Nov 2021 20:01:11 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/3sipgFsYx4nTsFXeXnXh9bfVECakyAq+Xo8bhn0cKY=;
+        b=KF4+YVNBmZKthkEXURItO5pDUc/Lc6j8DrZzk22DLHGd48hSRV10hEhKQ9tmpscZZP
+         gqFMm3vsQTrXvEWiS/2+r6YDadgOk5/u+RC/WmhPhIsrEMXAvvHrcvU4vt0mLZ+CsOPZ
+         lNcW/J25ymgrgp3vapwWH5iotXpBxGGME3tkRK7jNIUVnZSPDq6qmXZ85CAt7l2wP/Mk
+         3rqFLodNZzIClNAofFEC40xVSkcOGuwKWTKr2cUy2f0aVhPtlwATmRvslyXOxm3WbXUm
+         UmDhH1TM2ebvDRbW1cNFwhQS47g8Db3QX8jjIQ7ovWTm3zjh9QW/7AZm94lYb29IcsuN
+         ktOQ==
+X-Gm-Message-State: AOAM530dg6ILeQf+AhFO1XXEaJ393B3fbvjxv5F2N8d8E8WGUmR3+IzC
+        AZx93EZgsasAstHSyENCxgI=
+X-Google-Smtp-Source: ABdhPJwgmi0fWes54vGJMTyaEVxmZV86S5SM8EKRgEg2RclJoumK0u6HH4iSRag8Kgp7VE0otm9R2Q==
+X-Received: by 2002:a05:6a00:1594:b0:49f:c5f0:19df with SMTP id u20-20020a056a00159400b0049fc5f019dfmr43134007pfk.70.1638245166942;
+        Mon, 29 Nov 2021 20:06:06 -0800 (PST)
+Received: from localhost.localdomain ([94.177.118.4])
+        by smtp.gmail.com with ESMTPSA id s15sm748299pjs.51.2021.11.29.20.06.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Nov 2021 20:06:06 -0800 (PST)
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Yangbo Lu <yangbo.lu@nxp.com>
+Cc:     Dongliang Mu <mudongliangabcd@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] dpaa2-eth: destroy workqueue at the end of remove function
+Date:   Tue, 30 Nov 2021 12:05:54 +0800
+Message-Id: <20211130040554.868846-1-mudongliangabcd@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20211125021822.6236-1-radhac@marvell.com> <CAC8NTUX1-p24ZBGvwa7YcYQ_G+A_kn3f_GeTofKhO7ELB2bn8g@mail.gmail.com>
- <20211124192710.438657ca@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAC8NTUUdZSuNtjczBvEZPaAbzaP4rWyR9fDOWC9mdMHEqiEVNw@mail.gmail.com> <20211125070812.1432d2ad@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211125070812.1432d2ad@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Radha Mohan <mohun106@gmail.com>
-Date:   Mon, 29 Nov 2021 20:00:59 -0800
-Message-ID: <CAC8NTUVmfNMNNJ3aT6=fB3S_9jb0XtyOt4s0VU8o1Q3RfQwY3Q@mail.gmail.com>
-Subject: Re: [PATCH] octeontx2-nicvf: Add netdev interface support for SDP VF devices
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        sgoutham@marvell.com,
-        Prasun Kapoor <Prasun.Kapoor@caviumnetworks.com>,
-        Satananda Burla <sburla@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 25, 2021 at 7:08 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Wed, 24 Nov 2021 22:00:49 -0800 Radha Mohan wrote:
-> > On Wed, Nov 24, 2021 at 7:27 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > On Wed, 24 Nov 2021 18:21:04 -0800 Radha Mohan wrote:
-> > > > This patch adds netdev interface for SDP VFs. This interface can be used
-> > > > to communicate with a host over PCIe when OcteonTx is in PCIe Endpoint
-> > > > mode.
-> > >
-> > > All your SDP/SDK/management interfaces do not fit into our netdev
-> > > model of the world and should be removed upstream.
-> >
-> > SDP is our System DMA Packet Interface which sends/receives network
-> > packets to NIX block. It is similar to CGX, LBK blocks but only
-> > difference is the medium being PCIe. So if you have accepted that I
-> > believe you can accept this as well.
->
-> Nope, I have not accepted that. I was just too lazy to send a revert
-> after it was merged.
-I think you have misunderstood what I am saying. The currently merged
-changes (not the ones what you were lazy about) support our networking
-blocks NIX which has send/receive queues to transfer packets over CGX
-(externally over the wire) and LBK (internally looping).
-Now we are adding support for NIX to send/receive using SDP (over
-PCIe). The earlier changes that you thought of rejecting (for reasons
-unknown) are initial support and this change completes that.
-Can you please elaborate on your outright rejection criteria only for
-SDP ? Just saying I will not have XYZ support added just because I am
-the maintainer now doesn't make a good argument.
+The commit c55211892f46 ("dpaa2-eth: support PTP Sync packet one-step
+timestamping") forgets to destroy workqueue at the end of remove
+function.
+
+Fix this by adding destroy_workqueue before fsl_mc_portal_free and
+free_netdev.
+
+Fixes: c55211892f46 ("dpaa2-eth: support PTP Sync packet one-step timestamping")
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+---
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index 6451c8383639..8e643567abce 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -4550,6 +4550,8 @@ static int dpaa2_eth_remove(struct fsl_mc_device *ls_dev)
+ 
+ 	fsl_mc_portal_free(priv->mc_io);
+ 
++	destroy_workqueue(priv->dpaa2_ptp_wq);
++
+ 	dev_dbg(net_dev->dev.parent, "Removed interface %s\n", net_dev->name);
+ 
+ 	free_netdev(net_dev);
+-- 
+2.25.1
+
