@@ -2,43 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0948D462CE5
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 07:39:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02729462CE6
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 07:39:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233500AbhK3GnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 01:43:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58850 "EHLO
+        id S238685AbhK3GnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 01:43:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232619AbhK3GnA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 01:43:00 -0500
+        with ESMTP id S233768AbhK3GnI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 01:43:08 -0500
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3034EC061574
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 22:39:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EF42C061574
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 22:39:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
         Content-ID:Content-Description:In-Reply-To:References;
-        bh=mBTj9I4bPELs0gmVLF5+MfOfgPVZkwnwY9OPSSXiAyI=; b=n7R7pub8RzpPxJC4QYTVsz/P+P
-        gppBaRMYwdgmyUcr1C8Vkzdq2BX0WDojclMeJcVzXFTs1dEVClNPGoO3mUvQ7QWoHWW4PdLCdAqZD
-        b592m2r1Or2CtDx0dm9OUs/Cx7bsOE4ZaNz30zRcEx2CgAF4I1iYOsB7K1e8xp2yJxiKvlo1VY9Me
-        7xbr7z+wY26v+1vDRe7TtrWJPnpZxEzjDgSeH1lTzrPbmBSMN4jLvb9uG7OORmpFEuKlxgittoE8F
-        Ol51oLr4lqqR8PDRd5myLtNDu1TNtXRrK8Kj5U/vziXmjVszEB7EitjLbYKbIV0OCkI8u7U6LN2F5
-        XnHs8lGA==;
+        bh=A6daDwCiIh3975g68Xikm65PMFqryYSeKnUccgK88Ag=; b=D3C8JbZS6323Fh6YlL4k9UFUoY
+        JWuk3DDMs1G9OnOHMpdumy1pcQhbsxv32aOIevzA9SSACqjMyaVSJgTJvVDPBQa+P5gWPQSRkR/Yx
+        B7lP12opYaJotxll63EXcTwqBbtpZS6NSC6Q4v6esIzBPa6S9ViBCHA477qdTL6wAwEN6JTCzOZaH
+        eYuFBhRMnIMWUqOLZPwJWT3Te4MQ5PXCIdJbptlOEvxgZ2H8oKoM1nCRureBMQe3f4h2tN0ad5fsy
+        nDx8w4BzSqfcHgMm9PRfoq3eM9pyAZDXYJBZcN2Pu3kTivM8dIhAQwi0iXiWpAjgwf+AVYbvnt4Wk
+        N+2H3y7Q==;
 Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mrwnk-003ozd-4x; Tue, 30 Nov 2021 06:39:40 +0000
+        id 1mrwns-003p0j-MK; Tue, 30 Nov 2021 06:39:48 +0000
 From:   Randy Dunlap <rdunlap@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        kernel test robot <lkp@intel.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Finn Thain <fthain@telegraphics.com.au>,
         Chris Zankel <chris@zankel.net>,
         Max Filippov <jcmvbkbc@gmail.com>,
         linux-xtensa@linux-xtensa.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 1/2 -net] natsemi: xtensa: allow writing to const dev_addr array
-Date:   Mon, 29 Nov 2021 22:39:39 -0800
-Message-Id: <20211130063939.6929-1-rdunlap@infradead.org>
+Subject: [PATCH 2/2 -net] natsemi: xtensa: fix section mismatch warnings
+Date:   Mon, 29 Nov 2021 22:39:47 -0800
+Message-Id: <20211130063947.7529-1-rdunlap@infradead.org>
 X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -46,49 +49,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Let the compiler know that it's ok to write to this const field.
+Fix section mismatch warnings in xtsonic. The first one appears to be
+bogus and after fixing the second one, the first one is gone.
 
-Fixes these build errors:
+WARNING: modpost: vmlinux.o(.text+0x529adc): Section mismatch in reference from the function sonic_get_stats() to the function .init.text:set_reset_devices()
+The function sonic_get_stats() references
+the function __init set_reset_devices().
+This is often because sonic_get_stats lacks a __init 
+annotation or the annotation of set_reset_devices is wrong.
 
-../drivers/net/ethernet/natsemi/xtsonic.c: In function 'sonic_probe1':
-../drivers/net/ethernet/natsemi/xtsonic.c:166:36: error: assignment of read-only location '*(dev->dev_addr + (sizetype)(i * 2))'
-  166 |                 dev->dev_addr[i*2] = val;
-../drivers/net/ethernet/natsemi/xtsonic.c:167:38: error: assignment of read-only location '*(dev->dev_addr + ((sizetype)(i * 2) + 1))'
-  167 |                 dev->dev_addr[i*2+1] = val >> 8;
+WARNING: modpost: vmlinux.o(.text+0x529b3b): Section mismatch in reference from the function xtsonic_probe() to the function .init.text:sonic_probe1()
+The function xtsonic_probe() references
+the function __init sonic_probe1().
+This is often because xtsonic_probe lacks a __init 
+annotation or the annotation of sonic_probe1 is wrong.
 
 Fixes: 74f2a5f0ef64 ("xtensa: Add support for the Sonic Ethernet device for the XT2000 board.")
 Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc: Finn Thain <fthain@telegraphics.com.au>
 Cc: Chris Zankel <chris@zankel.net>
 Cc: Max Filippov <jcmvbkbc@gmail.com>
 Cc: linux-xtensa@linux-xtensa.org
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/natsemi/xtsonic.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/natsemi/xtsonic.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- linux-next-20211129.orig/drivers/net/ethernet/natsemi/xtsonic.c
 +++ linux-next-20211129/drivers/net/ethernet/natsemi/xtsonic.c
-@@ -125,6 +125,7 @@ static int __init sonic_probe1(struct ne
+@@ -120,7 +120,7 @@ static const struct net_device_ops xtson
+ 	.ndo_set_mac_address	= eth_mac_addr,
+ };
+ 
+-static int __init sonic_probe1(struct net_device *dev)
++static int sonic_probe1(struct net_device *dev)
+ {
  	unsigned int silicon_revision;
  	struct sonic_local *lp = netdev_priv(dev);
- 	unsigned int base_addr = dev->base_addr;
-+	unsigned char *devadr;
- 	int i;
- 	int err = 0;
- 
-@@ -161,10 +162,10 @@ static int __init sonic_probe1(struct ne
- 	SONIC_WRITE(SONIC_CMD,SONIC_CR_RST);
- 	SONIC_WRITE(SONIC_CEP,0);
- 
--	for (i=0; i<3; i++) {
-+	for (i=0, devadr = (unsigned char *)dev->dev_addr; i<3; i++) {
- 		unsigned int val = SONIC_READ(SONIC_CAP0-i);
--		dev->dev_addr[i*2] = val;
--		dev->dev_addr[i*2+1] = val >> 8;
-+		devadr[i*2] = val;
-+		devadr[i*2+1] = val >> 8;
- 	}
- 
- 	lp->dma_bitmode = SONIC_BITMODE32;
