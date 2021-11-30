@@ -2,150 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B181462E1B
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 09:00:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4A71462E28
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 09:03:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239331AbhK3ID4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 03:03:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49152 "EHLO
+        id S239406AbhK3IGv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 03:06:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239332AbhK3IDz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 03:03:55 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C45AC061714;
-        Tue, 30 Nov 2021 00:00:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D5065CE1805;
-        Tue, 30 Nov 2021 08:00:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D2E8C53FC7;
-        Tue, 30 Nov 2021 08:00:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638259232;
-        bh=gwVGC0FCLR9lTUsfRmzZgc76rFUCFN275E0muoiWsyo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GtpdM2vtVEDqKjuuYCPFplX6Kqy//iHakJXjcI2g+X0C7os4V9LAO/Yrg1scbZY6h
-         p2lGycR7k+oLbh/mNGJ4M+QTYvtAtvHDwomFRKntFb4o/A5GhR9UMOCmshuFnAXPZT
-         8sVX1IPLrK9JovYJCSkVzsDGfxd+xjffJEMaI9Th65BrHYAI4cEidHdwROVvr7vtXJ
-         DbSNCF+4ZhPL0GltwHdmSHp852EALV4PWICJMSp/BIJM6d/IuhFiZq8LtbuFW/5Flj
-         14R+kg/vi3LQtoUilvtt3htt7X88SMq75PIFEyWW+G4baYmC65rLKiXxQzGVU2RQeS
-         CieIW90nZRewQ==
-Date:   Tue, 30 Nov 2021 10:00:28 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
+        with ESMTP id S239398AbhK3IGv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 03:06:51 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46332C061714
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 00:03:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=uDe44T9uMm2Ho9I+XpilySothrARD8K+vfSDwWdWPaU=;
+        t=1638259412; x=1639469012; b=Dz5cavtYBsCCRgw8kWaNM53W41ovUr2inCuMNCa8XVP5sEx
+        5alpYMajHVsHamdagTCcCeVYJDwWsF+q4rc7I/K1ORZlBB1lBqAwGkJgE88n56N6I/89ZpSEhK7HG
+        Ow9J6iNlY2LJkKvpZRwy21jTDg/UObmylVGJZkaBbISOihHlyoEKvy4KhrlGdxLUrgY0cO4mADV5L
+        SiRSZmddnC8j20oYg2e92oqQnRvdILoHy3ZEgv7/vQrjqcd+VVZlpG8iZ5iEnbg5w1MA3ZSbVAl85
+        Pw5m6Uqw6z/8fGzg9hJbKyYeIYc4GB6L9XCIXzVS/A18uRASD91/efuMwzs97JzA==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.95)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1mry6n-004oxJ-46;
+        Tue, 30 Nov 2021 09:03:25 +0100
+Message-ID: <392f3d3cc15018c789ed5fe2a8ad278cd0ceceda.camel@sipsolutions.net>
+Subject: Re: [PATCH RESEND net-next 0/5] WWAN debugfs tweaks
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Leon Romanovsky <leon@kernel.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>
 Cc:     "David S . Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net-next v1] devlink: Simplify devlink resources
- unregister call
-Message-ID: <YaXaHCW3/WQiiTeS@unreal>
-References: <e8684abc2c8ced4e35026e8fa85fe29447ef60b6.1638103213.git.leonro@nvidia.com>
- <20211129201400.488c8ef9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        M Chetan Kumar <m.chetan.kumar@intel.com>,
+        Intel Corporation <linuxwwan@intel.com>,
+        Loic Poulain <loic.poulain@linaro.org>
+Date:   Tue, 30 Nov 2021 09:03:24 +0100
+In-Reply-To: <YaPKJ1JADMxheh0b@unreal>
+References: <20211128125522.23357-1-ryazanov.s.a@gmail.com>
+         <YaPKJ1JADMxheh0b@unreal>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.1 (3.42.1-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211129201400.488c8ef9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 29, 2021 at 08:14:00PM -0800, Jakub Kicinski wrote:
-> On Sun, 28 Nov 2021 14:42:44 +0200 Leon Romanovsky wrote:
-> > The devlink_resources_unregister() used second parameter as an
-> > entry point for the recursive removal of devlink resources. None
-> > of external to devlink users needed to use this field, so lat's
+On Sun, 2021-11-28 at 20:27 +0200, Leon Romanovsky wrote:
 > 
-> None of the callers outside of devlink core...
-> s/lat/let/
+> I personally see your CONFIG_*_DEBUGFS patches as a mistake, which
+> complicates code without any gain at all. Even an opposite is true,
+> by adding more knobs, you can find yourself with the system which
+> has CONFIG_DEBUGFS enabled but with your CONFIG_*_DEBUGFS disabled.
 > 
-> > remove it.
-> 
-> > diff --git a/include/net/devlink.h b/include/net/devlink.h
-> > index e3c88fabd700..043fcec8b0aa 100644
-> > --- a/include/net/devlink.h
-> > +++ b/include/net/devlink.h
-> > @@ -361,33 +361,6 @@ devlink_resource_size_params_init(struct devlink_resource_size_params *size_para
-> >  
-> >  typedef u64 devlink_resource_occ_get_t(void *priv);
-> >  
-> > -/**
-> > - * struct devlink_resource - devlink resource
-> > - * @name: name of the resource
-> > - * @id: id, per devlink instance
-> > - * @size: size of the resource
-> > - * @size_new: updated size of the resource, reload is needed
-> > - * @size_valid: valid in case the total size of the resource is valid
-> > - *              including its children
-> > - * @parent: parent resource
-> > - * @size_params: size parameters
-> > - * @list: parent list
-> > - * @resource_list: list of child resources
-> > - */
-> > -struct devlink_resource {
-> > -	const char *name;
-> > -	u64 id;
-> > -	u64 size;
-> > -	u64 size_new;
-> > -	bool size_valid;
-> > -	struct devlink_resource *parent;
-> > -	struct devlink_resource_size_params size_params;
-> > -	struct list_head list;
-> > -	struct list_head resource_list;
-> > -	devlink_resource_occ_get_t *occ_get;
-> > -	void *occ_get_priv;
-> > -};
-> 
-> > diff --git a/net/core/devlink.c b/net/core/devlink.c
-> > index fd21022145a3..db3b52110cf2 100644
-> > --- a/net/core/devlink.c
-> > +++ b/net/core/devlink.c
-> > @@ -69,6 +69,35 @@ struct devlink {
-> >  	char priv[] __aligned(NETDEV_ALIGN);
-> >  };
-> >  
-> > +/**
-> > + * struct devlink_resource - devlink resource
-> > + * @name: name of the resource
-> > + * @id: id, per devlink instance
-> > + * @size: size of the resource
-> > + * @size_new: updated size of the resource, reload is needed
-> > + * @size_valid: valid in case the total size of the resource is valid
-> > + *              including its children
-> > + * @parent: parent resource
-> > + * @size_params: size parameters
-> > + * @list: parent list
-> > + * @resource_list: list of child resources
-> > + * @occ_get: occupancy getter callback
-> > + * @occ_get_priv: occupancy getter callback priv
-> > + */
-> > +struct devlink_resource {
-> > +	const char *name;
-> > +	u64 id;
-> > +	u64 size;
-> > +	u64 size_new;
-> > +	bool size_valid;
-> > +	struct devlink_resource *parent;
-> > +	struct devlink_resource_size_params size_params;
-> > +	struct list_head list;
-> > +	struct list_head resource_list;
-> > +	devlink_resource_occ_get_t *occ_get;
-> > +	void *occ_get_priv;
-> > +};
-> 
-> Hiding struct devlink_resource is not mentioned in the commit message
-> and entirely unrelated to removal of the unused argument.
 
-devlink_resources_unregister() was the API function that is declared in
-the devlink.h that used "struct devlink_resource". Once we removed extra
-parameter from that function, the "struct devlink_resource" left as not
-used at all. So this "hiding" is related and part of this simplification
-patch.
+I tend to agree with this - it has already happened to me "in the wild"
+that I've had to walk people through a handful of DEBUGFS options to
+finally get all the right data ...
 
-I will add it to the commit message.
-
-Thanks
+johannes
