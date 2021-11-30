@@ -2,68 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57EDB46399E
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 16:14:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 357C04639C2
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 16:20:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243961AbhK3PRz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 10:17:55 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:39930 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244858AbhK3PQ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 10:16:29 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A3795CE1A0D;
-        Tue, 30 Nov 2021 15:13:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 756D1C53FC1;
-        Tue, 30 Nov 2021 15:13:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638285186;
-        bh=nIS7rhL2Hg2Jxh77suuv7PBv670aiPweqb3ofL8cjy0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mVE38cq7UsTCABRKP+wGlkr7SWyGVy+y5w90eBUp04v0RNHxS9gjR2NV71KhTzx4m
-         KefBJ7GIfw3j+uIxozM8GsKZLdLAUfc7KTvX+u+nbOeXhNXaLLUJ1HZY2g1jodg2SK
-         IG1etQ4ojCRFCrsPsf6ykRAKEYGOxTKby2VnQtyaezay6ST7BVRgcRLajK3+ovL0KR
-         4vWCqGReZZL2msbe7Ko5dDFumm/T+5YVsl8KwUFaMmiOKiwUCq4anql9RgEwnBQxx4
-         dQ+zTGHxHlqRndQKoooZbA8NTVVTdhWHey7DomZ8bNfmIn4bWpBfHw4BvFjC3tgZNP
-         RCM8glqOaZW4w==
-Date:   Tue, 30 Nov 2021 07:13:05 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net-next v1] devlink: Simplify devlink resources
- unregister call
-Message-ID: <20211130071305.28c3121c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YaXaHCW3/WQiiTeS@unreal>
-References: <e8684abc2c8ced4e35026e8fa85fe29447ef60b6.1638103213.git.leonro@nvidia.com>
-        <20211129201400.488c8ef9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YaXaHCW3/WQiiTeS@unreal>
+        id S243144AbhK3PX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 10:23:57 -0500
+Received: from out30-130.freemail.mail.aliyun.com ([115.124.30.130]:50318 "EHLO
+        out30-130.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239195AbhK3PUx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 10:20:53 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0UytYDy2_1638285451;
+Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0UytYDy2_1638285451)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 30 Nov 2021 23:17:31 +0800
+From:   Dust Li <dust.li@linux.alibaba.com>
+To:     Karsten Graul <kgraul@linux.ibm.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ursula Braun <ubraun@linux.ibm.com>
+Cc:     Tony Lu <tonylu@linux.alibaba.com>,
+        Wen Gu <guwen@linux.alibaba.com>, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH net] net/smc: fix wrong list_del in smc_lgr_cleanup_early
+Date:   Tue, 30 Nov 2021 23:17:31 +0800
+Message-Id: <20211130151731.55951-1-dust.li@linux.alibaba.com>
+X-Mailer: git-send-email 2.19.1.3.ge56e4f7
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Nov 2021 10:00:28 +0200 Leon Romanovsky wrote:
-> > Hiding struct devlink_resource is not mentioned in the commit message
-> > and entirely unrelated to removal of the unused argument.  
-> 
-> devlink_resources_unregister() was the API function that is declared in
-> the devlink.h that used "struct devlink_resource". Once we removed extra
-> parameter from that function, the "struct devlink_resource" left as not
-> used at all. So this "hiding" is related and part of this simplification
-> patch.
-> 
-> I will add it to the commit message.
+smc_lgr_cleanup_early() meant to deleted the link
+group from the link group list, but it deleted
+the list head by mistake.
 
-Forward declarations exist. The author did not have to disclose the
-definition of the structure. Removing this definition is not related,
-you just like doing it.
+This may cause memory corruption since we didn't
+remove the real link group from the list and later
+memseted the link group structure.
+We got a list corruption panic when testing:
+
+[  231.277259] list_del corruption. prev->next should be ffff8881398a8000, but was 0000000000000000
+[  231.278222] ------------[ cut here ]------------
+[  231.278726] kernel BUG at lib/list_debug.c:53!
+[  231.279326] invalid opcode: 0000 [#1] SMP NOPTI
+[  231.279803] CPU: 0 PID: 5 Comm: kworker/0:0 Not tainted 5.10.46+ #435
+[  231.280466] Hardware name: Alibaba Cloud ECS, BIOS 8c24b4c 04/01/2014
+[  231.281248] Workqueue: events smc_link_down_work
+[  231.281732] RIP: 0010:__list_del_entry_valid+0x70/0x90
+[  231.282258] Code: 4c 60 82 e8 7d cc 6a 00 0f 0b 48 89 fe 48 c7 c7 88 4c
+60 82 e8 6c cc 6a 00 0f 0b 48 89 fe 48 c7 c7 c0 4c 60 82 e8 5b cc 6a 00 <0f>
+0b 48 89 fe 48 c7 c7 00 4d 60 82 e8 4a cc 6a 00 0f 0b cc cc cc
+[  231.284146] RSP: 0018:ffffc90000033d58 EFLAGS: 00010292
+[  231.284685] RAX: 0000000000000054 RBX: ffff8881398a8000 RCX: 0000000000000000
+[  231.285415] RDX: 0000000000000001 RSI: ffff88813bc18040 RDI: ffff88813bc18040
+[  231.286141] RBP: ffffffff8305ad40 R08: 0000000000000003 R09: 0000000000000001
+[  231.286873] R10: ffffffff82803da0 R11: ffffc90000033b90 R12: 0000000000000001
+[  231.287606] R13: 0000000000000000 R14: ffff8881398a8000 R15: 0000000000000003
+[  231.288337] FS:  0000000000000000(0000) GS:ffff88813bc00000(0000) knlGS:0000000000000000
+[  231.289160] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  231.289754] CR2: 0000000000e72058 CR3: 000000010fa96006 CR4: 00000000003706f0
+[  231.290485] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  231.291211] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  231.291940] Call Trace:
+[  231.292211]  smc_lgr_terminate_sched+0x53/0xa0
+[  231.292677]  smc_switch_conns+0x75/0x6b0
+[  231.293085]  ? update_load_avg+0x1a6/0x590
+[  231.293517]  ? ttwu_do_wakeup+0x17/0x150
+[  231.293907]  ? update_load_avg+0x1a6/0x590
+[  231.294317]  ? newidle_balance+0xca/0x3d0
+[  231.294716]  smcr_link_down+0x50/0x1a0
+[  231.295090]  ? __wake_up_common_lock+0x77/0x90
+[  231.295534]  smc_link_down_work+0x46/0x60
+[  231.295933]  process_one_work+0x18b/0x350
+
+Fixes: a0a62ee15a829 ("net/smc: separate locks for SMCD and SMCR link group lists")
+Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+---
+ net/smc/smc_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index bb52c8b5f148..ae2d5fa6dfca 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -635,8 +635,8 @@ void smc_lgr_cleanup_early(struct smc_connection *conn)
+ 	lgr_list = smc_lgr_list_head(lgr, &lgr_lock);
+ 	spin_lock_bh(lgr_lock);
+ 	/* do not use this link group for new connections */
+-	if (!list_empty(lgr_list))
+-		list_del_init(lgr_list);
++	if (!list_empty(&lgr->list))
++		list_del_init(&lgr->list);
+ 	spin_unlock_bh(lgr_lock);
+ 	__smc_lgr_terminate(lgr, true);
+ }
+-- 
+2.19.1.3.ge56e4f7
+
