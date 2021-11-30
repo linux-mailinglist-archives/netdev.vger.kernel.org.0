@@ -2,97 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E6E5462FB6
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 10:32:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64AAD462FDD
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 10:39:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240240AbhK3Jf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 04:35:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:25442 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235582AbhK3Jfz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 04:35:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1638264756;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=95/wbwyuxE7DzbjpYWIIgT2MISDRD/0Z2RLccr1nMBk=;
-        b=RwPrBlT8uXK8jPze6JfTHBKWSWLyoXrC/2mTsTQiA31SB2/EUk2QCUJXPhTpduq6BZcOrZ
-        x2hkGGcEMA7n7kTOjQ0QTzxGYKkjzrjuNLKLjSPuzqCUFiUumokqcWNgS48/tbkTcT8OZP
-        vwpODXhV0WhQJwuapShLFoDAW48SJRQ=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-377-ZyDCRssQNnudVw4FOnPy1g-1; Tue, 30 Nov 2021 04:32:34 -0500
-X-MC-Unique: ZyDCRssQNnudVw4FOnPy1g-1
-Received: by mail-ed1-f72.google.com with SMTP id a3-20020a05640213c300b003e7d12bb925so16464529edx.9
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 01:32:34 -0800 (PST)
+        id S240307AbhK3JnE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 04:43:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43850 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235639AbhK3JnE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 04:43:04 -0500
+Received: from mail-wr1-x449.google.com (mail-wr1-x449.google.com [IPv6:2a00:1450:4864:20::449])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B921C061574
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 01:39:45 -0800 (PST)
+Received: by mail-wr1-x449.google.com with SMTP id q15-20020adfbb8f000000b00191d3d89d09so3424718wrg.3
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 01:39:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=kELG4qNiHubyqw+GHawv5id0iTgcwVQeZoU1KiAX7cg=;
+        b=cYKsBgum6CbGbNMXiRqSOGmUnmKPlZzir9ODQnP7ZSMf3OGZzNIl9ljLw92DPQ5lzE
+         EheFwtJyJ1EEWc8oLh7FIEf1S0y+gb0/dgUTmH8NMBQytFUUpPKbE5Gz4irO68YSFdcb
+         d+NWwWTEDQWpi1Qcc3tpOXUn2RaeBK0rfBUIjvUOM/aoqFwRSy92bzleyWkrfEjK1glN
+         OaGc9hb/H62u5Y9go4YbWbiIH8SXjbKVMPoPC1cyW49JINpABcwpgNZ1o6YPFpr03hZz
+         iehENzMCefRcitFBvG3oh2ZmQZpOt6KepGx00cFYhfa3eNh0JY4GhbamutPZ4fXGpehc
+         8y7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=95/wbwyuxE7DzbjpYWIIgT2MISDRD/0Z2RLccr1nMBk=;
-        b=nQxSjLRbWej9Mnj7O0TUWm3Ko992cQmQmWKAdkS0Q3v5FcHq2lwuBHFXR4Q+botAlD
-         /sfvtDnvleNWZhbXwPiglihK6+BvoFt0mP47LV7sK+HxB8GqPA/W1n+5Vw3GiizfJ8+8
-         0dtAPNLECI1t92lvCBU6unNvTZzE/5UNTSs73rrP8eBbD74D93fPmNldVXqB4k01ShVl
-         gdXQ08fb2uQw0ykSFpuWIHhofKBIh8RL1jL9wyEM26vS0FQ6LbnwM+8MB4IL8/mdZOtt
-         D0Cf1+wVg70MACNDilO5ofXZZvPp2hl55DdOjoWrq7RRKB78UhyvFJWCdRvNlJkGFXah
-         8LZQ==
-X-Gm-Message-State: AOAM532m00ZL5H89GvGGTDPPwoM+zOieDmGPB4NN9c6hlJ4e7F9SI89I
-        XYb1EMeHt6QdoRE4Zna2aoCSNpnqLXRnt5OGwNTG4XALFeDIID9jVl2Aon/nLuYCxFs4/uDs/mL
-        nwrkdqgRocUMpBPrA
-X-Received: by 2002:a05:6402:4413:: with SMTP id y19mr80697589eda.26.1638264753182;
-        Tue, 30 Nov 2021 01:32:33 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwDmTv7P796/A2e4IqQPa36J8ENyP8CCY9GhkFhEgsEHepB5C2PoVkKOSzCqO+t0lSL2tloFw==
-X-Received: by 2002:a05:6402:4413:: with SMTP id y19mr80697562eda.26.1638264752958;
-        Tue, 30 Nov 2021 01:32:32 -0800 (PST)
-Received: from steredhat (host-79-46-195-175.retail.telecomitalia.it. [79.46.195.175])
-        by smtp.gmail.com with ESMTPSA id gz10sm8564363ejc.38.2021.11.30.01.32.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Nov 2021 01:32:32 -0800 (PST)
-Date:   Tue, 30 Nov 2021 10:32:28 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Zhu Lingshan <lingshan.zhu@intel.com>
-Cc:     jasowang@redhat.com, mst@redhat.com,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] ifcvf/vDPA: fix misuse virtio-net device config size for
- blk dev
-Message-ID: <20211130093228.iiz2r43e7mcgecnk@steredhat>
-References: <20211129093144.8033-1-lingshan.zhu@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20211129093144.8033-1-lingshan.zhu@intel.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=kELG4qNiHubyqw+GHawv5id0iTgcwVQeZoU1KiAX7cg=;
+        b=y9SrwYtRMEBXH4WUi4W9N+RI04n79wJzDJjgVRpYZ0Ozorr7K4ialFJTIvrMIqWqfF
+         tx3zo+/h/msiN7P0dwYv5rbSLMUQURnMZX7yop+05+SE9XiIzgtr05lTaHR3EHNn3/ri
+         YPhtynERt2CujEHc9UPVYChVhxf0uDHTZpT565cRefdkbH8Q0vvR1U5Y+fPEQAIJ8vQe
+         eYqEWR1GagjxpOHzPpqvmh3sVdO9L35CGwGsnM+RZ3qh9Ml8+s93yeuN6elOkUPbgaxh
+         dhxQW1AXXhqkJqLtXnibexdUL0sTXAbtBvbogDB0eniL71qToKCvjhC4AkfLnOAi9NEF
+         kI8Q==
+X-Gm-Message-State: AOAM531cikEnc/zgeKoof/lC/XiIMSYbW0sulb3MBIobakVI5cCZWkdd
+        XZethkqMkeFgWhv+rePZREA6t0tC5zzA
+X-Google-Smtp-Source: ABdhPJzP07EGlbfgMOkGabHIaXfvMk3ZPzmr0ipqOJR5t06BpGMFsKoCThWTsi90O/5cJjKGLojv34CNVgoX
+X-Received: from dvyukov-desk.muc.corp.google.com ([2a00:79e0:15:13:1e84:81dc:2c2c:50e2])
+ (user=dvyukov job=sendgmr) by 2002:a5d:64eb:: with SMTP id
+ g11mr39838154wri.438.1638265183653; Tue, 30 Nov 2021 01:39:43 -0800 (PST)
+Date:   Tue, 30 Nov 2021 10:39:39 +0100
+In-Reply-To: <20211117192031.3906502-2-eric.dumazet@gmail.com>
+Message-Id: <20211130093939.4092417-1-dvyukov@google.com>
+Mime-Version: 1.0
+References: <20211117192031.3906502-2-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.34.0.rc2.393.gf8c9666880-goog
+Subject: Re: [RFC -next 1/2] lib: add reference counting infrastructure
+From:   Dmitry Vyukov <dvyukov@google.com>
+To:     eric.dumazet@gmail.com
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 29, 2021 at 05:31:44PM +0800, Zhu Lingshan wrote:
->This commit fixes a misuse of virtio-net device config size issue
->for virtio-block devices.
->
->A new member config_size in struct ifcvf_hw is introduced and would
->be initialized through vdpa_dev_add() to record correct device
->config size.
->
->Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->Reported-and-suggested-by: Stefano Garzarella <sgarzare@redhat.com>
->Fixes: 6ad31d162a4e ("vDPA/ifcvf: enable Intel C5000X-PL virtio-block for vDPA")
->Cc: <stable@vger.kernel.org>
->---
-> drivers/vdpa/ifcvf/ifcvf_base.c | 41 +++++++++++++++++++++++++--------
-> drivers/vdpa/ifcvf/ifcvf_base.h |  9 +++++---
-> drivers/vdpa/ifcvf/ifcvf_main.c | 24 ++++---------------
-> 3 files changed, 41 insertions(+), 33 deletions(-)
+Hi Eric,
 
-The patch LGTM. Maybe we could add in the description that we rename 
-some fields and functions in a more generic way.
+Nice! Especially ref_tracker_dir_print() in netdev_wait_allrefs().
 
-In both cases:
+> +	*trackerp = tracker = kzalloc(sizeof(*tracker), gfp);
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+This may benefit from __GFP_NOFAIL. syzkaller will use fault injection to fail
+this. And I think it will do more bad than good.
 
-Thanks,
-Stefano
+We could also note this condition in dir, along the lines of:
 
+	if (!tracker) {
+		dir->failed = true;
+
+To print on any errors and to check in ref_tracker_free():
+
+int ref_tracker_free(struct ref_tracker_dir *dir,
+		     struct ref_tracker **trackerp)
+{
+...
+	if (!tracker) {
+		WARN_ON(!dir->failed);
+		return -EEXIST;
+	}
+
+This would be a bug, right?
+Or:
+
+	*trackerp = tracker = kzalloc(sizeof(*tracker), gfp);
+	if (!tracker) {
+		*tracker = TRACKERP_ALLOC_FAILED;
+		 return -ENOMEM;
+	}
+
+and then check TRACKERP_ALLOC_FAILED in ref_tracker_free().
+dev_hold_track() ignores the return value, so it would be useful to note
+this condition.
+
+> +	if (tracker->dead) {
+> +		pr_err("reference already released.\n");
+
+This and other custom prints won't be detected as bugs by syzkaller and other
+testing systems, they detect the standard BUG/WARNING. Please use these.
+
+ref_tracker_free() uses unnecesary long critical sections. I understand this
+is debugging code, but frequently debugging code is so pessimistic that nobody
+use it. If we enable this on syzbot, it will also slowdown all fuzzing.
+I think with just a small code shuffling critical sections can be
+significantly reduced:
+
+	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 1);
+	tracker->free_stack_handle = stack_depot_save(entries, nr_entries, GFP_ATOMIC);
+
+	spin_lock_irqsave(&dir->lock, flags);
+	if (tracker->dead)
+		...
+	tracker->dead = true;
+
+	list_move_tail(&tracker->head, &dir->quarantine);
+	if (!dir->quarantine_avail) {
+		tracker = list_first_entry(&dir->quarantine, struct ref_tracker, head);
+		list_del(&tracker->head);
+	} else {
+		dir->quarantine_avail--;
+		tracker = NULL;
+	}
+	spin_unlock_irqrestore(&dir->lock, flags);
+
+	kfree(tracker);
+
+> +#define REF_TRACKER_STACK_ENTRIES 16
+> +	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 1);
+> +	tracker->alloc_stack_handle = stack_depot_save(entries, nr_entries, gfp);
+
+The saved stacks can be longer because they are de-duped. But stacks insered
+into stack_depot need to be trimmed with filter_irq_stacks(). It seems that
+almost all current users got it wrong. We are considering moving
+filter_irq_stacks() into stack_depot_save(), but it's not done yet.
