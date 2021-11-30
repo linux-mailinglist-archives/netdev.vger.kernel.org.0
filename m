@@ -2,192 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32237462E96
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 09:35:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06BC6462E9F
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 09:36:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234895AbhK3Iim (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 03:38:42 -0500
-Received: from relay.sw.ru ([185.231.240.75]:57388 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234404AbhK3Iij (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Nov 2021 03:38:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:Mime-Version:Message-Id:Subject:From
-        :Date; bh=JKjU+kifbq8rsOYzRvdWKrdX+Rjdz7pQmegLKz3ylu0=; b=Nz06Lp8dMQSJhSaS/+O
-        Al/V6Ewly87+bsfWNkLv7d+dn9HGhnKaIvvU+c71Nm6mJAePEJM7DHN0qOdOmjgsp53oQCvs1TlA4
-        DUSPzPAWPMIIW88s6NayvVz3KWSykFVkSR4R8XXXp1xSzEgZpf8tTQxMQwKPTlJDB+i7Acl6OnY=;
-Received: from [192.168.15.149] (helo=mikhalitsyn-laptop)
-        by relay.sw.ru with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <alexander.mikhalitsyn@virtuozzo.com>)
-        id 1mrybe-001s4B-6Z; Tue, 30 Nov 2021 11:35:18 +0300
-Date:   Tue, 30 Nov 2021 11:35:17 +0300
-From:   Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
-        David Miller <davem@davemloft.net>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Andrei Vagin <avagin@gmail.com>,
-        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
-        Alexander Mikhalitsyn <alexander@mihalicyn.com>
-Subject: Re: [PATCH net-next] rtnetlink: add RTNH_REJECT_MASK
-Message-Id: <20211130113517.35324af97e168a9b0676b751@virtuozzo.com>
-In-Reply-To: <YaXZ3WdgwdeocakQ@shredder>
-References: <20211111160240.739294-1-alexander.mikhalitsyn@virtuozzo.com>
-        <20211126134311.920808-1-alexander.mikhalitsyn@virtuozzo.com>
-        <20211126134311.920808-2-alexander.mikhalitsyn@virtuozzo.com>
-        <YaOLt2M1hBnoVFKd@shredder>
-        <e3d13710-2780-5dff-3cbf-fa0fd7cb5d32@gmail.com>
-        <YaXZ3WdgwdeocakQ@shredder>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S239652AbhK3Ij2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 03:39:28 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:56715 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234779AbhK3Ij1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 03:39:27 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 885E05C0138;
+        Tue, 30 Nov 2021 03:36:08 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Tue, 30 Nov 2021 03:36:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=qfmn4y
+        RhLRAg0V9cxCqYmHuC23s1vVUxybGCfaEHsDw=; b=HC99zS781M/ueYiHkg/Qkg
+        zJIDUHkQqUQqxz8C9jf/EBHiRTI9bbNSrB72X2XU9Ln/M/6ATxF0AUiw7EIkuHfF
+        agq7eDZRuN0g2JBty8pyT65q0fKBrDo7ACvX0JALLmYFjPBwjinXDXeR9fwMagS7
+        pbu7p/cmE8XRuO7ZSUAudcsidMxeyQ7iByIWv0jvF2sDqv8o2OLVEKv2mwiUKDmR
+        DwSWhAgFAR7KR4XmHpOq4wl3PkxjlIzBEA7NvAoJrDUgzQWCtRrhYQXqhxbNdZEv
+        f+cu87G6T3124Rto79qNQZ3wEEIWRX3T0JRBosl+LEyD9MCetV/VQNuTMSnae4dQ
+        ==
+X-ME-Sender: <xms:eOKlYY9rmNI3j9K7rzNGLpjMdaLSK70f_OQBXx3VcXs00JrNDbd0Mw>
+    <xme:eOKlYQtiUg3UWLa_vM2fycVb1C7L_rf82Z6bvS1FQamWa1CpifXxnGyqLNzqsALKz
+    WQhpsHOQE7InlQ>
+X-ME-Received: <xmr:eOKlYeD4rZNuf-C5TbCkgL_TQy2hqPF7_O32T9KF1di8X6oMViwy19k-bBVSis6etmDEWOU88UXat-zWZG0xvldL6g5Ikw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddriedtgdduvddvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujgesthdtre
+    dttddtvdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecuggftrfgrthhtvghrnheptdffkeekfeduffevgeeujeffjefhte
+    fgueeugfevtdeiheduueeukefhudehleetnecuvehluhhsthgvrhfuihiivgeptdenucfr
+    rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:eOKlYYejDyIxHbhf-TQS3MIzN2fTYWb09EQ2Uu2fbD7B0_Hqv7XXaA>
+    <xmx:eOKlYdOuS5zb6uylTS-o5Fjh87NuSN2lJ-TbsK-EVgutAOOvNBKX3A>
+    <xmx:eOKlYSmetTDS-eMITUOMd0iAva8IoJ9QvCN0p3O_Q8vRGfOgXTdgow>
+    <xmx:eOKlYQeFFIblr_UZnIp97YtKoF1GAZu9ho0OeFSwHGDE0w0yKiDFKA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 30 Nov 2021 03:36:07 -0500 (EST)
+Date:   Tue, 30 Nov 2021 10:36:02 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
+        mkubecek@suse.cz, pali@kernel.org, jacob.e.keller@intel.com,
+        vadimp@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next 0/4] ethtool: Add ability to flash and query
+ transceiver modules' firmware
+Message-ID: <YaXicrPwrHJoTi9w@shredder>
+References: <20211127174530.3600237-1-idosch@idosch.org>
+ <20211129093724.3b76ebff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211129093724.3b76ebff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Nov 2021 09:59:25 +0200
-Ido Schimmel <idosch@idosch.org> wrote:
-
-> On Sun, Nov 28, 2021 at 05:19:38PM -0700, David Ahern wrote:
-> > On 11/28/21 7:01 AM, Ido Schimmel wrote:
-> > > On Fri, Nov 26, 2021 at 04:43:11PM +0300, Alexander Mikhalitsyn wrote:
-> > >> diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
-> > >> index 5888492a5257..9c065e2fdef9 100644
-> > >> --- a/include/uapi/linux/rtnetlink.h
-> > >> +++ b/include/uapi/linux/rtnetlink.h
-> > >> @@ -417,6 +417,9 @@ struct rtnexthop {
-> > >>  #define RTNH_COMPARE_MASK	(RTNH_F_DEAD | RTNH_F_LINKDOWN | \
-> > >>  				 RTNH_F_OFFLOAD | RTNH_F_TRAP)
-> > >>  
-> > >> +/* these flags can't be set by the userspace */
-> > >> +#define RTNH_REJECT_MASK	(RTNH_F_DEAD | RTNH_F_LINKDOWN)
-> > >> +
-> > >>  /* Macros to handle hexthops */
-> > >>  
-> > >>  #define RTNH_ALIGNTO	4
-> > >> diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-> > >> index 4c0c33e4710d..805f5e05b56d 100644
-> > >> --- a/net/ipv4/fib_semantics.c
-> > >> +++ b/net/ipv4/fib_semantics.c
-> > >> @@ -685,7 +685,7 @@ static int fib_get_nhs(struct fib_info *fi, struct rtnexthop *rtnh,
-> > >>  			return -EINVAL;
-> > >>  		}
-> > >>  
-> > >> -		if (rtnh->rtnh_flags & (RTNH_F_DEAD | RTNH_F_LINKDOWN)) {
-> > >> +		if (rtnh->rtnh_flags & RTNH_REJECT_MASK) {
-> > >>  			NL_SET_ERR_MSG(extack,
-> > >>  				       "Invalid flags for nexthop - can not contain DEAD or LINKDOWN");
-> > >>  			return -EINVAL;
-> > >> @@ -1363,7 +1363,7 @@ struct fib_info *fib_create_info(struct fib_config *cfg,
-> > >>  		goto err_inval;
-> > >>  	}
-> > >>  
-> > >> -	if (cfg->fc_flags & (RTNH_F_DEAD | RTNH_F_LINKDOWN)) {
-> > >> +	if (cfg->fc_flags & RTNH_REJECT_MASK) {
-> > >>  		NL_SET_ERR_MSG(extack,
-> > >>  			       "Invalid rtm_flags - can not contain DEAD or LINKDOWN");
-> > > 
-> > > Instead of a deny list as in the legacy nexthop code, the new nexthop
-> > > code has an allow list (from rtm_to_nh_config()):
-> > > 
-> > > ```
-> > > 	if (nhm->nh_flags & ~NEXTHOP_VALID_USER_FLAGS) {
-> > > 		NL_SET_ERR_MSG(extack, "Invalid nexthop flags in ancillary header");
-> > > 		goto out;
-> > > 	}
-> > > ```
-> > > 
-> > > Where:
-> > > 
-> > > ```
-> > > #define NEXTHOP_VALID_USER_FLAGS RTNH_F_ONLINK
-> > > ```
-> > > 
-> > > So while the legacy nexthop code allows setting flags such as
-> > > RTNH_F_OFFLOAD, the new nexthop code denies them. I don't have a use
-> > > case for setting these flags from user space so I don't care if we allow
-> > > or deny them, but I believe the legacy and new nexthop code should be
-> > > consistent.
-> > > 
-> > > WDYT? Should we allow these flags in the new nexthop code as well or
-> > > keep denying them?
-> > > 
-> > >>  		goto err_inval;
+On Mon, Nov 29, 2021 at 09:37:24AM -0800, Jakub Kicinski wrote:
+> On Sat, 27 Nov 2021 19:45:26 +0200 Ido Schimmel wrote:
+> > This patchset extends the ethtool netlink API to allow user space to
+> > both flash transceiver modules' firmware and query the firmware
+> > information (e.g., version, state).
 > > 
-> > I like the positive naming - RTNH_VALID_USER_FLAGS.
-> 
-> I don't think we can move the legacy code to the same allow list as the
-> new nexthop code without potentially breaking user space. The legacy
-> code allows for much more flags to be set in the ancillary header than
-> the new nexthop code.
-
-
-Hello, Ido
-
-agreed, let's keep this side unchanged
-
-> 
-> Looking at the patch again, what is the motivation to expose
-> RTNH_REJECT_MASK to user space? iproute2 already knows that it only
-> makes sense to set RTNH_F_ONLINK. Can't we just do:
-
-Sorry, but that's not fully clear for me, why we should exclude RTNH_F_ONLINK?
-I thought that we should exclude RTNH_F_DEAD and RTNH_F_LINKDOWN just because
-kernel doesn't allow to set these flags.
-
-I'd also thought about another approach - "offload" this flags filtering
-problems to the kernel side for better iproute dump images compatibility.
-
-Now we dump all routes using netlink message like this
-	struct {
-		struct nlmsghdr nlh;
-		struct rtmsg rtm;
-		char buf[128];
-	} req = {
-		.nlh.nlmsg_len = NLMSG_LENGTH(sizeof(struct rtmsg)),
-		.nlh.nlmsg_type = RTM_GETROUTE,
-		.nlh.nlmsg_flags = NLM_F_DUMP | NLM_F_REQUEST,
-...
-	};
-
-But we can introduce some "special" flag like NLM_F_FILTERED_DUMP (or something like that)
-	} req = {
-		.nlh.nlmsg_len = NLMSG_LENGTH(sizeof(struct rtmsg)),
-		.nlh.nlmsg_type = RTM_GETROUTE,
-		.nlh.nlmsg_flags = NLM_F_FILTERED_DUMP | NLM_F_REQUEST,
-...
-	};
-
-The idea here is that the kernel nows better which flags should be omitted from the dump
-(<=> which flags is prohibited to set directly from the userspace side).
-
-But that change is more "global". WDYT about this?
-
-I'm ready to implement any of the approaches with your kind advice.
-
-Alex
-
-> 
-> diff --git a/ip/iproute.c b/ip/iproute.c
-> index 1447a5f78f49..0e6dad2b67e5 100644
-> --- a/ip/iproute.c
-> +++ b/ip/iproute.c
-> @@ -1632,6 +1632,8 @@ static int save_route(struct nlmsghdr *n, void *arg)
->         if (!filter_nlmsg(n, tb, host_len))
->                 return 0;
->  
-> +       r->rtm_flags &= ~RTNH_F_ONLINK;
-> +
->         ret = write(STDOUT_FILENO, n, n->nlmsg_len);
->         if ((ret > 0) && (ret != n->nlmsg_len)) {
->                 fprintf(stderr, "Short write while saving nlmsg\n");
-> 
+> > The main use case is CMIS compliant modules such as QSFP-DD. The CMIS
+> > standard specifies the interfaces used for both operations. See section
+> > 7.3.1 in revision 5.0 of the standard [1].
 > > 
-> > nexthop API should allow the OFFLOAD flag to be consistent; separate
-> > change though.
+> > Despite the immediate use case being CMIS compliant modules, the user
+> > interface is kept generic enough to accommodate future use cases, if
+> > these arise.
 > > 
+> > The purpose of this RFC is to solicit feedback on both the proposed user
+> > interface and the device driver API which are described in detail in
+> > patches #1 and #3. The netdevsim patches are for RFC purposes only. The
+> > plan is to implement the CMIS functionality in common code (under lib/)
+> > so that it can be shared by MAC drivers that will pass function pointers
+> > to it in order to read and write from their modules EEPROM.
+> > 
+> > ethtool(8) patches can be found here [2].
+> 
+> Immediate question I have is why not devlink. We purposefully moved 
+> FW flashing to devlink because I may take long, so doing it under
+> rtnl_lock is really bad. Other advantages exist (like flashing
+> non-Ethernet ports). Ethtool netlink already existed at the time.
+
+Device firmware flashing doesn't belong in devlink because of locking
+semantics. It belongs in devlink because you are updating the firmware
+of the device, which can instantiate multiple netdevs. For multi-port
+devices, it always seemed weird to tell users "choose some random port
+and use it for 'ethtool -f'". I remember being asked if the command
+needs to be run for all swp* netdevs (no).
+
+On the other hand, each netdev corresponds to a single transceiver
+module and each transceiver module corresponds to a single netdev
+(modulo split which is a user configuration).
+
+In addition, users are already dumping the EEPROM contents of
+transceiver modules via ethtool and also toggling their settings.
+
+Given the above, it's beyond me why we should tell users to use anything
+other than ethtool to update transceiver modules' firmware.
+
+Also, note that an important difference from the devlink implementation
+is that this mechanism is asynchronous, which allows the firmware on
+multiple modules to be updated simultaneously.
