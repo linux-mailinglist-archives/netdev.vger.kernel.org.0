@@ -2,84 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4209146368E
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 15:22:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E190463691
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 15:23:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237647AbhK3O0F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 09:26:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53902 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229604AbhK3O0F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 09:26:05 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B3DC061574;
-        Tue, 30 Nov 2021 06:22:46 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F03CB819E7;
-        Tue, 30 Nov 2021 14:22:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59D55C53FC1;
-        Tue, 30 Nov 2021 14:22:41 +0000 (UTC)
-Date:   Tue, 30 Nov 2021 09:22:40 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel test robot <oliver.sang@intel.com>,
-        kbuild test robot <lkp@intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH v2 4/7] fs/binfmt_elf: replace open-coded string copy
- with get_task_comm
-Message-ID: <20211130092240.312f68a4@gandalf.local.home>
-In-Reply-To: <CALOAHbB-2ESG0QgESN_b=bXzESbq+UBP-dqttirKnt1c9TZHZA@mail.gmail.com>
-References: <20211120112738.45980-1-laoar.shao@gmail.com>
-        <20211120112738.45980-5-laoar.shao@gmail.com>
-        <20211129110140.733475f3@gandalf.local.home>
-        <CALOAHbB-2ESG0QgESN_b=bXzESbq+UBP-dqttirKnt1c9TZHZA@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S242108AbhK3O0X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 09:26:23 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:33476 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229604AbhK3O0X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 09:26:23 -0500
+Date:   Tue, 30 Nov 2021 15:23:02 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1638282183;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=cypNFOsJms5d2lVU+8cfZxqIibioLOQv6sw1ENRSbeQ=;
+        b=R3JVDEoLx1+c3Q+zWQ6T/FZHlEPQTU2UCnjViAurAFOjN5gmqKWzx1rUoU+0N5WhYp+wMS
+        KzH3Qo6O/7ba4ntEY114GzcOcPrCm9y4E9YKt/1qcyM4eE/26/JvbMY1VbtYspJhud83Tc
+        MbfXXnhpUdExMm7a2Iw1r/ZUJcxEFkTRve/pYNn3naSNI9+abXtP/95zbf6byAlaT5GVp2
+        /fhyXsD1Jmiq+yUZ21v0Jzwgu1cXTqtNlvmvHjtQKYAP2fNtn8uuyVI7TZkZsce+Qh4dNF
+        fW+PXXde9wyVlcZ3YkXBYO5sH08iMutM9+EnFdnvmAVtxgWZ+/4Wd5BBym4rKQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1638282183;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=cypNFOsJms5d2lVU+8cfZxqIibioLOQv6sw1ENRSbeQ=;
+        b=qKlrgGoiN94sK7YxqML0pNdsLt/KaUmIkJsIHCRxUgWX0azg/dA+HbX39tLhnWAOBGv36Y
+        wd951YFN5oXlZWDw==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mike Galbraith <efault@gmx.de>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH net-next] tcp: Don't acquire inet_listen_hashbucket::lock
+ with disabled BH.
+Message-ID: <20211130142302.ikcnjgo2xlbxbbl3@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Nov 2021 11:01:27 +0800
-Yafang Shao <laoar.shao@gmail.com> wrote:
+Commit
+   9652dc2eb9e40 ("tcp: relax listening_hash operations")
 
-> There are three options,
-> - option 1
->   comment on all the hard-coded 16 to explain why it is hard-coded
-> - option 2
->   replace the hard-coded 16 that can be replaced and comment on the
-> others which can't be replaced.
-> - option 3
->    replace the hard-coded 16 that can be replaced and specifically
-> define TASK_COMM_LEN_16 in other files which can't include
-> linux/sched.h.
-> 
-> Which one do you prefer ?
-> 
+removed the need to disable bottom half while acquiring
+listening_hash.lock. There are still two callers left which disable
+bottom half before the lock is acquired.
 
-Option 3. Since TASK_COMM_LEN_16 is, by it's name, already hard coded to
-16, it doesn't really matter if you define it in more than one location.
+On PREEMPT_RT the softirqs are preemptible and local_bh_disable() acts
+as a lock to ensure that resources, that are protected by disabling
+bottom halves, remain protected.
+This leads to a circular locking dependency if the lock acquired with
+disabled bottom halves is also acquired with enabled bottom halves
+followed by disabling bottom halves. This is the reverse locking order.
+It has been observed with inet_listen_hashbucket::lock:
 
-Or we could define it in another header that include/sched.h can include.
+local_bh_disable() + spin_lock(&ilb->lock):
+  inet_listen()
+    inet_csk_listen_start()
+      sk->sk_prot->hash() := inet_hash()
+	local_bh_disable()
+	__inet_hash()
+	  spin_lock(&ilb->lock);
+	    acquire(&ilb->lock);
 
-The idea of having TASK_COMM_LEN_16 is to easily grep for it, and also know
-exactly what it is used for when people see it being used.
+Reverse order: spin_lock(&ilb->lock) + local_bh_disable():
+  tcp_seq_next()
+    listening_get_next()
+      spin_lock(&ilb->lock);
+	acquire(&ilb->lock);
 
--- Steve
+  tcp4_seq_show()
+    get_tcp4_sock()
+      sock_i_ino()
+	read_lock_bh(&sk->sk_callback_lock);
+	  acquire(softirq_ctrl)	// <---- whoops
+	  acquire(&sk->sk_callback_lock)
+
+Drop local_bh_disable() around __inet_hash() which acquires
+listening_hash->lock. Split inet_unhash() and acquire the
+listen_hashbucket lock without disabling bottom halves; the inet_ehash
+lock with disabled bottom halves.
+
+Reported-by: Mike Galbraith <efault@gmx.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Link: https://lkml.kernel.org/r/12d6f9879a97cd56c09fb53dee343cbb14f7f1f7.camel@gmx.de
+Link: https://lkml.kernel.org/r/X9CheYjuXWc75Spa@hirez.programming.kicks-ass.net
+---
+ net/ipv4/inet_hashtables.c  | 53 ++++++++++++++++++++++---------------
+ net/ipv6/inet6_hashtables.c |  5 +---
+ 2 files changed, 33 insertions(+), 25 deletions(-)
+
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 75737267746f8..7bd1e10086f0a 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -637,7 +637,9 @@ int __inet_hash(struct sock *sk, struct sock *osk)
+ 	int err = 0;
+ 
+ 	if (sk->sk_state != TCP_LISTEN) {
++		local_bh_disable();
+ 		inet_ehash_nolisten(sk, osk, NULL);
++		local_bh_enable();
+ 		return 0;
+ 	}
+ 	WARN_ON(!sk_unhashed(sk));
+@@ -669,45 +671,54 @@ int inet_hash(struct sock *sk)
+ {
+ 	int err = 0;
+ 
+-	if (sk->sk_state != TCP_CLOSE) {
+-		local_bh_disable();
++	if (sk->sk_state != TCP_CLOSE)
+ 		err = __inet_hash(sk, NULL);
+-		local_bh_enable();
+-	}
+ 
+ 	return err;
+ }
+ EXPORT_SYMBOL_GPL(inet_hash);
+ 
+-void inet_unhash(struct sock *sk)
++static void __inet_unhash(struct sock *sk, struct inet_listen_hashbucket *ilb)
+ {
+-	struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
+-	struct inet_listen_hashbucket *ilb = NULL;
+-	spinlock_t *lock;
+-
+ 	if (sk_unhashed(sk))
+ 		return;
+ 
+-	if (sk->sk_state == TCP_LISTEN) {
+-		ilb = &hashinfo->listening_hash[inet_sk_listen_hashfn(sk)];
+-		lock = &ilb->lock;
+-	} else {
+-		lock = inet_ehash_lockp(hashinfo, sk->sk_hash);
+-	}
+-	spin_lock_bh(lock);
+-	if (sk_unhashed(sk))
+-		goto unlock;
+-
+ 	if (rcu_access_pointer(sk->sk_reuseport_cb))
+ 		reuseport_stop_listen_sock(sk);
+ 	if (ilb) {
++		struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
++
+ 		inet_unhash2(hashinfo, sk);
+ 		ilb->count--;
+ 	}
+ 	__sk_nulls_del_node_init_rcu(sk);
+ 	sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
+-unlock:
+-	spin_unlock_bh(lock);
++}
++
++void inet_unhash(struct sock *sk)
++{
++	struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
++
++	if (sk_unhashed(sk))
++		return;
++
++	if (sk->sk_state == TCP_LISTEN) {
++		struct inet_listen_hashbucket *ilb;
++
++		ilb = &hashinfo->listening_hash[inet_sk_listen_hashfn(sk)];
++		/* Don't disable bottom halves while acquiring the lock to
++		 * avoid circular locking dependency on PREEMPT_RT.
++		 */
++		spin_lock(&ilb->lock);
++		__inet_unhash(sk, ilb);
++		spin_unlock(&ilb->lock);
++	} else {
++		spinlock_t *lock = inet_ehash_lockp(hashinfo, sk->sk_hash);
++
++		spin_lock_bh(lock);
++		__inet_unhash(sk, NULL);
++		spin_unlock_bh(lock);
++	}
+ }
+ EXPORT_SYMBOL_GPL(inet_unhash);
+ 
+diff --git a/net/ipv6/inet6_hashtables.c b/net/ipv6/inet6_hashtables.c
+index 67c9114835c84..0a2e7f2283911 100644
+--- a/net/ipv6/inet6_hashtables.c
++++ b/net/ipv6/inet6_hashtables.c
+@@ -333,11 +333,8 @@ int inet6_hash(struct sock *sk)
+ {
+ 	int err = 0;
+ 
+-	if (sk->sk_state != TCP_CLOSE) {
+-		local_bh_disable();
++	if (sk->sk_state != TCP_CLOSE)
+ 		err = __inet_hash(sk, NULL);
+-		local_bh_enable();
+-	}
+ 
+ 	return err;
+ }
+-- 
+2.34.1
+
