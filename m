@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E50AB46361F
+	by mail.lfdr.de (Postfix) with ESMTP id 5296946361D
 	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 15:07:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242030AbhK3OKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 09:10:31 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:27321 "EHLO
+        id S242004AbhK3OK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 09:10:28 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:27322 "EHLO
         szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236521AbhK3OKV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 09:10:21 -0500
-Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4J3PCx4RWKzbjDF;
-        Tue, 30 Nov 2021 22:06:53 +0800 (CST)
+        with ESMTP id S241999AbhK3OKW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 09:10:22 -0500
+Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4J3PCy0pyqzbjDP;
+        Tue, 30 Nov 2021 22:06:54 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by dggpeml500025.china.huawei.com
  (7.185.36.35) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Tue, 30 Nov
- 2021 22:06:59 +0800
+ 2021 22:07:00 +0800
 From:   Hou Tao <houtao1@huawei.com>
 To:     Alexei Starovoitov <ast@kernel.org>
 CC:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>, <houtao1@huawei.com>
-Subject: [PATCH bpf-next 3/5] selftests/bpf: factor out common helpers for benchmarks
-Date:   Tue, 30 Nov 2021 22:22:13 +0800
-Message-ID: <20211130142215.1237217-4-houtao1@huawei.com>
+Subject: [PATCH bpf-next 4/5] selftests/bpf: add benchmark for bpf_strncmp() helper
+Date:   Tue, 30 Nov 2021 22:22:14 +0800
+Message-ID: <20211130142215.1237217-5-houtao1@huawei.com>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20211130142215.1237217-1-houtao1@huawei.com>
 References: <20211130142215.1237217-1-houtao1@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 X-Originating-IP: [10.175.124.27]
 X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
  dggpeml500025.china.huawei.com (7.185.36.35)
@@ -41,502 +41,369 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Five helpers are factored out to reduce boilerplate for
-benchmark tests: do_getpgid(), getpgid_loop_producer(),
-assert_single_consumer(), assert_single_producer() and
-noop_consumer().
+Add benchmark to compare the performance between home-made strncmp()
+in bpf program and bpf_strncmp() helper. In summary, the performance
+win of bpf_strncmp() under x86-64 is greater than 18% when the compared
+string length is greater than 64, and is 179% when the length is 4095.
+Under arm64 the performance win is even bigger: 33% when the length
+is greater than 64 and 600% when the length is 4095.
+
+The following is the details:
+
+no-helper-X: use home-made strncmp() to compare X-sized string
+helper-Y: use bpf_strncmp() to compare Y-sized string
+
+Under x86-64:
+
+no-helper-1          3.504 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+helper-1             3.347 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-8          3.357 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+helper-8             3.307 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-32         3.064 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+helper-32            3.253 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-64         2.563 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+helper-64            3.040 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-128        1.975 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+helper-128           2.641 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-512        0.759 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+helper-512           1.574 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-2048       0.329 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+helper-2048          0.602 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-4095       0.117 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+helper-4095          0.327 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+
+Under arm64:
+
+no-helper-1          2.806 ± 0.004M/s (drops 0.000 ± 0.000M/s)
+helper-1             2.819 ± 0.002M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-8          2.797 ± 0.109M/s (drops 0.000 ± 0.000M/s)
+helper-8             2.786 ± 0.025M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-32         2.399 ± 0.011M/s (drops 0.000 ± 0.000M/s)
+helper-32            2.703 ± 0.002M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-64         2.020 ± 0.015M/s (drops 0.000 ± 0.000M/s)
+helper-64            2.702 ± 0.073M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-128        1.604 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+helper-128           2.516 ± 0.002M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-512        0.699 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+helper-512           2.106 ± 0.003M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-2048       0.215 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+helper-2048          1.223 ± 0.003M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-4095       0.112 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+helper-4095          0.796 ± 0.000M/s (drops 0.000 ± 0.000M/s)
 
 Signed-off-by: Hou Tao <houtao1@huawei.com>
 ---
- tools/testing/selftests/bpf/bench.c           | 13 +++++
- tools/testing/selftests/bpf/bench.h           | 25 +++++++++
- .../bpf/benchs/bench_bloom_filter_map.c       | 44 ++++-----------
- .../selftests/bpf/benchs/bench_count.c        | 14 +----
- .../selftests/bpf/benchs/bench_rename.c       | 27 +++------
- .../selftests/bpf/benchs/bench_ringbufs.c     |  7 +--
- .../selftests/bpf/benchs/bench_trigger.c      | 55 +++++++------------
- 7 files changed, 81 insertions(+), 104 deletions(-)
+ tools/testing/selftests/bpf/Makefile          |   4 +-
+ tools/testing/selftests/bpf/bench.c           |   6 +
+ .../selftests/bpf/benchs/bench_strncmp.c      | 150 ++++++++++++++++++
+ .../selftests/bpf/benchs/run_bench_strncmp.sh |  12 ++
+ .../selftests/bpf/progs/strncmp_bench.c       |  50 ++++++
+ 5 files changed, 221 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/bpf/benchs/bench_strncmp.c
+ create mode 100755 tools/testing/selftests/bpf/benchs/run_bench_strncmp.sh
+ create mode 100644 tools/testing/selftests/bpf/progs/strncmp_bench.c
 
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 8ff7060fe754..7719924b01a3 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -531,6 +531,7 @@ $(OUTPUT)/bench_trigger.o: $(OUTPUT)/trigger_bench.skel.h
+ $(OUTPUT)/bench_ringbufs.o: $(OUTPUT)/ringbuf_bench.skel.h \
+ 			    $(OUTPUT)/perfbuf_bench.skel.h
+ $(OUTPUT)/bench_bloom_filter_map.o: $(OUTPUT)/bloom_filter_bench.skel.h
++$(OUTPUT)/bench_strncmp.o: $(OUTPUT)/strncmp_bench.skel.h
+ $(OUTPUT)/bench.o: bench.h testing_helpers.h $(BPFOBJ)
+ $(OUTPUT)/bench: LDLIBS += -lm
+ $(OUTPUT)/bench: $(OUTPUT)/bench.o \
+@@ -540,7 +541,8 @@ $(OUTPUT)/bench: $(OUTPUT)/bench.o \
+ 		 $(OUTPUT)/bench_rename.o \
+ 		 $(OUTPUT)/bench_trigger.o \
+ 		 $(OUTPUT)/bench_ringbufs.o \
+-		 $(OUTPUT)/bench_bloom_filter_map.o
++		 $(OUTPUT)/bench_bloom_filter_map.o \
++		 $(OUTPUT)/bench_strncmp.o
+ 	$(call msg,BINARY,,$@)
+ 	$(Q)$(CC) $(LDFLAGS) $(filter %.a %.o,$^) $(LDLIBS) -o $@
+ 
 diff --git a/tools/testing/selftests/bpf/bench.c b/tools/testing/selftests/bpf/bench.c
-index ffb589b885c5..681db8175fe1 100644
+index 681db8175fe1..8f1a4351fb18 100644
 --- a/tools/testing/selftests/bpf/bench.c
 +++ b/tools/testing/selftests/bpf/bench.c
-@@ -134,6 +134,19 @@ void hits_drops_report_final(struct bench_res res[], int res_cnt)
- 	       total_ops_mean, total_ops_stddev);
- }
+@@ -184,10 +184,12 @@ static const struct argp_option opts[] = {
  
-+void *getpgid_loop_producer(void *ctx)
-+{
-+	while (true)
-+		do_getpgid();
+ extern struct argp bench_ringbufs_argp;
+ extern struct argp bench_bloom_map_argp;
++extern struct argp strncmp_argp;
+ 
+ static const struct argp_child bench_parsers[] = {
+ 	{ &bench_ringbufs_argp, 0, "Ring buffers benchmark", 0 },
+ 	{ &bench_bloom_map_argp, 0, "Bloom filter map benchmark", 0 },
++	{ &strncmp_argp, 0, "Strncmp benchmark", 0 },
+ 	{},
+ };
+ 
+@@ -386,6 +388,8 @@ extern const struct bench bench_bloom_update;
+ extern const struct bench bench_bloom_false_positive;
+ extern const struct bench bench_hashmap_without_bloom;
+ extern const struct bench bench_hashmap_with_bloom;
++extern const struct bench bench_strncmp_no_helper;
++extern const struct bench bench_strncmp_helper;
+ 
+ static const struct bench *benchs[] = {
+ 	&bench_count_global,
+@@ -417,6 +421,8 @@ static const struct bench *benchs[] = {
+ 	&bench_bloom_false_positive,
+ 	&bench_hashmap_without_bloom,
+ 	&bench_hashmap_with_bloom,
++	&bench_strncmp_no_helper,
++	&bench_strncmp_helper,
+ };
+ 
+ static void setup_benchmark()
+diff --git a/tools/testing/selftests/bpf/benchs/bench_strncmp.c b/tools/testing/selftests/bpf/benchs/bench_strncmp.c
+new file mode 100644
+index 000000000000..57dea095e27a
+--- /dev/null
++++ b/tools/testing/selftests/bpf/benchs/bench_strncmp.c
+@@ -0,0 +1,150 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (C) 2021. Huawei Technologies Co., Ltd */
++#include <argp.h>
++#include "bench.h"
++#include "strncmp_bench.skel.h"
 +
-+	return NULL;
++struct strncmp_ctx {
++	struct strncmp_bench *skel;
++};
++
++struct strncmp_args {
++	u32 cmp_str_len;
++};
++
++static struct strncmp_args args = {
++	.cmp_str_len = 32,
++};
++
++static struct strncmp_ctx ctx;
++
++enum {
++	ARG_CMP_STR_LEN = 4000,
++};
++
++static const struct argp_option opts[] = {
++	{ "cmp-str-len", ARG_CMP_STR_LEN, "CMP_STR_LEN", 0,
++	  "Set the length of compared string" },
++	{},
++};
++
++static error_t strncmp_parse_arg(int key, char *arg, struct argp_state *state)
++{
++	switch (key) {
++	case ARG_CMP_STR_LEN:
++		args.cmp_str_len = strtoul(arg, NULL, 10);
++		if (!args.cmp_str_len ||
++		    args.cmp_str_len >= sizeof(ctx.skel->bss->str)) {
++			fprintf(stderr, "Invalid cmp str len (limit %zu)\n",
++				sizeof(ctx.skel->bss->str));
++			argp_usage(state);
++		}
++		break;
++	default:
++		return ARGP_ERR_UNKNOWN;
++	}
++
++	return 0;
 +}
 +
-+void *noop_consumer(void *ctx)
++const struct argp strncmp_argp = {
++	.options = opts,
++	.parser = strncmp_parse_arg,
++};
++
++static void strncmp_validate(void)
 +{
-+	return NULL;
++	assert_single_consumer("strncmp");
 +}
 +
- const char *argp_program_version = "benchmark";
- const char *argp_program_bug_address = "<bpf@vger.kernel.org>";
- const char argp_program_doc[] =
-diff --git a/tools/testing/selftests/bpf/bench.h b/tools/testing/selftests/bpf/bench.h
-index 3fb8401b7314..79913082b469 100644
---- a/tools/testing/selftests/bpf/bench.h
-+++ b/tools/testing/selftests/bpf/bench.h
-@@ -59,6 +59,8 @@ void hits_drops_report_progress(int iter, struct bench_res *res, long delta_ns);
- void hits_drops_report_final(struct bench_res res[], int res_cnt);
- void false_hits_report_progress(int iter, struct bench_res *res, long delta_ns);
- void false_hits_report_final(struct bench_res res[], int res_cnt);
-+void *getpgid_loop_producer(void *ctx);
-+void *noop_consumer(void *ctx);
- 
- static inline __u64 get_time_ns(void)
- {
-@@ -83,3 +85,26 @@ static inline long atomic_swap(long *value, long n)
- {
- 	return __atomic_exchange_n(value, n, __ATOMIC_RELAXED);
- }
-+
-+static inline void assert_single_consumer(const char *name)
++static void strncmp_setup(void)
 +{
-+	if (env.consumer_cnt != 1) {
-+		fprintf(stderr, "%s benchmark doesn't support multi-consumer!\n",
-+			name);
++	int err;
++	char *target;
++	size_t i, sz;
++
++	sz = sizeof(ctx.skel->rodata->target);
++	if (!sz || sz < sizeof(ctx.skel->bss->str)) {
++		fprintf(stderr, "invalid string size (target %zu, src %zu)\n",
++			sz, sizeof(ctx.skel->bss->str));
++		exit(1);
++	}
++
++	setup_libbpf();
++
++	ctx.skel = strncmp_bench__open();
++	if (!ctx.skel) {
++		fprintf(stderr, "failed to open skeleton\n");
++		exit(1);
++	}
++
++	srandom(time(NULL));
++	target = ctx.skel->rodata->target;
++	for (i = 0; i < sz - 1; i++)
++		target[i] = '1' + random() % 9;
++	target[sz - 1] = '\0';
++
++	ctx.skel->rodata->cmp_str_len = args.cmp_str_len;
++
++	memcpy(ctx.skel->bss->str, target, args.cmp_str_len);
++	ctx.skel->bss->str[args.cmp_str_len] = '\0';
++	/* Make bss->str < rodata->target */
++	ctx.skel->bss->str[args.cmp_str_len - 1] -= 1;
++
++	err = strncmp_bench__load(ctx.skel);
++	if (err) {
++		fprintf(stderr, "failed to load skeleton\n");
++		strncmp_bench__destroy(ctx.skel);
 +		exit(1);
 +	}
 +}
 +
-+static inline void assert_single_producer(const char *name)
++static void strncmp_attach_prog(struct bpf_program *prog)
 +{
-+	if (env.producer_cnt != 1) {
-+		fprintf(stderr, "%s benchmark doesn't support multi-producer!\n",
-+			name);
++	struct bpf_link *link;
++
++	link = bpf_program__attach(prog);
++	if (!link) {
++		fprintf(stderr, "failed to attach program!\n");
 +		exit(1);
 +	}
 +}
 +
-+static inline void do_getpgid(void)
++static void strncmp_no_helper_setup(void)
 +{
-+	(void)syscall(__NR_getpgid, 0);
++	strncmp_setup();
++	strncmp_attach_prog(ctx.skel->progs.strncmp_no_helper);
 +}
-diff --git a/tools/testing/selftests/bpf/benchs/bench_bloom_filter_map.c b/tools/testing/selftests/bpf/benchs/bench_bloom_filter_map.c
-index 5bcb8a8cdeb2..796553a7ab17 100644
---- a/tools/testing/selftests/bpf/benchs/bench_bloom_filter_map.c
-+++ b/tools/testing/selftests/bpf/benchs/bench_bloom_filter_map.c
-@@ -107,24 +107,7 @@ const struct argp bench_bloom_map_argp = {
- 
- static void validate(void)
- {
--	if (env.consumer_cnt != 1) {
--		fprintf(stderr,
--			"The bloom filter benchmarks do not support multi-consumer use\n");
--		exit(1);
--	}
--}
--
--static inline void trigger_bpf_program(void)
--{
--	syscall(__NR_getpgid);
--}
--
--static void *producer(void *input)
--{
--	while (true)
--		trigger_bpf_program();
--
--	return NULL;
-+	assert_single_consumer("bloom filter");
- }
- 
- static void *map_prepare_thread(void *arg)
-@@ -421,17 +404,12 @@ static void measure(struct bench_res *res)
- 	last_false_hits = total_false_hits;
- }
- 
--static void *consumer(void *input)
--{
--	return NULL;
--}
--
- const struct bench bench_bloom_lookup = {
- 	.name = "bloom-lookup",
- 	.validate = validate,
- 	.setup = bloom_lookup_setup,
--	.producer_thread = producer,
--	.consumer_thread = consumer,
++
++static void strncmp_helper_setup(void)
++{
++	strncmp_setup();
++	strncmp_attach_prog(ctx.skel->progs.strncmp_helper);
++}
++
++static void strncmp_measure(struct bench_res *res)
++{
++	res->hits = atomic_swap(&ctx.skel->bss->hits, 0);
++}
++
++const struct bench bench_strncmp_no_helper = {
++	.name = "strncmp-no-helper",
++	.validate = strncmp_validate,
++	.setup = strncmp_no_helper_setup,
 +	.producer_thread = getpgid_loop_producer,
 +	.consumer_thread = noop_consumer,
- 	.measure = measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-@@ -441,8 +419,8 @@ const struct bench bench_bloom_update = {
- 	.name = "bloom-update",
- 	.validate = validate,
- 	.setup = bloom_update_setup,
--	.producer_thread = producer,
--	.consumer_thread = consumer,
++	.measure = strncmp_measure,
++	.report_progress = hits_drops_report_progress,
++	.report_final = hits_drops_report_final,
++};
++
++const struct bench bench_strncmp_helper = {
++	.name = "strncmp-helper",
++	.validate = strncmp_validate,
++	.setup = strncmp_helper_setup,
 +	.producer_thread = getpgid_loop_producer,
 +	.consumer_thread = noop_consumer,
- 	.measure = measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-@@ -452,8 +430,8 @@ const struct bench bench_bloom_false_positive = {
- 	.name = "bloom-false-positive",
- 	.validate = validate,
- 	.setup = false_positive_setup,
--	.producer_thread = producer,
--	.consumer_thread = consumer,
-+	.producer_thread = getpgid_loop_producer,
-+	.consumer_thread = noop_consumer,
- 	.measure = measure,
- 	.report_progress = false_hits_report_progress,
- 	.report_final = false_hits_report_final,
-@@ -463,8 +441,8 @@ const struct bench bench_hashmap_without_bloom = {
- 	.name = "hashmap-without-bloom",
- 	.validate = validate,
- 	.setup = hashmap_no_bloom_setup,
--	.producer_thread = producer,
--	.consumer_thread = consumer,
-+	.producer_thread = getpgid_loop_producer,
-+	.consumer_thread = noop_consumer,
- 	.measure = measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-@@ -474,8 +452,8 @@ const struct bench bench_hashmap_with_bloom = {
- 	.name = "hashmap-with-bloom",
- 	.validate = validate,
- 	.setup = hashmap_with_bloom_setup,
--	.producer_thread = producer,
--	.consumer_thread = consumer,
-+	.producer_thread = getpgid_loop_producer,
-+	.consumer_thread = noop_consumer,
- 	.measure = measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-diff --git a/tools/testing/selftests/bpf/benchs/bench_count.c b/tools/testing/selftests/bpf/benchs/bench_count.c
-index 078972ce208e..6b4b1cdec8a7 100644
---- a/tools/testing/selftests/bpf/benchs/bench_count.c
-+++ b/tools/testing/selftests/bpf/benchs/bench_count.c
-@@ -18,11 +18,6 @@ static void *count_global_producer(void *input)
- 	return NULL;
- }
- 
--static void *count_global_consumer(void *input)
--{
--	return NULL;
--}
--
- static void count_global_measure(struct bench_res *res)
- {
- 	struct count_global_ctx *ctx = &count_global_ctx;
-@@ -56,11 +51,6 @@ static void *count_local_producer(void *input)
- 	return NULL;
- }
- 
--static void *count_local_consumer(void *input)
--{
--	return NULL;
--}
--
- static void count_local_measure(struct bench_res *res)
- {
- 	struct count_local_ctx *ctx = &count_local_ctx;
-@@ -74,7 +64,7 @@ static void count_local_measure(struct bench_res *res)
- const struct bench bench_count_global = {
- 	.name = "count-global",
- 	.producer_thread = count_global_producer,
--	.consumer_thread = count_global_consumer,
-+	.consumer_thread = noop_consumer,
- 	.measure = count_global_measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-@@ -84,7 +74,7 @@ const struct bench bench_count_local = {
- 	.name = "count-local",
- 	.setup = count_local_setup,
- 	.producer_thread = count_local_producer,
--	.consumer_thread = count_local_consumer,
-+	.consumer_thread = noop_consumer,
- 	.measure = count_local_measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-diff --git a/tools/testing/selftests/bpf/benchs/bench_rename.c b/tools/testing/selftests/bpf/benchs/bench_rename.c
-index 3c203b6d6a6e..89c2de8dbb4b 100644
---- a/tools/testing/selftests/bpf/benchs/bench_rename.c
-+++ b/tools/testing/selftests/bpf/benchs/bench_rename.c
-@@ -13,14 +13,8 @@ static struct ctx {
- 
- static void validate(void)
- {
--	if (env.producer_cnt != 1) {
--		fprintf(stderr, "benchmark doesn't support multi-producer!\n");
--		exit(1);
--	}
--	if (env.consumer_cnt != 1) {
--		fprintf(stderr, "benchmark doesn't support multi-consumer!\n");
--		exit(1);
--	}
-+	assert_single_producer("rename");
-+	assert_single_consumer("rename");
- }
- 
- static void *producer(void *input)
-@@ -106,17 +100,12 @@ static void setup_fexit(void)
- 	attach_bpf(ctx.skel->progs.prog5);
- }
- 
--static void *consumer(void *input)
--{
--	return NULL;
--}
--
- const struct bench bench_rename_base = {
- 	.name = "rename-base",
- 	.validate = validate,
- 	.setup = setup_base,
- 	.producer_thread = producer,
--	.consumer_thread = consumer,
-+	.consumer_thread = noop_consumer,
- 	.measure = measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-@@ -127,7 +116,7 @@ const struct bench bench_rename_kprobe = {
- 	.validate = validate,
- 	.setup = setup_kprobe,
- 	.producer_thread = producer,
--	.consumer_thread = consumer,
-+	.consumer_thread = noop_consumer,
- 	.measure = measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-@@ -138,7 +127,7 @@ const struct bench bench_rename_kretprobe = {
- 	.validate = validate,
- 	.setup = setup_kretprobe,
- 	.producer_thread = producer,
--	.consumer_thread = consumer,
-+	.consumer_thread = noop_consumer,
- 	.measure = measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-@@ -149,7 +138,7 @@ const struct bench bench_rename_rawtp = {
- 	.validate = validate,
- 	.setup = setup_rawtp,
- 	.producer_thread = producer,
--	.consumer_thread = consumer,
-+	.consumer_thread = noop_consumer,
- 	.measure = measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-@@ -160,7 +149,7 @@ const struct bench bench_rename_fentry = {
- 	.validate = validate,
- 	.setup = setup_fentry,
- 	.producer_thread = producer,
--	.consumer_thread = consumer,
-+	.consumer_thread = noop_consumer,
- 	.measure = measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-@@ -171,7 +160,7 @@ const struct bench bench_rename_fexit = {
- 	.validate = validate,
- 	.setup = setup_fexit,
- 	.producer_thread = producer,
--	.consumer_thread = consumer,
-+	.consumer_thread = noop_consumer,
- 	.measure = measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-diff --git a/tools/testing/selftests/bpf/benchs/bench_ringbufs.c b/tools/testing/selftests/bpf/benchs/bench_ringbufs.c
-index da8593b3494a..f3cfb643140d 100644
---- a/tools/testing/selftests/bpf/benchs/bench_ringbufs.c
-+++ b/tools/testing/selftests/bpf/benchs/bench_ringbufs.c
-@@ -90,15 +90,12 @@ static struct counter buf_hits;
- 
- static inline void bufs_trigger_batch(void)
- {
--	(void)syscall(__NR_getpgid);
-+	do_getpgid();
- }
- 
- static void bufs_validate(void)
- {
--	if (env.consumer_cnt != 1) {
--		fprintf(stderr, "rb-libbpf benchmark doesn't support multi-consumer!\n");
--		exit(1);
--	}
-+	assert_single_consumer("rb-libbpf");
- 
- 	if (args.back2back && env.producer_cnt > 1) {
- 		fprintf(stderr, "back-to-back mode makes sense only for single-producer case!\n");
-diff --git a/tools/testing/selftests/bpf/benchs/bench_trigger.c b/tools/testing/selftests/bpf/benchs/bench_trigger.c
-index 7f957c55a3ca..b3d9dae5f0a1 100644
---- a/tools/testing/selftests/bpf/benchs/bench_trigger.c
-+++ b/tools/testing/selftests/bpf/benchs/bench_trigger.c
-@@ -13,16 +13,13 @@ static struct counter base_hits;
- 
- static void trigger_validate(void)
- {
--	if (env.consumer_cnt != 1) {
--		fprintf(stderr, "benchmark doesn't support multi-consumer!\n");
--		exit(1);
--	}
-+	assert_single_consumer("trigger");
- }
- 
- static void *trigger_base_producer(void *input)
- {
- 	while (true) {
--		(void)syscall(__NR_getpgid);
-+		do_getpgid();
- 		atomic_inc(&base_hits.value);
- 	}
- 	return NULL;
-@@ -33,13 +30,6 @@ static void trigger_base_measure(struct bench_res *res)
- 	res->hits = atomic_swap(&base_hits.value, 0);
- }
- 
--static void *trigger_producer(void *input)
--{
--	while (true)
--		(void)syscall(__NR_getpgid);
--	return NULL;
--}
--
- static void trigger_measure(struct bench_res *res)
- {
- 	res->hits = atomic_swap(&ctx.skel->bss->hits, 0);
-@@ -103,11 +93,6 @@ static void trigger_fmodret_setup(void)
- 	attach_bpf(ctx.skel->progs.bench_trigger_fmodret);
- }
- 
--static void *trigger_consumer(void *input)
--{
--	return NULL;
--}
--
- /* make sure call is not inlined and not avoided by compiler, so __weak and
-  * inline asm volatile in the body of the function
-  *
-@@ -207,7 +192,7 @@ const struct bench bench_trig_base = {
- 	.name = "trig-base",
- 	.validate = trigger_validate,
- 	.producer_thread = trigger_base_producer,
--	.consumer_thread = trigger_consumer,
-+	.consumer_thread = noop_consumer,
- 	.measure = trigger_base_measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-@@ -217,8 +202,8 @@ const struct bench bench_trig_tp = {
- 	.name = "trig-tp",
- 	.validate = trigger_validate,
- 	.setup = trigger_tp_setup,
--	.producer_thread = trigger_producer,
--	.consumer_thread = trigger_consumer,
-+	.producer_thread = getpgid_loop_producer,
-+	.consumer_thread = noop_consumer,
- 	.measure = trigger_measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-@@ -228,8 +213,8 @@ const struct bench bench_trig_rawtp = {
- 	.name = "trig-rawtp",
- 	.validate = trigger_validate,
- 	.setup = trigger_rawtp_setup,
--	.producer_thread = trigger_producer,
--	.consumer_thread = trigger_consumer,
-+	.producer_thread = getpgid_loop_producer,
-+	.consumer_thread = noop_consumer,
- 	.measure = trigger_measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-@@ -239,8 +224,8 @@ const struct bench bench_trig_kprobe = {
- 	.name = "trig-kprobe",
- 	.validate = trigger_validate,
- 	.setup = trigger_kprobe_setup,
--	.producer_thread = trigger_producer,
--	.consumer_thread = trigger_consumer,
-+	.producer_thread = getpgid_loop_producer,
-+	.consumer_thread = noop_consumer,
- 	.measure = trigger_measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-@@ -250,8 +235,8 @@ const struct bench bench_trig_fentry = {
- 	.name = "trig-fentry",
- 	.validate = trigger_validate,
- 	.setup = trigger_fentry_setup,
--	.producer_thread = trigger_producer,
--	.consumer_thread = trigger_consumer,
-+	.producer_thread = getpgid_loop_producer,
-+	.consumer_thread = noop_consumer,
- 	.measure = trigger_measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-@@ -261,8 +246,8 @@ const struct bench bench_trig_fentry_sleep = {
- 	.name = "trig-fentry-sleep",
- 	.validate = trigger_validate,
- 	.setup = trigger_fentry_sleep_setup,
--	.producer_thread = trigger_producer,
--	.consumer_thread = trigger_consumer,
-+	.producer_thread = getpgid_loop_producer,
-+	.consumer_thread = noop_consumer,
- 	.measure = trigger_measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-@@ -272,8 +257,8 @@ const struct bench bench_trig_fmodret = {
- 	.name = "trig-fmodret",
- 	.validate = trigger_validate,
- 	.setup = trigger_fmodret_setup,
--	.producer_thread = trigger_producer,
--	.consumer_thread = trigger_consumer,
-+	.producer_thread = getpgid_loop_producer,
-+	.consumer_thread = noop_consumer,
- 	.measure = trigger_measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-@@ -283,7 +268,7 @@ const struct bench bench_trig_uprobe_base = {
- 	.name = "trig-uprobe-base",
- 	.setup = NULL, /* no uprobe/uretprobe is attached */
- 	.producer_thread = uprobe_base_producer,
--	.consumer_thread = trigger_consumer,
-+	.consumer_thread = noop_consumer,
- 	.measure = trigger_base_measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-@@ -293,7 +278,7 @@ const struct bench bench_trig_uprobe_with_nop = {
- 	.name = "trig-uprobe-with-nop",
- 	.setup = uprobe_setup_with_nop,
- 	.producer_thread = uprobe_producer_with_nop,
--	.consumer_thread = trigger_consumer,
-+	.consumer_thread = noop_consumer,
- 	.measure = trigger_measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-@@ -303,7 +288,7 @@ const struct bench bench_trig_uretprobe_with_nop = {
- 	.name = "trig-uretprobe-with-nop",
- 	.setup = uretprobe_setup_with_nop,
- 	.producer_thread = uprobe_producer_with_nop,
--	.consumer_thread = trigger_consumer,
-+	.consumer_thread = noop_consumer,
- 	.measure = trigger_measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-@@ -313,7 +298,7 @@ const struct bench bench_trig_uprobe_without_nop = {
- 	.name = "trig-uprobe-without-nop",
- 	.setup = uprobe_setup_without_nop,
- 	.producer_thread = uprobe_producer_without_nop,
--	.consumer_thread = trigger_consumer,
-+	.consumer_thread = noop_consumer,
- 	.measure = trigger_measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
-@@ -323,7 +308,7 @@ const struct bench bench_trig_uretprobe_without_nop = {
- 	.name = "trig-uretprobe-without-nop",
- 	.setup = uretprobe_setup_without_nop,
- 	.producer_thread = uprobe_producer_without_nop,
--	.consumer_thread = trigger_consumer,
-+	.consumer_thread = noop_consumer,
- 	.measure = trigger_measure,
- 	.report_progress = hits_drops_report_progress,
- 	.report_final = hits_drops_report_final,
++	.measure = strncmp_measure,
++	.report_progress = hits_drops_report_progress,
++	.report_final = hits_drops_report_final,
++};
+diff --git a/tools/testing/selftests/bpf/benchs/run_bench_strncmp.sh b/tools/testing/selftests/bpf/benchs/run_bench_strncmp.sh
+new file mode 100755
+index 000000000000..142697284b45
+--- /dev/null
++++ b/tools/testing/selftests/bpf/benchs/run_bench_strncmp.sh
+@@ -0,0 +1,12 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++
++source ./benchs/run_common.sh
++
++set -eufo pipefail
++
++for s in 1 8 64 512 2048 4095; do
++	for b in no-helper helper; do
++		summarize ${b}-${s} "$($RUN_BENCH --cmp-str-len=$s strncmp-${b})"
++	done
++done
+diff --git a/tools/testing/selftests/bpf/progs/strncmp_bench.c b/tools/testing/selftests/bpf/progs/strncmp_bench.c
+new file mode 100644
+index 000000000000..18373a7df76e
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/strncmp_bench.c
+@@ -0,0 +1,50 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (C) 2021. Huawei Technologies Co., Ltd */
++#include <linux/types.h>
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++
++#define STRNCMP_STR_SZ 4096
++
++/* Will be updated by benchmark before program loading */
++const volatile unsigned int cmp_str_len = 1;
++const char target[STRNCMP_STR_SZ];
++
++long hits = 0;
++char str[STRNCMP_STR_SZ];
++
++char _license[] SEC("license") = "GPL";
++
++static __always_inline int local_strncmp(const char *s1, unsigned int sz,
++					 const char *s2)
++{
++	int ret = 0;
++	unsigned int i;
++
++	for (i = 0; i < sz; i++) {
++		/* E.g. 0xff > 0x31 */
++		ret = (unsigned char)s1[i] - (unsigned char)s2[i];
++		if (ret || !s1[i])
++			break;
++	}
++
++	return ret;
++}
++
++SEC("tp/syscalls/sys_enter_getpgid")
++int strncmp_no_helper(void *ctx)
++{
++	if (local_strncmp(str, cmp_str_len + 1, target) < 0)
++		__sync_add_and_fetch(&hits, 1);
++	return 0;
++}
++
++SEC("tp/syscalls/sys_enter_getpgid")
++int strncmp_helper(void *ctx)
++{
++	if (bpf_strncmp(str, cmp_str_len + 1, target) < 0)
++		__sync_add_and_fetch(&hits, 1);
++	return 0;
++}
++
 -- 
 2.29.2
 
