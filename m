@@ -2,75 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31FBF4634C8
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 13:50:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F3C546351C
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 14:09:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231350AbhK3Mxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 07:53:31 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:43624 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230150AbhK3Mxa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 07:53:30 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C836B8199D;
-        Tue, 30 Nov 2021 12:50:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3BA3AC53FC1;
-        Tue, 30 Nov 2021 12:50:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638276609;
-        bh=wTnpliE16cUbCWHyHtW0dOXWX662bN4oGy1G+1KlN0A=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=bVVYc6hlkdHBuvvlHdyZC/YnHOmhdUw083heW8EPGKOhOw18MeG/u1UX8p6bD5pmf
-         Iie+yDyTtCRnd3w4OEelvQ5ME8LHFJUidlm7gmWDY36AiW1zWzpAaUeh0pkaFQ42tu
-         yTChnzdMiNv0kADRoExrAmGxeHIcz9jkkw0YsA/IBBefENUa4yHIdKV8qcyNfZYxwC
-         4DG/u+F8EEd6LAaGSMfRBqthSQGFnmEgYcRY3Ipr1bq7ZNjMTbYRTDZbyfvgGAqjsH
-         3ueakcEjp9D7ps1+yETNOnfM47rDUCmQ6nyabtRoeww34hmKdG84uZLKvJaMFUfiZY
-         lD3aJDVSyitLQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 163B760A7E;
-        Tue, 30 Nov 2021 12:50:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S236985AbhK3NM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 08:12:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36736 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237001AbhK3NMy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 08:12:54 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42D32C061746
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 05:09:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=CrzjMyMj2fl+xR9Xgec/HhrwWoXtgbAxoLeORV+tOYo=; b=ZpB1Rn0vkmm1hNCeGtYURz1If4
+        FyIwe+SD5wf4KHzKSFK6VDLZXyeToNFLfRd3RrhKrp+bin0Sk229PEfXXuq1mi0Dm0s98FsIIWRot
+        eYPCTXQwrW6M+oWN/5hktvubPZwXKXj3bBGjRsQhTR3XcFzaUciNYNjnQnOkgX3dFTU82d0OwWib/
+        RoNJMZjWNSQnAIIvR7GnGYkk3bU12C/wqVovp6OqDHYo402mxdzVKTlQWdbopLSsR/cIezHG2YSfk
+        B8q9PrwMcfO5HiTahSwaFldZDlXKJtpsQ5HWyWdXcdXoIY6z+sbslm7Fy8alLOhRA7QQKE86kNmxT
+        Ph5GfGYA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55982)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ms2t1-0006uw-Ty; Tue, 30 Nov 2021 13:09:31 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ms2sz-00074y-Rm; Tue, 30 Nov 2021 13:09:29 +0000
+Date:   Tue, 30 Nov 2021 13:09:29 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH net-next 0/5] net: dsa: convert two drivers to
+ phylink_generic_validate()
+Message-ID: <YaYiiU9nvmVugqnJ@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: ixp4xx_hss: drop kfree for memory allocated
- with devm_kzalloc
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163827660908.10870.11448889104468467688.git-patchwork-notify@kernel.org>
-Date:   Tue, 30 Nov 2021 12:50:09 +0000
-References: <20211130104840.1767981-1-weiyongjun1@huawei.com>
-In-Reply-To: <20211130104840.1767981-1-weiyongjun1@huawei.com>
-To:     Wei Yongjun <weiyongjun1@huawei.com>
-Cc:     linus.walleij@linaro.org, khalasa@piap.pl, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, hulkci@huawei.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi,
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+The following series comes from the RFC series posted last Thursday
+adding support for phylink_generic_validate() to DSA.
 
-On Tue, 30 Nov 2021 10:48:40 +0000 you wrote:
-> It's not necessary to free memory allocated with devm_kzalloc
-> and using kfree leads to a double free.
-> 
-> Fixes: 35aefaad326b ("net: ixp4xx_hss: Convert to use DT probing")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-> 
-> [...]
+Patches 1 to 3 update core DSA code to allow drivers to be converted,
+and patches 4 and 5 convert hellcreek and lantiq to use this (both of
+which received reviewed-by from their maintainers.) As the rest have
+yet to be reviewed by their maintainers, they are not included here.
 
-Here is the summary with links:
-  - [net-next] net: ixp4xx_hss: drop kfree for memory allocated with devm_kzalloc
-    https://git.kernel.org/netdev/net-next/c/196073f9c44b
+Patch 1 had a request to change the formatting of it; I have not done
+so as I believe a patch should do one change and one change only -
+reformatting it is a separate change that should be in its own patch.
+However, as patch 2 gets rid of the reason for reformatting it, it
+would be pointless, and pure noise to include such an intermediary
+patch.
 
-You are awesome, thank you!
+Instead, I have swapped the order of patches 2 and 3 from the RFC
+series.
+
+ drivers/net/dsa/hirschmann/hellcreek.c |  24 ++++---
+ drivers/net/dsa/lantiq_gswip.c         | 120 +++++++++++----------------------
+ include/net/dsa.h                      |   4 +-
+ net/dsa/dsa_priv.h                     |   2 +-
+ net/dsa/port.c                         |  48 ++++++++-----
+ net/dsa/slave.c                        |  19 +-----
+ 6 files changed, 88 insertions(+), 129 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
