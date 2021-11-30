@@ -2,120 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6AEC4629CE
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 02:34:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CCF54629D8
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 02:35:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236462AbhK3Bhm convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 29 Nov 2021 20:37:42 -0500
-Received: from mga02.intel.com ([134.134.136.20]:2931 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236373AbhK3Bhl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Nov 2021 20:37:41 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10183"; a="223342545"
-X-IronPort-AV: E=Sophos;i="5.87,273,1631602800"; 
-   d="scan'208";a="223342545"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2021 17:34:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,273,1631602800"; 
-   d="scan'208";a="676605092"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orsmga005.jf.intel.com with ESMTP; 29 Nov 2021 17:34:23 -0800
-Received: from shsmsx604.ccr.corp.intel.com (10.109.6.214) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Mon, 29 Nov 2021 17:34:22 -0800
-Received: from shsmsx601.ccr.corp.intel.com (10.109.6.141) by
- SHSMSX604.ccr.corp.intel.com (10.109.6.214) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 30 Nov 2021 09:34:20 +0800
-Received: from shsmsx601.ccr.corp.intel.com ([10.109.6.141]) by
- SHSMSX601.ccr.corp.intel.com ([10.109.6.141]) with mapi id 15.01.2308.020;
- Tue, 30 Nov 2021 09:34:20 +0800
-From:   "Wang, Wei W" <wei.w.wang@intel.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     "mst@redhat.com" <mst@redhat.com>,
-        "stefanha@redhat.com" <stefanha@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH v2] virtio/vsock: fix the transport to work with
- VMADDR_CID_ANY
-Thread-Topic: [PATCH v2] virtio/vsock: fix the transport to work with
- VMADDR_CID_ANY
-Thread-Index: AQHX4m3Zj4b3Qhf8bE+JSA6gud1FyqwU+0CAgAZQX3A=
-Date:   Tue, 30 Nov 2021 01:34:20 +0000
-Message-ID: <2853d4c373aa4cf0961a256622014eed@intel.com>
-References: <20211126011823.1760-1-wei.w.wang@intel.com>
- <20211126085341.wiab2frkcbmkg4ca@steredhat>
-In-Reply-To: <20211126085341.wiab2frkcbmkg4ca@steredhat>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.6.200.16
-x-originating-ip: [10.239.127.36]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S236624AbhK3Bi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 20:38:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47864 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236601AbhK3Bi3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 20:38:29 -0500
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7E9C061574
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 17:35:10 -0800 (PST)
+Received: by mail-oi1-x22c.google.com with SMTP id q25so38243825oiw.0
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 17:35:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=M1NXGmRJ2IsdoQuz5hBrEXRZYE5coMqFTOc5SIHqtl4=;
+        b=niBnUvVzkEfJ73tEgZaxQbIfsVXfbscEk+J9NYxIANIQttcYA28hvY2golz1SdNMjx
+         lWeKPoprSDzJOGdg5uJoDaY9JrYnU3tGNAk5cupNydo+C1g+n02w81JX6Rp2Y7QV06xR
+         Bx6Kj22M0CXAUzGIQs5KXtBokyY26uP0K3CZ5+OhegZxf7yCEBZdug5j2f2ph6AVeJBj
+         IZ42s1pDVse2GoBUNb0HHg1/m+BC2jTSoS6BKAt2fLZmSzDfMTdWIwUY/txuxrfGEcox
+         V/lEIR3HSb9pRR3O46ar27RIM9+cWdjUzddRkPvzAg9LUiDYgSzDwyJf4aoq+2rozJrC
+         iRKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=M1NXGmRJ2IsdoQuz5hBrEXRZYE5coMqFTOc5SIHqtl4=;
+        b=N44fQma+3BXWH7D6W8800RFqaxjjTXwdhT00T70e77AaGLoVLq1V+KX2X14sdzZFKY
+         wEfzI1z7aBTs9Gdt9oRV5/Mpiz7R86XP9RysWW188cEVM06fzp4cjl7iRrShi7XTPVo+
+         IV1nHZeO4B9iFXjKEoTmthkGAVx7E7e6NgzWctlZFd1z2jB0UvO257rtkFULTy1v2khO
+         Q6URjJ+GYIEDyLPfvFzcuxuf2SSi37wCfM5nElfERas4gGE0q7/f6Q0DiCKW65OMYV01
+         iuB5QQSvFTTJUX7R9w0jnw3P9TilQDgoRABsj93oJYF0zr+ntNOwBiJaJbrLK7P0s3bu
+         sNxA==
+X-Gm-Message-State: AOAM533sTj7tDLgOQ9UF3Vd63LMSIDt0rfr15WlyqZ+iNSaZt/cIFNyQ
+        dXnXd+9xhc6NkTO1n6zlYlQ=
+X-Google-Smtp-Source: ABdhPJxSbPYEASNnxQ7LqEIqK74vNRir/5z5NdlMTy34r2zdPQPnNxCkSuu28ehi9EQEXzo9DOBa5w==
+X-Received: by 2002:a05:6808:284:: with SMTP id z4mr1610531oic.60.1638236110367;
+        Mon, 29 Nov 2021 17:35:10 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id c3sm3491257oiw.8.2021.11.29.17.35.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Nov 2021 17:35:10 -0800 (PST)
+Message-ID: <87b2b35e-11b0-4ff8-f65c-9bbef0ab6588@gmail.com>
+Date:   Mon, 29 Nov 2021 18:35:09 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.3.1
+Subject: Re: [PATCH net-next v2] net: ipv6: use the new fib6_nh_release_dsts
+ helper in fib6_nh_release
+Content-Language: en-US
+To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+References: <8f11307c-9acf-2d83-a7f4-675c46966ede@nvidia.com>
+ <20211129154411.561783-1-razor@blackwall.org>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20211129154411.561783-1-razor@blackwall.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michael,
-
-Do you plan to merge this patch through your tree?
-If not, I'll resend to have it applied to the net tree.
-
-Thanks,
-Wei
-
-On Friday, November 26, 2021 4:54 PM, Stefano Garzarella wrote:
-> On Thu, Nov 25, 2021 at 08:18:23PM -0500, Wei Wang wrote:
-> >The VMADDR_CID_ANY flag used by a socket means that the socket isn't
-> >bound to any specific CID. For example, a host vsock server may want to
-> >be bound with VMADDR_CID_ANY, so that a guest vsock client can connect
-> >to the host server with CID=VMADDR_CID_HOST (i.e. 2), and meanwhile, a
-> >host vsock client can connect to the same local server with
-> >CID=VMADDR_CID_LOCAL (i.e. 1).
-> >
-> >The current implementation sets the destination socket's svm_cid to a
-> >fixed CID value after the first client's connection, which isn't an
-> >expected operation. For example, if the guest client first connects to
-> >the host server, the server's svm_cid gets set to VMADDR_CID_HOST, then
-> >other host clients won't be able to connect to the server anymore.
-> >
-> >Reproduce steps:
-> >1. Run the host server:
-> >   socat VSOCK-LISTEN:1234,fork -
-> >2. Run a guest client to connect to the host server:
-> >   socat - VSOCK-CONNECT:2:1234
-> >3. Run a host client to connect to the host server:
-> >   socat - VSOCK-CONNECT:1:1234
-> >
-> >Without this patch, step 3. above fails to connect, and socat complains
-> >"socat[1720] E connect(5, AF=40 cid:1 port:1234, 16): Connection reset
-> >by peer".
-> >With this patch, the above works well.
-> >
-> >Fixes: c0cfa2d8a788 ("vsock: add multi-transports support")
-> >Signed-off-by: Wei Wang <wei.w.wang@intel.com>
-> >---
-> > net/vmw_vsock/virtio_transport_common.c | 3 ++-
-> > 1 file changed, 2 insertions(+), 1 deletion(-)
+On 11/29/21 8:44 AM, Nikolay Aleksandrov wrote:
+> From: Nikolay Aleksandrov <nikolay@nvidia.com>
 > 
-> Usually fixes for net/vmw_vsock/* are applied through the net tree
-> (netdev@vger.kernel.org) that seems not CCed. Please
-> use ./scripts/get_maintainer.pl next time.
+> We can remove a bit of code duplication by reusing the new
+> fib6_nh_release_dsts helper in fib6_nh_release. Their only difference is
+> that fib6_nh_release's version doesn't use atomic operation to swap the
+> pointers because it assumes the fib6_nh is no longer visible, while
+> fib6_nh_release_dsts can be used anywhere.
 > 
-> Maybe this one can be queued by Michael, let's wait a bit, otherwise please
-> resend CCing netdev and using "net" tag.
+> Suggested-by: David Ahern <dsahern@gmail.com>
+> Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+> ---
+> v2: no need to check for NULL rt6i_pcpu before calling free_percpu
 > 
-> Anyway the patch LGTM:
+>  net/ipv6/route.c | 20 ++------------------
+>  1 file changed, 2 insertions(+), 18 deletions(-)
 > 
-> Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
+
+
+Reviewed-by: David Ahern <dsahern@kernel.org>
