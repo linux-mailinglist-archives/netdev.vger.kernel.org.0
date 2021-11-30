@@ -2,172 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08C95463ADA
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 17:01:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29345463B49
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 17:10:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243244AbhK3QEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 11:04:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49574 "EHLO
+        id S244003AbhK3QNw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 11:13:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243070AbhK3QEx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 11:04:53 -0500
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 975F3C061574
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 08:01:33 -0800 (PST)
-Received: by mail-ot1-x32b.google.com with SMTP id 47-20020a9d0332000000b005798ac20d72so30803019otv.9
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 08:01:33 -0800 (PST)
+        with ESMTP id S243884AbhK3QMQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 11:12:16 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7BB9C06175E
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 08:08:34 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id v1so88808791edx.2
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 08:08:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=VlTLtH4niv/6nWTR4PKPPeVcjW0qeRR4xNqpzMOVBfQ=;
-        b=HehAJaCx3Kl2ppAtOZqirHKKBr9xwbJnRS2Dzw0G4axqt+2CRF429QO7p3wrps8xyM
-         VM3k9nlWqMsIrvv7H4YzaeHNoijgnyIkBZqSGDDOvfGuwDearmbdSOWKzrEkLPivTn1q
-         xjPet5PGeCNp7nEjuFWA7iuTTIrzRSXHDaHW7qWfx/mW+NG0aHh6uaP1WsWScGAxM/ua
-         4vhVz+RlDxkSw1N+9zw+AjpYZjFPw5BUYLImWEQUc2ohylWSYmLK2YpTLMXaXXOYkiuO
-         XGkh3UWR0ProBD1wbZppmzhdCz7OcP8l0ODrEV9UzWpk8ZGIv5/ElsUA0UKZz7KMC4iY
-         Mbcw==
+        d=anyfinetworks-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NV4WFdl9vBrhP2G53aXnoMRhF2dXodBjxt5U+Ip4rB8=;
+        b=3xXPyB7Aiqx8xLJUoSqpNUON61nAzQudWtkcNRdkzXXAkALyBAGFebMzRqkXDIcjZV
+         uXv/m6Ky/8SGSgypXscEVH2EvLeOazslUCWDoJcUcjW7L4RrV5k8ItPGUgHwRbHSyi53
+         09vLub7QE+lfu8d83rp77Jh+P+sY7baLryo+WxDOtgBVgb6QW7jJYCvfrY2HW4zLt6X2
+         lsvxX6G5JMkWwmDrXVSa5+Hcs0szuWiTf1llLI6z9sKrUt/26j3IViKxI+ltDaCaMCsO
+         fGa37Ng7yD34YgBj3faMz1nQ4hh5uvmBWNy7DEWsXmq2mw4X2ag40bsPBhmEsZEBXCZy
+         X8fA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=VlTLtH4niv/6nWTR4PKPPeVcjW0qeRR4xNqpzMOVBfQ=;
-        b=2Pe5R+yrhVFL/CpOKmgetPJBFsms8HWkzqX38w7zpVMk6T8CQeH2E8It3NGOaYSWGF
-         mO427lnT9HByXyhSWlFP1aG6LaOy9TjvWj/SkGCbeSM7SJ1zvOZFamQ0+/M20tNGPPbf
-         el3/tH1Cx56+Bmtw54PwOhMpqH2X1atvWLx50gqm44nAU5pT0VV/5lg1wa/pu8SeqpTu
-         U7veneVNTvkTrp96KyaeAb3chCoMrKv7PUGteyhqWGUSCxmZG4HskQfpmPlicuDb2z+T
-         8PbmKRtxvdp2s+yg4knG6N5N/5LvDSwAjEJRdSbCpgFWyiv0eWTOLDxAIqSdp8+PIG64
-         USAg==
-X-Gm-Message-State: AOAM531Y5eN66e5/+uKEn9b+Y/4ckCMYEMmYzJ98Ez1Zn1JHkRd0Mjfb
-        E2y2Zs1RiuHswQ0FVzGe+Hk=
-X-Google-Smtp-Source: ABdhPJxRUtHG8QBWZBVF8kqGG3g/78S5+Tk4ek1quanhXfM47tHJZj4lsKBmK1V0nmanLx4wEoyq9A==
-X-Received: by 2002:a9d:19c1:: with SMTP id k59mr123520otk.348.1638288092849;
-        Tue, 30 Nov 2021 08:01:32 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id x17sm2830574oot.30.2021.11.30.08.01.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Nov 2021 08:01:32 -0800 (PST)
-Message-ID: <0243bb47-4b5f-a1d7-ff63-adcb6504df8a@gmail.com>
-Date:   Tue, 30 Nov 2021 09:01:31 -0700
+        bh=NV4WFdl9vBrhP2G53aXnoMRhF2dXodBjxt5U+Ip4rB8=;
+        b=EoMLxo5LlqTO1LAsT2yizGaJ1eaCqB26TikDRdFfhGXan617UeWb9slvUy4QgeYWfW
+         t3aKU8Wxs20f0NmZ/TMWMd6u26lVdwuNN6feZvvK5w/MrkRoU6E2WMep/O+sAXP32FoS
+         E10ZY1Tq/6lRxDFTfhK4gJcmmEgoeKXWh46682d5OHejVHF4+9g+DblBD5c4WMpW9CWf
+         iXH1r0zRWDY7OAi2JibKQ5PdCP4DGKhfdxhxHydgcGAXHIzwJaZrXN9GsTWCwqvOPE6M
+         PbN9EMhl4z8FhD0UOPZ6UjwNA+23V3/ZfcDKwk059s3juSShnQB+SpHqkgCM5UspX5XK
+         j2/A==
+X-Gm-Message-State: AOAM532QhxnoHv7Q58C8bu3YKr+RlFX1A+P0d17pLLWL7LAlYND52m1o
+        IJeiXScsQhdhCMpZHnZX2i95Pg==
+X-Google-Smtp-Source: ABdhPJxwwpemHUMHlxQMBA2L2tu2lgif0I249zRDyuDD08yGDvZYidCZDnnksXYGSN6B9KPfkl4fEQ==
+X-Received: by 2002:aa7:db8f:: with SMTP id u15mr84418812edt.47.1638288513259;
+        Tue, 30 Nov 2021 08:08:33 -0800 (PST)
+Received: from anpc2.lan ([62.119.107.74])
+        by smtp.gmail.com with ESMTPSA id sa3sm9301336ejc.113.2021.11.30.08.08.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Nov 2021 08:08:32 -0800 (PST)
+From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        paulburton@kernel.org
+Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        tsbogend@alpha.franken.de, bpf@vger.kernel.org,
+        linux-mips@vger.kernel.org, netdev@vger.kernel.org,
+        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH bpf] mips, bpf: Fix reference to non-existing Kconfig symbol
+Date:   Tue, 30 Nov 2021 17:08:24 +0100
+Message-Id: <20211130160824.3781635-1-johan.almbladh@anyfinetworks.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.1
-Subject: Re: [RFC PATCH net] net: ipv6: make fib6_nh_init properly clean after
- itself on error
-Content-Language: en-US
-To:     Ido Schimmel <idosch@idosch.org>,
-        Nikolay Aleksandrov <razor@blackwall.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-References: <20211129141151.490533-1-razor@blackwall.org>
- <YaYbusXHbVQUXpmB@shredder>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <YaYbusXHbVQUXpmB@shredder>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/30/21 5:40 AM, Ido Schimmel wrote:
-> On Mon, Nov 29, 2021 at 04:11:51PM +0200, Nikolay Aleksandrov wrote:
->> diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
->> index 5dbd4b5505eb..a7debafe8b90 100644
->> --- a/net/ipv4/nexthop.c
->> +++ b/net/ipv4/nexthop.c
->> @@ -2565,14 +2565,8 @@ static int nh_create_ipv6(struct net *net,  struct nexthop *nh,
->>  	/* sets nh_dev if successful */
->>  	err = ipv6_stub->fib6_nh_init(net, fib6_nh, &fib6_cfg, GFP_KERNEL,
->>  				      extack);
->> -	if (err) {
->> -		/* IPv6 is not enabled, don't call fib6_nh_release */
->> -		if (err == -EAFNOSUPPORT)
->> -			goto out;
->> -		ipv6_stub->fib6_nh_release(fib6_nh);
->> -	} else {
->> +	if (!err)
->>  		nh->nh_flags = fib6_nh->fib_nh_flags;
->> -	}
->>  out:
->>  	return err;
->>  }
-> 
-> This hunk looks good
+The Kconfig symbol for R10000 ll/sc errata workaround in the MIPS JIT was
+misspelled, causing the workaround to not take effect when enabled.
 
-agreed, but it should be a no-op now so this should be a net-next
-cleanup patch.
+Fixes: 72570224bb8f ("mips, bpf: Add JIT workarounds for CPU errata")
+Reported-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
+---
+ arch/mips/net/bpf_jit_comp.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> 
->> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
->> index 42d60c76d30a..2107b13cc9ab 100644
->> --- a/net/ipv6/route.c
->> +++ b/net/ipv6/route.c
->> @@ -3635,7 +3635,9 @@ int fib6_nh_init(struct net *net, struct fib6_nh *fib6_nh,
->>  		in6_dev_put(idev);
->>  
->>  	if (err) {
->> -		lwtstate_put(fib6_nh->fib_nh_lws);
->> +		/* check if we failed after fib_nh_common_init() was called */
->> +		if (fib6_nh->nh_common.nhc_pcpu_rth_output)
->> +			fib_nh_common_release(&fib6_nh->nh_common);
->>  		fib6_nh->fib_nh_lws = NULL;
->>  		dev_put(dev);
->>  	}
-> 
-> Likewise
-
-this is a leak in the current code and should go through -net as a
-separate patch.
-
-> 
->> @@ -3822,7 +3824,7 @@ static struct fib6_info *ip6_route_info_create(struct fib6_config *cfg,
->>  	} else {
->>  		err = fib6_nh_init(net, rt->fib6_nh, cfg, gfp_flags, extack);
->>  		if (err)
->> -			goto out;
->> +			goto out_free;
->>  
->>  		fib6_nh = rt->fib6_nh;
->>  
->> @@ -3841,7 +3843,7 @@ static struct fib6_info *ip6_route_info_create(struct fib6_config *cfg,
->>  		if (!ipv6_chk_addr(net, &cfg->fc_prefsrc, dev, 0)) {
->>  			NL_SET_ERR_MSG(extack, "Invalid source address");
->>  			err = -EINVAL;
->> -			goto out;
->> +			goto out_free;
->>  		}
->>  		rt->fib6_prefsrc.addr = cfg->fc_prefsrc;
->>  		rt->fib6_prefsrc.plen = 128;
->> @@ -3849,12 +3851,13 @@ static struct fib6_info *ip6_route_info_create(struct fib6_config *cfg,
->>  		rt->fib6_prefsrc.plen = 0;
->>  
->>  	return rt;
->> -out:
->> -	fib6_info_release(rt);
->> -	return ERR_PTR(err);
->> +
->>  out_free:
->>  	ip_fib_metrics_put(rt->fib6_metrics);
->> +	if (rt->nh)
->> +		nexthop_put(rt->nh);
-> 
-> Shouldn't this be above ip_fib_metrics_put() given nexthop_get() is
-> called after ip_fib_metrics_init() ?
-> 
-> Also, shouldn't we call fib6_nh_release() if fib6_nh_init() succeeded
-> and we failed later?
-
-similarly I think this cleanup is a separate patch.
-
-
-> 
->>  	kfree(rt);
->> +out:
->>  	return ERR_PTR(err);
->>  }
->>  
->> -- 
->> 2.31.1
->>
+diff --git a/arch/mips/net/bpf_jit_comp.h b/arch/mips/net/bpf_jit_comp.h
+index 6f3a7b07294b..a37fe20818eb 100644
+--- a/arch/mips/net/bpf_jit_comp.h
++++ b/arch/mips/net/bpf_jit_comp.h
+@@ -98,7 +98,7 @@ do {								\
+ #define emit(...) __emit(__VA_ARGS__)
+ 
+ /* Workaround for R10000 ll/sc errata */
+-#ifdef CONFIG_WAR_R10000
++#ifdef CONFIG_WAR_R10000_LLSC
+ #define LLSC_beqz	beqzl
+ #else
+ #define LLSC_beqz	beqz
+-- 
+2.30.2
 
