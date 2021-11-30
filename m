@@ -2,45 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A0814638F0
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 16:03:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E51D84638F3
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 16:03:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245042AbhK3PGc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 10:06:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33464 "EHLO
+        id S233885AbhK3PGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 10:06:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243216AbhK3O6p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 09:58:45 -0500
+        with ESMTP id S243220AbhK3O6s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 09:58:48 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF45C0613B8;
-        Tue, 30 Nov 2021 06:51:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22BB7C0613BF;
+        Tue, 30 Nov 2021 06:51:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9425BB81A4D;
-        Tue, 30 Nov 2021 14:51:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7293BC53FD1;
-        Tue, 30 Nov 2021 14:51:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DFE6BB81A22;
+        Tue, 30 Nov 2021 14:51:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C43E4C53FC1;
+        Tue, 30 Nov 2021 14:51:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638283910;
-        bh=rG5KoghkyfV7pz9bOTRLk+mJ5sE6VXKu+6Aw2KfwALs=;
+        s=k20201202; t=1638283911;
+        bh=jIGgzyTQszMg2X41ksGWPVOYN1ku/b4XLRpY6SmlxBc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fSWbO6Wl8mkWUWZb0MZTPDpEd4fKnV21ullPuVPeHLmrWgmjuXnXFVp5n5U8iutea
-         UNuPojMMcHTIM/ORAiUWk0LmF+nzqyR65orluwgdHOqGhzY27CfCpOtcBxrILYVsnB
-         E7B2LdWEbdmhyYCoNrtHXEObxVZw4dEN37n0C5qUZ7fUSoCM47pPd3rgIuB+oEZFHJ
-         Izi2st7ME7GGBgYNOsoRGhCaWRrtAdxZE30dSzt2lyZCgWF3GBAuB3hEGdoGpMwAvA
-         7aslSIFd+uPbsssuYTTKvv2UBJ/VFZuVfVqEDD1T+cHN8hrE35PdxLNsxfAwPz1JDE
-         Jelk/vReB9nGA==
+        b=sc3L1LeZmVDW2K5AUHwZQYfiXtmBdSIVbwh7KhZvbTbzuf4JymLVFwjMokYLhWSBq
+         x7d+JH3C9Tpv0ucKVXMiSIEWt2PJB0N9qB4uPS9uvVPJtks546FRPFWIrn+PDwxu2x
+         ZZXj/TvpyFzfCaXmZbDn2BKUckXlB6c0GBwsu/qKhH9NWZhUci8/MiFqUVU+0Js2em
+         BZfKdlnz8ytkK5Bxl0Dl1YlCcNDz9VZzwB/KedUzvVUEiPg2Dm/l7jikeWDaP/SRnI
+         Yn+5IJfWy2KpbjvCr5OmNqA6rd8yHu6MfOjaFyjlC4q5I3qAI6XLE8msBfx2ihyzSB
+         2kZNubK5ON9dg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 40/43] vhost-vdpa: clean irqs before reseting vdpa device
-Date:   Tue, 30 Nov 2021 09:50:17 -0500
-Message-Id: <20211130145022.945517-40-sashal@kernel.org>
+Cc:     zhangyue <zhangyue1@kylinos.cn>, Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, aelior@marvell.com,
+        manishc@marvell.com, davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 41/43] net: qed: fix the array may be out of bound
+Date:   Tue, 30 Nov 2021 09:50:18 -0500
+Message-Id: <20211130145022.945517-41-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211130145022.945517-1-sashal@kernel.org>
 References: <20211130145022.945517-1-sashal@kernel.org>
@@ -52,43 +50,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wu Zongyong <wuzongyong@linux.alibaba.com>
+From: zhangyue <zhangyue1@kylinos.cn>
 
-[ Upstream commit ea8f17e44fa7d54fae287ccbe30ce269afb5ee42 ]
+[ Upstream commit 0435a4d08032c8fba2966cebdac870e22238cacc ]
 
-Vdpa devices should be reset after unseting irqs of virtqueues, or we
-will get errors when killing qemu process:
+If the variable 'p_bit->flags' is always 0,
+the loop condition is always 0.
 
->> pi_update_irte: failed to update PI IRTE
->> irq bypass consumer (token 0000000065102a43) unregistration fails: -22
+The variable 'j' may be greater than or equal to 32.
 
-Signed-off-by: Wu Zongyong <wuzongyong@linux.alibaba.com>
-Link: https://lore.kernel.org/r/a2cb60cf73be9da5c4e6399242117d8818f975ae.1636946171.git.wuzongyong@linux.alibaba.com
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
+At this time, the array 'p_aeu->bits[32]' may be out
+of bound.
+
+Signed-off-by: zhangyue <zhangyue1@kylinos.cn>
+Link: https://lore.kernel.org/r/20211125113610.273841-1-zhangyue1@kylinos.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vhost/vdpa.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/qlogic/qed/qed_int.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index fdeb20f2f174c..dc4dccd35f59b 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -928,12 +928,12 @@ static int vhost_vdpa_release(struct inode *inode, struct file *filep)
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_int.c b/drivers/net/ethernet/qlogic/qed/qed_int.c
+index 578935f643b83..88c4de35a490f 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_int.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_int.c
+@@ -1025,7 +1025,7 @@ static int qed_int_deassertion(struct qed_hwfn  *p_hwfn,
+ 		if (!parities)
+ 			continue;
  
- 	mutex_lock(&d->mutex);
- 	filep->private_data = NULL;
-+	vhost_vdpa_clean_irq(v);
- 	vhost_vdpa_reset(v);
- 	vhost_dev_stop(&v->vdev);
- 	vhost_vdpa_iotlb_free(v);
- 	vhost_vdpa_free_domain(v);
- 	vhost_vdpa_config_put(v);
--	vhost_vdpa_clean_irq(v);
- 	vhost_dev_cleanup(&v->vdev);
- 	kfree(v->vdev.vqs);
- 	mutex_unlock(&d->mutex);
+-		for (j = 0, bit_idx = 0; bit_idx < 32; j++) {
++		for (j = 0, bit_idx = 0; bit_idx < 32 && j < 32; j++) {
+ 			struct aeu_invert_reg_bit *p_bit = &p_aeu->bits[j];
+ 
+ 			if (qed_int_is_parity_flag(p_hwfn, p_bit) &&
+@@ -1063,7 +1063,7 @@ static int qed_int_deassertion(struct qed_hwfn  *p_hwfn,
+ 			 * to current group, making them responsible for the
+ 			 * previous assertion.
+ 			 */
+-			for (j = 0, bit_idx = 0; bit_idx < 32; j++) {
++			for (j = 0, bit_idx = 0; bit_idx < 32 && j < 32; j++) {
+ 				long unsigned int bitmask;
+ 				u8 bit, bit_len;
+ 
+@@ -1362,7 +1362,7 @@ static void qed_int_sb_attn_init(struct qed_hwfn *p_hwfn,
+ 	memset(sb_info->parity_mask, 0, sizeof(u32) * NUM_ATTN_REGS);
+ 	for (i = 0; i < NUM_ATTN_REGS; i++) {
+ 		/* j is array index, k is bit index */
+-		for (j = 0, k = 0; k < 32; j++) {
++		for (j = 0, k = 0; k < 32 && j < 32; j++) {
+ 			struct aeu_invert_reg_bit *p_aeu;
+ 
+ 			p_aeu = &aeu_descs[i].bits[j];
 -- 
 2.33.0
 
