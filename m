@@ -2,97 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA7EE463A8B
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 16:47:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D27C1463A92
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 16:50:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239712AbhK3Pu7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 10:50:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46372 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237639AbhK3Puy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 10:50:54 -0500
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD748C061574;
-        Tue, 30 Nov 2021 07:47:30 -0800 (PST)
-Received: by mail-qk1-x732.google.com with SMTP id 193so27223356qkh.10;
-        Tue, 30 Nov 2021 07:47:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0E8rI2pldC/kJRYfFj5pOe4f4oCd/4elC+07mJ7cezg=;
-        b=M3TECrBfeRNcmU2wzwJW8xakJwOsl96F7/wzhKVZtGVC4XSClhkZtPmX4O/ArG22Sh
-         jjA+g1x4pyJ/4pviilYQPG+KhhSz3F4DZuFRxnjDPTFhjqCEG4DtQvvJ8KQb64m6allX
-         yyKpYEUobSoiHyXxASAEYQUGG6RRUph0Z3VWpZpdz7lmDRWto1u3+zXWvSbLxkDosk3G
-         7B4KO4BxCe1+OrGLaCgzq2a913mzBdZ+eBV/20lQAFekOCsIcFyVxoB2ZV2YfjeK8rzK
-         SXg7rom0+dWxy0uNUSNNlxxK6f6+bXyctj/awauwEt7A4J/lXSd6tDQSaieEQdgMmo+8
-         LQbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0E8rI2pldC/kJRYfFj5pOe4f4oCd/4elC+07mJ7cezg=;
-        b=aEDwJF6lOKVALR1v3UyQRQHeogd81xev40Ew9jIUQetifgumoPkmSjjzUdbBwJT8gh
-         Aox3c91O/AsZOkas/dnjUVoMHEKtOpCjn/UUfA6phKawDM/kKaQ1B9Jr5QkDaIf6nDCH
-         PfW8pzA2oVoG51jWAqeerte6/2x2L78t2d5Ru4qh5G3cUhWIae1/IOJNKhGXebFubQZ/
-         r7H/QT/CWsGNkIbnt2nj1GG+HkiVc2hpTBie2sgjFp2N7MrxiHQZ2+CLyrYRvWHXwDZ0
-         hkBJf7DXD5f00W1s4GzRDqMTV6Zdg1unpDcr5IvLN92/hkPlP0uQwsGrZWki6uEYxrjz
-         89cQ==
-X-Gm-Message-State: AOAM533lBt32BQn2kBPAMjB0bGD6Ra/DUZEVGI4su675A82UvO8XfFFU
-        D13u9KzrvtZDYnMof721w+pUpy489osVr2bX3rA=
-X-Google-Smtp-Source: ABdhPJztrZJR8wzz1uvKDh9tgCXsCwcvYHaAV5LAj9Tyfjkwz7VlVZjHRc1l9DQlQzaVs/JoaW2gQFPu+qw5proo6JA=
-X-Received: by 2002:a05:620a:134a:: with SMTP id c10mr46334061qkl.207.1638287249916;
- Tue, 30 Nov 2021 07:47:29 -0800 (PST)
+        id S242171AbhK3Pxx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 10:53:53 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:59650 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230418AbhK3Pw2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Nov 2021 10:52:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=raquvrxlJWH5aEPOH47gleUfugDkT+B0zOk0j1clNJw=; b=Jt2pskyUzLM93gYMPluXjNXZ+R
+        DUZZSTcka100Puc0m6zOEMetpq+6s9fz5W765V6XKMPMiaYOOfJxwix8Y/lZbSIaYPBAXss3ToCYG
+        jPCnCEbhy7iSnlEu5By1q/FGhDReluV4EzV5++/tqnXGbs6LrF2e81eJEGee4Tf1oeKU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ms5N4-00F7Ho-UZ; Tue, 30 Nov 2021 16:48:42 +0100
+Date:   Tue, 30 Nov 2021 16:48:42 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH net-next 2/5] net: dsa: replace phylink_get_interfaces()
+ with phylink_get_caps()
+Message-ID: <YaZH2lnTx3f4Tkie@lunn.ch>
+References: <YaYiiU9nvmVugqnJ@shell.armlinux.org.uk>
+ <E1ms2tV-00ECJA-2v@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
-References: <20211120112738.45980-1-laoar.shao@gmail.com> <20211120112738.45980-8-laoar.shao@gmail.com>
- <yt9d35nf1d84.fsf@linux.ibm.com> <20211129123043.5cfd687a@gandalf.local.home>
- <CALOAHbCVJcPdYq2j_VvhHBE-xLBnizRRx2oBu-KNgOr5jMf6RQ@mail.gmail.com> <20211130092333.77408a81@gandalf.local.home>
-In-Reply-To: <20211130092333.77408a81@gandalf.local.home>
-From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Tue, 30 Nov 2021 23:46:54 +0800
-Message-ID: <CALOAHbDvxpjW9eD2_FeKMJzXdbEkWJykbdcjtk1Et_+=ybvgVw@mail.gmail.com>
-Subject: Re: [PATCH v2 7/7] tools/testing/selftests/bpf: replace open-coded 16
- with TASK_COMM_LEN
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Sven Schnelle <svens@linux.ibm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel test robot <oliver.sang@intel.com>,
-        kbuild test robot <lkp@intel.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Kees Cook <keescook@chromium.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Tom Zanussi <zanussi@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <E1ms2tV-00ECJA-2v@rmk-PC.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 30, 2021 at 10:23 PM Steven Rostedt <rostedt@goodmis.org> wrote:
->
-> On Tue, 30 Nov 2021 11:03:48 +0800
-> Yafang Shao <laoar.shao@gmail.com> wrote:
->
-> > Many thanks for the quick fix!
-> > It seems this fix should be ahead of patch #7.
-> > I will send v3 which contains your fix.
->
-> Don't bother. I'm actually going to send this to Linus as a bug fix.
->
+On Tue, Nov 30, 2021 at 01:10:01PM +0000, Russell King (Oracle) wrote:
+> Phylink needs slightly more information than phylink_get_interfaces()
+> allows us to get from the DSA drivers - we need the MAC capabilities.
+> Replace the phylink_get_interfaces() method with phylink_get_caps() to
+> allow DSA drivers to fill in the phylink_config MAC capabilities field
+> as well.
 
-Great!  Thanks for the work.
+It would of been nice to say that phylink_get_interfaces() is
+currently unused, and so this change does not break anything. I think
+that was a discussion with the RFC?
 
--- 
-Thanks
-Yafang
+But the code itself looks good.
+
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
