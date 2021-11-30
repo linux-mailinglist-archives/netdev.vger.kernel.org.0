@@ -2,73 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07075462B19
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 04:32:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8370462B51
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 04:53:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237899AbhK3DfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 22:35:18 -0500
-Received: from szxga03-in.huawei.com ([45.249.212.189]:28191 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237894AbhK3DfN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 22:35:13 -0500
-Received: from dggpeml500021.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4J37501x1vz8vg4;
-        Tue, 30 Nov 2021 11:29:56 +0800 (CST)
-Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
- dggpeml500021.china.huawei.com (7.185.36.21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 30 Nov 2021 11:31:53 +0800
-Received: from huawei.com (10.175.103.91) by dggpeml500017.china.huawei.com
- (7.185.36.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Tue, 30 Nov
- 2021 11:31:52 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <olek2@wp.pl>, <davem@davemloft.net>, <kuba@kernel.org>
-Subject: [PATCH -next] net: lantiq: fix missing free_netdev() on error in ltq_etop_probe()
-Date:   Tue, 30 Nov 2021 11:38:37 +0800
-Message-ID: <20211130033837.778452-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S237992AbhK3D44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 22:56:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50446 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229656AbhK3D4z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 22:56:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4826DC061574;
+        Mon, 29 Nov 2021 19:53:37 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7768AB81696;
+        Tue, 30 Nov 2021 03:53:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDAB7C53FC1;
+        Tue, 30 Nov 2021 03:53:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638244414;
+        bh=Xbqf1Qw6VkwibXpQT6sF1yneZieb5lH3C6moEpEclXc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fuFPviqEOmamZpz8C2DTDGCwzLhGarGz55wRbxS1jA2kVZ1HCu4VqidsXBYJfFqaH
+         9s/WQuWESoClsDt6VQ9Wwb8bop2Vi0eyMOw2pU27Z8obS0E2lbR3XGpjMLY4EIijff
+         yI3xta4YBVp0Ax/zSNL4f+X0IUi6dNjbk72FN6a1ifVJWpVZOPjnSDEoUUJzSBQZmF
+         /+87NMAR2Sm7ULdDyB2Tn7xiVKfcxQgfVawGCLLxnYAmD0uYBNfcVv8XjaNbBtJTpf
+         OvjjYL8TpV96/hyfkVrt5YYeyNzPk2l0gJW7n/7arUYxbN8CGDENoJ4t+AW9mSMoLO
+         7kQjzplUWQyRQ==
+Date:   Mon, 29 Nov 2021 19:53:32 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Boris Pismenny <borisp@nvidia.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net/tls: simplify the tls_set_sw_offload function
+Message-ID: <20211129195332.06704cf4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211129111014.4910-1-tianjia.zhang@linux.alibaba.com>
+References: <20211129111014.4910-1-tianjia.zhang@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500017.china.huawei.com (7.185.36.243)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the missing free_netdev() before return from ltq_etop_probe()
-in the error handling case.
+On Mon, 29 Nov 2021 19:10:14 +0800 Tianjia Zhang wrote:
+> Assigning crypto_info variables in advance can simplify the logic
+> of accessing value and move related local variables to a smaller
+> scope.
+> 
+> Signed-off-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
 
-Fixes: 14d4e308e0aa ("net: lantiq: configure the burst length in ethernet drivers")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/net/ethernet/lantiq_etop.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
 
-diff --git a/drivers/net/ethernet/lantiq_etop.c b/drivers/net/ethernet/lantiq_etop.c
-index 072391c494ce..14059e11710a 100644
---- a/drivers/net/ethernet/lantiq_etop.c
-+++ b/drivers/net/ethernet/lantiq_etop.c
-@@ -687,13 +687,13 @@ ltq_etop_probe(struct platform_device *pdev)
- 	err = device_property_read_u32(&pdev->dev, "lantiq,tx-burst-length", &priv->tx_burst_len);
- 	if (err < 0) {
- 		dev_err(&pdev->dev, "unable to read tx-burst-length property\n");
--		return err;
-+		goto err_free;
- 	}
- 
- 	err = device_property_read_u32(&pdev->dev, "lantiq,rx-burst-length", &priv->rx_burst_len);
- 	if (err < 0) {
- 		dev_err(&pdev->dev, "unable to read rx-burst-length property\n");
--		return err;
-+		goto err_free;
- 	}
- 
- 	for (i = 0; i < MAX_DMA_CHAN; i++) {
--- 
-2.25.1
-
+Thanks!
