@@ -2,46 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD51F462B0F
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 04:27:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07075462B19
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 04:32:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237878AbhK3Da4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Nov 2021 22:30:56 -0500
-Received: from pi.codeconstruct.com.au ([203.29.241.158]:59304 "EHLO
-        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbhK3Da4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 22:30:56 -0500
-Received: from pecola.lan (unknown [159.196.93.152])
-        by mail.codeconstruct.com.au (Postfix) with ESMTPSA id 37ADD20222;
-        Tue, 30 Nov 2021 11:27:30 +0800 (AWST)
-Message-ID: <19ae1de8c72e72d61e6d2c149a275223c1c80d5d.camel@codeconstruct.com.au>
-Subject: Re: [PATCH -next] mctp: test: use kfree_skb() instead of kfree()
-From:   Jeremy Kerr <jk@codeconstruct.com.au>
-To:     Yang Yingliang <yangyingliang@huawei.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org
-Date:   Tue, 30 Nov 2021 11:27:29 +0800
-In-Reply-To: <20211130031100.768032-1-yangyingliang@huawei.com>
-References: <20211130031100.768032-1-yangyingliang@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.0-2 
+        id S237899AbhK3DfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Nov 2021 22:35:18 -0500
+Received: from szxga03-in.huawei.com ([45.249.212.189]:28191 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237894AbhK3DfN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Nov 2021 22:35:13 -0500
+Received: from dggpeml500021.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4J37501x1vz8vg4;
+        Tue, 30 Nov 2021 11:29:56 +0800 (CST)
+Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
+ dggpeml500021.china.huawei.com (7.185.36.21) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Tue, 30 Nov 2021 11:31:53 +0800
+Received: from huawei.com (10.175.103.91) by dggpeml500017.china.huawei.com
+ (7.185.36.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Tue, 30 Nov
+ 2021 11:31:52 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <olek2@wp.pl>, <davem@davemloft.net>, <kuba@kernel.org>
+Subject: [PATCH -next] net: lantiq: fix missing free_netdev() on error in ltq_etop_probe()
+Date:   Tue, 30 Nov 2021 11:38:37 +0800
+Message-ID: <20211130033837.778452-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpeml500017.china.huawei.com (7.185.36.243)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yang,
+Add the missing free_netdev() before return from ltq_etop_probe()
+in the error handling case.
 
-> Use kfree_skb() instead of kfree() to free sk_buff.
+Fixes: 14d4e308e0aa ("net: lantiq: configure the burst length in ethernet drivers")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/net/ethernet/lantiq_etop.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Thanks for the patch! We do already have this queued in -net though:
+diff --git a/drivers/net/ethernet/lantiq_etop.c b/drivers/net/ethernet/lantiq_etop.c
+index 072391c494ce..14059e11710a 100644
+--- a/drivers/net/ethernet/lantiq_etop.c
++++ b/drivers/net/ethernet/lantiq_etop.c
+@@ -687,13 +687,13 @@ ltq_etop_probe(struct platform_device *pdev)
+ 	err = device_property_read_u32(&pdev->dev, "lantiq,tx-burst-length", &priv->tx_burst_len);
+ 	if (err < 0) {
+ 		dev_err(&pdev->dev, "unable to read tx-burst-length property\n");
+-		return err;
++		goto err_free;
+ 	}
+ 
+ 	err = device_property_read_u32(&pdev->dev, "lantiq,rx-burst-length", &priv->rx_burst_len);
+ 	if (err < 0) {
+ 		dev_err(&pdev->dev, "unable to read rx-burst-length property\n");
+-		return err;
++		goto err_free;
+ 	}
+ 
+ 	for (i = 0; i < MAX_DMA_CHAN; i++) {
+-- 
+2.25.1
 
- https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=d85195654470
-
-(which should percolate to net-next in due course too).
-
-Cheers,
-
-
-Jeremy
