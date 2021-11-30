@@ -2,91 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02729462CE6
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 07:39:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 077F7462D0F
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 07:46:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238685AbhK3GnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 01:43:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58878 "EHLO
+        id S238791AbhK3Gtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 01:49:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233768AbhK3GnI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 01:43:08 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EF42C061574
-        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 22:39:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=A6daDwCiIh3975g68Xikm65PMFqryYSeKnUccgK88Ag=; b=D3C8JbZS6323Fh6YlL4k9UFUoY
-        JWuk3DDMs1G9OnOHMpdumy1pcQhbsxv32aOIevzA9SSACqjMyaVSJgTJvVDPBQa+P5gWPQSRkR/Yx
-        B7lP12opYaJotxll63EXcTwqBbtpZS6NSC6Q4v6esIzBPa6S9ViBCHA477qdTL6wAwEN6JTCzOZaH
-        eYuFBhRMnIMWUqOLZPwJWT3Te4MQ5PXCIdJbptlOEvxgZ2H8oKoM1nCRureBMQe3f4h2tN0ad5fsy
-        nDx8w4BzSqfcHgMm9PRfoq3eM9pyAZDXYJBZcN2Pu3kTivM8dIhAQwi0iXiWpAjgwf+AVYbvnt4Wk
-        N+2H3y7Q==;
-Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mrwns-003p0j-MK; Tue, 30 Nov 2021 06:39:48 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     netdev@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Finn Thain <fthain@telegraphics.com.au>,
-        Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 2/2 -net] natsemi: xtensa: fix section mismatch warnings
-Date:   Mon, 29 Nov 2021 22:39:47 -0800
-Message-Id: <20211130063947.7529-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S238795AbhK3Gty (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 01:49:54 -0500
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0752C061574
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 22:46:35 -0800 (PST)
+Received: by mail-wm1-x32e.google.com with SMTP id o29so16502164wms.2
+        for <netdev@vger.kernel.org>; Mon, 29 Nov 2021 22:46:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=QNJ3t2LB0sVoFXWxdLfGbSoudvZqAR4Hf/OZxVoLW8g=;
+        b=CTPzcDAFFzMDcTf10D1b0MkhNAXpcox4qEAnlhzyPZf2RrDe6yWNLySHOk/UIx2DPi
+         yEgYI/uj4Ayf/E5FFSpfbxYWcWNs76l/K9OulOMXjbxDqaldlyaC8e81u/8xklykOX6m
+         TmUEfBy4tOOKcR/N81SpaxDWQvpoWPnfK5k9LH1j7dDYXfeKnX0mRGu9F4xbEcVd+lEu
+         LJjoIpe9XY5gtdPYLKbff07o+gKJJqBCESJFmXP1ZZ5R6FP2RCtRVP9RFCQmLeEuRdz1
+         SbL+a0JzlHsYGLe/QSBfRhkLW3/1m490lj2swn0Cv3qKYmJwHkJ6mKawIoiOxRfOhlRC
+         cnIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=QNJ3t2LB0sVoFXWxdLfGbSoudvZqAR4Hf/OZxVoLW8g=;
+        b=XNkAlj3EWsY+iXgnObt9nQ/oJpiLmWDQARPxNsuYsKkFduNSNIDUGdUz+JhSGjC1TY
+         f1JeD7BpAeWwZ1dBZdT8IWrfXHVaHxpWBFeXDJlTkRJeLu89ENgNck1h2qcjSbq4vLMh
+         P6ZyoSXGqWsW5yXLWPWBT3mkGU12rTcJR4BcJmEA0i47ZCGbYuWuzRKYiTQwFibGWCsW
+         WG1v5oVSNqbZDyGJD8WEZybPDkXX6V0DVhv+o5XlOzFUXc8J6TjLy5GOYlvVZC9K9yq7
+         1Y1fFvwyioW5OMFZeJHinOO7LhGpp3MEwCalnY1VfPXc4xUUB4OeMWjUdPx77sNNYdOJ
+         esSQ==
+X-Gm-Message-State: AOAM531ELtCAlF56PE1HYJhBmmC6HY3vsVmvGH0SGCBbdhPBAraaQaM0
+        ScpL8BZIHLpgRICzFGaSHOg=
+X-Google-Smtp-Source: ABdhPJw+c4hM9/DCdQfJc6aOhvhbMHsdbwRZZC1Y7Z1T28cEaf4lRQ9m6jK3ppm+GJm+t5ZEn36hmA==
+X-Received: by 2002:a05:600c:1f0c:: with SMTP id bd12mr2835941wmb.56.1638254794334;
+        Mon, 29 Nov 2021 22:46:34 -0800 (PST)
+Received: from ?IPV6:2003:ea:8f1a:f00:982e:c052:6f5c:d61f? (p200300ea8f1a0f00982ec0526f5cd61f.dip0.t-ipconnect.de. [2003:ea:8f1a:f00:982e:c052:6f5c:d61f])
+        by smtp.googlemail.com with ESMTPSA id g18sm1658229wmq.4.2021.11.29.22.46.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Nov 2021 22:46:33 -0800 (PST)
+Message-ID: <6edc23a1-5907-3a41-7b46-8d53c5664a56@gmail.com>
+Date:   Tue, 30 Nov 2021 07:46:22 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
+References: <6bb28d2f-4884-7696-0582-c26c35534bae@gmail.com>
+ <20211129171712.500e37cb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net] igb: fix deadlock caused by taking RTNL in RPM resume
+ path
+In-Reply-To: <20211129171712.500e37cb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix section mismatch warnings in xtsonic. The first one appears to be
-bogus and after fixing the second one, the first one is gone.
+On 30.11.2021 02:17, Jakub Kicinski wrote:
+> On Mon, 29 Nov 2021 22:14:06 +0100 Heiner Kallweit wrote:
+>> -	rtnl_lock();
+>> +	if (!rpm)
+>> +		rtnl_lock();
+> 
+> Is there an ASSERT_RTNL() hidden in any of the below? Can we add one?
+> Unless we're 100% confident nobody will RPM resume without rtnl held..
+> 
 
-WARNING: modpost: vmlinux.o(.text+0x529adc): Section mismatch in reference from the function sonic_get_stats() to the function .init.text:set_reset_devices()
-The function sonic_get_stats() references
-the function __init set_reset_devices().
-This is often because sonic_get_stats lacks a __init 
-annotation or the annotation of set_reset_devices is wrong.
+Not sure whether igb uses RPM the same way as r8169. There the device
+is runtime-suspended (D3hot) w/o link. Once cable is plugged in the PHY
+triggers a PME, and PCI core runtime-resumes the device (MAC).
+In this case RTNL isn't held by the caller. Therefore I don't think
+it's safe to assume that all callers hold RTNL.
 
-WARNING: modpost: vmlinux.o(.text+0x529b3b): Section mismatch in reference from the function xtsonic_probe() to the function .init.text:sonic_probe1()
-The function xtsonic_probe() references
-the function __init sonic_probe1().
-This is often because xtsonic_probe lacks a __init 
-annotation or the annotation of sonic_probe1 is wrong.
+>>  	if (!err && netif_running(netdev))
+>>  		err = __igb_open(netdev, true);
+>>  
+>>  	if (!err)
+>>  		netif_device_attach(netdev);
+>> -	rtnl_unlock();
+>> +	if (!rpm)
+>> +		rtnl_unlock();
 
-Fixes: 74f2a5f0ef64 ("xtensa: Add support for the Sonic Ethernet device for the XT2000 board.")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: Finn Thain <fthain@telegraphics.com.au>
-Cc: Chris Zankel <chris@zankel.net>
-Cc: Max Filippov <jcmvbkbc@gmail.com>
-Cc: linux-xtensa@linux-xtensa.org
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
----
- drivers/net/ethernet/natsemi/xtsonic.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- linux-next-20211129.orig/drivers/net/ethernet/natsemi/xtsonic.c
-+++ linux-next-20211129/drivers/net/ethernet/natsemi/xtsonic.c
-@@ -120,7 +120,7 @@ static const struct net_device_ops xtson
- 	.ndo_set_mac_address	= eth_mac_addr,
- };
- 
--static int __init sonic_probe1(struct net_device *dev)
-+static int sonic_probe1(struct net_device *dev)
- {
- 	unsigned int silicon_revision;
- 	struct sonic_local *lp = netdev_priv(dev);
