@@ -2,147 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EADD5462E68
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 09:18:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C7E0462E71
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 09:22:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235224AbhK3IVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 03:21:37 -0500
-Received: from relay.sw.ru ([185.231.240.75]:56036 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229951AbhK3IVh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Nov 2021 03:21:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:Mime-Version:Message-Id:Subject:From
-        :Date; bh=2wnIBgDiWd/NvnzHclv2xy3kp8AYM9EQW7Lm5q/ExzI=; b=NasbWUqM+FJdbYwqA39
-        ELybBr/KhxbF0TVdytF7cEjaJEP2mHdxljdT/Ns+X4yTZ6jrM7ym1QAsZR68yKIS21jWcCC6uywXg
-        IDeCkVzZ8TUh1/Yau19SlRRuN3fQ/I21IEnwSm0FszbfhQyFyR9voBCCW4TU6OeYLh7i8Ug2kSU=;
-Received: from [192.168.15.149] (helo=mikhalitsyn-laptop)
-        by relay.sw.ru with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <alexander.mikhalitsyn@virtuozzo.com>)
-        id 1mryL7-001rwn-IO; Tue, 30 Nov 2021 11:18:13 +0300
-Date:   Tue, 30 Nov 2021 11:18:13 +0300
-From:   Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
-        David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Ido Schimmel <idosch@nvidia.com>,
+        id S239315AbhK3IZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 03:25:56 -0500
+Received: from mail.loongson.cn ([114.242.206.163]:39896 "EHLO loongson.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S234234AbhK3IZx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Nov 2021 03:25:53 -0500
+Received: from localhost.localdomain.localdomain (unknown [10.2.5.46])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxz8on36Vhh7UBAA--.4073S2;
+        Tue, 30 Nov 2021 16:22:06 +0800 (CST)
+From:   Yinbo Zhu <zhuyinbo@loongson.cn>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Andrei Vagin <avagin@gmail.com>,
-        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
-        Alexander Mikhalitsyn <alexander@mihalicyn.com>
-Subject: Re: [PATCH net-next] rtnetlink: add RTNH_REJECT_MASK
-Message-Id: <20211130111813.272af77c530a9b13152178ee@virtuozzo.com>
-In-Reply-To: <YaOLt2M1hBnoVFKd@shredder>
-References: <20211111160240.739294-1-alexander.mikhalitsyn@virtuozzo.com>
-        <20211126134311.920808-1-alexander.mikhalitsyn@virtuozzo.com>
-        <20211126134311.920808-2-alexander.mikhalitsyn@virtuozzo.com>
-        <YaOLt2M1hBnoVFKd@shredder>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kbuild@vger.kernel.org
+Cc:     zhuyinbo@loongson.cn
+Subject: [PATCH v3 1/2] modpost: file2alias: make mdio alias configure match mdio uevent
+Date:   Tue, 30 Nov 2021 16:21:56 +0800
+Message-Id: <1638260517-13634-1-git-send-email-zhuyinbo@loongson.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-CM-TRANSID: AQAAf9Dxz8on36Vhh7UBAA--.4073S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxJr1DXF4rJw4xJFWUAFW8Zwb_yoW8Cw4UpF
+        ZxGa42grWkWF47Wa15ua4DJr1UXw4kC3s5WayY9a10gFWqyrZYqr4SkFsIyr15CFWkXa40
+        gw13uFy8uw4UXrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvC14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v26r
+        xl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
+        6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr
+        0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E
+        8cxan2IY04v7MxkIecxEwVCm-wCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJV
+        W8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF
+        1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
+        IIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAI
+        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2Kf
+        nxnUUI43ZEXa7VU1a9aPUUUUU==
+X-CM-SenderInfo: 52kx5xhqerqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 28 Nov 2021 16:01:27 +0200
-Ido Schimmel <idosch@idosch.org> wrote:
+The do_mdio_entry was responsible for generating a phy alias configure
+that according to the phy driver's mdio_device_id, before apply this
+patch, which alias configure is like "alias mdio:000000010100000100001
+1011101????", it doesn't match the phy_id of mdio_uevent, because of
+the phy_id was a hexadecimal digit and the mido uevent is consisit of
+phy_id with the char 'p', the uevent string is different from alias.
+Add this patch that mdio alias configure will can match mdio uevent.
 
-> On Fri, Nov 26, 2021 at 04:43:11PM +0300, Alexander Mikhalitsyn wrote:
-> > diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
-> > index 5888492a5257..9c065e2fdef9 100644
-> > --- a/include/uapi/linux/rtnetlink.h
-> > +++ b/include/uapi/linux/rtnetlink.h
-> > @@ -417,6 +417,9 @@ struct rtnexthop {
-> >  #define RTNH_COMPARE_MASK	(RTNH_F_DEAD | RTNH_F_LINKDOWN | \
-> >  				 RTNH_F_OFFLOAD | RTNH_F_TRAP)
-> >  
-> > +/* these flags can't be set by the userspace */
-> > +#define RTNH_REJECT_MASK	(RTNH_F_DEAD | RTNH_F_LINKDOWN)
-> > +
-> >  /* Macros to handle hexthops */
-> >  
-> >  #define RTNH_ALIGNTO	4
-> > diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-> > index 4c0c33e4710d..805f5e05b56d 100644
-> > --- a/net/ipv4/fib_semantics.c
-> > +++ b/net/ipv4/fib_semantics.c
-> > @@ -685,7 +685,7 @@ static int fib_get_nhs(struct fib_info *fi, struct rtnexthop *rtnh,
-> >  			return -EINVAL;
-> >  		}
-> >  
-> > -		if (rtnh->rtnh_flags & (RTNH_F_DEAD | RTNH_F_LINKDOWN)) {
-> > +		if (rtnh->rtnh_flags & RTNH_REJECT_MASK) {
-> >  			NL_SET_ERR_MSG(extack,
-> >  				       "Invalid flags for nexthop - can not contain DEAD or LINKDOWN");
-> >  			return -EINVAL;
-> > @@ -1363,7 +1363,7 @@ struct fib_info *fib_create_info(struct fib_config *cfg,
-> >  		goto err_inval;
-> >  	}
-> >  
-> > -	if (cfg->fc_flags & (RTNH_F_DEAD | RTNH_F_LINKDOWN)) {
-> > +	if (cfg->fc_flags & RTNH_REJECT_MASK) {
-> >  		NL_SET_ERR_MSG(extack,
-> >  			       "Invalid rtm_flags - can not contain DEAD or LINKDOWN");
-> 
-> Instead of a deny list as in the legacy nexthop code, the new nexthop
-> code has an allow list (from rtm_to_nh_config()):
-> 
-> ```
-> 	if (nhm->nh_flags & ~NEXTHOP_VALID_USER_FLAGS) {
-> 		NL_SET_ERR_MSG(extack, "Invalid nexthop flags in ancillary header");
-> 		goto out;
-> 	}
-> ```
-> 
-> Where:
-> 
-> ```
-> #define NEXTHOP_VALID_USER_FLAGS RTNH_F_ONLINK
-> ```
-> 
-> So while the legacy nexthop code allows setting flags such as
-> RTNH_F_OFFLOAD, the new nexthop code denies them. I don't have a use
-> case for setting these flags from user space so I don't care if we allow
-> or deny them, but I believe the legacy and new nexthop code should be
-> consistent.
+Signed-off-by: Yinbo Zhu <zhuyinbo@loongson.cn>
+---
+Change in v3:
+		Rework the patch commit log information.
 
-Dear Ido,
+ include/linux/mod_devicetable.h |  2 ++
+ scripts/mod/file2alias.c        | 17 +----------------
+ 2 files changed, 3 insertions(+), 16 deletions(-)
 
-thanks for your attention to the patches and our checkpoint/restore problem.
-
-Yep, I've read nexthop code too and notices some inconsistencies, but
-unfortunately I'm newbie here and my first goal is to fix thing and not break
-something, that's why my patch is so trivial and not invasive :)
-
-We have some discussion about these flags here:
-https://lore.kernel.org/netdev/d7c2d8fa-052e-b941-2ef1-830c1ba655c1@gmail.com/#r
-
-I've noticed, that current iproute2 code not allows us to set RTNH_F_OFFLOAD and
-RTNH_F_TRAP directly. And asked If we should prohibit setting these flags from
-the userspace. But huge thanks to Roopa and David here - it turned out that some
-userspace code usings these flags and sets it.
-
-So, let's decide which flags we should allow to set from the userspace side
-and which not. I'm ready to prepare all needed changes for both the kernel and
-iproute2 side. ;)
-
-> 
-> WDYT? Should we allow these flags in the new nexthop code as well or
-> keep denying them?
-
-IMHO, we should try to be consistent between the new nexthop code and the lagacy one.
-
-Regards,
-Alex
-
-> 
-> >  		goto err_inval;
-> > -- 
-> > 2.31.1
-> > 
-
+diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
+index ae2e75d..7bd23bf 100644
+--- a/include/linux/mod_devicetable.h
++++ b/include/linux/mod_devicetable.h
+@@ -595,6 +595,8 @@ struct platform_device_id {
+ 	kernel_ulong_t driver_data;
+ };
+ 
++#define MDIO_ANY_ID (~0)
++
+ #define MDIO_NAME_SIZE		32
+ #define MDIO_MODULE_PREFIX	"mdio:"
+ 
+diff --git a/scripts/mod/file2alias.c b/scripts/mod/file2alias.c
+index 49aba86..63f3149 100644
+--- a/scripts/mod/file2alias.c
++++ b/scripts/mod/file2alias.c
+@@ -1027,24 +1027,9 @@ static int do_platform_entry(const char *filename,
+ static int do_mdio_entry(const char *filename,
+ 			 void *symval, char *alias)
+ {
+-	int i;
+ 	DEF_FIELD(symval, mdio_device_id, phy_id);
+-	DEF_FIELD(symval, mdio_device_id, phy_id_mask);
+-
+ 	alias += sprintf(alias, MDIO_MODULE_PREFIX);
+-
+-	for (i = 0; i < 32; i++) {
+-		if (!((phy_id_mask >> (31-i)) & 1))
+-			*(alias++) = '?';
+-		else if ((phy_id >> (31-i)) & 1)
+-			*(alias++) = '1';
+-		else
+-			*(alias++) = '0';
+-	}
+-
+-	/* Terminate the string */
+-	*alias = 0;
+-
++	ADD(alias, "p", phy_id != MDIO_ANY_ID, phy_id);
+ 	return 1;
+ }
+ 
+-- 
+1.8.3.1
 
