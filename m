@@ -2,102 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1DE146414A
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 23:28:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABB734641CE
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 23:53:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232815AbhK3Wbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 17:31:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54312 "EHLO
+        id S1344739AbhK3W4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 17:56:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233346AbhK3Wbv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 17:31:51 -0500
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3994C061574
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 14:28:30 -0800 (PST)
-Received: by mail-wr1-x441.google.com with SMTP id d24so47775790wra.0
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 14:28:30 -0800 (PST)
+        with ESMTP id S233731AbhK3W4s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 17:56:48 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57053C061574;
+        Tue, 30 Nov 2021 14:53:28 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id 131so57399969ybc.7;
+        Tue, 30 Nov 2021 14:53:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=inGg2ozIO61DUeekcaBgdee8gmnFxwlwbC+Dglgl2cg=;
-        b=Z1UXP+y/RjKLmcFhOF2kYXUngjvEx/SVvmZ4dpmHeqsSDqtdcmXgHNjZyLmY5hTTQ7
-         RmTenvEznK/w829qpGwoRUnq1h5c2gxPlFxaY8hVgD4dfmni5Gxp6OGCVUPOlKO130ZZ
-         tp5JQ1zv8M/gDCgVqTT2jHJZoDD0Qq01XExHAyPzn7Na/vLVtSdzaxQ6GmBdFobcSIfo
-         h14Vcsj5MgPiDdOaY1T29WkxHwf2cSAzuLwkM9aBspNXGQlRuL+TP9kaAo134KXAclbb
-         iznzLhkeGr5dbKLPNgFHyZQEI1V7heD2XaH2zsqt2mm5aQ9xE3IcsDCVwU8T30MGKpch
-         9ojA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IWmAAXa9pjC4EoqzChkZJaBqSIgJLKarMG+xKoHvRDs=;
+        b=VmwSq84INeu/Qn3AsnjWJ0DU7BawUMaHEwht0V2qDRsbDAKFVMFTWtLa0+FbSAZcd2
+         W5csmdUvHO3LDaG4XQiuLRKzEPQ+AEgvEv5GCeh0V6i6YY0tB8yxAY5RvyOgYHIxr6wN
+         wdpGvxtWnaWOWshLRHa5vNrSHBcHchSIRbYNDt8Xt9c/Vivwh3+dG+QJ4bfzpoRXMb27
+         ixkRqrTaTaos4/NyZ7VMAprmNyQwHiWR/HlCj0Nf08P+mbopAZxUmXVVYYu3Ujo99OUI
+         6yHUi+UBd+BZh4UqrYdBieJhc0vWPX/aXEN2bRLgnL4LQqIuQqbGVJZumNkX58i25c8C
+         lssw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=inGg2ozIO61DUeekcaBgdee8gmnFxwlwbC+Dglgl2cg=;
-        b=eYH7EFzphaFF3SIOVWX73W4iIa7twP00MOrj3uBFdjP9rrjDg/5H4zaPgr4LSK8Z+e
-         ajwNuTzLXNz3mKkCrRL2XQ3jOhSRcHYp6CJU91kPnaeqjgcBFrQVnAwX8eUJIkzvz3bF
-         jewSh+gcy2XcZrbjMIlLgc+hSRhgD0ZRF+BVv+wG+YFhGNQ3Q/GtryfWL5J1JVnfG/23
-         XXODOBK2VkImFyEg8dn12kpfDdGtj/4Iy5ML6eNNjf6cUcFJENxL/9N7DLzSKBmskTxF
-         XxiwYFWuss9gqr//nX3yw8CT36Bmmzv/MzH6SPpdszAvKm2J7PBZNgmp8UOcBq3Eb1Ny
-         07IQ==
-X-Gm-Message-State: AOAM530Dg3EfQ+P9aCp4FXHgc0iqqyP7xmAKvMA9xXeXjH5VFuzUpRyh
-        b10E/4s1g8piyFGdgOJAELrLUYRrBUXBOdlChI4=
-X-Google-Smtp-Source: ABdhPJxR2FnTGSN9EC2XOpjRDq4FoO8Ulliet170jc7INebgbBNKMRYNLUbQg9dC3NDJz/MDyLr80mTmbSgtXg7IjjY=
-X-Received: by 2002:a5d:6d8b:: with SMTP id l11mr1979686wrs.458.1638311309573;
- Tue, 30 Nov 2021 14:28:29 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IWmAAXa9pjC4EoqzChkZJaBqSIgJLKarMG+xKoHvRDs=;
+        b=gevsea9fSM17IIG/YGJnNpCHBWoDnR3A1RhnbdLmMeXg0g6Dhmyvc+kRfMbC3KK0aD
+         GZ4LQjGOuvMr/B1yz1f0KU+T2PbERNwzN6BI8duc2Towa+OIBm9q/ZaRPgHFDqAEDSOD
+         C3fD47JhlHO/1XOEwrJTI9DM3fPmjH9GjCVWRBZYIYUz7fAOJ+is2lw8qVX4YEq9bjJE
+         Y9WOBl9amNiNCM/TnhrdFYZ9nChjdxJ9NyYESFjJnvmPUBhjjIISzxD7X+DQlxLJWTXs
+         eJsZ0N5J7s9Q5l4kiIpFlYKtVYM+YhSU5PT8NNyeowfAIYSFSWOUA5PlX/LXLXdh8/Dh
+         UibQ==
+X-Gm-Message-State: AOAM532yh3USp2IBr6AifnRHjY6ux9eUyZ9dgGgFpn7jFqgKVjOm4Wow
+        jC0bD6yl84SN7GHldUuG2xuXrzwOjUG4mYZRzTY=
+X-Google-Smtp-Source: ABdhPJzUU4qXaHZ7S/0ey52ccLEJxZXY/ZqwQOyktHVC6pgjLhE3jqkNaxjz8nDisWn7VsfLQ8vZEeZYXJhieuHwWBc=
+X-Received: by 2002:a25:54e:: with SMTP id 75mr2440929ybf.393.1638312807553;
+ Tue, 30 Nov 2021 14:53:27 -0800 (PST)
 MIME-Version: 1.0
-Sender: mcinnesdonna05@gmail.com
-Received: by 2002:a7b:ca53:0:0:0:0:0 with HTTP; Tue, 30 Nov 2021 14:28:29
- -0800 (PST)
-From:   Jackie Fowler <jackiefowler597@gmail.com>
-Date:   Tue, 30 Nov 2021 22:28:29 +0000
-X-Google-Sender-Auth: nXM73lxzdGPFdFD3fH3IFcNEycI
-Message-ID: <CAK+X-7VWPMLRSpbXFazynAP57jDhSm+cmZAiPAAhzcZwr0YLMA@mail.gmail.com>
-Subject: Hello
-To:     undisclosed-recipients:;
+References: <1638027102-22686-1-git-send-email-cuibixuan@linux.alibaba.com>
+In-Reply-To: <1638027102-22686-1-git-send-email-cuibixuan@linux.alibaba.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 30 Nov 2021 14:53:16 -0800
+Message-ID: <CAEf4BzbV=s+C=dFS5YfAdJhiBv+3ocanaZ-NNHoPz8RzHhGCbQ@mail.gmail.com>
+Subject: Re: [PATCH -next] bpf: Add oversize check before call kvmalloc()
+To:     Bixuan Cui <cuibixuan@linux.alibaba.com>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Gooday,
+On Sat, Nov 27, 2021 at 7:32 AM Bixuan Cui <cuibixuan@linux.alibaba.com> wrote:
+>
+> Commit 7661809d493b ("mm: don't allow oversized kvmalloc() calls") add
+> the oversize check. When the allocation is larger than what kvmalloc()
+> supports, the following warning triggered:
+>
+> WARNING: CPU: 1 PID: 372 at mm/util.c:597 kvmalloc_node+0x111/0x120
+> mm/util.c:597
+> Modules linked in:
+> CPU: 1 PID: 372 Comm: syz-executor.4 Not tainted 5.15.0-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+> Google 01/01/2011
+> RIP: 0010:kvmalloc_node+0x111/0x120 mm/util.c:597
+> Code: 01 00 00 00 4c 89 e7 e8 7d f7 0c 00 49 89 c5 e9 69 ff ff ff e8 60
+> 20 d1 ff 41 89 ed 41 81 cd 00 20 01 00 eb 95 e8 4f 20 d1 ff <0f> 0b e9
+> 4c ff ff ff 0f 1f 84 00 00 00 00 00 55 48 89 fd 53 e8 36
+> RSP: 0018:ffffc90002bf7c98 EFLAGS: 00010216
+> RAX: 00000000000000ec RBX: 1ffff9200057ef9f RCX: ffffc9000ac63000
+> RDX: 0000000000040000 RSI: ffffffff81a6a621 RDI: 0000000000000003
+> RBP: 0000000000102cc0 R08: 000000007fffffff R09: 00000000ffffffff
+> R10: ffffffff81a6a5de R11: 0000000000000000 R12: 00000000ffff9aaa
+> R13: 0000000000000000 R14: 00000000ffffffff R15: 0000000000000000
+> FS:  00007f05f2573700(0000) GS:ffff8880b9d00000(0000)
+> knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 0000001b2f424000 CR3: 0000000027d2c000 CR4: 00000000003506e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  <TASK>
+>  kvmalloc include/linux/slab.h:741 [inline]
+>  map_lookup_elem kernel/bpf/syscall.c:1090 [inline]
+>  __sys_bpf+0x3a5b/0x5f00 kernel/bpf/syscall.c:4603
+>  __do_sys_bpf kernel/bpf/syscall.c:4722 [inline]
+>  __se_sys_bpf kernel/bpf/syscall.c:4720 [inline]
+>  __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:4720
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+>
+> The type of 'value_size' is u32, its value may exceed INT_MAX.
+>
+> Reported-by: syzbot+cecf5b7071a0dfb76530@syzkaller.appspotmail.com
+> Signed-off-by: Bixuan Cui <cuibixuan@linux.alibaba.com>
+> ---
+>  kernel/bpf/syscall.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index 1033ee8..f5bc380 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -1094,6 +1094,10 @@ static int map_lookup_elem(union bpf_attr *attr)
+>         }
+>
+>         value_size = bpf_map_value_size(map);
+> +       if (value_size > INT_MAX) {
+> +               err = -EINVAL;
 
-It's my pleasure to contact you to seek for your urgent assistance in
-this humanitarian social investment project to be establish in your
-country for the mutual benefit of the orphans and the less privileged
-ones, haven't known each other or meet before, I know that everything
-is controlled by God as there is nothing impossible to him. I believe
-that you and I can cooperate together in the service of the Lord,
-please open your heart to assist me in carrying out this benevolently
-project in your country/position. I am Mrs.Fowler Jackie. a dying
-widow hospitalized undergoing treatment for brain tumor disease, I
-believe that you will not expose or betray this trust and confidence
-that I am about to entrust on you for the mutual benefit of the
-orphans and the less privileged ones. My late husband made a
-substantial deposit with the Bank which I have decided to hand over
-and entrust the sum of ($ 12,500,000.00 Dollars) in the account under
-your custody for you to invest it into any social charitable project
-in your location or your country. Based on my present health status I
-am permanently indisposed to handle finances or any financial related
-project.
+-E2BIG makes a bit more sense in this scenario?
 
-This is the reason why I decided to contact you for your support and
-help to stand as my rightful beneficiary and claim the money for
-humanitarian purposes for the mutual benefits of the less privileged
-ones. Because If the money remains unclaimed with the bank after my
-death, those greedy bank executives will place the money as an
-unclaimed Fund and share it for their selfish and worthless ventures.
-However I need your sincerity and ability to carry out this
-transaction and fulfill my final wish in implementing the charitable
-investment project in your country as it requires absolute trust and
-devotion without any failure. Meanwhile It will be my pleasure to
-compensate you with part of the total money as my Investment
-manager/partner for your effort in handling the transaction, while the
-remaining amount shall be invested into any charity project of your
-choice there in your country.
-Please I'm waiting for your prompt response if only you are
-interested. I will send you further details and the bank contact
-details where the fund has been deposited for you to contact the Bank
-for immediate release and transfer of the fund into your bank account
-as my rightful beneficiary.
-May god bless you and your family.
-Respectfully.
-Mrs.Fowler Jackie.
-Written from the Hospital.
+> +               goto err_put;
+> +       }
+>
+>         err = -ENOMEM;
+>         value = kvmalloc(value_size, GFP_USER | __GFP_NOWARN);
+> --
+> 1.8.3.1
+>
