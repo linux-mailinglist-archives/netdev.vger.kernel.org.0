@@ -2,41 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EAE0463C6D
+	by mail.lfdr.de (Postfix) with ESMTP id A79C3463C6E
 	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 18:02:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244535AbhK3RFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 12:05:30 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:45564 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244559AbhK3RF1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 12:05:27 -0500
+        id S238207AbhK3RFb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 12:05:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35810 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244573AbhK3RF3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 12:05:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6690C061748
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 09:02:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E3ADBCE186C
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 17:02:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73CA8C53FCF;
-        Tue, 30 Nov 2021 17:02:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F953B81A96
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 17:02:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 920EEC53FC7;
+        Tue, 30 Nov 2021 17:02:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638291725;
-        bh=4zp+GQeJrJLq3o3CUHkrxkW8sYrbZ8kTyi967TAK/WE=;
+        s=k20201202; t=1638291727;
+        bh=dV7W4TiZXubUSJ6z9SNZ80UUJ6UtEIZ3ChaBWjd9ZwE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sRD31bMFjX6adZTdYdfUwTOcx6ecA4R6UI+wZATJD631G5IcBbuWMAiAa4hxBm4Ky
-         kx7LyffhidOvoJWO4YrR9po0SX+yu7XXAelkK1U/XnRVZJczv8lVkz/h1o7ZM9aZqY
-         HsXMMmXm3j+DREZTwSgb2GA+VB36Mk7IoE48p87qTEqRYEIppy6O1voH5FsoVvOSZh
-         +LDW+Mz7YiMNrwah7NgD9B5BEddGSRj1LcePRhaXjEJVQPF+D5rrWZ/k337BSJyLhA
-         TMfBoc+w46KLihepx6MptrkUv5Mo38ckBoYjJ2w4QvkqtF86kkPRWzIPyDbMZhQeMw
-         nHcMy9rCeJvLA==
+        b=A3Bvv/1jiwx3aggKbZtAoP4b0KJynPtAWo7pPEaH2AeP+ZrcyFR9ZuYXzog9Ib9on
+         AaUFi7o6N2K6MH5p+rEkdagIxvzEVIJtQngmhbDEBXngqAPGMsKBgDw/H07kdLYJc0
+         XLj2Usc15q+fNRQAyRpqCYo99rw/Zwacu/7eThvi/i64i7LCfsgyeuSk0CJb2yiSJI
+         elVLpb4VRXORBbrBOw1lg+GFT2Z/ViAj5cHmt5EB0RTrMbuKiAmPpVmEt91Z0qqR72
+         uIU7D5I4O2YvLhprL7AFkMm7/yE0I9Q5X9Epa/OGuMU43hR0VddR+0igDfcHjH3pcI
+         0xerX1IoVF3AA==
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
 To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
 Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
         Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
         Vladimir Oltean <olteanv@gmail.com>,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net v2 4/6] net: dsa: mv88e6xxx: Add fix for erratum 5.2 of 88E6393X family
-Date:   Tue, 30 Nov 2021 18:01:49 +0100
-Message-Id: <20211130170151.7741-5-kabel@kernel.org>
+Subject: [PATCH net v2 5/6] net: dsa: mv88e6xxx: Fix inband AN for 2500base-x on 88E6393X family
+Date:   Tue, 30 Nov 2021 18:01:50 +0100
+Message-Id: <20211130170151.7741-6-kabel@kernel.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211130170151.7741-1-kabel@kernel.org>
 References: <20211130170151.7741-1-kabel@kernel.org>
@@ -47,64 +50,115 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add fix for erratum 5.2 of the 88E6393X (Amethyst) family: for 10gbase-r
-mode, some undocumented registers need to be written some special
-values.
+Inband AN is broken on Amethyst in 2500base-x mode when set by standard
+mechanism (via cmode).
+
+(There probably is some weird setting done by default in the switch for
+ this mode that make it cycle in some state or something, because when
+ the peer is the mvneta controller, it receives link change interrupts
+ every ~0.3ms, but the link is always down.)
+
+Get around this by configuring the PCS mode to 1000base-x (where inband
+AN works), and then changing the SerDes frequency while SerDes
+transmitter and receiver are disabled, before enabling SerDes PHY. After
+disabling SerDes PHY, change the PCS mode back to 2500base-x, to avoid
+confusing the device (if we leave it at 1000base-x PCS mode but with
+different frequency, and then change cmode to sgmii, the device won't
+change the frequency because it thinks it already has the correct one).
+
+The register which changes the frequency is undocumented. I discovered
+it by going through all registers in the ranges 4.f000-4.f100 and
+1e.8000-1e.8200 for all SerDes cmodes (sgmii, 1000base-x, 2500base-x,
+5gbase-r, 10gbase-r, usxgmii) and filtering out registers that didn't
+make sense (the value was the same for modes which have different
+frequency). The result of this was:
+
+    reg   sgmii 1000base-x 2500base-x 5gbase-r 10gbase-r usxgmii
+  04.f002  005b       0058       0059     005c      005d    005f
+  04.f076  3000       0000       1000     4000      5000    7000
+  04.f07c  0950       0950       1850     0550      0150    0150
+  1e.8000  0059       0059       0058     0055      0051    0051
+  1e.8140  0e20       0e20       0e28     0e21      0e42    0e42
+
+Register 04.f002 is the documented Port Operational Confiuration
+register, it's last 3 bits select PCS type, so changing this register
+also changes the frequency to the appropriate value.
+
+Registers 04.f076 and 04.f07c are not writable.
+
+Undocumented register 1e.8000 was the one: changing bits 3:0 from 9 to 8
+changed SerDes frequency to 3.125 GHz, while leaving the value of PCS
+mode in register 04.f002.2:0 at 1000base-x. Inband autonegotiation
+started working correctly.
+
+(I didn't try anything with register 1e.8140 since 1e.8000 solved the
+ problem.)
+
+Since I don't have documentation for this register 1e.8000.3:0, I am
+using the constants without names, but my hypothesis is that this
+register selects PHY frequency. If in the future I have access to an
+oscilloscope able to handle these frequencies, I will try to test this
+hypothesis.
 
 Fixes: de776d0d316f ("net: dsa: mv88e6xxx: add support for mv88e6393x family")
 Signed-off-by: Marek Behún <kabel@kernel.org>
 ---
- drivers/net/dsa/mv88e6xxx/serdes.c | 48 ++++++++++++++++++++++++++++++
- 1 file changed, 48 insertions(+)
+ drivers/net/dsa/mv88e6xxx/serdes.c | 61 +++++++++++++++++++++++++++++-
+ drivers/net/dsa/mv88e6xxx/serdes.h |  1 +
+ 2 files changed, 61 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
-index ceb63d7f1f97..9e4f18a4adc2 100644
+index 9e4f18a4adc2..6f60376b932c 100644
 --- a/drivers/net/dsa/mv88e6xxx/serdes.c
 +++ b/drivers/net/dsa/mv88e6xxx/serdes.c
-@@ -1375,6 +1375,50 @@ static int mv88e6393x_serdes_erratum_4_8(struct mv88e6xxx_chip *chip, int lane)
- 				      MV88E6393X_ERRATA_4_8_REG, reg);
+@@ -1419,6 +1419,54 @@ static int mv88e6393x_serdes_erratum_5_2(struct mv88e6xxx_chip *chip, int lane,
+ 	return 0;
  }
  
-+static int mv88e6393x_serdes_erratum_5_2(struct mv88e6xxx_chip *chip, int lane,
-+					 u8 cmode)
++static int mv88e6393x_serdes_fix_2500basex_an(struct mv88e6xxx_chip *chip,
++					      int lane, u8 cmode, bool on)
 +{
-+	static const struct {
-+		u16 dev, reg, val, mask;
-+	} fixes[] = {
-+		{ MDIO_MMD_VEND1, 0x8093, 0xcb5a, 0xffff },
-+		{ MDIO_MMD_VEND1, 0x8171, 0x7088, 0xffff },
-+		{ MDIO_MMD_VEND1, 0x80c9, 0x311a, 0xffff },
-+		{ MDIO_MMD_VEND1, 0x80a2, 0x8000, 0xff7f },
-+		{ MDIO_MMD_VEND1, 0x80a9, 0x0000, 0xfff0 },
-+		{ MDIO_MMD_VEND1, 0x80a3, 0x0000, 0xf8ff },
-+		{ MDIO_MMD_PHYXS, MV88E6393X_SERDES_POC,
-+		  MV88E6393X_SERDES_POC_RESET, MV88E6393X_SERDES_POC_RESET },
-+	};
-+	int err, i;
 +	u16 reg;
++	int err;
 +
-+	/* mv88e6393x family errata 5.2:
-+	 * For optimal signal integrity the following sequence should be applied
-+	 * to SERDES operating in 10G mode. These registers only apply to 10G
-+	 * operation and have no effect on other speeds.
-+	 */
-+	if (cmode != MV88E6393X_PORT_STS_CMODE_10GBASER)
++	if (cmode != MV88E6XXX_PORT_STS_CMODE_2500BASEX)
 +		return 0;
 +
-+	for (i = 0; i < ARRAY_SIZE(fixes); ++i) {
-+		err = mv88e6390_serdes_read(chip, lane, fixes[i].dev,
-+					    fixes[i].reg, &reg);
-+		if (err)
-+			return err;
++	/* Inband AN is broken on Amethyst in 2500base-x mode when set by
++	 * standard mechanism (via cmode).
++	 * We can get around this by configuring the PCS mode to 1000base-x
++	 * and then writing value 0x58 to register 1e.8000. (This must be done
++	 * while SerDes receiver and transmitter are disabled, which is, when
++	 * this function is called.)
++	 * It seem that when we do this configuration to 2500base-x mode (by
++	 * changing PCS mode to 1000base-x and frequency to 3.125 GHz from
++	 * 1.25 GHz) and then configure to sgmii or 1000base-x, the device
++	 * thinks that it already has SerDes at 1.25 GHz and does not change
++	 * the 1e.8000 register, leaving SerDes at 3.125 GHz.
++	 * To avoid this, change PCS mode back to 2500base-x when disabling
++	 * SerDes from 2500base-x mode.
++	 */
++	err = mv88e6390_serdes_read(chip, lane, MDIO_MMD_PHYXS,
++				    MV88E6393X_SERDES_POC, &reg);
++	if (err)
++		return err;
 +
-+		reg &= ~fixes[i].mask;
-+		reg |= fixes[i].val;
++	reg &= ~(MV88E6393X_SERDES_POC_PCS_MASK | MV88E6393X_SERDES_POC_AN);
++	if (on)
++		reg |= MV88E6393X_SERDES_POC_PCS_1000BASEX |
++		       MV88E6393X_SERDES_POC_AN;
++	else
++		reg |= MV88E6393X_SERDES_POC_PCS_2500BASEX;
++	reg |= MV88E6393X_SERDES_POC_RESET;
 +
-+		err = mv88e6390_serdes_write(chip, lane, fixes[i].dev,
-+					     fixes[i].reg, reg);
-+		if (err)
-+			return err;
-+	}
++	err = mv88e6390_serdes_write(chip, lane, MDIO_MMD_PHYXS,
++				     MV88E6393X_SERDES_POC, reg);
++	if (err)
++		return err;
++
++	err = mv88e6390_serdes_write(chip, lane, MDIO_MMD_VEND1, 0x8000, 0x58);
++	if (err)
++		return err;
 +
 +	return 0;
 +}
@@ -112,17 +166,46 @@ index ceb63d7f1f97..9e4f18a4adc2 100644
  int mv88e6393x_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
  			    bool on)
  {
-@@ -1389,6 +1433,10 @@ int mv88e6393x_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
+@@ -1437,6 +1485,11 @@ int mv88e6393x_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
  		if (err)
  			return err;
  
-+		err = mv88e6393x_serdes_erratum_5_2(chip, lane, cmode);
++		err = mv88e6393x_serdes_fix_2500basex_an(chip, lane, cmode,
++							 true);
 +		if (err)
 +			return err;
 +
  		err = mv88e6393x_serdes_power_lane(chip, lane, true);
  		if (err)
  			return err;
+@@ -1457,8 +1510,14 @@ int mv88e6393x_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
+ 	if (err)
+ 		return err;
+ 
+-	if (!on)
++	if (!on) {
+ 		err = mv88e6393x_serdes_power_lane(chip, lane, false);
++		if (err)
++			return err;
++
++		err = mv88e6393x_serdes_fix_2500basex_an(chip, lane, cmode,
++							 false);
++	}
+ 
+ 	return err;
+ }
+diff --git a/drivers/net/dsa/mv88e6xxx/serdes.h b/drivers/net/dsa/mv88e6xxx/serdes.h
+index e9292c8beee4..8dd8ed225b45 100644
+--- a/drivers/net/dsa/mv88e6xxx/serdes.h
++++ b/drivers/net/dsa/mv88e6xxx/serdes.h
+@@ -93,6 +93,7 @@
+ #define MV88E6393X_SERDES_POC_PCS_MASK		0x0007
+ #define MV88E6393X_SERDES_POC_RESET		BIT(15)
+ #define MV88E6393X_SERDES_POC_PDOWN		BIT(5)
++#define MV88E6393X_SERDES_POC_AN		BIT(3)
+ #define MV88E6393X_SERDES_CTRL1			0xf003
+ #define MV88E6393X_SERDES_CTRL1_TX_PDOWN	BIT(9)
+ #define MV88E6393X_SERDES_CTRL1_RX_PDOWN	BIT(8)
 -- 
 2.32.0
 
