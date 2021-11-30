@@ -2,35 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86992463FD9
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 22:22:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50F86463FDA
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 22:22:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343999AbhK3VZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 16:25:10 -0500
-Received: from mga03.intel.com ([134.134.136.65]:13461 "EHLO mga03.intel.com"
+        id S1344032AbhK3VZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 16:25:17 -0500
+Received: from mga03.intel.com ([134.134.136.65]:13468 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344018AbhK3VYm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Nov 2021 16:24:42 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10184"; a="236263997"
+        id S1344044AbhK3VYq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Nov 2021 16:24:46 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10184"; a="236263999"
 X-IronPort-AV: E=Sophos;i="5.87,277,1631602800"; 
-   d="scan'208";a="236263997"
+   d="scan'208";a="236263999"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2021 13:21:17 -0800
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2021 13:21:18 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,277,1631602800"; 
-   d="scan'208";a="744895451"
+   d="scan'208";a="744895456"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga006.fm.intel.com with ESMTP; 30 Nov 2021 13:21:17 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        sassmann@redhat.com,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net-next v2 04/10] iavf: Add trace while removing device
-Date:   Tue, 30 Nov 2021 13:19:58 -0800
-Message-Id: <20211130212004.198898-5-anthony.l.nguyen@intel.com>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com, Tony Brelinski <tony.brelinski@intel.com>
+Subject: [PATCH net-next v2 05/10] iavf: Enable setting RSS hash key
+Date:   Tue, 30 Nov 2021 13:19:59 -0800
+Message-Id: <20211130212004.198898-6-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211130212004.198898-1-anthony.l.nguyen@intel.com>
 References: <20211130212004.198898-1-anthony.l.nguyen@intel.com>
@@ -40,35 +37,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+Driver support for changing the RSS hash key exists, however, checks
+have caused it to be reported as unsupported. Remove the check and
+allow the hash key to be specified.
 
-Add kernel trace that device was removed.
-Currently there is no such information.
-I.e. Host admin removes a PCI device from a VM,
-than on VM shall be info about the event.
-
-This patch adds info log to iavf_remove function.
-
-Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Tested-by: Tony Brelinski <tony.brelinski@intel.com>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/intel/iavf/iavf_ethtool.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index b1221aaf1e46..a6f10d947d04 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -4000,6 +4000,7 @@ static void iavf_remove(struct pci_dev *pdev)
- 	if (iavf_lock_timeout(&adapter->crit_lock, 5000))
- 		dev_warn(&adapter->pdev->dev, "failed to acquire crit_lock in %s\n", __FUNCTION__);
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
+index 27c7b36427d2..f0e8b5adfecc 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
+@@ -1910,7 +1910,7 @@ static int iavf_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key,
+  * @key: hash key
+  * @hfunc: hash function to use
+  *
+- * Returns -EINVAL if the table specifies an inavlid queue id, otherwise
++ * Returns -EINVAL if the table specifies an invalid queue id, otherwise
+  * returns 0 after programming the table.
+  **/
+ static int iavf_set_rxfh(struct net_device *netdev, const u32 *indir,
+@@ -1919,19 +1919,21 @@ static int iavf_set_rxfh(struct net_device *netdev, const u32 *indir,
+ 	struct iavf_adapter *adapter = netdev_priv(netdev);
+ 	u16 i;
  
-+	dev_info(&adapter->pdev->dev, "Removing device\n");
- 	/* Shut down all the garbage mashers on the detention level */
- 	iavf_change_state(adapter, __IAVF_REMOVE);
- 	adapter->aq_required = 0;
+-	/* We do not allow change in unsupported parameters */
+-	if (key ||
+-	    (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP))
++	/* Only support toeplitz hash function */
++	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP)
+ 		return -EOPNOTSUPP;
+-	if (!indir)
++
++	if (!key && !indir)
+ 		return 0;
+ 
+ 	if (key)
+ 		memcpy(adapter->rss_key, key, adapter->rss_key_size);
+ 
+-	/* Each 32 bits pointed by 'indir' is stored with a lut entry */
+-	for (i = 0; i < adapter->rss_lut_size; i++)
+-		adapter->rss_lut[i] = (u8)(indir[i]);
++	if (indir) {
++		/* Each 32 bits pointed by 'indir' is stored with a lut entry */
++		for (i = 0; i < adapter->rss_lut_size; i++)
++			adapter->rss_lut[i] = (u8)(indir[i]);
++	}
+ 
+ 	return iavf_config_rss(adapter);
+ }
 -- 
 2.31.1
 
