@@ -2,47 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D31964638F5
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 16:03:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D9F74638F7
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 16:03:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245246AbhK3PGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 10:06:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33686 "EHLO
+        id S245082AbhK3PGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 10:06:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243982AbhK3O7n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 09:59:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 181B7C07E5DB;
-        Tue, 30 Nov 2021 06:52:19 -0800 (PST)
+        with ESMTP id S244208AbhK3PAb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 10:00:31 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8567EC08C5D1;
+        Tue, 30 Nov 2021 06:52:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D5139B81A4D;
-        Tue, 30 Nov 2021 14:52:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32ABDC8D181;
-        Tue, 30 Nov 2021 14:52:15 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0A2FFCE1A72;
+        Tue, 30 Nov 2021 14:52:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ACA9C8D182;
+        Tue, 30 Nov 2021 14:52:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638283936;
-        bh=4lEzPjoY8VNC6YcnCKYxB+7P4eDvMZKWbxCenFRzZwg=;
+        s=k20201202; t=1638283958;
+        bh=hx5PblAh7S4fefABmWw2qDrUtLJIWtlBNAXSYaQxJzU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WA/vye/WwWmcFof/DazpC/ryDbQk33Fn6RbzXtvZ/XO/O36rfEZSG5la+tYfG+kSq
-         UFiH2gQuCpwiOxvKHX7X3jJYyBhi7IUkQHlleXVoexwRSKdVwgHF2X8pvxzQDScjjh
-         PoctEkXupITIIbe2TfTVTs5/gmmwwRJ0IVSsV1FVU8vt7ZPT5n11v7DcB3DJtQ9txc
-         MvkKwZuoIvkv0KpBUDHoJagBPQBejapya0lK1zWxVzUE+lWuqKbz4MtdI0auuu05Bk
-         X8v6wcOWy6q3pHKGNBxDgh5Ms4+FeIptzfb8UFIAakl4Fx6nbKvYzd/Z6YCx8HDSUw
-         EwQGc1ig4Tk9w==
+        b=gliI52jrGO9naEkfyfMBnl0COHsFdlTwsiUK5mu5C8thNw3N+5z2KLO2XTkSOPMty
+         iRuY/aUioJu13KjMNJQ7UgFeELbL7opummwAAMcsa9ZfadWZTCX6zxs+64KuINLwXI
+         4qufWPmo6Srp3CcqJjBYazSxYzAEfmRLSBLevCZqwyAdzf+r4y8Vz8NByf428DxDuG
+         yW8nvO05jardhl8bdUpalOKkclwTIDzDuOZwn9/vLPLenvojwQyYQY5Jx+3iAIYMRw
+         7VGYVz1Ac4OFoZQ8nd5ihDZI07SQ8mtazsaP6sM5s02CZabQh7c8kVp/1clTj1xhWT
+         ORxiQD58lc3Wg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Li Zhijian <zhijianx.li@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, shuah@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 09/25] selftests/tc-testings: Be compatible with newer tc output
-Date:   Tue, 30 Nov 2021 09:51:39 -0500
-Message-Id: <20211130145156.946083-9-sashal@kernel.org>
+Cc:     zhangyue <zhangyue1@kylinos.cn>, Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, aelior@marvell.com,
+        manishc@marvell.com, davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 23/25] net: qed: fix the array may be out of bound
+Date:   Tue, 30 Nov 2021 09:51:53 -0500
+Message-Id: <20211130145156.946083-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211130145156.946083-1-sashal@kernel.org>
 References: <20211130145156.946083-1-sashal@kernel.org>
@@ -54,44 +50,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Li Zhijian <zhijianx.li@intel.com>
+From: zhangyue <zhangyue1@kylinos.cn>
 
-[ Upstream commit ac2944abe4d7732f29a79f063c9cae7df2a3e3cc ]
+[ Upstream commit 0435a4d08032c8fba2966cebdac870e22238cacc ]
 
-old tc(iproute2-5.9.0) output:
- action order 1: bpf action.o:[action-ok] id 60 tag bcf7977d3b93787c jited default-action pipe
-newer tc(iproute2-5.14.0) output:
- action order 1: bpf action.o:[action-ok] id 64 name tag bcf7977d3b93787c jited default-action pipe
+If the variable 'p_bit->flags' is always 0,
+the loop condition is always 0.
 
-It can fix below errors:
- # ok 260 f84a - Add cBPF action with invalid bytecode
- # not ok 261 e939 - Add eBPF action with valid object-file
- #       Could not match regex pattern. Verify command output:
- # total acts 0
- #
- #       action order 1: bpf action.o:[action-ok] id 42 name  tag bcf7977d3b93787c jited default-action pipe
- #        index 667 ref 1 bind 0
+The variable 'j' may be greater than or equal to 32.
 
-Signed-off-by: Li Zhijian <zhijianx.li@intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+At this time, the array 'p_aeu->bits[32]' may be out
+of bound.
+
+Signed-off-by: zhangyue <zhangyue1@kylinos.cn>
+Link: https://lore.kernel.org/r/20211125113610.273841-1-zhangyue1@kylinos.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/tc-testing/tc-tests/actions/bpf.json | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/qlogic/qed/qed_int.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/bpf.json b/tools/testing/selftests/tc-testing/tc-tests/actions/bpf.json
-index 47a3082b66613..8feaa712a7f5a 100644
---- a/tools/testing/selftests/tc-testing/tc-tests/actions/bpf.json
-+++ b/tools/testing/selftests/tc-testing/tc-tests/actions/bpf.json
-@@ -68,7 +68,7 @@
-         "cmdUnderTest": "$TC action add action bpf object-file $EBPFDIR/action.o section action-ok index 667",
-         "expExitCode": "0",
-         "verifyCmd": "$TC action get action bpf index 667",
--        "matchPattern": "action order [0-9]*: bpf action.o:\\[action-ok\\] id [0-9]* tag [0-9a-f]{16}( jited)? default-action pipe.*index 667 ref",
-+        "matchPattern": "action order [0-9]*: bpf action.o:\\[action-ok\\] id [0-9].* tag [0-9a-f]{16}( jited)? default-action pipe.*index 667 ref",
-         "matchCount": "1",
-         "teardown": [
-             "$TC action flush action bpf"
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_int.c b/drivers/net/ethernet/qlogic/qed/qed_int.c
+index 666e43748a5f4..a68363e1a9030 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_int.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_int.c
+@@ -1027,7 +1027,7 @@ static int qed_int_deassertion(struct qed_hwfn  *p_hwfn,
+ 		if (!parities)
+ 			continue;
+ 
+-		for (j = 0, bit_idx = 0; bit_idx < 32; j++) {
++		for (j = 0, bit_idx = 0; bit_idx < 32 && j < 32; j++) {
+ 			struct aeu_invert_reg_bit *p_bit = &p_aeu->bits[j];
+ 
+ 			if (qed_int_is_parity_flag(p_hwfn, p_bit) &&
+@@ -1065,7 +1065,7 @@ static int qed_int_deassertion(struct qed_hwfn  *p_hwfn,
+ 			 * to current group, making them responsible for the
+ 			 * previous assertion.
+ 			 */
+-			for (j = 0, bit_idx = 0; bit_idx < 32; j++) {
++			for (j = 0, bit_idx = 0; bit_idx < 32 && j < 32; j++) {
+ 				long unsigned int bitmask;
+ 				u8 bit, bit_len;
+ 
+@@ -1365,7 +1365,7 @@ static void qed_int_sb_attn_init(struct qed_hwfn *p_hwfn,
+ 	memset(sb_info->parity_mask, 0, sizeof(u32) * NUM_ATTN_REGS);
+ 	for (i = 0; i < NUM_ATTN_REGS; i++) {
+ 		/* j is array index, k is bit index */
+-		for (j = 0, k = 0; k < 32; j++) {
++		for (j = 0, k = 0; k < 32 && j < 32; j++) {
+ 			struct aeu_invert_reg_bit *p_aeu;
+ 
+ 			p_aeu = &aeu_descs[i].bits[j];
 -- 
 2.33.0
 
