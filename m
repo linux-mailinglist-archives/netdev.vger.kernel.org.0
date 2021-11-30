@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0D6F46337C
-	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 12:54:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA4F9463380
+	for <lists+netdev@lfdr.de>; Tue, 30 Nov 2021 12:54:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232597AbhK3L5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 06:57:55 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:58734 "EHLO
+        id S229635AbhK3L55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 06:57:57 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:58744 "EHLO
         sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231820AbhK3L5q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 06:57:46 -0500
+        with ESMTP id S232973AbhK3L5v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 06:57:51 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E0E8CCE16DE;
-        Tue, 30 Nov 2021 11:54:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42B96C53FCD;
-        Tue, 30 Nov 2021 11:54:20 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A46DCCE189B;
+        Tue, 30 Nov 2021 11:54:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 068FEC53FD2;
+        Tue, 30 Nov 2021 11:54:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638273264;
-        bh=CkvBFl5fKOhXbpaHsQ8ZbEx999WY3cYOMfRBirGE+Us=;
+        s=k20201202; t=1638273268;
+        bh=tGF61zKzsJAmGIzu8WAVdTjf/JcZYu53bNTYV4vdUY4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VPuz0MGXtniiuuZDxDNP/QWNf/B1UJIk461dP4/8KktKehBDKBf8d0CHs4jUqOyWG
-         4O+SNx16XY5bKDwddUyHfLoVZuNLktQK4t/tum4/ek2amL9VH+L1uMb1zO4vQAJeV8
-         SBkb39mgfwuitdXDHcy7ScFB/L/UlR2UOceCrbaRgbjeMIWq6qiQFmrg/6SU6/5XWh
-         CuK8dTs519F4U8cdweYHEbhror3GN35xcPuEjpM/RRooSyCisqTarQpejGDx8Ktuuw
-         OZFI4lqDFG7ItdHCQNr/7TGI0ppqUq2n6ZOhDyiDKbeeaLsQimIdQp6Bcj98X06A2j
-         3XZJLUdzGHrYw==
+        b=J3C/6JvB+wQeNJ5dVpllTDuJ9SA4LuIibGRYwlvXfEnjL4CZLcMhURcVfOc9mnVMK
+         lca05GYIh+D6FFzclnRBS1nwtZelNm26KdEfc7nONCvMJQwy3CK+T0EG8VMDNPQTK8
+         428ssPT8iTdgegTKii9AZkMBLWB5GW0D+qrqk5yKrp4ond70XZsV6QecQj6cXnCh6i
+         tWGuh+UQCozm6B4SwuQVEUnV7KBBwTeTAbSCg9KL85ARankgrj9gFgsxeruPPGaX+L
+         T1SwRswxPsOieRH/+PPyvthUCr9p6dG+rnBkzZ5oPm/0K/A7sZ0xGo72UCslfK5B0+
+         uk1szg7FCOJ9A==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
@@ -37,9 +37,9 @@ Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         alexander.duyck@gmail.com, saeed@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
         tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: [PATCH v19 bpf-next 08/23] net: mvneta: add multi buffer support to XDP_TX
-Date:   Tue, 30 Nov 2021 12:52:52 +0100
-Message-Id: <a829efbfa6668f79a651c2cd1c446f327efb6536.1638272238.git.lorenzo@kernel.org>
+Subject: [PATCH v19 bpf-next 09/23] bpf: introduce BPF_F_XDP_MB flag in prog_flags loading the ebpf program
+Date:   Tue, 30 Nov 2021 12:52:53 +0100
+Message-Id: <910d9f4270cea155f6283a99b697f89cbc39009f.1638272238.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1638272238.git.lorenzo@kernel.org>
 References: <cover.1638272238.git.lorenzo@kernel.org>
@@ -49,184 +49,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce the capability to map non-linear xdp buffer running
-mvneta_xdp_submit_frame() for XDP_TX and XDP_REDIRECT
+Introduce BPF_F_XDP_MB and the related field in bpf_prog_aux in order to
+notify the driver the loaded program support xdp multi-buffer.
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/marvell/mvneta.c | 112 +++++++++++++++++---------
- 1 file changed, 76 insertions(+), 36 deletions(-)
+ include/linux/bpf.h            | 1 +
+ include/uapi/linux/bpf.h       | 5 +++++
+ kernel/bpf/syscall.c           | 4 +++-
+ tools/include/uapi/linux/bpf.h | 5 +++++
+ 4 files changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index e6977815b805..332699960b53 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -1856,8 +1856,8 @@ static void mvneta_txq_bufs_free(struct mvneta_port *pp,
- 			bytes_compl += buf->skb->len;
- 			pkts_compl++;
- 			dev_kfree_skb_any(buf->skb);
--		} else if (buf->type == MVNETA_TYPE_XDP_TX ||
--			   buf->type == MVNETA_TYPE_XDP_NDO) {
-+		} else if ((buf->type == MVNETA_TYPE_XDP_TX ||
-+			    buf->type == MVNETA_TYPE_XDP_NDO) && buf->xdpf) {
- 			if (napi && buf->type == MVNETA_TYPE_XDP_TX)
- 				xdp_return_frame_rx_napi(buf->xdpf);
- 			else
-@@ -2051,47 +2051,87 @@ mvneta_xdp_put_buff(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index cc7a0c36e7df..25f383f3ebc5 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -875,6 +875,7 @@ struct bpf_prog_aux {
+ 	bool func_proto_unreliable;
+ 	bool sleepable;
+ 	bool tail_call_reachable;
++	bool xdp_mb;
+ 	struct hlist_node tramp_hlist;
+ 	/* BTF_KIND_FUNC_PROTO for valid attach_btf_id */
+ 	const struct btf_type *attach_func_proto;
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index a69e4b04ffeb..be07a2f65e3f 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -1111,6 +1111,11 @@ enum bpf_link_type {
+  */
+ #define BPF_F_SLEEPABLE		(1U << 4)
  
- static int
- mvneta_xdp_submit_frame(struct mvneta_port *pp, struct mvneta_tx_queue *txq,
--			struct xdp_frame *xdpf, bool dma_map)
-+			struct xdp_frame *xdpf, int *nxmit_byte, bool dma_map)
- {
--	struct mvneta_tx_desc *tx_desc;
--	struct mvneta_tx_buf *buf;
--	dma_addr_t dma_addr;
-+	struct skb_shared_info *sinfo = xdp_get_shared_info_from_frame(xdpf);
-+	struct device *dev = pp->dev->dev.parent;
-+	struct mvneta_tx_desc *tx_desc = NULL;
-+	int i, num_frames = 1;
-+	struct page *page;
++/* If BPF_F_XDP_MB is used in BPF_PROG_LOAD command, the loaded program
++ * fully support xdp multi-buffer
++ */
++#define BPF_F_XDP_MB		(1U << 5)
 +
-+	if (unlikely(xdp_frame_is_mb(xdpf)))
-+		num_frames += sinfo->nr_frags;
+ /* When BPF ldimm64's insn[0].src_reg != 0 then this can have
+  * the following extensions:
+  *
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 50f96ea4452a..fbae37d5b329 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -2202,7 +2202,8 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr)
+ 				 BPF_F_ANY_ALIGNMENT |
+ 				 BPF_F_TEST_STATE_FREQ |
+ 				 BPF_F_SLEEPABLE |
+-				 BPF_F_TEST_RND_HI32))
++				 BPF_F_TEST_RND_HI32 |
++				 BPF_F_XDP_MB))
+ 		return -EINVAL;
  
--	if (txq->count >= txq->tx_stop_threshold)
-+	if (txq->count + num_frames >= txq->size)
- 		return MVNETA_XDP_DROPPED;
+ 	if (!IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) &&
+@@ -2288,6 +2289,7 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr)
+ 	prog->aux->dst_prog = dst_prog;
+ 	prog->aux->offload_requested = !!attr->prog_ifindex;
+ 	prog->aux->sleepable = attr->prog_flags & BPF_F_SLEEPABLE;
++	prog->aux->xdp_mb = attr->prog_flags & BPF_F_XDP_MB;
  
--	tx_desc = mvneta_txq_next_desc_get(txq);
-+	for (i = 0; i < num_frames; i++) {
-+		struct mvneta_tx_buf *buf = &txq->buf[txq->txq_put_index];
-+		skb_frag_t *frag = NULL;
-+		int len = xdpf->len;
-+		dma_addr_t dma_addr;
+ 	err = security_bpf_prog_alloc(prog->aux);
+ 	if (err)
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index a69e4b04ffeb..be07a2f65e3f 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -1111,6 +1111,11 @@ enum bpf_link_type {
+  */
+ #define BPF_F_SLEEPABLE		(1U << 4)
  
--	buf = &txq->buf[txq->txq_put_index];
--	if (dma_map) {
--		/* ndo_xdp_xmit */
--		dma_addr = dma_map_single(pp->dev->dev.parent, xdpf->data,
--					  xdpf->len, DMA_TO_DEVICE);
--		if (dma_mapping_error(pp->dev->dev.parent, dma_addr)) {
--			mvneta_txq_desc_put(txq);
--			return MVNETA_XDP_DROPPED;
-+		if (unlikely(i)) { /* paged area */
-+			frag = &sinfo->frags[i - 1];
-+			len = skb_frag_size(frag);
- 		}
--		buf->type = MVNETA_TYPE_XDP_NDO;
--	} else {
--		struct page *page = virt_to_page(xdpf->data);
- 
--		dma_addr = page_pool_get_dma_addr(page) +
--			   sizeof(*xdpf) + xdpf->headroom;
--		dma_sync_single_for_device(pp->dev->dev.parent, dma_addr,
--					   xdpf->len, DMA_BIDIRECTIONAL);
--		buf->type = MVNETA_TYPE_XDP_TX;
-+		tx_desc = mvneta_txq_next_desc_get(txq);
-+		if (dma_map) {
-+			/* ndo_xdp_xmit */
-+			void *data;
++/* If BPF_F_XDP_MB is used in BPF_PROG_LOAD command, the loaded program
++ * fully support xdp multi-buffer
++ */
++#define BPF_F_XDP_MB		(1U << 5)
 +
-+			data = unlikely(frag) ? skb_frag_address(frag)
-+					      : xdpf->data;
-+			dma_addr = dma_map_single(dev, data, len,
-+						  DMA_TO_DEVICE);
-+			if (dma_mapping_error(dev, dma_addr)) {
-+				mvneta_txq_desc_put(txq);
-+				goto unmap;
-+			}
-+
-+			buf->type = MVNETA_TYPE_XDP_NDO;
-+		} else {
-+			page = unlikely(frag) ? skb_frag_page(frag)
-+					      : virt_to_page(xdpf->data);
-+			dma_addr = page_pool_get_dma_addr(page);
-+			if (unlikely(frag))
-+				dma_addr += skb_frag_off(frag);
-+			else
-+				dma_addr += sizeof(*xdpf) + xdpf->headroom;
-+			dma_sync_single_for_device(dev, dma_addr, len,
-+						   DMA_BIDIRECTIONAL);
-+			buf->type = MVNETA_TYPE_XDP_TX;
-+		}
-+		buf->xdpf = unlikely(i) ? NULL : xdpf;
-+
-+		tx_desc->command = unlikely(i) ? 0 : MVNETA_TXD_F_DESC;
-+		tx_desc->buf_phys_addr = dma_addr;
-+		tx_desc->data_size = len;
-+		*nxmit_byte += len;
-+
-+		mvneta_txq_inc_put(txq);
- 	}
--	buf->xdpf = xdpf;
- 
--	tx_desc->command = MVNETA_TXD_FLZ_DESC;
--	tx_desc->buf_phys_addr = dma_addr;
--	tx_desc->data_size = xdpf->len;
-+	/*last descriptor */
-+	if (likely(tx_desc))
-+		tx_desc->command |= MVNETA_TXD_L_DESC | MVNETA_TXD_Z_PAD;
- 
--	mvneta_txq_inc_put(txq);
--	txq->pending++;
--	txq->count++;
-+	txq->pending += num_frames;
-+	txq->count += num_frames;
- 
- 	return MVNETA_XDP_TX;
-+
-+unmap:
-+	for (i--; i >= 0; i--) {
-+		mvneta_txq_desc_put(txq);
-+		tx_desc = txq->descs + txq->next_desc_to_proc;
-+		dma_unmap_single(dev, tx_desc->buf_phys_addr,
-+				 tx_desc->data_size,
-+				 DMA_TO_DEVICE);
-+	}
-+
-+	return MVNETA_XDP_DROPPED;
- }
- 
- static int
-@@ -2100,8 +2140,8 @@ mvneta_xdp_xmit_back(struct mvneta_port *pp, struct xdp_buff *xdp)
- 	struct mvneta_pcpu_stats *stats = this_cpu_ptr(pp->stats);
- 	struct mvneta_tx_queue *txq;
- 	struct netdev_queue *nq;
-+	int cpu, nxmit_byte = 0;
- 	struct xdp_frame *xdpf;
--	int cpu;
- 	u32 ret;
- 
- 	xdpf = xdp_convert_buff_to_frame(xdp);
-@@ -2113,10 +2153,10 @@ mvneta_xdp_xmit_back(struct mvneta_port *pp, struct xdp_buff *xdp)
- 	nq = netdev_get_tx_queue(pp->dev, txq->id);
- 
- 	__netif_tx_lock(nq, cpu);
--	ret = mvneta_xdp_submit_frame(pp, txq, xdpf, false);
-+	ret = mvneta_xdp_submit_frame(pp, txq, xdpf, &nxmit_byte, false);
- 	if (ret == MVNETA_XDP_TX) {
- 		u64_stats_update_begin(&stats->syncp);
--		stats->es.ps.tx_bytes += xdpf->len;
-+		stats->es.ps.tx_bytes += nxmit_byte;
- 		stats->es.ps.tx_packets++;
- 		stats->es.ps.xdp_tx++;
- 		u64_stats_update_end(&stats->syncp);
-@@ -2155,11 +2195,11 @@ mvneta_xdp_xmit(struct net_device *dev, int num_frame,
- 
- 	__netif_tx_lock(nq, cpu);
- 	for (i = 0; i < num_frame; i++) {
--		ret = mvneta_xdp_submit_frame(pp, txq, frames[i], true);
-+		ret = mvneta_xdp_submit_frame(pp, txq, frames[i], &nxmit_byte,
-+					      true);
- 		if (ret != MVNETA_XDP_TX)
- 			break;
- 
--		nxmit_byte += frames[i]->len;
- 		nxmit++;
- 	}
- 
+ /* When BPF ldimm64's insn[0].src_reg != 0 then this can have
+  * the following extensions:
+  *
 -- 
 2.31.1
 
