@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73B4A4645B5
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 05:12:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 665724645B8
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 05:13:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346550AbhLAEQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 23:16:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46864 "EHLO
+        id S1346566AbhLAEQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 23:16:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346533AbhLAEP5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 23:15:57 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1906AC061574;
-        Tue, 30 Nov 2021 20:12:37 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id r130so23025625pfc.1;
-        Tue, 30 Nov 2021 20:12:37 -0800 (PST)
+        with ESMTP id S1346545AbhLAEP7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 23:15:59 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6D2AC06174A;
+        Tue, 30 Nov 2021 20:12:38 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id v19so16642458plo.7;
+        Tue, 30 Nov 2021 20:12:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=G8eVTKgQ71scTCdgvnAxinAjRWpK2tMB1hMCFM8SGqY=;
-        b=QdiAYp+97KXoewPidJZ/CPoptc+O5S04qu4lfywjTeVcO6quxgTwr4NeRF5tyrCKOh
-         aL5Hts6+fQhN6Y3dIdC1+D0lUj6IsbGyAxoDyvtosNYoqf/+YvULN94IQIGm8EBIJhja
-         6Ua8GmOGgYjCSBgdqgH1lKmdwV6JcP5fcTPGbYWU6Zd9hXIRkZx5A+p0msyUTMKLwuNc
-         0abJA24r0KX4ddVMiV5LZOKDwBoY87N2xC+54Nvytr6o8QZ8ajwZXgKvGfwBXwST8LZ7
-         tPbQLBMLA9J7mFMGSkg2Shc5mPpf9Z8jP8k79taMAhedBCWIJA5eppA52dop5KdbCuqO
-         UJyA==
+        bh=xVoKWeNn56cuTdwEaWw3q49t3mf9LKbZIeR0Fnf7eBw=;
+        b=oUlryFWFGsPsidH/+KD18ZO9ozd5oVMB+0TrJ5h5RZvVMB4WSiN8X8+H65psjlCb2Y
+         RDzTI1nWljrW03lbHbHAH/EipRyffWEEMmX9V78zsFJVO7Pg9qsV0mOpJrZbmBDO3WFx
+         jQcd4kuNNFmUknK7RRBXEbeEFdKvkEOfxbYjvvAceAi2gI2cUGNi+OvViR8vVjwQZ6wr
+         /+zqguvN5kz7ESjuC89/9KGmTCNZiGv8OjRR5csP2YhqkEcj494sZgEMbr3JoFqhrdLC
+         vLeMYP8wOt+9rDNPrgINrqGrdhNropwjvUvOLzySJZmNrpJkh8rcEnst4ijnEHIdnFyS
+         f7vg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=G8eVTKgQ71scTCdgvnAxinAjRWpK2tMB1hMCFM8SGqY=;
-        b=JgrRT69svyh9rgilOrETzbtCj4kPFrp6qKTuA1282XTrO2lzybhYjC2/e0c1/Xn+30
-         MbxHx0lx+N3YLz4DE8mo2gCyK7OhSfuXn5XkUO7X4wI12wof1cK3wF54HHzKoN0kI4Pv
-         xDFQYEXQz8tYwT3B1GjKGC+6xLIcu/9LAtpUcCSgAfFARXSOPPWxnCpAah6JASGMKL0e
-         jTnyB/YZsL0ifpw/CqNoEMBUdB0ksw30In7jjRk7brZ4NTEakRKVCor1i9ydUSIe1rX4
-         MRTs/RJd96h686WqJFujUwke81EiJe3Hn5humzHmyYWHGZPowwKpP1Z8Ho9ETwxUh/gp
-         nnBQ==
-X-Gm-Message-State: AOAM533Pag8HPSRcNWSqS0yQFOqgKSG9WJGMnqcNZuL88yLwEXOLsQMx
-        BzZdmZDOZ5eEIYhEgb11c+SfRCrj30w=
-X-Google-Smtp-Source: ABdhPJyCEyg78fsDQ4KPjxXMj3FgSjwpzhxdII+VMQ4ikaksZUeq/cGuryfwn/8rilQJn2KwlbBQAQ==
-X-Received: by 2002:a63:d00e:: with SMTP id z14mr2789546pgf.300.1638331956280;
-        Tue, 30 Nov 2021 20:12:36 -0800 (PST)
+        bh=xVoKWeNn56cuTdwEaWw3q49t3mf9LKbZIeR0Fnf7eBw=;
+        b=VrTCh6g2MQQ84LI7zuN1TwCgZZpbvu6O/VoM7AJ7p66AJcazSa09jzKb0yzgZP4rjs
+         67ujZ4JrcV2e7Sdq4oURapDc+SoJmuU2/HMyCNxRG75MOAytWScbZImIPOG0PTkLFBH6
+         llmVHZI4TgATUAsFECDyKAqxQ1sJ+eCqdaICz2GCUP2jH4aciUv2wOg/BA4zIvFWQuo/
+         tR3juD0QyJnmTfiE8oiW4r53Vf8Qw/OgctImRMN/XI99waFP/8L/hdbF56ypa52AzURL
+         MjfC3+Vs4zV6r1zvlUOQAnLgez91XxGYsTfCdycidoFNQsNnJNdk/MNii2ZGMldr6nxk
+         SZsg==
+X-Gm-Message-State: AOAM530ORt99FJqP1L1vy95Tyf2mNp+kxFWv1WLuozKtOEYoSnfqzEL3
+        8VPoPz5ki6zmgoQsM89FcVrQD3u7iHs=
+X-Google-Smtp-Source: ABdhPJw2AIxSo0x8NdgHNJxKTcL0OCdOReI7qQTHHWdOvAKRA5PnBfFNSHUM4cdSjI4e1TbRDL+GsQ==
+X-Received: by 2002:a17:90a:bb84:: with SMTP id v4mr4412675pjr.4.1638331957919;
+        Tue, 30 Nov 2021 20:12:37 -0800 (PST)
 Received: from 7YHHR73.igp.broadcom.net ([192.19.161.250])
-        by smtp.gmail.com with ESMTPSA id s8sm4296451pfe.196.2021.11.30.20.12.34
+        by smtp.gmail.com with ESMTPSA id s8sm4296451pfe.196.2021.11.30.20.12.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Nov 2021 20:12:35 -0800 (PST)
+        Tue, 30 Nov 2021 20:12:37 -0800 (PST)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -62,40 +62,39 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         DEVICE TREE BINDINGS), linux-kernel@vger.kernel.org (open list),
         linux-arm-kernel@lists.infradead.org (moderated list:BROADCOM IPROC ARM
         ARCHITECTURE)
-Subject: [PATCH net-next 2/7] dt-bindings: net: brcm,unimac-mdio: Update maintainers for binding
-Date:   Tue, 30 Nov 2021 20:12:23 -0800
-Message-Id: <20211201041228.32444-3-f.fainelli@gmail.com>
+Subject: [PATCH net-next 3/7] dt-bindings: net: Document moca PHY interface
+Date:   Tue, 30 Nov 2021 20:12:24 -0800
+Message-Id: <20211201041228.32444-4-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211201041228.32444-1-f.fainelli@gmail.com>
 References: <20211201041228.32444-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add Doug and myself as maintainers since this binding is used by the
-GENET Ethernet controller for its internal MDIO controller.
+MoCA (Multimedia over Coaxial) is used by the internal GENET/MOCA cores
+and will be needed in order to convert GENET to YAML in subsequent
+changes.
 
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- Documentation/devicetree/bindings/net/brcm,unimac-mdio.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ Documentation/devicetree/bindings/net/ethernet-controller.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/net/brcm,unimac-mdio.yaml b/Documentation/devicetree/bindings/net/brcm,unimac-mdio.yaml
-index cda52f98340f..0be426ee1e44 100644
---- a/Documentation/devicetree/bindings/net/brcm,unimac-mdio.yaml
-+++ b/Documentation/devicetree/bindings/net/brcm,unimac-mdio.yaml
-@@ -7,6 +7,8 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- title: Broadcom UniMAC MDIO bus controller
+diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+index b0933a8c295a..31bfec8bb674 100644
+--- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
++++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+@@ -69,6 +69,7 @@ properties:
+       - rev-mii
+       - rmii
+       - rev-rmii
++      - moca
  
- maintainers:
-+  - Doug Berger <opendmb@gmail.com>
-+  - Florian Fainelli <f.fainelli@gmail.com>
-   - Rafał Miłecki <rafal@milecki.pl>
- 
- allOf:
+       # RX and TX delays are added by the MAC when required
+       - rgmii
 -- 
 2.25.1
 
