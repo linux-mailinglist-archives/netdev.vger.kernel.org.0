@@ -2,106 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B801464B8B
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 11:25:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78DF1464BA2
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 11:29:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348630AbhLAK2f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 05:28:35 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:48344 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243001AbhLAK2b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 05:28:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1638354309;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NUuEbHoZMvDjZ6xkgKYJQ/5wnlYmlybqTTOhVgFntb0=;
-        b=N6C3+r8ihG6LOtJrsQfPCzf4lLFsm2pHd5Lgi1MFtHUTFrIbr8/MIAmIGWLX7DmLJWv6F1
-        i+esgD1iNhoWP8rs+QjK2/CA6jpC8BwfSxAFuRZgwKJvPB4EWkoiV3T6OKAUelC8q8ylsD
-        0WpFdoxNODKIERZsnD1my7PH0ozO9Zw=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-229-AZD3Z0ALM2S6raqV3FGofw-1; Wed, 01 Dec 2021 05:25:08 -0500
-X-MC-Unique: AZD3Z0ALM2S6raqV3FGofw-1
-Received: by mail-ed1-f69.google.com with SMTP id m17-20020aa7d351000000b003e7c0bc8523so19832763edr.1
-        for <netdev@vger.kernel.org>; Wed, 01 Dec 2021 02:25:08 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
-         :subject:content-language:to:references:in-reply-to
-         :content-transfer-encoding;
-        bh=NUuEbHoZMvDjZ6xkgKYJQ/5wnlYmlybqTTOhVgFntb0=;
-        b=JJEsjp2U6PhOt859vwIH5PSbtSlAO8xQGERGkiF26xE1npM4oL08Un4P/0L15EIaQ8
-         IQ+JPMqkA2ODH4bU+Pf159v7nBxSUVc47HpDlrJSRXYDVNO8k0jsOEe6Md/YV/V6aKoH
-         HzNNsnrihnc0aw9oClejfRXhVTDUN07UWreKd49xLDnHlGqgspW3lLVYOY6vt/LfBLcZ
-         NomZBjZMgPTPmD95//fMGDRIJY3juicj1ebHl8nUMjMORIHDca0l6mw4/CP1lQ0HuQZj
-         +dYzGVtAn7WPhnp5q/45oRq/jwqzFrKhF6oHyE1WP8H4Zer7qMOV3NGNTNWPDA6M591i
-         pOIQ==
-X-Gm-Message-State: AOAM532SsN41ivn7RQCCZDTSwL3VBmBdrGIP1QImNTV6yvK/FgVvu8Z/
-        cuKA6Jr/hsmLfnpW/qrbi/d/0cITQG3JvF9BAzWFOCNfzR5xRROezdk3naGVJcbbv4RHdfdU01S
-        OM1SZeAt0uf9s6DxE
-X-Received: by 2002:a05:6402:2814:: with SMTP id h20mr7208842ede.288.1638354307277;
-        Wed, 01 Dec 2021 02:25:07 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx7zWt7d2gxC7lYVybBM9KToK1+c4o6A1wxtmjadhCt1FFxFU/uPQVp+adHi1ddtzJRLjd+fg==
-X-Received: by 2002:a05:6402:2814:: with SMTP id h20mr7208804ede.288.1638354307090;
-        Wed, 01 Dec 2021 02:25:07 -0800 (PST)
-Received: from [192.168.2.13] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
-        by smtp.gmail.com with ESMTPSA id gn16sm10716476ejc.67.2021.12.01.02.25.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Dec 2021 02:25:06 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <78c7dbae-ea41-5afc-bd13-66969145fbd1@redhat.com>
-Date:   Wed, 1 Dec 2021 11:25:05 +0100
+        id S1348669AbhLAKdA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 05:33:00 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:36870 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348628AbhLAKc7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 05:32:59 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D040EB81E29;
+        Wed,  1 Dec 2021 10:29:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEBF0C53FCC;
+        Wed,  1 Dec 2021 10:29:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638354576;
+        bh=AETMMOBDPGn+QVfejghVAmHwWjI/7/bsub2Dx0V2n1k=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kKgNhAT9qH3X2bUtpCTaa4PNttI8HZMuvoKs8aX6pG8r4gCGfx5dMJ9/G5IojdnF/
+         GWHDgbTR/TDyRo3f6cbXyTjzYQTqgN6bZFr7zUK4d1hxBtNdgteSj5cRFLCLRXJNwA
+         /ZJBUwyY1+upcObJyXqZifHGIEweRgPdO0F8Y3T6KqKa2cwoC7yaVbNIzJmO/KPVqC
+         Uw5O8sCg4RIjbd1HoZdVa5MVqIq8gLT59onNjcqsJA03dXd2pBHV2IYeRnMbrusKwD
+         0qqD0LWz+0TAsaaIOLHoNwoYmhnVIx69NoL8WVdNd+jyMtlh++pQuhxYNK2FzhE/Y3
+         eELnK/kXRIHDg==
+Date:   Wed, 1 Dec 2021 12:29:32 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Bixuan Cui <cuibixuan@linux.alibaba.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>
+Subject: Re: [PATCH -next] bpf: Add oversize check before call kvmalloc()
+Message-ID: <YadOjJXMTjP85MQx@unreal>
+References: <1638027102-22686-1-git-send-email-cuibixuan@linux.alibaba.com>
+ <CAEf4BzbV=s+C=dFS5YfAdJhiBv+3ocanaZ-NNHoPz8RzHhGCbQ@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Cc:     brouer@redhat.com, netdev@vger.kernel.org, sasha.neftin@intel.com,
-        vitaly.lifshits@intel.com, maciej.fijalkowski@intel.com,
-        magnus.karlsson@intel.com, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com, bpf@vger.kernel.org,
-        andrii@kernel.org
-Subject: Re: [PATCH net-next 0/2][pull request] 1GbE Intel Wired LAN Driver
- Updates 2021-11-30
-Content-Language: en-US
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
-        kuba@kernel.org
-References: <20211130175918.3705966-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20211130175918.3705966-1-anthony.l.nguyen@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzbV=s+C=dFS5YfAdJhiBv+3ocanaZ-NNHoPz8RzHhGCbQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 30/11/2021 18.59, Tony Nguyen wrote:
-> Jesper Dangaard Brouer says:
+On Tue, Nov 30, 2021 at 02:53:16PM -0800, Andrii Nakryiko wrote:
+> On Sat, Nov 27, 2021 at 7:32 AM Bixuan Cui <cuibixuan@linux.alibaba.com> wrote:
+> >
+> > Commit 7661809d493b ("mm: don't allow oversized kvmalloc() calls") add
+> > the oversize check. When the allocation is larger than what kvmalloc()
+> > supports, the following warning triggered:
+> >
+> > WARNING: CPU: 1 PID: 372 at mm/util.c:597 kvmalloc_node+0x111/0x120
+> > mm/util.c:597
+> > Modules linked in:
+> > CPU: 1 PID: 372 Comm: syz-executor.4 Not tainted 5.15.0-syzkaller #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+> > Google 01/01/2011
+> > RIP: 0010:kvmalloc_node+0x111/0x120 mm/util.c:597
+> > Code: 01 00 00 00 4c 89 e7 e8 7d f7 0c 00 49 89 c5 e9 69 ff ff ff e8 60
+> > 20 d1 ff 41 89 ed 41 81 cd 00 20 01 00 eb 95 e8 4f 20 d1 ff <0f> 0b e9
+> > 4c ff ff ff 0f 1f 84 00 00 00 00 00 55 48 89 fd 53 e8 36
+> > RSP: 0018:ffffc90002bf7c98 EFLAGS: 00010216
+> > RAX: 00000000000000ec RBX: 1ffff9200057ef9f RCX: ffffc9000ac63000
+> > RDX: 0000000000040000 RSI: ffffffff81a6a621 RDI: 0000000000000003
+> > RBP: 0000000000102cc0 R08: 000000007fffffff R09: 00000000ffffffff
+> > R10: ffffffff81a6a5de R11: 0000000000000000 R12: 00000000ffff9aaa
+> > R13: 0000000000000000 R14: 00000000ffffffff R15: 0000000000000000
+> > FS:  00007f05f2573700(0000) GS:ffff8880b9d00000(0000)
+> > knlGS:0000000000000000
+> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > CR2: 0000001b2f424000 CR3: 0000000027d2c000 CR4: 00000000003506e0
+> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > Call Trace:
+> >  <TASK>
+> >  kvmalloc include/linux/slab.h:741 [inline]
+> >  map_lookup_elem kernel/bpf/syscall.c:1090 [inline]
+> >  __sys_bpf+0x3a5b/0x5f00 kernel/bpf/syscall.c:4603
+> >  __do_sys_bpf kernel/bpf/syscall.c:4722 [inline]
+> >  __se_sys_bpf kernel/bpf/syscall.c:4720 [inline]
+> >  __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:4720
+> >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+> >  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> >
+> > The type of 'value_size' is u32, its value may exceed INT_MAX.
+> >
+> > Reported-by: syzbot+cecf5b7071a0dfb76530@syzkaller.appspotmail.com
+> > Signed-off-by: Bixuan Cui <cuibixuan@linux.alibaba.com>
+> > ---
+> >  kernel/bpf/syscall.c | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> >
+> > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> > index 1033ee8..f5bc380 100644
+> > --- a/kernel/bpf/syscall.c
+> > +++ b/kernel/bpf/syscall.c
+> > @@ -1094,6 +1094,10 @@ static int map_lookup_elem(union bpf_attr *attr)
+> >         }
+> >
+> >         value_size = bpf_map_value_size(map);
+> > +       if (value_size > INT_MAX) {
+> > +               err = -EINVAL;
 > 
-> Changes to fix and enable XDP metadata to a specific Intel driver igc.
-> Tested with hardware i225 that uses driver igc, while testing AF_XDP
-> access to metadata area.
+> -E2BIG makes a bit more sense in this scenario?
+
+kvmalloc should be fixed do not print WARN_ON() on attempts to provide
+such allocations sizes.
+
+We are in RDMA, and everyone who receives this size as an input from the
+user, seeing this type of error.
+
+Thanks
+
 > 
-> The following are changes since commit 196073f9c44be0b4758ead11e51bc2875f98df29:
->    net: ixp4xx_hss: drop kfree for memory allocated with devm_kzalloc
-> and are available in the git repository at:
->    git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 1GbE
-> 
-> Jesper Dangaard Brouer (2):
->    igc: AF_XDP zero-copy metadata adjust breaks SKBs on XDP_PASS
->    igc: enable XDP metadata in driver
-> 
->   drivers/net/ethernet/intel/igc/igc_main.c | 37 +++++++++++++++--------
->   1 file changed, 25 insertions(+), 12 deletions(-)
-
-
-Thanks Tony for taking care of these :-)
-The adjustments looks good to me.
-
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-
---Jesper
-
+> > +               goto err_put;
+> > +       }
+> >
+> >         err = -ENOMEM;
+> >         value = kvmalloc(value_size, GFP_USER | __GFP_NOWARN);
+> > --
+> > 1.8.3.1
+> >
