@@ -2,90 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9F8C4644C2
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 03:08:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40C024644CB
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 03:15:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345816AbhLACME (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 21:12:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47594 "EHLO
+        id S229807AbhLACSy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 21:18:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231168AbhLACMD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 21:12:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F05D4C061574
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 18:08:43 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4DA2B81C3E
-        for <netdev@vger.kernel.org>; Wed,  1 Dec 2021 02:08:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 331B7C53FCB;
-        Wed,  1 Dec 2021 02:08:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638324521;
-        bh=PlK8M0ATr1vCP29y4xkVGBUPLKqmpAgulN4hFgPIr/Y=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OVXHMKj3jzmqFtIfocTMAp1viXDJxmoOxouT01OSWLCd4pGPufDO6B/YfYDNE2MRG
-         Rkrbu7taQ0LqGxUl70KGpyPM5COkbJHbBj5BPJyFiAw/3HcmLc/GRV0UlWrxYmai4Q
-         I/MmlDiYPL3uMgC45DkU+AVe2EZsyG6U6RpFZoH9ekC3snKoA0RNckxWcKEiV6kNtk
-         G6KWFqgu1+mPrsnr40fSOEtr94suaUzbRDOcTVEGDO4TqRxN5T+MUl66Lnb1eK9H+Q
-         R+z5in6b0C3jyq4QErIH12G724z7Nf5zwhsTPHLXF+uconjD10li9bfhH76MMGjuRf
-         ths6tqkXdIKPg==
-Date:   Tue, 30 Nov 2021 18:08:39 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     davem@davemloft.net, alexander.duyck@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net] net-sysfs: update the queue counts in the
- unregistration path
-Message-ID: <20211130180839.285e31be@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211129154520.295823-1-atenart@kernel.org>
-References: <20211129154520.295823-1-atenart@kernel.org>
+        with ESMTP id S229538AbhLACSx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 21:18:53 -0500
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC6FC061574
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 18:15:33 -0800 (PST)
+Received: by mail-ot1-x333.google.com with SMTP id i5-20020a05683033e500b0057a369ac614so11528183otu.10
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 18:15:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=I7Ej8qs188p2B4AEAU5WYRe+YSbz1jougFanMO40+Ps=;
+        b=mH3qiQhSz5gr/GBetgPmqhgQt43OVaRFDsPGZQrXjJcV5HB75vikXQnQ5uzejFEN+U
+         BtgxDuzQpG3sLN9ynbNJyKko97sJExeGBPTMIrSy/6uWv7sfxyS8iLp4BDNt5JUT2xJ0
+         RRoBTvAwNak/xLUhga+ka16XA8HFrUd/yAyDoqrz0/uVa1ZrQ7hQ1H3hpumfpbhfD0EA
+         BEWhMwifUKbS+XoikDgK+Z9H6WYGxNx0Ek3CBW3AbqIbW9jpSNcw57uUI1/KQhxwRWCu
+         7PGuthzEIJVi0jXFhSeDWd7rhKl6u3LSuqwDhWIMiFM97BDMO99fBjGdXoynGO01/jOZ
+         kFDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=I7Ej8qs188p2B4AEAU5WYRe+YSbz1jougFanMO40+Ps=;
+        b=Ch/6FNC1jWURGzfb0EWvdy4LERwZx5oLF6lCCWo5LizoYPFPp5e9ARb+TlAutMUf5F
+         BftfKzJriw1ly+gcz+B4ps99Wn96ck9kG8sCMxUeCxiZXKXNBeg5Y5QenSz+BNIMybf1
+         JMKDyRSyz45i9tvEsk2FIvJBNOc8rkoOLhAWAwkEawQlr8V0U0DsFXBW/guWn4Cgm7Fx
+         /iOoxD8666keQf8AVn7V8K8lZtahNA7WEjARsOiKrD3/cFlhGaJlf4zmUUP3XfKeXq80
+         BLicpRFLShanVm9pZZzuE/KFoRoqrHCER+NLBGMkUcxio8c/scH0ESyLjj8biHBxA1cL
+         xxRQ==
+X-Gm-Message-State: AOAM531+NHMreU3zZDrRiRnpBahpG7yiVAtocd/WBynjty609NyeUqqp
+        y+OxoND9nI1gcv1eQeJLy7itdC9lNI/irA==
+X-Google-Smtp-Source: ABdhPJwxay+S+1OXD1K+QmBuiNwyJ/avG9hBr0vy2NA4m5zHu+zRie/HJxmsYprEvObtjnHvzzrbCA==
+X-Received: by 2002:a05:6830:3499:: with SMTP id c25mr3188282otu.206.1638324932824;
+        Tue, 30 Nov 2021 18:15:32 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id g24sm3462892oti.19.2021.11.30.18.15.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Nov 2021 18:15:32 -0800 (PST)
+Message-ID: <40480957-bc05-9dcd-f565-33faaaaef906@gmail.com>
+Date:   Tue, 30 Nov 2021 19:15:28 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.3.1
+Subject: Re: [PATCH net] vrf: Reset IPCB/IP6CB when processing outbound pkts
+ in vrf dev xmit
+Content-Language: en-US
+To:     Stephen Suryaputra <ssuryaextr@gmail.com>, netdev@vger.kernel.org
+References: <20211130162637.3249-1-ssuryaextr@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20211130162637.3249-1-ssuryaextr@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 29 Nov 2021 16:45:20 +0100 Antoine Tenart wrote:
-> When updating Rx and Tx queue kobjects, the queue count should always be
-> updated to match the queue kobjects count. This was not done in the net
-> device unregistration path and due to the Tx queue logic allowing
-> updates when unregistering (for qdisc cleanup) it was possible with
-> ethtool to manually add new queues after unregister, leading to NULL
-> pointer exceptions and UaFs, such as:
+On 11/30/21 9:26 AM, Stephen Suryaputra wrote:
+> IPCB/IP6CB need to be initialized when processing outbound v4 or v6 pkts
+> in the codepath of vrf device xmit function so that leftover garbage
+> doesn't cause futher code that uses the CB to incorrectly process the
+> pkt.
 > 
->   BUG: KASAN: use-after-free in kobject_get+0x14/0x90
->   Read of size 1 at addr ffff88801961248c by task ethtool/755
+> One occasion of the issue might occur when MPLS route uses the vrf
+> device as the outgoing device such as when the route is added using "ip
+> -f mpls route add <label> dev <vrf>" command.
 > 
->   CPU: 0 PID: 755 Comm: ethtool Not tainted 5.15.0-rc6+ #778
->   Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-4.fc34 04/014
->   Call Trace:
->    dump_stack_lvl+0x57/0x72
->    print_address_description.constprop.0+0x1f/0x140
->    kasan_report.cold+0x7f/0x11b
->    kobject_get+0x14/0x90
->    kobject_add_internal+0x3d1/0x450
->    kobject_init_and_add+0xba/0xf0
->    netdev_queue_update_kobjects+0xcf/0x200
->    netif_set_real_num_tx_queues+0xb4/0x310
->    veth_set_channels+0x1c3/0x550
->    ethnl_set_channels+0x524/0x610
+> The problems seems to exist since day one. Hence I put the day one
+> commits on the Fixes tags.
 > 
-> Updating the queue counts in the unregistration path solve the above
-> issue, as the ethtool path updating the queue counts makes sanity checks
-> and a queue count of 0 should prevent any update.
-
-Would you mind pointing where in the code that happens? I can't seem 
-to find anything looking at real_num_.x_queues outside dev.c and
-net-sysfs.c :S
-
-> Fixes: 5c56580b74e5 ("net: Adjust TX queue kobjects if number of queues changes during unregister")
-> Signed-off-by: Antoine Tenart <atenart@kernel.org>
+> Fixes: 193125dbd8eb ("net: Introduce VRF device driver")
+> Fixes: 35402e313663 ("net: Add IPv6 support to VRF device")
+> Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
 > ---
-> Following a previous thread[1] I had another look at this issue and now
-> have a better fix (this patch). In this previous thread we also
-> discussed preventing ethtool operations after unregister and adding a
-> warning in netdev_queue_update_kobjects; I'll send two patches for this
-> but targetting net-next.
+>  drivers/net/vrf.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+
+Reviewed-by: David Ahern <dsahern@kernel.org>
+
