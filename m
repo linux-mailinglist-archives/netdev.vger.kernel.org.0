@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E50F464958
+	by mail.lfdr.de (Postfix) with ESMTP id AB7B0464959
 	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 09:13:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347872AbhLAIRC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 03:17:02 -0500
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:52787 "EHLO
+        id S1347864AbhLAIRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 03:17:03 -0500
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:35315 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1347714AbhLAIQ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 03:16:59 -0500
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 50BB95C0256;
-        Wed,  1 Dec 2021 03:13:39 -0500 (EST)
+        by vger.kernel.org with ESMTP id S1347861AbhLAIRC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 03:17:02 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 6227D5C0256;
+        Wed,  1 Dec 2021 03:13:41 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute6.internal (MEProxy); Wed, 01 Dec 2021 03:13:39 -0500
+  by compute3.internal (MEProxy); Wed, 01 Dec 2021 03:13:41 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=J688way4O+wKbz1RqwkI7EMEosTw/LZOUeSmhIzpcfg=; b=QzOJQGsh
-        HuMFTD5tsZaYahgewd3XV4YzIxSazVCewZn7pDDHV0JRynz7sgLw6KEjl9HEfIJj
-        k3lyjYLAtPs/lz1jRpn0fFZQCMtYHhGIOx682MxV1z1o7xDR+TGiPltGVXlzbPDG
-        kBqCToNDEEydnQ5+dRKsBvA8fhFrU/ZNlWSU0SiHVpBuyN1PCQgwCU0yYWTGIDrU
-        xMzN2o06WSubYnRT6g4OTX2aH6VXO2p72C9c2VBnkp0gx19FPbwWrQLOYKkQQ2zu
-        kjzGmZ3LCgHUPl18bVBarjNvhFdLOuOQk7XnIjjg0dlUKV/9qket8Si2vxF3cjr6
-        o4k4SH5LBD631g==
-X-ME-Sender: <xms:sy6nYVKlGyPHWDoXU3TuLvpzfbJW6m9sS9Ok1WMHnMD9wybag4mBWA>
-    <xme:sy6nYRIs25Svm8JHc75ii3MXgf-l5setev-OBEcAT9p9MZcMZO3tjU8b0oJ01D6PM
-    -b5Efw3zRA_zYk>
-X-ME-Received: <xmr:sy6nYdtH4n6UBL_Kjv2i9VtAEgnlz7BKZ2mxDr_IHn0dz-t7VYTW2gI0_0tUyCZVujrJ08eCJZdZO7FAHksL08l8Er799TAdQ6LBzYQ4SzRTUw>
+        fm1; bh=7KwoSFM3mUKoWkxUJJ9XyEgg3h4GOqhUIh/3tiUT/Mc=; b=MUpaN3RM
+        DHnhpftBdbiqEi//BE/0DAfjEvwDJCBM3CQ8n5c6DDTbIgKem+x0WdiQXrY/Qnmf
+        R0R6cxS7jvartvJMX8WBTkAMFvyzF/q2sAbGn8Cgx4UEOV2VlZqWgW4DbikOb//D
+        r+ExmcllN+mp0xECs3pUIID6FGIHxFFDSFx2Fa8XH9wlHeqLuN8O4OVqZ3JVAm3h
+        cAoeGcAm59wdkXiOEOC1agD7p+mElEbuSpueFPb1TUqe73Qx7ScStTur6URT0W+Q
+        Iyb591jQfCmULCStj0Qfsv7c/boqxNFJhvTSNBNoyLEn5lToPWGyFRu+XW4bDGSe
+        iukWbPFwBsnG/w==
+X-ME-Sender: <xms:tS6nYVSntdZF7w078e0WnbFtsjyKTRJv1bxDISoXVNzlmAkufx7ZFg>
+    <xme:tS6nYezSEwG5KGbQh_vMQPqnK2Stb0uydZ5opUavaGo4XZsIwZq2XMqWewXoCnRfK
+    NHK1jvFIC4jbaU>
+X-ME-Received: <xmr:tS6nYa0u4VWD83AMdH4VpVRp-KuWxplqMEOn0SmnNztTlrTA_GsczkiIgPqGHM_gFcuTfZj1iB7k5zI_b5G1geLljF1c8TkPfrWkXDZwV6Gizw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddriedvgdduudekucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgeptdenucfr
+    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgepudenucfr
     rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:sy6nYWbGrr-2xZ0qBUxrPv7moZW7UJ-91L7LNIxVl9dV4kL00AfIAw>
-    <xmx:sy6nYcbh9Tl4rwuaFKYPfsoH2VO0PjvYD5EHy5zzWncpe0saYQUDsg>
-    <xmx:sy6nYaCh9-3aLqNxAW78l1XUYs7f3ReFS91pX5G3kMc4EdIFDhPvrQ>
-    <xmx:sy6nYTUgnJsx7PrY0X0xePeSWfIHmguDsakMT4nnRWrXOq8ugP7DDw>
+X-ME-Proxy: <xmx:tS6nYdC5LzNySL8RkiDlmR8u9eVCavgJggqe8ERYP3oXkqP08NFVmQ>
+    <xmx:tS6nYejBRpTO5F0M-MtdxgnbE_kX1vc7NGnmhSpeF-oESM1g6xvGYQ>
+    <xmx:tS6nYRqcHSdu0p_x1GfcGnhh6CqDkMtFii-SrMSOL86UPtpS4-wjMg>
+    <xmx:tS6nYWfu4Ev5pzVbkVGFpriL7D9IDTTFfIrPlCbc-zfkwPkPVBr8Pg>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 1 Dec 2021 03:13:37 -0500 (EST)
+ 1 Dec 2021 03:13:39 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         amcohen@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 09/10] mlxsw: Use Switch Flooding Table Register Version 2
-Date:   Wed,  1 Dec 2021 10:12:39 +0200
-Message-Id: <20211201081240.3767366-10-idosch@idosch.org>
+Subject: [PATCH net-next 10/10] mlxsw: Use Switch Multicast ID Register Version 2
+Date:   Wed,  1 Dec 2021 10:12:40 +0200
+Message-Id: <20211201081240.3767366-11-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211201081240.3767366-1-idosch@idosch.org>
 References: <20211201081240.3767366-1-idosch@idosch.org>
@@ -63,228 +63,237 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Amit Cohen <amcohen@nvidia.com>
 
-The SFTR-V2 register is used for flooding packet replication.
-It is a new version of SFTR in order to support 1024 bits of local_port.
+The SMID-V2 register maps Multicast ID (MID) into a list of local ports.
+It is a new version of SMID in order to support 1024 bits of local_port.
 
-Add SFTR-V2 register and use it instead of SFTR.
+Add SMID-V2 register and use it instead of SMID.
 
 Signed-off-by: Amit Cohen <amcohen@nvidia.com>
 Reviewed-by: Petr Machata <petrm@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h     | 142 +++++++++---------
- .../ethernet/mellanox/mlxsw/spectrum_fid.c    |  18 +--
- 2 files changed, 80 insertions(+), 80 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     | 94 +++++++++----------
+ .../mellanox/mlxsw/spectrum_switchdev.c       | 50 +++++-----
+ 2 files changed, 72 insertions(+), 72 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index 4c26188d541c..43cac526b9ad 100644
+index 43cac526b9ad..5eaba2abf212 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
 +++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -1108,76 +1108,6 @@ mlxsw_reg_sfgc_pack(char *payload, enum mlxsw_reg_sfgc_type type,
- 	mlxsw_reg_sfgc_mid_set(payload, MLXSW_PORT_MID);
- }
+@@ -69,52 +69,6 @@ MLXSW_REG_DEFINE(spad, MLXSW_REG_SPAD_ID, MLXSW_REG_SPAD_LEN);
+  */
+ MLXSW_ITEM_BUF(reg, spad, base_mac, 0x02, 6);
  
--/* SFTR - Switch Flooding Table Register
-- * -------------------------------------
-- * The switch flooding table is used for flooding packet replication. The table
-- * defines a bit mask of ports for packet replication.
+-/* SMID - Switch Multicast ID
+- * --------------------------
+- * The MID record maps from a MID (Multicast ID), which is a unique identifier
+- * of the multicast group within the stacking domain, into a list of local
+- * ports into which the packet is replicated.
 - */
--#define MLXSW_REG_SFTR_ID 0x2012
--#define MLXSW_REG_SFTR_LEN 0x420
+-#define MLXSW_REG_SMID_ID 0x2007
+-#define MLXSW_REG_SMID_LEN 0x240
 -
--MLXSW_REG_DEFINE(sftr, MLXSW_REG_SFTR_ID, MLXSW_REG_SFTR_LEN);
+-MLXSW_REG_DEFINE(smid, MLXSW_REG_SMID_ID, MLXSW_REG_SMID_LEN);
 -
--/* reg_sftr_swid
-- * Switch partition ID with which to associate the port.
+-/* reg_smid_swid
+- * Switch partition ID.
 - * Access: Index
 - */
--MLXSW_ITEM32(reg, sftr, swid, 0x00, 24, 8);
+-MLXSW_ITEM32(reg, smid, swid, 0x00, 24, 8);
 -
--/* reg_sftr_flood_table
-- * Flooding table index to associate with the specific type on the specific
-- * switch partition.
+-/* reg_smid_mid
+- * Multicast identifier - global identifier that represents the multicast group
+- * across all devices.
 - * Access: Index
 - */
--MLXSW_ITEM32(reg, sftr, flood_table, 0x00, 16, 6);
+-MLXSW_ITEM32(reg, smid, mid, 0x00, 0, 16);
 -
--/* reg_sftr_index
-- * Index. Used as an index into the Flooding Table in case the table is
-- * configured to use VID / FID or FID Offset.
-- * Access: Index
-- */
--MLXSW_ITEM32(reg, sftr, index, 0x00, 0, 16);
--
--/* reg_sftr_table_type
-- * See mlxsw_flood_table_type
+-/* reg_smid_port
+- * Local port memebership (1 bit per port).
 - * Access: RW
 - */
--MLXSW_ITEM32(reg, sftr, table_type, 0x04, 16, 3);
+-MLXSW_ITEM_BIT_ARRAY(reg, smid, port, 0x20, 0x20, 1);
 -
--/* reg_sftr_range
-- * Range of entries to update
-- * Access: Index
-- */
--MLXSW_ITEM32(reg, sftr, range, 0x04, 0, 16);
--
--/* reg_sftr_port
-- * Local port membership (1 bit per port).
-- * Access: RW
-- */
--MLXSW_ITEM_BIT_ARRAY(reg, sftr, port, 0x20, 0x20, 1);
--
--/* reg_sftr_cpu_port_mask
-- * CPU port mask (1 bit per port).
+-/* reg_smid_port_mask
+- * Local port mask (1 bit per port).
 - * Access: W
 - */
--MLXSW_ITEM_BIT_ARRAY(reg, sftr, port_mask, 0x220, 0x20, 1);
+-MLXSW_ITEM_BIT_ARRAY(reg, smid, port_mask, 0x220, 0x20, 1);
 -
--static inline void mlxsw_reg_sftr_pack(char *payload,
--				       unsigned int flood_table,
--				       unsigned int index,
--				       enum mlxsw_flood_table_type table_type,
--				       unsigned int range, u8 port, bool set)
+-static inline void mlxsw_reg_smid_pack(char *payload, u16 mid,
+-				       u8 port, bool set)
 -{
--	MLXSW_REG_ZERO(sftr, payload);
--	mlxsw_reg_sftr_swid_set(payload, 0);
--	mlxsw_reg_sftr_flood_table_set(payload, flood_table);
--	mlxsw_reg_sftr_index_set(payload, index);
--	mlxsw_reg_sftr_table_type_set(payload, table_type);
--	mlxsw_reg_sftr_range_set(payload, range);
--	mlxsw_reg_sftr_port_set(payload, port, set);
--	mlxsw_reg_sftr_port_mask_set(payload, port, 1);
+-	MLXSW_REG_ZERO(smid, payload);
+-	mlxsw_reg_smid_swid_set(payload, 0);
+-	mlxsw_reg_smid_mid_set(payload, mid);
+-	mlxsw_reg_smid_port_set(payload, port, set);
+-	mlxsw_reg_smid_port_mask_set(payload, port, 1);
 -}
 -
- /* SFDF - Switch Filtering DB Flush
-  * --------------------------------
-  * The switch filtering DB flush register is used to flush the FDB.
-@@ -2105,6 +2035,76 @@ static inline void mlxsw_reg_spevet_pack(char *payload, u16 local_port,
- 	mlxsw_reg_spevet_et_vlan_set(payload, et_vlan);
+ /* SSPR - Switch System Port Record Register
+  * -----------------------------------------
+  * Configures the system port to local port mapping.
+@@ -2105,6 +2059,52 @@ static inline void mlxsw_reg_sftr2_pack(char *payload,
+ 	mlxsw_reg_sftr2_port_mask_set(payload, port, 1);
  }
  
-+/* SFTR-V2 - Switch Flooding Table Version 2 Register
-+ * --------------------------------------------------
-+ * The switch flooding table is used for flooding packet replication. The table
-+ * defines a bit mask of ports for packet replication.
++/* SMID-V2 - Switch Multicast ID Version 2 Register
++ * ------------------------------------------------
++ * The MID record maps from a MID (Multicast ID), which is a unique identifier
++ * of the multicast group within the stacking domain, into a list of local
++ * ports into which the packet is replicated.
 + */
-+#define MLXSW_REG_SFTR2_ID 0x202F
-+#define MLXSW_REG_SFTR2_LEN 0x120
++#define MLXSW_REG_SMID2_ID 0x2034
++#define MLXSW_REG_SMID2_LEN 0x120
 +
-+MLXSW_REG_DEFINE(sftr2, MLXSW_REG_SFTR2_ID, MLXSW_REG_SFTR2_LEN);
++MLXSW_REG_DEFINE(smid2, MLXSW_REG_SMID2_ID, MLXSW_REG_SMID2_LEN);
 +
-+/* reg_sftr2_swid
-+ * Switch partition ID with which to associate the port.
++/* reg_smid2_swid
++ * Switch partition ID.
 + * Access: Index
 + */
-+MLXSW_ITEM32(reg, sftr2, swid, 0x00, 24, 8);
++MLXSW_ITEM32(reg, smid2, swid, 0x00, 24, 8);
 +
-+/* reg_sftr2_flood_table
-+ * Flooding table index to associate with the specific type on the specific
-+ * switch partition.
++/* reg_smid2_mid
++ * Multicast identifier - global identifier that represents the multicast group
++ * across all devices.
 + * Access: Index
 + */
-+MLXSW_ITEM32(reg, sftr2, flood_table, 0x00, 16, 6);
++MLXSW_ITEM32(reg, smid2, mid, 0x00, 0, 16);
 +
-+/* reg_sftr2_index
-+ * Index. Used as an index into the Flooding Table in case the table is
-+ * configured to use VID / FID or FID Offset.
-+ * Access: Index
-+ */
-+MLXSW_ITEM32(reg, sftr2, index, 0x00, 0, 16);
-+
-+/* reg_sftr2_table_type
-+ * See mlxsw_flood_table_type
++/* reg_smid2_port
++ * Local port memebership (1 bit per port).
 + * Access: RW
 + */
-+MLXSW_ITEM32(reg, sftr2, table_type, 0x04, 16, 3);
++MLXSW_ITEM_BIT_ARRAY(reg, smid2, port, 0x20, 0x80, 1);
 +
-+/* reg_sftr2_range
-+ * Range of entries to update
-+ * Access: Index
-+ */
-+MLXSW_ITEM32(reg, sftr2, range, 0x04, 0, 16);
-+
-+/* reg_sftr2_port
-+ * Local port membership (1 bit per port).
-+ * Access: RW
-+ */
-+MLXSW_ITEM_BIT_ARRAY(reg, sftr2, port, 0x20, 0x80, 1);
-+
-+/* reg_sftr2_port_mask
++/* reg_smid2_port_mask
 + * Local port mask (1 bit per port).
 + * Access: WO
 + */
-+MLXSW_ITEM_BIT_ARRAY(reg, sftr2, port_mask, 0xA0, 0x80, 1);
++MLXSW_ITEM_BIT_ARRAY(reg, smid2, port_mask, 0xA0, 0x80, 1);
 +
-+static inline void mlxsw_reg_sftr2_pack(char *payload,
-+					unsigned int flood_table,
-+					unsigned int index,
-+					enum mlxsw_flood_table_type table_type,
-+					unsigned int range, u16 port, bool set)
++static inline void mlxsw_reg_smid2_pack(char *payload, u16 mid, u16 port,
++					bool set)
 +{
-+	MLXSW_REG_ZERO(sftr2, payload);
-+	mlxsw_reg_sftr2_swid_set(payload, 0);
-+	mlxsw_reg_sftr2_flood_table_set(payload, flood_table);
-+	mlxsw_reg_sftr2_index_set(payload, index);
-+	mlxsw_reg_sftr2_table_type_set(payload, table_type);
-+	mlxsw_reg_sftr2_range_set(payload, range);
-+	mlxsw_reg_sftr2_port_set(payload, port, set);
-+	mlxsw_reg_sftr2_port_mask_set(payload, port, 1);
++	MLXSW_REG_ZERO(smid2, payload);
++	mlxsw_reg_smid2_swid_set(payload, 0);
++	mlxsw_reg_smid2_mid_set(payload, mid);
++	mlxsw_reg_smid2_port_set(payload, port, set);
++	mlxsw_reg_smid2_port_mask_set(payload, port, 1);
 +}
 +
  /* CWTP - Congetion WRED ECN TClass Profile
   * ----------------------------------------
   * Configures the profiles for queues of egress port and traffic class
-@@ -12383,7 +12383,6 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
- 	MLXSW_REG(spvm),
- 	MLXSW_REG(spaft),
- 	MLXSW_REG(sfgc),
--	MLXSW_REG(sftr),
- 	MLXSW_REG(sfdf),
- 	MLXSW_REG(sldr),
- 	MLXSW_REG(slcr),
+@@ -12373,7 +12373,6 @@ static inline void mlxsw_reg_sbib_pack(char *payload, u16 local_port,
+ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
+ 	MLXSW_REG(sgcr),
+ 	MLXSW_REG(spad),
+-	MLXSW_REG(smid),
+ 	MLXSW_REG(sspr),
+ 	MLXSW_REG(sfdat),
+ 	MLXSW_REG(sfd),
 @@ -12396,6 +12395,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
- 	MLXSW_REG(spvmlr),
  	MLXSW_REG(spvc),
  	MLXSW_REG(spevet),
-+	MLXSW_REG(sftr2),
+ 	MLXSW_REG(sftr2),
++	MLXSW_REG(smid2),
  	MLXSW_REG(cwtp),
  	MLXSW_REG(cwtpm),
  	MLXSW_REG(pgcr),
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
-index d5e9af064ee6..ce80931f0402 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
-@@ -323,7 +323,7 @@ int mlxsw_sp_fid_flood_set(struct mlxsw_sp_fid *fid,
- 	struct mlxsw_sp_fid_family *fid_family = fid->fid_family;
- 	const struct mlxsw_sp_fid_ops *ops = fid_family->ops;
- 	const struct mlxsw_sp_flood_table *flood_table;
--	char *sftr_pl;
-+	char *sftr2_pl;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
+index 6eb54cd082d0..c5fd69a6bedd 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
+@@ -865,17 +865,17 @@ static int mlxsw_sp_port_mc_disabled_set(struct mlxsw_sp_port *mlxsw_sp_port,
+ static int mlxsw_sp_smid_router_port_set(struct mlxsw_sp *mlxsw_sp,
+ 					 u16 mid_idx, bool add)
+ {
+-	char *smid_pl;
++	char *smid2_pl;
  	int err;
  
- 	if (WARN_ON(!fid_family->flood_tables || !ops->flood_index))
-@@ -333,16 +333,16 @@ int mlxsw_sp_fid_flood_set(struct mlxsw_sp_fid *fid,
- 	if (!flood_table)
- 		return -ESRCH;
- 
--	sftr_pl = kmalloc(MLXSW_REG_SFTR_LEN, GFP_KERNEL);
--	if (!sftr_pl)
-+	sftr2_pl = kmalloc(MLXSW_REG_SFTR2_LEN, GFP_KERNEL);
-+	if (!sftr2_pl)
+-	smid_pl = kmalloc(MLXSW_REG_SMID_LEN, GFP_KERNEL);
+-	if (!smid_pl)
++	smid2_pl = kmalloc(MLXSW_REG_SMID2_LEN, GFP_KERNEL);
++	if (!smid2_pl)
  		return -ENOMEM;
  
--	mlxsw_reg_sftr_pack(sftr_pl, flood_table->table_index,
--			    ops->flood_index(fid), flood_table->table_type, 1,
--			    local_port, member);
--	err = mlxsw_reg_write(fid_family->mlxsw_sp->core, MLXSW_REG(sftr),
--			      sftr_pl);
--	kfree(sftr_pl);
-+	mlxsw_reg_sftr2_pack(sftr2_pl, flood_table->table_index,
-+			     ops->flood_index(fid), flood_table->table_type, 1,
-+			     local_port, member);
-+	err = mlxsw_reg_write(fid_family->mlxsw_sp->core, MLXSW_REG(sftr2),
-+			      sftr2_pl);
-+	kfree(sftr2_pl);
+-	mlxsw_reg_smid_pack(smid_pl, mid_idx,
+-			    mlxsw_sp_router_port(mlxsw_sp), add);
+-	err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(smid), smid_pl);
+-	kfree(smid_pl);
++	mlxsw_reg_smid2_pack(smid2_pl, mid_idx,
++			     mlxsw_sp_router_port(mlxsw_sp), add);
++	err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(smid2), smid2_pl);
++	kfree(smid2_pl);
+ 	return err;
+ }
+ 
+@@ -1477,30 +1477,30 @@ static int mlxsw_sp_port_smid_full_entry(struct mlxsw_sp *mlxsw_sp, u16 mid_idx,
+ 					 long *ports_bitmap,
+ 					 bool set_router_port)
+ {
+-	char *smid_pl;
++	char *smid2_pl;
+ 	int err, i;
+ 
+-	smid_pl = kmalloc(MLXSW_REG_SMID_LEN, GFP_KERNEL);
+-	if (!smid_pl)
++	smid2_pl = kmalloc(MLXSW_REG_SMID2_LEN, GFP_KERNEL);
++	if (!smid2_pl)
+ 		return -ENOMEM;
+ 
+-	mlxsw_reg_smid_pack(smid_pl, mid_idx, 0, false);
++	mlxsw_reg_smid2_pack(smid2_pl, mid_idx, 0, false);
+ 	for (i = 1; i < mlxsw_core_max_ports(mlxsw_sp->core); i++) {
+ 		if (mlxsw_sp->ports[i])
+-			mlxsw_reg_smid_port_mask_set(smid_pl, i, 1);
++			mlxsw_reg_smid2_port_mask_set(smid2_pl, i, 1);
+ 	}
+ 
+-	mlxsw_reg_smid_port_mask_set(smid_pl,
+-				     mlxsw_sp_router_port(mlxsw_sp), 1);
++	mlxsw_reg_smid2_port_mask_set(smid2_pl,
++				      mlxsw_sp_router_port(mlxsw_sp), 1);
+ 
+ 	for_each_set_bit(i, ports_bitmap, mlxsw_core_max_ports(mlxsw_sp->core))
+-		mlxsw_reg_smid_port_set(smid_pl, i, 1);
++		mlxsw_reg_smid2_port_set(smid2_pl, i, 1);
+ 
+-	mlxsw_reg_smid_port_set(smid_pl, mlxsw_sp_router_port(mlxsw_sp),
+-				set_router_port);
++	mlxsw_reg_smid2_port_set(smid2_pl, mlxsw_sp_router_port(mlxsw_sp),
++				 set_router_port);
+ 
+-	err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(smid), smid_pl);
+-	kfree(smid_pl);
++	err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(smid2), smid2_pl);
++	kfree(smid2_pl);
+ 	return err;
+ }
+ 
+@@ -1508,16 +1508,16 @@ static int mlxsw_sp_port_smid_set(struct mlxsw_sp_port *mlxsw_sp_port,
+ 				  u16 mid_idx, bool add)
+ {
+ 	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
+-	char *smid_pl;
++	char *smid2_pl;
+ 	int err;
+ 
+-	smid_pl = kmalloc(MLXSW_REG_SMID_LEN, GFP_KERNEL);
+-	if (!smid_pl)
++	smid2_pl = kmalloc(MLXSW_REG_SMID2_LEN, GFP_KERNEL);
++	if (!smid2_pl)
+ 		return -ENOMEM;
+ 
+-	mlxsw_reg_smid_pack(smid_pl, mid_idx, mlxsw_sp_port->local_port, add);
+-	err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(smid), smid_pl);
+-	kfree(smid_pl);
++	mlxsw_reg_smid2_pack(smid2_pl, mid_idx, mlxsw_sp_port->local_port, add);
++	err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(smid2), smid2_pl);
++	kfree(smid2_pl);
  	return err;
  }
  
