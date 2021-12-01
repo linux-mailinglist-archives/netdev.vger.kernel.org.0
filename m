@@ -2,161 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E919F464600
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 05:34:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 762DC464630
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 05:57:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346566AbhLAEhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 23:37:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51646 "EHLO
+        id S229652AbhLAFAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 00:00:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230301AbhLAEhP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 23:37:15 -0500
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 419FEC061574;
-        Tue, 30 Nov 2021 20:33:55 -0800 (PST)
-Received: by mail-yb1-xb2f.google.com with SMTP id v138so59478047ybb.8;
-        Tue, 30 Nov 2021 20:33:55 -0800 (PST)
+        with ESMTP id S229487AbhLAFAs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 00:00:48 -0500
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C150FC061574
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 20:57:28 -0800 (PST)
+Received: by mail-pl1-x631.google.com with SMTP id m24so16720226pls.10
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 20:57:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HgPlX08iVhCHw9hxpajnttorkNd49rlMPuyi3Twywfg=;
-        b=T+vYrxRqRC4OruAQddpJR6OllDmjwh/akcDo4VNt57UMAF/kWKnumEBUV7qtw0qFZl
-         FoI05FLG0S2XmpE3kCrS3MpXfDiZNiaznB0665x5sYKIyD3kkmTow4pNvjkSmwjTwY+Y
-         yYp4Nr+wQUwgZC3ioghY0kDapKvPXccEnpEmYlLbydhnA6IkajRPc22XbCBLuKlnZX26
-         pm7Jm79bXBpOUx6Z8PBX2BJm/juS9bFo77OvF/XbZn7YlH7Qu5l/T/UpRyBjcwhtZtUX
-         u1ajki7w/aCuTKA3LC5cNr3rJs2d1Gs9f90h0iylWPkJB6hL9WvzHZJOzhFaw/lwXrA2
-         mNCg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6KTAD3sKpyDKo+5liOLZ7i1RU7H5kwdnRvVAzdbwkHM=;
+        b=XgQlPIGfPfnxQSra78j+1431qtCkVJzPVcATzoqpGhy1mR8IniulOt7m/Gqm6pJUYL
+         +/ZZty9xWNWWMswXyRcKN3Eoxn7nqSN1o9Sd+yoBFOGkdw9q0xryoyW6XcAUcDTJnvAh
+         689jO3rB7vqASjnwDnnh8kqbr3ohQ09VmnGWPN0hQ8b3VLRNtvSdxZnuNeCl3OhYPunO
+         RHQq7OTDfKnEV+HwA1hI2yp08Fb/jDRraKoumjTR9/JSJHp6lavQ52Y0WxlH+m0BJ/C2
+         Gb7iOxMtFs1wEoaL/IdLXeuPzSX6tFF+OXk3bkzSeUrnm8z+x8LF8QdOoAOS0vZwXf2E
+         Ednw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HgPlX08iVhCHw9hxpajnttorkNd49rlMPuyi3Twywfg=;
-        b=JbjqrYodD02JaIfLpamE9dhY8DvyS9j5HGUUlRi33vmkYb7ku1Ed19fE1WYE4qW1I9
-         bnOB9RsKcVoW8YeDJhtHGRaygetjmO3yChFK4JBTp2RqVO4R0kgNgBDGVIB4LVZUKY38
-         /8izSnwnaadRJO9enbVYbBgSYik5WtUe+M16pg2KpRzKRWCjkjg2TONxxrOLwRcvK2zn
-         jdxw9WbAmHEUNs1J9HaJzQRmHnr/aKCQvgh9t6VPnAZjzYsepkc75ZUavxcwTG4jKIv7
-         YSiA4d869PkxDGkDO/w3ldtmHMcTyxxcug5B0PB4wXUsHEm/Kpgyxh45eomtks1Eg1vZ
-         2YGg==
-X-Gm-Message-State: AOAM530FbCjSlURzo4bhrQfpdPiFdi4E0NhylN9VB7aoFfxxyccj9Jnx
-        M4JQP7WsV6aftl3GTwB9DCU1MsuoHglTyxnec3Q=
-X-Google-Smtp-Source: ABdhPJwIybvmDal0P6G8pbyJ9J48JU2pvinGXabx2uP2lP6LGxPKm7TZntqnx3xIOfea2p+QrqTrLCDJwNfJxoayTBU=
-X-Received: by 2002:a25:54e:: with SMTP id 75mr4245787ybf.393.1638333234508;
- Tue, 30 Nov 2021 20:33:54 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6KTAD3sKpyDKo+5liOLZ7i1RU7H5kwdnRvVAzdbwkHM=;
+        b=RxXj2Ep54ceMNc1iEsSlNaT6/UUYS+tC0dfLHGBUfrEPcUW9Z1sp+gm7cWdUjU64sE
+         HonwcmPFO47cTgv7x5PNbOwW4oXnEMLCYmr1kVr5T2ekpySuqmQo09MFhfn2Jy3VUjJJ
+         aa+GXD+HFd+0Sq64AESNTDqtK8tl1kthC6lr1j58G9izH9u/vjWP0x+QNEWGt6iO5B+j
+         6QH/yIi6vhSNCn4ACbAcbmnQJgZ52KdPJZ1zh2NrTrKXpswaOieJdfZYzaXMUZAaqu5u
+         Iwh8lvi8+wCO4ukMlpU1JW18VHMN6UUH8tZyObYV+edaXIW7q2mIEYGdpQJmSRPFu3jy
+         Kr7Q==
+X-Gm-Message-State: AOAM533+b/l6EN7hinJChPtNNjyddN0SF6djRQXGfyWF4gziraHPNqdR
+        Rri6F+qw7j0pjzhomAKC7CI=
+X-Google-Smtp-Source: ABdhPJwinjOchqi5+vheQ4O7VWdw/xHMefVxgYLNwraOloKlLuXZj12kVTyvMT/3Uz1oDp+crHA27A==
+X-Received: by 2002:a17:902:b411:b0:143:6fe8:c60e with SMTP id x17-20020a170902b41100b001436fe8c60emr4558479plr.41.1638334648231;
+        Tue, 30 Nov 2021 20:57:28 -0800 (PST)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id g20sm25531389pfj.12.2021.11.30.20.57.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Nov 2021 20:57:27 -0800 (PST)
+Date:   Wed, 1 Dec 2021 12:57:22 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>, davem@davemloft.net,
+        Richard Cochran <richardcochran@gmail.com>,
+        Miroslav Lichvar <mlichvar@redhat.com>
+Subject: Re: [PATCH net-next] bond: pass get_ts_info and SIOC[SG]HWTSTAMP
+ ioctl to active device
+Message-ID: <YacAstl+brTqgAu8@Laptop-X1>
+References: <20211130070932.1634476-1-liuhangbin@gmail.com>
+ <20211130071956.5ad2c795@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20211126204108.11530-1-xiyou.wangcong@gmail.com>
- <CAPhsuW4zR5Yuwuywd71fdfP1YXX5cw6uNmhqULHy8BhfcbEAAQ@mail.gmail.com>
- <YaU9Mdv+7kEa4JOJ@unknown> <CAPhsuW4M5Zf9ryWihNSc6DPnXAq0PDJReD2-exxNZp4PDvsSXQ@mail.gmail.com>
- <CAM_iQpVrv8C9opCCMb9ZYtemp32vdv8No2XDwYmDAaCgPtq+RA@mail.gmail.com>
-In-Reply-To: <CAM_iQpVrv8C9opCCMb9ZYtemp32vdv8No2XDwYmDAaCgPtq+RA@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 30 Nov 2021 20:33:43 -0800
-Message-ID: <CAEf4BzZUdE+gsgiLRRissh1Vskf2Ea4WT3gAseV1b9cvNnaBVQ@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: fix missing section "sk_skb/skb_verdict"
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Song Liu <song@kernel.org>, Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211130071956.5ad2c795@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 30, 2021 at 8:19 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> On Tue, Nov 30, 2021 at 3:33 PM Song Liu <song@kernel.org> wrote:
-> >
-> > On Mon, Nov 29, 2021 at 12:51 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > >
-> > > On Fri, Nov 26, 2021 at 04:20:34PM -0800, Song Liu wrote:
-> > > > On Fri, Nov 26, 2021 at 12:45 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > > > >
-> > > > > From: Cong Wang <cong.wang@bytedance.com>
-> > > > >
-> > > > > When BPF_SK_SKB_VERDICT was introduced, I forgot to add
-> > > > > a section mapping for it in libbpf.
-> > > > >
-> > > > > Fixes: a7ba4558e69a ("sock_map: Introduce BPF_SK_SKB_VERDICT")
-> > > > > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > > > > Cc: John Fastabend <john.fastabend@gmail.com>
-> > > > > Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> > > > > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> > > >
-> > > > The patch looks good to me. But seems the selftests are OK without this. So,
-> > > > do we really need this?
-> > > >
-> > >
-> > > Not sure if I understand this question.
-> > >
-> > > At least BPF_SK_SKB_STREAM_PARSER and BPF_SK_SKB_STREAM_VERDICT are already
-> > > there, so either we should remove all of them or add BPF_SK_SKB_VERDICT for
-> > > completeness.
-> > >
-> > > Or are you suggesting we should change it back in selftests too? Note, it was
-> > > changed by Andrii in commit 15669e1dcd75fe6d51e495f8479222b5884665b6:
-> > >
-> > > -SEC("sk_skb/skb_verdict")
-> > > +SEC("sk_skb")
-> >
-> > Yes, I noticed that Andrii made the change, and it seems to work
-> > as-is. Therefore,
-> > I had the question "do we really need it".
->
-> Same question from me: why still keep sk_skb/stream_parser and
-> sk_skb/stream_verdict? ;) I don't see any reason these two are more
-> special than sk_skb/skb_verdict, therefore we should either keep all
-> of them or remove all of them.
->
+On Tue, Nov 30, 2021 at 07:19:56AM -0800, Jakub Kicinski wrote:
+> On Tue, 30 Nov 2021 15:09:32 +0800 Hangbin Liu wrote:
+> > We have VLAN PTP support(via get_ts_info) on kernel, and bond support(by
+> > getting active interface via netlink message) on userspace tool linuxptp.
+> > But there are always some users who want to use PTP with VLAN over bond,
+> > which is not able to do with the current implementation.
+> > 
+> > This patch passed get_ts_info and SIOC[SG]HWTSTAMP ioctl to active device
+> > with bond mode active-backup/tlb/alb. With this users could get kernel native
+> > bond or VLAN over bond PTP support.
+> > 
+> > Test with ptp4l and it works with VLAN over bond after this patch:
+> > ]# ptp4l -m -i bond0.23
+> > ptp4l[53377.141]: selected /dev/ptp4 as PTP clock
+> > ptp4l[53377.142]: port 1: INITIALIZING to LISTENING on INIT_COMPLETE
+> > ptp4l[53377.143]: port 0: INITIALIZING to LISTENING on INIT_COMPLETE
+> > ptp4l[53377.143]: port 0: INITIALIZING to LISTENING on INIT_COMPLETE
+> > ptp4l[53384.127]: port 1: LISTENING to MASTER on ANNOUNCE_RECEIPT_TIMEOUT_EXPIRES
+> > ptp4l[53384.127]: selected local clock e41d2d.fffe.123db0 as best master
+> > ptp4l[53384.127]: port 1: assuming the grand master role
+> 
+> Does the Ethernet spec say something about PTP over bond/LACP?
 
-"sk_skb/skb_verdict" was treated by libbpf *exactly* the same way as
-"sk_skb". Which means the attach type was set to BPF_PROG_TYPE_SK_SKB
-and expected_attach_type was 0 (not BPF_SK_SKB_VERDICT!). So that
-program is definitely not a BPF_SK_SKB_VERDICT, libbpf pre-1.0 just
-has a sloppy prefix matching logic.
+bond_option_active_slave_get_rcu() only supports bond mode active-backup/tlb/alb.
+With LACP mode _no_ active interface returns and we will use software
+timestamping.
 
-So Song's point is valid, we currently don't have selftests that tests
-BPF_SK_SKB_VERDICT expected attach type, so it would be good to add
-it. Or make sure that existing test that was supposed to test it is
-actually testing it.
+But you remind me that we should return -EOPNOTSUPP when there is no real_dev
+for bond_eth_ioctl(). I will send a fixup later.
 
-> >
-> > If we do need to differentiate skb_verdict from just sk_skb, could you
->
-> Are you sure sk_skb is a real attach type?? To me, it is an umbrella to
-> catch all of them:
->
-> SEC_DEF("sk_skb",               SK_SKB, 0, SEC_NONE | SEC_SLOPPY_PFX),
->
-> whose expected_attach_type is 0. The reason why it works is
-> probably because we don't check BPF_PROG_TYPE_SK_SKB in
-> bpf_prog_load_check_attach().
+> 
+> What happens during failover? Presumably the user space daemon will
+> start getting HW stamps based on a different PHC than it's disciplining?
 
-We don't check expected_attach_type in prog_load, but
-sock_map_prog_update in net/core/sock_map.c is checking expected
-attach type and should return -EOPNOTSUPP. But given that no test is
-failing our tests don't even try to attach anything, I assume. Which
-makes them not so great at actually testing anything. Please see if
-you can improve that.
+linuxptp will switch to new active interface's PHC device when there is a
+bonding failover by filtering netlink message on pure bond.
 
->
-> > please add a
-> > case selftest for skb_verdict?
->
-> Ah, sure, I didn't know we have sec_name_test.
->
-> >
-> > Also, maybe we can name it as "sk_skb/verdict" to avoid duplication?
->
-> At least we used to call it sk_skb/skb_verdict before commit 15669e1dcd.
+But for VLAN over bond I need to figure out how to get the bond failover
+message on VLAN interface and update the new PHC device.
 
-As I mentioned above, it could have been called "sk_skb!dontcare" and
-that would still work (and still does if strict mode is not enabled
-for libbpf). For consistency with UAPI expected_attach_type enum it
-should be called "sk_skb/verdict" because BPF_SK_SKB_VERDICT vs
-BPF_SK_SKB_STREAM_VERDICT vs BPF_SK_SKB_STREAM_PARSER.
-
->
-> Thanks.
+Thanks
+Hangbin
