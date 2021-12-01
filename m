@@ -2,79 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDA52464517
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 03:50:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C0C8464533
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 03:57:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241465AbhLACxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 21:53:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56806 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234237AbhLACxb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 21:53:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8021EC061574;
-        Tue, 30 Nov 2021 18:50:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47468B81DD6;
-        Wed,  1 Dec 2021 02:50:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E9F7FC53FCC;
-        Wed,  1 Dec 2021 02:50:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638327009;
-        bh=WjQfaBteavQVGvjcBxD6/WxaXi44xVjBawSieCO2qU0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=OuT/sJiLgdcTk95OzydOMOtZACkLY8QdH/rbYEbCK0Eqrt5ea62r4VtXt8g910sls
-         XL0suaruFnz8n1fwqjZQIx3hgmaeTm69/CRz1RFs+NccMpknjwxmauS7pHfPmNVOQ3
-         kTexfUrZPihLgs/mjfFqTWp3FzOcZ3WtB/JakZtQuxorI6l1uyOTpqdiAUSYK4qI0d
-         zZx66nxF0jtgnSht2l48CKnSu5e5+1JsQgWtYKhnzIee4o5V1csr04/c2D2At9dGh2
-         BnxchpFpnLKvh8+fpSDWB5Wd2ZDIETJucp5e28Zf8NmddxDoXLorBDLhwUCmnENhEx
-         XMrneo9iLV88g==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id CC25C60A4D;
-        Wed,  1 Dec 2021 02:50:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1346342AbhLADAs convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 30 Nov 2021 22:00:48 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:59336 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346343AbhLADAr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 22:00:47 -0500
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1B12v1QH1016468, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36503.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1B12v1QH1016468
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 1 Dec 2021 10:57:01 +0800
+Received: from RTEXDAG02.realtek.com.tw (172.21.6.101) by
+ RTEXH36503.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 1 Dec 2021 10:57:01 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXDAG02.realtek.com.tw (172.21.6.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 1 Dec 2021 10:57:01 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::e095:6756:b2cf:3baa]) by
+ RTEXMBS04.realtek.com.tw ([fe80::e095:6756:b2cf:3baa%5]) with mapi id
+ 15.01.2308.015; Wed, 1 Dec 2021 10:57:01 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+Subject: RE: [RFC PATCH 0/4] r8169: support dash
+Thread-Topic: [RFC PATCH 0/4] r8169: support dash
+Thread-Index: AQHX5QnDLn6ABzzmpEe3dMh4ox9UtKwaRZuAgAKrunA=
+Date:   Wed, 1 Dec 2021 02:57:00 +0000
+Message-ID: <918d75ea873a453ab2ba588a35d66ab6@realtek.com>
+References: <20211129101315.16372-381-nic_swsd@realtek.com>
+ <20211129095947.547a765f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211129095947.547a765f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.203]
+x-kse-serverinfo: RTEXDAG02.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/11/30_=3F=3F_11:16:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: natsemi: fix hw address initialization for jazz and
- xtensa
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163832700883.18410.4563471558753780897.git-patchwork-notify@kernel.org>
-Date:   Wed, 01 Dec 2021 02:50:08 +0000
-References: <20211130143600.31970-1-jcmvbkbc@gmail.com>
-In-Reply-To: <20211130143600.31970-1-jcmvbkbc@gmail.com>
-To:     Max Filippov <jcmvbkbc@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        rdunlap@infradead.org, davem@davemloft.net, kuba@kernel.org
+X-KSE-ServerInfo: RTEXH36503.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Tue, 30 Nov 2021 06:36:00 -0800 you wrote:
-> Use eth_hw_addr_set function instead of writing the address directly to
-> net_device::dev_addr.
+Jakub Kicinski <kuba@kernel.org>
+> Sent: Tuesday, November 30, 2021 2:00 AM
+> Subject: Re: [RFC PATCH 0/4] r8169: support dash
 > 
-> Fixes: adeef3e32146 ("net: constify netdev->dev_addr")
-> Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
-> Cc: Randy Dunlap <rdunlap@infradead.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
+> On Mon, 29 Nov 2021 18:13:11 +0800 Hayes Wang wrote:
+> > These patches are used to support dash for RTL8111EP and
+> > RTL8111FP(RTL81117).
 > 
-> [...]
+> If I understand correctly DASH is a DMTF standard for remote control.
+> 
+> Since it's a standard I think we should have a common way of
+> configuring it across drivers.
 
-Here is the summary with links:
-  - net: natsemi: fix hw address initialization for jazz and xtensa
-    https://git.kernel.org/netdev/net-next/c/23ea630f86c7
+Excuse me. I am not familiar with it.
+What document or sample code could I start?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> Is enable/disable the only configuration
+> that we will need?
 
+I don't think I could answer it before I understand the above way
+you mentioned.
+
+> We don't use sysfs too much these days, can we move the knob to
+> devlink, please? (If we only need an on/off switch generic devlink param
+> should be fine).
+
+Thanks. I would study devlink.
+
+Best Regards,
+Hayes
 
