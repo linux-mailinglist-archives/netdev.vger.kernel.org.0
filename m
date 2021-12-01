@@ -2,301 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB7B0464959
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 09:13:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DAB746497B
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 09:19:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347864AbhLAIRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 03:17:03 -0500
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:35315 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1347861AbhLAIRC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 03:17:02 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 6227D5C0256;
-        Wed,  1 Dec 2021 03:13:41 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 01 Dec 2021 03:13:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=7KwoSFM3mUKoWkxUJJ9XyEgg3h4GOqhUIh/3tiUT/Mc=; b=MUpaN3RM
-        DHnhpftBdbiqEi//BE/0DAfjEvwDJCBM3CQ8n5c6DDTbIgKem+x0WdiQXrY/Qnmf
-        R0R6cxS7jvartvJMX8WBTkAMFvyzF/q2sAbGn8Cgx4UEOV2VlZqWgW4DbikOb//D
-        r+ExmcllN+mp0xECs3pUIID6FGIHxFFDSFx2Fa8XH9wlHeqLuN8O4OVqZ3JVAm3h
-        cAoeGcAm59wdkXiOEOC1agD7p+mElEbuSpueFPb1TUqe73Qx7ScStTur6URT0W+Q
-        Iyb591jQfCmULCStj0Qfsv7c/boqxNFJhvTSNBNoyLEn5lToPWGyFRu+XW4bDGSe
-        iukWbPFwBsnG/w==
-X-ME-Sender: <xms:tS6nYVSntdZF7w078e0WnbFtsjyKTRJv1bxDISoXVNzlmAkufx7ZFg>
-    <xme:tS6nYezSEwG5KGbQh_vMQPqnK2Stb0uydZ5opUavaGo4XZsIwZq2XMqWewXoCnRfK
-    NHK1jvFIC4jbaU>
-X-ME-Received: <xmr:tS6nYa0u4VWD83AMdH4VpVRp-KuWxplqMEOn0SmnNztTlrTA_GsczkiIgPqGHM_gFcuTfZj1iB7k5zI_b5G1geLljF1c8TkPfrWkXDZwV6Gizw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddriedvgdduudekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgepudenucfr
-    rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:tS6nYdC5LzNySL8RkiDlmR8u9eVCavgJggqe8ERYP3oXkqP08NFVmQ>
-    <xmx:tS6nYejBRpTO5F0M-MtdxgnbE_kX1vc7NGnmhSpeF-oESM1g6xvGYQ>
-    <xmx:tS6nYRqcHSdu0p_x1GfcGnhh6CqDkMtFii-SrMSOL86UPtpS4-wjMg>
-    <xmx:tS6nYWfu4Ev5pzVbkVGFpriL7D9IDTTFfIrPlCbc-zfkwPkPVBr8Pg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 1 Dec 2021 03:13:39 -0500 (EST)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
-        amcohen@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 10/10] mlxsw: Use Switch Multicast ID Register Version 2
-Date:   Wed,  1 Dec 2021 10:12:40 +0200
-Message-Id: <20211201081240.3767366-11-idosch@idosch.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211201081240.3767366-1-idosch@idosch.org>
-References: <20211201081240.3767366-1-idosch@idosch.org>
+        id S241758AbhLAIXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 03:23:07 -0500
+Received: from mga09.intel.com ([134.134.136.24]:42259 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229564AbhLAIXG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Dec 2021 03:23:06 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10184"; a="236232410"
+X-IronPort-AV: E=Sophos;i="5.87,278,1631602800"; 
+   d="scan'208";a="236232410"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2021 00:19:45 -0800
+X-IronPort-AV: E=Sophos;i="5.87,278,1631602800"; 
+   d="scan'208";a="512594157"
+Received: from unknown (HELO cra01infra01.deacluster.intel.com) ([10.240.193.73])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2021 00:19:43 -0800
+From:   Zhu Lingshan <lingshan.zhu@intel.com>
+To:     jasowang@redhat.com, mst@redhat.com, sgarzare@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, Zhu Lingshan <lingshan.zhu@intel.com>,
+        stable@vger.kernel.org
+Subject: [PATCH V2] ifcvf/vDPA: fix misuse virtio-net device config size for blk dev
+Date:   Wed,  1 Dec 2021 16:12:55 +0800
+Message-Id: <20211201081255.60187-1-lingshan.zhu@intel.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Amit Cohen <amcohen@nvidia.com>
+This commit fixes a misuse of virtio-net device config size issue
+for virtio-block devices.
 
-The SMID-V2 register maps Multicast ID (MID) into a list of local ports.
-It is a new version of SMID in order to support 1024 bits of local_port.
+A new member config_size in struct ifcvf_hw is introduced and would
+be initialized through vdpa_dev_add() to record correct device
+config size.
 
-Add SMID-V2 register and use it instead of SMID.
+To be more generic, rename ifcvf_hw.net_config to ifcvf_hw.dev_config,
+the helpers ifcvf_read/write_net_config() to ifcvf_read/write_dev_config()
 
-Signed-off-by: Amit Cohen <amcohen@nvidia.com>
-Reviewed-by: Petr Machata <petrm@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+Reported-and-suggested-by: Stefano Garzarella <sgarzare@redhat.com>
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+Fixes: 6ad31d162a4e ("vDPA/ifcvf: enable Intel C5000X-PL virtio-block for vDPA")
+Cc: <stable@vger.kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h     | 94 +++++++++----------
- .../mellanox/mlxsw/spectrum_switchdev.c       | 50 +++++-----
- 2 files changed, 72 insertions(+), 72 deletions(-)
+ drivers/vdpa/ifcvf/ifcvf_base.c | 41 +++++++++++++++++++++++++--------
+ drivers/vdpa/ifcvf/ifcvf_base.h |  9 +++++---
+ drivers/vdpa/ifcvf/ifcvf_main.c | 24 ++++---------------
+ 3 files changed, 41 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index 43cac526b9ad..5eaba2abf212 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -69,52 +69,6 @@ MLXSW_REG_DEFINE(spad, MLXSW_REG_SPAD_ID, MLXSW_REG_SPAD_LEN);
-  */
- MLXSW_ITEM_BUF(reg, spad, base_mac, 0x02, 6);
+diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c b/drivers/vdpa/ifcvf/ifcvf_base.c
+index 2808f1ba9f7b..7d41dfe48ade 100644
+--- a/drivers/vdpa/ifcvf/ifcvf_base.c
++++ b/drivers/vdpa/ifcvf/ifcvf_base.c
+@@ -143,8 +143,8 @@ int ifcvf_init_hw(struct ifcvf_hw *hw, struct pci_dev *pdev)
+ 			IFCVF_DBG(pdev, "hw->isr = %p\n", hw->isr);
+ 			break;
+ 		case VIRTIO_PCI_CAP_DEVICE_CFG:
+-			hw->net_cfg = get_cap_addr(hw, &cap);
+-			IFCVF_DBG(pdev, "hw->net_cfg = %p\n", hw->net_cfg);
++			hw->dev_cfg = get_cap_addr(hw, &cap);
++			IFCVF_DBG(pdev, "hw->dev_cfg = %p\n", hw->dev_cfg);
+ 			break;
+ 		}
  
--/* SMID - Switch Multicast ID
-- * --------------------------
-- * The MID record maps from a MID (Multicast ID), which is a unique identifier
-- * of the multicast group within the stacking domain, into a list of local
-- * ports into which the packet is replicated.
-- */
--#define MLXSW_REG_SMID_ID 0x2007
--#define MLXSW_REG_SMID_LEN 0x240
--
--MLXSW_REG_DEFINE(smid, MLXSW_REG_SMID_ID, MLXSW_REG_SMID_LEN);
--
--/* reg_smid_swid
-- * Switch partition ID.
-- * Access: Index
-- */
--MLXSW_ITEM32(reg, smid, swid, 0x00, 24, 8);
--
--/* reg_smid_mid
-- * Multicast identifier - global identifier that represents the multicast group
-- * across all devices.
-- * Access: Index
-- */
--MLXSW_ITEM32(reg, smid, mid, 0x00, 0, 16);
--
--/* reg_smid_port
-- * Local port memebership (1 bit per port).
-- * Access: RW
-- */
--MLXSW_ITEM_BIT_ARRAY(reg, smid, port, 0x20, 0x20, 1);
--
--/* reg_smid_port_mask
-- * Local port mask (1 bit per port).
-- * Access: W
-- */
--MLXSW_ITEM_BIT_ARRAY(reg, smid, port_mask, 0x220, 0x20, 1);
--
--static inline void mlxsw_reg_smid_pack(char *payload, u16 mid,
--				       u8 port, bool set)
--{
--	MLXSW_REG_ZERO(smid, payload);
--	mlxsw_reg_smid_swid_set(payload, 0);
--	mlxsw_reg_smid_mid_set(payload, mid);
--	mlxsw_reg_smid_port_set(payload, port, set);
--	mlxsw_reg_smid_port_mask_set(payload, port, 1);
--}
--
- /* SSPR - Switch System Port Record Register
-  * -----------------------------------------
-  * Configures the system port to local port mapping.
-@@ -2105,6 +2059,52 @@ static inline void mlxsw_reg_sftr2_pack(char *payload,
- 	mlxsw_reg_sftr2_port_mask_set(payload, port, 1);
- }
- 
-+/* SMID-V2 - Switch Multicast ID Version 2 Register
-+ * ------------------------------------------------
-+ * The MID record maps from a MID (Multicast ID), which is a unique identifier
-+ * of the multicast group within the stacking domain, into a list of local
-+ * ports into which the packet is replicated.
-+ */
-+#define MLXSW_REG_SMID2_ID 0x2034
-+#define MLXSW_REG_SMID2_LEN 0x120
-+
-+MLXSW_REG_DEFINE(smid2, MLXSW_REG_SMID2_ID, MLXSW_REG_SMID2_LEN);
-+
-+/* reg_smid2_swid
-+ * Switch partition ID.
-+ * Access: Index
-+ */
-+MLXSW_ITEM32(reg, smid2, swid, 0x00, 24, 8);
-+
-+/* reg_smid2_mid
-+ * Multicast identifier - global identifier that represents the multicast group
-+ * across all devices.
-+ * Access: Index
-+ */
-+MLXSW_ITEM32(reg, smid2, mid, 0x00, 0, 16);
-+
-+/* reg_smid2_port
-+ * Local port memebership (1 bit per port).
-+ * Access: RW
-+ */
-+MLXSW_ITEM_BIT_ARRAY(reg, smid2, port, 0x20, 0x80, 1);
-+
-+/* reg_smid2_port_mask
-+ * Local port mask (1 bit per port).
-+ * Access: WO
-+ */
-+MLXSW_ITEM_BIT_ARRAY(reg, smid2, port_mask, 0xA0, 0x80, 1);
-+
-+static inline void mlxsw_reg_smid2_pack(char *payload, u16 mid, u16 port,
-+					bool set)
-+{
-+	MLXSW_REG_ZERO(smid2, payload);
-+	mlxsw_reg_smid2_swid_set(payload, 0);
-+	mlxsw_reg_smid2_mid_set(payload, mid);
-+	mlxsw_reg_smid2_port_set(payload, port, set);
-+	mlxsw_reg_smid2_port_mask_set(payload, port, 1);
-+}
-+
- /* CWTP - Congetion WRED ECN TClass Profile
-  * ----------------------------------------
-  * Configures the profiles for queues of egress port and traffic class
-@@ -12373,7 +12373,6 @@ static inline void mlxsw_reg_sbib_pack(char *payload, u16 local_port,
- static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
- 	MLXSW_REG(sgcr),
- 	MLXSW_REG(spad),
--	MLXSW_REG(smid),
- 	MLXSW_REG(sspr),
- 	MLXSW_REG(sfdat),
- 	MLXSW_REG(sfd),
-@@ -12396,6 +12395,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
- 	MLXSW_REG(spvc),
- 	MLXSW_REG(spevet),
- 	MLXSW_REG(sftr2),
-+	MLXSW_REG(smid2),
- 	MLXSW_REG(cwtp),
- 	MLXSW_REG(cwtpm),
- 	MLXSW_REG(pgcr),
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-index 6eb54cd082d0..c5fd69a6bedd 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-@@ -865,17 +865,17 @@ static int mlxsw_sp_port_mc_disabled_set(struct mlxsw_sp_port *mlxsw_sp_port,
- static int mlxsw_sp_smid_router_port_set(struct mlxsw_sp *mlxsw_sp,
- 					 u16 mid_idx, bool add)
- {
--	char *smid_pl;
-+	char *smid2_pl;
- 	int err;
- 
--	smid_pl = kmalloc(MLXSW_REG_SMID_LEN, GFP_KERNEL);
--	if (!smid_pl)
-+	smid2_pl = kmalloc(MLXSW_REG_SMID2_LEN, GFP_KERNEL);
-+	if (!smid2_pl)
- 		return -ENOMEM;
- 
--	mlxsw_reg_smid_pack(smid_pl, mid_idx,
--			    mlxsw_sp_router_port(mlxsw_sp), add);
--	err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(smid), smid_pl);
--	kfree(smid_pl);
-+	mlxsw_reg_smid2_pack(smid2_pl, mid_idx,
-+			     mlxsw_sp_router_port(mlxsw_sp), add);
-+	err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(smid2), smid2_pl);
-+	kfree(smid2_pl);
- 	return err;
- }
- 
-@@ -1477,30 +1477,30 @@ static int mlxsw_sp_port_smid_full_entry(struct mlxsw_sp *mlxsw_sp, u16 mid_idx,
- 					 long *ports_bitmap,
- 					 bool set_router_port)
- {
--	char *smid_pl;
-+	char *smid2_pl;
- 	int err, i;
- 
--	smid_pl = kmalloc(MLXSW_REG_SMID_LEN, GFP_KERNEL);
--	if (!smid_pl)
-+	smid2_pl = kmalloc(MLXSW_REG_SMID2_LEN, GFP_KERNEL);
-+	if (!smid2_pl)
- 		return -ENOMEM;
- 
--	mlxsw_reg_smid_pack(smid_pl, mid_idx, 0, false);
-+	mlxsw_reg_smid2_pack(smid2_pl, mid_idx, 0, false);
- 	for (i = 1; i < mlxsw_core_max_ports(mlxsw_sp->core); i++) {
- 		if (mlxsw_sp->ports[i])
--			mlxsw_reg_smid_port_mask_set(smid_pl, i, 1);
-+			mlxsw_reg_smid2_port_mask_set(smid2_pl, i, 1);
+@@ -153,7 +153,7 @@ int ifcvf_init_hw(struct ifcvf_hw *hw, struct pci_dev *pdev)
  	}
  
--	mlxsw_reg_smid_port_mask_set(smid_pl,
--				     mlxsw_sp_router_port(mlxsw_sp), 1);
-+	mlxsw_reg_smid2_port_mask_set(smid2_pl,
-+				      mlxsw_sp_router_port(mlxsw_sp), 1);
+ 	if (hw->common_cfg == NULL || hw->notify_base == NULL ||
+-	    hw->isr == NULL || hw->net_cfg == NULL) {
++	    hw->isr == NULL || hw->dev_cfg == NULL) {
+ 		IFCVF_ERR(pdev, "Incomplete PCI capabilities\n");
+ 		return -EIO;
+ 	}
+@@ -174,7 +174,7 @@ int ifcvf_init_hw(struct ifcvf_hw *hw, struct pci_dev *pdev)
+ 	IFCVF_DBG(pdev,
+ 		  "PCI capability mapping: common cfg: %p, notify base: %p\n, isr cfg: %p, device cfg: %p, multiplier: %u\n",
+ 		  hw->common_cfg, hw->notify_base, hw->isr,
+-		  hw->net_cfg, hw->notify_off_multiplier);
++		  hw->dev_cfg, hw->notify_off_multiplier);
  
- 	for_each_set_bit(i, ports_bitmap, mlxsw_core_max_ports(mlxsw_sp->core))
--		mlxsw_reg_smid_port_set(smid_pl, i, 1);
-+		mlxsw_reg_smid2_port_set(smid2_pl, i, 1);
- 
--	mlxsw_reg_smid_port_set(smid_pl, mlxsw_sp_router_port(mlxsw_sp),
--				set_router_port);
-+	mlxsw_reg_smid2_port_set(smid2_pl, mlxsw_sp_router_port(mlxsw_sp),
-+				 set_router_port);
- 
--	err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(smid), smid_pl);
--	kfree(smid_pl);
-+	err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(smid2), smid2_pl);
-+	kfree(smid2_pl);
- 	return err;
+ 	return 0;
+ }
+@@ -242,33 +242,54 @@ int ifcvf_verify_min_features(struct ifcvf_hw *hw, u64 features)
+ 	return 0;
  }
  
-@@ -1508,16 +1508,16 @@ static int mlxsw_sp_port_smid_set(struct mlxsw_sp_port *mlxsw_sp_port,
- 				  u16 mid_idx, bool add)
+-void ifcvf_read_net_config(struct ifcvf_hw *hw, u64 offset,
++u32 ifcvf_get_config_size(struct ifcvf_hw *hw)
++{
++	struct ifcvf_adapter *adapter;
++	u32 config_size;
++
++	adapter = vf_to_adapter(hw);
++	switch (hw->dev_type) {
++	case VIRTIO_ID_NET:
++		config_size = sizeof(struct virtio_net_config);
++		break;
++	case VIRTIO_ID_BLOCK:
++		config_size = sizeof(struct virtio_blk_config);
++		break;
++	default:
++		config_size = 0;
++		IFCVF_ERR(adapter->pdev, "VIRTIO ID %u not supported\n", hw->dev_type);
++	}
++
++	return config_size;
++}
++
++void ifcvf_read_dev_config(struct ifcvf_hw *hw, u64 offset,
+ 			   void *dst, int length)
  {
- 	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
--	char *smid_pl;
-+	char *smid2_pl;
- 	int err;
+ 	u8 old_gen, new_gen, *p;
+ 	int i;
  
--	smid_pl = kmalloc(MLXSW_REG_SMID_LEN, GFP_KERNEL);
--	if (!smid_pl)
-+	smid2_pl = kmalloc(MLXSW_REG_SMID2_LEN, GFP_KERNEL);
-+	if (!smid2_pl)
- 		return -ENOMEM;
+-	WARN_ON(offset + length > sizeof(struct virtio_net_config));
++	WARN_ON(offset + length > hw->config_size);
+ 	do {
+ 		old_gen = ifc_ioread8(&hw->common_cfg->config_generation);
+ 		p = dst;
+ 		for (i = 0; i < length; i++)
+-			*p++ = ifc_ioread8(hw->net_cfg + offset + i);
++			*p++ = ifc_ioread8(hw->dev_cfg + offset + i);
  
--	mlxsw_reg_smid_pack(smid_pl, mid_idx, mlxsw_sp_port->local_port, add);
--	err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(smid), smid_pl);
--	kfree(smid_pl);
-+	mlxsw_reg_smid2_pack(smid2_pl, mid_idx, mlxsw_sp_port->local_port, add);
-+	err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(smid2), smid2_pl);
-+	kfree(smid2_pl);
- 	return err;
+ 		new_gen = ifc_ioread8(&hw->common_cfg->config_generation);
+ 	} while (old_gen != new_gen);
  }
  
+-void ifcvf_write_net_config(struct ifcvf_hw *hw, u64 offset,
++void ifcvf_write_dev_config(struct ifcvf_hw *hw, u64 offset,
+ 			    const void *src, int length)
+ {
+ 	const u8 *p;
+ 	int i;
+ 
+ 	p = src;
+-	WARN_ON(offset + length > sizeof(struct virtio_net_config));
++	WARN_ON(offset + length > hw->config_size);
+ 	for (i = 0; i < length; i++)
+-		ifc_iowrite8(*p++, hw->net_cfg + offset + i);
++		ifc_iowrite8(*p++, hw->dev_cfg + offset + i);
+ }
+ 
+ static void ifcvf_set_features(struct ifcvf_hw *hw, u64 features)
+diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
+index 09918af3ecf8..c486873f370a 100644
+--- a/drivers/vdpa/ifcvf/ifcvf_base.h
++++ b/drivers/vdpa/ifcvf/ifcvf_base.h
+@@ -71,12 +71,14 @@ struct ifcvf_hw {
+ 	u64 hw_features;
+ 	u32 dev_type;
+ 	struct virtio_pci_common_cfg __iomem *common_cfg;
+-	void __iomem *net_cfg;
++	void __iomem *dev_cfg;
+ 	struct vring_info vring[IFCVF_MAX_QUEUES];
+ 	void __iomem * const *base;
+ 	char config_msix_name[256];
+ 	struct vdpa_callback config_cb;
+ 	unsigned int config_irq;
++	/* virtio-net or virtio-blk device config size */
++	u32 config_size;
+ };
+ 
+ struct ifcvf_adapter {
+@@ -105,9 +107,9 @@ int ifcvf_init_hw(struct ifcvf_hw *hw, struct pci_dev *dev);
+ int ifcvf_start_hw(struct ifcvf_hw *hw);
+ void ifcvf_stop_hw(struct ifcvf_hw *hw);
+ void ifcvf_notify_queue(struct ifcvf_hw *hw, u16 qid);
+-void ifcvf_read_net_config(struct ifcvf_hw *hw, u64 offset,
++void ifcvf_read_dev_config(struct ifcvf_hw *hw, u64 offset,
+ 			   void *dst, int length);
+-void ifcvf_write_net_config(struct ifcvf_hw *hw, u64 offset,
++void ifcvf_write_dev_config(struct ifcvf_hw *hw, u64 offset,
+ 			    const void *src, int length);
+ u8 ifcvf_get_status(struct ifcvf_hw *hw);
+ void ifcvf_set_status(struct ifcvf_hw *hw, u8 status);
+@@ -120,4 +122,5 @@ u16 ifcvf_get_vq_state(struct ifcvf_hw *hw, u16 qid);
+ int ifcvf_set_vq_state(struct ifcvf_hw *hw, u16 qid, u16 num);
+ struct ifcvf_adapter *vf_to_adapter(struct ifcvf_hw *hw);
+ int ifcvf_probed_virtio_net(struct ifcvf_hw *hw);
++u32 ifcvf_get_config_size(struct ifcvf_hw *hw);
+ #endif /* _IFCVF_H_ */
+diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
+index 6dc75ca70b37..92ba7126e5d6 100644
+--- a/drivers/vdpa/ifcvf/ifcvf_main.c
++++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+@@ -366,24 +366,9 @@ static u32 ifcvf_vdpa_get_vq_align(struct vdpa_device *vdpa_dev)
+ 
+ static size_t ifcvf_vdpa_get_config_size(struct vdpa_device *vdpa_dev)
+ {
+-	struct ifcvf_adapter *adapter = vdpa_to_adapter(vdpa_dev);
+ 	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
+-	struct pci_dev *pdev = adapter->pdev;
+-	size_t size;
+-
+-	switch (vf->dev_type) {
+-	case VIRTIO_ID_NET:
+-		size = sizeof(struct virtio_net_config);
+-		break;
+-	case VIRTIO_ID_BLOCK:
+-		size = sizeof(struct virtio_blk_config);
+-		break;
+-	default:
+-		size = 0;
+-		IFCVF_ERR(pdev, "VIRTIO ID %u not supported\n", vf->dev_type);
+-	}
+ 
+-	return size;
++	return  vf->config_size;
+ }
+ 
+ static void ifcvf_vdpa_get_config(struct vdpa_device *vdpa_dev,
+@@ -392,8 +377,7 @@ static void ifcvf_vdpa_get_config(struct vdpa_device *vdpa_dev,
+ {
+ 	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
+ 
+-	WARN_ON(offset + len > sizeof(struct virtio_net_config));
+-	ifcvf_read_net_config(vf, offset, buf, len);
++	ifcvf_read_dev_config(vf, offset, buf, len);
+ }
+ 
+ static void ifcvf_vdpa_set_config(struct vdpa_device *vdpa_dev,
+@@ -402,8 +386,7 @@ static void ifcvf_vdpa_set_config(struct vdpa_device *vdpa_dev,
+ {
+ 	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
+ 
+-	WARN_ON(offset + len > sizeof(struct virtio_net_config));
+-	ifcvf_write_net_config(vf, offset, buf, len);
++	ifcvf_write_dev_config(vf, offset, buf, len);
+ }
+ 
+ static void ifcvf_vdpa_set_config_cb(struct vdpa_device *vdpa_dev,
+@@ -542,6 +525,7 @@ static int ifcvf_vdpa_dev_add(struct vdpa_mgmt_dev *mdev, const char *name,
+ 		vf->vring[i].irq = -EINVAL;
+ 
+ 	vf->hw_features = ifcvf_get_hw_features(vf);
++	vf->config_size = ifcvf_get_config_size(vf);
+ 
+ 	adapter->vdpa.mdev = &ifcvf_mgmt_dev->mdev;
+ 	ret = _vdpa_register_device(&adapter->vdpa, vf->nr_vring);
 -- 
-2.31.1
+2.27.0
 
