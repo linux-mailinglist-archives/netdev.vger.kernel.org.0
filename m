@@ -2,91 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB104465644
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 20:21:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A55F465688
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 20:35:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243784AbhLATYY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 14:24:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57976 "EHLO
+        id S245282AbhLATix (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 14:38:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240750AbhLATYU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 14:24:20 -0500
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95D5EC061574;
-        Wed,  1 Dec 2021 11:20:58 -0800 (PST)
-Received: by mail-oi1-x235.google.com with SMTP id o4so50653110oia.10;
-        Wed, 01 Dec 2021 11:20:58 -0800 (PST)
+        with ESMTP id S234430AbhLATiv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 14:38:51 -0500
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1A3C061574;
+        Wed,  1 Dec 2021 11:35:30 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id u11so18515679plf.3;
+        Wed, 01 Dec 2021 11:35:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=koZ0b6nl3s2fzAgfm0qGxpJFId/Sep4OPopoU1+xfLg=;
-        b=gP3MDOzAOzPK23tyx4hY7QrQ3ksi5PTsuN7H+PIVJ4k1Arseh+RYNyX2OmrvjjenG2
-         Gvnzm99Y5feMZqAqUvhP/T6fZWmiS7qfuwW9XglFCD/mQeEXQyML91wlk1FnyAhrL5dh
-         CumJx18MDQzA68CMClVlIX5pwRe0r3s/s/IRF4y69O1sPmEhVYr4XF9+P/vk+6taJjOE
-         3L4F9K5tuqyqVdZfKnUC1MBhE4yGNY55xdlwhISps4mn6HuakaW7Pe6IqXqxlHS+pfrZ
-         LLmK5pRgAN70+4+N8nnz5E9itTLi3oM3QO6JuSpjoTIdPGKEI21gZ/Ffl139tw3ozrSf
-         D2tg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=VSsVFWntTE7c4RiAbESHCx0AGg9CBW9/QGJqS0X9jIQ=;
+        b=koR/F2dhOFSTeQfeKCRb86Y+ZSFgu6AJc8p8GQi6UkmfL+ZT6AluQY1VEusXrdet0z
+         Nun9QcGUEiCVo7BKXL6CBLPaLEXZPzH4/N159MCHyTuCCASGIp0krtr7js+CBJ8t+G5S
+         QjwLGXsiRepAP/dKpgS3/ZFtlfm5zTvC3E2KGsRagvA7XvPVjhGMF/BuFd4bG2+nGQDb
+         1UlvJvMggbCLZEZGPbGgrI0EjHILEr0GzHrTXsPeLbZ37VXqvmzH5IvHUbwQLb02qzVh
+         CuuuRhOZWD40Sugsp9GuppQcRjhvVhWkXQc1FjHMoEoYEkJ3UdKxLPIOM6TNj5Py51/Q
+         VEZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=koZ0b6nl3s2fzAgfm0qGxpJFId/Sep4OPopoU1+xfLg=;
-        b=LRpvKP/m76fFevI76+aNco19JXPV+1bJVqdFYitehPAcufn7FvXz6a9f07HgzW7dAW
-         cXx2dusAYUWqttvoPvgzZykdjEumkEb0Ixjuj1rmnGKnNkKaZKS9aV9iZegV8rUlNTf9
-         +cNae/wyKpaUwTtZjPf7yHwZnX62g19VzYZvhy51DAw7AKibct0qmDZd+iPRMAgWb2mI
-         62InMUSEhMo5e8OiuoXj5DE35s9iQWsxjsfbnq9LtQmYFbERe0kmeGt3BioYnHuOQ4wA
-         BLdhnTHU7r+ok0mrxelZbIS+obWhWDjakwhG6rQp5sbIc+Hlc8tPVdEMBszE+rcigHuR
-         fNFg==
-X-Gm-Message-State: AOAM533nB67VORpPLupinfMwHwcVHs88ItOgzVX9+jf/K+Fi9ACYGnqf
-        wJ8ad3qvzOMLR6Ydu40zCSs=
-X-Google-Smtp-Source: ABdhPJzSt9l+Lvm2Z7PLVkUw0itt+1FsGQhintNOwH5/M3Kc6EE+Srg4/fIbkFYFAXqJzfc7oZuBqw==
-X-Received: by 2002:a05:6808:2111:: with SMTP id r17mr194476oiw.118.1638386458066;
-        Wed, 01 Dec 2021 11:20:58 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id bl33sm401914oib.47.2021.12.01.11.20.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Dec 2021 11:20:57 -0800 (PST)
-Message-ID: <0b92f046-5ac3-7138-2775-59fadee6e17a@gmail.com>
-Date:   Wed, 1 Dec 2021 12:20:56 -0700
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=VSsVFWntTE7c4RiAbESHCx0AGg9CBW9/QGJqS0X9jIQ=;
+        b=uyuYxfzlYNVtT0uTTnQ6d4s0BNB2OlkcJupxDIvpcFQyTW6r518znKFborRr0O/Ojw
+         NJjQfAyXVyD9JG/fat/IDzT3h6Nwjb8CdWkh5ZOwGBidQoUEy+fO8ySSbiDlx5tnkMwF
+         +fPPuF4OCeC0TzNrYNjoVseROfUgWVJNWFq13+M6bNWiJTElLXIwCoJKKixfEfXx5V0x
+         VjhjcZE+ZF8BwVDEHqpOb74vnQuIfC16qFLJXFlHbKdydAZduasTytT+aMja8/GV+GKg
+         FWcrWqv6V3W44PrP18DBKX/N4l8eNDaC/tpEnUCgQ1bbslFo0LnRx5yDP1lz0cMegWhG
+         oaPw==
+X-Gm-Message-State: AOAM530/HuI9Q2UhIlhkqVYJj1P3j9SII6n5gRST9iz07RGVK5/U6gEH
+        ei3E6pmMe4IWpDEoea2JpuD01dgbaw==
+X-Google-Smtp-Source: ABdhPJwPzikQOQSO9fQi5ca2JZqe56DT2SwLlF1BD5JP5rLc18v8yM4tJTVpoZIPrPt/XggjAHNV5w==
+X-Received: by 2002:a17:90b:4c0f:: with SMTP id na15mr294164pjb.222.1638387330094;
+        Wed, 01 Dec 2021 11:35:30 -0800 (PST)
+Received: from bytedance ([4.7.18.210])
+        by smtp.gmail.com with ESMTPSA id k8sm600474pfc.197.2021.12.01.11.35.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Dec 2021 11:35:29 -0800 (PST)
+Date:   Wed, 1 Dec 2021 11:35:27 -0800
+From:   Peilin Ye <yepeilin.cs@gmail.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v3] selftests/fib_tests: Rework fib_rp_filter_test()
+Message-ID: <20211201193527.GA27000@bytedance>
+References: <20211130004905.4146-1-yepeilin.cs@gmail.com>
+ <20211201004720.6357-1-yepeilin.cs@gmail.com>
+ <42b5ebde-2a36-3956-d6dd-bd50e18ff6dc@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.1
-Subject: Re: [RFC 00/12] io_uring zerocopy send
-Content-Language: en-US
-To:     Pavel Begunkov <asml.silence@gmail.com>, io-uring@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Willem de Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, Jens Axboe <axboe@kernel.dk>
-References: <cover.1638282789.git.asml.silence@gmail.com>
- <ae2d2dab-6f42-403a-f167-1ba3db3fd07f@gmail.com>
- <994e315b-fdb7-1467-553e-290d4434d853@gmail.com>
- <c4424a7a-2ef1-6524-9b10-1e7d1f1e1fe4@gmail.com>
- <889c0306-afed-62cd-d95b-a20b8e798979@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <889c0306-afed-62cd-d95b-a20b8e798979@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <42b5ebde-2a36-3956-d6dd-bd50e18ff6dc@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/1/21 12:11 PM, Pavel Begunkov wrote:
-> btw, why a dummy device would ever go through loopback? It doesn't
-> seem to make sense, though may be missing something.
+Hi David,
 
-You are sending to a local ip address, so the fib_lookup returns
-RTN_LOCAL. The code makes dev_out the loopback:
+On Wed, Dec 01, 2021 at 11:00:26AM -0700, David Ahern wrote:
+> On 11/30/21 5:47 PM, Peilin Ye wrote:
+> >  ┌─────────────────────────────┐    ┌─────────────────────────────┐
+> >  │  network namespace 1 (ns1)  │    │  network namespace 2 (ns2)  │
+> >  │                             │    │                             │
+> >  │  ┌────┐     ┌─────┐         │    │  ┌─────┐            ┌────┐  │
+> >  │  │ lo │<───>│veth1│<────────┼────┼─>│veth2│<──────────>│ lo │  │
+> >  │  └────┘     ├─────┴──────┐  │    │  ├─────┴──────┐     └────┘  │
+> >  │             │192.0.2.1/24│  │    │  │192.0.2.1/24│             │
+> >  │             └────────────┘  │    │  └────────────┘             │
+> >  └─────────────────────────────┘    └─────────────────────────────┘
+> 
+> if the intention of the tests is to validate that rp_filter = 1 works as
+> designed, then I suggest a simpler test. 2 namespaces, 2 veth pairs.
+> Request goes through one interface, and the response comes in the other
+> via routing in ns2. ns1 would see the response coming in the 'wrong'
+> interface and drops it.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/net/ipv4/route.c#n2773
+Quite the opposite - the goal is to make sure that commit 66f8209547cc
+("fib: relax source validation check for loopback packets") _prevents_
+packets from being dropped when rp_filter = 1 in this corner case, as I
+mentioned in the commit message.
 
-(you are not using vrf so ignore the l3mdev reference). loopback device
-has the logic to put the skb back in the stack for Rx processing:
+In order to test this corner case, I need a packet that:
 
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/drivers/net/loopback.c#n68
+  1. was received on lo;
+  2. has a local source IP address (other than lo's 127.0.0.1/8, which
+     is 192.0.2.1 in this case);
+  3. has no dst attached to it (in this case since it was redirected
+     from veth).
+
+See __fib_validate_source():
+
++       dev_match = dev_match || (res.type == RTN_LOCAL &&
++                                 dev == net->loopback_dev);
+					      ^^^^^^^^^^^^
+This relaxed check only applies to lo, and I do need to redirect packets
+from veth ingress to lo ingress in order to trigger this.
+
+Thanks,
+Peilin Ye
+
