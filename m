@@ -2,74 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 929074644D4
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 03:20:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B36344644DB
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 03:22:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241292AbhLACXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 21:23:32 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:49730 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbhLACXb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 21:23:31 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 72AF8B81C0F;
-        Wed,  1 Dec 2021 02:20:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 25E5CC53FC7;
-        Wed,  1 Dec 2021 02:20:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638325209;
-        bh=NsrkI24hix3RptPZuZ71vjwQOEYKri4EMggY7An9M6U=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=sAGx29hvH+xkMzOQWtp5v2Die9qU1BN6CCNeMpEGnBVKREsljq/WZ0X1qijFtwMl9
-         zTG1RkrwDTkMZv5tr5/LU6OdQ+oOWGFlRQ3z1OMGQhUnZPxaaXLXYM7nKPCFfvejIX
-         I+yCRWwgHQrvcI2oZhTrjjNR7N4wer1okY+b1kNv/AxPbA+A8GsnVf2SOMcl995Kp2
-         40+XOO4odY+y41w1tDNldBQdz8elmfPc8IxYvQfAv0pSWP62nzGGzv077FPGpHAXa8
-         TjoakFcldckXEMcCBtBqkW+9K/V+uU3X3S+oIlby2cuHmu6UGxVSs3A89DVP7Y6zXF
-         7wEWTSICMt4Cw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0C33B60A38;
-        Wed,  1 Dec 2021 02:20:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1345996AbhLACZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 21:25:28 -0500
+Received: from out30-131.freemail.mail.aliyun.com ([115.124.30.131]:54352 "EHLO
+        out30-131.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1346062AbhLACZ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 21:25:26 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0UywXgH9_1638325322;
+Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0UywXgH9_1638325322)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 01 Dec 2021 10:22:03 +0800
+Date:   Wed, 1 Dec 2021 10:22:02 +0800
+From:   "dust.li" <dust.li@linux.alibaba.com>
+To:     kernel test robot <lkp@intel.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ursula Braun <ubraun@linux.ibm.com>
+Cc:     kbuild-all@lists.01.org, Tony Lu <tonylu@linux.alibaba.com>,
+        Wen Gu <guwen@linux.alibaba.com>, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] net/smc: fix wrong list_del in smc_lgr_cleanup_early
+Message-ID: <20211201022202.GB38461@linux.alibaba.com>
+Reply-To: dust.li@linux.alibaba.com
+References: <20211130151731.55951-1-dust.li@linux.alibaba.com>
+ <202112010159.e2LA9rIR-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH -next] mctp: remove unnecessary check before calling
- kfree_skb()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163832520904.6106.12847821764543488258.git-patchwork-notify@kernel.org>
-Date:   Wed, 01 Dec 2021 02:20:09 +0000
-References: <20211130031243.768823-1-yangyingliang@huawei.com>
-In-Reply-To: <20211130031243.768823-1-yangyingliang@huawei.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        jk@codeconstruct.com.au, davem@davemloft.net, kuba@kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202112010159.e2LA9rIR-lkp@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, Dec 01, 2021 at 02:07:46AM +0800, kernel test robot wrote:
+>Hi Dust,
+>
+>Thank you for the patch! Perhaps something to improve:
+>
+>[auto build test WARNING on net/master]
+>
+>url:    https://github.com/0day-ci/linux/commits/Dust-Li/net-smc-fix-wrong-list_del-in-smc_lgr_cleanup_early/20211130-232151
+>base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 34d8778a943761121f391b7921f79a7adbe1feaf
+>config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20211201/202112010159.e2LA9rIR-lkp@intel.com/config)
+>compiler: arceb-elf-gcc (GCC) 11.2.0
+>reproduce (this is a W=1 build):
+>        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>        chmod +x ~/bin/make.cross
+>        # https://github.com/0day-ci/linux/commit/9b9af6a458f20989d91478dc8e038325978e16d5
+>        git remote add linux-review https://github.com/0day-ci/linux
+>        git fetch --no-tags linux-review Dust-Li/net-smc-fix-wrong-list_del-in-smc_lgr_cleanup_early/20211130-232151
+>        git checkout 9b9af6a458f20989d91478dc8e038325978e16d5
+>        # save the config file to linux build tree
+>        mkdir build_dir
+>        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash net/smc/
+>
+>If you fix the issue, kindly add following tag as appropriate
+>Reported-by: kernel test robot <lkp@intel.com>
+>
+>All warnings (new ones prefixed by >>):
+>
+>   net/smc/smc_core.c: In function 'smc_lgr_cleanup_early':
+>>> net/smc/smc_core.c:628:27: warning: variable 'lgr_list' set but not used [-Wunused-but-set-variable]
+>     628 |         struct list_head *lgr_list;
+>         |                           ^~~~~~~~
+Sorry, I will send a v2 to fix this.
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Tue, 30 Nov 2021 11:12:43 +0800 you wrote:
-> The skb will be checked inside kfree_skb(), so remove the
-> outside check.
-> 
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
->  net/mctp/af_mctp.c | 3 +--
->  net/mctp/route.c   | 4 +---
->  2 files changed, 2 insertions(+), 5 deletions(-)
-
-Here is the summary with links:
-  - [-next] mctp: remove unnecessary check before calling kfree_skb()
-    https://git.kernel.org/netdev/net-next/c/5cfe53cfeb1c
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+>
+>
+>vim +/lgr_list +628 net/smc/smc_core.c
+>
+>8f9dde4bf230f5 Guvenc Gulce  2020-12-01  624  
+>51e3dfa8906ace Ursula Braun  2020-02-25  625  void smc_lgr_cleanup_early(struct smc_connection *conn)
+>51e3dfa8906ace Ursula Braun  2020-02-25  626  {
+>51e3dfa8906ace Ursula Braun  2020-02-25  627  	struct smc_link_group *lgr = conn->lgr;
+>9ec6bf19ec8bb1 Karsten Graul 2020-05-03 @628  	struct list_head *lgr_list;
+>9ec6bf19ec8bb1 Karsten Graul 2020-05-03  629  	spinlock_t *lgr_lock;
+>51e3dfa8906ace Ursula Braun  2020-02-25  630  
+>51e3dfa8906ace Ursula Braun  2020-02-25  631  	if (!lgr)
+>51e3dfa8906ace Ursula Braun  2020-02-25  632  		return;
+>51e3dfa8906ace Ursula Braun  2020-02-25  633  
+>51e3dfa8906ace Ursula Braun  2020-02-25  634  	smc_conn_free(conn);
+>9ec6bf19ec8bb1 Karsten Graul 2020-05-03  635  	lgr_list = smc_lgr_list_head(lgr, &lgr_lock);
+>9ec6bf19ec8bb1 Karsten Graul 2020-05-03  636  	spin_lock_bh(lgr_lock);
+>9ec6bf19ec8bb1 Karsten Graul 2020-05-03  637  	/* do not use this link group for new connections */
+>9b9af6a458f209 Dust Li       2021-11-30  638  	if (!list_empty(&lgr->list))
+>9b9af6a458f209 Dust Li       2021-11-30  639  		list_del_init(&lgr->list);
+>9ec6bf19ec8bb1 Karsten Graul 2020-05-03  640  	spin_unlock_bh(lgr_lock);
+>f9aab6f2ce5761 Ursula Braun  2020-09-10  641  	__smc_lgr_terminate(lgr, true);
+>51e3dfa8906ace Ursula Braun  2020-02-25  642  }
+>51e3dfa8906ace Ursula Braun  2020-02-25  643  
+>
+>---
+>0-DAY CI Kernel Test Service, Intel Corporation
+>https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
