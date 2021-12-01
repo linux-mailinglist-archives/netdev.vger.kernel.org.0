@@ -2,245 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A494465478
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 18:58:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61C2046547B
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 18:58:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352216AbhLASBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 13:01:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37526 "EHLO
+        id S1352222AbhLASBP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 13:01:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352010AbhLASAp (ORCPT
+        with ESMTP id S1352006AbhLASAp (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 13:00:45 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC62BC0613E0;
-        Wed,  1 Dec 2021 09:57:12 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id gf14-20020a17090ac7ce00b001a7a2a0b5c3so332802pjb.5;
-        Wed, 01 Dec 2021 09:57:12 -0800 (PST)
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BEE7C0613DD;
+        Wed,  1 Dec 2021 09:57:11 -0800 (PST)
+Received: by mail-oi1-x22f.google.com with SMTP id m6so50207332oim.2;
+        Wed, 01 Dec 2021 09:57:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=CofjtoS3C2UlVTL2mQI4/sEc5MpZ6MET1C9W9dcnuEY=;
-        b=ZjxD5mfNKE0pXHW6k9ghM+tWQSVZYKoGXbrLill2uMs7FqfBnfkzmHZ+TbPfExjMWM
-         BmlGqmvLnMaldY0AHFiDAdtmGCEtQwNjlZKkOIEvFidzRkIwEh94Rp426QFn5rM4P22y
-         rEARxHCbXBsSMjzDC7C8DVUJDp87vkSpln1yMnlNYd6qVTAL07PQIArzI+4Rjc3aJ8g+
-         6PlwKlrsbE13BT+6e6MRRNt2Mcq8u4gnnaJTkJtvoei3fPf/OQcGGN9hvz4Hk+LAijG/
-         prWc0pdBHX5K38xsob1MvBRrfEA11/kN/T/1EmaBvAI9Nh2Zmrs0QTf3Qla9LFT5Qr1P
-         iNfg==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ZLy6Jb+6Ty24fX68SpNaQHHxD3uEqTcLfyiSOpS1cog=;
+        b=GiV7gMzj+3aRKlq31wAPB3RVY+mEmhyhz0l3S43ArUwJV5I5ALh6N+eNs0DO0OCMAj
+         ll0RBwEiQmQ+3n+VxHbtKCVoJCM8OaCENU0Ffl0Iq9y+tmt2qUwZtoU/JwfaBO2dZZeo
+         0tVGBqcsLIgXVNBEwg30A8mwQUV18n89uta5H3IcEnz+583zmHMrY6Rs6xFstVCF/aUP
+         PmRC6wNTz+7P+ArnCy1Rq++sHLB92JbVXDnvMQfyUJVbjN7md/5eugFy1monZ7Pet7SU
+         em+a4oMQroZG1OUtFf5qfbpw/e4h5VBHACaZuE3tajOGS71FdkTmIk7WGhLyfPvSYpov
+         fNVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=CofjtoS3C2UlVTL2mQI4/sEc5MpZ6MET1C9W9dcnuEY=;
-        b=GSFLTHt1HpiI8BGe7R8EAElFKvbCUVIHkic7epJC9u7ANScXTG7KnsfUsztleddoHV
-         lcskkJHyL3TNcFkaaDvAr5yV2JNBtCYUQc0PR8yRIZXte1ycgMBj3V3JriccJQeuRnJV
-         UofXTaGUThUVCI0/tdvNHB7VipsaW5WsvZhoj/sCesWGJi2ERF/n2rCB/KqVtLGiCVrY
-         qjYBVmCdsiJNnzyJNJdMjF0ZKHw9PLS9eEWJZ+hsfq2WcKXT2MCE8awrcLhrxW/HhUEY
-         ZUKFVQaavyH7R9mQPDqxC8bUAb+c/bC3xpDGNVPhCHvPC+5/ub+y9S9O9p5HtsAU1gOC
-         gRmg==
-X-Gm-Message-State: AOAM533Jvagg9HfS9GTGWPG1ot4rueq7sV45BHmDRchh5+SHwFOcNZ6n
-        arpEpM7VuiJpHveZ4K8J9G8I8Em+lco=
-X-Google-Smtp-Source: ABdhPJxf0xUb0pM/R2FfaUGrqutQC3ervh7m6lZSWlFbf/8bNQDZfoq9aeCNta6kbyPIKHx/iYK1vQ==
-X-Received: by 2002:a17:90b:1e07:: with SMTP id pg7mr9256037pjb.93.1638381431891;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ZLy6Jb+6Ty24fX68SpNaQHHxD3uEqTcLfyiSOpS1cog=;
+        b=P9oMUXfzMZbDtAp5ipe51M4WkegBvYGjr2VIYnih7Tz/VGD07hSHccan6/nmJCHoJY
+         pGi5j8LJi3eGFkWpcTznE5UtClZCeUNBdqOsFodtonB0onEq85elifQLQzG273X9+MzC
+         3uHc0x+hGQ/QtiGRHPlshe3kzhv7mu9txtAL2Jt/SsGeEkBn6ovOykOjDwU+ylDRZzMg
+         UqHMPll2hRQDsga2Xvd4CqZMccSOe8lt0sv67J5k96Snr40ZjwBkzq8Bb+pXg3eNHGdg
+         UHvlo9LgmtvQSSsBrrrV3yYG7VH6VlfdOuk5FKaL8MILSOpPQxpDdnVdT7AYix+yo1SM
+         m/nQ==
+X-Gm-Message-State: AOAM531WU6RagYLme7YtmJefZmhW7Jk7TSzf5l14xf3ij770TPBns1Nf
+        Yqzfr52oWBofY4FKY7QXXyA=
+X-Google-Smtp-Source: ABdhPJxfBuWPwGbgqA8NaLP/Hxr10UC/stVPUmZU5tFkPgYG/wFW+cRClTJPbiQ+XHQUm5JY+P4/5A==
+X-Received: by 2002:aca:de07:: with SMTP id v7mr7367492oig.28.1638381431002;
         Wed, 01 Dec 2021 09:57:11 -0800 (PST)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id j13sm471546pfc.151.2021.12.01.09.57.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Dec 2021 09:57:11 -0800 (PST)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        bcm-kernel-feedback-list@broadcom.com (maintainer:BROADCOM IPROC GBIT
-        ETHERNET DRIVER), Doug Berger <opendmb@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS), linux-kernel@vger.kernel.org (open list),
-        linux-arm-kernel@lists.infradead.org (moderated list:BROADCOM IPROC ARM
-        ARCHITECTURE),
-        linux-phy@lists.infradead.org (open list:GENERIC PHY FRAMEWORK)
-Subject: [PATCH net-next v2 9/9] dt-bindings: net: Convert iProc MDIO mux to YAML
-Date:   Wed,  1 Dec 2021 09:56:52 -0800
-Message-Id: <20211201175652.4722-10-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211201175652.4722-1-f.fainelli@gmail.com>
-References: <20211201175652.4722-1-f.fainelli@gmail.com>
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id d3sm158953otc.0.2021.12.01.09.57.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Dec 2021 09:57:10 -0800 (PST)
+Message-ID: <c4424a7a-2ef1-6524-9b10-1e7d1f1e1fe4@gmail.com>
+Date:   Wed, 1 Dec 2021 10:57:09 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.3.1
+Subject: Re: [RFC 00/12] io_uring zerocopy send
+Content-Language: en-US
+To:     Pavel Begunkov <asml.silence@gmail.com>, io-uring@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Willem de Bruijn <willemb@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, Jens Axboe <axboe@kernel.dk>
+References: <cover.1638282789.git.asml.silence@gmail.com>
+ <ae2d2dab-6f42-403a-f167-1ba3db3fd07f@gmail.com>
+ <994e315b-fdb7-1467-553e-290d4434d853@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <994e315b-fdb7-1467-553e-290d4434d853@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Conver the Broadcom iProc MDIO mux Device Tree binding to YAML.
+On 12/1/21 8:32 AM, Pavel Begunkov wrote:
+> 
+> Sure. First, for dummy I set mtu by hand, not sure can do it from
+> the userspace, can I? Without it __ip_append_data() falls into
+> non-zerocopy path.
+> 
+> diff --git a/drivers/net/dummy.c b/drivers/net/dummy.c
+> index f82ad7419508..5c5aeacdabd5 100644
+> --- a/drivers/net/dummy.c
+> +++ b/drivers/net/dummy.c
+> @@ -132,7 +132,8 @@ static void dummy_setup(struct net_device *dev)
+>      eth_hw_addr_random(dev);
+>  
+>      dev->min_mtu = 0;
+> -    dev->max_mtu = 0;
+> +    dev->mtu = 0xffff;
+> +    dev->max_mtu = 0xffff;
+>  }
+> 
+> # dummy configuration
+> 
+> modprobe dummy numdummies=1
+> ip link set dummy0 up
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- .../bindings/net/brcm,mdio-mux-iproc.txt      | 62 --------------
- .../bindings/net/brcm,mdio-mux-iproc.yaml     | 80 +++++++++++++++++++
- 2 files changed, 80 insertions(+), 62 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.txt
- create mode 100644 Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.yaml
 
-diff --git a/Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.txt b/Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.txt
-deleted file mode 100644
-index deb9e852ea27..000000000000
---- a/Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.txt
-+++ /dev/null
-@@ -1,62 +0,0 @@
--Properties for an MDIO bus multiplexer found in Broadcom iProc based SoCs.
--
--This MDIO bus multiplexer defines buses that could be internal as well as
--external to SoCs and could accept MDIO transaction compatible to C-22 or
--C-45 Clause. When child bus is selected, one needs to select these two
--properties as well to generate desired MDIO transaction on appropriate bus.
--
--Required properties in addition to the generic multiplexer properties:
--
--MDIO multiplexer node:
--- compatible: brcm,mdio-mux-iproc.
--
--Every non-ethernet PHY requires a compatible so that it could be probed based
--on this compatible string.
--
--Optional properties:
--- clocks: phandle of the core clock which drives the mdio block.
--
--Additional information regarding generic multiplexer properties can be found
--at- Documentation/devicetree/bindings/net/mdio-mux.yaml
--
--
--for example:
--		mdio_mux_iproc: mdio-mux@66020000 {
--			compatible = "brcm,mdio-mux-iproc";
--			reg = <0x66020000 0x250>;
--			#address-cells = <1>;
--			#size-cells = <0>;
--
--			mdio@0 {
--				reg = <0x0>;
--				#address-cells = <1>;
--				#size-cells = <0>;
--
--				pci_phy0: pci-phy@0 {
--					compatible = "brcm,ns2-pcie-phy";
--					reg = <0x0>;
--					#phy-cells = <0>;
--				};
--			};
--
--			mdio@7 {
--				reg = <0x7>;
--				#address-cells = <1>;
--				#size-cells = <0>;
--
--				pci_phy1: pci-phy@0 {
--					compatible = "brcm,ns2-pcie-phy";
--					reg = <0x0>;
--					#phy-cells = <0>;
--				};
--			};
--			mdio@10 {
--				reg = <0x10>;
--				#address-cells = <1>;
--				#size-cells = <0>;
--
--				gphy0: eth-phy@10 {
--					reg = <0x10>;
--				};
--			};
--		};
-diff --git a/Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.yaml b/Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.yaml
-new file mode 100644
-index 000000000000..a576fb87bfc8
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.yaml
-@@ -0,0 +1,80 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/brcm,mdio-mux-iproc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MDIO bus multiplexer found in Broadcom iProc based SoCs.
-+
-+maintainers:
-+  - Florian Fainelli <f.fainelli@gmail.com>
-+
-+description:
-+  This MDIO bus multiplexer defines buses that could be internal as well as
-+  external to SoCs and could accept MDIO transaction compatible to C-22 or
-+  C-45 Clause. When child bus is selected, one needs to select these two
-+  properties as well to generate desired MDIO transaction on appropriate bus.
-+
-+allOf:
-+  - $ref: /schemas/net/mdio-mux.yaml#
-+
-+properties:
-+  compatible:
-+    const: brcm,mdio-mux-iproc
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+    description: core clock driving the MDIO block
-+
-+
-+required:
-+  - compatible
-+  - reg
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    mdio_mux_iproc: mdio-mux@66020000 {
-+        compatible = "brcm,mdio-mux-iproc";
-+        reg = <0x66020000 0x250>;
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        mdio@0 {
-+           reg = <0x0>;
-+           #address-cells = <1>;
-+           #size-cells = <0>;
-+
-+           pci_phy0: pci-phy@0 {
-+              compatible = "brcm,ns2-pcie-phy";
-+              reg = <0x0>;
-+              #phy-cells = <0>;
-+           };
-+        };
-+
-+        mdio@7 {
-+           reg = <0x7>;
-+           #address-cells = <1>;
-+           #size-cells = <0>;
-+
-+           pci_phy1: pci-phy@0 {
-+              compatible = "brcm,ns2-pcie-phy";
-+              reg = <0x0>;
-+              #phy-cells = <0>;
-+           };
-+        };
-+
-+        mdio@10 {
-+           reg = <0x10>;
-+           #address-cells = <1>;
-+           #size-cells = <0>;
-+
-+           gphy0: eth-phy@10 {
-+              reg = <0x10>;
-+           };
-+        };
-+    };
--- 
-2.25.1
+No change is needed to the dummy driver:
+  ip li add dummy0 type dummy
+  ip li set dummy0 up mtu 65536
+
+
+> # force requests to <dummy_ip_addr> go through the dummy device
+> ip route add <dummy_ip_addr> dev dummy0
+
+that command is not necessary.
+
+> 
+> 
+> With dummy I was just sinking the traffic to the dummy device,
+> was good enough for me. Omitting "taskset" and "nice":
+> 
+> send-zc -4 -D <dummy_ip_addr> -t 10 udp
+> 
+> Similarly with msg_zerocopy:
+> 
+> <kernel>/tools/testing/selftests/net/msg_zerocopy -4 -p 6666 -D
+> <dummy_ip_addr> -t 10 -z udp
+
+I get -ENOBUFS with '-z' and any local address.
+
+> 
+> 
+> For loopback testing, as zerocopy is not allowed for it as Willem
+> explained in
+> the original MSG_ZEROCOPY cover-letter, I used a hack to bypass it:
+> 
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index ebb12a7d386d..42df33b175ce 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -2854,9 +2854,7 @@ static inline int skb_orphan_frags(struct sk_buff
+> *skb, gfp_t gfp_mask)
+>  /* Frags must be orphaned, even if refcounted, if skb might loop to rx
+> path */
+>  static inline int skb_orphan_frags_rx(struct sk_buff *skb, gfp_t gfp_mask)
+>  {
+> -    if (likely(!skb_zcopy(skb)))
+> -        return 0;
+> -    return skb_copy_ubufs(skb, gfp_mask);
+> +    return skb_orphan_frags(skb, gfp_mask);
+>  }
+>  
+
+that is the key change that is missing in your repo. All local traffic
+(traffic to the address on a dummy device falls into this comment) goes
+through loopback. That's just the way Linux works. If you look at the
+dummy driver, it's xmit function just drops packets if any actually make
+it there.
+
+
+>> mileage varies quite a bit.
+> 
+> Interesting, any brief notes on the setup and the results? Dummy
+
+VM on Chromebook. I just cloned your repos, built, install and test. As
+mentioned above, the skb_orphan_frags_rx change is missing from your
+repo and that is the key to your reported performance gains.
 
